@@ -109,6 +109,7 @@ static const char *const modNames[] =
 	"MOD_LCANNON_SPLASH",
 	"MOD_FLAMER",
 	"MOD_FLAMER_SPLASH",
+	"MOD_BURN",
 	"MOD_GRENADE",
 	"MOD_WATER",
 	"MOD_SLIME",
@@ -159,7 +160,7 @@ Function to distribute rewards to entities that killed this one.
 */
 void G_RewardAttackers( gentity_t *self )
 {
-	float     value, reward, distanceToBase;
+	float     value, reward;
 	int       playerNum, enemyDamage, maxHealth, damageShare;
 	gentity_t *player;
 	team_t    ownTeam, playerTeam;
@@ -211,8 +212,6 @@ void G_RewardAttackers( gentity_t *self )
 	{
 		return;
 	}
-
-	distanceToBase = G_DistanceToBase( self, qtrue );
 
 	// Give individual rewards
 	for ( playerNum = 0; playerNum < level.maxclients; playerNum++ )
@@ -273,14 +272,34 @@ void G_RewardAttackers( gentity_t *self )
 		else
 		{
 			G_AddCreditsToScore( player, ( int )reward );
-
 			G_AddCreditToClient( player->client, ( short )reward, qtrue );
 
-			// Give confidence for killing enemies inside their main base
-			if ( distanceToBase < 1000.0f )
+			// Give confidence for killing non-naked players outside the friendly base
+			switch ( self->client->ps.stats[ STAT_CLASS ] )
 			{
-				G_AddConfidence( playerTeam, CONFIDENCE_KILLING, CONF_REAS_KILLING, CONF_QUAL_IN_ENEMEY_BASE,
-								 reward * CONFIDENCE_PER_CREDIT, player );
+				case PCL_ALIEN_LEVEL0:
+				case PCL_ALIEN_BUILDER0:
+				case PCL_ALIEN_BUILDER0_UPG:
+					break;
+
+				case PCL_HUMAN:
+					// Treat a human just wearing light armor as naked
+					if ( ( int )value <= BG_Class( PCL_HUMAN )->value +
+					                     ( BG_Upgrade( UP_LIGHTARMOUR )->price / 2 ) )
+					{
+						break;
+					}
+
+				default:
+					if ( G_InsideBase( player, qtrue ) || G_InsideBase( self, qfalse ) )
+					{
+						break;
+					}
+
+					qualifier = CONF_QUAL_OUTSIDE_OWN_BASE;
+
+					G_AddConfidence( playerTeam, CONFIDENCE_KILLING, CONF_REAS_KILLING,
+					                 qualifier, reward * CONFIDENCE_PER_CREDIT, player );
 			}
 		}
 	}

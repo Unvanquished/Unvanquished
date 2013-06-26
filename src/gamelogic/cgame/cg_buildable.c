@@ -73,25 +73,57 @@ void CG_AlienBuildableExplosion( vec3_t origin, vec3_t dir )
 
 /*
 =================
+CG_HumanBuildableDieing
+
+Called for human buildables that are about to blow up
+=================
+*/
+void CG_HumanBuildableDying( buildable_t buildable, vec3_t origin )
+{
+	switch ( buildable )
+	{
+		case BA_H_REPEATER:
+		case BA_H_REACTOR:
+			trap_S_StartSound( origin, ENTITYNUM_WORLD, CHAN_AUTO, cgs.media.humanBuildableDying );
+		default:
+			return;
+	}
+}
+
+/*
+=================
 CG_HumanBuildableExplosion
 
 Called for human buildables as they are destroyed
 =================
 */
-void CG_HumanBuildableExplosion( vec3_t origin, vec3_t dir )
+void CG_HumanBuildableExplosion( buildable_t buildable, vec3_t origin, vec3_t dir )
 {
-	particleSystem_t *ps;
+	particleSystem_t *explosion = NULL;
+	particleSystem_t *nova = NULL;
 
-	trap_S_StartSound( origin, ENTITYNUM_WORLD, CHAN_AUTO, cgs.media.humanBuildableExplosion );
-
-	//particle system
-	ps = CG_SpawnNewParticleSystem( cgs.media.humanBuildableDestroyedPS );
-
-	if ( CG_IsParticleSystemValid( &ps ) )
+	switch ( buildable )
 	{
-		CG_SetAttachmentPoint( &ps->attachment, origin );
-		CG_SetParticleSystemNormal( ps, dir );
-		CG_AttachToPoint( &ps->attachment );
+		case BA_H_REPEATER:
+		case BA_H_REACTOR:
+			nova = CG_SpawnNewParticleSystem( cgs.media.humanBuildableNovaPS );
+		default:
+			trap_S_StartSound( origin, ENTITYNUM_WORLD, CHAN_AUTO, cgs.media.humanBuildableExplosion );
+			explosion = CG_SpawnNewParticleSystem( cgs.media.humanBuildableDestroyedPS );
+	}
+
+	if ( CG_IsParticleSystemValid( &nova ) )
+	{
+		CG_SetAttachmentPoint( &nova->attachment, origin );
+		CG_SetParticleSystemNormal( nova, dir );
+		CG_AttachToPoint( &nova->attachment );
+	}
+
+	if ( CG_IsParticleSystemValid( &explosion ) )
+	{
+		CG_SetAttachmentPoint( &explosion->attachment, origin );
+		CG_SetParticleSystemNormal( explosion, dir );
+		CG_AttachToPoint( &explosion->attachment );
 	}
 }
 
@@ -157,6 +189,54 @@ static void CG_Creep( centity_t *cent )
 	{
 		CG_ImpactMark( cgs.media.creepShader, origin, cent->currentState.origin2,
 		               0.0f, 1.0f, 1.0f, 1.0f, 1.0f, qfalse, size, qtrue );
+	}
+}
+
+/*
+==================
+CG_OnFire
+
+Sets buildable particle system to a fire effect if buildable is burning
+==================
+*/
+static void CG_OnFire( centity_t *cent )
+{
+	entityState_t *es = &cent->currentState;
+	team_t        team = BG_Buildable( es->modelindex )->team;
+
+	if ( es->eType != ET_BUILDABLE )
+	{
+		return;
+	}
+
+	if ( !( es->eFlags & EF_B_ONFIRE ) )
+	{
+		if ( CG_IsParticleSystemValid( &cent->buildableStatusPS ) )
+		{
+			CG_DestroyParticleSystem( &cent->buildableStatusPS );
+		}
+
+		return;
+	}
+
+	switch ( team )
+	{
+		case TEAM_ALIENS:
+			if ( !CG_IsParticleSystemValid( &cent->buildableStatusPS ) )
+			{
+				cent->buildableStatusPS = CG_SpawnNewParticleSystem( cgs.media.alienBuildableBurnPS );
+			}
+			break;
+
+		default:
+			// human buildables cannot burn … yet
+			return;
+	}
+
+	if ( CG_IsParticleSystemValid( &cent->buildableStatusPS ) )
+	{
+		CG_SetAttachmentCent( &cent->buildableStatusPS->attachment, cent );
+		CG_AttachToCent( &cent->buildableStatusPS->attachment );
 	}
 }
 
@@ -662,12 +742,12 @@ qboolean CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t 
 			break;
 
 		case BA_H_REACTOR:
-			*range = REACTOR_BASESIZE;
+			*range = REACTOR_POWER_RANGE;
 			shc = SHC_DARK_BLUE;
 			break;
 
 		case BA_H_REPEATER:
-			*range = REPEATER_BASESIZE;
+			*range = REPEATER_POWER_RANGE;
 			shc = SHC_LIGHT_BLUE;
 			break;
 
@@ -1358,11 +1438,11 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 {
 	entityState_t *es = &cent->currentState;
 	vec3_t        origin;
-	float         healthScale;
-	int           health;
+	float         healthScale, relativeSparePowerScale, mineEfficiencyScale;
+	int           health, relativeSparePower, mineEfficiency;
 	float         x, y;
 	vec4_t        color;
-	qboolean      powered, marked, miner;
+	qboolean      powered, marked, showMineEfficiency, showPower;
 	trace_t       tr;
 	float         d;
 	buildStat_t   *bs;
@@ -1383,7 +1463,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 	else
 	{
 		bs = &cgs.humanBuildStat;
-	}
+	}            
 
 	if ( !bs->loaded )
 	{
@@ -1492,6 +1572,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 		}
 	}
 
+	// ???
 	if ( !visible && cent->buildableStatus.visible )
 	{
 		cent->buildableStatus.visible = qfalse;
@@ -1525,22 +1606,87 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 		}
 	}
 
-	health = es->generic1;
-	healthScale = ( float ) health / BG_Buildable( es->modelindex )->health;
+	// get mine efficiency data
+	showMineEfficiency = ( BG_Buildable( es->modelindex )->number == BA_A_LEECH ||
+	                       BG_Buildable( es->modelindex )->number == BA_H_DRILL );
 
-	if ( health > 0 && healthScale < 0.01f )
+	if ( showMineEfficiency )
 	{
-		healthScale = 0.01f;
-	}
-	else if ( healthScale < 0.0f )
-	{
-		healthScale = 0.0f;
-	}
-	else if ( healthScale > 1.0f )
-	{
-		healthScale = 1.0f;
+		mineEfficiency = es->weaponAnim;
 	}
 
+	// get health data
+	{
+		health = es->generic1;
+	}
+
+	// get power consumption data
+	showPower = ( BG_Buildable( es->modelindex )->team == TEAM_HUMANS &&
+	              !( BG_Buildable( es->modelindex )->number == BA_H_REACTOR ||
+	                 BG_Buildable( es->modelindex )->number == BA_H_REPEATER ) );
+
+	if ( showPower )
+	{
+		relativeSparePower = es->clientNum;
+	}
+
+	// calculate mine efficiency bar size
+	if ( showMineEfficiency )
+	{
+		mineEfficiencyScale = ( float )mineEfficiency / 100.0f;
+
+		if ( mineEfficiency > 0 && mineEfficiencyScale < 0.01f )
+		{
+			mineEfficiencyScale = 0.01f;
+		}
+		else if ( mineEfficiencyScale < 0.0f )
+		{
+			mineEfficiencyScale = 0.0f;
+		}
+		else if ( mineEfficiencyScale > 1.0f )
+		{
+			mineEfficiencyScale = 1.0f;
+		}
+	}
+
+	// calculate health bar size
+	{
+		healthScale = ( float ) health / BG_Buildable( es->modelindex )->health;
+
+		if ( health > 0 && healthScale < 0.01f )
+		{
+			healthScale = 0.01f;
+		}
+		else if ( healthScale < 0.0f )
+		{
+			healthScale = 0.0f;
+		}
+		else if ( healthScale > 1.0f )
+		{
+			healthScale = 1.0f;
+		}
+	}
+
+	// calculate power consumption bar size
+	if ( showPower )
+	{
+		relativeSparePowerScale = ( float )relativeSparePower / 100.0f;
+
+		if ( relativeSparePower > 0 && relativeSparePowerScale < 0.01f )
+		{
+			relativeSparePowerScale = 0.01f;
+		}
+		else if ( relativeSparePowerScale < 0.0f )
+		{
+			relativeSparePowerScale = 0.0f;
+		}
+		else if ( relativeSparePowerScale > 1.0f )
+		{
+			relativeSparePowerScale = 1.0f;
+		}
+	}
+
+	// draw elements
 	if ( CG_WorldToScreen( origin, &x, &y ) )
 	{
 		float  picH = bs->frameHeight;
@@ -1557,8 +1703,6 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 
 		powered = es->eFlags & EF_B_POWERED;
 		marked = es->eFlags & EF_B_MARKED;
-		miner = (BG_Buildable( es->modelindex )->number == BA_A_LEECH
-		      || BG_Buildable( es->modelindex )->number == BA_H_DRILL);
 
 		picH *= scale;
 		picW *= scale;
@@ -1580,14 +1724,71 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 			Vector4Copy( bs->backColor, frameColor );
 			frameColor[ 3 ] = color[ 3 ];
 			trap_R_SetColor( frameColor );
+
+			if ( showMineEfficiency )
+			{
+				CG_SetClipRegion( picX, picY - 0.5f * picH, picW, 0.5f * picH );
+				CG_DrawPic( picX, picY - 0.5f * picH, picW, picH, bs->frameShader );
+				CG_ClearClipRegion();
+			}
+
 			CG_DrawPic( picX, picY, picW, picH, bs->frameShader );
+
+			if ( showPower )
+			{
+				CG_SetClipRegion( picX, picY + picH, picW, 0.5f * picH );
+				CG_DrawPic( picX, picY + 0.5f * picH, picW, picH, bs->frameShader );
+				CG_ClearClipRegion();
+			}
+
 			trap_R_SetColor( NULL );
 		}
 
+		// draw mine rate bar
+		if ( showMineEfficiency && mineEfficiency > 0 )
+		{
+			float  hX, hY, hW, hH;
+			vec4_t barColor;
+
+			hX = picX + ( bs->healthPadding * scale );
+			hY = picY - ( 0.5f * picH ) + ( bs->healthPadding * scale );
+			hH = ( 0.5f * picH ) - ( bs->healthPadding * scale );
+			hW = ( picW * mineEfficiencyScale ) - ( bs->healthPadding * 2.0f * scale );
+
+			if ( mineEfficiencyScale == 1.0f )
+			{
+				Vector4Copy( bs->healthLowColor, barColor );
+			}
+			else if ( mineEfficiencyScale >= 0.75f )
+			{
+				Vector4Copy( bs->healthGuardedColor, barColor );
+			}
+			else if ( mineEfficiencyScale >= 0.50f )
+			{
+				Vector4Copy( bs->healthElevatedColor, barColor );
+			}
+			else if ( mineEfficiencyScale >= 0.25f )
+			{
+				Vector4Copy( bs->healthHighColor, barColor );
+			}
+			else
+			{
+				Vector4Copy( bs->healthSevereColor, barColor );
+			}
+
+			barColor[ 3 ] = color[ 3 ];
+			trap_R_SetColor( barColor );
+
+			CG_DrawPic( hX, hY, hW, hH, cgs.media.whiteShader );
+
+			trap_R_SetColor( NULL );
+		}
+
+		// draw health bar
 		if ( health > 0 )
 		{
 			float  hX, hY, hW, hH;
-			vec4_t healthColor;
+			vec4_t barColor;
 
 			hX = picX + ( bs->healthPadding * scale );
 			hY = picY + ( bs->healthPadding * scale );
@@ -1596,29 +1797,70 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 
 			if ( healthScale == 1.0f )
 			{
-				Vector4Copy( bs->healthLowColor, healthColor );
+				Vector4Copy( bs->healthLowColor, barColor );
 			}
 			else if ( healthScale >= 0.75f )
 			{
-				Vector4Copy( bs->healthGuardedColor, healthColor );
+				Vector4Copy( bs->healthGuardedColor, barColor );
 			}
 			else if ( healthScale >= 0.50f )
 			{
-				Vector4Copy( bs->healthElevatedColor, healthColor );
+				Vector4Copy( bs->healthElevatedColor, barColor );
 			}
 			else if ( healthScale >= 0.25f )
 			{
-				Vector4Copy( bs->healthHighColor, healthColor );
+				Vector4Copy( bs->healthHighColor, barColor );
 			}
 			else
 			{
-				Vector4Copy( bs->healthSevereColor, healthColor );
+				Vector4Copy( bs->healthSevereColor, barColor );
 			}
 
-			healthColor[ 3 ] = color[ 3 ];
-			trap_R_SetColor( healthColor );
+			barColor[ 3 ] = color[ 3 ];
+			trap_R_SetColor( barColor );
 
 			CG_DrawPic( hX, hY, hW, hH, cgs.media.whiteShader );
+
+			trap_R_SetColor( NULL );
+		}
+
+		// draw power consumption bar
+		if ( showPower && relativeSparePower > 0 )
+		{
+			float  hX, hY, hW, hH;
+			vec4_t barColor;
+
+			hX = picX + ( bs->healthPadding * scale );
+			hY = picY + picH;
+			hH = ( 0.5f * picH ) - ( bs->healthPadding * scale );
+			hW = ( picW * relativeSparePowerScale ) - ( bs->healthPadding * 2.0f * scale );
+
+			if ( relativeSparePowerScale == 1.0f )
+			{
+				Vector4Copy( bs->healthLowColor, barColor );
+			}
+			else if ( relativeSparePowerScale >= 0.75f )
+			{
+				Vector4Copy( bs->healthGuardedColor, barColor );
+			}
+			else if ( relativeSparePowerScale >= 0.50f )
+			{
+				Vector4Copy( bs->healthElevatedColor, barColor );
+			}
+			else if ( relativeSparePowerScale >= 0.25f )
+			{
+				Vector4Copy( bs->healthHighColor, barColor );
+			}
+			else
+			{
+				Vector4Copy( bs->healthSevereColor, barColor );
+			}
+
+			barColor[ 3 ] = color[ 3 ];
+			trap_R_SetColor( barColor );
+
+			CG_DrawPic( hX, hY, hW, hH, cgs.media.whiteShader );
+
 			trap_R_SetColor( NULL );
 		}
 
@@ -1635,12 +1877,15 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 			oY -= ( oH * 0.5f );
 
 			trap_R_SetColor( frameColor );
+
 			CG_DrawPic( oX, oY, oW, oH, bs->overlayShader );
+
 			trap_R_SetColor( NULL );
 		}
 
 		trap_R_SetColor( color );
 
+		// show no power icon
 		if ( !powered )
 		{
 			float pX;
@@ -1649,6 +1894,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 			CG_DrawPic( pX, subY, subH, subH, bs->noPowerShader );
 		}
 
+		// show marked icon
 		if ( marked )
 		{
 			float mX;
@@ -1657,6 +1903,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 			CG_DrawPic( mX, subY, subH, subH, bs->markedShader );
 		}
 
+		// show hp
 		{
 			float nX;
 			int   healthMax;
@@ -1670,14 +1917,14 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 				healthPoints = 1;
 			}
 
-			if (miner)
-			{
-				nX = picX + ( picW * 0.33f ) - 2.0f - ( ( subH * 4 ) * 0.5f );
-			}
-			else
-			{
-				nX = picX + ( picW * 0.5f ) - 2.0f - ( ( subH * 4 ) * 0.5f );
-			}
+			//if (showMineEfficiency)
+			//{
+			//	nX = picX + ( picW * 0.33f ) - 2.0f - ( ( subH * 4 ) * 0.5f );
+			//}
+			//else
+			//{
+			nX = picX + ( picW * 0.5f ) - 2.0f - ( ( subH * 4 ) * 0.5f );
+			//}
 
 			if ( healthPoints > 999 )
 			{
@@ -1699,8 +1946,9 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 			CG_DrawField( nX, subY, 4, subH, subH, healthPoints );
 		}
 
+		/*
 		// show mine rate for resource generating structures
-		if ( miner )
+		if ( showMineEfficiency )
 		{
 			float rX, rY;
 			int   mineRate;
@@ -1734,6 +1982,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 
 			CG_DrawField( rX, rY, 4, subH, subH, mineRate );
 		}
+		*/
 
 		trap_R_SetColor( NULL );
 		CG_ClearClipRegion();
@@ -1886,6 +2135,11 @@ void CG_Buildable( centity_t *cent )
 			CG_DestroyParticleSystem( &cent->buildablePS );
 		}
 
+		if ( CG_IsParticleSystemValid( &cent->buildableStatusPS ) )
+		{
+			CG_DestroyParticleSystem( &cent->buildableStatusPS );
+		}
+
 		return;
 	}
 
@@ -2021,9 +2275,6 @@ void CG_Buildable( centity_t *cent )
 			QuatFromAngles( rotation, es->angles2[ PITCH ], 0, 0 );
 			QuatMultiply0( ent.skeleton.bones[ 6 ].rotation, rotation );
 		}
-
-
-
 
 		CG_TransformSkeleton( &ent.skeleton, Scale );
 		VectorCopy(mins, ent.skeleton.bounds[ 0 ]);
@@ -2174,8 +2425,7 @@ void CG_Buildable( centity_t *cent )
 
 	health = es->generic1;
 
-	if ( health < cent->lastBuildableHealth &&
-	     ( es->eFlags & EF_B_SPAWNED ) )
+	if ( health < cent->lastBuildableHealth && ( es->eFlags & EF_B_SPAWNED ) )
 	{
 		if ( cent->lastBuildableDamageSoundTime + BUILDABLE_SOUND_PERIOD < cg.time )
 		{
@@ -2184,16 +2434,15 @@ void CG_Buildable( centity_t *cent )
 				int i = rand() % 4;
 				trap_S_StartSound( NULL, es->number, CHAN_BODY, cgs.media.humanBuildableDamage[ i ] );
 			}
-			else if ( team == TEAM_ALIENS )
-			{
-				trap_S_StartSound( NULL, es->number, CHAN_BODY, cgs.media.alienBuildableDamage );
-			}
 
 			cent->lastBuildableDamageSoundTime = cg.time;
 		}
 	}
 
 	cent->lastBuildableHealth = health;
+
+	// set particle effect to fire if buildable is burning
+	CG_OnFire( cent );
 
 	//smoke etc for damaged buildables
 	CG_BuildableParticleEffects( cent );

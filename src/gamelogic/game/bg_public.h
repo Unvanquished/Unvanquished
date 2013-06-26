@@ -319,6 +319,7 @@ typedef enum
 #define EF_B_SPAWNED        0x0008
 #define EF_B_POWERED        0x0010
 #define EF_B_MARKED         0x0020
+#define EF_B_ONFIRE         0x0040
 
 // for players
 #define EF_POWER_AVAILABLE  0x0010
@@ -537,6 +538,7 @@ typedef enum
   EV_BUILD_DELAY, // can't build yet
   EV_BUILD_REPAIR, // repairing buildable
   EV_BUILD_REPAIRED, // buildable has full health
+  EV_HUMAN_BUILDABLE_DYING,
   EV_HUMAN_BUILDABLE_EXPLOSION,
   EV_ALIEN_BUILDABLE_EXPLOSION,
   EV_ALIEN_ACIDTUBE,
@@ -634,11 +636,12 @@ typedef enum
 
   //human build
   MN_H_NOPOWERHERE,
+  MN_H_DRILLPOWERSOURCE,
+  MN_H_NOREACTOR,
   MN_H_NOBP,
   MN_H_NOTPOWERED,
   MN_H_NODCC,
-  MN_H_ONEREACTOR,
-  MN_H_RPTPOWERHERE,
+  MN_H_ONEREACTOR
 } dynMenu_t;
 
 // animations
@@ -900,6 +903,7 @@ typedef enum
   MOD_LCANNON_SPLASH,
   MOD_FLAMER,
   MOD_FLAMER_SPLASH,
+  MOD_BURN,
   MOD_GRENADE,
   MOD_WATER,
   MOD_SLIME,
@@ -1059,6 +1063,7 @@ typedef struct
 	float       bounce;
 
 	int         buildPoints;
+	int         powerConsumption;
 	int         stages;
 
 	int         health;

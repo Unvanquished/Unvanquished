@@ -2771,12 +2771,11 @@ void Cmd_Destroy_f( gentity_t *ent )
 				if ( !instant && !protect && DECON_MARK_CHECK( INSTANT ) ) goto fail_lastSpawn;
 				goto toggle_deconstruct;
 			}
-			else if ( protect && ( ent->client->pers.teamSelection != TEAM_HUMANS || G_FindPower( traceEnt, qtrue ) ) )
+			else if ( protect )
 			{
 				goto toggle_deconstruct;
 			}
-			else if ( instant || DECON_MARK_CHECK( INSTANT ) ||
-			          ( ent->client->pers.teamSelection == TEAM_HUMANS && !G_FindPower( traceEnt, qtrue ) ) )
+			else if ( instant || DECON_MARK_CHECK( INSTANT ) )
 			{
 				goto do_deconstruct;
 			}
@@ -2806,14 +2805,11 @@ fail_lastSpawn:
 	}
 
 	// deny decon if Build Timer Says No
-	if ( ent->client->pers.teamSelection != TEAM_HUMANS || G_FindPower( traceEnt, qtrue ) )
+	if ( ent->client->ps.stats[ STAT_MISC ] > 0 )
 	{
-		if ( ent->client->ps.stats[ STAT_MISC ] > 0 )
-		{
-			traceEnt->deconstruct = prevDeconstruct; // restore the decon flag (for repeat '/deconstruct marked')
-			G_AddEvent( ent, EV_BUILD_DELAY, ent->client->ps.clientNum );
-			return;
-		}
+		traceEnt->deconstruct = prevDeconstruct; // restore the decon flag (for repeat '/deconstruct marked')
+		G_AddEvent( ent, EV_BUILD_DELAY, ent->client->ps.clientNum );
+		return;
 	}
 
 	if ( !g_cheats.integer ) // add a bit to the build timer
@@ -2822,6 +2818,31 @@ fail_lastSpawn:
 	}
 
 	G_Deconstruct( traceEnt, ent, MOD_DECONSTRUCT );
+}
+
+/*
+=================
+Cmd_Ignite_f
+=================
+*/
+void Cmd_Ignite_f( gentity_t *player )
+{
+	vec3_t    viewOrigin, forward, end;
+	trace_t   trace;
+	gentity_t *target;
+
+	BG_GetClientViewOrigin( &player->client->ps, viewOrigin );
+	AngleVectors( player->client->ps.viewangles, forward, NULL, NULL );
+	VectorMA( viewOrigin, 100, forward, end );
+	trap_Trace( &trace, viewOrigin, NULL, NULL, end, player->s.number, MASK_PLAYERSOLID );
+	target = &g_entities[ trace.entityNum ];
+
+	if ( !target || target->s.eType != ET_BUILDABLE || target->buildableTeam != TEAM_ALIENS )
+	{
+		return;
+	}
+
+	G_IgniteBuildable( target, player );
 }
 
 /*
@@ -3471,29 +3492,32 @@ void Cmd_Build_f( gentity_t *ent )
 		//these are the errors displayed when the builder first selects something to use
 		switch ( G_CanBuild( ent, buildable, dist, origin, normal, &groundEntNum ) )
 		{
-				// can place right away, set the blueprint and the valid togglebit
+			// can place right away, set the blueprint and the valid togglebit
 			case IBE_NONE:
-			case IBE_TNODEWARN:
-			case IBE_RPTNOREAC:
-			case IBE_RPTPOWERHERE:
-			case IBE_SPWNWARN:
 				err = MN_NONE;
 				// we OR-in the selected builable later
 				ent->client->ps.stats[ STAT_BUILDABLE ] = SB_VALID_TOGGLEBIT;
 				break;
 
-				// can't place yet but maybe soon: start with valid togglebit off
+			// can't place yet but maybe soon: start with valid togglebit off
 			case IBE_NORMAL:
 			case IBE_NOCREEP:
 			case IBE_NOROOM:
-			case IBE_NOOVERMIND:
 			case IBE_NOPOWERHERE:
+			case IBE_DRILLPOWERSOURCE:
+			case IBE_PERMISSION:
+			case IBE_NOOVERMIND:
+			case IBE_NOREACTOR:
 				err = MN_NONE;
 				break;
 
-				// more serious errors just pop a menu
+			// more serious errors will abort the buildable placement
 			case IBE_NOALIENBP:
 				err = MN_A_NOBP;
+				break;
+
+			case IBE_NOHUMANBP:
+				err = MN_H_NOBP;
 				break;
 
 			case IBE_ONEOVERMIND:
@@ -3504,16 +3528,8 @@ void Cmd_Build_f( gentity_t *ent )
 				err = MN_H_ONEREACTOR;
 				break;
 
-			case IBE_NOHUMANBP:
-				err = MN_H_NOBP;
-				break;
-
 			case IBE_NODCC:
 				err = MN_H_NODCC;
-				break;
-
-			case IBE_PERMISSION:
-				err = MN_B_CANNOT;
 				break;
 
 			case IBE_LASTSPAWN:
@@ -4432,6 +4448,7 @@ static void Cmd_Pubkey_Identify_f( gentity_t *ent )
 	CP( "cp \"^2Pubkey authenticated\"\n" );
 }
 
+// commands must be in alphabetical order!
 static const commands_t cmds[] =
 {
 	{ "a",               CMD_MESSAGE | CMD_INTERMISSION,      Cmd_AdminMessage_f     },
@@ -4449,6 +4466,7 @@ static const commands_t cmds[] =
 	{ "followprev",      CMD_SPEC,                            Cmd_FollowCycle_f      },
 	{ "give",            CMD_CHEAT | CMD_TEAM,                Cmd_Give_f             },
 	{ "god",             CMD_CHEAT,                           Cmd_God_f              },
+	{ "ignite",          CMD_CHEAT | CMD_TEAM | CMD_ALIVE,    Cmd_Ignite_f           },
 	{ "ignore",          0,                                   Cmd_Ignore_f           },
 	{ "itemact",         CMD_HUMAN | CMD_ALIVE,               Cmd_ActivateItem_f     },
 	{ "itemdeact",       CMD_HUMAN | CMD_ALIVE,               Cmd_DeActivateItem_f   },

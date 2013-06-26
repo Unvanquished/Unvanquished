@@ -196,9 +196,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 /*
  * ALIEN buildables
- *
- * CREEP_BASESIZE - the maximum distance a buildable can be from an egg/overmind
- *
  */
 
 #define CREEP_BASESIZE          700
@@ -206,6 +203,15 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define CREEP_MODIFIER          0.5f
 #define CREEP_ARMOUR_MODIFIER   0.75f
 #define CREEP_SCALEDOWN_TIME    3000
+
+#define BURN_DAMAGE             10
+#define BURN_DAMAGE_PERIOD      1000
+#define BURN_STOP_PERIOD        2500
+#define BURN_STOP_CHANCE        0.5f
+#define BURN_SPREAD_PERIOD      1000
+#define BURN_SPREAD_CHANCE      0.2f
+#define BURN_SPREAD_RADIUS      100
+#define BURN_PERIODS_RAND       0.2
 
 #define PCLOUD_MODIFIER         0.5f
 #define PCLOUD_ARMOUR_MODIFIER  0.75f
@@ -314,14 +320,17 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define CHAINGUN_SPREAD          900
 #define CHAINGUN_DMG             HDM(6)
 
-#define FLAMER_DMG               HDM(14) // 20->15->14
-#define FLAMER_FLIGHTSPLASHDAMAGE HDM(1)
-#define FLAMER_SPLASHDAMAGE      HDM(6) // 10->7->6
-#define FLAMER_RADIUS            25 //  Radius lowered by 25
-#define FLAMER_SIZE              15 // missile bounding box
-#define FLAMER_LIFETIME          750.0f // Raised by 50.
-#define FLAMER_SPEED             500.0f
-#define FLAMER_LAG               0.65f // the amount of player velocity that is added to the fireball
+#define FLAMER_DMG               HDM(12)
+#define FLAMER_FLIGHTDAMAGE      HDM(1)
+#define FLAMER_SPLASHDAMAGE      HDM(6)
+#define FLAMER_RADIUS            25
+#define FLAMER_SIZE              5      // missile bounding box
+#define FLAMER_LIFETIME          750.0f
+#define FLAMER_SPEED             400.0f
+#define FLAMER_LAG               0.65f  // part of player velocity that is added to the fireball
+#define FLAMER_IGNITE_RADIUS     50
+#define FLAMER_IGNITE_CHANCE     0.5f
+#define FLAMER_IGNITE_SPLCHANCE  0.1f
 
 #define PRIFLE_DMG               HDM(9)
 #define PRIFLE_SPEED             1200
@@ -371,15 +380,20 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 /*
  * HUMAN buildables
- *
- * REACTOR_BASESIZE - the maximum distance a buildable can be from a reactor
- * REPEATER_BASESIZE - the maximum distance a buildable can be from a repeater
- *
  */
 
-#define REACTOR_BASESIZE          1000
-#define REPEATER_BASESIZE         500
-#define HUMAN_DETONATION_DELAY    5000
+// power
+#define BASE_POWER                    20  // amount of power available everywhere (if RC is up)
+#define POWER_COMPETITION_RANGE       320 // buildables in this range will compete for power
+#define REACTOR_POWER                 40  // extra power the reactor yields in its range
+#define REACTOR_POWER_RANGE           800
+#define REPEATER_POWER                20  // extra power a repeater yields in its range
+#define REPEATER_POWER_RANGE          400
+#define LEVEL1_INTERFERENCE           13  // basilisk "power consumption"
+#define LEVEL1_INTERFERENCE_RANGE     250
+#define LEVEL1UPG_INTERFERENCE        16  // advanced basilisk "power consumption"
+#define LEVEL1UPG_INTERFERENCE_RANGE  300
+#define POWER_RELEVANT_RANGE          800 // max of all above ranges
 
 #define MGTURRET_RANGE            400.0
 #define MGTURRET_REPEAT           150.0
@@ -435,9 +449,15 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * Misc
  */
 
+// fall distance
 #define MIN_FALL_DISTANCE                  30.0f //the fall distance at which fall damage kicks in
 #define MAX_FALL_DISTANCE                  120.0f //the fall distance at which maximum damage is dealt
 #define AVG_FALL_DISTANCE                  (( MIN_FALL_DISTANCE + MAX_FALL_DISTANCE ) / 2.0f )
+
+// buildable explosion
+#define HUMAN_DETONATION_DELAY             4000
+#define ALIEN_DETONATION_DELAY             5000
+#define DETONATION_DELAY_RAND_RANGE        0.25f
 
 // score
 #define SCORE_PER_CREDIT                   0.02f // used to convert credit rewards to score points

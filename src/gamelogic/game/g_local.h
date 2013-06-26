@@ -209,6 +209,7 @@ struct gentity_s
 	 */
 	qboolean     spawned;
 	gentity_t    *parent; // the gentity that spawned this one
+
 	/**
 	 * is the buildable getting support by reactor or overmind?
 	 * this is tightly coupled with enabled
@@ -220,14 +221,30 @@ struct gentity_s
 	gentity_t    *powerSource;
 
 	/**
-	 * has a marked building been deconstructed for this building?
+	 * Human buildables compete for power.
+	 * currentSparePower takes temporary influences into account and sets a buildables power state.
+	 * expectedSparePower is a prediction of the static part and is used for limiting new buildables.
+	 *
+	 * currentSparePower  >= 0: Buildable has enough power
+	 * currentSparePower  <  0: Buildable lacks power, will shut down
+	 * expectedSparePower >  0: New buildables can be built in range
 	 */
-	qboolean     replacement;
+	float        currentSparePower;
+	float        expectedSparePower;
 
 	/**
 	 * The amount of confidence this building generated on construction
 	 */
 	float        confidenceEarned;
+
+	/**
+	 * Alien buildables can burn, which is a lot of fun if they are close.
+	 */
+	qboolean     onFire;
+	int          nextBurnDamage;
+	int          nextBurnStopCheck;
+	int          nextBurnSpreadCheck;
+	gentity_t    *fireStarter;
 
 	/*
 	 * targets to aim at
@@ -917,26 +934,24 @@ void G_Physics( gentity_t *ent, int msec );
 
 typedef enum
 {
-  IBE_NONE,
+  IBE_NONE,             // no error, can build
 
-  IBE_NOOVERMIND,
-  IBE_ONEOVERMIND,
-  IBE_NOALIENBP,
-  IBE_SPWNWARN, // not currently used
-  IBE_NOCREEP,
+  IBE_NOOVERMIND,       // no overmind present
+  IBE_ONEOVERMIND,      // may not build two overminds
+  IBE_NOALIENBP,        // not enough build points (aliens)
+  IBE_NOCREEP,          // no creep in this area
 
-  IBE_ONEREACTOR,
-  IBE_NOPOWERHERE,
-  IBE_TNODEWARN, // not currently used
-  IBE_RPTNOREAC,
-  IBE_RPTPOWERHERE,
-  IBE_NOHUMANBP,
-  IBE_NODCC,
+  IBE_NOREACTOR,        // no reactor present
+  IBE_ONEREACTOR,       // may not build two reactors
+  IBE_NOHUMANBP,        // not enough build points (humans)
+  IBE_DRILLPOWERSOURCE, // needs a close power source
+  IBE_NOPOWERHERE,      // not enough power in this area
+  IBE_NODCC,            // needs a defense computer
 
-  IBE_NORMAL, // too steep
-  IBE_NOROOM,
-  IBE_PERMISSION,
-  IBE_LASTSPAWN,
+  IBE_NORMAL,           // surface is too steep
+  IBE_NOROOM,           // no room
+  IBE_PERMISSION,       // map doesn't allow building on that surface
+  IBE_LASTSPAWN,        // may not replace last spawn with non-spawn
 
   IBE_MAXERRORS
 } itemBuildError_t;
@@ -945,17 +960,17 @@ gentity_t *G_CheckSpawnPoint( int spawnNum, const vec3_t origin,
                               const vec3_t normal, buildable_t spawn,
                               vec3_t spawnOrigin );
 
-buildable_t      G_IsPowered( vec3_t origin );
 qboolean         G_IsDCCBuilt( void );
 int              G_FindDCC( gentity_t *self );
 gentity_t        *G_Reactor( void );
 gentity_t        *G_Overmind( void );
 float            G_DistanceToBase( gentity_t *self, qboolean ownBase );
+qboolean         G_InsideBase( gentity_t *self, qboolean ownBase );
 qboolean         G_FindCreep( gentity_t *self );
 int              G_RGSPredictEfficiency( vec3_t origin );
-float            G_BuildingConfidenceReward( gentity_t *self );
 void             G_BuildableThink( gentity_t *ent, int msec );
 qboolean         G_BuildableRange( vec3_t origin, float r, buildable_t buildable );
+void             G_IgniteBuildable( gentity_t *self, gentity_t *fireStarter );
 void             G_ClearDeconMarks( void );
 void             G_Deconstruct( gentity_t *self, gentity_t *deconner, meansOfDeath_t deconType );
 itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance,
@@ -974,10 +989,6 @@ int              G_NextQueueTime( int queuedBP, int totalBP, int queueBaseRate )
 void             G_QueueBuildPoints( gentity_t *self );
 int              G_GetBuildPointsInt( team_t team );
 int              G_GetMarkedBuildPointsInt( team_t team );
-qboolean         G_FindPower( gentity_t *self, qboolean searchUnspawned );
-gentity_t        *G_PowerEntityForPoint( const vec3_t origin );
-gentity_t        *G_PowerEntityForEntity( gentity_t *ent );
-gentity_t        *G_InPowerZone( gentity_t *self );
 buildLog_t       *G_BuildLogNew( gentity_t *actor, buildFate_t fate );
 void             G_BuildLogSet( buildLog_t *log, gentity_t *ent );
 void             G_BuildLogAuto( gentity_t *actor, gentity_t *buildable, buildFate_t fate );
@@ -985,6 +996,7 @@ void             G_BuildLogRevert( int id );
 qboolean         G_CanAffordBuildPoints( team_t team, float amount );
 void             G_ModifyBuildPoints( team_t team, float amount );
 void             G_GetBuildableResourceValue( int *teamValue );
+void             G_SetHumanBuildablePowerState();
 
 //
 // g_utils.c
@@ -1024,8 +1036,8 @@ void       G_TriggerMenu( int clientNum, dynMenu_t menu );
 void       G_TriggerMenuArgs( int clientNum, dynMenu_t menu, int arg );
 void       G_CloseMenus( int clientNum );
 
-void G_AddConfidence(team_t team, confidence_t type, confidence_reason_t reason,
-                     confidence_qualifier_t qualifier, float amount, gentity_t *source );
+void       G_AddConfidence( team_t team, confidence_t type, confidence_reason_t reason,
+                            confidence_qualifier_t qualifier, float amount, gentity_t *source );
 
 //
 // g_combat.c
