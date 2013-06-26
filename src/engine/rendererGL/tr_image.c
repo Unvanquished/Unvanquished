@@ -3337,7 +3337,7 @@ static void R_CreateShadowMapFBOImage( void )
 			{
 				tr.shadowMapFBOImage[ i ] = R_CreateImage( va( "_shadowMapFBO%d", i ), NULL, width, height, IF_NOPICMIP | IF_ALPHA16F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
 			}
-			else if ( r_shadows->integer == SHADOWING_ESM16 )
+			else if ( r_shadows->integer == SHADOWING_VSM16 )
 			{
 				tr.shadowMapFBOImage[ i ] = R_CreateImage( va( "_shadowMapFBO%d", i ), NULL, width, height, IF_NOPICMIP | IF_LA16F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
 			}
@@ -3449,7 +3449,7 @@ static void R_CreateShadowCubeFBOImage( void )
 		}
 		else
 		{
-			if ( r_shadows->integer == SHADOWING_VSM16 )
+			if ( r_shadows->integer == SHADOWING_ESM16 )
 			{
 				tr.shadowCubeFBOImage[ j ] = R_CreateCubeImage( va( "_shadowCubeFBO%d", j ), ( const byte ** ) data, width, height, IF_NOPICMIP | IF_ALPHA16F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
 			}
