@@ -1174,7 +1174,7 @@ static qboolean CG_ParseTrailFile( const char *fileName )
 		return qfalse;
 	}
 
-	if ( len == 0 || len >= sizeof( text ) - 1 )
+	if ( len == 0 || len + 1 >= (int) sizeof( text ) )
 	{
 		trap_FS_FCloseFile( f );
 		CG_Printf( len ? S_ERROR "trail file %s is too long\n" : S_ERROR "trail file %s is empty\n", fileName );

@@ -64,7 +64,7 @@ qboolean G_SpawnString( const char *key, const char *defaultString, char **out )
  *
  * use this with caution, as it might persist unprepared cvars (see cvartable)
  */
-static qboolean G_SpawnStringIntoCVar( const char *key, const char *cvarName )
+static qboolean G_SpawnStringIntoCVarIfSet( const char *key, const char *cvarName )
 {
 	char     *tmpString;
 
@@ -75,6 +75,14 @@ static qboolean G_SpawnStringIntoCVar( const char *key, const char *cvarName )
 	}
 
 	return qfalse;
+}
+
+static void G_SpawnStringIntoCVar( const char *key, const char *cvarName )
+{
+	char     *tmpString;
+
+	G_SpawnString( key, "", &tmpString );
+	trap_Cvar_Set( cvarName, tmpString );
 }
 
 qboolean G_SpawnBoolean( const char *key, qboolean defaultqboolean )
@@ -1049,14 +1057,14 @@ void SP_worldspawn( void )
 
 	trap_SetConfigstring( CS_MOTD, g_motd.string );  // message of the day
 
-	G_SpawnStringIntoCVar( "gravity", "g_gravity" );
+	G_SpawnStringIntoCVarIfSet( "gravity", "g_gravity" );
 
-	G_SpawnStringIntoCVar( "humanMaxStage", "g_humanRepeaterBuildPoints" );
-	G_SpawnStringIntoCVar( "alienMaxStage", "g_alienMaxStage" );
+	G_SpawnStringIntoCVarIfSet( "humanMaxStage", "g_humanMaxStage" );
+	G_SpawnStringIntoCVarIfSet( "alienMaxStage", "g_alienMaxStage" );
 
-	G_SpawnStringIntoCVar( "humanBuildPoints", "g_humanBuildPoints" );
-	G_SpawnStringIntoCVar( "humanRepeaterBuildPoints", "g_humanRepeaterBuildPoints" );
-	G_SpawnStringIntoCVar( "alienBuildPoints", "g_alienBuildPoints" );
+	G_SpawnStringIntoCVarIfSet( "humanBuildPoints", "g_humanBuildPoints" );
+	G_SpawnStringIntoCVarIfSet( "humanRepeaterBuildPoints", "g_humanRepeaterBuildPoints" );
+	G_SpawnStringIntoCVarIfSet( "alienBuildPoints", "g_alienBuildPoints" );
 
 	G_SpawnStringIntoCVar( "disabledEquipment", "g_disabledEquipment" );
 	G_SpawnStringIntoCVar( "disabledClasses", "g_disabledClasses" );

@@ -251,6 +251,9 @@ CG_AnnounceAlienStageTransition
 */
 static void CG_AnnounceAlienStageTransition( stage_t from, stage_t to )
 {
+	Q_UNUSED(from);
+	Q_UNUSED(to);
+
 	if ( cg.predictedPlayerState.stats[ STAT_TEAM ] != TEAM_ALIENS )
 	{
 		return;
@@ -267,6 +270,9 @@ CG_AnnounceHumanStageTransition
 */
 static void CG_AnnounceHumanStageTransition( stage_t from, stage_t to )
 {
+	Q_UNUSED(from);
+	Q_UNUSED(to);
+
 	if ( cg.predictedPlayerState.stats[ STAT_TEAM ] != TEAM_HUMANS )
 	{
 		return;
@@ -1136,12 +1142,12 @@ static void CG_Say( const char *name, int clientNum, saymode_t mode, const char 
 		case SAY_TEAM:
 		case SAY_AREA:
 		case SAY_TPRIVMSG:
-			if ( cg.snap->ps.stats[ STAT_TEAM ] == TEAM_ALIENS )
+			if ( cgs.clientinfo[ clientNum ].team == TEAM_ALIENS )
 			{
 				trap_S_StartLocalSound( cgs.media.alienTalkSound, CHAN_LOCAL_SOUND );
 				break;
 			}
-			else if ( cg.snap->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
+			else if ( cgs.clientinfo[ clientNum ].team == TEAM_HUMANS )
 			{
 				trap_S_StartLocalSound( cgs.media.humanTalkSound, CHAN_LOCAL_SOUND );
 				break;

@@ -1295,6 +1295,8 @@ static void CG_smoothWJTransitions( playerState_t *ps, const vec3_t in, vec3_t o
 	qboolean performed = qfalse;
 	vec3_t   inAxis[ 3 ], outAxis[ 3 ];
 
+	Q_UNUSED(ps);
+
 	if ( cg.snap->ps.pm_flags & PMF_FOLLOW )
 	{
 		VectorCopy( in, out );
@@ -1345,7 +1347,7 @@ Sets cg.refdef.gradingWeights
 */
 static void CG_CalcColorGradingForPoint( vec3_t loc )
 {
-	int   i, j, idx;
+	int   i, j;
 	float dist, weight;
 	int   selectedIdx[3] = { 0, 0, 0 };
 	float selectedWeight[3] = { 0.0f, 0.0f, 0.0f };
@@ -1468,7 +1470,7 @@ static void CG_ChooseCgradingEffectAndFade( const playerState_t* ps, qhandle_t* 
 
 static qboolean CG_InstantCgradingEffectAndFade( const playerState_t* ps, qhandle_t* effect, float* fade )
 {
-	(void)ps; //-Wunused-variable TODO: add a macro for this
+	Q_UNUSED(ps);
 
 	if (cg.zoomed)
 	{
@@ -1541,6 +1543,52 @@ static void CG_AddColorGradingEffects( const playerState_t* ps )
 	cg.refdef.gradingWeights[1] *= factor;
 	cg.refdef.gradingWeights[2] *= factor;
 	cg.refdef.gradingWeights[3] *= factor;
+}
+
+/*
+===============
+CG_StartShadowCaster
+
+Helper function to add a inverse dynamic light to create shadows for the
+following models.
+===============
+*/
+void CG_StartShadowCaster( vec3_t origin, vec3_t mins, vec3_t maxs ) {
+	vec3_t ambientLight, directedLight, lightDir;
+	vec3_t lightPos;
+	trace_t tr;
+	vec3_t traceMins = { -3.0f, -3.0f, -3.0f };
+	vec3_t traceMaxs = {  3.0f,  3.0f,  3.0f };
+	float maxLightDist = Distance( maxs, mins );
+
+	// find a point to place the light source by tracing in the
+	// average light direction
+	trap_R_LightForPoint( origin, ambientLight, directedLight, lightDir );
+	VectorMA( origin, 3.0f * maxLightDist, lightDir, lightPos );
+
+	CG_Trace( &tr, origin, traceMins, traceMaxs, lightPos, 0, MASK_OPAQUE );
+
+	if( !tr.startsolid ) {
+		VectorCopy( tr.endpos, lightPos );
+	}
+
+	trap_R_AddLightToScene( lightPos, 2.0f * Distance( lightPos, origin ),
+				3.0f, directedLight[0], directedLight[1],
+				directedLight[2], 0,
+				REF_RESTRICT_DLIGHT | REF_INVERSE_DLIGHT );
+}
+/*
+===============
+CG_EndShadowCaster
+
+Helper function to terminate the list of models for the last shadow caster.
+following models.
+===============
+*/
+void CG_EndShadowCaster( void ) {
+	trap_R_AddLightToScene( vec3_origin, 0.0f, 0.0f,
+				0.0f, 0.0f, 0.0f,
+				0, 0 );
 }
 
 /*

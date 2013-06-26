@@ -1482,6 +1482,8 @@ extern  vmCvar_t            cg_runpitch;
 extern  vmCvar_t            cg_runroll;
 extern  vmCvar_t            cg_swingSpeed;
 extern  vmCvar_t            cg_shadows;
+extern  vmCvar_t            cg_playerShadows;
+extern  vmCvar_t            cg_buildableShadows;
 extern  vmCvar_t            cg_drawTimer;
 extern  vmCvar_t            cg_drawClock;
 extern  vmCvar_t            cg_drawFPS;
@@ -1669,6 +1671,8 @@ void     CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean 
 void     CG_OffsetFirstPersonView( void );
 void     CG_OffsetThirdPersonView( void );
 void     CG_OffsetShoulderView( void );
+void     CG_StartShadowCaster( vec3_t origin, vec3_t mins, vec3_t maxs );
+void     CG_EndShadowCaster( void );
 
 //
 // cg_drawtools.c

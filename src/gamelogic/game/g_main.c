@@ -128,6 +128,7 @@ vmCvar_t           g_unlagged;
 vmCvar_t           g_disabledEquipment;
 vmCvar_t           g_disabledClasses;
 vmCvar_t           g_disabledBuildables;
+vmCvar_t           g_disabledVoteCalls;
 
 vmCvar_t           g_markDeconstruct;
 
@@ -340,6 +341,7 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_disabledEquipment,           "g_disabledEquipment",           "",                                 CVAR_ROM | CVAR_SYSTEMINFO,                      0, qfalse           },
 	{ &g_disabledClasses,             "g_disabledClasses",             "",                                 CVAR_ROM | CVAR_SYSTEMINFO,                      0, qfalse           },
 	{ &g_disabledBuildables,          "g_disabledBuildables",          "",                                 CVAR_ROM | CVAR_SYSTEMINFO,                      0, qfalse           },
+	{ &g_disabledVoteCalls,           "g_disabledVoteCalls",           "",                                 0,                                               0, qfalse           },
 
 	{ &g_sayAreaRange,                "g_sayAreaRange",                "1000",                             CVAR_ARCHIVE,                                    0, qtrue            },
 
@@ -810,8 +812,8 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 			G_LogPrintf( "------------------------------------------------------------\n" );
 			G_LogPrintf( "InitGame: %s\n", serverinfo );
 
-			t = trap_RealTime( &qt );
-			G_LogPrintf( "RealTime: %04i-%02i-%02i %02i:%02i:%02i\n",
+			t = trap_GMTime( &qt );
+			G_LogPrintf( "RealTime: %04i-%02i-%02i %02i:%02i:%02i Z\n",
 			             1900 + qt.tm_year, qt.tm_mon + 1, qt.tm_mday,
 			             qt.tm_hour, qt.tm_min, qt.tm_sec );
 		}
@@ -825,8 +827,9 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 	// rotation may clear this flag
 	trap_Cvar_Set( "g_botKickVotesAllowedThisMap", g_botKickVotesAllowed.integer ? "1" : "0" );
 
-	// clear this now; it'll be set, if needed, from rotation
+	// clear these now; they'll be set, if needed, from rotation
 	trap_Cvar_Set( "g_mapStartupMessage", "" );
+	trap_Cvar_Set( "g_disabledVoteCalls", "" );
 
 	{
 		char map[ MAX_CVAR_VALUE_STRING ] = { "" };
@@ -2063,11 +2066,6 @@ void ExitLevel( void )
 	if ( G_MapExists( g_nextMap.string ) )
 	{
 		trap_SendConsoleCommand( EXEC_APPEND, va( "map %s %s\n", Quote( g_nextMap.string ), Quote( g_nextMapLayouts.string ) ) );
-
-		if ( G_MapRotationActive() )
-		{
-			G_AdvanceMapRotation( 0 );
-		}
 	}
 	else if ( G_MapRotationActive() )
 	{

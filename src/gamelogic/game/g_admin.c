@@ -790,7 +790,7 @@ void G_admin_writeconfig( void )
 		return;
 	}
 
-	t = trap_RealTime( NULL );
+	t = trap_GMTime( NULL );
 
 	Q_snprintf( tmp, sizeof( tmp ), "%s.tmp", g_admin.string );
 
@@ -1443,7 +1443,7 @@ static void G_admin_ban_message(
 	{
 		char  duration[ MAX_DURATION_LENGTH ];
 		char  time[ MAX_DURATION_LENGTH ];
-		G_admin_duration( ban->expires - trap_RealTime( NULL ), time, sizeof( time ), duration,
+		G_admin_duration( ban->expires - trap_GMTime( NULL ), time, sizeof( time ), duration,
 		                  sizeof( duration ) );
 		// part of this might get cut off on the connect screen
 		Com_sprintf( creason, clen,
@@ -1477,7 +1477,7 @@ static g_admin_ban_t *G_admin_match_ban( gentity_t *ent )
 	int           t;
 	g_admin_ban_t *ban;
 
-	t = trap_RealTime( NULL );
+	t = trap_GMTime( NULL );
 
 	if ( ent->client->pers.localClient )
 	{
@@ -2080,7 +2080,7 @@ qboolean G_admin_time( gentity_t *ent )
 	qtime_t qt;
 	int gameDuration, timelimitTime, gameMinutes, gameSeconds, remainingMinutes, remainingSeconds;
 
-	trap_RealTime( &qt );
+	trap_GMTime( &qt );
 
 	gameDuration = (level.time - level.startTime);
 
@@ -2094,7 +2094,7 @@ qboolean G_admin_time( gentity_t *ent )
 		remainingMinutes = (level.suddenDeathBeginTime - gameDuration)/1000 / 60;
 		remainingSeconds = (level.suddenDeathBeginTime - gameDuration)/1000 % 60 + 1;
 
-		ADMP( va( "%s %02i %02i %02i %02i %02i %i %02i", QQ( N_("^3time: ^7local time is ^d$1$:$2$:$3$^7 - game runs for ^d$4$:$5$^7 with Sudden Death in ^d$6$:$7$^7\n") ),
+		ADMP( va( "%s %02i %02i %02i %02i %02i %i %02i", QQ( N_("^3time: ^7time is ^d$1$:$2$:$3$^7 UTC – game runs for ^d$4$:$5$^7 with Sudden Death in ^d$6$:$7$^7\n") ),
 			          qt.tm_hour, qt.tm_min, qt.tm_sec, gameMinutes, gameSeconds, remainingMinutes, remainingSeconds) );
 	}
 	else if(gameDuration < timelimitTime)
@@ -2102,12 +2102,12 @@ qboolean G_admin_time( gentity_t *ent )
 		remainingMinutes = (timelimitTime - gameDuration)/1000 / 60;
 		remainingSeconds = (timelimitTime - gameDuration)/1000 % 60 + 1;
 
-		ADMP( va( "%s %02i %02i %02i %02i %02i %i %02i", QQ( N_("^3time: ^7local time is ^d$1$:$2$:$3$^7 - game runs for ^d$4$:$5$^7 hitting Timelimit in ^d$6$:$7$^7\n") ),
+		ADMP( va( "%s %02i %02i %02i %02i %02i %i %02i", QQ( N_("^3time: ^7time is ^d$1$:$2$:$3$^7 UTC – game runs for ^d$4$:$5$^7 hitting Timelimit in ^d$6$:$7$^7\n") ),
 	          qt.tm_hour, qt.tm_min, qt.tm_sec, gameMinutes, gameSeconds, remainingMinutes, remainingSeconds ) );
 	}
 	else //requesting time in intermission after the timelimit hit, or timelimit wasn't set (unless pre-sd)
 	{
-		ADMP( va( "%s %02i %02i %02i %02i %02i", QQ( N_("^3time: ^7local time is ^d$1$:$2$:$3$^7 - game time is ^d$4$:$5$^7\n") ),
+		ADMP( va( "%s %02i %02i %02i %02i %02i", QQ( N_("^3time: ^7time is ^d$1$:$2$:$3$^7 UTC – game time is ^d$4$:$5$^7\n") ),
 			          qt.tm_hour, qt.tm_min, qt.tm_sec, gameMinutes, gameSeconds) );
 	}
 
@@ -2187,7 +2187,7 @@ qboolean G_admin_setlevel( gentity_t *ent )
 
 		vic->client->pers.admin = a;
 		Q_strncpyz( a->guid, vic->client->pers.guid, sizeof( a->guid ) );
-		trap_RealTime( &a->lastSeen ); // player is connected...
+		trap_GMTime( &a->lastSeen ); // player is connected...
 	}
 
 	a->level = l->level;
@@ -2238,7 +2238,7 @@ static void admin_create_ban( gentity_t *ent,
 	int           id = 1;
 	int           expired = 0;
 
-	t = trap_RealTime( &qt );
+	t = trap_GMTime( &qt );
 
 	for ( b = g_admin_bans; b; b = b->next )
 	{
@@ -2642,7 +2642,7 @@ qboolean G_admin_ban( gentity_t *ent )
 qboolean G_admin_unban( gentity_t *ent )
 {
 	int           bnum;
-	int           time = trap_RealTime( NULL );
+	int           time = trap_GMTime( NULL );
 	char          bs[ 5 ];
 	g_admin_ban_t *ban, *p;
 	qboolean      expireOnly;
@@ -2721,7 +2721,7 @@ qboolean G_admin_adjustban( gentity_t *ent )
 	int           bnum;
 	int           length, maximum;
 	int           expires;
-	int           time = trap_RealTime( NULL );
+	int           time = trap_GMTime( NULL );
 	char          duration[ MAX_DURATION_LENGTH ] = { "" };
 	char          seconds[ MAX_DURATION_LENGTH ];
 	char          *reason;
@@ -3002,7 +3002,7 @@ qboolean G_admin_speclock( gentity_t *ent )
 	if ( lockTime )
 	{
 		G_admin_duration( lockTime, time, sizeof( time ), duration, sizeof( duration ) );
-		spec->expires = trap_RealTime( NULL ) + lockTime;
+		spec->expires = trap_GMTime( NULL ) + lockTime;
 	}
 	else
 	{
@@ -3384,7 +3384,7 @@ qboolean G_admin_listinactive( gentity_t *ent )
 	}
 
 	trap_Argv( 1, s, sizeof( s ) );
-	trap_RealTime( &tm );
+	trap_GMTime( &tm );
 
 	months = atoi( s );
 	months = months < 1 ? 1 : months; // minimum of 1 month
@@ -3624,7 +3624,7 @@ static int ban_out( void *ban, char *str )
 		return b->id;
 	}
 
-	t = trap_RealTime( NULL );
+	t = trap_GMTime( NULL );
 
 	for ( i = 0; b->name[ i ]; i++ )
 	{

@@ -189,7 +189,7 @@ static qboolean CG_ParseBuildableAnimationFile( const char *filename, buildable_
 		return qfalse;
 	}
 
-	if ( len == 0 || len >= sizeof( text ) - 1 )
+	if ( len == 0 || len + 1 >= (int) sizeof( text ) )
 	{
 		trap_FS_FCloseFile( f );
 		CG_Printf( len == 0 ? "File %s is empty\n" : "File %s is too long\n", filename );
@@ -297,7 +297,7 @@ static qboolean CG_ParseBuildableSoundFile( const char *filename, buildable_t bu
 		return qfalse;
 	}
 
-	if ( len == 0 || len >= sizeof( text ) - 1 )
+	if ( len == 0 || len + 1 >= (int) sizeof( text ) )
 	{
 		trap_FS_FCloseFile( f );
 		CG_Printf( len == 0 ? "File %s is empty\n" : "File %s is too long\n", filename );
@@ -1916,6 +1916,12 @@ void CG_Buildable( centity_t *cent )
 		ent.nonNormalizedAxes = qfalse;
 	}
 
+	// add inverse shadow map
+	if ( cg_buildableShadows.integer )
+	{
+		CG_StartShadowCaster( ent.lightingOrigin, mins, maxs );
+	}
+
 	if ( CG_PlayerIsBuilder( es->modelindex ) && CG_BuildableRemovalPending( es->number ) )
 	{
 		ent.customShader = cgs.media.redBuildShader;
@@ -2147,5 +2153,10 @@ void CG_Buildable( centity_t *cent )
 
 			CG_DrawBuildableRangeMarker( buildable->number, cent->lerpOrigin, cent->currentState.origin2, opacity );
 		}
+	}
+
+	if ( cg_buildableShadows.integer )
+	{
+		CG_EndShadowCaster( );
 	}
 }

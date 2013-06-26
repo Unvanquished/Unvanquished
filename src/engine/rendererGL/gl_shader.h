@@ -209,14 +209,9 @@ class GLShaderManager
 {
 	std::queue< GLShader* > _shaderBuildQueue;
 	std::vector< GLShader* > _shaders;
-	int       _lastBuildStartTime;
-	int       _lastBuildTime;
-	int       _beginBuildTime;
-	int       _endBuildTime;
 	int       _totalBuildTime;
 public:
-	GLShaderManager() : _beginBuildTime( 0 ), _endBuildTime( 0 ), _totalBuildTime( 0 ),
-	                    _lastBuildTime( 1 ), _lastBuildStartTime( 0 )
+	GLShaderManager() : _totalBuildTime( 0 )
 	{
 	}
 	~GLShaderManager();
@@ -232,7 +227,6 @@ public:
 	void freeAll();
 
 	bool buildPermutation( GLShader *shader, size_t permutation );
-	void buildIncremental( int dt );
 	void buildAll();
 private:
 	bool LoadShaderBinary( GLShader *shader, size_t permutation );
@@ -306,6 +300,9 @@ protected:
 	inline void SetValue( float value )
 	{
 		shaderProgram_t *p = _shader->GetProgram();
+
+		assert( p == glState.currentProgram );
+
 #if defined( LOG_GLSL_UNIFORMS )
 		if ( r_logFile->integer )
 		{
@@ -344,6 +341,8 @@ protected:
 	{
 		shaderProgram_t *p = _shader->GetProgram();
 
+		assert( p == glState.currentProgram );
+
 #if defined( LOG_GLSL_UNIFORMS )
 		if ( r_logFile->integer )
 		{
@@ -366,6 +365,9 @@ protected:
 	inline void SetValue( const vec3_t v )
 	{
 		shaderProgram_t *p = _shader->GetProgram();
+
+		assert( p == glState.currentProgram );
+
 #if defined( LOG_GLSL_UNIFORMS )
 		if ( r_logFile->integer )
 		{
@@ -403,6 +405,9 @@ protected:
 	inline void SetValue( const vec4_t v )
 	{
 		shaderProgram_t *p = _shader->GetProgram();
+
+		assert( p == glState.currentProgram );
+
 #if defined( LOG_GLSL_UNIFORMS )
 		if ( r_logFile->integer )
 		{
@@ -440,6 +445,9 @@ protected:
 	inline void SetValue( int numV, vec4_t *v )
 	{
 		shaderProgram_t *p = _shader->GetProgram();
+
+		assert( p == glState.currentProgram );
+
 #if defined( LOG_GLSL_UNIFORMS )
 		if ( r_logFile->integer )
 		{
@@ -462,6 +470,9 @@ protected:
 	inline void SetValue( GLboolean transpose, const matrix_t m )
 	{
 		shaderProgram_t *p = _shader->GetProgram();
+
+		assert( p == glState.currentProgram );
+
 #if defined( LOG_GLSL_UNIFORMS )
 		if ( r_logFile->integer )
 		{
@@ -501,6 +512,8 @@ protected:
 	inline void SetValue( int numMatrices, GLboolean transpose, const matrix_t *m )
 	{
 		shaderProgram_t *p = _shader->GetProgram();
+
+		assert( p == glState.currentProgram );
 
 #if defined( LOG_GLSL_UNIFORMS )
 		if ( r_logFile->integer )

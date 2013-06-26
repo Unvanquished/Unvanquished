@@ -891,7 +891,7 @@ void Cmd_Team_f( gentity_t *ent )
 	}
 
 	// Cannot join a team for a while after a locking putteam.
-	t = trap_RealTime( NULL );
+	t = trap_GMTime( NULL );
 
 	if ( team != TEAM_NONE && ( specOnly = G_admin_match_spec( ent ) ) )
 	{
@@ -1701,6 +1701,45 @@ void Cmd_CallVote_f( gentity_t *ent )
 		return;
 	}
 
+	// Check for disabled vote types
+	// Does not distinguish between public and team votes
+	{
+		int        voteNameLength = strlen( vote );
+		const char *dv = g_disabledVoteCalls.string;
+
+		while ( *dv )
+		{
+			const char *delim;
+
+			// skip spaces (and commas)
+			while ( *dv && ( *dv == ' ' || *dv == ',' ) )
+			{
+				++dv;
+			}
+
+			if ( !*dv )
+			{
+				break;
+			}
+
+			delim = dv;
+
+			// find the end of this token
+			while ( *delim && *delim != ' ' && *delim != ',' )
+			{
+				++delim;
+			}
+
+			// match? if so, complain
+			if ( delim - dv == voteNameLength && !Q_strnicmp( dv, vote, voteNameLength ) )
+			{
+				goto vote_is_disabled; // yes, goto
+			}
+
+			dv = delim; // point past the current token
+		}
+	}
+
 	if ( g_voteLimit.integer > 0 &&
 	     ent->client->pers.namelog->voteCount >= g_voteLimit.integer &&
 	     !G_admin_permission( ent, ADMF_NO_VOTE_LIMIT ) )
@@ -1720,6 +1759,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 
 	if ( level.voteThreshold[ team ] <= 0)
 	{
+vote_is_disabled:
 		trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s", QQ( N_("'$1$' votes have been disabled\n") ), voteInfo[voteId].name ) );
 		return;
 	}
@@ -4634,10 +4674,19 @@ void G_DecolorString( const char *in, char *out, int len )
 			continue;
 		}
 
-		if ( Q_IsColorString( in ) && decolor )
+		if ( decolor )
 		{
-			in += 2;
-			continue;
+			if ( Q_IsColorString( in ) )
+			{
+				in += 2;
+				continue;
+			}
+
+			if ( in[0] == Q_COLOR_ESCAPE && in[1] == Q_COLOR_ESCAPE )
+			{
+				++in;
+				// at this point, we want the default 'copy' action
+			}
 		}
 
 		*out++ = *in++;
