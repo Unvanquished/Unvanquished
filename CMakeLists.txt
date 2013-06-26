@@ -1699,7 +1699,7 @@ endif()
 ####################
 if( BUILD_TTY_CLIENT )
   # Setup the target Server
-  add_executable( ttyclient ${SERVERLIST} ${CLIENTLIST} ${SDLBASELIST} ${CPUINFOLIST}
+  add_executable( ttyclient ${DETOURLIST} ${SERVERLIST} ${CLIENTLIST} ${SDLBASELIST} ${CPUINFOLIST}
     ${QCOMMONLIST} ${SHAREDLIST} ${DATABASELIST} ${CRYPTOLIST}
     ${TINYGETTEXT_LIST}
     ${MOUNT_DIR}/engine/qcommon/dl_main_stubs.c ${WIN_RC}
