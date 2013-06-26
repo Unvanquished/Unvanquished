@@ -25,7 +25,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 uniform sampler2D	u_ColorMap;
 uniform float		u_AlphaThreshold;
 
-varying vec3		var_Position;
 varying vec2		var_Tex;
 varying vec4		var_Color;
 
