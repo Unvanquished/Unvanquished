@@ -65,7 +65,7 @@ typedef enum
 class RocketProgressBar : public Rocket::Core::Element
 {
 public:
-	RocketProgressBar( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), dirty_geometry( true ), orientation( LEFT ), value( 0.0f ), renderFilter( 0 ), loadFilter( 0 )
+	RocketProgressBar( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), dirty_geometry( true ), orientation( LEFT ), value( 0.0f ), renderFilter( 0 ), loadFilter( 0 ), color( Rocket::Core::Colourb( 255, 255, 255 ) )
 	{
 		for ( int i = START; i < NUM_GEOMETRIES; ++i )
 		{
@@ -126,6 +126,11 @@ public:
 	void OnPropertyChange( const Rocket::Core::PropertyNameList &changed_properties )
 	{
 		Element::OnPropertyChange( changed_properties );
+
+		if ( changed_properties.find( "color" ) != changed_properties.end() )
+		{
+			color = GetProperty( "color" )->Get<Rocket::Core::Colourb>();
+		}
 
 		if ( changed_properties.find( "start-image" ) != changed_properties.end() )
 		{
@@ -435,7 +440,7 @@ private:
 											 &indicies[0],
 											 geometryPosition[i],
 											 geometrySize[i],
-											 Rocket::Core::Colourb( 255, 255, 255, 255 ),
+											 color,
 											 texcoords[i][0],
 											 texcoords[i][1]
 										   );
@@ -450,7 +455,9 @@ private:
 	float value; // current value
 	int renderFilter; // Filter components to draw
 	int loadFilter; // Images loaded
-	
+
+	Rocket::Core::Colourb color;
+
 	Rocket::Core::Geometry geometry[ NUM_GEOMETRIES ]; // 1: start image, 2: straight section, 3: straight section decoration, 4: end image
 
 	Rocket::Core::Vector2f texcoords[ NUM_GEOMETRIES ][ 2 ]; // texture coords
