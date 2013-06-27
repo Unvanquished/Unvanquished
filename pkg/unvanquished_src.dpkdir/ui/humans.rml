@@ -5,114 +5,155 @@
 			{
 				font-family: Roboto;
 				font-size: 24;
+				width: 100%;
+				height: 100%;
 			}
-			div#left
+			div#fps
 			{
-				float: left;
+				position: fixed;
+				top: 0%;
+				text-align: right;
+				font-size: 18;
 			}
-			div#right
+			div#lagometer
 			{
+				position: fixed;
+				top: 5%;
+				right: 0%;
 				float: right;
+				width: 4%;
+				height: 4%;
+				text-align: center;
+				vertical-align: text-top;
+				font-size: 12;
 			}
-			speedometer, lagometer
+			lagometer
 			{
-				width: 100px;
-				height: 100px;
-				background-color: rgba(50,50,50,100);
-				color: rgba(255,0,0,191);
+				width: 100%;
+				height: 50%;
+				background-color: #1E1E1E1E;
 			}
-			crosshair
+			div#location
 			{
-				color: red;
+				position: fixed;
+				text-align: right;
+				right: 0%;
+				top: 20%;
 			}
-			.speed_max, .speed_current
+			div#hudbg img
 			{
-				color: black;
-				font-size: 20;
-				padding: 25px;
-				margin: -65px;
+				position: fixed;
+				width: 31%;
+				height: 20%;
+				bottom: 0%;
+				color: #26707080;
+				z-index: -1;
+			}
+			div#hudbg img#right
+			{
+				position: fixed;
+				right: 0%;
+			}
+			div#hudbg img#left
+			{
+				position: fixed;
+				left: 0%;
+			}
+			div#gunstuff
+			{
+				position: fixed;
+				right: 0%;
+				bottom: 0%;
+				width: 100%;
+				height: 20%;
+				z-index: 1;
+			}
+			ammo_stack
+			{
+				position: relative;
+				top: 40%;
+				color: #4A928F80;
+				width: 250%;
+				height: 25%;
+				left: 80%;
+			}
+			clip_stack
+			{
+				position: relative;
+				top: 40%;
+				color: #4A928F80;
+				width: 250%;
+				height: 25%;
+				left: 80%;
+			}
+			div#bars
+			{
+				position: fixed;
+				left: 0%;
+				bottom: -10%;
+				width: 20%;
+				height: 20%;
 			}
 			progressbar
 			{
-				width: 20%;
-				height: 32px;
+				float: right;
+				width: 80%;
+				height: 14%;
 				progress-image: /white;
+				z-index: 2;
 			}
-			div.item_select img
-			{
-				color: blue;
-			}
-			div.item_select img.selected
-			{
-				width: 256px;
-				height: 256px;
-				color: black;
-			}
-			div.item_select img.inactive, div.item_select img.no_ammo
+			progressbar#health
 			{
 				color: red;
 			}
-			scanner.active
+			progressbar#stamina
 			{
-				position: absolute;
-				top: 700px;
-				left: 700px;
-				width: 200px;
-				height: 100px;
-				background-decorator: image;
-				background-image-src: /ui/assets/human/scanner.tga;
+				color: aqua;
 			}
-			.stage_report
+			div#crosshair
 			{
-				position: absolute;
-				top: 0px;
-				text-align: right;
+				position: fixed;
 			}
-			ammo_stack, clip_stack
+			crosshair
 			{
-				width: 200px;
-				height: 100px;
 				color: white;
 			}
 			console_text
 			{
-				position: absolute;
-				height: 175px;
+				position: fixed;
 				width: 75%;
-				left: 25%;
-				top: 0%;
-				font-size: 24;
-				overflow-y: hidden;
+				height: 20%;
 			}
 		</style>
 	</head>
 	<body id="human_hud">
-		<div id='left'>
-		<fps /> fps <timer /><br />
-		<ammo type="total" /> rounds of ammo<br />
-		<clips /> clips left <br />
-		<location /><br />
-
-		<crosshair /><br />
-		<speedometer /><br />
-		<lagometer /><br />
-		<progressbar id="btimer" src="btimer" /><br />
-		<credits /> credits<br />
-		<progressbar id="stamina" src="stamina" /><br />
-		<div><itemselect_text/></div>
-		<itemselect />
-		<weapon_icon />
-		<scanner />
-		<usable_buildable src="/ui/assets/neutral/use.tga" />
-		</div>
-		<div id='right'>
-		<stage_report />
-		<crosshair_name/><br />
-		</div>
-		<ammo_stack /><br />
-		<clip_stack /><br />
-		<div id="console_text">
-			<console_text />
-		</div>
+	<div id="fps">
+		<fps /> fps<br />
+		<timer />
+	</div>
+	<div id="lagometer">
+		<lagometer />
+	</div>
+	<div id="location">
+		<location />
+	</div>
+	<div id="hudbg">
+		<img id="right" src="/ui/assets/human/rightbg.tga"/>
+		<img id="left" src="/ui/assets/human/leftbg.tga"/>
+	</div>
+	<div id="gunstuff">
+		<ammo_stack/>
+		<clip_stack/>
+	</div>
+	<div id="bars">
+		<progressbar id="stamina" src="stamina" />
+		<progressbar id="health" src="health" />
+	</div>
+	<div id="crosshair">
+		<crosshair/>
+	</div>
+	<div id="consoletext">
+		<console_text />
+	</div>
 	</body>
 </rml>
