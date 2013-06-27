@@ -542,8 +542,8 @@ void RE_AddDynamicLightToSceneET( const vec3_t org, float radius, float intensit
 	light->l.color[ 1 ] = g;
 	light->l.color[ 2 ] = b;
 
-	light->l.noShadows = r_dynamicLightCastShadows->integer ? qfalse : qtrue;
 	light->l.inverseShadows = !!( flags & REF_INVERSE_DLIGHT );
+	light->l.noShadows = r_dynamicLightCastShadows->integer && !light->l.inverseShadows;
 
 	if( flags & REF_RESTRICT_DLIGHT ) {
 		light->restrictInteractionFirst = r_numEntities - r_firstSceneEntity;
