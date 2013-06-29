@@ -220,6 +220,10 @@ std::string     GLShaderManager::BuildGPUShaderText( const char *mainShaderName,
 	AddGLSLDefine( bufferExtra, "COMPAT_ET", 1 );
 #endif
 
+	if( glConfig2.textureRGAvailable ) {
+		AddGLSLDefine( bufferExtra, "TEXTURE_RG", 1 );
+	}
+
 	AddGLSLDefine( bufferExtra, "r_SpecularExponent", r_specularExponent->value );
 	AddGLSLDefine( bufferExtra, "r_SpecularExponent2", r_specularExponent->value );
 	AddGLSLDefine( bufferExtra, "r_SpecularScale", r_specularScale->value );
