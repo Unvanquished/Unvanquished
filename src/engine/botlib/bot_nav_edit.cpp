@@ -65,7 +65,7 @@ bool GetPointPointedTo( NavData_t *nav, rVec &p )
 	return true;
 }
 
-struct
+static struct
 {
 	bool enabled;
 	bool offBegin;
