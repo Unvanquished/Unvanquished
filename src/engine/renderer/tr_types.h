@@ -506,6 +506,7 @@ typedef struct
 	qboolean drawBuffersAvailable;
 	qboolean textureHalfFloatAvailable;
 	qboolean textureFloatAvailable;
+	qboolean textureRGAvailable;
 	int      maxDrawBuffers;
 
 	qboolean vertexArrayObjectAvailable;
