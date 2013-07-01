@@ -4542,10 +4542,16 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 			}
 		}
 
-		// Check permissions
+		// Check surface permissions
 		if ( (tr1.surfaceFlags & SURF_NOALIENBUILD) || (contents & CONTENTS_NOALIENBUILD) )
 		{
-			reason = IBE_PERMISSION;
+			reason = IBE_SURFACE;
+		}
+
+		// Check level permissions
+		if ( !g_alienAllowBuilding.integer )
+		{
+			reason = IBE_DISABLED;
 		}
 	}
 	else if ( ent->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
@@ -4574,14 +4580,21 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 		// Check permissions
 		if ( (tr1.surfaceFlags & SURF_NOHUMANBUILD) || (contents & CONTENTS_NOHUMANBUILD) )
 		{
-			reason = IBE_PERMISSION;
+			reason = IBE_SURFACE;
+		}
+
+
+		// Check level permissions
+		if ( !g_humanAllowBuilding.integer )
+		{
+			reason = IBE_DISABLED;
 		}
 	}
 
 	// Check permission to build here
 	if ( (tr1.surfaceFlags & SURF_NOBUILD) || (contents & CONTENTS_NOBUILD) )
 	{
-		reason = IBE_PERMISSION;
+		reason = IBE_SURFACE;
 	}
 
 	// Can we only have one of these?
@@ -4941,8 +4954,12 @@ qboolean G_BuildIfValid( gentity_t *ent, buildable_t buildable )
 			G_TriggerMenu( ent->client->ps.clientNum, MN_B_NORMAL );
 			return qfalse;
 
-		case IBE_PERMISSION:
+		case IBE_SURFACE:
 			G_TriggerMenu( ent->client->ps.clientNum, MN_B_NORMAL );
+			return qfalse;
+
+		case IBE_DISABLED:
+			G_TriggerMenu( ent->client->ps.clientNum, MN_B_DISABLED );
 			return qfalse;
 
 		case IBE_ONEREACTOR:

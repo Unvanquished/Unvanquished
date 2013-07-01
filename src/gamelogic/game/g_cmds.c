@@ -3505,7 +3505,7 @@ void Cmd_Build_f( gentity_t *ent )
 			case IBE_NOROOM:
 			case IBE_NOPOWERHERE:
 			case IBE_DRILLPOWERSOURCE:
-			case IBE_PERMISSION:
+			case IBE_SURFACE:
 			case IBE_NOOVERMIND:
 			case IBE_NOREACTOR:
 				err = MN_NONE;
@@ -3534,6 +3534,10 @@ void Cmd_Build_f( gentity_t *ent )
 
 			case IBE_LASTSPAWN:
 				err = MN_B_LASTSPAWN;
+				break;
+
+			case IBE_DISABLED:
+				err = MN_B_DISABLED;
 				break;
 
 			default:

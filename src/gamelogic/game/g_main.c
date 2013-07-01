@@ -111,6 +111,9 @@ vmCvar_t           g_alienMaxStage;
 vmCvar_t           g_humanStage;
 vmCvar_t           g_alienStage;
 
+vmCvar_t           g_humanAllowBuilding;
+vmCvar_t           g_alienAllowBuilding;
+
 vmCvar_t           g_powerCompetitionRange;
 vmCvar_t           g_powerBaseSupply;
 vmCvar_t           g_powerReactorSupply;
@@ -290,6 +293,9 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_alienMaxStage,               "g_alienMaxStage",               DEFAULT_ALIEN_MAX_STAGE,            0,                                               0, qfalse, cv_alienMaxStage},
 	{ &g_humanStage,                  "g_humanStage",                  "0",                                0,                                               0, qfalse           },
 	{ &g_alienStage,                  "g_alienStage",                  "0",                                0,                                               0, qfalse           },
+
+	{ &g_humanAllowBuilding,          "g_humanAllowBuilding",          "1",                                0,                                               0, qfalse           },
+	{ &g_alienAllowBuilding,          "g_alienAllowBuilding",          "1",                                0,                                               0, qfalse           },
 
 	{ &g_powerCompetitionRange,       "g_powerCompetitionRange",       "320",                              CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_powerBaseSupply,             "g_powerBaseSupply",             "20",                               CVAR_ARCHIVE,                                    0, qfalse           },

@@ -950,7 +950,8 @@ typedef enum
 
   IBE_NORMAL,           // surface is too steep
   IBE_NOROOM,           // no room
-  IBE_PERMISSION,       // map doesn't allow building on that surface
+  IBE_SURFACE,          // map doesn't allow building on that surface
+  IBE_DISABLED,         // building has been disabled for team
   IBE_LASTSPAWN,        // may not replace last spawn with non-spawn
 
   IBE_MAXERRORS
@@ -1309,6 +1310,9 @@ extern  vmCvar_t g_humanMaxStage;
 extern  vmCvar_t g_alienMaxStage;
 extern  vmCvar_t g_humanStage;
 extern  vmCvar_t g_alienStage;
+
+extern  vmCvar_t g_humanAllowBuilding;
+extern  vmCvar_t g_alienAllowBuilding;
 
 extern  vmCvar_t g_powerCompetitionRange;
 extern  vmCvar_t g_powerBaseSupply;
