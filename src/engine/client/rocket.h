@@ -68,8 +68,6 @@ void Rocket_Update( void );
 void Rocket_InjectMouseMotion( int x, int y );
 void Rocket_LoadDocument( const char *path );
 void Rocket_LoadCursor( const char *path );
-void Rocket_LoadHud( const char *path );
-void Rocket_ShowHud( const char *id );
 void Rocket_DocumentAction( const char *name, const char *action );
 qboolean Rocket_GetEvent( void );
 void Rocket_DeleteEvent( void );
@@ -96,6 +94,11 @@ void Rocket_SetClass( const char *in, qboolean activate );
 void Rocket_SetPropertyById( const char *id, const char *property, const char *value );
 void Rocket_SetActiveContext( int catcher );
 void Rocket_AddConsoleText( void );
+void Rocket_InitializeHuds( int size );
+void Rocket_LoadUnit( const char *path );
+void Rocket_AddUnitToHud( int weapon, const char *id );
+void Rocket_ShowHud( int weapon );
+void Rocket_ClearHud( int weapon );
 #if defined( __cplusplus )
 }
 #endif

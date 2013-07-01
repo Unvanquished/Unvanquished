@@ -71,47 +71,6 @@ void Rocket_LoadCursor( const char *path )
 	}
 }
 
-void Rocket_LoadHud( const char *path )
-{
-	Rocket::Core::ElementDocument *document = hudContext->LoadDocument( path );
-	Rocket::Core::ElementDocument* other;
-
-	if ( document )
-	{
-		document->Hide();
-		document->RemoveReference();
-		hudContext->PushDocumentToBack( document );
-
-		// Close any other documents which may have the same ID
-		other = menuContext->GetDocument( document->GetId() );
-		if ( other && other != document )
-		{
-			other->Close();
-		}
-	}
-
-}
-
-void Rocket_ShowHud( const char *id )
-{
-	if ( !id || !*id )
-	{
-		return;
-	}
-
-	Rocket::Core::ElementDocument *document = hudContext->GetDocument( id );
-
-	if ( document )
-	{
-		for ( int i = 0; i < hudContext->GetNumDocuments(); ++i )
-		{
-			hudContext->GetDocument( i )->Hide();
-		}
-
-		document->Show();
-	}
-}
-
 void Rocket_DocumentAction( const char *name, const char *action )
 {
 	if ( !Q_stricmp( action, "show" ) || !Q_stricmp( action, "open" ) )

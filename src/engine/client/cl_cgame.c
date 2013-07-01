@@ -2175,14 +2175,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			Rocket_LoadCursor( VMA(1) );
 			return 0;
 
-		case CG_ROCKET_LOADHUD:
-			Rocket_LoadHud( VMA(1) );
-			return 0;
-
-		case CG_ROCKET_SHOWHUD:
-			Rocket_ShowHud( VMA(1) );
-			return 0;
-
 		case CG_ROCKET_DOCUMENTACTION:
 			Rocket_DocumentAction( VMA(1), VMA(2) );
 			return 0;
@@ -2346,6 +2338,26 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 
 		case CG_ROCKET_SETPROPERYBYID:
 			Rocket_SetPropertyById( VMA(1), VMA(2), VMA(3) );
+			return 0;
+
+		case CG_ROCKET_INITHUDS:
+			Rocket_InitializeHuds( args[1] );
+			return 0;
+
+		case CG_ROCKET_LOADUNIT:
+			Rocket_LoadUnit( VMA(1) );
+			return 0;
+
+		case CG_ROCKET_ADDUNITTOHUD:
+			Rocket_AddUnitToHud( args[1], VMA(2) );
+			return 0;
+
+		case CG_ROCKET_SHOWHUD:
+			Rocket_ShowHud( args[1] );
+			return 0;
+
+		case CG_ROCKET_CLEARHUD:
+			Rocket_ClearHud( args[1] );
 			return 0;
 
 		default:

@@ -68,7 +68,7 @@ void CG_RegisterRocketCvars( void )
 	for ( i = 0, cv = rocketCvarTable; i < rocketCvarTableSize; i++, cv++ )
 	{
 		trap_Cvar_Register( cv->vmCvar, cv->cvarName,
-							cv->defaultString, cv->cvarFlags );
+		                    cv->defaultString, cv->cvarFlags );
 	}
 }
 
@@ -224,35 +224,36 @@ void CG_Rocket_Init( void )
 			token = COM_Parse2( &text_p );
 
 			if ( *token != '{' )
+			{
+				Com_Error( ERR_DROP, "Error parsing %s. Expecting \"{\" but found \"%c\".", rocket_menuFile.string, *token );
+			}
+
+			while ( 1 )
+			{
+				token = COM_Parse2( &text_p );
+
+				if ( *token == '}' )
 				{
-					Com_Error( ERR_DROP, "Error parsing %s. Expecting \"{\" but found \"%c\".", rocket_menuFile.string, *token );
+					break;
 				}
 
-				while ( 1 )
+				if ( !*token )
 				{
-					token = COM_Parse2( &text_p );
-
-					if ( *token == '}' )
-					{
-						break;
-					}
-
-					if ( !*token )
-					{
-						Com_Error( ERR_DROP, "Error parsing %s. Unexpected end of file. Expecting closing '}'.", rocket_menuFile.string );
-					}
-
-					// Skip non-RML files
-					if ( Q_stricmp( token + strlen( token ) - 4, ".rml" ) )
-					{
-						Com_Printf( "^3WARNING: Non-RML file listed in %s: \"%s\" . Skipping.", rocket_menuFile.string, token );
-						continue;
-					}
-
-					trap_Rocket_LoadDocument( token );
-
+					Com_Error( ERR_DROP, "Error parsing %s. Unexpected end of file. Expecting closing '}'.", rocket_menuFile.string );
 				}
-				continue;
+
+				// Skip non-RML files
+				if ( Q_stricmp( token + strlen( token ) - 4, ".rml" ) )
+				{
+					Com_Printf( "^3WARNING: Non-RML file listed in %s: \"%s\" . Skipping.", rocket_menuFile.string, token );
+					continue;
+				}
+
+				trap_Rocket_LoadDocument( token );
+
+			}
+
+			continue;
 		}
 	}
 
@@ -286,6 +287,8 @@ void CG_Rocket_LoadHuds( void )
 	text_p = text;
 	trap_FS_FCloseFile( f );
 
+	trap_Rocket_InitializeHuds( WP_NUM_WEAPONS );
+
 	// Parse files to load...
 
 	while ( 1 )
@@ -297,52 +300,107 @@ void CG_Rocket_LoadHuds( void )
 			break;
 		}
 
+		if ( !Q_stricmp( token, "units" ) )
+		{
+			while ( 1 )
+			{
+				token = COM_Parse2( &text_p );
+
+				if ( !*token )
+				{
+					Com_Error( ERR_DROP, "Unable to load huds from %s. Unexpected end of file. Expected closing } to close off units.", rocket_hudFile.string );
+				}
+
+				if ( *token == '}' )
+				{
+					break;
+				}
+
+				// Skip non-RML files
+				if ( Q_stricmp( token + strlen( token ) - 4, ".rml" ) )
+				{
+					continue;
+				}
+
+				trap_Rocket_LoadUnit( token );
+			}
+
+			continue;
+		}
+
 		if ( !Q_stricmp( token, "human_hud" ) )
 		{
-			const char *s, *ss;
-			token = COM_Parse2( &text_p );
-
-			// Skip non-RML files
-			if ( Q_stricmp( token + strlen( token ) - 4, ".rml" ) )
-			{
-				continue;
-			}
-
-			token = COM_Parse2( &text_p );
-			s = BG_strdup( token );
-			token = COM_Parse2( &text_p );
-			ss = BG_strdup( token );
-
+			// Clear old values
 			for ( i = WP_BLASTER; i < WP_GRENADE; ++i )
 			{
-				rocketInfo.hud[ i ].path = s;
-				rocketInfo.hud[ i ].id = ss;
+				trap_Rocket_ClearHud( i );
 			}
 
-			rocketInfo.hud[ WP_HBUILD ].path = s;
-			rocketInfo.hud[ WP_HBUILD ].id = ss;
+			trap_Rocket_ClearHud( WP_HBUILD );
+
+			while ( 1 )
+			{
+				token = COM_Parse2( &text_p );
+
+				if ( !*token )
+				{
+					Com_Error( ERR_DROP, "Unable to load huds from %s. Unexpected end of file. Expected closing } to close off human_hud.", rocket_hudFile.string );
+				}
+
+				if ( *token == '{' )
+				{
+					continue;
+				}
+
+				if ( *token == '}' )
+				{
+					break;
+				}
+
+
+				for ( i = WP_BLASTER; i < WP_GRENADE; ++i )
+				{
+					trap_Rocket_AddUnitToHud( i, token );
+				}
+
+				trap_Rocket_AddUnitToHud( WP_HBUILD, token );
+			}
+
+
 			continue;
 		}
 
 		if ( !Q_stricmp( token, "spectator_hud" ) )
 		{
-			const char *s, *ss;
-			token = COM_Parse2( &text_p );
-
-			// Skip non-RML files
-			if ( Q_stricmp( token + strlen( token ) - 4, ".rml" ) )
-			{
-				continue;
-			}
-
-			s = BG_strdup( token );
-			token = COM_Parse2( &text_p );
-			ss = BG_strdup( token );
-
 			for ( i = WP_NONE; i < WP_NUM_WEAPONS; ++i )
 			{
-				rocketInfo.hud[ i ].path = s;
-				rocketInfo.hud[ i ].id = ss;
+				trap_Rocket_ClearHud( i );
+			}
+
+			while ( 1 )
+			{
+				token = COM_Parse2( &text_p );
+
+				if ( !*token )
+				{
+					Com_Error( ERR_DROP, "Unable to load huds from %s. Unexpected end of file. Expected closing } to close off spectator_hud.", rocket_hudFile.string );
+				}
+
+				if ( *token == '{' )
+				{
+					continue;
+				}
+
+				if ( *token == '}' )
+				{
+					break;
+				}
+
+
+				for ( i = WP_NONE; i < WP_NUM_WEAPONS; ++i )
+				{
+					trap_Rocket_AddUnitToHud( i, token );
+				}
 			}
 
 			continue;
@@ -350,63 +408,73 @@ void CG_Rocket_LoadHuds( void )
 
 		if ( !Q_stricmp( token, "alien_hud" ) )
 		{
-			const char *s, *ss;
-			token = COM_Parse2( &text_p );
-
-			// Skip non-RML files
-			if ( Q_stricmp( token + strlen( token ) - 4, ".rml" ) )
-			{
-				continue;
-			}
-
-			s = BG_strdup( token );
-			token = COM_Parse2( &text_p );
-			ss = BG_strdup( token );
-
 			for ( i = WP_ALEVEL0; i < WP_ALEVEL4; ++i )
 			{
-				rocketInfo.hud[ i ].path = s;
-				rocketInfo.hud[ i ].id = ss;
+				trap_Rocket_ClearHud( i );
 			}
 
-			rocketInfo.hud[ WP_ABUILD ].path = s;
-			rocketInfo.hud[ WP_ABUILD2 ].path = s;
-			rocketInfo.hud[ WP_ABUILD ].id = ss;
-			rocketInfo.hud[ WP_ABUILD2 ].id = ss;
+			trap_Rocket_ClearHud( WP_ABUILD );
+			trap_Rocket_ClearHud( WP_ABUILD2 );
+
+			while ( 1 )
+			{
+				token = COM_Parse2( &text_p );
+
+				if ( !*token )
+				{
+					Com_Error( ERR_DROP, "Unable to load huds from %s. Unexpected end of file. Expected closing } to close off alien_hud.", rocket_hudFile.string );
+				}
+
+				if ( *token == '{' )
+					{
+						continue;
+					}
+
+					if ( *token == '}' )
+					{
+						break;
+					}
+				for ( i = WP_ALEVEL0; i < WP_ALEVEL4; ++i )
+				{
+					trap_Rocket_AddUnitToHud( i, token );
+				}
+
+				trap_Rocket_AddUnitToHud( WP_ABUILD, token );
+				trap_Rocket_AddUnitToHud( WP_ABUILD2, token );
+			}
+
 			continue;
 		}
 
 		for ( i = WP_NONE + 1; i < WP_NUM_WEAPONS; ++i )
 		{
-			Com_Printf( "%s_hud\n", BG_Weapon( i )->name );
-
-			if ( !Q_stricmp( token, va( "%s_hud", BG_Weapon( i )->humanName ) ) )
+			if ( !Q_stricmp( token, va( "%s_hud", BG_Weapon( i )->name ) ) )
 			{
-				token = COM_Parse( &text_p );
-				rocketInfo.hud[ i ].path = BG_strdup( token );
-				token = COM_Parse( &text_p );
-				rocketInfo.hud[ i ].id = BG_strdup( token );
-				continue;
+				trap_Rocket_ClearHud( i );
+				while ( 1 )
+				{
+					token = COM_Parse2( &text_p );
+
+					if ( !*token )
+					{
+						Com_Error( ERR_DROP, "Unable to load huds from %s. Unexpected end of file. Expected closing } to close off spectator_hud.", rocket_hudFile.string );
+					}
+
+					if ( *token == '{' )
+					{
+						continue;
+					}
+
+					if ( *token == '}' )
+					{
+						break;
+					}
+
+					trap_Rocket_AddUnitToHud( i, token );
+				}
 			}
 		}
 	}
-
-	if ( !rocketInfo.hud[ WP_NONE ].path || !rocketInfo.hud[ WP_NONE ].id )
-	{
-		Com_Error( ERR_DROP, "Default HUD not set." );
-	}
-
-	// Set default HUD for all weapons without a hud and load all the HUDs
-	for ( i = 0; i <  WP_NUM_WEAPONS; ++i )
-	{
-		if ( !rocketInfo.hud[ i ].path || !rocketInfo.hud[ i ].id )
-		{
-			rocketInfo.hud[ i ] = rocketInfo.hud[ WP_NONE ];
-		}
-
-		trap_Rocket_LoadHud( rocketInfo.hud[ i ].path );
-	}
-
 }
 
 int CG_StringToNetSource( const char *src )
@@ -415,10 +483,12 @@ int CG_StringToNetSource( const char *src )
 	{
 		return AS_LOCAL;
 	}
+
 	else if ( !Q_stricmp( src, "favorites" ) )
 	{
 		return AS_FAVORITES;
 	}
+
 	else
 	{
 		return AS_GLOBAL;
@@ -445,7 +515,7 @@ void CG_Rocket_Frame( void )
 {
 	trap_GetClientState( &rocketInfo.cstate );
 
-	if  ( oldConnState != rocketInfo.cstate.connState )
+	if ( oldConnState != rocketInfo.cstate.connState )
 	{
 		switch ( rocketInfo.cstate.connState )
 		{
@@ -455,6 +525,7 @@ void CG_Rocket_Frame( void )
 				{
 					rocketInfo.rocketState = IDLE;
 				}
+
 				break;
 
 			case CA_CONNECTING:

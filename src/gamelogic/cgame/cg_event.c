@@ -709,7 +709,7 @@ void CG_OnPlayerWeaponChange( weapon_t oldWeapon )
 {
 	playerState_t *ps = &cg.snap->ps;
 	// Change the HUD to match the weapon. Close the old hud first
-	trap_Rocket_ShowHud( rocketInfo.hud[ ps->weapon ].id );
+	trap_Rocket_ShowHud( ps->weapon );
 }
 
 /*

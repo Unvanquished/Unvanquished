@@ -1400,16 +1400,6 @@ void trap_Rocket_LoadCursor( const char *path )
 	syscall( CG_ROCKET_LOADCURSOR, path );
 }
 
-void trap_Rocket_LoadHud( const char *path )
-{
-	syscall( CG_ROCKET_LOADHUD, path );
-}
-
-void trap_Rocket_ShowHud( const char *id )
-{
-	syscall( CG_ROCKET_SHOWHUD, id );
-}
-
 void trap_Rocket_DocumentAction( const char *name, const char *action )
 {
 	syscall( CG_ROCKET_DOCUMENTACTION, name, action );
@@ -1526,4 +1516,29 @@ void trap_Rocket_QuakeToRML( const char *in, char *out, int length )
 void trap_Rocket_SetClass( const char *in, qboolean activate )
 {
 	syscall( CG_ROCKET_SETCLASS, in, activate );
+}
+
+void trap_Rocket_InitializeHuds( int size )
+{
+	syscall( CG_ROCKET_INITHUDS, size );
+}
+
+void trap_Rocket_LoadUnit( const char *path )
+{
+	syscall( CG_ROCKET_LOADUNIT, path );
+}
+
+void trap_Rocket_AddUnitToHud( int weapon, const char *id )
+{
+	syscall( CG_ROCKET_ADDUNITTOHUD, weapon, id );
+}
+
+void trap_Rocket_ShowHud( int weapon )
+{
+	syscall( CG_ROCKET_SHOWHUD, weapon );
+}
+
+void trap_Rocket_ClearHud( int weapon )
+{
+	syscall( CG_ROCKET_CLEARHUD, weapon );
 }

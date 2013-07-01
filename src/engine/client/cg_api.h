@@ -309,8 +309,6 @@ typedef enum cgameImport_s
   CG_ROCKET_SHUTDOWN,
   CG_ROCKET_LOADDOCUMENT,
   CG_ROCKET_LOADCURSOR,
-  CG_ROCKET_LOADHUD,
-  CG_ROCKET_SHOWHUD,
   CG_ROCKET_DOCUMENTACTION,
   CG_ROCKET_GETEVENT,
   CG_ROCKET_DELELTEEVENT,
@@ -334,7 +332,12 @@ typedef enum cgameImport_s
   CG_ROCKET_KEYTOQUAKE,
   CG_ROCKET_GETELEMENTABSOLUTEOFFSET,
   CG_ROCKET_QUAKETORML,
-  CG_ROCKET_SETCLASS
+  CG_ROCKET_SETCLASS,
+  CG_ROCKET_INITHUDS,
+  CG_ROCKET_LOADUNIT,
+  CG_ROCKET_ADDUNITTOHUD,
+  CG_ROCKET_SHOWHUD,
+  CG_ROCKET_CLEARHUD
 } cgameImport_t;
 
 typedef enum
@@ -626,8 +629,6 @@ void            trap_Rocket_Init( void );
 void            trap_Rocket_Shutdown( void );
 void            trap_Rocket_LoadDocument( const char *path );
 void            trap_Rocket_LoadCursor( const char *path );
-void            trap_Rocket_LoadHud( const char *path );
-void            trap_Rocket_ShowHud( const char *id );
 void            trap_Rocket_DocumentAction( const char *name, const char *action );
 qboolean        trap_Rocket_GetEvent( void );
 void            trap_Rocket_DeleteEvent( void );
@@ -652,4 +653,9 @@ int             trap_Rocket_KeyToQuake( int key );
 void            trap_Rocket_GetElementAbsoluteOffset( float *x, float *y );
 void            trap_Rocket_QuakeToRML( const char *in, char *out, int length );
 void            trap_Rocket_SetClass( const char *in, qboolean activate );
+void            trap_Rocket_InitializeHuds( int size );
+void            trap_Rocket_LoadUnit( const char *path );
+void            trap_Rocket_AddUnitToHud( int weapon, const char *id );
+void            trap_Rocket_ShowHud( int weapon );
+void            trap_Rocket_ClearHud( int weapon );
 #endif
