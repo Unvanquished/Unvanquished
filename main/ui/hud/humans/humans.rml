@@ -8,38 +8,6 @@
 				width: 100%;
 				height: 100%;
 			}
-			div#fps
-			{
-				position: fixed;
-				top: 0%;
-				text-align: right;
-				font-size: 18;
-			}
-			div#lagometer
-			{
-				position: fixed;
-				top: 5%;
-				right: 0%;
-				float: right;
-				width: 4%;
-				height: 4%;
-				text-align: center;
-				vertical-align: text-top;
-				font-size: 12;
-			}
-			lagometer
-			{
-				width: 100%;
-				height: 50%;
-				background-color: #1E1E1E1E;
-			}
-			div#location
-			{
-				position: fixed;
-				text-align: right;
-				right: 0%;
-				top: 20%;
-			}
 			div#hudbg img
 			{
 				position: fixed;
@@ -121,16 +89,6 @@
 		</style>
 	</head>
 	<body id="human_hud">
-	<div id="fps">
-		<fps /> fps<br />
-		<timer />
-	</div>
-	<div id="lagometer">
-		<lagometer />
-	</div>
-	<div id="location">
-		<location />
-	</div>
 	<div id="hudbg">
 		<img id="right" src="/ui/assets/human/rightbg.tga"/>
 		<img id="left" src="/ui/assets/human/leftbg.tga"/>

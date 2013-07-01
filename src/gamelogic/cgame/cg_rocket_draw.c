@@ -1617,6 +1617,48 @@ void CG_Rocket_DrawConnectText( void )
 	trap_Rocket_SetInnerRML( "", "", rml, qtrue );
 }
 
+void CG_Rocket_DrawClock( void )
+{
+	char    *s;
+	qtime_t qt;
+
+	if ( !cg_drawClock.integer )
+	{
+		return;
+	}
+
+	trap_RealTime( &qt );
+
+	if ( cg_drawClock.integer == 2 )
+	{
+		s = va( "%02d%s%02d", qt.tm_hour, ( qt.tm_sec % 2 ) ? ":" : " ",
+			qt.tm_min );
+	}
+	else
+	{
+		char *pm = "am";
+		int  h = qt.tm_hour;
+
+		if ( h == 0 )
+		{
+			h = 12;
+		}
+		else if ( h == 12 )
+		{
+			pm = "pm";
+		}
+		else if ( h > 12 )
+		{
+			h -= 12;
+			pm = "pm";
+		}
+
+		s = va( "%d%s%02d%s", h, ( qt.tm_sec % 2 ) ? ":" : " ", qt.tm_min, pm );
+	}
+
+	trap_Rocket_SetInnerRML( "", "", s, qfalse );
+}
+
 typedef struct
 {
 	const char *name;
@@ -1633,6 +1675,7 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "center_print", &CG_Rocket_DrawCenterPrint, ELEMENT_GAME },
 	{ "clips", &CG_Rocket_DrawClips, ELEMENT_HUMANS },
 	{ "clip_stack", &CG_DrawPlayerClipsStack, ELEMENT_HUMANS },
+	{ "clock", &CG_Rocket_DrawClock, ELEMENT_ALL },
 	{ "connecting", &CG_Rocket_DrawConnectText, ELEMENT_ALL },
 	{ "credits", &CG_Rocket_DrawCreditsValue, ELEMENT_HUMANS },
 	{ "crosshair", &CG_Rocket_DrawCrosshair, ELEMENT_BOTH },
