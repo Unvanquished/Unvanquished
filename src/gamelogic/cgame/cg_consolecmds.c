@@ -137,41 +137,8 @@ static void CG_UIMenu_f( void )
 
 static void CG_ReloadHud_f( void )
 {
-	int i, j, num = 0;
-	rocketMenu_t *toDealloc[ WP_NUM_WEAPONS ]; // Max number of huds. Most probably won't be used completely
-	qboolean duplicate = qfalse;
-
-	// Since there may be duplicates, we must dealloc each hud only once
-	for ( i = WP_NONE; i < WP_NUM_WEAPONS; ++i )
-	{
-		for (  j = WP_NONE; j < num; ++j )
-		{
-			// Ids must be unique, so only check those
-			if ( !Q_stricmp( toDealloc[ j ]->id, rocketInfo.hud[ i ].id ) )
-			{
-				duplicate = qtrue;
-				break;
-			}
-		}
-
-		if ( duplicate )
-		{
-			duplicate = qfalse;
-			continue;
-		}
-
-		toDealloc[ num++ ] = &rocketInfo.hud[ i ];
-	}
-
-	for ( i = 0; i < num; ++i )
-	{
-		BG_Free( ( void * ) toDealloc[ i ]->path );
-		BG_Free( ( void * ) toDealloc[ i ]->id );
-	}
-
-	BG_DefragmentMemory();
 	CG_Rocket_LoadHuds();
-	CG_OnPlayerWeaponChange(WP_NONE);
+	CG_OnPlayerWeaponChange( cg.snap->ps.weapon );
 }
 
 static void CG_CompleteClass( void )

@@ -64,6 +64,8 @@ void Rocket_InitializeHuds( int size )
 	{
 		huds.push_back( RocketHud() );
 	}
+
+	activeHud = NULL;
 }
 
 void Rocket_LoadUnit( const char *path )
@@ -76,10 +78,10 @@ void Rocket_LoadUnit( const char *path )
 	{
 		document->Hide();
 		document->RemoveReference();
-		hudContext->PushDocumentToBack( document );
+		hudContext->PullDocumentToFront( document );
 
 		// Close any other documents which may have the same ID
-		other = menuContext->GetDocument( document->GetId() );
+		other = hudContext->GetDocument( document->GetId() );
 		if ( other && other != document )
 		{
 			other->Close();
