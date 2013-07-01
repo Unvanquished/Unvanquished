@@ -118,12 +118,6 @@
 			{
 				color: white;
 			}
-			console_text
-			{
-				position: fixed;
-				width: 75%;
-				height: 20%;
-			}
 		</style>
 	</head>
 	<body id="human_hud">
@@ -151,9 +145,6 @@
 	</div>
 	<div id="crosshair">
 		<crosshair/>
-	</div>
-	<div id="consoletext">
-		<console_text />
 	</div>
 	</body>
 </rml>

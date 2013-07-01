@@ -1,15 +1,21 @@
 units
 {
-	ui/humans.rml
-	ui/aliens.rml
+	ui/hud/humans/humans.rml
+	ui/hud/aliens/aliens.rml
+	ui/hud/common/overlay.rml
+	ui/hud/common/console.rml
 }
 
 spectator_hud
 {
 	human_hud
+	overlay
+	console
 }
 
 alien_hud
 {
 	alien_hud
+	overlay
+	console
 }
