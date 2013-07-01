@@ -111,6 +111,17 @@ vmCvar_t           g_alienMaxStage;
 vmCvar_t           g_humanStage;
 vmCvar_t           g_alienStage;
 
+vmCvar_t           g_powerCompetitionRange;
+vmCvar_t           g_powerBaseSupply;
+vmCvar_t           g_powerReactorSupply;
+vmCvar_t           g_powerReactorRange;
+vmCvar_t           g_powerRepeaterSupply;
+vmCvar_t           g_powerRepeaterRange;
+vmCvar_t           g_powerLevel1Interference;
+vmCvar_t           g_powerLevel1Range;
+vmCvar_t           g_powerLevel1UpgInterference;
+vmCvar_t           g_powerLevel1UpgRange;
+
 vmCvar_t           g_alienOffCreepRegenHalfLife;
 
 vmCvar_t           g_teamImbalanceWarnings;
@@ -280,7 +291,18 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_humanStage,                  "g_humanStage",                  "0",                                0,                                               0, qfalse           },
 	{ &g_alienStage,                  "g_alienStage",                  "0",                                0,                                               0, qfalse           },
 
-	{ &g_alienOffCreepRegenHalfLife,  "g_alienOffCreepRegenHalfLife",  "5",                                CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_powerCompetitionRange,       "g_powerCompetitionRange",       "320",                              CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_powerBaseSupply,             "g_powerBaseSupply",             "20",                               CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_powerReactorSupply,          "g_powerReactorSupply",          "40",                               CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_powerReactorRange,           "g_powerReactorRange",           "800",                              CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_powerRepeaterSupply,         "g_powerRepeaterSupply",         "20",                               CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_powerRepeaterRange,          "g_powerRepeaterRange",          "400",                              CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_powerLevel1Interference,     "g_powerLevel1Interference",     "13",                               CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_powerLevel1Range,            "g_powerLevel1Range",            "250",                              CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_powerLevel1UpgInterference,  "g_powerLevel1UpgInterference",  "16",                               CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_powerLevel1UpgRange,         "g_powerLevel1UpgRange",         "300",                              CVAR_ARCHIVE,                                    0, qfalse           },
+
+	{ &g_alienOffCreepRegenHalfLife,  "g_alienOffCreepRegenHalfLife",  "0",                                CVAR_ARCHIVE,                                    0, qfalse           },
 
 	{ &g_teamImbalanceWarnings,       "g_teamImbalanceWarnings",       "30",                               CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_freeFundPeriod,              "g_freeFundPeriod",              DEFAULT_FREEKILL_PERIOD,            CVAR_ARCHIVE,                                    0, qtrue            },

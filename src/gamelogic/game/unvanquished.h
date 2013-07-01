@@ -381,20 +381,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 /*
  * HUMAN buildables
  */
-
-// power
-#define BASE_POWER                    20  // amount of power available everywhere (if RC is up)
-#define POWER_COMPETITION_RANGE       320 // buildables in this range will compete for power
-#define REACTOR_POWER                 40  // extra power the reactor yields in its range
-#define REACTOR_POWER_RANGE           800
-#define REPEATER_POWER                20  // extra power a repeater yields in its range
-#define REPEATER_POWER_RANGE          400
-#define LEVEL1_INTERFERENCE           13  // basilisk "power consumption"
-#define LEVEL1_INTERFERENCE_RANGE     250
-#define LEVEL1UPG_INTERFERENCE        16  // advanced basilisk "power consumption"
-#define LEVEL1UPG_INTERFERENCE_RANGE  300
-#define POWER_RELEVANT_RANGE          800 // max of all above ranges
-
 #define MGTURRET_RANGE            400.0
 #define MGTURRET_REPEAT           150.0
 #define MGTURRET_ANGULARSPEED     12

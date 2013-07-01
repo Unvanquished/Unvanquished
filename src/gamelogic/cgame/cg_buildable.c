@@ -741,16 +741,18 @@ qboolean CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t 
 			shc = SHC_RED;
 			break;
 
+		// TODO: Make RC and Rep power ranges available to the client
+		/*
 		case BA_H_REACTOR:
-			*range = REACTOR_POWER_RANGE;
+			*range = ;
 			shc = SHC_DARK_BLUE;
 			break;
 
 		case BA_H_REPEATER:
-			*range = REPEATER_POWER_RANGE;
+			*range = ;
 			shc = SHC_LIGHT_BLUE;
 			break;
-
+		*/
 
 		default:
 			return qfalse;
