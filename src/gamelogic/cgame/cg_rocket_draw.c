@@ -1617,17 +1617,6 @@ void CG_Rocket_DrawConnectText( void )
 	trap_Rocket_SetInnerRML( "", "", rml, qtrue );
 }
 
-void CG_Rocket_DrawConsoleText( void )
-{
-	static int old = 0;
-	if ( old != cg.numConsoleLines )
-	{
-		trap_Rocket_SetInnerRML( "", "", cg.consoleText, qtrue );
-		old = cg.numConsoleLines;
-	}
-}
-
-
 typedef struct
 {
 	const char *name;
