@@ -1941,12 +1941,6 @@ static void UI_DrawInfoPane( menuItem_t *item, rectDef_t *rect, float text_x, fl
 					{
 						s = va( "%s", string2 );
 					}
-					else if ( value2 > BASE_POWER )
-					{
-						s = va( "%s\n%s: %d (%s)",
-						        string2, _( "Power" ), value2,
-						        _( "requires close power source" ) );
-					}
 					else
 					{
 						s = va( "%s\n%s: %d",

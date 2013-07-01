@@ -878,6 +878,7 @@ typedef struct
 		int              stage3Time;
 		qboolean         locked;
 		float            confidence[ NUM_CONFIDENCE_TYPES ];
+		stage_t          stage;
 		int              stage2Threshold;
 		int              stage3Threshold;
 	} team[ NUM_TEAMS ];
@@ -961,7 +962,8 @@ typedef enum
 
   IBE_NORMAL,           // surface is too steep
   IBE_NOROOM,           // no room
-  IBE_PERMISSION,       // map doesn't allow building on that surface
+  IBE_SURFACE,          // map doesn't allow building on that surface
+  IBE_DISABLED,         // building has been disabled for team
   IBE_LASTSPAWN,        // may not replace last spawn with non-spawn
 
   IBE_MAXERRORS
@@ -1324,10 +1326,22 @@ extern  vmCvar_t g_stage3IncreasePerPlayer;
 extern  vmCvar_t g_stageThresholdHalfLife;
 extern  vmCvar_t g_humanMaxStage;
 extern  vmCvar_t g_alienMaxStage;
-extern  vmCvar_t g_humanStage;
-extern  vmCvar_t g_alienStage;
 
-extern  vmCvar_t  g_alienOffCreepRegenHalfLife;
+extern  vmCvar_t g_humanAllowBuilding;
+extern  vmCvar_t g_alienAllowBuilding;
+
+extern  vmCvar_t g_powerCompetitionRange;
+extern  vmCvar_t g_powerBaseSupply;
+extern  vmCvar_t g_powerReactorSupply;
+extern  vmCvar_t g_powerReactorRange;
+extern  vmCvar_t g_powerRepeaterSupply;
+extern  vmCvar_t g_powerRepeaterRange;
+extern  vmCvar_t g_powerLevel1Interference;
+extern  vmCvar_t g_powerLevel1Range;
+extern  vmCvar_t g_powerLevel1UpgInterference;
+extern  vmCvar_t g_powerLevel1UpgRange;
+
+extern  vmCvar_t g_alienOffCreepRegenHalfLife;
 
 extern  vmCvar_t g_teamImbalanceWarnings;
 extern  vmCvar_t g_freeFundPeriod;

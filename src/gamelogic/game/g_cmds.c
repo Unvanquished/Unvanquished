@@ -2488,7 +2488,7 @@ static qboolean Cmd_Class_internal( gentity_t *ent, const char *s, qboolean repo
 				return qfalse;
 			}
 
-			if ( !BG_ClassAllowedInStage( newClass, g_alienStage.integer ) )
+			if ( !BG_ClassAllowedInStage( newClass, level.team[ TEAM_ALIENS ].stage ) )
 			{
 				if ( report )
 				{
@@ -2619,7 +2619,7 @@ static qboolean Cmd_Class_internal( gentity_t *ent, const char *s, qboolean repo
 				return qfalse;
 			}
 
-			cost = BG_ClassCanEvolveFromTo( currentClass, newClass, ent->client->pers.credit, g_alienStage.integer );
+			cost = BG_ClassCanEvolveFromTo( currentClass, newClass, ent->client->pers.credit, level.team[ TEAM_ALIENS ].stage );
 
 			if ( G_RoomForClassChange( ent, newClass, infestOrigin ) )
 			{
@@ -3088,7 +3088,7 @@ static qboolean Cmd_Buy_internal( gentity_t *ent, const char *s )
 		}
 
 		//are we /allowed/ to buy this?
-		if ( !BG_WeaponAllowedInStage( weapon, g_humanStage.integer ) || !BG_WeaponIsAllowed( weapon ) )
+		if ( !BG_WeaponAllowedInStage( weapon, level.team[ TEAM_HUMANS ].stage ) || !BG_WeaponIsAllowed( weapon ) )
 		{
 			goto cant_buy;
 		}
@@ -3155,7 +3155,7 @@ static qboolean Cmd_Buy_internal( gentity_t *ent, const char *s )
 		}
 
 		//are we /allowed/ to buy this?
-		if ( !BG_UpgradeAllowedInStage( upgrade, g_humanStage.integer ) || !BG_UpgradeIsAllowed( upgrade ) )
+		if ( !BG_UpgradeAllowedInStage( upgrade, level.team[ TEAM_HUMANS ].stage ) || !BG_UpgradeIsAllowed( upgrade ) )
 		{
 			goto cant_buy;
 		}
@@ -3521,9 +3521,7 @@ void Cmd_Build_f( gentity_t *ent )
 
 	if ( buildable != BA_NONE &&
 	     ( ( 1 << ent->client->ps.weapon ) & BG_Buildable( buildable )->buildWeapon ) &&
-	     BG_BuildableIsAllowed( buildable ) &&
-	     ( ( team == TEAM_ALIENS && BG_BuildableAllowedInStage( buildable, g_alienStage.integer ) ) ||
-	       ( team == TEAM_HUMANS && BG_BuildableAllowedInStage( buildable, g_humanStage.integer ) ) ) )
+	     BG_BuildableIsAllowed( buildable ) && BG_BuildableAllowedInStage( buildable, level.team[ team ].stage ) )
 	{
 		dynMenu_t err;
 		vec3_t forward, aimDir;
@@ -3553,7 +3551,7 @@ void Cmd_Build_f( gentity_t *ent )
 			case IBE_NOROOM:
 			case IBE_NOPOWERHERE:
 			case IBE_DRILLPOWERSOURCE:
-			case IBE_PERMISSION:
+			case IBE_SURFACE:
 			case IBE_NOOVERMIND:
 			case IBE_NOREACTOR:
 				err = MN_NONE;
@@ -3582,6 +3580,10 @@ void Cmd_Build_f( gentity_t *ent )
 
 			case IBE_LASTSPAWN:
 				err = MN_B_LASTSPAWN;
+				break;
+
+			case IBE_DISABLED:
+				err = MN_B_DISABLED;
 				break;
 
 			default:

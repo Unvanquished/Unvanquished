@@ -1943,6 +1943,36 @@ static void IdlePowerState( gentity_t *self )
 
 /*
 ================
+PowerRelevantRange
+
+Determines relvant range for power related entities.
+================
+*/
+static int PowerRelevantRange()
+{
+	static int relevantRange = 1;
+	static int lastCalculation = 0;
+
+	// only calculate once per server frame
+	if ( lastCalculation == level.time )
+	{
+		return relevantRange;
+	}
+
+	lastCalculation = level.time;
+
+	relevantRange = 1;
+	relevantRange = MAX( relevantRange, g_powerReactorRange.integer );
+	relevantRange = MAX( relevantRange, g_powerRepeaterRange.integer );
+	relevantRange = MAX( relevantRange, g_powerCompetitionRange.integer );
+	relevantRange = MAX( relevantRange, g_powerLevel1UpgRange.integer );
+	relevantRange = MAX( relevantRange, g_powerLevel1Range.integer );
+
+	return relevantRange;
+}
+
+/*
+================
 PowerSourceInRange
 
 Check if origin is affected by reactor or repeater power.
@@ -1952,7 +1982,7 @@ static qboolean PowerSourceInRange( vec3_t origin )
 {
 	gentity_t *neighbor = NULL;
 
-	while ( neighbor = G_IterateEntitiesWithinRadius( neighbor, origin, POWER_RELEVANT_RANGE ) )
+	while ( neighbor = G_IterateEntitiesWithinRadius( neighbor, origin, PowerRelevantRange() ) )
 	{
 		if ( neighbor->s.eType != ET_BUILDABLE )
 		{
@@ -1962,14 +1992,14 @@ static qboolean PowerSourceInRange( vec3_t origin )
 		switch ( neighbor->s.modelindex )
 		{
 			case BA_H_REACTOR:
-				if ( Distance( origin, neighbor->s.origin ) < REACTOR_POWER_RANGE )
+				if ( Distance( origin, neighbor->s.origin ) < g_powerReactorRange.integer )
 				{
 					return qtrue;
 				}
 				break;
 
 			case BA_H_REPEATER:
-				if ( Distance( origin, neighbor->s.origin ) < REPEATER_POWER_RANGE )
+				if ( Distance( origin, neighbor->s.origin ) < g_powerRepeaterRange.integer )
 				{
 					return qtrue;
 				}
@@ -2018,8 +2048,8 @@ static float IncomingInterference( buildable_t buildable, gentity_t *neighbor,
 			case BA_H_REPEATER:
 				if ( neighbor->health > 0 )
 				{
-					power = REPEATER_POWER;
-					range = REPEATER_POWER_RANGE;
+					power = g_powerRepeaterSupply.integer;
+					range = g_powerRepeaterRange.integer;
 					break;
 				}
 				else
@@ -2030,8 +2060,8 @@ static float IncomingInterference( buildable_t buildable, gentity_t *neighbor,
 			case BA_H_REACTOR:
 				if ( neighbor->health > 0 )
 				{
-					power = REACTOR_POWER;
-					range = REACTOR_POWER_RANGE;
+					power = g_powerReactorSupply.integer;
+					range = g_powerReactorRange.integer;
 					break;
 				}
 				else
@@ -2041,7 +2071,7 @@ static float IncomingInterference( buildable_t buildable, gentity_t *neighbor,
 
 			default:
 				power = -BG_Buildable( neighbor->s.modelindex )->powerConsumption;
-				range = POWER_COMPETITION_RANGE;
+				range = g_powerCompetitionRange.integer;
 		}
 	}
 	// interference from player classes
@@ -2050,13 +2080,13 @@ static float IncomingInterference( buildable_t buildable, gentity_t *neighbor,
 		switch ( neighbor->client->ps.stats[ STAT_CLASS ] )
 		{
 			case PCL_ALIEN_LEVEL1:
-				power = -LEVEL1_INTERFERENCE;
-				range = LEVEL1_INTERFERENCE_RANGE;
+				power = -g_powerLevel1Interference.integer;
+				range = g_powerLevel1Range.integer;
 				break;
 
 			case PCL_ALIEN_LEVEL1_UPG:
-				power = -LEVEL1UPG_INTERFERENCE;
-				range = LEVEL1UPG_INTERFERENCE_RANGE;
+				power = -g_powerLevel1UpgInterference.integer;
+				range = g_powerLevel1UpgRange.integer;
 				break;
 
 			default:
@@ -2064,6 +2094,12 @@ static float IncomingInterference( buildable_t buildable, gentity_t *neighbor,
 		}
 	}
 	else
+	{
+		return 0.0f;
+	}
+
+	// sanity check range
+	if ( range <= 0.0f )
 	{
 		return 0.0f;
 	}
@@ -2104,18 +2140,24 @@ static float OutgoingInterference( buildable_t buildable, gentity_t *neighbor, f
 	switch ( buildable )
 	{
 		case BA_H_REPEATER:
-			power = REPEATER_POWER;
-			range = REPEATER_POWER_RANGE;
+			power = g_powerReactorSupply.integer;
+			range = g_powerReactorRange.integer;
 			break;
 
 		case BA_H_REACTOR:
-			power = REACTOR_POWER;
-			range = REACTOR_POWER_RANGE;
+			power = g_powerReactorSupply.integer;
+			range = g_powerReactorRange.integer;
 			break;
 
 		default:
 			power = -BG_Buildable( buildable )->powerConsumption;
-			range = POWER_COMPETITION_RANGE;
+			range = g_powerCompetitionRange.integer;
+	}
+
+	// sanity check range
+	if ( range <= 0.0f )
+	{
+		return 0.0f;
 	}
 
 	return power * MAX( 0.0f, 1.0f - ( distance / range ) );
@@ -2146,7 +2188,7 @@ static void CalculateSparePower( gentity_t *self )
 			return;
 	}
 
-	self->expectedSparePower = BASE_POWER - BG_Buildable( self->s.modelindex )->powerConsumption;
+	self->expectedSparePower = g_powerBaseSupply.integer - BG_Buildable( self->s.modelindex )->powerConsumption;
 
 	if ( self->spawned )
 	{
@@ -2158,7 +2200,7 @@ static void CalculateSparePower( gentity_t *self )
 	}
 
 	neighbor = NULL;
-	while ( neighbor = G_IterateEntitiesWithinRadius( neighbor, self->s.origin, POWER_RELEVANT_RANGE ) )
+	while ( neighbor = G_IterateEntitiesWithinRadius( neighbor, self->s.origin, PowerRelevantRange() ) )
 	{
 		if ( self == neighbor )
 		{
@@ -2176,9 +2218,9 @@ static void CalculateSparePower( gentity_t *self )
 	}
 
 	// HACK: store relative spare power in entityState_t.clientNum for display
-	if ( self->spawned )
+	if ( self->spawned && g_powerBaseSupply.integer > 0 )
 	{
-		relativeSparePower = ( int )( 100.0f * ( self->currentSparePower / BASE_POWER ) + 0.5f );
+		relativeSparePower = ( int )( 100.0f * ( self->currentSparePower / g_powerBaseSupply.integer ) + 0.5f );
 
 		if ( relativeSparePower == 0 && self->currentSparePower > 0.0f )
 		{
@@ -4060,10 +4102,10 @@ static qboolean PredictBuildablePower( buildable_t buildable, vec3_t origin )
 			return qtrue;
 	}
 
-	ownPrediction = BASE_POWER - BG_Buildable( buildable )->powerConsumption;
+	ownPrediction = g_powerBaseSupply.integer - BG_Buildable( buildable )->powerConsumption;
 
 	neighbor = NULL;
-	while ( neighbor = G_IterateEntitiesWithinRadius( neighbor, origin, POWER_RELEVANT_RANGE ) )
+	while ( neighbor = G_IterateEntitiesWithinRadius( neighbor, origin, PowerRelevantRange() ) )
 	{
 		// only predict interference with friendly buildables
 		if ( neighbor->s.eType != ET_BUILDABLE || neighbor->buildableTeam != TEAM_HUMANS )
@@ -4083,10 +4125,10 @@ static qboolean PredictBuildablePower( buildable_t buildable, vec3_t origin )
 		neighborPrediction = neighbor->expectedSparePower + OutgoingInterference( buildable, neighbor, distance );
 
 		// check power of neighbor, with regards to pending deconstruction
-		if ( neighborPrediction < 0.0f && distance < POWER_COMPETITION_RANGE )
+		if ( neighborPrediction < 0.0f && distance < g_powerCompetitionRange.integer )
 		{
 			buddy = NULL;
-			while ( buddy = G_IterateEntitiesWithinRadius( buddy, neighbor->s.origin, POWER_RELEVANT_RANGE ) )
+			while ( buddy = G_IterateEntitiesWithinRadius( buddy, neighbor->s.origin, PowerRelevantRange() ) )
 			{
 				if ( IsSetForDeconstruction( buddy ) )
 				{
@@ -4218,7 +4260,7 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 		neighbor = NULL;
 
 		// assemble a list of closeby human buildable IDs
-		while ( neighbor = G_IterateEntitiesWithinRadius( neighbor, origin, POWER_RELEVANT_RANGE ) )
+		while ( neighbor = G_IterateEntitiesWithinRadius( neighbor, origin, PowerRelevantRange() ) )
 		{
 			if ( neighbor->s.eType != ET_BUILDABLE || neighbor->buildableTeam != TEAM_HUMANS )
 			{
@@ -4512,10 +4554,16 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 			}
 		}
 
-		// Check permissions
+		// Check surface permissions
 		if ( (tr1.surfaceFlags & SURF_NOALIENBUILD) || (contents & CONTENTS_NOALIENBUILD) )
 		{
-			reason = IBE_PERMISSION;
+			reason = IBE_SURFACE;
+		}
+
+		// Check level permissions
+		if ( !g_alienAllowBuilding.integer )
+		{
+			reason = IBE_DISABLED;
 		}
 	}
 	else if ( ent->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
@@ -4544,14 +4592,21 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 		// Check permissions
 		if ( (tr1.surfaceFlags & SURF_NOHUMANBUILD) || (contents & CONTENTS_NOHUMANBUILD) )
 		{
-			reason = IBE_PERMISSION;
+			reason = IBE_SURFACE;
+		}
+
+
+		// Check level permissions
+		if ( !g_humanAllowBuilding.integer )
+		{
+			reason = IBE_DISABLED;
 		}
 	}
 
 	// Check permission to build here
 	if ( (tr1.surfaceFlags & SURF_NOBUILD) || (contents & CONTENTS_NOBUILD) )
 	{
-		reason = IBE_PERMISSION;
+		reason = IBE_SURFACE;
 	}
 
 	// Can we only have one of these?
@@ -4956,8 +5011,12 @@ qboolean G_BuildIfValid( gentity_t *ent, buildable_t buildable )
 			G_TriggerMenu( ent->client->ps.clientNum, MN_B_NORMAL );
 			return qfalse;
 
-		case IBE_PERMISSION:
+		case IBE_SURFACE:
 			G_TriggerMenu( ent->client->ps.clientNum, MN_B_NORMAL );
+			return qfalse;
+
+		case IBE_DISABLED:
+			G_TriggerMenu( ent->client->ps.clientNum, MN_B_DISABLED );
 			return qfalse;
 
 		case IBE_ONEREACTOR:

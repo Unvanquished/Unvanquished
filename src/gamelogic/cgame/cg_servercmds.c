@@ -673,7 +673,6 @@ void CG_Menu( int menu, int arg )
 			type = DT_BUILD;
 			break;
 
-			// FIXME: MN_H_ and MN_A_?
 		case MN_B_LASTSPAWN:
 			longMsg = _("This action would remove your team's last spawn point, "
 			          "which often quickly results in a loss. Try building more "
@@ -682,11 +681,9 @@ void CG_Menu( int menu, int arg )
 			type = DT_MISC_CP;
 			break;
 
-		case MN_B_SUDDENDEATH:
-			longMsg = _("Neither team has prevailed after a certain time and the "
-			          "game has entered Sudden Death. During Sudden Death "
-			          "building is not allowed.");
-			shortMsg = _("Cannot build during Sudden Death");
+		case MN_B_DISABLED:
+			longMsg = _("Building has been disabled on the server for your team.");
+			shortMsg = _("Building has been disabled for your team");
 			type = DT_BUILD;
 			break;
 

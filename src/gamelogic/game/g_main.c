@@ -110,8 +110,20 @@ vmCvar_t           g_stage3IncreasePerPlayer;
 vmCvar_t           g_stageThresholdHalfLife;
 vmCvar_t           g_humanMaxStage;
 vmCvar_t           g_alienMaxStage;
-vmCvar_t           g_humanStage;
-vmCvar_t           g_alienStage;
+
+vmCvar_t           g_humanAllowBuilding;
+vmCvar_t           g_alienAllowBuilding;
+
+vmCvar_t           g_powerCompetitionRange;
+vmCvar_t           g_powerBaseSupply;
+vmCvar_t           g_powerReactorSupply;
+vmCvar_t           g_powerReactorRange;
+vmCvar_t           g_powerRepeaterSupply;
+vmCvar_t           g_powerRepeaterRange;
+vmCvar_t           g_powerLevel1Interference;
+vmCvar_t           g_powerLevel1Range;
+vmCvar_t           g_powerLevel1UpgInterference;
+vmCvar_t           g_powerLevel1UpgRange;
 
 vmCvar_t           g_alienOffCreepRegenHalfLife;
 
@@ -324,10 +336,22 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_stageThresholdHalfLife,      "g_stageThresholdHalfLife",      DEFAULT_STAGE_THRESHOLD_HALF_LIFE,  CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_humanMaxStage,               "g_humanMaxStage",               DEFAULT_HUMAN_MAX_STAGE,            0,                                               0, qfalse, cv_humanMaxStage},
 	{ &g_alienMaxStage,               "g_alienMaxStage",               DEFAULT_ALIEN_MAX_STAGE,            0,                                               0, qfalse, cv_alienMaxStage},
-	{ &g_humanStage,                  "g_humanStage",                  "0",                                0,                                               0, qfalse           },
-	{ &g_alienStage,                  "g_alienStage",                  "0",                                0,                                               0, qfalse           },
 
-	{ &g_alienOffCreepRegenHalfLife,  "g_alienOffCreepRegenHalfLife",  "5",                                CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_humanAllowBuilding,          "g_humanAllowBuilding",          "1",                                0,                                               0, qfalse           },
+	{ &g_alienAllowBuilding,          "g_alienAllowBuilding",          "1",                                0,                                               0, qfalse           },
+
+	{ &g_powerCompetitionRange,       "g_powerCompetitionRange",       "320",                              CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_powerBaseSupply,             "g_powerBaseSupply",             "20",                               CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_powerReactorSupply,          "g_powerReactorSupply",          "40",                               CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_powerReactorRange,           "g_powerReactorRange",           "800",                              CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_powerRepeaterSupply,         "g_powerRepeaterSupply",         "20",                               CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_powerRepeaterRange,          "g_powerRepeaterRange",          "400",                              CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_powerLevel1Interference,     "g_powerLevel1Interference",     "13",                               CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_powerLevel1Range,            "g_powerLevel1Range",            "250",                              CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_powerLevel1UpgInterference,  "g_powerLevel1UpgInterference",  "16",                               CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_powerLevel1UpgRange,         "g_powerLevel1UpgRange",         "300",                              CVAR_ARCHIVE,                                    0, qfalse           },
+
+	{ &g_alienOffCreepRegenHalfLife,  "g_alienOffCreepRegenHalfLife",  "0",                                CVAR_ARCHIVE,                                    0, qfalse           },
 
 	{ &g_teamImbalanceWarnings,       "g_teamImbalanceWarnings",       "30",                               CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_freeFundPeriod,              "g_freeFundPeriod",              DEFAULT_FREEKILL_PERIOD,            CVAR_ARCHIVE,                                    0, qtrue            },
@@ -1769,19 +1793,13 @@ void G_CalculateStages( void )
 		switch ( team )
 		{
 			case TEAM_ALIENS:
-				stage          = g_alienStage.integer;
-				stageModCount  = g_alienStage.modificationCount;
 				maxStage       = g_alienMaxStage.integer;
-				stageCVar      = "g_alienStage";
 				teamName       = "Aliens";
 				CSStage        = CS_ALIEN_STAGE;
 				break;
 
 			case TEAM_HUMANS:
-				stage          = g_humanStage.integer;
-				stageModCount  = g_humanStage.modificationCount;
 				maxStage       = g_humanMaxStage.integer;
-				stageCVar      = "g_humanStage";
 				teamName       = "Humans";
 				CSStage        = CS_HUMAN_STAGE;
 				break;
@@ -1791,6 +1809,7 @@ void G_CalculateStages( void )
 		}
 
 		confidence     = ( int )level.team[ team ].confidence[ CONFIDENCE_SUM ];
+		stage          = level.team[ team ].stage;
 		S2Threshold    = level.team[ team ].stage2Threshold;
 		S3Threshold    = level.team[ team ].stage3Threshold;
 		S2Time         = &level.team[ team ].stage2Time;
@@ -1851,7 +1870,8 @@ void G_CalculateStages( void )
 			continue;
 		}
 
-		trap_Cvar_Set( stageCVar, va( "%d", newStage ) );
+		// store new stage and send it to clients
+		level.team[ team ].stage = newStage;
 		trap_SetConfigstring( CSStage, va( "%d", newStage ) );
 
 		if ( g_minimumStageTime.integer > 0 && g_confidenceHalfLife.integer > 0 )
@@ -2579,10 +2599,10 @@ void G_SendGameStat( team_t team )
 	             level.team[ TEAM_HUMANS ].averageNumClients,
 	             map,
 	             level.matchTime,
-	             g_alienStage.integer,
+	             level.team[ TEAM_ALIENS ].stage,
 	             level.team[ TEAM_ALIENS ].stage2Time - level.startTime,
 	             level.team[ TEAM_ALIENS ].stage3Time - level.startTime,
-	             g_humanStage.integer,
+	             level.team[ TEAM_HUMANS ].stage,
 	             level.team[ TEAM_HUMANS ].stage2Time - level.startTime,
 	             level.team[ TEAM_HUMANS ].stage3Time - level.startTime,
 	             level.numConnectedClients );
