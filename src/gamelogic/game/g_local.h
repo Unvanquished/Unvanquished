@@ -868,6 +868,7 @@ typedef struct
 		int              stage3Time;
 		qboolean         locked;
 		float            confidence[ NUM_CONFIDENCE_TYPES ];
+		stage_t          stage;
 		int              stage2Threshold;
 		int              stage3Threshold;
 	} team[ NUM_TEAMS ];
@@ -1308,8 +1309,6 @@ extern  vmCvar_t g_stage3IncreasePerPlayer;
 extern  vmCvar_t g_stageThresholdHalfLife;
 extern  vmCvar_t g_humanMaxStage;
 extern  vmCvar_t g_alienMaxStage;
-extern  vmCvar_t g_humanStage;
-extern  vmCvar_t g_alienStage;
 
 extern  vmCvar_t g_humanAllowBuilding;
 extern  vmCvar_t g_alienAllowBuilding;

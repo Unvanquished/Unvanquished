@@ -108,8 +108,6 @@ vmCvar_t           g_stage3IncreasePerPlayer;
 vmCvar_t           g_stageThresholdHalfLife;
 vmCvar_t           g_humanMaxStage;
 vmCvar_t           g_alienMaxStage;
-vmCvar_t           g_humanStage;
-vmCvar_t           g_alienStage;
 
 vmCvar_t           g_humanAllowBuilding;
 vmCvar_t           g_alienAllowBuilding;
@@ -291,8 +289,6 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_stageThresholdHalfLife,      "g_stageThresholdHalfLife",      DEFAULT_STAGE_THRESHOLD_HALF_LIFE,  CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_humanMaxStage,               "g_humanMaxStage",               DEFAULT_HUMAN_MAX_STAGE,            0,                                               0, qfalse, cv_humanMaxStage},
 	{ &g_alienMaxStage,               "g_alienMaxStage",               DEFAULT_ALIEN_MAX_STAGE,            0,                                               0, qfalse, cv_alienMaxStage},
-	{ &g_humanStage,                  "g_humanStage",                  "0",                                0,                                               0, qfalse           },
-	{ &g_alienStage,                  "g_alienStage",                  "0",                                0,                                               0, qfalse           },
 
 	{ &g_humanAllowBuilding,          "g_humanAllowBuilding",          "1",                                0,                                               0, qfalse           },
 	{ &g_alienAllowBuilding,          "g_alienAllowBuilding",          "1",                                0,                                               0, qfalse           },
@@ -1674,19 +1670,13 @@ void G_CalculateStages( void )
 		switch ( team )
 		{
 			case TEAM_ALIENS:
-				stage          = g_alienStage.integer;
-				stageModCount  = g_alienStage.modificationCount;
 				maxStage       = g_alienMaxStage.integer;
-				stageCVar      = "g_alienStage";
 				teamName       = "Aliens";
 				CSStage        = CS_ALIEN_STAGE;
 				break;
 
 			case TEAM_HUMANS:
-				stage          = g_humanStage.integer;
-				stageModCount  = g_humanStage.modificationCount;
 				maxStage       = g_humanMaxStage.integer;
-				stageCVar      = "g_humanStage";
 				teamName       = "Humans";
 				CSStage        = CS_HUMAN_STAGE;
 				break;
@@ -1696,6 +1686,7 @@ void G_CalculateStages( void )
 		}
 
 		confidence     = ( int )level.team[ team ].confidence[ CONFIDENCE_SUM ];
+		stage          = level.team[ team ].stage;
 		S2Threshold    = level.team[ team ].stage2Threshold;
 		S3Threshold    = level.team[ team ].stage3Threshold;
 		S2Time         = &level.team[ team ].stage2Time;
@@ -1756,7 +1747,8 @@ void G_CalculateStages( void )
 			continue;
 		}
 
-		trap_Cvar_Set( stageCVar, va( "%d", newStage ) );
+		// store new stage and send it to clients
+		level.team[ team ].stage = newStage;
 		trap_SetConfigstring( CSStage, va( "%d", newStage ) );
 
 		if ( g_minimumStageTime.integer > 0 && g_confidenceHalfLife.integer > 0 )
@@ -2459,10 +2451,10 @@ void G_SendGameStat( team_t team )
 	             level.team[ TEAM_HUMANS ].averageNumClients,
 	             map,
 	             level.matchTime,
-	             g_alienStage.integer,
+	             level.team[ TEAM_ALIENS ].stage,
 	             level.team[ TEAM_ALIENS ].stage2Time - level.startTime,
 	             level.team[ TEAM_ALIENS ].stage3Time - level.startTime,
-	             g_humanStage.integer,
+	             level.team[ TEAM_HUMANS ].stage,
 	             level.team[ TEAM_HUMANS ].stage2Time - level.startTime,
 	             level.team[ TEAM_HUMANS ].stage3Time - level.startTime,
 	             level.numConnectedClients );
