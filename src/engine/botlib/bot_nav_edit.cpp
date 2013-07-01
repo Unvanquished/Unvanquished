@@ -40,6 +40,9 @@ extern "C" {
 #include "bot_navdraw.h"
 #include "nav.h"
 
+#define DEFAULT_CONNECTION_SIZE 50
+static int connectionSize = DEFAULT_CONNECTION_SIZE;
+
 bool GetPointPointedTo( NavData_t *nav, rVec &p )
 {
 	qVec forward;
@@ -65,7 +68,7 @@ bool GetPointPointedTo( NavData_t *nav, rVec &p )
 	return true;
 }
 
-struct
+static struct
 {
 	bool enabled;
 	bool offBegin;
@@ -81,13 +84,13 @@ void BotDrawNavEdit( DebugDrawQuake *dd )
 	{
 		unsigned int col = duRGBA( 255, 255, 255, 220 );
 		dd->begin( DU_DRAW_LINES, 2.0f );
-		duAppendCircle( dd, p[ 0 ], p[ 1 ], p[ 2 ], 50, col );
+		duAppendCircle( dd, p[ 0 ], p[ 1 ], p[ 2 ], connectionSize, col );
 
 		if ( cmd.offBegin )
 		{
 			duAppendArc( dd, cmd.pc.start[ 0 ], cmd.pc.start[ 1 ], cmd.pc.start[ 2 ], p[ 0 ], p[ 1 ], p[ 2 ], 0.25f,
 						0.6f, 0.6f, col );
-			duAppendCircle( dd, cmd.pc.start[ 0 ], cmd.pc.start[ 1 ], cmd.pc.start[ 2 ], 50, col );
+			duAppendCircle( dd, cmd.pc.start[ 0 ], cmd.pc.start[ 1 ], cmd.pc.start[ 2 ], connectionSize, col );
 		}
 		dd->end();
 	}
@@ -269,7 +272,7 @@ void Cmd_AddConnection( void )
 			}
 			else
 			{
-				cmd.pc.radius = 50;
+				cmd.pc.radius = connectionSize;
 			}
 			cmd.offBegin = true;
 		}
@@ -316,6 +319,40 @@ void Cmd_AddConnection( void )
 	}
 }
 
+static void adjustConnectionSize( int dir )
+{
+	int argc = Cmd_Argc();
+	int adjust = 5;
+	int newConnectionSize;
+
+	if ( argc > 1 )
+	{
+		adjust = atoi( Cmd_Argv( 1 ) );
+		adjust = MIN( adjust, 20 );
+		adjust = MAX( adjust, 1 );
+	}
+
+	newConnectionSize = connectionSize + dir * adjust;
+	newConnectionSize = MIN( newConnectionSize, 100 );
+	newConnectionSize = MAX( newConnectionSize, 20 );
+
+	if ( newConnectionSize != connectionSize )
+	{
+		connectionSize = newConnectionSize;
+		Com_Printf( "Default connection size = %d\n", connectionSize );
+	}
+}
+
+void Cmd_ConnectionSizeUp( void )
+{
+	return adjustConnectionSize( 1 );
+}
+
+void Cmd_ConnectionSizeDown( void )
+{
+	return adjustConnectionSize( -1 );
+}
+
 void NavEditInit( void )
 {
 #ifndef DEDICATED
@@ -323,6 +360,8 @@ void NavEditInit( void )
 	Cvar_Set( "r_debugSurface", "0" );
 	Cmd_AddCommand( "navedit", Cmd_NavEdit );
 	Cmd_AddCommand( "addcon", Cmd_AddConnection );
+	Cmd_AddCommand( "conSizeUp", Cmd_ConnectionSizeUp );
+	Cmd_AddCommand( "conSizeDown", Cmd_ConnectionSizeDown );
 #endif
 }
 
@@ -331,5 +370,7 @@ void NavEditShutdown( void )
 #ifndef DEDICATED
 	Cmd_RemoveCommand( "navedit" );
 	Cmd_RemoveCommand( "addcon" );
+	Cmd_RemoveCommand( "conSizeUp" );
+	Cmd_RemoveCommand( "conSizeDown" );
 #endif
 }

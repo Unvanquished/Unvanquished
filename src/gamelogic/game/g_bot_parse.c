@@ -264,12 +264,12 @@ static AIValue_t botCanEvolveTo( gentity_t *self, const AIValue_t *params )
 
 static AIValue_t humanStage( gentity_t *self, const AIValue_t *params )
 {
-	return AIBoxInt( g_humanStage.integer );
+	return AIBoxInt( level.team[ TEAM_HUMANS ].stage );
 }
 
 static AIValue_t alienStage( gentity_t *self, const AIValue_t *params )
 {
-	return AIBoxInt( g_alienStage.integer );
+	return AIBoxInt( level.team[ TEAM_ALIENS ].stage );
 }
 
 static AIValue_t randomChance( gentity_t *self, const AIValue_t *params )

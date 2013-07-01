@@ -266,7 +266,7 @@ float BotGetEnemyPriority( gentity_t *self, gentity_t *ent )
 
 qboolean BotCanEvolveToClass( gentity_t *self, class_t newClass )
 {
-	return ( BG_ClassCanEvolveFromTo( ( class_t )self->client->ps.stats[STAT_CLASS], newClass, self->client->ps.persistant[PERS_CREDIT], g_alienStage.integer ) >= 0 );
+	return ( BG_ClassCanEvolveFromTo( ( class_t )self->client->ps.stats[STAT_CLASS], newClass, self->client->ps.persistant[PERS_CREDIT], level.team[ TEAM_ALIENS ].stage ) >= 0 );
 }
 
 qboolean WeaponIsEmpty( weapon_t weapon, playerState_t ps )
@@ -343,18 +343,18 @@ void BotGetDesiredBuy( gentity_t *self, weapon_t *weapon, upgrade_t *upgrades, i
 	int usableCapital = credits + equipmentPrice;
 
 	//decide what upgrade(s) to buy
-	if ( g_humanStage.integer >= 2 && usableCapital >= ( BG_Weapon( WP_PAIN_SAW )->price + BG_Upgrade( UP_BATTLESUIT )->price ) )
+	if ( level.team[ TEAM_HUMANS ].stage >= S3 && usableCapital >= ( BG_Weapon( WP_PAIN_SAW )->price + BG_Upgrade( UP_BATTLESUIT )->price ) )
 	{
 		upgrades[0] = UP_BATTLESUIT;
 		*numUpgrades = 1;
 	}
-	else if ( g_humanStage.integer >= 1 && usableCapital >= ( BG_Weapon( WP_SHOTGUN )->price + BG_Upgrade( UP_LIGHTARMOUR )->price + BG_Upgrade( UP_HELMET )->price ) )
+	else if ( level.team[ TEAM_HUMANS ].stage >= S2 && usableCapital >= ( BG_Weapon( WP_SHOTGUN )->price + BG_Upgrade( UP_LIGHTARMOUR )->price + BG_Upgrade( UP_HELMET )->price ) )
 	{
 		upgrades[0] = UP_LIGHTARMOUR;
 		upgrades[1] = UP_HELMET;
 		*numUpgrades = 2;
 	}
-	else if ( g_humanStage.integer >= 0 && usableCapital >= ( BG_Weapon( WP_PAIN_SAW )->price + BG_Upgrade( UP_LIGHTARMOUR )->price ) )
+	else if ( level.team[ TEAM_HUMANS ].stage >= S1 && usableCapital >= ( BG_Weapon( WP_PAIN_SAW )->price + BG_Upgrade( UP_LIGHTARMOUR )->price ) )
 	{
 		upgrades[0] = UP_LIGHTARMOUR;
 		*numUpgrades = 1;
@@ -370,39 +370,39 @@ void BotGetDesiredBuy( gentity_t *self, weapon_t *weapon, upgrade_t *upgrades, i
 	}
 
 	//now decide what weapon to buy
-	if ( g_humanStage.integer >= 2  && usableCapital >= BG_Weapon( WP_LUCIFER_CANNON )->price && g_bot_lcannon.integer )
+	if ( level.team[ TEAM_HUMANS ].stage >= S3  && usableCapital >= BG_Weapon( WP_LUCIFER_CANNON )->price && g_bot_lcannon.integer )
 	{
 		*weapon = WP_LUCIFER_CANNON;;
 	}
-	else if ( g_humanStage.integer >= 2 && usableCapital >= BG_Weapon( WP_CHAINGUN )->price && upgrades[0] == UP_BATTLESUIT && g_bot_chaingun.integer )
+	else if ( level.team[ TEAM_HUMANS ].stage >= S3 && usableCapital >= BG_Weapon( WP_CHAINGUN )->price && upgrades[0] == UP_BATTLESUIT && g_bot_chaingun.integer )
 	{
 		*weapon = WP_CHAINGUN;
 	}
-	else if ( g_humanStage.integer >= 1 && g_alienStage.integer < 2 && usableCapital >= BG_Weapon( WP_FLAMER )->price && g_bot_flamer.integer )
+	else if ( level.team[ TEAM_HUMANS ].stage >= S2 && level.team[ TEAM_ALIENS ].stage < S3 && usableCapital >= BG_Weapon( WP_FLAMER )->price && g_bot_flamer.integer )
 	{
 		*weapon = WP_FLAMER;
 	}
-	else if ( g_humanStage.integer >= 1 && usableCapital >= BG_Weapon( WP_PULSE_RIFLE )->price && g_bot_prifle.integer )
+	else if ( level.team[ TEAM_HUMANS ].stage >= S2 && usableCapital >= BG_Weapon( WP_PULSE_RIFLE )->price && g_bot_prifle.integer )
 	{
 		*weapon = WP_PULSE_RIFLE;
 	}
-	else if ( g_humanStage.integer >= 0 && usableCapital >= BG_Weapon( WP_CHAINGUN )->price && g_bot_chaingun.integer )
+	else if ( level.team[ TEAM_HUMANS ].stage >= S1 && usableCapital >= BG_Weapon( WP_CHAINGUN )->price && g_bot_chaingun.integer )
 	{
 		*weapon = WP_CHAINGUN;;
 	}
-	else if ( g_humanStage.integer >= 0 && usableCapital >= BG_Weapon( WP_MASS_DRIVER )->price && g_bot_mdriver.integer )
+	else if ( level.team[ TEAM_HUMANS ].stage >= S1 && usableCapital >= BG_Weapon( WP_MASS_DRIVER )->price && g_bot_mdriver.integer )
 	{
 		*weapon = WP_MASS_DRIVER;
 	}
-	else if ( g_humanStage.integer >= 0 && usableCapital >= BG_Weapon( WP_LAS_GUN )->price && g_bot_lasgun.integer )
+	else if ( level.team[ TEAM_HUMANS ].stage >= S1 && usableCapital >= BG_Weapon( WP_LAS_GUN )->price && g_bot_lasgun.integer )
 	{
 		*weapon = WP_LAS_GUN;
 	}
-	else if ( g_humanStage.integer >= 0 && usableCapital >= BG_Weapon( WP_SHOTGUN )->price && g_bot_shotgun.integer )
+	else if ( level.team[ TEAM_HUMANS ].stage >= S1 && usableCapital >= BG_Weapon( WP_SHOTGUN )->price && g_bot_shotgun.integer )
 	{
 		*weapon = WP_SHOTGUN;
 	}
-	else if ( g_humanStage.integer >= 0 && usableCapital >= BG_Weapon( WP_PAIN_SAW )->price && g_bot_painsaw.integer )
+	else if ( level.team[ TEAM_HUMANS ].stage >= S1 && usableCapital >= BG_Weapon( WP_PAIN_SAW )->price && g_bot_painsaw.integer )
 	{
 		*weapon = WP_PAIN_SAW;
 	}
@@ -414,7 +414,7 @@ void BotGetDesiredBuy( gentity_t *self, weapon_t *weapon, upgrade_t *upgrades, i
 	usableCapital -= BG_Weapon( *weapon )->price;
 
 	//finally, see if we can buy a battpack
-	if ( BG_Weapon( *weapon )->usesEnergy && usableCapital >= BATTPACK_PRICE && g_humanStage.integer >= 1 && upgrades[0] != UP_BATTLESUIT )
+	if ( BG_Weapon( *weapon )->usesEnergy && usableCapital >= BATTPACK_PRICE && level.team[ TEAM_HUMANS ].stage >= S2 && upgrades[0] != UP_BATTLESUIT )
 	{
 		upgrades[( *numUpgrades )++] = UP_BATTPACK;
 		usableCapital -= BATTPACK_PRICE;
@@ -1781,13 +1781,13 @@ qboolean BotEvolveToClass( gentity_t *ent, class_t newClass )
 			return qfalse;
 		}
 
-		numLevels = BG_ClassCanEvolveFromTo( currentClass, newClass, ( short )ent->client->ps.persistant[ PERS_CREDIT ], g_alienStage.integer );
+		numLevels = BG_ClassCanEvolveFromTo( currentClass, newClass, ( short )ent->client->ps.persistant[ PERS_CREDIT ], level.team[ TEAM_ALIENS ].stage );
 
 		if ( G_RoomForClassChange( ent, newClass, infestOrigin ) )
 		{
 			//...check we can evolve to that class
 			if ( numLevels >= 0 &&
-				BG_ClassAllowedInStage( newClass, ( stage_t )g_alienStage.integer ) &&
+				BG_ClassAllowedInStage( newClass, level.team[ TEAM_ALIENS ].stage ) &&
 				BG_ClassIsAllowed( newClass ) )
 			{
 
@@ -1853,7 +1853,7 @@ void BotBuyWeapon( gentity_t *self, weapon_t weapon )
 		}
 
 		//are we /allowed/ to buy this?
-		if ( !BG_WeaponAllowedInStage( weapon, ( stage_t )g_humanStage.integer ) || !BG_WeaponIsAllowed( weapon ) )
+		if ( !BG_WeaponAllowedInStage( weapon, level.team[ TEAM_HUMANS ].stage ) || !BG_WeaponIsAllowed( weapon ) )
 		{
 			return;
 		}
@@ -1955,7 +1955,7 @@ void BotBuyUpgrade( gentity_t *self, upgrade_t upgrade )
 		}
 
 		//are we /allowed/ to buy this?
-		if ( !BG_UpgradeAllowedInStage( upgrade, ( stage_t )g_humanStage.integer ) || !BG_UpgradeIsAllowed( upgrade ) )
+		if ( !BG_UpgradeAllowedInStage( upgrade, level.team[ TEAM_HUMANS ].stage ) || !BG_UpgradeIsAllowed( upgrade ) )
 		{
 			return;
 		}

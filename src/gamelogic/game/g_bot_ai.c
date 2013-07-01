@@ -907,7 +907,7 @@ AINodeStatus_t BotActionEvolve ( gentity_t *self, AIGenericNode_t *node )
 			status = STATUS_SUCCESS;
 		}
 	}
-	else if ( BotCanEvolveToClass( self, PCL_ALIEN_LEVEL3 ) && ( !BG_ClassAllowedInStage( PCL_ALIEN_LEVEL3_UPG, ( stage_t ) g_alienStage.integer ) || !g_bot_level2upg.integer || !g_bot_level3upg.integer ) && g_bot_level3.integer )
+	else if ( BotCanEvolveToClass( self, PCL_ALIEN_LEVEL3 ) && ( !BG_ClassAllowedInStage( PCL_ALIEN_LEVEL3_UPG, level.team[ TEAM_ALIENS ].stage ) || !g_bot_level2upg.integer || !g_bot_level3upg.integer ) && g_bot_level3.integer )
 	{
 		if ( BotEvolveToClass( self, PCL_ALIEN_LEVEL3 ) )
 		{
@@ -921,21 +921,21 @@ AINodeStatus_t BotActionEvolve ( gentity_t *self, AIGenericNode_t *node )
 			status = STATUS_SUCCESS;
 		}
 	}
-	else if ( BotCanEvolveToClass( self, PCL_ALIEN_LEVEL2 ) && ( g_humanStage.integer == 0 || !g_bot_level2upg.integer )  && g_bot_level2.integer )
+	else if ( BotCanEvolveToClass( self, PCL_ALIEN_LEVEL2 ) && ( level.team[ TEAM_HUMANS ].stage == S1 || !g_bot_level2upg.integer )  && g_bot_level2.integer )
 	{
 		if ( BotEvolveToClass( self, PCL_ALIEN_LEVEL2 ) )
 		{
 			status = STATUS_SUCCESS;
 		}
 	}
-	else if ( BotCanEvolveToClass( self, PCL_ALIEN_LEVEL1_UPG ) && g_humanStage.integer == 0 && g_bot_level1upg.integer )
+	else if ( BotCanEvolveToClass( self, PCL_ALIEN_LEVEL1_UPG ) && level.team[ TEAM_HUMANS ].stage == S1 && g_bot_level1upg.integer )
 	{
 		if ( BotEvolveToClass( self, PCL_ALIEN_LEVEL1_UPG ) )
 		{
 			status = STATUS_SUCCESS;
 		}
 	}
-	else if ( BotCanEvolveToClass( self, PCL_ALIEN_LEVEL1 ) && g_humanStage.integer == 0 && g_bot_level1.integer )
+	else if ( BotCanEvolveToClass( self, PCL_ALIEN_LEVEL1 ) && level.team[ TEAM_HUMANS ].stage == S1 && g_bot_level1.integer )
 	{
 		if ( BotEvolveToClass( self, PCL_ALIEN_LEVEL1 ) )
 		{
