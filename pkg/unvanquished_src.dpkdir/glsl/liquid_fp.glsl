@@ -105,11 +105,11 @@ void	main()
 	// compute incident ray
 	vec3 I = normalize(u_ViewOrigin - var_Position);
 
-	mat3 tangentToWorldMatrix;
+	mat3 tangentToWorldMatrix = mat3(var_Tangent.xyz, var_Binormal.xyz, var_Normal.xyz);
 	if(gl_FrontFacing)
-		tangentToWorldMatrix = mat3(-var_Tangent.xyz, -var_Binormal.xyz, -var_Normal.xyz);
-	else
-		tangentToWorldMatrix = mat3(var_Tangent.xyz, var_Binormal.xyz, var_Normal.xyz);
+	{
+		tangentToWorldMatrix = -tangentToWorldMatrix;
+	}
 
 	mat3 worldToTangentMatrix;
 #if defined(GLHW_ATI) || defined(GLHW_ATI_DX10) || defined(GLDRV_MESA)
