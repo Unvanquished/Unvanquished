@@ -22,6 +22,15 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 /* deferredShadowing_proj_fp.glsl */
 
+/* swizzle one- and two-component textures to RG */
+#ifdef TEXTURE_RG
+#  define SWIZ1 r
+#  define SWIZ2 rg
+#else
+#  define SWIZ1 a
+#  define SWIZ2 ra
+#endif
+
 uniform sampler2D	u_DepthMap;
 uniform sampler2D	u_AttenuationMapXY;
 uniform sampler2D	u_AttenuationMapZ;
@@ -68,7 +77,7 @@ void	main()
 
 		// no filter
 		vec4 texShadow = u_ShadowMatrix[0] * vec4(P.xyz, 1.0);
-		vec4 shadowMoments = texture2DProj(u_ShadowMap, texShadow.xyw);
+		vec2 shadowMoments = texture2DProj(u_ShadowMap, texShadow.xyw).SWIZ2;
 		//vec4 shadowMoments = texture2DProj(u_ShadowMap, SP.xyw);
 
 		#if defined(VSM_CLAMP)
@@ -77,7 +86,7 @@ void	main()
 		#endif
 
 		float shadowDistance = shadowMoments.r;
-		float shadowDistanceSquared = shadowMoments.a;
+		float shadowDistanceSquared = shadowMoments.g;
 
 		// standard shadow map comparison
 		shadow = vertexDistance <= shadowDistance ? 1.0 : 0.0;
@@ -123,12 +132,12 @@ void	main()
 
 		// no filter
 		vec4 texShadow = u_ShadowMatrix[0] * vec4(P.xyz, 1.0);
-		vec4 shadowMoments = texture2DProj(u_ShadowMap, texShadow.xyw);
+		float shadowMoments = texture2DProj(u_ShadowMap, texShadow.xyw).SWIZ1;
 
 		const float	SHADOW_BIAS = 0.001;
 		float vertexDistance = (length(I) / u_LightRadius) * r_ShadowMapDepthScale; // - SHADOW_BIAS;
 
-		float shadowDistance = shadowMoments.a;
+		float shadowDistance = shadowMoments;
 
 		// exponential shadow mapping
 		//shadow = vertexDistance <= shadowDistance ? 1.0 : 0.0;
