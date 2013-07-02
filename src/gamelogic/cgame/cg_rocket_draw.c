@@ -913,7 +913,7 @@ static void CG_Rocket_DrawLagometer( void )
 		ping = va( "%d", cg.ping );
 	}
 
-	trap_Rocket_SetInnerRML( "", "", va( "%s", ping ), qfalse );
+	trap_Rocket_SetInnerRML( "", "", va( "<span class='ping'>%s</span>", ping ), qfalse );
 	CG_Rocket_DrawDisconnect();
 }
 
