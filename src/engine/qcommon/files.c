@@ -1270,9 +1270,6 @@ separate file or a ZIP file.
 */
 extern qboolean com_fullyInitialized;
 
-// see FS_FOpenFileRead_Filtered
-static int      fs_filter_flag = 0;
-
 static qboolean FS_CheckUIImageFile( const char *filename )
 {
 	int l = strlen( filename );
@@ -1291,7 +1288,7 @@ static qboolean FS_CheckUIImageFile( const char *filename )
 }
 
 
-int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueFILE )
+static int FS_FOpenFileRead_Internal( const char *filename, fileHandle_t *file, qboolean uniqueFILE, qboolean allowImpure, qboolean fs_filter_flag )
 {
 	searchpath_t *search;
 	char         *netpath;
@@ -1532,7 +1529,7 @@ int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueF
 			// the only files we will allow to come from the directory are .cfg, .menu, etc. files
 			l = strlen( filename );
 
-			if ( fs_numServerPaks )
+			if ( fs_numServerPaks && !allowImpure )
 			{
 				if ( Q_stricmp( filename + l - 4, ".cfg" )  // for config files
 				     && Q_stricmp( filename + l - 4, ".ttf" )
@@ -1598,15 +1595,19 @@ int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueF
 	return -1;
 }
 
+int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueFILE )
+{
+        return FS_FOpenFileRead_Internal( filename, file, uniqueFILE, qfalse, qfalse );
+}
+
+int FS_FOpenFileRead_Impure( const char *filename, fileHandle_t *file, qboolean uniqueFILE )
+{
+        return FS_FOpenFileRead_Internal( filename, file, uniqueFILE, qtrue, qfalse );
+}
+
 int FS_FOpenFileRead_Filtered( const char *qpath, fileHandle_t *file, qboolean uniqueFILE, int filter_flag )
 {
-	int ret;
-
-	fs_filter_flag = filter_flag;
-	ret = FS_FOpenFileRead( qpath, file, uniqueFILE );
-	fs_filter_flag = 0;
-
-	return ret;
+	return FS_FOpenFileRead_Internal( qpath, file, uniqueFILE, qfalse, filter_flag );
 }
 
 /*
@@ -1812,21 +1813,6 @@ FS_Read
 Properly handles partial reads
 =================
 */
-int FS_Read2( void *buffer, int len, fileHandle_t f )
-{
-	if ( !fs_searchpaths )
-	{
-		Com_Error( ERR_FATAL, "Filesystem call made without initialization" );
-	}
-
-	if ( !f )
-	{
-		return 0;
-	}
-
-	return FS_Read( buffer, len, f );
-}
-
 int FS_Read( void *buffer, int len, fileHandle_t f )
 {
 	int  block, remaining;
@@ -3098,48 +3084,67 @@ void FS_ConvertPath( char *s )
 FS_PathCmp
 
 Ignore case and separator char distinctions
+Sort ~ before everything else
+Handle digits specially
+
+Implementation is based on dpkg's version comparison code (verrevcmp() and order())
+http://anonscm.debian.org/gitweb/?p=dpkg/dpkg.git;a=blob;f=lib/dpkg/version.c;hb=74946af470550a3295e00cf57eca1747215b9311
 ===========
 */
-int FS_PathCmp( const char *s1, const char *s2 )
+static int FS_PathCmp_Order( int c )
 {
-	int c1, c2;
+	if      ( isdigit( c ) ) { return 0; }
+	else if ( islower( c ) ) { return toupper( c ); }
+	else if ( isalpha( c ) ) { return c; }
+	else if ( c == '~' )     { return -1; }
+#ifdef _WIN32
+	else if ( c == '\\' )    { return '/'; }
+#endif
+	else if ( c == '/'  )    { return '/'; }
+	else if ( c )            { return c + 256; }
 
-	do
+	return 0;
+}
+
+int FS_PathCmp( const char *a, const char *b )
+{
+	while ( *a || *b )
 	{
-		c1 = *s1++;
-		c2 = *s2++;
+		int first_diff = 0;
 
-		if ( c1 >= 'a' && c1 <= 'z' )
+		while ( ( *a && !isdigit( *a ) ) || ( *b && !isdigit( *b ) ) )
 		{
-			c1 -= ( 'a' - 'A' );
+			int ac = FS_PathCmp_Order( *a );
+			int bc = FS_PathCmp_Order( *b );
+
+			if ( ac != bc )
+			{
+				return ac - bc;
+			}
+
+			a++;
+			b++;
 		}
 
-		if ( c2 >= 'a' && c2 <= 'z' )
+// don't ignore leading zeroes?
+//		while ( *a == '0' ) { a++; }
+//		while ( *b == '0' ) { b++; }
+
+		while ( isdigit( *a ) && isdigit( *b ) )
 		{
-			c2 -= ( 'a' - 'A' );
+			if ( !first_diff )
+			{
+				first_diff = *a - *b;
+			}
+
+			a++;
+			b++;
 		}
 
-		if ( c1 == '\\' || c1 == ':' )
-		{
-			c1 = '/';
-		}
-
-		if ( c2 == '\\' || c2 == ':' )
-		{
-			c2 = '/';
-		}
-
-		if ( c1 < c2 )
-		{
-			return -1; // strings not equal
-		}
-
-		if ( c1 > c2 )
-		{
-			return 1;
-		}
+		if ( isdigit( *a ) ) { return  1; }
+		if ( isdigit( *b ) ) { return -1; }
+		if ( first_diff )    { return first_diff; }
 	}
-	while ( c1 );
 
 	return 0; // strings are equal
 }

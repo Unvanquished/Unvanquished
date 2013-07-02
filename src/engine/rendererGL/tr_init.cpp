@@ -104,6 +104,7 @@ extern "C" {
 	cvar_t      *r_ext_vertex_array_object;
 	cvar_t      *r_ext_half_float_pixel;
 	cvar_t      *r_ext_texture_float;
+	cvar_t      *r_ext_texture_rg;
 	cvar_t      *r_ext_stencil_wrap;
 	cvar_t      *r_ext_texture_filter_anisotropic;
 	cvar_t      *r_ext_stencil_two_side;
@@ -1371,6 +1372,7 @@ extern "C" {
 		r_ext_vertex_array_object = ri.Cvar_Get( "r_ext_vertex_array_object", "1", CVAR_CHEAT | CVAR_LATCH );
 		r_ext_half_float_pixel = ri.Cvar_Get( "r_ext_half_float_pixel", "1", CVAR_CHEAT | CVAR_LATCH );
 		r_ext_texture_float = ri.Cvar_Get( "r_ext_texture_float", "1", CVAR_CHEAT | CVAR_LATCH );
+		r_ext_texture_rg = ri.Cvar_Get( "r_ext_texture_rg", "1", CVAR_CHEAT | CVAR_LATCH );
 		r_ext_stencil_wrap = ri.Cvar_Get( "r_ext_stencil_wrap", "1", CVAR_CHEAT | CVAR_LATCH );
 		r_ext_texture_filter_anisotropic = ri.Cvar_Get( "r_ext_texture_filter_anisotropic", "4", CVAR_ARCHIVE | CVAR_LATCH );
 		r_ext_stencil_two_side = ri.Cvar_Get( "r_ext_stencil_two_side", "1", CVAR_CHEAT | CVAR_LATCH );
@@ -1393,7 +1395,11 @@ extern "C" {
 		r_stencilbits = ri.Cvar_Get( "r_stencilbits", "8", CVAR_ARCHIVE | CVAR_LATCH );
 		r_depthbits = ri.Cvar_Get( "r_depthbits", "0", CVAR_ARCHIVE | CVAR_LATCH );
 		r_ext_multisample = ri.Cvar_Get( "r_ext_multisample", "0", CVAR_ARCHIVE | CVAR_LATCH );
-		r_ignorehwgamma = ri.Cvar_Get( "r_ignorehwgamma", "1", CVAR_ARCHIVE | CVAR_LATCH );
+#ifdef WIN32
+		r_ignorehwgamma = ri.Cvar_Get( "r_ignorehwgamma", "0", CVAR_ARCHIVE | CVAR_LATCH );  // use hw gamma on Windows by default
+#else
+		r_ignorehwgamma = ri.Cvar_Get( "r_ignorehwgamma", "1", CVAR_ARCHIVE | CVAR_LATCH );  // use software gamma by default
+#endif
 		r_mode = ri.Cvar_Get( "r_mode", "6", CVAR_ARCHIVE | CVAR_LATCH | CVAR_SHADER );
 		r_fullscreen = ri.Cvar_Get( "r_fullscreen", "0", CVAR_ARCHIVE | CVAR_LATCH );
 		r_customwidth = ri.Cvar_Get( "r_customwidth", "1600", CVAR_ARCHIVE | CVAR_LATCH );
@@ -1401,7 +1407,7 @@ extern "C" {
 		r_customaspect = ri.Cvar_Get( "r_customaspect", "1", CVAR_ARCHIVE | CVAR_LATCH );
 		r_simpleMipMaps = ri.Cvar_Get( "r_simpleMipMaps", "0", CVAR_ARCHIVE | CVAR_LATCH );
 		r_subdivisions = ri.Cvar_Get( "r_subdivisions", "4", CVAR_ARCHIVE | CVAR_LATCH );
-		r_deferredShading = ri.Cvar_Get( "r_deferredShading", "0", CVAR_ARCHIVE | CVAR_LATCH | CVAR_SHADER );
+		r_deferredShading = ri.Cvar_Get( "r_deferredShading", "0", CVAR_ARCHIVE | CVAR_LATCH | CVAR_SHADER | CVAR_CHEAT );
 		r_parallaxMapping = ri.Cvar_Get( "r_parallaxMapping", "0", CVAR_ARCHIVE );
 		r_dynamicLightCastShadows = ri.Cvar_Get( "r_dynamicLightCastShadows", "1", CVAR_ARCHIVE );
 		r_precomputedLighting = ri.Cvar_Get( "r_precomputedLighting", "1", CVAR_ARCHIVE | CVAR_SHADER );

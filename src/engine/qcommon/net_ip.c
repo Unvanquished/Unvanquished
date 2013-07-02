@@ -103,6 +103,11 @@ typedef int SOCKET;
 
 static qboolean            usingSocks = qfalse;
 static int                 networkingEnabled = 0;
+#ifndef DEDICATED
+static qboolean            serverMode = qfalse;
+#else
+#define serverMode (qtrue)
+#endif
 
 static cvar_t              *net_enabled;
 
@@ -1039,7 +1044,7 @@ void Sys_ShowIP( void )
 NET_IPSocket
 ====================
 */
-SOCKET NET_IPSocket( char *net_interface, int port, int *err )
+SOCKET NET_IPSocket( const char *net_interface, int port, struct sockaddr_in *bindto, int *err )
 {
 	SOCKET             newsocket;
 	struct sockaddr_in address;
@@ -1049,14 +1054,7 @@ SOCKET NET_IPSocket( char *net_interface, int port, int *err )
 
 	*err = 0;
 
-	if ( net_interface )
-	{
-		Com_Printf(_( "Opening IP socket: %s:%i\n"), net_interface, port );
-	}
-	else
-	{
-		Com_Printf(_( "Opening IP socket: 0.0.0.0:%i\n"), port );
-	}
+	Com_Printf(_( "Opening IP socket: %s:%s\n"), net_interface ? net_interface : "0.0.0.0", port ? va( "%i", port ) : "*" );
 
 	if ( ( newsocket = socket( PF_INET, SOCK_DGRAM, IPPROTO_UDP ) ) == INVALID_SOCKET )
 	{
@@ -1094,14 +1092,7 @@ SOCKET NET_IPSocket( char *net_interface, int port, int *err )
 		}
 	}
 
-	if ( port == PORT_ANY )
-	{
-		address.sin_port = 0;
-	}
-	else
-	{
-		address.sin_port = htons( ( short ) port );
-	}
+	address.sin_port = htons( ( short ) port );
 
 	if ( bind( newsocket, ( void * ) &address, sizeof( address ) ) == SOCKET_ERROR )
 	{
@@ -1109,6 +1100,23 @@ SOCKET NET_IPSocket( char *net_interface, int port, int *err )
 		*err = socketError;
 		closesocket( newsocket );
 		return INVALID_SOCKET;
+	}
+
+	if ( bindto )
+	{
+		// random port? find what was chosen
+		if ( address.sin_port == 0 )
+		{
+			struct sockaddr_in addr; // enough space
+			socklen_t          addrlen = sizeof( addr );
+
+			if ( !getsockname( newsocket, (struct sockaddr *) &addr, &addrlen ) && addrlen )
+			{
+				address.sin_port = addr.sin_port;
+			}
+		}
+
+		*bindto = address;
 	}
 
 	return newsocket;
@@ -1119,31 +1127,18 @@ SOCKET NET_IPSocket( char *net_interface, int port, int *err )
 NET_IP6Socket
 ====================
 */
-SOCKET NET_IP6Socket( char *net_interface, int port, struct sockaddr_in6 *bindto, int *err )
+SOCKET NET_IP6Socket( const char *net_interface, int port, struct sockaddr_in6 *bindto, int *err )
 {
 	SOCKET              newsocket;
 	struct sockaddr_in6 address;
 
 	u_long              _true = 1;
+	qboolean            brackets = net_interface && Q_CountChar( net_interface, ':' );
 
 	*err = 0;
 
-	if ( net_interface )
-	{
-		// Print the name in brackets if there is a colon:
-		if ( Q_CountChar( net_interface, ':' ) )
-		{
-			Com_Printf(_( "Opening IP6 socket: [%s]:%i\n"), net_interface, port );
-		}
-		else
-		{
-			Com_Printf(_( "Opening IP6 socket: %s:%i\n"), net_interface, port );
-		}
-	}
-	else
-	{
-		Com_Printf(_( "Opening IP6 socket: [::]:%i\n"), port );
-	}
+	// Print the name in brackets if there is a colon:
+	Com_Printf(_( "Opening IP6 socket: %s%s%s:%s\n"), brackets ? "[" : "", net_interface ? net_interface : "[::]", brackets ? "]" : "", port ? va( "%i", port ) : "*" );
 
 	if ( ( newsocket = socket( PF_INET6, SOCK_DGRAM, IPPROTO_UDP ) ) == INVALID_SOCKET )
 	{
@@ -1188,14 +1183,7 @@ SOCKET NET_IP6Socket( char *net_interface, int port, struct sockaddr_in6 *bindto
 		}
 	}
 
-	if ( port == PORT_ANY )
-	{
-		address.sin6_port = 0;
-	}
-	else
-	{
-		address.sin6_port = htons( ( short ) port );
-	}
+	address.sin6_port = htons( ( short ) port );
 
 	if ( bind( newsocket, ( void * ) &address, sizeof( address ) ) == SOCKET_ERROR )
 	{
@@ -1207,6 +1195,17 @@ SOCKET NET_IP6Socket( char *net_interface, int port, struct sockaddr_in6 *bindto
 
 	if ( bindto )
 	{
+		// random port? find what was chosen
+		if ( address.sin6_port == 0 )
+		{
+			struct sockaddr_in6 addr; // enough space
+			socklen_t           addrlen = sizeof( addr );
+
+			if ( !getsockname( newsocket, (struct sockaddr *) &addr, &addrlen ) && addrlen )
+			{
+				address.sin6_port = addr.sin6_port;
+			}
+		}
 		*bindto = address;
 	}
 
@@ -1680,20 +1679,38 @@ static void NET_GetLocalAddress( void )
 
 #endif
 
+#define MAX_TRY_PORTS 10
+
+static int NET_EnsureValidPortNo( int port )
+{
+	if ( port == PORT_ANY )
+	{
+		return PORT_ANY;
+	}
+
+	port &= 0xFFFF;
+	return ( port < 1024 ) ? 1024 : port; // the usual 1024 reserved ports
+}
+
 /*
 ====================
 NET_OpenIP
 ====================
 */
-void NET_OpenIP( void )
+static void NET_OpenIP( void )
 {
 	int i;
 	int err;
-	int port;
-	int port6;
+	int port = PORT_ANY;
+	int port6 = PORT_ANY;
 
-	port = net_port->integer;
-	port6 = net_port6->integer;
+	struct sockaddr_in boundto4;
+
+	if ( serverMode )
+	{
+		port = NET_EnsureValidPortNo( net_port->integer );
+		port6 = NET_EnsureValidPortNo( net_port6->integer );
+	}
 
 	NET_GetLocalAddress();
 
@@ -1703,61 +1720,65 @@ void NET_OpenIP( void )
 
 	if ( net_enabled->integer & NET_ENABLEV6 )
 	{
-		for ( i = 0; i < 10; i++ )
+		for ( i = ( port6 == PORT_ANY ? 1 : MAX_TRY_PORTS ); i; i++ )
 		{
-			ip6_socket = NET_IP6Socket( net_ip6->string, port6 + i, &boundto, &err );
+			ip6_socket = NET_IP6Socket( net_ip6->string, port6, &boundto, &err );
 
 			if ( ip6_socket != INVALID_SOCKET )
 			{
-				Cvar_SetValue( "net_port6", port6 + i );
+				port6 = ntohs( boundto.sin6_port );
 				break;
 			}
-			else
+			else if ( err == EAFNOSUPPORT )
 			{
-				if ( err == EAFNOSUPPORT )
-				{
-					break;
-				}
+				port6 = PORT_ANY;
+				break;
 			}
+
+			port6 = ( port6 == PORT_ANY ) ? port6 : NET_EnsureValidPortNo( port6 + 1 );
 		}
 
-		if ( ip6_socket == INVALID_SOCKET )
+		if ( ip6_socket == INVALID_SOCKET || err == EAFNOSUPPORT )
 		{
 			Com_Printf( "WARNING: Couldn't bind to an IPv6 address.\n" );
+			port6 = PORT_ANY;
 		}
 	}
 
 	if ( net_enabled->integer & NET_ENABLEV4 )
 	{
-		for ( i = 0; i < 10; i++ )
+		for ( i = ( port6 == PORT_ANY ? 1 : MAX_TRY_PORTS ); i; i++ )
 		{
-			ip_socket = NET_IPSocket( net_ip->string, port + i, &err );
+			ip_socket = NET_IPSocket( net_ip->string, port, &boundto4, &err );
 
 			if ( ip_socket != INVALID_SOCKET )
 			{
-				Cvar_SetValue( "net_port", port + i );
-
-				if ( net_socksEnabled->integer )
-				{
-					NET_OpenSocks( port + i );
-				}
-
+				port = ntohs( boundto4.sin_port );
 				break;
 			}
-			else
+			else if ( err == EAFNOSUPPORT )
 			{
-				if ( err == EAFNOSUPPORT )
-				{
-					break;
-				}
+				port = PORT_ANY;
+				break;
 			}
+
+			port = ( port == PORT_ANY ) ? port : NET_EnsureValidPortNo( port + 1 );
 		}
 
 		if ( ip_socket == INVALID_SOCKET )
 		{
 			Com_Printf( "WARNING: Couldn't bind to an IPv4 address.\n" );
+			port = PORT_ANY;
 		}
 	}
+
+	if ( port != PORT_ANY && net_socksEnabled->integer )
+	{
+		NET_OpenSocks( port );
+	}
+
+	Cvar_Set( "net_currentPort", va( "%i", port ) );
+	Cvar_Set( "net_currentPort6", va( "%i", port6 ) );
 }
 
 //===================================================================
@@ -1845,9 +1866,15 @@ void NET_Config( qboolean enableNetworking )
 	qboolean modified;
 	qboolean stop;
 	qboolean start;
+	qboolean svRunning;
+	qboolean svChanged;
 
 	// get any latched changes to cvars
 	modified = NET_GetCvars();
+#ifndef DEDICATED
+	svRunning = !!com_sv_running->integer;
+	modified |= ( svRunning != serverMode );
+#endif
 
 	if ( !net_enabled->integer )
 	{
@@ -1885,9 +1912,12 @@ void NET_Config( qboolean enableNetworking )
 			stop = qtrue;
 			start = qfalse;
 		}
-
-		networkingEnabled = enableNetworking;
 	}
+
+#ifndef DEDICATED
+	serverMode = svRunning;
+#endif
+	networkingEnabled = enableNetworking;
 
 	if ( stop )
 	{

@@ -2232,16 +2232,7 @@ void CG_Buildable( centity_t *cent )
 	// add inverse shadow map
 	if ( cg_buildableShadows.integer )
 	{
-		vec3_t ambientLight, directedLight, lightDir;
-		vec3_t lightPos;
-
-		trap_R_LightForPoint( ent.lightingOrigin, ambientLight,
-				      directedLight, lightDir );
-		VectorMA( ent.lightingOrigin, 64.0f, lightDir, lightPos );
-
-		trap_R_AddLightToScene( lightPos, 128.0f, 3.0f,
-					directedLight[0], directedLight[1], directedLight[2],
-					0, REF_RESTRICT_DLIGHT | REF_INVERSE_DLIGHT );
+		CG_StartShadowCaster( ent.lightingOrigin, mins, maxs );
 	}
 
 	if ( CG_PlayerIsBuilder( es->modelindex ) && CG_BuildableRemovalPending( es->number ) )
@@ -2474,8 +2465,6 @@ void CG_Buildable( centity_t *cent )
 
 	if ( cg_buildableShadows.integer )
 	{
-		trap_R_AddLightToScene( vec3_origin, 0.0f, 0.0f,
-					0.0f, 0.0f, 0.0f,
-					0, 0 );
+		CG_EndShadowCaster( );
 	}
 }
