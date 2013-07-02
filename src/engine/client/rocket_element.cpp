@@ -218,6 +218,38 @@ void Rocket_GetProperty( const char *name, void *out, int len, rocketVarType_t t
 					return;
 				}
 
+				// HACK: special case for width and height specified in non absolute units
+
+				if ( !Q_stricmp( "width", name ) && property->unit & Rocket::Core::Property::ABSOLUTE_UNIT )
+				{
+					float base_size = 0;
+					Rocket::Core::Element *parent = activeElement;
+
+					while ( parent = parent->GetParentNode() )
+					{
+						if ( ( base_size = parent->GetOffsetWidth() ) != 0 )
+						{
+							*f = activeElement->ResolveProperty( "width", base_size );
+							return;
+						}
+					}
+				}
+
+				if ( !Q_stricmp( "height", name ) && property->unit & Rocket::Core::Property::ABSOLUTE_UNIT )
+				{
+					float base_size = 0;
+					Rocket::Core::Element *parent = activeElement;
+
+					while ( parent = parent->GetParentNode() )
+					{
+						if ( ( base_size = parent->GetOffsetHeight() ) != 0 )
+						{
+							*f = activeElement->ResolveProperty( "height", base_size );
+							return;
+						}
+					}
+				}
+
 				*f = property->Get<float>();
 				return;
 			}
