@@ -214,11 +214,11 @@ static struct irc_message_t IRC_ReceivedMessage;
 typedef int ( *irc_handler_func_t )( void );
 typedef int ( *ctcp_handler_func_t )( qboolean is_channel, const char *message );
 
-struct irc_handler_t
+typedef struct
 {
 	char cmd_string[ 33 ];
 	void ( *handler )( void );
-};
+}irc_handler_t;
 
 static hashtable_t IRC_Handlers;
 static hashtable_t IRC_CTCPHandlers;
@@ -291,12 +291,12 @@ Initialises the handler tables
 static INLINE void IRC_InitHandlers( void )
 {
 	IRC_Handlers = HT_Create( 100, HT_FLAG_INTABLE | HT_FLAG_CASE,
-	                          sizeof( struct irc_handler_t ),
-	                          HT_OffsetOfField( struct irc_handler_t, cmd_string ),
+	                          sizeof( irc_handler_t ),
+	                          HT_OffsetOfField( irc_handler_t, cmd_string ),
 	                          32 );
 	IRC_CTCPHandlers = HT_Create( 100, HT_FLAG_INTABLE | HT_FLAG_CASE,
-	                              sizeof( struct irc_handler_t ),
-	                              HT_OffsetOfField( struct irc_handler_t, cmd_string ),
+	                              sizeof( irc_handler_t ),
+	                              HT_OffsetOfField( irc_handler_t, cmd_string ),
 	                              32 );
 }
 
@@ -323,7 +323,7 @@ Registers a new IRC command handler.
 static INLINE void IRC_AddHandler( const char *command, irc_handler_func_t handler )
 {
 	qboolean            created;
-	struct irc_handler_t *rv;
+	irc_handler_t *rv;
 
 	rv = (irc_handler_t*) HT_GetItem( IRC_Handlers, command, &created );
 	assert( created );
@@ -340,7 +340,7 @@ Registers a new CTCP command handler.
 static void IRC_AddCTCPHandler( const char *command, ctcp_handler_func_t handler )
 {
 	qboolean             created;
-	struct irc_handler_t *rv;
+	irc_handler_t *rv;
 
 	rv = (irc_handler_t*) HT_GetItem( IRC_CTCPHandlers, command, &created );
 	assert( created );
@@ -357,7 +357,7 @@ no registered handler matching the command, ignore it.
 */
 static int IRC_ExecuteHandler( void )
 {
-	struct irc_handler_t *handler;
+	irc_handler_t *handler;
 
 	handler = (irc_handler_t*) HT_GetItem( IRC_Handlers, IRC_String( cmd_string ), NULL );
 
@@ -378,7 +378,7 @@ Executes a CTCP command handler.
 */
 static int IRC_ExecuteCTCPHandler( const char *command, qboolean is_channel, const char *argument )
 {
-	struct irc_handler_t *handler;
+	irc_handler_t *handler;
 
 	handler = (irc_handler_t*) HT_GetItem( IRC_CTCPHandlers, command, NULL );
 
