@@ -220,7 +220,7 @@ void Rocket_GetProperty( const char *name, void *out, int len, rocketVarType_t t
 
 				// HACK: special case for width and height specified in non absolute units
 
-				if ( !Q_stricmp( "width", name ) && property->unit & Rocket::Core::Property::ABSOLUTE_UNIT )
+				if ( !Q_stricmp( "width", name ) && property->unit & Rocket::Core::Property::RELATIVE_UNIT )
 				{
 					float base_size = 0;
 					Rocket::Core::Element *parent = activeElement;
@@ -235,7 +235,7 @@ void Rocket_GetProperty( const char *name, void *out, int len, rocketVarType_t t
 					}
 				}
 
-				if ( !Q_stricmp( "height", name ) && property->unit & Rocket::Core::Property::ABSOLUTE_UNIT )
+				if ( !Q_stricmp( "height", name ) && property->unit & Rocket::Core::Property::RELATIVE_UNIT )
 				{
 					float base_size = 0;
 					Rocket::Core::Element *parent = activeElement;
