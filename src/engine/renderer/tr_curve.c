@@ -373,13 +373,13 @@ srfGridMesh_t  *R_CreateSurfaceGridMesh( int width, int height,
 	size = ( width * height - 1 ) * sizeof( drawVert_t ) + sizeof( *grid );
 
 #ifdef PATCH_STITCHING
-	grid = /*ri.Hunk_Alloc */ ri.Z_Malloc( size );
+	grid = (srfGridMesh_t*) /*ri.Hunk_Alloc */ ri.Z_Malloc( size );
 	Com_Memset( grid, 0, size );
 
-	grid->widthLodError = /*ri.Hunk_Alloc */ ri.Z_Malloc( width * 4 );
+	grid->widthLodError = (float*) /*ri.Hunk_Alloc */ ri.Z_Malloc( width * 4 );
 	memcpy( grid->widthLodError, errorTable[ 0 ], width * 4 );
 
-	grid->heightLodError = /*ri.Hunk_Alloc */ ri.Z_Malloc( height * 4 );
+	grid->heightLodError = (float*) /*ri.Hunk_Alloc */ ri.Z_Malloc( height * 4 );
 	memcpy( grid->heightLodError, errorTable[ 1 ], height * 4 );
 #else
 	grid = ri.Hunk_Alloc( size, h_low );

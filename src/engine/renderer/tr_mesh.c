@@ -488,13 +488,13 @@ void R_AddMD3Surfaces( trRefEntity_t *ent )
 		     && r_shadows->integer >= 2
 		     && fogNum == 0 && !( ent->e.renderfx & ( RF_NOSHADOW | RF_DEPTHHACK ) ) && shader->sort == SS_OPAQUE )
 		{
-			R_AddDrawSurf( ( void * ) surface, tr.shadowShader, 0, 0, 0 );
+			R_AddDrawSurf( ( surfaceType_t * ) surface, tr.shadowShader, 0, 0, 0 );
 		}
 
 		// don't add third_person objects if not viewing through a portal
 		if ( !personalModel )
 		{
-			R_AddDrawSurf( ( void * ) surface, shader, fogNum, 0, 0 );
+			R_AddDrawSurf( ( surfaceType_t * ) surface, shader, fogNum, 0, 0 );
 		}
 
 		surface = ( md3Surface_t * )( ( byte * ) surface + surface->ofsEnd );

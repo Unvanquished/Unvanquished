@@ -2676,7 +2676,7 @@ static void ParseDeform( char **text )
 			n = 0;
 		}
 
-		ds->deformation = DEFORM_TEXT0 + n;
+		ds->deformation = (deform_t) (DEFORM_TEXT0 + n);
 		return;
 	}
 
@@ -3451,7 +3451,7 @@ static qboolean ParseShader( char **text )
 			}
 
 			tokenLen = strlen( token ) + 1;
-			tr.sunShaderName = ri.Hunk_Alloc( sizeof( char ) * tokenLen, h_low );
+			tr.sunShaderName = (char*) ri.Hunk_Alloc( sizeof( char ) * tokenLen, h_low );
 			Q_strncpyz( tr.sunShaderName, token, tokenLen );
 		}
 //----(SA)  added
@@ -4245,7 +4245,7 @@ static shader_t *GeneratePermanentShader( void )
 	}
 
 	// Ridah, caching system
-	newShader =
+	newShader = (shader_t*)
 	  R_CacheShaderAlloc( shader.lightmapIndex < 0 ? va( "%s lm: %i", shader.name, shader.lightmapIndex ) : NULL,
 	                      sizeof( shader_t ) );
 
@@ -4278,7 +4278,7 @@ static shader_t *GeneratePermanentShader( void )
 		}
 
 		// Ridah, caching system
-		newShader->stages[ i ] = R_CacheShaderAlloc( NULL, sizeof( stages[ i ] ) );
+		newShader->stages[ i ] = (shaderStage_t*) R_CacheShaderAlloc( NULL, sizeof( stages[ i ] ) );
 
 		*newShader->stages[ i ] = stages[ i ];
 
@@ -4293,7 +4293,7 @@ static shader_t *GeneratePermanentShader( void )
 
 			size = newShader->stages[ i ]->bundle[ b ].numTexMods * sizeof( texModInfo_t );
 			// Ridah, caching system
-			newShader->stages[ i ]->bundle[ b ].texMods = R_CacheShaderAlloc( NULL, size );
+			newShader->stages[ i ]->bundle[ b ].texMods = (texModInfo_t*) R_CacheShaderAlloc( NULL, size );
 
 			memcpy( newShader->stages[ i ]->bundle[ b ].texMods, stages[ i ].bundle[ b ].texMods, size );
 		}
@@ -4751,7 +4751,7 @@ qboolean RE_LoadDynamicShader( const char *shadername, const char *shadertext )
 		lastdptr->next = dptr;
 	}
 
-	dptr->shadertext = ri.Z_Malloc( strlen( shadertext ) + 1 );
+	dptr->shadertext = (char*) ri.Z_Malloc( strlen( shadertext ) + 1 );
 
 	if ( !dptr->shadertext )
 	{
@@ -5643,7 +5643,7 @@ static void ScanAndLoadShaderFiles( void )
 	}
 
 	// build single large buffer
-	s_shaderText = ri.Hunk_Alloc( sum + numShaders * 2, h_low );
+	s_shaderText = (char*) ri.Hunk_Alloc( sum + numShaders * 2, h_low );
 
 	// Gordon: optimised to not use strcat/strlen which can be VERY slow for the large strings we're using here
 	p = s_shaderText;
@@ -6120,7 +6120,7 @@ void R_LoadCacheShaders( void )
 	}
 
 	ri.FS_ReadFile( "shader.cache", &buf );
-	pString = buf;
+	pString = (char*) buf;
 
 	while ( ( token = COM_ParseExt( &pString, qtrue ) ) && token[ 0 ] )
 	{

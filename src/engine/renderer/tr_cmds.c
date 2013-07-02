@@ -273,7 +273,7 @@ void R_AddDrawSurfCmd( drawSurf_t *drawSurfs, int numDrawSurfs )
 {
 	drawSurfsCommand_t *cmd;
 
-	cmd = R_GetCommandBuffer( sizeof( *cmd ) );
+	cmd = (drawSurfsCommand_t*) R_GetCommandBuffer( sizeof( *cmd ) );
 
 	if ( !cmd )
 	{
@@ -299,7 +299,7 @@ void R_AddRunVisTestsCmd( visTest_t **visTests, int numVisTests )
 {
 	runVisTestsCommand_t *cmd;
 
-	cmd = R_GetCommandBuffer( sizeof( *cmd ) );
+	cmd = (runVisTestsCommand_t*) R_GetCommandBuffer( sizeof( *cmd ) );
 
 	if ( !cmd )
 	{
@@ -326,7 +326,7 @@ void RE_SetColor( const float *rgba )
 {
 	setColorCommand_t *cmd;
 
-	cmd = R_GetCommandBuffer( sizeof( *cmd ) );
+	cmd = (setColorCommand_t*) R_GetCommandBuffer( sizeof( *cmd ) );
 
 	if ( !cmd )
 	{
@@ -461,7 +461,7 @@ void RE_StretchPic ( float x, float y, float w, float h,
 		return;
 	}
 
-	cmd = R_GetCommandBuffer( sizeof( *cmd ) );
+	cmd = (stretchPicCommand_t*) R_GetCommandBuffer( sizeof( *cmd ) );
 	if ( !cmd )
 	{
 		return;
@@ -495,7 +495,7 @@ void RE_2DPolyies( polyVert_t *verts, int numverts, qhandle_t hShader )
 		return;
 	}
 
-	cmd = R_GetCommandBuffer( sizeof( *cmd ) );
+	cmd = (poly2dCommand_t*) R_GetCommandBuffer( sizeof( *cmd ) );
 
 	if ( !cmd )
 	{
@@ -520,7 +520,7 @@ void RE_ScissorEnable( qboolean enable )
 {
 	scissorEnableCommand_t *cmd;
 
-	cmd = R_GetCommandBuffer( sizeof( *cmd ) );
+	cmd = (scissorEnableCommand_t*) R_GetCommandBuffer( sizeof( *cmd ) );
 
 	if ( !cmd )
 	{
@@ -540,7 +540,7 @@ void RE_ScissorSet( int x, int y, int w, int h )
 {
 	scissorSetCommand_t *cmd;
 
-	cmd = R_GetCommandBuffer( sizeof( *cmd ) );
+	cmd = (scissorSetCommand_t*) R_GetCommandBuffer( sizeof( *cmd ) );
 
 	if ( !cmd )
 	{
@@ -563,7 +563,7 @@ void RE_RotatedPic( float x, float y, float w, float h, float s1, float t1, floa
 {
 	stretchPicCommand_t *cmd;
 
-	cmd = R_GetCommandBuffer( sizeof( *cmd ) );
+	cmd = (stretchPicCommand_t*) R_GetCommandBuffer( sizeof( *cmd ) );
 
 	if ( !cmd )
 	{
@@ -597,7 +597,7 @@ void RE_StretchPicGradient( float x, float y, float w, float h,
 {
 	stretchPicCommand_t *cmd;
 
-	cmd = R_GetCommandBuffer( sizeof( *cmd ) );
+	cmd = (stretchPicCommand_t*) R_GetCommandBuffer( sizeof( *cmd ) );
 
 	if ( !cmd )
 	{
@@ -831,7 +831,7 @@ void RE_BeginFrame( stereoFrame_t stereoFrame )
 	//
 	// draw buffer stuff
 	//
-	cmd = R_GetCommandBuffer( sizeof( *cmd ) );
+	cmd = (drawBufferCommand_t*) R_GetCommandBuffer( sizeof( *cmd ) );
 
 	if ( !cmd )
 	{
@@ -931,7 +931,7 @@ void RE_TakeVideoFrame( int width, int height, byte *captureBuffer, byte *encode
 		return;
 	}
 
-	cmd = R_GetCommandBuffer( sizeof( *cmd ) );
+	cmd = (videoFrameCommand_t*) R_GetCommandBuffer( sizeof( *cmd ) );
 
 	if ( !cmd )
 	{
@@ -966,7 +966,7 @@ void RE_RenderToTexture( int textureid, int x, int y, int w, int h )
 		return;
 	}
 
-	cmd = R_GetCommandBuffer( sizeof( *cmd ) );
+	cmd = (renderToTextureCommand_t*) R_GetCommandBuffer( sizeof( *cmd ) );
 
 	if ( !cmd )
 	{
@@ -994,7 +994,7 @@ void RE_Finish( void )
 
 	ri.Printf( PRINT_ALL, "RE_Finish\n" );
 
-	cmd = R_GetCommandBuffer( sizeof( *cmd ) );
+	cmd = (renderFinishCommand_t*) R_GetCommandBuffer( sizeof( *cmd ) );
 
 	if ( !cmd )
 	{

@@ -51,17 +51,17 @@ Used by both the front end (for DlightBmodel) and
 the back end (before doing the lighting calculation)
 ===============
 */
-void R_TransformDlights( int count, dlight_t *dl, orientationr_t * or )
+void R_TransformDlights( int count, dlight_t *dl, orientationr_t * orientation )
 {
 	int    i;
 	vec3_t temp;
 
 	for ( i = 0; i < count; i++, dl++ )
 	{
-		VectorSubtract( dl->origin, or ->origin, temp );
-		dl->transformed[ 0 ] = DotProduct( temp, or ->axis[ 0 ] );
-		dl->transformed[ 1 ] = DotProduct( temp, or ->axis[ 1 ] );
-		dl->transformed[ 2 ] = DotProduct( temp, or ->axis[ 2 ] );
+		VectorSubtract( dl->origin, orientation ->origin, temp );
+		dl->transformed[ 0 ] = DotProduct( temp, orientation ->axis[ 0 ] );
+		dl->transformed[ 1 ] = DotProduct( temp, orientation ->axis[ 1 ] );
+		dl->transformed[ 2 ] = DotProduct( temp, orientation ->axis[ 2 ] );
 	}
 }
 

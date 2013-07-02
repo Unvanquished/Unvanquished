@@ -470,7 +470,7 @@ void R_MDM_AddAnimSurfaces( trRefEntity_t *ent )
 		// don't add third_person objects if not viewing through a portal
 		if ( !personalModel )
 		{
-			R_AddDrawSurf( ( void * ) surface, shader, fogNum, 0, 0 );
+			R_AddDrawSurf( ( surfaceType_t * ) surface, shader, fogNum, 0, 0 );
 		}
 
 		surface = ( mdmSurface_t * )( ( byte * ) surface + surface->ofsEnd );
