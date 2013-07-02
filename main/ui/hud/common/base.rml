@@ -1,0 +1,80 @@
+<rml>
+<head>
+	<style>
+		body
+		{
+			font-family: Roboto;
+			font-size: 24;
+			width: 100%;
+			height: 100%;
+		}
+		div#fps
+		{
+			position: fixed;
+			top: 0%;
+			text-align: right;
+			font-size: 18;
+		}
+		div#lagometer
+		{
+			position: fixed;
+			top: 10%;
+			right: 0%;
+			float: right;
+			width: 4%;
+			height: 4%;
+			text-align: center;
+			vertical-align: text-top;
+			font-size: 12;
+		}
+		lagometer
+		{
+			width: 100%;
+			height: 50%;
+			background-color: #1E1E1E1E;
+		}
+		div#location
+		{
+			position: fixed;
+			text-align: right;
+			right: 0%;
+			top: 20%;
+		}
+		div#tutorial
+		{
+			position: fixed;
+			top: 70%;
+			text-align: left;
+			width: 30%;
+			font-size: 12;
+		}
+		div#crosshair
+		{
+			position: fixed;
+		}
+		crosshair
+		{
+			color: white;
+		}
+	</style>
+</head>
+<body id="base">
+	<div id="fps">
+		<fps /> fps<br />
+		<timer /><br />
+		<clock />
+	</div>
+	<div id="lagometer">
+		<lagometer />
+	</div>
+	<div id="location">
+		<location />
+	</div>
+	<div id="tutorial">
+		<tutorial />
+	</div>
+	<div id="crosshair">
+		<crosshair/>
+	</div>
+</body>
+</rml>
