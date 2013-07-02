@@ -56,11 +56,55 @@ public:
 	RocketElement( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ) { }
 	~RocketElement() { }
 
-	bool GetIntrinsicDimensions( Rocket::Core::Vector2f &dimensions )
+	bool GetIntrinsicDimensions( Rocket::Core::Vector2f &dimension )
 	{
-		activeElement = this;
-		VM_Call( cgvm, CG_ROCKET_GETELEMENTDIMENSIONS );
-		dimensions = this->dimensions;
+		const Rocket::Core::Property *property;
+		property = GetProperty( "width" );
+
+		// Absolute unit. We can use it as is
+		if ( property->unit & Rocket::Core::Property::ABSOLUTE_UNIT )
+		{
+			dimensions.x = property->value.Get<float>();
+		}
+		else
+		{
+			float base_size = 0;
+			Rocket::Core::Element *parent = this;
+
+			while ( parent = parent->GetParentNode() )
+			{
+				if ( ( base_size = parent->GetOffsetWidth() ) != 0 )
+				{
+					dimensions.x = ResolveProperty( "width", base_size );
+					break;
+				}
+			}
+		}
+
+		property = GetProperty( "height" );
+		if ( property->unit & Rocket::Core::Property::ABSOLUTE_UNIT )
+		{
+			dimensions.y = property->value.Get<float>();
+		}
+		else
+		{
+			float base_size = 0;
+			Rocket::Core::Element *parent = this;
+
+			while ( parent = parent->GetParentNode() )
+			{
+				if ( ( base_size = parent->GetOffsetHeight() ) != 0 )
+				{
+					dimensions.y = ResolveProperty( "height", base_size );
+					break;
+				}
+			}
+		}
+		// Return the calculated dimensions. If this changes the size of the element, it will result in
+		// a 'resize' event which is caught below and will regenerate the geometry.
+
+		dimension = dimensions;
+
 		return true;
 	}
 

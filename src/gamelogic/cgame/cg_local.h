@@ -2150,11 +2150,6 @@ void CG_Rocket_RenderElement( void );
 void CG_Rocket_RegisterElements( void );
 
 //
-// cg_rocket_elementdimensions.c
-//
-void CG_Rocket_SetElementDimensions( void );
-
-//
 // cg_rocket_datasource.c
 //
 void CG_Rocket_BuildDataSource( const char *dataSrc, const char *table );

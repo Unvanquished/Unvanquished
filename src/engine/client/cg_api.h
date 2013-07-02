@@ -405,9 +405,6 @@ typedef enum
   CG_ROCKET_FORMATDATA,
 // Rocket wants some data formatted
 
-  CG_ROCKET_GETELEMENTDIMENSIONS,
-// Rocket wants to dimension some elements
-
   CG_ROCKET_RENDERELEMENT,
 // Rocket wants an element renderered
 
