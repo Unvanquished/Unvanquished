@@ -72,7 +72,7 @@ model_t        *R_AllocModel( void )
 		return NULL;
 	}
 
-	mod = ri.Hunk_Alloc( sizeof( *tr.models[ tr.numModels ] ), h_low );
+	mod = (model_t*) ri.Hunk_Alloc( sizeof( *tr.models[ tr.numModels ] ), h_low );
 	mod->index = tr.numModels;
 	tr.models[ tr.numModels ] = mod;
 	tr.numModels++;
@@ -365,7 +365,7 @@ static qboolean R_LoadMDX( model_t *mod, void *buffer, const char *mod_name )
 	mod->type = MOD_MDX;
 	size = LittleLong( pinmodel->ofsEnd );
 	mod->dataSize += size;
-	mdx = mod->mdx = ri.Hunk_Alloc( size, h_low );
+	mdx = mod->mdx = (mdxHeader_t*) ri.Hunk_Alloc( size, h_low );
 
 	memcpy( mdx, buffer, LittleLong( pinmodel->ofsEnd ) );
 

@@ -139,7 +139,7 @@ void GL_TextureMode( const char *string )
 	// change all the existing mipmap texture objects
 	for ( i = 0; i < tr.images.currentElements; i++ )
 	{
-		image = Com_GrowListElement( &tr.images, i );
+		image = (image_t*) Com_GrowListElement( &tr.images, i );
 
 		if ( image->filterType == FT_DEFAULT )
 		{
@@ -173,7 +173,7 @@ int R_SumOfUsedImages( void )
 
 	for ( i = 0; i < tr.images.currentElements; i++ )
 	{
-		image = Com_GrowListElement( &tr.images, i );
+		image = (image_t*) Com_GrowListElement( &tr.images, i );
 
 		if ( image->frameUsed == tr.frameCount )
 		{
@@ -208,7 +208,7 @@ void R_ImageList_f( void )
 
 	for ( i = 0; i < tr.images.currentElements; i++ )
 	{
-		image = Com_GrowListElement( &tr.images, i );
+		image = (image_t*) Com_GrowListElement( &tr.images, i );
 
 		ri.Printf( PRINT_ALL, "%4i: %4i %4i  %s   ",
 		           i, image->uploadWidth, image->uploadHeight, yesno[ image->filterType == FT_DEFAULT ] );
@@ -600,7 +600,7 @@ static void R_MipMap2( unsigned *in, int inWidth, int inHeight )
 
 	outWidth = inWidth >> 1;
 	outHeight = inHeight >> 1;
-	temp = ri.Hunk_AllocateTempMemory( outWidth * outHeight * 4 );
+	temp = (unsigned int*) ri.Hunk_AllocateTempMemory( outWidth * outHeight * 4 );
 
 	inWidthMask = inWidth - 1;
 	inHeightMask = inHeight - 1;
@@ -1323,7 +1323,7 @@ void R_UploadImage( const byte **dataArray, int numData, image_t *image )
 	}
 
 	if( data )
-		scaledBuffer = ri.Hunk_AllocateTempMemory( sizeof( byte ) * scaledWidth * scaledHeight * 4 );
+		scaledBuffer = (byte*) ri.Hunk_AllocateTempMemory( sizeof( byte ) * scaledWidth * scaledHeight * 4 );
 	else
 		scaledBuffer = NULL;
 
@@ -1550,7 +1550,7 @@ image_t        *R_AllocImage( const char *name, qboolean linkIntoHashTable )
 		return NULL;
 	}
 
-	image = ri.Hunk_Alloc( sizeof( image_t ), h_low );
+	image = (image_t*) ri.Hunk_Alloc( sizeof( image_t ), h_low );
 	Com_Memset( image, 0, sizeof( image_t ) );
 
 	glGenTextures( 1, &image->texnum );
@@ -1713,7 +1713,7 @@ image_t        *R_Create3DImage( const char *name,
 	image->width = width;
 	image->height = height;
 
-	pics = ri.Hunk_AllocateTempMemory( depth * sizeof(const byte *) );
+	pics = (const byte**) ri.Hunk_AllocateTempMemory( depth * sizeof(const byte *) );
 	for( i = 0; i < depth; i++ ) {
 		pics[i] = pic + i * width * height * sizeof(color4ub_t);
 	}
@@ -2467,7 +2467,7 @@ static void R_Rotate( byte *in, int width, int height, int degrees )
 	int  x, y, x2, y2;
 	byte *out, *tmp;
 
-	tmp = ri.Hunk_AllocateTempMemory( width * height * 4 );
+	tmp = (byte*) ri.Hunk_AllocateTempMemory( width * height * 4 );
 
 	// rotate into tmp buffer
 	for ( y = 0; y < height; y++ )
@@ -2849,7 +2849,7 @@ static void R_CreateFogImage( void )
 	float d;
 	float borderColor[ 4 ];
 
-	data = ri.Hunk_AllocateTempMemory( FOG_S * FOG_T * 4 );
+	data = (byte*) ri.Hunk_AllocateTempMemory( FOG_S * FOG_T * 4 );
 
 	//g = 2.0;
 
@@ -3495,7 +3495,7 @@ static void R_CreateBlackCubeImage( void )
 
 	for ( i = 0; i < 6; i++ )
 	{
-		data[ i ] = ri.Hunk_AllocateTempMemory( width * height * 4 );
+		data[ i ] = (byte*) ri.Hunk_AllocateTempMemory( width * height * 4 );
 		Com_Memset( data[ i ], 0, width * height * 4 );
 	}
 
@@ -3522,7 +3522,7 @@ static void R_CreateWhiteCubeImage( void )
 
 	for ( i = 0; i < 6; i++ )
 	{
-		data[ i ] = ri.Hunk_AllocateTempMemory( width * height * 4 );
+		data[ i ] = (byte*) ri.Hunk_AllocateTempMemory( width * height * 4 );
 		Com_Memset( data[ i ], 0xFF, width * height * 4 );
 	}
 
@@ -3541,7 +3541,7 @@ static void R_CreateColorGradeImage( void )
 	byte *data, *ptr;
 	int i, r, g, b;
 
-	data = ri.Hunk_AllocateTempMemory( 4 * REF_COLORGRADEMAP_STORE_SIZE * sizeof(color4ub_t) );
+	data = (byte*) ri.Hunk_AllocateTempMemory( 4 * REF_COLORGRADEMAP_STORE_SIZE * sizeof(color4ub_t) );
 
 	// 255 is 15 * 17, so the colors range from 0 to 255
 	for( ptr = data, i = 0; i < 4; i++ ) {
@@ -3868,7 +3868,7 @@ void R_ShutdownImages( void )
 
 	for ( i = 0; i < tr.images.currentElements; i++ )
 	{
-		image = Com_GrowListElement( &tr.images, i );
+		image = (image_t*) Com_GrowListElement( &tr.images, i );
 
 		glDeleteTextures( 1, &image->texnum );
 	}
@@ -3910,7 +3910,7 @@ int RE_GetTextureId( const char *name )
 
 	for ( i = 0; i < tr.images.currentElements; i++ )
 	{
-		image = Com_GrowListElement( &tr.images, i );
+		image = (image_t*) Com_GrowListElement( &tr.images, i );
 
 		if ( !strcmp( name, image->name ) )
 		{

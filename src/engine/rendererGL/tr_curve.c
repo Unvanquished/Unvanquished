@@ -605,39 +605,39 @@ static srfGridMesh_t *R_CreateSurfaceGridMesh( int width, int height,
 
 	if ( r_stitchCurves->integer )
 	{
-		grid = /*ri.Hunk_Alloc */ Com_Allocate( size );
+		grid = (srfGridMesh_t*)/*ri.Hunk_Alloc */ Com_Allocate( size );
 		Com_Memset( grid, 0, size );
 
-		grid->widthLodError = /*ri.Hunk_Alloc */ Com_Allocate( width * 4 );
+		grid->widthLodError = (float*)/*ri.Hunk_Alloc */ Com_Allocate( width * 4 );
 		Com_Memcpy( grid->widthLodError, errorTable[ 0 ], width * 4 );
 
-		grid->heightLodError = /*ri.Hunk_Alloc */ Com_Allocate( height * 4 );
+		grid->heightLodError = (float*)/*ri.Hunk_Alloc */ Com_Allocate( height * 4 );
 		Com_Memcpy( grid->heightLodError, errorTable[ 1 ], height * 4 );
 
 		grid->numTriangles = numTriangles;
-		grid->triangles = Com_Allocate( grid->numTriangles * sizeof( srfTriangle_t ) );
+		grid->triangles = (srfTriangle_t*) Com_Allocate( grid->numTriangles * sizeof( srfTriangle_t ) );
 		Com_Memcpy( grid->triangles, triangles, numTriangles * sizeof( srfTriangle_t ) );
 
 		grid->numVerts = ( width * height );
-		grid->verts = Com_Allocate( grid->numVerts * sizeof( srfVert_t ) );
+		grid->verts = (srfVert_t*) Com_Allocate( grid->numVerts * sizeof( srfVert_t ) );
 	}
 	else
 	{
-		grid = ri.Hunk_Alloc( size, h_low );
+		grid = (srfGridMesh_t*) ri.Hunk_Alloc( size, h_low );
 		Com_Memset( grid, 0, size );
 
-		grid->widthLodError = ri.Hunk_Alloc( width * 4, h_low );
+		grid->widthLodError = (float*) ri.Hunk_Alloc( width * 4, h_low );
 		Com_Memcpy( grid->widthLodError, errorTable[ 0 ], width * 4 );
 
-		grid->heightLodError = ri.Hunk_Alloc( height * 4, h_low );
+		grid->heightLodError = (float*) ri.Hunk_Alloc( height * 4, h_low );
 		Com_Memcpy( grid->heightLodError, errorTable[ 1 ], height * 4 );
 
 		grid->numTriangles = numTriangles;
-		grid->triangles = ri.Hunk_Alloc( grid->numTriangles * sizeof( srfTriangle_t ), h_low );
+		grid->triangles = (srfTriangle_t*) ri.Hunk_Alloc( grid->numTriangles * sizeof( srfTriangle_t ), h_low );
 		Com_Memcpy( grid->triangles, triangles, numTriangles * sizeof( srfTriangle_t ) );
 
 		grid->numVerts = ( width * height );
-		grid->verts = ri.Hunk_Alloc( grid->numVerts * sizeof( srfVert_t ), h_low );
+		grid->verts = (srfVert_t*) ri.Hunk_Alloc( grid->numVerts * sizeof( srfVert_t ), h_low );
 	}
 
 	grid->width = width;

@@ -111,7 +111,7 @@ void R_AddBrushModelInteractions( trRefEntity_t *ent, trRefLight_t *light, inter
 				continue;
 			}
 
-			R_AddLightInteraction( light, ( void * ) vboSurface, shader, cubeSideBits, iaType );
+			R_AddLightInteraction( light, ( surfaceType_t * ) vboSurface, shader, cubeSideBits, iaType );
 			tr.pc.c_dlightSurfaces++;
 		}
 	}

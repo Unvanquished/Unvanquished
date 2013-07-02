@@ -55,7 +55,7 @@ VBO_t          *R_CreateVBO( const char *name, byte *vertexes, int vertexesSize,
 	// make sure the render thread is stopped
 	R_SyncRenderThread();
 
-	vbo = ri.Hunk_Alloc( sizeof( *vbo ), h_low );
+	vbo = (VBO_t*) ri.Hunk_Alloc( sizeof( *vbo ), h_low );
 	Com_AddToGrowList( &tr.vbos, vbo );
 
 	Q_strncpyz( vbo->name, name, sizeof( vbo->name ) );
@@ -137,7 +137,7 @@ VBO_t          *R_CreateVBO2( const char *name, int numVertexes, srfVert_t *vert
 	// make sure the render thread is stopped
 	R_SyncRenderThread();
 
-	vbo = ri.Hunk_Alloc( sizeof( *vbo ), h_low );
+	vbo = (VBO_t*) ri.Hunk_Alloc( sizeof( *vbo ), h_low );
 	Com_AddToGrowList( &tr.vbos, vbo );
 
 	Q_strncpyz( vbo->name, name, sizeof( vbo->name ) );
@@ -175,7 +175,7 @@ VBO_t          *R_CreateVBO2( const char *name, int numVertexes, srfVert_t *vert
 	}
 
 	dataSize *= numVertexes;
-	data = ri.Hunk_AllocateTempMemory( dataSize );
+	data = (byte*) ri.Hunk_AllocateTempMemory( dataSize );
 	dataOfs = 0;
 
 	// since this is all float, point tmp directly into data
@@ -309,7 +309,7 @@ IBO_t          *R_CreateIBO( const char *name, byte *indexes, int indexesSize, v
 	// make sure the render thread is stopped
 	R_SyncRenderThread();
 
-	ibo = ri.Hunk_Alloc( sizeof( *ibo ), h_low );
+	ibo = (IBO_t*) ri.Hunk_Alloc( sizeof( *ibo ), h_low );
 	Com_AddToGrowList( &tr.ibos, ibo );
 
 	Q_strncpyz( ibo->name, name, sizeof( ibo->name ) );
@@ -374,13 +374,13 @@ IBO_t          *R_CreateIBO2( const char *name, int numTriangles, srfTriangle_t 
 	// make sure the render thread is stopped
 	R_SyncRenderThread();
 
-	ibo = ri.Hunk_Alloc( sizeof( *ibo ), h_low );
+	ibo = (IBO_t*) ri.Hunk_Alloc( sizeof( *ibo ), h_low );
 	Com_AddToGrowList( &tr.ibos, ibo );
 
 	Q_strncpyz( ibo->name, name, sizeof( ibo->name ) );
 
 	indexesSize = numTriangles * 3 * sizeof( glIndex_t );
-	indexes = ri.Hunk_AllocateTempMemory( indexesSize );
+	indexes = (byte*) ri.Hunk_AllocateTempMemory( indexesSize );
 	indexesOfs = 0;
 
 	//ri.Printf(PRINT_ALL, "sizeof(glIndex_t) = %i\n", sizeof(glIndex_t));
@@ -533,8 +533,8 @@ static void R_InitUnitCubeVBO( void )
 
 	Tess_AddCube( vec3_origin, mins, maxs, colorWhite );
 
-	verts = ri.Hunk_AllocateTempMemory( tess.numVertexes * sizeof( srfVert_t ) );
-	triangles = ri.Hunk_AllocateTempMemory( ( tess.numIndexes / 3 ) * sizeof( srfTriangle_t ) );
+	verts = (srfVert_t*) ri.Hunk_AllocateTempMemory( tess.numVertexes * sizeof( srfVert_t ) );
+	triangles = (srfTriangle_t*) ri.Hunk_AllocateTempMemory( ( tess.numIndexes / 3 ) * sizeof( srfTriangle_t ) );
 
 	for ( i = 0; i < tess.numVertexes; i++ )
 	{

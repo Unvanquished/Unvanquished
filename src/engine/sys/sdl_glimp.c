@@ -1113,7 +1113,7 @@ static qboolean GLimp_StartDriverAndSetMode( int mode, qboolean fullscreen, qboo
 		fullscreen = qfalse;
 	}
 
-	err = GLimp_SetMode( mode, fullscreen, noborder );
+	err = (rserr_t) GLimp_SetMode( mode, fullscreen, noborder );
 
 	switch ( err )
 	{

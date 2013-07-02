@@ -61,7 +61,7 @@ void LoadWEBP( const char *filename, unsigned char **pic, int *width, int *heigh
 	stride = *width * sizeof( color4ub_t );
 	size = *height * stride;
 
-	out = ri.Z_Malloc( size );
+	out = (byte*) ri.Z_Malloc( size );
 
 	if ( !WebPDecodeRGBAInto( fbuffer.b, len, out, size, stride ) )
 	{

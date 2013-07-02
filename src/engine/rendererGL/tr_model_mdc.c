@@ -381,7 +381,7 @@ qboolean R_LoadMDC( model_t *mod, int lod, void *buffer, int bufferSize, const c
 	mod->type = MOD_MESH;
 	size = LittleLong( mdcModel->ofsEnd );
 	mod->dataSize += size;
-	mdvModel = mod->mdv[ lod ] = ri.Hunk_Alloc( sizeof( mdvModel_t ), h_low );
+	mdvModel = mod->mdv[ lod ] = (mdvModel_t*) ri.Hunk_Alloc( sizeof( mdvModel_t ), h_low );
 
 	LL( mdcModel->ident );
 	LL( mdcModel->version );
@@ -404,7 +404,7 @@ qboolean R_LoadMDC( model_t *mod, int lod, void *buffer, int bufferSize, const c
 
 	// swap all the frames
 	mdvModel->numFrames = mdcModel->numFrames;
-	mdvModel->frames = frame = ri.Hunk_Alloc( sizeof( *frame ) * mdcModel->numFrames, h_low );
+	mdvModel->frames = frame = (mdvFrame_t*) ri.Hunk_Alloc( sizeof( *frame ) * mdcModel->numFrames, h_low );
 
 	mdcFrame = ( md3Frame_t * )( ( byte * ) mdcModel + mdcModel->ofsFrames );
 
@@ -440,7 +440,7 @@ qboolean R_LoadMDC( model_t *mod, int lod, void *buffer, int bufferSize, const c
 
 	// swap all the tags
 	mdvModel->numTags = mdcModel->numTags;
-	mdvModel->tags = tag = ri.Hunk_Alloc( sizeof( *tag ) * ( mdcModel->numTags * mdcModel->numFrames ), h_low );
+	mdvModel->tags = tag = (mdvTag_t*) ri.Hunk_Alloc( sizeof( *tag ) * ( mdcModel->numTags * mdcModel->numFrames ), h_low );
 
 	mdcTag = ( mdcTag_t * )( ( byte * ) mdcModel + mdcModel->ofsTags );
 
@@ -457,7 +457,7 @@ qboolean R_LoadMDC( model_t *mod, int lod, void *buffer, int bufferSize, const c
 		AnglesToAxis( angles, tag->axis );
 	}
 
-	mdvModel->tagNames = tagName = ri.Hunk_Alloc( sizeof( *tagName ) * ( mdcModel->numTags ), h_low );
+	mdvModel->tagNames = tagName = (mdvTagName_t*) ri.Hunk_Alloc( sizeof( *tagName ) * ( mdcModel->numTags ), h_low );
 
 	mdcTagName = ( mdcTagName_t * )( ( byte * ) mdcModel + mdcModel->ofsTagNames );
 
@@ -468,7 +468,7 @@ qboolean R_LoadMDC( model_t *mod, int lod, void *buffer, int bufferSize, const c
 
 	// swap all the surfaces
 	mdvModel->numSurfaces = mdcModel->numSurfaces;
-	mdvModel->surfaces = surf = ri.Hunk_Alloc( sizeof( *surf ) * mdcModel->numSurfaces, h_low );
+	mdvModel->surfaces = surf = (mdvSurface_t*) ri.Hunk_Alloc( sizeof( *surf ) * mdcModel->numSurfaces, h_low );
 
 	mdcSurf = ( mdcSurface_t * )( ( byte * ) mdcModel + mdcModel->ofsSurfaces );
 
@@ -553,7 +553,7 @@ qboolean R_LoadMDC( model_t *mod, int lod, void *buffer, int bufferSize, const c
 
 		// swap all the triangles
 		surf->numTriangles = mdcSurf->numTriangles;
-		surf->triangles = tri = ri.Hunk_Alloc( sizeof( *tri ) * mdcSurf->numTriangles, h_low );
+		surf->triangles = tri = (srfTriangle_t*) ri.Hunk_Alloc( sizeof( *tri ) * mdcSurf->numTriangles, h_low );
 
 		mdcTri = ( md3Triangle_t * )( ( byte * ) mdcSurf + mdcSurf->ofsTriangles );
 
@@ -601,7 +601,7 @@ qboolean R_LoadMDC( model_t *mod, int lod, void *buffer, int bufferSize, const c
 		}
 
 		surf->numVerts = mdcSurf->numVerts;
-		surf->verts = v = ri.Hunk_Alloc( sizeof( *v ) * ( mdcSurf->numVerts * mdcModel->numFrames ), h_low );
+		surf->verts = v = (mdvXyz_t*) ri.Hunk_Alloc( sizeof( *v ) * ( mdcSurf->numVerts * mdcModel->numFrames ), h_low );
 
 		for ( j = 0; j < mdcModel->numFrames; j++ )
 		{
@@ -642,7 +642,7 @@ qboolean R_LoadMDC( model_t *mod, int lod, void *buffer, int bufferSize, const c
 		}
 
 		// swap all the ST
-		surf->st = st = ri.Hunk_Alloc( sizeof( *st ) * mdcSurf->numVerts, h_low );
+		surf->st = st = (mdvSt_t*) ri.Hunk_Alloc( sizeof( *st ) * mdcSurf->numVerts, h_low );
 
 		mdcst = ( md3St_t * )( ( byte * ) mdcSurf + mdcSurf->ofsSt );
 
@@ -753,7 +753,7 @@ qboolean R_LoadMDC( model_t *mod, int lod, void *buffer, int bufferSize, const c
 			//ri.Printf(PRINT_ALL, "...calculating MDC mesh VBOs ( '%s', %i verts %i tris )\n", surf->name, surf->numVerts, surf->numTriangles);
 
 			// create surface
-			vboSurf = ri.Hunk_Alloc( sizeof( *vboSurf ), h_low );
+			vboSurf = (srfVBOMDVMesh_t*) ri.Hunk_Alloc( sizeof( *vboSurf ), h_low );
 			Com_AddToGrowList( &vboSurfaces, vboSurf );
 
 			vboSurf->surfaceType = SF_VBO_MDVMESH;
@@ -775,7 +775,7 @@ qboolean R_LoadMDC( model_t *mod, int lod, void *buffer, int bufferSize, const c
 
 			dataSize = ( surf->numVerts * mdvModel->numFrames * sizeof( vec4_t ) * 4 ) +  // xyz, tangent, binormal, normal
 			           ( surf->numVerts * sizeof( vec4_t ) );  // texcoords
-			data = ri.Hunk_AllocateTempMemory( dataSize );
+			data = (byte*) ri.Hunk_AllocateTempMemory( dataSize );
 			dataOfs = 0;
 
 			// feed vertex XYZ
@@ -903,7 +903,7 @@ qboolean R_LoadMDC( model_t *mod, int lod, void *buffer, int bufferSize, const c
 
 		// move VBO surfaces list to hunk
 		mdvModel->numVBOSurfaces = vboSurfaces.currentElements;
-		mdvModel->vboSurfaces = ri.Hunk_Alloc( mdvModel->numVBOSurfaces * sizeof( *mdvModel->vboSurfaces ), h_low );
+		mdvModel->vboSurfaces = (srfVBOMDVMesh_t**) ri.Hunk_Alloc( mdvModel->numVBOSurfaces * sizeof( *mdvModel->vboSurfaces ), h_low );
 
 		for ( i = 0; i < mdvModel->numVBOSurfaces; i++ )
 		{
