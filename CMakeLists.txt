@@ -1276,8 +1276,8 @@ if( USE_PHYSICS )
 endif()
 
 #HACK: Force the compilation of EVERYTHING in C++
-file(GLOB_RECURSE EVERYTHING src/engine/*)
-set_source_files_properties( ${EVERYTHING} PROPERTIES LANGUAGE CXX )
+file(GLOB_RECURSE EVERYTHING_C "src/engine/*.c")
+set_source_files_properties( ${EVERYTHING_C} PROPERTIES LANGUAGE CXX )
 
 ######################
 # Build Old Renderer #
