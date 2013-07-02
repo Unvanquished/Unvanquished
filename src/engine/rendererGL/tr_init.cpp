@@ -104,6 +104,7 @@ extern "C" {
 	cvar_t      *r_ext_vertex_array_object;
 	cvar_t      *r_ext_half_float_pixel;
 	cvar_t      *r_ext_texture_float;
+	cvar_t      *r_ext_texture_rg;
 	cvar_t      *r_ext_stencil_wrap;
 	cvar_t      *r_ext_texture_filter_anisotropic;
 	cvar_t      *r_ext_stencil_two_side;
@@ -1371,6 +1372,7 @@ extern "C" {
 		r_ext_vertex_array_object = ri.Cvar_Get( "r_ext_vertex_array_object", "1", CVAR_CHEAT | CVAR_LATCH );
 		r_ext_half_float_pixel = ri.Cvar_Get( "r_ext_half_float_pixel", "1", CVAR_CHEAT | CVAR_LATCH );
 		r_ext_texture_float = ri.Cvar_Get( "r_ext_texture_float", "1", CVAR_CHEAT | CVAR_LATCH );
+		r_ext_texture_rg = ri.Cvar_Get( "r_ext_texture_rg", "1", CVAR_CHEAT | CVAR_LATCH );
 		r_ext_stencil_wrap = ri.Cvar_Get( "r_ext_stencil_wrap", "1", CVAR_CHEAT | CVAR_LATCH );
 		r_ext_texture_filter_anisotropic = ri.Cvar_Get( "r_ext_texture_filter_anisotropic", "4", CVAR_ARCHIVE | CVAR_LATCH );
 		r_ext_stencil_two_side = ri.Cvar_Get( "r_ext_stencil_two_side", "1", CVAR_CHEAT | CVAR_LATCH );

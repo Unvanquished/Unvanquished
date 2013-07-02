@@ -1431,6 +1431,57 @@ void CG_BuildableStatusParse( const char *filename, buildStat_t *bs )
 #define STATUS_MAX_VIEW_DIST 900.0f
 #define STATUS_PEEK_DIST     20
 
+static void HealthColorFade( vec4_t out, float healthFrac, buildStat_t *bs )
+{
+	float frac;
+
+	if ( healthFrac > 1.0f )
+	{
+		healthFrac = 1.0f;
+	}
+	else if ( healthFrac < 0.0f )
+	{
+		healthFrac = 0.0f;
+	}
+
+	if ( healthFrac == 1.0f )
+	{
+		Vector4Copy( bs->healthLowColor, out );
+	}
+	else if ( healthFrac > 0.666f )
+	{
+		frac = 1.0f - ( healthFrac - 0.666f ) * 3.0f;
+		Vector4Lerp( frac, bs->healthGuardedColor, bs->healthElevatedColor, out );
+	}
+	else if ( healthFrac > 0.333f )
+	{
+		frac = 1.0f - ( healthFrac - 0.333f ) * 3.0f;
+		Vector4Lerp( frac, bs->healthElevatedColor, bs->healthHighColor, out );
+	}
+	else
+	{
+		frac = 1.0f - healthFrac * 3.0f;
+		Vector4Lerp( frac, bs->healthHighColor, bs->healthSevereColor, out );
+	}
+}
+
+static void DepletionColorFade( vec4_t out, float frac, buildStat_t *bs )
+{
+	if ( frac > 1.0f )
+	{
+		frac = 1.0f;
+	}
+	else if ( frac < 0.0f )
+	{
+		frac = 0.0f;
+	}
+
+	frac = frac * 0.6f + 0.4f;
+
+	Vector4Copy( bs->healthLowColor, out );
+	Vector4Scale( out, frac, out );
+}
+
 /*
 ==================
 CG_BuildableStatusDisplay
@@ -1574,7 +1625,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 		}
 	}
 
-	// ???
+	// check if visibility state changed
 	if ( !visible && cent->buildableStatus.visible )
 	{
 		cent->buildableStatus.visible = qfalse;
@@ -1757,28 +1808,9 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 			hH = ( 0.5f * picH ) - ( bs->healthPadding * scale );
 			hW = ( picW * mineEfficiencyScale ) - ( bs->healthPadding * 2.0f * scale );
 
-			if ( mineEfficiencyScale == 1.0f )
-			{
-				Vector4Copy( bs->healthLowColor, barColor );
-			}
-			else if ( mineEfficiencyScale >= 0.75f )
-			{
-				Vector4Copy( bs->healthGuardedColor, barColor );
-			}
-			else if ( mineEfficiencyScale >= 0.50f )
-			{
-				Vector4Copy( bs->healthElevatedColor, barColor );
-			}
-			else if ( mineEfficiencyScale >= 0.25f )
-			{
-				Vector4Copy( bs->healthHighColor, barColor );
-			}
-			else
-			{
-				Vector4Copy( bs->healthSevereColor, barColor );
-			}
-
+			DepletionColorFade( barColor, mineEfficiencyScale, bs );
 			barColor[ 3 ] = color[ 3 ];
+
 			trap_R_SetColor( barColor );
 
 			CG_DrawPic( hX, hY, hW, hH, cgs.media.whiteShader );
@@ -1797,28 +1829,9 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 			hH = picH - ( bs->healthPadding * 2.0f * scale );
 			hW = picW * healthScale - ( bs->healthPadding * 2.0f * scale );
 
-			if ( healthScale == 1.0f )
-			{
-				Vector4Copy( bs->healthLowColor, barColor );
-			}
-			else if ( healthScale >= 0.75f )
-			{
-				Vector4Copy( bs->healthGuardedColor, barColor );
-			}
-			else if ( healthScale >= 0.50f )
-			{
-				Vector4Copy( bs->healthElevatedColor, barColor );
-			}
-			else if ( healthScale >= 0.25f )
-			{
-				Vector4Copy( bs->healthHighColor, barColor );
-			}
-			else
-			{
-				Vector4Copy( bs->healthSevereColor, barColor );
-			}
-
+			HealthColorFade( barColor, healthScale, bs );
 			barColor[ 3 ] = color[ 3 ];
+
 			trap_R_SetColor( barColor );
 
 			CG_DrawPic( hX, hY, hW, hH, cgs.media.whiteShader );
@@ -1837,28 +1850,9 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 			hH = ( 0.5f * picH ) - ( bs->healthPadding * scale );
 			hW = ( picW * relativeSparePowerScale ) - ( bs->healthPadding * 2.0f * scale );
 
-			if ( relativeSparePowerScale == 1.0f )
-			{
-				Vector4Copy( bs->healthLowColor, barColor );
-			}
-			else if ( relativeSparePowerScale >= 0.75f )
-			{
-				Vector4Copy( bs->healthGuardedColor, barColor );
-			}
-			else if ( relativeSparePowerScale >= 0.50f )
-			{
-				Vector4Copy( bs->healthElevatedColor, barColor );
-			}
-			else if ( relativeSparePowerScale >= 0.25f )
-			{
-				Vector4Copy( bs->healthHighColor, barColor );
-			}
-			else
-			{
-				Vector4Copy( bs->healthSevereColor, barColor );
-			}
-
+			DepletionColorFade( barColor, relativeSparePowerScale, bs );
 			barColor[ 3 ] = color[ 3 ];
+
 			trap_R_SetColor( barColor );
 
 			CG_DrawPic( hX, hY, hW, hH, cgs.media.whiteShader );

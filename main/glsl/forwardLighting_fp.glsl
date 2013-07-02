@@ -22,6 +22,15 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 /* forwardLighting_fp.glsl */
 
+/* swizzle one- and two-component textures to RG */
+#ifdef TEXTURE_RG
+#  define SWIZ1 r
+#  define SWIZ2 rg
+#else
+#  define SWIZ1 a
+#  define SWIZ2 ra
+#endif
+
 uniform sampler2D	u_DiffuseMap;
 uniform sampler2D	u_NormalMap;
 uniform sampler2D	u_SpecularMap;
@@ -852,7 +861,7 @@ void	main()
 		float vertexDistance = (length(I) / u_LightRadius) - SHADOW_BIAS; // * r_ShadowMapDepthScale;
 #endif
 
-		float shadowDistance = shadowMoments.a;
+		float shadowDistance = shadowMoments.SWIZ1;
 
 		// standard shadow mapping
 		shadow = vertexDistance <= shadowDistance ? 1.0 : 0.0;
@@ -886,7 +895,7 @@ void	main()
 		float vertexDistance = length(I) / u_LightRadius - SHADOW_BIAS;
 #endif
 
-		shadow = ChebyshevUpperBound(shadowMoments.ra, vertexDistance, VSM_EPSILON);
+		shadow = ChebyshevUpperBound(shadowMoments.SWIZ2, vertexDistance, VSM_EPSILON);
 	}
 #elif defined(EVSM)
 	{
@@ -942,17 +951,13 @@ void	main()
 #if defined(USE_NORMAL_MAPPING)
 
 	// invert tangent space for twosided surfaces
-	mat3 tangentToWorldMatrix;
+	mat3 tangentToWorldMatrix = mat3(var_Tangent.xyz, var_Binormal.xyz, var_Normal.xyz);
 #if defined(TWOSIDED)
 	if(gl_FrontFacing)
 	{
-		tangentToWorldMatrix = mat3(-var_Tangent.xyz, -var_Binormal.xyz, -var_Normal.xyz);
+		tangentToWorldMatrix = -tangentToWorldMatrix;
 	}
-	else
 #endif
-	{
-		tangentToWorldMatrix = mat3(var_Tangent.xyz, var_Binormal.xyz, var_Normal.xyz);
-	}
 
 
 	vec2 texNormal = var_TexNormal.st;
@@ -1007,17 +1012,13 @@ void	main()
 
 #else // USE_NORMAL_MAPPING
 
-	vec3 N;
+	vec3 N = normalize(var_Normal.xyz);
 #if defined(TWOSIDED)
 	if(gl_FrontFacing)
 	{
-		N = -normalize(var_Normal.xyz);
+		N = -N;
 	}
-	else
 #endif
-	{
-		N = normalize(var_Normal.xyz);
-	}
 
 #endif // USE_NORMAL_MAPPING
 
