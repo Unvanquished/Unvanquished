@@ -43,7 +43,7 @@
 		div#tutorial
 		{
 			position: fixed;
-			top: 70%;
+			bottom: 21%;
 			text-align: left;
 			width: 30%;
 			font-size: 12;
