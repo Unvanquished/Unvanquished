@@ -24,14 +24,19 @@
 			width: 4%;
 			height: 4%;
 			text-align: center;
-			vertical-align: text-top;
-			font-size: 12;
+			font-size: 24;
 		}
 		lagometer
 		{
 			width: 100%;
-			height: 50%;
+			height: 100%;
 			background-color: #1E1E1E1E;
+		}
+		span.ping
+		{
+			position: absolute;
+			top: 5%;
+
 		}
 		div#location
 		{
