@@ -297,7 +297,7 @@ char *Q_UTF8_Unstore( int e )
 static int uc_search_range( const void *chp, const void *memb )
 {
   int ch = *(int *)chp;
-  const ucs2_pair_t *item = memb;
+  const ucs2_pair_t *item = (ucs2_pair_t*) memb;
 
   return ( ch < item->c1 ) ? -1 : ( ch >= item->c2 ) ? 1 : 0;
 }
@@ -327,7 +327,7 @@ qboolean Q_Unicode_IsAlphaOrIdeoOrDigit( int ch )
 static int uc_search_cp( const void *chp, const void *memb )
 {
   int ch = *(int *)chp;
-  const ucs2_pair_t *item = memb;
+  const ucs2_pair_t *item = (ucs2_pair_t*) memb;
 
   return ( ch < item->c1 ) ? -1 : ( ch > item->c1 ) ? 1 : 0;
 }
@@ -335,7 +335,7 @@ static int uc_search_cp( const void *chp, const void *memb )
 #define Q_UC_TO(label, array) \
   int Q_Unicode_To##label( int ch ) \
   { \
-    const ucs2_pair_t *converted = bsearch( &ch, array, ARRAY_LEN( array ), sizeof( array[ 0 ] ), uc_search_cp ); \
+    const ucs2_pair_t *converted = (ucs2_pair_t*) bsearch( &ch, array, ARRAY_LEN( array ), sizeof( array[ 0 ] ), uc_search_cp ); \
     return converted ? converted->c2 : ch; \
   }
 
