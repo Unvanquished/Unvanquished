@@ -105,8 +105,6 @@ cvar_t *com_introPlayed;
 cvar_t *com_logosPlaying;
 cvar_t *cl_paused;
 cvar_t *sv_paused;
-cvar_t *cl_packetdelay;
-cvar_t *sv_packetdelay;
 
 #if defined( _WIN32 ) && !defined( NDEBUG )
 cvar_t *com_noErrorInterrupt;

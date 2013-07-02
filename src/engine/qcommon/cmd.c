@@ -602,7 +602,7 @@ static modifierMask_t getModifierMask( const char *mods )
 	int                         i;
 	modifierMask_t              mask;
 	const char                  *ptr;
-	static const modifierMask_t none;
+	static const modifierMask_t none = {0, 0, 0};
 
 	mask = none;
 
@@ -2295,7 +2295,7 @@ qboolean Cmd_AddButtonCommand( const char *cmd_name, int parameter )
 	char           *prefixed_name;
 	cmd_function_t *cmd;
 
-	prefixed_name = S_Malloc( strlen( cmd_name ) + 2 );
+	prefixed_name = (char*) S_Malloc( strlen( cmd_name ) + 2 );
 	prefixed_name[0] = '-';
 	strcpy( prefixed_name + 1, cmd_name );
 
@@ -2314,7 +2314,7 @@ qboolean Cmd_AddButtonCommand( const char *cmd_name, int parameter )
 
 	// + form
 	// (prefix is already in place)
-	cmd = S_Malloc( sizeof( cmd_function_t ) );
+	cmd = (cmd_function_t*) S_Malloc( sizeof( cmd_function_t ) );
 	cmd->name = CopyString( prefixed_name );
 	cmd->buttonFunction = IN_ButtonDown;
 	cmd->isButtonCommand = qtrue;
@@ -2325,7 +2325,7 @@ qboolean Cmd_AddButtonCommand( const char *cmd_name, int parameter )
 
 	// - form
 	prefixed_name[0] = '-';
-	cmd = S_Malloc( sizeof( cmd_function_t ) );
+	cmd = (cmd_function_t*) S_Malloc( sizeof( cmd_function_t ) );
 	cmd->name = prefixed_name;
 	cmd->buttonFunction = IN_ButtonUp;
 	cmd->isButtonCommand = qtrue;

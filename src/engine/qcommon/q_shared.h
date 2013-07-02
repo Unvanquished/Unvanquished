@@ -35,10 +35,6 @@ Maryland 20850 USA.
 #ifndef Q_SHARED_H_
 #define Q_SHARED_H_
 
-#if defined( __cplusplus )
-extern "C" {
-#endif
-
 // q_shared.h -- included first by ALL program modules.
 // A user mod should never modify this file
 
@@ -2233,9 +2229,5 @@ typedef struct
 #define RSA_PUBLIC_EXPONENT 65537
 #define RSA_KEY_LENGTH      2048
 #define RSA_STRING_LENGTH   ( RSA_KEY_LENGTH / 4 + 1 )
-
-#if defined( __cplusplus )
-}
-#endif
 
 #endif /* Q_SHARED_H_ */

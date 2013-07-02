@@ -914,7 +914,7 @@ qboolean SV_GetTag( int clientNum, int tagFileNumber, const char *tagname, orien
 		return qfalse;
 	}
 
-	return CL_GetTag( clientNum, tagname, or );
+	return CL_GetTag( clientNum, tagname, org );
 #else
 	return qfalse;
 #endif

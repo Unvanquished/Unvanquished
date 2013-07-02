@@ -20,15 +20,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #ifdef USE_LLVM
 void *VM_LoadLLVM( vm_t *vm, intptr_t (*systemcalls)(intptr_t, ...) );
 void VM_UnloadLLVM( void *llvmModuleProvider );
 #endif
 
-#ifdef __cplusplus
-}
-#endif

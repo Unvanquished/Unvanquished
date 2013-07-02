@@ -293,7 +293,7 @@ char *Sys_GetClipboardData( clipboard_t clip )
 
 		if ( selectionType == x11.utf8 )
 		{
-			dest = Z_Malloc( nbytes + 1 );
+			dest = (char*) Z_Malloc( nbytes + 1 );
 			memcpy( dest, src, nbytes );
 			dest[ nbytes ] = 0;
 		}

@@ -225,13 +225,13 @@ static qboolean IN_IsConsoleKey( keyNum_t key, const unsigned char character )
 
 			if ( charCode > 0 )
 			{
-				c->type = CHARACTER;
+				c->type = consoleKey_t::CHARACTER;
 				c->u.character = ( unsigned char ) charCode;
 			}
 			else
 			{
-				c->type = KEY;
-				c->u.key = Key_StringToKeynum( token );
+				c->type = consoleKey_t::KEY;
+				c->u.key = (keyNum_t) Key_StringToKeynum( token );
 
 				// 0 isn't a key
 				if ( c->u.key <= 0 )
@@ -282,7 +282,7 @@ static qboolean IN_IsConsoleKey( keyNum_t key, const unsigned char character )
 	// If the character is the same as the key, prefer the character
 	if ( key == character )
 	{
-		key = 0;
+		key = (keyNum_t) 0;
 	}
 
 	for ( i = 0; i < numConsoleKeys; i++ )
@@ -291,7 +291,7 @@ static qboolean IN_IsConsoleKey( keyNum_t key, const unsigned char character )
 
 		switch ( c->type )
 		{
-			case KEY:
+            case consoleKey_t::KEY:
 				if ( key && c->u.key == key )
 				{
 					return qtrue;
@@ -299,7 +299,7 @@ static qboolean IN_IsConsoleKey( keyNum_t key, const unsigned char character )
 
 				break;
 
-			case CHARACTER:
+            case consoleKey_t::CHARACTER:
 				if ( c->u.character == character )
 				{
 					return qtrue;
@@ -321,15 +321,15 @@ static const char *IN_TranslateSDLToQ3Key( SDL_keysym *keysym,
     keyNum_t *key, qboolean down )
 {
 	static unsigned char buf[ 5 ] = {0};
-	qboolean             delete = qfalse;
+	qboolean             del = qfalse;
 
 	*buf = '\0';
-	*key = 0;
+	*key = (keyNum_t) 0;
 
 	if ( keysym->sym >= SDLK_SPACE && keysym->sym < SDLK_DELETE )
 	{
 		// These happen to match the ASCII chars
-		*key = ( int ) keysym->sym;
+		*key = (keyNum_t) ( int ) keysym->sym;
 	}
 	else
 	{
@@ -599,7 +599,7 @@ static const char *IN_TranslateSDLToQ3Key( SDL_keysym *keysym,
 			default:
 				if ( keysym->sym >= SDLK_WORLD_0 && keysym->sym <= SDLK_WORLD_95 )
 				{
-					*key = ( keysym->sym - SDLK_WORLD_0 ) + K_WORLD_0;
+					*key = (keyNum_t) ( ( keysym->sym - SDLK_WORLD_0 ) + K_WORLD_0 );
 				}
 
 				break;
@@ -617,7 +617,7 @@ static const char *IN_TranslateSDLToQ3Key( SDL_keysym *keysym,
 				{
 					// ctrl-h
 					*buf = CTRL( 'h' );
-					delete = qtrue;
+					del = qtrue;
 					break;
 				}
 
@@ -644,7 +644,7 @@ static const char *IN_TranslateSDLToQ3Key( SDL_keysym *keysym,
 			Com_Printf( "  Ignored dead key '%c'\n", *key );
 		}
 
-		*key = 0;
+		*key = (keyNum_t) 0;
 	}
 
 	if ( IN_IsConsoleKey( *key, *buf ) && !keys[ K_ALT ].down)
@@ -654,7 +654,7 @@ static const char *IN_TranslateSDLToQ3Key( SDL_keysym *keysym,
 		*key = K_CONSOLE;
 		*buf = '\0';
 	}
-	else if ( delete )
+	else if ( del )
 	{
 		*buf = CTRL( 'h' );
 	}		
@@ -1590,7 +1590,7 @@ static void IN_ProcessEvents( void )
 {
 	SDL_Event  e;
 	const char *character = NULL;
-	keyNum_t   key = 0;
+	keyNum_t   key = (keyNum_t) 0;
 
 	if ( !SDL_WasInit( SDL_INIT_VIDEO ) )
 	{
