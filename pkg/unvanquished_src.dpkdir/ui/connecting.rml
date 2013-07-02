@@ -26,19 +26,6 @@
 			{
 				font-family: Roboto;
 			}
-			div#progressbars
-			{
-				left: 25%;
-				width: 50%;
-				z-index: 3;
-			}
-			progressbar
-			{
-				width: 100%;
-				height: 32px;
-				progress-image: /white;
-				z-index: 3;
-			}
 		</style>
 		<title>Connecting</title>
 	</head>

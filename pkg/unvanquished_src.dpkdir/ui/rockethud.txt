@@ -4,10 +4,12 @@ units
 	ui/hud/aliens/aliens.rml
 	ui/hud/common/overlay.rml
 	ui/hud/common/console.rml
+	ui/hud/common/base.rml
 }
 
 spectator_hud
 {
+	base
 	human_hud
 	overlay
 	console
@@ -15,6 +17,7 @@ spectator_hud
 
 alien_hud
 {
+	base
 	alien_hud
 	overlay
 	console

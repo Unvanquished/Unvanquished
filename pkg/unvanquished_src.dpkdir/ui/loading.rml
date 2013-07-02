@@ -1,6 +1,13 @@
 <rml>
 	<head>
 		<style>
+			body
+			{
+				font-family: Roboto;
+				width: 100%;
+				height: 100%;
+			}
+
 			div#background
 			{
 				z-index: -1;
@@ -22,10 +29,6 @@
 				margin-top: 50%;
 				font-size: 48;
 			}
-			body
-			{
-				font-family: Roboto;
-			}
 			div#progressbars
 			{
 				left: 25%;
@@ -36,7 +39,7 @@
 			{
 				width: 100%;
 				height: 32px;
-				progress-image: /white;
+				image: /white;
 				z-index: 3;
 			}
 
