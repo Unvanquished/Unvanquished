@@ -345,7 +345,7 @@ void VM_LoadSymbols( vm_t *vm )
 		}
 
 		chars = strlen( token );
-		sym = Hunk_Alloc( sizeof( *sym ) + chars, h_high );
+		sym = (vmSymbol_t*) Hunk_Alloc( sizeof( *sym ) + chars, h_high );
 		*prev = sym;
 		prev = &sym->next;
 		sym->next = NULL;
@@ -621,7 +621,7 @@ vmHeader_t *VM_LoadQVM( vm_t *vm, qboolean alloc )
 	if ( alloc )
 	{
 		// allocate zero filled space for initialized and uninitialized data
-		vm->dataBase = Hunk_Alloc( dataLength + VM_DATA_PADDING, h_high );
+		vm->dataBase = (byte*) Hunk_Alloc( dataLength + VM_DATA_PADDING, h_high );
 		vm->dataMask = dataLength - 1;
 	}
 	else
@@ -661,7 +661,7 @@ vmHeader_t *VM_LoadQVM( vm_t *vm, qboolean alloc )
 
 		if ( alloc )
 		{
-			vm->jumpTableTargets = Hunk_Alloc( header.h->jtrgLength, h_high );
+			vm->jumpTableTargets = (byte*) Hunk_Alloc( header.h->jtrgLength, h_high );
 		}
 		else
 		{
@@ -838,7 +838,7 @@ vm_t *VM_Create( const char *module, intptr_t ( *systemCalls )( intptr_t * ),
 
 	// allocate space for the jump targets, which will be filled in by the compile/prep functions
 	vm->instructionCount = header->instructionCount;
-	vm->instructionPointers = Hunk_Alloc( vm->instructionCount * sizeof( *vm->instructionPointers ), h_high );
+	vm->instructionPointers = (intptr_t*) Hunk_Alloc( vm->instructionCount * sizeof( *vm->instructionPointers ), h_high );
 
 	// copy or compile the instructions
 	vm->codeLength = header->codeLength;
@@ -1166,7 +1166,7 @@ void VM_VmProfile_f( void )
 		return;
 	}
 
-	sorted = Z_Malloc( vm->numSymbols * sizeof( *sorted ) );
+	sorted = (vmSymbol_t**) Z_Malloc( vm->numSymbols * sizeof( *sorted ) );
 	sorted[ 0 ] = vm->symbols;
 	total = sorted[ 0 ]->profileCount;
 
@@ -1347,8 +1347,8 @@ intptr_t VM_SystemCall( intptr_t *args )
 			return memcmp( VMA( 1 ), VMA( 2 ), args[ 3 ] );
 
 		case TRAP_STRNCPY:
-			VM_CheckBlockPair( args[ 1 ], args[ 2 ], args[ 3 ], strlen( VMA( 2 ) ) + 1, "STRNCPY" );
-			return ( intptr_t ) strncpy( VMA( 1 ), VMA( 2 ), args[ 3 ] );
+			VM_CheckBlockPair( args[ 1 ], args[ 2 ], args[ 3 ], strlen( (char*) VMA( 2 ) ) + 1, "STRNCPY" );
+			return ( intptr_t ) strncpy( (char*) VMA( 1 ), (char*) VMA( 2 ), args[ 3 ] );
 
 		case TRAP_SIN:
 			return FloatAsInt( sin( VMF( 1 ) ) );
@@ -1381,15 +1381,15 @@ intptr_t VM_SystemCall( intptr_t *args )
 			return FloatAsInt( ceil( VMF( 1 ) ) );
 
 		case TRAP_MATRIXMULTIPLY:
-			AxisMultiply( VMA( 1 ), VMA( 2 ), VMA( 3 ) );
+			AxisMultiply( (float(*)[3]) VMA( 1 ), (float(*)[3]) VMA( 2 ), (float(*)[3]) VMA( 3 ) );
 			return 0;
 
 		case TRAP_ANGLEVECTORS:
-			AngleVectors( VMA( 1 ), VMA( 2 ), VMA( 3 ), VMA( 4 ) );
+			AngleVectors( (float*) VMA( 1 ), (float*) VMA( 2 ), (float*) VMA( 3 ), (float*) VMA( 4 ) );
 			return 0;
 
 		case TRAP_PERPENDICULARVECTOR:
-			PerpendicularVector( VMA( 1 ), VMA( 2 ) );
+			PerpendicularVector( (float*) VMA( 1 ), (float*) VMA( 2 ) );
 			return 0;
 
 		case TRAP_VERSION:

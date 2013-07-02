@@ -570,7 +570,7 @@ int EmitCallDoSyscall( vm_t *vm )
 {
 	// use edx register to store DoSyscall address
 	EmitString( REX_W(48,40) "BA" );  // mov edx, DoSyscall
-	EmitPtr( DoSyscall );
+	EmitPtr( (void*) DoSyscall );
 
 	// Push important registers to stack as we can't really make
 	// any assumptions about calling conventions.
@@ -1218,9 +1218,9 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 
 	// allocate a very large temp buffer, we will shrink it later
 	maxLength = header->codeLength * 8 + 64;
-	buf = Z_Malloc( maxLength );
-	jused = Z_Malloc( jusedSize );
-	code = Z_Malloc( header->codeLength + 32 );
+	buf = (byte*) Z_Malloc( maxLength );
+	jused = (byte*) Z_Malloc( jusedSize );
+	code = (byte*) Z_Malloc( header->codeLength + 32 );
 
 	Com_Memset( jused, 0, jusedSize );
 	Com_Memset( buf, 0, maxLength );
@@ -1795,7 +1795,7 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 #else // FTOL_PTR
 						// call the library conversion function
 					EmitString( REX_W(48,40) "BA" );  // mov edx, Q_VMftol
-					EmitPtr( Q_VMftol );
+					EmitPtr( (void*) Q_VMftol );
 					EmitString( REX64(48) "FF D2" );  // call edx
 					EmitCommand( LAST_COMMAND_MOV_STACK_EAX );  // mov dword ptr [edi + ebx * 4], eax
 #endif
@@ -1855,7 +1855,7 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 	// copy to an exact sized buffer with the appropriate permission bits
 	vm->codeLength = compiledOfs;
 #ifdef VM_X86_MMAP
-	vm->codeBase = mmap( NULL, compiledOfs, PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0 );
+	vm->codeBase = (byte*) mmap( NULL, compiledOfs, PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0 );
 
 	if ( vm->codeBase == MAP_FAILED )
 	{
@@ -1972,7 +1972,7 @@ int VM_CallCompiled( vm_t *vm, int *args )
 
 	// off we go into generated code...
 	entryPoint = vm->codeBase + vm->entryOfs;
-	opStack = PADP( stack, 16 );
+	opStack = (int*) PADP( stack, 16 );
 	*opStack = 0xDEADBEEF;
 	opStackOfs = 0;
 

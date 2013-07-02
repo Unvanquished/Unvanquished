@@ -1094,7 +1094,7 @@ SOCKET NET_IPSocket( const char *net_interface, int port, struct sockaddr_in *bi
 
 	address.sin_port = htons( ( short ) port );
 
-	if ( bind( newsocket, ( void * ) &address, sizeof( address ) ) == SOCKET_ERROR )
+	if ( bind( newsocket, ( struct sockaddr * ) &address, sizeof( address ) ) == SOCKET_ERROR )
 	{
 		Com_Printf( "WARNING: NET_IPSocket: bind: %s\n", NET_ErrorString() );
 		*err = socketError;
@@ -1185,7 +1185,7 @@ SOCKET NET_IP6Socket( const char *net_interface, int port, struct sockaddr_in6 *
 
 	address.sin6_port = htons( ( short ) port );
 
-	if ( bind( newsocket, ( void * ) &address, sizeof( address ) ) == SOCKET_ERROR )
+	if ( bind( newsocket, ( struct sockaddr * ) &address, sizeof( address ) ) == SOCKET_ERROR )
 	{
 		Com_Printf( "WARNING: NET_IP6Socket: bind: %s\n", NET_ErrorString() );
 		*err = socketError;
