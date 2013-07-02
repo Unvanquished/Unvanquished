@@ -325,7 +325,7 @@ static INLINE void IRC_AddHandler( const char *command, irc_handler_func_t handl
 	qboolean            created;
 	struct irc_handler_t *rv;
 
-	rv = HT_GetItem( IRC_Handlers, command, &created );
+	rv = (irc_handler_t*) HT_GetItem( IRC_Handlers, command, &created );
 	assert( created );
 	rv->handler = ( void (*)( void ) )handler;
 }
@@ -342,7 +342,7 @@ static void IRC_AddCTCPHandler( const char *command, ctcp_handler_func_t handler
 	qboolean             created;
 	struct irc_handler_t *rv;
 
-	rv = HT_GetItem( IRC_CTCPHandlers, command, &created );
+	rv = (irc_handler_t*) HT_GetItem( IRC_CTCPHandlers, command, &created );
 	assert( created );
 	rv->handler = ( void (*)( void ) )handler;
 }
@@ -359,7 +359,7 @@ static int IRC_ExecuteHandler( void )
 {
 	struct irc_handler_t *handler;
 
-	handler = HT_GetItem( IRC_Handlers, IRC_String( cmd_string ), NULL );
+	handler = (irc_handler_t*) HT_GetItem( IRC_Handlers, IRC_String( cmd_string ), NULL );
 
 	if ( handler == NULL )
 	{
@@ -380,7 +380,7 @@ static int IRC_ExecuteCTCPHandler( const char *command, qboolean is_channel, con
 {
 	struct irc_handler_t *handler;
 
-	handler = HT_GetItem( IRC_CTCPHandlers, command, NULL );
+	handler = (irc_handler_t*) HT_GetItem( IRC_CTCPHandlers, command, NULL );
 
 	if ( handler == NULL )
 	{

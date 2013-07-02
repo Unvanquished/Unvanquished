@@ -464,7 +464,7 @@ void CL_VoipParseTargets( void )
 			}
 			else if ( !Q_strnicmp( target, "team", 4 ) )
 			{
-				const char *players = VM_ExplicitArgPtr( cgvm, VM_Call( cgvm, CG_VOIP_STRING, 0 ) );
+				const char *players = (char*) VM_ExplicitArgPtr( cgvm, VM_Call( cgvm, CG_VOIP_STRING, 0 ) );
 				const char *head;
 				char *p;
 
@@ -2289,7 +2289,7 @@ static void CL_LoadRSAKeys( void )
 		return;
 	}
 
-	buf = Z_TagMalloc( len, TAG_CRYPTO );
+	buf = (uint8_t*) Z_TagMalloc( len, TAG_CRYPTO );
 	FS_Read( buf, len, f );
 	FS_FCloseFile( f );
 
@@ -4269,7 +4269,7 @@ qboolean CL_InitRef( const char *renderer )
 
 	Com_Printf( "done\n" );
 
-	GetRefAPI = Sys_LoadFunction( lib, "GetRefAPI" );
+	GetRefAPI = (GetRefAPI_t) Sys_LoadFunction( lib, "GetRefAPI" );
 
 	if ( !GetRefAPI )
 	{

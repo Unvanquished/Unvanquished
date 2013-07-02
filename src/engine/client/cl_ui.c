@@ -988,45 +988,45 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 			return Sys_Milliseconds();
 
 		case UI_CVAR_REGISTER:
-			Cvar_Register( VMA( 1 ), VMA( 2 ), VMA( 3 ), args[ 4 ] );
+			Cvar_Register( (vmCvar_t*) VMA( 1 ), (char*) VMA( 2 ), (char*) VMA( 3 ), args[ 4 ] );
 			return 0;
 
 		case UI_CVAR_UPDATE:
-			Cvar_Update( VMA( 1 ) );
+			Cvar_Update( (vmCvar_t*) VMA( 1 ) );
 			return 0;
 
 		case UI_CVAR_SET:
-			Cvar_Set( VMA( 1 ), VMA( 2 ) );
+			Cvar_Set( (char*) VMA( 1 ), (char*) VMA( 2 ) );
 			return 0;
 
 		case UI_CVAR_VARIABLEVALUE:
-			return FloatAsInt( Cvar_VariableValue( VMA( 1 ) ) );
+			return FloatAsInt( Cvar_VariableValue( (char*) VMA( 1 ) ) );
 
 		case UI_CVAR_VARIABLESTRINGBUFFER:
 			VM_CheckBlock( args[2], args[3], "CVARVSB" );
-			Cvar_VariableStringBuffer( VMA( 1 ), VMA( 2 ), args[ 3 ] );
+			Cvar_VariableStringBuffer( (char*) VMA( 1 ), (char*) VMA( 2 ), args[ 3 ] );
 			return 0;
 
 		case UI_CVAR_LATCHEDVARIABLESTRINGBUFFER:
 			VM_CheckBlock( args[2], args[3], "CVARLVSB" );
-			Cvar_LatchedVariableStringBuffer( VMA( 1 ), VMA( 2 ), args[ 3 ] );
+			Cvar_LatchedVariableStringBuffer( (char*) VMA( 1 ), (char*) VMA( 2 ), args[ 3 ] );
 			return 0;
 
 		case UI_CVAR_SETVALUE:
-			Cvar_SetValue( VMA( 1 ), VMF( 2 ) );
+			Cvar_SetValue( (char*) VMA( 1 ), VMF( 2 ) );
 			return 0;
 
 		case UI_CVAR_RESET:
-			Cvar_Reset( VMA( 1 ) );
+			Cvar_Reset( (char*) VMA( 1 ) );
 			return 0;
 
 		case UI_CVAR_CREATE:
-			Cvar_Register( NULL, VMA( 1 ), VMA( 2 ), args[ 3 ] );
+			Cvar_Register( NULL, (char*) VMA( 1 ), (char*) VMA( 2 ), args[ 3 ] );
 			return 0;
 
 		case UI_CVAR_INFOSTRINGBUFFER:
 			VM_CheckBlock( args[2], args[3], "CVARISB" );
-			Cvar_InfoStringBuffer( args[ 1 ], VMA( 2 ), args[ 3 ] );
+			Cvar_InfoStringBuffer( args[ 1 ], (char*) VMA( 2 ), args[ 3 ] );
 			return 0;
 
 		case UI_ARGC:
@@ -1034,28 +1034,28 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 
 		case UI_ARGV:
 			VM_CheckBlock( args[2], args[3], "ARGV" );
-			Cmd_ArgvBuffer( args[ 1 ], VMA( 2 ), args[ 3 ] );
+			Cmd_ArgvBuffer( args[ 1 ], (char*) VMA( 2 ), args[ 3 ] );
 			return 0;
 
 		case UI_CMD_EXECUTETEXT:
-			Cbuf_ExecuteText( args[ 1 ], VMA( 2 ) );
+			Cbuf_ExecuteText( args[ 1 ], (char*) VMA( 2 ) );
 			return 0;
 
 		case UI_ADDCOMMAND:
-			Cmd_AddCommand( VMA( 1 ), NULL );
+			Cmd_AddCommand( (char*) VMA( 1 ), NULL );
 			return 0;
 
 		case UI_FS_FOPENFILE:
-			return FS_FOpenFileByMode( VMA( 1 ), VMA( 2 ), args[ 3 ] );
+			return FS_FOpenFileByMode( (char*) VMA( 1 ), (fileHandle_t*) VMA( 2 ), (fsMode_t) args[ 3 ] );
 
 		case UI_FS_READ:
 			VM_CheckBlock( args[1], args[2], "FSREAD" );
-			FS_Read( VMA( 1 ), args[ 2 ], args[ 3 ] );
+			FS_Read( (char*) VMA( 1 ), args[ 2 ], args[ 3 ] );
 			return 0;
 
 		case UI_FS_WRITE:
 			VM_CheckBlock( args[1], args[2], "FSWRITE" );
-			FS_Write( VMA( 1 ), args[ 2 ], args[ 3 ] );
+			FS_Write( (char*) VMA( 1 ), args[ 2 ], args[ 3 ] );
 			return 0;
 
 		case UI_FS_FCLOSEFILE:
@@ -1063,67 +1063,67 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 			return 0;
 
 		case UI_FS_DELETEFILE:
-			return FS_Delete( VMA( 1 ) );
+			return FS_Delete( (char*) VMA( 1 ) );
 
 		case UI_FS_GETFILELIST:
 			VM_CheckBlock( args[3], args[4], "FSGFL" );
-			return FS_GetFileList( VMA( 1 ), VMA( 2 ), VMA( 3 ), args[ 4 ] );
+			return FS_GetFileList( (char*) VMA( 1 ), (char*) VMA( 2 ), (char*) VMA( 3 ), args[ 4 ] );
 
 		case UI_FS_SEEK:
 			return FS_Seek( args[ 1 ], args[ 2 ], args[ 3 ] );
 
 		case UI_R_REGISTERMODEL:
-			return re.RegisterModel( VMA( 1 ) );
+			return re.RegisterModel( (char*) VMA( 1 ) );
 
 		case UI_R_REGISTERSKIN:
-			return re.RegisterSkin( VMA( 1 ) );
+			return re.RegisterSkin( (char*) VMA( 1 ) );
 
 		case UI_R_REGISTERSHADER:
-			return re.RegisterShader( VMA( 1 ), args[ 2 ] );
+			return re.RegisterShader( (char*) VMA( 1 ), (RegisterShaderFlags_t) args[ 2 ] );
 
 		case UI_R_CLEARSCENE:
 			re.ClearScene();
 			return 0;
 
 		case UI_R_ADDREFENTITYTOSCENE:
-			re.AddRefEntityToScene( VMA( 1 ) );
+			re.AddRefEntityToScene( (refEntity_t*) VMA( 1 ) );
 			return 0;
 
 		case UI_R_ADDPOLYTOSCENE:
-			re.AddPolyToScene( args[ 1 ], args[ 2 ], VMA( 3 ) );
+			re.AddPolyToScene( args[ 1 ], args[ 2 ], (polyVert_t*) VMA( 3 ) );
 			return 0;
 
 			// Ridah
 		case UI_R_ADDPOLYSTOSCENE:
-			re.AddPolysToScene( args[ 1 ], args[ 2 ], VMA( 3 ), args[ 4 ] );
+			re.AddPolysToScene( args[ 1 ], args[ 2 ], (polyVert_t*) VMA( 3 ), args[ 4 ] );
 			return 0;
 			// done.
 
 		case UI_R_ADDLIGHTTOSCENE:
 			// ydnar: new dlight code
 			//% re.AddLightToScene( VMA(1), VMF(2), VMF(3), VMF(4), VMF(5), args[6] );
-			re.AddLightToScene( VMA( 1 ), VMF( 2 ), VMF( 3 ), VMF( 4 ), VMF( 5 ), VMF( 6 ), args[ 7 ], args[ 8 ] );
+			re.AddLightToScene( (float*) VMA( 1 ), VMF( 2 ), VMF( 3 ), VMF( 4 ), VMF( 5 ), VMF( 6 ), args[ 7 ], args[ 8 ] );
 			return 0;
 
 		case UI_R_ADDCORONATOSCENE:
-			re.AddCoronaToScene( VMA( 1 ), VMF( 2 ), VMF( 3 ), VMF( 4 ), VMF( 5 ), args[ 6 ], args[ 7 ] );
+			re.AddCoronaToScene((float*) VMA( 1 ), VMF( 2 ), VMF( 3 ), VMF( 4 ), VMF( 5 ), args[ 6 ], args[ 7 ] );
 			return 0;
 
 		case UI_R_RENDERSCENE:
-			re.RenderScene( VMA( 1 ) );
+			re.RenderScene( (refdef_t*) VMA( 1 ) );
 			return 0;
 
 		case UI_R_SETCOLOR:
-			re.SetColor( VMA( 1 ) );
+			re.SetColor( (float*) VMA( 1 ) );
 			return 0;
 
 			// Tremulous
 		case UI_R_SETCLIPREGION:
-			re.SetClipRegion( VMA( 1 ) );
+			re.SetClipRegion( (float*) VMA( 1 ) );
 			return 0;
 
 		case UI_R_DRAW2DPOLYS:
-			re.Add2dPolys( VMA( 1 ), args[ 2 ], args[ 3 ] );
+			re.Add2dPolys( (polyVert_t*) VMA( 1 ), args[ 2 ], args[ 3 ] );
 			return 0;
 
 		case UI_R_DRAWSTRETCHPIC:
@@ -1135,7 +1135,7 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 			return 0;
 
 		case UI_R_MODELBOUNDS:
-			re.ModelBounds( args[ 1 ], VMA( 2 ), VMA( 3 ) );
+			re.ModelBounds( args[ 1 ], (float*) VMA( 2 ), (float*) VMA( 3 ) );
 			return 0;
 
 		case UI_UPDATESCREEN:
@@ -1143,13 +1143,13 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 			return 0;
 
 		case UI_CM_LERPTAG:
-			return re.LerpTag( VMA( 1 ), VMA( 2 ), VMA( 3 ), args[ 4 ] );
+			return re.LerpTag( (orientation_t*) VMA( 1 ), (refEntity_t*) VMA( 2 ), (char*) VMA( 3 ), args[ 4 ] );
 
 		case UI_S_REGISTERSOUND:
 #ifdef DOOMSOUND ///// (SA) DOOMSOUND
-			return S_RegisterSound( VMA( 1 ) );
+			return S_RegisterSound( (char*) VMA( 1 ) );
 #else
-			return S_RegisterSound( VMA( 1 ), args[ 2 ] );
+			return S_RegisterSound( (char*) VMA( 1 ), args[ 2 ] );
 #endif ///// (SA) DOOMSOUND
 
 		case UI_S_STARTLOCALSOUND:
@@ -1169,16 +1169,16 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 
 		case UI_KEY_KEYNUMTOSTRINGBUF:
 			VM_CheckBlock( args[2], args[3], "KEYNTSB" );
-			Key_KeynumToStringBuf( args[ 1 ], VMA( 2 ), args[ 3 ] );
+			Key_KeynumToStringBuf( args[ 1 ], (char*) VMA( 2 ), args[ 3 ] );
 			return 0;
 
 		case UI_KEY_GETBINDINGBUF:
 			VM_CheckBlock( args[3], args[4], "KEYGBB" );
-			Key_GetBindingBuf( args[ 1 ], args[ 2 ], VMA( 3 ), args[ 4 ] );
+			Key_GetBindingBuf( args[ 1 ], args[ 2 ], (char*) VMA( 3 ), args[ 4 ] );
 			return 0;
 
 		case UI_KEY_SETBINDING:
-			Key_SetBinding( args[ 1 ], args[ 2 ], VMA( 3 ) ); // FIXME BIND
+			Key_SetBinding( args[ 1 ], args[ 2 ], (char*) VMA( 3 ) ); // FIXME BIND
 			return 0;
 
 		case UI_KEY_ISDOWN:
@@ -1207,7 +1207,7 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 
 			if ( cl_allowPaste->integer )
 			{
-				CL_GetClipboardData( VMA( 1 ), args[ 2 ], args[ 3 ] );
+				CL_GetClipboardData( (char*) VMA( 1 ), args[ 2 ], (clipboard_t) args[ 3 ] );
 			}
 			else
 			{
@@ -1216,16 +1216,16 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 			return 0;
 
 		case UI_GETCLIENTSTATE:
-			GetClientState( VMA( 1 ) );
+			GetClientState( (uiClientState_t*) VMA( 1 ) );
 			return 0;
 
 		case UI_GETGLCONFIG:
-			CL_GetGlconfig( VMA( 1 ) );
+			CL_GetGlconfig( (glconfig_t*) VMA( 1 ) );
 			return 0;
 
 		case UI_GETCONFIGSTRING:
 			VM_CheckBlock( args[2], args[3], "UIGCS" );
-			return GetConfigString( args[ 1 ], VMA( 2 ), args[ 3 ] );
+			return GetConfigString( args[ 1 ], (char*) VMA( 2 ), args[ 3 ] );
 
 		case UI_LAN_LOADCACHEDSERVERS:
 			LAN_LoadCachedServers();
@@ -1236,10 +1236,10 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 			return 0;
 
 		case UI_LAN_ADDSERVER:
-			return LAN_AddServer( args[ 1 ], VMA( 2 ), VMA( 3 ) );
+			return LAN_AddServer( args[ 1 ], (char*) VMA( 2 ), (char*) VMA( 3 ) );
 
 		case UI_LAN_REMOVESERVER:
-			LAN_RemoveServer( args[ 1 ], VMA( 2 ) );
+			LAN_RemoveServer( args[ 1 ], (char*) VMA( 2 ) );
 			return 0;
 
 		case UI_LAN_GETPINGQUEUECOUNT:
@@ -1251,12 +1251,12 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 
 		case UI_LAN_GETPING:
 			VM_CheckBlock( args[2], args[3], "UILANGP" );
-			LAN_GetPing( args[ 1 ], VMA( 2 ), args[ 3 ], VMA( 4 ) );
+			LAN_GetPing( args[ 1 ], (char*) VMA( 2 ), args[ 3 ], (int*) VMA( 4 ) );
 			return 0;
 
 		case UI_LAN_GETPINGINFO:
 			VM_CheckBlock( args[2], args[3], "UILANGPI" );
-			LAN_GetPingInfo( args[ 1 ], VMA( 2 ), args[ 3 ] );
+			LAN_GetPingInfo( args[ 1 ], (char*) VMA( 2 ), args[ 3 ] );
 			return 0;
 
 		case UI_LAN_GETSERVERCOUNT:
@@ -1264,12 +1264,12 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 
 		case UI_LAN_GETSERVERADDRESSSTRING:
 			VM_CheckBlock( args[3], args[4], "UILANGSAS" );
-			LAN_GetServerAddressString( args[ 1 ], args[ 2 ], VMA( 3 ), args[ 4 ] );
+			LAN_GetServerAddressString( args[ 1 ], args[ 2 ], (char*) VMA( 3 ), args[ 4 ] );
 			return 0;
 
 		case UI_LAN_GETSERVERINFO:
 			VM_CheckBlock( args[3], args[4], "UILANGSI" );
-			LAN_GetServerInfo( args[ 1 ], args[ 2 ], VMA( 3 ), args[ 4 ] );
+			LAN_GetServerInfo( args[ 1 ], args[ 2 ], (char*) VMA( 3 ), args[ 4 ] );
 			return 0;
 
 		case UI_LAN_GETSERVERPING:
@@ -1291,7 +1291,7 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 
 		case UI_LAN_SERVERSTATUS:
 			VM_CheckBlock( args[2], args[3], "UILANGSS" );
-			return LAN_GetServerStatus( VMA( 1 ), VMA( 2 ), args[ 3 ] );
+			return LAN_GetServerStatus( (char*) VMA( 1 ), (char*) VMA( 2 ), args[ 3 ] );
 
 		case UI_LAN_SERVERISINFAVORITELIST:
 			return LAN_ServerIsInFavoriteList( args[ 1 ], args[ 2 ] );
@@ -1306,23 +1306,23 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 			return Hunk_MemoryRemaining();
 
 		case UI_R_REGISTERFONT:
-			re.RegisterFontVM( VMA( 1 ), VMA( 2 ), args[ 3 ], VMA( 4 ) );
+			re.RegisterFontVM( (char*) VMA( 1 ), (char*) VMA( 2 ), args[ 3 ], (fontMetrics_t*) VMA( 4 ) );
 			return 0;
 
 		case UI_PARSE_ADD_GLOBAL_DEFINE:
-			return Parse_AddGlobalDefine( VMA( 1 ) );
+			return Parse_AddGlobalDefine( (char*) VMA( 1 ) );
 
 		case UI_PARSE_LOAD_SOURCE:
-			return Parse_LoadSourceHandle( VMA( 1 ) );
+			return Parse_LoadSourceHandle( (char*) VMA( 1 ) );
 
 		case UI_PARSE_FREE_SOURCE:
 			return Parse_FreeSourceHandle( args[ 1 ] );
 
 		case UI_PARSE_READ_TOKEN:
-			return Parse_ReadTokenHandle( args[ 1 ], VMA( 2 ) );
+			return Parse_ReadTokenHandle( args[ 1 ], (pc_token_t*) VMA( 2 ) );
 
 		case UI_PARSE_SOURCE_FILE_AND_LINE:
-			return Parse_SourceFileAndLine( args[ 1 ], VMA( 2 ), VMA( 3 ) );
+			return Parse_SourceFileAndLine( args[ 1 ], (char*) VMA( 2 ), (int*) VMA( 3 ) );
 
 		case UI_S_STOPBACKGROUNDTRACK:
 			S_StopBackgroundTrack();
@@ -1330,15 +1330,15 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 
 		case UI_S_STARTBACKGROUNDTRACK:
 			//S_StartBackgroundTrack(VMA(1), VMA(2), args[3]);  //----(SA) added fadeup time
-			S_StartBackgroundTrack( VMA( 1 ), VMA( 2 ) );
+			S_StartBackgroundTrack( (char*) VMA( 1 ), (char*) VMA( 2 ) );
 			return 0;
 
 		case UI_REAL_TIME:
-			return Com_RealTime( VMA( 1 ) );
+			return Com_RealTime( (qtime_t*) VMA( 1 ) );
 
 		case UI_CIN_PLAYCINEMATIC:
 			Com_DPrintf( "UI_CIN_PlayCinematic\n" );
-			return CIN_PlayCinematic( VMA( 1 ), args[ 2 ], args[ 3 ], args[ 4 ], args[ 5 ], args[ 6 ] );
+			return CIN_PlayCinematic( (char*) VMA( 1 ), args[ 2 ], args[ 3 ], args[ 4 ], args[ 5 ], args[ 6 ] );
 
 		case UI_CIN_STOPCINEMATIC:
 			return CIN_StopCinematic( args[ 1 ] );
@@ -1355,31 +1355,31 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 			return 0;
 
 		case UI_R_REMAP_SHADER:
-			re.RemapShader( VMA( 1 ), VMA( 2 ), VMA( 3 ) );
+			re.RemapShader( (char*) VMA( 1 ), (char*) VMA( 2 ), (char*) VMA( 3 ) );
 			return 0;
 
 		case UI_GETHUNKDATA:
-			Com_GetHunkInfo( VMA( 1 ), VMA( 2 ) );
+			Com_GetHunkInfo( (int*) VMA( 1 ), (int*) VMA( 2 ) );
 			return 0;
 
 		case UI_QUOTESTRING:
 			VM_CheckBlock( args[ 2 ], args[ 3 ], "QUOTE" );
-			Cmd_QuoteStringBuffer( VMA( 1 ), VMA( 2 ), args[ 3 ] );
+			Cmd_QuoteStringBuffer( (char*) VMA( 1 ), (char*) VMA( 2 ), args[ 3 ] );
 			return 0;
 
 #if defined( USE_REFENTITY_ANIMATIONSYSTEM )
 
 		case UI_R_REGISTERANIMATION:
-			return re.RegisterAnimation( VMA( 1 ) );
+			return re.RegisterAnimation( (char*) VMA( 1 ) );
 
 		case UI_R_BUILDSKELETON:
-			return re.BuildSkeleton( VMA( 1 ), args[ 2 ], args[ 3 ], args[ 4 ], VMF( 5 ), args[ 6 ] );
+			return re.BuildSkeleton( (refSkeleton_t*) VMA( 1 ), args[ 2 ], args[ 3 ], args[ 4 ], VMF( 5 ), args[ 6 ] );
 
 		case UI_R_BLENDSKELETON:
-			return re.BlendSkeleton( VMA( 1 ), VMA( 2 ), VMF( 3 ) );
+			return re.BlendSkeleton( (refSkeleton_t*) VMA( 1 ), (refSkeleton_t*) VMA( 2 ), VMF( 3 ) );
 
 		case UI_R_BONEINDEX:
-			return re.BoneIndex( args[ 1 ], VMA( 2 ) );
+			return re.BoneIndex( args[ 1 ], (char*) VMA( 2 ) );
 
 		case UI_R_ANIMNUMFRAMES:
 			return re.AnimNumFrames( args[ 1 ] );
@@ -1389,15 +1389,15 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 #endif
 		case UI_GETTEXT:
 			VM_CheckBlock( args[1], args[3], "UIGETTEXT" );
-			Q_strncpyz( VMA(1), __(VMA(2)), args[3] );
+			Q_strncpyz( (char*) VMA(1), __((char*) VMA(2)), args[3] );
 			return 0;
 
 		case UI_R_GLYPH:
-			re.GlyphVM( args[1], VMA(2), VMA(3) );
+			re.GlyphVM( args[1], (char*) VMA(2), (glyphInfo_t*) VMA(3) );
 			return 0;
 
 		case UI_R_GLYPHCHAR:
-			re.GlyphCharVM( args[1], args[2], VMA(3) );
+			re.GlyphCharVM( args[1], args[2], (glyphInfo_t*) VMA(3) );
 			return 0;
 
 		case UI_R_UREGISTERFONT:
@@ -1406,12 +1406,12 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 
 		case UI_PGETTEXT:
 			VM_CheckBlock( args[ 1 ], args[ 4 ], "UIPGETTEXT" );
-			Q_strncpyz( VMA( 1 ), C__( VMA( 2 ), VMA( 3 ) ), args[ 4 ] );
+			Q_strncpyz( (char*) VMA( 1 ), C__( (char*) VMA( 2 ), (char*) VMA( 3 ) ), args[ 4 ] );
 			return 0;
 
 		case UI_GETTEXT_PLURAL:
 			VM_CheckBlock( args[ 1 ], args[ 5 ], "UIGETTEXTP" );
-			Q_strncpyz( VMA( 1 ), P__( VMA( 2 ), VMA( 3 ), args[ 4 ] ), args[ 5 ] );
+			Q_strncpyz( (char*) VMA( 1 ), P__( (char*) VMA( 2 ), (char*) VMA( 3 ), args[ 4 ] ), args[ 5 ] );
 			return 0;
 
 		default:

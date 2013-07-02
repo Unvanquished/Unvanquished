@@ -1457,7 +1457,7 @@ void Key_EditBind_f( void )
 	binding = Key_GetBinding( b, -team );
 
 	bindq = binding ? Cmd_QuoteString( binding ) : "";  // <- static buffer
-	buf = malloc( 32 + strlen( key ) + strlen( bindq ) );
+	buf = (char*) malloc( 32 + strlen( key ) + strlen( bindq ) );
 
 	if ( team >= 0 )
 	{

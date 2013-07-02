@@ -957,7 +957,7 @@ static void S_AL_SrcKill(srcHandle_t src)
 
 	curSource->sfx = 0;
 	curSource->lastUsedTime = 0;
-	curSource->priority = 0;
+	curSource->priority = (alSrcPriority_t) 0;
 	curSource->entity = -1;
 	curSource->channel = -1;
 	if(curSource->isActive)

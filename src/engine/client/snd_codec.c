@@ -198,7 +198,7 @@ snd_stream_t *codec_util_open( const char *filename, snd_codec_t *codec )
 	}
 
 	// Allocate a stream
-	stream = calloc( 1, sizeof( snd_stream_t ) );
+	stream = (snd_stream_t*) calloc( 1, sizeof( snd_stream_t ) );
 
 	if ( !stream )
 	{
