@@ -1048,7 +1048,7 @@ void SCR_DebugGraph( float value, int color );  // FIXME: move logging to common
 // server interface
 //
 void     SV_Init( void );
-void     SV_Shutdown( char *finalmsg );
+void     SV_Shutdown( const char *finalmsg );
 void     SV_Frame( int msec );
 void     SV_PacketEvent( netadr_t from, msg_t *msg );
 qboolean SV_GameCommand( void );
@@ -1113,7 +1113,7 @@ void                  Sys_UnloadDll( void *dllHandle );
 
 void                  *Sys_LoadFunction( void *dllHandle, const char *functionName );
 
-char                  *Sys_GetCurrentUser( void );
+const char            *Sys_GetCurrentUser( void );
 int                   Sys_GetPID( void );
 
 void QDECL            Sys_Error( const char *error, ... ) PRINTF_LIKE(1) NORETURN;

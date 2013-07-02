@@ -442,7 +442,7 @@ CONNECTIONLESS COMMANDS
 //bani - bugtraq 12534
 //returns qtrue if valid challenge
 //returns qfalse if m4d h4x0rz
-qboolean SV_VerifyChallenge( char *challenge )
+qboolean SV_VerifyChallenge( const char *challenge )
 {
 	int i, j;
 

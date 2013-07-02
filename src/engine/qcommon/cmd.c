@@ -1159,7 +1159,7 @@ Delays a command
 void Cmd_Delay_f( void )
 {
 	int      i, delay, type, lastchar;
-	char     *raw_delay, *name, *cmd;
+	const char *raw_delay, *name, *cmd;
 	qboolean availiable_cmd = qfalse;
 
 	// Check if the call is valid
@@ -1221,7 +1221,7 @@ void Cmd_Delay_f( void )
 	}
 
 	delayed_cmd[ i ].delay = delay;
-	delayed_cmd[ i ].type = type;
+	delayed_cmd[ i ].type = ( cmdDelayType_t ) type;
 	Q_strncpyz( delayed_cmd[ i ].text, cmd, MAX_CMD_LINE );
 	Q_strncpyz( delayed_cmd[ i ].name, name, MAX_CMD_LINE );
 }
@@ -1477,7 +1477,7 @@ void Cmd_Alias_f( void )
 		// Create/update an alias
 		if ( !alias )
 		{
-			alias = S_Malloc( sizeof( cmd_alias_t ) );
+			alias = ( cmd_alias_t * ) S_Malloc( sizeof( cmd_alias_t ) );
 			alias->name = CopyString( name );
 			alias->exec = CopyString( Cmd_ArgsFrom( 2 ) );
 			alias->next = cmd_aliases;
@@ -1599,7 +1599,7 @@ int Cmd_Argc( void )
 Cmd_Argv
 ============
 */
-char           *Cmd_Argv( int arg )
+char *Cmd_Argv( int arg )
 {
 	if ( ( unsigned ) arg >= cmd.argc )
 	{
@@ -2208,7 +2208,7 @@ String length is UNCHECKED
 const char *Cmd_DequoteString( const char *str )
 {
 	char *escapeBuffer = GetEscapeBuffer();
-	char *q;
+	const char *q;
 
 	// shouldn't be any leading space, but just in case...
 	while ( *str == ' ' || *str == '\n' )
@@ -2273,7 +2273,7 @@ void Cmd_AddCommand( const char *cmd_name, xcommand_t function )
 	}
 
 	// use a small malloc to avoid zone fragmentation
-	cmd = S_Malloc( sizeof( cmd_function_t ) );
+	cmd = ( cmd_function_t * ) S_Malloc( sizeof( cmd_function_t ) );
 	cmd->name = CopyString( cmd_name );
 	cmd->function = function;
 #ifndef DEDICATED

@@ -132,7 +132,7 @@ void SV_UpdateConfigStrings( void )
 				{
 					int  sent = 0;
 					int  remaining = len;
-					char *cmd;
+					const char *cmd;
 					char buf[ MAX_STRING_CHARS ];
 
 					while ( remaining > 0 )
@@ -336,7 +336,7 @@ void SV_Startup( void )
 	SV_BoundMaxClients( 1 );
 
 	// RF, avoid trying to allocate large chunk on a fragmented zone
-	svs.clients = calloc( sizeof( client_t ) * sv_maxclients->integer, 1 );
+	svs.clients = ( client_t * ) calloc( sizeof( client_t ) * sv_maxclients->integer, 1 );
 
 	if ( !svs.clients )
 	{
@@ -402,7 +402,7 @@ void SV_ChangeMaxClients( void )
 		return;
 	}
 
-	oldClients = Hunk_AllocateTempMemory( count * sizeof( client_t ) );
+	oldClients = ( client_t * ) Hunk_AllocateTempMemory( count * sizeof( client_t ) );
 
 	// copy the clients to hunk memory
 	for ( i = 0; i < count; i++ )
@@ -423,7 +423,7 @@ void SV_ChangeMaxClients( void )
 
 	// allocate new clients
 	// RF, avoid trying to allocate large chunk on a fragmented zone
-	svs.clients = calloc( sizeof( client_t ) * sv_maxclients->integer, 1 );
+	svs.clients = ( client_t * ) calloc( sizeof( client_t ) * sv_maxclients->integer, 1 );
 
 	if ( !svs.clients )
 	{
@@ -466,7 +466,7 @@ SV_SetExpectedHunkUsage
 void SV_SetExpectedHunkUsage( char *mapname )
 {
 	int  handle;
-	char *memlistfile = "hunkusage.dat";
+	const char *memlistfile = "hunkusage.dat";
 	char *buf;
 	char *buftrav;
 	char *token;
@@ -624,7 +624,7 @@ void SV_SpawnServer( char *server )
 	FS_ClearPakReferences( 0 );
 
 	// allocate the snapshot entities on the hunk
-	svs.snapshotEntities = Hunk_Alloc( sizeof( entityState_t ) * svs.numSnapshotEntities, h_high );
+	svs.snapshotEntities = ( entityState_t * ) Hunk_Alloc( sizeof( entityState_t ) * svs.numSnapshotEntities, h_high );
 	svs.nextSnapshotEntities = 0;
 
 	// toggle the server bit so clients can detect that a
@@ -703,7 +703,7 @@ void SV_SpawnServer( char *server )
 		// send the new gamestate to all connected clients
 		if ( svs.clients[ i ].state >= CS_CONNECTED )
 		{
-			char *denied;
+			const char *denied;
 
 			if ( svs.clients[ i ].netchan.remoteAddress.type == NA_BOT )
 			{
@@ -716,7 +716,7 @@ void SV_SpawnServer( char *server )
 			}
 
 			// connect the client again
-			denied = VM_ExplicitArgPtr( gvm, VM_Call( gvm, GAME_CLIENT_CONNECT, i, qfalse, isBot ) );   // firstTime = qfalse
+			denied = ( const char * ) 	VM_ExplicitArgPtr( gvm, VM_Call( gvm, GAME_CLIENT_CONNECT, i, qfalse, isBot ) );   // firstTime = qfalse
 
 			if ( denied )
 			{
@@ -959,7 +959,7 @@ Called when each game quits,
 before Sys_Quit or Sys_Error
 ================
 */
-void SV_Shutdown( char *finalmsg )
+void SV_Shutdown( const char *finalmsg )
 {
 	if ( !com_sv_running || !com_sv_running->integer )
 	{

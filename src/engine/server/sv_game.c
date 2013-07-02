@@ -467,18 +467,18 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 			return 0; //silence warning and have a fallback behavior if Com_Error behavior changes
 
 		case G_LOG:
-			Com_LogEvent( VMA( 1 ), NULL );
+			Com_LogEvent( ( log_event_t* ) VMA( 1 ), NULL );
 			return 0;
 
 		case G_MILLISECONDS:
 			return Sys_Milliseconds();
 
 		case G_CVAR_REGISTER:
-			Cvar_Register( VMA( 1 ), VMA( 2 ), VMA( 3 ), args[ 4 ] );
+			Cvar_Register( ( vmCvar_t* ) VMA( 1 ), ( const char* ) VMA( 2 ), ( const char* ) VMA( 3 ), args[ 4 ] );
 			return 0;
 
 		case G_CVAR_UPDATE:
-			Cvar_Update( VMA( 1 ) );
+			Cvar_Update( ( vmCvar_t* ) VMA( 1 ) );
 			return 0;
 
 		case G_CVAR_SET:
@@ -490,12 +490,12 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 
 		case G_CVAR_VARIABLE_STRING_BUFFER:
 		        VM_CheckBlock( args[2], args[3], "CVARVSB" );
-			Cvar_VariableStringBuffer( VMA( 1 ), VMA( 2 ), args[ 3 ] );
+			Cvar_VariableStringBuffer( ( const char* ) VMA( 1 ), ( char* ) VMA( 2 ), args[ 3 ] );
 			return 0;
 
 		case G_CVAR_LATCHEDVARIABLESTRINGBUFFER:
 		        VM_CheckBlock( args[2], args[3], "CVARLVSB" );
-			Cvar_LatchedVariableStringBuffer( VMA( 1 ), VMA( 2 ), args[ 3 ] );
+			Cvar_LatchedVariableStringBuffer( ( const char * ) VMA( 1 ), ( char * ) VMA( 2 ), args[ 3 ] );
 			return 0;
 
 		case G_ARGC:
@@ -503,15 +503,15 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 
 		case G_ARGV:
 		        VM_CheckBlock( args[2], args[3], "ARGV" );
-			Cmd_ArgvBuffer( args[ 1 ], VMA( 2 ), args[ 3 ] );
+			Cmd_ArgvBuffer( args[ 1 ], ( char * ) VMA( 2 ), args[ 3 ] );
 			return 0;
 
 		case G_SEND_CONSOLE_COMMAND:
-			Cbuf_ExecuteText( args[ 1 ], VMA( 2 ) );
+			Cbuf_ExecuteText( args[ 1 ], ( const char * ) VMA( 2 ) );
 			return 0;
 
 		case G_FS_FOPEN_FILE:
-			return FS_FOpenFileByMode( VMA( 1 ), VMA( 2 ), args[ 3 ] );
+			return FS_FOpenFileByMode( ( const char * ) VMA( 1 ), ( fileHandle_t* ) VMA( 2 ), ( fsMode_t ) args[ 3 ] );
 
 		case G_FS_READ:
 		        VM_CheckBlock( args[1], args[2], "FSREAD" );
@@ -523,7 +523,7 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 			return FS_Write( VMA( 1 ), args[ 2 ], args[ 3 ] );
 
 		case G_FS_RENAME:
-			FS_Rename( VMA( 1 ), VMA( 2 ) );
+			FS_Rename( ( const char * ) VMA( 1 ), ( const char * ) VMA( 2 ) );
 			return 0;
 
 		case G_FS_FCLOSE_FILE:
@@ -532,66 +532,66 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 
 		case G_FS_GETFILELIST:
 		        VM_CheckBlock( args[3], args[4], "FSGFL" );
-			return FS_GetFileList( VMA( 1 ), VMA( 2 ), VMA( 3 ), args[ 4 ] );
+			return FS_GetFileList( ( const char * ) VMA( 1 ), ( const char * ) VMA( 2 ), ( char * ) VMA( 3 ), args[ 4 ] );
 
 		case G_LOCATE_GAME_DATA:
-			SV_LocateGameData( VMA( 1 ), args[ 2 ], args[ 3 ], VMA( 4 ), args[ 5 ] );
+			SV_LocateGameData( ( sharedEntity_t* ) VMA( 1 ), args[ 2 ], args[ 3 ], ( playerState_t* ) VMA( 4 ), args[ 5 ] );
 			return 0;
 
 		case G_DROP_CLIENT:
-			SV_GameDropClient( args[ 1 ], VMA( 2 ) );
+			SV_GameDropClient( args[ 1 ], ( const char * ) VMA( 2 ) );
 			return 0;
 
 		case G_SEND_SERVER_COMMAND:
-			SV_GameSendServerCommand( args[ 1 ], VMA( 2 ) );
+			SV_GameSendServerCommand( args[ 1 ], ( const char * ) VMA( 2 ) );
 			return 0;
 
 		case G_LINKENTITY:
-			SV_LinkEntity( VMA( 1 ) );
+			SV_LinkEntity( ( sharedEntity_t* ) VMA( 1 ) );
 			return 0;
 
 		case G_UNLINKENTITY:
-			SV_UnlinkEntity( VMA( 1 ) );
+			SV_UnlinkEntity( ( sharedEntity_t* ) VMA( 1 ) );
 			return 0;
 
 		case G_ENTITIES_IN_BOX:
 		        VM_CheckBlock( args[3], args[4] * sizeof( int ), "ENTIB" );
-			return SV_AreaEntities( VMA( 1 ), VMA( 2 ), VMA( 3 ), args[ 4 ] );
+			return SV_AreaEntities( ( const float * ) VMA( 1 ), ( const float * ) VMA( 2 ), ( int * ) VMA( 3 ), args[ 4 ] );
 
 		case G_ENTITY_CONTACT:
-			return SV_EntityContact( VMA( 1 ), VMA( 2 ), VMA( 3 ), TT_AABB );
+			return SV_EntityContact( ( float * ) VMA( 1 ), ( float * ) VMA( 2 ), ( const sharedEntity_t * ) VMA( 3 ), TT_AABB );
 
 		case G_ENTITY_CONTACTCAPSULE:
-			return SV_EntityContact( VMA( 1 ), VMA( 2 ), VMA( 3 ), TT_CAPSULE );
+			return SV_EntityContact( ( float * ) VMA( 1 ), ( float * ) VMA( 2 ), ( const sharedEntity_t * ) VMA( 3 ), TT_CAPSULE );
 
 		case G_TRACE:
-			SV_Trace( VMA( 1 ), VMA( 2 ), VMA( 3 ), VMA( 4 ), VMA( 5 ), args[ 6 ], args[ 7 ], TT_AABB );
+			SV_Trace( ( trace_t * ) VMA( 1 ), ( const float * ) VMA( 2 ), ( float * ) VMA( 3 ), ( float * ) VMA( 4 ), ( const float * ) VMA( 5 ), args[ 6 ], args[ 7 ], TT_AABB );
 			return 0;
 
 		case G_TRACECAPSULE:
-			SV_Trace( VMA( 1 ), VMA( 2 ), VMA( 3 ), VMA( 4 ), VMA( 5 ), args[ 6 ], args[ 7 ], TT_CAPSULE );
+			SV_Trace( ( trace_t * ) VMA( 1 ), ( const float * ) VMA( 2 ), ( float * ) VMA( 3 ), ( float * ) VMA( 4 ), ( const float * ) VMA( 5 ), args[ 6 ], args[ 7 ], TT_CAPSULE );
 			return 0;
 
 		case G_POINT_CONTENTS:
-			return SV_PointContents( VMA( 1 ), args[ 2 ] );
+			return SV_PointContents( ( const float * ) VMA( 1 ), args[ 2 ] );
 
 		case G_SET_BRUSH_MODEL:
-			SV_SetBrushModel( VMA( 1 ), VMA( 2 ) );
+			SV_SetBrushModel( ( sharedEntity_t * ) VMA( 1 ), ( const char * ) VMA( 2 ) );
 			return 0;
 
 		case G_IN_PVS:
-			return SV_inPVS( VMA( 1 ), VMA( 2 ) );
+			return SV_inPVS( ( const float * ) VMA( 1 ), ( const float * ) VMA( 2 ) );
 
 		case G_IN_PVS_IGNORE_PORTALS:
-			return SV_inPVSIgnorePortals( VMA( 1 ), VMA( 2 ) );
+			return SV_inPVSIgnorePortals( ( const float * ) VMA( 1 ), ( const float * ) VMA( 2 ) );
 
 		case G_SET_CONFIGSTRING:
-			SV_SetConfigstring( args[ 1 ], VMA( 2 ) );
+			SV_SetConfigstring( args[ 1 ], ( const char * ) VMA( 2 ) );
 			return 0;
 
 		case G_GET_CONFIGSTRING:
 		        VM_CheckBlock( args[2], args[3], "GETCS" );
-			SV_GetConfigstring( args[ 1 ], VMA( 2 ), args[ 3 ] );
+			SV_GetConfigstring( args[ 1 ], ( char * ) VMA( 2 ), args[ 3 ] );
 			return 0;
 
 		case G_SET_CONFIGSTRING_RESTRICTIONS:
@@ -600,21 +600,21 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 			return 0;
 
 		case G_SET_USERINFO:
-			SV_SetUserinfo( args[ 1 ], VMA( 2 ) );
+			SV_SetUserinfo( args[ 1 ], ( const char * ) VMA( 2 ) );
 			return 0;
 
 		case G_GET_USERINFO:
 		        VM_CheckBlock( args[2], args[3], "GETUI" );
-			SV_GetUserinfo( args[ 1 ], VMA( 2 ), args[ 3 ] );
+			SV_GetUserinfo( args[ 1 ], ( char * ) VMA( 2 ), args[ 3 ] );
 			return 0;
 
 		case G_GET_SERVERINFO:
 		        VM_CheckBlock( args[2], args[3], "GETSI" );
-			SV_GetServerinfo( VMA( 1 ), args[ 2 ] );
+			SV_GetServerinfo( ( char * ) VMA( 1 ), args[ 2 ] );
 			return 0;
 
 		case G_ADJUST_AREA_PORTAL_STATE:
-			SV_AdjustAreaPortalState( VMA( 1 ), args[ 2 ] );
+			SV_AdjustAreaPortalState( ( sharedEntity_t * ) VMA( 1 ), args[ 2 ] );
 			return 0;
 
 		case G_AREAS_CONNECTED:
@@ -629,10 +629,10 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 
 		case BOT_GET_CONSOLE_MESSAGE:
 		        VM_CheckBlock( args[2], args[3], "BOTGCM" );
-			return SV_BotGetConsoleMessage( args[ 1 ], VMA( 2 ), args[ 3 ] );
+			return SV_BotGetConsoleMessage( args[ 1 ], ( char * ) VMA( 2 ), args[ 3 ] );
 
 		case G_GET_USERCMD:
-			SV_GetUsercmd( args[ 1 ], VMA( 2 ) );
+			SV_GetUsercmd( args[ 1 ], ( usercmd_t * ) VMA( 2 ) );
 			return 0;
 
 		case G_GET_ENTITY_TOKEN:
@@ -641,7 +641,7 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 				const char *s;
 
 				s = COM_Parse( &sv.entityParsePoint );
-				Q_strncpyz( VMA( 1 ), s, args[ 2 ] );
+				Q_strncpyz( ( char * ) VMA( 1 ), s, args[ 2 ] );
 
 				if ( !sv.entityParsePoint && !s[ 0 ] )
 				{
@@ -654,97 +654,97 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 			}
 
 		case G_GM_TIME:
-			return Com_GMTime( VMA( 1 ) );
+			return Com_GMTime( ( qtime_t * ) VMA( 1 ) );
 
 		case G_SNAPVECTOR:
-			Q_SnapVector( VMA( 1 ) );
+			Q_SnapVector( ( float * ) VMA( 1 ) );
 			return 0;
 
 		case G_SEND_GAMESTAT:
-			SV_MasterGameStat( VMA( 1 ) );
+			SV_MasterGameStat( ( const char * ) VMA( 1 ) );
 			return 0;
 
 		case G_ADDCOMMAND:
-			Cmd_AddCommand( VMA( 1 ), NULL );
+			Cmd_AddCommand( ( const char * ) VMA( 1 ), NULL );
 			return 0;
 
 		case G_REMOVECOMMAND:
-			Cmd_RemoveCommand( VMA( 1 ) );
+			Cmd_RemoveCommand( ( const char * ) VMA( 1 ) );
 			return 0;
 
 		case G_GETTAG:
-			return SV_GetTag( args[ 1 ], args[ 2 ], VMA( 3 ), VMA( 4 ) );
+			return SV_GetTag( args[ 1 ], args[ 2 ], ( const char * ) VMA( 3 ), ( orientation_t * ) VMA( 4 ) );
 
 		case G_REGISTERTAG:
-			return SV_LoadTag( VMA( 1 ) );
+			return SV_LoadTag( ( const char * ) VMA( 1 ) );
 
 			// START    xkan, 10/28/2002
 		case G_REGISTERSOUND:
 #ifdef DOOMSOUND ///// (SA) DOOMSOUND
-			return S_RegisterSound( VMA( 1 ) );
+			return S_RegisterSound( ( const char * ) VMA( 1 ) );
 #else
-			return S_RegisterSound( VMA( 1 ), args[ 2 ] );
+			return S_RegisterSound( ( const char * ) VMA( 1 ), args[ 2 ] );
 #endif ///// (SA) DOOMSOUND
 
 		case G_GET_SOUND_LENGTH:
 			return S_GetSoundLength( args[ 1 ] );
 
 		case G_PARSE_ADD_GLOBAL_DEFINE:
-			return Parse_AddGlobalDefine( VMA( 1 ) );
+			return Parse_AddGlobalDefine( ( const char * ) VMA( 1 ) );
 
 		case G_PARSE_LOAD_SOURCE:
-			return Parse_LoadSourceHandle( VMA( 1 ) );
+			return Parse_LoadSourceHandle( ( const char * ) VMA( 1 ) );
 
 		case G_PARSE_FREE_SOURCE:
 			return Parse_FreeSourceHandle( args[ 1 ] );
 
 		case G_PARSE_READ_TOKEN:
-			return Parse_ReadTokenHandle( args[ 1 ], VMA( 2 ) );
+			return Parse_ReadTokenHandle( args[ 1 ], ( pc_token_t * ) VMA( 2 ) );
 
 		case G_PARSE_SOURCE_FILE_AND_LINE:
-			return Parse_SourceFileAndLine( args[ 1 ], VMA( 2 ), VMA( 3 ) );
+			return Parse_SourceFileAndLine( args[ 1 ], ( char * ) VMA( 2 ), ( int * ) VMA( 3 ) );
 
 // ===
 
 		case G_ADD_PHYSICS_ENTITY:
 #ifdef USE_PHYSICS
-			CMod_PhysicsAddEntity( VMA( 1 ) );
+			CMod_PhysicsAddEntity( ( sharedEntity_t * ) VMA( 1 ) );
 #endif
 			return 0;
 
 		case G_ADD_PHYSICS_STATIC:
 #ifdef USE_PHYSICS
-			CMod_PhysicsAddStatic( VMA( 1 ) );
+			CMod_PhysicsAddStatic( ( const sharedEntity_t * ) VMA( 1 ) );
 #endif
 			return 0;
 
 		case G_SENDMESSAGE:
 		        VM_CheckBlock( args[2], args[3], "SENDM" );
-			SV_SendBinaryMessage( args[ 1 ], VMA( 2 ), args[ 3 ] );
+			SV_SendBinaryMessage( args[ 1 ], ( char * ) VMA( 2 ), args[ 3 ] );
 			return 0;
 
 		case G_MESSAGESTATUS:
 			return SV_BinaryMessageStatus( args[ 1 ] );
 
 		case G_RSA_GENMSG:
-			return SV_RSAGenMsg( VMA( 1 ), VMA( 2 ), VMA( 3 ) );
+			return SV_RSAGenMsg( ( const char * ) VMA( 1 ), ( char * ) VMA( 2 ), ( char * ) VMA( 3 ) );
 
 		case G_QUOTESTRING:
 			VM_CheckBlock( args[ 2 ], args[ 3 ], "QUOTE" );
-			Cmd_QuoteStringBuffer( VMA( 1 ), VMA( 2 ), args[ 3 ] );
+			Cmd_QuoteStringBuffer( ( const char * ) VMA( 1 ), ( char * ) VMA( 2 ), args[ 3 ] );
 			return 0;
 
 		case G_GENFINGERPRINT:
-			Com_MD5Buffer( VMA( 1 ), args[ 2 ], VMA( 3 ), args [ 4 ] );
+			Com_MD5Buffer( ( const char * ) VMA( 1 ), args[ 2 ], ( char * ) VMA( 3 ), args [ 4 ] );
 			return 0;
 
 		case G_GETPLAYERPUBKEY:
-			SV_GetPlayerPubkey( args[ 1 ], VMA( 2 ), args[ 3 ] );
+			SV_GetPlayerPubkey( args[ 1 ], ( char * ) VMA( 2 ), args[ 3 ] );
 			return 0;
 
-                case G_GETTIMESTRING:
-		        VM_CheckBlock( args[1], args[2], "STRFTIME" );
-			SV_GetTimeString( VMA( 1 ), args[ 2 ], VMA( 3 ), VMA( 4 ) );
+		case G_GETTIMESTRING:
+			VM_CheckBlock( args[1], args[2], "STRFTIME" );
+			SV_GetTimeString( ( char * ) VMA( 1 ), args[ 2 ], ( const char * ) VMA( 3 ), ( const qtime_t * ) VMA( 4 ) );
 			return 0;
 			
 		default:
@@ -849,7 +849,7 @@ void SV_InitGameProgs( void )
 	sv.num_tags = 0;
 
 	// load the game module
-	gvm = VM_Create( "game", SV_GameSystemCalls, Cvar_VariableValue( "vm_game" ) );
+	gvm = VM_Create( "game", SV_GameSystemCalls, (vmInterpret_t)Cvar_VariableIntegerValue( "vm_game" ) );
 
 	if ( !gvm )
 	{
@@ -883,9 +883,9 @@ SV_GetTag
   return qfalse if unable to retrieve tag information for this client
 ====================
 */
-extern qboolean CL_GetTag( int clientNum, const char *tagname, orientation_t * or );
+extern qboolean CL_GetTag( int clientNum, const char *tagname, orientation_t * org );
 
-qboolean SV_GetTag( int clientNum, int tagFileNumber, const char *tagname, orientation_t * or )
+qboolean SV_GetTag( int clientNum, int tagFileNumber, const char *tagname, orientation_t * org )
 {
 	int i;
 
@@ -896,10 +896,10 @@ qboolean SV_GetTag( int clientNum, int tagFileNumber, const char *tagname, orien
 		{
 			if ( !Q_stricmp( sv.tags[ i ].name, tagname ) )
 			{
-				VectorCopy( sv.tags[ i ].origin, or ->origin );
-				VectorCopy( sv.tags[ i ].axis[ 0 ], or ->axis[ 0 ] );
-				VectorCopy( sv.tags[ i ].axis[ 1 ], or ->axis[ 1 ] );
-				VectorCopy( sv.tags[ i ].axis[ 2 ], or ->axis[ 2 ] );
+				VectorCopy( sv.tags[ i ].origin, org ->origin );
+				VectorCopy( sv.tags[ i ].axis[ 0 ], org ->axis[ 0 ] );
+				VectorCopy( sv.tags[ i ].axis[ 1 ], org ->axis[ 1 ] );
+				VectorCopy( sv.tags[ i ].axis[ 2 ], org ->axis[ 2 ] );
 				return qtrue;
 			}
 		}

@@ -230,7 +230,7 @@ cpuFeatures_t Sys_GetProcessorFeatures( void )
 
 	return features;
 #else
-	return 0;
+	return ( cpuFeatures_t ) 0;
 #endif
 }
 
@@ -486,8 +486,8 @@ void *QDECL Sys_LoadDll( const char *name,
 	}
 
 	// Try to load the dllEntry and vmMain function.
-	dllEntry = Sys_LoadFunction( libHandle, "dllEntry" );
-	*entryPoint = Sys_LoadFunction( libHandle, "vmMain" );
+	dllEntry = ( void ( QDECL * )( intptr_t ( QDECL * )( intptr_t, ... ) ) ) Sys_LoadFunction( libHandle, "dllEntry" );
+	*entryPoint = ( intptr_t ( QDECL  * )( int, ... ) ) Sys_LoadFunction( libHandle, "vmMain" );
 
 	if ( !*entryPoint || !dllEntry )
 	{

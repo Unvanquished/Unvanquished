@@ -168,7 +168,7 @@ hashtable_t HT_Create(
 
 	// Allocate table
 	real_size = _HT_NextPrime( size );
-	table = Z_Malloc( sizeof( struct hashtable_s ) + real_size * sizeof( struct listhead_t ) );
+	table = ( hashtable_t ) Z_Malloc( sizeof( struct hashtable_s ) + real_size * sizeof( struct listhead_t ) );
 	assert( table );
 
 	// Initialise main table fields
@@ -317,7 +317,7 @@ void *HT_GetItem(
 	if ( table->key_length == 0 )
 	{
 		char **key_ptr = ( char ** )( ( ( char * ) data ) + table->key_offset );
-		*key_ptr = Z_Malloc( strlen( key ) + 1 );
+		*key_ptr = ( char * ) Z_Malloc( strlen( key ) + 1 );
 		strcpy( *key_ptr, key );
 	}
 	else
@@ -699,7 +699,7 @@ static struct tentry_t *_HT_CreateEntry(
 
 	size_t          entry_size = sizeof( struct tentry_t );
 	entry_size += ( table->flags &HT_FLAG_INTABLE ) ? table->item_size : sizeof( void * );
-	t_entry = Z_Malloc( entry_size );
+	t_entry = ( tentry_t * ) Z_Malloc( entry_size );
 	t_entry->hash = hash;
 
 	// Add entry to local list

@@ -1022,7 +1022,7 @@ void           *Z_TagMalloc( int size, int tag )
 {
 #endif
 	int        extra;
-	memblock_t *start, *rover, *new, *base;
+	memblock_t *start, *rover, *new_, *base;
 	memzone_t  *zone;
 #ifdef ZONE_DEBUG
 	int        allocSize;
@@ -1089,14 +1089,14 @@ void           *Z_TagMalloc( int size, int tag )
 	if ( extra > MINFRAGMENT )
 	{
 		// there will be a free fragment after the allocated block
-		new = ( memblock_t * )( ( byte * ) base + size );
-		new->size = extra;
-		new->tag = 0; // free block
-		new->prev = base;
-		new->id = ZONEID;
-		new->next = base->next;
-		new->next->prev = new;
-		base->next = new;
+		new_ = ( memblock_t * )( ( byte * ) base + size );
+		new_->size = extra;
+		new_->tag = 0; // free block
+		new_->prev = base;
+		new_->id = ZONEID;
+		new_->next = base->next;
+		new_->next->prev = new_;
+		base->next = new_;
 		base->size = size;
 	}
 
@@ -1350,7 +1350,7 @@ char           *CopyString( const char *in )
 		}
 	}
 
-	out = S_Malloc( strlen( in ) + 1 );
+	out = ( char * ) S_Malloc( strlen( in ) + 1 );
 	strcpy( out, in );
 	return out;
 }
@@ -1676,7 +1676,7 @@ void Com_InitSmallZoneMemory( void )
 {
 	s_smallZoneTotal = 512 * 1024;
 	// bk001205 - was malloc
-	smallzone = calloc( s_smallZoneTotal, 1 );
+	smallzone = ( memzone_t * ) calloc( s_smallZoneTotal, 1 );
 
 	if ( !smallzone )
 	{
@@ -1704,7 +1704,7 @@ void Com_InitZoneMemory( void )
 	}
 
 	// bk001205 - was malloc
-	mainzone = calloc( s_zoneTotal, 1 );
+	mainzone = ( memzone_t * ) calloc( s_zoneTotal, 1 );
 
 	if ( !mainzone )
 	{
@@ -1857,7 +1857,7 @@ void Com_InitHunkMemory( void )
 		s_hunkTotal = cv->integer * 1024 * 1024;
 	}
 
-	s_hunkData = malloc( s_hunkTotal + 31 );
+	s_hunkData = ( byte * ) malloc( s_hunkTotal + 31 );
 
 	if ( !s_hunkData )
 	{
@@ -2381,7 +2381,7 @@ sysEvent_t Com_GetSystemEvent( void )
 		int  len;
 
 		len = strlen( s ) + 1;
-		b = Z_Malloc( len );
+		b = ( char * ) Z_Malloc( len );
 		strcpy( b, s );
 		Com_QueueEvent( 0, SE_CONSOLE, 0, 0, len, b );
 	}
@@ -2397,7 +2397,7 @@ sysEvent_t Com_GetSystemEvent( void )
 
 		// copy out to a separate buffer for queuing
 		len = sizeof( netadr_t ) + netmsg.cursize;
-		buf = Z_Malloc( len );
+		buf = ( netadr_t * ) Z_Malloc( len );
 		*buf = adr;
 		memcpy( buf + 1, &netmsg.data[ netmsg.readcount ], netmsg.cursize - netmsg.readcount );
 		Com_QueueEvent( 0, SE_PACKET, 0, 0, len, buf );

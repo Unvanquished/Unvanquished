@@ -54,7 +54,7 @@ static client_t *SV_GetPlayerByName( void )
 {
 	client_t *cl;
 	int      i;
-	char     *s;
+	const char *s;
 	char     cleanName[ 64 ];
 
 	// make sure server is running
@@ -170,7 +170,7 @@ Restart the server on a different map
 */
 static void SV_Map_f( void )
 {
-	char     *map;
+	const char *map;
 	const char *layouts;
 	char     mapname[ MAX_QPATH ];
 	qboolean cheat;
@@ -337,7 +337,7 @@ static void SV_MapRestart_f( void )
 		SV_AddServerCommand( client, "map_restart\n" );
 
 		// connect the client again, without the firstTime flag
-		denied = VM_ExplicitArgPtr( gvm, VM_Call( gvm, GAME_CLIENT_CONNECT, i, qfalse, isBot ) );
+		denied = ( char* ) VM_ExplicitArgPtr( gvm, VM_Call( gvm, GAME_CLIENT_CONNECT, i, qfalse, isBot ) );
 
 		if ( denied )
 		{
