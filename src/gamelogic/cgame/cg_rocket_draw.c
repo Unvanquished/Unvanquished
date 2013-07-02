@@ -1669,6 +1669,13 @@ void CG_Rocket_DrawTutorial( void )
 	trap_Rocket_SetInnerRML( "", "", CG_TutorialText(), qtrue );
 }
 
+void CG_Rocket_DrawStaminaBolt( void )
+{
+	qboolean  activate = cg.snap->ps.stats[ STAT_STATE ] & SS_SPEEDBOOST;
+	trap_Rocket_SetClass( "sprint", activate );
+	trap_Rocket_SetClass( "walk", !activate );
+}
+
 typedef struct
 {
 	const char *name;
@@ -1704,6 +1711,7 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "speedometer", &CG_Rocket_DrawSpeedGraph, ELEMENT_GAME },
 	{ "stage_report", &CG_Rocket_DrawStageReport, ELEMENT_BOTH },
 	{ "stamina", &CG_Rocket_DrawStaminaValue, ELEMENT_HUMANS },
+	{ "stamina_bolt", &CG_Rocket_DrawStaminaBolt, ELEMENT_HUMANS },
 	{ "timer", &CG_Rocket_DrawTimer, ELEMENT_GAME },
 	{ "tutorial", &CG_Rocket_DrawTutorial, ELEMENT_GAME },
 	{ "usable_buildable", &CG_Rocket_DrawUsableBuildable, ELEMENT_HUMANS },
