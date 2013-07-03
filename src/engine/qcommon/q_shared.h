@@ -247,14 +247,9 @@ extern int memcmp( void *, void *, size_t );
 	typedef unsigned char        byte;
 	typedef unsigned int         uint;
 
-	typedef enum {qfalse, qtrue} qboolean;
+	enum {qfalse, qtrue};
+	typedef int qboolean;
 	typedef enum {qno, qyes, qmaybe} qtrinary;
-
-#ifdef __cplusplus
-#define qfalse false
-#define qtrue true
-#define qboolean bool
-#endif
 
 	typedef union
 	{
