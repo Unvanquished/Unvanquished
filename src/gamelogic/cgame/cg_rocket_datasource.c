@@ -769,7 +769,7 @@ void CG_Rocket_CleanUpDemoList( const char *args )
 	rocketInfo.data.demoCount = 0;
 }
 
-void CG_Rocket_BuildTeamList( const char *args )
+void CG_Rocket_BuildPlayerList( const char *args )
 {
 	char buf[ MAX_INFO_STRING ];
 	clientInfo_t *ci;
@@ -839,7 +839,7 @@ static int PlayerListCmpByScore( const void *one, const void *two )
 	return 0; // silence compiler
 }
 
-void CG_Rocket_SortTeamList( const char *name, const char *sortBy )
+void CG_Rocket_SortPlayerList( const char *name, const char *sortBy )
 {
 	int i;
 	clientInfo_t *ci;
@@ -968,14 +968,14 @@ void CG_Rocket_SetMapListIndex( const char *table, int index )
 }
 
 
-void CG_Rocket_CleanUpTeamList( const char *args )
+void CG_Rocket_CleanUpPlayerList( const char *args )
 {
 	rocketInfo.data.playerCount[ TEAM_ALIENS ] = 0;
 	rocketInfo.data.playerIndex[ TEAM_HUMANS ] = 0;
 	rocketInfo.data.playerCount[ TEAM_NONE ] = 0;
 }
 
-void CG_Rocket_SetTeamListPlayer( const char *table, int index )
+void CG_Rocket_SetPlayerListPlayer( const char *table, int index )
 {
 }
 
@@ -1011,7 +1011,7 @@ static const dataSourceCmd_t dataSourceCmdList[] =
 	{ "modList", &CG_Rocket_BuildModList, &nullSortFunc, &CG_Rocket_CleanUpModList, &CG_Rocket_SetModListMod, &nullFilterFunc, &nullExecFunc },
 	{ "resolutions", &CG_Rocket_BuildResolutionList, &CG_Rocket_SortResolutionList, &CG_Rocket_CleanUpResolutionList, &CG_Rocket_SetResolutionListResolution, &nullFilterFunc, &nullExecFunc },
 	{ "server_browser", &CG_Rocket_BuildServerList, &CG_Rocket_SortServerList, &CG_Rocket_CleanUpServerList, &CG_Rocket_SetServerListServer, &CG_Rocket_FilterServerList, &CG_Rocket_ExecServerList },
-	{ "teams", &CG_Rocket_BuildTeamList, &CG_Rocket_SortTeamList, &CG_Rocket_CleanUpTeamList, &CG_Rocket_SetTeamListPlayer, &nullFilterFunc, &nullExecFunc },
+	{ "playerList", &CG_Rocket_BuildPlayerList, &CG_Rocket_SortPlayerList, &CG_Rocket_CleanUpPlayerList, &CG_Rocket_SetPlayerListPlayer, &nullFilterFunc, &nullExecFunc },
 	{ "voipInputs", &CG_Rocket_BuildVoIPInputs, &nullSortFunc, &CG_Rocket_CleanUpVoIPInputs, &CG_Rocket_SetVoipInputsInput, &nullFilterFunc, &nullExecFunc },
 
 };
