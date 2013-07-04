@@ -846,11 +846,11 @@ void CG_Rocket_SortTeamList( const char *name, const char *sortBy )
 	score_t *score;
 	char buf[ MAX_INFO_STRING ];
 
-// 	// Do not sort list if not currently playing
-// 	if ( rocketInfo.rocketState < PLAYING )
-// 	{
-// 		return;
-// 	}
+	// Do not sort list if not currently playing
+	if ( rocketInfo.rocketState < PLAYING )
+	{
+		return;
+	}
 
 
 
