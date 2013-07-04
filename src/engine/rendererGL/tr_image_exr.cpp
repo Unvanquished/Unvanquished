@@ -21,23 +21,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // tr_image_exr.c
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
 //#include "tr_local.h"
 #include "../qcommon/q_shared.h"
-#ifdef __cplusplus
-}
-#endif
 
 //#include <OpenEXR/half.h>
 #include "../openexr/half.h"
-
-#ifdef __cplusplus
-extern          "C"
-{
-#endif
 
 	void LoadRGBEToFloats( const char *name, float **pic, int *width, int *height, qboolean doGamma, qboolean toneMap, qboolean compensate );
 
@@ -101,7 +89,3 @@ extern          "C"
 
 		Com_Dealloc( hdrImage );
 	}
-
-#ifdef __cplusplus
-}
-#endif

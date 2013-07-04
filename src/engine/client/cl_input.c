@@ -1226,7 +1226,7 @@ void CL_RegisterButtonCommands( const char *cmd_names )
 
 	for ( i = 0; cmd_names && i < USERCMD_BUTTONS; ++i )
 	{
-		char *term;
+		const char *term;
 
 		if ( *cmd_names == ',' )
 		{

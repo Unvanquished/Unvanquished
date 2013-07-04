@@ -57,7 +57,7 @@ int qvmftolsse(void)
 
   return retval;
 }
-
+/*
 long qftolx87(float f)
 {
   long retval;
@@ -116,4 +116,4 @@ int qvmftolx87(void)
   );
 
   return retval;
-}
+}*/

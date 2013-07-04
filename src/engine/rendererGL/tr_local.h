@@ -24,13 +24,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef TR_LOCAL_H
 #define TR_LOCAL_H
 
+#include "../qcommon/q_shared.h"
+#include "../qcommon/qfiles.h"
+#include "../qcommon/qcommon.h"
+
 #if defined( __cplusplus )
 extern "C" {
 #endif
 
-#include "../qcommon/q_shared.h"
-#include "../qcommon/qfiles.h"
-#include "../qcommon/qcommon.h"
 #include "../renderer/tr_public.h"
 
 #include <GL/glew.h>
@@ -3462,10 +3463,6 @@ extern "C" {
 
 	void     GLimp_LogComment( const char *comment );
 
-// NOTE TTimo linux works with float gamma value, not the gamma table
-//   the params won't be used, getting the r_gamma cvar directly
-	void GLimp_SetGamma( unsigned char red[ 256 ], unsigned char green[ 256 ], unsigned char blue[ 256 ] );
-
 	/*
 	====================================================================
 
@@ -4187,5 +4184,9 @@ extern "C" {
 #if defined( __cplusplus )
 }
 #endif
+
+// NOTE TTimo linux works with float gamma value, not the gamma table
+//   the params won't be used, getting the r_gamma cvar directly
+	void GLimp_SetGamma( unsigned char red[ 256 ], unsigned char green[ 256 ], unsigned char blue[ 256 ] );
 
 #endif // TR_LOCAL_H

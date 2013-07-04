@@ -2162,13 +2162,14 @@ extern "C" {
 		return &re;
 	}
 
+#if defined( __cplusplus )
+}
+#endif
+
 #ifndef REF_HARD_LINKED
 
 // this is only here so the functions in q_shared.c and q_math.c can link
 
-#if defined( __cplusplus )
-	extern "C" {
-#endif
 		void QDECL PRINTF_LIKE(1) Com_Printf( const char *msg, ... )
 		{
 			va_list argptr;
@@ -2205,12 +2206,5 @@ extern "C" {
 			ri.Error( level, "%s", text );
 		}
 
-#if defined( __cplusplus )
-	}
 #endif
 
-#endif
-
-#if defined( __cplusplus )
-}
-#endif

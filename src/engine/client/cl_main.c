@@ -470,7 +470,7 @@ void CL_VoipParseTargets( void )
 
 				head = players;
 
-				while ( ( p = strchr( head, ',' ) ) )
+				while ( ( p = (char*) strchr( head, ',' ) ) )
 				{
 					int val;
 
