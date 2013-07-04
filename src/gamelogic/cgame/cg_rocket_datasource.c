@@ -785,9 +785,9 @@ void CG_Rocket_BuildPlayerList( const char *args )
 	CG_RequestScores();
 
 	// Clear old values. Always build all three teams.
-	trap_Rocket_DSClearTable( "teams", "spectators" );
-	trap_Rocket_DSClearTable( "teams", "aliens" );
-	trap_Rocket_DSClearTable( "teams", "humans" );
+	trap_Rocket_DSClearTable( "playerList", "spectators" );
+	trap_Rocket_DSClearTable( "playerList", "aliens" );
+	trap_Rocket_DSClearTable( "playerList", "humans" );
 
 	for ( i = 0; i < MAX_CLIENTS; ++i )
 	{
@@ -811,17 +811,17 @@ void CG_Rocket_BuildPlayerList( const char *args )
 		{
 			case TEAM_ALIENS:
 				rocketInfo.data.playerList[ score->team ][ rocketInfo.data.playerCount[ TEAM_ALIENS ]++ ] = i;
-				trap_Rocket_DSAddRow( "teams", "aliens", buf );
+				trap_Rocket_DSAddRow( "playerList", "aliens", buf );
 				break;
 
 			case TEAM_HUMANS:
 				rocketInfo.data.playerList[ score->team ][ rocketInfo.data.playerIndex[ TEAM_HUMANS ]++ ] = i;
-				trap_Rocket_DSAddRow( "teams", "humans", buf );
+				trap_Rocket_DSAddRow( "playerList", "humans", buf );
 				break;
 
 			case TEAM_NONE:
 				rocketInfo.data.playerList[ score->team ][ rocketInfo.data.playerCount[ TEAM_NONE ]++ ] = i;
-				trap_Rocket_DSAddRow( "teams", "spectators", buf );
+				trap_Rocket_DSAddRow( "playerList", "spectators", buf );
 				break;
 		}
 	}
@@ -862,9 +862,9 @@ void CG_Rocket_SortPlayerList( const char *name, const char *sortBy )
 	}
 
 	// Clear old values. Always build all three teams.
-	trap_Rocket_DSClearTable( "teams", "spectators" );
-	trap_Rocket_DSClearTable( "teams", "aliens" );
-	trap_Rocket_DSClearTable( "teams", "humans" );
+	trap_Rocket_DSClearTable( "playerList", "spectators" );
+	trap_Rocket_DSClearTable( "playerList", "aliens" );
+	trap_Rocket_DSClearTable( "playerList", "humans" );
 
 	for ( i = 0; i < rocketInfo.data.playerCount[ TEAM_NONE ]; ++i )
 	{
@@ -884,7 +884,7 @@ void CG_Rocket_SortPlayerList( const char *name, const char *sortBy )
 		Info_SetValueForKey( buf, "credits", va( "%d", ci->credit ), qfalse );
 		Info_SetValueForKey( buf, "location", CG_ConfigString( CS_LOCATIONS + ci->location ), qfalse );
 
-		trap_Rocket_DSAddRow( "teams", "spectators", buf );
+		trap_Rocket_DSAddRow( "playerList", "spectators", buf );
 	}
 
 	for ( i = 0; i < rocketInfo.data.playerIndex[ TEAM_HUMANS ]; ++i )
@@ -904,7 +904,7 @@ void CG_Rocket_SortPlayerList( const char *name, const char *sortBy )
 		Info_SetValueForKey( buf, "time", va( "%d", score->time ), qfalse );
 		Info_SetValueForKey( buf, "credits", va( "%d", ci->credit ), qfalse );
 		Info_SetValueForKey( buf, "location", CG_ConfigString( CS_LOCATIONS + ci->location ), qfalse );
-		trap_Rocket_DSAddRow( "team", "spectators", buf );
+		trap_Rocket_DSAddRow( "playerList", "spectators", buf );
 	}
 
 	for ( i = 0; i < rocketInfo.data.playerCount[ TEAM_NONE ]; ++i )
@@ -925,7 +925,7 @@ void CG_Rocket_SortPlayerList( const char *name, const char *sortBy )
 		Info_SetValueForKey( buf, "credits", va( "%d", ci->credit ), qfalse );
 		Info_SetValueForKey( buf, "location", CG_ConfigString( CS_LOCATIONS + ci->location ), qfalse );
 
-		trap_Rocket_DSAddRow( "teams", "spectators", buf );
+		trap_Rocket_DSAddRow( "playerList", "spectators", buf );
 	}
 }
 
@@ -979,6 +979,67 @@ void CG_Rocket_SetPlayerListPlayer( const char *table, int index )
 {
 }
 
+void CG_Rocket_BuildTeamList( const char *args )
+{
+	static const char *data[] = {
+		"\\name\\Aliens\\description\\The Alien Team\n\n"
+		"The Aliens' strengths are in movement and the ability to "
+		"quickly construct new bases quickly. They possess a range "
+		"of abilities including basic melee attacks, movement-"
+		"crippling poisons and more.\\"
+		,
+		"\\name\\Humans\\description\\The Human Team\n\n"
+		"The humans are the masters of technology. Although their "
+		"bases take long to construct, their automated defense "
+		"ensures they stay built. A wide range of upgrades and "
+		"weapons are available to the humans, each contributing "
+		"to eradicate the alien threat.\\"
+		,
+		"\\name\\Spectate\\description\\Watch the game without playing.\\"
+		,
+		"\\name\\Auto Select\\description\\Join the team with the least players.\\"
+		,
+		NULL
+	};
+
+	int i = 0;
+
+	while ( data[ i ] )
+	{
+		trap_Rocket_DSAddRow( "teamList", "default", data[ i++ ] );
+	}
+}
+
+void CG_Rocket_SetTeamList( const char *table, int index )
+{
+	rocketInfo.data.selectedTeamIndex = index;
+}
+
+void CG_Rocket_ExecTeamList( const char *table )
+{
+	const char *cmd = NULL;
+
+	switch ( rocketInfo.data.selectedTeamIndex )
+	{
+		case 1: cmd = "team aliens"; break;
+		case 2: cmd = "team humans"; break;
+		case 3: cmd = "team spectate"; break;
+		case 4: cmd = "team auto"; break;
+	}
+
+	if ( cmd )
+	{
+		trap_SendConsoleCommand( cmd );
+	}
+}
+
+void CG_Rocket_CleanUpTeamList( const char *table )
+{
+	rocketInfo.data.selectedTeamIndex = -1;
+}
+
+
+
 static void nullSortFunc( const char *name, const char *sortBy )
 {
 }
@@ -1012,6 +1073,7 @@ static const dataSourceCmd_t dataSourceCmdList[] =
 	{ "resolutions", &CG_Rocket_BuildResolutionList, &CG_Rocket_SortResolutionList, &CG_Rocket_CleanUpResolutionList, &CG_Rocket_SetResolutionListResolution, &nullFilterFunc, &nullExecFunc },
 	{ "server_browser", &CG_Rocket_BuildServerList, &CG_Rocket_SortServerList, &CG_Rocket_CleanUpServerList, &CG_Rocket_SetServerListServer, &CG_Rocket_FilterServerList, &CG_Rocket_ExecServerList },
 	{ "playerList", &CG_Rocket_BuildPlayerList, &CG_Rocket_SortPlayerList, &CG_Rocket_CleanUpPlayerList, &CG_Rocket_SetPlayerListPlayer, &nullFilterFunc, &nullExecFunc },
+	{ "teamList", &CG_Rocket_BuildTeamList, &nullSortFunc, &CG_Rocket_CleanUpTeamList, &CG_Rocket_SetTeamList, &nullFilterFunc, &CG_Rocket_ExecTeamList },
 	{ "voipInputs", &CG_Rocket_BuildVoIPInputs, &nullSortFunc, &CG_Rocket_CleanUpVoIPInputs, &CG_Rocket_SetVoipInputsInput, &nullFilterFunc, &nullExecFunc },
 
 };

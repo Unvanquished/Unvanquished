@@ -1279,6 +1279,8 @@ typedef struct
 	mapInfo_t mapList[ MAX_MAPS ];
 	int mapCount;
 	int mapIndex;
+
+	int selectedTeamIndex;
 } rocketDataSource_t;
 
 typedef struct
