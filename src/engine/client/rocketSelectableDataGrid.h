@@ -105,6 +105,8 @@ public:
 				Rocket::Controls::ElementDataGridRow *row = dynamic_cast<Rocket::Controls::ElementDataGridRow*>( elem );
 				int index = row->GetTableRelativeIndex();
 				Rocket::Core::String indexStr( va( "%d", index ) );
+				Rocket::Core::String dsName = dataSource.Substring( 0, dataSource.Find( "." ) );
+				Rocket::Core::String tableName =  dataSource.Substring( dataSource.Find( "." ) + 1, dataSource.Length() );
 
 				// this should never happen
 				if( index >= this->GetNumRows() )
@@ -131,12 +133,15 @@ public:
 
 
 
-					eventQueue.push( new RocketEvent_t( Rocket::Core::String( va ( "setDS %s %s %d", dataSource.Substring( 0, dataSource.Find( "." ) ).CString(), dataSource.Substring( dataSource.Find( "." ) + 1, dataSource.Length() ).CString(), index ) ) ) );
+					eventQueue.push( new RocketEvent_t( Rocket::Core::String( va ( "setDS %s %s %d", dsName.CString(),tableName.CString(), index ) ) ) );
 				}
 
 				Rocket::Core::Dictionary parameters;
 				parameters.Set( "index", indexStr );
 				parameters.Set( "column_index", column );
+				parameters.Set( "datasource", dsName );
+				parameters.Set( "table", tableName );
+
 				if( evt == "click" )
 					DispatchEvent( "rowselect", parameters );
 				else

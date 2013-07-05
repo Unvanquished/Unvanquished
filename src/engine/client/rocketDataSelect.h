@@ -57,6 +57,8 @@ public:
 		if ( GetSelection() != selection )
 		{
 			Rocket::Core::String dataSource = GetAttribute<Rocket::Core::String>( "source", "" );
+			Rocket::Core::String dsName = dataSource.Substring( 0, dataSource.Find( "." ) );
+			Rocket::Core::String tableName =  dataSource.Substring( dataSource.Find( "." ) + 1, dataSource.Length() );
 
 			if ( dataSource.Empty() )
 			{
@@ -64,7 +66,16 @@ public:
 			}
 
 			selection = GetSelection();
-			eventQueue.push( new RocketEvent_t( Rocket::Core::String( va( "setDS %s %d", dataSource.Substring( 0, dataSource.Find( "." ) ).CString(), selection ) ) ) );
+
+			// dispatch event so cgame knows about it
+			eventQueue.push( new RocketEvent_t( Rocket::Core::String( va( "setDS %s %s %d", dsName.CString(), tableName.CString(), selection ) ) ) );
+
+			// dispatch event so rocket knows about it
+			Rocket::Core::Dictionary parameters;
+			parameters.Set( "index", va( "%d", selection ) );
+			parameters.Set( "datasource", dsName );
+			parameters.Set( "table", tableName );
+			DispatchEvent( "rowselect", parameters );
 		}
 	}
 private:
