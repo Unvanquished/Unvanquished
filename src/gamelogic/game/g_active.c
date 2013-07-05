@@ -331,10 +331,15 @@ void ClientImpacts( gentity_t *ent, pmove_t *pm )
 			other->client->unlaggedCalc.used = qfalse;
 		}
 
-		// tyrant impact attacks
+		// tyrant trample
 		if ( ent->client->ps.weapon == WP_ALEVEL4 )
 		{
 			G_ChargeAttack( ent, other );
+		}
+
+		// crush and weight damage
+		if ( ent->client )
+		{
 			G_CrushAttack( ent, other );
 		}
 
