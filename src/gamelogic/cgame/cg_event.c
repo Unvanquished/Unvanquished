@@ -574,10 +574,10 @@ static void CG_Obituary( entityState_t *ent )
 				}
 				break;
 
-			case MOD_LEVEL4_CRUSH:
+			case MOD_WEIGHT:
 				if ( cg_emoticonsInMessages.integer )
 				{
-					message = "%s%s^7 [tyrant] %s\n";
+					message = "%s%s^7 crushed %s\n";
 					attackerFirst = qtrue;
 				}
 				else

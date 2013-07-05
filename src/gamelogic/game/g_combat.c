@@ -120,6 +120,7 @@ static const char *const modNames[] =
 	"MOD_SUICIDE",
 	"MOD_TARGET_LASER",
 	"MOD_TRIGGER_HURT",
+	"MOD_WEIGHT",
 
 	"MOD_ABUILDER_CLAW",
 	"MOD_LEVEL0_BITE",
@@ -132,7 +133,6 @@ static const char *const modNames[] =
 	"MOD_LEVEL2_ZAP",
 	"MOD_LEVEL4_CLAW",
 	"MOD_LEVEL4_TRAMPLE",
-	"MOD_LEVEL4_CRUSH",
 
 	"MOD_SLOWBLOB",
 	"MOD_POISON",
@@ -1252,8 +1252,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	}
 
 	// don't do friendly fire on movement attacks
-	if ( ( mod == MOD_LEVEL4_TRAMPLE || mod == MOD_LEVEL3_POUNCE ||
-	       mod == MOD_LEVEL4_CRUSH ) &&
+	if ( ( mod == MOD_LEVEL4_TRAMPLE || mod == MOD_LEVEL3_POUNCE ) &&
 	     targ->s.eType == ET_BUILDABLE && targ->buildableTeam == TEAM_ALIENS )
 	{
 		return;
@@ -1266,15 +1265,14 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		// if the attacker was on the same team
 		if ( targ != attacker && OnSameTeam( targ, attacker ) )
 		{
-			// don't do friendly fire on movement attacks
-			if ( mod == MOD_LEVEL4_TRAMPLE || mod == MOD_LEVEL3_POUNCE ||
-			     mod == MOD_LEVEL4_CRUSH )
+			// never do friendly fire on movement attacks
+			if ( mod == MOD_LEVEL4_TRAMPLE || mod == MOD_LEVEL3_POUNCE )
 			{
 				return;
 			}
 
 			// if dretchpunt is enabled and this is a dretch, do dretchpunt instead of damage
-			if ( g_dretchPunt.integer &&
+			if ( g_dretchPunt.integer && targ->client &&
 			     targ->client->ps.stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL0 )
 			{
 				vec3_t dir, push;

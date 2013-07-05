@@ -1536,56 +1536,129 @@ void G_ChargeAttack( gentity_t *ent, gentity_t *victim )
 	ent->client->ps.weaponTime += LEVEL4_TRAMPLE_REPEAT;
 }
 
-/*
-===============
-G_CrushAttack
-
-Should only be called if there was an impact between a tyrant and another player
-===============
-*/
-void G_CrushAttack( gentity_t *ent, gentity_t *victim )
+static int GetPlayerMass( class_t pcl )
 {
-	vec3_t dir;
-	float  jump;
-	int    damage;
+	// TODO: Put mass into player class config files
+	switch ( pcl )
+	{
+		case PCL_ALIEN_LEVEL0:
+			return 5;
 
-	if ( !victim->takedamage ||
-	     ent->client->ps.origin[ 2 ] + ent->r.mins[ 2 ] <
-	     victim->s.origin[ 2 ] + victim->r.maxs[ 2 ] ||
-	     ( victim->client &&
-	       victim->client->ps.groundEntityNum == ENTITYNUM_NONE ) )
+		case PCL_ALIEN_LEVEL1:
+			return 30;
+
+		case PCL_ALIEN_LEVEL1_UPG:
+			return 40;
+
+		case PCL_ALIEN_LEVEL2:
+			return 50;
+
+		case PCL_ALIEN_LEVEL2_UPG:
+			return 60;
+
+		case PCL_ALIEN_LEVEL3:
+			return 180;
+
+		case PCL_ALIEN_LEVEL3_UPG:
+			return 200;
+
+		case PCL_ALIEN_LEVEL4:
+			return 500;
+
+		case PCL_ALIEN_BUILDER0:
+			return 40;
+
+		case PCL_ALIEN_BUILDER0_UPG:
+			return 50;
+
+		case PCL_HUMAN:
+			return 80;
+
+		case PCL_HUMAN_BSUIT:
+			return 130;
+
+		default:
+			return 0;
+	}
+}
+
+#define CRUSHDMG_JOULE_TO_DAMAGE           0.002f  // in 1/J
+#define CRUSHDMG_QU_TO_METER               0.03125 // in m/qu
+#define CRUSHDMG_FF_THRESHOLD              30      // ignore friendly crush damage below this
+#define WEIGHTDMG_DMG_MODIFIER             0.25f   // multiply with weight difference to get DPS
+#define WEIGHTDMG_DPS_THRESHOLD            10      // ignore weight damage per second below this
+#define WEIGHTDMG_REPEAT                   200     // in ms, low value reduces damage precision
+void G_CrushAttack( gentity_t *attacker, gentity_t *victim )
+{
+	float  impactVelocity, impactEnergy, weightDPS;
+	vec3_t knockbackDir;
+	int    attackerMass, victimMass, impactDamage, weightDamage;
+
+	// self must be a client
+	if ( !attacker->client )
 	{
 		return;
 	}
 
-	// Deal velocity based damage to target
-	jump = BG_Class( ent->client->ps.stats[ STAT_CLASS ] )->jumpMagnitude;
-	damage = ( ent->client->pmext.fallVelocity + jump ) *
-	         -LEVEL4_CRUSH_DAMAGE_PER_V;
-
-	if ( damage < 0 )
+	// ignore invincible targets
+	if ( !victim->takedamage )
 	{
-		damage = 0;
+		return;
 	}
 
-	// Players also get damaged periodically
+	// attacker must be above victim
+	if ( attacker->client->ps.origin[ 2 ] + attacker->r.mins[ 2 ] <
+	     victim->s.origin[ 2 ] + victim->r.maxs[ 2 ] )
+	{
+		return;
+	}
+
+	attackerMass = GetPlayerMass( attacker->client->pers.classSelection );
+
+	// clients periodically suffer from weight damage if they stand on the floor
 	if ( victim->client &&
-	     ent->client->lastCrushTime + LEVEL4_CRUSH_REPEAT < level.time )
+	     victim->client->nextCrushTime < level.time &&
+	     victim->client->ps.groundEntityNum != ENTITYNUM_NONE )
 	{
-		ent->client->lastCrushTime = level.time;
-		damage += LEVEL4_CRUSH_DAMAGE;
+		victimMass = GetPlayerMass( victim->client->pers.classSelection );
+		weightDPS = WEIGHTDMG_DMG_MODIFIER * MAX( attackerMass - victimMass, 0 );
+
+		if ( weightDPS > WEIGHTDMG_DPS_THRESHOLD )
+		{
+			weightDamage = ( int )( weightDPS * ( WEIGHTDMG_REPEAT / 1000.0f ) );
+
+			if ( weightDamage > 0 )
+			{
+				G_Damage( victim, attacker, attacker, NULL, victim->s.origin, weightDamage,
+						  DAMAGE_NO_LOCDAMAGE, MOD_WEIGHT );
+			}
+		}
+
+		victim->client->nextCrushTime = level.time + WEIGHTDMG_REPEAT;
 	}
 
-	if ( damage < 1 )
+	// stop here if attacker didn't fall
+	if ( attacker->client->pmext.fallVelocity == 0.0f )
 	{
 		return;
 	}
 
-	// Crush the victim over a period of time
-	VectorSubtract( victim->s.origin, ent->client->ps.origin, dir );
-	VectorNormalize( dir );
-	G_Damage( victim, ent, ent, dir, victim->s.origin, damage,
-	          DAMAGE_NO_LOCDAMAGE, MOD_LEVEL4_CRUSH );
+	// calculate impact damage
+	impactVelocity = fabs( attacker->client->pmext.fallVelocity ) * CRUSHDMG_QU_TO_METER; // in m/s
+	impactEnergy = attackerMass * impactVelocity * impactVelocity; // in J
+	impactDamage = ( int )( impactEnergy * CRUSHDMG_JOULE_TO_DAMAGE );
+
+	// deal impact damage to both clients and structures, use a threshold for friendly fire
+	if ( ( !OnSameTeam( attacker, victim ) && impactDamage > 0                     ) ||
+	     (  OnSameTeam( attacker, victim ) && impactDamage > CRUSHDMG_FF_THRESHOLD ) )
+	{
+		// calculate knockback direction
+		VectorSubtract( victim->s.origin, attacker->client->ps.origin, knockbackDir );
+		VectorNormalize( knockbackDir );
+
+		G_Damage( victim, attacker, attacker, knockbackDir, victim->s.origin, impactDamage,
+		          DAMAGE_NO_LOCDAMAGE, MOD_WEIGHT );
+	}
 }
 
 //======================================================================
