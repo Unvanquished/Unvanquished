@@ -463,7 +463,7 @@ vec4 PCF(vec4 I, float filterWidth, float samples)
 #endif
 
 
-#if defined(PCSS)
+#if 0//defined(PCSS)
 
 
 #if defined(LIGHT_DIRECTIONAL)
