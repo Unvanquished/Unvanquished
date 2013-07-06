@@ -49,6 +49,7 @@ Maryland 20850 USA.
 #include "rocketDataSelect.h"
 #include "rocketConsoleTextElement.h"
 #include "rocketDataSourceSingle.h"
+#include "rocketFocusManager.h"
 
 extern "C"
 {
@@ -452,6 +453,8 @@ static DaemonFileInterface fileInterface;
 static DaemonSystemInterface systemInterface;
 static DaemonRenderInterface renderInterface;
 
+static RocketFocusManager fm;
+
 Rocket::Core::Context *menuContext = NULL;
 Rocket::Core::Context *hudContext = NULL;
 
@@ -494,6 +497,11 @@ void Rocket_Init( void )
 
 	// Create the menu context
 	menuContext = Rocket::Core::CreateContext( "menuContext", Rocket::Core::Vector2i( cls.glconfig.vidWidth, cls.glconfig.vidHeight ) );
+
+	// Add the listenr so we know where to give mouse/keyboard control to
+	menuContext->GetRootElement()->AddEventListener( "show", &fm );
+	menuContext->GetRootElement()->AddEventListener( "hide", &fm );
+	menuContext->GetRootElement()->AddEventListener( "close", &fm );
 
 	// Create the HUD context
 	hudContext = Rocket::Core::CreateContext( "hudContext", Rocket::Core::Vector2i( cls.glconfig.vidWidth, cls.glconfig.vidHeight ) );
