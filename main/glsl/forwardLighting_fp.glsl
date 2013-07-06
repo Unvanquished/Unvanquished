@@ -821,7 +821,7 @@ void	main()
 		#endif
 	#else
 	// no filter
-	vec4 shadowMoments = FetchShadowMoments(shadowVert);
+	vec4 shadowMoments = FetchShadowMoments(shadowVert.xy / shadowVert.w);
 	#endif
 
 #else
