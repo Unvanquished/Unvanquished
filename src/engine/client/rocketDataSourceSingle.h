@@ -48,7 +48,7 @@ extern "C"
 class RocketDataSourceSingle : public Rocket::Core::Element, public Rocket::Controls::DataSourceListener, public Rocket::Core::EventListener
 {
 public:
-	RocketDataSourceSingle( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), data_source( NULL ), selection( -1 ),
+	RocketDataSourceSingle( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), formatter( NULL ), data_source( NULL ), selection( -1 ),
 	targetElement( NULL ), dirty_query( false ), dirty_listener( false ) { }
 
 	void OnAttributeChange( const Rocket::Core::AttributeNameList &changed_attributes )
