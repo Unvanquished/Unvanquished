@@ -208,7 +208,9 @@ void G_SetClientSound( gentity_t *ent )
 
 /*
 ==============
-ClientShove
+GetClientMass
+
+TODO: Define player class masses in config files
 ==============
 */
 static int GetClientMass( gentity_t *ent )
@@ -234,6 +236,11 @@ static int GetClientMass( gentity_t *ent )
 	return entMass;
 }
 
+/*
+==============
+ClientShove
+==============
+*/
 static void ClientShove( gentity_t *ent, gentity_t *victim )
 {
 	vec3_t dir, push;
@@ -1054,10 +1061,10 @@ void ClientEvents( gentity_t *ent, int oldEventSequence )
 	vec3_t    dir;
 	vec3_t    point, mins;
 	float     fallDistance;
-	class_t   class;
+	class_t   pcl;
 
 	client = ent->client;
-	class = client->ps.stats[ STAT_CLASS ];
+	pcl = client->ps.stats[ STAT_CLASS ];
 
 	if ( oldEventSequence < client->ps.eventSequence - MAX_EVENTS )
 	{
@@ -1089,11 +1096,11 @@ void ClientEvents( gentity_t *ent, int oldEventSequence )
 					fallDistance = 1.0f;
 				}
 
-				damage = ( int )( ( float ) BG_Class( class )->health *
-				                  BG_Class( class )->fallDamage * fallDistance );
+				damage = ( int )( ( float ) BG_Class( pcl )->health *
+				                  BG_Class( pcl )->fallDamage * fallDistance );
 
 				VectorSet( dir, 0, 0, 1 );
-				BG_ClassBoundingBox( class, mins, NULL, NULL, NULL, NULL );
+				BG_ClassBoundingBox( pcl, mins, NULL, NULL, NULL, NULL );
 				mins[ 0 ] = mins[ 1 ] = 0.0f;
 				VectorAdd( client->ps.origin, mins, point );
 
