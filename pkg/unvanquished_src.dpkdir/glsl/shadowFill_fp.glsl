@@ -31,6 +31,13 @@ varying vec3		var_Position;
 varying vec2		var_Tex;
 varying vec4		var_Color;
 
+#ifdef TEXTURE_RG
+#  define SWIZ1 r
+#  define SWIZ2 rg
+#else
+#  define SWIZ1 a
+#  define SWIZ2 ar
+#endif
 
 #if defined(EVSM)
 
@@ -47,7 +54,7 @@ vec2 WarpDepth(float depth)
 vec4 ShadowDepthToEVSM(float depth)
 {
 	vec2 warpedDepth = WarpDepth(depth);
-	return vec4(warpedDepth.xy, warpedDepth.xy * warpedDepth.xy);
+	return vec4(warpedDepth.x, warpedDepth.x * warpedDepth.x, warpedDepth.y, warpedDepth.y * warpedDepth.y);
 }
 
 #endif // #if defined(EVSM)
@@ -79,9 +86,9 @@ void	main()
 
 #if defined(VSM_CLAMP)
 	// convert to [0,1] color space
-	gl_FragColor = vec4(distance, 0.0 , 0.0, distanceSquared) * 0.5 + 0.5;
+	gl_FragColor.SWIZ2 = vec2(distance, distanceSquared) * 0.5 + 0.5;
 #else
-	gl_FragColor = vec4(distance, 0.0, 0.0, distanceSquared);
+	gl_FragColor.SWIZ2 = vec2(distance, distanceSquared);
 #endif
 
 #elif defined(EVSM) || defined(ESM)
@@ -104,10 +111,10 @@ void	main()
 #if !defined(r_EVSMPostProcess)
 	gl_FragColor = ShadowDepthToEVSM(distance);
 #else
-	gl_FragColor = vec4(0.0, 0.0, 0.0, distance);
+	gl_FragColor.SWIZ1 = distance;
 #endif
 #else
-	gl_FragColor = vec4(0.0, 0.0, 0.0, distance);
+	gl_FragColor.SWIZ1 = distance;
 #endif // defined(EVSM)
 
 #else
