@@ -1,7 +1,7 @@
 <rml>
 	<head>
 		<title>Help</title>
-		<link type="text/template" href="assets/window.rml" />
+		<link type="text/template" href="templates/unvwindow.rml" />
 		<style>
 			body
 			{
@@ -13,6 +13,7 @@
 			div#content
 			{
 				overflow-y: scroll;
+				height: 100%;
 			}
 
 			div#title_bar div#icon
@@ -22,7 +23,7 @@
 			}
 		</style>
 	</head>
-	<body template="window" id="help">
+	<body template="unvwindow" id="help">
 		<h1>Story</h1>
 		<p>
 			One day, without warning, they came for us; endless waves of the invaders, numbers too vast to count, fresh from the Martian foundries. Earth's orbital defences took a heavy toll, but were inevitably overrun, buying enough time only for a single rocket ship to launch. The prototype X-42 'Defender'-class, not yet tested but piloted by the finest astronaut the Space Corps had to offer.
@@ -50,6 +51,6 @@
 		<p>
 			Destroy all the invaders in each wave before any get past your ship to invade Earth, unleash their deadly toxin and wipe out all of humanity!
 		</p>
-		<button onclick="close help">Back</button>
+		<button onclick="hide help">Back</button>
 	</body>
 </rml>
