@@ -436,9 +436,17 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
 // fall distance
-#define MIN_FALL_DISTANCE                  30.0f //the fall distance at which fall damage kicks in
-#define MAX_FALL_DISTANCE                  120.0f //the fall distance at which maximum damage is dealt
+#define MIN_FALL_DISTANCE                  30.0f  // the fall distance at which fall damage kicks in
+#define MAX_FALL_DISTANCE                  120.0f // the fall distance at which maximum damage is dealt
 #define AVG_FALL_DISTANCE                  (( MIN_FALL_DISTANCE + MAX_FALL_DISTANCE ) / 2.0f )
+
+// crush and weight damage
+#define CRUSHDMG_JOULE_TO_DAMAGE           0.002f  // in 1/J
+#define CRUSHDMG_QU_TO_METER               0.03125 // in m/qu
+#define CRUSHDMG_FF_THRESHOLD              30      // ignore friendly crush damage below this
+#define WEIGHTDMG_DMG_MODIFIER             0.25f   // multiply with weight difference to get DPS
+#define WEIGHTDMG_DPS_THRESHOLD            10      // ignore weight damage per second below this
+#define WEIGHTDMG_REPEAT                   200     // in ms, low value reduces damage precision
 
 // buildable explosion
 #define HUMAN_DETONATION_DELAY             4000
@@ -459,7 +467,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define FREEKILL_HUMAN                     180   // value of a dretch
 
 // resources
-#define RGS_RANGE                          750.0f
+#define RGS_RANGE                          1000.0f
 #define DEFAULT_INITIAL_BUILD_POINTS       "50"  // in BP
 #define DEFAULT_INITIAL_MINE_RATE          "8"   // in (BP/min)/RGS
 #define DEFAULT_MINE_RATE_HALF_LIFE        "20"  // in min

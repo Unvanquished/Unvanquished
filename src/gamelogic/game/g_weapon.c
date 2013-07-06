@@ -1582,12 +1582,6 @@ static int GetPlayerMass( class_t pcl )
 	}
 }
 
-#define CRUSHDMG_JOULE_TO_DAMAGE           0.002f  // in 1/J
-#define CRUSHDMG_QU_TO_METER               0.03125 // in m/qu
-#define CRUSHDMG_FF_THRESHOLD              30      // ignore friendly crush damage below this
-#define WEIGHTDMG_DMG_MODIFIER             0.25f   // multiply with weight difference to get DPS
-#define WEIGHTDMG_DPS_THRESHOLD            10      // ignore weight damage per second below this
-#define WEIGHTDMG_REPEAT                   200     // in ms, low value reduces damage precision
 void G_CrushAttack( gentity_t *attacker, gentity_t *victim )
 {
 	float  impactVelocity, impactEnergy, weightDPS;
