@@ -60,6 +60,11 @@ static void CG_Rocket_EventBlur( void )
 	trap_Rocket_DocumentAction( CG_Argv( 1 ), "blur" );
 }
 
+static void CG_Rocket_EventHide( void )
+{
+	trap_Rocket_DocumentAction( CG_Argv( 1 ), "hide" );
+}
+
 
 static void CG_Rocket_InitServers( void )
 {
@@ -208,6 +213,7 @@ static const eventCmd_t eventCmdList[] =
 	{ "execDS", &CG_Rocket_ExecDS },
 	{ "filterDS", &CG_Rocket_FilterDS },
 	{ "goto", &CG_Rocket_EventGoto },
+	{ "hide", &CG_Rocket_EventHide },
 	{ "init_servers", &CG_Rocket_InitServers },
 	{ "open", &CG_Rocket_EventOpen },
 	{ "setAttribute", &CG_Rocket_SetAttribute },
