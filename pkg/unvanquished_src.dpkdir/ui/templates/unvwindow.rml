@@ -1,0 +1,54 @@
+<template name="unvwindow" content="content">
+<head>
+	<link type="text/rcss" href="../css/rkt.rcss" />
+	<link type="text/rcss" href="../css/unv.rcss" />
+	<style>
+		body.window
+		{
+			padding-top: 43px;
+			padding-bottom: 20px;
+
+			min-width: 250px;
+			max-width: 800px;
+
+			min-height: 135px;
+			max-height: 700px;
+		}
+		body
+		{
+			width: auto;
+			padding: 10px 25px;
+
+			background-decorator: tiled-box;
+			background-top-left-image: /ui/assets/alien/buildstat/overlay.tga 0px 0px 45px 35px;
+			background-top-right-image: /ui/assets/alien/buildstat/overlay.tga 289px 0px 317px 35px;
+			background-top-image: /ui/assets/alien/buildstat/overlay.tga stretch 45px 0px 289px 35px;
+			background-bottom-left-image: /ui/assets/alien/buildstat/overlay.tga 0px 50px 37px 75px;
+			background-bottom-right-image: /ui/assets/alien/buildstat/overlay.tga 273px 50px 320px 75px;
+			background-bottom-image: /ui/assets/alien/buildstat/overlay.tga stretch 37px 50px 273px 75px;
+			background-left-image: /ui/assets/alien/buildstat/overlay.tga stretch 0px 35px 28px 50px;
+			background-center-image: /ui/assets/alien/buildstat/overlay.tga stretch 114px 32px 115px 33px;
+			overflow: hidden auto;
+			background: rgba(51,51,51,222);
+		}
+		button#x, button#x:hover
+		{
+			width: 35px;
+			height: 35px;
+			float: right;
+			background-image-src: /emoticons/cross_1x1.tga;
+			background-color-multiplier: rgba(255,255,255,122);
+		}
+		button#x:hover
+		{
+			background-color-multiplier: rgba(255,255,255,255);
+		}
+	</style>
+</head>
+<body class="window">
+	<div id="window">
+		<div id="content">
+		</div>
+	</div>
+</body>
+</template>

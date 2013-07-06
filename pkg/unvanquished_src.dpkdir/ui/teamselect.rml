@@ -1,0 +1,52 @@
+<rml>
+	<head>
+		<title>Help</title>
+		<link type="text/template" href="templates/unvwindow.rml" />
+		<style>
+			body
+			{
+				width: 40%;
+				height: 30%;
+				margin: auto;
+			}
+
+			div
+			{
+				float: left;
+			}
+			div#list
+			{
+				width: 30%;
+				height: 100%;
+			}
+
+			div#info
+			{
+				width: 70%;
+				height: 100%;
+				overflow-y: auto;
+			}
+
+			datagrid
+			{
+				width: 100%;
+				float: left;
+			}
+
+			datagridrow:selected
+			{
+				background: rgba(111,111,111,111);
+			}
+		</style>
+	</head>
+	<body template="unvwindow" id="teamsel" onShow="buildDS teamList default">
+		<div id="list">
+		<datagrid id="team"  source="teamList.default">
+			<col fields="name" width="100%"/>
+		</datagrid>
+		</div>
+		<div id="info">
+		<datasource_single source="teamList.default" fields="description" targetid="team" />
+		</div>
+	</body>
+</rml>

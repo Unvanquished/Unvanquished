@@ -6,7 +6,7 @@
 		ui/loading.rml loading       // ROCKETMENU_LOADING
 		ui/connecting.rml connecting // ROCKETMENU_DOWNLOADING
 		ui/help.rml help             // ROCKETMENU_INGAME_MENU
-		ui/help.rml help             // ROCKETMENU_TEAMSELECT
+		ui/teamselect.rml teamsel    // ROCKETMENU_TEAMSELECT
 		ui/help.rml help             // ROCKETMENU_WEAPONSELECT
 		ui/help.rml help             // ROCKETMENU_CLASSSELECT
 		ui/help.rml help             // ROCKETMENU_ALIENBUILD
