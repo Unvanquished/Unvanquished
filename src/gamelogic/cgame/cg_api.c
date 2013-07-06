@@ -1370,11 +1370,6 @@ int trap_LAN_CompareServers( int source, int sortKey, int sortDir, int s1, int s
 	return syscall( CG_LAN_COMPARESERVERS, source, sortKey, sortDir, s1, s2 );
 }
 
-void trap_Cmd_ExecuteText( int exec_when, const char *text )
-{
-	syscall( CG_CMD_EXECUTETEXT, exec_when, text );
-}
-
 void trap_R_GetShaderNameFromHandle( const qhandle_t shader, char *out, int len )
 {
 	syscall( CG_R_GETSHADERNAMEFROMHANDLE, shader, out, len );

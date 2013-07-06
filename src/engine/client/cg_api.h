@@ -303,7 +303,6 @@ typedef enum cgameImport_s
   CG_LAN_SERVERISINFAVORITELIST,
   CG_GETNEWS,
   CG_LAN_COMPARESERVERS,
-  CG_CMD_EXECUTETEXT,
   CG_R_GETSHADERNAMEFROMHANDLE,
   CG_ROCKET_INIT,
   CG_ROCKET_SHUTDOWN,
@@ -620,7 +619,6 @@ int             trap_LAN_ServerStatus( const char *serverAddress, char *serverSt
 qboolean        trap_LAN_ServerIsInFavoriteList( int source, int n );
 qboolean        trap_GetNews( qboolean force );
 int             trap_LAN_CompareServers( int source, int sortKey, int sortDir, int s1, int s2 );
-void            trap_Cmd_ExecuteText( int exec_when, const char *text );
 void            trap_R_GetShaderNameFromHandle( const qhandle_t shader, char *out, int len );
 void            trap_Rocket_Init( void );
 void            trap_Rocket_Shutdown( void );

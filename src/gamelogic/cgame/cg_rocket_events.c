@@ -69,12 +69,12 @@ static void CG_Rocket_InitServers( void )
 
 	if ( !Q_stricmp( src, "internet" ) )
 	{
-		trap_Cmd_ExecuteText( EXEC_APPEND, "globalservers 0 86 full empty\n" );
+		trap_SendConsoleCommand( "globalservers 0 86 full empty\n" );
 	}
 
 	else if ( !Q_stricmp( src, "local" ) )
 	{
-		trap_Cmd_ExecuteText( EXEC_APPEND, "localservers\n" );
+		trap_SendConsoleCommand( "localservers\n" );
 	}
 
 	trap_LAN_UpdateVisiblePings( CG_StringToNetSource( src ) );
@@ -92,7 +92,7 @@ static void CG_Rocket_BuildDS( void )
 
 static void CG_Rocket_EventExec( void )
 {
-	trap_Cmd_ExecuteText( EXEC_APPEND, CG_Args() );
+	trap_SendConsoleCommand( CG_Args() );
 }
 
 static void CG_Rocket_EventCvarForm( void )

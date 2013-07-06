@@ -334,7 +334,7 @@ static void CG_Rocket_FilterServerList( const char *table, const char *filter )
 void CG_Rocket_ExecServerList( const char *table )
 {
 	int netSrc = CG_StringToNetSource( table );
-	trap_Cmd_ExecuteText( EXEC_APPEND, va( "connect %s", rocketInfo.data.servers[ netSrc ][ rocketInfo.data.serverIndex[ netSrc ] ].addr ) );
+	trap_SendConsoleCommand( va( "connect %s", rocketInfo.data.servers[ netSrc ][ rocketInfo.data.serverIndex[ netSrc ] ].addr ) );
 }
 
 static qboolean Parse( char **p, char **out )
