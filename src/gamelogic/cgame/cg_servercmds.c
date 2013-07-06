@@ -485,7 +485,7 @@ CG_Menu
 */
 void CG_Menu( int menuType, int arg )
 {
-	rocketMenuType_t menu = -1; // Menu to open
+	int          menu = -1; // Menu to open
 	const char   *longMsg = NULL; // command parameter
 	const char   *shortMsg = NULL; // non-modal version of message
 	const char   *dialog;
