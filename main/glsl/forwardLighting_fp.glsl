@@ -153,6 +153,12 @@ Pr(X -mu >= k * sigma) <= 1 / ( 1 + k^2)
 */
 
 #if defined(VSM) || defined(EVSM)
+
+float linstep(float low, float high, float v)
+{
+	return clamp((v - low)/(high - low), 0.0, 1.0);
+}
+
 float ChebyshevUpperBound(vec2 shadowMoments, float vertexDistance, float minVariance)
 {
 	float shadowDistance = shadowMoments.x;
@@ -169,11 +175,9 @@ float ChebyshevUpperBound(vec2 shadowMoments, float vertexDistance, float minVar
 	float d = vertexDistance - shadowDistance;
 	float pMax = variance / (variance + (d * d));
 
-	/*
 	#if defined(r_LightBleedReduction)
-	pMax = smoothstep(r_LightBleedReduction, 1.0, pMax);
+		pMax = linstep(r_LightBleedReduction, 1.0, pMax);
 	#endif
-	*/
 
 	// one-tailed Chebyshev with k > 0
 	return (vertexDistance <= shadowDistance ? 1.0 : pMax);
