@@ -445,10 +445,10 @@ extern "C" {
 	  IF_NORMALMAP = BIT( 3 ),
 	  IF_RGBA16F = BIT( 4 ),
 	  IF_RGBA32F = BIT( 5 ),
-	  IF_LA16F = BIT( 6 ),
-	  IF_LA32F = BIT( 7 ),
-	  IF_ALPHA16F = BIT( 8 ),
-	  IF_ALPHA32F = BIT( 9 ),
+	  IF_TWOCOMP16F = BIT( 6 ),
+	  IF_TWOCOMP32F = BIT( 7 ),
+	  IF_ONECOMP16F = BIT( 8 ),
+	  IF_ONECOMP32F = BIT( 9 ),
 	  IF_DEPTH16 = BIT( 10 ),
 	  IF_DEPTH24 = BIT( 11 ),
 	  IF_DEPTH32 = BIT( 12 ),
@@ -3006,6 +3006,7 @@ extern "C" {
 	extern cvar_t *r_ext_vertex_array_object;
 	extern cvar_t *r_ext_half_float_pixel;
 	extern cvar_t *r_ext_texture_float;
+	extern cvar_t *r_ext_texture_rg;
 	extern cvar_t *r_ext_stencil_wrap;
 	extern cvar_t *r_ext_texture_filter_anisotropic;
 	extern cvar_t *r_ext_stencil_two_side;

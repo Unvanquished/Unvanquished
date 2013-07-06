@@ -165,7 +165,7 @@ static qboolean CG_ParseMinimap( minimap_t* m, const char* filename )
     m->nZones = 0;
     m->lastZone = -1;
     m->scale = 1.0f;
-    m->bgColor[3] = 1.0f; //Initialise the bgColor to black
+    m->bgColor[3] = 0.333f; // black, approx. 1/3 opacity
 
     if( !BG_ReadWholeFile( filename, text_buffer, sizeof(text_buffer) ) )
     {

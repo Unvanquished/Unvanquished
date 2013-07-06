@@ -1388,6 +1388,26 @@ static void GLimp_XreaLInitExtensions( void )
 		ri.Printf( PRINT_ALL, "...GL_ARB_texture_float not found\n" );
 	}
 
+	// GL_ARB_texture_rg
+	glConfig2.textureRGAvailable = qfalse;
+
+	if ( glConfig.driverType == GLDRV_OPENGL3 || GLEW_ARB_texture_rg )
+	{
+		if ( r_ext_texture_rg->integer )
+		{
+			glConfig2.textureRGAvailable = qtrue;
+			ri.Printf( PRINT_ALL, "...using GL_ARB_texture_rg\n" );
+		}
+		else
+		{
+			ri.Printf( PRINT_ALL, "...ignoring GL_ARB_texture_rg\n" );
+		}
+	}
+	else
+	{
+		ri.Printf( PRINT_ALL, "...GL_ARB_texture_rg not found\n" );
+	}
+
 	// GL_ARB_texture_compression
 	glConfig.textureCompression = TC_NONE;
 
