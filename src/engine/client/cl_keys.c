@@ -1817,7 +1817,7 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 		}
 		else
 		{
-			Rocket_DocumentAction( "", "close" );
+			Rocket_DocumentAction( "", "hide" );
 		}
 
 		return;

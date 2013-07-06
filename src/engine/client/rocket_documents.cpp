@@ -119,6 +119,17 @@ void Rocket_DocumentAction( const char *name, const char *action )
 	}
 	else if ( !Q_stricmp( "blur", action ) || !Q_stricmp( "hide", action ) )
 	{
+		if ( !*name ) // If name is empty, hide active
+		{
+			if ( menuContext->GetFocusElement() &&
+				menuContext->GetFocusElement()->GetOwnerDocument() )
+			{
+				menuContext->GetFocusElement()->GetOwnerDocument()->Hide();
+			}
+
+			return;
+		}
+
 		Rocket::Core::ElementDocument* document = menuContext->GetDocument( name );
 		if ( document )
 		{
