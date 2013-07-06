@@ -1004,6 +1004,8 @@ void CG_Rocket_BuildTeamList( const char *args )
 
 	int i = 0;
 
+	trap_Rocket_DSClearTable( "teamList", "default" );
+
 	while ( data[ i ] )
 	{
 		trap_Rocket_DSAddRow( "teamList", "default", data[ i++ ] );
@@ -1021,10 +1023,10 @@ void CG_Rocket_ExecTeamList( const char *table )
 
 	switch ( rocketInfo.data.selectedTeamIndex )
 	{
-		case 1: cmd = "team aliens"; break;
-		case 2: cmd = "team humans"; break;
-		case 3: cmd = "team spectate"; break;
-		case 4: cmd = "team auto"; break;
+		case 0: cmd = "team aliens"; break;
+		case 1: cmd = "team humans"; break;
+		case 2: cmd = "team spectate"; break;
+		case 3: cmd = "team auto"; break;
 	}
 
 	if ( cmd )
