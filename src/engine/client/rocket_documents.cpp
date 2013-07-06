@@ -50,7 +50,7 @@ void Rocket_LoadDocument( const char *path )
 	{
 		document->Hide();
 		document->RemoveReference();
-		menuContext->PushDocumentToBack( document ); // Ensure any duplicates will be found first.
+		menuContext->PullDocumentToFront( document ); // Ensure any duplicates will be found first.
 
 		// Close any other documents which may have the same ID
 		other = menuContext->GetDocument( document->GetId() );
