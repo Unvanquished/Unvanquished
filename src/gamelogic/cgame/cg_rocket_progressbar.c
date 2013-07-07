@@ -116,36 +116,34 @@ static float CG_Rocket_GetPlayerHealthProgress( void )
 
 static float CG_Rocket_GetPlayerAmmoProgress( void )
 {
-	int      maxAmmo;
-	weapon_t weapon;
-
-	weapon = BG_PrimaryWeapon( cg.snap->ps.stats );
-	maxAmmo = BG_Weapon( weapon )->maxAmmo;
-
-	if ( maxAmmo <= 0 ) { return 0; }
-
-	if ( BG_Weapon( weapon )->usesEnergy &&
-		BG_InventoryContainsUpgrade( UP_BATTPACK, cg.snap->ps.stats ) )
+	if ( cg.snap->ps.weaponstate == WEAPON_RELOADING )
 	{
-		maxAmmo *= BATTPACK_MODIFIER;
+		float maxDelay;
+		playerState_t *ps = &cg.snap->ps;
+		centity_t *cent = &cg_entities[ ps->clientNum ];
+
+		maxDelay = ( float ) BG_Weapon( cent->currentState.weapon )->reloadTime;
+		return ( maxDelay - ( float ) ps->weaponTime ) / maxDelay;
+
 	}
-
-	return (float)cg.snap->ps.ammo / (float)maxAmmo;
-}
-
-static float CG_Rocket_GetReloadProgress( void )
-{
-	float maxDelay;
-	playerState_t *ps = &cg.snap->ps;
-	centity_t *cent = &cg_entities[ ps->clientNum ];
-
-	if ( ps->weaponstate != WEAPON_RELOADING )
+	else
 	{
-		return 0;
-	}
+		int      maxAmmo;
+		weapon_t weapon;
 
-	maxDelay = ( float ) BG_Weapon( cent->currentState.weapon )->reloadTime;
-	return ( maxDelay - ( float ) ps->weaponTime ) / maxDelay;
+		weapon = BG_PrimaryWeapon( cg.snap->ps.stats );
+		maxAmmo = BG_Weapon( weapon )->maxAmmo;
+
+		if ( maxAmmo <= 0 ) { return 0; }
+
+		if ( BG_Weapon( weapon )->usesEnergy &&
+			BG_InventoryContainsUpgrade( UP_BATTPACK, cg.snap->ps.stats ) )
+		{
+			maxAmmo *= BATTPACK_MODIFIER;
+		}
+
+		return (float)cg.snap->ps.ammo / (float)maxAmmo;
+	}
 }
 
 typedef struct progressBarCmd_s
@@ -166,7 +164,6 @@ static const progressBarCmd_t progressBarCmdList[] =
 	{ "media", &CG_Rocket_GetMediaLoadProgress, ELEMENT_LOADING },
 	{ "overall", &CG_Rocket_GetOverallLoadProgress, ELEMENT_LOADING },
 	{ "poison", &CG_Rocket_GetPoisonProgress, ELEMENT_ALIENS },
-	{ "reload", &CG_Rocket_GetReloadProgress, ELEMENT_HUMANS },
 	{ "stamina", &CG_Rocket_GetStaminaProgress, ELEMENT_HUMANS },
 };
 
