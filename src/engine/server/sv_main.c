@@ -90,6 +90,8 @@ cvar_t *sv_fullmsg;
 
 #define LL( x ) x = LittleLong( x )
 
+#define MAX_CHALLENGE_LEN 128
+
 /*
 =============================================================================
 
@@ -254,6 +256,11 @@ static struct {
 	netadr_t ipv4, ipv6;
 } masterServerAddr[ MAX_MASTER_SERVERS ];
 
+static struct {
+	netadrtype_t type;
+	char         text[ MAX_CHALLENGE_LEN + 1 ];
+} challenges[ MAX_MASTER_SERVERS ];
+
 static void SV_ResolveMasterServers( void )
 {
 	int i, netenabled, res;
@@ -264,6 +271,7 @@ static void SV_ResolveMasterServers( void )
 	{
 		if ( !sv_master[ i ]->string || !sv_master[ i ]->string[ 0 ] )
 		{
+			challenges[ i ].type =
 			masterServerAddr[ i ].ipv4.type = masterServerAddr[ i ].ipv6.type = NA_BAD;
 			continue;
 		}
@@ -563,21 +571,27 @@ void SVC_Info( netadr_t from )
 	char *gamedir;
 	char infostring[ MAX_INFO_STRING ];
 
-	//bani - bugtraq 12534
-	if ( !SV_VerifyChallenge( Cmd_Argv( 1 ) ) )
-	{
-		return;
-	}
+	const char *challenge;
+
+	challenge = Cmd_Argv( 1 );
 
 	/*
 	 * Check whether Cmd_Argv(1) has a sane length. This was not done in the original Quake3 version which led
 	 * to the Infostring bug discovered by Luigi Auriemma. See http://aluigi.altervista.org/ for the advisory.
 	*/
 	// A maximum challenge length of 128 should be more than plenty.
-	if ( strlen( Cmd_Argv( 1 ) ) > 128 )
+	if ( strlen( challenge ) > MAX_CHALLENGE_LEN  )
 	{
 		return;
 	}
+
+	//bani - bugtraq 12534
+	if ( !SV_VerifyChallenge( challenge ) )
+	{
+		return;
+	}
+
+	SV_ResolveMasterServers();
 
 	// don't count privateclients
 	count = 0;
@@ -594,7 +608,35 @@ void SVC_Info( netadr_t from )
 
 	// echo back the parameter to status. so servers can use it as a challenge
 	// to prevent timed spoofed reply packets that add ghost servers
-	Info_SetValueForKey( infostring, "challenge", Cmd_Argv( 1 ), qfalse );
+	Info_SetValueForKey( infostring, "challenge", challenge, qfalse );
+
+	// If the master server listens on IPv4 and IPv6, we want to send the
+	// most recent challenge received from it over the OTHER protocol
+	for ( i = 0; i < MAX_MASTER_SERVERS; i++ )
+	{
+		// First, see if the challenge was sent by this master server
+		if ( !NET_CompareBaseAdr( from, masterServerAddr[ i ].ipv4 ) && !NET_CompareBaseAdr( from, masterServerAddr[ i ].ipv6 ) )
+		{
+			continue;
+		}
+
+		// It was - if the saved challenge is for the other protocol, send it and record the current one
+		if ( challenges[ i ].type == NA_IP || challenges[ i ].type == NA_IP6 )
+		{
+			if ( challenges[ i ].type != from.type )
+			{
+				Info_SetValueForKey( infostring, "challenge2", challenges[ i ].text, qfalse );
+				challenges[ i ].type = from.type;
+				strcpy( challenges[ i ].text, challenge );
+				break;
+			}
+		}
+
+		// Otherwise record the current one regardless and check the next server
+		challenges[ i ].type = from.type;
+		strcpy( challenges[ i ].text, challenge );
+	}
+
 	Info_SetValueForKey( infostring, "protocol", va( "%i", PROTOCOL_VERSION ), qfalse );
 	Info_SetValueForKey( infostring, "hostname", sv_hostname->string, qfalse );
 	Info_SetValueForKey( infostring, "serverload", va( "%i", svs.serverLoad ), qfalse );
