@@ -1647,11 +1647,6 @@ static void CG_RegisterGraphics( void )
 		CG_RegisterGrading( i, CG_ConfigString( CS_GRADING_TEXTURES + i ) );
 	}
 
-	if( cgs.gameGradingTextures[ 0 ] )
-	{
-		trap_SetColorGrading( 0, cgs.gameGradingTextures[ 0 ] );
-	}
-
 	CG_UpdateMediaFraction( 0.9f );
 
 	// register all the server specified particle systems

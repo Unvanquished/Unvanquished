@@ -1054,8 +1054,7 @@ void SP_worldspawn( void )
 
 	if(G_SpawnString( "colorGrade", "", &s ))
 	{
-		G_Printf( S_WARNING "Deprecated spawn string ‘colorGrade’ found – use ‘gradingTexture’ instead\n" );
-		trap_SetConfigstring( CS_GRADING_TEXTURES, va( "%i %f %s", 0, 0.0f, s ) );
+		trap_SetConfigstring( CS_GRADING_TEXTURES, va( "%i %f %s", -1, 0.0f, s ) );
 	}
 
 	if(G_SpawnString( "gradingTexture", "", &s ))

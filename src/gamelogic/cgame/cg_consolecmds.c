@@ -400,7 +400,10 @@ static void CG_TestCGrade_f( void )
 	qhandle_t shader = trap_R_RegisterShader(CG_Argv(1),
 						 RSF_NOMIP |
 						 RSF_NOLIGHTSCALE);
-	trap_SetColorGrading( 0, shader );
+
+	// override shader 0
+	cgs.gameGradingTextures[ 0 ] = shader;
+	cgs.gameGradingModels[ 0 ] = -1;
 }
 
 static const struct
