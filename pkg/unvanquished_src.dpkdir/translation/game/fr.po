@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-05-06 01:34+0200\n"
+"POT-Creation-Date: 2013-07-07 23:10+0200\n"
 "PO-Revision-Date: 2013-06-27 20:49+0000\n"
 "Last-Translator: Tom <tomtom.mymail@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1783,45 +1783,45 @@ msgstr "%s^7 est mort\n"
 msgid "Listed %2d clients\n"
 msgstr "%2d client(s) listé(s)\n"
 
-#: src/gamelogic/cgame/cg_draw.c:2019 src/gamelogic/ui/ui_main.c:2485
+#: src/gamelogic/cgame/cg_draw.c:2018 src/gamelogic/ui/ui_main.c:2485
 msgid "Aliens"
 msgstr "Aliens"
 
-#: src/gamelogic/cgame/cg_draw.c:2023 src/gamelogic/cgame/cg_draw.c:2033
+#: src/gamelogic/cgame/cg_draw.c:2022 src/gamelogic/cgame/cg_draw.c:2032
 #, c-format
 msgid "(Stage %d)"
 msgstr "(Phase %d)"
 
-#: src/gamelogic/cgame/cg_draw.c:2029 src/gamelogic/ui/ui_main.c:2495
+#: src/gamelogic/cgame/cg_draw.c:2028 src/gamelogic/ui/ui_main.c:2495
 msgid "Humans"
 msgstr "Humains"
 
-#: src/gamelogic/cgame/cg_draw.c:2091 src/gamelogic/cgame/cg_draw.c:2115
+#: src/gamelogic/cgame/cg_draw.c:2090 src/gamelogic/cgame/cg_draw.c:2114
 #, c-format
 msgid "Stage %d"
 msgstr "Phase %d"
 
-#: src/gamelogic/cgame/cg_draw.c:2095
+#: src/gamelogic/cgame/cg_draw.c:2094
 #, c-format
 msgid "Stage %d, 1 frag for next stage"
 msgstr "Phase %d, 1 frag avant la prochaine phase"
 
-#: src/gamelogic/cgame/cg_draw.c:2100
+#: src/gamelogic/cgame/cg_draw.c:2099
 #, c-format
 msgid "Stage %d, %d frags for next stage"
 msgstr "Phase %d, %d frags avant la prochaine phase"
 
-#: src/gamelogic/cgame/cg_draw.c:2119
+#: src/gamelogic/cgame/cg_draw.c:2118
 #, c-format
 msgid "Stage %d, 1 credit for next stage"
 msgstr "Phase %d, 1 crédit avant la prochaine phase"
 
-#: src/gamelogic/cgame/cg_draw.c:2124
+#: src/gamelogic/cgame/cg_draw.c:2123
 #, c-format
 msgid "Stage %d, %d credits for next stage"
 msgstr "Phase %d, %d crédits avant la prochaine phase"
 
-#: src/gamelogic/cgame/cg_draw.c:2764
+#: src/gamelogic/cgame/cg_draw.c:2760
 msgid "Connection Interrupted"
 msgstr "Connexion interrompue"
 
@@ -1883,15 +1883,15 @@ msgstr "%s^7 a rejoint les %s\n"
 msgid "%s^7 left the %s and joined the %s\n"
 msgstr "%s^7 a quitté les %s et rejoint les %s\n"
 
-#: src/gamelogic/cgame/cg_servercmds.c:262
+#: src/gamelogic/cgame/cg_servercmds.c:263
 msgid "We have evolved!"
 msgstr "Nous avons évolué !"
 
-#: src/gamelogic/cgame/cg_servercmds.c:278
+#: src/gamelogic/cgame/cg_servercmds.c:282
 msgid "Reinforcements have arrived!"
 msgstr "Les renforts sont arrivés !"
 
-#: src/gamelogic/cgame/cg_servercmds.c:545
+#: src/gamelogic/cgame/cg_servercmds.c:548
 msgid ""
 "The alien team has too many players. Please wait until slots become "
 "available or join the human team."
@@ -1899,11 +1899,11 @@ msgstr ""
 "L’équipe des aliens a trop de joueurs. Patientez jusqu’à ce qu’une place se "
 "libère, ou rejoignez l’équipe des humains."
 
-#: src/gamelogic/cgame/cg_servercmds.c:547
+#: src/gamelogic/cgame/cg_servercmds.c:550
 msgid "The alien team has too many players"
 msgstr "L’équipe des aliens a trop de joueurs"
 
-#: src/gamelogic/cgame/cg_servercmds.c:552
+#: src/gamelogic/cgame/cg_servercmds.c:555
 msgid ""
 "The human team has too many players. Please wait until slots become "
 "available or join the alien team."
@@ -1911,31 +1911,31 @@ msgstr ""
 "L’équipe des humains a trop de joueurs. Patientez jusqu’à ce qu’une place se "
 "libère, ou rejoignez l’équipe des aliens."
 
-#: src/gamelogic/cgame/cg_servercmds.c:554
+#: src/gamelogic/cgame/cg_servercmds.c:557
 msgid "The human team has too many players"
 msgstr "L’équipe des humains a trop de joueurs"
 
-#: src/gamelogic/cgame/cg_servercmds.c:559
+#: src/gamelogic/cgame/cg_servercmds.c:562
 msgid "The alien team is locked. You cannot join the aliens at this time."
 msgstr ""
 "L’équipe des aliens est verrouillée. Vous ne pouvez pas les rejoindre pour "
 "le moment."
 
-#: src/gamelogic/cgame/cg_servercmds.c:561
+#: src/gamelogic/cgame/cg_servercmds.c:564
 msgid "The alien team is locked"
 msgstr "L’équipe des aliens est verrouillée"
 
-#: src/gamelogic/cgame/cg_servercmds.c:566
+#: src/gamelogic/cgame/cg_servercmds.c:569
 msgid "The human team is locked. You cannot join the humans at this time."
 msgstr ""
 "L’équipe des humains est verrouillée. Vous ne pouvez pas les rejoindre pour "
 "le moment."
 
-#: src/gamelogic/cgame/cg_servercmds.c:568
+#: src/gamelogic/cgame/cg_servercmds.c:571
 msgid "The human team is locked"
 msgstr "L’équipe des humains est verrouillée"
 
-#: src/gamelogic/cgame/cg_servercmds.c:573
+#: src/gamelogic/cgame/cg_servercmds.c:576
 msgid ""
 "The maximum number of playing clients has been reached. Please wait until "
 "slots become available."
@@ -1943,25 +1943,25 @@ msgstr ""
 "Le nombre maximum de joueur a été atteint. Veuillez patienter jusqu’à ce "
 "qu’une place se libère."
 
-#: src/gamelogic/cgame/cg_servercmds.c:575
+#: src/gamelogic/cgame/cg_servercmds.c:578
 msgid "No free player slots"
 msgstr "Aucune place de libre"
 
-#: src/gamelogic/cgame/cg_servercmds.c:580
+#: src/gamelogic/cgame/cg_servercmds.c:583
 msgid "You must wait until the warmup time is finished before joining a team. "
 msgstr ""
 "Vous devez attendre que l’échauffement soit terminé avant de rejoindre une "
 "équipe."
 
-#: src/gamelogic/cgame/cg_servercmds.c:582
+#: src/gamelogic/cgame/cg_servercmds.c:585
 msgid "You cannot join a team during warmup."
 msgstr "Vous ne pouvez pas rejoindre d’équipe pendant l’échauffement."
 
-#: src/gamelogic/cgame/cg_servercmds.c:594
+#: src/gamelogic/cgame/cg_servercmds.c:597
 msgid "Cheats are not enabled on this server"
 msgstr "La triche n’est pas activée sur ce serveur"
 
-#: src/gamelogic/cgame/cg_servercmds.c:599
+#: src/gamelogic/cgame/cg_servercmds.c:602
 msgid ""
 "Cheats are not enabled on this server, so you may not use this command while "
 "on a team"
@@ -1969,29 +1969,29 @@ msgstr ""
 "La triche n’est pas activée sur ce serveur, vous ne pouvez donc pas utiliser "
 "cette commande en étant dans une équipe"
 
-#: src/gamelogic/cgame/cg_servercmds.c:607
+#: src/gamelogic/cgame/cg_servercmds.c:610
 msgid "Join a team first"
 msgstr "Rejoignez d’abord une équipe"
 
-#: src/gamelogic/cgame/cg_servercmds.c:614
+#: src/gamelogic/cgame/cg_servercmds.c:617
 msgid "You can only use this command when spectating"
 msgstr "Vous ne pouvez utiliser cette commande qu’en étant spectateur"
 
-#: src/gamelogic/cgame/cg_servercmds.c:620
+#: src/gamelogic/cgame/cg_servercmds.c:623
 msgid "Must be alien to use this command"
 msgstr "Vous devez être alien pour utiliser cette commande"
 
-#: src/gamelogic/cgame/cg_servercmds.c:626
+#: src/gamelogic/cgame/cg_servercmds.c:629
 msgid "Must be human to use this command"
 msgstr "Vous devez être humain pour utiliser cette commande"
 
-#: src/gamelogic/cgame/cg_servercmds.c:632
+#: src/gamelogic/cgame/cg_servercmds.c:635
 msgid "Must be alive to use this command"
 msgstr "Vous devez être en vie pour utiliser cette commande"
 
 # Note : c’est bien « vert translucide ». Deux adjectifs employés pour
 # désigner une seule couleur sont invariables.
-#: src/gamelogic/cgame/cg_servercmds.c:639
+#: src/gamelogic/cgame/cg_servercmds.c:642
 msgid ""
 "There is no room to build here. Move until the structure turns translucent "
 "green, indicating a valid build location."
@@ -2000,11 +2000,11 @@ msgstr ""
 "structure devienne vert translucide, ce qui indique un emplacement de "
 "construction valide."
 
-#: src/gamelogic/cgame/cg_servercmds.c:641
+#: src/gamelogic/cgame/cg_servercmds.c:644
 msgid "There is no room to build here"
 msgstr "Il n’y a pas de place pour construire ici"
 
-#: src/gamelogic/cgame/cg_servercmds.c:646
+#: src/gamelogic/cgame/cg_servercmds.c:649
 msgid ""
 "Cannot build on this surface. The surface is too steep or unsuitable for "
 "building. Please choose another site for this structure."
@@ -2013,15 +2013,15 @@ msgstr ""
 "impropre à la construction. Veuillez choisir un autre emplacement pour cette "
 "structure."
 
-#: src/gamelogic/cgame/cg_servercmds.c:649
+#: src/gamelogic/cgame/cg_servercmds.c:652
 msgid "Cannot build on this surface"
 msgstr "Impossible de construire à cet endroit"
 
-#: src/gamelogic/cgame/cg_servercmds.c:655
+#: src/gamelogic/cgame/cg_servercmds.c:658
 msgid "You cannot build that structure"
 msgstr "Vous ne pouvez pas construire cette structure"
 
-#: src/gamelogic/cgame/cg_servercmds.c:661
+#: src/gamelogic/cgame/cg_servercmds.c:664
 msgid ""
 "This action would remove your team's last spawn point, which often quickly "
 "results in a loss. Try building more spawns."
@@ -2030,11 +2030,11 @@ msgstr ""
 "ce qui entraîne souvent une défaite rapide. Essayez de construire d’autres "
 "points de réapparition."
 
-#: src/gamelogic/cgame/cg_servercmds.c:664
+#: src/gamelogic/cgame/cg_servercmds.c:667
 msgid "You may not deconstruct the last spawn"
 msgstr "Vous ne pouvez pas déconstruire le dernier point de réapparition"
 
-#: src/gamelogic/cgame/cg_servercmds.c:669
+#: src/gamelogic/cgame/cg_servercmds.c:672
 msgid ""
 "Neither team has prevailed after a certain time and the game has entered "
 "Sudden Death. During Sudden Death building is not allowed."
@@ -2043,11 +2043,11 @@ msgstr ""
 "partie est passée en mort subite. Cela signifie qu’on ne peut plus "
 "construire."
 
-#: src/gamelogic/cgame/cg_servercmds.c:672
+#: src/gamelogic/cgame/cg_servercmds.c:675
 msgid "Cannot build during Sudden Death"
 msgstr "Impossible de construire pendant la mort subite"
 
-#: src/gamelogic/cgame/cg_servercmds.c:677
+#: src/gamelogic/cgame/cg_servercmds.c:680
 msgid ""
 "Your teammates have lost faith in your ability to build for the team. You "
 "will not be allowed to build until your team votes to reinstate your "
@@ -2057,11 +2057,11 @@ msgstr ""
 "Vous ne serez plus autorisé à construire jusqu’à ce qu’un vote de votre "
 "équipe ne restitue vos droits de construction."
 
-#: src/gamelogic/cgame/cg_servercmds.c:680
+#: src/gamelogic/cgame/cg_servercmds.c:683
 msgid "Your building rights have been revoked"
 msgstr "Vos droits de construction ont été retirés"
 
-#: src/gamelogic/cgame/cg_servercmds.c:685
+#: src/gamelogic/cgame/cg_servercmds.c:688
 msgid ""
 "Your team has decided to admit defeat and concede the game:traitors and "
 "cowards are not allowed to build."
@@ -2069,11 +2069,11 @@ msgstr ""
 "Votre équipe a décidé d’admettre sa défaite et de se rendre : les traîtres "
 "et les lâches ne sont pas autorisés à construire."
 
-#: src/gamelogic/cgame/cg_servercmds.c:688
+#: src/gamelogic/cgame/cg_servercmds.c:691
 msgid "Building is denied to traitorous cowards"
 msgstr "La construction est interdite aux traîtres et aux lâches"
 
-#: src/gamelogic/cgame/cg_servercmds.c:697
+#: src/gamelogic/cgame/cg_servercmds.c:700
 msgid ""
 "There is no power remaining. Free up power by marking existing buildable "
 "objects."
@@ -2081,7 +2081,7 @@ msgstr ""
 "Il ne reste plus assez d’énergie. Libérez-en en marquant des constructions "
 "existantes."
 
-#: src/gamelogic/cgame/cg_servercmds.c:702
+#: src/gamelogic/cgame/cg_servercmds.c:705
 msgid ""
 "There is no power remaining. Free up power by deconstructing existing "
 "buildable objects."
@@ -2089,11 +2089,11 @@ msgstr ""
 "Il ne reste plus assez d’énergie. Libérez-en en déconstruisant des "
 "constructions existantes."
 
-#: src/gamelogic/cgame/cg_servercmds.c:706
+#: src/gamelogic/cgame/cg_servercmds.c:709
 msgid "There is no power remaining"
 msgstr "Il ne reste plus assez d’énergie"
 
-#: src/gamelogic/cgame/cg_servercmds.c:711
+#: src/gamelogic/cgame/cg_servercmds.c:714
 msgid ""
 "This buildable is not powered. Build a Reactor and/or Repeater in order to "
 "power it."
@@ -2101,11 +2101,11 @@ msgstr ""
 "Cette construction n’est pas alimentée. Construisez un réacteur ou un "
 "répétiteur pour l’alimenter."
 
-#: src/gamelogic/cgame/cg_servercmds.c:713
+#: src/gamelogic/cgame/cg_servercmds.c:716
 msgid "This buildable is not powered"
 msgstr "Cette construction n’est pas alimentée"
 
-#: src/gamelogic/cgame/cg_servercmds.c:718
+#: src/gamelogic/cgame/cg_servercmds.c:721
 msgid ""
 "There can only be one Reactor. Deconstruct the existing one if you wish to "
 "move it."
@@ -2113,11 +2113,11 @@ msgstr ""
 "Il ne peut y avoir qu’un seul réacteur. Déconstruisez le réacteur en place "
 "si vous souhaitez le déplacer."
 
-#: src/gamelogic/cgame/cg_servercmds.c:720
+#: src/gamelogic/cgame/cg_servercmds.c:723
 msgid "There can only be one Reactor"
 msgstr "Il ne peut y avoir qu’un seul réacteur"
 
-#: src/gamelogic/cgame/cg_servercmds.c:725
+#: src/gamelogic/cgame/cg_servercmds.c:728
 msgid ""
 "There is no power here. If available, a Repeater may be used to transmit "
 "power to this location."
@@ -2125,30 +2125,30 @@ msgstr ""
 "Il n’y a pas d’énergie ici. Si vous y avez accès, un répétiteur peut être "
 "utilisé pour retransmettre de l’énergie à cet endroit."
 
-#: src/gamelogic/cgame/cg_servercmds.c:727
+#: src/gamelogic/cgame/cg_servercmds.c:730
 msgid "There is no power here"
 msgstr "Il n’y a pas d’énergie ici"
 
-#: src/gamelogic/cgame/cg_servercmds.c:732
+#: src/gamelogic/cgame/cg_servercmds.c:735
 msgid ""
 "There is no Defense Computer. A Defense Computer is needed to build this."
 msgstr ""
 "Vous n’avez pas de d’ordinateur de défense. L’ordinateur de défense est "
 "nécessaire pour construire cela."
 
-#: src/gamelogic/cgame/cg_servercmds.c:734
+#: src/gamelogic/cgame/cg_servercmds.c:737
 msgid "There is no Defense Computer"
 msgstr "Vous n’avez pas de d’ordinateur de défense"
 
-#: src/gamelogic/cgame/cg_servercmds.c:739
+#: src/gamelogic/cgame/cg_servercmds.c:742
 msgid "This area already has power. A Repeater is not required here."
 msgstr "Cette zone est déjà alimentée. Un répétiteur n’est pas nécessaire ici."
 
-#: src/gamelogic/cgame/cg_servercmds.c:740
+#: src/gamelogic/cgame/cg_servercmds.c:743
 msgid "This area already has power"
 msgstr "Cette zone est déjà alimentée"
 
-#: src/gamelogic/cgame/cg_servercmds.c:745
+#: src/gamelogic/cgame/cg_servercmds.c:748
 msgid ""
 "You have no room to carry this. Please sell any conflicting upgrades before "
 "purchasing this item."
@@ -2156,22 +2156,22 @@ msgstr ""
 "Vous n’avez pas la place pour porter cela. Veuillez vendre les objets qui "
 "gènent avant d’acheter cet objet."
 
-#: src/gamelogic/cgame/cg_servercmds.c:747
+#: src/gamelogic/cgame/cg_servercmds.c:750
 msgid "You have no room to carry this"
 msgstr "Vous n’avez pas la place pour porter cela"
 
-#: src/gamelogic/cgame/cg_servercmds.c:752
+#: src/gamelogic/cgame/cg_servercmds.c:755
 msgid ""
 "Insufficient funds. You do not have enough credits to perform this action."
 msgstr ""
 "Fonds insuffisants. Vous n’avez pas assez de crédits pour effectuer cette "
 "action."
 
-#: src/gamelogic/cgame/cg_servercmds.c:754
+#: src/gamelogic/cgame/cg_servercmds.c:757
 msgid "Insufficient funds"
 msgstr "Fonds insuffisants"
 
-#: src/gamelogic/cgame/cg_servercmds.c:759
+#: src/gamelogic/cgame/cg_servercmds.c:762
 msgid ""
 "You already hold this item. It is not possible to carry multiple items of "
 "the same type."
@@ -2179,11 +2179,11 @@ msgstr ""
 "Vous possédez déjà cet objet. Il n’est pas possible d’avoir plusieurs objets "
 "du même type."
 
-#: src/gamelogic/cgame/cg_servercmds.c:761
+#: src/gamelogic/cgame/cg_servercmds.c:764
 msgid "You already hold this item"
 msgstr "Vous possédez déjà cet objet"
 
-#: src/gamelogic/cgame/cg_servercmds.c:766
+#: src/gamelogic/cgame/cg_servercmds.c:769
 msgid ""
 "You must be near a powered Armoury in order to purchase weapons, upgrades or "
 "ammunition."
@@ -2191,11 +2191,11 @@ msgstr ""
 "Vous devez être à côté d’une armurerie alimentée pour pouvoir acheter des "
 "armes, des évolutions ou des munitions."
 
-#: src/gamelogic/cgame/cg_servercmds.c:768
+#: src/gamelogic/cgame/cg_servercmds.c:771
 msgid "You must be near a powered Armoury"
 msgstr "Vous devez être à côté d’une armurerie alimentée"
 
-#: src/gamelogic/cgame/cg_servercmds.c:773
+#: src/gamelogic/cgame/cg_servercmds.c:776
 msgid ""
 "You must be near a Reactor or a powered Armoury or Repeater in order to "
 "purchase energy ammunition."
@@ -2203,13 +2203,13 @@ msgstr ""
 "Vous devez être à côté d’un réacteur, d’une armurerie alimentée ou d’un "
 "répétiteur pour pouvoir acheter des munitions."
 
-#: src/gamelogic/cgame/cg_servercmds.c:775
+#: src/gamelogic/cgame/cg_servercmds.c:778
 msgid "You must be near a Reactor or a powered Armoury or Repeater"
 msgstr ""
 "Vous devez être à côté d’un réacteur, d’une armurerie alimentée ou d’un "
 "répétiteur"
 
-#: src/gamelogic/cgame/cg_servercmds.c:780
+#: src/gamelogic/cgame/cg_servercmds.c:783
 msgid ""
 "There is not enough room here to put on a Battle Suit. Make sure you have "
 "enough head room to climb in."
@@ -2217,11 +2217,11 @@ msgstr ""
 "Il n’y a pas assez de place ici pour mettre un exosquelette. Assurez-vous "
 "d’avoir assez d’espace au-dessus de vous pour l’enfiler."
 
-#: src/gamelogic/cgame/cg_servercmds.c:782
+#: src/gamelogic/cgame/cg_servercmds.c:785
 msgid "Not enough room here to put on a Battle Suit"
 msgstr "Pas assez de place ici pour mettre un exosquelette"
 
-#: src/gamelogic/cgame/cg_servercmds.c:787
+#: src/gamelogic/cgame/cg_servercmds.c:790
 msgid ""
 "There is not enough room here to take off your Battle Suit. Make sure you "
 "have enough head room to climb out."
@@ -2229,12 +2229,12 @@ msgstr ""
 "Il n’y a pas assez de place ici pour retirer votre exosquelette. Assurez-"
 "vous d’avoir assez d’espace au-dessus de vous pour l’enlever."
 
-#: src/gamelogic/cgame/cg_servercmds.c:789
+#: src/gamelogic/cgame/cg_servercmds.c:792
 msgid "Not enough room here to take off your Battle Suit"
 msgstr "Il n’y a pas assez de place ici pour retirer votre exosquelette"
 
 # Adapté au contexte car « timer » se traduit difficilement.
-#: src/gamelogic/cgame/cg_servercmds.c:794
+#: src/gamelogic/cgame/cg_servercmds.c:797
 msgid ""
 "You are not allowed to buy or sell weapons until your build timer has "
 "expired."
@@ -2242,22 +2242,22 @@ msgstr ""
 "Vous n'êtes pas autorisé à acheter ou à vendre des armes tant que votre "
 "minuterie de construction n'est pas terminée."
 
-#: src/gamelogic/cgame/cg_servercmds.c:796
+#: src/gamelogic/cgame/cg_servercmds.c:799
 msgid "You can not buy or sell weapons until your build timer expires"
 msgstr ""
 "Vous ne pouvez pas acheter ou vendre des armes tant que votre minuterie de "
 "construction n'est pas terminée"
 
 # Quelque soit la langue, le nom de la commande à taper est toujours le même.
-#: src/gamelogic/cgame/cg_servercmds.c:802
+#: src/gamelogic/cgame/cg_servercmds.c:805
 msgid "You must be dead to use the class command"
 msgstr "Vous devez être mort pour utiliser la commande « class »"
 
-#: src/gamelogic/cgame/cg_servercmds.c:807
+#: src/gamelogic/cgame/cg_servercmds.c:810
 msgid "Unknown starting item"
 msgstr "Objet de départ inconnu"
 
-#: src/gamelogic/cgame/cg_servercmds.c:814
+#: src/gamelogic/cgame/cg_servercmds.c:817
 msgid ""
 "There is no creep here. You must build near existing Eggs or the Overmind. "
 "Alien structures will not support themselves."
@@ -2266,11 +2266,11 @@ msgstr ""
 "existants ou de l’Overmind. Les structures des aliens ne subsisteront pas "
 "toutes seules."
 
-#: src/gamelogic/cgame/cg_servercmds.c:816
+#: src/gamelogic/cgame/cg_servercmds.c:819
 msgid "There is no creep here"
 msgstr "Cet endroit n’est pas infesté"
 
-#: src/gamelogic/cgame/cg_servercmds.c:821
+#: src/gamelogic/cgame/cg_servercmds.c:824
 msgid ""
 "There is no Overmind. An Overmind must be built to control the structure you "
 "tried to place."
@@ -2278,12 +2278,12 @@ msgstr ""
 "Il n’y a pas d’Overmind. Un Overmind doit être construit pour contrôler la "
 "structure que vous essayez de placer."
 
-#: src/gamelogic/cgame/cg_servercmds.c:823
-#: src/gamelogic/cgame/cg_servercmds.c:858
+#: src/gamelogic/cgame/cg_servercmds.c:826
+#: src/gamelogic/cgame/cg_servercmds.c:861
 msgid "There is no Overmind"
 msgstr "Il n’y a pas d’Overmind"
 
-#: src/gamelogic/cgame/cg_servercmds.c:828
+#: src/gamelogic/cgame/cg_servercmds.c:831
 msgid ""
 "There can only be one Overmind. Deconstruct the existing one if you wish to "
 "move it."
@@ -2291,11 +2291,11 @@ msgstr ""
 "Il ne peut y avoir qu’un seul Overmind. Déconstruisez l’Overmind en place si "
 "vous souhaitez le déplacer."
 
-#: src/gamelogic/cgame/cg_servercmds.c:830
+#: src/gamelogic/cgame/cg_servercmds.c:833
 msgid "There can only be one Overmind"
 msgstr "Il ne peut y avoir qu’un seul Overmind"
 
-#: src/gamelogic/cgame/cg_servercmds.c:835
+#: src/gamelogic/cgame/cg_servercmds.c:838
 msgid ""
 "The Overmind cannot control any more structures. Deconstruct existing "
 "structures to build more."
@@ -2303,11 +2303,11 @@ msgstr ""
 "L’Overmind ne peut pas contrôler davantage de structures. Déconstruisez les "
 "structures en place pour en construire d’autres."
 
-#: src/gamelogic/cgame/cg_servercmds.c:837
+#: src/gamelogic/cgame/cg_servercmds.c:840
 msgid "The Overmind cannot control any more structures"
 msgstr "L’Overmind ne peut pas contrôler davantage de structures"
 
-#: src/gamelogic/cgame/cg_servercmds.c:842
+#: src/gamelogic/cgame/cg_servercmds.c:845
 msgid ""
 "There is no room to evolve here. Move away from walls or other nearby "
 "objects and try again."
@@ -2315,11 +2315,11 @@ msgstr ""
 "Il n’y a pas assez de place pour évoluer ici. Éloignez-vous des murs et "
 "autres objets qui vous entourent, puis essayez à nouveau."
 
-#: src/gamelogic/cgame/cg_servercmds.c:844
+#: src/gamelogic/cgame/cg_servercmds.c:847
 msgid "There is no room to evolve here"
 msgstr "Il n’y a pas assez de place pour évoluer ici"
 
-#: src/gamelogic/cgame/cg_servercmds.c:849
+#: src/gamelogic/cgame/cg_servercmds.c:852
 msgid ""
 "This location is too close to the enemy to evolve. Move away from the "
 "enemy's presence and try again."
@@ -2327,11 +2327,11 @@ msgstr ""
 "Cet endroit est trop proche de l’ennemi pour évoluer. Éloignez-vous des "
 "ennemis et essayez à nouveau."
 
-#: src/gamelogic/cgame/cg_servercmds.c:851
+#: src/gamelogic/cgame/cg_servercmds.c:854
 msgid "This location is too close to the enemy to evolve"
 msgstr "Cet endroit est trop proche de l’ennemi pour évoluer"
 
-#: src/gamelogic/cgame/cg_servercmds.c:856
+#: src/gamelogic/cgame/cg_servercmds.c:859
 msgid ""
 "There is no Overmind. An Overmind must be built to allow you to upgrade."
 msgstr ""
@@ -2339,57 +2339,57 @@ msgstr ""
 "puissiez évoluer."
 
 # Adapté au contexte car « timer » se traduit difficilement.
-#: src/gamelogic/cgame/cg_servercmds.c:863
+#: src/gamelogic/cgame/cg_servercmds.c:866
 msgid "You cannot evolve until your build timer has expired."
 msgstr ""
 "Vous ne pouvez pas évoluer tant que la structure en cours de construction "
 "n’est pas terminée."
 
-#: src/gamelogic/cgame/cg_servercmds.c:864
+#: src/gamelogic/cgame/cg_servercmds.c:867
 msgid "You cannot evolve until your build timer expires"
 msgstr ""
 "Vous ne pouvez pas évoluer avant que la structure en cours de construction "
 "ne se termine"
 
-#: src/gamelogic/cgame/cg_servercmds.c:878
+#: src/gamelogic/cgame/cg_servercmds.c:881
 #, c-format
 msgid "You cannot evolve into a %s"
 msgstr "Vous ne pouvez pas évoluer en %s"
 
-#: src/gamelogic/cgame/cg_servercmds.c:884
+#: src/gamelogic/cgame/cg_servercmds.c:887
 msgid "You cannot evolve while wallwalking"
 msgstr "Vous ne pouvez pas évoluer tout en marchant aux murs"
 
-#: src/gamelogic/cgame/cg_servercmds.c:889
+#: src/gamelogic/cgame/cg_servercmds.c:892
 msgid "Unknown class"
 msgstr "Classe inconnue"
 
-#: src/gamelogic/cgame/cg_servercmds.c:894
+#: src/gamelogic/cgame/cg_servercmds.c:897
 #, c-format
 msgid "You cannot spawn as a %s"
 msgstr "Vous ne pouvez pas réapparaître en %s"
 
-#: src/gamelogic/cgame/cg_servercmds.c:900
+#: src/gamelogic/cgame/cg_servercmds.c:903
 #, c-format
 msgid "The %s is not allowed"
 msgstr "Le %s n’est pas autorisé"
 
-#: src/gamelogic/cgame/cg_servercmds.c:906
+#: src/gamelogic/cgame/cg_servercmds.c:909
 #, c-format
 msgid "The %s is not allowed at Stage %d"
 msgstr "Le %s n’est pas autorisé en phase %d"
 
-#: src/gamelogic/cgame/cg_servercmds.c:913
+#: src/gamelogic/cgame/cg_servercmds.c:916
 #, c-format
 msgid "cgame: debug: no such menu %d\n"
 msgstr "cgame : correction : aucun menu tel que %d\n"
 
-#: src/gamelogic/cgame/cg_servercmds.c:1123
+#: src/gamelogic/cgame/cg_servercmds.c:1126
 #, c-format
 msgid ">> to reply, say: /m %d [your message] <<\n"
 msgstr ">> pour répondre, tapez : /m %d [votre message] <<\n"
 
-#: src/gamelogic/cgame/cg_servercmds.c:1570
+#: src/gamelogic/cgame/cg_servercmds.c:1573
 #, c-format
 msgid "Unknown client game command: %s\n"
 msgstr "Commande du jeu client inconnue : %s\n"
@@ -2480,6 +2480,7 @@ msgstr "Appuyez sur %s pour utiliser %s\n"
 
 # L’article qui précède le %s n’est pas accordé
 #: src/gamelogic/cgame/cg_tutorial.c:204
+#, c-format
 #, c-format, fuzzy
 msgid "Press %s to cancel placing the %s\n"
 msgstr "Appuyez sur %s pour annuler la mise en place du %s\n"
@@ -2504,24 +2505,24 @@ msgstr "Appuyez sur %s pour marquer cette structure afin qu’elle soit remplac�
 msgid "Press %s to destroy this structure\n"
 msgstr "Appuyez sur %s pour détruire cette structure\n"
 
-#: src/gamelogic/cgame/cg_tutorial.c:251 src/gamelogic/cgame/cg_tutorial.c:295
-#: src/gamelogic/cgame/cg_tutorial.c:364
+#: src/gamelogic/cgame/cg_tutorial.c:251 src/gamelogic/cgame/cg_tutorial.c:297
+#: src/gamelogic/cgame/cg_tutorial.c:368
 #, c-format
 msgid "Press %s to swipe\n"
 msgstr "Appuyez sur %s pour faucher\n"
 
-#: src/gamelogic/cgame/cg_tutorial.c:258 src/gamelogic/cgame/cg_tutorial.c:347
+#: src/gamelogic/cgame/cg_tutorial.c:258 src/gamelogic/cgame/cg_tutorial.c:349
 #, c-format
 msgid "Press %s to launch a projectile\n"
 msgstr "Appuyez sur %s pour lancer un projectile\n"
 
-#: src/gamelogic/cgame/cg_tutorial.c:262 src/gamelogic/cgame/cg_tutorial.c:279
-#: src/gamelogic/cgame/cg_tutorial.c:306
+#: src/gamelogic/cgame/cg_tutorial.c:262 src/gamelogic/cgame/cg_tutorial.c:281
+#: src/gamelogic/cgame/cg_tutorial.c:308
 #, c-format
 msgid "Press %s to walk on walls\n"
 msgstr "Appuyez sur %s pour marcher sur les murs\n"
 
-#: src/gamelogic/cgame/cg_tutorial.c:275
+#: src/gamelogic/cgame/cg_tutorial.c:277
 msgid ""
 "Touch humans to damage them\n"
 "Look at their heads (or jump) to try to bite their heads\n"
@@ -2531,7 +2532,7 @@ msgstr ""
 "Regardez leurs têtes (ou sautez) pour essayez de les mordre\n"
 "Les morsures à la tête font plus de dégâts\n"
 
-#: src/gamelogic/cgame/cg_tutorial.c:291
+#: src/gamelogic/cgame/cg_tutorial.c:293
 msgid ""
 "Touch humans to grab them\n"
 "Look at them to maintain the grab\n"
@@ -2539,201 +2540,201 @@ msgstr ""
 "Touchez les humains pour les attrapper\n"
 "Regardez-les pour les garder\n"
 
-#: src/gamelogic/cgame/cg_tutorial.c:301
+#: src/gamelogic/cgame/cg_tutorial.c:303
 #, c-format
 msgid "Press %s to spray disorienting gas\n"
 msgstr "Appuyez sur %s pour émettre un gaz désorientant\n"
 
-#: src/gamelogic/cgame/cg_tutorial.c:318 src/gamelogic/cgame/cg_tutorial.c:341
+#: src/gamelogic/cgame/cg_tutorial.c:320 src/gamelogic/cgame/cg_tutorial.c:343
 #, c-format
 msgid "Press %s to bite\n"
 msgstr "Appuyez sur %s pour mordre\n"
 
-#: src/gamelogic/cgame/cg_tutorial.c:324
+#: src/gamelogic/cgame/cg_tutorial.c:326
 #, c-format
 msgid "Press %s to invoke an electrical attack\n"
 msgstr "Appuyez sur %s pour lancer une attaque électrique\n"
 
-#: src/gamelogic/cgame/cg_tutorial.c:329
+#: src/gamelogic/cgame/cg_tutorial.c:331
 #, c-format
 msgid "Hold down %s then touch a wall to wall jump\n"
 msgstr "Maintenez %s enfoncée puis touchez un mur pour rebondir dessus\n"
 
-#: src/gamelogic/cgame/cg_tutorial.c:352
+#: src/gamelogic/cgame/cg_tutorial.c:354
 #, c-format
 msgid "Hold down and release %s to pounce\n"
 msgstr "Maintenez puis relâchez %s pour bondir\n"
 
-#: src/gamelogic/cgame/cg_tutorial.c:368
+#: src/gamelogic/cgame/cg_tutorial.c:372
 #, c-format
 msgid "Hold down and release %s while moving forwards to trample\n"
 msgstr "Appuyez puis relâchez %s en avançant pour charger\n"
 
-#: src/gamelogic/cgame/cg_tutorial.c:412
+#: src/gamelogic/cgame/cg_tutorial.c:416
 #, c-format
 msgid "Find an Armoury and press %s for more ammo\n"
 msgstr "Trouvez une armurerie et appuyez sur %s pour plus de munitions\n"
 
-#: src/gamelogic/cgame/cg_tutorial.c:421
+#: src/gamelogic/cgame/cg_tutorial.c:425
 #, c-format
 msgid "Find an Armoury, Reactor, or Repeater and press %s for more ammo\n"
 msgstr "Trouvez une armurerie, un réacteur ou un répétiteur et appuyez sur %s pour "
 "plus de munitions\n"
 
 # L’article qui précède le nom de l’arme n’est pas accordé.
-#: src/gamelogic/cgame/cg_tutorial.c:441 src/gamelogic/cgame/cg_tutorial.c:448
-#: src/gamelogic/cgame/cg_tutorial.c:470
+#: src/gamelogic/cgame/cg_tutorial.c:445 src/gamelogic/cgame/cg_tutorial.c:452
+#: src/gamelogic/cgame/cg_tutorial.c:474
 #, c-format
 #, fuzzy, c-format
 msgid "Press %s to fire the %s\n"
 msgstr "Appuyez sur %s pour tirer avec le %s\n"
 
-#: src/gamelogic/cgame/cg_tutorial.c:453
+#: src/gamelogic/cgame/cg_tutorial.c:457
 #, c-format
 msgid "Hold %s to zoom\n"
 msgstr "Maintenez %s enfoncé pour zoomer\n"
 
-#: src/gamelogic/cgame/cg_tutorial.c:459
+#: src/gamelogic/cgame/cg_tutorial.c:463
 #, c-format
 msgid "Hold %s to activate the %s\n"
 msgstr "Maintenez %s pour mettre en marche la %s\n"
 
-#: src/gamelogic/cgame/cg_tutorial.c:466
+#: src/gamelogic/cgame/cg_tutorial.c:470
 #, c-format
 msgid "Hold and release %s to fire a charged shot\n"
 msgstr "Maintenez puis relâchez %s pour tirer un gros coup\n"
 
-#: src/gamelogic/cgame/cg_tutorial.c:485
+#: src/gamelogic/cgame/cg_tutorial.c:489
 #, c-format
 msgid "Use %s and %s to select an upgrade\n"
 msgstr "Utilisez %s et %s pour sélectionner une amélioration\n"
 
 # L’article devant la chose à utiliser n’est pas accordé.
-#: src/gamelogic/cgame/cg_tutorial.c:492 src/gamelogic/cgame/cg_tutorial.c:539
+#: src/gamelogic/cgame/cg_tutorial.c:496 src/gamelogic/cgame/cg_tutorial.c:543
 #, c-format
 #, fuzzy, c-format
 msgid "Press %s to use the %s\n"
 msgstr "Appuyez sur %s pour utiliser le %s\n"
 
-#: src/gamelogic/cgame/cg_tutorial.c:501
+#: src/gamelogic/cgame/cg_tutorial.c:505
 #, c-format
 msgid "Press %s to use your %s\n"
 msgstr "Appuyez sur %s pour utiliser votre %s\n"
 
-#: src/gamelogic/cgame/cg_tutorial.c:509
+#: src/gamelogic/cgame/cg_tutorial.c:513
 msgid "You are blacking out. Stop sprinting to recover stamina\n"
 msgstr "Vous sombrez. Arrêtez de sprinter pour regagner de l’endurance\n"
 
-#: src/gamelogic/cgame/cg_tutorial.c:514
+#: src/gamelogic/cgame/cg_tutorial.c:518
 msgid "Your stamina is low. Stop sprinting to recover\n"
 msgstr "Vous n’êtes plus très endurant. Arrêtez de sprinter pour récupérer\n"
 
-#: src/gamelogic/cgame/cg_tutorial.c:521
+#: src/gamelogic/cgame/cg_tutorial.c:525
 #, c-format
 msgid ""
 "Press %s to buy equipment upgrades at the %s. Sell your old weapon first!\n"
 msgstr "Appuyez sur %s pour acheter du matériel à l’%s. Vendez d’abord l’arme que "
 "vous portez!\n"
 
-#: src/gamelogic/cgame/cg_tutorial.c:529
+#: src/gamelogic/cgame/cg_tutorial.c:533
 #, c-format
 msgid "Press %s to refill your energy weapon's ammo at the %s\n"
 msgstr "Appuyez sur %s pour recharger l’énergie de votre arme sur le %s\n"
 
-#: src/gamelogic/cgame/cg_tutorial.c:546
+#: src/gamelogic/cgame/cg_tutorial.c:550
 #, c-format
 msgid "Press %s and any direction to sprint\n"
 msgstr "Appuyez sur %s et une direction pour sprinter\n"
 
-#: src/gamelogic/cgame/cg_tutorial.c:550
+#: src/gamelogic/cgame/cg_tutorial.c:554
 #, c-format
 msgid "Press %s and back or strafe to dodge\n"
 msgstr "Appuyez sur %s et arrière ou sur les côtés pour esquiver\n"
 
-#: src/gamelogic/cgame/cg_tutorial.c:566
+#: src/gamelogic/cgame/cg_tutorial.c:570
 #, c-format
 msgid "Press %s to leave spawn queue\n"
 msgstr "Appuyez sur %s pour quitter la file d’attente pour réapparaître\n"
 
-#: src/gamelogic/cgame/cg_tutorial.c:572
+#: src/gamelogic/cgame/cg_tutorial.c:576
 #, c-format
 msgid "Press %s to spawn\n"
 msgstr "Appuyez sur %s pour apparaître\n"
 
-#: src/gamelogic/cgame/cg_tutorial.c:579
+#: src/gamelogic/cgame/cg_tutorial.c:583
 #, c-format
 msgid "Press %s to join a team\n"
 msgstr "Appuyez sur %s pour rejoindre une équipe\n"
 
-#: src/gamelogic/cgame/cg_tutorial.c:588
+#: src/gamelogic/cgame/cg_tutorial.c:592
 #, c-format
 msgid "Press %s to switch to chase-cam spectator mode\n"
 msgstr "Appuyez sur %s pour basculer en mode vue extérieure\n"
 
-#: src/gamelogic/cgame/cg_tutorial.c:594
+#: src/gamelogic/cgame/cg_tutorial.c:598
 #, c-format
 msgid "Press %s to return to free spectator mode\n"
 msgstr "Appuyez sur %s pour retourner en mode spectateur libre\n"
 
-#: src/gamelogic/cgame/cg_tutorial.c:600
+#: src/gamelogic/cgame/cg_tutorial.c:604
 #, c-format
 msgid "Press %s to stop following\n"
 msgstr "Appuyez sur %s pour cesser de suivre\n"
 
-#: src/gamelogic/cgame/cg_tutorial.c:605
+#: src/gamelogic/cgame/cg_tutorial.c:609
 #, c-format
 msgid "Use %s and %s to change between players\n"
 msgstr "Utilisez %s et %s pour passer d’un joueur à l’autre\n"
 
-#: src/gamelogic/cgame/cg_tutorial.c:611
+#: src/gamelogic/cgame/cg_tutorial.c:615
 #, c-format
 msgid "Press %s to follow a player\n"
 msgstr "Appuyez sur %s pour suivre un joueur\n"
 
-#: src/gamelogic/cgame/cg_tutorial.c:696
+#: src/gamelogic/cgame/cg_tutorial.c:700
 #, c-format
 msgid "Press %s to evolve\n"
 msgstr "Appuyez sur %s pour évoluer\n"
 
-#: src/gamelogic/cgame/cg_tutorial.c:707
+#: src/gamelogic/cgame/cg_tutorial.c:711
 #, c-format
 msgid "Press %s when ready to continue\n"
 msgstr "Appuyez sur %s lorsque vous serez prêt à continuer\n"
 
-#: src/gamelogic/cgame/cg_tutorial.c:712
+#: src/gamelogic/cgame/cg_tutorial.c:716
 msgid "Waiting for other players to be ready\n"
 msgstr "En attente que les autres joueurs soient prêts\n"
 
-#: src/gamelogic/cgame/cg_tutorial.c:718
+#: src/gamelogic/cgame/cg_tutorial.c:722
 #, c-format
 msgid "Press %s to open the console\n"
 msgstr "Appuyez sur %s pour ouvrir ou fermer la console\n"
 
-#: src/gamelogic/cgame/cg_tutorial.c:719
+#: src/gamelogic/cgame/cg_tutorial.c:723
 msgid "Press ESC for the menu"
 msgstr "Appuyez sur échap pour le menu"
 
-#: src/gamelogic/game/bg_misc.c:2616
+#: src/gamelogic/game/bg_misc.c:2454
 msgid "spectator"
 msgstr "spectateur"
 
-#: src/gamelogic/game/bg_misc.c:2621
+#: src/gamelogic/game/bg_misc.c:2459
 msgid "alien"
 msgstr "alien"
 
-#: src/gamelogic/game/bg_misc.c:2626
+#: src/gamelogic/game/bg_misc.c:2464
 msgid "human"
 msgstr "humain"
 
-#: src/gamelogic/game/bg_misc.c:2636
+#: src/gamelogic/game/bg_misc.c:2474
 msgid "spectators"
 msgstr "spectateurs"
 
-#: src/gamelogic/game/bg_misc.c:2641
+#: src/gamelogic/game/bg_misc.c:2479
 msgid "aliens"
 msgstr "aliens"
 
-#: src/gamelogic/game/bg_misc.c:2646
+#: src/gamelogic/game/bg_misc.c:2484
 msgid "humans"
 msgstr "humains"
 
@@ -3163,22 +3164,19 @@ msgstr "^3readconfig : ^7$1$ niveaux chargés, $2$ admins, $3$ bans, $4$ command
 
 #: src/gamelogic/game/g_admin.c:2093
 msgid ""
-"^3time: ^7local time is ^d$1$:$2$:$3$^7 - game runs for ^d$4$:$5$^7 with "
+"^3time: ^7time is ^d$1$:$2$:$3$^7 UTC – game runs for ^d$4$:$5$^7 with "
 "Sudden Death in ^d$6$:$7$^7\n"
-msgstr "^3time: ^7l’heure locale est ^d$1$:$2$:$3$^7 - la partie dure depuis "
-"^d$4$:$5$^7 et la mort subite est dans ^d$6$:$7$^7\n"
+msgstr ""
 
 #: src/gamelogic/game/g_admin.c:2101
 msgid ""
-"^3time: ^7local time is ^d$1$:$2$:$3$^7 - game runs for ^d$4$:$5$^7 hitting "
+"^3time: ^7time is ^d$1$:$2$:$3$^7 UTC – game runs for ^d$4$:$5$^7 hitting "
 "Timelimit in ^d$6$:$7$^7\n"
-msgstr "^3time: ^7l’heure locale est ^d$1$:$2$:$3$^7 - la partie dure depuis "
-"^d$4$:$5$^7 et atteindra la limite de temps dans ^d$6$:$7$^7\n"
+msgstr ""
 
 #: src/gamelogic/game/g_admin.c:2106
-msgid "^3time: ^7local time is ^d$1$:$2$:$3$^7 - game time is ^d$4$:$5$^7\n"
-msgstr "^3time: ^7l’heure locale est ^d$1$:$2$:$3$^7 - le temps écoulé dans la "
-"partie est de ^d$4$:$5$^7\n"
+msgid "^3time: ^7time is ^d$1$:$2$:$3$^7 UTC – game time is ^d$4$:$5$^7\n"
+msgstr ""
 
 #: src/gamelogic/game/g_admin.c:2132
 msgid "^3setlevel: ^7usage: setlevel [name|slot#] [level]\n"
@@ -4026,263 +4024,263 @@ msgstr "$1$ : aucune piste disponible pour la commande « $2$ », équipe $3$, c
 msgid "origin: $1$ $2$ $3$\n"
 msgstr "origine : $1$ $2$ $3$\n"
 
-#: src/gamelogic/game/g_cmds.c:1635
+#: src/gamelogic/game/g_cmds.c:1636
 msgid "$1$: voting not allowed here\n"
 msgstr "$1$ : le vote n’est pas autorisé ici\n"
 
-#: src/gamelogic/game/g_cmds.c:1642
+#: src/gamelogic/game/g_cmds.c:1643
 msgid "$1$: a vote is already in progress\n"
 msgstr "$1$ : un vote est déjà en cours\n"
 
-#: src/gamelogic/game/g_cmds.c:1672
+#: src/gamelogic/game/g_cmds.c:1675
 msgid "Invalid vote string\n"
 msgstr "Le texte du vote est invalide\n"
 
-#: src/gamelogic/game/g_cmds.c:1673
+#: src/gamelogic/game/g_cmds.c:1676
 msgid "Valid vote commands are: "
 msgstr "Commandes de vote possibles : "
 
-#: src/gamelogic/game/g_cmds.c:1674
+#: src/gamelogic/game/g_cmds.c:1677
 msgid "Valid team-vote commands are: "
 msgstr "Commandes de vote d’équipe possibles : "
 
-#: src/gamelogic/game/g_cmds.c:1703
+#: src/gamelogic/game/g_cmds.c:1745
 msgid "$1$: you have already called the maximum number of votes ($2$)\n"
 msgstr "$1$ : vous avez déjà atteint le nombre maximum d’appel à voter ($2$)\n"
 
 # $1$ prendra une valeur du genre "kick", "denybuild", "mute", "map", "map_restart"
-#: src/gamelogic/game/g_cmds.c:1716
+#: src/gamelogic/game/g_cmds.c:1760
 msgid "'$1$' votes have been disabled\n"
 msgstr "Les votes de type « $1$ » ont été désactivés\n"
 
 # Note : pas de subjonctif après « après que »
-#: src/gamelogic/game/g_cmds.c:1731
+#: src/gamelogic/game/g_cmds.c:1775
 msgid "'$1$' votes are not allowed once $2$ minutes have passed\n"
 msgstr "Les votes de type « $1$ » ne sont pas autorisés après que $2$ minutes se "
 "sont écoulées.\n"
 
-#: src/gamelogic/game/g_cmds.c:1741
+#: src/gamelogic/game/g_cmds.c:1785
 msgid "'$1$' votes are not allowed until $2$ minutes have passed\n"
 msgstr "Les votes de type « $1$ » ne sont pas autorisés avant que $2$ minutes ne "
 "soient écoulées.\n"
 
-#: src/gamelogic/game/g_cmds.c:1751
+#: src/gamelogic/game/g_cmds.c:1795
 msgid "'$1$' votes are only allowed with less than $2$ minutes remaining\n"
 msgstr "Les votes de type « $1$ » sont autorisés seulement lorsqu’il reste moins de "
 "$2$ minutes\n"
 
-#: src/gamelogic/game/g_cmds.c:1762
+#: src/gamelogic/game/g_cmds.c:1806
 msgid "Sudden Death has already begun\n"
 msgstr "La mort subite a déjà commencé\n"
 
-#: src/gamelogic/game/g_cmds.c:1770
+#: src/gamelogic/game/g_cmds.c:1814
 msgid "Sudden Death is imminent — this vote may have no effect\n"
 msgstr "La mort subite est imminente — votre vote pourrait n’avoir aucun effet\n"
 
-#: src/gamelogic/game/g_cmds.c:1801
+#: src/gamelogic/game/g_cmds.c:1845
 msgid "$1$: no target\n"
 msgstr "$1$ : aucune cible\n"
 
-#: src/gamelogic/game/g_cmds.c:1820 src/gamelogic/game/g_cmds.c:1834
+#: src/gamelogic/game/g_cmds.c:1864 src/gamelogic/game/g_cmds.c:1878
 msgid "$1$: admin is immune\n"
 msgstr "$1$ : l’administrateur est immunisé\n"
 
-#: src/gamelogic/game/g_cmds.c:1842
+#: src/gamelogic/game/g_cmds.c:1886
 msgid "$1$: player is not on your team\n"
 msgstr "$1$ : le joueur n’est pas dans votre équipe\n"
 
-#: src/gamelogic/game/g_cmds.c:1853
+#: src/gamelogic/game/g_cmds.c:1897
 msgid "$1$: You must provide a reason\n"
 msgstr "$1$ : Vous devez fournir un motif\n"
 
-#: src/gamelogic/game/g_cmds.c:1864
+#: src/gamelogic/game/g_cmds.c:1908
 #, c-format
 msgid "Kick player '%s'"
 msgstr "Expulsion du joueur « %s »"
 
-#: src/gamelogic/game/g_cmds.c:1872
+#: src/gamelogic/game/g_cmds.c:1916
 #, c-format
 msgid "Move player '%s' to spectators"
 msgstr "Renvoie du joueur « %s » en spectateur"
 
-#: src/gamelogic/game/g_cmds.c:1879
+#: src/gamelogic/game/g_cmds.c:1923
 msgid "$1$: player is already muted\n"
 msgstr "$1$ : le joueur est déjà réduit au silence\n"
 
-#: src/gamelogic/game/g_cmds.c:1887
+#: src/gamelogic/game/g_cmds.c:1931
 #, c-format
 msgid "Mute player '%s'"
 msgstr "Le joueur « %s » est réduit au silence"
 
-#: src/gamelogic/game/g_cmds.c:1894
+#: src/gamelogic/game/g_cmds.c:1938
 msgid "$1$: player is not currently muted\n"
 msgstr "$1$ : le joueur n’est pour le moment pas réduit au silence\n"
 
-#: src/gamelogic/game/g_cmds.c:1902
+#: src/gamelogic/game/g_cmds.c:1946
 #, c-format
 msgid "Unmute player '%s'"
 msgstr "Le joueur « %s » regagne la parole"
 
-#: src/gamelogic/game/g_cmds.c:1909
+#: src/gamelogic/game/g_cmds.c:1953
 msgid "$1$: player already lost building rights\n"
 msgstr "$1$ : le joueur a déjà perdu ses droits de construction\n"
 
-#: src/gamelogic/game/g_cmds.c:1924
+#: src/gamelogic/game/g_cmds.c:1968
 msgid "$1$: player already has building rights\n"
 msgstr "$1$ : le joueur a déjà ses droits de construction\n"
 
-#: src/gamelogic/game/g_cmds.c:1955
+#: src/gamelogic/game/g_cmds.c:1999
 msgid "callvote: Maximum number of $1$ extend votes has been reached\n"
 msgstr "callvote: Le nombre maximum de $1$ votes de prolongations a été atteint\n"
 
-#: src/gamelogic/game/g_cmds.c:1992 src/gamelogic/game/g_cmds.c:2051
+#: src/gamelogic/game/g_cmds.c:2036 src/gamelogic/game/g_cmds.c:2095
 msgid "$1$: 'maps/$2$.bsp' could not be found on the server\n"
 msgstr "$1$ : « maps/$2$.bsp » n’a pas été trouvé sur le serveur\n"
 
-#: src/gamelogic/game/g_cmds.c:2028
+#: src/gamelogic/game/g_cmds.c:2072
 msgid "callvote: layout '$1$' could not be found on the server\n"
 msgstr "callvote : l’agencement « $1$ » n’a pas été trouvé sur le serveur\n"
 
-#: src/gamelogic/game/g_cmds.c:2043
+#: src/gamelogic/game/g_cmds.c:2087
 msgid "$1$: the next map is already set to '$2$'\n"
 msgstr "$1$ : la prochaine carte est déjà « $2$ »\n"
 
-#: src/gamelogic/game/g_cmds.c:2100
+#: src/gamelogic/game/g_cmds.c:2144
 msgid "$1$^7 called a vote: $2$\n"
 msgstr "$1$^7 lance un vote : $2$\n"
 
-#: src/gamelogic/game/g_cmds.c:2115
+#: src/gamelogic/game/g_cmds.c:2159
 msgid "$1$^7 called a team vote: $2t$\n"
 msgstr "$1$^7 lance à son équipe un vote : $2t$\n"
 
-#: src/gamelogic/game/g_cmds.c:2166
+#: src/gamelogic/game/g_cmds.c:2210
 msgid "$1$: no vote in progress\n"
 msgstr "$1$ : aucun vote en cours\n"
 
-#: src/gamelogic/game/g_cmds.c:2173
+#: src/gamelogic/game/g_cmds.c:2217
 msgid "$1$: vote already cast\n"
 msgstr "$1$ : vote déjà exprimé\n"
 
-#: src/gamelogic/game/g_cmds.c:2178
+#: src/gamelogic/game/g_cmds.c:2222
 msgid "$1$: vote cast\n"
 msgstr "$1$ : vote exprimé\n"
 
-#: src/gamelogic/game/g_cmds.c:2208
+#: src/gamelogic/game/g_cmds.c:2254
 msgid "usage: setviewpos (<x> <y> <z> [<yaw> [<pitch>]] | <entitynum>)\n"
 msgstr "utilisation : setviewpos (<x> <y> <z> [<lacet> [<tangage>]] | <numéro "
 "d’entitée>)\n"
 
-#: src/gamelogic/game/g_cmds.c:2823 src/gamelogic/game/g_cmds.c:2853
-#: src/gamelogic/game/g_cmds.c:2905
+#: src/gamelogic/game/g_cmds.c:2869 src/gamelogic/game/g_cmds.c:2899
+#: src/gamelogic/game/g_cmds.c:2951
 msgid "You don't have the $1$\n"
 msgstr "Vous n’avez pas le $1$\n"
 
-#: src/gamelogic/game/g_cmds.c:3105
+#: src/gamelogic/game/g_cmds.c:3151
 msgid "You can't buy this item ($1$)\n"
 msgstr "Vous ne pouvez pas acheter cet objet ($1$)\n"
 
-#: src/gamelogic/game/g_cmds.c:3109
+#: src/gamelogic/game/g_cmds.c:3155
 msgid "You can't buy alien items\n"
 msgstr "Vous ne pouvez pas acheter des objets pour aliens\n"
 
-#: src/gamelogic/game/g_cmds.c:3261
+#: src/gamelogic/game/g_cmds.c:3307
 msgid "You can't sell this weapon\n"
 msgstr "Vous ne pouvez pas vendre cette arme\n"
 
-#: src/gamelogic/game/g_cmds.c:3294
+#: src/gamelogic/game/g_cmds.c:3340
 msgid "You can't sell this item\n"
 msgstr "Vous ne pouvez pas vendre cet objet\n"
 
-#: src/gamelogic/game/g_cmds.c:3900
+#: src/gamelogic/game/g_cmds.c:3946
 msgid "usage: $1$ [clientNum | partial name match]\n"
 msgstr "utilisation : $1$ [numéro du client | texte partiel correspondant au nom]\n"
 
-#: src/gamelogic/game/g_cmds.c:3910
+#: src/gamelogic/game/g_cmds.c:3956
 msgid "$1$: no clients match the name '$2$'\n"
 msgstr "$1$ : aucun client ne correspond au nom « $2$ »\n"
 
-#: src/gamelogic/game/g_cmds.c:3923
+#: src/gamelogic/game/g_cmds.c:3969
 msgid "ignore: added $1$^7 to your ignore list\n"
 msgstr "ignore: $1$^7 a été ajouté à votre liste d’ignorés\n"
 
-#: src/gamelogic/game/g_cmds.c:3929
+#: src/gamelogic/game/g_cmds.c:3975
 msgid "ignore: $1$^7 is already on your ignore list\n"
 msgstr "ignore: $1$^7 est déjà présent dans votre liste d’ignorés\n"
 
-#: src/gamelogic/game/g_cmds.c:3940
+#: src/gamelogic/game/g_cmds.c:3986
 msgid "unignore: removed $1$^7 from your ignore list\n"
 msgstr "unignore: $1$^7 a été supprimé de votre liste d’ignorés\n"
 
-#: src/gamelogic/game/g_cmds.c:3946
+#: src/gamelogic/game/g_cmds.c:3992
 msgid "unignore: $1$^7 is not on your ignore list\n"
 msgstr "unignore: $1$^7 n’est pas présent dans votre liste d’ignorés\n"
 
-#: src/gamelogic/game/g_cmds.c:4084
+#: src/gamelogic/game/g_cmds.c:4130
 msgid "^3listmaps: ^7found $1$ map matching '$2$^7'"
 msgid_plural "^3listmaps: ^7found $1$ maps matching '$2$^7'"
 msgstr[0] "^3listmaps: ^7$1$ carte trouvée correspondant à « $2$^7 »"
 msgstr[1] "^3listmaps: ^7$1$ cartes trouvées correspondant à « $2$^7 »"
 
-#: src/gamelogic/game/g_cmds.c:4088
+#: src/gamelogic/game/g_cmds.c:4134
 msgid "^3listmaps: ^7listing $1$ of $2$ map"
 msgid_plural "^3listmaps: ^7listing $1$ of $2$ maps"
 msgstr[0] "^3listmaps: ^7liste de $1$ carte sur $2$"
 msgstr[1] "^3listmaps: ^7liste de $1$ cartes sur $2$"
 
-#: src/gamelogic/game/g_cmds.c:4093
+#: src/gamelogic/game/g_cmds.c:4139
 msgid ", page $1$ of $2$"
 msgstr ", page $1$ sur $2$"
 
-#: src/gamelogic/game/g_cmds.c:4098
+#: src/gamelogic/game/g_cmds.c:4144
 msgid ", use 'listmaps $1$$2$$3$' to see more"
 msgstr ", utilisez « listmaps $1$$2$$3$ » pour en voir plus"
 
-#: src/gamelogic/game/g_cmds.c:4215
+#: src/gamelogic/game/g_cmds.c:4261
 msgid "^3maplog: ^7recent map results, newest first\n"
 msgstr "^3maplog: ^7résultat des dernières cartes, la plus récente d’abord\n"
 
-#: src/gamelogic/game/g_cmds.c:4360
+#: src/gamelogic/game/g_cmds.c:4406
 msgid "You are flooding: please wait $1$s before trying again\n"
 msgstr "Vous surchargez le serveur : merci de patienter $1$ s avant d’essayer à "
 "nouveau\n"
 
-#: src/gamelogic/game/g_cmds.c:4470
+#: src/gamelogic/game/g_cmds.c:4516
 msgid "Unknown command $1$\n"
 msgstr "Commande $1$ inconnue\n"
 
-#: src/gamelogic/game/g_cmds.c:4629
+#: src/gamelogic/game/g_cmds.c:4684
 msgid "Sorry, but private messages have been disabled\n"
 msgstr "Désolé, mais les messages privés ont été désactivés\n"
 
-#: src/gamelogic/game/g_cmds.c:4637
+#: src/gamelogic/game/g_cmds.c:4692
 msgid "usage: $1$ [name|slot#] [message]\n"
 msgstr "utilisation : $1$ [nom|numéro de place] [message]\n"
 
-#: src/gamelogic/game/g_cmds.c:4669
+#: src/gamelogic/game/g_cmds.c:4724
 msgid "^3No player matching ^7 '$1$^7' ^3to send message to.\n"
 msgstr "^3Aucun joueur correspondant à ^7 « $1$^7 » ^3à qui envoyer votre message.\n"
 
-#: src/gamelogic/game/g_cmds.c:4674
+#: src/gamelogic/game/g_cmds.c:4729
 msgid "^$1$Private message: ^7$2$\n"
 msgstr "^$1$Message privé : ^7$2$\n"
 
-#: src/gamelogic/game/g_cmds.c:4679
+#: src/gamelogic/game/g_cmds.c:4734
 msgid "^$1$sent to $2$ player: ^7$3$\n"
 msgid_plural "^$1$sent to $2$ players: ^7$3$\n"
 msgstr[0] "^$1$ envoyé à $2$ joueur : ^7$3$\n"
 
-#: src/gamelogic/game/g_cmds.c:4705
+#: src/gamelogic/game/g_cmds.c:4760
 msgid "Sorry, but use of /a by non-admins has been disabled.\n"
 msgstr "Désolé, mais l’utilisation de /a par les joueurs qui ne sont pas "
 "administrateurs a été désactivée.\n"
 
-#: src/gamelogic/game/g_cmds.c:4710
+#: src/gamelogic/game/g_cmds.c:4765
 msgid ""
 "Your message has been sent to any available admins and to the server logs.\n"
 msgstr "Votre message a été envoyé à tous les administrateurs disponibles et aux "
 "journaux du serveur.\n"
 
-#: src/gamelogic/game/g_cmds.c:4717
+#: src/gamelogic/game/g_cmds.c:4772
 msgid "usage: a [message]\n"
 msgstr "utilisation : a [message]\n"
 
@@ -4299,61 +4297,69 @@ msgid "$1$ ^3DESTROYED^7 by $2$\n"
 msgstr "$1$ ^3DÉTRUIT^7 par $2$\n"
 
 # $1$ = nom de la cvar, $2$ = nouvelle valeur de cette cvar
-#: src/gamelogic/game/g_main.c:582
+#: src/gamelogic/game/g_main.c:584
 msgid "Server: $1$ changed to $2$\n"
 msgstr "Serveur : valeur de $1$ changé à $2$\n"
 
-#: src/gamelogic/game/g_main.c:1341
+#: src/gamelogic/game/g_main.c:1344
 msgid "Beginning Sudden Death.\n"
 msgstr "Commencement de la mort subite.\n"
 
-#: src/gamelogic/game/g_main.c:1359
+#: src/gamelogic/game/g_main.c:1362
 msgid "Sudden Death will begin in $1$ seconds.\n"
 msgstr "La mort subite va commencer dans $1$ secondes.\n"
 
-#: src/gamelogic/game/g_main.c:2365
+#: src/gamelogic/game/g_main.c:2363
 msgid "Timelimit hit\n"
 msgstr "Limite de temps atteinte\n"
 
-#: src/gamelogic/game/g_main.c:2394
+#: src/gamelogic/game/g_main.c:2392
 msgid "Humans win\n"
 msgstr "Victoire des humains\n"
 
-#: src/gamelogic/game/g_main.c:2408
+#: src/gamelogic/game/g_main.c:2406
 msgid "Aliens win\n"
 msgstr "Victoire des aliens\n"
 
-#: src/gamelogic/game/g_main.c:2552
+#: src/gamelogic/game/g_main.c:2589
+msgid "Vote failed ($1$ of $2$; quorum not reached)\n"
+msgstr ""
+
+#: src/gamelogic/game/g_main.c:2589
+msgid "Team vote failed ($1$ of $2$; quorum not reached)\n"
+msgstr ""
+
+#: src/gamelogic/game/g_main.c:2594
 msgid "Vote passed ($1$ — $2$)\n"
 msgstr "Vote remporté ($1$ — $2$)\n"
 
-#: src/gamelogic/game/g_main.c:2552
+#: src/gamelogic/game/g_main.c:2594
 msgid "Team vote passed ($1$ — $2$)\n"
 msgstr "Vote d’équipe remporté ($1$ — $2$)\n"
 
-#: src/gamelogic/game/g_main.c:2557
+#: src/gamelogic/game/g_main.c:2599
 #, c-format
 msgid "Vote failed ($1$ — $2$; $3$% needed)\n"
 msgstr "Le vote a échoué ($1$ — $2$ ; il fallait $3$ %)\n"
 
-#: src/gamelogic/game/g_main.c:2557
+#: src/gamelogic/game/g_main.c:2599
 #, c-format
 msgid "Team vote failed ($1$ — $2$; $3$% needed)\n"
 msgstr "Le vote d’équipe a échoué ($1$ — $2$ ; il fallait $3$ %)\n"
 
-#: src/gamelogic/game/g_main.c:2771
+#: src/gamelogic/game/g_main.c:2801
 msgid "Server: Game will auto-unpause in $1$ seconds\n"
 msgstr "Serveur : la partie reprendra automatiquement dans $1$ secondes\n"
 
-#: src/gamelogic/game/g_main.c:2787
+#: src/gamelogic/game/g_main.c:2817
 msgid "Server: The game has been unpaused automatically (2 minute max)\n"
 msgstr "Serveur : la partie a été reprise automatiquement (2 minutes maximum)\n"
 
-#: src/gamelogic/game/g_maprotation.c:760
+#: src/gamelogic/game/g_maprotation.c:777
 msgid "^3listrotation: ^7there is no active map rotation on this server\n"
 msgstr "^3listrotation: ^7aucun cycle de cartes n’a été mis en place sur ce serveur\n"
 
-#: src/gamelogic/game/g_maprotation.c:766
+#: src/gamelogic/game/g_maprotation.c:783
 msgid "^3listrotation: ^7there are no maps in the active map rotation\n"
 msgstr "^3listrotation: ^7il n’y a aucune carte dans le cycle de cartes en cours\n"
 
@@ -5202,6 +5208,22 @@ msgstr "Merci !"
 #: main/ui/vsays.menu:114
 msgid "Sorry!"
 msgstr "Désolé !"
+
+#~ msgid ""
+#~ "^3time: ^7local time is ^d$1$:$2$:$3$^7 - game runs for ^d$4$:$5$^7 with "
+#~ "Sudden Death in ^d$6$:$7$^7\n"
+#~ msgstr "^3time: ^7l’heure locale est ^d$1$:$2$:$3$^7 - la partie dure depuis "
+#~ "^d$4$:$5$^7 et la mort subite est dans ^d$6$:$7$^7\n"
+
+#~ msgid ""
+#~ "^3time: ^7local time is ^d$1$:$2$:$3$^7 - game runs for ^d$4$:$5$^7 hitting "
+#~ "Timelimit in ^d$6$:$7$^7\n"
+#~ msgstr "^3time: ^7l’heure locale est ^d$1$:$2$:$3$^7 - la partie dure depuis "
+#~ "^d$4$:$5$^7 et atteindra la limite de temps dans ^d$6$:$7$^7\n"
+
+#~ msgid "^3time: ^7local time is ^d$1$:$2$:$3$^7 - game time is ^d$4$:$5$^7\n"
+#~ msgstr "^3time: ^7l’heure locale est ^d$1$:$2$:$3$^7 - le temps écoulé dans la "
+#~ "partie est de ^d$4$:$5$^7\n"
 
 #, c-format
 #~ msgid ""
