@@ -816,6 +816,10 @@ void	main()
 	vec3 I = var_Position.xyz - u_LightOrigin;
 	
 	float vertexDistance = length(I) / u_LightRadius - SHADOW_BIAS;
+	if( vertexDistance >= 1.0f ) {
+		discard;
+		return;
+	}
 
 	#if defined(r_PCFSamples)
 		#if 0//defined( PCSS )
@@ -1004,7 +1008,7 @@ void	main()
 	color.gb *= var_TexNormal.pq;
 
 	if( u_LightScale < 0.0 ) {
-		color.rgb = vec3( dot(color.rgb, vec3( 0.3333 ) ) );
+		color.rgb = vec3( clamp(dot(color.rgb, vec3( 0.3333 ) ), 0.3, 0.7 ) );
 	}
 
 	gl_FragColor = color;
