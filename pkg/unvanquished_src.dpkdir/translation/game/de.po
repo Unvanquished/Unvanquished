@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: Unv Game DE r2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-05-06 01:34+0200\n"
-"PO-Revision-Date: 2013-05-03 09:57+0000\n"
-"Last-Translator: Tim <>\n"
+"PO-Revision-Date: 2013-05-09 20:33+0000\n"
+"Last-Translator: Viech <eris@hush.com>\n"
 "Language-Team: Unvanquished Development\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Pootle 2.5.0-beta1\n"
-"X-POOTLE-MTIME: 1367575051.0\n"
+"X-POOTLE-MTIME: 1368131639.0\n"
 
 #: tremulous_alien_builder_hud.menu:47 tremulous_alien_builder_hud.menu:49
 #: tremulous_alien_builder_hud.menu:48
@@ -649,19 +649,19 @@ msgstr "Schatten:"
 
 #: ingame_options.menu:553 options.menu:565
 msgid "Blobs"
-msgstr ""
+msgstr "Klecks"
 
 #: ingame_options.menu:553 options.menu:565
 msgid "Exponential mapping"
-msgstr ""
+msgstr "Exponentiell"
 
 #: ingame_options.menu:553 options.menu:565
 msgid "Variance mapping"
-msgstr ""
+msgstr "Gestreut"
 
 #: ingame_options.menu:553 options.menu:565
 msgid "Exponential variance"
-msgstr ""
+msgstr "Exponentiell & Gestreut"
 
 #: ingame_options.menu:559 options.menu:571 main/ui/ingame_options.menu:559
 #: main/ui/options.menu:571
@@ -854,7 +854,7 @@ msgstr "Map"
 
 #: joinserver.menu:350
 msgid "Players + Bots"
-msgstr ""
+msgstr "Spieler + Bots"
 
 #: joinserver.menu:393 teamscore.menu:175 teamscore.menu:250
 msgid "Ping"
@@ -2372,7 +2372,7 @@ msgstr "Nächster Gegenstand"
 
 #: src/gamelogic/cgame/cg_tutorial.c:52
 msgid "Toggle Console"
-msgstr ""
+msgstr "Console öffnen"
 
 #: src/gamelogic/cgame/cg_tutorial.c:128 src/gamelogic/ui/ui_shared.c:6261
 #, c-format
@@ -2385,9 +2385,9 @@ msgid "\"%s\" (unbound)"
 msgstr "\"%s\" (ungebunden)"
 
 #: src/gamelogic/cgame/cg_tutorial.c:201
-#, c-format
+#, c-format, fuzzy
 msgid "Press %s to place the %s\n"
-msgstr ""
+msgstr "Drücke %s um %s zu benutzen\n"
 
 #: src/gamelogic/cgame/cg_tutorial.c:204
 #, c-format
@@ -2437,17 +2437,22 @@ msgid ""
 "Look at their heads (or jump) to try to bite their heads\n"
 "Head-bites cause more damage\n"
 msgstr ""
+"Berühre Menschen um sie zu beissen\n"
+"Schaue oder springe in Richtung ihres Kopfes\n"
+"um größeren Schaden anzurichten\n"
 
 #: src/gamelogic/cgame/cg_tutorial.c:291
 msgid ""
 "Touch humans to grab them\n"
 "Look at them to maintain the grab\n"
 msgstr ""
+"Berühre Menschen um sie festzuhalten\n"
+"So lange Du sie anschaust, behälst Du sie im Griff\n"
 
 #: src/gamelogic/cgame/cg_tutorial.c:301
 #, c-format
 msgid "Press %s to spray disorienting gas\n"
-msgstr ""
+msgstr "Drücke %s um Betäubungsgas zu versprühen\n"
 
 #: src/gamelogic/cgame/cg_tutorial.c:318 src/gamelogic/cgame/cg_tutorial.c:341
 #, c-format
@@ -2472,7 +2477,7 @@ msgstr "Bereite mit %s einen Sprung vor\n"
 #: src/gamelogic/cgame/cg_tutorial.c:368
 #, c-format
 msgid "Hold down and release %s while moving forwards to trample\n"
-msgstr ""
+msgstr "Halte beim laufen %s um einen Trampelangriff aufzuladen\n"
 
 #: src/gamelogic/cgame/cg_tutorial.c:412
 #, c-format
@@ -2509,7 +2514,7 @@ msgstr "Bentze %s um einen konzentrierten Schuss abzufeuern\n"
 #: src/gamelogic/cgame/cg_tutorial.c:485
 #, c-format
 msgid "Use %s and %s to select an upgrade\n"
-msgstr ""
+msgstr "Benutze %s und %s um ein Item auszuwählen\n"
 
 #: src/gamelogic/cgame/cg_tutorial.c:492 src/gamelogic/cgame/cg_tutorial.c:539
 #, c-format
@@ -2585,7 +2590,7 @@ msgstr "Drücke %s um dich vom Spieler zu lösen\n"
 #: src/gamelogic/cgame/cg_tutorial.c:605
 #, c-format
 msgid "Use %s and %s to change between players\n"
-msgstr ""
+msgstr "Benutze %s und %s um zwischen Spielern zu wechseln\n"
 
 #: src/gamelogic/cgame/cg_tutorial.c:611
 #, c-format
@@ -2609,7 +2614,7 @@ msgstr "Warte auf andere Spieler\n"
 #: src/gamelogic/cgame/cg_tutorial.c:718
 #, c-format
 msgid "Press %s to open the console\n"
-msgstr ""
+msgstr "Drücke %s um die Konsole zu öffnen\n"
 
 #: src/gamelogic/cgame/cg_tutorial.c:719
 msgid "Press ESC for the menu"
