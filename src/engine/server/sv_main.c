@@ -250,6 +250,85 @@ MASTER SERVER FUNCTIONS
 
 ==============================================================================
 */
+static struct {
+	netadr_t ipv4, ipv6;
+} masterServerAddr[ MAX_MASTER_SERVERS ];
+
+static void SV_ResolveMasterServers( void )
+{
+	int i, netenabled, res;
+
+	netenabled = Cvar_VariableIntegerValue( "net_enabled" );
+
+	for ( i = 0; i < MAX_MASTER_SERVERS; i++ )
+	{
+		if ( !sv_master[ i ]->string || !sv_master[ i ]->string[ 0 ] )
+		{
+			masterServerAddr[ i ].ipv4.type = masterServerAddr[ i ].ipv6.type = NA_BAD;
+			continue;
+		}
+
+		// see if we haven't already resolved the name
+		// resolving usually causes hitches on win95, so only
+		// do it when needed
+		if ( sv_master[ i ]->modified || ( masterServerAddr[ i ].ipv4.type == NA_BAD && masterServerAddr[ i ].ipv6.type == NA_BAD ) )
+		{
+			sv_master[ i ]->modified = qfalse;
+
+			if ( netenabled & NET_ENABLEV4 )
+			{
+				Com_Printf(_( "Resolving %s (IPv4)\n"), sv_master[ i ]->string );
+				res = NET_StringToAdr( sv_master[ i ]->string, &masterServerAddr[ i ].ipv4, NA_IP );
+
+				if ( res == 2 )
+				{
+					// if no port was specified, use the default master port
+					masterServerAddr[ i ].ipv4.port = BigShort( PORT_MASTER );
+				}
+
+				if ( res )
+				{
+					Com_Printf(_( "%s resolved to %s\n"), sv_master[ i ]->string, NET_AdrToStringwPort( masterServerAddr[ i ].ipv4 ) );
+				}
+				else
+				{
+					Com_Printf(_( "%s has no IPv4 address.\n"), sv_master[ i ]->string );
+				}
+			}
+
+			if ( netenabled & NET_ENABLEV6 )
+			{
+				Com_Printf(_( "Resolving %s (IPv6)\n"), sv_master[ i ]->string );
+				res = NET_StringToAdr( sv_master[ i ]->string, &masterServerAddr[ i ].ipv6, NA_IP6 );
+
+				if ( res == 2 )
+				{
+					// if no port was specified, use the default master port
+					masterServerAddr[ i ].ipv6.port = BigShort( PORT_MASTER );
+				}
+
+				if ( res )
+				{
+					Com_Printf(_( "%s resolved to %s\n"), sv_master[ i ]->string, NET_AdrToStringwPort( masterServerAddr[ i ].ipv6 ) );
+				}
+				else
+				{
+					Com_Printf(_( "%s has no IPv6 address.\n"), sv_master[ i ]->string );
+				}
+			}
+
+			if ( masterServerAddr[ i ].ipv4.type == NA_BAD && masterServerAddr[ i ].ipv6.type == NA_BAD )
+			{
+				// if the address failed to resolve, clear it
+				// so we don't take repeated dns hits
+				Com_Printf(_( "Couldn't resolve address: %s\n"), sv_master[ i ]->string );
+				Cvar_Set( sv_master[ i ]->name, "" );
+				sv_master[ i ]->modified = qfalse;
+				continue;
+			}
+		}
+	}
+}
 
 /*
 ================
@@ -268,7 +347,6 @@ but not on every player enter or exit.
 
 void SV_MasterHeartbeat( const char *hbname )
 {
-	static netadr_t adr[ MAX_MASTER_SERVERS ][ 2 ];
 	int             i;
 	int             res;
 	int             netenabled;
@@ -289,72 +367,14 @@ void SV_MasterHeartbeat( const char *hbname )
 
 	svs.nextHeartbeatTime = svs.time + HEARTBEAT_MSEC;
 
+	SV_ResolveMasterServers();
+
 	// send to group masters
 	for ( i = 0; i < MAX_MASTER_SERVERS; i++ )
 	{
-		if ( !sv_master[ i ]->string || !sv_master[ i ]->string[ 0 ] )
+		if ( masterServerAddr[ i ].ipv4.type == NA_BAD && masterServerAddr[ i ].ipv6.type == NA_BAD )
 		{
 			continue;
-		}
-
-		// see if we haven't already resolved the name
-		// resolving usually causes hitches on win95, so only
-		// do it when needed
-		if ( sv_master[ i ]->modified || ( adr[ i ][ 0 ].type == NA_BAD && adr[ i ][ 1 ].type == NA_BAD ) )
-		{
-			sv_master[ i ]->modified = qfalse;
-
-			if ( netenabled & NET_ENABLEV4 )
-			{
-				Com_Printf(_( "Resolving %s (IPv4)\n"), sv_master[ i ]->string );
-				res = NET_StringToAdr( sv_master[ i ]->string, &adr[ i ][ 0 ], NA_IP );
-
-				if ( res == 2 )
-				{
-					// if no port was specified, use the default master port
-					adr[ i ][ 0 ].port = BigShort( PORT_MASTER );
-				}
-
-				if ( res )
-				{
-					Com_Printf(_( "%s resolved to %s\n"), sv_master[ i ]->string, NET_AdrToStringwPort( adr[ i ][ 0 ] ) );
-				}
-				else
-				{
-					Com_Printf(_( "%s has no IPv4 address.\n"), sv_master[ i ]->string );
-				}
-			}
-
-			if ( netenabled & NET_ENABLEV6 )
-			{
-				Com_Printf(_( "Resolving %s (IPv6)\n"), sv_master[ i ]->string );
-				res = NET_StringToAdr( sv_master[ i ]->string, &adr[ i ][ 1 ], NA_IP6 );
-
-				if ( res == 2 )
-				{
-					// if no port was specified, use the default master port
-					adr[ i ][ 1 ].port = BigShort( PORT_MASTER );
-				}
-
-				if ( res )
-				{
-					Com_Printf(_( "%s resolved to %s\n"), sv_master[ i ]->string, NET_AdrToStringwPort( adr[ i ][ 1 ] ) );
-				}
-				else
-				{
-					Com_Printf(_( "%s has no IPv6 address.\n"), sv_master[ i ]->string );
-				}
-			}
-
-			if ( adr[ i ][ 0 ].type == NA_BAD && adr[ i ][ 1 ].type == NA_BAD )
-			{
-				// if the address failed to resolve, clear it
-				// so we don't take repeated dns hits
-				Com_Printf(_( "Couldn't resolve address: %s\n"), sv_master[ i ]->string );
-				Cvar_Set( sv_master[ i ]->name, "" );
-				sv_master[ i ]->modified = qfalse;
-				continue;
-			}
 		}
 
 		Com_Printf(_( "Sending heartbeat to %s\n"), sv_master[ i ]->string );
@@ -362,14 +382,14 @@ void SV_MasterHeartbeat( const char *hbname )
 		// this command should be changed if the server info / status format
 		// ever incompatibly changes
 
-		if ( adr[ i ][ 0 ].type != NA_BAD )
+		if ( masterServerAddr[ i ].ipv4.type != NA_BAD )
 		{
-			NET_OutOfBandPrint( NS_SERVER, adr[ i ][ 0 ], "heartbeat %s\n", hbname );
+			NET_OutOfBandPrint( NS_SERVER, masterServerAddr[ i ].ipv4, "heartbeat %s\n", hbname );
 		}
 
-		if ( adr[ i ][ 1 ].type != NA_BAD )
+		if ( masterServerAddr[ i ].ipv6.type != NA_BAD )
 		{
-			NET_OutOfBandPrint( NS_SERVER, adr[ i ][ 1 ], "heartbeat %s\n", hbname );
+			NET_OutOfBandPrint( NS_SERVER, masterServerAddr[ i ].ipv6, "heartbeat %s\n", hbname );
 		}
 	}
 }
