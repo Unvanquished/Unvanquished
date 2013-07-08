@@ -356,6 +356,9 @@ void SV_Startup( void )
 	svs.initialized = qtrue;
 
 	Cvar_Set( "sv_running", "1" );
+#ifndef DEDICATED
+	NET_Config( qtrue );
+#endif
 
 	// Join the IPv6 multicast group now that a map is running, so clients can scan for us on the local network.
 	NET_JoinMulticast6();
@@ -842,6 +845,8 @@ void SV_Init( void )
 	sv_maxPing = Cvar_Get( "sv_maxPing", "0", CVAR_ARCHIVE | CVAR_SERVERINFO );
 	sv_floodProtect = Cvar_Get( "sv_floodProtect", "0", CVAR_ARCHIVE | CVAR_SERVERINFO );
 
+	sv_statsURL = Cvar_Get( "sv_statsURL", "", CVAR_SERVERINFO | CVAR_ARCHIVE );
+
 	// systeminfo
 	//bani - added cvar_t for sv_cheats so server engine can reference it
 	sv_cheats = Cvar_Get( "sv_cheats", "1", CVAR_SYSTEMINFO | CVAR_ROM );
@@ -995,6 +1000,9 @@ void SV_Shutdown( char *finalmsg )
 	svs.serverLoad = -1;
 
 	Cvar_Set( "sv_running", "0" );
+#ifndef DEDICATED
+	NET_Config( qtrue );
+#endif
 
 	Com_Printf( "---------------------------\n" );
 

@@ -257,17 +257,40 @@ void Sys_AnsiColorPrint( const char *msg )
 {
 	static char buffer[ MAXPRINTMSG ];
 	int         length = 0;
-	static int  q3ToAnsi[ 8 ] =
-	{
-		30, // COLOR_BLACK
-		31, // COLOR_RED
-		32, // COLOR_GREEN
-		33, // COLOR_YELLOW
-		34, // COLOR_BLUE
-		36, // COLOR_CYAN
-		35, // COLOR_MAGENTA
-		0 // COLOR_WHITE
+
+	// Approximations of g_color_table (q_math.c)
+#define A_BOLD 16
+#define A_DIM  32
+	static const char colour16map[2][32] = {
+		{ // Variant 1 (xterm)
+			0 | A_BOLD, 1,          2,          3,
+			4,          6,          5,          7,
+			3 | A_DIM,  7 | A_DIM,  7 | A_DIM,  7 | A_DIM,
+			2 | A_DIM,  3 | A_DIM,  4 | A_DIM,  1 | A_DIM,
+			3 | A_DIM,  3 | A_DIM,  6 | A_DIM,  5 | A_DIM,
+			6 | A_DIM,  5 | A_DIM,  6 | A_DIM,  2 | A_BOLD,
+			2 | A_DIM,  1,          1 | A_DIM,  3 | A_DIM,
+			3 | A_DIM,  2 | A_DIM,  5,          3 | A_BOLD
+		},
+		{ // Variant 1 (vte)
+			0 | A_BOLD, 1,          2,          3 | A_BOLD,
+			4,          6,          5,          7,
+			3        ,  7 | A_DIM,  7 | A_DIM,  7 | A_DIM,
+			2 | A_DIM,  3,          4 | A_DIM,  1 | A_DIM,
+			3 | A_DIM,  3 | A_DIM,  6 | A_DIM,  5 | A_DIM,
+			6 | A_DIM,  5 | A_DIM,  6 | A_DIM,  2 | A_BOLD,
+			2 | A_DIM,  1,          1 | A_DIM,  3 | A_DIM,
+			3 | A_DIM,  2 | A_DIM,  5,          3 | A_BOLD
+		}
 	};
+	static const char modifier[][4] = { "", ";1", ";2", "" };
+
+	int index = abs( com_ansiColor->integer ) - 1;
+
+	if ( index >= ARRAY_LEN( colour16map ) )
+	{
+		index = 0;
+	}
 
 	while ( *msg )
 	{
@@ -290,8 +313,10 @@ void Sys_AnsiColorPrint( const char *msg )
 			else
 			{
 				// Print the color code
-				Com_sprintf( buffer, sizeof( buffer ), "\033[%dm",
-				             q3ToAnsi[ ColorIndex( * ( msg + 1 ) ) ] );
+				int colour = colour16map[ index ][ ( msg[ 1 ] - '0' ) & 31 ];
+
+				Com_sprintf( buffer, sizeof( buffer ), "\033[%d%sm",
+				             30 + ( colour & 15 ), modifier[ ( colour / 16 ) & 3 ] );
 				fputs( buffer, stderr );
 				msg += 2;
 			}
@@ -401,23 +426,12 @@ Sys_TryLibraryLoad
 */
 static void *Sys_TryLibraryLoad( const char *base, const char *gamedir, const char *fname )
 {
-	void *libHandle = NULL;
 	char *fn;
 
 	fn = FS_BuildOSPath( base, gamedir, fname );
 	Com_DPrintf( "Sys_LoadDll(%s)...\n", fn );
 
-	libHandle = Sys_LoadLibrary( fn );
-
-	if ( !libHandle )
-	{
-		Com_DPrintf( "Sys_LoadDll(%s) failed:\n\"%s\"\n", fn, Sys_LibraryError() );
-		return NULL;
-	}
-
-	Com_DPrintf( "Sys_LoadDll(%s): succeeded ...\n", fn );
-
-	return libHandle;
+	return Sys_LoadLibrary( fn );
 }
 
 /*
@@ -463,12 +477,6 @@ void *QDECL Sys_LoadDll( const char *name,
 	if ( !libHandle && basepath )
 	{
 		libHandle = Sys_TryLibraryLoad( basepath, gamedir, fname );
-	}
-
-	if ( !libHandle )
-	{
-		Com_DPrintf( "Sys_LoadDll(%s) could not find it\n", fname );
-		return NULL;
 	}
 
 	if ( !libHandle )

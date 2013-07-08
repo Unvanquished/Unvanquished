@@ -63,18 +63,14 @@ void	main()
 
 #if defined(USE_NORMAL_MAPPING)
 	// invert tangent space for two sided surfaces
-	mat3 tangentToWorldMatrix;
+	mat3 tangentToWorldMatrix = mat3(var_Tangent.xyz, var_Binormal.xyz, var_Normal.xyz);
 
 #if defined(TWOSIDED)
 	if(gl_FrontFacing)
 	{
-		tangentToWorldMatrix = mat3(-var_Tangent.xyz, -var_Binormal.xyz, -var_Normal.xyz);
+		tangentToWorldMatrix = -tangentToWorldMatrix;
 	}
-	else
 #endif
-	{
-		tangentToWorldMatrix = mat3(var_Tangent.xyz, var_Binormal.xyz, var_Normal.xyz);
-	}
 
 	vec2 texNormal = var_TexNormal.st;
 #if !defined(r_DeferredLighting)
@@ -154,25 +150,18 @@ void	main()
 
 #else // USE_NORMAL_MAPPING
 
-	vec3 N;
+	vec3 N = normalize(var_Normal);
 
 #if defined(TWOSIDED)
 	if(gl_FrontFacing)
 	{
-		N = -normalize(var_Normal);
-		// gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
-		// return;
+		N = -N;
 	}
-	else
 #endif
-	{
-		N = normalize(var_Normal);
-	}
 
 	vec3 specular = vec3(0.0);
 
 #endif // USE_NORMAL_MAPPING
-
 
 	// compute the diffuse term
 	vec4 diffuse = texture2D(u_DiffuseMap, texDiffuse);

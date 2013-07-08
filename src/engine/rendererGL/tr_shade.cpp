@@ -4190,7 +4190,7 @@ void Tess_StageIteratorLighting()
 					}
 					else if ( light->l.rlType == RL_PROJ )
 					{
-						if ( !light->l.inverseShadows )
+						//if ( !light->l.inverseShadows )
 						{
 							Render_forwardLighting_DBS_proj( diffuseStage, attenuationXYStage, attenuationZStage, light );
 						}

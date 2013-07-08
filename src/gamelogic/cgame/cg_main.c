@@ -46,6 +46,9 @@ Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3,
                           int arg4, int arg5, int arg6, int arg7,
                           int arg8, int arg9, int arg10, int arg11 )
 {
+	Q_UNUSED(arg3); Q_UNUSED(arg4);  Q_UNUSED(arg5);
+	Q_UNUSED(arg6); Q_UNUSED(arg7);  Q_UNUSED(arg8);
+	Q_UNUSED(arg9); Q_UNUSED(arg10); Q_UNUSED(arg11);
 	switch ( command )
 	{
 		case CG_INIT:
@@ -125,6 +128,8 @@ vmCvar_t        cg_runpitch;
 vmCvar_t        cg_runroll;
 vmCvar_t        cg_swingSpeed;
 vmCvar_t        cg_shadows;
+vmCvar_t        cg_playerShadows;
+vmCvar_t        cg_buildableShadows;
 vmCvar_t        cg_drawTimer;
 vmCvar_t        cg_drawClock;
 vmCvar_t        cg_drawFPS;
@@ -139,7 +144,6 @@ vmCvar_t        cg_minimapActive;
 vmCvar_t        cg_crosshairSize;
 vmCvar_t        cg_crosshairFile;
 vmCvar_t        cg_draw2D;
-vmCvar_t        cg_animSpeed;
 vmCvar_t        cg_debugAnim;
 vmCvar_t        cg_debugPosition;
 vmCvar_t        cg_debugEvents;
@@ -289,6 +293,9 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_viewsize,                    "cg_viewsize",                    "100",          CVAR_ARCHIVE                 },
 	{ &cg_stereoSeparation,            "cg_stereoSeparation",            "0.4",          CVAR_ARCHIVE                 },
 	{ &cg_shadows,                     "cg_shadows",                     "1",            CVAR_ARCHIVE | CVAR_LATCH    },
+	{ &cg_playerShadows,               "cg_playerShadows",               "1",            CVAR_ARCHIVE                 },
+	{ &cg_buildableShadows,            "cg_buildableShadows",            "0",            CVAR_ARCHIVE                 },
+	{ &cg_shadows,                     "cg_shadows",                     "1",            CVAR_ARCHIVE | CVAR_LATCH    },
 	{ &cg_draw2D,                      "cg_draw2D",                      "1",            CVAR_ARCHIVE                 },
 	{ &cg_drawTimer,                   "cg_drawTimer",                   "1",            CVAR_ARCHIVE                 },
 	{ &cg_drawClock,                   "cg_drawClock",                   "0",            CVAR_ARCHIVE                 },
@@ -316,7 +323,6 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_runpitch,                    "cg_runpitch",                    "0.002",        CVAR_ARCHIVE                 },
 	{ &cg_runroll,                     "cg_runroll",                     "0.005",        CVAR_ARCHIVE                 },
 	{ &cg_swingSpeed,                  "cg_swingSpeed",                  "0.3",          CVAR_CHEAT                   },
-	{ &cg_animSpeed,                   "cg_animspeed",                   "1",            CVAR_CHEAT                   },
 	{ &cg_debugAnim,                   "cg_debuganim",                   "0",            CVAR_CHEAT                   },
 	{ &cg_debugPosition,               "cg_debugposition",               "0",            CVAR_CHEAT                   },
 	{ &cg_debugEvents,                 "cg_debugevents",                 "0",            CVAR_CHEAT                   },
@@ -460,7 +466,7 @@ CG_RegisterCvars
 */
 void CG_RegisterCvars( void )
 {
-	int         i;
+	size_t i;
 	const cvarTable_t *cv;
 
 	for ( i = 0, cv = cvarTable; i < cvarTableSize; i++, cv++ )
@@ -481,6 +487,10 @@ these should refer only to playerstates that belong to the client, not the follo
 static void CG_SetPVars( void )
 {
 	playerState_t *ps;
+	char          buffer[ MAX_CVAR_VALUE_STRING ];
+	int           i, stage = 0;
+	qboolean      first;
+
 	if ( !cg.snap )
 	{
 		return;
@@ -493,14 +503,15 @@ static void CG_SetPVars( void )
 
 	trap_Cvar_Set( "p_teamname", BG_TeamName( ps->stats[ STAT_TEAM ] ) );
 
+	// while we're here, set stage
 	switch ( ps->stats[ STAT_TEAM ] )
 	{
 		case TEAM_ALIENS:
-			trap_Cvar_Set( "p_stage", va( "%d", cgs.alienStage ) );
+			stage = cgs.alienStage;
 			break;
 
 		case TEAM_HUMANS:
-			trap_Cvar_Set( "p_stage", va( "%d", cgs.humanStage ) );
+			stage = cgs.humanStage;
 			break;
 
 		default:
@@ -523,6 +534,7 @@ static void CG_SetPVars( void )
 			return;
 	}
 
+	trap_Cvar_Set( "p_stage", va( "%d", stage ) );
 	trap_Cvar_Set( "p_class", va( "%d", ps->stats[ STAT_CLASS ] ) );
 
 	switch ( ps->stats[ STAT_CLASS ] )
@@ -669,6 +681,27 @@ static void CG_SetPVars( void )
 	trap_Cvar_Set( "p_maxhp", va( "%d", ps->stats[ STAT_MAX_HEALTH ] ) );
 	trap_Cvar_Set( "p_ammo", va( "%d", ps->ammo ) );
 	trap_Cvar_Set( "p_clips", va( "%d", ps->clips ) );
+
+	// set p_availableBuildings to a space-separated list of buildings
+	// limited to those available given team, stage and class
+	first = qtrue;
+	*buffer = 0;
+
+	for ( i = BA_NONE; i < BA_NUM_BUILDABLES; ++i )
+	{
+		const buildableAttributes_t *buildable = BG_Buildable( i );
+
+		if ( buildable->team == ps->stats[ STAT_TEAM ] &&
+		     BG_BuildableAllowedInStage( i, stage ) &&
+		     (buildable->buildWeapon & ( 1 << ps->stats[ STAT_WEAPON ] ) ) )
+
+		{
+			Q_strcat( buffer, sizeof( buffer ), first ? buildable->name : va( " %s", buildable->name ) );
+			first = qfalse;
+		}
+	}
+
+	trap_Cvar_Set( "p_availableBuildings", buffer );
 }
 
 /*
@@ -891,7 +924,7 @@ CG_UpdateCvars
 */
 void CG_UpdateCvars( void )
 {
-	int         i;
+	size_t i;
 	const cvarTable_t *cv;
 
 	for ( i = 0, cv = cvarTable; i < cvarTableSize; i++, cv++ )
@@ -1034,6 +1067,8 @@ void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int level, const char *error, ... 
 {
 	va_list argptr;
 	char    text[ 1024 ];
+
+	Q_UNUSED(level);
 
 	va_start( argptr, error );
 	Q_vsnprintf( text, sizeof( text ), error, argptr );
@@ -1612,11 +1647,6 @@ static void CG_RegisterGraphics( void )
 		CG_RegisterGrading( i, CG_ConfigString( CS_GRADING_TEXTURES + i ) );
 	}
 
-	if( cgs.gameGradingTextures[ 0 ] )
-	{
-		trap_SetColorGrading( 0, cgs.gameGradingTextures[ 0 ] );
-	}
-
 	CG_UpdateMediaFraction( 0.9f );
 
 	// register all the server specified particle systems
@@ -2176,6 +2206,8 @@ void CG_LoadMenus( const char *menuFile )
 
 static qboolean CG_OwnerDrawHandleKey( int ownerDraw, int key )
 {
+	Q_UNUSED(ownerDraw);
+	Q_UNUSED(key);
 	return qfalse;
 }
 
@@ -2391,6 +2423,8 @@ static const char *CG_FeederItemText( int feederID, int index, int column, qhand
 
 static qhandle_t CG_FeederItemImage( int feederID, int index )
 {
+	Q_UNUSED(feederID);
+	Q_UNUSED(index);
 	return 0;
 }
 
@@ -2458,6 +2492,7 @@ static void CG_RunCinematicFrame( int handle )
 // hack to prevent warning
 static qboolean CG_OwnerDrawVisible( int parameter )
 {
+	Q_UNUSED(parameter);
 	return qfalse;
 }
 
@@ -2761,7 +2796,7 @@ static char *CG_VoIPString( void )
 		nlen = Q_snprintf( &voipString[ slen ], sizeof( voipString ) - slen,
 							"%s%d", ( slen > 0 ) ? "," : "", i );
 
-		if ( slen + nlen + 1 >= sizeof( voipString ) )
+		if ( slen + nlen + 1 >= (int) sizeof( voipString ) )
 		{
 			CG_Printf( S_WARNING "voipString overflowed\n" );
 			break;

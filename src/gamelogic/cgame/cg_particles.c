@@ -705,7 +705,7 @@ static void CG_ParseValueAndVariance( char *token, float *value, float *variance
 /*
 CG_ParseParticle helpers
 */
-static void CG_CopyLine( int *i, char *toks, size_t num, size_t size, char **text_p )
+static void CG_CopyLine( int *i, char *toks, int num, size_t size, char **text_p )
 {
 	char *token;
 
@@ -1738,7 +1738,7 @@ static qboolean CG_ParseParticleFile( const char *fileName )
 		return qfalse;
 	}
 
-	if ( len == 0 || len >= sizeof( text ) - 1 )
+	if ( len == 0 || len + 1 >= (int) sizeof( text ) )
 	{
 		trap_FS_FCloseFile( f );
 		CG_Printf( len ? S_ERROR "particle file %s is too long\n" : S_ERROR "particle file %s is empty\n", fileName );

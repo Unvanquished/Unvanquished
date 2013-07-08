@@ -22,6 +22,15 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 /* lightVolume_omni_fp.glsl */
 
+/* swizzle one- and two-component textures to RG */
+#ifdef TEXTURE_RG
+#  define SWIZ1 r
+#  define SWIZ2 rg
+#else
+#  define SWIZ1 a
+#  define SWIZ2 ar
+#endif
+
 uniform sampler2D	u_DepthMap;
 uniform sampler2D	u_AttenuationMapXY;
 uniform sampler2D	u_AttenuationMapZ;
@@ -89,7 +98,7 @@ void	main()
 			// compute incident ray
 			vec3 I2 = T - u_LightOrigin;
 
-			vec4 shadowMoments = textureCube(u_ShadowMap, I2);
+			vec2 shadowMoments = textureCube(u_ShadowMap, I2).SWIZ2;
 
 			#if defined(VSM_CLAMP)
 			// convert to [-1, 1] vector space

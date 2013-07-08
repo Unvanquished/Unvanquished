@@ -971,8 +971,6 @@ Other things could be stuck in here, like birds in the sky, etc
 */
 void Tess_StageIteratorSky( void )
 {
-#if !defined( USE_D3D10 )
-
 	// log this call
 	if ( r_logFile->integer )
 	{
@@ -1087,6 +1085,4 @@ void Tess_StageIteratorSky( void )
 			backEnd.skyRenderedThisView = qtrue;
 		}
 	}
-
-#endif
 }

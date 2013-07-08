@@ -165,7 +165,7 @@ static qboolean CG_ParseMinimap( minimap_t* m, const char* filename )
     m->nZones = 0;
     m->lastZone = -1;
     m->scale = 1.0f;
-    m->bgColor[3] = 1.0f; //Initialise the bgColor to black
+    m->bgColor[3] = 0.333f; // black, approx. 1/3 opacity
 
     if( !BG_ReadWholeFile( filename, text_buffer, sizeof(text_buffer) ) )
     {
@@ -264,7 +264,7 @@ static void CG_SetupMinimapTransform( const rectDef_t *rect, const minimap_t* mi
 {
     float posx, posy, x, y, s, c, angle, scale;
 
-    (void)minimap; //Supresses -Wunused-variable, we might need this one later //TODO: have a macro for this
+    Q_UNUSED(minimap);
 
     //The refdefview angle is the angle from the x axis
     //the 90 gets it back to the Y axis (we want the view to point up)

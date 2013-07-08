@@ -1295,6 +1295,8 @@ static void CG_smoothWJTransitions( playerState_t *ps, const vec3_t in, vec3_t o
 	qboolean performed = qfalse;
 	vec3_t   inAxis[ 3 ], outAxis[ 3 ];
 
+	Q_UNUSED(ps);
+
 	if ( cg.snap->ps.pm_flags & PMF_FOLLOW )
 	{
 		VectorCopy( in, out );
@@ -1345,14 +1347,26 @@ Sets cg.refdef.gradingWeights
 */
 static void CG_CalcColorGradingForPoint( vec3_t loc )
 {
-	int   i, j, idx;
+	int   i, j;
 	float dist, weight;
 	int   selectedIdx[3] = { 0, 0, 0 };
 	float selectedWeight[3] = { 0.0f, 0.0f, 0.0f };
 	float totalWeight = 0.0f;
 	int freeSlot = -1;
+	qboolean haveGlobal = qfalse;
 
-	for( i = 0; i < MAX_GRADING_TEXTURES; i++ )
+	// the first allocated grading is special in that it may be global
+	i = 0;
+
+	if ( cgs.gameGradingTextures[0] && cgs.gameGradingModels[0] == -1 )
+	{
+		selectedIdx[0] = 0; // shouldn't be needed
+		selectedWeight[0] = 2.0f; // won't be sorted down
+		haveGlobal = qtrue;
+		i = 1;
+	}
+
+	for(; i < MAX_GRADING_TEXTURES; i++ )
 	{
 		if( !cgs.gameGradingTextures[i] )
 		{
@@ -1384,20 +1398,28 @@ static void CG_CalcColorGradingForPoint( vec3_t loc )
 		selectedWeight[j+1] = weight;
 	}
 
-	for( i = 0; i < 3; i++ )
+	i = 0;
+
+	if( haveGlobal )
+	{
+		trap_SetColorGrading( 1, cgs.gameGradingTextures[0] );
+		i = 1;
+	}
+
+	for(; i < 3; i++ )
 	{
 		if( selectedWeight[i] > 0.0f )
 		{
 			trap_SetColorGrading( i + 1, cgs.gameGradingTextures[selectedIdx[i]] );
+			totalWeight += selectedWeight[i];
 		}
 		else
 		{
 			freeSlot = i;
 		}
-		totalWeight += selectedWeight[i];
 	}
 
-	if( totalWeight < 1.0f )
+	if( !haveGlobal && totalWeight < 1.0f )
 	{
 		if(freeSlot >= 0)
 		{
@@ -1407,18 +1429,12 @@ static void CG_CalcColorGradingForPoint( vec3_t loc )
 			selectedWeight[freeSlot] = 1.0f - totalWeight;
 			totalWeight = 1.0f;
 		}
-		cg.refdef.gradingWeights[0] = 0.0f;
-		cg.refdef.gradingWeights[1] = selectedWeight[0] / totalWeight;
-		cg.refdef.gradingWeights[2] = selectedWeight[1] / totalWeight;
-		cg.refdef.gradingWeights[3] = selectedWeight[2] / totalWeight;
 	}
-	else
-	{
-		cg.refdef.gradingWeights[0] = 0.0f;
-		cg.refdef.gradingWeights[1] = selectedWeight[0] / totalWeight;
-		cg.refdef.gradingWeights[2] = selectedWeight[1] / totalWeight;
-		cg.refdef.gradingWeights[3] = selectedWeight[2] / totalWeight;
-	}
+
+	cg.refdef.gradingWeights[0] = 0.0f;
+	cg.refdef.gradingWeights[1] = haveGlobal ? ( 1.0f - totalWeight ) : ( selectedWeight[0] / totalWeight );
+	cg.refdef.gradingWeights[2] = totalWeight == 0.0f ? 0.0f : selectedWeight[1] / totalWeight;
+	cg.refdef.gradingWeights[3] = totalWeight == 0.0f ? 0.0f : selectedWeight[2] / totalWeight;
 }
 
 static void CG_ChooseCgradingEffectAndFade( const playerState_t* ps, qhandle_t* effect, float* fade )
@@ -1468,7 +1484,7 @@ static void CG_ChooseCgradingEffectAndFade( const playerState_t* ps, qhandle_t* 
 
 static qboolean CG_InstantCgradingEffectAndFade( const playerState_t* ps, qhandle_t* effect, float* fade )
 {
-	(void)ps; //-Wunused-variable TODO: add a macro for this
+	Q_UNUSED(ps);
 
 	if (cg.zoomed)
 	{
@@ -1541,6 +1557,52 @@ static void CG_AddColorGradingEffects( const playerState_t* ps )
 	cg.refdef.gradingWeights[1] *= factor;
 	cg.refdef.gradingWeights[2] *= factor;
 	cg.refdef.gradingWeights[3] *= factor;
+}
+
+/*
+===============
+CG_StartShadowCaster
+
+Helper function to add a inverse dynamic light to create shadows for the
+following models.
+===============
+*/
+void CG_StartShadowCaster( vec3_t origin, vec3_t mins, vec3_t maxs ) {
+	vec3_t ambientLight, directedLight, lightDir;
+	vec3_t lightPos;
+	trace_t tr;
+	vec3_t traceMins = { -3.0f, -3.0f, -3.0f };
+	vec3_t traceMaxs = {  3.0f,  3.0f,  3.0f };
+	float maxLightDist = Distance( maxs, mins );
+
+	// find a point to place the light source by tracing in the
+	// average light direction
+	trap_R_LightForPoint( origin, ambientLight, directedLight, lightDir );
+	VectorMA( origin, 3.0f * maxLightDist, lightDir, lightPos );
+
+	CG_Trace( &tr, origin, traceMins, traceMaxs, lightPos, 0, MASK_OPAQUE );
+
+	if( !tr.startsolid ) {
+		VectorCopy( tr.endpos, lightPos );
+	}
+
+	trap_R_AddLightToScene( lightPos, 2.0f * Distance( lightPos, origin ),
+				3.0f, directedLight[0], directedLight[1],
+				directedLight[2], 0,
+				REF_RESTRICT_DLIGHT | REF_INVERSE_DLIGHT );
+}
+/*
+===============
+CG_EndShadowCaster
+
+Helper function to terminate the list of models for the last shadow caster.
+following models.
+===============
+*/
+void CG_EndShadowCaster( void ) {
+	trap_R_AddLightToScene( vec3_origin, 0.0f, 0.0f,
+				0.0f, 0.0f, 0.0f,
+				0, 0 );
 }
 
 /*

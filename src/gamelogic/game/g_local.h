@@ -512,7 +512,7 @@ typedef struct
 	int credit;
 
 	int voted;
-	int vote;
+	int voteYes, voteNo;
 
 	// flood protection
 	int      floodDemerits;
@@ -770,7 +770,9 @@ typedef struct
 	int  voteDelay[ NUM_TEAMS ]; // it doesn't make sense to always delay vote execution
 	int  voteYes[ NUM_TEAMS ];
 	int  voteNo[ NUM_TEAMS ];
+	int  voted[ NUM_TEAMS ];
 	int  numVotingClients[ NUM_TEAMS ]; // set by CalculateRanks
+	int  quorum[ NUM_TEAMS ];
 	int  extend_vote_count;
 
 	// spawn variables
@@ -1151,6 +1153,7 @@ void       SendScoreboardMessageToAllClients( void );
 void QDECL G_Printf( const char *fmt, ... ) PRINTF_LIKE(1);
 void QDECL G_Error( const char *fmt, ... ) PRINTF_LIKE(1) NORETURN;
 void       G_Vote( gentity_t *ent, team_t team, qboolean voting );
+void       G_ResetVote( team_t team );
 void       G_ExecuteVote( team_t team );
 void       G_CheckVote( team_t team );
 void       LogExit( const char *string );
@@ -1321,6 +1324,7 @@ extern  vmCvar_t g_unlagged;
 extern  vmCvar_t g_disabledEquipment;
 extern  vmCvar_t g_disabledClasses;
 extern  vmCvar_t g_disabledBuildables;
+extern  vmCvar_t g_disabledVoteCalls;
 
 extern  vmCvar_t g_markDeconstruct;
 
@@ -1476,7 +1480,7 @@ int              trap_BotAllocateClient( int clientNum );
 void             trap_BotFreeClient( int clientNum );
 void             trap_GetUsercmd( int clientNum, usercmd_t *cmd );
 qboolean         trap_GetEntityToken( char *buffer, int bufferSize );
-int              trap_RealTime( qtime_t *qtime );
+int              trap_GMTime( qtime_t *qtime );
 void             trap_SnapVector( float *v );
 void             trap_SendGameStat( const char *data );
 void             trap_AddCommand( const char *cmdName );
