@@ -2838,6 +2838,55 @@ void R_AddPolygonInteractions( trRefLight_t *light )
 
 /*
 =============
+R_TransformShadowLight
+
+check if OMNI shadow light can be turned into PROJ for better shadow map quality
+=============
+*/
+void R_TransformShadowLight( trRefLight_t *light ) {
+	int    i;
+	vec3_t mins, maxs, mids;
+	vec3_t forward, right, up;
+	float  radius, dist;
+
+	if( !light->l.inverseShadows || light->l.rlType != RL_OMNI ||
+	    light->restrictInteractionFirst < 0 )
+		return;
+
+	ClearBounds( mins, maxs );
+	for( i = light->restrictInteractionFirst; i <= light->restrictInteractionLast; i++ ) {
+		trRefEntity_t *ent = &tr.refdef.entities[ i ];
+
+		AddPointToBounds( ent->worldBounds[0], mins, maxs );
+		AddPointToBounds( ent->worldBounds[1], mins, maxs );
+	}
+
+	// if light origin is outside BBox of shadow receivers, build
+	// a projection light on the closest plane of the BBox
+	VectorAdd( mins, maxs, mids );
+	VectorScale( mids, 0.5f, mids );
+	radius = Distance( mids, maxs );
+	dist = Distance( light->l.origin, mids );
+
+	if( dist <= 2.0f * radius ) {
+		return;
+	}
+
+	light->l.rlType = RL_PROJ;
+	VectorSubtract( mids, light->l.origin, forward );
+	VectorNormalize( forward );
+	PerpendicularVector( right, forward );
+	CrossProduct( forward, right, up );
+
+	VectorScale( right, 2.0f * radius, light->l.projRight );
+	VectorScale( up, 2.0f * radius, light->l.projUp );
+	VectorCopy( vec3_origin, light->l.projStart );
+	VectorCopy( vec3_origin, light->l.projEnd );
+	VectorScale( forward, light->l.radius[0], light->l.projTarget );
+}
+
+/*
+=============
 R_AddLightInteractions
 =============
 */
@@ -2869,6 +2918,8 @@ void R_AddLightInteractions( void )
 				continue;
 			}
 		}
+
+		R_TransformShadowLight( light );
 
 		// we must set up parts of tr.or for light culling
 		R_RotateLightForViewParms( light, &tr.viewParms, &tr.orientation );
