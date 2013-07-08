@@ -3085,7 +3085,7 @@ void G_CheckVote( team_t team )
 	}
 
 	// If quorum is required, check whether at least half of who could vote did
-	if ( level.team[ team ].quorum && level.team[ team ].voted * 2 < level.team[ team ].numVotingClients )
+	if ( level.team[ team ].quorum && level.team[ team ].voted < floor( powf( level.team[ team ].numVotingClients, 0.6 ) ) )
 	{
 		quorum = qfalse;
 	}

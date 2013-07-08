@@ -1052,6 +1052,11 @@ void SP_worldspawn( void )
 	G_SpawnString( "message", "", &s );
 	trap_SetConfigstring( CS_MESSAGE, s );  // map specific message
 
+	if(G_SpawnString( "colorGrade", "", &s ))
+	{
+		trap_SetConfigstring( CS_GRADING_TEXTURES, va( "%i %f %s", -1, 0.0f, s ) );
+	}
+
 	if(G_SpawnString( "gradingTexture", "", &s ))
 		trap_SetConfigstring( CS_GRADING_TEXTURES, va( "%i %f %s", 0, 0.0f, s ) );
 

@@ -3030,6 +3030,8 @@ void Com_Init( char *commandLine )
 	FS_InitFilesystem();
 	Com_InitJournaling();
 
+	Trans_Init();
+
 	Cbuf_AddText( "exec default.cfg\n" );
 
 #if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
@@ -3111,8 +3113,6 @@ void Com_Init( char *commandLine )
 #endif
 	// allocate the stack based hunk allocator
 	Com_InitHunkMemory();
-
-	Trans_Init();
 
 	// if any archived cvars are modified after this, we will trigger a writing
 	// of the config file

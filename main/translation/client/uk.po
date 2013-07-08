@@ -4,9 +4,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: vcelestialragev@gmail.com\n"
-"POT-Creation-Date: 2012-11-01 03:39+0000\n"
-"PO-Revision-Date: 2012-11-04 01:57+0200\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-07-07 23:10+0200\n"
+"PO-Revision-Date: 2013-07-01 22:09+0000\n"
 "Last-Translator: Qrntz <q@penguinishly.org.ua>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: uk\n"
@@ -15,284 +15,553 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%"
 "10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Pootle 2.1.6\n"
+"X-Generator: Pootle 2.5.0-beta1\n"
+"X-POOTLE-MTIME: 1372716570.0\n"
 
-#: src/engine/server/sv_main.c:161
-msgid "===== pending server commands =====\n"
-msgstr "===== команди сервера у черзі =====\n"
+#: src/engine/client/cl_cgame.c:471
+msgid "Server sent a pubkey_decrypt command, but sent nothing to decrypt!"
+msgstr "Сервер відправив команду pubkey_decrypt, але не дані для розшифрування!"
 
-#: src/engine/server/sv_main.c:306
+#: src/engine/client/cl_cgame.c:1683
+msgid "Mumble: Linking to Mumble application okay\n"
+msgstr "Mumble: З’єднання з застосунком Mumble пройшло успішно\n"
+
+#: src/engine/client/cl_cgame.c:1683
+msgid "Mumble: Linking to Mumble application failed\n"
+msgstr "Mumble: З’єднання з застосунком Mumble не вдалося\n"
+
+#: src/engine/client/cl_console.c:248
+msgid "[<filename>]"
+msgstr "[<ім’я файлу>]"
+
+#: src/engine/client/cl_console.c:267 src/engine/client/cl_main.c:985
+msgid "couldn't open."
+msgstr "не вдалось відкрити."
+
+#: src/engine/client/cl_console.c:271
 #, c-format
-msgid "Resolving %s (IPv4)\n"
-msgstr "Вирізняю %s (IPv4)\n"
+msgid "Dumped console text to %s.\n"
+msgstr "Текст з консолі записано до %s.\n"
 
-#: src/engine/server/sv_main.c:317 src/engine/server/sv_main.c:338
-#: src/engine/server/sv_main.c:424 src/engine/client/cl_main.c:1866
-#: src/engine/client/cl_main.c:2045
+#: src/engine/client/cl_console.c:307
+msgid "<string>…"
+msgstr "<рядок>…"
+
+#: src/engine/client/cl_console.c:352
+msgid "<string>"
+msgstr "<рядок>"
+
+#: src/engine/client/cl_irc.c:1000
+msgid "Unable to initialise socket.\n"
+msgstr "Не вдалося ініціалізувати сокет.\n"
+
+#: src/engine/client/cl_irc.c:1004
+msgid "The specified address family is not supported.\n"
+msgstr "Вказана родина адрес не підтримується.\n"
+
+#: src/engine/client/cl_irc.c:1008
+msgid "Specified address is not available from the local machine.\n"
+msgstr "Вказана адреса недоступна з цієї машини.\n"
+
+#: src/engine/client/cl_irc.c:1012
+msgid "The attempt to connect was forcefully rejected.\n"
+msgstr "Спроба під’єднання була різко відхилена.\n"
+
+#: src/engine/client/cl_irc.c:1016
+msgid "address destination address is required.\n"
+msgstr "потрібна адреса призначення.\n"
+
+#: src/engine/client/cl_irc.c:1020
+msgid "The namelen argument is incorrect.\n"
+msgstr "Невірний аргумент до namelen.\n"
+
+#: src/engine/client/cl_irc.c:1024
+msgid "The socket is not already bound to an address.\n"
+msgstr "Сокет ще не прив’язаний до адреси.\n"
+
+#: src/engine/client/cl_irc.c:1028
+msgid "The socket is already connected.\n"
+msgstr "Сокет вже під’єднаний.\n"
+
+#: src/engine/client/cl_irc.c:1032
+msgid "The specified address is already in use.\n"
+msgstr "Вказана адреса вже використовується.\n"
+
+#: src/engine/client/cl_irc.c:1036
+msgid "No more file descriptors are available.\n"
+msgstr "Більше немає файлових дескрипторів.\n"
+
+#: src/engine/client/cl_irc.c:1040
+msgid "No buffer space available. The socket cannot be created.\n"
+msgstr "Немає місця у буфері. Сокет не може бути створений.\n"
+
+#: src/engine/client/cl_irc.c:1044
+msgid "The specified protocol is not supported.\n"
+msgstr "Вказаний протокол не підтримується.\n"
+
+#: src/engine/client/cl_irc.c:1048
+msgid "The specified protocol is the wrong type for this socket.\n"
+msgstr "Вказаний протокол має невірний тип для цього сокету.\n"
+
+#: src/engine/client/cl_irc.c:1052
+msgid "The network can't be reached from this host at this time.\n"
+msgstr "На даний момент неможливо дістатися до мережі з цього вузлу.\n"
+
+#: src/engine/client/cl_irc.c:1056
+msgid "The descriptor is not a socket.\n"
+msgstr "Дескриптор не є сокетом.\n"
+
+#: src/engine/client/cl_irc.c:1060
+msgid "Attempt timed out without establishing a connection.\n"
+msgstr "Час спроби встановлення з’єднання вийшов.\n"
+
+#: src/engine/client/cl_irc.c:1064
+msgid "Socket type is not supported in this address family.\n"
+msgstr "Тип сокету у цій родині адрес не підтримується.\n"
+
+#: src/engine/client/cl_irc.c:1068
+msgid "Network subsystem failure.\n"
+msgstr "Крах мережевої підсистеми.\n"
+
+#: src/engine/client/cl_irc.c:1072
+msgid "Authoritative Answer Host not found.\n"
+msgstr "Вузол авторитативної відповіді не знайдено.\n"
+
+#: src/engine/client/cl_irc.c:1076
+msgid "Non-Authoritative Host not found or SERVERFAIL.\n"
+msgstr "Не-авторитативний вузол не знайдено або SERVERFAIL.\n"
+
+#: src/engine/client/cl_irc.c:1080
+msgid "Non recoverable errors, FORMERR, REFUSED, NOTIMP.\n"
+msgstr "Невиправні помилки, FORMERR, REFUSED, NOTIMP.\n"
+
+#: src/engine/client/cl_irc.c:1084
+msgid "Valid name, no data record of requested type.\n"
+msgstr "Дійсна назва, немає запису даних вказаного типу.\n"
+
+#: src/engine/client/cl_irc.c:1088
+msgid "address blocking Windows Sockets operation is in progress.\n"
+msgstr "відбувається адресо-блокуюча операція Windows Sockets.\n"
+
+#: src/engine/client/cl_irc.c:1092
+msgid "Unknown connection error.\n"
+msgstr "Невідома помилка з’єднання.\n"
+
+#: src/engine/client/cl_irc.c:1102
+msgid "socket connection error"
+msgstr "помилка сокетного з’єднання"
+
+#: src/engine/client/cl_irc.c:1393
 #, c-format
-msgid "%s resolved to %s\n"
-msgstr "%s вирізнено як %s\n"
+msgid "^5-> ^7%s^5 has entered the channel.\n"
+msgstr "^5-> ^7%s^5 зайшов до каналу.\n"
 
-#: src/engine/server/sv_main.c:321
+#: src/engine/client/cl_irc.c:1397
+msgid "^2Joined IRC chat.\n"
+msgstr "^2Зайшов до IRC-чату.\n"
+
+#: src/engine/client/cl_irc.c:1410
 #, c-format
-msgid "%s has no IPv4 address.\n"
-msgstr "%s не має IPv4-адреси.\n"
+msgid "^5<- ^7%s^5 has left the channel: %s.\n"
+msgstr "^5<- ^7%s^5 залишив канал: %s.\n"
 
-#: src/engine/server/sv_main.c:327
+#: src/engine/client/cl_irc.c:1414
 #, c-format
-msgid "Resolving %s (IPv6)\n"
-msgstr "Вирізняю %s (IPv6)\n"
+msgid "^5<- ^7%s^5 has left the channel.\n"
+msgstr "^5<- ^7%s^5 залишив канал.\n"
 
-#: src/engine/server/sv_main.c:342
+#: src/engine/client/cl_irc.c:1428
 #, c-format
-msgid "%s has no IPv6 address.\n"
-msgstr "%s не має IPv6-адреси.\n"
+msgid "^5<- ^7%s^5 has quit: %s.\n"
+msgstr "^5<- ^7%s^5 вийшов: %s.\n"
 
-#: src/engine/server/sv_main.c:350
+#: src/engine/client/cl_irc.c:1432
 #, c-format
-msgid "Couldn't resolve address: %s\n"
-msgstr "Не вдалося вирізнити адресу: %s\n"
+msgid "^5<- ^7%s^5 has quit.\n"
+msgstr "^5<- ^7%s^5 вийшов.\n"
 
-#: src/engine/server/sv_main.c:357
+#: src/engine/client/cl_irc.c:1438
 #, c-format
-msgid "Sending heartbeat to %s\n"
-msgstr "Відправляю heartbeat до %s\n"
+msgid "^2Quit IRC chat: %s.\n"
+msgstr "^2Вихід з IRC-чату: %s.\n"
 
-#: src/engine/server/sv_main.c:409
+#: src/engine/client/cl_irc.c:1448
 #, c-format
-msgid "Resolving %s\n"
-msgstr "Вирізняю %s\n"
+msgid "^2Kicked by ^7%s^2: %s.\n"
+msgstr "^2Викинуто ^7%s^2: %s.\n"
 
-#: src/engine/server/sv_main.c:414
+#: src/engine/client/cl_irc.c:1452
 #, c-format
-msgid "Couldn't resolve master address: %s\n"
-msgstr "Не вдалося вирізнити адресу мастер-серверу: %s\n"
+msgid "^5<- ^7%s^5 has been kicked: %s.\n"
+msgstr "^5<- ^7%s^5 було викинуто: %s.\n"
 
-#: src/engine/server/sv_main.c:427
+#: src/engine/client/cl_irc.c:1462
 #, c-format
-msgid "Sending gamestat to %s\n"
-msgstr "Відправляю gamestat до %s\n"
+msgid "^2** ^7%s^2 is now known as ^7%s^2.\n"
+msgstr "^2** ^7%s^2 тепер відомий як ^7%s^2.\n"
 
-#: src/engine/server/sv_main.c:707
-msgid "Detected flood of getinfo/getstatus connectionless packets\n"
-msgstr "Помічено флуд пакетів getinfo/getstatus без встановлення з’єднання\n"
-
-#: src/engine/server/sv_main.c:718
+#: src/engine/client/cl_irc.c:1466
 #, c-format
-msgid ""
-"Possible DRDoS attack to address %i.%i.%i.%i, ignoring getinfo/getstatus "
-"connectionless packet\n"
-msgstr "Можлива DRDoS-атака на адресу %i.%i.%i.%i, ігнорую безз’єднальний пакет "
-"getinfo/getstatus\n"
+msgid "^5** ^7%s^5 is now known as ^7%s^5.\n"
+msgstr "^5** ^7%s^5 тепер відомий як ^7%s^5.\n"
 
-#: src/engine/server/sv_main.c:770
+#: src/engine/client/cl_irc.c:1473
+msgid "unknown message received\n"
+msgstr "отримано невідоме повідомлення\n"
+
+#: src/engine/client/cl_irc.c:1572 src/engine/client/cl_irc.c:1576
+msgid "server error"
+msgstr "помилка серверу"
+
+#: src/engine/client/cl_irc.c:1634
+#, fuzzy
+msgid "got spurious nickname error"
+msgstr "отримана помилка: недійсний нікнейм"
+
+#: src/engine/client/cl_irc.c:2034
+msgid "<text>"
+msgstr "<текст>"
+
+#: src/engine/client/cl_irc.c:2040
+msgid "Not connected"
+msgstr "Не з’єднано"
+
+#: src/engine/client/cl_irc.c:2063
+#, fuzzy
+msgid "flood detected, message not sent"
+msgstr "помічено флуд, повідомлення не відправлено"
+
+#: src/engine/client/cl_irc.c:2259
+msgid "connecting to server"
+msgstr "з’єднуюсь із сервером"
+
+#: src/engine/client/cl_irc.c:2266
+msgid "rejected due to unset player name"
+msgstr "відмовлено з-за невказаного імені гравця"
+
+#: src/engine/client/cl_irc.c:2273
+msgid "rejected due to mostly unusable player name"
+msgstr "відмовлено з-за здебільшого непридатного імені гравця"
+
+#: src/engine/client/cl_irc.c:2282
+msgid "unknown server"
+msgstr "невідомий сервер"
+
+#: src/engine/client/cl_irc.c:2300
+msgid "invalid port number, defaulting to 6667"
+msgstr "невірний номер порта, використовую усталений 6667"
+
+#: src/engine/client/cl_irc.c:2312
+msgid "connection refused"
+msgstr "у з’єднанні відмовлено"
+
+# 88%
+#: src/engine/client/cl_irc.c:2336
+msgid "…Connected to IRC server\n"
+msgstr "…З’єднано з IRC-сервером\n"
+
+#: src/engine/client/cl_irc.c:2537
+msgid "disconnected from server"
+msgstr "роз’єднано з сервером"
+
+#: src/engine/client/cl_irc.c:2701
+msgid "thread is already running"
+msgstr "потік вже запущений"
+
+#: src/engine/client/cl_keys.c:1138
 #, c-format
-msgid ""
-"Bad rcon from %s:\n"
-"%s\n"
-msgstr ""
-"Поганий rcon від %s:\n"
-"%s\n"
+msgid "^3%s:^7 %d is not a valid team number\n"
+msgstr "^3%s:^7 %d не є правильним номером команди\n"
 
-#: src/engine/server/sv_main.c:775
+#: src/engine/client/cl_keys.c:1157
 #, c-format
-msgid ""
-"Rcon from %s:\n"
-"%s\n"
-msgstr ""
-"rcon від %s:\n"
-"%s\n"
+msgid "^3%s:^7 '%s^7' is not a valid team name\n"
+msgstr "^3%s:^7 '%s^7' не є правильною назвою команди\n"
 
-#: src/engine/server/sv_main.c:790
-msgid "No rconpassword set on the server.\n"
-msgstr "На сервері не встановлено rconpassword.\n"
+#: src/engine/client/cl_keys.c:1281 src/engine/client/cl_keys.c:1434
+msgid "[<team>] <key>"
+msgstr "[<команда>] <ключ>"
 
-#: src/engine/server/sv_main.c:794
-msgid "Bad rconpassword.\n"
-msgstr "Поганий rconpassword.\n"
+#: src/engine/client/cl_keys.c:1281
+msgid "remove commands from a key"
+msgstr "видалити команди з ключу"
 
-#: src/engine/server/sv_init.c:576
-msgid "------ Server Initialization ------\n"
-msgstr "------ Ініціалізація сервера ------\n"
-
-#: src/engine/server/sv_init.c:577
-#, c-format
-msgid "Server: %s\n"
-msgstr "Сервер: %s\n"
-
-#: src/engine/server/sv_init.c:766
-msgid "WARNING: sv_pure set but no PK3 files loaded\n"
-msgstr "УВАГА: встановлено sv_pure, але не завантажено PK3-файлів\n"
-
-#: src/engine/server/sv_init.c:963
-msgid "----- Server Shutdown -----\n"
-msgstr "----- Завершення сервера -----\n"
-
-#: src/engine/server/sv_client.c:226
-#, c-format
-msgid "Client %i connecting with %i challenge ping\n"
-msgstr "Клієнт %i під’єднується з пінґом виклику %i\n"
-
-#: src/engine/server/sv_client.c:760
-#, c-format
-msgid "clientDownload: %d : file \"%s\" completed\n"
-msgstr "clientDownload: %d : завантаження файлу \"%s\" завершено\n"
-
-#: src/engine/server/sv_client.c:809 src/engine/server/sv_client.c:833
-#, c-format
-msgid "SV_WWWDownload: unexpected wwwdl '%s' for client '%s'\n"
-msgstr "SV_WWWDownload: неочікуваний wwwdl '%s' для клієнта '%s'\n"
-
-#: src/engine/server/sv_client.c:818
-#, c-format
-msgid "WARNING: dupe wwwdl ack from client '%s'\n"
-msgstr "WARNING: dupe wwwdl ack from client '%s'\n"
-
-#: src/engine/server/sv_client.c:857
-#, c-format
-msgid ""
-"WARNING: client '%s' reports that the redirect download for '%s' had wrong "
-"checksum.\n"
-msgstr "УВАГА: клієнт '%s' звітує, що перенаправлене завантаження для '%s' мало "
-"неправильну контрольну суму.\n"
-
-#: src/engine/server/sv_client.c:859
-msgid "         you should check your download redirect configuration.\n"
-msgstr "         Вам варто перевірити налаштування переадресації завантажень.\n"
-
-#: src/engine/server/sv_client.c:869
-#, c-format
-msgid "SV_WWWDownload: unknown wwwdl subcommand '%s' for client '%s'\n"
-msgstr "SV_WWWDownload: невідома wwwdl субкоманда '%s' для клієнта '%s'\n"
-
-#: src/engine/server/sv_client.c:899
-#, c-format
-msgid "clientDownload: sending client '%s' to fallback URL '%s'\n"
-msgstr "clientDownload: відправляю клієнтові '%s' запасний URL '%s'\n"
-
-#: src/engine/server/sv_client.c:1007
-#, c-format
-msgid "Redirecting client '%s' to %s\n"
-msgstr "Переадресую клієнта '%s' на %s\n"
-
-#: src/engine/server/sv_client.c:1031
-#, c-format
-msgid "ERROR: Client '%s': couldn't extract file size for %s\n"
-msgstr "ПОМИЛКА: Клієнт '%s': не вдалося витягнути розмір файлу для %s\n"
-
-#: src/engine/server/sv_client.c:1044
-#, c-format
-msgid "Client '%s': falling back to regular downloading for failed file %s\n"
-msgstr "Клієнт '%s': повертаюсь до звичайного завантаження для невдалого файла %s\n"
-
-#: src/engine/server/sv_client.c:1055
-#, c-format
-msgid "Client '%s' is not configured for www download\n"
-msgstr "Клієнт '%s' не налаштований для www-завантаження\n"
-
-#: src/engine/server/sv_client.c:1065
-#, c-format
-msgid "clientDownload: %d : \"%s\" file not found on server\n"
-msgstr "clientDownload: %d : \"%s\" файл не знайдено на сервері\n"
-
-#: src/engine/server/sv_client.c:1131
-#, c-format
-msgid "'%s' downloading at sv_dl_maxrate (%d)\n"
-msgstr "'%s' завантажує на sv_dl_maxrate (%d)\n"
-
-#: src/engine/server/sv_client.c:1136
-#, c-format
-msgid "'%s' downloading at rate %d\n"
-msgstr "'%s' завантажує зі швидкістю %d\n"
-
-#: src/engine/server/sv_client.c:1745
-#, c-format
-msgid "Client %s lost %i clientCommands\n"
-msgstr "Клієнт %s загубив %i клієнтських команд\n"
-
-#: src/engine/server/sv_client.c:2078
-#, c-format
-msgid "Too many VoIP packets queued for client #%d\n"
-msgstr "Занадто багато VoIP-пакетів у черзі для клієнта №%d\n"
-
-#: src/engine/server/sv_client.c:2253
-#, c-format
-msgid "WARNING: bad command byte for client %i\n"
-msgstr "УВАГА: неправильний байт команди для клієнта %i\n"
-
-# можливо, переповнене, бо msg - повідомлення
-#: src/engine/server/sv_snapshot.c:960 src/engine/server/sv_snapshot.c:1031
-#, c-format
-msgid "WARNING: msg overflowed for %s\n"
-msgstr "УВАГА: msg переповнении для %s\n"
-
-#: src/engine/server/sv_ccmds.c:68 src/engine/server/sv_ccmds.c:125
-msgid "No player specified.\n"
-msgstr "Не вказано гравця.\n"
-
-#: src/engine/server/sv_ccmds.c:96
-#, c-format
-msgid "Player %s is not on the server\n"
-msgstr "Гравця %s немає на сервері\n"
-
-#: src/engine/server/sv_ccmds.c:135
-#, c-format
-msgid "Bad slot number: %s\n"
-msgstr "Поганий номер слоту: %s\n"
-
-#: src/engine/server/sv_ccmds.c:144
-#, c-format
-msgid "Bad client slot: %i\n"
-msgstr "Поганий номер слоту клієнта: %i\n"
-
-#: src/engine/server/sv_ccmds.c:152
-#, c-format
-msgid "Client %i is not active\n"
-msgstr "Клієнт %i неактивний\n"
-
-#: src/engine/server/sv_ccmds.c:192
-#, c-format
-msgid "Can't find map %s\n"
-msgstr "Не можу знайти мапу %s\n"
-
-#: src/engine/server/sv_ccmds.c:263 src/engine/server/sv_ccmds.c:393
-msgid "Server is not running.\n"
-msgstr "Сервер не запущено.\n"
-
-#: src/engine/server/sv_ccmds.c:283
-msgid "sv_maxclients variable change — restarting.\n"
-msgstr "sv_maxclients змінено — перезавантажуюсь.\n"
-
-#: src/engine/server/sv_ccmds.c:489
-msgid "Server info settings:\n"
-msgstr "Налаштування інформації серверу:\n"
-
-#: src/engine/server/sv_ccmds.c:502
-msgid "System info settings:\n"
-msgstr "Налаштування інформації системи:\n"
-
-#: src/engine/client/cl_keys.c:1373
-msgid "unbind <key> : remove commands from a key\n"
-msgstr "unbind <клавіша> : зтерти команди для клавіші\n"
-
-#: src/engine/client/cl_keys.c:1381 src/engine/client/cl_keys.c:1434
-#: src/engine/client/cl_keys.c:1489
+#: src/engine/client/cl_keys.c:1299 src/engine/client/cl_keys.c:1362
+#: src/engine/client/cl_keys.c:1453
 #, c-format
 msgid "\"%s\" isn't a valid key\n"
 msgstr "\"%s\" не є правильною клавішою\n"
 
-#: src/engine/client/cl_keys.c:1421
-msgid "bind <key> [command] : attach a command to a key\n"
-msgstr "bind <клавіша> [команда] : закріпити команду за клавішею\n"
+#: src/engine/client/cl_keys.c:1339
+msgid "<team> <key> [<command>]"
+msgstr "<загін> <ключ> [<команда>]"
 
-#: src/engine/client/cl_keys.c:1446
+#: src/engine/client/cl_keys.c:1339
+msgid "<key> [<command>]"
+msgstr "<ключ> [<команда>]"
+
+#: src/engine/client/cl_keys.c:1339
+msgid "attach a command to a key"
+msgstr "прив’язати до ключа команду"
+
+#: src/engine/client/cl_keys.c:1378
+#, c-format
+msgid "\"%s\"[%s] is not bound\n"
+msgstr "\"%s\"[%s] не прив’язана\n"
+
+#: src/engine/client/cl_keys.c:1397
 #, c-format
 msgid "\"%s\" is not bound\n"
 msgstr "\"%s\" не прив’язана\n"
 
-#: src/engine/client/cl_keys.c:1480
-msgid "usage: editbind <key>"
-msgstr "використання: editbind <клавіша>"
+#: src/engine/client/cl_main.c:295
+#, c-format
+msgid "VoIP: Now ignoring player #%d\n"
+msgstr "VoIP: Тепер ігнорую гравця №%d\n"
+
+#: src/engine/client/cl_main.c:295
+#, c-format
+msgid "VoIP: No longer ignoring player #%d\n"
+msgstr "VoIP: Більше не ігнорую гравця №%d\n"
+
+#: src/engine/client/cl_main.c:300 src/engine/client/cl_main.c:372
+msgid "VoIP: invalid player ID#\n"
+msgstr "VoIP: недійсний ID гравця\n"
+
+#: src/engine/client/cl_main.c:318
+#, c-format
+msgid "VoIP: player #%d gain now set to %f\n"
+msgstr "VoIP: посилення для гравця №%d тепер %f\n"
+
+#: src/engine/client/cl_main.c:343
+#, c-format
+msgid "VoIP: command ignored: %s\n"
+msgstr "VoIP: команду проігноровано: %s\n"
+
+#: src/engine/client/cl_main.c:367
+#, c-format
+msgid "VoIP: current gain for player #%d is %f\n"
+msgstr "VoIP: поточне посилення для гравця №%d — %f\n"
+
+#: src/engine/client/cl_main.c:382
+msgid "VoIP: muting incoming voice\n"
+msgstr "VoIP: приглушую вхідний голос\n"
+
+#: src/engine/client/cl_main.c:388
+msgid "VoIP: unmuting incoming voice\n"
+msgstr "VoIP: відновлюю вхідний голос\n"
+
+#: src/engine/client/cl_main.c:515
+#, c-format
+msgid "VoIP target %d is not a valid client number\n"
+msgstr "VoIP-ціль %d не є дійсним номером клієнта\n"
+
+#: src/engine/client/cl_main.c:562
+msgid ""
+"Your network rate is too slow for VoIP.\n"
+"Set 'Data Rate' to 'LAN/Cable/xDSL' in 'Setup/System/Network' and restart.\n"
+"Until then, VoIP is disabled.\n"
+msgstr ""
+"Швидкість вашого з’єднання занадто мала для VoIP.\n"
+"Оберіть «LAN/Кабель/xDSL» у «Налаштування/Системні/Мережа» та "
+"перезапустіться.\n"
+"До того часу VoIP відключено.\n"
+
+#: src/engine/client/cl_main.c:864
+msgid "Not recording a demo.\n"
+msgstr "Не записую демо.\n"
+
+#: src/engine/client/cl_main.c:879
+msgid "Stopped demo.\n"
+msgstr "Демо зупинено.\n"
+
+#: src/engine/client/cl_main.c:923
+msgid "Already recording."
+msgstr "Вже записую."
+
+#: src/engine/client/cl_main.c:929
+msgid "You must be in a level to record."
+msgstr "Ви повинні бути на певній мапі для запису."
+
+#: src/engine/client/cl_main.c:937
+#, c-format
+msgid "You should set '%s' for smoother demo recording"
+msgstr ""
+
+#: src/engine/client/cl_main.c:980 src/engine/client/cl_main.c:1300
+#, c-format
+msgid "recording to %s.\n"
+msgstr "записую до %s.\n"
+
+#: src/engine/client/cl_main.c:1085
+#, c-format
+msgid "%i frames, %3.1fs: %3.1f fps\n"
+msgstr "%i кадрів, %3.1fс: %3.1f кадрів/с\n"
+
+#: src/engine/client/cl_main.c:1160
+msgid "Demo file was truncated.\n"
+msgstr "Демо-файл усічений.\n"
+
+#: src/engine/client/cl_main.c:1267 src/engine/client/cl_main.c:2545
+msgid "Already recording a wav file\n"
+msgstr "Вже записую wav-файл\n"
+
+#: src/engine/client/cl_main.c:1305
+#, c-format
+#, c-format, fuzzy
+msgid "couldn't open %s for writing."
+msgstr "ПОМИЛКА: неможливо відкрити %s для зчитування.\n"
+
+#: src/engine/client/cl_main.c:1321
+msgid "Stopped recording\n"
+msgstr "Запис зупинено\n"
+
+#: src/engine/client/cl_main.c:1730
+msgid "Mumble: Unlinking from Mumble application\n"
+msgstr "Mumble: Від’єднуюсь від застосунку Mumble\n"
+
+#: src/engine/client/cl_main.c:1867
+#, c-format
+msgid "Unknown command \"%s\"\n"
+msgstr "Невідома команда \"%s\"\n"
+
+#: src/engine/client/cl_main.c:1902
+msgid "Couldn't resolve master address\n"
+msgstr "Не вдалося вирізнити адресу мастер-серверу\n"
+
+#: src/engine/client/cl_main.c:1944 src/engine/client/cl_main.c:2503
+#: src/engine/client/cl_main.c:5698
+msgid "Not connected to a server.\n"
+msgstr "Не з’єднано з сервером.\n"
+
+#: src/engine/client/cl_main.c:1975
+msgid "Can't reconnect to nothing.\n"
+msgstr ""
+
+#: src/engine/client/cl_main.c:1979
+msgid "Can't reconnect to localhost.\n"
+msgstr "Не можу перепід’єднатись до localhost.\n"
+
+#: src/engine/client/cl_main.c:2003 src/engine/client/cl_main.c:5498
+#: src/engine/client/cl_main.c:5699
+msgid "[-4|-6] <server>"
+msgstr ""
+
+#: src/engine/client/cl_main.c:2023
+#, fuzzy
+msgid "only -4 or -6 as address type understood."
+msgstr "увага: тільки -4 або -6 сприймаються як тип адреси.\n"
+
+#: src/engine/client/cl_main.c:2077
+msgid "Bad server address\n"
+msgstr "Погана адреса серверу\n"
+
+#: src/engine/client/cl_main.c:2138
+msgid ""
+"You must set 'rconPassword' before\n"
+"issuing an rcon command.\n"
+msgstr ""
+"Ви маєте встановити 'rconPassword' перед\n"
+"виконанням rcon-команд.\n"
+
+#: src/engine/client/cl_main.c:2165
+msgid ""
+"Connect to a server or set the 'rconAddress' cvar to issue rcon commands\n"
+msgstr "З’єднайтесь із сервером чи встановіть змінну «rconAddress» для видавання "
+"rcon-команд\n"
+
+#: src/engine/client/cl_main.c:2243
+#, c-format
+msgid "^5Regenerating RSA keypair; writing to %s\n"
+msgstr ""
+
+#: src/engine/client/cl_main.c:2258
+#, fuzzy
+msgid "Daemon RSA keys generated\n"
+msgstr "Відкритий ключ RSA створено\n"
+
+#: src/engine/client/cl_main.c:2281
+#, c-format
+msgid "^5Loading RSA keys from %s\n"
+msgstr ""
+
+#: src/engine/client/cl_main.c:2287
+msgid "Daemon RSA public-key file not found, regenerating\n"
+msgstr "Файл відкритого ключу RSA не знайдено, відновлюю\n"
+
+#: src/engine/client/cl_main.c:2298
+#, fuzzy
+msgid "Invalid RSA keypair in file, regenerating\n"
+msgstr "Недійсна пара RSA-ключів, відновлюю\n"
+
+#: src/engine/client/cl_main.c:2305
+msgid "Daemon RSA public-key found.\n"
+msgstr "Відкритий RSA-ключ Daemon знайдено.\n"
+
+#: src/engine/client/cl_main.c:2562
+msgid "Not recording a wav file\n"
+msgstr "Не записую wav-файл\n"
+
+#: src/engine/client/cl_main.c:2590
+msgid "The video command can only be used when playing back demos\n"
+msgstr "Команда «video» може бути використана лише під час програвання демо\n"
+
+#: src/engine/client/cl_main.c:2626
+#, fuzzy
+msgid "no free file names to create video"
+msgstr "ПОМИЛКА: немає вільних імен файлів для створення відео\n"
+
+#: src/engine/client/cl_main.c:3696 src/engine/client/cl_main.c:3705
+#, c-format
+msgid "Download failure while getting '%s'\n"
+msgstr "Помилка завантаження під час отримання '%s'\n"
+
+#: src/engine/client/cl_main.c:3730
+#, c-format
+msgid ""
+"file %s obtained through download redirect has wrong checksum\n"
+"\tthis likely means the server configuration is broken"
+msgstr ""
+
+#: src/engine/client/cl_main.c:4119
+msgid "Initializing Renderer"
+msgstr ""
+
+#: src/engine/client/cl_main.c:4355
+msgid "Calling GetRefAPI…\n"
+msgstr "Викликаю GetRefAPI…\n"
+
+#: src/engine/client/cl_main.c:4405
+msgid "Client Initialization"
+msgstr ""
+
+#: src/engine/client/cl_main.c:4510 src/engine/qcommon/translation.cpp:270
+msgid "~ ` 0x7e 0x60"
+msgstr "~ ` 0x7e 0x60"
+
+#: src/engine/client/cl_main.c:4636
+msgid "Client Initialization Complete"
+msgstr ""
+
+#: src/engine/client/cl_main.c:5081
+msgid "Server settings:\n"
+msgstr "Налаштування сервера:\n"
+
+#: src/engine/client/cl_main.c:5131
+msgid ""
+"\n"
+"Players:\n"
+msgstr ""
+"\n"
+"Гравці:\n"
+
+#: src/engine/client/cl_main.c:5132
+msgid "num: score: ping: name:\n"
+msgstr "№: рахунок: пінґ: ім’я:\n"
+
+#: src/engine/client/cl_main.c:5518 src/engine/client/cl_main.c:5726
+msgid "warning: only -4 or -6 as address type understood.\n"
+msgstr "увага: тільки -4 або -6 сприймаються як тип адреси.\n"
 
 #: src/engine/client/cl_parse.c:671
 msgid "Server sending download, but no download was requested\n"
@@ -313,51 +582,34 @@ msgstr "Не вдалося розпочати завантаження для '
 msgid "Could not create %s\n"
 msgstr "Не вдалося створити %s\n"
 
-#: src/engine/client/cl_console.c:246
-msgid "usage: condump <filename>\n"
-msgstr "використання: condump <ім’я файлу>\n"
-
-#: src/engine/client/cl_console.c:250
+#: src/engine/client/snd_codec.c:143 src/engine/client/snd_codec.c:162
 #, c-format
-msgid "Dumped console text to %s.\n"
-msgstr "Текст з консолі записано до %s.\n"
+msgid "Unknown extension for %s\n"
+msgstr "Невідоме розширення для %s\n"
 
-#: src/engine/client/cl_console.c:256 src/engine/client/cl_main.c:938
-msgid "ERROR: couldn't open.\n"
-msgstr "ПОМИЛКА: не зміг відкрити.\n"
-
-#: src/engine/client/cl_console.c:294
+#: src/engine/client/snd_codec.c:196 src/engine/client/snd_codec_wav.c:235
 #, c-format
-msgid "usage: %s <string1> <string2> <…>\n"
-msgstr "використання: %s <рядок 1> <рядок 2> <…>\n"
+msgid "Can't read sound file %s\n"
+msgstr "Не можу зчитати звуковий файл %s\n"
 
-#: src/engine/client/cl_console.c:340
-msgid "usage: grep <string>\n"
-msgstr "використання: grep <рядок>\n"
+#: src/engine/client/snd_codec_wav.c:203
+msgid "No ‘data’ chunk\n"
+msgstr "Відсутня «data»-скиба\n"
 
-#: src/engine/client/snd_main.c:374
-msgid "------ Initializing Sound -----\n"
-msgstr "------ Ініціалізую звук ------\n"
+#: src/engine/client/snd_codec_wav.c:243
+#, c-format
+msgid "Can't understand wav file %s\n"
+msgstr "Не розумію wav-файл %s\n"
 
-#: src/engine/client/snd_mem.c:113
-msgid "Sound memory manager started\n"
-msgstr "Керування звуковою пам’яттю запущено\n"
-
-#: src/engine/client/cl_cgame.c:471
-msgid "^3Server sent a pubkey_decrypt command, but sent nothing to decrypt!\n"
-msgstr "^3Сервер відправив команду pubkey_decrypt, але не дані для розшифрування!\n"
-
-#: src/engine/client/cl_cgame.c:1632
-msgid "Mumble: Linking to Mumble application okay\n"
-msgstr "Mumble: З’єднання з застосунком Mumble пройшло успішно\n"
-
-#: src/engine/client/cl_cgame.c:1632
-msgid "Mumble: Linking to Mumble application failed\n"
-msgstr "Mumble: З’єднання з застосунком Mumble не вдалося\n"
+#: src/engine/client/snd_codec_wav.c:253
+#, c-format
+#, c-format, fuzzy
+msgid "Out of memory reading \"%s\"\n"
+msgstr "ERROR: Out of memory reading \"%s\"\n"
 
 #: src/engine/client/snd_dma.c:104
-msgid "----- Sound Info -----\n"
-msgstr "----- Інформація про звук -----\n"
+msgid "Sound Info"
+msgstr ""
 
 #: src/engine/client/snd_dma.c:108
 msgid "the sound system is not started\n"
@@ -402,623 +654,32 @@ msgstr "Фоновий потік: %s\n"
 msgid "No background file.\n"
 msgstr "Немає файлу тла.\n"
 
-#: src/engine/client/snd_dma.c:181
-msgid "Channel memory manager started\n"
-msgstr "Запущено керування канальною пам’яттю\n"
-
-#: src/engine/client/snd_dma.c:405
-msgid "Sound name exceeds MAX_QPATH\n"
-msgstr "Назва звуку перевищує MAX_QPATH\n"
+#: src/engine/client/snd_dma.c:405 src/engine/client/snd_openal.c:198
+msgid "Sound name exceeds MAX_QPATH"
+msgstr "Назва звуку перевищує MAX_QPATH"
 
 #: src/engine/client/snd_dma.c:415 src/engine/client/snd_dma.c:429
 #, c-format
-msgid "WARNING: could not find %s — using default\n"
-msgstr "УВАГА: не вдалося знайти %s — використовую типовий\n"
+msgid "could not find %s — using default"
+msgstr "не вдалося знайти %s — використовую типовий"
 
-#: src/engine/client/snd_dma.c:558
+#: src/engine/client/snd_dma.c:558 src/engine/client/snd_dma.c:705
+#: src/engine/client/snd_dma.c:831 src/engine/client/snd_dma.c:905
 #, c-format
-msgid "S_StartSound: handle %i out of range\n"
-msgstr "S_StartSound: handle %i out of range\n"
+msgid "handle %i out of range"
+msgstr "дескриптор %i за межами"
 
 #: src/engine/client/snd_dma.c:661
 msgid "dropping sound\n"
 msgstr "скасовую звук\n"
 
-#: src/engine/client/snd_dma.c:705
-#, c-format
-msgid "S_StartLocalSound: handle %i out of range\n"
-msgstr "S_StartLocalSound: handle %i out of range\n"
-
-#: src/engine/client/snd_dma.c:831
-#, c-format
-msgid "S_AddLoopingSound: handle %i out of range\n"
-msgstr "S_AddLoopingSound: handle %i out of range\n"
-
-#: src/engine/client/snd_dma.c:905
-#, c-format
-msgid "S_AddRealLoopingSound: handle %i out of range\n"
-msgstr "S_AddRealLoopingSound: handle %i out of range\n"
-
-#: src/engine/client/snd_dma.c:1493
-msgid "paged out"
-msgstr "вивантажено сторінок"
-
-#: src/engine/client/snd_dma.c:1493
-msgid "resident"
-msgstr "резидентна"
-
-#: src/engine/client/snd_dma.c:1504
-#, c-format
-msgid "Total resident: %i\n"
-msgstr "Усього резидентної: %i\n"
-
-#: src/engine/client/cl_irc.c:1001
-msgid "Unable to initialise socket.\n"
-msgstr "Не вдалося ініціалізувати сокет.\n"
-
-#: src/engine/client/cl_irc.c:1005
-msgid "The specified address family is not supported.\n"
-msgstr "Вказана родина адрес не підтримується.\n"
-
-#: src/engine/client/cl_irc.c:1009
-msgid "Specified address is not available from the local machine.\n"
-msgstr "Вказана адреса недоступна з цієї машини.\n"
-
-#: src/engine/client/cl_irc.c:1013
-msgid "The attempt to connect was forcefully rejected.\n"
-msgstr "Спроба під’єднання була різко відхилена.\n"
-
-#: src/engine/client/cl_irc.c:1017
-msgid "address destination address is required.\n"
-msgstr "потрібна адреса призначення.\n"
-
-#: src/engine/client/cl_irc.c:1021
-msgid "The namelen argument is incorrect.\n"
-msgstr "Невірний аргумент до namelen.\n"
-
-#: src/engine/client/cl_irc.c:1025
-msgid "The socket is not already bound to an address.\n"
-msgstr "Сокет ще не прив’язаний до адреси.\n"
-
-#: src/engine/client/cl_irc.c:1029
-msgid "The socket is already connected.\n"
-msgstr "Сокет вже під’єднаний.\n"
-
-#: src/engine/client/cl_irc.c:1033
-msgid "The specified address is already in use.\n"
-msgstr "Вказана адреса вже використовується.\n"
-
-#: src/engine/client/cl_irc.c:1037
-msgid "No more file descriptors are available.\n"
-msgstr "Більше немає файлових дескрипторів.\n"
-
-#: src/engine/client/cl_irc.c:1041
-msgid "No buffer space available. The socket cannot be created.\n"
-msgstr "Немає місця у буфері. Сокет не може бути створений.\n"
-
-#: src/engine/client/cl_irc.c:1045
-msgid "The specified protocol is not supported.\n"
-msgstr "Вказаний протокол не підтримується.\n"
-
-#: src/engine/client/cl_irc.c:1049
-msgid "The specified protocol is the wrong type for this socket.\n"
-msgstr "Вказаний протокол має невірний тип для цього сокету.\n"
-
-#: src/engine/client/cl_irc.c:1053
-msgid "The network can't be reached from this host at this time.\n"
-msgstr "На даний момент неможливо дістатися до мережі з цього вузлу.\n"
-
-#: src/engine/client/cl_irc.c:1057
-msgid "The descriptor is not a socket.\n"
-msgstr "Дескриптор не є сокетом.\n"
-
-#: src/engine/client/cl_irc.c:1061
-msgid "Attempt timed out without establishing a connection.\n"
-msgstr "Час спроби встановлення з’єднання вийшов.\n"
-
-#: src/engine/client/cl_irc.c:1065
-msgid "Socket type is not supported in this address family.\n"
-msgstr "Тип сокету у цій родині адрес не підтримується.\n"
-
-#: src/engine/client/cl_irc.c:1069
-msgid "Network subsystem failure.\n"
-msgstr "Крах мережевої підсистеми.\n"
-
-#: src/engine/client/cl_irc.c:1073
-msgid "Authoritative Answer Host not found.\n"
-msgstr "Вузол авторитативної відповіді не знайдено.\n"
-
-#: src/engine/client/cl_irc.c:1077
-msgid "Non-Authoritative Host not found or SERVERFAIL.\n"
-msgstr "Не-авторитативний вузол не знайдено або SERVERFAIL.\n"
-
-#: src/engine/client/cl_irc.c:1081
-msgid "Non recoverable errors, FORMERR, REFUSED, NOTIMP.\n"
-msgstr "Невиправні помилки, FORMERR, REFUSED, NOTIMP.\n"
-
-#: src/engine/client/cl_irc.c:1085
-msgid "Valid name, no data record of requested type.\n"
-msgstr "Дійсна назва, немає запису даних вказаного типу.\n"
-
-#: src/engine/client/cl_irc.c:1089
-msgid "address blocking Windows Sockets operation is in progress.\n"
-msgstr "відбувається адресо-блокуюча операція Windows Sockets.\n"
-
-#: src/engine/client/cl_irc.c:1093
-msgid "Unknown connection error.\n"
-msgstr "Невідома помилка з’єднання.\n"
-
-#: src/engine/client/cl_irc.c:1103
-#, c-format
-msgid "IRC socket connection error: %s\n"
-msgstr "Помилка з’єднання IRC-сокету: %s\n"
-
-#: src/engine/client/cl_irc.c:1394
-#, c-format
-msgid "^5-> ^7%s^5 has entered the channel.\n"
-msgstr "^5-> ^7%s^5 зайшов до каналу.\n"
-
-#: src/engine/client/cl_irc.c:1398
-msgid "^2Joined IRC chat.\n"
-msgstr "^2Зайшов до IRC-чату.\n"
-
-#: src/engine/client/cl_irc.c:1411
-#, c-format
-msgid "^5<- ^7%s^5 has left the channel: %s.\n"
-msgstr "^5<- ^7%s^5 залишив канал: %s.\n"
-
-#: src/engine/client/cl_irc.c:1415
-#, c-format
-msgid "^5<- ^7%s^5 has left the channel.\n"
-msgstr "^5<- ^7%s^5 залишив канал.\n"
-
-#: src/engine/client/cl_irc.c:1429
-#, c-format
-msgid "^5<- ^7%s^5 has quit: %s.\n"
-msgstr "^5<- ^7%s^5 вийшов: %s.\n"
-
-#: src/engine/client/cl_irc.c:1433
-#, c-format
-msgid "^5<- ^7%s^5 has quit.\n"
-msgstr "^5<- ^7%s^5 вийшов.\n"
-
-#: src/engine/client/cl_irc.c:1439
-#, c-format
-msgid "^2Quit IRC chat: %s.\n"
-msgstr "^2Вихід з IRC-чату: %s.\n"
-
-#: src/engine/client/cl_irc.c:1449
-#, c-format
-msgid "^2Kicked by ^7%s^2: %s.\n"
-msgstr "^2Викинуто ^7%s^2: %s.\n"
-
-#: src/engine/client/cl_irc.c:1453
-#, c-format
-msgid "^5<- ^7%s^5 has been kicked: %s.\n"
-msgstr "^5<- ^7%s^5 було викинуто: %s.\n"
-
-#: src/engine/client/cl_irc.c:1463
-#, c-format
-msgid "^2** ^7%s^2 is now known as ^7%s^2.\n"
-msgstr "^2** ^7%s^2 тепер відомий як ^7%s^2.\n"
-
-#: src/engine/client/cl_irc.c:1467
-#, c-format
-msgid "^5** ^7%s^5 is now known as ^7%s^5.\n"
-msgstr "^5** ^7%s^5 тепер відомий як ^7%s^5.\n"
-
-#: src/engine/client/cl_irc.c:1474
-msgid "unknown message received\n"
-msgstr "отримано невідоме повідомлення\n"
-
-#: src/engine/client/cl_irc.c:1573
-#, c-format
-msgid "IRC: server error: %s\n"
-msgstr "IRC: помилка серверу: %s\n"
-
-#: src/engine/client/cl_irc.c:1577
-msgid "IRC: server error\n"
-msgstr "IRC: помилка серверу\n"
-
-#: src/engine/client/cl_irc.c:1635
-msgid "…IRC: got spurious nickname error\n"
-msgstr "…IRC: помилка; недійсний нікнейм\n"
-
-#: src/engine/client/cl_irc.c:2044
-msgid "usage: irc_say <text>\n"
-msgstr "використання: irc_say <текст>\n"
-
-#: src/engine/client/cl_irc.c:2050
-msgid "IRC: Not connected\n"
-msgstr "IRC: Не з’єднано\n"
-
-#: src/engine/client/cl_irc.c:2073
-msgid "IRC: flood detected, message not sent\n"
-msgstr "IRC: помічено флуд, повідомлення не відправлено\n"
-
-#: src/engine/client/cl_irc.c:2271
-msgid "…IRC: connecting to server\n"
-msgstr "…IRC: з’єднуюся з сервером\n"
-
-#: src/engine/client/cl_irc.c:2278
-msgid "…IRC: rejected due to unset player name\n"
-msgstr "…IRC: відмовлено з-за невказаного імені гравця\n"
-
-#: src/engine/client/cl_irc.c:2285
-msgid "…IRC: rejected due to mostly unusable player name\n"
-msgstr "…IRC: відмовлено з-за здебільшого непридатного імені гравця\n"
-
-#: src/engine/client/cl_irc.c:2294
-msgid "…IRC: unknown server\n"
-msgstr "…IRC: невідомий сервер\n"
-
-#: src/engine/client/cl_irc.c:2312
-msgid "IRC: invalid port number, defaulting to 6667\n"
-msgstr "IRC: невірний номер порта, використовую усталений 6667\n"
-
-#: src/engine/client/cl_irc.c:2324
-msgid "…IRC connection refused.\n"
-msgstr "…IRC-з’єднання відхилено.\n"
-
-# 88%
-#: src/engine/client/cl_irc.c:2348
-msgid "…Connected to IRC server\n"
-msgstr "…З’єднано з IRC-сервером\n"
-
-#: src/engine/client/cl_irc.c:2549
-msgid "…IRC: disconnected from server\n"
-msgstr "…IRC: роз’єднано з сервером\n"
-
-#: src/engine/client/cl_irc.c:2714
-msgid "…IRC thread is already running\n"
-msgstr "…IRC: потік вже запущений\n"
-
-#: src/engine/client/snd_codec_wav.c:203
-msgid "No ‘data’ chunk\n"
-msgstr "Відсутня «data»-скиба\n"
-
-#: src/engine/client/snd_codec_wav.c:235 src/engine/client/snd_codec.c:196
-#, c-format
-msgid "Can't read sound file %s\n"
-msgstr "Не можу зчитати звуковий файл %s\n"
-
-#: src/engine/client/snd_codec_wav.c:243
-#, c-format
-msgid "Can't understand wav file %s\n"
-msgstr "Не розумію wav-файл %s\n"
-
-#: src/engine/client/snd_codec_wav.c:253
-#, c-format
-msgid "ERROR: Out of memory reading \"%s\"\n"
-msgstr "ERROR: Out of memory reading \"%s\"\n"
-
-#: src/engine/client/snd_codec.c:143 src/engine/client/snd_codec.c:162
-#, c-format
-msgid "Unknown extension for %s\n"
-msgstr "Невідоме розширення для %s\n"
-
-#: src/engine/client/cl_main.c:287
-#, c-format
-msgid "VoIP: Now ignoring player #%d\n"
-msgstr "VoIP: Тепер ігнорую гравця №%d\n"
-
-#: src/engine/client/cl_main.c:287
-#, c-format
-msgid "VoIP: No longer ignoring player #%d\n"
-msgstr "VoIP: Більше не ігнорую гравця №%d\n"
-
-#: src/engine/client/cl_main.c:292 src/engine/client/cl_main.c:364
-msgid "VoIP: invalid player ID#\n"
-msgstr "VoIP: недійсний ID гравця\n"
-
-#: src/engine/client/cl_main.c:310
-#, c-format
-msgid "VoIP: player #%d gain now set to %f\n"
-msgstr "VoIP: посилення для гравця №%d тепер %f\n"
-
-#: src/engine/client/cl_main.c:335
-#, c-format
-msgid "VoIP: command ignored: %s\n"
-msgstr "VoIP: команду проігноровано: %s\n"
-
-#: src/engine/client/cl_main.c:359
-#, c-format
-msgid "VoIP: current gain for player #%d is %f\n"
-msgstr "VoIP: поточне посилення для гравця №%d — %f\n"
-
-#: src/engine/client/cl_main.c:369
-msgid "usage: voip gain <playerID#> [value]\n"
-msgstr "використання: voip gain <ID гравця> [значення]\n"
-
-#: src/engine/client/cl_main.c:374
-msgid "VoIP: muting incoming voice\n"
-msgstr "VoIP: приглушую вхідний голос\n"
-
-#: src/engine/client/cl_main.c:380
-msgid "VoIP: unmuting incoming voice\n"
-msgstr "VoIP: відновлюю вхідний голос\n"
-
-#: src/engine/client/cl_main.c:386
-msgid ""
-"usage: voip [un]ignore <playerID#>\n"
-"       voip [un]muteall\n"
-"       voip gain <playerID#> [value]\n"
-msgstr ""
-"використання: voip [un]ignore <ID гравця>\n"
-"       voip [un]muteall\n"
-"       voip gain <ID гравця> [значення]\n"
-
-#: src/engine/client/cl_main.c:488
-#, c-format
-msgid "WARNING: VoIP target %d is not a valid client number\n"
-msgstr "УВАГА: VoIP-ціль %d не є дійсним номером клієнта\n"
-
-#: src/engine/client/cl_main.c:817
-msgid "Not recording a demo.\n"
-msgstr "Не записую демо.\n"
-
-#: src/engine/client/cl_main.c:832
-msgid "Stopped demo.\n"
-msgstr "Демо зупинено.\n"
-
-#: src/engine/client/cl_main.c:870
-msgid "record <demoname>\n"
-msgstr "record <ім’я демо-файлу>\n"
-
-#: src/engine/client/cl_main.c:876
-msgid "Already recording.\n"
-msgstr "Вже записую.\n"
-
-#: src/engine/client/cl_main.c:882
-msgid "You must be in a level to record.\n"
-msgstr "Ви повинні бути на певній мапі для запису.\n"
-
-#: src/engine/client/cl_main.c:890
-msgid ""
-"WARNING: You should set 'g_synchronousClients 1' for smoother demo "
-"recording\n"
-msgstr "УВАГА: Вам варто встановити 'g_synchronousClients 1' для більш плавного "
-"запису демо\n"
-
-#: src/engine/client/cl_main.c:933 src/engine/client/cl_main.c:1253
-#, c-format
-msgid "recording to %s.\n"
-msgstr "записую до %s.\n"
-
-#: src/engine/client/cl_main.c:1038
-#, c-format
-msgid "%i frames, %3.1fs: %3.1f fps\n"
-msgstr "%i кадрів, %3.1fс: %3.1f кадрів/с\n"
-
-#: src/engine/client/cl_main.c:1113
-msgid "Demo file was truncated.\n"
-msgstr "Демо-файл усічений.\n"
-
-#: src/engine/client/cl_main.c:1214
-msgid "wav_record <wavname>\n"
-msgstr "wav_record <ім’я wav-файлу>\n"
-
-#: src/engine/client/cl_main.c:1220 src/engine/client/cl_main.c:2471
-msgid "Already recording a wav file\n"
-msgstr "Вже записую wav-файл\n"
-
-#: src/engine/client/cl_main.c:1258
-#, c-format
-msgid "ERROR: couldn't open %s for writing.\n"
-msgstr "ПОМИЛКА: неможливо відкрити %s для зчитування.\n"
-
-#: src/engine/client/cl_main.c:1274
-msgid "Stopped recording\n"
-msgstr "Запис зупинено\n"
-
-#: src/engine/client/cl_main.c:1321
-msgid "playdemo <demoname>\n"
-msgstr "playdemo <ім’я демо-файлу>\n"
-
-#: src/engine/client/cl_main.c:1686
-msgid "Mumble: Unlinking from Mumble application\n"
-msgstr "Mumble: Від’єднуюсь від застосунку Mumble\n"
-
-#: src/engine/client/cl_main.c:1821
-#, c-format
-msgid "Unknown command \"%s\"\n"
-msgstr "Невідома команда \"%s\"\n"
-
-#: src/engine/client/cl_main.c:1856
-msgid "Couldn't resolve master address\n"
-msgstr "Не вдалося вирізнити адресу мастер-серверу\n"
-
-#: src/engine/client/cl_main.c:1898 src/engine/client/cl_main.c:2429
-#: src/engine/client/cl_main.c:5678
-msgid "Not connected to a server.\n"
-msgstr "Не з’єднано з сервером.\n"
-
-#: src/engine/client/cl_main.c:1934
-msgid "Can't reconnect to localhost.\n"
-msgstr "Не можу перепід’єднатись до localhost.\n"
-
-#: src/engine/client/cl_main.c:1957
-msgid "usage: connect [-4|-6] server\n"
-msgstr "використання: connect [-4|-6] <сервер>\n"
-
-#: src/engine/client/cl_main.c:1977 src/engine/client/cl_main.c:5498
-#: src/engine/client/cl_main.c:5706
-msgid "warning: only -4 or -6 as address type understood.\n"
-msgstr "увага: тільки -4 або -6 сприймаються як тип адреси.\n"
-
-#: src/engine/client/cl_main.c:2032
-msgid "Bad server address\n"
-msgstr "Погана адреса серверу\n"
-
-#: src/engine/client/cl_main.c:2093
-msgid ""
-"You must set 'rconPassword' before\n"
-"issuing an rcon command.\n"
-msgstr ""
-"Ви маєте встановити 'rconPassword' перед\n"
-"виконанням rcon-команд.\n"
-
-#: src/engine/client/cl_main.c:2120
-msgid ""
-"Connect to a server or set the 'rconAddress' cvar to issue rcon commands\n"
-msgstr "З’єднайтесь із сервером чи встановіть змінну «rconAddress» для видавання "
-"rcon-команд\n"
-
-#: src/engine/client/cl_main.c:2197
-msgid "Daemon RSA public-key file not found, regenerating\n"
-msgstr "Файл відкритого ключу RSA не знайдено, відновлюю\n"
-
-#: src/engine/client/cl_main.c:2207
-msgid "Invalid RSA keypair in RSAKey, regenerating\n"
-msgstr "Недійсна пара RSA-ключів, відновлюю\n"
-
-#: src/engine/client/cl_main.c:2213
-msgid "Daemon RSA public-key found.\n"
-msgstr "Відкритий RSA-ключ Daemon знайдено.\n"
-
-#: src/engine/client/cl_main.c:2242
-#, c-format
-msgid ""
-"Daemon RSA public-key could not open %s for write, RSA support will be "
-"disabled"
-msgstr ""
-"Daemon не вдалося відкрити %s для запису відкритого RSA-ключу, підтримку RSA "
-"буде вимкнено"
-
-#: src/engine/client/cl_main.c:2249
-msgid "Daemon RSA public-key generated\n"
-msgstr "Відкритий ключ RSA створено\n"
-
-#: src/engine/client/cl_main.c:2488
-msgid "Not recording a wav file\n"
-msgstr "Не записую wav-файл\n"
-
-#: src/engine/client/cl_main.c:2516
-msgid "The video command can only be used when playing back demos\n"
-msgstr "Команда «video» може бути використана лише під час програвання демо\n"
-
-#: src/engine/client/cl_main.c:2552
-msgid "ERROR: no free file names to create video\n"
-msgstr "ПОМИЛКА: немає вільних імен файлів для створення відео\n"
-
-#: src/engine/client/cl_main.c:3625 src/engine/client/cl_main.c:3634
-#, c-format
-msgid "Download failure while getting '%s'\n"
-msgstr "Помилка завантаження під час отримання '%s'\n"
-
-#: src/engine/client/cl_main.c:3659
-#, c-format
-msgid ""
-"WARNING: file %s obtained through download redirect has wrong checksum\n"
-"         this likely means the server configuration is broken\n"
-msgstr ""
-"УВАГА: файл %s, отриманий з переадресованого завантаження має невірну "
-"контрольну суму\n"
-"         скоріше за все, це означає що конфігурація серверу порушена\n"
-
-#: src/engine/client/cl_main.c:3670
-#, c-format
-msgid "bad checksums: %s\n"
-msgstr "неправильні контрольні суми: %s\n"
-
-#: src/engine/client/cl_main.c:4048
-msgid "----- Initializing Renderer ----\n"
-msgstr "----- Ініціалізую рендерер ----\n"
-
-#: src/engine/client/cl_main.c:4278
-msgid "Calling GetRefAPI…\n"
-msgstr "Викликаю GetRefAPI…\n"
-
-#: src/engine/client/cl_main.c:4328
-msgid "----- Client Initialization -----\n"
-msgstr "----- Ініціалізація клієнта -----\n"
-
-#: src/engine/client/cl_main.c:4431 src/engine/qcommon/translation.cpp:114
-msgid "~ ` 0x7e 0x60"
-msgstr "~ ` 0x7e 0x60"
-
-#: src/engine/client/cl_main.c:4490
-msgid ""
-"Your network rate is too slow for VoIP.\n"
-"Set 'Data Rate' to 'LAN/Cable/xDSL' in 'Setup/System/Network' and restart.\n"
-"Until then, VoIP is disabled.\n"
-msgstr ""
-"Швидкість вашого з’єднання занадто мала для VoIP.\n"
-"Оберіть «LAN/Кабель/xDSL» у «Налаштування/Системні/Мережа» та "
-"перезапустіться.\n"
-"До того часу VoIP відключено.\n"
-
-#: src/engine/client/cl_main.c:4563
-msgid "----- Client Initialization Complete -----\n"
-msgstr "----- Ініціалізація клієнта виконана -----\n"
-
-#: src/engine/client/cl_main.c:4582
-msgid "----- CL_Shutdown -----\n"
-msgstr "----- CL_Shutdown -----\n"
-
-#: src/engine/client/cl_main.c:5002
-msgid "Server settings:\n"
-msgstr "Налаштування сервера:\n"
-
-#: src/engine/client/cl_main.c:5052
-msgid ""
-"\n"
-"Players:\n"
-msgstr ""
-"\n"
-"Гравці:\n"
-
-#: src/engine/client/cl_main.c:5053
-msgid "num: score: ping: name:\n"
-msgstr "№: рахунок: пінґ: ім’я:\n"
-
-#: src/engine/client/cl_main.c:5109
-msgid "Scanning for servers on the local network…\n"
-msgstr "Шукаю сервери у локальній мережі…\n"
-
-#: src/engine/client/cl_main.c:5162
-#, c-format
-msgid "usage: globalservers <master# 0-%d> [protocol] [keywords]\n"
-msgstr "використання: globalservers <№мастеру 0-%d> [протокол] [ключові слова]\n"
-
-#: src/engine/client/cl_main.c:5228
-#, c-format
-msgid "usage: globalservers <master# 0-%d> <protocol> [keywords]\n"
-msgstr "використання: globalservers <№мастеру 0-%d> <протокол> [ключові слова]\n"
-
-#: src/engine/client/cl_main.c:5237
-msgid "CL_GlobalServers_f: Error: No master server address given.\n"
-msgstr "CL_GlobalServers_f: Error: Не надано адресу мастер-серверу.\n"
-
-#: src/engine/client/cl_main.c:5248
-#, c-format
-msgid "CL_GlobalServers_f: Error: could not resolve address of master %s\n"
-msgstr "CL_GlobalServers_f: Error: не вдалося вирізнити адресу мастер-серверу %s\n"
-
-#: src/engine/client/cl_main.c:5256
-#, c-format
-msgid "Requesting servers from master %s…\n"
-msgstr "Запитую сервери у мастер-серверу %s…\n"
-
-#: src/engine/client/cl_main.c:5478
-msgid "usage: ping [-4|-6] server\n"
-msgstr "використання: ping [-4|-6] сервер\n"
-
-#: src/engine/client/cl_main.c:5679
-msgid "usage: serverstatus [-4|-6] server\n"
-msgstr "використання: serverstatus [-4|-6] сервер\n"
-
-#: src/engine/qcommon/vm.c:1208
-msgid "Registered virtual machines:\n"
-msgstr "Зареєстровано віртуальних машин:\n"
-
-#: src/engine/qcommon/dl_main.c:128
-msgid "Replace existing download target file\n"
-msgstr "Замініть існуючий цільовий файл завантаження\n"
-
-#: src/engine/qcommon/dl_main.c:186 src/engine/qcommon/dl_main_curl.c:87
-msgid "Client download subsystem initialized\n"
-msgstr "Підсистема завантаження клієнту ініціалізована\n"
+#: src/engine/client/snd_main.c:454
+msgid "Initializing Sound"
+msgstr "Ініціалізую звук"
+
+#: src/engine/client/snd_mem.c:113
+msgid "Sound memory manager started\n"
+msgstr "Керування звуковою пам’яттю запущено\n"
 
 #: src/engine/qcommon/cmd.c:196
 msgid "Cbuf_AddText: overflow\n"
@@ -1028,128 +689,138 @@ msgstr "Cbuf_AddText: переповнення\n"
 msgid "Cbuf_InsertText overflowed\n"
 msgstr "Cbuf_InsertText — переповнення\n"
 
-#: src/engine/qcommon/cmd.c:446
-msgid "exec <filename> (args) : execute a script file\n"
-msgstr "exec <ім'я файлу> (аргументи) : виконати скриптовий файл\n"
+#: src/engine/qcommon/cmd.c:485
+msgid "<filename> [<arguments>…]"
+msgstr "<ім’я файлу> [<аргументи>…]"
 
-#: src/engine/qcommon/cmd.c:450
-#, c-format
-msgid "execing %s\n"
-msgstr "виконую %s\n"
+#: src/engine/qcommon/cmd.c:485
+msgid "execute a script file without notification, a shortcut for exec -q"
+msgstr "виконати скрипт без оголошення, скорочення для exec -q"
 
-#: src/engine/qcommon/cmd.c:479
+#: src/engine/qcommon/cmd.c:489
+msgid "[-q|-f|-s] <filename> [<arguments>…]"
+msgstr "[-q|-f|-s] <ім’я файлу> [<аргументи>…]"
+
+#: src/engine/qcommon/cmd.c:489
+msgid "execute a script file."
+msgstr "виконати скрипт."
+
+#: src/engine/qcommon/cmd.c:532
 #, c-format
 msgid "couldn't exec %s\n"
 msgstr "не вдалося виконати %s\n"
 
-#: src/engine/qcommon/cmd.c:496
-msgid "vstr <variablename> : execute a variable command\n"
-msgstr "vstr <ім’я змінної> : виконати команду(и) зі змінної\n"
+#: src/engine/qcommon/cmd.c:539
+#, c-format
+msgid "execing %s\n"
+msgstr "виконую %s\n"
 
-#: src/engine/qcommon/cmd.c:510
+#: src/engine/qcommon/cmd.c:556
+msgid "<variablename>"
+msgstr "<назва змінної>"
+
+#: src/engine/qcommon/cmd.c:556
+msgid "execute a variable command"
+msgstr "виконати змінну команду"
+
+#: src/engine/qcommon/cmd.c:570
 msgid "not supported in the dedicated server"
 msgstr "не підтримується у виділеному сервері"
 
-#: src/engine/qcommon/cmd.c:512
+#: src/engine/qcommon/cmd.c:572
 msgid "shift, ctrl, alt, command/cmd, mode, super; ! negates; e.g. shift,!alt"
 msgstr "shift, ctrl, alt, command/cmd, mode, super; ! negates; e.g. shift,!alt"
 
 # відчуваю граматичний фейл
-#: src/engine/qcommon/cmd.c:583
+#: src/engine/qcommon/cmd.c:643
 #, c-format
 msgid "can't have %s both pressed and not pressed\n"
 msgstr "%s не може бути одночасно натисненою та не натисненою\n"
 
-#: src/engine/qcommon/cmd.c:604
+#: src/engine/qcommon/cmd.c:664
 #, c-format
 msgid "unknown modifier key name in \"%s\"\n"
 msgstr "невідома назва клавіші-модифікатора у \"%s\"\n"
 
-#: src/engine/qcommon/cmd.c:668
-msgid "modcase <modifiers> <command> [<modifiers> <command>] … [<command>]\n"
+#: src/engine/qcommon/cmd.c:728
+#, fuzzy
+msgid "<modifiers> <command> [<modifiers> <command>] … [<command>]"
 msgstr "modcase <модифікатори> <команда> [<модифікатори> <команда>] … [<команда>]\n"
 
-#: src/engine/qcommon/cmd.c:756
+#: src/engine/qcommon/cmd.c:817
 msgid "if <modifiers>… is not supported on the server — assuming true.\n"
 msgstr "if <модифікатори>… не підтримується сервером — припускаю вірність.\n"
 
-#: src/engine/qcommon/cmd.c:800
-msgid "invalid operator in if command. valid operators are = != < > >= <=\n"
-msgstr "неправильний оператор у команді «if». правильними операторами є = != < > >= "
-"<=\n"
+#: src/engine/qcommon/cmd.c:854
+msgid ""
+"invalid relation operator in if command. valid relation operators are = != ≠ "
+"< > ≥ >= ≤ <= eq ne in !in\n"
+msgstr ""
 
-#: src/engine/qcommon/cmd.c:807
+#: src/engine/qcommon/cmd.c:861
 #, c-format
 msgid ""
-"if <value1> <operator> <value2> <cmdthen> (<cmdelse>) : compares the first "
-"two values and executes <cmdthen> if true, <cmdelse> if false\n"
+"if <number|string> <relation> <number|string> <cmdthen> (<cmdelse>) : "
+"compares two numbers or two strings and executes <cmdthen> if true, "
+"<cmdelse> if false\n"
 "if <modifiers> <cmdthen> (<cmdelse>) : check if modifiers are (not) pressed\n"
 "-- modifiers are %s\n"
 "-- commands are cvar names unless prefixed with / or \\\n"
 msgstr ""
-"if <значення 1> <оператор> <значення 2> <наслідок> (<альтернатива>) : "
-"порівнює два значення й виконує <наслідок> якщо істинно, <альтернатива> якщо "
-"хибно\n"
-"if <модифікатори> <наслідок> (<альтернатива>) : перевірити чи модифікатори "
-"(не) натиснені\n"
-"-- модифікаторами є %s\n"
-"-- командами є назви змінних, якщо їм не передує / або \\\n"
 
-#: src/engine/qcommon/cmd.c:857 src/engine/qcommon/cmd.c:891
-#: src/engine/qcommon/cmd.c:926 src/engine/qcommon/cmd.c:932
-msgid ""
-"math <variableToSet> = <value1> <operator> <value2>\n"
-"math <variableToSet> <operator> <value1>\n"
-"math <variableToSet> ++\n"
-"math <variableToSet> --\n"
-"valid operators are + - * /\n"
+#: src/engine/qcommon/cmd.c:886
+msgid "<variableToSet> = <number> <operator> <number>"
 msgstr ""
-"math <змінна результату> = <значення1> <оператор> <значення2>\n"
-"math <змінна результату> <оператор> <значення1>\n"
-"math <змінна результату> ++\n"
-"math <змінна результату> --\n"
-"вірними операторами є + - * /\n"
 
-#: src/engine/qcommon/cmd.c:883 src/engine/qcommon/cmd.c:918
-#: src/engine/qcommon/cmd.c:1061
-msgid "Cannot divide by 0!\n"
+#: src/engine/qcommon/cmd.c:887
+msgid "<variableToSet> <operator> <number>"
+msgstr ""
+
+#: src/engine/qcommon/cmd.c:888
+msgid "<variableToSet> (++|--)"
+msgstr ""
+
+#: src/engine/qcommon/cmd.c:890
+msgid "valid operators: + - × * ÷ /\n"
+msgstr ""
+
+#: src/engine/qcommon/cmd.c:949 src/engine/qcommon/cmd.c:984
+#: src/engine/qcommon/cmd.c:1071
+#, fuzzy
+msgid "Cannot divide by 0!"
 msgstr "Не можу поділити на 0!\n"
 
-#: src/engine/qcommon/cmd.c:980
-msgid "invalid operator in strcmp command. valid operators are = !=\n"
-msgstr "неправильний оператор у команді strcmp. дозволеними операторами є = !=\n"
+#: src/engine/qcommon/cmd.c:1017
+msgid "<variableToSet> <variable1> … <variableN>"
+msgstr ""
 
-#: src/engine/qcommon/cmd.c:986
+#: src/engine/qcommon/cmd.c:1017
 msgid ""
-"strcmp <string1> <operator> <string2> <cmdthen> (<cmdelse>) : compares the "
-"first two strings and executes <cmdthen> if true, <cmdelse> if false\n"
-msgstr "strcmp <рядок 1> <оператор> <рядок 2> <наслідок> (<альтернатива>) : порівнює "
-"два рядки й виконує <наслідок> якщо істинно, <альтернатива> якщо хибно\n"
+"concatenates variable1 to variableN and sets the result to variableToSet"
+msgstr ""
 
-#: src/engine/qcommon/cmd.c:1007
+#: src/engine/qcommon/cmd.c:1044 src/engine/qcommon/cmd.c:1088
+msgid "<number> <operator> <number>"
+msgstr ""
+
+#: src/engine/qcommon/cmd.c:1044 src/engine/qcommon/cmd.c:1088
 msgid ""
-"concat <variableToSet> <variable1> … <variableN> : concatenates variable1 to "
-"variableN and sets the result to variableToSet\n"
-msgstr "concat <змінна результату> <змінна 1> … <змінна N> : виводить продукт "
-"сполучення змінних від 1-ої до N-ної у змінну результату\n"
+"Calculator.\n"
+"Accepted operators: +, -, /, */x\n"
+msgstr ""
 
-#: src/engine/qcommon/cmd.c:1034 src/engine/qcommon/cmd.c:1077
-msgid "calc <number> <function> <number>, accepted functions: +, -, /, */x\n"
-msgstr "calc <число> <функція> <число>, прийнятні функції: +, -, /, */x\n"
+#: src/engine/qcommon/cmd.c:1118
+msgid "<name> (command)"
+msgstr ""
 
-#: src/engine/qcommon/cmd.c:1107
+#: src/engine/qcommon/cmd.c:1118
 msgid ""
-"undelay <name> (command)\n"
 "removes all commands with <name> in them.\n"
 "if (command) is specified, the removal will be limited only to delays whose "
-"commands contain (command).\n"
+"commands contain (command)."
 msgstr ""
-"undelay <назва> (команда)\n"
-"вилучає всі затримані команди з <назва> у них.\n"
-"якщо (команда) вказана, вилучення обмежиться лише затримками, команди яких "
-"містять (команда).\n"
 
-#: src/engine/qcommon/cmd.c:1156
+#: src/engine/qcommon/cmd.c:1168
 msgid ""
 "delay (name) <delay in milliseconds> <command>\n"
 "delay <delay in frames>f <command>\n"
@@ -1159,57 +830,68 @@ msgstr ""
 "delay <затримка у кадрах>f <команда>\n"
 "виконує <команда> після затримки\n"
 
-#: src/engine/qcommon/cmd.c:1178
+#: src/engine/qcommon/cmd.c:1190
 msgid "delay: the delay must be a positive integer\n"
 msgstr "delay: затримка має бути додатнім цілим\n"
 
-#: src/engine/qcommon/cmd.c:1194
-msgid "WARNING: Maximum amount of delayed commands reached\n"
+#: src/engine/qcommon/cmd.c:1206
+#, fuzzy
+msgid "Maximum amount of delayed commands reached."
 msgstr "УВАГА: Досягнуто максимальної кількості затриманих команд\n"
 
-#: src/engine/qcommon/cmd.c:1237
-msgid "random <variableToSet> <value1> <value2>\n"
-msgstr "random <змінна результату> <значення 1> <значення 2>\n"
+#: src/engine/qcommon/cmd.c:1351
+#, c-format
+msgid "%i aliases\n"
+msgstr ""
 
-# Вважаю поточний переклад досить ідіоматичним. «Псевдонім», як на мене, тут не підходить.
-#: src/engine/qcommon/cmd.c:1381
-msgid "unalias <name> : delete an alias\n"
-msgstr "unalias <назва> : вилучити альтернативну команду\n"
+#: src/engine/qcommon/cmd.c:1393 src/engine/qcommon/cmd.c:1440
+msgid "<name>"
+msgstr ""
 
-# Вважаю поточний переклад досить ідіоматичним. «Псевдонім», як на мене, тут не підходить.
-#: src/engine/qcommon/cmd.c:1428
-msgid "alias <name> : show an alias\n"
-msgstr "alias <назва> : показати значення альтернативної команди\n"
+#: src/engine/qcommon/cmd.c:1393
+msgid "delete an alias"
+msgstr ""
 
-# Вважаю поточний переклад досить ідіоматичним. «Псевдонім», як на мене, тут не підходить.
-#: src/engine/qcommon/cmd.c:1429
-msgid "alias <name> <exec> : create an alias\n"
-msgstr "alias <назва> <послідовність для виконання> : створити альтернативну команду\n"
+#: src/engine/qcommon/cmd.c:1440
+msgid "show an alias"
+msgstr ""
 
-#: src/engine/qcommon/cmd.c:1452
+#: src/engine/qcommon/cmd.c:1441
+msgid "<name> <exec>"
+msgstr ""
+
+#: src/engine/qcommon/cmd.c:1441
+msgid "create an alias"
+msgstr ""
+
+#: src/engine/qcommon/cmd.c:1464
 msgid "Can't make an alias to itself\n"
 msgstr "Не можна створювати рекурсивні альтернативні команди\n"
 
-#: src/engine/qcommon/cmd.c:1461
+#: src/engine/qcommon/cmd.c:1473
 msgid "Can't override a builtin function with an alias\n"
 msgstr "Неможливо перевизначити вбудовану функцію псевдонімом\n"
 
-#: src/engine/qcommon/cmd.c:1487
+#: src/engine/qcommon/cmd.c:1498
 #, c-format
 msgid "Alias %s does not exist\n"
 msgstr "Альтернативна команда %s не існує\n"
 
-#: src/engine/qcommon/cmd.c:2233
+#: src/engine/qcommon/cmd.c:1579 src/engine/qcommon/cmd.c:1583
+msgid "usage"
+msgstr ""
+
+#: src/engine/qcommon/cmd.c:2269
 #, c-format
 msgid "Cmd_AddCommand: %s already defined\n"
 msgstr "Cmd_AddCommand: %s вже означено\n"
 
-#: src/engine/qcommon/cmd.c:2305
+#: src/engine/qcommon/cmd.c:2341
 #, c-format
 msgid "Cmd_AddButtonCommand: +/-%s already defined\n"
 msgstr "Cmd_AddButtonCommand: +/-%s вже означено\n"
 
-#: src/engine/qcommon/cmd.c:2512
+#: src/engine/qcommon/cmd.c:2549
 #, c-format
 msgid "%i commands\n"
 msgstr "%i команд\n"
@@ -1218,262 +900,1001 @@ msgstr "%i команд\n"
 msgid "map features per poly collision detection\n"
 msgstr "map features per poly collision detection\n"
 
-#: src/engine/qcommon/cvar.c:486
+#: src/engine/qcommon/cm_patch.c:415
+msgid "WARNING: CM_GridPlane unresolvable\n"
+msgstr "WARNING: CM_GridPlane unresolvable\n"
+
+#: src/engine/qcommon/common.c:252
+#, c-format
+msgid "logfile opened on %s\n"
+msgstr "журнал відкрито %s\n"
+
+#: src/engine/qcommon/common.c:289
+#, c-format
+msgid "^3Warning: ^7%s\n"
+msgstr ""
+
+#: src/engine/qcommon/common.c:292
+#, c-format
+msgid "^1Error: ^7%s\n"
+msgstr ""
+
+#: src/engine/qcommon/common.c:295
+#, c-format
+msgid "Debug: %s\n"
+msgstr ""
+
+#: src/engine/qcommon/common.c:2807
+msgid "freeze <seconds>\n"
+msgstr "freeze <секунди>\n"
+
+#: src/engine/qcommon/common.c:2851
+msgid "Found high quality video and slow CPU\n"
+msgstr "Знайдено високоякісне відео та повільний ЦП\n"
+
+#: src/engine/qcommon/common.c:2857
+msgid "Found low quality video and slow CPU\n"
+msgstr "Знайдено низькоякісне відео та повільний ЦП\n"
+
+#: src/engine/qcommon/common.c:2961
+#, c-format
+#, c-format, fuzzy
+msgid "%s couldn't write %s\n"
+msgstr "Не вдалося записати %s.\n"
+
+#: src/engine/qcommon/common.c:3068
+#, c-format
+msgid ""
+"profile.pid found for profile '%s' — the system settings will revert to "
+"their defaults\n"
+msgstr ""
+
+#: src/engine/qcommon/common.c:3332 src/engine/qcommon/common.c:4509
+#, c-format
+msgid "Couldn't write %s.\n"
+msgstr "Не вдалося записати %s.\n"
+
+#: src/engine/qcommon/common.c:3406 src/engine/qcommon/common.c:3430
+msgid "<filename>"
+msgstr ""
+
+#: src/engine/qcommon/common.c:3412 src/engine/qcommon/common.c:3436
+#, c-format
+msgid "Writing %s.\n"
+msgstr "Записую %s.\n"
+
+#: src/engine/qcommon/common.c:3695
+#, fuzzy
+msgid "watchdog will trigger in 4 seconds"
+msgstr "УВАГА: вартівник спрацює через 4 секунди\n"
+
+#: src/engine/qcommon/common.c:3700
+msgid "Idle server with no map — triggering watchdog\n"
+msgstr "Бездіяльний сервер без мапи — запускаю вартівник\n"
+
+#: src/engine/qcommon/common.c:4460
+#, c-format
+msgid "Couldn't read %s.\n"
+msgstr "Неможливо прочитати %s.\n"
+
+#: src/engine/qcommon/cvar.c:497
 #, c-format
 msgid "Using %s instead of %s\n"
 msgstr "Використовую %s замість %s\n"
 
-#: src/engine/qcommon/cvar.c:514 src/engine/qcommon/cvar.c:940
+#: src/engine/qcommon/cvar.c:525 src/engine/qcommon/cvar.c:979
 #, c-format
 msgid "%s is unsafe. Check com_crashed.\n"
 msgstr "%s небезпечна. Перевірте com_crashed.\n"
 
-#: src/engine/qcommon/cvar.c:520
+#: src/engine/qcommon/cvar.c:531
 #, c-format
 msgid "%s is read only.\n"
 msgstr "%s доступна тільки для читання.\n"
 
-#: src/engine/qcommon/cvar.c:526
+#: src/engine/qcommon/cvar.c:537
 #, c-format
 msgid "%s is write protected.\n"
 msgstr "%s захищена від запису.\n"
 
-#: src/engine/qcommon/cvar.c:532
+#: src/engine/qcommon/cvar.c:543
 #, c-format
 msgid "%s is cheat protected.\n"
 msgstr "%s є чит-захищеною.\n"
 
-#: src/engine/qcommon/cvar.c:538
+#: src/engine/qcommon/cvar.c:549
 #, c-format
 msgid "%s will be changed upon recompiling shaders.\n"
 msgstr "%s буде змінено після перекомпіляції шейдерів.\n"
 
-#: src/engine/qcommon/cvar.c:561
+#: src/engine/qcommon/cvar.c:572
 #, c-format
 msgid "%s will be changed upon restarting.\n"
 msgstr "%s буде змінено після перезапуску.\n"
 
-#: src/engine/qcommon/cvar.c:792
+#: src/engine/qcommon/cvar.c:803
 #, c-format
-msgid "\"%s\" is:\"%s"
-msgstr "\"%s\" є:\"%s"
+msgid "\"%s\" is \"%s^7\" default: \"%s^7\"\n"
+msgstr ""
 
-#: src/engine/qcommon/cvar.c:796
+#: src/engine/qcommon/cvar.c:807
 #, c-format
 msgid "latched: \"%s\"\n"
 msgstr "зафіксовано: \"%s\"\n"
 
-#: src/engine/qcommon/cvar.c:824
-msgid "usage: toggle <variable> [<value> …]\n"
-msgstr "використання: toggle <змінна> [<значення> …]\n"
+#: src/engine/qcommon/cvar.c:890
+msgid "[+|-] <variable> [<value>…]"
+msgstr ""
 
-#: src/engine/qcommon/cvar.c:867
-msgid "usage: cycle <variable> <start> <end> [step]\n"
-msgstr "використання: cycle <змінна> <початок> <кінець> [крок]\n"
+#: src/engine/qcommon/cvar.c:906
+msgid "<variable> <start> <end> [<step>]"
+msgstr ""
 
-#: src/engine/qcommon/cvar.c:928
-msgid "usage: set <variable> <value> [unsafe]\n"
-msgstr "використання: set <змінна> <значення> [небезпечно]\n"
+#: src/engine/qcommon/cvar.c:967 src/engine/qcommon/cvar.c:1034
+msgid "<variable> <value> [unsafe]"
+msgstr ""
 
-#: src/engine/qcommon/cvar.c:1002
-msgid "usage: setu <variable> <value> [unsafe]\n"
-msgstr "використання: setu <змінна> <значення> [небезпечно]\n"
+#: src/engine/qcommon/cvar.c:1094
+msgid "<variable>"
+msgstr ""
 
-#: src/engine/qcommon/cvar.c:1030
-msgid "usage: sets <variable> <value> [unsafe]\n"
-msgstr "використання: sets <змінна> <значення> [небезпечно]\n"
+#: src/engine/qcommon/dl_main.c:128
+msgid "Replace existing download target file\n"
+msgstr "Замініть існуючий цільовий файл завантаження\n"
 
-#: src/engine/qcommon/cvar.c:1058
-msgid "usage: seta <variable> <value> [unsafe]\n"
-msgstr "використання: seta <змінна> <значення> [небезпечно]\n"
+#: src/engine/qcommon/files.c:3036
+msgid "<directory> [<extension>]"
+msgstr ""
 
-#: src/engine/qcommon/cvar.c:1082
-msgid "usage: reset <variable>\n"
-msgstr "використання: reset <змінна>\n"
-
-#: src/engine/qcommon/files.c:3052
-msgid "usage: dir <directory> [extension]\n"
-msgstr "використання: dir <тека> [розширення]\n"
-
-#: src/engine/qcommon/files.c:3067
+#: src/engine/qcommon/files.c:3051
 #, c-format
 msgid "Directory of %s %s\n"
 msgstr "Директорія %s %s\n"
 
-#: src/engine/qcommon/files.c:3200
-msgid "usage: fdir <filter>\n"
-msgstr "використання: fdir <фільтр>\n"
+#: src/engine/qcommon/files.c:3203
+msgid "<filter>"
+msgstr ""
 
-#: src/engine/qcommon/files.c:3201
+#: src/engine/qcommon/files.c:3204
 msgid "example: fdir *q3dm*.bsp\n"
 msgstr "приклад: fdir *q3dm*.bsp\n"
 
-#: src/engine/qcommon/files.c:3219
+#: src/engine/qcommon/files.c:3222
 #, c-format
 msgid "%d files listed\n"
 msgstr "%d файлів перераховано\n"
 
-#: src/engine/qcommon/files.c:3241
-#, c-format
-msgid "%s (%i files)\n"
-msgstr "%s (%i файлів)\n"
-
-#: src/engine/qcommon/files.c:3294
-msgid "Usage: which <file>\n"
-msgstr "використання: which <файл>\n"
+#: src/engine/qcommon/files.c:3297
+msgid "<file>"
+msgstr ""
 
 # Контекст: файл з pak-архіву
-#: src/engine/qcommon/files.c:3325
+#: src/engine/qcommon/files.c:3328
 #, c-format
 msgid "File \"%s\" found in \"%s\"\n"
 msgstr "Файл \"%s\" знайдено у \"%s\"\n"
 
 # Контекст: окремий файл
-#: src/engine/qcommon/files.c:3348
+#: src/engine/qcommon/files.c:3351
 #, c-format
 msgid "File \"%s\" found at \"%s\"\n"
 msgstr "Файл \"%s\" знайдено як \"%s\"\n"
 
-#: src/engine/qcommon/files.c:3353
+#: src/engine/qcommon/files.c:3356
 #, c-format
 msgid "File not found: \"%s\"\n"
 msgstr "Файл не знайдено: \"%s\"\n"
 
-#: src/engine/qcommon/cm_patch.c:415
-msgid "WARNING: CM_GridPlane unresolvable\n"
-msgstr "WARNING: CM_GridPlane unresolvable\n"
-
-#: src/engine/qcommon/common.c:251
+#: src/engine/qcommon/net_ip.c:1057
 #, c-format
-msgid "logfile opened on %s\n"
-msgstr "журнал відкрито %s\n"
-
-#: src/engine/qcommon/common.c:386
-#, c-format
-msgid ""
-"********************\n"
-"ERROR: %s\n"
-"********************\n"
+msgid "Opening IP socket: %s:%s\n"
 msgstr ""
-"********************\n"
-"ПОМИЛКА: %s\n"
-"********************\n"
-
-#: src/engine/qcommon/common.c:2919
-msgid "freeze <seconds>\n"
-msgstr "freeze <секунди>\n"
-
-#: src/engine/qcommon/common.c:2963
-msgid "Found high quality video and slow CPU\n"
-msgstr "Знайдено високоякісне відео та повільний ЦП\n"
-
-#: src/engine/qcommon/common.c:2969
-msgid "Found low quality video and slow CPU\n"
-msgstr "Знайдено низькоякісне відео та повільний ЦП\n"
-
-#: src/engine/qcommon/common.c:3182
-#, c-format
-msgid ""
-"^3WARNING: profile.pid found for profile '%s' — the system settings will "
-"revert to their defaults\n"
-msgstr "^3УВАГА; profile.pid знайдено для профілю '%s' — системні налаштування буде "
-"скинуто на типові\n"
-
-#: src/engine/qcommon/common.c:3192
-#, c-format
-msgid "^3WARNING: couldn't write profiles/%s/profile.pid\n"
-msgstr "^3УВАГА: не вдалося записати profiles/%s/profile.pid\n"
-
-#: src/engine/qcommon/common.c:3437 src/engine/qcommon/common.c:4526
-#, c-format
-msgid "Couldn't write %s.\n"
-msgstr "Не вдалося записати %s.\n"
-
-#: src/engine/qcommon/common.c:3495
-msgid "Usage: writeconfig <filename>\n"
-msgstr "Використання: writeconfig <ім’я файлу>\n"
-
-#: src/engine/qcommon/common.c:3501
-#, c-format
-msgid "Writing %s.\n"
-msgstr "Записую %s.\n"
-
-#: src/engine/qcommon/common.c:3748
-msgid "WARNING: watchdog will trigger in 4 seconds\n"
-msgstr "УВАГА: вартівник спрацює через 4 секунди\n"
-
-#: src/engine/qcommon/common.c:3753
-msgid "Idle server with no map — triggering watchdog\n"
-msgstr "Бездіяльний сервер без мапи — запускаю вартівник\n"
-
-#: src/engine/qcommon/common.c:4477
-#, c-format
-msgid "Couldn't read %s.\n"
-msgstr "Неможливо прочитати %s.\n"
-
-#: src/engine/qcommon/translation.cpp:93
-#, c-format
-msgid ""
-"^3WARNING:^7 Language \"%s\" (%s) not found. Default to \"English\" (en)\n"
-msgstr "^3УВАГА:^7 Мову \"%s\" (%s) не знайдено. Повертаюсь до типової \"English\" (en)\n"
-
-#: src/engine/qcommon/translation.cpp:94
-msgid "Unknown Language"
-msgstr "Невідома мова"
-
-#: src/engine/qcommon/translation.cpp:108
-#, c-format
-msgid "Switched language to %s\n"
-msgstr "Мову змінено на %s\n"
-
-#: src/engine/qcommon/translation.cpp:170
-#, c-format
-msgid "^1ERROR: Could not open client translation: %s\n"
-msgstr "^1ПОМИЛКА: Неможливо відкрити переклад клієнту: %s\n"
-
-#: src/engine/qcommon/translation.cpp:182
-#, c-format
-msgid "^1ERROR: Could not open game translation: %s\n"
-msgstr "^1ПОМИЛКА: Неможливо відкрити переклад гри: %s\n"
-
-#: src/engine/qcommon/translation.cpp:196
-#, c-format
-msgid "Loaded %lu language(s)\n"
-msgstr "Завантажено %lu мову(и)\n"
-
-#: src/engine/qcommon/net_ip.c:1055
-#, c-format
-msgid "Opening IP socket: %s:%i\n"
-msgstr "Відкриваю IP-сокет: %s:%i\n"
-
-#: src/engine/qcommon/net_ip.c:1059
-#, c-format
-msgid "Opening IP socket: 0.0.0.0:%i\n"
-msgstr "Відкриваю IP-сокет: 0.0.0.0:%i\n"
-
-#: src/engine/qcommon/net_ip.c:1137
-#, c-format
-msgid "Opening IP6 socket: [%s]:%i\n"
-msgstr "Відкриваю IP6-сокет: [%s]:%i\n"
 
 #: src/engine/qcommon/net_ip.c:1141
 #, c-format
-msgid "Opening IP6 socket: %s:%i\n"
-msgstr "Відкриваю IP6-сокет: %s:%i\n"
+msgid "Opening IP6 socket: %s%s%s:%s\n"
+msgstr ""
 
-#: src/engine/qcommon/net_ip.c:1146
-#, c-format
-msgid "Opening IP6 socket: [::]:%i\n"
-msgstr "Відкриваю IP6-сокет: [::]:%i\n"
-
-#: src/engine/qcommon/net_ip.c:1345
+#: src/engine/qcommon/net_ip.c:1343
 msgid "Opening connection to SOCKS server.\n"
 msgstr "Відкриваю з’єднання з SOCKS-сервером.\n"
 
-#: src/engine/qcommon/net_ip.c:1635
+#: src/engine/qcommon/net_ip.c:1633
 #, c-format
 msgid "Hostname: %s\n"
 msgstr "Ім’я вузлу: %s\n"
+
+#: src/engine/qcommon/translation.cpp:260
+#, c-format
+msgid "Set language to %s\n"
+msgstr "Мову змінено на %s\n"
+
+#: src/engine/qcommon/translation.cpp:340
+#, c-format
+#, c-format, fuzzy
+msgid "Loaded %u language\n"
+msgid_plural "Loaded %u languages\n"
+msgstr[0] "Завантажено %lu мову(и)\n"
+msgstr[1] ""
+msgstr[2] ""
+
+#: src/engine/qcommon/vm.c:1208
+msgid "Registered virtual machines:\n"
+msgstr "Зареєстровано віртуальних машин:\n"
+
+#: src/engine/server/sv_ccmds.c:68 src/engine/server/sv_ccmds.c:125
+msgid "No player specified.\n"
+msgstr "Не вказано гравця.\n"
+
+#: src/engine/server/sv_ccmds.c:96
+#, c-format
+msgid "Player %s is not on the server\n"
+msgstr "Гравця %s немає на сервері\n"
+
+#: src/engine/server/sv_ccmds.c:135
+#, c-format
+msgid "Bad slot number: %s\n"
+msgstr "Поганий номер слоту: %s\n"
+
+#: src/engine/server/sv_ccmds.c:144
+#, c-format
+msgid "Bad client slot: %i\n"
+msgstr "Поганий номер слоту клієнта: %i\n"
+
+#: src/engine/server/sv_ccmds.c:152
+#, c-format
+msgid "Client %i is not active\n"
+msgstr "Клієнт %i неактивний\n"
+
+#: src/engine/server/sv_ccmds.c:192
+#, c-format
+msgid "Can't find map %s\n"
+msgstr "Не можу знайти мапу %s\n"
+
+#: src/engine/server/sv_ccmds.c:255 src/engine/server/sv_ccmds.c:385
+#: src/engine/server/sv_ccmds.c:483 src/engine/server/sv_ccmds.c:503
+msgid "Server is not running.\n"
+msgstr "Сервер не запущено.\n"
+
+#: src/engine/server/sv_ccmds.c:275
+msgid "sv_maxclients variable change — restarting.\n"
+msgstr "sv_maxclients змінено — перезавантажуюсь.\n"
+
+#: src/engine/server/sv_ccmds.c:487
+msgid "Server info settings:\n"
+msgstr "Налаштування інформації серверу:\n"
+
+#: src/engine/server/sv_ccmds.c:507
+msgid "System info settings:\n"
+msgstr "Налаштування інформації системи:\n"
+
+#: src/engine/server/sv_client.c:226
+#, c-format
+msgid "Client %i connecting with %i challenge ping\n"
+msgstr "Клієнт %i під’єднується з пінґом виклику %i\n"
+
+#: src/engine/server/sv_client.c:766
+#, c-format
+msgid "clientDownload: %d : file \"%s\" completed\n"
+msgstr "clientDownload: %d : завантаження файлу \"%s\" завершено\n"
+
+#: src/engine/server/sv_client.c:815 src/engine/server/sv_client.c:839
+#, c-format
+msgid "SV_WWWDownload: unexpected wwwdl '%s' for client '%s'\n"
+msgstr "SV_WWWDownload: неочікуваний wwwdl '%s' для клієнта '%s'\n"
+
+#: src/engine/server/sv_client.c:824
+#, c-format
+#, c-format, fuzzy
+msgid "dupe wwwdl ack from client '%s'"
+msgstr "WARNING: dupe wwwdl ack from client '%s'\n"
+
+#: src/engine/server/sv_client.c:863
+#, c-format
+msgid ""
+"client '%s' reports that the redirect download for '%s' had wrong checksum.\n"
+"\tYou should check your download redirect configuration."
+msgstr ""
+
+#: src/engine/server/sv_client.c:904
+#, c-format
+msgid "clientDownload: sending client '%s' to fallback URL '%s'\n"
+msgstr "clientDownload: відправляю клієнтові '%s' запасний URL '%s'\n"
+
+#: src/engine/server/sv_client.c:1012
+#, c-format
+msgid "Redirecting client '%s' to %s\n"
+msgstr "Переадресую клієнта '%s' на %s\n"
+
+#: src/engine/server/sv_client.c:1036
+#, c-format
+#, c-format, fuzzy
+msgid "Client '%s': couldn't extract file size for %s"
+msgstr "ПОМИЛКА: Клієнт '%s': не вдалося витягнути розмір файлу для %s\n"
+
+#: src/engine/server/sv_client.c:1049
+#, c-format
+#, c-format, fuzzy
+msgid "Client '%s': falling back to regular downloading for failed file %s"
+msgstr "Клієнт '%s': повертаюсь до звичайного завантаження для невдалого файла %s\n"
+
+#: src/engine/server/sv_client.c:1060
+#, c-format
+msgid "Client '%s' is not configured for www download\n"
+msgstr "Клієнт '%s' не налаштований для www-завантаження\n"
+
+#: src/engine/server/sv_client.c:1070
+#, c-format
+msgid "clientDownload: %d : \"%s\" file not found on server\n"
+msgstr "clientDownload: %d : \"%s\" файл не знайдено на сервері\n"
+
+#: src/engine/server/sv_client.c:1136
+#, c-format
+msgid "'%s' downloading at sv_dl_maxrate (%d)\n"
+msgstr "'%s' завантажує на sv_dl_maxrate (%d)\n"
+
+#: src/engine/server/sv_client.c:1141
+#, c-format
+msgid "'%s' downloading at rate %d\n"
+msgstr "'%s' завантажує зі швидкістю %d\n"
+
+#: src/engine/server/sv_client.c:1223
+msgid "disconnected"
+msgstr ""
+
+#: src/engine/server/sv_client.c:1750
+#, c-format
+msgid "Client %s lost %i clientCommands\n"
+msgstr "Клієнт %s загубив %i клієнтських команд\n"
+
+#: src/engine/server/sv_client.c:2083
+#, c-format
+msgid "Too many VoIP packets queued for client #%d\n"
+msgstr "Занадто багато VoIP-пакетів у черзі для клієнта №%d\n"
+
+#: src/engine/server/sv_init.c:579
+msgid "Server Initialization"
+msgstr ""
+
+#: src/engine/server/sv_init.c:580
+#, c-format
+msgid "Server: %s\n"
+msgstr "Сервер: %s\n"
+
+#: src/engine/server/sv_init.c:769
+#, fuzzy
+msgid "sv_pure set but no PK3 files loaded"
+msgstr "УВАГА: встановлено sv_pure, але не завантажено PK3-файлів\n"
+
+#: src/engine/server/sv_init.c:969
+msgid "Server Shutdown"
+msgstr ""
+
+#: src/engine/server/sv_main.c:288
+#, c-format
+msgid "Resolving %s (IPv4)\n"
+msgstr "Вирізняю %s (IPv4)\n"
+
+#: src/engine/server/sv_main.c:299 src/engine/server/sv_main.c:320
+#: src/engine/server/sv_main.c:455
+#, c-format
+msgid "%s resolved to %s\n"
+msgstr "%s вирізнено як %s\n"
+
+#: src/engine/server/sv_main.c:303
+#, c-format
+msgid "%s has no IPv4 address.\n"
+msgstr "%s не має IPv4-адреси.\n"
+
+#: src/engine/server/sv_main.c:309
+#, c-format
+msgid "Resolving %s (IPv6)\n"
+msgstr "Вирізняю %s (IPv6)\n"
+
+#: src/engine/server/sv_main.c:324
+#, c-format
+msgid "%s has no IPv6 address.\n"
+msgstr "%s не має IPv6-адреси.\n"
+
+#: src/engine/server/sv_main.c:332
+#, c-format
+msgid "Couldn't resolve address: %s\n"
+msgstr "Не вдалося вирізнити адресу: %s\n"
+
+#: src/engine/server/sv_main.c:388
+#, c-format
+msgid "Sending heartbeat to %s\n"
+msgstr "Відправляю heartbeat до %s\n"
+
+#: src/engine/server/sv_main.c:440
+#, c-format
+msgid "Resolving %s\n"
+msgstr "Вирізняю %s\n"
+
+#: src/engine/server/sv_main.c:445
+#, c-format
+msgid "Couldn't resolve master address: %s\n"
+msgstr "Не вдалося вирізнити адресу мастер-серверу: %s\n"
+
+#: src/engine/server/sv_main.c:458
+#, c-format
+msgid "Sending gamestat to %s\n"
+msgstr "Відправляю gamestat до %s\n"
+
+#: src/engine/server/sv_main.c:781
+msgid "Detected flood of getinfo/getstatus connectionless packets\n"
+msgstr "Помічено флуд пакетів getinfo/getstatus без встановлення з’єднання\n"
+
+#: src/engine/server/sv_main.c:792
+#, c-format
+msgid ""
+"Possible DRDoS attack to address %i.%i.%i.%i, ignoring getinfo/getstatus "
+"connectionless packet\n"
+msgstr "Можлива DRDoS-атака на адресу %i.%i.%i.%i, ігнорую безз’єднальний пакет "
+"getinfo/getstatus\n"
+
+#: src/engine/server/sv_main.c:844
+#, c-format
+msgid ""
+"Bad rcon from %s:\n"
+"%s\n"
+msgstr ""
+"Поганий rcon від %s:\n"
+"%s\n"
+
+#: src/engine/server/sv_main.c:849
+#, c-format
+msgid ""
+"Rcon from %s:\n"
+"%s\n"
+msgstr ""
+"rcon від %s:\n"
+"%s\n"
+
+#: src/engine/server/sv_main.c:864
+msgid "No rconpassword set on the server.\n"
+msgstr "На сервері не встановлено rconpassword.\n"
+
+#: src/engine/server/sv_main.c:868
+msgid "Bad rconpassword.\n"
+msgstr "Поганий rconpassword.\n"
+
+# можливо, переповнене, бо msg - повідомлення
+#: src/engine/server/sv_snapshot.c:960
+#, c-format
+msgid "WARNING: msg overflowed for %s\n"
+msgstr "УВАГА: msg переповнении для %s\n"
+
+#, c-format
+#~ msgid "Opening IP socket: %s:%i\n"
+#~ msgstr "Відкриваю IP-сокет: %s:%i\n"
+
+#, c-format
+#~ msgid "Opening IP socket: 0.0.0.0:%i\n"
+#~ msgstr "Відкриваю IP-сокет: 0.0.0.0:%i\n"
+
+#, c-format
+#~ msgid "Opening IP6 socket: [%s]:%i\n"
+#~ msgstr "Відкриваю IP6-сокет: [%s]:%i\n"
+
+#, c-format
+#~ msgid "Opening IP6 socket: %s:%i\n"
+#~ msgstr "Відкриваю IP6-сокет: %s:%i\n"
+
+#, c-format
+#~ msgid "Opening IP6 socket: [::]:%i\n"
+#~ msgstr "Відкриваю IP6-сокет: [::]:%i\n"
+
+#~ msgid "Already recording.\n"
+#~ msgstr "Вже записую.\n"
+
+#~ msgid "You must be in a level to record.\n"
+#~ msgstr "Ви повинні бути на певній мапі для запису.\n"
+
+#~ msgid ""
+#~ "WARNING: You should set 'g_synchronousClients 1' for smoother demo "
+#~ "recording\n"
+#~ msgstr "УВАГА: Вам варто встановити 'g_synchronousClients 1' для більш плавного "
+#~ "запису демо\n"
+
+#~ msgid "ERROR: no free file names to create video\n"
+#~ msgstr "ПОМИЛКА: немає вільних імен файлів для створення відео\n"
+
+#, c-format
+#~ msgid "WARNING: dupe wwwdl ack from client '%s'\n"
+#~ msgstr "WARNING: dupe wwwdl ack from client '%s'\n"
+
+#, c-format
+#~ msgid ""
+#~ "WARNING: client '%s' reports that the redirect download for '%s' had wrong "
+#~ "checksum.\n"
+#~ msgstr "УВАГА: клієнт '%s' звітує, що перенаправлене завантаження для '%s' мало "
+#~ "неправильну контрольну суму.\n"
+
+#~ msgid "         you should check your download redirect configuration.\n"
+#~ msgstr "         Вам варто перевірити налаштування переадресації завантажень.\n"
+
+#, c-format
+#~ msgid "SV_WWWDownload: unknown wwwdl subcommand '%s' for client '%s'\n"
+#~ msgstr "SV_WWWDownload: невідома wwwdl субкоманда '%s' для клієнта '%s'\n"
+
+#, c-format
+#~ msgid "ERROR: Client '%s': couldn't extract file size for %s\n"
+#~ msgstr "ПОМИЛКА: Клієнт '%s': не вдалося витягнути розмір файлу для %s\n"
+
+#, c-format
+#~ msgid "Client '%s': falling back to regular downloading for failed file %s\n"
+#~ msgstr "Клієнт '%s': повертаюсь до звичайного завантаження для невдалого файла %s\n"
+
+#~ msgid "WARNING: sv_pure set but no PK3 files loaded\n"
+#~ msgstr "УВАГА: встановлено sv_pure, але не завантажено PK3-файлів\n"
+
+#~ msgid "^3Server sent a pubkey_decrypt command, but sent nothing to decrypt!\n"
+#~ msgstr "^3Сервер відправив команду pubkey_decrypt, але не дані для розшифрування!\n"
+
+#, c-format
+#~ msgid ""
+#~ "WARNING: file %s obtained through download redirect has wrong checksum\n"
+#~ "         this likely means the server configuration is broken\n"
+#~ msgstr ""
+#~ "УВАГА: файл %s, отриманий з переадресованого завантаження має невірну "
+#~ "контрольну суму\n"
+#~ "         скоріше за все, це означає що конфігурація серверу порушена\n"
+
+#~ msgid "Sound name exceeds MAX_QPATH\n"
+#~ msgstr "Назва звуку перевищує MAX_QPATH\n"
+
+#, c-format
+#~ msgid "S_StartSound: handle %i out of range\n"
+#~ msgstr "S_StartSound: handle %i out of range\n"
+
+#~ msgid "paged out"
+#~ msgstr "вивантажено сторінок"
+
+#~ msgid "resident"
+#~ msgstr "резидентна"
+
+#, c-format
+#~ msgid "Total resident: %i\n"
+#~ msgstr "Усього резидентної: %i\n"
+
+#, c-format
+#~ msgid "WARNING: bad command byte for client %i\n"
+#~ msgstr "УВАГА: неправильний байт команди для клієнта %i\n"
+
+#~ msgid "ERROR: couldn't open.\n"
+#~ msgstr "ПОМИЛКА: не зміг відкрити.\n"
+
+#, c-format
+#~ msgid "ERROR: couldn't open %s for writing.\n"
+#~ msgstr "ПОМИЛКА: неможливо відкрити %s для зчитування.\n"
+
+#, c-format
+#~ msgid "S_StartLocalSound: handle %i out of range\n"
+#~ msgstr "S_StartLocalSound: handle %i out of range\n"
+
+#, c-format
+#~ msgid "S_AddLoopingSound: handle %i out of range\n"
+#~ msgstr "S_AddLoopingSound: handle %i out of range\n"
+
+#, c-format
+#~ msgid "S_AddRealLoopingSound: handle %i out of range\n"
+#~ msgstr "S_AddRealLoopingSound: handle %i out of range\n"
+
+#~ msgid "Cannot divide by 0!\n"
+#~ msgstr "Не можу поділити на 0!\n"
+
+#~ msgid "WARNING: Maximum amount of delayed commands reached\n"
+#~ msgstr "УВАГА: Досягнуто максимальної кількості затриманих команд\n"
+
+#~ msgid "WARNING: watchdog will trigger in 4 seconds\n"
+#~ msgstr "УВАГА: вартівник спрацює через 4 секунди\n"
+
+#~ msgid ""
+#~ "math <variableToSet> = <number> <operator> <number>\n"
+#~ "math <variableToSet> <operator> <number>\n"
+#~ "math <variableToSet> ++\n"
+#~ "math <variableToSet> --\n"
+#~ "valid operators are + - * /\n"
+#~ msgstr ""
+#~ "math <змінна результату> = <число> <оператор> <число>\n"
+#~ "math <змінна результату> <оператор> <число>\n"
+#~ "math <змінна результату> ++\n"
+#~ "math <змінна результату> --\n"
+#~ "valid operators are + - * /\n"
+
+#, c-format
+#~ msgid ""
+#~ "^3WARNING:^7 Language \"%s\" (%s) not found. Default to \"English\" (en)\n"
+#~ msgstr "^3УВАГА:^7 Мову \"%s\" (%s) не знайдено. Повертаюсь до типової \"English\" (en)\n"
+
+#~ msgid "Unknown Language"
+#~ msgstr "Невідома мова"
+
+#, c-format
+#~ msgid "usage: %s <string1> <string2> <…>\n"
+#~ msgstr "використання: %s <рядок 1> <рядок 2> <…>\n"
+
+#~ msgid "usage: grep <string>\n"
+#~ msgstr "використання: grep <рядок>\n"
+
+#~ msgid "usage: irc_say <text>\n"
+#~ msgstr "використання: irc_say <текст>\n"
+
+#~ msgid "bind <key> [command] : attach a command to a key\n"
+#~ msgstr "bind <клавіша> [команда] : закріпити команду за клавішею\n"
+
+#~ msgid "usage: voip gain <playerID#> [value]\n"
+#~ msgstr "використання: voip gain <ID гравця> [значення]\n"
+
+#~ msgid ""
+#~ "usage: voip [un]ignore <playerID#>\n"
+#~ "       voip [un]muteall\n"
+#~ "       voip gain <playerID#> [value]\n"
+#~ msgstr ""
+#~ "використання: voip [un]ignore <ID гравця>\n"
+#~ "       voip [un]muteall\n"
+#~ "       voip gain <ID гравця> [значення]\n"
+
+#~ msgid "record <demoname>\n"
+#~ msgstr "record <ім’я демо-файлу>\n"
+
+#~ msgid "wav_record <wavname>\n"
+#~ msgstr "wav_record <ім’я wav-файлу>\n"
+
+#~ msgid "playdemo <demoname>\n"
+#~ msgstr "playdemo <ім’я демо-файлу>\n"
+
+#~ msgid "usage: connect [-4|-6] server\n"
+#~ msgstr "використання: connect [-4|-6] <сервер>\n"
+
+#, c-format
+#~ msgid "usage: globalservers <master# 0-%d> [protocol] [keywords]\n"
+#~ msgstr "використання: globalservers <№мастеру 0-%d> [протокол] [ключові слова]\n"
+
+#~ msgid "usage: ping [-4|-6] server\n"
+#~ msgstr "використання: ping [-4|-6] сервер\n"
+
+#~ msgid "usage: serverstatus [-4|-6] server\n"
+#~ msgstr "використання: serverstatus [-4|-6] сервер\n"
+
+#~ msgid "vstr <variablename> : execute a variable command\n"
+#~ msgstr "vstr <ім’я змінної> : виконати команду(и) зі змінної\n"
+
+#~ msgid "modcase <modifiers> <command> [<modifiers> <command>] … [<command>]\n"
+#~ msgstr "modcase <модифікатори> <команда> [<модифікатори> <команда>] … [<команда>]\n"
+
+#~ msgid ""
+#~ "concat <variableToSet> <variable1> … <variableN> : concatenates variable1 to "
+#~ "variableN and sets the result to variableToSet\n"
+#~ msgstr "concat <змінна результату> <змінна 1> … <змінна N> : виводить продукт "
+#~ "сполучення змінних від 1-ої до N-ної у змінну результату\n"
+
+#~ msgid "calc <number> <operator> <number>, accepted operators: +, -, /, */x\n"
+#~ msgstr "calc <число> <оператор> <число>, прийнятні оператори: +, -, /, */x\n"
+
+#~ msgid ""
+#~ "undelay <name> (command)\n"
+#~ "removes all commands with <name> in them.\n"
+#~ "if (command) is specified, the removal will be limited only to delays whose "
+#~ "commands contain (command).\n"
+#~ msgstr ""
+#~ "undelay <назва> (команда)\n"
+#~ "вилучає всі затримані команди з <назва> у них.\n"
+#~ "якщо (команда) вказана, вилучення обмежиться лише затримками, команди яких "
+#~ "містять (команда).\n"
+
+#~ msgid "random <variableToSet> <minNumber> <maxNumber>\n"
+#~ msgstr "random <змінна результату> <мінімум> <максимум>\n"
+
+# Вважаю поточний переклад досить ідіоматичним. «Псевдонім», як на мене, тут не підходить.
+#~ msgid "unalias <name> : delete an alias\n"
+#~ msgstr "unalias <назва> : вилучити альтернативну команду\n"
+
+# Вважаю поточний переклад досить ідіоматичним. «Псевдонім», як на мене, тут не підходить.
+#~ msgid "alias <name> : show an alias\n"
+#~ msgstr "alias <назва> : показати значення альтернативної команди\n"
+
+# Вважаю поточний переклад досить ідіоматичним. «Псевдонім», як на мене, тут не підходить.
+#~ msgid "alias <name> <exec> : create an alias\n"
+#~ msgstr "alias <назва> <послідовність для виконання> : створити альтернативну команду\n"
+
+#~ msgid "Usage: writeconfig <filename>\n"
+#~ msgstr "Використання: writeconfig <ім’я файлу>\n"
+
+#~ msgid "usage: toggle <variable> [<value> …]\n"
+#~ msgstr "використання: toggle <змінна> [<значення> …]\n"
+
+#~ msgid "usage: cycle <variable> <start> <end> [step]\n"
+#~ msgstr "використання: cycle <змінна> <початок> <кінець> [крок]\n"
+
+#~ msgid "usage: set <variable> <value> [unsafe]\n"
+#~ msgstr "використання: set <змінна> <значення> [небезпечно]\n"
+
+#, c-format
+#~ msgid "usage: %s <variable> <value> [unsafe]\n"
+#~ msgstr "використання: %s <змінна> <значення> [небезпечно]\n"
+
+#~ msgid "usage: reset <variable>\n"
+#~ msgstr "використання: reset <змінна>\n"
+
+#~ msgid "usage: dir <directory> [extension]\n"
+#~ msgstr "використання: dir <тека> [розширення]\n"
+
+#~ msgid "Usage: which <file>\n"
+#~ msgstr "використання: which <файл>\n"
+
+#, c-format
+#~ msgid "IRC socket connection error: %s\n"
+#~ msgstr "Помилка з’єднання IRC-сокету: %s\n"
+
+#, c-format
+#~ msgid "IRC: server error: %s\n"
+#~ msgstr "IRC: помилка серверу: %s\n"
+
+#~ msgid "IRC: server error\n"
+#~ msgstr "IRC: помилка серверу\n"
+
+#~ msgid "…IRC: got spurious nickname error\n"
+#~ msgstr "…IRC: помилка; недійсний нікнейм\n"
+
+#~ msgid "IRC: Not connected\n"
+#~ msgstr "IRC: Не з’єднано\n"
+
+#~ msgid "IRC: flood detected, message not sent\n"
+#~ msgstr "IRC: помічено флуд, повідомлення не відправлено\n"
+
+#~ msgid "…IRC: connecting to server\n"
+#~ msgstr "…IRC: з’єднуюся з сервером\n"
+
+#~ msgid "…IRC: rejected due to unset player name\n"
+#~ msgstr "…IRC: відмовлено з-за невказаного імені гравця\n"
+
+#~ msgid "…IRC: rejected due to mostly unusable player name\n"
+#~ msgstr "…IRC: відмовлено з-за здебільшого непридатного імені гравця\n"
+
+#~ msgid "…IRC: unknown server\n"
+#~ msgstr "…IRC: невідомий сервер\n"
+
+#~ msgid "IRC: invalid port number, defaulting to 6667\n"
+#~ msgstr "IRC: невірний номер порта, використовую усталений 6667\n"
+
+#~ msgid "…IRC connection refused.\n"
+#~ msgstr "…IRC-з’єднання відхилено.\n"
+
+#~ msgid "…IRC: disconnected from server\n"
+#~ msgstr "…IRC: роз’єднано з сервером\n"
+
+#~ msgid "…IRC thread is already running\n"
+#~ msgstr "…IRC: потік вже запущений\n"
+
+#~ msgid "----- Initializing Renderer ----\n"
+#~ msgstr "----- Ініціалізую рендерер ----\n"
+
+#~ msgid "----- Client Initialization -----\n"
+#~ msgstr "----- Ініціалізація клієнта -----\n"
+
+#~ msgid "----- Client Initialization Complete -----\n"
+#~ msgstr "----- Ініціалізація клієнта виконана -----\n"
+
+#, c-format
+#~ msgid "usage: globalservers <master# 0-%d> <protocol> [keywords]\n"
+#~ msgstr "використання: globalservers <№мастеру 0-%d> <протокол> [ключові слова]\n"
+
+#~ msgid "CL_GlobalServers_f: Error: No master server address given.\n"
+#~ msgstr "CL_GlobalServers_f: Error: Не надано адресу мастер-серверу.\n"
+
+#, c-format
+#~ msgid "CL_GlobalServers_f: Error: could not resolve address of master %s\n"
+#~ msgstr "CL_GlobalServers_f: Error: не вдалося вирізнити адресу мастер-серверу %s\n"
+
+#, c-format
+#~ msgid "Requesting servers from master %s…\n"
+#~ msgstr "Запитую сервери у мастер-серверу %s…\n"
+
+#~ msgid "----- Sound Info -----\n"
+#~ msgstr "----- Інформація про звук -----\n"
+
+#~ msgid "------ Initializing Sound -----\n"
+#~ msgstr "------ Ініціалізую звук ------\n"
+
+#, c-format
+#~ msgid "\"%s\" is:\"%s"
+#~ msgstr "\"%s\" є:\"%s"
+
+#~ msgid "------ Server Initialization ------\n"
+#~ msgstr "------ Ініціалізація сервера ------\n"
+
+#~ msgid "----- Server Shutdown -----\n"
+#~ msgstr "----- Завершення сервера -----\n"
+
+#~ msgid "===== pending server commands =====\n"
+#~ msgstr "===== команди сервера у черзі =====\n"
+
+#, c-format
+#~ msgid "WARNING: VoIP target %d is not a valid client number\n"
+#~ msgstr "УВАГА: VoIP-ціль %d не є дійсним номером клієнта\n"
+
+#~ msgid "Invalid RSA keypair in RSAKey, regenerating\n"
+#~ msgstr "Недійсна пара RSA-ключів, відновлюю\n"
+
+#, c-format
+#~ msgid ""
+#~ "Daemon RSA public-key could not open %s for write, RSA support will be "
+#~ "disabled"
+#~ msgstr ""
+#~ "Daemon не вдалося відкрити %s для запису відкритого RSA-ключу, підтримку RSA "
+#~ "буде вимкнено"
+
+#~ msgid "Daemon RSA public-key generated\n"
+#~ msgstr "Відкритий ключ RSA створено\n"
+
+#, c-format
+#~ msgid "ERROR: Out of memory reading \"%s\"\n"
+#~ msgstr "ERROR: Out of memory reading \"%s\"\n"
+
+#, c-format
+#~ msgid "WARNING: could not find %s — using default\n"
+#~ msgstr "УВАГА: не вдалося знайти %s — використовую типовий\n"
+
+#~ msgid "execq <filename> (args) : execute a script file without notification\n"
+#~ msgstr "execq <ім’я файлу> (аргументи) : виконати сценарій без повідомлень\n"
+
+#~ msgid "exec <filename> (args) : execute a script file\n"
+#~ msgstr "exec <ім'я файлу> (аргументи) : виконати скриптовий файл\n"
+
+#, c-format
+#~ msgid ""
+#~ "^3WARNING: profile.pid found for profile '%s' — the system settings will "
+#~ "revert to their defaults\n"
+#~ msgstr "^3УВАГА; profile.pid знайдено для профілю '%s' — системні налаштування буде "
+#~ "скинуто на типові\n"
+
+#, c-format
+#~ msgid "^3WARNING: couldn't write profiles/%s/profile.pid\n"
+#~ msgstr "^3УВАГА: не вдалося записати profiles/%s/profile.pid\n"
+
+#~ msgid "usage: condump <filename>\n"
+#~ msgstr "використання: condump <ім’я файлу>\n"
+
+#~ msgid "unbind <key> : remove commands from a key\n"
+#~ msgstr "unbind <клавіша> : зтерти команди для клавіші\n"
+
+#~ msgid "usage: editbind <key>"
+#~ msgstr "використання: editbind <клавіша>"
+
+#, c-format
+#~ msgid "bad checksums: %s\n"
+#~ msgstr "неправильні контрольні суми: %s\n"
+
+#~ msgid "----- CL_Shutdown -----\n"
+#~ msgstr "----- CL_Shutdown -----\n"
+
+#~ msgid "Scanning for servers on the local network…\n"
+#~ msgstr "Шукаю сервери у локальній мережі…\n"
+
+#~ msgid "Channel memory manager started\n"
+#~ msgstr "Запущено керування канальною пам’яттю\n"
+
+#~ msgid ""
+#~ "invalid relation operator in if command. valid relation operators are = != < "
+#~ "> >= <= eq ne in !in\n"
+#~ msgstr "неправильний оператор у «if»-команді. правильними операторами є =, !=, <, >, "
+#~ ">=, <=, eq, ne, in, !in\n"
+
+#, c-format
+#~ msgid ""
+#~ "if <number> <relation> <number> <cmdthen> (<cmdelse>) : compares the first "
+#~ "two numbers and executes <cmdthen> if true, <cmdelse> if false\n"
+#~ "if <modifiers> <cmdthen> (<cmdelse>) : check if modifiers are (not) pressed\n"
+#~ "-- modifiers are %s\n"
+#~ "-- commands are cvar names unless prefixed with / or \\\n"
+#~ msgstr ""
+#~ "if <число> <оператор> <число> <тоді> (<інакше>) : порівнює два числа та "
+#~ "виконує <тоді> якщо результат — істина, <інакше> якщо хиба\n"
+#~ "if <модифікатори> <тоді> (<інакше>) : перевірити, чи (не) натиснуті "
+#~ "модифікатори\n"
+#~ "— модифікатори: %s\n"
+#~ "— команди — назви змінних, якщо перед ними не стоїть / чи \\\n"
+
+#~ msgid "invalid operator in strcmp command. valid operators are = !=\n"
+#~ msgstr "неправильний оператор у команді strcmp. дозволеними операторами є = !=\n"
+
+#~ msgid ""
+#~ "strcmp <string1> <relation> <string2> <cmdthen> (<cmdelse>) : compares the "
+#~ "first two strings and executes <cmdthen> if true, <cmdelse> if false\n"
+#~ msgstr "strcmp <рядок 1> <оператор> <рядок 2> <тоді> (<інакше>) : порівнює два рядки "
+#~ "та виконує <тоді> якщо результат — істина, <інакше> якщо хиба\n"
+
+#, c-format
+#~ msgid ""
+#~ "********************\n"
+#~ "ERROR: %s\n"
+#~ "********************\n"
+#~ msgstr ""
+#~ "********************\n"
+#~ "ПОМИЛКА: %s\n"
+#~ "********************\n"
+
+#~ msgid "Client download subsystem initialized\n"
+#~ msgstr "Підсистема завантаження клієнту ініціалізована\n"
+
+#~ msgid "usage: fdir <filter>\n"
+#~ msgstr "використання: fdir <фільтр>\n"
+
+#, c-format
+#~ msgid "Loaded %lu language(s)\n"
+#~ msgstr "Завантажено %lu мову(и)\n"
+
+#~ msgid "invalid operator in if command. valid operators are = != < > >= <=\n"
+#~ msgstr "неправильний оператор у команді «if». правильними операторами є = != < > >= "
+#~ "<=\n"
+
+#, c-format
+#~ msgid ""
+#~ "if <value1> <operator> <value2> <cmdthen> (<cmdelse>) : compares the first "
+#~ "two values and executes <cmdthen> if true, <cmdelse> if false\n"
+#~ "if <modifiers> <cmdthen> (<cmdelse>) : check if modifiers are (not) pressed\n"
+#~ "-- modifiers are %s\n"
+#~ "-- commands are cvar names unless prefixed with / or \\\n"
+#~ msgstr ""
+#~ "if <значення 1> <оператор> <значення 2> <наслідок> (<альтернатива>) : "
+#~ "порівнює два значення й виконує <наслідок> якщо істинно, <альтернатива> якщо "
+#~ "хибно\n"
+#~ "if <модифікатори> <наслідок> (<альтернатива>) : перевірити чи модифікатори "
+#~ "(не) натиснені\n"
+#~ "-- модифікаторами є %s\n"
+#~ "-- командами є назви змінних, якщо їм не передує / або \\\n"
+
+#~ msgid ""
+#~ "math <variableToSet> = <value1> <operator> <value2>\n"
+#~ "math <variableToSet> <operator> <value1>\n"
+#~ "math <variableToSet> ++\n"
+#~ "math <variableToSet> --\n"
+#~ "valid operators are + - * /\n"
+#~ msgstr ""
+#~ "math <змінна результату> = <значення1> <оператор> <значення2>\n"
+#~ "math <змінна результату> <оператор> <значення1>\n"
+#~ "math <змінна результату> ++\n"
+#~ "math <змінна результату> --\n"
+#~ "вірними операторами є + - * /\n"
+
+#~ msgid ""
+#~ "strcmp <string1> <operator> <string2> <cmdthen> (<cmdelse>) : compares the "
+#~ "first two strings and executes <cmdthen> if true, <cmdelse> if false\n"
+#~ msgstr "strcmp <рядок 1> <оператор> <рядок 2> <наслідок> (<альтернатива>) : порівнює "
+#~ "два рядки й виконує <наслідок> якщо істинно, <альтернатива> якщо хибно\n"
+
+#~ msgid "calc <number> <function> <number>, accepted functions: +, -, /, */x\n"
+#~ msgstr "calc <число> <функція> <число>, прийнятні функції: +, -, /, */x\n"
+
+#~ msgid "random <variableToSet> <value1> <value2>\n"
+#~ msgstr "random <змінна результату> <значення 1> <значення 2>\n"
+
+#~ msgid "usage: setu <variable> <value> [unsafe]\n"
+#~ msgstr "використання: setu <змінна> <значення> [небезпечно]\n"
+
+#~ msgid "usage: sets <variable> <value> [unsafe]\n"
+#~ msgstr "використання: sets <змінна> <значення> [небезпечно]\n"
+
+#~ msgid "usage: seta <variable> <value> [unsafe]\n"
+#~ msgstr "використання: seta <змінна> <значення> [небезпечно]\n"
+
+#, c-format
+#~ msgid "%s (%i files)\n"
+#~ msgstr "%s (%i файлів)\n"
+
+#, c-format
+#~ msgid "Switched language to %s\n"
+#~ msgstr "Мову змінено на %s\n"
+
+#, c-format
+#~ msgid "^1ERROR: Could not open client translation: %s\n"
+#~ msgstr "^1ПОМИЛКА: Неможливо відкрити переклад клієнту: %s\n"
+
+#, c-format
+#~ msgid "^1ERROR: Could not open game translation: %s\n"
+#~ msgstr "^1ПОМИЛКА: Неможливо відкрити переклад гри: %s\n"
 
 #~ msgid "[Theora] unexpected resolution in a YUV frame\n"
 #~ msgstr "[Theora] unexpected resolution in a YUV frame\n"
