@@ -397,7 +397,7 @@ void       SV_MasterShutdown( void );
 void       SV_MasterGameStat( const char *data );
 
 //bani - bugtraq 12534
-qboolean   SV_VerifyChallenge( char *challenge );
+qboolean   SV_VerifyChallenge( const char *challenge );
 
 //
 // sv_init.c

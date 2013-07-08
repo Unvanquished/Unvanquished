@@ -3328,47 +3328,36 @@ static void R_CreateShadowMapFBOImage( void )
 	{
 		width = height = shadowMapResolutions[ i ];
 
-		if ( glConfig.driverType == GLDRV_OPENGL3 || ( glConfig.hardwareType == GLHW_NV_DX10 || glConfig.hardwareType == GLHW_ATI_DX10 ) )
+		if ( r_shadows->integer == SHADOWING_ESM32 )
 		{
-			// we can do the most expensive filtering types with OpenGL 3 hardware
-			if ( r_shadows->integer == SHADOWING_ESM32 )
+			tr.shadowMapFBOImage[ i ] = R_CreateImage( va( "_shadowMapFBO%d", i ), NULL, width, height, IF_NOPICMIP | IF_ONECOMP32F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
+		}
+		else if ( r_shadows->integer == SHADOWING_VSM32 )
+		{
+			tr.shadowMapFBOImage[ i ] = R_CreateImage( va( "_shadowMapFBO%d", i ), NULL, width, height, IF_NOPICMIP | IF_TWOCOMP32F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
+		}
+		else if ( r_shadows->integer == SHADOWING_EVSM32 )
+		{
+			if ( r_evsmPostProcess->integer )
 			{
 				tr.shadowMapFBOImage[ i ] = R_CreateImage( va( "_shadowMapFBO%d", i ), NULL, width, height, IF_NOPICMIP | IF_ONECOMP32F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
 			}
-			else if ( r_shadows->integer == SHADOWING_VSM32 )
-			{
-				tr.shadowMapFBOImage[ i ] = R_CreateImage( va( "_shadowMapFBO%d", i ), NULL, width, height, IF_NOPICMIP | IF_TWOCOMP32F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
-			}
-			else if ( r_shadows->integer == SHADOWING_EVSM32 )
-			{
-				if ( r_evsmPostProcess->integer )
-				{
-					tr.shadowMapFBOImage[ i ] = R_CreateImage( va( "_shadowMapFBO%d", i ), NULL, width, height, IF_NOPICMIP | IF_ONECOMP32F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
-				}
-				else
-				{
-					tr.shadowMapFBOImage[ i ] = R_CreateImage( va( "_shadowMapFBO%d", i ), NULL, width, height, IF_NOPICMIP | IF_RGBA32F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
-				}
-			}
 			else
 			{
-				tr.shadowMapFBOImage[ i ] = R_CreateImage( va( "_shadowMapFBO%d", i ), NULL, width, height, IF_NOPICMIP | IF_RGBA16F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
+				tr.shadowMapFBOImage[ i ] = R_CreateImage( va( "_shadowMapFBO%d", i ), NULL, width, height, IF_NOPICMIP | IF_RGBA32F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
 			}
+		}
+		else if ( r_shadows->integer == SHADOWING_ESM16 )
+		{
+			tr.shadowMapFBOImage[ i ] = R_CreateImage( va( "_shadowMapFBO%d", i ), NULL, width, height, IF_NOPICMIP | IF_ONECOMP16F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
+		}
+		else if ( r_shadows->integer == SHADOWING_VSM16 )
+		{
+			tr.shadowMapFBOImage[ i ] = R_CreateImage( va( "_shadowMapFBO%d", i ), NULL, width, height, IF_NOPICMIP | IF_TWOCOMP16F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
 		}
 		else
 		{
-			if ( r_shadows->integer == SHADOWING_ESM16 )
-			{
-				tr.shadowMapFBOImage[ i ] = R_CreateImage( va( "_shadowMapFBO%d", i ), NULL, width, height, IF_NOPICMIP | IF_ONECOMP16F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
-			}
-			else if ( r_shadows->integer == SHADOWING_VSM16 )
-			{
-				tr.shadowMapFBOImage[ i ] = R_CreateImage( va( "_shadowMapFBO%d", i ), NULL, width, height, IF_NOPICMIP | IF_TWOCOMP16F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
-			}
-			else
-			{
-				tr.shadowMapFBOImage[ i ] = R_CreateImage( va( "_shadowMapFBO%d", i ), NULL, width, height, IF_NOPICMIP | IF_RGBA16F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
-			}
+			tr.shadowMapFBOImage[ i ] = R_CreateImage( va( "_shadowMapFBO%d", i ), NULL, width, height, IF_NOPICMIP | IF_RGBA16F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
 		}
 	}
 
@@ -3377,47 +3366,36 @@ static void R_CreateShadowMapFBOImage( void )
 	{
 		width = height = sunShadowMapResolutions[ i ];
 
-		if ( glConfig.driverType == GLDRV_OPENGL3 || ( glConfig.hardwareType == GLHW_NV_DX10 || glConfig.hardwareType == GLHW_ATI_DX10 ) )
+		if ( r_shadows->integer == SHADOWING_ESM32 )
 		{
-			// we can do the most expensive filtering types with OpenGL 3 hardware
-			if ( r_shadows->integer == SHADOWING_ESM32 )
+			tr.sunShadowMapFBOImage[ i ] = R_CreateImage( va( "_sunShadowMapFBO%d", i ), NULL, width, height, IF_NOPICMIP | IF_ONECOMP32F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
+		}
+		else if ( r_shadows->integer == SHADOWING_VSM32 )
+		{
+			tr.sunShadowMapFBOImage[ i ] = R_CreateImage( va( "_sunShadowMapFBO%d", i ), NULL, width, height, IF_NOPICMIP | IF_TWOCOMP32F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
+		}
+		else if ( r_shadows->integer == SHADOWING_EVSM32 )
+		{
+			if ( r_evsmPostProcess->integer )
 			{
-				tr.sunShadowMapFBOImage[ i ] = R_CreateImage( va( "_sunShadowMapFBO%d", i ), NULL, width, height, IF_NOPICMIP | IF_ONECOMP32F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
-			}
-			else if ( r_shadows->integer == SHADOWING_VSM32 )
-			{
-				tr.sunShadowMapFBOImage[ i ] = R_CreateImage( va( "_sunShadowMapFBO%d", i ), NULL, width, height, IF_NOPICMIP | IF_TWOCOMP32F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
-			}
-			else if ( r_shadows->integer == SHADOWING_EVSM32 )
-			{
-				if ( r_evsmPostProcess->integer )
-				{
-					tr.sunShadowMapFBOImage[ i ] = R_CreateImage( va( "_sunShadowMapFBO%d", i ), NULL, width, height, IF_NOPICMIP | IF_DEPTH24, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
-				}
-				else
-				{
-					tr.sunShadowMapFBOImage[ i ] = R_CreateImage( va( "_sunShadowMapFBO%d", i ), NULL, width, height, IF_NOPICMIP | IF_RGBA32F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
-				}
+				tr.sunShadowMapFBOImage[ i ] = R_CreateImage( va( "_sunShadowMapFBO%d", i ), NULL, width, height, IF_NOPICMIP | IF_DEPTH24, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
 			}
 			else
 			{
-				tr.sunShadowMapFBOImage[ i ] = R_CreateImage( va( "_sunShadowMapFBO%d", i ), NULL, width, height, IF_NOPICMIP | IF_RGBA16F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
+				tr.sunShadowMapFBOImage[ i ] = R_CreateImage( va( "_sunShadowMapFBO%d", i ), NULL, width, height, IF_NOPICMIP | IF_RGBA32F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
 			}
+		}
+		else if ( r_shadows->integer == SHADOWING_ESM16 )
+		{
+			tr.sunShadowMapFBOImage[ i ] = R_CreateImage( va( "_sunShadowMapFBO%d", i ), NULL, width, height, IF_NOPICMIP | IF_ONECOMP16F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
+		}
+		else if ( r_shadows->integer == SHADOWING_VSM16 )
+		{
+			tr.sunShadowMapFBOImage[ i ] = R_CreateImage( va( "_sunShadowMapFBO%d", i ), NULL, width, height, IF_NOPICMIP | IF_TWOCOMP16F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
 		}
 		else
 		{
-			if ( r_shadows->integer == SHADOWING_ESM16 )
-			{
-				tr.sunShadowMapFBOImage[ i ] = R_CreateImage( va( "_sunShadowMapFBO%d", i ), NULL, width, height, IF_NOPICMIP | IF_ONECOMP16F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
-			}
-			else if ( r_shadows->integer == SHADOWING_VSM16 )
-			{
-				tr.sunShadowMapFBOImage[ i ] = R_CreateImage( va( "_sunShadowMapFBO%d", i ), NULL, width, height, IF_NOPICMIP | IF_TWOCOMP16F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
-			}
-			else
-			{
-				tr.sunShadowMapFBOImage[ i ] = R_CreateImage( va( "_sunShadowMapFBO%d", i ), NULL, width, height, IF_NOPICMIP | IF_RGBA16F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
-			}
+			tr.sunShadowMapFBOImage[ i ] = R_CreateImage( va( "_sunShadowMapFBO%d", i ), NULL, width, height, IF_NOPICMIP | IF_RGBA16F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
 		}
 	}
 }
@@ -3445,46 +3423,36 @@ static void R_CreateShadowCubeFBOImage( void )
 			data[ i ] = NULL;
 		}
 
-		if ( glConfig.driverType == GLDRV_OPENGL3 || ( glConfig.hardwareType == GLHW_NV_DX10 || glConfig.hardwareType == GLHW_ATI_DX10 ) )
+		if ( r_shadows->integer == SHADOWING_ESM32 )
 		{
-			if ( r_shadows->integer == SHADOWING_ESM32 )
+			tr.shadowCubeFBOImage[ j ] = R_CreateCubeImage( va( "_shadowCubeFBO%d", j ), ( const byte ** ) data, width, height, IF_NOPICMIP | IF_ONECOMP32F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
+		}
+		else if ( r_shadows->integer == SHADOWING_VSM32 )
+		{
+			tr.shadowCubeFBOImage[ j ] = R_CreateCubeImage( va( "_shadowCubeFBO%d", j ), ( const byte ** ) data, width, height, IF_NOPICMIP | IF_TWOCOMP32F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
+		}
+		else if ( r_shadows->integer == SHADOWING_EVSM32 )
+		{
+			if ( r_evsmPostProcess->integer )
 			{
 				tr.shadowCubeFBOImage[ j ] = R_CreateCubeImage( va( "_shadowCubeFBO%d", j ), ( const byte ** ) data, width, height, IF_NOPICMIP | IF_ONECOMP32F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
 			}
-			else if ( r_shadows->integer == SHADOWING_VSM32 )
-			{
-				tr.shadowCubeFBOImage[ j ] = R_CreateCubeImage( va( "_shadowCubeFBO%d", j ), ( const byte ** ) data, width, height, IF_NOPICMIP | IF_TWOCOMP32F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
-			}
-			else if ( r_shadows->integer == SHADOWING_EVSM32 )
-			{
-				if ( r_evsmPostProcess->integer )
-				{
-					tr.shadowCubeFBOImage[ j ] = R_CreateCubeImage( va( "_shadowCubeFBO%d", j ), ( const byte ** ) data, width, height, IF_NOPICMIP | IF_ONECOMP32F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
-				}
-				else
-				{
-					tr.shadowCubeFBOImage[ j ] = R_CreateCubeImage( va( "_shadowCubeFBO%d", j ), ( const byte ** ) data, width, height, IF_NOPICMIP | IF_RGBA32F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
-				}
-			}
 			else
 			{
-				tr.shadowCubeFBOImage[ j ] = R_CreateCubeImage( va( "_shadowCubeFBO%d", j ), ( const byte ** ) data, width, height, IF_NOPICMIP | IF_RGBA16F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
+				tr.shadowCubeFBOImage[ j ] = R_CreateCubeImage( va( "_shadowCubeFBO%d", j ), ( const byte ** ) data, width, height, IF_NOPICMIP | IF_RGBA32F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
 			}
+		}
+		else if ( r_shadows->integer == SHADOWING_ESM16 )
+		{
+			tr.shadowCubeFBOImage[ j ] = R_CreateCubeImage( va( "_shadowCubeFBO%d", j ), ( const byte ** ) data, width, height, IF_NOPICMIP | IF_ONECOMP16F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
+		}
+		else if ( r_shadows->integer == SHADOWING_VSM16 )
+		{
+			tr.shadowCubeFBOImage[ j ] = R_CreateCubeImage( va( "_shadowCubeFBO%d", j ), ( const byte ** ) data, width, height, IF_NOPICMIP | IF_TWOCOMP16F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
 		}
 		else
 		{
-			if ( r_shadows->integer == SHADOWING_ESM16 )
-			{
-				tr.shadowCubeFBOImage[ j ] = R_CreateCubeImage( va( "_shadowCubeFBO%d", j ), ( const byte ** ) data, width, height, IF_NOPICMIP | IF_ONECOMP16F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
-			}
-			else if ( r_shadows->integer == SHADOWING_VSM16 )
-			{
-				tr.shadowCubeFBOImage[ j ] = R_CreateCubeImage( va( "_shadowCubeFBO%d", j ), ( const byte ** ) data, width, height, IF_NOPICMIP | IF_TWOCOMP16F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
-			}
-			else
-			{
-				tr.shadowCubeFBOImage[ j ] = R_CreateCubeImage( va( "_shadowCubeFBO%d", j ), ( const byte ** ) data, width, height, IF_NOPICMIP | IF_RGBA16F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
-			}
+			tr.shadowCubeFBOImage[ j ] = R_CreateCubeImage( va( "_shadowCubeFBO%d", j ), ( const byte ** ) data, width, height, IF_NOPICMIP | IF_RGBA16F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
 		}
 	}
 }

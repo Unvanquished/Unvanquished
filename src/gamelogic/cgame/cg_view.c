@@ -1353,8 +1353,20 @@ static void CG_CalcColorGradingForPoint( vec3_t loc )
 	float selectedWeight[3] = { 0.0f, 0.0f, 0.0f };
 	float totalWeight = 0.0f;
 	int freeSlot = -1;
+	qboolean haveGlobal = qfalse;
 
-	for( i = 0; i < MAX_GRADING_TEXTURES; i++ )
+	// the first allocated grading is special in that it may be global
+	i = 0;
+
+	if ( cgs.gameGradingTextures[0] && cgs.gameGradingModels[0] == -1 )
+	{
+		selectedIdx[0] = 0; // shouldn't be needed
+		selectedWeight[0] = 2.0f; // won't be sorted down
+		haveGlobal = qtrue;
+		i = 1;
+	}
+
+	for(; i < MAX_GRADING_TEXTURES; i++ )
 	{
 		if( !cgs.gameGradingTextures[i] )
 		{
@@ -1386,20 +1398,28 @@ static void CG_CalcColorGradingForPoint( vec3_t loc )
 		selectedWeight[j+1] = weight;
 	}
 
-	for( i = 0; i < 3; i++ )
+	i = 0;
+
+	if( haveGlobal )
+	{
+		trap_SetColorGrading( 1, cgs.gameGradingTextures[0] );
+		i = 1;
+	}
+
+	for(; i < 3; i++ )
 	{
 		if( selectedWeight[i] > 0.0f )
 		{
 			trap_SetColorGrading( i + 1, cgs.gameGradingTextures[selectedIdx[i]] );
+			totalWeight += selectedWeight[i];
 		}
 		else
 		{
 			freeSlot = i;
 		}
-		totalWeight += selectedWeight[i];
 	}
 
-	if( totalWeight < 1.0f )
+	if( !haveGlobal && totalWeight < 1.0f )
 	{
 		if(freeSlot >= 0)
 		{
@@ -1409,18 +1429,12 @@ static void CG_CalcColorGradingForPoint( vec3_t loc )
 			selectedWeight[freeSlot] = 1.0f - totalWeight;
 			totalWeight = 1.0f;
 		}
-		cg.refdef.gradingWeights[0] = 0.0f;
-		cg.refdef.gradingWeights[1] = selectedWeight[0] / totalWeight;
-		cg.refdef.gradingWeights[2] = selectedWeight[1] / totalWeight;
-		cg.refdef.gradingWeights[3] = selectedWeight[2] / totalWeight;
 	}
-	else
-	{
-		cg.refdef.gradingWeights[0] = 0.0f;
-		cg.refdef.gradingWeights[1] = selectedWeight[0] / totalWeight;
-		cg.refdef.gradingWeights[2] = selectedWeight[1] / totalWeight;
-		cg.refdef.gradingWeights[3] = selectedWeight[2] / totalWeight;
-	}
+
+	cg.refdef.gradingWeights[0] = 0.0f;
+	cg.refdef.gradingWeights[1] = haveGlobal ? ( 1.0f - totalWeight ) : ( selectedWeight[0] / totalWeight );
+	cg.refdef.gradingWeights[2] = totalWeight == 0.0f ? 0.0f : selectedWeight[1] / totalWeight;
+	cg.refdef.gradingWeights[3] = totalWeight == 0.0f ? 0.0f : selectedWeight[2] / totalWeight;
 }
 
 static void CG_ChooseCgradingEffectAndFade( const playerState_t* ps, qhandle_t* effect, float* fade )
