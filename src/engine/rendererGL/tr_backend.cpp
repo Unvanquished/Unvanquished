@@ -7149,7 +7149,7 @@ static void RB_RenderDebugUtils()
 		GL_Bind( tr.whiteImage );
 		gl_genericShader->SetUniform_ColorTextureMatrix( matrixIdentity );
 
-		for ( iaCount = 0, ia = &backEnd.viewParms.interactions[ 0 ]; iaCount < backEnd.viewParms.numInteractions; )
+		for ( iaCount = 0, ia = &backEnd.viewParms.interactions[ 0 ]; iaCount < backEnd.viewParms.numInteractions; ia++, iaCount++ )
 		{
 			backEnd.currentEntity = entity = ia->entity;
 			light = ia->light;
