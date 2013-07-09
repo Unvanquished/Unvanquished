@@ -1245,7 +1245,12 @@ float CG_ChargeProgress( void )
 	float progress;
 	int   min = 0, max = 0;
 
-	if ( cg.snap->ps.weapon == WP_ALEVEL3 )
+	if ( cg.snap->ps.weapon == WP_ALEVEL0 )
+	{
+		min = 0;
+		max = MAX( LEVEL0_POUNCE_COOLDOWN, LEVEL0_SIDEPOUNCE_COOLDOWN );
+	}
+	else if ( cg.snap->ps.weapon == WP_ALEVEL3 )
 	{
 		min = LEVEL3_POUNCE_TIME_MIN;
 		max = LEVEL3_POUNCE_TIME;
