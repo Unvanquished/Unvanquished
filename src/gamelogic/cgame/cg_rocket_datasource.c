@@ -1032,6 +1032,7 @@ void CG_Rocket_ExecTeamList( const char *table )
 	if ( cmd )
 	{
 		trap_SendConsoleCommand( cmd );
+		trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_TEAMSELECT ].id, "hide" );
 	}
 }
 
@@ -1080,6 +1081,7 @@ void CG_Rocket_ExecHumanSpawnItems( const char *table )
 	if ( cmd )
 	{
 		trap_SendConsoleCommand( cmd );
+		trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_HUMANSPAWN ].id, "hide" );
 	}
 }
 
