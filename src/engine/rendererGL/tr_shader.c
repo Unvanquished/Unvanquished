@@ -298,6 +298,11 @@ const opstring_t opStrings[] =
 	{ NULL,                 OP_BAD                }
 };
 
+const char* GetOpName(opcode_t type)
+{
+	return opStrings[ type ].s;
+}
+
 static void GetOpType( char *token, expOperation_t *op )
 {
 	const opstring_t *opString;
