@@ -7,7 +7,7 @@
 		ui/connecting.rml connecting // ROCKETMENU_DOWNLOADING
 		ui/help.rml help             // ROCKETMENU_INGAME_MENU
 		ui/teamselect.rml teamsel    // ROCKETMENU_TEAMSELECT
-		ui/help.rml help             // ROCKETMENU_WEAPONSELECT
+		ui/humanspawn.rml humanspawn // ROCKETMENU_HUMANSPAWNITEM
 		ui/help.rml help             // ROCKETMENU_CLASSSELECT
 		ui/help.rml help             // ROCKETMENU_ALIENBUILD
 		ui/help.rml help             // ROCKETMENU_HUMANBUILD
