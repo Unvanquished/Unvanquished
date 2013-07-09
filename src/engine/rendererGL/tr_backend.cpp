@@ -2227,7 +2227,7 @@ static void RB_RenderInteractions()
 		{
 			backEnd.currentEntity = entity = ia->entity;
 			surface = ia->surface;
-			shader = ia->surfaceShader;
+			shader = tr.sortedShaders[ ia->shaderNum ];
 
 			if ( glConfig2.occlusionQueryBits && glConfig.driverType != GLDRV_MESA && r_dynamicEntityOcclusionCulling->integer && !entity->occlusionQuerySamples )
 			{
@@ -3186,7 +3186,7 @@ static void RB_RenderInteractionsShadowMapped()
 				iaLast = ia;
 				backEnd.currentEntity = entity = ia->entity;
 				surface = ia->surface;
-				shader = ia->surfaceShader;
+				shader = tr.sortedShaders[ ia->shaderNum ];
 				alphaTest = shader->alphaTest;
 				deformType = GetDeformType( shader );
 
@@ -3365,7 +3365,7 @@ static void RB_RenderInteractionsShadowMapped()
 			iaLast = ia;
 			backEnd.currentEntity = entity = ia->entity;
 			surface = ia->surface;
-			shader = ia->surfaceShader;
+			shader = tr.sortedShaders[ ia->shaderNum ];
 			alphaTest = shader->alphaTest;
 			deformType = GetDeformType( shader );
 
@@ -4519,7 +4519,7 @@ static void RB_RenderInteractionsDeferredShadowMapped()
 				iaLast = ia;
 				backEnd.currentEntity = entity = ia->entity;
 				surface = ia->surface;
-				shader = ia->surfaceShader;
+				shader = tr.sortedShaders[ ia->shaderNum ];
 				alphaTest = shader->alphaTest;
 				deformType = GetDeformType( shader );
 
