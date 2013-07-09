@@ -1281,6 +1281,8 @@ typedef struct
 	int mapIndex;
 
 	int selectedTeamIndex;
+
+	int selectedHumanSpawnItem;
 } rocketDataSource_t;
 
 typedef struct

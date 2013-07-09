@@ -1040,7 +1040,53 @@ void CG_Rocket_CleanUpTeamList( const char *table )
 	rocketInfo.data.selectedTeamIndex = -1;
 }
 
+void AddHumanSpawnItem( weapon_t weapon )
+{
+	static char data[ MAX_STRING_CHARS ];
 
+	if ( !BG_WeaponIsAllowed( weapon ) )
+	{
+		return;
+	}
+
+	data[ 0 ] = '\0';
+	Info_SetValueForKey( data, "name", BG_Weapon( weapon )->humanName, qfalse );
+	Info_SetValueForKey( data, "description", BG_Weapon( weapon )->info, qfalse );
+
+	trap_Rocket_DSAddRow( "humanSpawnItems", "default", data );
+}
+
+void CG_Rocket_BuildHumanSpawnItems( const char *table )
+{
+	trap_Rocket_DSClearTable( "humanSpawnItems", "default" );
+	AddHumanSpawnItem( WP_MACHINEGUN );
+	AddHumanSpawnItem( WP_HBUILD );
+}
+
+void CG_Rocket_SetHumanSpawnItems( const char *table, int index )
+{
+	rocketInfo.data.selectedHumanSpawnItem = index;
+}
+
+void CG_Rocket_ExecHumanSpawnItems( const char *table )
+{
+	const char *cmd = NULL;
+	switch ( rocketInfo.data.selectedHumanSpawnItem )
+	{
+		case 0: cmd = "class rifle"; break;
+		case 1: cmd = "class ckit"; break;
+	}
+
+	if ( cmd )
+	{
+		trap_SendConsoleCommand( cmd );
+	}
+}
+
+void CG_Rocket_CleanUpHumanSpawnItems( const char *table )
+{
+	rocketInfo.data.selectedHumanSpawnItem = -1;
+}
 
 static void nullSortFunc( const char *name, const char *sortBy )
 {
@@ -1069,6 +1115,7 @@ static const dataSourceCmd_t dataSourceCmdList[] =
 {
 	{ "alOutputs", &CG_Rocket_BuildAlOutputs, &nullSortFunc, &CG_Rocket_CleanUpAlOutputs, &CG_Rocket_SetAlOutputsOutput, &nullFilterFunc, &nullExecFunc },
 	{ "demoList", &CG_Rocket_BuildDemoList, &nullSortFunc, &CG_Rocket_CleanUpDemoList, &CG_Rocket_SetDemoListDemo, &nullFilterFunc, &CG_Rocket_ExecDemoList },
+	{ "humanSpawnItems", &CG_Rocket_BuildHumanSpawnItems, &nullSortFunc, CG_Rocket_CleanUpHumanSpawnItems, &CG_Rocket_SetHumanSpawnItems, &nullFilterFunc, &CG_Rocket_ExecHumanSpawnItems },
 	{ "languages", &CG_Rocket_BuildLanguageList, &nullSortFunc, &CG_Rocket_CleanUpLanguageList, &CG_Rocket_SetLanguageListLanguage, &nullFilterFunc, &nullExecFunc },
 	{ "mapList", &CG_Rocket_BuildMapList, &nullSortFunc, &CG_Rocket_CleanUpMapList, &CG_Rocket_SetMapListIndex, &nullFilterFunc, &nullExecFunc },
 	{ "modList", &CG_Rocket_BuildModList, &nullSortFunc, &CG_Rocket_CleanUpModList, &CG_Rocket_SetModListMod, &nullFilterFunc, &nullExecFunc },
