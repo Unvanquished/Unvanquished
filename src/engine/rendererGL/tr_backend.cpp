@@ -3153,7 +3153,7 @@ static void RB_RenderInteractionsShadowMapped()
 				numMaps = 6;
 				break;
 			case RL_DIRECTIONAL:
-				numMaps = MAX( r_parallelShadowSplits->integer, 1 );
+				numMaps = MAX( r_parallelShadowSplits->integer + 1, 1 );
 				break;
 			default:
 				numMaps = 1;
@@ -4486,7 +4486,7 @@ static void RB_RenderInteractionsDeferredShadowMapped()
 				numMaps = 6;
 				break;
 			case RL_DIRECTIONAL:
-				numMaps = MAX( r_parallelShadowSplits->integer, 1 );
+				numMaps = MAX( r_parallelShadowSplits->integer + 1, 1 );
 				break;
 			default:
 				numMaps = 1;
