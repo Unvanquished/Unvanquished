@@ -274,11 +274,13 @@ static void CG_AlienLevel0Text( char *text, playerState_t *ps )
 
 	Q_strcat( text, MAX_TUTORIAL_TEXT,
 	          _( "Touch humans to damage them\n"
-	             "Look at their heads (or jump) to try to bite their heads\n"
-	             "Head-bites cause more damage\n" ) );
+	             "Aim at their heads to cause more damage\n" ) );
 	Q_strcat( text, MAX_TUTORIAL_TEXT,
 	          va( _( "Press %s to walk on walls\n" ),
 	              CG_KeyNameForCommand( "+movedown" ) ) );
+	Q_strcat( text, MAX_TUTORIAL_TEXT,
+	          va( _( "Press %s to pounce\n" ),
+	              CG_KeyNameForCommand( "+attack2" ) ) );
 }
 
 /*

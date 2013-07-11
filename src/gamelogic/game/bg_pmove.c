@@ -637,17 +637,30 @@ PM_CheckWaterPounce
 */
 static void PM_CheckWaterPounce( void )
 {
-	if ( pm->ps->weapon != WP_ALEVEL3 &&
-	     pm->ps->weapon != WP_ALEVEL3_UPG )
+	// Check for valid class
+	switch ( pm->ps->weapon )
 	{
-		return;
+		case WP_ALEVEL0:
+		case WP_ALEVEL3:
+		case WP_ALEVEL3_UPG:
+			break;
+
+		default:
+			return;
 	}
 
 	// We were pouncing, but we've landed into water
 	if ( ( pm->waterlevel > 1 ) && ( pm->ps->pm_flags & PMF_CHARGE ) )
 	{
 		pm->ps->pm_flags &= ~PMF_CHARGE;
-		pm->ps->weaponTime += LEVEL3_POUNCE_REPEAT;
+
+		switch ( pm->ps->weapon )
+		{
+			case WP_ALEVEL3:
+			case WP_ALEVEL3_UPG:
+				pm->ps->weaponTime += LEVEL3_POUNCE_REPEAT;
+				break;
+		}
 	}
 }
 
@@ -658,56 +671,198 @@ PM_CheckPounce
 */
 static qboolean PM_CheckPounce( void )
 {
-	int jumpMagnitude;
+	int      jumpMagnitude;
+	vec3_t   jumpDirection;
+	vec3_t   groundDirection;
+	float    pitch;
 
-	if ( pm->ps->weapon != WP_ALEVEL3 &&
-	     pm->ps->weapon != WP_ALEVEL3_UPG )
+	// Check for valid class
+	switch ( pm->ps->weapon )
 	{
-		return qfalse;
+		case WP_ALEVEL0:
+		case WP_ALEVEL3:
+		case WP_ALEVEL3_UPG:
+			break;
+
+		default:
+			return qfalse;
 	}
 
-	// We were pouncing, but we've landed
-	if ( pm->ps->groundEntityNum != ENTITYNUM_NONE &&
-	     ( pm->ps->pm_flags & PMF_CHARGE ) )
+	// Handle landing
+	if ( pm->ps->groundEntityNum != ENTITYNUM_NONE && ( pm->ps->pm_flags & PMF_CHARGE ) )
 	{
+		// end the pounce
 		pm->ps->pm_flags &= ~PMF_CHARGE;
-		pm->ps->weaponTime += LEVEL3_POUNCE_REPEAT;
+
+		// goon pounce delays bite attacks
+		switch ( pm->ps->weapon )
+		{
+			case WP_ALEVEL3:
+			case WP_ALEVEL3_UPG:
+				pm->ps->weaponTime += LEVEL3_POUNCE_REPEAT;
+				break;
+		}
+
 		return qfalse;
 	}
 
-	// We're building up for a pounce
-	if ( usercmdButtonPressed( pm->cmd.buttons, BUTTON_ATTACK2 ) )
+	// Check class-specific conditions for starting a pounce
+	switch ( pm->ps->weapon )
 	{
-		pm->ps->pm_flags &= ~PMF_CHARGE;
-		return qfalse;
+		case WP_ALEVEL0:
+			// Check if player wants to pounce
+			if ( !usercmdButtonPressed( pm->cmd.buttons, BUTTON_ATTACK2 ) )
+			{
+				return qfalse;
+			}
+
+			// Check if cooldown is over
+			if ( pm->ps->stats[ STAT_MISC ] > 0 )
+			{
+				return qfalse;
+			}
+			break;
+
+		case WP_ALEVEL3:
+		case WP_ALEVEL3_UPG:
+			// Don't pounce while still charging
+			if ( usercmdButtonPressed( pm->cmd.buttons, BUTTON_ATTACK2 ) )
+			{
+				pm->ps->pm_flags &= ~PMF_CHARGE;
+
+				return qfalse;
+			}
+
+			// Pounce if minimum charge time has passed and the charge button isn't held anymore
+			if ( pm->ps->stats[ STAT_MISC ] < LEVEL3_POUNCE_TIME_MIN )
+			{
+				return qfalse;
+			}
+			break;
 	}
 
-	// Can't start a pounce
-	if ( ( pm->ps->pm_flags & PMF_CHARGE ) ||
-	     pm->ps->stats[ STAT_MISC ] < LEVEL3_POUNCE_TIME_MIN ||
-	     pm->ps->groundEntityNum == ENTITYNUM_NONE )
+	// Check if already pouncing
+	if ( pm->ps->pm_flags & PMF_CHARGE )
 	{
 		return qfalse;
 	}
 
-	// Give the player forward velocity and simulate a jump
+	// Check if in air
+	if ( pm->ps->groundEntityNum == ENTITYNUM_NONE )
+	{
+		return qfalse;
+	}
+
+	// Prepare a simulated jump
 	pml.groundPlane = qfalse;
 	pml.walking = qfalse;
 	pm->ps->pm_flags |= PMF_CHARGE;
 	pm->ps->groundEntityNum = ENTITYNUM_NONE;
 
-	if ( pm->ps->weapon == WP_ALEVEL3 )
+	// Calculate jump parameters
+	switch ( pm->ps->weapon )
 	{
-		jumpMagnitude = pm->ps->stats[ STAT_MISC ] *
-		                LEVEL3_POUNCE_JUMP_MAG / LEVEL3_POUNCE_TIME;
-	}
-	else
-	{
-		jumpMagnitude = pm->ps->stats[ STAT_MISC ] *
-		                LEVEL3_POUNCE_JUMP_MAG_UPG / LEVEL3_POUNCE_TIME_UPG;
+		case WP_ALEVEL0:
+			// wallwalking
+			if ( pml.groundTrace.plane.normal[ 2 ] <= 0.1f )
+			{
+				// get jump direction
+				VectorCopy( pml.forward, jumpDirection );
+
+				// get jump magnitude
+				jumpMagnitude = LEVEL0_WALLPOUNCE_MAGNITUDE;
+
+				// add cooldown
+				pm->ps->stats[ STAT_MISC ] = LEVEL0_WALLPOUNCE_COOLDOWN;
+			}
+			// moving foward or standing still
+			else if ( pm->cmd.forwardmove > 0 || ( pm->cmd.forwardmove == 0 && pm->cmd.rightmove == 0) )
+			{
+				// get jump direction
+				VectorCopy( pml.forward, jumpDirection );
+				jumpDirection[ 2 ] = fabs( jumpDirection[ 2 ] );
+
+				// calculate jump magnitude so that jump length is fixed for pitch between
+				// LEVEL0_POUNCE_MINPITCH and pi/4 (45°)
+				groundDirection[ 0 ] = jumpDirection[ 0 ];
+				groundDirection[ 1 ] = jumpDirection[ 1 ];
+				groundDirection[ 2 ] = 0.0f;
+				VectorNormalize( groundDirection );
+
+				pitch = acos( groundDirection[ 0 ] * jumpDirection[ 0 ] +
+							  groundDirection[ 1 ] * jumpDirection[ 1 ] );
+
+				if ( pitch > M_PI / 4.0f ) // 45°
+				{
+					pitch = M_PI / 4.0f;
+				}
+				else if ( pitch < LEVEL0_POUNCE_MINPITCH )
+				{
+					pitch = LEVEL0_POUNCE_MINPITCH;
+				}
+
+				jumpMagnitude = ( int )sqrt( LEVEL0_POUNCE_DISTANCE * pm->ps->gravity / sin( 2.0f * pitch ) );
+
+				// add cooldown
+				pm->ps->stats[ STAT_MISC ] = LEVEL0_POUNCE_COOLDOWN;
+			}
+			// going backwards or strafing
+			else if ( pm->cmd.forwardmove < 0 || pm->cmd.rightmove != 0 )
+			{
+				// get jump direction
+				if ( pm->cmd.forwardmove < 0 )
+				{
+					VectorNegate( pml.forward, jumpDirection );
+				}
+				else if ( pm->cmd.rightmove < 0 )
+				{
+					VectorNegate( pml.right, jumpDirection );
+				}
+				else
+				{
+					VectorCopy( pml.right, jumpDirection );
+				}
+
+				jumpDirection[ 2 ] = LEVEL0_SIDEPOUNCE_DIR_Z;
+
+				// get jump magnitude
+				jumpMagnitude = LEVEL0_SIDEPOUNCE_MAGNITUDE;
+
+				// add cooldown
+				pm->ps->stats[ STAT_MISC ] = LEVEL0_SIDEPOUNCE_COOLDOWN;
+			}
+
+			break;
+
+		case WP_ALEVEL3:
+		case WP_ALEVEL3_UPG:
+			if ( pm->ps->weapon == WP_ALEVEL3 )
+			{
+				jumpMagnitude = pm->ps->stats[ STAT_MISC ]
+				              * LEVEL3_POUNCE_JUMP_MAG / LEVEL3_POUNCE_TIME;
+			}
+			else
+			{
+				jumpMagnitude = pm->ps->stats[ STAT_MISC ]
+				              * LEVEL3_POUNCE_JUMP_MAG_UPG / LEVEL3_POUNCE_TIME_UPG;
+			}
+
+			VectorCopy( pml.forward, jumpDirection );
+
+			// save payload
+			pm->pmext->pouncePayload = pm->ps->stats[ STAT_MISC ];
+
+			// reset charge bar
+			pm->ps->stats[ STAT_MISC ] = 0;
+
+			break;
+
+		default:
+			return qfalse;
 	}
 
-	VectorMA( pm->ps->velocity, jumpMagnitude, pml.forward, pm->ps->velocity );
+	// Jump
+	VectorMA( pm->ps->velocity, jumpMagnitude, jumpDirection, pm->ps->velocity );
 	PM_AddEvent( EV_JUMP );
 
 	// Play jumping animation
@@ -738,9 +893,7 @@ static qboolean PM_CheckPounce( void )
 		pm->ps->pm_flags |= PMF_BACKWARDS_JUMP;
 	}
 
-	pm->pmext->pouncePayload = pm->ps->stats[ STAT_MISC ];
-	pm->ps->stats[ STAT_MISC ] = 0;
-
+	// We started to pounce
 	return qtrue;
 }
 
@@ -3241,13 +3394,23 @@ static void PM_Weapon( void )
 		return;
 	}
 
-	// Charging for a pounce or canceling a pounce
+	// Pounce cooldown (level 0)
+	if ( pm->ps->weapon == WP_ALEVEL0 )
+	{
+		pm->ps->stats[ STAT_MISC ] -= pml.msec;
+
+		if ( pm->ps->stats[ STAT_MISC ] < 0 )
+		{
+			pm->ps->stats[ STAT_MISC ] = 0;
+		}
+	}
+
+	// Charging for a pounce or canceling a pounce (level 3)
 	if ( pm->ps->weapon == WP_ALEVEL3 || pm->ps->weapon == WP_ALEVEL3_UPG )
 	{
 		int max;
 
-		max = pm->ps->weapon == WP_ALEVEL3 ? LEVEL3_POUNCE_TIME :
-		      LEVEL3_POUNCE_TIME_UPG;
+		max = pm->ps->weapon == WP_ALEVEL3 ? LEVEL3_POUNCE_TIME : LEVEL3_POUNCE_TIME_UPG;
 
 		if ( usercmdButtonPressed( pm->cmd.buttons, BUTTON_ATTACK2 ) )
 		{
