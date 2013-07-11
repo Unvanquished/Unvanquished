@@ -1090,6 +1090,120 @@ void CG_Rocket_CleanUpHumanSpawnItems( const char *table )
 	rocketInfo.data.selectedHumanSpawnItem = -1;
 }
 
+static void AddWeaponToBuyList( int i )
+{
+	static char buf[ MAX_STRING_CHARS ];
+
+	buf[ 0 ] = '\0';
+
+	if ( BG_Weapon( i )->purchasable && BG_WeaponAllowedInStage( i, cgs.humanStage ) && !BG_InventoryContainsWeapon( i, cg.snap->ps.stats ) )
+	{
+		Info_SetValueForKey( buf, "name", BG_Weapon( i )->humanName, qfalse );
+		Info_SetValueForKey( buf, "price", va( "%d", BG_Weapon( i )->price ), qfalse );
+		Info_SetValueForKey( buf, "description", BG_Weapon( i )->info, qfalse );
+
+		trap_Rocket_DSAddRow( "armouryBuyList", "default", buf );
+
+		rocketInfo.data.armouryBuyList[ rocketInfo.data.armouryBuyListCount++ ] = i;
+	}
+}
+
+static void AddUpgradeToBuyList( int i )
+{
+	static char buf[ MAX_STRING_CHARS ];
+
+	buf[ 0 ] = '\0';
+
+	if ( BG_Upgrade( i )->purchasable && BG_UpgradeAllowedInStage( i, cgs.humanStage ) && !BG_InventoryContainsUpgrade( i, cg.snap->ps.stats ) )
+	{
+		Info_SetValueForKey( buf, "name", BG_Upgrade( i )->humanName, qfalse );
+		Info_SetValueForKey( buf, "price", va( "%d", BG_Upgrade( i )->price ), qfalse );
+		Info_SetValueForKey( buf, "description", BG_Upgrade( i )->info, qfalse );
+
+		trap_Rocket_DSAddRow( "armouryBuyList", "default", buf );
+
+		rocketInfo.data.armouryBuyList[ rocketInfo.data.armouryBuyListCount++ ] = i + WP_NUM_WEAPONS;
+
+
+	}
+}
+
+void CG_Rocket_BuildArmouryBuyList( const char *table )
+{
+	int i;
+
+	if ( !Q_stricmp( table, "default" ) )
+	{
+		trap_Rocket_DSClearTable( "armouryBuyList", "default" );
+
+		for ( i = WP_MACHINEGUN; i <= WP_GRENADE; ++i )
+		{
+			AddWeaponToBuyList( i );
+		}
+
+		AddWeaponToBuyList( WP_HBUILD );
+
+		for ( i = UP_NONE + 1; i < UP_NUM_UPGRADES; ++i )
+		{
+			AddUpgradeToBuyList( i );
+		}
+	}
+}
+
+void CG_Rocket_CleanUpArmouryBuyList( const char *table )
+{
+	rocketInfo.data.selectedArmouryBuyItem = 0;
+	rocketInfo.data.armouryBuyListCount = 0;
+}
+
+void CG_Rocket_SetArmouryBuyList( const char *table, int index )
+{
+	rocketInfo.data.selectedArmouryBuyItem = index;
+}
+
+void CG_Rocket_ExecArmouryBuyList( const char *table )
+{
+	int item;
+	const char *buy = NULL;
+
+	if ( ( item = rocketInfo.data.armouryBuyList[ rocketInfo.data.selectedArmouryBuyItem ] ) > WP_NUM_WEAPONS )
+	{
+		item -= WP_NUM_WEAPONS;
+
+		if ( BG_Upgrade( item ) )
+		{
+			buy = BG_Upgrade( item )->name;
+
+			if ( BG_Upgrade( item )->slots & BG_SlotsForInventory( cg.snap->ps.stats ) )
+			{
+				int i;
+
+				for ( i = 0; i < UP_NUM_UPGRADES; ++i )
+				{
+					if ( i != item &&  BG_Upgrade( i )->slots == BG_Upgrade( item )->slots )
+					{
+						trap_SendClientCommand( va( "sell %s", BG_Upgrade( i )->name ) );
+					}
+				}
+			}
+		}
+	}
+	else
+	{
+		if ( BG_Weapon( item ) )
+		{
+			buy = BG_Weapon( item )->name;
+			trap_SendClientCommand( va( "sell %s", BG_Weapon ( BG_GetPlayerWeapon( &cg.snap->ps ) )->name ) );
+		}
+	}
+
+	if ( buy )
+	{
+		trap_SendClientCommand( va( "buy %s", buy ) );
+		trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_ARMOURYBUY ].id, "hide" );
+	}
+}
+
 static void nullSortFunc( const char *name, const char *sortBy )
 {
 }
@@ -1116,6 +1230,7 @@ typedef struct
 static const dataSourceCmd_t dataSourceCmdList[] =
 {
 	{ "alOutputs", &CG_Rocket_BuildAlOutputs, &nullSortFunc, &CG_Rocket_CleanUpAlOutputs, &CG_Rocket_SetAlOutputsOutput, &nullFilterFunc, &nullExecFunc },
+	{ "armouryBuyList", &CG_Rocket_BuildArmouryBuyList, &nullSortFunc, &CG_Rocket_CleanUpArmouryBuyList, &CG_Rocket_SetArmouryBuyList, &nullFilterFunc, &CG_Rocket_ExecArmouryBuyList },
 	{ "demoList", &CG_Rocket_BuildDemoList, &nullSortFunc, &CG_Rocket_CleanUpDemoList, &CG_Rocket_SetDemoListDemo, &nullFilterFunc, &CG_Rocket_ExecDemoList },
 	{ "humanSpawnItems", &CG_Rocket_BuildHumanSpawnItems, &nullSortFunc, CG_Rocket_CleanUpHumanSpawnItems, &CG_Rocket_SetHumanSpawnItems, &nullFilterFunc, &CG_Rocket_ExecHumanSpawnItems },
 	{ "languages", &CG_Rocket_BuildLanguageList, &nullSortFunc, &CG_Rocket_CleanUpLanguageList, &CG_Rocket_SetLanguageListLanguage, &nullFilterFunc, &nullExecFunc },
