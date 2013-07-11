@@ -666,14 +666,123 @@ static void PM_CheckWaterPounce( void )
 
 /*
 =============
+PM_GetTrajectoryAngleForVelocity
+
+Given an origin, a target point and an initial velocity v0, calculate the two possible
+pitch angles and corresponding directions for reaching the target on a parabolic trajectory.
+
+Returns qtrue when angles contains the two possible pitch angles and dir1 and dir2
+contain the corresponding directions. Returns qfalse when the target is out of reach.
+=============
+*/
+static qboolean PM_GetTrajectoryAngleForVelocity(
+        vec3_t origin, vec3_t target, float v0, vec2_t angles, vec3_t dir1, vec3_t dir2 )
+{
+	vec3_t t3;    // target relative to origin in 3D space
+	vec2_t t;     // relative target in 2D space (ignoring yaw angle)
+	float  tmp;   // temporary variable
+	float  g;     // gravity
+	float  v02;   // v0 * v0
+
+	VectorSubtract( target, origin, t3 );
+
+	if ( pm->debugLevel > 1 )
+	{
+		Com_Printf( "[PM_GetTrajectoryAngleForVelocity] 3D: %.1f %.1f %.1f (%.1f qu)\n",
+		            t3[ 0 ], t3[ 1 ], t3[ 2 ], VectorLength( t3 ) );
+	}
+
+	// abort if the distance is very small
+	if ( VectorLength( t3 ) < 0.1f )
+	{
+		return qfalse;
+	}
+
+	g = ( float )pm->ps->gravity;
+	v02 = v0 * v0;
+
+	// create a 2D representation of the problem by cutting out the plane that contains
+	// the trajectory
+	t[ 1 ] = t3[ 2 ];
+	t[ 0 ] = sqrt( t3[ 0 ] * t3[ 0 ] + t3[ 1 ] * t3[ 1 ] );
+
+	if ( pm->debugLevel > 1 )
+	{
+		Com_Printf("[PM_GetTrajectoryAngleForVelocity] 2D: %.1f %.1f (%.1f qu)\n",
+		           t[ 0 ], t[ 1 ], sqrt( t[ 0 ] * t[ 0 ] + t[ 1 ] * t[ 1 ] ) );
+	}
+
+	// calculate the angles
+	tmp = v02 * v02 - g * ( g * t[ 0 ] * t[ 0 ] + 2.0f * t[ 1 ] * v02 );
+
+	if ( tmp < 0.0f )
+	{
+		// target not reachable
+		return qfalse;
+	}
+
+	tmp = sqrt( tmp );
+
+	// TODO: Add actual atan
+	angles[ 0 ] = atanf( ( v02 + tmp ) / ( g * t[ 0 ] ) );
+	angles[ 1 ] = atanf( ( v02 - tmp ) / ( g * t[ 0 ] ) );
+
+	if ( pm->debugLevel > 1 )
+	{
+		Com_Printf( "[PM_GetTrajectoryAngleForVelocity] Angles: %.1f°, %.1f°\n",
+		            180.0f / M_PI * angles[ 0 ], 180.0f / M_PI * angles[ 1 ] );
+	}
+
+	// calculate the corresponding directions for both angles
+	dir1[ 0 ] = dir2[ 0 ] = t3[ 0 ];
+	dir1[ 1 ] = dir2[ 1 ] = t3[ 1 ];
+
+	if ( fabs( t3[ 0 ] ) < 0.01f && fabs( t3[ 1 ] ) < 0.01f ) // epsilon to prevent DBZ
+	{
+		// if target is below or above origin, we already know the direction
+		dir1[ 2 ] = dir2[ 2 ] = t3[ 2 ];
+	}
+	else
+	{
+		VectorNormalize( dir1 );
+		VectorNormalize( dir2 );
+
+		// otherwise we can assume that angles are not a multiple of pi/2
+		dir1[ 2 ] = sqrt( 1.0f / cos( angles[ 0 ] ) - 1.0f );
+		dir2[ 2 ] = sqrt( 1.0f / cos( angles[ 1 ] ) - 1.0f );
+
+		if ( angles[ 0 ] < 0.0f )
+		{
+			dir1[ 2 ] = -dir1[ 2 ];
+		}
+
+		if ( angles[ 1 ] < 0.0f )
+		{
+			dir2[ 2 ] = -dir2[ 2 ];
+		}
+	}
+
+	VectorNormalize( dir1 );
+	VectorNormalize( dir2 );
+
+	if ( pm->debugLevel > 1 )
+	{
+		Com_Printf( "[PM_GetTrajectoryAngleForVelocity] Dirs: ( %.2f, %.2f, %.2f ), ( %.2f, %.2f, %.2f )\n",
+		            dir1[ 0 ], dir1[ 1 ], dir1[ 2 ], dir2[ 0 ], dir2[ 1 ], dir2[ 2 ] );
+	}
+
+	return qtrue;
+}
+
+/*
+=============
 PM_CheckPounce
 =============
 */
 static qboolean PM_CheckPounce( void )
 {
 	int      jumpMagnitude;
-	vec3_t   jumpDirection;
-	vec3_t   groundDirection;
+	vec3_t   jumpDirection, groundDirection;
 	float    pitch;
 
 	// Check for valid class
@@ -766,11 +875,61 @@ static qboolean PM_CheckPounce( void )
 			// wallwalking
 			if ( pml.groundTrace.plane.normal[ 2 ] <= 0.1f )
 			{
-				// get jump direction
-				VectorCopy( pml.forward, jumpDirection );
-
 				// get jump magnitude
 				jumpMagnitude = LEVEL0_WALLPOUNCE_MAGNITUDE;
+
+				// if looking in the direction of the surface, jump in opposite normal direction
+				if ( DotProduct( pml.groundTrace.plane.normal, pml.forward ) < 0.0f )
+				{
+					VectorCopy( pml.groundTrace.plane.normal, jumpDirection );
+				}
+				// otherwise try to find a trajectory to the surface point the player is looking at
+				else
+				{
+					trace_t trace;
+					vec3_t  point, dir1, dir2;
+					vec2_t  angles;
+
+					VectorMA( pm->ps->origin, 10000.0f, pml.forward, point );
+
+					pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, point,
+					           pm->ps->clientNum, MASK_SOLID );
+
+					if ( trace.fraction < 1.0f &&
+					     PM_GetTrajectoryAngleForVelocity( pm->ps->origin, trace.endpos,
+					                                       jumpMagnitude, angles, dir1, dir2 ) )
+					{
+						// use the shorter trajection
+						if ( dir1[ 2 ] < dir2[ 2 ] )
+						{
+							if ( pm->debugLevel > 1 )
+							{
+								Com_Printf("[PM_CheckPounce] Using angle #1\n");
+							}
+
+							VectorCopy( dir1, jumpDirection );
+						}
+						else
+						{
+							if ( pm->debugLevel > 1 )
+							{
+								Com_Printf("[PM_CheckPounce] Using angle #2\n");
+							}
+
+							VectorCopy( dir2, jumpDirection );
+						}
+					}
+					// resort to jumping in view direction
+					else
+					{
+						if ( pm->debugLevel > 1 )
+						{
+							Com_Printf("[PM_CheckPounce] Failed to find a trajectory\n");
+						}
+
+						VectorCopy( pml.forward, jumpDirection );
+					}
+				}
 
 				// add cooldown
 				pm->ps->stats[ STAT_MISC ] = LEVEL0_WALLPOUNCE_COOLDOWN;
