@@ -1240,6 +1240,7 @@ void IN_BuiltinButtonCommand( void )
 	//Search in the builtin button commands
 	if ( key == -1 )
 	{
+		i = 0;
 		while( builtinButtonCommands[i].name != NULL )
 		{
 			if ( !Q_stricmp( builtinButtonCommands[i].name, name ) )
@@ -1256,11 +1257,11 @@ void IN_BuiltinButtonCommand( void )
 	{
 		if(isPlus)
 		{
-			IN_KeyDown( &kb[ KB_BUTTONS + i ] );
+			IN_KeyDown( &kb[ key ] );
 		}
 		else
 		{
-			IN_KeyUp( &kb[ KB_BUTTONS + i ] );
+			IN_KeyUp( &kb[ key ] );
 		}
 	}
 }
