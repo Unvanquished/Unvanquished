@@ -323,9 +323,33 @@ typedef struct
 
 //=============================================================================
 
+class GameVM: public VM::VMBase {
+public:
+	void GameInit(int levelTime, int randomSeed, qboolean restart);
+	void GameShutdown(qboolean restart);
+	qboolean GameClientConnect(char* reason, size_t size, int clientNum, qboolean firstTime, qboolean isBot);
+	void GameClientBegin(int clientNum);
+	void GameClientUserInfoChanged(int clientNum);
+	void GameClientDisconnect(int clientNum);
+	void GameClientCommand(int clientNum);
+	void GameClientThink(int clientNum);
+	void GameRunFrame(int levelTime);
+	qboolean GameConsoleCommand();
+	qboolean GameSnapshotCallback(int entityNum, int clientNum);
+	void BotAIStartFrame(int levelTime);
+	void GameMessageRecieved(int clientNum, const char *buffer, int bufferSize, int commandTime);
+
+private:
+	void Syscall(int index, RPC::Reader& input, RPC::Writer& outputs);
+
+	NaCl::SharedMemoryPtr shmRegion;
+};
+
+//=============================================================================
+
 extern serverStatic_t svs; // persistent server info across maps
 extern server_t       sv; // cleared each map
-extern vm_t           *gvm; // game virtual machine
+extern GameVM         gvm; // game virtual machine
 
 extern cvar_t         *sv_fps;
 extern cvar_t         *sv_timeout;

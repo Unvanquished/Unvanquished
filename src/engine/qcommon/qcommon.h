@@ -330,51 +330,46 @@ VIRTUAL MACHINE
 ==============================================================
 */
 
-// See also vm_traps.h for syscalls common to all VMs
+#include "nacl.h"
+#include "rpc.h"
 
-typedef struct vm_s vm_t;
+namespace VM {
 
-typedef enum
-{
-  VMI_NATIVE,
-  VMI_BYTECODE,
-  VMI_COMPILED
-} vmInterpret_t;
+enum Type {
+  TYPE_NATIVE,
+  TYPE_NACL
+};
 
-void VM_Init( void );
+class VMBase {
+public:
+  // Create the VM for the named module. Returns the ABI version reported
+  // by the module.
+  int Create(const char* name, Type type);
 
-vm_t *VM_Create( const char *module, intptr_t ( *systemCalls )( intptr_t * ), vmInterpret_t interpret );
+  // Free the VM
+  void Free()
+  {
+    module = nullptr;
+  }
 
-// module should be bare: "cgame", not "cgame.dll", "vm/cgame.qvm" or "cgamellvm.bc"
+  // Check if the VM is active
+  bool IsActive() const
+  {
+    return module != nullptr;
+  }
 
-void           VM_Free( vm_t *vm );
-void           VM_Clear( void );
-void           VM_Forced_Unload_Start( void );
-void           VM_Forced_Unload_Done( void );
-vm_t           *VM_Restart( vm_t *vm );
+protected:
+  // Perform an RPC call with the given inputs, returns results in output
+  void DoRPC(RPC::Writer& input, RPC::Reader& output, bool ignoreErrors = false);
 
-intptr_t QDECL VM_Call( vm_t *vm, int callNum, ... );
-intptr_t QDECL VM_DllSyscall( intptr_t arg, ... );
+  // System call handler
+  virtual void Syscall(int index, RPC::Reader& input, RPC::Writer& output) = 0;
 
-void           VM_Debug( int level );
+private:
+  std::unique_ptr<NaCl::Module> module;
+};
 
-void           *VM_ArgPtr( intptr_t intValue );
-void           *VM_ExplicitArgPtr( vm_t *vm, intptr_t intValue );
-
-void VM_CheckBlock( intptr_t buf, size_t n, const char *fail );
-void VM_CheckBlockPair( intptr_t dest, intptr_t src, size_t dn, size_t sn, const char *fail );
-
-intptr_t       VM_SystemCall( intptr_t *args ); // common system calls
-
-#define VMA(x) VM_ArgPtr(args[ x ])
-static INLINE float _vmf( intptr_t x )
-{
-    floatint_t fi;
-    fi.i = ( int ) x;
-    return fi.f;
-}
-
-#define VMF(x) _vmf(args[ x ])
+} // namespace VM
 
 /*
 ==============================================================

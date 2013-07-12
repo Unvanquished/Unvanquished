@@ -412,32 +412,26 @@ void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int code, const char *fmt, ... )
 
 	if ( code == ERR_SERVERDISCONNECT )
 	{
-		VM_Forced_Unload_Start();
 		Com_Printf( S_COLOR_WHITE "%s\n", com_errorMessage );
 		SV_Shutdown( "Server disconnected" );
 		CL_Disconnect( qtrue );
 		CL_FlushMemory();
-		VM_Forced_Unload_Done();
 		com_errorEntered = qfalse;
 		longjmp( abortframe, -1 );
 	}
 	else if ( code == ERR_DROP )
 	{
-		VM_Forced_Unload_Start();
 		Com_Printf( S_COLOR_ORANGE "%s\n", com_errorMessage );
 		SV_Shutdown( va( "********************\nServer crashed: %s\n********************\n", com_errorMessage ) );
 		CL_Disconnect( qtrue );
 		CL_FlushMemory();
-		VM_Forced_Unload_Done();
 		com_errorEntered = qfalse;
 		longjmp( abortframe, -1 );
 	}
 	else
 	{
-		VM_Forced_Unload_Start();
 		CL_Shutdown();
 		SV_Shutdown( va( "Server fatal crashed: %s\n", com_errorMessage ) );
-		VM_Forced_Unload_Done();
 	}
 
 	Com_Shutdown( code == ERR_VID_FATAL ? qtrue : qfalse );
@@ -470,14 +464,12 @@ void NORETURN Com_Quit_f( void )
 		// which would trigger an unload of active VM error.
 		// Sys_Quit will kill this process anyways, so
 		// a corrupt call stack makes no difference
-		VM_Forced_Unload_Start();
 		SV_Shutdown( p[ 0 ] ? p : "Server quit\n" );
 //bani
 #if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 		CL_ShutdownCGame();
 #endif
 		CL_Shutdown();
-		VM_Forced_Unload_Done();
 		Com_Shutdown( qfalse );
 		FS_Shutdown( qtrue );
 	}
@@ -1969,7 +1961,6 @@ void Hunk_Clear( void )
 	com_hunkusedvalue = hunk_low.permanent + hunk_high.permanent;
 
 	Com_DPrintf( "Hunk_Clear: reset the hunk ok\n" );
-	VM_Clear(); // (SA) FIXME:TODO: was commented out in wolf
 #ifdef HUNK_DEBUG
 	hunkblocks = NULL;
 #endif
@@ -3198,7 +3189,6 @@ void Com_Init( char *commandLine )
 	Com_RandomBytes( ( byte * )&qport, sizeof( int ) );
 	Netchan_Init( qport & 0xffff );
 
-	VM_Init();
 	SV_Init();
 	Hist_Load();
 

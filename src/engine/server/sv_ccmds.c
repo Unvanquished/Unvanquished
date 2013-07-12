@@ -239,7 +239,8 @@ static void SV_MapRestart_f( void )
 {
 	int         i;
 	client_t    *client;
-	char        *denied;
+	qboolean    denied;
+	char        reason[ MAX_STRING_CHARS ];
 	qboolean    isBot;
 	int         delay = 0;
 
@@ -302,7 +303,7 @@ static void SV_MapRestart_f( void )
 	// run a few frames to allow everything to settle
 	for ( i = 0; i < GAME_INIT_FRAMES; i++ )
 	{
-		VM_Call( gvm, GAME_RUN_FRAME, svs.time );
+		gvm.GameRunFrame( svs.time );
 		svs.time += FRAMETIME;
 	}
 
@@ -337,13 +338,13 @@ static void SV_MapRestart_f( void )
 		SV_AddServerCommand( client, "map_restart\n" );
 
 		// connect the client again, without the firstTime flag
-		denied = ( char* ) VM_ExplicitArgPtr( gvm, VM_Call( gvm, GAME_CLIENT_CONNECT, i, qfalse, isBot ) );
+		denied = gvm.GameClientConnect( reason, sizeof( reason ), i, qfalse, isBot );
 
 		if ( denied )
 		{
 			// this generally shouldn't happen, because the client
 			// was connected before the level change
-			SV_DropClient( client, denied );
+			SV_DropClient( client, reason );
 
 			if ( !isBot )
 			{
@@ -359,7 +360,7 @@ static void SV_MapRestart_f( void )
 	}
 
 	// run another frame to allow things to look at all the players
-	VM_Call( gvm, GAME_RUN_FRAME, svs.time );
+	gvm.GameRunFrame( svs.time );
 	svs.time += FRAMETIME;
 
 	Cvar_Set( "sv_serverRestarting", "0" );

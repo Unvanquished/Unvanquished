@@ -533,12 +533,6 @@ set( SERVERLIST
   ${MOUNT_DIR}/engine/server/sv_world.c
 )
 
-set( QCOMMON_ARCH "" )
-if( BUILD_ARCH STREQUAL "i386" OR BUILD_ARCH STREQUAL "x32" OR BUILD_ARCH STREQUAL "x86_64" )
-  set( QCOMMON_ARCH ${MOUNT_DIR}/engine/qcommon/vm_x86.c )
-#elseif( ... )
-endif()
-
 set( QCOMMONLIST
   ${MOUNT_DIR}/engine/qcommon/cm_load.c
   ${MOUNT_DIR}/engine/qcommon/cm_trisoup.c
@@ -563,9 +557,8 @@ set( QCOMMONLIST
   ${MOUNT_DIR}/engine/qcommon/translation.cpp
   ${MOUNT_DIR}/engine/qcommon/unzip.c
   ${MOUNT_DIR}/engine/qcommon/ioapi.c
-  ${MOUNT_DIR}/engine/qcommon/vm.c
-  ${MOUNT_DIR}/engine/qcommon/vm_interpreted.c
-  ${QCOMMON_ARCH}
+  ${MOUNT_DIR}/engine/qcommon/nacl.cpp
+  ${MOUNT_DIR}/engine/qcommon/vm.cpp
 )
 
 # Visual studio can't handle inline assembly
@@ -1035,6 +1028,49 @@ set( TINYGETTEXT_LIST
   ${MOUNT_DIR}/libs/tinygettext/po_parser.hpp
   ${MOUNT_DIR}/libs/findlocale/findlocale.c
 )
+
+set( NACL_LIST_HOST
+  ${MOUNT_DIR}/libs/nacl/native_client/src/shared/imc/nacl_imc_common.cc
+)
+if( UNIX )
+    set( NACL_LIST_HOST ${NACL_LIST_HOST}
+      ${MOUNT_DIR}/libs/nacl/native_client/src/shared/imc/posix/nacl_imc_posix.cc
+    )
+  if( APPLE )
+    add_definitions( -DNACL_WIN32=0 -DNACL_LINUX=0 -DNACL_ANDRIOD=0 -DNACL_OSX=1 )
+    set( NACL_LIST_HOST ${NACL_LIST_HOST}
+      ${MOUNT_DIR}/libs/nacl/native_client/src/shared/imc/osx/nacl_imc.cc
+    )
+  else()
+    add_definitions( -DNACL_WIN32=0 -DNACL_LINUX=1 -DNACL_ANDRIOD=0 -DNACL_OSX=0 )
+    set( NACL_LIST_HOST ${NACL_LIST_HOST}
+      ${MOUNT_DIR}/libs/nacl/native_client/src/shared/imc/linux/nacl_imc.cc
+    )
+  endif()
+elseif( WIN32 )
+  add_definitions( -DNACL_WIN32=1 -DNACL_LINUX=0 -DNACL_ANDRIOD=0 -DNACL_OSX=0 )
+  set( NACL_LIST_HOST ${NACL_LIST_HOST}
+    ${MOUNT_DIR}/libs/nacl/native_client/src/shared/imc/win/nacl_imc.cc
+    ${MOUNT_DIR}/libs/nacl/native_client/src/shared/imc/win/nacl_shm.cc
+  )
+endif()
+add_definitions( -DNACL_BUILD_ARCH=x86 -DNACL_BUILD_SUBARCH=64 )
+
+set( NACL_LIST_MODULE
+  ${MOUNT_DIR}/libs/nacl/native_client/src/shared/imc/nacl_imc_common.cc
+  ${MOUNT_DIR}/libs/nacl/native_client/src/shared/imc/nacl/nacl_imc.cc
+  ${MOUNT_DIR}/libs/nacl/native_client/src/untrusted/nacl/imc_accept.c
+  ${MOUNT_DIR}/libs/nacl/native_client/src/untrusted/nacl/imc_connect.c
+  ${MOUNT_DIR}/libs/nacl/native_client/src/untrusted/nacl/imc_makeboundsock.c
+  ${MOUNT_DIR}/libs/nacl/native_client/src/untrusted/nacl/imc_mem_obj_create.c
+  ${MOUNT_DIR}/libs/nacl/native_client/src/untrusted/nacl/imc_recvmsg.c
+  ${MOUNT_DIR}/libs/nacl/native_client/src/untrusted/nacl/imc_sendmsg.c
+  ${MOUNT_DIR}/libs/nacl/native_client/src/untrusted/nacl/imc_socketpair.c
+)
+
+set( QCOMMONLIST ${QCOMMONLIST} ${NACL_LIST_HOST} )
+
+include_directories( ${MOUNT_DIR}/libs/nacl )
 
 ####################
 # End of file list #

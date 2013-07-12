@@ -143,6 +143,7 @@ Maryland 20850 USA.
 
 #define DLL_PREFIX    ""
 #define DLL_EXT       ".dll"
+#define EXE_EXT       ".exe"
 
 #elif defined( __WIN32__ ) || defined( _WIN32 )
 
@@ -177,6 +178,7 @@ Maryland 20850 USA.
 
 #define DLL_PREFIX    ""
 #define DLL_EXT       ".dll"
+#define EXE_EXT       ".exe"
 
 #endif
 
@@ -212,6 +214,7 @@ Maryland 20850 USA.
 
 #define DLL_PREFIX    "lib"
 #define DLL_EXT       ".dylib"
+#define EXE_EXT       ""
 
 #endif
 
@@ -274,6 +277,7 @@ Maryland 20850 USA.
 
 #define DLL_PREFIX    "lib"
 #define DLL_EXT       ".so"
+#define EXE_EXT       ""
 
 #endif
 
@@ -323,6 +327,7 @@ Maryland 20850 USA.
 
 #define DLL_PREFIX    "lib"
 #define DLL_EXT       ".so"
+#define EXE_EXT       ""
 
 #endif
 
@@ -353,6 +358,7 @@ Maryland 20850 USA.
 
 #define DLL_PREFIX    "lib"
 #define DLL_EXT       ".so"
+#define EXE_EXT       ""
 
 #endif
 
@@ -372,6 +378,7 @@ Maryland 20850 USA.
 
 #define DLL_PREFIX    "lib"
 #define DLL_EXT       ".so"
+#define EXE_EXT       ""
 
 #endif
 #endif
@@ -414,6 +421,10 @@ Maryland 20850 USA.
 
 #ifndef DLL_EXT
 #error "DLL_EXT not defined"
+#endif
+
+#ifndef EXE_EXT
+#error "EXE_EXT not defined"
 #endif
 
 //endianness

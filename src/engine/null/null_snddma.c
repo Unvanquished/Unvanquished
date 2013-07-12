@@ -29,7 +29,8 @@ If you have questions concerning this license or the applicable additional terms
 // snddma_null.c
 // all other sound mixing is portable
 
-#include "../client/client.h"
+#include "../qcommon/q_shared.h"
+#include "../qcommon/qcommon.h"
 
 qboolean SNDDMA_Init( void )
 {

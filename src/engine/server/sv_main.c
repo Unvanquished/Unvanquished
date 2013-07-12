@@ -40,7 +40,7 @@ cvar_t         *sv_voip;
 
 serverStatic_t svs; // persistent server info
 server_t       sv; // local server
-vm_t           *gvm = NULL; // game virtual machine // bk001212 init
+GameVM         gvm; // game virtual machine
 
 cvar_t         *sv_fps; // time rate for running non-clients
 cvar_t         *sv_timeout; // seconds without any message
@@ -1329,7 +1329,7 @@ void SV_Frame( int msec )
 		svs.time += frameMsec;
 
 		// let everything in the world think and move
-		VM_Call( gvm, GAME_RUN_FRAME, svs.time );
+		gvm.GameRunFrame( svs.time );
 
 #ifdef USE_PHYSICS
 		CMod_PhysicsUpdate();

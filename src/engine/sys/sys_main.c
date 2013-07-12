@@ -562,12 +562,10 @@ void NORETURN Sys_SigHandler( int signal )
 	else
 	{
 		signalcaught = qtrue;
-		VM_Forced_Unload_Start();
 #if !defined(DEDICATED)
 		CL_Shutdown();
 #endif
 		SV_Shutdown( va( "Received signal %d", signal ) );
-		VM_Forced_Unload_Done();
 	}
 
 	if ( signal == SIGTERM || signal == SIGINT )

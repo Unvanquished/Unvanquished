@@ -690,7 +690,7 @@ void SV_SpawnServer( char *server )
 	// run a few frames to allow everything to settle
 	for ( i = 0; i < GAME_INIT_FRAMES; i++ )
 	{
-		VM_Call( gvm, GAME_RUN_FRAME, svs.time );
+		gvm.GameRunFrame( svs.time );
 		SV_BotFrame( svs.time );
 		svs.time += FRAMETIME;
 	}
@@ -703,7 +703,8 @@ void SV_SpawnServer( char *server )
 		// send the new gamestate to all connected clients
 		if ( svs.clients[ i ].state >= CS_CONNECTED )
 		{
-			const char *denied;
+			qboolean denied;
+			char reason[ MAX_STRING_CHARS ];
 
 			if ( svs.clients[ i ].netchan.remoteAddress.type == NA_BOT )
 			{
@@ -716,13 +717,13 @@ void SV_SpawnServer( char *server )
 			}
 
 			// connect the client again
-			denied = ( const char * ) 	VM_ExplicitArgPtr( gvm, VM_Call( gvm, GAME_CLIENT_CONNECT, i, qfalse, isBot ) );   // firstTime = qfalse
+			denied = gvm.GameClientConnect( reason, sizeof( reason ), i, qfalse, isBot );   // firstTime = qfalse
 
 			if ( denied )
 			{
 				// this generally shouldn't happen, because the client
 				// was connected before the level change
-				SV_DropClient( &svs.clients[ i ], denied );
+				SV_DropClient( &svs.clients[ i ], reason );
 			}
 			else
 			{
@@ -746,14 +747,14 @@ void SV_SpawnServer( char *server )
 					client->deltaMessage = -1;
 					client->nextSnapshotTime = svs.time; // generate a snapshot immediately
 
-					VM_Call( gvm, GAME_CLIENT_BEGIN, i );
+					gvm.GameClientBegin( i );
 				}
 			}
 		}
 	}
 
 	// run another frame to allow things to look at all the players
-	VM_Call( gvm, GAME_RUN_FRAME, svs.time );
+	gvm.GameRunFrame( svs.time );
 	SV_BotFrame( svs.time );
 	svs.time += FRAMETIME;
 

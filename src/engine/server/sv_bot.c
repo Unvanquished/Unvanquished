@@ -271,12 +271,12 @@ void SV_BotFrame( int time )
 	}
 
 	//NOTE: maybe the game is already shutdown
-	if ( !gvm )
+	if ( !gvm.IsActive() )
 	{
 		return;
 	}
 
-	VM_Call( gvm, BOTAI_START_FRAME, time );
+	gvm.BotAIStartFrame( time );
 }
 
 //
