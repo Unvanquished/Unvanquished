@@ -355,7 +355,7 @@ std::string     GLShaderManager::BuildGPUShaderText( const char *mainShaderName,
 
 		if ( r_debugShadowMaps->integer )
 		{
-			AddGLSLDefine( bufferExtra, "r_debugShadowMaps", r_debugShadowMaps->integer );
+			AddGLSLDefine( bufferExtra, "r_DebugShadowMaps", r_debugShadowMaps->integer );
 		}
 
 		/*

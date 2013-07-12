@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-05-06 01:34+0200\n"
+"POT-Creation-Date: 2013-07-07 23:10+0200\n"
 "PO-Revision-Date: 2013-01-21 22:32+0000\n"
 "Last-Translator: Qrntz <q@penguinishly.org.ua>\n"
 "Language-Team: Ukrainian <kde-i18n-doc@kde.org>\n"
@@ -1887,47 +1887,47 @@ msgstr "%s^7 died\n"
 msgid "Listed %2d clients\n"
 msgstr "Показано %2d клієнтів\n"
 
-#: src/gamelogic/cgame/cg_draw.c:2019 src/gamelogic/ui/ui_main.c:2485
+#: src/gamelogic/cgame/cg_draw.c:2018 src/gamelogic/ui/ui_main.c:2485
 #, fuzzy
 msgid "Aliens"
 msgstr "прибульці"
 
-#: src/gamelogic/cgame/cg_draw.c:2023 src/gamelogic/cgame/cg_draw.c:2033
+#: src/gamelogic/cgame/cg_draw.c:2022 src/gamelogic/cgame/cg_draw.c:2032
 #, c-format
 msgid "(Stage %d)"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_draw.c:2029 src/gamelogic/ui/ui_main.c:2495
+#: src/gamelogic/cgame/cg_draw.c:2028 src/gamelogic/ui/ui_main.c:2495
 #, fuzzy
 msgid "Humans"
 msgstr "люди"
 
-#: src/gamelogic/cgame/cg_draw.c:2091 src/gamelogic/cgame/cg_draw.c:2115
+#: src/gamelogic/cgame/cg_draw.c:2090 src/gamelogic/cgame/cg_draw.c:2114
 #, c-format
 msgid "Stage %d"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_draw.c:2095
+#: src/gamelogic/cgame/cg_draw.c:2094
 #, c-format
 msgid "Stage %d, 1 frag for next stage"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_draw.c:2100
+#: src/gamelogic/cgame/cg_draw.c:2099
 #, c-format
 msgid "Stage %d, %d frags for next stage"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_draw.c:2119
+#: src/gamelogic/cgame/cg_draw.c:2118
 #, c-format
 msgid "Stage %d, 1 credit for next stage"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_draw.c:2124
+#: src/gamelogic/cgame/cg_draw.c:2123
 #, c-format
 msgid "Stage %d, %d credits for next stage"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_draw.c:2764
+#: src/gamelogic/cgame/cg_draw.c:2760
 msgid "Connection Interrupted"
 msgstr ""
 
@@ -1992,15 +1992,15 @@ msgstr "%s^7 приєднався до %s\n"
 msgid "%s^7 left the %s and joined the %s\n"
 msgstr "%s^7 залишив %s й приєднався до %s\n"
 
-#: src/gamelogic/cgame/cg_servercmds.c:262
+#: src/gamelogic/cgame/cg_servercmds.c:263
 msgid "We have evolved!"
 msgstr "Ми еволюціонували!"
 
-#: src/gamelogic/cgame/cg_servercmds.c:278
+#: src/gamelogic/cgame/cg_servercmds.c:282
 msgid "Reinforcements have arrived!"
 msgstr "Прибули підкріплення!"
 
-#: src/gamelogic/cgame/cg_servercmds.c:545
+#: src/gamelogic/cgame/cg_servercmds.c:548
 msgid ""
 "The alien team has too many players. Please wait until slots become "
 "available or join the human team."
@@ -2008,11 +2008,11 @@ msgstr ""
 "Забагато гравців у команді прибульців. Будь ласка, почекайте доки "
 "звільниться місце або приєднайтесь до команди людей."
 
-#: src/gamelogic/cgame/cg_servercmds.c:547
+#: src/gamelogic/cgame/cg_servercmds.c:550
 msgid "The alien team has too many players"
 msgstr "Забагато гравців у команді прибульців"
 
-#: src/gamelogic/cgame/cg_servercmds.c:552
+#: src/gamelogic/cgame/cg_servercmds.c:555
 msgid ""
 "The human team has too many players. Please wait until slots become "
 "available or join the alien team."
@@ -2020,30 +2020,30 @@ msgstr ""
 "Забагато гравців у команді людей. Будь ласка, почекайте доки звільниться "
 "місце або приєднайтесь до команди прибульців."
 
-#: src/gamelogic/cgame/cg_servercmds.c:554
+#: src/gamelogic/cgame/cg_servercmds.c:557
 msgid "The human team has too many players"
 msgstr "Забагато гравців у команді людей"
 
-#: src/gamelogic/cgame/cg_servercmds.c:559
+#: src/gamelogic/cgame/cg_servercmds.c:562
 msgid "The alien team is locked. You cannot join the aliens at this time."
 msgstr ""
 "Команда прибульців замкнена. Ви не можете приєднатись до прибульців на даний "
 "момент."
 
-#: src/gamelogic/cgame/cg_servercmds.c:561
+#: src/gamelogic/cgame/cg_servercmds.c:564
 msgid "The alien team is locked"
 msgstr "Команда прибульців замкнена"
 
-#: src/gamelogic/cgame/cg_servercmds.c:566
+#: src/gamelogic/cgame/cg_servercmds.c:569
 msgid "The human team is locked. You cannot join the humans at this time."
 msgstr ""
 "Команда людей замкнена. Ви не можете приєднатись до людей на даний момент."
 
-#: src/gamelogic/cgame/cg_servercmds.c:568
+#: src/gamelogic/cgame/cg_servercmds.c:571
 msgid "The human team is locked"
 msgstr "Команда людей замкнена"
 
-#: src/gamelogic/cgame/cg_servercmds.c:573
+#: src/gamelogic/cgame/cg_servercmds.c:576
 msgid ""
 "The maximum number of playing clients has been reached. Please wait until "
 "slots become available."
@@ -2051,25 +2051,25 @@ msgstr ""
 "Максимальне число гравців було досягнуто. Будь ласка, зачекайте доки "
 "звільниться місце."
 
-#: src/gamelogic/cgame/cg_servercmds.c:575
+#: src/gamelogic/cgame/cg_servercmds.c:578
 msgid "No free player slots"
 msgstr "Немає вільного місця для гравців"
 
-#: src/gamelogic/cgame/cg_servercmds.c:580
+#: src/gamelogic/cgame/cg_servercmds.c:583
 msgid "You must wait until the warmup time is finished before joining a team. "
 msgstr ""
 "Ви повинні дочекатись закінчення розігріву перед приєднанням до команди."
 
-#: src/gamelogic/cgame/cg_servercmds.c:582
+#: src/gamelogic/cgame/cg_servercmds.c:585
 msgid "You cannot join a team during warmup."
 msgstr "Ви не можете увійти в команду протягом розігріву."
 
-#: src/gamelogic/cgame/cg_servercmds.c:594
+#: src/gamelogic/cgame/cg_servercmds.c:597
 msgid "Cheats are not enabled on this server"
 msgstr "Шахрайство не дозволене на цьому сервері"
 
 # yo dawg we heard you like команди
-#: src/gamelogic/cgame/cg_servercmds.c:599
+#: src/gamelogic/cgame/cg_servercmds.c:602
 msgid ""
 "Cheats are not enabled on this server, so you may not use this command while "
 "on a team"
@@ -2077,27 +2077,27 @@ msgstr ""
 "Чити не увімкнені на цьому сервері, тож ви не можете використовувати цю "
 "команду коли у загоні"
 
-#: src/gamelogic/cgame/cg_servercmds.c:607
+#: src/gamelogic/cgame/cg_servercmds.c:610
 msgid "Join a team first"
 msgstr "Спочатку приєднайтесь до команди"
 
-#: src/gamelogic/cgame/cg_servercmds.c:614
+#: src/gamelogic/cgame/cg_servercmds.c:617
 msgid "You can only use this command when spectating"
 msgstr "Ви можете використовувати цю команду лише у режимі спостерігача"
 
-#: src/gamelogic/cgame/cg_servercmds.c:620
+#: src/gamelogic/cgame/cg_servercmds.c:623
 msgid "Must be alien to use this command"
 msgstr "Ви повинні бути прибульцем для використання цієї команди"
 
-#: src/gamelogic/cgame/cg_servercmds.c:626
+#: src/gamelogic/cgame/cg_servercmds.c:629
 msgid "Must be human to use this command"
 msgstr "Ви повинні бути людиною для використання цієї команди"
 
-#: src/gamelogic/cgame/cg_servercmds.c:632
+#: src/gamelogic/cgame/cg_servercmds.c:635
 msgid "Must be alive to use this command"
 msgstr "Ви повинні жити для використання цієї команди"
 
-#: src/gamelogic/cgame/cg_servercmds.c:639
+#: src/gamelogic/cgame/cg_servercmds.c:642
 msgid ""
 "There is no room to build here. Move until the structure turns translucent "
 "green, indicating a valid build location."
@@ -2105,11 +2105,11 @@ msgstr ""
 "Тут немає місця для будування. Рухайтесь, допоки будівля не стане зеленого "
 "кольору, вказуючи слушне місце для будування."
 
-#: src/gamelogic/cgame/cg_servercmds.c:641
+#: src/gamelogic/cgame/cg_servercmds.c:644
 msgid "There is no room to build here"
 msgstr "Тут немає місця для будування"
 
-#: src/gamelogic/cgame/cg_servercmds.c:646
+#: src/gamelogic/cgame/cg_servercmds.c:649
 msgid ""
 "Cannot build on this surface. The surface is too steep or unsuitable for "
 "building. Please choose another site for this structure."
@@ -2117,15 +2117,15 @@ msgstr ""
 "Будувати на цій поверхні не можна. Поверхня є занадто крутою або не "
 "підходить для будування. Будь ласка, оберіть інше місце для цієї будівлі."
 
-#: src/gamelogic/cgame/cg_servercmds.c:649
+#: src/gamelogic/cgame/cg_servercmds.c:652
 msgid "Cannot build on this surface"
 msgstr "Будувати на цій поверхні не можна"
 
-#: src/gamelogic/cgame/cg_servercmds.c:655
+#: src/gamelogic/cgame/cg_servercmds.c:658
 msgid "You cannot build that structure"
 msgstr "Ви не можете побудувати цю структуру"
 
-#: src/gamelogic/cgame/cg_servercmds.c:661
+#: src/gamelogic/cgame/cg_servercmds.c:664
 msgid ""
 "This action would remove your team's last spawn point, which often quickly "
 "results in a loss. Try building more spawns."
@@ -2133,11 +2133,11 @@ msgstr ""
 "Дана дія призвела б до втрати вашою командою останньої точки спавну, що "
 "часто спричинює поразку. Спробуйте побудувати більше точок спавну."
 
-#: src/gamelogic/cgame/cg_servercmds.c:664
+#: src/gamelogic/cgame/cg_servercmds.c:667
 msgid "You may not deconstruct the last spawn"
 msgstr "Ви не можете демонтувати останній спавн"
 
-#: src/gamelogic/cgame/cg_servercmds.c:669
+#: src/gamelogic/cgame/cg_servercmds.c:672
 msgid ""
 "Neither team has prevailed after a certain time and the game has entered "
 "Sudden Death. During Sudden Death building is not allowed."
@@ -2145,11 +2145,11 @@ msgstr ""
 "Жодна з команд не виграла протягом деякого часу й розпочалася фаза Раптової "
 "Смерті. Під час цієї фази не можна будувати."
 
-#: src/gamelogic/cgame/cg_servercmds.c:672
+#: src/gamelogic/cgame/cg_servercmds.c:675
 msgid "Cannot build during Sudden Death"
 msgstr "Не можна будувати під час Раптової Смерті"
 
-#: src/gamelogic/cgame/cg_servercmds.c:677
+#: src/gamelogic/cgame/cg_servercmds.c:680
 msgid ""
 "Your teammates have lost faith in your ability to build for the team. You "
 "will not be allowed to build until your team votes to reinstate your "
@@ -2159,11 +2159,11 @@ msgstr ""
 "дозволено будувати доки ваша команда не проголосує за відновлення ваших "
 "прав."
 
-#: src/gamelogic/cgame/cg_servercmds.c:680
+#: src/gamelogic/cgame/cg_servercmds.c:683
 msgid "Your building rights have been revoked"
 msgstr "Ваше право на будування було скасовано"
 
-#: src/gamelogic/cgame/cg_servercmds.c:685
+#: src/gamelogic/cgame/cg_servercmds.c:688
 msgid ""
 "Your team has decided to admit defeat and concede the game:traitors and "
 "cowards are not allowed to build."
@@ -2171,11 +2171,11 @@ msgstr ""
 "Ваша команда вирішила визнати поразку й здатись: зрадники й боягузи не "
 "повинні будувати."
 
-#: src/gamelogic/cgame/cg_servercmds.c:688
+#: src/gamelogic/cgame/cg_servercmds.c:691
 msgid "Building is denied to traitorous cowards"
 msgstr "Будівництво заборонено зрадливим боягузам"
 
-#: src/gamelogic/cgame/cg_servercmds.c:697
+#: src/gamelogic/cgame/cg_servercmds.c:700
 msgid ""
 "There is no power remaining. Free up power by marking existing buildable "
 "objects."
@@ -2183,29 +2183,29 @@ msgstr ""
 "Не залишилось енергії. Звільніть енергію шляхом позначення існуючих "
 "будівель."
 
-#: src/gamelogic/cgame/cg_servercmds.c:702
+#: src/gamelogic/cgame/cg_servercmds.c:705
 msgid ""
 "There is no power remaining. Free up power by deconstructing existing "
 "buildable objects."
 msgstr ""
 "Не залишилось енергії. Звільніть енергію шляхом знесення існуючих будівель."
 
-#: src/gamelogic/cgame/cg_servercmds.c:706
+#: src/gamelogic/cgame/cg_servercmds.c:709
 msgid "There is no power remaining"
 msgstr "Не залишилось енергії"
 
-#: src/gamelogic/cgame/cg_servercmds.c:711
+#: src/gamelogic/cgame/cg_servercmds.c:714
 msgid ""
 "This buildable is not powered. Build a Reactor and/or Repeater in order to "
 "power it."
 msgstr ""
 "Ця будівля не працює. Побудуйте реактор та/або повторювач щоб увімкнути її."
 
-#: src/gamelogic/cgame/cg_servercmds.c:713
+#: src/gamelogic/cgame/cg_servercmds.c:716
 msgid "This buildable is not powered"
 msgstr "Ця будівля не працює"
 
-#: src/gamelogic/cgame/cg_servercmds.c:718
+#: src/gamelogic/cgame/cg_servercmds.c:721
 msgid ""
 "There can only be one Reactor. Deconstruct the existing one if you wish to "
 "move it."
@@ -2213,11 +2213,11 @@ msgstr ""
 "Може існувати лише один реактор. Знесіть існуючий, якщо ви бажаєте його "
 "перенести."
 
-#: src/gamelogic/cgame/cg_servercmds.c:720
+#: src/gamelogic/cgame/cg_servercmds.c:723
 msgid "There can only be one Reactor"
 msgstr "Може існувати лише один реактор"
 
-#: src/gamelogic/cgame/cg_servercmds.c:725
+#: src/gamelogic/cgame/cg_servercmds.c:728
 msgid ""
 "There is no power here. If available, a Repeater may be used to transmit "
 "power to this location."
@@ -2225,28 +2225,28 @@ msgstr ""
 "Тут немає енергії. Якщо можливо, використайте повторювач для передавання "
 "енергії до цього місця."
 
-#: src/gamelogic/cgame/cg_servercmds.c:727
+#: src/gamelogic/cgame/cg_servercmds.c:730
 msgid "There is no power here"
 msgstr "Тут немає енергії"
 
-#: src/gamelogic/cgame/cg_servercmds.c:732
+#: src/gamelogic/cgame/cg_servercmds.c:735
 msgid ""
 "There is no Defense Computer. A Defense Computer is needed to build this."
 msgstr "Захисний комп’ютер не побудований. Він потрібен, щоб побудувати це."
 
-#: src/gamelogic/cgame/cg_servercmds.c:734
+#: src/gamelogic/cgame/cg_servercmds.c:737
 msgid "There is no Defense Computer"
 msgstr "Немає захисного комп’ютеру"
 
-#: src/gamelogic/cgame/cg_servercmds.c:739
+#: src/gamelogic/cgame/cg_servercmds.c:742
 msgid "This area already has power. A Repeater is not required here."
 msgstr "У цій місцині вже є енергія. Повторювач тут не потрібен."
 
-#: src/gamelogic/cgame/cg_servercmds.c:740
+#: src/gamelogic/cgame/cg_servercmds.c:743
 msgid "This area already has power"
 msgstr "У цій місцині вже є енергія"
 
-#: src/gamelogic/cgame/cg_servercmds.c:745
+#: src/gamelogic/cgame/cg_servercmds.c:748
 msgid ""
 "You have no room to carry this. Please sell any conflicting upgrades before "
 "purchasing this item."
@@ -2254,30 +2254,30 @@ msgstr ""
 "У вас немає місця для цього. Будь ласка, продайте усі конфліктуючі апґрейди "
 "перед купівлею цієї речі."
 
-#: src/gamelogic/cgame/cg_servercmds.c:747
+#: src/gamelogic/cgame/cg_servercmds.c:750
 msgid "You have no room to carry this"
 msgstr "У вас немає місця для цього"
 
-#: src/gamelogic/cgame/cg_servercmds.c:752
+#: src/gamelogic/cgame/cg_servercmds.c:755
 msgid ""
 "Insufficient funds. You do not have enough credits to perform this action."
 msgstr "Недостатньо коштів. У вас не вистачає кредитів для виконання цієї дії."
 
-#: src/gamelogic/cgame/cg_servercmds.c:754
+#: src/gamelogic/cgame/cg_servercmds.c:757
 msgid "Insufficient funds"
 msgstr "Недостатньо коштів"
 
-#: src/gamelogic/cgame/cg_servercmds.c:759
+#: src/gamelogic/cgame/cg_servercmds.c:762
 msgid ""
 "You already hold this item. It is not possible to carry multiple items of "
 "the same type."
 msgstr "У вас вже є ця річ. Мати декілька речей одного типу не можна."
 
-#: src/gamelogic/cgame/cg_servercmds.c:761
+#: src/gamelogic/cgame/cg_servercmds.c:764
 msgid "You already hold this item"
 msgstr "У вас вже є ця річ"
 
-#: src/gamelogic/cgame/cg_servercmds.c:766
+#: src/gamelogic/cgame/cg_servercmds.c:769
 msgid ""
 "You must be near a powered Armoury in order to purchase weapons, upgrades or "
 "ammunition."
@@ -2285,11 +2285,11 @@ msgstr ""
 "Ви повинні бути поряд з працюючим арсеналом для купівлі зброї, апґрейдів чи "
 "боєприпасів."
 
-#: src/gamelogic/cgame/cg_servercmds.c:768
+#: src/gamelogic/cgame/cg_servercmds.c:771
 msgid "You must be near a powered Armoury"
 msgstr "Ви повинні бути поряд з працюючим арсеналом"
 
-#: src/gamelogic/cgame/cg_servercmds.c:773
+#: src/gamelogic/cgame/cg_servercmds.c:776
 msgid ""
 "You must be near a Reactor or a powered Armoury or Repeater in order to "
 "purchase energy ammunition."
@@ -2297,11 +2297,11 @@ msgstr ""
 "Ви повинні буди поряд з реактором, працюючим арсеналом або повторювачем для "
 "купівлі енергетичних боєприпасів."
 
-#: src/gamelogic/cgame/cg_servercmds.c:775
+#: src/gamelogic/cgame/cg_servercmds.c:778
 msgid "You must be near a Reactor or a powered Armoury or Repeater"
 msgstr "Ви повинні бути поряд з реактором, працюючим арсеналом або повторювачем"
 
-#: src/gamelogic/cgame/cg_servercmds.c:780
+#: src/gamelogic/cgame/cg_servercmds.c:783
 msgid ""
 "There is not enough room here to put on a Battle Suit. Make sure you have "
 "enough head room to climb in."
@@ -2309,11 +2309,11 @@ msgstr ""
 "Тут немає місця для одягнення бойового скафандру. Впевніться, що маєте "
 "достатньо місця над головою, щоб залізти до нього."
 
-#: src/gamelogic/cgame/cg_servercmds.c:782
+#: src/gamelogic/cgame/cg_servercmds.c:785
 msgid "Not enough room here to put on a Battle Suit"
 msgstr "Немає місця для одягнення бойового скафандру"
 
-#: src/gamelogic/cgame/cg_servercmds.c:787
+#: src/gamelogic/cgame/cg_servercmds.c:790
 msgid ""
 "There is not enough room here to take off your Battle Suit. Make sure you "
 "have enough head room to climb out."
@@ -2321,11 +2321,11 @@ msgstr ""
 "Тут немає місця для зняття бойового скафандру. Впевніться, що маєте "
 "достатньо місця над головою, щоб вилізти з нього."
 
-#: src/gamelogic/cgame/cg_servercmds.c:789
+#: src/gamelogic/cgame/cg_servercmds.c:792
 msgid "Not enough room here to take off your Battle Suit"
 msgstr "Немає місця для зняття бойового скафандру"
 
-#: src/gamelogic/cgame/cg_servercmds.c:794
+#: src/gamelogic/cgame/cg_servercmds.c:797
 msgid ""
 "You are not allowed to buy or sell weapons until your build timer has "
 "expired."
@@ -2333,20 +2333,20 @@ msgstr ""
 "Вам не дозволено купувати чи продавати зброю доки Ваш будівельний таймер не "
 "завершився."
 
-#: src/gamelogic/cgame/cg_servercmds.c:796
+#: src/gamelogic/cgame/cg_servercmds.c:799
 msgid "You can not buy or sell weapons until your build timer expires"
 msgstr ""
 "Ви не можете купувати чи продавати зброю поки Ваш будівельний таймер спливає"
 
-#: src/gamelogic/cgame/cg_servercmds.c:802
+#: src/gamelogic/cgame/cg_servercmds.c:805
 msgid "You must be dead to use the class command"
 msgstr "Ви повинні бути мерцем для використання команди class"
 
-#: src/gamelogic/cgame/cg_servercmds.c:807
+#: src/gamelogic/cgame/cg_servercmds.c:810
 msgid "Unknown starting item"
 msgstr "Невідома початкова річ"
 
-#: src/gamelogic/cgame/cg_servercmds.c:814
+#: src/gamelogic/cgame/cg_servercmds.c:817
 msgid ""
 "There is no creep here. You must build near existing Eggs or the Overmind. "
 "Alien structures will not support themselves."
@@ -2354,11 +2354,11 @@ msgstr ""
 "Тут немає слизу. Ви повинні будувати біля існуючих яєць чи Надрозуму. "
 "Будівлі прибульців не підтримують самі себе."
 
-#: src/gamelogic/cgame/cg_servercmds.c:816
+#: src/gamelogic/cgame/cg_servercmds.c:819
 msgid "There is no creep here"
 msgstr "Тут немає слизу"
 
-#: src/gamelogic/cgame/cg_servercmds.c:821
+#: src/gamelogic/cgame/cg_servercmds.c:824
 msgid ""
 "There is no Overmind. An Overmind must be built to control the structure you "
 "tried to place."
@@ -2366,12 +2366,12 @@ msgstr ""
 "Немає Надрозуму. Надрозум має бути побудований для керування структурою, яку "
 "ви намагались побудувати"
 
-#: src/gamelogic/cgame/cg_servercmds.c:823
-#: src/gamelogic/cgame/cg_servercmds.c:858
+#: src/gamelogic/cgame/cg_servercmds.c:826
+#: src/gamelogic/cgame/cg_servercmds.c:861
 msgid "There is no Overmind"
 msgstr "Немає Надрозуму"
 
-#: src/gamelogic/cgame/cg_servercmds.c:828
+#: src/gamelogic/cgame/cg_servercmds.c:831
 msgid ""
 "There can only be one Overmind. Deconstruct the existing one if you wish to "
 "move it."
@@ -2379,11 +2379,11 @@ msgstr ""
 "Може існувати лише один Надрозум. Знесіть існуючий, якщо ви бажаєте його "
 "перенести."
 
-#: src/gamelogic/cgame/cg_servercmds.c:830
+#: src/gamelogic/cgame/cg_servercmds.c:833
 msgid "There can only be one Overmind"
 msgstr "Може існувати лише один Надрозум"
 
-#: src/gamelogic/cgame/cg_servercmds.c:835
+#: src/gamelogic/cgame/cg_servercmds.c:838
 msgid ""
 "The Overmind cannot control any more structures. Deconstruct existing "
 "structures to build more."
@@ -2391,11 +2391,11 @@ msgstr ""
 "Надрозум більше не може керувати будівлями. Знесіть існуючі для будування "
 "нових."
 
-#: src/gamelogic/cgame/cg_servercmds.c:837
+#: src/gamelogic/cgame/cg_servercmds.c:840
 msgid "The Overmind cannot control any more structures"
 msgstr "Надрозум більше не може керувати будівлями"
 
-#: src/gamelogic/cgame/cg_servercmds.c:842
+#: src/gamelogic/cgame/cg_servercmds.c:845
 msgid ""
 "There is no room to evolve here. Move away from walls or other nearby "
 "objects and try again."
@@ -2403,11 +2403,11 @@ msgstr ""
 "Тут немає місця для розвитку. Відійдіть від стін чи інших об’єктів поблизу й "
 "спробуйте ще раз."
 
-#: src/gamelogic/cgame/cg_servercmds.c:844
+#: src/gamelogic/cgame/cg_servercmds.c:847
 msgid "There is no room to evolve here"
 msgstr "Тут немає місця для розвитку"
 
-#: src/gamelogic/cgame/cg_servercmds.c:849
+#: src/gamelogic/cgame/cg_servercmds.c:852
 msgid ""
 "This location is too close to the enemy to evolve. Move away from the "
 "enemy's presence and try again."
@@ -2415,64 +2415,64 @@ msgstr ""
 "Це місце занадто близько до ворога для розвитку. Віддаліться від ворогів й "
 "спробуйте ще раз."
 
-#: src/gamelogic/cgame/cg_servercmds.c:851
+#: src/gamelogic/cgame/cg_servercmds.c:854
 msgid "This location is too close to the enemy to evolve"
 msgstr "Це місце занадто близько до ворога для розвитку"
 
-#: src/gamelogic/cgame/cg_servercmds.c:856
+#: src/gamelogic/cgame/cg_servercmds.c:859
 msgid ""
 "There is no Overmind. An Overmind must be built to allow you to upgrade."
 msgstr ""
 "Немає Надрозуму. Надрозум має бути побудований, щоб Ви мали змогу "
 "розвиватися."
 
-#: src/gamelogic/cgame/cg_servercmds.c:863
+#: src/gamelogic/cgame/cg_servercmds.c:866
 msgid "You cannot evolve until your build timer has expired."
 msgstr "Ви не можете розвинутися доки Ваш будівельний таймер не завершиться."
 
-#: src/gamelogic/cgame/cg_servercmds.c:864
+#: src/gamelogic/cgame/cg_servercmds.c:867
 msgid "You cannot evolve until your build timer expires"
 msgstr "Ви не можете розвинутися поки Ваш будівельний таймер працює"
 
-#: src/gamelogic/cgame/cg_servercmds.c:878
+#: src/gamelogic/cgame/cg_servercmds.c:881
 #, c-format
 msgid "You cannot evolve into a %s"
 msgstr "Ви не можете розвинутися у %s"
 
-#: src/gamelogic/cgame/cg_servercmds.c:884
+#: src/gamelogic/cgame/cg_servercmds.c:887
 msgid "You cannot evolve while wallwalking"
 msgstr "Ви не можете розвинутися під час ходіння по стінах"
 
-#: src/gamelogic/cgame/cg_servercmds.c:889
+#: src/gamelogic/cgame/cg_servercmds.c:892
 msgid "Unknown class"
 msgstr "Невідомий клас"
 
-#: src/gamelogic/cgame/cg_servercmds.c:894
+#: src/gamelogic/cgame/cg_servercmds.c:897
 #, c-format
 msgid "You cannot spawn as a %s"
 msgstr "Ви не можете спавнитися як %s"
 
-#: src/gamelogic/cgame/cg_servercmds.c:900
+#: src/gamelogic/cgame/cg_servercmds.c:903
 #, c-format
 msgid "The %s is not allowed"
 msgstr "%s не є дозволеним"
 
-#: src/gamelogic/cgame/cg_servercmds.c:906
+#: src/gamelogic/cgame/cg_servercmds.c:909
 #, c-format
 msgid "The %s is not allowed at Stage %d"
 msgstr "%s не дозволений у фазі %d"
 
-#: src/gamelogic/cgame/cg_servercmds.c:913
+#: src/gamelogic/cgame/cg_servercmds.c:916
 #, c-format
 msgid "cgame: debug: no such menu %d\n"
 msgstr "cgame: debug: не існує такого меню, як %d\n"
 
-#: src/gamelogic/cgame/cg_servercmds.c:1123
+#: src/gamelogic/cgame/cg_servercmds.c:1126
 #, c-format
 msgid ">> to reply, say: /m %d [your message] <<\n"
 msgstr ">> щоб відповісти, наберіть: /m %d [ваше повідомлення] <<\n"
 
-#: src/gamelogic/cgame/cg_servercmds.c:1570
+#: src/gamelogic/cgame/cg_servercmds.c:1573
 #, c-format
 msgid "Unknown client game command: %s\n"
 msgstr "Невідома команда клієнта гри: %s\n"
@@ -2587,225 +2587,225 @@ msgstr ""
 msgid "Press %s to destroy this structure\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:251 src/gamelogic/cgame/cg_tutorial.c:295
-#: src/gamelogic/cgame/cg_tutorial.c:364
+#: src/gamelogic/cgame/cg_tutorial.c:251 src/gamelogic/cgame/cg_tutorial.c:297
+#: src/gamelogic/cgame/cg_tutorial.c:368
 #, c-format
 msgid "Press %s to swipe\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:258 src/gamelogic/cgame/cg_tutorial.c:347
+#: src/gamelogic/cgame/cg_tutorial.c:258 src/gamelogic/cgame/cg_tutorial.c:349
 #, c-format
 msgid "Press %s to launch a projectile\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:262 src/gamelogic/cgame/cg_tutorial.c:279
-#: src/gamelogic/cgame/cg_tutorial.c:306
+#: src/gamelogic/cgame/cg_tutorial.c:262 src/gamelogic/cgame/cg_tutorial.c:281
+#: src/gamelogic/cgame/cg_tutorial.c:308
 #, c-format
 msgid "Press %s to walk on walls\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:275
+#: src/gamelogic/cgame/cg_tutorial.c:277
 msgid ""
 "Touch humans to damage them\n"
 "Look at their heads (or jump) to try to bite their heads\n"
 "Head-bites cause more damage\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:291
+#: src/gamelogic/cgame/cg_tutorial.c:293
 msgid ""
 "Touch humans to grab them\n"
 "Look at them to maintain the grab\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:301
+#: src/gamelogic/cgame/cg_tutorial.c:303
 #, c-format
 msgid "Press %s to spray disorienting gas\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:318 src/gamelogic/cgame/cg_tutorial.c:341
+#: src/gamelogic/cgame/cg_tutorial.c:320 src/gamelogic/cgame/cg_tutorial.c:343
 #, c-format
 msgid "Press %s to bite\n"
 msgstr "Натисни %s, щоб вкусити\n"
 
-#: src/gamelogic/cgame/cg_tutorial.c:324
+#: src/gamelogic/cgame/cg_tutorial.c:326
 #, c-format
 msgid "Press %s to invoke an electrical attack\n"
 msgstr "Натисни %s, щоб вдарити струмом\n"
 
-#: src/gamelogic/cgame/cg_tutorial.c:329
+#: src/gamelogic/cgame/cg_tutorial.c:331
 #, c-format
 msgid "Hold down %s then touch a wall to wall jump\n"
 msgstr "Затисни %s та торкнись стіни, щоб відстрибнути\n"
 
-#: src/gamelogic/cgame/cg_tutorial.c:352
+#: src/gamelogic/cgame/cg_tutorial.c:354
 #, c-format
 msgid "Hold down and release %s to pounce\n"
 msgstr "Затисни та відпусти %s, щоб накинутись\n"
 
-#: src/gamelogic/cgame/cg_tutorial.c:368
+#: src/gamelogic/cgame/cg_tutorial.c:372
 #, c-format
 msgid "Hold down and release %s while moving forwards to trample\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:412
+#: src/gamelogic/cgame/cg_tutorial.c:416
 #, c-format
 msgid "Find an Armoury and press %s for more ammo\n"
 msgstr "Знайди арсенал та натисни %s для отримання амуніції\n"
 
-#: src/gamelogic/cgame/cg_tutorial.c:421
+#: src/gamelogic/cgame/cg_tutorial.c:425
 #, c-format
 msgid "Find an Armoury, Reactor, or Repeater and press %s for more ammo\n"
 msgstr "Знайди арсенал, реактор чи повторювач та натисни %s для отримання амуніції\n"
 
-#: src/gamelogic/cgame/cg_tutorial.c:441 src/gamelogic/cgame/cg_tutorial.c:448
-#: src/gamelogic/cgame/cg_tutorial.c:470
+#: src/gamelogic/cgame/cg_tutorial.c:445 src/gamelogic/cgame/cg_tutorial.c:452
+#: src/gamelogic/cgame/cg_tutorial.c:474
 #, c-format
 msgid "Press %s to fire the %s\n"
 msgstr "Натисни %s, щоб стріляти з %s\n"
 
-#: src/gamelogic/cgame/cg_tutorial.c:453
+#: src/gamelogic/cgame/cg_tutorial.c:457
 #, c-format
 msgid "Hold %s to zoom\n"
 msgstr "Тисни %s для зближення\n"
 
-#: src/gamelogic/cgame/cg_tutorial.c:459
+#: src/gamelogic/cgame/cg_tutorial.c:463
 #, c-format
 msgid "Hold %s to activate the %s\n"
 msgstr "Тисни %s, щоб задіяти %s\n"
 
-#: src/gamelogic/cgame/cg_tutorial.c:466
+#: src/gamelogic/cgame/cg_tutorial.c:470
 #, c-format
 msgid "Hold and release %s to fire a charged shot\n"
 msgstr "Затисни та відпусти %s, щоб зробити заряджений постріл\n"
 
-#: src/gamelogic/cgame/cg_tutorial.c:485
+#: src/gamelogic/cgame/cg_tutorial.c:489
 #, c-format
 msgid "Use %s and %s to select an upgrade\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:492 src/gamelogic/cgame/cg_tutorial.c:539
+#: src/gamelogic/cgame/cg_tutorial.c:496 src/gamelogic/cgame/cg_tutorial.c:543
 #, c-format
 msgid "Press %s to use the %s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:501
+#: src/gamelogic/cgame/cg_tutorial.c:505
 #, c-format
 msgid "Press %s to use your %s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:509
+#: src/gamelogic/cgame/cg_tutorial.c:513
 msgid "You are blacking out. Stop sprinting to recover stamina\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:514
+#: src/gamelogic/cgame/cg_tutorial.c:518
 msgid "Your stamina is low. Stop sprinting to recover\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:521
+#: src/gamelogic/cgame/cg_tutorial.c:525
 #, c-format
 msgid ""
 "Press %s to buy equipment upgrades at the %s. Sell your old weapon first!\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:529
+#: src/gamelogic/cgame/cg_tutorial.c:533
 #, c-format
 msgid "Press %s to refill your energy weapon's ammo at the %s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:546
+#: src/gamelogic/cgame/cg_tutorial.c:550
 #, c-format
 msgid "Press %s and any direction to sprint\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:550
+#: src/gamelogic/cgame/cg_tutorial.c:554
 #, c-format
 msgid "Press %s and back or strafe to dodge\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:566
+#: src/gamelogic/cgame/cg_tutorial.c:570
 #, c-format
 msgid "Press %s to leave spawn queue\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:572
+#: src/gamelogic/cgame/cg_tutorial.c:576
 #, c-format
 msgid "Press %s to spawn\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:579
+#: src/gamelogic/cgame/cg_tutorial.c:583
 #, c-format
 msgid "Press %s to join a team\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:588
+#: src/gamelogic/cgame/cg_tutorial.c:592
 #, c-format
 msgid "Press %s to switch to chase-cam spectator mode\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:594
+#: src/gamelogic/cgame/cg_tutorial.c:598
 #, c-format
 msgid "Press %s to return to free spectator mode\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:600
+#: src/gamelogic/cgame/cg_tutorial.c:604
 #, c-format
 msgid "Press %s to stop following\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:605
+#: src/gamelogic/cgame/cg_tutorial.c:609
 #, c-format
 msgid "Use %s and %s to change between players\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:611
+#: src/gamelogic/cgame/cg_tutorial.c:615
 #, c-format
 msgid "Press %s to follow a player\n"
 msgstr "Натисни %s, щоб слідкувати за гравцем\n"
 
-#: src/gamelogic/cgame/cg_tutorial.c:696
+#: src/gamelogic/cgame/cg_tutorial.c:700
 #, c-format
 msgid "Press %s to evolve\n"
 msgstr "Натисни %s, щоб розвинутися\n"
 
-#: src/gamelogic/cgame/cg_tutorial.c:707
+#: src/gamelogic/cgame/cg_tutorial.c:711
 #, c-format
 msgid "Press %s when ready to continue\n"
 msgstr "Натисни %s, коли готовий продовжувати\n"
 
-#: src/gamelogic/cgame/cg_tutorial.c:712
+#: src/gamelogic/cgame/cg_tutorial.c:716
 msgid "Waiting for other players to be ready\n"
 msgstr "Очікую інших гравців\n"
 
-#: src/gamelogic/cgame/cg_tutorial.c:718
+#: src/gamelogic/cgame/cg_tutorial.c:722
 #, c-format
 msgid "Press %s to open the console\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:719
+#: src/gamelogic/cgame/cg_tutorial.c:723
 msgid "Press ESC for the menu"
 msgstr "Натисни ESC, щоб потрапити у меню"
 
-#: src/gamelogic/game/bg_misc.c:2616
+#: src/gamelogic/game/bg_misc.c:2454
 msgid "spectator"
 msgstr "спостерігач"
 
-#: src/gamelogic/game/bg_misc.c:2621
+#: src/gamelogic/game/bg_misc.c:2459
 msgid "alien"
 msgstr "прибулець"
 
-#: src/gamelogic/game/bg_misc.c:2626
+#: src/gamelogic/game/bg_misc.c:2464
 msgid "human"
 msgstr "людина"
 
-#: src/gamelogic/game/bg_misc.c:2636
+#: src/gamelogic/game/bg_misc.c:2474
 msgid "spectators"
 msgstr "спостерігачі"
 
-#: src/gamelogic/game/bg_misc.c:2641
+#: src/gamelogic/game/bg_misc.c:2479
 msgid "aliens"
 msgstr "прибульці"
 
-#: src/gamelogic/game/bg_misc.c:2646
+#: src/gamelogic/game/bg_misc.c:2484
 msgid "humans"
 msgstr "люди"
 
@@ -3219,18 +3219,18 @@ msgstr "^3readconfig: ^7завантажено $1$ рівнів, $2$ адмін�
 
 #: src/gamelogic/game/g_admin.c:2093
 msgid ""
-"^3time: ^7local time is ^d$1$:$2$:$3$^7 - game runs for ^d$4$:$5$^7 with "
+"^3time: ^7time is ^d$1$:$2$:$3$^7 UTC – game runs for ^d$4$:$5$^7 with "
 "Sudden Death in ^d$6$:$7$^7\n"
 msgstr ""
 
 #: src/gamelogic/game/g_admin.c:2101
 msgid ""
-"^3time: ^7local time is ^d$1$:$2$:$3$^7 - game runs for ^d$4$:$5$^7 hitting "
+"^3time: ^7time is ^d$1$:$2$:$3$^7 UTC – game runs for ^d$4$:$5$^7 hitting "
 "Timelimit in ^d$6$:$7$^7\n"
 msgstr ""
 
 #: src/gamelogic/game/g_admin.c:2106
-msgid "^3time: ^7local time is ^d$1$:$2$:$3$^7 - game time is ^d$4$:$5$^7\n"
+msgid "^3time: ^7time is ^d$1$:$2$:$3$^7 UTC – game time is ^d$4$:$5$^7\n"
 msgstr ""
 
 #: src/gamelogic/game/g_admin.c:2132
@@ -4053,259 +4053,259 @@ msgstr "$1$: немає доступної доріжки для команди 
 msgid "origin: $1$ $2$ $3$\n"
 msgstr "початок: $1$ $2$ $3$\n"
 
-#: src/gamelogic/game/g_cmds.c:1635
+#: src/gamelogic/game/g_cmds.c:1636
 msgid "$1$: voting not allowed here\n"
 msgstr "$1$: тут не дозволяється голосувати\n"
 
-#: src/gamelogic/game/g_cmds.c:1642
+#: src/gamelogic/game/g_cmds.c:1643
 msgid "$1$: a vote is already in progress\n"
 msgstr "$1$: голосування вже проводиться\n"
 
-#: src/gamelogic/game/g_cmds.c:1672
+#: src/gamelogic/game/g_cmds.c:1675
 msgid "Invalid vote string\n"
 msgstr "Неправильний рядок голосування\n"
 
-#: src/gamelogic/game/g_cmds.c:1673
+#: src/gamelogic/game/g_cmds.c:1676
 msgid "Valid vote commands are: "
 msgstr "Правильними командами голосування є: "
 
-#: src/gamelogic/game/g_cmds.c:1674
+#: src/gamelogic/game/g_cmds.c:1677
 msgid "Valid team-vote commands are: "
 msgstr "Правильними командами загонового голосування є: "
 
-#: src/gamelogic/game/g_cmds.c:1703
+#: src/gamelogic/game/g_cmds.c:1745
 msgid "$1$: you have already called the maximum number of votes ($2$)\n"
 msgstr "$1$: Ви вже скликали максимальну кількість голосувань ($2$)\n"
 
-#: src/gamelogic/game/g_cmds.c:1716
+#: src/gamelogic/game/g_cmds.c:1760
 msgid "'$1$' votes have been disabled\n"
 msgstr "'$1$'-голосування було вимкнено\n"
 
-#: src/gamelogic/game/g_cmds.c:1731
+#: src/gamelogic/game/g_cmds.c:1775
 msgid "'$1$' votes are not allowed once $2$ minutes have passed\n"
 msgstr "'$1$'-голосування не дозволені після того, як пройшло $2$ хвилин\n"
 
-#: src/gamelogic/game/g_cmds.c:1741
+#: src/gamelogic/game/g_cmds.c:1785
 msgid "'$1$' votes are not allowed until $2$ minutes have passed\n"
 msgstr "'$1$'-голосування не дозволені доки не пройшло $$ хвилин\n"
 
-#: src/gamelogic/game/g_cmds.c:1751
+#: src/gamelogic/game/g_cmds.c:1795
 msgid "'$1$' votes are only allowed with less than $2$ minutes remaining\n"
 msgstr "'$1$'-голосування дозволені лише коли залишається менше, ніж $2$ хвилин\n"
 
-#: src/gamelogic/game/g_cmds.c:1762
+#: src/gamelogic/game/g_cmds.c:1806
 msgid "Sudden Death has already begun\n"
 msgstr "Раптова Смерть вже почалась\n"
 
-#: src/gamelogic/game/g_cmds.c:1770
+#: src/gamelogic/game/g_cmds.c:1814
 msgid "Sudden Death is imminent — this vote may have no effect\n"
 msgstr "Раптова Смерть неминуча — це голосування може виявитися марним\n"
 
-#: src/gamelogic/game/g_cmds.c:1801
+#: src/gamelogic/game/g_cmds.c:1845
 msgid "$1$: no target\n"
 msgstr "$1$: немає цілі\n"
 
-#: src/gamelogic/game/g_cmds.c:1820 src/gamelogic/game/g_cmds.c:1834
+#: src/gamelogic/game/g_cmds.c:1864 src/gamelogic/game/g_cmds.c:1878
 msgid "$1$: admin is immune\n"
 msgstr "$1$: адміністратор має імунітет\n"
 
-#: src/gamelogic/game/g_cmds.c:1842
+#: src/gamelogic/game/g_cmds.c:1886
 msgid "$1$: player is not on your team\n"
 msgstr "$1$: гравець не у Вашому загоні\n"
 
-#: src/gamelogic/game/g_cmds.c:1853
+#: src/gamelogic/game/g_cmds.c:1897
 msgid "$1$: You must provide a reason\n"
 msgstr "$1$: Ви маєте надати причину\n"
 
-#: src/gamelogic/game/g_cmds.c:1864
+#: src/gamelogic/game/g_cmds.c:1908
 #, c-format
 msgid "Kick player '%s'"
 msgstr "Викинути гравця '%s'"
 
-#: src/gamelogic/game/g_cmds.c:1872
+#: src/gamelogic/game/g_cmds.c:1916
 #, c-format
 msgid "Move player '%s' to spectators"
 msgstr "Перенести гравця '%s' до спостерігачів"
 
-#: src/gamelogic/game/g_cmds.c:1879
+#: src/gamelogic/game/g_cmds.c:1923
 msgid "$1$: player is already muted\n"
 msgstr "$1$: гравець вже приглушений\n"
 
-#: src/gamelogic/game/g_cmds.c:1887
+#: src/gamelogic/game/g_cmds.c:1931
 #, c-format
 msgid "Mute player '%s'"
 msgstr "Приглушити гравця '%s'"
 
-#: src/gamelogic/game/g_cmds.c:1894
+#: src/gamelogic/game/g_cmds.c:1938
 msgid "$1$: player is not currently muted\n"
 msgstr "$1$: гравець наразі не приглушений\n"
 
-#: src/gamelogic/game/g_cmds.c:1902
+#: src/gamelogic/game/g_cmds.c:1946
 #, c-format
 msgid "Unmute player '%s'"
 msgstr "Відновити свободу слова гравця '%s'"
 
-#: src/gamelogic/game/g_cmds.c:1909
+#: src/gamelogic/game/g_cmds.c:1953
 msgid "$1$: player already lost building rights\n"
 msgstr "$1$: гравець вже втратив права на будування\n"
 
-#: src/gamelogic/game/g_cmds.c:1924
+#: src/gamelogic/game/g_cmds.c:1968
 msgid "$1$: player already has building rights\n"
 msgstr "$1$: гравець вже має права на будування\n"
 
-#: src/gamelogic/game/g_cmds.c:1955
+#: src/gamelogic/game/g_cmds.c:1999
 msgid "callvote: Maximum number of $1$ extend votes has been reached\n"
 msgstr "callvote: Максимальну кількість у $1$ голосувань за подовження було "
 "досягнуто\n"
 
-#: src/gamelogic/game/g_cmds.c:1992 src/gamelogic/game/g_cmds.c:2051
+#: src/gamelogic/game/g_cmds.c:2036 src/gamelogic/game/g_cmds.c:2095
 msgid "$1$: 'maps/$2$.bsp' could not be found on the server\n"
 msgstr "$1$: 'maps/$2$.bsp' не вдалося знайти на сервері\n"
 
-#: src/gamelogic/game/g_cmds.c:2028
+#: src/gamelogic/game/g_cmds.c:2072
 msgid "callvote: layout '$1$' could not be found on the server\n"
 msgstr "callvote: схему '$1$' не вдалося знайти на сервері\n"
 
-#: src/gamelogic/game/g_cmds.c:2043
+#: src/gamelogic/game/g_cmds.c:2087
 msgid "$1$: the next map is already set to '$2$'\n"
 msgstr "$1$: наступною мапою вже встановлено '$2$'\n"
 
-#: src/gamelogic/game/g_cmds.c:2100
+#: src/gamelogic/game/g_cmds.c:2144
 msgid "$1$^7 called a vote: $2$\n"
 msgstr "$1$^7 скликав голосування: $2$\n"
 
-#: src/gamelogic/game/g_cmds.c:2115
+#: src/gamelogic/game/g_cmds.c:2159
 msgid "$1$^7 called a team vote: $2t$\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:2166
+#: src/gamelogic/game/g_cmds.c:2210
 msgid "$1$: no vote in progress\n"
 msgstr "$1$: наразі не проводиться голосування\n"
 
-#: src/gamelogic/game/g_cmds.c:2173
+#: src/gamelogic/game/g_cmds.c:2217
 msgid "$1$: vote already cast\n"
 msgstr "$1$: вже проголосовано\n"
 
-#: src/gamelogic/game/g_cmds.c:2178
+#: src/gamelogic/game/g_cmds.c:2222
 msgid "$1$: vote cast\n"
 msgstr "$1$: проголосовано\n"
 
-#: src/gamelogic/game/g_cmds.c:2208
+#: src/gamelogic/game/g_cmds.c:2254
 msgid "usage: setviewpos (<x> <y> <z> [<yaw> [<pitch>]] | <entitynum>)\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:2823 src/gamelogic/game/g_cmds.c:2853
-#: src/gamelogic/game/g_cmds.c:2905
+#: src/gamelogic/game/g_cmds.c:2869 src/gamelogic/game/g_cmds.c:2899
+#: src/gamelogic/game/g_cmds.c:2951
 msgid "You don't have the $1$\n"
 msgstr "Ви не маєте $1$\n"
 
-#: src/gamelogic/game/g_cmds.c:3105
+#: src/gamelogic/game/g_cmds.c:3151
 msgid "You can't buy this item ($1$)\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:3109
+#: src/gamelogic/game/g_cmds.c:3155
 msgid "You can't buy alien items\n"
 msgstr "Ви не можете купувати вироби прибульців\n"
 
-#: src/gamelogic/game/g_cmds.c:3261
+#: src/gamelogic/game/g_cmds.c:3307
 msgid "You can't sell this weapon\n"
 msgstr "Ви не можете продати цю зброю\n"
 
-#: src/gamelogic/game/g_cmds.c:3294
+#: src/gamelogic/game/g_cmds.c:3340
 msgid "You can't sell this item\n"
 msgstr "Ви не можете продати цей виріб\n"
 
-#: src/gamelogic/game/g_cmds.c:3900
+#: src/gamelogic/game/g_cmds.c:3946
 msgid "usage: $1$ [clientNum | partial name match]\n"
 msgstr "використання: $1$ [номер клієнту | частковий збіг імені]\n"
 
-#: src/gamelogic/game/g_cmds.c:3910
+#: src/gamelogic/game/g_cmds.c:3956
 msgid "$1$: no clients match the name '$2$'\n"
 msgstr "$1$: немає клієнтів, що б збігались з іменем '$2$'\n"
 
-#: src/gamelogic/game/g_cmds.c:3923
+#: src/gamelogic/game/g_cmds.c:3969
 msgid "ignore: added $1$^7 to your ignore list\n"
 msgstr "ignore: додано $1$^7 до Вашого чорного списку\n"
 
-#: src/gamelogic/game/g_cmds.c:3929
+#: src/gamelogic/game/g_cmds.c:3975
 msgid "ignore: $1$^7 is already on your ignore list\n"
 msgstr "ignore: $1$^7 вже у Вашому чорному списку\n"
 
-#: src/gamelogic/game/g_cmds.c:3940
+#: src/gamelogic/game/g_cmds.c:3986
 msgid "unignore: removed $1$^7 from your ignore list\n"
 msgstr "unignore: вилучено $1$^7 з Вашого чорного списку\n"
 
-#: src/gamelogic/game/g_cmds.c:3946
+#: src/gamelogic/game/g_cmds.c:3992
 msgid "unignore: $1$^7 is not on your ignore list\n"
 msgstr "unignore: $1$^7 не у Вашому чорному списку\n"
 
-#: src/gamelogic/game/g_cmds.c:4084
+#: src/gamelogic/game/g_cmds.c:4130
 msgid "^3listmaps: ^7found $1$ map matching '$2$^7'"
 msgid_plural "^3listmaps: ^7found $1$ maps matching '$2$^7'"
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
 
-#: src/gamelogic/game/g_cmds.c:4088
+#: src/gamelogic/game/g_cmds.c:4134
 msgid "^3listmaps: ^7listing $1$ of $2$ map"
 msgid_plural "^3listmaps: ^7listing $1$ of $2$ maps"
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
 
-#: src/gamelogic/game/g_cmds.c:4093
+#: src/gamelogic/game/g_cmds.c:4139
 msgid ", page $1$ of $2$"
 msgstr ", сторінка $1$ з $2$"
 
-#: src/gamelogic/game/g_cmds.c:4098
+#: src/gamelogic/game/g_cmds.c:4144
 msgid ", use 'listmaps $1$$2$$3$' to see more"
 msgstr ", скористуйтесь 'listmaps $1$$2$$3$', щоб побачити більше"
 
-#: src/gamelogic/game/g_cmds.c:4215
+#: src/gamelogic/game/g_cmds.c:4261
 msgid "^3maplog: ^7recent map results, newest first\n"
 msgstr "^3maplog: ^7нещодавні результати мап, новіші спочатку\n"
 
-#: src/gamelogic/game/g_cmds.c:4360
+#: src/gamelogic/game/g_cmds.c:4406
 msgid "You are flooding: please wait $1$s before trying again\n"
 msgstr "Ви займаєтесь флудом: будь ласка, почекайте $1$с перед тим, як знову "
 "спробувати\n"
 
-#: src/gamelogic/game/g_cmds.c:4470
+#: src/gamelogic/game/g_cmds.c:4516
 msgid "Unknown command $1$\n"
 msgstr "Невідома команда $1$\n"
 
-#: src/gamelogic/game/g_cmds.c:4629
+#: src/gamelogic/game/g_cmds.c:4684
 msgid "Sorry, but private messages have been disabled\n"
 msgstr "Вибачте, але особисті повідомлення було вимкнено\n"
 
-#: src/gamelogic/game/g_cmds.c:4637
+#: src/gamelogic/game/g_cmds.c:4692
 msgid "usage: $1$ [name|slot#] [message]\n"
 msgstr "використання: $1$ [ім’я|номер слоту] [повідомлення]\n"
 
-#: src/gamelogic/game/g_cmds.c:4669
+#: src/gamelogic/game/g_cmds.c:4724
 msgid "^3No player matching ^7 '$1$^7' ^3to send message to.\n"
 msgstr "^3Немає гравця, збіжного з ^7'$1$^7' ^3для відправлення повідомлення.\n"
 
-#: src/gamelogic/game/g_cmds.c:4674
+#: src/gamelogic/game/g_cmds.c:4729
 msgid "^$1$Private message: ^7$2$\n"
 msgstr "^$1$Особисте повідомлення: ^7$2$\n"
 
-#: src/gamelogic/game/g_cmds.c:4679
+#: src/gamelogic/game/g_cmds.c:4734
 msgid "^$1$sent to $2$ player: ^7$3$\n"
 msgid_plural "^$1$sent to $2$ players: ^7$3$\n"
 msgstr[0] "^$1$відправлено до $2$ гравця: ^7$3$\n"
 
-#: src/gamelogic/game/g_cmds.c:4705
+#: src/gamelogic/game/g_cmds.c:4760
 msgid "Sorry, but use of /a by non-admins has been disabled.\n"
 msgstr "Вибачте, але використання /a не-адміністраторами було вимкнено.\n"
 
-#: src/gamelogic/game/g_cmds.c:4710
+#: src/gamelogic/game/g_cmds.c:4765
 msgid ""
 "Your message has been sent to any available admins and to the server logs.\n"
 msgstr "Ваше повідомлення було відправлено усім доступним адміністраторам та "
 "записано до серверного журналу.\n"
 
-#: src/gamelogic/game/g_cmds.c:4717
+#: src/gamelogic/game/g_cmds.c:4772
 msgid "usage: a [message]\n"
 msgstr "використання: a [повідомлення]\n"
 
@@ -4321,63 +4321,71 @@ msgstr "$1$ ^3ЗНЕСЕНО^7 $2$\n"
 msgid "$1$ ^3DESTROYED^7 by $2$\n"
 msgstr "$1$ ^3ЗРУЙНОВАНО^7 $2$\n"
 
-#: src/gamelogic/game/g_main.c:582
+#: src/gamelogic/game/g_main.c:584
 msgid "Server: $1$ changed to $2$\n"
 msgstr "Сервер: $1$ змінено на $2$\n"
 
-#: src/gamelogic/game/g_main.c:1341
+#: src/gamelogic/game/g_main.c:1344
 msgid "Beginning Sudden Death.\n"
 msgstr "Починаю Раптову Смерть.\n"
 
 # 92%
-#: src/gamelogic/game/g_main.c:1359
+#: src/gamelogic/game/g_main.c:1362
 msgid "Sudden Death will begin in $1$ seconds.\n"
 msgstr "Фаза Раптової Смерті почнеться через %s секунд.\n"
 
-#: src/gamelogic/game/g_main.c:2365
+#: src/gamelogic/game/g_main.c:2363
 msgid "Timelimit hit\n"
 msgstr "Ліміт часу досягнуто\n"
 
-#: src/gamelogic/game/g_main.c:2394
+#: src/gamelogic/game/g_main.c:2392
 msgid "Humans win\n"
 msgstr "Люди виграли\n"
 
-#: src/gamelogic/game/g_main.c:2408
+#: src/gamelogic/game/g_main.c:2406
 msgid "Aliens win\n"
 msgstr "Прибульці виграли\n"
 
-#: src/gamelogic/game/g_main.c:2552
+#: src/gamelogic/game/g_main.c:2589
+msgid "Vote failed ($1$ of $2$; quorum not reached)\n"
+msgstr ""
+
+#: src/gamelogic/game/g_main.c:2589
+msgid "Team vote failed ($1$ of $2$; quorum not reached)\n"
+msgstr ""
+
+#: src/gamelogic/game/g_main.c:2594
 msgid "Vote passed ($1$ — $2$)\n"
 msgstr "Голосування пройшло ($1$ - $2$)\n"
 
-#: src/gamelogic/game/g_main.c:2552
+#: src/gamelogic/game/g_main.c:2594
 msgid "Team vote passed ($1$ — $2$)\n"
 msgstr "Голосування у загоні пройшло ($1$ - $2$)\n"
 
-#: src/gamelogic/game/g_main.c:2557
+#: src/gamelogic/game/g_main.c:2599
 #, c-format
 msgid "Vote failed ($1$ — $2$; $3$% needed)\n"
 msgstr "Голосування не пройшло ($1$ — $2$; $3$% потрібно)\n"
 
-#: src/gamelogic/game/g_main.c:2557
+#: src/gamelogic/game/g_main.c:2599
 #, c-format
 msgid "Team vote failed ($1$ — $2$; $3$% needed)\n"
 msgstr "Голосування у команді не пройшло ($1$ — $2$; $3$% потрібно)\n"
 
 # 93%
-#: src/gamelogic/game/g_main.c:2771
+#: src/gamelogic/game/g_main.c:2801
 msgid "Server: Game will auto-unpause in $1$ seconds\n"
 msgstr "Сервер: Гра буде автоматично продовжена через $1$ секунд\n"
 
-#: src/gamelogic/game/g_main.c:2787
+#: src/gamelogic/game/g_main.c:2817
 msgid "Server: The game has been unpaused automatically (2 minute max)\n"
 msgstr "Сервер: Гра була продовжена автоматично (максимум — 2 хвилини)\n"
 
-#: src/gamelogic/game/g_maprotation.c:760
+#: src/gamelogic/game/g_maprotation.c:777
 msgid "^3listrotation: ^7there is no active map rotation on this server\n"
 msgstr "^3listrotation: ^7на цьому сервері немає поточної ротації мап\n"
 
-#: src/gamelogic/game/g_maprotation.c:766
+#: src/gamelogic/game/g_maprotation.c:783
 msgid "^3listrotation: ^7there are no maps in the active map rotation\n"
 msgstr "^3listrotation: ^7у поточній ротації немає мап\n"
 

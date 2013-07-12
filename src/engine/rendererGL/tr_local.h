@@ -1612,7 +1612,7 @@ extern "C" {
 
 		trRefEntity_t        *entity;
 		surfaceType_t        *surface; // any of surface*_t
-		shader_t             *surfaceShader;
+		int                  shaderNum;
 
 		byte                 cubeSideBits;
 

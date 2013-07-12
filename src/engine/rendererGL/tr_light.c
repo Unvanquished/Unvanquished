@@ -1172,7 +1172,7 @@ qboolean R_AddLightInteraction( trRefLight_t *light, surfaceType_t *surface, sha
 	ia->light = light;
 	ia->entity = tr.currentEntity;
 	ia->surface = surface;
-	ia->surfaceShader = surfaceShader;
+	ia->shaderNum = surfaceShader->sortedIndex;
 
 	ia->cubeSideBits = cubeSideBits;
 
@@ -1218,12 +1218,12 @@ static int InteractionCompare( const void *a, const void *b )
 #if 1
 
 	// shader first
-	if ( ( ( interaction_t * ) a )->surfaceShader < ( ( interaction_t * ) b )->surfaceShader )
+	if ( ( ( interaction_t * ) a )->shaderNum < ( ( interaction_t * ) b )->shaderNum )
 	{
 		return -1;
 	}
 
-	else if ( ( ( interaction_t * ) a )->surfaceShader > ( ( interaction_t * ) b )->surfaceShader )
+	else if ( ( ( interaction_t * ) a )->shaderNum > ( ( interaction_t * ) b )->shaderNum )
 	{
 		return 1;
 	}

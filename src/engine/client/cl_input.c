@@ -246,16 +246,6 @@ float CL_KeyState( kbutton_t *key )
 	return val;
 }
 
-void IN_ButtonDown( int arg )
-{
-	IN_KeyDown( &kb[ arg ] );
-}
-
-void IN_ButtonUp( int arg )
-{
-	IN_KeyUp( &kb[ arg ] );
-}
-
 #ifdef USE_VOIP
 void IN_VoipRecordDown( void )
 {
@@ -1201,26 +1191,102 @@ void CL_SendCmd( void )
 	CL_WritePacket();
 }
 
+static char *registeredButtonCommands[ USERCMD_BUTTONS ] = { NULL };
+
+struct{
+	const char* name;
+	int key;
+} builtinButtonCommands [] = {
+	"moveup",     KB_UP,
+	"movedown",   KB_DOWN,
+	"left",       KB_LEFT,
+	"right",      KB_RIGHT,
+	"forward",    KB_FORWARD,
+	"back",       KB_BACK,
+	"lookup",     KB_LOOKUP,
+	"lookdown",   KB_LOOKDOWN,
+	"strafe",     KB_STRAFE,
+	"moveleft",   KB_MOVELEFT,
+	"moveright",  KB_MOVERIGHT,
+	"speed",      KB_SPEED,
+	"mlook",      KB_MLOOK,
+	NULL, 0
+};
+
+//A proxy command for +/-commands
+void IN_BuiltinButtonCommand( void )
+{
+	int i = 0;
+	const char* name = Cmd_Argv(0);
+	qboolean isPlus = name[0] == '+';
+	int key = -1;
+
+	//Remove the modifier
+	name ++;
+
+	//Search in the button commands given by cgame
+	for ( i = 0; i < USERCMD_BUTTONS; ++i )
+	{
+		if ( registeredButtonCommands[ i ] )
+		{
+			if( !Q_stricmp( registeredButtonCommands[ i ] + 1, name ) )
+			{
+				key = KB_BUTTONS + i;
+				break;
+			}
+		}
+	}
+
+	//Search in the builtin button commands
+	if ( key == -1 )
+	{
+		while( builtinButtonCommands[i].name != NULL )
+		{
+			if ( !Q_stricmp( builtinButtonCommands[i].name, name ) )
+			{
+				key = builtinButtonCommands[i].key;
+				break;
+			}
+			i++;
+		}
+	}
+
+	//We have a match, fire the right event
+	if ( key != -1 )
+	{
+		if(isPlus)
+		{
+			IN_KeyDown( &kb[ KB_BUTTONS + i ] );
+		}
+		else
+		{
+			IN_KeyUp( &kb[ KB_BUTTONS + i ] );
+		}
+	}
+}
+
 /*
 ============
 CL_RegisterButtonCommands
+
+Get a list of buttons from cgame (USERCMD_BUTTONS comma sperated names)
+and registers the appropriate commands
 ============
 */
 void CL_RegisterButtonCommands( const char *cmd_names )
 {
-	static char    *registered[ USERCMD_BUTTONS ] = { NULL };
-	char           name[ 100 ];
-	int            i;
+	char name[100];
+	int i;
 
 	for ( i = 0; i < USERCMD_BUTTONS; ++i )
 	{
-		if ( registered[ i ] )
+		if ( registeredButtonCommands[ i ] )
 		{
-			Cmd_RemoveCommand( registered[ i ] );
-			registered[ i ][ 0 ] = '-';
-			Cmd_RemoveCommand( registered[ i ] );
-			Z_Free( registered[ i ] );
-			registered[ i ] = NULL;
+			Cmd_RemoveCommand( registeredButtonCommands[ i ] );
+			registeredButtonCommands[ i ][ 0 ] = '-';
+			Cmd_RemoveCommand( registeredButtonCommands[ i ] );
+			Z_Free( registeredButtonCommands[ i ] );
+			registeredButtonCommands[ i ] = NULL;
 		}
 	}
 
@@ -1240,12 +1306,13 @@ void CL_RegisterButtonCommands( const char *cmd_names )
 		Q_snprintf( name + 1, sizeof( name ) - 1, "%.*s",
 		            (int)( term ? ( term - cmd_names ) : sizeof ( name ) - 1 ), cmd_names );
 
-		if ( Cmd_AddButtonCommand( name + 1, KB_BUTTONS + i ) )
-		{
-			// store a copy of the name, '+'-prefixed ready for unregistration
-			name[0] = '+';
-			registered[i] = CopyString( name );
-		}
+		name[0] = '-';
+		Cmd_AddCommand( name, IN_BuiltinButtonCommand );
+		name[0] = '+';
+		Cmd_AddCommand( name, IN_BuiltinButtonCommand );
+
+		// store a copy of the name, '+'-prefixed ready for unregistration
+		registeredButtonCommands[i] = CopyString( name );
 
 		cmd_names = term + !!term;
 	}
@@ -1263,21 +1330,16 @@ CL_InitInput
 */
 void CL_InitInput( void )
 {
+	int i = 0;
+
 	Cmd_AddCommand ("centerview", IN_CenterView);
 
-	Cmd_AddButtonCommand( "moveup",     KB_UP );
-	Cmd_AddButtonCommand( "movedown",   KB_DOWN );
-	Cmd_AddButtonCommand( "left",       KB_LEFT );
-	Cmd_AddButtonCommand( "right",      KB_RIGHT );
-	Cmd_AddButtonCommand( "forward",    KB_FORWARD );
-	Cmd_AddButtonCommand( "back",       KB_BACK );
-	Cmd_AddButtonCommand( "lookup",     KB_LOOKUP );
-	Cmd_AddButtonCommand( "lookdown",   KB_LOOKDOWN );
-	Cmd_AddButtonCommand( "strafe",     KB_STRAFE );
-	Cmd_AddButtonCommand( "moveleft",   KB_MOVELEFT );
-	Cmd_AddButtonCommand( "moveright",  KB_MOVERIGHT );
-	Cmd_AddButtonCommand( "speed",      KB_SPEED );
-	Cmd_AddButtonCommand( "mlook",      KB_MLOOK );
+	while( builtinButtonCommands[i].name != NULL )
+	{
+		Cmd_AddCommand( va( "-%s", builtinButtonCommands[i].name ), IN_BuiltinButtonCommand );
+		Cmd_AddCommand( va( "+%s", builtinButtonCommands[i].name ), IN_BuiltinButtonCommand );
+		i++;
+	}
 
 	//Cmd_AddCommand ("notebook",IN_Notebook);
 	Cmd_AddCommand( "help", IN_Help );

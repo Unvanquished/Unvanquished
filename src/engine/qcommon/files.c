@@ -3089,6 +3089,8 @@ Handle digits specially
 
 Implementation is based on dpkg's version comparison code (verrevcmp() and order())
 http://anonscm.debian.org/gitweb/?p=dpkg/dpkg.git;a=blob;f=lib/dpkg/version.c;hb=74946af470550a3295e00cf57eca1747215b9311
+
+Note that this is a full comparison. Stripping the last component may be useful.
 ===========
 */
 static int FS_PathCmp_Order( int c )
@@ -3380,7 +3382,7 @@ then loads the zip headers
 void FS_AddGameDirectory( const char *path, const char *dir )
 {
 	searchpath_t *sp;
-//	int i;
+	int          i;
 	searchpath_t *search;
 	pack_t       *pak;
 	char         *pakfile;
@@ -3439,8 +3441,26 @@ void FS_AddGameDirectory( const char *path, const char *dir )
 		numfiles = MAX_PAKFILES;
 	}
 
+	// strip ".pk3" for sorting reasons (it's guaranteed to be present)
+	if ( pakfiles )
+	{
+                for ( i = 0; pakfiles[ i ]; ++i )
+                {
+                        pakfiles[ i ][ strlen( pakfiles[ i ] ) - 4 ] = 0;
+                }
+        }
+
 	qsort( pakfiles, numfiles, sizeof( char * ), paksort );
 	qsort( pakdirs, numdirs, sizeof( char * ), paksort );
+
+	// ... and restore the ".pk3"
+	if ( pakfiles )
+	{
+                for ( i = 0; pakfiles[ i ]; ++i )
+                {
+                        pakfiles[ i ][ strlen( pakfiles[ i ] ) ] = '.';
+                }
+        }
 
 #if 0
 	for ( ; ( pakfilesi + pakdirsi ) < ( numfiles + numdirs ); )
