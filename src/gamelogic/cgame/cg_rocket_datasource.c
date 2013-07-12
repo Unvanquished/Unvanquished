@@ -1096,7 +1096,7 @@ static void AddWeaponToBuyList( int i )
 
 	buf[ 0 ] = '\0';
 
-	if ( BG_Weapon( i )->purchasable && BG_WeaponAllowedInStage( i, cgs.humanStage ) && !BG_InventoryContainsWeapon( i, cg.snap->ps.stats ) )
+	if ( BG_Weapon( i )->purchasable && BG_WeaponAllowedInStage( i, cgs.humanStage ) && !BG_InventoryContainsWeapon( i, cg.snap->ps.stats ) && BG_Weapon( i )->team == TEAM_HUMANS )
 	{
 		Info_SetValueForKey( buf, "name", BG_Weapon( i )->humanName, qfalse );
 		Info_SetValueForKey( buf, "price", va( "%d", BG_Weapon( i )->price ), qfalse );
@@ -1136,7 +1136,7 @@ void CG_Rocket_BuildArmouryBuyList( const char *table )
 	{
 		trap_Rocket_DSClearTable( "armouryBuyList", "default" );
 
-		for ( i = WP_MACHINEGUN; i <= WP_GRENADE; ++i )
+		for ( i = 0; i <= WP_NUM_WEAPONS; ++i )
 		{
 			AddWeaponToBuyList( i );
 		}
@@ -1203,6 +1203,8 @@ void CG_Rocket_ExecArmouryBuyList( const char *table )
 		trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_ARMOURYBUY ].id, "hide" );
 	}
 }
+
+
 
 static void nullSortFunc( const char *name, const char *sortBy )
 {
