@@ -675,7 +675,7 @@ Returns qtrue when angles contains the two possible pitch angles and dir1 and di
 contain the corresponding directions. Returns qfalse when the target is out of reach.
 =============
 */
-static qboolean PM_GetTrajectoryAngleForVelocity(
+static qboolean PM_GetTrajectoryPitch(
         vec3_t origin, vec3_t target, float v0, vec2_t angles, vec3_t dir1, vec3_t dir2 )
 {
 	vec3_t t3;    // target relative to origin in 3D space
@@ -688,7 +688,7 @@ static qboolean PM_GetTrajectoryAngleForVelocity(
 
 	if ( pm->debugLevel > 1 )
 	{
-		Com_Printf( "[PM_GetTrajectoryAngleForVelocity] 3D: %.1f %.1f %.1f (%.1f qu)\n",
+		Com_Printf( "[PM_GetTrajectoryPitch] 3D: %.1f %.1f %.1f (%.1f qu)\n",
 		            t3[ 0 ], t3[ 1 ], t3[ 2 ], VectorLength( t3 ) );
 	}
 
@@ -708,7 +708,7 @@ static qboolean PM_GetTrajectoryAngleForVelocity(
 
 	if ( pm->debugLevel > 1 )
 	{
-		Com_Printf("[PM_GetTrajectoryAngleForVelocity] 2D: %.1f %.1f (%.1f qu)\n",
+		Com_Printf("[PM_GetTrajectoryPitch] 2D: %.1f %.1f (%.1f qu)\n",
 		           t[ 0 ], t[ 1 ], sqrt( t[ 0 ] * t[ 0 ] + t[ 1 ] * t[ 1 ] ) );
 	}
 
@@ -723,13 +723,12 @@ static qboolean PM_GetTrajectoryAngleForVelocity(
 
 	tmp = sqrt( tmp );
 
-	// TODO: Add actual atan
 	angles[ 0 ] = atanf( ( v02 + tmp ) / ( g * t[ 0 ] ) );
 	angles[ 1 ] = atanf( ( v02 - tmp ) / ( g * t[ 0 ] ) );
 
 	if ( pm->debugLevel > 1 )
 	{
-		Com_Printf( "[PM_GetTrajectoryAngleForVelocity] Angles: %.1f°, %.1f°\n",
+		Com_Printf( "[PM_GetTrajectoryPitch] Angles: %.1f°, %.1f°\n",
 		            180.0f / M_PI * angles[ 0 ], 180.0f / M_PI * angles[ 1 ] );
 	}
 
@@ -744,10 +743,12 @@ static qboolean PM_GetTrajectoryAngleForVelocity(
 	}
 	else
 	{
+		// normalize direction so it can be rotated more easily
+		dir1[ 2 ] = dir2[ 2 ] = 0.0f;
 		VectorNormalize( dir1 );
 		VectorNormalize( dir2 );
 
-		// otherwise we can assume that angles are not a multiple of pi/2
+		// angles are in ]-pi/2,pi/2[, so cos != 0
 		dir1[ 2 ] = sqrt( 1.0f / cos( angles[ 0 ] ) - 1.0f );
 		dir2[ 2 ] = sqrt( 1.0f / cos( angles[ 1 ] ) - 1.0f );
 
@@ -767,7 +768,7 @@ static qboolean PM_GetTrajectoryAngleForVelocity(
 
 	if ( pm->debugLevel > 1 )
 	{
-		Com_Printf( "[PM_GetTrajectoryAngleForVelocity] Dirs: ( %.2f, %.2f, %.2f ), ( %.2f, %.2f, %.2f )\n",
+		Com_Printf( "[PM_GetTrajectoryPitch] Dirs: ( %.2f, %.2f, %.2f ), ( %.2f, %.2f, %.2f )\n",
 		            dir1[ 0 ], dir1[ 1 ], dir1[ 2 ], dir2[ 0 ], dir2[ 1 ], dir2[ 2 ] );
 	}
 
@@ -896,8 +897,8 @@ static qboolean PM_CheckPounce( void )
 					           pm->ps->clientNum, MASK_SOLID );
 
 					if ( trace.fraction < 1.0f &&
-					     PM_GetTrajectoryAngleForVelocity( pm->ps->origin, trace.endpos,
-					                                       jumpMagnitude, angles, dir1, dir2 ) )
+					     PM_GetTrajectoryPitch( pm->ps->origin, trace.endpos, jumpMagnitude,
+					                            angles, dir1, dir2 ) )
 					{
 						// use the shorter trajection
 						if ( dir1[ 2 ] < dir2[ 2 ] )
