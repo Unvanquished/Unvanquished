@@ -736,7 +736,7 @@ delta functions with keys
 =============================================================================
 */
 
-static const int kbitmask[ 32 ] =
+static const unsigned int kbitmask[ 32 ] =
 {
 	0x00000001, 0x00000003, 0x00000007, 0x0000000F,
 	0x0000001F, 0x0000003F, 0x0000007F, 0x000000FF,
@@ -931,7 +931,7 @@ typedef struct
 } netField_t;
 
 // using the stringizing operator to save typing...
-#define NETF( x ) # x,(size_t)&( (entityState_t*)0 )->x
+#define NETF( x ) # x,int((size_t)&( (entityState_t*)0 )->x)
 
 static netField_t entityStateFields[] =
 {
@@ -1398,7 +1398,7 @@ player_state_t communication
 */
 
 // using the stringizing operator to save typing...
-#define PSF( x ) # x,(size_t)&( (playerState_t*)0 )->x
+#define PSF( x ) # x,int((size_t)&( (playerState_t*)0 )->x)
 
 static netField_t playerStateFields[] =
 {

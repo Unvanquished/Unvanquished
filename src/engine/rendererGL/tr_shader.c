@@ -3295,7 +3295,7 @@ static const infoParm_t infoParms[] =
 	{ "ikclip",             1,                         0,                      0                                      }, // FIXME
 #endif
 
-	{ "nodrop",             1,                         0,                      CONTENTS_NODROP                        }, // don't drop items or leave bodies (death fog, lava, etc)
+	{ "nodrop",             1,                         0,                      int(CONTENTS_NODROP)                   }, // don't drop items or leave bodies (death fog, lava, etc)
 	{ "nonsolid",           1,                         SURF_NONSOLID,          0                                      }, // clears the solid flag
 
 	{ "blood",              1,                         0,                      CONTENTS_WATER                         },
