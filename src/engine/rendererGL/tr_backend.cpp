@@ -1964,6 +1964,12 @@ static int MergeInteractionBounds( const matrix_t lightViewProjectionMatrix, int
 		{
 			clipPlane = &frustum[ i ];
 
+			// we can have shadow casters outside the initial computed light view frustum
+			if ( i == FRUSTUM_NEAR && shadowCasters )
+			{
+				continue;
+			}
+
 			r = BoxOnPlaneSide( worldBounds[ 0 ], worldBounds[ 1 ], clipPlane );
 
 			if ( r == 2 )
