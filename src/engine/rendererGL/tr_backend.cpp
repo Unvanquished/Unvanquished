@@ -2227,7 +2227,7 @@ static void RB_RenderInteractions()
 		{
 			backEnd.currentEntity = entity = ia->entity;
 			surface = ia->surface;
-			shader = ia->surfaceShader;
+			shader = tr.sortedShaders[ ia->shaderNum ];
 
 			if ( glConfig2.occlusionQueryBits && glConfig.driverType != GLDRV_MESA && r_dynamicEntityOcclusionCulling->integer && !entity->occlusionQuerySamples )
 			{
@@ -3153,7 +3153,7 @@ static void RB_RenderInteractionsShadowMapped()
 				numMaps = 6;
 				break;
 			case RL_DIRECTIONAL:
-				numMaps = MAX( r_parallelShadowSplits->integer, 1 );
+				numMaps = MAX( r_parallelShadowSplits->integer + 1, 1 );
 				break;
 			default:
 				numMaps = 1;
@@ -3186,7 +3186,7 @@ static void RB_RenderInteractionsShadowMapped()
 				iaLast = ia;
 				backEnd.currentEntity = entity = ia->entity;
 				surface = ia->surface;
-				shader = ia->surfaceShader;
+				shader = tr.sortedShaders[ ia->shaderNum ];
 				alphaTest = shader->alphaTest;
 				deformType = GetDeformType( shader );
 
@@ -3365,7 +3365,7 @@ static void RB_RenderInteractionsShadowMapped()
 			iaLast = ia;
 			backEnd.currentEntity = entity = ia->entity;
 			surface = ia->surface;
-			shader = ia->surfaceShader;
+			shader = tr.sortedShaders[ ia->shaderNum ];
 			alphaTest = shader->alphaTest;
 			deformType = GetDeformType( shader );
 
@@ -4486,7 +4486,7 @@ static void RB_RenderInteractionsDeferredShadowMapped()
 				numMaps = 6;
 				break;
 			case RL_DIRECTIONAL:
-				numMaps = MAX( r_parallelShadowSplits->integer, 1 );
+				numMaps = MAX( r_parallelShadowSplits->integer + 1, 1 );
 				break;
 			default:
 				numMaps = 1;
@@ -4519,7 +4519,7 @@ static void RB_RenderInteractionsDeferredShadowMapped()
 				iaLast = ia;
 				backEnd.currentEntity = entity = ia->entity;
 				surface = ia->surface;
-				shader = ia->surfaceShader;
+				shader = tr.sortedShaders[ ia->shaderNum ];
 				alphaTest = shader->alphaTest;
 				deformType = GetDeformType( shader );
 
@@ -7149,7 +7149,7 @@ static void RB_RenderDebugUtils()
 		GL_Bind( tr.whiteImage );
 		gl_genericShader->SetUniform_ColorTextureMatrix( matrixIdentity );
 
-		for ( iaCount = 0, ia = &backEnd.viewParms.interactions[ 0 ]; iaCount < backEnd.viewParms.numInteractions; )
+		for ( iaCount = 0, ia = &backEnd.viewParms.interactions[ 0 ]; iaCount < backEnd.viewParms.numInteractions; ia++, iaCount++ )
 		{
 			backEnd.currentEntity = entity = ia->entity;
 			light = ia->light;
