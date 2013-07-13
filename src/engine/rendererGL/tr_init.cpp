@@ -1543,7 +1543,7 @@ extern "C" {
 		r_printShaders = ri.Cvar_Get( "r_printShaders", "0", CVAR_ARCHIVE );
 
 		r_bloom = ri.Cvar_Get( "r_bloom", "0", CVAR_ARCHIVE );
-		r_bloomBlur = ri.Cvar_Get( "r_bloomBlur", "5.0", CVAR_CHEAT );
+		r_bloomBlur = ri.Cvar_Get( "r_bloomBlur", "1.0", CVAR_CHEAT );
 		r_bloomPasses = ri.Cvar_Get( "r_bloomPasses", "2", CVAR_CHEAT );
 		r_rotoscope = ri.Cvar_Get( "r_rotoscope", "0", CVAR_ARCHIVE );
 		r_cameraPostFX = ri.Cvar_Get( "r_cameraPostFX", "1", CVAR_ARCHIVE );
