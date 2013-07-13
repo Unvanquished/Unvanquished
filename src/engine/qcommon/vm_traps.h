@@ -32,42 +32,43 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#include "keycodes.h"
+#ifndef __VM_TRAPS_H
+#define __VM_TRAPS_H
 
-#define MAX_TEAMS 4
-#define DEFAULT_BINDING 0
+// Major: API breakage
+#define SYSCALL_ABI_VERSION_MAJOR 7
+// Minor: API extension
+#define SYSCALL_ABI_VERSION_MINOR 2
 
-typedef struct
+// First VM-specific call no.
+#define FIRST_VM_SYSCALL 256
+
+// Calls common to all VMs. Call nos. must be between 0 and FIRST_VM_SYSCALL
+// Comments in this enum are used by the QVM API scanner
+typedef enum sharedImport_s
 {
-	qboolean down;
-	int      repeats; // if > 1, it is autorepeating
-	char     *binding[ MAX_TEAMS ];
-} qkey_t;
+  TRAP_MEMSET,               // = memset
+  TRAP_MEMCPY,               // = memcpy
+  TRAP_MEMCMP,               // = memcmp
+  TRAP_STRNCPY,              // = strncpy
+  TRAP_SIN,                  // = sin
+  TRAP_COS,                  // = cos
+  TRAP_ASIN,                 // = asin
+//.TRAP_ACOS,                 // = acos
+  TRAP_TAN,                  // = tanf
+  TRAP_ATAN,                 // = atanf
+  TRAP_ATAN2,                // = atan2
+  TRAP_SQRT,                 // = sqrt
+  TRAP_FLOOR,                // = floor
+  TRAP_CEIL,                 // = ceil
 
-extern qboolean key_overstrikeMode;
-extern qkey_t   keys[ MAX_KEYS ];
-extern int      bindTeam;
+  TRAP_MATRIXMULTIPLY = 128, // unused
+  TRAP_ANGLEVECTORS,         // unused
+  TRAP_PERPENDICULARVECTOR,  // unused
 
-// NOTE TTimo the declaration of field_t and Field_Clear is now in qcommon/qcommon.h
+  TRAP_VERSION = 255
+} sharedTraps_t;
 
-void            Field_KeyDownEvent( field_t *edit, int key );
-void            Field_CharEvent( field_t *edit, const char *ch );
-void            Field_Draw( field_t *edit, int x, int y, qboolean showCursor, qboolean noColorEscape, float alpha );
-void            Field_BigDraw( field_t *edit, int x, int y, qboolean showCursor, qboolean noColorEscape );
+void trap_SyscallABIVersion( int, int );
 
-extern field_t  g_consoleField;
-extern field_t  chatField;
-extern int      anykeydown;
-extern qboolean chat_irc;
-
-void            Key_WriteBindings( fileHandle_t f );
-void            Key_SetBinding( int keynum, int team, const char *binding );
-void            Key_GetBindingByString( const char *binding, int team, int *key1, int *key2 );
-const char      *Key_GetBinding( int keynum, int team );
-qboolean        Key_IsDown( int keynum );
-qboolean        Key_GetOverstrikeMode( void );
-void            Key_SetOverstrikeMode( qboolean state );
-void            Key_ClearStates( void );
-int             Key_GetKey( const char *binding, int team );
-
-void            Key_SetTeam( int newTeam );
+#endif

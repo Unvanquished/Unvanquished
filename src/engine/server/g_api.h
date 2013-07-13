@@ -170,8 +170,6 @@ typedef enum gameImport_s
 // engine-to-game-module calls
 typedef enum
 {
-  GAME_ABI_CHECK, // int ()( int version );
-
   GAME_INIT, // void ()( int levelTime, int randomSeed, qboolean restart );
   // the first call to the game module
 

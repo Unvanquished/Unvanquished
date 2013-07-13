@@ -76,11 +76,12 @@ if( NOT DEFINED SUBSEQUENT_RUN )
     endif(NOT MINIMAL_FLAGS)
   endif()
 
-  set( CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS}" CACHE STRING "Flags used by the compiler during all build types" FORCE )
-  set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}" CACHE STRING "Flags used by the compiler during debug builds." FORCE )
-  set( CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_C_FLAGS_MINSIZEREL}" CACHE STRING "Flags used by the compiler during release minsize builds." FORCE )
-  set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}" CACHE STRING "Flags used by the compiler during release builds" FORCE )
-  set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO}" CACHE STRING "Flags used by the compiler during Release with Debug Info builds." FORCE )
+  set( CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -std=c++11" CACHE STRING "Flags used by the compiler during all build types" FORCE )
+  set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -std=c++11" CACHE STRING "Flags used by the compiler during debug builds." FORCE )
+  set( CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_C_FLAGS_MINSIZEREL} -std=c++11" CACHE STRING "Flags used by the compiler during release minsize builds." FORCE )
+  set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -std=c++11" CACHE STRING "Flags used by the compiler during release builds" FORCE )
+  set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO}
+  -std=c++11" CACHE STRING "Flags used by the compiler during Release with Debug Info builds." FORCE )
 endif()
 
 set( CMAKE_ASM_COMPILER ${CMAKE_C_COMPILER} )

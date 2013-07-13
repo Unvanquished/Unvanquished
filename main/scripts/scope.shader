@@ -13,8 +13,8 @@ scope
 	}
 	{
 		clampmap gfx/2d/scope/crosshair
-		blendFunc add
-		alphaFunc GE128
+		alphaGen vertex
+		blend blend
 	}
 	{
 		clampmap gfx/2d/scope/zoom

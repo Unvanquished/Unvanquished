@@ -245,7 +245,6 @@ private:
 // argument contains the root socket handle and must be passed to this function.
 std::unique_ptr<RootSocket> GetRootSocket(const char* arg);
 
-
 } // namespace NaCl
 
 #endif // NACL_H_
