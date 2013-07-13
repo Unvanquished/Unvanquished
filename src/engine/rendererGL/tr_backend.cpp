@@ -5152,6 +5152,11 @@ void RB_RenderBloom()
 		{
 			for ( j = 0; j < r_bloomPasses->integer; j++ )
 			{
+				vec2_t texScale;
+
+				texScale[ 0 ] = 1.0f / tr.bloomRenderFBO[ flip ]->width;
+				texScale[ 1 ] = 1.0f / tr.bloomRenderFBO[ flip ]->height;
+
 				R_BindFBO( tr.bloomRenderFBO[ flip ] );
 
 				GL_ClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
@@ -5173,6 +5178,7 @@ void RB_RenderBloom()
 
 					gl_blurXShader->SetUniform_DeformMagnitude( r_bloomBlur->value );
 					gl_blurXShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
+					gl_blurXShader->SetUniform_TexScale( texScale );
 				}
 				else
 				{
@@ -5180,6 +5186,7 @@ void RB_RenderBloom()
 
 					gl_blurYShader->SetUniform_DeformMagnitude( r_bloomBlur->value );
 					gl_blurYShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
+					gl_blurYShader->SetUniform_TexScale( texScale );
 				}
 
 				GL_PopMatrix();
