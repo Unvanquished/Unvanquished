@@ -2393,9 +2393,21 @@ static void PM_GroundTraceMissed( void )
 PM_GroundClimbTrace
 =============
 */
+// ATP - Attachpoints for wallwalking
+// order is important!
+enum {
+	GCT_ATP_MOVEDIRECTION,
+	GCT_ATP_GROUND,
+	GCT_ATP_STEPMOVE,
+	GCT_ATP_UNDERNEATH,
+	GCT_ATP_CEILING,
+	GCT_ATP_FALLBACK,
+	NUM_GCT_ATP
+};
+
 static void PM_GroundClimbTrace( void )
 {
-	vec3_t      surfNormal, movedir, lookdir, point;
+	vec3_t      surfNormal, moveDir, lookDir, point, velocityDir;
 	vec3_t      toAngles, surfAngles;
 	trace_t     trace;
 	int         i;
@@ -2410,63 +2422,70 @@ static void PM_GroundClimbTrace( void )
 	float       ldDOTtCs, d;
 	vec3_t      abc;
 
-	static const vec3_t refNormal = { 0.0f, 0.0f, 1.0f };
+	static const vec3_t refNormal = { 0.0f, 0.0f, 1.0f };      // really the floor's normal. refactor?
 	static const vec3_t ceilingNormal = { 0.0f, 0.0f, -1.0f };
-	static const vec3_t horizontal = { 1.0f, 0.0f, 0.0f }; //arbituary vector perpendicular to refNormal
+	static const vec3_t horizontal = { 1.0f, 0.0f, 0.0f };     // arbitrary vector orthogonal to refNormal
 
 	BG_GetClientNormal( pm->ps, surfNormal );
 
-	//construct a vector which reflects the direction the player is looking wrt the surface normal
-	ProjectPointOnPlane( movedir, pml.forward, surfNormal );
-	VectorNormalize( movedir );
+	// construct a vector which reflects the direction the player is looking at
+	// with respect to the surface normal
+	ProjectPointOnPlane( moveDir, pml.forward, surfNormal );
+	VectorNormalize( moveDir );
 
-	VectorCopy( movedir, lookdir );
+	VectorCopy( moveDir, lookDir );
 
 	if ( pm->cmd.forwardmove < 0 )
 	{
-		VectorNegate( movedir, movedir );
+		VectorNegate( moveDir, moveDir );
 	}
 
-	//allow strafe transitions
+	// allow strafe transitions
 	if ( pm->cmd.rightmove )
 	{
-		VectorCopy( pml.right, movedir );
+		VectorCopy( pml.right, moveDir );
 
 		if ( pm->cmd.rightmove < 0 )
 		{
-			VectorNegate( movedir, movedir );
+			VectorNegate( moveDir, moveDir );
 		}
 	}
 
-	for ( i = 0; i <= 4; i++ )
+	// get direction of velocity
+	VectorCopy( pm->ps->velocity, velocityDir );
+	VectorNormalize( velocityDir );
+
+	// try to attach to a surface
+	for ( i = 0; i <= NUM_GCT_ATP; i++ )
 	{
 		switch ( i )
 		{
-			case 0:
-
-				//we are going to step this frame so skip the transition test
+			case GCT_ATP_MOVEDIRECTION:
+				// we are going to step this frame so skip the transition test
 				if ( PM_PredictStepMove() )
 				{
 					continue;
 				}
 
-				//trace into direction we are moving
-				VectorMA( pm->ps->origin, 0.25f, movedir, point );
+				// trace into direction we are moving
+				VectorMA( pm->ps->origin, 0.25f, moveDir, point );
 				pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask );
+
 				break;
 
-			case 1:
-				//trace straight down anto "ground" surface
-				//mask out CONTENTS_BODY to not hit other players and avoid the camera flipping out when
+			case GCT_ATP_GROUND:
+				// trace straight down onto "ground" surface
+				// mask out CONTENTS_BODY to not hit other players and avoid the camera flipping out when
 				// wallwalkers touch
 				VectorMA( pm->ps->origin, -0.25f, surfNormal, point );
 				pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask & ~CONTENTS_BODY );
+
 				break;
 
-			case 2:
+			case GCT_ATP_STEPMOVE:
 				if ( pml.groundPlane != qfalse && PM_PredictStepMove() )
 				{
-					//step down
+					// step down
 					VectorMA( pm->ps->origin, -STEPSIZE, surfNormal, point );
 					pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask );
 				}
@@ -2477,13 +2496,12 @@ static void PM_GroundClimbTrace( void )
 
 				break;
 
-			case 3:
-
-				//trace "underneath" BBOX so we can traverse angles > 180deg
+			case GCT_ATP_UNDERNEATH:
+				// trace "underneath" BBOX so we can traverse angles > 180deg
 				if ( pml.groundPlane != qfalse )
 				{
 					VectorMA( pm->ps->origin, -16.0f, surfNormal, point );
-					VectorMA( point, -16.0f, movedir, point );
+					VectorMA( point, -16.0f, moveDir, point );
 					pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask );
 				}
 				else
@@ -2493,29 +2511,45 @@ static void PM_GroundClimbTrace( void )
 
 				break;
 
-			case 4:
-				//fall back so we don't have to modify PM_GroundTrace too much
+			case GCT_ATP_CEILING:
+				// attach to the ceiling if we get close enough during a jump that goes roughly upwards
+				if ( velocityDir[ 2 ] > 0.5f ) // angle < acos( 0.5f ) = 60°
+				{
+					VectorMA( pm->ps->origin, -16.0f, ceilingNormal, point );
+					pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask & ~CONTENTS_BODY );
+					break;
+				}
+				else
+				{
+					continue;
+				}
+
+			case GCT_ATP_FALLBACK:
+				// fall back so we don't have to modify PM_GroundTrace too much
 				VectorCopy( pm->ps->origin, point );
 				point[ 2 ] = pm->ps->origin[ 2 ] - 0.25f;
 				pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask );
+
 				break;
 		}
 
-		//if we hit something
+		// check if we hit something
 		if ( trace.fraction < 1.0f && !( trace.surfaceFlags & ( SURF_SKY | SURF_SLICK ) ) &&
 		     !( trace.entityNum != ENTITYNUM_WORLD && i != 4 ) )
 		{
-			if ( i == 2 || i == 3 )
+			// check if we attached to a new surface (?)
+			if ( i == GCT_ATP_STEPMOVE || i == GCT_ATP_UNDERNEATH || i == GCT_ATP_CEILING )
 			{
-				if ( i == 2 )
+				// add step event if necessary
+				if ( i == GCT_ATP_STEPMOVE )
 				{
 					PM_StepEvent( pm->ps->origin, trace.endpos, surfNormal );
 				}
 
+				// snap our origin to the new surface
 				VectorCopy( trace.endpos, pm->ps->origin );
 			}
 
-			//calculate a bunch of stuff...
 			CrossProduct( trace.plane.normal, surfNormal, traceCROSSsurf );
 			VectorNormalize( traceCROSSsurf );
 
@@ -2525,7 +2559,7 @@ static void PM_GroundClimbTrace( void )
 			CrossProduct( surfNormal, refNormal, surfCROSSref );
 			VectorNormalize( surfCROSSref );
 
-			//calculate angle between surf and trace
+			// calculate angle between surf and trace
 			traceDOTsurf = DotProduct( trace.plane.normal, surfNormal );
 			traceANGsurf = RAD2DEG( acos( traceDOTsurf ) );
 
@@ -2534,7 +2568,7 @@ static void PM_GroundClimbTrace( void )
 				traceANGsurf -= 180.0f;
 			}
 
-			//calculate angle between trace and ref
+			// calculate angle between trace and ref
 			traceDOTref = DotProduct( trace.plane.normal, refNormal );
 			traceANGref = RAD2DEG( acos( traceDOTref ) );
 
@@ -2543,7 +2577,7 @@ static void PM_GroundClimbTrace( void )
 				traceANGref -= 180.0f;
 			}
 
-			//calculate angle between surf and ref
+			// calculate angle between surf and ref
 			surfDOTref = DotProduct( surfNormal, refNormal );
 			surfANGref = RAD2DEG( acos( surfDOTref ) );
 
@@ -2552,13 +2586,14 @@ static void PM_GroundClimbTrace( void )
 				surfANGref -= 180.0f;
 			}
 
-			//if the trace result and old surface normal are different then we must have transided to a new
-			//surface... do some stuff...
+			// if the trace result and old surface normal are different then we must have transided to a new surface
 			if ( !VectorCompareEpsilon( trace.plane.normal, surfNormal, eps ) )
 			{
-				//if the trace result or the old vector is not the floor or ceiling correct the YAW angle
-				if ( !VectorCompareEpsilon( trace.plane.normal, refNormal, eps ) && !VectorCompareEpsilon( surfNormal, refNormal, eps ) &&
-				     !VectorCompareEpsilon( trace.plane.normal, ceilingNormal, eps ) && !VectorCompareEpsilon( surfNormal, ceilingNormal, eps ) )
+				// if the trace result or the old vector is not the floor or ceiling correct the YAW angle
+				if ( !VectorCompareEpsilon( trace.plane.normal, refNormal, eps ) &&
+				     !VectorCompareEpsilon( surfNormal, refNormal, eps ) &&
+				     !VectorCompareEpsilon( trace.plane.normal, ceilingNormal, eps ) &&
+				     !VectorCompareEpsilon( surfNormal, ceilingNormal, eps ) )
 				{
 					//behold the evil mindfuck from hell
 					//it has fucked mind like nothing has fucked mind before
@@ -2591,28 +2626,28 @@ static void PM_GroundClimbTrace( void )
 					pm->ps->delta_angles[ YAW ] -= rTtANGrTsTt;
 				}
 
-				//construct a plane dividing the surf and trace normals
+				// construct a plane dividing the surf and trace normals
 				CrossProduct( traceCROSSsurf, surfNormal, abc );
 				VectorNormalize( abc );
 				d = DotProduct( abc, pm->ps->origin );
 
-				//construct a point representing where the player is looking
-				VectorAdd( pm->ps->origin, lookdir, point );
+				// construct a point representing where the player is looking
+				VectorAdd( pm->ps->origin, lookDir, point );
 
-				//check whether point is on one side of the plane, if so invert the correction angle
+				// check whether point is on one side of the plane, if so invert the correction angle
 				if ( ( abc[ 0 ] * point[ 0 ] + abc[ 1 ] * point[ 1 ] + abc[ 2 ] * point[ 2 ] - d ) > 0 )
 				{
 					traceANGsurf = -traceANGsurf;
 				}
 
-				//find the . product of the lookdir and traceCROSSsurf
-				if ( ( ldDOTtCs = DotProduct( lookdir, traceCROSSsurf ) ) < 0.0f )
+				// find the . product of the lookdir and traceCROSSsurf
+				if ( ( ldDOTtCs = DotProduct( lookDir, traceCROSSsurf ) ) < 0.0f )
 				{
 					VectorInverse( traceCROSSsurf );
-					ldDOTtCs = DotProduct( lookdir, traceCROSSsurf );
+					ldDOTtCs = DotProduct( lookDir, traceCROSSsurf );
 				}
 
-				//set the correction angle
+				// set the correction angle
 				traceANGsurf *= 1.0f - ldDOTtCs;
 
 				if ( !( pm->ps->persistant[ PERS_STATE ] & PS_WALLCLIMBINGFOLLOW ) )
@@ -2621,17 +2656,39 @@ static void PM_GroundClimbTrace( void )
 					pm->ps->delta_angles[ PITCH ] -= ANGLE2SHORT( traceANGsurf );
 				}
 
-				//transition from wall to ceiling
-				//normal for subsequent viewangle rotations
+				// transition to ceiling
+				// calculate axis for subsequent viewangle rotations
 				if ( VectorCompareEpsilon( trace.plane.normal, ceilingNormal, eps ) )
 				{
-					CrossProduct( surfNormal, trace.plane.normal, pm->ps->grapplePoint );
-					VectorNormalize( pm->ps->grapplePoint );
+					if ( fabs( DotProduct( surfNormal, trace.plane.normal ) ) < ( 1.0f - eps ) )
+					{
+						// we had a smooth transition, rotate along old surface x new surface
+						CrossProduct( surfNormal, trace.plane.normal, pm->ps->grapplePoint );
+						VectorNormalize( pm->ps->grapplePoint ); // necessary?
+					}
+					else
+					{
+						// rotate view around itself
+						VectorCopy( pml.forward, pm->ps->grapplePoint );
+						pm->ps->grapplePoint[ 2 ] = 0.0f;
+
+						// sanity check grapplePoint, use an arbitrary axis as fallback
+						if ( VectorLength( pm->ps->grapplePoint ) < eps )
+						{
+							VectorCopy( horizontal, pm->ps->grapplePoint );
+						}
+						else
+						{
+							VectorNormalize( pm->ps->grapplePoint );
+						}
+					}
+
+					// we are now on the ceiling
 					pm->ps->eFlags |= EF_WALLCLIMBCEILING;
 				}
 
-				//transition from ceiling to wall
-				//we need to do some different angle correction here cos GPISROTVEC
+				// transition from ceiling
+				// we need to do some different angle correction here because grapplePoint is a rotation axis
 				if ( VectorCompareEpsilon( surfNormal, ceilingNormal, eps ) )
 				{
 					vectoangles( trace.plane.normal, toAngles );
@@ -2641,25 +2698,25 @@ static void PM_GroundClimbTrace( void )
 				}
 			}
 
+			// we have ground
 			pml.groundTrace = trace;
 
-			//so everything knows where we're wallclimbing (ie client side)
+			// we are climbing on a wall
 			pm->ps->eFlags |= EF_WALLCLIMB;
 
-			//if we're not stuck to the ceiling then set grapplePoint to be a surface normal
+			// if we're not at the ceiling, set grapplePoint to be a surface normal
 			if ( !VectorCompareEpsilon( trace.plane.normal, ceilingNormal, eps ) )
 			{
-				//so we know what surface we're stuck to
 				VectorCopy( trace.plane.normal, pm->ps->grapplePoint );
 				pm->ps->eFlags &= ~EF_WALLCLIMBCEILING;
 			}
 
-			//IMPORTANT: break out of the for loop if we've hit something
+			// we hit something, so stop searching for a surface to attach to
 			break;
 		}
 		else if ( trace.allsolid )
 		{
-			// do something corrective if the trace starts in a solid...
+			// do something corrective if the trace starts in a solid
 			if ( !PM_CorrectAllSolid( &trace ) )
 			{
 				return;
@@ -2667,52 +2724,67 @@ static void PM_GroundClimbTrace( void )
 		}
 	}
 
+	// check if we are in free wall (the last trace didn't hit)
 	if ( trace.fraction >= 1.0f )
 	{
-		// if the trace didn't hit anything, we are in free fall
 		PM_GroundTraceMissed();
 		pml.groundPlane = qfalse;
 		pml.walking = qfalse;
 
-		//just transitioned from ceiling to floor... apply delta correction
+		// if we were wallwalking the last frame, apply delta correction
 		if( pm->ps->eFlags & EF_WALLCLIMB || pm->ps->eFlags & EF_WALLCLIMBCEILING)
 		{
-			vec3_t  forward, rotated, angles;
+			vec3_t forward, rotated, angles;
 
-			if(!(pm->ps->eFlags & EF_WALLCLIMBCEILING))
-				VectorCopy(pm->ps->grapplePoint,surfNormal);
-			else
-				VectorSet( surfNormal, 0, 0, -1 );
-
-			//only correct if we were on a ceiling
-			if(surfNormal[2] < 0)
+			if ( pm->ps->eFlags & EF_WALLCLIMBCEILING )
 			{
-				//The actual problem is with BG_RotateAxis()
-				//The rotation applied there causes our view to turn around
-				//We correct this here
+				// we were walking on the ceiling
+				VectorSet( surfNormal, 0, 0, -1 );
+			}
+			else
+			{
+				// we were walking on a wall or the floor
+				VectorCopy( pm->ps->grapplePoint, surfNormal );
+			}
+
+			// delta correction is only necessary if our view was upside down
+			// the actual problem is with BG_RotateAxis()
+			// the rotation applied there causes our view to turn around
+			if ( surfNormal[ 2 ] < 0 )
+			{
 				vec3_t xNormal;
+
 				AngleVectors( pm->ps->viewangles, forward, NULL, NULL );
-				if(pm->ps->eFlags & EF_WALLCLIMBCEILING)
+
+				if ( pm->ps->eFlags & EF_WALLCLIMBCEILING )
 				{
-					VectorCopy(pm->ps->grapplePoint, xNormal);
+					// we were walking on the ceiling
+					VectorCopy( pm->ps->grapplePoint, xNormal );
 				}
-				else {
+				else
+				{
+					// we were walking on a wall
 					CrossProduct( surfNormal, refNormal, xNormal );
 					VectorNormalize( xNormal );
 				}
-				RotatePointAroundVector(rotated, xNormal, forward, 180);
+
+				RotatePointAroundVector( rotated, xNormal, forward, 180 );
 				vectoangles( rotated, angles );
 				pm->ps->delta_angles[ YAW ] -= ANGLE2SHORT( angles[ YAW ] - pm->ps->viewangles[ YAW ] );
 			}
-		}
-		pm->ps->eFlags &= ~EF_WALLCLIMB;
-		pm->ps->eFlags &= ~EF_WALLCLIMBCEILING;
 
-		//we get very bizarre effects if we don't do this :0
+			// we are not wallwalking anymore
+			pm->ps->eFlags &= ~EF_WALLCLIMB;
+			pm->ps->eFlags &= ~EF_WALLCLIMBCEILING;
+		}
+
+		// rotate view back to horizontal (?)
 		VectorCopy( refNormal, pm->ps->grapplePoint );
+
 		return;
 	}
 
+	// we are on a surface
 	pml.groundPlane = qtrue;
 	pml.walking = qtrue;
 
@@ -2724,9 +2796,6 @@ static void PM_GroundClimbTrace( void )
 	}
 
 	pm->ps->groundEntityNum = trace.entityNum;
-
-	// don't reset the z velocity for slopes
-//  pm->ps->velocity[2] = 0;
 
 	PM_AddTouchEnt( trace.entityNum );
 }
