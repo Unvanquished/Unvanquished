@@ -7,7 +7,7 @@
     "Feel free to take part in our weekly development games, ^3each Saturday at"
     " 21:00 UTC^7 on the »^aDevelopment^7 & ^8Testing^7 ^@Server^7«!"
   }
-  "[dev] Resources"
+  "[drill] Resources"
   {
     "Building a structure requires build points, which are now a one-time "
     "payment – if the buildable gets destroyed, the build points spent on it "
@@ -16,9 +16,9 @@
     "Your team will start with a small pool of build points but more can be "
     "acquired by building a mining structure.\n"
     "\n"
-    "Read »[dev] Resource generation« for more."
+    "Read »Resource generation« for more."
   }
-  "[dev] Resource generation"
+  "[leech] Resource generation"
   {
     "Build points are acquired via two structures – the human [drill] drill and"
     " the alien [leech] leech. These buildings need to be spread out for "
@@ -32,7 +32,7 @@
     " acquire resources in a long lasting match. This replaces sudden death.\n"
     "\n"
   }
-  "[dev] Stages & Confidence"
+  "[bsuit] Stages & Confidence"
   {
     "Building and destroying structures earns your team a new resource called "
     "^2confidence^7. If you gain enough confidence your team will stage up.\n"
@@ -46,7 +46,7 @@
     "destroying it. There is also a reward for killing an enemy outside your "
     "own base."
   }
-  "[dev] Human building ^21^7"
+  "[ckit] Human building ^21^7"
   {
     "The [reactor] reactor now supplies power to every point on the map, but "
     "there is a limited amount of energy per region. Human buildables will "
@@ -61,7 +61,7 @@
     "Be warned that repeaters will deal significant damage to close structures "
     "when they explode."
   }
-  "[dev] Human building ^22^7"
+  "[ckit] Human building ^22^7"
   {
     "When the power consumption in a region is too high, the smallest possible "
     "number of buildables will power down so that the other strucutres have "
@@ -87,5 +87,14 @@
     "\n"
     "The [advgranger] advanced granger's spit attack can be used to put out "
     "fires."
+  }
+  "[dev] Miscellaneous"
+  {
+    "The human dodge has been removed, stamina has been increased.\n"
+    "\n"
+    "The grenade price has been increased (200 → 300).\n"
+    "\n"
+    "All alien evo costs and gains have been doubled. The new maximum of evos "
+    "an alien can store is 20 (formerly 9)."
   }
 }
