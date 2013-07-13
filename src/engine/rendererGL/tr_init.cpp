@@ -129,6 +129,7 @@ extern "C" {
 	cvar_t      *r_drawBuffer;
 	cvar_t      *r_shadows;
 	cvar_t      *r_softShadows;
+	cvar_t      *r_softShadowsPP;
 	cvar_t      *r_shadowBlur;
 
 	cvar_t      *r_shadowMapQuality;
@@ -1617,6 +1618,8 @@ extern "C" {
 		r_softShadows = ri.Cvar_Get( "r_softShadows", "0", CVAR_ARCHIVE | CVAR_SHADER );
 		AssertCvarRange( r_softShadows, 0, 6, qtrue );
 
+		r_softShadowsPP = ri.Cvar_Get( "r_softShadowsPP", "0", CVAR_ARCHIVE | CVAR_LATCH );
+		
 		r_shadowBlur = ri.Cvar_Get( "r_shadowBlur", "2", CVAR_ARCHIVE | CVAR_SHADER );
 
 		r_shadowMapQuality = ri.Cvar_Get( "r_shadowMapQuality", "3", CVAR_ARCHIVE | CVAR_LATCH );
