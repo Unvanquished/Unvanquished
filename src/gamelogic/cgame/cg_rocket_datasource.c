@@ -1348,6 +1348,114 @@ void CG_Rocket_ExecAlienEvolveList( const char *table )
 	}
 }
 
+void CG_Rocket_CleanUpHumanBuildList( const char *table )
+{
+	rocketInfo.data.selectedHumanBuild = -1;
+	rocketInfo.data.humanBuildListCount = 0;
+}
+
+void CG_Rocket_BuildHumanBuildList( const char *table )
+{
+	static char buf[ MAX_STRING_CHARS ];
+
+	if ( !Q_stricmp( table, "default" ) )
+	{
+		int i;
+
+		trap_Rocket_DSClearTable( "humanBuildList", "default" );
+		CG_Rocket_CleanUpHumanBuildList( "default" );
+
+		for ( i = BA_NONE + 1; i < BA_NUM_BUILDABLES; ++i )
+		{
+			if ( BG_Buildable( i )->team == TEAM_HUMANS &&
+				BG_Buildable( i )->buildWeapon & ( 1 << BG_GetPlayerWeapon( &cg.predictedPlayerState ) ) &&
+				BG_BuildableAllowedInStage( i, cgs.humanStage ) &&
+				BG_BuildableIsAllowed( i ) )
+			{
+				buf[ 0 ] = '\0';
+
+				Info_SetValueForKey( buf, "name", BG_Buildable( i )->humanName, qfalse );
+				Info_SetValueForKey(buf, "cost", va( "%d", BG_Buildable( i )->buildPoints ), qfalse );
+				Info_SetValueForKey( buf, "description", BG_Buildable( i )->info, qfalse );
+
+				trap_Rocket_DSAddRow( "humanBuildList", "default", buf );
+
+				rocketInfo.data.humanBuildList[ rocketInfo.data.humanBuildListCount++ ] = i;
+			}
+		}
+	}
+}
+
+void CG_Rocket_SetHumanBuildList( const char *table, int index )
+{
+	rocketInfo.data.selectedHumanBuild = index;
+}
+
+void CG_Rocket_ExecHumanBuildList( const char *table )
+{
+	buildable_t build = rocketInfo.data.humanBuildList[ rocketInfo.data.selectedHumanBuild ];
+
+	if ( BG_Buildable( build ) )
+	{
+		trap_SendClientCommand( va( "build %s", BG_Buildable( build )->name ) );
+		trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_HUMANBUILD ].id, "hide" );
+	}
+}
+
+void CG_Rocket_CleanUpAlienBuildList( const char *table )
+{
+	rocketInfo.data.selectedAlienBuild = -1;
+	rocketInfo.data.alienBuildListCount = 0;
+}
+
+void CG_Rocket_BuildAlienBuildList( const char *table )
+{
+	static char buf[ MAX_STRING_CHARS ];
+
+	if ( !Q_stricmp( table, "default" ) )
+	{
+		int i;
+
+		trap_Rocket_DSClearTable( "alienBuildList", "default" );
+		CG_Rocket_CleanUpAlienBuildList( "default" );
+
+		for ( i = BA_NONE + 1; i < BA_NUM_BUILDABLES; ++i )
+		{
+			if ( BG_Buildable( i )->team == TEAM_ALIENS &&
+				BG_Buildable( i )->buildWeapon & ( 1 << BG_GetPlayerWeapon( &cg.predictedPlayerState ) ) &&
+				BG_BuildableAllowedInStage( i, cgs.alienStage ) &&
+				BG_BuildableIsAllowed( i ) )
+			{
+				buf[ 0 ] = '\0';
+
+				Info_SetValueForKey( buf, "name", BG_Buildable( i )->humanName, qfalse );
+				Info_SetValueForKey(buf, "cost", va( "%d", BG_Buildable( i )->buildPoints ), qfalse );
+				Info_SetValueForKey( buf, "description", BG_Buildable( i )->info, qfalse );
+
+				trap_Rocket_DSAddRow( "alienBuildList", "default", buf );
+
+				rocketInfo.data.alienBuildList[ rocketInfo.data.alienBuildListCount++ ] = i;
+			}
+		}
+	}
+}
+
+void CG_Rocket_SetAlienBuildList( const char *table, int index )
+{
+	rocketInfo.data.selectedAlienBuild = index;
+}
+
+void CG_Rocket_ExecAlienBuildList( const char *table )
+{
+	buildable_t build = rocketInfo.data.alienBuildList[ rocketInfo.data.selectedAlienBuild ];
+
+	if ( BG_Buildable( build ) )
+	{
+		trap_SendClientCommand( va( "build %s", BG_Buildable( build )->name ) );
+		trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_ALIENBUILD ].id, "hide" );
+	}
+}
+
 static void nullSortFunc( const char *name, const char *sortBy )
 {
 }
@@ -1373,11 +1481,13 @@ typedef struct
 
 static const dataSourceCmd_t dataSourceCmdList[] =
 {
+	{ "alienBuildList", &CG_Rocket_BuildAlienBuildList, &nullSortFunc, &CG_Rocket_CleanUpAlienBuildList, &CG_Rocket_SetAlienBuildList, &nullFilterFunc, &CG_Rocket_ExecAlienBuildList },
 	{ "alienEvolveList", &CG_Rocket_BuildAlienEvolveList, &nullSortFunc, &CG_Rocket_CleanUpAlienEvolveList, &CG_Rocket_SetAlienEvolveList, &nullFilterFunc, &CG_Rocket_ExecAlienEvolveList },
 	{ "alOutputs", &CG_Rocket_BuildAlOutputs, &nullSortFunc, &CG_Rocket_CleanUpAlOutputs, &CG_Rocket_SetAlOutputsOutput, &nullFilterFunc, &nullExecFunc },
 	{ "armouryBuyList", &CG_Rocket_BuildArmouryBuyList, &nullSortFunc, &CG_Rocket_CleanUpArmouryBuyList, &CG_Rocket_SetArmouryBuyList, &nullFilterFunc, &CG_Rocket_ExecArmouryBuyList },
 	{ "armourySellList", &CG_Rocket_BuildArmourySellList, &nullSortFunc, &CG_Rocket_CleanUpArmourySellList, &CG_Rocket_SetArmourySellList, &nullFilterFunc, &CG_Rocket_ExecArmourySellList },
 	{ "demoList", &CG_Rocket_BuildDemoList, &nullSortFunc, &CG_Rocket_CleanUpDemoList, &CG_Rocket_SetDemoListDemo, &nullFilterFunc, &CG_Rocket_ExecDemoList },
+	{ "humanBuildList", &CG_Rocket_BuildHumanBuildList, &nullSortFunc, &CG_Rocket_CleanUpHumanBuildList, &CG_Rocket_SetHumanBuildList, &nullFilterFunc, &CG_Rocket_ExecHumanBuildList },
 	{ "humanSpawnItems", &CG_Rocket_BuildHumanSpawnItems, &nullSortFunc, CG_Rocket_CleanUpHumanSpawnItems, &CG_Rocket_SetHumanSpawnItems, &nullFilterFunc, &CG_Rocket_ExecHumanSpawnItems },
 	{ "languages", &CG_Rocket_BuildLanguageList, &nullSortFunc, &CG_Rocket_CleanUpLanguageList, &CG_Rocket_SetLanguageListLanguage, &nullFilterFunc, &nullExecFunc },
 	{ "mapList", &CG_Rocket_BuildMapList, &nullSortFunc, &CG_Rocket_CleanUpMapList, &CG_Rocket_SetMapListIndex, &nullFilterFunc, &nullExecFunc },
