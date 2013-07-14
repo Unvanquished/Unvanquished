@@ -115,8 +115,8 @@ typedef struct
 	qboolean     looping, holdAtEnd, dirty, alterGameState, silent, shader;
 	fileHandle_t iFile;
 	e_status     status;
-	unsigned int startTime;
-	unsigned int lastTime;
+	int          startTime;
+	int          lastTime;
 	long         tfps;
 	long         RoQPlayed;
 	long         ROQSize;
