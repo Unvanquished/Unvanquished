@@ -22,7 +22,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
-#include "../../engine/qcommon/q_shared.h"
+#include "../engine/qcommon/q_shared.h"
 #include <string>
 #include <vector>
 #include <list>

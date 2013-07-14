@@ -24,8 +24,8 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Command.h"
 
-#include "../../engine/qcommon/qcommon.h"
-#include "../../engine/framework/CommandSystem.h"
+#include "../engine/qcommon/qcommon.h"
+#include "../engine/framework/CommandSystem.h"
 
 namespace Cmd {
 
