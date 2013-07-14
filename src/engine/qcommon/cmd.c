@@ -38,6 +38,11 @@ Maryland 20850 USA.
 #include "qcommon.h"
 #include "../client/keys.h"
 
+#include "../../shared/Command.h"
+#include "../framework/CommandSystem.h"
+
+#include <unordered_map>
+
 #define MAX_CMD_BUFFER 131072
 #define MAX_CMD_LINE   1024
 
@@ -521,14 +526,14 @@ void Cmd_Exec_f( void )
 	{
 		if( !failSilent )
 		{
-			Com_Printf( _("couldn't exec %s\n"), filename );
+			Com_Printf( _("couldn't exec '%s'\n"), filename );
 		}
 		return;
 	}
 
 	if ( !executeSilent )
 	{
-		Com_Printf( _("execing %s\n"), filename );
+		Com_Printf( _("execing '%s'\n"), filename );
 	}
 }
 
@@ -1546,7 +1551,7 @@ Cmd_SaveCmdContext
 */
 void Cmd_SaveCmdContext( void )
 {
-	Com_Memcpy( &savedCmd, &cmd, sizeof( cmdContext_t ) );
+	Cmd::SaveArgs();
 }
 
 /*
@@ -1556,7 +1561,7 @@ Cmd_RestoreCmdContext
 */
 void Cmd_RestoreCmdContext( void )
 {
-	Com_Memcpy( &cmd, &savedCmd, sizeof( cmdContext_t ) );
+	Cmd::LoadArgs();
 }
 
 /*
@@ -1583,7 +1588,8 @@ Cmd_Argc
 */
 int Cmd_Argc( void )
 {
-	return cmd.argc;
+	const Cmd::Args& args = Cmd::GetCurrentArgs();
+	return args.Argc();
 }
 
 /*
@@ -1593,12 +1599,17 @@ Cmd_Argv
 */
 char *Cmd_Argv( int arg )
 {
-	if ( ( unsigned ) arg >= cmd.argc )
-	{
+	if (arg >= Cmd_Argc() || arg < 0) {
 		return "";
 	}
 
-	return cmd.argv[ arg ];
+	const Cmd::Args& args = Cmd::GetCurrentArgs();
+	const std::string& res = args.Argv(arg);
+	static char buffer[100][1024];
+
+	strcpy(buffer[arg], res.c_str());
+
+	return buffer[arg];
 }
 
 /*
@@ -1621,27 +1632,13 @@ Cmd_Args
 Returns a single string containing argv(arg) to argv(argc()-1)
 ============
 */
-char           *Cmd_ArgsFrom( int arg )
+char *Cmd_ArgsFrom( int arg )
 {
 	static char cmd_args[ BIG_INFO_STRING ];
-	int         i;
 
-	cmd_args[ 0 ] = 0;
-
-	if ( arg < 0 )
-	{
-		arg = 0;
-	}
-
-	for ( i = arg; i < cmd.argc; i++ )
-	{
-		strcat( cmd_args, Cmd_QuoteString( cmd.argv[ i ] ) );
-
-		if ( i != cmd.argc - 1 )
-		{
-			strcat( cmd_args, " " );
-		}
-	}
+	const Cmd::Args& args = Cmd::GetCurrentArgs();
+	const std::string& res = args.QuotedArgs(arg);
+	strcpy(cmd_args, res.c_str());
 
 	return cmd_args;
 }
@@ -1681,7 +1678,9 @@ they can't have pointers returned to them
 */
 void    Cmd_LiteralArgsBuffer( char *buffer, int bufferLength )
 {
-	Q_strncpyz( buffer, cmd.cmd, bufferLength );
+	const Cmd::Args& args = Cmd::GetCurrentArgs();
+	const std::string& res = args.OriginalArgs(0);
+	Q_strncpyz( buffer, res.c_str(), MIN(bufferLength, res.size()) );
 }
 
 /*
@@ -1695,7 +1694,9 @@ ATVI Wolfenstein Misc #284
 */
 const char *Cmd_Cmd( void )
 {
-	return cmd.cmd;
+	static char fatBuffer[4096];
+	Cmd_LiteralArgsBuffer(fatBuffer, 4096);
+	return fatBuffer;
 }
 
 /*
@@ -1709,44 +1710,12 @@ ATVI Wolfenstein Misc #284
 */
 const char *Cmd_Cmd_FromNth( int count )
 {
-	char *ret = cmd.cmd - 1;
-	int  i = 0, q = 0;
+	static char fatBuffer[4096];
+	const Cmd::Args& args = Cmd::GetCurrentArgs();
+	const std::string& res = args.OriginalArgs(count);
+	strcpy( fatBuffer, res.c_str() );
 
-	if ( !count )
-	{
-		return cmd.cmd;
-	}
-
-	while ( *++ret )
-	{
-		if ( !q && *ret == ' ' )
-		{
-			i = 1; // space found outside quotation marks
-		}
-
-		if ( i && *ret != ' ' )
-		{
-			i = 0; // non-space found after space outside quotation marks
-			if ( !--count ) // one word fewer to scan
-			{
-				return ret;
-			}
-		}
-
-		if ( *ret == '"' )
-		{
-			q = !q; // found a quotation mark
-		}
-		else if ( *ret == '\\' )
-		{
-			if ( !*++ret)
-			{
-				break;
-			}
-		}
-	}
-
-	return ret;
+	return fatBuffer;
 }
 
 /*
@@ -1759,8 +1728,6 @@ are inserted in the appropriate place. The argv array
 will point into this temporary buffer.
 ============
 */
-// NOTE TTimo define that to track tokenization issues
-//#define TKN_DBG
 static void Tokenise( const char *text, char *textOut, qboolean tokens, qboolean ignoreQuotes )
 {
 	// Assumption:
@@ -1877,116 +1844,13 @@ static void Tokenise( const char *text, char *textOut, qboolean tokens, qboolean
 		*--textOut = '\0';
 	}
 }
+// NOTE TTimo define that to track tokenization issues
+//#define TKN_DBG
 
 static void Cmd_TokenizeString2( const char *text_in, qboolean ignoreQuotes, qboolean parseCvar )
 {
-	char       *text;
-	char       *textOut;
-	char       *cvarName;
-	char       buffer[ BIG_INFO_STRING ];
-
-#ifdef TKN_DBG
-	// FIXME TTimo blunt hook to try to find the tokenization of userinfo
-	Com_DPrintf( "Cmd_TokenizeString: %s\n", text_in );
-#endif
-
-	// clear previous args
-	cmd.argc = 0;
-	cmd.cmd[ 0 ] = '\0';
-
-	if ( !text_in )
-	{
-		return;
-	}
-
-	// parse for cvar substitution
-	if ( parseCvar )
-	{
-		Q_strncpyz( buffer, text_in, sizeof( buffer ) );
-		text = buffer;
-		textOut = cmd.cmd;
-
-		while ( *text )
-		{
-			if ( text[ 0 ] == '\\' )
-			{
-				// Escape found. Copy it & following character (if present).
-				if ( textOut == sizeof( cmd.cmd ) + cmd.cmd - 1 )
-				{
-					break;
-				}
-
-				*textOut++ = '\\';
-				if ( *++text ) goto copy;
-				break;
-			}
-			else if ( text[ 0 ] == '$' )
-			{
-				// $ found. Could be a variable name.
-				cvarName = ++text;
-				text = strchr( text, '$' );
-
-				if ( !text )
-				{
-					// No terminating $ - treat as literal
-					text = cvarName - 1;
-					goto copy;
-				}
-
-				// Got $...$ - look it up
-				// If found, quote the value and copy it in
-				// If not found, just skip it :-)
-				*text++ = 0;
-
-				if ( Cvar_Flags( cvarName ) != CVAR_NONEXISTENT )
-				{
-					char cvarValue[ MAX_CVAR_VALUE_STRING ];
-
-					Cvar_VariableStringBuffer( cvarName, cvarValue, sizeof( cvarValue ) );
-					Q_strncpyz( textOut, Cmd_EscapeString( cvarValue ), sizeof( cmd.cmd ) - ( textOut - cmd.cmd ) );
-					textOut += strlen( textOut );
-
-					if ( textOut == sizeof( cmd.cmd ) + cmd.cmd - 1 )
-					{
-						break;
-					}
-				}
-			}
-			else
-			{
-				// Character literal; just copy
-				copy:
-
-				if ( textOut == sizeof( cmd.cmd ) + cmd.cmd - 1 )
-				{
-					break;
-				}
-
-				*textOut++ = *text++;
-			}
-		}
-
-		*textOut = 0;
-	}
-	else
-	{
-		Q_strncpyz( cmd.cmd, text_in, sizeof( cmd.cmd ) );
-	}
-
-	text = cmd.cmd - 1;
-
-/*
-	// simplify whitespace handling
-	while ( *++text )
-	{
-		if ( *text > '\0' && *text != '\n' && *text < ' ' )
-		{
-			*text = ' ';
-		}
-	}
-*/
-
-	Tokenise( cmd.cmd, cmd.tokenized, qtrue, ignoreQuotes );
+    Cmd::Args args(text_in, parseCvar);
+    Cmd::SetCurrentArgs(args);
 }
 
 /*
@@ -2230,18 +2094,44 @@ Cmd_CommandExists
 */
 qboolean Cmd_CommandExists( const char *cmd_name )
 {
-	cmd_function_t *cmd;
-
-	for ( cmd = cmd_functions; cmd; cmd = cmd->next )
-	{
-		if ( !strcmp( cmd_name, cmd->name ) )
-		{
-			return qtrue;
-		}
-	}
-
-	return qfalse;
+	return Cmd::CommandExists(cmd_name);
 }
+
+struct proxyInfo_t{
+	xcommand_t cmd;
+	completionFunc_t complete;
+};
+
+//Contains the commands given through the C interface
+std::unordered_map<std::string, proxyInfo_t> proxies;
+
+//Contains data send to Cmd_CompleteArguments
+char* completeArgs = NULL;
+int completeArgNum = 0;
+
+//Is registered in the new command system for all the commands registered through the C interface.
+class ProxyCmd: public Cmd::CmdBase {
+	public:
+		ProxyCmd(): Cmd::CmdBase("proxy-cmd", (Cmd::cmdFlags_t) (Cmd::NO_AUTO_REGISTER | Cmd::PROXY_FOR_OLD), "a proxy between C and C++ commands") {}
+
+		void Run(const Cmd::Args& args) const override {
+			proxyInfo_t proxy = proxies[args.Argv(0)];
+			proxy.cmd();
+		}
+
+		std::vector<std::string> Complete(int argNum, const Cmd::Args& args) const override {
+			proxyInfo_t proxy = proxies[args.Argv(0)];
+
+			if (!proxy.complete) {
+				return {};
+			}
+			proxy.complete(completeArgs, completeArgNum);
+
+			return {};
+		}
+};
+
+ProxyCmd myProxyCmd;
 
 /*
 ============
@@ -2250,27 +2140,12 @@ Cmd_AddCommand
 */
 void Cmd_AddCommand( const char *cmd_name, xcommand_t function )
 {
-	cmd_function_t *cmd;
-
-	// fail if the command already exists
-	if ( Cmd_CommandExists( cmd_name ) )
-	{
-		// allow completion-only commands to be silently doubled
-		if ( function != NULL )
-		{
-			Com_Printf(_( "Cmd_AddCommand: %s already defined\n"), cmd_name );
-		}
-
-		return;
+	if (function == 0) {
+		return; //It does happen.
 	}
 
-	// use a small malloc to avoid zone fragmentation
-	cmd = ( cmd_function_t * ) S_Malloc( sizeof( cmd_function_t ) );
-	cmd->name = CopyString( cmd_name );
-	cmd->function = function;
-	cmd->next = cmd_functions;
-	cmd->complete = NULL;
-	cmd_functions = cmd;
+	proxies[cmd_name] = proxyInfo_t{function, NULL};
+	Cmd::AddCommand(cmd_name, &myProxyCmd);
 }
 
 /*
@@ -2280,15 +2155,7 @@ Cmd_SetCommandCompletionFunc
 */
 void Cmd_SetCommandCompletionFunc( const char *command, completionFunc_t complete )
 {
-	cmd_function_t *cmd;
-
-	for ( cmd = cmd_functions; cmd; cmd = cmd->next )
-	{
-		if ( !Q_stricmp( command, cmd->name ) )
-		{
-			cmd->complete = complete;
-		}
-	}
+	proxies[command].complete = complete;
 }
 
 /*
@@ -2298,35 +2165,8 @@ Cmd_RemoveCommand
 */
 void Cmd_RemoveCommand( const char *cmd_name )
 {
-	cmd_function_t *cmd, **back;
-
-	back = &cmd_functions;
-
-	while ( 1 )
-	{
-		cmd = *back;
-
-		if ( !cmd )
-		{
-			// command wasn't active
-			return;
-		}
-
-		if ( !strcmp( cmd_name, cmd->name ) )
-		{
-			*back = cmd->next;
-
-			if ( cmd->name )
-			{
-				Z_Free( cmd->name );
-			}
-
-			Z_Free( cmd );
-			return;
-		}
-
-		back = &cmd->next;
-	}
+	proxies.erase(cmd_name);
+	Cmd::RemoveCommand(cmd_name);
 }
 
 /*
@@ -2334,13 +2174,17 @@ void Cmd_RemoveCommand( const char *cmd_name )
 Cmd_CommandCompletion
 ============
 */
+
+//TODO
 void Cmd_CommandCompletion( void ( *callback )( const char *s ) )
 {
-	cmd_function_t *cmd;
+	Com_Printf("Cmd_CommandCompletion\n");
 
-	for ( cmd = cmd_functions; cmd; cmd = cmd->next )
+	auto names = Cmd::CommandNames();
+
+	for ( auto name: names )
 	{
-		callback( cmd->name );
+		callback( name.c_str() );
 	}
 }
 
@@ -2349,16 +2193,15 @@ void Cmd_CommandCompletion( void ( *callback )( const char *s ) )
 Cmd_CompleteArgument
 ============
 */
+
 void Cmd_CompleteArgument( const char *command, char *args, int argNum )
 {
-	cmd_function_t *cmd;
+	completeArgs = args;
+	completeArgNum = argNum;
 
-	for ( cmd = cmd_functions; cmd; cmd = cmd->next )
-	{
-		if ( !Q_stricmp( command, cmd->name ) && cmd->complete )
-		{
-			cmd->complete( args, argNum );
-		}
+	std::vector<std::string> res = Cmd::CompleteArgument(command, 42);
+	if (res.size() > 0) {
+		strcpy(args, res[0].c_str());
 	}
 }
 
@@ -2371,68 +2214,8 @@ A complete command line has been parsed, so try to execute it
 */
 void Cmd_ExecuteString( const char *text )
 {
-	cmd_function_t *cmdFunc, **prev;
-
-	// execute the command line
-	Cmd_TokenizeStringParseCvar( text );
-
-	if ( !Cmd_Argc() )
-	{
-		return; // no tokens
-	}
-
-	// check registered command functions
-	for ( prev = &cmd_functions; *prev; prev = &cmdFunc->next )
-	{
-		cmdFunc = *prev;
-
-		if ( !Q_stricmp( cmd.argv[ 0 ], cmdFunc->name ) )
-		{
-			// rearrange the links so that the command will be
-			// near the head of the list next time it is used
-			*prev = cmdFunc->next;
-			cmdFunc->next = cmd_functions;
-			cmd_functions = cmdFunc;
-
-			// perform the action
-			if ( cmdFunc->function )
-			{
-				cmdFunc->function();
-				return;
-			}
-
-			// let the cgame or game handle it
-			break;
-		}
-	}
-
-	// check cvars
-	if ( Cvar_Command() )
-	{
-		return;
-	}
-
-	// check client game commands
-	if ( com_cl_running && com_cl_running->integer && CL_GameCommand() )
-	{
-		return;
-	}
-
-	// check server game commands
-	if ( com_sv_running && com_sv_running->integer && SV_GameCommand() )
-	{
-		return;
-	}
-
-	// check ui commands
-	if ( com_cl_running && com_cl_running->integer && UI_GameCommand() )
-	{
-		return;
-	}
-
-	// send it as a server command if we are connected
-	// (cvars are expanded locally)
-	CL_ForwardCommandToServer( cmd.cmd );
+	std::string cmd(text);
+	Cmd::ExecuteCommandString(cmd);
 }
 
 /*

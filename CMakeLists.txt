@@ -541,6 +541,8 @@ if( BUILD_ARCH STREQUAL "i386" OR BUILD_ARCH STREQUAL "x32" OR BUILD_ARCH STREQU
 endif()
 
 set( QCOMMONLIST
+  ${MOUNT_DIR}/shared/Command.cpp
+  ${MOUNT_DIR}/engine/framework/CommandSystem.cpp
   ${MOUNT_DIR}/engine/qcommon/cm_load.c
   ${MOUNT_DIR}/engine/qcommon/cm_trisoup.c
   ${MOUNT_DIR}/engine/qcommon/cm_patch.c
