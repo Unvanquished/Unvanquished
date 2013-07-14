@@ -48,7 +48,7 @@ public:
 	RocketFocusManager( void ) : active( 0 ) { }
 	void ProcessEvent( Rocket::Core::Event &evt )
 	{
-		if ( evt == "show" )
+		if ( evt == "show" || evt == "load" )
 		{
 			active++;
 		}

@@ -502,6 +502,7 @@ void Rocket_Init( void )
 	menuContext->GetRootElement()->AddEventListener( "show", &fm );
 	menuContext->GetRootElement()->AddEventListener( "hide", &fm );
 	menuContext->GetRootElement()->AddEventListener( "close", &fm );
+	menuContext->GetRootElement()->AddEventListener( "load", &fm );
 
 	// Create the HUD context
 	hudContext = Rocket::Core::CreateContext( "hudContext", Rocket::Core::Vector2i( cls.glconfig.vidWidth, cls.glconfig.vidHeight ) );
