@@ -11,7 +11,7 @@
 		ui/help.rml help             // ROCKETMENU_CLASSSELECT
 		ui/help.rml help             // ROCKETMENU_ALIENBUILD
 		ui/help.rml help             // ROCKETMENU_HUMANBUILD
-		ui/help.rml help             // ROCKETMENU_ARMOURYBUY
+		ui/armourybuy.rml armourybuy // ROCKETMENU_ARMOURYBUY
 		ui/help.rml help             // ROCKETMENU_ALIENEVOLVE
 	}
 	misc
