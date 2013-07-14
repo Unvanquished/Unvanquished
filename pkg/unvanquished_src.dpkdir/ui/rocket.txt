@@ -12,7 +12,7 @@
 		ui/help.rml help             // ROCKETMENU_ALIENBUILD
 		ui/help.rml help             // ROCKETMENU_HUMANBUILD
 		ui/armourybuy.rml armourybuy // ROCKETMENU_ARMOURYBUY
-		ui/help.rml help             // ROCKETMENU_ALIENEVOLVE
+		ui/alienevo.rml alienevo     // ROCKETMENU_ALIENEVOLVE
 	}
 	misc
 	{
