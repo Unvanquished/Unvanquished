@@ -3310,15 +3310,16 @@ static void R_CreateShadowMapFBOImage( void )
 {
 	int  i;
 	int  width, height;
+	int numShadowMaps = ( r_softShadowsPP->integer && r_shadows->integer >= SHADOWING_VSM16 ) ? MAX_SHADOWMAPS * 2 : MAX_SHADOWMAPS;
 
 	if ( !glConfig2.textureFloatAvailable || r_shadows->integer < SHADOWING_ESM16 )
 	{
 		return;
 	}
 
-	for ( i = 0; i < MAX_SHADOWMAPS; i++ )
+	for ( i = 0; i < numShadowMaps; i++ )
 	{
-		width = height = shadowMapResolutions[ i ];
+		width = height = shadowMapResolutions[ i % MAX_SHADOWMAPS ];
 
 		if ( r_shadows->integer == SHADOWING_ESM32 )
 		{
@@ -3354,9 +3355,9 @@ static void R_CreateShadowMapFBOImage( void )
 	}
 
 	// sun shadow maps
-	for ( i = 0; i < MAX_SHADOWMAPS; i++ )
+	for ( i = 0; i < numShadowMaps; i++ )
 	{
-		width = height = sunShadowMapResolutions[ i ];
+		width = height = sunShadowMapResolutions[ i % MAX_SHADOWMAPS ];
 
 		if ( r_shadows->integer == SHADOWING_ESM32 )
 		{
