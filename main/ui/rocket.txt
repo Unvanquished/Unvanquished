@@ -9,8 +9,8 @@
 		ui/teamselect.rml teamsel    // ROCKETMENU_TEAMSELECT
 		ui/humanspawn.rml humanspawn // ROCKETMENU_HUMANSPAWN
 		ui/help.rml help             // ROCKETMENU_ALIENSPAWN
-		ui/help.rml help             // ROCKETMENU_ALIENBUILD
-		ui/help.rml help             // ROCKETMENU_HUMANBUILD
+		ui/alienbuild.rml alienbuild // ROCKETMENU_ALIENBUILD
+		ui/humanbuild.rml humanbuild // ROCKETMENU_HUMANBUILD
 		ui/armourybuy.rml armourybuy // ROCKETMENU_ARMOURYBUY
 		ui/alienevo.rml alienevo     // ROCKETMENU_ALIENEVOLVE
 	}

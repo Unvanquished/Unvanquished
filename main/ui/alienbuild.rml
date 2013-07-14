@@ -1,0 +1,82 @@
+<rml>
+	<head>
+		<title>Help</title>
+		<link type="text/template" href="templates/unvwindow.rml" />
+		<style>
+			body
+			{
+				width: 40%;
+				height: 30%;
+				margin: auto;
+			}
+
+			div
+			{
+				float: left;
+			}
+			div#list
+			{
+				width: 30%;
+				height: 100%;
+			}
+
+			div#info
+			{
+				width: 70%;
+				height: 100%;
+			}
+
+			datagrid
+			{
+				width: 100%;
+				float: left;
+			}
+
+			datagridbody
+			{
+				height: 70%;
+				overflow-y: auto;
+			}
+
+			datagridrow:selected
+			{
+				background: rgba(111,111,111,111);
+			}
+			div#buttons
+			{
+				position: absolute;
+				height: 3%;
+				width: 100%;
+				bottom: 0px;
+			}
+			button
+			{
+				float: right;
+				height: 17px;
+				font-size: 18;
+			}
+			button p
+			{
+				position: absolute;
+				text-align: center;
+				top: 0px;
+			}
+		</style>
+	</head>
+	<body template="unvwindow" id="alienbuild" onShow="buildDS alienBuildList default">
+		<div id="list">
+		<datagrid id="team"  source="alienBuildList.default">
+			<col fields="name" width="100%"/>
+		</datagrid>
+		</div>
+		<div id="info">
+		<datasource_single source="alienBuildList.default" fields="name" targetid="team" /><br />
+		<datasource_single source="alienBuildList.default" fields="price" targetid="team" /><br />
+		<datasource_single source="alienBuildList.default" fields="description" targetid="team" />
+		</div>
+		<div id='buttons'>
+			<button onClick="execDS alienBuildList default"><p>Join!</p></button>
+			<button onClick="hide alienbuild"><p>Cancel</p></button>
+		</div>
+	</body>
+</rml>
