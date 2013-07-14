@@ -106,8 +106,8 @@ namespace Cmd {
 
             //We have something that is not whitespace nor comments so it must be a token
 
-            //This is a quoted token
             if (c == '"' and pos < text.size()) {
+                //This is a quoted token
                 bool escaped = false;
 
                 c = text[pos ++]; //skips the "
@@ -128,8 +128,8 @@ namespace Cmd {
                 token = "";
                 tokenStart = pos;
 
-            //An unquoted string, until the next " or comment start
             } else {
+                //An unquoted string, until the next " or comment start
                 bool escaped = false;
                 bool finished;
                 bool startsSomethingElse;
@@ -182,7 +182,7 @@ namespace Cmd {
         bool inQuotes = false;
         bool escaped = false;
 
-		//Splits are made on unquoted ; or newlines
+        //Splits are made on unquoted ; or newlines
         for(int i = 0; i < commands.size(); i++) {
             if (escaped) {
                 escaped = false;
@@ -300,8 +300,8 @@ namespace Cmd {
             if (text[i] == '\\') {
                 isEscaped = true;
 
-            //Found a block, every other block is a cvar name block
             } else if (text[i] == '$') {
+                //Found a block, every second block is a cvar name block
                 std::string block(raw_text + lastBlockStart, i - lastBlockStart);
 
                 if (inCvarName) {
@@ -309,7 +309,7 @@ namespace Cmd {
                     //by Cvar::get(cvarName)->getString() or something
                     if (!(Cvar_Flags(block.c_str()) & CVAR_NONEXISTENT)) {
                         char cvarValue[ MAX_CVAR_VALUE_STRING ];
-					    Cvar_VariableStringBuffer( block.c_str(), cvarValue, sizeof( cvarValue ) );
+                        Cvar_VariableStringBuffer( block.c_str(), cvarValue, sizeof( cvarValue ) );
                         result += std::string(cvarValue);
                     }
                     inCvarName = false;
