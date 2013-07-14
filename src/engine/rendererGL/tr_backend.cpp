@@ -1964,6 +1964,12 @@ static int MergeInteractionBounds( const matrix_t lightViewProjectionMatrix, int
 		{
 			clipPlane = &frustum[ i ];
 
+			// we can have shadow casters outside the initial computed light view frustum
+			if ( i == FRUSTUM_NEAR && shadowCasters )
+			{
+				continue;
+			}
+
 			r = BoxOnPlaneSide( worldBounds[ 0 ], worldBounds[ 1 ], clipPlane );
 
 			if ( r == 2 )
@@ -3077,6 +3083,87 @@ static void RB_SetupLightForLighting( trRefLight_t *light )
 	}
 }
 
+static void RB_BlurShadowMap( const trRefLight_t *light, int i )
+{
+	vec4_t  verts[ 4 ];
+	int     index;
+	image_t **images;
+	FBO_t   **fbos;
+	vec2_t  texScale;
+	matrix_t ortho;
+
+	if ( light->l.inverseShadows || r_shadows->integer < SHADOWING_VSM16 || !r_softShadowsPP->integer )
+	{
+		return;
+	}
+
+	if ( light->l.rlType == RL_OMNI )
+	{
+		return;
+	}
+		
+	fbos = ( light->l.rlType == RL_DIRECTIONAL ) ? tr.sunShadowMapFBO : tr.shadowMapFBO;
+	images = ( light->l.rlType == RL_DIRECTIONAL ) ? tr.sunShadowMapFBOImage : tr.shadowMapFBOImage;
+	index = ( light->l.rlType == RL_DIRECTIONAL ) ? i : light->shadowLOD;
+
+	Vector4Set( verts[ 0 ], 0, 0, 0, 1 );
+	Vector4Set( verts[ 1 ], fbos[ index ]->width, 0, 0, 1 );
+	Vector4Set( verts[ 2 ], verts[ 1 ][ 0 ], fbos[ index ]->height, 0, 1 );
+	Vector4Set( verts[ 3 ], 0, verts[ 2 ][ 1 ], 0, 1 );
+
+	texScale[ 0 ] = 1.0f / fbos[ index ]->width;
+	texScale[ 1 ] = 1.0f / fbos[ index ]->height;
+
+	R_BindFBO( fbos[ index ] );
+	R_AttachFBOTexture2D( images[ index + MAX_SHADOWMAPS ]->type, images[ index + MAX_SHADOWMAPS ]->texnum, 0 );
+
+	if ( !r_ignoreGLErrors->integer )
+	{
+		R_CheckFBO( fbos[ index ] );
+	}
+
+	// set the window clipping
+	GL_Viewport( 0, 0, verts[ 2 ][ 0 ], verts[ 2 ][ 1 ] );
+	GL_Scissor( 0, 0, verts[ 2 ][ 0 ], verts[ 2 ][ 1 ] );
+
+	glClear( GL_COLOR_BUFFER_BIT );
+
+	GL_Cull( CT_TWO_SIDED );
+	GL_State( GLS_DEPTHTEST_DISABLE );
+
+	GL_SelectTexture( 0 );
+	GL_Bind( images[ index ] );
+
+	GL_PushMatrix();
+	GL_LoadModelViewMatrix( matrixIdentity );
+
+	MatrixOrthogonalProjection( ortho, 0, verts[ 2 ][ 0 ], 0, verts[ 2 ][ 1 ], -99999, 99999 );
+	GL_LoadProjectionMatrix( ortho );
+
+	gl_blurXShader->BindProgram();
+	gl_blurXShader->SetUniform_DeformMagnitude( 1 );
+	gl_blurXShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
+	gl_blurXShader->SetUniform_TexScale( texScale );
+
+	Tess_InstantQuad( verts );
+
+	R_AttachFBOTexture2D( images[ index ]->type, images[ index ]->texnum, 0 );
+
+	glClear( GL_COLOR_BUFFER_BIT );
+
+	GL_SelectTexture( 0 );
+	GL_Bind( images[ index + MAX_SHADOWMAPS ] );
+
+	gl_blurYShader->BindProgram();
+	gl_blurYShader->SetUniform_DeformMagnitude( 1 );
+	gl_blurYShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
+	gl_blurYShader->SetUniform_TexScale( texScale );
+
+	Tess_InstantQuad( verts );
+
+	GL_PopMatrix();
+}
+
 /*
 =================
 RB_RenderInteractionsShadowMapped
@@ -3352,6 +3439,8 @@ static void RB_RenderInteractionsShadowMapped()
 
 				MatrixMultiply( light->projectionMatrix, light->viewMatrix, light->shadowMatrices[ i ] );
 			}
+
+			RB_BlurShadowMap( light, i );
 		}
 
 		// begin lighting
@@ -4671,6 +4760,8 @@ static void RB_RenderInteractionsDeferredShadowMapped()
 			}
 
 			Tess_End();
+
+			RB_BlurShadowMap( light, i );
 		}
 
 
@@ -5152,6 +5243,11 @@ void RB_RenderBloom()
 		{
 			for ( j = 0; j < r_bloomPasses->integer; j++ )
 			{
+				vec2_t texScale;
+
+				texScale[ 0 ] = 1.0f / tr.bloomRenderFBO[ flip ]->width;
+				texScale[ 1 ] = 1.0f / tr.bloomRenderFBO[ flip ]->height;
+
 				R_BindFBO( tr.bloomRenderFBO[ flip ] );
 
 				GL_ClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
@@ -5173,6 +5269,7 @@ void RB_RenderBloom()
 
 					gl_blurXShader->SetUniform_DeformMagnitude( r_bloomBlur->value );
 					gl_blurXShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
+					gl_blurXShader->SetUniform_TexScale( texScale );
 				}
 				else
 				{
@@ -5180,6 +5277,7 @@ void RB_RenderBloom()
 
 					gl_blurYShader->SetUniform_DeformMagnitude( r_bloomBlur->value );
 					gl_blurYShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
+					gl_blurYShader->SetUniform_TexScale( texScale );
 				}
 
 				GL_PopMatrix();
