@@ -1291,6 +1291,10 @@ typedef struct
 	int armourySellList[ WP_NUM_WEAPONS + UP_NUM_UPGRADES ];
 	int selectedArmourySellItem;
 	int armourySellListCount;
+
+	int alienEvolveList[ PCL_NUM_CLASSES ];
+	int selectedAlienEvolve;
+	int alienEvolveListCount;
 } rocketDataSource_t;
 
 typedef struct

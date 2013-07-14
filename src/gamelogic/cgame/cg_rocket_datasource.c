@@ -1295,6 +1295,59 @@ void CG_Rocket_ExecArmourySellList( const char *table )
 	}
 }
 
+void CG_Rocket_CleanUpAlienEvolveList( const char *table )
+{
+	rocketInfo.data.selectedAlienEvolve = -1;
+	rocketInfo.data.alienEvolveListCount = 0;
+
+}
+
+void CG_Rocket_BuildAlienEvolveList( const char *table )
+{
+	static char buf[ MAX_STRING_CHARS ];
+
+	if ( !Q_stricmp( table, "default" ) )
+	{
+		int i;
+		int cost;
+
+		trap_Rocket_DSClearTable( "alienEvolveList", "default" );
+		CG_Rocket_CleanUpAlienEvolveList( "default" );
+
+		for ( i = 0; i < PCL_NUM_CLASSES; ++i )
+		{
+			if ( ( cost = BG_ClassCanEvolveFromTo( cg.predictedPlayerState.stats[ STAT_CLASS ], i, cg.predictedPlayerState.persistant[ PERS_CREDIT ], cgs.alienStage, 0 ) ) > 0 )
+			{
+				buf[ 0 ] = '\0';
+
+				Info_SetValueForKey( buf, "name", BG_ClassModelConfig( i )->humanName, qfalse );
+				Info_SetValueForKey( buf, "description", BG_Class( i )->info, qfalse );
+				Info_SetValueForKey( buf, "price", va( "%d", cost / ALIEN_CREDITS_PER_KILL ), qfalse );
+
+				trap_Rocket_DSAddRow( "alienEvolveList", "default", buf );
+
+				rocketInfo.data.alienEvolveList[ rocketInfo.data.alienEvolveListCount++ ] = i;
+			}
+		}
+	}
+}
+
+void CG_Rocket_SetAlienEvolveList( const char *table, int index )
+{
+	rocketInfo.data.selectedAlienEvolve = index;
+}
+
+void CG_Rocket_ExecAlienEvolveList( const char *table )
+{
+	class_t evo = rocketInfo.data.alienEvolveList[ rocketInfo.data.selectedAlienEvolve ];
+
+	if ( BG_Class( evo ) && BG_ClassCanEvolveFromTo( cg.predictedPlayerState.stats[ STAT_CLASS ], evo, cg.predictedPlayerState.persistant[ PERS_CREDIT ], cgs.alienStage, 0 ) >= 0 )
+	{
+		trap_SendClientCommand( va( "class %s", BG_Class( evo )->name ) );
+		trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_ALIENEVOLVE ].id, "hide" );
+	}
+}
+
 static void nullSortFunc( const char *name, const char *sortBy )
 {
 }
@@ -1320,6 +1373,7 @@ typedef struct
 
 static const dataSourceCmd_t dataSourceCmdList[] =
 {
+	{ "alienEvolveList", &CG_Rocket_BuildAlienEvolveList, &nullSortFunc, &CG_Rocket_CleanUpAlienEvolveList, &CG_Rocket_SetAlienEvolveList, &nullFilterFunc, &CG_Rocket_ExecAlienEvolveList },
 	{ "alOutputs", &CG_Rocket_BuildAlOutputs, &nullSortFunc, &CG_Rocket_CleanUpAlOutputs, &CG_Rocket_SetAlOutputsOutput, &nullFilterFunc, &nullExecFunc },
 	{ "armouryBuyList", &CG_Rocket_BuildArmouryBuyList, &nullSortFunc, &CG_Rocket_CleanUpArmouryBuyList, &CG_Rocket_SetArmouryBuyList, &nullFilterFunc, &CG_Rocket_ExecArmouryBuyList },
 	{ "armourySellList", &CG_Rocket_BuildArmourySellList, &nullSortFunc, &CG_Rocket_CleanUpArmourySellList, &CG_Rocket_SetArmourySellList, &nullFilterFunc, &CG_Rocket_ExecArmourySellList },
