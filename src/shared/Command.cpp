@@ -307,11 +307,11 @@ namespace Cmd {
                 if (inCvarName) {
                     //For now we use the cvar C api to get the cvar value but it should be replaced
                     //by Cvar::get(cvarName)->getString() or something
-                    if (!(Cvar_Flags(block.c_str()) & CVAR_NONEXISTENT)) {
+                    //if (!(Cvar_Flags(block.c_str()) & CVAR_NONEXISTENT)) {
                         char cvarValue[ MAX_CVAR_VALUE_STRING ];
                         Cvar_VariableStringBuffer( block.c_str(), cvarValue, sizeof( cvarValue ) );
                         result += std::string(cvarValue);
-                    }
+                    //}
                     inCvarName = false;
 
                 } else {
