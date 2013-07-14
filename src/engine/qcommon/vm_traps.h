@@ -55,8 +55,8 @@ typedef enum sharedImport_s
   TRAP_COS,                  // = cos
   TRAP_ASIN,                 // = asin
 //.TRAP_ACOS,                 // = acos
-  TRAP_TAN,                  // = tanf
-  TRAP_ATAN,                 // = atanf
+  TRAP_TAN,                  // = tan
+  TRAP_ATAN,                 // = atan
   TRAP_ATAN2,                // = atan2
   TRAP_SQRT,                 // = sqrt
   TRAP_FLOOR,                // = floor

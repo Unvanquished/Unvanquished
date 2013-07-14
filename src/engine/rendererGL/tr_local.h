@@ -2750,9 +2750,9 @@ extern "C" {
 //	image_t        *downScaleFBOImage_16x16;
 //	image_t        *downScaleFBOImage_4x4;
 //	image_t        *downScaleFBOImage_1x1;
-		image_t *shadowMapFBOImage[ MAX_SHADOWMAPS ];
+		image_t *shadowMapFBOImage[ MAX_SHADOWMAPS * 2 ];
 		image_t *shadowCubeFBOImage[ MAX_SHADOWMAPS ];
-		image_t *sunShadowMapFBOImage[ MAX_SHADOWMAPS ];
+		image_t *sunShadowMapFBOImage[ MAX_SHADOWMAPS * 2 ];
 
 		// external images
 		image_t *charsetImage;
@@ -3050,6 +3050,7 @@ extern "C" {
 // 3 = stencil shadow volumes
 // 4 = shadow mapping
 	extern cvar_t *r_softShadows;
+	extern cvar_t *r_softShadowsPP;
 	extern cvar_t *r_shadowBlur;
 
 	extern cvar_t *r_shadowMapQuality;
