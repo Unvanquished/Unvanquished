@@ -35,10 +35,46 @@ Maryland 20850 USA.
 #include "CommandSystem.h"
 
 #include <unordered_map>
+#include <list>
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
 
 namespace Cmd {
+
+    std::list<std::string> commandBuffer;
+
+    void BufferCommand(const std::string& text, execWhen_t when) {
+        std::list<std::string> commands = SplitCommands(text);
+
+        switch (when) {
+            case NOW:
+                for(auto command : commands) {
+                    ExecuteCommandString(command);
+                }
+                break;
+
+            case AFTER:
+                commandBuffer.splice(commandBuffer.begin(), commands);
+                break;
+
+            case END:
+                commandBuffer.splice(commandBuffer.end(), commands);
+                break;
+
+            default:
+                Com_Printf("Cmd::BufferCommandText: unknown execWhen_t %i\n", when);
+        }
+    }
+
+    //TODO: reimplement the wait command, maybe?
+    void ExecuteCommandBuffer() {
+        while (not commandBuffer.empty()) {
+            std::string command = commandBuffer.front();
+            commandBuffer.pop_front();
+            ExecuteCommandString(command);
+        }
+        commandBuffer.clear();
+    }
 
     std::unordered_map<std::string, const CmdBase*> commands;
 
@@ -76,6 +112,7 @@ namespace Cmd {
     }
 
     void ExecuteCommandString(const std::string& command) {
+        Com_Printf("Execing '%s'\n", command.c_str());
         Args args(command);
         currentArgs = args;
 

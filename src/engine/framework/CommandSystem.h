@@ -39,12 +39,22 @@ Maryland 20850 USA.
 
 namespace Cmd {
 
+    typedef enum {
+        NOW,
+        AFTER,
+        END
+    } execWhen_t;
+
+    void BufferCommand(const std::string& text, execWhen_t when = END);
+    void ExecuteCommandBuffer();
+
     void AddCommand(const std::string& name, const CmdBase* cmd);
     void RemoveCommand(const std::string& name);
     void RemoveFlaggedCommands(cmdFlags_t flag);
 
     void ExecuteCommandString(const std::string& command);
 
+    //Completion stuff, highly unstable :-)
     std::vector<std::string> CommandNames();
     std::vector<std::string> CompleteArgument(const std::string& command, int pos);
 

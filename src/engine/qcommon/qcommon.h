@@ -396,7 +396,7 @@ files can be execed.
 
 void Cbuf_Init( void );
 
-// allocates an initial text buffer that will grow as needed
+// allocates an initial text buffer that will grow as needed <-- untrue
 
 void Cbuf_AddText( const char *text );
 

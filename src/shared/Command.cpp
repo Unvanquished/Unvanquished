@@ -47,80 +47,7 @@ namespace Cmd {
         }
     }
 
-    /*
-    ===============================================================================
-
-    Cmd::CmdArgs
-
-    ===============================================================================
-    */
-
-    Args::Args() {
-    }
-
-    Args::Args(const std::string& command, bool parseCvars) {
-        if (parseCvars) {
-            cmd = SubstituteCvars(command);
-        }else{
-            cmd = command;
-        }
-
-        Tokenize(cmd, args, argsStarts);
-    }
-
-    int Args::Argc() const {
-        return args.size();
-    }
-
-    const std::string& Args::Argv(int argNum) const {
-        return args[argNum];
-    }
-
-    std::string Args::QuotedArgs(int start, int end) const {
-        std::string res;
-
-        if (end < 0) {
-            end = args.size() - 1;
-        }
-
-        for (int i = start; i < end + 1; i++) {
-            if (i != start) {
-                res += " ";
-            }
-            res += Escape(args[i], true);
-        }
-
-        return res;
-    }
-
-    std::string Args::OriginalArgs(int start, int end) const {
-        int startOffset = argsStarts[start];
-        int endOffset;
-
-        if (end < 0) {
-            endOffset = cmd.size();
-        } else {
-            endOffset = argsStarts[end];
-        }
-
-        return std::string(cmd.c_str() + startOffset, endOffset - startOffset);
-    }
-
-    int Args::ArgNumber(int pos) {
-        for (int i = argsStarts.size(); i-->0;) {
-            if (argsStarts[i] <= pos) {
-                return i;
-            }
-        }
-
-        return -1;
-    }
-
-    int Args::ArgStart(int argNum) {
-        return argsStarts[argNum];
-    }
-
-    std::string Args::Escape(const std::string& text, bool quote) {
+    std::string Escape(const std::string& text, bool quote) {
         std::string res;
 
         if (quote) {
@@ -147,61 +74,7 @@ namespace Cmd {
         return res;
     }
 
-    std::string Args::SubstituteCvars(const std::string& text) {
-        const char* raw_text = text.c_str();
-        std::string result;
-
-        bool isEscaped = false;
-        bool inCvarName = false;
-        int lastBlockStart = 0;
-
-        //Cvar are delimited by $ so we parse a bloc at a time
-        for(int i = 0; i < text.size(); i++){
-
-            // a \ escapes the next letter so we don't use it for block delimitation
-            if (isEscaped) {
-                isEscaped = false;
-                continue;
-            }
-
-            if (text[i] == '\\') {
-                isEscaped = true;
-
-            //Found a block, every other block is a cvar name block
-            } else if (text[i] == '$') {
-                std::string block(raw_text + lastBlockStart, i - lastBlockStart);
-
-                if (inCvarName) {
-                    //For now we use the cvar C api to get the cvar value but it should be replaced
-                    //by Cvar::get(cvarName)->getString() or something
-                    if (!(Cvar_Flags(block.c_str()) & CVAR_NONEXISTENT)) {
-                        char cvarValue[ MAX_CVAR_VALUE_STRING ];
-					    Cvar_VariableStringBuffer( block.c_str(), cvarValue, sizeof( cvarValue ) );
-                        result += std::string(cvarValue);
-                    }
-                    inCvarName = false;
-
-                } else {
-                    result += block;
-                    inCvarName = true;
-                }
-
-                lastBlockStart = i + 1;
-            }
-        }
-
-        //Handle the last block
-        if (inCvarName) {
-            Com_Printf("Warning: last CVar substitution block not closed in %s\n", raw_text);
-        } else {
-            std::string block(raw_text + lastBlockStart, text.size() - lastBlockStart);
-            result += block;
-        }
-
-        return result;
-    }
-
-    void Args::Tokenize(const std::string& text, std::vector<std::string>& tokens, std::vector<int>& tokenStarts) {
+    void Tokenize(const std::string& text, std::vector<std::string>& tokens, std::vector<int>& tokenStarts) {
         const char* raw_text = text.c_str();
         std::string token;
         int tokenStart = 0;
@@ -310,6 +183,165 @@ namespace Cmd {
             tokens.push_back(token);
             tokenStarts.push_back(tokenStart);
         }
+    }
+
+    std::list<std::string> SplitCommands(const std::string& commands) {
+        std::list<std::string> res;
+
+        int commandStart = 0;
+        bool inQuotes = false;
+        bool escaped = false;
+
+		//Splits are made on unquoted ; or newlines
+        for(int i = 0; i < commands.size(); i++) {
+            if (escaped) {
+                escaped = false;
+                continue;
+            }
+
+            char c = commands[i];
+
+            if (c == '"') {
+                inQuotes = not inQuotes;
+                continue;
+            }
+
+            if (c == '\n' or (not inQuotes and c == ';')) {
+                res.push_back(std::string(commands.c_str() + commandStart, i - commandStart));
+                commandStart = i + 1;
+            }
+        }
+
+        res.push_back(std::string(commands.c_str() + commandStart));
+
+        return res;
+    }
+
+    /*
+    ===============================================================================
+
+    Cmd::CmdArgs
+
+    ===============================================================================
+    */
+
+    Args::Args() {
+    }
+
+    Args::Args(const std::string& command, bool parseCvars) {
+        if (parseCvars) {
+            cmd = SubstituteCvars(command);
+        }else{
+            cmd = command;
+        }
+
+        Tokenize(cmd, args, argsStarts);
+    }
+
+    int Args::Argc() const {
+        return args.size();
+    }
+
+    const std::string& Args::Argv(int argNum) const {
+        return args[argNum];
+    }
+
+    std::string Args::QuotedArgs(int start, int end) const {
+        std::string res;
+
+        if (end < 0) {
+            end = args.size() - 1;
+        }
+
+        for (int i = start; i < end + 1; i++) {
+            if (i != start) {
+                res += " ";
+            }
+            res += Escape(args[i], true);
+        }
+
+        return res;
+    }
+
+    std::string Args::OriginalArgs(int start, int end) const {
+        int startOffset = argsStarts[start];
+        int endOffset;
+
+        if (end < 0) {
+            endOffset = cmd.size();
+        } else {
+            endOffset = argsStarts[end];
+        }
+
+        return std::string(cmd.c_str() + startOffset, endOffset - startOffset);
+    }
+
+    int Args::ArgNumber(int pos) {
+        for (int i = argsStarts.size(); i-->0;) {
+            if (argsStarts[i] <= pos) {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    int Args::ArgStart(int argNum) {
+        return argsStarts[argNum];
+    }
+
+    std::string Args::SubstituteCvars(const std::string& text) {
+        const char* raw_text = text.c_str();
+        std::string result;
+
+        bool isEscaped = false;
+        bool inCvarName = false;
+        int lastBlockStart = 0;
+
+        //Cvar are delimited by $ so we parse a bloc at a time
+        for(int i = 0; i < text.size(); i++){
+
+            // a \ escapes the next letter so we don't use it for block delimitation
+            if (isEscaped) {
+                isEscaped = false;
+                continue;
+            }
+
+            if (text[i] == '\\') {
+                isEscaped = true;
+
+            //Found a block, every other block is a cvar name block
+            } else if (text[i] == '$') {
+                std::string block(raw_text + lastBlockStart, i - lastBlockStart);
+
+                if (inCvarName) {
+                    //For now we use the cvar C api to get the cvar value but it should be replaced
+                    //by Cvar::get(cvarName)->getString() or something
+                    if (!(Cvar_Flags(block.c_str()) & CVAR_NONEXISTENT)) {
+                        char cvarValue[ MAX_CVAR_VALUE_STRING ];
+					    Cvar_VariableStringBuffer( block.c_str(), cvarValue, sizeof( cvarValue ) );
+                        result += std::string(cvarValue);
+                    }
+                    inCvarName = false;
+
+                } else {
+                    result += block;
+                    inCvarName = true;
+                }
+
+                lastBlockStart = i + 1;
+            }
+        }
+
+        //Handle the last block
+        if (inCvarName) {
+            Com_Printf("Warning: last CVar substitution block not closed in %s\n", raw_text);
+        } else {
+            std::string block(raw_text + lastBlockStart, text.size() - lastBlockStart);
+            result += block;
+        }
+
+        return result;
     }
 
     /*

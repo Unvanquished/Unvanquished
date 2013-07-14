@@ -188,7 +188,7 @@ void Cbuf_AddText( const char *text )
 
 	l = strlen( text );
 
-	if ( cmd_text.cursize + l >= cmd_text.maxsize )
+	if ( cmd_text.cursize + l + 1 >= cmd_text.maxsize )
 	{
 		Com_Printf(_( "Cbuf_AddText: overflow\n" ));
 		return;
@@ -196,6 +196,13 @@ void Cbuf_AddText( const char *text )
 
 	Com_Memcpy( &cmd_text.data[ cmd_text.cursize ], text, l );
 	cmd_text.cursize += l;
+	cmd_text.data[cmd_text.cursize] = '\0';
+
+	if (strchr((char*) cmd_text.data, '\n') != NULL)
+	{
+		Cmd::BufferCommand((char*) cmd_text.data);
+		cmd_text.cursize = 0;
+	}
 }
 
 /*
@@ -208,30 +215,7 @@ Adds a \n to the text
 */
 void Cbuf_InsertText( const char *text )
 {
-	int len;
-	int i;
-
-	len = strlen( text ) + 1;
-
-	if ( len + cmd_text.cursize > cmd_text.maxsize )
-	{
-		Com_Printf(_( "Cbuf_InsertText overflowed\n" ));
-		return;
-	}
-
-	// move the existing command text
-	for ( i = cmd_text.cursize - 1; i >= 0; i-- )
-	{
-		cmd_text.data[ i + len ] = cmd_text.data[ i ];
-	}
-
-	// copy the new text in
-	Com_Memcpy( cmd_text.data, text, len - 1 );
-
-	// add a \n
-	cmd_text.data[ len - 1 ] = '\n';
-
-	cmd_text.cursize += len;
+	Cmd::BufferCommand(text, Cmd::AFTER);
 }
 
 /*
@@ -246,13 +230,11 @@ void Cbuf_ExecuteText( int exec_when, const char *text )
 		case EXEC_NOW:
 			if ( text && strlen( text ) > 0 )
 			{
-				Com_DPrintf( S_COLOR_YELLOW "EXEC_NOW %s\n", text );
-				Cmd_ExecuteString( text );
+				Cmd::BufferCommand(text, Cmd::NOW);
 			}
 			else
 			{
-				Com_DPrintf( S_COLOR_YELLOW "EXEC_NOW %s\n", cmd_text.data );
-				Cbuf_Execute();
+				Cmd::ExecuteCommandBuffer();
 			}
 
 			break;
@@ -277,83 +259,7 @@ Cbuf_Execute
 */
 void Cbuf_Execute( void )
 {
-	int  i, ws;
-	char *text;
-	char line[ MAX_CMD_LINE ];
-	int  quotes;
-
-	while ( cmd_text.cursize )
-	{
-		if ( cmd_wait )
-		{
-			// skip out while text still remains in buffer, leaving it
-			// for next frame
-			cmd_wait--;
-			break;
-		}
-
-		// find a \n or ; line break
-		text = ( char * ) cmd_text.data;
-
-		quotes = 0;
-
-		// skip whitespace here, since other code assumes that there's no leading white space
-		for ( ws = 0; ws < cmd_text.cursize && ( text[ ws ] == ' ' || text[ ws ] == '\t' || text[ ws ] == '\n' ); ++ws )
-		{
-			// lots going on here
-		}
-
-		for ( i = ws; i < cmd_text.cursize; i++ )
-		{
-			if ( text[ i ] == '\\' && text[ i + 1 ] )
-			{
-				i++;
-				continue; // ignore escapes
-			}
-
-			if ( text[ i ] == '"' )
-			{
-				quotes++;
-			}
-
-			if ( !( quotes & 1 ) && text[ i ] == ';' )
-			{
-				break; // don't break if inside a quoted string
-			}
-
-			if ( text[ i ] == '\n' || text[ i ] == '\r' )
-			{
-				break;
-			}
-		}
-
-		if ( i >= ( MAX_CMD_LINE - 1 ) )
-		{
-			i = MAX_CMD_LINE - 1;
-		}
-
-		memcpy( line, text + ws, i - ws );
-		line[ i - ws ] = 0;
-
-// delete the text from the command buffer and move remaining commands down
-// this is necessary because commands (exec) can insert data at the
-// beginning of the text buffer
-
-		if ( i == cmd_text.cursize )
-		{
-			cmd_text.cursize = 0;
-		}
-		else
-		{
-			i++;
-			cmd_text.cursize -= i;
-			memmove( text, text + i, cmd_text.cursize );
-		}
-
-// execute the command line
-
-		Cmd_ExecuteString( line );
-	}
+	Cmd::ExecuteCommandBuffer();
 }
 
 /*
@@ -1680,7 +1586,7 @@ void    Cmd_LiteralArgsBuffer( char *buffer, int bufferLength )
 {
 	const Cmd::Args& args = Cmd::GetCurrentArgs();
 	const std::string& res = args.OriginalArgs(0);
-	Q_strncpyz( buffer, res.c_str(), MIN(bufferLength, res.size()) );
+	Q_strncpyz( buffer, res.c_str(), MIN(bufferLength, res.size() + 1) );
 }
 
 /*
@@ -2178,8 +2084,6 @@ Cmd_CommandCompletion
 //TODO
 void Cmd_CommandCompletion( void ( *callback )( const char *s ) )
 {
-	Com_Printf("Cmd_CommandCompletion\n");
-
 	auto names = Cmd::CommandNames();
 
 	for ( auto name: names )

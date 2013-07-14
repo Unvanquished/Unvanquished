@@ -35,6 +35,7 @@ Maryland 20850 USA.
 #include "../../engine/qcommon/q_shared.h"
 #include <string>
 #include <vector>
+#include <list>
 
 #ifndef SHARED_COMMAND_H_
 #define SHARED_COMMAND_H_
@@ -52,7 +53,12 @@ namespace Cmd {
         PROXY_FOR_OLD    = BIT(31)
     } cmdFlags_t;
 
+
     void Init();
+
+    std::string Escape(const std::string& text, bool quote = false);
+    void Tokenize(const std::string& text, std::vector<std::string>& tokens, std::vector<int>& tokenStarts);
+    std::list<std::string> SplitCommands(const std::string& commands);
 
     class Args {
         public:
@@ -77,9 +83,7 @@ namespace Cmd {
             std::string cmd;
 
             //TODO: move these somewhere else, once done ?
-            static std::string Escape(const std::string& text, bool quote = false);
             static std::string SubstituteCvars(const std::string& text);
-            static void Tokenize(const std::string& text, std::vector<std::string>& tokens, std::vector<int>& tokenStarts);
     };
 
     class CmdBase {
