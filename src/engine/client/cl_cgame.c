@@ -1433,7 +1433,7 @@ void CL_InitCGame( void )
 	mapname = Info_ValueForKey( info, "mapname" );
 	Com_sprintf( cl.mapname, sizeof( cl.mapname ), "maps/%s.bsp", mapname );
 
-	cgvm = VM_Create( "cgame", CL_CgameSystemCalls, (vmInterpret_t) Cvar_VariableValue( "vm_cgame" ) );
+	cgvm = VM_Create( "cgame", CL_CgameSystemCalls, (vmInterpret_t) Cvar_VariableIntegerValue( "vm_cgame" ) );
 
 	if ( !cgvm )
 	{
@@ -1478,7 +1478,7 @@ void CL_InitCGame( void )
 
 void CL_InitCGameCVars( void )
 {
-	vm_t *cgv_vm = VM_Create( "cgame", CL_CgameSystemCalls, (vmInterpret_t) Cvar_VariableValue( "vm_cgame" ) );
+	vm_t *cgv_vm = VM_Create( "cgame", CL_CgameSystemCalls, (vmInterpret_t) Cvar_VariableIntegerValue( "vm_cgame" ) );
 
 	if ( !cgv_vm )
 	{

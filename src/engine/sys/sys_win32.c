@@ -192,7 +192,7 @@ qboolean Sys_RandomBytes( byte *string, int len )
 Sys_GetCurrentUser
 ================
 */
-char *Sys_GetCurrentUser( void )
+const char *Sys_GetCurrentUser( void )
 {
 	static char   s_userName[ 1024 ];
 	unsigned long size = sizeof( s_userName );
@@ -226,9 +226,9 @@ char *Sys_GetClipboardData( clipboard_t clip )
 
 		if ( ( hClipboardData = GetClipboardData( CF_TEXT ) ) != 0 )
 		{
-			if ( ( cliptext = GlobalLock( hClipboardData ) ) != 0 )
+			if ( ( cliptext = ( char * )GlobalLock( hClipboardData ) ) != 0 )
 			{
-				data = Z_Malloc( GlobalSize( hClipboardData ) + 1 );
+				data = ( char * ) Z_Malloc( GlobalSize( hClipboardData ) + 1 );
 				Q_strncpyz( data, cliptext, GlobalSize( hClipboardData ) );
 				GlobalUnlock( hClipboardData );
 
@@ -535,7 +535,7 @@ char **Sys_ListFiles( const char *directory, const char *extension, char *filter
 			return NULL;
 		}
 
-		listCopy = Z_Malloc( ( nfiles + 1 ) * sizeof( *listCopy ) );
+		listCopy = ( char ** ) Z_Malloc( ( nfiles + 1 ) * sizeof( *listCopy ) );
 
 		for ( i = 0; i < nfiles; i++ )
 		{
@@ -603,7 +603,7 @@ char **Sys_ListFiles( const char *directory, const char *extension, char *filter
 		return NULL;
 	}
 
-	listCopy = Z_Malloc( ( nfiles + 1 ) * sizeof( *listCopy ) );
+	listCopy = ( char ** ) Z_Malloc( ( nfiles + 1 ) * sizeof( *listCopy ) );
 
 	for ( i = 0; i < nfiles; i++ )
 	{
