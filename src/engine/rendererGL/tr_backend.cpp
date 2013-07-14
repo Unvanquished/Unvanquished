@@ -3128,6 +3128,7 @@ static void RB_BlurShadowMap( const trRefLight_t *light, int i )
 
 	glClear( GL_COLOR_BUFFER_BIT );
 
+	GL_Cull( CT_TWO_SIDED );
 	GL_State( GLS_DEPTHTEST_DISABLE );
 
 	GL_SelectTexture( 0 );
@@ -3149,8 +3150,6 @@ static void RB_BlurShadowMap( const trRefLight_t *light, int i )
 	R_AttachFBOTexture2D( images[ index ]->type, images[ index ]->texnum, 0 );
 
 	glClear( GL_COLOR_BUFFER_BIT );
-
-	GL_State( GLS_DEPTHTEST_DISABLE );
 
 	GL_SelectTexture( 0 );
 	GL_Bind( images[ index + MAX_SHADOWMAPS ] );
