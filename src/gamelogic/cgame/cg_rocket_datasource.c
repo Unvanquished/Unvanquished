@@ -1456,6 +1456,67 @@ void CG_Rocket_ExecAlienBuildList( const char *table )
 	}
 }
 
+void AddAlienSpawnClass( class_t _class )
+{
+	static char data[ MAX_STRING_CHARS ];
+
+	if ( !BG_ClassIsAllowed( _class ) )
+	{
+		return;
+	}
+
+	data[ 0 ] = '\0';
+	Info_SetValueForKey( data, "name", BG_ClassModelConfig( _class )->humanName, qfalse );
+	Info_SetValueForKey( data, "description", BG_Class( _class )->info, qfalse );
+
+	trap_Rocket_DSAddRow( "alienSpawnClass", "default", data );
+}
+
+void CG_Rocket_BuildAlienSpawnList( const char *table )
+{
+	if ( !Q_stricmp( table, "default" ) )
+
+		trap_Rocket_DSClearTable( "alienSpawnClass", "default" );
+	{
+		AddAlienSpawnClass( PCL_ALIEN_LEVEL0 );
+
+		if ( cgs.alienStage )
+		{
+			AddAlienSpawnClass( PCL_ALIEN_BUILDER0_UPG );
+		}
+		else
+		{
+			AddAlienSpawnClass( PCL_ALIEN_BUILDER0 );
+		}
+	}
+}
+
+void CG_Rocket_CleanUpAlienSpawnList( const char *table )
+{
+	rocketInfo.data.selectedAlienSpawnClass = -1;
+}
+
+void CG_Rocket_SetAlienSpawnList( const char *table, int index )
+{
+	rocketInfo.data.selectedAlienSpawnClass = index;
+}
+
+void CG_Rocket_ExecAlienSpawnList( const char *table )
+{
+	const char *_class = NULL;
+	switch ( rocketInfo.data.selectedAlienSpawnClass )
+	{
+		case 0: _class = "level0"; break;
+		case 1: _class = cgs.alienStage ? "builderupg" : "builder"; break;
+	}
+
+	if ( _class )
+	{
+		trap_SendClientCommand( va( "class %s", _class ) );
+		trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_ALIENSPAWN ].id, "hide" );
+	}
+}
+
 static void nullSortFunc( const char *name, const char *sortBy )
 {
 }
@@ -1483,6 +1544,7 @@ static const dataSourceCmd_t dataSourceCmdList[] =
 {
 	{ "alienBuildList", &CG_Rocket_BuildAlienBuildList, &nullSortFunc, &CG_Rocket_CleanUpAlienBuildList, &CG_Rocket_SetAlienBuildList, &nullFilterFunc, &CG_Rocket_ExecAlienBuildList },
 	{ "alienEvolveList", &CG_Rocket_BuildAlienEvolveList, &nullSortFunc, &CG_Rocket_CleanUpAlienEvolveList, &CG_Rocket_SetAlienEvolveList, &nullFilterFunc, &CG_Rocket_ExecAlienEvolveList },
+	{ "alienSpawnClass", &CG_Rocket_BuildAlienSpawnList, &nullSortFunc, &CG_Rocket_CleanUpAlienSpawnList, &CG_Rocket_SetAlienSpawnList, &nullFilterFunc, &CG_Rocket_ExecAlienSpawnList },
 	{ "alOutputs", &CG_Rocket_BuildAlOutputs, &nullSortFunc, &CG_Rocket_CleanUpAlOutputs, &CG_Rocket_SetAlOutputsOutput, &nullFilterFunc, &nullExecFunc },
 	{ "armouryBuyList", &CG_Rocket_BuildArmouryBuyList, &nullSortFunc, &CG_Rocket_CleanUpArmouryBuyList, &CG_Rocket_SetArmouryBuyList, &nullFilterFunc, &CG_Rocket_ExecArmouryBuyList },
 	{ "armourySellList", &CG_Rocket_BuildArmourySellList, &nullSortFunc, &CG_Rocket_CleanUpArmourySellList, &CG_Rocket_SetArmourySellList, &nullFilterFunc, &CG_Rocket_ExecArmourySellList },

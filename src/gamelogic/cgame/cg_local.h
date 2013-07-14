@@ -1284,6 +1284,8 @@ typedef struct
 
 	int selectedHumanSpawnItem;
 
+	int selectedAlienSpawnClass;
+
 	int armouryBuyList[ ( WP_GRENADE - WP_BLASTER ) + UP_NUM_UPGRADES +1 ];
 	int selectedArmouryBuyItem;
 	int armouryBuyListCount;
