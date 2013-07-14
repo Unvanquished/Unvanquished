@@ -1287,6 +1287,10 @@ typedef struct
 	int armouryBuyList[ ( WP_GRENADE - WP_BLASTER ) + UP_NUM_UPGRADES +1 ];
 	int selectedArmouryBuyItem;
 	int armouryBuyListCount;
+
+	int armourySellList[ WP_NUM_WEAPONS + UP_NUM_UPGRADES ];
+	int selectedArmourySellItem;
+	int armourySellListCount;
 } rocketDataSource_t;
 
 typedef struct
@@ -1939,6 +1943,7 @@ void CG_CheckEvents( centity_t *cent );
 void CG_EntityEvent( centity_t *cent, vec3_t position );
 void CG_PainEvent( centity_t *cent, int health );
 void CG_OnPlayerWeaponChange( weapon_t oldWeapon );
+void CG_OnPlayerUpgradeChange( void );
 
 //
 // cg_ents.c
@@ -2169,6 +2174,9 @@ void CG_Rocket_ExecDataSource( const char *dataSource, const char *table );
 void CG_Rocket_SetDataSourceIndex( const char *dataSource, const char *table, int index );
 void CG_Rocket_FilterDataSource( const char *dataSource, const char *table, const char *filter );
 void CG_Rocket_BuildServerInfo( void );
+void CG_Rocket_BuildArmourySellList( const char *table );
+void CG_Rocket_BuildArmouryBuyList( const char *table );
+
 //
 // cg_rocket_progressbar.c
 //

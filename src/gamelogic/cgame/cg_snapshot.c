@@ -200,6 +200,11 @@ static void CG_TransitionSnapshot( void )
 		{
 			CG_OnPlayerWeaponChange( ops->weapon );
 		}
+
+		if ( ops->stats[ STAT_ITEMS ] != ps->stats[ STAT_ITEMS ] )
+		{
+			CG_OnPlayerUpgradeChange();
+		}
 	}
 }
 
