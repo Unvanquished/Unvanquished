@@ -67,11 +67,14 @@ namespace Cmd {
 
             const std::vector<std::string>& GetArgs() const;
 
+            const std::string& operator[] (int argNum) const; // same as Argv(int)
+
         private:
             std::vector<std::string> args;
             std::vector<int> argsStarts;
             std::string cmd;
     };
+
 
     class CmdBase {
         public:
@@ -101,6 +104,10 @@ namespace Cmd {
         return args;
     }
 
+    inline const std::string& Args::operator[] (int argNum) const
+    {
+        return Argv(argNum);
+    }
 }
 
 #endif // SHARED_COMMAND_H_
