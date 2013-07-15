@@ -68,42 +68,6 @@ namespace Cmd {
 
             const std::vector<std::string>& GetArgs() const;
 
-            class Iterator {
-                public:
-                    Iterator(const Args *argv_, int index_)
-                        : argv(argv_), index(index_)
-                    {}
-
-                    bool operator != (const Iterator &other) const {
-                        return argv != other.argv || index != other.index;
-                    }
-
-                    const std::string& operator * () const {
-                        return argv->Argv(index);
-                    }
-
-                    const Iterator& operator ++ () {
-                        ++index;
-                        return *this;
-                    }
-
-                private:
-                    const Args *argv;
-                    int index;
-            };
-
-            Iterator begin() {
-                return Iterator(this, 1);
-            }
-
-            Iterator beginWithCommand() {
-                return Iterator(this, 0);
-            }
-
-            Iterator end() {
-                return Iterator(this, args.size());
-            }
-
         private:
             std::vector<std::string> args;
             std::vector<int> argsStarts;
