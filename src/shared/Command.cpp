@@ -241,8 +241,8 @@ namespace Cmd {
         std::list<std::string> res;
 
         std::vector<int> start = StartsOfCommands(commands);
-        if (start.back() != commands.size()) {
-            start.push_back(commands.size());
+        if (start.back() < commands.size()) {
+            start.push_back(commands.size() + 1);
         }
 
         for(int i = 0; i < start.size() - 1; i++) {
