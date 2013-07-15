@@ -175,34 +175,86 @@ namespace Cmd {
         }
     }
 
-    std::list<std::string> SplitCommandText(const std::string& commands) {
-        std::list<std::string> res;
+    std::vector<int> StartsOfCommands(const std::string& text) {
+        std::vector<int> res = {0};
 
-        int commandStart = 0;
         bool inQuotes = false;
         bool escaped = false;
+        bool inComment = false;
+        bool inInlineComment = false;
 
-        //Splits are made on unquoted ; or newlines
-        for(int i = 0; i < commands.size(); i++) {
+        for (int i = 0; i < text.size(); i++) {
             if (escaped) {
                 escaped = false;
                 continue;
             }
 
-            char c = commands[i];
+            char c = text[i];
 
-            if (c == '"') {
-                inQuotes = not inQuotes;
-                continue;
+            if (not inInlineComment) {
+                // /* */ comments have precedence over everything
+                if (c == '\n') {
+                    inComment = false;
+                    res.push_back(i + 1);
+                    continue;
+                }
+
+                if (not inComment) {
+                    if (c == '\\') {
+                        escaped = true;
+                        continue;
+                    }
+
+                    if (c == '"') {
+                        inQuotes = not inQuotes;
+                        continue;
+                    }
+
+                    if (c == ';' and not inQuotes) {
+                        res.push_back(i + 1);
+                        continue;
+                    }
+                }
             }
 
-            if (c == '\n' or (not inQuotes and c == ';')) {
-                res.push_back(std::string(commands.c_str() + commandStart, i - commandStart));
-                commandStart = i + 1;
+            if (not inQuotes and i < text.size() - 1) {
+                //Search for 2 char delimiters
+                char c2 = text[i + 1];
+
+                if (inInlineComment and c == '*' and c2 == '/') {
+                    inInlineComment = false;
+                    i++;
+                    continue;
+                }
+
+                if (not inInlineComment and c == '/' and c2 == '/') {
+                    inComment = true;
+                    continue;
+                }
+
+                if (not inComment and c == '/' and c2 == '*') {
+                    inInlineComment = true;
+                    continue;
+                }
             }
         }
 
-        res.push_back(std::string(commands.c_str() + commandStart));
+        return res;
+    }
+
+
+    std::list<std::string> SplitCommandText(const std::string& commands) {
+        std::list<std::string> res;
+
+        std::vector<int> start = StartsOfCommands(commands);
+        if (start.back() != commands.size()) {
+            start.push_back(commands.size());
+        }
+
+        for(int i = 0; i < start.size() - 1; i++) {
+            //Get the command, except the command delimiter character
+            res.push_back(std::string(commands.c_str() + start[i], start[i + 1] - start[i] - 1));
+        }
 
         return res;
     }
@@ -272,6 +324,7 @@ namespace Cmd {
     }
 
     Args::Args(const std::string& command) {
+        cmd = command;
         Tokenize(command, args, argsStarts);
     }
 
