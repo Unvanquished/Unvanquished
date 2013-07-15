@@ -32,16 +32,15 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace Cmd {
 
-    typedef enum {
-        NO_AUTO_REGISTER = BIT(0),
-        BASE             = BIT(1),
-        SYSTEM           = BIT(2),
-        RENDERER         = BIT(3),
-        SOUND            = BIT(4),
-        GAME             = BIT(5),
-        CGAME            = BIT(6),
+    enum cmdFlags_t {
+        BASE             = BIT(0),
+        SYSTEM           = BIT(1),
+        RENDERER         = BIT(2),
+        SOUND            = BIT(3),
+        GAME             = BIT(4),
+        CGAME            = BIT(5),
         PROXY_FOR_OLD    = BIT(31)
-    } cmdFlags_t;
+    };
 
 
     std::string Escape(const std::string& text, bool quote = false);
@@ -79,17 +78,18 @@ namespace Cmd {
             virtual void Run(const Args& args) const = 0;
             virtual std::vector<std::string> Complete(int argNum, const Args& args) const;
 
-            const std::string& GetCanonicalName() const;
-            const std::string& GetDescription() const;
             cmdFlags_t GetFlags() const;
 
         protected:
-            CmdBase(const std::string name, cmdFlags_t flags, const std::string description);
+            CmdBase(cmdFlags_t flags);
 
         private:
-            std::string name;
-            std::string description;
             cmdFlags_t flags;
+    };
+
+    class StaticCmd : public CmdBase {
+        protected:
+            StaticCmd(std::string name, cmdFlags_t flags, std::string description);
     };
 }
 

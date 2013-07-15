@@ -29,16 +29,16 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace Cmd {
 
-    typedef enum {
+    enum execWhen_t {
         NOW,
         AFTER,
         END
-    } execWhen_t;
+    };
 
     void BufferCommandText(const std::string& text, execWhen_t when = END, bool parseCvars = false);
     void ExecuteCommandBuffer();
 
-    void AddCommand(std::string name, const CmdBase* cmd);
+    void AddCommand(std::string name, const CmdBase& cmd, std::string description);
     void RemoveCommand(const std::string& name);
     void RemoveFlaggedCommands(cmdFlags_t flag);
 

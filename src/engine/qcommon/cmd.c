@@ -2024,7 +2024,7 @@ int completeArgNum = 0;
 //Is registered in the new command system for all the commands registered through the C interface.
 class ProxyCmd: public Cmd::CmdBase {
 	public:
-		ProxyCmd(): Cmd::CmdBase("proxy-cmd", (Cmd::cmdFlags_t) (Cmd::NO_AUTO_REGISTER | Cmd::PROXY_FOR_OLD), "a proxy between C and C++ commands") {}
+		ProxyCmd(): Cmd::CmdBase(Cmd::PROXY_FOR_OLD) {}
 
 		void Run(const Cmd::Args& args) const override {
 			proxyInfo_t proxy = proxies[args.Argv(0)];
@@ -2057,7 +2057,7 @@ void Cmd_AddCommand( const char *cmd_name, xcommand_t function )
 	}
 
 	proxies[cmd_name] = proxyInfo_t{function, NULL};
-	Cmd::AddCommand(cmd_name, &myProxyCmd);
+	Cmd::AddCommand(cmd_name, myProxyCmd, "Calls some ugly C code to do something");
 }
 
 /*

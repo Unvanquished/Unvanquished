@@ -377,28 +377,22 @@ namespace Cmd {
     ===============================================================================
     */
 
-    CmdBase::CmdBase(const std::string name, const cmdFlags_t flags, const std::string description)
-    :name(name), description(description), flags(flags) {
-        if (!(flags & NO_AUTO_REGISTER)) {
-            //Register this command statically
-            AddCommand(name, this);
-        }
+    CmdBase::CmdBase(const cmdFlags_t flags): flags(flags) {
     }
 
     std::vector<std::string> CmdBase::Complete(int argNum, const Args& args) const {
         return {};
     }
 
-    const std::string& CmdBase::GetCanonicalName() const {
-        return name;
-    }
-
-    const std::string& CmdBase::GetDescription() const {
-        return description;
-    }
-
     cmdFlags_t CmdBase::GetFlags() const {
         return flags;
     }
+
+    StaticCmd::StaticCmd(std::string name, const cmdFlags_t flags, std::string description)
+    :CmdBase(flags){
+        //Register this command statically
+        AddCommand(std::move(name), *this, std::move(description));
+    }
+
 
 }
