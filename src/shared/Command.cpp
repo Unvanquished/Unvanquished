@@ -288,7 +288,7 @@ namespace Cmd {
                     //by Cvar::get(cvarName)->getString() or something
                     char cvarValue[ MAX_CVAR_VALUE_STRING ];
                     Cvar_VariableStringBuffer( block.c_str(), cvarValue, sizeof( cvarValue ) );
-                    result += std::string(cvarValue);
+                    result += Escape(std::string(cvarValue));
 
                     inCvarName = false;
 
