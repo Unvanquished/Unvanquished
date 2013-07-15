@@ -49,13 +49,14 @@ namespace Cmd {
     std::string Escape(const std::string& text, bool quote = false);
     void Tokenize(const std::string& text, std::vector<std::string>& tokens, std::vector<int>& tokenStarts);
     std::list<std::string> SplitCommands(const std::string& commands);
+    std::string SubstituteCvars(const std::string& text);
 
     class Args {
         public:
             Args();
             //Do that later, the original command line should be the concatenation of quoted args
             //Args(const std::vector<std::string>& args);
-            Args(const std::string& command, bool parseCvars = false);
+            Args(const std::string& command);
 
             int Argc() const;
             const std::string& Argv(int argNum) const;
@@ -73,7 +74,6 @@ namespace Cmd {
             std::string cmd;
 
             //TODO: move these somewhere else, once done ?
-            static std::string SubstituteCvars(const std::string& text);
     };
 
     class CmdBase {

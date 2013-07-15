@@ -200,7 +200,7 @@ void Cbuf_AddText( const char *text )
 
 	if (strchr((char*) cmd_text.data, '\n') != NULL)
 	{
-		Cmd::BufferCommand((char*) cmd_text.data);
+		Cmd::BufferCommand((char*) cmd_text.data, Cmd::END, true);
 		cmd_text.cursize = 0;
 	}
 }
@@ -215,7 +215,7 @@ Adds a \n to the text
 */
 void Cbuf_InsertText( const char *text )
 {
-	Cmd::BufferCommand(text, Cmd::AFTER);
+	Cmd::BufferCommand(text, Cmd::AFTER, true);
 }
 
 /*
@@ -230,7 +230,7 @@ void Cbuf_ExecuteText( int exec_when, const char *text )
 		case EXEC_NOW:
 			if ( text && strlen( text ) > 0 )
 			{
-				Cmd::BufferCommand(text, Cmd::NOW);
+				Cmd::BufferCommand(text, Cmd::NOW, true);
 			}
 			else
 			{
@@ -1755,8 +1755,14 @@ static void Tokenise( const char *text, char *textOut, qboolean tokens, qboolean
 
 static void Cmd_TokenizeString2( const char *text_in, qboolean ignoreQuotes, qboolean parseCvar )
 {
-    Cmd::Args args(text_in, parseCvar);
-    Cmd::SetCurrentArgs(args);
+	std::string cmd;
+	if (parseCvar) {
+		cmd = Cmd::SubstituteCvars(text_in);
+	} else {
+		cmd = text_in;
+	}
+	Cmd::Args args(cmd);
+	Cmd::SetCurrentArgs(args);
 }
 
 /*

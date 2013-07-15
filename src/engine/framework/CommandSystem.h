@@ -35,7 +35,7 @@ namespace Cmd {
         END
     } execWhen_t;
 
-    void BufferCommand(const std::string& text, execWhen_t when = END);
+    void BufferCommand(const std::string& text, execWhen_t when = END, bool parseCvars = false);
     void ExecuteCommandBuffer();
 
     void AddCommand(const std::string& name, const CmdBase* cmd);

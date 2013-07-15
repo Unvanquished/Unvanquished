@@ -207,6 +207,59 @@ namespace Cmd {
         return res;
     }
 
+    std::string SubstituteCvars(const std::string& text) {
+        const char* raw_text = text.c_str();
+        std::string result;
+
+        bool isEscaped = false;
+        bool inCvarName = false;
+        int lastBlockStart = 0;
+
+        //Cvar are delimited by $ so we parse a bloc at a time
+        for(int i = 0; i < text.size(); i++){
+
+            // a \ escapes the next letter so we don't use it for block delimitation
+            if (isEscaped) {
+                isEscaped = false;
+                continue;
+            }
+
+            if (text[i] == '\\') {
+                isEscaped = true;
+
+            } else if (text[i] == '$') {
+                //Found a block, every second block is a cvar name block
+                std::string block(raw_text + lastBlockStart, i - lastBlockStart);
+
+                if (inCvarName) {
+                    //For now we use the cvar C api to get the cvar value but it should be replaced
+                    //by Cvar::get(cvarName)->getString() or something
+                    char cvarValue[ MAX_CVAR_VALUE_STRING ];
+                    Cvar_VariableStringBuffer( block.c_str(), cvarValue, sizeof( cvarValue ) );
+                    result += std::string(cvarValue);
+
+                    inCvarName = false;
+
+                } else {
+                    result += block;
+                    inCvarName = true;
+                }
+
+                lastBlockStart = i + 1;
+            }
+        }
+
+        //Handle the last block
+        if (inCvarName) {
+            Com_Printf("Warning: last CVar substitution block not closed in %s\n", raw_text);
+        } else {
+            std::string block(raw_text + lastBlockStart, text.size() - lastBlockStart);
+            result += block;
+        }
+
+        return result;
+    }
+
     /*
     ===============================================================================
 
@@ -218,14 +271,8 @@ namespace Cmd {
     Args::Args() {
     }
 
-    Args::Args(const std::string& command, bool parseCvars) {
-        if (parseCvars) {
-            cmd = SubstituteCvars(command);
-        }else{
-            cmd = command;
-        }
-
-        Tokenize(cmd, args, argsStarts);
+    Args::Args(const std::string& command) {
+        Tokenize(command, args, argsStarts);
     }
 
     int Args::Argc() const {
@@ -278,60 +325,6 @@ namespace Cmd {
 
     int Args::ArgStart(int argNum) {
         return argsStarts[argNum];
-    }
-
-    std::string Args::SubstituteCvars(const std::string& text) {
-        const char* raw_text = text.c_str();
-        std::string result;
-
-        bool isEscaped = false;
-        bool inCvarName = false;
-        int lastBlockStart = 0;
-
-        //Cvar are delimited by $ so we parse a bloc at a time
-        for(int i = 0; i < text.size(); i++){
-
-            // a \ escapes the next letter so we don't use it for block delimitation
-            if (isEscaped) {
-                isEscaped = false;
-                continue;
-            }
-
-            if (text[i] == '\\') {
-                isEscaped = true;
-
-            } else if (text[i] == '$') {
-                //Found a block, every second block is a cvar name block
-                std::string block(raw_text + lastBlockStart, i - lastBlockStart);
-
-                if (inCvarName) {
-                    //For now we use the cvar C api to get the cvar value but it should be replaced
-                    //by Cvar::get(cvarName)->getString() or something
-                    //if (!(Cvar_Flags(block.c_str()) & CVAR_NONEXISTENT)) {
-                        char cvarValue[ MAX_CVAR_VALUE_STRING ];
-                        Cvar_VariableStringBuffer( block.c_str(), cvarValue, sizeof( cvarValue ) );
-                        result += std::string(cvarValue);
-                    //}
-                    inCvarName = false;
-
-                } else {
-                    result += block;
-                    inCvarName = true;
-                }
-
-                lastBlockStart = i + 1;
-            }
-        }
-
-        //Handle the last block
-        if (inCvarName) {
-            Com_Printf("Warning: last CVar substitution block not closed in %s\n", raw_text);
-        } else {
-            std::string block(raw_text + lastBlockStart, text.size() - lastBlockStart);
-            result += block;
-        }
-
-        return result;
     }
 
     /*

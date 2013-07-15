@@ -33,8 +33,17 @@ namespace Cmd {
 
     std::list<std::string> commandBuffer;
 
-    void BufferCommand(const std::string& text, execWhen_t when) {
-        std::list<std::string> commands = SplitCommands(text);
+    void BufferCommand(const std::string& text, execWhen_t when, bool parseCvars) {
+        std::list<std::string> splitted = SplitCommands(text);
+
+        std::list<std::string> commands;
+        if (parseCvars) {
+            for (auto text: splitted) {
+                commands.push_back(SubstituteCvars(text));
+            }
+        } else {
+            commands = std::move(splitted);
+        }
 
         switch (when) {
             case NOW:
@@ -102,7 +111,6 @@ namespace Cmd {
     }
 
     void ExecuteCommandString(const std::string& command) {
-        Com_Printf("Execing '%s'\n", command.c_str());
         Args args(command);
         currentArgs = args;
 
