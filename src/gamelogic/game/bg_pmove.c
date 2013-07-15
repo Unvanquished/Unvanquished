@@ -863,18 +863,12 @@ static qboolean PM_CheckPounce( void )
 		return qfalse;
 	}
 
-	// Prepare a simulated jump
-	pml.groundPlane = qfalse;
-	pml.walking = qfalse;
-	pm->ps->pm_flags |= PMF_CHARGE;
-	pm->ps->groundEntityNum = ENTITYNUM_NONE;
-
 	// Calculate jump parameters
 	switch ( pm->ps->weapon )
 	{
 		case WP_ALEVEL0:
 			// wallwalking
-			if ( pml.groundTrace.plane.normal[ 2 ] <= 0.1f )
+			if ( pm->ps->groundEntityNum == ENTITYNUM_WORLD && pml.groundTrace.plane.normal[ 2 ] <= 0.1f )
 			{
 				// get jump magnitude
 				jumpMagnitude = LEVEL0_WALLPOUNCE_MAGNITUDE;
@@ -887,28 +881,52 @@ static qboolean PM_CheckPounce( void )
 				// otherwise try to find a trajectory to the surface point the player is looking at
 				else
 				{
-					trace_t trace;
-					vec3_t  point, dir1, dir2;
-					vec2_t  angles;
+					trace_t  trace;
+					vec3_t   traceTarget, endpos, trajectoryDir1, trajectoryDir2;
+					vec2_t   trajectoryAngles;
+					float    zCorrection;
+					qboolean foundTrajectory;
 
-					VectorMA( pm->ps->origin, 10000.0f, pml.forward, point );
+					VectorMA( pm->ps->origin, 10000.0f, pml.forward, traceTarget );
 
-					pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, point,
+					pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, traceTarget,
 					           pm->ps->clientNum, MASK_SOLID );
 
-					if ( trace.fraction < 1.0f &&
-					     PM_GetTrajectoryPitch( pm->ps->origin, trace.endpos, jumpMagnitude,
-					                            angles, dir1, dir2 ) )
+					foundTrajectory = ( trace.fraction < 1.0f );
+
+					// HACK: make sure we don't just tangent if we want to attach to the ceiling
+					//       this is done by moving the target point inside a ceiling's surface
+					if ( foundTrajectory )
 					{
-						// use the shorter trajection
-						if ( dir1[ 2 ] < dir2[ 2 ] )
+						VectorCopy( trace.endpos, endpos );
+
+						if ( trace.plane.normal[ 2 ] < 0.0f )
+						{
+							zCorrection = 64.0f * trace.plane.normal[ 2 ];
+
+							if ( pm->debugLevel > 0 )
+							{
+								Com_Printf( "[PM_CheckPounce] Aiming at ceiling; move target into surface by %.2f\n",
+								            zCorrection );
+							}
+
+							VectorMA( endpos, zCorrection, trace.plane.normal, endpos );
+						}
+					}
+
+					// if there is a possible trajectoy they come in pairs, use the shorter one
+					if ( foundTrajectory &&
+					     PM_GetTrajectoryPitch( pm->ps->origin, endpos, jumpMagnitude, trajectoryAngles,
+					                            trajectoryDir1, trajectoryDir2 ) )
+					{
+						if ( trajectoryDir1[ 2 ] < trajectoryDir2[ 2 ] )
 						{
 							if ( pm->debugLevel > 0 )
 							{
 								Com_Printf("[PM_CheckPounce] Using angle #1\n");
 							}
 
-							VectorCopy( dir1, jumpDirection );
+							VectorCopy( trajectoryDir1, jumpDirection );
 						}
 						else
 						{
@@ -917,7 +935,24 @@ static qboolean PM_CheckPounce( void )
 								Com_Printf("[PM_CheckPounce] Using angle #2\n");
 							}
 
-							VectorCopy( dir2, jumpDirection );
+							VectorCopy( trajectoryDir2, jumpDirection );
+						}
+
+						// HACK: make sure we get off the ceiling if jumping to an adjacent wall
+						//       this is done by subsequently rotating the jump direction in surface
+						//       normal direction until their angle is below a threshold
+						while ( DotProduct( jumpDirection, pml.groundTrace.plane.normal ) <= 0.1f ) // acos(0.1) ~= 85°
+						{
+							VectorMA( jumpDirection, 0.1f, pml.groundTrace.plane.normal, jumpDirection );
+							VectorNormalize( jumpDirection );
+
+							if ( pm->debugLevel > 0 )
+							{
+								Com_Printf("[PM_CheckPounce] Adjusting jump direction to get off the surface: "
+								           "( %.2f, %.2f, %.2f )\n",
+								           jumpDirection[ 0 ], jumpDirection[ 1 ], jumpDirection[ 2 ] );
+							}
+
 						}
 					}
 					// resort to jumping in view direction
@@ -1020,6 +1055,12 @@ static qboolean PM_CheckPounce( void )
 		default:
 			return qfalse;
 	}
+
+	// Prepare a simulated jump
+	pml.groundPlane = qfalse;
+	pml.walking = qfalse;
+	pm->ps->pm_flags |= PMF_CHARGE;
+	pm->ps->groundEntityNum = ENTITYNUM_NONE;
 
 	// Jump
 	VectorMA( pm->ps->velocity, jumpMagnitude, jumpDirection, pm->ps->velocity );
@@ -2513,7 +2554,7 @@ static void PM_GroundClimbTrace( void )
 
 			case GCT_ATP_CEILING:
 				// attach to the ceiling if we get close enough during a jump that goes roughly upwards
-				if ( velocityDir[ 2 ] > 0.5f ) // angle < acos( 0.5f ) = 60°
+				if ( velocityDir[ 2 ] > 0.2f ) // acos( 0.2f ) ~= 80°
 				{
 					VectorMA( pm->ps->origin, -16.0f, ceilingNormal, point );
 					pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask & ~CONTENTS_BODY );
