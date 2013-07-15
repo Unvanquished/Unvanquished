@@ -96,7 +96,7 @@ namespace Cmd {
 // Implementation details
 // ----------------------
 
-    const std::vector<std::string>& Args::GetArgs() const
+    inline const std::vector<std::string>& Args::GetArgs() const
     {
         return args;
     }
