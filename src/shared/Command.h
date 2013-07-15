@@ -91,6 +91,16 @@ namespace Cmd {
         protected:
             StaticCmd(std::string name, cmdFlags_t flags, std::string description);
     };
+
+// ----------------------
+// Implementation details
+// ----------------------
+
+    const std::vector<std::string>& Args::GetArgs() const
+    {
+        return args;
+    }
+
 }
 
 #endif // SHARED_COMMAND_H_
