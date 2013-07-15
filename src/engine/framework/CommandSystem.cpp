@@ -31,6 +31,26 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace Cmd {
 
+    struct commandRecord_t {
+        std::string description;
+        const CmdBase* cmd;
+    };
+
+    typedef typename std::unordered_map<std::string, commandRecord_t> CommandMap;
+
+    CommandMap& GetCommandMap() {
+        static CommandMap* commands = new CommandMap();
+        return *commands;
+    }
+
+    /*
+    ===============================================================================
+
+    Cmd:: The command buffer
+
+    ===============================================================================
+    */
+
     std::list<std::string> commandBuffer;
 
     void BufferCommandText(const std::string& text, execWhen_t when, bool parseCvars) {
@@ -75,17 +95,13 @@ namespace Cmd {
         commandBuffer.clear();
     }
 
-    struct commandRecord_t {
-        std::string description;
-        const CmdBase* cmd;
-    };
+    /*
+    ===============================================================================
 
-    typedef typename std::unordered_map<std::string, commandRecord_t> CommandMap;
+    Cmd:: Registration and execution
 
-    CommandMap& GetCommandMap() {
-        static CommandMap* commands = new CommandMap();
-        return *commands;
-    }
+    ===============================================================================
+    */
 
     //TODO: remove the need for this
     Args currentArgs;
@@ -210,4 +226,130 @@ namespace Cmd {
     void LoadArgs() {
         currentArgs = oldArgs;
     }
+
+    /*
+    ===============================================================================
+
+    Cmd:: /list<Subsystem>Commands
+
+    ===============================================================================
+    */
+
+    void ListFlaggedCommands(const Args& args, cmdFlags_t flags) {
+        CommandMap& commands = GetCommandMap();
+
+        //TODO: add partial matches as in Doom3BFG
+        std::vector<const commandRecord_t*> matches;
+        std::vector<const std::string*> matchesNames;
+        int maxNameLength = 0;
+
+        //Find all the matching commands and thir name
+        for (auto it = commands.cbegin(); it != commands.cend(); ++it) {
+            const commandRecord_t& record = it->second;
+
+            if (record.cmd->GetFlags() & flags) {
+                matches.push_back(&it->second);
+                matchesNames.push_back(&it->first);
+                maxNameLength = MAX(maxNameLength, it->first.size());
+            }
+        }
+
+        //Print the matches, keeping the description aligned
+        for (int i = 0; i < matches.size(); i++) {
+            int toFill = maxNameLength - matchesNames[i]->size();
+            Com_Printf("  %s%s %s\n", matchesNames[i]->c_str(), std::string(toFill, ' ').c_str(), matches[i]->description.c_str());
+        }
+
+        Com_Printf("%zu commands\n", matches.size());
+    }
+
+    class ListCmdsCmd: public StaticCmd {
+        public:
+            ListCmdsCmd(): StaticCmd("listCmds", BASE, "lists all the commands") {
+            }
+
+            void Run(const Cmd::Args& args) const override {
+                ListFlaggedCommands(args, (cmdFlags_t)~0);
+            }
+    };
+
+    class ListBaseCmdsCmd: public StaticCmd {
+        public:
+            ListBaseCmdsCmd(): StaticCmd("listBaseCmds", BASE, "lists all the base commands") {
+            }
+
+            void Run(const Cmd::Args& args) const override {
+                ListFlaggedCommands(args, BASE);
+            }
+    };
+
+    class ListSystemCmdsCmd: public StaticCmd {
+        public:
+            ListSystemCmdsCmd(): StaticCmd("listSystemCmds", (cmdFlags_t) (BASE|SYSTEM), "lists all the system commands") {
+            }
+
+            void Run(const Cmd::Args& args) const override {
+                ListFlaggedCommands(args, SYSTEM);
+            }
+    };
+
+    class ListRendererCmdsCmd: public StaticCmd {
+        public:
+            ListRendererCmdsCmd(): StaticCmd("listRendererCmds", (cmdFlags_t) (BASE|RENDERER), "lists all the renderer commands") {
+            }
+
+            void Run(const Cmd::Args& args) const override {
+                ListFlaggedCommands(args, RENDERER);
+            }
+    };
+	static ListRendererCmdsCmd listRendererCmdsCmdRegistration;
+
+    class ListSoundCmdsCmd: public StaticCmd {
+        public:
+            ListSoundCmdsCmd(): StaticCmd("listSoundCmds", (cmdFlags_t) (BASE|SOUND), "lists all the sound commands") {
+            }
+
+            void Run(const Cmd::Args& args) const override {
+                ListFlaggedCommands(args, SOUND);
+            }
+    };
+
+    class ListCGameCmdsCmd: public StaticCmd {
+        public:
+            ListCGameCmdsCmd(): StaticCmd("listCGameCmds", (cmdFlags_t) (BASE|CGAME), "lists all the client-side game commands") {
+            }
+
+            void Run(const Cmd::Args& args) const override {
+                ListFlaggedCommands(args, CGAME);
+            }
+    };
+
+    class ListGameCmdsCmd: public StaticCmd {
+        public:
+            ListGameCmdsCmd(): StaticCmd("listGameCmds", (cmdFlags_t) (BASE|GAME), "lists all the server-side game commands") {
+            }
+
+            void Run(const Cmd::Args& args) const override {
+                ListFlaggedCommands(args, GAME);
+            }
+    };
+
+    class ListOldStyleCmdsCmd: public StaticCmd {
+        public:
+            ListOldStyleCmdsCmd(): StaticCmd("listOldStyleCmds", BASE, "lists all the commands registered through the C interface") {
+            }
+
+            void Run(const Cmd::Args& args) const override {
+                ListFlaggedCommands(args, PROXY_FOR_OLD);
+            }
+    };
+
+    //Automatically register the list<Subsystem>Cmds commands
+	static ListCmdsCmd listCmdsCmdRegistration;
+	static ListBaseCmdsCmd listBaseCmdsCmdRegistration;
+	static ListSystemCmdsCmd listSystemCmdsCmdRegistration;
+	static ListSoundCmdsCmd listSoundCmdsCmdRegistration;
+	static ListCGameCmdsCmd listCGameCmdsCmdRegistration;
+	static ListGameCmdsCmd listGameCmdsCmdRegistration;
+	static ListOldStyleCmdsCmd listOldStyleCmdsCmdRegistration;
 }
