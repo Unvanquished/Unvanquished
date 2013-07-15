@@ -666,6 +666,41 @@ static void PM_CheckWaterPounce( void )
 
 /*
 =============
+PM_PlayJumpingAnimation
+=============
+*/
+static void PM_PlayJumpingAnimation( void )
+{
+	if ( pm->cmd.forwardmove >= 0 )
+	{
+		if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+		{
+			PM_ForceLegsAnim( LEGS_JUMP );
+		}
+		else
+		{
+			PM_ForceLegsAnim( NSPA_JUMP );
+		}
+
+		pm->ps->pm_flags &= ~PMF_BACKWARDS_JUMP;
+	}
+	else
+	{
+		if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+		{
+			PM_ForceLegsAnim( LEGS_JUMPB );
+		}
+		else
+		{
+			PM_ForceLegsAnim( NSPA_JUMPBACK );
+		}
+
+		pm->ps->pm_flags |= PMF_BACKWARDS_JUMP;
+	}
+}
+
+/*
+=============
 PM_GetTrajectoryAngleForVelocity
 
 Given an origin, a target point and an initial velocity v0, calculate the two possible
@@ -686,7 +721,7 @@ static qboolean PM_GetTrajectoryPitch(
 
 	VectorSubtract( target, origin, t3 );
 
-	if ( pm->debugLevel > 1 )
+	if ( pm->debugLevel > 0 )
 	{
 		Com_Printf( "[PM_GetTrajectoryPitch] 3D: %.1f %.1f %.1f (%.1f qu)\n",
 		            t3[ 0 ], t3[ 1 ], t3[ 2 ], VectorLength( t3 ) );
@@ -706,7 +741,7 @@ static qboolean PM_GetTrajectoryPitch(
 	t[ 1 ] = t3[ 2 ];
 	t[ 0 ] = sqrt( t3[ 0 ] * t3[ 0 ] + t3[ 1 ] * t3[ 1 ] );
 
-	if ( pm->debugLevel > 1 )
+	if ( pm->debugLevel > 0 )
 	{
 		Com_Printf("[PM_GetTrajectoryPitch] 2D: %.1f %.1f (%.1f qu)\n",
 		           t[ 0 ], t[ 1 ], sqrt( t[ 0 ] * t[ 0 ] + t[ 1 ] * t[ 1 ] ) );
@@ -726,7 +761,7 @@ static qboolean PM_GetTrajectoryPitch(
 	angles[ 0 ] = atanf( ( v02 + tmp ) / ( g * t[ 0 ] ) );
 	angles[ 1 ] = atanf( ( v02 - tmp ) / ( g * t[ 0 ] ) );
 
-	if ( pm->debugLevel > 1 )
+	if ( pm->debugLevel > 0 )
 	{
 		Com_Printf( "[PM_GetTrajectoryPitch] Angles: %.1f°, %.1f°\n",
 		            180.0f / M_PI * angles[ 0 ], 180.0f / M_PI * angles[ 1 ] );
@@ -766,7 +801,7 @@ static qboolean PM_GetTrajectoryPitch(
 	VectorNormalize( dir1 );
 	VectorNormalize( dir2 );
 
-	if ( pm->debugLevel > 1 )
+	if ( pm->debugLevel > 0 )
 	{
 		Com_Printf( "[PM_GetTrajectoryPitch] Dirs: ( %.2f, %.2f, %.2f ), ( %.2f, %.2f, %.2f )\n",
 		            dir1[ 0 ], dir1[ 1 ], dir1[ 2 ], dir2[ 0 ], dir2[ 1 ], dir2[ 2 ] );
@@ -863,18 +898,12 @@ static qboolean PM_CheckPounce( void )
 		return qfalse;
 	}
 
-	// Prepare a simulated jump
-	pml.groundPlane = qfalse;
-	pml.walking = qfalse;
-	pm->ps->pm_flags |= PMF_CHARGE;
-	pm->ps->groundEntityNum = ENTITYNUM_NONE;
-
 	// Calculate jump parameters
 	switch ( pm->ps->weapon )
 	{
 		case WP_ALEVEL0:
 			// wallwalking
-			if ( pml.groundTrace.plane.normal[ 2 ] <= 0.1f )
+			if ( pm->ps->groundEntityNum == ENTITYNUM_WORLD && pml.groundTrace.plane.normal[ 2 ] <= 0.1f )
 			{
 				// get jump magnitude
 				jumpMagnitude = LEVEL0_WALLPOUNCE_MAGNITUDE;
@@ -887,43 +916,84 @@ static qboolean PM_CheckPounce( void )
 				// otherwise try to find a trajectory to the surface point the player is looking at
 				else
 				{
-					trace_t trace;
-					vec3_t  point, dir1, dir2;
-					vec2_t  angles;
+					trace_t  trace;
+					vec3_t   traceTarget, endpos, trajectoryDir1, trajectoryDir2;
+					vec2_t   trajectoryAngles;
+					float    zCorrection;
+					qboolean foundTrajectory;
 
-					VectorMA( pm->ps->origin, 10000.0f, pml.forward, point );
+					VectorMA( pm->ps->origin, 10000.0f, pml.forward, traceTarget );
 
-					pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, point,
+					pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, traceTarget,
 					           pm->ps->clientNum, MASK_SOLID );
 
-					if ( trace.fraction < 1.0f &&
-					     PM_GetTrajectoryPitch( pm->ps->origin, trace.endpos, jumpMagnitude,
-					                            angles, dir1, dir2 ) )
+					foundTrajectory = ( trace.fraction < 1.0f );
+
+					// HACK: make sure we don't just tangent if we want to attach to the ceiling
+					//       this is done by moving the target point inside a ceiling's surface
+					if ( foundTrajectory )
 					{
-						// use the shorter trajection
-						if ( dir1[ 2 ] < dir2[ 2 ] )
+						VectorCopy( trace.endpos, endpos );
+
+						if ( trace.plane.normal[ 2 ] < 0.0f )
 						{
-							if ( pm->debugLevel > 1 )
+							zCorrection = 64.0f * trace.plane.normal[ 2 ];
+
+							if ( pm->debugLevel > 0 )
+							{
+								Com_Printf( "[PM_CheckPounce] Aiming at ceiling; move target into surface by %.2f\n",
+								            zCorrection );
+							}
+
+							VectorMA( endpos, zCorrection, trace.plane.normal, endpos );
+						}
+					}
+
+					// if there is a possible trajectoy they come in pairs, use the shorter one
+					if ( foundTrajectory &&
+					     PM_GetTrajectoryPitch( pm->ps->origin, endpos, jumpMagnitude, trajectoryAngles,
+					                            trajectoryDir1, trajectoryDir2 ) )
+					{
+						if ( trajectoryDir1[ 2 ] < trajectoryDir2[ 2 ] )
+						{
+							if ( pm->debugLevel > 0 )
 							{
 								Com_Printf("[PM_CheckPounce] Using angle #1\n");
 							}
 
-							VectorCopy( dir1, jumpDirection );
+							VectorCopy( trajectoryDir1, jumpDirection );
 						}
 						else
 						{
-							if ( pm->debugLevel > 1 )
+							if ( pm->debugLevel > 0 )
 							{
 								Com_Printf("[PM_CheckPounce] Using angle #2\n");
 							}
 
-							VectorCopy( dir2, jumpDirection );
+							VectorCopy( trajectoryDir2, jumpDirection );
+						}
+
+						// HACK: make sure we get off the ceiling if jumping to an adjacent wall
+						//       this is done by subsequently rotating the jump direction in surface
+						//       normal direction until their angle is below a threshold
+						while ( DotProduct( jumpDirection, pml.groundTrace.plane.normal ) <= 0.1f ) // acos(0.1) ~= 85°
+						{
+							VectorMA( jumpDirection, 0.1f, pml.groundTrace.plane.normal, jumpDirection );
+							VectorNormalize( jumpDirection );
+
+							if ( pm->debugLevel > 0 )
+							{
+								Com_Printf("[PM_CheckPounce] Adjusting jump direction to get off the surface: "
+								           "( %.2f, %.2f, %.2f )\n",
+								           jumpDirection[ 0 ], jumpDirection[ 1 ], jumpDirection[ 2 ] );
+							}
+
 						}
 					}
 					// resort to jumping in view direction
 					else
 					{
-						if ( pm->debugLevel > 1 )
+						if ( pm->debugLevel > 0 )
 						{
 							Com_Printf("[PM_CheckPounce] Failed to find a trajectory\n");
 						}
@@ -1021,37 +1091,16 @@ static qboolean PM_CheckPounce( void )
 			return qfalse;
 	}
 
+	// Prepare a simulated jump
+	pml.groundPlane = qfalse;
+	pml.walking = qfalse;
+	pm->ps->pm_flags |= PMF_CHARGE;
+	pm->ps->groundEntityNum = ENTITYNUM_NONE;
+
 	// Jump
 	VectorMA( pm->ps->velocity, jumpMagnitude, jumpDirection, pm->ps->velocity );
 	PM_AddEvent( EV_JUMP );
-
-	// Play jumping animation
-	if ( pm->cmd.forwardmove >= 0 )
-	{
-		if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
-		{
-			PM_ForceLegsAnim( LEGS_JUMP );
-		}
-		else
-		{
-			PM_ForceLegsAnim( NSPA_JUMP );
-		}
-
-		pm->ps->pm_flags &= ~PMF_BACKWARDS_JUMP;
-	}
-	else
-	{
-		if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
-		{
-			PM_ForceLegsAnim( LEGS_JUMPB );
-		}
-		else
-		{
-			PM_ForceLegsAnim( NSPA_JUMPBACK );
-		}
-
-		pm->ps->pm_flags |= PMF_BACKWARDS_JUMP;
-	}
+	PM_PlayJumpingAnimation();
 
 	// We started to pounce
 	return qtrue;
@@ -1180,33 +1229,7 @@ static qboolean PM_CheckWallJump( void )
 	}
 
 	PM_AddEvent( EV_JUMP );
-
-	if ( pm->cmd.forwardmove >= 0 )
-	{
-		if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
-		{
-			PM_ForceLegsAnim( LEGS_JUMP );
-		}
-		else
-		{
-			PM_ForceLegsAnim( NSPA_JUMP );
-		}
-
-		pm->ps->pm_flags &= ~PMF_BACKWARDS_JUMP;
-	}
-	else
-	{
-		if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
-		{
-			PM_ForceLegsAnim( LEGS_JUMPB );
-		}
-		else
-		{
-			PM_ForceLegsAnim( NSPA_JUMPBACK );
-		}
-
-		pm->ps->pm_flags |= PMF_BACKWARDS_JUMP;
-	}
+	PM_PlayJumpingAnimation();
 
 	return qtrue;
 }
@@ -1301,33 +1324,7 @@ static qboolean PM_CheckJump( void )
 	          normal, pm->ps->velocity );
 
 	PM_AddEvent( EV_JUMP );
-
-	if ( pm->cmd.forwardmove >= 0 )
-	{
-		if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
-		{
-			PM_ForceLegsAnim( LEGS_JUMP );
-		}
-		else
-		{
-			PM_ForceLegsAnim( NSPA_JUMP );
-		}
-
-		pm->ps->pm_flags &= ~PMF_BACKWARDS_JUMP;
-	}
-	else
-	{
-		if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
-		{
-			PM_ForceLegsAnim( LEGS_JUMPB );
-		}
-		else
-		{
-			PM_ForceLegsAnim( NSPA_JUMPBACK );
-		}
-
-		pm->ps->pm_flags |= PMF_BACKWARDS_JUMP;
-	}
+	PM_PlayJumpingAnimation();
 
 	return qtrue;
 }
@@ -2278,7 +2275,7 @@ static int PM_CorrectAllSolid( trace_t *trace )
 	int    i, j, k;
 	vec3_t point;
 
-	if ( pm->debugLevel )
+	if ( pm->debugLevel > 1 )
 	{
 		Com_Printf( "%i:allsolid\n", c_pmove );
 	}
@@ -2332,7 +2329,7 @@ static void PM_GroundTraceMissed( void )
 	if ( pm->ps->groundEntityNum != ENTITYNUM_NONE )
 	{
 		// we just transitioned into freefall
-		if ( pm->debugLevel )
+		if ( pm->debugLevel > 1 )
 		{
 			Com_Printf( "%i:lift\n", c_pmove );
 		}
@@ -2513,7 +2510,7 @@ static void PM_GroundClimbTrace( void )
 
 			case GCT_ATP_CEILING:
 				// attach to the ceiling if we get close enough during a jump that goes roughly upwards
-				if ( velocityDir[ 2 ] > 0.5f ) // angle < acos( 0.5f ) = 60°
+				if ( velocityDir[ 2 ] > 0.2f ) // acos( 0.2f ) ~= 80°
 				{
 					VectorMA( pm->ps->origin, -16.0f, ceilingNormal, point );
 					pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask & ~CONTENTS_BODY );
@@ -2949,7 +2946,7 @@ static void PM_GroundTrace( void )
 	// check if getting thrown off the ground
 	if ( pm->ps->velocity[ 2 ] > 0.0f && DotProduct( pm->ps->velocity, trace.plane.normal ) > 10.0f )
 	{
-		if ( pm->debugLevel )
+		if ( pm->debugLevel > 1 )
 		{
 			Com_Printf( "%i:kickoff\n", c_pmove );
 		}
@@ -2991,7 +2988,7 @@ static void PM_GroundTrace( void )
 	// slopes that are too steep will not be considered onground
 	if ( trace.plane.normal[ 2 ] < MIN_WALK_NORMAL )
 	{
-		if ( pm->debugLevel )
+		if ( pm->debugLevel > 1 )
 		{
 			Com_Printf( "%i:steep\n", c_pmove );
 		}
@@ -3017,7 +3014,7 @@ static void PM_GroundTrace( void )
 	if ( pm->ps->groundEntityNum == ENTITYNUM_NONE )
 	{
 		// just hit the ground
-		if ( pm->debugLevel )
+		if ( pm->debugLevel > 1 )
 		{
 			Com_Printf( "%i:Land\n", c_pmove );
 		}
