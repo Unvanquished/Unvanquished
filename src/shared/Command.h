@@ -64,6 +64,8 @@ namespace Cmd {
             std::string QuotedArgs(int start = 1, int end = -1) const;
             std::string OriginalArgs(int start = 1, int end = -1) const;
 
+            operator const std::string& () { return cmd; }
+
             int ArgNumber(int pos);
             int ArgStart(int argNum);
 
