@@ -75,13 +75,19 @@ namespace Cmd {
         commandBuffer.clear();
     }
 
-    std::unordered_map<std::string, const CmdBase*> commands;
+    std::unordered_map<std::string, const CmdBase*>& GetCommandMap() {
+        typedef typename std::unordered_map<std::string, const CmdBase*> CommandMap;
+        static CommandMap* commands = new CommandMap();
+        return *commands;
+    }
 
     //TODO: remove the need for this
     Args currentArgs;
     Args oldArgs;
 
     void AddCommand(std::string name, const CmdBase* cmd) {
+        auto& commands = GetCommandMap();
+
         if (commands.count(name)) {
 			Com_Printf(_( "Cmd::AddCommand: %s already defined\n"), name.c_str() );
 			return;
@@ -91,10 +97,14 @@ namespace Cmd {
     }
 
     void RemoveCommand(const std::string& name) {
+        auto& commands = GetCommandMap();
+
         commands.erase(name);
     }
 
     void RemoveFlaggedCommands(cmdFlags_t flag) {
+        auto& commands = GetCommandMap();
+
         for (auto it = commands.cbegin(); it != commands.cend();) {
             const CmdBase* cmd = it->second;
 
@@ -107,10 +117,14 @@ namespace Cmd {
     }
 
     bool CommandExists(const std::string& name) {
+        auto& commands = GetCommandMap();
+
         return commands.count(name);
     }
 
     void ExecuteCommand(std::string command) {
+        auto& commands = GetCommandMap();
+
         Args args(std::move(command));
         currentArgs = args;
 
@@ -151,6 +165,8 @@ namespace Cmd {
     }
 
     std::vector<std::string> CommandNames() {
+        auto& commands = GetCommandMap();
+
         std::vector<std::string> res;
         for (auto entry: commands) {
             res.push_back(entry.first);
@@ -159,6 +175,8 @@ namespace Cmd {
     }
 
     std::vector<std::string> CompleteArgument(std::string command, int pos) {
+        auto& commands = GetCommandMap();
+
         Args args(std::move(command));
         int argNum = args.ArgNumber(pos);
         const std::string& cmdName = args.Argv(0);

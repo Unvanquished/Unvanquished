@@ -31,12 +31,6 @@ namespace Cmd {
 
     static CmdBase* firstCommand = nullptr;
 
-    void Init() {
-        for (CmdBase* cmd = firstCommand; cmd != nullptr; cmd = cmd->next) {
-            AddCommand(cmd->GetCanonicalName(), cmd);
-        }
-    }
-
     std::string Escape(const std::string& text, bool quote) {
         std::string res;
 
@@ -389,11 +383,10 @@ namespace Cmd {
     */
 
     CmdBase::CmdBase(const std::string name, const cmdFlags_t flags, const std::string description)
-    :next(nullptr), name(name), description(description), flags(flags) {
-        //Add this command to the static list of commands to be registered
+    :name(name), description(description), flags(flags) {
         if (!(flags & NO_AUTO_REGISTER)) {
-            this->next = firstCommand;
-            firstCommand = this;
+            //Register this command statically
+            AddCommand(name, this);
         }
     }
 

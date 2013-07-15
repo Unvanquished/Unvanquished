@@ -44,8 +44,6 @@ namespace Cmd {
     } cmdFlags_t;
 
 
-    void Init();
-
     std::string Escape(const std::string& text, bool quote = false);
     void Tokenize(const std::string& text, std::vector<std::string>& tokens, std::vector<int>& tokenStarts);
     std::vector<int> StartsOfCommands(const std::string& text);
@@ -111,8 +109,6 @@ namespace Cmd {
             std::vector<std::string> args;
             std::vector<int> argsStarts;
             std::string cmd;
-
-            //TODO: move these somewhere else, once done ?
     };
 
     class CmdBase {
@@ -124,13 +120,10 @@ namespace Cmd {
             const std::string& GetDescription() const;
             cmdFlags_t GetFlags() const;
 
-            CmdBase* next;
-
         protected:
             CmdBase(const std::string name, cmdFlags_t flags, const std::string description);
 
         private:
-
             std::string name;
             std::string description;
             cmdFlags_t flags;
