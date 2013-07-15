@@ -200,7 +200,7 @@ void Cbuf_AddText( const char *text )
 
 	if (strchr((char*) cmd_text.data, '\n') != NULL)
 	{
-		Cmd::BufferCommand((char*) cmd_text.data, Cmd::END, true);
+		Cmd::BufferCommandText((char*) cmd_text.data, Cmd::END, true);
 		cmd_text.cursize = 0;
 	}
 }
@@ -215,7 +215,7 @@ Adds a \n to the text
 */
 void Cbuf_InsertText( const char *text )
 {
-	Cmd::BufferCommand(text, Cmd::AFTER, true);
+	Cmd::BufferCommandText(text, Cmd::AFTER, true);
 }
 
 /*
@@ -230,7 +230,7 @@ void Cbuf_ExecuteText( int exec_when, const char *text )
 		case EXEC_NOW:
 			if ( text && strlen( text ) > 0 )
 			{
-				Cmd::BufferCommand(text, Cmd::NOW, true);
+				Cmd::BufferCommandText(text, Cmd::NOW, true);
 			}
 			else
 			{
@@ -2125,7 +2125,7 @@ A complete command line has been parsed, so try to execute it
 void Cmd_ExecuteString( const char *text )
 {
 	std::string cmd(text);
-	Cmd::ExecuteCommandString(cmd);
+	Cmd::ExecuteCommand(cmd);
 }
 
 /*

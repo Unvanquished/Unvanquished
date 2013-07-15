@@ -48,7 +48,7 @@ namespace Cmd {
 
     std::string Escape(const std::string& text, bool quote = false);
     void Tokenize(const std::string& text, std::vector<std::string>& tokens, std::vector<int>& tokenStarts);
-    std::list<std::string> SplitCommands(const std::string& commands);
+    std::list<std::string> SplitCommandText(const std::string& commands);
     std::string SubstituteCvars(const std::string& text);
 
     class Args {

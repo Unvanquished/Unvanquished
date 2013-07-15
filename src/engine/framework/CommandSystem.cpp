@@ -33,8 +33,8 @@ namespace Cmd {
 
     std::list<std::string> commandBuffer;
 
-    void BufferCommand(const std::string& text, execWhen_t when, bool parseCvars) {
-        std::list<std::string> splitted = SplitCommands(text);
+    void BufferCommandText(const std::string& text, execWhen_t when, bool parseCvars) {
+        std::list<std::string> splitted = SplitCommandText(text);
 
         std::list<std::string> commands;
         if (parseCvars) {
@@ -48,7 +48,7 @@ namespace Cmd {
         switch (when) {
             case NOW:
                 for(auto command : commands) {
-                    ExecuteCommandString(command);
+                    ExecuteCommand(command);
                 }
                 break;
 
@@ -70,7 +70,7 @@ namespace Cmd {
         while (not commandBuffer.empty()) {
             std::string command = commandBuffer.front();
             commandBuffer.pop_front();
-            ExecuteCommandString(command);
+            ExecuteCommand(command);
         }
         commandBuffer.clear();
     }
@@ -110,7 +110,7 @@ namespace Cmd {
         return commands.count(name);
     }
 
-    void ExecuteCommandString(const std::string& command) {
+    void ExecuteCommand(const std::string& command) {
         Args args(command);
         currentArgs = args;
 

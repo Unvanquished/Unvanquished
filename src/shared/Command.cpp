@@ -175,7 +175,7 @@ namespace Cmd {
         }
     }
 
-    std::list<std::string> SplitCommands(const std::string& commands) {
+    std::list<std::string> SplitCommandText(const std::string& commands) {
         std::list<std::string> res;
 
         int commandStart = 0;
