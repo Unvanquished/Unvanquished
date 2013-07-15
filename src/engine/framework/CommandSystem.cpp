@@ -81,13 +81,13 @@ namespace Cmd {
     Args currentArgs;
     Args oldArgs;
 
-    void AddCommand(const std::string& name, const CmdBase* cmd) {
+    void AddCommand(std::string name, const CmdBase* cmd) {
         if (commands.count(name)) {
 			Com_Printf(_( "Cmd::AddCommand: %s already defined\n"), name.c_str() );
 			return;
         }
 
-        commands[name] = cmd;
+        commands[std::move(name)] = cmd;
     }
 
     void RemoveCommand(const std::string& name) {
@@ -110,8 +110,8 @@ namespace Cmd {
         return commands.count(name);
     }
 
-    void ExecuteCommand(const std::string& command) {
-        Args args(command);
+    void ExecuteCommand(std::string command) {
+        Args args(std::move(command));
         currentArgs = args;
 
         if (args.Argc() == 0) {
@@ -158,8 +158,8 @@ namespace Cmd {
         return res;
     }
 
-    std::vector<std::string> CompleteArgument(const std::string& command, int pos) {
-        Args args(command);
+    std::vector<std::string> CompleteArgument(std::string command, int pos) {
+        Args args(std::move(command));
         int argNum = args.ArgNumber(pos);
         const std::string& cmdName = args.Argv(0);
 

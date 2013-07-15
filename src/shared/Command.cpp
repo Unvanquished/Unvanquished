@@ -323,9 +323,9 @@ namespace Cmd {
     Args::Args() {
     }
 
-    Args::Args(const std::string& command) {
-        cmd = command;
-        Tokenize(command, args, argsStarts);
+    Args::Args(std::string command) {
+        cmd = std::move(command);
+        Tokenize(cmd, args, argsStarts);
     }
 
     int Args::Argc() const {

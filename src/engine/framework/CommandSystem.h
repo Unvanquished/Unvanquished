@@ -38,15 +38,15 @@ namespace Cmd {
     void BufferCommandText(const std::string& text, execWhen_t when = END, bool parseCvars = false);
     void ExecuteCommandBuffer();
 
-    void AddCommand(const std::string& name, const CmdBase* cmd);
+    void AddCommand(std::string name, const CmdBase* cmd);
     void RemoveCommand(const std::string& name);
     void RemoveFlaggedCommands(cmdFlags_t flag);
 
-    void ExecuteCommand(const std::string& command);
+    void ExecuteCommand(std::string command);
 
     //Completion stuff, highly unstable :-)
     std::vector<std::string> CommandNames();
-    std::vector<std::string> CompleteArgument(const std::string& command, int pos);
+    std::vector<std::string> CompleteArgument(std::string command, int pos);
 
     //Function to ease the transition to C++
     bool CommandExists(const std::string& name);
