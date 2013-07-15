@@ -161,7 +161,7 @@ namespace Cmd {
 
         // send it as a server command if we are connected
         // (cvars are expanded locally)
-        CL_ForwardCommandToServer( args.OriginalArgs(0).c_str() );
+        CL_ForwardCommandToServer( args.RawArgs().c_str() );
     }
 
     std::vector<std::string> CommandNames() {
@@ -178,7 +178,7 @@ namespace Cmd {
         auto& commands = GetCommandMap();
 
         Args args(std::move(command));
-        int argNum = args.ArgNumber(pos);
+        int argNum = args.PosToArg(pos);
         const std::string& cmdName = args.Argv(0);
 
         if (!commands.count(cmdName)) {

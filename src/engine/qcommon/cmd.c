@@ -1585,7 +1585,7 @@ they can't have pointers returned to them
 void    Cmd_LiteralArgsBuffer( char *buffer, int bufferLength )
 {
 	const Cmd::Args& args = Cmd::GetCurrentArgs();
-	const std::string& res = args.OriginalArgs(0);
+	const std::string& res = args.RawArgs();
 	Q_strncpyz( buffer, res.c_str(), MIN(bufferLength, res.size() + 1) );
 }
 
@@ -1618,7 +1618,7 @@ const char *Cmd_Cmd_FromNth( int count )
 {
 	static char fatBuffer[4096];
 	const Cmd::Args& args = Cmd::GetCurrentArgs();
-	const std::string& res = args.OriginalArgs(count);
+	const std::string& res = args.RawArgsFrom(count);
 	strcpy( fatBuffer, res.c_str() );
 
 	return fatBuffer;

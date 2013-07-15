@@ -347,20 +347,15 @@ namespace Cmd {
         return res;
     }
 
-    std::string Args::OriginalArgs(int start, int end) const {
-        int startOffset = argsStarts[start];
-        int endOffset;
-
-        if (end < 0) {
-            endOffset = cmd.size();
-        } else {
-            endOffset = argsStarts[end];
-        }
-
-        return std::string(cmd.c_str() + startOffset, endOffset - startOffset);
+    const std::string& Args::RawArgs() const {
+        return cmd;
     }
 
-    int Args::ArgNumber(int pos) {
+    const std::string& Args::RawArgsFrom(int start) const {
+        return cmd.c_str() + argsStarts[start];
+    }
+
+    int Args::PosToArg(int pos) {
         for (int i = argsStarts.size(); i-->0;) {
             if (argsStarts[i] <= pos) {
                 return i;
@@ -370,7 +365,7 @@ namespace Cmd {
         return -1;
     }
 
-    int Args::ArgStart(int argNum) {
+    int Args::ArgStartPos(int argNum) {
         return argsStarts[argNum];
     }
 

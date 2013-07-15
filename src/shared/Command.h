@@ -59,13 +59,12 @@ namespace Cmd {
 
             int Argc() const;
             const std::string& Argv(int argNum) const;
-            std::string QuotedArgs(int start = 1, int end = -1) const;
-            std::string OriginalArgs(int start = 1, int end = -1) const;
+            std::string QuotedArgs(int start = 1, int end = -1) const; //TODO; is there a real use for it?
+            const std::string& RawArgs() const;
+            const std::string& RawArgsFrom(int start = 1) const;
 
-            operator const std::string& () { return cmd; }
-
-            int ArgNumber(int pos);
-            int ArgStart(int argNum);
+            int PosToArg(int pos);
+            int ArgStartPos(int argNum);
 
             const std::vector<std::string>& GetArgs() const;
 
