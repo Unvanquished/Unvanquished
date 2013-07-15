@@ -666,6 +666,41 @@ static void PM_CheckWaterPounce( void )
 
 /*
 =============
+PM_PlayJumpingAnimation
+=============
+*/
+static void PM_PlayJumpingAnimation( void )
+{
+	if ( pm->cmd.forwardmove >= 0 )
+	{
+		if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+		{
+			PM_ForceLegsAnim( LEGS_JUMP );
+		}
+		else
+		{
+			PM_ForceLegsAnim( NSPA_JUMP );
+		}
+
+		pm->ps->pm_flags &= ~PMF_BACKWARDS_JUMP;
+	}
+	else
+	{
+		if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+		{
+			PM_ForceLegsAnim( LEGS_JUMPB );
+		}
+		else
+		{
+			PM_ForceLegsAnim( NSPA_JUMPBACK );
+		}
+
+		pm->ps->pm_flags |= PMF_BACKWARDS_JUMP;
+	}
+}
+
+/*
+=============
 PM_GetTrajectoryAngleForVelocity
 
 Given an origin, a target point and an initial velocity v0, calculate the two possible
@@ -1065,34 +1100,7 @@ static qboolean PM_CheckPounce( void )
 	// Jump
 	VectorMA( pm->ps->velocity, jumpMagnitude, jumpDirection, pm->ps->velocity );
 	PM_AddEvent( EV_JUMP );
-
-	// Play jumping animation
-	if ( pm->cmd.forwardmove >= 0 )
-	{
-		if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
-		{
-			PM_ForceLegsAnim( LEGS_JUMP );
-		}
-		else
-		{
-			PM_ForceLegsAnim( NSPA_JUMP );
-		}
-
-		pm->ps->pm_flags &= ~PMF_BACKWARDS_JUMP;
-	}
-	else
-	{
-		if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
-		{
-			PM_ForceLegsAnim( LEGS_JUMPB );
-		}
-		else
-		{
-			PM_ForceLegsAnim( NSPA_JUMPBACK );
-		}
-
-		pm->ps->pm_flags |= PMF_BACKWARDS_JUMP;
-	}
+	PM_PlayJumpingAnimation();
 
 	// We started to pounce
 	return qtrue;
@@ -1221,33 +1229,7 @@ static qboolean PM_CheckWallJump( void )
 	}
 
 	PM_AddEvent( EV_JUMP );
-
-	if ( pm->cmd.forwardmove >= 0 )
-	{
-		if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
-		{
-			PM_ForceLegsAnim( LEGS_JUMP );
-		}
-		else
-		{
-			PM_ForceLegsAnim( NSPA_JUMP );
-		}
-
-		pm->ps->pm_flags &= ~PMF_BACKWARDS_JUMP;
-	}
-	else
-	{
-		if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
-		{
-			PM_ForceLegsAnim( LEGS_JUMPB );
-		}
-		else
-		{
-			PM_ForceLegsAnim( NSPA_JUMPBACK );
-		}
-
-		pm->ps->pm_flags |= PMF_BACKWARDS_JUMP;
-	}
+	PM_PlayJumpingAnimation();
 
 	return qtrue;
 }
@@ -1342,33 +1324,7 @@ static qboolean PM_CheckJump( void )
 	          normal, pm->ps->velocity );
 
 	PM_AddEvent( EV_JUMP );
-
-	if ( pm->cmd.forwardmove >= 0 )
-	{
-		if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
-		{
-			PM_ForceLegsAnim( LEGS_JUMP );
-		}
-		else
-		{
-			PM_ForceLegsAnim( NSPA_JUMP );
-		}
-
-		pm->ps->pm_flags &= ~PMF_BACKWARDS_JUMP;
-	}
-	else
-	{
-		if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
-		{
-			PM_ForceLegsAnim( LEGS_JUMPB );
-		}
-		else
-		{
-			PM_ForceLegsAnim( NSPA_JUMPBACK );
-		}
-
-		pm->ps->pm_flags |= PMF_BACKWARDS_JUMP;
-	}
+	PM_PlayJumpingAnimation();
 
 	return qtrue;
 }
