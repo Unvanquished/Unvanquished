@@ -686,7 +686,7 @@ static qboolean PM_GetTrajectoryPitch(
 
 	VectorSubtract( target, origin, t3 );
 
-	if ( pm->debugLevel > 1 )
+	if ( pm->debugLevel > 0 )
 	{
 		Com_Printf( "[PM_GetTrajectoryPitch] 3D: %.1f %.1f %.1f (%.1f qu)\n",
 		            t3[ 0 ], t3[ 1 ], t3[ 2 ], VectorLength( t3 ) );
@@ -706,7 +706,7 @@ static qboolean PM_GetTrajectoryPitch(
 	t[ 1 ] = t3[ 2 ];
 	t[ 0 ] = sqrt( t3[ 0 ] * t3[ 0 ] + t3[ 1 ] * t3[ 1 ] );
 
-	if ( pm->debugLevel > 1 )
+	if ( pm->debugLevel > 0 )
 	{
 		Com_Printf("[PM_GetTrajectoryPitch] 2D: %.1f %.1f (%.1f qu)\n",
 		           t[ 0 ], t[ 1 ], sqrt( t[ 0 ] * t[ 0 ] + t[ 1 ] * t[ 1 ] ) );
@@ -726,7 +726,7 @@ static qboolean PM_GetTrajectoryPitch(
 	angles[ 0 ] = atanf( ( v02 + tmp ) / ( g * t[ 0 ] ) );
 	angles[ 1 ] = atanf( ( v02 - tmp ) / ( g * t[ 0 ] ) );
 
-	if ( pm->debugLevel > 1 )
+	if ( pm->debugLevel > 0 )
 	{
 		Com_Printf( "[PM_GetTrajectoryPitch] Angles: %.1f°, %.1f°\n",
 		            180.0f / M_PI * angles[ 0 ], 180.0f / M_PI * angles[ 1 ] );
@@ -766,7 +766,7 @@ static qboolean PM_GetTrajectoryPitch(
 	VectorNormalize( dir1 );
 	VectorNormalize( dir2 );
 
-	if ( pm->debugLevel > 1 )
+	if ( pm->debugLevel > 0 )
 	{
 		Com_Printf( "[PM_GetTrajectoryPitch] Dirs: ( %.2f, %.2f, %.2f ), ( %.2f, %.2f, %.2f )\n",
 		            dir1[ 0 ], dir1[ 1 ], dir1[ 2 ], dir2[ 0 ], dir2[ 1 ], dir2[ 2 ] );
@@ -903,7 +903,7 @@ static qboolean PM_CheckPounce( void )
 						// use the shorter trajection
 						if ( dir1[ 2 ] < dir2[ 2 ] )
 						{
-							if ( pm->debugLevel > 1 )
+							if ( pm->debugLevel > 0 )
 							{
 								Com_Printf("[PM_CheckPounce] Using angle #1\n");
 							}
@@ -912,7 +912,7 @@ static qboolean PM_CheckPounce( void )
 						}
 						else
 						{
-							if ( pm->debugLevel > 1 )
+							if ( pm->debugLevel > 0 )
 							{
 								Com_Printf("[PM_CheckPounce] Using angle #2\n");
 							}
@@ -923,7 +923,7 @@ static qboolean PM_CheckPounce( void )
 					// resort to jumping in view direction
 					else
 					{
-						if ( pm->debugLevel > 1 )
+						if ( pm->debugLevel > 0 )
 						{
 							Com_Printf("[PM_CheckPounce] Failed to find a trajectory\n");
 						}
@@ -2278,7 +2278,7 @@ static int PM_CorrectAllSolid( trace_t *trace )
 	int    i, j, k;
 	vec3_t point;
 
-	if ( pm->debugLevel )
+	if ( pm->debugLevel > 1 )
 	{
 		Com_Printf( "%i:allsolid\n", c_pmove );
 	}
@@ -2332,7 +2332,7 @@ static void PM_GroundTraceMissed( void )
 	if ( pm->ps->groundEntityNum != ENTITYNUM_NONE )
 	{
 		// we just transitioned into freefall
-		if ( pm->debugLevel )
+		if ( pm->debugLevel > 1 )
 		{
 			Com_Printf( "%i:lift\n", c_pmove );
 		}
@@ -2949,7 +2949,7 @@ static void PM_GroundTrace( void )
 	// check if getting thrown off the ground
 	if ( pm->ps->velocity[ 2 ] > 0.0f && DotProduct( pm->ps->velocity, trace.plane.normal ) > 10.0f )
 	{
-		if ( pm->debugLevel )
+		if ( pm->debugLevel > 1 )
 		{
 			Com_Printf( "%i:kickoff\n", c_pmove );
 		}
@@ -2991,7 +2991,7 @@ static void PM_GroundTrace( void )
 	// slopes that are too steep will not be considered onground
 	if ( trace.plane.normal[ 2 ] < MIN_WALK_NORMAL )
 	{
-		if ( pm->debugLevel )
+		if ( pm->debugLevel > 1 )
 		{
 			Com_Printf( "%i:steep\n", c_pmove );
 		}
@@ -3017,7 +3017,7 @@ static void PM_GroundTrace( void )
 	if ( pm->ps->groundEntityNum == ENTITYNUM_NONE )
 	{
 		// just hit the ground
-		if ( pm->debugLevel )
+		if ( pm->debugLevel > 1 )
 		{
 			Com_Printf( "%i:Land\n", c_pmove );
 		}
