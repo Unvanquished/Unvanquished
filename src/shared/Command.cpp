@@ -239,6 +239,7 @@ namespace Cmd {
 
     std::list<std::string> SplitCommandText(const std::string& commands) {
         std::list<std::string> res;
+        const char *data = commands.data();
 
         std::vector<int> start = StartsOfCommands(commands);
         if (start.back() < commands.size()) {
@@ -246,8 +247,14 @@ namespace Cmd {
         }
 
         for(int i = 0; i < start.size() - 1; i++) {
-            //Get the command, except the command delimiter character
-            res.push_back(std::string(commands.c_str() + start[i], start[i + 1] - start[i] - 1));
+            //Get the command, except the command delimiter character (if there is one)
+            int p = start[i];
+            //Strip leading white space
+            while (p < start[i + 1] && data[p] >= 0 && data[p] <= ' ')
+                ++p;
+            //If the result is not "", add it to the list
+            if (p < start[i + 1] && data[p] != ';')
+                res.push_back(std::string(commands.c_str() + p, start[i + 1] - p - 1));
         }
 
         return res;
