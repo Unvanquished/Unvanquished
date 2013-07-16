@@ -83,6 +83,8 @@ namespace Cmd {
 
             cmdFlags_t GetFlags() const;
 
+            static void PrintUsage(const Args& args, const std::string& syntax, const std::string& description = "");
+
         protected:
             CmdBase(cmdFlags_t flags);
 

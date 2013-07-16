@@ -308,164 +308,6 @@ void Cdelay_Frame( void ) {
 
 /*
 ===============
-Cmd_Exec_f
-===============
-*/
-
-static void Cmd_SetExecArgs( int startingArg )
-{
-	int i;
-
-	Cvar_Get( "arg_all", Cmd_ArgsFrom( startingArg ), CVAR_TEMP | CVAR_ROM | CVAR_USER_CREATED );
-	Cvar_Set( "arg_all", Cmd_ArgsFrom( startingArg ) );
-	Cvar_Get( "arg_count", va( "%i", Cmd_Argc() - startingArg ), CVAR_TEMP | CVAR_ROM | CVAR_USER_CREATED );
-	Cvar_Set( "arg_count", va( "%i", Cmd_Argc() - startingArg ) );
-
-	for ( i = Cmd_Argc() - startingArg; i; i-- )
-	{
-		Cvar_Get( va( "arg_%i", i ), Cmd_Argv( i + 1 ), CVAR_TEMP | CVAR_ROM | CVAR_USER_CREATED );
-		Cvar_Set( va( "arg_%i", i ), Cmd_Argv( i + 1 ) );
-	}
-}
-
-static void Cmd_ExecText( char *scriptText )
-{
-	COM_Compress( scriptText );
-	Cbuf_InsertText( scriptText );
-}
-
-static qboolean Cmd_ExecFile( char *filename )
-{
-	union
-	{
-		char *c;
-		void *v;
-	} f;
-
-	int          len;
-	fileHandle_t h;
-	qboolean     success = qfalse;
-
-	len = FS_SV_FOpenFileRead( filename, &h );
-
-	if ( h )
-	{
-		success = qtrue;
-		f.v = Hunk_AllocateTempMemory( len + 1 );
-		FS_Read( f.v, len, h );
-		f.c[ len ] = 0;
-		FS_FCloseFile( h );
-		Cmd_ExecText( f.c );
-		Hunk_FreeTempMemory( f.v );
-	}
-	else
-	{
-		FS_ReadFile( filename, &f.v );
-
-		if ( f.c )
-		{
-			success = qtrue;
-			Cmd_ExecText( f.c );
-			FS_FreeFile( f.v );
-		}
-	}
-	return success;
-}
-
-void Cmd_Exec_f( void )
-{
-	char         filename[ MAX_QPATH ];
-	qboolean     executeSilent;
-	qboolean     failSilent = qfalse;
-	int          filenameArgNum;
-
-	executeSilent = !Q_stricmp( Cmd_Argv( 0 ), "execq" );
-
-	if ( Cmd_Argc() < 2 )
-	{
-		if ( executeSilent )
-		{
-			Cmd_PrintUsage(_("<filename> [<arguments>…]"), _("execute a script file without notification, a shortcut for exec -q"));
-		}
-		else
-		{
-			Cmd_PrintUsage(_("[-q|-f|-s] <filename> [<arguments>…]"), _("execute a script file."));
-		}
-
-		return;
-	}
-
-	Q_strncpyz( filename, Cmd_Argv( 1 ), sizeof( filename ) );
-
-	if( filename[0] != '-'  || Cmd_Argc() < 3 )
-	{
-		filenameArgNum = 2;
-	}
-	else // wasn't the filename after all; we got us a parameter!
-	{
-		filenameArgNum = 3;
-
-		switch (filename[1]) {
-			case 'q':
-				executeSilent = qtrue;
-				break;
-
-			case 'f':
-				failSilent = qtrue;
-				break;
-
-			case 's':
-				executeSilent = qtrue;
-				failSilent = qtrue;
-				break;
-			default: //if we use only '-'
-				break;
-		}
-
-		Q_strncpyz( filename, Cmd_Argv( 2 ), sizeof( filename ) );
-	}
-
-	COM_DefaultExtension( filename, sizeof( filename ), ".cfg" );
-	Cmd_SetExecArgs( filenameArgNum );
-
-	if ( !Cmd_ExecFile( filename ) )
-	{
-		if( !failSilent )
-		{
-			Com_Printf( _("couldn't exec '%s'\n"), filename );
-		}
-		return;
-	}
-
-	if ( !executeSilent )
-	{
-		Com_Printf( _("execing '%s'\n"), filename );
-	}
-}
-
-/*
-===============
-Cmd_Vstr_f
-
-Inserts the current value of a variable as command text
-===============
-*/
-void Cmd_Vstr_f( void )
-{
-	char *variableName;
-
-	if ( Cmd_Argc() != 2 )
-	{
-		Cmd_PrintUsage(_("<variablename>"), _("execute a variable command"));
-		return;
-	}
-
-	variableName = Cvar_VariableString( Cmd_Argv( 1 ) );
-	Cbuf_InsertText( va( "%s\n", variableName ) );
-}
-
-/*
-===============
 Helper functions for Cmd_If_f & Cmd_ModCase_f
 ===============
 */
@@ -2129,42 +1971,6 @@ void Cmd_ExecuteString( const char *text )
 }
 
 /*
-============
-Cmd_List_f
-============
-*/
-void Cmd_List_f( void )
-{
-	cmd_function_t *cmd;
-	int            i;
-	char           *match;
-
-	if ( Cmd_Argc() > 1 )
-	{
-		match = Cmd_Argv( 1 );
-	}
-	else
-	{
-		match = NULL;
-	}
-
-	i = 0;
-
-	for ( cmd = cmd_functions; cmd; cmd = cmd->next )
-	{
-		if ( match && !Com_Filter( match, cmd->name, qfalse ) )
-		{
-			continue;
-		}
-
-		Com_Printf( "%s\n", cmd->name );
-		i++;
-	}
-
-	Com_Printf(_( "%i commands\n"), i );
-}
-
-/*
 ==================
 Cmd_CompleteCfgName
 ==================
@@ -2264,13 +2070,9 @@ Cmd_Init
 */
 void Cmd_Init( void )
 {
-	Cmd_AddCommand( "cmdlist", Cmd_List_f );
-	Cmd_AddCommand( "exec", Cmd_Exec_f );
-	Cmd_SetCommandCompletionFunc( "exec", Cmd_CompleteCfgName );
-	Cmd_AddCommand( "execq", Cmd_Exec_f );
-	Cmd_SetCommandCompletionFunc( "execq", Cmd_CompleteCfgName );
-	Cmd_AddCommand( "vstr", Cmd_Vstr_f );
-	Cmd_SetCommandCompletionFunc( "vstr", Cvar_CompleteCvarName );
+	//Cmd_SetCommandCompletionFunc( "exec", Cmd_CompleteCfgName );
+	//Cmd_SetCommandCompletionFunc( "execq", Cmd_CompleteCfgName );
+	//Cmd_SetCommandCompletionFunc( "vstr", Cvar_CompleteCvarName );
 	Cmd_AddCommand( "echo", Cmd_Echo_f );
 	Cmd_AddCommand( "wait", Cmd_Wait_f );
 #ifndef DEDICATED

@@ -359,7 +359,11 @@ namespace Cmd {
     }
 
     const std::string& Args::RawArgsFrom(int start) const {
-        return cmd.c_str() + argsStarts[start];
+        if (start < argsStarts.size()) {
+            return cmd.c_str() + argsStarts[start];
+        } else {
+            return "";
+        }
     }
 
     int Args::PosToArg(int pos) {
@@ -389,6 +393,14 @@ namespace Cmd {
 
     std::vector<std::string> CmdBase::Complete(int argNum, const Args& args) const {
         return {};
+    }
+
+    void CmdBase::PrintUsage(const Args& args, const std::string& syntax, const std::string& description) {
+        if(description.empty()) {
+            Com_Printf("%s: %s %s\n", _("usage"), args.Argv(0).c_str(), syntax.c_str());
+        } else {
+            Com_Printf("%s: %s %s — %s\n", _("usage"), args.Argv(0).c_str(), syntax.c_str(), description.c_str());
+        }
     }
 
     cmdFlags_t CmdBase::GetFlags() const {
