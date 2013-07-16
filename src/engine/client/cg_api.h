@@ -234,7 +234,8 @@ typedef enum cgameImport_s
   CG_SETCOLORGRADING,
   CG_CM_DISTANCETOMODEL,
   CG_R_SCISSOR_ENABLE,
-  CG_R_SCISSOR_SET
+  CG_R_SCISSOR_SET,
+  CG_PREPAREKEYUP
 } cgameImport_t;
 
 typedef enum
@@ -484,3 +485,5 @@ float           trap_CM_DistanceToModel( const vec3_t loc, clipHandle_t model );
 
 void            trap_R_ScissorEnable( qboolean enable );
 void            trap_R_ScissorSet( int x, int y, int w, int h );
+
+void            trap_PrepareKeyUp( void );

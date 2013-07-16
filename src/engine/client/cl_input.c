@@ -60,6 +60,7 @@ at the same time.
 */
 
 static kbutton_t  kb[ NUM_BUTTONS ];
+static char       *keyup[ MAX_KEYS ];
 
 // Arnout: doubleTap button mapping
 // FIXME: should be registered by cgame code
@@ -1286,6 +1287,61 @@ void IN_KeysUp( unsigned int check, int key, int time )
 	{
 		Cbuf_AddText( va( "setkeydata %d\n", check ) );
 	}
+
+	// Pseudo-button commands handled here
+	// After the setkeydata so that they can't go adding more commands
+	if ( keyup[ key ] )
+	{
+		Cbuf_AddText( keyup[ key ] );
+		Z_Free( keyup[ key ] );
+		keyup[ key ] = NULL;
+	}
+}
+
+/*
+============
+IN_PrepareKeyUp
+
+For pseudo-button commands which don't need key/time info but do need to be executed on key-up.
+Called by the +command code.
+============
+*/
+void IN_PrepareKeyUp( void )
+{
+	char *cmd;
+	int  key;
+
+	// Get the current key no. If negative, return
+	key = Key_GetKeyNumber();
+
+	if ( key < 0 )
+	{
+		return;
+	}
+
+	// Get the command & check that it's a +command
+	cmd = Cmd_Argv( 0 );
+
+	if ( *cmd != '+' )
+	{
+		return;
+	}
+
+	++cmd; // skip the '+'
+
+	// Add the command to what's already marked for this command
+	if ( keyup[ key ] )
+	{
+		char *newcmd = Z_Malloc( strlen( keyup[ key ] ) + strlen( cmd ) + 3 );
+		sprintf( newcmd, "%s-%s\n", keyup[ key ], cmd );
+		Z_Free( keyup[ key ] );
+		keyup[ key ] = newcmd;
+	}
+	else
+	{
+		keyup[ key ] = Z_Malloc( strlen( cmd ) + 3 );
+		sprintf( keyup[ key ], "-%s\n", cmd );
+	}
 }
 
 /*
@@ -1302,6 +1358,15 @@ void IN_ClearKeyDown( void )
 		kb[ i ].active = qfalse;
 		kb[ i ].down[ 0 ] = 0;
 		kb[ i ].down[ 1 ] = 0;
+	}
+
+	for ( i = 0; i < ARRAY_LEN( keyup ); ++i )
+	{
+		if ( keyup[ i ] )
+		{
+			Z_Free( keyup[ i ] );
+			keyup[ i ] = NULL;
+		}
 	}
 }
 
