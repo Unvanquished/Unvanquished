@@ -1293,13 +1293,20 @@ void IN_KeysUp( unsigned int check, int key, int time )
 CL_RegisterButtonCommands
 
 Get a list of buttons from cgame (USERCMD_BUTTONS comma sperated names)
-and registers the appropriate commands
+and registers the appropriate commands. Also clears activations
 ============
 */
 void CL_RegisterButtonCommands( const char *cmd_names )
 {
 	char name[100];
 	int i;
+
+	for ( i = 0; i < ARRAY_LEN( kb ); ++i )
+	{
+		kb[ i ].down[ 0 ] = 0;
+		kb[ i ].down[ 1 ] = 0;
+		kb[ i ].active = qfalse;
+	}
 
 	for ( i = 0; i < USERCMD_BUTTONS; ++i )
 	{
