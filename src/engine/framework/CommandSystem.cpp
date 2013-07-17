@@ -124,7 +124,7 @@ namespace Cmd {
         commands.erase(name);
     }
 
-    void RemoveFlaggedCommands(cmdFlags_t flag) {
+    void RemoveFlaggedCommands(int flag) {
         CommandMap& commands = GetCommandMap();
 
         for (auto it = commands.cbegin(); it != commands.cend();) {
@@ -235,7 +235,7 @@ namespace Cmd {
     ===============================================================================
     */
 
-    void ListFlaggedCommands(const Args& args, cmdFlags_t flags) {
+    void ListFlaggedCommands(const Args& args, int flags) {
         CommandMap& commands = GetCommandMap();
 
         //TODO: add partial matches as in Doom3BFG
@@ -269,7 +269,7 @@ namespace Cmd {
             }
 
             void Run(const Cmd::Args& args) const override {
-                ListFlaggedCommands(args, (cmdFlags_t)~0);
+                ListFlaggedCommands(args, ~0);
             }
     };
 
@@ -285,7 +285,7 @@ namespace Cmd {
 
     class ListSystemCmdsCmd: public StaticCmd {
         public:
-            ListSystemCmdsCmd(): StaticCmd("listSystemCmds", (cmdFlags_t) (BASE|SYSTEM), "lists all the system commands") {
+            ListSystemCmdsCmd(): StaticCmd("listSystemCmds", BASE | SYSTEM, "lists all the system commands") {
             }
 
             void Run(const Cmd::Args& args) const override {
@@ -295,7 +295,7 @@ namespace Cmd {
 
     class ListRendererCmdsCmd: public StaticCmd {
         public:
-            ListRendererCmdsCmd(): StaticCmd("listRendererCmds", (cmdFlags_t) (BASE|RENDERER), "lists all the renderer commands") {
+            ListRendererCmdsCmd(): StaticCmd("listRendererCmds", BASE | RENDERER, "lists all the renderer commands") {
             }
 
             void Run(const Cmd::Args& args) const override {
@@ -306,7 +306,7 @@ namespace Cmd {
 
     class ListSoundCmdsCmd: public StaticCmd {
         public:
-            ListSoundCmdsCmd(): StaticCmd("listSoundCmds", (cmdFlags_t) (BASE|SOUND), "lists all the sound commands") {
+            ListSoundCmdsCmd(): StaticCmd("listSoundCmds", BASE | SOUND, "lists all the sound commands") {
             }
 
             void Run(const Cmd::Args& args) const override {
@@ -316,7 +316,7 @@ namespace Cmd {
 
     class ListCGameCmdsCmd: public StaticCmd {
         public:
-            ListCGameCmdsCmd(): StaticCmd("listCGameCmds", (cmdFlags_t) (BASE|CGAME), "lists all the client-side game commands") {
+            ListCGameCmdsCmd(): StaticCmd("listCGameCmds", BASE | CGAME, "lists all the client-side game commands") {
             }
 
             void Run(const Cmd::Args& args) const override {
@@ -326,7 +326,7 @@ namespace Cmd {
 
     class ListGameCmdsCmd: public StaticCmd {
         public:
-            ListGameCmdsCmd(): StaticCmd("listGameCmds", (cmdFlags_t) (BASE|GAME), "lists all the server-side game commands") {
+            ListGameCmdsCmd(): StaticCmd("listGameCmds", BASE | GAME, "lists all the server-side game commands") {
             }
 
             void Run(const Cmd::Args& args) const override {

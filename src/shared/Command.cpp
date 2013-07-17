@@ -388,7 +388,7 @@ namespace Cmd {
     ===============================================================================
     */
 
-    CmdBase::CmdBase(const cmdFlags_t flags): flags(flags) {
+    CmdBase::CmdBase(const int flags): flags(flags) {
     }
 
     std::vector<std::string> CmdBase::Complete(int argNum, const Args& args) const {
@@ -403,11 +403,11 @@ namespace Cmd {
         }
     }
 
-    cmdFlags_t CmdBase::GetFlags() const {
+    int CmdBase::GetFlags() const {
         return flags;
     }
 
-    StaticCmd::StaticCmd(std::string name, const cmdFlags_t flags, std::string description)
+    StaticCmd::StaticCmd(std::string name, const int flags, std::string description)
     :CmdBase(flags){
         //Register this command statically
         AddCommand(std::move(name), *this, std::move(description));

@@ -32,7 +32,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace Cmd {
 
-    enum cmdFlags_t {
+    enum {
         BASE             = BIT(0),
         SYSTEM           = BIT(1),
         RENDERER         = BIT(2),
@@ -81,20 +81,20 @@ namespace Cmd {
             virtual void Run(const Args& args) const = 0;
             virtual std::vector<std::string> Complete(int argNum, const Args& args) const;
 
-            cmdFlags_t GetFlags() const;
+            int GetFlags() const;
 
             static void PrintUsage(const Args& args, const std::string& syntax, const std::string& description = "");
 
         protected:
-            CmdBase(cmdFlags_t flags);
+            CmdBase(int flags);
 
         private:
-            cmdFlags_t flags;
+            int flags;
     };
 
     class StaticCmd : public CmdBase {
         protected:
-            StaticCmd(std::string name, cmdFlags_t flags, std::string description);
+            StaticCmd(std::string name, int flags, std::string description);
     };
 
 // ----------------------

@@ -40,7 +40,7 @@ namespace Cmd {
 
     void AddCommand(std::string name, const CmdBase& cmd, std::string description);
     void RemoveCommand(const std::string& name);
-    void RemoveFlaggedCommands(cmdFlags_t flag);
+    void RemoveFlaggedCommands(int flag);
 
     void ExecuteCommand(std::string command);
 
