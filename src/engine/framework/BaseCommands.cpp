@@ -24,6 +24,8 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "BaseCommands.h"
 
+#include <list>
+
 #include "CommandSystem.h"
 #include "../../shared/Command.h"
 #include "../qcommon/qcommon.h"
@@ -148,5 +150,125 @@ namespace Cmd {
     };
     static ExecCmd ExecCmdRegistration("exec", false);
     static ExecCmd ExecqCmdRegistration("execq", true);
+
+    /*
+    ===============================================================================
+
+    Cmd:: delay related commands
+
+    ===============================================================================
+    */
+
+    enum delayType_t {
+        MSEC,
+        FRAME
+    };
+
+    struct delayRecord_t {
+        std::string name;
+        std::string command;
+        int target;
+        delayType_t type;
+    };
+
+    std::list<delayRecord_t> delays;
+    int delayFrame = 0;
+
+    void DelayFrame() {
+        int time = Sys_Milliseconds();
+        delayFrame ++;
+
+        //We store delays to execute in a second list to avoid problems with delays that create delays
+        std::list<delayRecord_t> toRun;
+
+        for (auto it = delays.begin(); it != delays.end();) {
+            const delayRecord_t& delay = *it;
+
+            if ((delay.type == MSEC and delay.target <= time) or (delay.type == FRAME and delay.target < delayFrame)) {
+                toRun.splice(toRun.begin(), delays, it ++);
+            }
+            it ++;
+        }
+
+        for (auto& delay : toRun) {
+            Cmd::BufferCommandText(delay.command);
+        }
+    }
+
+    class DelayCmd: public StaticCmd {
+        public:
+            DelayCmd(): StaticCmd("delay", BASE, N_("executes a command after a delay")) {
+            }
+
+            void Run(const Cmd::Args& args) const override {
+                int argc = args.Argc();
+
+                if (argc < 3 or argc > 4) {
+		            PrintUsage(args, _( "delay (name) <delay in milliseconds> <command>\n  delay <delay in frames>f <command>"), _("executes <command> after the delay\n" ));
+		            return;
+                }
+
+                //Get all the parameters!
+                const std::string& command = args.Argv(argc - 1);
+                std::string delay = args.Argv(argc - 2);
+                int target = std::stoi(delay);
+                const std::string& name = (argc == 4) ? args.Argv(1) : "";
+                delayType_t type;
+
+                if (target < 1) {
+                    Com_Printf(_("delay: the delay must be a positive integer\n"));
+                    return;
+                }
+
+                if (delay[delay.size() - 1] == 'f') {
+                    target += delayFrame;
+                    type = FRAME;
+                } else {
+                    target += Sys_Milliseconds();
+                    type = MSEC;
+                }
+
+                delays.emplace_back(delayRecord_t{name, command, target, type});
+            }
+    };
+
+    class UndelayCmd: public StaticCmd {
+        public:
+            UndelayCmd(): StaticCmd("undelay", BASE, N_("removes named /delay commands")) {
+            }
+
+            void Run(const Cmd::Args& args) const override {
+                if (args.Argc() < 2) {
+                    PrintUsage(args, _("<name> (command)"), _( "removes all commands with <name> in them.\nif (command) is specified, the removal will be limited only to delays whose commands contain (command)."));
+                    return;
+                }
+
+                const std::string& name = args.Argv(1);
+                const std::string& command = (args.Argc() >= 3) ? args.Argv(2) : "";
+
+                for (auto it = delays.begin(); it != delays.end();) {
+                    const delayRecord_t& delay = *it;
+
+                    if (Q_stristr(delay.name.c_str(), name.c_str()) and Q_stristr(delay.command.c_str(), command.c_str())) {
+                        delays.erase(it ++);
+                    }
+                    it ++;
+                }
+            }
+    };
+
+    class UndelayAllCmd: public StaticCmd {
+        public:
+            UndelayAllCmd(): StaticCmd("undelayAll", BASE, N_("removes all the pending /delay commands")) {
+            }
+
+            void Run(const Cmd::Args& args) const override {
+                delays.clear();
+            }
+    };
+
+    static DelayCmd DelayCmdRegistration;
+    static UndelayCmd UndelayCmdRegistration;
+    static UndelayAllCmd UndelayAllCmdRegistration;
 
 }

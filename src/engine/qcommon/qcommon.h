@@ -398,10 +398,6 @@ void Cbuf_ExecuteText( int exec_when, const char *text );
 
 // this can be used in place of either Cbuf_AddText or Cbuf_InsertText
 
-void Cdelay_Frame (void);
-//Checks if a delayed command has to be executed and decreases the remaining
-//delay time for all of them
-
 //===========================================================================
 
 /*

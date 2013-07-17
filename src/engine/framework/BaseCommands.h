@@ -27,6 +27,8 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace Cmd {
 
+    void DelayFrame();
+
 }
 
 #endif // FRAMEWORK_BASE_COMMANDS_H_

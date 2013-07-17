@@ -40,6 +40,7 @@ Maryland 20850 USA.
 #include "qcommon.h"
 #include <setjmp.h>
 
+#include "../framework/BaseCommands.h"
 #include "../framework/CommandSystem.h"
 
 // htons
@@ -3654,7 +3655,7 @@ void Com_Frame( void )
 
 		Com_EventLoop();
 		Cmd::ExecuteCommandBuffer();
-		Cdelay_Frame();
+		Cmd::DelayFrame();
 		//
 		// client side
 		//
