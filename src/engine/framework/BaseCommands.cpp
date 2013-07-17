@@ -151,6 +151,61 @@ namespace Cmd {
     static ExecCmd ExecCmdRegistration("exec", false);
     static ExecCmd ExecqCmdRegistration("execq", true);
 
+    class EchoCmd: public StaticCmd {
+        public:
+            EchoCmd(): StaticCmd("echo", BASE, N_("prints to the console")) {
+            }
+
+            void Run(const Cmd::Args& args) const override {
+                for (int i = 1; i < args.Argc(); i++) {
+                    Com_Printf("%s", args.Argv(i).c_str());
+                }
+                Com_Printf("\n");
+            }
+    };
+    static EchoCmd EchoCmdRegistration;
+
+    class RandomCmd: public StaticCmd {
+        public:
+            RandomCmd(): StaticCmd("random", BASE, N_("sets a variable to a random integer")) {
+            }
+
+            void Run(const Cmd::Args& args) const override {
+                if (args.Argc() != 4) {
+                    PrintUsage(args, _("<variableToSet> <minNumber> <maxNumber>"), _("sets a variable to a random integer between minNumber and maxNumber"));
+                    return;
+                }
+
+                const std::string& cvar = args.Argv(1);
+                int min = std::stoi(args.Argv(2));
+                int max = std::stoi(args.Argv(3));
+                int number = min + (std::rand() % (max - min));
+
+                Cvar_SetValueLatched(cvar.c_str(), number);
+            }
+    };
+    static RandomCmd RandomCmdRegistration;
+
+    class ConcatCmd: public StaticCmd {
+        public:
+            ConcatCmd(): StaticCmd("concat", BASE, N_("concatenatas variables")) {
+            }
+
+            void Run(const Cmd::Args& args) const override {
+                if (args.Argc() < 3) {
+                    PrintUsage(args, _("<variableToSet> <variable1> … <variableN>"), _("concatenates variable1 to variableN and sets the result to variableToSet"));
+                    return;
+                }
+
+                std::string res;
+                for (int i = 2; i < args.Argc(); i++) {
+                    res += Cvar_VariableString(args.Argv(i).c_str());
+                }
+                Cvar_Set(args.Argv(1).c_str(), res.c_str());
+            }
+    };
+    static ConcatCmd ConcatCmdRegistration;
+
     /*
     ===============================================================================
 

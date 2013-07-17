@@ -99,32 +99,6 @@ cmd_function_t *Cmd_FindCommand( const char *cmd_name )
 }
 
 /*
-============
-Cmd_Wait_f
-
-Causes execution of the remainder of the command buffer to be delayed until
-next frame.  This allows commands like:
-bind g "cmd use rocket ; +attack ; wait ; -attack ; cmd use blaster"
-============
-*/
-void Cmd_Wait_f( void )
-{
-	if ( Cmd_Argc() == 2 )
-	{
-		cmd_wait = atoi( Cmd_Argv( 1 ) );
-
-		if ( cmd_wait < 0 )
-		{
-			cmd_wait = 1; // ignore the argument
-		}
-	}
-	else
-	{
-		cmd_wait = 1;
-	}
-}
-
-/*
 =============================================================================
 
                                                 COMMAND BUFFER
@@ -645,129 +619,6 @@ void Cmd_Math_f( void )
 	}
 }
 
-/*
-===============
-Cmd_Concat_f
-
-concatenates cvars together
-===============
-*/
-void Cmd_Concat_f( void )
-{
-	int  i;
-	char variableToSet[ MAX_CVAR_VALUE_STRING ] = "";
-
-	if ( Cmd_Argc() < 3 )
-	{
-		Cmd_PrintUsage(_("<variableToSet> <variable1> … <variableN>"), _("concatenates variable1 to variableN and sets the result to variableToSet"));
-		return;
-	}
-
-	for ( i = 2; i < Cmd_Argc(); i++ )
-	{
-		Q_strcat( variableToSet, sizeof( variableToSet ), Cvar_VariableString( Cmd_Argv( i ) ) );
-	}
-
-	Cvar_Set( Cmd_Argv( 1 ), variableToSet );
-}
-
-/*
-===============
-Cmd_Calc_f
-
-Does math and displays the value into the chat/console, this is used for basic math operations
-===============
-*/
-void Cmd_Calc_f( void )
-{
-	char *firstOperand;
-	char *secondOperand;
-	char *operation;
-
-	if ( Cmd_Argc() < 3 )
-	{
-		Cmd_PrintUsage(_( "<number> <operator> <number>" ), _("Calculator.\nAccepted operators: +, -, /, */x\n") );
-		return;
-	}
-
-	firstOperand = Cmd_Argv( 1 );
-	operation = Cmd_Argv( 2 );
-	secondOperand = Cmd_Argv( 3 );
-
-	// Add
-	if ( !strcmp( operation, "+" ) )
-	{
-		Com_Printf( "%s %s %s = %f\n", firstOperand, operation, secondOperand, ( atof( firstOperand ) + atof( secondOperand ) ) );
-		return;
-	}
-
-	// Subtract
-	else if ( !strcmp( operation, "-" ) )
-	{
-		Com_Printf( "%s %s %s = %f\n", firstOperand, operation, secondOperand, ( atof( firstOperand ) - atof( secondOperand ) ) );
-		return;
-	}
-
-	// Divide
-	else if ( !strcmp( operation, "/" ) || !strcmp( operation, "÷" ) )
-	{
-		if ( atof( secondOperand ) == 0.f )
-		{
-			Com_Log(LOG_ERROR, _( "Cannot divide by 0!" ));
-			return;
-		}
-
-		Com_Printf( "%s ÷ %s = %f\n", firstOperand, secondOperand, ( atof( firstOperand ) / atof( secondOperand ) ) );
-		return;
-	}
-
-	// Multiply
-	else if ( !strcmp( operation, "*" ) || !strcmp( operation, "x" ) || !strcmp( operation, "×" ) )
-	{
-		//note: × (multiplication operator) is not x (the letter) and might have different rendering with different fonts
-		Com_Printf( "%s × %s = %f\n", firstOperand, secondOperand, ( atof( firstOperand ) * atof( secondOperand ) ) );
-		return;
-	}
-
-	// Invalid function, help the poor guy out
-	Cmd_PrintUsage(_( "<number> <operator> <number>" ), _("Calculator.\nAccepted operators: +, -, /, */x\n") );
-}
-
-/*
-===============
-Cmd_Echo_f
-
-Just prints the rest of the line to the console
-===============
-*/
-void Cmd_Echo_f( void )
-{
-	Com_Printf( "%s\n", Cmd_UnquoteString( Cmd_Args() ) );
-}
-
-/*
-===============
-Cmd_Random_f
-
-Print a random integer between minNumber and maxNumber
-===============
-*/
-void Cmd_Random_f( void )
-{
-	int minNumber;
-	int maxNumber;
-
-	if ( Cmd_Argc() == 4 )
-	{
-		minNumber = atoi( Cmd_Argv( 2 ) );
-		maxNumber = atoi( Cmd_Argv( 3 ) );
-		Cvar_SetValueLatched( Cmd_Argv( 1 ), ( int )( minNumber + rand() / ( double ) RAND_MAX * ( maxNumber - ( double ) minNumber ) ) );
-	}
-	else
-	{
-		Cmd_PrintUsage("<variableToSet> <minNumber> <maxNumber>", "sets a variable to a random integer between minNumber and maxNumber");
-	}
-}
 
 /*
 =============================================================================
@@ -1776,18 +1627,14 @@ void Cmd_Init( void )
 	//Cmd_SetCommandCompletionFunc( "exec", Cmd_CompleteCfgName );
 	//Cmd_SetCommandCompletionFunc( "execq", Cmd_CompleteCfgName );
 	//Cmd_SetCommandCompletionFunc( "vstr", Cvar_CompleteCvarName );
-	Cmd_AddCommand( "echo", Cmd_Echo_f );
-	Cmd_AddCommand( "wait", Cmd_Wait_f );
 #ifndef DEDICATED
 	Cmd_AddCommand( "modcase", Cmd_ModCase_f );
 #endif
 	Cmd_AddCommand( "if", Cmd_If_f );
 	Cmd_SetCommandCompletionFunc( "if", Cmd_CompleteIf );
-	Cmd_AddCommand( "calc", Cmd_Calc_f );
 	Cmd_AddCommand( "math", Cmd_Math_f );
 	Cmd_SetCommandCompletionFunc( "math", Cvar_CompleteCvarName );
-	Cmd_AddCommand( "concat", Cmd_Concat_f );
-	Cmd_SetCommandCompletionFunc( "concat", Cmd_CompleteConcat );
+	//Cmd_SetCommandCompletionFunc( "concat", Cmd_CompleteConcat );
 	Cmd_AddCommand( "alias", Cmd_Alias_f );
 	Cmd_SetCommandCompletionFunc( "alias", Cmd_CompleteAliasName );
 	Cmd_AddCommand( "unalias", Cmd_UnAlias_f );
@@ -1796,5 +1643,4 @@ void Cmd_Init( void )
 	Cmd_AddCommand( "clearaliases", Cmd_ClearAliases_f );
 	//Cmd_SetCommandCompletionFunc( "delay", Cmd_CompleteDelay );
 	//Cmd_SetCommandCompletionFunc( "undelay", Cmd_CompleteUnDelay );
-	Cmd_AddCommand( "random", Cmd_Random_f );
 }
