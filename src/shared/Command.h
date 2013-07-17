@@ -56,14 +56,14 @@ namespace Cmd {
 
             int Argc() const;
             const std::string& Argv(int argNum) const;
-            std::string QuotedArgs(int start = 1, int end = -1) const; //TODO; is there a real use for it?
-            const std::string& RawArgs() const;
+            std::string EscapedArgs(int start = 1, int end = -1) const;
+            const std::string& RawCmd() const;
             std::string RawArgsFrom(int start = 1) const;
 
             int PosToArg(int pos);
             int ArgStartPos(int argNum);
 
-            const std::vector<std::string>& GetArgs() const;
+            const std::vector<std::string>& ArgVector() const;
 
             const std::string& operator[] (int argNum) const; // same as Argv(int)
 
@@ -94,20 +94,6 @@ namespace Cmd {
         protected:
             StaticCmd(std::string name, int flags, std::string description);
     };
-
-// ----------------------
-// Implementation details
-// ----------------------
-
-    inline const std::vector<std::string>& Args::GetArgs() const
-    {
-        return args;
-    }
-
-    inline const std::string& Args::operator[] (int argNum) const
-    {
-        return Argv(argNum);
-    }
 }
 
 #endif // SHARED_COMMAND_H_

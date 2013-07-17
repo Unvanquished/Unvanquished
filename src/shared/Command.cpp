@@ -349,7 +349,7 @@ namespace Cmd {
         return args[argNum];
     }
 
-    std::string Args::QuotedArgs(int start, int end) const {
+    std::string Args::EscapedArgs(int start, int end) const {
         std::string res;
 
         if (end < 0) {
@@ -366,7 +366,7 @@ namespace Cmd {
         return res;
     }
 
-    const std::string& Args::RawArgs() const {
+    const std::string& Args::RawCmd() const {
         return cmd;
     }
 
@@ -390,6 +390,16 @@ namespace Cmd {
 
     int Args::ArgStartPos(int argNum) {
         return argsStarts[argNum];
+    }
+
+    const std::vector<std::string>& Args::ArgVector() const
+    {
+        return args;
+    }
+
+    const std::string& Args::operator[] (int argNum) const
+    {
+        return Argv(argNum);
     }
 
     /*

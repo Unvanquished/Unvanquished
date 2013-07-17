@@ -1010,7 +1010,7 @@ char *Cmd_ArgsFrom( int arg )
 	static char cmd_args[ BIG_INFO_STRING ];
 
 	const Cmd::Args& args = Cmd::GetCurrentArgs();
-	const std::string& res = args.QuotedArgs(arg);
+	const std::string& res = args.EscapedArgs(arg);
 	strcpy(cmd_args, res.c_str());
 
 	return cmd_args;
@@ -1052,7 +1052,7 @@ they can't have pointers returned to them
 void    Cmd_LiteralArgsBuffer( char *buffer, int bufferLength )
 {
 	const Cmd::Args& args = Cmd::GetCurrentArgs();
-	const std::string& res = args.RawArgs();
+	const std::string& res = args.RawCmd();
 	Q_strncpyz( buffer, res.c_str(), MIN(bufferLength, res.size() + 1) );
 }
 

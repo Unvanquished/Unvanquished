@@ -180,7 +180,7 @@ namespace Cmd {
 
         // send it as a server command if we are connected
         // (cvars are expanded locally)
-        CL_ForwardCommandToServer( args.RawArgs().c_str() );
+        CL_ForwardCommandToServer( args.RawCmd().c_str() );
     }
 
     std::vector<std::string> CommandNames() {
