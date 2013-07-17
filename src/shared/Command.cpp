@@ -324,6 +324,18 @@ namespace Cmd {
     Args::Args() {
     }
 
+    Args::Args(std::vector<std::string> args_) {
+        args = std::move(args_);
+
+        for (int i = 0; i < args.size(); i++) {
+            argsStarts.push_back(cmd.size());
+            cmd += Escape(args[i]);
+            if (i != args.size() - 1) {
+                cmd += " ";
+            }
+        }
+    }
+
     Args::Args(std::string command) {
         cmd = std::move(command);
         Tokenize(cmd, args, argsStarts);

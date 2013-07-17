@@ -51,8 +51,7 @@ namespace Cmd {
     class Args {
         public:
             Args();
-            //Do that later, the original command line should be the concatenation of quoted args
-            //Args(const std::vector<std::string>& args);
+            Args(std::vector<std::string> args);
             Args(std::string command);
 
             int Argc() const;
