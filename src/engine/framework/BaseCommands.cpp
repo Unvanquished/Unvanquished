@@ -191,7 +191,7 @@ namespace Cmd {
         }
 
         for (auto& delay : toRun) {
-            Cmd::BufferCommandText(delay.command);
+            Cmd::BufferCommandText(delay.command, Cmd::NOW, true);
         }
     }
 
