@@ -448,10 +448,8 @@ const char *Cmd_Cmd( void );
 const char *Cmd_Cmd_FromNth( int );
 
 // these all share an output buffer
-const char *Cmd_EscapeString( const char *in );
 const char *Cmd_QuoteString( const char *in );
 const char *Cmd_UnquoteString( const char *in );
-const char *Cmd_DequoteString( const char *in ); // FIXME QUOTING INFO
 
 void Cmd_QuoteStringBuffer( const char *in, char *buffer, int size );
 
@@ -460,18 +458,9 @@ void Cmd_QuoteStringBuffer( const char *in, char *buffer, int size );
 // if arg >= argc, so string operations are always safe.
 
 void Cmd_TokenizeString( const char *text );
-void Cmd_TokenizeStringIgnoreQuotes( const char *text_in );
 void Cmd_LiteralArgsBuffer( char *buffer, int bufferLength );
 void Cmd_SaveCmdContext( void );
 void Cmd_RestoreCmdContext( void );
-
-// Takes a null terminated string.  Does not need to be /n terminated.
-// breaks the string up into arg tokens.
-
-void Cmd_ExecuteString( const char *text );
-
-// Parses a single line of text into arguments and tries to execute it
-// as if it was typed at the console
 
 /*
 ==============================================================

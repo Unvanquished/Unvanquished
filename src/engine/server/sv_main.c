@@ -897,7 +897,7 @@ void SVC_RemoteCommand( netadr_t from, msg_t *msg )
 
 		Q_strcat( remaining, sizeof( remaining ), cmd_aux );
 
-		Cmd_ExecuteString( remaining );
+		Cmd::BufferCommandText(remaining, Cmd::NOW, true);
 	}
 
 	Com_EndRedirect();

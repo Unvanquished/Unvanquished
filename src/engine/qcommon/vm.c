@@ -46,6 +46,8 @@ and one exported function: Perform
 
 */
 
+#include "../framework/CommandSystem.h"
+
 #ifdef _MSC_VER
 #include "../../libs/msinttypes/inttypes.h"
 #else
@@ -557,7 +559,7 @@ vmHeader_t *VM_LoadQVM( vm_t *vm, qboolean alloc )
 	// show where the QVM was loaded from
 	if ( com_developer->integer )
 	{
-		Cmd_ExecuteString( va( "which %s\n", filename ) );
+		Cmd::BufferCommandText(va("which %s", filename), Cmd::NOW);
 	}
 
 	if ( LittleLong( header.h->vmMagic ) == VM_MAGIC_VER2 )

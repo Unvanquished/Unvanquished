@@ -48,28 +48,6 @@ Maryland 20850 USA.
 
 int   cmd_wait;
 
-// Delay stuff
-
-#define MAX_DELAYED_COMMANDS 64
-#define CMD_DELAY_FRAME_FIRE 1
-#define CMD_DELAY_UNUSED     0
-
-typedef enum
-{
-  CMD_DELAY_MSEC,
-  CMD_DELAY_FRAME
-} cmdDelayType_t;
-
-typedef struct
-{
-	char           name[ MAX_CMD_LINE ];
-	char           text[ MAX_CMD_LINE ];
-	int            delay;
-	cmdDelayType_t type;
-} delayed_cmd_s;
-
-delayed_cmd_s delayed_cmd[ MAX_DELAYED_COMMANDS ];
-
 typedef struct cmd_function_s
 {
 	struct cmd_function_s *next;
@@ -188,19 +166,6 @@ void Cbuf_AddText( const char *text )
 
 /*
 ============
-Cbuf_InsertText
-
-Adds command text immediately after the current command
-Adds a \n to the text
-============
-*/
-void Cbuf_InsertText( const char *text )
-{
-	Cmd::BufferCommandText(text, Cmd::AFTER, true);
-}
-
-/*
-============
 Cbuf_ExecuteText
 ============
 */
@@ -221,7 +186,7 @@ void Cbuf_ExecuteText( int exec_when, const char *text )
 			break;
 
 		case EXEC_INSERT:
-			Cbuf_InsertText( text );
+            Cmd::BufferCommandText(text, Cmd::AFTER, true);
 			break;
 
 		case EXEC_APPEND:
@@ -231,16 +196,6 @@ void Cbuf_ExecuteText( int exec_when, const char *text )
 		default:
 			Com_Error( ERR_FATAL, "Cbuf_ExecuteText: bad exec_when" );
 	}
-}
-
-/*
-============
-Cbuf_Execute
-============
-*/
-void Cbuf_Execute( void )
-{
-	Cmd::ExecuteCommandBuffer();
 }
 
 /*
@@ -464,11 +419,11 @@ found:
 	{
 		if ( *v == '/' || *v == '\\' )
 		{
-			Cbuf_InsertText( va( "%s\n", v + 1 ) );
+			Cmd::BufferCommandText(va("%s", v + 1), Cmd::AFTER, true);
 		}
 		else
 		{
-			Cbuf_InsertText( va( "vstr %s\n", v ) );
+			Cmd::BufferCommandText(va("vstr %s", v));
 		}
 	}
 }
@@ -561,11 +516,11 @@ void Cmd_If_f( void )
 	{
 		if ( *result == '/' || *result == '\\' )
 		{
-			Cbuf_InsertText( va( "%s\n", result + 1 ) );
+			Cmd::BufferCommandText(va("%s", result + 1), Cmd::AFTER, true);
 		}
 		else
 		{
-			Cbuf_InsertText( va( "vstr %s\n", result ) );
+			Cmd::BufferCommandText(va("vstr %s", result));
 		}
 	}
 }
@@ -857,7 +812,7 @@ void Cmd_RunAlias_f( void )
 		Com_Error( ERR_FATAL, "Alias: Alias %s doesn't exist", name );
 	}
 
-	Cbuf_InsertText( va( "%s %s", alias->exec, args ) );
+	Cmd::BufferCommandText(va("%s %s", alias->exec, args), Cmd::AFTER, true);
 }
 
 /*
@@ -1090,7 +1045,7 @@ void    Cmd_AliasCompletion( void ( *callback )( const char *s ) )
 Cmd_DelayCompletion
 ============
 */
-void    Cmd_DelayCompletion( void ( *callback )( const char *s ) )
+/*void    Cmd_DelayCompletion( void ( *callback )( const char *s ) )
 {
 	int i;
 
@@ -1101,7 +1056,7 @@ void    Cmd_DelayCompletion( void ( *callback )( const char *s ) )
 			callback( delayed_cmd[ i ].name );
 		}
 	}
-}
+}*/
 
 /*
 =============================================================================
@@ -1438,16 +1393,6 @@ void Cmd_TokenizeString( const char *text_in )
 
 /*
 ============
-Cmd_TokenizeStringIgnoreQuotes
-============
-*/
-void Cmd_TokenizeStringIgnoreQuotes( const char *text_in )
-{
-	Cmd_TokenizeString2( text_in, qtrue, qfalse );
-}
-
-/*
-============
 Cmd_TokenizeStringParseCvar
 ============
 */
@@ -1549,18 +1494,6 @@ static const char *EscapeString( const char *in, qboolean quote )
 
 /*
 ============
-Cmd_EscapeString
-
-Adds escapes (see above).
-============
-*/
-const char *Cmd_EscapeString( const char *in )
-{
-	return EscapeString( in, qfalse );
-}
-
-/*
-============
 Cmd_QuoteString
 
 Adds escapes (see above), wraps in quotation marks.
@@ -1621,42 +1554,6 @@ const char *Cmd_UnquoteString( const char *str )
 {
 	char *escapeBuffer = GetEscapeBuffer();
 	Tokenise( str, escapeBuffer, qfalse, qfalse );
-	return escapeBuffer;
-}
-
-/*
-===================
-Cmd_DequoteString -- FIXME QUOTING INFO
-
-Usually passed a raw partial command string
-Returns the first token
-Escapes are NOT processed
-String length is UNCHECKED
-===================
-*/
-const char *Cmd_DequoteString( const char *str )
-{
-	char *escapeBuffer = GetEscapeBuffer();
-	const char *q;
-
-	// shouldn't be any leading space, but just in case...
-	while ( *str == ' ' || *str == '\n' )
-	{
-		++str;
-	}
-
-	if ( *str == '"' )
-	{
-		q = strchr( ++str, '"' );
-	}
-	else
-	{
-		q = strchr( str, ' ' );
-		q = q ? q : strchr( str, '\n' );
-	}
-
-	Q_snprintf( escapeBuffer, ESCAPEBUFFER_SIZE, "%.*s", (int)( q ? q - str : ESCAPEBUFFER_SIZE ), str );
-
 	return escapeBuffer;
 }
 
@@ -1774,19 +1671,6 @@ void Cmd_CompleteArgument( const char *command, char *args, int argNum )
 	if (res.size() > 0) {
 		strcpy(args, res[0].c_str());
 	}
-}
-
-/*
-============
-Cmd_ExecuteString
-
-A complete command line has been parsed, so try to execute it
-============
-*/
-void Cmd_ExecuteString( const char *text )
-{
-	std::string cmd(text);
-	Cmd::ExecuteCommand(cmd);
 }
 
 /*

@@ -4235,12 +4235,14 @@ void Field_CompleteDelay( void )
 	matchCount = 0;
 	shortestMatch[ 0 ] = 0;
 
+	return;
+	/*
 	Cmd_DelayCompletion( FindMatches );
 
 	if ( !Field_Complete() )
 	{
 		Cmd_DelayCompletion( PrintMatches );
-	}
+	}*/
 }
 
 /*
