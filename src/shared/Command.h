@@ -25,7 +25,6 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #include "../engine/qcommon/q_shared.h"
 #include <string>
 #include <vector>
-#include <list>
 
 #ifndef SHARED_COMMAND_H_
 #define SHARED_COMMAND_H_
@@ -46,7 +45,7 @@ namespace Cmd {
     std::string Escape(const std::string& text, bool quote = false);
     void Tokenize(const std::string& text, std::vector<std::string>& tokens, std::vector<int>& tokenStarts);
     std::vector<int> StartsOfCommands(const std::string& text);
-    std::list<std::string> SplitCommandText(const std::string& commands);
+    std::vector<std::string> SplitCommandText(const std::string& commands);
     std::string SubstituteCvars(const std::string& text);
 
     class Args {

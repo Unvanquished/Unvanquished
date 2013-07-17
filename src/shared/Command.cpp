@@ -237,8 +237,8 @@ namespace Cmd {
     }
 
 
-    std::list<std::string> SplitCommandText(const std::string& commands) {
-        std::list<std::string> res;
+    std::vector<std::string> SplitCommandText(const std::string& commands) {
+        std::vector<std::string> res;
         const char *data = commands.data();
 
         std::vector<int> start = StartsOfCommands(commands);

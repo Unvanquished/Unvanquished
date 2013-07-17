@@ -25,7 +25,6 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #include "CommandSystem.h"
 
 #include <unordered_map>
-#include <list>
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
 
@@ -51,18 +50,15 @@ namespace Cmd {
     ===============================================================================
     */
 
-    std::list<std::string> commandBuffer;
+    std::vector<std::string> commandBuffer;
 
     void BufferCommandText(const std::string& text, execWhen_t when, bool parseCvars) {
-        std::list<std::string> splitted = SplitCommandText(text);
+        std::vector<std::string> commands = SplitCommandText(text);
 
-        std::list<std::string> commands;
         if (parseCvars) {
-            for (auto text: splitted) {
-                commands.push_back(SubstituteCvars(text));
+            for (auto& text: commands) {
+                text = SubstituteCvars(text);
             }
-        } else {
-            commands = std::move(splitted);
         }
 
         switch (when) {
@@ -73,11 +69,11 @@ namespace Cmd {
                 break;
 
             case AFTER:
-                commandBuffer.splice(commandBuffer.begin(), commands);
+                commandBuffer.insert(commandBuffer.begin(), commands.begin(), commands.end());
                 break;
 
             case END:
-                commandBuffer.splice(commandBuffer.end(), commands);
+                commandBuffer.insert(commandBuffer.end(), commands.begin(), commands.end());
                 break;
 
             default:
@@ -87,9 +83,10 @@ namespace Cmd {
 
     //TODO: reimplement the wait command, maybe?
     void ExecuteCommandBuffer() {
+        // Note that commands may be inserted into the buffer while running other commands
         while (not commandBuffer.empty()) {
             std::string command = commandBuffer.front();
-            commandBuffer.pop_front();
+            commandBuffer.erase(commandBuffer.begin());
             ExecuteCommand(command);
         }
         commandBuffer.clear();
