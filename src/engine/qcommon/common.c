@@ -3654,8 +3654,8 @@ void Com_Frame( void )
 		}
 
 		Com_EventLoop();
-		Cmd::ExecuteCommandBuffer();
 		Cmd::DelayFrame();
+		Cmd::ExecuteCommandBuffer();
 		//
 		// client side
 		//

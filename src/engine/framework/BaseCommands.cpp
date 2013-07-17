@@ -24,7 +24,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "BaseCommands.h"
 
-#include <list>
+#include <vector>
 
 #include "CommandSystem.h"
 #include "../../shared/Command.h"
@@ -226,27 +226,22 @@ namespace Cmd {
         delayType_t type;
     };
 
-    std::list<delayRecord_t> delays;
+    std::vector<delayRecord_t> delays;
     int delayFrame = 0;
 
     void DelayFrame() {
         int time = Sys_Milliseconds();
         delayFrame ++;
 
-        //We store delays to execute in a second list to avoid problems with delays that create delays
-        std::list<delayRecord_t> toRun;
-
         for (auto it = delays.begin(); it != delays.end();) {
             const delayRecord_t& delay = *it;
 
             if ((delay.type == MSEC and delay.target <= time) or (delay.type == FRAME and delay.target < delayFrame)) {
-                toRun.splice(toRun.begin(), delays, it ++);
+                Cmd::BufferCommandText(delay.command, Cmd::END, true);
+                it = delays.erase(it);
+            } else {
+                it ++;
             }
-            it ++;
-        }
-
-        for (auto& delay : toRun) {
-            Cmd::BufferCommandText(delay.command, Cmd::NOW, true);
         }
     }
 
