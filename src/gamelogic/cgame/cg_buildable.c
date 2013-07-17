@@ -1917,7 +1917,7 @@ void CG_Buildable( centity_t *cent )
 	}
 
 	// add inverse shadow map
-	if ( cg_buildableShadows.integer )
+	if ( cg_shadows.integer > SHADOWING_BLOB && cg_buildableShadows.integer )
 	{
 		CG_StartShadowCaster( ent.lightingOrigin, mins, maxs );
 	}
@@ -2155,7 +2155,7 @@ void CG_Buildable( centity_t *cent )
 		}
 	}
 
-	if ( cg_buildableShadows.integer )
+	if ( cg_shadows.integer > SHADOWING_BLOB && cg_buildableShadows.integer )
 	{
 		CG_EndShadowCaster( );
 	}

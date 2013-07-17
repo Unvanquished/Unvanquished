@@ -591,6 +591,12 @@ int         CL_ServerStatus( char *serverAddress, char *serverStatusString, int 
 void CL_Record( const char *name );
 
 //
+// cl_keys (for input usage)
+//
+int             Key_GetKeyNumber(void);
+unsigned int    Key_GetKeyTime(void);
+
+//
 // cl_input
 //
 typedef struct
@@ -637,6 +643,9 @@ qboolean CL_UIOwnsMouse ( void );
 
 void IN_Notebook( void );
 void IN_Help( void );
+
+void IN_KeysUp( unsigned int check, int key, int time );
+void IN_ClearKeyDown( void );
 
 //----(SA)
 

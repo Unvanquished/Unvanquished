@@ -5011,8 +5011,10 @@ static void R_CreateWorldVBO( void )
 	int           numTriangles;
 	srfTriangle_t *triangles;
 
-//  int             numSurfaces;
+	int             numSurfaces;
 	bspSurface_t  *surface;
+	
+	bspSurface_t  **surfaces;
 
 //	trRefLight_t   *light;
 
@@ -5022,171 +5024,110 @@ static void R_CreateWorldVBO( void )
 
 	numVerts = 0;
 	numTriangles = 0;
+	numSurfaces = 0;
 
 	for ( k = 0, surface = &s_worldData.surfaces[ 0 ]; k < s_worldData.numWorldSurfaces; k++, surface++ )
 	{
+		if ( ShaderRequiresCPUDeforms( surface->shader ) )
+		{
+			continue;
+		}
+
 		if ( *surface->data == SF_FACE )
 		{
 			srfSurfaceFace_t *face = ( srfSurfaceFace_t * ) surface->data;
 
-			if ( face->numVerts )
-			{
-				numVerts += face->numVerts;
-			}
-
-			if ( face->numTriangles )
-			{
-				numTriangles += face->numTriangles;
-			}
+			numVerts += face->numVerts;
+			numTriangles += face->numTriangles;
 		}
 		else if ( *surface->data == SF_GRID )
 		{
 			srfGridMesh_t *grid = ( srfGridMesh_t * ) surface->data;
 
-			if ( grid->numVerts )
-			{
-				numVerts += grid->numVerts;
-			}
-
-			if ( grid->numTriangles )
-			{
-				numTriangles += grid->numTriangles;
-			}
+			numVerts += grid->numVerts;
+			numTriangles += grid->numTriangles;
 		}
 		else if ( *surface->data == SF_TRIANGLES )
 		{
 			srfTriangles_t *tri = ( srfTriangles_t * ) surface->data;
 
-			if ( tri->numVerts )
-			{
-				numVerts += tri->numVerts;
-			}
-
-			if ( tri->numTriangles )
-			{
-				numTriangles += tri->numTriangles;
-			}
+			numVerts += tri->numVerts;
+			numTriangles += tri->numTriangles;
 		}
+		else
+		{
+			continue;
+		}
+
+		numSurfaces++;
 	}
 
-	if ( !numVerts || !numTriangles )
+	if ( !numVerts || !numTriangles || !numSurfaces )
 	{
 		return;
 	}
 
+	surfaces = ( bspSurface_t ** ) ri.Hunk_AllocateTempMemory( sizeof( *surfaces ) * numSurfaces );
+
+	numSurfaces = 0;
+	for ( k = 0, surface = &s_worldData.surfaces[ 0 ]; k < s_worldData.numWorldSurfaces; k++, surface++ )
+	{
+		if ( ShaderRequiresCPUDeforms( surface->shader ) )
+		{
+			continue;
+		}
+
+		if ( *surface->data == SF_FACE || *surface->data == SF_GRID || *surface->data == SF_TRIANGLES )
+		{
+			surfaces[ numSurfaces++ ] = surface;
+		}
+	}
+
+	qsort( surfaces, numSurfaces, sizeof( *surfaces ), BSPSurfaceCompare );
+
 	ri.Printf( PRINT_DEVELOPER, "...calculating world VBO ( %i verts %i tris )\n", numVerts, numTriangles );
 
 	// create arrays
-
 	s_worldData.numVerts = numVerts;
-	s_worldData.verts = verts = ri.Hunk_Alloc( numVerts * sizeof( srfVert_t ), h_low );
+	s_worldData.verts = verts = ( srfVert_t * ) ri.Hunk_Alloc( numVerts * sizeof( srfVert_t ), h_low );
 	//optimizedVerts = ri.Hunk_AllocateTempMemory(numVerts * sizeof(srfVert_t));
 
 	s_worldData.numTriangles = numTriangles;
-	s_worldData.triangles = triangles = ri.Hunk_Alloc( numTriangles * sizeof( srfTriangle_t ), h_low );
+	s_worldData.triangles = triangles = ( srfTriangle_t * ) ri.Hunk_Alloc( numTriangles * sizeof( srfTriangle_t ), h_low );
 
 	// set up triangle indices
 	numVerts = 0;
 	numTriangles = 0;
 
-	for ( k = 0, surface = &s_worldData.surfaces[ 0 ]; k < s_worldData.numWorldSurfaces; k++, surface++ )
+	for ( k = 0, surface = surfaces[ 0 ]; k < numSurfaces; k++, surface = surfaces[ k ] )
 	{
 		if ( *surface->data == SF_FACE )
 		{
 			srfSurfaceFace_t *srf = ( srfSurfaceFace_t * ) surface->data;
 
 			srf->firstTriangle = numTriangles;
-
-			if ( srf->numTriangles )
-			{
-				srfTriangle_t *tri;
-
-				for ( i = 0, tri = srf->triangles; i < srf->numTriangles; i++, tri++ )
-				{
-					for ( j = 0; j < 3; j++ )
-					{
-						triangles[ numTriangles + i ].indexes[ j ] = numVerts + tri->indexes[ j ];
-					}
-				}
-
-				numTriangles += srf->numTriangles;
-			}
-
-			if ( srf->numVerts )
-			{
-				numVerts += srf->numVerts;
-			}
-		}
-		else if ( *surface->data == SF_GRID )
-		{
-			srfGridMesh_t *srf = ( srfGridMesh_t * ) surface->data;
-
-			srf->firstTriangle = numTriangles;
-
-			if ( srf->numTriangles )
-			{
-				srfTriangle_t *tri;
-
-				for ( i = 0, tri = srf->triangles; i < srf->numTriangles; i++, tri++ )
-				{
-					for ( j = 0; j < 3; j++ )
-					{
-						triangles[ numTriangles + i ].indexes[ j ] = numVerts + tri->indexes[ j ];
-					}
-				}
-
-				numTriangles += srf->numTriangles;
-			}
-
-			if ( srf->numVerts )
-			{
-				numVerts += srf->numVerts;
-			}
-		}
-		else if ( *surface->data == SF_TRIANGLES )
-		{
-			srfTriangles_t *srf = ( srfTriangles_t * ) surface->data;
-
-			srf->firstTriangle = numTriangles;
-
-			if ( srf->numTriangles )
-			{
-				srfTriangle_t *tri;
-
-				for ( i = 0, tri = srf->triangles; i < srf->numTriangles; i++, tri++ )
-				{
-					for ( j = 0; j < 3; j++ )
-					{
-						triangles[ numTriangles + i ].indexes[ j ] = numVerts + tri->indexes[ j ];
-					}
-				}
-
-				numTriangles += srf->numTriangles;
-			}
-
-			if ( srf->numVerts )
-			{
-				numVerts += srf->numVerts;
-			}
-		}
-	}
-
-	// build vertices
-	numVerts = 0;
-
-	for ( k = 0, surface = &s_worldData.surfaces[ 0 ]; k < s_worldData.numWorldSurfaces; k++, surface++ )
-	{
-		if ( *surface->data == SF_FACE )
-		{
-			srfSurfaceFace_t *srf = ( srfSurfaceFace_t * ) surface->data;
-
 			srf->firstVert = numVerts;
+
+			if ( srf->numTriangles )
+			{
+				srfTriangle_t *tri;
+
+				for ( i = 0, tri = srf->triangles; i < srf->numTriangles; i++, tri++ )
+				{
+					for ( j = 0; j < 3; j++ )
+					{
+						triangles[ numTriangles + i ].indexes[ j ] = srf->firstVert + tri->indexes[ j ];
+					}
+				}
+
+				numTriangles += srf->numTriangles;
+			}
 
 			if ( srf->numVerts )
 			{
 				for ( i = 0; i < srf->numVerts; i++ )
 				{
-					CopyVert( &srf->verts[ i ], &verts[ numVerts + i ] );
+					CopyVert( &srf->verts[ i ], &verts[ srf->firstVert + i ] );
 				}
 
 				numVerts += srf->numVerts;
@@ -5196,13 +5137,29 @@ static void R_CreateWorldVBO( void )
 		{
 			srfGridMesh_t *srf = ( srfGridMesh_t * ) surface->data;
 
+			srf->firstTriangle = numTriangles;
 			srf->firstVert = numVerts;
+
+			if ( srf->numTriangles )
+			{
+				srfTriangle_t *tri;
+
+				for ( i = 0, tri = srf->triangles; i < srf->numTriangles; i++, tri++ )
+				{
+					for ( j = 0; j < 3; j++ )
+					{
+						triangles[ numTriangles + i ].indexes[ j ] = srf->firstVert + tri->indexes[ j ];
+					}
+				}
+
+				numTriangles += srf->numTriangles;
+			}
 
 			if ( srf->numVerts )
 			{
 				for ( i = 0; i < srf->numVerts; i++ )
 				{
-					CopyVert( &srf->verts[ i ], &verts[ numVerts + i ] );
+					CopyVert( &srf->verts[ i ], &verts[ srf->firstVert + i ] );
 				}
 
 				numVerts += srf->numVerts;
@@ -5212,13 +5169,29 @@ static void R_CreateWorldVBO( void )
 		{
 			srfTriangles_t *srf = ( srfTriangles_t * ) surface->data;
 
+			srf->firstTriangle = numTriangles;
 			srf->firstVert = numVerts;
+
+			if ( srf->numTriangles )
+			{
+				srfTriangle_t *tri;
+
+				for ( i = 0, tri = srf->triangles; i < srf->numTriangles; i++, tri++ )
+				{
+					for ( j = 0; j < 3; j++ )
+					{
+						triangles[ numTriangles + i ].indexes[ j ] = srf->firstVert + tri->indexes[ j ];
+					}
+				}
+
+				numTriangles += srf->numTriangles;
+			}
 
 			if ( srf->numVerts )
 			{
 				for ( i = 0; i < srf->numVerts; i++ )
 				{
-					CopyVert( &srf->verts[ i ], &verts[ numVerts + i ] );
+					CopyVert( &srf->verts[ i ], &verts[ srf->firstVert + i ] );
 				}
 
 				numVerts += srf->numVerts;
@@ -5255,7 +5228,7 @@ static void R_CreateWorldVBO( void )
 	ri.Printf( PRINT_DEVELOPER, "world VBO calculation time = %5.2f seconds\n", ( endTime - startTime ) / 1000.0 );
 
 	// point triangle surfaces to world VBO
-	for ( k = 0, surface = &s_worldData.surfaces[ 0 ]; k < s_worldData.numWorldSurfaces; k++, surface++ )
+	for ( k = 0, surface = surfaces[ 0 ]; k < numSurfaces; k++, surface = surfaces[ k ] )
 	{
 		if ( *surface->data == SF_FACE )
 		{
@@ -5292,10 +5265,10 @@ static void R_CreateWorldVBO( void )
 		}
 	}
 
-	startTime = ri.Milliseconds();
-
 	// Tr3B: FIXME move this to somewhere else?
 #if CALC_REDUNDANT_SHADOWVERTS
+	startTime = ri.Milliseconds();
+
 	s_worldData.redundantVertsCalculationNeeded = 0;
 
 	for ( i = 0; i < s_worldData.numLights; i++ )
@@ -5331,6 +5304,7 @@ static void R_CreateWorldVBO( void )
 	//ri.Hunk_FreeTempMemory(triangles);
 	//ri.Hunk_FreeTempMemory(optimizedVerts);
 	//ri.Hunk_FreeTempMemory(verts);
+	ri.Hunk_FreeTempMemory( surfaces );
 }
 
 /*

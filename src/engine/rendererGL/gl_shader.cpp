@@ -2175,7 +2175,8 @@ void GLShader_cameraEffects::SetShaderProgramUniforms( shaderProgram_t *shaderPr
 GLShader_blurX::GLShader_blurX( GLShaderManager *manager ) :
 	GLShader( "blurX", ATTR_POSITION, manager ),
 	u_ModelViewProjectionMatrix( this ),
-	u_DeformMagnitude( this )
+	u_DeformMagnitude( this ),
+	u_TexScale( this )
 {
 }
 
@@ -2187,7 +2188,8 @@ void GLShader_blurX::SetShaderProgramUniforms( shaderProgram_t *shaderProgram )
 GLShader_blurY::GLShader_blurY( GLShaderManager *manager ) :
 	GLShader( "blurY", ATTR_POSITION, manager ),
 	u_ModelViewProjectionMatrix( this ),
-	u_DeformMagnitude( this )
+	u_DeformMagnitude( this ),
+	u_TexScale( this )
 {
 }
 

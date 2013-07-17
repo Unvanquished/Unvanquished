@@ -91,18 +91,8 @@ void IN_MLookUp( void )
 void IN_KeyDown( kbutton_t *b )
 {
 	int  k;
-	char *c;
 
-	c = Cmd_Argv( 1 );
-
-	if ( c[ 0 ] )
-	{
-		k = atoi( c );
-	}
-	else
-	{
-		k = -1; // typed manually at the console for continuous down
-	}
+	k = Key_GetKeyNumber(); // -1 if typed manually at the console for continuous down
 
 	if ( k == b->down[ 0 ] || k == b->down[ 1 ] )
 	{
@@ -129,8 +119,7 @@ void IN_KeyDown( kbutton_t *b )
 	}
 
 	// save timestamp for partial frame summing
-	c = Cmd_Argv( 2 );
-	b->downtime = atoi( c );
+	b->downtime = Key_GetKeyTime();
 
 	b->active = qtrue;
 	b->wasPressed = qtrue;
@@ -139,16 +128,11 @@ void IN_KeyDown( kbutton_t *b )
 void IN_KeyUp( kbutton_t *b )
 {
 	int      k;
-	char     *c;
 	unsigned uptime;
 
-	c = Cmd_Argv( 1 );
+	k = Key_GetKeyNumber();
 
-	if ( c[ 0 ] )
-	{
-		k = atoi( c );
-	}
-	else
+	if ( k < 0 )
 	{
 		// typed manually at the console, assume for unsticking, so clear all
 		b->down[ 0 ] = b->down[ 1 ] = 0;
@@ -177,8 +161,7 @@ void IN_KeyUp( kbutton_t *b )
 	b->active = qfalse;
 
 	// save timestamp for partial frame summing
-	c = Cmd_Argv( 2 );
-	uptime = atoi( c );
+	uptime = Key_GetKeyTime();
 
 	if ( uptime )
 	{
@@ -1266,12 +1249,69 @@ void IN_BuiltinButtonCommand( void )
 	}
 }
 
+void IN_KeysUp( unsigned int check, int key, int time )
+{
+	int i;
+	qboolean first = qtrue;
+
+	for ( i = 0; i < USERCMD_BUTTONS; ++i )
+	{
+		if ( kb[ KB_BUTTONS + i ].down[ 0 ] == key || kb[ KB_BUTTONS + i ].down[ 1 ] == key )
+		{
+			if ( first )
+			{
+				Cbuf_AddText( va( "setkeydata %d %d %u\n", check, key + 1, time ) );
+				first = qfalse;
+			}
+
+			Cbuf_AddText( va( "-%s\n", registeredButtonCommands[ i ] + 1 ) ); // command name includes '+'
+		}
+	}
+
+	for ( i = 0; builtinButtonCommands[i].name; ++i )
+	{
+		if ( kb[ builtinButtonCommands[i].key ].down[ 0 ] == key || kb[ builtinButtonCommands[i].key ].down[ 1 ] == key )
+		{
+			if ( first )
+			{
+				Cbuf_AddText( va( "setkeydata %d %d %u\n", check, key + 1, time ) );
+				first = qfalse;
+			}
+
+			Cbuf_AddText( va( "-%s\n", builtinButtonCommands[i].name ) ); // command name doesn't include '+'
+		}
+	}
+
+	if ( !first )
+	{
+		Cbuf_AddText( va( "setkeydata %d\n", check ) );
+	}
+}
+
+/*
+============
+IN_ClearKeyDown
+============
+*/
+void IN_ClearKeyDown( void )
+{
+	int i;
+
+	for ( i = 0; i < ARRAY_LEN( kb ); ++i )
+	{
+		kb[ i ].active = qfalse;
+		kb[ i ].down[ 0 ] = 0;
+		kb[ i ].down[ 1 ] = 0;
+	}
+}
+
+
 /*
 ============
 CL_RegisterButtonCommands
 
 Get a list of buttons from cgame (USERCMD_BUTTONS comma sperated names)
-and registers the appropriate commands
+and registers the appropriate commands.
 ============
 */
 void CL_RegisterButtonCommands( const char *cmd_names )
