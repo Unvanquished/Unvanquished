@@ -4177,6 +4177,7 @@ void CL_StartHunkUsers( void )
 	{
 		cls.cgameCVarsRegistered = qtrue;
 		CL_InitCGameCVars();
+		IN_ClearKeyDown();
 	}
 
 	if ( !cls.uiStarted )
