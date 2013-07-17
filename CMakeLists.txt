@@ -1239,15 +1239,17 @@ function( GAMELIB )
     foreach( QVM_FILE ${GAMELIB_QVM_FILES} )
       get_filename_component( QVM_FILENAME ${QVM_FILE} NAME_WE )
       get_filename_component( QVM_FILEDIR ${QVM_FILE} PATH )
-      set( QVM_COMPONENT ${QVM_DIR}/${QVM_FILENAME} )
-      set( QVM_OBJECTS ${QVM_OBJECTS} ${QVM_COMPONENT}.asm )
+	  if( QVM_FILENAME MATCHES "\\.c$")
+        set( QVM_COMPONENT ${QVM_DIR}/${QVM_FILENAME} )
+        set( QVM_OBJECTS ${QVM_OBJECTS} ${QVM_COMPONENT}.asm )
 
-      add_custom_command( OUTPUT ${QVM_COMPONENT}.asm
-        COMMAND lcc -target bytecode ${QVM_CPP_OPTIONS} ${QVM_FILE}
-        DEPENDS lcc rcc cpp ${QVM_FILE}
-        IMPLICIT_DEPENDS C ${QVM_FILE}
-        WORKING_DIRECTORY ${QVM_DIR}
-      )
+        add_custom_command( OUTPUT ${QVM_COMPONENT}.asm
+          COMMAND lcc -target bytecode ${QVM_CPP_OPTIONS} ${QVM_FILE}
+          DEPENDS lcc rcc cpp ${QVM_FILE}
+          IMPLICIT_DEPENDS C ${QVM_FILE}
+          WORKING_DIRECTORY ${QVM_DIR}
+        )
+	  endif()	
     endforeach()
 
     # Ensure qvms end up in the correct folder for VS or Xcode projects
