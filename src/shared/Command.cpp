@@ -370,9 +370,9 @@ namespace Cmd {
         return cmd;
     }
 
-    const std::string& Args::RawArgsFrom(int start) const {
+    std::string Args::RawArgsFrom(int start) const {
         if (start < argsStarts.size()) {
-            return cmd.c_str() + argsStarts[start];
+            return std::string(cmd.begin() + argsStarts[start], cmd.end());
         } else {
             return "";
         }

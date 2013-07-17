@@ -58,7 +58,7 @@ namespace Cmd {
             const std::string& Argv(int argNum) const;
             std::string QuotedArgs(int start = 1, int end = -1) const; //TODO; is there a real use for it?
             const std::string& RawArgs() const;
-            const std::string& RawArgsFrom(int start = 1) const;
+            std::string RawArgsFrom(int start = 1) const;
 
             int PosToArg(int pos);
             int ArgStartPos(int argNum);
