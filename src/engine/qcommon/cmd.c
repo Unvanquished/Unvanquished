@@ -46,16 +46,7 @@ Maryland 20850 USA.
 #define MAX_CMD_BUFFER 131072
 #define MAX_CMD_LINE   1024
 
-typedef struct
-{
-	byte *data;
-	int  maxsize;
-	int  cursize;
-} cmd_t;
-
 int   cmd_wait;
-cmd_t cmd_text;
-byte  cmd_text_buf[ MAX_CMD_BUFFER ];
 
 // Delay stuff
 
@@ -165,18 +156,6 @@ void Cmd_Wait_f( void )
 
 /*
 ============
-Cbuf_Init
-============
-*/
-void Cbuf_Init( void )
-{
-	cmd_text.data = cmd_text_buf;
-	cmd_text.maxsize = MAX_CMD_BUFFER;
-	cmd_text.cursize = 0;
-}
-
-/*
-============
 Cbuf_AddText
 
 Adds command text at the end of the buffer, does NOT add a final \n
@@ -184,24 +163,26 @@ Adds command text at the end of the buffer, does NOT add a final \n
 */
 void Cbuf_AddText( const char *text )
 {
+	static int cursize = 0;
+	static char data[MAX_CMD_BUFFER];
 	int l;
 
 	l = strlen( text );
 
-	if ( cmd_text.cursize + l + 1 >= cmd_text.maxsize )
+	if ( cursize + l + 1 >= MAX_CMD_BUFFER )
 	{
 		Com_Printf(_( "Cbuf_AddText: overflow\n" ));
 		return;
 	}
 
-	Com_Memcpy( &cmd_text.data[ cmd_text.cursize ], text, l );
-	cmd_text.cursize += l;
-	cmd_text.data[cmd_text.cursize] = '\0';
+	Com_Memcpy( &data[ cursize ], text, l );
+	cursize += l;
+	data[cursize] = '\0';
 
-	if (strchr((char*) cmd_text.data, '\n') != NULL)
+	if (strchr( data, '\n') != NULL)
 	{
-		Cmd::BufferCommandText((char*) cmd_text.data, Cmd::END, true);
-		cmd_text.cursize = 0;
+		Cmd::BufferCommandText((char*) data, Cmd::END, true);
+		cursize = 0;
 	}
 }
 
@@ -294,7 +275,7 @@ void Cdelay_Frame( void ) {
 		if(run_it)
 		{
 			delayed_cmd[i].delay = CMD_DELAY_UNUSED;
-			Cbuf_ExecuteText(EXEC_NOW, delayed_cmd[i].text);
+			Cmd::BufferCommandText(delayed_cmd[i].text, Cmd::NOW, true);
 		}
 	}
 }

@@ -44,6 +44,8 @@ Maryland 20850 USA.
 #include "qcommon.h"
 #include "unzip.h"
 
+#include "../framework/CommandSystem.h"
+
 #ifdef _WIN32
 #include <direct.h>
 #else
@@ -4787,7 +4789,7 @@ void FS_Restart( int checksumFeed )
 #ifdef NDEBUG
 					Com_Printf( S_WARNING "profile.pid found for profile '%s' — the system settings will revert to their defaults\n", cl_profileStr );
 					// ydnar: set crashed state
-					Cbuf_AddText( "set com_crashed 1\n" );
+					Cmd::BufferCommandText("set com_crashed 1");
 #endif
 				}
 
@@ -4795,16 +4797,16 @@ void FS_Restart( int checksumFeed )
 				Com_WriteProfile( va( "profiles/%s/profile.pid", cl_profileStr ) );
 
 				// exec the config
-				Cbuf_AddText( va( "exec profiles/%s/%s\n", cl_profileStr, CONFIG_NAME ) );
+				Cmd::BufferCommandText(va("exec profiles/%s/%s", cl_profileStr, CONFIG_NAME));
 #ifndef DEDICATED
-				Cbuf_AddText( va( "exec profiles/%s/%s\n", cl_profileStr, KEYBINDINGS_NAME ) );
+				Cmd::BufferCommandText(va("exec profiles/%s/%s", cl_profileStr, KEYBINDINGS_NAME));
 #endif
 			}
 			else
 			{
-				Cbuf_AddText( va( "exec %s\n", CONFIG_NAME ) );
+				Cmd::BufferCommandText(va("exec %s", CONFIG_NAME));
 #ifndef DEDICATED
-				Cbuf_AddText( va( "exec %s\n", KEYBINDINGS_NAME ) );
+				Cmd::BufferCommandText(va("exec %s", KEYBINDINGS_NAME));
 #endif
 			}
 		}

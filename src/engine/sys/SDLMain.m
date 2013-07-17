@@ -13,6 +13,8 @@
 #import "SDL/SDL.h"
 #import "SDLMain.h"
 
+#include "../framework/CommandSystem.h"
+
 #define SDL_USE_CPS 1
 
 #ifdef SDL_USE_CPS
@@ -238,8 +240,6 @@ static void CustomApplicationMain( int argc, char **argv )
 	printf( "Base Directory: %s\n", [resourcePath UTF8String] );
 }
 
-void Cbuf_AddText( const char *text );
-
 - (void) getUrl: (NSAppleEventDescriptor *) event withReplyEvent: (NSAppleEventDescriptor *) replyEvent
 {
 	NSString *uri = [[event paramDescriptorForKeyword:keyDirectObject] stringValue];
@@ -248,7 +248,7 @@ void Cbuf_AddText( const char *text );
 	if ( gCalledAppMainline )
 	{
 		snprintf( buffer, sizeof( buffer ), "connect \"%s\";", [uri UTF8String] );
-		Cbuf_AddText( buffer );
+		Cmd::BufferCommandText(buffer);
 	}
 	else
 	{

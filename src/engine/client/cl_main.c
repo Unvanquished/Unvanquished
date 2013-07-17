@@ -38,6 +38,8 @@ Maryland 20850 USA.
 #include "../qcommon/q_unicode.h"
 #include <limits.h>
 
+#include "../framework/CommandSystem.h"
+
 #include "snd_local.h" // fretn
 
 #include "../sys/sys_loadlib.h"
@@ -1439,7 +1441,7 @@ Closing the main menu will restart the demo loop
 void CL_StartDemoLoop( void )
 {
 	// start the demo loop again
-	Cbuf_AddText( "d1\n" );
+	Cmd::BufferCommandText("d1");
 	Key_SetCatcher( 0 );
 }
 
@@ -1507,9 +1509,8 @@ void CL_NextDemo( void )
 	}
 
 	Cvar_Set( "nextdemo", "" );
-	Cbuf_AddText( v );
-	Cbuf_AddText( "\n" );
-	Cbuf_Execute();
+	Cmd::BufferCommandText(v, Cmd::AFTER, true);
+	Cmd::ExecuteCommandBuffer();
 }
 
 /*
@@ -1980,7 +1981,7 @@ void CL_Reconnect_f( void )
 	}
 	else
 	{
-		Cbuf_AddText( cls.reconnectCmd );
+		Cmd::BufferCommandText(cls.reconnectCmd, Cmd::AFTER, true);
 	}
 }
 
@@ -4625,7 +4626,7 @@ void CL_Init( void )
 
 	SCR_Init();
 
-	Cbuf_Execute();
+	Cmd::ExecuteCommandBuffer();
 
 	Cvar_Set( "cl_running", "1" );
 	CL_LoadRSAKeys();

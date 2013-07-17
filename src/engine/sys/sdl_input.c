@@ -42,6 +42,8 @@ Maryland 20850 USA.
 #include "../qcommon/q_unicode.h"
 #include "../sys/sys_local.h"
 
+#include "../framework/CommandSystem.h"
+
 #ifdef MACOS_X_ACCELERATION_HACK
 #       include <IOKit/IOTypes.h>
 #       include <IOKit/hidsystem/IOHIDLib.h>
@@ -1701,7 +1703,7 @@ static void IN_ProcessEvents( void )
 				break;
 
 			case SDL_QUIT:
-				Cbuf_ExecuteText( EXEC_NOW, "quit Closed window\n" );
+				Cmd::BufferCommandText("quit Closed window", Cmd::NOW);
 				break;
 
 			case SDL_VIDEORESIZE:
