@@ -1290,24 +1290,6 @@ void IN_KeysUp( unsigned int check, int key, int time )
 
 /*
 ============
-IN_ClearKeyDown
-============
-*/
-void IN_ClearKeyDown( void )
-{
-	int i;
-
-	for ( i = 0; i < ARRAY_LEN( kb ); ++i )
-	{
-		kb[ i ].active = qfalse;
-		kb[ i ].down[ 0 ] = 0;
-		kb[ i ].down[ 1 ] = 0;
-	}
-}
-
-
-/*
-============
 CL_RegisterButtonCommands
 
 Get a list of buttons from cgame (USERCMD_BUTTONS comma sperated names)
