@@ -687,7 +687,7 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 		float       x2;
 		const float threehalfs = 1.5F;
 
-        //Check http://en.wikipedia.org/wiki/Fast_inverse_square_root for an explanation
+		//Check http://en.wikipedia.org/wiki/Fast_inverse_square_root for an explanation
 		x2 = number * 0.5F;
 		t.f = number;
 		t.i = 0x5f3759df - ( t.i >> 1 ); // what the fuck?
