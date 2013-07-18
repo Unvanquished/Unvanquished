@@ -33,11 +33,13 @@ namespace Cmd {
 
     enum {
         BASE             = BIT(0),
-        SYSTEM           = BIT(1),
-        RENDERER         = BIT(2),
-        SOUND            = BIT(3),
-        GAME             = BIT(4),
-        CGAME            = BIT(5),
+        ALIAS            = BIT(1),
+        SYSTEM           = BIT(2),
+        RENDERER         = BIT(3),
+        SOUND            = BIT(4),
+        GAME             = BIT(5),
+        CGAME            = BIT(6),
+        UI               = BIT(6),
         PROXY_FOR_OLD    = BIT(31)
     };
 

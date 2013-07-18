@@ -22,12 +22,16 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
+#include "../qcommon/qcommon.h"
+#include "../qcommon/q_shared.h"
+
 #ifndef FRAMEWORK_BASE_COMMANDS_H_
 #define FRAMEWORK_BASE_COMMANDS_H_
 
 namespace Cmd {
 
     void DelayFrame();
+    void WriteAliases(fileHandle_t f);
 
 }
 

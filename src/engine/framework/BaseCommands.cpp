@@ -22,13 +22,14 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
+#include "../qcommon/q_shared.h"
 #include "BaseCommands.h"
 
 #include <vector>
+#include <unordered_map>
 
 #include "CommandSystem.h"
 #include "../../shared/Command.h"
-#include "../qcommon/qcommon.h"
 
 namespace Cmd {
 
@@ -226,8 +227,8 @@ namespace Cmd {
         delayType_t type;
     };
 
-    std::vector<delayRecord_t> delays;
-    int delayFrame = 0;
+    static std::vector<delayRecord_t> delays;
+    static int delayFrame = 0;
 
     void DelayFrame() {
         int time = Sys_Milliseconds();
@@ -320,5 +321,185 @@ namespace Cmd {
     static DelayCmd DelayCmdRegistration;
     static UndelayCmd UndelayCmdRegistration;
     static UndelayAllCmd UndelayAllCmdRegistration;
+
+    /*
+    ===============================================================================
+
+    Cmd:: alias related commands
+
+    ===============================================================================
+    */
+
+    struct aliasRecord_t {
+        std::string command;
+        int lastRun;
+    };
+
+    static std::unordered_map<std::string, aliasRecord_t> aliases;
+    static int aliasRun;
+    static bool inAliasRun;
+
+    void WriteAliases(fileHandle_t f) {
+        std::string toWrite = "clearAliases\n";
+        FS_Write(toWrite.c_str(), toWrite.size(), f);
+
+        for (auto it: aliases) {
+            toWrite = "alias " + it.first + " " + it.second.command + "\n";
+            FS_Write(toWrite.c_str(), toWrite.size(), f);
+        }
+    }
+
+    class AliasProxy: public CmdBase {
+        public:
+            AliasProxy(): CmdBase(0) {
+            }
+
+            void Run(const Cmd::Args& args) const override{
+                const std::string& name = args.Argv(0);
+                const std::string& parameters = args.RawArgsFrom(1);
+
+                if (aliases.count(name) == 0) {
+                    Com_Printf("alias %s doesn't exist", name.c_str());
+                    return;
+                }
+
+                aliasRecord_t& alias = aliases[name];
+
+                bool startsRun = not inAliasRun;
+                if (startsRun) {
+                    inAliasRun = true;
+                    aliasRun ++;
+                }
+
+                if (alias.lastRun == aliasRun) {
+                    Com_Printf("recursive alias call at alias %s", name.c_str());
+                } else {
+                    alias.lastRun = aliasRun;
+                    Cmd::BufferCommandText(alias.command + " " + parameters, NOW, true);
+                }
+
+                if (startsRun) {
+                    inAliasRun = false;
+                }
+            }
+    };
+    static AliasProxy aliasProxy;
+
+    class AliasCmd: StaticCmd {
+        public:
+            AliasCmd(): StaticCmd("alias", BASE, N_("creates or view an alias")) {
+            }
+
+            void Run(const Cmd::Args& args) const override{
+                if (args.Argc() < 2) {
+                    PrintUsage(args, _("<name>"), _("show an alias"));
+                    PrintUsage(args, _("<name> <exec>"), _("create an alias"));
+                    return;
+                }
+
+                const std::string& name = args.Argv(1);
+
+                //Show an alias
+                if (args.Argc() == 2) {
+                    if (aliases.count(name)) {
+                        Com_Printf("%s ⇒ %s\n", name.c_str(), aliases[name].command.c_str());
+                    } else {
+                        Com_Printf(_("Alias %s does not exist\n"), name.c_str());
+                    }
+                    return;
+                }
+
+                //Modify or create an alias
+                const std::string& command = args.RawArgsFrom(2);
+
+                if (aliases.count(name)) {
+                    aliases[name].command = command;
+                    return;
+                }
+
+                if (CommandExists(name)) {
+                    Com_Printf(_("Can't override a builtin function with an alias\n"));
+                    return;
+                }
+
+                aliases[name] = aliasRecord_t{command, aliasRun};
+                AddCommand(name, aliasProxy, N_("a user-defined alias command"));
+
+                //Force an update of autogen.cfg (TODO: get rid of this super global variable)
+                cvar_modifiedFlags |= CVAR_ARCHIVE;
+            }
+    };
+    static AliasCmd AliasCmdRegistration;
+
+    class UnaliasCmd: StaticCmd {
+        public:
+            UnaliasCmd(): StaticCmd("unalias", BASE, N_("deletes an alias")) {
+            }
+
+            void Run(const Cmd::Args& args) const override{
+                if (args.Argc() != 2) {
+                    PrintUsage(args, _("<name>"), _("delete an alias"));
+                    return;
+                }
+
+                const std::string& name = args.Argv(1);
+
+                if (aliases.count(name)) {
+                    aliases.erase(name);
+                    RemoveCommand(name);
+                }
+            }
+    };
+    static UnaliasCmd UnaliasCmdRegistration;
+
+    class ClearAliasesCmd: StaticCmd {
+        public:
+            ClearAliasesCmd(): StaticCmd("clearAliases", BASE, N_("deletes all the aliases")) {
+            }
+
+            void Run(const Cmd::Args& args) const override{
+                RemoveFlaggedCommands(ALIAS);
+                aliases.clear();
+            }
+    };
+    static ClearAliasesCmd ClearAliasesCmdRegistration;
+
+    class ListAliasesCmd: StaticCmd {
+        public:
+            ListAliasesCmd(): StaticCmd("listAliases", BASE, N_("lists aliases")) {
+            }
+
+            void Run(const Cmd::Args& args) const override{
+                std::string name;
+
+                if (args.Argc() > 1) {
+                    name = args.Argv(1);
+                } else {
+                    name = "";
+                }
+
+                std::vector<const aliasRecord_t*> matches;
+                std::vector<const std::string*> matchesNames;
+                int maxNameLength = 0;
+
+                //Find all the matching aliases and their names
+                for (auto it = aliases.cbegin(); it != aliases.cend(); ++it) {
+                    if (Q_stristr(it->first.c_str(), name.c_str())) {
+                        matches.push_back(&it->second);
+                        matchesNames.push_back(&it->first);
+                        maxNameLength = MAX(maxNameLength, it->first.size());
+                    }
+                }
+
+                //Print the matches, keeping the description aligned
+                for (int i = 0; i < matches.size(); i++) {
+                    int toFill = maxNameLength - matchesNames[i]->size();
+                    Com_Printf("  %s%s ⇒ %s\n", matchesNames[i]->c_str(), std::string(toFill, ' ').c_str(), matches[i]->command.c_str());
+                }
+
+                Com_Printf("%zu aliases\n", matches.size());
+            }
+    };
+    static ListAliasesCmd ListAliasesCmdRegistration;
 
 }

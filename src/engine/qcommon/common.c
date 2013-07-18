@@ -4217,12 +4217,14 @@ void Field_CompleteAlias( void )
 	matchCount = 0;
 	shortestMatch[ 0 ] = 0;
 
+	return;
+	/*
 	Cmd_AliasCompletion( FindMatches );
 
 	if ( !Field_Complete() )
 	{
 		Cmd_AliasCompletion( PrintMatches );
-	}
+	}*/
 }
 
 /*

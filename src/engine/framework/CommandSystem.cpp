@@ -240,7 +240,7 @@ namespace Cmd {
         std::vector<const std::string*> matchesNames;
         int maxNameLength = 0;
 
-        //Find all the matching commands and thir name
+        //Find all the matching commands and their names
         for (auto it = commands.cbegin(); it != commands.cend(); ++it) {
             const commandRecord_t& record = it->second;
 
@@ -331,6 +331,16 @@ namespace Cmd {
             }
     };
 
+    class ListUICmdsCmd: public StaticCmd {
+        public:
+            ListUICmdsCmd(): StaticCmd("listUICmds", BASE | UI, "lists all the UI commands") {
+            }
+
+            void Run(const Cmd::Args& args) const override {
+                ListFlaggedCommands(args, UI);
+            }
+    };
+
     class ListOldStyleCmdsCmd: public StaticCmd {
         public:
             ListOldStyleCmdsCmd(): StaticCmd("listOldStyleCmds", BASE, "lists all the commands registered through the C interface") {
@@ -348,5 +358,6 @@ namespace Cmd {
 	static ListSoundCmdsCmd listSoundCmdsCmdRegistration;
 	static ListCGameCmdsCmd listCGameCmdsCmdRegistration;
 	static ListGameCmdsCmd listGameCmdsCmdRegistration;
+	static ListUICmdsCmd listUICmdsCmdRegistration;
 	static ListOldStyleCmdsCmd listOldStyleCmdsCmdRegistration;
 }
