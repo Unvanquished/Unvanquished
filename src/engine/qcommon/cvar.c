@@ -37,6 +37,8 @@ Maryland 20850 USA.
 #include "../qcommon/q_shared.h"
 #include "qcommon.h"
 
+#include "../framework/CommandSystem.h"
+
 cvar_t        *cvar_vars;
 cvar_t        *cvar_cheats;
 int           cvar_modifiedFlags;
@@ -817,135 +819,122 @@ qboolean Cvar_Command( void )
 
 /*
 ============
-Cvar_Toggle_f
+ToggleCmd
 
 Toggles a cvar for easy single key binding,
 optionally through a list of given values
 ============
 */
-void Cvar_Toggle_f( void )
-{
-	int        i, c;
-	int        listfirst = 2;
-	int        step = 1;
-	const char *varname, *curval;
 
-	c = Cmd_Argc();
+class ToggleCmd: public Cmd::StaticCmd {
+    public:
+        ToggleCmd(): Cmd::StaticCmd("toggle", Cmd::BASE, N_("toggles a cvar between different values")) {
+        }
 
-	// at least two parameters regardless
-	if ( c < 2 )
-	{
-		goto print_usage;
-	}
+        void Run(const Cmd::Args& args) const override {
+            if (args.Argc() < 2) {
+                Usage(args);
+                return;
+            }
 
-	varname = Cmd_Argv( 1 );
+            const std::string& firstArg = args.Argv(1);
 
-	// step direction
-	if ( !strcmp( varname, "+" ) )
-	{
-		// step = 1;
-		listfirst = 3;
-		varname = Cmd_Argv( 2 );
-	}
-	else if ( !strcmp( varname, "-" ) )
-	{
-		step = -1;
-		listfirst = 3;
-		varname = Cmd_Argv( 2 );
-	}
+            int listStart = 2;
+            int direction = 1;
 
-	// we now know how many parameters are needed
-	if ( c < listfirst )
-	{
-		goto print_usage;
-	}
+            if (firstArg == "+") {
+                listStart = 3;
+            } else if (firstArg == "-") {
+                listStart = 3;
+                direction = -1;
+            }
 
-	// simple case: just toggle between 0 and 1
-	if ( c == listfirst )
-	{
-		Cvar_Set2( varname, va( "%d", !Cvar_VariableValue( varname ) ), qfalse );
-		return;
-	}
+            if (args.Argc() < listStart) {
+                Usage(args);
+                return;
+            }
 
-	// need to look through the supplied list
-	curval = Cvar_VariableString( varname );
-	c -= listfirst; // convenience
+            const std::string& name = args.Argv(listStart - 1);
 
-	for ( i = 0; i < c; ++i )
-	{
-		if ( !strcmp( curval, Cmd_Argv( listfirst + i ) ) )
-		{
-			Cvar_Set2( varname, Cmd_Argv( listfirst + ( i + c + step ) % c ), qfalse );
-			return;
-		}
-	}
+            if (args.Argc() == listStart) {
+                //There is no list, toggle between 0 and 1
+                Cvar_Set2(name.c_str(), va("%d", !Cvar_VariableValue(name.c_str())), false);
+                return;
+            }
 
-	// fallback
-	Cvar_Set2( varname, Cmd_Argv( listfirst ), qfalse );
+            //Toggle the cvar through a list of values
+            std::string currentValue = Cvar_VariableString(name.c_str());
 
-	// done
-	return;
+            for(int i = listStart; i < args.Argc(); i++) {
+                if(currentValue == args.Argv(i)) {
+                    //Found the current value, choose the next one
+                    int next = (i + direction) % (args.Argc() - listStart);
 
-print_usage:
-	Cmd_PrintUsage(_("[+|-] <variable> [<value>…]"), NULL);
-}
+                    Cvar_Set2(name.c_str(), args.Argv(next + listStart).c_str(), false);
+                    return;
+                }
+            }
+
+            //fallback
+            Cvar_Set2(name.c_str(), args.Argv(listStart).c_str(), false);
+        }
+
+        void Usage(const Cmd::Args& args) const{
+            PrintUsage(args, _("[+|-] <variable> [<value>…]"), "");
+        }
+};
+static ToggleCmd ToggleCmdRegistration;
 
 /*
 ============
-Cvar_Cycle_f - ydnar
+CycleCmd
 
 Cycles a cvar for easy single key binding
 ============
 */
-void Cvar_Cycle_f( void )
-{
-	int start, end, step, oldvalue, value;
+class CycleCmd: public Cmd::StaticCmd {
+    public:
+        CycleCmd(): Cmd::StaticCmd("cycle", Cmd::BASE, N_("cycles a cvar through numbers")) {
+        }
 
-	if ( Cmd_Argc() < 4 || Cmd_Argc() > 5 )
-	{
-		Cmd_PrintUsage(_("<variable> <start> <end> [<step>]"), NULL);
-		return;
-	}
+        void Run(const Cmd::Args& args) const override {
+            if (args.Argc() < 4 || args.Argc() > 5) {
+                PrintUsage(args, _("<variable> <start> <end> [<step>]"), "");
+                return;
+            }
 
-	oldvalue = value = Cvar_VariableValue( Cmd_Argv( 1 ) );
-	start = atoi( Cmd_Argv( 2 ) );
-	end = atoi( Cmd_Argv( 3 ) );
+            int oldValue = Cvar_VariableValue(args.Argv(1).c_str());
+            int start = std::stoi(args.Argv(2));
+            int end = std::stoi(args.Argv(3));
 
-	if ( Cmd_Argc() == 5 )
-	{
-		step = abs( atoi( Cmd_Argv( 4 ) ) );
-	}
-	else
-	{
-		step = 1;
-	}
+            int step;
+            if (args.Argc() == 5) {
+                step = std::stoi(args.Argv(4));
+            } else {
+                step = 1;
+            }
+            if (std::abs(end - start) < step) {
+                step = 1;
+            }
 
-	if ( abs( end - start ) < step )
-	{
-		step = 1;
-	}
+            //TODO: rewrite all this nonsense
+            int newValue;
+            if (end < start) {
+                newValue = oldValue - step;
+                if (newValue < start) {
+                    newValue = start - (step - (oldValue - end + 1));
+                }
+            } else {
+                newValue = oldValue + step;
+                if (newValue > end) {
+                    newValue = start + (step - (end - oldValue + 1));
+                }
+            }
 
-	if ( end < start )
-	{
-		value -= step;
-
-		if ( value < end )
-		{
-			value = start - ( step - ( oldvalue - end + 1 ) );
-		}
-	}
-	else
-	{
-		value += step;
-
-		if ( value > end )
-		{
-			value = start + ( step - ( end - oldvalue + 1 ) );
-		}
-	}
-
-	Cvar_Set2( Cmd_Argv( 1 ), va( "%i", value ), qfalse );
-}
+            Cvar_Set2(args.Argv(1).c_str(), va("%i", newValue), false);
+        }
+};
+static CycleCmd CycleCmdRegistration;
 
 /*
 ============
@@ -1547,10 +1536,8 @@ void Cvar_Init( void )
 {
 	cvar_cheats = Cvar_Get( "sv_cheats", "1", CVAR_ROM | CVAR_SYSTEMINFO );
 
-	Cmd_AddCommand( "toggle", Cvar_Toggle_f );
-	Cmd_SetCommandCompletionFunc( "toggle", Cvar_CompleteToggle );
-	Cmd_AddCommand( "cycle", Cvar_Cycle_f );  // ydnar
-	Cmd_SetCommandCompletionFunc( "cycle", Cvar_CompleteCvarName );
+	//Cmd_SetCommandCompletionFunc( "toggle", Cvar_CompleteToggle );
+	//Cmd_SetCommandCompletionFunc( "cycle", Cvar_CompleteCvarName );
 	Cmd_AddCommand( "set", Cvar_Set_f );
 	Cmd_SetCommandCompletionFunc( "set", Cvar_CompleteCvarName );
 	Cmd_AddCommand( "sets", Cvar_SetS_f );
