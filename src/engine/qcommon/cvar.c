@@ -936,173 +936,67 @@ class CycleCmd: public Cmd::StaticCmd {
 };
 static CycleCmd CycleCmdRegistration;
 
-static char *Cvar_Set_FromCmd(void)
-{
-	int  c, unsafe = 0;
-	char *name, *value;
-	int  nameIndex = 1;
+class SetCmd: public Cmd::StaticCmd {
+    public:
+        SetCmd(const std::string& name, int flags): Cmd::StaticCmd(name, Cmd::BASE, N_("sets the value of a cvar")), flags(flags) {
+        }
 
-	c = Cmd_Argc();
+        void Run(const Cmd::Args& args) const override{
+            int argc = args.Argc();
+            int nameIndex = 1;
+            bool unsafe = false;
 
-	if ( c < 3 )
-	{
-		Cmd_PrintUsage(_("[-unsafe] <variable> <value>"), NULL);
-		return NULL;
-	}
+            if (argc < 3) {
+                PrintUsage(args, _("[-unsafe] <variable> <value>"), "");
+                return;
+            }
 
-	// handle unsafe vars
-	if ( c >= 4 && !strcmp( Cmd_Argv( nameIndex ), "-unsafe" ) )
-	{
-		++nameIndex;
-		unsafe = 1;
-	}
-	// FIXME: trailing 'unsafe' is deprecated and will go away soon (at the earliest, a19).
-	else if ( c >= 4 && !strcmp( Cmd_Argv( c - 1 ), "unsafe" ) )
-	{
-		c--;
-		unsafe = 2;
-	}
+            if (argc >= 4 and args.Argv(1) == "-unsafe") {
+                nameIndex = 2;
+                unsafe = true;
+            }
 
-	name = Cmd_Argv( nameIndex );
+            const std::string& name = args.Argv(nameIndex);
 
-	if ( unsafe && com_crashed != NULL && com_crashed->integer )
-	{
-		Com_Printf(_( "%s is unsafe. Check com_crashed.\n"), name );
-		return NULL;
-	}
+            if (unsafe and com_crashed != nullptr and com_crashed->integer != 0) {
+                Com_Printf(_("%s is unsafe. Check com_crashed.\n"), name.c_str());
+                return;
+            }
 
-	value = strdup( Cmd_Cmd_FromNth( nameIndex + 1 ) );   // 3rd arg onwards, raw
+            const std::string& value = args.Argv(nameIndex + 1);
+            Cvar_Set2(name.c_str(), value.c_str(), false);
 
-        // FIXME: deprecated code
-	if ( unsafe == 2 )
-	{
-		char *end = value + strlen( value );
+            cvar_t* var = Cvar_FindVar(name.c_str());
+            var->flags |= flags;
+        }
 
-		// skip spaces
-		while ( --end > value )
-		{
-			if ( *end != ' ' )
-			{
-				break;
-			}
-		}
-
-		++end;
-
-		// skip "unsafe" (may be quoted, so just scan it)
-		while ( --end > value )
-		{
-			if ( *end == ' ' )
-			{
-				break;
-			}
-		}
-
-		++end;
-
-		// skip spaces
-		while ( --end > value )
-		{
-			if ( *end != ' ' )
-			{
-				break;
-			}
-		}
-
-		end[ 1 ] = 0; // end of string :-)
-	}
-
-	Cvar_Set2( name, Cmd_UnquoteString( value ), qfalse );
-	free( value );
-
-	return name;
-}
-
-static void Cvar_Set_Flagged( int flag )
-{
-	cvar_t *v;
-	char   *name;
-
-	if ( Cmd_Argc() < 3 )
-	{
-		Cmd_PrintUsage(_("[-unsafe] <variable> <value>"), NULL);
-		return;
-	}
-
-	name = Cvar_Set_FromCmd();
-	v = name ? Cvar_FindVar( name ) : NULL;
-
-	if ( !v )
-	{
-		return;
-	}
-
-	v->flags |= flag;
-}
-
-/*
-============
-Cvar_Set_f
-
-Allows setting and defining of arbitrary cvars from console, even if they
-weren't declared in C code.
-============
-*/
-void Cvar_Set_f( void )
-{
-	Cvar_Set_FromCmd();
-}
-/*
-============
-Cvar_SetU_f
-
-As Cvar_Set, but also flags it as userinfo
-============
-*/
-void Cvar_SetU_f( void )
-{
-	Cvar_Set_Flagged( CVAR_USERINFO );
-}
-
-/*
-============
-Cvar_SetS_f
-
-As Cvar_Set, but also flags it as serverinfo
-============
-*/
-void Cvar_SetS_f( void )
-{
-	Cvar_Set_Flagged( CVAR_SERVERINFO );
-}
-
-/*
-============
-Cvar_SetA_f
-
-As Cvar_Set, but also flags it as archived
-============
-*/
-void Cvar_SetA_f( void )
-{
-	Cvar_Set_Flagged( CVAR_ARCHIVE );
-}
+    private:
+        int flags;
+};
+static SetCmd SetCmdRegistration("set", 0);
+static SetCmd SetuCmdRegistration("setu", CVAR_USERINFO);
+static SetCmd SetsCmdRegistration("sets", CVAR_SERVERINFO);
+static SetCmd SetaCmdRegistration("seta", CVAR_ARCHIVE);
 
 /*
 ============
 Cvar_Reset_f
 ============
 */
-void Cvar_Reset_f( void )
-{
-	if ( Cmd_Argc() != 2 )
-	{
-		Cmd_PrintUsage(_("<variable>"), NULL);
-		return;
-	}
+class ResetCmd: public Cmd::StaticCmd {
+    public:
+        ResetCmd(): Cmd::StaticCmd("reset", Cmd::BASE, N_("resets a variable")) {
+        }
 
-	Cvar_Reset( Cmd_Argv( 1 ) );
-}
+        void Run(const Cmd::Args& args) const override {
+            if (args.Argc() != 2) {
+                PrintUsage(args, _("<variable>"), "");
+            } else {
+                Cvar_Reset(args.Argv(1).c_str());
+            }
+        }
+};
+static ResetCmd ResetCmdRegistration;
 
 /*
 ============
@@ -1554,16 +1448,11 @@ void Cvar_Init( void )
 
 	//Cmd_SetCommandCompletionFunc( "toggle", Cvar_CompleteToggle );
 	//Cmd_SetCommandCompletionFunc( "cycle", Cvar_CompleteCvarName );
-	Cmd_AddCommand( "set", Cvar_Set_f );
-	Cmd_SetCommandCompletionFunc( "set", Cvar_CompleteCvarName );
-	Cmd_AddCommand( "sets", Cvar_SetS_f );
-	Cmd_SetCommandCompletionFunc( "sets", Cvar_CompleteCvarName );
-	Cmd_AddCommand( "setu", Cvar_SetU_f );
-	Cmd_SetCommandCompletionFunc( "setu", Cvar_CompleteCvarName );
-	Cmd_AddCommand( "seta", Cvar_SetA_f );
-	Cmd_SetCommandCompletionFunc( "seta", Cvar_CompleteCvarName );
-	Cmd_AddCommand( "reset", Cvar_Reset_f );
-	Cmd_SetCommandCompletionFunc( "reset", Cvar_CompleteCvarName );
+	//Cmd_SetCommandCompletionFunc( "set", Cvar_CompleteCvarName );
+	//Cmd_SetCommandCompletionFunc( "sets", Cvar_CompleteCvarName );
+	//Cmd_SetCommandCompletionFunc( "setu", Cvar_CompleteCvarName );
+	//Cmd_SetCommandCompletionFunc( "seta", Cvar_CompleteCvarName );
+	//Cmd_SetCommandCompletionFunc( "reset", Cvar_CompleteCvarName );
 	Cmd_AddCommand( "cvarlist", Cvar_List_f );
 	Cmd_AddCommand( "cvar_clean", Cvar_Clean_f );
 	Cmd_AddCommand( "cvar_restart", Cvar_Restart_f );
