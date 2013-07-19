@@ -525,11 +525,122 @@ extern "C" {
 		int      height;
 	} FBO_t;
 
+	enum
+	{
+		ATTR_INDEX_POSITION = 0,
+		ATTR_INDEX_TEXCOORD,
+		ATTR_INDEX_LIGHTCOORD,
+		ATTR_INDEX_TANGENT,
+		ATTR_INDEX_BINORMAL,
+		ATTR_INDEX_NORMAL,
+		ATTR_INDEX_COLOR,
+
+#if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
+		ATTR_INDEX_PAINTCOLOR,
+#endif
+		ATTR_INDEX_AMBIENTLIGHT,
+		ATTR_INDEX_DIRECTEDLIGHT,
+		ATTR_INDEX_LIGHTDIRECTION,
+
+		// GPU vertex skinning
+		ATTR_INDEX_BONE_INDEXES,
+		ATTR_INDEX_BONE_WEIGHTS,
+
+		// GPU vertex animations
+		ATTR_INDEX_POSITION2,
+		ATTR_INDEX_TANGENT2,
+		ATTR_INDEX_BINORMAL2,
+		ATTR_INDEX_NORMAL2,
+		ATTR_INDEX_MAX
+	};
+
+	// must match order of ATTR_INDEX enums
+	static const char *attributeNames[] =
+	{
+		"attr_Position",
+		"attr_TexCoord0",
+		"attr_TexCoord1",
+		"attr_Tangent",
+		"attr_Binormal",
+		"attr_Normal",
+		"attr_Color",
+#if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
+		"attr_PaintColor",
+#endif
+		"attr_AmbientLight",
+		"attr_DirectedLight",
+		"attr_LightDirection",
+		"attr_BoneIndexes",
+		"attr_BoneWeights",
+		"attr_Position2",
+		"attr_Tangent2",
+		"attr_Binormal2",
+		"attr_Normal2"
+	};
+
+	enum
+	{
+	  ATTR_POSITION       = BIT( ATTR_INDEX_POSITION ),
+	  ATTR_TEXCOORD       = BIT( ATTR_INDEX_TEXCOORD ),
+	  ATTR_LIGHTCOORD     = BIT( ATTR_INDEX_LIGHTCOORD ),
+	  ATTR_TANGENT        = BIT( ATTR_INDEX_TANGENT ),
+	  ATTR_BINORMAL       = BIT( ATTR_INDEX_BINORMAL ),
+	  ATTR_NORMAL         = BIT( ATTR_INDEX_NORMAL ),
+	  ATTR_COLOR          = BIT( ATTR_INDEX_COLOR ),
+
+#if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
+	  ATTR_PAINTCOLOR     = BIT( ATTR_INDEX_PAINTCOLOR ),
+#endif
+	  ATTR_AMBIENTLIGHT   = BIT( ATTR_INDEX_AMBIENTLIGHT ),
+	  ATTR_DIRECTEDLIGHT  = BIT( ATTR_INDEX_DIRECTEDLIGHT ),
+	  ATTR_LIGHTDIRECTION = BIT( ATTR_INDEX_LIGHTDIRECTION ),
+
+	  ATTR_BONE_INDEXES   = BIT( ATTR_INDEX_BONE_INDEXES ),
+	  ATTR_BONE_WEIGHTS   = BIT( ATTR_INDEX_BONE_WEIGHTS ),
+
+	  // for .md3 interpolation
+	  ATTR_POSITION2      = BIT( ATTR_INDEX_POSITION2 ),
+	  ATTR_TANGENT2       = BIT( ATTR_INDEX_TANGENT2 ),
+	  ATTR_BINORMAL2      = BIT( ATTR_INDEX_BINORMAL2 ),
+	  ATTR_NORMAL2        = BIT( ATTR_INDEX_NORMAL2 ),
+
+	  ATTR_INTERP_BITS = ATTR_POSITION2 | ATTR_TANGENT2 | ATTR_BINORMAL2 | ATTR_NORMAL2,
+
+	  // FIXME XBSP format with ATTR_LIGHTDIRECTION and ATTR_PAINTCOLOR
+	  //ATTR_DEFAULT = ATTR_POSITION | ATTR_TEXCOORD | ATTR_TANGENT | ATTR_BINORMAL | ATTR_COLOR,
+
+	  ATTR_BITS = ATTR_POSITION |
+	              ATTR_TEXCOORD |
+	              ATTR_LIGHTCOORD |
+	              ATTR_TANGENT |
+	              ATTR_BINORMAL |
+	              ATTR_NORMAL |
+	              ATTR_COLOR // |
+
+#if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
+	              ATTR_PAINTCOLOR |
+	              ATTR_LIGHTDIRECTION |
+#endif
+
+	              //ATTR_BONE_INDEXES |
+	              //ATTR_BONE_WEIGHTS
+	};
+
 	typedef enum
 	{
 	  VBO_USAGE_STATIC,
 	  VBO_USAGE_DYNAMIC
 	} vboUsage_t;
+
+	typedef struct
+	{
+		GLint   numComponents; // how many components in a single attribute for a single vertex
+		GLenum  componentType; // the input type for a single component
+		GLboolean normalize; // convert signed integers to the floating point range [-1, 1], and unsigned integers to the range [0, 1]
+		GLsizei stride;
+		GLsizei ofs;
+		GLsizei frameOffset; // for vertex animation, real offset computed as ofs + frame * frameOffset
+	} vboAttributeLayout_t;
 
 	typedef struct VBO_s
 	{
@@ -538,26 +649,10 @@ extern "C" {
 		uint32_t vertexesVBO;
 		uint32_t vertexesSize; // amount of memory data allocated for all vertices in bytes
 		uint32_t vertexesNum;
-		uint32_t ofsXYZ;
-		uint32_t ofsTexCoords;
-		uint32_t ofsLightCoords;
-		uint32_t ofsTangents;
-		uint32_t ofsBinormals;
-		uint32_t ofsNormals;
-		uint32_t ofsColors;
-		uint32_t ofsPaintColors; // for advanced terrain blending
-		uint32_t ofsAmbientLight;
-		uint32_t ofsDirectedLight;
-		uint32_t ofsLightDirections;
-		uint32_t ofsBoneIndexes;
-		uint32_t ofsBoneWeights;
 
-		uint32_t sizeXYZ;
-		uint32_t sizeTangents;
-		uint32_t sizeBinormals;
-		uint32_t sizeNormals;
+		vboAttributeLayout_t attribs[ ATTR_INDEX_MAX ]; // info for buffer manipulation
 
-		uint32_t attribs;
+		uint32_t attribBits;
 	} VBO_t;
 
 	typedef struct IBO_s
@@ -1171,34 +1266,6 @@ extern "C" {
 		struct shader_s *next;
 	} shader_t;
 
-	enum
-	{
-		ATTR_INDEX_POSITION,
-		ATTR_INDEX_TEXCOORD0,
-		ATTR_INDEX_TEXCOORD1,
-		ATTR_INDEX_TANGENT,
-		ATTR_INDEX_BINORMAL,
-		ATTR_INDEX_NORMAL,
-		ATTR_INDEX_COLOR,
-
-#if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
-		ATTR_INDEX_PAINTCOLOR,
-#endif
-		ATTR_INDEX_AMBIENTLIGHT,
-		ATTR_INDEX_DIRECTEDLIGHT,
-		ATTR_INDEX_LIGHTDIRECTION,
-
-		// GPU vertex skinning
-		ATTR_INDEX_BONE_INDEXES,
-		ATTR_INDEX_BONE_WEIGHTS,
-
-		// GPU vertex animations
-		ATTR_INDEX_POSITION2,
-		ATTR_INDEX_TANGENT2,
-		ATTR_INDEX_BINORMAL2,
-		ATTR_INDEX_NORMAL2,
-	};
-
 // *INDENT-OFF*
 	enum
 	{
@@ -1277,52 +1344,6 @@ extern "C" {
 	};
 
 // *INDENT-ON*
-
-	enum
-	{
-	  ATTR_POSITION       = BIT( ATTR_INDEX_POSITION ),
-	  ATTR_TEXCOORD       = BIT( ATTR_INDEX_TEXCOORD0 ),
-	  ATTR_LIGHTCOORD     = BIT( ATTR_INDEX_TEXCOORD1 ),
-	  ATTR_TANGENT        = BIT( ATTR_INDEX_TANGENT ),
-	  ATTR_BINORMAL       = BIT( ATTR_INDEX_BINORMAL ),
-	  ATTR_NORMAL         = BIT( ATTR_INDEX_NORMAL ),
-	  ATTR_COLOR          = BIT( ATTR_INDEX_COLOR ),
-
-#if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
-	  ATTR_PAINTCOLOR     = BIT( ATTR_INDEX_PAINTCOLOR ),
-#endif
-	  ATTR_AMBIENTLIGHT   = BIT( ATTR_INDEX_AMBIENTLIGHT ),
-	  ATTR_DIRECTEDLIGHT  = BIT( ATTR_INDEX_DIRECTEDLIGHT ),
-	  ATTR_LIGHTDIRECTION = BIT( ATTR_INDEX_LIGHTDIRECTION ),
-
-	  ATTR_BONE_INDEXES   = BIT( ATTR_INDEX_BONE_INDEXES ),
-	  ATTR_BONE_WEIGHTS   = BIT( ATTR_INDEX_BONE_WEIGHTS ),
-
-	  // for .md3 interpolation
-	  ATTR_POSITION2      = BIT( ATTR_INDEX_POSITION2 ),
-	  ATTR_TANGENT2       = BIT( ATTR_INDEX_TANGENT2 ),
-	  ATTR_BINORMAL2      = BIT( ATTR_INDEX_BINORMAL2 ),
-	  ATTR_NORMAL2        = BIT( ATTR_INDEX_NORMAL2 ),
-
-	  // FIXME XBSP format with ATTR_LIGHTDIRECTION and ATTR_PAINTCOLOR
-	  //ATTR_DEFAULT = ATTR_POSITION | ATTR_TEXCOORD | ATTR_TANGENT | ATTR_BINORMAL | ATTR_COLOR,
-
-	  ATTR_BITS = ATTR_POSITION |
-	              ATTR_TEXCOORD |
-	              ATTR_LIGHTCOORD |
-	              ATTR_TANGENT |
-	              ATTR_BINORMAL |
-	              ATTR_NORMAL |
-	              ATTR_COLOR // |
-
-#if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
-	              ATTR_PAINTCOLOR |
-	              ATTR_LIGHTDIRECTION |
-#endif
-
-	              //ATTR_BONE_INDEXES |
-	              //ATTR_BONE_WEIGHTS
-	};
 
 // Tr3B - shaderProgram_t represents a pair of one
 // GLSL vertex and one GLSL fragment shader

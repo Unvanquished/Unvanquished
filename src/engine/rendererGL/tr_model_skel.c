@@ -402,14 +402,14 @@ void AddSurfaceToVBOSurfacesList( growList_t *vboSurfaces, growList_t *vboTriang
 	}
 
 	vboSurf->vbo = R_CreateVBO( va( "staticMD5Mesh_VBO %i", vboSurfaces->currentElements ), data, dataSize, VBO_USAGE_STATIC );
-	vboSurf->vbo->ofsXYZ = 0;
-	vboSurf->vbo->ofsTexCoords = ofsTexCoords;
-	vboSurf->vbo->ofsLightCoords = ofsTexCoords;
-	vboSurf->vbo->ofsTangents = ofsTangents;
-	vboSurf->vbo->ofsBinormals = ofsBinormals;
-	vboSurf->vbo->ofsNormals = ofsNormals;
-	vboSurf->vbo->ofsBoneIndexes = ofsBoneIndexes;
-	vboSurf->vbo->ofsBoneWeights = ofsBoneWeights;
+	vboSurf->vbo->attribs[ ATTR_INDEX_POSITION ].ofs = 0;
+	vboSurf->vbo->attribs[ ATTR_INDEX_TEXCOORD ].ofs = ofsTexCoords;
+	vboSurf->vbo->attribs[ ATTR_INDEX_LIGHTCOORD ].ofs = ofsTexCoords;
+	vboSurf->vbo->attribs[ ATTR_INDEX_TANGENT ].ofs = ofsTangents;
+	vboSurf->vbo->attribs[ ATTR_INDEX_BINORMAL ].ofs = ofsBinormals;
+	vboSurf->vbo->attribs[ ATTR_INDEX_NORMAL ].ofs = ofsNormals;
+	vboSurf->vbo->attribs[ ATTR_INDEX_BONE_INDEXES ].ofs = ofsBoneIndexes;
+	vboSurf->vbo->attribs[ ATTR_INDEX_BONE_WEIGHTS ].ofs = ofsBoneWeights;
 
 	vboSurf->ibo = R_CreateIBO( va( "staticMD5Mesh_IBO %i", vboSurfaces->currentElements ), indexes, indexesSize, VBO_USAGE_STATIC );
 
@@ -661,14 +661,14 @@ void AddSurfaceToVBOSurfacesList2( growList_t *vboSurfaces, growList_t *vboTrian
 	}
 
 	vboSurf->vbo = R_CreateVBO( va( "staticMD5Mesh_VBO %i", vboSurfaces->currentElements ), data, dataSize, VBO_USAGE_STATIC );
-	vboSurf->vbo->ofsXYZ = 0;
-	vboSurf->vbo->ofsTexCoords = ofsTexCoords;
-	vboSurf->vbo->ofsLightCoords = ofsTexCoords;
-	vboSurf->vbo->ofsTangents = ofsTangents;
-	vboSurf->vbo->ofsBinormals = ofsBinormals;
-	vboSurf->vbo->ofsNormals = ofsNormals;
-	vboSurf->vbo->ofsBoneIndexes = ofsBoneIndexes;
-	vboSurf->vbo->ofsBoneWeights = ofsBoneWeights;
+	vboSurf->vbo->attribs[ ATTR_INDEX_POSITION ].ofs = 0;
+	vboSurf->vbo->attribs[ ATTR_INDEX_TEXCOORD ].ofs = ofsTexCoords;
+	vboSurf->vbo->attribs[ ATTR_INDEX_LIGHTCOORD ].ofs = ofsTexCoords;
+	vboSurf->vbo->attribs[ ATTR_INDEX_TANGENT ].ofs = ofsTangents;
+	vboSurf->vbo->attribs[ ATTR_INDEX_BINORMAL ].ofs = ofsBinormals;
+	vboSurf->vbo->attribs[ ATTR_INDEX_NORMAL ].ofs = ofsNormals;
+	vboSurf->vbo->attribs[ ATTR_INDEX_BONE_INDEXES ].ofs = ofsBoneIndexes;
+	vboSurf->vbo->attribs[ ATTR_INDEX_BONE_WEIGHTS ].ofs = ofsBoneWeights;
 
 	vboSurf->ibo = R_CreateIBO( va( "staticMD5Mesh_IBO %i", vboSurfaces->currentElements ), indexes, indexesSize, VBO_USAGE_STATIC );
 

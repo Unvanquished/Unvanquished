@@ -22,6 +22,37 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // tr_vbo.c
 #include "tr_local.h"
 
+static void R_SetVBOAttributes( VBO_t *vbo )
+{
+	int i;
+	for ( i = 0; i < ATTR_INDEX_MAX; i++ )
+	{
+		if ( i == ATTR_INDEX_BONE_INDEXES )
+		{
+			vbo->attribs[ i ].componentType = GL_INT;
+		}
+		else
+		{
+			vbo->attribs[ i ].componentType = GL_FLOAT;
+		}
+
+		vbo->attribs[ i ].normalize = GL_FALSE;
+
+		if ( i == ATTR_INDEX_TANGENT || i == ATTR_INDEX_NORMAL || i == ATTR_INDEX_BINORMAL ||
+			i == ATTR_INDEX_TANGENT2 || i == ATTR_INDEX_NORMAL2 || i == ATTR_INDEX_BINORMAL2 ||
+			i == ATTR_INDEX_AMBIENTLIGHT || i == ATTR_INDEX_DIRECTEDLIGHT || i == ATTR_INDEX_LIGHTDIRECTION )
+		{
+			vbo->attribs[ i ].numComponents = 3;
+			vbo->attribs[ i ].stride = 16;
+		}
+		else
+		{
+			vbo->attribs[ i ].numComponents = 4;
+			vbo->attribs[ i ].stride = 0;
+		}
+	}
+}
+
 /*
 ============
 R_CreateVBO
@@ -56,28 +87,13 @@ VBO_t          *R_CreateVBO( const char *name, byte *vertexes, int vertexesSize,
 	R_SyncRenderThread();
 
 	vbo = ri.Hunk_Alloc( sizeof( *vbo ), h_low );
+	memset( vbo, 0, sizeof( *vbo ) );
+
 	Com_AddToGrowList( &tr.vbos, vbo );
 
 	Q_strncpyz( vbo->name, name, sizeof( vbo->name ) );
 
-	vbo->ofsXYZ = 0;
-	vbo->ofsTexCoords = 0;
-	vbo->ofsLightCoords = 0;
-	vbo->ofsBinormals = 0;
-	vbo->ofsTangents = 0;
-	vbo->ofsNormals = 0;
-	vbo->ofsColors = 0;
-	vbo->ofsPaintColors = 0;
-	vbo->ofsAmbientLight = 0;
-	vbo->ofsDirectedLight = 0;
-	vbo->ofsLightDirections = 0;
-	vbo->ofsBoneIndexes = 0;
-	vbo->ofsBoneWeights = 0;
-
-	vbo->sizeXYZ = 0;
-	vbo->sizeTangents = 0;
-	vbo->sizeBinormals = 0;
-	vbo->sizeNormals = 0;
+	R_SetVBOAttributes( vbo );
 
 	vbo->vertexesSize = vertexesSize;
 
@@ -138,28 +154,11 @@ VBO_t          *R_CreateVBO2( const char *name, int numVertexes, srfVert_t *vert
 	R_SyncRenderThread();
 
 	vbo = ri.Hunk_Alloc( sizeof( *vbo ), h_low );
+	memset( vbo, 0, sizeof( *vbo ) );
+
 	Com_AddToGrowList( &tr.vbos, vbo );
 
 	Q_strncpyz( vbo->name, name, sizeof( vbo->name ) );
-
-	vbo->ofsXYZ = 0;
-	vbo->ofsTexCoords = 0;
-	vbo->ofsLightCoords = 0;
-	vbo->ofsBinormals = 0;
-	vbo->ofsTangents = 0;
-	vbo->ofsNormals = 0;
-	vbo->ofsColors = 0;
-	vbo->ofsPaintColors = 0;
-	vbo->ofsAmbientLight = 0;
-	vbo->ofsDirectedLight = 0;
-	vbo->ofsLightDirections = 0;
-	vbo->ofsBoneIndexes = 0;
-	vbo->ofsBoneWeights = 0;
-
-	vbo->sizeXYZ = 0;
-	vbo->sizeTangents = 0;
-	vbo->sizeBinormals = 0;
-	vbo->sizeNormals = 0;
 
 	// size VBO
 	dataSize = 0;
@@ -195,49 +194,49 @@ VBO_t          *R_CreateVBO2( const char *name, int numVertexes, srfVert_t *vert
 
 	if ( stateBits & ATTR_POSITION )
 	{
-		vbo->ofsXYZ = dataOfs;
+		vbo->attribs[ ATTR_INDEX_POSITION ].ofs = dataOfs;
 		VERTEXCOPY( xyz );
 	}
 
 	// feed vertex texcoords
 	if ( stateBits & ATTR_TEXCOORD )
 	{
-		vbo->ofsTexCoords = dataOfs;
+		vbo->attribs[ ATTR_INDEX_TEXCOORD ].ofs = dataOfs;
 		VERTEXCOPY( st );
 	}
 
 	// feed vertex lightmap texcoords
 	if ( stateBits & ATTR_LIGHTCOORD )
 	{
-		vbo->ofsLightCoords = dataOfs;
+		vbo->attribs[ ATTR_INDEX_LIGHTCOORD ].ofs = dataOfs;
 		VERTEXCOPY( lightmap );
 	}
 
 	// feed vertex tangents
 	if ( stateBits & ATTR_TANGENT )
 	{
-		vbo->ofsTangents = dataOfs;
+		vbo->attribs[ ATTR_INDEX_TANGENT ].ofs = dataOfs;
 		VERTEXCOPY( tangent );
 	}
 
 	// feed vertex binormals
 	if ( stateBits & ATTR_BINORMAL )
 	{
-		vbo->ofsBinormals = dataOfs;
+		vbo->attribs[ ATTR_INDEX_BINORMAL ].ofs = dataOfs;
 		VERTEXCOPY( binormal );
 	}
 
 	// feed vertex normals
 	if ( stateBits & ATTR_NORMAL )
 	{
-		vbo->ofsNormals = dataOfs;
+		vbo->attribs[ ATTR_INDEX_NORMAL ].ofs = dataOfs;
 		VERTEXCOPY( normal );
 	}
 
 	// feed vertex colors
 	if ( stateBits & ATTR_COLOR )
 	{
-		vbo->ofsColors = dataOfs;
+		vbo->attribs[ ATTR_INDEX_COLOR ].ofs = dataOfs;
 		VERTEXCOPY( lightColor );
 	}
 
@@ -246,18 +245,20 @@ VBO_t          *R_CreateVBO2( const char *name, int numVertexes, srfVert_t *vert
 	// feed vertex paint colors
 	if ( stateBits & ATTR_PAINTCOLOR )
 	{
-		vbo->ofsPaintColors = dataOfs;
+		vbo->attribs[ ATTR_INDEX_PAINTCOLOR ].ofs = dataOfs;
 		VERTEXCOPY( paintColor );
 	}
 
 	// feed vertex light directions
 	if ( stateBits & ATTR_LIGHTDIRECTION )
 	{
-		vbo->ofsLightDirections = dataOfs;
+		vbo->attribs[ ATTR_INDEX_LIGHTDIRECTION ].ofs = dataOfs;
 		VERTEXCOPY( lightDirection );
 	}
 
 #endif
+
+	R_SetVBOAttributes( vbo );
 
 	vbo->vertexesSize = dataSize;
 	vbo->vertexesNum = numVertexes;
@@ -567,6 +568,7 @@ R_InitVBOs
 void R_InitVBOs( void )
 {
 	int  dataSize;
+	GLsizei prevOffset = 0;
 
 	ri.Printf( PRINT_DEVELOPER, "------- R_InitVBOs -------\n" );
 
@@ -580,26 +582,33 @@ void R_InitVBOs( void )
 #endif
 
 	tess.vbo = R_CreateVBO( "tessVertexArray_VBO", NULL, dataSize, VBO_USAGE_DYNAMIC );
-	tess.vbo->ofsXYZ = 0;
-	tess.vbo->ofsTexCoords = tess.vbo->ofsXYZ + sizeof( tess.xyz );
-	tess.vbo->ofsLightCoords = tess.vbo->ofsTexCoords + sizeof( tess.texCoords );
-	tess.vbo->ofsTangents = tess.vbo->ofsLightCoords + sizeof( tess.lightCoords );
-	tess.vbo->ofsBinormals = tess.vbo->ofsTangents + sizeof( tess.tangents );
-	tess.vbo->ofsNormals = tess.vbo->ofsBinormals + sizeof( tess.binormals );
-	tess.vbo->ofsColors = tess.vbo->ofsNormals + sizeof( tess.normals );
+	prevOffset = tess.vbo->attribs[ ATTR_INDEX_POSITION ].ofs = 0;
+	tess.vbo->attribs[ ATTR_INDEX_POSITION2 ].ofs = 0;
+	prevOffset = tess.vbo->attribs[ ATTR_INDEX_TEXCOORD ].ofs = prevOffset + sizeof( tess.xyz );
+	prevOffset = tess.vbo->attribs[ ATTR_INDEX_LIGHTCOORD ].ofs = prevOffset + sizeof( tess.texCoords );
+	prevOffset = tess.vbo->attribs[ ATTR_INDEX_TANGENT ].ofs = prevOffset + sizeof( tess.lightCoords );
+	tess.vbo->attribs[ ATTR_INDEX_TANGENT2 ].ofs = prevOffset;
+	prevOffset = tess.vbo->attribs[ ATTR_INDEX_BINORMAL ].ofs = prevOffset + sizeof( tess.tangents );
+	tess.vbo->attribs[ ATTR_INDEX_BINORMAL2 ].ofs = prevOffset;
+	prevOffset = tess.vbo->attribs[ ATTR_INDEX_NORMAL ].ofs = prevOffset + sizeof( tess.binormals );
+	tess.vbo->attribs[ ATTR_INDEX_NORMAL2 ].ofs = prevOffset;
+	prevOffset = tess.vbo->attribs[ ATTR_INDEX_COLOR ].ofs = prevOffset + sizeof( tess.normals );
 
 #if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
-	tess.vbo->ofsPaintColors = tess.vbo->ofsColors + sizeof( tess.colors );
-	tess.vbo->ofsAmbientLight = tess.vbo->ofsPaintColors + sizeof( tess.PaintColors );
+	prevOffset = tess.vbo->attribs[ ATTR_INDEX_PAINTCOLOR ].ofs = prevOffset + sizeof( tess.colors );
 #endif
-	tess.vbo->ofsAmbientLight = tess.vbo->ofsColors + sizeof( tess.colors );
-	tess.vbo->ofsDirectedLight = tess.vbo->ofsAmbientLight + sizeof( tess.ambientLights );
-	tess.vbo->ofsLightDirections = tess.vbo->ofsDirectedLight + sizeof( tess.directedLights );
+	prevOffset = tess.vbo->attribs[ ATTR_INDEX_AMBIENTLIGHT ].ofs = prevOffset + sizeof( tess.colors );
+	prevOffset = tess.vbo->attribs[ ATTR_INDEX_DIRECTEDLIGHT ].ofs = prevOffset + sizeof( tess.ambientLights );
+	prevOffset =tess.vbo->attribs[ ATTR_INDEX_LIGHTDIRECTION ].ofs = prevOffset + sizeof( tess.directedLights );
 
-	tess.vbo->sizeXYZ = sizeof( tess.xyz );
-	tess.vbo->sizeTangents = sizeof( tess.tangents );
-	tess.vbo->sizeBinormals = sizeof( tess.binormals );
-	tess.vbo->sizeNormals = sizeof( tess.normals );
+	tess.vbo->attribs[ ATTR_INDEX_POSITION ].frameOffset = sizeof( tess.xyz );
+	tess.vbo->attribs[ ATTR_INDEX_TANGENT ].frameOffset = sizeof( tess.tangents );
+	tess.vbo->attribs[ ATTR_INDEX_BINORMAL ].frameOffset = sizeof( tess.binormals );
+	tess.vbo->attribs[ ATTR_INDEX_NORMAL ].frameOffset = sizeof( tess.normals );
+	tess.vbo->attribs[ ATTR_INDEX_POSITION2 ].frameOffset = sizeof( tess.xyz );
+	tess.vbo->attribs[ ATTR_INDEX_TANGENT2 ].frameOffset = sizeof( tess.tangents );
+	tess.vbo->attribs[ ATTR_INDEX_BINORMAL2 ].frameOffset = sizeof( tess.binormals );
+	tess.vbo->attribs[ ATTR_INDEX_NORMAL2 ].frameOffset = sizeof( tess.normals );
 
 	dataSize = sizeof( tess.indexes );
 

@@ -300,15 +300,8 @@ qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const c
 
 		vec4_t          tmp;
 
-		GLuint          ofsTexCoords;
-		GLuint          ofsTangents;
-		GLuint          ofsBinormals;
-		GLuint          ofsNormals;
-
-		GLuint          sizeXYZ = 0;
-		GLuint          sizeTangents = 0;
-		GLuint          sizeBinormals = 0;
-		GLuint          sizeNormals = 0;
+		uint32_t        ofs[ ATTR_INDEX_MAX ] = {0};
+		uint32_t        frameOffset[ ATTR_INDEX_MAX ] = {0};
 
 		int             vertexesNum;
 		int             f;
@@ -424,12 +417,12 @@ qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const c
 
 				if ( f == 0 )
 				{
-					sizeXYZ = dataOfs;
+					frameOffset[ ATTR_INDEX_POSITION2 ] = frameOffset[ ATTR_INDEX_POSITION ] = dataOfs;
 				}
 			}
 
 			// feed vertex texcoords
-			ofsTexCoords = dataOfs;
+			ofs[ ATTR_INDEX_TEXCOORD ] = dataOfs;
 
 			for ( j = 0; j < vertexesNum; j++ )
 			{
@@ -445,7 +438,7 @@ qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const c
 			}
 
 			// feed vertex tangents
-			ofsTangents = dataOfs;
+			ofs[ ATTR_INDEX_TANGENT2 ] = ofs[ ATTR_INDEX_TANGENT ] = dataOfs;
 
 			for ( f = 0; f < mdvModel->numFrames; f++ )
 			{
@@ -463,12 +456,12 @@ qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const c
 
 				if ( f == 0 )
 				{
-					sizeTangents = dataOfs - ofsTangents;
+					frameOffset[ ATTR_INDEX_TANGENT2 ] = frameOffset[ ATTR_INDEX_TANGENT ] = dataOfs - ofs[ ATTR_INDEX_TANGENT ];
 				}
 			}
 
 			// feed vertex binormals
-			ofsBinormals = dataOfs;
+			ofs[ ATTR_INDEX_BINORMAL2 ] = ofs[ ATTR_INDEX_BINORMAL ] = dataOfs;
 
 			for ( f = 0; f < mdvModel->numFrames; f++ )
 			{
@@ -486,12 +479,12 @@ qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const c
 
 				if ( f == 0 )
 				{
-					sizeBinormals = dataOfs - ofsBinormals;
+					frameOffset[ ATTR_INDEX_BINORMAL2 ] = frameOffset[ ATTR_INDEX_BINORMAL ] = dataOfs - ofs[ ATTR_INDEX_BINORMAL ];
 				}
 			}
 
 			// feed vertex normals
-			ofsNormals = dataOfs;
+			ofs[ ATTR_INDEX_NORMAL2 ] = ofs[ ATTR_INDEX_NORMAL ] = dataOfs;
 
 			for ( f = 0; f < mdvModel->numFrames; f++ )
 			{
@@ -509,23 +502,18 @@ qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const c
 
 				if ( f == 0 )
 				{
-					sizeNormals = dataOfs - ofsNormals;
+					frameOffset[ ATTR_INDEX_NORMAL2 ] = frameOffset[ ATTR_INDEX_NORMAL ] = dataOfs - ofs[ ATTR_INDEX_NORMAL ];
 				}
 			}
 
 			vboSurf->vbo = R_CreateVBO( va( "staticMD3Mesh_VBO '%s'", surf->name ), data, dataSize, VBO_USAGE_STATIC );
-			vboSurf->vbo->ofsXYZ = 0;
-			vboSurf->vbo->ofsTexCoords = ofsTexCoords;
-			vboSurf->vbo->ofsLightCoords = ofsTexCoords;
-			vboSurf->vbo->ofsTangents = ofsTangents;
-			vboSurf->vbo->ofsBinormals = ofsBinormals;
-			vboSurf->vbo->ofsNormals = ofsNormals;
 
-			vboSurf->vbo->sizeXYZ = sizeXYZ;
-			vboSurf->vbo->sizeTangents = sizeTangents;
-			vboSurf->vbo->sizeBinormals = sizeBinormals;
-			vboSurf->vbo->sizeNormals = sizeNormals;
-
+			for ( f = 0; f < ATTR_INDEX_MAX; f++ )
+			{
+				vboSurf->vbo->attribs[ f ].ofs = ofs[ f ];
+				vboSurf->vbo->attribs[ f ].frameOffset = frameOffset[ f ];
+			}
+			
 			ri.Hunk_FreeTempMemory( data );
 			ri.Hunk_FreeTempMemory( vertexes );
 		}

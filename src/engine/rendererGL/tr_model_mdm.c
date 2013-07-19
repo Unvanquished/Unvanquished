@@ -240,17 +240,17 @@ static void AddSurfaceToVBOSurfacesListMDM( growList_t *vboSurfaces, growList_t 
 	}
 
 	vboSurf->vbo = R_CreateVBO( va( "staticMDMMesh_VBO %i", vboSurfaces->currentElements ), data, dataSize, VBO_USAGE_STATIC );
-	vboSurf->vbo->ofsXYZ = 0;
-	vboSurf->vbo->ofsTexCoords = ofsTexCoords;
-	vboSurf->vbo->ofsLightCoords = ofsTexCoords;
-	vboSurf->vbo->ofsTangents = ofsTangents;
-	vboSurf->vbo->ofsBinormals = ofsBinormals;
-	vboSurf->vbo->ofsNormals = ofsNormals;
-	vboSurf->vbo->ofsColors = ofsNormals;
-	vboSurf->vbo->ofsLightCoords = 0; // not required anyway
-	vboSurf->vbo->ofsLightDirections = 0; // not required anyway
-	vboSurf->vbo->ofsBoneIndexes = ofsBoneIndexes;
-	vboSurf->vbo->ofsBoneWeights = ofsBoneWeights;
+	vboSurf->vbo->attribs[ ATTR_INDEX_POSITION ].ofs = 0;
+	vboSurf->vbo->attribs[ ATTR_INDEX_TEXCOORD ].ofs = ofsTexCoords;
+	vboSurf->vbo->attribs[ ATTR_INDEX_LIGHTCOORD ].ofs = ofsTexCoords;
+	vboSurf->vbo->attribs[ ATTR_INDEX_TANGENT ].ofs = ofsTangents;
+	vboSurf->vbo->attribs[ ATTR_INDEX_BINORMAL ].ofs = ofsBinormals;
+	vboSurf->vbo->attribs[ ATTR_INDEX_NORMAL ].ofs = ofsNormals;
+	vboSurf->vbo->attribs[ ATTR_INDEX_COLOR ].ofs = ofsNormals;
+	vboSurf->vbo->attribs[ ATTR_INDEX_LIGHTCOORD ].ofs = 0; // not required anyway
+	vboSurf->vbo->attribs[ ATTR_INDEX_LIGHTDIRECTION ].ofs = 0; // not required anyway
+	vboSurf->vbo->attribs[ ATTR_INDEX_BONE_INDEXES ].ofs = ofsBoneIndexes;
+	vboSurf->vbo->attribs[ ATTR_INDEX_BONE_WEIGHTS ].ofs = ofsBoneWeights;
 
 	// calculate LOD IBOs
 	lod = 0;
