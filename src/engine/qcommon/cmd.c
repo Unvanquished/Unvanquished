@@ -44,19 +44,6 @@ Maryland 20850 USA.
 #include <unordered_map>
 
 #define MAX_CMD_BUFFER 131072
-#define MAX_CMD_LINE   1024
-
-int   cmd_wait;
-
-typedef struct cmd_function_s
-{
-	struct cmd_function_s *next;
-
-	char                  *name;
-	xcommand_t            function;
-	int                   parameter;
-	completionFunc_t      complete;
-} cmd_function_t;
 
 typedef struct cmdContext_s
 {
@@ -73,30 +60,6 @@ static cmdContext_t savedCmd;
 // static char    *cmd.argv[MAX_STRING_TOKENS]; // points into cmd.tokenized
 // static char     cmd.tokenized[BIG_INFO_STRING + MAX_STRING_TOKENS];  // will have 0 bytes inserted
 // static char     cmd.cmd[BIG_INFO_STRING];  // the original command we received (no token processing)
-
-static cmd_function_t *cmd_functions; // possible commands to execute
-
-//=============================================================================
-
-/*
-============
-Cmd_FindCommand
-============
-*/
-cmd_function_t *Cmd_FindCommand( const char *cmd_name )
-{
-	cmd_function_t *cmd;
-
-	for ( cmd = cmd_functions; cmd; cmd = cmd->next )
-	{
-		if ( !Q_stricmp( cmd_name, cmd->name ) )
-		{
-			return cmd;
-		}
-	}
-
-	return NULL;
-}
 
 /*
 =============================================================================
@@ -618,32 +581,6 @@ void Cmd_Math_f( void )
 		return;
 	}
 }
-
-/*
-void    Cmd_AliasCompletion( void ( *callback )( const char *s ) )
-{
-	cmd_alias_t *alias;
-
-	for ( alias = cmd_aliases; alias; alias = alias->next )
-	{
-		callback( alias->name );
-	}
-}
-*/
-
-/*
-void    Cmd_DelayCompletion( void ( *callback )( const char *s ) )
-{
-	int i;
-
-	for ( i = 0; i < MAX_DELAYED_COMMANDS; i++ )
-	{
-		if ( delayed_cmd[ i ].delay != CMD_DELAY_UNUSED )
-		{
-			callback( delayed_cmd[ i ].name );
-		}
-	}
-}*/
 
 /*
 =============================================================================
@@ -1261,118 +1198,15 @@ void Cmd_CompleteArgument( const char *command, char *args, int argNum )
 }
 
 /*
-==================
-Cmd_CompleteCfgName
-==================
-*/
-void Cmd_CompleteCfgName( char *args, int argNum )
-{
-	if ( argNum == 2 )
-	{
-		Field_CompleteFilename( "", "cfg", qfalse );
-	}
-}
-
-/*
-==================
-Cmd_CompleteAliasName
-==================
-*/
-void Cmd_CompleteAliasName( char *args, int argNum )
-{
-	if ( argNum == 2 )
-	{
-		Field_CompleteAlias();
-	}
-}
-
-/*
-==================
-Cmd_CompleteConcat
-==================
-*/
-void Cmd_CompleteConcat( char *args, int argNum )
-{
-	// Skip
-	char *p = Com_SkipTokens( args, argNum - 1, " " );
-
-	if ( p > args )
-	{
-		Field_CompleteCommand( p, qfalse, qtrue );
-	}
-}
-
-/*
-==================
-Cmd_CompleteIf
-==================
-*/
-void Cmd_CompleteIf( char *args, int argNum )
-{
-	if ( argNum == 5 || argNum == 6 )
-	{
-		// Skip
-		char *p = Com_SkipTokens( args, argNum - 1, " " );
-
-		if ( p > args )
-		{
-			Field_CompleteCommand( p, qfalse, qtrue );
-		}
-	}
-}
-
-/*
-==================
-Cmd_CompleteDelay
-==================
-*/
-void Cmd_CompleteDelay( char *args, int argNum )
-{
-	if ( argNum == 3 || argNum == 4 )
-	{
-		// Skip "delay "
-		char *p = Com_SkipTokens( args, 1, " " );
-
-		if ( p > args )
-		{
-			Field_CompleteCommand( p, qtrue, qtrue );
-		}
-	}
-}
-
-/*
-==================
-Cmd_CompleteUnDelay
-==================
-*/
-void Cmd_CompleteUnDelay( char *args, int argNum )
-{
-	if ( argNum == 2 )
-	{
-		Field_CompleteDelay();
-	}
-}
-
-/*
 ============
 Cmd_Init
 ============
 */
 void Cmd_Init( void )
 {
-	//Cmd_SetCommandCompletionFunc( "exec", Cmd_CompleteCfgName );
-	//Cmd_SetCommandCompletionFunc( "execq", Cmd_CompleteCfgName );
-	//Cmd_SetCommandCompletionFunc( "vstr", Cvar_CompleteCvarName );
 #ifndef DEDICATED
 	Cmd_AddCommand( "modcase", Cmd_ModCase_f );
 #endif
 	Cmd_AddCommand( "if", Cmd_If_f );
-	Cmd_SetCommandCompletionFunc( "if", Cmd_CompleteIf );
 	Cmd_AddCommand( "math", Cmd_Math_f );
-	Cmd_SetCommandCompletionFunc( "math", Cvar_CompleteCvarName );
-	//Cmd_SetCommandCompletionFunc( "concat", Cmd_CompleteConcat );
-	//Cmd_SetCommandCompletionFunc( "alias", Cmd_CompleteAliasName );
-	//Cmd_SetCommandCompletionFunc( "unalias", Cmd_CompleteAliasName );
-	//Cmd_SetCommandCompletionFunc( "delay", Cmd_CompleteDelay );
-	//Cmd_SetCommandCompletionFunc( "undelay", Cmd_CompleteUnDelay );
 }
