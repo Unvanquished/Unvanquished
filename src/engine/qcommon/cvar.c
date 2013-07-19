@@ -787,34 +787,30 @@ Cvar_Command
 Handles variable inspection and changing from the console
 ============
 */
-qboolean Cvar_Command( void )
-{
-	cvar_t *v;
+bool Cvar_Command(const Cmd::Args& args) {
+    if (args.Argc() == 0) {
+        return false;
+    }
 
-	// check variables
-	v = Cvar_FindVar( Cmd_Argv( 0 ) );
+    cvar_t* var = Cvar_FindVar(args.Argv(0).c_str());
 
-	if ( !v )
-	{
-		return qfalse;
+	if (!var) {
+	    return false;
 	}
 
-	// perform a variable print or set
-	if ( Cmd_Argc() == 1 )
-	{
-		Com_Printf( _("\"%s\" is \"%s^7\" default: \"%s^7\"\n"), v->name, v->string, v->resetString );
+    if (args.Argc() == 1) {
+        //Just print the cvar
+        Com_Printf(_("\"%s\" is \"%s^7\" default: \"%s^7\"\n"), var->name, var->string, var->resetString);
 
-		if ( v->latchedString )
-		{
-			Com_Printf( _("latched: \"%s\"\n"), v->latchedString );
-		}
+        if (var->latchedString) {
+            Com_Printf(_("latched: \"%s\"\n"), var->latchedString);
+        }
+        return true;
+    }
 
-		return qtrue;
-	}
-
-	// set the value if forcing isn't required
-	Cvar_Set2( v->name, Cmd_UnquoteString( Cmd_Args() ), qfalse );
-	return qtrue;
+    // set the value if forcing isn't required
+    Cvar_Set2(var->name, args.Argv(1).c_str(), false);
+    return true;
 }
 
 /*
@@ -936,6 +932,11 @@ class CycleCmd: public Cmd::StaticCmd {
 };
 static CycleCmd CycleCmdRegistration;
 
+/*
+============
+SetCmd
+============
+*/
 class SetCmd: public Cmd::StaticCmd {
     public:
         SetCmd(const std::string& name, int flags): Cmd::StaticCmd(name, Cmd::BASE, N_("sets the value of a cvar")), flags(flags) {
@@ -980,7 +981,7 @@ static SetCmd SetaCmdRegistration("seta", CVAR_ARCHIVE);
 
 /*
 ============
-Cvar_Reset_f
+ResetCmd
 ============
 */
 class ResetCmd: public Cmd::StaticCmd {
@@ -1000,181 +1001,67 @@ static ResetCmd ResetCmdRegistration;
 
 /*
 ============
-Cvar_WriteVariables
-
-Appends lines containing "set variable value" for all variables
-with the archive flag set that are not in a transient state.
+ListCmd
 ============
 */
-void Cvar_WriteVariables( fileHandle_t f )
-{
-	cvar_t *var;
-	char   buffer[ 1024 ];
+class ListCmd: public Cmd::StaticCmd {
+    public:
+        ListCmd(): Cmd::StaticCmd("listCvars", Cmd::BASE, N_("lists variables")) {
+        }
 
-	for ( var = cvar_vars; var; var = var->next )
-	{
-		if ( var->flags & CVAR_ARCHIVE )
-		{
-			if( var->transient )
-				continue;
+        void Run(const Cmd::Args& args) const override {
+            int matchArg = 1;
+            bool raw;
+            std::string match = "";
 
-			// write the latched value, even if it hasn't taken effect yet
-			Com_sprintf( buffer, sizeof( buffer ), "seta %s%s %s\n",
-			             ( var->flags & CVAR_UNSAFE ) ? "-unsafe " : "",
-			             var->name,
-			             Cmd_QuoteString( var->latchedString ? var->latchedString : var->string ) );
-			FS_Printf( f, "%s", buffer );
-		}
-	}
-}
+            //Read parameters
+            if (args.Argc() > 1) {
+                match = args.Argv(1);
+                if (match == "-raw") {
+                    raw = true;
+                    match = (args.Argc() > 2) ? args.Argv(2) : "";
+                }
+            }
 
-/*
-============
-Cvar_List_f
-============
-*/
-void Cvar_List_f( void )
-{
-	cvar_t   *var;
-	int      i = 0;
-	char     *match = NULL;
-	qboolean raw = qfalse;
+            std::vector<cvar_t*> matches;
+            int maxNameLength = 0;
 
-	if ( Cmd_Argc() > 1 )
-	{
-		match = Cmd_Argv( 1 );
+            //Find all the matching cvars
+            for (cvar_t* var = cvar_vars; var; var = var->next) {
+                if (Q_stristr(var->name, match.c_str())) {
+                    matches.push_back(var);
+                    maxNameLength = MAX(maxNameLength, strlen(var->name));
+                }
+            }
 
-		if ( !Q_stricmp( match, "-raw" ) )
-		{
-			raw = qtrue;
-			match = ( Cmd_Argc() > 2 ) ? Cmd_Argv( 2 ) : NULL;
-		}
-	}
+            //Print the matches, keeping the flags and descriptions aligned
+            for (auto var: matches) {
+                std::string filler = std::string(maxNameLength - strlen(var->name), ' ');
+                Com_Printf("  %s%s", var->name, filler.c_str());
 
-	for ( var = cvar_vars; var; var = var->next, i++ )
-	{
-		if ( match && !Com_Filter( match, var->name, qfalse ) )
-		{
-			continue;
-		}
+                std::string flags = "";
+                flags += (var->flags & CVAR_SERVERINFO) ? "S" : "_";
+                flags += (var->flags & CVAR_SYSTEMINFO) ? "s" : "_";
+                flags += (var->flags & CVAR_USERINFO) ? "U" : "_";
+                flags += (var->flags & CVAR_ROM) ? "R" : "_";
+                flags += (var->flags & CVAR_INIT) ? "I" : "_";
+                flags += (var->flags & CVAR_ARCHIVE) ? "A" : "_";
+                flags += (var->flags & CVAR_LATCH) ? "L" : "_";
+                flags += (var->flags & CVAR_CHEAT) ? "C" : "_";
+                flags += (var->flags & CVAR_USER_CREATED) ? "?" : "_";
+                flags += (var->transient) ? "T" : " ";
 
-		if ( var->flags & CVAR_SERVERINFO )
-		{
-			Com_Printf( "S" );
-		}
-		else
-		{
-			Com_Printf( " " );
-		}
+                Com_Printf("%s ", flags.c_str());
 
-		if ( var->flags & CVAR_SYSTEMINFO )
-		{
-			Com_Printf( "s" );
-		}
-		else
-		{
-			Com_Printf( " " );
-		}
+                //TODO: the raw parameter is not handled, need a function to escape carets
+                Com_Printf("%s\n", Cmd::Escape(var->string, true).c_str());
+            }
 
-		if ( var->flags & CVAR_USERINFO )
-		{
-			Com_Printf( "U" );
-		}
-		else
-		{
-			Com_Printf( " " );
-		}
-
-		if ( var->flags & CVAR_ROM )
-		{
-			Com_Printf( "R" );
-		}
-		else
-		{
-			Com_Printf( " " );
-		}
-
-		if ( var->flags & CVAR_INIT )
-		{
-			Com_Printf( "I" );
-		}
-		else
-		{
-			Com_Printf( " " );
-		}
-
-		if ( var->flags & CVAR_ARCHIVE )
-		{
-			Com_Printf( "A" );
-		}
-		else
-		{
-			Com_Printf( " " );
-		}
-
-		if ( var->flags & CVAR_LATCH )
-		{
-			Com_Printf( "L" );
-		}
-		else
-		{
-			Com_Printf( " " );
-		}
-
-		if ( var->flags & CVAR_CHEAT )
-		{
-			Com_Printf( "C" );
-		}
-		else
-		{
-			Com_Printf( " " );
-		}
-
-		if ( var->flags & CVAR_USER_CREATED )
-		{
-			Com_Printf( "?" );
-		}
-		else
-		{
-			Com_Printf( " " );
-		}
-
-		if ( var->transient )
-		{
-			Com_Printf( "T" );
-		}
-		else
-		{
-			Com_Printf( " " );
-		}
-
-		if ( raw )
-		{
-			char *index;
-
-			Com_Printf( " %s \"", var->name );
-
-			for ( index = var->string; ; )
-			{
-				char *hat = strchr( index, '^' );
-
-				if ( !hat ) break;
-
-				Com_Printf( "%.*s", (int)( hat + 1 - index ), index );
-				index = hat + 1;
-			}
-
-			Com_Printf( "%s\"\n", index );
-		}
-		else
-		{
-			Com_Printf( " %s \"%s\"\n", var->name, var->string );
-		}
-	}
-
-	Com_Printf( "\n%i total cvars\n", i );
-	Com_Printf( "%i cvar indexes\n", cvar_numIndexes );
-}
+            Com_Printf("%zu cvars\n", matches.size());
+            Com_Printf("%i cvars indexed\n", cvar_numIndexes);
+        }
+};
+static ListCmd ListCmdRegistration;
 
 static void restart_cvars( qboolean checkForEquality )
 {
@@ -1249,28 +1136,69 @@ static void restart_cvars( qboolean checkForEquality )
 
 /*
 ============
-Cvar_Restart_f
+Cvar_WriteVariables
 
-Resets all cvars to their default value and sets them transient
+Appends lines containing "set variable value" for all variables
+with the archive flag set that are not in a transient state.
 ============
 */
-void Cvar_Restart_f( void )
+void Cvar_WriteVariables( fileHandle_t f )
 {
-	restart_cvars( qfalse );
+	cvar_t *var;
+	char   buffer[ 1024 ];
+
+	for ( var = cvar_vars; var; var = var->next )
+	{
+		if ( var->flags & CVAR_ARCHIVE )
+		{
+			if( var->transient )
+				continue;
+
+			// write the latched value, even if it hasn't taken effect yet
+			Com_sprintf( buffer, sizeof( buffer ), "seta %s%s %s\n",
+			             ( var->flags & CVAR_UNSAFE ) ? "-unsafe " : "",
+			             var->name,
+			             Cmd_QuoteString( var->latchedString ? var->latchedString : var->string ) );
+			FS_Printf( f, "%s", buffer );
+		}
+	}
 }
 
 /*
 ============
-Cvar_Clean_f
+RestartCvarsCmd
+
+Resets all cvars to their default value and sets them transient
+============
+*/
+class RestartCvarsCmd: public Cmd::StaticCmd {
+    public:
+        RestartCvarsCmd(): Cmd::StaticCmd("restartCvars", Cmd::BASE, N_("reset all cvars to their default value")) {
+        }
+
+        void Run(const Cmd::Args& args) const override {
+            restart_cvars(false);
+        }
+};
+static RestartCvarsCmd RestartCvarsCmdRegistration;
+
+/*
+============
+CleanCvarsCmd
 
 Resets all cvars to their default value and sets them transient, if their current value and their default value are equal
 ============
 */
+class CleanCvarsCmd: public Cmd::StaticCmd {
+    public:
+        CleanCvarsCmd(): Cmd::StaticCmd("cleanCvars", Cmd::BASE, N_("reset all cvars to their default value")) {
+        }
 
-void Cvar_Clean_f( void )
-{
-	restart_cvars( qtrue );
-}
+        void Run(const Cmd::Args& args) const override {
+            restart_cvars(true);
+        }
+};
+static CleanCvarsCmd CleanCvarsCmdRegistration;
 
 /*
 =====================
@@ -1453,7 +1381,4 @@ void Cvar_Init( void )
 	//Cmd_SetCommandCompletionFunc( "setu", Cvar_CompleteCvarName );
 	//Cmd_SetCommandCompletionFunc( "seta", Cvar_CompleteCvarName );
 	//Cmd_SetCommandCompletionFunc( "reset", Cvar_CompleteCvarName );
-	Cmd_AddCommand( "cvarlist", Cvar_List_f );
-	Cmd_AddCommand( "cvar_clean", Cvar_Clean_f );
-	Cmd_AddCommand( "cvar_restart", Cvar_Restart_f );
 }

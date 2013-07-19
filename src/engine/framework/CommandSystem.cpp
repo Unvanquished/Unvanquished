@@ -159,7 +159,7 @@ namespace Cmd {
 
         //TODO: remove that and add default command handlers or something
         // check cvars
-        if (Cvar_Command()) {
+        if (Cvar_Command(args)) {
             return;
         }
 
