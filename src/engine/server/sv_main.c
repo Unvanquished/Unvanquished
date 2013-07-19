@@ -34,6 +34,8 @@ Maryland 20850 USA.
 
 #include "server.h"
 
+#include "../framework/CommandSystem.h"
+
 #ifdef USE_VOIP
 cvar_t         *sv_voip;
 #endif
@@ -895,7 +897,7 @@ void SVC_RemoteCommand( netadr_t from, msg_t *msg )
 
 		Q_strcat( remaining, sizeof( remaining ), cmd_aux );
 
-		Cmd_ExecuteString( remaining );
+		Cmd::BufferCommandText(remaining, Cmd::NOW, true);
 	}
 
 	Com_EndRedirect();
@@ -1327,7 +1329,7 @@ void SV_Frame( int msec )
 		// there won't be a map_restart if you have shut down the server
 		// since it doesn't restart a non-running server
 		// instead, re-run the current map
-		Cbuf_AddText( va( "map %s\n", mapname ) );
+		Cmd::BufferCommandText(va("map %s", mapname));
 		return;
 	}
 
@@ -1337,14 +1339,14 @@ void SV_Frame( int msec )
 		Q_strncpyz( mapname, sv_mapname->string, MAX_QPATH );
 		SV_Shutdown( "Restarting server due to numSnapshotEntities wrapping" );
 		// TTimo see above
-		Cbuf_AddText( va( "map %s\n", mapname ) );
+		Cmd::BufferCommandText(va("map %s", mapname));
 		return;
 	}
 
 	if ( sv.restartTime && svs.time >= sv.restartTime )
 	{
 		sv.restartTime = 0;
-		Cbuf_AddText( "map_restart 0\n" );
+		Cmd::BufferCommandText("map_restart 0");
 		return;
 	}
 

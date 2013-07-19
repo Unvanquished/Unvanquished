@@ -535,6 +535,9 @@ set( SERVERLIST
 )
 
 set( QCOMMONLIST
+  ${MOUNT_DIR}/shared/Command.cpp
+  ${MOUNT_DIR}/engine/framework/BaseCommands.cpp
+  ${MOUNT_DIR}/engine/framework/CommandSystem.cpp
   ${MOUNT_DIR}/engine/qcommon/cm_load.c
   ${MOUNT_DIR}/engine/qcommon/cm_trisoup.c
   ${MOUNT_DIR}/engine/qcommon/cm_patch.c

@@ -34,6 +34,7 @@ Maryland 20850 USA.
 
 #include "client.h"
 #include "../qcommon/q_unicode.h"
+#include "../framework/CommandSystem.h"
 
 /*
 
@@ -813,7 +814,7 @@ void Console_Key( int key )
 	// ctrl-L clears screen
 	if ( key == 'l' && keys[ K_CTRL ].down )
 	{
-		Cbuf_AddText( "clear\n" );
+		Cmd::BufferCommandText("clear");
 		return;
 	}
 
@@ -842,8 +843,7 @@ void Console_Key( int key )
 		// leading slash is an explicit command
 		if ( g_consoleField.buffer[ 0 ] == '\\' || g_consoleField.buffer[ 0 ] == '/' )
 		{
-			Cbuf_AddText( g_consoleField.buffer + 1 );  // valid command
-			Cbuf_AddText( "\n" );
+			Cmd::BufferCommandText(g_consoleField.buffer + 1, Cmd::AFTER, true);  // valid command
 		}
 		else
 		{
@@ -854,7 +854,7 @@ void Console_Key( int key )
 			}
 			else
 			{
-				Cbuf_AddText( va("%s %s\n", cl_consoleCommand->string, g_consoleField.buffer) );
+				Cmd::BufferCommandText(va("%s %s", cl_consoleCommand->string, g_consoleField.buffer), Cmd::AFTER, true);
 			}
 		}
 
@@ -1732,13 +1732,13 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 		if ( key == 'f' )
 		{
 			Key_ClearStates();
-			Cbuf_ExecuteText( EXEC_APPEND, "toggle r_fullscreen\nvid_restart\n" );
+			Cmd::BufferCommandText("toggle r_fullscreen; vid_restart");
 			return;
 		}
 		else if ( key == 'q' )
 		{
 			Key_ClearStates();
-			Cbuf_ExecuteText( EXEC_APPEND, "quit\n" );
+			Cmd::BufferCommandText("quit");
 			return;
 		}
 		else if ( key == K_TAB )
@@ -1841,8 +1841,8 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 		{
 			// button commands add keynum and time as parms so that multiple
 			// sources can be discriminated and subframe corrected
-			Com_sprintf( cmd, sizeof( cmd ), "-%s %i %i\n", kb + 1, key, time );
-			Cbuf_AddText( cmd );
+			Com_sprintf( cmd, sizeof( cmd ), "-%s %i %i", kb + 1, key, time );
+			Cmd::BufferCommandText(cmd, Cmd::AFTER, true);
 		}
 
 		if ( cls.keyCatchers & KEYCATCH_UI && uivm )
@@ -1909,14 +1909,13 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 		{
 			// button commands add keynum and time as parms so that multiple
 			// sources can be discriminated and subframe corrected
-			Com_sprintf( cmd, sizeof( cmd ), "%s %i %i\n", kb, key, time );
-			Cbuf_AddText( cmd );
+			Com_sprintf( cmd, sizeof( cmd ), "%s %i %i", kb, key, time );
+			Cmd::BufferCommandText(cmd, Cmd::AFTER, true);
 		}
 		else
 		{
 			// down-only command
-			Cbuf_AddText( kb );
-			Cbuf_AddText( "\n" );
+			Cmd::BufferCommandText(kb, Cmd::AFTER, true);
 		}
 	}
 }

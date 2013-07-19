@@ -44,6 +44,8 @@ Maryland 20850 USA.
 #include "qcommon.h"
 #include "unzip.h"
 
+#include "../framework/CommandSystem.h"
+
 #ifdef _WIN32
 #include <direct.h>
 #else
@@ -2548,7 +2550,7 @@ Returns a uniqued list of files that match the given criteria
 from all search paths
 ===============
 */
-char **FS_ListFilteredFiles( const char *path, const char *extension, char *filter, int *numfiles )
+char **FS_ListFilteredFiles( const char *path, const char *extension, const char *filter, int *numfiles )
 {
 	int          nfiles;
 	char         **listCopy;
@@ -3020,46 +3022,37 @@ int FS_GetModList( char *listbuf, int bufsize )
 
 /*
 ================
-FS_Dir_f
+DirCmd
 ================
 */
-void FS_Dir_f( void )
-{
-	char *path;
-	char *extension;
-	char **dirnames;
-	int  ndirs;
-	int  i;
+class DirCmd: public Cmd::StaticCmd {
+    public:
+        DirCmd(): Cmd::StaticCmd("dir", Cmd::SYSTEM, N_("lists the files in a directory")) {
+        }
 
-	if ( Cmd_Argc() < 2 || Cmd_Argc() > 3 )
-	{
-		Cmd_PrintUsage(_("<directory> [<extension>]"), NULL);
-		return;
-	}
+        void Run(const Cmd::Args& args) const override {
+            if (args.Argc() < 2 or args.Argc() > 3) {
+                PrintUsage(args, _("<directory> [<extension>]"), "");
+                return;
+            }
 
-	if ( Cmd_Argc() == 2 )
-	{
-		path = Cmd_Argv( 1 );
-		extension = "";
-	}
-	else
-	{
-		path = Cmd_Argv( 1 );
-		extension = Cmd_Argv( 2 );
-	}
+            const std::string& path = args.Argv(1);
+            const std::string& extension = (args.Argc() == 3) ? args.Argv(2) : "";
 
-	Com_Printf(_( "Directory of %s %s\n"), path, extension );
-	Com_Printf( "---------------\n" );
+            Com_Printf(_("Directory of %s %s\n"), path.c_str(), extension.c_str());
+            Com_Printf("---------------\n");
 
-	dirnames = FS_ListFiles( path, extension, &ndirs );
+            int ndirs;
+            char** dirnames = FS_ListFiles(path.c_str(), extension.c_str(), &ndirs );
 
-	for ( i = 0; i < ndirs; i++ )
-	{
-		Com_Printf( "%s\n", dirnames[ i ] );
-	}
+            for (int i = 0; i < ndirs; i++) {
+                Com_Printf("  %s\n", dirnames[i]);
+            }
 
-	FS_FreeFileList( dirnames );
-}
+            FS_FreeFileList(dirnames);
+        }
+};
+static DirCmd DirCmdRegistration;
 
 /*
 ===========
@@ -3190,48 +3183,48 @@ void FS_SortFileList( char **filelist, int numfiles )
 
 /*
 ================
-FS_NewDir_f
+GlobCmd
 ================
 */
-void FS_NewDir_f( void )
-{
-	char *filter;
-	char **dirnames;
-	int  ndirs;
-	int  i;
+class GlobCmd: public Cmd::StaticCmd {
+    public:
+        GlobCmd(): Cmd::StaticCmd("glob", Cmd::SYSTEM, N_("searches the matching filenames")) {
+        }
 
-	if ( Cmd_Argc() < 2 )
-	{
-		Cmd_PrintUsage(_("<filter>"), NULL);
-		Com_Printf(_( "example: fdir *q3dm*.bsp\n" ));
-		return;
-	}
+        void Run(const Cmd::Args& args) const override {
+            if (args.Argc() < 2){
+                PrintUsage(args, _("<filter>"), "");
+                Com_Printf(_( "example: fdir *q3dm*.bsp\n"));
+                return;
+            }
 
-	filter = Cmd_Argv( 1 );
+            const std::string& filter = args.Argv(1);
 
-	Com_Printf( "---------------\n" );
+            Com_Printf("---------------\n");
 
-	dirnames = FS_ListFilteredFiles( "", "", filter, &ndirs );
+            int ndirs;
+            char** dirnames = FS_ListFilteredFiles("", "", filter.c_str(), &ndirs);
 
-	FS_SortFileList( dirnames, ndirs );
+            FS_SortFileList( dirnames, ndirs );
 
-	for ( i = 0; i < ndirs; i++ )
-	{
-		FS_ConvertPath( dirnames[ i ] );
-		Com_Printf( "%s\n", dirnames[ i ] );
-	}
+            for (int i = 0; i < ndirs; i++) {
+                FS_ConvertPath(dirnames[i]);
+                Com_Printf("  %s\n", dirnames[i]);
+            }
 
-	Com_Printf(_( "%d files listed\n"), ndirs );
-	FS_FreeFileList( dirnames );
-}
+            Com_Printf(_("%d files listed\n"), ndirs );
+            FS_FreeFileList(dirnames);
+        }
+};
+static GlobCmd GlobCmdRegistration;
 
 /*
 ============
-FS_Path_f
+FS_PrintPath
 
 ============
 */
-void FS_Path_f( void )
+void FS_PrintPath( void )
 {
 	searchpath_t *s;
 	int          i;
@@ -3274,89 +3267,88 @@ void FS_Path_f( void )
 	}
 }
 
+class PathCmd: public Cmd::StaticCmd {
+    public:
+        PathCmd(): Cmd::StaticCmd("path", Cmd::SYSTEM, N_("lists the file search paths")) {
+        }
+
+        void Run(const Cmd::Args& args) const override {
+            FS_PrintPath();
+        }
+};
+static PathCmd PathCmdRegistration;
+
 /*
 ============
 FS_Which_f
 ============
 */
-void FS_Which_f( void )
-{
-	searchpath_t *search;
-	char         *netpath;
-	pack_t       *pak;
-	fileInPack_t *pakFile;
-	directory_t  *dir;
-	long         hash;
-	FILE         *temp;
-	char         *filename;
-	char         buf[ MAX_OSPATH ];
+class WhichCmd: public Cmd::StaticCmd {
+    public:
+        WhichCmd(): Cmd::StaticCmd("which", Cmd::SYSTEM, N_("tells from which source a file was loaded")) {
+        }
 
-	hash = 0;
-	filename = Cmd_Argv( 1 );
+        void Run(const Cmd::Args& args) const override {
+            if (args.Argc() < 2) {
+                PrintUsage(args, _("<file>"), "");
+                return;
+            }
 
-	if ( !filename[ 0 ] )
-	{
-		Cmd_PrintUsage(_("<file>"), NULL);
-		return;
-	}
+            std::string filename = args.Argv(1);
 
-	// qpaths are not supposed to have a leading slash
-	if ( filename[ 0 ] == '/' || filename[ 0 ] == '\\' )
-	{
-		filename++;
-	}
+            // qpaths are not supposed to have a leading slash
+            if (filename[0] == '/' or filename[0] == '\\' ) {
+                filename = std::string(filename, 1);
+            }
 
-	// just wants to see if file is there
-	for ( search = fs_searchpaths; search; search = search->next )
-	{
-		if ( search->pack )
-		{
-			hash = FS_HashFileName( filename, search->pack->hashSize );
-		}
+            // just wants to see if file is there
+            for (searchpath_t* search = fs_searchpaths; search; search = search->next) {
+                long hash;
+                if ( search->pack ) {
+                    hash = FS_HashFileName(filename.c_str(), search->pack->hashSize);
+                }
 
-		// is the element a pak file?
-		if ( search->pack && search->pack->hashTable[ hash ] )
-		{
-			// look through all the pak file elements
-			pak = search->pack;
-			pakFile = pak->hashTable[ hash ];
+                // is the element a pak file?
+                if (search->pack && search->pack->hashTable[hash]) {
+                    // look through all the pak file elements
+                    pack_t* pak = search->pack;
+                    fileInPack_t* pakFile = pak->hashTable[ hash ];
 
-			do
-			{
-				// case and separator insensitive comparisons
-				if ( !FS_FilenameCompare( pakFile->name, filename ) )
-				{
-					// found it!
-					Com_Printf(_( "File \"%s\" found in \"%s\"\n"), filename, pak->pakFilename );
-					return;
-				}
+                    do {
+                        // case and separator insensitive comparisons
+                        if (!FS_FilenameCompare( pakFile->name, filename.c_str())) {
+                            // found it!
+                            Com_Printf(_( "File \"%s\" found in \"%s\"\n"), filename.c_str(), pak->pakFilename);
+                            return;
+                        }
 
-				pakFile = pakFile->next;
-			}
-			while ( pakFile != NULL );
-		}
-		else if ( search->dir )
-		{
-			dir = search->dir;
+                        pakFile = pakFile->next;
+                    } while (pakFile != NULL);
 
-			netpath = FS_BuildOSPath( dir->path, dir->gamedir, filename );
-			temp = Sys_FOpen( netpath, "rb" );
+                } else if (search->dir) {
+                    directory_t* dir = search->dir;
 
-			if ( !temp )
-			{
-				continue;
-			}
+                    char* netpath = FS_BuildOSPath(dir->path, dir->gamedir, filename.c_str());
+                    FILE* temp = Sys_FOpen(netpath, "rb");
 
-			fclose( temp );
-			Com_sprintf( buf, sizeof( buf ), "%s/%s", dir->path, dir->gamedir );
-			FS_ReplaceSeparators( buf );
-			Com_Printf(_( "File \"%s\" found at \"%s\"\n"), filename, buf );
-			return;
-		}
-	}
+                    if (!temp) {
+                        continue;
+                    }
 
-	Com_Printf(_( "File not found: \"%s\"\n"), filename );
-}
+                    fclose(temp);
+
+                    char buf[ MAX_OSPATH ];
+                    Com_sprintf(buf, sizeof(buf), "%s/%s", dir->path, dir->gamedir);
+                    FS_ReplaceSeparators(buf);
+                    Com_Printf(_("File \"%s\" found at \"%s\"\n"), filename.c_str(), buf);
+                    return;
+                }
+            }
+
+            Com_Printf(_("File not found: \"%s\"\n"), filename.c_str());
+        }
+};
+static WhichCmd WhichCmdRegistration;
 
 //===========================================================================
 
@@ -3930,18 +3922,12 @@ static void FS_Startup( const char *gameName )
 		}
 	}
 
-	// add our commands
-	Cmd_AddCommand( "path", FS_Path_f );
-	Cmd_AddCommand( "dir", FS_Dir_f );
-	Cmd_AddCommand( "fdir", FS_NewDir_f );
-	Cmd_AddCommand( "which", FS_Which_f );
-
 	// show_bug.cgi?id=506
 	// reorder the pure pk3 files according to server order
 	FS_ReorderPurePaks();
 
 	// print the current search paths
-	FS_Path_f();
+	FS_PrintPath();
 
 	fs_gamedirvar->modified = qfalse; // We just loaded, it's not modified
 
@@ -4787,7 +4773,7 @@ void FS_Restart( int checksumFeed )
 #ifdef NDEBUG
 					Com_Printf( S_WARNING "profile.pid found for profile '%s' — the system settings will revert to their defaults\n", cl_profileStr );
 					// ydnar: set crashed state
-					Cbuf_AddText( "set com_crashed 1\n" );
+					Cmd::BufferCommandText("set com_crashed 1");
 #endif
 				}
 
@@ -4795,16 +4781,16 @@ void FS_Restart( int checksumFeed )
 				Com_WriteProfile( va( "profiles/%s/profile.pid", cl_profileStr ) );
 
 				// exec the config
-				Cbuf_AddText( va( "exec profiles/%s/%s\n", cl_profileStr, CONFIG_NAME ) );
+				Cmd::BufferCommandText(va("exec profiles/%s/%s", cl_profileStr, CONFIG_NAME));
 #ifndef DEDICATED
-				Cbuf_AddText( va( "exec profiles/%s/%s\n", cl_profileStr, KEYBINDINGS_NAME ) );
+				Cmd::BufferCommandText(va("exec profiles/%s/%s", cl_profileStr, KEYBINDINGS_NAME));
 #endif
 			}
 			else
 			{
-				Cbuf_AddText( va( "exec %s\n", CONFIG_NAME ) );
+				Cmd::BufferCommandText(va("exec %s", CONFIG_NAME));
 #ifndef DEDICATED
-				Cbuf_AddText( va( "exec %s\n", KEYBINDINGS_NAME ) );
+				Cmd::BufferCommandText(va("exec %s", KEYBINDINGS_NAME));
 #endif
 			}
 		}

@@ -42,6 +42,8 @@ Maryland 20850 USA.
 
 #include "../qcommon/crypto.h"
 
+#include "../framework/CommandSystem.h"
+
 #define __(x) Trans_GettextGame(x)
 #define C__(x, y) Trans_PgettextGame(x, y)
 #define P__(x, y, c) Trans_GettextGamePlural(x, y, c)
@@ -704,7 +706,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return FS_Delete( (char*) VMA( 1 ) );
 
 		case CG_SENDCONSOLECOMMAND:
-			Cbuf_AddText( (char*) VMA( 1 ) );
+			Cmd::BufferCommandText( (char*) VMA( 1 ) );
 			return 0;
 
 		case CG_ADDCOMMAND:
@@ -1433,7 +1435,7 @@ void CL_InitCGame( void )
 	mapname = Info_ValueForKey( info, "mapname" );
 	Com_sprintf( cl.mapname, sizeof( cl.mapname ), "maps/%s.bsp", mapname );
 
-	cgvm = VM_Create( "cgame", CL_CgameSystemCalls, (vmInterpret_t) Cvar_VariableValue( "vm_cgame" ) );
+	cgvm = VM_Create( "cgame", CL_CgameSystemCalls, (vmInterpret_t) Cvar_VariableIntegerValue( "vm_cgame" ) );
 
 	if ( !cgvm )
 	{
@@ -1478,7 +1480,7 @@ void CL_InitCGame( void )
 
 void CL_InitCGameCVars( void )
 {
-	vm_t *cgv_vm = VM_Create( "cgame", CL_CgameSystemCalls, (vmInterpret_t) Cvar_VariableValue( "vm_cgame" ) );
+	vm_t *cgv_vm = VM_Create( "cgame", CL_CgameSystemCalls, (vmInterpret_t) Cvar_VariableIntegerValue( "vm_cgame" ) );
 
 	if ( !cgv_vm )
 	{
@@ -1670,8 +1672,7 @@ void CL_FirstSnapshot( void )
 	// after loading
 	if ( cl_activeAction->string[ 0 ] )
 	{
-		Cbuf_AddText( cl_activeAction->string );
-		Cbuf_AddText( "\n" );
+		Cmd::BufferCommandText(cl_activeAction->string);
 		Cvar_Set( "activeAction", "" );
 	}
 
@@ -1928,5 +1929,5 @@ void  CL_OnTeamChanged( int newTeam )
 	 *
 	 * compared to render settings, that are client/workstation specifc, teamconfigs will always be player and with that profile dependend
 	 */
-	Cbuf_AddText( va( "exec -f profiles/%s/" TEAMCONFIG_NAME "\n", cl_profile->string ) );
+	Cmd::BufferCommandText( va( "exec -f profiles/%s/" TEAMCONFIG_NAME, cl_profile->string ) );
 }

@@ -47,6 +47,9 @@ Maryland 20850 USA.
 
 #include "client.h"
 #include "snd_local.h"
+
+#include "../framework/CommandSystem.h"
+
 #define MAXSIZE            8
 #define MINSIZE            4
 
@@ -115,8 +118,8 @@ typedef struct
 	qboolean     looping, holdAtEnd, dirty, alterGameState, silent, shader;
 	fileHandle_t iFile;
 	e_status     status;
-	unsigned int startTime;
-	unsigned int lastTime;
+	int          startTime;
+	int          lastTime;
 	long         tfps;
 	long         RoQPlayed;
 	long         ROQSize;
@@ -1562,7 +1565,7 @@ static void RoQShutdown( void )
 
 		if ( s[ 0 ] )
 		{
-			Cbuf_ExecuteText( EXEC_APPEND, va( "%s\n", s ) );
+			Cmd::BufferCommandText(s);
 			Cvar_Set( "sv_nextmap", "" );
 		}
 

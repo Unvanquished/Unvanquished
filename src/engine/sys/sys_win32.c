@@ -192,7 +192,7 @@ qboolean Sys_RandomBytes( byte *string, int len )
 Sys_GetCurrentUser
 ================
 */
-char *Sys_GetCurrentUser( void )
+const char *Sys_GetCurrentUser( void )
 {
 	static char   s_userName[ 1024 ];
 	unsigned long size = sizeof( s_userName );
@@ -226,9 +226,9 @@ char *Sys_GetClipboardData( clipboard_t clip )
 
 		if ( ( hClipboardData = GetClipboardData( CF_TEXT ) ) != 0 )
 		{
-			if ( ( cliptext = GlobalLock( hClipboardData ) ) != 0 )
+			if ( ( cliptext = ( char * )GlobalLock( hClipboardData ) ) != 0 )
 			{
-				data = Z_Malloc( GlobalSize( hClipboardData ) + 1 );
+				data = ( char * ) Z_Malloc( GlobalSize( hClipboardData ) + 1 );
 				Q_strncpyz( data, cliptext, GlobalSize( hClipboardData ) );
 				GlobalUnlock( hClipboardData );
 
@@ -405,7 +405,7 @@ DIRECTORY SCANNING
 Sys_ListFilteredFiles
 ==============
 */
-void Sys_ListFilteredFiles( const char *basedir, char *subdirs, char *filter, char **list, int *numfiles )
+void Sys_ListFilteredFiles( const char *basedir, char *subdirs, const char *filter, char **list, int *numfiles )
 {
 	char               search[ MAX_OSPATH ], newsubdirs[ MAX_OSPATH ];
 	char               filename[ MAX_OSPATH ];
@@ -510,7 +510,7 @@ static qboolean strgtr( const char *s0, const char *s1 )
 Sys_ListFiles
 ==============
 */
-char **Sys_ListFiles( const char *directory, const char *extension, char *filter, int *numfiles, qboolean wantsubs )
+char **Sys_ListFiles( const char *directory, const char *extension, const char *filter, int *numfiles, qboolean wantsubs )
 {
 	char               search[ MAX_OSPATH ];
 	int                nfiles;
@@ -535,7 +535,7 @@ char **Sys_ListFiles( const char *directory, const char *extension, char *filter
 			return NULL;
 		}
 
-		listCopy = Z_Malloc( ( nfiles + 1 ) * sizeof( *listCopy ) );
+		listCopy = ( char ** ) Z_Malloc( ( nfiles + 1 ) * sizeof( *listCopy ) );
 
 		for ( i = 0; i < nfiles; i++ )
 		{
@@ -603,7 +603,7 @@ char **Sys_ListFiles( const char *directory, const char *extension, char *filter
 		return NULL;
 	}
 
-	listCopy = Z_Malloc( ( nfiles + 1 ) * sizeof( *listCopy ) );
+	listCopy = ( char ** ) Z_Malloc( ( nfiles + 1 ) * sizeof( *listCopy ) );
 
 	for ( i = 0; i < nfiles; i++ )
 	{

@@ -72,7 +72,7 @@ static qboolean PrintCpuInfoFromRegistry( void )
 		HKEY   kCpu;
 
 		int    value_buf_i[ 256 ];
-		LPBYTE value_buf = ( char * ) value_buf_i;
+		LPBYTE value_buf = ( LPBYTE ) value_buf_i;
 		DWORD  value_buf_len;
 
 		if ( RegOpenKeyEx( kCpus, name_buf, 0, KEY_QUERY_VALUE, &kCpu ) != ERROR_SUCCESS )

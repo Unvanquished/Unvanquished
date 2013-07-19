@@ -389,28 +389,9 @@ files can be execed.
 
 */
 
-void Cbuf_Init( void );
-
-// allocates an initial text buffer that will grow as needed
-
-void Cbuf_AddText( const char *text );
-
-// Adds command text at the end of the buffer, does NOT add a final \n
-
 void Cbuf_ExecuteText( int exec_when, const char *text );
 
 // this can be used in place of either Cbuf_AddText or Cbuf_InsertText
-
-void Cbuf_Execute( void );
-
-// Pulls off \n terminated lines of text from the command buffer and sends
-// them through Cmd_ExecuteString.  Stops when the buffer is empty.
-// Called on a per-frame basis, but may also be explicitly invoked.
-// Do not call inside a command function, or current args will be destroyed.
-
-void Cdelay_Frame (void);
-//Checks if a delayed command has to be executed and decreases the remaining
-//delay time for all of them
 
 //===========================================================================
 
@@ -462,10 +443,8 @@ const char *Cmd_Cmd( void );
 const char *Cmd_Cmd_FromNth( int );
 
 // these all share an output buffer
-const char *Cmd_EscapeString( const char *in );
 const char *Cmd_QuoteString( const char *in );
 const char *Cmd_UnquoteString( const char *in );
-const char *Cmd_DequoteString( const char *in ); // FIXME QUOTING INFO
 
 void Cmd_QuoteStringBuffer( const char *in, char *buffer, int size );
 
@@ -474,18 +453,9 @@ void Cmd_QuoteStringBuffer( const char *in, char *buffer, int size );
 // if arg >= argc, so string operations are always safe.
 
 void Cmd_TokenizeString( const char *text );
-void Cmd_TokenizeStringIgnoreQuotes( const char *text_in );
 void Cmd_LiteralArgsBuffer( char *buffer, int bufferLength );
 void Cmd_SaveCmdContext( void );
 void Cmd_RestoreCmdContext( void );
-
-// Takes a null terminated string.  Does not need to be /n terminated.
-// breaks the string up into arg tokens.
-
-void Cmd_ExecuteString( const char *text );
-
-// Parses a single line of text into arguments and tries to execute it
-// as if it was typed at the console
 
 /*
 ==============================================================
@@ -802,7 +772,7 @@ int        Com_Milliseconds( void );  // will be journaled properly
 unsigned   Com_BlockChecksum( const void *buffer, int length );
 char       *Com_MD5File( const char *filename, int length );
 void       Com_MD5Buffer( const char *pubkey, int size, char *buffer, int bufsize );
-int        Com_FilterPath( char *filter, char *name, int casesensitive );
+int        Com_FilterPath( const char *filter, char *name, int casesensitive );
 int        Com_RealTime( qtime_t *qtime );
 int        Com_GMTime( qtime_t *qtime );
 // Com_Time: client gets local time, server gets GMT
@@ -1157,7 +1127,7 @@ char         *Sys_Dirname( char *path );
 char         *Sys_Basename( char *path );
 char         *Sys_ConsoleInput( void );
 
-char         **Sys_ListFiles( const char *directory, const char *extension, char *filter, int *numfiles, qboolean wantsubs );
+char         **Sys_ListFiles( const char *directory, const char *extension, const char *filter, int *numfiles, qboolean wantsubs );
 void         Sys_FreeFileList( char **list );
 
 void         Sys_Sleep( int msec );

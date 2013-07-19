@@ -147,7 +147,11 @@ void Cvar_SetCheatState(void);
  * command.  Returns true if the command was a variable reference that
  * was handled. (print or change)
  */
-qboolean Cvar_Command(void);
+namespace Cmd {
+    class Args;
+}
+
+bool Cvar_Command(const Cmd::Args& args);
 
 /**
  * writes lines containing "set variable value" for all variables
@@ -167,10 +171,6 @@ char *Cvar_InfoString(int bit, qboolean big);
 void Cvar_InfoStringBuffer(int bit, char *buff, int buffsize);
 
 void Cvar_CheckRange(cvar_t *cv, float minVal, float maxVal, qboolean shouldBeIntegral);
-
-void Cvar_Restart_f(void);
-void Cvar_Clean_f(void);
-
 
 /**
  *  whenever a cvar is modified, its flags will be OR'd into this, so

@@ -40,6 +40,9 @@ Maryland 20850 USA.
 #include "qcommon.h"
 #include <setjmp.h>
 
+#include "../framework/BaseCommands.h"
+#include "../framework/CommandSystem.h"
+
 // htons
 #if defined __linux__ || defined __FreeBSD__ || MACOS_X
 #include <sys/types.h>
@@ -626,8 +629,7 @@ qboolean Com_AddStartupCommands( void )
 			added = qtrue;
 		}
 
-		Cbuf_AddText( com_consoleLines[ i ] );
-		Cbuf_AddText( "\n" );
+		Cmd::BufferCommandText(com_consoleLines[i], Cmd::AFTER, true);
 	}
 
 	return added;
@@ -700,7 +702,7 @@ void Info_Print( const char *s )
 Com_FilterPath
 ============
 */
-int Com_FilterPath( char *filter, char *name, int casesensitive )
+int Com_FilterPath( const char *filter, char *name, int casesensitive )
 {
 	int  i;
 	char new_filter[ MAX_QPATH ];
@@ -2662,8 +2664,7 @@ int Com_EventLoop( void )
 				if (cmd[0] == '/' || cmd[0] == '\\')
 				{
 					//make sure, explicit commands are not getting handled with com_consoleCommand
-					Cbuf_AddText( cmd + 1);
-					Cbuf_AddText( "\n" );
+					Cmd::BufferCommandText(cmd + 1, Cmd::AFTER, true);
 				}
 				else
 				{
@@ -2674,7 +2675,7 @@ int Com_EventLoop( void )
 					 *
 					 * the additional space gets trimmed by the parser
 					 */
-					Cbuf_AddText( va("%s %s\n", com_consoleCommand->string, cmd) );
+					Cmd::BufferCommandText(va("%s %s", com_consoleCommand->string, cmd), Cmd::AFTER, true);
 				}
 
 				break;
@@ -2838,13 +2839,13 @@ void Com_SetRecommended( void )
 	if ( goodVideo )
 	{
 		Com_Printf(_( "Found high quality video and slow CPU\n" ));
-		Cbuf_AddText( "exec preset_fast.cfg\n" );
+		Cmd::BufferCommandText("exec preset_fast.cfg");
 		Cvar_Set( "com_recommended", "2" );
 	}
 	else
 	{
 		Com_Printf(_( "Found low quality video and slow CPU\n" ));
-		Cbuf_AddText( "exec preset_fastest.cfg\n" );
+		Cmd::BufferCommandText("exec preset_fastest.cfg");
 		Cvar_Set( "com_recommended", "3" );
 	}
 }
@@ -2992,8 +2993,6 @@ void Com_Init( char *commandLine )
 	// cvar and command buffer management
 	Com_ParseCommandLine( commandLine );
 
-	Cbuf_Init();
-
 	Com_InitZoneMemory();
 	Cmd_Init();
 
@@ -3021,7 +3020,7 @@ void Com_Init( char *commandLine )
 
 	Trans_Init();
 
-	Cbuf_AddText( "exec default.cfg\n" );
+	Cmd::BufferCommandText("exec default.cfg");
 
 #if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 	// skip the q3config.cfg if "safe" is on the command line
@@ -3059,7 +3058,7 @@ void Com_Init( char *commandLine )
 				Com_Printf(_( S_WARNING "profile.pid found for profile '%s' — the system settings will revert to their defaults\n"),
 				            cl_profileStr );
 				// ydnar: set crashed state
-				Cbuf_AddText( "set com_crashed 1\n" );
+				Cmd::BufferCommandText("set com_crashed 1");
 #endif
 			}
 
@@ -3067,27 +3066,27 @@ void Com_Init( char *commandLine )
 			Com_WriteProfile( va( "profiles/%s/profile.pid", cl_profileStr ) );
 
 			// exec the config
-			Cbuf_AddText( va( "exec profiles/%s/" CONFIG_NAME "\n", cl_profileStr ) );
-			Cbuf_AddText( va( "exec profiles/%s/" KEYBINDINGS_NAME "\n", cl_profileStr ) );
-			Cbuf_AddText( va( "exec profiles/%s/" AUTOEXEC_NAME "\n", cl_profileStr ) );
+			Cmd::BufferCommandText(va("exec profiles/%s/" CONFIG_NAME, cl_profileStr));
+			Cmd::BufferCommandText(va("exec profiles/%s/" KEYBINDINGS_NAME, cl_profileStr));
+			Cmd::BufferCommandText(va("exec profiles/%s/" AUTOEXEC_NAME, cl_profileStr));
 		}
 		else
 		{
-			Cbuf_AddText( "exec " CONFIG_NAME "\n" );
-			Cbuf_AddText( "exec " KEYBINDINGS_NAME "\n" );
-			Cbuf_AddText( "exec " AUTOEXEC_NAME "\n" );
+			Cmd::BufferCommandText("exec " CONFIG_NAME);
+			Cmd::BufferCommandText("exec " KEYBINDINGS_NAME);
+			Cmd::BufferCommandText("exec " AUTOEXEC_NAME);
 		}
 	}
 #else
-	Cbuf_AddText( "exec " CONFIG_NAME "\n" );
+	Cmd::BufferCommandText("exec " CONFIG_NAME);
 #endif
 
 
 	// ydnar: reset crashed state
-	Cbuf_AddText( "set com_crashed 0\n" );
+	Cmd::BufferCommandText("set com_crashed 0");
 
 	// execute the queued commands
-	Cbuf_Execute();
+	Cmd::ExecuteCommandBuffer();
 
 	// override anything from the config files with command line args
 	Com_StartupVariable( NULL );
@@ -3225,7 +3224,7 @@ void Com_Init( char *commandLine )
 	if ( !com_dedicated->integer )
 	{
 		//Cvar_Set( "com_logosPlaying", "1" );
-		//Cbuf_AddText( "cinematic etintro.roq\n" );
+		//Cmd::BufferCommandText("cinematic etintro.roq\n");
 
 		/*Cvar_Set( "sv_nextmap", "cinematic avlogo.roq" );
 		   if( !com_introPlayed->integer ) {
@@ -3287,7 +3286,7 @@ void Com_ReadFromPipe( void )
 		{
 			char tmp = *brk;
 			*brk = '\0';
-			Cbuf_ExecuteText( EXEC_APPEND, buf );
+			Cmd::BufferCommandText(buf);
 			*brk = tmp;
 
 			numAccd -= brk - buf;
@@ -3298,7 +3297,7 @@ void Com_ReadFromPipe( void )
 			// unfortunately, this command line gets chopped
 			//  (but Cbuf_ExecuteText() chops long command lines at (MAX_STRING_CHARS - 1) anyway)
 			buf[ sizeof( buf ) - 1 ] = '\0';
-			Cbuf_ExecuteText( EXEC_APPEND, buf );
+			Cmd::BufferCommandText(buf);
 			numAccd = 0;
 		}
 	}
@@ -3592,7 +3591,7 @@ void Com_Frame( void )
 		msec = com_frameTime - lastTime;
 	}
 
-	Cbuf_Execute();
+	Cmd::ExecuteCommandBuffer();
 
 	lastTime = com_frameTime;
 
@@ -3645,8 +3644,8 @@ void Com_Frame( void )
 		}
 
 		Com_EventLoop();
-		Cbuf_Execute();
-		Cdelay_Frame();
+		Cmd::DelayFrame();
+		Cmd::ExecuteCommandBuffer();
 		//
 		// client side
 		//
@@ -3691,11 +3690,11 @@ void Com_Frame( void )
 
 				if ( com_watchdog_cmd->string[ 0 ] == '\0' )
 				{
-					Cbuf_AddText( "quit\n" );
+					Cmd::BufferCommandText("quit");
 				}
 				else
 				{
-					Cbuf_AddText( va( "%s\n", com_watchdog_cmd->string ) );
+					Cmd::BufferCommandText(com_watchdog_cmd->string);
 				}
 			}
 		}
@@ -4208,12 +4207,14 @@ void Field_CompleteAlias( void )
 	matchCount = 0;
 	shortestMatch[ 0 ] = 0;
 
+	return;
+	/*
 	Cmd_AliasCompletion( FindMatches );
 
 	if ( !Field_Complete() )
 	{
 		Cmd_AliasCompletion( PrintMatches );
-	}
+	}*/
 }
 
 /*
@@ -4226,12 +4227,14 @@ void Field_CompleteDelay( void )
 	matchCount = 0;
 	shortestMatch[ 0 ] = 0;
 
+	return;
+	/*
 	Cmd_DelayCompletion( FindMatches );
 
 	if ( !Field_Complete() )
 	{
 		Cmd_DelayCompletion( PrintMatches );
-	}
+	}*/
 }
 
 /*
