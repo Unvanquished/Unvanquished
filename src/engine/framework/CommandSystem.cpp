@@ -266,7 +266,7 @@ namespace Cmd {
             }
 
             void Run(const Cmd::Args& args) const override {
-                ListFlaggedCommands(args, ~0);
+                ListFlaggedCommands(args, ~ALIAS);
             }
     };
 

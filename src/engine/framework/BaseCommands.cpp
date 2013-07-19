@@ -207,6 +207,95 @@ namespace Cmd {
     };
     static ConcatCmd ConcatCmdRegistration;
 
+    class MathCmd: public StaticCmd {
+        public:
+            MathCmd(): StaticCmd("math", BASE, N_("does math and sets the result to a variable")) {
+            }
+
+            void Run(const Cmd::Args& args) const override {
+                if  (args.Argc() < 2) {
+                    Usage(args);
+                    return;
+                }
+
+                const std::string& targetName = args.Argv(1);
+                float currentValue = Cvar_VariableValue(targetName.c_str());
+                float newValue;
+
+                if (args.Argc() == 3) {
+                    // only one additional argument (++, --)
+                    const std::string& op = args.Argv(2);
+
+                    if (op == "++") {
+                        newValue = currentValue + 1;
+                    } else if (op == "--") {
+                        newValue = currentValue - 1;
+                    } else {
+                        Usage(args);
+                        return;
+                    }
+
+                } else if (args.Argc() == 4) {
+                    // two additional arguments (+=, -=, *=, /=)
+                    const std::string& op = args.Argv(2);
+                    float operand = std::stof(args.Argv(3));
+
+                    if (op == "+") {
+                        newValue = currentValue + operand;
+                    } else if (op == "-") {
+                        newValue = currentValue - operand;
+                    } else if (op == "*") {
+                        newValue = currentValue * operand;
+                    } else if (op == "/" or op == "÷") {
+                        if (operand == 0.0f) {
+                            Com_Log(LOG_ERROR, _( "Cannot divide by 0!" ));
+                            return;
+                        }
+                        newValue = currentValue / operand;
+                    } else {
+                        Usage(args);
+                        return;
+                    }
+
+                } else if (args.Argc() == 6) {
+                    // for additional arguments (_ = _ op _ with op in +, -, *, /)
+                    float operand1 = std::stof(args.Argv(3));
+                    const std::string& op = args.Argv(4);
+                    float operand2 = std::stof(args.Argv(5));
+
+                    if (op == "+") {
+                        newValue = operand1 + operand2;
+                    } else if (op == "-") {
+                        newValue = operand1 - operand2;
+                    } else if (op == "*") {
+                        newValue = operand1 * operand2;
+                    } else if (op == "/" or op == "÷") {
+                        if (operand2 == 0.0f) {
+                            Com_Log(LOG_ERROR, _( "Cannot divide by 0!" ));
+                            return;
+                        }
+                        newValue = operand1 / operand2;
+                    } else {
+                        Usage(args);
+                        return;
+                    }
+
+                } else {
+                    Usage(args);
+                    return;
+                }
+
+                Cvar_SetValueLatched(targetName.c_str(), newValue);
+            }
+
+            void Usage(const Cmd::Args& args) const{
+                PrintUsage(args, _("<variableToSet> = <number> <operator> <number>"), "");
+                PrintUsage(args, _("<variableToSet> <operator> <number>"), "");
+                PrintUsage(args, _("<variableToSet> (++|--)"), "");
+                Com_Printf(_("valid operators: + - × * ÷ /\n"));
+            }
+    };
+    static MathCmd MathCmdRegistration;
     /*
     ===============================================================================
 
