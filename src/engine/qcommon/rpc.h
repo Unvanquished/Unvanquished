@@ -126,7 +126,7 @@ public:
 		} else
 			Com_Error(ERR_DROP, "RPC message too short");
 	}
-	std::unique_ptr<NaCl::IPCHandle> ReadHandle()
+	NaCl::IPCHandle ReadHandle()
 	{
 		if (handles_pos <= handles.size())
 			return std::move(handles[handles_pos++]);
@@ -166,14 +166,14 @@ public:
 	{
 		return data;
 	}
-	std::vector<std::unique_ptr<NaCl::IPCHandle>>& GetHandlesBuffer()
+	std::vector<NaCl::IPCHandle>& GetHandlesBuffer()
 	{
 		return handles;
 	}
 
 private:
 	std::vector<char> data;
-	std::vector<std::unique_ptr<NaCl::IPCHandle>> handles;
+	std::vector<NaCl::IPCHandle> handles;
 	size_t pos;
 	size_t handles_pos;
 };

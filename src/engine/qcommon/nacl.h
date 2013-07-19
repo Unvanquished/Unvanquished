@@ -92,8 +92,40 @@ private:
 // - An open file
 class IPCHandle {
 public:
+	IPCHandle()
+		: handle(INVALID_HANDLE) {}
+	~IPCHandle()
+	{
+		Close();
+	}
+	IPCHandle(IPCHandle&& other)
+	{
+		handle = other.handle;
+		other.handle = INVALID_HANDLE;
+#ifndef __native_client__
+		type = other.type;
+		size = other.size;
+#endif
+	}
+	IPCHandle& operator=(IPCHandle&& other)
+	{
+		Close();
+		handle = other.handle;
+		other.handle = INVALID_HANDLE;
+#ifndef __native_client__
+		type = other.type;
+		size = other.size;
+#endif
+	}
+
+	// Check if the handle is valid
+	explicit operator bool() const
+	{
+		return handle != INVALID_HANDLE;
+	}
+
 	// Close the handle
-	~IPCHandle();
+	void Close();
 
 	// Release ownership of the underlying OS handle so that it isn't closed
 	// when the IPCHandle object is destroyed.
@@ -106,30 +138,25 @@ public:
 
 	// Send a message through the socket
 	// Returns the number of bytes sent or -1 on error
-	int SendMsg(const void* data, size_t len);
+	bool SendMsg(const void* data, size_t len) const;
 
 	// Recieve a message from the socket, will block until a message arrives.
 	// Returns the number of bytes sent or -1 on error
-	int RecvMsg(std::vector<char>& buffer);
+	bool RecvMsg(std::vector<char>& buffer) const;
 
 	// Map a shared memory region into memory
 	// Returns a pointer to the memory mapping or NULL on error
 	// The mapping remains valid even after the handle is closed
-	SharedMemoryPtr Map();
+	SharedMemoryPtr Map() const;
 
 private:
 	OSHandleType handle;
 
-	// Handles are non-copyable
-	IPCHandle() {}
-	IPCHandle(const IPCHandle&);
-	IPCHandle& operator=(const IPCHandle&);
-
 	friend bool InternalSendMsg(OSHandleType handle, const void* data, size_t len, IPCHandle* const* handles, size_t num_handles);
-	friend bool InternalRecvMsg(OSHandleType handle, std::vector<char>& buffer, std::vector<std::unique_ptr<IPCHandle>>& handles);
-	friend bool SocketPair(std::unique_ptr<IPCHandle>& first, std::unique_ptr<IPCHandle>& second);
-	friend std::unique_ptr<IPCHandle> CreateSharedMemory(size_t size);
-	friend std::unique_ptr<IPCHandle> WrapFileHandle(OSHandleType handle, FileOpenMode mode);
+	friend bool InternalRecvMsg(OSHandleType handle, std::vector<char>& buffer, std::vector<IPCHandle>& handles);
+	friend bool SocketPair(IPCHandle& first, IPCHandle& second);
+	friend IPCHandle CreateSharedMemory(size_t size);
+	friend IPCHandle WrapFileHandle(OSHandleType handle, FileOpenMode mode);
 
 	// Information only required on the host side for handle transfer protocol
 #ifndef __native_client__
@@ -148,66 +175,13 @@ private:
 
 // Create a pair of sockets which are linked to each other.
 // Returns false on error
-bool SocketPair(std::unique_ptr<IPCHandle>& first, std::unique_ptr<IPCHandle>& second);
+bool SocketPair(IPCHandle& first, IPCHandle& second);
 
 // Allocate a shared memory region of the specified size.
-std::unique_ptr<IPCHandle> CreateSharedMemory(size_t size);
+IPCHandle CreateSharedMemory(size_t size);
 
 // Wrap an open file handle in an IPCHandle
-std::unique_ptr<IPCHandle> WrapFileHandle(OSHandleType handle, FileOpenMode mode);
-
-// Host-only definitions
-#ifndef __native_client__
-
-class Module {
-public:
-	// Close the module and kill the NaCl process
-	~Module();
-
-	// Send a message through the root socket, optionally with a some IPC handles.
-	// Returns the number of bytes sent or -1 on error
-	int SendMsg(const void* data, size_t len, IPCHandle* const* handles, size_t num_handles);
-
-	// Recieve a message from the root socket, will block until a message arrives.
-	// Up to num_handles handles are retrieved from the message, any further handles are discarded.
-	// If there are less than num_handles handles, the remaining entries are filled with NULL pointers.
-	// Returns the number of bytes recieved or -1 on error
-	int RecvMsg(std::vector<char>& buffer, std::vector<std::unique_ptr<IPCHandle>>& handles);
-
-	// Overloads for sending and recieving data without any handles
-	int SendMsg(const void* data, size_t len)
-	{
-		return SendMsg(data, len, NULL, 0);
-	}
-	int RecvMsg(std::vector<char>& buffer)
-	{
-		std::vector<std::unique_ptr<IPCHandle>> handles;
-		return RecvMsg(buffer, handles);
-	}
-
-private:
-	OSHandleType root_socket;
-	OSHandleType process_handle;
-
-	// Modules are non-copyable
-	Module() {}
-	Module(const Module&);
-	Module& operator=(const Module&);
-
-	friend std::unique_ptr<Module> InternalLoadModule(const char* const*, OSHandleType*);
-};
-
-// Load a NaCl module
-std::unique_ptr<Module> LoadNaClModule(const char* module, const char* sel_ldr, const char* irt);
-
-// Load a NaCl module using the integrated debugger. The module will wait for a
-// debugger to attach on localhost:4014 before starting.
-std::unique_ptr<Module> LoadNaClModuleDebug(const char* module, const char* sel_ldr, const char* irt);
-
-// Load a native module
-std::unique_ptr<Module> LoadNativeModule(const char* module);
-
-#endif
+IPCHandle WrapFileHandle(OSHandleType handle, FileOpenMode mode);
 
 // Root socket of a module, created by the parent process. This is the only
 // socket which can transfer IPCHandles in messages.
@@ -215,35 +189,110 @@ class RootSocket {
 public:
 	// Note that the socket is not closed in the destructor. This is done to
 	// allow the socket to be re-created at any time using GetRootSocket.
+	RootSocket()
+		: handle(INVALID_HANDLE) {}
+	RootSocket(RootSocket&& other)
+		: handle(other.handle) {}
+	RootSocket& operator=(RootSocket&& other)
+	{
+		handle = other.handle;
+	}
 	~RootSocket() {}
 
-	// Root socket operations, see the descriptions in Module
-	int SendMsg(const void* data, size_t len, IPCHandle* const* handles, size_t num_handles);
-	int RecvMsg(std::vector<char>& buffer, std::vector<std::unique_ptr<IPCHandle>>& handles);
-	inline int SendMsg(const void* data, size_t len)
+	// Check if the handle is valid
+	explicit operator bool() const
+	{
+		return handle != INVALID_HANDLE;
+	}
+
+	// Send a message through the root socket, optionally with a some IPC handles.
+	// Returns the number of bytes sent or -1 on error
+	bool SendMsg(const void* data, size_t len, IPCHandle* const* handles, size_t num_handles) const;
+
+	// Recieve a message from the root socket, will block until a message arrives.
+	// Up to num_handles handles are retrieved from the message, any further handles are discarded.
+	// If there are less than num_handles handles, the remaining entries are filled with NULL pointers.
+	// Returns the number of bytes recieved or -1 on error
+	bool RecvMsg(std::vector<char>& buffer, std::vector<IPCHandle>& handles) const;
+
+	// Overloads for sending and recieving data without any handles
+	inline bool SendMsg(const void* data, size_t len) const
 	{
 		return SendMsg(data, len, NULL, 0);
 	}
-	inline int RecvMsg(std::vector<char>& buffer)
+	inline bool RecvMsg(std::vector<char>& buffer) const
 	{
-		std::vector<std::unique_ptr<IPCHandle>> handles;
+		std::vector<IPCHandle> handles;
 		return RecvMsg(buffer, handles);
 	}
 
 private:
 	OSHandleType handle;
 
-	// The root socket is non-copyable
-	RootSocket() {}
-	RootSocket(const RootSocket&);
-	RootSocket& operator=(const RootSocket&);
-
-	friend std::unique_ptr<RootSocket> GetRootSocket(const char* arg);
+	friend RootSocket GetRootSocket(const char* arg);
+	friend class Module;
 };
 
+// Host-only definitions
+
+class Module {
+public:
+	Module()
+		: process_handle(INVALID_HANDLE) {}
+	~Module()
+	{
+		Close();
+	}
+	Module(Module&& other)
+	{
+		process_handle = other.process_handle;
+		other.process_handle = INVALID_HANDLE;
+	}
+	Module& operator=(Module&& other)
+	{
+		Close();
+		process_handle = other.process_handle;
+		other.process_handle = INVALID_HANDLE;
+	}
+
+	// Check if the handle is valid
+	explicit operator bool() const
+	{
+		return process_handle != INVALID_HANDLE;
+	}
+
+	// Close the module and kill the NaCl process
+	void Close();
+
+	// Get the root socket of this module
+	RootSocket GetRootSocket() const
+	{
+		RootSocket out;
+		out.handle = root_socket;
+		return out;
+	}
+
+private:
+	OSHandleType process_handle;
+	OSHandleType root_socket;
+
+	friend Module InternalLoadModule(const char* const*, OSHandleType*);
+};
+
+// Load a NaCl module
+Module LoadNaClModule(const char* module, const char* sel_ldr, const char* irt);
+
+// Load a NaCl module using the integrated debugger. The module will wait for a
+// debugger to attach on localhost:4014 before starting.
+Module LoadNaClModuleDebug(const char* module, const char* sel_ldr, const char* irt);
+
+// Load a native module
+Module LoadNativeModule(const char* module);
+
+// Module-only definitions
 // Create the root socket from the module's command line arguments. The first
 // argument contains the root socket handle and must be passed to this function.
-std::unique_ptr<RootSocket> GetRootSocket(const char* arg);
+RootSocket GetRootSocket(const char* arg);
 
 } // namespace NaCl
 

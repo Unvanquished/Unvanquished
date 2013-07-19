@@ -349,13 +349,13 @@ public:
   // Free the VM
   void Free()
   {
-    module = nullptr;
+    module.Close();
   }
 
   // Check if the VM is active
   bool IsActive() const
   {
-    return module != nullptr;
+    return bool(module);
   }
 
 protected:
@@ -366,7 +366,7 @@ protected:
   virtual void Syscall(int index, RPC::Reader& input, RPC::Writer& output) = 0;
 
 private:
-  std::unique_ptr<NaCl::Module> module;
+  NaCl::Module module;
 };
 
 } // namespace VM

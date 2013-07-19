@@ -151,7 +151,7 @@ bool InternalSendMsg(OSHandleType handle, const void* data, size_t len, IPCHandl
 #endif
 }
 
-bool InternalRecvMsg(OSHandleType handle, std::vector<char>& buffer, std::vector<std::unique_ptr<IPCHandle>>& handles)
+bool InternalRecvMsg(OSHandleType handle, std::vector<char>& buffer, std::vector<IPCHandle>& handles)
 {
 	NaClMessageHeader hdr;
 	NaClIOVec iov[2];
@@ -236,17 +236,17 @@ bool InternalRecvMsg(OSHandleType handle, std::vector<char>& buffer, std::vector
 		}
 
 		size_t i = handle_index++;
-		handles.emplace_back(new IPCHandle);
-		handles.back()->handle = h[i];
+		handles.emplace_back();
+		handles.back().handle = h[i];
 		h[i] = NACL_INVALID_HANDLE;
 		if (tag == NACL_DESC_TRANSFERABLE_DATA_SOCKET)
-			handles.back()->type = IPCHandle::TYPE_SOCKET;
+			handles.back().type = IPCHandle::TYPE_SOCKET;
 		else if (tag == NACL_DESC_HOST_IO) {
-			handles.back()->type = IPCHandle::TYPE_FILE;
-			handles.back()->flags = flags;
+			handles.back().type = IPCHandle::TYPE_FILE;
+			handles.back().flags = flags;
 		} else {
-			handles.back()->type = IPCHandle::TYPE_SHM;
-			handles.back()->size = size;
+			handles.back().type = IPCHandle::TYPE_SHM;
+			handles.back().size = size;
 		}
 	}
 
@@ -265,25 +265,25 @@ fail:
 #endif
 }
 
-IPCHandle::~IPCHandle()
+void IPCHandle::Close()
 {
 	if (handle != INVALID_HANDLE)
 		NaClClose(handle);
 }
 
-int IPCHandle::SendMsg(const void* data, size_t len)
+bool IPCHandle::SendMsg(const void* data, size_t len) const
 {
 	return InternalSendMsg(handle, data, len, NULL, 0);
 }
 
-int IPCHandle::RecvMsg(std::vector<char>& buffer)
+bool IPCHandle::RecvMsg(std::vector<char>& buffer) const
 {
-	std::vector<std::unique_ptr<IPCHandle>> handles;
+	std::vector<IPCHandle> handles;
 	return InternalRecvMsg(handle, buffer, handles);
 }
 
 // We don't use NaClMap here because it only supports MAP_FIXED
-SharedMemoryPtr IPCHandle::Map()
+SharedMemoryPtr IPCHandle::Map() const
 {
 	// Get the size of the memory region from the NaCl runtime
 #ifdef __native_client__
@@ -319,69 +319,82 @@ void SharedMemoryPtr::Unmap()
 #endif
 }
 
-bool SocketPair(std::unique_ptr<IPCHandle>& first, std::unique_ptr<IPCHandle>& second)
+bool SocketPair(IPCHandle& first, IPCHandle& second)
 {
 	NaClHandle handles[2];
 	if (NaClSocketPair(handles) != 0)
 		return false;
-	first.reset(new IPCHandle);
-	second.reset(new IPCHandle);
-	first->handle = handles[0];
-	second->handle = handles[1];
+	first.Close();
+	second.Close();
+	first.handle = handles[0];
+	second.handle = handles[1];
 #ifndef __native_client__
-	first->type = second->type = IPCHandle::TYPE_SOCKET;
+	first.type = second.type = IPCHandle::TYPE_SOCKET;
 #endif
 	return true;
 }
 
-std::unique_ptr<IPCHandle> CreateSharedMemory(size_t size)
+IPCHandle CreateSharedMemory(size_t size)
 {
 	// Round size up to page size, otherwise the syscall will fail in NaCl
 	size = (size + NACL_MAP_PAGESIZE - 1) & ~(NACL_MAP_PAGESIZE - 1);
 
 	OSHandleType h = NaClCreateMemoryObject(size, 0);
 	if (h == NACL_INVALID_HANDLE)
-		return NULL;
-	std::unique_ptr<IPCHandle> out(new IPCHandle);
-	out->handle = h;
+		return IPCHandle();
+	IPCHandle out;
+	out.handle = h;
 #ifndef __native_client__
-	out->type = IPCHandle::TYPE_SHM;
-	out->size = size;
+	out.type = IPCHandle::TYPE_SHM;
+	out.size = size;
 #endif
 	return out;
 }
 
-std::unique_ptr<IPCHandle> WrapFileHandle(OSHandleType handle, FileOpenMode mode)
+IPCHandle WrapFileHandle(OSHandleType handle, FileOpenMode mode)
 {
-	std::unique_ptr<IPCHandle> out(new IPCHandle);
-	out->handle = handle;
+	IPCHandle out;
+	out.handle = handle;
 #ifndef __native_client__
-	out->type = IPCHandle::TYPE_FILE;
+	out.type = IPCHandle::TYPE_FILE;
 	switch (mode) {
 	case MODE_READ:
-		out->flags = NACL_ABI_O_RDONLY;
+		out.flags = NACL_ABI_O_RDONLY;
 		break;
 	case MODE_WRITE:
-		out->flags = NACL_ABI_O_WRONLY;
+		out.flags = NACL_ABI_O_WRONLY;
 		break;
 	case MODE_RW:
-		out->flags = NACL_ABI_O_RDWR;
+		out.flags = NACL_ABI_O_RDWR;
 		break;
 	case MODE_WRITE_APPEND:
-		out->flags = NACL_ABI_O_WRONLY | NACL_ABI_O_APPEND;
+		out.flags = NACL_ABI_O_WRONLY | NACL_ABI_O_APPEND;
 		break;
 	case MODE_RW_APPEND:
-		out->flags = NACL_ABI_O_RDWR | NACL_ABI_O_APPEND;
+		out.flags = NACL_ABI_O_RDWR | NACL_ABI_O_APPEND;
 		break;
 	}
 #endif
 	return out;
 }
 
+bool RootSocket::SendMsg(const void* data, size_t len, IPCHandle* const* handles, size_t num_handles) const
+{
+	return InternalSendMsg(handle, data, len, handles, num_handles);
+}
+
+bool RootSocket::RecvMsg(std::vector<char>& buffer, std::vector<IPCHandle>& handles) const
+{
+	return InternalRecvMsg(handle, buffer, handles);
+}
+
 #ifndef __native_client__
 
-Module::~Module()
+void Module::Close()
 {
+	if (process_handle == INVALID_HANDLE)
+		return;
+
 	NaClClose(root_socket);
 #ifdef _WIN32
 	TerminateProcess(process_handle, 0);
@@ -392,23 +405,13 @@ Module::~Module()
 #endif
 }
 
-int Module::SendMsg(const void* data, size_t len, IPCHandle* const* handles, size_t num_handles)
-{
-	return InternalSendMsg(root_socket, data, len, handles, num_handles);
-}
-
-int Module::RecvMsg(std::vector<char>& buffer, std::vector<std::unique_ptr<IPCHandle>>& handles)
-{
-	return InternalRecvMsg(root_socket, buffer, handles);
-}
-
-std::unique_ptr<Module> InternalLoadModule(const char* const* args, NaClHandle* pair)
+Module InternalLoadModule(const char* const* args, NaClHandle* pair)
 {
 #ifdef _WIN32
 	if (!SetHandleInformation(pair[1], HANDLE_FLAG_INHERIT, HANDLE_FLAG_INHERIT)) {
 		NaClClose(pair[0]);
 		NaClClose(pair[1]);
-		return NULL;
+		return Module();
 	}
 
 	// Escape command line arguments
@@ -451,22 +454,22 @@ std::unique_ptr<Module> InternalLoadModule(const char* const* args, NaClHandle* 
 	if (!CreateProcessA(NULL, const_cast<char*>(cmdline.c_str()), NULL, NULL, TRUE, 0, NULL, NULL, &startup_info, &process_information)) {
 		NaClClose(pair[0]);
 		NaClClose(pair[1]);
-		return NULL;
+		return Module();
 	}
 
 	NaClClose(pair[1]);
 	CloseHandle(process_information.hThread);
 
-	std::unique_ptr<IPCHandle> out(new Module);
-	out->process_handle = process_information.hProcess;
-	out->root_socket = pair[0];
+	Module out;
+	out.process_handle = process_information.hProcess;
+	out.root_socket = pair[0];
 	return out;
 #else
 	int pid = fork();
 	if (pid < 0) {
 		NaClClose(pair[0]);
 		NaClClose(pair[1]);
-		return NULL;
+		return Module();
 	}
 	if (pid == 0) {
 		NaClClose(pair[0]);
@@ -489,18 +492,18 @@ std::unique_ptr<Module> InternalLoadModule(const char* const* args, NaClHandle* 
 
 	NaClClose(pair[1]);
 
-	std::unique_ptr<Module> out(new Module);
-	out->process_handle = pid;
-	out->root_socket = pair[0];
+	Module out;
+	out.process_handle = pid;
+	out.root_socket = pair[0];
 	return out;
 #endif
 }
 
-std::unique_ptr<Module> LoadNaClModule(const char* module, const char* sel_ldr, const char* irt)
+Module LoadNaClModule(const char* module, const char* sel_ldr, const char* irt)
 {
 	NaClHandle pair[2];
 	if (NaClSocketPair(pair))
-		return NULL;
+		return Module();
 
 	char root_sock_redir[32];
 	snprintf(root_sock_redir, sizeof(root_sock_redir), "%d:%ld", ROOT_SOCKET_FD, (long)pair[1]);
@@ -510,11 +513,11 @@ std::unique_ptr<Module> LoadNaClModule(const char* module, const char* sel_ldr, 
 	return InternalLoadModule(args, pair);
 }
 
-std::unique_ptr<Module> LoadNaClModuleDebug(const char* module, const char* sel_ldr, const char* irt)
+Module LoadNaClModuleDebug(const char* module, const char* sel_ldr, const char* irt)
 {
 	NaClHandle pair[2];
 	if (NaClSocketPair(pair))
-		return NULL;
+		return Module();
 
 	char root_sock_redir[32];
 	snprintf(root_sock_redir, sizeof(root_sock_redir), "%d:%ld", ROOT_SOCKET_FD, (long)pair[1]);
@@ -524,11 +527,11 @@ std::unique_ptr<Module> LoadNaClModuleDebug(const char* module, const char* sel_
 	return InternalLoadModule(args, pair);
 }
 
-std::unique_ptr<Module> LoadNativeModule(const char* module)
+Module LoadNativeModule(const char* module)
 {
 	NaClHandle pair[2];
 	if (NaClSocketPair(pair))
-		return NULL;
+		return Module();
 
 	char arg[32];
 	snprintf(arg, sizeof(arg), "%ld", (long)pair[1]);
@@ -538,24 +541,14 @@ std::unique_ptr<Module> LoadNativeModule(const char* module)
 
 #endif
 
-int RootSocket::SendMsg(const void* data, size_t len, IPCHandle* const* handles, size_t num_handles)
-{
-	return InternalSendMsg(handle, data, len, handles, num_handles);
-}
-
-int RootSocket::RecvMsg(std::vector<char>& buffer, std::vector<std::unique_ptr<IPCHandle>>& handles)
-{
-	return InternalRecvMsg(handle, buffer, handles);
-}
-
-std::unique_ptr<RootSocket> GetRootSocket(const char* arg)
+RootSocket GetRootSocket(const char* arg)
 {
 	char* end;
 	NaClHandle h = (NaClHandle)strtol(arg, &end, 10);
 	if (arg == end || *end != '\0')
-		return NULL;
-	std::unique_ptr<RootSocket> out(new RootSocket);
-	out->handle = h;
+		return RootSocket();
+	RootSocket out;
+	out.handle = h;
 	return out;
 }
 

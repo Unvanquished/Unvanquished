@@ -37,9 +37,9 @@ Maryland 20850 USA.
 
 namespace VM {
 
-static std::unique_ptr<NaCl::Module> TryLoad(const char* name, const char* path, const char* game, Type type, int* abiVersion)
+static NaCl::Module TryLoad(const char* name, const char* path, const char* game, Type type, int& abiVersion)
 {
-	std::unique_ptr<NaCl::Module> out;
+	NaCl::Module out;
 	if (type == TYPE_NATIVE) {
 		char exe[MAX_QPATH];
 		Com_sprintf(exe, sizeof(exe), "%s%s", name, EXE_EXT);
@@ -58,9 +58,9 @@ static std::unique_ptr<NaCl::Module> TryLoad(const char* name, const char* path,
 	// Read the ABI version from the root socket.
 	// If this fails, we assume the remote process failed to start
 	std::vector<char> buffer;
-	if (!out->RecvMsg(buffer) || buffer.size() != sizeof(int))
-		return nullptr;
-	*abiVersion = *reinterpret_cast<int*>(buffer.data());
+	if (!out.GetRootSocket().RecvMsg(buffer) || buffer.size() != sizeof(int))
+		return NaCl::Module();
+	abiVersion = *reinterpret_cast<int*>(buffer.data());
 
 	return out;
 }
@@ -77,9 +77,9 @@ int VMBase::Create(const char* name, Type type)
 	int abiVersion;
 
 	if (libPath[0])
-		module = TryLoad(name, libPath, gameDir, type, &abiVersion);
+		module = TryLoad(name, libPath, gameDir, type, abiVersion);
 	if (!module && basePath[0])
-		module = TryLoad(name, basePath, gameDir, type, &abiVersion);
+		module = TryLoad(name, basePath, gameDir, type, abiVersion);
 
 	if (!module)
 		Com_Error(ERR_DROP, "Couldn't load VM %s", name);
@@ -89,7 +89,7 @@ int VMBase::Create(const char* name, Type type)
 
 void VMBase::DoRPC(RPC::Writer& writer, RPC::Reader& reader, bool ignoreErrors)
 {
-	if (!module->SendMsg(writer.GetData(), writer.GetSize(), writer.GetHandles(), writer.GetNumHandles())) {
+	if (!module.GetRootSocket().SendMsg(writer.GetData(), writer.GetSize(), writer.GetHandles(), writer.GetNumHandles())) {
 		if (ignoreErrors)
 			return;
 		Com_Error(ERR_DROP, "Error sending RPC message");
@@ -98,7 +98,7 @@ void VMBase::DoRPC(RPC::Writer& writer, RPC::Reader& reader, bool ignoreErrors)
 	// Handle syscalls from the remote module until the "return" pseudo-syscall is invoked
 	while (true) {
 		reader.Reset();
-		if (!module->RecvMsg(reader.GetDataBuffer(), reader.GetHandlesBuffer()))
+		if (!module.GetRootSocket().RecvMsg(reader.GetDataBuffer(), reader.GetHandlesBuffer()))
 			Com_Error(ERR_DROP, "Error recieving RPC message");
 
 		int syscall = reader.ReadInt();
@@ -108,7 +108,7 @@ void VMBase::DoRPC(RPC::Writer& writer, RPC::Reader& reader, bool ignoreErrors)
 		writer.Reset();
 		writer.WriteInt(-1);
 		Syscall(syscall, reader, writer);
-		if (!module->SendMsg(writer.GetData(), writer.GetSize(), writer.GetHandles(), writer.GetNumHandles()))
+		if (!module.GetRootSocket().SendMsg(writer.GetData(), writer.GetSize(), writer.GetHandles(), writer.GetNumHandles()))
 			Com_Error(ERR_DROP, "Error sending RPC message");
 	}
 }
