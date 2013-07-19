@@ -777,7 +777,7 @@ int        Com_Milliseconds( void );  // will be journaled properly
 unsigned   Com_BlockChecksum( const void *buffer, int length );
 char       *Com_MD5File( const char *filename, int length );
 void       Com_MD5Buffer( const char *pubkey, int size, char *buffer, int bufsize );
-int        Com_FilterPath( char *filter, char *name, int casesensitive );
+int        Com_FilterPath( const char *filter, char *name, int casesensitive );
 int        Com_RealTime( qtime_t *qtime );
 int        Com_GMTime( qtime_t *qtime );
 // Com_Time: client gets local time, server gets GMT
@@ -1132,7 +1132,7 @@ char         *Sys_Dirname( char *path );
 char         *Sys_Basename( char *path );
 char         *Sys_ConsoleInput( void );
 
-char         **Sys_ListFiles( const char *directory, const char *extension, char *filter, int *numfiles, qboolean wantsubs );
+char         **Sys_ListFiles( const char *directory, const char *extension, const char *filter, int *numfiles, qboolean wantsubs );
 void         Sys_FreeFileList( char **list );
 
 void         Sys_Sleep( int msec );

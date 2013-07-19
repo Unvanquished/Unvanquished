@@ -710,7 +710,7 @@ void Info_Print( const char *s )
 Com_FilterPath
 ============
 */
-int Com_FilterPath( char *filter, char *name, int casesensitive )
+int Com_FilterPath( const char *filter, char *name, int casesensitive )
 {
 	int  i;
 	char new_filter[ MAX_QPATH ];

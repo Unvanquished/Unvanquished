@@ -1173,7 +1173,7 @@ Resets all cvars to their default value and sets them transient
 */
 class RestartCvarsCmd: public Cmd::StaticCmd {
     public:
-        RestartCvarsCmd(): Cmd::StaticCmd("restartCvars", Cmd::BASE, N_("reset all cvars to their default value")) {
+        RestartCvarsCmd(): Cmd::StaticCmd("restartCvars", Cmd::SYSTEM, N_("reset all cvars to their default value")) {
         }
 
         void Run(const Cmd::Args& args) const override {
@@ -1191,7 +1191,7 @@ Resets all cvars to their default value and sets them transient, if their curren
 */
 class CleanCvarsCmd: public Cmd::StaticCmd {
     public:
-        CleanCvarsCmd(): Cmd::StaticCmd("cleanCvars", Cmd::BASE, N_("reset all cvars to their default value")) {
+        CleanCvarsCmd(): Cmd::StaticCmd("cleanCvars", Cmd::SYSTEM, N_("reset all cvars to their default value")) {
         }
 
         void Run(const Cmd::Args& args) const override {
