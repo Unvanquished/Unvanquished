@@ -646,7 +646,6 @@ void IN_Help( void );
 
 void IN_KeysUp( unsigned int check, int key, int time );
 void IN_PrepareKeyUp( void );
-void IN_ClearKeyDown( void );
 
 //----(SA)
 

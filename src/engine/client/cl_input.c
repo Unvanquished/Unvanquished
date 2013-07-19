@@ -1346,33 +1346,6 @@ void IN_PrepareKeyUp( void )
 
 /*
 ============
-IN_ClearKeyDown
-============
-*/
-void IN_ClearKeyDown( void )
-{
-	int i;
-
-	for ( i = 0; i < ARRAY_LEN( kb ); ++i )
-	{
-		kb[ i ].active = qfalse;
-		kb[ i ].down[ 0 ] = 0;
-		kb[ i ].down[ 1 ] = 0;
-	}
-
-	for ( i = 0; i < ARRAY_LEN( keyup ); ++i )
-	{
-		if ( keyup[ i ] )
-		{
-			Z_Free( keyup[ i ] );
-			keyup[ i ] = NULL;
-		}
-	}
-}
-
-
-/*
-============
 CL_RegisterButtonCommands
 
 Get a list of buttons from cgame (USERCMD_BUTTONS comma sperated names)
@@ -1466,5 +1439,16 @@ CL_ClearKeys
 */
 void CL_ClearKeys( void )
 {
+	int i;
+
+	for ( i = 0; i < ARRAY_LEN( keyup ); ++i )
+	{
+		if ( keyup[ i ] )
+		{
+			Z_Free( keyup[ i ] );
+			keyup[ i ] = NULL;
+		}
+	}
+
 	memset( kb, 0, sizeof( kb ) );
 }
