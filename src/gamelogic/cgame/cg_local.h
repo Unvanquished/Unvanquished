@@ -1286,9 +1286,9 @@ typedef struct
 
 	int selectedAlienSpawnClass;
 
-	int armouryBuyList[ ( WP_GRENADE - WP_BLASTER ) + UP_NUM_UPGRADES +1 ];
-	int selectedArmouryBuyItem;
-	int armouryBuyListCount;
+	int armouryBuyList[3][ ( WP_GRENADE - WP_BLASTER ) + UP_NUM_UPGRADES +1 ];
+	int selectedArmouryBuyItem[3];
+	int armouryBuyListCount[3];
 
 	int armourySellList[ WP_NUM_WEAPONS + UP_NUM_UPGRADES ];
 	int selectedArmourySellItem;

@@ -1090,13 +1090,37 @@ void CG_Rocket_CleanUpHumanSpawnItems( const char *table )
 	rocketInfo.data.selectedHumanSpawnItem = -1;
 }
 
+
+enum {
+	ROCKETDS_BOTH,
+	ROCKETDS_WEAPONS,
+	ROCKETDS_UPGRADES
+};
+
 void CG_Rocket_CleanUpArmouryBuyList( const char *table )
 {
-	rocketInfo.data.selectedArmouryBuyItem = 0;
-	rocketInfo.data.armouryBuyListCount = 0;
+	char c = table ? *table : 'd';
+	int tblIndex;
+	switch ( c )
+	{
+		case 'W':
+		case 'w':
+			tblIndex = ROCKETDS_WEAPONS;
+			break;
+
+		case 'U':
+		case 'u':
+			tblIndex = ROCKETDS_UPGRADES;
+
+		default:
+			tblIndex = ROCKETDS_BOTH;
+	}
+
+	rocketInfo.data.selectedArmouryBuyItem[ tblIndex ] = 0;
+	rocketInfo.data.armouryBuyListCount[ tblIndex ] = 0;
 }
 
-static void AddWeaponToBuyList( int i )
+static void AddWeaponToBuyList( int i, const char *table, int tblIndex )
 {
 	static char buf[ MAX_STRING_CHARS ];
 
@@ -1108,13 +1132,13 @@ static void AddWeaponToBuyList( int i )
 		Info_SetValueForKey( buf, "price", va( "%d", BG_Weapon( i )->price ), qfalse );
 		Info_SetValueForKey( buf, "description", BG_Weapon( i )->info, qfalse );
 
-		trap_Rocket_DSAddRow( "armouryBuyList", "default", buf );
+		trap_Rocket_DSAddRow( "armouryBuyList", table, buf );
 
-		rocketInfo.data.armouryBuyList[ rocketInfo.data.armouryBuyListCount++ ] = i;
+		rocketInfo.data.armouryBuyList[ tblIndex ][ rocketInfo.data.armouryBuyListCount[ tblIndex ]++ ] = i;
 	}
 }
 
-static void AddUpgradeToBuyList( int i )
+static void AddUpgradeToBuyList( int i, const char *table, int tblIndex )
 {
 	static char buf[ MAX_STRING_CHARS ];
 
@@ -1126,9 +1150,9 @@ static void AddUpgradeToBuyList( int i )
 		Info_SetValueForKey( buf, "price", va( "%d", BG_Upgrade( i )->price ), qfalse );
 		Info_SetValueForKey( buf, "description", BG_Upgrade( i )->info, qfalse );
 
-		trap_Rocket_DSAddRow( "armouryBuyList", "default", buf );
+		trap_Rocket_DSAddRow( "armouryBuyList", table, buf );
 
-		rocketInfo.data.armouryBuyList[ rocketInfo.data.armouryBuyListCount++ ] = i + WP_NUM_WEAPONS;
+		rocketInfo.data.armouryBuyList[ tblIndex ][ rocketInfo.data.armouryBuyListCount[ tblIndex ]++ ] = i + WP_NUM_WEAPONS;
 
 
 	}
@@ -1137,27 +1161,60 @@ static void AddUpgradeToBuyList( int i )
 void CG_Rocket_BuildArmouryBuyList( const char *table )
 {
 	int i;
+	int tblIndex = ROCKETDS_BOTH;
 
-	if ( !Q_stricmp( table, "default" ) )
+	if ( *table == 'w' || *table == 'W' )
 	{
-		CG_Rocket_CleanUpArmouryBuyList( "default" );
-		trap_Rocket_DSClearTable( "armouryBuyList", "default" );
+		tblIndex = ROCKETDS_WEAPONS;
+	}
 
+	if ( *table == 'u' || *table == 'U' )
+	{
+		tblIndex = ROCKETDS_UPGRADES;
+	}
+
+	CG_Rocket_CleanUpArmouryBuyList( "default" );
+	trap_Rocket_DSClearTable( "armouryBuyList", table );
+
+	if ( tblIndex != ROCKETDS_UPGRADES )
+	{
 		for ( i = 0; i <= WP_NUM_WEAPONS; ++i )
 		{
-			AddWeaponToBuyList( i );
-		}
-
-		for ( i = UP_NONE + 1; i < UP_NUM_UPGRADES; ++i )
-		{
-			AddUpgradeToBuyList( i );
+			AddWeaponToBuyList( i, table, tblIndex );
 		}
 	}
+
+	if ( tblIndex != ROCKETDS_WEAPONS )
+	{
+		for ( i = UP_NONE + 1; i < UP_NUM_UPGRADES; ++i )
+		{
+			AddUpgradeToBuyList( i, table, tblIndex );
+		}
+	}
+
 }
 
 void CG_Rocket_SetArmouryBuyList( const char *table, int index )
 {
-	rocketInfo.data.selectedArmouryBuyItem = index;
+	char c = table ? *table : 'd';
+	int tblIndex;
+	switch ( c )
+	{
+		case 'W':
+		case 'w':
+			tblIndex = ROCKETDS_WEAPONS;
+			break;
+
+		case 'U':
+		case 'u':
+			tblIndex = ROCKETDS_UPGRADES;
+
+		default:
+			tblIndex = ROCKETDS_BOTH;
+	}
+
+	rocketInfo.data.selectedArmouryBuyItem[ tblIndex ] = index;
+
 }
 
 void CG_Rocket_BuildArmourySellList( const char *table );
@@ -1166,8 +1223,24 @@ void CG_Rocket_ExecArmouryBuyList( const char *table )
 {
 	int item;
 	const char *buy = NULL;
+	char c = table ? *table : 'd';
+	int tblIndex;
+	switch ( c )
+	{
+		case 'W':
+		case 'w':
+			tblIndex = ROCKETDS_WEAPONS;
+			break;
 
-	if ( ( item = rocketInfo.data.armouryBuyList[ rocketInfo.data.selectedArmouryBuyItem ] ) > WP_NUM_WEAPONS )
+		case 'U':
+		case 'u':
+			tblIndex = ROCKETDS_UPGRADES;
+
+		default:
+			tblIndex = ROCKETDS_BOTH;
+	}
+
+	if ( ( item = rocketInfo.data.armouryBuyList[ tblIndex ][ rocketInfo.data.selectedArmouryBuyItem[ tblIndex ] ] ) > WP_NUM_WEAPONS )
 	{
 		item -= WP_NUM_WEAPONS;
 
