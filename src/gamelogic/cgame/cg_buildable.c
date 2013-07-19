@@ -1962,6 +1962,15 @@ void CG_Buildable( centity_t *cent )
 		ent.skeleton.bounds[ 1 ][ 2 ] -= mins[ 2 ];
 	}
 
+	if ( es->generic1 <= 0 )
+	{
+		ent.altShaderIndex = RE_ALTSHADER_DEAD;
+	}
+	else if ( !(es->eFlags & EF_B_POWERED) )
+	{
+		ent.altShaderIndex = RE_ALTSHADER_UNPOWERED;
+	}
+
 	//add to refresh list
 	trap_R_AddRefEntityToScene( &ent );
 
@@ -2011,6 +2020,7 @@ void CG_Buildable( centity_t *cent )
 			turretBarrel.customShader = cgs.media.redBuildShader;
 		}
 
+		turretBarrel.altShaderIndex = ent.altShaderIndex;
 		trap_R_AddRefEntityToScene( &turretBarrel );
 	}
 
@@ -2060,6 +2070,7 @@ void CG_Buildable( centity_t *cent )
 			turretTop.customShader = cgs.media.redBuildShader;
 		}
 
+		turretTop.altShaderIndex = ent.altShaderIndex;
 		trap_R_AddRefEntityToScene( &turretTop );
 	}
 

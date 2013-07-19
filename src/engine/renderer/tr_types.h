@@ -127,6 +127,14 @@ typedef enum
   RT_MAX_REF_ENTITY_TYPE
 } refEntityType_t;
 
+typedef enum
+{
+  RE_ALTSHADER_DEFAULT, // must be first
+  RE_ALTSHADER_UNPOWERED,
+  RE_ALTSHADER_DEAD,
+  RE_ALTSHADER_COUNT    // must be last
+} altShader_t;
+
 #define ZOMBIEFX_FADEOUT_TIME 10000
 
 #define REFLAG_ONLYHAND       1 // only draw hand surfaces
@@ -248,6 +256,8 @@ typedef struct
 	// extra light interaction information
 	short noShadowID;
 #endif
+
+	altShader_t altShaderIndex;
 
 // XreaL END
 } refEntity_t;

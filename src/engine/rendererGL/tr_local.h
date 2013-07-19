@@ -1168,6 +1168,11 @@ extern "C" {
 
 		struct shader_s *remappedShader; // current shader this one is remapped too
 
+		struct {
+			char *name;
+			int  index;
+		} altShader[ RE_ALTSHADER_COUNT ]; // state-based remapping; note that index 0 is unused
+
 		struct shader_s *next;
 	} shader_t;
 

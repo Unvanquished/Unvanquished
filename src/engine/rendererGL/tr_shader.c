@@ -4730,6 +4730,44 @@ static qboolean ParseShader( char *_text )
 			SurfaceParm( "noShadows" );
 			continue;
 		}
+		// when <state> <shader name>
+		else if ( !Q_stricmp( token, "when" ) )
+		{
+			int index = RE_ALTSHADER_DEFAULT;
+
+			token = COM_ParseExt2( text, qfalse );
+
+			if ( !Q_stricmp( token, "unpowered" ) )
+			{
+				index = RE_ALTSHADER_UNPOWERED;
+			}
+			else if ( !Q_stricmp( token, "destroyed" ) )
+			{
+				index = RE_ALTSHADER_DEAD;
+			}
+
+			if ( index == RE_ALTSHADER_DEFAULT )
+			{
+				ri.Printf( PRINT_WARNING, "WARNING: unknown parameter '%s' for 'when' in '%s'\n", token, shader.name );
+			}
+			else
+			{
+				int tokenLen;
+
+				token = COM_ParseExt( text, qfalse );
+
+				if ( !token[ 0 ] )
+				{
+					ri.Printf( PRINT_WARNING, "WARNING: missing shader name for 'when'\n" );
+					continue;
+				}
+
+				tokenLen = strlen( token ) + 1;
+				shader.altShader[ index ].index = 0;
+				shader.altShader[ index ].name = ri.Hunk_Alloc( sizeof( char ) * tokenLen, h_low );
+				Q_strncpyz( shader.altShader[ index ].name, token, tokenLen );
+			}
+		}
 		else if ( SurfaceParm( token ) )
 		{
 			continue;
@@ -5313,7 +5351,8 @@ from the current global working shader
 */
 static shader_t *FinishShader( void )
 {
-	int stage;
+	int      stage, i;
+	shader_t *ret;
 
 	// set sky stuff appropriate
 	if ( shader.isSky )
@@ -5567,7 +5606,20 @@ static shader_t *FinishShader( void )
 		shader.sort = SS_FOG;
 	}
 
-	return GeneratePermanentShader();
+	ret = GeneratePermanentShader();
+
+	for ( i = 1; i < RE_ALTSHADER_COUNT; ++i )
+	{
+		if ( ret->altShader[ i ].name )
+		{
+			// flags were previously stashed in altShader[0].index
+			shader_t *sh = R_FindShader( ret->altShader[ i ].name, ret->type, ret->altShader[ 0 ].index );
+
+			ret->altShader[ i ].index = sh->defaultShader ? 0 : sh->index;
+		}
+	}
+
+	return ret;
 }
 
 //========================================================================================
@@ -5928,6 +5980,8 @@ shader_t       *R_FindShader( const char *name, shaderType_t type,
 			return sh;
 		}
 	}
+
+	shader.altShader[ 0 ].index = flags; // save for later use (in case of alternativer shaders)
 
 	// make sure the render thread is stopped, because we are probably
 	// going to have to upload an image

@@ -3800,6 +3800,44 @@ static qboolean ParseShader( char **text )
 			SkipRestOfLine( text );
 			continue;
 		}
+		// when <state> <shader name>
+		else if ( !Q_stricmp( token, "when" ) )
+		{
+			int index = RE_ALTSHADER_DEFAULT;
+
+			token = COM_ParseExt2( text, qfalse );
+
+			if ( !Q_stricmp( token, "unpowered" ) )
+			{
+				index = RE_ALTSHADER_UNPOWERED;
+			}
+			else if ( !Q_stricmp( token, "destroyed" ) )
+			{
+				index = RE_ALTSHADER_DEAD;
+			}
+
+			if ( index == RE_ALTSHADER_DEFAULT )
+			{
+				ri.Printf( PRINT_WARNING, "WARNING: unknown parameter '%s' for 'when' in '%s'\n", token, shader.name );
+			}
+			else
+			{
+				int tokenLen;
+
+				token = COM_ParseExt( text, qfalse );
+
+				if ( !token[ 0 ] )
+				{
+					ri.Printf( PRINT_WARNING, "WARNING: missing shader name for 'when'\n" );
+					continue;
+				}
+
+				tokenLen = strlen( token ) + 1;
+				shader.altShader[ index ].index = 0;
+				shader.altShader[ index ].name = ri.Hunk_Alloc( sizeof( char ) * tokenLen, h_low );
+				Q_strncpyz( shader.altShader[ index ].name, token, tokenLen );
+			}
+		}
 		// unknown directive
 		else
 		{
@@ -4441,6 +4479,7 @@ static shader_t *FinishShader( void )
 {
 	int      stage, i;
 	qboolean hasLightmapStage;
+	shader_t *ret;
 
 	hasLightmapStage = qfalse;
 
@@ -4633,7 +4672,19 @@ static shader_t *FinishShader( void )
 		tr.allowCompress = qfalse;
 	}
 
-	return GeneratePermanentShader();
+	ret = GeneratePermanentShader();
+
+	for ( i = 1; i < RE_ALTSHADER_COUNT; ++i )
+	{
+		if ( ret->altShader[ i ].name )
+		{
+			shader_t *sh = R_FindShader( ret->altShader[ i ].name, ret->lightmapIndex, !( ret->noMipMaps && ret->noPicMip ) );
+
+			ret->altShader[ i ].index = sh->defaultShader ? 0 : sh->index;
+		}
+	}
+
+	return ret;
 }
 
 //========================================================================================

@@ -600,6 +600,12 @@ typedef struct shader_s
 
 	int             shaderStates[ MAX_STATES_PER_SHADER ]; // index to valid shader states
 
+	struct {
+		char *name;
+		int  index;
+		int  spare[7]; // possible future expansion
+	} altShader[ RE_ALTSHADER_COUNT ]; // state-based remapping; note that index 0 is unused
+
 	struct shader_s *next;
 } shader_t;
 
