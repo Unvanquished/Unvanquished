@@ -132,8 +132,8 @@ static void CG_Rocket_SortDS( void )
 	char *p;
 
 	Q_strncpyz( name, CG_Argv( 1 ), sizeof( name ) );
-	Q_strncpyz( table, CG_Argv( 2 ), sizeof( name ) );
-	Q_strncpyz( sortBy, CG_Argv( 3 ), sizeof( name ) );
+	Q_strncpyz( table, CG_Argv( 2 ), sizeof( table ) );
+	Q_strncpyz( sortBy, CG_Argv( 3 ), sizeof( sortBy ) );
 
 	if ( name[ 0 ] && table[ 0 ] && sortBy[ 0 ] )
 	{
