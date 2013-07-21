@@ -49,7 +49,7 @@ extern "C"
 class RocketCircleMenu : public Rocket::Core::Element, public Rocket::Controls::DataSourceListener
 {
 public:
-	RocketCircleMenu( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), dirty_query( false ), dirty_layout( false ), init( false ), formatter( NULL ), data_source( NULL )
+	RocketCircleMenu( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), dirty_query( false ), dirty_layout( false ), init( false ), radius( 10 ), formatter( NULL ), data_source( NULL )
 	{
 	}
 
@@ -147,6 +147,11 @@ public:
 			dirty_layout = true;
 		}
 
+		if ( changed_properties.find( "radius" ) != changed_properties.end() )
+		{
+			radius = GetProperty( "radius" )->Get<int>();
+		}
+
 	}
 
 	void OnRowAdd( Rocket::Controls::DataSource *data_source, const Rocket::Core::String &table, int first_row_added, int num_rows_added )
@@ -169,24 +174,21 @@ public:
 		dirty_query = true;
 	}
 
+
+
 	void OnUpdate( void )
 	{
 		if ( !init )
 		{
-			init = true;
-			SetProperty( "position", "relative" );
-			Rocket::Core::Factory::InstanceElementText( this, va( "<button onClick=\"hide %s\">Cancel</button>", GetOwnerDocument()->GetId().CString() ) );
-			GetFirstChild()->SetClass( "cancelButton", true );
+			AddCancelbutton();
 		}
 
 		if ( dirty_query )
 		{
 			dirty_query = false;
 
-			for ( int i = 1; i < GetNumChildren(); ++i )
-			{
-				RemoveChild( GetChild( i ) );
-			}
+			RemoveAllChildren();
+			AddCancelbutton();
 
 			Rocket::Controls::DataQuery query( data_source, data_table, csvFields, 0, -1 );
 			int index = 0;
@@ -249,8 +251,7 @@ protected:
 			return;
 		}
 
-		int angle = 360 /  ( numChildren - 2 );
-		float radius = Rocket::Core::Math::Min<float>( dimensions.x, dimensions.y ) * 0.75f;
+		int angle = 360 /  ( numChildren - 1 );
 
 		// Rest are the circular buttons
 		for ( int i = 1; i < numChildren; ++i )
@@ -258,8 +259,8 @@ protected:
 			child = GetChild( i );
 			width = child->GetOffsetWidth();
 			height = child->GetOffsetHeight();
-			float y = sin( angle * i * ( M_PI / 180.0f ) ) * radius;
-			float x = cos( angle * i * ( M_PI / 180.0f ) ) * radius;
+			float y = sin( angle * ( i - 1 ) * ( M_PI / 180.0f ) ) * radius;
+			float x = cos( angle * ( i - 1 ) * ( M_PI / 180.0f ) ) * radius;
 
 			child->SetProperty( "position", "absolute" );
 			child->SetProperty( "left", va( "%fpx", ( dimensions.x / 2 ) - ( width / 2 ) + offset.x + x  ) );
@@ -269,9 +270,17 @@ protected:
 
 private:
 
+	void AddCancelbutton( void )
+	{
+		init = true;
+		Rocket::Core::Factory::InstanceElementText( this, va( "<button onClick=\"hide %s\">Cancel</button>", GetOwnerDocument()->GetId().CString() ) );
+		GetFirstChild()->SetClass( "cancelButton", true );
+	}
+
 	bool dirty_query;
 	bool dirty_layout;
 	bool init;
+	int radius;
 	Rocket::Controls::DataFormatter *formatter;
 	Rocket::Controls::DataSource *data_source;
 
