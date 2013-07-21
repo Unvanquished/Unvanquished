@@ -1103,7 +1103,7 @@ Assumes 'three' teams: spectators, aliens, humans
 */
 static const char *const teamName[] = { "default", "aliens", "humans", "others" };
 
-static int Key_GetTeam( const char *arg, const char *cmd )
+int Key_GetTeam( const char *arg, const char *cmd )
 {
 	static const struct {
 		char team;

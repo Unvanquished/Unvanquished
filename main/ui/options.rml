@@ -27,10 +27,13 @@
 		</style>
 	</head>
 	<body id="options" template="window" onload="buildDS resolutions; sortDS resolutions default width">
-		<form onsubmit="store; goto main">
+		<form onsubmit="store; hide options">
 			<div>
 				<p>
 					<dataselect source="resolutions.default" fields="width,height" formatter="Resolution" />
+				</p>
+				<p>
+					<keybind cmd="+sprint" team="humans"/>
 				</p>
 				<p id="bad_warning" style="display: none;">Are you sure about this? Bad graphics are just plain <em>bad.</em></p>
 				<p>
