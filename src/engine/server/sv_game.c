@@ -630,24 +630,22 @@ qboolean SV_GetTag( int clientNum, int tagFileNumber, const char *tagname, orien
 void GameVM::GameInit(int levelTime, int randomSeed, qboolean restart)
 {
 	RPC::Writer input;
-	RPC::Reader output;
 	input.WriteInt(GAME_INIT);
 	input.WriteInt(levelTime);
 	input.WriteInt(randomSeed);
 	input.WriteInt(restart);
-	DoRPC(input, output);
+	DoRPC(input);
 }
 
 void GameVM::GameShutdown(qboolean restart)
 {
 	RPC::Writer input;
-	RPC::Reader output;
 	input.WriteInt(GAME_SHUTDOWN);
 	input.WriteInt(restart);
 
 	// Ignore socket errors when shutting down, in case the remote process
 	// has been killed and we are shutting down because of an error.
-	DoRPC(input, output, true);
+	DoRPC(input, true);
 
 	// Release the shared memory region
 	shmRegion.Close();
@@ -656,12 +654,11 @@ void GameVM::GameShutdown(qboolean restart)
 qboolean GameVM::GameClientConnect(char* reason, size_t size, int clientNum, qboolean firstTime, qboolean isBot)
 {
 	RPC::Writer input;
-	RPC::Reader output;
 	input.WriteInt(GAME_CLIENT_CONNECT);
 	input.WriteInt(clientNum);
 	input.WriteInt(firstTime);
 	input.WriteInt(isBot);
-	DoRPC(input, output);
+	RPC::Reader output = DoRPC(input);
 	qboolean denied = output.ReadInt();
 	if (denied)
 		Q_strncpyz(reason, output.ReadString(), size);
@@ -671,84 +668,67 @@ qboolean GameVM::GameClientConnect(char* reason, size_t size, int clientNum, qbo
 void GameVM::GameClientBegin(int clientNum)
 {
 	RPC::Writer input;
-	RPC::Reader output;
 	input.WriteInt(GAME_CLIENT_BEGIN);
 	input.WriteInt(clientNum);
-	DoRPC(input, output);
+	DoRPC(input);
 }
 
 void GameVM::GameClientUserInfoChanged(int clientNum)
 {
 	RPC::Writer input;
-	RPC::Reader output;
 	input.WriteInt(GAME_CLIENT_USERINFO_CHANGED);
 	input.WriteInt(clientNum);
-	DoRPC(input, output);
+	DoRPC(input);
 }
 
 void GameVM::GameClientDisconnect(int clientNum)
 {
 	RPC::Writer input;
-	RPC::Reader output;
 	input.WriteInt(GAME_CLIENT_DISCONNECT);
 	input.WriteInt(clientNum);
-	DoRPC(input, output);
+	DoRPC(input);
 }
 
 void GameVM::GameClientCommand(int clientNum)
 {
 	RPC::Writer input;
-	RPC::Reader output;
 	input.WriteInt(GAME_CLIENT_COMMAND);
 	input.WriteInt(clientNum);
-	DoRPC(input, output);
+	DoRPC(input);
 }
 
 void GameVM::GameClientThink(int clientNum)
 {
 	RPC::Writer input;
-	RPC::Reader output;
 	input.WriteInt(GAME_CLIENT_THINK);
 	input.WriteInt(clientNum);
-	DoRPC(input, output);
+	DoRPC(input);
 }
 
 void GameVM::GameRunFrame(int levelTime)
 {
 	RPC::Writer input;
-	RPC::Reader output;
 	input.WriteInt(GAME_RUN_FRAME);
 	input.WriteInt(levelTime);
-	DoRPC(input, output);
+	DoRPC(input);
 }
 
 qboolean GameVM::GameConsoleCommand()
 {
 	RPC::Writer input;
-	RPC::Reader output;
 	input.WriteInt(GAME_CONSOLE_COMMAND);
-	DoRPC(input, output);
+	RPC::Reader output = DoRPC(input);
 	return output.ReadInt();
 }
 
 qboolean GameVM::GameSnapshotCallback(int entityNum, int clientNum)
 {
-	RPC::Writer input;
-	RPC::Reader output;
-	input.WriteInt(GAME_SNAPSHOT_CALLBACK);
-	input.WriteInt(entityNum);
-	input.WriteInt(clientNum);
-	DoRPC(input, output);
-	return output.ReadInt();
+	Com_Error(ERR_DROP, "GameVM::GameSnapshotCallback not implemented");
 }
 
 void GameVM::BotAIStartFrame(int levelTime)
 {
-	RPC::Writer input;
-	RPC::Reader output;
-	input.WriteInt(BOTAI_START_FRAME);
-	input.WriteInt(levelTime);
-	DoRPC(input, output);
+	Com_Error(ERR_DROP, "GameVM::BotAIStartFrame not implemented");
 }
 
 void GameVM::GameMessageRecieved(int clientNum, const char *buffer, int bufferSize, int commandTime)
@@ -842,7 +822,6 @@ void GameVM::Syscall(int index, RPC::Reader& inputs, RPC::Writer& outputs)
 		int len = inputs.ReadInt();
 		std::unique_ptr<char[]> buffer(new char[len]);
 		FS_Read(buffer.get(), len, f);
-		outputs.WriteInt(len);
 		outputs.Write(buffer.get(), len);
 		break;
 	}
@@ -875,7 +854,6 @@ void GameVM::Syscall(int index, RPC::Reader& inputs, RPC::Writer& outputs)
 		int len = inputs.ReadInt();
 		std::unique_ptr<char[]> buffer(new char[len]);
 		outputs.WriteInt(FS_GetFileList(path, extension, buffer.get(), len));
-		outputs.WriteInt(len);
 		outputs.Write(buffer.get(), len);
 		break;
 	}
@@ -1032,7 +1010,10 @@ void GameVM::Syscall(int index, RPC::Reader& inputs, RPC::Writer& outputs)
 	}
 
 	case G_SET_CONFIGSTRING_RESTRICTIONS:
-		Com_Error(ERR_DROP, "SV_SetConfigstringRestrictions not implemented");
+	{
+		Com_Printf("SV_SetConfigstringRestrictions not implemented");
+		break;
+	}
 
 	case G_SET_USERINFO:
 	{

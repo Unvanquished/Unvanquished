@@ -52,9 +52,9 @@ public:
 	{
 		data.insert(data.end(), static_cast<const char*>(p), static_cast<const char*>(p) + len);
 	}
-	void WriteHandle(NaCl::IPCHandle* h)
+	void WriteHandle(NaCl::IPCHandle& h)
 	{
-		handles.push_back(h);
+		handles.push_back(&h);
 	}
 
 	void WriteInt(int x)
@@ -177,6 +177,34 @@ private:
 	size_t pos;
 	size_t handles_pos;
 };
+
+template<typename Func> Reader DoRPC(const NaCl::RootSocket& socket, Writer& writer, bool ignoreErrors, Func&& syscallHandler)
+{
+	Reader reader;
+
+	if (!socket.SendMsg(writer.GetData(), writer.GetSize(), writer.GetHandles(), writer.GetNumHandles())) {
+		if (ignoreErrors)
+			return reader;
+		Com_Error(ERR_DROP, "Error sending RPC message");
+	}
+
+	// Handle syscalls from the remote module until the "return" pseudo-syscall is invoked
+	while (true) {
+		reader.Reset();
+		if (!socket.RecvMsg(reader.GetDataBuffer(), reader.GetHandlesBuffer()))
+			Com_Error(ERR_DROP, "Error recieving RPC message");
+
+		int syscall = reader.ReadInt();
+		if (syscall == -1)
+			return reader;
+
+		writer.Reset();
+		writer.WriteInt(-1);
+		syscallHandler(syscall, reader, writer);
+		if (!socket.SendMsg(writer.GetData(), writer.GetSize(), writer.GetHandles(), writer.GetNumHandles()))
+			Com_Error(ERR_DROP, "Error sending RPC message");
+	}
+}
 
 } // namespace RPC
 

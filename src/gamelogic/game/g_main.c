@@ -41,8 +41,8 @@ typedef struct
 	char      *explicit;
 } cvarTable_t;
 
-gentity_t          g_entities[ MAX_GENTITIES ];
-gclient_t          g_clients[ MAX_CLIENTS ];
+gentity_t          *g_entities;
+gclient_t          *g_clients;
 
 vmCvar_t           g_timelimit;
 vmCvar_t           g_suddenDeathTime;
@@ -358,69 +358,6 @@ void               CheckExitRules( void );
 void               G_CountSpawns( void );
 void               G_CalculateBuildPoints( void );
 
-/*
-================
-vmMain
-
-This is the only way control passes into the module.
-This must be the very first function compiled into the .q3vm file
-================
-*/
-Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3, int arg4,
-                          int arg5, int arg6, int arg7, int arg8, int arg9,
-                          int arg10, int arg11 )
-{
-	switch ( command )
-	{
-		case GAME_INIT:
-			G_InitGame( arg0, arg1, arg2 );
-			return 0;
-
-		case GAME_SHUTDOWN:
-			G_ShutdownGame( arg0 );
-			return 0;
-
-		case GAME_CLIENT_CONNECT:
-			return ( intptr_t ) ClientConnect( arg0, arg1 );
-
-		case GAME_CLIENT_THINK:
-			ClientThink( arg0 );
-			return 0;
-
-		case GAME_CLIENT_USERINFO_CHANGED:
-			ClientUserinfoChanged( arg0, qfalse );
-			return 0;
-
-		case GAME_CLIENT_DISCONNECT:
-			ClientDisconnect( arg0 );
-			return 0;
-
-		case GAME_CLIENT_BEGIN:
-			ClientBegin( arg0 );
-			return 0;
-
-		case GAME_CLIENT_COMMAND:
-			ClientCommand( arg0 );
-			return 0;
-
-		case GAME_RUN_FRAME:
-			G_RunFrame( arg0 );
-			return 0;
-
-		case GAME_CONSOLE_COMMAND:
-			return ConsoleCommand();
-
-		case GAME_MESSAGERECEIVED:
-			// ignored
-			return 0;
-
-		default:
-			G_Error( "vmMain(): unknown game command %i", command );
-	}
-
-	return -1;
-}
-
 void QDECL PRINTF_LIKE(1) G_Printf( const char *fmt, ... )
 {
 	va_list argptr;
@@ -649,8 +586,6 @@ G_InitGame
 void G_InitGame( int levelTime, int randomSeed, int restart )
 {
 	int i;
-
-	trap_SyscallABIVersion( SYSCALL_ABI_VERSION_MAJOR, SYSCALL_ABI_VERSION_MINOR );
 
 	srand( randomSeed );
 

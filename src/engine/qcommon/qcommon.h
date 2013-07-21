@@ -360,7 +360,7 @@ public:
 
 protected:
   // Perform an RPC call with the given inputs, returns results in output
-  void DoRPC(RPC::Writer& input, RPC::Reader& output, bool ignoreErrors = false);
+  RPC::Reader DoRPC(RPC::Writer& input, bool ignoreErrors = false);
 
   // System call handler
   virtual void Syscall(int index, RPC::Reader& input, RPC::Writer& output) = 0;
