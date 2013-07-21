@@ -1128,6 +1128,7 @@ static void AddWeaponToBuyList( int i, const char *table, int tblIndex )
 
 	if ( BG_Weapon( i )->purchasable && BG_WeaponAllowedInStage( i, cgs.humanStage ) && !BG_InventoryContainsWeapon( i, cg.predictedPlayerState.stats ) && BG_Weapon( i )->team == TEAM_HUMANS && i != WP_BLASTER )
 	{
+		Info_SetValueForKey( buf, "num", va( "%d", i ), qfalse );
 		Info_SetValueForKey( buf, "name", BG_Weapon( i )->humanName, qfalse );
 		Info_SetValueForKey( buf, "price", va( "%d", BG_Weapon( i )->price ), qfalse );
 		Info_SetValueForKey( buf, "description", BG_Weapon( i )->info, qfalse );
@@ -1146,6 +1147,7 @@ static void AddUpgradeToBuyList( int i, const char *table, int tblIndex )
 
 	if ( BG_Upgrade( i )->purchasable && BG_UpgradeAllowedInStage( i, cgs.humanStage ) && !BG_InventoryContainsUpgrade( i, cg.predictedPlayerState.stats ) && i != UP_MEDKIT )
 	{
+		Info_SetValueForKey( buf, "num", va( "%d", tblIndex == ROCKETDS_BOTH ? i + WP_NUM_WEAPONS : i ), qfalse );
 		Info_SetValueForKey( buf, "name", BG_Upgrade( i )->humanName, qfalse );
 		Info_SetValueForKey( buf, "price", va( "%d", BG_Upgrade( i )->price ), qfalse );
 		Info_SetValueForKey( buf, "description", BG_Upgrade( i )->info, qfalse );
@@ -1173,14 +1175,31 @@ void CG_Rocket_BuildArmouryBuyList( const char *table )
 		tblIndex = ROCKETDS_UPGRADES;
 	}
 
-	CG_Rocket_CleanUpArmouryBuyList( "default" );
-	trap_Rocket_DSClearTable( "armouryBuyList", table );
+	if ( tblIndex == ROCKETDS_BOTH )
+	{
+		CG_Rocket_CleanUpArmouryBuyList( "default" );
+		trap_Rocket_DSClearTable( "armouryBuyList", "default" );
+	}
+
+	if(  tblIndex == ROCKETDS_BOTH || tblIndex == ROCKETDS_WEAPONS )
+	{
+		CG_Rocket_CleanUpArmouryBuyList( "weapons" );
+		trap_Rocket_DSClearTable( "armouryBuyList", "weapons" );
+	}
+
+	if(  tblIndex == ROCKETDS_BOTH || tblIndex == ROCKETDS_UPGRADES )
+	{
+		CG_Rocket_CleanUpArmouryBuyList( "upgrades" );
+		trap_Rocket_DSClearTable( "armouryBuyList", "upgrades" );
+	}
+
 
 	if ( tblIndex != ROCKETDS_UPGRADES )
 	{
 		for ( i = 0; i <= WP_NUM_WEAPONS; ++i )
 		{
-			AddWeaponToBuyList( i, table, tblIndex );
+			AddWeaponToBuyList( i, "default", ROCKETDS_BOTH );
+			AddWeaponToBuyList( i, "weapons", ROCKETDS_WEAPONS);
 		}
 	}
 
@@ -1188,7 +1207,8 @@ void CG_Rocket_BuildArmouryBuyList( const char *table )
 	{
 		for ( i = UP_NONE + 1; i < UP_NUM_UPGRADES; ++i )
 		{
-			AddUpgradeToBuyList( i, table, tblIndex );
+			AddUpgradeToBuyList( i, "default", ROCKETDS_BOTH );
+			AddUpgradeToBuyList( i, "upgrades", ROCKETDS_UPGRADES );
 		}
 	}
 
