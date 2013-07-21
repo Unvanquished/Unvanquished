@@ -113,6 +113,20 @@ static void CG_Rocket_DFServerLabel( int handle, const char *data )
 	trap_Rocket_DataFormatterFormattedData( handle, *data ? ++str : "&nbsp;", qfalse );
 }
 
+static void CG_Rocket_DFCMArmouryBuyWeapon( int handle, const char *data )
+{
+	weapon_t weapon = atoi( Info_ValueForKey( data, "1" ) );
+
+	trap_Rocket_DataFormatterFormattedData( handle, va( "<button class='armourybuy' onClick='setDS armouryBuyList weapons %s; execDS armouryBuyList weapons'><img src='/%s'/></button>", Info_ValueForKey( data, "2" ), CG_GetShaderNameFromHandle( cg_weapons[ weapon ].ammoIcon ) ), qfalse );
+}
+
+static void CG_Rocket_DFCMArmouryBuyUpgrade( int handle, const char *data )
+{
+	upgrade_t upgrade = atoi( Info_ValueForKey( data, "1" ) );
+
+	trap_Rocket_DataFormatterFormattedData( handle, va( "<button class='armourybuy' onClick='setDS armouryBuyList upgrades %s; execDS armouryBuyList upgrades'><img src='/%s'/></button>", Info_ValueForKey( data, "2" ), CG_GetShaderNameFromHandle( cg_upgrades[ upgrade ].upgradeIcon ) ), qfalse );
+}
+
 typedef struct
 {
 	const char *name;
@@ -122,6 +136,8 @@ typedef struct
 static const dataFormatterCmd_t dataFormatterCmdList[] =
 {
 	{ "ClassName", &CG_Rocket_DFClassName },
+	{ "CMArmouryBuyUpgrades", &CG_Rocket_DFCMArmouryBuyUpgrade },
+	{ "CMArmouryBuyWeapons", &CG_Rocket_DFCMArmouryBuyWeapon },
 	{ "PlayerName", &CG_Rocket_DFPlayerName },
 	{ "Resolution", &CG_Rocket_DFResolution },
 	{ "ServerLabel", &CG_Rocket_DFServerLabel },
