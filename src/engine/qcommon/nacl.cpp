@@ -87,7 +87,7 @@ bool InternalSendMsg(OSHandleType handle, const void* data, size_t len, IPCHandl
 	hdr.flags = 0;
 	iov[0].base = const_cast<void*>(data);
 	iov[0].length = len;
-	return NaClSendDatagram(handle, &hdr, 0) == len;
+	return NaClSendDatagram(handle, &hdr, 0) == (int)len;
 #else
 	size_t desc_bytes = 0;
 	std::unique_ptr<char[]> desc_buffer;
@@ -147,7 +147,7 @@ bool InternalSendMsg(OSHandleType handle, const void* data, size_t len, IPCHandl
 	iov[2].base = const_cast<void*>(data);
 	iov[2].length = len;
 
-	return NaClSendDatagram(handle, &hdr, 0) == len + desc_bytes + sizeof(NaClInternalHeader);
+	return NaClSendDatagram(handle, &hdr, 0) == (int)(len + desc_bytes + sizeof(NaClInternalHeader));
 #endif
 }
 
@@ -169,17 +169,17 @@ bool InternalRecvMsg(OSHandleType handle, std::vector<char>& buffer, std::vector
 	hdr.handles = h;
 	hdr.handle_count = NACL_ABI_IMC_DESC_MAX;
 	hdr.flags = 0;
-	iov[0].base = recv_buffer;
+	iov[0].base = recv_buffer.get();
 	iov[0].length = NACL_ABI_IMC_BYTES_MAX;
 
 	int result = NaClReceiveDatagram(handle, &hdr, 0);
 	if (result < 0)
 		return false;
 
-	for (size_t i = 0; i < num_handles; i++) {
+	for (size_t i = 0; i < NACL_ABI_IMC_DESC_MAX; i++) {
 		if (h[i] != NACL_INVALID_HANDLE) {
-			handles.emplace_back(new IPCHandle);
-			handles.back()->handle = h[i];
+			handles.emplace_back();
+			handles.back().handle = h[i];
 		}
 	}
 
@@ -289,7 +289,7 @@ SharedMemoryPtr IPCHandle::Map() const
 #ifdef __native_client__
 	struct stat st;
 	if (fstat(handle, &st) != 0)
-		return NULL;
+		return SharedMemoryPtr();
 	size_t size = st.st_size;
 #endif
 
@@ -307,10 +307,11 @@ SharedMemoryPtr IPCHandle::Map() const
 	return out;
 }
 
-void SharedMemoryPtr::Unmap()
+void SharedMemoryPtr::Close()
 {
 	if (!addr)
 		return;
+	addr = nullptr;
 
 #ifdef _WIN32
 	UnmapViewOfFile(addr);

@@ -650,7 +650,7 @@ void GameVM::GameShutdown(qboolean restart)
 	DoRPC(input, output, true);
 
 	// Release the shared memory region
-	shmRegion = nullptr;
+	shmRegion.Close();
 }
 
 qboolean GameVM::GameClientConnect(char* reason, size_t size, int clientNum, qboolean firstTime, qboolean isBot)

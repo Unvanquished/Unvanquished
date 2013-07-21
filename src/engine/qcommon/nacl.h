@@ -47,19 +47,11 @@ public:
 	{
 		std::swap(addr, other.addr);
 		std::swap(size, other.size);
+		return *this;
 	}
-	SharedMemoryPtr(std::nullptr_t)
-		: addr(nullptr) {}
-	SharedMemoryPtr& operator=(std::nullptr_t)
-	{
-		Unmap();
-		addr = nullptr;
-	}
-
-	// Automatically release the memory mapping on destruction
 	~SharedMemoryPtr()
 	{
-		Unmap();
+		Close();
 	}
 
 	explicit operator bool() const
@@ -77,10 +69,11 @@ public:
 		return size;
 	}
 
+	// Release the memory mapping
+	void Close();
+
 private:
 	friend class IPCHandle;
-
-	void Unmap();
 
 	void* addr;
 	size_t size;
@@ -109,13 +102,12 @@ public:
 	}
 	IPCHandle& operator=(IPCHandle&& other)
 	{
-		Close();
-		handle = other.handle;
-		other.handle = INVALID_HANDLE;
+		std::swap(handle, other.handle);
 #ifndef __native_client__
-		type = other.type;
-		size = other.size;
+		std::swap(type, other.type);
+		std::swap(size, other.size);
 #endif
+		return *this;
 	}
 
 	// Check if the handle is valid
@@ -134,6 +126,12 @@ public:
 		OSHandleType out = handle;
 		handle = INVALID_HANDLE;
 		return out;
+	}
+
+	// Get the underlying OS handle
+	OSHandleType GetOSHandle() const
+	{
+		return handle;
 	}
 
 	// Send a message through the socket
@@ -196,6 +194,7 @@ public:
 	RootSocket& operator=(RootSocket&& other)
 	{
 		handle = other.handle;
+		return *this;
 	}
 	~RootSocket() {}
 
@@ -246,13 +245,14 @@ public:
 	Module(Module&& other)
 	{
 		process_handle = other.process_handle;
+		root_socket = other.root_socket;
 		other.process_handle = INVALID_HANDLE;
 	}
 	Module& operator=(Module&& other)
 	{
-		Close();
-		process_handle = other.process_handle;
-		other.process_handle = INVALID_HANDLE;
+		std::swap(process_handle, other.process_handle);
+		std::swap(root_socket, other.root_socket);
+		return *this;
 	}
 
 	// Check if the handle is valid
