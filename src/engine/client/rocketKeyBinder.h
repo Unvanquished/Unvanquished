@@ -43,10 +43,10 @@ extern "C"
 #include "client.h"
 }
 
-class RocketKeyBinder : public Rocket::Core::Element
+class RocketKeyBinder : public Rocket::Core::Element, public Rocket::Core::EventListener
 {
 public:
-	RocketKeyBinder( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), dirty_key( false ), waitingForKeypress( false ), team( 0 ), key( -1 )
+	RocketKeyBinder( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), init( false ), dirty_key( false ), waitingForKeypress( false ), team( 0 ), key( -1 ), cmd( "" ), mouse_x( 0 ), mouse_y( 0 )
 	{
 	}
 
@@ -67,6 +67,12 @@ public:
 
 	void OnUpdate( void )
 	{
+		if ( !init )
+		{
+			init = true;
+			GetContext()->AddEventListener( "mousemove", this );
+			GetContext()->AddEventListener( "keydown", this );
+		}
 		if ( dirty_key && team >= 0 )
 		{
 			dirty_key = false;
@@ -77,10 +83,14 @@ public:
 
 	void ProcessEvent( Rocket::Core::Event &event )
 	{
-		if ( event == "click" && event.GetTargetElement() == this )
+		if ( !waitingForKeypress && event == "mousedown" && event.GetTargetElement() == this )
 		{
 			waitingForKeypress = true;
 			SetInnerRML( "Enter desired key..." );
+
+			// fix mouse position inside the widget
+			mouse_x = event.GetParameter<int>( "mouse_x", 0 );
+			mouse_y = event.GetParameter<int>( "mouse_y", 0 );
 		}
 
 		else if ( waitingForKeypress && event == "keydown" && event.GetTargetElement() == this )
@@ -88,11 +98,13 @@ public:
 			int newKey = Rocket_ToQuakeKey( ( Rocket::Core::Input::KeyIdentifier ) event.GetParameter< int >( "key_identifier", 0 ) );
 
 			BindKey( newKey );
+
+			event.StopPropagation();
 		}
 
-		else if ( waitingForKeypress && event == "mouseup" && event.GetTargetElement() == this )
+		else if ( waitingForKeypress && event == "mousedown" && event.GetTargetElement() == this )
 		{
-			int button = event.GetParameter<int>( "button", 1 );
+			int button = event.GetParameter<int>( "button", 0 );
 			int newKey;
 			switch (button)
 			{
@@ -103,6 +115,14 @@ public:
 			}
 
 			BindKey( newKey );
+
+			event.StopPropagation();
+		}
+
+		else if ( waitingForKeypress && event == "mousemove" )
+		{
+			GetContext()->ProcessMouseMove( mouse_x, mouse_y, 0 );
+			event.StopPropagation();
 		}
 	}
 
@@ -135,12 +155,15 @@ protected:
 	}
 
 private:
+	bool init;
 	bool dirty_key;
 	bool waitingForKeypress;
 	int team;
 	int key;
 
 	Rocket::Core::String cmd;
+	int mouse_x;
+	int mouse_y;
 };
 
 
