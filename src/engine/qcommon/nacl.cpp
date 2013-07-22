@@ -389,6 +389,7 @@ bool RootSocket::RecvMsg(std::vector<char>& buffer, std::vector<IPCHandle>& hand
 	return InternalRecvMsg(handle, buffer, handles);
 }
 
+// Don't include host-only definitions in NaCl build
 #ifndef __native_client__
 
 void Module::Close()
@@ -406,7 +407,7 @@ void Module::Close()
 #endif
 }
 
-Module InternalLoadModule(const char* const* args, NaClHandle* pair)
+Module InternalLoadModule(NaClHandle* pair, const char* const* args, const char* const* env)
 {
 #ifdef _WIN32
 	if (!SetHandleInformation(pair[1], HANDLE_FLAG_INHERIT, HANDLE_FLAG_INHERIT)) {
@@ -448,11 +449,19 @@ Module InternalLoadModule(const char* const* args, NaClHandle* pair)
 		cmdline += "\"";
 	}
 
+	// Build environment data
+	std::vector<char> env_data;
+	while (*env) {
+		env_data.insert(env_data.begin(), *env, *env + strlen(*env) + 1);
+		env++;
+	}
+	env_data.push_back('\0');
+
 	STARTUPINFOA startup_info;
 	PROCESS_INFORMATION process_information;
 	memset(&startup_info, 0, sizeof(startup_info));
 	startup_info.cb = sizeof(startup_info);
-	if (!CreateProcessA(NULL, const_cast<char*>(cmdline.c_str()), NULL, NULL, TRUE, 0, NULL, NULL, &startup_info, &process_information)) {
+	if (!CreateProcessA(NULL, const_cast<char*>(cmdline.c_str()), NULL, NULL, TRUE, 0, env_data.data(), NULL, &startup_info, &process_information)) {
 		NaClClose(pair[0]);
 		NaClClose(pair[1]);
 		return Module();
@@ -484,7 +493,7 @@ Module InternalLoadModule(const char* const* args, NaClHandle* pair)
 		close(1);
 		close(2);
 
-		execv(args[0], const_cast<char* const*>(args));
+		execve(args[0], const_cast<char* const*>(args), const_cast<char* const*>(env));
 
 		// Abort if exec failed, the parent should notice a socket error when
 		// trying to use the root socket.
@@ -507,11 +516,12 @@ Module LoadNaClModule(const char* module, const char* sel_ldr, const char* irt)
 		return Module();
 
 	char root_sock_redir[32];
-	snprintf(root_sock_redir, sizeof(root_sock_redir), "%d:%ld", ROOT_SOCKET_FD, (long)pair[1]);
-	char arg[32];
-	snprintf(arg, sizeof(arg), "%d", ROOT_SOCKET_FD);
-	const char* args[] = {sel_ldr, "-B", irt, "-i", root_sock_redir, "--", module, arg, NULL};
-	return InternalLoadModule(args, pair);
+	snprintf(root_sock_redir, sizeof(root_sock_redir), "%d:%d", ROOT_SOCKET_FD, (int)pair[1]);
+	char root_sock_handle[32];
+	snprintf(root_sock_handle, sizeof(root_sock_handle), "NACLENV_ROOT_SOCKET=%d", ROOT_SOCKET_FD);
+	const char* args[] = {sel_ldr, "-B", irt, "-i", root_sock_redir, "-f", module, NULL};
+	const char* env[] = {root_sock_handle, NULL};
+	return InternalLoadModule(pair, args, env);
 }
 
 Module LoadNaClModuleDebug(const char* module, const char* sel_ldr, const char* irt)
@@ -521,11 +531,12 @@ Module LoadNaClModuleDebug(const char* module, const char* sel_ldr, const char* 
 		return Module();
 
 	char root_sock_redir[32];
-	snprintf(root_sock_redir, sizeof(root_sock_redir), "%d:%ld", ROOT_SOCKET_FD, (long)pair[1]);
-	char arg[32];
-	snprintf(arg, sizeof(arg), "%d", ROOT_SOCKET_FD);
-	const char* args[] = {sel_ldr, "-g", "-B", irt, "-i", root_sock_redir, "--", module, arg, NULL};
-	return InternalLoadModule(args, pair);
+	snprintf(root_sock_redir, sizeof(root_sock_redir), "%d:%d", ROOT_SOCKET_FD, (int)pair[1]);
+	char root_sock_handle[32];
+	snprintf(root_sock_handle, sizeof(root_sock_handle), "NACLENV_ROOT_SOCKET=%d", ROOT_SOCKET_FD);
+	const char* args[] = {sel_ldr, "-g", "-B", irt, "-i", root_sock_redir, "-f", module, NULL};
+	const char* env[] = {root_sock_handle, NULL};
+	return InternalLoadModule(pair, args, env);
 }
 
 Module LoadNativeModule(const char* module)
@@ -534,20 +545,33 @@ Module LoadNativeModule(const char* module)
 	if (NaClSocketPair(pair))
 		return Module();
 
-	char arg[32];
-	snprintf(arg, sizeof(arg), "%ld", (long)pair[1]);
-	const char* args[] = {module, arg, NULL};
-	return InternalLoadModule(args, pair);
+	char root_sock_handle[32];
+	snprintf(root_sock_handle, sizeof(root_sock_handle), "ROOT_SOCKET=%d", (int)pair[1]);
+	const char* args[] = {module, NULL};
+	const char* env[] = {root_sock_handle, NULL};
+	return InternalLoadModule(pair, args, env);
 }
 
 #endif
 
-RootSocket GetRootSocket(const char* arg)
+static NaClHandle GetRootSocketHandle()
 {
+	const char* socket = getenv("ROOT_SOCKET");
+	if (!socket)
+		return INVALID_HANDLE;
+
 	char* end;
-	NaClHandle h = (NaClHandle)strtol(arg, &end, 10);
-	if (arg == end || *end != '\0')
-		return RootSocket();
+	NaClHandle h = (NaClHandle)strtol(socket, &end, 10);
+	if (socket == end || *end != '\0')
+		return INVALID_HANDLE;
+
+	return h;
+}
+
+RootSocket GetRootSocket()
+{
+	static NaClHandle h = GetRootSocketHandle();
+
 	RootSocket out;
 	out.handle = h;
 	return out;

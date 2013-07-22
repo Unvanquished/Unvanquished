@@ -228,7 +228,7 @@ public:
 private:
 	OSHandleType handle;
 
-	friend RootSocket GetRootSocket(const char* arg);
+	friend RootSocket GetRootSocket();
 	friend class Module;
 };
 
@@ -276,7 +276,7 @@ private:
 	OSHandleType process_handle;
 	OSHandleType root_socket;
 
-	friend Module InternalLoadModule(const char* const*, OSHandleType*);
+	friend Module InternalLoadModule(OSHandleType*, const char* const*, const char* const*);
 };
 
 // Load a NaCl module
@@ -290,9 +290,8 @@ Module LoadNaClModuleDebug(const char* module, const char* sel_ldr, const char* 
 Module LoadNativeModule(const char* module);
 
 // Module-only definitions
-// Create the root socket from the module's command line arguments. The first
-// argument contains the root socket handle and must be passed to this function.
-RootSocket GetRootSocket(const char* arg);
+// Create the root socket for the current module.
+RootSocket GetRootSocket();
 
 } // namespace NaCl
 
