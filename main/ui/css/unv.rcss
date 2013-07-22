@@ -141,7 +141,7 @@ button:hover
 	tab-index: auto;
 
 	background-decorator: image;
-	background-image-src: /ui/assets/button_highlight.png;
+	background-image-src: /ui/assets/button-hover.png;
 }
 
 tabs
