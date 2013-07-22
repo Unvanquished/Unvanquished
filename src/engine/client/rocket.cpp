@@ -52,6 +52,7 @@ Maryland 20850 USA.
 #include "rocketFocusManager.h"
 #include "rocketCircleMenu.h"
 #include "rocketKeyBinder.h"
+#include "rocketElementDocument.h"
 
 extern "C"
 {
@@ -284,6 +285,7 @@ void InitSDLtoRocketKeymap()
 
 	SDLK_keymap[SDLK_UNKNOWN] = KI_UNKNOWN;
 	SDLK_keymap[SDLK_SPACE] = KI_SPACE;
+	SDLK_keymap[SDLK_ESCAPE] = KI_ESCAPE;
 	SDLK_keymap[SDLK_0] = KI_0;
 	SDLK_keymap[SDLK_1] = KI_1;
 	SDLK_keymap[SDLK_2] = KI_2;
@@ -522,6 +524,7 @@ void Rocket_Init( void )
 	Rocket::Core::Factory::RegisterElementInstancer( "datasource_single", new Rocket::Core::ElementInstancerGeneric< RocketDataSourceSingle >() )->RemoveReference();
 	Rocket::Core::Factory::RegisterElementInstancer( "circlemenu", new Rocket::Core::ElementInstancerGeneric< RocketCircleMenu >() )->RemoveReference();
 	Rocket::Core::Factory::RegisterElementInstancer( "keybind", new Rocket::Core::ElementInstancerGeneric< RocketKeyBinder >() )->RemoveReference();
+	Rocket::Core::Factory::RegisterElementInstancer( "body", new Rocket::Core::ElementInstancerGeneric< RocketElementDocument >() )->RemoveReference();
 
 	Cmd_AddCommand( "rocket", Rocket_Rocket_f );
 	Cmd_AddCommand( "rocketDebug", Rocket_RocketDebug_f );
