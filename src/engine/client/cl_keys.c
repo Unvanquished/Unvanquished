@@ -56,11 +56,11 @@ qkey_t   keys[ MAX_KEYS ];
 int      bindTeam = DEFAULT_BINDING;
 
 static struct {
-	int          seq;
 	int          key;
 	unsigned int time;
+	qboolean     valid;
+	int          check;
 } plusCommand;
-#define PLUSCOMMAND_CHECK clc.reliableSequence
 
 typedef struct
 {
@@ -1560,22 +1560,26 @@ Key_SetKeyData
 */
 void Key_SetKeyData_f(void)
 {
-	if ( atoi( Cmd_Argv( 1 ) ) == PLUSCOMMAND_CHECK )
+	if ( atoi( Cmd_Argv( 1 ) ) == plusCommand.check )
 	{
-		plusCommand.seq  = PLUSCOMMAND_CHECK;
 		plusCommand.key  = atoi( Cmd_Argv( 2 ) ) - 1;
 		plusCommand.time = atoi( Cmd_Argv( 3 ) );
+		plusCommand.valid = qtrue;
+	}
+	else
+	{
+		plusCommand.valid = qfalse;
 	}
 }
 
 int Key_GetKeyNumber(void)
 {
-	return plusCommand.seq == PLUSCOMMAND_CHECK ? plusCommand.key : -1;
+	return plusCommand.valid ? plusCommand.key : -1;
 }
 
 unsigned int Key_GetKeyTime(void)
 {
-	return plusCommand.seq == PLUSCOMMAND_CHECK ? plusCommand.time : 0;
+	return plusCommand.valid ? plusCommand.time : 0;
 }
 
 /*
@@ -1867,7 +1871,7 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 	if ( !down )
 	{
 		// Handle any +commands which were invoked on the corresponding key-down
-		IN_KeysUp( PLUSCOMMAND_CHECK, key, time );
+		IN_KeysUp( plusCommand.check, key, time );
 
 		if ( cls.keyCatchers & KEYCATCH_UI && uivm )
 		{
@@ -1929,8 +1933,8 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 		if ( kb )
 		{
 			// down-only command
-			Cbuf_AddText( va( "setkeydata %d %d %u\n%s\n", PLUSCOMMAND_CHECK, key + 1, time, kb ) );
-			Cbuf_AddText( va( "setkeydata %d\n", PLUSCOMMAND_CHECK ) );
+			Cbuf_AddText( va( "setkeydata %d %d %u\n%s\n", plusCommand.check, key + 1, time, kb ) );
+			Cbuf_AddText( va( "setkeydata %d\n", plusCommand.check ) );
 		}
 	}
 }
@@ -1994,6 +1998,8 @@ void Key_ClearStates( void )
 		keys[ i ].down = 0;
 		keys[ i ].repeats = 0;
 	}
+
+	plusCommand.check = rand();
 }
 
 /*
