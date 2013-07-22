@@ -109,7 +109,18 @@ public:
 protected:
 	void BindKey( int newKey )
 	{
-		if ( key == newKey ) { return; }
+		// Don't accept the same key
+		if ( key == newKey )
+		{
+			return;
+		}
+		// Cancel selection
+		else if ( newKey == K_ESCAPE )
+		{
+			waitingForKeypress = false;
+			dirty_key = true;
+			return;
+		}
 
 		Key_SetBinding( newKey, team, cmd.CString() );
 
