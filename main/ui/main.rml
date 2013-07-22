@@ -37,7 +37,6 @@
 
 				margin: -50px auto;
 				padding-top: 35px;
-				vertical-align: -100px;
 
 				font-size: 24;
 				button-font-effect: outline;

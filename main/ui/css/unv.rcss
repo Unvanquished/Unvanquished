@@ -102,7 +102,6 @@ scrollbarvertical sliderarrowinc
 	min-width: 10px;
 	min-height: 10px;
 }
-
 tab,
 button
 {
@@ -110,12 +109,11 @@ button
 	display: inline-block;
 
 	width: 150px;
-	height: 37px;
-
-	padding-top: 8px;
-	vertical-align: -18px;
+	height: 64px;
 
 	font-size: 24;
+	padding-top: 35px;
+	margin-top: -30px;
 	button-font-effect: outline;
 	text-align: center;
 	tab-index: auto;
@@ -123,24 +121,11 @@ button
 	background-decorator: image;
 	background-image-src: /ui/assets/button.png;
 }
+
 tab:hover,
 button:hover
 {
 	color: white;
-	display: inline-block;
-
-	width: 150px;
-	height: 37px;
-
-	padding-top: 8px;
-	vertical-align: -18px;
-
-	font-size: 24;
-	button-font-effect: outline;
-	text-align: center;
-	tab-index: auto;
-
-	background-decorator: image;
 	background-image-src: /ui/assets/button-hover.png;
 }
 

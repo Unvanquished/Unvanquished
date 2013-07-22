@@ -71,7 +71,7 @@
 		}
 		tabset#misc tab
 		{
-			font-size: 14;
+			font-size: 24;
 		}
 		div#left
 		{
@@ -148,7 +148,7 @@
 			</p>
 			</div>
 		</panel>
-		<tab>Server Details</tab>
+		<tab style="width: 300px;">Server Details</tab>
 		<panel>
 		<div id="serverInfo">
 			<datagrid id="info" source="server_browser.serverInfo">
