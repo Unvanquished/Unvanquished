@@ -157,7 +157,14 @@ static size_t R_GetSizeForType( GLenum type )
 
 static size_t R_GetAttribStorageSize( const VBO_t *vbo, uint32_t attribute )
 {
-	return sizeof( vec4_t );
+	if ( vbo->usage == GL_STATIC_DRAW )
+	{
+		return vbo->attribs[ attribute ].numComponents * R_GetSizeForType( vbo->attribs[ attribute ].componentType );
+	}
+	else
+	{
+		return sizeof( vec4_t );
+	}
 }
 
 static qboolean R_AttributeTightlyPacked( const VBO_t *vbo, uint32_t attribute )
@@ -359,10 +366,11 @@ static void R_CopyVertexData( VBO_t *vbo, byte *outData, vboData_t inData )
 		uint32_t j; \
 		type *tmp = ( type * ) ( outData + vbo->attribs[ index ].ofs + v * vbo->attribs[ index ].realStride ); \
 		const type *vert = inData.attr[ v ]; \
+		uint32_t numComponents = vbo->attribs[ index ].numComponents; \
 		uint32_t len = ARRAY_LEN( *inData.attr ); \
 		for ( j = 0; j < len; j++ ) { tmp[ j ] = vert[ j ]; } \
-		if ( len < 3 ) { tmp[ 2 ] = 0; } \
-		if ( len < 4 ) { tmp[ 3 ] = 1; } \
+		if ( len < 3 && ( vbo->usage != GL_STATIC_DRAW || numComponents >= 3 ) ) { tmp[ 2 ] = 0; } \
+		if ( len < 4 && ( vbo->usage != GL_STATIC_DRAW || numComponents == 4 ) ) { tmp[ 3 ] = 1; } \
 	} while ( 0 )
 
 	if ( vbo->layout == VBO_LAYOUT_VERTEX_ANIMATION )
