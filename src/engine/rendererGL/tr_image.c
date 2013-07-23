@@ -31,6 +31,11 @@ int                  gl_filter_max = GL_LINEAR;
 
 image_t              *r_imageHashTable[ IMAGE_FILE_HASH_SIZE ];
 
+#define Tex_ByteToFloat(v) ( ( (int)(v) - 128 ) / 127.0f )
+#define Tex_FloatToByte(v) ( 128 + (byte) roundf( (v) * 127.0f ) )
+//#define Tex_ByteToFloat(v) ( ( (float)(v) / 127.5f ) - 1.0f )
+//#define Tex_FloatToByte(v) (byte)( roundf( ( (v) + 1.0f ) * 127.5f ) )
+
 /*
 ** R_GammaCorrect
 */
@@ -420,7 +425,6 @@ static void ResampleTexture( unsigned *in, int inwidth, int inheight, unsigned *
 	unsigned frac, fracstep;
 	unsigned p1[ 2048 ], p2[ 2048 ];
 	byte     *pix1, *pix2, *pix3, *pix4;
-	float    inv127 = 1.0f / 127.0f;
 	vec3_t   n, n2, n3, n4;
 
 	// NOTE: Tr3B - limitation not needed anymore
@@ -461,21 +465,21 @@ static void ResampleTexture( unsigned *in, int inwidth, int inheight, unsigned *
 				pix3 = ( byte * ) inrow2 + p1[ x ];
 				pix4 = ( byte * ) inrow2 + p2[ x ];
 
-				n[ 0 ] = ( pix1[ 0 ] * inv127 - 1.0 );
-				n[ 1 ] = ( pix1[ 1 ] * inv127 - 1.0 );
-				n[ 2 ] = ( pix1[ 2 ] * inv127 - 1.0 );
+				n[ 0 ] = Tex_ByteToFloat( pix1[ 0 ] );
+				n[ 1 ] = Tex_ByteToFloat( pix1[ 1 ] );
+				n[ 2 ] = Tex_ByteToFloat( pix1[ 2 ] );
 
-				n2[ 0 ] = ( pix2[ 0 ] * inv127 - 1.0 );
-				n2[ 1 ] = ( pix2[ 1 ] * inv127 - 1.0 );
-				n2[ 2 ] = ( pix2[ 2 ] * inv127 - 1.0 );
+				n2[ 0 ] = Tex_ByteToFloat( pix2[ 0 ] );
+				n2[ 1 ] = Tex_ByteToFloat( pix2[ 1 ] );
+				n2[ 2 ] = Tex_ByteToFloat( pix2[ 2 ] );
 
-				n3[ 0 ] = ( pix3[ 0 ] * inv127 - 1.0 );
-				n3[ 1 ] = ( pix3[ 1 ] * inv127 - 1.0 );
-				n3[ 2 ] = ( pix3[ 2 ] * inv127 - 1.0 );
+				n3[ 0 ] = Tex_ByteToFloat( pix3[ 0 ] );
+				n3[ 1 ] = Tex_ByteToFloat( pix3[ 1 ] );
+				n3[ 2 ] = Tex_ByteToFloat( pix3[ 2 ] );
 
-				n4[ 0 ] = ( pix4[ 0 ] * inv127 - 1.0 );
-				n4[ 1 ] = ( pix4[ 1 ] * inv127 - 1.0 );
-				n4[ 2 ] = ( pix4[ 2 ] * inv127 - 1.0 );
+				n4[ 0 ] = Tex_ByteToFloat( pix4[ 0 ] );
+				n4[ 1 ] = Tex_ByteToFloat( pix4[ 1 ] );
+				n4[ 2 ] = Tex_ByteToFloat( pix4[ 2 ] );
 
 				VectorAdd( n, n2, n );
 				VectorAdd( n, n3, n );
@@ -486,10 +490,10 @@ static void ResampleTexture( unsigned *in, int inwidth, int inheight, unsigned *
 					VectorSet( n, 0, 0, 1 );
 				}
 
-				( ( byte * )( out + x ) ) [ 0 ] = ( byte )( 128 + 127 * n[ 0 ] );
-				( ( byte * )( out + x ) ) [ 1 ] = ( byte )( 128 + 127 * n[ 1 ] );
-				( ( byte * )( out + x ) ) [ 2 ] = ( byte )( 128 + 127 * n[ 2 ] );
-				( ( byte * )( out + x ) ) [ 3 ] = ( byte )( 128 + 127 * 1.0 );
+				( ( byte * )( out + x ) ) [ 0 ] = Tex_FloatToByte( n[ 0 ] );
+				( ( byte * )( out + x ) ) [ 1 ] = Tex_FloatToByte( n[ 1 ] );
+				( ( byte * )( out + x ) ) [ 2 ] = Tex_FloatToByte( n[ 2 ] );
+				( ( byte * )( out + x ) ) [ 3 ] = 255;
 			}
 		}
 	}
@@ -710,8 +714,6 @@ static void R_MipNormalMap( byte *in, int width, int height )
 	vec4_t n;
 	vec_t  length;
 
-	float  inv255 = 1.0f / 255.0f;
-
 	if ( width == 1 && height == 1 )
 	{
 		return;
@@ -726,25 +728,23 @@ static void R_MipNormalMap( byte *in, int width, int height )
 	{
 		for ( j = 0; j < width; j += 8, out += 4, in += 8 )
 		{
-			n[ 0 ] = ( in[ 0 ] * inv255 - 0.5 ) * 2.0 +
-			         ( in[ 4 ] * inv255 - 0.5 ) * 2.0 +
-			         ( in[ width + 0 ] * inv255 - 0.5 ) * 2.0 +
-			         ( in[ width + 4 ] * inv255 - 0.5 ) * 2.0;
+			// these calculations were centred on 127.5: (p / 255.0 - 0.5) * 2.0
+			n[ 0 ] = Tex_ByteToFloat( in[ 0 ] ) +
+			         Tex_ByteToFloat( in[ 4 ] ) +
+			         Tex_ByteToFloat( in[ width + 0 ] ) +
+			         Tex_ByteToFloat( in[ width + 4 ] );
 
-			n[ 1 ] = ( in[ 1 ] * inv255 - 0.5 ) * 2.0 +
-			         ( in[ 5 ] * inv255 - 0.5 ) * 2.0 +
-			         ( in[ width + 1 ] * inv255 - 0.5 ) * 2.0 +
-			         ( in[ width + 5 ] * inv255 - 0.5 ) * 2.0;
+			n[ 1 ] = Tex_ByteToFloat( in[ 1 ] ) +
+			         Tex_ByteToFloat( in[ 5 ] ) +
+			         Tex_ByteToFloat( in[ width + 1 ] ) +
+			         Tex_ByteToFloat( in[ width + 5 ] );
 
-			n[ 2 ] = ( in[ 2 ] * inv255 - 0.5 ) * 2.0 +
-			         ( in[ 6 ] * inv255 - 0.5 ) * 2.0 +
-			         ( in[ width + 2 ] * inv255 - 0.5 ) * 2.0 +
-			         ( in[ width + 6 ] * inv255 - 0.5 ) * 2.0;
+			n[ 2 ] = Tex_ByteToFloat( in[ 2 ] ) +
+			         Tex_ByteToFloat( in[ 6 ] ) +
+			         Tex_ByteToFloat( in[ width + 2 ] ) +
+			         Tex_ByteToFloat( in[ width + 6 ] );
 
-			n[ 3 ] = ( inv255 * in[ 3 ] ) +
-			         ( inv255 * in[ 7 ] ) +
-			         ( inv255 * in[ width + 3 ] ) +
-			         ( inv255 * in[ width + 7 ] );
+			n[ 3 ] = ( in[ 3 ] + in[ 7 ] + in[ width + 3 ] +  in[ width + 7 ] ) / 255.0f;
 
 			length = VectorLength( n );
 
@@ -759,9 +759,9 @@ static void R_MipNormalMap( byte *in, int width, int height )
 				VectorSet( n, 0.0, 0.0, 1.0 );
 			}
 
-			out[ 0 ] = ( byte )( 128 + 127 * n[ 0 ] );
-			out[ 1 ] = ( byte )( 128 + 127 * n[ 1 ] );
-			out[ 2 ] = ( byte )( 128 + 127 * n[ 2 ] );
+			out[ 0 ] = Tex_FloatToByte( n[ 0 ] );
+			out[ 1 ] = Tex_FloatToByte( n[ 1 ] );
+			out[ 2 ] = Tex_FloatToByte( n[ 2 ] );
 			out[ 3 ] = ( byte )( n[ 3 ] * 255.0 / 4.0 );
 			//out[3] = (in[3] + in[7] + in[width + 3] + in[width + 7]) >> 2;
 		}
@@ -776,7 +776,6 @@ static void R_HeightMapToNormalMap( byte *in, int width, int height, float scale
 	float  r, g, b;
 	float  c, cx, cy;
 	float  dcx, dcy;
-	float  inv255 = 1.0f / 255.0f;
 	vec3_t n;
 	byte   *out;
 
@@ -793,7 +792,7 @@ static void R_HeightMapToNormalMap( byte *in, int width, int height, float scale
 			g = in[ 4 * ( y * width + x ) + 1 ];
 			b = in[ 4 * ( y * width + x ) + 2 ];
 
-			c = ( r + g + b ) * inv255;
+			c = ( r + g + b ) / 255.0f;
 
 			// expand the texel to its right
 			if ( x == width - 1 )
@@ -809,7 +808,7 @@ static void R_HeightMapToNormalMap( byte *in, int width, int height, float scale
 				b = in[ 4 * ( y * width + ( ( x + 1 ) % width ) ) + 2 ];
 			}
 
-			cx = ( r + g + b ) * inv255;
+			cx = ( r + g + b ) / 255.0f;
 
 			// expand the texel one up
 			if ( y == height - 1 )
@@ -825,7 +824,7 @@ static void R_HeightMapToNormalMap( byte *in, int width, int height, float scale
 				b = in[ 4 * ( ( ( y + 1 ) % height ) * width + x ) + 2 ];
 			}
 
-			cy = ( r + g + b ) * inv255;
+			cy = ( r + g + b ) / 255.0f;
 
 			dcx = scale * ( c - cx );
 			dcy = scale * ( c - cy );
@@ -840,9 +839,9 @@ static void R_HeightMapToNormalMap( byte *in, int width, int height, float scale
 
 			// repack the normalized vector into an RGB unsigned byte
 			// vector in the normal map image
-			*out++ = ( byte )( 128 + 127 * n[ 0 ] );
-			*out++ = ( byte )( 128 + 127 * n[ 1 ] );
-			*out++ = ( byte )( 128 + 127 * n[ 2 ] );
+			*out++ = Tex_FloatToByte( n[ 0 ] );
+			*out++ = Tex_FloatToByte( n[ 1 ] );
+			*out++ = Tex_FloatToByte( n[ 2 ] );
 
 			// put in no height as displacement map by default
 			*out++ = ( byte ) 0; //(Q_bound(0, c * 255.0 / 3.0, 255));
@@ -880,13 +879,13 @@ static void R_AddNormals( byte *in, byte *in2, int width, int height )
 			d1 = in + ( y * width + x ) * 4;
 			d2 = in2 + ( y * width + x ) * 4;
 
-			n[ 0 ] = ( d1[ 0 ] - 128 ) / 127.0f;
-			n[ 1 ] = ( d1[ 1 ] - 128 ) / 127.0f;
-			n[ 2 ] = ( d1[ 2 ] - 128 ) / 127.0f;
+			n[ 0 ] = Tex_ByteToFloat( d1[ 0 ] );
+			n[ 1 ] = Tex_ByteToFloat( d1[ 1 ] );
+			n[ 2 ] = Tex_ByteToFloat( d1[ 2 ] );
 
-			n[ 0 ] += ( d2[ 0 ] - 128 ) / 127.0f;
-			n[ 1 ] += ( d2[ 1 ] - 128 ) / 127.0f;
-			n[ 2 ] += ( d2[ 2 ] - 128 ) / 127.0f;
+			n[ 0 ] += Tex_ByteToFloat( d2[ 0 ] );
+			n[ 1 ] += Tex_ByteToFloat( d2[ 1 ] );
+			n[ 2 ] += Tex_ByteToFloat( d2[ 2 ] );
 
 			a = d1[ 3 ];
 			a2 = d2[ 3 ];
@@ -896,9 +895,9 @@ static void R_AddNormals( byte *in, byte *in2, int width, int height )
 				VectorSet( n, 0, 0, 1 );
 			}
 
-			d1[ 0 ] = ( byte )( 127 * n[ 0 ] + 128 );
-			d1[ 1 ] = ( byte )( 127 * n[ 1 ] + 128 );
-			d1[ 2 ] = ( byte )( 127 * n[ 2 ] + 128 );
+			d1[ 0 ] = Tex_FloatToByte( n[ 0 ] );
+			d1[ 1 ] = Tex_FloatToByte( n[ 1 ] );
+			d1[ 2 ] = Tex_FloatToByte( n[ 2 ] );
 			d1[ 3 ] = ( byte )( Q_bound( 0, a + a2, 255 ) );
 		}
 	}
