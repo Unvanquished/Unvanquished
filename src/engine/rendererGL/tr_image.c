@@ -850,35 +850,17 @@ static void R_HeightMapToNormalMap( byte *in, int width, int height, float scale
 	}
 }
 
-static void R_DisplaceMap( byte *in, byte *in2, int width, int height )
+static void R_DisplaceMap( byte *img, const byte *in2, int width, int height )
 {
-	int    x, y;
-	vec3_t n;
-	int    avg;
-	float  inv255 = 1.0f / 255.0f;
-	byte   *out;
+	int i;
 
-	out = in;
+	img += 3;
 
-	for ( y = 0; y < height; y++ )
+	for ( i = height * width; i; --i )
 	{
-		for ( x = 0; x < width; x++ )
-		{
-			n[ 0 ] = ( in[ 4 * ( y * width + x ) + 0 ] * inv255 - 0.5 ) * 2.0;
-			n[ 1 ] = ( in[ 4 * ( y * width + x ) + 1 ] * inv255 - 0.5 ) * 2.0;
-			n[ 2 ] = ( in[ 4 * ( y * width + x ) + 2 ] * inv255 - 0.5 ) * 2.0;
-
-			avg = 0;
-			avg += in2[ 4 * ( y * width + x ) + 0 ];
-			avg += in2[ 4 * ( y * width + x ) + 1 ];
-			avg += in2[ 4 * ( y * width + x ) + 2 ];
-			avg /= 3;
-
-			*out++ = ( byte )( 128 + 127 * n[ 0 ] );
-			*out++ = ( byte )( 128 + 127 * n[ 1 ] );
-			*out++ = ( byte )( 128 + 127 * n[ 2 ] );
-			*out++ = ( byte )( avg );
-		}
+		*img = ( in2[ 0 ] + in2[ 1 ] + in2[ 2 ] ) / 3;
+		img += 4;
+		in2 += 4;
 	}
 }
 
