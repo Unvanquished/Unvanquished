@@ -5,13 +5,15 @@
 		<style>
 			body
 			{
-				width: 40%;
-				height: 30%;
+				width: 70%;
+				height: 50%;
 				margin: auto;
 			}
 
 			div
 			{
+				position: relative;
+				left: 20%;
 				float: left;
 			}
 			div#list
@@ -42,19 +44,16 @@
 				position: absolute;
 				height: 3%;
 				width: 100%;
-				bottom: 0px;
+				bottom: 20%;
 			}
 			button
 			{
 				float: right;
-				height: 17px;
 				font-size: 18;
 			}
-			button p
+			button:first-child
 			{
-				position: absolute;
-				text-align: center;
-				top: 0px;
+				margin-right: 60px;
 			}
 		</style>
 	</head>
@@ -68,8 +67,8 @@
 		<datasource_single source="humanSpawnItems.default" fields="description" targetid="team" />
 		</div>
 		<div id='buttons'>
-			<button onClick="execDS humanSpawnItems default"><p>Spawn</p></button>
-			<button onClick="hide humanspawn"><p>Cancel</p></button>
+			<button onClick="execDS humanSpawnItems default">Spawn</button>
+			<button onClick="hide humanspawn">Cancel</button>
 		</div>
 	</body>
 </rml>

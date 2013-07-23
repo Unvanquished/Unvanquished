@@ -21,6 +21,11 @@
 				icon-image-s: 128px 179px;
 				icon-image-t: 152px 191px;
 			}
+			button
+			{
+				margin-left: auto;
+				margin-right: auto;
+			}
 		</style>
 	</head>
 	<body template="unvwindow" id="help">

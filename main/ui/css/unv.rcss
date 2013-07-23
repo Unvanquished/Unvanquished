@@ -1,7 +1,7 @@
 body
 {
 	font-family: Roboto;
-	font-size: 24;
+	font-size: 18;
 	font-weight: normal;
 	font-style: normal;
 }
@@ -18,11 +18,11 @@ h1
 	margin-bottom: 0.4em;
 
 	text-align: left;
-	font-size: 16;
+	font-size: 24;
 	font-weight: bold;
 
 	shadow-font-effect: shadow;
-	shadow-offset: 1px 1px;
+	shadow-offset: 2px 2px;
 	shadow-color: black;
 }
 
