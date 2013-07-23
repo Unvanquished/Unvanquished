@@ -451,7 +451,7 @@ static void ResampleTexture( unsigned *in, int inwidth, int inheight, unsigned *
 
 	if ( normalMap )
 	{
-		for ( y = 0; y < outheight; y++, out += outwidth )
+		for ( y = 0; y < outheight; y++ )
 		{
 			inrow = in + inwidth * ( int )( ( y + 0.25 ) * inheight / outheight );
 			inrow2 = in + inwidth * ( int )( ( y + 0.75 ) * inheight / outheight );
@@ -490,16 +490,18 @@ static void ResampleTexture( unsigned *in, int inwidth, int inheight, unsigned *
 					VectorSet( n, 0, 0, 1 );
 				}
 
-				( ( byte * )( out + x ) ) [ 0 ] = Tex_FloatToByte( n[ 0 ] );
-				( ( byte * )( out + x ) ) [ 1 ] = Tex_FloatToByte( n[ 1 ] );
-				( ( byte * )( out + x ) ) [ 2 ] = Tex_FloatToByte( n[ 2 ] );
-				( ( byte * )( out + x ) ) [ 3 ] = 255;
+				( ( byte * )( out ) ) [ 0 ] = Tex_FloatToByte( n[ 0 ] );
+				( ( byte * )( out ) ) [ 1 ] = Tex_FloatToByte( n[ 1 ] );
+				( ( byte * )( out ) ) [ 2 ] = Tex_FloatToByte( n[ 2 ] );
+				( ( byte * )( out ) ) [ 3 ] = 255;
+
+				++out;
 			}
 		}
 	}
 	else
 	{
-		for ( y = 0; y < outheight; y++, out += outwidth )
+		for ( y = 0; y < outheight; y++ )
 		{
 			inrow = in + inwidth * ( int )( ( y + 0.25 ) * inheight / outheight );
 			inrow2 = in + inwidth * ( int )( ( y + 0.75 ) * inheight / outheight );
@@ -513,10 +515,12 @@ static void ResampleTexture( unsigned *in, int inwidth, int inheight, unsigned *
 				pix3 = ( byte * ) inrow2 + p1[ x ];
 				pix4 = ( byte * ) inrow2 + p2[ x ];
 
-				( ( byte * )( out + x ) ) [ 0 ] = ( pix1[ 0 ] + pix2[ 0 ] + pix3[ 0 ] + pix4[ 0 ] ) >> 2;
-				( ( byte * )( out + x ) ) [ 1 ] = ( pix1[ 1 ] + pix2[ 1 ] + pix3[ 1 ] + pix4[ 1 ] ) >> 2;
-				( ( byte * )( out + x ) ) [ 2 ] = ( pix1[ 2 ] + pix2[ 2 ] + pix3[ 2 ] + pix4[ 2 ] ) >> 2;
-				( ( byte * )( out + x ) ) [ 3 ] = ( pix1[ 3 ] + pix2[ 3 ] + pix3[ 3 ] + pix4[ 3 ] ) >> 2;
+				( ( byte * )( out ) ) [ 0 ] = ( pix1[ 0 ] + pix2[ 0 ] + pix3[ 0 ] + pix4[ 0 ] ) >> 2;
+				( ( byte * )( out ) ) [ 1 ] = ( pix1[ 1 ] + pix2[ 1 ] + pix3[ 1 ] + pix4[ 1 ] ) >> 2;
+				( ( byte * )( out ) ) [ 2 ] = ( pix1[ 2 ] + pix2[ 2 ] + pix3[ 2 ] + pix4[ 2 ] ) >> 2;
+				( ( byte * )( out ) ) [ 3 ] = ( pix1[ 3 ] + pix2[ 3 ] + pix3[ 3 ] + pix4[ 3 ] ) >> 2;
+
+				++out;
 			}
 		}
 	}
@@ -598,43 +602,41 @@ static void R_MipMap2( unsigned *in, int inWidth, int inHeight )
 	int      i, j, k;
 	byte     *outpix;
 	int      inWidthMask, inHeightMask;
-	int      total;
 	int      outWidth, outHeight;
 	unsigned *temp;
+	byte     *row[ 4 ];
 
 	outWidth = inWidth >> 1;
 	outHeight = inHeight >> 1;
 	temp = ri.Hunk_AllocateTempMemory( outWidth * outHeight * 4 );
+	outpix = (byte *) temp;
 
-	inWidthMask = inWidth - 1;
-	inHeightMask = inHeight - 1;
+	inWidthMask = ( inWidth << 2 ) - 1; // applied to row indices
+	inHeightMask = inHeight - 1; // applied to in indices
 
-	for ( i = 0; i < outHeight; i++ )
+	row[ 1 ] = (byte *) &in[( -1 & inHeightMask ) * inWidth ];
+	row[ 2 ] = (byte *) &in[   0                            ];
+	row[ 3 ] = (byte *) &in[(  1 & inHeightMask ) * inWidth ];
+
+	for ( i = 0; i < inHeight; i += 2 ) // count source, row pairs
 	{
-		for ( j = 0; j < outWidth; j++ )
-		{
-			outpix = ( byte * )( temp + i * outWidth + j );
+		row[ 0 ] = row[ 1 ];
+		row[ 1 ] = row[ 2 ];
+		row[ 2 ] = row[ 3 ];
+		row[ 3 ] = (byte *) &in[ ( ( i + 2 ) & inHeightMask ) * inWidth ];
 
-			for ( k = 0; k < 4; k++ )
+		for ( j = 0; j < inWidth * 4; j += 8 ) // count source, bytes comprising texel pairs
+		{
+			for ( k = j; k < j + 4; k++ )
 			{
-				total =
-				  1 * ( ( byte * ) &in[( ( i * 2 - 1 ) & inHeightMask ) * inWidth + ( ( j * 2 - 1 ) & inWidthMask ) ] ) [ k ] +
-				  2 * ( ( byte * ) &in[( ( i * 2 - 1 ) & inHeightMask ) * inWidth + ( ( j * 2 ) & inWidthMask ) ] ) [ k ] +
-				  2 * ( ( byte * ) &in[( ( i * 2 - 1 ) & inHeightMask ) * inWidth + ( ( j * 2 + 1 ) & inWidthMask ) ] ) [ k ] +
-				  1 * ( ( byte * ) &in[( ( i * 2 - 1 ) & inHeightMask ) * inWidth + ( ( j * 2 + 2 ) & inWidthMask ) ] ) [ k ] +
-				  2 * ( ( byte * ) &in[( ( i * 2 ) & inHeightMask ) * inWidth + ( ( j * 2 - 1 ) & inWidthMask ) ] ) [ k ] +
-				  4 * ( ( byte * ) &in[( ( i * 2 ) & inHeightMask ) * inWidth + ( ( j * 2 ) & inWidthMask ) ] ) [ k ] +
-				  4 * ( ( byte * ) &in[( ( i * 2 ) & inHeightMask ) * inWidth + ( ( j * 2 + 1 ) & inWidthMask ) ] ) [ k ] +
-				  2 * ( ( byte * ) &in[( ( i * 2 ) & inHeightMask ) * inWidth + ( ( j * 2 + 2 ) & inWidthMask ) ] ) [ k ] +
-				  2 * ( ( byte * ) &in[( ( i * 2 + 1 ) & inHeightMask ) * inWidth + ( ( j * 2 - 1 ) & inWidthMask ) ] ) [ k ] +
-				  4 * ( ( byte * ) &in[( ( i * 2 + 1 ) & inHeightMask ) * inWidth + ( ( j * 2 ) & inWidthMask ) ] ) [ k ] +
-				  4 * ( ( byte * ) &in[( ( i * 2 + 1 ) & inHeightMask ) * inWidth + ( ( j * 2 + 1 ) & inWidthMask ) ] ) [ k ] +
-				  2 * ( ( byte * ) &in[( ( i * 2 + 1 ) & inHeightMask ) * inWidth + ( ( j * 2 + 2 ) & inWidthMask ) ] ) [ k ] +
-				  1 * ( ( byte * ) &in[( ( i * 2 + 2 ) & inHeightMask ) * inWidth + ( ( j * 2 - 1 ) & inWidthMask ) ] ) [ k ] +
-				  2 * ( ( byte * ) &in[( ( i * 2 + 2 ) & inHeightMask ) * inWidth + ( ( j * 2 ) & inWidthMask ) ] ) [ k ] +
-				  2 * ( ( byte * ) &in[( ( i * 2 + 2 ) & inHeightMask ) * inWidth + ( ( j * 2 + 1 ) & inWidthMask ) ] ) [ k ] +
-				  1 * ( ( byte * ) &in[( ( i * 2 + 2 ) & inHeightMask ) * inWidth + ( ( j * 2 + 2 ) & inWidthMask ) ] ) [ k ];
-				outpix[ k ] = total / 36;
+				const int km1 = ( k - 4 ) & inWidthMask;
+				const int kp1 = ( k + 4 ) & inWidthMask;
+				const int kp2 = ( k + 8 ) & inWidthMask;
+
+				*outpix++ = ( 1 * row[ 0 ][ km1 ] + 2 * row[ 0 ][ k   ] + 2 * row[ 0 ][ kp1 ] + 1 * row[ 0 ][ kp2 ] +
+				              2 * row[ 1 ][ km1 ] + 4 * row[ 1 ][ k   ] + 4 * row[ 1 ][ kp1 ] + 2 * row[ 1 ][ kp2 ] +
+				              2 * row[ 2 ][ km1 ] + 4 * row[ 2 ][ k   ] + 4 * row[ 2 ][ kp1 ] + 2 * row[ 2 ][ kp2 ] +
+				              1 * row[ 3 ][ km1 ] + 2 * row[ 3 ][ k   ] + 2 * row[ 3 ][ kp1 ] + 1 * row[ 3 ][ kp2 ] ) / 36;
 			}
 		}
 	}
@@ -770,16 +772,15 @@ static void R_MipNormalMap( byte *in, int width, int height )
 
 // *INDENT-ON*
 
-static void R_HeightMapToNormalMap( byte *in, int width, int height, float scale )
+static void R_HeightMapToNormalMap( byte *img, int width, int height, float scale )
 {
 	int    x, y;
 	float  r, g, b;
 	float  c, cx, cy;
 	float  dcx, dcy;
 	vec3_t n;
-	byte   *out;
 
-	out = in;
+	const int row = 4 * width;
 
 	for ( y = 0; y < height; y++ )
 	{
@@ -788,43 +789,39 @@ static void R_HeightMapToNormalMap( byte *in, int width, int height, float scale
 			// convert the pixel at x, y in the bump map to a normal (float)
 
 			// expand [0,255] texel values to the [0,1] range
-			r = in[ 4 * ( y * width + x ) + 0 ];
-			g = in[ 4 * ( y * width + x ) + 1 ];
-			b = in[ 4 * ( y * width + x ) + 2 ];
+			r = img[ 0 ];
+			g = img[ 1 ];
+			b = img[ 2 ];
 
 			c = ( r + g + b ) / 255.0f;
 
 			// expand the texel to its right
 			if ( x == width - 1 )
 			{
-				r = in[ 4 * ( y * width + x ) + 0 ];
-				g = in[ 4 * ( y * width + x ) + 1 ];
-				b = in[ 4 * ( y * width + x ) + 2 ];
+				cx = c; // at edge, don't wrap
 			}
 			else
 			{
-				r = in[ 4 * ( y * width + ( ( x + 1 ) % width ) ) + 0 ];
-				g = in[ 4 * ( y * width + ( ( x + 1 ) % width ) ) + 1 ];
-				b = in[ 4 * ( y * width + ( ( x + 1 ) % width ) ) + 2 ];
-			}
+				r = img[ 4 ];
+				g = img[ 5 ];
+				b = img[ 6 ];
 
-			cx = ( r + g + b ) / 255.0f;
+				cx = ( r + g + b ) / 255.0f;
+			}
 
 			// expand the texel one up
 			if ( y == height - 1 )
 			{
-				r = in[ 4 * ( y * width + x ) + 0 ];
-				g = in[ 4 * ( y * width + x ) + 1 ];
-				b = in[ 4 * ( y * width + x ) + 2 ];
+				cy = c; // at edge, don't wrap
 			}
 			else
 			{
-				r = in[ 4 * ( ( ( y + 1 ) % height ) * width + x ) + 0 ];
-				g = in[ 4 * ( ( ( y + 1 ) % height ) * width + x ) + 1 ];
-				b = in[ 4 * ( ( ( y + 1 ) % height ) * width + x ) + 2 ];
-			}
+				r = img[ row ];
+				g = img[ row + 1 ];
+				b = img[ row + 2 ];
 
-			cy = ( r + g + b ) / 255.0f;
+				cy = ( r + g + b ) / 255.0f;
+			}
 
 			dcx = scale * ( c - cx );
 			dcy = scale * ( c - cy );
@@ -839,12 +836,12 @@ static void R_HeightMapToNormalMap( byte *in, int width, int height, float scale
 
 			// repack the normalized vector into an RGB unsigned byte
 			// vector in the normal map image
-			*out++ = Tex_FloatToByte( n[ 0 ] );
-			*out++ = Tex_FloatToByte( n[ 1 ] );
-			*out++ = Tex_FloatToByte( n[ 2 ] );
+			*img++ = Tex_FloatToByte( n[ 0 ] );
+			*img++ = Tex_FloatToByte( n[ 1 ] );
+			*img++ = Tex_FloatToByte( n[ 2 ] );
 
 			// put in no height as displacement map by default
-			*out++ = ( byte ) 0; //(Q_bound(0, c * 255.0 / 3.0, 255));
+			*img++ = ( byte ) 0; //(Q_bound(0, c * 255.0 / 3.0, 255));
 		}
 	}
 }
@@ -863,124 +860,85 @@ static void R_DisplaceMap( byte *img, const byte *in2, int width, int height )
 	}
 }
 
-static void R_AddNormals( byte *in, byte *in2, int width, int height )
+static void R_AddNormals( byte *img, byte *in2, int width, int height )
 {
-	int    x, y;
+	int    i;
 	vec3_t n;
 	byte   a;
 	byte   a2;
 
-	for ( y = 0; y < height; y++ )
+	for ( i = width * height; i; --i )
 	{
-		for ( x = 0; x < width; x++ )
+		n[ 0 ] = Tex_ByteToFloat( img[ 0 ] ) + Tex_ByteToFloat( in2[ 0 ] );
+		n[ 1 ] = Tex_ByteToFloat( img[ 1 ] ) + Tex_ByteToFloat( in2[ 1 ] );
+		n[ 2 ] = Tex_ByteToFloat( img[ 2 ] ) + Tex_ByteToFloat( in2[ 2 ] );
+
+		a = img[ 3 ];
+		a2 = in2[ 3 ];
+
+		if ( !VectorNormalize( n ) )
 		{
-			byte *d1, *d2;
-
-			d1 = in + ( y * width + x ) * 4;
-			d2 = in2 + ( y * width + x ) * 4;
-
-			n[ 0 ] = Tex_ByteToFloat( d1[ 0 ] );
-			n[ 1 ] = Tex_ByteToFloat( d1[ 1 ] );
-			n[ 2 ] = Tex_ByteToFloat( d1[ 2 ] );
-
-			n[ 0 ] += Tex_ByteToFloat( d2[ 0 ] );
-			n[ 1 ] += Tex_ByteToFloat( d2[ 1 ] );
-			n[ 2 ] += Tex_ByteToFloat( d2[ 2 ] );
-
-			a = d1[ 3 ];
-			a2 = d2[ 3 ];
-
-			if ( !VectorNormalize( n ) )
-			{
-				VectorSet( n, 0, 0, 1 );
-			}
-
-			d1[ 0 ] = Tex_FloatToByte( n[ 0 ] );
-			d1[ 1 ] = Tex_FloatToByte( n[ 1 ] );
-			d1[ 2 ] = Tex_FloatToByte( n[ 2 ] );
-			d1[ 3 ] = ( byte )( Q_bound( 0, a + a2, 255 ) );
+			VectorSet( n, 0, 0, 1 );
 		}
+
+		img[ 0 ] = Tex_FloatToByte( n[ 0 ] );
+		img[ 1 ] = Tex_FloatToByte( n[ 1 ] );
+		img[ 2 ] = Tex_FloatToByte( n[ 2 ] );
+		img[ 3 ] = ( byte )( Q_bound( 0, a + a2, 255 ) );
+
+		img += 4;
+		in2 += 4;
 	}
 }
 
-static void R_InvertAlpha( byte *in, int width, int height )
+static void R_InvertAlpha( byte *img, int width, int height )
 {
-	int  x, y;
-	byte *out;
+	int i;
 
-	out = in;
+	img += 3;
 
-	for ( y = 0; y < height; y++ )
+	for ( i = width * height; i; --i )
 	{
-		for ( x = 0; x < width; x++ )
-		{
-			out[ 4 * ( y * width + x ) + 3 ] = 255 - in[ 4 * ( y * width + x ) + 3 ];
-		}
+		*img = 255 - *img;
+		img += 4;
 	}
 }
 
-static void R_InvertColor( byte *in, int width, int height )
+static void R_InvertColor( byte *img, int width, int height )
 {
-	int  x, y;
-	byte *out;
+	int i;
 
-	out = in;
-
-	for ( y = 0; y < height; y++ )
+	for ( i = width * height; i; --i )
 	{
-		for ( x = 0; x < width; x++ )
-		{
-			out[ 4 * ( y * width + x ) + 0 ] = 255 - in[ 4 * ( y * width + x ) + 0 ];
-			out[ 4 * ( y * width + x ) + 1 ] = 255 - in[ 4 * ( y * width + x ) + 1 ];
-			out[ 4 * ( y * width + x ) + 2 ] = 255 - in[ 4 * ( y * width + x ) + 2 ];
-		}
+		img[ 0 ] = 255 - img[ 0 ];
+		img[ 1 ] = 255 - img[ 1 ];
+		img[ 2 ] = 255 - img[ 2 ];
+		img += 4;
 	}
 }
 
-static void R_MakeIntensity( byte *in, int width, int height )
+static void R_MakeIntensity( byte *img, int width, int height )
 {
-	int  x, y;
-	byte *out;
-	byte red;
+	int i;
 
-	out = in;
-
-	for ( y = 0; y < height; y++ )
+	for ( i = width * height; i; --i )
 	{
-		for ( x = 0; x < width; x++ )
-		{
-			red = out[ 4 * ( y * width + x ) + 0 ];
-
-			out[ 4 * ( y * width + x ) + 1 ] = red;
-			out[ 4 * ( y * width + x ) + 2 ] = red;
-			out[ 4 * ( y * width + x ) + 3 ] = red;
-		}
+		img[ 3 ] = img[ 2 ] = img[ 1 ] = img[ 0 ];
+		img += 4;
 	}
 }
 
-static void R_MakeAlpha( byte *in, int width, int height )
+static void R_MakeAlpha( byte *img, int width, int height )
 {
-	int  x, y;
-	byte *out;
-	int  avg;
+	int i;
 
-	out = in;
-
-	for ( y = 0; y < height; y++ )
+	for ( i = width * height; i; --i )
 	{
-		for ( x = 0; x < width; x++ )
-		{
-			avg = 0;
-			avg += out[ 4 * ( y * width + x ) + 0 ];
-			avg += out[ 4 * ( y * width + x ) + 1 ];
-			avg += out[ 4 * ( y * width + x ) + 2 ];
-			avg /= 3;
-
-			out[ 4 * ( y * width + x ) + 0 ] = 255;
-			out[ 4 * ( y * width + x ) + 1 ] = 255;
-			out[ 4 * ( y * width + x ) + 2 ] = 255;
-			out[ 4 * ( y * width + x ) + 3 ] = ( byte ) avg;
-		}
+		img[ 3 ] = ( img[ 0 ] + img[ 1 ] + img[ 2 ] ) / 3;
+		img[ 2 ] = 255;
+		img[ 1 ] = 255;
+		img[ 0 ] = 255;
+		img += 4;
 	}
 }
 
@@ -2384,61 +2342,40 @@ image_t        *R_FindImageFile( const char *imageName, int bits, filterType_t f
 	return image;
 }
 
-static INLINE void SwapPixel( byte *inout, int x, int y, int x2, int y2, int width, int height )
-{
-	byte color[ 4 ];
-	byte color2[ 4 ];
-
-	color[ 0 ] = inout[ 4 * ( y * width + x ) + 0 ];
-	color[ 1 ] = inout[ 4 * ( y * width + x ) + 1 ];
-	color[ 2 ] = inout[ 4 * ( y * width + x ) + 2 ];
-	color[ 3 ] = inout[ 4 * ( y * width + x ) + 3 ];
-
-	color2[ 0 ] = inout[ 4 * ( y2 * width + x2 ) + 0 ];
-	color2[ 1 ] = inout[ 4 * ( y2 * width + x2 ) + 1 ];
-	color2[ 2 ] = inout[ 4 * ( y2 * width + x2 ) + 2 ];
-	color2[ 3 ] = inout[ 4 * ( y2 * width + x2 ) + 3 ];
-
-	inout[ 4 * ( y * width + x ) + 0 ] = color2[ 0 ];
-	inout[ 4 * ( y * width + x ) + 1 ] = color2[ 1 ];
-	inout[ 4 * ( y * width + x ) + 2 ] = color2[ 2 ];
-	inout[ 4 * ( y * width + x ) + 3 ] = color2[ 3 ];
-
-	inout[ 4 * ( y2 * width + x2 ) + 0 ] = color[ 0 ];
-	inout[ 4 * ( y2 * width + x2 ) + 1 ] = color[ 1 ];
-	inout[ 4 * ( y2 * width + x2 ) + 2 ] = color[ 2 ];
-	inout[ 4 * ( y2 * width + x2 ) + 3 ] = color[ 3 ];
-}
-
 static void R_Flip( byte *in, int width, int height )
 {
+	int32_t *data = (int32_t *) in;
 	int x, y;
-//	byte           *out;
-
-//	out = in;
 
 	for ( y = 0; y < height; y++ )
 	{
 		for ( x = 0; x < width / 2; x++ )
 		{
-			SwapPixel( in, x, y, ( width - 1 - x ), y, width, height );
+			int32_t texel = data[ x ];
+			data[ x ] = data[ width - 1 - x ];
+			data[ width - 1 - x ] = texel;
 		}
+		data += width;
 	}
 }
 
 static void R_Flop( byte *in, int width, int height )
 {
-	int x, y;
-//	byte           *out;
-
-//	out = in;
+	int32_t *upper = (int32_t *) in;
+	int32_t *lower = (int32_t *) in + ( height - 1 ) * width;
+	int     x, y;
 
 	for ( y = 0; y < height / 2; y++ )
 	{
 		for ( x = 0; x < width; x++ )
 		{
-			SwapPixel( in, x, y, x, ( height - 1 - y ), width, height );
+			int32_t texel = upper[ x ];
+			upper[ x ] = lower[ x ];
+			lower[ x ] = texel;
 		}
+
+		upper += width;
+		lower -= width;
 	}
 }
 
@@ -2474,7 +2411,7 @@ static void R_Rotate( byte *in, int width, int height, int degrees )
 			{
 				x2 = ( width - ( 1 + y ) );
 				y2 = x;
-
+ 
 				tmp[ 4 * ( y2 * width + x2 ) + 0 ] = color[ 0 ];
 				tmp[ 4 * ( y2 * width + x2 ) + 1 ] = color[ 1 ];
 				tmp[ 4 * ( y2 * width + x2 ) + 2 ] = color[ 2 ];
@@ -2825,24 +2762,25 @@ R_CreateFogImage
 static void R_CreateFogImage( void )
 {
 	int   x, y;
-	byte  *data;
+	byte  *data, *ptr;
 	//float           g;
 	float d;
 	float borderColor[ 4 ];
 
-	data = ri.Hunk_AllocateTempMemory( FOG_S * FOG_T * 4 );
+	ptr = data = ri.Hunk_AllocateTempMemory( FOG_S * FOG_T * 4 );
 
 	//g = 2.0;
 
 	// S is distance, T is depth
-	for ( x = 0; x < FOG_S; x++ )
+	for ( y = 0; y < FOG_T; y++ )
 	{
-		for ( y = 0; y < FOG_T; y++ )
+		for ( x = 0; x < FOG_S; x++ )
 		{
 			d = R_FogFactor( ( x + 0.5f ) / FOG_S, ( y + 0.5f ) / FOG_T );
 
-			data[( y * FOG_S + x ) * 4 + 0 ] = data[( y * FOG_S + x ) * 4 + 1 ] = data[( y * FOG_S + x ) * 4 + 2 ] = 255;
-			data[( y * FOG_S + x ) * 4 + 3 ] = 255 * d;
+			ptr[ 0 ] = ptr[ 1 ] = ptr[ 2 ] = 255;
+			ptr[ 3 ] = 255 * d;
+			ptr += 4;
 		}
 	}
 
@@ -2893,13 +2831,14 @@ static void R_CreateRandomNormalsImage( void )
 {
 	int  x, y;
 	byte data[ DEFAULT_SIZE ][ DEFAULT_SIZE ][ 4 ];
+	byte *ptr = &data[0][0][0];
 
 	// the default image will be a box, to allow you to see the mapping coordinates
 	Com_Memset( data, 32, sizeof( data ) );
 
-	for ( x = 0; x < DEFAULT_SIZE; x++ )
+	for ( y = 0; y < DEFAULT_SIZE; y++ )
 	{
-		for ( y = 0; y < DEFAULT_SIZE; y++ )
+		for ( x = 0; x < DEFAULT_SIZE; x++ )
 		{
 			vec3_t n;
 			float  r, angle;
@@ -2912,10 +2851,11 @@ static void R_CreateRandomNormalsImage( void )
 
 			//VectorSet(n, crandom(), crandom(), crandom());
 
-			data[ y ][ x ][ 0 ] = ( byte )( 128 + 127 * n[ 0 ] );
-			data[ y ][ x ][ 1 ] = ( byte )( 128 + 127 * n[ 1 ] );
-			data[ y ][ x ][ 2 ] = ( byte )( 128 + 127 * n[ 2 ] );
-			data[ y ][ x ][ 3 ] = 255;
+			ptr[ 0 ] = ( byte )( 128 + 127 * n[ 0 ] );
+			ptr[ 1 ] = ( byte )( 128 + 127 * n[ 1 ] );
+			ptr[ 2 ] = ( byte )( 128 + 127 * n[ 2 ] );
+			ptr[ 3 ] = 255;
+			ptr += 4;
 		}
 	}
 
@@ -2936,12 +2876,13 @@ static void R_CreateAttenuationXYImage( void )
 {
 	int  x, y;
 	byte data[ ATTENUATION_XY_SIZE ][ ATTENUATION_XY_SIZE ][ 4 ];
+	byte *ptr = &data[0][0][0];
 	int  b;
 
 	// make a centered inverse-square falloff blob for dynamic lighting
-	for ( x = 0; x < ATTENUATION_XY_SIZE; x++ )
+	for ( y = 0; y < ATTENUATION_XY_SIZE; y++ )
 	{
-		for ( y = 0; y < ATTENUATION_XY_SIZE; y++ )
+		for ( x = 0; x < ATTENUATION_XY_SIZE; x++ )
 		{
 			float d;
 
@@ -2958,8 +2899,9 @@ static void R_CreateAttenuationXYImage( void )
 				b = 0;
 			}
 
-			data[ y ][ x ][ 0 ] = data[ y ][ x ][ 1 ] = data[ y ][ x ][ 2 ] = b;
-			data[ y ][ x ][ 3 ] = 255;
+			ptr[ 0 ] = ptr[ 1 ] = ptr[ 2 ] = b;
+			ptr[ 3 ] = 255;
+			ptr += 4;
 		}
 	}
 
@@ -3542,57 +3484,38 @@ void R_CreateBuiltinImages( void )
 	tr.blackImage = R_CreateImage( "_black", ( byte * ) data, 8, 8, IF_NOPICMIP, FT_LINEAR, WT_REPEAT );
 
 	// red
-	for ( x = 0; x < DEFAULT_SIZE; x++ )
+	for ( x = DEFAULT_SIZE * DEFAULT_SIZE, out = &data[0][0][0]; x; --x, out += 4 )
 	{
-		for ( y = 0; y < DEFAULT_SIZE; y++ )
-		{
-			data[ y ][ x ][ 0 ] = 255;
-			data[ y ][ x ][ 1 ] = 0;
-			data[ y ][ x ][ 2 ] = 0;
-			data[ y ][ x ][ 3 ] = 255;
-		}
+		out[ 1 ] = out[ 2 ] = 0;
+		out[ 0 ] = out[ 3 ] = 255;
 	}
 
 	tr.redImage = R_CreateImage( "_red", ( byte * ) data, 8, 8, IF_NOPICMIP, FT_LINEAR, WT_REPEAT );
 
 	// green
-	for ( x = 0; x < DEFAULT_SIZE; x++ )
+	for ( x = DEFAULT_SIZE * DEFAULT_SIZE, out = &data[0][0][0]; x; --x, out += 4 )
 	{
-		for ( y = 0; y < DEFAULT_SIZE; y++ )
-		{
-			data[ y ][ x ][ 0 ] = 0;
-			data[ y ][ x ][ 1 ] = 255;
-			data[ y ][ x ][ 2 ] = 0;
-			data[ y ][ x ][ 3 ] = 255;
-		}
+		out[ 0 ] = out[ 2 ] = 0;
+		out[ 1 ] = out[ 3 ] = 255;
 	}
 
 	tr.greenImage = R_CreateImage( "_green", ( byte * ) data, 8, 8, IF_NOPICMIP, FT_LINEAR, WT_REPEAT );
 
 	// blue
-	for ( x = 0; x < DEFAULT_SIZE; x++ )
+	for ( x = DEFAULT_SIZE * DEFAULT_SIZE, out = &data[0][0][0]; x; --x, out += 4 )
 	{
-		for ( y = 0; y < DEFAULT_SIZE; y++ )
-		{
-			data[ y ][ x ][ 0 ] = 0;
-			data[ y ][ x ][ 1 ] = 0;
-			data[ y ][ x ][ 2 ] = 255;
-			data[ y ][ x ][ 3 ] = 255;
-		}
+		out[ 0 ] = out[ 1 ] = 0;
+		out[ 2 ] = out[ 3 ] = 255;
 	}
 
 	tr.blueImage = R_CreateImage( "_blue", ( byte * ) data, 8, 8, IF_NOPICMIP, FT_LINEAR, WT_REPEAT );
 
 	// generate a default normalmap with a zero heightmap
-	for ( x = 0; x < DEFAULT_SIZE; x++ )
+	for ( x = DEFAULT_SIZE * DEFAULT_SIZE, out = &data[0][0][0]; x; --x, out += 4 )
 	{
-		for ( y = 0; y < DEFAULT_SIZE; y++ )
-		{
-			data[ y ][ x ][ 0 ] = 128;
-			data[ y ][ x ][ 1 ] = 128;
-			data[ y ][ x ][ 2 ] = 255;
-			data[ y ][ x ][ 3 ] = 0;
-		}
+		out[ 0 ] = out[ 1 ] = 128;
+		out[ 2 ] = 255;
+		out[ 3 ] = 0;
 	}
 
 	tr.flatImage = R_CreateImage( "_flat", ( byte * ) data, 8, 8, IF_NOPICMIP | IF_NORMALMAP, FT_LINEAR, WT_REPEAT );
