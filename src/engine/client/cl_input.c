@@ -138,17 +138,15 @@ void IN_KeyUp( kbutton_t *b )
 		return;
 	}
 
-	if ( b->down[ 0 ] == k )
+	// If this key is marked as down for this button, clear it
+	// Also clear sticky state (don't care if there was no key-down)
+	if ( b->down[ 0 ] == k || b->down[ 0 ] < 0 )
 	{
 		b->down[ 0 ] = 0;
 	}
-	else if ( b->down[ 1 ] == k )
+	if ( b->down[ 1 ] == k || b->down[ 1 ] < 0 )
 	{
 		b->down[ 1 ] = 0;
-	}
-	else
-	{
-		return; // key up without corresponding down (menu pass-through)
 	}
 
 	if ( b->down[ 0 ] || b->down[ 1 ] )
