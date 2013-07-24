@@ -2,10 +2,13 @@
 #include <windows.h>
 #else
 #include <unistd.h>
+#include <signal.h>
 #include <sys/mman.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
-#include <signal.h>
+#ifdef __linux__
+#include <sys/prctl.h>
+#endif
 #endif
 
 #include <stdio.h>
@@ -487,6 +490,12 @@ Module InternalLoadModule(NaClHandle* pair, const char* const* args, const char*
 		// This seems to be required, otherwise killing the child process will
 		// also kill the parent process.
 		setsid();
+
+#ifdef __linux__
+		// Kill child process if the parent dies. This avoid left-over processes
+		// when using the debug stub. Sadly it is Linux-only.
+		prctl(PR_SET_PDEATHSIG, SIGKILL);
+#endif
 
 		// Close standard input/output descriptors
 		close(0);
