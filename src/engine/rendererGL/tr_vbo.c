@@ -437,7 +437,7 @@ void R_BindVBO( VBO_t *vbo )
 		glState.currentVBO = vbo;
 		glState.vertexAttribPointersSet = 0;
 
-		glState.vertexAttribsInterpolation = 0;
+		glState.vertexAttribsInterpolation = -1;
 		glState.vertexAttribsOldFrame = 0;
 		glState.vertexAttribsNewFrame = 0;
 

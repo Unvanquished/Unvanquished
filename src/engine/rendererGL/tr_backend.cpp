@@ -780,7 +780,7 @@ void GL_VertexAttribPointers( uint32_t attribBits )
 		uint32_t bit = BIT( i );
 		uint32_t frame = 0;
 
-		if ( ( attribBits & bit ) )
+		if ( ( attribBits & bit ) && ( !( glState.vertexAttribPointersSet & bit ) || glState.vertexAttribsInterpolation >= 0 ) )
 		{
 			const vboAttributeLayout_t *layout = &glState.currentVBO->attribs[ i ];
 
