@@ -5401,7 +5401,7 @@ static void R_CreateSubModelVBOs( void )
 		Com_InitGrowList( &vboSurfaces, 100 );
 
 		// sort surfaces by shader
-		qsort( surfacesSorted, numSurfaces, sizeof( surfacesSorted ), BSPSurfaceCompare );
+		qsort( surfacesSorted, numSurfaces, sizeof( *surfacesSorted ), BSPSurfaceCompare );
 
 		// create a VBO for each shader
 		shader = oldShader = NULL;
@@ -5413,7 +5413,7 @@ static void R_CreateSubModelVBOs( void )
 			shader = surface->shader;
 			lightmapNum = surface->lightmapNum;
 
-			if ( shader != oldShader || ( r_precomputedLighting->integer ? lightmapNum != oldLightmapNum : 0 ) )
+			if ( shader != oldShader || ( r_precomputedLighting->integer && lightmapNum != oldLightmapNum ) )
 			{
 				oldShader = shader;
 				oldLightmapNum = lightmapNum;
@@ -5426,7 +5426,7 @@ static void R_CreateSubModelVBOs( void )
 				{
 					surface2 = surfacesSorted[ l ];
 
-					if ( surface2->shader != shader )
+					if ( surface2->shader != shader || ( r_precomputedLighting->integer && surface2->lightmapNum != lightmapNum ) )
 					{
 						continue;
 					}
@@ -5509,7 +5509,7 @@ static void R_CreateSubModelVBOs( void )
 				{
 					surface2 = surfacesSorted[ l ];
 
-					if ( surface2->shader != shader )
+					if ( surface2->shader != shader || ( r_precomputedLighting->integer && surface2->lightmapNum != lightmapNum ) )
 					{
 						continue;
 					}
@@ -5596,7 +5596,7 @@ static void R_CreateSubModelVBOs( void )
 				{
 					surface2 = surfacesSorted[ l ];
 
-					if ( surface2->shader != shader )
+					if ( surface2->shader != shader || ( r_precomputedLighting->integer && surface2->lightmapNum != lightmapNum ) )
 					{
 						continue;
 					}
