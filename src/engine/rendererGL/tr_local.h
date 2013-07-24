@@ -626,33 +626,59 @@ extern "C" {
 	              //ATTR_BONE_WEIGHTS
 	};
 
-	typedef enum
-	{
-	  VBO_USAGE_STATIC,
-	  VBO_USAGE_DYNAMIC
-	} vboUsage_t;
-
 	typedef struct
 	{
 		GLint   numComponents; // how many components in a single attribute for a single vertex
 		GLenum  componentType; // the input type for a single component
 		GLboolean normalize; // convert signed integers to the floating point range [-1, 1], and unsigned integers to the range [0, 1]
 		GLsizei stride;
+		GLsizei realStride;
 		GLsizei ofs;
 		GLsizei frameOffset; // for vertex animation, real offset computed as ofs + frame * frameOffset
 	} vboAttributeLayout_t;
+
+	typedef enum
+	{
+		VBO_LAYOUT_VERTEX_ANIMATION,
+		VBO_LAYOUT_INTERLEAVED,
+		VBO_LAYOUT_SEPERATE
+	} vboLayout_t;
+
+	typedef struct
+	{
+		vec3_t *xyz;
+		vec3_t *tangent;
+		vec3_t *binormal;
+		vec3_t *normal;
+		int numFrames;
+
+		vec4_t *color;
+		vec2_t *st;
+		vec2_t *lightCoord;
+		vec3_t *ambientLight;
+		vec3_t *directedLight;
+		vec3_t *lightDir;
+		int    (*boneIndexes)[ 4 ];
+		vec4_t *boneWeights;
+		int     numVerts;
+	} vboData_t;
 
 	typedef struct VBO_s
 	{
 		char     name[ MAX_QPATH ];
 
 		uint32_t vertexesVBO;
-		uint32_t vertexesSize; // amount of memory data allocated for all vertices in bytes
+
+		uint32_t vertexesSize; // total amount of memory data allocated for this vbo
+
 		uint32_t vertexesNum;
+		uint32_t framesNum; // number of frames for vertex animation
 
 		vboAttributeLayout_t attribs[ ATTR_INDEX_MAX ]; // info for buffer manipulation
 
+		vboLayout_t layout;
 		uint32_t attribBits;
+		GLenum      usage;
 	} VBO_t;
 
 	typedef struct IBO_s
@@ -2176,13 +2202,6 @@ extern "C" {
 	{
 		vec3_t xyz;
 	} mdvXyz_t;
-
-	typedef struct
-	{
-		vec3_t normal;
-		vec3_t tangent;
-		vec3_t binormal;
-	} mdvNormTanBi_t;
 
 	typedef struct
 	{
@@ -3779,11 +3798,11 @@ extern "C" {
 
 	============================================================
 	*/
-	VBO_t *R_CreateVBO( const char *name, byte *vertexes, int vertexesSize, vboUsage_t usage );
-	VBO_t *R_CreateVBO2( const char *name, int numVertexes, srfVert_t *vertexes, uint32_t stateBits, vboUsage_t usage );
+	VBO_t *R_CreateStaticVBO( const char *name, vboData_t data, vboLayout_t layout );
+	VBO_t *R_CreateStaticVBO2( const char *name, int numVertexes, srfVert_t *vertexes, uint32_t stateBits );
 
-	IBO_t *R_CreateIBO( const char *name, byte *indexes, int indexesSize, vboUsage_t usage );
-	IBO_t *R_CreateIBO2( const char *name, int numTriangles, srfTriangle_t *triangles, vboUsage_t usage );
+	IBO_t *R_CreateStaticIBO( const char *name, glIndex_t *indexes, int numIndexes );
+	IBO_t *R_CreateStaticIBO2( const char *name, int numTriangles, srfTriangle_t *triangles );
 
 	void  R_BindVBO( VBO_t *vbo );
 	void  R_BindNullVBO( void );

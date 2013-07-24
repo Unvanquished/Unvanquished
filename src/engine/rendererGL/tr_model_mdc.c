@@ -660,22 +660,10 @@ qboolean R_LoadMDC( model_t *mod, int lod, void *buffer, int bufferSize, const c
 #if 1
 	// create VBO surfaces from md3 surfaces
 	{
-		mdvNormTanBi_t  *vertexes;
-		mdvNormTanBi_t  *vert;
-
 		growList_t      vboSurfaces;
 		srfVBOMDVMesh_t *vboSurf;
+		vboData_t       data;
 
-		byte            *data;
-		int             dataSize;
-		int             dataOfs;
-
-		vec4_t          tmp;
-
-		uint32_t        ofs[ ATTR_INDEX_MAX ] = {0};
-		uint32_t        frameOffset[ ATTR_INDEX_MAX ] = {0};
-
-		int             vertexesNum;
 		int             f;
 
 		Com_InitGrowList( &vboSurfaces, 10 );
@@ -683,9 +671,32 @@ qboolean R_LoadMDC( model_t *mod, int lod, void *buffer, int bufferSize, const c
 		for ( i = 0, surf = mdvModel->surfaces; i < mdvModel->numSurfaces; i++, surf++ )
 		{
 			//allocate temp memory for vertex data
-			vertexes = (mdvNormTanBi_t*)ri.Hunk_AllocateTempMemory( sizeof( *vertexes ) * surf->numVerts * mdvModel->numFrames );
+			memset( &data, 0, sizeof( data ) );
+			data.xyz = ( vec3_t * ) ri.Hunk_AllocateTempMemory( sizeof( *data.xyz ) * mdvModel->numFrames * surf->numVerts );
+			data.normal = ( vec3_t * ) ri.Hunk_AllocateTempMemory( sizeof( *data.normal ) * mdvModel->numFrames * surf->numVerts );
+			data.tangent = ( vec3_t * ) ri.Hunk_AllocateTempMemory( sizeof( *data.tangent ) * mdvModel->numFrames * surf->numVerts );
+			data.binormal = ( vec3_t * ) ri.Hunk_AllocateTempMemory( sizeof( *data.binormal ) * mdvModel->numFrames * surf->numVerts );
+			data.numFrames = mdvModel->numFrames;
+			data.st = ( vec2_t * ) ri.Hunk_AllocateTempMemory( sizeof( *data.st ) * surf->numVerts );
+			data.numVerts = surf->numVerts;
 
-			// calc tangent spaces
+			// feed vertex XYZ
+			for ( f = 0; f < mdvModel->numFrames; f++ )
+			{
+				for ( j = 0; j < surf->numVerts; j++ )
+				{
+					VectorCopy( surf->verts[ f * surf->numVerts + j ].xyz, data.xyz[ f * surf->numVerts + j ] );
+				}
+			}
+
+			// feed vertex texcoords
+			for ( j = 0; j < surf->numVerts; j++ )
+			{
+				data.st[ j ][ 0 ] = surf->st[ j ].st[ 0 ];
+				data.st[ j ][ 1 ] = surf->st[ j ].st[ 1 ];
+			}
+
+			// calc and feed tangent spaces
 			{
 				const float *v0, *v1, *v2;
 				const float *t0, *t1, *t2;
@@ -693,11 +704,11 @@ qboolean R_LoadMDC( model_t *mod, int lod, void *buffer, int bufferSize, const c
 				vec3_t      binormal;
 				vec3_t      normal;
 
-				for ( j = 0, vert = vertexes; j < ( surf->numVerts * mdvModel->numFrames ); j++, vert++ )
+				for ( j = 0; j < ( surf->numVerts * mdvModel->numFrames ); j++ )
 				{
-					VectorClear( vert->tangent );
-					VectorClear( vert->binormal );
-					VectorClear( vert->normal );
+					VectorClear( data.tangent[ j ] );
+					VectorClear( data.binormal[ j ] );
+					VectorClear( data.normal[ j ] );
 				}
 
 				for ( f = 0; f < mdvModel->numFrames; f++ )
@@ -723,30 +734,30 @@ qboolean R_LoadMDC( model_t *mod, int lod, void *buffer, int bufferSize, const c
 						{
 							float *v;
 
-							v = vertexes[ surf->numVerts * f + tri->indexes[ k ] ].tangent;
+							v = data.tangent[ surf->numVerts * f + tri->indexes[ k ] ];
 							VectorAdd( v, tangent, v );
 
-							v = vertexes[ surf->numVerts * f + tri->indexes[ k ] ].binormal;
+							v = data.binormal[ surf->numVerts * f + tri->indexes[ k ] ];
 							VectorAdd( v, binormal, v );
 
-							v = vertexes[ surf->numVerts * f + tri->indexes[ k ] ].normal;
+							v = data.normal[ surf->numVerts * f + tri->indexes[ k ] ];
 							VectorAdd( v, normal, v );
 						}
 					}
 				}
 
-				for ( j = 0, vert = vertexes; j < ( surf->numVerts * mdvModel->numFrames ); j++, vert++ )
+				for ( j = 0; j < ( surf->numVerts * mdvModel->numFrames ); j++ )
 				{
-					VectorNormalize( vert->tangent );
-					VectorNormalize( vert->binormal );
-					VectorNormalize( vert->normal );
+					VectorNormalize( data.tangent[ j ] );
+					VectorNormalize( data.binormal[ j ] );
+					VectorNormalize( data.normal[ j ] );
 				}
 			}
 
-			//ri.Printf(PRINT_ALL, "...calculating MDC mesh VBOs ( '%s', %i verts %i tris )\n", surf->name, surf->numVerts, surf->numTriangles);
+			//ri.Printf(PRINT_ALL, "...calculating MD3 mesh VBOs ( '%s', %i verts %i tris )\n", surf->name, surf->numVerts, surf->numTriangles);
 
 			// create surface
-			vboSurf = ri.Hunk_Alloc( sizeof( *vboSurf ), h_low );
+			vboSurf = ( srfVBOMDVMesh_t * ) ri.Hunk_Alloc( sizeof( *vboSurf ), h_low );
 			Com_AddToGrowList( &vboSurfaces, vboSurf );
 
 			vboSurf->surfaceType = SF_VBO_MDVMESH;
@@ -755,138 +766,15 @@ qboolean R_LoadMDC( model_t *mod, int lod, void *buffer, int bufferSize, const c
 			vboSurf->numIndexes = surf->numTriangles * 3;
 			vboSurf->numVerts = surf->numVerts;
 
-			/*
-			vboSurf->vbo = R_CreateVBO2(va("staticWorldMesh_vertices %i", vboSurfaces.currentElements), numVerts, optimizedVerts,
-			                                                   ATTR_POSITION | ATTR_TEXCOORD | ATTR_LIGHTCOORD | ATTR_TANGENT | ATTR_BINORMAL | ATTR_NORMAL
-			                                                   | ATTR_COLOR);
-			                                                   */
+			vboSurf->ibo = R_CreateStaticIBO2( va( "staticMD3Mesh_IBO %s", surf->name ), surf->numTriangles, surf->triangles );
 
-			vboSurf->ibo = R_CreateIBO2( va( "staticMDCMesh_IBO %s", surf->name ), surf->numTriangles, surf->triangles, VBO_USAGE_STATIC );
-
-			// create VBO
-			vertexesNum = surf->numVerts;
-
-			dataSize = ( surf->numVerts * mdvModel->numFrames * sizeof( vec4_t ) * 4 ) +  // xyz, tangent, binormal, normal
-			           ( surf->numVerts * sizeof( vec4_t ) );  // texcoords
-			data = ri.Hunk_AllocateTempMemory( dataSize );
-			dataOfs = 0;
-
-			// feed vertex XYZ
-			for ( f = 0; f < mdvModel->numFrames; f++ )
-			{
-				for ( j = 0; j < vertexesNum; j++ )
-				{
-					for ( k = 0; k < 3; k++ )
-					{
-						tmp[ k ] = surf->verts[ f * vertexesNum + j ].xyz[ k ];
-					}
-
-					tmp[ 3 ] = 1;
-					Com_Memcpy( data + dataOfs, ( vec_t * ) tmp, sizeof( vec4_t ) );
-					dataOfs += sizeof( vec4_t );
-				}
-
-				if ( f == 0 )
-				{
-					frameOffset[ ATTR_INDEX_POSITION2 ] = frameOffset[ ATTR_INDEX_POSITION ] = dataOfs;
-				}
-			}
-
-			// feed vertex texcoords
-			ofs[ ATTR_INDEX_TEXCOORD ] = dataOfs;
-
-			for ( j = 0; j < vertexesNum; j++ )
-			{
-				for ( k = 0; k < 2; k++ )
-				{
-					tmp[ k ] = surf->st[ j ].st[ k ];
-				}
-
-				tmp[ 2 ] = 0;
-				tmp[ 3 ] = 1;
-				Com_Memcpy( data + dataOfs, ( vec_t * ) tmp, sizeof( vec4_t ) );
-				dataOfs += sizeof( vec4_t );
-			}
-
-			// feed vertex tangents
-			ofs[ ATTR_INDEX_TANGENT2 ] = ofs[ ATTR_INDEX_TANGENT ] = dataOfs;
-
-			for ( f = 0; f < mdvModel->numFrames; f++ )
-			{
-				for ( j = 0; j < vertexesNum; j++ )
-				{
-					for ( k = 0; k < 3; k++ )
-					{
-						tmp[ k ] = vertexes[ f * vertexesNum + j ].tangent[ k ];
-					}
-
-					tmp[ 3 ] = 1;
-					Com_Memcpy( data + dataOfs, ( vec_t * ) tmp, sizeof( vec4_t ) );
-					dataOfs += sizeof( vec4_t );
-				}
-
-				if ( f == 0 )
-				{
-					frameOffset[ ATTR_INDEX_TANGENT2 ] = frameOffset[ ATTR_INDEX_TANGENT ] = dataOfs - ofs[ ATTR_INDEX_TANGENT ];
-				}
-			}
-
-			// feed vertex binormals
-			ofs[ ATTR_INDEX_BINORMAL2 ] = ofs[ ATTR_INDEX_BINORMAL ] = dataOfs;
-
-			for ( f = 0; f < mdvModel->numFrames; f++ )
-			{
-				for ( j = 0; j < vertexesNum; j++ )
-				{
-					for ( k = 0; k < 3; k++ )
-					{
-						tmp[ k ] = vertexes[ f * vertexesNum + j ].binormal[ k ];
-					}
-
-					tmp[ 3 ] = 1;
-					Com_Memcpy( data + dataOfs, ( vec_t * ) tmp, sizeof( vec4_t ) );
-					dataOfs += sizeof( vec4_t );
-				}
-
-				if ( f == 0 )
-				{
-					frameOffset[ ATTR_INDEX_BINORMAL2 ] = frameOffset[ ATTR_INDEX_BINORMAL ] = dataOfs - ofs[ ATTR_INDEX_BINORMAL ];
-				}
-			}
-
-			// feed vertex normals
-			ofs[ ATTR_INDEX_NORMAL2 ] = ofs[ ATTR_INDEX_NORMAL ] = dataOfs;
-
-			for ( f = 0; f < mdvModel->numFrames; f++ )
-			{
-				for ( j = 0; j < vertexesNum; j++ )
-				{
-					for ( k = 0; k < 3; k++ )
-					{
-						tmp[ k ] = vertexes[ f * vertexesNum + j ].normal[ k ];
-					}
-
-					tmp[ 3 ] = 1;
-					Com_Memcpy( data + dataOfs, ( vec_t * ) tmp, sizeof( vec4_t ) );
-					dataOfs += sizeof( vec4_t );
-				}
-
-				if ( f == 0 )
-				{
-					frameOffset[ ATTR_INDEX_NORMAL2 ] = frameOffset[ ATTR_INDEX_NORMAL ] = dataOfs - ofs[ ATTR_INDEX_NORMAL ];
-				}
-			}
-
-			vboSurf->vbo = R_CreateVBO( va( "staticMDCMesh_VBO '%s'", surf->name ), data, dataSize, VBO_USAGE_STATIC );
-
-			for ( f = 0; f < ATTR_INDEX_MAX; f++ )
-			{
-				vboSurf->vbo->attribs[ f ].ofs = ofs[ f ];
-				vboSurf->vbo->attribs[ f ].frameOffset = frameOffset[ f ];
-			}
-
-			ri.Hunk_FreeTempMemory( data );
-			ri.Hunk_FreeTempMemory( vertexes );
+			vboSurf->vbo = R_CreateStaticVBO( va( "staticMD3Mesh_VBO '%s'", surf->name ), data, VBO_LAYOUT_VERTEX_ANIMATION );
+			
+			ri.Hunk_FreeTempMemory( data.st );
+			ri.Hunk_FreeTempMemory( data.binormal );
+			ri.Hunk_FreeTempMemory( data.tangent );
+			ri.Hunk_FreeTempMemory( data.normal );
+			ri.Hunk_FreeTempMemory( data.xyz );
 		}
 
 		// move VBO surfaces list to hunk
