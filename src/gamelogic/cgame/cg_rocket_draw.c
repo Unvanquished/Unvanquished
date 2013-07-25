@@ -1173,14 +1173,14 @@ void CG_Rocket_DrawPlayerHealthCross( void )
 	vec4_t    color, ref_color;
 	float     ref_alpha;
 	rectDef_t rect;
-    
+
 	// grab info from libRocket
 	CG_GetRocketElementColor( ref_color );
 	CG_GetRocketElementRect( &rect );
-    
+
 	// Pick the current icon
 	shader = cgs.media.healthCross;
-    
+
 	if ( cg.snap->ps.stats[ STAT_STATE ] & SS_HEALING_3X )
 	{
 		shader = cgs.media.healthCross3X;
@@ -1200,35 +1200,35 @@ void CG_Rocket_DrawPlayerHealthCross( void )
 	{
 		shader = cgs.media.healthCrossPoisoned;
 	}
-    
+
 	// Pick the alpha value
 	Vector4Copy( ref_color, color );
-    
+
 	if ( cg.snap->ps.stats[ STAT_TEAM ] == TEAM_HUMANS &&
         cg.snap->ps.stats[ STAT_HEALTH ] < 10 )
 	{
 		color[ 0 ] = 1.0f;
 		color[ 1 ] = color[ 2 ] = 0.0f;
 	}
-    
+
 	ref_alpha = ref_color[ 3 ];
-    
+
 	if ( cg.snap->ps.stats[ STAT_STATE ] & SS_HEALING_ACTIVE )
 	{
 		ref_alpha = 1.0f;
 	}
-    
+
 	// Don't fade from nothing
 	if ( !cg.lastHealthCross )
 	{
 		cg.lastHealthCross = shader;
 	}
-    
+
 	// Fade the icon during transition
 	if ( cg.lastHealthCross != shader )
 	{
 		cg.healthCrossFade += cg.frametime / 500.0f;
-        
+
 		if ( cg.healthCrossFade > 1.0f )
 		{
 			cg.healthCrossFade = 0.0f;
@@ -1247,7 +1247,7 @@ void CG_Rocket_DrawPlayerHealthCross( void )
 			return;
 		}
 	}
-    
+
 	// Not fading, draw a single icon
 	color[ 3 ] = ref_alpha;
 	trap_R_SetColor( color );
