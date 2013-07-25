@@ -464,12 +464,18 @@ Module InternalLoadModule(NaClHandle* pair, const char* const* args, const char*
 	PROCESS_INFORMATION process_information;
 	memset(&startup_info, 0, sizeof(startup_info));
 	startup_info.cb = sizeof(startup_info);
-	if (!CreateProcessA(NULL, const_cast<char*>(cmdline.c_str()), NULL, NULL, TRUE, 0, env_data.data(), NULL, &startup_info, &process_information)) {
+	if (!CreateProcessA(NULL, const_cast<char*>(cmdline.c_str()), NULL, NULL, TRUE, CREATE_SUSPENDED | DETACHED_PROCESS, env_data.data(), NULL, &startup_info, &process_information)) {
 		NaClClose(pair[0]);
 		NaClClose(pair[1]);
 		return Module();
 	}
 
+#ifndef _WIN64
+	// Attempt to reserve 1GB of address space for the NaCl sandbox
+	VirtualAllocEx(process_information.hProcess, NULL, 1 << 30, MEM_RESERVE, PAGE_NOACCESS);
+#endif
+
+	ResumeThread(process_information.hThread);
 	NaClClose(pair[1]);
 	CloseHandle(process_information.hThread);
 
