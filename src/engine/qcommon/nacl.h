@@ -1,10 +1,10 @@
+#ifndef NACL_H_
+#define NACL_H_
+
 #include <stddef.h>
 #include <stdint.h>
 #include <memory>
 #include <vector>
-
-#ifndef NACL_H_
-#define NACL_H_
 
 namespace NaCl {
 
