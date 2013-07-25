@@ -280,11 +280,11 @@ private:
 };
 
 // Load a NaCl module
-Module LoadNaClModule(const char* module, const char* sel_ldr, const char* irt);
+Module LoadNaClModule(const char* module, const char* sel_ldr, const char* irt, const char* bootstrap = NULL);
 
 // Load a NaCl module using the integrated debugger. The module will wait for a
 // debugger to attach on localhost:4014 before starting.
-Module LoadNaClModuleDebug(const char* module, const char* sel_ldr, const char* irt);
+Module LoadNaClModuleDebug(const char* module, const char* sel_ldr, const char* irt, const char* bootstrap = NULL);
 
 // Load a native module
 Module LoadNativeModule(const char* module);

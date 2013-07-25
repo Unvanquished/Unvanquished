@@ -518,7 +518,7 @@ Module InternalLoadModule(NaClHandle* pair, const char* const* args, const char*
 #endif
 }
 
-Module LoadNaClModule(const char* module, const char* sel_ldr, const char* irt)
+Module LoadNaClModule(const char* module, const char* sel_ldr, const char* irt, const char* bootstrap)
 {
 	NaClHandle pair[2];
 	if (NaClSocketPair(pair))
@@ -529,11 +529,12 @@ Module LoadNaClModule(const char* module, const char* sel_ldr, const char* irt)
 	char root_sock_handle[32];
 	snprintf(root_sock_handle, sizeof(root_sock_handle), "NACLENV_ROOT_SOCKET=%d", ROOT_SOCKET_FD);
 	const char* args[] = {sel_ldr, "-B", irt, "-i", root_sock_redir, "-f", module, NULL};
+	const char* args_bootstrap[] = {bootstrap, sel_ldr, "--r_debug=0xXXXXXXXXXXXXXXXX", "--reserved_at_zero=0xXXXXXXXXXXXXXXXX", "-B", irt, "-i", root_sock_redir, "-f", module, NULL};
 	const char* env[] = {root_sock_handle, NULL};
-	return InternalLoadModule(pair, args, env);
+	return InternalLoadModule(pair, bootstrap ? args_bootstrap : args, env);
 }
 
-Module LoadNaClModuleDebug(const char* module, const char* sel_ldr, const char* irt)
+Module LoadNaClModuleDebug(const char* module, const char* sel_ldr, const char* irt, const char* bootstrap)
 {
 	NaClHandle pair[2];
 	if (NaClSocketPair(pair))
@@ -543,9 +544,10 @@ Module LoadNaClModuleDebug(const char* module, const char* sel_ldr, const char* 
 	snprintf(root_sock_redir, sizeof(root_sock_redir), "%d:%d", ROOT_SOCKET_FD, (int)pair[1]);
 	char root_sock_handle[32];
 	snprintf(root_sock_handle, sizeof(root_sock_handle), "NACLENV_ROOT_SOCKET=%d", ROOT_SOCKET_FD);
-	const char* args[] = {sel_ldr, "-g", "-B", irt, "-i", root_sock_redir, "-f", module, NULL};
+	const char* args[] = {sel_ldr, "-B", irt, "-i", root_sock_redir, "-f", module, NULL};
+	const char* args_bootstrap[] = {bootstrap, sel_ldr, "--r_debug=0xXXXXXXXXXXXXXXXX", "--reserved_at_zero=0xXXXXXXXXXXXXXXXX", "-g", "-B", irt, "-i", root_sock_redir, "-f", module, NULL};
 	const char* env[] = {root_sock_handle, NULL};
-	return InternalLoadModule(pair, args, env);
+	return InternalLoadModule(pair, bootstrap ? args_bootstrap : args, env);
 }
 
 Module LoadNativeModule(const char* module)
