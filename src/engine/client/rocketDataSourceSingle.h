@@ -182,5 +182,3 @@ private:
 };
 
 #endif
-
-extern sched_param param;
