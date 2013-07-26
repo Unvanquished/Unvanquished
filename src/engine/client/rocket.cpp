@@ -674,7 +674,7 @@ int Rocket_ToQuakeKey( const int rocketKey )
 
 void Rocket_InjectMouseMotion( int x, int y )
 {
-	if ( !menuContext || !( cls.keyCatchers & KEYCATCH_UI ) || cls.keyCatchers & KEYCATCH_CONSOLE )
+	if ( menuContext && cls.keyCatchers & KEYCATCH_UI  && !( cls.keyCatchers & KEYCATCH_CONSOLE ) )
 	{
 		menuContext->ProcessMouseMove( x, y, RocketConvertSDLmod( SDL_GetModState() ) );
 	}
