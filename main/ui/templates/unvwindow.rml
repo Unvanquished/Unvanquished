@@ -5,9 +5,7 @@
 	<style>
 		body.window
 		{
-			padding-top: 43px;
-			padding-bottom: 20px;
-
+			padding: 80px 60px;
 			min-width: 250px;
 			max-width: 800px;
 
@@ -17,19 +15,17 @@
 		body
 		{
 			width: auto;
-			padding: 10px 25px;
 
 			background-decorator: tiled-box;
-			background-top-left-image: /ui/assets/alien/buildstat/overlay.tga 0px 0px 45px 35px;
-			background-top-right-image: /ui/assets/alien/buildstat/overlay.tga 289px 0px 317px 35px;
-			background-top-image: /ui/assets/alien/buildstat/overlay.tga stretch 45px 0px 289px 35px;
-			background-bottom-left-image: /ui/assets/alien/buildstat/overlay.tga 0px 50px 37px 75px;
-			background-bottom-right-image: /ui/assets/alien/buildstat/overlay.tga 273px 50px 320px 75px;
-			background-bottom-image: /ui/assets/alien/buildstat/overlay.tga stretch 37px 50px 273px 75px;
-			background-left-image: /ui/assets/alien/buildstat/overlay.tga stretch 0px 35px 28px 50px;
-			background-center-image: /ui/assets/alien/buildstat/overlay.tga stretch 114px 32px 115px 33px;
+			background-top-left-image: /ui/assets/window/top-left.png;
+			background-top-right-image: /ui/assets/window/top-right.png;
+			background-top-image: /ui/assets/window/top.png stretch;
+			background-bottom-left-image: /ui/assets/window/bottom-left.png;
+			background-bottom-right-image: /ui/assets/window/bottom-right.png;
+			background-bottom-image: /ui/assets/window/bottom.png stretch;
+			background-left-image: /ui/assets/window/left.png stretch;
+			background-center-image: /ui/assets/window/line.png stretch;
 			overflow: hidden auto;
-			background: rgba(51,51,51,222);
 		}
 		button#x, button#x:hover
 		{
