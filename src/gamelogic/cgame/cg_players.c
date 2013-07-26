@@ -1664,7 +1664,10 @@ static void CG_SetLerpFrameAnimation( clientInfo_t *ci, lerpFrame_t *lf, int new
 	anim = &ci->animations[ newAnimation ];
 
 	lf->animation = anim;
-	lf->animationTime = lf->frameTime + anim->initialLerp;
+	lf->animationTime = cg.time + anim->initialLerp;
+
+	lf->oldFrame = lf->frame = 0;
+	lf->oldFrameTime = lf->frameTime = 0;
 
 	if ( cg_debugAnim.integer )
 	{
@@ -1735,11 +1738,9 @@ static void CG_RunPlayerLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAni
 		animChanged = qtrue;
 	}
 
-	if ( !ci->md5 )
-	{
-		CG_RunLerpFrame( lf, speedScale );
-	}
-	else
+	CG_RunLerpFrame( lf, speedScale );
+
+	if ( ci->md5 )
 	{
 		CG_RunMD5LerpFrame( lf, speedScale, animChanged );
 
