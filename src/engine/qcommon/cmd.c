@@ -770,20 +770,6 @@ static void Tokenise( const char *text, char *textOut, qboolean tokens, qboolean
 		*--textOut = '\0';
 	}
 }
-// NOTE TTimo define that to track tokenization issues
-//#define TKN_DBG
-
-static void Cmd_TokenizeString2( const char *text_in, qboolean ignoreQuotes, qboolean parseCvar )
-{
-	std::string cmd;
-	if (parseCvar) {
-		cmd = Cmd::SubstituteCvars(text_in);
-	} else {
-		cmd = text_in;
-	}
-	Cmd::Args args(cmd);
-	Cmd::SetCurrentArgs(args);
-}
 
 /*
 ============
@@ -792,17 +778,9 @@ Cmd_TokenizeString
 */
 void Cmd_TokenizeString( const char *text_in )
 {
-	Cmd_TokenizeString2( text_in, qfalse, qfalse );
-}
-
-/*
-============
-Cmd_TokenizeStringParseCvar
-============
-*/
-void Cmd_TokenizeStringParseCvar( const char *text_in )
-{
-	Cmd_TokenizeString2( text_in, qfalse, qtrue );
+    std::string cmd(text_in)
+	Cmd::Args args(cmd);
+	Cmd::SetCurrentArgs(args);
 }
 
 /*
