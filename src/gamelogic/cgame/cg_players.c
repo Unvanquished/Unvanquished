@@ -1707,12 +1707,16 @@ static void CG_SetLerpFrameAnimation( clientInfo_t *ci, lerpFrame_t *lf, int new
 				return;
 			}
 		}
+
+		lf->animationTime = cg.time + anim->initialLerp;
+
+		lf->oldFrame = lf->frame = 0;
+		lf->oldFrameTime = lf->frameTime = 0;
 	}
-
-	lf->animationTime = cg.time + anim->initialLerp;
-
-	lf->oldFrame = lf->frame = 0;
-	lf->oldFrameTime = lf->frameTime = 0;
+	else
+	{
+		lf->animationTime = lf->frameTime + anim->initialLerp;
+	}
 
 	if ( cg_debugAnim.integer )
 	{

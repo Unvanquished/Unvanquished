@@ -731,10 +731,18 @@ static void CG_SetBuildableLerpFrameAnimation( buildable_t buildable, lerpFrame_
 	}
 
 	lf->animation = anim;
-	lf->animationTime = cg.time + anim->initialLerp;
 
-	lf->oldFrame = lf->frame = 0;
-	lf->oldFrameTime = lf->frameTime = 0;
+	if ( cg_buildables[ buildable ].md5 )
+	{
+		lf->animationTime = cg.time + anim->initialLerp;
+
+		lf->oldFrame = lf->frame = 0;
+		lf->oldFrameTime = lf->frameTime = 0;
+	}
+	else
+	{
+		lf->animationTime = lf->frameTime + anim->initialLerp;
+	}
 
 	if ( cg_debugAnim.integer )
 	{
