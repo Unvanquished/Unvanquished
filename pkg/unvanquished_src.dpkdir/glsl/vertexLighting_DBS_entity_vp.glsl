@@ -22,13 +22,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 /* vertexLighting_DBS_entity_vp.glsl */
 
-attribute vec4		attr_Position;
-attribute vec4		attr_TexCoord0;
+attribute vec3 		attr_Position;
+attribute vec2 		attr_TexCoord0;
 attribute vec3		attr_Tangent;
 attribute vec3		attr_Binormal;
 attribute vec3		attr_Normal;
 
-attribute vec4		attr_Position2;
+attribute vec3 		attr_Position2;
 attribute vec3		attr_Tangent2;
 attribute vec3		attr_Binormal2;
 attribute vec3		attr_Normal2;
@@ -90,7 +90,7 @@ void	main()
 	#endif
 
 #else
-	position = attr_Position;
+	position = vec4(attr_Position, 1.0);
 
 	#if defined(USE_NORMAL_MAPPING)
 	tangent = attr_Tangent;
@@ -121,13 +121,13 @@ void	main()
 	var_Normal.xyz = (u_ModelMatrix * vec4(normal, 0.0)).xyz;
 
 	// transform diffusemap texcoords
-	var_TexDiffuse = (u_DiffuseTextureMatrix * attr_TexCoord0).st;
+	var_TexDiffuse = (u_DiffuseTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0)).st;
 
 #if defined(USE_NORMAL_MAPPING)
 	// transform normalmap texcoords
-	var_TexNormal = (u_NormalTextureMatrix * attr_TexCoord0).st;
+	var_TexNormal = (u_NormalTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0)).st;
 
 	// transform specularmap texture coords
-	var_TexSpecular = (u_SpecularTextureMatrix * attr_TexCoord0).st;
+	var_TexSpecular = (u_SpecularTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0)).st;
 #endif
 }

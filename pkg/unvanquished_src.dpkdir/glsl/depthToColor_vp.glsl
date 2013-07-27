@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 /* depthToColor_vp.glsl */
 
-attribute vec4		attr_Position;
+attribute vec3 		attr_Position;
 #if defined(USE_VERTEX_SKINNING)
 attribute vec3      attr_Normal;
 #endif
@@ -44,7 +44,7 @@ void	main()
 	#else
 	{
 		// transform vertex position into homogenous clip-space
-		gl_Position = u_ModelViewProjectionMatrix * attr_Position;
+		gl_Position = u_ModelViewProjectionMatrix * vec4(attr_Position, 1.0);
 	}
 	#endif
 }
