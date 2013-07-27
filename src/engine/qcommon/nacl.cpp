@@ -27,6 +27,11 @@
 // File handle for the root socket
 #define ROOT_SOCKET_FD 100
 
+// MinGW doesn't define JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE
+#ifndef JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE
+#define JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE 0x2000
+#endif
+
 // Definitions taken from nacl_desc_base.h
 enum NaClDescTypeTag {
   NACL_DESC_INVALID,
@@ -402,7 +407,7 @@ void Module::Close()
 
 	NaClClose(root_socket);
 #ifdef _WIN32
-	TerminateProcess(process_handle, 0);
+	// Closing the job object should kill the child process
 	CloseHandle(process_handle);
 #else
 	kill(process_handle, SIGKILL);
@@ -460,11 +465,31 @@ Module InternalLoadModule(NaClHandle* pair, const char* const* args, const char*
 	}
 	env_data.push_back('\0');
 
+	// Create a job object to ensure the process is terminated if the parent dies
+	OSHandleType job = CreateJobObject(NULL, NULL);
+	JOBOBJECT_EXTENDED_LIMIT_INFORMATION jeli;
+	memset(&jeli, 0, sizeof(jeli));
+	jeli.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
+	if (!job || !SetInformationJobObject(job, JobObjectExtendedLimitInformation, &jeli, sizeof(jeli))) {
+		NaClClose(pair[0]);
+		NaClClose(pair[1]);
+		return Module();
+	}
+
 	STARTUPINFOA startup_info;
 	PROCESS_INFORMATION process_information;
 	memset(&startup_info, 0, sizeof(startup_info));
 	startup_info.cb = sizeof(startup_info);
-	if (!CreateProcessA(NULL, const_cast<char*>(cmdline.c_str()), NULL, NULL, TRUE, CREATE_SUSPENDED | DETACHED_PROCESS, env_data.data(), NULL, &startup_info, &process_information)) {
+	if (!CreateProcessA(NULL, const_cast<char*>(cmdline.c_str()), NULL, NULL, TRUE, CREATE_SUSPENDED | CREATE_BREAKAWAY_FROM_JOB | DETACHED_PROCESS, env_data.data(), NULL, &startup_info, &process_information)) {
+		NaClClose(pair[0]);
+		NaClClose(pair[1]);
+		return Module();
+	}
+
+	if (!AssignProcessToJobObject(job, process_information.hProcess)) {
+		TerminateProcess(process_information.hProcess, 0);
+		CloseHandle(process_information.hThread);
+		CloseHandle(process_information.hProcess);
 		NaClClose(pair[0]);
 		NaClClose(pair[1]);
 		return Module();
@@ -478,9 +503,10 @@ Module InternalLoadModule(NaClHandle* pair, const char* const* args, const char*
 	ResumeThread(process_information.hThread);
 	NaClClose(pair[1]);
 	CloseHandle(process_information.hThread);
+	CloseHandle(process_information.hProcess);
 
 	Module out;
-	out.process_handle = process_information.hProcess;
+	out.process_handle = job;
 	out.root_socket = pair[0];
 	return out;
 #else
