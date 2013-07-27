@@ -415,7 +415,7 @@ void Module::Close()
 #endif
 }
 
-Module InternalLoadModule(NaClHandle* pair, const char* const* args, const char* const* env)
+Module InternalLoadModule(NaClHandle* pair, const char* const* args, const char* const* env, bool reserve_mem)
 {
 #ifdef _WIN32
 	if (!SetHandleInformation(pair[1], HANDLE_FLAG_INHERIT, HANDLE_FLAG_INHERIT)) {
@@ -497,7 +497,8 @@ Module InternalLoadModule(NaClHandle* pair, const char* const* args, const char*
 
 #ifndef _WIN64
 	// Attempt to reserve 1GB of address space for the NaCl sandbox
-	VirtualAllocEx(process_information.hProcess, NULL, 1 << 30, MEM_RESERVE, PAGE_NOACCESS);
+	if (reserve_mem)
+		VirtualAllocEx(process_information.hProcess, NULL, 1 << 30, MEM_RESERVE, PAGE_NOACCESS);
 #endif
 
 	ResumeThread(process_information.hThread);
@@ -563,7 +564,7 @@ Module LoadNaClModule(const char* module, const char* sel_ldr, const char* irt, 
 	const char* args[] = {sel_ldr, "-B", irt, "-i", root_sock_redir, "-f", module, NULL};
 	const char* args_bootstrap[] = {bootstrap, sel_ldr, "--r_debug=0xXXXXXXXXXXXXXXXX", "--reserved_at_zero=0xXXXXXXXXXXXXXXXX", "-B", irt, "-i", root_sock_redir, "-f", module, NULL};
 	const char* env[] = {root_sock_handle, NULL};
-	return InternalLoadModule(pair, bootstrap ? args_bootstrap : args, env);
+	return InternalLoadModule(pair, bootstrap ? args_bootstrap : args, env, true);
 }
 
 Module LoadNaClModuleDebug(const char* module, const char* sel_ldr, const char* irt, const char* bootstrap)
@@ -579,7 +580,7 @@ Module LoadNaClModuleDebug(const char* module, const char* sel_ldr, const char* 
 	const char* args[] = {sel_ldr, "-B", irt, "-i", root_sock_redir, "-f", module, NULL};
 	const char* args_bootstrap[] = {bootstrap, sel_ldr, "--r_debug=0xXXXXXXXXXXXXXXXX", "--reserved_at_zero=0xXXXXXXXXXXXXXXXX", "-g", "-B", irt, "-i", root_sock_redir, "-f", module, NULL};
 	const char* env[] = {root_sock_handle, NULL};
-	return InternalLoadModule(pair, bootstrap ? args_bootstrap : args, env);
+	return InternalLoadModule(pair, bootstrap ? args_bootstrap : args, env, true);
 }
 
 Module LoadNativeModule(const char* module)
@@ -592,7 +593,7 @@ Module LoadNativeModule(const char* module)
 	snprintf(root_sock_handle, sizeof(root_sock_handle), "ROOT_SOCKET=%d", (int)pair[1]);
 	const char* args[] = {module, NULL};
 	const char* env[] = {root_sock_handle, NULL};
-	return InternalLoadModule(pair, args, env);
+	return InternalLoadModule(pair, args, env, false);
 }
 
 #endif

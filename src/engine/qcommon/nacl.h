@@ -276,7 +276,7 @@ private:
 	OSHandleType process_handle;
 	OSHandleType root_socket;
 
-	friend Module InternalLoadModule(OSHandleType*, const char* const*, const char* const*);
+	friend Module InternalLoadModule(OSHandleType*, const char* const*, const char* const*, bool);
 };
 
 // Load a NaCl module
