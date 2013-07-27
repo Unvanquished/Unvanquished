@@ -3050,6 +3050,11 @@ static qboolean Cmd_Sell_upgrades( gentity_t *ent )
 	return sold;
 }
 
+static qboolean Cmd_Sell_armour( gentity_t *ent )
+{
+	return Cmd_Sell_upgradeItem( ent, UP_LIGHTARMOUR ) | Cmd_Sell_upgradeItem( ent, UP_HELMET ) | Cmd_Sell_upgradeItem( ent, UP_BATTLESUIT );
+}
+
 static qboolean Cmd_Sell_internal( gentity_t *ent, const char *s )
 {
 	weapon_t  weapon;
@@ -3131,6 +3136,10 @@ static qboolean Cmd_Sell_internal( gentity_t *ent, const char *s )
 	else if ( !Q_stricmp( s, "upgrades" ) )
 	{
 		return Cmd_Sell_upgrades( ent );
+	}
+	else if ( !Q_stricmp( s, "armour" ) || !Q_stricmp( s, "armor" ) )
+	{
+		return Cmd_Sell_armour( ent );
 	}
 	else if ( !Q_stricmp( s, "all" ) )
 	{
