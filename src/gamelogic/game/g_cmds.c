@@ -2954,11 +2954,223 @@ void Cmd_ToggleItem_f( gentity_t *ent )
 
 /*
 =================
+Cmd_Sell_f
+=================
+*/
+static qboolean Cmd_Sell_weapons( gentity_t *ent )
+{
+	int      i;
+	weapon_t selected = BG_GetPlayerWeapon( &ent->client->ps );
+	qboolean sold = qfalse;
+
+	if ( !BG_PlayerCanChangeWeapon( &ent->client->ps ) )
+	{
+		return qfalse;
+	}
+
+	for ( i = WP_NONE + 1; i < WP_NUM_WEAPONS; i++ )
+	{
+		// guard against selling the HBUILD weapons exploit
+		if ( i == WP_HBUILD && ent->client->ps.stats[ STAT_MISC ] > 0 )
+		{
+			G_TriggerMenu( ent->client->ps.clientNum, MN_H_ARMOURYBUILDTIMER );
+			continue;
+		}
+
+		if ( BG_InventoryContainsWeapon( i, ent->client->ps.stats ) &&
+		     BG_Weapon( i )->purchasable )
+		{
+			ent->client->ps.stats[ STAT_WEAPON ] = WP_NONE;
+
+			// add to funds
+			G_AddCreditToClient( ent->client, ( short ) BG_Weapon( i )->price, qfalse );
+
+			sold = qtrue;
+		}
+
+		// if we have this weapon selected, force a new selection
+		if ( i == selected )
+		{
+			G_ForceWeaponChange( ent, WP_NONE );
+		}
+	}
+
+	return sold;
+}
+
+static qboolean Cmd_Sell_upgradeItem( gentity_t *ent, upgrade_t item )
+{
+	// check if carried and sellable
+	if ( !BG_InventoryContainsUpgrade( item, ent->client->ps.stats ) ||
+	     !BG_Upgrade( item )->purchasable )
+	{
+		return qfalse;
+	}
+
+	// shouldn't really need to test for this, but just to be safe
+	if ( item == UP_BATTLESUIT )
+	{
+		vec3_t newOrigin;
+
+		if ( !G_RoomForClassChange( ent, PCL_HUMAN, newOrigin ) )
+		{
+			G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOROOMBSUITOFF );
+			return qfalse;
+		}
+
+		VectorCopy( newOrigin, ent->client->ps.origin );
+		ent->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN;
+		ent->client->pers.classSelection = PCL_HUMAN;
+		ent->client->ps.eFlags ^= EF_TELEPORT_BIT;
+	}
+
+	BG_RemoveUpgradeFromInventory( item, ent->client->ps.stats );
+
+	if ( item == UP_BATTPACK )
+	{
+		G_GiveClientMaxAmmo( ent, qtrue );
+	}
+
+	// add to funds
+	G_AddCreditToClient( ent->client, ( short ) BG_Upgrade( item )->price, qfalse );
+
+	return qtrue;
+}
+
+static qboolean Cmd_Sell_upgrades( gentity_t *ent )
+{
+	int      i;
+	qboolean sold = qfalse;
+
+	for ( i = UP_NONE + 1; i < UP_NUM_UPGRADES; i++ )
+	{
+		sold |= Cmd_Sell_upgradeItem( ent, i );
+	}
+
+	return sold;
+}
+
+static qboolean Cmd_Sell_internal( gentity_t *ent, const char *s )
+{
+	weapon_t  weapon;
+	upgrade_t upgrade;
+
+	//no armoury nearby
+	if ( !G_BuildableRange( ent->client->ps.origin, 100, BA_H_ARMOURY ) )
+	{
+		G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOARMOURYHERE );
+		return qfalse;
+	}
+
+	if ( !Q_strnicmp( s, "weapon", 6 ) )
+	{
+		weapon = ent->client->ps.stats[ STAT_WEAPON ];
+	}
+	else
+	{
+		weapon = BG_WeaponByName( s )->number;
+	}
+
+	upgrade = BG_UpgradeByName( s )->number;
+
+	if ( weapon != WP_NONE )
+	{
+		weapon_t selected = BG_GetPlayerWeapon( &ent->client->ps );
+
+		if ( !BG_PlayerCanChangeWeapon( &ent->client->ps ) )
+		{
+			return qfalse;
+		}
+
+		//are we /allowed/ to sell this?
+		if ( !BG_Weapon( weapon )->purchasable )
+		{
+			trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("You can't sell this weapon\n") "\"" );
+			return qfalse;
+		}
+
+		//remove weapon if carried
+		if ( BG_InventoryContainsWeapon( weapon, ent->client->ps.stats ) )
+		{
+			//guard against selling the HBUILD weapons exploit
+			if ( weapon == WP_HBUILD && ent->client->ps.stats[ STAT_MISC ] > 0 )
+			{
+				G_TriggerMenu( ent->client->ps.clientNum, MN_H_ARMOURYBUILDTIMER );
+				return qfalse;
+			}
+
+			ent->client->ps.stats[ STAT_WEAPON ] = WP_NONE;
+			// Cancel ghost buildables
+			ent->client->ps.stats[ STAT_BUILDABLE ] = BA_NONE;
+
+			//add to funds
+			G_AddCreditToClient( ent->client, ( short ) BG_Weapon( weapon )->price, qfalse );
+		}
+
+		//if we have this weapon selected, force a new selection
+		if ( weapon == selected )
+		{
+			G_ForceWeaponChange( ent, WP_NONE );
+		}
+	}
+	else if ( upgrade != UP_NONE )
+	{
+		//are we /allowed/ to sell this?
+		if ( !BG_Upgrade( upgrade )->purchasable )
+		{
+			trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("You can't sell this item\n") "\"" );
+			return qfalse;
+		}
+
+		return Cmd_Sell_upgradeItem( ent, upgrade );
+	}
+	else if ( !Q_stricmp( s, "weapons" ) )
+	{
+		return Cmd_Sell_weapons( ent );
+	}
+	else if ( !Q_stricmp( s, "upgrades" ) )
+	{
+		return Cmd_Sell_upgrades( ent );
+	}
+	else if ( !Q_stricmp( s, "all" ) )
+	{
+		return Cmd_Sell_weapons( ent ) | Cmd_Sell_upgrades( ent );
+	}
+	else
+	{
+		G_TriggerMenu( ent->client->ps.clientNum, MN_H_UNKNOWNITEM );
+	}
+
+	return qfalse;
+}
+
+void Cmd_Sell_f( gentity_t *ent )
+{
+	char     s[ MAX_TOKEN_CHARS ];
+	int      c, args;
+	qboolean updated = qfalse;
+
+	args = trap_Argc();
+
+	for ( c = 1; c < args; ++c )
+	{
+		trap_Argv( c, s, sizeof( s ) );
+		updated |= Cmd_Sell_internal( ent, s );
+	}
+
+	//update ClientInfo
+	if ( updated )
+	{
+		ClientUserinfoChanged( ent->client->ps.clientNum, qfalse );
+		ent->client->pers.infoChangeTime = level.time;
+	}
+}
+
+/*
+=================
 Cmd_Buy_f
 =================
 */
-static qboolean Cmd_Sell_internal( gentity_t *ent, const char *s );
-
 static qboolean Cmd_Buy_internal( gentity_t *ent, const char *s )
 {
 	weapon_t  weapon;
@@ -3168,220 +3380,6 @@ void Cmd_Buy_f( gentity_t *ent )
 	{
 		trap_Argv( c, s, sizeof( s ) );
 		updated |= s[0] == '-' ? Cmd_Sell_internal( ent, s + 1 ) : Cmd_Buy_internal( ent, s );
-	}
-
-	//update ClientInfo
-	if ( updated )
-	{
-		ClientUserinfoChanged( ent->client->ps.clientNum, qfalse );
-		ent->client->pers.infoChangeTime = level.time;
-	}
-}
-
-/*
-=================
-Cmd_Sell_f
-=================
-*/
-static qboolean Cmd_Sell_weapons( gentity_t *ent )
-{
-	int      i;
-	weapon_t selected = BG_GetPlayerWeapon( &ent->client->ps );
-	qboolean sold = qfalse;
-
-	if ( !BG_PlayerCanChangeWeapon( &ent->client->ps ) )
-	{
-		return qfalse;
-	}
-
-	for ( i = WP_NONE + 1; i < WP_NUM_WEAPONS; i++ )
-	{
-		// guard against selling the HBUILD weapons exploit
-		if ( i == WP_HBUILD && ent->client->ps.stats[ STAT_MISC ] > 0 )
-		{
-			G_TriggerMenu( ent->client->ps.clientNum, MN_H_ARMOURYBUILDTIMER );
-			continue;
-		}
-
-		if ( BG_InventoryContainsWeapon( i, ent->client->ps.stats ) &&
-		     BG_Weapon( i )->purchasable )
-		{
-			ent->client->ps.stats[ STAT_WEAPON ] = WP_NONE;
-
-			// add to funds
-			G_AddCreditToClient( ent->client, ( short ) BG_Weapon( i )->price, qfalse );
-
-			sold = qtrue;
-		}
-
-		// if we have this weapon selected, force a new selection
-		if ( i == selected )
-		{
-			G_ForceWeaponChange( ent, WP_NONE );
-		}
-	}
-
-	return sold;
-}
-
-static qboolean Cmd_Sell_upgradeItem( gentity_t *ent, upgrade_t item )
-{
-	// check if carried and sellable
-	if ( !BG_InventoryContainsUpgrade( item, ent->client->ps.stats ) ||
-	     !BG_Upgrade( item )->purchasable )
-	{
-		return qfalse;
-	}
-
-	// shouldn't really need to test for this, but just to be safe
-	if ( item == UP_BATTLESUIT )
-	{
-		vec3_t newOrigin;
-
-		if ( !G_RoomForClassChange( ent, PCL_HUMAN, newOrigin ) )
-		{
-			G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOROOMBSUITOFF );
-			return qfalse;
-		}
-
-		VectorCopy( newOrigin, ent->client->ps.origin );
-		ent->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN;
-		ent->client->pers.classSelection = PCL_HUMAN;
-		ent->client->ps.eFlags ^= EF_TELEPORT_BIT;
-	}
-
-	BG_RemoveUpgradeFromInventory( item, ent->client->ps.stats );
-
-	if ( item == UP_BATTPACK )
-	{
-		G_GiveClientMaxAmmo( ent, qtrue );
-	}
-
-	// add to funds
-	G_AddCreditToClient( ent->client, ( short ) BG_Upgrade( item )->price, qfalse );
-
-	return qtrue;
-}
-
-static qboolean Cmd_Sell_upgrades( gentity_t *ent )
-{
-	int      i;
-	qboolean sold = qfalse;
-
-	for ( i = UP_NONE + 1; i < UP_NUM_UPGRADES; i++ )
-	{
-		sold |= Cmd_Sell_upgradeItem( ent, i );
-	}
-
-	return sold;
-}
-
-static qboolean Cmd_Sell_internal( gentity_t *ent, const char *s )
-{
-	weapon_t  weapon;
-	upgrade_t upgrade;
-
-	//no armoury nearby
-	if ( !G_BuildableRange( ent->client->ps.origin, 100, BA_H_ARMOURY ) )
-	{
-		G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOARMOURYHERE );
-		return qfalse;
-	}
-
-	if ( !Q_strnicmp( s, "weapon", 6 ) )
-	{
-		weapon = ent->client->ps.stats[ STAT_WEAPON ];
-	}
-	else
-	{
-		weapon = BG_WeaponByName( s )->number;
-	}
-
-	upgrade = BG_UpgradeByName( s )->number;
-
-	if ( weapon != WP_NONE )
-	{
-		weapon_t selected = BG_GetPlayerWeapon( &ent->client->ps );
-
-		if ( !BG_PlayerCanChangeWeapon( &ent->client->ps ) )
-		{
-			return qfalse;
-		}
-
-		//are we /allowed/ to sell this?
-		if ( !BG_Weapon( weapon )->purchasable )
-		{
-			trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("You can't sell this weapon\n") "\"" );
-			return qfalse;
-		}
-
-		//remove weapon if carried
-		if ( BG_InventoryContainsWeapon( weapon, ent->client->ps.stats ) )
-		{
-			//guard against selling the HBUILD weapons exploit
-			if ( weapon == WP_HBUILD && ent->client->ps.stats[ STAT_MISC ] > 0 )
-			{
-				G_TriggerMenu( ent->client->ps.clientNum, MN_H_ARMOURYBUILDTIMER );
-				return qfalse;
-			}
-
-			ent->client->ps.stats[ STAT_WEAPON ] = WP_NONE;
-			// Cancel ghost buildables
-			ent->client->ps.stats[ STAT_BUILDABLE ] = BA_NONE;
-
-			//add to funds
-			G_AddCreditToClient( ent->client, ( short ) BG_Weapon( weapon )->price, qfalse );
-		}
-
-		//if we have this weapon selected, force a new selection
-		if ( weapon == selected )
-		{
-			G_ForceWeaponChange( ent, WP_NONE );
-		}
-	}
-	else if ( upgrade != UP_NONE )
-	{
-		//are we /allowed/ to sell this?
-		if ( !BG_Upgrade( upgrade )->purchasable )
-		{
-			trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("You can't sell this item\n") "\"" );
-			return qfalse;
-		}
-
-		return Cmd_Sell_upgradeItem( ent, upgrade );
-	}
-	else if ( !Q_stricmp( s, "weapons" ) )
-	{
-		return Cmd_Sell_weapons( ent );
-	}
-	else if ( !Q_stricmp( s, "upgrades" ) )
-	{
-		return Cmd_Sell_upgrades( ent );
-	}
-	else if ( !Q_stricmp( s, "all" ) )
-	{
-		return Cmd_Sell_weapons( ent ) | Cmd_Sell_upgrades( ent );
-	}
-	else
-	{
-		G_TriggerMenu( ent->client->ps.clientNum, MN_H_UNKNOWNITEM );
-	}
-
-	return qfalse;
-}
-
-void Cmd_Sell_f( gentity_t *ent )
-{
-	char     s[ MAX_TOKEN_CHARS ];
-	int      c, args;
-	qboolean updated = qfalse;
-
-	args = trap_Argc();
-
-	for ( c = 1; c < args; ++c )
-	{
-		trap_Argv( c, s, sizeof( s ) );
-		updated |= Cmd_Sell_internal( ent, s );
 	}
 
 	//update ClientInfo
