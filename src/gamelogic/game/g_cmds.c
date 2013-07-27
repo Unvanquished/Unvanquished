@@ -3180,8 +3180,33 @@ void Cmd_Sell_f( gentity_t *ent )
 Cmd_Buy_f
 =================
 */
-static qboolean Cmd_Buy_internal( gentity_t *ent, const char *s )
+static qboolean Cmd_Sell_conflictingUpgrades( gentity_t *ent, upgrade_t upgrade )
 {
+	const int  slots = BG_Upgrade( upgrade )->slots;
+	int        i;
+	qboolean   sold = qfalse;
+	int *const stats = ent->client->ps.stats;
+
+	for ( i = UP_NONE; i < UP_NUM_UPGRADES; i++ )
+	{
+		if ( i != upgrade && BG_InventoryContainsUpgrade( i, stats ) )
+		{
+			int slot = BG_Upgrade( i )->slots;
+
+			if ( slots & slot )
+			{
+				sold |= Cmd_Sell_upgradeItem( ent, i );
+			}
+		}
+	}
+
+	return sold;
+}
+
+
+static qboolean Cmd_Buy_internal( gentity_t *ent, const char *s, qboolean sellConflicting, qboolean quiet )
+{
+#define Maybe_TriggerMenu(num, reason) do { if ( !quiet ) G_TriggerMenu( (num), (reason) ); } while ( 0 )
 	weapon_t  weapon;
 	upgrade_t upgrade;
 	qboolean  energyOnly;
@@ -3221,7 +3246,7 @@ static qboolean Cmd_Buy_internal( gentity_t *ent, const char *s )
 		//already got this?
 		if ( BG_InventoryContainsWeapon( weapon, ent->client->ps.stats ) )
 		{
-			G_TriggerMenu( ent->client->ps.clientNum, MN_H_ITEMHELD );
+			Maybe_TriggerMenu( ent->client->ps.clientNum, MN_H_ITEMHELD );
 			return qfalse;
 		}
 
@@ -3243,24 +3268,41 @@ static qboolean Cmd_Buy_internal( gentity_t *ent, const char *s )
 			goto cant_buy;
 		}
 
-		//can afford this?
-		if ( BG_Weapon( weapon )->price > ( short ) ent->client->pers.credit )
-		{
-			G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOFUNDS );
-			return qfalse;
-		}
-
-		//have space to carry this?
-		if ( BG_Weapon( weapon )->slots & BG_SlotsForInventory( ent->client->ps.stats ) )
-		{
-			G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOSLOTS );
-			return qfalse;
-		}
-
 		// In some instances, weapons can't be changed
 		if ( !BG_PlayerCanChangeWeapon( &ent->client->ps ) )
 		{
 			return qfalse;
+		}
+
+		for (;;)
+		{
+			//can afford this?
+			if ( BG_Weapon( weapon )->price > ( short ) ent->client->pers.credit )
+			{
+				// if requested, try to sell then recheck
+				if ( sellConflicting && Cmd_Sell_weapons( ent ) )
+				{
+					continue;
+				}
+
+				Maybe_TriggerMenu( ent->client->ps.clientNum, MN_H_NOFUNDS );
+				return qfalse;
+			}
+
+			//have space to carry this?
+			if ( BG_Weapon( weapon )->slots & BG_SlotsForInventory( ent->client->ps.stats ) )
+			{
+				// if requested, try to sell then recheck
+				if ( sellConflicting && Cmd_Sell_weapons( ent ) )
+				{
+					continue;
+				}
+
+				Maybe_TriggerMenu( ent->client->ps.clientNum, MN_H_NOSLOTS );
+				return qfalse;
+			}
+
+			break; // okay, can buy this
 		}
 
 		ent->client->ps.stats[ STAT_WEAPON ] = weapon;
@@ -3288,7 +3330,7 @@ static qboolean Cmd_Buy_internal( gentity_t *ent, const char *s )
 		//already got this?
 		if ( BG_InventoryContainsUpgrade( upgrade, ent->client->ps.stats ) )
 		{
-			G_TriggerMenu( ent->client->ps.clientNum, MN_H_ITEMHELD );
+			Maybe_TriggerMenu( ent->client->ps.clientNum, MN_H_ITEMHELD );
 			return qfalse;
 		}
 
@@ -3310,18 +3352,35 @@ static qboolean Cmd_Buy_internal( gentity_t *ent, const char *s )
 			goto cant_buy;
 		}
 
-		//can afford this?
-		if ( BG_Upgrade( upgrade )->price > ( short ) ent->client->pers.credit )
+		for (;;)
 		{
-			G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOFUNDS );
-			return qfalse;
-		}
+			//can afford this?
+			if ( BG_Upgrade( upgrade )->price > ( short ) ent->client->pers.credit )
+			{
+				// if requested, try to sell then recheck
+				if ( sellConflicting && Cmd_Sell_conflictingUpgrades( ent, upgrade ) )
+				{
+					continue;
+				}
 
-		//have space to carry this?
-		if ( BG_Upgrade( upgrade )->slots & BG_SlotsForInventory( ent->client->ps.stats ) )
-		{
-			G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOSLOTS );
-			return qfalse;
+				Maybe_TriggerMenu( ent->client->ps.clientNum, MN_H_NOFUNDS );
+				return qfalse;
+			}
+
+			//have space to carry this?
+			if ( BG_Upgrade( upgrade )->slots & BG_SlotsForInventory( ent->client->ps.stats ) )
+			{
+				// if requested, try to sell then recheck
+				if ( sellConflicting && Cmd_Sell_conflictingUpgrades( ent, upgrade ) )
+				{
+					continue;
+				}
+
+				Maybe_TriggerMenu( ent->client->ps.clientNum, MN_H_NOSLOTS );
+				return qfalse;
+			}
+
+			break; // okay, can buy this
 		}
 
 		if ( upgrade == UP_AMMO )
@@ -3385,10 +3444,28 @@ void Cmd_Buy_f( gentity_t *ent )
 
 	args = trap_Argc();
 
-	for ( c = 1; c < args; ++c )
+	c = 1;
+	trap_Argv( c, s, sizeof( s ) );
+
+	for ( ; c < args; ++c )
 	{
 		trap_Argv( c, s, sizeof( s ) );
-		updated |= s[0] == '-' ? Cmd_Sell_internal( ent, s + 1 ) : Cmd_Buy_internal( ent, s );
+
+		switch ( s[0] )
+		{
+		case '-':
+			updated |= Cmd_Sell_internal( ent, s + 1 );
+			break;
+		case '+':
+			updated |= Cmd_Buy_internal( ent, s + 1, qtrue, qfalse ); // auto-sell if needed
+			break;
+		case '?':
+			updated |= Cmd_Buy_internal( ent, s + 1, qfalse, qtrue ); // quiet mode
+			break;
+		default:
+			updated |= Cmd_Buy_internal( ent, s, qfalse, qfalse );
+			break;
+		}
 	}
 
 	//update ClientInfo
