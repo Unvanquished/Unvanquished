@@ -44,4 +44,12 @@ else
   fi
 fi
 
-exec $RUNGDB ./unvanquished +set fs_libpath "$PWD" +set fs_basepath /var/games/unvanquished +$PRECMD"$@"
+# Prefix with + if needed
+PREFIX=+
+case "$PRECMD$@" in
+  +*|'')
+    PREFIX=
+    ;;
+esac
+
+exec $RUNGDB ./unvanquished +set fs_libpath "$PWD" +set fs_basepath /var/games/unvanquished $PREFIX$PRECMD"$@"
