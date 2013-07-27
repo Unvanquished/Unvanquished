@@ -3224,6 +3224,45 @@ static qboolean Cmd_Sell_weapons( gentity_t *ent )
 	return sold;
 }
 
+static qboolean Cmd_Sell_upgradeItem( gentity_t *ent, upgrade_t item )
+{
+	// check if carried and sellable
+	if ( !BG_InventoryContainsUpgrade( item, ent->client->ps.stats ) ||
+	     !BG_Upgrade( item )->purchasable )
+	{
+		return qfalse;
+	}
+
+	// shouldn't really need to test for this, but just to be safe
+	if ( item == UP_BATTLESUIT )
+	{
+		vec3_t newOrigin;
+
+		if ( !G_RoomForClassChange( ent, PCL_HUMAN, newOrigin ) )
+		{
+			G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOROOMBSUITOFF );
+			return qfalse;
+		}
+
+		VectorCopy( newOrigin, ent->client->ps.origin );
+		ent->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN;
+		ent->client->pers.classSelection = PCL_HUMAN;
+		ent->client->ps.eFlags ^= EF_TELEPORT_BIT;
+	}
+
+	BG_RemoveUpgradeFromInventory( item, ent->client->ps.stats );
+
+	if ( item == UP_BATTPACK )
+	{
+		G_GiveClientMaxAmmo( ent, qtrue );
+	}
+
+	// add to funds
+	G_AddCreditToClient( ent->client, ( short ) BG_Upgrade( item )->price, qfalse );
+
+	return qtrue;
+}
+
 static qboolean Cmd_Sell_upgrades( gentity_t *ent )
 {
 	int      i;
@@ -3231,39 +3270,7 @@ static qboolean Cmd_Sell_upgrades( gentity_t *ent )
 
 	for ( i = UP_NONE + 1; i < UP_NUM_UPGRADES; i++ )
 	{
-		// remove upgrade if carried
-		if ( BG_InventoryContainsUpgrade( i, ent->client->ps.stats ) &&
-		     BG_Upgrade( i )->purchasable )
-		{
-			// shouldn't really need to test for this, but just to be safe
-			if ( i == UP_BATTLESUIT )
-			{
-				vec3_t newOrigin;
-
-				if ( !G_RoomForClassChange( ent, PCL_HUMAN, newOrigin ) )
-				{
-					G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOROOMBSUITOFF );
-					continue;
-				}
-
-				VectorCopy( newOrigin, ent->client->ps.origin );
-				ent->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN;
-				ent->client->pers.classSelection = PCL_HUMAN;
-				ent->client->ps.eFlags ^= EF_TELEPORT_BIT;
-			}
-
-			BG_RemoveUpgradeFromInventory( i, ent->client->ps.stats );
-
-			if ( i == UP_BATTPACK )
-			{
-				G_GiveClientMaxAmmo( ent, qtrue );
-			}
-
-			// add to funds
-			G_AddCreditToClient( ent->client, ( short ) BG_Upgrade( i )->price, qfalse );
-
-			sold = qtrue;
-		}
+		sold |= Cmd_Sell_upgradeItem( ent, i );
 	}
 
 	return sold;
@@ -3341,38 +3348,7 @@ static qboolean Cmd_Sell_internal( gentity_t *ent, const char *s )
 			return qfalse;
 		}
 
-		//remove upgrade if carried
-		if ( BG_InventoryContainsUpgrade( upgrade, ent->client->ps.stats ) )
-		{
-			// shouldn't really need to test for this, but just to be safe
-			if ( upgrade == UP_BATTLESUIT )
-			{
-				vec3_t newOrigin;
-
-				if ( !G_RoomForClassChange( ent, PCL_HUMAN, newOrigin ) )
-				{
-					G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOROOMBSUITOFF );
-					return qfalse;
-				}
-
-				VectorCopy( newOrigin, ent->client->ps.origin );
-				ent->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN;
-				ent->client->pers.classSelection = PCL_HUMAN;
-				ent->client->ps.eFlags ^= EF_TELEPORT_BIT;
-			}
-
-			//add to inventory
-			BG_RemoveUpgradeFromInventory( upgrade, ent->client->ps.stats );
-
-			if ( upgrade == UP_BATTPACK )
-			{
-				G_GiveClientMaxAmmo( ent, qtrue );
-			}
-
-			//add to funds
-			G_AddCreditToClient( ent->client, ( short ) BG_Upgrade( upgrade )->price, qfalse );
-			return qtrue;
-		}
+		return Cmd_Sell_upgradeItem( ent, upgrade );
 	}
 	else if ( !Q_stricmp( s, "weapons" ) )
 	{
