@@ -579,7 +579,6 @@ void CG_Rocket_Frame( void )
 
 			case PLAYING:
 				trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_CONNECTING ].id, "blurall" );
-				trap_Key_SetCatcher( 0 );
 				break;
 		}
 

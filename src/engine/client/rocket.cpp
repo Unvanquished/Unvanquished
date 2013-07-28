@@ -823,8 +823,12 @@ void Rocket_SetActiveContext( int catcher )
 			menuContext->ShowMouseCursor( true );
 			break;
 
-		case KEYCATCH_CGAME:
-			menuContext->ShowMouseCursor( false );
+		default:
+			if ( !( catcher & KEYCATCH_CONSOLE ) )
+			{
+				menuContext->ShowMouseCursor( false );
+			}
+
 			break;
 	}
 }

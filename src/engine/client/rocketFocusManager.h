@@ -67,9 +67,9 @@ public:
 		{
 			Key_SetCatcher( KEYCATCH_UI );
 		}
-		else if ( !( cls.keyCatchers & KEYCATCH_CGAME ) && active <= 0 && cls.state >= CA_PRIMED )
+		else if ( cls.keyCatchers && active <= 0 && cls.state >= CA_PRIMED )
 		{
-			Key_SetCatcher( KEYCATCH_CGAME );
+			Key_SetCatcher( 0 );
 		}
 	}
 
