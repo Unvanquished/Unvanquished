@@ -118,7 +118,7 @@
 				<p><span id="status"></span></p>
 				<button onClick="buildDS server_browser internet">Refresh</button>
 				<button onClick="sortDS server_browser internet ping">Sort</button>
-				<button onClick="close serverbrowser; open main; show main">Close</button>
+				<button onClick="hide serverbrowser; show main">Close</button>
 				<div class="servers">
 				<datagrid source="server_browser.internet">
 					<col fields="label" width="2%" formatter="ServerLabel"></col>
