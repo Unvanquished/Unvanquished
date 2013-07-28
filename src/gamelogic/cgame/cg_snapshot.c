@@ -120,6 +120,9 @@ void CG_SetInitialSnapshot( snapshot_t *snap )
 		// check for events
 		CG_CheckEvents( cent );
 	}
+
+	CG_OnPlayerUpgradeChange();
+	CG_OnPlayerWeaponChange( cg.snap->ps.weapon );
 }
 
 /*
