@@ -144,7 +144,7 @@ typedef enum
 
 // XreaL BEGIN
 
-//#define USE_REFLIGHT 1
+#define USE_REFLIGHT 1
 
 // RB: defining any of the following macros would break the compatibility to old ET mods
 #define USE_REFENTITY_ANIMATIONSYSTEM 1
