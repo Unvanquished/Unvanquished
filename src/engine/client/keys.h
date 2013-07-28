@@ -73,8 +73,3 @@ int             Key_GetKey( const char *binding, int team );
 void            Key_SetTeam( int newTeam );
 int             Key_GetTeam( const char *arg, const char *cmd );
 
-#ifndef DEDICATED
-// from cl_input.c
-void IN_ButtonDown( int );
-void IN_ButtonUp( int );
-#endif

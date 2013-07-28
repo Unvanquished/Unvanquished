@@ -280,7 +280,6 @@ extern "C" void Trans_Init( void )
 {
 	char langList[ MAX_TOKEN_CHARS ] = "";
 	char encList[ MAX_TOKEN_CHARS ] = "";
-	FL_Locale           *locale;
 	std::set<Language>  langs;
 	Language            lang;
 
@@ -315,6 +314,13 @@ extern "C" void Trans_Init( void )
 	Cvar_Set( "trans_languages", langList );
 	Cvar_Set( "trans_encodings", encList );
 
+	Com_Printf( P_( "Loaded %u language\n", "Loaded %u languages\n", langs.size() ), ( int )langs.size() );
+}
+
+void Trans_LoadDefaultLanguage( void )
+{
+	FL_Locale           *locale;
+
 	// Only detect locale if no previous language set.
 	if( !language->string[0] )
 	{
@@ -328,16 +334,14 @@ extern "C" void Trans_Init( void )
 		else
 		{
 			Cvar_Set( "language", va( "%s%s%s", locale->lang,
-									  locale->country[0] ? "_" : "",
-									  locale->country ) );
+						  locale->country[0] ? "_" : "",
+						  locale->country ) );
 		}
 
 		FL_FreeLocale( &locale );
 	}
 
 	Trans_SetLanguage( language->string );
-
-	Com_Printf( P_( "Loaded %u language\n", "Loaded %u languages\n", langs.size() ), ( int )langs.size() );
 }
 
 const char* Trans_Gettext_Internal( const char *msgid, DictionaryManager& manager )

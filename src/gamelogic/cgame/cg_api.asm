@@ -10,8 +10,8 @@ equ strncpy                               -4
 equ sin                                   -5
 equ cos                                   -6
 equ asin                                  -7
-equ tanf                                  -8
-equ atanf                                 -9
+equ tan                                   -8
+equ atan                                  -9
 equ atan2                                 -10
 equ sqrt                                  -11
 equ floor                                 -12

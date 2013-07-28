@@ -1521,7 +1521,7 @@ IN_ProcessEvents
 */
 void InjectRocket( SDL_Event e );
 void Rocket_InjectMouseMotion( int x, int y );
-static void IN_ProcessEvents( void )
+static void IN_ProcessEvents( qboolean dropInput )
 {
 	SDL_Event  e;
 	const char *character = NULL;
@@ -1550,35 +1550,44 @@ static void IN_ProcessEvents( void )
 		switch ( e.type )
 		{
 			case SDL_KEYDOWN:
-				character = IN_TranslateSDLToQ3Key( &e.key.keysym, &key, qtrue );
-
-				if( character && *character )
+				if ( !dropInput )
 				{
-					void *buf = Z_Malloc( 5 );
-					memcpy( buf, character, 5 );
-					Com_QueueEvent( 0, SE_CHAR, 5, 0, 0, buf );
-				}
+					character = IN_TranslateSDLToQ3Key( &e.key.keysym, &key, qtrue );
 
-				if ( key )
-				{
-					Com_QueueEvent( 0, SE_KEY, key, qtrue, 0, NULL );
+					if( character && *character )
+					{
+						void *buf = Z_Malloc( 5 );
+						memcpy( buf, character, 5 );
+						Com_QueueEvent( 0, SE_CHAR, 5, 0, 0, buf );
+					}
+
+					if ( key )
+					{
+						Com_QueueEvent( 0, SE_KEY, key, qtrue, 0, NULL );
+					}
 				}
 
 				break;
 
 			case SDL_KEYUP:
-				IN_TranslateSDLToQ3Key( &e.key.keysym, &key, qfalse );
-
-				if ( key )
+				if ( !dropInput )
 				{
-					Com_QueueEvent( 0, SE_KEY, key, qfalse, 0, NULL );
+					IN_TranslateSDLToQ3Key( &e.key.keysym, &key, qfalse );
+
+					if ( key )
+					{
+						Com_QueueEvent( 0, SE_KEY, key, qfalse, 0, NULL );
+					}
 				}
 
 				break;
 
 			case SDL_MOUSEMOTION:
 				Rocket_InjectMouseMotion( e.motion.x, e.motion.y );
-				if ( mouseActive )
+				if ( dropInput )
+				{
+				}
+				else if ( mouseActive )
 				{
 					Com_QueueEvent( 0, SE_MOUSE, e.motion.xrel, e.motion.yrel, 0, NULL );
 				}
@@ -1586,6 +1595,7 @@ static void IN_ProcessEvents( void )
 
 			case SDL_MOUSEBUTTONDOWN:
 			case SDL_MOUSEBUTTONUP:
+				if ( !dropInput )
 				{
 					unsigned char b;
 
@@ -1669,6 +1679,8 @@ static void IN_ProcessEvents( void )
 IN_Frame
 ===============
 */
+static qboolean dropInput = qfalse;
+
 void IN_Frame( void )
 {
 	qboolean loading;
@@ -1682,7 +1694,8 @@ void IN_Frame( void )
 		IN_JoyMove();
 	}
 
-	IN_ProcessEvents();
+	IN_ProcessEvents( dropInput );
+	dropInput = qfalse;
 	Rocket_Update();
 
 	// If not DISCONNECTED (main menu) or ACTIVE (in game), we're loading
@@ -1713,6 +1726,11 @@ void IN_Frame( void )
 	{
 		IN_ActivateMouse();
 	}
+}
+
+void IN_DropInputsForFrame( void )
+{
+	dropInput = qtrue;
 }
 
 /*

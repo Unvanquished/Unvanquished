@@ -3112,6 +3112,7 @@ void Com_Init( char *commandLine )
 #endif
 	// allocate the stack based hunk allocator
 	Com_InitHunkMemory();
+	Trans_LoadDefaultLanguage();
 
 	// if any archived cvars are modified after this, we will trigger a writing
 	// of the config file

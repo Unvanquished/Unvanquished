@@ -1063,64 +1063,10 @@ void GLShaderManager::ValidateProgram( GLuint program ) const
 
 void GLShaderManager::BindAttribLocations( GLuint program ) const
 {
-	//if(attribs & ATTR_POSITION)
-	glBindAttribLocation( program, ATTR_INDEX_POSITION, "attr_Position" );
-
-	//if(attribs & ATTR_TEXCOORD)
-	glBindAttribLocation( program, ATTR_INDEX_TEXCOORD0, "attr_TexCoord0" );
-
-	//if(attribs & ATTR_LIGHTCOORD)
-	glBindAttribLocation( program, ATTR_INDEX_TEXCOORD1, "attr_TexCoord1" );
-
-//  if(attribs & ATTR_TEXCOORD2)
-//      glBindAttribLocation(program, ATTR_INDEX_TEXCOORD2, "attr_TexCoord2");
-
-//  if(attribs & ATTR_TEXCOORD3)
-//      glBindAttribLocation(program, ATTR_INDEX_TEXCOORD3, "attr_TexCoord3");
-
-	//if(attribs & ATTR_TANGENT)
-	glBindAttribLocation( program, ATTR_INDEX_TANGENT, "attr_Tangent" );
-
-	//if(attribs & ATTR_BINORMAL)
-	glBindAttribLocation( program, ATTR_INDEX_BINORMAL, "attr_Binormal" );
-
-	//if(attribs & ATTR_NORMAL)
-	glBindAttribLocation( program, ATTR_INDEX_NORMAL, "attr_Normal" );
-
-	//if(attribs & ATTR_COLOR)
-	glBindAttribLocation( program, ATTR_INDEX_COLOR, "attr_Color" );
-
-#if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
-	//if(attribs & ATTR_PAINTCOLOR)
-	glBindAttribLocation( program, ATTR_INDEX_PAINTCOLOR, "attr_PaintColor" );
-#endif
-
-	//if(attribs & ATTR_AMBIENTLIGHT)
-	glBindAttribLocation( program, ATTR_INDEX_AMBIENTLIGHT, "attr_AmbientLight" );
-
-	//if(attribs & ATTR_DIRECTEDLIGHT)
-	glBindAttribLocation( program, ATTR_INDEX_DIRECTEDLIGHT, "attr_DirectedLight" );
-
-	//if(attribs & ATTR_LIGHTDIRECTION)
-	glBindAttribLocation( program, ATTR_INDEX_LIGHTDIRECTION, "attr_LightDirection" );
-
-	//if(glConfig2.vboVertexSkinningAvailable)
+	for ( uint32_t i = 0; i < ATTR_INDEX_MAX; i++ )
 	{
-		glBindAttribLocation( program, ATTR_INDEX_BONE_INDEXES, "attr_BoneIndexes" );
-		glBindAttribLocation( program, ATTR_INDEX_BONE_WEIGHTS, "attr_BoneWeights" );
+		glBindAttribLocation( program, i, attributeNames[ i ] );
 	}
-
-	//if(attribs & ATTR_POSITION2)
-	glBindAttribLocation( program, ATTR_INDEX_POSITION2, "attr_Position2" );
-
-	//if(attribs & ATTR_TANGENT2)
-	glBindAttribLocation( program, ATTR_INDEX_TANGENT2, "attr_Tangent2" );
-
-	//if(attribs & ATTR_BINORMAL2)
-	glBindAttribLocation( program, ATTR_INDEX_BINORMAL2, "attr_Binormal2" );
-
-	//if(attribs & ATTR_NORMAL2)
-	glBindAttribLocation( program, ATTR_INDEX_NORMAL2, "attr_Normal2" );
 }
 
 bool GLCompileMacro_USE_VERTEX_SKINNING::HasConflictingMacros( size_t permutation, const std::vector< GLCompileMacro * > &macros ) const
@@ -2175,7 +2121,8 @@ void GLShader_cameraEffects::SetShaderProgramUniforms( shaderProgram_t *shaderPr
 GLShader_blurX::GLShader_blurX( GLShaderManager *manager ) :
 	GLShader( "blurX", ATTR_POSITION, manager ),
 	u_ModelViewProjectionMatrix( this ),
-	u_DeformMagnitude( this )
+	u_DeformMagnitude( this ),
+	u_TexScale( this )
 {
 }
 
@@ -2187,7 +2134,8 @@ void GLShader_blurX::SetShaderProgramUniforms( shaderProgram_t *shaderProgram )
 GLShader_blurY::GLShader_blurY( GLShaderManager *manager ) :
 	GLShader( "blurY", ATTR_POSITION, manager ),
 	u_ModelViewProjectionMatrix( this ),
-	u_DeformMagnitude( this )
+	u_DeformMagnitude( this ),
+	u_TexScale( this )
 {
 }
 

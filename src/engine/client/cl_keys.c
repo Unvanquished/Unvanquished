@@ -55,6 +55,13 @@ qkey_t   keys[ MAX_KEYS ];
 
 int      bindTeam = DEFAULT_BINDING;
 
+static struct {
+	int          key;
+	unsigned int time;
+	qboolean     valid;
+	int          check;
+} plusCommand;
+
 typedef struct
 {
 	const char *name;
@@ -1548,6 +1555,35 @@ void Key_Bindlist_f( void )
 
 /*
 ============
+Key_SetKeyData
+============
+*/
+void Key_SetKeyData_f(void)
+{
+	if ( atoi( Cmd_Argv( 1 ) ) == plusCommand.check )
+	{
+		plusCommand.key  = atoi( Cmd_Argv( 2 ) ) - 1;
+		plusCommand.time = atoi( Cmd_Argv( 3 ) );
+		plusCommand.valid = qtrue;
+	}
+	else
+	{
+		plusCommand.valid = qfalse;
+	}
+}
+
+int Key_GetKeyNumber(void)
+{
+	return plusCommand.valid ? plusCommand.key : -1;
+}
+
+unsigned int Key_GetKeyTime(void)
+{
+	return plusCommand.valid ? plusCommand.time : 0;
+}
+
+/*
+============
 Key_KeynameCompletion
 ============
 */
@@ -1656,6 +1692,7 @@ void CL_InitKeyCommands( void )
 	Cmd_AddCommand( "bindlist", Key_Bindlist_f );
 	Cmd_AddCommand( "editbind", Key_EditBind_f );
 	Cmd_SetCommandCompletionFunc( "editbind", Key_CompleteEditbind );
+	Cmd_AddCommand( "setkeydata", Key_SetKeyData_f );
 }
 
 /*
@@ -1835,19 +1872,10 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 	//
 	if ( !down )
 	{
-		kb = keys[ key ].binding[ bindTeam ]
-		   ? keys[ key ].binding[ bindTeam ] // prefer the team bind
-		   : keys[ key ].binding[ 0 ];       // default to global
+		// Handle any +commands which were invoked on the corresponding key-down
+		IN_KeysUp( plusCommand.check, key, time );
 
-		if ( kb && kb[ 0 ] == '+' )
-		{
-			// button commands add keynum and time as parms so that multiple
-			// sources can be discriminated and subframe corrected
-			Com_sprintf( cmd, sizeof( cmd ), "-%s %i %i\n", kb + 1, key, time );
-			Cbuf_AddText( cmd );
-		}
-
-		else if ( cls.keyCatchers & KEYCATCH_CGAME && cgvm )
+		if ( cls.keyCatchers & KEYCATCH_CGAME && cgvm )
 		{
 			if ( !onlybinds )
 			{
@@ -1890,21 +1918,11 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 		   ? keys[ key ].binding[ bindTeam ] // prefer the team bind
 		   : keys[ key ].binding[ 0 ];       // default to global
 
-		if ( !kb )
-		{
-		}
-		else if ( kb[ 0 ] == '+' )
-		{
-			// button commands add keynum and time as parms so that multiple
-			// sources can be discriminated and subframe corrected
-			Com_sprintf( cmd, sizeof( cmd ), "%s %i %i\n", kb, key, time );
-			Cbuf_AddText( cmd );
-		}
-		else
+		if ( kb )
 		{
 			// down-only command
-			Cbuf_AddText( kb );
-			Cbuf_AddText( "\n" );
+			Cbuf_AddText( va( "setkeydata %d %d %u\n%s\n", plusCommand.check, key + 1, time, kb ) );
+			Cbuf_AddText( va( "setkeydata %d\n", plusCommand.check ) );
 		}
 	}
 }
@@ -1957,6 +1975,8 @@ void Key_ClearStates( void )
 		keys[ i ].down = 0;
 		keys[ i ].repeats = 0;
 	}
+
+	plusCommand.check = rand();
 }
 
 /*
