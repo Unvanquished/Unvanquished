@@ -417,7 +417,7 @@ void CG_InitBuildables( void )
 		buildableAnimNumber_t fallback;
 		qboolean              fallbackReversed; // true if the fallback's reversed flag is to be inverted
 	} animTypes[ MAX_BUILDABLE_ANIMATIONS ] = {
-		{}, // unused
+		{ "" }, // unused
 		{ "idle",              qtrue,  qfalse, qfalse, BANIM_NONE,     qfalse },
 		{ "idle2",     	       qtrue,  qfalse, qfalse, BANIM_IDLE1,    qfalse },
 		{ "powerdown",         qfalse, qfalse, qfalse, BANIM_IDLE1,    qfalse },
