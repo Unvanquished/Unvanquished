@@ -801,7 +801,6 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in )
 		}
 		else
 		{
-			// NOTE: +2 is for the two brackets.
 			currentPosition = closeBracket + 1;
 		}
 	}
