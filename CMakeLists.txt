@@ -19,7 +19,7 @@ set( CMAKE_BUILD_TYPE Release CACHE STRING "Build configuration (Debug, Release,
 # convenience option for source distros
 option( MINIMAL_FLAGS "try not to mess up system flags" 0)
 
-project( Daemon C CXX ASM )
+project( Daemon C CXX )
 
 set( X86 0 )
 if( WIN32 OR MSVC OR CMAKE_SYSTEM_PROCESSOR MATCHES "i.86" OR CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64" )
@@ -84,8 +84,6 @@ if( NOT DEFINED SUBSEQUENT_RUN )
   -std=c++11" CACHE STRING "Flags used by the compiler during Release with Debug Info builds." FORCE )
 endif()
 
-set( CMAKE_ASM_COMPILER ${CMAKE_C_COMPILER} )
-set( CMAKE_ASM_COMPILE_OBJECT ${CMAKE_C_COMPILE_OBJECT} )
 set( CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "" ) # Need this to get rid of -rdynamic linker flag set by default by cmake
 set( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" )
 
@@ -565,28 +563,6 @@ set( QCOMMONLIST
   ${MOUNT_DIR}/engine/qcommon/vm.cpp
 )
 
-# Visual studio can't handle inline assembly
-if( MSVC )
-  if( ${BUILD_ARCH} STREQUAL "i386" )
-    set( ASM_APP ml )
-  else()
-    set( ASM_APP ml64 -D idx64=1 )
-  endif()
-  set( QCOMMONLIST ${QCOMMONLIST} ftola.obj snapvector.obj )
-  # Work around - bugs in cmake prevent adding asm files to target in VS projects
-  add_custom_command( OUTPUT ftola.obj COMMAND ${ASM_APP} /c ARGS "${MOUNT_DIR}/engine/asm/ftola.asm" MAIN_DEPENDENCY ${MOUNT_DIR}/engine/asm/ftola.asm )
-  add_custom_command( OUTPUT snapvector.obj COMMAND ${ASM_APP} /c ARGS "${MOUNT_DIR}/engine/asm/snapvector.asm" MAIN_DEPENDENCY ${MOUNT_DIR}/engine/asm/snapvector.asm )
-  if( BUILD_ARCH STREQUAL "x86_64" )
-    set( QCOMMONLIST ${QCOMMONLIST} vm_x86_64.obj )
-    add_custom_command( OUTPUT vm_x86_64.obj COMMAND ${ASM_APP} /c ARGS "${MOUNT_DIR}/engine/asm/vm_x86_64.asm" MAIN_DEPENDENCY ${MOUNT_DIR}/engine/asm/vm_x86_64.asm )
-  endif()
-elseif( BUILD_ARCH STREQUAL "i386" OR BUILD_ARCH STREQUAL "x32" OR BUILD_ARCH STREQUAL "x86_64" )
-    set( QCOMMONLIST ${QCOMMONLIST}
-    ${MOUNT_DIR}/engine/asm/ftola.c
-    ${MOUNT_DIR}/engine/asm/snapvector.c
-  )
-endif()
-
 if( GAME_LIB_LLVM )
   set( QCOMMONLIST ${QCOMMONLIST} ${MOUNT_DIR}/engine/qcommon/vm_llvm.cpp )
 endif()
@@ -759,7 +735,7 @@ set( GAMEGPP_BASE
 
 set( GAMEGPP_SO
   ${GAMEGPP_BASE}
-  ${GPP_DIR}/game/g_api.c
+  ${GPP_DIR}/game/g_api.cpp
   ${GPP_DIR}/game/game.def
 )
 

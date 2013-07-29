@@ -119,14 +119,6 @@ cvar_t *com_watchdog_cmd;
 
 cvar_t *com_hunkused; // Ridah
 
-#if idx64 || idx64_32
-int ( *Q_VMftol )( void );
-#elif id386
-long( QDECL *Q_ftol )( float f );
-int ( QDECL *Q_VMftol )( void );
-void ( QDECL *Q_SnapVector )( vec3_t vec );
-#endif
-
 // com_speeds times
 int      time_game;
 int      time_frontend; // renderer frontend time
@@ -1608,59 +1600,6 @@ void Com_TouchMemory( void )
 
 /*
 =================
-Com_DetectSSE
-Find out whether we have SSE support for Q_ftol function
-=================
-*/
-
-#if id386 || idx64 || idx64_32
-
-static void Com_DetectSSE( void )
-{
-#if !idx64 && !idx64_32
-	cpuFeatures_t feat;
-
-	feat = Sys_GetProcessorFeatures();
-
-	if ( feat & CF_SSE )
-	{
-		if ( feat & CF_SSE2 )
-		{
-			Q_SnapVector = qsnapvectorsse;
-		}
-		else
-		{
-			Q_SnapVector = qsnapvectorx87;
-		}
-
-		Q_ftol = qftolsse;
-#endif
-		Q_VMftol = qvmftolsse;
-
-		Com_Printf( "Have SSE support\n" );
-#if !idx64 && !idx64_32
-	}
-
-	else
-	{
-		Q_ftol = qftolx87;
-		Q_VMftol = qvmftolx87;
-		Q_SnapVector = qsnapvectorx87;
-
-		Com_Printf( "No SSE support on this machine\n" );
-	}
-
-#endif
-}
-
-#else
-
-#define Com_DetectSSE()
-
-#endif
-
-/*
-=================
 Com_InitZoneMemory
 =================
 */
@@ -2986,8 +2925,6 @@ void Com_Init( char *commandLine )
 
 	Com_InitSmallZoneMemory();
 	Cvar_Init();
-
-	Com_DetectSSE();
 
 	// prepare enough of the subsystems to handle
 	// cvar and command buffer management

@@ -720,10 +720,10 @@ static void ProjectDecalOntoWinding( decalProjector_t *dp, int numPoints, vec3_t
 		}
 
 		/* set color */
-		vert->modulate[ 0 ] = XreaL_Q_ftol( pd * alpha * dp->color[ 0 ] );
-		vert->modulate[ 1 ] = XreaL_Q_ftol( pd * alpha * dp->color[ 1 ] );
-		vert->modulate[ 2 ] = XreaL_Q_ftol( pd * alpha * dp->color[ 2 ] );
-		vert->modulate[ 3 ] = XreaL_Q_ftol( alpha * dp->color[ 3 ] );
+		vert->modulate[ 0 ] = Q_ftol( pd * alpha * dp->color[ 0 ] );
+		vert->modulate[ 1 ] = Q_ftol( pd * alpha * dp->color[ 1 ] );
+		vert->modulate[ 2 ] = Q_ftol( pd * alpha * dp->color[ 2 ] );
+		vert->modulate[ 3 ] = Q_ftol( alpha * dp->color[ 3 ] );
 	}
 }
 

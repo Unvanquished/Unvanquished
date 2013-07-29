@@ -123,12 +123,6 @@ Maryland 20850 USA.
 #pragma warning(disable : 4389) // '==' : signed/unsigned mismatch
 #endif
 
-
-
-#if defined( ppc ) || defined( __ppc ) || defined( __ppc__ ) || defined( __POWERPC__ )
-#define idppc 1
-#endif
-
 #define Q_UNUSED(x) (void)(sizeof((x), 0))
 
 	/**********************************************************************
@@ -161,10 +155,6 @@ Maryland 20850 USA.
 #define IFDECLARE
 #else
 #define IFDECLARE ;
-#endif
-
-#ifdef USE_LLVM
-extern int memcmp( void *, void *, size_t );
 #endif
 
 #else
@@ -528,14 +518,12 @@ extern int memcmp( void *, void *, size_t );
 #define S_COLOR_MDPURPLE "^C"
 #define S_COLOR_NULL     "^*"
 
-STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
-#ifdef Q3_VM_INSTANTIATE
+STATIC_INLINE qboolean Q_IsColorString( const char *p )
 {
 	return ( p[0] == Q_COLOR_ESCAPE &&
 	         ( p[1] == COLOR_NULL || ( p[1] >= '0' && p[1] != Q_COLOR_ESCAPE && p[1] < 'p' ) )
 	       ) ? qtrue : qfalse;
 }
-#endif
 
 
 #define INDENT_MARKER    '\v'
@@ -561,221 +549,38 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 #define Q_clamp( a, b, c )            ( ( b ) >= ( c ) ? ( a ) = ( b ) : ( a ) < ( b ) ? ( a ) = ( b ) : ( a ) > ( c ) ? ( a ) = ( c ) : ( a ) )
 #define Q_lerp( from, to, frac )      ( ( from ) + ( frac ) * ( ( to ) - ( from ) ) )
 
-	struct cplane_s;
+struct cplane_s;
 
-	extern vec3_t   vec3_origin;
-	extern vec3_t   axisDefault[ 3 ];
-	extern matrix_t matrixIdentity;
-	extern quat_t   quatIdentity;
+extern vec3_t   vec3_origin;
+extern vec3_t   axisDefault[ 3 ];
+extern matrix_t matrixIdentity;
+extern quat_t   quatIdentity;
 
 #define nanmask ( 255 << 23 )
 
 #define IS_NAN( x ) ( ( ( *(int *)&( x ) ) & nanmask ) == nanmask )
 
-#if idx64 || idx64_32
-	extern long qftolsse( float f );
-	extern int  qvmftolsse( void );
-	extern void qsnapvectorsse( vec3_t vec );
+#define Q_ftol(x) ((long)(x))
 
-#define Q_ftol       qftolsse
-#define Q_SnapVector qsnapvectorsse
+STATIC_INLINE float Q_rsqrt( float number )
+{
+	return 1.0f / sqrtf( number );
+}
 
-	extern int ( *Q_VMftol )( void );
-#elif id386
-	extern long QDECL qftolx87( float f );
-	extern long QDECL qftolsse( float f );
-	extern int QDECL  qvmftolx87( void );
-	extern int QDECL  qvmftolsse( void );
-	extern void QDECL qsnapvectorx87( vec3_t vec );
-	extern void QDECL qsnapvectorsse( vec3_t vec );
+STATIC_INLINE float Q_fabs( float x )
+{
+	return fabsf( x );
+}
 
-	extern long( QDECL *Q_ftol )( float f );
-	extern int ( QDECL *Q_VMftol )( void );
-	extern void ( QDECL *Q_SnapVector )( vec3_t vec );
-#else
-#define Q_ftol lrintf
-#define Q_SnapVector(vec) \
-        do \
-  { \
-    vec3_t *temp = ( vec ); \
-                \
-    ( *temp )[ 0 ] = round(( *temp )[ 0 ]); \
-    ( *temp )[ 1 ] = round(( *temp )[ 1 ]); \
-    ( *temp )[ 2 ] = round(( *temp )[ 2 ]); \
-  } while(0)
-#endif
+#define Q_recip(x) ( 1.0f / (x) )
 
-	/*
-	// if your system does not have lrintf() and round() you can try this block. Please also open a bug report at bugzilla.icculus.org
-	// or write a mail to the ioq3 mailing list.
-#else
-#	define Q_ftol(v) ((long) (v))
-#	define Q_round(v) do { if((v) < 0) (v) -= 0.5f; else (v) += 0.5f; (v) = Q_ftol((v)); } while(0)
-#	define Q_SnapVector(vec) \
-	        do\
-	        {\
-	                vec3_t *temp = (vec);\
-	                \
-	                Q_round((*temp)[0]);\
-	                Q_round((*temp)[1]);\
-	                Q_round((*temp)[2]);\
-	        } while(0)
-#endif
-	*/
-
-	STATIC_INLINE long XreaL_Q_ftol( float f ) IFDECLARE
-#ifdef Q3_VM_INSTANTIATE
-	{
-#if id386_sse && defined( _MSC_VER )
-		static int tmp;
-		__asm fld f
-		__asm fistp tmp
-		__asm mov  eax, tmp
-#else
-		return ( long ) f;
-#endif
-	}
-#endif
-
-	STATIC_INLINE float Q_rsqrt( float number ) IFDECLARE
-#ifdef Q3_VM_INSTANTIATE
-	{
-		float y;
-
-#if idppc
-		float x = 0.5f * number;
-
-#ifdef __GNUC__
-		asm( "frsqrte %0, %1" : "=f"( y ) : "f"( number ) );
-#else
-		y = __frsqrte( number );
-#endif
-		return y * ( 1.5f - ( x * y * y ) );
-
-#elif id386_3dnow && defined __GNUC__
-//#error Q_rqsrt
-		asm volatile
-		(
-		  // lo                                   | hi
-		  "femms                               \n"
-		  "movd           (%%eax),        %%mm0\n" // in                                   |       -
-		  "pfrsqrt        %%mm0,          %%mm1\n" // 1/sqrt(in)                           | 1/sqrt(in)    (approx)
-		  "movq           %%mm1,          %%mm2\n" // 1/sqrt(in)                           | 1/sqrt(in)    (approx)
-		  "pfmul          %%mm1,          %%mm1\n" // (1/sqrt(in))?                        | (1/sqrt(in))?         step 1
-		  "pfrsqit1       %%mm0,          %%mm1\n" // intermediate                                                 step 2
-		  "pfrcpit2       %%mm2,          %%mm1\n" // 1/sqrt(in) (full 24-bit precision)                           step 3
-		  "movd           %%mm1,        (%%edx)\n"
-		  "femms                               \n"
-		  :
-		  : "a"( &number ), "d"( &y ) : "memory"
-		);
-#elif id386_sse && defined __GNUC__
-		asm volatile( "rsqrtss %0, %1" : "=x"( y ) : "x"( number ) );
-#elif id386_sse && defined _MSC_VER
-		__asm
-		{
-			rsqrtss xmm0, number
-			movss y, xmm0
-		}
-#else
-		union
-		{
-			float f;
-			int   i;
-		} t;
-
-		float       x2;
-		const float threehalfs = 1.5F;
-
-		//Check http://en.wikipedia.org/wiki/Fast_inverse_square_root for an explanation
-		x2 = number * 0.5F;
-		t.f = number;
-		t.i = 0x5f3759df - ( t.i >> 1 ); // what the fuck?
-		y = t.f;
-		y = y * ( threehalfs - ( x2 * y * y ) ); // 1st iteration
-#endif
-		return y;
-	}
-#endif
-
-	STATIC_INLINE float Q_fabs( float x ) IFDECLARE
-#ifdef Q3_VM_INSTANTIATE
-	{
-#if idppc && defined __GNUC__
-		float abs_x;
-
-		asm( "fabs %0, %1" : "=f"( abs_x ) : "f"( x ) );
-		return abs_x;
-#else
-		floatint_t tmp;
-
-		tmp.f = x;
-		tmp.i &= 0x7FFFFFFF;
-		return tmp.f;
-#endif
-	}
-#endif
-
-#define SQRTFAST( x ) ( 1.0f / Q_rsqrt( x ) )
-
-// fast float to int conversion
-#if id386 && !( ( defined __linux__ || defined __FreeBSD__ || defined __GNUC__ ) && ( defined __i386__ ) ) // rb010123
-	long myftol( float f );
-
-#elif defined( __MACOS__ )
-#define myftol( x ) (long)( x )
-#else
-	extern long int lrintf( float x );
-
-#define myftol( x ) lrintf( x )
-#endif
-
-#ifdef _MSC_VER
-	STATIC_INLINE long lrintf( float f )
-	{
-#ifdef _M_X64
-		return ( long )( ( f > 0.0f ) ? ( f + 0.5f ) : ( f - 0.5f ) );
-#else
-		int i;
-
-		_asm
-		{
-			fld f
-			fistp i
-		};
-
-		return i;
-#endif
-	}
-
-#endif
-
-#if id386_3dnow && defined __GNUC__ && 0
-	STATIC_INLINE float Q_recip( float in )
-	{
-		vec_t out;
-
-		femms();
-		asm volatile( "movd		(%%eax),	%%mm0\n""pfrcp		%%mm0,		%%mm1\n"                    // (approx)
-		              "pfrcpit1	%%mm1,		%%mm0\n"// (intermediate)
-		              "pfrcpit2	%%mm1,		%%mm0\n"// (full 24-bit)
-		              // out = mm0[low]
-		              "movd		%%mm0,		(%%edx)\n"::"a"( &in ), "d"( &out ) : "memory" );
-
-		femms();
-		return out;
-	}
-#else
-#	define Q_recip(x) ( 1.0f / (x) )
-#endif
-
-	byte         ClampByte( int i );
-	signed char  ClampChar( int i );
-	signed short ClampShort( int i );
+byte         ClampByte( int i );
+signed char  ClampChar( int i );
+signed short ClampShort( int i );
 
 // this isn't a real cheap function to call!
-	int          DirToByte( vec3_t dir );
-	void         ByteToDir( int b, vec3_t dir );
+int          DirToByte( vec3_t dir );
+void         ByteToDir( int b, vec3_t dir );
 
 #if 1
 
@@ -798,18 +603,6 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 #define VectorScale( v, s, o )  _VectorScale( v,s,o )
 #define VectorMA( v, s, b, o )  _VectorMA( v,s,b,o )
 
-#endif
-
-#ifdef Q3_VM
-#ifdef VectorCopy
-#undef VectorCopy
-// this is a little hack to get more efficient copies in our interpreter
-	typedef struct
-	{
-		float v[ 3 ];
-	} vec3struct_t;
-#define VectorCopy( a,b ) ( *(vec3struct_t *)( b ) = *(vec3struct_t *)( a ) )
-#endif
 #endif
 
 #define VectorClear( a )             ( ( a )[ 0 ] = ( a )[ 1 ] = ( a )[ 2 ] = 0 )
@@ -860,8 +653,7 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 	qboolean BoundsIntersectSphere( const vec3_t mins, const vec3_t maxs, const vec3_t origin, vec_t radius );
 	qboolean BoundsIntersectPoint( const vec3_t mins, const vec3_t maxs, const vec3_t origin );
 
-	STATIC_INLINE void BoundsToCorners( const vec3_t mins, const vec3_t maxs, vec3_t corners[ 8 ] ) IFDECLARE
-#ifdef Q3_VM_INSTANTIATE
+	STATIC_INLINE void BoundsToCorners( const vec3_t mins, const vec3_t maxs, vec3_t corners[ 8 ] )
 	{
 		VectorSet( corners[ 0 ], mins[ 0 ], maxs[ 1 ], maxs[ 2 ] );
 		VectorSet( corners[ 1 ], maxs[ 0 ], maxs[ 1 ], maxs[ 2 ] );
@@ -872,12 +664,10 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 		VectorSet( corners[ 6 ], maxs[ 0 ], mins[ 1 ], mins[ 2 ] );
 		VectorSet( corners[ 7 ], mins[ 0 ], mins[ 1 ], mins[ 2 ] );
 	}
-#endif
 
 	int VectorCompare( const vec3_t v1, const vec3_t v2 );
 
-	STATIC_INLINE int Vector4Compare( const vec4_t v1, const vec4_t v2 ) IFDECLARE
-#ifdef Q3_VM_INSTANTIATE
+	STATIC_INLINE int Vector4Compare( const vec4_t v1, const vec4_t v2 )
 	{
 		if ( v1[ 0 ] != v2[ 0 ] || v1[ 1 ] != v2[ 1 ] || v1[ 2 ] != v2[ 2 ] || v1[ 3 ] != v2[ 3 ] )
 		{
@@ -886,19 +676,15 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 
 		return 1;
 	}
-#endif
 
-	STATIC_INLINE void VectorLerp( const vec3_t from, const vec3_t to, float frac, vec3_t out ) IFDECLARE
-#ifdef Q3_VM_INSTANTIATE
+	STATIC_INLINE void VectorLerp( const vec3_t from, const vec3_t to, float frac, vec3_t out )
 	{
 		out[ 0 ] = from[ 0 ] + ( ( to[ 0 ] - from[ 0 ] ) * frac );
 		out[ 1 ] = from[ 1 ] + ( ( to[ 1 ] - from[ 1 ] ) * frac );
 		out[ 2 ] = from[ 2 ] + ( ( to[ 2 ] - from[ 2 ] ) * frac );
 	}
-#endif
 
-	STATIC_INLINE int VectorCompareEpsilon( const vec3_t v1, const vec3_t v2, float epsilon ) IFDECLARE
-#ifdef Q3_VM_INSTANTIATE
+	STATIC_INLINE int VectorCompareEpsilon( const vec3_t v1, const vec3_t v2, float epsilon )
 	{
 		vec3_t d;
 
@@ -914,7 +700,6 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 
 		return 1;
 	}
-#endif
 
 	vec_t VectorLength( const vec3_t v );
 	vec_t VectorLengthSquared( const vec3_t v );
@@ -1084,12 +869,10 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 	void     MatrixScaleTranslateToUnitCube( matrix_t m, const vec3_t mins, const vec3_t maxs );
 	void     MatrixCrop( matrix_t m, const vec3_t mins, const vec3_t maxs );
 
-	STATIC_INLINE void AnglesToMatrix( const vec3_t angles, matrix_t m ) IFDECLARE
-#ifdef Q3_VM_INSTANTIATE
+	STATIC_INLINE void AnglesToMatrix( const vec3_t angles, matrix_t m )
 	{
 		MatrixFromAngles( m, angles[ PITCH ], angles[ YAW ], angles[ ROLL ] );
 	}
-#endif
 
 //=============================================
 
@@ -1100,15 +883,13 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 
 #define QuatCompare(a,b)   (( a )[ 0 ] == ( b )[ 0 ] && ( a )[ 1 ] == ( b )[ 1 ] && ( a )[ 2 ] == ( b )[ 2 ] && ( a )[ 3 ] == ( b )[ 3 ] )
 
-	STATIC_INLINE void QuatClear( quat_t q ) IFDECLARE
-#ifdef Q3_VM_INSTANTIATE
+	STATIC_INLINE void QuatClear( quat_t q )
 	{
 		q[ 0 ] = 0;
 		q[ 1 ] = 0;
 		q[ 2 ] = 0;
 		q[ 3 ] = 1;
 	}
-#endif
 
 	/*
 	STATIC_INLINE int QuatCompare(const quat_t a, const quat_t b)
@@ -1121,8 +902,7 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 	}
 	*/
 
-	STATIC_INLINE void QuatCalcW( quat_t q ) IFDECLARE
-#ifdef Q3_VM_INSTANTIATE
+	STATIC_INLINE void QuatCalcW( quat_t q )
 	{
 #if 1
 		vec_t term = 1.0f - ( q[ 0 ] * q[ 0 ] + q[ 1 ] * q[ 1 ] + q[ 2 ] * q[ 2 ] );
@@ -1140,44 +920,35 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 		q[ 3 ] = sqrt( fabs( 1.0f - ( q[ 0 ] * q[ 0 ] + q[ 1 ] * q[ 1 ] + q[ 2 ] * q[ 2 ] ) ) );
 #endif
 	}
-#endif
 
-	STATIC_INLINE void QuatInverse( quat_t q ) IFDECLARE
-#ifdef Q3_VM_INSTANTIATE
+	STATIC_INLINE void QuatInverse( quat_t q )
 	{
 		q[ 0 ] = -q[ 0 ];
 		q[ 1 ] = -q[ 1 ];
 		q[ 2 ] = -q[ 2 ];
 	}
-#endif
 
-	STATIC_INLINE void QuatAntipodal( quat_t q ) IFDECLARE
-#ifdef Q3_VM_INSTANTIATE
+	STATIC_INLINE void QuatAntipodal( quat_t q )
 	{
 		q[ 0 ] = -q[ 0 ];
 		q[ 1 ] = -q[ 1 ];
 		q[ 2 ] = -q[ 2 ];
 		q[ 3 ] = -q[ 3 ];
 	}
-#endif
 
-	STATIC_INLINE vec_t QuatLength( const quat_t q ) IFDECLARE
-#ifdef Q3_VM_INSTANTIATE
+	STATIC_INLINE vec_t QuatLength( const quat_t q )
 	{
 		return ( vec_t ) sqrt( q[ 0 ] * q[ 0 ] + q[ 1 ] * q[ 1 ] + q[ 2 ] * q[ 2 ] + q[ 3 ] * q[ 3 ] );
 	}
-#endif
 
 	vec_t QuatNormalize( quat_t q );
 
 	void  QuatFromAngles( quat_t q, vec_t pitch, vec_t yaw, vec_t roll );
 
-	STATIC_INLINE void AnglesToQuat( const vec3_t angles, quat_t q ) IFDECLARE
-#ifdef Q3_VM_INSTANTIATE
+	STATIC_INLINE void AnglesToQuat( const vec3_t angles, quat_t q )
 	{
 		QuatFromAngles( q, angles[ PITCH ], angles[ YAW ], angles[ ROLL ] );
 	}
-#endif
 
 	void QuatFromMatrix( quat_t q, const matrix_t m );
 	void QuatToVectorsFLU( const quat_t quat, vec3_t forward, vec3_t left, vec3_t up );
@@ -1889,36 +1660,27 @@ double rint( double x );
 	} usercmd_t;
 
 // Some functions for buttons manipulation & testing
-	STATIC_INLINE void usercmdPressButton( byte *buttons, int bit ) IFDECLARE
-#ifdef Q3_VM_INSTANTIATE
+	STATIC_INLINE void usercmdPressButton( byte *buttons, int bit )
 	{
 		buttons[bit / 8] |= 1 << ( bit & 7 );
 	}
-#endif
 
-	STATIC_INLINE void usercmdReleaseButton( byte *buttons, int bit ) IFDECLARE
-#ifdef Q3_VM_INSTANTIATE
+	STATIC_INLINE void usercmdReleaseButton( byte *buttons, int bit )
 	{
 		buttons[bit / 8] &= ~( 1 << ( bit & 7 ) );
 	}
-#endif
 
-	STATIC_INLINE void usercmdClearButtons( byte *buttons ) IFDECLARE
-#ifdef Q3_VM_INSTANTIATE
+	STATIC_INLINE void usercmdClearButtons( byte *buttons )
 	{
 		memset( buttons, 0, USERCMD_BUTTONS / 8 );
 	}
-#endif
 
-	STATIC_INLINE void usercmdCopyButtons( byte *dest, const byte *source ) IFDECLARE
-#ifdef Q3_VM_INSTANTIATE
+	STATIC_INLINE void usercmdCopyButtons( byte *dest, const byte *source )
 	{
 		memcpy( dest, source, USERCMD_BUTTONS / 8 );
 	}
-#endif
 
-	STATIC_INLINE void usercmdLatchButtons( byte *dest, const byte *srcNew, const byte *srcOld ) IFDECLARE
-#ifdef Q3_VM_INSTANTIATE
+	STATIC_INLINE void usercmdLatchButtons( byte *dest, const byte *srcNew, const byte *srcOld )
 	{
 		int i;
 		for ( i = 0; i < USERCMD_BUTTONS / 8; ++i )
@@ -1926,21 +1688,16 @@ double rint( double x );
 			 dest[i] |= srcNew[i] & ~srcOld[i];
 		}
 	}
-#endif
 
-	STATIC_INLINE qboolean usercmdButtonPressed( const byte *buttons, int bit ) IFDECLARE
-#ifdef Q3_VM_INSTANTIATE
+	STATIC_INLINE qboolean usercmdButtonPressed( const byte *buttons, int bit )
 	{
 		return ( buttons[bit / 8] & ( 1 << ( bit & 7 ) ) ) ? qtrue : qfalse;
 	}
-#endif
 
-	STATIC_INLINE qboolean usercmdButtonsDiffer( const byte *a, const byte *b ) IFDECLARE
-#ifdef Q3_VM_INSTANTIATE
+	STATIC_INLINE qboolean usercmdButtonsDiffer( const byte *a, const byte *b )
 	{
 		return memcmp( a, b, USERCMD_BUTTONS / 8 ) ? qtrue : qfalse;
 	}
-#endif
 
 //===================================================================
 

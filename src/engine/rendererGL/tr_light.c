@@ -1791,7 +1791,7 @@ void R_SetupLightLOD( trRefLight_t *light )
 	}
 
 	flod *= numLods;
-	lod = XreaL_Q_ftol( flod );
+	lod = Q_ftol( flod );
 
 	if ( lod < 0 )
 	{

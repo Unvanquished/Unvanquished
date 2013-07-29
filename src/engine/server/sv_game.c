@@ -1107,7 +1107,7 @@ void GameVM::Syscall(int index, RPC::Reader& inputs, RPC::Writer& outputs)
 	{
 		vec3_t v;
 		inputs.Read(v, sizeof(vec3_t));
-		Q_SnapVector(v);
+		SnapVector(v);
 		outputs.Write(v, sizeof(vec3_t));
 		break;
 	}

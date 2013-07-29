@@ -88,7 +88,7 @@ void BindAnimatedImage( textureBundle_t *bundle )
 
 	// it is necessary to do this messy calc to make sure animations line up
 	// exactly with waveforms of the same frequency
-	index = XreaL_Q_ftol( backEnd.refdef.floatTime * bundle->imageAnimationSpeed * FUNCTABLE_SIZE );
+	index = Q_ftol( backEnd.refdef.floatTime * bundle->imageAnimationSpeed * FUNCTABLE_SIZE );
 	index >>= FUNCTABLE_SIZE2;
 
 	if ( index < 0 )

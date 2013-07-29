@@ -3633,7 +3633,7 @@ void R_CreateBuiltinImages( void )
 
 			value = 1.0f - ( s * 2.0f ) + ( s * s );
 
-			intensity = ClampByte( XreaL_Q_ftol( value * 255.0f ) );
+			intensity = ClampByte( Q_ftol( value * 255.0f ) );
 
 			out[ 0 ] = intensity;
 			out[ 1 ] = intensity;

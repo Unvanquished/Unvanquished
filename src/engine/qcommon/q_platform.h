@@ -35,10 +35,6 @@ Maryland 20850 USA.
 #ifndef Q_PLATFORM_H_
 #define Q_PLATFORM_H_
 
-// this is for determining if we have an asm version of a C function
-#define idx64 0
-#define idx64_32 0
-
 #ifdef VM_COMPILED
 #undef VM_COMPILED
 #endif
@@ -46,9 +42,6 @@ Maryland 20850 USA.
 #ifdef Q3_VM
 
 #define id386         0
-#define idppc         0
-#define idppc_altivec 0
-#define idsparc       0
 
 #else
 
@@ -72,35 +65,7 @@ Maryland 20850 USA.
 #define id386_sse   0
 #endif
 
-#if ( defined( powerc ) || defined( powerpc ) || defined( ppc ) || \
-        defined( __ppc ) || defined( __ppc__ )) && !defined( C_ONLY )
-#define idppc         1
-#if defined( __VEC__ )
-#define idppc_altivec 1
-#ifdef MACOS_X // Apple's GCC does this differently than the GNU's.
-#define VECCONST_UINT8(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p) \
-        (vector unsigned char) ( a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p )
-#else
-#define VECCONST_UINT8(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p) \
-        (vector unsigned char) {a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p }
 #endif
-#else
-#define idppc_altivec 0
-#endif
-#else
-#define idppc         0
-#define idppc_altivec 0
-#endif
-
-#if defined( __sparc__ ) && !defined( C_ONLY )
-#define idsparc 1
-#else
-#define idsparc 0
-#endif
-
-#endif
-
-#ifndef __ASM_I386__ // don't include the C bits if included from qasm.h
 
 // for windows fastcall option
 #define QDECL
@@ -109,8 +74,6 @@ Maryland 20850 USA.
 //================================================================= WIN64/32 ===
 #ifndef Q3_VM
 #if defined( _WIN64 ) || defined( __WIN64__ )
-#undef idx64
-#define idx64 1
 
 #define MAC_STATIC
 
@@ -205,8 +168,6 @@ Maryland 20850 USA.
 #define Q3_LITTLE_ENDIAN
 #define VM_COMPILED
 #elif defined __x86_64__
-#undef idx64
-#define idx64       1
 #define ARCH_STRING "x86_64"
 #define Q3_LITTLE_ENDIAN
 #define VM_COMPILED
@@ -234,13 +195,9 @@ Maryland 20850 USA.
 #define ARCH_STRING "i386"
 #define VM_COMPILED
 #elif defined __x86_64__ && defined _ILP32
-#undef idx64_32
-#define idx64_32    1
 #define ARCH_STRING "x32"
 #define VM_COMPILED
 #elif defined __x86_64__
-#undef idx64
-#define idx64       1
 #define ARCH_STRING "x86_64"
 #define VM_COMPILED
 #elif defined __powerpc64__
@@ -314,8 +271,6 @@ Maryland 20850 USA.
 #elif defined __axp__
 #define ARCH_STRING "alpha"
 #elif defined __x86_64__
-#undef idx64
-#define idx64       1
 #define ARCH_STRING "x86_64"
 #endif
 
@@ -463,8 +418,6 @@ float FloatSwap( float f );
 
 #else
 #error "Endianness not defined"
-#endif
-
 #endif
 
 #ifndef VM_COMPILED
