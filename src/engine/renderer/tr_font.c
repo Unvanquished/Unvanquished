@@ -343,7 +343,7 @@ float readFloat( void )
 {
 	poor me;
 
-#if idppc
+#ifdef Q3_BIG_ENDIAN
 	me.fred[ 0 ] = fdFile[ fdOffset + 3 ];
 	me.fred[ 1 ] = fdFile[ fdOffset + 2 ];
 	me.fred[ 2 ] = fdFile[ fdOffset + 1 ];

@@ -1055,7 +1055,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return Com_RealTime( (qtime_t*) VMA( 1 ) );
 
 		case CG_SNAPVECTOR:
-			Q_SnapVector( (float*) VMA( 1 ) );
+			SnapVector( (float*) VMA( 1 ) );
 			return 0;
 
 		case CG_CIN_PLAYCINEMATIC:

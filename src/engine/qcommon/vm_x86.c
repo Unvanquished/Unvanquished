@@ -482,7 +482,7 @@ static void DoSyscall( void )
 
 		if ( data[ 0 ] < FIRST_VM_SYSCALL )
 		{
-			vmInfo.opStackBase[ vmInfo.opStackOfs + 1 ] = VM_SystemCall( data ); // Common
+			vmInfo.opStackBase[ vmInfo.opStackOfs + 1 ] = VM_SystemCall( (intptr_t *) data ); // Common
 		}
 		else
 		{
@@ -1201,6 +1201,34 @@ qboolean ConstOptimize( vm_t *vm, int callProcOfsSyscall )
 	return qfalse;
 }
 
+#if idx64 || idx64_32
+#  define EAX "%%rax"
+#  define EBX "%%rbx"
+#  define ESP "%%rsp"
+#  define EDI "%%rdi"
+#else
+#  define EAX "%%eax"
+#  define EBX "%%ebx"
+#  define ESP "%%esp"
+#  define EDI "%%edi"
+#endif
+
+int myvmftol(void)
+{
+  int retval;
+
+  __asm__ volatile
+  (
+    "movss (" EDI ", " EBX ", 4), %%xmm0\n"
+    "cvttss2si %%xmm0, %0\n"
+    : "=r" (retval)
+    :
+    : "%xmm0"
+  );
+
+  return retval;
+}
+
 /*
 =================
 VM_Compile
@@ -1794,8 +1822,8 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 					EmitString( "DB 1C 9F" );  // fistp dword ptr [edi + ebx * 4]
 #else // FTOL_PTR
 						// call the library conversion function
-					EmitString( REX_W(48,40) "BA" );  // mov edx, Q_VMftol
-					EmitPtr( (void*) Q_VMftol );
+					EmitString( REX_W(48,40) "BA" );  // mov edx, myvmftol
+					EmitPtr( (void*) myvmftol );
 					EmitString( REX64(48) "FF D2" );  // call edx
 					EmitCommand( LAST_COMMAND_MOV_STACK_EAX );  // mov dword ptr [edi + ebx * 4], eax
 #endif

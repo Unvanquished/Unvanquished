@@ -188,7 +188,7 @@ int R_ComputeLOD( trRefEntity_t *ent )
 		}
 
 		flod *= tr.currentModel->numLods;
-		lod = XreaL_Q_ftol( flod );
+		lod = Q_ftol( flod );
 
 		if ( lod < 0 )
 		{

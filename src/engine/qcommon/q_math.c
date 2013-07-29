@@ -746,21 +746,6 @@ void VectorRotate( vec3_t in, vec3_t matrix[ 3 ], vec3_t out )
 	out[ 2 ] = DotProduct( in, matrix[ 2 ] );
 }
 
-//============================================================================
-
-// *INDENT-OFF*
-#if id386 && !( ( defined __linux__ || defined __FreeBSD__ || defined __GNUC__ ) && ( defined __i386__ ) ) // rb010123
-long myftol( float f )
-{
-	static int tmp;
-	__asm fld f
-	__asm fistp tmp
-	__asm mov  eax, tmp
-}
-
-#endif
-// *INDENT-ON*
-
 //============================================================
 
 /*
@@ -1936,49 +1921,6 @@ void MatrixClear( matrix_t m )
 
 void MatrixCopy( const matrix_t in, matrix_t out )
 {
-#if id386_sse && defined __GNUC__ && 0
-	asm volatile
-	(
-	  "movups         (%%edx),        %%xmm0\n"
-	  "movups         0x10(%%edx),    %%xmm1\n"
-	  "movups         0x20(%%edx),    %%xmm2\n"
-	  "movups         0x30(%%edx),    %%xmm3\n"
-
-	  "movups         %%xmm0,         (%%eax)\n"
-	  "movups         %%xmm1,         0x10(%%eax)\n"
-	  "movups         %%xmm2,         0x20(%%eax)\n"
-	  "movups         %%xmm3,         0x30(%%eax)\n"
-	  :
-	  : "a"( out ), "d"( in )
-	  : "memory"
-	);
-#elif id386_3dnow && defined __GNUC__
-	asm volatile
-	(
-	  "femms\n"
-	  "movq           (%%edx),        %%mm0\n"
-	  "movq           8(%%edx),       %%mm1\n"
-	  "movq           16(%%edx),      %%mm2\n"
-	  "movq           24(%%edx),      %%mm3\n"
-	  "movq           32(%%edx),      %%mm4\n"
-	  "movq           40(%%edx),      %%mm5\n"
-	  "movq           48(%%edx),      %%mm6\n"
-	  "movq           56(%%edx),      %%mm7\n"
-
-	  "movq           %%mm0,          (%%eax)\n"
-	  "movq           %%mm1,          8(%%eax)\n"
-	  "movq           %%mm2,          16(%%eax)\n"
-	  "movq           %%mm3,          24(%%eax)\n"
-	  "movq           %%mm4,          32(%%eax)\n"
-	  "movq           %%mm5,          40(%%eax)\n"
-	  "movq           %%mm6,          48(%%eax)\n"
-	  "movq           %%mm7,          56(%%eax)\n"
-	  "femms\n"
-	  :
-	  : "a"( out ), "d"( in )
-	  : "memory"
-	);
-#else
 	out[ 0 ] = in[ 0 ];
 	out[ 4 ] = in[ 4 ];
 	out[ 8 ] = in[ 8 ];
@@ -1995,7 +1937,6 @@ void MatrixCopy( const matrix_t in, matrix_t out )
 	out[ 7 ] = in[ 7 ];
 	out[ 11 ] = in[ 11 ];
 	out[ 15 ] = in[ 15 ];
-#endif
 }
 
 qboolean MatrixCompare( const matrix_t a, const matrix_t b )
@@ -2006,63 +1947,8 @@ qboolean MatrixCompare( const matrix_t a, const matrix_t b )
 	         a[ 3 ] == b[ 3 ] && a[ 7 ] == b[ 7 ] && a[ 11 ] == b[ 11 ] && a[ 15 ] == b[ 15 ] );
 }
 
-void MatrixTransposeIntoXMM( const matrix_t m )
-{
-#if id386_sse && defined __GNUC__ && 0
-	asm volatile
-	( // reg[0]                       | reg[1]                | reg[2]                | reg[3]
-	  // load transpose into XMM registers
-	  "movlps         (%%eax),        %%xmm4\n" // m[0][0]                      | m[0][1]               | -                     | -
-	  "movhps         16(%%eax),      %%xmm4\n" // m[0][0]                      | m[0][1]               | m[1][0]               | m[1][1]
-
-	  "movlps         32(%%eax),      %%xmm3\n" // m[2][0]                      | m[2][1]               | -                     | -
-	  "movhps         48(%%eax),      %%xmm3\n" // m[2][0]                      | m[2][1]               | m[3][0]               | m[3][1]
-
-	  "movups         %%xmm4,         %%xmm5\n" // m[0][0]                      | m[0][1]               | m[1][0]               | m[1][1]
-
-	  // 0x88 = 10 00 | 10 00 <-> 00 10 | 00 10          xmm4[00]                       xmm4[10]                xmm3[00]                xmm3[10]
-	  "shufps         $0x88, %%xmm3,  %%xmm4\n" // m[0][0]                      | m[1][0]               | m[2][0]               | m[3][0]
-
-	  // 0xDD = 11 01 | 11 01 <-> 01 11 | 01 11          xmm5[01]                       xmm5[11]                xmm3[01]                xmm3[11]
-	  "shufps         $0xDD, %%xmm3,  %%xmm5\n" // m[0][1]                      | m[1][1]               | m[2][1]               | m[3][1]
-
-	  "movlps         8(%%eax),       %%xmm6\n" // m[0][2]                      | m[0][3]               | -                     | -
-	  "movhps         24(%%eax),      %%xmm6\n" // m[0][2]                      | m[0][3]               | m[1][2]               | m[1][3]
-
-	  "movlps         40(%%eax),      %%xmm3\n" // m[2][2]                      | m[2][3]               | -                     | -
-	  "movhps         56(%%eax),      %%xmm3\n" // m[2][2]                      | m[2][3]               | m[3][2]               | m[3][3]
-
-	  "movups         %%xmm6,         %%xmm7\n" // m[0][2]                      | m[0][3]               | m[1][2]               | m[1][3]
-
-	  // 0x88 = 10 00 | 10 00 <-> 00 10 | 00 10          xmm6[00]                       xmm6[10]                xmm3[00]                xmm3[10]
-	  "shufps         $0x88, %%xmm3,  %%xmm6\n" // m[0][2]                      | m[1][2]               | m[2][2]               | m[3][2]
-
-	  // 0xDD = 11 01 | 11 01 <-> 01 11 | 01 11          xmm7[01]                       xmm7[11]                xmm3[01]                xmm3[11]
-	  "shufps         $0xDD, %%xmm3,  %%xmm7\n" // m[0][3]                      | m[1][3]               | m[2][3]               | m[3][3]
-	  :
-	  : "a"( m )
-	  : "memory"
-	);
-#endif
-}
-
 void MatrixTranspose( const matrix_t in, matrix_t out )
 {
-#if id386_sse && defined __GNUC__ && 0
-	// transpose the matrix into the xmm4-7
-	MatrixTransposeIntoXMM( in );
-
-	asm volatile
-	(
-	  "movups         %%xmm4,         (%%eax)\n"
-	  "movups         %%xmm5,         0x10(%%eax)\n"
-	  "movups         %%xmm6,         0x20(%%eax)\n"
-	  "movups         %%xmm7,         0x30(%%eax)\n"
-	  :
-	  : "a"( out )
-	  : "memory"
-	);
-#else
 	out[ 0 ] = in[ 0 ];
 	out[ 1 ] = in[ 4 ];
 	out[ 2 ] = in[ 8 ];
@@ -2079,7 +1965,6 @@ void MatrixTranspose( const matrix_t in, matrix_t out )
 	out[ 13 ] = in[ 7 ];
 	out[ 14 ] = in[ 11 ];
 	out[ 15 ] = in[ 15 ];
-#endif
 }
 
 // helper functions for MatrixInverse from GtkRadiant C mathlib

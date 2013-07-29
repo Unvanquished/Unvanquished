@@ -4348,8 +4348,6 @@ qboolean CL_InitRef( const char *renderer )
 	ri.IN_Shutdown = IN_Shutdown;
 	ri.IN_Restart = IN_Restart;
 
-	ri.ftol = Q_ftol;
-
 	ri.Sys_GLimpSafeInit = Sys_GLimpSafeInit;
 	ri.Sys_GLimpInit = Sys_GLimpInit;
 

@@ -657,7 +657,7 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 			return Com_GMTime( ( qtime_t * ) VMA( 1 ) );
 
 		case G_SNAPVECTOR:
-			Q_SnapVector( ( float * ) VMA( 1 ) );
+			SnapVector( ( float * ) VMA( 1 ) );
 			return 0;
 
 		case G_SEND_GAMESTAT:
