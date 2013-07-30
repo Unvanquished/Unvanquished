@@ -242,6 +242,7 @@ struct gentity_s
 	 */
 	qboolean     onFire;
 	int          nextBurnDamage;
+	int          nextBurnSplashDamage;
 	int          nextBurnStopCheck;
 	int          nextBurnSpreadCheck;
 	gentity_t    *fireStarter;

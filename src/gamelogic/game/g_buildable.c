@@ -866,8 +866,7 @@ void AGeneric_Blast( gentity_t *self )
 
 	//do a bit of radius damage
 	G_SelectiveRadiusDamage( self->s.pos.trBase, g_entities + self->killedBy, self->splashDamage,
-	                         self->splashRadius, self, self->splashMethodOfDeath,
-	                         TEAM_ALIENS );
+	                         self->splashRadius, self, self->splashMethodOfDeath, TEAM_ALIENS );
 
 	//pretty events and item cleanup
 	self->s.eFlags |= EF_NODRAW; //don't draw the model once it's destroyed
@@ -969,6 +968,7 @@ void G_IgniteBuildable( gentity_t *self, gentity_t *fireStarter )
 		self->onFire = qtrue;
 		self->fireStarter = fireStarter;
 		self->nextBurnDamage = level.time + BURN_DAMAGE_PERIOD * BURN_PERIODS_RAND_FACTOR;
+		self->nextBurnSplashDamage = level.time + BURN_DAMAGE_PERIOD * BURN_PERIODS_RAND_FACTOR;
 		self->nextBurnSpreadCheck = level.time + BURN_SPREAD_PERIOD * BURN_PERIODS_RAND_FACTOR;
 	}
 
@@ -993,16 +993,24 @@ void AGeneric_Burn( gentity_t *self )
 		return;
 	}
 
+	// damage self
 	if ( self->nextBurnDamage < level.time )
 	{
-		G_SelectiveRadiusDamage( self->s.origin, self->fireStarter, BURN_DAMAGE,
-		                         BURN_SPREAD_RADIUS / 2, self, MOD_BURN, TEAM_NONE );
-
 		G_Damage( self, self, self->fireStarter, NULL, NULL, BURN_DAMAGE, 0, MOD_BURN );
 
 		self->nextBurnDamage = level.time + BURN_DAMAGE_PERIOD * BURN_PERIODS_RAND_FACTOR;
 	}
 
+	// damage close players
+	if ( self->nextBurnSplashDamage < level.time )
+	{
+		G_SelectiveRadiusDamage( self->s.origin, self->fireStarter, BURN_SPLDAMAGE,
+		                         BURN_SPLDAMAGE_RADIUS, self, MOD_BURN, TEAM_NONE );
+
+		self->nextBurnSplashDamage = level.time + BURN_SPLDAMAGE_PERIOD * BURN_PERIODS_RAND_FACTOR;
+	}
+
+	// chance to stop burning
 	if ( self->nextBurnStopCheck < level.time )
 	{
 		if ( random() < BURN_STOP_CHANCE )
@@ -1014,6 +1022,7 @@ void AGeneric_Burn( gentity_t *self )
 		self->nextBurnStopCheck = level.time + BURN_STOP_PERIOD * BURN_PERIODS_RAND_FACTOR;
 	}
 
+	// chance to ignite close buildables
 	if ( self->nextBurnSpreadCheck < level.time )
 	{
 		neighbor = NULL;

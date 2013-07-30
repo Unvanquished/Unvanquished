@@ -213,7 +213,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define CREEP_SCALEDOWN_TIME    3000
 
 #define BURN_DAMAGE             10
-#define BURN_DAMAGE_PERIOD      1000
+#define BURN_DAMAGE_PERIOD      1000 // high, so we don't get popcorn sound with all the damage anims
+#define BURN_SPLDAMAGE          10
+#define BURN_SPLDAMAGE_RADIUS   60
+#define BURN_SPLDAMAGE_PERIOD   500
 #define BURN_STOP_PERIOD        2500
 #define BURN_STOP_CHANCE        0.5f
 #define BURN_SPREAD_PERIOD      1000
