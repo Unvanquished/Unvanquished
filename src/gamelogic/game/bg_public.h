@@ -754,7 +754,9 @@ typedef enum
 
   BANIM_IDLE1, // inactive idle
   BANIM_IDLE2, // active idle
+
   BANIM_POWERDOWN, // note: not looped
+  BANIM_IDLE_UNPOWERED,
 
   BANIM_CONSTRUCT1,
   BANIM_CONSTRUCT2, // return to idle state

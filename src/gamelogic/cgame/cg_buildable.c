@@ -28,6 +28,7 @@ static const char *const cg_buildableSoundNames[ MAX_BUILDABLE_ANIMATIONS ] =
 	"idle1.wav",
 	"idle2.wav",
 	"powerdown.wav",
+	"idle_unpowered.wav",
 	"construct1.wav",
 	"construct2.wav",
 	"attack1.wav",
@@ -42,11 +43,11 @@ static const char *const cg_buildableSoundNames[ MAX_BUILDABLE_ANIMATIONS ] =
 };
 
 // MD5 buildable animation info helper macro
-#define CG_ANIM( b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14 ) \
+#define CG_ANIM( b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15 ) \
 	( (   1   <<  1 ) | ( !!b2  <<  2 ) | ( !!b3  <<  3 ) | ( !!b4  <<  4 ) | \
 	  ( !!b5  <<  5 ) | ( !!b6  <<  6 ) | ( !!b7  <<  7 ) | ( !!b8  <<  8 ) | \
 	  ( !!b9  <<  9 ) | ( !!b10 << 10 ) | ( !!b11 << 11 ) | ( !!b12 << 12 ) | \
-	  ( !!b13 << 13 ) | ( !!b14 << 14 ) \
+	  ( !!b13 << 13 ) | ( !!b14 << 14 ) | ( !!b15 << 15 ) \
 	)
 
 // MD5 buildable animation names, flags and fallbacks
@@ -60,6 +61,7 @@ static const struct {
 	{ "idle",              qtrue,  qfalse, qfalse, BANIM_NONE,     qfalse },
 	{ "idle2",     	       qtrue,  qfalse, qfalse, BANIM_IDLE1,    qfalse },
 	{ "powerdown",         qfalse, qfalse, qfalse, BANIM_IDLE1,    qfalse },
+	{ "idle_unpowered",    qtrue,  qfalse, qfalse, BANIM_IDLE1,    qfalse },
 	{ "construct", 	       qfalse, qfalse, qfalse, BANIM_IDLE1,    qfalse },
 	{ "construct2",        qfalse, qfalse, qfalse, BANIM_IDLE1,    qfalse },
 	{ "attack",            qfalse, qfalse, qfalse, BANIM_IDLE1,    qfalse },
@@ -77,23 +79,23 @@ static const struct {
 // We expect that all have idle animations
 static const int animLoading[] = {
 	0,
-	//       idle2   pwrdwn  cnstr   cnstr2  attack   attack2 spawn   spawn2  pain    pain2   dstry   dstry2  dstryed
-	CG_ANIM( qtrue,  qfalse, qtrue,  qtrue,  qtrue,   qtrue,  qtrue,  qfalse, qtrue,  qtrue,  qtrue,  qfalse, qtrue  ), // BA_A_SPAWN
-	CG_ANIM( qfalse, qfalse, qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qfalse, qtrue  ), // BA_A_OVERMIND
-	CG_ANIM( qtrue,  qfalse, qtrue,  qfalse, qtrue,   qtrue,  qfalse, qfalse, qtrue,  qtrue,  qtrue,  qtrue,  qtrue  ), // BA_A_BARRICADE
-	CG_ANIM( qfalse, qfalse, qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qfalse, qtrue  ), // BA_A_ACIDTUBE
-	CG_ANIM( qfalse, qfalse, qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qfalse, qtrue  ), // BA_A_TRAPPER
-	CG_ANIM( qfalse, qfalse, qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qfalse, qtrue  ), // BA_A_BOOSTER
-	CG_ANIM( qfalse, qfalse, qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qfalse, qtrue  ), // BA_A_HIVE
+	//       idle2   pwrdwn  idlunp  cnstr   cnstr2  attack   attack2 spawn   spawn2  pain    pain2   dstry   dstry2  dstryed
+	CG_ANIM( qtrue,  qfalse, qfalse, qtrue,  qtrue,  qtrue,   qtrue,  qtrue,  qfalse, qtrue,  qtrue,  qtrue,  qfalse, qtrue  ), // BA_A_SPAWN
+	CG_ANIM( qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qfalse, qtrue  ), // BA_A_OVERMIND
+	CG_ANIM( qtrue,  qtrue,  qtrue,  qtrue,  qfalse, qtrue,   qtrue,  qfalse, qfalse, qtrue,  qtrue,  qtrue,  qtrue,  qtrue  ), // BA_A_BARRICADE
+	CG_ANIM( qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qfalse, qtrue  ), // BA_A_ACIDTUBE
+	CG_ANIM( qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qfalse, qtrue  ), // BA_A_TRAPPER
+	CG_ANIM( qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qfalse, qtrue  ), // BA_A_BOOSTER
+	CG_ANIM( qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qfalse, qtrue  ), // BA_A_HIVE
 
-	CG_ANIM( qtrue,  qtrue,  qtrue,  qtrue,  qtrue,   qtrue,  qtrue,  qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_SPAWN
-	CG_ANIM( qfalse, qtrue,  qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_TURRET
-	CG_ANIM( qfalse, qtrue,  qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_TESLAGEN
-	CG_ANIM( qfalse, qtrue,  qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_ARMOURY
-	CG_ANIM( qfalse, qtrue,  qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_DCC
-	CG_ANIM( qtrue,  qtrue,  qtrue,  qtrue,  qtrue,   qtrue,  qfalse, qfalse, qtrue,  qtrue,  qtrue,  qtrue,  qtrue  ), // BA_H_MEDISTAT
-	CG_ANIM( qfalse, qtrue,  qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_REACTOR
-	CG_ANIM( qfalse, qtrue,  qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_REPEATER
+	CG_ANIM( qtrue,  qtrue,  qtrue,  qtrue,  qtrue,  qtrue,   qtrue,  qtrue,  qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_SPAWN
+	CG_ANIM( qfalse, qtrue,  qtrue,  qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_TURRET
+	CG_ANIM( qfalse, qtrue,  qtrue,  qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_TESLAGEN
+	CG_ANIM( qfalse, qtrue,  qtrue,  qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_ARMOURY
+	CG_ANIM( qfalse, qtrue,  qtrue,  qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_DCC
+	CG_ANIM( qtrue,  qtrue,  qtrue,  qtrue,  qtrue,  qtrue,   qtrue,  qfalse, qfalse, qtrue,  qtrue,  qtrue,  qtrue,  qtrue  ), // BA_H_MEDISTAT
+	CG_ANIM( qfalse, qtrue,  qtrue,  qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_REACTOR
+	CG_ANIM( qfalse, qtrue,  qtrue,  qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_REPEATER
 };
 
 static sfxHandle_t defaultAlienSounds[ MAX_BUILDABLE_ANIMATIONS ];

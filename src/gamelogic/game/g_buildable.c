@@ -1842,16 +1842,17 @@ static void G_IdlePowerState( gentity_t *self )
 {
 	if ( self->powered )
 	{
-		if ( self->s.torsoAnim == BANIM_POWERDOWN )
+		if ( self->s.torsoAnim == BANIM_IDLE_UNPOWERED )
 		{
 			G_SetIdleBuildableAnim( self, BG_Buildable( self->s.modelindex )->idleAnim );
 		}
 	}
 	else
 	{
-		if ( self->s.torsoAnim != BANIM_POWERDOWN )
+		if ( self->s.torsoAnim != BANIM_IDLE_UNPOWERED )
 		{
-			G_SetIdleBuildableAnim( self, BANIM_POWERDOWN );
+			G_SetBuildableAnim( self, BANIM_POWERDOWN, qfalse );
+			G_SetIdleBuildableAnim( self, BANIM_IDLE_UNPOWERED );
 		}
 	}
 }
