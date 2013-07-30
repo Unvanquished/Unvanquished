@@ -26,7 +26,7 @@ attribute vec4		attr_BoneWeights;
 uniform int			u_VertexSkinning;
 uniform mat4		u_BoneMatrix[MAX_GLSL_BONES];
 
-void VertexSkinning_P_N(const vec4 inPosition,
+void VertexSkinning_P_N(const vec3 inPosition,
 						const vec3 inNormal,
 
 						inout vec4 position,
@@ -37,13 +37,13 @@ void VertexSkinning_P_N(const vec4 inPosition,
 	boneMatrix += u_BoneMatrix[ int( attr_BoneIndexes[ 2 ] ) ] * attr_BoneWeights[ 2 ];
 	boneMatrix += u_BoneMatrix[ int( attr_BoneIndexes[ 3 ] ) ] * attr_BoneWeights[ 3 ];
 
-	position.xyz = ( boneMatrix * inPosition ).xyz;
+	position.xyz = ( boneMatrix * vec4( inPosition, 1.0 ) ).xyz;
 	position.w = 1.0;
 	
 	normal = ( boneMatrix * vec4( inNormal, 0.0 ) ).xyz;
 }
 
-void VertexSkinning_P_TBN(	const vec4 inPosition,
+void VertexSkinning_P_TBN(	const vec3 inPosition,
 							const vec3 inTangent,
 							const vec3 inBinormal,
 							const vec3 inNormal,
@@ -59,7 +59,7 @@ void VertexSkinning_P_TBN(	const vec4 inPosition,
 	boneMatrix += u_BoneMatrix[ int( attr_BoneIndexes[ 2 ] ) ] * attr_BoneWeights[ 2 ];
 	boneMatrix += u_BoneMatrix[ int( attr_BoneIndexes[ 3 ] ) ] * attr_BoneWeights[ 3 ];
 
-	position.xyz = ( boneMatrix * inPosition ).xyz;
+	position.xyz = ( boneMatrix * vec4( inPosition, 1.0 ) ).xyz;
 	position.w = 1.0;
 	
 	tangent = ( boneMatrix * vec4( inTangent, 0.0 ) ).xyz;

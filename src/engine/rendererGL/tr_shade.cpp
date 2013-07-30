@@ -265,7 +265,7 @@ void Tess_DrawElements()
 		}
 		else
 		{
-			glDrawElements( GL_TRIANGLES, tess.numIndexes, GL_INDEX_TYPE, BUFFER_OFFSET( 0 ) );
+			glDrawRangeElements( GL_TRIANGLES, 0, tess.numVertexes, tess.numIndexes, GL_INDEX_TYPE, BUFFER_OFFSET( 0 ) );
 
 			backEnd.pc.c_drawElements++;
 
@@ -738,7 +738,7 @@ static void Render_vertexLighting_DBS_entity( int stage )
 
 		gl_vertexLightingShader_DBS_entity->SetUniform_SpecularTextureMatrix( tess.svars.texMatrices[ TB_SPECULARMAP ] );
 
-		//if(r_reflectionMapping->integer)
+		if ( tr.cubeHashTable != NULL )
 		{
 			cubemapProbe_t *cubeProbeNearest;
 			cubemapProbe_t *cubeProbeSecondNearest;

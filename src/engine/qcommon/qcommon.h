@@ -1274,6 +1274,7 @@ void Com_RandomBytes( byte *string, int len );
 #define P_(x, y, c) Trans_GettextPlural(x, y, c)
 
 void Trans_Init( void );
+void Trans_LoadDefaultLanguage( void );
 const char* Trans_Gettext( const char *msgid ) __attribute__((__format_arg__(1)));
 const char* Trans_Pgettext( const char *ctxt, const char *msgid ) __attribute__((__format_arg__(2)));
 const char* Trans_GettextPlural( const char *msgid, const char *msgid_plural, int num ) __attribute__((__format_arg__(1))) __attribute__((__format_arg__(2)));

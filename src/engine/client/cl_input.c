@@ -91,9 +91,8 @@ void IN_MLookUp( void )
 
 void IN_KeyDown( kbutton_t *b )
 {
-	int  k;
-
-	k = Key_GetKeyNumber(); // -1 if typed manually at the console for continuous down
+	qboolean nokey = ( Cmd_Argc() > 1 );
+	int      k = nokey ? -1 : Key_GetKeyNumber(); // -1 if typed manually at the console for continuous down
 
 	if ( k == b->down[ 0 ] || k == b->down[ 1 ] )
 	{
@@ -120,7 +119,7 @@ void IN_KeyDown( kbutton_t *b )
 	}
 
 	// save timestamp for partial frame summing
-	b->downtime = Key_GetKeyTime();
+	b->downtime = nokey ? 0 : Key_GetKeyTime();
 
 	b->active = qtrue;
 	b->wasPressed = qtrue;
@@ -128,10 +127,9 @@ void IN_KeyDown( kbutton_t *b )
 
 void IN_KeyUp( kbutton_t *b )
 {
-	int      k;
 	unsigned uptime;
-
-	k = Key_GetKeyNumber();
+	qboolean nokey = ( Cmd_Argc() > 1 );
+	int      k = nokey ? -1 : Key_GetKeyNumber(); // -1 if typed manually at the console for continuous down
 
 	if ( k < 0 )
 	{
@@ -141,17 +139,15 @@ void IN_KeyUp( kbutton_t *b )
 		return;
 	}
 
-	if ( b->down[ 0 ] == k )
+	// If this key is marked as down for this button, clear it
+	// Also clear sticky state (don't care if there was no key-down)
+	if ( b->down[ 0 ] == k || b->down[ 0 ] < 0 )
 	{
 		b->down[ 0 ] = 0;
 	}
-	else if ( b->down[ 1 ] == k )
+	if ( b->down[ 1 ] == k || b->down[ 1 ] < 0 )
 	{
 		b->down[ 1 ] = 0;
-	}
-	else
-	{
-		return; // key up without corresponding down (menu pass-through)
 	}
 
 	if ( b->down[ 0 ] || b->down[ 1 ] )
@@ -162,7 +158,7 @@ void IN_KeyUp( kbutton_t *b )
 	b->active = qfalse;
 
 	// save timestamp for partial frame summing
-	uptime = Key_GetKeyTime();
+	uptime = nokey ? 0 : Key_GetKeyTime();
 
 	if ( uptime )
 	{

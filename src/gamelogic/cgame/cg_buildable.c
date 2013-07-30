@@ -689,6 +689,23 @@ static void CG_SetBuildableLerpFrameAnimation( buildable_t buildable, lerpFrame_
 		CG_Error( "Bad animation number: %i", newAnimation );
 	}
 
+	if ( cg_buildables[ buildable ].md5 )
+	{
+		if ( bSkeleton.type != SK_INVALID )
+		{
+			oldbSkeleton = bSkeleton;
+
+			if ( lf->old_animation != NULL )
+			{
+				if ( !trap_R_BuildSkeleton( &oldbSkeleton, lf->old_animation->handle, lf->oldFrame, lf->frame, lf->blendlerp, lf->old_animation->clearOrigin ) )
+				{
+					CG_Printf( "Can't build old buildable bSkeleton\n" );
+					return;
+				}
+			}
+		}
+	}
+
 	anim = &cg_buildables[ buildable ].animations[ newAnimation ];
 
 	//this item has just spawned so lf->frameTime will be zero
@@ -698,7 +715,18 @@ static void CG_SetBuildableLerpFrameAnimation( buildable_t buildable, lerpFrame_
 	}
 
 	lf->animation = anim;
-	lf->animationTime = lf->frameTime + anim->initialLerp;
+
+	if ( cg_buildables[ buildable ].md5 )
+	{
+		lf->animationTime = cg.time + anim->initialLerp;
+
+		lf->oldFrame = lf->frame = 0;
+		lf->oldFrameTime = lf->frameTime = 0;
+	}
+	else
+	{
+		lf->animationTime = lf->frameTime + anim->initialLerp;
+	}
 
 	if ( cg_debugAnim.integer )
 	{
@@ -718,23 +746,6 @@ static void CG_SetBuildableLerpFrameAnimation( buildable_t buildable, lerpFrame_
 	else
 	{
 		lf->blendlerp = 1.0f - lf->blendlerp; //use old blending for smooth blending between two blended animations
-	}
-
-	if ( cg_buildables[ buildable ].md5 )
-	{
-		if ( bSkeleton.type != SK_INVALID )
-		{
-			oldbSkeleton = bSkeleton;
-
-			if ( lf->old_animation != NULL )
-			{
-				if ( !trap_R_BuildSkeleton( &oldbSkeleton, lf->old_animation->handle, lf->oldFrame, lf->frame, lf->blendlerp, lf->old_animation->clearOrigin ) )
-				{
-					CG_Printf( "Can't build old buildable bSkeleton\n" );
-					return;
-				}
-			}
-		}
 	}
 }
 

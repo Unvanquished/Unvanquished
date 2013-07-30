@@ -433,15 +433,23 @@ endif(NOT MINIMAL_FLAGS)
 # Define Build Files #
 ######################
 
-set( SHAREDLIST
+set( SHAREDLIST_C
   ${MOUNT_DIR}/engine/qcommon/q_shared.c
   ${MOUNT_DIR}/engine/qcommon/q_unicode.c
   ${MOUNT_DIR}/engine/qcommon/q_math.c
+)
+
+set ( SHAREDLIST_H
   ${MOUNT_DIR}/engine/qcommon/q_shared.h
   ${MOUNT_DIR}/engine/qcommon/q_platform.h
   ${MOUNT_DIR}/engine/qcommon/q_unicode.h
   ${MOUNT_DIR}/engine/qcommon/unicode_data.h
   ${MOUNT_DIR}/engine/qcommon/logging.h
+)
+
+set ( SHAREDLIST
+  ${SHAREDLIST_C}
+  ${SHAREDLIST_H}
 )
 
 set( OPENEXRLIST
@@ -754,15 +762,16 @@ set( CGAMEGPP_BASE
   ${GPP_DIR}/cgame/cg_utils.c
   ${GPP_DIR}/ui/ui_shared.c
   ${GPP_DIR}/ui/ui_utf8.c
-  ${SHAREDLIST}
-  ${MOUNT_DIR}/engine/client/cg_api.h
-  ${MOUNT_DIR}/engine/qcommon/print_translated.h
+  ${SHAREDLIST_C}
 )
 
 set( CGAMEGPP_SO
   ${CGAMEGPP_BASE}
+  ${SHAREDLIST_H}
   ${GPP_DIR}/cgame/cg_api.c
   ${GPP_DIR}/cgame/cgame.def
+  ${MOUNT_DIR}/engine/client/cg_api.h
+  ${MOUNT_DIR}/engine/qcommon/print_translated.h
 )
 
 set( CGAMEGPP_QVM
@@ -805,14 +814,15 @@ set( GAMEGPP_BASE
   ${GPP_DIR}/game/g_weapon.c
   ${GPP_DIR}/game/g_admin.c
   ${GPP_DIR}/game/g_namelog.c
-  ${SHAREDLIST}
-  ${MOUNT_DIR}/engine/server/g_api.h
+  ${SHAREDLIST_C}
 )
 
 set( GAMEGPP_SO
   ${GAMEGPP_BASE}
+  ${SHAREDLIST_H}
   ${GPP_DIR}/game/g_api.c
   ${GPP_DIR}/game/game.def
+  ${MOUNT_DIR}/engine/server/g_api.h
 )
 
 set( GAMEGPP_QVM
@@ -829,14 +839,15 @@ set( UIGPP_BASE
   ${GPP_DIR}/game/bg_lib.c
   ${GPP_DIR}/game/bg_alloc.c
   ${GPP_DIR}/ui/ui_utf8.c
-  ${SHAREDLIST}
-  ${MOUNT_DIR}/engine/client/ui_api.h
+  ${SHAREDLIST_C}
 )
 
 set( UIGPP_SO
   ${UIGPP_BASE}
+  ${SHAREDLIST_H}
   ${GPP_DIR}/ui/ui_api.c
   ${GPP_DIR}/ui/ui.def
+  ${MOUNT_DIR}/engine/client/ui_api.h
 )
 
 set( UIGPP_QVM
@@ -1239,17 +1250,15 @@ function( GAMELIB )
     foreach( QVM_FILE ${GAMELIB_QVM_FILES} )
       get_filename_component( QVM_FILENAME ${QVM_FILE} NAME_WE )
       get_filename_component( QVM_FILEDIR ${QVM_FILE} PATH )
-	  if( QVM_FILENAME MATCHES "\\.c$")
-        set( QVM_COMPONENT ${QVM_DIR}/${QVM_FILENAME} )
-        set( QVM_OBJECTS ${QVM_OBJECTS} ${QVM_COMPONENT}.asm )
+      set( QVM_COMPONENT ${QVM_DIR}/${QVM_FILENAME} )
+      set( QVM_OBJECTS ${QVM_OBJECTS} ${QVM_COMPONENT}.asm )
 
-        add_custom_command( OUTPUT ${QVM_COMPONENT}.asm
-          COMMAND lcc -target bytecode ${QVM_CPP_OPTIONS} ${QVM_FILE}
-          DEPENDS lcc rcc cpp ${QVM_FILE}
-          IMPLICIT_DEPENDS C ${QVM_FILE}
-          WORKING_DIRECTORY ${QVM_DIR}
-        )
-	  endif()	
+      add_custom_command( OUTPUT ${QVM_COMPONENT}.asm
+        COMMAND lcc -target bytecode ${QVM_CPP_OPTIONS} ${QVM_FILE}
+        DEPENDS lcc rcc cpp ${QVM_FILE}
+        IMPLICIT_DEPENDS C ${QVM_FILE}
+        WORKING_DIRECTORY ${QVM_DIR}
+      )
     endforeach()
 
     # Ensure qvms end up in the correct folder for VS or Xcode projects

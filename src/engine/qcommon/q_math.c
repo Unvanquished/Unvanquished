@@ -2387,6 +2387,70 @@ void MatrixMultiply2( matrix_t m, const matrix_t m2 )
 	MatrixMultiply( tmp, m2, m );
 }
 
+// multiply two matricies together each with last row = ( 0, 0, 0, 1 )
+void Matrix43Multiply( const matrix_t a, const matrix_t b, matrix_t out )
+{
+	out[ 0 ] = b[ 0 ] * a[ 0 ] + b[ 1 ] * a[ 4 ] + b[ 2 ] * a[ 8 ];
+	out[ 1 ] = b[ 0 ] * a[ 1 ] + b[ 1 ] * a[ 5 ] + b[ 2 ] * a[ 9 ];
+	out[ 2 ] = b[ 0 ] * a[ 2 ] + b[ 1 ] * a[ 6 ] + b[ 2 ] * a[ 10 ];
+	out[ 3 ] = 0;
+
+	out[ 4 ] = b[ 4 ] * a[ 0 ] + b[ 5 ] * a[ 4 ] + b[ 6 ] * a[ 8 ];
+	out[ 5 ] = b[ 4 ] * a[ 1 ] + b[ 5 ] * a[ 5 ] + b[ 6 ] * a[ 9 ];
+	out[ 6 ] = b[ 4 ] * a[ 2 ] + b[ 5 ] * a[ 6 ] + b[ 6 ] * a[ 10 ];
+	out[ 7 ] = 0;
+
+	out[ 8 ] = b[ 8 ] * a[ 0 ] + b[ 9 ] * a[ 4 ] + b[ 10 ] * a[ 8 ];
+	out[ 9 ] = b[ 8 ] * a[ 1 ] + b[ 9 ] * a[ 5 ] + b[ 10 ] * a[ 9 ];
+	out[ 10 ] = b[ 8 ] * a[ 2 ] + b[ 9 ] * a[ 6 ] + b[ 10 ] * a[ 10 ];
+	out[ 11 ] = 0;
+
+	out[ 12 ] = b[ 12 ] * a[ 0 ] + b[ 13 ] * a[ 4 ] + b[ 14 ] * a[ 8 ] + a[ 12 ];
+	out[ 13 ] = b[ 12 ] * a[ 1 ] + b[ 13 ] * a[ 5 ] + b[ 14 ] * a[ 9 ] + a[ 13 ];
+	out[ 14 ] = b[ 12 ] * a[ 2 ] + b[ 13 ] * a[ 6 ] + b[ 14 ] * a[ 10 ] + a[ 14 ];
+	out[ 15 ] = 1;
+}
+
+// assumes last row of both matricies is unused
+void Matrix43ScalerMultiply( matrix_t a, float scale, const matrix_t b )
+{
+	a[ 0 ] = b[ 0 ] * scale;
+	a[ 1 ] = b[ 1 ] * scale;
+	a[ 2 ] = b[ 2 ] * scale;
+
+	a[ 4 ] = b[ 4 ] * scale;
+	a[ 5 ] = b[ 5 ] * scale;
+	a[ 6 ] = b[ 6 ] * scale;
+
+	a[ 8 ] = b[ 8 ] * scale;
+	a[ 9 ] = b[ 9 ] * scale;
+	a[ 10 ] = b[ 10 ] * scale;
+
+	a[ 12 ] = b[ 12 ] * scale;
+	a[ 13 ] = b[ 13 ] * scale;
+	a[ 14 ] = b[ 14 ] * scale;
+}
+
+// assumes last row of both matricies is unused
+void Matrix43ScalerMultiplyAdd( matrix_t a, float scale, const matrix_t b )
+{
+	a[ 0 ] += b[ 0 ] * scale;
+	a[ 1 ] += b[ 1 ] * scale;
+	a[ 2 ] += b[ 2 ] * scale;
+	
+	a[ 4 ] += b[ 4 ] * scale;
+	a[ 5 ] += b[ 5 ] * scale;
+	a[ 6 ] += b[ 6 ] * scale;
+	
+	a[ 8 ] += b[ 8 ] * scale;
+	a[ 9 ] += b[ 9 ] * scale;
+	a[ 10 ] += b[ 10 ] * scale;
+
+	a[ 12 ] += b[ 12 ] * scale;
+	a[ 13 ] += b[ 13 ] * scale;
+	a[ 14 ] += b[ 14 ] * scale;
+}
+
 void MatrixMultiplyRotation( matrix_t m, vec_t pitch, vec_t yaw, vec_t roll )
 {
 	matrix_t tmp, rot;
