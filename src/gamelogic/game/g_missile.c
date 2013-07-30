@@ -475,8 +475,7 @@ void G_RunMissile( gentity_t *ent )
 
 	if ( ent->flightSplashDamage )
 	{
-		G_RadiusDamage( tr.endpos, ent->parent,
-		                ent->flightSplashDamage * G_DoMissileTimePowerReduce( ent ), ent->splashRadius,
+		G_RadiusDamage( tr.endpos, ent->parent, ent->flightSplashDamage, ent->flightSplashRadius,
 		                ent->parent, ent->splashMethodOfDeath );
 	}
 
@@ -509,6 +508,7 @@ gentity_t *fire_flamer( gentity_t *self, vec3_t start, vec3_t dir )
 	bolt->parent = self;
 	bolt->damage = FLAMER_DMG;
 	bolt->flightSplashDamage = FLAMER_FLIGHTDAMAGE;
+	bolt->flightSplashRadius = FLAMER_RADIUS;
 	bolt->splashDamage = FLAMER_SPLASHDAMAGE;
 	bolt->splashRadius = FLAMER_RADIUS;
 	bolt->methodOfDeath = MOD_FLAMER;
@@ -554,6 +554,7 @@ gentity_t *fire_blaster( gentity_t *self, vec3_t start, vec3_t dir )
 	bolt->parent = self;
 	bolt->damage = BLASTER_DMG;
 	bolt->flightSplashDamage = 0;
+	bolt->flightSplashRadius = 0;
 	bolt->splashDamage = 0;
 	bolt->splashRadius = 0;
 	bolt->methodOfDeath = MOD_BLASTER;
@@ -598,6 +599,7 @@ gentity_t *fire_pulseRifle( gentity_t *self, vec3_t start, vec3_t dir )
 	bolt->parent = self;
 	bolt->damage = PRIFLE_DMG;
 	bolt->flightSplashDamage = 0;
+	bolt->flightSplashRadius = 0;
 	bolt->splashDamage = 0;
 	bolt->splashRadius = 0;
 	bolt->methodOfDeath = MOD_PRIFLE;
@@ -653,6 +655,7 @@ gentity_t *fire_luciferCannon( gentity_t *self, vec3_t start, vec3_t dir,
 	bolt->parent = self;
 	bolt->damage = damage;
 	bolt->flightSplashDamage = 0;
+	bolt->flightSplashRadius = 0;
 	bolt->splashDamage = damage / 2;
 	bolt->splashRadius = radius;
 	bolt->methodOfDeath = MOD_LCANNON;
@@ -710,6 +713,7 @@ gentity_t *launch_grenade( gentity_t *self, vec3_t start, vec3_t dir )
 	bolt->parent = self;
 	bolt->damage = GRENADE_DAMAGE;
 	bolt->flightSplashDamage = 0;
+	bolt->flightSplashRadius = 0;
 	bolt->splashDamage = GRENADE_DAMAGE;
 	bolt->splashRadius = GRENADE_RANGE;
 	bolt->methodOfDeath = MOD_GRENADE;
@@ -824,6 +828,7 @@ gentity_t *fire_hive( gentity_t *self, vec3_t start, vec3_t dir )
 	bolt->parent = self;
 	bolt->damage = HIVE_DMG;
 	bolt->flightSplashDamage = 0;
+	bolt->flightSplashRadius = 0;
 	bolt->splashDamage = 0;
 	bolt->splashRadius = 0;
 	bolt->methodOfDeath = MOD_SWARM;
@@ -864,6 +869,7 @@ gentity_t *fire_lockblob( gentity_t *self, vec3_t start, vec3_t dir )
 	bolt->parent = self;
 	bolt->damage = 0;
 	bolt->flightSplashDamage = 0;
+	bolt->flightSplashRadius = 0;
 	bolt->splashDamage = 0;
 	bolt->splashRadius = 0;
 	bolt->methodOfDeath = MOD_UNKNOWN; //doesn't do damage so will never kill
@@ -901,6 +907,7 @@ gentity_t *fire_slowBlob( gentity_t *self, vec3_t start, vec3_t dir )
 	bolt->parent = self;
 	bolt->damage = ABUILDER_BLOB_DMG;
 	bolt->flightSplashDamage = 0;
+	bolt->flightSplashRadius = 0;
 	bolt->splashDamage = 0;
 	bolt->splashRadius = 0;
 	bolt->methodOfDeath = MOD_SLOWBLOB;
@@ -939,6 +946,7 @@ gentity_t *fire_bounceBall( gentity_t *self, vec3_t start, vec3_t dir )
 	bolt->parent = self;
 	bolt->damage = LEVEL3_BOUNCEBALL_DMG;
 	bolt->flightSplashDamage = 0;
+	bolt->flightSplashRadius = 0;
 	bolt->splashDamage = LEVEL3_BOUNCEBALL_DMG;
 	bolt->splashRadius = LEVEL3_BOUNCEBALL_RADIUS;
 	bolt->methodOfDeath = MOD_LEVEL3_BOUNCEBALL;

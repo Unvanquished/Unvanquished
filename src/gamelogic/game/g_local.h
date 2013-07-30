@@ -370,6 +370,7 @@ struct gentity_s
 	qboolean  takedamage;
 
 	int       flightSplashDamage; // quad will increase this without increasing radius
+	int       flightSplashRadius;
 	int       splashDamage; // quad will increase this without increasing radius
 	int       splashRadius;
 	int       methodOfDeath;
