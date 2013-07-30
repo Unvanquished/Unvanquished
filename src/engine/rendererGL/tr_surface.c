@@ -471,7 +471,7 @@ void Tess_UpdateVBOs( uint32_t attribBits )
 				GLimp_LogComment( va( "glBufferSubData( ATTR_POSITION, vbo = '%s', numVertexes = %i )\n", tess.vbo->name, tess.numVertexes ) );
 			}
 
-			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->ofsXYZ, tess.numVertexes * sizeof( vec4_t ), tess.xyz );
+			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->attribs[ ATTR_INDEX_POSITION ].ofs, tess.numVertexes * sizeof( vec4_t ), tess.xyz );
 		}
 
 		if ( attribBits & ATTR_TEXCOORD )
@@ -481,7 +481,7 @@ void Tess_UpdateVBOs( uint32_t attribBits )
 				GLimp_LogComment( va( "glBufferSubData( ATTR_TEXCOORD, vbo = '%s', numVertexes = %i )\n", tess.vbo->name, tess.numVertexes ) );
 			}
 
-			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->ofsTexCoords, tess.numVertexes * sizeof( vec4_t ), tess.texCoords );
+			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->attribs[ ATTR_INDEX_TEXCOORD ].ofs, tess.numVertexes * sizeof( vec4_t ), tess.texCoords );
 		}
 
 		if ( attribBits & ATTR_LIGHTCOORD )
@@ -491,7 +491,7 @@ void Tess_UpdateVBOs( uint32_t attribBits )
 				GLimp_LogComment( va( "glBufferSubData( ATTR_LIGHTCOORD, vbo = '%s', numVertexes = %i )\n", tess.vbo->name, tess.numVertexes ) );
 			}
 
-			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->ofsLightCoords, tess.numVertexes * sizeof( vec4_t ), tess.lightCoords );
+			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->attribs[ ATTR_INDEX_LIGHTCOORD ].ofs, tess.numVertexes * sizeof( vec4_t ), tess.lightCoords );
 		}
 
 		if ( attribBits & ATTR_TANGENT )
@@ -501,7 +501,7 @@ void Tess_UpdateVBOs( uint32_t attribBits )
 				GLimp_LogComment( va( "glBufferSubData( ATTR_TANGENT, vbo = '%s', numVertexes = %i )\n", tess.vbo->name, tess.numVertexes ) );
 			}
 
-			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->ofsTangents, tess.numVertexes * sizeof( vec4_t ), tess.tangents );
+			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->attribs[ ATTR_INDEX_TANGENT ].ofs, tess.numVertexes * sizeof( vec4_t ), tess.tangents );
 		}
 
 		if ( attribBits & ATTR_BINORMAL )
@@ -511,7 +511,7 @@ void Tess_UpdateVBOs( uint32_t attribBits )
 				GLimp_LogComment( va( "glBufferSubData( ATTR_BINORMAL, vbo = '%s', numVertexes = %i )\n", tess.vbo->name, tess.numVertexes ) );
 			}
 
-			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->ofsBinormals, tess.numVertexes * sizeof( vec4_t ), tess.binormals );
+			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->attribs[ ATTR_INDEX_BINORMAL ].ofs, tess.numVertexes * sizeof( vec4_t ), tess.binormals );
 		}
 
 		if ( attribBits & ATTR_NORMAL )
@@ -521,7 +521,7 @@ void Tess_UpdateVBOs( uint32_t attribBits )
 				GLimp_LogComment( va( "glBufferSubData( ATTR_NORMAL, vbo = '%s', numVertexes = %i )\n", tess.vbo->name, tess.numVertexes ) );
 			}
 
-			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->ofsNormals, tess.numVertexes * sizeof( vec4_t ), tess.normals );
+			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->attribs[ ATTR_INDEX_NORMAL ].ofs, tess.numVertexes * sizeof( vec4_t ), tess.normals );
 		}
 
 		if ( attribBits & ATTR_COLOR )
@@ -531,7 +531,7 @@ void Tess_UpdateVBOs( uint32_t attribBits )
 				GLimp_LogComment( va( "glBufferSubData( ATTR_COLOR, vbo = '%s', numVertexes = %i )\n", tess.vbo->name, tess.numVertexes ) );
 			}
 
-			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->ofsColors, tess.numVertexes * sizeof( vec4_t ), tess.colors );
+			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->attribs[ ATTR_INDEX_COLOR ].ofs, tess.numVertexes * sizeof( vec4_t ), tess.colors );
 		}
 
 #if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
@@ -543,7 +543,7 @@ void Tess_UpdateVBOs( uint32_t attribBits )
 				GLimp_LogComment( va( "glBufferSubData( ATTR_PAINTCOLOR, vbo = '%s', numVertexes = %i )\n", tess.vbo->name, tess.numVertexes ) );
 			}
 
-			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->ofsPaintColors, tess.numVertexes * sizeof( vec4_t ), tess.paintColors );
+			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->attribs[ ATTR_INDEX_PAINTCOLOR ].ofs, tess.numVertexes * sizeof( vec4_t ), tess.paintColors );
 		}
 
 #endif
@@ -554,7 +554,7 @@ void Tess_UpdateVBOs( uint32_t attribBits )
 				GLimp_LogComment( va( "glBufferSubData( ATTR_AMBIENTLIGHT, vbo = '%s', numVertexes = %i )\n", tess.vbo->name, tess.numVertexes ) );
 			}
 
-			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->ofsAmbientLight, tess.numVertexes * sizeof( vec4_t ), tess.ambientLights );
+			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->attribs[ ATTR_INDEX_AMBIENTLIGHT ].ofs, tess.numVertexes * sizeof( vec4_t ), tess.ambientLights );
 		}
 
 		if ( attribBits & ATTR_DIRECTEDLIGHT )
@@ -564,7 +564,7 @@ void Tess_UpdateVBOs( uint32_t attribBits )
 				GLimp_LogComment( va( "glBufferSubData( ATTR_DIRECTEDLIGHT, vbo = '%s', numVertexes = %i )\n", tess.vbo->name, tess.numVertexes ) );
 			}
 
-			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->ofsDirectedLight, tess.numVertexes * sizeof( vec4_t ), tess.directedLights );
+			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->attribs[ ATTR_INDEX_DIRECTEDLIGHT ].ofs, tess.numVertexes * sizeof( vec4_t ), tess.directedLights );
 		}
 
 		if ( attribBits & ATTR_LIGHTDIRECTION )
@@ -574,7 +574,7 @@ void Tess_UpdateVBOs( uint32_t attribBits )
 				GLimp_LogComment( va( "glBufferSubData( ATTR_LIGHTDIRECTION, vbo = '%s', numVertexes = %i )\n", tess.vbo->name, tess.numVertexes ) );
 			}
 
-			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->ofsLightDirections, tess.numVertexes * sizeof( vec4_t ), tess.lightDirections );
+			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->attribs[ ATTR_INDEX_LIGHTDIRECTION ].ofs, tess.numVertexes * sizeof( vec4_t ), tess.lightDirections );
 		}
 
 	}
@@ -1707,6 +1707,7 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 	{
 		vec3_t      tmpVert;
 		md5Weight_t *w;
+		matrix_t    tmpMat;
 
 		// convert bones back to matrices
 		for ( i = 0; i < model->numBones; i++ )
@@ -1732,12 +1733,8 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 		// deform the vertices by the lerped bones
 		numVertexes = srf->numVerts;
 
-		memset( tess.xyz + tess.numVertexes, 0, numVertexes * sizeof( tess.xyz[ 0 ] ) );
-
 		for ( j = 0, v = srf->verts; j < numVertexes; j++, v++ )
 		{
-			vec3_t      *const tmpPosition = (vec3_t *) tess.xyz[ tess.numVertexes + j ];
-
 			tess.xyz[ tess.numVertexes + j ][ 3 ] = 1;
 
 			tess.texCoords[ tess.numVertexes + j ][ 0 ] = v->texCoords[ 0 ];
@@ -1745,19 +1742,22 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 			tess.texCoords[ tess.numVertexes + j ][ 2 ] = 0;
 			tess.texCoords[ tess.numVertexes + j ][ 3 ] = 1;
 
-			for ( k = 0, w = v->weights[ 0 ]; k < v->numWeights; k++, w++ )
-			{
-				//bone = &model->bones[w->boneIndex];
+			w = v->weights[ 0 ];
+			Matrix43ScalerMultiply( tmpMat, w->boneWeight, boneMatrices[ w->boneIndex ] );
 
-				MatrixTransformPoint( boneMatrices[ w->boneIndex ], w->offset, tmpVert );
-				VectorMA( *tmpPosition, w->boneWeight, tmpVert, *tmpPosition );
+			for ( k = 1, w = v->weights[ 1 ]; k < v->numWeights; k++, w++ )
+			{
+				Matrix43ScalerMultiplyAdd( tmpMat, w->boneWeight, boneMatrices[ w->boneIndex ] );
 			}
+
+			MatrixTransformPoint( tmpMat, v->position, tess.xyz[ tess.numVertexes + j ] );
 		}
 	}
 	else
 	{
 		vec3_t      tmpVert;
 		md5Weight_t *w;
+		matrix_t    tmpMat;
 
 		// convert bones back to matrices
 		for ( i = 0; i < model->numBones; i++ )
@@ -1767,13 +1767,12 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 
 			if ( backEnd.currentEntity->e.skeleton.type == SK_ABSOLUTE )
 			{
-				MatrixSetupTransformFromQuat( boneMatrices[ i ], backEnd.currentEntity->e.skeleton.bones[ i ].rotation,
+				MatrixSetupTransformFromQuat( tmpMat, backEnd.currentEntity->e.skeleton.bones[ i ].rotation,
 				                              backEnd.currentEntity->e.skeleton.bones[ i ].origin );
-				MatrixMultiplyScale( boneMatrices[ i ],
+				MatrixMultiplyScale( tmpMat,
 				                  backEnd.currentEntity->e.skeleton.scale[ 0 ],
 				                  backEnd.currentEntity->e.skeleton.scale[ 1 ], backEnd.currentEntity->e.skeleton.scale[ 2 ] );
-
-				MatrixMultiply2( boneMatrices[ i ], model->bones[ i ].inverseTransform );
+				Matrix43Multiply( tmpMat, model->bones[ i ].inverseTransform, boneMatrices[ i ] );
 			}
 			else
 #endif
@@ -1785,18 +1784,8 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 		// deform the vertices by the lerped bones
 		numVertexes = srf->numVerts;
 
-		memset( tess.xyz       + tess.numVertexes, 0, numVertexes * sizeof( tess.xyz[ 0 ] ) );
-		memset( tess.tangents  + tess.numVertexes, 0, numVertexes * sizeof( tess.tangents[ 0 ] ) );
-		memset( tess.binormals + tess.numVertexes, 0, numVertexes * sizeof( tess.binormals[ 0 ] ) );
-		memset( tess.normals   + tess.numVertexes, 0, numVertexes * sizeof( tess.normals[ 0 ] ) );
-
 		for ( j = 0, v = srf->verts; j < numVertexes; j++, v++ )
 		{
-			vec3_t *const tmpPosition = (vec3_t *) tess.xyz[ tess.numVertexes + j ];
-			vec3_t *const tmpTangent  = (vec3_t *) tess.tangents[ tess.numVertexes + j ];
-			vec3_t *const tmpBinormal = (vec3_t *) tess.binormals[ tess.numVertexes + j ];
-			vec3_t *const tmpNormal   = (vec3_t *) tess.normals[ tess.numVertexes + j ];
-
 			tess.xyz[ tess.numVertexes + j ][ 3 ] = 1;
 			tess.tangents[ tess.numVertexes + j ][ 3 ] = 1;
 			tess.binormals[ tess.numVertexes + j ][ 3 ] = 1;
@@ -1807,29 +1796,20 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 			tess.texCoords[ tess.numVertexes + j ][ 2 ] = 0;
 			tess.texCoords[ tess.numVertexes + j ][ 3 ] = 1;
 
-			for ( k = 0, w = v->weights[ 0 ]; k < v->numWeights; k++, w++ )
+			w = v->weights[ 0 ];
+			Matrix43ScalerMultiply( tmpMat, w->boneWeight, boneMatrices[ w->boneIndex ] );
+
+			for ( k = 1, w = v->weights[ 1 ]; k < v->numWeights; k++, w++ )
 			{
-				//MatrixTransformPoint(boneMatrices[w->boneIndex], w->offset, tmpVert);
-				MatrixTransformPoint( boneMatrices[ w->boneIndex ], v->position, tmpVert );
-				VectorMA( *tmpPosition, w->boneWeight, tmpVert, *tmpPosition );
-
-				MatrixTransformNormal( boneMatrices[ w->boneIndex ], v->tangent, tmpVert );
-				VectorMA( *tmpTangent, w->boneWeight, tmpVert, *tmpTangent );
-
-				MatrixTransformNormal( boneMatrices[ w->boneIndex ], v->binormal, tmpVert );
-				VectorMA( *tmpBinormal, w->boneWeight, tmpVert, *tmpBinormal );
-
-				MatrixTransformNormal( boneMatrices[ w->boneIndex ], v->normal, tmpVert );
-				VectorMA( *tmpNormal, w->boneWeight, tmpVert, *tmpNormal );
+				Matrix43ScalerMultiplyAdd( tmpMat, w->boneWeight, boneMatrices[ w->boneIndex ] );
 			}
 
-			//VectorNormalize(tmpTangent);
-			//VectorNormalize(tmpBinormal);
-			//VectorNormalize(tmpNormal);
+			MatrixTransformPoint( tmpMat, v->position, tess.xyz[ tess.numVertexes + j ] );
 
-			//VectorCopy(v->tangent, tmpTangent);
-			//VectorCopy(v->binormal, tmpBinormal);
-			//VectorCopy(v->normal, tmpNormal);
+			// we do not need to normalize because scaling is uniform and we normalize in the fragment shader
+			MatrixTransformNormal( tmpMat, v->normal, tess.normals[ tess.numVertexes + j ] );
+			MatrixTransformNormal( tmpMat, v->binormal, tess.binormals[ tess.numVertexes + j ] );
+			MatrixTransformNormal( tmpMat, v->tangent, tess.tangents[ tess.numVertexes + j ] );
 		}
 	}
 
@@ -2084,6 +2064,7 @@ static void Tess_SurfaceVBOMD5Mesh( srfVBOMD5Mesh_t *srf )
 {
 	int        i;
 	md5Model_t *model;
+	matrix_t   tmpMat;
 
 	GLimp_LogComment( "--- Tess_SurfaceVBOMD5Mesh ---\n" );
 
@@ -2111,12 +2092,12 @@ static void Tess_SurfaceVBOMD5Mesh( srfVBOMD5Mesh_t *srf )
 
 		for ( i = 0; i < srf->numBoneRemap; i++ )
 		{
-			MatrixSetupTransformFromQuat( tess.boneMatrices[ i ], backEnd.currentEntity->e.skeleton.bones[ srf->boneRemapInverse[ i ] ].rotation,
+			MatrixSetupTransformFromQuat( tmpMat, backEnd.currentEntity->e.skeleton.bones[ srf->boneRemapInverse[ i ] ].rotation,
 			                              backEnd.currentEntity->e.skeleton.bones[ srf->boneRemapInverse[ i ] ].origin );
-			MatrixMultiplyScale( tess.boneMatrices[ i ],
+			MatrixMultiplyScale( tmpMat,
 				                  backEnd.currentEntity->e.skeleton.scale[ 0 ],
 				                  backEnd.currentEntity->e.skeleton.scale[ 1 ], backEnd.currentEntity->e.skeleton.scale[ 2 ] );
-			MatrixMultiply2( tess.boneMatrices[ i ], model->bones[ srf->boneRemapInverse[ i ] ].inverseTransform );
+			Matrix43Multiply( tmpMat, model->bones[ srf->boneRemapInverse[ i ] ].inverseTransform, tess.boneMatrices[ i ] );
 		}
 	}
 	else

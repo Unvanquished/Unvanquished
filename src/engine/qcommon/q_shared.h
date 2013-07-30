@@ -45,10 +45,10 @@ extern "C" {
 #define PRODUCT_NAME            "Unvanquished"
 #define PRODUCT_NAME_UPPER      "UNVANQUISHED" // Case, No spaces
 #define PRODUCT_NAME_LOWER      "unvanquished" // No case, No spaces
-#define PRODUCT_VERSION         "0.16.0"
+#define PRODUCT_VERSION         "0.17.0"
 
 #define ENGINE_NAME             "Daemon Engine"
-#define ENGINE_VERSION          "0.16.0"
+#define ENGINE_VERSION          "0.17.0"
 
 #ifdef REVISION
 # define Q3_VERSION             PRODUCT_NAME " " PRODUCT_VERSION " " REVISION
@@ -1041,6 +1041,9 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 	void     MatrixSetupShear( matrix_t m, vec_t x, vec_t y );
 	void     MatrixMultiply( const matrix_t a, const matrix_t b, matrix_t out );
 	void     MatrixMultiply2( matrix_t m, const matrix_t m2 );
+	void     Matrix43Multiply( const matrix_t a, const matrix_t b, matrix_t out );
+	void     Matrix43ScalerMultiply( matrix_t a, float scale, const matrix_t b );
+	void     Matrix43ScalerMultiplyAdd( matrix_t a, float scale, const matrix_t b );
 	void     MatrixMultiplyRotation( matrix_t m, vec_t pitch, vec_t yaw, vec_t roll );
 	void     MatrixMultiplyZRotation( matrix_t m, vec_t degrees );
 	void     MatrixMultiplyTranslation( matrix_t m, vec_t x, vec_t y, vec_t z );

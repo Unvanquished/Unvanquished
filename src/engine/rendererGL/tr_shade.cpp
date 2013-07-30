@@ -265,7 +265,7 @@ void Tess_DrawElements()
 		}
 		else
 		{
-			glDrawElements( GL_TRIANGLES, tess.numIndexes, GL_INDEX_TYPE, BUFFER_OFFSET( 0 ) );
+			glDrawRangeElements( GL_TRIANGLES, 0, tess.numVertexes, tess.numIndexes, GL_INDEX_TYPE, BUFFER_OFFSET( 0 ) );
 
 			backEnd.pc.c_drawElements++;
 
@@ -295,7 +295,7 @@ SURFACE SHADERS
 =============================================================
 */
 
-shaderCommands_t tess;
+ALIGNED( 16, shaderCommands_t tess );
 
 /*
 =================
@@ -738,7 +738,7 @@ static void Render_vertexLighting_DBS_entity( int stage )
 
 		gl_vertexLightingShader_DBS_entity->SetUniform_SpecularTextureMatrix( tess.svars.texMatrices[ TB_SPECULARMAP ] );
 
-		//if(r_reflectionMapping->integer)
+		if ( tr.cubeHashTable != NULL )
 		{
 			cubemapProbe_t *cubeProbeNearest;
 			cubemapProbe_t *cubeProbeSecondNearest;
@@ -4190,7 +4190,7 @@ void Tess_StageIteratorLighting()
 					}
 					else if ( light->l.rlType == RL_PROJ )
 					{
-						if ( !light->l.inverseShadows )
+						//if ( !light->l.inverseShadows )
 						{
 							Render_forwardLighting_DBS_proj( diffuseStage, attenuationXYStage, attenuationZStage, light );
 						}

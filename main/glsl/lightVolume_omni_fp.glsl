@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #  define SWIZ2 rg
 #else
 #  define SWIZ1 a
-#  define SWIZ2 ra
+#  define SWIZ2 ar
 #endif
 
 uniform sampler2D	u_DepthMap;

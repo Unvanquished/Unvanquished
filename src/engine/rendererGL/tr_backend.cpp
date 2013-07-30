@@ -703,6 +703,7 @@ void GL_State( uint32_t stateBits )
 void GL_VertexAttribsState( uint32_t stateBits )
 {
 	uint32_t diff;
+	uint32_t i;
 
 	if ( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning )
 	{
@@ -718,381 +719,36 @@ void GL_VertexAttribsState( uint32_t stateBits )
 		return;
 	}
 
-	if ( diff & ATTR_POSITION )
+	for ( i = 0; i < ATTR_INDEX_MAX; i++ )
 	{
-		if ( stateBits & ATTR_POSITION )
+		uint32_t bit = BIT( i );
+
+		if ( ( diff & bit ) )
 		{
-			if ( r_logFile->integer )
+			if ( ( stateBits & bit ) )
 			{
-				GLimp_LogComment( "glEnableVertexAttribArray( ATTR_INDEX_POSITION )\n" );
-			}
+				if ( r_logFile->integer )
+				{
+					static char buf[ MAX_STRING_CHARS ];
+					Q_snprintf( buf, sizeof( buf ), "glEnableVertexAttribArray( %s )\n", attributeNames[ i ] );
 
-			glEnableVertexAttribArray( ATTR_INDEX_POSITION );
-		}
-		else
-		{
-			if ( r_logFile->integer )
+					GLimp_LogComment( buf );
+				}
+
+				glEnableVertexAttribArray( i );
+			}
+			else
 			{
-				GLimp_LogComment( "glDisableVertexAttribArray( ATTR_INDEX_POSITION )\n" );
+				if ( r_logFile->integer )
+				{
+					static char buf[ MAX_STRING_CHARS ];
+					Q_snprintf( buf, sizeof( buf ), "glDisableVertexAttribArray( %s )\n", attributeNames[ i ] );
+
+					GLimp_LogComment( buf );
+				}
+
+				glDisableVertexAttribArray( i );
 			}
-
-			glDisableVertexAttribArray( ATTR_INDEX_POSITION );
-		}
-	}
-
-	if ( diff & ATTR_TEXCOORD )
-	{
-		if ( stateBits & ATTR_TEXCOORD )
-		{
-			if ( r_logFile->integer )
-			{
-				GLimp_LogComment( "glEnableVertexAttribArray( ATTR_INDEX_TEXCOORD )\n" );
-			}
-
-			glEnableVertexAttribArray( ATTR_INDEX_TEXCOORD0 );
-		}
-		else
-		{
-			if ( r_logFile->integer )
-			{
-				GLimp_LogComment( "glDisableVertexAttribArray( ATTR_INDEX_TEXCOORD )\n" );
-			}
-
-			glDisableVertexAttribArray( ATTR_INDEX_TEXCOORD0 );
-		}
-	}
-
-	if ( diff & ATTR_LIGHTCOORD )
-	{
-		if ( stateBits & ATTR_LIGHTCOORD )
-		{
-			if ( r_logFile->integer )
-			{
-				GLimp_LogComment( "glEnableVertexAttribArray( ATTR_INDEX_LIGHTCOORD )\n" );
-			}
-
-			glEnableVertexAttribArray( ATTR_INDEX_TEXCOORD1 );
-		}
-		else
-		{
-			if ( r_logFile->integer )
-			{
-				GLimp_LogComment( "glDisableVertexAttribArray( ATTR_INDEX_LIGHTCOORD )\n" );
-			}
-
-			glDisableVertexAttribArray( ATTR_INDEX_TEXCOORD1 );
-		}
-	}
-
-	if ( diff & ATTR_TANGENT )
-	{
-		if ( stateBits & ATTR_TANGENT )
-		{
-			if ( r_logFile->integer )
-			{
-				GLimp_LogComment( "glEnableVertexAttribArray( ATTR_INDEX_TANGENT )\n" );
-			}
-
-			glEnableVertexAttribArray( ATTR_INDEX_TANGENT );
-		}
-		else
-		{
-			if ( r_logFile->integer )
-			{
-				GLimp_LogComment( "glDisableVertexAttribArray( ATTR_INDEX_TANGENT )\n" );
-			}
-
-			glDisableVertexAttribArray( ATTR_INDEX_TANGENT );
-		}
-	}
-
-	if ( diff & ATTR_BINORMAL )
-	{
-		if ( stateBits & ATTR_BINORMAL )
-		{
-			if ( r_logFile->integer )
-			{
-				GLimp_LogComment( "glEnableVertexAttribArray( ATTR_INDEX_BINORMAL )\n" );
-			}
-
-			glEnableVertexAttribArray( ATTR_INDEX_BINORMAL );
-		}
-		else
-		{
-			if ( r_logFile->integer )
-			{
-				GLimp_LogComment( "glDisableVertexAttribArray( ATTR_INDEX_BINORMAL )\n" );
-			}
-
-			glDisableVertexAttribArray( ATTR_INDEX_BINORMAL );
-		}
-	}
-
-	if ( diff & ATTR_NORMAL )
-	{
-		if ( stateBits & ATTR_NORMAL )
-		{
-			if ( r_logFile->integer )
-			{
-				GLimp_LogComment( "glEnableVertexAttribArray( ATTR_INDEX_NORMAL )\n" );
-			}
-
-			glEnableVertexAttribArray( ATTR_INDEX_NORMAL );
-		}
-		else
-		{
-			if ( r_logFile->integer )
-			{
-				GLimp_LogComment( "glDisableVertexAttribArray( ATTR_INDEX_NORMAL )\n" );
-			}
-
-			glDisableVertexAttribArray( ATTR_INDEX_NORMAL );
-		}
-	}
-
-	if ( diff & ATTR_COLOR )
-	{
-		if ( stateBits & ATTR_COLOR )
-		{
-			if ( r_logFile->integer )
-			{
-				GLimp_LogComment( "glEnableVertexAttribArray( ATTR_INDEX_COLOR )\n" );
-			}
-
-			glEnableVertexAttribArray( ATTR_INDEX_COLOR );
-		}
-		else
-		{
-			if ( r_logFile->integer )
-			{
-				GLimp_LogComment( "glDisableVertexAttribArray( ATTR_INDEX_COLOR )\n" );
-			}
-
-			glDisableVertexAttribArray( ATTR_INDEX_COLOR );
-		}
-	}
-
-#if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
-
-	if ( diff & ATTR_PAINTCOLOR )
-	{
-		if ( stateBits & ATTR_PAINTCOLOR )
-		{
-			if ( r_logFile->integer )
-			{
-				GLimp_LogComment( "glEnableVertexAttribArray( ATTR_INDEX_PAINTCOLOR )\n" );
-			}
-
-			glEnableVertexAttribArray( ATTR_INDEX_PAINTCOLOR );
-		}
-		else
-		{
-			if ( r_logFile->integer )
-			{
-				GLimp_LogComment( "glDisableVertexAttribArray( ATTR_INDEX_PAINTCOLOR )\n" );
-			}
-
-			glDisableVertexAttribArray( ATTR_INDEX_PAINTCOLOR );
-		}
-	}
-
-#endif
-
-	if ( diff & ATTR_AMBIENTLIGHT )
-	{
-		if ( stateBits & ATTR_AMBIENTLIGHT )
-		{
-			if ( r_logFile->integer )
-			{
-				GLimp_LogComment( "glEnableVertexAttribArray( ATTR_INDEX_AMBIENTLIGHT )\n" );
-			}
-
-			glEnableVertexAttribArray( ATTR_INDEX_AMBIENTLIGHT );
-		}
-		else
-		{
-			if ( r_logFile->integer )
-			{
-				GLimp_LogComment( "glDisableVertexAttribArray( ATTR_INDEX_AMBIENTLIGHT )\n" );
-			}
-
-			glDisableVertexAttribArray( ATTR_INDEX_AMBIENTLIGHT );
-		}
-	}
-
-	if ( diff & ATTR_DIRECTEDLIGHT )
-	{
-		if ( stateBits & ATTR_DIRECTEDLIGHT )
-		{
-			if ( r_logFile->integer )
-			{
-				GLimp_LogComment( "glEnableVertexAttribArray( ATTR_INDEX_DIRECTEDLIGHT )\n" );
-			}
-
-			glEnableVertexAttribArray( ATTR_INDEX_DIRECTEDLIGHT );
-		}
-		else
-		{
-			if ( r_logFile->integer )
-			{
-				GLimp_LogComment( "glDisableVertexAttribArray( ATTR_INDEX_DIRECTEDLIGHT )\n" );
-			}
-
-			glDisableVertexAttribArray( ATTR_INDEX_DIRECTEDLIGHT );
-		}
-	}
-
-	if ( diff & ATTR_LIGHTDIRECTION )
-	{
-		if ( stateBits & ATTR_LIGHTDIRECTION )
-		{
-			if ( r_logFile->integer )
-			{
-				GLimp_LogComment( "glEnableVertexAttribArray( ATTR_INDEX_LIGHTDIRECTION )\n" );
-			}
-
-			glEnableVertexAttribArray( ATTR_INDEX_LIGHTDIRECTION );
-		}
-		else
-		{
-			if ( r_logFile->integer )
-			{
-				GLimp_LogComment( "glDisableVertexAttribArray( ATTR_INDEX_LIGHTDIRECTION )\n" );
-			}
-
-			glDisableVertexAttribArray( ATTR_INDEX_LIGHTDIRECTION );
-		}
-	}
-
-	if ( diff & ATTR_BONE_INDEXES )
-	{
-		if ( stateBits & ATTR_BONE_INDEXES )
-		{
-			if ( r_logFile->integer )
-			{
-				GLimp_LogComment( "glEnableVertexAttribArray( ATTR_INDEX_BONE_INDEXES )\n" );
-			}
-
-			glEnableVertexAttribArray( ATTR_INDEX_BONE_INDEXES );
-		}
-		else
-		{
-			if ( r_logFile->integer )
-			{
-				GLimp_LogComment( "glDisableVertexAttribArray( ATTR_INDEX_BONE_INDEXES )\n" );
-			}
-
-			glDisableVertexAttribArray( ATTR_INDEX_BONE_INDEXES );
-		}
-	}
-
-	if ( diff & ATTR_BONE_WEIGHTS )
-	{
-		if ( stateBits & ATTR_BONE_WEIGHTS )
-		{
-			if ( r_logFile->integer )
-			{
-				GLimp_LogComment( "glEnableVertexAttribArray( ATTR_INDEX_BONE_WEIGHTS )\n" );
-			}
-
-			glEnableVertexAttribArray( ATTR_INDEX_BONE_WEIGHTS );
-		}
-		else
-		{
-			if ( r_logFile->integer )
-			{
-				GLimp_LogComment( "glDisableVertexAttribArray( ATTR_INDEX_BONE_WEIGHTS )\n" );
-			}
-
-			glDisableVertexAttribArray( ATTR_INDEX_BONE_WEIGHTS );
-		}
-	}
-
-	if ( diff & ATTR_POSITION2 )
-	{
-		if ( stateBits & ATTR_POSITION2 )
-		{
-			if ( r_logFile->integer )
-			{
-				GLimp_LogComment( "glEnableVertexAttribArray( ATTR_INDEX_POSITION2 )\n" );
-			}
-
-			glEnableVertexAttribArray( ATTR_INDEX_POSITION2 );
-		}
-		else
-		{
-			if ( r_logFile->integer )
-			{
-				GLimp_LogComment( "glDisableVertexAttribArray( ATTR_INDEX_POSITION2 )\n" );
-			}
-
-			glDisableVertexAttribArray( ATTR_INDEX_POSITION2 );
-		}
-	}
-
-	if ( diff & ATTR_TANGENT2 )
-	{
-		if ( stateBits & ATTR_TANGENT2 )
-		{
-			if ( r_logFile->integer )
-			{
-				GLimp_LogComment( "glEnableVertexAttribArray( ATTR_INDEX_TANGENT2 )\n" );
-			}
-
-			glEnableVertexAttribArray( ATTR_INDEX_TANGENT2 );
-		}
-		else
-		{
-			if ( r_logFile->integer )
-			{
-				GLimp_LogComment( "glDisableVertexAttribArray( ATTR_INDEX_TANGENT2 )\n" );
-			}
-
-			glDisableVertexAttribArray( ATTR_INDEX_TANGENT2 );
-		}
-	}
-
-	if ( diff & ATTR_BINORMAL2 )
-	{
-		if ( stateBits & ATTR_BINORMAL2 )
-		{
-			if ( r_logFile->integer )
-			{
-				GLimp_LogComment( "glEnableVertexAttribArray( ATTR_INDEX_BINORMAL2 )\n" );
-			}
-
-			glEnableVertexAttribArray( ATTR_INDEX_BINORMAL2 );
-		}
-		else
-		{
-			if ( r_logFile->integer )
-			{
-				GLimp_LogComment( "glDisableVertexAttribArray( ATTR_INDEX_BINORMAL2 )\n" );
-			}
-
-			glDisableVertexAttribArray( ATTR_INDEX_BINORMAL2 );
-		}
-	}
-
-	if ( diff & ATTR_NORMAL2 )
-	{
-		if ( stateBits & ATTR_NORMAL2 )
-		{
-			if ( r_logFile->integer )
-			{
-				GLimp_LogComment( "glEnableVertexAttribArray( ATTR_INDEX_NORMAL2 )\n" );
-			}
-
-			glEnableVertexAttribArray( ATTR_INDEX_NORMAL2 );
-		}
-		else
-		{
-			if ( r_logFile->integer )
-			{
-				GLimp_LogComment( "glDisableVertexAttribArray( ATTR_INDEX_NORMAL2 )\n" );
-			}
-
-			glDisableVertexAttribArray( ATTR_INDEX_NORMAL2 );
 		}
 	}
 
@@ -1101,6 +757,8 @@ void GL_VertexAttribsState( uint32_t stateBits )
 
 void GL_VertexAttribPointers( uint32_t attribBits )
 {
+	uint32_t i;
+
 	if ( !glState.currentVBO )
 	{
 		ri.Error( ERR_FATAL, "GL_VertexAttribPointers: no VBO bound" );
@@ -1117,197 +775,34 @@ void GL_VertexAttribPointers( uint32_t attribBits )
 		attribBits |= ( ATTR_BONE_INDEXES | ATTR_BONE_WEIGHTS );
 	}
 
-	if ( ( attribBits & ATTR_POSITION ) )
+	for ( i = 0; i < ATTR_INDEX_MAX; i++ )
 	{
-		if ( r_logFile->integer )
+		uint32_t bit = BIT( i );
+		uint32_t frame = 0;
+
+		if ( ( attribBits & bit ) && ( !( glState.vertexAttribPointersSet & bit ) || glState.vertexAttribsInterpolation >= 0 ) )
 		{
-			GLimp_LogComment( "glVertexAttribPointer( ATTR_INDEX_POSITION )\n" );
-		}
+			const vboAttributeLayout_t *layout = &glState.currentVBO->attribs[ i ];
 
-		glVertexAttribPointer( ATTR_INDEX_POSITION, 4, GL_FLOAT, 0, 0, BUFFER_OFFSET( glState.currentVBO->ofsXYZ + ( glState.vertexAttribsOldFrame * glState.currentVBO->sizeXYZ ) ) );
-		glState.vertexAttribPointersSet |= ATTR_POSITION;
-	}
-
-	if ( ( attribBits & ATTR_TEXCOORD ) )
-	{
-		if ( r_logFile->integer )
-		{
-			GLimp_LogComment( "glVertexAttribPointer( ATTR_INDEX_TEXCOORD )\n" );
-		}
-
-		glVertexAttribPointer( ATTR_INDEX_TEXCOORD0, 4, GL_FLOAT, 0, 0, BUFFER_OFFSET( glState.currentVBO->ofsTexCoords ) );
-		glState.vertexAttribPointersSet |= ATTR_TEXCOORD;
-	}
-
-	if ( ( attribBits & ATTR_LIGHTCOORD ) )
-	{
-		if ( r_logFile->integer )
-		{
-			GLimp_LogComment( "glVertexAttribPointer( ATTR_INDEX_LIGHTCOORD )\n" );
-		}
-
-		glVertexAttribPointer( ATTR_INDEX_TEXCOORD1, 4, GL_FLOAT, 0, 0, BUFFER_OFFSET( glState.currentVBO->ofsLightCoords ) );
-		glState.vertexAttribPointersSet |= ATTR_LIGHTCOORD;
-	}
-
-	if ( ( attribBits & ATTR_TANGENT ) )
-	{
-		if ( r_logFile->integer )
-		{
-			GLimp_LogComment( "glVertexAttribPointer( ATTR_INDEX_TANGENT )\n" );
-		}
-
-		glVertexAttribPointer( ATTR_INDEX_TANGENT, 3, GL_FLOAT, 0, 16, BUFFER_OFFSET( glState.currentVBO->ofsTangents + ( glState.vertexAttribsOldFrame * glState.currentVBO->sizeTangents ) ) );
-		glState.vertexAttribPointersSet |= ATTR_TANGENT;
-	}
-
-	if ( ( attribBits & ATTR_BINORMAL ) )
-	{
-		if ( r_logFile->integer )
-		{
-			GLimp_LogComment( "glVertexAttribPointer( ATTR_INDEX_BINORMAL )\n" );
-		}
-
-		glVertexAttribPointer( ATTR_INDEX_BINORMAL, 3, GL_FLOAT, 0, 16, BUFFER_OFFSET( glState.currentVBO->ofsBinormals + ( glState.vertexAttribsOldFrame * glState.currentVBO->sizeBinormals ) ) );
-		glState.vertexAttribPointersSet |= ATTR_BINORMAL;
-	}
-
-	if ( ( attribBits & ATTR_NORMAL ) )
-	{
-		if ( r_logFile->integer )
-		{
-			GLimp_LogComment( "glVertexAttribPointer( ATTR_INDEX_NORMAL )\n" );
-		}
-
-		glVertexAttribPointer( ATTR_INDEX_NORMAL, 3, GL_FLOAT, 0, 16, BUFFER_OFFSET( glState.currentVBO->ofsNormals + ( glState.vertexAttribsOldFrame * glState.currentVBO->sizeNormals ) ) );
-		glState.vertexAttribPointersSet |= ATTR_NORMAL;
-	}
-
-	if ( ( attribBits & ATTR_COLOR ) )
-	{
-		if ( r_logFile->integer )
-		{
-			GLimp_LogComment( "glVertexAttribPointer( ATTR_INDEX_COLOR )\n" );
-		}
-
-		glVertexAttribPointer( ATTR_INDEX_COLOR, 4, GL_FLOAT, 0, 0, BUFFER_OFFSET( glState.currentVBO->ofsColors ) );
-		glState.vertexAttribPointersSet |= ATTR_COLOR;
-	}
-
-#if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
-
-	if ( ( attribBits & ATTR_PAINTCOLOR ) )
-	{
-		if ( r_logFile->integer )
-		{
-			GLimp_LogComment( "glVertexAttribPointer( ATTR_INDEX_PAINTCOLOR )\n" );
-		}
-
-		glVertexAttribPointer( ATTR_INDEX_PAINTCOLOR, 4, GL_FLOAT, 0, 0, BUFFER_OFFSET( glState.currentVBO->ofsPaintColors ) );
-		glState.vertexAttribPointersSet |= ATTR_PAINTCOLOR;
-	}
-
-#endif // #if !defined(COMPAT_Q3A) && !defined(COMPAT_ET)
-
-	if ( ( attribBits & ATTR_AMBIENTLIGHT ) )
-	{
-		if ( r_logFile->integer )
-		{
-			GLimp_LogComment( "glVertexAttribPointer( ATTR_INDEX_AMBIENTLIGHT )\n" );
-		}
-
-		glVertexAttribPointer( ATTR_INDEX_AMBIENTLIGHT, 3, GL_FLOAT, 0, 16, BUFFER_OFFSET( glState.currentVBO->ofsAmbientLight ) );
-		glState.vertexAttribPointersSet |= ATTR_AMBIENTLIGHT;
-	}
-
-	if ( ( attribBits & ATTR_DIRECTEDLIGHT ) )
-	{
-		if ( r_logFile->integer )
-		{
-			GLimp_LogComment( "glVertexAttribPointer( ATTR_INDEX_DIRECTEDLIGHT )\n" );
-		}
-
-		glVertexAttribPointer( ATTR_INDEX_DIRECTEDLIGHT, 3, GL_FLOAT, 0, 16, BUFFER_OFFSET( glState.currentVBO->ofsDirectedLight ) );
-		glState.vertexAttribPointersSet |= ATTR_DIRECTEDLIGHT;
-	}
-
-	if ( ( attribBits & ATTR_LIGHTDIRECTION ) )
-	{
-		if ( r_logFile->integer )
-		{
-			GLimp_LogComment( "glVertexAttribPointer( ATTR_INDEX_LIGHTDIRECTION )\n" );
-		}
-
-		glVertexAttribPointer( ATTR_INDEX_LIGHTDIRECTION, 3, GL_FLOAT, 0, 16, BUFFER_OFFSET( glState.currentVBO->ofsLightDirections ) );
-		glState.vertexAttribPointersSet |= ATTR_LIGHTDIRECTION;
-	}
-
-	if ( ( attribBits & ATTR_BONE_INDEXES ) )
-	{
-		if ( r_logFile->integer )
-		{
-			GLimp_LogComment( "glVertexAttribPointer( ATTR_INDEX_BONE_INDEXES )\n" );
-		}
-
-		glVertexAttribPointer( ATTR_INDEX_BONE_INDEXES, 4, GL_INT, 0, 0, BUFFER_OFFSET( glState.currentVBO->ofsBoneIndexes ) );
-		glState.vertexAttribPointersSet |= ATTR_BONE_INDEXES;
-	}
-
-	if ( ( attribBits & ATTR_BONE_WEIGHTS ) )
-	{
-		if ( r_logFile->integer )
-		{
-			GLimp_LogComment( "glVertexAttribPointer( ATTR_INDEX_BONE_WEIGHTS )\n" );
-		}
-
-		glVertexAttribPointer( ATTR_INDEX_BONE_WEIGHTS, 4, GL_FLOAT, 0, 0, BUFFER_OFFSET( glState.currentVBO->ofsBoneWeights ) );
-		glState.vertexAttribPointersSet |= ATTR_BONE_WEIGHTS;
-	}
-
-	if ( glState.vertexAttribsInterpolation > 0 )
-	{
-		if ( ( attribBits & ATTR_POSITION2 ) )
-		{
 			if ( r_logFile->integer )
 			{
-				GLimp_LogComment( "glVertexAttribPointer( ATTR_INDEX_POSITION2 )\n" );
+				static char buf[ MAX_STRING_CHARS ];
+				Q_snprintf( buf, sizeof( buf ), "glVertexAttribPointer( %s )\n", attributeNames[ i ] );
+
+				GLimp_LogComment( buf );
 			}
 
-			glVertexAttribPointer( ATTR_INDEX_POSITION2, 4, GL_FLOAT, 0, 0, BUFFER_OFFSET( glState.currentVBO->ofsXYZ + ( glState.vertexAttribsNewFrame * glState.currentVBO->sizeXYZ ) ) );
-			glState.vertexAttribPointersSet |= ATTR_POSITION2;
-		}
-
-		if ( ( attribBits & ATTR_TANGENT2 ) )
-		{
-			if ( r_logFile->integer )
+			if ( ( ATTR_INTERP_BITS & bit ) && glState.vertexAttribsInterpolation > 0 )
 			{
-				GLimp_LogComment( "glVertexAttribPointer( ATTR_INDEX_TANGENT2 )\n" );
+				frame = glState.vertexAttribsNewFrame;
 			}
-
-			glVertexAttribPointer( ATTR_INDEX_TANGENT2, 3, GL_FLOAT, 0, 16, BUFFER_OFFSET( glState.currentVBO->ofsTangents + ( glState.vertexAttribsNewFrame * glState.currentVBO->sizeTangents ) ) );
-			glState.vertexAttribPointersSet |= ATTR_TANGENT2;
-		}
-
-		if ( ( attribBits & ATTR_BINORMAL2 ) )
-		{
-			if ( r_logFile->integer )
+			else
 			{
-				GLimp_LogComment( "glVertexAttribPointer( ATTR_INDEX_BINORMAL2 )\n" );
+				frame = glState.vertexAttribsOldFrame;
 			}
-
-			glVertexAttribPointer( ATTR_INDEX_BINORMAL2, 3, GL_FLOAT, 0, 16, BUFFER_OFFSET( glState.currentVBO->ofsBinormals + ( glState.vertexAttribsNewFrame * glState.currentVBO->sizeBinormals ) ) );
-			glState.vertexAttribPointersSet |= ATTR_BINORMAL2;
-		}
-
-		if ( ( attribBits & ATTR_NORMAL2 ) )
-		{
-			if ( r_logFile->integer )
-			{
-				GLimp_LogComment( "glVertexAttribPointer( ATTR_INDEX_NORMAL2 )\n" );
-			}
-
-			glVertexAttribPointer( ATTR_INDEX_NORMAL2, 3, GL_FLOAT, 0, 16, BUFFER_OFFSET( glState.currentVBO->ofsNormals + ( glState.vertexAttribsNewFrame * glState.currentVBO->sizeNormals ) ) );
-			glState.vertexAttribPointersSet |= ATTR_NORMAL2;
+			
+			glVertexAttribPointer( i, layout->numComponents, layout->componentType, layout->normalize, layout->stride, BUFFER_OFFSET( layout->ofs + ( frame * layout->frameOffset ) ) );
+			glState.vertexAttribPointersSet |= bit;
 		}
 	}
 }
@@ -1964,6 +1459,12 @@ static int MergeInteractionBounds( const matrix_t lightViewProjectionMatrix, int
 		{
 			clipPlane = &frustum[ i ];
 
+			// we can have shadow casters outside the initial computed light view frustum
+			if ( i == FRUSTUM_NEAR && shadowCasters )
+			{
+				continue;
+			}
+
 			r = BoxOnPlaneSide( worldBounds[ 0 ], worldBounds[ 1 ], clipPlane );
 
 			if ( r == 2 )
@@ -2227,7 +1728,7 @@ static void RB_RenderInteractions()
 		{
 			backEnd.currentEntity = entity = ia->entity;
 			surface = ia->surface;
-			shader = ia->surfaceShader;
+			shader = tr.sortedShaders[ ia->shaderNum ];
 
 			if ( glConfig2.occlusionQueryBits && glConfig.driverType != GLDRV_MESA && r_dynamicEntityOcclusionCulling->integer && !entity->occlusionQuerySamples )
 			{
@@ -3077,6 +2578,87 @@ static void RB_SetupLightForLighting( trRefLight_t *light )
 	}
 }
 
+static void RB_BlurShadowMap( const trRefLight_t *light, int i )
+{
+	vec4_t  verts[ 4 ];
+	int     index;
+	image_t **images;
+	FBO_t   **fbos;
+	vec2_t  texScale;
+	matrix_t ortho;
+
+	if ( light->l.inverseShadows || r_shadows->integer < SHADOWING_VSM16 || !r_softShadowsPP->integer )
+	{
+		return;
+	}
+
+	if ( light->l.rlType == RL_OMNI )
+	{
+		return;
+	}
+		
+	fbos = ( light->l.rlType == RL_DIRECTIONAL ) ? tr.sunShadowMapFBO : tr.shadowMapFBO;
+	images = ( light->l.rlType == RL_DIRECTIONAL ) ? tr.sunShadowMapFBOImage : tr.shadowMapFBOImage;
+	index = ( light->l.rlType == RL_DIRECTIONAL ) ? i : light->shadowLOD;
+
+	Vector4Set( verts[ 0 ], 0, 0, 0, 1 );
+	Vector4Set( verts[ 1 ], fbos[ index ]->width, 0, 0, 1 );
+	Vector4Set( verts[ 2 ], verts[ 1 ][ 0 ], fbos[ index ]->height, 0, 1 );
+	Vector4Set( verts[ 3 ], 0, verts[ 2 ][ 1 ], 0, 1 );
+
+	texScale[ 0 ] = 1.0f / fbos[ index ]->width;
+	texScale[ 1 ] = 1.0f / fbos[ index ]->height;
+
+	R_BindFBO( fbos[ index ] );
+	R_AttachFBOTexture2D( images[ index + MAX_SHADOWMAPS ]->type, images[ index + MAX_SHADOWMAPS ]->texnum, 0 );
+
+	if ( !r_ignoreGLErrors->integer )
+	{
+		R_CheckFBO( fbos[ index ] );
+	}
+
+	// set the window clipping
+	GL_Viewport( 0, 0, verts[ 2 ][ 0 ], verts[ 2 ][ 1 ] );
+	GL_Scissor( 0, 0, verts[ 2 ][ 0 ], verts[ 2 ][ 1 ] );
+
+	glClear( GL_COLOR_BUFFER_BIT );
+
+	GL_Cull( CT_TWO_SIDED );
+	GL_State( GLS_DEPTHTEST_DISABLE );
+
+	GL_SelectTexture( 0 );
+	GL_Bind( images[ index ] );
+
+	GL_PushMatrix();
+	GL_LoadModelViewMatrix( matrixIdentity );
+
+	MatrixOrthogonalProjection( ortho, 0, verts[ 2 ][ 0 ], 0, verts[ 2 ][ 1 ], -99999, 99999 );
+	GL_LoadProjectionMatrix( ortho );
+
+	gl_blurXShader->BindProgram();
+	gl_blurXShader->SetUniform_DeformMagnitude( 1 );
+	gl_blurXShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
+	gl_blurXShader->SetUniform_TexScale( texScale );
+
+	Tess_InstantQuad( verts );
+
+	R_AttachFBOTexture2D( images[ index ]->type, images[ index ]->texnum, 0 );
+
+	glClear( GL_COLOR_BUFFER_BIT );
+
+	GL_SelectTexture( 0 );
+	GL_Bind( images[ index + MAX_SHADOWMAPS ] );
+
+	gl_blurYShader->BindProgram();
+	gl_blurYShader->SetUniform_DeformMagnitude( 1 );
+	gl_blurYShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
+	gl_blurYShader->SetUniform_TexScale( texScale );
+
+	Tess_InstantQuad( verts );
+
+	GL_PopMatrix();
+}
+
 /*
 =================
 RB_RenderInteractionsShadowMapped
@@ -3153,7 +2735,7 @@ static void RB_RenderInteractionsShadowMapped()
 				numMaps = 6;
 				break;
 			case RL_DIRECTIONAL:
-				numMaps = MAX( r_parallelShadowSplits->integer, 1 );
+				numMaps = MAX( r_parallelShadowSplits->integer + 1, 1 );
 				break;
 			default:
 				numMaps = 1;
@@ -3186,7 +2768,7 @@ static void RB_RenderInteractionsShadowMapped()
 				iaLast = ia;
 				backEnd.currentEntity = entity = ia->entity;
 				surface = ia->surface;
-				shader = ia->surfaceShader;
+				shader = tr.sortedShaders[ ia->shaderNum ];
 				alphaTest = shader->alphaTest;
 				deformType = GetDeformType( shader );
 
@@ -3352,6 +2934,8 @@ static void RB_RenderInteractionsShadowMapped()
 
 				MatrixMultiply( light->projectionMatrix, light->viewMatrix, light->shadowMatrices[ i ] );
 			}
+
+			RB_BlurShadowMap( light, i );
 		}
 
 		// begin lighting
@@ -3365,7 +2949,7 @@ static void RB_RenderInteractionsShadowMapped()
 			iaLast = ia;
 			backEnd.currentEntity = entity = ia->entity;
 			surface = ia->surface;
-			shader = ia->surfaceShader;
+			shader = tr.sortedShaders[ ia->shaderNum ];
 			alphaTest = shader->alphaTest;
 			deformType = GetDeformType( shader );
 
@@ -4486,7 +4070,7 @@ static void RB_RenderInteractionsDeferredShadowMapped()
 				numMaps = 6;
 				break;
 			case RL_DIRECTIONAL:
-				numMaps = MAX( r_parallelShadowSplits->integer, 1 );
+				numMaps = MAX( r_parallelShadowSplits->integer + 1, 1 );
 				break;
 			default:
 				numMaps = 1;
@@ -4519,7 +4103,7 @@ static void RB_RenderInteractionsDeferredShadowMapped()
 				iaLast = ia;
 				backEnd.currentEntity = entity = ia->entity;
 				surface = ia->surface;
-				shader = ia->surfaceShader;
+				shader = tr.sortedShaders[ ia->shaderNum ];
 				alphaTest = shader->alphaTest;
 				deformType = GetDeformType( shader );
 
@@ -4671,6 +4255,8 @@ static void RB_RenderInteractionsDeferredShadowMapped()
 			}
 
 			Tess_End();
+
+			RB_BlurShadowMap( light, i );
 		}
 
 
@@ -5152,6 +4738,11 @@ void RB_RenderBloom()
 		{
 			for ( j = 0; j < r_bloomPasses->integer; j++ )
 			{
+				vec2_t texScale;
+
+				texScale[ 0 ] = 1.0f / tr.bloomRenderFBO[ flip ]->width;
+				texScale[ 1 ] = 1.0f / tr.bloomRenderFBO[ flip ]->height;
+
 				R_BindFBO( tr.bloomRenderFBO[ flip ] );
 
 				GL_ClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
@@ -5173,6 +4764,7 @@ void RB_RenderBloom()
 
 					gl_blurXShader->SetUniform_DeformMagnitude( r_bloomBlur->value );
 					gl_blurXShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
+					gl_blurXShader->SetUniform_TexScale( texScale );
 				}
 				else
 				{
@@ -5180,6 +4772,7 @@ void RB_RenderBloom()
 
 					gl_blurYShader->SetUniform_DeformMagnitude( r_bloomBlur->value );
 					gl_blurYShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
+					gl_blurYShader->SetUniform_TexScale( texScale );
 				}
 
 				GL_PopMatrix();
@@ -7149,7 +6742,7 @@ static void RB_RenderDebugUtils()
 		GL_Bind( tr.whiteImage );
 		gl_genericShader->SetUniform_ColorTextureMatrix( matrixIdentity );
 
-		for ( iaCount = 0, ia = &backEnd.viewParms.interactions[ 0 ]; iaCount < backEnd.viewParms.numInteractions; )
+		for ( iaCount = 0, ia = &backEnd.viewParms.interactions[ 0 ]; iaCount < backEnd.viewParms.numInteractions; ia++, iaCount++ )
 		{
 			backEnd.currentEntity = entity = ia->entity;
 			light = ia->light;

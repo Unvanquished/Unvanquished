@@ -432,9 +432,6 @@ typedef void ( *xcommand_arg_t )( int );
 void Cmd_Init( void );
 
 void     Cmd_AddCommand( const char *cmd_name, xcommand_t function );
-#ifndef DEDICATED
-qboolean Cmd_AddButtonCommand( const char *cmd_name, int parameter );
-#endif
 
 // called by the init functions of other parts of the program to
 // register commands and functions to call for them.
@@ -1277,6 +1274,7 @@ void Com_RandomBytes( byte *string, int len );
 #define P_(x, y, c) Trans_GettextPlural(x, y, c)
 
 void Trans_Init( void );
+void Trans_LoadDefaultLanguage( void );
 const char* Trans_Gettext( const char *msgid ) __attribute__((__format_arg__(1)));
 const char* Trans_Pgettext( const char *ctxt, const char *msgid ) __attribute__((__format_arg__(2)));
 const char* Trans_GettextPlural( const char *msgid, const char *msgid_plural, int num ) __attribute__((__format_arg__(1))) __attribute__((__format_arg__(2)));

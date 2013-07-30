@@ -13,8 +13,8 @@ set -e
 
 PAKBASE="$1"
 shift
-BUILDDIR="$1"
-shift
+BUILDDIR="${1:-.}"
+shift || :
 
 if test "$PAKBASE" = ''; then
   echo 'the current release tag is needed' >&2
@@ -33,7 +33,9 @@ rm -f -- pak.pre.pk3 vms.pre.pk3
 
 echo '[33mBuilding pak.pre.pk3[m'
 cd "$BASEDIR/main"
-zip -9 "$BASEDIR/pak.pre.pk3" $(git diff --name-only "$PAKBASE" . | sed -e 's%main/%%' | grep -v '^translation/[^c]')
+if test -n "$(git diff --name-only "$PAKBASE" . | sed -e 's%main/%%' | grep -v '^translation/[^c]')"; then
+  zip -9 "$BASEDIR/pak.pre.pk3" $(git diff --name-only "$PAKBASE" . | sed -e 's%main/%%' | grep -v '^translation/[^c]')
+fi
 if test -d "$BASEDIR/pak"; then
   echo '[33m(including contents of directory '\'pak\'')[m'
   cd "$BASEDIR/pak"
@@ -49,7 +51,7 @@ zip -9 "$BASEDIR/vms.pre.pk3" vm/*qvm
 if which advzip &>/dev/null; then
   echo '[33mOptimising[m'
   cd "$BASEDIR"
-  advzip -z4 pak.pre.pk3 vms.pre.pk3
+  advzip -z4 $(test -f pak.pre.pk3 && echo pak.pre.pk3 || :) vms.pre.pk3
 fi
 
 echo '[32mDone![m'

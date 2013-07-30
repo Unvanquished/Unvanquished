@@ -149,17 +149,24 @@ void   *memset( void *dest, int c, size_t count );
 void   *memcpy( void *dest, const void *src, size_t count );
 
 // Math functions
+#define FLT_EPSILON 1.19209290E-07F
+
 double ceil( double x );
 float  ceilf( float x );
 double floor( double x );
 float  floorf( float x );
 double sqrt( double x );
+float  sqrtf( float x );
 double sin( double x );
 double cos( double x );
+double atan( double x );
+float  atanf( float x );
 double atan2( double y, double x );
 double tan( double x );
+float  tanf( float x );
 int    abs( int n );
 double fabs( double x );
+double asin( double x );
 double acos( double x );
 float  powf( float x, float y );
 double rint( double v );
