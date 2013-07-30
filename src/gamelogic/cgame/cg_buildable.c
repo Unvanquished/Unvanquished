@@ -703,22 +703,22 @@ qboolean CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t 
 
 		case BA_A_TRAPPER:
 			*range = TRAPPER_RANGE;
-			shc = SHC_PINK;
+			shc = SHC_VIOLET;
 			break;
 
 		case BA_A_HIVE:
 			*range = HIVE_SENSE_RANGE;
-			shc = SHC_YELLOW;
+			shc = SHC_RED;
 			break;
 
 		case BA_A_LEECH:
 			*range = RGS_RANGE;
-			shc = SHC_RED;
+			shc = SHC_GREY;
 			break;
 
 		case BA_A_BOOSTER:
 			*range = REGEN_BOOST_RANGE;
-			shc = SHC_GREY;
+			shc = SHC_YELLOW;
 			break;
 
 		case BA_H_MGTURRET:
@@ -728,17 +728,17 @@ qboolean CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t 
 
 		case BA_H_TESLAGEN:
 			*range = TESLAGEN_RANGE;
-			shc = SHC_VIOLET;
+			shc = SHC_RED;
 			break;
 
 		case BA_H_DCC:
 			*range = DC_RANGE;
-			shc = SHC_GREEN_CYAN;
+			shc = SHC_YELLOW;
 			break;
 
 		case BA_H_DRILL:
 			*range = RGS_RANGE;
-			shc = SHC_RED;
+			shc = SHC_GREY;
 			break;
 
 		case BA_H_REACTOR:
