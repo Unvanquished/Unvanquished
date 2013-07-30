@@ -191,7 +191,7 @@ void	main()
 #endif
 
 	vec3 light = u_AmbientColor + u_LightColor * NL;
-	clamp(light, 0.0, 1.0);
+	light = clamp(light, 0.0, 1.0);
 
 	// compute final color
 	vec4 color = diffuse;
