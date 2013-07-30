@@ -296,9 +296,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
 #define HUMAN_WDMG_MODIFIER      1.0f
-#define HDM(d) ((int)((float)d * HUMAN_WDMG_MODIFIER ))
+#define HDM(d)                   ((int)((float)d * HUMAN_WDMG_MODIFIER ))
 
-#define BLASTER_SPREAD           200
 #define BLASTER_SPEED            1400
 #define BLASTER_DMG              HDM(10)
 #define BLASTER_SIZE             5
@@ -320,16 +319,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define SHOTGUN_DMG              HDM(5)
 #define SHOTGUN_RANGE            ( 8192 * 12 )
 
-#define LASGUN_REPEAT            200
-#define LASGUN_K_SCALE           1.0f
 #define LASGUN_DAMAGE            HDM(9)
 
 #define MDRIVER_DMG              HDM(40)
-#define MDRIVER_REPEAT           1000
-#define MDRIVER_K_SCALE          1.0f
 
-#define CHAINGUN_SPREAD          900
 #define CHAINGUN_DMG             HDM(6)
+#define CHAINGUN_SPREAD          900
 
 #define FLAMER_DMG               HDM(12)
 #define FLAMER_FLIGHTDAMAGE      HDM(1)
