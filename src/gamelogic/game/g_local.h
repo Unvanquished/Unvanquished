@@ -245,6 +245,7 @@ struct gentity_s
 	 */
 	qboolean     onFire;
 	int          nextBurnDamage;
+	int          nextBurnSplashDamage;
 	int          nextBurnStopCheck;
 	int          nextBurnSpreadCheck;
 	gentity_t    *fireStarter;
@@ -372,6 +373,7 @@ struct gentity_s
 	qboolean  takedamage;
 
 	int       flightSplashDamage; // quad will increase this without increasing radius
+	int       flightSplashRadius;
 	int       splashDamage; // quad will increase this without increasing radius
 	int       splashRadius;
 	int       methodOfDeath;
@@ -1064,7 +1066,7 @@ void     G_SelectiveDamage( gentity_t *targ, gentity_t *inflictor, gentity_t *at
 qboolean G_RadiusDamage( vec3_t origin, gentity_t *attacker, float damage, float radius,
                          gentity_t *ignore, int mod );
 qboolean G_SelectiveRadiusDamage( vec3_t origin, gentity_t *attacker, float damage, float radius,
-                                  gentity_t *ignore, int mod, int team );
+                                  gentity_t *ignore, int mod, int ignoreTeam );
 void     G_RewardAttackers( gentity_t *self );
 void     G_AddCreditsToScore( gentity_t *self, int credits );
 void     G_AddConfidenceToScore( gentity_t *self, float confidence );
@@ -1345,12 +1347,6 @@ extern  vmCvar_t g_alienOffCreepRegenHalfLife;
 
 extern  vmCvar_t g_teamImbalanceWarnings;
 extern  vmCvar_t g_freeFundPeriod;
-
-extern  vmCvar_t g_luciHalfLifeTime;
-extern  vmCvar_t g_luciFullPowerTime;
-extern  vmCvar_t g_pulseHalfLifeTime;
-extern  vmCvar_t g_pulseFullPowerTime;
-extern  vmCvar_t g_flameFadeout;
 
 extern  vmCvar_t g_unlagged;
 

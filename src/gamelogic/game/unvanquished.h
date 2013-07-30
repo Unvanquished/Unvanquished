@@ -213,7 +213,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define CREEP_SCALEDOWN_TIME    3000
 
 #define BURN_DAMAGE             10
-#define BURN_DAMAGE_PERIOD      1000
+#define BURN_DAMAGE_PERIOD      1000 // high, so we don't get popcorn sound with all the damage anims
+#define BURN_SPLDAMAGE          10
+#define BURN_SPLDAMAGE_RADIUS   60
+#define BURN_SPLDAMAGE_PERIOD   500
 #define BURN_STOP_PERIOD        2500
 #define BURN_STOP_CHANCE        0.5f
 #define BURN_SPREAD_PERIOD      1000
@@ -293,9 +296,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
 #define HUMAN_WDMG_MODIFIER      1.0f
-#define HDM(d) ((int)((float)d * HUMAN_WDMG_MODIFIER ))
+#define HDM(d)                   ((int)((float)d * HUMAN_WDMG_MODIFIER ))
 
-#define BLASTER_SPREAD           200
 #define BLASTER_SPEED            1400
 #define BLASTER_DMG              HDM(10)
 #define BLASTER_SIZE             5
@@ -317,36 +319,37 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define SHOTGUN_DMG              HDM(5)
 #define SHOTGUN_RANGE            ( 8192 * 12 )
 
-#define LASGUN_REPEAT            200
-#define LASGUN_K_SCALE           1.0f
 #define LASGUN_DAMAGE            HDM(9)
 
 #define MDRIVER_DMG              HDM(40)
-#define MDRIVER_REPEAT           1000
-#define MDRIVER_K_SCALE          1.0f
 
-#define CHAINGUN_SPREAD          900
 #define CHAINGUN_DMG             HDM(6)
+#define CHAINGUN_SPREAD          900
 
-#define FLAMER_DMG               HDM(12)
-#define FLAMER_FLIGHTDAMAGE      HDM(1)
-#define FLAMER_SPLASHDAMAGE      HDM(6)
-#define FLAMER_RADIUS            25
-#define FLAMER_SIZE              5      // missile bounding box
+#define FLAMER_DAMAGE            HDM(10)
+#define FLAMER_DAMAGE_MAXDST_MOD 0.5f    // damage decreases linearly from full damage to this during missile lifetime
+#define FLAMER_SPLASH_DAMAGE     FLAMER_DAMAGE
+#define FLAMER_SPLASH_RADIUS     50
+#define FLAMER_SPLASH_MINDST_MOD 0.5f    // splash damage increases linearly from this to full damage during lifetime
+#define FLAMER_SIZE              5
 #define FLAMER_LIFETIME          750.0f
 #define FLAMER_SPEED             400.0f
-#define FLAMER_LAG               0.65f  // part of player velocity that is added to the fireball
+#define FLAMER_LAG               0.65f   // part of player velocity that is added to the fireball
 #define FLAMER_IGNITE_RADIUS     50
 #define FLAMER_IGNITE_CHANCE     0.5f
 #define FLAMER_IGNITE_SPLCHANCE  0.1f
 
 #define PRIFLE_DMG               HDM(9)
 #define PRIFLE_SPEED             1200
+#define PRIFLE_DAMAGE_FULL_TIME  0 // in ms, full damage for this time
+#define PRIFLE_DAMAGE_HALF_LIFE  0 // in ms, damage half life time after full damage period, 0 = off
 #define PRIFLE_SIZE              5
 
 #define LCANNON_DAMAGE           HDM(265)
 #define LCANNON_RADIUS           150 // primary splash damage radius
-#define LCANNON_SIZE             5 // missile bounding box radius
+#define LCANNON_DAMAGE_FULL_TIME 0 // in ms, full damage for this time
+#define LCANNON_DAMAGE_HALF_LIFE 0 // in ms, damage half life time after full damage period, 0 = off
+#define LCANNON_SIZE             5 // missile bounding box radiusa
 #define LCANNON_SECONDARY_DAMAGE HDM(30)
 #define LCANNON_SECONDARY_RADIUS 75 // secondary splash damage radius
 #define LCANNON_SECONDARY_SPEED  1400

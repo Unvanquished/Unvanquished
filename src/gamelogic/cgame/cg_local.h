@@ -1380,6 +1380,8 @@ typedef struct
 	int      maxclients;
 	char     mapname[ MAX_QPATH ];
 	qboolean markDeconstruct; // Whether or not buildables are marked
+	int      powerReactorRange;
+	int      powerRepeaterRange;
 
 	int      voteTime[ NUM_TEAMS ];
 	int      voteYes[ NUM_TEAMS ];

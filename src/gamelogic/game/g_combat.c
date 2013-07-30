@@ -1529,7 +1529,7 @@ G_SelectiveRadiusDamage
 ============
 */
 qboolean G_SelectiveRadiusDamage( vec3_t origin, gentity_t *attacker, float damage,
-                                  float radius, gentity_t *ignore, int mod, int team )
+                                  float radius, gentity_t *ignore, int mod, int ignoreTeam )
 {
 	float     points, dist;
 	gentity_t *ent;
@@ -1537,7 +1537,6 @@ qboolean G_SelectiveRadiusDamage( vec3_t origin, gentity_t *attacker, float dama
 	int       numListedEntities;
 	vec3_t    mins, maxs;
 	vec3_t    v;
-	vec3_t    dir;
 	int       i, e;
 	qboolean  hitClient = qfalse;
 
@@ -1600,16 +1599,13 @@ qboolean G_SelectiveRadiusDamage( vec3_t origin, gentity_t *attacker, float dama
 		points = damage * ( 1.0 - dist / radius );
 
 		if ( CanDamage( ent, origin ) && ent->client &&
-		     ent->client->ps.stats[ STAT_TEAM ] != team )
+		     ent->client->ps.stats[ STAT_TEAM ] != ignoreTeam )
 		{
-			VectorSubtract( ent->r.currentOrigin, origin, dir );
-			// push the center of mass higher than the origin so players
-			// get knocked into the air more
-			dir[ 2 ] += 24;
-			VectorNormalize( dir );
 			hitClient = qtrue;
-			G_Damage( ent, NULL, attacker, dir, origin,
-			          ( int ) points, DAMAGE_RADIUS | DAMAGE_NO_LOCDAMAGE, mod );
+
+			// don't do knockback, since an attack that spares one team is most likely not based on kinetic energy
+			G_Damage( ent, NULL, attacker, NULL, origin, ( int ) points,
+			          DAMAGE_RADIUS | DAMAGE_NO_LOCDAMAGE | DAMAGE_NO_KNOCKBACK, mod );
 		}
 	}
 
