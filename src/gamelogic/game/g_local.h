@@ -1053,7 +1053,7 @@ void     G_SelectiveDamage( gentity_t *targ, gentity_t *inflictor, gentity_t *at
 qboolean G_RadiusDamage( vec3_t origin, gentity_t *attacker, float damage, float radius,
                          gentity_t *ignore, int mod );
 qboolean G_SelectiveRadiusDamage( vec3_t origin, gentity_t *attacker, float damage, float radius,
-                                  gentity_t *ignore, int mod, int team );
+                                  gentity_t *ignore, int mod, int ignoreTeam );
 void     G_RewardAttackers( gentity_t *self );
 void     G_AddCreditsToScore( gentity_t *self, int credits );
 void     G_AddConfidenceToScore( gentity_t *self, float confidence );
