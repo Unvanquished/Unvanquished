@@ -34,6 +34,9 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
+// Don't add ogg dependancies to tty client
+#ifndef BUILD_TTY_CLIENT
+
 // includes for the Q3 sound system
 #include "client.h"
 #include "snd_codec.h"
@@ -470,3 +473,5 @@ void *codec_ogg_load( const char *filename, snd_info_t *info )
 
 	return buffer;
 }
+
+#endif // !BUILD_TTY_CLIENT

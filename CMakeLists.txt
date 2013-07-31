@@ -825,7 +825,6 @@ endif()
 
 # Speex
 if( USE_VOIP )
-  add_definitions( -DUSE_VOIP -DFLOATING_POINT )
   find_package( Speex )
   if( SPEEX_FOUND )
     include_directories( ${SPEEX_INCLUDE_DIRS} )
@@ -1106,6 +1105,10 @@ if( BUILD_CLIENT )
   add_executable( client ${SERVERLIST} ${CLIENTLIST} ${SDLLIST} ${ENGINELIST} ${SHAREDLIST}
     ${LIBSRC_BASE} ${LIBSRC_ENGINE} ${LIBSRC_CLIENTBASE} ${LIBSRC_CLIENT} ${WIN_RC} )
   target_link_libraries( client ${LIBS_BASE} ${LIBS_ENGINE} ${LIBS_CLIENTBASE} ${LIBS_CLIENT} )
+  if( USE_VOIP )
+    # Set it here so the tty client doesn't try to handle voip
+    set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_VOIP )
+  endif()
   set_target_properties( client PROPERTIES OUTPUT_NAME "daemon" PREFIX "" )
 
   # Setup CPack for target client
@@ -1138,8 +1141,6 @@ endif()
 
 if( BUILD_TTY_CLIENT )
   # Setup the target ttyclient
-  # Amanieu: Don't use remove_definitions here
-  remove_definitions( -DUSE_CIN_THEORA -DUSE_VOIP -DUSE_CODEC_VORBIS )
   add_executable( ttyclient ${SERVERLIST} ${CLIENTLIST} ${ENGINELIST} ${SHAREDLIST}
     ${LIBSRC_BASE} ${LIBSRC_ENGINE} ${LIBSRC_CLIENTBASE} ${WIN_RC}
     ${MOUNT_DIR}/engine/null/null_input.c ${MOUNT_DIR}/engine/null/null_snddma.c ${MOUNT_DIR}/engine/null/null_renderer.c )
