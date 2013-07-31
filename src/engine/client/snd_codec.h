@@ -116,13 +116,10 @@ int                codec_wav_read( snd_stream_t *stream, int bytes, void *buffer
 /*
  * Ogg Vorbis codec
  */
-#ifdef USE_CODEC_VORBIS
 extern snd_codec_t ogg_codec;
 void               *codec_ogg_load( const char *filename, snd_info_t *info );
 snd_stream_t       *codec_ogg_open( const char *filename );
 void               codec_ogg_close( snd_stream_t *stream );
 int                codec_ogg_read( snd_stream_t *stream, int bytes, void *buffer );
-
-#endif // USE_CODEC_VORBIS
 
 #endif // !_SND_CODEC_H_

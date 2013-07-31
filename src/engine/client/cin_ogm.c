@@ -37,13 +37,10 @@ Maryland 20850 USA.
 
   This is a decoder for OGM, a "better" (smaller files, higher resolutions) cinematic format than ROQ
 
-  In this code "ogm" is only: ogg wrapper, vorbis audio, xvid video (or theora video)
+  In this code "ogm" is only: ogg wrapper, vorbis audio, theora video
   (ogm(Ogg Media) in general is ogg wrapper with all kind of audio/video/subtitle/...)
 
 ... infos used for this src:
-xvid:
- * examples/xvid_decraw.c
- * xvid.h
 ogg/vobis:
  * decoder_example.c (libvorbis src)
  * libogg Documentation ( http://www.xiph.org/ogg/doc/libogg/ )
@@ -52,19 +49,12 @@ theora:
  * theora doxygen docs (1.0beta1)
 */
 
-#if defined( USE_CODEC_VORBIS ) && ( defined( USE_CIN_XVID ) || defined( USE_CIN_THEORA ))
+#ifndef BUILD_TTY_CLIENT
 
 #include <ogg/ogg.h>
 #include <vorbis/codec.h>
 
-#ifdef USE_CIN_XVID
-#include <xvid.h>
-
-#endif
-
-#ifdef USE_CIN_THEORA
 #include <theora/theora.h>
-#endif
 
 #include "client.h"
 #include "snd_local.h"
@@ -84,19 +74,13 @@ typedef struct
 	vorbis_info      vi; /* struct that stores all the static vorbis bitstream settings */
 	vorbis_comment   vc; /* struct that stores all the bitstream user comments */
 
-	qboolean         videoStreamIsXvid; //FIXME: atm there isn't really a check for this (all "video" streams are handled as xvid, because xvid supports more than one "subtype")
-#ifdef USE_CIN_XVID
-	xvid_dec_stats_t xvid_dec_stats;
-	void             *xvid_dec_handle;
-#endif
 	qboolean         videoStreamIsTheora;
-#ifdef USE_CIN_THEORA
+
 	theora_info      th_info; // dump_video.c(example decoder): ti
 	theora_comment   th_comment; // dump_video.c(example decoder): tc
 	theora_state     th_state; // dump_video.c(example decoder): td
 
 	yuv_buffer       th_yuvbuffer;
-#endif
 
 	unsigned char *outputBuffer;
 	int           outputWidht;
@@ -110,104 +94,6 @@ typedef struct
 static cin_ogm_t g_ogm;
 
 int              nextNeededVFrame( void );
-
-/* ####################### #######################
-
-  XVID
-
-*/
-#ifdef USE_CIN_XVID
-
-#define BPP 4
-
-static int init_xvid( void )
-{
-	int               ret;
-
-	xvid_gbl_init_t   xvid_gbl_init;
-	xvid_dec_create_t xvid_dec_create;
-
-	/* Reset the structure with zeros */
-	memset( &xvid_gbl_init, 0, sizeof( xvid_gbl_init_t ) );
-	memset( &xvid_dec_create, 0, sizeof( xvid_dec_create_t ) );
-
-	/* Version */
-	xvid_gbl_init.version = XVID_VERSION;
-
-	xvid_gbl_init.cpu_flags = 0;
-	xvid_gbl_init.debug = 0;
-
-	xvid_global( NULL, 0, &xvid_gbl_init, NULL );
-
-	/* Version */
-	xvid_dec_create.version = XVID_VERSION;
-
-	/*
-	 * Image dimensions -- set to 0, xvidcore will resize when ever it is
-	 * needed
-	 */
-	xvid_dec_create.width = 0;
-	xvid_dec_create.height = 0;
-
-	ret = xvid_decore( NULL, XVID_DEC_CREATE, &xvid_dec_create, NULL );
-
-	g_ogm.xvid_dec_handle = xvid_dec_create.handle;
-
-	return ( ret );
-}
-
-static int dec_xvid( unsigned char *input, int input_size )
-{
-	int              ret;
-
-	xvid_dec_frame_t xvid_dec_frame;
-
-	/* Reset all structures */
-	memset( &xvid_dec_frame, 0, sizeof( xvid_dec_frame_t ) );
-	memset( &g_ogm.xvid_dec_stats, 0, sizeof( xvid_dec_stats_t ) );
-
-	/* Set version */
-	xvid_dec_frame.version = XVID_VERSION;
-	g_ogm.xvid_dec_stats.version = XVID_VERSION;
-
-	/* No general flags to set */
-	xvid_dec_frame.general = XVID_LOWDELAY; //0;
-
-	/* Input stream */
-	xvid_dec_frame.bitstream = input;
-	xvid_dec_frame.length = input_size;
-
-	/* Output frame structure */
-	xvid_dec_frame.output.plane[ 0 ] = g_ogm.outputBuffer;
-	xvid_dec_frame.output.stride[ 0 ] = g_ogm.outputWidht * BPP;
-
-	if ( g_ogm.outputBuffer == NULL )
-	{
-		xvid_dec_frame.output.csp = XVID_CSP_NULL;
-	}
-	else
-	{
-		xvid_dec_frame.output.csp = XVID_CSP_RGBA; // example was with XVID_CSP_I420
-	}
-
-	ret = xvid_decore( g_ogm.xvid_dec_handle, XVID_DEC_DECODE, &xvid_dec_frame, &g_ogm.xvid_dec_stats );
-
-	return ( ret );
-}
-
-static int shutdown_xvid( void )
-{
-	int ret = 0;
-
-	if ( g_ogm.xvid_dec_handle )
-	{
-		ret = xvid_decore( g_ogm.xvid_dec_handle, XVID_DEC_DESTROY, NULL, NULL );
-	}
-
-	return ( ret );
-}
-
-#endif
 
 /* ####################### #######################
 
@@ -384,80 +270,6 @@ static qboolean loadAudio( void )
                         0 -> no new Frame
                         <0  -> error
 */
-#ifdef USE_CIN_XVID
-static int loadVideoFrameXvid( void )
-{
-	int        r = 0;
-	ogg_packet op;
-	int        used_bytes = 0;
-
-	memset( &op, 0, sizeof( op ) );
-
-	while ( !r && ( ogg_stream_packetout( &g_ogm.os_video, &op ) ) )
-	{
-		used_bytes = dec_xvid( op.packet, op.bytes );
-
-		if ( g_ogm.xvid_dec_stats.type == XVID_TYPE_VOL )
-		{
-			if ( g_ogm.outputWidht != g_ogm.xvid_dec_stats.data.vol.width ||
-			     g_ogm.outputHeight != g_ogm.xvid_dec_stats.data.vol.height )
-			{
-				g_ogm.outputWidht = g_ogm.xvid_dec_stats.data.vol.width;
-				g_ogm.outputHeight = g_ogm.xvid_dec_stats.data.vol.height;
-				Com_DPrintf( "[XVID]new resolution %dx%d\n", g_ogm.outputWidht, g_ogm.outputHeight );
-			}
-
-			if ( g_ogm.outputBufferSize < g_ogm.xvid_dec_stats.data.vol.width * g_ogm.xvid_dec_stats.data.vol.height )
-			{
-				g_ogm.outputBufferSize = g_ogm.xvid_dec_stats.data.vol.width * g_ogm.xvid_dec_stats.data.vol.height;
-
-				/* Free old output buffer */
-				if ( g_ogm.outputBuffer )
-				{
-					free( g_ogm.outputBuffer );
-				}
-
-				/* Allocate the new buffer */
-				g_ogm.outputBuffer = ( unsigned char * ) malloc( g_ogm.outputBufferSize * 4 );  //FIXME? should the 4 stay for BPP?
-
-				if ( g_ogm.outputBuffer == NULL )
-				{
-					g_ogm.outputBufferSize = 0;
-					r = -2;
-					break;
-				}
-			}
-
-			// use the rest of this packet
-			used_bytes += dec_xvid( op.packet + used_bytes, op.bytes - used_bytes );
-		}
-
-		// we got a real output frame ...
-		if ( g_ogm.xvid_dec_stats.type > 0 )
-		{
-			r = 1;
-
-			++g_ogm.VFrameCount;
-//          Com_Printf( "frame infos: %d %d %d\n", xvid_dec_stats.data.vop.general, xvid_dec_stats.data.vop.time_base, xvid_dec_stats.data.vop.time_increment);
-//          Com_Printf( "frame info time: %d (Frame# %d, %d)\n", xvid_dec_stats.data.vop.time_base, VFrameCount, (int)(VFrameCount*Vtime_unit/10000000));
-		}
-
-//      if((op.bytes-used_bytes)>0)
-//          Com_Printf( "unused: %d(firstChar: %X)\n",(op.bytes-used_bytes),(int)(op.packet[used_bytes]));
-	}
-
-	return r;
-}
-
-#endif
-
-/*
-
-  return: 1 -> loaded a new Frame ( g_ogm.outputBuffer points to the actual frame )
-                        0 -> no new Frame
-                        <0  -> error
-*/
-#ifdef USE_CIN_THEORA
 
 /*
 how many >> are needed to make y==x (shifting y>>i)
@@ -583,8 +395,6 @@ static int loadVideoFrameTheora( void )
 	return r;
 }
 
-#endif
-
 /*
 
   return: 1 -> loaded a new Frame ( g_ogm.outputBuffer points to the actual frame )
@@ -593,22 +403,10 @@ static int loadVideoFrameTheora( void )
 */
 static int loadVideoFrame( void )
 {
-#ifdef USE_CIN_XVID
-
-	if ( g_ogm.videoStreamIsXvid )
-	{
-		return loadVideoFrameXvid();
-	}
-
-#endif
-#ifdef USE_CIN_THEORA
-
 	if ( g_ogm.videoStreamIsTheora )
 	{
 		return loadVideoFrameTheora();
 	}
-
-#endif
 
 	// if we come to this point, there will be no codec that use the stream content ...
 	if ( g_ogm.os_video.serialno )
@@ -789,8 +587,6 @@ int Cin_OGM_Init( const char *filename )
 				}
 			}
 
-#ifdef USE_CIN_THEORA
-
 			if ( strstr( ( char * )( og.body + 1 ), "theora" ) )
 			{
 				if ( g_ogm.os_video.serialno )
@@ -805,47 +601,6 @@ int Cin_OGM_Init( const char *filename )
 				}
 			}
 
-#endif
-#ifdef USE_CIN_XVID
-
-			if ( strstr( ( char * )( og.body + 1 ), "video" ) )
-			{
-				//FIXME? better way to find video stream
-				if ( g_ogm.os_video.serialno )
-				{
-					Com_Printf( "more than one video stream in OGM file(%s). We will stay at the first one\n", filename );
-				}
-				else
-				{
-					stream_header_t *sh;
-
-					g_ogm.videoStreamIsXvid = qtrue;
-
-					sh = ( stream_header_t * )( og.body + 1 );
-
-					//TODO: one solution for checking xvid and theora
-					if ( !isPowerOf2( sh->sh.stream_header_video.width ) )
-					{
-						Com_Printf( "Video width of the OGM file isn't a power of 2 (%s)\n", filename );
-
-						return -5;
-					}
-
-					if ( !isPowerOf2( sh->sh.stream_header_video.height ) )
-					{
-						Com_Printf( "Video height of the OGM file isn't a power of 2 (%s)\n", filename );
-
-						return -6;
-					}
-
-					g_ogm.Vtime_unit = sh->time_unit;
-
-					ogg_stream_init( &g_ogm.os_video, ogg_page_serialno( &og ) );
-					ogg_stream_pagein( &g_ogm.os_video, &og );
-				}
-			}
-
-#endif
 		}
 		else if ( loadBlockToSync() )
 		{
@@ -853,21 +608,11 @@ int Cin_OGM_Init( const char *filename )
 		}
 	}
 
-	if ( g_ogm.videoStreamIsXvid && g_ogm.videoStreamIsTheora )
-	{
-		Com_Printf( S_WARNING "Found \"video\" and \"theora\" stream; OGM file (%s)\n", filename );
-		return -2;
-	}
-
-#if 1
-
 	if ( !g_ogm.os_audio.serialno )
 	{
 		Com_Printf( S_WARNING "Didn't find a Vorbis audio stream in %s\n", filename );
 		return -2;
 	}
-
-#endif
 
 	if ( !g_ogm.os_video.serialno )
 	{
@@ -913,20 +658,6 @@ int Cin_OGM_Init( const char *filename )
 	}
 
 	vorbis_synthesis_init( &g_ogm.vd, &g_ogm.vi );
-
-#ifdef USE_CIN_XVID
-	status = init_xvid();
-
-	if ( status )
-	{
-		Com_Printf( "[Xvid]Decore INIT problem, return value %d(OGM file: %s)\n", status, filename );
-
-		return -4;
-	}
-
-#endif
-
-#ifdef USE_CIN_THEORA
 
 	if ( g_ogm.videoStreamIsTheora )
 	{
@@ -986,8 +717,6 @@ int Cin_OGM_Init( const char *filename )
 		g_ogm.Vtime_unit = ( ( ogg_int64_t ) g_ogm.th_info.fps_denominator * 1000 * 10000 / g_ogm.th_info.fps_numerator );
 	}
 
-#endif
-
 	Com_DPrintf( "OGM-Init done (%s)\n", filename );
 
 	return 0;
@@ -1040,23 +769,9 @@ unsigned char  *Cin_OGM_GetOutput( int *outWidth, int *outHeight )
 
 void Cin_OGM_Shutdown( void )
 {
-#ifdef USE_CIN_XVID
-	int status;
-
-	status = shutdown_xvid();
-
-	if ( status )
-	{
-		Com_Printf( "[Xvid]Decore RELEASE problem; return value %d\n", status );
-	}
-
-#endif
-
-#ifdef USE_CIN_THEORA
 	theora_clear( &g_ogm.th_state );
 	theora_comment_clear( &g_ogm.th_comment );
 	theora_info_clear( &g_ogm.th_info );
-#endif
 
 	if ( g_ogm.outputBuffer )
 	{
@@ -1079,6 +794,7 @@ void Cin_OGM_Shutdown( void )
 }
 
 #else
+
 int Cin_OGM_Init( const char *filename )
 {
 	return 1;

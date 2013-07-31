@@ -34,9 +34,6 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-// OGG support is enabled by this define
-#if defined ( USE_CODEC_VORBIS )
-
 // includes for the Q3 sound system
 #include "client.h"
 #include "snd_codec.h"
@@ -473,5 +470,3 @@ void *codec_ogg_load( const char *filename, snd_info_t *info )
 
 	return buffer;
 }
-
-#endif // USE_CODEC_VORBIS
