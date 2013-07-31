@@ -551,6 +551,10 @@ static void CG_SetPVars( void )
 			trap_Cvar_Set( "p_classname", "Dretch" );
 			break;
 
+		case PCL_ALIEN_LEVEL0_UPG:
+			trap_Cvar_Set( "p_classname", "Advanced Dretch" );
+			break;
+
 		case PCL_ALIEN_LEVEL1:
 			trap_Cvar_Set( "p_classname", "Basilisk" );
 			break;
@@ -649,6 +653,7 @@ static void CG_SetPVars( void )
 			break;
 
 		case WP_ALEVEL0:
+		case WP_ALEVEL0_UPG:
 			trap_Cvar_Set( "p_weaponname", "Teeth" );
 			break;
 

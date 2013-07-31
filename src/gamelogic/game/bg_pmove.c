@@ -640,7 +640,7 @@ static void PM_CheckWaterPounce( void )
 	// Check for valid class
 	switch ( pm->ps->weapon )
 	{
-		case WP_ALEVEL0:
+		case WP_ALEVEL0_UPG:
 		case WP_ALEVEL3:
 		case WP_ALEVEL3_UPG:
 			break;
@@ -824,7 +824,7 @@ static qboolean PM_CheckPounce( void )
 	// Check for valid class
 	switch ( pm->ps->weapon )
 	{
-		case WP_ALEVEL0:
+		case WP_ALEVEL0_UPG:
 		case WP_ALEVEL3:
 		case WP_ALEVEL3_UPG:
 			break;
@@ -854,7 +854,7 @@ static qboolean PM_CheckPounce( void )
 	// Check class-specific conditions for starting a pounce
 	switch ( pm->ps->weapon )
 	{
-		case WP_ALEVEL0:
+		case WP_ALEVEL0_UPG:
 			// Check if player wants to pounce
 			if ( !usercmdButtonPressed( pm->cmd.buttons, BUTTON_ATTACK2 ) )
 			{
@@ -901,7 +901,7 @@ static qboolean PM_CheckPounce( void )
 	// Calculate jump parameters
 	switch ( pm->ps->weapon )
 	{
-		case WP_ALEVEL0:
+		case WP_ALEVEL0_UPG:
 			// wallwalking
 			if ( pm->ps->groundEntityNum == ENTITYNUM_WORLD && pml.groundTrace.plane.normal[ 2 ] <= 0.1f )
 			{
@@ -3620,8 +3620,8 @@ static void PM_Weapon( void )
 		return;
 	}
 
-	// Pounce cooldown (level 0)
-	if ( pm->ps->weapon == WP_ALEVEL0 )
+	// Pounce cooldown (advanced dretch)
+	if ( pm->ps->weapon == WP_ALEVEL0_UPG )
 	{
 		pm->ps->stats[ STAT_MISC ] -= pml.msec;
 
@@ -3631,7 +3631,7 @@ static void PM_Weapon( void )
 		}
 	}
 
-	// Charging for a pounce or canceling a pounce (level 3)
+	// Charging for a pounce or canceling a pounce (dragoon)
 	if ( pm->ps->weapon == WP_ALEVEL3 || pm->ps->weapon == WP_ALEVEL3_UPG )
 	{
 		int max;
@@ -3956,6 +3956,7 @@ static void PM_Weapon( void )
 	switch ( pm->ps->weapon )
 	{
 		case WP_ALEVEL0:
+		case WP_ALEVEL0_UPG:
 			//venom is only autohit
 			return;
 
@@ -4107,6 +4108,7 @@ static void PM_Weapon( void )
 		switch ( pm->ps->weapon )
 		{
 			case WP_ALEVEL0:
+			case WP_ALEVEL0_UPG:
 				pm->ps->generic1 = WPM_PRIMARY;
 				PM_AddEvent( EV_FIRE_WEAPON );
 				addTime = BG_Weapon( pm->ps->weapon )->repeatRate1;

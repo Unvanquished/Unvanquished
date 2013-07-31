@@ -1544,6 +1544,9 @@ static int GetPlayerMass( class_t pcl )
 		case PCL_ALIEN_LEVEL0:
 			return 5;
 
+		case PCL_ALIEN_LEVEL0_UPG:
+			return 6;
+
 		case PCL_ALIEN_LEVEL1:
 			return 30;
 

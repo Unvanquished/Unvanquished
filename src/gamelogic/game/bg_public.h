@@ -353,6 +353,7 @@ typedef enum
   WP_NONE,
 
   WP_ALEVEL0,
+  WP_ALEVEL0_UPG,
   WP_ALEVEL1,
   WP_ALEVEL1_UPG,
   WP_ALEVEL2,
@@ -844,6 +845,7 @@ typedef enum
 
   //offensive classes
   PCL_ALIEN_LEVEL0,
+  PCL_ALIEN_LEVEL0_UPG,
   PCL_ALIEN_LEVEL1,
   PCL_ALIEN_LEVEL1_UPG,
   PCL_ALIEN_LEVEL2,

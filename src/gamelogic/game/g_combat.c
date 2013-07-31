@@ -1273,7 +1273,8 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 
 			// if dretchpunt is enabled and this is a dretch, do dretchpunt instead of damage
 			if ( g_dretchPunt.integer && targ->client &&
-			     targ->client->ps.stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL0 )
+			     ( targ->client->ps.stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL0 ||
+			       targ->client->ps.stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL0_UPG ) )
 			{
 				vec3_t dir, push;
 
