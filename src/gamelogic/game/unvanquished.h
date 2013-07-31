@@ -338,6 +338,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define FLAMER_IGNITE_RADIUS     50
 #define FLAMER_IGNITE_CHANCE     0.5f
 #define FLAMER_IGNITE_SPLCHANCE  0.1f
+#define FLAMER_LEAVE_FIRE_CHANCE 0.3f
 
 #define PRIFLE_DMG               HDM(9)
 #define PRIFLE_SPEED             1200
@@ -445,6 +446,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 /*
  * Misc
  */
+
+// fire
+#define FIRE_MIN_DISTANCE                  20.0f
 
 // fall distance
 #define MIN_FALL_DISTANCE                  30.0f  // the fall distance at which fall damage kicks in

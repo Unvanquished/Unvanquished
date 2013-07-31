@@ -1999,7 +1999,7 @@ double rint( double x );
 		ET_PUSHER,
 		ET_TELEPORTER,
 		ET_INVISIBLE,
-		ET_GRAPPLE,       // grapple hooked on wall
+		ET_FIRE,
 
 		ET_CORPSE,
 		ET_PARTICLE_SYSTEM,
