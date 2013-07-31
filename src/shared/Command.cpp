@@ -392,13 +392,15 @@ namespace Cmd {
         return argsStarts[argNum];
     }
 
-    const std::vector<std::string>& Args::ArgVector() const
-    {
+    const std::vector<std::string>& Args::ArgVector() const {
         return args;
     }
 
-    const std::string& Args::operator[] (int argNum) const
-    {
+    int Args::size() const {
+        return Argc();
+    }
+
+    const std::string& Args::operator[] (int argNum) const {
         return Argv(argNum);
     }
 

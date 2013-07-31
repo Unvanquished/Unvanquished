@@ -67,6 +67,7 @@ namespace Cmd {
 
             const std::vector<std::string>& ArgVector() const;
 
+            int size() const; // same as Argc()
             const std::string& operator[] (int argNum) const; // same as Argv(int)
 
         private:

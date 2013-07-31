@@ -778,8 +778,7 @@ Cmd_TokenizeString
 */
 void Cmd_TokenizeString( const char *text_in )
 {
-    std::string cmd(text_in)
-	Cmd::Args args(cmd);
+	Cmd::Args args(text_in);
 	Cmd::SetCurrentArgs(args);
 }
 

@@ -4565,7 +4565,7 @@ void FS_PureServerSetLoadedPaks( const char *pakSums, const char *pakNames )
 
 	Cmd::Args sums(pakSums);
 
-	c = sums.Argc();
+	c = sums.size();
 
 	if ( c > MAX_SEARCH_PATHS )
 	{
@@ -4576,7 +4576,7 @@ void FS_PureServerSetLoadedPaks( const char *pakSums, const char *pakNames )
 
 	for ( i = 0; i < c; i++ )
 	{
-		fs_serverPaks[ i ] = Str::ToInt(sums.Argv(i));
+		fs_serverPaks[ i ] = Str::ToInt(sums[i]);
 	}
 
 	if ( fs_numServerPaks )
@@ -4609,7 +4609,7 @@ void FS_PureServerSetLoadedPaks( const char *pakSums, const char *pakNames )
 	{
 		Cmd::Args names(pakNames);
 
-		d = names.Argc();
+		d = names.size();
 
 		if ( d > MAX_SEARCH_PATHS )
 		{
@@ -4618,7 +4618,7 @@ void FS_PureServerSetLoadedPaks( const char *pakSums, const char *pakNames )
 
 		for ( i = 0; i < d; i++ )
 		{
-			fs_serverPakNames[ i ] = CopyString(names.Argv(i).c_str());
+			fs_serverPakNames[ i ] = CopyString(names[i].c_str());
 		}
 	}
 }
@@ -4638,7 +4638,7 @@ void FS_PureServerSetReferencedPaks( const char *pakSums, const char *pakNames )
 
 	Cmd::Args sums(pakSums);
 
-	c = sums.Argc();
+	c = sums.size();
 
 	if ( c > MAX_SEARCH_PATHS )
 	{
@@ -4649,7 +4649,7 @@ void FS_PureServerSetReferencedPaks( const char *pakSums, const char *pakNames )
 
 	for ( i = 0; i < c; i++ )
 	{
-		fs_serverReferencedPaks[ i ] = Str::ToInt(sums.Argv(i));
+		fs_serverReferencedPaks[ i ] = Str::ToInt(sums[i]);
 	}
 
 	for ( i = 0; i < c; i++ )
@@ -4666,7 +4666,7 @@ void FS_PureServerSetReferencedPaks( const char *pakSums, const char *pakNames )
 	{
 		Cmd::Args names(pakNames);
 
-		d = names.Argc();
+		d = names.size();
 
 		if ( d > MAX_SEARCH_PATHS )
 		{
@@ -4675,7 +4675,7 @@ void FS_PureServerSetReferencedPaks( const char *pakSums, const char *pakNames )
 
 		for ( i = 0; i < d; i++ )
 		{
-			fs_serverReferencedPakNames[ i ] = CopyString(names.Argv(i).c_str());
+			fs_serverReferencedPakNames[ i ] = CopyString(names[i].c_str());
 		}
 	}
 }

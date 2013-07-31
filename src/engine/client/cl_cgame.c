@@ -385,15 +385,15 @@ qboolean CL_GetServerCommand( int serverCommandNumber )
 
 rescan:
 	Cmd::Args args(s);
-	cmd = args.Argv(0).c_str();
-	argc = args.Argc();
+	cmd = args[0].c_str();
+	argc = args.size();
 
 	if ( !strcmp( cmd, "disconnect" ) )
 	{
 		// NERVE - SMF - allow server to indicate why they were disconnected
 		if ( argc >= 2 )
 		{
-			Com_Error( ERR_SERVERDISCONNECT, "Server disconnected: %s", args.Argv(1).c_str() );
+			Com_Error( ERR_SERVERDISCONNECT, "Server disconnected: %s", args[1].c_str() );
 		}
 		else
 		{
@@ -403,13 +403,13 @@ rescan:
 
 	if ( !strcmp( cmd, "bcs0" ) )
 	{
-		Com_sprintf( bigConfigString, BIG_INFO_STRING, "cs %s %s", args.Argv(1).c_str(), Cmd_QuoteString( args.Argv(2).c_str() ) );
+		Com_sprintf( bigConfigString, BIG_INFO_STRING, "cs %s %s", args[1].c_str(), Cmd_QuoteString( args[2].c_str() ) );
 		return qfalse;
 	}
 
 	if ( !strcmp( cmd, "bcs1" ) )
 	{
-		s = Cmd_QuoteString( args.Argv(2).c_str() );
+		s = Cmd_QuoteString( args[2].c_str() );
 
 		if ( strlen( bigConfigString ) + strlen( s ) >= BIG_INFO_STRING )
 		{
@@ -422,7 +422,7 @@ rescan:
 
 	if ( !strcmp( cmd, "bcs2" ) )
 	{
-		s = Cmd_QuoteString( args.Argv(2).c_str() );
+		s = Cmd_QuoteString( args[2].c_str() );
 
 		if ( strlen( bigConfigString ) + strlen( s ) + 1 >= BIG_INFO_STRING )
 		{
@@ -472,7 +472,7 @@ rescan:
 			return qfalse;
 		}
 
-		mpz_init_set_str( message, args.Argv(1).c_str(), 16 );
+		mpz_init_set_str( message, args[1].c_str(), 16 );
 
 		if ( rsa_decrypt( &private_key, &msg_len, ( unsigned char * ) buffer + 16, message ) )
 		{
