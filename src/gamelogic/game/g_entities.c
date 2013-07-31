@@ -462,11 +462,11 @@ gentity chain handling
 /**
  * a call made by the world, mostly by hard coded calls due to world-events
  */
-const gentityCall_t WORLD_CALL = { NULL, &g_entities[ ENTITYNUM_WORLD ], &g_entities[ ENTITYNUM_WORLD ] };
+#define WORLD_CALL (gentityCall_t){ NULL, &g_entities[ ENTITYNUM_WORLD ], &g_entities[ ENTITYNUM_WORLD ] }
 /**
  * a non made call
  */
-const gentityCall_t NULL_CALL = { NULL, &g_entities[ ENTITYNUM_NONE ], &g_entities[ ENTITYNUM_NONE ] };
+#define NULL_CALL (gentityCall_t){ NULL, &g_entities[ ENTITYNUM_NONE ], &g_entities[ ENTITYNUM_NONE ] }
 
 typedef struct
 {

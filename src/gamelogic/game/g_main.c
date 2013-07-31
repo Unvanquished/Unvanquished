@@ -350,9 +350,6 @@ static cvarTable_t gameCvarTable[] =
 
 static const size_t gameCvarTableSize = ARRAY_LEN( gameCvarTable );
 
-void               G_InitGame( int levelTime, int randomSeed, int restart );
-void               G_RunFrame( int levelTime );
-void               G_ShutdownGame( int restart );
 void               CheckExitRules( void );
 
 void               G_CountSpawns( void );

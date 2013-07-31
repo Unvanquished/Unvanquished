@@ -21,7 +21,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "../qcommon/q_shared.h"
-#include "../qcommon/vm_traps.h"
 #include "../renderer/tr_types.h"
 
 #define CGAME_IMPORT_API_VERSION 3
@@ -59,7 +58,7 @@ typedef struct
 
 typedef enum cgameImport_s
 {
-  CG_PRINT = FIRST_VM_SYSCALL,
+  CG_PRINT,
   CG_ERROR,
   CG_LOG,
   CG_MILLISECONDS,

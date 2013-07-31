@@ -337,6 +337,26 @@ Maryland 20850 USA.
 
 #endif
 #endif
+
+//================================================================== NACL ===
+
+#ifdef __native_client__
+
+#define INLINE inline
+#define Q3_LITTLE_ENDIAN
+
+#define MAC_STATIC
+
+#define OS_STRING     "nacl"
+#define PATH_SEP      '/'
+
+#define ARCH_STRING   "nacl"
+
+#define DLL_PREFIX    ""
+#define DLL_EXT       ".nexe"
+#define EXE_EXT       ".nexe"
+
+#endif
 //================================================================== Q3VM ===
 
 #ifdef Q3_VM

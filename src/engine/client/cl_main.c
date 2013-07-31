@@ -4274,7 +4274,7 @@ qboolean CL_InitRef( const char *renderer )
 
 	if ( !GetRefAPI )
 	{
-		Com_Printf( "Can't load symbol GetRefAPI: '%s'",  Sys_LibraryError() );
+		Com_Printf( "Can't load symbol GetRefAPI: '%s'\n",  Sys_LibraryError() );
 		Sys_UnloadDll( lib );
 		return qfalse;
 	}
@@ -4347,8 +4347,6 @@ qboolean CL_InitRef( const char *renderer )
 	ri.IN_Init = IN_Init;
 	ri.IN_Shutdown = IN_Shutdown;
 	ri.IN_Restart = IN_Restart;
-
-	ri.ftol = Q_ftol;
 
 	ri.Sys_GLimpSafeInit = Sys_GLimpSafeInit;
 	ri.Sys_GLimpInit = Sys_GLimpInit;

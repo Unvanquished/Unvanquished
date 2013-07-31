@@ -34,8 +34,6 @@ Maryland 20850 USA.
 
 #include "revision.h"
 
-#include <CPUInfo.h>
-
 #include <signal.h>
 #include <stdlib.h>
 #include <limits.h>
@@ -194,44 +192,7 @@ Sys_GetProcessorFeatures
 */
 cpuFeatures_t Sys_GetProcessorFeatures( void )
 {
-#ifdef USE_CPUINFO
-	cpuFeatures_t features = 0;
-	CPUINFO       cpuinfo;
-
-	GetCPUInfo( &cpuinfo, CI_FALSE );
-
-	if ( HasCPUID( &cpuinfo ) ) { features |= CF_RDTSC; }
-
-	if ( HasMMX( &cpuinfo ) ) { features |= CF_MMX; }
-
-	if ( HasMMXExt( &cpuinfo ) ) { features |= CF_MMX_EXT; }
-
-	if ( Has3DNow( &cpuinfo ) ) { features |= CF_3DNOW; }
-
-	if ( Has3DNowExt( &cpuinfo ) ) { features |= CF_3DNOW_EXT; }
-
-	if ( HasSSE( &cpuinfo ) ) { features |= CF_SSE; }
-
-	if ( HasSSE2( &cpuinfo ) ) { features |= CF_SSE2; }
-
-	if ( HasSSE3( &cpuinfo ) ) { features |= CF_SSE3; }
-
-	if ( HasSSSE3( &cpuinfo ) ) { features |= CF_SSSE3; }
-
-	if ( HasSSE4_1( &cpuinfo ) ) { features |= CF_SSE4_1; }
-
-	if ( HasSSE4_2( &cpuinfo ) ) { features |= CF_SSE4_2; }
-
-	if ( HasHTT( &cpuinfo ) ) { features |= CF_HasHTT; }
-
-	if ( HasSerial( &cpuinfo ) ) { features |= CF_HasSerial; }
-
-	if ( Is64Bit( &cpuinfo ) ) { features |= CF_Is64Bit; }
-
-	return features;
-#else
 	return ( cpuFeatures_t ) 0;
-#endif
 }
 
 /*
@@ -620,11 +581,6 @@ int main( int argc, char **argv )
 		Sys_Exit( 1 );
 	}
 
-#endif
-
-#if 0 // looks like broken on !Windows; remove?
-	Sys_PrintCpuInfo();
-	Sys_PrintMemoryInfo();
 #endif
 
 #ifdef OPENMP

@@ -1127,6 +1127,9 @@ void       G_ExecuteVote( team_t team );
 void       G_CheckVote( team_t team );
 void       LogExit( const char *string );
 int        G_TimeTilSuddenDeath( void );
+void       G_InitGame( int levelTime, int randomSeed, int restart );
+void       G_RunFrame( int levelTime );
+void       G_ShutdownGame( int restart );
 
 //
 // g_client.c
@@ -1207,6 +1210,7 @@ const char *G_quoted_admin_name( gentity_t *ent );
 
 extern  level_locals_t level;
 extern  gentity_t      *g_entities;
+extern  gclient_t      *g_clients;
 
 #define FOFS(x) ((size_t)&(((gentity_t *)0 )->x ))
 

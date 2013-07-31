@@ -2010,10 +2010,10 @@ extern "C" {
 	GetRefAPI
 	=====================
 	*/
-//#if defined(__cplusplus)
-//extern "C" {
-//#endif
-	refexport_t *GetRefAPI( int apiVersion, refimport_t *rimp )
+#ifdef  __cplusplus
+extern "C"
+#endif
+	Q_EXPORT refexport_t *GetRefAPI( int apiVersion, refimport_t *rimp )
 	{
 		static refexport_t re;
 

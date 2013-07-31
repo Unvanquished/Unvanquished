@@ -14,153 +14,220 @@ include( CMakeDependentOption )
 # This line has to appear before 'PROJECT' in order to be able to disable incremental linking
 set( MSVC_INCREMENTAL_DEFAULT ON )
 
-set( CMAKE_BUILD_TYPE Release CACHE STRING "Build configuration (Debug, Release, RelWithDebInfo, MinSizeRel)" )
-
-# convenience option for source distros
-option( MINIMAL_FLAGS "try not to mess up system flags" 0)
+# Default to Release builds. To use system CFLAGS only (for distro builds), set CMAKE_BUILD_TYPE to None
+if( NOT CMAKE_BUILD_TYPE )
+   set( CMAKE_BUILD_TYPE "Release" )
+endif()
 
 project( Daemon C CXX )
 
-set( X86 0 )
-if( WIN32 OR MSVC OR CMAKE_SYSTEM_PROCESSOR MATCHES "i.86" OR CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64" )
-  set( X86 1 )
-endif()
+################################################################################
+# Configuration options
+################################################################################
 
-set( MOUNT_DIR ${CMAKE_SOURCE_DIR}/src )
-set( OBJ_DIR ${CMAKE_BINARY_DIR}/CMakeFiles )
-
-# Check if this is first run and if so set some default flags
-if( NOT DEFINED SUBSEQUENT_RUN )
-  set( SUBSEQUENT_RUN 1 CACHE INTERNAL "True if not first run" )
-
-  if( MSVC )
-    set( CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /arch:SSE /fp:precise /Oy" CACHE STRING "Flags used by the compiler during release builds" FORCE )
-  else()
-    if(NOT MINIMAL_FLAGS)
-      # "gcc -msse2" fails on non-x86
-      if( X86 )
-        set( CMAKE_USE_SSE2 "-msse2" )
-      else()
-        set( CMAKE_USE_SSE2 "" )
-      endif()
-
-      macro( try_compiler_option COMPILER_ID COMPILER_VERSION PROP FLAG_TRUE FLAG_FALSE )
-        if( COMPILER_ID STREQUAL "" OR ( CMAKE_C_COMPILER_ID STREQUAL "${COMPILER_ID}" AND NOT ( CMAKE_C_COMPILER_VERSION VERSION_LESS "${COMPILER_VERSION}" ) ) )
-          set( SAVED_FLAGS "${CMAKE_C_FLAGS}" )
-          set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${FLAG_TRUE}" )
-          try_compile( ${PROP}_TEST ${MOUNT_DIR}/tests ${MOUNT_DIR}/tests/test.c
-                       CMAKE_FLAGS "-DCMAKE_C_FLAGS=${CMAKE_C_FLAGS}" )
-          set( CMAKE_C_FLAGS "${SAVED_FLAGS}" )
-          if( ${PROP}_TEST )
-            message( STATUS "Using flag ${FLAG_TRUE}" )
-            set( ${PROP} ${FLAG_TRUE} )
-          else()
-            set( ${PROP} ${FLAG_FALSE} )
-          endif()
-        else()
-          set( ${PROP} ${FLAG_FALSE} )
-        endif()
-      endmacro()
-
-      try_compiler_option( GNU   0.0 DEBUG_SYMBOLS_LEVEL -g3 -g  ) # gcc: macro expansion etc. in gdb
-      try_compiler_option( GNU   4.8 DEBUG_OPTIMISE      -Og ""  ) # gcc 4.8: optimisation level for debug builds
-
-      set( CMAKE_C_FLAGS "${CMAKE_USE_SSE2} -pipe" CACHE STRING "Flags used by the compiler during all build types" FORCE )
-      set( CMAKE_C_FLAGS_DEBUG "${DEBUG_OPTIMISE} ${DEBUG_SYMBOLS_LEVEL}" CACHE STRING "Flags used by the compiler during debug builds." FORCE )
-      set( CMAKE_C_FLAGS_MINSIZEREL "-DNDEBUG -Os" CACHE STRING "Flags used by the compiler during release minsize builds." FORCE )
-      set( CMAKE_C_FLAGS_RELEASE "-DNDEBUG -O3 -ffast-math -fomit-frame-pointer -fno-strict-aliasing" CACHE STRING "Flags used by the compiler during release builds" FORCE )
-      set( CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELEASE} -g" CACHE STRING "Flags used by the compiler during Release with Debug Info builds." FORCE )
-    else(NOT MINIMAL_FLAGS)
-      set( CMAKE_C_FLAGS_DEBUG "" )
-      set( CMAKE_C_FLAGS_RELEASE "-DNDEBUG" )
-    endif(NOT MINIMAL_FLAGS)
-  endif()
-
-  set( CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -std=c++11" CACHE STRING "Flags used by the compiler during all build types" FORCE )
-  set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -std=c++11" CACHE STRING "Flags used by the compiler during debug builds." FORCE )
-  set( CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_C_FLAGS_MINSIZEREL} -std=c++11" CACHE STRING "Flags used by the compiler during release minsize builds." FORCE )
-  set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -std=c++11" CACHE STRING "Flags used by the compiler during release builds" FORCE )
-  set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO}
-  -std=c++11" CACHE STRING "Flags used by the compiler during Release with Debug Info builds." FORCE )
-endif()
-
-set( CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "" ) # Need this to get rid of -rdynamic linker flag set by default by cmake
-set( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" )
-
-
-# Options
+# Build targets
 option( BUILD_CLIENT         "Build Daemon client"                         1 )
 option( BUILD_SERVER         "Build Daemonded server"                      1 )
-option( GAME_LIB             "Build game logic libraries"                  0 )
-option( GAME_QVM             "Build game logic QVM files"                  0 )
-option( BUILD_DAEMONMAP      "Build Mapping tool"                          0 )
+option( BUILD_GAME_NATIVE    "Build native game logic "                    0 )
+option( BUILD_GAME_NACL      "Build NaCl game logic"                       0 )
 option( BUILD_TTY_CLIENT     "Build Daemon headless client"                0 )
-
-option( ENABLE_W_ALL         "Use -Wall"                                   0 )
-option( ENABLE_WARNINGS      "Enable security & code-checking warning options" 1 )
-option( ENABLE_HARDENING     "Enable security hardening options"           1 )
-
-option( USE_GIT_DESCRIBE     "Use the revision information reported by Git's describe function" 1 )
-option( ENABLE_BUNDLING      "When packaging automatically include all non-system libraries in package" 0 )
-
 cmake_dependent_option( BUILD_OLD_RENDERER   "Build old renderer library"                            1 BUILD_CLIENT                   0 )
 cmake_dependent_option( BUILD_NEW_RENDERER   "Build new renderer library"                            1 BUILD_CLIENT                   0 )
+
+option( ENABLE_LTO           "Use link-time optimization for Release builds"                            0 )
+option( ENABLE_BUNDLING      "When packaging automatically include all non-system libraries in package" 0 )
+
 cmake_dependent_option( USE_OPENAL           "Use OpenAL"                                            1 BUILD_CLIENT                   0 )
-cmake_dependent_option( USE_CODEC_VORBIS     "Compile with support for Vorbis"                       1 BUILD_CLIENT                   0 )
 cmake_dependent_option( USE_MUMBLE           "Compile with support for Mumble"                       1 BUILD_CLIENT                   0 )
 cmake_dependent_option( USE_VOIP             "Compile with VOIP support"                             1 "BUILD_CLIENT OR BUILD_SERVER" 0 )
-cmake_dependent_option( USE_CIN_XVID         "Encode videos with XViD"                               1 BUILD_CLIENT                   0 )
-cmake_dependent_option( USE_INTERNAL_SDL     "Use SDL files included with Unvanquished"              0 BUILD_CLIENT                   0 )
+cmake_dependent_option( USE_CURSES           "Use the curses console"                                1 "BUILD_CLIENT OR BUILD_SERVER OR BUILD_TTY_CLIENT" 0 )
 
-cmake_dependent_option( USE_CPUINFO          "Use CPUInfo (if compilation fails, then disable this)" 1 "X86 AND (BUILD_CLIENT OR BUILD_SERVER)" 0 )
-cmake_dependent_option( USE_CURSES           "Use the curses console"                                1 "BUILD_CLIENT OR BUILD_SERVER" 0 )
-cmake_dependent_option( USE_PHYSICS          "Compile with Newton Physics"                           0 "BUILD_CLIENT OR BUILD_SERVER" 0 )
-cmake_dependent_option( USE_INTERNAL_CRYPTO  "Use internal crypto (nettle)"                          0 "BUILD_CLIENT OR BUILD_SERVER" 0 )
+################################################################################
+# Determine platform
+################################################################################
 
-cmake_dependent_option( USE_INTERNAL_JPEG    "Use JPEG files included with Unvanquished"             0
-                                                                        "BUILD_OLD_RENDERER OR BUILD_NEW_RENDERER OR BUILD_DAEMONMAP" 0 )
-
-cmake_dependent_option( USE_GLSL_OPTIMIZER   "Compile with GLSL Optimizer"                           1 BUILD_NEW_RENDERER             0 )
-cmake_dependent_option( USE_SDL_ICONV        "Compile with SDL's iconv implementation"               1 BUILD_CLIENT                   0 )
-
-cmake_dependent_option( HAVE_BZIP2           "Compile with BZip2 support"                            0 "HAVE_BZIP2"                   0 )
-
-cmake_dependent_option( BUILD_GAME_GPP       "Build Tremulous GPP game logic"              1 "GAME_LIB OR GAME_QVM" 0 )
-cmake_dependent_option( DEBUG_VM_ALLOC       "Debug some allocations (VM as native code)"  0 GAME_LIB         0 )
-cmake_dependent_option( GAME_LIB_LLVM        "Use LLVM, not shared libs, for game logic"   0 GAME_LIB         0 )
-
-cmake_dependent_option( USE_OPENAL_DLOPEN    "Use dlopen to load OpenAL"                   1 USE_OPENAL       0 )
-cmake_dependent_option( USE_CIN_THEORA       "Compile with support for Theora"             1 USE_CODEC_VORBIS 0 )
-cmake_dependent_option( USE_INTERNAL_SPEEX   "Use internal speex"                          0 USE_VOIP         0 )
-cmake_dependent_option( USE_INTERNAL_GLEW    "Use internal GLEW"                           0 BUILD_CLIENT     0 )
-
-cmake_dependent_option( USE_INTERNAL_WEBP    "Use internal WebP"                           0 BUILD_CLIENT     0 )
-
-cmake_dependent_option( ENABLE_W_EXTRA       "Use -Wextra"                                 0 ENABLE_W_ALL     0 )
-
-cmake_dependent_option( ENABLE_FSTACKPROT    "Enable stack protection if available"        1 ENABLE_HARDENING 0 )
-cmake_dependent_option( ENABLE_RELRO         "Enable relro & bindnow if available"         1 ENABLE_HARDENING 0 )
-
-mark_as_advanced( GAME_LIB_LLVM LLVM_CONFIG ENABLE_FSTACKPROT ENABLE_RELRO USE_GIT_DESCRIBE ENABLE_BUNDLING )
-
-if( GAME_LIB_LLVM )
-  find_program( LLVM_CONFIG llvm-config )
-  execute_process( COMMAND ${LLVM_CONFIG} --libfiles
-                   OUTPUT_VARIABLE LLVM_LIBS OUTPUT_STRIP_TRAILING_WHITESPACE )
-  execute_process( COMMAND ${LLVM_CONFIG} --includedir OUTPUT_VARIABLE LLVM_INCLUDE_DIR OUTPUT_STRIP_TRAILING_WHITESPACE )
-  execute_process( COMMAND ${LLVM_CONFIG} --version OUTPUT_VARIABLE LLVM_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE )
-  execute_process( COMMAND ${LLVM_CONFIG} --libdir OUTPUT_VARIABLE LLVM_LIBDIR OUTPUT_STRIP_TRAILING_WHITESPACE )
-  separate_arguments( LLVM_LIBS )
-
-  include( ${CMAKE_SOURCE_DIR}/cmake/CMakeLLVMInformation.cmake )
-  include( ${CMAKE_SOURCE_DIR}/cmake/CMakeLLVMXXInformation.cmake )
-  file( WRITE ${OBJ_DIR}/CMakeLLVMCompiler.cmake )
-  file( WRITE ${OBJ_DIR}/CMakeLLVMXXCompiler.cmake )
-  enable_language( LLVM )
-  enable_language( LLVMXX )
-  message( STATUS "Using LLVM" )
+# When adding a new platform, look at all the places WIN32, MAC and LINUX are used
+if( WIN32 )
+  set( PLATFORM "win32" )
+elseif( CMAKE_SYSTEM_NAME MATCHES "Darwin" )
+  set( MAC ON )
+  set( PLATFORM "mac" )
+elseif( CMAKE_SYSTEM_NAME MATCHES "Linux" )
+  set( LINUX ON )
+  set( PLATFORM "linux" )
+else()
+  message( FATAL_ERROR "Platform not supported" )
 endif()
 
+################################################################################
+# Determine architecture
+################################################################################
+
+# When adding a new architecture, look at all the places ARCH is used
+if( WIN32 )
+  # CMAKE_SYSTEM_PROCESSOR is not reliable under windows
+  if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
+    set( ARCH "x86_64" )
+  elseif( CMAKE_SIZEOF_VOID_P EQUAL 4 )
+    set( ARCH "x86" )
+  else()
+    set( ARCH ${CMAKE_SYSTEM_PROCESSOR} )
+  endif()
+else()
+  if( CMAKE_SYSTEM_PROCESSOR MATCHES "i.86" OR CMAKE_SYSTEM_PROCESSOR STREQUAL "x86" )
+    # Sometimes CMAKE_SYSTEM_PROCESSOR returns x86 on x86_64
+    if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
+      set( ARCH "x86_64" )
+    else()
+      set( ARCH "x86" )
+    endif()
+  elseif( CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64" OR CMAKE_SYSTEM_PROCESSOR STREQUAL "amd64" )
+   set( ARCH "x86_64" )
+  else()
+    set( ARCH ${CMAKE_SYSTEM_PROCESSOR} )
+  endif()
+endif()
+
+################################################################################
+# Compile and link flags
+################################################################################
+
+include(CheckCCompilerFlag)
+include(CheckCXXCompilerFlag)
+
+# Set flag without checking, optional argument specifies build type
+macro( set_c_flag FLAG )
+  if( ${ARGC} GREATER 1 )
+    set( CMAKE_C_FLAGS_${ARGV1} "${CMAKE_C_FLAGS_${ARGV1}} ${FLAG}" )
+  else()
+    set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${FLAG}" )
+  endif()
+endmacro()
+macro( set_cxx_flag FLAG )
+  if( ${ARGC} GREATER 1 )
+    set( CMAKE_CXX_FLAGS_${ARGV1} "${CMAKE_CXX_FLAGS_${ARGV1}} ${FLAG}" )
+  else()
+    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${FLAG}" )
+  endif()
+endmacro()
+macro( set_c_cxx_flag FLAG )
+  set_c_flag( ${FLAG} ${ARGN} )
+  set_cxx_flag( ${FLAG} ${ARGN} )
+endmacro()
+macro( set_linker_flag FLAG )
+  set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${FLAG}" )
+  set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${FLAG}" )
+  set( CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} ${FLAG}" )
+endmacro()
+
+# Try flag and set if it works, optional argument specifies build type
+macro( try_c_flag PROP FLAG )
+  check_C_compiler_flag( ${FLAG} FLAG_${PROP} )
+  if( FLAG_${PROP} )
+    set_c_flag( ${FLAG} ${ARGN} )
+  endif()
+endmacro()
+macro( try_cxx_flag PROP FLAG )
+  check_CXX_compiler_flag( ${FLAG} FLAG_${PROP} )
+  if( FLAG_${PROP} )
+    set_cxx_flag( ${FLAG} ${ARGV2} )
+  endif()
+endmacro()
+macro( try_c_cxx_flag PROP FLAG )
+  # Only try the flag once on the C compiler
+  try_c_flag( ${PROP} ${FLAG} ${ARGV2} )
+  if( FLAG_${PROP} )
+    set_cxx_flag( ${FLAG} ${ARGV2} )
+  endif()
+endmacro()
+
+if( MSVC )
+  set_c_cxx_flag( "/fp:fast" )
+  if( ARCH STREQUAL "x86" )
+    set_c_cxx_flag( "/arch:SSE2" )
+  endif()
+  if( ENABLE_LTO )
+    set_c_cxx_flag( "/GL" RELEASE )
+    set_linker_flag( "/LTCG" )
+  endif()
+else()
+  # Amanieu: Look into enabling strict aliasing
+  set_c_cxx_flag( "-ffast-math" )
+  set_c_cxx_flag( "-fno-strict-aliasing" )
+  set_c_cxx_flag( "-fomit-frame-pointer" RELEASE )
+
+  # Set arch on x86 to SSE2 minimum and enable CMPXCHG16B
+  if( ARCH STREQUAL "x86" )
+    set_c_cxx_flag( "-m32" )
+    set_c_cxx_flag( "-msse2" )
+    set_c_cxx_flag( "-mtune=generic" )
+    set_c_cxx_flag( "-mfpmath=sse" )
+  elseif( ARCH STREQUAL "x86_64" )
+    set_c_cxx_flag( "-m64" )
+    set_c_cxx_flag( "-mtune=generic" )
+    try_c_cxx_flag( MCX16 "-mcx16" )
+  endif()
+
+  # Use hidden symbol visibility if possible
+  try_c_cxx_flag( FVISIBILITY_HIDDEN "-fvisibility=hidden" )
+
+  # Extra debug flags
+  set_c_cxx_flag( "-ggdb3" )
+  try_c_cxx_flag( OPTIMIZE_DEBUG "-Og" DEBUG )
+
+  # C++11 support
+  try_cxx_flag( GNUXX11 "-std=gnu++11" )
+  if( NOT FLAG_GNUXX11 )
+    try_cxx_flag( GNUXX0X "-std=gnu++0x" )
+    if( NOT FLAG_GNUXX0X )
+      message( FATAL_ERROR "C++11 not supported by compiler" )
+    endif()
+  endif()
+
+  # Stack protection
+  set_c_cxx_flag( "-fstack-protector" )
+  set_c_cxx_flag( "--param=ssp-buffer-size=4" )
+
+  # Linker flags
+  set_linker_flag( "-Wl,-O1,--sort-common,--as-needed,-z,relro" )
+
+  # LTO support
+  if( ENABLE_LTO )
+    set_c_cxx_flag( "-flto" RELEASE )
+
+    # These are defined for all build types, but have no effect on non-Release
+    # Attempt to use a GNU make jobserver if possible for parallel LTO
+    set_linker_flag( "-O3" )
+    set_linker_flag( "-flto=jobserver" )
+  endif()
+
+  # The -pthread flag sets some preprocessor defines
+  try_c_cxx_flag( PTHREAD "-pthread" )
+
+  # Warning options
+  set_c_cxx_flag( "-Wall" )
+  set_c_cxx_flag( "-Wno-sign-compare" )
+  set_c_cxx_flag( "-Wno-write-strings" )
+endif()
+
+# Windows-specific definitions
+if( WIN32 )
+  # Minimum Windows version: XP
+  # Define WIN32 for compatibility (compiler defines _WIN32)
+  add_definitions( -DWINVER=0x501 -DWIN32 )
+endif()
+if( MSVC )
+  add_definitions( -D_CRT_SECURE_NO_WARNINGS )
+endif()
+
+################################################################################
+# Directories
+################################################################################
+
+# Amanieu: The naming sucks here
+set( CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake )
+set( MOUNT_DIR ${CMAKE_SOURCE_DIR}/src )
+set( OBJ_DIR ${CMAKE_BINARY_DIR}/CMakeFiles )
 set( GPP_DIR ${MOUNT_DIR}/gamelogic )
 set( LIB_DIR ${MOUNT_DIR}/libs ) # LIB_DIR is also defined in Visual_Studio32/64.cmake
 set( SDL_DIR ${LIB_DIR}/libsdl )
@@ -168,79 +235,24 @@ set( JPEG_DIR ${LIB_DIR}/jpeg )
 set( GLEW_DIR ${LIB_DIR}/glew )
 set( WEBP_DIR ${LIB_DIR}/libwebp )
 
-if( WIN32 )
-  add_definitions( -D_CRT_SECURE_NO_WARNINGS )
-  set( CMAKE_SHARED_LIBRARY_PREFIX "" )
-endif()
+################################################################################
+# Git revision info
+################################################################################
 
-if( MSVC )
-  add_definitions( -D_WINDOWS -DWIN32 )
-endif()
-
-set( CONSOLE "tty" )
-
-# Determine platform
-if( WIN32 )
-  set( PLATFORM "win32" )
-  set( CONSOLE "win32" )
-elseif( UNIX )
-  if( ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
-    add_definitions( -DMACOS_X -DMACOS_X_ACCELERATION_HACK -DUSE_FILE32API -DMACOS_X_CURSOR_HACK )
-  endif()
-  set( PLATFORM "unix" )
-endif()
-
-# Determine arch.
-if( CMAKE_SYSTEM_NAME STREQUAL "Darwin" )
-  # CMAKE_SYSTEM_PROCESSOR always returns i386 for x86 and x86_64 on Mac
-  if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
-    set( BUILD_ARCH "x86_64" )
-  elseif( CMAKE_SIZEOF_VOID_P EQUAL 4 AND CMAKE_SYSTEM_PROCESSOR STREQUAL "i386" )
-    set( BUILD_ARCH "i386" )
-  elseif( CMAKE_SIZEOF_VOID_P EQUAL 4 AND CMAKE_SYSTEM_PROCESSOR STREQUAL "ppc" )
-    set( BUILD_ARCH "ppc" )
-  else()
-    set( BUILD_ARCH "Unknown" )
-  endif()
-elseif( WIN32 )
-  # CMAKE_SYSTEM_PROCESSOR is not reliable under windows
-  if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
-    set( BUILD_ARCH "x86_64" )
-  elseif( CMAKE_SIZEOF_VOID_P EQUAL 4 )
-    set( BUILD_ARCH "i386" )
-  endif()
-else()
-  # CMAKE_SYSTEM_PROCESSOR is reliable for *nix
-  if( CMAKE_SYSTEM_PROCESSOR MATCHES "i.86" )
-    set( BUILD_ARCH "i386" )
-  elseif( CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64" AND CMAKE_SIZEOF_VOID_P EQUAL 8)
-    set( BUILD_ARCH "x86_64" )
-  elseif( CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64" AND CMAKE_SIZEOF_VOID_P EQUAL 4 )
-    set( BUILD_ARCH "x32" )
-  else()
-    set( BUILD_ARCH ${CMAKE_SYSTEM_PROCESSOR} )
-  endif()
-endif()
-
-if( USE_GIT_DESCRIBE )
-  # Report the Git commit identification, if possible
-
-  if( EXISTS "${CMAKE_SOURCE_DIR}/.git" )
-    find_package( Git )
-    if( GIT_FOUND )
-      execute_process( COMMAND git describe --tags --long --dirty=+dirty OUTPUT_VARIABLE GIT_DESCRIBE_REPORT OUTPUT_STRIP_TRAILING_WHITESPACE )
-      message( STATUS "git reported ${GIT_DESCRIBE_REPORT}" )
-      # this may fail with annotated non-release tags
-      if( GIT_DESCRIBE_REPORT MATCHES "-0-g.......$" )
-        set( GIT_DESCRIBE_REPORT )
-      endif()
+if( EXISTS "${CMAKE_SOURCE_DIR}/.git" )
+  find_package( Git )
+  if( GIT_FOUND )
+    execute_process( COMMAND git describe --tags --long --match v* --dirty=+dirty OUTPUT_VARIABLE GIT_DESCRIBE_REPORT OUTPUT_STRIP_TRAILING_WHITESPACE )
+    message( STATUS "git reported ${GIT_DESCRIBE_REPORT}" )
+    # this may fail with annotated non-release tags
+    if( GIT_DESCRIBE_REPORT MATCHES "-0-g.......$" )
+      set( GIT_DESCRIBE_REPORT )
     endif()
   endif()
+endif()
 
-  if( GIT_DESCRIBE_REPORT )
-    set( DESIRED_REVISION_H_CONTENTS "#define REVISION \"${GIT_DESCRIBE_REPORT}\"\n" )
-  endif()
-  set( GIT_DESCRIBE ${GIT_DESCRIBE_REPORT} CACHE INTERNAL "commit id reported by Git" FORCE )
+if( GIT_DESCRIBE_REPORT )
+  set( DESIRED_REVISION_H_CONTENTS "#define REVISION \"${GIT_DESCRIBE_REPORT}\"\n" )
 endif()
 
 if( EXISTS "${OBJ_DIR}/revision.h" )
@@ -254,192 +266,14 @@ endif()
 
 include_directories( "${OBJ_DIR}" )
 
-# Import CMakeLists.txt for internal libraries
-if( USE_INTERNAL_SDL )
-  add_subdirectory( ${SDL_DIR} ${OBJ_DIR}/libsdl )
-  set( SDL_LIBRARY INTERNAL_SDL INTERNAL_SDLMain CACHE STRING "SDL library" FORCE )
-  set( SDL_INCLUDE_DIR ${SDL_DIR}/include CACHE STRING "SDL include directory" FORCE )
-endif()
-
-if( USE_INTERNAL_JPEG )
-  add_subdirectory( ${JPEG_DIR} ${OBJ_DIR}/libjpeg )
-  set( JPEG_LIBRARY INTERNAL_JPEG CACHE STRING "JPEG library" FORCE )
-  set( JPEG_INCLUDE_DIR ${JPEG_DIR} CACHE STRING "JPEG include directory" FORCE )
-endif()
-
-if( USE_INTERNAL_GLEW )
-  add_subdirectory( ${GLEW_DIR} ${OBJ_DIR}/libglew )
-  set( GLEW_LIBRARY INTERNAL_GLEW CACHE STRING "Glew library" FORCE )
-  set( GLEW_INCLUDE_DIR ${GLEW_DIR}/include CACHE STRING "Glew include directory" FORCE )
-endif()
-
-if( USE_INTERNAL_WEBP )
-  add_subdirectory( ${WEBP_DIR} ${OBJ_DIR}/libwebp )
-  set( WEBP_LIBRARY INTERNAL_WEBP CACHE STRING "WebP library" FORCE )
-  set( WEBP_INCLUDE_DIR ${WEBP_DIR} CACHE STRING "WebP include directory" FORCE )
-endif()
-
-# Setup CPack
-set( CPACK_PACKAGE_FILE_NAME "Unvanquished" )
-set( CPACK_PACKAGE_ICON "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cpack/OS_X/Unvanquished.icns" )
-set( CPACK_PACKAGE_DESCRIPTION_SUMMARY "Daemon Unvanquished client" )
-set( CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.md" )
-set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/GPL.txt" )
-# Mac OS X Bundle specific settings
-set( CPACK_BUNDLE_NAME ${CPACK_PACKAGE_FILE_NAME} )
-set( CPACK_BUNDLE_ICON ${CPACK_PACKAGE_ICON} )
-set( CPACK_BUNDLE_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cpack/OS_X/Info.plist" )
-
-if(NOT MINIMAL_FLAGS)
-  #################
-  # Compile flags #
-  #################
-
-  macro( try_compiler_flag_internal PROP FLAG CC SUFFIX LABEL )
-    set( SAVED_FLAGS "${CMAKE_${CC}_FLAGS}" )
-    set( CMAKE_${CC}_FLAGS "${CMAKE_${CC}_FLAGS} ${FLAG}" )
-    # test it on an executable
-    if( NOT ${PROP}_${CC}_CACHED )
-      try_compile( ${PROP}_${CC} ${MOUNT_DIR}/tests ${MOUNT_DIR}/tests/test.${SUFFIX}
-                   CMAKE_FLAGS "-DCMAKE_${CC}_FLAGS=${CMAKE_${CC}_FLAGS}" )
-    endif()
-    if( ${PROP}_${CC} )
-      if( NOT ${PROP}_${CC}_CACHED )
-        message( STATUS "Using ${LABEL} flag ${FLAG}" )
-      endif()
-    else()
-      if( NOT ${PROP}_${CC}_CACHED )
-        message( STATUS "${LABEL} flag ${FLAG} is not available" )
-      endif()
-      set( CMAKE_${CC}_FLAGS "${SAVED_FLAGS}" )
-    endif()
-    set( ${PROP}_${CC}_CACHED TRUE CACHE INTERNAL "Set if ${LABEL} option ${FLAG} has been checked for." )
-  endmacro()
-
-  macro( try_c_flag PROP FLAG )
-    try_compiler_flag_internal( ${PROP} ${FLAG} C c C )
-  endmacro()
-
-  macro( try_cxx_flag PROP FLAG )
-    try_compiler_flag_internal( ${PROP} ${FLAG} CXX cxx C++ )
-  endmacro()
-
-  macro( try_llvm_flag PROP FLAG )
-    try_compiler_flag_internal( ${PROP} ${FLAG} LLVM cc C/LLVM )
-  endmacro()
-
-  macro( try_c_llvm_flag PROP FLAG )
-    try_c_flag( ${PROP} ${FLAG} )
-    if( GAME_LIB_LLVM )
-      try_llvm_flag( ${PROP} ${FLAG} )
-    endif()
-  endmacro()
-
-  macro( try_c_cxx_flag PROP FLAG )
-    try_c_flag( ${PROP} ${FLAG} )
-    try_cxx_flag( ${PROP} ${FLAG} )
-  endmacro()
-
-  macro( try_c_cxx_llvm_flag PROP FLAG )
-    try_c_flag( ${PROP} ${FLAG} )
-    try_cxx_flag( ${PROP} ${FLAG} )
-    if( GAME_LIB_LLVM )
-      try_llvm_flag( ${PROP} ${FLAG} )
-    endif()
-  endmacro()
-
-  # Various warnings
-  if( ENABLE_W_ALL )
-    try_c_cxx_llvm_flag( HAVE_W_ALL              -Wall )
-  endif()
-  if( ENABLE_W_EXTRA )
-    try_c_cxx_llvm_flag( HAVE_W_EXTRA            -Wextra )
-  endif()
-  if( ENABLE_WARNINGS )
-    try_c_cxx_llvm_flag( HAVE_W_FORMAT2          -Wformat=2 )
-    if( NOT HAVE_W_FORMAT2_C )
-      try_c_cxx_llvm_flag( HAVE_W_FORMAT         -Wformat )
-    endif()
-    try_c_llvm_flag    ( HAVE_W_0LEN_FMT         -Wno-format-zero-length )
-    try_c_cxx_llvm_flag( HAVE_W_FORMAT_SECURITY  -Wformat-security )
-    try_c_cxx_llvm_flag( HAVE_W_STRICT_ALIAS_2   -Wstrict-aliasing=2 )
-    try_c_cxx_llvm_flag( HAVE_W_MISSING_FMT_ATTR -Wmissing-format-attribute )
-    try_c_cxx_llvm_flag( HAVE_W_MISSING_NORETURN -Wmissing-noreturn )
-    try_c_llvm_flag    ( HAVE_W_IMPLICIT_FN      -Wimplicit-function-declaration )
-    if( HAVE_W_IMPLICIT_FN_C )
-      try_c_cxx_llvm_flag( HAVE_W_ERR_IMPLICIT_FN -Werror=implicit-function-declaration )
-    endif()
-    try_c_cxx_llvm_flag( HAVE_W_FMT_SECURITY     -Wformat-security )
-    if( HAVE_W_FMT_SECURITY_C )
-      try_c_cxx_llvm_flag( HAVE_W_ERR_FMT_SECURITY -Werror=format-security )
-    endif()
-    try_c_llvm_flag( HAVE_W_DECL_AFT_STMT        -Wdeclaration-after-statement )
-    if( HAVE_W_DECL_AFT_STMT_C )
-      try_c_llvm_flag( HAVE_W_ERR_DECL_AFT_STMT  -Werror=declaration-after-statement )
-    endif()
-  endif()
-
-  # Hardening
-  if( ENABLE_HARDENING )
-    try_c_cxx_flag( HAVE_F_STACK_PROTECTOR -fstack-protector )
-  endif()
-
-  ##############
-  # Link flags #
-  ##############
-
-  macro( try_linker_flag PROP FLAG )
-    set( SAVED_FLAGS "${CMAKE_EXE_LINKER_FLAGS}" )
-    set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${FLAG}" )
-    # test it on an executable
-    if( NOT ${PROP}_CACHED )
-      try_compile( ${PROP} ${MOUNT_DIR}/tests ${MOUNT_DIR}/tests/test.c
-                   CMAKE_FLAGS -DCMAKE_EXE_LINKER_FLAGS=${CMAKE_EXE_LINKER_FLAGS} )
-    endif()
-    if( ${PROP} )
-      if( NOT ${PROP}_CACHED )
-        message( STATUS "Using linker flag ${FLAG}" )
-      endif()
-      # assume that it works for shared & static libs too
-      set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${FLAG}" )
-      set( CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} ${FLAG}" )
-    else()
-      if( NOT ${PROP}_CACHED )
-        message( STATUS "Linker flag ${FLAG} is not available" )
-      endif()
-      set( CMAKE_EXE_LINKER_FLAGS "${SAVED_FLAGS}" )
-    endif()
-    set( ${PROP}_CACHED TRUE CACHE INTERNAL "Set if linker option ${FLAG} has been checked for." )
-  endmacro()
-
-  if( NOT MSVC )
-    # Can we get rid of unneeded external libraries?
-    try_linker_flag( HAVE_AS_NEEDED -Wl,--as-needed )
-
-    # If we can, fail if there are unresolved symbols
-    try_linker_flag( HAVE_Z_DEFS -Wl,-z,defs )
-  endif()
-
-  if( ENABLE_FSTACKPROT )
-    try_linker_flag( HAVE_FSTACKPROT "-fstack-protector --param=ssp-buffer-size=4" )
-  endif()
-  if( ENABLE_RELRO )
-    try_linker_flag( HAVE_Z_RELRO_Z_NOW -Wl,-z,relro,-z,now )
-  endif()
-endif(NOT MINIMAL_FLAGS)
-
-######################
-# Define Build Files #
-######################
+################################################################################
+# File lists
+################################################################################
 
 set( SHAREDLIST
   ${MOUNT_DIR}/engine/qcommon/q_shared.c
   ${MOUNT_DIR}/engine/qcommon/q_unicode.c
   ${MOUNT_DIR}/engine/qcommon/q_math.c
-)
-
-set( OPENEXRLIST
-  ${MOUNT_DIR}/libs/openexr/half.cpp
 )
 
 set( RENDERERLIST
@@ -518,6 +352,7 @@ set( RENDERERGLLIST
   ${MOUNT_DIR}/engine/rendererGL/tr_vbo.c
   ${MOUNT_DIR}/engine/rendererGL/tr_world.cpp
   ${MOUNT_DIR}/engine/qcommon/md4.c
+  ${MOUNT_DIR}/libs/openexr/half.cpp
 )
 
 set( SERVERLIST
@@ -532,7 +367,7 @@ set( SERVERLIST
   ${MOUNT_DIR}/engine/server/sv_world.c
 )
 
-set( QCOMMONLIST
+set( ENGINELIST
   ${MOUNT_DIR}/shared/Command.cpp
   ${MOUNT_DIR}/engine/framework/BaseCommands.cpp
   ${MOUNT_DIR}/engine/framework/CommandSystem.cpp
@@ -561,17 +396,34 @@ set( QCOMMONLIST
   ${MOUNT_DIR}/engine/qcommon/ioapi.c
   ${MOUNT_DIR}/engine/qcommon/nacl.cpp
   ${MOUNT_DIR}/engine/qcommon/vm.cpp
+  ${MOUNT_DIR}/engine/sys/sys_main.c
+  ${MOUNT_DIR}/engine/sys/con_log.c
 )
 
-if( GAME_LIB_LLVM )
-  set( QCOMMONLIST ${QCOMMONLIST} ${MOUNT_DIR}/engine/qcommon/vm_llvm.cpp )
+if( WIN32 )
+  set( ENGINELIST ${ENGINELIST}
+    ${MOUNT_DIR}/engine/sys/sys_win32.c
+    ${MOUNT_DIR}/engine/sys/con_win32.c
+  )
+else()
+  set( ENGINELIST ${ENGINELIST}
+    ${MOUNT_DIR}/engine/sys/sys_unix.c
+    ${MOUNT_DIR}/engine/sys/con_tty.c
+  )
 endif()
 
-if( USE_PHYSICS )
-  set( QCOMMONLIST ${QCOMMONLIST} ${MOUNT_DIR}/engine/qcommon/cm_physics.cpp )
+if( MAC )
+  set( ENGINELIST ${ENGINELIST}
+    ${MOUNT_DIR}/engine/sys/sys_osx.m
+  )
+endif()
+
+if( USE_CURSES )
+  set( ENGINELIST ${ENGINELIST} ${MOUNT_DIR}/engine/sys/con_curses.c )
 endif()
 
 set( CLIENTLIST
+  ${MOUNT_DIR}/engine/qcommon/dl_main_curl.c
   ${MOUNT_DIR}/engine/client/cin_ogm.c
   ${MOUNT_DIR}/engine/client/cl_avi.c
   ${MOUNT_DIR}/engine/client/cl_cgame.c
@@ -603,50 +455,11 @@ if( USE_MUMBLE )
   set( CLIENTLIST ${CLIENTLIST} ${MOUNT_DIR}/engine/client/libmumblelink.c )
 endif()
 
-if( USE_CPUINFO )
-  set( CPUINFOLIST
-    ${MOUNT_DIR}/libs/cpuinfo/CPUInfo.c
-  )
-  add_definitions( -DUSE_CPUINFO )
-endif()
-
-if( ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
-  set( SDLBASELIST
-    ${MOUNT_DIR}/engine/sys/sys_unix.c
-    ${MOUNT_DIR}/engine/sys/sys_osx.m
-    ${MOUNT_DIR}/engine/sys/sys_main.c
-    ${MOUNT_DIR}/engine/sys/con_log.c
-    ${MOUNT_DIR}/engine/sys/con_${CONSOLE}.c
-  )
-else()
-  set( SDLBASELIST
-    ${MOUNT_DIR}/engine/sys/sys_${PLATFORM}.c
-    ${MOUNT_DIR}/engine/sys/sys_main.c
-    ${MOUNT_DIR}/engine/sys/con_log.c
-    ${MOUNT_DIR}/engine/sys/con_${CONSOLE}.c
-  )
-endif()
-
-# Append Visual Studio specific files to SDLBASELIST
-if( MSVC )
-  set( SDLBASELIST ${SDLBASELIST} ${MOUNT_DIR}/engine/sys/sys_sysinfo.c )
-endif()
-
-if( USE_CURSES )
-  set( SDLBASELIST ${SDLBASELIST} ${MOUNT_DIR}/engine/sys/con_curses.c )
-endif()
-
 set( SDLLIST
   ${MOUNT_DIR}/engine/sys/sdl_input.c
   ${MOUNT_DIR}/engine/sys/sdl_snd.c
 )
 
-# needed for LLVM & QVM
-set( GAME_VM_COMMON
-  ${MOUNT_DIR}/engine/qcommon/q_static.c
-)
-
-# Any .def files must come at the end of the file list otherwise they will be ignored
 set( CGAMEGPP_BASE
   ${GPP_DIR}/cgame/cg_main.c
   ${GPP_DIR}/game/bg_misc.c
@@ -681,17 +494,7 @@ set( CGAMEGPP_BASE
   ${GPP_DIR}/cgame/cg_utils.c
   ${GPP_DIR}/ui/ui_shared.c
   ${GPP_DIR}/ui/ui_utf8.c
-  ${SHAREDLIST}
-)
-
-set( CGAMEGPP_SO
-  ${CGAMEGPP_BASE}
   ${GPP_DIR}/cgame/cg_api.c
-  ${GPP_DIR}/cgame/cgame.def
-)
-
-set( CGAMEGPP_QVM
-  ${GPP_DIR}/cgame/cg_api.asm
 )
 
 set( GAMEGPP_BASE
@@ -730,17 +533,7 @@ set( GAMEGPP_BASE
   ${GPP_DIR}/game/g_weapon.c
   ${GPP_DIR}/game/g_admin.c
   ${GPP_DIR}/game/g_namelog.c
-  ${SHAREDLIST}
-)
-
-set( GAMEGPP_SO
-  ${GAMEGPP_BASE}
   ${GPP_DIR}/game/g_api.cpp
-  ${GPP_DIR}/game/game.def
-)
-
-set( GAMEGPP_QVM
-  ${GPP_DIR}/game/g_api.asm
 )
 
 set( UIGPP_BASE
@@ -753,94 +546,71 @@ set( UIGPP_BASE
   ${GPP_DIR}/game/bg_lib.c
   ${GPP_DIR}/game/bg_alloc.c
   ${GPP_DIR}/ui/ui_utf8.c
-  ${SHAREDLIST}
-)
-
-set( UIGPP_SO
-  ${UIGPP_BASE}
   ${GPP_DIR}/ui/ui_api.c
-  ${GPP_DIR}/ui/ui.def
 )
 
-set( UIGPP_QVM
-  ${GPP_DIR}/ui/ui_api.asm
+set( SPEEXLIST
+  ${MOUNT_DIR}/libs/libspeex/libspeex/bits.c
+  ${MOUNT_DIR}/libs/libspeex/libspeex/buffer.c
+  ${MOUNT_DIR}/libs/libspeex/libspeex/cb_search.c
+  ${MOUNT_DIR}/libs/libspeex/libspeex/exc_10_16_table.c
+  ${MOUNT_DIR}/libs/libspeex/libspeex/exc_10_32_table.c
+  ${MOUNT_DIR}/libs/libspeex/libspeex/exc_20_32_table.c
+  ${MOUNT_DIR}/libs/libspeex/libspeex/exc_5_256_table.c
+  ${MOUNT_DIR}/libs/libspeex/libspeex/exc_5_64_table.c
+  ${MOUNT_DIR}/libs/libspeex/libspeex/exc_8_128_table.c
+  ${MOUNT_DIR}/libs/libspeex/libspeex/fftwrap.c
+  ${MOUNT_DIR}/libs/libspeex/libspeex/filterbank.c
+  ${MOUNT_DIR}/libs/libspeex/libspeex/filters.c
+  ${MOUNT_DIR}/libs/libspeex/libspeex/gain_table.c
+  ${MOUNT_DIR}/libs/libspeex/libspeex/gain_table_lbr.c
+  ${MOUNT_DIR}/libs/libspeex/libspeex/hexc_10_32_table.c
+  ${MOUNT_DIR}/libs/libspeex/libspeex/hexc_table.c
+  ${MOUNT_DIR}/libs/libspeex/libspeex/high_lsp_tables.c
+  ${MOUNT_DIR}/libs/libspeex/libspeex/jitter.c
+  ${MOUNT_DIR}/libs/libspeex/libspeex/kiss_fft.c
+  ${MOUNT_DIR}/libs/libspeex/libspeex/kiss_fftr.c
+  ${MOUNT_DIR}/libs/libspeex/libspeex/lpc.c
+  ${MOUNT_DIR}/libs/libspeex/libspeex/lsp.c
+  ${MOUNT_DIR}/libs/libspeex/libspeex/lsp_tables_nb.c
+  ${MOUNT_DIR}/libs/libspeex/libspeex/ltp.c
+  ${MOUNT_DIR}/libs/libspeex/libspeex/mdf.c
+  ${MOUNT_DIR}/libs/libspeex/libspeex/modes.c
+  ${MOUNT_DIR}/libs/libspeex/libspeex/modes_wb.c
+  ${MOUNT_DIR}/libs/libspeex/libspeex/nb_celp.c
+  ${MOUNT_DIR}/libs/libspeex/libspeex/preprocess.c
+  ${MOUNT_DIR}/libs/libspeex/libspeex/quant_lsp.c
+  ${MOUNT_DIR}/libs/libspeex/libspeex/resample.c
+  ${MOUNT_DIR}/libs/libspeex/libspeex/sb_celp.c
+  ${MOUNT_DIR}/libs/libspeex/libspeex/smallft.c
+  ${MOUNT_DIR}/libs/libspeex/libspeex/speex.c
+  ${MOUNT_DIR}/libs/libspeex/libspeex/speex_callbacks.c
+  ${MOUNT_DIR}/libs/libspeex/libspeex/speex_header.c
+  ${MOUNT_DIR}/libs/libspeex/libspeex/stereo.c
+  ${MOUNT_DIR}/libs/libspeex/libspeex/vbr.c
+  ${MOUNT_DIR}/libs/libspeex/libspeex/vq.c
+  ${MOUNT_DIR}/libs/libspeex/libspeex/window.c
 )
 
-set( DAEMONMAPLIST
-  ${MOUNT_DIR}/tools/common/cmdlib.c
-  ${MOUNT_DIR}/tools/common/imagelib.c
-  ${MOUNT_DIR}/tools/common/inout.c
-  ${MOUNT_DIR}/tools/common/mathlib.c
-  ${MOUNT_DIR}/tools/common/md4.c
-  ${MOUNT_DIR}/tools/common/mutex.c
-  ${MOUNT_DIR}/tools/common/polylib.c
-  ${MOUNT_DIR}/tools/common/scriplib.c
-  ${MOUNT_DIR}/tools/common/threads.c
-  ${MOUNT_DIR}/tools/common/unzip.c
-  ${MOUNT_DIR}/tools/common/vfs.c
-  ${MOUNT_DIR}/tools/common/ddslib.c
-  ${MOUNT_DIR}/libs/picomodel/picointernal.c
-  ${MOUNT_DIR}/libs/picomodel/picomodel.c
-  ${MOUNT_DIR}/libs/picomodel/picomodules.c
-  ${MOUNT_DIR}/libs/picomodel/pm_3ds.c
-  ${MOUNT_DIR}/libs/picomodel/pm_ase.c
-  ${MOUNT_DIR}/libs/picomodel/pm_fm.c
-  ${MOUNT_DIR}/libs/picomodel/pm_lwo.c
-  ${MOUNT_DIR}/libs/picomodel/pm_md2.c
-  ${MOUNT_DIR}/libs/picomodel/pm_md3.c
-  ${MOUNT_DIR}/libs/picomodel/pm_mdc.c
-  ${MOUNT_DIR}/libs/picomodel/pm_ms3d.c
-  ${MOUNT_DIR}/libs/picomodel/pm_obj.c
-  ${MOUNT_DIR}/libs/picomodel/pm_terrain.c
-  ${MOUNT_DIR}/libs/picomodel/lwo/clip.c
-  ${MOUNT_DIR}/libs/picomodel/lwo/envelope.c
-  ${MOUNT_DIR}/libs/picomodel/lwo/list.c
-  ${MOUNT_DIR}/libs/picomodel/lwo/lwio.c
-  ${MOUNT_DIR}/libs/picomodel/lwo/lwo2.c
-  ${MOUNT_DIR}/libs/picomodel/lwo/lwob.c
-  ${MOUNT_DIR}/libs/picomodel/lwo/pntspols.c
-  ${MOUNT_DIR}/libs/picomodel/lwo/surface.c
-  ${MOUNT_DIR}/libs/picomodel/lwo/vecmath.c
-  ${MOUNT_DIR}/libs/picomodel/lwo/vmap.c
-  ${MOUNT_DIR}/tools/owmap/brush.c
-  ${MOUNT_DIR}/tools/owmap/fog.c
-  ${MOUNT_DIR}/tools/owmap/brush_primit.c
-  ${MOUNT_DIR}/tools/owmap/bsp.c
-  ${MOUNT_DIR}/tools/owmap/bspfile_abstract.c
-  ${MOUNT_DIR}/tools/owmap/bspfile_ibsp.c
-  ${MOUNT_DIR}/tools/owmap/bspfile_rbsp.c
-  ${MOUNT_DIR}/tools/owmap/bspfile_xbsp.c
-  ${MOUNT_DIR}/tools/owmap/convert_ase.c
-  ${MOUNT_DIR}/tools/owmap/convert_map.c
-  ${MOUNT_DIR}/tools/owmap/decals.c
-  ${MOUNT_DIR}/tools/owmap/facebsp.c
-  ${MOUNT_DIR}/tools/owmap/gldraw.c
-  ${MOUNT_DIR}/tools/owmap/model.c
-  ${MOUNT_DIR}/tools/owmap/image.c
-  ${MOUNT_DIR}/tools/owmap/leakfile.c
-  ${MOUNT_DIR}/tools/owmap/light.c
-  ${MOUNT_DIR}/tools/owmap/light_bounce.c
-  ${MOUNT_DIR}/tools/owmap/light_trace.c
-  ${MOUNT_DIR}/tools/owmap/light_ydnar.c
-  ${MOUNT_DIR}/tools/owmap/lightmaps_ydnar.c
-  ${MOUNT_DIR}/tools/owmap/main.c
-  ${MOUNT_DIR}/tools/owmap/map.c
-  ${MOUNT_DIR}/tools/owmap/mesh.c
-  ${MOUNT_DIR}/tools/owmap/patch.c
-  ${MOUNT_DIR}/tools/owmap/prtfile.c
-  ${MOUNT_DIR}/tools/owmap/path_init.c
-  ${MOUNT_DIR}/tools/owmap/portals.c
-  ${MOUNT_DIR}/tools/owmap/shaders.c
-  ${MOUNT_DIR}/tools/owmap/writebsp.c
-  ${MOUNT_DIR}/tools/owmap/surface_abstract.c
-  ${MOUNT_DIR}/tools/owmap/surface_extra.c
-  ${MOUNT_DIR}/tools/owmap/surface_foliage.c
-  ${MOUNT_DIR}/tools/owmap/surface_fur.c
-  ${MOUNT_DIR}/tools/owmap/surface_meta.c
-  ${MOUNT_DIR}/tools/owmap/tjunction.c
-  ${MOUNT_DIR}/tools/owmap/tree.c
-  ${MOUNT_DIR}/tools/owmap/vis.c
-  ${MOUNT_DIR}/tools/owmap/visflow.c
+set( NETTLELIST
+  ${MOUNT_DIR}/libs/nettle/nettle/bignum.c
+  ${MOUNT_DIR}/libs/nettle/nettle/bignum-random.c
+  ${MOUNT_DIR}/libs/nettle/nettle/buffer-init.c
+  ${MOUNT_DIR}/libs/nettle/nettle/nettle-buffer.c
+  ${MOUNT_DIR}/libs/nettle/nettle/nettle-internal.c
+  ${MOUNT_DIR}/libs/nettle/nettle/rsa2sexp.c
+  ${MOUNT_DIR}/libs/nettle/nettle/rsa.c
+  ${MOUNT_DIR}/libs/nettle/nettle/rsa-decrypt.c
+  ${MOUNT_DIR}/libs/nettle/nettle/rsa-encrypt.c
+  ${MOUNT_DIR}/libs/nettle/nettle/rsa-keygen.c
+  ${MOUNT_DIR}/libs/nettle/nettle/rsa-sign.c
+  ${MOUNT_DIR}/libs/nettle/nettle/sexp2bignum.c
+  ${MOUNT_DIR}/libs/nettle/nettle/sexp2rsa.c
+  ${MOUNT_DIR}/libs/nettle/nettle/sexp.c
+  ${MOUNT_DIR}/libs/nettle/nettle/sexp-format.c
+)
+
+set( ZLIBLIST
   ${MOUNT_DIR}/libs/zlib/adler32.c
   ${MOUNT_DIR}/libs/zlib/compress.c
   ${MOUNT_DIR}/libs/zlib/crc32.c
@@ -856,136 +626,7 @@ set( DAEMONMAPLIST
   ${MOUNT_DIR}/libs/zlib/zutil.c
 )
 
-if( USE_VOIP AND USE_INTERNAL_SPEEX )
-    set( SPEEXLIST
-    ${MOUNT_DIR}/libs/libspeex/libspeex/bits.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/buffer.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/cb_search.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/exc_10_16_table.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/exc_10_32_table.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/exc_20_32_table.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/exc_5_256_table.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/exc_5_64_table.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/exc_8_128_table.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/fftwrap.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/filterbank.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/filters.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/gain_table.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/gain_table_lbr.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/hexc_10_32_table.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/hexc_table.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/high_lsp_tables.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/jitter.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/kiss_fft.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/kiss_fftr.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/lpc.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/lsp.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/lsp_tables_nb.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/ltp.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/mdf.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/modes.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/modes_wb.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/nb_celp.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/preprocess.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/quant_lsp.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/resample.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/sb_celp.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/smallft.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/speex.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/speex_callbacks.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/speex_header.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/stereo.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/vbr.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/vq.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/window.c
-  )
-endif()
-
-if( USE_INTERNAL_CRYPTO )
-  set( CRYPTOLIST
-    ${MOUNT_DIR}/libs/nettle/nettle/bignum.c
-    ${MOUNT_DIR}/libs/nettle/nettle/bignum-random.c
-    ${MOUNT_DIR}/libs/nettle/nettle/buffer-init.c
-    ${MOUNT_DIR}/libs/nettle/nettle/nettle-buffer.c
-    ${MOUNT_DIR}/libs/nettle/nettle/nettle-internal.c
-    ${MOUNT_DIR}/libs/nettle/nettle/rsa2sexp.c
-    ${MOUNT_DIR}/libs/nettle/nettle/rsa.c
-    ${MOUNT_DIR}/libs/nettle/nettle/rsa-decrypt.c
-    ${MOUNT_DIR}/libs/nettle/nettle/rsa-encrypt.c
-    ${MOUNT_DIR}/libs/nettle/nettle/rsa-keygen.c
-    ${MOUNT_DIR}/libs/nettle/nettle/rsa-sign.c
-    ${MOUNT_DIR}/libs/nettle/nettle/sexp2bignum.c
-    ${MOUNT_DIR}/libs/nettle/nettle/sexp2rsa.c
-    ${MOUNT_DIR}/libs/nettle/nettle/sexp.c
-    ${MOUNT_DIR}/libs/nettle/nettle/sexp-format.c
-  )
-endif()
-
-if( WIN32 )
-  set( WIN_RC ${MOUNT_DIR}/engine/sys/daemon.rc )
-endif()
-
-set( Q3LCCETCDIR ${MOUNT_DIR}/tools/lcc/etc )
-
-set( Q3LBURG_LIST
-  ${MOUNT_DIR}/tools/lcc/lburg/gram.c
-  ${MOUNT_DIR}/tools/lcc/lburg/lburg.c
-)
-
-set( Q3RCC_LIST
-  ${MOUNT_DIR}/tools/lcc/src/alloc.c
-  ${MOUNT_DIR}/tools/lcc/src/bind.c
-  ${MOUNT_DIR}/tools/lcc/src/bytecode.c
-  ${MOUNT_DIR}/tools/lcc/src/dag.c
-  ${MOUNT_DIR}/tools/lcc/src/decl.c
-  ${MOUNT_DIR}/tools/lcc/src/enode.c
-  ${MOUNT_DIR}/tools/lcc/src/error.c
-  ${MOUNT_DIR}/tools/lcc/src/event.c
-  ${MOUNT_DIR}/tools/lcc/src/expr.c
-  ${MOUNT_DIR}/tools/lcc/src/gen.c
-  ${MOUNT_DIR}/tools/lcc/src/init.c
-  ${MOUNT_DIR}/tools/lcc/src/inits.c
-  ${MOUNT_DIR}/tools/lcc/src/input.c
-  ${MOUNT_DIR}/tools/lcc/src/lex.c
-  ${MOUNT_DIR}/tools/lcc/src/list.c
-  ${MOUNT_DIR}/tools/lcc/src/main.c
-  ${MOUNT_DIR}/tools/lcc/src/null.c
-  ${MOUNT_DIR}/tools/lcc/src/output.c
-  ${MOUNT_DIR}/tools/lcc/src/prof.c
-  ${MOUNT_DIR}/tools/lcc/src/profio.c
-  ${MOUNT_DIR}/tools/lcc/src/simp.c
-  ${MOUNT_DIR}/tools/lcc/src/stmt.c
-  ${MOUNT_DIR}/tools/lcc/src/string.c
-  ${MOUNT_DIR}/tools/lcc/src/sym.c
-  ${MOUNT_DIR}/tools/lcc/src/symbolic.c
-  ${MOUNT_DIR}/tools/lcc/src/trace.c
-  ${MOUNT_DIR}/tools/lcc/src/tree.c
-  ${MOUNT_DIR}/tools/lcc/src/types.c
-  ${OBJ_DIR}/dagcheck.c
-)
-
-set( Q3CPP_LIST
-  ${MOUNT_DIR}/tools/lcc/cpp/cpp.c
-  ${MOUNT_DIR}/tools/lcc/cpp/lex.c
-  ${MOUNT_DIR}/tools/lcc/cpp/nlist.c
-  ${MOUNT_DIR}/tools/lcc/cpp/tokens.c
-  ${MOUNT_DIR}/tools/lcc/cpp/macro.c
-  ${MOUNT_DIR}/tools/lcc/cpp/eval.c
-  ${MOUNT_DIR}/tools/lcc/cpp/include.c
-  ${MOUNT_DIR}/tools/lcc/cpp/hideset.c
-  ${MOUNT_DIR}/tools/lcc/cpp/getopt.c
-  ${MOUNT_DIR}/tools/lcc/cpp/unix.c
-)
-
-set( Q3LCC_LIST
-  ${MOUNT_DIR}/tools/lcc/etc/lcc.c
-  ${MOUNT_DIR}/tools/lcc/etc/bytecode.c
-)
-
-set( Q3ASM_LIST
-  ${MOUNT_DIR}/tools/lcc/asm/q3asm.c
-  ${MOUNT_DIR}/tools/lcc/asm/cmdlib.c
-)
+set( WIN_RC ${MOUNT_DIR}/engine/sys/daemon.rc )
 
 set( TINYGETTEXT_LIST
   ${MOUNT_DIR}/libs/tinygettext/dictionary_manager.hpp
@@ -1009,32 +650,25 @@ set( TINYGETTEXT_LIST
   ${MOUNT_DIR}/libs/findlocale/findlocale.c
 )
 
-set( NACL_LIST_HOST
-  ${MOUNT_DIR}/libs/nacl/native_client/src/shared/imc/nacl_imc_common.cc
-)
-if( UNIX )
-    set( NACL_LIST_HOST ${NACL_LIST_HOST}
-      ${MOUNT_DIR}/libs/nacl/native_client/src/shared/imc/posix/nacl_imc_posix.cc
-    )
-  if( APPLE )
-    add_definitions( -DNACL_WIN32=0 -DNACL_LINUX=0 -DNACL_ANDRIOD=0 -DNACL_OSX=1 )
-    set( NACL_LIST_HOST ${NACL_LIST_HOST}
-      ${MOUNT_DIR}/libs/nacl/native_client/src/shared/imc/osx/nacl_imc.cc
-    )
-  else()
-    add_definitions( -DNACL_WIN32=0 -DNACL_LINUX=1 -DNACL_ANDRIOD=0 -DNACL_OSX=0 )
-    set( NACL_LIST_HOST ${NACL_LIST_HOST}
-      ${MOUNT_DIR}/libs/nacl/native_client/src/shared/imc/linux/nacl_imc.cc
-    )
-  endif()
+if( MAC )
+  set( NACL_LIST_NATIVE
+    ${MOUNT_DIR}/libs/nacl/native_client/src/shared/imc/nacl_imc_common.cc
+    ${MOUNT_DIR}/libs/nacl/native_client/src/shared/imc/posix/nacl_imc_posix.cc
+    ${MOUNT_DIR}/libs/nacl/native_client/src/shared/imc/osx/nacl_imc.cc
+  )
+elseif( LINUX )
+  set( NACL_LIST_NATIVE
+    ${MOUNT_DIR}/libs/nacl/native_client/src/shared/imc/nacl_imc_common.cc
+    ${MOUNT_DIR}/libs/nacl/native_client/src/shared/imc/posix/nacl_imc_posix.cc
+    ${MOUNT_DIR}/libs/nacl/native_client/src/shared/imc/linux/nacl_imc.cc
+  )
 elseif( WIN32 )
-  add_definitions( -DNACL_WIN32=1 -DNACL_LINUX=0 -DNACL_ANDRIOD=0 -DNACL_OSX=0 )
-  set( NACL_LIST_HOST ${NACL_LIST_HOST}
+  set( NACL_LIST_NATIVE
+    ${MOUNT_DIR}/libs/nacl/native_client/src/shared/imc/nacl_imc_common.cc
     ${MOUNT_DIR}/libs/nacl/native_client/src/shared/imc/win/nacl_imc.cc
     ${MOUNT_DIR}/libs/nacl/native_client/src/shared/imc/win/nacl_shm.cc
   )
 endif()
-add_definitions( -DNACL_BUILD_ARCH=x86 -DNACL_BUILD_SUBARCH=64 )
 
 set( NACL_LIST_MODULE
   ${MOUNT_DIR}/libs/nacl/native_client/src/shared/imc/nacl_imc_common.cc
@@ -1048,373 +682,431 @@ set( NACL_LIST_MODULE
   ${MOUNT_DIR}/libs/nacl/native_client/src/untrusted/nacl/imc_socketpair.c
 )
 
-set( QCOMMONLIST ${QCOMMONLIST} ${NACL_LIST_HOST} )
+#HACK: Force the compilation of EVERYTHING in C++
+file(GLOB_RECURSE EVERYTHING_C "src/engine/*.c")
+set_source_files_properties( ${EVERYTHING_C} PROPERTIES LANGUAGE CXX )
 
+# Enable this globally
+add_definitions( -DUSE_REFENTITY_ANIMATIONSYSTEM )
+
+################################################################################
+# Libraries
+################################################################################
+
+# Amanieu: Need to add proper if wrappers so that compilation doesn't fail because of a dep we don't need
+
+# These variables are defined
+# LIBS_BASE, LIBSRC_BASE
+# LIBS_ENGINE, LIBSRC_ENGINE
+# LIBS_RENDERER, LIBSRC_RENDERER
+# LIBS_BASECLIENT, LIBSRC_BASECLIENT
+# LIBS_CLIENT, LIBSRC_CLIENT
+
+# We provide some pre-built packages for Windows, make find_package optional
+if( WIN32 )
+  set( OPTIONAL_WIN32 )
+else()
+  set( OPTIONAL_WIN32 REQUIRED )
+endif()
+
+# C99 int types for MSVC
+if( MSVC )
+  include_directories( ${MOUNT_DIR}/libs/msinttypes )
+endif()
+
+# Base OS libs
+if( WIN32 )
+  # Amanieu: Check if psapi is really needed
+  set( LIBS_BASE ${LIBS_BASE} winmm ws2_32 psapi )
+else()
+  find_library( LIBM m )
+  if( LIBM )
+    set( LIBS_BASE ${LIBS_BASE} ${LIBM} )
+  endif()
+  find_library( LIBRT rt )
+  if( LIBRT )
+    set( LIBS_BASE ${LIBS_BASE} ${LIBRT} )
+  endif()
+  mark_as_advanced( LIBM LIBRT )
+  set( LIBS_BASE ${LIBS_BASE} ${CMAKE_DL_LIBS} )
+  find_package( Threads REQUIRED )
+  set( LIBS_BASE ${LIBS_BASE} ${CMAKE_THREAD_LIBS_INIT} )
+  if( MAC )
+    # Amanieu: Check if any of these can be removed or moved to client libs
+    set( LIBS_BASE ${LIBS_BASE} "-framework AGL -framework OpenGL -framework Carbon -framework IOKit" )
+  endif()
+endif()
+
+# zlib
+find_package( ZLIB )
+if( ZLIB_FOUND )
+  include_directories( ${ZLIB_INCLUDE_DIRS} )
+  set( LIBS_BASE ${LIBS_BASE} ${ZLIB_LIBRARIES} )
+else()
+  include_directories( ${LIB_DIR}/zlib )
+  set( LIBSRC_BASE ${LIBSRC_BASE} ${ZLIBLIST} )
+endif()
+
+# Tinygettext
+set( LIBSRC_ENGINE ${LIBSRC_ENGINE} ${TINYGETTEXT_LIST} )
+
+# Native client
+if( MAC )
+  add_definitions( -DNACL_WIN32=0 -DNACL_LINUX=0 -DNACL_ANDRIOD=0 -DNACL_OSX=1 )
+elseif( LINUX )
+  add_definitions( -DNACL_WIN32=0 -DNACL_LINUX=1 -DNACL_ANDRIOD=0 -DNACL_OSX=0 )
+elseif( WIN32 )
+  add_definitions( -DNACL_WIN32=1 -DNACL_LINUX=0 -DNACL_ANDRIOD=0 -DNACL_OSX=0 )
+endif()
+if( ARCH STREQUAL "x86" OR ARCH STREQUAL "x86_64" )
+  add_definitions( -DNACL_BUILD_ARCH=x86 )
+else()
+  add_definitions( -DNACL_BUILD_ARCH=${ARCH} )
+endif()
+if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
+  add_definitions( -DNACL_BUILD_SUBARCH=64 )
+else()
+  add_definitions( -DNACL_BUILD_SUBARCH=32 )
+endif()
+set( LIBSRC_ENGINE ${LIBSRC_ENGINE} ${NACL_LIST_NATIVE} )
 include_directories( ${MOUNT_DIR}/libs/nacl )
 
-####################
-# End of file list #
-####################
-
-if( GAME_LIB_LLVM )
-  add_definitions( -DUSE_LLVM -D__STDC_LIMIT_MACROS -D__STDC_CONSTANT_MACROS )
-endif()
-
-if( USE_PHYSICS )
-  set( NEWTON_INCLUDES
-    ${MOUNT_DIR}/libs/libnewton/include
-    ${MOUNT_DIR}/libs/libnewton/include/dAnimation
-    ${MOUNT_DIR}/libs/libnewton/include/dContainers
-    ${MOUNT_DIR}/libs/libnewton/include/dCustomJoints
-    ${MOUNT_DIR}/libs/libnewton/include/dMath
-  )
-endif()
-
-if( WIN32 )
-  add_definitions( -DWINVER=0x501 )
-  if( MSVC )
-    set( OS_LIBRARIES winmm ws2_32 psapi )
-    if( ${BUILD_ARCH} STREQUAL "x86_64" )
-      add_definitions( -D__WIN64__ )
+# SDL, required for all targets on win32 because of iconv
+if( BUILD_CLIENT OR WIN32 )
+  find_package( SDL ${OPTIONAL_WIN32} )
+  mark_as_advanced( SDLMAIN_LIBRARY SDL_LIBRARY SDL_INCLUDE_DIR )
+  if( SDL_FOUND )
+    include_directories( ${SDL_INCLUDE_DIR} )
+    set( LIBS_CLIENT ${LIBS_CLIENT} ${SDL_LIBRARY} )
+    set( LIBS_RENDERER ${LIBS_RENDERER} ${SDL_LIBRARY} )
+    set( LIBS_RENDERERGL ${LIBS_RENDERERGL} ${SDL_LIBRARY} )
+    if( MAC )
+      # Mac OS X does not provide a SDLMain.dylib so we must compile our own
+      add_library( INTERNAL_SDLMain ${MOUNT_DIR}/engine/sys/SDLMain.m )
+      set( LIBS_CLIENT ${LIBS_CLIENT} INTERNAL_SDLMain )
     endif()
   else()
-    set( OS_LIBRARIES m winmm ws2_32 psapi z )
+    add_subdirectory( ${SDL_DIR} ${OBJ_DIR}/libsdl )
+    include_directories( ${SDL_DIR}/include )
+    set( LIBS_CLIENT ${LIBS_CLIENT} INTERNAL_SDL INTERNAL_SDLMain )
+    set( LIBS_RENDERER ${LIBS_RENDERER} INTERNAL_SDL )
+    set( LIBS_RENDERERGL ${LIBS_RENDERERGL} INTERNAL_SDL )
   endif()
-elseif( UNIX )
-  if( CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" )
-    set( OS_LIBRARIES m z )
-  elseif( CMAKE_SYSTEM_NAME STREQUAL "Darwin" )
-    set( OS_LIBRARIES dl m z )
-    # FIXME This looks wrong.
-    set( OS_LIBRARIES ${OS_LIBRARIES} "-framework AGL -framework OpenGL -framework Carbon -framework IOKit" )
-  else()
-    set( OS_LIBRARIES ${CMAKE_DL_LIBS} m z rt )
+
+  # Used by tinygettext to use SDL_iconv instead of base iconv
+  if( WIN32 )
+    add_definitions( -DHAVE_SDL )
   endif()
 endif()
 
-###############################
-# Build Game/Cgame/Ui DLL/.so #
-###############################
+# GMP
+find_package( GMP ${OPTIONAL_WIN32} )
+if( GMP_FOUND )
+  include_directories( ${GMP_INCLUDE_DIRS} )
+  set( LIBS_ENGINE ${LIBS_ENGINE} ${GMP_LIBRARIES} )
+else()
+  include_directories( ${MOUNT_DIR}/libs/gmp/include )
+  if( ARCH STREQUAL "x86" )
+    set( LIBS_ENGINE ${LIBS_ENGINE} ${LIB_DIR}/GMP/libs/win32/mpir.lib )
+  elseif( ARCH STREQUAL "x86_64" )
+    set( LIBS_ENGINE ${LIBS_ENGINE} ${LIB_DIR}/GMP/libs/win64/mpir.lib )
+  endif()
+endif()
 
+# Nettle
+find_package( Nettle )
+if( NETTLE_FOUND )
+  include_directories( ${NETTLE_INCLUDE_DIRS} )
+  set( LIBS_ENGINE ${LIBS_ENGINE} ${NETTLE_LIBRARIES} )
+else()
+  include_directories( ${MOUNT_DIR}/libs/nettle )
+  set( LIBSRC_ENGINE ${LIBSRC_ENGINE} ${NETTLELIST} )
+endif()
+
+# Speex
+if( USE_VOIP )
+  add_definitions( -DUSE_VOIP -DFLOATING_POINT )
+  find_package( Speex )
+  if( SPEEX_FOUND )
+    include_directories( ${SPEEX_INCLUDE_DIRS} )
+    set( LIBS_CLIENT ${LIBS_CLIENT} ${SPEEX_LIBRARIES} )
+  else()
+    include_directories( ${MOUNT_DIR}/libs/libspeex/include )
+    set( LIBSRC_CLIENT ${LIBSRC_CLIENT} ${SPEEXLIST} )
+  endif()
+endif()
+
+# Mumble
+if( USE_MUMBLE )
+  add_definitions( -DUSE_MUMBLE )
+endif()
+
+# Ogg
+find_package( Ogg ${OPTIONAL_WIN32} )
+if( OGG_FOUND )
+  include_directories( ${OGG_INCLUDE_DIRS} )
+  set( LIBS_CLIENT ${LIBS_CLIENT} ${OGG_LIBRARIES} )
+else()
+  include_directories( ${LIB_DIR}/libogg/include )
+  if( ARCH STREQUAL "x86" )
+    set( LIBS_CLIENT ${LIBS_CLIENT} ${LIB_DIR}/libogg/libs/win32/release/libogg.lib )
+  elseif( ARCH STREQUAL "x86_64" )
+    set( LIBS_CLIENT ${LIBS_CLIENT} ${LIB_DIR}/libogg/libs/win64/release/libogg.lib )
+  endif()
+endif()
+
+# Vorbis
+add_definitions( -DUSE_CODEC_VORBIS )
+find_package( Vorbis ${OPTIONAL_WIN32} )
+if( VORBIS_FOUND )
+  include_directories( ${VORBIS_INCLUDE_DIRS} )
+  set( LIBS_CLIENT ${LIBS_CLIENT} ${VORBIS_LIBRARIES} )
+else()
+  include_directories( ${LIB_DIR}/libvorbis/include )
+  if( ARCH STREQUAL "x86" )
+    set( LIBS_CLIENT ${LIBS_CLIENT}
+      ${LIB_DIR}/libvorbis/libs/Win32/Release/libvorbis.lib
+      ${LIB_DIR}/libvorbis/libs/Win32/Release/libvorbisfile.lib
+    )
+  elseif( ARCH STREQUAL "x86_64" )
+    set( LIBS_CLIENT ${LIBS_CLIENT}
+      ${LIB_DIR}/libvorbis/libs/x64/Release/libvorbis.lib
+      ${LIB_DIR}/libvorbis/libs/x64/Release/libvorbisfile.lib
+    )
+  endif()
+endif()
+
+# Theora
+add_definitions( -DUSE_CIN_THEORA )
+find_package( Theora ${OPTIONAL_WIN32} )
+if( THEORA_FOUND )
+  include_directories( ${THEORA_INCLUDE_DIRS} )
+  set( LIBS_CLIENT ${LIBS_CLIENT} ${THEORA_LIBRARIES} )
+else()
+  include_directories( ${LIB_DIR}/libtheora/include )
+  if( ARCH STREQUAL "x86" )
+    set( LIBS_CLIENT ${LIBS_CLIENT} ${LIB_DIR}/libtheora/libs/win32/release/libtheora.lib )
+  elseif( ARCH STREQUAL "x86_64" )
+    set( LIBS_CLIENT ${LIBS_CLIENT} ${LIB_DIR}/libtheora/libs/win64/release/libtheora.lib )
+  endif()
+endif()
+
+# WebP
+find_package( WebP )
+if( WEBP_FOUND )
+  include_directories( ${WEBP_INCLUDE_DIRS} )
+  set( LIBS_RENDERER ${LIBS_RENDERER} ${WEBP_LIBRARIES} )
+else()
+  add_subdirectory( ${WEBP_DIR} ${OBJ_DIR}/libwebp )
+  include_directories( ${WEBP_DIR})
+  set( LIBS_RENDERER ${LIBS_RENDERER} INTERNAL_WEBP )
+endif()
+
+# JPEG
+find_package( JPEG )
+if( JPEG_FOUND )
+  include_directories( ${JPEG_INCLUDE_DIRS} )
+  set( LIBS_RENDERER ${LIBS_RENDERER} ${JPEG_LIBRARIES} )
+else()
+  add_subdirectory( ${JPEG_DIR} ${OBJ_DIR}/libjpeg )
+  include_directories( ${JPEG_DIR} )
+  set( LIBSRC_RENDERER ${LIBSRC_RENDERER} ${JPEGLIST} )
+endif()
+
+# PNG
+find_package( PNG ${OPTIONAL_WIN32} )
+if( PNG_FOUND )
+  include_directories( ${PNG_INCLUDE_DIRS} )
+  set( LIBS_RENDERER ${LIBS_RENDERER} ${PNG_LIBRARIES} )
+else()
+  include_directories( ${LIB_DIR}/libpng )
+  if( ARCH STREQUAL "x86" )
+    set( LIBS_RENDERER ${LIBS_RENDERER} ${LIB_DIR}/libpng/libs/win32/libpng.lib )
+  elseif( ARCH STREQUAL "x86_64" )
+    set( LIBS_RENDERER ${LIBS_RENDERER} ${LIB_DIR}/libpng/libs/win32/libpng.lib )
+  endif()
+endif()
+
+# Freetype
+find_package( Freetype ${OPTIONAL_WIN32} )
+if( FREETYPE_FOUND )
+  include_directories( ${FREETYPE_INCLUDE_DIRS} )
+  set( LIBS_RENDERER ${LIBS_RENDERER} ${FREETYPE_LIBRARIES} )
+else()
+  include_directories( ${LIB_DIR}/freetype/include/freetype2 )
+  if( ARCH STREQUAL "x86" )
+    set( LIBS_RENDERER ${LIBS_RENDERER} ${LIB_DIR}/freetype/lib/freetype.lib )
+  elseif( ARCH STREQUAL "x86_64" )
+    set( LIBS_RENDERER ${LIBS_RENDERER} ${LIB_DIR}/freetype/lib/x64/freetype.lib )
+  endif()
+endif()
+
+# GLEW
+find_package( GLEW )
+if( GLEW_FOUND )
+  include_directories( ${GLEW_INCLUDE_DIRS} )
+  set( LIBS_RENDERER ${LIBS_RENDERER} ${GLEW_LIBRARIES} )
+else()
+  add_subdirectory( ${GLEW_DIR} ${OBJ_DIR}/libglew )
+  include_directories( ${GLEW_DIR}/include )
+  set( LIBS_RENDERER ${LIBS_RENDERER} INTERNAL_GLEW )
+endif()
+
+# OpenGL
+find_package( OpenGL REQUIRED )
+include_directories( ${OPENGL_INCLUDE_DIRS} )
+set( LIBS_RENDERER ${LIBS_RENDERER} ${OPENGL_LIBRARIES} )
+
+# X11
+if( LINUX )
+  find_package( X11 REQUIRED )
+  include_directories( ${X11_INCLUDE_DIRS} )
+  set( LIBS_CLIENT ${LIBS_CLIENT} ${X11_LIBRARIES} )
+endif()
+
+# OpenAL
+if( USE_OPENAL )
+  add_definitions( -DUSE_OPENAL -DUSE_OPENAL_DLOPEN )
+  find_package( OpenAL )
+  if( OPENAL_FOUND )
+    include_directories( ${OPENAL_INCLUDE_DIRS} )
+  else()
+    include_directories( ${LIB_DIR}/openal/include )
+  endif()
+endif()
+
+# CURL
+find_package( CURL ${OPTIONAL_WIN32} )
+if( CURL_FOUND )
+  include_directories( ${CURL_INCLUDE_DIRS} )
+  set( LIBS_CLIENTBASE ${LIBS_CLIENTBASE} ${CURL_LIBRARIES} )
+else()
+  include_directories( ${LIB_DIR}/curl-7.21.6/include )
+  if( ARCH STREQUAL "x86" )
+    set( LIBS_CLIENTBASE ${LIBS_CLIENTBASE} ${LIB_DIR}/curl-7.21.6/lib/win32/release/libcurl_imp.lib )
+  elseif( ARCH STREQUAL "x86_64" )
+    set( LIBS_CLIENTBASE ${LIBS_CLIENTBASE} ${LIB_DIR}/curl-7.21.6/lib/win64/release/libcurl_imp.lib )
+  endif()
+endif()
+
+# Curses, disabled for Windows
+if( USE_CURSES AND NOT WIN32 )
+  set( CURSES_NEED_NCURSES 1 ) # Tells FindCurses that ncurses is required
+  find_package( CursesW )
+  if( CURSESW_FOUND )
+    add_definitions( -DUSE_CURSES -DUSE_CURSES_W )
+    include_directories( ${CURSESW_INCLUDE_DIR} )
+    set( LIBS_ENGINE ${LIBS_ENGINE} ${CURSESW_LIBRARIES} )
+  else()
+    find_package( Curses REQUIRED )
+    add_definitions( -DUSE_CURSES )
+    include_directories( ${CURSES_INCLUDE_DIR} )
+    set( LIBS_ENGINE ${LIBS_ENGINE} ${CURSES_LIBRARIES} )
+  endif()
+endif()
+
+################################################################################
+# Installer
+################################################################################
+
+# Setup CPack
+set( CPACK_PACKAGE_FILE_NAME "Unvanquished" )
+set( CPACK_PACKAGE_ICON "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cpack/OS_X/Unvanquished.icns" )
+set( CPACK_PACKAGE_DESCRIPTION_SUMMARY "Daemon Unvanquished client" )
+set( CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.md" )
+set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/GPL.txt" )
+# Mac OS X Bundle specific settings
+set( CPACK_BUNDLE_NAME ${CPACK_PACKAGE_FILE_NAME} )
+set( CPACK_BUNDLE_ICON ${CPACK_PACKAGE_ICON} )
+set( CPACK_BUNDLE_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cpack/OS_X/Info.plist" )
+
+# Don't worry about installing targets individually just copy entire folder over
+# This allows maps/.pk3s to be easily added to the installer
+install( DIRECTORY ${CMAKE_BINARY_DIR}/main DESTINATION "Unvanquished" )
+
+################################################################################
+# Game logic
+################################################################################
 
 # Function to setup all the Game/Cgame/UI libraries
 include( CMakeParseArguments )
 function( GAMELIB )
   # ParseArguments setup
-  set( oneValueArgs LIB_NAME OUTPUT_NAME OUTPUT_DIR )
-  set( multiValueArgs COMPILE_DEF LIB_FILES QVM_FILES QVM_ASM )
+  set( oneValueArgs LIB_NAME OUTPUT_DIR )
+  set( multiValueArgs COMPILE_DEF LIB_FILES )
   cmake_parse_arguments( GAMELIB "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
 
-  if( GAME_LIB )
+  if( BUILD_GAME_NATIVE )
     # Xcode places the game libraries in the incorrect location. This should fix it
     if( XCODE_VERSION OR MSVC )
-      set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE "Release/${GAMELIB_OUTPUT_DIR}" )
-      set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG "Debug/${GAMELIB_OUTPUT_DIR}" )
-      set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_MINSIZEREL "MinSizeRel/${GAMELIB_OUTPUT_DIR}" )
-      set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELWITHDEBINFO "RelWithDebInfo/${GAMELIB_OUTPUT_DIR}" )
       set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE "Release/${GAMELIB_OUTPUT_DIR}" )
       set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG "Debug/${GAMELIB_OUTPUT_DIR}" )
       set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL "MinSizeRel/${GAMELIB_OUTPUT_DIR}" )
       set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO "RelWithDebInfo/${GAMELIB_OUTPUT_DIR}" )
     endif()
     set( GAMELIB_COMPILE_DEF_NATIVE ${GAMELIB_COMPILE_DEF} )
-    if( DEBUG_VM_ALLOC )
-      set( GAMELIB_COMPILE_DEF_NATIVE ${GAMELIB_COMPILE_DEF} DEBUG_VM_ALLOC )
-    endif()
 
-    if( GAME_LIB_LLVM )
-      add_library( ${GAMELIB_LIB_NAME} SHARED ${GAMELIB_LIB_FILES} ${GAME_VM_COMMON} )
-    else()
-      add_library( ${GAMELIB_LIB_NAME} SHARED ${GAMELIB_LIB_FILES} )
-    endif()
-    if( NOT MSVC )
-      target_link_libraries( ${GAMELIB_LIB_NAME} m )
-    endif()
+    # HACK: Compile shared files as C, uncomment this when building game
+    #set_source_files_properties( ${SHAREDLIST} PROPERTIES LANGUAGE C )
+    add_executable( ${GAMELIB_LIB_NAME} ${GAMELIB_LIB_FILES} ${SHAREDLIST} ${NACL_LIST_NATIVE} ${MOUNT_DIR}/engine/qcommon/nacl.cpp )
+    target_link_libraries( ${GAMELIB_LIB_NAME} ${LIBS_BASE} )
     set_target_properties( ${GAMELIB_LIB_NAME} PROPERTIES
-      PREFIX ""
-      LIBRARY_OUTPUT_DIRECTORY ${GAMELIB_OUTPUT_DIR}
       RUNTIME_OUTPUT_DIRECTORY ${GAMELIB_OUTPUT_DIR}
-      ARCHIVE_OUTPUT_DIRECTORY ${GAMELIB_OUTPUT_DIR}
-      COMPILE_DEFINITIONS "${GAMELIB_COMPILE_DEF_NATIVE}"
+      COMPILE_DEFINITIONS "${GAMELIB_COMPILE_DEF}"
     )
-
-    if( GAME_LIB_LLVM )
-      file( MAKE_DIRECTORY "${Daemon_BINARY_DIR}/${GAMELIB_OUTPUT_DIR}/vm" )
-
-      set( GAMELIB_SOURCE_NAME "gamelogic/${GAMELIB_OUTPUT_DIR}" )
-      if( GAMELIB_OUTPUT_DIR STREQUAL "main" )
-        set( GAMELIB_SOURCE_NAME "gamelogic/" )
-      endif()
-
-      set( GAMELIB_LLVM_FLAGS "-w -emit-llvm -DQ3_VM -nostdinc -I${GAMELIB_SOURCE_NAME} -Isrc/engine/qcommon -I${GAMELIB_SOURCE_NAME}/game -I${GAMELIB_SOURCE_NAME}/src/cgame -I${GAMELIB_SOURCE_NAME}/ui" )
-
-      set( GAMELIB_LIB_CXX )
-      foreach( FILE ${GAMELIB_LIB_FILES} )
-        if( FILE MATCHES "\\.cpp$" )
-          set( GAMELIB_LIB_CXX ${GAMELIB_LIB_CXX} ${FILE} )
-        endif()
-      endforeach()
-
-      set_source_files_properties( ${GAMELIB_LIB_FILES} ${GAME_VM_COMMON} PROPERTIES LANGUAGE LLVM )
-      set_source_files_properties( ${GAMELIB_LIB_CXX} PROPERTIES LANGUAGE LLVMXX )
-
-      # First target is for at least i386
-      set_target_properties( ${GAMELIB_LIB_NAME} PROPERTIES
-        PREFIX "vm/"
-        SUFFIX ".bc"
-        COMPILE_FLAGS "-m32 ${GAMELIB_LLVM_FLAGS}"
-        OUTPUT_NAME "${GAMELIB_OUTPUT_NAME}_32"
-        LINKER_LANGUAGE LLVM
-        LINK_FLAGS -emit-llvm
-      )
-      # And a second target for at least amd64
-      add_library( ${GAMELIB_LIB_NAME}_64 SHARED ${GAMELIB_LIB_FILES} ${GAME_VM_COMMON} )
-      target_link_libraries( ${GAMELIB_LIB_NAME}_64 m )
-      set_target_properties( ${GAMELIB_LIB_NAME}_64 PROPERTIES
-        PREFIX "vm/"
-        SUFFIX ".bc"
-        COMPILE_FLAGS "-m64 ${GAMELIB_LLVM_FLAGS}"
-        OUTPUT_NAME "${GAMELIB_OUTPUT_NAME}_64"
-        LINKER_LANGUAGE LLVM
-        LINK_FLAGS -emit-llvm
-        LIBRARY_OUTPUT_DIRECTORY ${GAMELIB_OUTPUT_DIR}
-        RUNTIME_OUTPUT_DIRECTORY ${GAMELIB_OUTPUT_DIR}
-        ARCHIVE_OUTPUT_DIRECTORY ${GAMELIB_OUTPUT_DIR}
-        COMPILE_DEFINITIONS "${GAMELIB_COMPILE_DEF}"
-      )
-      # May need more here for different architectures
-    else()
-      set_target_properties( ${GAMELIB_LIB_NAME} PROPERTIES OUTPUT_NAME "${GAMELIB_OUTPUT_NAME}" )
-    endif()
   endif()
 
-  if( GAME_QVM AND GAMELIB_QVM_FILES )
-    set( QVM_DIR ${OBJ_DIR}/${GAMELIB_LIB_NAME}-qvm.dir )
-    set( QVM_CPP_OPTIONS
-      -I"${MOUNT_DIR}/gamelogic/game"
-      -I"${MOUNT_DIR}/engine/qcommon"
-      -D__inline=
-      -DQ3_VM
-    )
-    foreach( DEF ${GAMELIB_COMPILE_DEF} )
-      set( QVM_CPP_OPTIONS ${QVM_CPP_OPTIONS} -D${DEF} )
-    endforeach()
-
-    set( QVM_OBJECTS )
-    set( GAMELIB_QVM_FILES ${GAMELIB_QVM_FILES} ${MOUNT_DIR}/engine/qcommon/q_static.c )
-    foreach( QVM_FILE ${GAMELIB_QVM_FILES} )
-      get_filename_component( QVM_FILENAME ${QVM_FILE} NAME_WE )
-      get_filename_component( QVM_FILEDIR ${QVM_FILE} PATH )
-      set( QVM_COMPONENT ${QVM_DIR}/${QVM_FILENAME} )
-      set( QVM_OBJECTS ${QVM_OBJECTS} ${QVM_COMPONENT}.asm )
-
-      add_custom_command( OUTPUT ${QVM_COMPONENT}.asm
-        COMMAND lcc -target bytecode ${QVM_CPP_OPTIONS} ${QVM_FILE}
-        DEPENDS lcc rcc cpp ${QVM_FILE}
-        IMPLICIT_DEPENDS C ${QVM_FILE}
-        WORKING_DIRECTORY ${QVM_DIR}
-      )
-    endforeach()
-
-    # Ensure qvms end up in the correct folder for VS or Xcode projects
-    if( XCODE_VERSION OR MSVC )
-      set( QVM_OUTPUT ${CMAKE_BINARY_DIR}/$<CONFIGURATION>/${GAMELIB_OUTPUT_DIR}/vm/${GAMELIB_OUTPUT_NAME}.qvm )
-    else()
-      set( QVM_OUTPUT ${CMAKE_BINARY_DIR}/${GAMELIB_OUTPUT_DIR}/vm/${GAMELIB_OUTPUT_NAME}.qvm )
-    endif()
-
-    add_custom_command(
-      OUTPUT ${CMAKE_BINARY_DIR}/${GAMELIB_OUTPUT_DIR}/vm/${GAMELIB_OUTPUT_NAME}.qvm
-      COMMAND asm -o ${QVM_OUTPUT} ${QVM_OBJECTS} ${GAMELIB_QVM_ASM}
-      DEPENDS asm ${QVM_OBJECTS} ${GAMELIB_QVM_ASM}
-    )
-
-    add_custom_target( ${GAMELIB_LIB_NAME}-qvm ALL
-      DEPENDS ${CMAKE_BINARY_DIR}/${GAMELIB_OUTPUT_DIR}/vm/${GAMELIB_OUTPUT_NAME}.qvm
-    )
-
-  endif()
 endfunction()
 
-if( GAME_QVM )
-  add_subdirectory( ${MOUNT_DIR}/tools/lcc ${CMAKE_BINARY_DIR}/lcc )
-endif()
-
-GAMELIB( LIB_NAME gppgame
-  OUTPUT_NAME game
+GAMELIB( LIB_NAME game
   OUTPUT_DIR main
-  COMPILE_DEF GAME GAMEDLL GPP USE_REFENTITY_ANIMATIONSYSTEM
-  LIB_FILES ${GAMEGPP_SO} ${GPP_DIR}
-  QVM_FILES ${GAMEGPP_BASE}
-  QVM_ASM ${GAMEGPP_QVM}
+  COMPILE_DEF GAME
+  LIB_FILES ${GAMEGPP_BASE}
 )
 
-GAMELIB( LIB_NAME gpptrem
-  OUTPUT_NAME cgame
-  OUTPUT_DIR main
-  COMPILE_DEF CGAME CGAMEDLL GPP USE_REFENTITY_ANIMATIONSYSTEM
-  LIB_FILES ${CGAMEGPP_SO}
-  QVM_FILES ${CGAMEGPP_BASE}
-  QVM_ASM ${CGAMEGPP_QVM}
-)
-
-GAMELIB( LIB_NAME gppui
-  OUTPUT_NAME ui
-  OUTPUT_DIR main
-  COMPILE_DEF UI UIDLL GPP USE_REFENTITY_ANIMATIONSYSTEM
-  LIB_FILES ${UIGPP_SO}
-  QVM_FILES ${UIGPP_BASE}
-  QVM_ASM ${UIGPP_QVM}
-)
-
-# Don't worry about installing targets individually just copy entire folder over
-# This allows maps/.pk3s to be easily added to the installer
-if( GAME_LIB OR GAME_QVM )
-  install( DIRECTORY ${CMAKE_BINARY_DIR}/main DESTINATION "Unvanquished" )
-endif()
-
-if( USE_PHYSICS )
-  if( LINUX )
-    if( BUILD_ARCH STREQUAL "x86_64" )
-      set( NEWTON_LIBRARY CACHE FILEPATH "${MOUNT_DIR}/libs/libnewton/libs/linux64/libNewton.a" )
-    elseif( BUILD_ARCH STREQUAL "i386" )
-      set( NEWTON_LIBRARY CACHE FILEPATH "${MOUNT_DIR}/libs/libnewton/libs/linux32/libNewton.a" )
-    endif()
-  elseif( MSVC )
-    if( BUILD_ARCH STREQUAL "x86_64" )
-      set( NEWTON_LIBRARY CACHE FILEPATH "${MOUNT_DIR}/libs/libnewton/libs/win64/newton.lib" )
-    elseif( BUILD_ARCH STREQUAL "i386" )
-      set( NEWTON_LIBRARY CACHE FILEPATH "${MOUNT_DIR}/libs/libnewton/libs/win32/newton.lib" )
-    endif()
-  else()
-    set( NEWTON_LIBRARY CACHE FILEPATH "Location of the Newton library" )
-  endif()
-endif()
-
-#HACK: Force the compilation of EVERYTHING in C++
-file(GLOB_RECURSE EVERYTHING_C "src/engine/*.c")
-set_source_files_properties( ${EVERYTHING_C} PROPERTIES LANGUAGE CXX )
-
-######################
-# Build Old Renderer #
-######################
+################################################################################
+# Renderers
+################################################################################
 
 if( BUILD_OLD_RENDERER )
   # Setup target renderer
-  add_library( renderer SHARED ${RENDERERLIST} ${MOUNT_DIR}/engine/sys/sdl_glimp.c ${MOUNT_DIR}/engine/sys/sdl_gamma.c ${SHAREDLIST} ${MOUNT_DIR}/engine/rendererGL/rendererGL.def )
-  set_property( TARGET renderer PROPERTY COMPILE_DEFINITIONS USE_REFENTITY_ANIMATIONSYSTEM )
+  add_library( renderer MODULE ${RENDERERLIST} ${SHAREDLIST} ${LIBSRC_BASE} ${LIBSRC_RENDERER}
+    ${MOUNT_DIR}/engine/sys/sdl_glimp.c ${MOUNT_DIR}/engine/sys/sdl_gamma.c )
+  target_link_libraries( renderer ${LIBS_BASE} ${LIBS_RENDERER} )
   set_target_properties( renderer PROPERTIES OUTPUT_NAME "rendererGL" )
-
-  if( NOT MSVC )
-    target_link_libraries( renderer m )
-  endif()
 
   # Setup CPack for target renderer
   install( TARGETS renderer DESTINATION "Unvanquished" )
   get_target_property( LOCATION renderer LOCATION )
   get_filename_component( OUTPUT_NAME ${LOCATION} NAME )
   set( PLUGINS ${PLUGINS} "\${CMAKE_INSTALL_PREFIX}/Unvanquished/${OUTPUT_NAME}" )
-
-  # This section finds and provides REQUIRED dependencies to target renderer
-  find_package( OpenGL REQUIRED )
-  find_package( SDL REQUIRED )
-  find_package( JPEG REQUIRED )
-  find_package( PNG REQUIRED )
-  find_package( Freetype REQUIRED )
-  find_package( GLEW REQUIRED )
-
-  include_directories( ${PNG_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS} ${SDL_INCLUDE_DIR} )
-  target_link_libraries( renderer ${PNG_LIBRARIES} ${SDL_LIBRARY} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} ${JPEG_LIBRARIES} ${FREETYPE_LIBRARIES} )
-
-  find_package( WebP REQUIRED )
-  set_property( TARGET renderer APPEND PROPERTY COMPILE_DEFINITIONS )
-  include_directories( ${WEBP_INCLUDE_DIRS} )
-  target_link_libraries( renderer ${WEBP_LIBRARIES} )
-
-  # This section finds and provides OPTIONAL dependencies to target renderer
 endif()
-
-######################
-# Build New Renderer #
-######################
 
 if( BUILD_NEW_RENDERER )
   # Setup target rendererGL
-  add_library( rendererGL SHARED ${SHAREDLIST} ${OPENEXRLIST} ${RENDERERGLLIST} ${MOUNT_DIR}/engine/sys/sdl_glimp.c ${MOUNT_DIR}/engine/sys/sdl_gamma.c ${MOUNT_DIR}/engine/rendererGL/rendererGL.def )
-  set_property( TARGET rendererGL PROPERTY COMPILE_DEFINITIONS USE_XREAL_RENDERER USE_REFENTITY_ANIMATIONSYSTEM )
+  add_library( rendererGL MODULE ${RENDERERGLLIST} ${SHAREDLIST} ${LIBSRC_BASE} ${LIBSRC_RENDERER}
+    ${MOUNT_DIR}/engine/sys/sdl_glimp.c ${MOUNT_DIR}/engine/sys/sdl_gamma.c )
+  set_property( TARGET rendererGL APPEND PROPERTY COMPILE_DEFINITIONS USE_XREAL_RENDERER )
+  target_link_libraries( rendererGL ${LIBS_BASE} ${LIBS_RENDERER} )
   set_target_properties( rendererGL PROPERTIES OUTPUT_NAME "rendererGL3" )
-
-  target_link_libraries( rendererGL ${OS_LIBRARIES} )
 
   # Setup CPack for target rendererGL
   install( TARGETS rendererGL DESTINATION "Unvanquished" )
   get_target_property( LOCATION rendererGL LOCATION )
   get_filename_component( OUTPUT_NAME ${LOCATION} NAME )
   set( PLUGINS ${PLUGINS} "\${CMAKE_INSTALL_PREFIX}/Unvanquished/${OUTPUT_NAME}" )
-
-  # This section finds and provides REQUIRED dependencies to target rendererGL
-  find_package( OpenGL REQUIRED )
-  find_package( SDL REQUIRED )
-  find_package( JPEG REQUIRED )
-  find_package( PNG REQUIRED )
-  find_package( Freetype REQUIRED )
-  find_package( GLEW REQUIRED )
-
-  include_directories( ${PNG_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS} ${SDL_INCLUDE_DIR} )
-  target_link_libraries( rendererGL ${PNG_LIBRARIES} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} ${JPEG_LIBRARIES} ${FREETYPE_LIBRARIES} ${SDL_LIBRARY} )
-
-  find_package( WebP REQUIRED )
-  set_property( TARGET rendererGL APPEND PROPERTY COMPILE_DEFINITIONS )
-  include_directories( ${WEBP_INCLUDE_DIRS} )
-  target_link_libraries( rendererGL ${WEBP_LIBRARIES} )
-
-  # This section finds and provides OPTIONAL dependencies to target rendererGL
-  if( USE_GLSL_OPTIMIZER )
-    include_directories( ${LIB_DIR}/glsl-optimizer/include )
-    target_link_libraries( rendererGL glsl_optimizer )
-    set_property( TARGET rendererGL APPEND PROPERTY COMPILE_DEFINITIONS USE_GLSL_OPTIMIZER )
-  endif()
 endif()
 
-########################
-# Build GLSL Optimizer #
-########################
-
-if( USE_GLSL_OPTIMIZER )
-  add_subdirectory( ${LIB_DIR}/glsl-optimizer ${OBJ_DIR}/glsl )
-endif()
-
-###############
-# Find Curses #
-###############
-
-if( USE_CURSES )
-  set( CURSES_NEED_NCURSES 1 ) # Tells FindCurses that ncurses is required
-  find_package( CursesW )
-  if( CURSESW_FOUND )
-    set( CURSES_DEFINES USE_CURSES USE_CURSES_W )
-    set( CURSES_INCLUDE_DIR ${CURSESW_INCLUDE_DIR} )
-    set( CURSES_LIBRARIES ${CURSESW_LIBRARIES} )
-  else()
-    find_package( Curses REQUIRED )
-    set( CURSES_DEFINES USE_CURSES )
-  endif()
-endif()
-
-################
-# Build Client #
-################
+################################################################################
+# Engine
+################################################################################
 
 if( BUILD_CLIENT )
   # Setup target client
-  add_executable( client ${SERVERLIST} ${CLIENTLIST} ${SDLBASELIST}
-    ${CPUINFOLIST} ${SDLLIST} ${QCOMMONLIST} ${SHAREDLIST} ${CRYPTOLIST} ${TINYGETTEXT_LIST}
-    ${DATABASELIST} ${MOUNT_DIR}/engine/qcommon/dl_main_curl.c ${SPEEXLIST} ${WIN_RC} )
-  add_dependencies( client rendererGL )
-  include_directories( ${MOUNT_DIR}/libs/cpuinfo ${NEWTON_INCLUDES} )
-  target_link_libraries( client ${OS_LIBRARIES} ${NEWTON_LIBRARY} )
-  set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_XREAL_RENDERER COMPAT_ET USE_REFENTITY_ANIMATIONSYSTEM HAVE_SDL )
-  set_target_properties( client PROPERTIES OUTPUT_NAME "daemon" PREFIX "" LINKER_LANGUAGE CXX )
+  add_executable( client ${SERVERLIST} ${CLIENTLIST} ${SDLLIST} ${ENGINELIST} ${SHAREDLIST}
+    ${LIBSRC_BASE} ${LIBSRC_ENGINE} ${LIBSRC_CLIENTBASE} ${LIBSRC_CLIENT} ${WIN_RC} )
+  target_link_libraries( client ${LIBS_BASE} ${LIBS_ENGINE} ${LIBS_CLIENTBASE} ${LIBS_CLIENT} )
+  set_target_properties( client PROPERTIES OUTPUT_NAME "daemon" PREFIX "" )
 
   # Setup CPack for target client
   install( TARGETS client DESTINATION "Unvanquished" )
@@ -1422,149 +1114,19 @@ if( BUILD_CLIENT )
   get_filename_component( OUTPUT_NAME ${LOCATION} NAME )
   set( APPS ${APPS} Unvanquished/${OUTPUT_NAME} )
 
-  # Mac OS X specific settings
-  if( ${CMAKE_SYSTEM_NAME} STREQUAL "Darwin" )
-    # Mac OS X does not provide a SDLMain.dylib so we must compile our own
-    add_library( INTERNAL_SDLMain ${MOUNT_DIR}/engine/sys/SDLMain.m )
-    target_link_libraries( client INTERNAL_SDLMain )
-    # Mac OS X has some trouble with PIC code under X86/32.
-    if( BUILD_ARCH STREQUAL "i386" )
-      set_target_properties( client PROPERTIES COMPILE_FLAGS "-mdynamic-no-pic" LINK_FLAGS "-read_only_relocs suppress" )
-    endif()
-  endif()
-
-  # Visual Studio specific settings
-  if( MSVC )
-    include_directories( ${MOUNT_DIR}/libs/msinttypes )
-    set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS ZLIB_WINAPI HAVE_CONFIG_H )
-  endif()
-
-  # This section finds and provides REQUIRED dependencies to target client
-  find_package( OpenGL REQUIRED )
-  find_package( SDL REQUIRED )
-  find_package( Freetype REQUIRED )
-  find_package( GLEW REQUIRED )
-  find_package( GMP REQUIRED )
-  find_package( ZLIB REQUIRED )
-  find_package( CURL REQUIRED )
-
-  if( USE_INTERNAL_CRYPTO )
-    # BEFORE is required to prevent system headers from being used
-    include_directories( BEFORE ${MOUNT_DIR}/libs/nettle )
-  else()
-    find_package( Nettle REQUIRED )
-    include_directories( ${NETTLE_INCLUDE_DIRS} )
-    target_link_libraries( client ${NETTLE_LIBRARIES} )
-  endif()
-
-  include_directories( ${OPENGL_INCLUDE_DIR} ${SDL_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIR} ${GMP_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS} ${CURL_INCLUDE_DIRS} )
-  target_link_libraries( client ${OPENGL_LIBRARIES} ${SDL_LIBRARY} ${FREETYPE_LIBRARIES} ${GLEW_LIBRARY} ${GMP_LIBRARIES} ${ZLIB_LIBRARIES} ${CURL_LIBRARIES} )
-
-  # This section finds and provides OPTIONAL dependencies to target client
-  if( USE_OPENAL )
-    find_package( OpenAL REQUIRED )
-    set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_OPENAL )
-    if( USE_OPENAL_DLOPEN )
-      set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_OPENAL_DLOPEN )
-    else()
-		target_link_libraries( client ${OPENAL_LIBRARY} )
-	endif()
-  endif()
-
-  if( USE_CURSES )
-    set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS ${CURSES_DEFINES} )
-    include_directories( ${CURSES_INCLUDE_DIR} )
-    target_link_libraries( client ${CURSES_LIBRARIES} )
-  endif()
-
-  if( USE_VOIP )
-    set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_VOIP )
-    if( NOT MSVC )
-      set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS FLOATING_POINT )
-    endif()
-    if( USE_INTERNAL_SPEEX )
-      # BEFORE is required to prevent system headers being used
-      include_directories( BEFORE ${MOUNT_DIR}/libs/libspeex/include )
-    else()
-      find_package( Speex REQUIRED )
-      include_directories( ${SPEEX_INCLUDE_DIRS} )
-      target_link_libraries( client ${SPEEX_LIBRARIES} )
-    endif()
-  endif()
-
-  if( USE_CODEC_VORBIS )
-    find_package( Vorbis REQUIRED )
-    set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_CODEC_VORBIS )
-    include_directories( ${VORBIS_INCLUDE_DIRS} )
-    target_link_libraries( client ${VORBIS_LIBRARIES} )
-  endif()
-
-  if( USE_CIN_THEORA )
-    find_package( Theora REQUIRED )
-    set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_CIN_THEORA )
-    include_directories( ${THEORA_INCLUDE_DIRS} )
-    target_link_libraries( client ${THEORA_LIBRARIES} )
-  endif()
-
-  if( USE_MUMBLE )
-    set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_MUMBLE )
-  endif()
-
-  if( USE_PHYSICS )
-    find_package( TinyXML REQUIRED )
-    set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_PHYSICS )
-    add_dependencies( client newton )
-    include_directories( ${TINYXML_INCLUDE_DIR} )
-    target_link_libraries( client ${TINYXML_LIBRARY} ${NEWTON_LIBRARY} )
-  endif()
-
-  if( USE_CIN_XVID )
-    find_package( xvid REQUIRED )
-    set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_CIN_XVID )
-    include_directories( ${XVID_INCLUDE_DIR} )
-    target_link_libraries( client ${XVID_LIBRARY} )
-  endif()
-
-  if( HAVE_BZIP2 )
-    find_package( BZip2 REQUIRED )
-    set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS HAVE_BZIP2 )
-    include_directories( ${BZIP2_INCLUDE_DIR} )
-    target_link_libraries( client ${BZIP2_LIBRARY} )
-  endif()
-
-  if( GAME_LIB_LLVM )
-    include_directories( ${LLVM_INCLUDE_DIR} )
-    target_link_libraries( client ${LLVM_LIBS} )
-  endif()
-
-  if( MINGW )
-    target_link_libraries( client ${SDLMAIN_LIBRARY} )
-  endif()
+  # Amanieu: Not sure if this is required
+  #if( MINGW )
+  #  target_link_libraries( client ${SDLMAIN_LIBRARY} )
+  #endif()
 endif()
-
-################
-# Build OpenAL #
-################
-
-if( USE_OPENAL )
-  find_package( OpenAL REQUIRED )
-  include_directories( ${OPENAL_INCLUDE_DIR} )
-endif()
-
-################
-# Build Server #
-################
 
 if( BUILD_SERVER )
   # Setup the target Server
-  add_executable( server ${SERVERLIST} ${SDLBASELIST} ${CPUINFOLIST}
-    ${QCOMMONLIST} ${SHAREDLIST} ${DATABASELIST} ${CRYPTOLIST}
-    ${MOUNT_DIR}/engine/null/null_client.c ${TINYGETTEXT_LIST}
-    ${MOUNT_DIR}/engine/null/null_input.c ${MOUNT_DIR}/engine/null/null_snddma.c
-    ${MOUNT_DIR}/engine/qcommon/dl_main_stubs.c ${WIN_RC} )
-  include_directories( ${MOUNT_DIR}/libs/cpuinfo ${NEWTON_INCLUDES} )
-  target_link_libraries( server ${OS_LIBRARIES} ${NEWTON_LIBRARY} )
-  set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS DEDICATED COMPAT_ET )
+  add_executable( server ${SERVERLIST} ${ENGINELIST} ${SHAREDLIST} ${LIBSRC_BASE} ${LIBSRC_ENGINE}
+    ${MOUNT_DIR}/engine/null/null_client.c  ${MOUNT_DIR}/engine/null/null_input.c
+    ${MOUNT_DIR}/engine/null/null_snddma.c ${MOUNT_DIR}/engine/qcommon/dl_main_stubs.c ${WIN_RC} )
+  target_link_libraries( server ${LIBS_BASE} ${LIBS_ENGINE} )
+  set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS DEDICATED )
   set_target_properties( server PROPERTIES OUTPUT_NAME "daemonded" PREFIX "" LINKER_LANGUAGE CXX )
 
   # Setup CPack for target server
@@ -1572,190 +1134,29 @@ if( BUILD_SERVER )
   get_target_property( LOCATION server LOCATION )
   get_filename_component( OUTPUT_NAME ${LOCATION} NAME )
   set( APPS ${APPS} Unvanquished/${OUTPUT_NAME} )
-
-  # Mac OS X has some trouble with PIC code under X86/32.
-  if( CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND BUILD_ARCH STREQUAL "i386" )
-    set_target_properties( server PROPERTIES COMPILE_FLAGS -mdynamic-no-pic LINK_FLAGS "-read_only_relocs suppress" )
-  endif()
-
-  # Visual Studio specific settings
-  if( MSVC )
-    set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS ZLIB_WINAPI )
-  endif()
-
-  # The following section finds the REQUIRED dependencies and makes them available to the target
-  find_package( GMP REQUIRED )
-  find_package( ZLIB REQUIRED )
-
-  if( USE_INTERNAL_CRYPTO )
-    # BEFORE is required to prevent system headers from being used
-    include_directories( BEFORE ${MOUNT_DIR}/libs/nettle )
-  else()
-    find_package( Nettle REQUIRED )
-    include_directories( ${NETTLE_INCLUDE_DIRS} )
-    target_link_libraries( server ${NETTLE_LIBRARIES} )
-  endif()
-
-  include_directories( ${GMP_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS} )
-  target_link_libraries( server ${GMP_LIBRARIES} ${ZLIB_LIBRARIES} )
-
-  # The following section finds the OPTIONAL dependencies and makes them available to the target
-
-  if( USE_CURSES )
-    set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS ${CURSES_DEFINES} )
-    include_directories( ${CURSES_INCLUDE_DIR} )
-    target_link_libraries( server ${CURSES_LIBRARIES} )
-  endif()
-
-  if( USE_VOIP )
-    set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS USE_VOIP FLOATING_POINT )
-  endif()
-
-  if( USE_PHYSICS )
-    find_package( TinyXML REQUIRED )
-    set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS USE_PHYSICS )
-    include_directories( ${TINYXML_INCLUDE_DIRS} )
-    target_link_libraries( server ${TINYXML_LIBRARIES} )
-  endif()
-
-  if( HAVE_BZIP2 )
-    find_package( BZip2 REQUIRED )
-    set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS HAVE_BZIP2 )
-    include_directories( ${BZIP2_INCLUDE_DIR} )
-    target_link_libraries( server ${BZIP2_LIBRARY} )
-  endif()
-
-  if( USE_SDL_ICONV )
-    find_package( SDL REQUIRED )
-    set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS HAVE_SDL )
-    include_directories( ${SDL_INCLUDE_DIR} )
-    target_link_libraries( server ${SDL_LIBRARY} )
-  endif()
-
-  if( GAME_LIB_LLVM )
-    include_directories( ${LLVM_INCLUDE_DIR} )
-    target_link_libraries( server ${LLVM_LIBS} )
-  endif()
 endif()
 
-###################
-# Build DaemonMap #
-###################
-if( BUILD_DAEMONMAP )
-  # Setup DaemonMap target
-  add_executable( daemonMap ${DAEMONMAPLIST} ${WIN_RC} )
-  include_directories( ${LIB_DIR}/picomodel ${MOUNT_DIR}/tools/common )
-  target_link_libraries( daemonMap ${OS_LIBRARIES} )
-  set_property( TARGET daemonMap APPEND PROPERTY COMPILE_DEFINITIONS USE_OPENGL )
-  set_target_properties( daemonMap PROPERTIES OUTPUT_NAME "daemonmap" PREFIX "" )
-
-  # Setup CPack for target daemonmap
-  install( TARGETS daemonMap DESTINATION "Unvanquished" )
-  get_target_property( OUTPUT_NAME daemonMap OUTPUT_NAME )
-  set( APPS ${APPS} Unvanquished/${OUTPUT_NAME} )
-
-  # Visual Studio specific settings
-  if( MSVC )
-    set_property( TARGET daemonMap APPEND PROPERTY COMPILE_DEFINITIONS ZLIB_WINAPI )
-  endif()
-
-  # This section finds and provides REQUIRED dependencies to DaemonMap target
-  find_package( OpenGL REQUIRED )
-  find_package( SDL REQUIRED )
-  find_package( JPEG REQUIRED )
-  find_package( PNG REQUIRED )
-  find_package( GLib2 REQUIRED )
-  target_link_libraries( daemonMap ${OPENGL_LIBRARIES} ${SDL_LIBRARY} ${JPEG_LIBRARIES} ${PNG_LIBRARIES} ${GLIB_LIBRARIES} )
-  include_directories( ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${PNG_INCLUDE_DIR} ${SDL_INCLUDE_DIR} ${GLIB_INCLUDE_DIRS} )
-endif()
-
-####################
-# Build tty client #
-####################
 if( BUILD_TTY_CLIENT )
-  # Setup the target Server
-  add_executable( ttyclient ${SERVERLIST} ${CLIENTLIST} ${SDLBASELIST} ${CPUINFOLIST}
-    ${QCOMMONLIST} ${SHAREDLIST} ${DATABASELIST} ${CRYPTOLIST}
-    ${TINYGETTEXT_LIST}
-    ${MOUNT_DIR}/engine/qcommon/dl_main_stubs.c ${WIN_RC}
+  # Setup the target ttyclient
+  # Amanieu: Don't use remove_definitions here
+  remove_definitions( -DUSE_CIN_THEORA -DUSE_VOIP -DUSE_CODEC_VORBIS )
+  add_executable( ttyclient ${SERVERLIST} ${CLIENTLIST} ${ENGINELIST} ${SHAREDLIST}
+    ${LIBSRC_BASE} ${LIBSRC_ENGINE} ${LIBSRC_CLIENTBASE} ${WIN_RC}
     ${MOUNT_DIR}/engine/null/null_input.c ${MOUNT_DIR}/engine/null/null_snddma.c ${MOUNT_DIR}/engine/null/null_renderer.c )
-  include_directories( ${MOUNT_DIR}/libs/cpuinfo ${NEWTON_INCLUDES} )
-  target_link_libraries( ttyclient ${OS_LIBRARIES} ${NEWTON_LIBRARY} )
-  set_property( TARGET ttyclient APPEND PROPERTY COMPILE_DEFINITIONS COMPAT_ET BUILD_TTY_CLIENT REF_HARD_LINKED )
+  target_link_libraries( ttyclient ${LIBS_BASE} ${LIBS_ENGINE} ${LIBS_CLIENTBASE} )
+  set_property( TARGET ttyclient APPEND PROPERTY COMPILE_DEFINITIONS BUILD_TTY_CLIENT REF_HARD_LINKED )
   set_target_properties( ttyclient PROPERTIES OUTPUT_NAME "daemon-tty" PREFIX "" LINKER_LANGUAGE CXX )
 
-  # Setup CPack for target server
+  # Setup CPack for target ttyclient
   install( TARGETS ttyclient DESTINATION "Unvanquished" )
   get_target_property( LOCATION ttyclient LOCATION )
   get_filename_component( OUTPUT_NAME ${LOCATION} NAME )
   set( APPS ${APPS} Unvanquished/${OUTPUT_NAME} )
-
-  # Mac OS X has some trouble with PIC code under X86/32.
-  if( CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND BUILD_ARCH STREQUAL "i386" )
-    set_target_properties( ttyclient PROPERTIES COMPILE_FLAGS -mdynamic-no-pic LINK_FLAGS "-read_only_relocs suppress" )
-  endif()
-
-  # Visual Studio specific settings
-  if( MSVC )
-    set_property( TARGET ttyclient APPEND PROPERTY COMPILE_DEFINITIONS ZLIB_WINAPI )
-  endif()
-
-  # The following section finds the REQUIRED dependencies and makes them available to the target
-  find_package( GMP REQUIRED )
-  find_package( ZLIB REQUIRED )
-
-  if( USE_INTERNAL_CRYPTO )
-    # BEFORE is required to prevent system headers from being used
-    include_directories( BEFORE ${MOUNT_DIR}/libs/nettle )
-  else()
-    find_package( Nettle REQUIRED )
-    include_directories( ${NETTLE_INCLUDE_DIRS} )
-    target_link_libraries( ttyclient ${NETTLE_LIBRARIES} )
-  endif()
-
-  include_directories( ${GMP_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS} )
-  target_link_libraries( ttyclient ${GMP_LIBRARIES} ${ZLIB_LIBRARIES} )
-
-  # The following section finds the OPTIONAL dependencies and makes them available to the target
-
-  if( USE_CURSES )
-    set_property( TARGET ttyclient APPEND PROPERTY COMPILE_DEFINITIONS ${CURSES_DEFINES} )
-    include_directories( ${CURSES_INCLUDE_DIR} )
-    target_link_libraries( ttyclient ${CURSES_LIBRARIES} )
-  endif()
-
-  if( USE_PHYSICS )
-    find_package( TinyXML REQUIRED )
-    set_property( TARGET ttyclient APPEND PROPERTY COMPILE_DEFINITIONS USE_PHYSICS )
-    include_directories( ${TINYXML_INCLUDE_DIRS} )
-    target_link_libraries( ttyclient ${TINYXML_LIBRARIES} )
-  endif()
-
-  if( HAVE_BZIP2 )
-    find_package( BZip2 REQUIRED )
-    set_property( TARGET ttyclient APPEND PROPERTY COMPILE_DEFINITIONS HAVE_BZIP2 )
-    include_directories( ${BZIP2_INCLUDE_DIR} )
-    target_link_libraries( ttyclient ${BZIP2_LIBRARY} )
-  endif()
-
-  if( USE_SDL_ICONV )
-    find_package( SDL REQUIRED )
-    set_property( TARGET ttyclient APPEND PROPERTY COMPILE_DEFINITIONS HAVE_SDL )
-    include_directories( ${SDL_INCLUDE_DIR} )
-    target_link_libraries( ttyclient ${SDL_LIBRARY} )
-  endif()
-
-  if( GAME_LIB_LLVM )
-    include_directories( ${LLVM_INCLUDE_DIR} )
-    target_link_libraries( ttyclient ${LLVM_LIBS} )
-  endif()
 endif()
 
-
-
-###########################
-#Configure Download Script#
-###########################
+################################################################################
+# Installer
+################################################################################
 
 if( NOT MSVC )
   execute_process( COMMAND sed -e "/^#define PRODUCT_VERSION/! d; s/.*\"\\(.*\\)\\.[^.]\"/\\1/" ${CMAKE_SOURCE_DIR}/src/engine/qcommon/q_shared.h
@@ -1766,9 +1167,6 @@ if( NOT MSVC )
   )
 endif()
 
-#####################
-#Configure Installer#
-#####################
 # This section requires a lot of escaping as these values are parsed then passed
 # to CPack. Be very very careful when modifying values
 

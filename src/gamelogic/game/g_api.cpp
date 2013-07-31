@@ -20,7 +20,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
+extern "C" {
 #include "g_local.h"
+}
 #include "../../engine/qcommon/nacl.h"
 #include "../../engine/qcommon/rpc.h"
 
@@ -110,7 +112,7 @@ static RPC::Reader DoRPC(RPC::Writer& writer)
 
 int main(int argc, char** argv)
 {
-	rootSocket = NaCl::GetRootSocket(argv[1]);
+	rootSocket = NaCl::GetRootSocket();
 
 	// Send syscall ABI version, also acts as a sign that the module loaded
 	RPC::Writer writer;
@@ -291,7 +293,7 @@ int trap_FS_GetFileList(const char *path, const char *extension, char *listbuf, 
 	input.WriteInt(G_FS_GETFILELIST);
 	input.WriteString(path);
 	input.WriteString(extension);
-	input.WriteInt(len);
+	input.WriteInt(bufsize);
 	RPC::Reader output = DoRPC(input);
 	int ret = output.ReadInt();
 	output.Read(listbuf, bufsize);
@@ -761,7 +763,7 @@ int trap_RSA_GenerateMessage(const char *public_key, char *cleartext, char *encr
 	input.WriteInt(G_RSA_GENMSG);
 	input.WriteString(public_key);
 	RPC::Reader output = DoRPC(input);
-	int ret = output.ReadInt()
+	int ret = output.ReadInt();
 	Q_strncpyz(cleartext, output.ReadString(), RSA_STRING_LENGTH);
 	Q_strncpyz(encrypted, output.ReadString(), RSA_STRING_LENGTH);
 	return ret;

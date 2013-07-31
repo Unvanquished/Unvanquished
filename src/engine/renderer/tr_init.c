@@ -1514,10 +1514,10 @@ void R_DebugPolygon( int color, int numPoints, float *points );
 GetRefAPI
 =====================
 */
-#if defined( __cplusplus )
-extern "C" {
+#ifdef  __cplusplus
+extern "C"
 #endif
-	refexport_t    *GetRefAPI( int apiVersion, refimport_t *rimp )
+	Q_EXPORT refexport_t *GetRefAPI( int apiVersion, refimport_t *rimp )
 	{
 		static refexport_t re;
 
@@ -1641,10 +1641,6 @@ extern "C" {
 
 		return &re;
 	}
-
-#if defined( __cplusplus )
-} // extern "C"
-#endif
 
 #ifndef REF_HARD_LINKED
 // this is only here so the functions in q_shared.c and bg_*.c can link
