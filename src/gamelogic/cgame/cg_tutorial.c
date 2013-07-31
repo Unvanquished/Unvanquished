@@ -275,12 +275,17 @@ static void CG_AlienLevel0Text( char *text, playerState_t *ps )
 	Q_strcat( text, MAX_TUTORIAL_TEXT,
 	          _( "Touch humans to damage them\n"
 	             "Aim at their heads to cause more damage\n" ) );
+
 	Q_strcat( text, MAX_TUTORIAL_TEXT,
 	          va( _( "Press %s to walk on walls\n" ),
 	              CG_KeyNameForCommand( "+movedown" ) ) );
-	Q_strcat( text, MAX_TUTORIAL_TEXT,
-	          va( _( "Press %s to pounce\n" ),
-	              CG_KeyNameForCommand( "+attack2" ) ) );
+
+	if ( ps->stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL0_UPG )
+	{
+		Q_strcat( text, MAX_TUTORIAL_TEXT,
+		          va( _( "Press %s to pounce\n" ),
+		              CG_KeyNameForCommand( "+attack2" ) ) );
+	}
 }
 
 /*
@@ -656,6 +661,7 @@ const char *CG_TutorialText( void )
 					break;
 
 				case PCL_ALIEN_LEVEL0:
+				case PCL_ALIEN_LEVEL0_UPG:
 					CG_AlienLevel0Text( text, ps );
 					break;
 

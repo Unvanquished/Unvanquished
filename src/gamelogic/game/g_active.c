@@ -2057,6 +2057,7 @@ void ClientThink_real( gentity_t *ent )
 	switch ( client->ps.weapon )
 	{
 		case WP_ALEVEL0:
+		case WP_ALEVEL0_UPG:
 			if ( !CheckVenomAttack( ent ) )
 			{
 				client->ps.weaponstate = WEAPON_READY;

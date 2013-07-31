@@ -1245,7 +1245,7 @@ float CG_ChargeProgress( void )
 	float progress;
 	int   min = 0, max = 0;
 
-	if ( cg.snap->ps.weapon == WP_ALEVEL0 )
+	if ( cg.snap->ps.weapon == WP_ALEVEL0_UPG )
 	{
 		min = 0;
 		max = MAX( LEVEL0_POUNCE_COOLDOWN, LEVEL0_SIDEPOUNCE_COOLDOWN );
@@ -2545,8 +2545,9 @@ static void CG_DrawTeamOverlay( rectDef_t *rect, float scale, vec4_t color )
 			}
 			else
 			{
-				if ( curWeapon == WP_ABUILD2 || curWeapon == WP_ALEVEL1_UPG ||
-				     curWeapon == WP_ALEVEL2_UPG || curWeapon == WP_ALEVEL3_UPG )
+				if ( curWeapon == WP_ABUILD2 || curWeapon == WP_ALEVEL0_UPG ||
+				     curWeapon == WP_ALEVEL1_UPG || curWeapon == WP_ALEVEL2_UPG ||
+				     curWeapon == WP_ALEVEL3_UPG )
 				{
 					CG_DrawPic( x + iconSize + leftMargin, y, iconSize,
 					            iconSize, cgs.media.upgradeClassIconShader );
