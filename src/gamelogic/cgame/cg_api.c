@@ -359,13 +359,6 @@ void trap_S_StartSound( vec3_t origin, int entityNum, int entchannel, sfxHandle_
 	syscall( CG_S_STARTSOUND, origin, entityNum, entchannel, sfx, 127 );
 }
 
-//42.
-//S_StartSoundEx(VMA(1), args[2], args[3], args[4], args[5], args[6]);
-void trap_S_StartSoundEx( vec3_t origin, int entityNum, int entchannel, sfxHandle_t sfx, int flags )
-{
-	syscall( CG_S_STARTSOUNDEX, origin, entityNum, entchannel, sfx, flags, 127 );
-}
-
 //43.
 //S_StartLocalSound(args[1], args[2], args[3]);
 void trap_S_StartLocalSound( sfxHandle_t sfx, int channelNum )
@@ -427,27 +420,6 @@ void trap_S_StopStreamingSound( int entityNum )
 void trap_S_UpdateEntityPosition( int entityNum, const vec3_t origin )
 {
 	syscall( CG_S_UPDATEENTITYPOSITION, entityNum, origin );
-}
-
-//51.
-//return S_GetVoiceAmplitude(args[1]);
-int trap_S_GetVoiceAmplitude( int entityNum )
-{
-	return syscall( CG_S_GETVOICEAMPLITUDE, entityNum );
-}
-
-//52.
-//return S_GetSoundLength(args[1]);
-int trap_S_GetSoundLength( sfxHandle_t sfx )
-{
-	return syscall( CG_S_GETSOUNDLENGTH, sfx );
-}
-
-//53.
-//return S_GetCurrentSoundTime();
-int trap_S_GetCurrentSoundTime( void )
-{
-	return syscall( CG_S_GETCURRENTSOUNDTIME );
 }
 
 //54.
@@ -1105,13 +1077,6 @@ void trap_S_StartSoundVControl( vec3_t origin, int entityNum, int entchannel, sf
 int trap_R_LightForPoint( vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir )
 {
 	return syscall( CG_R_LIGHTFORPOINT, point, ambientLight, directedLight, lightDir );
-}
-
-//164.
-//return S_SoundDuration( args[1] );
-int trap_S_SoundDuration( sfxHandle_t handle )
-{
-	return syscall( CG_S_SOUNDDURATION, handle );
 }
 
 //165.

@@ -431,13 +431,6 @@ sfxHandle_t trap_RegisterSound( const char *sample, qboolean compressed )
 	return syscall( G_REGISTERSOUND, sample, compressed );
 }
 
-//53.
-//return S_GetSoundLength(args[1]);
-int trap_GetSoundLength( sfxHandle_t sfxHandle )
-{
-	return syscall( G_GET_SOUND_LENGTH, sfxHandle );
-}
-
 //54.
 //return Parse_AddGlobalDefine( VMA(1) );
 int trap_Parse_AddGlobalDefine( const char *define )
