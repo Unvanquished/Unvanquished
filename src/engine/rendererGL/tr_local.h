@@ -3211,10 +3211,6 @@ extern "C" {
 
 	extern cvar_t *r_evsmPostProcess;
 
-#ifdef USE_GLSL_OPTIMIZER
-	extern cvar_t *r_glslOptimizer;
-#endif
-
 	extern cvar_t *r_fontScale;
 
 //====================================================================

@@ -2867,8 +2867,5 @@ extern GLShader_screenSpaceAmbientOcclusion     *gl_screenSpaceAmbientOcclusionS
 extern GLShader_depthOfField                    *gl_depthOfFieldShader;
 extern GLShader_motionblur                      *gl_motionblurShader;
 extern GLShaderManager                           gl_shaderManager;
-#ifdef USE_GLSL_OPTIMIZER
-extern struct glslopt_ctx *s_glslOptimizer;
-#endif
 
 #endif // GL_SHADER_H
