@@ -31,6 +31,11 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace Cmd {
 
+    /**
+     * Commands can be in different namespaces which are used to
+     * list commands related to a specific subsystem as well as
+     * mass removal of commands.
+     */
     enum {
         BASE             = BIT(0),
         ALIAS            = BIT(1),
@@ -39,34 +44,52 @@ namespace Cmd {
         SOUND            = BIT(4),
         GAME             = BIT(5),
         CGAME            = BIT(6),
-        UI               = BIT(6),
-        PROXY_FOR_OLD    = BIT(31)
+        UI               = BIT(7),
+        PROXY_FOR_OLD    = BIT(31) // OLD: The command has been registered through the proxy function in cmd.c
     };
 
-
+    // OLD: Parsing functions that should go in their modules at some point
     std::string Escape(const std::string& text, bool quote = false);
     void Tokenize(const std::string& text, std::vector<std::string>& tokens, std::vector<int>& tokenStarts);
     std::vector<int> StartsOfCommands(const std::string& text);
     std::vector<std::string> SplitCommandText(const std::string& commands);
     std::string SubstituteCvars(const std::string& text);
 
+    /**
+     * Cmd::Args represents the arguments given to an invoked command.
+     * It has a number of convenient methods to access the raw command
+     * line, quote arguments etc.
+     * The first argument (index 0) is the name of the command.
+     */
     class Args {
         public:
+            // Represents an empty command line
             Args();
+            // Represents a command line that is the concatenation of the arguments
             Args(std::vector<std::string> args);
+            // Represents the command line
             Args(std::string command);
 
+            // Basic access
             int Argc() const;
             const std::string& Argv(int argNum) const;
+
+            // FIXME: used to preserve an old behavior, is it really needed?
             std::string EscapedArgs(int start = 1, int end = -1) const;
+            // Returns the raw command line represented by this Args
             const std::string& RawCmd() const;
+            // Returns the raw, unparsed commandline after the given argument
             std::string RawArgsFrom(int start = 1) const;
 
+            // Gives the index of the argument of the character at a given pos.
             int PosToArg(int pos);
+            // Gives the index of the starting character of an argument.
             int ArgStartPos(int argNum);
 
+            // Returns all the arguments in a vector
             const std::vector<std::string>& ArgVector() const;
 
+            // Aliases
             int size() const; // same as Argc()
             const std::string& operator[] (int argNum) const; // same as Argv(int)
 
@@ -77,25 +100,49 @@ namespace Cmd {
     };
 
 
+    /**
+     * Commands are defined by subclassing Cmd::CmdBase and defining both
+     * the Run method and the namespace in which the command is.
+     * Then it can be registered in the command system, this can be done
+     * automatically and that's why most of the time you will want to use
+     * Cmd::StaticCmd instad of Cmd::CmdBase.
+     * In the engine, Run and Complete will always be called from the main thread.
+     */
     class CmdBase {
         public:
+            // Called when the command is run with the command line args
             virtual void Run(const Args& args) const = 0;
+            // Called when the user wants to autocomplete a call to this command.
             virtual std::vector<std::string> Complete(int argNum, const Args& args) const;
 
+            // Used by the command system.
             int GetFlags() const;
 
+            // Prints the usage of this command with a standard formatting
             static void PrintUsage(const Args& args, const std::string& syntax, const std::string& description = "");
 
         protected:
+            // Is given the namespace of the command.
             CmdBase(int flags);
 
         private:
             int flags;
     };
 
+    /**
+     * Cmd::StaticCmd automatically register the command when it is
+     * instanciated and removes it when it is destroyed. A typical usage is
+     *
+     *  class MyCmd : public Cmd::StaticCmd {
+     *      MyCmd() : Cmd::StaticCmd("my_command", NAMESPACE, "my_desc"){}
+     *      //Other stuff
+     *  };
+     *  static MyCmd MyCmdRegistration;
+     */
     class StaticCmd : public CmdBase {
         protected:
             StaticCmd(std::string name, int flags, std::string description);
+            //TODO: sometimes (in the gamelogic) we already know what the flags is, provide another constructor for it.
     };
 }
 

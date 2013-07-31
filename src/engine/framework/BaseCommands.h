@@ -28,9 +28,16 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef FRAMEWORK_BASE_COMMANDS_H_
 #define FRAMEWORK_BASE_COMMANDS_H_
 
+/**
+ * Function related to basic commands such as aliases and delays
+ */
+
 namespace Cmd {
 
+    // Executes delayed commands that are ready.
     void DelayFrame();
+
+    //Saves the aliases in a configuration file
     void WriteAliases(fileHandle_t f);
 
 }

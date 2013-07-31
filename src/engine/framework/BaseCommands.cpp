@@ -32,6 +32,10 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #include "../../shared/Command.h"
 #include "../../shared/String.h"
 
+/**
+ * Definition of most of the commands that provide scripting capabilities to the console
+ */
+
 namespace Cmd {
 
     class VstrCmd: public StaticCmd {
