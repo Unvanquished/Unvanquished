@@ -115,7 +115,9 @@ void codec_init( void )
 {
 	codecs = NULL;
 	codec_register( &wav_codec );
+#ifndef BUILD_TTY_CLIENT
 	codec_register( &ogg_codec );
+#endif
 }
 
 void codec_shutdown( void )
