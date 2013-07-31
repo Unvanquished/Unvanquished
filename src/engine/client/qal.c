@@ -27,8 +27,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * Dynamically loads OpenAL
  */
 
-#ifdef USE_OPENAL_DLOPEN
-
 #include "qal.h"
 
 #ifdef USE_SDL
@@ -359,5 +357,3 @@ void QAL_Shutdown( void )
 	qalcCaptureStop = NULL;
 	qalcCaptureSamples = NULL;
 }
-
-#endif // USE_OPENAL_DLOPEN

@@ -2374,9 +2374,8 @@ void S_AL_Shutdown( void )
 		streamPlaying[i] = qfalse;
 		streamSources[i] = 0;
 	}
-#ifdef USE_OPENAL_DLOPEN
+
 	QAL_Shutdown();
-#endif
 }
 
 int S_AL_SoundDuration( sfxHandle_t sfxHandle )
@@ -2457,13 +2456,12 @@ qboolean S_AL_Init( soundInterface_t *si )
 	s_alDevice = Cvar_Get("s_alDevice", "", CVAR_ARCHIVE | CVAR_LATCH);
 
 	// Load QAL
-#ifdef USE_OPENAL_DLOPEN
 	if( !QAL_Init( s_alDriver->string ) )
 	{
 		Com_Printf( "Failed to load library: \"%s\".\n", s_alDriver->string );
 		return qfalse;
 	}
-#endif
+
 	device = s_alDevice->string;
 	if(device && !*device)
 		device = NULL;
@@ -2540,9 +2538,7 @@ qboolean S_AL_Init( soundInterface_t *si )
 
 	if( !alDevice )
 	{
-#ifdef USE_OPENAL_DLOPEN
 		QAL_Shutdown( );
-#endif
 		Com_Printf( "Failed to open OpenAL device.\n" );
 		return qfalse;
 	}
@@ -2551,9 +2547,7 @@ qboolean S_AL_Init( soundInterface_t *si )
 	alContext = qalcCreateContext( alDevice, NULL );
 	if( !alContext )
 	{
-#ifdef USE_OPENAL_DLOPEN
 		QAL_Shutdown( );
-#endif
 		qalcCloseDevice( alDevice );
 		Com_Printf( "Failed to create OpenAL context.\n" );
 		return qfalse;
