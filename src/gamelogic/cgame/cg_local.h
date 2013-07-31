@@ -1316,6 +1316,8 @@ typedef struct
 	qhandle_t   humanBuildableBleedPS;
 	qhandle_t   alienBuildableBurnPS;
 
+	qhandle_t   floorFirePS;
+
 	qhandle_t   teslaZapTS;
 
 	sfxHandle_t lCannonWarningSound;

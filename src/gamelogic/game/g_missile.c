@@ -161,7 +161,7 @@ static float MissileTimeSplashDmgMod( gentity_t *ent )
 ================
 G_ExplodeMissile
 
-Explode a missile without an impact
+Explode a missile without an impact.
 ================
 */
 void G_ExplodeMissile( gentity_t *ent )
@@ -201,7 +201,6 @@ void G_ExplodeMissile( gentity_t *ent )
 /*
 ================
 G_MissileImpact
-
 ================
 */
 void G_MissileImpact( gentity_t *ent, trace_t *trace )
@@ -252,7 +251,7 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace )
 			}
 		}
 
-		// ignite alien buildables on splash hit
+		// ignite alien buildables in radius
 		neighbor = NULL;
 		while ( neighbor = G_IterateEntitiesWithinRadius( neighbor, trace->endpos, FLAMER_IGNITE_RADIUS ) )
 		{
@@ -268,6 +267,15 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace )
 				{
 					G_IgniteBuildable( neighbor, ent->parent );
 				}
+			}
+		}
+
+		// set the environment on fire
+		if ( other->s.number == ENTITYNUM_WORLD )
+		{
+			if ( random() < FLAMER_LEAVE_FIRE_CHANCE )
+			{
+				G_SpawnFire( trace->endpos, trace->plane.normal, ent->parent );
 			}
 		}
 	}
@@ -396,7 +404,6 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace )
 /*
 ================
 G_RunMissile
-
 ================
 */
 void G_RunMissile( gentity_t *ent )
@@ -493,12 +500,9 @@ void G_RunMissile( gentity_t *ent )
 	G_RunThink( ent );
 }
 
-//=============================================================================
-
 /*
 =================
 fire_flamer
-
 =================
 */
 gentity_t *fire_flamer( gentity_t *self, vec3_t start, vec3_t dir )
@@ -540,12 +544,9 @@ gentity_t *fire_flamer( gentity_t *self, vec3_t start, vec3_t dir )
 	return bolt;
 }
 
-//=============================================================================
-
 /*
 =================
 fire_blaster
-
 =================
 */
 gentity_t *fire_blaster( gentity_t *self, vec3_t start, vec3_t dir )
@@ -585,12 +586,9 @@ gentity_t *fire_blaster( gentity_t *self, vec3_t start, vec3_t dir )
 	return bolt;
 }
 
-//=============================================================================
-
 /*
 =================
 fire_pulseRifle
-
 =================
 */
 gentity_t *fire_pulseRifle( gentity_t *self, vec3_t start, vec3_t dir )
@@ -630,12 +628,9 @@ gentity_t *fire_pulseRifle( gentity_t *self, vec3_t start, vec3_t dir )
 	return bolt;
 }
 
-//=============================================================================
-
 /*
 =================
 fire_luciferCannon
-
 =================
 */
 gentity_t *fire_luciferCannon( gentity_t *self, vec3_t start, vec3_t dir,
@@ -703,7 +698,6 @@ gentity_t *fire_luciferCannon( gentity_t *self, vec3_t start, vec3_t dir,
 /*
 =================
 launch_grenade
-
 =================
 */
 gentity_t *launch_grenade( gentity_t *self, vec3_t start, vec3_t dir )
@@ -751,12 +745,12 @@ gentity_t *launch_grenade( gentity_t *self, vec3_t start, vec3_t dir )
 
 /*
 ================
-AHive_SearchAndDestroy
+HiveMissileThink
 
-Adjust the trajectory to point towards the target
+Adjusts the trajectory to point towards the target.
 ================
 */
-void AHive_SearchAndDestroy( gentity_t *self )
+void HiveMissileThink( gentity_t *self )
 {
 	vec3_t    dir;
 	trace_t   tr;
@@ -829,7 +823,7 @@ gentity_t *fire_hive( gentity_t *self, vec3_t start, vec3_t dir )
 	bolt->classname = "hive";
 	bolt->pointAgainstWorld = qfalse;
 	bolt->nextthink = level.time + HIVE_DIR_CHANGE_PERIOD;
-	bolt->think = AHive_SearchAndDestroy;
+	bolt->think = HiveMissileThink;
 	bolt->s.eType = ET_MISSILE;
 	bolt->s.eFlags |= EF_BOUNCE | EF_NO_BOUNCE_SOUND;
 	bolt->s.weapon = WP_HIVE;

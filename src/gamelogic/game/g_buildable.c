@@ -947,8 +947,6 @@ void AGeneric_CreepCheck( gentity_t *self )
 	}
 }
 
-#define BURN_PERIODS_RAND_FACTOR ( 1.0f + ( random() - 0.5f ) * 2.0f * BURN_PERIODS_RAND )
-
 /*
 ================
 G_IgniteBuildable
@@ -986,8 +984,6 @@ A burning buildable has a chance to stop burning or ignite close buildables.
 */
 void AGeneric_Burn( gentity_t *self )
 {
-	gentity_t *neighbor;
-
 	if ( !self->onFire )
 	{
 		return;
@@ -1001,46 +997,7 @@ void AGeneric_Burn( gentity_t *self )
 		self->nextBurnDamage = level.time + BURN_DAMAGE_PERIOD * BURN_PERIODS_RAND_FACTOR;
 	}
 
-	// damage close players
-	if ( self->nextBurnSplashDamage < level.time )
-	{
-		G_SelectiveRadiusDamage( self->s.origin, self->fireStarter, BURN_SPLDAMAGE,
-		                         BURN_SPLDAMAGE_RADIUS, self, MOD_BURN, TEAM_NONE );
-
-		self->nextBurnSplashDamage = level.time + BURN_SPLDAMAGE_PERIOD * BURN_PERIODS_RAND_FACTOR;
-	}
-
-	// chance to stop burning
-	if ( self->nextBurnStopCheck < level.time )
-	{
-		if ( random() < BURN_STOP_CHANCE )
-		{
-			self->onFire = qfalse;
-			return;
-		}
-
-		self->nextBurnStopCheck = level.time + BURN_STOP_PERIOD * BURN_PERIODS_RAND_FACTOR;
-	}
-
-	// chance to ignite close buildables
-	if ( self->nextBurnSpreadCheck < level.time )
-	{
-		neighbor = NULL;
-		while ( neighbor = G_IterateEntitiesWithinRadius( neighbor, self->s.origin, BURN_SPREAD_RADIUS ) )
-		{
-			if ( neighbor->s.eType != ET_BUILDABLE || neighbor->buildableTeam != TEAM_ALIENS )
-			{
-				continue;
-			}
-
-			if ( random() < BURN_SPREAD_CHANCE )
-			{
-				G_IgniteBuildable( neighbor, self->fireStarter );
-			}
-		}
-
-		self->nextBurnSpreadCheck = level.time + BURN_SPREAD_PERIOD * BURN_PERIODS_RAND_FACTOR;
-	}
+	G_FireThink( self );
 }
 
 /*

@@ -70,6 +70,8 @@ typedef struct variatingTime_s variatingTime_t;
 #define DECON_OPTION_PROTECT       32
 #define DECON_OPTION_CHECK(option) ( g_markDeconstruct.integer & DECON_OPTION_##option )
 
+#define BURN_PERIODS_RAND_FACTOR   ( 1.0f + ( random() - 0.5f ) * 2.0f * BURN_PERIODS_RAND )
+
 struct variatingTime_s
 {
 	float time;
@@ -1042,6 +1044,9 @@ void       G_CloseMenus( int clientNum );
 
 void       G_AddConfidence( team_t team, confidence_t type, confidence_reason_t reason,
                             confidence_qualifier_t qualifier, float amount, gentity_t *source );
+
+void       G_FireThink( gentity_t *self );
+gentity_t  *G_SpawnFire(vec3_t origin, vec3_t normal, gentity_t *fireStarter );
 
 //
 // g_combat.c
