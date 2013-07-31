@@ -1,0 +1,55 @@
+floorFirePS
+{
+  // smoke
+  ejector
+  {
+    particle
+    {
+      shader sync gfx/weapons/flamersmoke
+
+      displacement ~15 ~15 5 ~0
+
+      velocityType      static
+      velocityDir       linear
+      velocityMagnitude 0
+      velocity          0 0 1 ~60
+
+      accelerationType      static
+      accelerationDir       linear
+      accelerationMagnitude 10~10
+      acceleration          0 0 1 0
+
+      radius 0 10.0 30.0~50%
+      alpha  0 0.6~0.1 0.0
+      rotation ~360 ~360 -
+      bounce 0.01
+
+      lifeTime 1500~50%
+    }
+
+    count infinite
+    delay 0
+    period 500 - ~50%
+  }
+
+  // flames
+  ejector
+  {
+    particle
+    {
+      shader sync gfx/fire/floorfire1 gfx/fire/floorfire2 gfx/fire/floorfire3
+      displacement ~25 ~25 2 ~0
+
+      radius 0 3~4 7~8
+      alpha  0 0.3~0.5 0
+      rotation 0 0 -
+      bounce 0.0
+
+      lifeTime 400~50%
+    }
+
+    count infinite
+    delay 0
+    period 30 - ~10%
+  }
+}
