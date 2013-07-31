@@ -115,9 +115,7 @@ void codec_init( void )
 {
 	codecs = NULL;
 	codec_register( &wav_codec );
-#ifdef USE_CODEC_VORBIS
 	codec_register( &ogg_codec );
-#endif
 }
 
 void codec_shutdown( void )
