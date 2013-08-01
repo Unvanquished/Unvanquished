@@ -58,7 +58,7 @@
 #define ftello64 ftell
 #define fseeko64 fseek
 #endif
-#elif defined __FreeBSD__
+#elif defined __FreeBSD__ || defined __APPLE__
 #define fopen64    fopen
 #define ftello64   ftello
 #define fseeko64   fseeko

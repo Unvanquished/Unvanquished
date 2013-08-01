@@ -611,7 +611,7 @@ void CON_Init( void )
 
 #ifdef SIGWINCH
 	// Catch window resizes
-	signal( SIGWINCH, ( sighandler_t ) CON_Resize );
+	signal( SIGWINCH, ( sig_t ) CON_Resize );
 #endif
 
 	curses_on = qtrue;
