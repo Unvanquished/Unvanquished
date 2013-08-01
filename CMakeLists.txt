@@ -795,6 +795,7 @@ if( BUILD_CLIENT OR WIN32 )
     set( LIBS_RENDERERGL ${LIBS_RENDERERGL} ${SDL_LIBRARY} )
     if( MAC )
       # Mac OS X does not provide a SDLMain.dylib so we must compile our own
+      set_source_files_properties( ${ENGINE_DIR}/sys/SDLMain.m PROPERTIES LANGUAGE C )
       add_library( INTERNAL_SDLMain ${ENGINE_DIR}/sys/SDLMain.m )
       set( LIBS_CLIENT ${LIBS_CLIENT} INTERNAL_SDLMain )
     endif()
