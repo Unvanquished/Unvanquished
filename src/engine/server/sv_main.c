@@ -1394,10 +1394,6 @@ void SV_Frame( int msec )
 
 		// let everything in the world think and move
 		gvm.GameRunFrame( svs.time );
-
-#ifdef USE_PHYSICS
-		CMod_PhysicsUpdate();
-#endif
 	}
 
 	if ( com_speeds->integer )

@@ -719,26 +719,6 @@ int trap_Parse_SourceFileAndLine(int handle, char *filename, int *line)
 	return ret;
 }
 
-void trap_AddPhysicsEntity(gentity_t *ent)
-{
-#ifdef USE_PHYSICS
-	RPC::Writer input;
-	input.WriteInt(G_ADD_PHYSICS_ENTITY);
-	input.WriteInt(ent - g_entities);
-	DoRPC(input);
-#endif
-}
-
-void trap_AddPhysicsStatic(gentity_t *ent)
-{
-#ifdef USE_PHYSICS
-	RPC::Writer input;
-	input.WriteInt(G_ADD_PHYSICS_STATIC);
-	input.WriteInt(ent - g_entities);
-	DoRPC(input);
-#endif
-}
-
 void trap_SendMessage(int clientNum, char *buf, int buflen)
 {
 	RPC::Writer input;

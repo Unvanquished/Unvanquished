@@ -37,9 +37,6 @@ Maryland 20850 USA.
 #include "server.h"
 #include "../qcommon/crypto.h"
 
-void            CMod_PhysicsAddEntity( sharedEntity_t *gEnt );
-void            CMod_PhysicsAddStatic( const sharedEntity_t *gEnt );
-
 // these functions must be used instead of pointer arithmetic, because
 // the game allocates gentities with private information after the server shared part
 int SV_NumForGentity( sharedEntity_t *ent )
@@ -530,10 +527,6 @@ void SV_RestartGameProgs( void )
 	}
 
 	gvm.GameShutdown( qtrue );
-
-#ifdef USE_PHYSICS
-	CMod_PhysicsClearBodies();
-#endif
 
 	gvm.Free();
 
@@ -1182,18 +1175,6 @@ void GameVM::Syscall(int index, RPC::Reader& inputs, RPC::Writer& outputs)
 	}
 
 // ===
-
-	case G_ADD_PHYSICS_ENTITY:
-#ifdef USE_PHYSICS
-		CMod_PhysicsAddEntity(SV_GentityNum(inputs.ReadInt()));
-#endif
-		break;
-
-	case G_ADD_PHYSICS_STATIC:
-#ifdef USE_PHYSICS
-		CMod_PhysicsAddStatic(SV_GentityNum(inputs.ReadInt()));
-#endif
-		break;
 
 	case G_SENDMESSAGE:
 	{

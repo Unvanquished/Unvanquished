@@ -188,10 +188,6 @@ void CMod_LoadSubmodels( lump_t *l )
 			continue; // world model doesn't need other info
 		}
 
-#ifdef USE_PHYSICS
-		CMod_PhysicsAddBSPModel( i, in->firstSurface, in->numSurfaces );
-#endif
-
 		// make a "leaf" just to hold the model's brushes and surfaces
 		out->leaf.numLeafBrushes = LittleLong( in->numBrushes );
 		indexes = ( int * ) Hunk_Alloc( out->leaf.numLeafBrushes * 4, h_high );
@@ -810,9 +806,6 @@ void CMod_LoadSurfaces( lump_t *surfs, lump_t *verts, lump_t *indexesLump )
 	static int    indexes[ SHADER_MAX_INDEXES ];
 	int           *index;
 	int           *index_p;
-#ifdef USE_PHYSICS
-	vec3_t        v[ 3 ];
-#endif
 
 	in = ( dsurface_t * )( cmod_base + surfs->fileofs );
 
@@ -838,44 +831,12 @@ void CMod_LoadSurfaces( lump_t *surfs, lump_t *verts, lump_t *indexesLump )
 		Com_Error( ERR_DROP, "CMod_LoadSurfaces: funny lump size" );
 	}
 
-#ifdef USE_PHYSICS
-	CMod_PhysicsBeginBSPCollisionTree();
-#endif
-
 	// scan through all the surfaces
 	for ( i = 0; i < count; i++, in++ )
 	{
-		if ( LittleLong( in->surfaceType ) == MST_PLANAR )
-		{
-#ifdef USE_PHYSICS
-			int j = 0;
-			int modelIndex = CMod_PhysicsBSPSurfaceIsModel( i );
-
-			for ( j = 0; j < in->numIndexes; j += 3 )
-			{
-				VectorCopy( dv[ in->firstVert + index[ in->firstIndex + j + 2 ] ].xyz, v[ 0 ] );
-				VectorCopy( dv[ in->firstVert + index[ in->firstIndex + j + 1 ] ].xyz, v[ 1 ] );
-				VectorCopy( dv[ in->firstVert + index[ in->firstIndex + j + 0 ] ].xyz, v[ 2 ] );
-
-				if ( modelIndex == 0 )
-				{
-					CMod_PhysicsAddBSPFace( v );
-				}
-				else
-				{
-					CMod_PhysicsAddFaceToModel( modelIndex, i, v );
-				}
-			}
-
-#endif
-		}
-		else if ( LittleLong( in->surfaceType ) == MST_PATCH )
+		if ( LittleLong( in->surfaceType ) == MST_PATCH )
 		{
 			int j = 0;
-#ifdef USE_PHYSICS
-			int rowLimit = in->patchHeight - 1;
-			int colLimit = in->patchWidth - 1;
-#endif
 
 			// FIXME: check for non-colliding patches
 			cm.surfaces[ i ] = surface = ( cSurface_t * ) Hunk_Alloc( sizeof( *surface ), h_high );
@@ -906,30 +867,6 @@ void CMod_LoadSurfaces( lump_t *surfs, lump_t *verts, lump_t *indexesLump )
 
 			// create the internal facet structure
 			surface->sc = CM_GeneratePatchCollide( width, height, vertexes );
-
-#ifdef USE_PHYSICS
-
-			for ( j = 0; j < rowLimit; ++j )
-			{
-				int k;
-
-				for ( k = 0; k < colLimit; ++k )
-				{
-					VectorCopy( dv[ in->firstVert + ( j * in->patchWidth ) + k ].xyz, v[ 0 ] );
-					VectorCopy( dv[ in->firstVert + ( j * in->patchWidth ) + k + 1 ].xyz, v[ 1 ] );
-					VectorCopy( dv[ in->firstVert + ( ( j + 1 ) * in->patchWidth ) + k ].xyz, v[ 2 ] );
-
-					CMod_PhysicsAddBSPFace( v );
-
-					VectorCopy( dv[ in->firstVert + ( j * in->patchWidth ) + k + 1 ].xyz, v[ 0 ] );
-					VectorCopy( dv[ in->firstVert + ( ( j + 1 ) * in->patchWidth ) + k ].xyz, v[ 1 ] );
-					VectorCopy( dv[ in->firstVert + ( ( j + 1 ) * in->patchWidth ) + k + 1 ].xyz, v[ 2 ] );
-
-					CMod_PhysicsAddBSPFace( v );
-				}
-			}
-
-#endif
 		}
 		else if ( LittleLong( in->surfaceType ) == MST_TRIANGLE_SOUP && ( cm.perPolyCollision || cm_forceTriangles->integer ) )
 		{
@@ -982,10 +919,6 @@ void CMod_LoadSurfaces( lump_t *surfs, lump_t *verts, lump_t *indexesLump )
 			surface->sc = CM_GenerateTriangleSoupCollide( numVertexes, vertexes, numIndexes, indexes );
 		}
 	}
-
-#ifdef USE_PHYSICS
-	CMod_PhysicsEndBSPCollisionTree();
-#endif
 }
 
 //==================================================================
@@ -1093,10 +1026,6 @@ void CM_LoadMap( const char *name, qboolean clientload, int *checksum )
 
 	cmod_base = ( byte * ) buf;
 
-#ifdef USE_PHYSICS
-	CMod_PhysicsInit();
-#endif
-
 	// load into heap
 	CMod_LoadShaders( &header.lumps[ LUMP_SHADERS ] );
 	CMod_LoadLeafs( &header.lumps[ LUMP_LEAFS ] );
@@ -1136,10 +1065,6 @@ void CM_ClearMap( void )
 {
 	Com_Memset( &cm, 0, sizeof( cm ) );
 	CM_ClearLevelPatches();
-
-#ifdef USE_PHYSICS
-	CMod_PhysicsShutdown();
-#endif
 }
 
 /*

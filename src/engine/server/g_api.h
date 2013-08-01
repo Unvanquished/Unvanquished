@@ -156,8 +156,6 @@ typedef enum gameImport_s
   G_PARSE_READ_TOKEN,
   G_PARSE_SOURCE_FILE_AND_LINE,
   BOT_GET_CONSOLE_MESSAGE,
-  G_ADD_PHYSICS_ENTITY,
-  G_ADD_PHYSICS_STATIC,
   G_SENDMESSAGE,
   G_MESSAGESTATUS,
   G_RSA_GENMSG, // ( const char *public_key, char *cleartext, char *encrypted )
