@@ -15,7 +15,7 @@ install:
 script:
   - mkdir build
   - cd build
-  - cmake -DBUILD_DAEMONMAP=TRUE -DENABLE_W_ALL=TRUE ..
+  - cmake -DCMAKE_BUILD_TYPE=Debug ..
   - cmake --build .
 
 notifications:
