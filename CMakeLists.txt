@@ -143,6 +143,13 @@ macro( try_c_cxx_flag PROP FLAG )
     set_cxx_flag( ${FLAG} ${ARGV2} )
   endif()
 endmacro()
+macro( try_linker_flag PROP FLAG )
+  # Check it with the C compiler
+  check_C_compiler_flag( ${FLAG} FLAG_${PROP} )
+  if( FLAG_${PROP} )
+    set_linker_flag( ${FLAG} ${ARGN} )
+  endif()
+endmacro()
 
 if( MSVC )
   set_c_cxx_flag( "/fp:fast" )
@@ -187,9 +194,9 @@ else()
     endif()
   endif()
   
-  # OSX Override
+  # Use libc++ on Mac because the shipped libstdc++ version is too old
   if( MAC )
-	  set_c_cxx_flag( "-stdlib=libc++")
+    set_c_cxx_flag( "-stdlib=libc++")
   endif()
 
   # Stack protection
@@ -199,19 +206,18 @@ else()
   endif()
 
   # Linker flags
-  if( NOT MAC )
-    set_linker_flag( "-Wl,-O1,--sort-common,--as-needed,-z,relro" )
-  endif()
-
+  try_linker_flag( LINKER_O1 "-Wl,-O1" )
+  try_linker_flag( LINKER_SORT_COMMON "-Wl,--sort-common" )
+  try_linker_flag( LINKER_AS_NEEDED "-Wl,--as-needed" )
+  try_linker_flag( LINKER_Z_RELRO "-Wl,-z,relro" )
 
   # LTO support
   if( ENABLE_LTO )
     set_c_cxx_flag( "-flto" RELEASE )
 
     # These are defined for all build types, but have no effect on non-Release
-    # Attempt to use a GNU make jobserver if possible for parallel LTO
     set_linker_flag( "-O3" )
-    set_linker_flag( "-flto=jobserver" )
+    set_linker_flag( "-flto" )
   endif()
 
   # The -pthread flag sets some preprocessor defines
@@ -853,9 +859,9 @@ if( USE_VOIP )
     include_directories( ${SPEEX_INCLUDE_DIR} )
     set( LIBS_CLIENT ${LIBS_CLIENT} ${SPEEX_LIBRARIES} )
   else()
+    add_definitions( -DFLOATING_POINT )
     include_directories( ${LIB_DIR}/libspeex/include )
     set( LIBSRC_CLIENT ${LIBSRC_CLIENT} ${SPEEXLIST} )
-	add_definitions( -DFLOATING_POINT )
   endif()
 endif()
 
