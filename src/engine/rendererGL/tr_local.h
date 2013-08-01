@@ -1149,6 +1149,9 @@ extern "C" {
 
 		expression_t    refractionIndexExp;
 
+		expression_t    specularExponentMin;
+		expression_t    specularExponentMax;
+
 		expression_t    fresnelPowerExp;
 		expression_t    fresnelScaleExp;
 		expression_t    fresnelBiasExp;
@@ -3077,8 +3080,8 @@ extern "C" {
 	extern cvar_t *r_offsetFactor;
 	extern cvar_t *r_offsetUnits;
 	extern cvar_t *r_forceSpecular;
-	extern cvar_t *r_specularExponent;
-	extern cvar_t *r_specularExponent2;
+	extern cvar_t *r_specularExponentMin;
+	extern cvar_t *r_specularExponentMax;
 	extern cvar_t *r_specularScale;
 	extern cvar_t *r_normalScale;
 	extern cvar_t *r_normalMapping;

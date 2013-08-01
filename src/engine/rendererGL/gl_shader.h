@@ -2232,6 +2232,26 @@ public:
 	}
 };
 
+class u_SpecularExponent :
+	GLUniform2f
+{
+public:
+	u_SpecularExponent( GLShader *shader ) :
+		GLUniform2f( shader, "u_SpecularExponent" )
+	{
+	}
+
+	void SetUniform_SpecularExponent( float min, float max )
+	{
+		// in the fragment shader, the exponent must be computed as
+		// exp = ( max - min ) * gloss + min
+		// to expand the [0...1] range of gloss to [min...max]
+		// we precompute ( max - min ) before sending the uniform to the fragment shader
+		vec2_t v = { max - min, min };
+		this->SetValue( v );
+	}
+};
+
 class GLShader_generic :
 	public GLShader,
 	public u_ColorTextureMatrix,
@@ -2261,6 +2281,7 @@ class GLShader_lightMapping :
 	public u_DiffuseTextureMatrix,
 	public u_NormalTextureMatrix,
 	public u_SpecularTextureMatrix,
+	public u_SpecularExponent,
 	public u_ColorModulate,
 	public u_Color,
 	public u_AlphaThreshold,
@@ -2287,6 +2308,7 @@ class GLShader_vertexLighting_DBS_entity :
 	public u_DiffuseTextureMatrix,
 	public u_NormalTextureMatrix,
 	public u_SpecularTextureMatrix,
+	public u_SpecularExponent,
 	public u_AlphaThreshold,
 	public u_AmbientColor,
 	public u_ViewOrigin,
@@ -2320,6 +2342,7 @@ class GLShader_vertexLighting_DBS_world :
 	public u_DiffuseTextureMatrix,
 	public u_NormalTextureMatrix,
 	public u_SpecularTextureMatrix,
+	public u_SpecularExponent,
 	public u_ColorModulate,
 	public u_Color,
 	public u_AlphaThreshold,
@@ -2348,6 +2371,7 @@ class GLShader_forwardLighting_omniXYZ :
 	public u_DiffuseTextureMatrix,
 	public u_NormalTextureMatrix,
 	public u_SpecularTextureMatrix,
+	public u_SpecularExponent,
 	public u_AlphaThreshold,
 	public u_ColorModulate,
 	public u_Color,
@@ -2387,6 +2411,7 @@ class GLShader_forwardLighting_projXYZ :
 	public u_DiffuseTextureMatrix,
 	public u_NormalTextureMatrix,
 	public u_SpecularTextureMatrix,
+	public u_SpecularExponent,
 	public u_AlphaThreshold,
 	public u_ColorModulate,
 	public u_Color,
@@ -2427,6 +2452,7 @@ class GLShader_forwardLighting_directionalSun :
 	public u_DiffuseTextureMatrix,
 	public u_NormalTextureMatrix,
 	public u_SpecularTextureMatrix,
+	public u_SpecularExponent,
 	public u_AlphaThreshold,
 	public u_ColorModulate,
 	public u_Color,
@@ -2563,6 +2589,7 @@ class GLShader_geometricFill :
 	public u_BoneMatrix,
 	public u_VertexInterpolation,
 	public u_DepthScale,
+	public u_SpecularExponent,
 	public GLDeformStage,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
 	public GLCompileMacro_USE_VERTEX_ANIMATION,
@@ -2844,6 +2871,7 @@ class GLShader_liquid :
 	public u_NormalScale,
 	public u_FogDensity,
 	public u_FogColor,
+	public u_SpecularExponent,
 	public GLCompileMacro_USE_PARALLAX_MAPPING
 {
 public:

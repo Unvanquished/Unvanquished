@@ -80,6 +80,7 @@ uniform float       u_ShadowBlur;
 uniform mat4		u_ViewMatrix;
 
 uniform float		u_DepthScale;
+uniform vec2		u_SpecularExponent;
 
 varying vec3		var_Position;
 varying vec4		var_TexDiffuse;
@@ -1038,7 +1039,8 @@ void	main()
 
 #if defined(USE_NORMAL_MAPPING)
 	// compute the specular term
-	vec3 specular = texture2D(u_SpecularMap, texSpecular).rgb * u_LightColor * pow(clamp(dot(N, H), 0.0, 1.0), r_SpecularExponent) * r_SpecularScale;
+	vec4 spec = texture2D(u_SpecularMap, texSpecular).rgba;
+	vec3 specular = spec.rgb * u_LightColor * pow(clamp(dot(N, H), 0.0, 1.0), u_SpecularExponent.x * spec.a + u_SpecularExponent.y) * r_SpecularScale;
 #endif
 
 

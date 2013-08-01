@@ -37,6 +37,7 @@ uniform vec3		u_ViewOrigin;
 uniform vec3        u_AmbientColor;
 uniform float		u_DepthScale;
 uniform mat4		u_ModelMatrix;
+uniform vec2		u_SpecularExponent;
 
 varying vec4		var_Position;
 varying vec2		var_TexDiffuse;
@@ -119,7 +120,7 @@ void	main()
 	// compute the specular term
 #if defined(USE_REFLECTIVE_SPECULAR)
 
-	vec3 specular = texture2D(u_SpecularMap, texSpecular).rgb;
+	vec4 specular = texture2D(u_SpecularMap, texSpecular).rgba;
 
 	vec4 envColor0 = textureCube(u_EnvironmentMap0, reflect(-V, N)).rgba;
 	vec4 envColor1 = textureCube(u_EnvironmentMap1, reflect(-V, N)).rgba;
@@ -128,12 +129,12 @@ void	main()
 
 #if 0
 	// specular = vec4(u_EnvironmentInterpolation, u_EnvironmentInterpolation, u_EnvironmentInterpolation, 1.0);
-	specular = envColor0;
+	specular.rgb = envColor0;
 #endif
 
 #else
 
-	vec3 specular = texture2D(u_SpecularMap, texSpecular).rgb;
+	vec4 specular = texture2D(u_SpecularMap, texSpecular).rgba;
 #endif // USE_REFLECTIVE_SPECULAR
 
 #endif // #if !defined(r_DeferredLighting)
@@ -175,7 +176,7 @@ void	main()
 	gl_FragData[0] = vec4(0.0, 0.0, 0.0, 1.0);
 	gl_FragData[1] = vec4(diffuse.rgb, var_Color.a);
 	gl_FragData[2] = vec4(N, var_Color.a);
-	gl_FragData[3] = vec4(specular, var_Color.a);
+	gl_FragData[3] = vec4(specular.rgb, u_SpecularExponent.x * specular.a + u_SpecularExponent.y);
 
 #endif // r_DeferredLighting
 }

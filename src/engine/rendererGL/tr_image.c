@@ -860,6 +860,22 @@ static void R_DisplaceMap( byte *img, const byte *in2, int width, int height )
 	}
 }
 
+
+static void R_AddGloss( byte *img, byte *in2, int width, int height )
+{
+	int i;
+
+	img += 3;
+
+	for ( i = height * width; i; --i )
+	{
+		// seperate gloss maps should always be greyscale, but do the average anyway 
+		*img = ( byte ) ( (int)in2[ 0 ] + (int)in2[ 1 ] + (int)in2[ 2 ] )/ 3;
+		in2 += 4;
+		img += 4;
+	}
+}
+
 static void R_AddNormals( byte *img, byte *in2, int width, int height )
 {
 	int    i;
@@ -1791,6 +1807,72 @@ static qboolean ParseDisplaceMap( char **text, byte **pic, int *width, int *heig
 	return qtrue;
 }
 
+static qboolean ParseAddGloss( char **text, byte **pic, int *width, int *height, int *bits, const char *materialName )
+{
+	char *token;
+	byte *pic2;
+	int  width2, height2;
+
+	token = COM_ParseExt2( text, qfalse );
+
+	if ( token[ 0 ] != '(' )
+	{
+		ri.Printf( PRINT_WARNING, "WARNING: expecting '(', found '%s' for addGloss\n", token );
+		return qfalse;
+	}
+
+	R_LoadImage( text, pic, width, height, bits, materialName );
+
+	if ( !pic )
+	{
+		ri.Printf( PRINT_WARNING, "WARNING: failed loading of first image ( specular ) for addGloss\n" );
+		return qfalse;
+	}
+
+	token = COM_ParseExt2( text, qfalse );
+
+	if ( token[ 0 ] != ',' )
+	{
+		ri.Printf( PRINT_WARNING, "WARNING: no matching ',' found for addGloss\n" );
+		return qfalse;
+	}
+
+	R_LoadImage( text, &pic2, &width2, &height2, bits, materialName );
+
+	if ( !pic2 )
+	{
+		ri.Printf( PRINT_WARNING, "WARNING: failed loading of second image ( gloss ) for addGloss\n" );
+		return qfalse;
+	}
+
+	token = COM_ParseExt2( text, qfalse );
+
+	if ( token[ 0 ] != ')' )
+	{
+		ri.Printf( PRINT_WARNING, "WARNING: expecting ')', found '%s' for addGloss\n", token );
+	}
+
+	if ( *width != width2 || *height != height2 )
+	{
+		ri.Printf( PRINT_WARNING, "WARNING: images for specularMap and glossMap have different dimensions (%i x %i != %i x %i)\n",
+		           *width, *height, width2, height2 );
+
+		//ri.Free(*pic);
+		//*pic = NULL;
+
+		ri.Free( pic2 );
+		return qfalse;
+	}
+
+	R_AddGloss( *pic, pic2, *width, *height );
+
+	ri.Free( pic2 );
+
+	*bits &= ~IF_ALPHA;
+
+	return qtrue;
+}
+
 static qboolean ParseAddNormals( char **text, byte **pic, int *width, int *height, int *bits, const char *materialName )
 {
 	char *token;
@@ -2132,6 +2214,16 @@ static void R_LoadImage( char **buffer, byte **pic, int *width, int *height, int
 			if ( materialName && materialName[ 0 ] != '\0' )
 			{
 				ri.Printf( PRINT_WARNING, "WARNING: failed to parse makeAlpha(<map>) expression for shader '%s'\n", materialName );
+			}
+		}
+	}
+	else if ( !Q_stricmp( token, "addGloss" ) )
+	{
+		if ( !ParseAddGloss( buffer, pic, width, height, bits, materialName ) )
+		{
+			if ( materialName && materialName[ 0 ] != '\0' )
+			{
+				ri.Printf( PRINT_WARNING, "WARNING: failed to parse addGloss(<map>, <map>) expression for shader '%s'\n", materialName );
 			}
 		}
 	}
