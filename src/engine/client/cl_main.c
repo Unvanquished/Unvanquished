@@ -4274,7 +4274,7 @@ qboolean CL_InitRef( const char *renderer )
 
 	if ( !GetRefAPI )
 	{
-		Com_Printf( "Can't load symbol GetRefAPI: '%s'",  Sys_LibraryError() );
+		Com_Printf( "Can't load symbol GetRefAPI: '%s'\n",  Sys_LibraryError() );
 		Sys_UnloadDll( lib );
 		return qfalse;
 	}

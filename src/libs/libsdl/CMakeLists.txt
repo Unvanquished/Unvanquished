@@ -61,7 +61,7 @@ include_directories( ${SDL_DIR}/include )
 add_library( INTERNAL_SDL SHARED ${SDLLIST} )
 target_link_libraries( INTERNAL_SDL winmm )
 
-if( ${BUILD_ARCH} STREQUAL "x86_64" )
+if( ARCH STREQUAL "x86_64" )
   target_link_libraries( INTERNAL_SDL ${SDL_DIR}/libs/x64/dxguid.lib )
 else()
   target_link_libraries( INTERNAL_SDL ${SDL_DIR}/libs/x32/dxguid.lib )

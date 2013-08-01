@@ -275,8 +275,6 @@ typedef struct
 	int ( *CIN_PlayCinematic )( const char *arg0, int xpos, int ypos, int width, int height, int bits );
 	e_status( *CIN_RunCinematic )( int handle );
 
-	long( *ftol )( float f );
-
 	// XreaL BEGIN
 	qboolean( *CL_VideoRecording )( void );
 	void ( *CL_WriteAVIVideoFrame )( const byte *buffer, int size );

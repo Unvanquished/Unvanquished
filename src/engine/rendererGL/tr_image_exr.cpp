@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../qcommon/q_shared.h"
 
 //#include <OpenEXR/half.h>
-#include "../openexr/half.h"
+#include "../../libs/openexr/half.h"
 
 	void LoadRGBEToFloats( const char *name, float **pic, int *width, int *height, qboolean doGamma, qboolean toneMap, qboolean compensate );
 
