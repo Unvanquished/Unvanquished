@@ -443,7 +443,6 @@ if( USE_CURSES )
 endif()
 
 set( CLIENTLIST
-  ${MOUNT_DIR}/engine/qcommon/dl_main_curl.c
   ${MOUNT_DIR}/engine/client/cin_ogm.c
   ${MOUNT_DIR}/engine/client/cl_avi.c
   ${MOUNT_DIR}/engine/client/cl_cgame.c
@@ -458,6 +457,7 @@ set( CLIENTLIST
   ${MOUNT_DIR}/engine/client/cl_scrn.c
   ${MOUNT_DIR}/engine/client/cl_ui.c
   ${MOUNT_DIR}/engine/client/cl_logs.c
+  ${MOUNT_DIR}/engine/client/dl_main.c
   ${MOUNT_DIR}/engine/client/snd_adpcm.c
   ${MOUNT_DIR}/engine/client/snd_codec.c
   ${MOUNT_DIR}/engine/client/snd_codec_ogg.c
@@ -1154,7 +1154,7 @@ if( BUILD_SERVER )
   # Setup the target Server
   add_executable( server ${SERVERLIST} ${ENGINELIST} ${SHAREDLIST} ${LIBSRC_BASE} ${LIBSRC_ENGINE}
     ${MOUNT_DIR}/engine/null/null_client.c  ${MOUNT_DIR}/engine/null/null_input.c
-    ${MOUNT_DIR}/engine/null/null_snddma.c ${MOUNT_DIR}/engine/qcommon/dl_main_stubs.c ${WIN_RC} )
+    ${MOUNT_DIR}/engine/null/null_snddma.c ${WIN_RC} )
   target_link_libraries( server ${LIBS_BASE} ${LIBS_ENGINE} )
   set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS DEDICATED )
   set_target_properties( server PROPERTIES OUTPUT_NAME "daemonded" PREFIX "" LINKER_LANGUAGE CXX )
