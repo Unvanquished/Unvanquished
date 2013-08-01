@@ -882,8 +882,7 @@ void R_SetupLightFrustum( trRefLight_t *light )
 	if ( light->isStatic )
 	{
 		int           i;
-		srfVert_t     *verts;
-		srfTriangle_t *triangles;
+		vboData_t     data;
 
 		if ( glConfig.smpActive )
 		{
@@ -896,27 +895,20 @@ void R_SetupLightFrustum( trRefLight_t *light )
 
 		R_TessLight( light, NULL );
 
-		verts = ( srfVert_t * ) ri.Hunk_AllocateTempMemory( tess.numVertexes * sizeof( srfVert_t ) );
-		triangles = ( srfTriangle_t * ) ri.Hunk_AllocateTempMemory( ( tess.numIndexes / 3 ) * sizeof( srfTriangle_t ) );
+		memset( &data, 0, sizeof( data ) );
+		data.xyz = ( vec3_t * ) ri.Hunk_AllocateTempMemory( tess.numVertexes * sizeof( *data.xyz ) );
 
 		for ( i = 0; i < tess.numVertexes; i++ )
 		{
 			// transform to world space
-			MatrixTransformPoint( light->transformMatrix, tess.xyz[ i ], verts[ i ].xyz );
+			MatrixTransformPoint( light->transformMatrix, tess.xyz[ i ], data.xyz[ i ] );
 		}
+		data.numVerts = tess.numVertexes;
 
-		for ( i = 0; i < tess.numIndexes / 3; i++ )
-		{
-			triangles[ i ].indexes[ 0 ] = tess.indexes[ i * 3 + 0 ];
-			triangles[ i ].indexes[ 1 ] = tess.indexes[ i * 3 + 1 ];
-			triangles[ i ].indexes[ 2 ] = tess.indexes[ i * 3 + 2 ];
-		}
+		light->frustumVBO = R_CreateStaticVBO( "staticLightFrustum_VBO", data, VBO_LAYOUT_SEPERATE );
+		light->frustumIBO = R_CreateStaticIBO( "staticLightFrustum_IBO", tess.indexes, tess.numIndexes );
 
-		light->frustumVBO = R_CreateVBO2( "staticLightFrustum_VBO", tess.numVertexes, verts, ATTR_POSITION, VBO_USAGE_STATIC );
-		light->frustumIBO = R_CreateIBO2( "staticLightFrustum_IBO", tess.numIndexes / 3, triangles, VBO_USAGE_STATIC );
-
-		ri.Hunk_FreeTempMemory( triangles );
-		ri.Hunk_FreeTempMemory( verts );
+		ri.Hunk_FreeTempMemory( data.xyz );
 
 		light->frustumVerts = tess.numVertexes;
 		light->frustumIndexes = tess.numIndexes;

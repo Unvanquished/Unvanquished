@@ -471,7 +471,7 @@ void Tess_UpdateVBOs( uint32_t attribBits )
 				GLimp_LogComment( va( "glBufferSubData( ATTR_POSITION, vbo = '%s', numVertexes = %i )\n", tess.vbo->name, tess.numVertexes ) );
 			}
 
-			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->ofsXYZ, tess.numVertexes * sizeof( vec4_t ), tess.xyz );
+			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->attribs[ ATTR_INDEX_POSITION ].ofs, tess.numVertexes * sizeof( vec4_t ), tess.xyz );
 		}
 
 		if ( attribBits & ATTR_TEXCOORD )
@@ -481,7 +481,7 @@ void Tess_UpdateVBOs( uint32_t attribBits )
 				GLimp_LogComment( va( "glBufferSubData( ATTR_TEXCOORD, vbo = '%s', numVertexes = %i )\n", tess.vbo->name, tess.numVertexes ) );
 			}
 
-			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->ofsTexCoords, tess.numVertexes * sizeof( vec4_t ), tess.texCoords );
+			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->attribs[ ATTR_INDEX_TEXCOORD ].ofs, tess.numVertexes * sizeof( vec4_t ), tess.texCoords );
 		}
 
 		if ( attribBits & ATTR_LIGHTCOORD )
@@ -491,7 +491,7 @@ void Tess_UpdateVBOs( uint32_t attribBits )
 				GLimp_LogComment( va( "glBufferSubData( ATTR_LIGHTCOORD, vbo = '%s', numVertexes = %i )\n", tess.vbo->name, tess.numVertexes ) );
 			}
 
-			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->ofsLightCoords, tess.numVertexes * sizeof( vec4_t ), tess.lightCoords );
+			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->attribs[ ATTR_INDEX_LIGHTCOORD ].ofs, tess.numVertexes * sizeof( vec4_t ), tess.lightCoords );
 		}
 
 		if ( attribBits & ATTR_TANGENT )
@@ -501,7 +501,7 @@ void Tess_UpdateVBOs( uint32_t attribBits )
 				GLimp_LogComment( va( "glBufferSubData( ATTR_TANGENT, vbo = '%s', numVertexes = %i )\n", tess.vbo->name, tess.numVertexes ) );
 			}
 
-			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->ofsTangents, tess.numVertexes * sizeof( vec4_t ), tess.tangents );
+			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->attribs[ ATTR_INDEX_TANGENT ].ofs, tess.numVertexes * sizeof( vec4_t ), tess.tangents );
 		}
 
 		if ( attribBits & ATTR_BINORMAL )
@@ -511,7 +511,7 @@ void Tess_UpdateVBOs( uint32_t attribBits )
 				GLimp_LogComment( va( "glBufferSubData( ATTR_BINORMAL, vbo = '%s', numVertexes = %i )\n", tess.vbo->name, tess.numVertexes ) );
 			}
 
-			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->ofsBinormals, tess.numVertexes * sizeof( vec4_t ), tess.binormals );
+			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->attribs[ ATTR_INDEX_BINORMAL ].ofs, tess.numVertexes * sizeof( vec4_t ), tess.binormals );
 		}
 
 		if ( attribBits & ATTR_NORMAL )
@@ -521,7 +521,7 @@ void Tess_UpdateVBOs( uint32_t attribBits )
 				GLimp_LogComment( va( "glBufferSubData( ATTR_NORMAL, vbo = '%s', numVertexes = %i )\n", tess.vbo->name, tess.numVertexes ) );
 			}
 
-			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->ofsNormals, tess.numVertexes * sizeof( vec4_t ), tess.normals );
+			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->attribs[ ATTR_INDEX_NORMAL ].ofs, tess.numVertexes * sizeof( vec4_t ), tess.normals );
 		}
 
 		if ( attribBits & ATTR_COLOR )
@@ -531,7 +531,7 @@ void Tess_UpdateVBOs( uint32_t attribBits )
 				GLimp_LogComment( va( "glBufferSubData( ATTR_COLOR, vbo = '%s', numVertexes = %i )\n", tess.vbo->name, tess.numVertexes ) );
 			}
 
-			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->ofsColors, tess.numVertexes * sizeof( vec4_t ), tess.colors );
+			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->attribs[ ATTR_INDEX_COLOR ].ofs, tess.numVertexes * sizeof( vec4_t ), tess.colors );
 		}
 
 #if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
@@ -543,7 +543,7 @@ void Tess_UpdateVBOs( uint32_t attribBits )
 				GLimp_LogComment( va( "glBufferSubData( ATTR_PAINTCOLOR, vbo = '%s', numVertexes = %i )\n", tess.vbo->name, tess.numVertexes ) );
 			}
 
-			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->ofsPaintColors, tess.numVertexes * sizeof( vec4_t ), tess.paintColors );
+			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->attribs[ ATTR_INDEX_PAINTCOLOR ].ofs, tess.numVertexes * sizeof( vec4_t ), tess.paintColors );
 		}
 
 #endif
@@ -554,7 +554,7 @@ void Tess_UpdateVBOs( uint32_t attribBits )
 				GLimp_LogComment( va( "glBufferSubData( ATTR_AMBIENTLIGHT, vbo = '%s', numVertexes = %i )\n", tess.vbo->name, tess.numVertexes ) );
 			}
 
-			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->ofsAmbientLight, tess.numVertexes * sizeof( vec4_t ), tess.ambientLights );
+			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->attribs[ ATTR_INDEX_AMBIENTLIGHT ].ofs, tess.numVertexes * sizeof( vec4_t ), tess.ambientLights );
 		}
 
 		if ( attribBits & ATTR_DIRECTEDLIGHT )
@@ -564,7 +564,7 @@ void Tess_UpdateVBOs( uint32_t attribBits )
 				GLimp_LogComment( va( "glBufferSubData( ATTR_DIRECTEDLIGHT, vbo = '%s', numVertexes = %i )\n", tess.vbo->name, tess.numVertexes ) );
 			}
 
-			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->ofsDirectedLight, tess.numVertexes * sizeof( vec4_t ), tess.directedLights );
+			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->attribs[ ATTR_INDEX_DIRECTEDLIGHT ].ofs, tess.numVertexes * sizeof( vec4_t ), tess.directedLights );
 		}
 
 		if ( attribBits & ATTR_LIGHTDIRECTION )
@@ -574,7 +574,7 @@ void Tess_UpdateVBOs( uint32_t attribBits )
 				GLimp_LogComment( va( "glBufferSubData( ATTR_LIGHTDIRECTION, vbo = '%s', numVertexes = %i )\n", tess.vbo->name, tess.numVertexes ) );
 			}
 
-			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->ofsLightDirections, tess.numVertexes * sizeof( vec4_t ), tess.lightDirections );
+			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->attribs[ ATTR_INDEX_LIGHTDIRECTION ].ofs, tess.numVertexes * sizeof( vec4_t ), tess.lightDirections );
 		}
 
 	}

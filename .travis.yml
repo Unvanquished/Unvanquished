@@ -21,4 +21,9 @@ script:
 notifications:
   irc: "irc.freenode.org#unvanquished-dev"
   on_success: change
-  on_failure: change
+  on_failure: always
+
+branches:
+  except:
+    - debian
+    - engine-upgrade

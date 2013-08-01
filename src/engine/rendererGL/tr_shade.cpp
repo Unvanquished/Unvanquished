@@ -254,7 +254,7 @@ void Tess_DrawElements()
 		}
 		else
 		{
-			glDrawElements( GL_TRIANGLES, tess.numIndexes, GL_INDEX_TYPE, BUFFER_OFFSET( 0 ) );
+			glDrawRangeElements( GL_TRIANGLES, 0, tess.numVertexes, tess.numIndexes, GL_INDEX_TYPE, BUFFER_OFFSET( 0 ) );
 
 			backEnd.pc.c_drawElements++;
 
@@ -284,7 +284,7 @@ SURFACE SHADERS
 =============================================================
 */
 
-shaderCommands_t tess;
+ALIGNED( 16, shaderCommands_t tess );
 
 /*
 =================
