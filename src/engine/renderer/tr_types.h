@@ -87,6 +87,8 @@ Maryland 20850 USA.
 #define RDF_NOBLOOM      ( 1 << 8 ) // RB: disable bloom. useful for HUD models
 // XreaL END
 
+#define MAX_ALTSHADERS   64 // alternative shaders ('when <condition> <shader>') – selection controlled from cgame
+
 #define GL_INDEX_TYPE GL_UNSIGNED_INT
 typedef unsigned int   glIndex_t;
 
@@ -126,14 +128,6 @@ typedef enum
 
   RT_MAX_REF_ENTITY_TYPE
 } refEntityType_t;
-
-typedef enum
-{
-  RE_ALTSHADER_DEFAULT, // must be first
-  RE_ALTSHADER_UNPOWERED,
-  RE_ALTSHADER_DEAD,
-  RE_ALTSHADER_COUNT    // must be last
-} altShader_t;
 
 #define ZOMBIEFX_FADEOUT_TIME 10000
 
@@ -257,7 +251,7 @@ typedef struct
 	short noShadowID;
 #endif
 
-	altShader_t altShaderIndex;
+	int altShaderIndex;
 
 // XreaL END
 } refEntity_t;

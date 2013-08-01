@@ -3080,15 +3080,15 @@ void CG_Player( centity_t *cent )
 
 	if ( es->eFlags & EF_DEAD )
 	{
-		altShaderIndex = RE_ALTSHADER_DEAD;
+		altShaderIndex = CG_ALTSHADER_DEAD;
 	}
 	else if ( !(es->eFlags & EF_B_POWERED) )
 	{
-		altShaderIndex = RE_ALTSHADER_UNPOWERED;
+		altShaderIndex = CG_ALTSHADER_UNPOWERED;
 	}
 	else
 	{
-		altShaderIndex = RE_ALTSHADER_DEFAULT;
+		altShaderIndex = CG_ALTSHADER_DEFAULT;
 	}
 
 	// get the player model information
@@ -3822,7 +3822,7 @@ void CG_Corpse( centity_t *cent )
 		legs.nonNormalizedAxes = qtrue;
 	}
 
-	legs.altShaderIndex = RE_ALTSHADER_DEAD;
+	legs.altShaderIndex = CG_ALTSHADER_DEAD;
 	trap_R_AddRefEntityToScene( &legs );
 
 	// if the model failed, allow the default nullmodel to be displayed. Also, if MD5, no need to add other parts
@@ -3854,7 +3854,7 @@ void CG_Corpse( centity_t *cent )
 		torso.shadowPlane = shadowPlane;
 		torso.renderfx = renderfx;
 
-		torso.altShaderIndex = RE_ALTSHADER_DEAD;
+		torso.altShaderIndex = CG_ALTSHADER_DEAD;
 		trap_R_AddRefEntityToScene( &torso );
 
 		//
@@ -3877,7 +3877,7 @@ void CG_Corpse( centity_t *cent )
 		head.shadowPlane = shadowPlane;
 		head.renderfx = renderfx;
 
-		head.altShaderIndex = RE_ALTSHADER_DEAD;
+		head.altShaderIndex = CG_ALTSHADER_DEAD;
 		trap_R_AddRefEntityToScene( &head );
 	}
 }

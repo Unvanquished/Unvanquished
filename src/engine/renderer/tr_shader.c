@@ -66,6 +66,8 @@ shaderStringPointer_t shaderChecksumLookup[ FILE_HASH_SIZE ];
 
 // done.
 
+static char           whenTokens[ MAX_STRING_CHARS ];
+
 /*
 ================
 return a hash value for the filename
@@ -3803,20 +3805,22 @@ static qboolean ParseShader( char **text )
 		// when <state> <shader name>
 		else if ( !Q_stricmp( token, "when" ) )
 		{
-			int index = RE_ALTSHADER_DEFAULT;
+			int i;
+			const char *p;
+			int index = 0;
 
 			token = COM_ParseExt2( text, qfalse );
 
-			if ( !Q_stricmp( token, "unpowered" ) )
+			for ( i = 1, p = whenTokens; i < MAX_ALTSHADERS && *p; ++i, p += strlen( p ) + 1 )
 			{
-				index = RE_ALTSHADER_UNPOWERED;
-			}
-			else if ( !Q_stricmp( token, "destroyed" ) )
-			{
-				index = RE_ALTSHADER_DEAD;
+				if ( !Q_stricmp( token, p ) )
+				{
+					index = i;
+					break;
+				}
 			}
 
-			if ( index == RE_ALTSHADER_DEFAULT )
+			if ( index == 0 )
 			{
 				ri.Printf( PRINT_WARNING, "WARNING: unknown parameter '%s' for 'when' in '%s'\n", token, shader.name );
 			}
@@ -4674,7 +4678,7 @@ static shader_t *FinishShader( void )
 
 	ret = GeneratePermanentShader();
 
-	for ( i = 1; i < RE_ALTSHADER_COUNT; ++i )
+	for ( i = 1; i < MAX_ALTSHADERS; ++i )
 	{
 		if ( ret->altShader[ i ].name )
 		{
@@ -6206,4 +6210,24 @@ void R_InitShaders( void )
 
 	// Ridah
 	R_LoadCacheShaders();
+}
+
+/*
+==================
+R_SetAltShaderKeywords
+==================
+*/
+void R_SetAltShaderTokens( const char *list )
+{
+       char *p;
+
+       memset( whenTokens, 0, sizeof( whenTokens ) );
+       Q_strncpyz( whenTokens, list, sizeof( whenTokens ) - 1 ); // will have double-NUL termination
+
+       p = whenTokens - 1;
+
+       while ( ( p = strchr( p + 1, ',' ) ) )
+       {
+               *p = 0;
+       }
 }

@@ -685,7 +685,7 @@ void R_AddMD5Surfaces( trRefEntity_t *ent )
 		{
 			shader = R_GetShaderByHandle( surface->shaderIndex );
 
-			if ( ent->e.altShaderIndex > RE_ALTSHADER_DEFAULT && ent->e.altShaderIndex < RE_ALTSHADER_COUNT &&
+			if ( ent->e.altShaderIndex > 0 && ent->e.altShaderIndex < MAX_ALTSHADERS &&
 			     shader->altShader[ ent->e.altShaderIndex ].index )
 			{
 				shader = R_GetShaderByHandle( shader->altShader[ ent->e.altShaderIndex ].index );

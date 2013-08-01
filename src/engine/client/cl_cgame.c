@@ -1281,6 +1281,10 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			IN_PrepareKeyUp();
 			return 0;
 
+		case CG_R_SETALTSHADERTOKENS:
+			re.SetAltShaderTokens( VMA(1) );
+			return 0;
+
 		default:
 			Com_Error( ERR_DROP, "Bad cgame system trap: %ld", ( long int ) args[ 0 ] );
 			exit(1); // silence warning, and make sure this behaves as expected, if Com_Error's behavior changes

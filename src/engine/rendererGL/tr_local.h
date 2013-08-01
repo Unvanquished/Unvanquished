@@ -1292,7 +1292,7 @@ extern "C" {
 		struct {
 			char *name;
 			int  index;
-		} altShader[ RE_ALTSHADER_COUNT ]; // state-based remapping; note that index 0 is unused
+		} altShader[ MAX_ALTSHADERS ]; // state-based remapping; note that index 0 is unused
 
 		struct shader_s *next;
 	} shader_t;
@@ -4229,6 +4229,8 @@ extern "C" {
 // bani
 	void       RE_RenderToTexture( int textureid, int x, int y, int w, int h );
 	void       RE_Finish( void );
+
+	void       R_SetAltShaderTokens( const char * );
 
 #if defined( __cplusplus )
 }

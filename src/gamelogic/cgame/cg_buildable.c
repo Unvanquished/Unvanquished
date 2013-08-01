@@ -1959,11 +1959,11 @@ void CG_Buildable( centity_t *cent )
 
 	if ( es->generic1 <= 0 )
 	{
-		ent.altShaderIndex = RE_ALTSHADER_DEAD;
+		ent.altShaderIndex = CG_ALTSHADER_DEAD;
 	}
 	else if ( !(es->eFlags & EF_B_POWERED) )
 	{
-		ent.altShaderIndex = RE_ALTSHADER_UNPOWERED;
+		ent.altShaderIndex = CG_ALTSHADER_UNPOWERED;
 	}
 
 	//add to refresh list
