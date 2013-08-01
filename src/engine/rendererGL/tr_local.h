@@ -1615,9 +1615,12 @@ extern "C" {
 
 	typedef enum
 	{
-	  IA_DEFAULT, // lighting and shadowing
-	  IA_SHADOWONLY,
-	  IA_LIGHTONLY
+		IA_LIGHT = 1,		// the received light if not in shadow
+		IA_SHADOW = 2,		// the surface shadows the light
+		IA_SHADOWCLIP = 4,	// the surface clips the shadow
+
+		IA_DEFAULT = IA_LIGHT | IA_SHADOW, // lighting and shadowing
+		IA_DEFAULTCLIP = IA_LIGHT | IA_SHADOWCLIP
 	} interactionType_t;
 
 // an interactionCache is a node between a light and a precached world surface
@@ -2793,6 +2796,9 @@ extern "C" {
 		image_t *shadowMapFBOImage[ MAX_SHADOWMAPS * 2 ];
 		image_t *shadowCubeFBOImage[ MAX_SHADOWMAPS ];
 		image_t *sunShadowMapFBOImage[ MAX_SHADOWMAPS * 2 ];
+		image_t *shadowClipMapFBOImage[ MAX_SHADOWMAPS * 2 ];
+		image_t *shadowClipCubeFBOImage[ MAX_SHADOWMAPS ];
+		image_t *sunShadowClipMapFBOImage[ MAX_SHADOWMAPS * 2 ];
 
 		// external images
 		image_t *charsetImage;

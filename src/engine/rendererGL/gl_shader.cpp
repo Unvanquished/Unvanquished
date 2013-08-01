@@ -1533,11 +1533,9 @@ void GLShader_forwardLighting_omniXYZ::SetShaderProgramUniforms( shaderProgram_t
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_SpecularMap" ), 2 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_AttenuationMapXY" ), 3 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_AttenuationMapZ" ), 4 );
-	//if(r_shadows->integer >= SHADOWING_ESM16)
-	{
-		glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap" ), 5 );
-	}
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap" ), 5 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_RandomMap" ), 6 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowClipMap" ), 7 );
 }
 
 GLShader_forwardLighting_projXYZ::GLShader_forwardLighting_projXYZ( GLShaderManager *manager ):
@@ -1602,11 +1600,9 @@ void GLShader_forwardLighting_projXYZ::SetShaderProgramUniforms( shaderProgram_t
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_SpecularMap" ), 2 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_AttenuationMapXY" ), 3 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_AttenuationMapZ" ), 4 );
-	//if(r_shadows->integer >= SHADOWING_ESM16)
-	{
-		glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap0" ), 5 );
-	}
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap0" ), 5 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_RandomMap" ), 6 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowClipMap0" ), 7 );
 }
 
 GLShader_forwardLighting_directionalSun::GLShader_forwardLighting_directionalSun( GLShaderManager *manager ):
@@ -1673,14 +1669,16 @@ void GLShader_forwardLighting_directionalSun::SetShaderProgramUniforms( shaderPr
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_SpecularMap" ), 2 );
 	//glUniform1i(glGetUniformLocation( shaderProgram->program, "u_AttenuationMapXY" ), 3);
 	//glUniform1i(glGetUniformLocation( shaderProgram->program, "u_AttenuationMapZ" ), 4);
-	//if(r_shadows->integer >= SHADOWING_ESM16)
-	{
-		glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap0" ), 5 );
-		glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap1" ), 6 );
-		glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap2" ), 7 );
-		glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap3" ), 8 );
-		glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap4" ), 9 );
-	}
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap0" ), 5 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap1" ), 6 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap2" ), 7 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap3" ), 8 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap4" ), 9 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowClipMap0" ), 10 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowClipMap1" ), 11 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowClipMap2" ), 12 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowClipMap3" ), 13 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowClipMap4" ), 14 );
 }
 
 GLShader_deferredLighting_omniXYZ::GLShader_deferredLighting_omniXYZ( GLShaderManager *manager ):
@@ -1719,10 +1717,8 @@ void GLShader_deferredLighting_omniXYZ::SetShaderProgramUniforms( shaderProgram_
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_DepthMap" ), 3 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_AttenuationMapXY" ), 4 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_AttenuationMapZ" ), 5 );
-	//if(r_shadows->integer >= SHADOWING_ESM16)
-	{
-		glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap" ), 6 );
-	}
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap" ), 6 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowClipMap" ), 7 );
 }
 
 GLShader_deferredLighting_projXYZ::GLShader_deferredLighting_projXYZ( GLShaderManager *manager ):
@@ -1762,10 +1758,8 @@ void GLShader_deferredLighting_projXYZ::SetShaderProgramUniforms( shaderProgram_
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_DepthMap" ), 3 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_AttenuationMapXY" ), 4 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_AttenuationMapZ" ), 5 );
-	//if(r_shadows->integer >= SHADOWING_ESM16)
-	{
-		glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap0" ), 6 );
-	}
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap0" ), 6 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowClipMap0" ), 7 );
 }
 
 GLShader_deferredLighting_directionalSun::GLShader_deferredLighting_directionalSun( GLShaderManager *manager ):
@@ -1807,14 +1801,16 @@ void GLShader_deferredLighting_directionalSun::SetShaderProgramUniforms( shaderP
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_DepthMap" ), 3 );
 	//glUniform1i(glGetUniformLocation( shaderProgram->program, "u_AttenuationMapXY" ), 4);
 	//glUniform1i(glGetUniformLocation( shaderProgram->program, "u_AttenuationMapZ" ), 5);
-	//if(r_shadows->integer >= SHADOWING_ESM16)
-	{
-		glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap0" ), 6 );
-		glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap1" ), 7 );
-		glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap2" ), 8 );
-		glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap3" ), 9 );
-		glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap4" ), 10 );
-	}
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap0" ), 6 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap1" ), 7 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap2" ), 8 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap3" ), 9 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap4" ), 10 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowClipMap0" ), 11 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowClipMap1" ), 12 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowClipMap2" ), 13 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowClipMap3" ), 14 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowClipMap4" ), 15 );
 }
 
 GLShader_geometricFill::GLShader_geometricFill( GLShaderManager *manager ):
@@ -2188,6 +2184,7 @@ void GLShader_lightVolume_omni::SetShaderProgramUniforms( shaderProgram_t *shade
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_AttenuationMapXY" ), 1 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_AttenuationMapZ" ), 2 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap" ), 3 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowClipMap" ), 4 );
 }
 
 GLShader_deferredShadowing_proj::GLShader_deferredShadowing_proj( GLShaderManager *manager ) :
@@ -2210,6 +2207,7 @@ void GLShader_deferredShadowing_proj::SetShaderProgramUniforms( shaderProgram_t 
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_AttenuationMapXY" ), 1 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_AttenuationMapZ" ), 2 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap" ), 3 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowClipMap" ), 4 );
 }
 
 GLShader_liquid::GLShader_liquid( GLShaderManager *manager ) :

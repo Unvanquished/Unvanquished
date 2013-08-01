@@ -1651,6 +1651,8 @@ static void Render_forwardLighting_DBS_omni( shaderStage_t *diffuseStage,
 	{
 		GL_SelectTexture( 5 );
 		GL_Bind( tr.shadowCubeFBOImage[ light->shadowLOD ] );
+		GL_SelectTexture( 7 );
+		GL_Bind( tr.shadowClipCubeFBOImage[ light->shadowLOD ] );
 	}
 
 	// bind u_RandomMap
@@ -1850,6 +1852,8 @@ static void Render_forwardLighting_DBS_proj( shaderStage_t *diffuseStage,
 	{
 		GL_SelectTexture( 5 );
 		GL_Bind( tr.shadowMapFBOImage[ light->shadowLOD ] );
+		GL_SelectTexture( 7 );
+		GL_Bind( tr.shadowClipMapFBOImage[ light->shadowLOD ] );
 	}
 
 	// bind u_RandomMap
@@ -2050,29 +2054,39 @@ static void Render_forwardLighting_DBS_directional( shaderStage_t *diffuseStage,
 	{
 		GL_SelectTexture( 5 );
 		GL_Bind( tr.sunShadowMapFBOImage[ 0 ] );
+		GL_SelectTexture( 10 );
+		GL_Bind( tr.sunShadowClipMapFBOImage[ 0 ] );
 
 		if ( r_parallelShadowSplits->integer >= 1 )
 		{
 			GL_SelectTexture( 6 );
 			GL_Bind( tr.sunShadowMapFBOImage[ 1 ] );
+			GL_SelectTexture( 11 );
+			GL_Bind( tr.sunShadowClipMapFBOImage[ 1 ] );
 		}
 
 		if ( r_parallelShadowSplits->integer >= 2 )
 		{
 			GL_SelectTexture( 7 );
 			GL_Bind( tr.sunShadowMapFBOImage[ 2 ] );
+			GL_SelectTexture( 12 );
+			GL_Bind( tr.sunShadowClipMapFBOImage[ 2 ] );
 		}
 
 		if ( r_parallelShadowSplits->integer >= 3 )
 		{
 			GL_SelectTexture( 8 );
 			GL_Bind( tr.sunShadowMapFBOImage[ 3 ] );
+			GL_SelectTexture( 13 );
+			GL_Bind( tr.sunShadowClipMapFBOImage[ 3 ] );
 		}
 
 		if ( r_parallelShadowSplits->integer >= 4 )
 		{
 			GL_SelectTexture( 9 );
 			GL_Bind( tr.sunShadowMapFBOImage[ 4 ] );
+			GL_SelectTexture( 14 );
+			GL_Bind( tr.sunShadowClipMapFBOImage[ 4 ] );
 		}
 	}
 
