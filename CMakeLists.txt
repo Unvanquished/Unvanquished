@@ -36,6 +36,7 @@ cmake_dependent_option( BUILD_NEW_RENDERER   "Build new renderer library"       
 
 option( ENABLE_LTO           "Use link-time optimization for Release builds"                            0 )
 option( ENABLE_BUNDLING      "When packaging automatically include all non-system libraries in package" 0 )
+option( ENABLE_HARDENING     "Use stack protection"                                                     0 )
 
 cmake_dependent_option( USE_OPENAL           "Use OpenAL"                                            1 BUILD_CLIENT                   0 )
 cmake_dependent_option( USE_MUMBLE           "Compile with support for Mumble"                       1 BUILD_CLIENT                   0 )
@@ -196,10 +197,10 @@ else()
     set_c_cxx_flag( "-stdlib=libc++")
   endif()
 
-  # Stack protection
-  if( NOT WIN32 )
-    set_c_cxx_flag( "-fstack-protector" )
-    set_c_cxx_flag( "--param=ssp-buffer-size=4" )
+  # Hardening
+  add_definitions( -D_FORTIFY_SOURCE=2 )
+  if( ENABLE_HARDENING )
+    try_c_cxx_flag( FSTACK_PROTECTOR "-fstack-protector" )
   endif()
 
   # Linker flags
