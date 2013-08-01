@@ -212,13 +212,10 @@ else()
   try_linker_flag( LINKER_NO_UNDEFINED "-Wl,--no-undefined" )
   try_linker_flag( LINKER_Z_RELRO "-Wl,-z,relro" )
 
-  # LTO support
+  # LTO support, only used on release builds
   if( ENABLE_LTO )
+    # This flag is also used when linking
     set_c_cxx_flag( "-flto" RELEASE )
-
-    # These are defined for all build types, but have no effect on non-Release
-    set_linker_flag( "-O3" )
-    set_linker_flag( "-flto" )
   endif()
 
   # The -pthread flag sets some preprocessor defines
