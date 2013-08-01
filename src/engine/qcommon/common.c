@@ -44,7 +44,7 @@ Maryland 20850 USA.
 #include "../framework/CommandSystem.h"
 
 // htons
-#if defined __linux__ || defined __FreeBSD__ || MACOS_X
+#if defined __linux__ || defined __FreeBSD__ || defined( MACOS_X ) || defined( __APPLE__ )
 #include <sys/types.h>
 #include <netinet/in.h>
 #else

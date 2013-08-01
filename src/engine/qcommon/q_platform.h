@@ -151,7 +151,7 @@ Maryland 20850 USA.
 
 //============================================================== MAC OS X ===
 
-#if defined( MACOS_X ) || defined( __APPLE_CC__ )
+#if defined( MACOS_X ) || defined( __APPLE_CC__ ) || defined( __APPLE__ )
 
 #define MAC_STATIC
 

@@ -175,7 +175,7 @@ else()
   try_c_cxx_flag( FVISIBILITY_HIDDEN "-fvisibility=hidden" )
 
   # Extra debug flags
-  set_c_cxx_flag( "-ggdb3" )
+  set_c_cxx_flag( "-g3" )
   try_c_cxx_flag( OPTIMIZE_DEBUG "-Og" DEBUG )
 
   # C++11 support
@@ -186,6 +186,11 @@ else()
       message( FATAL_ERROR "C++11 not supported by compiler" )
     endif()
   endif()
+  
+  # OSX Override
+  if( MAC )
+	  set_c_cxx_flag( "-stdlib=libc++")
+  endif()
 
   # Stack protection
   if( NOT WIN32 )
@@ -194,7 +199,10 @@ else()
   endif()
 
   # Linker flags
-  set_linker_flag( "-Wl,-O1,--sort-common,--as-needed" )
+  if( NOT MAC )
+    set_linker_flag( "-Wl,-O1,--sort-common,--as-needed,-z,relro" )
+  endif()
+
 
   # LTO support
   if( ENABLE_LTO )
@@ -432,7 +440,7 @@ endif()
 
 if( MAC )
   set( ENGINELIST ${ENGINELIST}
-    ${ENGINE_DIR}/sys/sys_osx.m
+    ${ENGINE_DIR}/sys/sys_osx.mm
   )
 endif()
 
@@ -797,8 +805,7 @@ if( BUILD_CLIENT OR WIN32 )
     set( LIBS_RENDERERGL ${LIBS_RENDERERGL} ${SDL_LIBRARY} )
     if( MAC )
       # Mac OS X does not provide a SDLMain.dylib so we must compile our own
-      set_source_files_properties( ${ENGINE_DIR}/sys/SDLMain.m PROPERTIES LANGUAGE C )
-      add_library( INTERNAL_SDLMain ${ENGINE_DIR}/sys/SDLMain.m )
+      add_library( INTERNAL_SDLMain ${ENGINE_DIR}/sys/SDLMain.mm )
       set( LIBS_CLIENT ${LIBS_CLIENT} INTERNAL_SDLMain )
     endif()
   else()
@@ -848,6 +855,7 @@ if( USE_VOIP )
   else()
     include_directories( ${LIB_DIR}/libspeex/include )
     set( LIBSRC_CLIENT ${LIBSRC_CLIENT} ${SPEEXLIST} )
+	add_definitions( -DFLOATING_POINT )
   endif()
 endif()
 
@@ -1127,7 +1135,8 @@ if( BUILD_CLIENT )
     # Set it here so the tty client doesn't try to handle voip
     set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_VOIP )
   endif()
-  set_target_properties( client PROPERTIES OUTPUT_NAME "daemon" PREFIX "" )
+
+ set_target_properties( client PROPERTIES OUTPUT_NAME "daemon" PREFIX "" )
 
   # Setup CPack for target client
   install( TARGETS client DESTINATION "Unvanquished" )

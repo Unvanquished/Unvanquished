@@ -32,7 +32,7 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#ifndef MACOS_X
+#if !defined( MACOS_X ) && !defined( __APPLE__ )
 #error This file is for Mac OS X only. You probably should not compile it.
 #endif
 
@@ -66,7 +66,7 @@ char *Sys_GetClipboardData( clipboard_t clip )
 	fgets( buffer, sizeof( buffer ), pipe );
 	pclose( pipe );
 
-	data = Z_Malloc( sizeof( buffer ) );
+	data = ( char * ) Z_Malloc( sizeof( buffer ) );
 	Q_strncpyz( data, buffer, sizeof( buffer ) );
 
 	return data;
