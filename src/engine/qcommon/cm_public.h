@@ -90,19 +90,3 @@ int      CM_MarkFragments( int numPoints, const vec3_t *points, const vec3_t pro
 
 // cm_patch.c
 void CM_DrawDebugSurface( void ( *drawPoly )( int color, int numPoints, float *points ) );
-
-// Physics
-#ifdef USE_PHYSICS
-void CMod_PhysicsInit( void );
-void CMod_PhysicsShutdown( void );
-void CMod_PhysicsClearBodies( void );
-void CMod_PhysicsAddBSPModel( int index, int firstSurface, int numSurfaces );
-
-void CMod_PhysicsAddFaceToModel( int modelIndex, int surface, vec3_t vec[ 3 ] );
-int  CMod_PhysicsBSPSurfaceIsModel( int surfaceID );
-void CMod_PhysicsUpdate( void );
-void CMod_PhysicsEndBSPCollisionTree( void );
-void CMod_PhysicsBeginBSPCollisionTree( void );
-
-void CMod_PhysicsAddBSPFace( vec3_t vec[ 3 ] );
-#endif

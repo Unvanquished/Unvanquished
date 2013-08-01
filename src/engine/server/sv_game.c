@@ -37,9 +37,6 @@ Maryland 20850 USA.
 #include "server.h"
 #include "../qcommon/crypto.h"
 
-void            CMod_PhysicsAddEntity( sharedEntity_t *gEnt );
-void            CMod_PhysicsAddStatic( const sharedEntity_t *gEnt );
-
 // these functions must be used instead of pointer arithmetic, because
 // the game allocates gentities with private information after the server shared part
 int SV_NumForGentity( sharedEntity_t *ent )
@@ -704,20 +701,6 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 		case G_PARSE_SOURCE_FILE_AND_LINE:
 			return Parse_SourceFileAndLine( args[ 1 ], ( char * ) VMA( 2 ), ( int * ) VMA( 3 ) );
 
-// ===
-
-		case G_ADD_PHYSICS_ENTITY:
-#ifdef USE_PHYSICS
-			CMod_PhysicsAddEntity( ( sharedEntity_t * ) VMA( 1 ) );
-#endif
-			return 0;
-
-		case G_ADD_PHYSICS_STATIC:
-#ifdef USE_PHYSICS
-			CMod_PhysicsAddStatic( ( const sharedEntity_t * ) VMA( 1 ) );
-#endif
-			return 0;
-
 		case G_SENDMESSAGE:
 		        VM_CheckBlock( args[2], args[3], "SENDM" );
 			SV_SendBinaryMessage( args[ 1 ], ( char * ) VMA( 2 ), args[ 3 ] );
@@ -819,10 +802,6 @@ void SV_RestartGameProgs( void )
 	}
 
 	VM_Call( gvm, GAME_SHUTDOWN, qtrue );
-
-#ifdef USE_PHYSICS
-	CMod_PhysicsClearBodies();
-#endif
 
 	// do a restart instead of a free
 	gvm = VM_Restart( gvm );

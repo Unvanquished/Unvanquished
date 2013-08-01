@@ -1407,8 +1407,6 @@ int              trap_PC_ReadToken( int handle, pc_token_t *pc_token );
 int              trap_PC_SourceFileAndLine( int handle, char *filename, int *line );
 int              trap_PC_UnReadToken( int handle );
 int              trap_BotGetServerCommand( int clientNum, char *message, int size );
-void             trap_AddPhysicsEntity( gentity_t *ent );
-void             trap_AddPhysicsStatic( gentity_t *ent );
 void             trap_SendMessage( int clientNum, char *buf, int buflen );
 messageStatus_t  trap_MessageStatus( int clientNum );
 
