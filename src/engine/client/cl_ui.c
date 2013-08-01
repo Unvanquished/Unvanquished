@@ -1367,8 +1367,6 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 			Cmd_QuoteStringBuffer( (char*) VMA( 1 ), (char*) VMA( 2 ), args[ 3 ] );
 			return 0;
 
-#if defined( USE_REFENTITY_ANIMATIONSYSTEM )
-
 		case UI_R_REGISTERANIMATION:
 			return re.RegisterAnimation( (char*) VMA( 1 ) );
 
@@ -1386,7 +1384,7 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 
 		case UI_R_ANIMFRAMERATE:
 			return re.AnimFrameRate( args[ 1 ] );
-#endif
+
 		case UI_GETTEXT:
 			VM_CheckBlock( args[1], args[3], "UIGETTEXT" );
 			Q_strncpyz( (char*) VMA(1), __((char*) VMA(2)), args[3] );

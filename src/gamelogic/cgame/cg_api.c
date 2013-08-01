@@ -564,13 +564,10 @@ void trap_R_AddRefEntityToScene( const refEntity_t *re )
 
 //70.
 //re.AddRefLightToScene(VMA(1));
-#if defined( USE_REFLIGHT )
 void trap_R_AddRefLightToScene( const refLight_t *light )
 {
 	syscall( CG_R_ADDREFLIGHTSTOSCENE, light );
 }
-
-#endif
 
 //71.
 //re.AddPolyToScene(args[1], args[2], VMA(3));
@@ -1115,7 +1112,6 @@ int trap_S_SoundDuration( sfxHandle_t handle )
 }
 
 //165.
-#if defined( USE_REFENTITY_ANIMATIONSYSTEM )
 qhandle_t trap_R_RegisterAnimation( const char *name )
 {
 	return syscall( CG_R_REGISTERANIMATION, name );
@@ -1156,8 +1152,6 @@ int trap_R_AnimFrameRate( qhandle_t hAnim )
 {
 	return syscall( CG_R_ANIMFRAMERATE, hAnim );
 }
-
-#endif
 
 //172.
 void trap_CompleteCallback( const char *complete )

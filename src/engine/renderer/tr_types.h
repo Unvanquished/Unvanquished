@@ -136,10 +136,7 @@ typedef enum
 
 // XreaL BEGIN
 
-//#define USE_REFLIGHT 1
-
 // RB: defining any of the following macros would break the compatibility to old ET mods
-#define USE_REFENTITY_ANIMATIONSYSTEM 1
 //#define USE_REFENTITY_NOSHADOWID 1
 
 // RB: having bone names for each refEntity_t takes several MiBs
@@ -150,7 +147,6 @@ typedef enum
 #define REFBONE_NAMES 1
 #endif
 
-#if defined( USE_REFENTITY_ANIMATIONSYSTEM )
 typedef struct
 {
 #if defined( REFBONE_NAMES )
@@ -178,7 +174,6 @@ typedef struct
 	vec3_t            bounds[ 2 ]; // bounds of all applied animations
 	vec3_t            scale;
 } refSkeleton_t;
-#endif
 
 // XreaL END
 
@@ -239,10 +234,8 @@ typedef struct
 
 // XreaL BEGIN
 
-#if defined( USE_REFENTITY_ANIMATIONSYSTEM )
 	// extra animation information
 	refSkeleton_t skeleton;
-#endif
 
 #if defined( USE_REFENTITY_NOSHADOWID )
 	// extra light interaction information

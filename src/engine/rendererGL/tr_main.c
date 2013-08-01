@@ -2651,12 +2651,9 @@ void R_AddEntitySurfaces( void )
 							break;
 #endif
 
-#if defined( USE_REFENTITY_ANIMATIONSYSTEM )
-
 						case MOD_MD5:
 							R_AddMD5Surfaces( ent );
 							break;
-#endif
 
 						case MOD_BSP:
 							R_AddBSPModelSurfaces( ent );
@@ -2763,12 +2760,9 @@ void R_AddEntityInteractions( trRefLight_t *light )
 							break;
 #endif
 
-#if defined( USE_REFENTITY_ANIMATIONSYSTEM )
-
 						case MOD_MD5:
 							R_AddMD5Interactions( ent, light, iaType );
 							break;
-#endif
 
 						case MOD_BSP:
 							R_AddBrushModelInteractions( ent, light, iaType );

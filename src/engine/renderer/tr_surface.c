@@ -1437,9 +1437,6 @@ static void RB_SurfaceMD5( md5Surface_t *srf )
 	// convert bones back to matrices
 	for ( i = 0; i < model->numBones; i++ )
 	{
-
-#if defined( USE_REFENTITY_ANIMATIONSYSTEM )
-
 		if ( backEnd.currentEntity->e.skeleton.type == SK_ABSOLUTE )
 		{
 
@@ -1451,7 +1448,6 @@ static void RB_SurfaceMD5( md5Surface_t *srf )
 			MatrixMultiply2( boneMatrices[ i ], model->bones[ i ].inverseTransform );
 		}
 		else
-#endif
 		{
 			MatrixIdentity( boneMatrices[ i ] );
 		}

@@ -1715,11 +1715,7 @@ extern "C" {
 		ri.Cmd_AddCommand( "skinlist", R_SkinList_f );
 		ri.Cmd_AddCommand( "modellist", R_Modellist_f );
 		ri.Cmd_AddCommand( "modelist", R_ModeList_f );
-
-#if defined( USE_REFENTITY_ANIMATIONSYSTEM )
 		ri.Cmd_AddCommand( "animationlist", R_AnimationList_f );
-#endif
-
 		ri.Cmd_AddCommand( "fbolist", R_FBOList_f );
 		ri.Cmd_AddCommand( "vbolist", R_VBOList_f );
 		ri.Cmd_AddCommand( "screenshot", R_ScreenShot_f );
@@ -1832,9 +1828,7 @@ extern "C" {
 
 		R_ModelInit();
 
-#if defined( USE_REFENTITY_ANIMATIONSYSTEM )
 		R_InitAnimations();
-#endif
 
 		R_InitFreeType();
 
@@ -2128,11 +2122,8 @@ extern "C"
 		re.TakeScreenshotPNG = RB_TakeScreenshotPNG;
 #endif
 
-#if defined( USE_REFLIGHT )
 		re.AddRefLightToScene = RE_AddRefLightToScene;
-#endif
 
-#if defined( USE_REFENTITY_ANIMATIONSYSTEM )
 		re.RegisterAnimation = RE_RegisterAnimation;
 		re.CheckSkeleton = RE_CheckSkeleton;
 		re.BuildSkeleton = RE_BuildSkeleton;
@@ -2140,7 +2131,6 @@ extern "C"
 		re.BoneIndex = RE_BoneIndex;
 		re.AnimNumFrames = RE_AnimNumFrames;
 		re.AnimFrameRate = RE_AnimFrameRate;
-#endif
 
 		// XreaL END
 

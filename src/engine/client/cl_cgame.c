@@ -909,11 +909,9 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			re.AddRefEntityToScene( (refEntity_t*) VMA( 1 ) );
 			return 0;
 
-#if defined( USE_REFLIGHT )
 		case CG_R_ADDREFLIGHTSTOSCENE:
 			re.AddRefLightToScene( (refLight_t*) VMA( 1 ) );
 			return 0;
-#endif
 
 		case CG_R_ADDPOLYTOSCENE:
 			re.AddPolyToScene( args[ 1 ], args[ 2 ], (polyVert_t*) VMA( 3 ) );
@@ -1173,7 +1171,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 		case CG_S_SOUNDDURATION:
 			return S_SoundDuration( args[ 1 ] );
 
-#if defined( USE_REFENTITY_ANIMATIONSYSTEM )
 		case CG_R_REGISTERANIMATION:
 			return re.RegisterAnimation( (char*) VMA( 1 ) );
 
@@ -1194,7 +1191,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 
 		case CG_R_ANIMFRAMERATE:
 			return re.AnimFrameRate( args[ 1 ] );
-#endif
 
 		case CG_REGISTER_BUTTON_COMMANDS:
 			CL_RegisterButtonCommands( (char*) VMA( 1 ) );

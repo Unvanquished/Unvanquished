@@ -34,8 +34,6 @@ frame.
 ===========================================================================
 */
 
-#if defined( USE_REFENTITY_ANIMATIONSYSTEM )
-
 static skelAnimation_t *R_AllocAnimation( void )
 {
 	skelAnimation_t *anim;
@@ -1705,5 +1703,3 @@ int RE_AnimFrameRate( qhandle_t hAnim )
 
 	return 0;
 }
-
-#endif

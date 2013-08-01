@@ -1667,9 +1667,6 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 		// convert bones back to matrices
 		for ( i = 0; i < model->numBones; i++ )
 		{
-
-#if defined( USE_REFENTITY_ANIMATIONSYSTEM )
-
 			if ( backEnd.currentEntity->e.skeleton.type == SK_ABSOLUTE )
 			{
 				MatrixSetupTransformFromQuat( boneMatrices[ i ], backEnd.currentEntity->e.skeleton.bones[ i ].rotation,
@@ -1679,7 +1676,6 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 				                  backEnd.currentEntity->e.skeleton.scale[ 1 ], backEnd.currentEntity->e.skeleton.scale[ 2 ] );
 			}
 			else
-#endif
 			{
 				MatrixSetupTransformFromQuat( boneMatrices[ i ], model->bones[ i ].rotation, model->bones[ i ].origin );
 			}
@@ -1718,9 +1714,6 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 		// convert bones back to matrices
 		for ( i = 0; i < model->numBones; i++ )
 		{
-
-#if defined( USE_REFENTITY_ANIMATIONSYSTEM )
-
 			if ( backEnd.currentEntity->e.skeleton.type == SK_ABSOLUTE )
 			{
 				MatrixSetupTransformFromQuat( boneMatrices[ i ], backEnd.currentEntity->e.skeleton.bones[ i ].rotation,
@@ -1732,7 +1725,6 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 				MatrixMultiply2( boneMatrices[ i ], model->bones[ i ].inverseTransform );
 			}
 			else
-#endif
 			{
 				MatrixIdentity( boneMatrices[ i ] );
 			}
@@ -2058,8 +2050,6 @@ static void Tess_SurfaceVBOMD5Mesh( srfVBOMD5Mesh_t *srf )
 
 	model = srf->md5Model;
 
-#if defined( USE_REFENTITY_ANIMATIONSYSTEM )
-
 	if ( backEnd.currentEntity->e.skeleton.type == SK_ABSOLUTE )
 	{
 		tess.vboVertexSkinning = qtrue;
@@ -2076,7 +2066,6 @@ static void Tess_SurfaceVBOMD5Mesh( srfVBOMD5Mesh_t *srf )
 		}
 	}
 	else
-#endif
 	{
 		tess.vboVertexSkinning = qfalse;
 	}
