@@ -2,6 +2,8 @@
 # not been tested on anything but windows. May require changes to jm*.c and
 # jconfig.h to work on non-windows platforms. Check filelist.txt for more info
 
+set( JPEG_DIR ${LIB_DIR}/jpeg )
+
 set( JPEGLIST
   ${JPEG_DIR}/jcapimin.c
   ${JPEG_DIR}/jcapistd.c
