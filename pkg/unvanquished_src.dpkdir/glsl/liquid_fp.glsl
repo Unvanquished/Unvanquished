@@ -36,6 +36,7 @@ uniform float		u_FresnelBias;
 uniform float		u_NormalScale;
 uniform mat4		u_ModelMatrix;
 uniform mat4		u_UnprojectMatrix;
+uniform vec2		u_SpecularExponent;
 
 varying vec3		var_Position;
 varying vec2		var_TexNormal;
@@ -184,7 +185,7 @@ void	main()
 	vec3 light = var_LightColor.rgb * clamp(dot(N2, L), 0.0, 1.0);
 
 	// compute the specular term
-	vec3 specular = reflectColor * var_LightColor.rgb * pow(clamp(dot(N2, H), 0.0, 1.0), r_SpecularExponent) * r_SpecularScale;
+	vec3 specular = reflectColor * var_LightColor.rgb * pow(clamp(dot(N2, H), 0.0, 1.0), u_SpecularExponent.x + u_SpecularExponent.y) * r_SpecularScale;
 	color.rgb += specular;
 
 	gl_FragColor = color;
