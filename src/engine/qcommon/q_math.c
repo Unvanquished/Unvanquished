@@ -33,16 +33,6 @@ Maryland 20850 USA.
 */
 
 // q_math.c -- stateless support routines that are included in each code module
-// Some of the vector functions are static inline in q_shared.h. q3asm
-// doesn't understand static functions though, so we only want them in
-// one file. That's what this is about.
-#ifdef Q3_VM
-#define FLT_EPSILON 1.19209290E-07F
-#define atanf(x) ( (float) atan( (x) ) )
-#define tanf(x) ( (float) tan( (x) ) )
-#define sqrtf(x) ( (float) sqrt( (x) ) )
-extern double asin( double );
-#endif
 
 #include "q_shared.h"
 

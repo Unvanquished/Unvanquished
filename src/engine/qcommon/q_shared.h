@@ -125,40 +125,6 @@ Maryland 20850 USA.
 
 #define Q_UNUSED(x) (void)(sizeof((x), 0))
 
-	/**********************************************************************
-	  VM Considerations
-
-	  The VM can not use the standard system headers because we aren't really
-	  using the compiler they were meant for.  We use bg_lib.h which contains
-	  prototypes for the functions we define for our own use in bg_lib.c.
-
-	  When writing mods, please add needed headers HERE, do not start including
-	  stuff like <stdio.h> in the various .c files that make up each of the VMs
-	  since you will be including system headers files can will have issues.
-
-	  Remember, if you use a C library function that is not defined in bg_lib.c,
-	  you will have to add your own version for support in the VM.
-
-	 **********************************************************************/
-
-#ifdef Q3_VM
-
-#include "../../gamelogic/game/bg_lib.h"
-
-	typedef int intptr_t;
-
-#include "../../engine/qcommon/q_platform.h"
-
-#define STATIC_INLINE
-
-#ifdef Q3_VM_INSTANTIATE
-#define IFDECLARE
-#else
-#define IFDECLARE ;
-#endif
-
-#else
-
 // for visibility of some functions in system headers
 #undef _GNU_SOURCE
 #undef _BSD_SOURCE
@@ -213,11 +179,7 @@ Maryland 20850 USA.
 
 #include "q_platform.h"
 
-// not VM - we can have static inline
 #define STATIC_INLINE static ALWAYS_INLINE
-#define IFDECLARE
-#define Q3_VM_INSTANTIATE
-#endif
 
 #include "../../include/global.h"
 
@@ -1305,11 +1267,7 @@ double rint( double x );
 	==============================================================
 	*/
 
-#ifdef Q3_VM
-#include "../../engine/qcommon/surfaceflags.h"
-#else
 #include "surfaceflags.h" // shared with the q3map utility
-#endif
 
 // plane types are used to speed some tests
 // 0-2 are axial planes
@@ -1868,8 +1826,6 @@ typedef struct
 
 typedef int fontHandle_t;
 
-#ifndef Q3_VM
-
 typedef glyphInfo_t glyphBlock_t[256];
 
 typedef struct
@@ -1881,8 +1837,6 @@ typedef struct
 	float         glyphScale;
 	char          name[ MAX_QPATH ];
 } fontInfo_t;
-
-#endif
 
 typedef struct
 {

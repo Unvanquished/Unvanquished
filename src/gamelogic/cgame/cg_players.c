@@ -2497,11 +2497,9 @@ CG_PlayerUpgrade
 */
 static void CG_PlayerUpgrades( centity_t *cent, refEntity_t *torso )
 {
-	// These are static because otherwise we have >32K of locals, and lcc doesn't like that.
-	// Also, jetpack and battpack are never both in use together, so just #define.
-	QVM_STATIC refEntity_t jetpack;
-	QVM_STATIC refEntity_t flash;
-#	define battpack jetpack
+	refEntity_t jetpack;
+	refEntity_t battpack;
+	refEntity_t flash;
 
 	int           held, active;
 	entityState_t *es = &cent->currentState;
@@ -2652,7 +2650,6 @@ static void CG_PlayerUpgrades( centity_t *cent, refEntity_t *torso )
 			               0.0f, 1.0f, 1.0f, 1.0f, 1.0f, qfalse, size, qtrue );
 		}
 	}
-#	undef battpack
 }
 
 /*
@@ -3009,16 +3006,6 @@ int CG_AmbientLight( vec3_t point )
 
 /*
 ===============
-Statics for CG_Player & CG_Corpse
-These are QVM-only to keep locals down below 32K
-===============
-*/
-#ifdef Q3_VM
-static refEntity_t legs, torso, body, head;
-#endif
-
-/*
-===============
 CG_Player
 ===============
 */
@@ -3028,9 +3015,7 @@ void CG_Player( centity_t *cent )
 
 	// NOTE: legs is used for nonsegmented models
 	//       this helps reduce code to be changed
-#ifndef Q3_VM
 	refEntity_t legs, torso, body, head;
-#endif
 
 	int           clientNum;
 	int           renderfx;
@@ -3642,9 +3627,7 @@ CG_Corpse
 */
 void CG_Corpse( centity_t *cent )
 {
-#ifndef Q3_VM
 	refEntity_t   legs, torso, head;
-#endif
 	clientInfo_t  *ci;
 	entityState_t *es = &cent->currentState;
 	int           corpseNum;

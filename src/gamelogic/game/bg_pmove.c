@@ -4309,13 +4309,6 @@ void PM_UpdateViewAngles( playerState_t *ps, const usercmd_t *cmd )
 	}
 }
 
-#if defined(Q3_VM) || ( defined(_WIN32) && !defined(__MINGW32__) )
-static float roundf( float v )
-{
-	return (int)( v + ( v < 0 ? -0.5 : 0.5 ) );
-}
-#endif
-
 /*
 ================
 PmoveSingle
@@ -4582,9 +4575,7 @@ void PmoveSingle( pmove_t *pmove )
 	if ( !pmove->pmove_accurate )
 	{
 		// snap some parts of playerstate to save network bandwidth
-		pm->ps->velocity[0] = roundf( pm->ps->velocity[0] );
-		pm->ps->velocity[1] = roundf( pm->ps->velocity[1] );
-		pm->ps->velocity[2] = roundf( pm->ps->velocity[2] );
+		SnapVector( pm->ps->velocity );
 	}
 }
 

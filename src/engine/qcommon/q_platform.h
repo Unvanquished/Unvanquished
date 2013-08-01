@@ -39,12 +39,6 @@ Maryland 20850 USA.
 #undef VM_COMPILED
 #endif
 
-#ifdef Q3_VM
-
-#define id386         0
-
-#else
-
 #if ( defined( _M_IX86 ) || defined( __i386__ )) && !defined( C_ONLY )
 #define id386       1
 #if defined SIMD_3DNOW
@@ -65,14 +59,11 @@ Maryland 20850 USA.
 #define id386_sse   0
 #endif
 
-#endif
-
 // for windows fastcall option
 #define QDECL
 #define QCALL
 
 //================================================================= WIN64/32 ===
-#ifndef Q3_VM
 #if defined( _WIN64 ) || defined( __WIN64__ )
 
 #define MAC_STATIC
@@ -336,7 +327,6 @@ Maryland 20850 USA.
 #define EXE_EXT       ""
 
 #endif
-#endif
 
 //================================================================== NACL ===
 
@@ -355,23 +345,6 @@ Maryland 20850 USA.
 #define DLL_PREFIX    ""
 #define DLL_EXT       ".nexe"
 #define EXE_EXT       ".nexe"
-
-#endif
-//================================================================== Q3VM ===
-
-#ifdef Q3_VM
-
-#define INLINE
-
-#define MAC_STATIC
-
-#define OS_STRING     "q3vm"
-#define PATH_SEP      '/'
-
-#define ARCH_STRING   "bytecode"
-
-#define DLL_PREFIX    ""
-#define DLL_EXT       ".qvm"
 
 #endif
 
@@ -426,15 +399,6 @@ float FloatSwap( float f );
 #define BigShort(x) ShortSwap(x)
 #define BigLong(x)  LongSwap(x)
 #define BigFloat(x) FloatSwap(x)
-
-#elif defined( Q3_VM )
-
-#define LittleShort
-#define LittleLong
-#define LittleFloat
-#define BigShort
-#define BigLong
-#define BigFloat
 
 #else
 #error "Endianness not defined"

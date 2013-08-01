@@ -2258,7 +2258,7 @@ static float UI_Parse_Indent( const char **text )
 	const char *p = *text;
 	int        numDigits;
 	float      pixels;
-#if defined(__GNUC__) || defined(__clang__) || defined( Q3_VM ) // stop crashes on Visual-C++-compiled DLLs with Unicode characters
+#ifndef _MSC_VER // stop crashes on Visual-C++-compiled DLLs with Unicode characters
 	while ( isdigit( *p ) || *p == '.' )
 #else
 	while ( iswdigit( *p ) || *p == '.' )
