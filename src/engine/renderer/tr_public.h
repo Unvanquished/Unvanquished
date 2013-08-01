@@ -167,12 +167,9 @@ typedef struct
 	// XreaL BEGIN
 	void ( *TakeVideoFrame )( int h, int w, byte *captureBuffer, byte *encodeBuffer, qboolean motionJpeg );
 
-#if defined( USE_REFLIGHT )
 	void ( *AddRefLightToScene )( const refLight_t *light );
-#endif
 
 	// RB: alternative skeletal animation system
-#if defined( USE_REFENTITY_ANIMATIONSYSTEM )
 	qhandle_t ( *RegisterAnimation )( const char *name );
 	int ( *CheckSkeleton )( refSkeleton_t *skel, qhandle_t model, qhandle_t anim );
 	int ( *BuildSkeleton )( refSkeleton_t *skel, qhandle_t anim, int startFrame, int endFrame, float frac,
@@ -181,7 +178,6 @@ typedef struct
 	int ( *BoneIndex )( qhandle_t hModel, const char *boneName );
 	int ( *AnimNumFrames )( qhandle_t hAnim );
 	int ( *AnimFrameRate )( qhandle_t hAnim );
-#endif
 
 	// XreaL END
 

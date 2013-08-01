@@ -131,9 +131,7 @@ typedef enum cgameImport_s
   CG_UNUSED_2,
   CG_R_CLEARSCENE,
   CG_R_ADDREFENTITYTOSCENE,
-//#if defined( USE_REFLIGHT )
   CG_R_ADDREFLIGHTSTOSCENE,
-//#endif
   CG_R_ADDPOLYTOSCENE,
   CG_R_ADDPOLYSTOSCENE,
   CG_R_ADDPOLYBUFFERTOSCENE,
@@ -206,7 +204,6 @@ typedef enum cgameImport_s
   CG_GETDEMONAME,
   CG_R_LIGHTFORPOINT,
   CG_S_SOUNDDURATION,
-//#if defined( USE_REFENTITY_ANIMATIONSYSTEM )
   CG_R_REGISTERANIMATION,
   CG_R_CHECKSKELETON,
   CG_R_BUILDSKELETON,
@@ -214,7 +211,6 @@ typedef enum cgameImport_s
   CG_R_BONEINDEX,
   CG_R_ANIMNUMFRAMES,
   CG_R_ANIMFRAMERATE,
-//#endif
   CG_COMPLETE_CALLBACK,
   CG_REGISTER_BUTTON_COMMANDS,
   CG_GETCLIPBOARDDATA,
@@ -451,7 +447,6 @@ void            trap_GetDemoName( char *buffer, int size );
 void            trap_S_StartSoundVControl( vec3_t origin, int entityNum, int entchannel, sfxHandle_t sfx, int volume );
 int             trap_R_LightForPoint( vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir );
 
-#if defined( USE_REFENTITY_ANIMATIONSYSTEM )
 qhandle_t       trap_R_RegisterAnimation( const char *name );
 int             trap_R_CheckSkeleton( refSkeleton_t *skel, qhandle_t hModel, qhandle_t hAnim );
 int             trap_R_BuildSkeleton( refSkeleton_t *skel, qhandle_t anim, int startFrame, int endFrame, float frac, qboolean clearOrigin );
@@ -460,7 +455,6 @@ int             trap_R_BoneIndex( qhandle_t hModel, const char *boneName );
 int             trap_R_AnimNumFrames( qhandle_t hAnim );
 int             trap_R_AnimFrameRate( qhandle_t hAnim );
 
-#endif
 void            trap_CompleteCallback( const char *complete );
 
 void            trap_RegisterButtonCommands( const char *cmds );

@@ -782,7 +782,6 @@ void trap_GetHunkData( int *hunkused, int *hunkexpected )
 }
 
 //120.
-#if defined( USE_REFENTITY_ANIMATIONSYSTEM )
 qhandle_t trap_R_RegisterAnimation( const char *name )
 {
 	return syscall( UI_R_REGISTERANIMATION, name );
@@ -840,8 +839,6 @@ void trap_QuoteString( const char *str, char *buffer, int size )
 {
 	syscall( UI_QUOTESTRING, str, buffer, size );
 }
-
-#endif
 
 //128.
 void trap_Gettext( char *buffer, const char *msgid, int bufferLength )

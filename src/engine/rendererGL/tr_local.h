@@ -3832,10 +3832,7 @@ extern "C" {
 
 	void      R_InitAnimations( void );
 
-#if defined( USE_REFENTITY_ANIMATIONSYSTEM )
 	qhandle_t RE_RegisterAnimation( const char *name );
-
-#endif
 
 	skelAnimation_t *R_GetAnimationByHandle( qhandle_t hAnim );
 	void            R_AnimationList_f( void );
@@ -3843,15 +3840,12 @@ extern "C" {
 	void            R_AddMD5Surfaces( trRefEntity_t *ent );
 	void            R_AddMD5Interactions( trRefEntity_t *ent, trRefLight_t *light, interactionType_t iaType );
 
-#if defined( USE_REFENTITY_ANIMATIONSYSTEM )
 	int             RE_CheckSkeleton( refSkeleton_t *skel, qhandle_t hModel, qhandle_t hAnim );
 	int             RE_BuildSkeleton( refSkeleton_t *skel, qhandle_t anim, int startFrame, int endFrame, float frac,
 	                                  qboolean clearOrigin );
 	int             RE_BlendSkeleton( refSkeleton_t *skel, const refSkeleton_t *blend, float frac );
 	int             RE_AnimNumFrames( qhandle_t hAnim );
 	int             RE_AnimFrameRate( qhandle_t hAnim );
-
-#endif
 
 	/*
 	=============================================================

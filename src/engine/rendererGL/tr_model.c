@@ -186,8 +186,6 @@ qhandle_t RE_RegisterModel( const char *name )
 
 #endif
 
-#if defined( USE_REFENTITY_ANIMATIONSYSTEM )
-
 			if ( !Q_strnicmp( ( const char * ) buffer, "MD5Version", 10 ) )
 			{
 				loaded = R_LoadMD5( mod, buffer, bufferLen, name );
@@ -197,7 +195,6 @@ qhandle_t RE_RegisterModel( const char *name )
 				loaded = R_LoadPSK( mod, buffer, bufferLen, name );
 			}
 
-#endif
 			ri.FS_FreeFile( buffer );
 		}
 

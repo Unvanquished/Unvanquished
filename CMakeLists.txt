@@ -709,9 +709,6 @@ endif()
 file(GLOB_RECURSE EVERYTHING_C "src/engine/*.c")
 set_source_files_properties( ${EVERYTHING_C} PROPERTIES LANGUAGE CXX )
 
-# Enable this globally
-add_definitions( -DUSE_REFENTITY_ANIMATIONSYSTEM )
-
 ################################################################################
 # Libraries
 ################################################################################

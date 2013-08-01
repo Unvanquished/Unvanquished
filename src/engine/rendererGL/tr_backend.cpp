@@ -7379,8 +7379,6 @@ static void RB_RenderDebugUtils()
 		GL_LoadModelViewMatrix( backEnd.viewParms.world.modelViewMatrix );
 	}
 
-#if defined( USE_REFENTITY_ANIMATIONSYSTEM )
-
 	if ( r_showSkeleton->integer )
 	{
 		int                  i, j, k, parentIndex;
@@ -7602,8 +7600,6 @@ static void RB_RenderDebugUtils()
 			tess.numIndexes = 0;
 		}
 	}
-
-#endif
 
 	if ( r_showLightScissors->integer )
 	{

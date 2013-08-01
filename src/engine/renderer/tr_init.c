@@ -1391,9 +1391,7 @@ void R_Init( void )
 
 	R_ModelInit();
 
-#if defined( USE_REFENTITY_ANIMATIONSYSTEM )
 	R_InitAnimations();
-#endif
 
 	R_InitFreeType();
 
@@ -1617,12 +1615,9 @@ extern "C"
 		re.Finish = RE_Finish;
 
 		re.TakeVideoFrame = RE_TakeVideoFrame;
-#if defined( USE_REFLIGHT )
 		re.AddRefLightToScene = NULL;
-#endif
 
 		// RB: alternative skeletal animation system
-#if defined( USE_REFENTITY_ANIMATIONSYSTEM )
 		re.RegisterAnimation = RE_RegisterAnimation;
 		re.CheckSkeleton = RE_CheckSkeleton;
 		re.BuildSkeleton = RE_BuildSkeleton;
@@ -1630,7 +1625,6 @@ extern "C"
 		re.BoneIndex = RE_BoneIndex;
 		re.AnimNumFrames = RE_AnimNumFrames;
 		re.AnimFrameRate = RE_AnimFrameRate;
-#endif
 
 		re.RegisterVisTest = RE_RegisterVisTest;
 		re.AddVisTestToScene = RE_AddVisTestToScene;

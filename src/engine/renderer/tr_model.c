@@ -270,14 +270,11 @@ qhandle_t RE_RegisterModel( const char *name )
 				loaded = R_LoadMDX( mod, buf, name );
 			}
 
-#if defined( USE_REFENTITY_ANIMATIONSYSTEM )
-
 			if ( !Q_strnicmp( ( const char * ) buf, "MD5Version", 10 ) )
 			{
 				loaded = R_LoadMD5( mod, buf, bufLen, name );
 			}
 
-#endif
 			ri.FS_FreeFile( buf );
 		}
 
