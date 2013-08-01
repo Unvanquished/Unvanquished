@@ -140,7 +140,7 @@ static void *GPA( char *str )
 {
 	void *rv;
 
-	rv = SYMLOAD( OpenALLib, str );
+	rv = ( void* )SYMLOAD( OpenALLib, str );
 
 	if ( !rv )
 	{

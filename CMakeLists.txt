@@ -188,11 +188,13 @@ else()
   endif()
 
   # Stack protection
-  set_c_cxx_flag( "-fstack-protector" )
-  set_c_cxx_flag( "--param=ssp-buffer-size=4" )
+  if( NOT WIN32 )
+    set_c_cxx_flag( "-fstack-protector" )
+    set_c_cxx_flag( "--param=ssp-buffer-size=4" )
+  endif()
 
   # Linker flags
-  set_linker_flag( "-Wl,-O1,--sort-common,--as-needed,-z,relro" )
+  set_linker_flag( "-Wl,-O1,--sort-common,--as-needed" )
 
   # LTO support
   if( ENABLE_LTO )

@@ -5,6 +5,8 @@ if( NOT WIN32 )
   message( FATAL_ERROR "USE_INTERNAL_SDL is only support for Windows" )
 endif()
 
+set( SDL_DIR ${LIB_DIR}/libsdl )
+
 # Add files needed to compile SDL
 file( GLOB SDLLIST
   ${SDL_DIR}/src/*.c
@@ -58,6 +60,7 @@ set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL "${CMAKE_BINARY_DIR}/MinSizeRel/$
 set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO "${CMAKE_BINARY_DIR}/RelWithDebInfo/${GAMELIB_OUTPUT_DIR}" )
 
 include_directories( ${SDL_DIR}/include )
+include_directories( ${SDL_DIR}/directx/include )
 add_library( INTERNAL_SDL SHARED ${SDLLIST} )
 target_link_libraries( INTERNAL_SDL winmm )
 
