@@ -224,16 +224,12 @@ endif()
 # Directories
 ################################################################################
 
-# Amanieu: The naming sucks here
 set( CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake )
 set( MOUNT_DIR ${CMAKE_SOURCE_DIR}/src )
 set( OBJ_DIR ${CMAKE_BINARY_DIR}/CMakeFiles )
-set( GPP_DIR ${MOUNT_DIR}/gamelogic )
-set( LIB_DIR ${MOUNT_DIR}/libs ) # LIB_DIR is also defined in Visual_Studio32/64.cmake
-set( SDL_DIR ${LIB_DIR}/libsdl )
-set( JPEG_DIR ${LIB_DIR}/jpeg )
-set( GLEW_DIR ${LIB_DIR}/glew )
-set( WEBP_DIR ${LIB_DIR}/libwebp )
+set( ENGINE_DIR ${MOUNT_DIR}/engine )
+set( GAMELOGIC_DIR ${MOUNT_DIR}/gamelogic )
+set( LIB_DIR ${MOUNT_DIR}/libs )
 
 ################################################################################
 # Git revision info
@@ -271,412 +267,412 @@ include_directories( "${OBJ_DIR}" )
 ################################################################################
 
 set( SHAREDLIST
-  ${MOUNT_DIR}/engine/qcommon/q_shared.c
-  ${MOUNT_DIR}/engine/qcommon/q_unicode.c
-  ${MOUNT_DIR}/engine/qcommon/q_math.c
+  ${ENGINE_DIR}/qcommon/q_shared.c
+  ${ENGINE_DIR}/qcommon/q_unicode.c
+  ${ENGINE_DIR}/qcommon/q_math.c
 )
 
 set( RENDERERLIST
-  ${MOUNT_DIR}/engine/renderer/tr_animation.c
-  ${MOUNT_DIR}/engine/renderer/tr_animation_mdm.c
-  ${MOUNT_DIR}/engine/renderer/tr_animation_mds.c
-  ${MOUNT_DIR}/engine/renderer/tr_backend.c
-  ${MOUNT_DIR}/engine/renderer/tr_bsp.c
-  ${MOUNT_DIR}/engine/renderer/tr_cmds.c
-  ${MOUNT_DIR}/engine/renderer/tr_cmesh.c
-  ${MOUNT_DIR}/engine/renderer/tr_curve.c
-  ${MOUNT_DIR}/engine/renderer/tr_decals.c
-  ${MOUNT_DIR}/engine/renderer/tr_flares.c
-  ${MOUNT_DIR}/engine/renderer/tr_font.c
-  ${MOUNT_DIR}/engine/renderer/tr_image.c
-  ${MOUNT_DIR}/engine/renderer/tr_init.c
-  ${MOUNT_DIR}/engine/renderer/tr_light.c
-  ${MOUNT_DIR}/engine/renderer/tr_main.c
-  ${MOUNT_DIR}/engine/renderer/tr_marks.c
-  ${MOUNT_DIR}/engine/renderer/tr_mesh.c
-  ${MOUNT_DIR}/engine/renderer/tr_model.c
-  ${MOUNT_DIR}/engine/renderer/tr_model_md5.c
-  ${MOUNT_DIR}/engine/renderer/tr_noise.c
-  ${MOUNT_DIR}/engine/renderer/tr_scene.c
-  ${MOUNT_DIR}/engine/renderer/tr_shade.c
-  ${MOUNT_DIR}/engine/renderer/tr_shade_calc.c
-  ${MOUNT_DIR}/engine/renderer/tr_shader.c
-  ${MOUNT_DIR}/engine/renderer/tr_shadows.c
-  ${MOUNT_DIR}/engine/renderer/tr_skin.c
-  ${MOUNT_DIR}/engine/renderer/tr_sky.c
-  ${MOUNT_DIR}/engine/renderer/tr_surface.c
-  ${MOUNT_DIR}/engine/renderer/tr_world.c
+  ${ENGINE_DIR}/renderer/tr_animation.c
+  ${ENGINE_DIR}/renderer/tr_animation_mdm.c
+  ${ENGINE_DIR}/renderer/tr_animation_mds.c
+  ${ENGINE_DIR}/renderer/tr_backend.c
+  ${ENGINE_DIR}/renderer/tr_bsp.c
+  ${ENGINE_DIR}/renderer/tr_cmds.c
+  ${ENGINE_DIR}/renderer/tr_cmesh.c
+  ${ENGINE_DIR}/renderer/tr_curve.c
+  ${ENGINE_DIR}/renderer/tr_decals.c
+  ${ENGINE_DIR}/renderer/tr_flares.c
+  ${ENGINE_DIR}/renderer/tr_font.c
+  ${ENGINE_DIR}/renderer/tr_image.c
+  ${ENGINE_DIR}/renderer/tr_init.c
+  ${ENGINE_DIR}/renderer/tr_light.c
+  ${ENGINE_DIR}/renderer/tr_main.c
+  ${ENGINE_DIR}/renderer/tr_marks.c
+  ${ENGINE_DIR}/renderer/tr_mesh.c
+  ${ENGINE_DIR}/renderer/tr_model.c
+  ${ENGINE_DIR}/renderer/tr_model_md5.c
+  ${ENGINE_DIR}/renderer/tr_noise.c
+  ${ENGINE_DIR}/renderer/tr_scene.c
+  ${ENGINE_DIR}/renderer/tr_shade.c
+  ${ENGINE_DIR}/renderer/tr_shade_calc.c
+  ${ENGINE_DIR}/renderer/tr_shader.c
+  ${ENGINE_DIR}/renderer/tr_shadows.c
+  ${ENGINE_DIR}/renderer/tr_skin.c
+  ${ENGINE_DIR}/renderer/tr_sky.c
+  ${ENGINE_DIR}/renderer/tr_surface.c
+  ${ENGINE_DIR}/renderer/tr_world.c
 )
 
 set( RENDERERGLLIST
-  ${MOUNT_DIR}/engine/rendererGL/gl_shader.cpp
-  ${MOUNT_DIR}/engine/rendererGL/tr_animation_mdm.c
-  ${MOUNT_DIR}/engine/rendererGL/tr_animation.c
-  ${MOUNT_DIR}/engine/rendererGL/tr_backend.cpp
-  ${MOUNT_DIR}/engine/rendererGL/tr_bsp.c
-  ${MOUNT_DIR}/engine/rendererGL/tr_cmds.c
-  ${MOUNT_DIR}/engine/rendererGL/tr_curve.c
-  ${MOUNT_DIR}/engine/rendererGL/tr_decals.c
-  ${MOUNT_DIR}/engine/rendererGL/tr_fbo.c
-  ${MOUNT_DIR}/engine/rendererGL/tr_flares.c
-  ${MOUNT_DIR}/engine/rendererGL/tr_fog.c
-  ${MOUNT_DIR}/engine/renderer/tr_font.c
-  ${MOUNT_DIR}/engine/rendererGL/tr_image.c
-  ${MOUNT_DIR}/engine/rendererGL/tr_image_dds.c
-  ${MOUNT_DIR}/engine/rendererGL/tr_image_exr.cpp
-  ${MOUNT_DIR}/engine/rendererGL/tr_image_jpg.c
-  ${MOUNT_DIR}/engine/rendererGL/tr_image_png.c
-  ${MOUNT_DIR}/engine/rendererGL/tr_image_tga.c
-  ${MOUNT_DIR}/engine/rendererGL/tr_image_webp.c
-  ${MOUNT_DIR}/engine/rendererGL/tr_init.cpp
-  ${MOUNT_DIR}/engine/rendererGL/tr_light.c
-  ${MOUNT_DIR}/engine/rendererGL/tr_main.c
-  ${MOUNT_DIR}/engine/rendererGL/tr_marks.c
-  ${MOUNT_DIR}/engine/rendererGL/tr_mesh.c
-  ${MOUNT_DIR}/engine/rendererGL/tr_model.c
-  ${MOUNT_DIR}/engine/rendererGL/tr_model_md3.c
-  ${MOUNT_DIR}/engine/rendererGL/tr_model_md5.c
-  ${MOUNT_DIR}/engine/rendererGL/tr_model_mdc.c
-  ${MOUNT_DIR}/engine/rendererGL/tr_model_mdm.c
-  ${MOUNT_DIR}/engine/rendererGL/tr_model_psk.c
-  ${MOUNT_DIR}/engine/rendererGL/tr_model_skel.c
-  ${MOUNT_DIR}/engine/rendererGL/tr_noise.c
-  ${MOUNT_DIR}/engine/rendererGL/tr_scene.c
-  ${MOUNT_DIR}/engine/rendererGL/tr_shade.cpp
-  ${MOUNT_DIR}/engine/rendererGL/tr_shade_calc.c
-  ${MOUNT_DIR}/engine/rendererGL/tr_shader.c
-  ${MOUNT_DIR}/engine/rendererGL/tr_shadows.c
-  ${MOUNT_DIR}/engine/rendererGL/tr_skin.c
-  ${MOUNT_DIR}/engine/rendererGL/tr_sky.cpp
-  ${MOUNT_DIR}/engine/rendererGL/tr_surface.c
-  ${MOUNT_DIR}/engine/rendererGL/tr_vbo.c
-  ${MOUNT_DIR}/engine/rendererGL/tr_world.cpp
-  ${MOUNT_DIR}/engine/qcommon/md4.c
-  ${MOUNT_DIR}/libs/openexr/half.cpp
+  ${ENGINE_DIR}/rendererGL/gl_shader.cpp
+  ${ENGINE_DIR}/rendererGL/tr_animation_mdm.c
+  ${ENGINE_DIR}/rendererGL/tr_animation.c
+  ${ENGINE_DIR}/rendererGL/tr_backend.cpp
+  ${ENGINE_DIR}/rendererGL/tr_bsp.c
+  ${ENGINE_DIR}/rendererGL/tr_cmds.c
+  ${ENGINE_DIR}/rendererGL/tr_curve.c
+  ${ENGINE_DIR}/rendererGL/tr_decals.c
+  ${ENGINE_DIR}/rendererGL/tr_fbo.c
+  ${ENGINE_DIR}/rendererGL/tr_flares.c
+  ${ENGINE_DIR}/rendererGL/tr_fog.c
+  ${ENGINE_DIR}/renderer/tr_font.c
+  ${ENGINE_DIR}/rendererGL/tr_image.c
+  ${ENGINE_DIR}/rendererGL/tr_image_dds.c
+  ${ENGINE_DIR}/rendererGL/tr_image_exr.cpp
+  ${ENGINE_DIR}/rendererGL/tr_image_jpg.c
+  ${ENGINE_DIR}/rendererGL/tr_image_png.c
+  ${ENGINE_DIR}/rendererGL/tr_image_tga.c
+  ${ENGINE_DIR}/rendererGL/tr_image_webp.c
+  ${ENGINE_DIR}/rendererGL/tr_init.cpp
+  ${ENGINE_DIR}/rendererGL/tr_light.c
+  ${ENGINE_DIR}/rendererGL/tr_main.c
+  ${ENGINE_DIR}/rendererGL/tr_marks.c
+  ${ENGINE_DIR}/rendererGL/tr_mesh.c
+  ${ENGINE_DIR}/rendererGL/tr_model.c
+  ${ENGINE_DIR}/rendererGL/tr_model_md3.c
+  ${ENGINE_DIR}/rendererGL/tr_model_md5.c
+  ${ENGINE_DIR}/rendererGL/tr_model_mdc.c
+  ${ENGINE_DIR}/rendererGL/tr_model_mdm.c
+  ${ENGINE_DIR}/rendererGL/tr_model_psk.c
+  ${ENGINE_DIR}/rendererGL/tr_model_skel.c
+  ${ENGINE_DIR}/rendererGL/tr_noise.c
+  ${ENGINE_DIR}/rendererGL/tr_scene.c
+  ${ENGINE_DIR}/rendererGL/tr_shade.cpp
+  ${ENGINE_DIR}/rendererGL/tr_shade_calc.c
+  ${ENGINE_DIR}/rendererGL/tr_shader.c
+  ${ENGINE_DIR}/rendererGL/tr_shadows.c
+  ${ENGINE_DIR}/rendererGL/tr_skin.c
+  ${ENGINE_DIR}/rendererGL/tr_sky.cpp
+  ${ENGINE_DIR}/rendererGL/tr_surface.c
+  ${ENGINE_DIR}/rendererGL/tr_vbo.c
+  ${ENGINE_DIR}/rendererGL/tr_world.cpp
+  ${ENGINE_DIR}/qcommon/md4.c
+  ${LIB_DIR}/openexr/half.cpp
 )
 
 set( SERVERLIST
-  ${MOUNT_DIR}/engine/server/sv_bot.c
-  ${MOUNT_DIR}/engine/server/sv_ccmds.c
-  ${MOUNT_DIR}/engine/server/sv_client.c
-  ${MOUNT_DIR}/engine/server/sv_game.c
-  ${MOUNT_DIR}/engine/server/sv_init.c
-  ${MOUNT_DIR}/engine/server/sv_main.c
-  ${MOUNT_DIR}/engine/server/sv_net_chan.c
-  ${MOUNT_DIR}/engine/server/sv_snapshot.c
-  ${MOUNT_DIR}/engine/server/sv_world.c
+  ${ENGINE_DIR}/server/sv_bot.c
+  ${ENGINE_DIR}/server/sv_ccmds.c
+  ${ENGINE_DIR}/server/sv_client.c
+  ${ENGINE_DIR}/server/sv_game.c
+  ${ENGINE_DIR}/server/sv_init.c
+  ${ENGINE_DIR}/server/sv_main.c
+  ${ENGINE_DIR}/server/sv_net_chan.c
+  ${ENGINE_DIR}/server/sv_snapshot.c
+  ${ENGINE_DIR}/server/sv_world.c
 )
 
 set( ENGINELIST
   ${MOUNT_DIR}/shared/Command.cpp
-  ${MOUNT_DIR}/engine/framework/BaseCommands.cpp
-  ${MOUNT_DIR}/engine/framework/CommandSystem.cpp
-  ${MOUNT_DIR}/engine/qcommon/cm_load.c
-  ${MOUNT_DIR}/engine/qcommon/cm_trisoup.c
-  ${MOUNT_DIR}/engine/qcommon/cm_patch.c
-  ${MOUNT_DIR}/engine/qcommon/cm_plane.c
-  ${MOUNT_DIR}/engine/qcommon/cm_polylib.c
-  ${MOUNT_DIR}/engine/qcommon/cm_test.c
-  ${MOUNT_DIR}/engine/qcommon/cm_trace.c
-  ${MOUNT_DIR}/engine/qcommon/cmd.c
-  ${MOUNT_DIR}/engine/qcommon/common.c
-  ${MOUNT_DIR}/engine/qcommon/crypto.c
-  ${MOUNT_DIR}/engine/qcommon/cvar.c
-  ${MOUNT_DIR}/engine/qcommon/files.c
-  ${MOUNT_DIR}/engine/qcommon/htable.c
-  ${MOUNT_DIR}/engine/qcommon/huffman.c
-  ${MOUNT_DIR}/engine/qcommon/md4.c
-  ${MOUNT_DIR}/engine/qcommon/md5.c
-  ${MOUNT_DIR}/engine/qcommon/msg.c
-  ${MOUNT_DIR}/engine/qcommon/net_chan.c
-  ${MOUNT_DIR}/engine/qcommon/net_ip.c
-  ${MOUNT_DIR}/engine/qcommon/parse.c
-  ${MOUNT_DIR}/engine/qcommon/translation.cpp
-  ${MOUNT_DIR}/engine/qcommon/unzip.c
-  ${MOUNT_DIR}/engine/qcommon/ioapi.c
-  ${MOUNT_DIR}/engine/qcommon/nacl.cpp
-  ${MOUNT_DIR}/engine/qcommon/vm.cpp
-  ${MOUNT_DIR}/engine/sys/sys_main.c
-  ${MOUNT_DIR}/engine/sys/con_log.c
+  ${ENGINE_DIR}/framework/BaseCommands.cpp
+  ${ENGINE_DIR}/framework/CommandSystem.cpp
+  ${ENGINE_DIR}/qcommon/cm_load.c
+  ${ENGINE_DIR}/qcommon/cm_trisoup.c
+  ${ENGINE_DIR}/qcommon/cm_patch.c
+  ${ENGINE_DIR}/qcommon/cm_plane.c
+  ${ENGINE_DIR}/qcommon/cm_polylib.c
+  ${ENGINE_DIR}/qcommon/cm_test.c
+  ${ENGINE_DIR}/qcommon/cm_trace.c
+  ${ENGINE_DIR}/qcommon/cmd.c
+  ${ENGINE_DIR}/qcommon/common.c
+  ${ENGINE_DIR}/qcommon/crypto.c
+  ${ENGINE_DIR}/qcommon/cvar.c
+  ${ENGINE_DIR}/qcommon/files.c
+  ${ENGINE_DIR}/qcommon/htable.c
+  ${ENGINE_DIR}/qcommon/huffman.c
+  ${ENGINE_DIR}/qcommon/md4.c
+  ${ENGINE_DIR}/qcommon/md5.c
+  ${ENGINE_DIR}/qcommon/msg.c
+  ${ENGINE_DIR}/qcommon/net_chan.c
+  ${ENGINE_DIR}/qcommon/net_ip.c
+  ${ENGINE_DIR}/qcommon/parse.c
+  ${ENGINE_DIR}/qcommon/translation.cpp
+  ${ENGINE_DIR}/qcommon/unzip.c
+  ${ENGINE_DIR}/qcommon/ioapi.c
+  ${ENGINE_DIR}/qcommon/nacl.cpp
+  ${ENGINE_DIR}/qcommon/vm.cpp
+  ${ENGINE_DIR}/sys/sys_main.c
+  ${ENGINE_DIR}/sys/con_log.c
 )
 
 if( WIN32 )
   set( ENGINELIST ${ENGINELIST}
-    ${MOUNT_DIR}/engine/sys/sys_win32.c
-    ${MOUNT_DIR}/engine/sys/con_win32.c
+    ${ENGINE_DIR}/sys/sys_win32.c
+    ${ENGINE_DIR}/sys/con_win32.c
   )
 else()
   set( ENGINELIST ${ENGINELIST}
-    ${MOUNT_DIR}/engine/sys/sys_unix.c
-    ${MOUNT_DIR}/engine/sys/con_tty.c
+    ${ENGINE_DIR}/sys/sys_unix.c
+    ${ENGINE_DIR}/sys/con_tty.c
   )
 endif()
 
 if( MAC )
   set( ENGINELIST ${ENGINELIST}
-    ${MOUNT_DIR}/engine/sys/sys_osx.m
+    ${ENGINE_DIR}/sys/sys_osx.m
   )
 endif()
 
 if( USE_CURSES )
-  set( ENGINELIST ${ENGINELIST} ${MOUNT_DIR}/engine/sys/con_curses.c )
+  set( ENGINELIST ${ENGINELIST} ${ENGINE_DIR}/sys/con_curses.c )
 endif()
 
 set( CLIENTLIST
-  ${MOUNT_DIR}/engine/client/cin_ogm.c
-  ${MOUNT_DIR}/engine/client/cl_avi.c
-  ${MOUNT_DIR}/engine/client/cl_cgame.c
-  ${MOUNT_DIR}/engine/client/cl_cin.c
-  ${MOUNT_DIR}/engine/client/cl_console.c
-  ${MOUNT_DIR}/engine/client/cl_input.c
-  ${MOUNT_DIR}/engine/client/cl_irc.c
-  ${MOUNT_DIR}/engine/client/cl_keys.c
-  ${MOUNT_DIR}/engine/client/cl_main.c
-  ${MOUNT_DIR}/engine/client/cl_net_chan.c
-  ${MOUNT_DIR}/engine/client/cl_parse.c
-  ${MOUNT_DIR}/engine/client/cl_scrn.c
-  ${MOUNT_DIR}/engine/client/cl_ui.c
-  ${MOUNT_DIR}/engine/client/cl_logs.c
-  ${MOUNT_DIR}/engine/client/dl_main.c
-  ${MOUNT_DIR}/engine/client/snd_adpcm.c
-  ${MOUNT_DIR}/engine/client/snd_codec.c
-  ${MOUNT_DIR}/engine/client/snd_codec_ogg.c
-  ${MOUNT_DIR}/engine/client/snd_codec_wav.c
-  ${MOUNT_DIR}/engine/client/snd_dma.c
-  ${MOUNT_DIR}/engine/client/snd_openal.c
-  ${MOUNT_DIR}/engine/client/snd_main.c
-  ${MOUNT_DIR}/engine/client/snd_mem.c
-  ${MOUNT_DIR}/engine/client/snd_mix.c
-  ${MOUNT_DIR}/engine/client/snd_wavelet.c
-  ${MOUNT_DIR}/engine/client/qal.c
+  ${ENGINE_DIR}/client/cin_ogm.c
+  ${ENGINE_DIR}/client/cl_avi.c
+  ${ENGINE_DIR}/client/cl_cgame.c
+  ${ENGINE_DIR}/client/cl_cin.c
+  ${ENGINE_DIR}/client/cl_console.c
+  ${ENGINE_DIR}/client/cl_input.c
+  ${ENGINE_DIR}/client/cl_irc.c
+  ${ENGINE_DIR}/client/cl_keys.c
+  ${ENGINE_DIR}/client/cl_main.c
+  ${ENGINE_DIR}/client/cl_net_chan.c
+  ${ENGINE_DIR}/client/cl_parse.c
+  ${ENGINE_DIR}/client/cl_scrn.c
+  ${ENGINE_DIR}/client/cl_ui.c
+  ${ENGINE_DIR}/client/cl_logs.c
+  ${ENGINE_DIR}/client/dl_main.c
+  ${ENGINE_DIR}/client/snd_adpcm.c
+  ${ENGINE_DIR}/client/snd_codec.c
+  ${ENGINE_DIR}/client/snd_codec_ogg.c
+  ${ENGINE_DIR}/client/snd_codec_wav.c
+  ${ENGINE_DIR}/client/snd_dma.c
+  ${ENGINE_DIR}/client/snd_openal.c
+  ${ENGINE_DIR}/client/snd_main.c
+  ${ENGINE_DIR}/client/snd_mem.c
+  ${ENGINE_DIR}/client/snd_mix.c
+  ${ENGINE_DIR}/client/snd_wavelet.c
+  ${ENGINE_DIR}/client/qal.c
 )
 
 if( USE_MUMBLE )
-  set( CLIENTLIST ${CLIENTLIST} ${MOUNT_DIR}/engine/client/libmumblelink.c )
+  set( CLIENTLIST ${CLIENTLIST} ${ENGINE_DIR}/client/libmumblelink.c )
 endif()
 
 set( SDLLIST
-  ${MOUNT_DIR}/engine/sys/sdl_input.c
-  ${MOUNT_DIR}/engine/sys/sdl_snd.c
+  ${ENGINE_DIR}/sys/sdl_input.c
+  ${ENGINE_DIR}/sys/sdl_snd.c
 )
 
 set( CGAMEGPP_BASE
-  ${GPP_DIR}/cgame/cg_main.c
-  ${GPP_DIR}/game/bg_misc.c
-  ${GPP_DIR}/game/bg_parse.c
-  ${GPP_DIR}/game/bg_pmove.c
-  ${GPP_DIR}/game/bg_slidemove.c
-  ${GPP_DIR}/game/bg_alloc.c
-  ${GPP_DIR}/game/bg_voice.c
-  ${GPP_DIR}/cgame/cg_consolecmds.c
-  ${GPP_DIR}/cgame/cg_buildable.c
-  ${GPP_DIR}/cgame/cg_animation.c
-  ${GPP_DIR}/cgame/cg_animmapobj.c
-  ${GPP_DIR}/cgame/cg_draw.c
-  ${GPP_DIR}/cgame/cg_drawtools.c
-  ${GPP_DIR}/cgame/cg_ents.c
-  ${GPP_DIR}/cgame/cg_event.c
-  ${GPP_DIR}/cgame/cg_marks.c
-  ${GPP_DIR}/cgame/cg_minimap.c
-  ${GPP_DIR}/cgame/cg_players.c
-  ${GPP_DIR}/cgame/cg_playerstate.c
-  ${GPP_DIR}/cgame/cg_predict.c
-  ${GPP_DIR}/cgame/cg_servercmds.c
-  ${GPP_DIR}/cgame/cg_snapshot.c
-  ${GPP_DIR}/cgame/cg_view.c
-  ${GPP_DIR}/cgame/cg_weapons.c
-  ${GPP_DIR}/cgame/cg_scanner.c
-  ${GPP_DIR}/cgame/cg_attachment.c
-  ${GPP_DIR}/cgame/cg_trails.c
-  ${GPP_DIR}/cgame/cg_particles.c
-  ${GPP_DIR}/cgame/cg_tutorial.c
-  ${GPP_DIR}/cgame/cg_utils.c
-  ${GPP_DIR}/ui/ui_shared.c
-  ${GPP_DIR}/ui/ui_utf8.c
-  ${GPP_DIR}/cgame/cg_api.c
+  ${GAMELOGIC_DIR}/cgame/cg_main.c
+  ${GAMELOGIC_DIR}/game/bg_misc.c
+  ${GAMELOGIC_DIR}/game/bg_parse.c
+  ${GAMELOGIC_DIR}/game/bg_pmove.c
+  ${GAMELOGIC_DIR}/game/bg_slidemove.c
+  ${GAMELOGIC_DIR}/game/bg_alloc.c
+  ${GAMELOGIC_DIR}/game/bg_voice.c
+  ${GAMELOGIC_DIR}/cgame/cg_consolecmds.c
+  ${GAMELOGIC_DIR}/cgame/cg_buildable.c
+  ${GAMELOGIC_DIR}/cgame/cg_animation.c
+  ${GAMELOGIC_DIR}/cgame/cg_animmapobj.c
+  ${GAMELOGIC_DIR}/cgame/cg_draw.c
+  ${GAMELOGIC_DIR}/cgame/cg_drawtools.c
+  ${GAMELOGIC_DIR}/cgame/cg_ents.c
+  ${GAMELOGIC_DIR}/cgame/cg_event.c
+  ${GAMELOGIC_DIR}/cgame/cg_marks.c
+  ${GAMELOGIC_DIR}/cgame/cg_minimap.c
+  ${GAMELOGIC_DIR}/cgame/cg_players.c
+  ${GAMELOGIC_DIR}/cgame/cg_playerstate.c
+  ${GAMELOGIC_DIR}/cgame/cg_predict.c
+  ${GAMELOGIC_DIR}/cgame/cg_servercmds.c
+  ${GAMELOGIC_DIR}/cgame/cg_snapshot.c
+  ${GAMELOGIC_DIR}/cgame/cg_view.c
+  ${GAMELOGIC_DIR}/cgame/cg_weapons.c
+  ${GAMELOGIC_DIR}/cgame/cg_scanner.c
+  ${GAMELOGIC_DIR}/cgame/cg_attachment.c
+  ${GAMELOGIC_DIR}/cgame/cg_trails.c
+  ${GAMELOGIC_DIR}/cgame/cg_particles.c
+  ${GAMELOGIC_DIR}/cgame/cg_tutorial.c
+  ${GAMELOGIC_DIR}/cgame/cg_utils.c
+  ${GAMELOGIC_DIR}/ui/ui_shared.c
+  ${GAMELOGIC_DIR}/ui/ui_utf8.c
+  ${GAMELOGIC_DIR}/cgame/cg_api.c
 )
 
 set( GAMEGPP_BASE
-  ${GPP_DIR}/game/g_main.c
-  ${GPP_DIR}/game/bg_misc.c
-  ${GPP_DIR}/game/bg_parse.c
-  ${GPP_DIR}/game/bg_pmove.c
-  ${GPP_DIR}/game/bg_slidemove.c
-  ${GPP_DIR}/game/bg_alloc.c
-  ${GPP_DIR}/game/bg_voice.c
-  ${GPP_DIR}/game/g_active.c
-  ${GPP_DIR}/game/g_client.c
-  ${GPP_DIR}/game/g_cmds.c
-  ${GPP_DIR}/game/g_combat.c
-  ${GPP_DIR}/game/g_entities.c
-  ${GPP_DIR}/game/g_physics.c
-  ${GPP_DIR}/game/g_buildable.c
-  ${GPP_DIR}/game/g_missile.c
-  ${GPP_DIR}/game/g_session.c
-  ${GPP_DIR}/game/g_spawn_afx.c
-  ${GPP_DIR}/game/g_spawn_ctrl.c
-  ${GPP_DIR}/game/g_spawn_fx.c
-  ${GPP_DIR}/game/g_spawn_game.c
-  ${GPP_DIR}/game/g_spawn_generic.c
-  ${GPP_DIR}/game/g_spawn_gfx.c
-  ${GPP_DIR}/game/g_spawn_mover.c
-  ${GPP_DIR}/game/g_spawn_position.c
-  ${GPP_DIR}/game/g_spawn_sensor.c
-  ${GPP_DIR}/game/g_spawn_shared.c
-  ${GPP_DIR}/game/g_spawn.c
-  ${GPP_DIR}/game/g_svcmds.c
-  ${GPP_DIR}/game/g_team.c
-  ${GPP_DIR}/game/g_utils.c
-  ${GPP_DIR}/game/g_maprotation.c
-  ${GPP_DIR}/game/g_weapon.c
-  ${GPP_DIR}/game/g_admin.c
-  ${GPP_DIR}/game/g_namelog.c
-  ${GPP_DIR}/game/g_api.cpp
+  ${GAMELOGIC_DIR}/game/g_main.c
+  ${GAMELOGIC_DIR}/game/bg_misc.c
+  ${GAMELOGIC_DIR}/game/bg_parse.c
+  ${GAMELOGIC_DIR}/game/bg_pmove.c
+  ${GAMELOGIC_DIR}/game/bg_slidemove.c
+  ${GAMELOGIC_DIR}/game/bg_alloc.c
+  ${GAMELOGIC_DIR}/game/bg_voice.c
+  ${GAMELOGIC_DIR}/game/g_active.c
+  ${GAMELOGIC_DIR}/game/g_client.c
+  ${GAMELOGIC_DIR}/game/g_cmds.c
+  ${GAMELOGIC_DIR}/game/g_combat.c
+  ${GAMELOGIC_DIR}/game/g_entities.c
+  ${GAMELOGIC_DIR}/game/g_physics.c
+  ${GAMELOGIC_DIR}/game/g_buildable.c
+  ${GAMELOGIC_DIR}/game/g_missile.c
+  ${GAMELOGIC_DIR}/game/g_session.c
+  ${GAMELOGIC_DIR}/game/g_spawn_afx.c
+  ${GAMELOGIC_DIR}/game/g_spawn_ctrl.c
+  ${GAMELOGIC_DIR}/game/g_spawn_fx.c
+  ${GAMELOGIC_DIR}/game/g_spawn_game.c
+  ${GAMELOGIC_DIR}/game/g_spawn_generic.c
+  ${GAMELOGIC_DIR}/game/g_spawn_gfx.c
+  ${GAMELOGIC_DIR}/game/g_spawn_mover.c
+  ${GAMELOGIC_DIR}/game/g_spawn_position.c
+  ${GAMELOGIC_DIR}/game/g_spawn_sensor.c
+  ${GAMELOGIC_DIR}/game/g_spawn_shared.c
+  ${GAMELOGIC_DIR}/game/g_spawn.c
+  ${GAMELOGIC_DIR}/game/g_svcmds.c
+  ${GAMELOGIC_DIR}/game/g_team.c
+  ${GAMELOGIC_DIR}/game/g_utils.c
+  ${GAMELOGIC_DIR}/game/g_maprotation.c
+  ${GAMELOGIC_DIR}/game/g_weapon.c
+  ${GAMELOGIC_DIR}/game/g_admin.c
+  ${GAMELOGIC_DIR}/game/g_namelog.c
+  ${GAMELOGIC_DIR}/game/g_api.cpp
 )
 
 set( UIGPP_BASE
-  ${GPP_DIR}/ui/ui_main.c
-  ${GPP_DIR}/ui/ui_atoms.c
-  ${GPP_DIR}/ui/ui_shared.c
-  ${GPP_DIR}/ui/ui_gameinfo.c
-  ${GPP_DIR}/game/bg_misc.c
-  ${GPP_DIR}/game/bg_parse.c
-  ${GPP_DIR}/game/bg_alloc.c
-  ${GPP_DIR}/ui/ui_utf8.c
-  ${GPP_DIR}/ui/ui_api.c
+  ${GAMELOGIC_DIR}/ui/ui_main.c
+  ${GAMELOGIC_DIR}/ui/ui_atoms.c
+  ${GAMELOGIC_DIR}/ui/ui_shared.c
+  ${GAMELOGIC_DIR}/ui/ui_gameinfo.c
+  ${GAMELOGIC_DIR}/game/bg_misc.c
+  ${GAMELOGIC_DIR}/game/bg_parse.c
+  ${GAMELOGIC_DIR}/game/bg_alloc.c
+  ${GAMELOGIC_DIR}/ui/ui_utf8.c
+  ${GAMELOGIC_DIR}/ui/ui_api.c
 )
 
 set( SPEEXLIST
-  ${MOUNT_DIR}/libs/libspeex/libspeex/bits.c
-  ${MOUNT_DIR}/libs/libspeex/libspeex/buffer.c
-  ${MOUNT_DIR}/libs/libspeex/libspeex/cb_search.c
-  ${MOUNT_DIR}/libs/libspeex/libspeex/exc_10_16_table.c
-  ${MOUNT_DIR}/libs/libspeex/libspeex/exc_10_32_table.c
-  ${MOUNT_DIR}/libs/libspeex/libspeex/exc_20_32_table.c
-  ${MOUNT_DIR}/libs/libspeex/libspeex/exc_5_256_table.c
-  ${MOUNT_DIR}/libs/libspeex/libspeex/exc_5_64_table.c
-  ${MOUNT_DIR}/libs/libspeex/libspeex/exc_8_128_table.c
-  ${MOUNT_DIR}/libs/libspeex/libspeex/fftwrap.c
-  ${MOUNT_DIR}/libs/libspeex/libspeex/filterbank.c
-  ${MOUNT_DIR}/libs/libspeex/libspeex/filters.c
-  ${MOUNT_DIR}/libs/libspeex/libspeex/gain_table.c
-  ${MOUNT_DIR}/libs/libspeex/libspeex/gain_table_lbr.c
-  ${MOUNT_DIR}/libs/libspeex/libspeex/hexc_10_32_table.c
-  ${MOUNT_DIR}/libs/libspeex/libspeex/hexc_table.c
-  ${MOUNT_DIR}/libs/libspeex/libspeex/high_lsp_tables.c
-  ${MOUNT_DIR}/libs/libspeex/libspeex/jitter.c
-  ${MOUNT_DIR}/libs/libspeex/libspeex/kiss_fft.c
-  ${MOUNT_DIR}/libs/libspeex/libspeex/kiss_fftr.c
-  ${MOUNT_DIR}/libs/libspeex/libspeex/lpc.c
-  ${MOUNT_DIR}/libs/libspeex/libspeex/lsp.c
-  ${MOUNT_DIR}/libs/libspeex/libspeex/lsp_tables_nb.c
-  ${MOUNT_DIR}/libs/libspeex/libspeex/ltp.c
-  ${MOUNT_DIR}/libs/libspeex/libspeex/mdf.c
-  ${MOUNT_DIR}/libs/libspeex/libspeex/modes.c
-  ${MOUNT_DIR}/libs/libspeex/libspeex/modes_wb.c
-  ${MOUNT_DIR}/libs/libspeex/libspeex/nb_celp.c
-  ${MOUNT_DIR}/libs/libspeex/libspeex/preprocess.c
-  ${MOUNT_DIR}/libs/libspeex/libspeex/quant_lsp.c
-  ${MOUNT_DIR}/libs/libspeex/libspeex/resample.c
-  ${MOUNT_DIR}/libs/libspeex/libspeex/sb_celp.c
-  ${MOUNT_DIR}/libs/libspeex/libspeex/smallft.c
-  ${MOUNT_DIR}/libs/libspeex/libspeex/speex.c
-  ${MOUNT_DIR}/libs/libspeex/libspeex/speex_callbacks.c
-  ${MOUNT_DIR}/libs/libspeex/libspeex/speex_header.c
-  ${MOUNT_DIR}/libs/libspeex/libspeex/stereo.c
-  ${MOUNT_DIR}/libs/libspeex/libspeex/vbr.c
-  ${MOUNT_DIR}/libs/libspeex/libspeex/vq.c
-  ${MOUNT_DIR}/libs/libspeex/libspeex/window.c
+  ${LIB_DIR}/libspeex/libspeex/bits.c
+  ${LIB_DIR}/libspeex/libspeex/buffer.c
+  ${LIB_DIR}/libspeex/libspeex/cb_search.c
+  ${LIB_DIR}/libspeex/libspeex/exc_10_16_table.c
+  ${LIB_DIR}/libspeex/libspeex/exc_10_32_table.c
+  ${LIB_DIR}/libspeex/libspeex/exc_20_32_table.c
+  ${LIB_DIR}/libspeex/libspeex/exc_5_256_table.c
+  ${LIB_DIR}/libspeex/libspeex/exc_5_64_table.c
+  ${LIB_DIR}/libspeex/libspeex/exc_8_128_table.c
+  ${LIB_DIR}/libspeex/libspeex/fftwrap.c
+  ${LIB_DIR}/libspeex/libspeex/filterbank.c
+  ${LIB_DIR}/libspeex/libspeex/filters.c
+  ${LIB_DIR}/libspeex/libspeex/gain_table.c
+  ${LIB_DIR}/libspeex/libspeex/gain_table_lbr.c
+  ${LIB_DIR}/libspeex/libspeex/hexc_10_32_table.c
+  ${LIB_DIR}/libspeex/libspeex/hexc_table.c
+  ${LIB_DIR}/libspeex/libspeex/high_lsp_tables.c
+  ${LIB_DIR}/libspeex/libspeex/jitter.c
+  ${LIB_DIR}/libspeex/libspeex/kiss_fft.c
+  ${LIB_DIR}/libspeex/libspeex/kiss_fftr.c
+  ${LIB_DIR}/libspeex/libspeex/lpc.c
+  ${LIB_DIR}/libspeex/libspeex/lsp.c
+  ${LIB_DIR}/libspeex/libspeex/lsp_tables_nb.c
+  ${LIB_DIR}/libspeex/libspeex/ltp.c
+  ${LIB_DIR}/libspeex/libspeex/mdf.c
+  ${LIB_DIR}/libspeex/libspeex/modes.c
+  ${LIB_DIR}/libspeex/libspeex/modes_wb.c
+  ${LIB_DIR}/libspeex/libspeex/nb_celp.c
+  ${LIB_DIR}/libspeex/libspeex/preprocess.c
+  ${LIB_DIR}/libspeex/libspeex/quant_lsp.c
+  ${LIB_DIR}/libspeex/libspeex/resample.c
+  ${LIB_DIR}/libspeex/libspeex/sb_celp.c
+  ${LIB_DIR}/libspeex/libspeex/smallft.c
+  ${LIB_DIR}/libspeex/libspeex/speex.c
+  ${LIB_DIR}/libspeex/libspeex/speex_callbacks.c
+  ${LIB_DIR}/libspeex/libspeex/speex_header.c
+  ${LIB_DIR}/libspeex/libspeex/stereo.c
+  ${LIB_DIR}/libspeex/libspeex/vbr.c
+  ${LIB_DIR}/libspeex/libspeex/vq.c
+  ${LIB_DIR}/libspeex/libspeex/window.c
 )
 
 set( NETTLELIST
-  ${MOUNT_DIR}/libs/nettle/nettle/bignum.c
-  ${MOUNT_DIR}/libs/nettle/nettle/bignum-random.c
-  ${MOUNT_DIR}/libs/nettle/nettle/buffer-init.c
-  ${MOUNT_DIR}/libs/nettle/nettle/nettle-buffer.c
-  ${MOUNT_DIR}/libs/nettle/nettle/nettle-internal.c
-  ${MOUNT_DIR}/libs/nettle/nettle/rsa2sexp.c
-  ${MOUNT_DIR}/libs/nettle/nettle/rsa.c
-  ${MOUNT_DIR}/libs/nettle/nettle/rsa-decrypt.c
-  ${MOUNT_DIR}/libs/nettle/nettle/rsa-encrypt.c
-  ${MOUNT_DIR}/libs/nettle/nettle/rsa-keygen.c
-  ${MOUNT_DIR}/libs/nettle/nettle/rsa-sign.c
-  ${MOUNT_DIR}/libs/nettle/nettle/sexp2bignum.c
-  ${MOUNT_DIR}/libs/nettle/nettle/sexp2rsa.c
-  ${MOUNT_DIR}/libs/nettle/nettle/sexp.c
-  ${MOUNT_DIR}/libs/nettle/nettle/sexp-format.c
+  ${LIB_DIR}/nettle/nettle/bignum.c
+  ${LIB_DIR}/nettle/nettle/bignum-random.c
+  ${LIB_DIR}/nettle/nettle/buffer-init.c
+  ${LIB_DIR}/nettle/nettle/nettle-buffer.c
+  ${LIB_DIR}/nettle/nettle/nettle-internal.c
+  ${LIB_DIR}/nettle/nettle/rsa2sexp.c
+  ${LIB_DIR}/nettle/nettle/rsa.c
+  ${LIB_DIR}/nettle/nettle/rsa-decrypt.c
+  ${LIB_DIR}/nettle/nettle/rsa-encrypt.c
+  ${LIB_DIR}/nettle/nettle/rsa-keygen.c
+  ${LIB_DIR}/nettle/nettle/rsa-sign.c
+  ${LIB_DIR}/nettle/nettle/sexp2bignum.c
+  ${LIB_DIR}/nettle/nettle/sexp2rsa.c
+  ${LIB_DIR}/nettle/nettle/sexp.c
+  ${LIB_DIR}/nettle/nettle/sexp-format.c
 )
 
 set( ZLIBLIST
-  ${MOUNT_DIR}/libs/zlib/adler32.c
-  ${MOUNT_DIR}/libs/zlib/compress.c
-  ${MOUNT_DIR}/libs/zlib/crc32.c
-  ${MOUNT_DIR}/libs/zlib/deflate.c
-  ${MOUNT_DIR}/libs/zlib/gzio.c
-  ${MOUNT_DIR}/libs/zlib/infback.c
-  ${MOUNT_DIR}/libs/zlib/inffast.c
-  ${MOUNT_DIR}/libs/zlib/inflate.c
-  ${MOUNT_DIR}/libs/zlib/inftrees.c
-  ${MOUNT_DIR}/libs/zlib/ioapi.c
-  ${MOUNT_DIR}/libs/zlib/trees.c
-  ${MOUNT_DIR}/libs/zlib/uncompr.c
-  ${MOUNT_DIR}/libs/zlib/zutil.c
+  ${LIB_DIR}/zlib/adler32.c
+  ${LIB_DIR}/zlib/compress.c
+  ${LIB_DIR}/zlib/crc32.c
+  ${LIB_DIR}/zlib/deflate.c
+  ${LIB_DIR}/zlib/gzio.c
+  ${LIB_DIR}/zlib/infback.c
+  ${LIB_DIR}/zlib/inffast.c
+  ${LIB_DIR}/zlib/inflate.c
+  ${LIB_DIR}/zlib/inftrees.c
+  ${LIB_DIR}/zlib/ioapi.c
+  ${LIB_DIR}/zlib/trees.c
+  ${LIB_DIR}/zlib/uncompr.c
+  ${LIB_DIR}/zlib/zutil.c
 )
 
-set( WIN_RC ${MOUNT_DIR}/engine/sys/daemon.rc )
+set( WIN_RC ${ENGINE_DIR}/sys/daemon.rc )
 
 set( TINYGETTEXT_LIST
-  ${MOUNT_DIR}/libs/tinygettext/dictionary_manager.hpp
-  ${MOUNT_DIR}/libs/tinygettext/file_system.hpp
-  ${MOUNT_DIR}/libs/tinygettext/iconv.cpp
-  ${MOUNT_DIR}/libs/tinygettext/plural_forms.hpp
-  ${MOUNT_DIR}/libs/tinygettext/tinygettext.cpp
-  ${MOUNT_DIR}/libs/tinygettext/tinygettext.hpp
-  ${MOUNT_DIR}/libs/tinygettext/dictionary.cpp
-  ${MOUNT_DIR}/libs/tinygettext/dictionary.hpp
-  ${MOUNT_DIR}/libs/tinygettext/dictionary_manager.cpp
-  ${MOUNT_DIR}/libs/tinygettext/iconv.hpp
-  ${MOUNT_DIR}/libs/tinygettext/language.cpp
-  ${MOUNT_DIR}/libs/tinygettext/language.hpp
-  ${MOUNT_DIR}/libs/tinygettext/log.cpp
-  ${MOUNT_DIR}/libs/tinygettext/log.hpp
-  ${MOUNT_DIR}/libs/tinygettext/log_stream.hpp
-  ${MOUNT_DIR}/libs/tinygettext/plural_forms.cpp
-  ${MOUNT_DIR}/libs/tinygettext/po_parser.cpp
-  ${MOUNT_DIR}/libs/tinygettext/po_parser.hpp
-  ${MOUNT_DIR}/libs/findlocale/findlocale.c
+  ${LIB_DIR}/tinygettext/dictionary_manager.hpp
+  ${LIB_DIR}/tinygettext/file_system.hpp
+  ${LIB_DIR}/tinygettext/iconv.cpp
+  ${LIB_DIR}/tinygettext/plural_forms.hpp
+  ${LIB_DIR}/tinygettext/tinygettext.cpp
+  ${LIB_DIR}/tinygettext/tinygettext.hpp
+  ${LIB_DIR}/tinygettext/dictionary.cpp
+  ${LIB_DIR}/tinygettext/dictionary.hpp
+  ${LIB_DIR}/tinygettext/dictionary_manager.cpp
+  ${LIB_DIR}/tinygettext/iconv.hpp
+  ${LIB_DIR}/tinygettext/language.cpp
+  ${LIB_DIR}/tinygettext/language.hpp
+  ${LIB_DIR}/tinygettext/log.cpp
+  ${LIB_DIR}/tinygettext/log.hpp
+  ${LIB_DIR}/tinygettext/log_stream.hpp
+  ${LIB_DIR}/tinygettext/plural_forms.cpp
+  ${LIB_DIR}/tinygettext/po_parser.cpp
+  ${LIB_DIR}/tinygettext/po_parser.hpp
+  ${LIB_DIR}/findlocale/findlocale.c
 )
 
 if( MAC )
   set( NACL_LIST_NATIVE
-    ${MOUNT_DIR}/libs/nacl/native_client/src/shared/imc/nacl_imc_common.cc
-    ${MOUNT_DIR}/libs/nacl/native_client/src/shared/imc/posix/nacl_imc_posix.cc
-    ${MOUNT_DIR}/libs/nacl/native_client/src/shared/imc/osx/nacl_imc.cc
+    ${LIB_DIR}/nacl/native_client/src/shared/imc/nacl_imc_common.cc
+    ${LIB_DIR}/nacl/native_client/src/shared/imc/posix/nacl_imc_posix.cc
+    ${LIB_DIR}/nacl/native_client/src/shared/imc/osx/nacl_imc.cc
   )
 elseif( LINUX )
   set( NACL_LIST_NATIVE
-    ${MOUNT_DIR}/libs/nacl/native_client/src/shared/imc/nacl_imc_common.cc
-    ${MOUNT_DIR}/libs/nacl/native_client/src/shared/imc/posix/nacl_imc_posix.cc
-    ${MOUNT_DIR}/libs/nacl/native_client/src/shared/imc/linux/nacl_imc.cc
+    ${LIB_DIR}/nacl/native_client/src/shared/imc/nacl_imc_common.cc
+    ${LIB_DIR}/nacl/native_client/src/shared/imc/posix/nacl_imc_posix.cc
+    ${LIB_DIR}/nacl/native_client/src/shared/imc/linux/nacl_imc.cc
   )
 elseif( WIN32 )
   set( NACL_LIST_NATIVE
-    ${MOUNT_DIR}/libs/nacl/native_client/src/shared/imc/nacl_imc_common.cc
-    ${MOUNT_DIR}/libs/nacl/native_client/src/shared/imc/win/nacl_imc.cc
-    ${MOUNT_DIR}/libs/nacl/native_client/src/shared/imc/win/nacl_shm.cc
+    ${LIB_DIR}/nacl/native_client/src/shared/imc/nacl_imc_common.cc
+    ${LIB_DIR}/nacl/native_client/src/shared/imc/win/nacl_imc.cc
+    ${LIB_DIR}/nacl/native_client/src/shared/imc/win/nacl_shm.cc
   )
 endif()
 
 set( NACL_LIST_MODULE
-  ${MOUNT_DIR}/libs/nacl/native_client/src/shared/imc/nacl_imc_common.cc
-  ${MOUNT_DIR}/libs/nacl/native_client/src/shared/imc/nacl/nacl_imc.cc
-  ${MOUNT_DIR}/libs/nacl/native_client/src/untrusted/nacl/imc_accept.c
-  ${MOUNT_DIR}/libs/nacl/native_client/src/untrusted/nacl/imc_connect.c
-  ${MOUNT_DIR}/libs/nacl/native_client/src/untrusted/nacl/imc_makeboundsock.c
-  ${MOUNT_DIR}/libs/nacl/native_client/src/untrusted/nacl/imc_mem_obj_create.c
-  ${MOUNT_DIR}/libs/nacl/native_client/src/untrusted/nacl/imc_recvmsg.c
-  ${MOUNT_DIR}/libs/nacl/native_client/src/untrusted/nacl/imc_sendmsg.c
-  ${MOUNT_DIR}/libs/nacl/native_client/src/untrusted/nacl/imc_socketpair.c
+  ${LIB_DIR}/nacl/native_client/src/shared/imc/nacl_imc_common.cc
+  ${LIB_DIR}/nacl/native_client/src/shared/imc/nacl/nacl_imc.cc
+  ${LIB_DIR}/nacl/native_client/src/untrusted/nacl/imc_accept.c
+  ${LIB_DIR}/nacl/native_client/src/untrusted/nacl/imc_connect.c
+  ${LIB_DIR}/nacl/native_client/src/untrusted/nacl/imc_makeboundsock.c
+  ${LIB_DIR}/nacl/native_client/src/untrusted/nacl/imc_mem_obj_create.c
+  ${LIB_DIR}/nacl/native_client/src/untrusted/nacl/imc_recvmsg.c
+  ${LIB_DIR}/nacl/native_client/src/untrusted/nacl/imc_sendmsg.c
+  ${LIB_DIR}/nacl/native_client/src/untrusted/nacl/imc_socketpair.c
 )
 
 #HACK: Force the compilation of EVERYTHING in C++
@@ -705,7 +701,7 @@ endif()
 
 # C99 int types for MSVC
 if( MSVC )
-  include_directories( ${MOUNT_DIR}/libs/msinttypes )
+  include_directories( ${LIB_DIR}/msinttypes )
 endif()
 
 # Base OS libs
@@ -763,7 +759,7 @@ else()
   add_definitions( -DNACL_BUILD_SUBARCH=32 )
 endif()
 set( LIBSRC_ENGINE ${LIBSRC_ENGINE} ${NACL_LIST_NATIVE} )
-include_directories( ${MOUNT_DIR}/libs/nacl )
+include_directories( ${LIB_DIR}/nacl )
 
 # SDL, required for all targets on win32 because of iconv
 if( BUILD_CLIENT OR WIN32 )
@@ -776,12 +772,12 @@ if( BUILD_CLIENT OR WIN32 )
     set( LIBS_RENDERERGL ${LIBS_RENDERERGL} ${SDL_LIBRARY} )
     if( MAC )
       # Mac OS X does not provide a SDLMain.dylib so we must compile our own
-      add_library( INTERNAL_SDLMain ${MOUNT_DIR}/engine/sys/SDLMain.m )
+      add_library( INTERNAL_SDLMain ${ENGINE_DIR}/sys/SDLMain.m )
       set( LIBS_CLIENT ${LIBS_CLIENT} INTERNAL_SDLMain )
     endif()
   else()
-    add_subdirectory( ${SDL_DIR} ${OBJ_DIR}/libsdl )
-    include_directories( ${SDL_DIR}/include )
+    add_subdirectory( ${${LIB_DIR}/libsdl} ${OBJ_DIR}/libsdl )
+    include_directories( ${${LIB_DIR}/libsdl}/include )
     set( LIBS_CLIENT ${LIBS_CLIENT} INTERNAL_SDL INTERNAL_SDLMain )
     set( LIBS_RENDERER ${LIBS_RENDERER} INTERNAL_SDL )
     set( LIBS_RENDERERGL ${LIBS_RENDERERGL} INTERNAL_SDL )
@@ -799,7 +795,7 @@ if( GMP_FOUND )
   include_directories( ${GMP_INCLUDE_DIRS} )
   set( LIBS_ENGINE ${LIBS_ENGINE} ${GMP_LIBRARIES} )
 else()
-  include_directories( ${MOUNT_DIR}/libs/gmp/include )
+  include_directories( ${LIB_DIR}/gmp/include )
   if( ARCH STREQUAL "x86" )
     set( LIBS_ENGINE ${LIBS_ENGINE} ${LIB_DIR}/GMP/libs/win32/mpir.lib )
   elseif( ARCH STREQUAL "x86_64" )
@@ -813,7 +809,7 @@ if( NETTLE_FOUND )
   include_directories( ${NETTLE_INCLUDE_DIRS} )
   set( LIBS_ENGINE ${LIBS_ENGINE} ${NETTLE_LIBRARIES} )
 else()
-  include_directories( ${MOUNT_DIR}/libs/nettle )
+  include_directories( ${LIB_DIR}/nettle )
   set( LIBSRC_ENGINE ${LIBSRC_ENGINE} ${NETTLELIST} )
 endif()
 
@@ -824,7 +820,7 @@ if( USE_VOIP )
     include_directories( ${SPEEX_INCLUDE_DIRS} )
     set( LIBS_CLIENT ${LIBS_CLIENT} ${SPEEX_LIBRARIES} )
   else()
-    include_directories( ${MOUNT_DIR}/libs/libspeex/include )
+    include_directories( ${LIB_DIR}/libspeex/include )
     set( LIBSRC_CLIENT ${LIBSRC_CLIENT} ${SPEEXLIST} )
   endif()
 endif()
@@ -890,8 +886,8 @@ if( WEBP_FOUND )
   include_directories( ${WEBP_INCLUDE_DIRS} )
   set( LIBS_RENDERER ${LIBS_RENDERER} ${WEBP_LIBRARIES} )
 else()
-  add_subdirectory( ${WEBP_DIR} ${OBJ_DIR}/libwebp )
-  include_directories( ${WEBP_DIR})
+  add_subdirectory( ${${LIB_DIR}/libwebp} ${OBJ_DIR}/libwebp )
+  include_directories( ${${LIB_DIR}/libwebp})
   set( LIBS_RENDERER ${LIBS_RENDERER} INTERNAL_WEBP )
 endif()
 
@@ -901,8 +897,8 @@ if( JPEG_FOUND )
   include_directories( ${JPEG_INCLUDE_DIRS} )
   set( LIBS_RENDERER ${LIBS_RENDERER} ${JPEG_LIBRARIES} )
 else()
-  add_subdirectory( ${JPEG_DIR} ${OBJ_DIR}/libjpeg )
-  include_directories( ${JPEG_DIR} )
+  add_subdirectory( ${${LIB_DIR}/jpeg} ${OBJ_DIR}/libjpeg )
+  include_directories( ${${LIB_DIR}/jpeg} )
   set( LIBSRC_RENDERER ${LIBSRC_RENDERER} ${JPEGLIST} )
 endif()
 
@@ -940,8 +936,8 @@ if( GLEW_FOUND )
   include_directories( ${GLEW_INCLUDE_DIRS} )
   set( LIBS_RENDERER ${LIBS_RENDERER} ${GLEW_LIBRARIES} )
 else()
-  add_subdirectory( ${GLEW_DIR} ${OBJ_DIR}/libglew )
-  include_directories( ${GLEW_DIR}/include )
+  add_subdirectory( ${${LIB_DIR}/glew} ${OBJ_DIR}/libglew )
+  include_directories( ${${LIB_DIR}/glew}/include )
   set( LIBS_RENDERER ${LIBS_RENDERER} INTERNAL_GLEW )
 endif()
 
@@ -1041,7 +1037,7 @@ function( GAMELIB )
 
     # HACK: Compile shared files as C, uncomment this when building game
     #set_source_files_properties( ${SHAREDLIST} PROPERTIES LANGUAGE C )
-    add_executable( ${GAMELIB_LIB_NAME} ${GAMELIB_LIB_FILES} ${SHAREDLIST} ${NACL_LIST_NATIVE} ${MOUNT_DIR}/engine/qcommon/nacl.cpp )
+    add_executable( ${GAMELIB_LIB_NAME} ${GAMELIB_LIB_FILES} ${SHAREDLIST} ${NACL_LIST_NATIVE} ${ENGINE_DIR}/qcommon/nacl.cpp )
     target_link_libraries( ${GAMELIB_LIB_NAME} ${LIBS_BASE} )
     set_target_properties( ${GAMELIB_LIB_NAME} PROPERTIES
       RUNTIME_OUTPUT_DIRECTORY ${GAMELIB_OUTPUT_DIR}
@@ -1064,7 +1060,7 @@ GAMELIB( LIB_NAME game
 if( BUILD_OLD_RENDERER )
   # Setup target renderer
   add_library( renderer MODULE ${RENDERERLIST} ${SHAREDLIST} ${LIBSRC_BASE} ${LIBSRC_RENDERER}
-    ${MOUNT_DIR}/engine/sys/sdl_glimp.c ${MOUNT_DIR}/engine/sys/sdl_gamma.c )
+    ${ENGINE_DIR}/sys/sdl_glimp.c ${ENGINE_DIR}/sys/sdl_gamma.c )
   target_link_libraries( renderer ${LIBS_BASE} ${LIBS_RENDERER} )
   set_target_properties( renderer PROPERTIES OUTPUT_NAME "rendererGL" )
 
@@ -1078,7 +1074,7 @@ endif()
 if( BUILD_NEW_RENDERER )
   # Setup target rendererGL
   add_library( rendererGL MODULE ${RENDERERGLLIST} ${SHAREDLIST} ${LIBSRC_BASE} ${LIBSRC_RENDERER}
-    ${MOUNT_DIR}/engine/sys/sdl_glimp.c ${MOUNT_DIR}/engine/sys/sdl_gamma.c )
+    ${ENGINE_DIR}/sys/sdl_glimp.c ${ENGINE_DIR}/sys/sdl_gamma.c )
   set_property( TARGET rendererGL APPEND PROPERTY COMPILE_DEFINITIONS USE_XREAL_RENDERER )
   target_link_libraries( rendererGL ${LIBS_BASE} ${LIBS_RENDERER} )
   set_target_properties( rendererGL PROPERTIES OUTPUT_NAME "rendererGL3" )
@@ -1120,8 +1116,8 @@ endif()
 if( BUILD_SERVER )
   # Setup the target Server
   add_executable( server ${SERVERLIST} ${ENGINELIST} ${SHAREDLIST} ${LIBSRC_BASE} ${LIBSRC_ENGINE}
-    ${MOUNT_DIR}/engine/null/null_client.c  ${MOUNT_DIR}/engine/null/null_input.c
-    ${MOUNT_DIR}/engine/null/null_snddma.c ${WIN_RC} )
+    ${ENGINE_DIR}/null/null_client.c  ${ENGINE_DIR}/null/null_input.c
+    ${ENGINE_DIR}/null/null_snddma.c ${WIN_RC} )
   target_link_libraries( server ${LIBS_BASE} ${LIBS_ENGINE} )
   set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS DEDICATED )
   set_target_properties( server PROPERTIES OUTPUT_NAME "daemonded" PREFIX "" LINKER_LANGUAGE CXX )
@@ -1137,7 +1133,7 @@ if( BUILD_TTY_CLIENT )
   # Setup the target ttyclient
   add_executable( ttyclient ${SERVERLIST} ${CLIENTLIST} ${ENGINELIST} ${SHAREDLIST}
     ${LIBSRC_BASE} ${LIBSRC_ENGINE} ${LIBSRC_CLIENTBASE} ${WIN_RC}
-    ${MOUNT_DIR}/engine/null/null_input.c ${MOUNT_DIR}/engine/null/null_snddma.c ${MOUNT_DIR}/engine/null/null_renderer.c )
+    ${ENGINE_DIR}/null/null_input.c ${ENGINE_DIR}/null/null_snddma.c ${ENGINE_DIR}/null/null_renderer.c )
   target_link_libraries( ttyclient ${LIBS_BASE} ${LIBS_ENGINE} ${LIBS_CLIENTBASE} )
   set_property( TARGET ttyclient APPEND PROPERTY COMPILE_DEFINITIONS BUILD_TTY_CLIENT REF_HARD_LINKED )
   set_target_properties( ttyclient PROPERTIES OUTPUT_NAME "daemon-tty" PREFIX "" LINKER_LANGUAGE CXX )
