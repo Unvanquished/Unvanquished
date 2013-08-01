@@ -40,8 +40,7 @@ Maryland 20850 USA.
 #include <curl/curl.h>
 
 #include "../qcommon/q_shared.h"
-#include "qcommon.h"
-#include "dl_public.h"
+#include "../qcommon/qcommon.h"
 
 // initialize once
 static int   dl_initialized = 0;
