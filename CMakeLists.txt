@@ -206,6 +206,7 @@ else()
   try_linker_flag( LINKER_O1 "-Wl,-O1" )
   try_linker_flag( LINKER_SORT_COMMON "-Wl,--sort-common" )
   try_linker_flag( LINKER_AS_NEEDED "-Wl,--as-needed" )
+  try_linker_flag( LINKER_NO_UNDEFINED "-Wl,--no-undefined" )
   try_linker_flag( LINKER_Z_RELRO "-Wl,-z,relro" )
 
   # LTO support
@@ -1072,39 +1073,6 @@ GAMELIB( LIB_NAME game
 )
 
 ################################################################################
-# Renderers
-################################################################################
-
-if( BUILD_OLD_RENDERER )
-  # Setup target renderer
-  add_library( renderer MODULE ${RENDERERLIST} ${SHAREDLIST} ${LIBSRC_BASE} ${LIBSRC_RENDERER}
-    ${ENGINE_DIR}/sys/sdl_glimp.c ${ENGINE_DIR}/sys/sdl_gamma.c )
-  target_link_libraries( renderer ${LIBS_BASE} ${LIBS_RENDERER} )
-  set_target_properties( renderer PROPERTIES OUTPUT_NAME "rendererGL" )
-
-  # Setup CPack for target renderer
-  install( TARGETS renderer DESTINATION "Unvanquished" )
-  get_target_property( LOCATION renderer LOCATION )
-  get_filename_component( OUTPUT_NAME ${LOCATION} NAME )
-  set( PLUGINS ${PLUGINS} "\${CMAKE_INSTALL_PREFIX}/Unvanquished/${OUTPUT_NAME}" )
-endif()
-
-if( BUILD_NEW_RENDERER )
-  # Setup target rendererGL
-  add_library( rendererGL MODULE ${RENDERERGLLIST} ${SHAREDLIST} ${LIBSRC_BASE} ${LIBSRC_RENDERER}
-    ${ENGINE_DIR}/sys/sdl_glimp.c ${ENGINE_DIR}/sys/sdl_gamma.c )
-  set_property( TARGET rendererGL APPEND PROPERTY COMPILE_DEFINITIONS USE_XREAL_RENDERER )
-  target_link_libraries( rendererGL ${LIBS_BASE} ${LIBS_RENDERER} )
-  set_target_properties( rendererGL PROPERTIES OUTPUT_NAME "rendererGL3" )
-
-  # Setup CPack for target rendererGL
-  install( TARGETS rendererGL DESTINATION "Unvanquished" )
-  get_target_property( LOCATION rendererGL LOCATION )
-  get_filename_component( OUTPUT_NAME ${LOCATION} NAME )
-  set( PLUGINS ${PLUGINS} "\${CMAKE_INSTALL_PREFIX}/Unvanquished/${OUTPUT_NAME}" )
-endif()
-
-################################################################################
 # Engine
 ################################################################################
 
@@ -1117,8 +1085,7 @@ if( BUILD_CLIENT )
     # Set it here so the tty client doesn't try to handle voip
     set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_VOIP )
   endif()
-
- set_target_properties( client PROPERTIES OUTPUT_NAME "daemon" PREFIX "" )
+  set_target_properties( client PROPERTIES OUTPUT_NAME "daemon" PREFIX "" ENABLE_EXPORTS ON )
 
   # Setup CPack for target client
   install( TARGETS client DESTINATION "Unvanquished" )
@@ -1139,7 +1106,7 @@ if( BUILD_SERVER )
     ${ENGINE_DIR}/null/null_snddma.c ${WIN_RC} )
   target_link_libraries( server ${LIBS_BASE} ${LIBS_ENGINE} )
   set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS DEDICATED )
-  set_target_properties( server PROPERTIES OUTPUT_NAME "daemonded" PREFIX "" LINKER_LANGUAGE CXX )
+  set_target_properties( server PROPERTIES OUTPUT_NAME "daemonded" PREFIX "" )
 
   # Setup CPack for target server
   install( TARGETS server DESTINATION "Unvanquished" )
@@ -1155,13 +1122,46 @@ if( BUILD_TTY_CLIENT )
     ${ENGINE_DIR}/null/null_input.c ${ENGINE_DIR}/null/null_snddma.c ${ENGINE_DIR}/null/null_renderer.c )
   target_link_libraries( ttyclient ${LIBS_BASE} ${LIBS_ENGINE} ${LIBS_CLIENTBASE} )
   set_property( TARGET ttyclient APPEND PROPERTY COMPILE_DEFINITIONS BUILD_TTY_CLIENT REF_HARD_LINKED )
-  set_target_properties( ttyclient PROPERTIES OUTPUT_NAME "daemon-tty" PREFIX "" LINKER_LANGUAGE CXX )
+  set_target_properties( ttyclient PROPERTIES OUTPUT_NAME "daemon-tty" PREFIX "" )
 
   # Setup CPack for target ttyclient
   install( TARGETS ttyclient DESTINATION "Unvanquished" )
   get_target_property( LOCATION ttyclient LOCATION )
   get_filename_component( OUTPUT_NAME ${LOCATION} NAME )
   set( APPS ${APPS} Unvanquished/${OUTPUT_NAME} )
+endif()
+
+################################################################################
+# Renderers
+################################################################################
+
+if( BUILD_OLD_RENDERER )
+  # Setup target renderer
+  add_library( renderer MODULE ${RENDERERLIST} ${SHAREDLIST} ${LIBSRC_BASE} ${LIBSRC_RENDERER}
+    ${ENGINE_DIR}/sys/sdl_glimp.c ${ENGINE_DIR}/sys/sdl_gamma.c )
+  target_link_libraries( renderer ${LIBS_BASE} ${LIBS_RENDERER} client )
+  set_target_properties( renderer PROPERTIES OUTPUT_NAME "rendererGL" )
+
+  # Setup CPack for target renderer
+  install( TARGETS renderer DESTINATION "Unvanquished" )
+  get_target_property( LOCATION renderer LOCATION )
+  get_filename_component( OUTPUT_NAME ${LOCATION} NAME )
+  set( PLUGINS ${PLUGINS} "\${CMAKE_INSTALL_PREFIX}/Unvanquished/${OUTPUT_NAME}" )
+endif()
+
+if( BUILD_NEW_RENDERER )
+  # Setup target rendererGL
+  add_library( rendererGL MODULE ${RENDERERGLLIST} ${SHAREDLIST} ${LIBSRC_BASE} ${LIBSRC_RENDERER}
+    ${ENGINE_DIR}/sys/sdl_glimp.c ${ENGINE_DIR}/sys/sdl_gamma.c )
+  set_property( TARGET rendererGL APPEND PROPERTY COMPILE_DEFINITIONS USE_XREAL_RENDERER )
+  target_link_libraries( rendererGL ${LIBS_BASE} ${LIBS_RENDERER} client )
+  set_target_properties( rendererGL PROPERTIES OUTPUT_NAME "rendererGL3" )
+
+  # Setup CPack for target rendererGL
+  install( TARGETS rendererGL DESTINATION "Unvanquished" )
+  get_target_property( LOCATION rendererGL LOCATION )
+  get_filename_component( OUTPUT_NAME ${LOCATION} NAME )
+  set( PLUGINS ${PLUGINS} "\${CMAKE_INSTALL_PREFIX}/Unvanquished/${OUTPUT_NAME}" )
 endif()
 
 ################################################################################
