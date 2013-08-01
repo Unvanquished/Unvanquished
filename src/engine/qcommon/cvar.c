@@ -38,6 +38,7 @@ Maryland 20850 USA.
 #include "qcommon.h"
 
 #include "../framework/CommandSystem.h"
+#include "../../shared/String.h"
 
 cvar_t        *cvar_vars;
 cvar_t        *cvar_cheats;
@@ -900,12 +901,12 @@ class CycleCmd: public Cmd::StaticCmd {
             }
 
             int oldValue = Cvar_VariableValue(args.Argv(1).c_str());
-            int start = std::stoi(args.Argv(2));
-            int end = std::stoi(args.Argv(3));
+            int start = Str::ToInt(args.Argv(2));
+            int end = Str::ToInt(args.Argv(3));
 
             int step;
             if (args.Argc() == 5) {
-                step = std::stoi(args.Argv(4));
+                step = Str::ToInt(args.Argv(4));
             } else {
                 step = 1;
             }

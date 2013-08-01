@@ -22,24 +22,16 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
-#include "../qcommon/qcommon.h"
-#include "../qcommon/q_shared.h"
+#include <string>
 
-#ifndef FRAMEWORK_BASE_COMMANDS_H_
-#define FRAMEWORK_BASE_COMMANDS_H_
+#ifndef SHARED_STRING_H_
+#define SHARED_STRING_H_
 
-/**
- * Function related to basic commands such as aliases and delays
- */
+namespace Str {
 
-namespace Cmd {
-
-    // Executes delayed commands that are ready.
-    void DelayFrame();
-
-    //Saves the aliases in a configuration file
-    void WriteAliases(fileHandle_t f);
+    int ToInt(const std::string& text);
+    int ToInt(const std::string& text, bool& success);
 
 }
 
-#endif // FRAMEWORK_BASE_COMMANDS_H_
+#endif //SHARED_STRING_H_

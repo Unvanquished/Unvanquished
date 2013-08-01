@@ -539,9 +539,9 @@ qboolean Com_SafeMode( void )
 
 	for ( i = 0; i < com_numConsoleLines; i++ )
 	{
-		Cmd_TokenizeString( com_consoleLines[ i ] );
+		Cmd::Args line(com_consoleLines[i]);
 
-		if ( !Q_stricmp( Cmd_Argv( 0 ), "safe" ) || !Q_stricmp( Cmd_Argv( 0 ), "cvar_restart" ) )
+		if ( !Q_stricmp( line[0].c_str(), "safe" ) || !Q_stricmp( line[0].c_str(), "cvar_restart" ) )
 		{
 			com_consoleLines[ i ][ 0 ] = 0;
 			return qtrue;
@@ -565,23 +565,23 @@ be after execing the config and default.
 void Com_StartupVariable( const char *match )
 {
 	int    i;
-	char   *s;
+	const char   *s;
 	cvar_t *cv;
 
 	for ( i = 0; i < com_numConsoleLines; i++ )
 	{
-		Cmd_TokenizeString( com_consoleLines[ i ] );
+		Cmd::Args line(com_consoleLines[i]);
 
-		if ( strcmp( Cmd_Argv( 0 ), "set" ) )
+		if ( strcmp( line[0].c_str(), "set" ) && line.size() < 3 )
 		{
 			continue;
 		}
 
-		s = Cmd_Argv( 1 );
+		s = line[1].c_str();
 
 		if ( !match || !strcmp( s, match ) )
 		{
-			Cvar_Set( s, Cmd_Argv( 2 ) );
+			Cvar_Set( s, line[2].c_str() );
 			cv = Cvar_Get( s, "", 0 );
 			cv->flags |= CVAR_USER_CREATED;
 //          com_consoleLines[i] = 0;
@@ -4187,8 +4187,8 @@ void Field_CompleteCommand( char *cmd,
 	// Skip leading whitespace and quotes
 	cmd = Com_SkipCharset( cmd, " \"" );
 
-	Cmd_TokenizeString( cmd );
-	completionArgument = Cmd_Argc();
+	Cmd::Args args(cmd);
+	completionArgument = args.size();
 
 	// If there is trailing whitespace on the cmd
 	if ( * ( cmd + strlen( cmd ) - 1 ) == ' ' )
@@ -4198,7 +4198,7 @@ void Field_CompleteCommand( char *cmd,
 	}
 	else
 	{
-		completionString = Cmd_Argv( completionArgument - 1 );
+		completionString = args[completionArgument - 1].c_str();
 	}
 
 	// Unconditionally add a '\' to the start of the buffer
@@ -4225,7 +4225,7 @@ void Field_CompleteCommand( char *cmd,
 
 	if ( completionArgument > 1 )
 	{
-		const char *baseCmd = Cmd_Argv( 0 );
+		const char *baseCmd = args[0].c_str();
 		char       *p;
 
 		// This should always be true

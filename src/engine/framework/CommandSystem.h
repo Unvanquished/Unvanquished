@@ -27,21 +27,45 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef FRAMEWORK_COMMAND_SYSTEM_H_
 #define FRAMEWORK_COMMAND_SYSTEM_H_
 
+/**
+ * Console command execution and command text buffering.
+ *
+ * Any number of commands can be added in a frame from several different
+ * sources. Most commands come from either key bindings or console line input,
+ * but entire text files can be execed.
+ *
+ * The command text is first split into command strings ten tokens,
+ * the first token is the name of the command to be executed
+ *
+ * NOTE: All the functions in this file most be called from the main thread.
+ */
+
 namespace Cmd {
 
+    /**
+     * Commands can be buffered to be executed right NOW,
+     * AFTER the current command or be put at the END of
+     * the command buffer.
+     */
     enum execWhen_t {
         NOW,
         AFTER,
         END
     };
 
+    // Adds a command text to by executed, optionnally parsing cvars ($cvarname$) if the text is a user input.
     void BufferCommandText(const std::string& text, execWhen_t when = END, bool parseCvars = false);
+    // Executes all the buffered commands.
     void ExecuteCommandBuffer();
 
+    // Registers a command
     void AddCommand(std::string name, const CmdBase& cmd, std::string description);
+    // Removes a command
     void RemoveCommand(const std::string& name);
+    // Removes all the commands with the given flag
     void RemoveFlaggedCommands(int flag);
 
+    // Executes a raw command string as a single command.
     void ExecuteCommand(std::string command);
 
     //Completion stuff, highly unstable :-)

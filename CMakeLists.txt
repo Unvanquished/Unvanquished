@@ -365,6 +365,7 @@ set( SERVERLIST
 
 set( ENGINELIST
   ${MOUNT_DIR}/shared/Command.cpp
+  ${MOUNT_DIR}/shared/String.cpp
   ${ENGINE_DIR}/framework/BaseCommands.cpp
   ${ENGINE_DIR}/framework/CommandSystem.cpp
   ${ENGINE_DIR}/qcommon/cm_load.c

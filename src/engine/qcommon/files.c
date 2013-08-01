@@ -45,6 +45,7 @@ Maryland 20850 USA.
 #include "unzip.h"
 
 #include "../framework/CommandSystem.h"
+#include "../../shared/String.h"
 
 #ifdef _WIN32
 #include <direct.h>
@@ -4562,9 +4563,9 @@ void FS_PureServerSetLoadedPaks( const char *pakSums, const char *pakNames )
 {
 	int i, c, d;
 
-	Cmd_TokenizeString( pakSums );
+	Cmd::Args sums(pakSums);
 
-	c = Cmd_Argc();
+	c = sums.size();
 
 	if ( c > MAX_SEARCH_PATHS )
 	{
@@ -4575,7 +4576,7 @@ void FS_PureServerSetLoadedPaks( const char *pakSums, const char *pakNames )
 
 	for ( i = 0; i < c; i++ )
 	{
-		fs_serverPaks[ i ] = atoi( Cmd_Argv( i ) );
+		fs_serverPaks[ i ] = Str::ToInt(sums[i]);
 	}
 
 	if ( fs_numServerPaks )
@@ -4606,9 +4607,9 @@ void FS_PureServerSetLoadedPaks( const char *pakSums, const char *pakNames )
 
 	if ( pakNames && *pakNames )
 	{
-		Cmd_TokenizeString( pakNames );
+		Cmd::Args names(pakNames);
 
-		d = Cmd_Argc();
+		d = names.size();
 
 		if ( d > MAX_SEARCH_PATHS )
 		{
@@ -4617,7 +4618,7 @@ void FS_PureServerSetLoadedPaks( const char *pakSums, const char *pakNames )
 
 		for ( i = 0; i < d; i++ )
 		{
-			fs_serverPakNames[ i ] = CopyString( Cmd_Argv( i ) );
+			fs_serverPakNames[ i ] = CopyString(names[i].c_str());
 		}
 	}
 }
@@ -4635,9 +4636,9 @@ void FS_PureServerSetReferencedPaks( const char *pakSums, const char *pakNames )
 {
 	int i, c, d;
 
-	Cmd_TokenizeString( pakSums );
+	Cmd::Args sums(pakSums);
 
-	c = Cmd_Argc();
+	c = sums.size();
 
 	if ( c > MAX_SEARCH_PATHS )
 	{
@@ -4648,7 +4649,7 @@ void FS_PureServerSetReferencedPaks( const char *pakSums, const char *pakNames )
 
 	for ( i = 0; i < c; i++ )
 	{
-		fs_serverReferencedPaks[ i ] = atoi( Cmd_Argv( i ) );
+		fs_serverReferencedPaks[ i ] = Str::ToInt(sums[i]);
 	}
 
 	for ( i = 0; i < c; i++ )
@@ -4663,9 +4664,9 @@ void FS_PureServerSetReferencedPaks( const char *pakSums, const char *pakNames )
 
 	if ( pakNames && *pakNames )
 	{
-		Cmd_TokenizeString( pakNames );
+		Cmd::Args names(pakNames);
 
-		d = Cmd_Argc();
+		d = names.size();
 
 		if ( d > MAX_SEARCH_PATHS )
 		{
@@ -4674,7 +4675,7 @@ void FS_PureServerSetReferencedPaks( const char *pakSums, const char *pakNames )
 
 		for ( i = 0; i < d; i++ )
 		{
-			fs_serverReferencedPakNames[ i ] = CopyString( Cmd_Argv( i ) );
+			fs_serverReferencedPakNames[ i ] = CopyString(names[i].c_str());
 		}
 	}
 }

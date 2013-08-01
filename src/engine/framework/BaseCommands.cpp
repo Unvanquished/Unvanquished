@@ -30,6 +30,11 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "CommandSystem.h"
 #include "../../shared/Command.h"
+#include "../../shared/String.h"
+
+/**
+ * Definition of most of the commands that provide scripting capabilities to the console
+ */
 
 namespace Cmd {
 
@@ -178,8 +183,8 @@ namespace Cmd {
                 }
 
                 const std::string& cvar = args.Argv(1);
-                int min = std::stoi(args.Argv(2));
-                int max = std::stoi(args.Argv(3));
+                int min = Str::ToInt(args.Argv(2));
+                int max = Str::ToInt(args.Argv(3));
                 int number = min + (std::rand() % (max - min));
 
                 Cvar_SetValueLatched(cvar.c_str(), number);
@@ -351,7 +356,7 @@ namespace Cmd {
                 //Get all the parameters!
                 const std::string& command = args.Argv(argc - 1);
                 std::string delay = args.Argv(argc - 2);
-                int target = std::stoi(delay);
+                int target = Str::ToInt(delay);
                 const std::string& name = (argc == 4) ? args.Argv(1) : "";
                 delayType_t type;
 
