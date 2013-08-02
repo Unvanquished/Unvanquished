@@ -2,6 +2,7 @@ models/players/human_base/armor
 {
 	qer_editorimage models/players/human_base/armor.jpg
 
+	cull none
 	diffuseMap models/players/human_base/armor.jpg
 	normalMap models/players/human_base/armor_n.tga
 	specularMap models/players/human_base/armor_s.jpg
