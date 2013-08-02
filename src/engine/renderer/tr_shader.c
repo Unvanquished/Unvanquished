@@ -2553,7 +2553,9 @@ static qboolean ParseStage( shaderStage_t *stage, char **text )
 		          !Q_stricmp( token, "scale" ) ||
 		          !Q_stricmp( token, "scroll" ) ||
 		          !Q_stricmp( token, "rotate" ) ||
-		          !Q_stricmp( token, "clamp" ) )
+		          !Q_stricmp( token, "clamp" )  ||
+		          !Q_stricmp( token, "specularExponentMin" ) ||
+		          !Q_stricmp( token, "specularExponentMax" ) )
 		{
 			SkipRestOfLine( text );
 			continue;

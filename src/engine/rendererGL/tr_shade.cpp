@@ -738,6 +738,11 @@ static void Render_vertexLighting_DBS_entity( int stage )
 
 		gl_vertexLightingShader_DBS_entity->SetUniform_SpecularTextureMatrix( tess.svars.texMatrices[ TB_SPECULARMAP ] );
 
+		float minSpec = RB_EvalExpression( &pStage->specularExponentMin, r_specularExponentMin->value );
+		float maxSpec = RB_EvalExpression( &pStage->specularExponentMax, r_specularExponentMax->value );
+
+		gl_vertexLightingShader_DBS_entity->SetUniform_SpecularExponent( minSpec, maxSpec );
+		
 		if ( tr.cubeHashTable != NULL )
 		{
 			cubemapProbe_t *cubeProbeNearest;
@@ -972,6 +977,11 @@ static void Render_vertexLighting_DBS_world( int stage )
 		}
 
 		gl_vertexLightingShader_DBS_world->SetUniform_SpecularTextureMatrix( tess.svars.texMatrices[ TB_SPECULARMAP ] );
+
+		float minSpec = RB_EvalExpression( &pStage->specularExponentMin, r_specularExponentMin->value );
+		float maxSpec = RB_EvalExpression( &pStage->specularExponentMax, r_specularExponentMax->value );
+
+		gl_vertexLightingShader_DBS_world->SetUniform_SpecularExponent( minSpec, maxSpec );
 	}
 
 	gl_vertexLightingShader_DBS_world->SetRequiredVertexPointers();
@@ -1273,6 +1283,9 @@ static void Render_geometricFill( int stage, bool cmap2black )
 				GL_Bind( tr.blackImage );
 			}
 
+			float specMin = RB_EvalExpression( &pStage->specularExponentMin, r_specularExponentMin->value );
+			float specMax = RB_EvalExpression( &pStage->specularExponentMax, r_specularExponentMax->value );
+			gl_geometricFillShader->SetUniform_SpecularExponent( specMin, specMax );
 			gl_geometricFillShader->SetUniform_SpecularTextureMatrix( tess.svars.texMatrices[ TB_SPECULARMAP ] );
 		}
 	}
@@ -1636,6 +1649,11 @@ static void Render_forwardLighting_DBS_omni( shaderStage_t *diffuseStage,
 		}
 
 		gl_forwardLightingShader_omniXYZ->SetUniform_SpecularTextureMatrix( tess.svars.texMatrices[ TB_SPECULARMAP ] );
+
+		float minSpec = RB_EvalExpression( &diffuseStage->specularExponentMin, r_specularExponentMin->value );
+		float maxSpec = RB_EvalExpression( &diffuseStage->specularExponentMax, r_specularExponentMax->value );
+
+		gl_forwardLightingShader_omniXYZ->SetUniform_SpecularExponent( minSpec, maxSpec );
 	}
 
 	// bind u_AttenuationMapXY
@@ -1651,6 +1669,8 @@ static void Render_forwardLighting_DBS_omni( shaderStage_t *diffuseStage,
 	{
 		GL_SelectTexture( 5 );
 		GL_Bind( tr.shadowCubeFBOImage[ light->shadowLOD ] );
+		GL_SelectTexture( 7 );
+		GL_Bind( tr.shadowClipCubeFBOImage[ light->shadowLOD ] );
 	}
 
 	// bind u_RandomMap
@@ -1835,6 +1855,11 @@ static void Render_forwardLighting_DBS_proj( shaderStage_t *diffuseStage,
 		}
 
 		gl_forwardLightingShader_projXYZ->SetUniform_SpecularTextureMatrix( tess.svars.texMatrices[ TB_SPECULARMAP ] );
+
+		float minSpec = RB_EvalExpression( &diffuseStage->specularExponentMin, r_specularExponentMin->value );
+		float maxSpec = RB_EvalExpression( &diffuseStage->specularExponentMax, r_specularExponentMax->value );
+
+		gl_forwardLightingShader_projXYZ->SetUniform_SpecularExponent( minSpec, maxSpec );
 	}
 
 	// bind u_AttenuationMapXY
@@ -1850,6 +1875,8 @@ static void Render_forwardLighting_DBS_proj( shaderStage_t *diffuseStage,
 	{
 		GL_SelectTexture( 5 );
 		GL_Bind( tr.shadowMapFBOImage[ light->shadowLOD ] );
+		GL_SelectTexture( 7 );
+		GL_Bind( tr.shadowClipMapFBOImage[ light->shadowLOD ] );
 	}
 
 	// bind u_RandomMap
@@ -2043,6 +2070,11 @@ static void Render_forwardLighting_DBS_directional( shaderStage_t *diffuseStage,
 		}
 
 		gl_forwardLightingShader_directionalSun->SetUniform_SpecularTextureMatrix( tess.svars.texMatrices[ TB_SPECULARMAP ] );
+
+		float minSpec = RB_EvalExpression( &diffuseStage->specularExponentMin, r_specularExponentMin->value );
+		float maxSpec = RB_EvalExpression( &diffuseStage->specularExponentMax, r_specularExponentMax->value );
+
+		gl_forwardLightingShader_directionalSun->SetUniform_SpecularExponent( minSpec, maxSpec );
 	}
 
 	// bind u_ShadowMap
@@ -2050,29 +2082,39 @@ static void Render_forwardLighting_DBS_directional( shaderStage_t *diffuseStage,
 	{
 		GL_SelectTexture( 5 );
 		GL_Bind( tr.sunShadowMapFBOImage[ 0 ] );
+		GL_SelectTexture( 10 );
+		GL_Bind( tr.sunShadowClipMapFBOImage[ 0 ] );
 
 		if ( r_parallelShadowSplits->integer >= 1 )
 		{
 			GL_SelectTexture( 6 );
 			GL_Bind( tr.sunShadowMapFBOImage[ 1 ] );
+			GL_SelectTexture( 11 );
+			GL_Bind( tr.sunShadowClipMapFBOImage[ 1 ] );
 		}
 
 		if ( r_parallelShadowSplits->integer >= 2 )
 		{
 			GL_SelectTexture( 7 );
 			GL_Bind( tr.sunShadowMapFBOImage[ 2 ] );
+			GL_SelectTexture( 12 );
+			GL_Bind( tr.sunShadowClipMapFBOImage[ 2 ] );
 		}
 
 		if ( r_parallelShadowSplits->integer >= 3 )
 		{
 			GL_SelectTexture( 8 );
 			GL_Bind( tr.sunShadowMapFBOImage[ 3 ] );
+			GL_SelectTexture( 13 );
+			GL_Bind( tr.sunShadowClipMapFBOImage[ 3 ] );
 		}
 
 		if ( r_parallelShadowSplits->integer >= 4 )
 		{
 			GL_SelectTexture( 9 );
 			GL_Bind( tr.sunShadowMapFBOImage[ 4 ] );
+			GL_SelectTexture( 14 );
+			GL_Bind( tr.sunShadowClipMapFBOImage[ 4 ] );
 		}
 	}
 
@@ -2560,6 +2602,10 @@ static void Render_liquid( int stage )
 	gl_liquidShader->SetUniform_UnprojectMatrix( backEnd.viewParms.unprojectionMatrix );
 	gl_liquidShader->SetUniform_ModelMatrix( backEnd.orientation.transformMatrix );
 	gl_liquidShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
+
+	float specMin = RB_EvalExpression( &pStage->specularExponentMin, r_specularExponentMin->value );
+	float specMax = RB_EvalExpression( &pStage->specularExponentMax, r_specularExponentMax->value );
+	gl_liquidShader->SetUniform_SpecularExponent( specMin, specMAx );
 
 	// capture current color buffer for u_CurrentMap
 	GL_SelectTexture( 0 );

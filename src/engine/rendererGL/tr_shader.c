@@ -2760,6 +2760,14 @@ static qboolean ParseStage( shaderStage_t *stage, char **text )
 		{
 			polyModeBits |= GLS_POLYMODE_LINE;
 		}
+		else if ( !Q_stricmp( token, "specularExponentMin" ) )
+		{
+			ParseExpression( text, &stage->specularExponentMin );
+		}
+		else if ( !Q_stricmp( token, "specularExponentMax" ) )
+		{
+			ParseExpression( text, &stage->specularExponentMax );
+		}
 		// refractionIndex <arithmetic expression>
 		else if ( !Q_stricmp( token, "refractionIndex" ) )
 		{
@@ -5051,7 +5059,10 @@ static void CollapseStages( void )
 			tmpStages[ numStages ].type = ST_COLLAPSE_lighting_DBS;
 
 			tmpStages[ numStages ].bundle[ TB_NORMALMAP ] = tmpNormalStage.bundle[ 0 ];
+
 			tmpStages[ numStages ].bundle[ TB_SPECULARMAP ] = tmpSpecularStage.bundle[ 0 ];
+			tmpStages[ numStages ].specularExponentMin = tmpSpecularStage.specularExponentMin;
+			tmpStages[ numStages ].specularExponentMax = tmpSpecularStage.specularExponentMax;
 
 			numStages++;
 			j += 2;
