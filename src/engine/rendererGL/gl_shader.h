@@ -354,6 +354,47 @@ protected:
 	}
 };
 
+class GLUniform2f : protected GLUniform
+{
+protected:
+	GLUniform2f( GLShader *shader, const char *name ) :
+	GLUniform( shader, name )
+	{
+	}
+
+	inline void SetValue( const vec2_t v )
+	{
+		shaderProgram_t *p = _shader->GetProgram();
+
+		assert( p == glState.currentProgram );
+
+#if defined( LOG_GLSL_UNIFORMS )
+		if ( r_logFile->integer )
+		{
+			GLimp_LogComment( va( "GLSL_SetUniform2f( %s, shader: %s, value: [ %f, %f ] ) ---\n",
+				this->GetName(), _shader->GetName().c_str(), v[ 0 ], v[ 1 ] ) );
+		}
+#endif
+#if defined( USE_UNIFORM_FIREWALL )
+		vec2_t *firewall = ( vec2_t * ) &p->uniformFirewall[ _firewallIndex ];
+
+		if ( ( *firewall )[ 0 ] == v[ 0 ] && ( *firewall )[ 1 ] == v[ 1 ] )
+		{
+			return;
+		}
+
+		( *firewall )[ 0 ] = v[ 0 ];
+		( *firewall )[ 1 ] = v[ 1 ];
+#endif
+		glUniform2f( p->uniformLocations[ _locationIndex ], v[ 0 ], v[ 1 ] );
+	}
+
+	size_t GetSize( void )
+	{
+		return sizeof( vec2_t );
+	}
+};
+
 class GLUniform3f : protected GLUniform
 {
 protected:
@@ -2176,6 +2217,21 @@ public:
 	}
 };
 
+class u_TexScale :
+	GLUniform2f
+{
+public:
+	u_TexScale( GLShader *shader ) :
+		GLUniform2f( shader, "u_TexScale" )
+	{
+	}
+
+	void SetUniform_TexScale( vec2_t value )
+	{
+		this->SetValue( value );
+	}
+};
+
 class GLShader_generic :
 	public GLShader,
 	public u_ColorTextureMatrix,
@@ -2701,7 +2757,8 @@ public:
 class GLShader_blurX :
 	public GLShader,
 	public u_ModelViewProjectionMatrix,
-	public u_DeformMagnitude
+	public u_DeformMagnitude,
+	public u_TexScale
 {
 public:
 	GLShader_blurX( GLShaderManager *manager );
@@ -2711,7 +2768,8 @@ public:
 class GLShader_blurY :
 	public GLShader,
 	public u_ModelViewProjectionMatrix,
-	public u_DeformMagnitude
+	public u_DeformMagnitude,
+	public u_TexScale
 {
 public:
 	GLShader_blurY( GLShaderManager *manager );

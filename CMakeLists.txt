@@ -243,6 +243,7 @@ set( CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake )
 set( MOUNT_DIR ${CMAKE_SOURCE_DIR}/src )
 set( OBJ_DIR ${CMAKE_BINARY_DIR}/CMakeFiles )
 set( ENGINE_DIR ${MOUNT_DIR}/engine )
+set( SHARED_DIR ${MOUNT_DIR}/shared )
 set( GAMELOGIC_DIR ${MOUNT_DIR}/gamelogic )
 set( LIB_DIR ${MOUNT_DIR}/libs )
 
@@ -379,8 +380,8 @@ set( SERVERLIST
 )
 
 set( ENGINELIST
-  ${MOUNT_DIR}/shared/Command.cpp
-  ${MOUNT_DIR}/shared/String.cpp
+  ${SHARED_DIR}/Command.cpp
+  ${SHARED_DIR}/String.cpp
   ${ENGINE_DIR}/framework/BaseCommands.cpp
   ${ENGINE_DIR}/framework/CommandSystem.cpp
   ${ENGINE_DIR}/qcommon/cm_load.c
@@ -473,7 +474,6 @@ set( SDLLIST
 )
 
 set( CGAMEGPP_BASE
-  ${GAMELOGIC_DIR}/cgame/cg_main.c
   ${GAMELOGIC_DIR}/game/bg_misc.c
   ${GAMELOGIC_DIR}/game/bg_parse.c
   ${GAMELOGIC_DIR}/game/bg_pmove.c
@@ -488,6 +488,7 @@ set( CGAMEGPP_BASE
   ${GAMELOGIC_DIR}/cgame/cg_drawtools.c
   ${GAMELOGIC_DIR}/cgame/cg_ents.c
   ${GAMELOGIC_DIR}/cgame/cg_event.c
+  ${GAMELOGIC_DIR}/cgame/cg_main.c
   ${GAMELOGIC_DIR}/cgame/cg_marks.c
   ${GAMELOGIC_DIR}/cgame/cg_minimap.c
   ${GAMELOGIC_DIR}/cgame/cg_players.c

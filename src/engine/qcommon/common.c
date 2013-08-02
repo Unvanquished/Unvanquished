@@ -541,7 +541,7 @@ qboolean Com_SafeMode( void )
 	{
 		Cmd::Args line(com_consoleLines[i]);
 
-		if ( !Q_stricmp( line[0].c_str(), "safe" ) || !Q_stricmp( line[0].c_str(), "cvar_restart" ) )
+		if ( line.size() > 1 && ( !Q_stricmp( line[0].c_str(), "safe" ) || !Q_stricmp( line[0].c_str(), "cvar_restart" ) ) )
 		{
 			com_consoleLines[ i ][ 0 ] = 0;
 			return qtrue;
@@ -572,7 +572,7 @@ void Com_StartupVariable( const char *match )
 	{
 		Cmd::Args line(com_consoleLines[i]);
 
-		if ( strcmp( line[0].c_str(), "set" ) && line.size() < 3 )
+		if ( line.size() < 3 || strcmp( line[0].c_str(), "set" ))
 		{
 			continue;
 		}
@@ -3038,6 +3038,7 @@ void Com_Init( char *commandLine )
 #endif
 	// allocate the stack based hunk allocator
 	Com_InitHunkMemory();
+	Trans_LoadDefaultLanguage();
 
 	// if any archived cvars are modified after this, we will trigger a writing
 	// of the config file

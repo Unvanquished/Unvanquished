@@ -35,6 +35,7 @@ Maryland 20850 USA.
 // cl_cgame.c  -- client system interaction with client game
 
 #include "client.h"
+#include "../sys/sys_local.h"
 
 #ifdef USE_MUMBLE
 #include "libmumblelink.h"
@@ -271,7 +272,7 @@ void CL_AddCgameCommand( const char *cmdName )
 CL_ConfigstringModified
 =====================
 */
-void CL_ConfigstringModified( void )
+void CL_ConfigstringModified( Cmd::Args& csCmd )
 {
 	const char  *old, *s;
 	int         i, index;
@@ -279,7 +280,11 @@ void CL_ConfigstringModified( void )
 	gameState_t oldGs;
 	int         len;
 
-	index = atoi( Cmd_Argv( 1 ) );
+	if (csCmd.Argc() < 3) {
+		Com_Error( ERR_DROP, "CL_ConfigstringModified: wrong command received" );
+	}
+
+	index = atoi( csCmd.Argv(1).c_str() );
 
 	if ( index < 0 || index >= MAX_CONFIGSTRINGS )
 	{
@@ -289,7 +294,7 @@ void CL_ConfigstringModified( void )
 //  s = Cmd_Argv(2);
 	// get everything after "cs <num>"
 	//s = Cmd_ArgsFrom( 2 );
-	s = Cmd_Argv( 2 );
+	s = csCmd.Argv(2).c_str();
 
 	old = cl.gameState.stringData + cl.gameState.stringOffsets[ index ];
 
@@ -384,6 +389,7 @@ qboolean CL_GetServerCommand( int serverCommandNumber )
 	}
 
 rescan:
+	Cmd_TokenizeString( s );
 	Cmd::Args args(s);
 	cmd = args[0].c_str();
 	argc = args.size();
@@ -437,7 +443,8 @@ rescan:
 
 	if ( !strcmp( cmd, "cs" ) )
 	{
-		CL_ConfigstringModified();
+		CL_ConfigstringModified(args);
+		Cmd_TokenizeString( s );
 		return qtrue;
 	}
 
@@ -1464,7 +1471,12 @@ void CL_InitCGame( void )
 
 	// Ridah, update the memory usage file
 	CL_UpdateLevelHunkUsage();
-	
+
+	// Cause any input while loading to be dropped and forget what's pressed
+	IN_DropInputsForFrame();
+	CL_ClearKeys();
+	Key_ClearStates();
+
 	CL_WriteClientLog( va("`~=-----------------=~`\n MAP: %s \n`~=-----------------=~`\n", mapname ) );
 
 //  if( cl_autorecord->integer ) {

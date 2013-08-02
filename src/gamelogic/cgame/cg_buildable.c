@@ -481,10 +481,10 @@ void CG_InitBuildables( void )
 						bi->animations[ BANIM_CONSTRUCT2 ] = bi->animations[ BANIM_IDLE1 ];
 					}
 
-					if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_IDLE2,
-						"idle2", qtrue, qfalse, qfalse ) )
+					if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_IDLE3,
+						"idle3", qtrue, qfalse, qfalse ) )
 					{
-						bi->animations[ BANIM_IDLE2 ] = bi->animations[ BANIM_IDLE1 ];
+						bi->animations[ BANIM_IDLE3 ] = bi->animations[ BANIM_IDLE1 ];
 					}
 
 				case BA_A_BARRICADE:
@@ -705,6 +705,23 @@ static void CG_SetBuildableLerpFrameAnimation( buildable_t buildable, lerpFrame_
 		CG_Error( "Bad animation number: %i", newAnimation );
 	}
 
+	if ( cg_buildables[ buildable ].md5 )
+	{
+		if ( bSkeleton.type != SK_INVALID )
+		{
+			oldbSkeleton = bSkeleton;
+
+			if ( lf->old_animation != NULL )
+			{
+				if ( !trap_R_BuildSkeleton( &oldbSkeleton, lf->old_animation->handle, lf->oldFrame, lf->frame, lf->blendlerp, lf->old_animation->clearOrigin ) )
+				{
+					CG_Printf( "Can't build old buildable bSkeleton\n" );
+					return;
+				}
+			}
+		}
+	}
+
 	anim = &cg_buildables[ buildable ].animations[ newAnimation ];
 
 	//this item has just spawned so lf->frameTime will be zero
@@ -714,7 +731,10 @@ static void CG_SetBuildableLerpFrameAnimation( buildable_t buildable, lerpFrame_
 	}
 
 	lf->animation = anim;
-	lf->animationTime = lf->frameTime + anim->initialLerp;
+	lf->animationTime = cg.time + anim->initialLerp;
+
+	lf->oldFrame = lf->frame = 0;
+	lf->oldFrameTime = lf->frameTime = 0;
 
 	if ( cg_debugAnim.integer )
 	{
@@ -734,23 +754,6 @@ static void CG_SetBuildableLerpFrameAnimation( buildable_t buildable, lerpFrame_
 	else
 	{
 		lf->blendlerp = 1.0f - lf->blendlerp; //use old blending for smooth blending between two blended animations
-	}
-
-	if ( cg_buildables[ buildable ].md5 )
-	{
-		if ( bSkeleton.type != SK_INVALID )
-		{
-			oldbSkeleton = bSkeleton;
-
-			if ( lf->old_animation != NULL )
-			{
-				if ( !trap_R_BuildSkeleton( &oldbSkeleton, lf->old_animation->handle, lf->oldFrame, lf->frame, lf->blendlerp, lf->old_animation->clearOrigin ) )
-				{
-					CG_Printf( "Can't build old buildable bSkeleton\n" );
-					return;
-				}
-			}
-		}
 	}
 }
 
@@ -1917,7 +1920,7 @@ void CG_Buildable( centity_t *cent )
 	}
 
 	// add inverse shadow map
-	if ( cg_buildableShadows.integer )
+	if ( cg_shadows.integer > SHADOWING_BLOB && cg_buildableShadows.integer )
 	{
 		CG_StartShadowCaster( ent.lightingOrigin, mins, maxs );
 	}
@@ -2155,7 +2158,7 @@ void CG_Buildable( centity_t *cent )
 		}
 	}
 
-	if ( cg_buildableShadows.integer )
+	if ( cg_shadows.integer > SHADOWING_BLOB && cg_buildableShadows.integer )
 	{
 		CG_EndShadowCaster( );
 	}
