@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 attribute vec4		attr_BoneIndexes;
 attribute vec4		attr_BoneWeights;
 uniform int			u_VertexSkinning;
-uniform mat4		u_BoneMatrix[MAX_GLSL_BONES];
+uniform mat3x4		u_BoneMatrix[MAX_GLSL_BONES];
 
 void VertexSkinning_P_N(const vec3 inPosition,
 						const vec3 inNormal,
@@ -32,15 +32,15 @@ void VertexSkinning_P_N(const vec3 inPosition,
 						inout vec4 position,
 						inout vec3 normal)
 {
-	mat4 boneMatrix = u_BoneMatrix[ int( attr_BoneIndexes[ 0 ] ) ] * attr_BoneWeights[ 0 ];
-	boneMatrix += u_BoneMatrix[ int( attr_BoneIndexes[ 1 ] ) ] * attr_BoneWeights[ 1 ];
-	boneMatrix += u_BoneMatrix[ int( attr_BoneIndexes[ 2 ] ) ] * attr_BoneWeights[ 2 ];
-	boneMatrix += u_BoneMatrix[ int( attr_BoneIndexes[ 3 ] ) ] * attr_BoneWeights[ 3 ];
+	mat3x4 boneMatrix = u_BoneMatrix[ int( attr_BoneIndexes.x ) ] * attr_BoneWeights.x;
+	boneMatrix += u_BoneMatrix[ int( attr_BoneIndexes.y ] * attr_BoneWeights.y;
+	boneMatrix += u_BoneMatrix[ int( attr_BoneIndexes.z ) ] * attr_BoneWeights.z;
+	boneMatrix += u_BoneMatrix[ int( attr_BoneIndexes.w ) ] * attr_BoneWeights.w;
 
-	position.xyz = ( boneMatrix * vec4( inPosition, 1.0 ) ).xyz;
+	position.xyz = ( vec4( inPosition, 1.0 ) * boneMatrix ).xyz;
 	position.w = 1.0;
 	
-	normal = ( boneMatrix * vec4( inNormal, 0.0 ) ).xyz;
+	normal = ( vec4( inNormal, 0.0 ) * boneMatrix ).xyz;
 }
 
 void VertexSkinning_P_TBN(	const vec3 inPosition,
@@ -54,15 +54,15 @@ void VertexSkinning_P_TBN(	const vec3 inPosition,
 							inout vec3 normal)
 {
 
-	mat4 boneMatrix = u_BoneMatrix[ int( attr_BoneIndexes[ 0 ] ) ] * attr_BoneWeights[ 0 ];
-	boneMatrix += u_BoneMatrix[ int( attr_BoneIndexes[ 1 ] ) ] * attr_BoneWeights[ 1 ];
-	boneMatrix += u_BoneMatrix[ int( attr_BoneIndexes[ 2 ] ) ] * attr_BoneWeights[ 2 ];
-	boneMatrix += u_BoneMatrix[ int( attr_BoneIndexes[ 3 ] ) ] * attr_BoneWeights[ 3 ];
+	mat3x4 boneMatrix = u_BoneMatrix[ int( attr_BoneIndexes.x ) ] * attr_BoneWeights.x;
+	boneMatrix += u_BoneMatrix[ int( attr_BoneIndexes.y ) ] * attr_BoneWeights.y;
+	boneMatrix += u_BoneMatrix[ int( attr_BoneIndexes.z ) ] * attr_BoneWeights.z;
+	boneMatrix += u_BoneMatrix[ int( attr_BoneIndexes.w ) ] * attr_BoneWeights.w;
 
-	position.xyz = ( boneMatrix * vec4( inPosition, 1.0 ) ).xyz;
+	position.xyz = ( vec4( inPosition, 1.0 ) * boneMatrix ).xyz;
 	position.w = 1.0;
 	
-	tangent = ( boneMatrix * vec4( inTangent, 0.0 ) ).xyz;
-	binormal = ( boneMatrix * vec4( inBinormal, 0.0 ) ).xyz;
-	normal = ( boneMatrix * vec4( inNormal, 0.0 ) ).xyz;
+	tangent = ( vec4( inTangent, 0.0 ) * boneMatrix ).xyz;
+	binormal = ( vec4( inBinormal, 0.0 ) * boneMatrix ).xyz;
+	normal = ( vec4( inNormal, 0.0 ) * boneMatrix ).xyz;
 }
