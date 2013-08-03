@@ -152,9 +152,8 @@ public:
 	{
 		len = ReadInt();
 		const char* out = static_cast<const char*>(ReadInline(len + 1));
-		if (out[len - 1] != '\0')
+		if (out[len] != '\0')
 			Com_Error(ERR_DROP, "RPC string not NUL-terminated");
-		pos += len + 1;
 		return out;
 	}
 	const char* ReadString()

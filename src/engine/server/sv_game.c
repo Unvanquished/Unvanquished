@@ -52,7 +52,7 @@ sharedEntity_t *SV_GentityNum( int num )
 {
 	sharedEntity_t *ent;
 
-	if ( num >= MAX_GENTITIES )
+	if ( num < 0 || num >= MAX_GENTITIES )
 	{
 		Com_Error( ERR_DROP, "SV_GentityNum: bad num" );
 	}
@@ -770,7 +770,8 @@ void GameVM::Syscall(int index, RPC::Reader& inputs, RPC::Writer& outputs)
 	case G_CVAR_SET:
 	{
 		const char* name = inputs.ReadString();
-		const char* value = inputs.ReadString();
+		qboolean haveValue = inputs.ReadInt();
+		const char* value = haveValue ? inputs.ReadString() : NULL;
 		Cvar_Set(name, value);
 		break;
 	}
@@ -802,10 +803,12 @@ void GameVM::Syscall(int index, RPC::Reader& inputs, RPC::Writer& outputs)
 	case G_FS_FOPEN_FILE:
 	{
 		const char* filename = inputs.ReadString();
+		qboolean openFile = inputs.ReadInt();
 		fsMode_t mode = static_cast<fsMode_t>(inputs.ReadInt());
 		fileHandle_t f;
-		outputs.WriteInt(FS_FOpenFileByMode(filename, &f, mode));
-		outputs.WriteInt(f);
+		outputs.WriteInt(FS_FOpenFileByMode(filename, openFile ? &f : NULL, mode));
+		if (openFile)
+			outputs.WriteInt(f);
 		break;
 	}
 
@@ -1004,7 +1007,7 @@ void GameVM::Syscall(int index, RPC::Reader& inputs, RPC::Writer& outputs)
 
 	case G_SET_CONFIGSTRING_RESTRICTIONS:
 	{
-		Com_Printf("SV_SetConfigstringRestrictions not implemented");
+		Com_Printf("SV_SetConfigstringRestrictions not implemented\n");
 		break;
 	}
 

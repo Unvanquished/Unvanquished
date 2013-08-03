@@ -2544,7 +2544,7 @@ void SP_func_dynamic( gentity_t *self )
 	self->flags |= FL_GROUPSLAVE;
 
 	trap_UnlinkEntity( self );  // was linked in InitMover
-	trap_AddPhysicsEntity( self );
+	//trap_AddPhysicsEntity( self );
 	trap_LinkEntity( self );
 }
 

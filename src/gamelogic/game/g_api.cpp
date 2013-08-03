@@ -165,6 +165,10 @@ int trap_Milliseconds(void)
 
 void trap_Cvar_Register(vmCvar_t *cvar, const char *var_name, const char *value, int flags)
 {
+	vmCvar_t dummy;
+	if (!cvar)
+		cvar = &dummy;
+
 	RPC::Writer input;
 	input.WriteInt(G_CVAR_REGISTER);
 	input.Write(cvar, sizeof(vmCvar_t));
@@ -189,7 +193,9 @@ void trap_Cvar_Set(const char *var_name, const char *value)
 	RPC::Writer input;
 	input.WriteInt(G_CVAR_SET);
 	input.WriteString(var_name);
-	input.WriteString(value);
+	input.WriteInt(value != NULL);
+	if (value)
+		input.WriteString(value);
 	DoRPC(input);
 }
 
@@ -242,10 +248,12 @@ int trap_FS_FOpenFile(const char *qpath, fileHandle_t *f, fsMode_t mode)
 	RPC::Writer input;
 	input.WriteInt(G_FS_FOPEN_FILE);
 	input.WriteString(qpath);
+	input.WriteInt(f != NULL);
 	input.WriteInt(mode);
 	RPC::Reader output = DoRPC(input);
 	int ret = output.ReadInt();
-	*f = output.ReadInt();
+	if (f)
+		*f = output.ReadInt();
 	return ret;
 }
 
@@ -393,10 +401,10 @@ void trap_Trace(trace_t *results, const vec3_t start, const vec3_t mins, const v
 	RPC::Writer input;
 	input.WriteInt(G_TRACE);
 	input.Write(start, sizeof(vec3_t));
-	input.Write(mins, sizeof(vec3_t));
-	input.Write(maxs, sizeof(vec3_t));
+	input.Write(mins ? mins : vec3_origin, sizeof(vec3_t));
+	input.Write(maxs ? maxs : vec3_origin, sizeof(vec3_t));
 	input.Write(end, sizeof(vec3_t));
-	input.WriteInt(passEntityNum);
+	input.WriteInt(passEntityNum == -1 ? ENTITYNUM_NONE : passEntityNum);
 	input.WriteInt(contentmask);
 	RPC::Reader output = DoRPC(input);
 	output.Read(results, sizeof(trace_t));
@@ -412,10 +420,10 @@ void trap_TraceCapsule(trace_t *results, const vec3_t start, const vec3_t mins, 
 	RPC::Writer input;
 	input.WriteInt(G_TRACECAPSULE);
 	input.Write(start, sizeof(vec3_t));
-	input.Write(mins, sizeof(vec3_t));
-	input.Write(maxs, sizeof(vec3_t));
+	input.Write(mins ? mins : vec3_origin, sizeof(vec3_t));
+	input.Write(maxs ? maxs : vec3_origin, sizeof(vec3_t));
 	input.Write(end, sizeof(vec3_t));
-	input.WriteInt(passEntityNum);
+	input.WriteInt(passEntityNum == -1 ? ENTITYNUM_NONE : passEntityNum);
 	input.WriteInt(contentmask);
 	RPC::Reader output = DoRPC(input);
 	output.Read(results, sizeof(trace_t));
@@ -479,6 +487,7 @@ void trap_GetConfigstring(int num, char *buffer, int bufferSize)
 	RPC::Writer input;
 	input.WriteInt(G_GET_CONFIGSTRING);
 	input.WriteInt(num);
+	input.WriteInt(bufferSize);
 	RPC::Reader output = DoRPC(input);
 	Q_strncpyz(buffer, output.ReadString(), bufferSize);
 }
@@ -506,6 +515,7 @@ void trap_GetUserinfo(int num, char *buffer, int bufferSize)
 	RPC::Writer input;
 	input.WriteInt(G_GET_USERINFO);
 	input.WriteInt(num);
+	input.WriteInt(bufferSize);
 	RPC::Reader output = DoRPC(input);
 	Q_strncpyz(buffer, output.ReadString(), bufferSize);
 }
@@ -514,6 +524,7 @@ void trap_GetServerinfo(char *buffer, int bufferSize)
 {
 	RPC::Writer input;
 	input.WriteInt(G_GET_SERVERINFO);
+	input.WriteInt(bufferSize);
 	RPC::Reader output = DoRPC(input);
 	Q_strncpyz(buffer, output.ReadString(), bufferSize);
 }
