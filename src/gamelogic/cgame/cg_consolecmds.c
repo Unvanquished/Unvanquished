@@ -358,6 +358,24 @@ static void CG_TestCGrade_f( void )
 	cgs.gameGradingModels[ 0 ] = -1;
 }
 
+static void CG_MessageAdmin_f( void )
+{
+	Q_strncpyz( cg.sayTextType, "Admin Say: ", sizeof( cg.sayTextType ) );
+	trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_CHAT ].id, "show" );
+}
+
+static void CG_MessageTeam_f( void )
+{
+	Q_strncpyz( cg.sayTextType, "Team Say: ", sizeof( cg.sayTextType ) );
+	trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_CHAT ].id, "show" );
+}
+
+static void CG_MessagePublic_f( void )
+{
+	Q_strncpyz( cg.sayTextType, "Public Say: ", sizeof( cg.sayTextType ) );
+	trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_CHAT ].id, "show" );
+}
+
 static const struct
 {
 	const char *cmd;
@@ -382,6 +400,9 @@ static const struct
 	{ "itemtoggle",    0,                       CG_CompleteItem  },
 	{ "lcp",           CG_CenterPrint_f,        0                },
 	{ "m",             0,                       CG_CompleteName  },
+	{ "message_admin", CG_MessageAdmin_f,       0                },
+	{ "message_team",  CG_MessageTeam_f,        0                },
+	{ "message_public",CG_MessagePublic_f,      0                },
 	{ "mt",            0,                       CG_CompleteName  },
 	{ "nextframe",     CG_TestModelNextFrame_f, 0                },
 	{ "nextskin",      CG_TestModelNextSkin_f,  0                },

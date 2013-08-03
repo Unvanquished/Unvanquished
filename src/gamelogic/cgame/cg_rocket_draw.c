@@ -1765,6 +1765,11 @@ void CG_Rocket_DrawStaminaBolt( void )
 	trap_Rocket_SetClass( "walk", !activate );
 }
 
+void CG_Rocket_DrawChatType( void )
+{
+	trap_Rocket_SetInnerRML( "", "", cg.sayTextType, qtrue );
+}
+
 typedef struct
 {
 	const char *name;
@@ -1779,6 +1784,7 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "ammo_stack", &CG_DrawPlayerAmmoStack, ELEMENT_HUMANS },
 	{ "barbs", &CG_Rocket_DrawAlienBarbs, ELEMENT_ALIENS },
 	{ "center_print", &CG_Rocket_DrawCenterPrint, ELEMENT_GAME },
+	{ "chattype", &CG_Rocket_DrawChatType, ELEMENT_ALL },
 	{ "clips", &CG_Rocket_DrawClips, ELEMENT_HUMANS },
 	{ "clip_stack", &CG_DrawPlayerClipsStack, ELEMENT_HUMANS },
 	{ "clock", &CG_Rocket_DrawClock, ELEMENT_ALL },

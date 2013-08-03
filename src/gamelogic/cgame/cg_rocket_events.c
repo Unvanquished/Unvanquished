@@ -197,6 +197,30 @@ static void CG_Rocket_FilterDS( void )
 	CG_Rocket_FilterDataSource( src, tbl, params );
 }
 
+static void CG_Rocket_SetChatCommand( void )
+{
+	const char *cmd = NULL;
+	switch ( *cg.sayTextType )
+	{
+		case 'A':
+			cmd = "a";
+			break;
+
+		case 'P':
+			cmd = "say";
+			break;
+
+		case 'T':
+			cmd = "say_team";
+			break;
+	}
+
+	if ( cmd )
+	{
+		trap_Rocket_SetAttribute( "", "", "exec", cmd );
+	}
+}
+
 typedef struct
 {
 	const char *command;
@@ -217,6 +241,7 @@ static const eventCmd_t eventCmdList[] =
 	{ "init_servers", &CG_Rocket_InitServers },
 	{ "open", &CG_Rocket_EventOpen },
 	{ "setAttribute", &CG_Rocket_SetAttribute },
+	{ "setChatCommand", &CG_Rocket_SetChatCommand },
 	{ "setDS", &CG_Rocket_SetDS },
 	{ "setProperty", &CG_Rocket_SetProperty },
 	{ "show", &CG_Rocket_EventShow },

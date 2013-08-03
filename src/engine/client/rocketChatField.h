@@ -103,93 +103,96 @@ public:
 			event.StopPropagation();
 		}
 
-		else if ( event == "resize" )
+		if ( event.GetTargetElement() == this )
 		{
-			GetContext()->ShowMouseCursor(false);
-			focus = true;
-			GenerateCursor();
-		}
-
-		// Handle key presses
-		else if ( event == "keydown" )
-		{
-			Rocket::Core::Input::KeyIdentifier key_identifier = ( Rocket::Core::Input::KeyIdentifier ) event.GetParameter<int>( "key_identifier", 0 );
-			bool numlock = event.GetParameter< int >( "num_lock_key", 0 );
-
-			switch ( key_identifier )
+			if ( event == "resize" )
 			{
-				case Rocket::Core::Input::KI_BACK:
-					text.Erase( cursor_character_index - 1, 1 );
-					UpdateText();
-					MoveCursor( -1 );
-					break;
+				GetContext()->ShowMouseCursor( false );
+				focus = true;
+				GenerateCursor();
+			}
 
-				case Rocket::Core::Input::KI_DELETE:
-					if ( cursor_character_index < text.Length() )
-					{
-						text.Erase( cursor_character_index, 1 );
+			// Handle key presses
+			else if ( event == "keydown" )
+			{
+				Rocket::Core::Input::KeyIdentifier key_identifier = ( Rocket::Core::Input::KeyIdentifier ) event.GetParameter<int>( "key_identifier", 0 );
+				bool numlock = event.GetParameter< int >( "num_lock_key", 0 );
+
+				switch ( key_identifier )
+				{
+					case Rocket::Core::Input::KI_BACK:
+						text.Erase( cursor_character_index - 1, 1 );
 						UpdateText();
-					}
+						MoveCursor( -1 );
+						break;
 
-					break;
+					case Rocket::Core::Input::KI_DELETE:
+						if ( cursor_character_index < text.Length() )
+						{
+							text.Erase( cursor_character_index, 1 );
+							UpdateText();
+						}
 
-				case Rocket::Core::Input::KI_LEFT:
-					MoveCursor( -1 );
-					break;
+						break;
 
-				case Rocket::Core::Input::KI_RIGHT:
-					MoveCursor( 1 );
-					break;
+					case Rocket::Core::Input::KI_LEFT:
+						MoveCursor( -1 );
+						break;
 
-				case Rocket::Core::Input::KI_RETURN:
-				case Rocket::Core::Input::KI_NUMPADENTER:
-					Rocket::Core::String cmd = GetAttribute<Rocket::Core::String>( "exec", "" );
+					case Rocket::Core::Input::KI_RIGHT:
+						MoveCursor( 1 );
+						break;
 
-					if ( !cmd.Empty() )
-					{
-						Cbuf_AddText( va( "%s %s\n", cmd.CString(), text.CString() ) );
-						text.Clear();
-						DispatchEvent( "exec", Rocket::Core::Dictionary() );
-					}
+					case Rocket::Core::Input::KI_RETURN:
+					case Rocket::Core::Input::KI_NUMPADENTER:
+						Rocket::Core::String cmd = GetAttribute<Rocket::Core::String>( "exec", "" );
 
-					break;
+						if ( !cmd.Empty() )
+						{
+							Cbuf_AddText( va( "%s %s\n", cmd.CString(), text.CString() ) );
+							text.Clear();
+							DispatchEvent( "exec", Rocket::Core::Dictionary() );
+						}
+
+						break;
+				}
 			}
-		}
 
-		else if ( event == "textinput" )
-		{
-			if ( event.GetParameter< int >( "ctrl_key", 0 ) == 0 &&
-			        event.GetParameter< int >( "alt_key", 0 ) == 0 &&
-			        event.GetParameter< int >( "meta_key", 0 ) == 0 )
+			else if ( event == "textinput" )
 			{
-				Rocket::Core::word character = event.GetParameter< Rocket::Core::word >( "data", 0 );
-
-				if ( text.Length() == cursor_character_index )
+				if ( event.GetParameter< int >( "ctrl_key", 0 ) == 0 &&
+				        event.GetParameter< int >( "alt_key", 0 ) == 0 &&
+				        event.GetParameter< int >( "meta_key", 0 ) == 0 )
 				{
-					text.Append( ( char )character );
-				}
+					Rocket::Core::word character = event.GetParameter< Rocket::Core::word >( "data", 0 );
 
-				else
-				{
-					text.Insert( cursor_character_index, character );
-				}
+					if ( text.Length() == cursor_character_index )
+					{
+						text.Append( ( char )character );
+					}
 
-				UpdateText();
-				MoveCursor( 1 );
+					else
+					{
+						text.Insert( cursor_character_index, character );
+					}
+
+					UpdateText();
+					MoveCursor( 1 );
+				}
 			}
-		}
 
-		// We are in focus, let the element know
-		else if ( event == "show" )
-		{
-			focus = true;
-		}
+			// We are in focus, let the element know
+			else if ( event == "show" )
+			{
+				focus = true;
+			}
 
-		else if ( event == "blur" || event == "hide" )
-		{
-			focus =  false;
-			GetContext()->ShowMouseCursor( true );
-			text.Clear();
+			else if ( event == "blur" || event == "hide" )
+			{
+				focus =  false;
+				GetContext()->ShowMouseCursor( true );
+				text.Clear();
+			}
 		}
 	}
 
