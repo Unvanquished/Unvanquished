@@ -543,9 +543,6 @@ extern  cvar_t *cl_voipShowSender;
 extern  cvar_t *cl_voip;
 #endif
 
-//bani
-extern qboolean sv_cheats;
-
 //=================================================
 
 //

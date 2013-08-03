@@ -501,7 +501,6 @@ void CL_SystemInfoChanged( void )
 #endif
 
 	s = Info_ValueForKey( systemInfo, "sv_cheats" );
-	sv_cheats = atoi( s );  //bani
 
 	if ( atoi( s ) == 0 )
 	{
