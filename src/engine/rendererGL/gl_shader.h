@@ -567,6 +567,30 @@ protected:
 	}
 };
 
+class GLUniformMatrix34fv : protected GLUniform
+{
+protected:
+	GLUniformMatrix34fv( GLShader *shader, const char *name ) :
+	GLUniform( shader, name )
+	{
+	}
+
+	inline void SetValue( int numMatrices, GLboolean transpose, const float *m )
+	{
+		shaderProgram_t *p = _shader->GetProgram();
+
+		assert( p == glState.currentProgram );
+#if defined( LOG_GLSL_UNIFORMS )
+		if ( r_logFile->integer )
+		{
+			GLimp_LogComment( va( "GLSL_SetUniformMatrix34fv( %s, shader: %s, numMatrices: %d, transpose: %d ) ---\n",
+				this->GetName(), _shader->GetName().c_str(), numMatrices, transpose ) );
+		}
+#endif
+		glUniformMatrix3x4fv( p->uniformLocations[ _locationIndex ], numMatrices, transpose, m );
+	}
+};
+
 class GLCompileMacro
 {
 private:
@@ -1865,17 +1889,17 @@ public:
 };
 
 class u_BoneMatrix :
-	GLUniformMatrix4fv
+	GLUniformMatrix34fv
 {
 public:
 	u_BoneMatrix( GLShader *shader ) :
-		GLUniformMatrix4fv( shader, "u_BoneMatrix" )
+		GLUniformMatrix34fv( shader, "u_BoneMatrix" )
 	{
 	}
 
-	void SetUniform_BoneMatrix( int numBones, const matrix_t boneMatrices[ MAX_BONES ] )
+	void SetUniform_BoneMatrix( int numBones, const boneMatrix_t boneMatrices[ MAX_BONES ] )
 	{
-		this->SetValue( numBones, GL_FALSE, boneMatrices );
+		this->SetValue( numBones, GL_FALSE, &boneMatrices[ 0 ][ 0 ] );
 	}
 };
 
