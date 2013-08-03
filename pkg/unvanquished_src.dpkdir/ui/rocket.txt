@@ -13,6 +13,7 @@
 		ui/humanbuild.rml humanbuild // ROCKETMENU_HUMANBUILD
 		ui/armourybuy.rml armourybuy // ROCKETMENU_ARMOURYBUY
 		ui/alienevo.rml alienevo     // ROCKETMENU_ALIENEVOLVE
+		ui/chat.rml chat             // ROCKETMENU_CHAT
 	}
 	misc
 	{
