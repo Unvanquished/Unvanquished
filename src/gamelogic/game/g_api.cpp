@@ -602,7 +602,8 @@ int trap_GMTime(qtime_t *qtime)
 	input.WriteInt(G_GM_TIME);
 	RPC::Reader output = DoRPC(input);
 	qboolean ret = output.ReadInt();
-	output.Read(qtime, sizeof(qtime_t));
+	if (qtime)
+		output.Read(qtime, sizeof(qtime_t));
 	return ret;
 }
 

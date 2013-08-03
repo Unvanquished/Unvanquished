@@ -277,6 +277,7 @@ void IPCHandle::Close()
 {
 	if (handle != INVALID_HANDLE)
 		NaClClose(handle);
+	handle = INVALID_HANDLE;
 }
 
 bool IPCHandle::SendMsg(const void* data, size_t len) const
@@ -413,6 +414,8 @@ void Module::Close()
 	kill(process_handle, SIGKILL);
 	waitpid(process_handle, NULL, 0);
 #endif
+
+	process_handle = INVALID_HANDLE;
 }
 
 Module InternalLoadModule(NaClHandle* pair, const char* const* args, const char* const* env, bool reserve_mem)

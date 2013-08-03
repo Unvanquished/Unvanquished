@@ -726,7 +726,7 @@ void GameVM::BotAIStartFrame(int levelTime)
 
 void GameVM::GameMessageRecieved(int clientNum, const char *buffer, int bufferSize, int commandTime)
 {
-	Com_Error(ERR_DROP, "GameVM::GameMessageRecieved not implemented");
+	//Com_Error(ERR_DROP, "GameVM::GameMessageRecieved not implemented");
 }
 
 void GameVM::Syscall(int index, RPC::Reader& inputs, RPC::Writer& outputs)
