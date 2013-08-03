@@ -43,7 +43,7 @@ Maryland 20850 USA.
 #include "../qcommon/qcommon.h"
 #include "sys_local.h"
 #if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
-extern "C" 
+extern "C"
 {
 #include <sys/sysctl.h>
 #include <Carbon/Carbon.h>

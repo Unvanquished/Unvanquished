@@ -2421,7 +2421,6 @@ S_AL_Init
 */
 qboolean S_AL_Init( soundInterface_t *si )
 {
-#ifdef USE_OPENAL
 	const char* device = NULL;
 	const char* inputdevice = NULL;
 	int i;
@@ -2665,8 +2664,5 @@ qboolean S_AL_Init( soundInterface_t *si )
 	si->StopAllSounds = S_AL_StopAllSounds;
 
 	return qtrue;
-#else
-	return qfalse;
-#endif
 }
 

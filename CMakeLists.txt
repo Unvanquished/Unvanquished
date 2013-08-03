@@ -142,6 +142,7 @@ macro( try_c_cxx_flag PROP FLAG )
 endmacro()
 macro( try_linker_flag PROP FLAG )
   # Check it with the C compiler
+  set( CMAKE_REQUIRED_FLAGS ${FLAG} )
   check_C_compiler_flag( ${FLAG} FLAG_${PROP} )
   if( FLAG_${PROP} )
     set_linker_flag( ${FLAG} ${ARGN} )
@@ -203,14 +204,12 @@ else()
   endif()
 
   # Linker flags
-  if( GCC )
-    try_linker_flag( LINKER_O1 "-Wl,-O1" )
-    try_linker_flag( LINKER_SORT_COMMON "-Wl,--sort-common" )
-    try_linker_flag( LINKER_AS_NEEDED "-Wl,--as-needed" )
-    try_linker_flag( LINKER_NO_UNDEFINED "-Wl,--no-undefined" )
-    try_linker_flag( LINKER_Z_RELRO "-Wl,-z,relro" )
-  endif()
-  
+  try_linker_flag( LINKER_O1 "-Wl,-O1" )
+  try_linker_flag( LINKER_SORT_COMMON "-Wl,--sort-common" )
+  try_linker_flag( LINKER_AS_NEEDED "-Wl,--as-needed" )
+  try_linker_flag( LINKER_NO_UNDEFINED "-Wl,--no-undefined" )
+  try_linker_flag( LINKER_Z_RELRO "-Wl,-z,relro" )
+
   # LTO support, only used on release builds
   if( ENABLE_LTO )
     # This flag is also used when linking
@@ -735,14 +734,16 @@ else()
   if( LIBRT )
     set( LIBS_BASE ${LIBS_BASE} ${LIBRT} )
   endif()
-  mark_as_advanced( LIBM LIBRT )
+  find_library( LIBICONV iconv )
+  if( LIBICONV )
+    set( LIBS_BASE ${LIBS_BASE} ${LIBICONV} )
+  endif()
+  mark_as_advanced( LIBM LIBRT LIBICONV )
   set( LIBS_BASE ${LIBS_BASE} ${CMAKE_DL_LIBS} )
   find_package( Threads REQUIRED )
   set( LIBS_BASE ${LIBS_BASE} ${CMAKE_THREAD_LIBS_INIT} )
   if( MAC )
-    # Amanieu: Check if any of these can be removed or moved to client libs
-    set( LIBS_CLIENT "-framework AGL" "-framework OpenGL" "-framework Carbon" "-framework IOKit" "-framework Cocoa" )
-    set( LIBS_BASE ${LIBS_BASE}  -liconv )
+    set( LIBS_CLIENT ${LIBS_CLIENT} "-framework Carbon" "-framework IOKit" "-framework Cocoa" )
   endif()
 endif()
 
@@ -974,8 +975,6 @@ if( LINUX )
 endif()
 
 # OpenAL
-
-
 find_package( OpenAL )
 if( OPENAL_FOUND )
   include_directories( ${OPENAL_INCLUDE_DIR} )
