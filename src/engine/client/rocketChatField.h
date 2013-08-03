@@ -60,7 +60,6 @@ public:
 	}
 	virtual ~RocketChatField( void )
 	{
-		this->RemoveReference();
 	}
 
 	void OnRender( void )
