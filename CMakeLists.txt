@@ -203,12 +203,14 @@ else()
   endif()
 
   # Linker flags
-  try_linker_flag( LINKER_O1 "-Wl,-O1" )
-  try_linker_flag( LINKER_SORT_COMMON "-Wl,--sort-common" )
-  try_linker_flag( LINKER_AS_NEEDED "-Wl,--as-needed" )
-  try_linker_flag( LINKER_NO_UNDEFINED "-Wl,--no-undefined" )
-  try_linker_flag( LINKER_Z_RELRO "-Wl,-z,relro" )
-
+  if( GCC )
+    try_linker_flag( LINKER_O1 "-Wl,-O1" )
+    try_linker_flag( LINKER_SORT_COMMON "-Wl,--sort-common" )
+    try_linker_flag( LINKER_AS_NEEDED "-Wl,--as-needed" )
+    try_linker_flag( LINKER_NO_UNDEFINED "-Wl,--no-undefined" )
+    try_linker_flag( LINKER_Z_RELRO "-Wl,-z,relro" )
+  endif()
+  
   # LTO support, only used on release builds
   if( ENABLE_LTO )
     # This flag is also used when linking
