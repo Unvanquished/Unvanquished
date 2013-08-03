@@ -33,7 +33,7 @@ void VertexSkinning_P_N(const vec3 inPosition,
 						inout vec3 normal)
 {
 	mat3x4 boneMatrix = u_BoneMatrix[ int( attr_BoneIndexes.x ) ] * attr_BoneWeights.x;
-	boneMatrix += u_BoneMatrix[ int( attr_BoneIndexes.y ] * attr_BoneWeights.y;
+	boneMatrix += u_BoneMatrix[ int( attr_BoneIndexes.y ) ] * attr_BoneWeights.y;
 	boneMatrix += u_BoneMatrix[ int( attr_BoneIndexes.z ) ] * attr_BoneWeights.z;
 	boneMatrix += u_BoneMatrix[ int( attr_BoneIndexes.w ) ] * attr_BoneWeights.w;
 
