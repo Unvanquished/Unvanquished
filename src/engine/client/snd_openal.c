@@ -25,8 +25,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "snd_codec.h"
 #include "client.h"
 
-#ifdef USE_OPENAL
-
 #include "qal.h"
 
 // Console variables specific to OpenAL
@@ -2302,7 +2300,6 @@ void S_AL_MasterGain( float gain )
 {
 	qalListenerf(AL_GAIN, gain);
 }
-#endif
 
 
 /*

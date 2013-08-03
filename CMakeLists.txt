@@ -38,7 +38,6 @@ option( ENABLE_LTO           "Use link-time optimization for Release builds"    
 option( ENABLE_BUNDLING      "When packaging automatically include all non-system libraries in package" 0 )
 option( ENABLE_HARDENING     "Use stack protection"                                                     0 )
 
-cmake_dependent_option( USE_OPENAL           "Use OpenAL"                                            1 "BUILD_CLIENT OR BUILD_TTY_CLIENT"                 0 )
 cmake_dependent_option( USE_MUMBLE           "Compile with support for Mumble"                       1 BUILD_CLIENT                   0 )
 cmake_dependent_option( USE_VOIP             "Compile with VOIP support"                             1 "BUILD_CLIENT OR BUILD_SERVER" 0 )
 cmake_dependent_option( USE_CURSES           "Use the curses console"                                1 "BUILD_CLIENT OR BUILD_SERVER OR BUILD_TTY_CLIENT" 0 )
@@ -973,15 +972,15 @@ if( LINUX )
 endif()
 
 # OpenAL
-if( USE_OPENAL )
-  add_definitions( -DUSE_OPENAL -DUSE_OPENAL_DLOPEN )
-  find_package( OpenAL )
-  if( OPENAL_FOUND )
-    include_directories( ${OPENAL_INCLUDE_DIR} )
-  else()
-    include_directories( ${LIB_DIR}/openal/include )
-  endif()
+
+
+find_package( OpenAL )
+if( OPENAL_FOUND )
+  include_directories( ${OPENAL_INCLUDE_DIR} )
+else()
+  include_directories( ${LIB_DIR}/openal/include )
 endif()
+
 
 # CURL
 find_package( CURL ${OPTIONAL_WIN32} )
