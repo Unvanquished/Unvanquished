@@ -39,7 +39,7 @@ void BoneMatrixInvert( boneMatrix_t m )
 	
 	z = m[ 6 ];
 	m[ 6 ] = m[ 9 ];
-	m[ 9 ] = m[ 6 ];
+	m[ 9 ] = z;
 	
 	// add unscale factor
 	x = m[ 0 ] * m[ 0 ] + m[ 1 ] * m[ 1 ] + m[ 2 ] * m[ 2 ];
