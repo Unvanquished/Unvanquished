@@ -189,6 +189,7 @@ public:
 		{
 			focus =  false;
 			GetContext()->ShowMouseCursor( true );
+			text.Clear();
 		}
 	}
 
