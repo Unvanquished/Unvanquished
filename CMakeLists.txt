@@ -147,6 +147,7 @@ macro( try_linker_flag PROP FLAG )
   if( FLAG_${PROP} )
     set_linker_flag( ${FLAG} ${ARGN} )
   endif()
+  set( CMAKE_REQUIRED_FLAGS "" )
 endmacro()
 
 if( MSVC )
