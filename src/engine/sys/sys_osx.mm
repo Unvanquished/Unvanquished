@@ -42,10 +42,14 @@ Maryland 20850 USA.
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
 #include "sys_local.h"
-
+#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
+extern "C" 
+{
 #include <sys/sysctl.h>
-#import <Carbon/Carbon.h>
-#import <Cocoa/Cocoa.h>
+#include <Carbon/Carbon.h>
+#include <Cocoa/Cocoa.h>
+}
+#endif
 
 /*
 ==================
@@ -81,6 +85,7 @@ Display an OS X dialog box
 */
 dialogResult_t Sys_Dialog( dialogType_t type, const char *message, const char *title )
 {
+#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 	dialogResult_t result = DR_OK;
 	NSAlert *alert = [NSAlert new];
 
@@ -126,4 +131,5 @@ dialogResult_t Sys_Dialog( dialogType_t type, const char *message, const char *t
 	[alert release];
 
 	return result;
+#endif
 }

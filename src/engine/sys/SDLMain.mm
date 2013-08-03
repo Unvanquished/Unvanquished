@@ -7,31 +7,15 @@
    Feel free to customize this file to suit your needs
 */
 
+extern "C"
+{
 #import <Cocoa/Cocoa.h>
 #import <sys/param.h>
-
+#import <CoreServices/CoreServices.h>
+ 
 #import "SDL/SDL.h"
 #import "SDLMain.h"
-
-#include "../framework/CommandSystem.h"
-
-#define SDL_USE_CPS 1
-
-#ifdef SDL_USE_CPS
-
-/* Portions of CPS.h */
-typedef struct CPSProcessSerNum
-{
-	UInt32 lo;
-	UInt32 hi;
-} CPSProcessSerNum;
-
-extern OSErr CPSGetCurrentProcess( CPSProcessSerNum *psn );
-extern OSErr CPSEnableForegroundOperation( CPSProcessSerNum *psn, UInt32 _arg2, UInt32 _arg3, UInt32 _arg4, UInt32 _arg5 );
-extern OSErr CPSSetFrontProcess( CPSProcessSerNum *psn );
-
-#endif
-
+}
 static int  gArgc;
 static char **gArgv;
 static BOOL gFinderLaunch;
@@ -148,15 +132,6 @@ static void CustomApplicationMain( int argc, char **argv )
 	sdlMain = [[SDLMain alloc] init];
 	[NSApp setDelegate:sdlMain];
 
-#ifdef SDL_USE_CPS
-	/* Tell the dock about us */
-	CPSProcessSerNum PSN;
-	if ( !CPSGetCurrentProcess( &PSN ) )
-		if ( !CPSEnableForegroundOperation( &PSN, 0x03, 0x3C, 0x2C, 0x1103 ) )
-			if ( !CPSSetFrontProcess( &PSN ) )
-				[NSApplication sharedApplication];
-#endif
-
 	/* Handle URI events */
 	[[NSAppleEventManager sharedAppleEventManager] setEventHandler:sdlMain andSelector:@selector(getUrl:withReplyEvent:) forEventClass:kInternetEventClass andEventID:kAEGetURL];
 
@@ -248,7 +223,7 @@ static void CustomApplicationMain( int argc, char **argv )
 	if ( gCalledAppMainline )
 	{
 		snprintf( buffer, sizeof( buffer ), "connect \"%s\";", [uri UTF8String] );
-		Cmd::BufferCommandText(buffer);
+//		Cmd::BufferCommandText(buffer);
 	}
 	else
 	{

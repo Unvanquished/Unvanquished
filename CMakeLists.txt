@@ -38,7 +38,7 @@ option( ENABLE_LTO           "Use link-time optimization for Release builds"    
 option( ENABLE_BUNDLING      "When packaging automatically include all non-system libraries in package" 0 )
 option( ENABLE_HARDENING     "Use stack protection"                                                     0 )
 
-cmake_dependent_option( USE_OPENAL           "Use OpenAL"                                            1 BUILD_CLIENT                   0 )
+cmake_dependent_option( USE_OPENAL           "Use OpenAL"                                            1 "BUILD_CLIENT OR BUILD_TTY_CLIENT"                 0 )
 cmake_dependent_option( USE_MUMBLE           "Compile with support for Mumble"                       1 BUILD_CLIENT                   0 )
 cmake_dependent_option( USE_VOIP             "Compile with VOIP support"                             1 "BUILD_CLIENT OR BUILD_SERVER" 0 )
 cmake_dependent_option( USE_CURSES           "Use the curses console"                                1 "BUILD_CLIENT OR BUILD_SERVER OR BUILD_TTY_CLIENT" 0 )
@@ -740,7 +740,8 @@ else()
   set( LIBS_BASE ${LIBS_BASE} ${CMAKE_THREAD_LIBS_INIT} )
   if( MAC )
     # Amanieu: Check if any of these can be removed or moved to client libs
-    set( LIBS_BASE ${LIBS_BASE} "-framework AGL -framework OpenGL -framework Carbon -framework IOKit" )
+    set( LIBS_CLIENT "-framework AGL" "-framework OpenGL" "-framework Carbon" "-framework IOKit" "-framework Cocoa" )
+    set( LIBS_BASE ${LIBS_BASE}  -liconv )
   endif()
 endif()
 
@@ -951,7 +952,7 @@ endif()
 # GLEW
 find_package( GLEW )
 if( GLEW_FOUND )
-  include_directories( ${GLEW_INCLUDE_DIRS} )
+  include_directories( ${GLEW_INCLUDE_DIR} )
   set( LIBS_RENDERER ${LIBS_RENDERER} ${GLEW_LIBRARIES} )
 else()
   add_subdirectory( ${LIB_DIR}/glew ${OBJ_DIR}/libglew )

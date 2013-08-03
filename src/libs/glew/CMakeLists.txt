@@ -2,7 +2,7 @@
 
 find_package( OpenGL REQUIRED )
 
-include_directories( ${GLEW_DIR}/include )
+include_directories( ${LIB_DIR}/glew/include )
 include_directories( ${OPENGL_INCLUDE_DIR} )
 
 
