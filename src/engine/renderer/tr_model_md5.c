@@ -497,6 +497,7 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 			}
 
 			VectorCopy( tmpVert, v->position );
+			v->position[ 3 ] = 1;
 			AddPointToBounds( tmpVert, md5->bounds[ 0 ], md5->bounds[ 1 ] );
 		}
 
@@ -508,8 +509,6 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 
 			for ( j = 0, v = surf->verts; j < surf->numVerts; j++, v++ )
 			{
-				VectorClear( v->tangent );
-				VectorClear( v->binormal );
 				VectorClear( v->normal );
 			}
 
@@ -537,6 +536,7 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 			for ( j = 0, v = surf->verts; j < surf->numVerts; j++, v++ )
 			{
 				VectorNormalize( v->normal );
+				v->normal[ 3 ] = 0;
 			}
 		}
 

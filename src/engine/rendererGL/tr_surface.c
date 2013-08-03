@@ -1683,7 +1683,7 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 	md5Model_t      *model;
 	md5Vertex_t     *v;
 	srfTriangle_t   *tri;
-	static boneMatrix_t boneMatrices[ MAX_BONES ];
+	static ALIGNED( 16, boneMatrix_t boneMatrices[ MAX_BONES ] );
 	md5Weight_t *w;
 	boneMatrix_t tmpMat;
 
@@ -1773,16 +1773,22 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 
 		for ( j = 0, v = srf->verts; j < numVertexes; j++, v++ )
 		{
-			tess.xyz[ tess.numVertexes + j ][ 3 ] = 1;
-			tess.tangents[ tess.numVertexes + j ][ 3 ] = 1;
-			tess.binormals[ tess.numVertexes + j ][ 3 ] = 1;
-			tess.normals[ tess.numVertexes + j ][ 3 ] = 1;
+#if id386_sse
+			__m128 a, b, c;
 
-			tess.texCoords[ tess.numVertexes + j ][ 0 ] = v->texCoords[ 0 ];
-			tess.texCoords[ tess.numVertexes + j ][ 1 ] = v->texCoords[ 1 ];
-			tess.texCoords[ tess.numVertexes + j ][ 2 ] = 0;
-			tess.texCoords[ tess.numVertexes + j ][ 3 ] = 1;
+			w = v->weights[ 0 ];
+			BoneMatrixMulSSE( &a, &b, &c, w->boneWeight, boneMatrices[ w->boneIndex ] );
 
+			for ( k = 1, w = v->weights[ 1 ]; k < v->numWeights; k++, w++ )
+			{
+				BoneMatrixMadSSE( &a, &b, &c, w->boneWeight, boneMatrices[ w->boneIndex ] );
+			}
+
+			BoneMatrixTransform4SSE( a, b, c, v->position, tess.xyz[ tess.numVertexes + j ] );
+			BoneMatrixTransform4SSE( a, b, c, v->normal, tess.normals[ tess.numVertexes + j ] );
+			BoneMatrixTransform4SSE( a, b, c, v->binormal, tess.binormals[ tess.numVertexes + j ] );
+			BoneMatrixTransform4SSE( a, b, c, v->tangent, tess.tangents[ tess.numVertexes + j ] );
+#else
 			w = v->weights[ 0 ];
 			BoneMatrixMul( tmpMat, w->boneWeight, boneMatrices[ w->boneIndex ] );
 
@@ -1797,6 +1803,16 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 			BoneMatrixTransformNormal( tmpMat, v->normal, tess.normals[ tess.numVertexes + j ] );
 			BoneMatrixTransformNormal( tmpMat, v->binormal, tess.binormals[ tess.numVertexes + j ] );
 			BoneMatrixTransformNormal( tmpMat, v->tangent, tess.tangents[ tess.numVertexes + j ] );
+#endif
+			tess.xyz[ tess.numVertexes + j ][ 3 ] = 1;
+			tess.tangents[ tess.numVertexes + j ][ 3 ] = 1;
+			tess.binormals[ tess.numVertexes + j ][ 3 ] = 1;
+			tess.normals[ tess.numVertexes + j ][ 3 ] = 1;
+
+			tess.texCoords[ tess.numVertexes + j ][ 0 ] = v->texCoords[ 0 ];
+			tess.texCoords[ tess.numVertexes + j ][ 1 ] = v->texCoords[ 1 ];
+			tess.texCoords[ tess.numVertexes + j ][ 2 ] = 0;
+			tess.texCoords[ tess.numVertexes + j ][ 3 ] = 1;
 		}
 	}
 
