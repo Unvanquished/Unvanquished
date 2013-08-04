@@ -1741,6 +1741,8 @@ if( BUILD_CLIENT )
 	  include_directories( ${LIB_DIR}/opusfile-0.2/include ${LIB_DIR}/opus-1.0.2/include ${LIB_DIR}/opus-1.0.2/celt ${LIB_DIR}/opus-1.0.2/silk ${LIB_DIR}/opus-1.0.2/silk/float )
   else()
 	  find_package( Opus REQUIRED )
+	  include_directories( ${OPUS_INCLUDE_DIRS} )
+	  target_link_libraries( client ${OPUS_LIBRARIES} )
   endif()
 
   if( USE_CODEC_VORBIS )
