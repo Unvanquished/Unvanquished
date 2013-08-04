@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-07-07 23:10+0200\n"
-"PO-Revision-Date: 2013-03-29 07:43+0000\n"
-"Last-Translator: asvarox <asvarox@gmail.com>\n"
+"PO-Revision-Date: 2013-07-29 07:10+0000\n"
+"Last-Translator: VVerTT <VVert-001@wp.pl>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: pl\n"
 "MIME-Version: 1.0\n"
@@ -16,12 +16,12 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2);\n"
 "X-Generator: Pootle 2.5.0-beta1\n"
-"X-POOTLE-MTIME: 1364542993.0\n"
+"X-POOTLE-MTIME: 1375081810.0\n"
 
 #: tremulous_alien_builder_hud.menu:47 tremulous_alien_builder_hud.menu:49
 #: tremulous_alien_builder_hud.menu:48
 msgid "build points"
-msgstr "punkty budowy"
+msgstr "Punkty Budowy"
 
 #: tremulous_alienbuild.menu:99 createfavorite.menu:79 drop.menu:81
 #: error.menu:84 newprofile.menu:70 password.menu:70
@@ -43,7 +43,7 @@ msgstr "Anuluj"
 
 #: confirmdelprofile.menu:48
 msgid "Delete Profile?"
-msgstr "Usunąć profil?"
+msgstr "Usunąć Profil?"
 
 #: confirmdelprofile.menu:63 quit.menu:63
 msgid "YES"
@@ -173,7 +173,7 @@ msgstr "Najniższe"
 
 #: firstrun.menu:50 ingame_options.menu:490 options.menu:503
 msgid "Custom"
-msgstr "Własna"
+msgstr "Własne"
 
 #: firstrun.menu:61 main/ui/firstrun.menu:61
 msgid "Network Connection:"
@@ -249,15 +249,15 @@ msgstr "Zakończ mecz remisem"
 
 #: ingame_game.menu:302 ingame_game.menu:589
 msgid "Mute Player"
-msgstr "Wycisz Gracza"
+msgstr "Wycisz gracza"
 
 #: ingame_game.menu:320 ingame_game.menu:628
 msgid "Kick Player"
-msgstr "Wykop Gracza"
+msgstr "Wykop gracza"
 
 #: ingame_game.menu:338 ingame_game.menu:648
 msgid "Move Player To Spectators"
-msgstr "Przenieś Gracza do Widzów"
+msgstr "Przenieś gracza do widzów"
 
 #: ingame_game.menu:356 ingame_game.menu:729
 msgid "Kick Teammate"
@@ -301,7 +301,7 @@ msgstr "Przyznaj się do porażki"
 
 #: ingame_game.menu:790
 msgid "Player Name"
-msgstr "Imię Gracza: "
+msgstr "Imię gracza: "
 
 #: ingame_game.menu:803
 msgid "Ignored"
@@ -313,19 +313,19 @@ msgstr "Ignorujący Ciebie"
 
 #: ingame_game.menu:854
 msgid "Ignore Player"
-msgstr "Ignoruj Gracza"
+msgstr "Ignoruj gracza"
 
 #: ingame_game.menu:873
 msgid "Stop Ignoring Player"
-msgstr "Przestań Ignorować Gracza"
+msgstr "Przestań ignorować gracza"
 
 #: ingame_game.menu:898
 msgid "Server Name:"
-msgstr "Nazwa Serwera: "
+msgstr "Nazwa serwera:"
 
 #: ingame_game.menu:915 main/ui/createserver.menu:127
 msgid "Time Limit:"
-msgstr "Limit Czasowy:"
+msgstr "Limit czasu:"
 
 #: ingame_game.menu:932
 msgid "Sudden Death Time:"
@@ -357,7 +357,7 @@ msgstr "Wersja: "
 
 #: ingame_leave.menu:54
 msgid "Main Menu"
-msgstr "Menu Głowne"
+msgstr "Menu Główne"
 
 #: ingame_leave.menu:75 main/ui/main.menu:72
 msgid "Quit"
@@ -456,7 +456,7 @@ msgstr "24-godzinny"
 #: ingame_options.menu:235 options.menu:247 main/ui/ingame_options.menu:235
 #: main/ui/options.menu:247
 msgid "Show Crosshair:"
-msgstr "Pokaż Celownik:"
+msgstr "Pokaż celownik:"
 
 #: ingame_options.menu:235 options.menu:247
 msgid "Never"
@@ -473,7 +473,7 @@ msgstr "Zawsze"
 #: ingame_options.menu:236 options.menu:248 main/ui/ingame_options.menu:236
 #: main/ui/options.menu:248
 msgid "Crosshair Size:"
-msgstr "Rozmiar Celownika:"
+msgstr "Rozmiar celownika:"
 
 #: ingame_options.menu:236 options.menu:248
 msgid "Small"
@@ -587,7 +587,7 @@ msgstr "Inne"
 
 #: ingame_options.menu:461 options.menu:474
 msgid "Display"
-msgstr ""
+msgstr "Wyświetlacz"
 
 #: ingame_options.menu:489 options.menu:502 main/ui/ingame_options.menu:489
 #: main/ui/options.menu:502
@@ -602,22 +602,22 @@ msgstr "Multisampling:"
 #: ingame_options.menu:502 ingame_options.menu:506 options.menu:515
 #: options.menu:519
 msgid "2×"
-msgstr ""
+msgstr "2×"
 
 #: ingame_options.menu:502 ingame_options.menu:506 options.menu:515
 #: options.menu:519
 msgid "4×"
-msgstr ""
+msgstr "4×"
 
 #: ingame_options.menu:502 ingame_options.menu:506 options.menu:515
 #: options.menu:519
 msgid "8×"
-msgstr ""
+msgstr "8×"
 
 #: ingame_options.menu:502 ingame_options.menu:506 options.menu:515
 #: options.menu:519
 msgid "16×"
-msgstr ""
+msgstr "16×"
 
 #: ingame_options.menu:505 options.menu:518 main/ui/ingame_options.menu:505
 #: main/ui/options.menu:518
@@ -626,7 +626,7 @@ msgstr "Filtrowania Anizotropowe:"
 
 #: ingame_options.menu:516 options.menu:528
 msgid "Effects"
-msgstr ""
+msgstr "Efekty"
 
 #: ingame_options.menu:545 options.menu:557 main/ui/ingame_options.menu:545
 #: main/ui/options.menu:557
@@ -644,23 +644,23 @@ msgstr "Vertex (niskie)"
 #: ingame_options.menu:552 options.menu:564 main/ui/ingame_options.menu:552
 #: main/ui/options.menu:564
 msgid "Shadows:"
-msgstr ""
+msgstr "Cienie:"
 
 #: ingame_options.menu:553 options.menu:565
 msgid "Blobs"
-msgstr ""
+msgstr "Blob"
 
 #: ingame_options.menu:553 options.menu:565
 msgid "Exponential mapping"
-msgstr ""
+msgstr "Mapowanie wykładnicze"
 
 #: ingame_options.menu:553 options.menu:565
 msgid "Variance mapping"
-msgstr ""
+msgstr "Mapowanie wariancyjne"
 
 #: ingame_options.menu:553 options.menu:565
 msgid "Exponential variance"
-msgstr ""
+msgstr "Wykładnicze wariancji"
 
 #: ingame_options.menu:559 options.menu:571 main/ui/ingame_options.menu:559
 #: main/ui/options.menu:571
@@ -683,7 +683,7 @@ msgstr "Trójliniowe"
 #: ingame_options.menu:576 options.menu:588 main/ui/ingame_options.menu:576
 #: main/ui/options.menu:588
 msgid "Motion Blur:"
-msgstr ""
+msgstr "Rozmycie w ruchu:"
 
 #: ingame_options.menu:589 options.menu:601
 msgid "GFX Software"
@@ -853,7 +853,7 @@ msgstr "Mapa"
 
 #: joinserver.menu:350
 msgid "Players + Bots"
-msgstr ""
+msgstr "Graczy + Botów"
 
 #: joinserver.menu:393 teamscore.menu:175 teamscore.menu:250
 msgid "Ping"
@@ -881,7 +881,7 @@ msgstr "Info o Serwerze"
 
 #: joinserver.menu:592
 msgid "Find a Friend"
-msgstr "Znajdź Gracza"
+msgstr "Znajdź gracza"
 
 #: joinserver.menu:614
 msgid "Create Server"
@@ -893,7 +893,7 @@ msgstr "Punkty Ewolucji"
 
 #: main.menu:80
 msgid "Unvanquished (C) 2011-2013 Unvanquished Development"
-msgstr "Unvanquished (C) 2011-2012 Unvanquished Development"
+msgstr "Unvanquished (C) 2011-2013 Unvanquished Development"
 
 #: mod.menu:74 profiles.menu:126
 msgid "Load"
@@ -2536,12 +2536,12 @@ msgstr "Następne Ulepszenie"
 
 #: src/gamelogic/cgame/cg_tutorial.c:52
 msgid "Toggle Console"
-msgstr ""
+msgstr "Przełącz konsolę"
 
 #: src/gamelogic/cgame/cg_tutorial.c:128 src/gamelogic/ui/ui_shared.c:6261
 #, c-format
 msgid "%s or %s"
-msgstr ""
+msgstr "%s lub %s"
 
 #: src/gamelogic/cgame/cg_tutorial.c:138
 #, c-format
@@ -2551,12 +2551,12 @@ msgstr "%s (nieustawiony)"
 #: src/gamelogic/cgame/cg_tutorial.c:201
 #, c-format
 msgid "Press %s to place the %s\n"
-msgstr ""
+msgstr "Wciśnij %s by użyć %s\n"
 
 #: src/gamelogic/cgame/cg_tutorial.c:204
 #, c-format
 msgid "Press %s to cancel placing the %s\n"
-msgstr ""
+msgstr "Naciśnij %s aby anulować zamieszczenie %s\n"
 
 #: src/gamelogic/cgame/cg_tutorial.c:210
 #, c-format
@@ -2601,17 +2601,22 @@ msgid ""
 "Look at their heads (or jump) to try to bite their heads\n"
 "Head-bites cause more damage\n"
 msgstr ""
+"Dotykaj ludzi aby ich ranić\n"
+"Podczas ataku (lub skoku) celuj w głowę\n"
+"Zaatakowanie człowieka w głowę powoduje większe obrażenia\n"
 
 #: src/gamelogic/cgame/cg_tutorial.c:293
 msgid ""
 "Touch humans to grab them\n"
 "Look at them to maintain the grab\n"
 msgstr ""
+"Dotykaj ludzi aby ich złapać.\n"
+"Popatrz na nich aby utrzymać chwyt.\n"
 
 #: src/gamelogic/cgame/cg_tutorial.c:303
 #, c-format
 msgid "Press %s to spray disorienting gas\n"
-msgstr ""
+msgstr "Naciśnij %s aby rozpylać gaz dezorientujący.\n"
 
 #: src/gamelogic/cgame/cg_tutorial.c:320 src/gamelogic/cgame/cg_tutorial.c:343
 #, c-format
@@ -2636,7 +2641,7 @@ msgstr "Przytrzymaj i puść %s by się wyrzucić\n"
 #: src/gamelogic/cgame/cg_tutorial.c:372
 #, c-format
 msgid "Hold down and release %s while moving forwards to trample\n"
-msgstr ""
+msgstr "Przytrzymaj i puść% s podczas ruchu do przodu, aby zaszarżować.\n"
 
 #: src/gamelogic/cgame/cg_tutorial.c:416
 #, c-format
@@ -2673,7 +2678,7 @@ msgstr "Przytrzymaj i puść %s by wystrzelić naładowany pocisk\n"
 #: src/gamelogic/cgame/cg_tutorial.c:489
 #, c-format
 msgid "Use %s and %s to select an upgrade\n"
-msgstr ""
+msgstr "Użyj %s oraz %s, aby wybrać ulepszenie.\n"
 
 #: src/gamelogic/cgame/cg_tutorial.c:496 src/gamelogic/cgame/cg_tutorial.c:543
 #, c-format
@@ -2748,7 +2753,7 @@ msgstr "Wciśnij %s by przestać podążać\n"
 #: src/gamelogic/cgame/cg_tutorial.c:609
 #, c-format
 msgid "Use %s and %s to change between players\n"
-msgstr ""
+msgstr "Użyj %s i %s, aby przemieszczać się pomiędzy graczami.\n"
 
 #: src/gamelogic/cgame/cg_tutorial.c:615
 #, c-format
@@ -2772,7 +2777,7 @@ msgstr "Oczekiwanie na potwierdzenie gotowości innych graczy\n"
 #: src/gamelogic/cgame/cg_tutorial.c:722
 #, c-format
 msgid "Press %s to open the console\n"
-msgstr ""
+msgstr "Naciśnij %s, aby otworzyć konsolę.\n"
 
 #: src/gamelogic/cgame/cg_tutorial.c:723
 msgid "Press ESC for the menu"
@@ -3218,16 +3223,20 @@ msgid ""
 "^3time: ^7time is ^d$1$:$2$:$3$^7 UTC – game runs for ^d$4$:$5$^7 with "
 "Sudden Death in ^d$6$:$7$^7\n"
 msgstr ""
+"^3Czas: ^7Czas obecny to ^d$1$:$2$:$3$^7 UTC – Czas gry to ^d$4$:$5$^7 z "
+"Sudden Death o ^d$6$:$7$^7\n"
+" "
 
 #: src/gamelogic/game/g_admin.c:2101
 msgid ""
 "^3time: ^7time is ^d$1$:$2$:$3$^7 UTC – game runs for ^d$4$:$5$^7 hitting "
 "Timelimit in ^d$6$:$7$^7\n"
-msgstr ""
+msgstr "^3czas: ^7czas lokalny to ^d$1$:$2$:$3$^7 UTC – czas gry to ^d$4$:$5$^7 "
+"koniec gry o ^d$6$:$7$^7\n"
 
 #: src/gamelogic/game/g_admin.c:2106
 msgid "^3time: ^7time is ^d$1$:$2$:$3$^7 UTC – game time is ^d$4$:$5$^7\n"
-msgstr ""
+msgstr "^3czas: ^7czas lokalny to ^d$1$:$2$:$3$^7 - czas gry to ^d$4$:$5$^7\n"
 
 #: src/gamelogic/game/g_admin.c:2132
 msgid "^3setlevel: ^7usage: setlevel [name|slot#] [level]\n"
@@ -4186,7 +4195,7 @@ msgstr "$1$^7 rozpoczął głosowanie: $2$\n"
 
 #: src/gamelogic/game/g_cmds.c:2159
 msgid "$1$^7 called a team vote: $2t$\n"
-msgstr ""
+msgstr "$1$^7 rozpoczął głosowanie w drużynie: "
 
 #: src/gamelogic/game/g_cmds.c:2210
 msgid "$1$: no vote in progress\n"
@@ -4202,7 +4211,7 @@ msgstr "$1$: zagłosowano\n"
 
 #: src/gamelogic/game/g_cmds.c:2254
 msgid "usage: setviewpos (<x> <y> <z> [<yaw> [<pitch>]] | <entitynum>)\n"
-msgstr ""
+msgstr "użycie: setviewpost <x> <y> <z> [<odchylenie> [<wysokość>]]\n"
 
 #: src/gamelogic/game/g_cmds.c:2869 src/gamelogic/game/g_cmds.c:2899
 #: src/gamelogic/game/g_cmds.c:2951
@@ -4211,7 +4220,7 @@ msgstr "Nie posiadasz $1$\n"
 
 #: src/gamelogic/game/g_cmds.c:3151
 msgid "You can't buy this item ($1$)\n"
-msgstr ""
+msgstr "Nie możesz kupić tego przedmiotu\n"
 
 #: src/gamelogic/game/g_cmds.c:3155
 msgid "You can't buy alien items\n"
@@ -4252,14 +4261,14 @@ msgstr "unignore: $1$^7 nie znajduje się na liście ignorowanych\n"
 #: src/gamelogic/game/g_cmds.c:4130
 msgid "^3listmaps: ^7found $1$ map matching '$2$^7'"
 msgid_plural "^3listmaps: ^7found $1$ maps matching '$2$^7'"
-msgstr[0] ""
+msgstr[0] "^3listmaps: ^7znaleziono $1$ map zawierających '$2$^7'"
 msgstr[1] ""
 msgstr[2] ""
 
 #: src/gamelogic/game/g_cmds.c:4134
 msgid "^3listmaps: ^7listing $1$ of $2$ map"
 msgid_plural "^3listmaps: ^7listing $1$ of $2$ maps"
-msgstr[0] ""
+msgstr[0] "^3listmaps: ^7wyświetlam $1$ ze wszystkich $2$ map"
 msgstr[1] ""
 msgstr[2] ""
 
@@ -4361,11 +4370,11 @@ msgstr "Obcy wygrali\n"
 
 #: src/gamelogic/game/g_main.c:2589
 msgid "Vote failed ($1$ of $2$; quorum not reached)\n"
-msgstr ""
+msgstr "Głosowanie nie powiodło się ($1$ z $2$; kworum nie osiągnięto)\n"
 
 #: src/gamelogic/game/g_main.c:2589
 msgid "Team vote failed ($1$ of $2$; quorum not reached)\n"
-msgstr ""
+msgstr "Głosowanie drużynowe nie powiodło się ($1$ z $2$; kworum nie osiągnięto)\n"
 
 # 91%
 #: src/gamelogic/game/g_main.c:2594
@@ -4441,15 +4450,15 @@ msgstr[0] "znaleziono %d serwer z graczem %s"
 
 #: src/gamelogic/ui/ui_main.c:1857
 msgid "Frags:"
-msgstr ""
+msgstr "Fragi:"
 
 #: src/gamelogic/ui/ui_main.c:1871 src/gamelogic/ui/ui_main.c:1892
 msgid "Credits: Free"
-msgstr ""
+msgstr "Kredyty: Free"
 
 #: src/gamelogic/ui/ui_main.c:1878 src/gamelogic/ui/ui_main.c:1899
 msgid "Credits:"
-msgstr ""
+msgstr "Twórcy"
 
 #: src/gamelogic/ui/ui_main.c:1911
 msgid "Sentience"
@@ -4944,7 +4953,7 @@ msgstr "Kompresja Tekstur:"
 
 #: main/ui/ingame_options.menu:567 main/ui/options.menu:579
 msgid "Normal Mapping:"
-msgstr ""
+msgstr "Normalne Mapowanie:"
 
 #: main/ui/ingame_options.menu:570 main/ui/options.menu:582
 msgid "Bloom:"
@@ -4952,11 +4961,11 @@ msgstr "Bloom:"
 
 #: main/ui/ingame_options.menu:573 main/ui/options.menu:585
 msgid "Rim Lighting:"
-msgstr ""
+msgstr "Obręcz świetlna:"
 
 #: main/ui/ingame_options.menu:579 main/ui/options.menu:591
 msgid "Heat Haze:"
-msgstr ""
+msgstr "Obłok cieplny:"
 
 #: main/ui/ingame_options.menu:617 main/ui/options.menu:629
 msgid "Brightness:"
