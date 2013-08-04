@@ -322,6 +322,11 @@ void ClientImpacts( gentity_t *ent, pmove_t *pm )
 	trace_t   trace;
 	gentity_t *other;
 
+	if( !ent->client )
+	{
+		return;
+	}
+
 	// clear a fake trace struct for touch function
 	memset( &trace, 0, sizeof( trace ) );
 
@@ -338,20 +343,18 @@ void ClientImpacts( gentity_t *ent, pmove_t *pm )
 			other->client->unlaggedCalc.used = qfalse;
 		}
 
+		// deal impact and weight damage
+		G_ImpactAttack( ent, other );
+		G_WeightAttack( ent, other );
+
 		// tyrant trample
 		if ( ent->client->ps.weapon == WP_ALEVEL4 )
 		{
 			G_ChargeAttack( ent, other );
 		}
 
-		// crush and weight damage
-		if ( ent->client )
-		{
-			G_CrushAttack( ent, other );
-		}
-
 		// shove players
-		if ( ent->client && other->client )
+		if ( other->client )
 		{
 			ClientShove( ent, other );
 		}
@@ -2004,8 +2007,8 @@ void ClientThink_real( gentity_t *ent )
 		usercmdPressButton( ent->client->pers.cmd.buttons, BUTTON_GESTURE );
 	}
 
-	// clear fall velocity before every pmove
-	client->pmext.fallVelocity = 0.0f;
+	// clear fall impact velocity before every pmove
+	VectorSet( client->pmext.fallImpactVelocity, 0.0f, 0.0f, 0.0f );
 
 	pm.ps = &client->ps;
 	pm.pmext = &client->pmext;

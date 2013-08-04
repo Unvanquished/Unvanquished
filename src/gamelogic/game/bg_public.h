@@ -177,8 +177,8 @@ typedef enum
 
 typedef struct
 {
-	int   pouncePayload;
-	float fallVelocity;
+	int    pouncePayload;
+	vec3_t fallImpactVelocity;
 } pmoveExt_t;
 
 #define MAXTOUCH 32
@@ -1014,6 +1014,7 @@ typedef struct
 	float    stopSpeed;
 	float    jumpMagnitude;
 	float    knockbackScale;
+	int      mass;
 
 	int      cost;
 	int      value;

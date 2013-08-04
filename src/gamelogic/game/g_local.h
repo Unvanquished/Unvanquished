@@ -1117,7 +1117,8 @@ void     CheckGrabAttack( gentity_t *ent );
 qboolean CheckPounceAttack( gentity_t *ent );
 void     CheckCkitRepair( gentity_t *ent );
 void     G_ChargeAttack( gentity_t *ent, gentity_t *victim );
-void     G_CrushAttack(gentity_t *attacker, gentity_t *victim );
+void     G_ImpactAttack(gentity_t *attacker, gentity_t *victim );
+void     G_WeightAttack(gentity_t *attacker, gentity_t *victim );
 void     G_UpdateZaps( int msec );
 void     G_ClearPlayerZapEffects( gentity_t *player );
 

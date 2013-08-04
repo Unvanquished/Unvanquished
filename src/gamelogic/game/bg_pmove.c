@@ -3019,8 +3019,8 @@ static void PM_GroundTrace( void )
 			Com_Printf( "%i:Land\n", c_pmove );
 		}
 
-		// communicate the fall velocity to the server
-		pm->pmext->fallVelocity = pml.previous_velocity[ 2 ];
+		// communicate the impact velocity to the server
+		VectorCopy( pml.previous_velocity, pm->pmext->fallImpactVelocity );
 
 		if ( BG_ClassHasAbility( pm->ps->stats[ STAT_CLASS ], SCA_TAKESFALLDAMAGE ) )
 		{
@@ -3031,7 +3031,7 @@ static void PM_GroundTrace( void )
 	pm->ps->groundEntityNum = trace.entityNum;
 
 	// don't reset the z velocity for slopes
-//  pm->ps->velocity[2] = 0;
+	//pm->ps->velocity[2] = 0;
 
 	PM_AddTouchEnt( trace.entityNum );
 }
