@@ -192,8 +192,8 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 		VectorCopy( boneOrigin, bone->origin );
 		QuatCopy( boneQuat, bone->rotation );
 
-		MatrixSetupTransformFromQuat( bone->inverseTransform, boneQuat, boneOrigin );
-		MatrixInverse( bone->inverseTransform );
+		BoneMatrixSetupTransform( bone->inverseTransform, boneQuat, boneOrigin );
+		BoneMatrixInvert( bone->inverseTransform );
 
 		// skip )
 		token = COM_ParseExt2( &buf_p, qfalse );

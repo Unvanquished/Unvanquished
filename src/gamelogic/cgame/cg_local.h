@@ -1460,6 +1460,13 @@ typedef enum
 	RM_SPHERICAL_CONE_240,
 } rangeMarker_t;
 
+typedef enum
+{
+  CG_ALTSHADER_DEFAULT, // must be first
+  CG_ALTSHADER_UNPOWERED,
+  CG_ALTSHADER_DEAD
+} altShader_t;
+
 //==============================================================================
 
 extern  cgs_t               cgs;

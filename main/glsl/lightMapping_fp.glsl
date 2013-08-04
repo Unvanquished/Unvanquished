@@ -30,6 +30,7 @@ uniform sampler2D	u_DeluxeMap;
 uniform float		u_AlphaThreshold;
 uniform vec3		u_ViewOrigin;
 uniform float		u_DepthScale;
+uniform vec2		u_SpecularExponent;
 
 varying vec3		var_Position;
 varying vec4		var_TexDiffuseNormal;
@@ -120,7 +121,7 @@ void	main()
 	vec3 lightColor = texture2D(u_LightMap, var_TexLight).rgb;
 
 	// compute the specular term
-	vec3 specular = texture2D(u_SpecularMap, texSpecular).rgb;
+	vec4 specular = texture2D(u_SpecularMap, texSpecular).rgba;
 
 	float NdotL = clamp(dot(N, L), 0.0, 1.0);
 
@@ -139,7 +140,7 @@ void	main()
 	color.rgb *= clamp(lightColorNoNdotL.rgb * NdotL, lightColor.rgb * 0.3, lightColor.rgb);
 	//color.rgb *= diffuse.rgb;
 	//color.rgb = L * 0.5 + 0.5;
-	color.rgb += specular * lightColorNoNdotL * pow(clamp(dot(N, H), 0.0, 1.0), r_SpecularExponent) * r_SpecularScale;
+	color.rgb += specular.rgb * lightColorNoNdotL * pow(clamp(dot(N, H), 0.0, 1.0), u_SpecularExponent.x * specular.a + u_SpecularExponent.y) * r_SpecularScale;
 	color.a = var_Color.a;	// for terrain blending
 
 

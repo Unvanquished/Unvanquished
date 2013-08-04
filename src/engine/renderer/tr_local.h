@@ -39,6 +39,8 @@ Maryland 20850 USA.
 #include "../qcommon/qfiles.h"
 #include "../qcommon/qcommon.h"
 #include "tr_public.h"
+#include "tr_bonematrix.h"
+
 #include <GL/glew.h>
 
 // everything that is needed by the backend needs
@@ -599,6 +601,12 @@ typedef struct shader_s
 	struct shader_s *remappedShader; // current shader this one is remapped too
 
 	int             shaderStates[ MAX_STATES_PER_SHADER ]; // index to valid shader states
+
+	struct {
+		char *name;
+		int  index;
+		int  spare[7]; // possible future expansion
+	} altShader[ MAX_ALTSHADERS ]; // state-based remapping; note that index 0 is unused
 
 	struct shader_s *next;
 } shader_t;
@@ -1222,7 +1230,7 @@ typedef struct
 	int8_t   parentIndex; // parent index (-1 if root)
 	vec3_t   origin;
 	quat_t   rotation;
-	matrix_t inverseTransform; // full inverse for tangent space transformation
+	boneMatrix_t inverseTransform; // full inverse for tangent space transformation
 } md5Bone_t;
 
 typedef struct md5Model_s
@@ -2565,6 +2573,8 @@ void     R_PurgeLightmapShaders( void );
 void     R_LoadCacheShaders( void );
 
 // done.
+
+void     R_SetAltShaderTokens( const char * );
 
 //------------------------------------------------------------------------------
 // Ridah, mesh compression

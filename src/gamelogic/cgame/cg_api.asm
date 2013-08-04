@@ -3,11 +3,6 @@
 
 code
 
-equ trap_S_StartSoundEx                   -1
-equ trap_S_GetSoundLength                 -1
-equ trap_S_GetCurrentSoundTime            -1
-equ trap_S_SoundDuration                  -1
-equ trap_S_GetVoiceAmplitude              -1
 equ memset                                -1
 equ memcpy                                -2
 equ memcmp                                -3
@@ -188,3 +183,5 @@ equ trap_SetColorGrading                  -420
 equ trap_CM_DistanceToModel               -421
 equ trap_R_ScissorEnable                  -422
 equ trap_R_ScissorSet                     -423
+equ trap_PrepareKeyUp                     -424
+equ trap_R_SetAltShaderTokens             -425

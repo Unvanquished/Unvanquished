@@ -266,22 +266,21 @@ static void R_AddInteractionSurface( bspSurface_t *surf, trRefLight_t *light )
 
 	if ( light->restrictInteractionFirst >= 0 )
 	{
-		iaType = IA_LIGHTONLY;
+		iaType = IA_DEFAULTCLIP;
+	}
+
+	if ( r_shadows->integer <= SHADOWING_BLOB ||
+	     light->l.noShadows ) {
+		iaType = (interactionType_t)(iaType & IA_LIGHT);
 	}
 
 	// Tr3B - this surface is maybe not in this view but it may still cast a shadow
 	// into this view
 	if ( surf->viewCount != tr.viewCountNoReset )
 	{
-		if ( r_shadows->integer <= SHADOWING_BLOB ||
-		     light->l.noShadows ||
-		     iaType == IA_LIGHTONLY )
-		{
+		iaType = (interactionType_t)(iaType & ~IA_LIGHT);
+		if ( !iaType ) {
 			return;
-		}
-		else
-		{
-			iaType = IA_SHADOWONLY;
 		}
 	}
 
@@ -2635,12 +2634,12 @@ void R_AddPrecachedWorldInteractions( trRefLight_t *light )
 			switch ( light->l.rlType )
 			{
 				case RL_OMNI:
-					R_AddLightInteraction( light, ( surfaceType_t * ) srf, shader, CUBESIDE_CLIPALL, IA_LIGHTONLY );
+					R_AddLightInteraction( light, ( surfaceType_t * ) srf, shader, CUBESIDE_CLIPALL, IA_LIGHT );
 					break;
 
 				case RL_DIRECTIONAL:
 				case RL_PROJ:
-					R_AddLightInteraction( light, ( surfaceType_t * ) srf, shader, CUBESIDE_CLIPALL, IA_LIGHTONLY );
+					R_AddLightInteraction( light, ( surfaceType_t * ) srf, shader, CUBESIDE_CLIPALL, IA_LIGHT );
 					break;
 
 				default:
@@ -2660,7 +2659,7 @@ void R_AddPrecachedWorldInteractions( trRefLight_t *light )
 			srf = iaVBO->vboShadowMesh;
 			shader = iaVBO->shader;
 
-			R_AddLightInteraction( light, ( surfaceType_t * ) srf, shader, iaVBO->cubeSideBits, IA_SHADOWONLY );
+			R_AddLightInteraction( light, ( surfaceType_t * ) srf, shader, iaVBO->cubeSideBits, IA_SHADOW );
 		}
 
 		// add interactions that couldn't be merged into VBOs
@@ -2688,7 +2687,7 @@ void R_AddPrecachedWorldInteractions( trRefLight_t *light )
 				}
 				else
 				{
-					iaType = IA_SHADOWONLY;
+					iaType = IA_SHADOW;
 				}
 			}
 			else
@@ -2723,7 +2722,7 @@ void R_AddPrecachedWorldInteractions( trRefLight_t *light )
 				}
 				else
 				{
-					iaType = IA_SHADOWONLY;
+					iaType = IA_SHADOW;
 				}
 			}
 			else

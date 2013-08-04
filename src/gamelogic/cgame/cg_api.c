@@ -1236,3 +1236,14 @@ void trap_R_ScissorSet( int x, int y, int w, int h )
 {
     syscall( CG_R_SCISSOR_SET, x, y, w, h );
 }
+
+void trap_PrepareKeyUp( void )
+{
+    syscall( CG_PREPAREKEYUP );
+}
+
+void trap_R_SetAltShaderTokens( const char *str )
+{
+    syscall( CG_R_SETALTSHADERTOKENS, str );
+}
+
