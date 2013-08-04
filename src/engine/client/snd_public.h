@@ -33,8 +33,8 @@ void S_StopBackgroundTrack( void );
 
 // cinematics and voice-over-network will send raw samples
 // 1.0 volume will be direct output of source samples
-void S_RawSamples(int stream, int samples, int rate, int width, int channels,
-				   const byte *data, float volume, int entityNum);
+void S_RawSamples( int stream, int samples, int rate, int width, int channels,
+                   const byte *data, float volume, int entityNum );
 
 // stop all sounds and the background track
 void S_StopAllSounds( void );
@@ -43,7 +43,7 @@ void S_StopAllSounds( void );
 void S_ClearLoopingSounds( qboolean killall );
 void S_AddLoopingSound( int entityNum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfx );
 void S_AddRealLoopingSound( int entityNum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfx );
-void S_StopLoopingSound(int entityNum );
+void S_StopLoopingSound( int entityNum );
 
 // recompute the relative volumes for all running sounds
 // relative to the given entityNum / orientation
@@ -64,7 +64,7 @@ void S_BeginRegistration( void );
 // checks for missing files
 sfxHandle_t	S_RegisterSound( const char *sample, qboolean compressed );
 
-void S_DisplayFreeMemory(void);
+void S_DisplayFreeMemory( void );
 
 void S_ClearSoundBuffer( void );
 

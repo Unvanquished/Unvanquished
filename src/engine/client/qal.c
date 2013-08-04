@@ -150,6 +150,7 @@ static void *GPA( char *str )
 		alinit_fail = qtrue;
 		return NULL;
 	}
+
 	else
 	{
 #ifndef NDEBUG

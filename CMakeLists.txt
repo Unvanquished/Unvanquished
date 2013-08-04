@@ -645,7 +645,7 @@ endif()
 set( CLIENTLIST
   ${MOUNT_DIR}/engine/client/cg_api.h
   ${MOUNT_DIR}/engine/client/ui_api.h
-  ${MOUNT_DIR}/engine/client/client.h	
+  ${MOUNT_DIR}/engine/client/client.h
   ${MOUNT_DIR}/engine/client/cin_ogm.c
   ${MOUNT_DIR}/engine/client/cl_avi.c
   ${MOUNT_DIR}/engine/client/cl_cgame.c
@@ -1735,7 +1735,7 @@ if( BUILD_CLIENT )
       target_link_libraries( client ${SPEEX_LIBRARIES} )
     endif()
   endif()
-  
+
   if( USE_INTERNAL_OPUS )
 	  set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_ALLOCA FLOATING_POINT OPUS_BUILD )
 	  include_directories( ${LIB_DIR}/opusfile-0.2/include ${LIB_DIR}/opus-1.0.2/include ${LIB_DIR}/opus-1.0.2/celt ${LIB_DIR}/opus-1.0.2/silk ${LIB_DIR}/opus-1.0.2/silk/float )
