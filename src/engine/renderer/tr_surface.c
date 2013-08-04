@@ -1448,7 +1448,7 @@ static void RB_SurfaceMD5( md5Surface_t *srf )
 		else
 #endif
 		{
-			MatrixIdentity( boneMatrices[ i ] );
+			BoneMatrixIdentity( boneMatrices[ i ] );
 		}
 	}
 

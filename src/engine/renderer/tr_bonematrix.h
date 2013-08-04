@@ -29,9 +29,25 @@ along with Daemon Source Code. If not, see <http://www.gnu.org/licenses/>.
 typedef float boneMatrix_t[ 12 ];
 
 // bone matrix functions
-// bone matrices are row major with 4 rows and 3 columns
+// bone matrices are row major with 3 rows and 4 columns
 
 void BoneMatrixInvert( boneMatrix_t m );
+
+static INLINE void BoneMatrixIdentity( boneMatrix_t m )
+{
+	m[ 0 ] = 1;
+	m[ 1 ] = 0;
+	m[ 2 ] = 0;
+	m[ 3 ] = 0;
+	m[ 4 ] = 0;
+	m[ 5 ] = 1;
+	m[ 6 ] = 0;
+	m[ 7 ] = 0;
+	m[ 8 ] = 0;
+	m[ 9 ] = 0;
+	m[ 10 ] = 1;
+	m[ 11 ] = 0;
+}
 
 static INLINE void BoneMatrixSetupTransform( boneMatrix_t m, const quat_t rot, const vec3_t origin )
 {
