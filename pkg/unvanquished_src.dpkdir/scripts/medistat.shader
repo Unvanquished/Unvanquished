@@ -2,14 +2,24 @@ models/buildables/medistat/base_down
 {
 	diffuseMap models/buildables/medistat/medistat_d
 	normalMap models/buildables/medistat/medistat_n
-	specularMap models/buildables/medistat/medistat_s
+	{
+		stage specularMap
+		map models/buildables/medistat/medistat_s
+		specularExponentMin 12
+		specularExponentMax 128
+	}
 }
 
 models/buildables/medistat/base_dead
 {
 	diffuseMap models/buildables/medistat/medistat_d
 	normalMap models/buildables/medistat/medistat_n
-	specularMap models/buildables/medistat/medistat_s
+	{
+		stage specularMap
+		map models/buildables/medistat/medistat_s
+		specularExponentMin 12
+		specularExponentMax 128
+	}
 
 	{
 		map models/buildables/medistat/medistat_dead
@@ -23,7 +33,12 @@ models/buildables/medistat/base
 
 	diffuseMap models/buildables/medistat/medistat_d
 	normalMap models/buildables/medistat/medistat_n
-	specularMap models/buildables/medistat/medistat_s
+	{
+		stage specularMap
+		map models/buildables/medistat/medistat_s
+		specularExponentMin 12
+		specularExponentMax 128
+	}
 
 	{
 		map models/buildables/medistat/medistat_glow
