@@ -29,9 +29,25 @@ along with Daemon Source Code. If not, see <http://www.gnu.org/licenses/>.
 typedef float boneMatrix_t[ 12 ];
 
 // bone matrix functions
-// bone matrices are row major with 4 rows and 3 columns
+// bone matrices are row major with 3 rows and 4 columns
 
 void BoneMatrixInvert( boneMatrix_t m );
+
+static INLINE void BoneMatrixIdentity( boneMatrix_t m )
+{
+	m[ 0 ] = 1;
+	m[ 1 ] = 0;
+	m[ 2 ] = 0;
+	m[ 3 ] = 0;
+	m[ 4 ] = 0;
+	m[ 5 ] = 1;
+	m[ 6 ] = 0;
+	m[ 7 ] = 0;
+	m[ 8 ] = 0;
+	m[ 9 ] = 0;
+	m[ 10 ] = 1;
+	m[ 11 ] = 0;
+}
 
 static INLINE void BoneMatrixSetupTransform( boneMatrix_t m, const quat_t rot, const vec3_t origin )
 {
@@ -154,4 +170,80 @@ static INLINE void BoneMatrixTransformNormal( const boneMatrix_t m, const vec3_t
 	out[ 2 ] = m[ 8 ] * p[ 0 ] + m[ 9 ] * p[ 1 ] + m[ 10 ] * p[ 2 ];
 }
 
+#if id386_sse
+#define assert_16_byte_aligned( x ) assert( ( (intptr_t)x & 15 ) == 0 )
+
+ALWAYS_INLINE void BoneMatrixMulSSE( __m128 *oa, __m128 *ob, __m128 *oc, float s, const boneMatrix_t m )
+{
+	__m128 a, b, c, w;
+	assert_16_byte_aligned( m );
+	
+	a = _mm_load_ps( m );
+	b = _mm_load_ps( m + 4 );
+	c = _mm_load_ps( m + 8 );
+	w = _mm_load1_ps( &s );
+
+	*oa = _mm_mul_ps( a, w );
+	*ob = _mm_mul_ps( b, w );
+	*oc = _mm_mul_ps( c, w );
+}
+
+ALWAYS_INLINE void BoneMatrixMadSSE(  __m128 *oa, __m128 *ob, __m128 *oc, float s, const boneMatrix_t m )
+{
+	__m128 a, b, c, w;
+	assert_16_byte_aligned( m );
+
+	a = _mm_load_ps( m );
+	b = _mm_load_ps( m + 4 );
+	c = _mm_load_ps( m + 8 );
+	w = _mm_load1_ps( &s );
+
+	*oa = _mm_add_ps( *oa, _mm_mul_ps( a, w ) );
+	*ob = _mm_add_ps( *ob, _mm_mul_ps( b, w ) );
+	*oc = _mm_add_ps( *oc, _mm_mul_ps( c, w ) );
+}
+
+ALWAYS_INLINE void BoneMatrixTransform4SSE( __m128 a, __m128 b, __m128 c, const vec4_t in, vec4_t out )
+{
+	__m128 p, x, y, z, s1, s2;
+	assert_16_byte_aligned( in );
+	assert_16_byte_aligned( out );
+
+	p = _mm_load_ps( in );
+
+	x = _mm_mul_ps( a, p );
+	y = _mm_mul_ps( b, p );
+	z = _mm_mul_ps( c, p );
+
+	s1 = _mm_add_ps( _mm_unpacklo_ps( x, z ), _mm_unpackhi_ps( x, z ) );
+	s2 = _mm_add_ps( _mm_unpacklo_ps( y, z ), _mm_unpackhi_ps( y, z ) );
+	_mm_store_ps( out, _mm_add_ps( _mm_unpacklo_ps( s1, s2 ), _mm_unpackhi_ps( s1, s2 ) ) );
+}
+
+ALWAYS_INLINE void BoneMatrixTransform4NormalizeSSE( __m128 a, __m128 b, __m128 c, const vec4_t in, vec4_t out )
+{
+	__m128 p, x, y, z, s1, s2, s3;
+	assert_16_byte_aligned( in );
+	assert_16_byte_aligned( out );
+
+	p = _mm_load_ps( in );
+
+	x = _mm_mul_ps( a, p );
+	y = _mm_mul_ps( b, p );
+	z = _mm_mul_ps( c, p );
+
+	s1 = _mm_add_ps( _mm_unpacklo_ps( x, z ), _mm_unpackhi_ps( x, z ) );
+	s2 = _mm_add_ps( _mm_unpacklo_ps( y, z ), _mm_unpackhi_ps( y, z ) );
+	s3 = _mm_add_ps( _mm_unpacklo_ps( s1, s2 ), _mm_unpackhi_ps( s1, s2 ) );
+	
+	// normalize result
+	s1 = _mm_mul_ps( s3, s3 );
+	s2 = _mm_add_ss( _mm_movehl_ps( s2, s1 ), s1 );
+	s2 = _mm_add_ss( s2, _mm_shuffle_ps( s1, s1, _MM_SHUFFLE( 1, 1, 1, 1 ) ) );
+	
+	s2 = _mm_rsqrt_ss( s2 );
+
+	_mm_store_ps( out, _mm_mul_ps( s3, _mm_shuffle_ps( s2, s2, _MM_SHUFFLE( 0, 0, 0, 0 ) ) ) );
+}
+#endif
 #endif

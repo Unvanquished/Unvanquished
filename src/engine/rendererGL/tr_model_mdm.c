@@ -583,6 +583,7 @@ qboolean R_LoadMDM( model_t *mod, void *buffer, const char *modName )
 			}
 
 			VectorCopy( tmpVert, v->position );
+			v->position[ 3 ] = 1;
 			AddPointToBounds( tmpVert, mdmModel->bounds[ 0 ], mdmModel->bounds[ 1 ] );
 		}
 
@@ -696,7 +697,9 @@ qboolean R_LoadMDM( model_t *mod, void *buffer, const char *modName )
 
 					VectorSubtract( dv[ k ]->binormal, dv[ k ]->position, dv[ k ]->binormal );
 					VectorNormalize( dv[ k ]->binormal );
-
+					dv[ k ]->tangent[ 3 ] = 0;
+					dv[ k ]->binormal[ 3 ] = 0;
+					dv[ k ]->normal[ 3 ] = 0;
 					// calculate the normal as cross product N=TxB
 #if 0
 					CrossProduct( dv[ k ]->tangent, dv[ k ]->binormal, dv[ k ]->normal );

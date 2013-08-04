@@ -27,3 +27,4 @@ branches:
   except:
     - debian
     - engine-upgrade
+    - nacl

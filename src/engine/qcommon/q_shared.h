@@ -381,13 +381,8 @@ extern int memcmp( void *, void *, size_t );
 	typedef float  vec_t;
 	typedef vec_t  vec2_t[ 2 ];
 
-#if defined( SSEVEC3_T )
-	typedef vec_t  vec3_t[ 4 ]; // ALIGN(16);
-	typedef vec3_t vec4_t;
-#else
 	typedef vec_t  vec3_t[ 3 ];
 	typedef vec_t  vec4_t[ 4 ];
-#endif
 
 	typedef vec_t  vec5_t[ 5 ];
 

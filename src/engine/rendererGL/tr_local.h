@@ -2271,18 +2271,19 @@ extern "C" {
 		vec3_t  offset;
 	} md5Weight_t;
 
-	typedef struct
+	// align for sse skinning
+	typedef ALIGNED( 16, struct
 	{
-		vec3_t      position;
+		vec4_t      position;
+		vec4_t      tangent;
+		vec4_t      binormal;
+		vec4_t      normal;
 		vec2_t      texCoords;
-		vec3_t      tangent;
-		vec3_t      binormal;
-		vec3_t      normal;
 
-		uint32_t    firstWeight;
+		uint16_t    firstWeight;
 		uint16_t    numWeights;
 		md5Weight_t **weights;
-	} md5Vertex_t;
+	} md5Vertex_t );
 
 	/*
 	typedef struct
