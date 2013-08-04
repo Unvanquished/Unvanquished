@@ -49,7 +49,7 @@ find_package( Ogg ${OGG_ARG} )
 
 # Look for the opusfile header file.
 find_path( OPUS_INCLUDE_DIR
-  NAMES opusfile.h
+  NAMES opus/opusfile.h
   DOC "Opus include directory" )
 mark_as_advanced( OPUS_INCLUDE_DIR )
 
