@@ -947,43 +947,45 @@ void Cvar_Cycle_f( void )
 	Cvar_Set2( Cmd_Argv( 1 ), va( "%i", value ), qfalse );
 }
 
-/*
-============
-Cvar_Set_f
-
-Allows setting and defining of arbitrary cvars from console, even if they
-weren't declared in C code.
-============
-*/
-void Cvar_Set_f( void )
+static char *Cvar_Set_FromCmd(void)
 {
 	int  c, unsafe = 0;
-	char *value;
+	char *name, *value;
+	int  nameIndex = 1;
 
 	c = Cmd_Argc();
 
 	if ( c < 3 )
 	{
-		Cmd_PrintUsage(_("<variable> <value> [unsafe]"), NULL);
-		return;
+		Cmd_PrintUsage(_("[-unsafe] <variable> <value>"), NULL);
+		return NULL;
 	}
 
-	// ydnar: handle unsafe vars
-	if ( c >= 4 && !strcmp( Cmd_Argv( c - 1 ), "unsafe" ) )
+	// handle unsafe vars
+	if ( c >= 4 && !strcmp( Cmd_Argv( nameIndex ), "-unsafe" ) )
+	{
+		++nameIndex;
+		unsafe = 1;
+	}
+	// FIXME: trailing 'unsafe' is deprecated and will go away soon (at the earliest, a19).
+	else if ( c >= 4 && !strcmp( Cmd_Argv( c - 1 ), "unsafe" ) )
 	{
 		c--;
-		unsafe = 1;
-
-		if ( com_crashed != NULL && com_crashed->integer )
-		{
-			Com_Printf(_( "%s is unsafe. Check com_crashed.\n"), Cmd_Argv( 1 ) );
-			return;
-		}
+		unsafe = 2;
 	}
 
-	value = strdup( Cmd_Cmd_FromNth( 2 ) );   // 3rd arg onwards, raw
+	name = Cmd_Argv( nameIndex );
 
-	if ( unsafe )
+	if ( unsafe && com_crashed != NULL && com_crashed->integer )
+	{
+		Com_Printf(_( "%s is unsafe. Check com_crashed.\n"), name );
+		return NULL;
+	}
+
+	value = strdup( Cmd_Cmd_FromNth( nameIndex + 1 ) );   // 3rd arg onwards, raw
+
+        // FIXME: deprecated code
+	if ( unsafe == 2 )
 	{
 		char *end = value + strlen( value );
 
@@ -1021,22 +1023,25 @@ void Cvar_Set_f( void )
 		end[ 1 ] = 0; // end of string :-)
 	}
 
-	Cvar_Set2( Cmd_Argv( 1 ), Cmd_UnquoteString( value ), qfalse );
+	Cvar_Set2( name, Cmd_UnquoteString( value ), qfalse );
 	free( value );
+
+	return name;
 }
 
 static void Cvar_Set_Flagged( int flag )
 {
 	cvar_t *v;
+	char   *name;
 
 	if ( Cmd_Argc() < 3 )
 	{
-		Cmd_PrintUsage(_("<variable> <value> [unsafe]"), NULL);
+		Cmd_PrintUsage(_("[-unsafe] <variable> <value>"), NULL);
 		return;
 	}
 
-	Cvar_Set_f();
-	v = Cvar_FindVar( Cmd_Argv( 1 ) );
+	name = Cvar_Set_FromCmd();
+	v = name ? Cvar_FindVar( name ) : NULL;
 
 	if ( !v )
 	{
@@ -1046,6 +1051,18 @@ static void Cvar_Set_Flagged( int flag )
 	v->flags |= flag;
 }
 
+/*
+============
+Cvar_Set_f
+
+Allows setting and defining of arbitrary cvars from console, even if they
+weren't declared in C code.
+============
+*/
+void Cvar_Set_f( void )
+{
+	Cvar_Set_FromCmd();
+}
 /*
 ============
 Cvar_SetU_f
@@ -1119,11 +1136,10 @@ void Cvar_WriteVariables( fileHandle_t f )
 				continue;
 
 			// write the latched value, even if it hasn't taken effect yet
-			Com_sprintf( buffer, sizeof( buffer ), "seta %s %s%s\n",
+			Com_sprintf( buffer, sizeof( buffer ), "seta %s%s %s\n",
+			             ( var->flags & CVAR_UNSAFE ) ? "-unsafe " : "",
 			             var->name,
-			             Cmd_QuoteString( var->latchedString ? var->latchedString : var->string ),
-			             ( var->flags & CVAR_UNSAFE ) ? " unsafe" : "" );
-
+			             Cmd_QuoteString( var->latchedString ? var->latchedString : var->string ) );
 			FS_Printf( f, "%s", buffer );
 		}
 	}

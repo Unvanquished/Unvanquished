@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-07-07 23:10+0200\n"
-"PO-Revision-Date: 2013-07-01 16:38+0000\n"
-"Last-Translator: Vincnet <vinp@hotmail.fr>\n"
+"PO-Revision-Date: 2013-07-19 20:18+0000\n"
+"Last-Translator: Tom <tomtom.mymail@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Pootle 2.5.0-beta1\n"
-"X-POOTLE-MTIME: 1372696739.0\n"
+"X-POOTLE-MTIME: 1374265082.0\n"
 
 #: src/engine/client/cl_cgame.c:471
 msgid "Server sent a pubkey_decrypt command, but sent nothing to decrypt!"
@@ -29,7 +29,7 @@ msgstr "Mumble: Liaison à l'application Mumble réussie\n"
 
 #: src/engine/client/cl_cgame.c:1683
 msgid "Mumble: Linking to Mumble application failed\n"
-msgstr "Mumble: Liaison à l'application Mumble échouée\n"
+msgstr "Mumble: La liaison à l'application Mumble a échouée\n"
 
 #: src/engine/client/cl_console.c:248
 msgid "[<filename>]"
@@ -436,8 +436,9 @@ msgid "Not connected to a server.\n"
 msgstr "Non connecté à un serveur.\n"
 
 #: src/engine/client/cl_main.c:1975
+#, fuzzy
 msgid "Can't reconnect to nothing.\n"
-msgstr ""
+msgstr "Impossible de se reconnecter à localhost.\n"
 
 #: src/engine/client/cl_main.c:1979
 msgid "Can't reconnect to localhost.\n"
@@ -952,8 +953,9 @@ msgid "Couldn't write %s.\n"
 msgstr "Impossible d'écrire %s.\n"
 
 #: src/engine/qcommon/common.c:3406 src/engine/qcommon/common.c:3430
+#, fuzzy
 msgid "<filename>"
-msgstr ""
+msgstr "[<nom du fichier>]"
 
 #: src/engine/qcommon/common.c:3412 src/engine/qcommon/common.c:3436
 #, c-format
@@ -1080,14 +1082,14 @@ msgid "File not found: \"%s\"\n"
 msgstr "Fichier introuvable : %s\n"
 
 #: src/engine/qcommon/net_ip.c:1057
-#, c-format
+#, c-format, fuzzy
 msgid "Opening IP socket: %s:%s\n"
-msgstr ""
+msgstr "Ouverture du socket IP: %s:%i\n"
 
 #: src/engine/qcommon/net_ip.c:1141
-#, c-format
+#, c-format, fuzzy
 msgid "Opening IP6 socket: %s%s%s:%s\n"
-msgstr ""
+msgstr "Ouverture du socket IP: %s:%i\n"
 
 #: src/engine/qcommon/net_ip.c:1343
 msgid "Opening connection to SOCKS server.\n"
@@ -1155,8 +1157,9 @@ msgid "sv_maxclients variable change — restarting.\n"
 msgstr ""
 
 #: src/engine/server/sv_ccmds.c:487
+#, fuzzy
 msgid "Server info settings:\n"
-msgstr ""
+msgstr "Paramêtre des informations du système:\n"
 
 #: src/engine/server/sv_ccmds.c:507
 msgid "System info settings:\n"

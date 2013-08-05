@@ -534,6 +534,7 @@ typedef struct
 	char     voice[ MAX_VOICE_NAME_LEN ];
 	qboolean useUnlagged;
 	int      pubkey_authenticated; // -1 = does not have pubkey, 0 = not authenticated, 1 = authenticated
+	int      pubkey_challengedAt; // time at which challenge was sent
 
 	// level.time when teamoverlay info changed so we know to tell other players.
 	int                 infoChangeTime;
@@ -1184,6 +1185,7 @@ char *ClientUserinfoChanged( int clientNum, qboolean forceName );
 void ClientDisconnect( int clientNum );
 void ClientBegin( int clientNum );
 void ClientCommand( int clientNum );
+void ClientAdminChallenge( int clientNum );
 
 //
 // g_active.c

@@ -65,7 +65,7 @@ equ trap_BotAllocateClient                -298
 equ trap_BotFreeClient                    -299
 equ trap_GetUsercmd                       -300
 equ trap_GetEntityToken                   -301
-equ trap_GMTime                         -302
+equ trap_GMTime                           -302
 equ trap_SnapVector                       -303
 equ trap_SendGameStat                     -304
 equ trap_AddCommand                       -305

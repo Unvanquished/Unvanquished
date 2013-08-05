@@ -35,6 +35,7 @@ Maryland 20850 USA.
 // cl_cgame.c  -- client system interaction with client game
 
 #include "client.h"
+#include "../sys/sys_local.h"
 
 #ifdef USE_MUMBLE
 #include "libmumblelink.h"
@@ -1276,6 +1277,14 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			re.ScissorSet( args[1], args[2], args[3], args[4] );
 			return 0;
 
+		case CG_PREPAREKEYUP:
+			IN_PrepareKeyUp();
+			return 0;
+
+		case CG_R_SETALTSHADERTOKENS:
+			re.SetAltShaderTokens( VMA(1) );
+			return 0;
+
 		default:
 			Com_Error( ERR_DROP, "Bad cgame system trap: %ld", ( long int ) args[ 0 ] );
 			exit(1); // silence warning, and make sure this behaves as expected, if Com_Error's behavior changes
@@ -1468,7 +1477,12 @@ void CL_InitCGame( void )
 
 	// Ridah, update the memory usage file
 	CL_UpdateLevelHunkUsage();
-	
+
+	// Cause any input while loading to be dropped and forget what's pressed
+	IN_DropInputsForFrame();
+	CL_ClearKeys();
+	Key_ClearStates();
+
 	CL_WriteClientLog( va("`~=-----------------=~`\n MAP: %s \n`~=-----------------=~`\n", mapname ) );
 
 //  if( cl_autorecord->integer ) {

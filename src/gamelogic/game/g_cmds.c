@@ -2977,232 +2977,6 @@ void Cmd_ToggleItem_f( gentity_t *ent )
 
 /*
 =================
-Cmd_Buy_f
-=================
-*/
-static qboolean Cmd_Sell_internal( gentity_t *ent, const char *s );
-
-static qboolean Cmd_Buy_internal( gentity_t *ent, const char *s )
-{
-	weapon_t  weapon;
-	upgrade_t upgrade;
-	qboolean  energyOnly;
-
-	weapon = BG_WeaponByName( s )->number;
-	upgrade = BG_UpgradeByName( s )->number;
-
-	// Only give energy from reactors or repeaters
-	if ( G_BuildableRange( ent->client->ps.origin, 100, BA_H_ARMOURY ) )
-	{
-		energyOnly = qfalse;
-	}
-	else if ( upgrade == UP_AMMO &&
-	          BG_Weapon( ent->client->ps.stats[ STAT_WEAPON ] )->usesEnergy &&
-	          ( G_BuildableRange( ent->client->ps.origin, 100, BA_H_REACTOR ) ||
-	            G_BuildableRange( ent->client->ps.origin, 100, BA_H_REPEATER ) ) )
-	{
-		energyOnly = qtrue;
-	}
-	else
-	{
-		if ( upgrade == UP_AMMO &&
-		     BG_Weapon( ent->client->ps.weapon )->usesEnergy )
-		{
-			G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOENERGYAMMOHERE );
-		}
-		else
-		{
-			G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOARMOURYHERE );
-		}
-
-		return qfalse;
-	}
-
-	if ( weapon != WP_NONE )
-	{
-		//already got this?
-		if ( BG_InventoryContainsWeapon( weapon, ent->client->ps.stats ) )
-		{
-			G_TriggerMenu( ent->client->ps.clientNum, MN_H_ITEMHELD );
-			return qfalse;
-		}
-
-		// Only humans can buy stuff
-		if ( BG_Weapon( weapon )->team != TEAM_HUMANS )
-		{
-			goto not_alien;
-		}
-
-		//are we /allowed/ to buy this?
-		if ( !BG_Weapon( weapon )->purchasable )
-		{
-			goto cant_buy;
-		}
-
-		//are we /allowed/ to buy this?
-		if ( !BG_WeaponAllowedInStage( weapon, level.team[ TEAM_HUMANS ].stage ) || !BG_WeaponIsAllowed( weapon ) )
-		{
-			goto cant_buy;
-		}
-
-		//can afford this?
-		if ( BG_Weapon( weapon )->price > ( short ) ent->client->pers.credit )
-		{
-			G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOFUNDS );
-			return qfalse;
-		}
-
-		//have space to carry this?
-		if ( BG_Weapon( weapon )->slots & BG_SlotsForInventory( ent->client->ps.stats ) )
-		{
-			G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOSLOTS );
-			return qfalse;
-		}
-
-		// In some instances, weapons can't be changed
-		if ( !BG_PlayerCanChangeWeapon( &ent->client->ps ) )
-		{
-			return qfalse;
-		}
-
-		ent->client->ps.stats[ STAT_WEAPON ] = weapon;
-		ent->client->ps.ammo = BG_Weapon( weapon )->maxAmmo;
-		ent->client->ps.clips = BG_Weapon( weapon )->maxClips;
-
-		if ( BG_Weapon( weapon )->usesEnergy &&
-		     BG_InventoryContainsUpgrade( UP_BATTPACK, ent->client->ps.stats ) )
-		{
-			ent->client->ps.ammo *= BATTPACK_MODIFIER;
-		}
-
-		G_ForceWeaponChange( ent, weapon );
-
-		//set build delay/pounce etc to 0
-		ent->client->ps.stats[ STAT_MISC ] = 0;
-
-		//subtract from funds
-		G_AddCreditToClient( ent->client, - ( short ) BG_Weapon( weapon )->price, qfalse );
-
-		return qtrue;
-	}
-	else if ( upgrade != UP_NONE )
-	{
-		//already got this?
-		if ( BG_InventoryContainsUpgrade( upgrade, ent->client->ps.stats ) )
-		{
-			G_TriggerMenu( ent->client->ps.clientNum, MN_H_ITEMHELD );
-			return qfalse;
-		}
-
-		// Only humans can buy stuff
-		if ( BG_Upgrade( upgrade )->team != TEAM_HUMANS )
-		{
-			goto not_alien;
-		}
-
-		//are we /allowed/ to buy this?
-		if ( !BG_Upgrade( upgrade )->purchasable )
-		{
-			goto cant_buy;
-		}
-
-		//are we /allowed/ to buy this?
-		if ( !BG_UpgradeAllowedInStage( upgrade, level.team[ TEAM_HUMANS ].stage ) || !BG_UpgradeIsAllowed( upgrade ) )
-		{
-			goto cant_buy;
-		}
-
-		//can afford this?
-		if ( BG_Upgrade( upgrade )->price > ( short ) ent->client->pers.credit )
-		{
-			G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOFUNDS );
-			return qfalse;
-		}
-
-		//have space to carry this?
-		if ( BG_Upgrade( upgrade )->slots & BG_SlotsForInventory( ent->client->ps.stats ) )
-		{
-			G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOSLOTS );
-			return qfalse;
-		}
-
-		if ( upgrade == UP_AMMO )
-		{
-			G_GiveClientMaxAmmo( ent, energyOnly );
-			return qtrue;
-		}
-		else
-		{
-			if ( upgrade == UP_BATTLESUIT )
-			{
-				vec3_t newOrigin;
-
-				if ( !G_RoomForClassChange( ent, PCL_HUMAN_BSUIT, newOrigin ) )
-				{
-					G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOROOMBSUITON );
-					return qfalse;
-				}
-
-				VectorCopy( newOrigin, ent->client->ps.origin );
-				ent->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN_BSUIT;
-				ent->client->pers.classSelection = PCL_HUMAN_BSUIT;
-				ent->client->ps.eFlags ^= EF_TELEPORT_BIT;
-			}
-
-			//add to inventory
-			BG_AddUpgradeToInventory( upgrade, ent->client->ps.stats );
-		}
-
-		if ( upgrade == UP_BATTPACK )
-		{
-			G_GiveClientMaxAmmo( ent, qtrue );
-		}
-
-		//subtract from funds
-		G_AddCreditToClient( ent->client, - ( short ) BG_Upgrade( upgrade )->price, qfalse );
-
-		return qtrue;
-	}
-	else
-	{
-		G_TriggerMenu( ent->client->ps.clientNum, MN_H_UNKNOWNITEM );
-	}
-
-	return qfalse;
-
-cant_buy:
-	trap_SendServerCommand( ent - g_entities, va( "print_tr \"" N_("You can't buy this item ($1$)\n") "\" %s", Quote( s ) ) );
-	return qfalse;
-
-not_alien:
-	trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("You can't buy alien items\n") "\"" );
-	return qfalse;
-}
-
-void Cmd_Buy_f( gentity_t *ent )
-{
-	char     s[ MAX_TOKEN_CHARS ];
-	int      c, args;
-	qboolean updated = qfalse;
-
-	args = trap_Argc();
-
-	for ( c = 1; c < args; ++c )
-	{
-		trap_Argv( c, s, sizeof( s ) );
-		updated |= s[0] == '-' ? Cmd_Sell_internal( ent, s + 1 ) : Cmd_Buy_internal( ent, s );
-	}
-
-	//update ClientInfo
-	if ( updated )
-	{
-		ClientUserinfoChanged( ent->client->ps.clientNum, qfalse );
-		ent->client->pers.infoChangeTime = level.time;
-	}
-}
-
-/*
-=================
 Cmd_Sell_f
 =================
 */
@@ -3247,6 +3021,45 @@ static qboolean Cmd_Sell_weapons( gentity_t *ent )
 	return sold;
 }
 
+static qboolean Cmd_Sell_upgradeItem( gentity_t *ent, upgrade_t item )
+{
+	// check if carried and sellable
+	if ( !BG_InventoryContainsUpgrade( item, ent->client->ps.stats ) ||
+	     !BG_Upgrade( item )->purchasable )
+	{
+		return qfalse;
+	}
+
+	// shouldn't really need to test for this, but just to be safe
+	if ( item == UP_BATTLESUIT )
+	{
+		vec3_t newOrigin;
+
+		if ( !G_RoomForClassChange( ent, PCL_HUMAN, newOrigin ) )
+		{
+			G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOROOMBSUITOFF );
+			return qfalse;
+		}
+
+		VectorCopy( newOrigin, ent->client->ps.origin );
+		ent->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN;
+		ent->client->pers.classSelection = PCL_HUMAN;
+		ent->client->ps.eFlags ^= EF_TELEPORT_BIT;
+	}
+
+	BG_RemoveUpgradeFromInventory( item, ent->client->ps.stats );
+
+	if ( item == UP_BATTPACK )
+	{
+		G_GiveClientMaxAmmo( ent, qtrue );
+	}
+
+	// add to funds
+	G_AddCreditToClient( ent->client, ( short ) BG_Upgrade( item )->price, qfalse );
+
+	return qtrue;
+}
+
 static qboolean Cmd_Sell_upgrades( gentity_t *ent )
 {
 	int      i;
@@ -3254,42 +3067,15 @@ static qboolean Cmd_Sell_upgrades( gentity_t *ent )
 
 	for ( i = UP_NONE + 1; i < UP_NUM_UPGRADES; i++ )
 	{
-		// remove upgrade if carried
-		if ( BG_InventoryContainsUpgrade( i, ent->client->ps.stats ) &&
-		     BG_Upgrade( i )->purchasable )
-		{
-			// shouldn't really need to test for this, but just to be safe
-			if ( i == UP_BATTLESUIT )
-			{
-				vec3_t newOrigin;
-
-				if ( !G_RoomForClassChange( ent, PCL_HUMAN, newOrigin ) )
-				{
-					G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOROOMBSUITOFF );
-					continue;
-				}
-
-				VectorCopy( newOrigin, ent->client->ps.origin );
-				ent->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN;
-				ent->client->pers.classSelection = PCL_HUMAN;
-				ent->client->ps.eFlags ^= EF_TELEPORT_BIT;
-			}
-
-			BG_RemoveUpgradeFromInventory( i, ent->client->ps.stats );
-
-			if ( i == UP_BATTPACK )
-			{
-				G_GiveClientMaxAmmo( ent, qtrue );
-			}
-
-			// add to funds
-			G_AddCreditToClient( ent->client, ( short ) BG_Upgrade( i )->price, qfalse );
-
-			sold = qtrue;
-		}
+		sold |= Cmd_Sell_upgradeItem( ent, i );
 	}
 
 	return sold;
+}
+
+static qboolean Cmd_Sell_armour( gentity_t *ent )
+{
+	return Cmd_Sell_upgradeItem( ent, UP_LIGHTARMOUR ) | Cmd_Sell_upgradeItem( ent, UP_HELMET ) | Cmd_Sell_upgradeItem( ent, UP_BATTLESUIT );
 }
 
 static qboolean Cmd_Sell_internal( gentity_t *ent, const char *s )
@@ -3364,38 +3150,7 @@ static qboolean Cmd_Sell_internal( gentity_t *ent, const char *s )
 			return qfalse;
 		}
 
-		//remove upgrade if carried
-		if ( BG_InventoryContainsUpgrade( upgrade, ent->client->ps.stats ) )
-		{
-			// shouldn't really need to test for this, but just to be safe
-			if ( upgrade == UP_BATTLESUIT )
-			{
-				vec3_t newOrigin;
-
-				if ( !G_RoomForClassChange( ent, PCL_HUMAN, newOrigin ) )
-				{
-					G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOROOMBSUITOFF );
-					return qfalse;
-				}
-
-				VectorCopy( newOrigin, ent->client->ps.origin );
-				ent->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN;
-				ent->client->pers.classSelection = PCL_HUMAN;
-				ent->client->ps.eFlags ^= EF_TELEPORT_BIT;
-			}
-
-			//add to inventory
-			BG_RemoveUpgradeFromInventory( upgrade, ent->client->ps.stats );
-
-			if ( upgrade == UP_BATTPACK )
-			{
-				G_GiveClientMaxAmmo( ent, qtrue );
-			}
-
-			//add to funds
-			G_AddCreditToClient( ent->client, ( short ) BG_Upgrade( upgrade )->price, qfalse );
-			return qtrue;
-		}
+		return Cmd_Sell_upgradeItem( ent, upgrade );
 	}
 	else if ( !Q_stricmp( s, "weapons" ) )
 	{
@@ -3404,6 +3159,10 @@ static qboolean Cmd_Sell_internal( gentity_t *ent, const char *s )
 	else if ( !Q_stricmp( s, "upgrades" ) )
 	{
 		return Cmd_Sell_upgrades( ent );
+	}
+	else if ( !Q_stricmp( s, "armour" ) || !Q_stricmp( s, "armor" ) )
+	{
+		return Cmd_Sell_armour( ent );
 	}
 	else if ( !Q_stricmp( s, "all" ) )
 	{
@@ -3429,6 +3188,307 @@ void Cmd_Sell_f( gentity_t *ent )
 	{
 		trap_Argv( c, s, sizeof( s ) );
 		updated |= Cmd_Sell_internal( ent, s );
+	}
+
+	//update ClientInfo
+	if ( updated )
+	{
+		ClientUserinfoChanged( ent->client->ps.clientNum, qfalse );
+		ent->client->pers.infoChangeTime = level.time;
+	}
+}
+
+/*
+=================
+Cmd_Buy_f
+=================
+*/
+static qboolean Cmd_Sell_conflictingUpgrades( gentity_t *ent, upgrade_t upgrade )
+{
+	const int  slots = BG_Upgrade( upgrade )->slots;
+	int        i;
+	qboolean   sold = qfalse;
+	int *const stats = ent->client->ps.stats;
+
+	for ( i = UP_NONE; i < UP_NUM_UPGRADES; i++ )
+	{
+		if ( i != upgrade && BG_InventoryContainsUpgrade( i, stats ) )
+		{
+			int slot = BG_Upgrade( i )->slots;
+
+			if ( slots & slot )
+			{
+				sold |= Cmd_Sell_upgradeItem( ent, i );
+			}
+		}
+	}
+
+	return sold;
+}
+
+
+static qboolean Cmd_Buy_internal( gentity_t *ent, const char *s, qboolean sellConflicting, qboolean quiet )
+{
+#define Maybe_TriggerMenu(num, reason) do { if ( !quiet ) G_TriggerMenu( (num), (reason) ); } while ( 0 )
+	weapon_t  weapon;
+	upgrade_t upgrade;
+	qboolean  energyOnly;
+
+	weapon = BG_WeaponByName( s )->number;
+	upgrade = BG_UpgradeByName( s )->number;
+
+	// Only give energy from reactors or repeaters
+	if ( G_BuildableRange( ent->client->ps.origin, 100, BA_H_ARMOURY ) )
+	{
+		energyOnly = qfalse;
+	}
+	else if ( upgrade == UP_AMMO &&
+	          BG_Weapon( ent->client->ps.stats[ STAT_WEAPON ] )->usesEnergy &&
+	          ( G_BuildableRange( ent->client->ps.origin, 100, BA_H_REACTOR ) ||
+	            G_BuildableRange( ent->client->ps.origin, 100, BA_H_REPEATER ) ) )
+	{
+		energyOnly = qtrue;
+	}
+	else
+	{
+		if ( upgrade == UP_AMMO &&
+		     BG_Weapon( ent->client->ps.weapon )->usesEnergy )
+		{
+			G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOENERGYAMMOHERE );
+		}
+		else
+		{
+			G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOARMOURYHERE );
+		}
+
+		return qfalse;
+	}
+
+	if ( weapon != WP_NONE )
+	{
+		//already got this?
+		if ( BG_InventoryContainsWeapon( weapon, ent->client->ps.stats ) )
+		{
+			Maybe_TriggerMenu( ent->client->ps.clientNum, MN_H_ITEMHELD );
+			return qfalse;
+		}
+
+		// Only humans can buy stuff
+		if ( BG_Weapon( weapon )->team != TEAM_HUMANS )
+		{
+			goto not_alien;
+		}
+
+		//are we /allowed/ to buy this?
+		if ( !BG_Weapon( weapon )->purchasable )
+		{
+			goto cant_buy;
+		}
+
+		//are we /allowed/ to buy this?
+		if ( !BG_WeaponAllowedInStage( weapon, level.team[ TEAM_HUMANS ].stage ) || !BG_WeaponIsAllowed( weapon ) )
+		{
+			goto cant_buy;
+		}
+
+		// In some instances, weapons can't be changed
+		if ( !BG_PlayerCanChangeWeapon( &ent->client->ps ) )
+		{
+			return qfalse;
+		}
+
+		for (;;)
+		{
+			//can afford this?
+			if ( BG_Weapon( weapon )->price > ( short ) ent->client->pers.credit )
+			{
+				// if requested, try to sell then recheck
+				if ( sellConflicting && Cmd_Sell_weapons( ent ) )
+				{
+					continue;
+				}
+
+				Maybe_TriggerMenu( ent->client->ps.clientNum, MN_H_NOFUNDS );
+				return qfalse;
+			}
+
+			//have space to carry this?
+			if ( BG_Weapon( weapon )->slots & BG_SlotsForInventory( ent->client->ps.stats ) )
+			{
+				// if requested, try to sell then recheck
+				if ( sellConflicting && Cmd_Sell_weapons( ent ) )
+				{
+					continue;
+				}
+
+				Maybe_TriggerMenu( ent->client->ps.clientNum, MN_H_NOSLOTS );
+				return qfalse;
+			}
+
+			break; // okay, can buy this
+		}
+
+		ent->client->ps.stats[ STAT_WEAPON ] = weapon;
+		ent->client->ps.ammo = BG_Weapon( weapon )->maxAmmo;
+		ent->client->ps.clips = BG_Weapon( weapon )->maxClips;
+
+		if ( BG_Weapon( weapon )->usesEnergy &&
+		     BG_InventoryContainsUpgrade( UP_BATTPACK, ent->client->ps.stats ) )
+		{
+			ent->client->ps.ammo *= BATTPACK_MODIFIER;
+		}
+
+		G_ForceWeaponChange( ent, weapon );
+
+		//set build delay/pounce etc to 0
+		ent->client->ps.stats[ STAT_MISC ] = 0;
+
+		//subtract from funds
+		G_AddCreditToClient( ent->client, - ( short ) BG_Weapon( weapon )->price, qfalse );
+
+		return qtrue;
+	}
+	else if ( upgrade != UP_NONE )
+	{
+		//already got this?
+		if ( BG_InventoryContainsUpgrade( upgrade, ent->client->ps.stats ) )
+		{
+			Maybe_TriggerMenu( ent->client->ps.clientNum, MN_H_ITEMHELD );
+			return qfalse;
+		}
+
+		// Only humans can buy stuff
+		if ( BG_Upgrade( upgrade )->team != TEAM_HUMANS )
+		{
+			goto not_alien;
+		}
+
+		//are we /allowed/ to buy this?
+		if ( !BG_Upgrade( upgrade )->purchasable )
+		{
+			goto cant_buy;
+		}
+
+		//are we /allowed/ to buy this?
+		if ( !BG_UpgradeAllowedInStage( upgrade, level.team[ TEAM_HUMANS ].stage ) || !BG_UpgradeIsAllowed( upgrade ) )
+		{
+			goto cant_buy;
+		}
+
+		for (;;)
+		{
+			//can afford this?
+			if ( BG_Upgrade( upgrade )->price > ( short ) ent->client->pers.credit )
+			{
+				// if requested, try to sell then recheck
+				if ( sellConflicting && Cmd_Sell_conflictingUpgrades( ent, upgrade ) )
+				{
+					continue;
+				}
+
+				Maybe_TriggerMenu( ent->client->ps.clientNum, MN_H_NOFUNDS );
+				return qfalse;
+			}
+
+			//have space to carry this?
+			if ( BG_Upgrade( upgrade )->slots & BG_SlotsForInventory( ent->client->ps.stats ) )
+			{
+				// if requested, try to sell then recheck
+				if ( sellConflicting && Cmd_Sell_conflictingUpgrades( ent, upgrade ) )
+				{
+					continue;
+				}
+
+				Maybe_TriggerMenu( ent->client->ps.clientNum, MN_H_NOSLOTS );
+				return qfalse;
+			}
+
+			break; // okay, can buy this
+		}
+
+		if ( upgrade == UP_AMMO )
+		{
+			G_GiveClientMaxAmmo( ent, energyOnly );
+			return qtrue;
+		}
+		else
+		{
+			if ( upgrade == UP_BATTLESUIT )
+			{
+				vec3_t newOrigin;
+
+				if ( !G_RoomForClassChange( ent, PCL_HUMAN_BSUIT, newOrigin ) )
+				{
+					G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOROOMBSUITON );
+					return qfalse;
+				}
+
+				VectorCopy( newOrigin, ent->client->ps.origin );
+				ent->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN_BSUIT;
+				ent->client->pers.classSelection = PCL_HUMAN_BSUIT;
+				ent->client->ps.eFlags ^= EF_TELEPORT_BIT;
+			}
+
+			//add to inventory
+			BG_AddUpgradeToInventory( upgrade, ent->client->ps.stats );
+		}
+
+		if ( upgrade == UP_BATTPACK )
+		{
+			G_GiveClientMaxAmmo( ent, qtrue );
+		}
+
+		//subtract from funds
+		G_AddCreditToClient( ent->client, - ( short ) BG_Upgrade( upgrade )->price, qfalse );
+
+		return qtrue;
+	}
+	else
+	{
+		G_TriggerMenu( ent->client->ps.clientNum, MN_H_UNKNOWNITEM );
+	}
+
+	return qfalse;
+
+cant_buy:
+	trap_SendServerCommand( ent - g_entities, va( "print_tr \"" N_("You can't buy this item ($1$)\n") "\" %s", Quote( s ) ) );
+	return qfalse;
+
+not_alien:
+	trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("You can't buy alien items\n") "\"" );
+	return qfalse;
+}
+
+void Cmd_Buy_f( gentity_t *ent )
+{
+	char     s[ MAX_TOKEN_CHARS ];
+	int      c, args;
+	qboolean updated = qfalse;
+
+	args = trap_Argc();
+
+	c = 1;
+	trap_Argv( c, s, sizeof( s ) );
+
+	for ( ; c < args; ++c )
+	{
+		trap_Argv( c, s, sizeof( s ) );
+
+		switch ( s[0] )
+		{
+		case '-':
+			updated |= Cmd_Sell_internal( ent, s + 1 );
+			break;
+		case '+':
+			updated |= Cmd_Buy_internal( ent, s + 1, qtrue, qfalse ); // auto-sell if needed
+			break;
+		case '?':
+			updated |= Cmd_Buy_internal( ent, s + 1, qfalse, qtrue ); // quiet mode
+			break;
+		default:
+			updated |= Cmd_Buy_internal( ent, s, qfalse, qfalse );
+			break;
+		}
 	}
 
 	//update ClientInfo

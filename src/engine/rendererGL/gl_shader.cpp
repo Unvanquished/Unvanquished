@@ -224,8 +224,6 @@ std::string     GLShaderManager::BuildGPUShaderText( const char *mainShaderName,
 		AddGLSLDefine( bufferExtra, "TEXTURE_RG", 1 );
 	}
 
-	AddGLSLDefine( bufferExtra, "r_SpecularExponent", r_specularExponent->value );
-	AddGLSLDefine( bufferExtra, "r_SpecularExponent2", r_specularExponent->value );
 	AddGLSLDefine( bufferExtra, "r_SpecularScale", r_specularScale->value );
 
 	//AddGLSLDefine( bufferExtra, "r_NormalScale", r_normalScale->value );
@@ -1063,64 +1061,10 @@ void GLShaderManager::ValidateProgram( GLuint program ) const
 
 void GLShaderManager::BindAttribLocations( GLuint program ) const
 {
-	//if(attribs & ATTR_POSITION)
-	glBindAttribLocation( program, ATTR_INDEX_POSITION, "attr_Position" );
-
-	//if(attribs & ATTR_TEXCOORD)
-	glBindAttribLocation( program, ATTR_INDEX_TEXCOORD0, "attr_TexCoord0" );
-
-	//if(attribs & ATTR_LIGHTCOORD)
-	glBindAttribLocation( program, ATTR_INDEX_TEXCOORD1, "attr_TexCoord1" );
-
-//  if(attribs & ATTR_TEXCOORD2)
-//      glBindAttribLocation(program, ATTR_INDEX_TEXCOORD2, "attr_TexCoord2");
-
-//  if(attribs & ATTR_TEXCOORD3)
-//      glBindAttribLocation(program, ATTR_INDEX_TEXCOORD3, "attr_TexCoord3");
-
-	//if(attribs & ATTR_TANGENT)
-	glBindAttribLocation( program, ATTR_INDEX_TANGENT, "attr_Tangent" );
-
-	//if(attribs & ATTR_BINORMAL)
-	glBindAttribLocation( program, ATTR_INDEX_BINORMAL, "attr_Binormal" );
-
-	//if(attribs & ATTR_NORMAL)
-	glBindAttribLocation( program, ATTR_INDEX_NORMAL, "attr_Normal" );
-
-	//if(attribs & ATTR_COLOR)
-	glBindAttribLocation( program, ATTR_INDEX_COLOR, "attr_Color" );
-
-#if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
-	//if(attribs & ATTR_PAINTCOLOR)
-	glBindAttribLocation( program, ATTR_INDEX_PAINTCOLOR, "attr_PaintColor" );
-#endif
-
-	//if(attribs & ATTR_AMBIENTLIGHT)
-	glBindAttribLocation( program, ATTR_INDEX_AMBIENTLIGHT, "attr_AmbientLight" );
-
-	//if(attribs & ATTR_DIRECTEDLIGHT)
-	glBindAttribLocation( program, ATTR_INDEX_DIRECTEDLIGHT, "attr_DirectedLight" );
-
-	//if(attribs & ATTR_LIGHTDIRECTION)
-	glBindAttribLocation( program, ATTR_INDEX_LIGHTDIRECTION, "attr_LightDirection" );
-
-	//if(glConfig2.vboVertexSkinningAvailable)
+	for ( uint32_t i = 0; i < ATTR_INDEX_MAX; i++ )
 	{
-		glBindAttribLocation( program, ATTR_INDEX_BONE_INDEXES, "attr_BoneIndexes" );
-		glBindAttribLocation( program, ATTR_INDEX_BONE_WEIGHTS, "attr_BoneWeights" );
+		glBindAttribLocation( program, i, attributeNames[ i ] );
 	}
-
-	//if(attribs & ATTR_POSITION2)
-	glBindAttribLocation( program, ATTR_INDEX_POSITION2, "attr_Position2" );
-
-	//if(attribs & ATTR_TANGENT2)
-	glBindAttribLocation( program, ATTR_INDEX_TANGENT2, "attr_Tangent2" );
-
-	//if(attribs & ATTR_BINORMAL2)
-	glBindAttribLocation( program, ATTR_INDEX_BINORMAL2, "attr_Binormal2" );
-
-	//if(attribs & ATTR_NORMAL2)
-	glBindAttribLocation( program, ATTR_INDEX_NORMAL2, "attr_Normal2" );
 }
 
 bool GLCompileMacro_USE_VERTEX_SKINNING::HasConflictingMacros( size_t permutation, const std::vector< GLCompileMacro * > &macros ) const
@@ -1381,6 +1325,7 @@ GLShader_lightMapping::GLShader_lightMapping( GLShaderManager *manager ) :
 	u_DiffuseTextureMatrix( this ),
 	u_NormalTextureMatrix( this ),
 	u_SpecularTextureMatrix( this ),
+	u_SpecularExponent( this ),
 	u_ColorModulate( this ),
 	u_Color( this ),
 	u_AlphaThreshold( this ),
@@ -1428,6 +1373,7 @@ GLShader_vertexLighting_DBS_entity::GLShader_vertexLighting_DBS_entity( GLShader
 	u_DiffuseTextureMatrix( this ),
 	u_NormalTextureMatrix( this ),
 	u_SpecularTextureMatrix( this ),
+	u_SpecularExponent( this ),
 	u_AlphaThreshold( this ),
 	u_AmbientColor( this ),
 	u_ViewOrigin( this ),
@@ -1487,6 +1433,7 @@ GLShader_vertexLighting_DBS_world::GLShader_vertexLighting_DBS_world( GLShaderMa
 	u_DiffuseTextureMatrix( this ),
 	u_NormalTextureMatrix( this ),
 	u_SpecularTextureMatrix( this ),
+	u_SpecularExponent( this ),
 	u_ColorModulate( this ),
 	u_Color( this ),
 	u_AlphaThreshold( this ),
@@ -1532,6 +1479,7 @@ GLShader_forwardLighting_omniXYZ::GLShader_forwardLighting_omniXYZ( GLShaderMana
 	u_DiffuseTextureMatrix( this ),
 	u_NormalTextureMatrix( this ),
 	u_SpecularTextureMatrix( this ),
+	u_SpecularExponent( this ),
 	u_AlphaThreshold( this ),
 	u_ColorModulate( this ),
 	u_Color( this ),
@@ -1587,11 +1535,9 @@ void GLShader_forwardLighting_omniXYZ::SetShaderProgramUniforms( shaderProgram_t
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_SpecularMap" ), 2 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_AttenuationMapXY" ), 3 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_AttenuationMapZ" ), 4 );
-	//if(r_shadows->integer >= SHADOWING_ESM16)
-	{
-		glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap" ), 5 );
-	}
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap" ), 5 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_RandomMap" ), 6 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowClipMap" ), 7 );
 }
 
 GLShader_forwardLighting_projXYZ::GLShader_forwardLighting_projXYZ( GLShaderManager *manager ):
@@ -1599,6 +1545,7 @@ GLShader_forwardLighting_projXYZ::GLShader_forwardLighting_projXYZ( GLShaderMana
 	u_DiffuseTextureMatrix( this ),
 	u_NormalTextureMatrix( this ),
 	u_SpecularTextureMatrix( this ),
+	u_SpecularExponent( this ),
 	u_AlphaThreshold( this ),
 	u_ColorModulate( this ),
 	u_Color( this ),
@@ -1656,11 +1603,9 @@ void GLShader_forwardLighting_projXYZ::SetShaderProgramUniforms( shaderProgram_t
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_SpecularMap" ), 2 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_AttenuationMapXY" ), 3 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_AttenuationMapZ" ), 4 );
-	//if(r_shadows->integer >= SHADOWING_ESM16)
-	{
-		glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap0" ), 5 );
-	}
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap0" ), 5 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_RandomMap" ), 6 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowClipMap0" ), 7 );
 }
 
 GLShader_forwardLighting_directionalSun::GLShader_forwardLighting_directionalSun( GLShaderManager *manager ):
@@ -1668,6 +1613,7 @@ GLShader_forwardLighting_directionalSun::GLShader_forwardLighting_directionalSun
 	u_DiffuseTextureMatrix( this ),
 	u_NormalTextureMatrix( this ),
 	u_SpecularTextureMatrix( this ),
+	u_SpecularExponent( this ),
 	u_AlphaThreshold( this ),
 	u_ColorModulate( this ),
 	u_Color( this ),
@@ -1727,14 +1673,16 @@ void GLShader_forwardLighting_directionalSun::SetShaderProgramUniforms( shaderPr
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_SpecularMap" ), 2 );
 	//glUniform1i(glGetUniformLocation( shaderProgram->program, "u_AttenuationMapXY" ), 3);
 	//glUniform1i(glGetUniformLocation( shaderProgram->program, "u_AttenuationMapZ" ), 4);
-	//if(r_shadows->integer >= SHADOWING_ESM16)
-	{
-		glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap0" ), 5 );
-		glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap1" ), 6 );
-		glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap2" ), 7 );
-		glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap3" ), 8 );
-		glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap4" ), 9 );
-	}
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap0" ), 5 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap1" ), 6 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap2" ), 7 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap3" ), 8 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap4" ), 9 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowClipMap0" ), 10 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowClipMap1" ), 11 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowClipMap2" ), 12 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowClipMap3" ), 13 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowClipMap4" ), 14 );
 }
 
 GLShader_deferredLighting_omniXYZ::GLShader_deferredLighting_omniXYZ( GLShaderManager *manager ):
@@ -1773,10 +1721,8 @@ void GLShader_deferredLighting_omniXYZ::SetShaderProgramUniforms( shaderProgram_
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_DepthMap" ), 3 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_AttenuationMapXY" ), 4 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_AttenuationMapZ" ), 5 );
-	//if(r_shadows->integer >= SHADOWING_ESM16)
-	{
-		glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap" ), 6 );
-	}
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap" ), 6 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowClipMap" ), 7 );
 }
 
 GLShader_deferredLighting_projXYZ::GLShader_deferredLighting_projXYZ( GLShaderManager *manager ):
@@ -1816,10 +1762,8 @@ void GLShader_deferredLighting_projXYZ::SetShaderProgramUniforms( shaderProgram_
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_DepthMap" ), 3 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_AttenuationMapXY" ), 4 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_AttenuationMapZ" ), 5 );
-	//if(r_shadows->integer >= SHADOWING_ESM16)
-	{
-		glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap0" ), 6 );
-	}
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap0" ), 6 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowClipMap0" ), 7 );
 }
 
 GLShader_deferredLighting_directionalSun::GLShader_deferredLighting_directionalSun( GLShaderManager *manager ):
@@ -1861,14 +1805,16 @@ void GLShader_deferredLighting_directionalSun::SetShaderProgramUniforms( shaderP
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_DepthMap" ), 3 );
 	//glUniform1i(glGetUniformLocation( shaderProgram->program, "u_AttenuationMapXY" ), 4);
 	//glUniform1i(glGetUniformLocation( shaderProgram->program, "u_AttenuationMapZ" ), 5);
-	//if(r_shadows->integer >= SHADOWING_ESM16)
-	{
-		glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap0" ), 6 );
-		glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap1" ), 7 );
-		glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap2" ), 8 );
-		glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap3" ), 9 );
-		glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap4" ), 10 );
-	}
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap0" ), 6 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap1" ), 7 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap2" ), 8 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap3" ), 9 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap4" ), 10 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowClipMap0" ), 11 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowClipMap1" ), 12 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowClipMap2" ), 13 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowClipMap3" ), 14 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowClipMap4" ), 15 );
 }
 
 GLShader_geometricFill::GLShader_geometricFill( GLShaderManager *manager ):
@@ -1885,6 +1831,7 @@ GLShader_geometricFill::GLShader_geometricFill( GLShaderManager *manager ):
 	u_BoneMatrix( this ),
 	u_VertexInterpolation( this ),
 	u_DepthScale( this ),
+	u_SpecularExponent( this ),
 	GLDeformStage( this ),
 	GLCompileMacro_USE_VERTEX_SKINNING( this ),
 	GLCompileMacro_USE_VERTEX_ANIMATION( this ),
@@ -2242,6 +2189,7 @@ void GLShader_lightVolume_omni::SetShaderProgramUniforms( shaderProgram_t *shade
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_AttenuationMapXY" ), 1 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_AttenuationMapZ" ), 2 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap" ), 3 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowClipMap" ), 4 );
 }
 
 GLShader_deferredShadowing_proj::GLShader_deferredShadowing_proj( GLShaderManager *manager ) :
@@ -2264,6 +2212,7 @@ void GLShader_deferredShadowing_proj::SetShaderProgramUniforms( shaderProgram_t 
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_AttenuationMapXY" ), 1 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_AttenuationMapZ" ), 2 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap" ), 3 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowClipMap" ), 4 );
 }
 
 GLShader_liquid::GLShader_liquid( GLShaderManager *manager ) :
@@ -2284,6 +2233,7 @@ GLShader_liquid::GLShader_liquid( GLShaderManager *manager ) :
 	u_NormalScale( this ),
 	u_FogDensity( this ),
 	u_FogColor( this ),
+	u_SpecularExponent( this ),
 	GLCompileMacro_USE_PARALLAX_MAPPING( this )
 {
 }
