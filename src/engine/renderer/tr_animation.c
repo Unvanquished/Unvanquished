@@ -682,6 +682,12 @@ void R_AddMD5Surfaces( trRefEntity_t *ent )
 		else
 		{
 			shader = R_GetShaderByHandle( surface->shaderIndex );
+
+			if ( ent->e.altShaderIndex > 0 && ent->e.altShaderIndex < MAX_ALTSHADERS &&
+			     shader->altShader[ ent->e.altShaderIndex ].index )
+			{
+				shader = R_GetShaderByHandle( shader->altShader[ ent->e.altShaderIndex ].index );
+			}
 		}
 
 		// we will add shadows even if the main object isn't visible in the view

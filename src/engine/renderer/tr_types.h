@@ -87,6 +87,8 @@ Maryland 20850 USA.
 #define RDF_NOBLOOM      ( 1 << 8 ) // RB: disable bloom. useful for HUD models
 // XreaL END
 
+#define MAX_ALTSHADERS   64 // alternative shaders ('when <condition> <shader>') – selection controlled from cgame
+
 #define GL_INDEX_TYPE GL_UNSIGNED_INT
 typedef unsigned int   glIndex_t;
 
@@ -241,6 +243,8 @@ typedef struct
 	// extra light interaction information
 	short noShadowID;
 #endif
+
+	int altShaderIndex;
 
 // XreaL END
 } refEntity_t;

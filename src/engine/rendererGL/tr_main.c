@@ -2704,12 +2704,16 @@ void R_AddEntityInteractions( trRefLight_t *light )
 
 	for ( i = 0; i < tr.refdef.numEntities; i++ )
 	{
-		if ( light->restrictInteractionFirst < 0 ||
-		     ( i >= light->restrictInteractionFirst &&
-		       i <= light->restrictInteractionLast ) ) {
-			iaType = IA_DEFAULT;
-		} else {
-			iaType = IA_LIGHTONLY;
+		iaType = IA_DEFAULT;
+
+		if ( r_shadows->integer <= SHADOWING_BLOB ||
+		     light->l.noShadows ) {
+			iaType = (interactionType_t) (iaType & (~IA_SHADOW));
+		}
+		if ( light->restrictInteractionFirst >= 0 &&
+		     ( i < light->restrictInteractionFirst ||
+		       i > light->restrictInteractionLast ) ) {
+			iaType = (interactionType_t) (iaType & (~IA_SHADOW));
 		}
 
 		ent = tr.currentEntity = &tr.refdef.entities[ i ];
@@ -2826,7 +2830,7 @@ void R_AddPolygonInteractions( trRefLight_t *light )
 			continue;
 		}
 
-		R_AddLightInteraction( light, ( surfaceType_t * ) poly, shader, CUBESIDE_CLIPALL, IA_LIGHTONLY );
+		R_AddLightInteraction( light, ( surfaceType_t * ) poly, shader, CUBESIDE_CLIPALL, IA_LIGHT );
 	}
 }
 

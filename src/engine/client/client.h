@@ -543,9 +543,6 @@ extern  cvar_t *cl_voipShowSender;
 extern  cvar_t *cl_voip;
 #endif
 
-//bani
-extern qboolean sv_cheats;
-
 //=================================================
 
 //
@@ -645,6 +642,7 @@ void IN_Notebook( void );
 void IN_Help( void );
 
 void IN_KeysUp( unsigned int check, int key, int time );
+void IN_PrepareKeyUp( void );
 
 //----(SA)
 

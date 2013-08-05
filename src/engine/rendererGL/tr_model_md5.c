@@ -201,8 +201,8 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 		VectorCopy( boneOrigin, bone->origin );
 		QuatCopy( boneQuat, bone->rotation );
 
-		MatrixSetupTransformFromQuat( bone->inverseTransform, boneQuat, boneOrigin );
-		MatrixInverse( bone->inverseTransform );
+		BoneMatrixSetupTransform( bone->inverseTransform, boneQuat, boneOrigin );
+		BoneMatrixInvert( bone->inverseTransform );
 
 		// skip )
 		token = COM_ParseExt2( &buf_p, qfalse );
@@ -504,6 +504,7 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 			}
 
 			VectorCopy( tmpVert, v->position );
+			v->position[ 3 ] = 1;
 			AddPointToBounds( tmpVert, md5->bounds[ 0 ], md5->bounds[ 1 ] );
 		}
 
@@ -558,8 +559,11 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 			for ( j = 0, v = surf->verts; j < surf->numVerts; j++, v++ )
 			{
 				VectorNormalize( v->tangent );
+				v->tangent[ 3 ] = 0;
 				VectorNormalize( v->binormal );
+				v->binormal[ 3 ] = 0;
 				VectorNormalize( v->normal );
+				v->normal[ 3 ] = 0;
 			}
 		}
 #else

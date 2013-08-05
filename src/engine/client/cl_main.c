@@ -146,7 +146,6 @@ cvar_t                 *cl_waveoffset; //bani
 
 cvar_t                 *cl_packetloss; //bani
 cvar_t                 *cl_packetdelay; //bani
-extern qboolean        sv_cheats; //bani
 
 cvar_t                 *cl_consoleKeys;
 cvar_t                 *cl_consoleFont;

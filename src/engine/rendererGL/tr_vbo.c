@@ -125,7 +125,12 @@ static void R_SetVBOAttributeComponentType( VBO_t *vbo, uint32_t i )
 
 	vbo->attribs[ i ].normalize = GL_FALSE;
 
-	if ( i == ATTR_INDEX_TANGENT2 || i == ATTR_INDEX_NORMAL2 || i == ATTR_INDEX_BINORMAL2 ||
+	if ( i == ATTR_INDEX_TEXCOORD || i == ATTR_INDEX_LIGHTCOORD )
+	{
+		vbo->attribs[ i ].numComponents = 2;
+	}
+	else if ( i == ATTR_INDEX_POSITION || i == ATTR_INDEX_POSITION2 ||
+	     i == ATTR_INDEX_TANGENT2 || i == ATTR_INDEX_NORMAL2 || i == ATTR_INDEX_BINORMAL2 ||
 	     i == ATTR_INDEX_TANGENT || i == ATTR_INDEX_NORMAL || i == ATTR_INDEX_BINORMAL ||
 	     i == ATTR_INDEX_AMBIENTLIGHT || i == ATTR_INDEX_DIRECTEDLIGHT || i == ATTR_INDEX_LIGHTDIRECTION )
 	{
@@ -369,8 +374,6 @@ static void R_CopyVertexData( VBO_t *vbo, byte *outData, vboData_t inData )
 		uint32_t numComponents = vbo->attribs[ index ].numComponents; \
 		uint32_t len = ARRAY_LEN( *inData.attr ); \
 		for ( j = 0; j < len; j++ ) { tmp[ j ] = vert[ j ]; } \
-		if ( len < 3 && ( vbo->usage != GL_STATIC_DRAW || numComponents >= 3 ) ) { tmp[ 2 ] = 0; } \
-		if ( len < 4 && ( vbo->usage != GL_STATIC_DRAW || numComponents == 4 ) ) { tmp[ 3 ] = 1; } \
 	} while ( 0 )
 
 	if ( vbo->layout == VBO_LAYOUT_VERTEX_ANIMATION )

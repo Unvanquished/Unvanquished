@@ -41,10 +41,10 @@ Maryland 20850 USA.
 #define PRODUCT_NAME            "Unvanquished"
 #define PRODUCT_NAME_UPPER      "UNVANQUISHED" // Case, No spaces
 #define PRODUCT_NAME_LOWER      "unvanquished" // No case, No spaces
-#define PRODUCT_VERSION         "0.17.0"
+#define PRODUCT_VERSION         "0.18.0"
 
 #define ENGINE_NAME             "Daemon Engine"
-#define ENGINE_VERSION          "0.17.0"
+#define ENGINE_VERSION          "0.18.0"
 
 #ifdef REVISION
 # define Q3_VERSION             PRODUCT_NAME " " PRODUCT_VERSION " " REVISION
@@ -330,13 +330,8 @@ Maryland 20850 USA.
 	typedef float  vec_t;
 	typedef vec_t  vec2_t[ 2 ];
 
-#if defined( SSEVEC3_T )
-	typedef vec_t  vec3_t[ 4 ]; // ALIGN(16);
-	typedef vec3_t vec4_t;
-#else
 	typedef vec_t  vec3_t[ 3 ];
 	typedef vec_t  vec4_t[ 4 ];
-#endif
 
 	typedef vec_t  vec5_t[ 5 ];
 

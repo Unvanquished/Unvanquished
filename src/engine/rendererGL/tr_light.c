@@ -42,13 +42,9 @@ void R_AddBrushModelInteractions( trRefEntity_t *ent, trRefLight_t *light, inter
 	// and we don't care about proper shadowing
 	if ( ent->cull == CULL_OUT )
 	{
-		if ( r_shadows->integer <= SHADOWING_BLOB || light->l.noShadows )
-		{
+		iaType = (interactionType_t) (iaType & (~IA_LIGHT));
+		if ( !iaType ) {
 			return;
-		}
-		else
-		{
-			iaType = IA_SHADOWONLY;
 		}
 	}
 
@@ -57,14 +53,14 @@ void R_AddBrushModelInteractions( trRefEntity_t *ent, trRefLight_t *light, inter
 
 	if ( light->l.inverseShadows )
 	{
-		if ( iaType != IA_LIGHTONLY && ( light->l.noShadowID && ( light->l.noShadowID != ent->e.noShadowID ) ) )
+		if ( (iaType & IA_SHADOW) && ( light->l.noShadowID && ( light->l.noShadowID != ent->e.noShadowID ) ) )
 		{
 			return;
 		}
 	}
 	else
 	{
-		if ( iaType != IA_LIGHTONLY && ( light->l.noShadowID && ( light->l.noShadowID == ent->e.noShadowID ) ) )
+		if ( (iaType & IA_SHADOW) && ( light->l.noShadowID && ( light->l.noShadowID == ent->e.noShadowID ) ) )
 		{
 			return;
 		}
@@ -583,7 +579,7 @@ void R_SetupLightLocalBounds( trRefLight_t *light )
 				int    j;
 				vec3_t farCorners[ 4 ];
 				//vec4_t      frustum[6];
-				vec4_t *frustum = light->localFrustum;
+				const vec4_t *frustum = (const vec4_t *)light->localFrustum;
 
 				ClearBounds( light->localBounds[ 0 ], light->localBounds[ 1 ] );
 
@@ -1143,18 +1139,11 @@ qboolean R_AddLightInteraction( trRefLight_t *light, surfaceType_t *surface, sha
 	// update counters
 	light->numInteractions++;
 
-	switch ( iaType )
-	{
-		case IA_SHADOWONLY:
-			light->numShadowOnlyInteractions++;
-			break;
-
-		case IA_LIGHTONLY:
-			light->numLightOnlyInteractions++;
-			break;
-
-		default:
-			break;
+	if( !(iaType & IA_LIGHT) ) {
+		light->numShadowOnlyInteractions++;
+	}
+	if( !(iaType & (IA_SHADOW | IA_SHADOWCLIP) ) ) {
+		light->numLightOnlyInteractions++;
 	}
 
 	ia->next = NULL;
@@ -1512,7 +1501,7 @@ void R_SetupLightScissor( trRefLight_t *light )
 			{
 				int    j;
 				vec3_t farCorners[ 4 ];
-				vec4_t *frustum = light->localFrustum;
+				const vec4_t *frustum = (const vec4_t *)light->localFrustum;
 
 				R_CalcFrustumFarCorners( frustum, farCorners );
 #if 1

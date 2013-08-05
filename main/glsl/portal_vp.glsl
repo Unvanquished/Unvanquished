@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 /* portal_vp.glsl */
 
-attribute vec4		attr_Position;
+attribute vec3 		attr_Position;
 attribute vec4		attr_Color;
 
 uniform mat4		u_ModelViewMatrix;
@@ -34,10 +34,10 @@ varying vec4		var_Color;
 void	main()
 {
 	// transform vertex position into homogenous clip-space
-	gl_Position = u_ModelViewProjectionMatrix * attr_Position;
+	gl_Position = u_ModelViewProjectionMatrix * vec4(attr_Position, 1.0);
 
 	// transform vertex position into camera space
-	var_Position = (u_ModelViewMatrix * attr_Position).xyz;
+	var_Position = (u_ModelViewMatrix * vec4(attr_Position, 1.0)).xyz;
 
 	// assign color
 	var_Color = attr_Color;

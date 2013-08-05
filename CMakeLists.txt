@@ -300,6 +300,7 @@ set( RENDERERLIST
   ${ENGINE_DIR}/renderer/tr_animation_mdm.c
   ${ENGINE_DIR}/renderer/tr_animation_mds.c
   ${ENGINE_DIR}/renderer/tr_backend.c
+  ${ENGINE_DIR}/renderer/tr_bonematrix.c
   ${ENGINE_DIR}/renderer/tr_bsp.c
   ${ENGINE_DIR}/renderer/tr_cmds.c
   ${ENGINE_DIR}/renderer/tr_cmesh.c
@@ -332,6 +333,7 @@ set( RENDERERGLLIST
   ${ENGINE_DIR}/rendererGL/tr_animation_mdm.c
   ${ENGINE_DIR}/rendererGL/tr_animation.c
   ${ENGINE_DIR}/rendererGL/tr_backend.cpp
+  ${ENGINE_DIR}/renderer/tr_bonematrix.c
   ${ENGINE_DIR}/rendererGL/tr_bsp.c
   ${ENGINE_DIR}/rendererGL/tr_cmds.c
   ${ENGINE_DIR}/rendererGL/tr_curve.c

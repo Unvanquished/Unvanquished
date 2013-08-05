@@ -66,6 +66,8 @@ shaderStringPointer_t shaderChecksumLookup[ FILE_HASH_SIZE ];
 
 // done.
 
+static char           whenTokens[ MAX_STRING_CHARS ];
+
 /*
 ================
 return a hash value for the filename
@@ -2551,7 +2553,9 @@ static qboolean ParseStage( shaderStage_t *stage, char **text )
 		          !Q_stricmp( token, "scale" ) ||
 		          !Q_stricmp( token, "scroll" ) ||
 		          !Q_stricmp( token, "rotate" ) ||
-		          !Q_stricmp( token, "clamp" ) )
+		          !Q_stricmp( token, "clamp" )  ||
+		          !Q_stricmp( token, "specularExponentMin" ) ||
+		          !Q_stricmp( token, "specularExponentMax" ) )
 		{
 			SkipRestOfLine( text );
 			continue;
@@ -3800,6 +3804,46 @@ static qboolean ParseShader( char **text )
 			SkipRestOfLine( text );
 			continue;
 		}
+		// when <state> <shader name>
+		else if ( !Q_stricmp( token, "when" ) )
+		{
+			int i;
+			const char *p;
+			int index = 0;
+
+			token = COM_ParseExt2( text, qfalse );
+
+			for ( i = 1, p = whenTokens; i < MAX_ALTSHADERS && *p; ++i, p += strlen( p ) + 1 )
+			{
+				if ( !Q_stricmp( token, p ) )
+				{
+					index = i;
+					break;
+				}
+			}
+
+			if ( index == 0 )
+			{
+				ri.Printf( PRINT_WARNING, "WARNING: unknown parameter '%s' for 'when' in '%s'\n", token, shader.name );
+			}
+			else
+			{
+				int tokenLen;
+
+				token = COM_ParseExt( text, qfalse );
+
+				if ( !token[ 0 ] )
+				{
+					ri.Printf( PRINT_WARNING, "WARNING: missing shader name for 'when'\n" );
+					continue;
+				}
+
+				tokenLen = strlen( token ) + 1;
+				shader.altShader[ index ].index = 0;
+				shader.altShader[ index ].name = ( char* )ri.Hunk_Alloc( sizeof( char ) * tokenLen, h_low );
+				Q_strncpyz( shader.altShader[ index ].name, token, tokenLen );
+			}
+		}
 		// unknown directive
 		else
 		{
@@ -4441,6 +4485,7 @@ static shader_t *FinishShader( void )
 {
 	int      stage, i;
 	qboolean hasLightmapStage;
+	shader_t *ret;
 
 	hasLightmapStage = qfalse;
 
@@ -4633,7 +4678,19 @@ static shader_t *FinishShader( void )
 		tr.allowCompress = qfalse;
 	}
 
-	return GeneratePermanentShader();
+	ret = GeneratePermanentShader();
+
+	for ( i = 1; i < MAX_ALTSHADERS; ++i )
+	{
+		if ( ret->altShader[ i ].name )
+		{
+			shader_t *sh = R_FindShader( ret->altShader[ i ].name, ret->lightmapIndex, !( ret->noMipMaps && ret->noPicMip ) );
+
+			ret->altShader[ i ].index = sh->defaultShader ? 0 : sh->index;
+		}
+	}
+
+	return ret;
 }
 
 //========================================================================================
@@ -6155,4 +6212,24 @@ void R_InitShaders( void )
 
 	// Ridah
 	R_LoadCacheShaders();
+}
+
+/*
+==================
+R_SetAltShaderKeywords
+==================
+*/
+void R_SetAltShaderTokens( const char *list )
+{
+       char *p;
+
+       memset( whenTokens, 0, sizeof( whenTokens ) );
+       Q_strncpyz( whenTokens, list, sizeof( whenTokens ) - 1 ); // will have double-NUL termination
+
+       p = whenTokens - 1;
+
+       while ( ( p = strchr( p + 1, ',' ) ) )
+       {
+               *p = 0;
+       }
 }

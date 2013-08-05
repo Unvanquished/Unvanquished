@@ -289,11 +289,7 @@ void R_AddMarkFragments( int numClipPoints, vec3_t clipPoints[ 2 ][ MAX_VERTS_ON
 	mf->firstPoint = ( *returnedPoints );
 	mf->numPoints = numClipPoints;
 
-#if defined( SSEVEC3_T )
-	Com_Memcpy( pointBuffer + ( *returnedPoints ) * 4, clipPoints[ pingPong ], numClipPoints * sizeof( vec3_t ) );
-#else
 	Com_Memcpy( pointBuffer + ( *returnedPoints ) * 3, clipPoints[ pingPong ], numClipPoints * sizeof( vec3_t ) );
-#endif
 
 	( *returnedPoints ) += numClipPoints;
 	( *returnedFragments ) ++;

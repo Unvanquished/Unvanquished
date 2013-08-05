@@ -153,7 +153,11 @@ fi
 
 # Check that the file is properly formatted
 echo '[33mVerifying md5sums integrity...[m'
-grep -sqve '^[0-9a-f]\{32\} [ *][^ ]\+$' "$CACHE/md5sums" && exit 1
+if grep -sqve '^[0-9a-f]\{32\} [ *][^.\\/][^ \\/]\*$' "$CACHE/md5sums"; then
+  rm -f "$CACHE/md5sums"
+  test -f "$CACHE/md5sums.old" && mv -f "$CACHE/md5sums.old" "$CACHE/md5sums"
+  exit 1
+fi
 echo '[32mSuccessful.[m'
 
 # List the files whose checksums are listed
