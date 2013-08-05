@@ -25,11 +25,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 static const char *const cg_buildableSoundNames[ MAX_BUILDABLE_ANIMATIONS ] =
 {
-	"construct1.wav",
-	"construct2.wav",
 	"idle1.wav",
 	"idle2.wav",
-	"idle3.wav",
+	"powerdown.wav",
+	"idle_unpowered.wav",
+	"construct1.wav",
+	"construct2.wav",
 	"attack1.wav",
 	"attack2.wav",
 	"spawn1.wav",
@@ -39,6 +40,64 @@ static const char *const cg_buildableSoundNames[ MAX_BUILDABLE_ANIMATIONS ] =
 	"destroy1.wav",
 	"destroy2.wav",
 	"destroyed.wav"
+};
+
+// MD5 buildable animation info helper macro
+#define CG_ANIM( b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15 ) \
+	( (   1   <<  1 ) | ( !!b2  <<  2 ) | ( !!b3  <<  3 ) | ( !!b4  <<  4 ) | \
+	  ( !!b5  <<  5 ) | ( !!b6  <<  6 ) | ( !!b7  <<  7 ) | ( !!b8  <<  8 ) | \
+	  ( !!b9  <<  9 ) | ( !!b10 << 10 ) | ( !!b11 << 11 ) | ( !!b12 << 12 ) | \
+	  ( !!b13 << 13 ) | ( !!b14 << 14 ) | ( !!b15 << 15 ) \
+	)
+
+// MD5 buildable animation names, flags and fallbacks
+static const struct {
+	const char            *name;
+	qboolean              loop, reversed, clearOrigin;
+	buildableAnimNumber_t fallback;
+	qboolean              fallbackReversed; // true if the fallback's reversed flag is to be inverted
+} animTypes[ MAX_BUILDABLE_ANIMATIONS ] = {
+	{ "" }, // unused
+	{ "idle",              qtrue,  qfalse, qfalse, BANIM_NONE,     qfalse },
+	{ "idle2",     	       qtrue,  qfalse, qfalse, BANIM_IDLE1,    qfalse },
+	{ "powerdown",         qfalse, qfalse, qfalse, BANIM_IDLE1,    qfalse },
+	{ "idle_unpowered",    qtrue,  qfalse, qfalse, BANIM_IDLE1,    qfalse },
+	{ "construct", 	       qfalse, qfalse, qfalse, BANIM_IDLE1,    qfalse },
+	{ "construct2",        qfalse, qfalse, qfalse, BANIM_IDLE1,    qfalse },
+	{ "attack",            qfalse, qfalse, qfalse, BANIM_IDLE1,    qfalse },
+	{ "attack2",           qfalse, qfalse, qfalse, BANIM_ATTACK1,  qtrue  },
+	{ "spawn",     	       qfalse, qfalse, qfalse, BANIM_IDLE1,    qfalse },
+	{ "spawn2",            qfalse, qfalse, qfalse, BANIM_IDLE1,    qfalse },
+	{ "pain",              qfalse, qfalse, qfalse, BANIM_IDLE1,    qfalse },
+	{ "pain2",             qtrue,  qfalse, qfalse, BANIM_PAIN1,    qfalse },
+	{ "destroy",  	       qfalse, qfalse, qfalse, BANIM_IDLE1,    qfalse },
+	{ "destroy_unpowered", qfalse, qfalse, qfalse, BANIM_DESTROY1, qfalse },
+	{ "destroyed",         qfalse, qfalse, qfalse, BANIM_IDLE1,    qfalse },
+};
+
+// Bitmaps for each buildable type, defining which animations are to be initialised
+// We expect that all have idle animations
+static const int animLoading[] = {
+	0,
+	//       idle2   pwrdwn  idlunp  cnstr   cnstr2  attack   attack2 spawn   spawn2  pain    pain2   dstry   dstry2  dstryed
+	CG_ANIM( qtrue,  qfalse, qfalse, qtrue,  qtrue,  qtrue,   qtrue,  qtrue,  qfalse, qtrue,  qtrue,  qtrue,  qfalse, qtrue  ), // BA_A_SPAWN
+	CG_ANIM( qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qfalse, qtrue  ), // BA_A_OVERMIND
+	CG_ANIM( qtrue,  qtrue,  qtrue,  qtrue,  qfalse, qtrue,   qtrue,  qfalse, qfalse, qtrue,  qtrue,  qtrue,  qtrue,  qtrue  ), // BA_A_BARRICADE
+	CG_ANIM( qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qfalse, qtrue  ), // BA_A_ACIDTUBE
+	CG_ANIM( qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qfalse, qtrue  ), // BA_A_TRAPPER
+	CG_ANIM( qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qfalse, qtrue  ), // BA_A_BOOSTER
+	CG_ANIM( qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qfalse, qtrue  ), // BA_A_HIVE
+	CG_ANIM( qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qfalse, qtrue  ), // BA_A_LEECH
+
+	CG_ANIM( qtrue,  qtrue,  qtrue,  qtrue,  qtrue,  qtrue,   qtrue,  qtrue,  qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_SPAWN
+	CG_ANIM( qfalse, qtrue,  qtrue,  qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_TURRET
+	CG_ANIM( qfalse, qtrue,  qtrue,  qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_TESLAGEN
+	CG_ANIM( qfalse, qtrue,  qtrue,  qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_ARMOURY
+	CG_ANIM( qfalse, qtrue,  qtrue,  qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_DCC
+	CG_ANIM( qtrue,  qtrue,  qtrue,  qtrue,  qtrue,  qtrue,   qtrue,  qfalse, qfalse, qtrue,  qtrue,  qtrue,  qtrue,  qtrue  ), // BA_H_MEDISTAT
+	CG_ANIM( qfalse, qtrue,  qtrue,  qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_DRILL
+	CG_ANIM( qfalse, qtrue,  qtrue,  qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_REACTOR
+	CG_ANIM( qfalse, qtrue,  qtrue,  qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_REPEATER
 };
 
 static sfxHandle_t defaultAlienSounds[ MAX_BUILDABLE_ANIMATIONS ];
@@ -527,96 +586,23 @@ void CG_InitBuildables( void )
 		// If an md5mesh is found, register md5anims
 		if ( bi->md5 )
 		{
-			if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_IDLE1,
-			                                     "idle", qtrue, qfalse, qfalse ) )
+			for ( n = BANIM_NONE + 1; n < MAX_BUILDABLE_ANIMATIONS; n++ )
 			{
-				//CG_Error( "could not find '%s'", path );
-			}
-
-			for ( n = BANIM_NONE; n < MAX_BUILDABLE_ANIMATIONS; n++ )
-			{
-				if ( n == BANIM_IDLE1 )
+				if ( animLoading[ i ] & ( 1 << n ) )
 				{
-					continue;
+					if ( !CG_RegisterBuildableAnimation( bi, buildableName, n, animTypes[ n ].name, animTypes[ n ].loop, animTypes[ n ].reversed, animTypes[ n ].clearOrigin ) )
+					{
+						int o = (int) animTypes[ n ].fallback;
+
+						// if the fallback is to be reversed, try loading it
+						// otherwise, or if that fails, use the fallback directly
+						if ( !animTypes[ n ].fallbackReversed ||
+						     !CG_RegisterBuildableAnimation( bi, buildableName, n, animTypes[ o ].name, animTypes[ o ].loop, !animTypes[ n ].reversed, animTypes[ o ].clearOrigin ) )
+						{
+							bi->animations[ n ] = bi->animations[ o ];
+						}
+					}
 				}
-
-				bi->animations[ n ] = bi->animations[ BANIM_IDLE1 ];
-			}
-
-			switch ( i )
-			{
-
-				case BA_A_SPAWN:
-				case BA_H_SPAWN:
-					if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_SPAWN1,
-						"spawn", qfalse, qfalse, qfalse ) )
-					{
-						bi->animations[ BANIM_SPAWN1 ] = bi->animations[ BANIM_IDLE1 ];
-					}
-
-				case BA_H_MEDISTAT:
-					if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_CONSTRUCT2,
-					   "construct2", qfalse, qfalse, qfalse ) )
-					{
-						bi->animations[ BANIM_CONSTRUCT2 ] = bi->animations[ BANIM_IDLE1 ];
-					}
-
-					if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_IDLE2,
-						"idle2", qtrue, qfalse, qfalse ) )
-					{
-						bi->animations[ BANIM_IDLE2 ] = bi->animations[ BANIM_IDLE1 ];
-					}
-
-				case BA_A_BARRICADE:
-					if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_IDLE2,
-						"idle2", qtrue, qfalse, qfalse ) )
-					{
-						bi->animations[ BANIM_IDLE2 ] = bi->animations[ BANIM_IDLE1 ];
-					}
-
-					if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_ATTACK2,
-						"attack2", qfalse, qfalse, qfalse ) )
-					{
-						bi->animations[ BANIM_ATTACK2 ] = bi->animations[ BANIM_IDLE1 ];
-					}
-
-					if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_PAIN2,
-						"pain2", qtrue, qfalse, qfalse ) )
-					{
-						bi->animations[ BANIM_PAIN2 ] = bi->animations[ BANIM_IDLE1 ];
-					}
-
-				default:
-					//Register the rest of the buildable animations
-					if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_CONSTRUCT1,
-														"construct", qfalse, qfalse, qfalse ) )
-					{
-						bi->animations[ BANIM_CONSTRUCT1 ] = bi->animations[ BANIM_IDLE1 ];
-					}
-
-					if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_ATTACK1,
-														"attack", qfalse, qfalse, qfalse ) )
-					{
-						bi->animations[ BANIM_ATTACK1 ] = bi->animations[ BANIM_IDLE1 ];
-					}
-
-					if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_PAIN1,
-														"pain", qfalse, qfalse, qfalse ) )
-					{
-						bi->animations[ BANIM_PAIN1 ] = bi->animations[ BANIM_IDLE1 ];
-					}
-
-					if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_DESTROY1,
-														"destroy", qfalse, qfalse, qfalse ) )
-					{
-						bi->animations[ BANIM_DESTROY1 ] = bi->animations[ BANIM_IDLE1 ];
-					}
-
-					if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_DESTROYED,
-														"destroyed", qtrue, qfalse, qfalse ) )
-					{
-						bi->animations[ BANIM_DESTROYED ] = bi->animations[ BANIM_IDLE1 ];
-					}
 			}
 		}
 		else // Not using md5s, fall back to md3s
@@ -798,6 +784,23 @@ static void CG_SetBuildableLerpFrameAnimation( buildable_t buildable, lerpFrame_
 		CG_Error( "Bad animation number: %i", newAnimation );
 	}
 
+	if ( cg_buildables[ buildable ].md5 )
+	{
+		if ( bSkeleton.type != SK_INVALID )
+		{
+			oldbSkeleton = bSkeleton;
+
+			if ( lf->old_animation != NULL )
+			{
+				if ( !trap_R_BuildSkeleton( &oldbSkeleton, lf->old_animation->handle, lf->oldFrame, lf->frame, lf->blendlerp, lf->old_animation->clearOrigin ) )
+				{
+					CG_Printf( "Can't build old buildable bSkeleton\n" );
+					return;
+				}
+			}
+		}
+	}
+
 	anim = &cg_buildables[ buildable ].animations[ newAnimation ];
 
 	//this item has just spawned so lf->frameTime will be zero
@@ -807,7 +810,18 @@ static void CG_SetBuildableLerpFrameAnimation( buildable_t buildable, lerpFrame_
 	}
 
 	lf->animation = anim;
-	lf->animationTime = lf->frameTime + anim->initialLerp;
+
+	if ( cg_buildables[ buildable ].md5 )
+	{
+		lf->animationTime = cg.time + anim->initialLerp;
+
+		lf->oldFrame = lf->frame = 0;
+		lf->oldFrameTime = lf->frameTime = 0;
+	}
+	else
+	{
+		lf->animationTime = lf->frameTime + anim->initialLerp;
+	}
 
 	if ( cg_debugAnim.integer )
 	{
@@ -827,23 +841,6 @@ static void CG_SetBuildableLerpFrameAnimation( buildable_t buildable, lerpFrame_
 	else
 	{
 		lf->blendlerp = 1.0f - lf->blendlerp; //use old blending for smooth blending between two blended animations
-	}
-
-	if ( cg_buildables[ buildable ].md5 )
-	{
-		if ( bSkeleton.type != SK_INVALID )
-		{
-			oldbSkeleton = bSkeleton;
-
-			if ( lf->old_animation != NULL )
-			{
-				if ( !trap_R_BuildSkeleton( &oldbSkeleton, lf->old_animation->handle, lf->oldFrame, lf->frame, lf->blendlerp, lf->old_animation->clearOrigin ) )
-				{
-					CG_Printf( "Can't build old buildable bSkeleton\n" );
-					return;
-				}
-			}
-		}
 	}
 }
 
@@ -2272,6 +2269,15 @@ void CG_Buildable( centity_t *cent )
 		ent.skeleton.bounds[ 1 ][ 2 ] -= mins[ 2 ];
 	}
 
+	if ( es->generic1 <= 0 )
+	{
+		ent.altShaderIndex = CG_ALTSHADER_DEAD;
+	}
+	else if ( !(es->eFlags & EF_B_POWERED) )
+	{
+		ent.altShaderIndex = CG_ALTSHADER_UNPOWERED;
+	}
+
 	//add to refresh list
 	trap_R_AddRefEntityToScene( &ent );
 
@@ -2321,6 +2327,7 @@ void CG_Buildable( centity_t *cent )
 			turretBarrel.customShader = cgs.media.redBuildShader;
 		}
 
+		turretBarrel.altShaderIndex = ent.altShaderIndex;
 		trap_R_AddRefEntityToScene( &turretBarrel );
 	}
 
@@ -2370,6 +2377,7 @@ void CG_Buildable( centity_t *cent )
 			turretTop.customShader = cgs.media.redBuildShader;
 		}
 
+		turretTop.altShaderIndex = ent.altShaderIndex;
 		trap_R_AddRefEntityToScene( &turretTop );
 	}
 

@@ -22,8 +22,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 /* liquid_vp.glsl */
 
-attribute vec4		attr_Position;
-attribute vec4		attr_TexCoord0;
+attribute vec3 		attr_Position;
+attribute vec2 		attr_TexCoord0;
 attribute vec3		attr_Tangent;
 attribute vec3		attr_Binormal;
 attribute vec3		attr_Normal;
@@ -45,13 +45,13 @@ varying vec3		var_LightDirection;
 void	main()
 {
 	// transform vertex position into homogenous clip-space
-	gl_Position = u_ModelViewProjectionMatrix * attr_Position;
+	gl_Position = u_ModelViewProjectionMatrix * vec4(attr_Position, 1.0);
 
 	// transform position into world space
-	var_Position = (u_ModelMatrix * attr_Position).xyz;
+	var_Position = (u_ModelMatrix * vec4(attr_Position, 1.0)).xyz;
 
 	// transform normalmap texcoords
-	var_TexNormal = (u_NormalTextureMatrix * attr_TexCoord0).st;
+	var_TexNormal = (u_NormalTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0)).st;
 
 	var_Tangent.xyz = (u_ModelMatrix * vec4(attr_Tangent, 0.0)).xyz;
 	var_Binormal.xyz = (u_ModelMatrix * vec4(attr_Binormal, 0.0)).xyz;

@@ -1,3 +1,12 @@
+unvanquished (0.18.0-1) unstable; urgency=low
+
+  * Release of alpha 18.
+  * Launch script:
+    - Only prepend ‘+’ if missing.
+    - Handle URL-escaped ‘[’ and ‘]’ around unv:// IPv6. (Suopid Iceweasel.)
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Mon, 05 Aug 2013 04:12:59 +0100
+
 unvanquished (0.17.0-1) unstable; urgency=low
 
   * Release of alpha 17.

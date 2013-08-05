@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-07-07 23:10+0200\n"
-"PO-Revision-Date: 2013-01-21 22:32+0000\n"
+"PO-Revision-Date: 2013-07-17 19:21+0000\n"
 "Last-Translator: Qrntz <q@penguinishly.org.ua>\n"
 "Language-Team: Ukrainian <kde-i18n-doc@kde.org>\n"
 "Language: uk\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%"
 "10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: Pootle 2.5.0-beta1\n"
-"X-POOTLE-MTIME: 1358807564.0\n"
+"X-POOTLE-MTIME: 1374088899.0\n"
 
 #: tremulous_alien_builder_hud.menu:47 tremulous_alien_builder_hud.menu:49
 #: tremulous_alien_builder_hud.menu:48
@@ -587,7 +587,7 @@ msgstr "Інше"
 
 #: ingame_options.menu:461 options.menu:474
 msgid "Display"
-msgstr ""
+msgstr "Показ"
 
 #: ingame_options.menu:489 options.menu:502 main/ui/ingame_options.menu:489
 #: main/ui/options.menu:502
@@ -602,22 +602,22 @@ msgstr "Мультисемплінґ:"
 #: ingame_options.menu:502 ingame_options.menu:506 options.menu:515
 #: options.menu:519
 msgid "2×"
-msgstr ""
+msgstr "2×"
 
 #: ingame_options.menu:502 ingame_options.menu:506 options.menu:515
 #: options.menu:519
 msgid "4×"
-msgstr ""
+msgstr "4×"
 
 #: ingame_options.menu:502 ingame_options.menu:506 options.menu:515
 #: options.menu:519
 msgid "8×"
-msgstr ""
+msgstr "8×"
 
 #: ingame_options.menu:502 ingame_options.menu:506 options.menu:515
 #: options.menu:519
 msgid "16×"
-msgstr ""
+msgstr "16×"
 
 #: ingame_options.menu:505 options.menu:518 main/ui/ingame_options.menu:505
 #: main/ui/options.menu:518
@@ -626,7 +626,7 @@ msgstr "Анізотропічне фільтрування:"
 
 #: ingame_options.menu:516 options.menu:528
 msgid "Effects"
-msgstr ""
+msgstr "Ефекти"
 
 #: ingame_options.menu:545 options.menu:557 main/ui/ingame_options.menu:545
 #: main/ui/options.menu:557
@@ -644,23 +644,23 @@ msgstr "Вершинне (низька)"
 #: ingame_options.menu:552 options.menu:564 main/ui/ingame_options.menu:552
 #: main/ui/options.menu:564
 msgid "Shadows:"
-msgstr ""
+msgstr "Тіні:"
 
 #: ingame_options.menu:553 options.menu:565
 msgid "Blobs"
-msgstr ""
+msgstr "Плями"
 
 #: ingame_options.menu:553 options.menu:565
 msgid "Exponential mapping"
-msgstr ""
+msgstr "Експоненціальне відображення"
 
 #: ingame_options.menu:553 options.menu:565
 msgid "Variance mapping"
-msgstr ""
+msgstr "Розсіяне відображення"
 
 #: ingame_options.menu:553 options.menu:565
 msgid "Exponential variance"
-msgstr ""
+msgstr "Експоненціальне розсіювання"
 
 #: ingame_options.menu:559 options.menu:571 main/ui/ingame_options.menu:559
 #: main/ui/options.menu:571
@@ -683,7 +683,7 @@ msgstr "Трилінійний"
 #: ingame_options.menu:576 options.menu:588 main/ui/ingame_options.menu:576
 #: main/ui/options.menu:588
 msgid "Motion Blur:"
-msgstr ""
+msgstr "Розмиття рухом:"
 
 #: ingame_options.menu:589 options.menu:601
 msgid "GFX Software"
@@ -752,15 +752,15 @@ msgstr "Унизу ліворуч"
 
 #: ingame_options.menu:772 options.menu:784
 msgid "Top Right"
-msgstr ""
+msgstr "Вгорі праворуч"
 
 #: ingame_options.menu:772 options.menu:784
 msgid "Top Center"
-msgstr ""
+msgstr "Вгорі посередині"
 
 #: ingame_options.menu:772 options.menu:784
 msgid "Bottom Center"
-msgstr ""
+msgstr "Знизу посередині"
 
 #: ingame_options.menu:785 options.menu:797
 msgid "Range Markers"
@@ -853,7 +853,7 @@ msgstr "Назва мапи"
 
 #: joinserver.menu:350
 msgid "Players + Bots"
-msgstr ""
+msgstr "Гравці + Боти"
 
 #: joinserver.menu:393 teamscore.menu:175 teamscore.menu:250
 msgid "Ping"
@@ -889,12 +889,11 @@ msgstr "Створити сервер"
 
 #: khaoshud_alien_common.menu:169
 msgid "Evolution Points"
-msgstr ""
+msgstr "Очки розвитку"
 
 #: main.menu:80
-#, fuzzy
 msgid "Unvanquished (C) 2011-2013 Unvanquished Development"
-msgstr "Unvanquished © 2011-2012 Unvanquished Development"
+msgstr "Unvanquished (C) 2011-2013 Unvanquished Development"
 
 #: mod.menu:74 profiles.menu:126
 msgid "Load"
@@ -1888,57 +1887,55 @@ msgid "Listed %2d clients\n"
 msgstr "Показано %2d клієнтів\n"
 
 #: src/gamelogic/cgame/cg_draw.c:2018 src/gamelogic/ui/ui_main.c:2485
-#, fuzzy
 msgid "Aliens"
-msgstr "прибульці"
+msgstr "Чужинці"
 
 #: src/gamelogic/cgame/cg_draw.c:2022 src/gamelogic/cgame/cg_draw.c:2032
 #, c-format
 msgid "(Stage %d)"
-msgstr ""
+msgstr "(етап %d)"
 
 #: src/gamelogic/cgame/cg_draw.c:2028 src/gamelogic/ui/ui_main.c:2495
-#, fuzzy
 msgid "Humans"
-msgstr "люди"
+msgstr "Люди"
 
 #: src/gamelogic/cgame/cg_draw.c:2090 src/gamelogic/cgame/cg_draw.c:2114
 #, c-format
 msgid "Stage %d"
-msgstr ""
+msgstr "Етап %d"
 
 #: src/gamelogic/cgame/cg_draw.c:2094
 #, c-format
 msgid "Stage %d, 1 frag for next stage"
-msgstr ""
+msgstr "Етап %d, 1 фраґ до наступного"
 
 #: src/gamelogic/cgame/cg_draw.c:2099
 #, c-format
 msgid "Stage %d, %d frags for next stage"
-msgstr ""
+msgstr "Етап %d, %d фраґів до наступного"
 
 #: src/gamelogic/cgame/cg_draw.c:2118
 #, c-format
 msgid "Stage %d, 1 credit for next stage"
-msgstr ""
+msgstr "Етап %d, 1 кредитка до наступного"
 
 #: src/gamelogic/cgame/cg_draw.c:2123
 #, c-format
 msgid "Stage %d, %d credits for next stage"
-msgstr ""
+msgstr "Етап %d, %d кредиток до наступного"
 
 #: src/gamelogic/cgame/cg_draw.c:2760
 msgid "Connection Interrupted"
-msgstr ""
+msgstr "З’єднання розірвано"
 
 #: src/gamelogic/cgame/cg_draw.c:4602
 msgid "You are at the front of the spawn queue"
-msgstr ""
+msgstr "Ви попереду черги до спавну"
 
 #: src/gamelogic/cgame/cg_draw.c:4606
 #, c-format
 msgid "You are at position %d in the spawn queue"
-msgstr ""
+msgstr "Ви на %d-ій позиції у черзі до спавну"
 
 #: src/gamelogic/cgame/cg_draw.c:4614
 msgid "There are no spawns remaining"
@@ -2514,95 +2511,89 @@ msgid "Reload"
 msgstr "Перезаряджання"
 
 #: src/gamelogic/cgame/cg_tutorial.c:45
-#, fuzzy
 msgid "Buy Ammo"
-msgstr "Придбати боєприпаси:"
+msgstr "Придбати боєприпаси"
 
 #: src/gamelogic/cgame/cg_tutorial.c:46
-#, fuzzy
 msgid "Use Medkit"
-msgstr "Використати аптечку:"
+msgstr "Використати аптечку"
 
 #: src/gamelogic/cgame/cg_tutorial.c:47
-#, fuzzy
 msgid "Use Structure/Evolve"
-msgstr "Використати будівлю/розвинутись:"
+msgstr "Використати будівлю/розвиток"
 
 #: src/gamelogic/cgame/cg_tutorial.c:49
-#, fuzzy
 msgid "Deconstruct Structure"
-msgstr "Знести будівлю:"
+msgstr "Знести будівлю"
 
 #: src/gamelogic/cgame/cg_tutorial.c:50
-#, fuzzy
 msgid "Previous Upgrade"
-msgstr "Попередній апґрейд:"
+msgstr "Попередній апґрейд"
 
 #: src/gamelogic/cgame/cg_tutorial.c:51
-#, fuzzy
 msgid "Next Upgrade"
-msgstr "Наступний апґрейд:"
+msgstr "Наступний апґрейд"
 
 #: src/gamelogic/cgame/cg_tutorial.c:52
 msgid "Toggle Console"
-msgstr ""
+msgstr "Показати/сховати консоль"
 
 #: src/gamelogic/cgame/cg_tutorial.c:128 src/gamelogic/ui/ui_shared.c:6261
 #, c-format
 msgid "%s or %s"
-msgstr ""
+msgstr "%s або %s"
 
 #: src/gamelogic/cgame/cg_tutorial.c:138
 #, c-format
 msgid "\"%s\" (unbound)"
-msgstr ""
+msgstr "\"%s\" (не прив’язане)"
 
 #: src/gamelogic/cgame/cg_tutorial.c:201
 #, c-format
 msgid "Press %s to place the %s\n"
-msgstr ""
+msgstr "Натисни %s, щоб розмістити %s\n"
 
 #: src/gamelogic/cgame/cg_tutorial.c:204
 #, c-format
 msgid "Press %s to cancel placing the %s\n"
-msgstr ""
+msgstr "Натисни %s, щоб скасувати розміщення %s\n"
 
 #: src/gamelogic/cgame/cg_tutorial.c:210
 #, c-format
 msgid "Press %s to build a structure\n"
-msgstr ""
+msgstr "Натисни %s, щоб будувати\n"
 
 #: src/gamelogic/cgame/cg_tutorial.c:223
 #, c-format
 msgid "Press %s to unmark this structure for replacement\n"
-msgstr ""
+msgstr "Натисни %s, щоб зняти позначку заміщення з цієї будівлі\n"
 
 #: src/gamelogic/cgame/cg_tutorial.c:228
 #, c-format
 msgid "Press %s to mark this structure for replacement\n"
-msgstr ""
+msgstr "Натисни %s, щоб позначити цю будівлю для заміщення\n"
 
 #: src/gamelogic/cgame/cg_tutorial.c:234
 #, c-format
 msgid "Press %s to destroy this structure\n"
-msgstr ""
+msgstr "Натисни %s, щоб зруйнувати цю будівлю\n"
 
 #: src/gamelogic/cgame/cg_tutorial.c:251 src/gamelogic/cgame/cg_tutorial.c:297
 #: src/gamelogic/cgame/cg_tutorial.c:368
 #, c-format
 msgid "Press %s to swipe\n"
-msgstr ""
+msgstr "Натисни %s, щоб вразити з розмаху\n"
 
 #: src/gamelogic/cgame/cg_tutorial.c:258 src/gamelogic/cgame/cg_tutorial.c:349
 #, c-format
 msgid "Press %s to launch a projectile\n"
-msgstr ""
+msgstr "Натисни %s, щоб запустити снаряд\n"
 
 #: src/gamelogic/cgame/cg_tutorial.c:262 src/gamelogic/cgame/cg_tutorial.c:281
 #: src/gamelogic/cgame/cg_tutorial.c:308
 #, c-format
 msgid "Press %s to walk on walls\n"
-msgstr ""
+msgstr "Натисни %s, щоб ходити по стінах\n"
 
 #: src/gamelogic/cgame/cg_tutorial.c:277
 msgid ""
@@ -2610,17 +2601,22 @@ msgid ""
 "Look at their heads (or jump) to try to bite their heads\n"
 "Head-bites cause more damage\n"
 msgstr ""
+"Торкайся людей, щоб завдавати їм шкоди\n"
+"Ціль у їхні голови (або стрибай) для нанесення головних укусів\n"
+"Головні укуси пошкоджують сильніше\n"
 
 #: src/gamelogic/cgame/cg_tutorial.c:293
 msgid ""
 "Touch humans to grab them\n"
 "Look at them to maintain the grab\n"
 msgstr ""
+"Торкайся людей, щоб хапати їх\n"
+"Дивись на них для підтримання тиску\n"
 
 #: src/gamelogic/cgame/cg_tutorial.c:303
 #, c-format
 msgid "Press %s to spray disorienting gas\n"
-msgstr ""
+msgstr "Натисни %s, щоб розпиляти дезорієнтуючий газ\n"
 
 #: src/gamelogic/cgame/cg_tutorial.c:320 src/gamelogic/cgame/cg_tutorial.c:343
 #, c-format
@@ -2684,14 +2680,14 @@ msgid "Use %s and %s to select an upgrade\n"
 msgstr ""
 
 #: src/gamelogic/cgame/cg_tutorial.c:496 src/gamelogic/cgame/cg_tutorial.c:543
-#, c-format
+#, c-format, fuzzy
 msgid "Press %s to use the %s\n"
-msgstr ""
+msgstr "Натисни %s, щоб стріляти з %s\n"
 
 #: src/gamelogic/cgame/cg_tutorial.c:505
-#, c-format
+#, c-format, fuzzy
 msgid "Press %s to use your %s\n"
-msgstr ""
+msgstr "Натисни %s, щоб стріляти з %s\n"
 
 #: src/gamelogic/cgame/cg_tutorial.c:513
 msgid "You are blacking out. Stop sprinting to recover stamina\n"
@@ -2728,9 +2724,9 @@ msgid "Press %s to leave spawn queue\n"
 msgstr ""
 
 #: src/gamelogic/cgame/cg_tutorial.c:576
-#, c-format
+#, c-format, fuzzy
 msgid "Press %s to spawn\n"
-msgstr ""
+msgstr "Натисни %s, щоб вкусити\n"
 
 #: src/gamelogic/cgame/cg_tutorial.c:583
 #, c-format
@@ -4175,8 +4171,9 @@ msgid "$1$^7 called a vote: $2$\n"
 msgstr "$1$^7 скликав голосування: $2$\n"
 
 #: src/gamelogic/game/g_cmds.c:2159
+#, fuzzy
 msgid "$1$^7 called a team vote: $2t$\n"
-msgstr ""
+msgstr "$1$^7 скликав загонове голосування: "
 
 #: src/gamelogic/game/g_cmds.c:2210
 msgid "$1$: no vote in progress\n"
@@ -4191,8 +4188,9 @@ msgid "$1$: vote cast\n"
 msgstr "$1$: проголосовано\n"
 
 #: src/gamelogic/game/g_cmds.c:2254
+#, fuzzy
 msgid "usage: setviewpos (<x> <y> <z> [<yaw> [<pitch>]] | <entitynum>)\n"
-msgstr ""
+msgstr "використання: setviewpos <x> <y> <z> [<никання> [<крен>]]\n"
 
 #: src/gamelogic/game/g_cmds.c:2869 src/gamelogic/game/g_cmds.c:2899
 #: src/gamelogic/game/g_cmds.c:2951
@@ -4200,8 +4198,9 @@ msgid "You don't have the $1$\n"
 msgstr "Ви не маєте $1$\n"
 
 #: src/gamelogic/game/g_cmds.c:3151
+#, fuzzy
 msgid "You can't buy this item ($1$)\n"
-msgstr ""
+msgstr "Ви не можете купити цей виріб\n"
 
 #: src/gamelogic/game/g_cmds.c:3155
 msgid "You can't buy alien items\n"
@@ -4240,16 +4239,18 @@ msgid "unignore: $1$^7 is not on your ignore list\n"
 msgstr "unignore: $1$^7 не у Вашому чорному списку\n"
 
 #: src/gamelogic/game/g_cmds.c:4130
+#, fuzzy
 msgid "^3listmaps: ^7found $1$ map matching '$2$^7'"
 msgid_plural "^3listmaps: ^7found $1$ maps matching '$2$^7'"
-msgstr[0] ""
+msgstr[0] "^3listmaps: ^7знайдено $1$ мап(и) збіжних з '$2$^7'"
 msgstr[1] ""
 msgstr[2] ""
 
 #: src/gamelogic/game/g_cmds.c:4134
+#, fuzzy
 msgid "^3listmaps: ^7listing $1$ of $2$ map"
 msgid_plural "^3listmaps: ^7listing $1$ of $2$ maps"
-msgstr[0] ""
+msgstr[0] "^3listmaps: ^7перераховую $1$ з $2$ мап(и)"
 msgstr[1] ""
 msgstr[2] ""
 
@@ -4432,8 +4433,9 @@ msgid "Credits: Free"
 msgstr ""
 
 #: src/gamelogic/ui/ui_main.c:1878 src/gamelogic/ui/ui_main.c:1899
+#, fuzzy
 msgid "Credits:"
-msgstr ""
+msgstr "Гривні"
 
 #: src/gamelogic/ui/ui_main.c:1911
 msgid "Sentience"
@@ -4981,8 +4983,9 @@ msgid "Enable VoIP:"
 msgstr ""
 
 #: main/ui/ingame_options.menu:770 main/ui/options.menu:782
+#, fuzzy
 msgid "Show VoIP Meter:"
-msgstr ""
+msgstr "Показувати відправника VoIP:"
 
 #: main/ui/ingame_options.menu:773 main/ui/options.menu:785
 msgid "Capture Gain:"

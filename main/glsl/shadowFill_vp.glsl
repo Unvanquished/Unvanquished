@@ -22,12 +22,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 /* shadowFill_vp.glsl */
 
-attribute vec4		attr_Position;
+attribute vec3 		attr_Position;
 attribute vec3		attr_Normal;
-attribute vec4		attr_TexCoord0;
+attribute vec2 		attr_TexCoord0;
 attribute vec4		attr_Color;
 
-attribute vec4		attr_Position2;
+attribute vec3 		attr_Position2;
 attribute vec3		attr_Normal2;
 
 uniform float		u_VertexInterpolation;
@@ -64,7 +64,7 @@ void	main()
 						position, normal);
 
 #else
-	position = attr_Position;
+	position = vec4(attr_Position, 1.0);
 	normal = attr_Normal;
 #endif
 
@@ -86,7 +86,7 @@ void	main()
 #endif
 
 	// transform texcoords
-	var_Tex = (u_ColorTextureMatrix * attr_TexCoord0).st;
+	var_Tex = (u_ColorTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0)).st;
 
 	// assign color
 	var_Color = u_Color;

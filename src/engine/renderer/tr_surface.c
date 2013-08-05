@@ -1412,11 +1412,9 @@ static void RB_SurfaceMD5( md5Surface_t *srf )
 	int             numVertexes;
 	md5Model_t      *model;
 	md5Vertex_t     *v;
-	md5Bone_t       *bone;
 	md5Triangle_t   *tri;
-	static matrix_t boneMatrices[ MAX_BONES ];
-	vec3_t          tmpVert;
-	vec3_t          tmpPosition, tmpNormal;
+	static ALIGNED( 16, boneMatrix_t boneMatrices[ MAX_BONES ] );
+	boneMatrix_t    tmpMat;
 	md5Weight_t     *w;
 
 	GLimp_LogComment( "--- Tess_SurfaceMD5 ---\n" );
@@ -1442,18 +1440,15 @@ static void RB_SurfaceMD5( md5Surface_t *srf )
 
 		if ( backEnd.currentEntity->e.skeleton.type == SK_ABSOLUTE )
 		{
-
-			MatrixSetupTransformFromQuat( boneMatrices[ i ], backEnd.currentEntity->e.skeleton.bones[ i ].rotation,
-			                              backEnd.currentEntity->e.skeleton.bones[ i ].origin );
-			MatrixMultiplyScale( boneMatrices[ i ],
-			                  backEnd.currentEntity->e.skeleton.scale[ 0 ],
-			                  backEnd.currentEntity->e.skeleton.scale[ 1 ], backEnd.currentEntity->e.skeleton.scale[ 2 ] );
-			MatrixMultiply2( boneMatrices[ i ], model->bones[ i ].inverseTransform );
+			BoneMatrixSetupTransformWithScale( tmpMat, backEnd.currentEntity->e.skeleton.bones[ i ].rotation,
+			                              backEnd.currentEntity->e.skeleton.bones[ i ].origin,
+			                              backEnd.currentEntity->e.skeleton.scale );
+			BoneMatrixMultiply( tmpMat, model->bones[ i ].inverseTransform, boneMatrices[ i ] );
 		}
 		else
 #endif
 		{
-			MatrixIdentity( boneMatrices[ i ] );
+			BoneMatrixIdentity( boneMatrices[ i ] );
 		}
 	}
 
@@ -1462,29 +1457,34 @@ static void RB_SurfaceMD5( md5Surface_t *srf )
 
 	for ( j = 0, v = srf->verts; j < numVertexes; j++, v++ )
 	{
-		VectorClear( tmpPosition );
-		VectorClear( tmpNormal );
-		for ( k = 0, w = v->weights[ 0 ]; k < v->numWeights; k++, w++ )
+#if id386_sse
+		__m128 a, b, c;
+
+		w = v->weights[ 0 ];
+		BoneMatrixMulSSE( &a, &b, &c, w->boneWeight, boneMatrices[ w->boneIndex ] );
+
+		for ( k = 1, w = v->weights[ 1 ]; k < v->numWeights; k++, w++ )
 		{
-			bone = &model->bones[ w->boneIndex ];
-
-			MatrixTransformPoint( boneMatrices[ w->boneIndex ], v->position, tmpVert );
-			VectorMA( tmpPosition, w->boneWeight, tmpVert, tmpPosition );
-
-			MatrixTransformNormal( boneMatrices[ w->boneIndex ], v->normal, tmpVert );
-			VectorMA( tmpNormal, w->boneWeight, tmpVert, tmpNormal );
+			BoneMatrixMadSSE( &a, &b, &c, w->boneWeight, boneMatrices[ w->boneIndex ] );
 		}
-		VectorNormalize( tmpNormal );
 
-		tess.xyz[ tess.numVertexes + j ].v[ 0 ] = tmpPosition[ 0 ];
-		tess.xyz[ tess.numVertexes + j ].v[ 1 ] = tmpPosition[ 1 ];
-		tess.xyz[ tess.numVertexes + j ].v[ 2 ] = tmpPosition[ 2 ];
+		BoneMatrixTransform4SSE( a, b, c, v->position, tess.xyz[ tess.numVertexes + j ].v );
+		BoneMatrixTransform4NormalizeSSE( a, b, c, v->normal, tess.normal[ tess.numVertexes + j ].v );
+#else
+		w = v->weights[ 0 ];
+		BoneMatrixMul( tmpMat, w->boneWeight, boneMatrices[ w->boneIndex ] );
+
+		for ( k = 1, w = v->weights[ 1 ]; k < v->numWeights; k++, w++ )
+		{
+			BoneMatrixMad( tmpMat, w->boneWeight, boneMatrices[ w->boneIndex ] );
+		}
+
+		BoneMatrixTransformPoint( tmpMat, v->position, tess.xyz[ tess.numVertexes + j ].v );
 		tess.xyz[ tess.numVertexes + j ].v[ 3 ] = 1;
 
-		tess.normal[ tess.numVertexes + j ].v[ 0 ] = tmpNormal[ 0 ];
-		tess.normal[ tess.numVertexes + j ].v[ 1 ] = tmpNormal[ 1 ];
-		tess.normal[ tess.numVertexes + j ].v[ 2 ] = tmpNormal[ 2 ];
-		tess.normal[ tess.numVertexes + j ].v[ 3 ] = 1;
+		BoneMatrixTransformNormal( tmpMat, v->normal, tess.normal[ tess.numVertexes + j ].v );
+		VectorNormalize( tess.normal[ tess.numVertexes + j ].v );
+#endif
 
 		tess.texCoords0[ tess.numVertexes + j ].v[ 0 ] = v->texCoords[ 0 ];
 		tess.texCoords0[ tess.numVertexes + j ].v[ 1 ] = v->texCoords[ 1 ];

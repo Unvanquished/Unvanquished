@@ -1827,19 +1827,13 @@ static int PM_FootstepForSurface( void )
 
 /*
 =================
-PM_CrashLand
+PM_Land
 
-Check for hard landings that generate sound events
+Play landing animation
 =================
 */
-static void PM_CrashLand( void )
+static void PM_Land( void )
 {
-	float delta;
-	float dist;
-	float vel, acc;
-	float t;
-	float a, b, c, den;
-
 	// decide which landing animation to use
 	if ( pm->ps->pm_flags & PMF_BACKWARDS_JUMP )
 	{
@@ -1872,6 +1866,23 @@ static void PM_CrashLand( void )
 	{
 		pm->ps->torsoTimer = TIMER_LAND;
 	}
+
+}
+
+/*
+=================
+PM_CrashLand
+
+Check for hard landings that generate sound events
+=================
+*/
+static void PM_CrashLand( void )
+{
+	float delta;
+	float dist;
+	float vel, acc;
+	float t;
+	float a, b, c, den;
 
 	// calculate the exact velocity on landing
 	dist = pm->ps->origin[ 2 ] - pml.previous_origin[ 2 ];
@@ -2643,6 +2654,7 @@ static void PM_GroundTrace( void )
 		// communicate the fall velocity to the server
 		pm->pmext->fallVelocity = pml.previous_velocity[ 2 ];
 
+		PM_Land();
 		if ( BG_ClassHasAbility( pm->ps->stats[ STAT_CLASS ], SCA_TAKESFALLDAMAGE ) )
 		{
 			PM_CrashLand();
@@ -3803,8 +3815,9 @@ static void PM_Weapon( void )
 			case WP_ALEVEL2:
 				if ( attack1 )
 				{
-					num /= RAND_MAX / 6 + 1;
-					PM_ForceLegsAnim( NSPA_ATTACK1 );
+					num /= RAND_MAX / 3 + 1;
+					PM_ForceLegsAnim( NSPA_ATTACK1 + num );
+					num = rand() / ( RAND_MAX / 6 + 1 );
 					PM_StartWeaponAnim( WANIM_ATTACK1 + num );
 				}
 
