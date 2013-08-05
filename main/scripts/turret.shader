@@ -4,6 +4,8 @@ models/buildables/mgturret/turret
 
     diffuseMap models/buildables/mgturret/turret_diff.tga
     normalMap models/buildables/mgturret/turret_norm.tga
-    specularMap models/buildables/mgturret/turret_spec.tga
-//    glowMap models/buildables/mgturret/turret_gloss.tga
+    {
+        stage specularMap
+	map addGloss(models/buildables/mgturret/turret_spec.tga, models/buildables/mgturret/turret_gloss.tga)
+    }
 }
