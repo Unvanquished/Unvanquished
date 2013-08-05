@@ -62,7 +62,6 @@ Maryland 20850 USA.
 #if defined( SIMD_SSE ) //|| 1 //|| defined(__SSE__)//defined(_MSC_VER)
 #define id386_sse   1
 #include <xmmintrin.h>
-#define SSEVEC3_T
 #else
 #define id386_sse   0
 #endif

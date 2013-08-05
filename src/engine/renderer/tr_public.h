@@ -198,6 +198,8 @@ typedef struct
 
 	void ( *ScissorEnable ) ( qboolean enable );
 	void ( *ScissorSet ) ( int x, int y, int w, int h );
+
+	void ( *SetAltShaderTokens ) ( const char * );
 } refexport_t;
 
 //

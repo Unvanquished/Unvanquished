@@ -901,7 +901,7 @@ exploding.
 */
 void AGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod )
 {
-	G_SetBuildableAnim( self, BANIM_DESTROY1, qtrue );
+	G_SetBuildableAnim( self, self->powered ? BANIM_DESTROY1 : BANIM_DESTROY_UNPOWERED, qtrue );
 	G_SetIdleBuildableAnim( self, BANIM_DESTROYED );
 
 	self->die = nullDieFunction;
@@ -1893,16 +1893,17 @@ static void IdlePowerState( gentity_t *self )
 {
 	if ( self->powered )
 	{
-		if ( self->s.torsoAnim == BANIM_IDLE3 )
+		if ( self->s.torsoAnim == BANIM_IDLE_UNPOWERED )
 		{
 			G_SetIdleBuildableAnim( self, BG_Buildable( self->s.modelindex )->idleAnim );
 		}
 	}
 	else
 	{
-		if ( self->s.torsoAnim != BANIM_IDLE3 )
+		if ( self->s.torsoAnim != BANIM_IDLE_UNPOWERED )
 		{
-			G_SetIdleBuildableAnim( self, BANIM_IDLE3 );
+			G_SetBuildableAnim( self, BANIM_POWERDOWN, qfalse );
+			G_SetIdleBuildableAnim( self, BANIM_IDLE_UNPOWERED );
 		}
 	}
 }
@@ -2403,7 +2404,7 @@ Called when a human buildable dies.
 */
 void HGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod )
 {
-	G_SetBuildableAnim( self, BANIM_DESTROY1, qtrue );
+	G_SetBuildableAnim( self, self->powered ? BANIM_DESTROY1 : BANIM_DESTROY_UNPOWERED, qtrue );
 	G_SetIdleBuildableAnim( self, BANIM_DESTROYED );
 
 	self->die = nullDieFunction;
@@ -2731,9 +2732,10 @@ void HMedistat_Think( gentity_t *self )
 			G_SetIdleBuildableAnim( self, BANIM_IDLE1 );
 		}
 	}
-	else if ( self->s.torsoAnim != BANIM_IDLE3 )
+	else if ( self->s.torsoAnim != BANIM_IDLE_UNPOWERED )
 	{
-			G_SetIdleBuildableAnim( self, BANIM_IDLE3 );
+			G_SetBuildableAnim( self, BANIM_POWERDOWN, qfalse );
+			G_SetIdleBuildableAnim( self, BANIM_IDLE_UNPOWERED );
 	}
 
 	// clear target's healing flag for now

@@ -3940,6 +3940,7 @@ qboolean G_admin_endvote( gentity_t *ent )
 	admin_log( BG_TeamName( team ) );
 	level.team[ team ].voteNo = cancel ? level.team[ team ].numVotingClients : 0;
 	level.team[ team ].voteYes = cancel ? 0 : level.team[ team ].numVotingClients;
+	level.team[ team ].quorum = 0;
 	G_CheckVote( team );
 
 	if ( !Q_strncmp( level.team[ team ].voteDisplayString, "Extend", 6 ) &&

@@ -1433,6 +1433,26 @@ char *ClientBotConnect( int clientNum, qboolean firstTime, team_t team )
 }
 
 /*
+============
+ClientAdminChallenge
+============
+*/
+void ClientAdminChallenge( int clientNum )
+{
+	gclient_t       *client = level.clients + clientNum;
+	g_admin_admin_t *admin = client->pers.admin;
+
+	if ( !client->pers.pubkey_authenticated && admin && admin->pubkey[ 0 ] && ( level.time - client->pers.pubkey_challengedAt ) >= 6000 )
+	{
+		trap_SendServerCommand( clientNum, va( "pubkey_decrypt %s", admin->msg2 ) );
+		client->pers.pubkey_challengedAt = level.time ^ ( 5 * clientNum ); // a small amount of jitter 
+
+		// copy the decrypted message because generating a new message will overwrite it
+		G_admin_writeconfig();
+	}
+}
+
+/*
 ===========
 ClientBegin
 
@@ -1446,14 +1466,11 @@ void ClientBegin( int clientNum )
 	gentity_t       *ent;
 	gclient_t       *client;
 	int             flags;
-	g_admin_admin_t *admin;
 	char            startMsg[ MAX_STRING_CHARS ];
 
 	ent = g_entities + clientNum;
 
 	client = level.clients + clientNum;
-
-	admin = client->pers.admin;
 
 	// ignore if client already entered the game
 	if ( client->pers.connected != CON_CONNECTING )
@@ -1474,12 +1491,7 @@ void ClientBegin( int clientNum )
 	client->pers.connected = CON_CONNECTED;
 	client->pers.enterTime = level.time;
 
-	if ( !client->pers.pubkey_authenticated && admin && admin->pubkey[ 0 ] )
-	{
-		trap_SendServerCommand( ent - g_entities, va( "pubkey_decrypt %s", admin->msg2 ) );
-		// copy the decrypted message because generating a new message will overwrite it
-		G_admin_writeconfig();
-	}
+	ClientAdminChallenge( clientNum );
 
 	// save eflags around this, because changing teams will
 	// cause this to happen with a valid entity, and we

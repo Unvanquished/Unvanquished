@@ -1536,60 +1536,26 @@ void G_ChargeAttack( gentity_t *ent, gentity_t *victim )
 	ent->client->ps.weaponTime += LEVEL4_TRAMPLE_REPEAT;
 }
 
-static int GetPlayerMass( class_t pcl )
+/*
+======================================================================
+
+GENERIC
+
+======================================================================
+*/
+
+/*
+===============
+G_ImpactAttack
+
+TODO: Handle generic impact damage (e.g. pounce).
+===============
+*/
+void G_ImpactAttack( gentity_t *attacker, gentity_t *victim )
 {
-	// TODO: Put mass into player class config files
-	switch ( pcl )
-	{
-		case PCL_ALIEN_LEVEL0:
-			return 5;
-
-		case PCL_ALIEN_LEVEL0_UPG:
-			return 6;
-
-		case PCL_ALIEN_LEVEL1:
-			return 30;
-
-		case PCL_ALIEN_LEVEL1_UPG:
-			return 40;
-
-		case PCL_ALIEN_LEVEL2:
-			return 50;
-
-		case PCL_ALIEN_LEVEL2_UPG:
-			return 60;
-
-		case PCL_ALIEN_LEVEL3:
-			return 180;
-
-		case PCL_ALIEN_LEVEL3_UPG:
-			return 200;
-
-		case PCL_ALIEN_LEVEL4:
-			return 500;
-
-		case PCL_ALIEN_BUILDER0:
-			return 40;
-
-		case PCL_ALIEN_BUILDER0_UPG:
-			return 50;
-
-		case PCL_HUMAN:
-			return 80;
-
-		case PCL_HUMAN_BSUIT:
-			return 130;
-
-		default:
-			return 0;
-	}
-}
-
-void G_CrushAttack( gentity_t *attacker, gentity_t *victim )
-{
-	float  impactVelocity, impactEnergy, weightDPS;
+	float  impactVelocity, impactEnergy;
 	vec3_t knockbackDir;
-	int    attackerMass, victimMass, impactDamage, weightDamage;
+	int    attackerMass, impactDamage;
 
 	// self must be a client
 	if ( !attacker->client )
@@ -1610,44 +1576,15 @@ void G_CrushAttack( gentity_t *attacker, gentity_t *victim )
 		return;
 	}
 
-	attackerMass = GetPlayerMass( attacker->client->pers.classSelection );
-
-	// clients periodically suffer from weight damage if they stand on the floor
-	if ( victim->client &&
-	     victim->client->nextCrushTime < level.time &&
-	     victim->client->ps.groundEntityNum != ENTITYNUM_NONE )
-	{
-		victimMass = GetPlayerMass( victim->client->pers.classSelection );
-		weightDPS = WEIGHTDMG_DMG_MODIFIER * MAX( attackerMass - victimMass, 0 );
-
-		if ( weightDPS > WEIGHTDMG_DPS_THRESHOLD )
-		{
-			weightDamage = ( int )( weightDPS * ( WEIGHTDMG_REPEAT / 1000.0f ) );
-
-			if ( weightDamage > 0 )
-			{
-				G_Damage( victim, attacker, attacker, NULL, victim->s.origin, weightDamage,
-						  DAMAGE_NO_LOCDAMAGE, MOD_WEIGHT );
-			}
-		}
-
-		victim->client->nextCrushTime = level.time + WEIGHTDMG_REPEAT;
-	}
-
-	// stop here if attacker didn't fall
-	if ( attacker->client->pmext.fallVelocity == 0.0f )
-	{
-		return;
-	}
-
 	// calculate impact damage
-	impactVelocity = fabs( attacker->client->pmext.fallVelocity ) * CRUSHDMG_QU_TO_METER; // in m/s
+	attackerMass = BG_Class( attacker->client->pers.classSelection )->mass;
+	impactVelocity = fabs( attacker->client->pmext.fallImpactVelocity[ 2 ] ) * IMPACTDMG_QU_TO_METER; // in m/s
 	impactEnergy = attackerMass * impactVelocity * impactVelocity; // in J
-	impactDamage = ( int )( impactEnergy * CRUSHDMG_JOULE_TO_DAMAGE );
+	impactDamage = ( int )( impactEnergy * IMPACTDMG_JOULE_TO_DAMAGE );
 
 	// deal impact damage to both clients and structures, use a threshold for friendly fire
 	if ( ( !OnSameTeam( attacker, victim ) && impactDamage > 0                     ) ||
-	     (  OnSameTeam( attacker, victim ) && impactDamage > CRUSHDMG_FF_THRESHOLD ) )
+	     (  OnSameTeam( attacker, victim ) && impactDamage > IMPACTDMG_FF_THRESHOLD ) )
 	{
 		// calculate knockback direction
 		VectorSubtract( victim->s.origin, attacker->client->ps.origin, knockbackDir );
@@ -1656,6 +1593,65 @@ void G_CrushAttack( gentity_t *attacker, gentity_t *victim )
 		G_Damage( victim, attacker, attacker, knockbackDir, victim->s.origin, impactDamage,
 		          DAMAGE_NO_LOCDAMAGE, MOD_WEIGHT );
 	}
+}
+
+/*
+===============
+G_WeightAttack
+===============
+*/
+void G_WeightAttack( gentity_t *attacker, gentity_t *victim )
+{
+	float  weightDPS;
+	int    attackerMass, victimMass, weightDamage;
+
+	// weigth damage is only dealt between clients
+	if ( !attacker->client || !victim->client )
+	{
+		return;
+	}
+
+	// ignore invincible targets
+	if ( !victim->takedamage )
+	{
+		return;
+	}
+
+	// attacker must be above victim
+	if ( attacker->client->ps.origin[ 2 ] + attacker->r.mins[ 2 ] <
+	     victim->s.origin[ 2 ] + victim->r.maxs[ 2 ] )
+	{
+		return;
+	}
+
+	// victim must be on the ground
+	if ( victim->client->ps.groundEntityNum == ENTITYNUM_NONE )
+	{
+		return;
+	}
+
+	// check timer
+	if ( victim->client->nextCrushTime > level.time )
+	{
+		return;
+	}
+
+	attackerMass = BG_Class( attacker->client->pers.classSelection )->mass;
+	victimMass = BG_Class( victim->client->pers.classSelection )->mass;
+	weightDPS = WEIGHTDMG_DMG_MODIFIER * MAX( attackerMass - victimMass, 0 );
+
+	if ( weightDPS > WEIGHTDMG_DPS_THRESHOLD )
+	{
+		weightDamage = ( int )( weightDPS * ( WEIGHTDMG_REPEAT / 1000.0f ) );
+
+		if ( weightDamage > 0 )
+		{
+			G_Damage( victim, attacker, attacker, NULL, victim->s.origin, weightDamage,
+					  DAMAGE_NO_LOCDAMAGE, MOD_WEIGHT );
+		}
+	}
+
+	victim->client->nextCrushTime = level.time + WEIGHTDMG_REPEAT;
 }
 
 //======================================================================

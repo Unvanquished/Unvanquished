@@ -42,13 +42,9 @@ void R_AddBrushModelInteractions( trRefEntity_t *ent, trRefLight_t *light, inter
 	// and we don't care about proper shadowing
 	if ( ent->cull == CULL_OUT )
 	{
-		if ( r_shadows->integer <= SHADOWING_BLOB || light->l.noShadows )
-		{
+		iaType &= ~IA_LIGHT;
+		if ( !iaType ) {
 			return;
-		}
-		else
-		{
-			iaType = IA_SHADOWONLY;
 		}
 	}
 
@@ -57,14 +53,14 @@ void R_AddBrushModelInteractions( trRefEntity_t *ent, trRefLight_t *light, inter
 
 	if ( light->l.inverseShadows )
 	{
-		if ( iaType != IA_LIGHTONLY && ( light->l.noShadowID && ( light->l.noShadowID != ent->e.noShadowID ) ) )
+		if ( (iaType & IA_SHADOW) && ( light->l.noShadowID && ( light->l.noShadowID != ent->e.noShadowID ) ) )
 		{
 			return;
 		}
 	}
 	else
 	{
-		if ( iaType != IA_LIGHTONLY && ( light->l.noShadowID && ( light->l.noShadowID == ent->e.noShadowID ) ) )
+		if ( (iaType & IA_SHADOW) && ( light->l.noShadowID && ( light->l.noShadowID == ent->e.noShadowID ) ) )
 		{
 			return;
 		}
@@ -583,7 +579,7 @@ void R_SetupLightLocalBounds( trRefLight_t *light )
 				int    j;
 				vec3_t farCorners[ 4 ];
 				//vec4_t      frustum[6];
-				vec4_t *frustum = light->localFrustum;
+				const vec4_t *frustum = (const vec4_t *)light->localFrustum;
 
 				ClearBounds( light->localBounds[ 0 ], light->localBounds[ 1 ] );
 
@@ -882,8 +878,7 @@ void R_SetupLightFrustum( trRefLight_t *light )
 	if ( light->isStatic )
 	{
 		int           i;
-		srfVert_t     *verts;
-		srfTriangle_t *triangles;
+		vboData_t     data;
 
 		if ( glConfig.smpActive )
 		{
@@ -896,27 +891,20 @@ void R_SetupLightFrustum( trRefLight_t *light )
 
 		R_TessLight( light, NULL );
 
-		verts = ( srfVert_t * ) ri.Hunk_AllocateTempMemory( tess.numVertexes * sizeof( srfVert_t ) );
-		triangles = ( srfTriangle_t * ) ri.Hunk_AllocateTempMemory( ( tess.numIndexes / 3 ) * sizeof( srfTriangle_t ) );
+		memset( &data, 0, sizeof( data ) );
+		data.xyz = ( vec3_t * ) ri.Hunk_AllocateTempMemory( tess.numVertexes * sizeof( *data.xyz ) );
 
 		for ( i = 0; i < tess.numVertexes; i++ )
 		{
 			// transform to world space
-			MatrixTransformPoint( light->transformMatrix, tess.xyz[ i ], verts[ i ].xyz );
+			MatrixTransformPoint( light->transformMatrix, tess.xyz[ i ], data.xyz[ i ] );
 		}
+		data.numVerts = tess.numVertexes;
 
-		for ( i = 0; i < tess.numIndexes / 3; i++ )
-		{
-			triangles[ i ].indexes[ 0 ] = tess.indexes[ i * 3 + 0 ];
-			triangles[ i ].indexes[ 1 ] = tess.indexes[ i * 3 + 1 ];
-			triangles[ i ].indexes[ 2 ] = tess.indexes[ i * 3 + 2 ];
-		}
+		light->frustumVBO = R_CreateStaticVBO( "staticLightFrustum_VBO", data, VBO_LAYOUT_SEPERATE );
+		light->frustumIBO = R_CreateStaticIBO( "staticLightFrustum_IBO", tess.indexes, tess.numIndexes );
 
-		light->frustumVBO = R_CreateVBO2( "staticLightFrustum_VBO", tess.numVertexes, verts, ATTR_POSITION, VBO_USAGE_STATIC );
-		light->frustumIBO = R_CreateIBO2( "staticLightFrustum_IBO", tess.numIndexes / 3, triangles, VBO_USAGE_STATIC );
-
-		ri.Hunk_FreeTempMemory( triangles );
-		ri.Hunk_FreeTempMemory( verts );
+		ri.Hunk_FreeTempMemory( data.xyz );
 
 		light->frustumVerts = tess.numVertexes;
 		light->frustumIndexes = tess.numIndexes;
@@ -1151,18 +1139,11 @@ qboolean R_AddLightInteraction( trRefLight_t *light, surfaceType_t *surface, sha
 	// update counters
 	light->numInteractions++;
 
-	switch ( iaType )
-	{
-		case IA_SHADOWONLY:
-			light->numShadowOnlyInteractions++;
-			break;
-
-		case IA_LIGHTONLY:
-			light->numLightOnlyInteractions++;
-			break;
-
-		default:
-			break;
+	if( !(iaType & IA_LIGHT) ) {
+		light->numShadowOnlyInteractions++;
+	}
+	if( !(iaType & (IA_SHADOW | IA_SHADOWCLIP) ) ) {
+		light->numLightOnlyInteractions++;
 	}
 
 	ia->next = NULL;
@@ -1520,7 +1501,7 @@ void R_SetupLightScissor( trRefLight_t *light )
 			{
 				int    j;
 				vec3_t farCorners[ 4 ];
-				vec4_t *frustum = light->localFrustum;
+				const vec4_t *frustum = (const vec4_t *)light->localFrustum;
 
 				R_CalcFrustumFarCorners( frustum, farCorners );
 #if 1

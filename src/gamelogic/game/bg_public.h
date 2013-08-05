@@ -177,8 +177,8 @@ typedef enum
 
 typedef struct
 {
-	int   pouncePayload;
-	float fallVelocity;
+	int    pouncePayload;
+	vec3_t fallImpactVelocity;
 } pmoveExt_t;
 
 #define MAXTOUCH 32
@@ -767,12 +767,14 @@ typedef enum
 {
   BANIM_NONE,
 
-  BANIM_CONSTRUCT1,
-  BANIM_CONSTRUCT2,
+  BANIM_IDLE1, // inactive idle
+  BANIM_IDLE2, // active idle
 
-  BANIM_IDLE1,
-  BANIM_IDLE2,
-  BANIM_IDLE3,
+  BANIM_POWERDOWN, // note: not looped
+  BANIM_IDLE_UNPOWERED,
+
+  BANIM_CONSTRUCT1,
+  BANIM_CONSTRUCT2, // return to idle state
 
   BANIM_ATTACK1,
   BANIM_ATTACK2,
@@ -784,7 +786,7 @@ typedef enum
   BANIM_PAIN2,
 
   BANIM_DESTROY1,
-  BANIM_DESTROY2,
+  BANIM_DESTROY_UNPOWERED, // if unpowered
   BANIM_DESTROYED,
 
   MAX_BUILDABLE_ANIMATIONS
@@ -1014,6 +1016,7 @@ typedef struct
 	float    stopSpeed;
 	float    jumpMagnitude;
 	float    knockbackScale;
+	int      mass;
 
 	int      cost;
 	int      value;

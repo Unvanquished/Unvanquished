@@ -542,6 +542,7 @@ typedef struct
 	char     voice[ MAX_VOICE_NAME_LEN ];
 	qboolean useUnlagged;
 	int      pubkey_authenticated; // -1 = does not have pubkey, 0 = not authenticated, 1 = authenticated
+	int      pubkey_challengedAt; // time at which challenge was sent
 
 	// level.time when teamoverlay info changed so we know to tell other players.
 	int                 infoChangeTime;
@@ -1129,7 +1130,8 @@ void     CheckGrabAttack( gentity_t *ent );
 qboolean CheckPounceAttack( gentity_t *ent );
 void     CheckCkitRepair( gentity_t *ent );
 void     G_ChargeAttack( gentity_t *ent, gentity_t *victim );
-void     G_CrushAttack(gentity_t *attacker, gentity_t *victim );
+void     G_ImpactAttack(gentity_t *attacker, gentity_t *victim );
+void     G_WeightAttack(gentity_t *attacker, gentity_t *victim );
 void     G_UpdateZaps( int msec );
 void     G_ClearPlayerZapEffects( gentity_t *player );
 
@@ -1198,6 +1200,7 @@ char *ClientUserinfoChanged( int clientNum, qboolean forceName );
 void ClientDisconnect( int clientNum );
 void ClientBegin( int clientNum );
 void ClientCommand( int clientNum );
+void ClientAdminChallenge( int clientNum );
 
 //
 // g_active.c
