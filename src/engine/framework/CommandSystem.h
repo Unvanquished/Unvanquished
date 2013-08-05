@@ -53,6 +53,7 @@ namespace Cmd {
         END
     };
 
+    //TODO make it thread safe for After and End.
     // Adds a command text to by executed, optionnally parsing cvars ($cvarname$) if the text is a user input.
     void BufferCommandText(const std::string& text, execWhen_t when = END, bool parseCvars = false);
     // Executes all the buffered commands.
