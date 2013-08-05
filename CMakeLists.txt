@@ -384,9 +384,12 @@ set( SERVERLIST
 
 set( ENGINELIST
   ${SHARED_DIR}/Command.cpp
+  ${SHARED_DIR}/LineEditData.cpp
   ${SHARED_DIR}/String.cpp
   ${ENGINE_DIR}/framework/BaseCommands.cpp
   ${ENGINE_DIR}/framework/CommandSystem.cpp
+  ${ENGINE_DIR}/framework/ConsoleField.cpp
+  ${ENGINE_DIR}/framework/ConsoleHistory.cpp
   ${ENGINE_DIR}/qcommon/cm_load.c
   ${ENGINE_DIR}/qcommon/cm_trisoup.c
   ${ENGINE_DIR}/qcommon/cm_patch.c
