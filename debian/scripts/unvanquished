@@ -17,28 +17,39 @@ if test "$1" = --gdb; then
   fi
 fi
 
-echo "$1" | LANG=C grep -q '^unv://\(\[[0-9A-Fa-f:]\+\]\|[-.A-Za-z0-9]\+\)\(:[0-9]\+\)\?/\?$'
+URI="$(echo "$1" | sed -e 's/%5B/[/; s/%5D/]/')"
+
+echo "$URI" | LANG=C grep -q '^unv://\(\[[0-9A-Fa-f:]\+\]\|[-.A-Za-z0-9]\+\)\(:[0-9]\+\)\?/\?$'
 NOT_URI=$?
 
 if test -p "$UNVPIPE" && lsof "$UNVPIPE" >/dev/null 2>&1; then
   if test $NOT_URI != 0; then
-    echo "$0: invalid URI: $1" >&2
+    echo "$0: invalid URI: $URI" >&2
     exit 2
   fi
   # Just pass on the URI; drop the rest
-  echo "connect $1" >~/.Unvanquished/main/pipe
+  echo "connect $URI" >~/.Unvanquished/main/pipe
   exit
 fi
 
 PRECMD=
 if test $NOT_URI = 0; then
-  PRECMD='connect '
+  PRECMD="connect $URI"
+  shift
 else
-  echo "$1" | LANG=C grep -qi '^unv://'
+  echo "$URI" | LANG=C grep -qi '^unv://'
   if test $? = 0; then
-    echo "$0: invalid URI: $1" >&2
+    echo "$0: invalid URI: $URI" >&2
     exit 2
   fi
 fi
 
-exec $RUNGDB ./unvanquished +set fs_libpath "$PWD" +set fs_basepath /var/games/unvanquished +$PRECMD"$@"
+# Prefix with + if needed
+PREFIX=+
+case "$PRECMD$@" in
+  +*|'')
+    PREFIX=
+    ;;
+esac
+
+exec $RUNGDB ./unvanquished +set fs_libpath "$PWD" +set fs_basepath /var/games/unvanquished $PREFIX$PRECMD"$@"
