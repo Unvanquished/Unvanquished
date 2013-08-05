@@ -4,5 +4,5 @@ models/buildables/mgturret/turret
 
     diffuseMap models/buildables/mgturret/turret_diff.tga
     normalMap models/buildables/mgturret/turret_norm.tga
-    map models/buildables/mgturret/turret_spec.webp
+    specularMap models/buildables/mgturret/turret_spec.webp
 }
