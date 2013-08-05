@@ -110,6 +110,8 @@ static const char *const modNames[] =
 	"MOD_FLAMER",
 	"MOD_FLAMER_SPLASH",
 	"MOD_BURN",
+	"MOD_WEIGHT_H",
+
 	"MOD_GRENADE",
 	"MOD_WATER",
 	"MOD_SLIME",
@@ -120,7 +122,6 @@ static const char *const modNames[] =
 	"MOD_SUICIDE",
 	"MOD_TARGET_LASER",
 	"MOD_TRIGGER_HURT",
-	"MOD_WEIGHT",
 
 	"MOD_ABUILDER_CLAW",
 	"MOD_LEVEL0_BITE",
@@ -133,6 +134,7 @@ static const char *const modNames[] =
 	"MOD_LEVEL2_ZAP",
 	"MOD_LEVEL4_CLAW",
 	"MOD_LEVEL4_TRAMPLE",
+	"MOD_WEIGHT_A",
 
 	"MOD_SLOWBLOB",
 	"MOD_POISON",
