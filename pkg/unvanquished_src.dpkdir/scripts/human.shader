@@ -15,6 +15,7 @@ models/players/human_base/helmet
 	diffuseMap models/players/human_base/helmet_d.webp
 	normalMap models/players/human_base/helmet_n.webp
 	specularMap models/players/human_base/helmet_s.webp
+	glowMap models/players/human_base/helmet_glow.webp
 }
 
 models/players/human_base/body
