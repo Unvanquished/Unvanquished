@@ -602,6 +602,12 @@ typedef struct shader_s
 
 	int             shaderStates[ MAX_STATES_PER_SHADER ]; // index to valid shader states
 
+	struct {
+		char *name;
+		int  index;
+		int  spare[7]; // possible future expansion
+	} altShader[ MAX_ALTSHADERS ]; // state-based remapping; note that index 0 is unused
+
 	struct shader_s *next;
 } shader_t;
 
@@ -2566,6 +2572,8 @@ void     R_PurgeLightmapShaders( void );
 void     R_LoadCacheShaders( void );
 
 // done.
+
+void     R_SetAltShaderTokens( const char * );
 
 //------------------------------------------------------------------------------
 // Ridah, mesh compression

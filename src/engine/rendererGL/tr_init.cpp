@@ -2162,6 +2162,8 @@ extern "C" {
 
 		re.SetColorGrading = RE_SetColorGrading;
 
+		re.SetAltShaderTokens = R_SetAltShaderTokens;
+
 		return &re;
 	}
 

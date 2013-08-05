@@ -107,6 +107,7 @@ static void CG_ScoresDown_f( void )
 	{
 		Menu_SetFeederSelection( menuScoreboard, FEEDER_ALIENTEAM_LIST, 0, NULL );
 		Menu_SetFeederSelection( menuScoreboard, FEEDER_HUMANTEAM_LIST, 0, NULL );
+		trap_PrepareKeyUp();
 		cg.showScores = qtrue;
 	}
 	else
