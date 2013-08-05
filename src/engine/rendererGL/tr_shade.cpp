@@ -1125,6 +1125,11 @@ static void Render_lightMapping( int stage, bool asColorMap, bool normalMapping 
 
 		gl_lightMappingShader->SetUniform_SpecularTextureMatrix( tess.svars.texMatrices[ TB_SPECULARMAP ] );
 
+		float specExpMin = RB_EvalExpression( &pStage->specularExponentMin, r_specularExponentMin->value );
+		float specExpMax = RB_EvalExpression( &pStage->specularExponentMax, r_specularExponentMax->value );
+
+		gl_lightMappingShader->SetUniform_SpecularExponent( specExpMin, specExpMax );
+
 		// bind u_DeluxeMap
 		GL_SelectTexture( 4 );
 		BindDeluxeMap();
