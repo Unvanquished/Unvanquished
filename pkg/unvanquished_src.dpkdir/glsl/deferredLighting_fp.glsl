@@ -76,7 +76,6 @@ uniform mat4		u_UnprojectMatrix;
 
 
 
-
 /*
 ================
 MakeNormalVectors
@@ -1020,7 +1019,8 @@ void	main()
 
 #if defined(USE_NORMAL_MAPPING)
 	// compute the specular term
-	vec3 specular = texture2D(u_SpecularMap, st).rgb * u_LightColor * pow(clamp(dot(N, H), 0.0, 1.0), r_SpecularExponent) * r_SpecularScale;
+	vec4 spec = texture2D(u_SpecularMap, st).rgba;
+	vec3 specular = spec.rgb * u_LightColor * pow(clamp(dot(N, H), 0.0, 1.0), spec.a) * r_SpecularScale;
 #endif
 
 

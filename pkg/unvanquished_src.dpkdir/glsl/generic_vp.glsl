@@ -22,13 +22,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 /* generic_vp.glsl */
 
-attribute vec4		attr_Position;
-attribute vec4		attr_TexCoord0;
-attribute vec4		attr_TexCoord1;
+attribute vec3 		attr_Position;
+attribute vec2 		attr_TexCoord0;
+attribute vec2 		attr_TexCoord1;
 attribute vec3		attr_Normal;
 attribute vec4		attr_Color;
 
-attribute vec4		attr_Position2;
+attribute vec3 		attr_Position2;
 attribute vec3		attr_Normal2;
 
 uniform float		u_VertexInterpolation;
@@ -64,7 +64,7 @@ void	main()
 						position, normal);
 
 #else
-	position = attr_Position;
+	position = vec4(attr_Position, 1.0);
 	normal = attr_Normal;
 #endif
 
@@ -95,9 +95,9 @@ void	main()
 		texCoord.w = 1;
 	}
 #elif defined(USE_TCGEN_LIGHTMAP)
-	texCoord = attr_TexCoord1;
+	texCoord = vec4(attr_TexCoord1, 0.0, 1.0);
 #else
-	texCoord = attr_TexCoord0;
+	texCoord = vec4(attr_TexCoord0, 0.0, 1.0);
 #endif
 
 	var_Tex = (u_ColorTextureMatrix * texCoord).st;
