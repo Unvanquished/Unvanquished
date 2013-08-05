@@ -90,6 +90,8 @@ cvar_t *sv_packetdelay;
 // fretn
 cvar_t *sv_fullmsg;
 
+cvar_t *vm_game;
+
 #define LL( x ) x = LittleLong( x )
 
 #define MAX_CHALLENGE_LEN 128

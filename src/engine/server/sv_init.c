@@ -906,6 +906,8 @@ void SV_Init( void )
 	// ET://someserver.com
 	sv_fullmsg = Cvar_Get( "sv_fullmsg", "Server is full.", CVAR_ARCHIVE );
 
+	vm_game = Cvar_Get( "vm_game", "0", CVAR_ARCHIVE );
+
 	svs.serverLoad = -1;
 }
 

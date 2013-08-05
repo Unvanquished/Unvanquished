@@ -37,6 +37,7 @@ cmake_dependent_option( BUILD_NEW_RENDERER   "Build new renderer library"       
 option( ENABLE_LTO           "Use link-time optimization for Release builds"                            0 )
 option( ENABLE_BUNDLING      "When packaging automatically include all non-system libraries in package" 0 )
 option( ENABLE_HARDENING     "Use stack protection"                                                     0 )
+option( ENABLE_QVM_COMPAT    "Configure the engine to use QVMs instead of NaCl"                         0 )
 
 cmake_dependent_option( USE_MUMBLE           "Compile with support for Mumble"                       1 BUILD_CLIENT                   0 )
 cmake_dependent_option( USE_VOIP             "Compile with VOIP support"                             1 "BUILD_CLIENT OR BUILD_SERVER" 0 )
@@ -236,6 +237,11 @@ if( MSVC )
   add_definitions( -D_CRT_SECURE_NO_WARNINGS )
 endif()
 
+# QVM compatibility
+if( ENABLE_QVM_COMPAT )
+  add_definitions( -DQVM_COMPAT )
+endif()
+
 ################################################################################
 # Directories
 ################################################################################
@@ -411,11 +417,24 @@ set( ENGINELIST
   ${ENGINE_DIR}/qcommon/translation.cpp
   ${ENGINE_DIR}/qcommon/unzip.c
   ${ENGINE_DIR}/qcommon/ioapi.c
-  ${ENGINE_DIR}/qcommon/nacl.cpp
-  ${ENGINE_DIR}/qcommon/vm.cpp
   ${ENGINE_DIR}/sys/sys_main.c
   ${ENGINE_DIR}/sys/con_log.c
 )
+
+if( ENABLE_QVM_COMPAT )
+  set( ENGINELIST ${ENGINELIST}
+    ${ENGINE_DIR}/qcommon/vm.c
+    ${ENGINE_DIR}/qcommon/vm_interpreted.c
+  )
+  if( ARCH STREQUAL "x86" OR ARCH STREQUAL "x86_64" )
+    set( ENGINELIST ${ENGINELIST} ${ENGINE_DIR}/qcommon/vm_x86.c )
+  endif()
+else()
+  set( ENGINELIST ${ENGINELIST}
+    ${ENGINE_DIR}/qcommon/nacl.cpp
+    ${ENGINE_DIR}/qcommon/vm.cpp
+  )
+endif()
 
 if( WIN32 )
   set( ENGINELIST ${ENGINELIST}
@@ -782,8 +801,10 @@ if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
 else()
   add_definitions( -DNACL_BUILD_SUBARCH=32 )
 endif()
-set( LIBSRC_ENGINE ${LIBSRC_ENGINE} ${NACL_LIST_NATIVE} )
 include_directories( ${LIB_DIR}/nacl )
+if( NOT ENABLE_QVM_COMPAT )
+  set( LIBSRC_ENGINE ${LIBSRC_ENGINE} ${NACL_LIST_NATIVE} )
+endif()
 
 # SDL, required for all targets on win32 because of iconv
 if( BUILD_CLIENT OR WIN32 )

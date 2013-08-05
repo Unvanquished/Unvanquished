@@ -2301,6 +2301,8 @@ void S_AL_MasterGain( float gain )
 	qalListenerf(AL_GAIN, gain);
 }
 
+#endif
+
 
 /*
 =================
@@ -2411,8 +2413,6 @@ int S_AL_GetCurrentSoundtime( void )
 	//fixme to be like snd_dma.c?
 	return Sys_Milliseconds( );
 }
-
-#endif
 
 /*
 =================

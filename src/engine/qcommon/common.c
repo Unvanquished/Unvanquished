@@ -3126,6 +3126,11 @@ void Com_Init( char *commandLine )
 	Com_RandomBytes( ( byte * )&qport, sizeof( int ) );
 	Netchan_Init( qport & 0xffff );
 
+#ifdef QVM_COMPAT
+	VM_Init();
+	// Ignore any errors
+	VM_Forced_Unload_Start();
+#endif
 	SV_Init();
 	Hist_Load();
 

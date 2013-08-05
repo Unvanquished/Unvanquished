@@ -412,17 +412,6 @@ extern clientStatic_t cls;
 
 //=============================================================================
 
-// HACK: Temporary to make client compile until syscalls are ported
-#define vm_t int
-#define VM_Call(...) 0
-#define VM_Free(...) 0
-#define VM_Create(...) NULL
-#define VMA(...) ((void*)1)
-#define VM_ExplicitArgPtr(...) ((void*)1)
-#define VMF(...) 0.0f
-#define VM_CheckBlock(...) 0
-#define VM_Debug(...) 0
-
 extern vm_t                   *cgvm; // interface to the cgame module
 extern vm_t                   *uivm; // interface to the ui module
 extern refexport_t            re; // interface to refresh library

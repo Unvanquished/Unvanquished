@@ -339,10 +339,12 @@ public:
 	void BotAIStartFrame(int levelTime);
 	void GameMessageRecieved(int clientNum, const char *buffer, int bufferSize, int commandTime);
 
+#ifndef QVM_COMPAT
 private:
 	void Syscall(int index, RPC::Reader& input, RPC::Writer& outputs);
 
 	NaCl::SharedMemoryPtr shmRegion;
+#endif
 };
 
 //=============================================================================
@@ -403,6 +405,8 @@ extern cvar_t *sv_fullmsg;
 #ifdef USE_VOIP
 extern cvar_t *sv_voip;
 #endif
+
+extern cvar_t *vm_game;
 
 //===========================================================
 

@@ -21,8 +21,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "../qcommon/q_shared.h"
+#include "../qcommon/vm_traps.h"
 
-#define GAME_ABI_VERSION          9
+#define GAME_API_VERSION          9
 
 #define SVF_NOCLIENT              0x00000001
 #define SVF_CLIENTMASK            0x00000002
@@ -97,7 +98,7 @@ typedef struct
 // game-module-to-engine calls
 typedef enum gameImport_s
 {
-  G_PRINT,
+  G_PRINT = FIRST_VM_SYSCALL,
   G_ERROR,
   G_LOG,
   G_MILLISECONDS,
@@ -106,6 +107,7 @@ typedef enum gameImport_s
   G_CVAR_SET,
   G_CVAR_VARIABLE_INTEGER_VALUE,
   G_CVAR_VARIABLE_STRING_BUFFER,
+  G_STUB__CVAR_LATCHEDVARIABLESTRINGBUFFER,
   G_ARGC,
   G_ARGV,
   G_SEND_CONSOLE_COMMAND,
@@ -156,6 +158,8 @@ typedef enum gameImport_s
   G_PARSE_READ_TOKEN,
   G_PARSE_SOURCE_FILE_AND_LINE,
   BOT_GET_CONSOLE_MESSAGE,
+  G_STUB__ADD_PHYSICS_ENTITY,
+  G_STUB__ADD_PHYSICS_STATIC,
   G_SENDMESSAGE,
   G_MESSAGESTATUS,
   G_RSA_GENMSG, // ( const char *public_key, char *cleartext, char *encrypted )
@@ -200,6 +204,11 @@ typedef enum
   // return qfalse if the entity should not be sent to the client
 
   BOTAI_START_FRAME, // void ()( int levelTime );
+
+  // Cast AI
+  BOT_VISIBLEFROMPOS, // qboolean ()( vec3_t srcOrig, int srcNum, dstOrig, int dstNum, qboolean isDummy );
+  BOT_CHECKATTACKATPOS, // qboolean ()( int entityNum, int enemyNum, vec3_t position,
+  //              qboolean ducking, qboolean allowWorldHit );
 
   GAME_MESSAGERECEIVED, // void ()( int clientNum, const char *buffer, int bufferSize, int commandTime );
 } gameExport_t;

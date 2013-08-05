@@ -116,7 +116,7 @@ int main(int argc, char** argv)
 
 	// Send syscall ABI version, also acts as a sign that the module loaded
 	RPC::Writer writer;
-	writer.WriteInt(GAME_ABI_VERSION);
+	writer.WriteInt(GAME_API_VERSION);
 
 	// Allocate entities and clients shared memory region
 	shmRegion = NaCl::CreateSharedMemory(sizeof(gentity_t) * MAX_GENTITIES + sizeof(gclient_t) * MAX_CLIENTS);
@@ -404,7 +404,7 @@ void trap_Trace(trace_t *results, const vec3_t start, const vec3_t mins, const v
 	input.Write(mins ? mins : vec3_origin, sizeof(vec3_t));
 	input.Write(maxs ? maxs : vec3_origin, sizeof(vec3_t));
 	input.Write(end, sizeof(vec3_t));
-	input.WriteInt(passEntityNum == -1 ? ENTITYNUM_NONE : passEntityNum);
+	input.WriteInt(passEntityNum);
 	input.WriteInt(contentmask);
 	RPC::Reader output = DoRPC(input);
 	output.Read(results, sizeof(trace_t));
@@ -423,7 +423,7 @@ void trap_TraceCapsule(trace_t *results, const vec3_t start, const vec3_t mins, 
 	input.Write(mins ? mins : vec3_origin, sizeof(vec3_t));
 	input.Write(maxs ? maxs : vec3_origin, sizeof(vec3_t));
 	input.Write(end, sizeof(vec3_t));
-	input.WriteInt(passEntityNum == -1 ? ENTITYNUM_NONE : passEntityNum);
+	input.WriteInt(passEntityNum);
 	input.WriteInt(contentmask);
 	RPC::Reader output = DoRPC(input);
 	output.Read(results, sizeof(trace_t));
