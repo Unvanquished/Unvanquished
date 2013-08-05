@@ -1,28 +1,83 @@
-models/buildables/medistat/red_cross
+models/buildables/medistat/base_down
 {
-  {
-    map models/buildables/medistat/red_cross.tga
-    blendfunc gl_one_minus_dst_color gl_one
-  }
+	diffuseMap models/buildables/medistat/medistat_d
+	normalMap models/buildables/medistat/medistat_n
+	{
+		stage specularMap
+		map models/buildables/medistat/medistat_s
+		specularExponentMin 12
+		specularExponentMax 128
+	}
 }
 
-models/buildables/medistat/medi_cone
+models/buildables/medistat/base_dead
 {
-  cull none
+	diffuseMap models/buildables/medistat/medistat_d
+	normalMap models/buildables/medistat/medistat_n
+	{
+		stage specularMap
+		map models/buildables/medistat/medistat_s
+		specularExponentMin 12
+		specularExponentMax 128
+	}
 
-  {
-    map models/buildables/medistat/medi_cone.jpg
-    blendfunc add
-    rgbGen lightingDiffuse
-    tcMod scroll 1 0
-  }
-  {
-    map models/buildables/telenode/sparkles.tga
-    blendfunc add
-    rgbGen identity
-    rgbGen wave noise 0 1 35 1
-    tcMod scale 2 2
-    tcMod scroll 1 0.5
-  }
+	{
+		map models/buildables/medistat/medistat_dead
+		blendfunc filter
+	}
 }
 
+models/buildables/medistat/base
+{
+	qer_editorimage models/buildables/medistat/medistat_d
+
+	diffuseMap models/buildables/medistat/medistat_d
+	normalMap models/buildables/medistat/medistat_n
+	{
+		stage specularMap
+		map models/buildables/medistat/medistat_s
+		specularExponentMin 12
+		specularExponentMax 128
+	}
+
+	{
+		map models/buildables/medistat/medistat_glow
+		blendfunc add
+		rgbGen wave sin 0.375 0.1875 0 0.25
+	}
+
+	when unpowered models/buildables/medistat/base_down
+	when destroyed models/buildables/medistat/base_dead
+}
+
+/*
+models/buildables/medistat/no_healing
+{
+	cull all
+	diffuseMap models/buildables/medistat/active
+}
+*/
+
+models/buildables/medistat/healing
+{
+	cull none
+	{
+		map models/buildables/medistat/active
+		blendfunc blend
+		rgbGen lightingDiffuse
+		tcMod scroll 0.5 0
+	}
+
+	{
+		map models/buildables/medistat/sparkles
+		blendfunc GL_SRC_ALPHA GL_ONE
+		rgbGen wave noise 0.0546875 0.0234375 35 0.25
+		// let's have some fun with this
+		tcMod rotate 59
+		tcmod scale 2 4
+		tcmod stretch sin 1 0.5 0 0.497
+		tcMod scroll -0.997 0.5
+	}
+
+//	when unpowered models/buildables/medistat/no_healing
+}
