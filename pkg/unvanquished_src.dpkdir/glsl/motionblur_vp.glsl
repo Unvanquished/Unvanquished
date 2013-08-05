@@ -22,10 +22,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 /* motionblur_vp.glsl */
 
-attribute vec4		attr_Position;
+attribute vec3 		attr_Position;
 
 void	main()
 {
 	// no vertex transformation needed
-	gl_Position = attr_Position;
+	gl_Position = vec4(attr_Position, 1.0);
 }
