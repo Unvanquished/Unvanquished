@@ -943,7 +943,7 @@ exploding.
 */
 void AGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod )
 {
-	G_SetBuildableAnim( self, BANIM_DESTROY1, qtrue );
+	G_SetBuildableAnim( self, self->powered ? BANIM_DESTROY1 : BANIM_DESTROY_UNPOWERED, qtrue );
 	G_SetIdleBuildableAnim( self, BANIM_DESTROYED );
 
 	self->die = nullDieFunction;
@@ -1854,16 +1854,17 @@ static void G_IdlePowerState( gentity_t *self )
 {
 	if ( self->powered )
 	{
-		if ( self->s.torsoAnim == BANIM_IDLE3 )
+		if ( self->s.torsoAnim == BANIM_IDLE_UNPOWERED )
 		{
 			G_SetIdleBuildableAnim( self, BG_Buildable( self->s.modelindex )->idleAnim );
 		}
 	}
 	else
 	{
-		if ( self->s.torsoAnim != BANIM_IDLE3 )
+		if ( self->s.torsoAnim != BANIM_IDLE_UNPOWERED )
 		{
-			G_SetIdleBuildableAnim( self, BANIM_IDLE3 );
+			G_SetBuildableAnim( self, BANIM_POWERDOWN, qfalse );
+			G_SetIdleBuildableAnim( self, BANIM_IDLE_UNPOWERED );
 		}
 	}
 }
@@ -1927,7 +1928,7 @@ Called when a human spawn dies
 */
 void HSpawn_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod )
 {
-	G_SetBuildableAnim( self, BANIM_DESTROY1, qtrue );
+	G_SetBuildableAnim( self, self->powered ? BANIM_DESTROY1 : BANIM_DESTROY_UNPOWERED, qtrue );
 	G_SetIdleBuildableAnim( self, BANIM_DESTROYED );
 
 	self->die = nullDieFunction;
@@ -2020,7 +2021,7 @@ Called when a repeater dies
 */
 static void HRepeater_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod )
 {
-	G_SetBuildableAnim( self, BANIM_DESTROY1, qtrue );
+	G_SetBuildableAnim( self, self->powered ? BANIM_DESTROY1 : BANIM_DESTROY_UNPOWERED, qtrue );
 	G_SetIdleBuildableAnim( self, BANIM_DESTROYED );
 
 	self->die = nullDieFunction;

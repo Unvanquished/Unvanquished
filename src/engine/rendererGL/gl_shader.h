@@ -354,6 +354,47 @@ protected:
 	}
 };
 
+class GLUniform2f : protected GLUniform
+{
+protected:
+	GLUniform2f( GLShader *shader, const char *name ) :
+	GLUniform( shader, name )
+	{
+	}
+
+	inline void SetValue( const vec2_t v )
+	{
+		shaderProgram_t *p = _shader->GetProgram();
+
+		assert( p == glState.currentProgram );
+
+#if defined( LOG_GLSL_UNIFORMS )
+		if ( r_logFile->integer )
+		{
+			GLimp_LogComment( va( "GLSL_SetUniform2f( %s, shader: %s, value: [ %f, %f ] ) ---\n",
+				this->GetName(), _shader->GetName().c_str(), v[ 0 ], v[ 1 ] ) );
+		}
+#endif
+#if defined( USE_UNIFORM_FIREWALL )
+		vec2_t *firewall = ( vec2_t * ) &p->uniformFirewall[ _firewallIndex ];
+
+		if ( ( *firewall )[ 0 ] == v[ 0 ] && ( *firewall )[ 1 ] == v[ 1 ] )
+		{
+			return;
+		}
+
+		( *firewall )[ 0 ] = v[ 0 ];
+		( *firewall )[ 1 ] = v[ 1 ];
+#endif
+		glUniform2f( p->uniformLocations[ _locationIndex ], v[ 0 ], v[ 1 ] );
+	}
+
+	size_t GetSize( void )
+	{
+		return sizeof( vec2_t );
+	}
+};
+
 class GLUniform3f : protected GLUniform
 {
 protected:
@@ -523,6 +564,30 @@ protected:
 		}
 #endif
 		glUniformMatrix4fv( p->uniformLocations[ _locationIndex ], numMatrices, transpose, &m[ 0 ][ 0 ] );
+	}
+};
+
+class GLUniformMatrix34fv : protected GLUniform
+{
+protected:
+	GLUniformMatrix34fv( GLShader *shader, const char *name ) :
+	GLUniform( shader, name )
+	{
+	}
+
+	inline void SetValue( int numMatrices, GLboolean transpose, const float *m )
+	{
+		shaderProgram_t *p = _shader->GetProgram();
+
+		assert( p == glState.currentProgram );
+#if defined( LOG_GLSL_UNIFORMS )
+		if ( r_logFile->integer )
+		{
+			GLimp_LogComment( va( "GLSL_SetUniformMatrix34fv( %s, shader: %s, numMatrices: %d, transpose: %d ) ---\n",
+				this->GetName(), _shader->GetName().c_str(), numMatrices, transpose ) );
+		}
+#endif
+		glUniformMatrix3x4fv( p->uniformLocations[ _locationIndex ], numMatrices, transpose, m );
 	}
 };
 
@@ -1824,17 +1889,17 @@ public:
 };
 
 class u_BoneMatrix :
-	GLUniformMatrix4fv
+	GLUniformMatrix34fv
 {
 public:
 	u_BoneMatrix( GLShader *shader ) :
-		GLUniformMatrix4fv( shader, "u_BoneMatrix" )
+		GLUniformMatrix34fv( shader, "u_BoneMatrix" )
 	{
 	}
 
-	void SetUniform_BoneMatrix( int numBones, const matrix_t boneMatrices[ MAX_BONES ] )
+	void SetUniform_BoneMatrix( int numBones, const boneMatrix_t boneMatrices[ MAX_BONES ] )
 	{
-		this->SetValue( numBones, GL_FALSE, boneMatrices );
+		this->SetValue( numBones, GL_FALSE, &boneMatrices[ 0 ][ 0 ] );
 	}
 };
 
@@ -2176,6 +2241,41 @@ public:
 	}
 };
 
+class u_TexScale :
+	GLUniform2f
+{
+public:
+	u_TexScale( GLShader *shader ) :
+		GLUniform2f( shader, "u_TexScale" )
+	{
+	}
+
+	void SetUniform_TexScale( vec2_t value )
+	{
+		this->SetValue( value );
+	}
+};
+
+class u_SpecularExponent :
+	GLUniform2f
+{
+public:
+	u_SpecularExponent( GLShader *shader ) :
+		GLUniform2f( shader, "u_SpecularExponent" )
+	{
+	}
+
+	void SetUniform_SpecularExponent( float min, float max )
+	{
+		// in the fragment shader, the exponent must be computed as
+		// exp = ( max - min ) * gloss + min
+		// to expand the [0...1] range of gloss to [min...max]
+		// we precompute ( max - min ) before sending the uniform to the fragment shader
+		vec2_t v = { max - min, min };
+		this->SetValue( v );
+	}
+};
+
 class GLShader_generic :
 	public GLShader,
 	public u_ColorTextureMatrix,
@@ -2205,6 +2305,7 @@ class GLShader_lightMapping :
 	public u_DiffuseTextureMatrix,
 	public u_NormalTextureMatrix,
 	public u_SpecularTextureMatrix,
+	public u_SpecularExponent,
 	public u_ColorModulate,
 	public u_Color,
 	public u_AlphaThreshold,
@@ -2231,6 +2332,7 @@ class GLShader_vertexLighting_DBS_entity :
 	public u_DiffuseTextureMatrix,
 	public u_NormalTextureMatrix,
 	public u_SpecularTextureMatrix,
+	public u_SpecularExponent,
 	public u_AlphaThreshold,
 	public u_AmbientColor,
 	public u_ViewOrigin,
@@ -2264,6 +2366,7 @@ class GLShader_vertexLighting_DBS_world :
 	public u_DiffuseTextureMatrix,
 	public u_NormalTextureMatrix,
 	public u_SpecularTextureMatrix,
+	public u_SpecularExponent,
 	public u_ColorModulate,
 	public u_Color,
 	public u_AlphaThreshold,
@@ -2292,6 +2395,7 @@ class GLShader_forwardLighting_omniXYZ :
 	public u_DiffuseTextureMatrix,
 	public u_NormalTextureMatrix,
 	public u_SpecularTextureMatrix,
+	public u_SpecularExponent,
 	public u_AlphaThreshold,
 	public u_ColorModulate,
 	public u_Color,
@@ -2331,6 +2435,7 @@ class GLShader_forwardLighting_projXYZ :
 	public u_DiffuseTextureMatrix,
 	public u_NormalTextureMatrix,
 	public u_SpecularTextureMatrix,
+	public u_SpecularExponent,
 	public u_AlphaThreshold,
 	public u_ColorModulate,
 	public u_Color,
@@ -2371,6 +2476,7 @@ class GLShader_forwardLighting_directionalSun :
 	public u_DiffuseTextureMatrix,
 	public u_NormalTextureMatrix,
 	public u_SpecularTextureMatrix,
+	public u_SpecularExponent,
 	public u_AlphaThreshold,
 	public u_ColorModulate,
 	public u_Color,
@@ -2507,6 +2613,7 @@ class GLShader_geometricFill :
 	public u_BoneMatrix,
 	public u_VertexInterpolation,
 	public u_DepthScale,
+	public u_SpecularExponent,
 	public GLDeformStage,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
 	public GLCompileMacro_USE_VERTEX_ANIMATION,
@@ -2701,7 +2808,8 @@ public:
 class GLShader_blurX :
 	public GLShader,
 	public u_ModelViewProjectionMatrix,
-	public u_DeformMagnitude
+	public u_DeformMagnitude,
+	public u_TexScale
 {
 public:
 	GLShader_blurX( GLShaderManager *manager );
@@ -2711,7 +2819,8 @@ public:
 class GLShader_blurY :
 	public GLShader,
 	public u_ModelViewProjectionMatrix,
-	public u_DeformMagnitude
+	public u_DeformMagnitude,
+	public u_TexScale
 {
 public:
 	GLShader_blurY( GLShaderManager *manager );
@@ -2786,6 +2895,7 @@ class GLShader_liquid :
 	public u_NormalScale,
 	public u_FogDensity,
 	public u_FogColor,
+	public u_SpecularExponent,
 	public GLCompileMacro_USE_PARALLAX_MAPPING
 {
 public:

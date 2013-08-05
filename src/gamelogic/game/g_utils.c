@@ -658,7 +658,7 @@ qboolean G_AddressParse( const char *str, addr_t *addr )
 	if ( strchr( str, ':' ) )
 	{
 		p = addr6parse( str, addr );
-		max = 128;
+		max = 64;
 	}
 	else if ( strchr( str, '.' ) )
 	{

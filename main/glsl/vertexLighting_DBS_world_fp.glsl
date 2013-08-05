@@ -29,6 +29,7 @@ uniform float		u_AlphaThreshold;
 uniform vec3		u_ViewOrigin;
 uniform float		u_DepthScale;
 uniform	float		u_LightWrapAround;
+uniform vec2		u_SpecularExponent;
 
 varying vec3		var_Position;
 varying vec4		var_TexDiffuseNormal;
@@ -125,7 +126,8 @@ void	main()
 	vec3 light = var_AmbientLight + var_DirectedLight.rgb * NL;
 
 	// compute the specular term
-	vec3 specular = texture2D(u_SpecularMap, texSpecular).rgb * var_DirectedLight.rgb * pow(clamp(dot(N, H), 0.0, 1.0), r_SpecularExponent) * r_SpecularScale;
+	vec4 spec = texture2D(u_SpecularMap, texSpecular).rgba;
+	vec3 specular = spec.rgb * var_DirectedLight.rgb * pow(clamp(dot(N, H), 0.0, 1.0), u_SpecularExponent.x * spec.a + u_SpecularExponent.y) * r_SpecularScale;
 
 	// compute final color
 	vec4 color = vec4(diffuse.rgb, 1.0);

@@ -1632,6 +1632,9 @@ void ClientThink_real( gentity_t *ent )
 		//  return;
 	}
 
+	// client is admin but program hasn't responded to challenge? Resend
+	ClientAdminChallenge( ent - g_entities );
+
 	//
 	// check for exiting intermission
 	//

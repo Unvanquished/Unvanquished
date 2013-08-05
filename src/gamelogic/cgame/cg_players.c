@@ -1664,12 +1664,6 @@ static void CG_SetLerpFrameAnimation( clientInfo_t *ci, lerpFrame_t *lf, int new
 	anim = &ci->animations[ newAnimation ];
 
 	lf->animation = anim;
-	lf->animationTime = lf->frameTime + anim->initialLerp;
-
-	if ( cg_debugAnim.integer )
-	{
-		CG_Printf( "Anim: %i\n", newAnimation );
-	}
 
 	if ( ci->md5 )
 	{
@@ -1713,7 +1707,22 @@ static void CG_SetLerpFrameAnimation( clientInfo_t *ci, lerpFrame_t *lf, int new
 				return;
 			}
 		}
+
+		lf->animationTime = cg.time + anim->initialLerp;
+
+		lf->oldFrame = lf->frame = 0;
+		lf->oldFrameTime = lf->frameTime = 0;
 	}
+	else
+	{
+		lf->animationTime = lf->frameTime + anim->initialLerp;
+	}
+
+	if ( cg_debugAnim.integer )
+	{
+		CG_Printf( "Anim: %i\n", newAnimation );
+	}
+
 }
 
 /*
@@ -1735,11 +1744,9 @@ static void CG_RunPlayerLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAni
 		animChanged = qtrue;
 	}
 
-	if ( !ci->md5 )
-	{
-		CG_RunLerpFrame( lf, speedScale );
-	}
-	else
+	CG_RunLerpFrame( lf, speedScale );
+
+	if ( ci->md5 )
 	{
 		CG_RunMD5LerpFrame( lf, speedScale, animChanged );
 
@@ -3044,6 +3051,8 @@ void CG_Player( centity_t *cent )
 	int           held = es->modelindex;
 	vec3_t        surfNormal = { 0.0f, 0.0f, 1.0f };
 
+	altShader_t   altShaderIndex;
+
 	// the client number is stored in clientNum.  It can't be derived
 	// from the entity number, because a single client may have
 	// multiple corpses on the level using the same clientinfo
@@ -3067,6 +3076,19 @@ void CG_Player( centity_t *cent )
 	if ( es->eFlags & EF_NODRAW )
 	{
 		return;
+	}
+
+	if ( es->eFlags & EF_DEAD )
+	{
+		altShaderIndex = CG_ALTSHADER_DEAD;
+	}
+	else if ( !(es->eFlags & EF_B_POWERED) )
+	{
+		altShaderIndex = CG_ALTSHADER_UNPOWERED;
+	}
+	else
+	{
+		altShaderIndex = CG_ALTSHADER_DEFAULT;
 	}
 
 	// get the player model information
@@ -3362,6 +3384,7 @@ void CG_Player( centity_t *cent )
 
 
 		// add body to renderer
+		body.altShaderIndex = altShaderIndex;
 		trap_R_AddRefEntityToScene( &body );
 
 		//sanity check that particle systems are stopped when dead
@@ -3511,6 +3534,7 @@ void CG_Player( centity_t *cent )
 	VectorCopy( legs.origin, legs.lightingOrigin );
 	VectorCopy( legs.origin, legs.oldorigin );  // don't positionally lerp at all
 
+	legs.altShaderIndex = altShaderIndex;
 	trap_R_AddRefEntityToScene( &legs );
 
 	// if the model failed, allow the default nullmodel to be displayed
@@ -3549,6 +3573,7 @@ void CG_Player( centity_t *cent )
 		torso.shadowPlane = shadowPlane;
 		torso.renderfx = renderfx;
 
+		torso.altShaderIndex = altShaderIndex;
 		trap_R_AddRefEntityToScene( &torso );
 
 		//
@@ -3578,6 +3603,7 @@ void CG_Player( centity_t *cent )
 		head.shadowPlane = shadowPlane;
 		head.renderfx = renderfx;
 
+		head.altShaderIndex = altShaderIndex;
 		trap_R_AddRefEntityToScene( &head );
 
 		// if this player has been hit with poison cloud, add an effect PS
@@ -3796,6 +3822,7 @@ void CG_Corpse( centity_t *cent )
 		legs.nonNormalizedAxes = qtrue;
 	}
 
+	legs.altShaderIndex = CG_ALTSHADER_DEAD;
 	trap_R_AddRefEntityToScene( &legs );
 
 	// if the model failed, allow the default nullmodel to be displayed. Also, if MD5, no need to add other parts
@@ -3827,6 +3854,7 @@ void CG_Corpse( centity_t *cent )
 		torso.shadowPlane = shadowPlane;
 		torso.renderfx = renderfx;
 
+		torso.altShaderIndex = CG_ALTSHADER_DEAD;
 		trap_R_AddRefEntityToScene( &torso );
 
 		//
@@ -3849,6 +3877,7 @@ void CG_Corpse( centity_t *cent )
 		head.shadowPlane = shadowPlane;
 		head.renderfx = renderfx;
 
+		head.altShaderIndex = CG_ALTSHADER_DEAD;
 		trap_R_AddRefEntityToScene( &head );
 	}
 }

@@ -307,7 +307,7 @@ void Sys_AnsiColorPrint( const char *msg )
 			if ( *msg == '\n' )
 			{
 				// Issue a reset and then the newline
-				fputs( "\033[0m\n", stderr );
+				fputs( "\033[0;40;37m\n", stderr );
 				msg++;
 			}
 			else
@@ -315,7 +315,8 @@ void Sys_AnsiColorPrint( const char *msg )
 				// Print the color code
 				int colour = colour16map[ index ][ ( msg[ 1 ] - '0' ) & 31 ];
 
-				Com_sprintf( buffer, sizeof( buffer ), "\033[%d%sm",
+				Com_sprintf( buffer, sizeof( buffer ), "\033[%s%d%sm",
+				             (colour & 0x30) == 0 ? "0;" : "",
 				             30 + ( colour & 15 ), modifier[ ( colour / 16 ) & 3 ] );
 				fputs( buffer, stderr );
 				msg += 2;

@@ -229,7 +229,7 @@ if( USE_GIT_DESCRIBE )
   if( EXISTS "${CMAKE_SOURCE_DIR}/.git" )
     find_package( Git )
     if( GIT_FOUND )
-      execute_process( COMMAND git describe --tags --long --dirty=+dirty OUTPUT_VARIABLE GIT_DESCRIBE_REPORT OUTPUT_STRIP_TRAILING_WHITESPACE )
+      execute_process( COMMAND git describe --tags --long --match v* --dirty=+dirty OUTPUT_VARIABLE GIT_DESCRIBE_REPORT OUTPUT_STRIP_TRAILING_WHITESPACE )
       message( STATUS "git reported ${GIT_DESCRIBE_REPORT}" )
       # this may fail with annotated non-release tags
       if( GIT_DESCRIBE_REPORT MATCHES "-0-g.......$" )
@@ -433,10 +433,23 @@ endif(NOT MINIMAL_FLAGS)
 # Define Build Files #
 ######################
 
-set( SHAREDLIST
+set( SHAREDLIST_C
   ${MOUNT_DIR}/engine/qcommon/q_shared.c
   ${MOUNT_DIR}/engine/qcommon/q_unicode.c
   ${MOUNT_DIR}/engine/qcommon/q_math.c
+)
+
+set ( SHAREDLIST_H
+  ${MOUNT_DIR}/engine/qcommon/q_shared.h
+  ${MOUNT_DIR}/engine/qcommon/q_platform.h
+  ${MOUNT_DIR}/engine/qcommon/q_unicode.h
+  ${MOUNT_DIR}/engine/qcommon/unicode_data.h
+  ${MOUNT_DIR}/engine/qcommon/logging.h
+)
+
+set ( SHAREDLIST
+  ${SHAREDLIST_C}
+  ${SHAREDLIST_H}
 )
 
 set( OPENEXRLIST
@@ -473,6 +486,12 @@ set( RENDERERLIST
   ${MOUNT_DIR}/engine/renderer/tr_sky.c
   ${MOUNT_DIR}/engine/renderer/tr_surface.c
   ${MOUNT_DIR}/engine/renderer/tr_world.c
+  ${MOUNT_DIR}/engine/renderer/tr_local.h
+  ${MOUNT_DIR}/engine/renderer/tr_types.h
+  ${MOUNT_DIR}/engine/renderer/tr_public.h
+  ${MOUNT_DIR}/engine/renderer/tr_bonematrix.h
+  ${MOUNT_DIR}/engine/renderer/tr_bonematrix.c
+  ${MOUNT_DIR}/engine/renderer/anorms256.h
 )
 
 set( RENDERERGLLIST
@@ -519,6 +538,13 @@ set( RENDERERGLLIST
   ${MOUNT_DIR}/engine/rendererGL/tr_vbo.c
   ${MOUNT_DIR}/engine/rendererGL/tr_world.cpp
   ${MOUNT_DIR}/engine/qcommon/md4.c
+  ${MOUNT_DIR}/engine/rendererGL/tr_local.h
+  ${MOUNT_DIR}/engine/renderer/tr_public.h
+  ${MOUNT_DIR}/engine/renderer/tr_bonematrix.h
+  ${MOUNT_DIR}/engine/renderer/tr_bonematrix.c
+  ${MOUNT_DIR}/engine/rendererGL/gl_shader.h
+  ${MOUNT_DIR}/engine/rendererGL/tr_image.h
+  ${MOUNT_DIR}/engine/rendererGL/tr_model_skel.h
 )
 
 set( SERVERLIST
@@ -535,6 +561,9 @@ set( SERVERLIST
   ${MOUNT_DIR}/engine/server/sv_net_chan.c
   ${MOUNT_DIR}/engine/server/sv_snapshot.c
   ${MOUNT_DIR}/engine/server/sv_world.c
+  ${MOUNT_DIR}/engine/server/server.h
+  ${MOUNT_DIR}/engine/server/g_api.h
+  ${MOUNT_DIR}/engine/qcommon/print_translated.h
 )
 
 set( QCOMMON_ARCH "" )
@@ -551,14 +580,23 @@ set( QCOMMONLIST
   ${MOUNT_DIR}/engine/qcommon/cm_polylib.c
   ${MOUNT_DIR}/engine/qcommon/cm_test.c
   ${MOUNT_DIR}/engine/qcommon/cm_trace.c
+  ${MOUNT_DIR}/engine/qcommon/cm_local.h
+  ${MOUNT_DIR}/engine/qcommon/cm_patch.h
+  ${MOUNT_DIR}/engine/qcommon/cm_polylib.h
+  ${MOUNT_DIR}/engine/qcommon/cm_public.h
   ${MOUNT_DIR}/engine/qcommon/cmd.c
   ${MOUNT_DIR}/engine/qcommon/common.c
   ${MOUNT_DIR}/engine/qcommon/crypto.c
+  ${MOUNT_DIR}/engine/qcommon/crypto.h
   ${MOUNT_DIR}/engine/qcommon/cvar.c
+  ${MOUNT_DIR}/engine/qcommon/cvar.h
   ${MOUNT_DIR}/engine/qcommon/files.c
+  ${MOUNT_DIR}/engine/qcommon/qfiles.h
   ${MOUNT_DIR}/engine/qcommon/htable.c
+  ${MOUNT_DIR}/engine/qcommon/htable.h
   ${MOUNT_DIR}/engine/qcommon/huffman.c
   ${MOUNT_DIR}/engine/qcommon/md4.c
+  ${MOUNT_DIR}/engine/qcommon/md4.h
   ${MOUNT_DIR}/engine/qcommon/md5.c
   ${MOUNT_DIR}/engine/qcommon/msg.c
   ${MOUNT_DIR}/engine/qcommon/net_chan.c
@@ -566,9 +604,14 @@ set( QCOMMONLIST
   ${MOUNT_DIR}/engine/qcommon/parse.c
   ${MOUNT_DIR}/engine/qcommon/translation.cpp
   ${MOUNT_DIR}/engine/qcommon/unzip.c
+  ${MOUNT_DIR}/engine/qcommon/unzip.h
   ${MOUNT_DIR}/engine/qcommon/ioapi.c
   ${MOUNT_DIR}/engine/qcommon/vm.c
+  ${MOUNT_DIR}/engine/qcommon/vm_local.h
+  ${MOUNT_DIR}/engine/qcommon/vm_traps.h
   ${MOUNT_DIR}/engine/qcommon/vm_interpreted.c
+  ${MOUNT_DIR}/engine/qcommon/qcommon.h
+  ${MOUNT_DIR}/engine/qcommon/surfaceflags.h
   ${QCOMMON_ARCH}
 )
 
@@ -595,7 +638,7 @@ elseif( BUILD_ARCH STREQUAL "i386" OR BUILD_ARCH STREQUAL "x32" OR BUILD_ARCH ST
 endif()
 
 if( GAME_LIB_LLVM )
-  set( QCOMMONLIST ${QCOMMONLIST} ${MOUNT_DIR}/engine/qcommon/vm_llvm.cpp )
+  set( QCOMMONLIST ${QCOMMONLIST} ${MOUNT_DIR}/engine/qcommon/vm_llvm.cpp ${MOUNT_DIR}/engine/qcommon/vm_llvm.h )
 endif()
 
 if( USE_PHYSICS )
@@ -605,6 +648,9 @@ endif()
 set( CLIENTLIST
   ${MOUNT_DIR}/engine/botlib/bot_debug.cpp
   ${MOUNT_DIR}/engine/botlib/bot_nav_edit.cpp
+  ${MOUNT_DIR}/engine/client/cg_api.h
+  ${MOUNT_DIR}/engine/client/ui_api.h
+  ${MOUNT_DIR}/engine/client/client.h
   ${MOUNT_DIR}/engine/client/cin_ogm.c
   ${MOUNT_DIR}/engine/client/cl_avi.c
   ${MOUNT_DIR}/engine/client/cl_cgame.c
@@ -613,6 +659,8 @@ set( CLIENTLIST
   ${MOUNT_DIR}/engine/client/cl_input.c
   ${MOUNT_DIR}/engine/client/cl_irc.c
   ${MOUNT_DIR}/engine/client/cl_keys.c
+  ${MOUNT_DIR}/engine/client/keycodes.h
+  ${MOUNT_DIR}/engine/client/keys.h
   ${MOUNT_DIR}/engine/client/cl_main.c
   ${MOUNT_DIR}/engine/client/cl_net_chan.c
   ${MOUNT_DIR}/engine/client/cl_parse.c
@@ -621,6 +669,9 @@ set( CLIENTLIST
   ${MOUNT_DIR}/engine/client/cl_logs.c
   ${MOUNT_DIR}/engine/client/snd_adpcm.c
   ${MOUNT_DIR}/engine/client/snd_codec.c
+  ${MOUNT_DIR}/engine/client/snd_codec.h
+  ${MOUNT_DIR}/engine/client/snd_local.h
+  ${MOUNT_DIR}/engine/client/snd_public.h
   ${MOUNT_DIR}/engine/client/snd_codec_ogg.c
   ${MOUNT_DIR}/engine/client/snd_codec_wav.c
   ${MOUNT_DIR}/engine/client/snd_dma.c
@@ -630,10 +681,11 @@ set( CLIENTLIST
   ${MOUNT_DIR}/engine/client/snd_mix.c
   ${MOUNT_DIR}/engine/client/snd_wavelet.c
   ${MOUNT_DIR}/engine/client/qal.c
+  ${MOUNT_DIR}/engine/client/qal.h
 )
 
 if( USE_MUMBLE )
-  set( CLIENTLIST ${CLIENTLIST} ${MOUNT_DIR}/engine/client/libmumblelink.c )
+  set( CLIENTLIST ${CLIENTLIST} ${MOUNT_DIR}/engine/client/libmumblelink.c ${MOUNT_DIR}/engine/client/libmumblelink.h )
 endif()
 
 if( USE_CPUINFO )
@@ -650,6 +702,7 @@ if( ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
     ${MOUNT_DIR}/engine/sys/sys_main.c
     ${MOUNT_DIR}/engine/sys/con_log.c
     ${MOUNT_DIR}/engine/sys/con_${CONSOLE}.c
+	${MOUNT_DIR}/engine/sys/sys_local.h
   )
 else()
   set( SDLBASELIST
@@ -657,7 +710,12 @@ else()
     ${MOUNT_DIR}/engine/sys/sys_main.c
     ${MOUNT_DIR}/engine/sys/con_log.c
     ${MOUNT_DIR}/engine/sys/con_${CONSOLE}.c
+	${MOUNT_DIR}/engine/sys/sys_local.h
   )
+endif()
+
+if ( WINDOWS )
+	set( SDLBASELIST ${SDLBASELIST} ${MOUNT_DIR}/engine/sys/sys_win32.h )
 endif()
 
 # Append Visual Studio specific files to SDLBASELIST
@@ -714,13 +772,16 @@ set( CGAMEGPP_BASE
   ${GPP_DIR}/cgame/cg_utils.c
   ${GPP_DIR}/ui/ui_shared.c
   ${GPP_DIR}/ui/ui_utf8.c
-  ${SHAREDLIST}
+  ${SHAREDLIST_C}
 )
 
 set( CGAMEGPP_SO
   ${CGAMEGPP_BASE}
+  ${SHAREDLIST_H}
   ${GPP_DIR}/cgame/cg_api.c
   ${GPP_DIR}/cgame/cgame.def
+  ${MOUNT_DIR}/engine/client/cg_api.h
+  ${MOUNT_DIR}/engine/qcommon/print_translated.h
 )
 
 set( CGAMEGPP_QVM
@@ -768,13 +829,15 @@ set( GAMEGPP_BASE
   ${GPP_DIR}/game/g_bot_nav.c
   ${GPP_DIR}/game/g_bot_parse.c
   ${GPP_DIR}/game/g_bot_util.c
-  ${SHAREDLIST}
+  ${SHAREDLIST_C}
 )
 
 set( GAMEGPP_SO
   ${GAMEGPP_BASE}
+  ${SHAREDLIST_H}
   ${GPP_DIR}/game/g_api.c
   ${GPP_DIR}/game/game.def
+  ${MOUNT_DIR}/engine/server/g_api.h
 )
 
 set( GAMEGPP_QVM
@@ -791,13 +854,15 @@ set( UIGPP_BASE
   ${GPP_DIR}/game/bg_lib.c
   ${GPP_DIR}/game/bg_alloc.c
   ${GPP_DIR}/ui/ui_utf8.c
-  ${SHAREDLIST}
+  ${SHAREDLIST_C}
 )
 
 set( UIGPP_SO
   ${UIGPP_BASE}
+  ${SHAREDLIST_H}
   ${GPP_DIR}/ui/ui_api.c
   ${GPP_DIR}/ui/ui.def
+  ${MOUNT_DIR}/engine/client/ui_api.h
 )
 
 set( UIGPP_QVM
@@ -895,7 +960,7 @@ set( DAEMONMAPLIST
   ${MOUNT_DIR}/libs/zlib/zutil.c
 )
 
-set( FASTLZLIST 
+set( FASTLZLIST
 	${MOUNT_DIR}/libs/fastlz/fastlz.c
 )
 
