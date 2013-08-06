@@ -1043,12 +1043,18 @@ Cmd_CompleteArgument
 ============
 */
 
-void Cmd_CompleteArgument( const char *command, char *args, int argNum )
+void Cmd_CompleteArgument( const char *command, char *args, int pos )
 {
 	completeArgs = args;
-	completeArgNum = argNum;
+	//TODO?
+	completeArgNum = Cmd::Args(args).PosToArg(pos);
 
-	std::vector<std::string> res = Cmd::CompleteArgument(command, 42);
+	std::vector<std::string> res = Cmd::CompleteArgument(args, pos);
+
+    for (auto& r : res) {
+        Com_Printf("%s\n", r.c_str());
+    }
+
 	if (res.size() > 0) {
 		strcpy(args, res[0].c_str());
 	}

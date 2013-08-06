@@ -4194,9 +4194,11 @@ void Field_CompleteCommand( char *cmd,
 	cmd = Com_SkipCharset( cmd, " \"" );
 
 	Cmd::Args args(cmd);
-	completionArgument = args.size();
+	completionArgument = completionField->cursor;
 
 	// If there is trailing whitespace on the cmd
+	// kangz: whatever
+	/*
 	if ( * ( cmd + strlen( cmd ) - 1 ) == ' ' )
 	{
 		completionString = "";
@@ -4206,7 +4208,7 @@ void Field_CompleteCommand( char *cmd,
 	{
 		completionString = args[completionArgument - 1].c_str();
 	}
-
+*/
 	// Unconditionally add a '\' to the start of the buffer
 	if ( completionField->buffer[ 0 ] &&
 	     completionField->buffer[ 0 ] != '\\' )
@@ -4229,7 +4231,8 @@ void Field_CompleteCommand( char *cmd,
 		completionField->buffer[ 0 ] = '\\';
 	}
 
-	if ( completionArgument > 1 )
+    //kangz: broke completion as Field will be removed soon
+	if (/* completionArgument > 1*/ 1 )
 	{
 		const char *baseCmd = args[0].c_str();
 		char       *p;
@@ -4240,13 +4243,13 @@ void Field_CompleteCommand( char *cmd,
 			baseCmd++;
 		}
 
-		if ( ( p = Field_FindFirstSeparator( cmd ) ) )
+		if ( /* ( p = Field_FindFirstSeparator( cmd ) )*/ 0 )
 		{
 			Field_CompleteCommand( p + 1, qtrue, qtrue );  // Compound command
 		}
 		else
 		{
-			Cmd_CompleteArgument( baseCmd, cmd, completionArgument );
+			Cmd_CompleteArgument( baseCmd, cmd + 1, completionArgument - 1 );
 		}
 	}
 	else

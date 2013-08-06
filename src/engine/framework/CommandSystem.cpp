@@ -28,6 +28,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
 
+//TODO: use case-insensitive comparisons for commands (store the lower case version?)
 namespace Cmd {
 
     struct commandRecord_t {
@@ -183,12 +184,17 @@ namespace Cmd {
         CL_ForwardCommandToServer( args.RawCmd().c_str() );
     }
 
-    std::vector<std::string> CommandNames() {
+    std::vector<std::string> CommandNames(const std::string& prefix) {
         CommandMap& commands = GetCommandMap();
 
         std::vector<std::string> res;
         for (auto& entry: commands) {
-            res.push_back(entry.first);
+            //TODO: add a Str::IsPrefix
+            auto mismatchRes = std::mismatch(prefix.begin(), prefix.end(), entry.first.begin());
+
+            if (mismatchRes.first == prefix.end()) {
+                res.push_back(entry.first);
+            }
         }
         return res;
     }
@@ -198,14 +204,19 @@ namespace Cmd {
 
         Args args(std::move(command));
         int argNum = args.PosToArg(pos);
-        const std::string& cmdName = args.Argv(0);
 
-        if (!commands.count(cmdName)) {
-            return {};
+        if (argNum > 0) {
+            const std::string& cmdName = args.Argv(0);
+
+            if (!commands.count(cmdName)) {
+                return {};
+            }
+
+            const CmdBase* cmd = commands[cmdName].cmd;
+            return cmd->Complete(argNum, args);
+        } else {
+            return CommandNames(args.Argv(0));
         }
-
-        const CmdBase* cmd = commands[cmdName].cmd;
-        return cmd->Complete(argNum, args);
     }
 
     const Args& GetCurrentArgs() {
