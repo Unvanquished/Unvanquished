@@ -26,16 +26,17 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
 
+#include <vector>
+
 //TODO: make it thread safe.
 //TODO: use unicode
 namespace Console {
 
     static const char* HISTORY_FILE = "con_history";
 
-    static const int HISTORY_LINES = 512;
+    static const int SAVED_HISTORY_LINES = 512;
 
-    static std::string lines[HISTORY_LINES];
-    static int index = -1;
+    static std::vector<std::string> lines;
 
     void SaveHistory() {
         fileHandle_t f = FS_SV_FOpenFileWrite(HISTORY_FILE);
@@ -45,9 +46,8 @@ namespace Console {
             return;
         }
 
-        for (int i = std::max(0, index - HISTORY_LINES + 1); i <= index; i++) {
-            const std::string& line = lines[i % HISTORY_LINES];
-            FS_Write(line.c_str(), line.size(), f);
+        for (int i = std::max(0ul, lines.size() - SAVED_HISTORY_LINES); i < lines.size(); i++) {
+            FS_Write(lines[i].c_str(), lines[i].size(), f);
             FS_Write("\n", 1, f);
         }
 
@@ -63,7 +63,6 @@ namespace Console {
             return;
         }
 
-        index = 0;
         char* buffer = new char[len + 1];
 
         FS_Read(buffer, len, f);
@@ -84,42 +83,33 @@ namespace Console {
     }
 
     void AddToHistory(std::string line) {
-        index ++;
-        lines[index % HISTORY_LINES] = std::move(line);
+        lines.push_back(std::move(line));
     }
 
     HistoryHandle HistoryEnd() {
-        return index + 1;
+        return lines.size();
     }
 
     std::string PrevLine(HistoryHandle& handle) {
         handle --;
 
-        if (handle <= index - HISTORY_LINES) {
-            handle = index - HISTORY_LINES;
-        }
-
-        if (handle <= std::max(index - HISTORY_LINES, -1)) {
+        if (handle < 0) {
             handle ++;
             return "";
         }
 
-        return lines[handle % HISTORY_LINES];
+        return lines[handle];
     }
 
     std::string NextLine(HistoryHandle& handle) {
         handle ++;
 
-        if (handle <= index - HISTORY_LINES) {
-            handle = index - HISTORY_LINES;
-        }
-
-        if (handle > index) {
+        if (handle >= lines.size()) {
             handle --;
             return "";
         }
 
-        return lines[handle % HISTORY_LINES];
+        return lines[handle];
     }
 
 }
