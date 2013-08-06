@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-07-07 23:10+0200\n"
-"PO-Revision-Date: 2013-06-27 20:49+0000\n"
+"PO-Revision-Date: 2013-07-19 20:11+0000\n"
 "Last-Translator: Tom <tomtom.mymail@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: fr\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Pootle 2.5.0-beta1\n"
-"X-POOTLE-MTIME: 1372366154.0\n"
+"X-POOTLE-MTIME: 1374264674.0\n"
 
 #: tremulous_alien_builder_hud.menu:47 tremulous_alien_builder_hud.menu:49
 #: tremulous_alien_builder_hud.menu:48
@@ -196,7 +196,7 @@ msgstr "56k"
 
 #: firstrun.menu:62 ingame_options.menu:731 options.menu:743
 msgid "ISDN"
-msgstr "ISDN"
+msgstr "ISDN (RNIS)"
 
 # Ou LAN/CÂBLE/xDSL mais ça rends moins bien.
 #: firstrun.menu:62 ingame_options.menu:731 options.menu:743
@@ -341,7 +341,7 @@ msgstr "Limite de temps :"
 # Traduction souhaitée : "Mort subite au bout de :"
 #: ingame_game.menu:932
 msgid "Sudden Death Time:"
-msgstr "Temps avant la mort subite :"
+msgstr "Mort subite au bout de :"
 
 # Traduction raccourcie par manque de place.
 # Traduction souhaitée : "Nombre maximum de clients :"
@@ -366,7 +366,7 @@ msgstr "Tirs alliés :"
 #: ingame_game.menu:1017
 #, fuzzy
 msgid "Buildable Friendly Fire:"
-msgstr "Tirs sur constructions :"
+msgstr "Tirs fratricides (constructions) :"
 
 #: ingame_game.menu:1034
 msgid "Version:"
@@ -878,7 +878,7 @@ msgstr "Nom de la carte"
 
 #: joinserver.menu:350
 msgid "Players + Bots"
-msgstr "Joueurs + robots"
+msgstr "Joueurs + IA"
 
 #: joinserver.menu:393 teamscore.menu:175 teamscore.menu:250
 msgid "Ping"
@@ -1866,7 +1866,7 @@ msgstr "Vous avez tué votre ^1COÉQUIPIER^7 %s"
 #: src/gamelogic/cgame/cg_players.c:1523
 #, c-format
 msgid "%s^7 renamed to %s\n"
-msgstr "%s^7 s’appelle maintenant %s\n"
+msgstr "%s^7 se renomme en %s\n"
 
 #: src/gamelogic/cgame/cg_players.c:1530
 #, c-format
@@ -2214,7 +2214,7 @@ msgid ""
 "There is not enough room here to put on a Battle Suit. Make sure you have "
 "enough head room to climb in."
 msgstr ""
-"Il n’y a pas assez de place ici pour mettre un exosquelette. Assurez-vous "
+"Il n’y a pas assez de place ici pour mettre une Battle Suit. Assurez-vous "
 "d’avoir assez d’espace au-dessus de vous pour l’enfiler."
 
 #: src/gamelogic/cgame/cg_servercmds.c:785
@@ -2226,8 +2226,8 @@ msgid ""
 "There is not enough room here to take off your Battle Suit. Make sure you "
 "have enough head room to climb out."
 msgstr ""
-"Il n’y a pas assez de place ici pour retirer votre exosquelette. Assurez-"
-"vous d’avoir assez d’espace au-dessus de vous pour l’enlever."
+"Il n’y a pas assez de place ici pour retirer votre Battle Suit. Assurez-vous "
+"d’avoir assez d’espace au-dessus de vous pour l’enlever."
 
 #: src/gamelogic/cgame/cg_servercmds.c:792
 msgid "Not enough room here to take off your Battle Suit"
@@ -2268,7 +2268,7 @@ msgstr ""
 
 #: src/gamelogic/cgame/cg_servercmds.c:819
 msgid "There is no creep here"
-msgstr "Cet endroit n’est pas infesté"
+msgstr "Il n'y a pas de creep ici"
 
 #: src/gamelogic/cgame/cg_servercmds.c:824
 msgid ""
@@ -3109,7 +3109,7 @@ msgstr "[^3nom|numéro de place^7] [^3motif^7]"
 
 #: src/gamelogic/game/g_admin.c:627
 msgid "This name is not allowed:"
-msgstr "Ce nom n’est pas autorisé :"
+msgstr "Ce nom n'est pas autorisé :"
 
 #: src/gamelogic/game/g_admin.c:639
 msgid "Names cannot begin with numbers:"
@@ -3125,7 +3125,7 @@ msgstr "Ce nom est déjà utilisé :"
 
 #: src/gamelogic/game/g_admin.c:708
 msgid "Please use another name. This name belongs to an admin:"
-msgstr "Veuillez utiliser un autre nom. Ce nom appartient à un administrateur :"
+msgstr "Merci d'utiliser un autre nom. Ce nom appartient à un administrateur :"
 
 #: src/gamelogic/game/g_admin.c:1274
 msgid "^3$1$: ^7no player connected in slot $2$\n"
@@ -3175,8 +3175,10 @@ msgid ""
 msgstr ""
 
 #: src/gamelogic/game/g_admin.c:2106
+#, fuzzy
 msgid "^3time: ^7time is ^d$1$:$2$:$3$^7 UTC – game time is ^d$4$:$5$^7\n"
-msgstr ""
+msgstr "^3time: ^7l’heure locale est ^d$1$:$2$:$3$^7 - le temps écoulé dans la "
+"partie est de ^d$4$:$5$^7\n"
 
 #: src/gamelogic/game/g_admin.c:2132
 msgid "^3setlevel: ^7usage: setlevel [name|slot#] [level]\n"
@@ -3675,7 +3677,7 @@ msgstr "^3$1$: ^7drapeau '$2$' supprimé pour $3$\n"
 
 #: src/gamelogic/game/g_admin.c:4840
 msgid "^3builder: ^7console can't aim.\n"
-msgstr "^3builder: ^7la console ne peut pas viser.\n"
+msgstr "^3builder: ^7console ne peut pas viser.\n"
 
 #: src/gamelogic/game/g_admin.c:4871
 msgid "^3builder: ^7structure not owned by your team\n"
@@ -3735,7 +3737,7 @@ msgstr "a mis ^7hors tension^7"
 
 #: src/gamelogic/game/g_admin.c:4963
 msgid "removed"
-msgstr "supprimé"
+msgstr "enlevé"
 
 #: src/gamelogic/game/g_admin.c:4985
 msgid "^3buildlog: ^7spectators have no buildings\n"
@@ -3782,8 +3784,8 @@ msgstr "^3revert : ^7identifiant invalide\n"
 msgid ""
 "^3revert: ^7you can only revert direct player actions, indicated by ^2* ^7in "
 "buildlog\n"
-msgstr "^3revert : ^7vous pouvez uniquement annuler les actions directes des "
-"joueurs, indiquées par ^2* ^7dans ce qu’affiche la commande buildlog\n"
+msgstr "^3revert: ^7vous pouvez uniquement annuler les actions directes des joueurs, "
+"indiquées par ^2* ^7dans ce qu’affiche la commande buildlog\n"
 
 #: src/gamelogic/game/g_admin.c:5173
 msgid "^3revert: ^7$1$^7 reverted $2$ changes over the past $3$ $4t$\n"
@@ -3835,7 +3837,7 @@ msgstr "^3unregister : ^7votre nom n’est pas protégé\n"
 
 #: src/gamelogic/game/g_admin.c:5305
 msgid "^3unregister: ^7$1$^7 is now an unprotected name\n"
-msgstr "^3unregister : ^7$1$^7 n’est désormais plus un nom protégé\n"
+msgstr "^3unregister: ^7$1$^7 n’est désormais plus un nom protégé\n"
 
 #: src/gamelogic/game/g_admin.c:5319
 msgid "^3gametimelimit: ^7time limit for this game is $1$m\n"
@@ -4811,7 +4813,7 @@ msgstr "Acheter des munitions :"
 
 #: main/ui/ingame_options.menu:372 main/ui/options.menu:384
 msgid "Use Medkit:"
-msgstr "Se soigner :"
+msgstr "Utiliser la trousse de secours :"
 
 #: main/ui/ingame_options.menu:373 main/ui/options.menu:385
 msgid "Use Structure/Evolve:"
