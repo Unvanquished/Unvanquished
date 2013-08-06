@@ -25,6 +25,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 uniform sampler2D	u_DiffuseMap;
 uniform sampler2D	u_NormalMap;
 uniform sampler2D	u_SpecularMap;
+uniform sampler2D	u_GlowMap;
+
 uniform float		u_AlphaThreshold;
 uniform vec3		u_ViewOrigin;
 uniform float		u_DepthScale;
@@ -134,6 +136,9 @@ void	main()
 	color.rgb *= light;
 	color.rgb += specular;
 
+	#if defined(USE_GLOW_MAPPING)
+	color.rgb += texture2D(u_GlowMap, texDiffuse).rgb;
+	#endif
 #if defined(r_DeferredShading)
 	gl_FragData[0] = color; 								// var_Color;
 	gl_FragData[1] = vec4(diffuse.rgb, var_LightColor.a);	// vec4(var_Color.rgb, 1.0 - var_Color.a);
@@ -165,7 +170,9 @@ void	main()
 	}
 
 	vec4 color = vec4(diffuse.rgb * var_LightColor.rgb, var_LightColor.a);
-
+#if defined(USE_GLOW_MAPPING)
+	color.rgb += texture2D(u_GlowMap, var_TexDiffuseNormal.st).rgb;
+#endif
 	// gl_FragColor = vec4(diffuse.rgb * var_LightColor.rgb, diffuse.a);
 	// color = vec4(vec3(1.0, 0.0, 0.0), diffuse.a);
 	// gl_FragColor = vec4(vec3(diffuse.a, diffuse.a, diffuse.a), 1.0);
@@ -222,7 +229,9 @@ void	main()
 
 	vec4 color = vec4(diffuse.rgb * light, var_LightColor.a);
 	// vec4 color = vec4(vec3(NL, NL, NL), diffuse.a);
-
+#if defined(USE_GLOW_MAPPING)
+	color.rgb += texture2D(u_GlowMap, var_TexDiffuseNormal.st).rgb;
+#endif
 #if defined(r_DeferredShading)
 	gl_FragData[0] = color; 								// var_Color;
 	gl_FragData[1] = vec4(diffuse.rgb, var_LightColor.a);	// vec4(var_Color.rgb, 1.0 - var_Color.a);

@@ -1005,7 +1005,8 @@ extern "C" {
 	  TB_DIFFUSEMAP = 0,
 	  TB_NORMALMAP,
 	  TB_SPECULARMAP,
-	  MAX_TEXTURE_BUNDLES = 3
+	  TB_GLOWMAP,
+	  MAX_TEXTURE_BUNDLES = 4
 	};
 
 	typedef struct
@@ -1025,6 +1026,7 @@ extern "C" {
 	{
 	  // material shader stage types
 	  ST_COLORMAP, // vanilla Q3A style shader treatening
+	  ST_GLOWMAP,
 	  ST_DIFFUSEMAP,
 	  ST_NORMALMAP,
 	  ST_SPECULARMAP,
@@ -1042,7 +1044,9 @@ extern "C" {
 #endif
 
 	  ST_COLLAPSE_lighting_DB, // diffusemap + bumpmap
+	  ST_COLLAPSE_lighting_DBG, // diffusemap + bumpmap + glowmap
 	  ST_COLLAPSE_lighting_DBS, // diffusemap + bumpmap + specularmap
+	  ST_COLLAPSE_lighting_DBSG, // diffusemap + bumpmap + specularmap + glowmap
 	  ST_COLLAPSE_reflection_CB, // color cubemap + bumpmap
 
 	  // light shader stage types
@@ -1055,7 +1059,9 @@ extern "C" {
 	  COLLAPSE_none,
 	  COLLAPSE_genericMulti,
 	  COLLAPSE_lighting_DB,
+	  COLLAPSE_lighting_DBG,
 	  COLLAPSE_lighting_DBS,
+	  COLLAPSE_lighting_DBSG,
 	  COLLAPSE_reflection_CB,
 	  COLLAPSE_color_lightmap
 	} collapseType_t;
