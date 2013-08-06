@@ -42,4 +42,12 @@ namespace Str {
         return false;
     }
 
+    bool IsPrefix(const std::string& prefix, const std::string& text) {
+        auto res = std::mismatch(prefix.begin(), prefix.end(), text.begin());
+        if (res.first == prefix.end()) {
+            return true;
+        }
+        return false;
+    }
+
 }

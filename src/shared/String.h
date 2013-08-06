@@ -32,6 +32,7 @@ namespace Str {
     int ToInt(const std::string& text);
     int ToInt(const std::string& text, bool& success);
 
+    bool IsPrefix(const std::string& prefix, const std::string& text);
 }
 
 #endif //SHARED_STRING_H_

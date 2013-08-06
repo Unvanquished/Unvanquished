@@ -24,6 +24,8 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "CommandSystem.h"
 
+#include "../../shared/String.h"
+
 #include <unordered_map>
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
@@ -189,10 +191,7 @@ namespace Cmd {
 
         std::vector<std::string> res;
         for (auto& entry: commands) {
-            //TODO: add a Str::IsPrefix
-            auto mismatchRes = std::mismatch(prefix.begin(), prefix.end(), entry.first.begin());
-
-            if (mismatchRes.first == prefix.end()) {
+            if (Str::IsPrefix(prefix, entry.first)) {
                 res.push_back(entry.first);
             }
         }
@@ -213,7 +212,7 @@ namespace Cmd {
             }
 
             const CmdBase* cmd = commands[cmdName].cmd;
-            return cmd->Complete(argNum, args);
+            return cmd->Complete(pos, args);
         } else {
             return CommandNames(args.Argv(0));
         }
