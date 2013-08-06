@@ -1756,7 +1756,7 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 
 			if ( backEnd.currentEntity->e.skeleton.type == SK_ABSOLUTE )
 			{
-				BoneMatrixSetupTransformWithScale( boneMatrices[ i ], backEnd.currentEntity->e.skeleton.bones[ i ].rotation,
+				BoneMatrixSetupTransformWithScale( tmpMat, backEnd.currentEntity->e.skeleton.bones[ i ].rotation,
 				                              backEnd.currentEntity->e.skeleton.bones[ i ].origin,
 				                              backEnd.currentEntity->e.skeleton.scale );
 				BoneMatrixMultiply( tmpMat, model->bones[ i ].inverseTransform, boneMatrices[ i ] );
