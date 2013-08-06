@@ -50,4 +50,9 @@ namespace Str {
         return false;
     }
 
+    int LongestPrefixSize(const std::string& text1, const std::string& text2) {
+        auto res = std::mismatch(text1.begin(), text1.end(), text2.begin());
+
+        return res.first - text1.begin();
+    }
 }

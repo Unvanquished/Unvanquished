@@ -301,18 +301,15 @@ char *CON_Input( void )
 					write( STDOUT_FILENO, "\n]", 2 );
 					return NULL;
 				}
-/*
+
 				if ( key == '\t' )
 				{
-					field_t *edit;
 					CON_Hide();
-					edit = &TTY_con;
-					Cmd_TokenizeString( edit->buffer );
-					Field_AutoComplete( edit, "]" );
+					TTY_field.AutoComplete();
 					CON_Show();
 					return NULL;
 				}
-*/
+
 				avail = read( STDIN_FILENO, &key, 1 );
 
 				if ( avail != -1 )
