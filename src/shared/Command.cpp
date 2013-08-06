@@ -378,7 +378,7 @@ namespace Cmd {
         }
     }
 
-    int Args::PosToArg(int pos) {
+    int Args::PosToArg(int pos) const {
         for (int i = argsStarts.size(); i-->0;) {
             if (argsStarts[i] <= pos) {
                 return i;
@@ -388,8 +388,14 @@ namespace Cmd {
         return -1;
     }
 
-    int Args::ArgStartPos(int argNum) {
+    int Args::ArgStartPos(int argNum) const {
         return argsStarts[argNum];
+    }
+
+    std::string Args::ArgPrefix(int pos) const {
+        int argNum = PosToArg(pos);
+        int nChars = pos - argsStarts[argNum];
+        return args[argNum].substr(0, pos);
     }
 
     const std::vector<std::string>& Args::ArgVector() const {

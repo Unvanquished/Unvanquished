@@ -82,9 +82,11 @@ namespace Cmd {
             std::string RawArgsFrom(int start = 1) const;
 
             // Gives the index of the argument of the character at a given pos.
-            int PosToArg(int pos);
+            int PosToArg(int pos) const;
             // Gives the index of the starting character of an argument.
-            int ArgStartPos(int argNum);
+            int ArgStartPos(int argNum) const;
+
+            std::string ArgPrefix(int pos) const;
 
             // Returns all the arguments in a vector
             const std::vector<std::string>& ArgVector() const;
@@ -113,7 +115,7 @@ namespace Cmd {
             // Called when the command is run with the command line args
             virtual void Run(const Args& args) const = 0;
             // Called when the user wants to autocomplete a call to this command.
-            virtual std::vector<std::string> Complete(int argNum, const Args& args) const;
+            virtual std::vector<std::string> Complete(int pos, const Args& args) const;
 
             // Used by the command system.
             int GetFlags() const;

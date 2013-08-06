@@ -1054,10 +1054,6 @@ void Cmd_CompleteArgument( const char *command, char *args, int pos )
     for (auto& r : res) {
         Com_Printf("%s\n", r.c_str());
     }
-
-	if (res.size() > 0) {
-		strcpy(args, res[0].c_str());
-	}
 }
 
 /*

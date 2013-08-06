@@ -52,6 +52,16 @@ namespace Cmd {
                 std::string command = Cvar_VariableString(args.Argv(1).c_str());
                 Cmd::BufferCommandText(command, Cmd::AFTER, true);
             }
+
+            std::vector<std::string> Complete(int pos, const Args& args) const override{
+                int argNum = args.PosToArg(pos);
+
+                if (argNum == 1) {
+                    return CVar::CompleteName(args.ArgPrefix(pos));
+                }
+
+                return {};
+            }
     };
     static VstrCmd VstrCmdRegistration;
 

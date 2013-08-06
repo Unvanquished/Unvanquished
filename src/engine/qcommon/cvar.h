@@ -160,6 +160,7 @@ bool Cvar_Command(const Cmd::Args& args);
 void Cvar_WriteVariables(fileHandle_t f);
 
 void Cvar_CompleteCvarName(char *args, int argNum);
+
 void Cvar_Init(void);
 
 /**
@@ -183,5 +184,8 @@ extern int cvar_modifiedFlags;
 extern qboolean bindingsModified;
 #endif
 
+namespace CVar {
+    std::vector<std::string> CompleteName(const std::string& prefix);
+}
 
 #endif /* CVAR_H_ */

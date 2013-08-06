@@ -38,6 +38,10 @@ Maryland 20850 USA.
 
 #include "../qcommon/cm_public.h"
 #include "../../include/global.h"
+
+//kangz need these for the command completion handlers
+#include <vector>
+#include <string>
 #include "cvar.h"
 
 //============================================================================

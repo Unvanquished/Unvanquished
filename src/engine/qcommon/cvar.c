@@ -1383,3 +1383,19 @@ void Cvar_Init( void )
 	//Cmd_SetCommandCompletionFunc( "seta", Cvar_CompleteCvarName );
 	//Cmd_SetCommandCompletionFunc( "reset", Cvar_CompleteCvarName );
 }
+
+namespace CVar {
+    std::vector<std::string> CompleteName(const std::string& prefix) {
+        cvar_t *cvar;
+
+        std::vector<std::string> res;
+
+        for ( cvar = cvar_vars; cvar; cvar = cvar->next ) {
+            if (Str::IsPrefix(prefix, cvar->name)) {
+                res.push_back(cvar->name);
+            }
+        }
+
+        return res;
+    }
+}
