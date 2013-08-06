@@ -35,6 +35,7 @@ attribute vec3		attr_LightDirection;
 uniform mat4		u_DiffuseTextureMatrix;
 uniform mat4		u_NormalTextureMatrix;
 uniform mat4		u_SpecularTextureMatrix;
+uniform mat4		u_GlowTextureMatrix;
 uniform mat4		u_ModelViewProjectionMatrix;
 
 uniform float		u_Time;

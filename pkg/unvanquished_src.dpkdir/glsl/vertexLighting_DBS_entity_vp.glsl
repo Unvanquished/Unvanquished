@@ -38,6 +38,7 @@ uniform float		u_VertexInterpolation;
 uniform mat4		u_DiffuseTextureMatrix;
 uniform mat4		u_NormalTextureMatrix;
 uniform mat4		u_SpecularTextureMatrix;
+uniform mat4		u_GlowTextureMatrix;
 uniform mat4		u_ModelMatrix;
 uniform mat4		u_ModelViewProjectionMatrix;
 
@@ -51,6 +52,10 @@ varying vec2		var_TexSpecular;
 varying vec3		var_Tangent;
 varying vec3		var_Binormal;
 #endif
+#if defined(USE_GLOW_MAPPING)
+varying vec2		var_TexGlow;
+#endif
+
 varying vec3		var_Normal;
 
 
@@ -129,5 +134,8 @@ void	main()
 
 	// transform specularmap texture coords
 	var_TexSpecular = (u_SpecularTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0)).st;
+#endif
+#if defined(USE_GLOW_MAPPING)
+	var_TexGlow = (u_GlowTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0)).st;
 #endif
 }
