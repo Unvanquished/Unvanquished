@@ -477,8 +477,6 @@ static void FillCloudySkySide( const int mins[ 2 ], const int maxs[ 2 ], qboolea
 
 			tess.texCoords[ tess.numVertexes ][ 0 ] = s_skyTexCoords[ t ][ s ][ 0 ];
 			tess.texCoords[ tess.numVertexes ][ 1 ] = s_skyTexCoords[ t ][ s ][ 1 ];
-			tess.texCoords[ tess.numVertexes ][ 2 ] = 0;
-			tess.texCoords[ tess.numVertexes ][ 3 ] = 1;
 
 			tess.numVertexes++;
 
@@ -895,8 +893,6 @@ void RB_DrawSun( void )
 	tess.xyz[ tess.numVertexes ][ 3 ] = 1;
 	tess.texCoords[ tess.numVertexes ][ 0 ] = 0;
 	tess.texCoords[ tess.numVertexes ][ 1 ] = 0;
-	tess.texCoords[ tess.numVertexes ][ 2 ] = 0;
-	tess.texCoords[ tess.numVertexes ][ 3 ] = 1;
 	tess.colors[ tess.numVertexes ][ 0 ] = 1;
 	tess.colors[ tess.numVertexes ][ 1 ] = 1;
 	tess.colors[ tess.numVertexes ][ 2 ] = 1;
@@ -909,8 +905,6 @@ void RB_DrawSun( void )
 	tess.xyz[ tess.numVertexes ][ 3 ] = 1;
 	tess.texCoords[ tess.numVertexes ][ 0 ] = 0;
 	tess.texCoords[ tess.numVertexes ][ 1 ] = 1;
-	tess.texCoords[ tess.numVertexes ][ 2 ] = 0;
-	tess.texCoords[ tess.numVertexes ][ 3 ] = 1;
 	tess.colors[ tess.numVertexes ][ 0 ] = 1;
 	tess.colors[ tess.numVertexes ][ 1 ] = 1;
 	tess.colors[ tess.numVertexes ][ 2 ] = 1;
@@ -923,8 +917,6 @@ void RB_DrawSun( void )
 	tess.xyz[ tess.numVertexes ][ 3 ] = 1;
 	tess.texCoords[ tess.numVertexes ][ 0 ] = 1;
 	tess.texCoords[ tess.numVertexes ][ 1 ] = 1;
-	tess.texCoords[ tess.numVertexes ][ 2 ] = 0;
-	tess.texCoords[ tess.numVertexes ][ 3 ] = 1;
 	tess.colors[ tess.numVertexes ][ 0 ] = 1;
 	tess.colors[ tess.numVertexes ][ 1 ] = 1;
 	tess.colors[ tess.numVertexes ][ 2 ] = 1;
@@ -937,8 +929,6 @@ void RB_DrawSun( void )
 	tess.xyz[ tess.numVertexes ][ 3 ] = 1;
 	tess.texCoords[ tess.numVertexes ][ 0 ] = 1;
 	tess.texCoords[ tess.numVertexes ][ 1 ] = 0;
-	tess.texCoords[ tess.numVertexes ][ 2 ] = 0;
-	tess.texCoords[ tess.numVertexes ][ 3 ] = 1;
 	tess.colors[ tess.numVertexes ][ 0 ] = 1;
 	tess.colors[ tess.numVertexes ][ 1 ] = 1;
 	tess.colors[ tess.numVertexes ][ 2 ] = 1;

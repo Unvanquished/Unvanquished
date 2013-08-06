@@ -3545,8 +3545,6 @@ extern "C" {
 	typedef struct shaderCommands_s
 	{
 		vec4_t xyz[ SHADER_MAX_VERTEXES ];
-		vec4_t texCoords[ SHADER_MAX_VERTEXES ];
-		vec4_t lightCoords[ SHADER_MAX_VERTEXES ];
 		vec4_t tangents[ SHADER_MAX_VERTEXES ];
 		vec4_t binormals[ SHADER_MAX_VERTEXES ];
 		vec4_t normals[ SHADER_MAX_VERTEXES ];
@@ -3557,6 +3555,8 @@ extern "C" {
 		vec4_t ambientLights[ SHADER_MAX_VERTEXES ];
 		vec4_t directedLights[ SHADER_MAX_VERTEXES ];
 		vec4_t lightDirections[ SHADER_MAX_VERTEXES ];
+		vec2_t texCoords[ SHADER_MAX_VERTEXES ];
+		vec2_t lightCoords[ SHADER_MAX_VERTEXES ];
 
 		glIndex_t   indexes[ SHADER_MAX_INDEXES ];
 

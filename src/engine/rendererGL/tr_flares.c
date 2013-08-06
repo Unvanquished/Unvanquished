@@ -410,8 +410,6 @@ void RB_RenderFlare( flare_t *f )
 	tess.xyz[ tess.numVertexes ][ 3 ] = 1;
 	tess.texCoords[ tess.numVertexes ][ 0 ] = 0;
 	tess.texCoords[ tess.numVertexes ][ 1 ] = 0;
-	tess.texCoords[ tess.numVertexes ][ 2 ] = 0;
-	tess.texCoords[ tess.numVertexes ][ 3 ] = 1;
 	tess.colors[ tess.numVertexes ][ 0 ] = color[ 0 ];
 	tess.colors[ tess.numVertexes ][ 1 ] = color[ 1 ];
 	tess.colors[ tess.numVertexes ][ 2 ] = color[ 2 ];
@@ -424,8 +422,6 @@ void RB_RenderFlare( flare_t *f )
 	tess.xyz[ tess.numVertexes ][ 3 ] = 1;
 	tess.texCoords[ tess.numVertexes ][ 0 ] = 0;
 	tess.texCoords[ tess.numVertexes ][ 1 ] = 1;
-	tess.texCoords[ tess.numVertexes ][ 2 ] = 0;
-	tess.texCoords[ tess.numVertexes ][ 3 ] = 1;
 	tess.colors[ tess.numVertexes ][ 0 ] = color[ 0 ];
 	tess.colors[ tess.numVertexes ][ 1 ] = color[ 1 ];
 	tess.colors[ tess.numVertexes ][ 2 ] = color[ 2 ];
@@ -438,8 +434,6 @@ void RB_RenderFlare( flare_t *f )
 	tess.xyz[ tess.numVertexes ][ 3 ] = 1;
 	tess.texCoords[ tess.numVertexes ][ 0 ] = 1;
 	tess.texCoords[ tess.numVertexes ][ 1 ] = 1;
-	tess.texCoords[ tess.numVertexes ][ 2 ] = 0;
-	tess.texCoords[ tess.numVertexes ][ 3 ] = 1;
 	tess.colors[ tess.numVertexes ][ 0 ] = color[ 0 ];
 	tess.colors[ tess.numVertexes ][ 1 ] = color[ 1 ];
 	tess.colors[ tess.numVertexes ][ 2 ] = color[ 2 ];
@@ -452,8 +446,6 @@ void RB_RenderFlare( flare_t *f )
 	tess.xyz[ tess.numVertexes ][ 3 ] = 1;
 	tess.texCoords[ tess.numVertexes ][ 0 ] = 1;
 	tess.texCoords[ tess.numVertexes ][ 1 ] = 0;
-	tess.texCoords[ tess.numVertexes ][ 2 ] = 0;
-	tess.texCoords[ tess.numVertexes ][ 3 ] = 1;
 	tess.colors[ tess.numVertexes ][ 0 ] = color[ 0 ];
 	tess.colors[ tess.numVertexes ][ 1 ] = color[ 1 ];
 	tess.colors[ tess.numVertexes ][ 2 ] = color[ 2 ];
