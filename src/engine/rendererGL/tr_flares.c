@@ -459,6 +459,7 @@ void RB_RenderFlare( flare_t *f )
 	tess.indexes[ tess.numIndexes++ ] = 2;
 	tess.indexes[ tess.numIndexes++ ] = 3;
 
+	tess.attribsSet |= ATTR_POSITION | ATTR_TEXCOORD | ATTR_COLOR;
 	Tess_End();
 }
 

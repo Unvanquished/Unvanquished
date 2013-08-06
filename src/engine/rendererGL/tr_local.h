@@ -3575,6 +3575,7 @@ extern "C" {
 
 		uint32_t    numIndexes;
 		uint32_t    numVertexes;
+		uint32_t    attribsSet;
 
 		int         multiDrawPrimitives;
 		glIndex_t    *multiDrawIndexes[ MAX_MULTIDRAW_PRIMITIVES ];

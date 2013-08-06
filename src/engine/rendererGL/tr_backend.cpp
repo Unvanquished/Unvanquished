@@ -9192,6 +9192,8 @@ const void     *RB_StretchPic( const void *data )
 	tess.texCoords[ numVerts + 3 ][ 0 ] = cmd->s1;
 	tess.texCoords[ numVerts + 3 ][ 1 ] = cmd->t2;
 
+	tess.attribsSet |= ATTR_POSITION | ATTR_COLOR | ATTR_TEXCOORD;
+
 	return ( const void * )( cmd + 1 );
 }
 
@@ -9290,6 +9292,7 @@ const void     *RB_Draw2dPolys( const void *data )
 		tess.numVertexes++;
 	}
 
+	tess.attribsSet |= ATTR_POSITION | ATTR_TEXCOORD | ATTR_COLOR;
 	return ( const void * )( cmd + 1 );
 }
 
@@ -9387,6 +9390,8 @@ const void     *RB_RotatedPic( const void *data )
 	tess.texCoords[ numVerts + 3 ][ 0 ] = cmd->s1;
 	tess.texCoords[ numVerts + 3 ][ 1 ] = cmd->t2;
 
+	tess.attribsSet |= ATTR_POSITION | ATTR_TEXCOORD | ATTR_COLOR;
+
 	return ( const void * )( cmd + 1 );
 }
 
@@ -9482,6 +9487,7 @@ const void     *RB_StretchPicGradient( const void *data )
 	tess.texCoords[ numVerts + 3 ][ 0 ] = cmd->s1;
 	tess.texCoords[ numVerts + 3 ][ 1 ] = cmd->t2;
 
+	tess.attribsSet |= ATTR_POSITION | ATTR_TEXCOORD | ATTR_COLOR;
 	return ( const void * )( cmd + 1 );
 }
 

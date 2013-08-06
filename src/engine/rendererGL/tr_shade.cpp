@@ -447,7 +447,7 @@ void Tess_Begin( void ( *stageIteratorFunc )( void ),
 
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;
-
+	tess.attribsSet = 0;
 	tess.multiDrawPrimitives = 0;
 
 	// materials are optional
@@ -3334,8 +3334,7 @@ void Tess_StageIteratorDebug()
 
 	if ( !glState.currentVBO || !glState.currentIBO || glState.currentVBO == tess.vbo || glState.currentIBO == tess.ibo )
 	{
-		// Tr3B: FIXME analyze required vertex attribs by the current material
-		Tess_UpdateVBOs( 0 );
+		Tess_UpdateVBOs( tess.attribsSet );
 	}
 
 	Tess_DrawElements();
@@ -3429,8 +3428,7 @@ void Tess_StageIteratorGeneric()
 
 	if ( !glState.currentVBO || !glState.currentIBO || glState.currentVBO == tess.vbo || glState.currentIBO == tess.ibo )
 	{
-		// Tr3B: FIXME analyze required vertex attribs by the current material
-		Tess_UpdateVBOs( 0 );
+		Tess_UpdateVBOs( tess.attribsSet );
 	}
 
 	// set GL fog
@@ -3653,8 +3651,7 @@ void Tess_StageIteratorGBuffer()
 
 	if ( !glState.currentVBO || !glState.currentIBO || glState.currentVBO == tess.vbo || glState.currentIBO == tess.ibo )
 	{
-		// Tr3B: FIXME analyze required vertex attribs by the current material
-		Tess_UpdateVBOs( 0 );
+		Tess_UpdateVBOs( tess.attribsSet );
 	}
 
 	// set face culling appropriately
@@ -3868,8 +3865,7 @@ void Tess_StageIteratorGBufferNormalsOnly()
 
 	if ( !glState.currentVBO || !glState.currentIBO || glState.currentVBO == tess.vbo || glState.currentIBO == tess.ibo )
 	{
-		// Tr3B: FIXME analyze required vertex attribs by the current material
-		Tess_UpdateVBOs( 0 );
+		Tess_UpdateVBOs( tess.attribsSet );
 	}
 
 	// set face culling appropriately
@@ -4155,8 +4151,7 @@ void Tess_StageIteratorLighting()
 
 	if ( !glState.currentVBO || !glState.currentIBO || glState.currentVBO == tess.vbo || glState.currentIBO == tess.ibo )
 	{
-		// Tr3B: FIXME analyze required vertex attribs by the current material
-		Tess_UpdateVBOs( 0 );
+		Tess_UpdateVBOs( tess.attribsSet );
 	}
 
 	// set OpenGL state for lighting
@@ -4323,6 +4318,7 @@ void Tess_End()
 	tess.multiDrawPrimitives = 0;
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;
+	tess.attribsSet = 0;
 
 	GLimp_LogComment( "--- Tess_End ---\n" );
 

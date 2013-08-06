@@ -172,6 +172,8 @@ void Tess_AddQuadStampExt( vec3_t origin, vec3_t left, vec3_t up, const vec4_t c
 
 	tess.numVertexes += 4;
 	tess.numIndexes += 6;
+
+	tess.attribsSet |= ATTR_POSITION | ATTR_NORMAL | ATTR_COLOR | ATTR_TEXCOORD;
 }
 
 /*
@@ -214,6 +216,8 @@ void Tess_AddQuadStampExt2( vec4_t quadVerts[ 4 ], const vec4_t color, float s1,
 	Vector4Copy( quadVerts[ 1 ], tess.xyz[ ndx + 1 ] );
 	Vector4Copy( quadVerts[ 2 ], tess.xyz[ ndx + 2 ] );
 	Vector4Copy( quadVerts[ 3 ], tess.xyz[ ndx + 3 ] );
+
+	tess.attribsSet |= ATTR_POSITION | ATTR_COLOR | ATTR_TEXCOORD | ATTR_NORMAL;
 
 	// constant normal all the way around
 	if ( calcNormals )
@@ -302,6 +306,8 @@ void Tess_AddTetrahedron( vec4_t tetraVerts[ 4 ], const vec4_t color )
 		tess.indexes[ tess.numIndexes++ ] = tess.numVertexes;
 		tess.numVertexes++;
 	}
+
+	tess.attribsSet |= ATTR_POSITION | ATTR_COLOR;
 }
 
 void Tess_AddCube( const vec3_t position, const vec3_t minSize, const vec3_t maxSize, const vec4_t color )
@@ -419,32 +425,7 @@ void Tess_UpdateVBOs( uint32_t attribBits )
 
 		GL_CheckErrors();
 
-		if ( !( attribBits & ATTR_BITS ) )
-		{
-			attribBits |= ATTR_POSITION | ATTR_TEXCOORD | ATTR_COLOR;
-
-			if ( backEnd.currentEntity != &backEnd.entity2D )
-			{
-				attribBits |= ATTR_NORMAL;
-
-				if ( r_normalMapping->integer )
-				{
-					attribBits |= ATTR_TANGENT | ATTR_BINORMAL;
-				}
-			}
-
-			if ( backEnd.currentEntity == &tr.worldEntity ||
-			     ( backEnd.currentEntity->e.reType == RT_MODEL &&
-			       tr.models[backEnd.currentEntity->e.hModel]->type == MOD_BSP ) )
-			{
-#if defined( COMPAT_Q3A ) || defined( COMPAT_ET )
-				attribBits |= ATTR_LIGHTCOORD | ATTR_AMBIENTLIGHT
-					| ATTR_DIRECTEDLIGHT | ATTR_LIGHTDIRECTION;
-#else
-				attribBits |= ATTR_LIGHTCOORD | ATTR_PAINTCOLOR | ATTR_LIGHTDIRECTION;
-#endif
-			}
-		}
+		assert( ( attribBits & ATTR_BITS ) != 0 );
 
 		GL_VertexAttribsState( attribBits );
 
@@ -588,6 +569,7 @@ void Tess_InstantQuad( vec4_t quadVerts[ 4 ] )
 	tess.multiDrawPrimitives = 0;
 	tess.numVertexes = 0;
 	tess.numIndexes = 0;
+	tess.attribsSet = 0;
 
 	Vector4Copy( quadVerts[ 0 ], tess.xyz[ tess.numVertexes ] );
 	tess.texCoords[ tess.numVertexes ][ 0 ] = 0;
@@ -639,7 +621,7 @@ void Tess_InstantQuad( vec4_t quadVerts[ 4 ] )
 	tess.multiDrawPrimitives = 0;
 	tess.numVertexes = 0;
 	tess.numIndexes = 0;
-
+	tess.attribsSet = 0;
 	GL_CheckErrors();
 }
 
@@ -800,6 +782,8 @@ static void Tess_SurfacePolychain( srfPoly_t *p )
 		numIndexes += 3;
 	}
 
+	tess.attribsSet |= ATTR_POSITION | ATTR_TEXCOORD | ATTR_COLOR;
+
 	// calc tangent spaces
 	if ( tess.surfaceShader->interactLight && !tess.skipTangentSpaces )
 	{
@@ -850,6 +834,8 @@ static void Tess_SurfacePolychain( srfPoly_t *p )
 		VectorArrayNormalize( ( vec4_t * ) tess.tangents[ tess.numVertexes ], numVertexes );
 		VectorArrayNormalize( ( vec4_t * ) tess.binormals[ tess.numVertexes ], numVertexes );
 		VectorArrayNormalize( ( vec4_t * ) tess.normals[ tess.numVertexes ], numVertexes );
+
+		tess.attribsSet |= ATTR_NORMAL | ATTR_BINORMAL | ATTR_TANGENT | ATTR_LIGHTDIRECTION | ATTR_AMBIENTLIGHT | ATTR_DIRECTEDLIGHT;
 	}
 
 	tess.numIndexes += numIndexes;
@@ -899,6 +885,7 @@ void Tess_SurfacePolybuffer( srfPolyBuffer_t *surf )
 		tess.colors[ tess.numVertexes + i ][ 3 ] = color[ 3 ] * ( 1.0 / 255.0 );
 	}
 
+	tess.attribsSet |= ATTR_POSITION | ATTR_COLOR | ATTR_TEXCOORD;
 	tess.numVertexes += numVertexes;
 }
 
@@ -935,6 +922,7 @@ void Tess_SurfaceDecal( srfDecal_t *srf )
 		tess.numIndexes += 3;
 	}
 
+	tess.attribsSet |= ATTR_POSITION | ATTR_COLOR | ATTR_TEXCOORD;
 	tess.numVertexes += srf->numVerts;
 }
 
@@ -993,6 +981,7 @@ static void Tess_SurfaceFace( srfSurfaceFace_t *srf )
 	color = tess.colors[ tess.numVertexes ];
 
 #if defined( COMPAT_Q3A ) || defined( COMPAT_ET )
+	tess.attribsSet |= ATTR_POSITION | ATTR_TEXCOORD | ATTR_LIGHTCOORD | ATTR_COLOR | ATTR_NORMAL | ATTR_TANGENT | ATTR_BINORMAL;
 
 	for ( i = 0; i < srf->numVerts;
 	      i++, dv++, xyz += 4, tangent += 4, binormal += 4, normal += 4, texCoords += 2, lightCoords += 2, color += 4 )
@@ -1139,7 +1128,7 @@ static void Tess_SurfaceGrid( srfGridMesh_t *srf )
 	color = tess.colors[ tess.numVertexes ];
 
 #if defined( COMPAT_Q3A ) || defined( COMPAT_ET )
-
+	tess.attribsSet |= ATTR_POSITION | ATTR_TEXCOORD | ATTR_LIGHTCOORD | ATTR_COLOR | ATTR_TANGENT | ATTR_BINORMAL | ATTR_NORMAL;
 	for ( i = 0; i < srf->numVerts;
 	      i++, dv++, xyz += 4, tangent += 4, binormal += 4, normal += 4, texCoords += 2, lightCoords += 2, color += 4 )
 	{
@@ -1285,7 +1274,7 @@ static void Tess_SurfaceTriangles( srfTriangles_t *srf )
 	color = tess.colors[ tess.numVertexes ];
 
 #if defined( COMPAT_Q3A ) || defined( COMPAT_ET )
-
+	tess.attribsSet |= ATTR_POSITION | ATTR_TEXCOORD | ATTR_LIGHTCOORD | ATTR_COLOR | ATTR_TANGENT | ATTR_BINORMAL | ATTR_NORMAL;
 	for ( i = 0; i < srf->numVerts;
 	      i++, dv++, xyz += 4, tangent += 4, binormal += 4, normal += 4, texCoords += 2, lightCoords += 2, color += 4 )
 	{
@@ -1541,6 +1530,8 @@ static void Tess_SurfaceMDV( mdvSurface_t *srf )
 		tess.texCoords[ tess.numVertexes + j ][ 1 ] = st->st[ 1 ];
 	}
 
+	tess.attribsSet |= ATTR_POSITION | ATTR_TEXCOORD;
+
 	// calc tangent spaces
 	if ( !tess.skipTangentSpaces )
 	{
@@ -1552,6 +1543,8 @@ static void Tess_SurfaceMDV( mdvSurface_t *srf )
 		vec3_t      binormal;
 		vec3_t      normal;
 		glIndex_t   *indices;
+
+		tess.attribsSet |= ATTR_NORMAL | ATTR_BINORMAL | ATTR_TANGENT;
 
 		for ( i = 0; i < numVertexes; i++ )
 		{
@@ -1646,6 +1639,8 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 		tess.indexes[ tess.numIndexes + i * 3 + 2 ] = tess.numVertexes + tri->indexes[ 2 ];
 	}
 
+	tess.attribsSet |= ATTR_POSITION | ATTR_TEXCOORD;
+
 	if ( tess.skipTangentSpaces )
 	{
 		// convert bones back to matrices
@@ -1690,6 +1685,8 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 	}
 	else
 	{
+		tess.attribsSet |= ATTR_NORMAL | ATTR_BINORMAL | ATTR_TANGENT;
+		
 		// convert bones back to matrices
 		for ( i = 0; i < model->numBones; i++ )
 		{

@@ -487,6 +487,8 @@ static void FillCloudySkySide( const int mins[ 2 ], const int maxs[ 2 ], qboolea
 		}
 	}
 
+	tess.attribsSet |= ATTR_POSITION | ATTR_TEXCOORD;
+
 	// only add indexes for one pass, otherwise it would draw multiple times for each pass
 	if ( addIndexes )
 	{
@@ -525,6 +527,7 @@ static void DrawSkyBox( shader_t *shader )
 	tess.multiDrawPrimitives = 0;
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;
+	tess.attribsSet = 0;
 
 	GL_State( GLS_DEFAULT );
 
@@ -600,9 +603,7 @@ static void DrawSkyBox( shader_t *shader )
 		// only add indexes for first stage
 		FillCloudySkySide( sky_mins_subd, sky_maxs_subd, qtrue );
 	}
-
-	// Tr3B: FIXME analyze required vertex attribs by the current material
-	Tess_UpdateVBOs( 0 );
+	Tess_UpdateVBOs( tess.attribsSet );
 
 	Tess_DrawElements();
 }
@@ -734,6 +735,7 @@ static void BuildCloudData()
 	tess.multiDrawPrimitives = 0;
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;
+	tess.attribsSet = 0;
 
 	if ( tess.surfaceShader->sky.cloudHeight )
 	{
