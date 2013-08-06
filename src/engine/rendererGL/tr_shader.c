@@ -50,6 +50,8 @@ static char          implicitMap[ MAX_QPATH ];
 static unsigned      implicitStateBits;
 static cullType_t    implicitCullType;
 
+static char          whenTokens[ MAX_STRING_CHARS ];
+
 /*
 ================
 return a hash value for the filename
@@ -2758,6 +2760,14 @@ static qboolean ParseStage( shaderStage_t *stage, char **text )
 		{
 			polyModeBits |= GLS_POLYMODE_LINE;
 		}
+		else if ( !Q_stricmp( token, "specularExponentMin" ) )
+		{
+			ParseExpression( text, &stage->specularExponentMin );
+		}
+		else if ( !Q_stricmp( token, "specularExponentMax" ) )
+		{
+			ParseExpression( text, &stage->specularExponentMax );
+		}
 		// refractionIndex <arithmetic expression>
 		else if ( !Q_stricmp( token, "refractionIndex" ) )
 		{
@@ -4730,6 +4740,46 @@ static qboolean ParseShader( char *_text )
 			SurfaceParm( "noShadows" );
 			continue;
 		}
+		// when <state> <shader name>
+		else if ( !Q_stricmp( token, "when" ) )
+		{
+			int i;
+			const char *p;
+			int index = 0;
+
+			token = COM_ParseExt2( text, qfalse );
+
+			for ( i = 1, p = whenTokens; i < MAX_ALTSHADERS && *p; ++i, p += strlen( p ) + 1 )
+			{
+				if ( !Q_stricmp( token, p ) )
+				{
+					index = i;
+					break;
+				}
+			}
+
+			if ( index == 0 )
+			{
+				ri.Printf( PRINT_WARNING, "WARNING: unknown parameter '%s' for 'when' in '%s'\n", token, shader.name );
+			}
+			else
+			{
+				int tokenLen;
+
+				token = COM_ParseExt( text, qfalse );
+
+				if ( !token[ 0 ] )
+				{
+					ri.Printf( PRINT_WARNING, "WARNING: missing shader name for 'when'\n" );
+					continue;
+				}
+
+				tokenLen = strlen( token ) + 1;
+				shader.altShader[ index ].index = 0;
+				shader.altShader[ index ].name = ri.Hunk_Alloc( sizeof( char ) * tokenLen, h_low );
+				Q_strncpyz( shader.altShader[ index ].name, token, tokenLen );
+			}
+		}
 		else if ( SurfaceParm( token ) )
 		{
 			continue;
@@ -5009,7 +5059,10 @@ static void CollapseStages( void )
 			tmpStages[ numStages ].type = ST_COLLAPSE_lighting_DBS;
 
 			tmpStages[ numStages ].bundle[ TB_NORMALMAP ] = tmpNormalStage.bundle[ 0 ];
+
 			tmpStages[ numStages ].bundle[ TB_SPECULARMAP ] = tmpSpecularStage.bundle[ 0 ];
+			tmpStages[ numStages ].specularExponentMin = tmpSpecularStage.specularExponentMin;
+			tmpStages[ numStages ].specularExponentMax = tmpSpecularStage.specularExponentMax;
 
 			numStages++;
 			j += 2;
@@ -5313,7 +5366,8 @@ from the current global working shader
 */
 static shader_t *FinishShader( void )
 {
-	int stage;
+	int      stage, i;
+	shader_t *ret;
 
 	// set sky stuff appropriate
 	if ( shader.isSky )
@@ -5567,7 +5621,20 @@ static shader_t *FinishShader( void )
 		shader.sort = SS_FOG;
 	}
 
-	return GeneratePermanentShader();
+	ret = GeneratePermanentShader();
+
+	for ( i = 1; i < MAX_ALTSHADERS; ++i )
+	{
+		if ( ret->altShader[ i ].name )
+		{
+			// flags were previously stashed in altShader[0].index
+			shader_t *sh = R_FindShader( ret->altShader[ i ].name, ret->type, ret->altShader[ 0 ].index );
+
+			ret->altShader[ i ].index = sh->defaultShader ? 0 : sh->index;
+		}
+	}
+
+	return ret;
 }
 
 //========================================================================================
@@ -5928,6 +5995,8 @@ shader_t       *R_FindShader( const char *name, shaderType_t type,
 			return sh;
 		}
 	}
+
+	shader.altShader[ 0 ].index = flags; // save for later use (in case of alternativer shaders)
 
 	// make sure the render thread is stopped, because we are probably
 	// going to have to upload an image
@@ -7140,4 +7209,24 @@ void R_InitShaders( void )
 	ScanAndLoadShaderFiles();
 
 	CreateExternalShaders();
+}
+
+/*
+==================
+R_SetAltShaderKeywords
+==================
+*/
+void R_SetAltShaderTokens( const char *list )
+{
+	char *p;
+
+	memset( whenTokens, 0, sizeof( whenTokens ) );
+	Q_strncpyz( whenTokens, list, sizeof( whenTokens ) - 1 ); // will have double-NUL termination
+
+	p = whenTokens - 1;
+
+	while ( ( p = strchr( p + 1, ',' ) ) )
+	{
+		*p = 0;
+	}
 }

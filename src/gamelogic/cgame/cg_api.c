@@ -1537,3 +1537,14 @@ void trap_Rocket_ClearHud( int weapon )
 {
 	syscall( CG_ROCKET_CLEARHUD, weapon );
 }
+
+void trap_PrepareKeyUp( void )
+{
+    syscall( CG_PREPAREKEYUP );
+}
+
+void trap_R_SetAltShaderTokens( const char *str )
+{
+    syscall( CG_R_SETALTSHADERTOKENS, str );
+}
+

@@ -1412,7 +1412,7 @@ static int MergeInteractionBounds( const matrix_t lightViewProjectionMatrix, int
 
 		if ( shadowCasters )
 		{
-			if ( ia->type == IA_LIGHTONLY )
+			if ( !(ia->type & IA_SHADOW) )
 			{
 				goto skipInteraction;
 			}
@@ -1420,7 +1420,7 @@ static int MergeInteractionBounds( const matrix_t lightViewProjectionMatrix, int
 		else
 		{
 			// we only merge shadow receivers
-			if ( ia->type == IA_SHADOWONLY )
+			if ( !(ia->type & IA_LIGHT) )
 			{
 				goto skipInteraction;
 			}
@@ -1475,7 +1475,7 @@ static int MergeInteractionBounds( const matrix_t lightViewProjectionMatrix, int
 
 #endif
 
-		if ( shadowCasters && ia->type != IA_LIGHTONLY )
+		if ( shadowCasters && (ia->type & IA_SHADOW) )
 		{
 			numCasters++;
 		}
@@ -1742,7 +1742,7 @@ static void RB_RenderInteractions()
 				continue;
 			}
 
-			if ( ia->type == IA_SHADOWONLY )
+			if ( !(ia->type & IA_LIGHT) )
 			{
 				// skip this interaction because the interaction is meant for shadowing only
 				continue;
@@ -1865,7 +1865,8 @@ static deformType_t GetDeformType( const shader_t *shader )
 	return deformType;
 }
 
-static void RB_SetupLightForShadowing( trRefLight_t *light, int index )
+static void RB_SetupLightForShadowing( trRefLight_t *light, int index,
+				       qboolean shadowClip )
 {
 	// HACK: bring OpenGL into a safe state or strange FBO update problems will occur
 	GL_BindProgram( NULL );
@@ -1900,8 +1901,13 @@ static void RB_SetupLightForShadowing( trRefLight_t *light, int index )
 				}
 
 				R_BindFBO( tr.shadowMapFBO[ light->shadowLOD ] );
-				R_AttachFBOTexture2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + cubeSide,
-								        tr.shadowCubeFBOImage[ light->shadowLOD ]->texnum, 0 );
+				if( shadowClip ) {
+					R_AttachFBOTexture2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + cubeSide,
+							      tr.shadowClipCubeFBOImage[ light->shadowLOD ]->texnum, 0 );
+				} else {
+					R_AttachFBOTexture2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + cubeSide,
+							      tr.shadowCubeFBOImage[ light->shadowLOD ]->texnum, 0 );
+				}
 
 				if ( !r_ignoreGLErrors->integer )
 				{
@@ -2014,7 +2020,11 @@ static void RB_SetupLightForShadowing( trRefLight_t *light, int index )
 				GLimp_LogComment( "--- Rendering projective shadowMap ---\n" );
 
 				R_BindFBO( tr.shadowMapFBO[ light->shadowLOD ] );
-				R_AttachFBOTexture2D( GL_TEXTURE_2D, tr.shadowMapFBOImage[ light->shadowLOD ]->texnum, 0 );
+				if( shadowClip ) {
+					R_AttachFBOTexture2D( GL_TEXTURE_2D, tr.shadowClipMapFBOImage[ light->shadowLOD ]->texnum, 0 );
+				} else {
+					R_AttachFBOTexture2D( GL_TEXTURE_2D, tr.shadowMapFBOImage[ light->shadowLOD ]->texnum, 0 );
+				}
 
 				if ( !r_ignoreGLErrors->integer )
 				{
@@ -2057,7 +2067,9 @@ static void RB_SetupLightForShadowing( trRefLight_t *light, int index )
 
 				R_BindFBO( tr.sunShadowMapFBO[ splitFrustumIndex ] );
 
-				if ( r_deferredShading->integer || !r_evsmPostProcess->integer )
+				if( shadowClip ) {
+					R_AttachFBOTexture2D( GL_TEXTURE_2D, tr.sunShadowClipMapFBOImage[ splitFrustumIndex ]->texnum, 0 );
+				} else if ( r_deferredShading->integer || !r_evsmPostProcess->integer )
 				{
 					R_AttachFBOTexture2D( GL_TEXTURE_2D, tr.sunShadowMapFBOImage[ splitFrustumIndex ]->texnum, 0 );
 				}
@@ -2676,6 +2688,7 @@ static void RB_RenderInteractionsShadowMapped()
 	qboolean       depthRange, oldDepthRange;
 	qboolean       alphaTest, oldAlphaTest;
 	deformType_t   deformType, oldDeformType;
+	qboolean       shadowClipFound;
 
 	int            startTime = 0, endTime = 0;
 	static const matrix_t bias = { 0.5,     0.0, 0.0, 0.0,
@@ -2761,8 +2774,9 @@ static void RB_RenderInteractionsShadowMapped()
 				continue;
 			}
 
-			RB_SetupLightForShadowing( light, i );
+			RB_SetupLightForShadowing( light, i, qfalse );
 
+			shadowClipFound = qfalse;
 			for( ia = iaFirst; ia; ia = ia->next )
 			{
 				iaLast = ia;
@@ -2792,7 +2806,11 @@ static void RB_RenderInteractionsShadowMapped()
 					continue;
 				}
 
-				if ( ia->type == IA_LIGHTONLY )
+				if ( (ia->type & IA_SHADOWCLIP) ) {
+					shadowClipFound = qtrue;
+				}
+
+				if ( !(ia->type & IA_SHADOW) )
 				{
 					continue;
 				}
@@ -2925,6 +2943,189 @@ static void RB_RenderInteractionsShadowMapped()
 
 			Tess_End();
 
+			if( shadowClipFound )
+			{
+				entity = NULL;
+				shader = NULL;
+				oldEntity = NULL;
+				oldShader = NULL;
+
+				if ( light->l.noShadows || light->shadowLOD < 0 )
+				{
+					if ( r_logFile->integer )
+					{
+						// don't just call LogComment, or we will get
+						// a call to va() every frame!
+						GLimp_LogComment( va( "----- Skipping shadowCube side: %i -----\n", i ) );
+					}
+					continue;
+				}
+
+				RB_SetupLightForShadowing( light, i, qtrue );
+
+				for( ia = iaFirst; ia; ia = ia->next )
+				{
+					iaLast = ia;
+					backEnd.currentEntity = entity = ia->entity;
+					surface = ia->surface;
+					shader = tr.sortedShaders[ ia->shaderNum ];
+					alphaTest = shader->alphaTest;
+					deformType = GetDeformType( shader );
+
+					if ( entity->e.renderfx & ( RF_NOSHADOW | RF_DEPTHHACK ) )
+					{
+						continue;
+					}
+
+					if ( shader->isSky )
+					{
+						continue;
+					}
+
+					if ( shader->sort > SS_OPAQUE )
+					{
+						continue;
+					}
+
+					if ( shader->noShadows )
+					{
+						continue;
+					}
+
+					if ( !(ia->type & IA_SHADOWCLIP) )
+					{
+						continue;
+					}
+
+					if ( light->l.rlType == RL_OMNI && !( ia->cubeSideBits & ( 1 << i ) ) )
+					{
+						continue;
+					}
+
+					switch ( light->l.rlType )
+					{
+						case RL_OMNI:
+						case RL_PROJ:
+						case RL_DIRECTIONAL:
+							{
+								if ( entity == oldEntity && ( alphaTest ? shader == oldShader : alphaTest == oldAlphaTest ) && deformType == oldDeformType )
+								{
+									if ( r_logFile->integer )
+									{
+										// don't just call LogComment, or we will get
+										// a call to va() every frame!
+										GLimp_LogComment( va( "----- Batching Shadow Interaction: %i -----\n", (int)( ia - backEnd.viewParms.interactions ) ) );
+									}
+
+									// fast path, same as previous
+									rb_surfaceTable[ *surface ]( surface );
+									continue;
+								}
+								else
+								{
+									// draw the contents of the last shader batch
+									Tess_End();
+
+									if ( r_logFile->integer )
+									{
+										// don't just call LogComment, or we will get
+										// a call to va() every frame!
+										GLimp_LogComment( va( "----- Beginning Shadow Interaction: %i -----\n", (int)( ia - backEnd.viewParms.interactions ) ) );
+									}
+
+									// we don't need tangent space calculations here
+									Tess_Begin( Tess_StageIteratorShadowFill, NULL, shader, light->shader, qtrue, qfalse, -1, 0 );
+								}
+
+								break;
+							}
+
+						default:
+							break;
+					}
+
+					// change the modelview matrix if needed
+					if ( entity != oldEntity )
+					{
+						depthRange = qfalse;
+
+						if ( entity != &tr.worldEntity )
+						{
+							// set up the transformation matrix
+							R_RotateEntityForLight( entity, light, &backEnd.orientation );
+
+							if ( entity->e.renderfx & RF_DEPTHHACK )
+							{
+								// hack the depth range to prevent view model from poking into walls
+								depthRange = qtrue;
+							}
+						}
+						else
+						{
+							// set up the transformation matrix
+							Com_Memset( &backEnd.orientation, 0, sizeof( backEnd.orientation ) );
+
+							backEnd.orientation.axis[ 0 ][ 0 ] = 1;
+							backEnd.orientation.axis[ 1 ][ 1 ] = 1;
+							backEnd.orientation.axis[ 2 ][ 2 ] = 1;
+							VectorCopy( light->l.origin, backEnd.orientation.viewOrigin );
+
+							MatrixIdentity( backEnd.orientation.transformMatrix );
+							//MatrixAffineInverse(backEnd.orientation.transformMatrix, backEnd.orientation.viewMatrix);
+							MatrixMultiply( light->viewMatrix, backEnd.orientation.transformMatrix, backEnd.orientation.viewMatrix );
+							MatrixCopy( backEnd.orientation.viewMatrix, backEnd.orientation.modelViewMatrix );
+						}
+
+						GL_LoadModelViewMatrix( backEnd.orientation.modelViewMatrix );
+
+						// change depthrange if needed
+						if ( oldDepthRange != depthRange )
+						{
+							if ( depthRange )
+							{
+								glDepthRange( 0, 0.3 );
+							}
+							else
+							{
+								glDepthRange( 0, 1 );
+							}
+
+							oldDepthRange = depthRange;
+						}
+
+						RB_SetupLightAttenuationForEntity( light, entity );
+					}
+
+					switch ( light->l.rlType )
+					{
+						case RL_OMNI:
+						case RL_PROJ:
+						case RL_DIRECTIONAL:
+							{
+								// add the triangles for this surface
+								rb_surfaceTable[ *surface ]( surface );
+								break;
+							}
+
+						default:
+							break;
+					}
+					oldEntity = entity;
+					oldShader = shader;
+					oldAlphaTest = alphaTest;
+					oldDeformType = deformType;
+				}
+
+				if ( r_logFile->integer )
+				{
+					// don't just call LogComment, or we will get
+					// a call to va() every frame!
+					GLimp_LogComment( va( "----- Last Interaction: %i -----\n", (int)( iaLast - backEnd.viewParms.interactions ) ) );
+				}
+
+				Tess_End();
+			}
+
 			// set shadow matrix including scale + offset
 			if ( light->l.rlType == RL_DIRECTIONAL )
 			{
@@ -2958,7 +3159,7 @@ static void RB_RenderInteractionsShadowMapped()
 				continue;
 			}
 
-			if ( ia->type == IA_SHADOWONLY )
+			if ( !(ia->type & IA_LIGHT) )
 			{
 				continue;
 			}
@@ -4096,7 +4297,7 @@ static void RB_RenderInteractionsDeferredShadowMapped()
 				continue;
 			}
 
-			RB_SetupLightForShadowing( light, i );
+			RB_SetupLightForShadowing( light, i, qfalse );
 
 			for( ia = iaFirst; ia; ia = ia->next )
 			{
@@ -4133,7 +4334,7 @@ static void RB_RenderInteractionsDeferredShadowMapped()
 					continue;
 				}
 
-				if ( ia->type == IA_LIGHTONLY )
+				if ( !(ia->type & IA_SHADOW) )
 				{
 					continue;
 				}

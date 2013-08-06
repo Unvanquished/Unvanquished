@@ -32,6 +32,7 @@ extern "C" {
 #include "../qcommon/qfiles.h"
 #include "../qcommon/qcommon.h"
 #include "../renderer/tr_public.h"
+#include "../renderer/tr_bonematrix.h"
 
 #include <GL/glew.h>
 
@@ -1149,6 +1150,9 @@ extern "C" {
 
 		expression_t    refractionIndexExp;
 
+		expression_t    specularExponentMin;
+		expression_t    specularExponentMax;
+
 		expression_t    fresnelPowerExp;
 		expression_t    fresnelScaleExp;
 		expression_t    fresnelBiasExp;
@@ -1288,6 +1292,11 @@ extern "C" {
 		long            expireTime; // time in milliseconds this expires
 
 		struct shader_s *remappedShader; // current shader this one is remapped too
+
+		struct {
+			char *name;
+			int  index;
+		} altShader[ MAX_ALTSHADERS ]; // state-based remapping; note that index 0 is unused
 
 		struct shader_s *next;
 	} shader_t;
@@ -1615,9 +1624,12 @@ extern "C" {
 
 	typedef enum
 	{
-	  IA_DEFAULT, // lighting and shadowing
-	  IA_SHADOWONLY,
-	  IA_LIGHTONLY
+		IA_LIGHT = 1,		// the received light if not in shadow
+		IA_SHADOW = 2,		// the surface shadows the light
+		IA_SHADOWCLIP = 4,	// the surface clips the shadow
+
+		IA_DEFAULT = IA_LIGHT | IA_SHADOW, // lighting and shadowing
+		IA_DEFAULTCLIP = IA_LIGHT | IA_SHADOWCLIP
 	} interactionType_t;
 
 // an interactionCache is a node between a light and a precached world surface
@@ -2259,18 +2271,19 @@ extern "C" {
 		vec3_t  offset;
 	} md5Weight_t;
 
-	typedef struct
+	// align for sse skinning
+	typedef ALIGNED( 16, struct
 	{
-		vec3_t      position;
+		vec4_t      position;
+		vec4_t      tangent;
+		vec4_t      binormal;
+		vec4_t      normal;
 		vec2_t      texCoords;
-		vec3_t      tangent;
-		vec3_t      binormal;
-		vec3_t      normal;
 
-		uint32_t    firstWeight;
+		uint16_t    firstWeight;
 		uint16_t    numWeights;
 		md5Weight_t **weights;
-	} md5Vertex_t;
+	} md5Vertex_t );
 
 	/*
 	typedef struct
@@ -2306,7 +2319,7 @@ extern "C" {
 		int8_t   parentIndex; // parent index (-1 if root)
 		vec3_t   origin;
 		quat_t   rotation;
-		matrix_t inverseTransform; // full inverse for tangent space transformation
+		boneMatrix_t inverseTransform; // full inverse for tangent space transformation
 	} md5Bone_t;
 
 	typedef struct md5Model_s
@@ -2793,6 +2806,9 @@ extern "C" {
 		image_t *shadowMapFBOImage[ MAX_SHADOWMAPS * 2 ];
 		image_t *shadowCubeFBOImage[ MAX_SHADOWMAPS ];
 		image_t *sunShadowMapFBOImage[ MAX_SHADOWMAPS * 2 ];
+		image_t *shadowClipMapFBOImage[ MAX_SHADOWMAPS * 2 ];
+		image_t *shadowClipCubeFBOImage[ MAX_SHADOWMAPS ];
+		image_t *sunShadowClipMapFBOImage[ MAX_SHADOWMAPS * 2 ];
 
 		// external images
 		image_t *charsetImage;
@@ -3071,8 +3087,8 @@ extern "C" {
 	extern cvar_t *r_offsetFactor;
 	extern cvar_t *r_offsetUnits;
 	extern cvar_t *r_forceSpecular;
-	extern cvar_t *r_specularExponent;
-	extern cvar_t *r_specularExponent2;
+	extern cvar_t *r_specularExponentMin;
+	extern cvar_t *r_specularExponentMax;
 	extern cvar_t *r_specularScale;
 	extern cvar_t *r_normalScale;
 	extern cvar_t *r_normalMapping;
@@ -3568,7 +3584,7 @@ extern "C" {
 
 		qboolean    vboVertexSkinning;
 		int         numBoneMatrices;
-		matrix_t    boneMatrices[ MAX_BONES ];
+		boneMatrix_t    boneMatrices[ MAX_BONES ];
 
 		// info extracted from current shader or backend mode
 		void ( *stageIteratorFunc )( void );
@@ -4240,6 +4256,8 @@ extern "C" {
 // bani
 	void       RE_RenderToTexture( int textureid, int x, int y, int w, int h );
 	void       RE_Finish( void );
+
+	void       R_SetAltShaderTokens( const char * );
 
 #if defined( __cplusplus )
 }

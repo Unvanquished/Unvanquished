@@ -13,8 +13,8 @@ set -e
 
 PAKBASE="$1"
 shift
-BUILDDIR="$1"
-shift
+BUILDDIR="${1:-.}"
+shift || :
 
 if test "$PAKBASE" = ''; then
   echo 'the current release tag is needed' >&2

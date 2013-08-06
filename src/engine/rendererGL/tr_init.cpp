@@ -179,8 +179,8 @@ extern "C" {
 	cvar_t      *r_offsetFactor;
 	cvar_t      *r_offsetUnits;
 	cvar_t      *r_forceSpecular;
-	cvar_t      *r_specularExponent;
-	cvar_t      *r_specularExponent2;
+	cvar_t      *r_specularExponentMin;
+	cvar_t      *r_specularExponentMax;
 	cvar_t      *r_specularScale;
 	cvar_t      *r_normalScale;
 	cvar_t      *r_normalMapping;
@@ -1595,8 +1595,8 @@ extern "C" {
 		r_offsetFactor = ri.Cvar_Get( "r_offsetFactor", "-1", CVAR_CHEAT );
 		r_offsetUnits = ri.Cvar_Get( "r_offsetUnits", "-2", CVAR_CHEAT );
 		r_forceSpecular = ri.Cvar_Get( "r_forceSpecular", "0", CVAR_CHEAT );
-		r_specularExponent = ri.Cvar_Get( "r_specularExponent", "16", CVAR_CHEAT | CVAR_SHADER );
-		r_specularExponent2 = ri.Cvar_Get( "r_specularExponent2", "3", CVAR_CHEAT | CVAR_SHADER );
+		r_specularExponentMin = ri.Cvar_Get( "r_specularExponentMin", "0", CVAR_CHEAT );
+		r_specularExponentMax = ri.Cvar_Get( "r_specularExponentMax", "16", CVAR_CHEAT );
 		r_specularScale = ri.Cvar_Get( "r_specularScale", "1.4", CVAR_CHEAT | CVAR_SHADER );
 		r_normalScale = ri.Cvar_Get( "r_normalScale", "1.1", CVAR_CHEAT );
 		r_normalMapping = ri.Cvar_Get( "r_normalMapping", "1", CVAR_ARCHIVE );
@@ -1619,7 +1619,7 @@ extern "C" {
 		AssertCvarRange( r_softShadows, 0, 6, qtrue );
 
 		r_softShadowsPP = ri.Cvar_Get( "r_softShadowsPP", "0", CVAR_ARCHIVE | CVAR_LATCH );
-		
+
 		r_shadowBlur = ri.Cvar_Get( "r_shadowBlur", "2", CVAR_ARCHIVE | CVAR_SHADER );
 
 		r_shadowMapQuality = ri.Cvar_Get( "r_shadowMapQuality", "3", CVAR_ARCHIVE | CVAR_LATCH );
@@ -2167,6 +2167,7 @@ extern "C" {
 		re.SetColorGrading = RE_SetColorGrading;
 
 		re.ShaderNameFromHandle = RE_GetShaderNameFromHandle;
+		re.SetAltShaderTokens = R_SetAltShaderTokens;
 
 		return &re;
 	}

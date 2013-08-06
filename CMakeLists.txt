@@ -230,7 +230,7 @@ if( USE_GIT_DESCRIBE )
   if( EXISTS "${CMAKE_SOURCE_DIR}/.git" )
     find_package( Git )
     if( GIT_FOUND )
-      execute_process( COMMAND git describe --tags --long --dirty=+dirty OUTPUT_VARIABLE GIT_DESCRIBE_REPORT OUTPUT_STRIP_TRAILING_WHITESPACE )
+      execute_process( COMMAND git describe --tags --long --match v* --dirty=+dirty OUTPUT_VARIABLE GIT_DESCRIBE_REPORT OUTPUT_STRIP_TRAILING_WHITESPACE )
       message( STATUS "git reported ${GIT_DESCRIBE_REPORT}" )
       # this may fail with annotated non-release tags
       if( GIT_DESCRIBE_REPORT MATCHES "-0-g.......$" )
@@ -492,6 +492,8 @@ set( RENDERERLIST
   ${MOUNT_DIR}/engine/renderer/tr_local.h
   ${MOUNT_DIR}/engine/renderer/tr_types.h
   ${MOUNT_DIR}/engine/renderer/tr_public.h
+  ${MOUNT_DIR}/engine/renderer/tr_bonematrix.h
+  ${MOUNT_DIR}/engine/renderer/tr_bonematrix.c
   ${MOUNT_DIR}/engine/renderer/anorms256.h
 )
 
@@ -541,6 +543,8 @@ set( RENDERERGLLIST
   ${MOUNT_DIR}/engine/qcommon/md4.c
   ${MOUNT_DIR}/engine/rendererGL/tr_local.h
   ${MOUNT_DIR}/engine/renderer/tr_public.h
+  ${MOUNT_DIR}/engine/renderer/tr_bonematrix.h
+  ${MOUNT_DIR}/engine/renderer/tr_bonematrix.c
   ${MOUNT_DIR}/engine/rendererGL/gl_shader.h
   ${MOUNT_DIR}/engine/rendererGL/tr_image.h
   ${MOUNT_DIR}/engine/rendererGL/tr_model_skel.h

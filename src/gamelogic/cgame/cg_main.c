@@ -1889,6 +1889,7 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 	( 480.0f * cgs.glconfig.vidWidth ) );
 
 	// load a few needed things before we do any screen updates
+	trap_R_SetAltShaderTokens( "unpowered,destroyed" );
 	cgs.media.whiteShader = trap_R_RegisterShader("white", RSF_DEFAULT);
 	cgs.media.charsetShader = trap_R_RegisterShader("gfx/2d/bigchars",
 							RSF_DEFAULT);

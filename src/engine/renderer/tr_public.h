@@ -198,6 +198,7 @@ typedef struct
 
 	// color grading
 	void      ( *SetColorGrading ) ( int slot, qhandle_t hShader );
+	void ( *SetAltShaderTokens ) ( const char * );
 } refexport_t;
 
 //

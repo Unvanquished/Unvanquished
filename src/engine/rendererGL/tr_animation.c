@@ -1022,6 +1022,12 @@ void R_AddMD5Surfaces( trRefEntity_t *ent )
 			else
 			{
 				shader = R_GetShaderByHandle( surface->shaderIndex );
+
+				if ( ent->e.altShaderIndex > 0 && ent->e.altShaderIndex < MAX_ALTSHADERS &&
+				     shader->altShader[ ent->e.altShaderIndex ].index )
+				{
+					shader = R_GetShaderByHandle( shader->altShader[ ent->e.altShaderIndex ].index );
+				}
 			}
 
 			// we will add shadows even if the main object isn't visible in the view
@@ -1104,13 +1110,10 @@ void R_AddMD5Interactions( trRefEntity_t *ent, trRefLight_t *light, interactionT
 	// is outside the view frustum and we don't care about proper shadowing
 	if ( ent->cull == CULL_OUT )
 	{
-		if ( r_shadows->integer <= SHADOWING_BLOB || light->l.noShadows )
-		{
+		iaType &= ~IA_LIGHT;
+
+		if( !iaType ) {
 			return;
-		}
-		else
-		{
-			iaType = IA_SHADOWONLY;
 		}
 	}
 
@@ -1119,14 +1122,14 @@ void R_AddMD5Interactions( trRefEntity_t *ent, trRefLight_t *light, interactionT
 
 	if ( light->l.inverseShadows )
 	{
-		if ( iaType != IA_LIGHTONLY && ( light->l.noShadowID && ( light->l.noShadowID != ent->e.noShadowID ) ) )
+		if ( (iaType & IA_SHADOW) && ( light->l.noShadowID && ( light->l.noShadowID != ent->e.noShadowID ) ) )
 		{
 			return;
 		}
 	}
 	else
 	{
-		if ( iaType != IA_LIGHTONLY && ( light->l.noShadowID && ( light->l.noShadowID == ent->e.noShadowID ) ) )
+		if ( (iaType & IA_SHADOW) && ( light->l.noShadowID && ( light->l.noShadowID == ent->e.noShadowID ) ) )
 		{
 			return;
 		}

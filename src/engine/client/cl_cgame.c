@@ -2356,6 +2356,13 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 		case CG_ROCKET_CLEARHUD:
 			Rocket_ClearHud( args[1] );
 			return 0;
+		case CG_PREPAREKEYUP:
+			IN_PrepareKeyUp();
+			return 0;
+
+		case CG_R_SETALTSHADERTOKENS:
+			re.SetAltShaderTokens( VMA(1) );
+			return 0;
 
 		default:
 			Com_Error( ERR_DROP, "Bad cgame system trap: %ld", ( long int ) args[ 0 ] );
