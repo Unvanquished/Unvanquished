@@ -149,7 +149,7 @@ void	main()
 #endif
 
 
-#elif defined(COMPAT_Q3A)
+#else // USE_NORMAL_MAPPING
 
 	vec3 N = normalize(var_Normal);
 
@@ -192,57 +192,7 @@ void	main()
 	gl_FragColor = color;
 #endif
 
-#else // USE_NORMAL_MAPPING
-
-	// compute the diffuse term
-	vec4 diffuse = texture2D(u_DiffuseMap, var_TexDiffuseNormal.st);
-
-	if( abs(diffuse.a + u_AlphaThreshold) <= 1.0 )
-	{
-		discard;
-		return;
-	}
-
-	vec3 N;
-
-#if defined(TWOSIDED)
-	if(gl_FrontFacing)
-	{
-		N = -normalize(var_Normal);
-	}
-	else
 #endif
-	{
-		N = normalize(var_Normal);
-	}
-
-	vec3 L = normalize(var_LightDirection);
-
-	// compute the light term
-#if defined(r_WrapAroundLighting)
-	float NL = clamp(dot(N, L) + u_LightWrapAround, 0.0, 1.0) / clamp(1.0 + u_LightWrapAround, 0.0, 1.0);
-#else
-	float NL = clamp(dot(N, L), 0.0, 1.0);
-#endif
-
-	vec3 light = var_LightColor.rgb * NL;
-
-	vec4 color = vec4(diffuse.rgb * light, var_LightColor.a);
-	// vec4 color = vec4(vec3(NL, NL, NL), diffuse.a);
-#if defined(USE_GLOW_MAPPING)
-	color.rgb += texture2D(u_GlowMap, var_TexDiffuseNormal.st).rgb;
-#endif
-#if defined(r_DeferredShading)
-	gl_FragData[0] = color; 								// var_Color;
-	gl_FragData[1] = vec4(diffuse.rgb, var_LightColor.a);	// vec4(var_Color.rgb, 1.0 - var_Color.a);
-	gl_FragData[2] = vec4(N, var_LightColor.a);
-	gl_FragData[3] = vec4(0.0, 0.0, 0.0, var_LightColor.a);
-#else
-	gl_FragColor = color;
-#endif
-
-
-#endif // USE_NORMAL_MAPPING
 
 #if 0
 #if defined(USE_PARALLAX_MAPPING)
