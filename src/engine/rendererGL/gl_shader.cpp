@@ -967,11 +967,12 @@ void GLShaderManager::PrintShaderSource( GLuint object ) const
 
 	glGetShaderSource( object, maxLength, &maxLength, msg );
 
-	for ( i = 0; i < maxLength; i += 1024 )
+	for ( i = 0; i < maxLength; i += sizeof( msgPart ) - 1 )
 	{
 		Q_strncpyz( msgPart, msg + i, sizeof( msgPart ) );
-		ri.Printf( PRINT_ALL, "%s\n", msgPart );
+		ri.Printf( PRINT_ALL, "%s", msgPart );
 	}
+	ri.Printf( PRINT_ALL, "\n" );
 
 	ri.Hunk_FreeTempMemory( msg );
 }
@@ -1012,12 +1013,12 @@ void GLShaderManager::PrintInfoLog( GLuint object, bool developerOnly ) const
 		ri.Printf( print, "link log:\n" );
 	}
 
-	for ( i = 0; i < maxLength; i += 1024 )
+	for ( i = 0; i < maxLength; i += sizeof( msgPart ) - 1 )
 	{
 		Q_strncpyz( msgPart, msg + i, sizeof( msgPart ) );
-
-		ri.Printf( print, "%s\n", msgPart );
+		ri.Printf( print, "%s", msgPart );
 	}
+	ri.Printf( PRINT_ALL, "\n" );
 
 	ri.Hunk_FreeTempMemory( msg );
 }
