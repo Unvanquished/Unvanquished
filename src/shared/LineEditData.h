@@ -38,10 +38,11 @@ namespace Util {
             LineEditData(int size, int scrollSize = defaultScrollSize);
             ~LineEditData();
 
-            const char* GetText();
-            const char* GetViewText();
-            int GetCursorPos();
-            int GetViewCursorPos();
+            const char* GetText() const;
+            const char* GetViewText() const;
+            int GetViewStartPos() const;
+            int GetCursorPos() const;
+            int GetViewCursorPos() const;
 
             void CursorLeft();
             void CursorRight();
@@ -56,6 +57,10 @@ namespace Util {
             void Clear();
 
             void SetWidth(int width);
+            int GetWidth() const;
+
+        protected:
+            void UpdateScroll();
 
         protected:
             char* buffer;

@@ -39,39 +39,37 @@ namespace Util {
         delete[] buffer;
     }
 
-    const char* LineEditData::GetText() {
+    const char* LineEditData::GetText() const {
         return buffer;
     }
 
-    const char* LineEditData::GetViewText() {
+    const char* LineEditData::GetViewText() const {
         return buffer + scroll;
     }
 
-    int LineEditData::GetCursorPos() {
+    int LineEditData::GetViewStartPos() const {
+        return scroll;
+    }
+
+    int LineEditData::GetCursorPos() const {
         return cursor;
     }
 
-    int LineEditData::GetViewCursorPos() {
+    int LineEditData::GetViewCursorPos() const {
         return cursor - scroll;
     }
 
     void LineEditData::CursorLeft() {
         if (cursor > 0) {
             cursor --;
-
-            if (cursor < scroll) {
-                scroll = std::min(scroll - scrollSize, 0);
-            }
+            UpdateScroll();
         }
     }
 
     void LineEditData::CursorRight() {
         if (cursor < strlen(buffer)) {
             cursor ++;
-
-            if (cursor > scroll + width) {
-                scroll = cursor - width + scrollSize;
-            }
+            UpdateScroll();
         }
     }
 
@@ -82,10 +80,7 @@ namespace Util {
 
     void LineEditData::CursorEnd() {
         cursor = strlen(buffer);
-
-        if (cursor > scroll + width) {
-            scroll = cursor - width + scrollSize;
-        }
+        UpdateScroll();
     }
 
     void LineEditData::DeleteNext() {
@@ -111,9 +106,7 @@ namespace Util {
             buffer[cursor] = a;
 
             cursor ++;
-            if (cursor > scroll + width) {
-                scroll = cursor - width + scrollSize;
-            }
+            UpdateScroll();
         }
     }
 
@@ -125,9 +118,18 @@ namespace Util {
 
     void LineEditData::SetWidth(int width_) {
         width = width_;
+        UpdateScroll();
+    }
 
-        if (scroll <= cursor - width) {
-            scroll = cursor - width + 1;
+    int LineEditData::GetWidth() const {
+        return width;
+    }
+
+    void LineEditData::UpdateScroll() {
+        if (cursor < scroll) {
+            scroll = std::min(scroll - scrollSize, 0);
+        } else if (cursor > scroll + width) {
+            scroll = cursor - width + scrollSize;
         }
     }
 }
