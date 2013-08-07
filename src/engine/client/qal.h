@@ -28,16 +28,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define AL_NO_PROTOTYPES
 #define ALC_NO_PROTOTYPES
 
-#if defined(_WIN32)
-#	include <al.h>
-#	include <alc.h>
-#elif defined(MACOS_X) || defined( __APPLE__ )
-#	include <al.h>
-#	include <alc.h>
-#else
-#	include <AL/al.h>
-#	include <AL/alc.h>
-#endif
+#include <al.h>
+#include <alc.h>
 
 extern LPALENABLE               qalEnable;
 extern LPALDISABLE              qalDisable;

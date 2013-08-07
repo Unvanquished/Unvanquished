@@ -811,7 +811,6 @@ endif()
 # SDL, required for all targets on win32 because of iconv
 if( BUILD_CLIENT OR BUILD_RENDERER_NEW OR BUILD_RENDERER_OLD OR WIN32 )
   find_package( SDL ${OPTIONAL_WIN32} )
-  mark_as_advanced( SDLMAIN_LIBRARY SDL_LIBRARY SDL_INCLUDE_DIR )
   if( SDL_FOUND )
     include_directories( ${SDL_INCLUDE_DIR} )
     set( LIBS_CLIENT ${LIBS_CLIENT} ${SDL_LIBRARY} )
@@ -835,6 +834,7 @@ if( BUILD_CLIENT OR BUILD_RENDERER_NEW OR BUILD_RENDERER_OLD OR WIN32 )
     add_definitions( -DHAVE_SDL )
   endif()
 endif()
+mark_as_advanced( SDLMAIN_LIBRARY SDL_LIBRARY SDL_INCLUDE_DIR )
 
 # GMP
 find_package( GMP ${OPTIONAL_WIN32} )
