@@ -44,9 +44,10 @@ uniform vec4		u_ColorModulate;
 uniform vec4		u_Color;
 uniform vec3		u_ViewOrigin;
 
-varying vec4		var_TexDiffuseNormal;
-//varying vec2		var_TexSpecular;
+varying vec4		var_TexDiffuseGlow;
+
 #if defined(USE_NORMAL_MAPPING)
+varying vec4		var_TexNormalSpecular;
 varying vec3		var_ViewDir;
 varying vec3		var_AmbientLight;
 varying vec3		var_DirectedLight;
@@ -73,14 +74,14 @@ void	main()
 	gl_Position = u_ModelViewProjectionMatrix * position;
 
 	// transform diffusemap texcoords
-	var_TexDiffuseNormal.st = (u_DiffuseTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0)).st;
+	var_TexDiffuseGlow.st = (u_DiffuseTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0)).st;
 
 #if defined(USE_NORMAL_MAPPING)
 	// transform normalmap texcoords
-	var_TexDiffuseNormal.pq = (u_NormalTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0)).st;
+	var_TexNormalSpecular.st = (u_NormalTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0)).st;
 
 	// transform specularmap texture coords
-//	var_TexSpecular = (u_SpecularTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0)).st;
+	var_TexNormalSpecular.pq = (u_SpecularTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0)).st;
 
 	var_AmbientLight = attr_AmbientLight;
 	var_DirectedLight = attr_DirectedLight;
@@ -101,5 +102,9 @@ void	main()
 	var_LightColor = attr_Color * u_ColorModulate + u_Color;
 	
 	var_Normal = attr_Normal;
+#endif
+
+#if defined(USE_GLOW_MAPPING)
+	var_TexDiffuseGlow.pq = ( u_GlowTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0) ).st;
 #endif
 }
