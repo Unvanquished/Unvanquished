@@ -34,6 +34,9 @@ namespace Str {
 
     bool IsPrefix(const std::string& prefix, const std::string& text);
     int LongestPrefixSize(const std::string& text1, const std::string& text2);
+
+    std::u32string UTF8To32(const std::string& str);
+    std::string UTF32To8(const std::u32string& str);
 }
 
 #endif //SHARED_STRING_H_
