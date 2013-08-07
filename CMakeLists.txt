@@ -1021,7 +1021,7 @@ if( LINUX AND ( BUILD_CLIENT OR BUILD_RENDERER_NEW OR BUILD_RENDERER_OLD ) )
 endif()
 
 # OpenAL
-if( BUILD_CLIENT )
+if( BUILD_CLIENT OR BUILD_TTY_CLIENT )
   find_package( OpenAL )
   if( OPENAL_FOUND )
     include_directories( ${OPENAL_INCLUDE_DIR} )
