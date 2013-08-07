@@ -114,46 +114,53 @@ namespace Console {
         std::string commandText(buffer + slashOffset);
 
         //Split the command text and find the command to complete
-        std::vector<int> starts = Cmd::StartsOfCommands(commandText);
-        if (starts.back() < strlen(buffer)) {
-            starts.push_back(strlen(buffer) + 1);
+        std::vector<int> commandStarts = Cmd::StartsOfCommands(commandText);
+        if (commandStarts.back() < strlen(buffer)) {
+            commandStarts.push_back(strlen(buffer) + 1);
         }
 
         int index = 0;
-        for (index = starts.size(); index --> 0;) {
-            if (starts[index] < cursor) {
+        for (index = commandStarts.size(); index --> 0;) {
+            if (commandStarts[index] < cursor) {
                 break;
             }
         }
-        int commandStart = starts[index];
+        int commandStart = commandStarts[index];
 
         //Skips whitespaces, like command parsing does
         //TODO: factor it?
         while(commandText[commandStart] == ' ') {
             commandStart ++;
         }
-        std::string command(commandText, starts[index], starts[index + 1] - starts[index]);
+        std::string command(commandText, commandStart, commandStarts[index + 1] - commandStart - 1);
 
         //Split the command and find the arg to complete
         Cmd::Args args(command);
-        int pos = cursor - starts[index];
-        int argNum = args.PosToArg(pos);
-        int startPos = args.ArgStartPos(argNum);
+        int cursorPos = cursor - commandStart;
+        int argNum = args.PosToArg(cursorPos);
+        int argStartPos = args.ArgStartPos(argNum);
 
-        std::vector<std::string> candidates = Cmd::CompleteArgument(command, pos);
-
-        //Insert the longest common prefix of all the results
-        if (candidates.size() > 0) {
-            int prefixSize = candidates[0].size();
-            for (auto candidate : candidates) {
-                prefixSize = std::min(prefixSize, Str::LongestPrefixSize(candidate, candidates[0]));
-            }
-
-            std::string completedArg(candidates[0], 0, prefixSize);
-            commandText.replace(commandStart + startPos, pos - startPos, completedArg);
-
-            cursor = startPos + prefixSize + slashOffset;
+        std::vector<std::string> candidates = Cmd::CompleteArgument(command, cursorPos);
+        if (candidates.empty()) {
+            return;
         }
+
+        //Compute the longest common prefix of all the results
+        int prefixSize = candidates[0].size();
+        for (auto candidate : candidates) {
+            prefixSize = std::min(prefixSize, Str::LongestPrefixSize(candidate, candidates[0]));
+        }
+
+        std::string completedArg(candidates[0], 0, prefixSize);
+
+        //Help the user bash the TAB key
+        if (candidates.size() == 1) {
+            completedArg += " ";
+        }
+
+        //Insert the completed arg
+        commandText.replace(commandStart + argStartPos, cursorPos - argStartPos - 1, completedArg);
+        cursor = argStartPos + completedArg.size() + slashOffset + commandStart;
 
         //Print the matches if it is ambiguous
         //TODO: multi column nice print?
