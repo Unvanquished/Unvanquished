@@ -137,7 +137,7 @@ public:
 	{
 		if ( _compileMacros.size() >= MAX_SHADER_MACROS )
 		{
-			ri.Error( ERR_DROP, "Can't register more than 9 compile macros for a single shader" );
+			ri.Error( ERR_DROP, "Can't register more than %i compile macros for a single shader", MAX_SHADER_MACROS );
 		}
 
 		_compileMacros.push_back( compileMacro );
