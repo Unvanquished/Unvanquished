@@ -876,6 +876,16 @@ class ToggleCmd: public Cmd::StaticCmd {
             Cvar_Set2(name.c_str(), args.Argv(listStart).c_str(), false);
         }
 
+        std::vector<std::string> Complete(int pos, const Cmd::Args& args) const override{
+            int argNum = args.PosToArg(pos);
+
+            if (argNum == 1 or argNum == 2) {
+                return CVar::CompleteName(args.ArgPrefix(pos));
+            }
+
+            return {};
+        }
+
         void Usage(const Cmd::Args& args) const{
             PrintUsage(args, _("[+|-] <variable> [<value>…]"), "");
         }
@@ -930,6 +940,16 @@ class CycleCmd: public Cmd::StaticCmd {
 
             Cvar_Set2(args.Argv(1).c_str(), va("%i", newValue), false);
         }
+
+        std::vector<std::string> Complete(int pos, const Cmd::Args& args) const override{
+            int argNum = args.PosToArg(pos);
+
+            if (argNum == 1) {
+                return CVar::CompleteName(args.ArgPrefix(pos));
+            }
+
+            return {};
+        }
 };
 static CycleCmd CycleCmdRegistration;
 
@@ -972,6 +992,16 @@ class SetCmd: public Cmd::StaticCmd {
             var->flags |= flags;
         }
 
+        std::vector<std::string> Complete(int pos, const Cmd::Args& args) const override{
+            int argNum = args.PosToArg(pos);
+
+            if (argNum == 1 or (argNum == 2 and args.Argv(1) == "-unsafe")) {
+                return CVar::CompleteName(args.ArgPrefix(pos));
+            }
+
+            return {};
+        }
+
     private:
         int flags;
 };
@@ -997,6 +1027,16 @@ class ResetCmd: public Cmd::StaticCmd {
                 Cvar_Reset(args.Argv(1).c_str());
             }
         }
+
+        std::vector<std::string> Complete(int pos, const Cmd::Args& args) const override{
+            int argNum = args.PosToArg(pos);
+
+            if (argNum == 1) {
+                return CVar::CompleteName(args.ArgPrefix(pos));
+            }
+
+            return {};
+        }
 };
 static ResetCmd ResetCmdRegistration;
 
@@ -1011,7 +1051,6 @@ class ListCmd: public Cmd::StaticCmd {
         }
 
         void Run(const Cmd::Args& args) const override {
-            int matchArg = 1;
             bool raw;
             std::string match = "";
 
@@ -1343,28 +1382,6 @@ void Cvar_CompleteCvarName( char *args, int argNum )
 }
 
 /*
-==================
-Cvar_CompleteToggle
-==================
-*/
-static void Cvar_CompleteToggle( char *args, int argNum )
-{
-	if ( argNum == 3 )
-	{
-		// Skip "<cmd> "
-		char *p = Com_SkipTokens( args, 1, " " );
-
-		if ( *p == '+' || *p == '-' )
-		{
-			args = p;
-			--argNum;
-		}
-	}
-
-	Cvar_CompleteCvarName( args, argNum );
-}
-
-/*
 ============
 Cvar_Init
 
@@ -1374,14 +1391,6 @@ Reads in all archived cvars
 void Cvar_Init( void )
 {
 	cvar_cheats = Cvar_Get( "sv_cheats", "1", CVAR_ROM | CVAR_SYSTEMINFO );
-
-	//Cmd_SetCommandCompletionFunc( "toggle", Cvar_CompleteToggle );
-	//Cmd_SetCommandCompletionFunc( "cycle", Cvar_CompleteCvarName );
-	//Cmd_SetCommandCompletionFunc( "set", Cvar_CompleteCvarName );
-	//Cmd_SetCommandCompletionFunc( "sets", Cvar_CompleteCvarName );
-	//Cmd_SetCommandCompletionFunc( "setu", Cvar_CompleteCvarName );
-	//Cmd_SetCommandCompletionFunc( "seta", Cvar_CompleteCvarName );
-	//Cmd_SetCommandCompletionFunc( "reset", Cvar_CompleteCvarName );
 }
 
 namespace CVar {

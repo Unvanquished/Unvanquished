@@ -39,7 +39,6 @@ namespace Cmd {
 
     //Saves the aliases in a configuration file
     void WriteAliases(fileHandle_t f);
-
 }
 
 #endif // FRAMEWORK_BASE_COMMANDS_H_

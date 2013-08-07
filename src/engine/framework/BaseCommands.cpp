@@ -199,6 +199,16 @@ namespace Cmd {
 
                 Cvar_SetValueLatched(cvar.c_str(), number);
             }
+
+            std::vector<std::string> Complete(int pos, const Args& args) const override{
+                int argNum = args.PosToArg(pos);
+
+                if (argNum == 1) {
+                    return CVar::CompleteName(args.ArgPrefix(pos));
+                }
+
+                return {};
+            }
     };
     static RandomCmd RandomCmdRegistration;
 
@@ -218,6 +228,16 @@ namespace Cmd {
                     res += Cvar_VariableString(args.Argv(i).c_str());
                 }
                 Cvar_Set(args.Argv(1).c_str(), res.c_str());
+            }
+
+            std::vector<std::string> Complete(int pos, const Args& args) const override{
+                int argNum = args.PosToArg(pos);
+
+                if (argNum >= 1) {
+                    return CVar::CompleteName(args.ArgPrefix(pos));
+                }
+
+                return {};
             }
     };
     static ConcatCmd ConcatCmdRegistration;
@@ -309,8 +329,19 @@ namespace Cmd {
                 PrintUsage(args, _("<variableToSet> (++|--)"), "");
                 Com_Printf(_("valid operators: + - × * ÷ /\n"));
             }
+
+            std::vector<std::string> Complete(int pos, const Args& args) const override{
+                int argNum = args.PosToArg(pos);
+
+                if (argNum == 1) {
+                    return CVar::CompleteName(args.ArgPrefix(pos));
+                }
+
+                return {};
+            }
     };
     static MathCmd MathCmdRegistration;
+
     /*
     ===============================================================================
 
@@ -350,6 +381,18 @@ namespace Cmd {
         }
     }
 
+    std::vector<std::string> CompleteDelayName(const std::string& prefix) {
+        std::vector<std::string> res;
+
+        for (auto& delay: delays) {
+            if (Str::IsPrefix(prefix, delay.name)) {
+                res.push_back(delay.name);
+            }
+        }
+
+        return res;
+    }
+
     class DelayCmd: public StaticCmd {
         public:
             DelayCmd(): StaticCmd("delay", BASE, N_("executes a command after a delay")) {
@@ -385,6 +428,16 @@ namespace Cmd {
 
                 delays.emplace_back(delayRecord_t{name, command, target, type});
             }
+
+            std::vector<std::string> Complete(int pos, const Args& args) const override{
+                int argNum = args.PosToArg(pos);
+
+                if (argNum == 1) {
+                    return CompleteDelayName(args.ArgPrefix(pos));
+                }
+
+                return {};
+            }
     };
 
     class UndelayCmd: public StaticCmd {
@@ -405,10 +458,21 @@ namespace Cmd {
                     const delayRecord_t& delay = *it;
 
                     if (Q_stristr(delay.name.c_str(), name.c_str()) and Q_stristr(delay.command.c_str(), command.c_str())) {
-                        delays.erase(it ++);
+                        it = delays.erase(it);
+                    } else {
+                        it ++;
                     }
-                    it ++;
                 }
+            }
+
+            std::vector<std::string> Complete(int pos, const Args& args) const override{
+                int argNum = args.PosToArg(pos);
+
+                if (argNum == 1) {
+                    return CompleteDelayName(args.ArgPrefix(pos));
+                }
+
+                return {};
             }
     };
 
@@ -451,6 +515,18 @@ namespace Cmd {
             toWrite = "alias " + it.first + " " + it.second.command + "\n";
             FS_Write(toWrite.c_str(), toWrite.size(), f);
         }
+    }
+
+    std::vector<std::string> CompleteAliasName(const std::string& prefix) {
+        std::vector<std::string> res;
+
+        for (auto it: aliases) {
+            if (Str::IsPrefix(prefix, it.first)) {
+                res.push_back(it.first);
+            }
+        }
+
+        return res;
     }
 
     class AliasProxy: public CmdBase {
@@ -532,6 +608,18 @@ namespace Cmd {
                 //Force an update of autogen.cfg (TODO: get rid of this super global variable)
                 cvar_modifiedFlags |= CVAR_ARCHIVE;
             }
+
+            std::vector<std::string> Complete(int pos, const Args& args) const override{
+                int argNum = args.PosToArg(pos);
+
+                if (argNum == 1) {
+                    return CompleteAliasName(args.ArgPrefix(pos));
+                } else if (argNum > 1) {
+                    return Cmd::CompleteArgument(args.RawArgsFrom(2), pos - args.ArgStartPos(2));
+                }
+
+                return {};
+            }
     };
     static AliasCmd AliasCmdRegistration;
 
@@ -552,6 +640,16 @@ namespace Cmd {
                     aliases.erase(name);
                     RemoveCommand(name);
                 }
+            }
+
+            std::vector<std::string> Complete(int pos, const Args& args) const override{
+                int argNum = args.PosToArg(pos);
+
+                if (argNum == 1) {
+                    return CompleteAliasName(args.ArgPrefix(pos));
+                }
+
+                return {};
             }
     };
     static UnaliasCmd UnaliasCmdRegistration;
