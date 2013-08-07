@@ -38,7 +38,7 @@ namespace Console {
             void HistoryPrev();
             void HistoryNext();
 
-            void RunCommand();
+            void RunCommand(const std::string& defaultCommand = "");
             void AutoComplete();
 
         private:

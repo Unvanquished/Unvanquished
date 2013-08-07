@@ -83,9 +83,7 @@ namespace Console {
         }
     }
 
-    void Field::RunCommand() {
-        //TODO: handle com_consoleCommand
-        //TODO: default command if no \ or /
+    void Field::RunCommand(const std::string& defaultCommand) {
         if(strlen(buffer) == 0) {
             return;
         }
@@ -95,7 +93,11 @@ namespace Console {
             Cmd::BufferCommandText(buffer + 1, Cmd::END, true);
         } else {
             AddToHistory(buffer);
-            Cmd::BufferCommandText(buffer, Cmd::END, true);
+            if (defaultCommand.empty()) {
+                Cmd::BufferCommandText(buffer, Cmd::END, true);
+            } else {
+                Cmd::BufferCommandText(defaultCommand + " " + std::string(buffer), Cmd::END, true);
+            }
         }
 
         inHistory = false;
