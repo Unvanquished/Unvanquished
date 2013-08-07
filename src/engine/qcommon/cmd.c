@@ -960,6 +960,7 @@ std::unordered_map<std::string, proxyInfo_t> proxies;
 char* completeArgs = NULL;
 int completeArgNum = 0;
 
+std::vector<std::string> completeMatches;
 //Is registered in the new command system for all the commands registered through the C interface.
 class ProxyCmd: public Cmd::CmdBase {
 	public:
@@ -970,20 +971,26 @@ class ProxyCmd: public Cmd::CmdBase {
 			proxy.cmd();
 		}
 
-		std::vector<std::string> Complete(int argNum, const Cmd::Args& args) const override {
+		std::vector<std::string> Complete(int pos, const Cmd::Args& args) const override {
+			static char buffer[4096];
 			proxyInfo_t proxy = proxies[args.Argv(0)];
 
 			if (!proxy.complete) {
 				return {};
 			}
-			proxy.complete(completeArgs, completeArgNum);
+			completeMatches.clear();
+			Q_strncpyz(buffer, args.RawCmd().c_str(), 4096);
+			proxy.complete(buffer, args.PosToArg(pos) + 1);
 
-			return {};
+			return completeMatches;
 		}
 };
 
 ProxyCmd myProxyCmd;
 
+void Cmd_OnCompleteMatch(const char* s) {
+    completeMatches.push_back(s);
+}
 /*
 ============
 Cmd_AddCommand

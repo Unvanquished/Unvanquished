@@ -3859,29 +3859,8 @@ static void FindMatches( const char *s )
 {
 	int i;
 
-	if ( Q_strnicmp( s, completionString, strlen( completionString ) ) )
-	{
-		return;
-	}
-
-	matchCount++;
-
-	if ( matchCount == 1 )
-	{
-		Q_strncpyz( shortestMatch, s, sizeof( shortestMatch ) );
-		return;
-	}
-
-	// cut shortestMatch to the amount common with s
-	for ( i = 0; s[ i ]; i++ )
-	{
-		if ( tolower( shortestMatch[ i ] ) != tolower( s[ i ] ) )
-		{
-			shortestMatch[ i ] = 0;
-		}
-	}
-
-	shortestMatch[ i ] = 0;
+    Cmd_OnCompleteMatch(s);
+    return;
 }
 
 /*
@@ -4112,11 +4091,11 @@ void Field_CompleteCgame( int argNum )
 	shortestMatch[ 0 ] = 0;
 
 	CL_CgameCompletion( FindMatches, argNum );
-
+/*
 	if ( !Field_Complete() )
 	{
 		CL_CgameCompletion( PrintMatches, argNum );
-	}
+	}*/
 }
 
 #endif
@@ -4133,11 +4112,11 @@ void Field_CompleteFilename( const char *dir,
 	shortestMatch[ 0 ] = 0;
 
 	FS_FilenameCompletion( dir, ext, stripExt, FindMatches );
-
+/*
 	if ( !Field_Complete() )
 	{
 		FS_FilenameCompletion( dir, ext, stripExt, PrintMatches );
-	}
+	}*/
 }
 
 /*

@@ -107,7 +107,11 @@ namespace Console {
     void Field::AutoComplete() {
         //We want to complete in the middle of a command text with potentially multiple commands
 
-        std::string commandText(buffer);
+        int slashOffset = 0;
+        if (buffer[0] == '/' or buffer[0] == '\\') {
+            slashOffset = 1;
+        }
+        std::string commandText(buffer + slashOffset);
 
         //Split the command text and find the command to complete
         std::vector<int> starts = Cmd::StartsOfCommands(commandText);
@@ -121,7 +125,13 @@ namespace Console {
                 break;
             }
         }
-        Com_Printf("commandText '%s', index %i, start %i\n", commandText.c_str(), index, starts[index]);
+        int commandStart = starts[index];
+
+        //Skips whitespaces, like command parsing does
+        //TODO: factor it?
+        while(commandText[commandStart] == ' ') {
+            commandStart ++;
+        }
         std::string command(commandText, starts[index], starts[index + 1] - starts[index]);
 
         //Split the command and find the arg to complete
@@ -130,23 +140,20 @@ namespace Console {
         int argNum = args.PosToArg(pos);
         int startPos = args.ArgStartPos(argNum);
 
-        Com_Printf("Calling CompleteArgument on '%s'\n", command.c_str());
         std::vector<std::string> candidates = Cmd::CompleteArgument(command, pos);
 
         //Insert the longest common prefix of all the results
         if (candidates.size() > 0) {
-            Com_Printf("Have prefixes\n");
             int prefixSize = candidates[0].size();
             for (auto candidate : candidates) {
                 prefixSize = std::min(prefixSize, Str::LongestPrefixSize(candidate, candidates[0]));
             }
 
             std::string completedArg(candidates[0], 0, prefixSize);
-            Com_Printf("Trying to insert %s\n", completedArg.c_str());
-            commandText.replace(starts[index] + startPos, pos - startPos + 1, completedArg);
-        }
+            commandText.replace(commandStart + startPos, pos - startPos, completedArg);
 
-        //TODO: move the cursor too
+            cursor = startPos + prefixSize + slashOffset;
+        }
 
         //Print the matches if it is ambiguous
         //TODO: multi column nice print?
@@ -156,7 +163,8 @@ namespace Console {
             }
         }
 
-        Q_strncpyz(buffer, commandText.c_str(), bufferSize);
+        UpdateScroll();
+        Q_strncpyz(buffer + slashOffset, commandText.c_str(), bufferSize - 1);
     }
 
 }

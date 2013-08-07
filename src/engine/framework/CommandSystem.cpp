@@ -202,6 +202,11 @@ namespace Cmd {
         CommandMap& commands = GetCommandMap();
 
         Args args(std::move(command));
+
+        if (args.Argc() == 0) {
+            return {};
+        }
+
         int argNum = args.PosToArg(pos);
 
         if (argNum > 0) {

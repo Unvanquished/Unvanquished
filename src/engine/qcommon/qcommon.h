@@ -513,6 +513,7 @@ void Cmd_CommandCompletion( void ( *callback )( const char *s ) );
 
 typedef void ( *completionFunc_t )( char *args, int argNum );
 
+void Cmd_OnCompleteMatch(const char* s);
 void Cmd_CommandCompletion( void ( *callback )( const char *s ) );
 void Cmd_AliasCompletion( void ( *callback )( const char *s ) );
 void Cmd_DelayCompletion( void ( *callback )( const char *s ) );
