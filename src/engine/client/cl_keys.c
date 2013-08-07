@@ -36,6 +36,8 @@ Maryland 20850 USA.
 #include "../qcommon/q_unicode.h"
 #include "../framework/CommandSystem.h"
 
+#include "../../shared/String.h"
+
 /*
 
 key up events are sent even if in console mode
@@ -44,8 +46,7 @@ key up events are sent even if in console mode
 
 #define CLIP(t) MAX( 0, MIN( MAX_TEAMS - 1, (t) ) )
 
-field_t  g_consoleField;
-field_t  chatField;
+Console::Field g_consoleField(INT_MAX);
 qboolean chat_irc;
 
 qboolean key_overstrikeMode;
@@ -358,129 +359,68 @@ Handles horizontal scrolling and cursor blinking
 x, y, and width are in pixels
 ===================
 */
-void Field_VariableSizeDraw( field_t *edit, int x, int y, int size, qboolean showCursor,
-                             qboolean noColorEscape, float alpha )
+void Field_VariableSizeDraw(const Util::LineEditData& edit, int x, int y, int size, qboolean showCursor,
+        qboolean noColorEscape, float alpha )
 {
-	int  len;
-	vec4_t supportElementsColor;
-	int  drawLen;
-	int  prestep;
-	char str[ MAX_STRING_CHARS ];
-	int  i;
-	int  offset, offsetEnd;
+    //TODO support UTF-8 once LineEditData does
+    //Extract the text we want to draw
+    int drawWidth = edit.GetWidth() - 1;
+    int len = edit.GetText().size();
+    int lineStart = edit.GetViewStartPos();
+    int cursorPos = edit.GetViewCursorPos();
+    std::string text = Str::UTF32To8(std::u32string(edit.GetViewText(), drawWidth));
 
-	drawLen = edit->widthInChars - 1; // - 1 so there is always a space for the cursor
-	len = Q_UTF8_Strlen( edit->buffer );
+    // draw the text
+    if (size == SMALLCHAR_WIDTH) {
+        float color[4] = {1.0, 1.0, 1.0, alpha};
+        SCR_DrawSmallStringExt(x, y, text.c_str(), color, qfalse, noColorEscape);
+    } else {
+        SCR_DrawBigString(x, y, text.c_str(), 1.0, noColorEscape);
+    }
 
-	// guarantee that cursor will be visible
-	if ( len <= drawLen )
-	{
-		edit->scroll = prestep = 0;
-	}
-	else
-	{
-		if ( edit->scroll + drawLen > len )
-		{
-			edit->scroll = len - drawLen;
+    // draw the line scrollbar
+    if (len > drawWidth) {
+        static const float yellow[] = { 1, 1, 0, 0.25 };
+        float width = SCR_ConsoleFontStringWidth(text.c_str(), drawWidth);
 
-			if ( edit->scroll < 0 )
-			{
-				edit->scroll = 0;
-			}
-		}
+        re.SetColor( yellow );
+        re.DrawStretchPic(x + (width * lineStart) / len, y + 3, (width * drawWidth) / len, 2, 0, 0, 0, 0, cls.whiteShader);
+    }
 
-		prestep = edit->scroll;
-	}
+    // draw the cursor
+    if (showCursor) {
+        //Blink changes state approximately 4 times per second
+        if ((int)(cls.realtime >> 8) & 1) {
+            return;
+        }
 
-	if ( prestep + drawLen > len )
-	{
-		drawLen = len - prestep;
-	}
+        vec4_t supportElementsColor = {1.0f, 1.0f, 1.0f, 0.66f * consoleState.currentAlphaFactor};
+        re.SetColor( supportElementsColor );
 
-	// extract <drawLen> characters from the field at <prestep>
-	offset = offsetEnd = Field_ScrollToOffset( edit );
-	for ( i = 0; i < drawLen && edit->buffer[ offsetEnd ]; ++i )
-	{
-		offsetEnd += Q_UTF8_Width( edit->buffer + offsetEnd );
-	}
+        //Compute the position of the cursor
+        float xpos, width, height;
+        if (size == SMALLCHAR_WIDTH) {
+            xpos = x + SCR_ConsoleFontStringWidth(text.c_str(), cursorPos);
+            height = key_overstrikeMode ? SMALLCHAR_HEIGHT / (CONSOLE_FONT_VPADDING + 1) : 2;
+            width = SMALLCHAR_WIDTH;
+        } else {
+            xpos = x + cursorPos * size;
+            height = key_overstrikeMode ? BIGCHAR_HEIGHT / (CONSOLE_FONT_VPADDING + 1) : 2;
+            width = BIGCHAR_WIDTH;
+        }
 
-	if ( offsetEnd - offset >= MAX_STRING_CHARS )
-	{
-		Com_Error( ERR_DROP, "drawLen >= MAX_STRING_CHARS" );
-	}
-
-	str[ offsetEnd - offset ] = 0;
-	Com_Memcpy( str, edit->buffer + offset, offsetEnd - offset );
-
-	// draw it
-	if ( size == SMALLCHAR_WIDTH )
-	{
-		float color[ 4 ];
-
-		color[ 0 ] = color[ 1 ] = color[ 2 ] = 1.0;
-		color[ 3 ] = alpha;
-		SCR_DrawSmallStringExt( x, y, str, color, qfalse, noColorEscape );
-	}
-	else
-	{
-		// draw big string with drop shadow
-		SCR_DrawBigString( x, y, str, 1.0, noColorEscape );
-	}
-
-	if ( len > drawLen )
-	{
-		static const float yellow[] = { 1, 1, 0, 0.25 };
-		float width = SCR_ConsoleFontStringWidth( str, drawLen );
-
-		re.SetColor( yellow );
-		re.DrawStretchPic( x + ( width * prestep ) / len, y + 3,
-		                   ( width * drawLen ) / len, 2,
-		                   0, 0, 0, 0, cls.whiteShader );
-	}
-
-	// draw the cursor
-	if ( showCursor )
-	{
-		float xpos, width, height;
-
-		supportElementsColor[0] = 1.0f;
-		supportElementsColor[1] = 1.0f;
-		supportElementsColor[2] = 1.0f;
-		supportElementsColor[3] = 0.66f * consoleState.currentAlphaFactor;
-
-		if ( ( int )( cls.realtime >> 8 ) & 1 )
-		{
-			return; // off blink
-		}
-
-		re.SetColor( supportElementsColor );
-
-		if ( size == SMALLCHAR_WIDTH )
-		{
-			xpos = x + SCR_ConsoleFontStringWidth( str, edit->cursor - prestep );
-			height = key_overstrikeMode ? SMALLCHAR_HEIGHT / ( CONSOLE_FONT_VPADDING + 1 ) : 2;
-			width = SMALLCHAR_WIDTH;
-		}
-		else
-		{
-			i = drawLen - Q_UTF8_Strlen( str );
-			xpos = x + ( edit->cursor - prestep - i ) * size;
-			height = key_overstrikeMode ? BIGCHAR_HEIGHT / ( CONSOLE_FONT_VPADDING + 1 ) : 2;
-			width = BIGCHAR_WIDTH;
-		}
-
-		re.DrawStretchPic( xpos, y + 2 - height, width, height, 0, 0, 0, 0, cls.whiteShader );
-	}
+        re.DrawStretchPic(xpos, y + 2 - height, width, height, 0, 0, 0, 0, cls.whiteShader);
+    }
 }
 
-void Field_Draw( field_t *edit, int x, int y, qboolean showCursor, qboolean noColorEscape, float alpha )
+void Field_Draw(const Util::LineEditData& edit, int x, int y, qboolean showCursor, qboolean noColorEscape, float alpha)
 {
-	Field_VariableSizeDraw( edit, x, y, SMALLCHAR_WIDTH, showCursor, noColorEscape, alpha );
+	Field_VariableSizeDraw(edit, x, y, SMALLCHAR_WIDTH, showCursor, noColorEscape, alpha);
 }
 
-void Field_BigDraw( field_t *edit, int x, int y, qboolean showCursor, qboolean noColorEscape )
+void Field_BigDraw(const Util::LineEditData& edit, int x, int y, qboolean showCursor, qboolean noColorEscape)
 {
-	Field_VariableSizeDraw( edit, x, y, BIGCHAR_WIDTH, showCursor, noColorEscape, 1.0f );
+	Field_VariableSizeDraw(edit, x, y, BIGCHAR_WIDTH, showCursor, noColorEscape, 1.0f);
 }
 
 /*
@@ -488,11 +428,11 @@ void Field_BigDraw( field_t *edit, int x, int y, qboolean showCursor, qboolean n
 Field_Paste
 ================
 */
-static void Field_Paste( field_t *edit, clipboard_t clip )
+static void Field_Paste(Util::LineEditData& edit, clipboard_t clip )
 {
 	const char *cbd;
 	int        pasteLen, width;
-	char       *ptr = Sys_GetClipboardData( clip );
+	char       *ptr = Sys_GetClipboardData(clip);
 
 	if ( !ptr )
 	{
@@ -524,140 +464,86 @@ in-game talk, and menu fields
 Key events are used for non-printable characters, others are gotten from char events.
 =================
 */
-void Field_KeyDownEvent( field_t *edit, int key )
-{
-	int len, width;
-	char *s;
+void Field_KeyDownEvent(Util::LineEditData& edit, int key) {
+    key = tolower(key);
 
-	key = tolower( key );
-	len = Q_UTF8_Strlen( edit->buffer );
-	s = &edit->buffer[ Field_CursorToOffset( edit ) ];
-	width = Q_UTF8_Width( s );
+    switch (key) {
+        case K_DEL:
+            edit.DeleteNext();
+            break;
 
-	switch ( key )
-	{
-		case K_DEL:
-			if ( *s )
-			{
-				memmove( s, s + width, strlen( s + width ) + 1 );
-			}
+        case K_RIGHTARROW:
+            if (keys[ K_CTRL ].down) {
+                //TODO: Skip a full word
+                edit.CursorRight();
+            } else {
+                edit.CursorRight();
+            }
+            break;
 
-			break;
+        case K_LEFTARROW:
+            if (keys[ K_CTRL ].down) {
+                //TODO: Skip a full word
+                edit.CursorLeft();
+            } else {
+                edit.CursorLeft();
+            }
+            break;
 
-		case K_RIGHTARROW:
-			if ( keys[ K_CTRL ].down )
-			{
-				width = Field_CursorToOffset( edit );
+            //TODO: figure out which od KeyDown or CharEvent is called
+        case 'a':
+            if (keys[ K_CTRL ].down) {
+                edit.CursorStart();
+            }
+            break;
 
-				while ( edit->buffer[ width ] == ' ' )
-				{
-					++width;
-				}
-				while ( edit->buffer[ width ] && edit->buffer[ width ] != ' ' )
-				{
-					++width;
-				}
+        case K_HOME:
+            edit.CursorStart();
+            break;
 
-				edit->cursor = Field_OffsetToCursor( edit, width );
-			}
-			else if ( edit->cursor < len )
-			{
-				edit->cursor++;
-			}
+        case 'e':
+            if (keys[ K_CTRL ].down) {
+                edit.CursorEnd();
+            }
+            break;
 
-			break;
+        case K_END:
+            edit.CursorEnd();
+            break;
 
-		case K_LEFTARROW:
-			if ( keys[ K_CTRL ].down )
-			{
-				width = Field_CursorToOffset( edit );
+        case K_INS:
+            if (keys[ K_SHIFT ].down) {
+                Field_Paste(edit, SELECTION_PRIMARY);
+            } else {
+                key_overstrikeMode = !key_overstrikeMode;
+            }
+            break;
 
-				while ( width && edit->buffer[ width ] == ' ' )
-				{
-					--width;
-				}
-				while ( width && edit->buffer[ width ] != ' ' )
-				{
-					--width;
-				}
+        /*
+        //kangz: I'm not sure we *need* this shortcut
+        case 't':
+            if ( keys[ K_CTRL ].down && edit->cursor ) {
+                char *p, tmp[4];
 
-				edit->cursor = Field_OffsetToCursor( edit, width );
-			}
-			else if ( edit->cursor > 0 )
-			{
-				edit->cursor--;
-			}
+                if ( edit->cursor == len )
+                {
+                    --edit->cursor;
+                    s = &edit->buffer[ Field_CursorToOffset( edit ) ];
+                    width = Q_UTF8_Width( s );
+                }
 
-			break;
+                --edit->cursor;
+                p = &edit->buffer[ Field_CursorToOffset( edit ) ];
+                memcpy( tmp, p, s - p );
+                memmove( p, s, width );
+                memcpy( p + width, tmp, s - p );
+                edit->cursor += 2;
+            }
 
-		case 'a':
-			if ( keys[ K_CTRL ].down )
-			{
-		case K_HOME:
-				edit->cursor = 0;
-			}
+            break;
+        */
 
-			break;
-
-		case 'e':
-			if ( keys[ K_CTRL ].down )
-			{
-		case K_END:
-				edit->cursor = len;
-			}
-
-			break;
-
-		case K_INS:
-			if ( keys[ K_SHIFT ].down )
-			{
-				Field_Paste( edit, SELECTION_PRIMARY );
-			}
-			else
-			{
-				key_overstrikeMode = !key_overstrikeMode;
-			}
-			break;
-
-		case 't':
-			if ( keys[ K_CTRL ].down && edit->cursor )
-			{
-				char *p, tmp[4];
-
-				if ( edit->cursor == len )
-				{
-					--edit->cursor;
-					s = &edit->buffer[ Field_CursorToOffset( edit ) ];
-					width = Q_UTF8_Width( s );
-				}
-
-				--edit->cursor;
-				p = &edit->buffer[ Field_CursorToOffset( edit ) ];
-				memcpy( tmp, p, s - p );
-				memmove( p, s, width );
-				memcpy( p + width, tmp, s - p );
-				edit->cursor += 2;
-			}
-
-			break;
-	}
-
-	// Change scroll if cursor is no longer visible
-	len = MIN( 5, edit->widthInChars / 4 );
-
-	if ( edit->cursor < edit->scroll + len )
-	{
-		edit->scroll = edit->cursor - len;
-
-		if ( edit->scroll < 0 )
-		{
-			edit->scroll = 0;
-		}
-	}
-	else if ( edit->cursor >= edit->scroll + edit->widthInChars - len )
-	{
-		edit->scroll = edit->cursor - edit->widthInChars + 1 + len;
-	}
+    }
 }
 
 /*
@@ -665,114 +551,66 @@ void Field_KeyDownEvent( field_t *edit, int key )
 Field_CharEvent
 ==================
 */
-void Field_CharEvent( field_t *edit, const char *s )
+void Field_CharEvent(Util::LineEditData& edit, const char *s )
 {
-	int len, width, oldWidth, offset;
+    char c = *s + 'a' - 1;
 
-	if ( *s == 'v' - 'a' + 1 ) // ctrl-v is paste
-	{
-		Field_Paste( edit, SELECTION_CLIPBOARD );
-		return;
-	}
+    if (c == 'v') { // ctrl-v is paste
+        Field_Paste(edit, SELECTION_CLIPBOARD);
+        return;
+    }
 
-	if ( *s == 'c' - 'a' + 1 ||
-	     *s == 'u' - 'a' + 1 ) // ctrl-c or ctrl-u clear the field
-	{
-		Field_Clear( edit );
-		return;
-	}
+    if (c == 'c' or c == 'u') { // ctrl-c or ctrl-u clear the field
+        edit.Clear();
+        return;
+    }
 
-	if ( *s == 'k' - 'a' + 1 ) // ctrl-k clears to the end of the field
-	{
-		edit->buffer[ Field_CursorToOffset( edit ) ] = '\0';
-		return;
-	}
+    //TODO
+    /*
+       if (c == 'k') { // ctrl-k clears to the end of the field
+       edit->buffer[ Field_CursorToOffset( edit ) ] = '\0';
+       return;
+       }
+       */
 
-	len = strlen( edit->buffer );
+    if (c == 'h') { // ctrl-h is backspace
+        edit.DeletePrev();
+        return;
+    }
 
-	if ( *s == 'h' - 'a' + 1 ) // ctrl-h is backspace
-	{
-		if ( edit->cursor )
-		{
-			int posFrom, posTo;
+    if (c == 'd') { // ctrl-d is delete forward
+        edit.DeleteNext();
+        return;
+    }
 
-			posFrom = Field_CursorToOffset( edit );
-			--edit->cursor;
-			posTo = Field_CursorToOffset( edit );
+    if (c == 'a') { // ctrl-a is home
+        edit.CursorStart();
+        return;
+    }
 
-			memmove( edit->buffer + posTo, edit->buffer + posFrom, len + 1 - posFrom );
+    if (c == 'e') { // ctrl-e is end
+        edit.CursorEnd();
+        return;
+    }
 
-			if ( edit->cursor < edit->scroll )
-			{
-				edit->scroll--;
-			}
-		}
+    //
+    // ignore any other non printable chars
+    //
+    if ( (unsigned char)*s < 32 || (unsigned char)*s == 0x7f )
+    {
+        return;
+    }
 
-		return;
-	}
+    // 'unprintable' on Mac - used for cursor keys, function keys etc.
+    if ( (unsigned int)( Q_UTF8_CodePoint( s ) - 0xF700 ) < 0x200u )
+    {
+        return;
+    }
 
-	if ( *s == 'd' - 'a' + 1 ) // ctrl-d is delete forward
-	{
-		int posTo = Field_CursorToOffset( edit );
-
-		if ( edit->buffer[ posTo ] )
-		{
-			int posFrom = posTo + Q_UTF8_Width( edit->buffer + posTo );
-			memmove( edit->buffer + posTo, edit->buffer + posFrom, len + 1 - posFrom );
-		}
-
-		return;
-	}
-
-	if ( *s == 'a' - 'a' + 1 ) // ctrl-a is home
-	{
-		edit->cursor = 0;
-		edit->scroll = 0;
-		return;
-	}
-
-	if ( *s == 'e' - 'a' + 1 ) // ctrl-e is end
-	{
-		edit->cursor = Field_OffsetToCursor( edit, len );
-		edit->scroll = edit->cursor - edit->widthInChars;
-		return;
-	}
-
-	//
-	// ignore any other non printable chars
-	//
-	if ( (unsigned char)*s < 32 || (unsigned char)*s == 0x7f )
-	{
-		return;
-	}
-
-	// 'unprintable' on Mac - used for cursor keys, function keys etc.
-	if ( (unsigned int)( Q_UTF8_CodePoint( s ) - 0xF700 ) < 0x200u )
-	{
-		return;
-	}
-
-	width = Q_UTF8_Width( s );
-	offset = Field_CursorToOffset( edit );
-
-	// if overstrike, adjust the width according to what's being replaced
-	// (at end-of-string, just insert)
-	oldWidth = ( key_overstrikeMode && edit->buffer[ offset ] ) ? Q_UTF8_Width( edit->buffer + offset ) : 0;
-
-	if ( len + width - oldWidth >= MAX_EDIT_LINE )
-	{
-		return;
-	}
-
-	memmove( edit->buffer + offset + width,
-	         edit->buffer + offset + oldWidth, len + 1 - offset - oldWidth );
-	Com_Memcpy( edit->buffer + offset, s, width );
-	++edit->cursor;
-
-	do
-	{
-		edit->scroll++;
-	} while ( edit->cursor >= edit->scroll +edit->widthInChars );
+    if (key_overstrikeMode) {
+        edit.DeleteNext();
+    }
+    edit.AddChar(*s);
 }
 
 /*
@@ -782,24 +620,6 @@ CONSOLE LINE EDITING
 
 ==============================================================================
 */
-
-/*
-===============
-CompleteCommand
-
-Tab expansion
-===============
-*/
-static void CompleteCommand( void )
-{
-	field_t *edit;
-	edit = &g_consoleField;
-
-	// only look at the first token for completion purposes
-	Cmd_TokenizeString( edit->buffer );
-
-	Field_AutoComplete( edit, "]" );
-}
 
 /*
 ====================
@@ -813,67 +633,37 @@ void Console_Key( int key )
 	// just return if any of the listed modifiers are pressed
 	// - no point in passing on, since they Just Get In The Way
 	if ( keys[ K_ALT     ].down || keys[ K_COMMAND ].down ||
-	     keys[ K_MODE    ].down || keys[ K_SUPER   ].down )
+			keys[ K_MODE    ].down || keys[ K_SUPER   ].down )
 	{
 		return;
 	}
 
 	// ctrl-L clears screen
-	if ( key == 'l' && keys[ K_CTRL ].down )
-	{
+	if (key == 'l' && keys[ K_CTRL ].down) {
 		Cmd::BufferCommandText("clear");
 		return;
 	}
 
 	// enter finishes the line
-	if ( key == K_ENTER || key == K_KP_ENTER )
-	{
-		// if not in the game explicitly prepend a slash if needed
-		if ( (cls.state != CA_ACTIVE || !cl_consoleCommand->string[0] ) && g_consoleField.buffer[ 0 ] != '\\'
-		     && g_consoleField.buffer[ 0 ] != '/' )
-		{
-			char temp[ MAX_STRING_CHARS ];
-
-			Q_strncpyz( temp, g_consoleField.buffer, sizeof( temp ) );
-			Com_sprintf( g_consoleField.buffer, sizeof( g_consoleField.buffer ), "\\%s", temp );
-			g_consoleField.cursor++;
-		}
+	if (key == K_ENTER or key == K_KP_ENTER) {
 
 		//scroll lock state 1 or smaller will scroll down on own output
-		if(con_scrollLock->integer <= 1)
-		{
+		if (con_scrollLock->integer <= 1) {
 			consoleState.scrollLineIndex = consoleState.currentLine;
 		}
 
-		Com_Printf( "]%s\n", g_consoleField.buffer );
+		Com_Printf("]%s\n", Str::UTF32To8(g_consoleField.GetText()).c_str());
 
-		// leading slash is an explicit command
-		if ( g_consoleField.buffer[ 0 ] == '\\' || g_consoleField.buffer[ 0 ] == '/' )
-		{
-			Cmd::BufferCommandText(g_consoleField.buffer + 1, Cmd::AFTER, true);  // valid command
-		}
-		else
-		{
-			// other text will be chat messages
-			if ( !g_consoleField.buffer[ 0 ] )
-			{
-				return; // empty lines just scroll the console without adding to history
-			}
-			else
-			{
-				Cmd::BufferCommandText(va("%s %s", cl_consoleCommand->string, g_consoleField.buffer), Cmd::AFTER, true);
-			}
+		// if not in the game always treat the input as a command
+		if (cls.state != CA_ACTIVE or !cl_consoleCommand->string[0]) {
+			g_consoleField.RunCommand();
+		} else {
+			g_consoleField.RunCommand(cl_consoleCommand->string);
 		}
 
-		// copy line to history buffer
-		Hist_Add( g_consoleField.buffer );
-
-		if ( cls.state == CA_DISCONNECTED )
-		{
-			SCR_UpdateScreen(); // force an update, because the command
-		} // may take some time
-
-		Field_Clear( &g_consoleField );
+		if (cls.state == CA_DISCONNECTED) {
+			SCR_UpdateScreen(); // force an update, because the command may take some time
+		}
 		return;
 	}
 
@@ -881,7 +671,7 @@ void Console_Key( int key )
 
 	if ( key == K_TAB )
 	{
-		CompleteCommand();
+		g_consoleField.AutoComplete();
 		return;
 	}
 
@@ -889,27 +679,17 @@ void Console_Key( int key )
 
 	//----(SA)  added some mousewheel functionality to the console
 	if ( ( key == K_MWHEELUP && keys[ K_SHIFT ].down ) || ( key == K_UPARROW ) || ( key == K_KP_UPARROW ) ||
-	     ( ( tolower( key ) == 'p' ) && keys[ K_CTRL ].down ) )
+			( ( tolower( key ) == 'p' ) && keys[ K_CTRL ].down ) )
 	{
-		Field_Set( &g_consoleField, Hist_Prev() );
+		g_consoleField.HistoryPrev();
 		return;
 	}
 
 	//----(SA)  added some mousewheel functionality to the console
 	if ( ( key == K_MWHEELDOWN && keys[ K_SHIFT ].down ) || ( key == K_DOWNARROW ) || ( key == K_KP_DOWNARROW ) ||
-	     ( ( tolower( key ) == 'n' ) && keys[ K_CTRL ].down ) )
+			( ( tolower( key ) == 'n' ) && keys[ K_CTRL ].down ) )
 	{
-		const char *history = Hist_Next();
-
-		if ( history )
-		{
-			Field_Set( &g_consoleField, history );
-		}
-		else if ( g_consoleField.buffer[ 0 ] )
-		{
-			Hist_Add( g_consoleField.buffer );
-			Field_Clear( &g_consoleField );
-		}
+		g_consoleField.HistoryNext();
 		return;
 	}
 
@@ -965,7 +745,7 @@ void Console_Key( int key )
 	}
 
 	// pass to the next editline routine
-	Field_KeyDownEvent( &g_consoleField, key );
+	Field_KeyDownEvent(g_consoleField, key);
 }
 
 //============================================================================
@@ -1475,9 +1255,13 @@ void Key_EditBind_f( void )
 		sprintf( buf, "/bind %s %s", Key_KeynumToString( b ), bindq );
 	}
 
+	/*
+	//kangz: what is EditBind used for anyway???
 	Con_OpenConsole_f();
+
 	Field_Set( &g_consoleField, buf );
 	free( buf );
+	*/
 }
 
 /*
@@ -1709,7 +1493,6 @@ qboolean consoleButtonWasPressed = qfalse;
 void CL_KeyEvent( int key, qboolean down, unsigned time )
 {
 	char     *kb;
-	char     cmd[ 1024 ];
 	qboolean bypassMenu = qfalse; // NERVE - SMF
 	qboolean onlybinds = qfalse;
 
@@ -1958,7 +1741,7 @@ void CL_CharEvent( const char *key )
 	// distribute the key down event to the appropriate handler
 	if ( cls.keyCatchers & KEYCATCH_CONSOLE )
 	{
-		Field_CharEvent( &g_consoleField, key );
+		Field_CharEvent(g_consoleField, key);
 	}
 	else if ( cls.keyCatchers & KEYCATCH_UI )
 	{
@@ -1973,7 +1756,7 @@ void CL_CharEvent( const char *key )
 	}
 	else if ( cls.state == CA_DISCONNECTED )
 	{
-		Field_CharEvent( &g_consoleField, key );
+		Field_CharEvent(g_consoleField, key);
 	}
 }
 

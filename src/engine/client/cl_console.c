@@ -168,10 +168,10 @@ void Con_ToggleConsole_f( void )
 	// ydnar: persistent console input is more useful
 	if ( con_autoclear->integer )
 	{
-		Field_Clear( &g_consoleField );
+		g_consoleField.Clear();
 	}
 
-	g_consoleField.widthInChars = g_console_field_width;
+	g_consoleField.SetWidth(g_console_field_width);
 
 	if (consoleState.isOpened) {
 		cls.keyCatchers &= ~KEYCATCH_CONSOLE;
@@ -495,7 +495,8 @@ qboolean Con_CheckResize( void )
 		Q_strncpyz( prompt, con_prompt->string, sizeof( prompt ) );
 		Q_CleanStr( prompt );
 
-		g_console_field_width = g_consoleField.widthInChars = consoleState.textWidthInChars - 8 - Q_UTF8_Strlen( prompt );
+		g_console_field_width = consoleState.textWidthInChars - 8 - Q_UTF8_Strlen( prompt );
+		g_consoleField.SetWidth(g_console_field_width);
 	}
 
 	return ret;
@@ -535,8 +536,8 @@ void Con_Init( void )
 
 	// Done defining cvars for console colors
 
-	Field_Clear( &g_consoleField );
-	g_consoleField.widthInChars = g_console_field_width;
+	g_consoleField.Clear();
+	g_consoleField.SetWidth(g_console_field_width);
 
 	Cmd_AddCommand( "toggleConsole", Con_ToggleConsole_f );
 	Cmd_AddCommand( "toggleMenu", Con_ToggleMenu_f );
@@ -790,7 +791,7 @@ void Con_DrawInput( int linePosition, float overrideAlpha )
 	SCR_DrawSmallStringExt( consoleState.margin.sides + consoleState.padding.sides, linePosition, prompt, color, qfalse, qfalse );
 
 	Q_CleanStr( prompt );
-	Field_Draw( &g_consoleField, consoleState.margin.sides + consoleState.padding.sides + SCR_ConsoleFontStringWidth( prompt, strlen( prompt ) ), linePosition, qtrue, qtrue, color[ 3 ] );
+	Field_Draw( g_consoleField, consoleState.margin.sides + consoleState.padding.sides + SCR_ConsoleFontStringWidth( prompt, strlen( prompt ) ), linePosition, qtrue, qtrue, color[ 3 ] );
 }
 
 void Con_DrawRightFloatingTextLine( const int linePosition, const float *color, const char* text )
@@ -1426,7 +1427,7 @@ void Con_Close( void )
 		return;
 	}
 
-	Field_Clear( &g_consoleField );
+	g_consoleField.Clear();
 	cls.keyCatchers &= ~KEYCATCH_CONSOLE;
 	consoleState.isOpened = qfalse;
 

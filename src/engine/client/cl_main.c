@@ -4085,7 +4085,7 @@ qboolean CL_InitRenderer( void )
 	cls.consoleShader = re.RegisterShader( "console", RSF_DEFAULT );
 
 	g_console_field_width = cls.glconfig.vidWidth / SMALLCHAR_WIDTH - 2;
-	g_consoleField.widthInChars = g_console_field_width;
+	g_consoleField.SetWidth(g_console_field_width);
 
 	return qtrue;
 }
