@@ -28,44 +28,37 @@ uniform sampler2D	u_SpecularMap;
 uniform sampler2D	u_GlowMap;
 
 uniform float		u_AlphaThreshold;
-uniform vec3		u_ViewOrigin;
 uniform float		u_DepthScale;
 uniform	float		u_LightWrapAround;
 uniform vec2		u_SpecularExponent;
 
-varying vec3		var_Position;
 varying vec4		var_TexDiffuseNormal;
 //varying vec2		var_TexSpecular;
 #if defined(USE_NORMAL_MAPPING)
+varying vec3		var_ViewDir; // direction from surface to viewer
 varying vec3		var_AmbientLight;
 varying vec3		var_DirectedLight;
-varying vec3		var_LightDirection;
-#endif
+varying vec3		var_LightDirection; // direction from surface to light
+#else
 varying vec4		var_LightColor;
-varying vec3		var_Tangent;
-varying vec3		var_Binormal;
 varying vec3		var_Normal;
+#endif
 
 
 
 void	main()
 {
 #if defined(USE_NORMAL_MAPPING)
-
-	// construct object-space-to-tangent-space 3x3 matrix
-	mat3 objectToTangentMatrix = mat3(	var_Tangent.x, var_Binormal.x, var_Normal.x,
-							var_Tangent.y, var_Binormal.y, var_Normal.y,
-							var_Tangent.z, var_Binormal.z, var_Normal.z	);
+	vec3 V = normalize(var_ViewDir);
+	vec3 L = normalize(var_LightDirection);
 
 #if defined(TWOSIDED)
 	if(gl_FrontFacing)
 	{
-		objectToTangentMatrix = -objectToTangentMatrix;
+		V = -V;
+		L = -L;
 	}
 #endif
-
-	// compute view direction in tangent space
-	vec3 V = normalize(objectToTangentMatrix * (u_ViewOrigin - var_Position));
 
 	vec2 texDiffuse = var_TexDiffuseNormal.st;
 	vec2 texNormal = var_TexDiffuseNormal.pq;
@@ -74,9 +67,10 @@ void	main()
 #if defined(USE_PARALLAX_MAPPING)
 
 	// ray intersect in view direction
-
+	vec3 Vts = V;
+	
 	// size and start position of search in texture space
-	vec2 S = V.xy * -u_DepthScale / V.z;
+	vec2 S = Vts.xy * -u_DepthScale / Vts.z;
 
 #if 0
 	vec2 texOffset = vec2(0.0);
@@ -108,13 +102,12 @@ void	main()
 
 	// compute normal in tangent space from normalmap
 	vec3 N = 2.0 * (texture2D(u_NormalMap, texNormal).xyz - 0.5);
+	
 	#if defined(r_NormalScale)
 	N.z *= r_NormalScale;
-	normalize(N);
 	#endif
-
-	// compute light direction in tangent space
-	vec3 L = normalize(objectToTangentMatrix * -var_LightDirection);
+	
+	N = normalize(N);
 
  	// compute half angle in tangent space
 	vec3 H = normalize(L + V);
@@ -147,8 +140,6 @@ void	main()
 #else
 	gl_FragColor = color;
 #endif
-
-
 #else // USE_NORMAL_MAPPING
 
 	vec3 N = normalize(var_Normal);
