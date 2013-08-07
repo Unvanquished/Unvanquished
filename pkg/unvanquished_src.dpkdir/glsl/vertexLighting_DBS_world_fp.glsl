@@ -32,9 +32,10 @@ uniform float		u_DepthScale;
 uniform	float		u_LightWrapAround;
 uniform vec2		u_SpecularExponent;
 
-varying vec4		var_TexDiffuseNormal;
-//varying vec2		var_TexSpecular;
+varying vec4		var_TexDiffuseGlow;
+
 #if defined(USE_NORMAL_MAPPING)
+varying vec4		var_TexNormalSpecular;
 varying vec3		var_ViewDir; // direction from surface to viewer
 varying vec3		var_AmbientLight;
 varying vec3		var_DirectedLight;
@@ -48,6 +49,10 @@ varying vec3		var_Normal;
 
 void	main()
 {
+
+vec2 texDiffuse = var_TexDiffuseGlow.st;
+vec2 texGlow = var_TexDiffuseGlow.pq;
+
 #if defined(USE_NORMAL_MAPPING)
 	vec3 V = normalize(var_ViewDir);
 	vec3 L = normalize(var_LightDirection);
@@ -60,9 +65,8 @@ void	main()
 	}
 #endif
 
-	vec2 texDiffuse = var_TexDiffuseNormal.st;
-	vec2 texNormal = var_TexDiffuseNormal.pq;
-	vec2 texSpecular = texNormal; //var_TexSpecular.st;
+	vec2 texNormal = var_TexNormalSpecular.st;
+	vec2 texSpecular = var_TexNormalSpecular.pq;
 
 #if defined(USE_PARALLAX_MAPPING)
 
@@ -130,7 +134,7 @@ void	main()
 	color.rgb += specular;
 
 	#if defined(USE_GLOW_MAPPING)
-	color.rgb += texture2D(u_GlowMap, texDiffuse).rgb;
+	color.rgb += texture2D(u_GlowMap, texGlow).rgb;
 	#endif
 #if defined(r_DeferredShading)
 	gl_FragData[0] = color; 								// var_Color;
@@ -152,7 +156,7 @@ void	main()
 #endif
 
 	// compute the diffuse term
-	vec4 diffuse = texture2D(u_DiffuseMap, var_TexDiffuseNormal.st);
+	vec4 diffuse = texture2D(u_DiffuseMap, texDiffuse);
 
 	if( abs(diffuse.a + u_AlphaThreshold) <= 1.0 )
 	{
@@ -162,7 +166,7 @@ void	main()
 
 	vec4 color = vec4(diffuse.rgb * var_LightColor.rgb, var_LightColor.a);
 #if defined(USE_GLOW_MAPPING)
-	color.rgb += texture2D(u_GlowMap, var_TexDiffuseNormal.st).rgb;
+	color.rgb += texture2D(u_GlowMap, texGlow).rgb;
 #endif
 	// gl_FragColor = vec4(diffuse.rgb * var_LightColor.rgb, diffuse.a);
 	// color = vec4(vec3(1.0, 0.0, 0.0), diffuse.a);
