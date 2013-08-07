@@ -181,7 +181,7 @@ Maryland 20850 USA.
 
 #define STATIC_INLINE static ALWAYS_INLINE
 
-#include "../../include/global.h"
+#include "../../shared/Global.h"
 
 //bani
 //======================= GNUC DEFINES ==================================

@@ -37,7 +37,6 @@ Maryland 20850 USA.
 #define QCOMMON_H_
 
 #include "../qcommon/cm_public.h"
-#include "../../include/global.h"
 
 //kangz need these for the command completion handlers
 #include <vector>
