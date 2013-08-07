@@ -26,102 +26,62 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #include "CommandSystem.h"
 #include "../../shared/String.h"
 #include "../qcommon/q_shared.h"
-
-//TODO: use unicode
+#include <locale>
 
 namespace Console {
 
-    Field::Field(): LineEditData(512) {
-    }
-
-    Field::~Field() {
-        if (oldBuffer) {
-            delete[] oldBuffer;
-        }
+    Field::Field(int size): LineEditData(size), hist(HISTORY_END) {
     }
 
     void Field::HistoryPrev() {
-        if (not inHistory) {
-            hist = HistoryEnd();
-        }
-
-        std::string line = PrevLine(hist);
-
-        if (line.empty()) {
-            return;
-        }
-
-        if (not inHistory) {
-            inHistory = true;
-            oldScroll = scroll;
-            oldCursor = cursor;
-            oldBuffer = buffer;
-            buffer = new char[bufferSize];
-        }
-
-        Q_strncpyz(buffer, line.c_str(), bufferSize);
-        CursorEnd();
+        std::string current = Str::UTF32To8(GetText());
+        PrevLine(hist, current);
+        SetText(Str::UTF8To32(current));
     }
 
     void Field::HistoryNext() {
-        if (not inHistory) {
-            return;
-        }
-
-        std::string line = NextLine(hist);
-        if (not line.empty()) {
-            Q_strncpyz(buffer, line.c_str(), bufferSize);
-            CursorEnd();
-        } else {
-            delete[] buffer;
-            buffer = oldBuffer;
-            oldBuffer = nullptr;
-
-            inHistory = false;
-            scroll = oldScroll;
-            cursor = oldCursor;
-        }
+        std::string current = Str::UTF32To8(GetText());
+        NextLine(hist, current);
+        SetText(Str::UTF8To32(current));
     }
 
     void Field::RunCommand(const std::string& defaultCommand) {
-        if(strlen(buffer) == 0) {
+        if (GetText().empty()) {
             return;
         }
 
-        if (buffer[0] == '/' or buffer[0] == '\\') {
-            AddToHistory(buffer + 1);
-            Cmd::BufferCommandText(buffer + 1, Cmd::END, true);
+        std::string current = Str::UTF32To8(GetText());
+        if (current[0] == '/' or current[0] == '\\') {
+            Cmd::BufferCommandText(current.c_str() + 1, Cmd::END, true);
+        } else if (defaultCommand.empty()) {
+            Cmd::BufferCommandText(std::move(current), Cmd::END, true);
         } else {
-            AddToHistory(buffer);
-            if (defaultCommand.empty()) {
-                Cmd::BufferCommandText(buffer, Cmd::END, true);
-            } else {
-                Cmd::BufferCommandText(defaultCommand + " " + std::string(buffer), Cmd::END, true);
-            }
+            Cmd::BufferCommandText(defaultCommand + " " + current, Cmd::END, true);
         }
+        AddToHistory(hist, std::move(current));
 
-        inHistory = false;
         Clear();
     }
 
     void Field::AutoComplete() {
         //We want to complete in the middle of a command text with potentially multiple commands
 
+        std::string current = Str::UTF32To8(GetText());
         int slashOffset = 0;
-        if (buffer[0] == '/' or buffer[0] == '\\') {
+        if (current[0] == '/' or current[0] == '\\') {
             slashOffset = 1;
         }
-        std::string commandText(buffer + slashOffset);
+        std::string commandText(current.c_str() + slashOffset);
 
         //Split the command text and find the command to complete
         std::vector<int> commandStarts = Cmd::StartsOfCommands(commandText);
-        if (commandStarts.back() < strlen(buffer)) {
-            commandStarts.push_back(strlen(buffer) + 1);
+        if (commandStarts.back() < current.size()) {
+            commandStarts.push_back(current.size() + 1);
         }
 
         int index = 0;
         for (index = commandStarts.size(); index --> 0;) {
-            if (commandStarts[index] < cursor) {
+            if (commandStarts[index] < GetCursorPos()) {
                 break;
             }
         }
@@ -136,7 +96,7 @@ namespace Console {
 
         //Split the command and find the arg to complete
         Cmd::Args args(command);
-        int cursorPos = cursor - commandStart;
+        int cursorPos = GetCursorPos() - commandStart;
         int argNum = args.PosToArg(cursorPos);
         int argStartPos = args.ArgStartPos(argNum);
 
@@ -147,7 +107,7 @@ namespace Console {
 
         //Compute the longest common prefix of all the results
         int prefixSize = candidates[0].size();
-        for (auto candidate : candidates) {
+        for (auto& candidate : candidates) {
             prefixSize = std::min(prefixSize, Str::LongestPrefixSize(candidate, candidates[0]));
         }
 
@@ -160,18 +120,17 @@ namespace Console {
 
         //Insert the completed arg
         commandText.replace(commandStart + argStartPos, cursorPos - argStartPos - 1, completedArg);
-        cursor = argStartPos + completedArg.size() + slashOffset + commandStart;
 
         //Print the matches if it is ambiguous
         //TODO: multi column nice print?
         if (candidates.size() >= 2) {
-            for (auto candidate : candidates) {
+            for (auto& candidate : candidates) {
                 Com_Printf("  %s\n", candidate.c_str());
             }
         }
 
-        UpdateScroll();
-        Q_strncpyz(buffer + slashOffset, commandText.c_str(), bufferSize - 1);
+        SetText(Str::UTF8To32(commandText));
+        SetCursor(argStartPos + completedArg.size() + slashOffset + commandStart);
     }
 
 }

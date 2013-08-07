@@ -120,12 +120,12 @@ namespace Str {
 
     static bool UTF8_IsOverlongSequence(uint32_t cp, int length)
     {
-        if (cp < 0x80 && length != 1)
-            return true;
-        else if (cp < 0x800 && length != 2)
-            return true;
-        else if (cp < 0x10000 && length != 3)
-            return true;
+        if (cp < 0x80)
+            return length != 1;
+        else if (cp < 0x800)
+            return length != 2;
+        else if (cp < 0x10000)
+            return length != 3;
         return false; 
     }
 

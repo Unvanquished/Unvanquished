@@ -31,20 +31,14 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace Util {
     LineEditData::LineEditData(int size, int scrollSize)
-    :buffer(new char[size]), bufferSize(size), scrollSize(scrollSize), width(size) {
-        buffer[0] = '\0';
+    :scrollSize(scrollSize), width(size) {
     }
-
-    LineEditData::~LineEditData() {
-        delete[] buffer;
-    }
-
-    const char* LineEditData::GetText() const {
+    const std::u32string& LineEditData::GetText() const {
         return buffer;
     }
 
-    const char* LineEditData::GetViewText() const {
-        return buffer + scroll;
+    const char32_t* LineEditData::GetViewText() const {
+        return GetText().c_str() + scroll;
     }
 
     int LineEditData::GetViewStartPos() const {
@@ -59,6 +53,15 @@ namespace Util {
         return cursor - scroll;
     }
 
+    void LineEditData::SetText(std::u32string text) {
+        buffer = std::move(text);
+        cursor = buffer.size();
+        if (cursor > width) {
+            scroll = cursor - width + scrollSize;
+        } else
+            scroll = 0;
+    }
+
     void LineEditData::CursorLeft() {
         if (cursor > 0) {
             cursor --;
@@ -67,7 +70,7 @@ namespace Util {
     }
 
     void LineEditData::CursorRight() {
-        if (cursor < strlen(buffer)) {
+        if (cursor < buffer.size()) {
             cursor ++;
             UpdateScroll();
         }
@@ -79,15 +82,18 @@ namespace Util {
     }
 
     void LineEditData::CursorEnd() {
-        cursor = strlen(buffer);
+        cursor = buffer.size();
+        UpdateScroll();
+    }
+
+    void LineEditData::SetCursor(int pos) {
+        cursor = pos;
         UpdateScroll();
     }
 
     void LineEditData::DeleteNext() {
-        int length = strlen(buffer);
-
-        if (cursor < length) {
-            memmove(buffer + cursor, buffer + cursor + 1, length - cursor);
+        if (cursor < buffer.size()) {
+            buffer.erase(buffer.begin() + cursor);
         }
     }
 
@@ -98,20 +104,14 @@ namespace Util {
         }
     }
 
-    void LineEditData::AddChar(char a) {
-        int length = strlen(buffer);
-
-        if (length + 1 < bufferSize) {
-            memmove(buffer + cursor + 1, buffer + cursor, length - cursor + 1);
-            buffer[cursor] = a;
-
-            cursor ++;
-            UpdateScroll();
-        }
+    void LineEditData::AddChar(char32_t a) {
+        buffer.insert(buffer.begin() + cursor, a);
+        cursor ++;
+        UpdateScroll();
     }
 
     void LineEditData::Clear() {
-        buffer[0] = '\0';
+        buffer.clear();
         scroll = 0;
         cursor = 0;
     }

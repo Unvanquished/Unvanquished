@@ -29,7 +29,6 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #include <vector>
 
 //TODO: make it thread safe.
-//TODO: use unicode
 namespace Console {
 
     static const char* HISTORY_FILE = "con_history";
@@ -47,7 +46,7 @@ namespace Console {
         }
 
         for (int i = std::max(0ul, lines.size() - SAVED_HISTORY_LINES); i < lines.size(); i++) {
-            FS_Write(lines[i].c_str(), lines[i].size(), f);
+            FS_Write(lines[i].data(), lines[i].size(), f);
             FS_Write("\n", 1, f);
         }
 
@@ -63,53 +62,68 @@ namespace Console {
             return;
         }
 
-        char* buffer = new char[len + 1];
+        std::unique_ptr<char[]> buffer(new char[len + 1]);
 
-        FS_Read(buffer, len, f);
+        FS_Read(buffer.get(), len, f);
         buffer[len] = '\0';
         FS_FCloseFile(f);
 
-        char* buf = buffer;
+        char* buf = buffer.get();
         char* end;
         while ((end = strchr(buf, '\n'))) {
             *end = '\0';
-            AddToHistory(buf);
+            lines.push_back(buf);
             buf = end + 1;
         }
 
-        AddToHistory(buf);
-
-        delete[] buffer;
+        lines.push_back(buf);
     }
 
-    void AddToHistory(std::string line) {
-        lines.push_back(std::move(line));
+    static const std::string& GetLine(HistoryHandle handle)
+    {
+        static std::string empty = "";
+        if (handle == HISTORY_END)
+            return empty;
+        else
+            return lines[handle];
     }
 
-    HistoryHandle HistoryEnd() {
-        return lines.size();
+    void AddToHistory(HistoryHandle& handle, std::string current) {
+        if (current != GetLine(handle)) {
+            lines.push_back(std::move(current));
+        }
+        handle = HISTORY_END;
     }
 
-    std::string PrevLine(HistoryHandle& handle) {
-        handle --;
-
-        if (handle < 0) {
-            handle ++;
-            return "";
+    void PrevLine(HistoryHandle& handle, std::string& current) {
+        if (current != GetLine(handle)) {
+            lines.push_back(current);
         }
 
-        return lines[handle];
-    }
-
-    std::string NextLine(HistoryHandle& handle) {
-        handle ++;
-
-        if (handle >= lines.size()) {
+        if (handle == 0 || (handle == HISTORY_END && lines.size() == 0)) {
+            return;
+        } else if (handle == HISTORY_END) {
+            handle = lines.size() -1;
+        } else {
             handle --;
-            return "";
+        }
+        current = GetLine(handle);
+    }
+
+    void NextLine(HistoryHandle& handle, std::string& current) {
+        if (current != GetLine(handle)) {
+            lines.push_back(current);
         }
 
-        return lines[handle];
+        if (handle == HISTORY_END) {
+            current.clear();
+        } else if (handle == lines.size() - 1) {
+            handle = HISTORY_END;
+            current.clear();
+        } else {
+            handle ++;
+            current = GetLine(handle);
+        }
     }
 
 }

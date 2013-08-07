@@ -32,8 +32,7 @@ namespace Console {
 
     class Field : public Util::LineEditData {
         public:
-            Field();
-            ~Field();
+            Field(int size);
 
             void HistoryPrev();
             void HistoryNext();
@@ -42,10 +41,6 @@ namespace Console {
             void AutoComplete();
 
         private:
-            char* oldBuffer = nullptr;
-            int oldScroll;
-            int oldCursor;
-            bool inHistory = false;
             HistoryHandle hist;
     };
 

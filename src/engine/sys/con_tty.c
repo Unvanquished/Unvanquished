@@ -42,6 +42,7 @@ Maryland 20850 USA.
 #include <fcntl.h>
 #include <sys/time.h>
 
+#include "../../shared/String.h"
 #include "../framework/ConsoleField.h"
 
 /* fallbacks for con_curses.c */
@@ -75,7 +76,7 @@ static int            TTY_eof;
 
 static struct termios TTY_tc;
 
-static Console::Field TTY_field;
+static Console::Field TTY_field(INT_MAX);
 
 /*
 ==================
@@ -134,7 +135,7 @@ static void CON_Hide( void )
 			return;
 		}
 
-		for (int i = strlen(TTY_field.GetText()); i-->0;) {
+		for (int i = TTY_field.GetText().size(); i-->0;) {
 			CON_Back();
 		}
 
@@ -164,7 +165,7 @@ static void CON_Show( void )
 		{
 			write( STDOUT_FILENO, "]", 1 );
 
-			const std::string& text = TTY_field.GetText();
+			std::string text = Str::UTF32To8(TTY_field.GetText());
 			write( STDOUT_FILENO, text.c_str(), text.size());
 		}
 	}

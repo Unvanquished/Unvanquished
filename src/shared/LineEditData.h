@@ -28,7 +28,6 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #define SHARED_LINE_EDIT_DATA_H_
 
 //FIXME: the namespace and the class name aren't very explicit
-//TODO: use unicode
 namespace Util {
 
     class LineEditData {
@@ -36,35 +35,34 @@ namespace Util {
             static const int defaultScrollSize = 16;
 
             LineEditData(int size, int scrollSize = defaultScrollSize);
-            ~LineEditData();
 
-            const char* GetText() const;
-            const char* GetViewText() const;
+            const std::u32string& GetText() const;
+            const char32_t* GetViewText() const;
             int GetViewStartPos() const;
             int GetCursorPos() const;
             int GetViewCursorPos() const;
+
+            void SetText(std::u32string text);
 
             void CursorLeft();
             void CursorRight();
             void CursorStart();
             void CursorEnd();
+            void SetCursor(int pos);
 
             void DeleteNext();
             void DeletePrev();
 
-            void AddChar(char a);
+            void AddChar(char32_t a);
 
             void Clear();
 
             void SetWidth(int width);
             int GetWidth() const;
 
-        protected:
+        private:
             void UpdateScroll();
-
-        protected:
-            char* buffer;
-            int bufferSize;
+            std::u32string buffer;
             int scrollSize;
             int width;
             int scroll = 0;

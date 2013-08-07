@@ -30,15 +30,14 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 namespace Console {
 
     typedef int HistoryHandle;
+    static const HistoryHandle HISTORY_END = -1;
 
     void SaveHistory();
     void LoadHistory();
 
-    void AddToHistory(std::string line);
-
-    HistoryHandle HistoryEnd();
-    std::string PrevLine(HistoryHandle& handle);
-    std::string NextLine(HistoryHandle& handle);
+    void AddToHistory(HistoryHandle& handle, std::string current);
+    void PrevLine(HistoryHandle& handle, std::string& current);
+    void NextLine(HistoryHandle& handle, std::string& current);
 
 }
 
