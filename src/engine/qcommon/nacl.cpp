@@ -554,49 +554,53 @@ Module InternalLoadModule(NaClHandle* pair, const char* const* args, const char*
 #endif
 }
 
-Module LoadNaClModule(const char* module, const char* sel_ldr, const char* irt, const char* bootstrap)
+Module LoadModule(const char* module, const LoaderParams* nacl_params, bool use_debugger)
 {
 	NaClHandle pair[2];
 	if (NaClSocketPair(pair))
 		return Module();
 
-	char root_sock_redir[32];
-	snprintf(root_sock_redir, sizeof(root_sock_redir), "%d:%d", ROOT_SOCKET_FD, (int)pair[1]);
+	// Environment variables, forward ROOT_SOCKET to NaCl module
 	char root_sock_handle[32];
-	snprintf(root_sock_handle, sizeof(root_sock_handle), "NACLENV_ROOT_SOCKET=%d", ROOT_SOCKET_FD);
-	const char* args[] = {sel_ldr, "-B", irt, "-i", root_sock_redir, "-f", module, NULL};
-	const char* args_bootstrap[] = {bootstrap, sel_ldr, "--r_debug=0xXXXXXXXXXXXXXXXX", "--reserved_at_zero=0xXXXXXXXXXXXXXXXX", "-B", irt, "-i", root_sock_redir, "-f", module, NULL};
+	if (nacl_params)
+		snprintf(root_sock_handle, sizeof(root_sock_handle), "NACLENV_ROOT_SOCKET=%d", ROOT_SOCKET_FD);
+	else
+		snprintf(root_sock_handle, sizeof(root_sock_handle), "ROOT_SOCKET=%d", pair[1]);
 	const char* env[] = {root_sock_handle, NULL};
-	return InternalLoadModule(pair, bootstrap ? args_bootstrap : args, env, true);
-}
 
-Module LoadNaClModuleDebug(const char* module, const char* sel_ldr, const char* irt, const char* bootstrap)
-{
-	NaClHandle pair[2];
-	if (NaClSocketPair(pair))
-		return Module();
+	// Generate command line
+	std::vector<const char*> args;
+	if (nacl_params) {
+		char root_sock_redir[32];
+		snprintf(root_sock_redir, sizeof(root_sock_redir), "%d:%d", ROOT_SOCKET_FD, (int)pair[1]);
 
-	char root_sock_redir[32];
-	snprintf(root_sock_redir, sizeof(root_sock_redir), "%d:%d", ROOT_SOCKET_FD, (int)pair[1]);
-	char root_sock_handle[32];
-	snprintf(root_sock_handle, sizeof(root_sock_handle), "NACLENV_ROOT_SOCKET=%d", ROOT_SOCKET_FD);
-	const char* args[] = {sel_ldr, "-B", irt, "-i", root_sock_redir, "-f", module, NULL};
-	const char* args_bootstrap[] = {bootstrap, sel_ldr, "--r_debug=0xXXXXXXXXXXXXXXXX", "--reserved_at_zero=0xXXXXXXXXXXXXXXXX", "-g", "-B", irt, "-i", root_sock_redir, "-f", module, NULL};
-	const char* env[] = {root_sock_handle, NULL};
-	return InternalLoadModule(pair, bootstrap ? args_bootstrap : args, env, true);
-}
+		if (nacl_params->bootstrap) {
+			args.push_back(nacl_params->bootstrap);
+			args.push_back(nacl_params->sel_ldr);
+			args.push_back("--r_debug=0xXXXXXXXXXXXXXXXX");
+			args.push_back("--reserved_at_zero=0xXXXXXXXXXXXXXXXX");
+		} else
+			args.push_back(nacl_params->sel_ldr);
+		if (use_debugger)
+			args.push_back("-g");
+		if (nacl_params->irt) {
+			args.push_back("-B");
+			args.push_back(nacl_params->irt);
+		}
+		args.push_back("-f");
+		args.push_back(module);
+		args.push_back("-i");
+		args.push_back(root_sock_redir);
+	} else {
+		if (use_debugger) {
+			args.push_back("/usr/bin/gdbserver");
+			args.push_back("localhost:4014");
+		}
+		args.push_back(module);
+	}
 
-Module LoadNativeModule(const char* module)
-{
-	NaClHandle pair[2];
-	if (NaClSocketPair(pair))
-		return Module();
-
-	char root_sock_handle[32];
-	snprintf(root_sock_handle, sizeof(root_sock_handle), "ROOT_SOCKET=%d", (int)pair[1]);
-	const char* args[] = {module, NULL};
-	const char* env[] = {root_sock_handle, NULL};
-	return InternalLoadModule(pair, args, env, false);
+	args.push_back(NULL);
+	return InternalLoadModule(pair, args.data(), env, nacl_params != nullptr);
 }
 
 #endif

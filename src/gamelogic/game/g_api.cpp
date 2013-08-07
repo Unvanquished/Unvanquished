@@ -143,6 +143,10 @@ void trap_Print(const char *string)
 
 void NORETURN trap_Error(const char *string)
 {
+	static bool recursiveError = false;
+	if (recursiveError)
+		exit(1);
+	recursiveError = true;
 	RPC::Writer input;
 	input.WriteInt(G_ERROR);
 	input.WriteString(string);

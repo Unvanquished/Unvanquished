@@ -39,11 +39,12 @@ namespace VM {
 
 static NaCl::Module TryLoad(const char* name, const char* path, const char* game, Type type, int& abiVersion)
 {
+	bool debug = Cvar_Get("vm_debug", "0", CVAR_INIT)->integer;
 	NaCl::Module out;
 	if (type == TYPE_NATIVE) {
 		char exe[MAX_QPATH];
 		Com_sprintf(exe, sizeof(exe), "%s%s", name, EXE_EXT);
-		out = NaCl::LoadNativeModule(FS_BuildOSPath(path, game, exe));
+		out = NaCl::LoadModule(FS_BuildOSPath(path, game, exe), nullptr, debug);
 	} else if (type == TYPE_NACL) {
 		char nexe[MAX_QPATH];
 		char sel_ldr[MAX_QPATH];
@@ -51,9 +52,13 @@ static NaCl::Module TryLoad(const char* name, const char* path, const char* game
 		Com_sprintf(nexe, sizeof(nexe), "%s.nexe", name);
 		Com_sprintf(sel_ldr, sizeof(sel_ldr), "%s/sel_ldr%s", path, EXE_EXT);
 		Com_sprintf(irt, sizeof(irt), "%s/irt_core.nexe", path);
-		out = NaCl::LoadNaClModule(FS_BuildOSPath(path, game, nexe), sel_ldr, irt);
+		NaCl::LoaderParams params = {sel_ldr, irt, nullptr};
+		out = NaCl::LoadModule(FS_BuildOSPath(path, game, nexe), &params, debug);
 	} else
 		Com_Error(ERR_DROP, "Invalid VM type");
+
+	if (debug && out)
+		Com_Printf("Waiting for GDB connection on localhost:4014\n");
 
 	// Read the ABI version from the root socket.
 	// If this fails, we assume the remote process failed to start

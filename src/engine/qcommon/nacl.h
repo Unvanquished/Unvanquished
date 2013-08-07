@@ -279,15 +279,22 @@ private:
 	friend Module InternalLoadModule(OSHandleType*, const char* const*, const char* const*, bool);
 };
 
-// Load a NaCl module
-Module LoadNaClModule(const char* module, const char* sel_ldr, const char* irt, const char* bootstrap = NULL);
+// NaCl module loader paramters
+struct LoaderParams {
+	// Secure ELF loader executable
+	const char* sel_ldr;
 
-// Load a NaCl module using the integrated debugger. The module will wait for a
-// debugger to attach on localhost:4014 before starting.
-Module LoadNaClModuleDebug(const char* module, const char* sel_ldr, const char* irt, const char* bootstrap = NULL);
+	// Integrated runtime
+	const char* irt;
 
-// Load a native module
-Module LoadNativeModule(const char* module);
+	// Bootstrap program, only used on Linux
+	const char* bootstrap;
+};
+
+// Load a module. If params is null, a native client executable is loaded,
+// otherwise a host executable is loaded. If use_debugger is enabled, a
+// gdbserver instance will be started on localhost:4014.
+Module LoadModule(const char* module, const LoaderParams* nacl_params, bool use_debugger);
 
 // Module-only definitions
 // Create the root socket for the current module.
