@@ -977,7 +977,7 @@ static inline void* Z_TagMalloc(size_t size, int tag)
 }
 static inline void* Z_Malloc(size_t size)
 {
-  return malloc(size);
+  return calloc(size, 1);
 }
 static inline void* S_Malloc(size_t size)
 {
