@@ -226,11 +226,7 @@ typedef struct
 	void ( *Hunk_FreeTempMemory )( void *block );
 
 	// dynamic memory allocator for things that need to be freed
-#ifdef ZONE_DEBUG
-	void            *( *Z_MallocDebug )( int bytes, const char *label, const char *file, int line );
-#else
 	void            *( *Z_Malloc )( int bytes );
-#endif
 	void ( *Free )( void *buf );
 	void ( *Tag_Free )( void );
 

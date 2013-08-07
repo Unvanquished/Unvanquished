@@ -2223,7 +2223,6 @@ static void CL_GetRSAKeysFileName( char *buffer, size_t size )
 static void CL_GenerateRSAKeys( const char *fileName )
 {
 	struct nettle_buffer key_buffer;
-	int                  key_buffer_len = 0;
 	fileHandle_t         f;
 
 	mpz_set_ui( public_key.e, RSA_PUBLIC_EXPONENT );
@@ -2233,7 +2232,7 @@ static void CL_GenerateRSAKeys( const char *fileName )
 		Com_Error( ERR_FATAL, "Error generating RSA keypair" );
 	}
 
-	qnettle_buffer_init( &key_buffer, &key_buffer_len );
+	nettle_buffer_init( &key_buffer );
 
 	if ( !rsa_keypair_to_sexp( &key_buffer, NULL, &public_key, &private_key ) )
 	{
@@ -4191,19 +4190,10 @@ void CL_StartHunkUsers( void )
 CL_RefMalloc
 ============
 */
-#ifdef ZONE_DEBUG
-void           *CL_RefMallocDebug( int size, const char *label, const char *file, int line )
-{
-	return Z_TagMallocDebug( size, TAG_RENDERER, label, file, line );
-}
-
-#else
 void           *CL_RefMalloc( int size )
 {
 	return Z_TagMalloc( size, TAG_RENDERER );
 }
-
-#endif
 
 /*
 ============
@@ -4212,7 +4202,6 @@ CL_RefTagFree
 */
 void CL_RefTagFree( void )
 {
-	Z_FreeTags( TAG_RENDERER );
 }
 
 int CL_ScaledMilliseconds( void )
@@ -4292,11 +4281,7 @@ qboolean CL_InitRef( const char *renderer )
 	ri.Milliseconds = CL_ScaledMilliseconds;
 	ri.RealTime = Com_RealTime;
 
-#ifdef ZONE_DEBUG
-	ri.Z_MallocDebug = CL_RefMallocDebug;
-#else
 	ri.Z_Malloc = CL_RefMalloc;
-#endif
 	ri.Free = Z_Free;
 	ri.Tag_Free = CL_RefTagFree;
 	ri.Hunk_Clear = Hunk_ClearToMark;
@@ -4681,8 +4666,6 @@ void CL_Shutdown( void )
 	CL_ShutdownRef();
 
 	CL_IRCInitiateShutdown();
-
-	Crypto_Shutdown();
 
 	Cmd_RemoveCommand( "cmd" );
 	Cmd_RemoveCommand( "configstrings" );

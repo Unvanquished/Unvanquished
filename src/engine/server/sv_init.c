@@ -595,10 +595,6 @@ void SV_SpawnServer( char *server )
 	// wipe the entire per-level structure
 	SV_ClearServer();
 
-	// MrE: main zone should be pretty much emtpy at this point
-	// except for file system data and cached renderer data
-	Z_LogHeap();
-
 	// allocate empty config strings
 	for ( i = 0; i < MAX_CONFIGSTRINGS; i++ )
 	{
@@ -1011,6 +1007,4 @@ void SV_Shutdown( const char *finalmsg )
 
 	// disconnect any local clients
 	CL_Disconnect( qfalse );
-
-	Crypto_Shutdown();
 }

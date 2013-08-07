@@ -842,7 +842,6 @@ typedef enum
 // centralized and cleaned, that's the max string you can send to a Com_Printf / Com_DPrintf (above gets truncated)
 #define MAXPRINTMSG 4096
 
-char       *CopyString( const char *in );
 void       Info_Print( const char *s );
 
 void       Com_BeginRedirect( char *buffer, int buffersize, void ( *flush )( char * ) );
@@ -971,27 +970,27 @@ temp file loading
 
 */
 
-#if !defined( NDEBUG ) && !defined( BSPC )
-#define ZONE_DEBUG
-#endif
-
-#ifdef ZONE_DEBUG
-#define Z_TagMalloc( size, tag ) Z_TagMallocDebug( size, tag, # size, __FILE__, __LINE__ )
-#define Z_Malloc( size )         Z_MallocDebug( size, # size, __FILE__, __LINE__ )
-#define S_Malloc( size )         S_MallocDebug( size, # size, __FILE__, __LINE__ )
-void     *Z_TagMallocDebug( int size, int tag, const char *label, const char *file, int line );  // NOT 0 filled memory
-void     *Z_MallocDebug( int size, const char *label, const char *file, int line );  // returns 0 filled memory
-void     *S_MallocDebug( int size, const char *label, const char *file, int line );  // NOT 0 filled memory
-
-#else
-void     *Z_TagMalloc( int size, int tag );  // NOT 0 filled memory
-void     *Z_Malloc( int size );  // returns 0 filled memory
-void     *S_Malloc( int size );  // NOT 0 filled memory only for small allocations
-
-#endif
-void     Z_Free( void *ptr );
-void     Z_FreeTags( int tag );
-void     Z_LogHeap( void );
+// Use malloc instead of the zone allocator
+static inline void* Z_TagMalloc(size_t size, int tag)
+{
+  return malloc(size);
+}
+static inline void* Z_Malloc(size_t size)
+{
+  return malloc(size);
+}
+static inline void* S_Malloc(size_t size)
+{
+  return malloc(size);
+}
+static inline char* CopyString(const char* str)
+{
+  return strdup(str);
+}
+static inline void Z_Free(void* ptr)
+{
+  free(ptr);
+}
 
 void     Hunk_Clear( void );
 void     Hunk_ClearToMark( void );
@@ -1338,7 +1337,4 @@ const char* Trans_GettextPlural( const char *msgid, const char *msgid_plural, in
 const char* Trans_GettextGame( const char *msgid ) __attribute__((__format_arg__(1)));
 const char* Trans_PgettextGame( const char *ctxt, const char *msgid ) __attribute__((__format_arg__(2)));
 const char* Trans_GettextGamePlural( const char *msgid, const char *msgid_plural, int num ) __attribute__((__format_arg__(1))) __attribute__((__format_arg__(2)));
-
-void     Crypto_Init( void );
-void     Crypto_Shutdown( void );
 #endif // QCOMMON_H_

@@ -224,16 +224,6 @@ void BotImport_FreeMemory( void *ptr )
 }
 
 /*
-==================
-BotImport_FreeZoneMemory
-==================
-*/
-void BotImport_FreeZoneMemory( void )
-{
-	Z_FreeTags( TAG_BOTLIB );
-}
-
-/*
 =================
 BotImport_HunkAlloc
 =================
