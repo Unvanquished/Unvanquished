@@ -1667,11 +1667,18 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 
 		for ( j = 0, v = srf->verts; j < numVertexes; j++, v++ )
 		{
-			tess.xyz[ tess.numVertexes + j ][ 3 ] = 1;
+#if id386_sse
+			__m128 a, b, c;
+			w = v->weights[ 0 ];
+			BoneMatrixMulSSE( &a, &b, &c, w->boneWeight, boneMatrices[ w->boneIndex ] );
 
-			tess.texCoords[ tess.numVertexes + j ][ 0 ] = v->texCoords[ 0 ];
-			tess.texCoords[ tess.numVertexes + j ][ 1 ] = v->texCoords[ 1 ];
+			for ( k = 1, w = v->weights[ 1 ]; k < v->numWeights; k++, w++ )
+			{
+				BoneMatrixMadSSE( &a, &b, &c, w->boneWeight, boneMatrices[ w->boneIndex ] );
+			}
 
+			BoneMatrixTransform4SSE( a, b, c, v->position, tess.xyz[ tess.numVertexes + j ] );
+#else
 			w = v->weights[ 0 ];
 			BoneMatrixMul( tmpMat, w->boneWeight, boneMatrices[ w->boneIndex ] );
 
@@ -1681,6 +1688,10 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 			}
 
 			BoneMatrixTransformPoint( tmpMat, v->position, tess.xyz[ tess.numVertexes + j ] );
+#endif
+			tess.xyz[ tess.numVertexes + j ][ 3 ] = 1;
+			tess.texCoords[ tess.numVertexes + j ][ 0 ] = v->texCoords[ 0 ];
+			tess.texCoords[ tess.numVertexes + j ][ 1 ] = v->texCoords[ 1 ];
 		}
 	}
 	else
