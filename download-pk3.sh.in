@@ -66,7 +66,7 @@ while test -z "$DONE"; do
       BASE_URL="$1"
       shift
       # Single word? Expand it
-      if echo "$BASE_URL" | grep -q '[./]'; then
+      if echo "$BASE_URL" | grep -vq '[./]'; then
         BASE_URL="$(printf "$MIRROR_URL" "$1")"
       fi
       ;;
