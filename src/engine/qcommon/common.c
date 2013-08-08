@@ -42,6 +42,7 @@ Maryland 20850 USA.
 
 #include "../framework/BaseCommands.h"
 #include "../framework/CommandSystem.h"
+#include "../framework/ConsoleHistory.h"
 
 // htons
 #if defined __linux__ || defined __FreeBSD__ || defined( MACOS_X ) || defined( __APPLE__ )
@@ -2416,7 +2417,7 @@ void Com_Init( char *commandLine )
 	VM_Forced_Unload_Start();
 #endif
 	SV_Init();
-	Hist_Load();
+	Console::LoadHistory();
 
 	com_dedicated->modified = qfalse;
 
@@ -3332,25 +3333,6 @@ void Field_CompleteCgame( int argNum )
 
 /*
 ===============
-Field_CompleteFilename
-===============
-*/
-void Field_CompleteFilename( const char *dir,
-                             const char *ext, qboolean stripExt )
-{
-	matchCount = 0;
-	shortestMatch[ 0 ] = 0;
-
-	FS_FilenameCompletion( dir, ext, stripExt, FindMatches );
-/*
-	if ( !Field_Complete() )
-	{
-		FS_FilenameCompletion( dir, ext, stripExt, PrintMatches );
-	}*/
-}
-
-/*
-===============
 Field_CompleteCommand
 ===============
 */
@@ -3549,136 +3531,18 @@ static int  hist_current, hist_next;
 
 /*
 ==================
-Hist_Load
-==================
-*/
-void Hist_Load( void )
-{
-	int          i;
-	fileHandle_t f;
-	char         *buf, *end;
-	char         buffer[ sizeof( history ) ];
-
-	FS_SV_FOpenFileRead( CON_HISTORY_FILE, &f );
-
-	if ( !f )
-	{
-		Com_Printf(_( "Couldn't read %s.\n"), CON_HISTORY_FILE );
-		return;
-	}
-
-	memset( buffer, '\0', sizeof( buffer ) );
-	memset( history, '\0', sizeof( history ) );
-
-	FS_Read( buffer, sizeof( buffer ), f );
-	FS_FCloseFile( f );
-
-	buf = buffer;
-
-	for ( i = 0; i < CON_HISTORY; i++ )
-	{
-		end = strchr( buf, '\n' );
-
-		if ( !end )
-		{
-			Q_strncpyz( history[ i ], buf, sizeof( history[ 0 ] ) );
-			break;
-		}
-
-		*end = '\0';
-		Q_strncpyz( history[ i ], buf, sizeof( history[ 0 ] ) );
-		buf = end + 1;
-
-		if ( !*buf )
-		{
-			break;
-		}
-	}
-
-	hist_current = hist_next = i + 1;
-}
-
-/*
-==================
-Hist_Save
-==================
-*/
-static void Hist_Save( void )
-{
-	int          i;
-	fileHandle_t f;
-
-	f = FS_SV_FOpenFileWrite( CON_HISTORY_FILE );
-
-	if ( !f )
-	{
-		Com_Printf(_( "Couldn't write %s.\n"), CON_HISTORY_FILE );
-		return;
-	}
-
-	i = ( hist_next + 1 ) % CON_HISTORY;
-
-	do
-	{
-		if ( history[ i ][ 0 ] )
-		{
-			FS_Write( history[ i ], strlen( history[ i ] ), f );
-			FS_Write( "\n", 1, f );
-		}
-		i = ( i + 1 ) % CON_HISTORY;
-	}
-	while ( i != hist_next % CON_HISTORY );
-
-	FS_FCloseFile( f );
-}
-
-/*
-==================
 Hist_Add
 ==================
 */
-void Hist_Add( const char *field )
-{
-	const char *prev = history[( hist_next - 1 ) % CON_HISTORY ];
-
-	// don't add "", "\" or "/"
-	if ( !field[ 0 ] ||
-	     ( ( field[ 0 ] == '/' || field[ 0 ] == '\\' ) && !field[ 1 ] ) )
-	{
-		hist_current = hist_next;
-		return;
-	}
-
-	// don't add if same as previous (treat leading \ and / as equivalent)
-	if ( ( *field == *prev ||
-	       ( *field == '/' && *prev == '\\' ) ||
-	       ( *field == '\\' && *prev  == '/' ) ) &&
-	     !strcmp( &field[ 1 ], &prev[ 1 ] ) )
-	{
-		hist_current = hist_next;
-		return;
-	}
-
-	Q_strncpyz( history[ hist_next % CON_HISTORY ], field, sizeof( history[ 0 ] ) );
-	hist_next++;
-	hist_current = hist_next;
-	Hist_Save();
-}
+void Hist_Add( const char *field ) {}
 
 /*
 ==================
 Hist_Prev
 ==================
 */
-const char *Hist_Prev( void )
-{
-	if ( ( hist_current - 1 ) % CON_HISTORY != hist_next % CON_HISTORY &&
-	     history[( hist_current - 1 ) % CON_HISTORY ][ 0 ] )
-	{
-		hist_current--;
-	}
-
-	return history[ hist_current % CON_HISTORY ];
+const char *Hist_Prev( void ) {
+    return " ";
 }
 
 /*
@@ -3686,17 +3550,6 @@ const char *Hist_Prev( void )
 Hist_Next
 ==================
 */
-const char *Hist_Next( void )
-{
-	if ( hist_current % CON_HISTORY != hist_next % CON_HISTORY )
-	{
-		hist_current++;
-	}
-
-	if ( hist_current % CON_HISTORY == hist_next % CON_HISTORY )
-	{
-		return NULL;
-	}
-
-	return history[ hist_current % CON_HISTORY ];
+const char *Hist_Next( void ) {
+    return " ";
 }

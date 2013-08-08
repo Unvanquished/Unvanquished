@@ -31,7 +31,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 //TODO: make it thread safe.
 namespace Console {
 
-    static const char* HISTORY_FILE = "con_history";
+    static const char* HISTORY_FILE = "conhistory";
 
     static const int SAVED_HISTORY_LINES = 512;
 
@@ -45,7 +45,7 @@ namespace Console {
             return;
         }
 
-        for (int i = std::max(0ul, lines.size() - SAVED_HISTORY_LINES); i < lines.size(); i++) {
+        for (int i = std::max(0, (int)(lines.size()) - SAVED_HISTORY_LINES); i < lines.size(); i++) {
             FS_Write(lines[i].data(), lines[i].size(), f);
             FS_Write("\n", 1, f);
         }
@@ -75,17 +75,16 @@ namespace Console {
             lines.push_back(buf);
             buf = end + 1;
         }
-
-        lines.push_back(buf);
     }
 
     static const std::string& GetLine(HistoryHandle handle)
     {
         static std::string empty = "";
-        if (handle == HISTORY_END)
+        if (handle == HISTORY_END) {
             return empty;
-        else
+        } else {
             return lines[handle];
+        }
     }
 
     void AddToHistory(HistoryHandle& handle, std::string current) {
@@ -93,6 +92,9 @@ namespace Console {
             lines.push_back(std::move(current));
         }
         handle = HISTORY_END;
+
+        //TODO defer it more? when the programs exits?
+        SaveHistory();
     }
 
     void PrevLine(HistoryHandle& handle, std::string& current) {

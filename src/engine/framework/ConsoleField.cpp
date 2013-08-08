@@ -54,7 +54,7 @@ namespace Console {
         if (current[0] == '/' or current[0] == '\\') {
             Cmd::BufferCommandText(current.c_str() + 1, Cmd::END, true);
         } else if (defaultCommand.empty()) {
-            Cmd::BufferCommandText(std::move(current), Cmd::END, true);
+            Cmd::BufferCommandText(current, Cmd::END, true);
         } else {
             Cmd::BufferCommandText(defaultCommand + " " + current, Cmd::END, true);
         }
