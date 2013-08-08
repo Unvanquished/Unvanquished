@@ -126,10 +126,10 @@ download ()
   if test "$3" != ''; then
     curl --retry 5 -fLo "$1/$3.tmp" "$BASE_URL$2" || {
       echo "[0;33mDownloading $3 instead...[m"
-      curl --retry 5 -fLo "$1/$3.tmp" "$BASE_URL$3"
+      curl --retry 5 -fLo "$1/$3.tmp" "$BASE_URL$3" || return 1
     }
   else
-    curl --retry 5 -fLo "$1/$2.tmp" "$BASE_URL$2"
+    curl --retry 5 -fLo "$1/$2.tmp" "$BASE_URL$2" || return 1
   fi
   mv -f "$1/${3:-$2}.tmp" "$1/${3:-$2}"
   echo '[32mDownloaded.[m'
@@ -148,7 +148,7 @@ verify_md5sums()
 if test -n "$RUN_DOWNLOAD"; then
   # Get the md5sum checksums
   test -f "$CACHE/md5sums" && mv -f "$CACHE/md5sums" "$CACHE/md5sums.old"
-  download "$CACHE" "md5sums$VERSION" "md5sums" || download "$CACHE" "md5sums"
+  download "$CACHE" "md5sums$VERSION" "md5sums"
 elif test ! -f "$CACHE/md5sums"; then
   echo '[1;31mNo md5sums file found.[m'
   exit 1
