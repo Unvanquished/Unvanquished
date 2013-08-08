@@ -3040,18 +3040,6 @@ void Field_SetCursor( field_t *edit, int cursor )
 
 /*
 ==================
-Field_Set
-==================
-*/
-void Field_Set( field_t *edit, const char *content )
-{
-	memset( edit->buffer, 0, MAX_EDIT_LINE );
-	strncpy( edit->buffer, content, MAX_EDIT_LINE );
-	Field_SetCursor( edit, Q_UTF8_Strlen( edit->buffer ) );
-}
-
-/*
-==================
 Field_CursorToOffset
 ==================
 */
@@ -3082,46 +3070,6 @@ int Field_ScrollToOffset( field_t *edit )
 	}
 
 	return j;
-}
-
-/*
-==================
-Field_OffsetToCursor
-==================
-*/
-int Field_OffsetToCursor( field_t *edit, int offset )
-{
-	int i = 0, j = 0;
-
-	while ( i < offset )
-	{
-		i += Q_UTF8_Width( edit->buffer + i );
-		++j;
-	}
-
-	return j;
-}
-
-/*
-==================
-Field_WordDelete
-==================
-*/
-void Field_WordDelete( field_t *edit )
-{
-	int index = Field_CursorToOffset( edit );
-	int start = index;
-
-	// search back past spaces
-	while ( --index >= 0 && edit->buffer[ index ] == ' ' ) {}
-
-	// search back past non-spaces
-	if ( index ) while ( --index >= 0 && edit->buffer[ index ] != ' ' ) {}
-
-	// strcpy would probably do, but possible overlap
-	memmove( edit->buffer + index, edit->buffer + start, strlen( edit->buffer + start ) + 1 );
-
-	Field_SetCursor( edit, Field_OffsetToCursor( edit, index ) );
 }
 
 static const char *completionString;
@@ -3333,130 +3281,12 @@ void Field_CompleteCgame( int argNum )
 
 /*
 ===============
-Field_CompleteCommand
-===============
-*/
-void Field_CompleteCommand( char *cmd,
-                            qboolean doCommands, qboolean doCvars )
-{
-	int completionArgument = 0;
-
-	// Skip leading whitespace and quotes
-	cmd = Com_SkipCharset( cmd, " \"" );
-
-	Cmd::Args args(cmd);
-	completionArgument = completionField->cursor;
-
-	// If there is trailing whitespace on the cmd
-	// kangz: whatever
-	/*
-	if ( * ( cmd + strlen( cmd ) - 1 ) == ' ' )
-	{
-		completionString = "";
-		completionArgument++;
-	}
-	else
-	{
-		completionString = args[completionArgument - 1].c_str();
-	}
-*/
-	// Unconditionally add a '\' to the start of the buffer
-	if ( completionField->buffer[ 0 ] &&
-	     completionField->buffer[ 0 ] != '\\' )
-	{
-		if ( completionField->buffer[ 0 ] != '/' )
-		{
-			// Buffer is full, refuse to complete
-			if ( strlen( completionField->buffer ) + 1 >=
-			     sizeof( completionField->buffer ) )
-			{
-				return;
-			}
-
-			memmove( &completionField->buffer[ 1 ],
-			         &completionField->buffer[ 0 ],
-			         strlen( completionField->buffer ) + 1 );
-			completionField->cursor++;
-		}
-
-		completionField->buffer[ 0 ] = '\\';
-	}
-
-    //kangz: broke completion as Field will be removed soon
-	if (/* completionArgument > 1*/ 1 )
-	{
-		const char *baseCmd = args[0].c_str();
-		char       *p;
-
-		// This should always be true
-		if ( baseCmd[ 0 ] == '\\' || baseCmd[ 0 ] == '/' )
-		{
-			baseCmd++;
-		}
-
-		if ( /* ( p = Field_FindFirstSeparator( cmd ) )*/ 0 )
-		{
-			Field_CompleteCommand( p + 1, qtrue, qtrue );  // Compound command
-		}
-		else
-		{
-			Cmd_CompleteArgument( baseCmd, cmd + 1, completionArgument - 1 );
-		}
-	}
-	else
-	{
-		if ( completionString[ 0 ] == '\\' || completionString[ 0 ] == '/' )
-		{
-			completionString++;
-		}
-
-		matchCount = 0;
-		shortestMatch[ 0 ] = 0;
-
-		if ( strlen( completionString ) == 0 )
-		{
-			return;
-		}
-
-		if ( doCommands )
-		{
-			Cmd_CommandCompletion( FindMatches );
-		}
-
-		if ( doCvars )
-		{
-			Cvar_CommandCompletion( FindMatches );
-		}
-
-		if ( !Field_Complete() )
-		{
-			// run through again, printing matches
-			if ( doCommands )
-			{
-				Cmd_CommandCompletion( PrintMatches );
-			}
-
-			if ( doCvars )
-			{
-				Cvar_CommandCompletion( PrintCvarMatches );
-			}
-		}
-	}
-}
-
-/*
-===============
 Field_AutoComplete
 
 Perform Tab expansion
 ===============
 */
-void Field_AutoComplete( field_t *field, const char *prompt )
-{
-	completionField = field;
-	completionPrompt = prompt;
-
-	Field_CompleteCommand( completionField->buffer, qtrue, qtrue );
+void Field_AutoComplete( field_t *field, const char *prompt ) {
 }
 
 void Com_GetHunkInfo( int *hunkused, int *hunkexpected )

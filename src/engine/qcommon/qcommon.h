@@ -798,17 +798,12 @@ typedef struct
 #define FIELD_TEAM_DEFAULT    4
 
 void Field_Clear( field_t *edit );
-void Field_Set( field_t *edit, const char *text );
-void Field_WordDelete( field_t *edit );
 void Field_AutoComplete( field_t *edit, const char *prompt );
 void Field_CompleteKeyname( int flags );
 void Field_CompleteTeamname( int flags );
 void Field_CompleteCgame( int argNum );
-void Field_CompleteCommand( char *cmd,
-                            qboolean doCommands, qboolean doCvars );
 
 // code point count <-> UTF-8 byte count
-int Field_OffsetToCursor( field_t *edit, int offset );
 int Field_CursorToOffset( field_t *edit );
 int Field_ScrollToOffset( field_t *edit );
 

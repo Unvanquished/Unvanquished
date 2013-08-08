@@ -494,7 +494,7 @@ static void Win_CompleteCommand( qboolean showMatches )
 		}
 
 		Cmd_CommandCompletion( Win_FindMatches );
-		Cvar_CommandCompletion( Win_FindMatches );
+		//Cvar_CommandCompletion( Win_FindMatches );
 
 		if ( win_matchCount == 0 )
 		{
@@ -543,7 +543,7 @@ static void Win_CompleteCommand( qboolean showMatches )
 
 		win_findMatchIndex = 0;
 		Cmd_CommandCompletion( Win_FindIndexMatch );
-		Cvar_CommandCompletion( Win_FindIndexMatch );
+		//Cvar_CommandCompletion( Win_FindIndexMatch );
 
 		Com_Memcpy( &temp, edit, sizeof( field_t ) );
 
@@ -566,7 +566,7 @@ static void Win_CompleteCommand( qboolean showMatches )
 		temp.buffer[ win_acLength ] = '\0';
 		Sys_Print( va( "] %s\n", temp.buffer ) );
 		Cmd_CommandCompletion( Win_PrintMatches );
-		Cvar_CommandCompletion( Win_PrintCvarMatches );
+		//Cvar_CommandCompletion( Win_PrintCvarMatches );
 	}
 }
 

@@ -263,21 +263,6 @@ int Cvar_Flags( const char *var_name )
 
 /*
 ============
-Cvar_CommandCompletion
-============
-*/
-void Cvar_CommandCompletion( void ( *callback )( const char *s ) )
-{
-	cvar_t *cvar;
-
-	for ( cvar = cvar_vars; cvar; cvar = cvar->next )
-	{
-		callback( cvar->name );
-	}
-}
-
-/*
-============
 Cvar_Get
 
 If the variable already exists, the value will not be set unless CVAR_ROM
@@ -1360,25 +1345,6 @@ void Cvar_Update( vmCvar_t *vmCvar )
 
 	vmCvar->value = cv->value;
 	vmCvar->integer = cv->integer;
-}
-
-/*
-==================
-Cvar_CompleteCvarName
-==================
-*/
-void Cvar_CompleteCvarName( char *args, int argNum )
-{
-	if ( argNum == 2 )
-	{
-		// Skip "<cmd> "
-		char *p = Com_SkipTokens( args, 1, " " );
-
-		if ( p > args )
-		{
-			Field_CompleteCommand( p, qfalse, qtrue );
-		}
-	}
 }
 
 /*

@@ -1428,7 +1428,8 @@ static void Key_CompleteBind_Internal( char *args, int argNum, int nameArg )
 
 		if ( p > args )
 		{
-			Field_CompleteCommand( p, qtrue, qtrue );
+		    //kangz: TODO
+			//Field_CompleteCommand( p, qtrue, qtrue );
 		}
 	}
 }

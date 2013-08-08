@@ -133,10 +133,6 @@ void Cvar_LatchedVariableStringBuffer(const char *var_name, char *buffer,
 
 int Cvar_Flags(const char *var_name);
 
-// callback with each valid string
-void Cvar_CommandCompletion(void (*callback)(const char *s));
-
-
 // reset all testing vars to a safe value
 void Cvar_Reset(const char *var_name);
 
@@ -158,8 +154,6 @@ bool Cvar_Command(const Cmd::Args& args);
  * with the archive flag set to true.
  */
 void Cvar_WriteVariables(fileHandle_t f);
-
-void Cvar_CompleteCvarName(char *args, int argNum);
 
 void Cvar_Init(void);
 
