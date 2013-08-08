@@ -778,6 +778,21 @@ static void G_ClientCleanName( const char *in, char *out, int outSize, gclient_t
 			len += 2;
 			continue;
 		}
+		else if ( in[ 0 ] == '^' && !in[ 1 ] )
+		{
+			// single trailing ^ will mess up some things
+
+			// make sure room in dest for both chars
+			if ( len > outSize - 2 )
+			{
+				break;
+			}
+
+			*out++ = '^';
+			*out++ = '^';
+			len += 2;
+			continue;
+		}
 		else if ( !g_emoticonsAllowedInNames.integer && G_IsEmoticon( in, &escaped ) )
 		{
 			// make sure room in dest for both chars
