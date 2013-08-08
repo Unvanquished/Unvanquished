@@ -173,7 +173,7 @@ if test -n "$RUN_DOWNLOAD"; then
   verify_md5sums |
     cut -d: -f1 |
     while read i; do
-      download "$DEST_DIR" "$(basename "$i")"
+      download "$DEST_DIR" "$(basename "$i")" || : # carry on with the next file if this one fails
     done
 
   if test -f "$CACHE/md5sums.old"; then
