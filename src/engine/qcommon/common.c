@@ -3188,58 +3188,6 @@ static void PrintCvarMatches( const char *s )
 	}
 }
 
-#if 0
-static void keyConcatArgs( void )
-{
-	int  i;
-	char *arg;
-
-	for ( i = 1; i < Cmd_Argc(); i++ )
-	{
-		Q_strcat( completionField->buffer, sizeof( completionField->buffer ), " " );
-		arg = Cmd_Argv( i );
-
-		while ( *arg )
-		{
-			if ( *arg == ' ' )
-			{
-				Q_strcat( completionField->buffer, sizeof( completionField->buffer ), "\"" );
-				break;
-			}
-
-			arg++;
-		}
-
-		Q_strcat( completionField->buffer, sizeof( completionField->buffer ), Cmd_Argv( i ) );
-
-		if ( *arg == ' ' )
-		{
-			Q_strcat( completionField->buffer, sizeof( completionField->buffer ), "\"" );
-		}
-	}
-}
-
-#endif
-
-#if 0
-static void ConcatRemaining( const char *src, const char *start )
-{
-	char *str;
-
-	str = strstr( src, start );
-
-	if ( !str )
-	{
-		keyConcatArgs();
-		return;
-	}
-
-	str += strlen( start );
-	Q_strcat( completionField->buffer, sizeof( completionField->buffer ), str );
-}
-
-#endif
-
 /*
 ===============
 Field_FindFirstSeparator
@@ -3398,46 +3346,6 @@ void Field_CompleteFilename( const char *dir,
 	if ( !Field_Complete() )
 	{
 		FS_FilenameCompletion( dir, ext, stripExt, PrintMatches );
-	}*/
-}
-
-/*
-===============
-Field_CompleteAlias
-===============
-*/
-void Field_CompleteAlias( void )
-{
-	matchCount = 0;
-	shortestMatch[ 0 ] = 0;
-
-	return;
-	/*
-	Cmd_AliasCompletion( FindMatches );
-
-	if ( !Field_Complete() )
-	{
-		Cmd_AliasCompletion( PrintMatches );
-	}*/
-}
-
-/*
-===============
-Field_CompleteDelay
-===============
-*/
-void Field_CompleteDelay( void )
-{
-	matchCount = 0;
-	shortestMatch[ 0 ] = 0;
-
-	return;
-	/*
-	Cmd_DelayCompletion( FindMatches );
-
-	if ( !Field_Complete() )
-	{
-		Cmd_DelayCompletion( PrintMatches );
 	}*/
 }
 

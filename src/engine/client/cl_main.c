@@ -1334,101 +1334,85 @@ void CL_WriteWaveClose( void )
 	clc.wavefile = 0;
 }
 
-/*
-====================
-CL_CompleteDemoName
-====================
-*/
-static void CL_CompleteDemoName( char *args, int argNum )
-{
-	if ( argNum == 2 )
-	{
-		char demoExt[ 16 ];
+class DemoCmd: public Cmd::StaticCmd {
+    public:
+        DemoCmd(): Cmd::StaticCmd("demo", Cmd::SYSTEM, "starts playing a demo file") {
+        }
 
-		Com_sprintf( demoExt, sizeof( demoExt ), ".dm_%d", PROTOCOL_VERSION );
-		Field_CompleteFilename( "demos", demoExt, qtrue );
-	}
-}
+        void Run(const Cmd::Args& args) const override {
+            if (args.Argc() != 2) {
+                PrintUsage(args, _("<demoname>"), _("starts playing a demo file"));
+                return;
+            }
 
-/*
-====================
-CL_PlayDemo_f
+            // make sure a local server is killed
+            Cvar_Set( "sv_killserver", "1" );
+            CL_Disconnect( qtrue );
 
-demo <demoname>
+            //  CL_FlushMemory();   //----(SA)  MEM NOTE: in missionpack, this is moved to CL_DownloadsComplete
 
-====================
-*/
-void CL_PlayDemo_f( void )
-{
-	char name[ MAX_OSPATH ], extension[ 32 ];
-	char *arg;
-	int  prot_ver;
+            // open the demo file
+            const std::string& fileName = args.Argv(1);
 
-	if ( Cmd_Argc() != 2 )
-	{
-		Cmd_PrintUsage("<name>", NULL);
-		return;
-	}
+            const char* arg = fileName.c_str();
+            int prot_ver = PROTOCOL_VERSION - 1;
 
-	// make sure a local server is killed
-	Cvar_Set( "sv_killserver", "1" );
+            char extension[32];
+            char name[ MAX_OSPATH ];
+            while (prot_ver <= PROTOCOL_VERSION && !clc.demofile) {
+                Com_sprintf(extension, sizeof(extension), ".dm_%d", prot_ver );
 
-	CL_Disconnect( qtrue );
+                if (!Q_stricmp(arg + strlen(arg) - strlen(extension), extension)) {
+                    Com_sprintf(name, sizeof(name), "demos/%s", arg);
 
-//  CL_FlushMemory();   //----(SA)  MEM NOTE: in missionpack, this is moved to CL_DownloadsComplete
+                } else {
+                    Com_sprintf(name, sizeof(name), "demos/%s.dm_%d", arg, prot_ver);
+                }
 
-	// open the demo file
-	arg = Cmd_Argv( 1 );
-	prot_ver = PROTOCOL_VERSION - 1;
+                FS_FOpenFileRead_Impure(name, &clc.demofile, qtrue);
+                prot_ver++;
+            }
 
-	while ( prot_ver <= PROTOCOL_VERSION && !clc.demofile )
-	{
-		Com_sprintf( extension, sizeof( extension ), ".dm_%d", prot_ver );
+            if (!clc.demofile) {
+                Com_Error(ERR_DROP, "couldn't open %s", name);
+            }
 
-		if ( !Q_stricmp( arg + strlen( arg ) - strlen( extension ), extension ) )
-		{
-			Com_sprintf( name, sizeof( name ), "demos/%s", arg );
-		}
-		else
-		{
-			Com_sprintf( name, sizeof( name ), "demos/%s.dm_%d", arg, prot_ver );
-		}
+            Q_strncpyz(clc.demoName, arg, sizeof(clc.demoName));
 
-		FS_FOpenFileRead_Impure( name, &clc.demofile, qtrue );
-		prot_ver++;
-	}
+            Con_Close();
 
-	if ( !clc.demofile )
-	{
-		Com_Error( ERR_DROP, "couldn't open %s", name );
-	}
+            cls.state = CA_CONNECTED;
+            clc.demoplaying = qtrue;
 
-	Q_strncpyz( clc.demoName, arg, sizeof( clc.demoName ) );
+            if (Cvar_VariableValue( "cl_wavefilerecord")) {
+                CL_WriteWaveOpen();
+            }
 
-	Con_Close();
+            // read demo messages until connected
+            while (cls.state >= CA_CONNECTED && cls.state < CA_PRIMED) {
+                CL_ReadDemoMessage();
+            }
 
-	cls.state = CA_CONNECTED;
-	clc.demoplaying = qtrue;
+            // don't get the first snapshot this frame, to prevent the long
+            // time from the gamestate load from messing causing a time skip
+            clc.firstDemoFrameSkipped = qfalse;
+            //  if (clc.waverecording) {
+            //      CL_WriteWaveClose();
+            //      clc.waverecording = qfalse;
+            //  }
+        }
 
-	if ( Cvar_VariableValue( "cl_wavefilerecord" ) )
-	{
-		CL_WriteWaveOpen();
-	}
+        std::vector<std::string> Complete(int pos, const Cmd::Args& args) const override{
+            int argNum = args.PosToArg(pos);
 
-	// read demo messages until connected
-	while ( cls.state >= CA_CONNECTED && cls.state < CA_PRIMED )
-	{
-		CL_ReadDemoMessage();
-	}
+            if (argNum == 1) {
+                return FS::CompleteFilenameInDir(args.ArgPrefix(pos), "demos", ".dm_" + std::to_string(PROTOCOL_VERSION));
+            }
 
-	// don't get the first snapshot this frame, to prevent the long
-	// time from the gamestate load from messing causing a time skip
-	clc.firstDemoFrameSkipped = qfalse;
-//  if (clc.waverecording) {
-//      CL_WriteWaveClose();
-//      clc.waverecording = qfalse;
-//  }
-}
+            return {};
+        }
+};
+static DemoCmd DemoCmdRegistration;
 
 /*
 ====================
@@ -4565,8 +4549,6 @@ void CL_Init( void )
 	Cmd_AddCommand( "ui_restart", CL_UI_Restart_f );  // NERVE - SMF
 	Cmd_AddCommand( "disconnect", CL_Disconnect_f );
 	Cmd_AddCommand( "record", CL_Record_f );
-	Cmd_AddCommand( "demo", CL_PlayDemo_f );
-	Cmd_SetCommandCompletionFunc( "demo", CL_CompleteDemoName );
 	Cmd_AddCommand( "cinematic", CL_PlayCinematic_f );
 	Cmd_AddCommand( "stoprecord", CL_StopRecord_f );
 	Cmd_AddCommand( "connect", CL_Connect_f );
@@ -4675,7 +4657,6 @@ void CL_Shutdown( void )
 	Cmd_RemoveCommand( "vid_restart" );
 	Cmd_RemoveCommand( "disconnect" );
 	Cmd_RemoveCommand( "record" );
-	Cmd_RemoveCommand( "demo" );
 	Cmd_RemoveCommand( "cinematic" );
 	Cmd_RemoveCommand( "stoprecord" );
 	Cmd_RemoveCommand( "connect" );

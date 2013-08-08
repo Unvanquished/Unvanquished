@@ -566,7 +566,7 @@ clients along with it.
 This is NOT called for map_restart
 ================
 */
-void SV_SpawnServer( char *server )
+void SV_SpawnServer( const char *server )
 {
 	int        i;
 	int        checksum;

@@ -760,6 +760,11 @@ void       FS_FilenameCompletion( const char *dir, const char *ext,
 
 qboolean   FS_Which( const char *filename, void *searchPath );
 
+namespace FS {
+    std::vector<std::string> CompleteFilenameInDir(const std::string& prefix, const std::string& dir,
+                                                   const std::string& extension, bool stripExtension = true);
+}
+
 /*
 ==============================================================
 
@@ -799,10 +804,6 @@ void Field_AutoComplete( field_t *edit, const char *prompt );
 void Field_CompleteKeyname( int flags );
 void Field_CompleteTeamname( int flags );
 void Field_CompleteCgame( int argNum );
-void Field_CompleteFilename( const char *dir,
-                             const char *ext, qboolean stripExt );
-void Field_CompleteAlias( void );
-void Field_CompleteDelay( void );
 void Field_CompleteCommand( char *cmd,
                             qboolean doCommands, qboolean doCvars );
 

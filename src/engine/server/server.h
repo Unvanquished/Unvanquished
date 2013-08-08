@@ -444,7 +444,7 @@ void SV_GetPlayerPubkey( int clientNum, char *pubkey, int size );
 void SV_CreateBaseline( void );
 
 void SV_ChangeMaxClients( void );
-void SV_SpawnServer( char *server );
+void SV_SpawnServer( const char *server );
 
 //
 // sv_client.c

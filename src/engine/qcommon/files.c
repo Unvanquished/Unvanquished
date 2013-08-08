@@ -4990,3 +4990,31 @@ void    FS_FilenameCompletion( const char *dir, const char *ext,
 
 	FS_FreeFileList( filenames );
 }
+
+namespace FS {
+    std::vector<std::string> CompleteFilenameInDir(const std::string& prefix, const std::string& dir,
+                                                   const std::string& extension, bool stripExtension) {
+        int nfiles;
+        char** filenames = FS_ListFilteredFiles(dir.c_str(), extension.c_str(), nullptr, &nfiles);
+        FS_SortFileList(filenames, nfiles);
+
+        std::vector<std::string> res;
+
+        for (int i = 0; i < nfiles; i++) {
+            FS_ConvertPath( filenames[ i ] );
+
+            char filename[MAX_STRING_CHARS];
+            Q_strncpyz(filename, filenames[i], MAX_STRING_CHARS);
+
+            if (stripExtension) {
+                COM_StripExtension3(filename, filename, sizeof(filename));
+            }
+
+            if (Str::IsPrefix(prefix, filename)) {
+                res.push_back(filename);
+            }
+        }
+
+        return res;
+    }
+}
