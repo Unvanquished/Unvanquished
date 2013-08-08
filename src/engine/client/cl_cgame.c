@@ -391,6 +391,11 @@ qboolean CL_GetServerCommand( int serverCommandNumber )
 rescan:
 	Cmd_TokenizeString( s );
 	Cmd::Args args(s);
+
+	if (args.Argc() == 0) {
+		return qfalse;
+	}
+
 	cmd = args[0].c_str();
 	argc = args.size();
 
