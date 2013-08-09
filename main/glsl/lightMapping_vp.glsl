@@ -33,6 +33,7 @@ attribute vec4		attr_Color;
 uniform mat4		u_DiffuseTextureMatrix;
 uniform mat4		u_NormalTextureMatrix;
 uniform mat4		u_SpecularTextureMatrix;
+uniform mat4		u_GlowTextureMatrix;
 uniform mat4		u_ModelMatrix;
 uniform mat4		u_ModelViewProjectionMatrix;
 
@@ -42,8 +43,8 @@ uniform vec4		u_ColorModulate;
 uniform vec4		u_Color;
 
 varying vec3		var_Position;
-varying vec4		var_TexDiffuseNormal;
-varying vec2		var_TexSpecular;
+varying vec4		var_TexDiffuseGlow;
+varying vec4		var_TexNormalSpecular;
 varying vec2		var_TexLight;
 varying vec3		var_Tangent;
 varying vec3		var_Binormal;
@@ -74,17 +75,20 @@ void	main()
 
 
 	// transform diffusemap texcoords
-	var_TexDiffuseNormal.st = (u_DiffuseTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0)).st;
+	var_TexDiffuseGlow.st = (u_DiffuseTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0)).st;
 	var_TexLight = attr_TexCoord1.st;
 
 #if defined(USE_NORMAL_MAPPING)
 	// transform normalmap texcoords
-	var_TexDiffuseNormal.pq = (u_NormalTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0)).st;
+	var_TexNormalSpecular.st = (u_NormalTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0)).st;
 
 	// transform specularmap texcoords
-	var_TexSpecular = (u_SpecularTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0)).st;
+	var_TexNormalSpecular.pq = (u_SpecularTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0)).st;
 #endif
 
+#if defined(USE_GLOW_MAPPING)
+	var_TexDiffuseGlow.pq = (u_GlowTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0)).st;
+#endif
 
 #if 0
 
