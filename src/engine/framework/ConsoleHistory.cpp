@@ -89,7 +89,7 @@ namespace Console {
     }
 
     void AddToHistory(HistoryHandle& handle, std::string current) {
-        if (current != GetLine(handle)) {
+        if (lines.empty() || current != lines.back()) {
             lines.push_back(std::move(current));
         }
         handle = HISTORY_END;
@@ -103,7 +103,7 @@ namespace Console {
             lines.push_back(current);
         }
 
-        if (handle == 0 || (handle == HISTORY_END && lines.size() == 0)) {
+        if (handle == 0 || (handle == HISTORY_END && lines.empty())) {
             return;
         } else if (handle == HISTORY_END) {
             handle = lines.size() -1;
