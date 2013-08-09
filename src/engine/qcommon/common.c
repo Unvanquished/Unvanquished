@@ -2216,8 +2216,6 @@ void Com_Init( char *commandLine )
 	// cvar and command buffer management
 	Com_ParseCommandLine( commandLine );
 
-	Cmd_Init();
-
 	// override anything from the config files with command line args
 	Com_StartupVariable( NULL );
 

@@ -342,6 +342,91 @@ namespace Cmd {
     };
     static MathCmd MathCmdRegistration;
 
+    class IfCmd: public StaticCmd {
+        public:
+            IfCmd(): StaticCmd("if", BASE, N_("conditionnaly execute commands")) {
+            }
+
+            void Run(const Cmd::Args& args) const override {
+                if (args.Argc() != 5 and args.Argc() != 6) {
+                    Usage(args);
+                    return;
+                }
+
+                const std::string& value1 = args.Argv(1);
+                const std::string& value2 = args.Argv(3);
+                const std::string& relation = args.Argv(2);
+
+                int intValue1 = Str::ToInt(value1);
+                int intValue2 = Str::ToInt(value2);
+
+                bool result;
+
+                if (relation == "=" or relation == "==") {
+                    result = intValue1 = intValue2;
+
+                } else if (relation == "!=" or relation == "≠") {
+                    result = intValue1 != intValue2;
+
+                } else if (relation == "<") {
+                    result = intValue1 < intValue2;
+
+                } else if (relation == "<=" or relation == "≤" ) {
+                    result = intValue1 <= intValue2;
+
+                } else if (relation == ">") {
+                    result = intValue1 > intValue2;
+
+                } else if (relation == ">=" or relation == "≥") {
+                    result = intValue1 >= intValue2;
+
+                } else if (relation == "eq") {
+                    result = value1 == value2;
+
+                } else if (relation == "ne") {
+                    result = value1 != value2;
+
+                } else if (relation == "in") {
+                    result = value2.find(value1) != std::string::npos;
+
+                } else if (relation == "!in") {
+                    result = value2.find(value1) == std::string::npos;
+
+                } else {
+                    Com_Printf(_( "invalid relation operator in if command. valid relation operators are = != ≠ < > ≥ >= ≤ <= eq ne in !in\n" ));
+                    Usage(args);
+                    return;
+                }
+
+                const std::string& toRun = result ? args.Argv(4) : args.Argv(5);
+
+                //if it starts with / or \ it is a quoted command
+                if (toRun.size() > 0 and (toRun[0] == '/' or toRun[0] == '\\')) {
+                    Cmd::BufferCommandText(toRun.c_str() + 1, Cmd::AFTER, true);
+
+                } else {
+                    std::string command = Cvar_VariableString(toRun.c_str());
+                    Cmd::BufferCommandText(command, Cmd::AFTER, true);
+                }
+            }
+
+            void Usage(const Cmd::Args& args) const{
+                PrintUsage(args, _("if <number|string> <relation> <number|string> <cmdthen> (<cmdelse>)"), "compares two numbers or two strings and executes <cmdthen> if true, <cmdelse> if false\n");
+                Com_Printf(_("-- commands are cvar names unless prefixed with / or \\\n"));
+            }
+
+            std::vector<std::string> Complete(int pos, const Args& args) const override{
+                int argNum = args.PosToArg(pos);
+
+                if (argNum == 4 or argNum == 5) {
+                    return CVar::CompleteName(args.ArgPrefix(pos));
+                }
+
+                return {};
+            }
+    };
+    static IfCmd IfCmdRegistration;
+
     /*
     ===============================================================================
 

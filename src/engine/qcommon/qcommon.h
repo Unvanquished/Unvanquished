@@ -496,8 +496,6 @@ then searches for a command or variable that matches the first token.
 typedef void ( *xcommand_t )( void );
 typedef void ( *xcommand_arg_t )( int );
 
-void Cmd_Init( void );
-
 void     Cmd_AddCommand( const char *cmd_name, xcommand_t function );
 
 // called by the init functions of other parts of the program to
