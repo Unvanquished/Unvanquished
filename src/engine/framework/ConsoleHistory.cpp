@@ -88,9 +88,7 @@ namespace Console {
     }
 
     void AddToHistory(HistoryHandle& handle, std::string current) {
-        if (current != GetLine(handle)) {
-            lines.push_back(std::move(current));
-        }
+        lines.push_back(std::move(current));
         handle = HISTORY_END;
 
         //TODO defer it more? when the programs exits?
