@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "snd_codec.h"
 #include "client.h"
 
+#ifndef BUILD_TTY_CLIENT
 #include "qal.h"
 
 // Console variables specific to OpenAL
@@ -2336,7 +2337,6 @@ static void S_AL_SoundInfo(void)
 }
 
 
-
 /*
 =================
 S_AL_Shutdown
@@ -2414,6 +2414,7 @@ int S_AL_GetCurrentSoundtime( void )
 	//fixme to be like snd_dma.c?
 	return Sys_Milliseconds( );
 }
+#endif
 
 /*
 =================
@@ -2422,6 +2423,7 @@ S_AL_Init
 */
 qboolean S_AL_Init( soundInterface_t *si )
 {
+#ifndef BUILD_TTY_CLIENT
 	const char* device = NULL;
 	const char* inputdevice = NULL;
 	int i;
@@ -2670,5 +2672,8 @@ qboolean S_AL_Init( soundInterface_t *si )
 	si->StopAllSounds = S_AL_StopAllSounds;
 
 	return qtrue;
+#else
+	return qfalse;
+#endif
 }
 

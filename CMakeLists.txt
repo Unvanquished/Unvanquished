@@ -42,8 +42,7 @@ option( ENABLE_QVM_COMPAT    "Configure the engine to use QVMs instead of NaCl" 
 cmake_dependent_option( USE_MUMBLE           "Compile with support for Mumble"                       1 BUILD_CLIENT                   0 )
 cmake_dependent_option( USE_VOIP             "Compile with VOIP support"                             1 "BUILD_CLIENT OR BUILD_SERVER" 0 )
 cmake_dependent_option( USE_CURSES           "Use the curses console"                                1 "BUILD_CLIENT OR BUILD_SERVER OR BUILD_TTY_CLIENT" 0 )
-
-option( USE_OPENAL_DLOPEN    "Use dlopen to load OpenAL"                   1 )
+cmake_dependent_option( USE_OPENAL_DLOPEN    "Use dlopen to load OpenAL"                             1 BUILD_CLIENT                   0 )
 
 ################################################################################
 # Determine platform
@@ -1026,8 +1025,22 @@ if( LINUX AND ( BUILD_CLIENT OR BUILD_NEW_RENDERER OR BUILD_OLD_RENDERER ) )
 endif()
 
 # OpenAL
-if( BUILD_CLIENT OR BUILD_TTY_CLIENT )
-  find_package( OpenAL )
+if( BUILD_CLIENT )
+  if( USE_OPENAL_DLOPEN )
+    add_definitions( -DUSE_OPENAL_DLOPEN )
+    find_package( OpenAL )
+  else()
+    find_package( OpenAL ${OPTIONAL_WIN32} )
+    if( OPENAL_FOUND )
+      set( LIBS_CLIENT ${LIBS_CLIENT} ${OPENAL_LIBRARY} )
+    else()
+      if( ARCH STREQUAL "x86" )
+        set( LIBS_CLIENT ${LIBS_CLIENT} ${LIB_DIR}/openal/libs/win32/OpenAL32.lib )
+      elseif( ARCH STREQUAL "x86_64" )
+        set( LIBS_CLIENT ${LIBS_CLIENT} ${LIB_DIR}/openal/libs/win64/OpenAL32.lib )
+      endif()
+    endif()
+  endif()
   if( OPENAL_FOUND )
     include_directories( ${OPENAL_INCLUDE_DIR} )
   else()
@@ -1140,12 +1153,6 @@ if( BUILD_CLIENT )
     set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_VOIP )
   endif()
   set_target_properties( client PROPERTIES OUTPUT_NAME "daemon" PREFIX "" ENABLE_EXPORTS ON )
-
-  if( USE_OPENAL_DLOPEN )
-    set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_OPENAL_DLOPEN )
-  else()
-    target_link_libraries( client ${OPENAL_LIBRARY} )
-  endif()
 
   # Setup CPack for target client
   install( TARGETS client DESTINATION "Unvanquished" )
