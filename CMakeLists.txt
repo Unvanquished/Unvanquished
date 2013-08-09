@@ -43,6 +43,8 @@ cmake_dependent_option( USE_MUMBLE           "Compile with support for Mumble"  
 cmake_dependent_option( USE_VOIP             "Compile with VOIP support"                             1 "BUILD_CLIENT OR BUILD_SERVER" 0 )
 cmake_dependent_option( USE_CURSES           "Use the curses console"                                1 "BUILD_CLIENT OR BUILD_SERVER OR BUILD_TTY_CLIENT" 0 )
 
+option( USE_OPENAL_DLOPEN    "Use dlopen to load OpenAL"                   1 )
+
 ################################################################################
 # Determine platform
 ################################################################################
@@ -1135,6 +1137,12 @@ if( BUILD_CLIENT )
     set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_VOIP )
   endif()
   set_target_properties( client PROPERTIES OUTPUT_NAME "daemon" PREFIX "" ENABLE_EXPORTS ON )
+
+  if( USE_OPENAL_DLOPEN )
+    set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_OPENAL_DLOPEN )
+  else()
+    target_link_libraries( client ${OPENAL_LIBRARY} )
+  endif()
 
   # Setup CPack for target client
   install( TARGETS client DESTINATION "Unvanquished" )
