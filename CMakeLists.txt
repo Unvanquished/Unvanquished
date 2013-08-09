@@ -296,6 +296,13 @@ set( SHAREDLIST
   ${ENGINE_DIR}/qcommon/q_math.c
 )
 
+# Hack to allow compiling shared files as C
+set( SHAREDLIST_HACK
+  ${ENGINE_DIR}/qcommon/./q_shared.c
+  ${ENGINE_DIR}/qcommon/./q_unicode.c
+  ${ENGINE_DIR}/qcommon/./q_math.c
+)
+
 set( RENDERERLIST
   ${ENGINE_DIR}/renderer/tr_animation.c
   ${ENGINE_DIR}/renderer/tr_animation_mdm.c
@@ -1121,9 +1128,9 @@ function( GAMELIB )
     endif()
     set( GAMELIB_COMPILE_DEF_NATIVE ${GAMELIB_COMPILE_DEF} )
 
-    # HACK: Compile shared files as C, uncomment this when building game
-    #set_source_files_properties( ${SHAREDLIST} PROPERTIES LANGUAGE C )
-    add_executable( ${GAMELIB_LIB_NAME} ${GAMELIB_LIB_FILES} ${SHAREDLIST} ${NACL_LIST_NATIVE} ${ENGINE_DIR}/qcommon/nacl.cpp )
+    # HACK: Compile shared files as C
+    set_source_files_properties( ${SHAREDLIST_HACK} PROPERTIES LANGUAGE C )
+    add_executable( ${GAMELIB_LIB_NAME} ${GAMELIB_LIB_FILES} ${SHAREDLIST_HACK} ${NACL_LIST_NATIVE} )
     target_link_libraries( ${GAMELIB_LIB_NAME} ${LIBS_BASE} )
     set_target_properties( ${GAMELIB_LIB_NAME} PROPERTIES
       RUNTIME_OUTPUT_DIRECTORY ${GAMELIB_OUTPUT_DIR}
