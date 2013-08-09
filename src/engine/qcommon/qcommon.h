@@ -799,7 +799,6 @@ void Field_Clear( field_t *edit );
 void Field_AutoComplete( field_t *edit, const char *prompt );
 void Field_CompleteKeyname( int flags );
 void Field_CompleteTeamname( int flags );
-void Field_CompleteCgame( int argNum );
 
 // code point count <-> UTF-8 byte count
 int Field_CursorToOffset( field_t *edit );
@@ -1073,10 +1072,6 @@ void CL_StartHunkUsers( void );
 void Key_KeynameCompletion( void ( *callback )( const char *s ) );
 
 // for keyname autocompletion
-
-void CL_CgameCompletion( void ( *callback )( const char *s ), int argNum );
-
-// for cgame command autocompletion
 
 void Key_WriteBindings( fileHandle_t f );
 

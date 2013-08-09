@@ -49,8 +49,6 @@ Maryland 20850 USA.
 #define C__(x, y) Trans_PgettextGame(x, y)
 #define P__(x, y, c) Trans_GettextGamePlural(x, y, c)
 
-static void ( *completer )( const char *s ) = NULL;
-
 // NERVE - SMF
 void                   Key_GetBindingBuf( int keynum, int team, char *buf, int buflen );
 void                   Key_KeynumToStringBuf( int keynum, char *buf, int buflen );
@@ -241,19 +239,7 @@ CL_CompleteCgameCommand
 */
 void CL_CompleteCgameCommand( char *args, int argNum )
 {
-	Field_CompleteCgame( argNum );
-}
-
-/*
-=====================
-CL_CgameCompletion
-=====================
-*/
-void CL_CgameCompletion( void ( *callback )( const char *s ), int argNum )
-{
-	completer = callback;
 	VM_Call( cgvm, CG_COMPLETE_COMMAND, argNum );
-	completer = NULL;
 }
 
 /*
@@ -728,11 +714,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0;
 
 		case CG_COMPLETE_CALLBACK:
-			if ( completer )
-			{
-				completer( (char*) VMA( 1 ) );
-			}
-
+			Cmd_OnCompleteMatch((char*) VMA(1));
 			return 0;
 
 		case CG_SENDCLIENTCOMMAND:

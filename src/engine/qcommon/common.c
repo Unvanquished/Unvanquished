@@ -3257,24 +3257,6 @@ void Field_CompleteTeamname( int flags )
 	}
 }
 
-/*
-===============
-Field_CompleteCgame
-===============
-*/
-void Field_CompleteCgame( int argNum )
-{
-	matchCount = 0;
-	shortestMatch[ 0 ] = 0;
-
-	CL_CgameCompletion( FindMatches, argNum );
-/*
-	if ( !Field_Complete() )
-	{
-		CL_CgameCompletion( PrintMatches, argNum );
-	}*/
-}
-
 #endif
 
 /*
