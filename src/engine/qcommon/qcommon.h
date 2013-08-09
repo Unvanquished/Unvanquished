@@ -333,9 +333,6 @@ VIRTUAL MACHINE
 ==============================================================
 */
 
-#include "nacl.h"
-#include "rpc.h"
-
 #ifdef QVM_COMPAT
 
 // See also vm_traps.h for syscalls common to all VMs
@@ -421,44 +418,6 @@ protected:
 #define VMF(...) 0.0f
 #define VM_CheckBlock(...) 0
 #define VM_Debug(...) 0
-
-namespace VM {
-
-enum Type {
-  TYPE_NATIVE,
-  TYPE_NACL
-};
-
-class VMBase {
-public:
-  // Create the VM for the named module. Returns the ABI version reported
-  // by the module.
-  int Create(const char* name, Type type);
-
-  // Free the VM
-  void Free()
-  {
-    module.Close();
-  }
-
-  // Check if the VM is active
-  bool IsActive() const
-  {
-    return bool(module);
-  }
-
-protected:
-  // Perform an RPC call with the given inputs, returns results in output
-  RPC::Reader DoRPC(RPC::Writer& input, bool ignoreErrors = false);
-
-  // System call handler
-  virtual void Syscall(int index, RPC::Reader& input, RPC::Writer& output) = 0;
-
-private:
-  NaCl::Module module;
-};
-
-} // namespace VM
 
 #endif // QVM_COMPAT
 

@@ -35,6 +35,7 @@ Maryland 20850 USA.
 #ifndef RPC_H_
 #define RPC_H_
 
+#include "../libs/nacl/nacl.h"
 #include <vector>
 #include <memory>
 #include <utility>

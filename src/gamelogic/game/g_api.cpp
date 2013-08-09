@@ -23,8 +23,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 extern "C" {
 #include "g_local.h"
 }
-#include "../../engine/qcommon/nacl.h"
-#include "../../engine/qcommon/rpc.h"
+#include "../../libs/nacl/nacl.h"
+#include "../../shared/RPC.h"
 
 static NaCl::RootSocket rootSocket;
 static NaCl::IPCHandle shmRegion;

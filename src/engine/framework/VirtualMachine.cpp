@@ -32,8 +32,9 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#include "q_shared.h"
-#include "qcommon.h"
+#include "../qcommon/q_shared.h"
+#include "../qcommon/qcommon.h"
+#include "VirtualMachine.h"
 
 namespace VM {
 

@@ -27,6 +27,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #include "../qcommon/qcommon.h"
 
 #include <vector>
+#include <memory>
 
 //TODO: make it thread safe.
 namespace Console {

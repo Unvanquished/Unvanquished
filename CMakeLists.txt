@@ -435,8 +435,7 @@ if( ENABLE_QVM_COMPAT )
   endif()
 else()
   set( ENGINELIST ${ENGINELIST}
-    ${ENGINE_DIR}/qcommon/nacl.cpp
-    ${ENGINE_DIR}/qcommon/vm.cpp
+    ${ENGINE_DIR}/framework/VirtualMachine.cpp
   )
 endif()
 
@@ -689,18 +688,21 @@ set( TINYGETTEXT_LIST
 
 if( MAC )
   set( NACL_LIST_NATIVE
+    ${LIB_DIR}/nacl/nacl.cpp
     ${LIB_DIR}/nacl/native_client/src/shared/imc/nacl_imc_common.cc
     ${LIB_DIR}/nacl/native_client/src/shared/imc/posix/nacl_imc_posix.cc
     ${LIB_DIR}/nacl/native_client/src/shared/imc/osx/nacl_imc.cc
   )
 elseif( LINUX )
   set( NACL_LIST_NATIVE
+    ${LIB_DIR}/nacl/nacl.cpp
     ${LIB_DIR}/nacl/native_client/src/shared/imc/nacl_imc_common.cc
     ${LIB_DIR}/nacl/native_client/src/shared/imc/posix/nacl_imc_posix.cc
     ${LIB_DIR}/nacl/native_client/src/shared/imc/linux/nacl_imc.cc
   )
 elseif( WIN32 )
   set( NACL_LIST_NATIVE
+    ${LIB_DIR}/nacl/nacl.cpp
     ${LIB_DIR}/nacl/native_client/src/shared/imc/nacl_imc_common.cc
     ${LIB_DIR}/nacl/native_client/src/shared/imc/win/nacl_imc.cc
     ${LIB_DIR}/nacl/native_client/src/shared/imc/win/nacl_shm.cc
@@ -708,6 +710,7 @@ elseif( WIN32 )
 endif()
 
 set( NACL_LIST_MODULE
+  ${LIB_DIR}/nacl/nacl.cpp
   ${LIB_DIR}/nacl/native_client/src/shared/imc/nacl_imc_common.cc
   ${LIB_DIR}/nacl/native_client/src/shared/imc/nacl/nacl_imc.cc
   ${LIB_DIR}/nacl/native_client/src/untrusted/nacl/imc_accept.c
