@@ -51,7 +51,6 @@ Maryland 20850 USA.
 #define CON_Shutdown CON_Shutdown_tty
 #define CON_Print    CON_Print_tty
 #define CON_Input    CON_Input_tty
-#define CON_Clear_f  Field_Clear( &TTY_con )
 #endif
 
 /*

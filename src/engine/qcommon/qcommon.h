@@ -754,8 +754,6 @@ typedef struct
 #define FIELD_TEAM_SPECTATORS 2
 #define FIELD_TEAM_DEFAULT    4
 
-void Field_Clear( field_t *edit );
-void Field_AutoComplete( field_t *edit, const char *prompt );
 void Field_CompleteKeyname( int flags );
 void Field_CompleteTeamname( int flags );
 

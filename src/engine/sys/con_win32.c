@@ -47,7 +47,6 @@ Maryland 20850 USA.
 #define CON_Shutdown CON_Shutdown_tty
 #define CON_Print    CON_Print_tty
 #define CON_Input    CON_Input_tty
-#define CON_Clear_f  Field_Clear( &TTY_con )
 #endif
 
 static WORD                qconsole_attrib;
@@ -436,14 +435,7 @@ char *CON_Input( void )
 		}
 		else if ( key == VK_TAB )
 		{
-			field_t f;
-
-			Q_strncpyz( f.buffer, qconsole_line,
-			            sizeof( f.buffer ) );
-			Field_AutoComplete( &f, "]" );
-			Q_strncpyz( qconsole_line, f.buffer,
-			            sizeof( qconsole_line ) );
-			qconsole_linelen = strlen( qconsole_line );
+			//No autocompletion for you for now
 			break;
 		}
 
