@@ -869,6 +869,12 @@ static void G_ClientCleanName( const char *in, char *out, int outSize, gclient_t
 		invalid = qtrue;
 	}
 
+	// don't allow names beginning with digits
+	if ( *p >= '0' && *p <= '9' )
+	{
+		invalid = qtrue;
+	}
+
 	// limit no. of code points
 	if ( Q_UTF8_PrintStrlen( p ) > MAX_NAME_LENGTH_CP )
 	{
