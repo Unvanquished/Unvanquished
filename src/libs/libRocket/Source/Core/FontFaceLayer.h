@@ -14,7 +14,7 @@
  *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -68,7 +68,7 @@ public:
 	/// @param[out] texture_dimensions The dimensions of the texture.
 	/// @param[in] glyphs The glyphs required by the font face handle.
 	/// @param[in] texture_id The index of the texture within the layer to generate.
-	virtual bool GenerateTexture(const byte*& texture_data, Vector2i& texture_dimensions, int texture_id);
+	virtual bool GenerateTexture(const byte*& texture_data, Vector2i& texture_dimensions, int layout_id, int texture_id);
 	/// Generates the geometry required to render a single character.
 	/// @param[out] geometry An array of geometries this layer will write to. It must be at least as big as the number of textures in this layer.
 	/// @param[in] character_code The character to generate geometry for.
@@ -107,6 +107,8 @@ public:
 	/// @return The layer's colour.
 	const Colourb& GetColour() const;
 
+	bool AddNewGlyphs(void);
+
 // protected:
 	struct Character
 	{
@@ -123,11 +125,12 @@ public:
 
 	typedef Container::map< word, Character >::Type CharacterMap;
 	typedef Container::vector< Texture >::Type TextureList;
+	typedef Container::vector< TextureLayout* >::Type TextureLayoutList;
 
 	const FontFaceHandle* handle;
 	FontEffect* effect;
 
-	TextureLayout texture_layout;
+	TextureLayoutList texture_layouts;
 
 	CharacterMap characters;
 	TextureList textures;

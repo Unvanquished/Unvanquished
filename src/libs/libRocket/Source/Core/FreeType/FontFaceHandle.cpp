@@ -57,6 +57,8 @@ FontFaceHandle::FontFaceHandle()
 	underline_thickness = 0;
 
 	base_layer = NULL;
+
+	memset(&fonts_generated, 0, sizeof(fonts_generated));
 }
 
 FontFaceHandle::~FontFaceHandle()
@@ -96,12 +98,14 @@ bool FontFaceHandle::Initialise(FT_Face ft_face, const String& _charset, int _si
 	layer_configurations.push_back(LayerConfiguration());
 	layer_configurations.back().push_back(base_layer);
 
+	this->ft_face = ft_face;
+
 
 	return true;
 }
 
 // Returns the width a string will take up if rendered with this handle.
-int FontFaceHandle::GetStringWidth(const WString& string, word prior_character, word default_character) const
+int FontFaceHandle::GetStringWidth(const WString& string, word prior_character, word default_character)
 {
 	int width = 0;
 
@@ -112,7 +116,32 @@ int FontFaceHandle::GetStringWidth(const WString& string, word prior_character, 
 		FontGlyphMap::const_iterator iterator = glyphs.find(character_code);
 		if (iterator == glyphs.end())
 		{
-			if (default_character >= 32)
+			word chunk = Math::RoundDown(character_code / 256);
+
+			if (!(fonts_generated[ chunk / 8 ] & (1 << (chunk % 8))))
+			{
+				int num = 0;
+				UnicodeRange range(chunk * 256, (chunk * 256) + 255);
+				fonts_generated[ chunk / 8 ] |= (1 << (chunk % 8));
+				if (BuildGlyphMap(ft_face, range))
+				{
+
+					for (size_t j = 0; j < layer_configurations.size(); ++j)
+					{
+						for (size_t k = 0; k < layer_configurations[j].size(); ++k)
+						{
+							layer_configurations[j][k]->AddNewGlyphs();
+							num++;
+						}
+					}
+
+					Log::Message(Log::LT_INFO, "Added new glyphs to %d layers", num);
+
+					i--;
+				}
+				continue;
+			}
+			else if (default_character >= 32)
 			{
 				iterator = glyphs.find(default_character);
 				if (iterator == glyphs.end())
@@ -214,17 +243,17 @@ int FontFaceHandle::GenerateLayerConfiguration(FontEffectMap& font_effects)
 }
 
 // Generates the texture data for a layer (for the texture database).
-bool FontFaceHandle::GenerateLayerTexture(const byte*& texture_data, Vector2i& texture_dimensions, FontEffect* layer_id, int texture_id)
+bool FontFaceHandle::GenerateLayerTexture(const byte*& texture_data, Vector2i& texture_dimensions, FontEffect* layer_id, int layout_id, int texture_id)
 {
 	FontLayerMap::iterator layer_iterator = layers.find(layer_id);
 	if (layer_iterator == layers.end())
 		return false;
 
-	return layer_iterator->second->GenerateTexture(texture_data, texture_dimensions, texture_id);
+	return layer_iterator->second->GenerateTexture(texture_data, texture_dimensions, layout_id, texture_id);
 }
 
 // Generates the geometry required to render a single line of text.
-int FontFaceHandle::GenerateString(GeometryList& geometry, const WString& string, const Vector2f& position, const Colourb& colour, int layer_configuration_index, word default_character) const
+int FontFaceHandle::GenerateString(GeometryList& geometry, const WString& string, const Vector2f& position, const Colourb& colour, int layer_configuration_index, word default_character)
 {
 	int geometry_index = 0;
 	int line_width = 0;
@@ -353,10 +382,14 @@ void FontFaceHandle::GenerateMetrics(FT_Face ft_face)
 		x_height = 0;
 }
 
-void FontFaceHandle::BuildGlyphMap(FT_Face ft_face, const UnicodeRange& unicode_range)
+bool FontFaceHandle::BuildGlyphMap(FT_Face ft_face, const UnicodeRange& unicode_range)
 {
+	bool success = false;
 	for (word character_code = (word) (Math::Max< unsigned int >(unicode_range.min_codepoint, 32)); character_code <= unicode_range.max_codepoint; ++character_code)
 	{
+		if (glyphs.find(character_code) != glyphs.end())
+			continue;
+
 		int index = FT_Get_Char_Index(ft_face, character_code);
 		if (index != 0)
 		{
@@ -378,8 +411,15 @@ void FontFaceHandle::BuildGlyphMap(FT_Face ft_face, const UnicodeRange& unicode_
 			glyph.character = character_code;
 			BuildGlyph(glyph, ft_face->glyph);
 			glyphs[character_code] = glyph;
+
+			if (!success)
+			{
+				success = true;
+			}
 		}
 	}
+
+	return success;
 }
 
 void FontFaceHandle::BuildGlyph(FontGlyph& glyph, FT_GlyphSlot ft_glyph)

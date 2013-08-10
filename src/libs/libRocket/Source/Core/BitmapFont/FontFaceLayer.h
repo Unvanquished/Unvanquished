@@ -68,7 +68,7 @@ public:
 	/// @param[out] texture_dimensions The dimensions of the texture.
 	/// @param[in] glyphs The glyphs required by the font face handle.
 	/// @param[in] texture_id The index of the texture within the layer to generate.
-	virtual bool GenerateTexture(const byte*& texture_data, Vector2i& texture_dimensions, int texture_id);
+	virtual bool GenerateTexture(const byte*& texture_data, Vector2i& texture_dimensions, int layout_id, int texture_id);
 
 };
 

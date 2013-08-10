@@ -112,7 +112,7 @@ bool FontFaceLayer::Initialise(const Rocket::Core::FontFaceHandle* _handle, Font
 }
 
 // Generates the texture data for a layer (for the texture database).
-bool FontFaceLayer::GenerateTexture(const byte*& texture_data, Vector2i& texture_dimensions, int texture_id)
+bool FontFaceLayer::GenerateTexture(const byte*& texture_data, Vector2i& texture_dimensions, int layout_id, int texture_id)
 {
 	return true;
 }
