@@ -99,7 +99,7 @@ namespace Console {
     }
 
     void PrevLine(HistoryHandle& handle, std::string& current) {
-        if (current != GetLine(handle)) {
+        if (!current.empty() && current != GetLine(handle)) {
             lines.push_back(current);
         }
 
@@ -114,7 +114,7 @@ namespace Console {
     }
 
     void NextLine(HistoryHandle& handle, std::string& current) {
-        if (current != GetLine(handle)) {
+        if (!current.empty() && current != GetLine(handle)) {
             lines.push_back(current);
         }
 
