@@ -586,6 +586,20 @@ void NORETURN Sys_SigHandler( int signal )
 main
 =================
 */
+
+#ifdef DEDICATED
+#define UNVANQUISHED_URL ""
+#else
+#define UNVANQUISHED_URL " [unv://ADDRESS[:PORT]]"
+#endif
+
+void Sys_HelpText( const char *binaryName )
+{
+	printf( PRODUCT_NAME " " PRODUCT_VERSION "\n"
+	        "Usage: %s" UNVANQUISHED_URL " [+COMMAND...]\n"
+	        , binaryName );
+}
+
 int main( int argc, char **argv )
 {
 	int  i;
@@ -599,6 +613,21 @@ int main( int argc, char **argv )
 #ifdef OPENMP
 	int nthreads, tid, procs, maxt, inpar, dynamic, nested;
 #endif
+
+	if ( argc > 1 )
+	{
+		if ( !strcmp( argv[1], "--help" ) || !strcmp( argv[1], "-h" ) )
+		{
+			Sys_HelpText( argv[0] );
+			return 0;
+		}
+
+		if ( !strcmp( argv[1], "--version" ) || !strcmp( argv[1], "-v" ) )
+		{
+			printf( PRODUCT_NAME " " PRODUCT_VERSION "\n" );
+			return 0;
+		}
+	}
 
 #if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 	// SDL version check
