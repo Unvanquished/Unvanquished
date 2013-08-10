@@ -84,45 +84,6 @@ Maryland 20850 USA.
 
 #define UNNAMED_PLAYER "UnnamedPlayer"
 
-#if defined _WIN32 && !defined __GNUC__
-
-#pragma warning(disable : 4018) // signed/unsigned mismatch
-#pragma warning(disable : 4032)
-#pragma warning(disable : 4051)
-#pragma warning(disable : 4057) // slightly different base types
-#pragma warning(disable : 4100) // unreferenced formal parameter
-#pragma warning(disable : 4115)
-#pragma warning(disable : 4125) // decimal digit terminates octal escape sequence
-#pragma warning(disable : 4127) // conditional expression is constant
-#pragma warning(disable : 4136)
-#pragma warning(disable : 4152) // nonstandard extension, function/data pointer conversion in expression
-#pragma warning(disable : 4201)
-#pragma warning(disable : 4214)
-#pragma warning(disable : 4244)
-//#pragma warning(disable : 4142)   // benign redefinition
-#pragma warning(disable : 4305) // truncation from const double to float
-//#pragma warning(disable : 4310)   // cast truncates constant value
-//#pragma warning(disable : 4505)   // unreferenced local function has been removed
-#pragma warning(disable : 4514)
-#pragma warning(disable : 4702) // unreachable code
-#pragma warning(disable : 4711) // selected for automatic inline expansion
-#pragma warning(disable : 4220) // varargs matches remaining parameters
-#pragma warning(disable : 4706) // assignment within conditional expression // cs: probably should correct all of these at some point
-#pragma warning(disable : 4005) // macro redefinition
-#pragma warning(disable : 4996) // This function or variable may be unsafe. Consider using 'function_s' instead
-#pragma warning(disable : 4075) // initializers put in unrecognized initialization area
-#pragma warning(disable : 4355) // 'this': used in member initializer list
-#pragma warning(disable : 4305) // signed unsigned mismatch
-#pragma warning(disable : 4554) // qualifier applied to reference type; ignored
-#pragma warning(disable : 4800) // forcing bool variable to one or zero, possible performance loss
-#pragma warning(disable : 4090) // 'function' : different 'const' qualifiers
-#pragma warning(disable : 4267) // 'initializing' : conversion from 'size_t' to 'int', possible loss of data
-#pragma warning(disable : 4146) // unary minus operator applied to unsigned type, result still unsigned
-#pragma warning(disable : 4133) // 'function' : incompatible types - from 'unsigned long *' to 'const time_t *'
-#pragma warning(disable : 4127) // conditional expression is constant
-#pragma warning(disable : 4389) // '==' : signed/unsigned mismatch
-#endif
-
 #define Q_UNUSED(x) (void)(sizeof((x), 0))
 
 // for visibility of some functions in system headers
@@ -151,6 +112,7 @@ Maryland 20850 USA.
 #include <limits.h>
 #include <sys/stat.h> // rain
 #include <float.h>
+#include <stdint.h>
 
 // vsnprintf is ISO/IEC 9899:1999
 // abstracting this to make it portable
@@ -162,38 +124,6 @@ Maryland 20850 USA.
 #define Q_snprintf  snprintf
 #endif
 
-#ifdef _MSC_VER
-#include <io.h>
-
-	typedef signed __int64   int64_t;
-	typedef signed __int32   int32_t;
-	typedef signed __int16   int16_t;
-	typedef signed __int8    int8_t;
-	typedef unsigned __int64 uint64_t;
-	typedef unsigned __int32 uint32_t;
-	typedef unsigned __int16 uint16_t;
-	typedef unsigned __int8  uint8_t;
-#else
-#include <stdint.h>
-#endif
-
-#include "q_platform.h"
-
-#define STATIC_INLINE static ALWAYS_INLINE
-
-#include "../../shared/Global.h"
-
-//bani
-//======================= GNUC DEFINES ==================================
-#if ( defined _MSC_VER )
-#define Q_EXPORT __declspec(dllexport)
-#elif ( defined __SUNPRO_C )
-#define Q_EXPORT __global
-#elif (( __GNUC__ >= 3 ) && ( !__EMX__ ) && ( !sun ))
-#define Q_EXPORT __attribute__((__visibility__("default")))
-#else
-#define Q_EXPORT
-#endif
 //=============================================================
 
 	typedef unsigned char        byte;
@@ -210,10 +140,22 @@ Maryland 20850 USA.
 		unsigned int ui;
 	} floatint_t;
 
-	typedef int qhandle_t;
-	typedef int sfxHandle_t;
-	typedef int fileHandle_t;
-	typedef int clipHandle_t;
+//=============================================================
+
+#include "../../shared/Compiler.h"
+#include "../../shared/Platform.h"
+#include "../../shared/Endian.h"
+
+// Compat macros
+#define STATIC_INLINE static inline
+#define QDECL
+#define INLINE inline
+#define Q_EXPORT DLLEXPORT
+
+typedef int qhandle_t;
+typedef int sfxHandle_t;
+typedef int fileHandle_t;
+typedef int clipHandle_t;
 
 #define PAD(x,y)                ((( x ) + ( y ) - 1 ) & ~(( y ) - 1 ))
 #define PADLEN(base, alignment) ( PAD(( base ), ( alignment )) - ( base ))
@@ -1130,7 +1072,7 @@ double rint( double x );
 
 #else
 #define         Q_strncpyz(string1,string2,length) Q_strncpyzDebug( string1, string2, length, __FILE__, __LINE__ )
-	void     Q_strncpyzDebug( char *dest, const char *src, int destsize, const char *file, int line ) __attribute__((__nonnull__));
+	void     Q_strncpyzDebug( char *dest, const char *src, int destsize, const char *file, int line );
 
 #endif
 	void     Q_strcat( char *dest, int destsize, const char *src );

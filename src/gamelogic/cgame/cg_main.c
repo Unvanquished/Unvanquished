@@ -1105,7 +1105,7 @@ const char *CG_Argv( int arg )
 
 //========================================================================
 
-static SENTINEL const char *choose( const char *first, ... )
+static const char *choose( const char *first, ... )
 {
 	va_list    ap;
 	int        count = 1;

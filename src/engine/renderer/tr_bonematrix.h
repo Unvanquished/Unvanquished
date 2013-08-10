@@ -173,7 +173,7 @@ static INLINE void BoneMatrixTransformNormal( const boneMatrix_t m, const vec3_t
 #if id386_sse
 #define assert_16_byte_aligned( x ) assert( ( (intptr_t)x & 15 ) == 0 )
 
-ALWAYS_INLINE void BoneMatrixMulSSE( __m128 *oa, __m128 *ob, __m128 *oc, float s, const boneMatrix_t m )
+inline void BoneMatrixMulSSE( __m128 *oa, __m128 *ob, __m128 *oc, float s, const boneMatrix_t m )
 {
 	__m128 a, b, c, w;
 	assert_16_byte_aligned( m );
@@ -188,7 +188,7 @@ ALWAYS_INLINE void BoneMatrixMulSSE( __m128 *oa, __m128 *ob, __m128 *oc, float s
 	*oc = _mm_mul_ps( c, w );
 }
 
-ALWAYS_INLINE void BoneMatrixMadSSE(  __m128 *oa, __m128 *ob, __m128 *oc, float s, const boneMatrix_t m )
+inline void BoneMatrixMadSSE(  __m128 *oa, __m128 *ob, __m128 *oc, float s, const boneMatrix_t m )
 {
 	__m128 a, b, c, w;
 	assert_16_byte_aligned( m );
@@ -203,7 +203,7 @@ ALWAYS_INLINE void BoneMatrixMadSSE(  __m128 *oa, __m128 *ob, __m128 *oc, float 
 	*oc = _mm_add_ps( *oc, _mm_mul_ps( c, w ) );
 }
 
-ALWAYS_INLINE void BoneMatrixTransform4SSE( __m128 a, __m128 b, __m128 c, const vec4_t in, vec4_t out )
+inline void BoneMatrixTransform4SSE( __m128 a, __m128 b, __m128 c, const vec4_t in, vec4_t out )
 {
 	__m128 p, x, y, z, s1, s2;
 	assert_16_byte_aligned( in );
@@ -220,7 +220,7 @@ ALWAYS_INLINE void BoneMatrixTransform4SSE( __m128 a, __m128 b, __m128 c, const 
 	_mm_store_ps( out, _mm_add_ps( _mm_unpacklo_ps( s1, s2 ), _mm_unpackhi_ps( s1, s2 ) ) );
 }
 
-ALWAYS_INLINE void BoneMatrixTransform4NormalizeSSE( __m128 a, __m128 b, __m128 c, const vec4_t in, vec4_t out )
+inline void BoneMatrixTransform4NormalizeSSE( __m128 a, __m128 b, __m128 c, const vec4_t in, vec4_t out )
 {
 	__m128 p, x, y, z, s1, s2, s3;
 	assert_16_byte_aligned( in );
