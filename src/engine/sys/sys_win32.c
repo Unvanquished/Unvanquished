@@ -104,7 +104,13 @@ Sys_DefaultHomePath
 char *Sys_DefaultHomePath( void )
 {
 	TCHAR   szPath[ MAX_PATH ];
-	FARPROC qSHGetFolderPath;
+	HRESULT (*qSHGetFolderPath)(
+	  _In_   HWND hwndOwner,
+	  _In_   int nFolder,
+	  _In_   HANDLE hToken,
+	  _In_   DWORD dwFlags,
+	  _Out_  LPTSTR pszPath
+	);
 	HMODULE shfolder = LoadLibrary( "shfolder.dll" );
 
 	if ( !*homePath )
@@ -115,7 +121,7 @@ char *Sys_DefaultHomePath( void )
 			return NULL;
 		}
 
-		qSHGetFolderPath = GetProcAddress( shfolder, "SHGetFolderPathA" );
+		qSHGetFolderPath = (decltype(qSHGetFolderPath))GetProcAddress( shfolder, "SHGetFolderPathA" );
 
 		if ( qSHGetFolderPath == NULL )
 		{
@@ -1129,5 +1135,5 @@ qboolean Sys_IsNumLockDown( void )
 }
 
 #else
-#error Don't compile me as part of an awesome operating system. This is meant for Win32 and Win64 only!
+#error "Don't compile me as part of an awesome operating system. This is meant for Win32 and Win64 only!"
 #endif /* _WIN32 */
