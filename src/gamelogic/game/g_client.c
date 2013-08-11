@@ -889,69 +889,6 @@ static void G_ClientCleanName( const char *in, char *out, int outSize, gclient_t
 }
 
 /*
-======================
-G_NonSegModel
-
-Reads an animation.cfg to check for nonsegmentation
-======================
-*/
-static qboolean G_NonSegModel( const char *filename )
-{
-	char         *text_p;
-	int          len;
-	char         *token;
-	char         text[ 20000 ];
-	fileHandle_t f;
-
-	// load the file
-	len = trap_FS_FOpenFile( filename, &f, FS_READ );
-
-	if ( !f )
-	{
-		G_Printf( "File not found: %s\n", filename );
-		return qfalse;
-	}
-
-	if ( len < 0 )
-	{
-		return qfalse;
-	}
-
-	if ( len == 0 || len >= sizeof( text ) - 1 )
-	{
-		trap_FS_FCloseFile( f );
-		G_Printf( "File %s is %s\n", filename, len == 0 ? "empty" : "too long" );
-		return qfalse;
-	}
-
-	trap_FS_Read( text, len, f );
-	text[ len ] = 0;
-	trap_FS_FCloseFile( f );
-
-	// parse the text
-	text_p = text;
-
-	// read optional parameters
-	while ( 1 )
-	{
-		token = COM_Parse( &text_p );
-
-		//EOF
-		if ( !token[ 0 ] )
-		{
-			break;
-		}
-
-		if ( !Q_stricmp( token, "nonsegmented" ) )
-		{
-			return qtrue;
-		}
-	}
-
-	return qfalse;
-}
-
-/*
 ===========
 ClientUserInfoChanged
 
@@ -968,7 +905,6 @@ char *ClientUserinfoChanged( int clientNum, qboolean forceName )
 	char      *s;
 	char      model[ MAX_QPATH ];
 	char      buffer[ MAX_QPATH ];
-	char      filename[ MAX_QPATH ];
 	char      oldname[ MAX_NAME_LENGTH ];
 	char      newname[ MAX_NAME_LENGTH ];
 	char      err[ MAX_STRING_CHARS ];
@@ -1087,11 +1023,7 @@ char *ClientUserinfoChanged( int clientNum, qboolean forceName )
 		Com_sprintf( buffer, MAX_QPATH, "%s/%s",  BG_ClassModelConfig( client->pers.classSelection )->modelName,
 		             BG_ClassModelConfig( client->pers.classSelection )->skinName );
 
-		//model segmentation
-		Com_sprintf( filename, sizeof( filename ), "models/players/%s/animation.cfg",
-		             BG_ClassModelConfig( client->pers.classSelection )->modelName );
-
-		if ( G_NonSegModel( filename ) )
+		if ( BG_ClassModelConfig( client->pers.classSelection )->segmented )
 		{
 			client->ps.persistant[ PERS_STATE ] |= PS_NONSEGMODEL;
 		}
