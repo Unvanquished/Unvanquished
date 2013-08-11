@@ -30,7 +30,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 namespace Str {
 
     int ToInt(const std::string& text);
-    int ToInt(const std::string& text, bool& success);
+    bool ToInt(const std::string& text, int& result);
 
     bool IsPrefix(const std::string& prefix, const std::string& text);
     int LongestPrefixSize(const std::string& text1, const std::string& text2);

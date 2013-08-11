@@ -24,6 +24,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "String.h"
 #include "../engine/qcommon/q_shared.h"
+#include <limits>
 
 namespace Str {
 
@@ -31,15 +32,15 @@ namespace Str {
         return atoi(text.c_str());
     }
 
-    int ToInt(const std::string& text, bool& success) {
-        try {
-            int res = std::stoi(text);
-            success = true;
-            return res;
-        } catch(...) {
-            success = false;
-        }
-        return false;
+    bool ToInt(const std::string& text, int& result) {
+        char* end;
+        const char* start = text.c_str();
+        result = strtol(start, &end, 10);
+        if (errno == ERANGE || result < std::numeric_limits<int>::min() || std::numeric_limits<int>::max() < result)
+            return false;
+        if (start == end)
+            return false;
+        return true;
     }
 
     bool IsPrefix(const std::string& prefix, const std::string& text) {
