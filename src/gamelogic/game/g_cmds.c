@@ -732,7 +732,7 @@ void Cmd_Kill_f( gentity_t *ent )
 	if ( g_cheats.integer )
 	{
 		ent->client->ps.stats[ STAT_HEALTH ] = ent->health = 0;
-		player_die( ent, ent, ent, 100000, MOD_SUICIDE );
+		player_die( ent, ent, ent, MOD_SUICIDE );
 	}
 	else
 	{

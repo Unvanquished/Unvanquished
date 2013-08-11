@@ -254,7 +254,7 @@ float G_RewardAttackers( gentity_t *self )
 player_die
 ==================
 */
-void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int meansOfDeath )
+void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int meansOfDeath )
 {
 	gentity_t *ent;
 	int       anim;
@@ -1375,7 +1375,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 				targ->health = -999;
 			}
 
-			targ->die( targ, inflictor, attacker, take, mod );
+			targ->die( targ, inflictor, attacker, mod );
 
 			if(!targ->client) //call the onDie event only on non living entities
 			{
