@@ -128,12 +128,6 @@ vmCvar_t           g_alienOffCreepRegenHalfLife;
 vmCvar_t           g_teamImbalanceWarnings;
 vmCvar_t           g_freeFundPeriod;
 
-vmCvar_t           g_luciHalfLifeTime;
-vmCvar_t           g_luciFullPowerTime;
-vmCvar_t           g_pulseHalfLifeTime;
-vmCvar_t           g_pulseFullPowerTime;
-vmCvar_t           g_flameFadeout;
-
 vmCvar_t           g_unlagged;
 
 vmCvar_t           g_disabledEquipment;
@@ -296,9 +290,9 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_powerCompetitionRange,       "g_powerCompetitionRange",       "320",                              CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_powerBaseSupply,             "g_powerBaseSupply",             "20",                               CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_powerReactorSupply,          "g_powerReactorSupply",          "40",                               CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_powerReactorRange,           "g_powerReactorRange",           "800",                              CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_powerReactorRange,           "g_powerReactorRange",           "800",                              CVAR_SERVERINFO | CVAR_ARCHIVE,                  0, qfalse           },
 	{ &g_powerRepeaterSupply,         "g_powerRepeaterSupply",         "20",                               CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_powerRepeaterRange,          "g_powerRepeaterRange",          "400",                              CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_powerRepeaterRange,          "g_powerRepeaterRange",          "400",                              CVAR_SERVERINFO | CVAR_ARCHIVE,                  0, qfalse           },
 	{ &g_powerLevel1Interference,     "g_powerLevel1Interference",     "13",                               CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_powerLevel1Range,            "g_powerLevel1Range",            "250",                              CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_powerLevel1UpgInterference,  "g_powerLevel1UpgInterference",  "16",                               CVAR_ARCHIVE,                                    0, qfalse           },
@@ -308,12 +302,6 @@ static cvarTable_t gameCvarTable[] =
 
 	{ &g_teamImbalanceWarnings,       "g_teamImbalanceWarnings",       "30",                               CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_freeFundPeriod,              "g_freeFundPeriod",              DEFAULT_FREEKILL_PERIOD,            CVAR_ARCHIVE,                                    0, qtrue            },
-
-	{ &g_luciHalfLifeTime,            "g_luciHalfLifeTime",            "512",                              CVAR_ARCHIVE,                                    0, qtrue            },
-	{ &g_luciFullPowerTime,           "g_luciFullPowerTime",           "0" /*"512"*/,                      CVAR_ARCHIVE,                                    0, qtrue            },
-	{ &g_pulseHalfLifeTime,           "g_pulseHalfLifeTime",           "768",                              CVAR_ARCHIVE,                                    0, qtrue            },
-	{ &g_pulseFullPowerTime,          "g_pulseFullPowerTime",          "0"  ,                              CVAR_ARCHIVE,                                    0, qtrue            },
-	{ &g_flameFadeout,                "g_flameFadeout",                "1",                                CVAR_ARCHIVE,                                    0, qtrue            },
 
 	{ &g_unlagged,                    "g_unlagged",                    "1",                                CVAR_SERVERINFO | CVAR_ARCHIVE,                  0, qtrue            },
 

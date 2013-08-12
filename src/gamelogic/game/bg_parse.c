@@ -643,6 +643,7 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
       COST = 1 << 15,
       VALUE = 1 << 16,
       RADAR = 1 << 17,
+      MASS = 1 << 18
     };
 
     if( !BG_ReadWholeFile( filename, text_buffer, sizeof(text_buffer) ) )
@@ -857,6 +858,14 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
             ca->radarFadeOut = atof( token );
 
             defined |= RADAR;
+        }
+        else if ( !Q_stricmp( token, "mass" ) )
+        {
+            PARSE(text, token);
+
+            ca->mass = atoi( token );
+
+            defined |= MASS;
         }
         else
         {

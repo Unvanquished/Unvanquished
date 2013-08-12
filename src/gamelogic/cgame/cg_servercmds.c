@@ -135,6 +135,8 @@ void CG_ParseServerinfo( void )
 	cgs.timelimit = atoi( Info_ValueForKey( info, "timelimit" ) );
 	cgs.maxclients = atoi( Info_ValueForKey( info, "sv_maxclients" ) );
 	cgs.markDeconstruct = atoi( Info_ValueForKey( info, "g_markDeconstruct" ) );
+	cgs.powerReactorRange = atoi( Info_ValueForKey( info, "g_powerReactorRange" ) );
+	cgs.powerRepeaterRange = atoi( Info_ValueForKey( info, "g_powerRepeaterRange" ) );
 	Q_strncpyz( cgs.mapname, Info_ValueForKey( info, "mapname" ), sizeof(cgs.mapname) );
 }
 

@@ -258,6 +258,11 @@ static classData_t bg_classData[] =
 		"level0", //char    *name;
 		WP_ALEVEL0 //weapon_t  startWeapon;
 	},
+    {
+		PCL_ALIEN_LEVEL0_UPG, //int     number;
+		"level0upg", //char    *name;
+		WP_ALEVEL0_UPG //weapon_t  startWeapon;
+	},
 	{
 		PCL_ALIEN_LEVEL1, //int     number;
 		"level1", //char    *name;
@@ -549,6 +554,7 @@ typedef struct
 static const weaponData_t bg_weaponsData[] =
 {
 	{ WP_ALEVEL0,           "level0"    },
+    { WP_ALEVEL0_UPG,       "level0upg" },
 	{ WP_ALEVEL1,           "level1"    },
 	{ WP_ALEVEL1_UPG,       "level1upg" },
 	{ WP_ALEVEL2,           "level2"    },

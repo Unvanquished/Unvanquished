@@ -62,85 +62,96 @@ void G_BounceMissile( gentity_t *ent, trace_t *trace )
 
 /*
 ================
-G_MissileTimePowerReduce
+MissileTimePowerReduce
 
-Reduce the power of e.g. a luciball relative to time spent travelling.
+Helper for MissileTimeDmgMod and MissileTimeSplashDmgMod
 ================
 */
 typedef enum {
-	PR_INVERSE_SQUARE, // params: 'full power' time, 'half-life' time
-	                   // (reality: starts falling off before so that we approximate a smooth curve)
-	PR_COSINE,         // params: lifetime, unused (but >0)
-	PR_END             // unused; here so that we can have the comma above for C89
-} powerReduce_t;
+	MTPR_LINEAR_DECREASE,
+	MTPR_LINEAR_INCREASE,
+	MTPR_EXPONENTIAL_DECREASE // endTime is half time period, endMod is ignored
+} missileTimePowerReduce_t;
 
-static float G_MissileTimePowerReduce( gentity_t *self, int fullPower, int halfLife, powerReduce_t type )
+static float MissileTimePowerMod( gentity_t *self, missileTimePowerReduce_t type,
+                                  float startMod, float endMod, int startTime, int endTime )
 {
-	int lifetime = level.time - self->creationTime;
-	float travelled;
-	float divider = 1;
+	int   lifeTime, affectedTime;
+	float fract;
 
-	// allow disabling via the half-life setting
-	if ( halfLife < 1 )
+	lifeTime = level.time - self->creationTime;
+
+	if ( lifeTime <= startTime )
 	{
-		return 1.0f;
+		return startMod;
+	}
+
+	affectedTime = lifeTime - startTime; // > 0
+
+	// sanity check endTime
+	if ( endTime < 1 )
+	{
+		return startMod;
 	}
 
 	switch ( type )
 	{
-	case PR_INVERSE_SQUARE:
-		travelled = lifetime + fullPower - halfLife;
-		if ( travelled > halfLife * 1.25 ) // approx. point at which the two graphs meet
-		{
-			divider = Q_rsqrt( travelled / halfLife );
-		}
-		else if ( travelled >= 0 )
-		{
-			divider = travelled / halfLife;
-			divider = cos( divider * divider / 3.375 );
-		}
-		break;
+		case MTPR_LINEAR_DECREASE:
+			// time is zero time
+			fract = MIN( affectedTime, endTime ) / ( float )endTime;
+			return startMod - ( startMod - endMod ) * fract;
 
-	case PR_COSINE:
-		// curve is from -halfLife to fullPower, with a quarter-cycle being 0…fullPower
-		travelled = lifetime - halfLife;
-		divider = cos( travelled * M_PI / 2.0f / ( fullPower + 1 - halfLife ) );
-		divider = MAX( 0.0f, divider );
-		break;
+		case MTPR_LINEAR_INCREASE:
+			// time is full time
+			fract = MIN( affectedTime, endTime ) / ( float )endTime;
+			return startMod + ( endMod - startMod ) * fract;
 
-	case PR_END:
-		break;
+		case MTPR_EXPONENTIAL_DECREASE:
+			// arg is half life time, ln(2) ~= 0.6931472
+			return startMod * exp( ( -0.6931472f * affectedTime ) / ( float )endTime );
+
+		default:
+			return startMod;
 	}
-
-	return divider;
 }
 
 /*
 ================
-G_DoMissileTimePowerReduce
-
-Called on missile explosion or impact if the missile is otherwise not specially handled
+MissileTimeDmgMod
 ================
 */
-static float G_DoMissileTimePowerReduce( gentity_t *ent )
+static float MissileTimeDmgMod( gentity_t *ent )
 {
 	if ( !strcmp( ent->classname, "lcannon" ) )
 	{
-		return G_MissileTimePowerReduce( ent, g_luciFullPowerTime.integer,
-		                                      g_luciHalfLifeTime.integer,
-		                                      PR_INVERSE_SQUARE );
+		return MissileTimePowerMod( ent, MTPR_EXPONENTIAL_DECREASE, 1.0f, 0.0f,
+		                            LCANNON_DAMAGE_FULL_TIME, LCANNON_DAMAGE_HALF_LIFE );
 	}
 	else if ( !strcmp( ent->classname, "pulse" ) )
 	{
-		return G_MissileTimePowerReduce( ent, g_pulseFullPowerTime.integer,
-		                                      g_pulseHalfLifeTime.integer,
-		                                      PR_INVERSE_SQUARE );
+		return MissileTimePowerMod( ent, MTPR_EXPONENTIAL_DECREASE, 1.0f, 0.0f,
+		                            PRIFLE_DAMAGE_FULL_TIME, PRIFLE_DAMAGE_HALF_LIFE );
 	}
 	else if ( !strcmp( ent->classname, "flame" ) )
 	{
-		return G_MissileTimePowerReduce( ent, FLAMER_LIFETIME,
-		                                      g_flameFadeout.integer ? ( FLAMER_LIFETIME / 5 ) : 0,
-		                                      PR_COSINE );
+		return MissileTimePowerMod( ent, MTPR_LINEAR_DECREASE, 1.0f, FLAMER_DAMAGE_MAXDST_MOD,
+		                            0, FLAMER_LIFETIME );
+	}
+
+	return 1.0f;
+}
+
+/*
+================
+MissileTimeSplashDmgMod
+================
+*/
+static float MissileTimeSplashDmgMod( gentity_t *ent )
+{
+	if ( !strcmp( ent->classname, "flame" ) )
+	{
+		return MissileTimePowerMod( ent, MTPR_LINEAR_INCREASE, FLAMER_SPLASH_MINDST_MOD, 1.0f,
+			                        0, FLAMER_LIFETIME );
 	}
 
 	return 1.0f;
@@ -150,7 +161,7 @@ static float G_DoMissileTimePowerReduce( gentity_t *ent )
 ================
 G_ExplodeMissile
 
-Explode a missile without an impact
+Explode a missile without an impact.
 ================
 */
 void G_ExplodeMissile( gentity_t *ent )
@@ -180,7 +191,7 @@ void G_ExplodeMissile( gentity_t *ent )
 	if ( ent->splashDamage )
 	{
 		G_RadiusDamage( ent->r.currentOrigin, ent->parent,
-		                ent->splashDamage * G_DoMissileTimePowerReduce( ent ),
+		                ent->splashDamage * MissileTimeSplashDmgMod( ent ),
 		                ent->splashRadius, ent, ent->splashMethodOfDeath );
 	}
 
@@ -190,7 +201,6 @@ void G_ExplodeMissile( gentity_t *ent )
 /*
 ================
 G_MissileImpact
-
 ================
 */
 void G_MissileImpact( gentity_t *ent, trace_t *trace )
@@ -198,7 +208,6 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace )
 	gentity_t *other, *attacker, *neighbor;
 	qboolean  returnAfterDamage = qfalse;
 	vec3_t    dir;
-	float     power;
 
 	other = &g_entities[ trace->entityNum ];
 	attacker = &g_entities[ ent->r.ownerNum ];
@@ -242,7 +251,7 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace )
 			}
 		}
 
-		// ignite alien buildables on splash hit
+		// ignite alien buildables in radius
 		neighbor = NULL;
 		while ( neighbor = G_IterateEntitiesWithinRadius( neighbor, trace->endpos, FLAMER_IGNITE_RADIUS ) )
 		{
@@ -258,6 +267,15 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace )
 				{
 					G_IgniteBuildable( neighbor, ent->parent );
 				}
+			}
+		}
+
+		// set the environment on fire
+		if ( other->s.number == ENTITYNUM_WORLD )
+		{
+			if ( random() < FLAMER_LEAVE_FIRE_CHANCE )
+			{
+				G_SpawnFire( trace->endpos, trace->plane.normal, ent->parent );
 			}
 		}
 	}
@@ -319,8 +337,6 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace )
 		}
 	}
 
-	power = G_DoMissileTimePowerReduce( ent );
-
 	// impact damage
 	if ( other->takedamage )
 	{
@@ -336,7 +352,8 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace )
 				dir[ 2 ] = 1; // stepped on a grenade
 			}
 
-			G_Damage( other, ent, attacker, dir, ent->s.origin, ent->damage * power,
+			G_Damage( other, ent, attacker, dir, ent->s.origin,
+			          roundf( ent->damage * MissileTimeDmgMod( ent ) ),
 			          DAMAGE_NO_LOCDAMAGE, ent->methodOfDeath );
 		}
 	}
@@ -376,8 +393,9 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace )
 	// splash damage (doesn't apply to person directly hit)
 	if ( ent->splashDamage )
 	{
-		G_RadiusDamage( trace->endpos, ent->parent, ent->splashDamage * power, ent->splashRadius,
-		                other, ent->splashMethodOfDeath );
+		G_RadiusDamage( trace->endpos, ent->parent,
+		                ent->splashDamage * MissileTimeSplashDmgMod( ent ),
+		                ent->splashRadius, other, ent->splashMethodOfDeath );
 	}
 
 	trap_LinkEntity( ent );
@@ -386,7 +404,6 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace )
 /*
 ================
 G_RunMissile
-
 ================
 */
 void G_RunMissile( gentity_t *ent )
@@ -475,8 +492,7 @@ void G_RunMissile( gentity_t *ent )
 
 	if ( ent->flightSplashDamage )
 	{
-		G_RadiusDamage( tr.endpos, ent->parent,
-		                ent->flightSplashDamage * G_DoMissileTimePowerReduce( ent ), ent->splashRadius,
+		G_RadiusDamage( tr.endpos, ent->parent, ent->flightSplashDamage, ent->flightSplashRadius,
 		                ent->parent, ent->splashMethodOfDeath );
 	}
 
@@ -484,12 +500,9 @@ void G_RunMissile( gentity_t *ent )
 	G_RunThink( ent );
 }
 
-//=============================================================================
-
 /*
 =================
 fire_flamer
-
 =================
 */
 gentity_t *fire_flamer( gentity_t *self, vec3_t start, vec3_t dir )
@@ -501,16 +514,17 @@ gentity_t *fire_flamer( gentity_t *self, vec3_t start, vec3_t dir )
 	bolt->classname = "flame";
 	bolt->pointAgainstWorld = qfalse;
 	bolt->nextthink = level.time + FLAMER_LIFETIME;
-	bolt->think = G_ExplodeMissile;
+	bolt->think = G_FreeEntity; // don't do splash when dying
 	bolt->s.eType = ET_MISSILE;
 	bolt->s.weapon = WP_FLAMER;
 	bolt->s.generic1 = self->s.generic1; //weaponMode
 	bolt->r.ownerNum = self->s.number;
 	bolt->parent = self;
-	bolt->damage = FLAMER_DMG;
-	bolt->flightSplashDamage = FLAMER_FLIGHTDAMAGE;
-	bolt->splashDamage = FLAMER_SPLASHDAMAGE;
-	bolt->splashRadius = FLAMER_RADIUS;
+	bolt->damage = FLAMER_DAMAGE;
+	bolt->flightSplashDamage = 0;
+	bolt->flightSplashRadius = 0;
+	bolt->splashDamage = FLAMER_SPLASH_DAMAGE;
+	bolt->splashRadius = FLAMER_SPLASH_RADIUS;
 	bolt->methodOfDeath = MOD_FLAMER;
 	bolt->splashMethodOfDeath = MOD_FLAMER_SPLASH;
 	bolt->clipmask = MASK_SHOT;
@@ -530,12 +544,9 @@ gentity_t *fire_flamer( gentity_t *self, vec3_t start, vec3_t dir )
 	return bolt;
 }
 
-//=============================================================================
-
 /*
 =================
 fire_blaster
-
 =================
 */
 gentity_t *fire_blaster( gentity_t *self, vec3_t start, vec3_t dir )
@@ -554,6 +565,7 @@ gentity_t *fire_blaster( gentity_t *self, vec3_t start, vec3_t dir )
 	bolt->parent = self;
 	bolt->damage = BLASTER_DMG;
 	bolt->flightSplashDamage = 0;
+	bolt->flightSplashRadius = 0;
 	bolt->splashDamage = 0;
 	bolt->splashRadius = 0;
 	bolt->methodOfDeath = MOD_BLASTER;
@@ -574,12 +586,9 @@ gentity_t *fire_blaster( gentity_t *self, vec3_t start, vec3_t dir )
 	return bolt;
 }
 
-//=============================================================================
-
 /*
 =================
 fire_pulseRifle
-
 =================
 */
 gentity_t *fire_pulseRifle( gentity_t *self, vec3_t start, vec3_t dir )
@@ -598,6 +607,7 @@ gentity_t *fire_pulseRifle( gentity_t *self, vec3_t start, vec3_t dir )
 	bolt->parent = self;
 	bolt->damage = PRIFLE_DMG;
 	bolt->flightSplashDamage = 0;
+	bolt->flightSplashRadius = 0;
 	bolt->splashDamage = 0;
 	bolt->splashRadius = 0;
 	bolt->methodOfDeath = MOD_PRIFLE;
@@ -618,12 +628,9 @@ gentity_t *fire_pulseRifle( gentity_t *self, vec3_t start, vec3_t dir )
 	return bolt;
 }
 
-//=============================================================================
-
 /*
 =================
 fire_luciferCannon
-
 =================
 */
 gentity_t *fire_luciferCannon( gentity_t *self, vec3_t start, vec3_t dir,
@@ -653,6 +660,7 @@ gentity_t *fire_luciferCannon( gentity_t *self, vec3_t start, vec3_t dir,
 	bolt->parent = self;
 	bolt->damage = damage;
 	bolt->flightSplashDamage = 0;
+	bolt->flightSplashRadius = 0;
 	bolt->splashDamage = damage / 2;
 	bolt->splashRadius = radius;
 	bolt->methodOfDeath = MOD_LCANNON;
@@ -690,7 +698,6 @@ gentity_t *fire_luciferCannon( gentity_t *self, vec3_t start, vec3_t dir,
 /*
 =================
 launch_grenade
-
 =================
 */
 gentity_t *launch_grenade( gentity_t *self, vec3_t start, vec3_t dir )
@@ -710,6 +717,7 @@ gentity_t *launch_grenade( gentity_t *self, vec3_t start, vec3_t dir )
 	bolt->parent = self;
 	bolt->damage = GRENADE_DAMAGE;
 	bolt->flightSplashDamage = 0;
+	bolt->flightSplashRadius = 0;
 	bolt->splashDamage = GRENADE_DAMAGE;
 	bolt->splashRadius = GRENADE_RANGE;
 	bolt->methodOfDeath = MOD_GRENADE;
@@ -737,12 +745,12 @@ gentity_t *launch_grenade( gentity_t *self, vec3_t start, vec3_t dir )
 
 /*
 ================
-AHive_SearchAndDestroy
+HiveMissileThink
 
-Adjust the trajectory to point towards the target
+Adjusts the trajectory to point towards the target.
 ================
 */
-void AHive_SearchAndDestroy( gentity_t *self )
+void HiveMissileThink( gentity_t *self )
 {
 	vec3_t    dir;
 	trace_t   tr;
@@ -815,7 +823,7 @@ gentity_t *fire_hive( gentity_t *self, vec3_t start, vec3_t dir )
 	bolt->classname = "hive";
 	bolt->pointAgainstWorld = qfalse;
 	bolt->nextthink = level.time + HIVE_DIR_CHANGE_PERIOD;
-	bolt->think = AHive_SearchAndDestroy;
+	bolt->think = HiveMissileThink;
 	bolt->s.eType = ET_MISSILE;
 	bolt->s.eFlags |= EF_BOUNCE | EF_NO_BOUNCE_SOUND;
 	bolt->s.weapon = WP_HIVE;
@@ -824,6 +832,7 @@ gentity_t *fire_hive( gentity_t *self, vec3_t start, vec3_t dir )
 	bolt->parent = self;
 	bolt->damage = HIVE_DMG;
 	bolt->flightSplashDamage = 0;
+	bolt->flightSplashRadius = 0;
 	bolt->splashDamage = 0;
 	bolt->splashRadius = 0;
 	bolt->methodOfDeath = MOD_SWARM;
@@ -864,6 +873,7 @@ gentity_t *fire_lockblob( gentity_t *self, vec3_t start, vec3_t dir )
 	bolt->parent = self;
 	bolt->damage = 0;
 	bolt->flightSplashDamage = 0;
+	bolt->flightSplashRadius = 0;
 	bolt->splashDamage = 0;
 	bolt->splashRadius = 0;
 	bolt->methodOfDeath = MOD_UNKNOWN; //doesn't do damage so will never kill
@@ -901,6 +911,7 @@ gentity_t *fire_slowBlob( gentity_t *self, vec3_t start, vec3_t dir )
 	bolt->parent = self;
 	bolt->damage = ABUILDER_BLOB_DMG;
 	bolt->flightSplashDamage = 0;
+	bolt->flightSplashRadius = 0;
 	bolt->splashDamage = 0;
 	bolt->splashRadius = 0;
 	bolt->methodOfDeath = MOD_SLOWBLOB;
@@ -939,6 +950,7 @@ gentity_t *fire_bounceBall( gentity_t *self, vec3_t start, vec3_t dir )
 	bolt->parent = self;
 	bolt->damage = LEVEL3_BOUNCEBALL_DMG;
 	bolt->flightSplashDamage = 0;
+	bolt->flightSplashRadius = 0;
 	bolt->splashDamage = LEVEL3_BOUNCEBALL_DMG;
 	bolt->splashRadius = LEVEL3_BOUNCEBALL_RADIUS;
 	bolt->methodOfDeath = MOD_LEVEL3_BOUNCEBALL;

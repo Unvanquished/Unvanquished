@@ -551,6 +551,10 @@ static void CG_SetPVars( void )
 			trap_Cvar_Set( "p_classname", "Dretch" );
 			break;
 
+		case PCL_ALIEN_LEVEL0_UPG:
+			trap_Cvar_Set( "p_classname", "Advanced Dretch" );
+			break;
+
 		case PCL_ALIEN_LEVEL1:
 			trap_Cvar_Set( "p_classname", "Basilisk" );
 			break;
@@ -649,6 +653,7 @@ static void CG_SetPVars( void )
 			break;
 
 		case WP_ALEVEL0:
+		case WP_ALEVEL0_UPG:
 			trap_Cvar_Set( "p_weaponname", "Teeth" );
 			break;
 
@@ -1554,7 +1559,9 @@ static void CG_RegisterGraphics( void )
 
 	cgs.media.humanBuildableBleedPS = CG_RegisterParticleSystem( "humanBuildableBleedPS" );
 	cgs.media.alienBuildableBleedPS = CG_RegisterParticleSystem( "alienBuildableBleedPS" );
-	cgs.media.alienBuildableBurnPS = CG_RegisterParticleSystem( "alienBuildableBurnPS" );
+	cgs.media.alienBuildableBurnPS  = CG_RegisterParticleSystem( "alienBuildableBurnPS" );
+
+	cgs.media.floorFirePS = CG_RegisterParticleSystem( "floorFirePS" );
 
 	cgs.media.alienBleedPS = CG_RegisterParticleSystem( "alienBleedPS" );
 	cgs.media.humanBleedPS = CG_RegisterParticleSystem( "humanBleedPS" );
