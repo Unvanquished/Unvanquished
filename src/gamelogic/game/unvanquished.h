@@ -196,9 +196,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 /*
  * ALIEN buildables
- *
- * CREEP_BASESIZE - the maximum distance a buildable can be from an egg/overmind
- *
  */
 
 #define CREEP_BASESIZE          700
@@ -206,6 +203,15 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define CREEP_MODIFIER          0.5f
 #define CREEP_ARMOUR_MODIFIER   0.75f
 #define CREEP_SCALEDOWN_TIME    3000
+
+#define BURN_DAMAGE             10
+#define BURN_DAMAGE_PERIOD      1000
+#define BURN_STOP_PERIOD        2500
+#define BURN_STOP_CHANCE        0.5f
+#define BURN_SPREAD_PERIOD      1000
+#define BURN_SPREAD_CHANCE      0.2f
+#define BURN_SPREAD_RADIUS      100
+#define BURN_PERIODS_RAND       0.2
 
 #define PCLOUD_MODIFIER         0.5f
 #define PCLOUD_ARMOUR_MODIFIER  0.75f
@@ -230,6 +236,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define HIVE_DMG                80
 #define HIVE_SPEED              320.0f
 #define HIVE_DIR_CHANGE_PERIOD  500
+
+#define LEECH_LIFETIME           3000
+#define LEECH_REPEAT             3000
+#define LEECH_K_SCALE            1.0f
+#define LEECH_DMG                80
+#define LEECH_SPEED              320.0f
+#define LEECH_DIR_CHANGE_PERIOD  500
 
 #define LOCKBLOB_SPEED          500.0f
 #define LOCKBLOB_LOCKTIME       5000
@@ -257,10 +270,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define ALIEN_REGEN_DAMAGE_TIME  2000 //msec since damage that regen starts again
 #define ALIEN_REGEN_NOCREEP_MOD  ( 1.0f / 3.0f ) //regen off creep
 
-#define ALIEN_MAX_FRAGS          9
-#define ALIEN_MAX_CREDITS        ( ALIEN_MAX_FRAGS * ALIEN_CREDITS_PER_KILL )
-#define ALIEN_CREDITS_PER_KILL   400
-#define ALIEN_TK_SUICIDE_PENALTY 350
+#define ALIEN_MAX_CREDITS        2000 // CREDITS_PER_EVO converts this to evos for display
+#define ALIEN_TK_SUICIDE_PENALTY 150
 
 /*
  * HUMAN weapons
@@ -309,14 +320,17 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define CHAINGUN_SPREAD          900
 #define CHAINGUN_DMG             HDM(6)
 
-#define FLAMER_DMG               HDM(14) // 20->15->14
-#define FLAMER_FLIGHTSPLASHDAMAGE HDM(1)
-#define FLAMER_SPLASHDAMAGE      HDM(6) // 10->7->6
-#define FLAMER_RADIUS            25 //  Radius lowered by 25
-#define FLAMER_SIZE              15 // missile bounding box
-#define FLAMER_LIFETIME          750.0f // Raised by 50.
-#define FLAMER_SPEED             500.0f
-#define FLAMER_LAG               0.65f // the amount of player velocity that is added to the fireball
+#define FLAMER_DMG               HDM(12)
+#define FLAMER_FLIGHTDAMAGE      HDM(1)
+#define FLAMER_SPLASHDAMAGE      HDM(6)
+#define FLAMER_RADIUS            25
+#define FLAMER_SIZE              5      // missile bounding box
+#define FLAMER_LIFETIME          750.0f
+#define FLAMER_SPEED             400.0f
+#define FLAMER_LAG               0.65f  // part of player velocity that is added to the fireball
+#define FLAMER_IGNITE_RADIUS     50
+#define FLAMER_IGNITE_CHANCE     0.5f
+#define FLAMER_IGNITE_SPLCHANCE  0.1f
 
 #define PRIFLE_DMG               HDM(9)
 #define PRIFLE_SPEED             1200
@@ -366,16 +380,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 /*
  * HUMAN buildables
- *
- * REACTOR_BASESIZE - the maximum distance a buildable can be from a reactor
- * REPEATER_BASESIZE - the maximum distance a buildable can be from a repeater
- *
  */
-
-#define REACTOR_BASESIZE          1000
-#define REPEATER_BASESIZE         500
-#define HUMAN_DETONATION_DELAY    5000
-
 #define MGTURRET_RANGE            400.0
 #define MGTURRET_REPEAT           150.0
 #define MGTURRET_ANGULARSPEED     12
@@ -408,10 +413,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define HUMAN_JOG_MODIFIER            1.0f
 #define HUMAN_BACK_MODIFIER           0.8f
 #define HUMAN_SIDE_MODIFIER           0.9f
-#define HUMAN_DODGE_SIDE_MODIFIER     2.9f
-#define HUMAN_DODGE_SLOWED_MODIFIER   0.9f
-#define HUMAN_DODGE_UP_MODIFIER       0.5f
-#define HUMAN_DODGE_TIMEOUT           2500 // Reduced dodge cooldown.
 #define HUMAN_LAND_FRICTION           3.0f
 
 #define STAMINA_STOP_RESTORE          30
@@ -419,7 +420,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define STAMINA_MEDISTAT_RESTORE      30 // stacked on STOP or WALK
 #define STAMINA_SPRINT_TAKE           6
 #define STAMINA_JUMP_TAKE             250 // Doubled jump requirement. Can perform ~8 jumps.
-#define STAMINA_DODGE_TAKE            750 // Tripled dodge stamina requirement.
 #define STAMINA_MAX                   2000 // Doubled maximum stamina.
 #define STAMINA_BREATHING_LEVEL       0
 #define STAMINA_SLOW_LEVEL            -1000 // doubled to match doubled stamina
@@ -431,39 +431,50 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define HUMAN_MAX_CREDITS             2000
 #define HUMAN_TK_SUICIDE_PENALTY      150
 
-#define HUMAN_BUILDER_SCOREINC        50 // builders receive this many points every 10 seconds
-#define ALIEN_BUILDER_SCOREINC        AVM(100) // builders receive this many points every 10 seconds
-
-#define HUMAN_BUILDABLE_INACTIVE_TIME 90000
-
 /*
  * Misc
  */
 
+// fall distance
 #define MIN_FALL_DISTANCE                  30.0f //the fall distance at which fall damage kicks in
 #define MAX_FALL_DISTANCE                  120.0f //the fall distance at which maximum damage is dealt
 #define AVG_FALL_DISTANCE                  (( MIN_FALL_DISTANCE + MAX_FALL_DISTANCE ) / 2.0f )
 
-#define DEFAULT_FREEKILL_PERIOD            "120" //seconds
-#define FREEKILL_ALIEN                     ALIEN_CREDITS_PER_KILL
-#define FREEKILL_HUMAN                     LEVEL0_VALUE
+// buildable explosion
+#define HUMAN_DETONATION_DELAY             4000
+#define ALIEN_DETONATION_DELAY             5000
+#define DETONATION_DELAY_RAND_RANGE        0.25f
 
-#define DEFAULT_ALIEN_BUILDPOINTS          "150"
-#define DEFAULT_ALIEN_QUEUE_TIME           "12000"
-#define DEFAULT_ALIEN_STAGE2_THRESH        "12000"
-#define DEFAULT_ALIEN_STAGE3_THRESH        "24000"
+// score
+#define SCORE_PER_CREDIT                   0.02f // used to convert credit rewards to score points
+#define SCORE_PER_CONFIDENCE               1.0f  // used to convert confidence rewards to score points
+#define HUMAN_BUILDER_SCOREINC             50    // in credits/10s
+#define ALIEN_BUILDER_SCOREINC             50    // in credits/10s
+
+// funds
+// Values are in credits. 'evo' is just another unit for credits.
+#define CREDITS_PER_EVO                    100   // Used when alien credits are displayed as evos
+#define DEFAULT_FREEKILL_PERIOD            "120" // in s
+#define FREEKILL_ALIEN                     200   // value of a naked human
+#define FREEKILL_HUMAN                     180   // value of a dretch
+
+// resources
+#define RGS_RANGE                          1000.0f
+#define DEFAULT_INITIAL_BUILD_POINTS       "50"  // in BP
+#define DEFAULT_INITIAL_MINE_RATE          "8"   // in (BP/min)/RGS
+#define DEFAULT_MINE_RATE_HALF_LIFE        "20"  // in min
+
+// confidence & stages
+#define CONFIDENCE_PER_CREDIT              0.01f // used to award confidence based on credit rewards
+#define DEFAULT_CONFIDENCE_HALF_LIFE       "5"   // in min
+#define DEFAULT_MINIMUM_STAGE_TIME         "60"  // in s. how long to keep a new stage at minimum
+#define DEFAULT_STAGE2_BASE_THRESHOLD      "100"
+#define DEFAULT_STAGE3_BASE_THRESHOLD      "250"
+#define DEFAULT_STAGE2_INC_PER_PLAYER      "10"
+#define DEFAULT_STAGE3_INC_PER_PLAYER      "25"
+#define DEFAULT_STAGE_THRESHOLD_HALF_LIFE  "30"
 #define DEFAULT_ALIEN_MAX_STAGE            "2"
-#define DEFAULT_HUMAN_BUILDPOINTS          "100"
-#define DEFAULT_HUMAN_QUEUE_TIME           "8000"
-#define DEFAULT_HUMAN_REPEATER_BUILDPOINTS "20"
-#define DEFAULT_HUMAN_REPEATER_QUEUE_TIME  "2000"
-#define DEFAULT_HUMAN_REPEATER_MAX_ZONES   "500"
-#define DEFAULT_HUMAN_STAGE2_THRESH        "6000"
-#define DEFAULT_HUMAN_STAGE3_THRESH        "12000"
 #define DEFAULT_HUMAN_MAX_STAGE            "2"
-
-#define DAMAGE_FRACTION_FOR_KILL           0.5f //how much damage players (versus structures) need to
-//do to increment the stage kill counters
 
 #define MAXIMUM_BUILD_TIME                 20000 // used for pie timer
 

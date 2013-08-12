@@ -42,6 +42,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define CROUCH_VIEWHEIGHT  12
 #define DEAD_VIEWHEIGHT    4 // height from ground
 
+#define POWER_REFRESH_TIME 2000 // nextthink time for power checks
+
 // QVM-specific
 #ifdef Q3_VM
 #define QVM_STATIC static
@@ -87,8 +89,8 @@ enum
   CS_BOTINFO,
   CS_CLIENTS_READY,
 
-  CS_ALIEN_STAGES,
-  CS_HUMAN_STAGES,
+  CS_ALIEN_STAGE,
+  CS_HUMAN_STAGE,
 
   CS_MODELS,
   CS_SOUNDS = CS_MODELS + MAX_MODELS,
@@ -228,6 +230,7 @@ void Pmove( pmove_t *pmove );
 //===================================================================================
 
 // player_state->stats[] indexes
+// netcode has space for 16 stats
 typedef enum
 {
   STAT_HEALTH,
@@ -242,8 +245,9 @@ typedef enum
   STAT_MISC, // for uh...misc stuff (pounce, trample, lcannon)
   STAT_BUILDABLE, // which ghost model to display for building
   STAT_FALLDIST, // the distance the player fell
-  STAT_VIEWLOCK // direction to lock the view in
-  // netcode has space for 3 more
+  STAT_VIEWLOCK, // direction to lock the view in
+  STAT_PREDICTION // predictions for current player action (RGS efficiency)
+  // netcode has space for 2 more
 } statIndex_t;
 
 #define SCA_WALLCLIMBER     0x00000001
@@ -277,20 +281,22 @@ typedef enum
 typedef enum
 {
   PERS_SCORE, // !!! MUST NOT CHANGE, SERVER AND GAME BOTH REFERENCE !!!
-  PERS_HITS, // total points damage inflicted so damage beeps can sound on change
+  PERS_CONFIDENCE, // the total confidence of a team
   PERS_SPAWNS, // how many spawns your team has
   PERS_SPECSTATE,
   PERS_SPAWN_COUNT, // incremented every respawn
   PERS_ATTACKER, // clientnum of last damage inflicter
-  PERS_KILLED, // count of the number of times you died
-
+  PERS_RGS_EFFICIENCY, // summed efficiency of all friendly RGS
   PERS_STATE,
   PERS_CREDIT, // human credit
   PERS_QUEUEPOS, // position in the spawn queue
   PERS_NEWWEAPON, // weapon to switch to
   PERS_BP,
-  PERS_MARKEDBP
-  // netcode has space for 3 more
+  PERS_MARKEDBP,
+  PERS_MINERATE, // level wide base mine rate. TODO: calculate clientside
+  PERS_THRESHOLD_STAGE2,
+  PERS_THRESHOLD_STAGE3
+  // netcode has space for 0 more. TODO: extend
 } persEnum_t;
 
 #define PS_WALLCLIMBINGFOLLOW 0x00000001
@@ -313,6 +319,7 @@ typedef enum
 #define EF_B_SPAWNED        0x0008
 #define EF_B_POWERED        0x0010
 #define EF_B_MARKED         0x0020
+#define EF_B_ONFIRE         0x0040
 
 // for players
 #define EF_POWER_AVAILABLE  0x0010
@@ -419,6 +426,7 @@ typedef enum
   BA_A_TRAPPER,
   BA_A_BOOSTER,
   BA_A_HIVE,
+  BA_A_LEECH,
 
   BA_H_SPAWN,
 
@@ -428,6 +436,7 @@ typedef enum
   BA_H_ARMOURY,
   BA_H_DCC,
   BA_H_MEDISTAT,
+  BA_H_DRILL,
 
   BA_H_REACTOR,
   BA_H_REPEATER,
@@ -529,6 +538,7 @@ typedef enum
   EV_BUILD_DELAY, // can't build yet
   EV_BUILD_REPAIR, // repairing buildable
   EV_BUILD_REPAIRED, // buildable has full health
+  EV_HUMAN_BUILDABLE_DYING,
   EV_HUMAN_BUILDABLE_EXPLOSION,
   EV_ALIEN_BUILDABLE_EXPLOSION,
   EV_ALIEN_ACIDTUBE,
@@ -551,13 +561,16 @@ typedef enum
   EV_MGTURRET_SPINUP, // turret spinup sound should play
 
   EV_RPTUSE_SOUND, // trigger a sound
-  EV_LEV2_ZAP
+  EV_LEV2_ZAP,
+
+  EV_CONFIDENCE // notify client of generated confidence
 } entity_event_t;
 
 typedef enum
 {
   MN_NONE,
 
+  MN_WELCOME,
   MN_TEAM,
   MN_A_TEAMFULL,
   MN_H_TEAMFULL,
@@ -595,7 +608,7 @@ typedef enum
   MN_B_NORMAL,
   MN_B_CANNOT,
   MN_B_LASTSPAWN,
-  MN_B_SUDDENDEATH,
+  MN_B_DISABLED,
   MN_B_REVOKED,
   MN_B_SURRENDER,
 
@@ -623,11 +636,12 @@ typedef enum
 
   //human build
   MN_H_NOPOWERHERE,
+  MN_H_DRILLPOWERSOURCE,
+  MN_H_NOREACTOR,
   MN_H_NOBP,
   MN_H_NOTPOWERED,
   MN_H_NODCC,
-  MN_H_ONEREACTOR,
-  MN_H_RPTPOWERHERE,
+  MN_H_ONEREACTOR
 } dynMenu_t;
 
 // animations
@@ -891,6 +905,7 @@ typedef enum
   MOD_LCANNON_SPLASH,
   MOD_FLAMER,
   MOD_FLAMER_SPLASH,
+  MOD_BURN,
   MOD_GRENADE,
   MOD_WATER,
   MOD_SLIME,
@@ -932,6 +947,38 @@ typedef enum
   MOD_NOCREEP
 } meansOfDeath_t;
 
+// reasons for giving confidence, get sent to the client who earned it
+typedef enum
+{
+	CONF_REAS_NONE,
+
+	CONF_REAS_STAGEUP,
+	CONF_REAS_STAGEDOWN,
+
+	CONF_REAS_KILLING,
+
+	CONF_REAS_DESTR_CRUCIAL,
+	CONF_REAS_DESTR_AGGRESSIVE,
+	CONF_REAS_DESTR_SUPPORT,
+
+	CONF_REAS_BUILD_CRUCIAL,
+	CONF_REAS_BUILD_AGGRESSIVE,
+	CONF_REAS_BUILD_SUPPORT,
+	CONF_REAS_DECON
+} confidence_reason_t;
+
+// qualifications that are necessary for generating confidence or yield a bonus,
+// get sent to the client who earned it
+typedef enum
+{
+	CONF_QUAL_NONE,
+
+	CONF_QUAL_IN_ENEMEY_BASE,
+	CONF_QUAL_CLOSE_TO_ENEMY_BASE,
+	CONF_QUAL_OUTSIDE_OWN_BASE,
+	CONF_QUAL_IN_OWN_BASE
+} confidence_qualifier_t;
+
 //---------------------------------------------------------
 
 // player class record
@@ -968,7 +1015,6 @@ typedef struct
 	float    jumpMagnitude;
 	float    knockbackScale;
 
-	int      children[ 3 ];
 	int      cost;
 	int      value;
 
@@ -1020,6 +1066,7 @@ typedef struct
 	float       bounce;
 
 	int         buildPoints;
+	int         powerConsumption;
 	int         stages;
 
 	int         health;
@@ -1177,11 +1224,9 @@ void                        BG_ClassBoundingBox( class_t pClass, vec3_t mins,
     vec3_t maxs, vec3_t cmaxs,
     vec3_t dmins, vec3_t dmaxs );
 qboolean                    BG_ClassHasAbility( class_t pClass, int ability );
-int                         BG_ClassCanEvolveFromTo( class_t fclass,
-    class_t tclass,
-    int credits, int alienStage, int num );
 
-qboolean                  BG_AlienCanEvolve( class_t pClass, int credits, int alienStage );
+int                         BG_ClassCanEvolveFromTo(class_t from, class_t to, int credits, int stage);
+qboolean                    BG_AlienCanEvolve(class_t from, int credits, int alienStage );
 
 const weaponAttributes_t  *BG_WeaponByName( const char *name );
 const weaponAttributes_t  *BG_Weapon( weapon_t weapon );

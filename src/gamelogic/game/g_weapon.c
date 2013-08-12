@@ -605,15 +605,7 @@ FLAME THROWER
 
 void flamerFire( gentity_t *ent )
 {
-	vec3_t origin;
-
-	// Correct muzzle so that the missile does not start in the ceiling
-	VectorMA( muzzle, -7.0f, up, origin );
-
-	// Correct muzzle so that the missile fires from the player's hand
-	VectorMA( origin, 4.5f, right, origin );
-
-	fire_flamer( ent, origin, forward );
+	fire_flamer( ent, muzzle, forward );
 }
 
 /*
@@ -820,12 +812,12 @@ BUILD GUN
 
 ======================================================================
 */
+
 void CheckCkitRepair( gentity_t *ent )
 {
 	vec3_t    viewOrigin, forward, end;
 	trace_t   tr;
 	gentity_t *traceEnt;
-	int       bHealth;
 
 	if ( ent->client->ps.weaponTime > 0 ||
 	     ent->client->ps.stats[ STAT_MISC ] > 0 )
@@ -843,15 +835,17 @@ void CheckCkitRepair( gentity_t *ent )
 	if ( tr.fraction < 1.0f && traceEnt->spawned && traceEnt->health > 0 &&
 	     traceEnt->s.eType == ET_BUILDABLE && traceEnt->buildableTeam == TEAM_HUMANS )
 	{
-		bHealth = BG_Buildable( traceEnt->s.modelindex )->health;
+		const buildableAttributes_t *buildable;
 
-		if ( traceEnt->health < bHealth )
+		buildable = BG_Buildable( traceEnt->s.modelindex );
+
+		if ( traceEnt->health < buildable->health )
 		{
 			traceEnt->health += HBUILD_HEALRATE;
 
-			if ( traceEnt->health >= bHealth )
+			if ( traceEnt->health >= buildable->health )
 			{
-				traceEnt->health = bHealth;
+				traceEnt->health = buildable->health;
 				G_AddEvent( ent, EV_BUILD_REPAIRED, 0 );
 			}
 			else
@@ -875,6 +869,7 @@ void cancelBuildFire( gentity_t *ent )
 	if ( ent->client->ps.stats[ STAT_BUILDABLE ] != BA_NONE )
 	{
 		ent->client->ps.stats[ STAT_BUILDABLE ] = BA_NONE;
+		ent->client->ps.stats[ STAT_PREDICTION ] = 0;
 		return;
 	}
 

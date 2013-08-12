@@ -256,22 +256,19 @@ gentity_t *G_SelectUnvanquishedSpawnPoint( team_t team, vec3_t preference, vec3_
 {
 	gentity_t *spot = NULL;
 
+	/* team must exist, or there will be a sigsegv */
+	assert(team == TEAM_HUMANS || team == TEAM_ALIENS);
+	if( level.team[ team ].numSpawns <= 0 )
+	{
+		return NULL;
+	}
+
 	if ( team == TEAM_ALIENS )
 	{
-		if ( level.numAlienSpawns <= 0 )
-		{
-			return NULL;
-		}
-
 		spot = G_SelectSpawnBuildable( preference, BA_A_SPAWN );
 	}
 	else if ( team == TEAM_HUMANS )
 	{
-		if ( level.numHumanSpawns <= 0 )
-		{
-			return NULL;
-		}
-
 		spot = G_SelectSpawnBuildable( preference, BA_H_SPAWN );
 	}
 
@@ -316,40 +313,39 @@ static gentity_t *G_SelectSpectatorSpawnPoint( vec3_t origin, vec3_t angles )
 ===========
 G_SelectAlienLockSpawnPoint
 
-Try to find a spawn point for alien intermission otherwise
-use spectator intermission spawn.
-============
+Historical wrapper which should be removed. See G_SelectLockSpawnPoint.
+===========
 */
 gentity_t *G_SelectAlienLockSpawnPoint( vec3_t origin, vec3_t angles )
 {
-	gentity_t *spot;
-
-	spot = G_PickRandomEntityOfClass( S_POS_ALIEN_INTERMISSION );
-
-	if ( !spot )
-	{
-		return G_SelectSpectatorSpawnPoint( origin, angles );
-	}
-
-	VectorCopy( spot->s.origin, origin );
-	VectorCopy( spot->s.angles, angles );
-
-	return spot;
+	return G_SelectLockSpawnPoint(origin, angles, S_POS_ALIEN_INTERMISSION );
 }
 
 /*
 ===========
 G_SelectHumanLockSpawnPoint
 
-Try to find a spawn point for human intermission otherwise
-use spectator intermission spawn.
-============
+Historical wrapper which should be removed. See G_SelectLockSpawnPoint.
+===========
 */
 gentity_t *G_SelectHumanLockSpawnPoint( vec3_t origin, vec3_t angles )
 {
+	return G_SelectLockSpawnPoint(origin, angles, S_POS_HUMAN_INTERMISSION );
+}
+
+/*
+===========
+G_SelectLockSpawnPoint
+
+Try to find a spawn point for a team intermission otherwise
+use spectator intermission spawn.
+============
+*/
+gentity_t *G_SelectLockSpawnPoint( vec3_t origin, vec3_t angles , char const* intermission )
+{
 	gentity_t *spot;
 
-	spot = G_PickRandomEntityOfClass( S_POS_HUMAN_INTERMISSION );
+	spot = G_PickRandomEntityOfClass( intermission );
 
 	if ( !spot )
 	{
@@ -1202,7 +1198,7 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 	{
 		return "Invalid pubkey key";
 	}
-	
+
 	trap_GenFingerprint( pubkey, sizeof( pubkey ), client->pers.guid, sizeof( client->pers.guid ) );
 
 	client->pers.admin = G_admin_admin( client->pers.guid );
@@ -1242,7 +1238,7 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 		{
 			continue;
 		}
-		
+
 		if ( !Q_stricmp( client->pers.guid, level.clients[ i ].pers.guid ) )
 		{
 			if ( !G_ClientIsLagging( level.clients + i ) )
@@ -1250,11 +1246,11 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 				trap_SendServerCommand( i, "cp \"Your GUID is not secure\"" );
 				return "Duplicate GUID";
 			}
-			
+
 			trap_DropClient( i, "Ghost" );
 		}
 	}
-	
+
 	client->pers.connected = CON_CONNECTING;
 
 	// read or initialize the session data
@@ -1394,6 +1390,25 @@ void ClientBegin( int clientNum )
 	{
 		G_ListCommands( ent );
 	}
+
+	// display the help menu, if connecting the first time
+	if ( !client->sess.seenWelcome )
+	{
+		client->sess.seenWelcome = 1;
+
+		// 0 - don't show
+		// 1 - always show to all
+		// 2 - show only to unregistered
+		switch ( g_showHelpOnConnection.integer )
+		{
+		case 0:
+			if (0)
+		default:
+			if ( !client->pers.admin )
+		case 1:
+			G_TriggerMenu( client->ps.clientNum, MN_WELCOME );
+		}
+	}
 }
 
 /*
@@ -1490,10 +1505,11 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 
 		spawnPoint = spawn;
 
-		if ( ent != spawn )
+		if ( spawnPoint->s.eType == ET_BUILDABLE )
 		{
-			//start spawn animation on spawnPoint
 			G_SetBuildableAnim( spawnPoint, BANIM_SPAWN1, qtrue );
+
+			spawnPoint->buildableStatsCount++;
 
 			if ( spawnPoint->buildableTeam == TEAM_ALIENS )
 			{
@@ -1616,6 +1632,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	ent->client->ps.stats[ STAT_TEAM ] = ent->client->pers.teamSelection;
 
 	ent->client->ps.stats[ STAT_BUILDABLE ] = BA_NONE;
+	ent->client->ps.stats[ STAT_PREDICTION ] = 0;
 	ent->client->ps.stats[ STAT_STATE ] = 0;
 	VectorSet( ent->client->ps.grapplePoint, 0.0f, 0.0f, 1.0f );
 
@@ -1747,9 +1764,6 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	// positively link the client, even if the command times are weird
 	if ( client->sess.spectatorState == SPECTATOR_NOT )
 	{
-		ent->r.svFlags |= SVF_CLIENTS_IN_RANGE;
-		ent->r.clientRadius = MAX( HELMET_RANGE, ALIENSENSE_RANGE );
-
 		BG_PlayerStateToEntityState( &client->ps, &ent->s, qtrue );
 		VectorCopy( ent->client->ps.origin, ent->r.currentOrigin );
 		trap_LinkEntity( ent );
