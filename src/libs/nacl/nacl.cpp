@@ -570,8 +570,8 @@ Module LoadModule(const char* module, const LoaderParams* nacl_params, bool use_
 
 	// Generate command line
 	std::vector<const char*> args;
+	char root_sock_redir[32];
 	if (nacl_params) {
-		char root_sock_redir[32];
 		snprintf(root_sock_redir, sizeof(root_sock_redir), "%d:%d", ROOT_SOCKET_FD, (int)pair[1]);
 
 		if (nacl_params->bootstrap) {
