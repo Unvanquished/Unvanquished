@@ -175,6 +175,8 @@ cvar_t             *cl_allowPaste;
 
 cvar_t             *cl_rate;
 
+cvar_t             *cl_cgameSyscallStats;
+
 clientActive_t     cl;
 clientConnection_t clc;
 clientStatic_t     cls;
@@ -3828,6 +3830,8 @@ void CL_Frame( int msec )
 
 	Con_RunConsole();
 
+	CL_CGameStats();
+
 	cls.framecount++;
 }
 
@@ -4536,6 +4540,8 @@ void CL_Init( void )
 	Cvar_Get( "cg_viewsize", "100", CVAR_ARCHIVE );
 
 	cl_allowPaste = Cvar_Get( "cl_allowPaste", "1", 0 );
+
+	cl_cgameSyscallStats = Cvar_Get( "cl_cgameSyscallStats", "0", CVAR_ARCHIVE );
 
 	//
 	// register our commands
