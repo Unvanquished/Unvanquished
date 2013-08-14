@@ -624,14 +624,7 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 	STATIC_INLINE long XreaL_Q_ftol( float f ) IFDECLARE
 #ifdef Q3_VM_INSTANTIATE
 	{
-#if id386_sse && defined( _MSC_VER )
-		static int tmp;
-		__asm fld f
-		__asm fistp tmp
-		__asm mov  eax, tmp
-#else
 		return ( long ) f;
-#endif
 	}
 #endif
 
@@ -639,8 +632,9 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 #ifdef Q3_VM_INSTANTIATE
 	{
 		float y;
-
-#if idppc
+#if id386_sse
+		_mm_store_ss( &y, _mm_rsqrt_ss( _mm_load_ss( &number ) ) );
+#elif idppc
 		float x = 0.5f * number;
 
 #ifdef __GNUC__
@@ -649,32 +643,6 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 		y = __frsqrte( number );
 #endif
 		return y * ( 1.5f - ( x * y * y ) );
-
-#elif id386_3dnow && defined __GNUC__
-//#error Q_rqsrt
-		asm volatile
-		(
-		  // lo                                   | hi
-		  "femms                               \n"
-		  "movd           (%%eax),        %%mm0\n" // in                                   |       -
-		  "pfrsqrt        %%mm0,          %%mm1\n" // 1/sqrt(in)                           | 1/sqrt(in)    (approx)
-		  "movq           %%mm1,          %%mm2\n" // 1/sqrt(in)                           | 1/sqrt(in)    (approx)
-		  "pfmul          %%mm1,          %%mm1\n" // (1/sqrt(in))?                        | (1/sqrt(in))?         step 1
-		  "pfrsqit1       %%mm0,          %%mm1\n" // intermediate                                                 step 2
-		  "pfrcpit2       %%mm2,          %%mm1\n" // 1/sqrt(in) (full 24-bit precision)                           step 3
-		  "movd           %%mm1,        (%%edx)\n"
-		  "femms                               \n"
-		  :
-		  : "a"( &number ), "d"( &y ) : "memory"
-		);
-#elif id386_sse && defined __GNUC__
-		asm volatile( "rsqrtss %0, %1" : "=x"( y ) : "x"( number ) );
-#elif id386_sse && defined _MSC_VER
-		__asm
-		{
-			rsqrtss xmm0, number
-			movss y, xmm0
-		}
 #else
 		union
 		{
@@ -715,56 +683,7 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 
 #define SQRTFAST( x ) ( 1.0f / Q_rsqrt( x ) )
 
-// fast float to int conversion
-#if id386 && !( ( defined __linux__ || defined __FreeBSD__ || defined __GNUC__ ) && ( defined __i386__ ) ) // rb010123
-	long myftol( float f );
-
-#elif defined( __MACOS__ )
-#define myftol( x ) (long)( x )
-#else
-	extern long int lrintf( float x );
-
-#define myftol( x ) lrintf( x )
-#endif
-
-#ifdef _MSC_VER
-	STATIC_INLINE long lrintf( float f )
-	{
-#ifdef _M_X64
-		return ( long )( ( f > 0.0f ) ? ( f + 0.5f ) : ( f - 0.5f ) );
-#else
-		int i;
-
-		_asm
-		{
-			fld f
-			fistp i
-		};
-
-		return i;
-#endif
-	}
-
-#endif
-
-#if id386_3dnow && defined __GNUC__ && 0
-	STATIC_INLINE float Q_recip( float in )
-	{
-		vec_t out;
-
-		femms();
-		asm volatile( "movd		(%%eax),	%%mm0\n""pfrcp		%%mm0,		%%mm1\n"                    // (approx)
-		              "pfrcpit1	%%mm1,		%%mm0\n"// (intermediate)
-		              "pfrcpit2	%%mm1,		%%mm0\n"// (full 24-bit)
-		              // out = mm0[low]
-		              "movd		%%mm0,		(%%edx)\n"::"a"( &in ), "d"( &out ) : "memory" );
-
-		femms();
-		return out;
-	}
-#else
-#	define Q_recip(x) ( 1.0f / (x) )
-#endif
+#define Q_recip(x) ( 1.0f / (x) )
 
 	byte         ClampByte( int i );
 	signed char  ClampChar( int i );

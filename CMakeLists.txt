@@ -34,7 +34,7 @@ if( NOT DEFINED SUBSEQUENT_RUN )
   set( SUBSEQUENT_RUN 1 CACHE INTERNAL "True if not first run" )
 
   if( MSVC )
-    set( CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /arch:SSE /fp:precise /Oy" CACHE STRING "Flags used by the compiler during release builds" FORCE )
+    set( CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /arch:SSE /fp:fast /Oy" CACHE STRING "Flags used by the compiler during release builds" FORCE )
   else()
     if(NOT MINIMAL_FLAGS)
       # "gcc -msse2" fails on non-x86

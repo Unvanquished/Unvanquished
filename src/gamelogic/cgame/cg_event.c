@@ -574,7 +574,8 @@ static void CG_Obituary( entityState_t *ent )
 				}
 				break;
 
-			case MOD_WEIGHT:
+			case MOD_WEIGHT_H:
+			case MOD_WEIGHT_A:
 				if ( cg_emoticonsInMessages.integer )
 				{
 					message = "%s%s^7 crushed %s\n";

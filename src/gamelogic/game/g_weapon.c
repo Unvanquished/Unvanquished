@@ -1544,6 +1544,11 @@ GENERIC
 ======================================================================
 */
 
+static INLINE meansOfDeath_t G_ModWeight( const gentity_t *ent )
+{
+	return ent->client->pers.teamSelection == TEAM_HUMANS ? MOD_WEIGHT_H : MOD_WEIGHT_A;
+}
+
 /*
 ===============
 G_ImpactAttack
@@ -1591,7 +1596,7 @@ void G_ImpactAttack( gentity_t *attacker, gentity_t *victim )
 		VectorNormalize( knockbackDir );
 
 		G_Damage( victim, attacker, attacker, knockbackDir, victim->s.origin, impactDamage,
-		          DAMAGE_NO_LOCDAMAGE, MOD_WEIGHT );
+		          DAMAGE_NO_LOCDAMAGE, G_ModWeight( attacker ) );
 	}
 }
 
@@ -1647,7 +1652,7 @@ void G_WeightAttack( gentity_t *attacker, gentity_t *victim )
 		if ( weightDamage > 0 )
 		{
 			G_Damage( victim, attacker, attacker, NULL, victim->s.origin, weightDamage,
-					  DAMAGE_NO_LOCDAMAGE, MOD_WEIGHT );
+					  DAMAGE_NO_LOCDAMAGE, G_ModWeight( attacker ) );
 		}
 	}
 
