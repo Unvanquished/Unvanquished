@@ -29,8 +29,6 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace Cmd {
 
-    static CmdBase* firstCommand = nullptr;
-
     std::string Escape(const std::string& text, bool quote) {
         std::string res;
 
