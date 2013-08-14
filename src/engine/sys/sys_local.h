@@ -67,3 +67,5 @@ void     Sys_ErrorDialog( const char *error );
 void     Sys_AnsiColorPrint( const char *msg );
 
 int      Sys_GetPID( void );
+
+void     Sys_HelpText( const char * );

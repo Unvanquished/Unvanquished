@@ -2728,7 +2728,7 @@ void SP_func_spawn( gentity_t *self )
   self->reset = func_spawn_reset;
 }
 
-void func_destructable_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod )
+void func_destructable_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
 {
 	self->takedamage = qfalse;
 	trap_UnlinkEntity( self );
@@ -2756,7 +2756,7 @@ void func_destructable_act( gentity_t *self, gentity_t *caller, gentity_t *activ
     trap_UnlinkEntity( self );
     if( self->health <= 0 )
     {
-    	func_destructable_die( self, caller, activator, 0, MOD_UNKNOWN );
+    	func_destructable_die( self, caller, activator, MOD_UNKNOWN );
     }
   }
   else

@@ -25,56 +25,56 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 uniform sampler2D	u_DiffuseMap;
 uniform sampler2D	u_NormalMap;
 uniform sampler2D	u_SpecularMap;
+uniform sampler2D	u_GlowMap;
+
 uniform float		u_AlphaThreshold;
-uniform vec3		u_ViewOrigin;
 uniform float		u_DepthScale;
 uniform	float		u_LightWrapAround;
 uniform vec2		u_SpecularExponent;
 
-varying vec3		var_Position;
-varying vec4		var_TexDiffuseNormal;
-//varying vec2		var_TexSpecular;
+varying vec4		var_TexDiffuseGlow;
+
 #if defined(USE_NORMAL_MAPPING)
+varying vec4		var_TexNormalSpecular;
+varying vec3		var_ViewDir; // direction from surface to viewer
 varying vec3		var_AmbientLight;
 varying vec3		var_DirectedLight;
-varying vec3		var_LightDirection;
-#endif
+varying vec3		var_LightDirection; // direction from surface to light
+#else
 varying vec4		var_LightColor;
-varying vec3		var_Tangent;
-varying vec3		var_Binormal;
 varying vec3		var_Normal;
+#endif
 
 
 
 void	main()
 {
-#if defined(USE_NORMAL_MAPPING)
 
-	// construct object-space-to-tangent-space 3x3 matrix
-	mat3 objectToTangentMatrix = mat3(	var_Tangent.x, var_Binormal.x, var_Normal.x,
-							var_Tangent.y, var_Binormal.y, var_Normal.y,
-							var_Tangent.z, var_Binormal.z, var_Normal.z	);
+vec2 texDiffuse = var_TexDiffuseGlow.st;
+vec2 texGlow = var_TexDiffuseGlow.pq;
+
+#if defined(USE_NORMAL_MAPPING)
+	vec3 V = normalize(var_ViewDir);
+	vec3 L = normalize(var_LightDirection);
 
 #if defined(TWOSIDED)
 	if(gl_FrontFacing)
 	{
-		objectToTangentMatrix = -objectToTangentMatrix;
+		V = -V;
+		L = -L;
 	}
 #endif
 
-	// compute view direction in tangent space
-	vec3 V = normalize(objectToTangentMatrix * (u_ViewOrigin - var_Position));
-
-	vec2 texDiffuse = var_TexDiffuseNormal.st;
-	vec2 texNormal = var_TexDiffuseNormal.pq;
-	vec2 texSpecular = texNormal; //var_TexSpecular.st;
+	vec2 texNormal = var_TexNormalSpecular.st;
+	vec2 texSpecular = var_TexNormalSpecular.pq;
 
 #if defined(USE_PARALLAX_MAPPING)
 
 	// ray intersect in view direction
-
+	vec3 Vts = V;
+	
 	// size and start position of search in texture space
-	vec2 S = V.xy * -u_DepthScale / V.z;
+	vec2 S = Vts.xy * -u_DepthScale / Vts.z;
 
 #if 0
 	vec2 texOffset = vec2(0.0);
@@ -106,13 +106,12 @@ void	main()
 
 	// compute normal in tangent space from normalmap
 	vec3 N = 2.0 * (texture2D(u_NormalMap, texNormal).xyz - 0.5);
+	
 	#if defined(r_NormalScale)
 	N.z *= r_NormalScale;
-	normalize(N);
 	#endif
-
-	// compute light direction in tangent space
-	vec3 L = normalize(objectToTangentMatrix * -var_LightDirection);
+	
+	N = normalize(N);
 
  	// compute half angle in tangent space
 	vec3 H = normalize(L + V);
@@ -134,6 +133,9 @@ void	main()
 	color.rgb *= light;
 	color.rgb += specular;
 
+	#if defined(USE_GLOW_MAPPING)
+	color.rgb += texture2D(u_GlowMap, texGlow).rgb;
+	#endif
 #if defined(r_DeferredShading)
 	gl_FragData[0] = color; 								// var_Color;
 	gl_FragData[1] = vec4(diffuse.rgb, var_LightColor.a);	// vec4(var_Color.rgb, 1.0 - var_Color.a);
@@ -142,9 +144,7 @@ void	main()
 #else
 	gl_FragColor = color;
 #endif
-
-
-#elif defined(COMPAT_Q3A)
+#else // USE_NORMAL_MAPPING
 
 	vec3 N = normalize(var_Normal);
 
@@ -156,7 +156,7 @@ void	main()
 #endif
 
 	// compute the diffuse term
-	vec4 diffuse = texture2D(u_DiffuseMap, var_TexDiffuseNormal.st);
+	vec4 diffuse = texture2D(u_DiffuseMap, texDiffuse);
 
 	if( abs(diffuse.a + u_AlphaThreshold) <= 1.0 )
 	{
@@ -165,7 +165,9 @@ void	main()
 	}
 
 	vec4 color = vec4(diffuse.rgb * var_LightColor.rgb, var_LightColor.a);
-
+#if defined(USE_GLOW_MAPPING)
+	color.rgb += texture2D(u_GlowMap, texGlow).rgb;
+#endif
 	// gl_FragColor = vec4(diffuse.rgb * var_LightColor.rgb, diffuse.a);
 	// color = vec4(vec3(1.0, 0.0, 0.0), diffuse.a);
 	// gl_FragColor = vec4(vec3(diffuse.a, diffuse.a, diffuse.a), 1.0);
@@ -185,55 +187,7 @@ void	main()
 	gl_FragColor = color;
 #endif
 
-#else // USE_NORMAL_MAPPING
-
-	// compute the diffuse term
-	vec4 diffuse = texture2D(u_DiffuseMap, var_TexDiffuseNormal.st);
-
-	if( abs(diffuse.a + u_AlphaThreshold) <= 1.0 )
-	{
-		discard;
-		return;
-	}
-
-	vec3 N;
-
-#if defined(TWOSIDED)
-	if(gl_FrontFacing)
-	{
-		N = -normalize(var_Normal);
-	}
-	else
 #endif
-	{
-		N = normalize(var_Normal);
-	}
-
-	vec3 L = normalize(var_LightDirection);
-
-	// compute the light term
-#if defined(r_WrapAroundLighting)
-	float NL = clamp(dot(N, L) + u_LightWrapAround, 0.0, 1.0) / clamp(1.0 + u_LightWrapAround, 0.0, 1.0);
-#else
-	float NL = clamp(dot(N, L), 0.0, 1.0);
-#endif
-
-	vec3 light = var_LightColor.rgb * NL;
-
-	vec4 color = vec4(diffuse.rgb * light, var_LightColor.a);
-	// vec4 color = vec4(vec3(NL, NL, NL), diffuse.a);
-
-#if defined(r_DeferredShading)
-	gl_FragData[0] = color; 								// var_Color;
-	gl_FragData[1] = vec4(diffuse.rgb, var_LightColor.a);	// vec4(var_Color.rgb, 1.0 - var_Color.a);
-	gl_FragData[2] = vec4(N, var_LightColor.a);
-	gl_FragData[3] = vec4(0.0, 0.0, 0.0, var_LightColor.a);
-#else
-	gl_FragColor = color;
-#endif
-
-
-#endif // USE_NORMAL_MAPPING
 
 #if 0
 #if defined(USE_PARALLAX_MAPPING)

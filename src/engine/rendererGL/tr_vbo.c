@@ -168,7 +168,14 @@ static size_t R_GetAttribStorageSize( const VBO_t *vbo, uint32_t attribute )
 	}
 	else
 	{
-		return sizeof( vec4_t );
+		if ( attribute == ATTR_INDEX_TEXCOORD || attribute == ATTR_INDEX_LIGHTCOORD )
+		{
+			return sizeof( vec2_t );
+		}
+		else
+		{
+			return sizeof( vec4_t );
+		}
 	}
 }
 

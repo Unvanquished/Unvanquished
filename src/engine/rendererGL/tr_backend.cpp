@@ -9003,8 +9003,6 @@ void RE_StretchRaw( int x, int y, int w, int h, int cols, int rows, const byte *
 	tess.xyz[ tess.numVertexes ][ 3 ] = 1;
 	tess.texCoords[ tess.numVertexes ][ 0 ] = 0.5f / cols;
 	tess.texCoords[ tess.numVertexes ][ 1 ] = 0.5f / rows;
-	tess.texCoords[ tess.numVertexes ][ 2 ] = 0;
-	tess.texCoords[ tess.numVertexes ][ 3 ] = 1;
 	tess.numVertexes++;
 
 	tess.xyz[ tess.numVertexes ][ 0 ] = x + w;
@@ -9013,8 +9011,6 @@ void RE_StretchRaw( int x, int y, int w, int h, int cols, int rows, const byte *
 	tess.xyz[ tess.numVertexes ][ 3 ] = 1;
 	tess.texCoords[ tess.numVertexes ][ 0 ] = ( cols - 0.5f ) / cols;
 	tess.texCoords[ tess.numVertexes ][ 1 ] = 0.5f / rows;
-	tess.texCoords[ tess.numVertexes ][ 2 ] = 0;
-	tess.texCoords[ tess.numVertexes ][ 3 ] = 1;
 	tess.numVertexes++;
 
 	tess.xyz[ tess.numVertexes ][ 0 ] = x + w;
@@ -9023,8 +9019,6 @@ void RE_StretchRaw( int x, int y, int w, int h, int cols, int rows, const byte *
 	tess.xyz[ tess.numVertexes ][ 3 ] = 1;
 	tess.texCoords[ tess.numVertexes ][ 0 ] = ( cols - 0.5f ) / cols;
 	tess.texCoords[ tess.numVertexes ][ 1 ] = ( rows - 0.5f ) / rows;
-	tess.texCoords[ tess.numVertexes ][ 2 ] = 0;
-	tess.texCoords[ tess.numVertexes ][ 3 ] = 1;
 	tess.numVertexes++;
 
 	tess.xyz[ tess.numVertexes ][ 0 ] = x;
@@ -9033,8 +9027,6 @@ void RE_StretchRaw( int x, int y, int w, int h, int cols, int rows, const byte *
 	tess.xyz[ tess.numVertexes ][ 3 ] = 1;
 	tess.texCoords[ tess.numVertexes ][ 0 ] = 0.5f / cols;
 	tess.texCoords[ tess.numVertexes ][ 1 ] = ( rows - 0.5f ) / rows;
-	tess.texCoords[ tess.numVertexes ][ 2 ] = 0;
-	tess.texCoords[ tess.numVertexes ][ 3 ] = 1;
 	tess.numVertexes++;
 
 	tess.indexes[ tess.numIndexes++ ] = 0;
@@ -9171,8 +9163,6 @@ const void     *RB_StretchPic( const void *data )
 
 	tess.texCoords[ numVerts ][ 0 ] = cmd->s1;
 	tess.texCoords[ numVerts ][ 1 ] = cmd->t1;
-	tess.texCoords[ numVerts ][ 2 ] = 0;
-	tess.texCoords[ numVerts ][ 3 ] = 1;
 
 	tess.xyz[ numVerts + 1 ][ 0 ] = cmd->x + cmd->w;
 	tess.xyz[ numVerts + 1 ][ 1 ] = cmd->y;
@@ -9181,8 +9171,6 @@ const void     *RB_StretchPic( const void *data )
 
 	tess.texCoords[ numVerts + 1 ][ 0 ] = cmd->s2;
 	tess.texCoords[ numVerts + 1 ][ 1 ] = cmd->t1;
-	tess.texCoords[ numVerts + 1 ][ 2 ] = 0;
-	tess.texCoords[ numVerts + 1 ][ 3 ] = 1;
 
 	tess.xyz[ numVerts + 2 ][ 0 ] = cmd->x + cmd->w;
 	tess.xyz[ numVerts + 2 ][ 1 ] = cmd->y + cmd->h;
@@ -9191,8 +9179,6 @@ const void     *RB_StretchPic( const void *data )
 
 	tess.texCoords[ numVerts + 2 ][ 0 ] = cmd->s2;
 	tess.texCoords[ numVerts + 2 ][ 1 ] = cmd->t2;
-	tess.texCoords[ numVerts + 2 ][ 2 ] = 0;
-	tess.texCoords[ numVerts + 2 ][ 3 ] = 1;
 
 	tess.xyz[ numVerts + 3 ][ 0 ] = cmd->x;
 	tess.xyz[ numVerts + 3 ][ 1 ] = cmd->y + cmd->h;
@@ -9201,8 +9187,8 @@ const void     *RB_StretchPic( const void *data )
 
 	tess.texCoords[ numVerts + 3 ][ 0 ] = cmd->s1;
 	tess.texCoords[ numVerts + 3 ][ 1 ] = cmd->t2;
-	tess.texCoords[ numVerts + 3 ][ 2 ] = 0;
-	tess.texCoords[ numVerts + 3 ][ 3 ] = 1;
+
+	tess.attribsSet |= ATTR_POSITION | ATTR_COLOR | ATTR_TEXCOORD;
 
 	return ( const void * )( cmd + 1 );
 }
@@ -9302,6 +9288,7 @@ const void     *RB_Draw2dPolys( const void *data )
 		tess.numVertexes++;
 	}
 
+	tess.attribsSet |= ATTR_POSITION | ATTR_TEXCOORD | ATTR_COLOR;
 	return ( const void * )( cmd + 1 );
 }
 
@@ -9399,6 +9386,8 @@ const void     *RB_RotatedPic( const void *data )
 	tess.texCoords[ numVerts + 3 ][ 0 ] = cmd->s1;
 	tess.texCoords[ numVerts + 3 ][ 1 ] = cmd->t2;
 
+	tess.attribsSet |= ATTR_POSITION | ATTR_TEXCOORD | ATTR_COLOR;
+
 	return ( const void * )( cmd + 1 );
 }
 
@@ -9494,6 +9483,7 @@ const void     *RB_StretchPicGradient( const void *data )
 	tess.texCoords[ numVerts + 3 ][ 0 ] = cmd->s1;
 	tess.texCoords[ numVerts + 3 ][ 1 ] = cmd->t2;
 
+	tess.attribsSet |= ATTR_POSITION | ATTR_TEXCOORD | ATTR_COLOR;
 	return ( const void * )( cmd + 1 );
 }
 

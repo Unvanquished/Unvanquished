@@ -2255,6 +2255,10 @@ static qboolean ParseStage( shaderStage_t *stage, char **text )
 			{
 				stage->type = ST_SPECULARMAP;
 			}
+			else if ( !Q_stricmp( token, "glowMap" ) )
+			{
+				stage->type = ST_GLOWMAP;
+			}
 			else
 			{
 				// complex double blends
@@ -2312,6 +2316,10 @@ static qboolean ParseStage( shaderStage_t *stage, char **text )
 			else if ( !Q_stricmp( token, "specularMap" ) )
 			{
 				stage->type = ST_SPECULARMAP;
+			}
+			else if ( !Q_stricmp( token, "glowMap" ) )
+			{
+				stage->type = ST_GLOWMAP;
 			}
 			else if ( !Q_stricmp( token, "reflectionMap" ) )
 			{
@@ -3546,7 +3554,7 @@ static void ParseGlowMap( shaderStage_t *stage, char **text )
 	char buffer[ 1024 ] = "";
 
 	stage->active = qtrue;
-	stage->type = ST_COLORMAP;
+	stage->type = ST_GLOWMAP;
 	stage->rgbGen = CGEN_IDENTITY;
 	stage->stateBits = GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE; // blend add
 
@@ -4870,11 +4878,13 @@ static void CollapseStages( void )
 	qboolean      hasNormalStage;
 	qboolean      hasSpecularStage;
 	qboolean      hasReflectionStage;
+	qboolean      hasGlowStage;
 
 	shaderStage_t tmpDiffuseStage;
 	shaderStage_t tmpNormalStage;
 	shaderStage_t tmpSpecularStage;
 	shaderStage_t tmpReflectionStage;
+	shaderStage_t tmpGlowStage;
 
 #if defined( COMPAT_Q3A ) || defined( COMPAT_ET )
 	shaderStage_t tmpColorStage;
@@ -4904,10 +4914,12 @@ static void CollapseStages( void )
 		hasNormalStage = qfalse;
 		hasSpecularStage = qfalse;
 		hasReflectionStage = qfalse;
+		hasGlowStage = qfalse;
 
 		Com_Memset( &tmpDiffuseStage, 0, sizeof( shaderStage_t ) );
 		Com_Memset( &tmpNormalStage, 0, sizeof( shaderStage_t ) );
 		Com_Memset( &tmpSpecularStage, 0, sizeof( shaderStage_t ) );
+		Com_Memset( &tmpGlowStage, 0, sizeof( shaderStage_t ) );
 
 #if defined( COMPAT_Q3A ) || defined( COMPAT_ET )
 		Com_Memset( &tmpColorStage, 0, sizeof( shaderStage_t ) );
@@ -4920,9 +4932,6 @@ static void CollapseStages( void )
 		}
 
 		if (
-#if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
-		  stages[ j ].type == ST_COLORMAP ||
-#endif
 		  stages[ j ].type == ST_REFRACTIONMAP ||
 		  stages[ j ].type == ST_DISPERSIONMAP ||
 		  stages[ j ].type == ST_SKYBOXMAP ||
@@ -5014,7 +5023,7 @@ static void CollapseStages( void )
 		*/
 #endif
 
-		for ( i = 0; i < 3; i++ )
+		for ( i = 0; i < 4; i++ )
 		{
 			if ( ( j + i ) >= MAX_SHADER_STAGES )
 			{
@@ -5046,14 +5055,44 @@ static void CollapseStages( void )
 				hasReflectionStage = qtrue;
 				tmpReflectionStage = stages[ j + i ];
 			}
+			else if ( stages[ j + i ].type == ST_GLOWMAP && !hasGlowStage )
+			{
+				hasGlowStage = qtrue;
+				tmpGlowStage = stages[ j + i ];
+			}
 		}
 
 		// NOTE: Tr3B - merge as many stages as possible
 
-		// try to merge diffuse/normal/specular
+		// try to merge diffuse/normal/specular/glow
 		if ( hasDiffuseStage         &&
 		     hasNormalStage          &&
-		     hasSpecularStage
+		     hasSpecularStage        &&
+		     hasGlowStage
+		   )
+		{
+			//ri.Printf(PRINT_ALL, "lighting_DBSG\n");
+
+			tmpShader.collapseType = COLLAPSE_lighting_DBSG;
+
+			tmpStages[ numStages ] = tmpDiffuseStage;
+			tmpStages[ numStages ].type = ST_COLLAPSE_lighting_DBSG;
+
+			tmpStages[ numStages ].bundle[ TB_NORMALMAP ] = tmpNormalStage.bundle[ 0 ];
+
+			tmpStages[ numStages ].bundle[ TB_SPECULARMAP ] = tmpSpecularStage.bundle[ 0 ];
+			tmpStages[ numStages ].specularExponentMin = tmpSpecularStage.specularExponentMin;
+			tmpStages[ numStages ].specularExponentMax = tmpSpecularStage.specularExponentMax;
+
+			tmpStages[ numStages ].bundle[ TB_GLOWMAP ] = tmpGlowStage.bundle[ 0 ];
+			numStages++;
+			j += 3;
+			continue;
+		}
+		// try to merge diffuse/normal/specular
+		else if ( hasDiffuseStage         &&
+		          hasNormalStage          &&
+		          hasSpecularStage
 		   )
 		{
 			//ri.Printf(PRINT_ALL, "lighting_DBS\n");
@@ -5069,6 +5108,25 @@ static void CollapseStages( void )
 			tmpStages[ numStages ].specularExponentMin = tmpSpecularStage.specularExponentMin;
 			tmpStages[ numStages ].specularExponentMax = tmpSpecularStage.specularExponentMax;
 
+			numStages++;
+			j += 2;
+			continue;
+		}
+		// try to merge diffuse/normal/glow
+		else if ( hasDiffuseStage         &&
+		          hasNormalStage          &&
+		          hasGlowStage
+		        )
+		{
+			//ri.Printf(PRINT_ALL, "lighting_DBG\n");
+
+			tmpShader.collapseType = COLLAPSE_lighting_DBG;
+
+			tmpStages[ numStages ] = tmpDiffuseStage;
+			tmpStages[ numStages ].type = ST_COLLAPSE_lighting_DBG;
+
+			tmpStages[ numStages ].bundle[ TB_NORMALMAP ] = tmpNormalStage.bundle[ 0 ];
+			tmpStages[ numStages ].bundle[ TB_GLOWMAP ] = tmpGlowStage.bundle[ 0 ];
 			numStages++;
 			j += 2;
 			continue;

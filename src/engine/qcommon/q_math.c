@@ -2800,39 +2800,10 @@ void MatrixTransformPoint2( const matrix_t m, vec3_t inout )
 
 void MatrixTransform4( const matrix_t m, const vec4_t in, vec4_t out )
 {
-#if id386_sse
-//#error MatrixTransform4
-
-	__m128 _t0, _t1, _t2, _x, _y, _z, _w, _m0, _m1, _m2, _m3;
-
-	_m0 = _mm_loadu_ps( &m[ 0 ] );
-	_m1 = _mm_loadu_ps( &m[ 4 ] );
-	_m2 = _mm_loadu_ps( &m[ 8 ] );
-	_m3 = _mm_loadu_ps( &m[ 12 ] );
-
-	_t0 = _mm_loadu_ps( in );
-	_x = _mm_shuffle_ps( _t0, _t0, _MM_SHUFFLE( 0, 0, 0, 0 ) );
-	_y = _mm_shuffle_ps( _t0, _t0, _MM_SHUFFLE( 1, 1, 1, 1 ) );
-	_z = _mm_shuffle_ps( _t0, _t0, _MM_SHUFFLE( 2, 2, 2, 2 ) );
-	_w = _mm_shuffle_ps( _t0, _t0, _MM_SHUFFLE( 3, 3, 3, 3 ) );
-
-	_t0 = _mm_mul_ps( _m3, _w );
-	_t1 = _mm_mul_ps( _m2, _z );
-	_t0 = _mm_add_ps( _t0, _t1 );
-
-	_t1 = _mm_mul_ps( _m1, _y );
-	_t2 = _mm_mul_ps( _m0, _x );
-	_t1 = _mm_add_ps( _t1, _t2 );
-
-	_t0 = _mm_add_ps( _t0, _t1 );
-
-	_mm_storeu_ps( out, _t0 );
-#else
 	out[ 0 ] = m[ 0 ] * in[ 0 ] + m[ 4 ] * in[ 1 ] + m[ 8 ] * in[ 2 ] + m[ 12 ] * in[ 3 ];
 	out[ 1 ] = m[ 1 ] * in[ 0 ] + m[ 5 ] * in[ 1 ] + m[ 9 ] * in[ 2 ] + m[ 13 ] * in[ 3 ];
 	out[ 2 ] = m[ 2 ] * in[ 0 ] + m[ 6 ] * in[ 1 ] + m[ 10 ] * in[ 2 ] + m[ 14 ] * in[ 3 ];
 	out[ 3 ] = m[ 3 ] * in[ 0 ] + m[ 7 ] * in[ 1 ] + m[ 11 ] * in[ 2 ] + m[ 15 ] * in[ 3 ];
-#endif
 }
 
 void MatrixTransformPlane( const matrix_t m, const vec4_t in, vec4_t out )

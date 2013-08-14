@@ -2446,7 +2446,6 @@ void CL_UpdateProfile( void )
 {
 	if( cl_profile->modified )
 	{
-		CL_LoadRSAKeys();
 		cl_profile->modified = qfalse;
 	}
 }
@@ -2880,6 +2879,7 @@ void CL_CheckForResend( void )
 		{
 			char key[ RSA_STRING_LENGTH ];
 
+			CL_LoadRSAKeys();
 			mpz_get_str( key, 16, public_key.n);
 			// sending back the challenge
 			port = Cvar_VariableValue( "net_qport" );
@@ -4593,7 +4593,6 @@ void CL_Init( void )
 	Cmd::ExecuteCommandBuffer();
 
 	Cvar_Set( "cl_running", "1" );
-	CL_LoadRSAKeys();
 
 	CL_OpenClientLog();
 	CL_WriteClientLog( "`~-     Client Opened     -~`\n" );

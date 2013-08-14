@@ -648,6 +648,7 @@ typedef struct centity_s
 	buildableAnimNumber_t oldBuildableAnim; //to detect when new anims are set
 	qboolean              buildableIdleAnim; //to check if new idle anim
 	particleSystem_t      *buildablePS;
+	particleSystem_t      *buildableStatusPS; // used for steady effects like fire
 	buildableStatus_t     buildableStatus;
 	buildableCache_t      buildableCache; // so we don't recalculate things
 	float                 lastBuildableHealth;
@@ -1268,8 +1269,8 @@ typedef struct
 	sfxHandle_t alienOvermindSpawns;
 
 	sfxHandle_t alienBuildableExplosion;
-	sfxHandle_t alienBuildableDamage;
 	sfxHandle_t alienBuildablePrebuild;
+	sfxHandle_t humanBuildableDying;
 	sfxHandle_t humanBuildableExplosion;
 	sfxHandle_t humanBuildablePrebuild;
 	sfxHandle_t humanBuildableDamage[ 4 ];
@@ -1305,6 +1306,7 @@ typedef struct
 
 	qhandle_t   humanBuildableDamagedPS;
 	qhandle_t   humanBuildableDestroyedPS;
+	qhandle_t   humanBuildableNovaPS;
 	qhandle_t   alienBuildableDamagedPS;
 	qhandle_t   alienBuildableDestroyedPS;
 
@@ -1312,6 +1314,7 @@ typedef struct
 	qhandle_t   humanBleedPS;
 	qhandle_t   alienBuildableBleedPS;
 	qhandle_t   humanBuildableBleedPS;
+	qhandle_t   alienBuildableBurnPS;
 
 	qhandle_t   teslaZapTS;
 
@@ -1389,10 +1392,6 @@ typedef struct
 
 	int      alienStage;
 	int      humanStage;
-	int      alienCredits;
-	int      humanCredits;
-	int      alienNextStageThreshold;
-	int      humanNextStageThreshold;
 
 	//
 	// locally derived information from gamestate
@@ -1443,6 +1442,7 @@ typedef enum
   SHC_LIGHT_BLUE,
   SHC_GREEN_CYAN,
   SHC_VIOLET,
+  SHC_INDIGO,
   SHC_YELLOW,
   SHC_ORANGE,
   SHC_LIGHT_GREEN,
@@ -1756,7 +1756,8 @@ void     CG_Buildable( centity_t *cent );
 void     CG_BuildableStatusParse( const char *filename, buildStat_t *bs );
 void     CG_DrawBuildableStatus( void );
 void     CG_InitBuildables( void );
-void     CG_HumanBuildableExplosion( vec3_t origin, vec3_t dir );
+void     CG_HumanBuildableDying( buildable_t buildable, vec3_t origin );
+void     CG_HumanBuildableExplosion( buildable_t buildable, vec3_t origin, vec3_t dir );
 void     CG_AlienBuildableExplosion( vec3_t origin, vec3_t dir );
 qboolean CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t *rmType, float *range, vec3_t rgb );
 

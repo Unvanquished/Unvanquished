@@ -2161,6 +2161,12 @@ static qboolean ParseStage( shaderStage_t *stage, char **text )
 			{
 				stage->active = qfalse;
 			}
+			else if ( !Q_stricmp( token, "glowMap" ) )
+			{
+				blendSrcBits = GLS_SRCBLEND_ONE;
+				blendDstBits = GLS_DSTBLEND_ONE;
+				stage->rgbGen = CGEN_IDENTITY;
+			}
 			else
 			{
 				// complex double blends
@@ -2208,6 +2214,12 @@ static qboolean ParseStage( shaderStage_t *stage, char **text )
 			}
 			else if ( !Q_stricmp( token, "diffuseMap" ) )
 			{
+			}
+			else if ( !Q_stricmp( token, "glowMap" ) )
+			{
+				blendSrcBits = GLS_SRCBLEND_ONE;
+				blendDstBits = GLS_DSTBLEND_ONE;
+				stage->rgbGen = CGEN_IDENTITY;
 			}
 			else if ( !Q_stricmp( token, "normalMap" ) || !Q_stricmp( token, "bumpMap" ) )
 			{

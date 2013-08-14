@@ -294,6 +294,11 @@ set( SHAREDLIST
   ${ENGINE_DIR}/qcommon/q_shared.c
   ${ENGINE_DIR}/qcommon/q_unicode.c
   ${ENGINE_DIR}/qcommon/q_math.c
+  ${ENGINE_DIR}/qcommon/q_shared.h
+  ${ENGINE_DIR}/qcommon/q_platform.h
+  ${ENGINE_DIR}/qcommon/q_unicode.h
+  ${ENGINE_DIR}/qcommon/unicode_data.h
+  ${ENGINE_DIR}/qcommon/logging.h
 )
 
 # Hack to allow compiling shared files as C
@@ -301,6 +306,11 @@ set( SHAREDLIST_HACK
   ${ENGINE_DIR}/qcommon/./q_shared.c
   ${ENGINE_DIR}/qcommon/./q_unicode.c
   ${ENGINE_DIR}/qcommon/./q_math.c
+  ${ENGINE_DIR}/qcommon/q_shared.h
+  ${ENGINE_DIR}/qcommon/q_platform.h
+  ${ENGINE_DIR}/qcommon/q_unicode.h
+  ${ENGINE_DIR}/qcommon/unicode_data.h
+  ${ENGINE_DIR}/qcommon/logging.h
 )
 
 set( RENDERERLIST
@@ -309,6 +319,7 @@ set( RENDERERLIST
   ${ENGINE_DIR}/renderer/tr_animation_mds.c
   ${ENGINE_DIR}/renderer/tr_backend.c
   ${ENGINE_DIR}/renderer/tr_bonematrix.c
+  ${ENGINE_DIR}/renderer/tr_bonematrix.h
   ${ENGINE_DIR}/renderer/tr_bsp.c
   ${ENGINE_DIR}/renderer/tr_cmds.c
   ${ENGINE_DIR}/renderer/tr_cmesh.c
@@ -334,6 +345,10 @@ set( RENDERERLIST
   ${ENGINE_DIR}/renderer/tr_sky.c
   ${ENGINE_DIR}/renderer/tr_surface.c
   ${ENGINE_DIR}/renderer/tr_world.c
+  ${ENGINE_DIR}/renderer/tr_local.h
+  ${ENGINE_DIR}/renderer/tr_types.h
+  ${ENGINE_DIR}/renderer/tr_public.h
+  ${ENGINE_DIR}/renderer/anorms256.h
 )
 
 set( RENDERERGLLIST
@@ -342,6 +357,7 @@ set( RENDERERGLLIST
   ${ENGINE_DIR}/rendererGL/tr_animation.c
   ${ENGINE_DIR}/rendererGL/tr_backend.cpp
   ${ENGINE_DIR}/renderer/tr_bonematrix.c
+  ${ENGINE_DIR}/renderer/tr_bonematrix.h
   ${ENGINE_DIR}/rendererGL/tr_bsp.c
   ${ENGINE_DIR}/rendererGL/tr_cmds.c
   ${ENGINE_DIR}/rendererGL/tr_curve.c
@@ -382,6 +398,11 @@ set( RENDERERGLLIST
   ${ENGINE_DIR}/rendererGL/tr_world.cpp
   ${ENGINE_DIR}/qcommon/md4.c
   ${LIB_DIR}/openexr/half.cpp
+  ${ENGINE_DIR}/rendererGL/tr_local.h
+  ${ENGINE_DIR}/renderer/tr_public.h
+  ${ENGINE_DIR}/rendererGL/gl_shader.h
+  ${ENGINE_DIR}/rendererGL/tr_image.h
+  ${ENGINE_DIR}/rendererGL/tr_model_skel.h 
 )
 
 set( SERVERLIST
@@ -394,16 +415,26 @@ set( SERVERLIST
   ${ENGINE_DIR}/server/sv_net_chan.c
   ${ENGINE_DIR}/server/sv_snapshot.c
   ${ENGINE_DIR}/server/sv_world.c
+  ${ENGINE_DIR}/server/server.h
+  ${ENGINE_DIR}/server/g_api.h
+  ${ENGINE_DIR}/qcommon/print_translated.h 
 )
 
 set( ENGINELIST
   ${SHARED_DIR}/Command.cpp
+  ${SHARED_DIR}/Command.h
   ${SHARED_DIR}/LineEditData.cpp
+  ${SHARED_DIR}/LineEditData.h
   ${SHARED_DIR}/String.cpp
+  ${SHARED_DIR}/String.h
   ${ENGINE_DIR}/framework/BaseCommands.cpp
+  ${ENGINE_DIR}/framework/BaseCommands.h
   ${ENGINE_DIR}/framework/CommandSystem.cpp
+  ${ENGINE_DIR}/framework/CommandSystem.h
   ${ENGINE_DIR}/framework/ConsoleField.cpp
+  ${ENGINE_DIR}/framework/ConsoleField.h
   ${ENGINE_DIR}/framework/ConsoleHistory.cpp
+  ${ENGINE_DIR}/framework/ConsoleHistory.h
   ${ENGINE_DIR}/qcommon/cm_load.c
   ${ENGINE_DIR}/qcommon/cm_trisoup.c
   ${ENGINE_DIR}/qcommon/cm_patch.c
@@ -411,14 +442,23 @@ set( ENGINELIST
   ${ENGINE_DIR}/qcommon/cm_polylib.c
   ${ENGINE_DIR}/qcommon/cm_test.c
   ${ENGINE_DIR}/qcommon/cm_trace.c
+  ${ENGINE_DIR}/qcommon/cm_local.h
+  ${ENGINE_DIR}/qcommon/cm_patch.h
+  ${ENGINE_DIR}/qcommon/cm_polylib.h
+  ${ENGINE_DIR}/qcommon/cm_public.h 
   ${ENGINE_DIR}/qcommon/cmd.c
   ${ENGINE_DIR}/qcommon/common.c
   ${ENGINE_DIR}/qcommon/crypto.c
+  ${ENGINE_DIR}/qcommon/crypto.h
   ${ENGINE_DIR}/qcommon/cvar.c
+  ${ENGINE_DIR}/qcommon/cvar.h
   ${ENGINE_DIR}/qcommon/files.c
+  ${ENGINE_DIR}/qcommon/qfiles.h
   ${ENGINE_DIR}/qcommon/htable.c
+  ${ENGINE_DIR}/qcommon/htable.h
   ${ENGINE_DIR}/qcommon/huffman.c
   ${ENGINE_DIR}/qcommon/md4.c
+  ${ENGINE_DIR}/qcommon/md4.h
   ${ENGINE_DIR}/qcommon/md5.c
   ${ENGINE_DIR}/qcommon/msg.c
   ${ENGINE_DIR}/qcommon/net_chan.c
@@ -426,15 +466,20 @@ set( ENGINELIST
   ${ENGINE_DIR}/qcommon/parse.c
   ${ENGINE_DIR}/qcommon/translation.cpp
   ${ENGINE_DIR}/qcommon/unzip.c
+  ${ENGINE_DIR}/qcommon/unzip.h
   ${ENGINE_DIR}/qcommon/ioapi.c
   ${ENGINE_DIR}/sys/sys_main.c
   ${ENGINE_DIR}/sys/con_log.c
+  ${ENGINE_DIR}/qcommon/qcommon.h
+  ${ENGINE_DIR}/qcommon/surfaceflags.h
 )
 
 if( ENABLE_QVM_COMPAT )
   set( ENGINELIST ${ENGINELIST}
     ${ENGINE_DIR}/qcommon/vm.c
     ${ENGINE_DIR}/qcommon/vm_interpreted.c
+    ${ENGINE_DIR}/qcommon/vm_local.h
+    ${ENGINE_DIR}/qcommon/vm_traps.h
   )
   if( ARCH STREQUAL "x86" OR ARCH STREQUAL "x86_64" )
     set( ENGINELIST ${ENGINELIST} ${ENGINE_DIR}/qcommon/vm_x86.c )
@@ -442,12 +487,14 @@ if( ENABLE_QVM_COMPAT )
 else()
   set( ENGINELIST ${ENGINELIST}
     ${ENGINE_DIR}/framework/VirtualMachine.cpp
+    ${ENGINE_DIR}/framework/VirtualMachine.h
   )
 endif()
 
 if( WIN32 )
   set( ENGINELIST ${ENGINELIST}
     ${ENGINE_DIR}/sys/sys_win32.c
+    ${ENGINE_DIR}/sys/sys_win32.h
     ${ENGINE_DIR}/sys/con_win32.c
   )
 else()
@@ -468,6 +515,9 @@ if( USE_CURSES )
 endif()
 
 set( CLIENTLIST
+  ${ENGINE_DIR}/client/cg_api.h
+  ${ENGINE_DIR}/client/ui_api.h
+  ${ENGINE_DIR}/client/client.h
   ${ENGINE_DIR}/client/cin_ogm.c
   ${ENGINE_DIR}/client/cl_avi.c
   ${ENGINE_DIR}/client/cl_cgame.c
@@ -476,6 +526,8 @@ set( CLIENTLIST
   ${ENGINE_DIR}/client/cl_input.c
   ${ENGINE_DIR}/client/cl_irc.c
   ${ENGINE_DIR}/client/cl_keys.c
+  ${ENGINE_DIR}/client/keycodes.h
+  ${ENGINE_DIR}/client/keys.h
   ${ENGINE_DIR}/client/cl_main.c
   ${ENGINE_DIR}/client/cl_net_chan.c
   ${ENGINE_DIR}/client/cl_parse.c
@@ -485,6 +537,9 @@ set( CLIENTLIST
   ${ENGINE_DIR}/client/dl_main.c
   ${ENGINE_DIR}/client/snd_adpcm.c
   ${ENGINE_DIR}/client/snd_codec.c
+  ${ENGINE_DIR}/client/snd_codec.h
+  ${ENGINE_DIR}/client/snd_local.h
+  ${ENGINE_DIR}/client/snd_public.h
   ${ENGINE_DIR}/client/snd_codec_ogg.c
   ${ENGINE_DIR}/client/snd_codec_wav.c
   ${ENGINE_DIR}/client/snd_dma.c
@@ -494,15 +549,20 @@ set( CLIENTLIST
   ${ENGINE_DIR}/client/snd_mix.c
   ${ENGINE_DIR}/client/snd_wavelet.c
   ${ENGINE_DIR}/client/qal.c
+  ${ENGINE_DIR}/client/qal.h
 )
 
 if( USE_MUMBLE )
-  set( CLIENTLIST ${CLIENTLIST} ${ENGINE_DIR}/client/libmumblelink.c )
+  set( CLIENTLIST ${CLIENTLIST}
+    ${ENGINE_DIR}/client/libmumblelink.c
+    ${ENGINE_DIR}/client/libmumblelink.h
+  )
 endif()
 
 set( SDLLIST
   ${ENGINE_DIR}/sys/sdl_input.c
   ${ENGINE_DIR}/sys/sdl_snd.c
+  ${ENGINE_DIR}/sys/sys_local.h
 )
 
 set( CGAMEGPP_BASE
@@ -539,6 +599,8 @@ set( CGAMEGPP_BASE
   ${GAMELOGIC_DIR}/ui/ui_shared.c
   ${GAMELOGIC_DIR}/ui/ui_utf8.c
   ${GAMELOGIC_DIR}/cgame/cg_api.c
+  ${ENGINE_DIR}/client/cg_api.h
+  ${ENGINE_DIR}/qcommon/print_translated.h 
 )
 
 set( GAMEGPP_BASE
@@ -577,6 +639,7 @@ set( GAMEGPP_BASE
   ${GAMELOGIC_DIR}/game/g_admin.c
   ${GAMELOGIC_DIR}/game/g_namelog.c
   ${GAMELOGIC_DIR}/game/g_api.cpp
+  ${ENGINE_DIR}/server/g_api.h 
 )
 
 set( UIGPP_BASE
@@ -589,6 +652,7 @@ set( UIGPP_BASE
   ${GAMELOGIC_DIR}/game/bg_alloc.c
   ${GAMELOGIC_DIR}/ui/ui_utf8.c
   ${GAMELOGIC_DIR}/ui/ui_api.c
+  ${ENGINE_DIR}/client/ui_api.h
 )
 
 set( SPEEXLIST

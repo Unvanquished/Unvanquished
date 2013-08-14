@@ -1007,7 +1007,8 @@ extern "C" {
 	  TB_DIFFUSEMAP = 0,
 	  TB_NORMALMAP,
 	  TB_SPECULARMAP,
-	  MAX_TEXTURE_BUNDLES = 3
+	  TB_GLOWMAP,
+	  MAX_TEXTURE_BUNDLES = 4
 	};
 
 	typedef struct
@@ -1027,6 +1028,7 @@ extern "C" {
 	{
 	  // material shader stage types
 	  ST_COLORMAP, // vanilla Q3A style shader treatening
+	  ST_GLOWMAP,
 	  ST_DIFFUSEMAP,
 	  ST_NORMALMAP,
 	  ST_SPECULARMAP,
@@ -1044,7 +1046,9 @@ extern "C" {
 #endif
 
 	  ST_COLLAPSE_lighting_DB, // diffusemap + bumpmap
+	  ST_COLLAPSE_lighting_DBG, // diffusemap + bumpmap + glowmap
 	  ST_COLLAPSE_lighting_DBS, // diffusemap + bumpmap + specularmap
+	  ST_COLLAPSE_lighting_DBSG, // diffusemap + bumpmap + specularmap + glowmap
 	  ST_COLLAPSE_reflection_CB, // color cubemap + bumpmap
 
 	  // light shader stage types
@@ -1057,7 +1061,9 @@ extern "C" {
 	  COLLAPSE_none,
 	  COLLAPSE_genericMulti,
 	  COLLAPSE_lighting_DB,
+	  COLLAPSE_lighting_DBG,
 	  COLLAPSE_lighting_DBS,
+	  COLLAPSE_lighting_DBSG,
 	  COLLAPSE_reflection_CB,
 	  COLLAPSE_color_lightmap
 	} collapseType_t;
@@ -3539,8 +3545,6 @@ extern "C" {
 	typedef struct shaderCommands_s
 	{
 		vec4_t xyz[ SHADER_MAX_VERTEXES ];
-		vec4_t texCoords[ SHADER_MAX_VERTEXES ];
-		vec4_t lightCoords[ SHADER_MAX_VERTEXES ];
 		vec4_t tangents[ SHADER_MAX_VERTEXES ];
 		vec4_t binormals[ SHADER_MAX_VERTEXES ];
 		vec4_t normals[ SHADER_MAX_VERTEXES ];
@@ -3551,6 +3555,8 @@ extern "C" {
 		vec4_t ambientLights[ SHADER_MAX_VERTEXES ];
 		vec4_t directedLights[ SHADER_MAX_VERTEXES ];
 		vec4_t lightDirections[ SHADER_MAX_VERTEXES ];
+		vec2_t texCoords[ SHADER_MAX_VERTEXES ];
+		vec2_t lightCoords[ SHADER_MAX_VERTEXES ];
 
 		glIndex_t   indexes[ SHADER_MAX_INDEXES ];
 
@@ -3569,6 +3575,7 @@ extern "C" {
 
 		uint32_t    numIndexes;
 		uint32_t    numVertexes;
+		uint32_t    attribsSet;
 
 		int         multiDrawPrimitives;
 		glIndex_t    *multiDrawIndexes[ MAX_MULTIDRAW_PRIMITIVES ];

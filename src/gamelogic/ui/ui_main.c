@@ -1821,9 +1821,9 @@ UI_DrawInfoPane
 static void UI_DrawInfoPane( menuItem_t *item, rectDef_t *rect, float text_x, float text_y,
                              float scale, int textalign, int textvalign, vec4_t color, int textStyle )
 {
-	int        value = 0;
+	int        value = 0, value2 = 0;
 	const char *s = "";
-	const char *string = "";
+	const char *string = "", *string2 = "";
 
 	int        class, credits;
 	char       ui_currentClass[ MAX_STRING_CHARS ];
@@ -1839,9 +1839,7 @@ static void UI_DrawInfoPane( menuItem_t *item, rectDef_t *rect, float text_x, fl
 			break;
 
 		case INFOTYPE_CLASS:
-			value = ( BG_ClassCanEvolveFromTo( class, item->v.pclass, credits,
-			                                   UI_GetCurrentAlienStage(), 0 ) +
-			          ALIEN_CREDITS_PER_KILL - 1 ) / ALIEN_CREDITS_PER_KILL;
+			value = BG_ClassCanEvolveFromTo( class, item->v.pclass, credits, UI_GetCurrentAlienStage() );
 
 			if ( value < 1 )
 			{
@@ -1855,7 +1853,7 @@ static void UI_DrawInfoPane( menuItem_t *item, rectDef_t *rect, float text_x, fl
 				        _( BG_ClassModelConfig( item->v.pclass )->humanName ),
 				        _( BG_Class( item->v.pclass )->info ),
 				        _( "Frags:" ),
-				        value );
+				        value / CREDITS_PER_EVO );
 			}
 
 			break;
@@ -1904,33 +1902,52 @@ static void UI_DrawInfoPane( menuItem_t *item, rectDef_t *rect, float text_x, fl
 
 		case INFOTYPE_BUILDABLE:
 			value = BG_Buildable( item->v.buildable )->buildPoints;
+			value2 = BG_Buildable( item->v.buildable )->powerConsumption;
+
+			string = va( "%s\n\n%s",
+			             _( BG_Buildable( item->v.buildable )->humanName ),
+			             _( BG_Buildable( item->v.buildable )->info ) );
 
 			switch ( BG_Buildable( item->v.buildable )->team )
 			{
 				case TEAM_ALIENS:
-					string = _("Sentience");
+					// resources
+					if ( value == 0 )
+					{
+						s = va( "%s", string );
+					}
+					else
+					{
+						s = va( "%s\n\n%s: %d",
+						        string, _( "Biomass" ), value );
+					}
+
 					break;
 
 				case TEAM_HUMANS:
-					string = _("Power");
-					break;
+					// resources
+					if ( value == 0 )
+					{
+						string2 = va( "%s", string );
+					}
+					else
+					{
+						string2 = va( "%s\n\n%s: %d",
+						              string, _( "Material" ), value );
+					}
 
-				default:
-					break;
-			}
+					// power consumption
+					if ( value2 == 0 )
+					{
+						s = va( "%s", string2 );
+					}
+					else
+					{
+						s = va( "%s\n%s: %d",
+						        string2, _( "Power" ), value2 );
+					}
 
-			if ( value == 0 )
-			{
-				s = va( "%s\n\n%s",
-				        _( BG_Buildable( item->v.buildable )->humanName ),
-				        _( BG_Buildable( item->v.buildable )->info ) );
-			}
-			else
-			{
-				s = va( "%s\n\n%s\n\n%s: %d",
-				        _( BG_Buildable( item->v.buildable )->humanName ),
-				        _( BG_Buildable( item->v.buildable )->info ),
-				        string, value );
+					break;
 			}
 
 			break;
@@ -2815,7 +2832,7 @@ static void UI_LoadAlienUpgrades( void )
 
 	for ( i = PCL_NONE + 1; i < PCL_NUM_CLASSES; i++ )
 	{
-		if ( BG_ClassCanEvolveFromTo( class, i, credits, stage, 0 ) >= 0 )
+		if ( BG_ClassCanEvolveFromTo( class, i, credits, stage ) >= 0 )
 		{
 			uiInfo.alienUpgradeList[ j ].text = BG_ClassModelConfig( i )->humanName;
 			uiInfo.alienUpgradeList[ j ].cmd =

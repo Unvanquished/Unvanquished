@@ -63,6 +63,7 @@ typedef enum sharedImport_s
   TRAP_SQRT,                 // = sqrt
   TRAP_FLOOR,                // = floor
   TRAP_CEIL,                 // = ceil
+  TRAP_EXP,                  // = exp
 
   TRAP_MATRIXMULTIPLY = 128, // unused
   TRAP_ANGLEVECTORS,         // unused
