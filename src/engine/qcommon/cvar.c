@@ -85,36 +85,6 @@ static long generateHashValue( const char *fname )
 
 /*
 ============
-Cvar_ValidateString
-============
-*/
-static qboolean Cvar_ValidateString( const char *s )
-{
-	if ( !s )
-	{
-		return qfalse;
-	}
-
-	if ( strchr( s, '\\' ) )
-	{
-		return qfalse;
-	}
-
-	if ( strchr( s, '\"' ) )
-	{
-		return qfalse;
-	}
-
-	if ( strchr( s, ';' ) )
-	{
-		return qfalse;
-	}
-
-	return qtrue;
-}
-
-/*
-============
 Cvar_FindVar
 ============
 */
@@ -279,22 +249,6 @@ cvar_t         *Cvar_Get( const char *var_name, const char *var_value, int flags
 		Com_Error( ERR_FATAL, "Cvar_Get: NULL parameter" );
 	}
 
-	if ( !Cvar_ValidateString( var_name ) )
-	{
-		Com_Printf( "invalid cvar name string: %s\n", var_name );
-		var_name = "BADNAME";
-	}
-
-#if 0 // FIXME: values with backslash happen
-
-	if ( !Cvar_ValidateString( var_value ) )
-	{
-		Com_Printf( "invalid cvar value string: %s\n", var_value );
-		var_value = "BADVALUE";
-	}
-
-#endif
-
 	var = Cvar_FindVar( var_name );
 
 	if ( var )
@@ -422,21 +376,6 @@ Cvar_Set2
 cvar_t         *Cvar_Set2( const char *var_name, const char *value, qboolean force )
 {
 	cvar_t *var;
-
-#if 0
-
-	if ( strcmp( "com_hunkused", var_name ) != 0 )
-	{
-		Com_DPrintf( "Cvar_Set2: %s %s\n", var_name, value );
-	}
-
-#endif
-
-	if ( !Cvar_ValidateString( var_name ) )
-	{
-		Com_Printf( "invalid cvar name string: %s\n", var_name );
-		var_name = "BADNAME";
-	}
 
 	var = Cvar_FindVar( var_name );
 
@@ -609,85 +548,6 @@ void Cvar_SetLatched( const char *var_name, const char *value )
 {
 	Cvar_Set2( var_name, value, qfalse );
 }
-
- /*
- ============
-Cvar_SetIFlag
-
-Sets the cvar by the name that begins with a backslash to "1".  This creates a
-cvar that can be set by the engine but not by the sure, and can be read by
-interpreted modules.
-============
-*/
-void Cvar_SetIFlag( const char *var_name )
-{
-	cvar_t *var;
-	long hash;
-	int index;
-
-	if ( !var_name ) {
-		Com_Error( ERR_FATAL, "Cvar_SetIFlag: NULL parameter" );
-	}
-
-  if ( *var_name != '\\' ) {
-		Com_Error( ERR_FATAL, "Cvar_SetIFlag: var_name must begin with a '\\'" );
-  }
-
-  /*
-  if ( Cvar_FindVar( var_name ) ) {
-		Com_Error( ERR_FATAL, "Cvar_SetIFlag: %s already exists.", var_name );
-  }
-  */
-
-	if ( !Cvar_ValidateString( var_name + 1 ) ) {
-		Com_Printf( "invalid cvar name string: %s\n", var_name );
-		var_name = "BADNAME";
-	}
-
-	// find a free cvar
-	for(index = 0; index < MAX_CVARS; index++)
-	{
-		if(!cvar_indexes[index].name)
-			break;
-	}
-
-	if(index >= MAX_CVARS)
-	{
-		if(!com_errorEntered)
-			Com_Error(ERR_FATAL, "Error: Too many cvars, cannot create a new one!");
-
-		return;
-	}
-
-	var = &cvar_indexes[index];
-
-	if(index >= cvar_numIndexes)
-		cvar_numIndexes = index + 1;
-
-	var->name = CopyString (var_name);
-	var->string = CopyString ("1");
-	var->modified = qtrue;
-	var->modificationCount = 1;
-	var->value = atof (var->string);
-	var->integer = atoi(var->string);
-	var->resetString = CopyString( "1" );
-
-	// link the variable in
-	var->next = cvar_vars;
-
-	cvar_vars = var;
-
-	var->flags = CVAR_INIT;
-	// note what types of cvars have been modified (userinfo, archive, serverinfo, systeminfo)
-	cvar_modifiedFlags |= var->flags;
-
-	hash = generateHashValue(var_name);
-
-	var->hashNext = hashTable[hash];
-
-	hashTable[hash] = var;
-}
-
 
 /*
 ============

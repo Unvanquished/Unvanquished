@@ -95,11 +95,6 @@ void Cvar_Update(vmCvar_t *vmCvar);
 void Cvar_Set(const char *var_name, const char *value);
 
 /**
- * sets the cvar by the name that begins with a backslash to "1"
- */
-void Cvar_SetIFlag(const char *var_name);
-
-/**
  * don't set the cvar immediately
  */
 void Cvar_SetLatched(const char *var_name, const char *value);
