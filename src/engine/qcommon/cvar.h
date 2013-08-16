@@ -65,11 +65,6 @@ typedef struct cvar_s
 	 */
 	qboolean transient;
 
-	qboolean validate;
-	qboolean integral;
-	float min;
-	float max;
-
 	struct cvar_s *next;
 
 	struct cvar_s *hashNext;
@@ -164,8 +159,6 @@ void Cvar_Init(void);
 char *Cvar_InfoString(int bit, qboolean big);
 
 void Cvar_InfoStringBuffer(int bit, char *buff, int buffsize);
-
-void Cvar_CheckRange(cvar_t *cv, float minVal, float maxVal, qboolean shouldBeIntegral);
 
 /**
  *  whenever a cvar is modified, its flags will be OR'd into this, so

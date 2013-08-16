@@ -671,7 +671,6 @@ void Cvar_SetIFlag( const char *var_name )
 	var->value = atof (var->string);
 	var->integer = atoi(var->string);
 	var->resetString = CopyString( "1" );
-	var->validate = qfalse;
 
 	// link the variable in
 	var->next = cvar_vars;
@@ -1117,22 +1116,6 @@ Cvar_InfoStringBuffer
 void Cvar_InfoStringBuffer( int bit, char *buff, int buffsize )
 {
 	Q_strncpyz( buff, Cvar_InfoString( bit, qfalse ), buffsize );
-}
-
-/*
-=====================
-Cvar_CheckRange
-=====================
-*/
-void Cvar_CheckRange( cvar_t *var, float min, float max, qboolean integral )
-{
-	var->validate = qtrue;
-	var->min = min;
-	var->max = max;
-	var->integral = integral;
-
-	// Force an initial range check
-	Cvar_Set( var->name, var->string );
 }
 
 /*

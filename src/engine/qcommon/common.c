@@ -2314,10 +2314,8 @@ void Com_Init( char *commandLine )
 #if defined(DEDICATED)
 	// TTimo: default to Internet dedicated, not LAN dedicated
 	com_dedicated = Cvar_Get( "dedicated", "2", CVAR_ROM );
-	Cvar_CheckRange( com_dedicated, 1, 2, qtrue );
 #else
 	com_dedicated = Cvar_Get( "dedicated", "0", CVAR_LATCH );
-	Cvar_CheckRange( com_dedicated, 0, 2, qtrue );
 #endif
 	// allocate the stack based hunk allocator
 	Com_InitHunkMemory();

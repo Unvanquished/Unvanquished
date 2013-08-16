@@ -4299,7 +4299,6 @@ qboolean CL_InitRef( const char *renderer )
 
 	ri.Cvar_Get = Cvar_Get;
 	ri.Cvar_Set = Cvar_Set;
-	ri.Cvar_CheckRange = Cvar_CheckRange;
 
 	ri.Cvar_VariableIntegerValue = Cvar_VariableIntegerValue;
 
@@ -4531,7 +4530,6 @@ void CL_Init( void )
 
 	// This is a protocol version number.
 	cl_voip = Cvar_Get( "cl_voip", "1", CVAR_USERINFO | CVAR_ARCHIVE );
-	Cvar_CheckRange( cl_voip, 0, 1, qtrue );
 
 
 #endif
