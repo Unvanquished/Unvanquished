@@ -12,6 +12,9 @@
 
 set -e
 
+# Work around a reported locale problem
+export LANG=C
+
 # Download from here
 BASE_URL='http://downloads.sourceforge.net/project/unvanquished/Assets/'
 MIRROR_DOMAIN='dl.sourceforge.net'
