@@ -1,3 +1,15 @@
+unvanquished (0.18.0-2) unstable; urgency=low
+
+  * .pk3 downloading fixes:
+    - Work around a reported French locale problem by forcing LANG=C.
+    - Tighten up md5sums file validation; fail sooner if download fails.
+    - Properly handle full URLs.
+    - Continue with the next file if a download fails.
+  * Fix an authentication problem which would occur if playing locally then
+    connecting to a server on which you're a registered player.
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Fri, 16 Aug 2013 15:55:55 +0100
+
 unvanquished (0.18.0-1) unstable; urgency=low
 
   * Release of alpha 18.
