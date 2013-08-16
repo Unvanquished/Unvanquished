@@ -1,5 +1,0 @@
-The default version (interpolate8x8_ia64.s) of the interpolate functions
-suffer from some rounding errors, but are fast. I our oppinion there
-is no need to be such exact here. Just in the case we provide another
-set of function with exact rounding: interpolate8x8_ia64_exact.s
-
