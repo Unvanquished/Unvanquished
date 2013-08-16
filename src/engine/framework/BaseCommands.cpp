@@ -427,6 +427,129 @@ namespace Cmd {
     };
     static IfCmd IfCmdRegistration;
 
+    class ToggleCmd: public Cmd::StaticCmd {
+        public:
+            ToggleCmd(): Cmd::StaticCmd("toggle", Cmd::BASE, N_("toggles a cvar between different values")) {
+            }
+
+            void Run(const Cmd::Args& args) const override {
+                if (args.Argc() < 2) {
+                    Usage(args);
+                    return;
+                }
+
+                const std::string& firstArg = args.Argv(1);
+
+                int listStart = 2;
+                int direction = 1;
+
+                if (firstArg == "+") {
+                    listStart = 3;
+                } else if (firstArg == "-") {
+                    listStart = 3;
+                    direction = -1;
+                }
+
+                if (args.Argc() < listStart) {
+                    Usage(args);
+                    return;
+                }
+
+                const std::string& name = args.Argv(listStart - 1);
+
+                if (args.Argc() == listStart) {
+                    //There is no list, toggle between 0 and 1
+                    Cvar_Set(name.c_str(), va("%d", !Cvar_VariableValue(name.c_str())));
+                    return;
+                }
+
+                //Toggle the cvar through a list of values
+                std::string currentValue = Cvar_VariableString(name.c_str());
+
+                for(int i = listStart; i < args.Argc(); i++) {
+                    if(currentValue == args.Argv(i)) {
+                        //Found the current value, choose the next one
+                        int next = (i + direction) % (args.Argc() - listStart);
+
+                        Cvar_Set(name.c_str(), args.Argv(next + listStart).c_str());
+                        return;
+                    }
+                }
+
+                //fallback
+                Cvar_Set(name.c_str(), args.Argv(listStart).c_str());
+            }
+
+            std::vector<std::string> Complete(int pos, const Cmd::Args& args) const override{
+                int argNum = args.PosToArg(pos);
+
+                if (argNum == 1 or argNum == 2) {
+                    return CVar::CompleteName(args.ArgPrefix(pos));
+                }
+
+                return {};
+            }
+
+            void Usage(const Cmd::Args& args) const{
+                PrintUsage(args, _("[+|-] <variable> [<value>…]"), "");
+            }
+    };
+    static ToggleCmd ToggleCmdRegistration;
+
+    class CycleCmd: public Cmd::StaticCmd {
+        public:
+            CycleCmd(): Cmd::StaticCmd("cycle", Cmd::BASE, N_("cycles a cvar through numbers")) {
+            }
+
+            void Run(const Cmd::Args& args) const override {
+                if (args.Argc() < 4 || args.Argc() > 5) {
+                    PrintUsage(args, _("<variable> <start> <end> [<step>]"), "");
+                    return;
+                }
+
+                int oldValue = Cvar_VariableValue(args.Argv(1).c_str());
+                int start = Str::ToInt(args.Argv(2));
+                int end = Str::ToInt(args.Argv(3));
+
+                int step;
+                if (args.Argc() == 5) {
+                    step = Str::ToInt(args.Argv(4));
+                } else {
+                    step = 1;
+                }
+                if (std::abs(end - start) < step) {
+                    step = 1;
+                }
+
+                //TODO: rewrite all this nonsense
+                int newValue;
+                if (end < start) {
+                    newValue = oldValue - step;
+                    if (newValue < start) {
+                        newValue = start - (step - (oldValue - end + 1));
+                    }
+                } else {
+                    newValue = oldValue + step;
+                    if (newValue > end) {
+                        newValue = start + (step - (end - oldValue + 1));
+                    }
+                }
+
+                Cvar_Set(args.Argv(1).c_str(), va("%i", newValue));
+            }
+
+            std::vector<std::string> Complete(int pos, const Cmd::Args& args) const override{
+                int argNum = args.PosToArg(pos);
+
+                if (argNum == 1) {
+                    return CVar::CompleteName(args.ArgPrefix(pos));
+                }
+
+                return {};
+            }
+    };
+    static CycleCmd CycleCmdRegistration;
+
     /*
     ===============================================================================
 
