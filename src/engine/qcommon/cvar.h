@@ -95,15 +95,9 @@ void Cvar_Update(vmCvar_t *vmCvar);
 void Cvar_Set(const char *var_name, const char *value);
 
 /**
- * don't set the cvar immediately
- */
-void Cvar_SetLatched(const char *var_name, const char *value);
-
-/**
  * expands value to a string and calls Cvar_Set
  */
 void Cvar_SetValue(const char *var_name, float value);
-void Cvar_SetValueLatched(const char *var_name, float value);
 
 // returns 0 if not defined or non numeric
 float Cvar_VariableValue(const char *var_name);
@@ -120,8 +114,6 @@ void Cvar_VariableStringBuffer(const char *var_name, char *buffer, int bufsize);
  */
 void Cvar_LatchedVariableStringBuffer(const char *var_name, char *buffer,
 		int bufsize);
-
-int Cvar_Flags(const char *var_name);
 
 // reset all testing vars to a safe value
 void Cvar_Reset(const char *var_name);

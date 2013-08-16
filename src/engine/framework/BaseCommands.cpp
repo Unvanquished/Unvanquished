@@ -197,7 +197,7 @@ namespace Cmd {
                 int max = Str::ToInt(args.Argv(3));
                 int number = min + (std::rand() % (max - min));
 
-                Cvar_SetValueLatched(cvar.c_str(), number);
+                Cvar_SetValue(cvar.c_str(), number);
             }
 
             std::vector<std::string> Complete(int pos, const Args& args) const override{
@@ -320,7 +320,7 @@ namespace Cmd {
                     return;
                 }
 
-                Cvar_SetValueLatched(targetName.c_str(), newValue);
+                Cvar_SetValue(targetName.c_str(), newValue);
             }
 
             void Usage(const Cmd::Args& args) const{

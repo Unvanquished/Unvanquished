@@ -214,25 +214,6 @@ void Cvar_LatchedVariableStringBuffer( const char *var_name, char *buffer, int b
 
 /*
 ============
-Cvar_Flags
-============
-*/
-int Cvar_Flags( const char *var_name )
-{
-	cvar_t *var;
-
-	if ( !( var = Cvar_FindVar( var_name ) ) )
-	{
-		return CVAR_NONEXISTENT;
-	}
-	else
-	{
-		return var->flags;
-	}
-}
-
-/*
-============
 Cvar_Get
 
 If the variable already exists, the value will not be set unless CVAR_ROM
@@ -541,16 +522,6 @@ void Cvar_Set( const char *var_name, const char *value )
 
 /*
 ============
-Cvar_SetLatched
-============
-*/
-void Cvar_SetLatched( const char *var_name, const char *value )
-{
-	Cvar_Set2( var_name, value, qfalse );
-}
-
-/*
-============
 Cvar_SetValue
 ============
 */
@@ -568,27 +539,6 @@ void Cvar_SetValue( const char *var_name, float value )
 	}
 
 	Cvar_Set( var_name, val );
-}
-
-/*
-============
-Cvar_SetValueLatched
-============
-*/
-void Cvar_SetValueLatched( const char *var_name, float value )
-{
-	char val[ 32 ];
-
-	if ( value == ( int ) value )
-	{
-		Com_sprintf( val, sizeof( val ), "%i", ( int ) value );
-	}
-	else
-	{
-		Com_sprintf( val, sizeof( val ), "%f", value );
-	}
-
-	Cvar_Set2( var_name, val, qfalse );
 }
 
 /*
