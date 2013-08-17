@@ -313,13 +313,16 @@ extern int   CHAINGUN_SPREAD;
 extern int   CHAINGUN_DMG;
 
 extern int   FLAMER_DMG;
-extern int   FLAMER_FLIGHTSPLASHDAMAGE;
+extern int   FLAMER_FLIGHTDAMAGE;
 extern int   FLAMER_SPLASHDAMAGE;
 extern int   FLAMER_RADIUS;
 extern int   FLAMER_SIZE;
 extern float FLAMER_LIFETIME;
 extern float FLAMER_SPEED;
 extern float FLAMER_LAG;
+extern float FLAMER_IGNITE_RADIUS;
+extern float FLAMER_IGNITE_CHANCE;
+extern float FLAMER_IGNITE_SPLCHANCE;
 
 extern int   PRIFLE_DMG;
 extern int   PRIFLE_SPEED;
@@ -369,7 +372,6 @@ extern int   MEDKIT_STARTUP_SPEED;
  */
 extern float REACTOR_BASESIZE;
 extern float REPEATER_BASESIZE;
-#define HUMAN_DETONATION_DELAY    5000
 
 extern float MGTURRET_RANGE;
 extern int   MGTURRET_ANGULARSPEED;
@@ -430,7 +432,7 @@ extern int   REACTOR_ATTACK_DCC_DAMAGE;
 #define AVG_FALL_DISTANCE                  (( MIN_FALL_DISTANCE + MAX_FALL_DISTANCE ) / 2.0f )
 
 // buildable explosion
-#define HUMAN_DETONATION_DELAY             4000
+#define HUMAN_DETONATION_DELAY             5000
 #define ALIEN_DETONATION_DELAY             5000
 #define DETONATION_DELAY_RAND_RANGE        0.25f
 

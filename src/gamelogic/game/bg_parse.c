@@ -218,13 +218,16 @@ int   CHAINGUN_SPREAD;
 int   CHAINGUN_DMG;
 
 int   FLAMER_DMG;
-int   FLAMER_FLIGHTSPLASHDAMAGE;
+int   FLAMER_FLIGHTDAMAGE;
 int   FLAMER_SPLASHDAMAGE;
 int   FLAMER_RADIUS;
 int   FLAMER_SIZE;
 float FLAMER_LIFETIME;
 float FLAMER_SPEED;
 float FLAMER_LAG;
+float FLAMER_IGNITE_RADIUS;
+float FLAMER_IGNITE_CHANCE;
+float FLAMER_IGNITE_SPLCHANCE;
 
 int   PRIFLE_DMG;
 int   PRIFLE_SPEED;
@@ -308,7 +311,10 @@ static configVar_t bg_configVars[] =
 	{"w_chaingun_spread", INTEGER, qfalse, &CHAINGUN_SPREAD },
 
 	{"w_flamer_damage", INTEGER, qfalse, &FLAMER_DMG },
-	{"w_flamer_flightSplashDamage", INTEGER, qfalse, &FLAMER_FLIGHTSPLASHDAMAGE },
+	{"w_flamer_flightDamage", INTEGER, qfalse, &FLAMER_FLIGHTDAMAGE },
+	{"w_flamer_igniteChance", FLOAT, qfalse, &FLAMER_IGNITE_CHANCE },
+	{"w_flamer_igniteRadius", FLOAT, qfalse, &FLAMER_IGNITE_RADIUS },
+	{"w_flamer_igniteSplChance", FLOAT, qfalse, &FLAMER_IGNITE_SPLCHANCE },
 	{"w_flamer_lag", FLOAT, qfalse, &FLAMER_LAG },
 	{"w_flamer_lifeTime", FLOAT, qfalse, &FLAMER_LIFETIME },
 	{"w_flamer_radius", INTEGER, qfalse, &FLAMER_RADIUS },
