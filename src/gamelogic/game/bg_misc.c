@@ -541,7 +541,7 @@ void BG_InitClassModelConfigs( void )
 		BG_ParseClassModelFile( va( "configs/classes/%s.model.cfg",
 		                       BG_Class( i )->name ), cc );
 
-		cc->segmented = BG_NonSegModel( va( "models/players/%s/animation.cfg", cc->modelName ) );
+		cc->segmented = cc->modelName[0] ? BG_NonSegModel( va( "models/players/%s/animation.cfg", cc->modelName ) ) : qfalse;
 	}
 }
 
