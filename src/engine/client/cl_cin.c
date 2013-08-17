@@ -41,7 +41,7 @@ Maryland 20850 USA.
 
 //#define ADAPTED_TO_STREAMING_SOUND
 //  (SA) MISSIONPACK MERGE
-//  s_rawend for wolf is [] and for q3 is just a single value
+//  s_rawend[0] for wolf is [] and for q3 is just a single value
 //  I need to ask Ryan if it's as simple as a constant index or
 // if some more coding needs to be done.
 
@@ -1393,7 +1393,7 @@ redump:
 				if ( cinTable[ currentHandle ].numQuads == -1 )
 				{
 					S_Update();
-					s_rawend = s_soundtime;
+					s_rawend[0] = s_soundtime;
 				}
 
 				ssize = RllDecodeStereoToStereo( framedata, sbuf, cinTable[ currentHandle ].RoQFrameSize, 0, ( unsigned short ) cinTable[ currentHandle ].roq_flags );
@@ -1768,8 +1768,6 @@ e_status CIN_RunCinematic( int handle )
 	return cinTable[ currentHandle ].status;
 }
 
-extern char *findExtension( const char *fni );  // from snd_codec.c (just a nice implementation of getting a point to the extention)
-
 /*
 ==================
 CIN_PlayCinematic
@@ -1811,8 +1809,12 @@ int CIN_PlayCinematic( const char *arg, int x, int y, int w, int h, int systemBi
 
 	strcpy( cinTable[ currentHandle ].fileName, name );
 
-	fileextPtr = findExtension( name );  // using the function from soundfile/audiocodec-detection
-
+	fileextPtr = name;
+	while ( fileextPtr && *fileextPtr != '.' )
+	{
+		fileextPtr++;
+	}
+	
 	if ( !Q_stricmp( fileextPtr, ".ogm" ) )
 	{
 		if ( Cin_OGM_Init( name ) )
@@ -1917,7 +1919,7 @@ int CIN_PlayCinematic( const char *arg, int x, int y, int w, int h, int systemBi
 
 		Con_Close();
 
-		s_rawend = s_soundtime;
+		s_rawend[0] = s_soundtime;
 
 		return currentHandle;
 	}
