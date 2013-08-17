@@ -279,6 +279,11 @@ static classData_t bg_classData[] =
 		WP_ALEVEL2_UPG //weapon_t  startWeapon;
 	},
 	{
+		PCL_ALIEN_LEVELFLY, //int    number;
+		"levelfly", //char    *name;
+		WP_ALEVELFLY //weapon_t   startWeapon;
+	},
+	{
 		PCL_ALIEN_LEVEL3, //int     number;
 		"level3", //char    *name;
 		WP_ALEVEL3 //weapon_t  startWeapon;
