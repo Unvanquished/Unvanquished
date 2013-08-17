@@ -967,9 +967,19 @@ static double powN( double base, int exp )
         }
 }
 
-double tan( double x )
+float tanf( float x )
 {
-	return sin( x ) / cos( x );
+	return ( float ) tan( ( double ) x );
+}
+
+float atanf( float x )
+{
+	return ( float ) atan( ( double ) x );
+}
+
+float sqrtf( float x )
+{
+	return ( float ) sqrt( ( double ) x );
 }
 
 /*

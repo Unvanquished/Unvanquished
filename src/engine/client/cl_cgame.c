@@ -35,6 +35,7 @@ Maryland 20850 USA.
 // cl_cgame.c  -- client system interaction with client game
 
 #include "client.h"
+#include "../sys/sys_local.h"
 
 #ifdef USE_MUMBLE
 #include "libmumblelink.h"
@@ -685,7 +686,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 
 		case CG_FS_READ:
 			VM_CheckBlock( args[1], args[2], "FSREAD" );
-			FS_Read2( VMA( 1 ), args[ 2 ], args[ 3 ] );
+			FS_Read( VMA( 1 ), args[ 2 ], args[ 3 ] );
 			return 0;
 
 		case CG_FS_WRITE:
@@ -1265,6 +1266,25 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			re.SetColorGrading( args[1], args[2] );
 			return 0;
 
+		case CG_CM_DISTANCETOMODEL:
+			return FloatAsInt( CM_DistanceToModel( VMA(1), args[2] ) );
+
+		case CG_R_SCISSOR_ENABLE:
+			re.ScissorEnable( args[1] );
+			return 0;
+
+		case CG_R_SCISSOR_SET:
+			re.ScissorSet( args[1], args[2], args[3], args[4] );
+			return 0;
+
+		case CG_PREPAREKEYUP:
+			IN_PrepareKeyUp();
+			return 0;
+
+		case CG_R_SETALTSHADERTOKENS:
+			re.SetAltShaderTokens( VMA(1) );
+			return 0;
+
 		default:
 			Com_Error( ERR_DROP, "Bad cgame system trap: %ld", ( long int ) args[ 0 ] );
 			exit(1); // silence warning, and make sure this behaves as expected, if Com_Error's behavior changes
@@ -1457,7 +1477,12 @@ void CL_InitCGame( void )
 
 	// Ridah, update the memory usage file
 	CL_UpdateLevelHunkUsage();
-	
+
+	// Cause any input while loading to be dropped and forget what's pressed
+	IN_DropInputsForFrame();
+	CL_ClearKeys();
+	Key_ClearStates();
+
 	CL_WriteClientLog( va("`~=-----------------=~`\n MAP: %s \n`~=-----------------=~`\n", mapname ) );
 
 //  if( cl_autorecord->integer ) {

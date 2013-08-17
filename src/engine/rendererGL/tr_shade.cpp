@@ -265,7 +265,7 @@ void Tess_DrawElements()
 		}
 		else
 		{
-			glDrawElements( GL_TRIANGLES, tess.numIndexes, GL_INDEX_TYPE, BUFFER_OFFSET( 0 ) );
+			glDrawRangeElements( GL_TRIANGLES, 0, tess.numVertexes, tess.numIndexes, GL_INDEX_TYPE, BUFFER_OFFSET( 0 ) );
 
 			backEnd.pc.c_drawElements++;
 
@@ -295,7 +295,7 @@ SURFACE SHADERS
 =============================================================
 */
 
-shaderCommands_t tess;
+ALIGNED( 16, shaderCommands_t tess );
 
 /*
 =================
@@ -447,7 +447,7 @@ void Tess_Begin( void ( *stageIteratorFunc )( void ),
 
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;
-
+	tess.attribsSet = 0;
 	tess.multiDrawPrimitives = 0;
 
 	// materials are optional
@@ -636,6 +636,7 @@ static void Render_vertexLighting_DBS_entity( int stage )
 	GL_State( stateBits );
 
 	bool normalMapping = r_normalMapping->integer && ( pStage->bundle[ TB_NORMALMAP ].image[ 0 ] != NULL );
+	bool glowMapping = ( pStage->bundle[ TB_GLOWMAP ].image[ 0 ] != NULL );
 
 	// choose right shader program ----------------------------------
 	gl_vertexLightingShader_DBS_entity->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
@@ -647,6 +648,8 @@ static void Render_vertexLighting_DBS_entity( int stage )
 	gl_vertexLightingShader_DBS_entity->SetParallaxMapping( normalMapping && r_parallaxMapping->integer && tess.surfaceShader->parallax );
 
 	gl_vertexLightingShader_DBS_entity->SetReflectiveSpecular( normalMapping && tr.cubeHashTable != NULL );
+
+	gl_vertexLightingShader_DBS_entity->SetGlowMapping( glowMapping );
 
 //	gl_vertexLightingShader_DBS_entity->SetMacro_TWOSIDED(tess.surfaceShader->cullType);
 
@@ -738,7 +741,12 @@ static void Render_vertexLighting_DBS_entity( int stage )
 
 		gl_vertexLightingShader_DBS_entity->SetUniform_SpecularTextureMatrix( tess.svars.texMatrices[ TB_SPECULARMAP ] );
 
-		//if(r_reflectionMapping->integer)
+		float minSpec = RB_EvalExpression( &pStage->specularExponentMin, r_specularExponentMin->value );
+		float maxSpec = RB_EvalExpression( &pStage->specularExponentMax, r_specularExponentMax->value );
+
+		gl_vertexLightingShader_DBS_entity->SetUniform_SpecularExponent( minSpec, maxSpec );
+		
+		if ( tr.cubeHashTable != NULL )
 		{
 			cubemapProbe_t *cubeProbeNearest;
 			cubemapProbe_t *cubeProbeSecondNearest;
@@ -829,6 +837,14 @@ static void Render_vertexLighting_DBS_entity( int stage )
 		}
 	}
 
+	if ( glowMapping )
+	{
+		GL_SelectTexture( 5 );
+		GL_Bind( pStage->bundle[ TB_GLOWMAP ].image[ 0 ] );
+
+		gl_vertexLightingShader_DBS_entity->SetUniform_GlowTextureMatrix( tess.svars.texMatrices[ TB_GLOWMAP ] );
+	}
+
 	gl_vertexLightingShader_DBS_entity->SetRequiredVertexPointers();
 
 	Tess_DrawElements();
@@ -849,12 +865,14 @@ static void Render_vertexLighting_DBS_world( int stage )
 	stateBits = pStage->stateBits;
 
 	bool normalMapping = r_normalMapping->integer && ( pStage->bundle[ TB_NORMALMAP ].image[ 0 ] != NULL );
+	bool glowMapping = ( pStage->bundle[ TB_GLOWMAP ].image[ 0 ] != NULL );
 
 	// choose right shader program ----------------------------------
 	gl_vertexLightingShader_DBS_world->SetDeformVertexes( tess.surfaceShader->numDeforms );
 
 	gl_vertexLightingShader_DBS_world->SetNormalMapping( normalMapping );
 	gl_vertexLightingShader_DBS_world->SetParallaxMapping( normalMapping && r_parallaxMapping->integer && tess.surfaceShader->parallax );
+	gl_vertexLightingShader_DBS_world->SetGlowMapping( glowMapping );
 
 //	gl_vertexLightingShader_DBS_world->SetMacro_TWOSIDED(tess.surfaceShader->cullType);
 
@@ -972,6 +990,19 @@ static void Render_vertexLighting_DBS_world( int stage )
 		}
 
 		gl_vertexLightingShader_DBS_world->SetUniform_SpecularTextureMatrix( tess.svars.texMatrices[ TB_SPECULARMAP ] );
+
+		float minSpec = RB_EvalExpression( &pStage->specularExponentMin, r_specularExponentMin->value );
+		float maxSpec = RB_EvalExpression( &pStage->specularExponentMax, r_specularExponentMax->value );
+
+		gl_vertexLightingShader_DBS_world->SetUniform_SpecularExponent( minSpec, maxSpec );
+	}
+
+	if ( glowMapping )
+	{
+		GL_SelectTexture( 3 );
+		GL_Bind( pStage->bundle[ TB_GLOWMAP ].image[ 0 ] );
+
+		gl_vertexLightingShader_DBS_world->SetUniform_GlowTextureMatrix( tess.svars.texMatrices[ TB_GLOWMAP ] );
 	}
 
 	gl_vertexLightingShader_DBS_world->SetRequiredVertexPointers();
@@ -987,6 +1018,7 @@ static void Render_lightMapping( int stage, bool asColorMap, bool normalMapping 
 	uint32_t      stateBits;
 	colorGen_t    rgbGen;
 	alphaGen_t    alphaGen;
+	bool glowMapping = false;
 
 	GLimp_LogComment( "--- Render_lightMapping ---\n" );
 
@@ -1030,12 +1062,18 @@ static void Render_lightMapping( int stage, bool asColorMap, bool normalMapping 
 		normalMapping = false;
 	}
 
+	if ( pStage->bundle[ TB_GLOWMAP ].image[ 0 ] != NULL )
+	{
+		glowMapping = true;
+	}
+
 	// choose right shader program ----------------------------------
 
 	gl_lightMappingShader->SetDeformVertexes( tess.surfaceShader->numDeforms );
 
 	gl_lightMappingShader->SetNormalMapping( normalMapping );
 	gl_lightMappingShader->SetParallaxMapping( normalMapping && r_parallaxMapping->integer && tess.surfaceShader->parallax );
+	gl_lightMappingShader->SetGlowMapping( glowMapping );
 
 //	gl_lightMappingShader->SetMacro_TWOSIDED(tess.surfaceShader->cullType);
 
@@ -1115,6 +1153,11 @@ static void Render_lightMapping( int stage, bool asColorMap, bool normalMapping 
 
 		gl_lightMappingShader->SetUniform_SpecularTextureMatrix( tess.svars.texMatrices[ TB_SPECULARMAP ] );
 
+		float specExpMin = RB_EvalExpression( &pStage->specularExponentMin, r_specularExponentMin->value );
+		float specExpMax = RB_EvalExpression( &pStage->specularExponentMax, r_specularExponentMax->value );
+
+		gl_lightMappingShader->SetUniform_SpecularExponent( specExpMin, specExpMax );
+
 		// bind u_DeluxeMap
 		GL_SelectTexture( 4 );
 		BindDeluxeMap();
@@ -1123,6 +1166,14 @@ static void Render_lightMapping( int stage, bool asColorMap, bool normalMapping 
 	// bind u_LightMap
 	GL_SelectTexture( 3 );
 	BindLightMap();
+
+	if ( glowMapping )
+	{
+		GL_SelectTexture( 5 );
+		GL_Bind( pStage->bundle[ TB_GLOWMAP ].image[ 0 ] );
+
+		gl_lightMappingShader->SetUniform_GlowTextureMatrix( tess.svars.texMatrices[ TB_GLOWMAP ] );
+	}
 
 	gl_lightMappingShader->SetRequiredVertexPointers();
 
@@ -1273,6 +1324,9 @@ static void Render_geometricFill( int stage, bool cmap2black )
 				GL_Bind( tr.blackImage );
 			}
 
+			float specMin = RB_EvalExpression( &pStage->specularExponentMin, r_specularExponentMin->value );
+			float specMax = RB_EvalExpression( &pStage->specularExponentMax, r_specularExponentMax->value );
+			gl_geometricFillShader->SetUniform_SpecularExponent( specMin, specMax );
 			gl_geometricFillShader->SetUniform_SpecularTextureMatrix( tess.svars.texMatrices[ TB_SPECULARMAP ] );
 		}
 	}
@@ -1636,6 +1690,11 @@ static void Render_forwardLighting_DBS_omni( shaderStage_t *diffuseStage,
 		}
 
 		gl_forwardLightingShader_omniXYZ->SetUniform_SpecularTextureMatrix( tess.svars.texMatrices[ TB_SPECULARMAP ] );
+
+		float minSpec = RB_EvalExpression( &diffuseStage->specularExponentMin, r_specularExponentMin->value );
+		float maxSpec = RB_EvalExpression( &diffuseStage->specularExponentMax, r_specularExponentMax->value );
+
+		gl_forwardLightingShader_omniXYZ->SetUniform_SpecularExponent( minSpec, maxSpec );
 	}
 
 	// bind u_AttenuationMapXY
@@ -1651,6 +1710,8 @@ static void Render_forwardLighting_DBS_omni( shaderStage_t *diffuseStage,
 	{
 		GL_SelectTexture( 5 );
 		GL_Bind( tr.shadowCubeFBOImage[ light->shadowLOD ] );
+		GL_SelectTexture( 7 );
+		GL_Bind( tr.shadowClipCubeFBOImage[ light->shadowLOD ] );
 	}
 
 	// bind u_RandomMap
@@ -1835,6 +1896,11 @@ static void Render_forwardLighting_DBS_proj( shaderStage_t *diffuseStage,
 		}
 
 		gl_forwardLightingShader_projXYZ->SetUniform_SpecularTextureMatrix( tess.svars.texMatrices[ TB_SPECULARMAP ] );
+
+		float minSpec = RB_EvalExpression( &diffuseStage->specularExponentMin, r_specularExponentMin->value );
+		float maxSpec = RB_EvalExpression( &diffuseStage->specularExponentMax, r_specularExponentMax->value );
+
+		gl_forwardLightingShader_projXYZ->SetUniform_SpecularExponent( minSpec, maxSpec );
 	}
 
 	// bind u_AttenuationMapXY
@@ -1850,6 +1916,8 @@ static void Render_forwardLighting_DBS_proj( shaderStage_t *diffuseStage,
 	{
 		GL_SelectTexture( 5 );
 		GL_Bind( tr.shadowMapFBOImage[ light->shadowLOD ] );
+		GL_SelectTexture( 7 );
+		GL_Bind( tr.shadowClipMapFBOImage[ light->shadowLOD ] );
 	}
 
 	// bind u_RandomMap
@@ -2043,6 +2111,11 @@ static void Render_forwardLighting_DBS_directional( shaderStage_t *diffuseStage,
 		}
 
 		gl_forwardLightingShader_directionalSun->SetUniform_SpecularTextureMatrix( tess.svars.texMatrices[ TB_SPECULARMAP ] );
+
+		float minSpec = RB_EvalExpression( &diffuseStage->specularExponentMin, r_specularExponentMin->value );
+		float maxSpec = RB_EvalExpression( &diffuseStage->specularExponentMax, r_specularExponentMax->value );
+
+		gl_forwardLightingShader_directionalSun->SetUniform_SpecularExponent( minSpec, maxSpec );
 	}
 
 	// bind u_ShadowMap
@@ -2050,29 +2123,39 @@ static void Render_forwardLighting_DBS_directional( shaderStage_t *diffuseStage,
 	{
 		GL_SelectTexture( 5 );
 		GL_Bind( tr.sunShadowMapFBOImage[ 0 ] );
+		GL_SelectTexture( 10 );
+		GL_Bind( tr.sunShadowClipMapFBOImage[ 0 ] );
 
 		if ( r_parallelShadowSplits->integer >= 1 )
 		{
 			GL_SelectTexture( 6 );
 			GL_Bind( tr.sunShadowMapFBOImage[ 1 ] );
+			GL_SelectTexture( 11 );
+			GL_Bind( tr.sunShadowClipMapFBOImage[ 1 ] );
 		}
 
 		if ( r_parallelShadowSplits->integer >= 2 )
 		{
 			GL_SelectTexture( 7 );
 			GL_Bind( tr.sunShadowMapFBOImage[ 2 ] );
+			GL_SelectTexture( 12 );
+			GL_Bind( tr.sunShadowClipMapFBOImage[ 2 ] );
 		}
 
 		if ( r_parallelShadowSplits->integer >= 3 )
 		{
 			GL_SelectTexture( 8 );
 			GL_Bind( tr.sunShadowMapFBOImage[ 3 ] );
+			GL_SelectTexture( 13 );
+			GL_Bind( tr.sunShadowClipMapFBOImage[ 3 ] );
 		}
 
 		if ( r_parallelShadowSplits->integer >= 4 )
 		{
 			GL_SelectTexture( 9 );
 			GL_Bind( tr.sunShadowMapFBOImage[ 4 ] );
+			GL_SelectTexture( 14 );
+			GL_Bind( tr.sunShadowClipMapFBOImage[ 4 ] );
 		}
 	}
 
@@ -2560,6 +2643,10 @@ static void Render_liquid( int stage )
 	gl_liquidShader->SetUniform_UnprojectMatrix( backEnd.viewParms.unprojectionMatrix );
 	gl_liquidShader->SetUniform_ModelMatrix( backEnd.orientation.transformMatrix );
 	gl_liquidShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
+
+	float specMin = RB_EvalExpression( &pStage->specularExponentMin, r_specularExponentMin->value );
+	float specMax = RB_EvalExpression( &pStage->specularExponentMax, r_specularExponentMax->value );
+	gl_liquidShader->SetUniform_SpecularExponent( specMin, specMAx );
 
 	// capture current color buffer for u_CurrentMap
 	GL_SelectTexture( 0 );
@@ -3283,8 +3370,7 @@ void Tess_StageIteratorDebug()
 
 	if ( !glState.currentVBO || !glState.currentIBO || glState.currentVBO == tess.vbo || glState.currentIBO == tess.ibo )
 	{
-		// Tr3B: FIXME analyze required vertex attribs by the current material
-		Tess_UpdateVBOs( 0 );
+		Tess_UpdateVBOs( tess.attribsSet );
 	}
 
 	Tess_DrawElements();
@@ -3378,8 +3464,7 @@ void Tess_StageIteratorGeneric()
 
 	if ( !glState.currentVBO || !glState.currentIBO || glState.currentVBO == tess.vbo || glState.currentIBO == tess.ibo )
 	{
-		// Tr3B: FIXME analyze required vertex attribs by the current material
-		Tess_UpdateVBOs( 0 );
+		Tess_UpdateVBOs( tess.attribsSet );
 	}
 
 	// set GL fog
@@ -3459,6 +3544,8 @@ void Tess_StageIteratorGeneric()
 #endif
 
 			case ST_DIFFUSEMAP:
+			case ST_COLLAPSE_lighting_DBSG:
+			case ST_COLLAPSE_lighting_DBG:
 			case ST_COLLAPSE_lighting_DB:
 			case ST_COLLAPSE_lighting_DBS:
 				{
@@ -3602,8 +3689,7 @@ void Tess_StageIteratorGBuffer()
 
 	if ( !glState.currentVBO || !glState.currentIBO || glState.currentVBO == tess.vbo || glState.currentIBO == tess.ibo )
 	{
-		// Tr3B: FIXME analyze required vertex attribs by the current material
-		Tess_UpdateVBOs( 0 );
+		Tess_UpdateVBOs( tess.attribsSet );
 	}
 
 	// set face culling appropriately
@@ -3659,6 +3745,8 @@ void Tess_StageIteratorGBuffer()
 				}
 
 			case ST_DIFFUSEMAP:
+			case ST_COLLAPSE_lighting_DBSG:
+			case ST_COLLAPSE_lighting_DBG:
 			case ST_COLLAPSE_lighting_DB:
 			case ST_COLLAPSE_lighting_DBS:
 				{
@@ -3817,8 +3905,7 @@ void Tess_StageIteratorGBufferNormalsOnly()
 
 	if ( !glState.currentVBO || !glState.currentIBO || glState.currentVBO == tess.vbo || glState.currentIBO == tess.ibo )
 	{
-		// Tr3B: FIXME analyze required vertex attribs by the current material
-		Tess_UpdateVBOs( 0 );
+		Tess_UpdateVBOs( tess.attribsSet );
 	}
 
 	// set face culling appropriately
@@ -3876,6 +3963,8 @@ void Tess_StageIteratorGBufferNormalsOnly()
 				}
 
 			case ST_DIFFUSEMAP:
+			case ST_COLLAPSE_lighting_DBSG:
+			case ST_COLLAPSE_lighting_DBG:
 			case ST_COLLAPSE_lighting_DB:
 			case ST_COLLAPSE_lighting_DBS:
 				{
@@ -3977,6 +4066,8 @@ void Tess_StageIteratorDepthFill()
 #endif
 
 			case ST_DIFFUSEMAP:
+			case ST_COLLAPSE_lighting_DBSG:
+			case ST_COLLAPSE_lighting_DBG:
 			case ST_COLLAPSE_lighting_DB:
 			case ST_COLLAPSE_lighting_DBS:
 				{
@@ -4063,6 +4154,8 @@ void Tess_StageIteratorShadowFill()
 			case ST_LIGHTMAP:
 #endif
 			case ST_DIFFUSEMAP:
+			case ST_COLLAPSE_lighting_DBSG:
+			case ST_COLLAPSE_lighting_DBG:
 			case ST_COLLAPSE_lighting_DB:
 			case ST_COLLAPSE_lighting_DBS:
 				{
@@ -4104,8 +4197,7 @@ void Tess_StageIteratorLighting()
 
 	if ( !glState.currentVBO || !glState.currentIBO || glState.currentVBO == tess.vbo || glState.currentIBO == tess.ibo )
 	{
-		// Tr3B: FIXME analyze required vertex attribs by the current material
-		Tess_UpdateVBOs( 0 );
+		Tess_UpdateVBOs( tess.attribsSet );
 	}
 
 	// set OpenGL state for lighting
@@ -4190,7 +4282,7 @@ void Tess_StageIteratorLighting()
 					}
 					else if ( light->l.rlType == RL_PROJ )
 					{
-						if ( !light->l.inverseShadows )
+						//if ( !light->l.inverseShadows )
 						{
 							Render_forwardLighting_DBS_proj( diffuseStage, attenuationXYStage, attenuationZStage, light );
 						}
@@ -4272,6 +4364,7 @@ void Tess_End()
 	tess.multiDrawPrimitives = 0;
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;
+	tess.attribsSet = 0;
 
 	GLimp_LogComment( "--- Tess_End ---\n" );
 

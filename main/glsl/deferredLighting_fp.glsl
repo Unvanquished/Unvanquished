@@ -22,6 +22,15 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 /* forwardLighting_fp.glsl */
 
+/* swizzle one- and two-component textures to RG */
+#ifdef TEXTURE_RG
+#  define SWIZ1 r
+#  define SWIZ2 rg
+#else
+#  define SWIZ1 a
+#  define SWIZ2 ar
+#endif
+
 uniform sampler2D	u_DiffuseMap;
 uniform sampler2D	u_NormalMap;
 uniform sampler2D	u_SpecularMap;
@@ -64,7 +73,6 @@ uniform float       u_ShadowBlur;
 
 uniform mat4		u_ViewMatrix;
 uniform mat4		u_UnprojectMatrix;
-
 
 
 
@@ -171,14 +179,19 @@ vec2 WarpDepth(float depth)
 vec4 ShadowDepthToEVSM(float depth)
 {
 	vec2 warpedDepth = WarpDepth(depth);
-	return vec4(warpedDepth.xy, warpedDepth.xy * warpedDepth.xy);
+	return vec4(warpedDepth.x, warpedDepth.x * warpedDepth.x, warpedDepth.y, warpedDepth.y * warpedDepth.y);
 }
 
 #endif // #if defined(EVSM)
 
-
-
-
+vec4 FixShadowMoments( vec4 moments )
+{
+#if !defined(EVSM) || defined(r_EVSMPostProcess)
+	return vec4( moments.SWIZ2, moments.SWIZ2 );
+#else
+	return moments;
+#endif
+}
 
 
 #if defined(LIGHT_DIRECTIONAL)
@@ -273,7 +286,8 @@ void FetchShadowMoments(vec3 Pworld, inout vec4 shadowVert, inout vec4 shadowMom
 		shadowMoments = texture2DProj(u_ShadowMap0, shadowVert.xyw);
 	}
 #endif
-
+	shadowMoments = FixShadowMoments(shadowMoments);
+	
 #if defined(EVSM) && defined(r_EVSMPostProcess)
 	shadowMoments = ShadowDepthToEVSM(shadowMoments.x);
 #endif
@@ -337,9 +351,9 @@ vec4 PCF(vec3 Pworld, float filterWidth, float samples)
 vec4 FetchShadowMoments(vec2 st)
 {
 #if defined(EVSM) && defined(r_EVSMPostProcess)
-	return ShadowDepthToEVSM(texture2D(u_ShadowMap0, st).a);
+	return ShadowDepthToEVSM(texture2D(u_ShadowMap0, st).SWIZ1);
 #else
-	return texture2D(u_ShadowMap0, st);
+	return FixShadowMoments(texture2D(u_ShadowMap0, st));
 #endif
 }
 
@@ -385,9 +399,9 @@ vec4 PCF(vec4 shadowVert, float filterWidth, float samples)
 vec4 FetchShadowMoments(vec3 I)
 {
 #if defined(EVSM) && defined(r_EVSMPostProcess)
-	return ShadowDepthToEVSM(textureCube(u_ShadowMap, I).a);
+	return ShadowDepthToEVSM(textureCube(u_ShadowMap, I).SWIZ1);
 #else
-	return textureCube(u_ShadowMap, I);
+	return FixShadowMoments(textureCube(u_ShadowMap, I));
 #endif
 }
 
@@ -887,10 +901,11 @@ void	main()
 		float vertexDistance = (length(I) / u_LightRadius) - SHADOW_BIAS; // * r_ShadowMapDepthScale;
 #endif
 
-		float shadowDistance = shadowMoments.a;
+		float shadowDistance = shadowMoments.x;
 
 		// standard shadow mapping
-		shadow = vertexDistance <= shadowDistance ? 1.0 : 0.0;
+		shadow = step(vertexDistance, shadowDistance);
+		//shadow = vertexDistance <= shadowDistance ? 1.0 : 0.0;
 
 		// exponential shadow mapping
 		// shadow = clamp(exp(r_OverDarkeningFactor * (shadowDistance - log(vertexDistance))), 0.0, 1.0);
@@ -921,7 +936,7 @@ void	main()
 		float vertexDistance = length(I) / u_LightRadius - SHADOW_BIAS;
 #endif
 
-		shadow = ChebyshevUpperBound(shadowMoments.ra, vertexDistance, VSM_EPSILON);
+		shadow = ChebyshevUpperBound(shadowMoments.xy, vertexDistance, VSM_EPSILON);
 	}
 #elif defined(EVSM)
 	{
@@ -939,8 +954,8 @@ void	main()
 		vec2 depthScale = VSM_EPSILON * r_EVSMExponents * warpedVertexDistances;
 		vec2 minVariance = depthScale * depthScale;
 
-		float posContrib = ChebyshevUpperBound(shadowMoments.xz, warpedVertexDistances.x, minVariance.x);
-		float negContrib = ChebyshevUpperBound(shadowMoments.yw, warpedVertexDistances.y, minVariance.y);
+		float posContrib = ChebyshevUpperBound(shadowMoments.xy, warpedVertexDistances.x, minVariance.x);
+		float negContrib = ChebyshevUpperBound(shadowMoments.zw, warpedVertexDistances.y, minVariance.y);
 
 		shadow = min(posContrib, negContrib);
 
@@ -1004,7 +1019,8 @@ void	main()
 
 #if defined(USE_NORMAL_MAPPING)
 	// compute the specular term
-	vec3 specular = texture2D(u_SpecularMap, st).rgb * u_LightColor * pow(clamp(dot(N, H), 0.0, 1.0), r_SpecularExponent) * r_SpecularScale;
+	vec4 spec = texture2D(u_SpecularMap, st).rgba;
+	vec3 specular = spec.rgb * u_LightColor * pow(clamp(dot(N, H), 0.0, 1.0), spec.a) * r_SpecularScale;
 #endif
 
 

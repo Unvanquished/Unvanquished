@@ -56,6 +56,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define MAX_LOADING_LABEL_LENGTH       32
 
+#define MAX_MINIMAP_ZONES              32
+
 typedef enum
 {
   FOOTSTEP_GENERAL,
@@ -570,6 +572,11 @@ typedef struct
 	vec3_t   lastNormal;
 	vec3_t   lastAxis[ 3 ];
 	smooth_t sList[ MAXSMOOTHS ];
+
+	vec3_t   lastMinimapPos;
+	float    lastMinimapAngle;
+	float    minimapFading;
+	qboolean minimapFadingOut;
 } playerEntity_t;
 
 typedef struct lightFlareStatus_s
@@ -641,6 +648,7 @@ typedef struct centity_s
 	buildableAnimNumber_t oldBuildableAnim; //to detect when new anims are set
 	qboolean              buildableIdleAnim; //to check if new idle anim
 	particleSystem_t      *buildablePS;
+	particleSystem_t      *buildableStatusPS; // used for steady effects like fire
 	buildableStatus_t     buildableStatus;
 	buildableCache_t      buildableCache; // so we don't recalculate things
 	float                 lastBuildableHealth;
@@ -892,6 +900,31 @@ typedef struct
 
 typedef struct
 {
+    vec3_t    boundsMin, boundsMax;
+    vec2_t    imageMin, imageMax;
+    float     scale;
+    qhandle_t image;
+} minimapZone_t;
+
+typedef struct
+{
+    qboolean     active;
+    qboolean     defined;
+    int          lastZone;
+    int          nZones;
+    float        bgColor[4];
+    float        scale;
+    struct
+    {
+        qhandle_t playerArrow, teamArrow;
+    } gfx;
+    minimapZone_t zones[ MAX_MINIMAP_ZONES ];
+} minimap_t;
+
+//======================================================================
+
+typedef struct
+{
 	vec3_t alienBuildablePos[ MAX_GENTITIES ];
 	float  alienBuildableIntensity[ MAX_GENTITIES ];
 	int    numAlienBuildables;
@@ -1010,7 +1043,6 @@ typedef struct
 	// view rendering
 	refdef_t refdef;
 	vec3_t   refdefViewAngles; // will be converted to refdef.viewaxis
-	vec4_t   gradingWeights;
 
 	// zoom key
 	qboolean zoomed;
@@ -1070,6 +1102,9 @@ typedef struct
 	float bobfracsin;
 	int   bobcycle;
 	float xyspeed;
+
+	//minimap
+	minimap_t               minimap;
 
 	// development tool
 	refEntity_t             testModelEntity;
@@ -1234,8 +1269,8 @@ typedef struct
 	sfxHandle_t alienOvermindSpawns;
 
 	sfxHandle_t alienBuildableExplosion;
-	sfxHandle_t alienBuildableDamage;
 	sfxHandle_t alienBuildablePrebuild;
+	sfxHandle_t humanBuildableDying;
 	sfxHandle_t humanBuildableExplosion;
 	sfxHandle_t humanBuildablePrebuild;
 	sfxHandle_t humanBuildableDamage[ 4 ];
@@ -1271,6 +1306,7 @@ typedef struct
 
 	qhandle_t   humanBuildableDamagedPS;
 	qhandle_t   humanBuildableDestroyedPS;
+	qhandle_t   humanBuildableNovaPS;
 	qhandle_t   alienBuildableDamagedPS;
 	qhandle_t   alienBuildableDestroyedPS;
 
@@ -1278,6 +1314,7 @@ typedef struct
 	qhandle_t   humanBleedPS;
 	qhandle_t   alienBuildableBleedPS;
 	qhandle_t   humanBuildableBleedPS;
+	qhandle_t   alienBuildableBurnPS;
 
 	qhandle_t   teslaZapTS;
 
@@ -1291,6 +1328,13 @@ typedef struct
 	qhandle_t   healthCross3X;
 	qhandle_t   healthCrossMedkit;
 	qhandle_t   healthCrossPoisoned;
+
+	qhandle_t   neutralCgrade;
+	qhandle_t   redCgrade;
+	qhandle_t   tealCgrade;
+	qhandle_t   desaturatedCgrade;
+
+	qhandle_t   scopeShader;
 } cgMedia_t;
 
 typedef struct
@@ -1348,10 +1392,6 @@ typedef struct
 
 	int      alienStage;
 	int      humanStage;
-	int      alienCredits;
-	int      humanCredits;
-	int      alienNextStageThreshold;
-	int      humanNextStageThreshold;
 
 	//
 	// locally derived information from gamestate
@@ -1359,6 +1399,8 @@ typedef struct
 	qhandle_t    gameModels[ MAX_MODELS ];
 	qhandle_t    gameShaders[ MAX_GAME_SHADERS ];
 	qhandle_t    gameGradingTextures[ MAX_GRADING_TEXTURES ];
+	qhandle_t    gameGradingModels[ MAX_GRADING_TEXTURES ];
+	float        gameGradingDistances[ MAX_GRADING_TEXTURES ];
 	qhandle_t    gameParticleSystems[ MAX_GAME_PARTICLE_SYSTEMS ];
 	sfxHandle_t  gameSounds[ MAX_SOUNDS ];
 
@@ -1400,6 +1442,7 @@ typedef enum
   SHC_LIGHT_BLUE,
   SHC_GREEN_CYAN,
   SHC_VIOLET,
+  SHC_INDIGO,
   SHC_YELLOW,
   SHC_ORANGE,
   SHC_LIGHT_GREEN,
@@ -1416,6 +1459,13 @@ typedef enum
 	RM_SPHERICAL_CONE_64,
 	RM_SPHERICAL_CONE_240,
 } rangeMarker_t;
+
+typedef enum
+{
+  CG_ALTSHADER_DEFAULT, // must be first
+  CG_ALTSHADER_UNPOWERED,
+  CG_ALTSHADER_DEAD
+} altShader_t;
 
 //==============================================================================
 
@@ -1439,6 +1489,8 @@ extern  vmCvar_t            cg_runpitch;
 extern  vmCvar_t            cg_runroll;
 extern  vmCvar_t            cg_swingSpeed;
 extern  vmCvar_t            cg_shadows;
+extern  vmCvar_t            cg_playerShadows;
+extern  vmCvar_t            cg_buildableShadows;
 extern  vmCvar_t            cg_drawTimer;
 extern  vmCvar_t            cg_drawClock;
 extern  vmCvar_t            cg_drawFPS;
@@ -1448,6 +1500,8 @@ extern  vmCvar_t            cg_drawChargeBar;
 extern  vmCvar_t            cg_drawCrosshair;
 extern  vmCvar_t            cg_drawCrosshairNames;
 extern  vmCvar_t            cg_drawBuildableHealth;
+extern  vmCvar_t            cg_drawMinimap;
+extern  vmCvar_t            cg_minimapActive;
 extern  vmCvar_t            cg_crosshairSize;
 extern  vmCvar_t            cg_crosshairFile;
 extern  vmCvar_t            cg_drawTeamOverlay;
@@ -1570,7 +1624,6 @@ extern vmCvar_t             cg_emoticonsInMessages;
 
 extern vmCvar_t             cg_chatTeamPrefix;
 
-extern vmCvar_t             cg_animSpeed;
 extern vmCvar_t             cg_animBlend;
 
 extern vmCvar_t             cg_highPolyPlayerModels;
@@ -1606,6 +1659,7 @@ qboolean   CG_FileExists( const char *filename );
 void       CG_RemoveNotifyLine( void );
 void       CG_AddNotifyText( void );
 void       CG_UpdateBuildableRangeMarkerMask( void );
+void       CG_RegisterGrading( int slot, const char *str );
 
 //
 // cg_view.c
@@ -1624,6 +1678,8 @@ void     CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean 
 void     CG_OffsetFirstPersonView( void );
 void     CG_OffsetThirdPersonView( void );
 void     CG_OffsetShoulderView( void );
+void     CG_StartShadowCaster( vec3_t origin, vec3_t mins, vec3_t maxs );
+void     CG_EndShadowCaster( void );
 
 //
 // cg_drawtools.c
@@ -1637,6 +1693,8 @@ void     CG_DrawFadePic( float x, float y, float width, float height, vec4_t fco
                          vec4_t tcolor, float amount, qhandle_t hShader );
 void     CG_SetClipRegion( float x, float y, float w, float h );
 void     CG_ClearClipRegion( void );
+void     CG_EnableScissor( qboolean enable );
+void     CG_SetScissor( int x, int y, int w, int h );
 
 int      CG_DrawStrlen( const char *str );
 
@@ -1668,6 +1726,7 @@ void CG_OwnerDraw( rectDef_t *rect, float text_x,
                    float borderSize, float scale, vec4_t foreColor,
                    vec4_t backColor, qhandle_t shader, int textStyle );
 float      CG_GetValue( int ownerDraw );
+float      CG_ChargeProgress( void );
 void       CG_RunMenuScript( char **args );
 void       CG_SetPrintString( int type, const char *p );
 const char *CG_GetKillerText( void );
@@ -1697,7 +1756,8 @@ void     CG_Buildable( centity_t *cent );
 void     CG_BuildableStatusParse( const char *filename, buildStat_t *bs );
 void     CG_DrawBuildableStatus( void );
 void     CG_InitBuildables( void );
-void     CG_HumanBuildableExplosion( vec3_t origin, vec3_t dir );
+void     CG_HumanBuildableDying( buildable_t buildable, vec3_t origin );
+void     CG_HumanBuildableExplosion( buildable_t buildable, vec3_t origin, vec3_t dir );
 void     CG_AlienBuildableExplosion( vec3_t origin, vec3_t dir );
 qboolean CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t *rmType, float *range, vec3_t rgb );
 
@@ -1784,6 +1844,12 @@ void CG_DrawItemSelectText( rectDef_t *rect, float scale, int textStyle );
 void CG_UpdateEntityPositions( void );
 void CG_Scanner( rectDef_t *rect, qhandle_t shader, vec4_t color );
 void CG_AlienSense( rectDef_t *rect );
+
+//
+// cg_minimap.c
+//
+void CG_InitMinimap( void );
+void CG_DrawMinimap( const rectDef_t *rect, const vec4_t color );
 
 //
 // cg_marks.c

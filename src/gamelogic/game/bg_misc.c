@@ -45,81 +45,23 @@ typedef struct
 
 static const buildableName_t bg_buildableNameList[] =
 {
-	{
-		BA_A_SPAWN,
-		"eggpod",
-		"team_alien_spawn",
-	},
-	{
-		BA_A_OVERMIND,
-		"overmind",
-		"team_alien_overmind",
-	},
-	{
-		BA_A_BARRICADE,
-		"barricade",
-		"team_alien_barricade",
-	},
-	{
-		BA_A_ACIDTUBE,
-		"acid_tube",
-		"team_alien_acid_tube",
-	},
-	{
-		BA_A_TRAPPER,
-		"trapper",
-		"team_alien_trapper",
-	},
-	{
-		BA_A_BOOSTER,
-		"booster",
-		"team_alien_booster",
-	},
-	{
-		BA_A_HIVE,
-		"hive",
-		"team_alien_hive",
-	},
-	{
-		BA_H_SPAWN,
-		"telenode",
-		"team_human_spawn",
-	},
-	{
-		BA_H_MGTURRET,
-		"mgturret",
-		"team_human_mgturret",
-	},
-	{
-		BA_H_TESLAGEN,
-		"tesla",
-		"team_human_tesla",
-	},
-	{
-		BA_H_ARMOURY,
-		"arm",
-		"team_human_armoury",
-	},
-	{
-		BA_H_DCC,
-		"dcc",
-		"team_human_dcc",
-	},
-	{
-		BA_H_MEDISTAT,
-		"medistat",
-		"team_human_medistat",
-	},
-	{
-		BA_H_REACTOR,
-		"reactor",
-		"team_human_reactor",
-	},
-	{
-		BA_H_REPEATER,
-		"repeater",
-		"team_human_repeater",
-	}
+	{ BA_A_SPAWN,     "eggpod",    "team_alien_spawn"     },
+	{ BA_A_OVERMIND,  "overmind",  "team_alien_overmind"  },
+	{ BA_A_BARRICADE, "barricade", "team_alien_barricade" },
+	{ BA_A_ACIDTUBE,  "acid_tube", "team_alien_acid_tube" },
+	{ BA_A_TRAPPER,   "trapper",   "team_alien_trapper"   },
+	{ BA_A_BOOSTER,   "booster",   "team_alien_booster"   },
+	{ BA_A_HIVE,      "hive",      "team_alien_hive"      },
+	{ BA_A_LEECH,     "leech",     "team_alien_leech"    },
+	{ BA_H_SPAWN,     "telenode",  "team_human_spawn"     },
+	{ BA_H_MGTURRET,  "mgturret",  "team_human_mgturret"  },
+	{ BA_H_TESLAGEN,  "tesla",     "team_human_tesla"     },
+	{ BA_H_ARMOURY,   "arm",       "team_human_armoury"   },
+	{ BA_H_DCC,       "dcc",       "team_human_dcc"       },
+	{ BA_H_MEDISTAT,  "medistat",  "team_human_medistat"  },
+ 	{ BA_H_DRILL,     "drill",     "team_human_drill"     },
+	{ BA_H_REACTOR,   "reactor",   "team_human_reactor"   },
+	{ BA_H_REPEATER,  "repeater",  "team_human_repeater"  }
 };
 
 static const size_t bg_numBuildables = ARRAY_LEN( bg_buildableNameList );
@@ -292,7 +234,6 @@ typedef struct
 	class_t number;
 	const char* name;
 	weapon_t startWeapon;
-	int children[ 3 ];
 } classData_t;
 
 static classData_t bg_classData[] =
@@ -300,80 +241,67 @@ static classData_t bg_classData[] =
 	{
 		PCL_NONE, //int     number;
 		"spectator", //char    *name;
-		WP_NONE, //weapon_t  startWeapon;
-		{ PCL_NONE,               PCL_NONE,             PCL_NONE }, //int     children[ 3 ];
+		WP_NONE //weapon_t  startWeapon;
 	},
 	{
 		PCL_ALIEN_BUILDER0, //int     number;
 		"builder", //char    *name;
-		WP_ABUILD, //weapon_t  startWeapon;
-		{ PCL_ALIEN_BUILDER0_UPG, PCL_ALIEN_LEVEL0,     PCL_NONE }, //int     children[ 3 ];
+		WP_ABUILD //weapon_t  startWeapon;
 	},
 	{
 		PCL_ALIEN_BUILDER0_UPG, //int     number;
 		"builderupg", //char    *name;
-		WP_ABUILD2, //weapon_t  startWeapon;
-		{ PCL_ALIEN_LEVEL0,       PCL_NONE,             PCL_NONE }, //int     children[ 3 ];
+		WP_ABUILD2 //weapon_t  startWeapon;
 	},
 	{
 		PCL_ALIEN_LEVEL0, //int     number;
 		"level0", //char    *name;
-		WP_ALEVEL0, //weapon_t  startWeapon;
-		{ PCL_ALIEN_LEVEL1,       PCL_NONE,             PCL_NONE }, //int     children[ 3 ];
+		WP_ALEVEL0 //weapon_t  startWeapon;
 	},
 	{
 		PCL_ALIEN_LEVEL1, //int     number;
 		"level1", //char    *name;
-		WP_ALEVEL1, //weapon_t  startWeapon;
-		{ PCL_ALIEN_LEVEL2,       PCL_ALIEN_LEVEL1_UPG, PCL_NONE }, //int     children[ 3 ];
+		WP_ALEVEL1 //weapon_t  startWeapon;
 	},
 	{
 		PCL_ALIEN_LEVEL1_UPG, //int     number;
 		"level1upg", //char    *name;
-		WP_ALEVEL1_UPG, //weapon_t  startWeapon;
-		{ PCL_ALIEN_LEVEL2,       PCL_NONE,             PCL_NONE }, //int     children[ 3 ];
+		WP_ALEVEL1_UPG //weapon_t  startWeapon;
 	},
 	{
 		PCL_ALIEN_LEVEL2, //int     number;
 		"level2", //char    *name;
-		WP_ALEVEL2, //weapon_t  startWeapon;
-		{ PCL_ALIEN_LEVEL3,       PCL_ALIEN_LEVEL2_UPG, PCL_NONE }, //int     children[ 3 ];
+		WP_ALEVEL2 //weapon_t  startWeapon;
 	},
 	{
 		PCL_ALIEN_LEVEL2_UPG, //int     number;
 		"level2upg", //char    *name;
-		WP_ALEVEL2_UPG, //weapon_t  startWeapon;
-		{ PCL_ALIEN_LEVEL3,       PCL_NONE,             PCL_NONE }, //int     children[ 3 ];
+		WP_ALEVEL2_UPG //weapon_t  startWeapon;
 	},
 	{
 		PCL_ALIEN_LEVEL3, //int     number;
 		"level3", //char    *name;
-		WP_ALEVEL3, //weapon_t  startWeapon;
-		{ PCL_ALIEN_LEVEL4,       PCL_ALIEN_LEVEL3_UPG, PCL_NONE }, //int     children[ 3 ];
+		WP_ALEVEL3 //weapon_t  startWeapon;
 	},
 	{
 		PCL_ALIEN_LEVEL3_UPG, //int     number;
 		"level3upg", //char    *name;
-		WP_ALEVEL3_UPG, //weapon_t  startWeapon;
-		{ PCL_ALIEN_LEVEL4,       PCL_NONE,             PCL_NONE }, //int     children[ 3 ];
+		WP_ALEVEL3_UPG //weapon_t  startWeapon;
 	},
 	{
 		PCL_ALIEN_LEVEL4, //int     number;
 		"level4", //char    *name;
-		WP_ALEVEL4, //weapon_t  startWeapon;
-		{ PCL_NONE,               PCL_NONE,             PCL_NONE }, //int     children[ 3 ];
+		WP_ALEVEL4 //weapon_t  startWeapon;
 	},
 	{
 		PCL_HUMAN, //int     number;
 		"human_base", //char    *name;
-		WP_NONE, //special-cased in g_client.c          //weapon_t  startWeapon;
-		{ PCL_NONE,               PCL_NONE,             PCL_NONE }, //int     children[ 3 ];
+		WP_NONE //special-cased in g_client.c          //weapon_t  startWeapon;
 	},
 	{
 		PCL_HUMAN_BSUIT, //int     number;
 		"human_bsuit", //char    *name;
-		WP_NONE, //special-cased in g_client.c          //weapon_t  startWeapon;
-		{ PCL_NONE,               PCL_NONE,             PCL_NONE }, //int     children[ 3 ];
+		WP_NONE //special-cased in g_client.c          //weapon_t  startWeapon;
 	}
 };
 
@@ -493,63 +421,53 @@ qboolean BG_ClassHasAbility( class_t pClass, int ability )
 BG_ClassCanEvolveFromTo
 ==============
 */
-int BG_ClassCanEvolveFromTo( class_t fclass,
-                             class_t tclass,
-                             int credits, int stage,
-                             int cost )
+int BG_ClassCanEvolveFromTo( class_t from, class_t to, int credits, int stage )
 {
-	int i, j, best, value;
+	int fromCost, toCost, evolveCost;
 
-	if ( credits < cost || fclass == PCL_NONE || tclass == PCL_NONE ||
-	     fclass == tclass )
+	if ( from == to ||
+	     from <= PCL_NONE || from >= PCL_NUM_CLASSES ||
+	     to <= PCL_NONE || to >= PCL_NUM_CLASSES )
 	{
 		return -1;
 	}
 
-	for ( i = 0; i < bg_numClasses; i++ )
+	if ( !BG_ClassAllowedInStage( to, stage ) || !BG_ClassIsAllowed( to ) )
 	{
-		if ( bg_classList[ i ].number != fclass )
-		{
-			continue;
-		}
-
-		best = credits + 1;
-
-		for ( j = 0; j < 3; j++ )
-		{
-			int thruClass, evolveCost;
-
-			thruClass = bg_classList[ i ].children[ j ];
-
-			if ( thruClass == PCL_NONE || !BG_ClassAllowedInStage( thruClass, stage ) ||
-			     !BG_ClassIsAllowed( thruClass ) )
-			{
-				continue;
-			}
-
-			evolveCost = BG_Class( thruClass )->cost * ALIEN_CREDITS_PER_KILL;
-
-			if ( thruClass == tclass )
-			{
-				value = cost + evolveCost;
-			}
-			else
-			{
-				value = BG_ClassCanEvolveFromTo( thruClass, tclass, credits, stage,
-				                                 cost + evolveCost );
-			}
-
-			if ( value >= 0 && value < best )
-			{
-				best = value;
-			}
-		}
-
-		return best <= credits ? best : -1;
+		return -1;
 	}
 
-	Com_Printf( S_WARNING "fallthrough in BG_ClassCanEvolveFromTo\n" );
-	return -1;
+	fromCost = BG_Class( from )->cost;
+	toCost = BG_Class( to )->cost;
+
+	// don't allow devolving
+	if ( toCost < fromCost )
+	{
+		return -1;
+	}
+
+	// classes w/o a cost are for spawning only
+	if ( toCost == 0 )
+	{
+		// (adv.) granger may evolve into adv. granger or dretch at no cost
+		if ( ( from == PCL_ALIEN_BUILDER0 || from == PCL_ALIEN_BUILDER0_UPG ) &&
+		     ( to == PCL_ALIEN_BUILDER0_UPG || to == PCL_ALIEN_LEVEL0 ) )
+		{
+			return 0;
+		}
+
+		return -1;
+	}
+
+	// evolving between classes of euqal cost costs one evo
+	evolveCost = MAX( toCost - fromCost, CREDITS_PER_EVO );
+
+	if ( credits < evolveCost )
+	{
+		return -1;
+	}
+
+	return evolveCost;
 }
 
 /*
@@ -557,33 +475,18 @@ int BG_ClassCanEvolveFromTo( class_t fclass,
 BG_AlienCanEvolve
 ==============
 */
-qboolean BG_AlienCanEvolve( class_t pClass, int credits, int stage )
+qboolean BG_AlienCanEvolve( class_t from, int credits, int stage )
 {
-	int i, j, tclass;
+	class_t to;
 
-	for ( i = 0; i < bg_numClasses; i++ )
+	for ( to = PCL_NONE + 1; to < PCL_NUM_CLASSES; to++ )
 	{
-		if ( bg_classList[ i ].number != pClass )
+		if ( BG_ClassCanEvolveFromTo( from, to, credits, stage ) >= 0 )
 		{
-			continue;
+			return qtrue;
 		}
-
-		for ( j = 0; j < 3; j++ )
-		{
-			tclass = bg_classList[ i ].children[ j ];
-
-			if ( tclass != PCL_NONE && BG_ClassAllowedInStage( tclass, stage ) &&
-			     BG_ClassIsAllowed( tclass ) &&
-			     credits >= BG_Class( tclass )->cost * ALIEN_CREDITS_PER_KILL )
-			{
-				return qtrue;
-			}
-		}
-
-		return qfalse;
 	}
 
-	Com_Printf( S_WARNING "fallthrough in BG_AlienCanEvolve\n" );
 	return qfalse;
 }
 
@@ -606,9 +509,6 @@ void BG_InitClassAttributes( void )
 		ca->number = cd->number;
 		ca->name = cd->name;
 		ca->startWeapon = cd->startWeapon;
-		ca->children[0] = cd->children[0];
-		ca->children[1] = cd->children[1];
-		ca->children[2] = cd->children[2];
 
 		ca->buildDist = 0.0f;
 		ca->bob = 0.0f;
@@ -635,6 +535,8 @@ void BG_InitClassModelConfigs( void )
 
 		BG_ParseClassModelFile( va( "configs/classes/%s.model.cfg",
 		                       BG_Class( i )->name ), cc );
+
+		cc->segmented = BG_NonSegModel( va( "models/players/%s/animation.cfg", cc->modelName ) );
 	}
 }
 
@@ -648,110 +550,32 @@ typedef struct
 
 static const weaponData_t bg_weaponsData[] =
 {
-	{
-		WP_ALEVEL0, //int       number;
-		"level0", //char      *name;
-	},
-	{
-		WP_ALEVEL1, //int       number;
-		"level1", //char      *name;
-	},
-	{
-		WP_ALEVEL1_UPG, //int       number;
-		"level1upg", //char      *name;
-	},
-	{
-		WP_ALEVEL2, //int       number;
-		"level2", //char      *name;
-	},
-	{
-		WP_ALEVEL2_UPG, //int       number;
-		"level2upg", //char      *name;
-	},
-	{
-		WP_ALEVEL3, //int       number;
-		"level3", //char      *name;
-	},
-	{
-		WP_ALEVEL3_UPG, //int       number;
-		"level3upg", //char      *name;
-	},
-	{
-		WP_ALEVEL4, //int       number;
-		"level4", //char      *name;
-	},
-	{
-		WP_BLASTER, //int       number;
-		"blaster", //char      *name;
-	},
-	{
-		WP_MACHINEGUN, //int       number;
-		"rifle", //char      *name;
-	},
-	{
-		WP_PAIN_SAW, //int       number;
-		"psaw", //char      *name;
-	},
-	{
-		WP_SHOTGUN, //int       number;
-		"shotgun", //char      *name;
-	},
-	{
-		WP_LAS_GUN, //int       number;
-		"lgun", //char      *name;
-	},
-	{
-		WP_MASS_DRIVER, //int       number;
-		"mdriver", //char      *name;
-	},
-	{
-		WP_CHAINGUN, //int       number;
-		"chaingun", //char      *name;
-	},
-	{
-		WP_FLAMER, //int       number;
-		"flamer", //char      *name;
-	},
-	{
-		WP_PULSE_RIFLE, //int       number;
-		"prifle", //char      *name;
-	},
-	{
-		WP_LUCIFER_CANNON, //int       number;
-		"lcannon", //char      *name;
-	},
-	{
-		WP_GRENADE, //int       number;
-		"grenade", //char      *name;
-	},
-	{
-		WP_LOCKBLOB_LAUNCHER, //int       number;
-		"lockblob", //char      *name;
-	},
-	{
-		WP_HIVE, //int       number;
-		"hive", //char      *name;
-	},
-	{
-		WP_TESLAGEN, //int       number;
-		"teslagen", //char      *name;
-	},
-	{
-		WP_MGTURRET, //int       number;
-		"mgturret", //char      *name;
-	},
-	{
-		WP_ABUILD, //int       number;
-		"abuild", //char      *name;
-	},
-	{
-		WP_ABUILD2, //int       number;
-		"abuildupg", //char      *name;
-	},
-	{
-		WP_HBUILD, //int       number;
-		"ckit", //char      *name;
-	}
+	{ WP_ALEVEL0,           "level0"    },
+	{ WP_ALEVEL1,           "level1"    },
+	{ WP_ALEVEL1_UPG,       "level1upg" },
+	{ WP_ALEVEL2,           "level2"    },
+	{ WP_ALEVEL2_UPG,       "level2upg" },
+	{ WP_ALEVEL3,           "level3"    },
+	{ WP_ALEVEL3_UPG,       "level3upg" },
+	{ WP_ALEVEL4,           "level4"    },
+	{ WP_BLASTER,           "blaster"   },
+	{ WP_MACHINEGUN,        "rifle"     },
+	{ WP_PAIN_SAW,          "psaw"      },
+	{ WP_SHOTGUN,           "shotgun"   },
+	{ WP_LAS_GUN,           "lgun"      },
+	{ WP_MASS_DRIVER,       "mdriver"   },
+	{ WP_CHAINGUN,          "chaingun"  },
+	{ WP_FLAMER,            "flamer"    },
+	{ WP_PULSE_RIFLE,       "prifle"    },
+	{ WP_LUCIFER_CANNON,    "lcannon"   },
+	{ WP_GRENADE,           "grenade"   },
+	{ WP_LOCKBLOB_LAUNCHER, "lockblob"  },
+	{ WP_HIVE,              "hive"      },
+	{ WP_TESLAGEN,          "teslagen"  },
+	{ WP_MGTURRET,          "mgturret"  },
+	{ WP_ABUILD,            "abuild"    },
+	{ WP_ABUILD2,           "abuildupg" },
+	{ WP_HBUILD,            "ckit"      }
 };
 
 static const size_t bg_numWeapons = ARRAY_LEN( bg_weaponsData );
@@ -843,38 +667,14 @@ typedef struct
 
 static const upgradeData_t bg_upgradesData[] =
 {
-	{
-		UP_LIGHTARMOUR, //int   number;
-		"larmour", //char  *name;
-	},
-	{
-		UP_HELMET, //int   number;
-		"helmet", //char  *name;
-	},
-	{
-		UP_MEDKIT, //int   number;
-		"medkit", //char  *name;
-	},
-	{
-		UP_BATTPACK, //int   number;
-		"battpack", //char  *name;
-	},
-	{
-		UP_JETPACK, //int   number;
-		"jetpack", //char  *name;
-	},
-	{
-		UP_BATTLESUIT, //int   number;
-		"bsuit", //char  *name;
-	},
-	{
-		UP_GRENADE, //int   number;
-		"gren", //char  *name;
-	},
-	{
-		UP_AMMO, //int   number;
-		"ammo", //char  *name;
-	}
+	{ UP_LIGHTARMOUR, "larmour"  },
+	{ UP_HELMET,      "helmet"   },
+	{ UP_MEDKIT,      "medkit"   },
+	{ UP_BATTPACK,    "battpack" },
+	{ UP_JETPACK,     "jetpack"  },
+	{ UP_BATTLESUIT,  "bsuit"    },
+	{ UP_GRENADE,     "gren"     },
+	{ UP_AMMO,        "ammo"     }
 };
 
 static const size_t bg_numUpgrades = ARRAY_LEN( bg_upgradesData );
@@ -1878,31 +1678,37 @@ Returns the credit value of a player
 */
 int BG_GetValueOfPlayer( playerState_t *ps )
 {
-	int i, worth = 0;
+	int upgradeNum, equipmentPrice;
 
-	worth = BG_Class( ps->stats[ STAT_CLASS ] )->value;
+	equipmentPrice = 0;
 
 	// Humans have worth from their equipment as well
 	if ( ps->stats[ STAT_TEAM ] == TEAM_HUMANS )
 	{
-		for ( i = UP_NONE + 1; i < UP_NUM_UPGRADES; i++ )
+		for ( upgradeNum = UP_NONE + 1; upgradeNum < UP_NUM_UPGRADES; upgradeNum++ )
 		{
-			if ( BG_InventoryContainsUpgrade( i, ps->stats ) )
+			if ( BG_InventoryContainsUpgrade( upgradeNum, ps->stats ) )
 			{
-				worth += BG_Upgrade( i )->price;
+				equipmentPrice += BG_Upgrade( upgradeNum )->price;
 			}
 		}
 
-		for ( i = WP_NONE + 1; i < WP_NUM_WEAPONS; i++ )
+		for ( upgradeNum = WP_NONE + 1; upgradeNum < WP_NUM_WEAPONS; upgradeNum++ )
 		{
-			if ( BG_InventoryContainsWeapon( i, ps->stats ) )
+			if ( BG_InventoryContainsWeapon( upgradeNum, ps->stats ) )
 			{
-				worth += BG_Weapon( i )->price;
+				equipmentPrice += BG_Weapon( upgradeNum )->price;
 			}
 		}
 	}
 
-	return worth;
+	// In Tremulous, the value of equipment measured in alien class costs was half its price:
+	// Old evo gain for killing a human was (400 + equipmentPrice) / 400.
+	// One old evo equals a value of 200 (2 new evos), which is the new base value of a naked human.
+	// In order not to double the impact of human equipment, set its value to half its price for now.
+	equipmentPrice /= 2;
+
+	return BG_Class( ps->stats[ STAT_CLASS ] )->value + equipmentPrice;
 }
 
 /*

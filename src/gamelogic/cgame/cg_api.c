@@ -171,7 +171,7 @@ int trap_FS_FOpenFile( const char *qpath, fileHandle_t *f, fsMode_t mode )
 }
 
 //15.
-//FS_Read2(VMA(1), args[2], args[3]);
+//FS_Read(VMA(1), args[2], args[3]);
 void trap_FS_Read( void *buffer, int len, fileHandle_t f )
 {
 	syscall( CG_FS_READ, buffer, len, f );
@@ -462,7 +462,7 @@ void trap_S_Respatialize( int entityNum, const vec3_t origin, vec3_t axis[ 3 ], 
 sfxHandle_t trap_S_RegisterSound( const char *sample, qboolean compressed )
 {
 	//CG_DrawInformation(qtrue);
-
+	Q_UNUSED(compressed);
 	return syscall( CG_S_REGISTERSOUND, sample, qfalse /* compressed */ );
 }
 
@@ -1256,3 +1256,29 @@ void trap_SetColorGrading( int slot, qhandle_t hShader )
 {
 	syscall( CG_SETCOLORGRADING, slot, hShader );
 }
+
+float trap_CM_DistanceToModel( const vec3_t loc, clipHandle_t model )
+{
+	return RETFLOAT( syscall( CG_CM_DISTANCETOMODEL, loc, model ) );
+}
+
+void trap_R_ScissorEnable( qboolean enable )
+{
+    syscall( CG_R_SCISSOR_ENABLE, enable );
+}
+
+void trap_R_ScissorSet( int x, int y, int w, int h )
+{
+    syscall( CG_R_SCISSOR_SET, x, y, w, h );
+}
+
+void trap_PrepareKeyUp( void )
+{
+    syscall( CG_PREPAREKEYUP );
+}
+
+void trap_R_SetAltShaderTokens( const char *str )
+{
+    syscall( CG_R_SETALTSHADERTOKENS, str );
+}
+

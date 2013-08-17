@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 /* refraction_C_vp.glsl */
 
-attribute vec4		attr_Position;
+attribute vec3 		attr_Position;
 attribute vec3		attr_Normal;
 #if defined(r_VertexSkinning)
 attribute vec4		attr_BoneIndexes;
@@ -51,7 +51,7 @@ void	main()
 			float boneWeight = attr_BoneWeights[i];
 			mat4  boneMatrix = u_BoneMatrix[boneIndex];
 
-			vertex += (boneMatrix * attr_Position) * boneWeight;
+			vertex += (boneMatrix * vec4(attr_Position, 1.0)) * boneWeight;
 			normal += (boneMatrix * vec4(attr_Normal, 0.0)).xyz * boneWeight;
 		}
 
@@ -68,10 +68,10 @@ void	main()
 #endif
 	{
 		// transform vertex position into homogenous clip-space
-		gl_Position = u_ModelViewProjectionMatrix * attr_Position;
+		gl_Position = u_ModelViewProjectionMatrix * vec4(attr_Position, 1.0);
 
 		// transform position into world space
-		var_Position = (u_ModelMatrix * attr_Position).xyz;
+		var_Position = (u_ModelMatrix * vec4(attr_Position, 1.0)).xyz;
 
 		// transform normal into world space
 		var_Normal = (u_ModelMatrix * vec4(attr_Normal, 0.0)).xyz;

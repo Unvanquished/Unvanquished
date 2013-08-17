@@ -22,8 +22,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 /* cameraEffects_vp.glsl */
 
-attribute vec4		attr_Position;
-attribute vec4		attr_TexCoord0;
+attribute vec3 		attr_Position;
+attribute vec2 		attr_TexCoord0;
 
 uniform mat4		u_ModelViewProjectionMatrix;
 uniform mat4		u_ColorTextureMatrix;
@@ -33,7 +33,7 @@ varying vec2		var_Tex;
 void	main()
 {
 	// transform vertex position into homogenous clip-space
-	gl_Position = u_ModelViewProjectionMatrix * attr_Position;
+	gl_Position = u_ModelViewProjectionMatrix * vec4(attr_Position, 1.0);
 
-	var_Tex = (u_ColorTextureMatrix * attr_TexCoord0).st;
+	var_Tex = (u_ColorTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0)).st;
 }

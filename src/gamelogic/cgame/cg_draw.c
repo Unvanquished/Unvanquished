@@ -386,7 +386,7 @@ static void CG_DrawPlayerCreditsValue( rectDef_t *rect, vec4_t color, qboolean p
 				localColor[ 3 ] = 0.0f;
 			}
 
-			value /= ALIEN_CREDITS_PER_KILL;
+			value /= CREDITS_PER_EVO;
 		}
 
 		trap_R_SetColor( localColor );
@@ -416,7 +416,7 @@ static void CG_DrawPlayerCreditsFraction( rectDef_t *rect, vec4_t color, qhandle
 	}
 
 	fraction = ( ( float )( cg.predictedPlayerState.persistant[ PERS_CREDIT ] %
-	                        ALIEN_CREDITS_PER_KILL ) ) / ALIEN_CREDITS_PER_KILL;
+	             CREDITS_PER_EVO ) ) / CREDITS_PER_EVO;
 
 	aRect = *rect;
 	CG_AdjustFrom640( &aRect.x, &aRect.y, &aRect.w, &aRect.h );
@@ -456,7 +456,7 @@ static void CG_DrawPlayerAlienEvos( rectDef_t *rect, float text_x, float text_y,
 				localColor[ 3 ] = 0.0f;
 			}
 
-			value /= ( float ) ALIEN_CREDITS_PER_KILL;
+			value /= ( float ) CREDITS_PER_EVO;
 		}
 
 		s = va( "%0.1f", floor( value * 10 ) / 10 );
@@ -1240,7 +1240,7 @@ static void CG_DrawPlayerHealthCross( rectDef_t *rect, vec4_t ref_color )
 	trap_R_SetColor( NULL );
 }
 
-static float CG_ChargeProgress( void )
+float CG_ChargeProgress( void )
 {
 	float progress;
 	int   min = 0, max = 0;
@@ -1649,6 +1649,36 @@ static void CG_DrawPlayerBoostedMeter( rectDef_t *rect, int align, vec4_t foreCo
 
 }
 
+static void CG_DrawLevelMineRate( rectDef_t *rect, float text_x, float text_y,
+								vec4_t color, float scale, int textalign, int textvalign, int textStyle )
+{
+	char s[ MAX_TOKEN_CHARS ];
+	float tx, ty, levelRate;
+	int totalRate;
+
+	// check if builder
+	switch ( BG_GetPlayerWeapon( &cg.snap->ps ) )
+	{
+		case WP_ABUILD:
+		case WP_ABUILD2:
+		case WP_HBUILD:
+			break;
+
+		default:
+			return;
+	}
+
+	levelRate = cg.predictedPlayerState.persistant[ PERS_MINERATE ] / 10.0f;
+	totalRate = cg.predictedPlayerState.persistant[ PERS_RGS_EFFICIENCY ];
+
+	Com_sprintf( s, MAX_TOKEN_CHARS, _("Level Rate: %.1f Total Rate: %.1f (%d%%)"),
+	             ( levelRate ), ( ( totalRate / 100.0f ) * levelRate ), totalRate );
+
+	CG_AlignText( rect, s, scale, 0.0f, 0.0f, textalign, textvalign, &tx, &ty );
+	UI_Text_Paint( text_x + tx, text_y + ty, scale, color, s, 0, textStyle );
+}
+
+
 static void CG_DrawProgressLabel( rectDef_t *rect, float text_x, float text_y, vec4_t color,
                                   float scale, int textalign, int textvalign,
                                   const char *s, float fraction )
@@ -1910,8 +1940,7 @@ const char *CG_GetKillerText( void )
 	return s;
 }
 
-static void CG_DrawKiller( rectDef_t *rect, float scale, vec4_t color,
-                           qhandle_t shader, int textStyle )
+static void CG_DrawKiller( rectDef_t *rect, float scale, vec4_t color, int textStyle )
 {
 	// fragged by ... line
 	if ( cg.killerName[ 0 ] )
@@ -1929,7 +1958,7 @@ static void CG_DrawKiller( rectDef_t *rect, float scale, vec4_t color,
 CG_DrawTeamSpectators
 ==================
 */
-static void CG_DrawTeamSpectators( rectDef_t *rect, float scale, int textvalign, vec4_t color, qhandle_t shader )
+static void CG_DrawTeamSpectators( rectDef_t *rect, float scale, int textvalign, vec4_t color )
 {
 	float y;
 	char  *text = cg.spectatorList;
@@ -2065,65 +2094,47 @@ static void CG_DrawStageReport( rectDef_t *rect, float text_x, float text_y,
                                 vec4_t color, float scale, int textalign, int textvalign, int textStyle )
 {
 	char  s[ MAX_TOKEN_CHARS ];
-	float tx, ty;
+	float tx, ty, confidence;
+	int   stage, stage2Threshold, stage3Threshold;
 
 	if ( cg.intermissionStarted )
 	{
 		return;
 	}
 
-	if ( cg.snap->ps.stats[ STAT_TEAM ] == TEAM_NONE )
+	switch ( cg.snap->ps.stats[ STAT_TEAM ] )
 	{
-		return;
+		case TEAM_ALIENS:
+			stage = cgs.alienStage;
+			break;
+
+		case TEAM_HUMANS:
+			stage = cgs.humanStage;
+			break;
+
+		default:
+			return;
 	}
 
-	if ( cg.snap->ps.stats[ STAT_TEAM ] == TEAM_ALIENS )
+	confidence = cg.predictedPlayerState.persistant[ PERS_CONFIDENCE ] / 10.0f;
+
+	stage2Threshold = cg.predictedPlayerState.persistant[ PERS_THRESHOLD_STAGE2 ];
+	stage3Threshold = cg.predictedPlayerState.persistant[ PERS_THRESHOLD_STAGE3 ];
+
+	if ( stage == S1 )
 	{
-		int kills = ceil( ( float )( cgs.alienNextStageThreshold - cgs.alienCredits ) / ALIEN_CREDITS_PER_KILL );
-
-		if ( kills < 0 )
-		{
-			kills = 0;
-		}
-
-		if ( cgs.alienNextStageThreshold < 0 )
-		{
-			Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d"), cgs.alienStage + 1 );
-		}
-		else if ( kills == 1 )
-		{
-			Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d, 1 frag for next stage"),
-			             cgs.alienStage + 1 );
-		}
-		else
-		{
-			Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d, %d frags for next stage"),
-			             cgs.alienStage + 1, kills );
-		}
+		Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d, %.1f confidence, ↑%d"),
+					 stage + 1, confidence, stage2Threshold );
 	}
-	else if ( cg.snap->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
+	else if ( stage == S3 )
 	{
-		int credits = cgs.humanNextStageThreshold - cgs.humanCredits;
-
-		if ( credits < 0 )
-		{
-			credits = 0;
-		}
-
-		if ( cgs.humanNextStageThreshold < 0 )
-		{
-			Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d"), cgs.humanStage + 1 );
-		}
-		else if ( credits == 1 )
-		{
-			Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d, 1 credit for next stage"),
-			             cgs.humanStage + 1 );
-		}
-		else
-		{
-			Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d, %d credits for next stage"),
-			             cgs.humanStage + 1, credits );
-		}
+		Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d, %.1f confidence, ↓%d"),
+					 stage + 1, confidence, stage3Threshold );
+	}
+	else
+	{
+		Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d, %.1f confidence, ↑%d ↓%d"),
+					 stage + 1, confidence, stage3Threshold, stage2Threshold );
 	}
 
 	CG_AlignText( rect, s, scale, 0.0f, 0.0f, textalign, textvalign, &tx, &ty );
@@ -2138,8 +2149,7 @@ CG_DrawFPS
 */
 #define FPS_FRAMES 20
 #define FPS_STRING "fps"
-static void CG_DrawFPS( rectDef_t *rect, float text_x, float text_y,
-                        float scale, vec4_t color,
+static void CG_DrawFPS( rectDef_t *rect, float scale, vec4_t color,
                         int textalign, int textvalign, int textStyle,
                         qboolean scalableText )
 {
@@ -2265,8 +2275,7 @@ static void CG_DrawTimerSecs( rectDef_t *rect, vec4_t color )
 CG_DrawTimer
 =================
 */
-static void CG_DrawTimer( rectDef_t *rect, float text_x, float text_y,
-                          float scale, vec4_t color,
+static void CG_DrawTimer( rectDef_t *rect, float scale, vec4_t color,
                           int textalign, int textvalign, int textStyle )
 {
 	char  *s;
@@ -2541,10 +2550,10 @@ static void CG_DrawTeamOverlay( rectDef_t *rect, float scale, vec4_t color )
 
 			s = va( " [^%c%s%d^7] %s ^7%s",
 			        CG_GetColorCharForHealth( displayClients[ i ] ),
-			        "  " + ( ci->health >= 100 ? 6 : ci->health >= 10 ? 3 : 0 ), // these are figure spaces, 3 bytes each
+			        &"  "[ci->health >= 100 ? 6 : ci->health >= 10 ? 3 : 0], // these are figure spaces, 3 bytes each
 			        ci->health,
 			        ( ci->team == TEAM_ALIENS )
-			          ? va( "₠%.1f", (float) ci->credit / ALIEN_CREDITS_PER_KILL )
+			          ? va( "₠%.1f", (float) ci->credit / CREDITS_PER_EVO )
 			          : va( "₢%d", ci->credit ),
 			        CG_ConfigString( CS_LOCATIONS + ci->location ) );
 		}
@@ -2570,8 +2579,7 @@ static void CG_DrawTeamOverlay( rectDef_t *rect, float scale, vec4_t color )
 CG_DrawClock
 =================
 */
-static void CG_DrawClock( rectDef_t *rect, float text_x, float text_y,
-                          float scale, vec4_t color,
+static void CG_DrawClock( rectDef_t *rect, float scale, vec4_t color,
                           int textalign, int textvalign, int textStyle )
 {
 	char    *s;
@@ -3114,8 +3122,7 @@ static void CG_DrawSpeedGraph( rectDef_t *rect, vec4_t foreColor,
 CG_DrawSpeedText
 ===================
 */
-static void CG_DrawSpeedText( rectDef_t *rect, float text_x, float text_y,
-                              float scale, vec4_t foreColor )
+static void CG_DrawSpeedText( rectDef_t *rect, float scale, vec4_t foreColor )
 {
 	char   speedstr[ 16 ];
 	float  val;
@@ -3154,8 +3161,7 @@ static void CG_DrawSpeedText( rectDef_t *rect, float text_x, float text_y,
 CG_DrawSpeed
 ===================
 */
-static void CG_DrawSpeed( rectDef_t *rect, float text_x, float text_y,
-                          float scale, vec4_t foreColor, vec4_t backColor )
+static void CG_DrawSpeed( rectDef_t *rect, float scale, vec4_t foreColor, vec4_t backColor )
 {
 	if ( cg_drawSpeed.integer & SPEEDOMETER_DRAW_GRAPH )
 	{
@@ -3164,7 +3170,7 @@ static void CG_DrawSpeed( rectDef_t *rect, float text_x, float text_y,
 
 	if ( cg_drawSpeed.integer & SPEEDOMETER_DRAW_TEXT )
 	{
-		CG_DrawSpeedText( rect, text_x, text_y, scale, foreColor );
+		CG_DrawSpeedText( rect, scale, foreColor );
 	}
 }
 
@@ -3898,6 +3904,7 @@ void CG_OwnerDraw( rectDef_t *rect, float text_x,
                    float scale, vec4_t foreColor, vec4_t backColor,
                    qhandle_t shader, int textStyle )
 {
+	Q_UNUSED(ownerDrawFlags);
 	switch ( ownerDraw )
 	{
 		case CG_PLAYER_CREDITS_VALUE:
@@ -4031,7 +4038,7 @@ void CG_OwnerDraw( rectDef_t *rect, float text_x,
 			break;
 
 		case CG_KILLER:
-			CG_DrawKiller( rect, scale, foreColor, shader, textStyle );
+			CG_DrawKiller( rect, scale, foreColor, textStyle );
 			break;
 
 		case CG_PLAYER_SELECT:
@@ -4047,7 +4054,7 @@ void CG_OwnerDraw( rectDef_t *rect, float text_x,
 			break;
 
 		case CG_SPECTATORS:
-			CG_DrawTeamSpectators( rect, scale, textvalign, foreColor, shader );
+			CG_DrawTeamSpectators( rect, scale, textvalign, foreColor );
 			break;
 
 		case CG_PLAYER_LOCATION:
@@ -4077,6 +4084,10 @@ void CG_OwnerDraw( rectDef_t *rect, float text_x,
 
 		case CG_HUMANS_SCORE_LABEL:
 			CG_DrawTeamLabel( rect, TEAM_HUMANS, text_x, text_y, foreColor, scale, textalign, textvalign, textStyle );
+			break;
+
+		case CG_LEVEL_MINE_RATE:
+			CG_DrawLevelMineRate( rect, text_x, text_y, foreColor, scale, textalign, textvalign, textStyle );
 			break;
 
 			//loading screen
@@ -4133,19 +4144,19 @@ void CG_OwnerDraw( rectDef_t *rect, float text_x,
 			break;
 
 		case CG_FPS:
-			CG_DrawFPS( rect, text_x, text_y, scale, foreColor, textalign, textvalign, textStyle, qtrue );
+			CG_DrawFPS( rect, scale, foreColor, textalign, textvalign, textStyle, qtrue );
 			break;
 
 		case CG_FPS_FIXED:
-			CG_DrawFPS( rect, text_x, text_y, scale, foreColor, textalign, textvalign, textStyle, qfalse );
+			CG_DrawFPS( rect, scale, foreColor, textalign, textvalign, textStyle, qfalse );
 			break;
 
 		case CG_TIMER:
-			CG_DrawTimer( rect, text_x, text_y, scale, foreColor, textalign, textvalign, textStyle );
+			CG_DrawTimer( rect, scale, foreColor, textalign, textvalign, textStyle );
 			break;
 
 		case CG_CLOCK:
-			CG_DrawClock( rect, text_x, text_y, scale, foreColor, textalign, textvalign, textStyle );
+			CG_DrawClock( rect, scale, foreColor, textalign, textvalign, textStyle );
 			break;
 
 		case CG_TIMER_MINS:
@@ -4169,7 +4180,7 @@ void CG_OwnerDraw( rectDef_t *rect, float text_x,
 			break;
 
 		case CG_SPEEDOMETER:
-			CG_DrawSpeed( rect, text_x, text_y, scale, foreColor, backColor );
+			CG_DrawSpeed( rect, scale, foreColor, backColor );
 			break;
 
 		case CG_DEMO_PLAYBACK:
@@ -4186,6 +4197,10 @@ void CG_OwnerDraw( rectDef_t *rect, float text_x,
 
 		case CG_TUTORIAL:
 			CG_DrawTutorial( rect, text_x, text_y, foreColor, scale, textalign, textvalign, textStyle );
+			break;
+
+		case CG_MINIMAP:
+			CG_DrawMinimap( rect, foreColor );
 			break;
 
 		default:
@@ -4297,6 +4312,7 @@ int CG_ClientNumFromName( const char *p )
 
 void CG_RunMenuScript( char **args )
 {
+	Q_UNUSED(args);
 }
 
 //END TA UI
@@ -4408,7 +4424,7 @@ static void CG_DrawCenterString( void )
 	{
 		char linebuffer[ MAX_STRING_CHARS ];
 
-		for ( l = 0; l < sizeof( linebuffer ) - 1; l++ )
+		for ( l = 0; l + 1 < (int) sizeof( linebuffer ); l++ )
 		{
 			if ( !start[ l ] || start[ l ] == '\n' )
 			{
@@ -4692,7 +4708,7 @@ static void CG_Draw2D( void )
 	}
 
 	if ( cg.snap->ps.persistant[ PERS_SPECSTATE ] == SPECTATOR_NOT &&
-	     cg.snap->ps.stats[ STAT_HEALTH ] > 0 )
+	     cg.snap->ps.stats[ STAT_HEALTH ] > 0 && !cg.zoomed )
 	{
 		menu = Menus_FindByName( BG_ClassModelConfig(
 		                           cg.predictedPlayerState.stats[ STAT_CLASS ] )->hudName );
@@ -4710,8 +4726,20 @@ static void CG_Draw2D( void )
 		}
 	}
 
-	Menu_Update( menu );
-	Menu_Paint( menu, qtrue );
+	if ( cg.zoomed )
+	{
+		vec4_t black = { 0.0f, 0.0f, 0.0f, 0.5f };
+		trap_R_DrawStretchPic( ( cgs.glconfig.vidWidth / 2 ) - ( cgs.glconfig.vidHeight / 2 ), 0, cgs.glconfig.vidHeight, cgs.glconfig.vidHeight, 0, 0, 1, 1, cgs.media.scopeShader );
+		trap_R_SetColor( black );
+		trap_R_DrawStretchPic( 0, 0, ( cgs.glconfig.vidWidth / 2 ) - ( cgs.glconfig.vidHeight / 2 ), cgs.glconfig.vidHeight, 0, 0, 1, 1, cgs.media.whiteShader );
+		trap_R_DrawStretchPic( cgs.glconfig.vidWidth - ( ( cgs.glconfig.vidWidth / 2 ) - ( cgs.glconfig.vidHeight / 2 ) ), 0, ( cgs.glconfig.vidWidth / 2 ) - ( cgs.glconfig.vidHeight / 2 ), cgs.glconfig.vidHeight, 0, 0, 1, 1, cgs.media.whiteShader );
+		trap_R_SetColor( NULL );
+	}
+	else
+	{
+		Menu_Update( menu );
+		Menu_Paint( menu, qtrue );
+	}
 
 	CG_DrawVote( TEAM_NONE );
 	CG_DrawVote( cg.predictedPlayerState.stats[ STAT_TEAM ] );

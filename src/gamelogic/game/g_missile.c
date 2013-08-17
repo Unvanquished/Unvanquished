@@ -195,7 +195,7 @@ G_MissileImpact
 */
 void G_MissileImpact( gentity_t *ent, trace_t *trace )
 {
-	gentity_t *other, *attacker;
+	gentity_t *other, *attacker, *neighbor;
 	qboolean  returnAfterDamage = qfalse;
 	vec3_t    dir;
 	float     power;
@@ -231,6 +231,36 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace )
 
 		return;
 	}
+	else if ( !strcmp( ent->classname, "flame" ) )
+	{
+		// ignite alien buildables on direct hit
+		if ( other->s.eType == ET_BUILDABLE && other->buildableTeam == TEAM_ALIENS )
+		{
+			if ( random() < FLAMER_IGNITE_CHANCE )
+			{
+				G_IgniteBuildable( other, ent->parent );
+			}
+		}
+
+		// ignite alien buildables on splash hit
+		neighbor = NULL;
+		while ( neighbor = G_IterateEntitiesWithinRadius( neighbor, trace->endpos, FLAMER_IGNITE_RADIUS ) )
+		{
+			// we already handled other, since it might not always be in FLAMER_IGNITE_RADIUS due to BBOX sizes
+			if ( neighbor == other )
+			{
+				continue;
+			}
+
+			if ( neighbor->s.eType == ET_BUILDABLE && neighbor->buildableTeam == TEAM_ALIENS )
+			{
+				if ( random() < FLAMER_IGNITE_SPLCHANCE )
+				{
+					G_IgniteBuildable( neighbor, ent->parent );
+				}
+			}
+		}
+	}
 	else if ( !strcmp( ent->classname, "lockblob" ) )
 	{
 		if ( other->client && other->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
@@ -247,8 +277,10 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace )
 		{
 			other->client->ps.stats[ STAT_STATE ] |= SS_SLOWLOCKED;
 			other->client->lastSlowTime = level.time;
-			AngleVectors( other->client->ps.viewangles, dir, NULL, NULL );
-			other->client->ps.stats[ STAT_VIEWLOCK ] = DirToByte( dir );
+		}
+		else if ( other->s.eType == ET_BUILDABLE && other->buildableTeam == TEAM_ALIENS )
+		{
+			other->onFire = qfalse;
 		}
 	}
 	else if ( !strcmp( ent->classname, "hive" ) )
@@ -476,7 +508,7 @@ gentity_t *fire_flamer( gentity_t *self, vec3_t start, vec3_t dir )
 	bolt->r.ownerNum = self->s.number;
 	bolt->parent = self;
 	bolt->damage = FLAMER_DMG;
-	bolt->flightSplashDamage = FLAMER_FLIGHTSPLASHDAMAGE;
+	bolt->flightSplashDamage = FLAMER_FLIGHTDAMAGE;
 	bolt->splashDamage = FLAMER_SPLASHDAMAGE;
 	bolt->splashRadius = FLAMER_RADIUS;
 	bolt->methodOfDeath = MOD_FLAMER;

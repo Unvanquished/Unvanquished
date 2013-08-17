@@ -52,6 +52,7 @@ cvar_t         *sv_maxclients;
 
 cvar_t         *sv_privateClients; // number of clients reserved for password
 cvar_t         *sv_hostname;
+cvar_t         *sv_statsURL;
 cvar_t         *sv_master[ MAX_MASTER_SERVERS ]; // master server IP addresses
 cvar_t         *sv_reconnectlimit; // minimum seconds between connect messages
 cvar_t         *sv_padPackets; // add nop bytes to messages
@@ -88,6 +89,8 @@ cvar_t *sv_packetdelay;
 cvar_t *sv_fullmsg;
 
 #define LL( x ) x = LittleLong( x )
+
+#define MAX_CHALLENGE_LEN 128
 
 /*
 =============================================================================
@@ -249,6 +252,91 @@ MASTER SERVER FUNCTIONS
 
 ==============================================================================
 */
+static struct {
+	netadr_t ipv4, ipv6;
+} masterServerAddr[ MAX_MASTER_SERVERS ];
+
+static struct {
+	netadrtype_t type;
+	char         text[ MAX_CHALLENGE_LEN + 1 ];
+} challenges[ MAX_MASTER_SERVERS ];
+
+static void SV_ResolveMasterServers( void )
+{
+	int i, netenabled, res;
+
+	netenabled = Cvar_VariableIntegerValue( "net_enabled" );
+
+	for ( i = 0; i < MAX_MASTER_SERVERS; i++ )
+	{
+		if ( !sv_master[ i ]->string || !sv_master[ i ]->string[ 0 ] )
+		{
+			challenges[ i ].type =
+			masterServerAddr[ i ].ipv4.type = masterServerAddr[ i ].ipv6.type = NA_BAD;
+			continue;
+		}
+
+		// see if we haven't already resolved the name
+		// resolving usually causes hitches on win95, so only
+		// do it when needed
+		if ( sv_master[ i ]->modified || ( masterServerAddr[ i ].ipv4.type == NA_BAD && masterServerAddr[ i ].ipv6.type == NA_BAD ) )
+		{
+			sv_master[ i ]->modified = qfalse;
+
+			if ( netenabled & NET_ENABLEV4 )
+			{
+				Com_Printf(_( "Resolving %s (IPv4)\n"), sv_master[ i ]->string );
+				res = NET_StringToAdr( sv_master[ i ]->string, &masterServerAddr[ i ].ipv4, NA_IP );
+
+				if ( res == 2 )
+				{
+					// if no port was specified, use the default master port
+					masterServerAddr[ i ].ipv4.port = BigShort( PORT_MASTER );
+				}
+
+				if ( res )
+				{
+					Com_Printf(_( "%s resolved to %s\n"), sv_master[ i ]->string, NET_AdrToStringwPort( masterServerAddr[ i ].ipv4 ) );
+				}
+				else
+				{
+					Com_Printf(_( "%s has no IPv4 address.\n"), sv_master[ i ]->string );
+				}
+			}
+
+			if ( netenabled & NET_ENABLEV6 )
+			{
+				Com_Printf(_( "Resolving %s (IPv6)\n"), sv_master[ i ]->string );
+				res = NET_StringToAdr( sv_master[ i ]->string, &masterServerAddr[ i ].ipv6, NA_IP6 );
+
+				if ( res == 2 )
+				{
+					// if no port was specified, use the default master port
+					masterServerAddr[ i ].ipv6.port = BigShort( PORT_MASTER );
+				}
+
+				if ( res )
+				{
+					Com_Printf(_( "%s resolved to %s\n"), sv_master[ i ]->string, NET_AdrToStringwPort( masterServerAddr[ i ].ipv6 ) );
+				}
+				else
+				{
+					Com_Printf(_( "%s has no IPv6 address.\n"), sv_master[ i ]->string );
+				}
+			}
+
+			if ( masterServerAddr[ i ].ipv4.type == NA_BAD && masterServerAddr[ i ].ipv6.type == NA_BAD )
+			{
+				// if the address failed to resolve, clear it
+				// so we don't take repeated dns hits
+				Com_Printf(_( "Couldn't resolve address: %s\n"), sv_master[ i ]->string );
+				Cvar_Set( sv_master[ i ]->name, "" );
+				sv_master[ i ]->modified = qfalse;
+				continue;
+			}
+		}
+	}
+}
 
 /*
 ================
@@ -267,7 +355,6 @@ but not on every player enter or exit.
 
 void SV_MasterHeartbeat( const char *hbname )
 {
-	static netadr_t adr[ MAX_MASTER_SERVERS ][ 2 ];
 	int             i;
 	int             res;
 	int             netenabled;
@@ -288,72 +375,14 @@ void SV_MasterHeartbeat( const char *hbname )
 
 	svs.nextHeartbeatTime = svs.time + HEARTBEAT_MSEC;
 
+	SV_ResolveMasterServers();
+
 	// send to group masters
 	for ( i = 0; i < MAX_MASTER_SERVERS; i++ )
 	{
-		if ( !sv_master[ i ]->string || !sv_master[ i ]->string[ 0 ] )
+		if ( masterServerAddr[ i ].ipv4.type == NA_BAD && masterServerAddr[ i ].ipv6.type == NA_BAD )
 		{
 			continue;
-		}
-
-		// see if we haven't already resolved the name
-		// resolving usually causes hitches on win95, so only
-		// do it when needed
-		if ( sv_master[ i ]->modified || ( adr[ i ][ 0 ].type == NA_BAD && adr[ i ][ 1 ].type == NA_BAD ) )
-		{
-			sv_master[ i ]->modified = qfalse;
-
-			if ( netenabled & NET_ENABLEV4 )
-			{
-				Com_Printf(_( "Resolving %s (IPv4)\n"), sv_master[ i ]->string );
-				res = NET_StringToAdr( sv_master[ i ]->string, &adr[ i ][ 0 ], NA_IP );
-
-				if ( res == 2 )
-				{
-					// if no port was specified, use the default master port
-					adr[ i ][ 0 ].port = BigShort( PORT_MASTER );
-				}
-
-				if ( res )
-				{
-					Com_Printf(_( "%s resolved to %s\n"), sv_master[ i ]->string, NET_AdrToStringwPort( adr[ i ][ 0 ] ) );
-				}
-				else
-				{
-					Com_Printf(_( "%s has no IPv4 address.\n"), sv_master[ i ]->string );
-				}
-			}
-
-			if ( netenabled & NET_ENABLEV6 )
-			{
-				Com_Printf(_( "Resolving %s (IPv6)\n"), sv_master[ i ]->string );
-				res = NET_StringToAdr( sv_master[ i ]->string, &adr[ i ][ 1 ], NA_IP6 );
-
-				if ( res == 2 )
-				{
-					// if no port was specified, use the default master port
-					adr[ i ][ 1 ].port = BigShort( PORT_MASTER );
-				}
-
-				if ( res )
-				{
-					Com_Printf(_( "%s resolved to %s\n"), sv_master[ i ]->string, NET_AdrToStringwPort( adr[ i ][ 1 ] ) );
-				}
-				else
-				{
-					Com_Printf(_( "%s has no IPv6 address.\n"), sv_master[ i ]->string );
-				}
-			}
-
-			if ( adr[ i ][ 0 ].type == NA_BAD && adr[ i ][ 1 ].type == NA_BAD )
-			{
-				// if the address failed to resolve, clear it
-				// so we don't take repeated dns hits
-				Com_Printf(_( "Couldn't resolve address: %s\n"), sv_master[ i ]->string );
-				Cvar_Set( sv_master[ i ]->name, "" );
-				sv_master[ i ]->modified = qfalse;
-				continue;
-			}
 		}
 
 		Com_Printf(_( "Sending heartbeat to %s\n"), sv_master[ i ]->string );
@@ -361,14 +390,14 @@ void SV_MasterHeartbeat( const char *hbname )
 		// this command should be changed if the server info / status format
 		// ever incompatibly changes
 
-		if ( adr[ i ][ 0 ].type != NA_BAD )
+		if ( masterServerAddr[ i ].ipv4.type != NA_BAD )
 		{
-			NET_OutOfBandPrint( NS_SERVER, adr[ i ][ 0 ], "heartbeat %s\n", hbname );
+			NET_OutOfBandPrint( NS_SERVER, masterServerAddr[ i ].ipv4, "heartbeat %s\n", hbname );
 		}
 
-		if ( adr[ i ][ 1 ].type != NA_BAD )
+		if ( masterServerAddr[ i ].ipv6.type != NA_BAD )
 		{
-			NET_OutOfBandPrint( NS_SERVER, adr[ i ][ 1 ], "heartbeat %s\n", hbname );
+			NET_OutOfBandPrint( NS_SERVER, masterServerAddr[ i ].ipv6, "heartbeat %s\n", hbname );
 		}
 	}
 }
@@ -441,7 +470,7 @@ CONNECTIONLESS COMMANDS
 //bani - bugtraq 12534
 //returns qtrue if valid challenge
 //returns qfalse if m4d h4x0rz
-qboolean SV_VerifyChallenge( char *challenge )
+qboolean SV_VerifyChallenge( const char *challenge )
 {
 	int i, j;
 
@@ -542,21 +571,27 @@ void SVC_Info( netadr_t from )
 	char *gamedir;
 	char infostring[ MAX_INFO_STRING ];
 
-	//bani - bugtraq 12534
-	if ( !SV_VerifyChallenge( Cmd_Argv( 1 ) ) )
-	{
-		return;
-	}
+	const char *challenge;
+
+	challenge = Cmd_Argv( 1 );
 
 	/*
 	 * Check whether Cmd_Argv(1) has a sane length. This was not done in the original Quake3 version which led
 	 * to the Infostring bug discovered by Luigi Auriemma. See http://aluigi.altervista.org/ for the advisory.
 	*/
 	// A maximum challenge length of 128 should be more than plenty.
-	if ( strlen( Cmd_Argv( 1 ) ) > 128 )
+	if ( strlen( challenge ) > MAX_CHALLENGE_LEN  )
 	{
 		return;
 	}
+
+	//bani - bugtraq 12534
+	if ( !SV_VerifyChallenge( challenge ) )
+	{
+		return;
+	}
+
+	SV_ResolveMasterServers();
 
 	// don't count privateclients
 	count = 0;
@@ -573,7 +608,35 @@ void SVC_Info( netadr_t from )
 
 	// echo back the parameter to status. so servers can use it as a challenge
 	// to prevent timed spoofed reply packets that add ghost servers
-	Info_SetValueForKey( infostring, "challenge", Cmd_Argv( 1 ), qfalse );
+	Info_SetValueForKey( infostring, "challenge", challenge, qfalse );
+
+	// If the master server listens on IPv4 and IPv6, we want to send the
+	// most recent challenge received from it over the OTHER protocol
+	for ( i = 0; i < MAX_MASTER_SERVERS; i++ )
+	{
+		// First, see if the challenge was sent by this master server
+		if ( !NET_CompareBaseAdr( from, masterServerAddr[ i ].ipv4 ) && !NET_CompareBaseAdr( from, masterServerAddr[ i ].ipv6 ) )
+		{
+			continue;
+		}
+
+		// It was - if the saved challenge is for the other protocol, send it and record the current one
+		if ( challenges[ i ].type == NA_IP || challenges[ i ].type == NA_IP6 )
+		{
+			if ( challenges[ i ].type != from.type )
+			{
+				Info_SetValueForKey( infostring, "challenge2", challenges[ i ].text, qfalse );
+				challenges[ i ].type = from.type;
+				strcpy( challenges[ i ].text, challenge );
+				break;
+			}
+		}
+
+		// Otherwise record the current one regardless and check the next server
+		challenges[ i ].type = from.type;
+		strcpy( challenges[ i ].text, challenge );
+	}
+
 	Info_SetValueForKey( infostring, "protocol", va( "%i", PROTOCOL_VERSION ), qfalse );
 	Info_SetValueForKey( infostring, "hostname", sv_hostname->string, qfalse );
 	Info_SetValueForKey( infostring, "serverload", va( "%i", svs.serverLoad ), qfalse );
@@ -581,6 +644,11 @@ void SVC_Info( netadr_t from )
 	Info_SetValueForKey( infostring, "clients", va( "%i", count ), qfalse );
 	Info_SetValueForKey( infostring, "sv_maxclients", va( "%i", sv_maxclients->integer - sv_privateClients->integer ), qfalse );
 	Info_SetValueForKey( infostring, "pure", va( "%i", sv_pure->integer ), qfalse );
+
+	if ( sv_statsURL->string[0] )
+	{
+		Info_SetValueForKey( infostring, "stats", sv_statsURL->string, qfalse );
+	}
 
 #ifdef USE_VOIP
 

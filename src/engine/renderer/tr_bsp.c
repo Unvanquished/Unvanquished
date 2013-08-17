@@ -258,12 +258,6 @@ static void R_LoadLightmaps( lump_t *l )
 		tr.numLightmaps++;
 	}
 
-	// permedia doesn't support lightmaps
-	if ( glConfig.hardwareType == GLHW_PERMEDIA2 )
-	{
-		return;
-	}
-
 	for ( i = 0; i < tr.numLightmaps; i++ )
 	{
 		// expand the 24 bit on-disk to 32 bit
@@ -406,11 +400,6 @@ static shader_t *ShaderForShaderNum( int shaderNum, int lightmapNum )
 	}
 
 	dsh = &s_worldData.shaders[ shaderNum ];
-
-	if ( glConfig.hardwareType == GLHW_PERMEDIA2 )
-	{
-		lightmapNum = LIGHTMAP_BY_VERTEX;
-	}
 
 	shader = R_FindShader( dsh->shader, lightmapNum, qtrue );
 

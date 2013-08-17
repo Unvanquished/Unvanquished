@@ -44,16 +44,6 @@ const matrix_t openGLToQuakeMatrix =
 	0,  0,  0, 1
 };
 
-// convert from our right handed coordinate system (looking down X)
-// to D3D's left handed coordinate system (looking down Z)
-const matrix_t quakeToD3DMatrix =
-{
-	0,  0, 1, 0,
-	-1, 0, 0, 0,
-	0,  1, 0, 0,
-	0,  0, 0, 1
-};
-
 const matrix_t flipZMatrix =
 {
 	1, 0, 0,  0,
@@ -1172,11 +1162,7 @@ void R_RotateForViewer( void )
 	MatrixAffineInverse( transformMatrix, tr.orientation.viewMatrix2 );
 //  MatrixAffineInverse(transformMatrix, tr.orientation.viewMatrix);
 
-#if 0
-	// convert from our right handed coordinate system (looking down X)
-	// to D3D's left handed coordinate system (looking down Z)
-	MatrixMultiply( quakeToD3DMatrix, tr.orientation.viewMatrix2, viewMatrix );
-#elif 1
+#if 1
 	// convert from our right handed coordinate system (looking down X)
 	// to OpenGL's right handed coordinate system (looking down -Z)
 	MatrixMultiply( quakeToOpenGLMatrix, tr.orientation.viewMatrix2, viewMatrix );
@@ -1761,6 +1747,22 @@ void R_SetupFrustum2( frustum_t frustum, const matrix_t mvp )
 }
 
 // *INDENT-ON*
+
+void R_CalcFrustumNearCorners( const vec4_t frustum[ FRUSTUM_PLANES ], vec3_t corners[ 4 ] )
+{
+	PlanesGetIntersectionPoint( frustum[ FRUSTUM_LEFT ], frustum[ FRUSTUM_TOP ], frustum[ FRUSTUM_NEAR ], corners[ 0 ] );
+	PlanesGetIntersectionPoint( frustum[ FRUSTUM_RIGHT ], frustum[ FRUSTUM_TOP ], frustum[ FRUSTUM_NEAR ], corners[ 1 ] );
+	PlanesGetIntersectionPoint( frustum[ FRUSTUM_RIGHT ], frustum[ FRUSTUM_BOTTOM ], frustum[ FRUSTUM_NEAR ], corners[ 2 ] );
+	PlanesGetIntersectionPoint( frustum[ FRUSTUM_LEFT ], frustum[ FRUSTUM_BOTTOM ], frustum[ FRUSTUM_NEAR ], corners[ 3 ] );
+}
+
+void R_CalcFrustumFarCorners( const vec4_t frustum[ FRUSTUM_PLANES ], vec3_t corners[ 4 ] )
+{
+	PlanesGetIntersectionPoint( frustum[ FRUSTUM_LEFT ], frustum[ FRUSTUM_TOP ], frustum[ FRUSTUM_FAR ], corners[ 0 ] );
+	PlanesGetIntersectionPoint( frustum[ FRUSTUM_RIGHT ], frustum[ FRUSTUM_TOP ], frustum[ FRUSTUM_FAR ], corners[ 1 ] );
+	PlanesGetIntersectionPoint( frustum[ FRUSTUM_RIGHT ], frustum[ FRUSTUM_BOTTOM ], frustum[ FRUSTUM_FAR ], corners[ 2 ] );
+	PlanesGetIntersectionPoint( frustum[ FRUSTUM_LEFT ], frustum[ FRUSTUM_BOTTOM ], frustum[ FRUSTUM_FAR ], corners[ 3 ] );
+}
 
 static void CopyPlane( const cplane_t *in, cplane_t *out )
 {
@@ -2607,12 +2609,7 @@ void R_AddEntitySurfaces( void )
 				break; // don't draw anything
 
 			case RT_SPRITE:
-			case RT_SPLASH:
 			case RT_BEAM:
-			case RT_LIGHTNING:
-			case RT_RAIL_CORE:
-			case RT_RAIL_CORE_TAPER:
-			case RT_RAIL_RINGS:
 
 				// self blood sprites, talk balloons, etc should not be drawn in the primary
 				// view.  We can't just do this check for all entities, because md3
@@ -2699,8 +2696,9 @@ R_AddEntityInteractions
 */
 void R_AddEntityInteractions( trRefLight_t *light )
 {
-	int           i;
-	trRefEntity_t *ent;
+	int               i;
+	trRefEntity_t     *ent;
+	interactionType_t iaType;
 
 	if ( !r_drawentities->integer )
 	{
@@ -2709,6 +2707,18 @@ void R_AddEntityInteractions( trRefLight_t *light )
 
 	for ( i = 0; i < tr.refdef.numEntities; i++ )
 	{
+		iaType = IA_DEFAULT;
+
+		if ( r_shadows->integer <= SHADOWING_BLOB ||
+		     light->l.noShadows ) {
+			iaType &= ~IA_SHADOW;
+		}
+		if ( light->restrictInteractionFirst >= 0 &&
+		     ( i < light->restrictInteractionFirst ||
+		       i > light->restrictInteractionLast ) ) {
+			iaType &= ~IA_SHADOW;
+		}
+
 		ent = tr.currentEntity = &tr.refdef.entities[ i ];
 
 		//
@@ -2728,12 +2738,7 @@ void R_AddEntityInteractions( trRefLight_t *light )
 				break; // don't draw anything
 
 			case RT_SPRITE:
-			case RT_SPLASH:
 			case RT_BEAM:
-			case RT_LIGHTNING:
-			case RT_RAIL_CORE:
-			case RT_RAIL_CORE_TAPER:
-			case RT_RAIL_RINGS:
 				break;
 
 			case RT_MODEL:
@@ -2748,7 +2753,7 @@ void R_AddEntityInteractions( trRefLight_t *light )
 					switch ( tr.currentModel->type )
 					{
 						case MOD_MESH:
-							R_AddMDVInteractions( ent, light );
+							R_AddMDVInteractions( ent, light, iaType );
 							break;
 
 #if defined( COMPAT_ET )
@@ -2758,19 +2763,19 @@ void R_AddEntityInteractions( trRefLight_t *light )
 							break;
 
 						case MOD_MDM:
-							R_AddMDMInteractions( ent, light );
+							R_AddMDMInteractions( ent, light, iaType );
 							break;
 #endif
 
 #if defined( USE_REFENTITY_ANIMATIONSYSTEM )
 
 						case MOD_MD5:
-							R_AddMD5Interactions( ent, light );
+							R_AddMD5Interactions( ent, light, iaType );
 							break;
 #endif
 
 						case MOD_BSP:
-							R_AddBrushModelInteractions( ent, light );
+							R_AddBrushModelInteractions( ent, light, iaType );
 							break;
 
 						case MOD_BAD: // null model axis
@@ -2831,8 +2836,57 @@ void R_AddPolygonInteractions( trRefLight_t *light )
 			continue;
 		}
 
-		R_AddLightInteraction( light, ( void * ) poly, shader, CUBESIDE_CLIPALL, IA_LIGHTONLY );
+		R_AddLightInteraction( light, ( void * ) poly, shader, CUBESIDE_CLIPALL, IA_LIGHT );
 	}
+}
+
+/*
+=============
+R_TransformShadowLight
+
+check if OMNI shadow light can be turned into PROJ for better shadow map quality
+=============
+*/
+void R_TransformShadowLight( trRefLight_t *light ) {
+	int    i;
+	vec3_t mins, maxs, mids;
+	vec3_t forward, right, up;
+	float  radius, dist;
+
+	if( !light->l.inverseShadows || light->l.rlType != RL_OMNI ||
+	    light->restrictInteractionFirst < 0 )
+		return;
+
+	ClearBounds( mins, maxs );
+	for( i = light->restrictInteractionFirst; i <= light->restrictInteractionLast; i++ ) {
+		trRefEntity_t *ent = &tr.refdef.entities[ i ];
+
+		AddPointToBounds( ent->worldBounds[0], mins, maxs );
+		AddPointToBounds( ent->worldBounds[1], mins, maxs );
+	}
+
+	// if light origin is outside BBox of shadow receivers, build
+	// a projection light on the closest plane of the BBox
+	VectorAdd( mins, maxs, mids );
+	VectorScale( mids, 0.5f, mids );
+	radius = Distance( mids, maxs );
+	dist = Distance( light->l.origin, mids );
+
+	if( dist <= 2.0f * radius ) {
+		return;
+	}
+
+	light->l.rlType = RL_PROJ;
+	VectorSubtract( mids, light->l.origin, forward );
+	VectorNormalize( forward );
+	PerpendicularVector( right, forward );
+	CrossProduct( forward, right, up );
+
+	VectorScale( right, 2.0f * radius, light->l.projRight );
+	VectorScale( up, 2.0f * radius, light->l.projUp );
+	VectorCopy( vec3_origin, light->l.projStart );
+	VectorCopy( vec3_origin, light->l.projEnd );
+	VectorScale( forward, light->l.radius[0], light->l.projTarget );
 }
 
 /*
@@ -2868,6 +2922,8 @@ void R_AddLightInteractions( void )
 				continue;
 			}
 		}
+
+		R_TransformShadowLight( light );
 
 		// we must set up parts of tr.or for light culling
 		R_RotateLightForViewParms( light, &tr.viewParms, &tr.orientation );
@@ -3418,10 +3474,6 @@ Visualization aid for movement clipping debugging
 */
 static void R_DebugGraphics( void )
 {
-#if defined( USE_D3D10 )
-	// TODO
-#else
-
 	if ( r_debugSurface->integer )
 	{
 		// the render thread can't make callbacks to the main thread
@@ -3433,8 +3485,6 @@ static void R_DebugGraphics( void )
 		GL_Cull( CT_FRONT_SIDED );
 		ri.CM_DrawDebugSurface( R_DebugPolygon );
 	}
-
-#endif
 }
 
 /*

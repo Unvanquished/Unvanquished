@@ -130,7 +130,7 @@ static qboolean CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 		return qfalse;
 	}
 
-	if ( len >= sizeof( text ) - 1 )
+	if ( len + 1 >= (int) sizeof( text ) )
 	{
 		CG_Printf( "File %s is too long\n", filename );
 		trap_FS_FCloseFile( f );
@@ -448,7 +448,7 @@ static qboolean CG_ParseAnimationFile( const char *filename, clientInfo_t *ci )
 		return qfalse;
 	}
 
-	if ( len == 0 || len >= sizeof( text ) - 1 )
+	if ( len == 0 || len + 1 >= (int) sizeof( text ) )
 	{
 		CG_Printf( len == 0 ? "File %s is empty\n" : "File %s is too long\n", filename );
 		trap_FS_FCloseFile( f );
@@ -1628,37 +1628,6 @@ PLAYER ANIMATION
 =============================================================================
 */
 
-// TODO: choose proper values and use blending speed from character.cfg
-// blending is slow for testing issues
-static void CG_BlendPlayerLerpFrame( lerpFrame_t *lf )
-{
-	if ( cg_animBlend.value <= 0.0f )
-	{
-		lf->blendlerp = 0.0f;
-		return;
-	}
-
-	if ( ( lf->blendlerp > 0.0f ) && ( cg.time > lf->blendtime ) )
-	{
-		//exp blending
-		lf->blendlerp -= lf->blendlerp / cg_animBlend.value;
-
-		if ( lf->blendlerp <= 0.0f )
-		{
-			lf->blendlerp = 0.0f;
-		}
-
-		if ( lf->blendlerp >= 1.0f )
-		{
-			lf->blendlerp = 1.0f;
-		}
-
-		lf->blendtime = cg.time + 10;
-
-		debug_anim_blend = lf->blendlerp;
-	}
-}
-
 static void CG_CombineLegSkeleton( refSkeleton_t *dest, refSkeleton_t *legs, int *legBones, int numBones )
 {
 	int i;
@@ -1695,12 +1664,6 @@ static void CG_SetLerpFrameAnimation( clientInfo_t *ci, lerpFrame_t *lf, int new
 	anim = &ci->animations[ newAnimation ];
 
 	lf->animation = anim;
-	lf->animationTime = lf->frameTime + anim->initialLerp;
-
-	if ( cg_debugAnim.integer )
-	{
-		CG_Printf( "Anim: %i\n", newAnimation );
-	}
 
 	if ( ci->md5 )
 	{
@@ -1744,7 +1707,22 @@ static void CG_SetLerpFrameAnimation( clientInfo_t *ci, lerpFrame_t *lf, int new
 				return;
 			}
 		}
+
+		lf->animationTime = cg.time + anim->initialLerp;
+
+		lf->oldFrame = lf->frame = 0;
+		lf->oldFrameTime = lf->frameTime = 0;
 	}
+	else
+	{
+		lf->animationTime = lf->frameTime + anim->initialLerp;
+	}
+
+	if ( cg_debugAnim.integer )
+	{
+		CG_Printf( "Anim: %i\n", newAnimation );
+	}
+
 }
 
 /*
@@ -1766,11 +1744,9 @@ static void CG_RunPlayerLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAni
 		animChanged = qtrue;
 	}
 
-	if ( !ci->md5 )
-	{
-		CG_RunLerpFrame( lf, speedScale );
-	}
-	else
+	CG_RunLerpFrame( lf, speedScale );
+
+	if ( ci->md5 )
 	{
 		CG_RunMD5LerpFrame( lf, speedScale, animChanged );
 
@@ -1782,7 +1758,7 @@ static void CG_RunPlayerLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAni
 	}
 }
 
-static void CG_RunCorpseLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAnimation, float speedScale )
+static void CG_RunCorpseLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAnimation )
 {
 	animation_t *anim;
 	qboolean    animChanged;
@@ -2773,7 +2749,7 @@ static qboolean CG_PlayerShadow( centity_t *cent, float *shadowPlane, class_t cl
 
 	*shadowPlane = 0;
 
-	if ( cg_shadows.integer == 0 )
+	if ( cg_shadows.integer == SHADOWING_NONE )
 	{
 		return qfalse;
 	}
@@ -2803,7 +2779,15 @@ static qboolean CG_PlayerShadow( centity_t *cent, float *shadowPlane, class_t cl
 		*shadowPlane = trace.endpos[ 2 ] + 1.0f;
 	}
 
-	if ( cg_shadows.integer != 1 ) // no mark for stencil or projection shadows
+	if ( cg_shadows.integer > SHADOWING_BLOB &&
+	     cg_playerShadows.integer ) {
+		// add inverse shadow map
+		{
+		  CG_StartShadowCaster( cent->lerpOrigin, mins, maxs );
+		}
+	}
+
+	if ( cg_shadows.integer != SHADOWING_BLOB ) // no mark for stencil or projection shadows
 	{
 		return qtrue;
 	}
@@ -2820,6 +2804,19 @@ static qboolean CG_PlayerShadow( centity_t *cent, float *shadowPlane, class_t cl
 	return qtrue;
 }
 
+static void CG_PlayerShadowEnd( void )
+{
+	if ( cg_shadows.integer == SHADOWING_NONE )
+	{
+		return;
+	}
+
+	if ( cg_shadows.integer > SHADOWING_BLOB &&
+	     cg_playerShadows.integer ) {
+		CG_EndShadowCaster( );
+	}
+}
+
 /*
 ===============
 CG_PlayerSplash
@@ -2834,7 +2831,7 @@ static void CG_PlayerSplash( centity_t *cent, class_t class )
 	trace_t trace;
 	int     contents;
 
-	if ( !cg_shadows.integer )
+	if ( cg_shadows.integer == SHADOWING_NONE )
 	{
 		return;
 	}
@@ -3054,6 +3051,8 @@ void CG_Player( centity_t *cent )
 	int           held = es->modelindex;
 	vec3_t        surfNormal = { 0.0f, 0.0f, 1.0f };
 
+	altShader_t   altShaderIndex;
+
 	// the client number is stored in clientNum.  It can't be derived
 	// from the entity number, because a single client may have
 	// multiple corpses on the level using the same clientinfo
@@ -3077,6 +3076,19 @@ void CG_Player( centity_t *cent )
 	if ( es->eFlags & EF_NODRAW )
 	{
 		return;
+	}
+
+	if ( es->eFlags & EF_DEAD )
+	{
+		altShaderIndex = CG_ALTSHADER_DEAD;
+	}
+	else if ( !(es->eFlags & EF_B_POWERED) )
+	{
+		altShaderIndex = CG_ALTSHADER_UNPOWERED;
+	}
+	else
+	{
+		altShaderIndex = CG_ALTSHADER_DEFAULT;
 	}
 
 	// get the player model information
@@ -3372,6 +3384,7 @@ void CG_Player( centity_t *cent )
 
 
 		// add body to renderer
+		body.altShaderIndex = altShaderIndex;
 		trap_R_AddRefEntityToScene( &body );
 
 		//sanity check that particle systems are stopped when dead
@@ -3389,6 +3402,7 @@ void CG_Player( centity_t *cent )
 		}
 
 		VectorCopy( surfNormal, cent->pe.lastNormal );
+		CG_PlayerShadowEnd( );
 		return;
 	}
 
@@ -3520,11 +3534,13 @@ void CG_Player( centity_t *cent )
 	VectorCopy( legs.origin, legs.lightingOrigin );
 	VectorCopy( legs.origin, legs.oldorigin );  // don't positionally lerp at all
 
+	legs.altShaderIndex = altShaderIndex;
 	trap_R_AddRefEntityToScene( &legs );
 
 	// if the model failed, allow the default nullmodel to be displayed
 	if ( !legs.hModel )
 	{
+		CG_PlayerShadowEnd( );
 		return;
 	}
 
@@ -3546,6 +3562,7 @@ void CG_Player( centity_t *cent )
 
 		if ( !torso.hModel )
 		{
+			CG_PlayerShadowEnd( );
 			return;
 		}
 
@@ -3556,6 +3573,7 @@ void CG_Player( centity_t *cent )
 		torso.shadowPlane = shadowPlane;
 		torso.renderfx = renderfx;
 
+		torso.altShaderIndex = altShaderIndex;
 		trap_R_AddRefEntityToScene( &torso );
 
 		//
@@ -3574,6 +3592,7 @@ void CG_Player( centity_t *cent )
 
 		if ( !head.hModel )
 		{
+			CG_PlayerShadowEnd( );
 			return;
 		}
 
@@ -3584,6 +3603,7 @@ void CG_Player( centity_t *cent )
 		head.shadowPlane = shadowPlane;
 		head.renderfx = renderfx;
 
+		head.altShaderIndex = altShaderIndex;
 		trap_R_AddRefEntityToScene( &head );
 
 		// if this player has been hit with poison cloud, add an effect PS
@@ -3636,6 +3656,7 @@ void CG_Player( centity_t *cent )
 			CG_DestroyParticleSystem( &cent->jetPackPS );
 		}
 	}
+	CG_PlayerShadowEnd( );
 
 	VectorCopy( surfNormal, cent->pe.lastNormal );
 }
@@ -3711,7 +3732,7 @@ void CG_Corpse( centity_t *cent )
 		if ( ci->gender == GENDER_NEUTER )
 		{
 			memset( &cent->pe.nonseg, 0, sizeof( lerpFrame_t ) );
-			CG_RunCorpseLerpFrame( ci, &cent->pe.nonseg, NSPA_DEATH1, 1 );
+			CG_RunCorpseLerpFrame( ci, &cent->pe.nonseg, NSPA_DEATH1 );
 			legs.oldframe = cent->pe.nonseg.oldFrame;
 			legs.frame = cent->pe.nonseg.frame;
 			legs.backlerp = cent->pe.nonseg.backlerp;
@@ -3719,7 +3740,7 @@ void CG_Corpse( centity_t *cent )
 		else
 		{
 			memset( &cent->pe.legs, 0, sizeof( lerpFrame_t ) );
-			CG_RunCorpseLerpFrame( ci, &cent->pe.legs, BOTH_DEATH1, 1 );
+			CG_RunCorpseLerpFrame( ci, &cent->pe.legs, BOTH_DEATH1 );
 			legs.oldframe = cent->pe.legs.oldFrame;
 			legs.frame = cent->pe.legs.frame;
 			legs.backlerp = cent->pe.legs.backlerp;
@@ -3801,11 +3822,13 @@ void CG_Corpse( centity_t *cent )
 		legs.nonNormalizedAxes = qtrue;
 	}
 
+	legs.altShaderIndex = CG_ALTSHADER_DEAD;
 	trap_R_AddRefEntityToScene( &legs );
 
 	// if the model failed, allow the default nullmodel to be displayed. Also, if MD5, no need to add other parts
 	if ( !legs.hModel || ci->md5 )
 	{
+		CG_PlayerShadowEnd( );
 		return;
 	}
 
@@ -3818,6 +3841,7 @@ void CG_Corpse( centity_t *cent )
 
 		if ( !torso.hModel )
 		{
+			CG_PlayerShadowEnd( );
 			return;
 		}
 
@@ -3830,6 +3854,7 @@ void CG_Corpse( centity_t *cent )
 		torso.shadowPlane = shadowPlane;
 		torso.renderfx = renderfx;
 
+		torso.altShaderIndex = CG_ALTSHADER_DEAD;
 		trap_R_AddRefEntityToScene( &torso );
 
 		//
@@ -3839,6 +3864,7 @@ void CG_Corpse( centity_t *cent )
 
 		if ( !head.hModel )
 		{
+			CG_PlayerShadowEnd( );
 			return;
 		}
 
@@ -3851,6 +3877,7 @@ void CG_Corpse( centity_t *cent )
 		head.shadowPlane = shadowPlane;
 		head.renderfx = renderfx;
 
+		head.altShaderIndex = CG_ALTSHADER_DEAD;
 		trap_R_AddRefEntityToScene( &head );
 	}
 }

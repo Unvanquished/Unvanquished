@@ -30,11 +30,7 @@ extern "C" {
 	glconfig_t  glConfig;
 	glconfig2_t glConfig2;
 
-#if defined( USE_D3D10 )
-	dxGlobals_t dx;
-#else
 	glstate_t   glState;
-#endif
 
 	float       displayAspect = 0.0f;
 
@@ -48,10 +44,6 @@ extern "C" {
 	cvar_t      *r_flares;
 	cvar_t      *r_flareSize;
 	cvar_t      *r_flareFade;
-
-	cvar_t      *r_railWidth;
-	cvar_t      *r_railCoreWidth;
-	cvar_t      *r_railSegmentLength;
 
 	cvar_t      *r_verbose;
 	cvar_t      *r_ignore;
@@ -112,6 +104,7 @@ extern "C" {
 	cvar_t      *r_ext_vertex_array_object;
 	cvar_t      *r_ext_half_float_pixel;
 	cvar_t      *r_ext_texture_float;
+	cvar_t      *r_ext_texture_rg;
 	cvar_t      *r_ext_stencil_wrap;
 	cvar_t      *r_ext_texture_filter_anisotropic;
 	cvar_t      *r_ext_stencil_two_side;
@@ -136,6 +129,7 @@ extern "C" {
 	cvar_t      *r_drawBuffer;
 	cvar_t      *r_shadows;
 	cvar_t      *r_softShadows;
+	cvar_t      *r_softShadowsPP;
 	cvar_t      *r_shadowBlur;
 
 	cvar_t      *r_shadowMapQuality;
@@ -185,8 +179,8 @@ extern "C" {
 	cvar_t      *r_offsetFactor;
 	cvar_t      *r_offsetUnits;
 	cvar_t      *r_forceSpecular;
-	cvar_t      *r_specularExponent;
-	cvar_t      *r_specularExponent2;
+	cvar_t      *r_specularExponentMin;
+	cvar_t      *r_specularExponentMax;
 	cvar_t      *r_specularScale;
 	cvar_t      *r_normalScale;
 	cvar_t      *r_normalMapping;
@@ -361,7 +355,6 @@ extern "C" {
 	** setting variables, checking GL constants, and reporting the gfx system config
 	** to the user.
 	*/
-#if !defined( USE_D3D10 )
 	static qboolean InitOpenGL( void )
 	{
 		char renderer_buffer[ 1024 ];
@@ -418,8 +411,6 @@ extern "C" {
 
 		return qtrue;
 	}
-
-#endif
 
 	/*
 	==================
@@ -1352,7 +1343,6 @@ extern "C" {
 		}
 	}
 
-#if !defined( USE_D3D10 )
 	static void GLSL_restart_f( void )
 	{
 		// make sure the render thread is stopped
@@ -1361,8 +1351,6 @@ extern "C" {
 		GLSL_ShutdownGPUShaders();
 		GLSL_InitGPUShaders();
 	}
-
-#endif
 
 	/*
 	===============
@@ -1385,6 +1373,7 @@ extern "C" {
 		r_ext_vertex_array_object = ri.Cvar_Get( "r_ext_vertex_array_object", "1", CVAR_CHEAT | CVAR_LATCH );
 		r_ext_half_float_pixel = ri.Cvar_Get( "r_ext_half_float_pixel", "1", CVAR_CHEAT | CVAR_LATCH );
 		r_ext_texture_float = ri.Cvar_Get( "r_ext_texture_float", "1", CVAR_CHEAT | CVAR_LATCH );
+		r_ext_texture_rg = ri.Cvar_Get( "r_ext_texture_rg", "1", CVAR_CHEAT | CVAR_LATCH );
 		r_ext_stencil_wrap = ri.Cvar_Get( "r_ext_stencil_wrap", "1", CVAR_CHEAT | CVAR_LATCH );
 		r_ext_texture_filter_anisotropic = ri.Cvar_Get( "r_ext_texture_filter_anisotropic", "4", CVAR_ARCHIVE | CVAR_LATCH );
 		r_ext_stencil_two_side = ri.Cvar_Get( "r_ext_stencil_two_side", "1", CVAR_CHEAT | CVAR_LATCH );
@@ -1407,7 +1396,11 @@ extern "C" {
 		r_stencilbits = ri.Cvar_Get( "r_stencilbits", "8", CVAR_ARCHIVE | CVAR_LATCH );
 		r_depthbits = ri.Cvar_Get( "r_depthbits", "0", CVAR_ARCHIVE | CVAR_LATCH );
 		r_ext_multisample = ri.Cvar_Get( "r_ext_multisample", "0", CVAR_ARCHIVE | CVAR_LATCH );
-		r_ignorehwgamma = ri.Cvar_Get( "r_ignorehwgamma", "1", CVAR_ARCHIVE | CVAR_LATCH );
+#ifdef WIN32
+		r_ignorehwgamma = ri.Cvar_Get( "r_ignorehwgamma", "0", CVAR_ARCHIVE | CVAR_LATCH );  // use hw gamma on Windows by default
+#else
+		r_ignorehwgamma = ri.Cvar_Get( "r_ignorehwgamma", "1", CVAR_ARCHIVE | CVAR_LATCH );  // use software gamma by default
+#endif
 		r_mode = ri.Cvar_Get( "r_mode", "6", CVAR_ARCHIVE | CVAR_LATCH | CVAR_SHADER );
 		r_fullscreen = ri.Cvar_Get( "r_fullscreen", "0", CVAR_ARCHIVE | CVAR_LATCH );
 		r_customwidth = ri.Cvar_Get( "r_customwidth", "1600", CVAR_ARCHIVE | CVAR_LATCH );
@@ -1415,7 +1408,7 @@ extern "C" {
 		r_customaspect = ri.Cvar_Get( "r_customaspect", "1", CVAR_ARCHIVE | CVAR_LATCH );
 		r_simpleMipMaps = ri.Cvar_Get( "r_simpleMipMaps", "0", CVAR_ARCHIVE | CVAR_LATCH );
 		r_subdivisions = ri.Cvar_Get( "r_subdivisions", "4", CVAR_ARCHIVE | CVAR_LATCH );
-		r_deferredShading = ri.Cvar_Get( "r_deferredShading", "0", CVAR_ARCHIVE | CVAR_LATCH | CVAR_SHADER );
+		r_deferredShading = ri.Cvar_Get( "r_deferredShading", "0", CVAR_ARCHIVE | CVAR_LATCH | CVAR_SHADER | CVAR_CHEAT );
 		r_parallaxMapping = ri.Cvar_Get( "r_parallaxMapping", "0", CVAR_ARCHIVE );
 		r_dynamicLightCastShadows = ri.Cvar_Get( "r_dynamicLightCastShadows", "1", CVAR_ARCHIVE );
 		r_precomputedLighting = ri.Cvar_Get( "r_precomputedLighting", "1", CVAR_ARCHIVE | CVAR_SHADER );
@@ -1496,10 +1489,6 @@ extern "C" {
 		r_gamma = ri.Cvar_Get( "r_gamma", "1.3", CVAR_ARCHIVE );
 		r_facePlaneCull = ri.Cvar_Get( "r_facePlaneCull", "1", CVAR_ARCHIVE );
 
-		r_railWidth = ri.Cvar_Get( "r_railWidth", "96", CVAR_ARCHIVE );
-		r_railCoreWidth = ri.Cvar_Get( "r_railCoreWidth", "16", CVAR_ARCHIVE );
-		r_railSegmentLength = ri.Cvar_Get( "r_railSegmentLength", "32", CVAR_ARCHIVE );
-
 		r_ambientScale = ri.Cvar_Get( "r_ambientScale", "0.6", CVAR_CHEAT );
 		r_lightScale = ri.Cvar_Get( "r_lightScale", "2", CVAR_CHEAT );
 
@@ -1555,12 +1544,12 @@ extern "C" {
 		r_printShaders = ri.Cvar_Get( "r_printShaders", "0", CVAR_ARCHIVE );
 
 		r_bloom = ri.Cvar_Get( "r_bloom", "0", CVAR_ARCHIVE );
-		r_bloomBlur = ri.Cvar_Get( "r_bloomBlur", "5.0", CVAR_CHEAT );
+		r_bloomBlur = ri.Cvar_Get( "r_bloomBlur", "1.0", CVAR_CHEAT );
 		r_bloomPasses = ri.Cvar_Get( "r_bloomPasses", "2", CVAR_CHEAT );
 		r_rotoscope = ri.Cvar_Get( "r_rotoscope", "0", CVAR_ARCHIVE );
-		r_cameraPostFX = ri.Cvar_Get( "r_cameraPostFX", "0", CVAR_ARCHIVE );
-		r_cameraVignette = ri.Cvar_Get( "r_cameraVignette", "1", CVAR_ARCHIVE );
-		r_cameraFilmGrain = ri.Cvar_Get( "r_cameraFilmGrain", "1", CVAR_ARCHIVE );
+		r_cameraPostFX = ri.Cvar_Get( "r_cameraPostFX", "1", CVAR_ARCHIVE );
+		r_cameraVignette = ri.Cvar_Get( "r_cameraVignette", "0", CVAR_ARCHIVE );
+		r_cameraFilmGrain = ri.Cvar_Get( "r_cameraFilmGrain", "0", CVAR_ARCHIVE );
 		r_cameraFilmGrainScale = ri.Cvar_Get( "r_cameraFilmGrainScale", "3", CVAR_ARCHIVE );
 
 		// temporary variables that can change at any time
@@ -1606,8 +1595,8 @@ extern "C" {
 		r_offsetFactor = ri.Cvar_Get( "r_offsetFactor", "-1", CVAR_CHEAT );
 		r_offsetUnits = ri.Cvar_Get( "r_offsetUnits", "-2", CVAR_CHEAT );
 		r_forceSpecular = ri.Cvar_Get( "r_forceSpecular", "0", CVAR_CHEAT );
-		r_specularExponent = ri.Cvar_Get( "r_specularExponent", "16", CVAR_CHEAT | CVAR_SHADER );
-		r_specularExponent2 = ri.Cvar_Get( "r_specularExponent2", "3", CVAR_CHEAT | CVAR_SHADER );
+		r_specularExponentMin = ri.Cvar_Get( "r_specularExponentMin", "0", CVAR_CHEAT );
+		r_specularExponentMax = ri.Cvar_Get( "r_specularExponentMax", "16", CVAR_CHEAT );
 		r_specularScale = ri.Cvar_Get( "r_specularScale", "1.4", CVAR_CHEAT | CVAR_SHADER );
 		r_normalScale = ri.Cvar_Get( "r_normalScale", "1.1", CVAR_CHEAT );
 		r_normalMapping = ri.Cvar_Get( "r_normalMapping", "1", CVAR_ARCHIVE );
@@ -1629,6 +1618,8 @@ extern "C" {
 		r_softShadows = ri.Cvar_Get( "r_softShadows", "0", CVAR_ARCHIVE | CVAR_SHADER );
 		AssertCvarRange( r_softShadows, 0, 6, qtrue );
 
+		r_softShadowsPP = ri.Cvar_Get( "r_softShadowsPP", "0", CVAR_ARCHIVE | CVAR_LATCH );
+		
 		r_shadowBlur = ri.Cvar_Get( "r_shadowBlur", "2", CVAR_ARCHIVE | CVAR_SHADER );
 
 		r_shadowMapQuality = ri.Cvar_Get( "r_shadowMapQuality", "3", CVAR_ARCHIVE | CVAR_LATCH );
@@ -1749,9 +1740,7 @@ extern "C" {
 //	ri.Cmd_AddCommand("generatemtr", R_GenerateMaterialFile_f);
 		ri.Cmd_AddCommand( "buildcubemaps", R_BuildCubeMaps );
 
-#if !defined( USE_D3D10 )
 		ri.Cmd_AddCommand( "glsl_restart", GLSL_restart_f );
-#endif
 	}
 
 	/*
@@ -1807,260 +1796,6 @@ extern "C" {
 
 		R_Register();
 
-#if defined( USE_D3D10 )
-
-		if ( glConfig.vidWidth == 0 )
-		{
-			DXGI_SWAP_CHAIN_DESC sd;
-			SDL_SysWMinfo        info;
-			HRESULT              hr = S_OK;
-			RECT                 rc;
-			ID3D10Texture2D       *backBuffer;
-			UINT                 createDeviceFlags = 0;
-			int                  i;
-
-			D3D10_DRIVER_TYPE    driverTypes[] =
-			{
-				D3D10_DRIVER_TYPE_HARDWARE,
-				D3D10_DRIVER_TYPE_REFERENCE,
-			};
-			UINT                 numDriverTypes = ARRAY_LEN( driverTypes );
-
-			GLimp_Init();
-
-			ri.Printf( PRINT_ALL, "------- D3D10 Initialization -------\n" );
-
-			SDL_VERSION( &info.version );
-
-			if ( !SDL_GetWMInfo( &info ) )
-			{
-				ri.Error( ERR_FATAL, "R_Init: Failed to obtain HWND from SDL (InputRegistry)" );
-			}
-
-			//GetClientRect(info.window, &rc);
-			//UINT width = rc.right - rc.left;
-			//UINT height = rc.bottom - rc.top;
-
-#ifndef NDEBUG
-			createDeviceFlags |= D3D10_CREATE_DEVICE_DEBUG;
-#endif
-
-			ZeroMemory( &sd, sizeof( sd ) );
-			sd.BufferCount = 1;
-			sd.BufferDesc.Width = glConfig.vidWidth;
-			sd.BufferDesc.Height = glConfig.vidHeight;
-			sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-			sd.BufferDesc.RefreshRate.Numerator = 60;
-			sd.BufferDesc.RefreshRate.Denominator = 1;
-			sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-			sd.OutputWindow = info.window;
-			sd.SampleDesc.Count = 1;
-			sd.SampleDesc.Quality = 0;
-			sd.Windowed = TRUE;
-
-#if 1
-			// Look for 'NVIDIA PerfHUD' adapter
-			// If it is present, override default settings
-			IDXGIFactory *pDXGIFactory;
-			hr = CreateDXGIFactory( __uuidof( IDXGIFactory ), ( void ** ) &pDXGIFactory );
-
-			// Search for a PerfHUD adapter.
-			UINT        nAdapter = 0;
-			IDXGIAdapter *adapter = NULL;
-			IDXGIAdapter *selectedAdapter = NULL;
-			dx.driverType = D3D10_DRIVER_TYPE_HARDWARE;
-
-			ri.Printf( PRINT_ALL, "Looking for PerfHUD..." );
-			bool gotPerfHUD = false;
-
-			while ( pDXGIFactory->EnumAdapters( nAdapter, &adapter ) != DXGI_ERROR_NOT_FOUND )
-			{
-				if ( adapter )
-				{
-					DXGI_ADAPTER_DESC adaptDesc;
-
-					if ( SUCCEEDED( adapter->GetDesc( &adaptDesc ) ) )
-					{
-						const bool isPerfHUD = wcscmp( adaptDesc.Description, L"NVIDIA PerfHUD" ) == 0;
-
-						// Select the PerfHUD adapter if it exists, and the first adapter otherwise.
-						if ( nAdapter == 0 || isPerfHUD )
-						{
-							selectedAdapter = adapter;
-						}
-
-						if ( isPerfHUD )
-						{
-							gotPerfHUD = true;
-							ri.Printf( PRINT_ALL, "found\n" );
-							dx.driverType = D3D10_DRIVER_TYPE_REFERENCE;
-							break;
-						}
-					}
-				}
-
-				++nAdapter;
-			}
-
-			if ( !gotPerfHUD )
-			{
-				ri.Printf( PRINT_ALL, "failed\n" );
-			}
-
-			hr = D3D10CreateDeviceAndSwapChain( selectedAdapter, dx.driverType, NULL, createDeviceFlags,
-			                                    D3D10_SDK_VERSION, &sd, &dx.swapChain, &dx.d3dDevice );
-
-			if ( FAILED( hr ) )
-#endif
-			{
-				ri.Printf( PRINT_ALL, "R_Init: Failed to find PerfHUD\n" );
-
-				for ( i = 0; i < numDriverTypes; i++ )
-				{
-					dx.driverType = driverTypes[ i ];
-					hr = D3D10CreateDeviceAndSwapChain( NULL, dx.driverType, NULL, createDeviceFlags,
-					                                    D3D10_SDK_VERSION, &sd, &dx.swapChain, &dx.d3dDevice );
-
-					if ( SUCCEEDED( hr ) )
-					{
-						break;
-					}
-				}
-
-				if ( FAILED( hr ) )
-				{
-					ri.Error( ERR_FATAL, "R_Init: Failed to create a D3D10 device and swap chain" );
-				}
-			}
-
-			// create a render target view
-			hr = dx.swapChain->GetBuffer( 0, __uuidof( ID3D10Texture2D ), ( LPVOID * ) &backBuffer );
-
-			if ( FAILED( hr ) )
-			{
-				ri.Error( ERR_FATAL, "R_Init: Failed to get a D3D10 back buffer" );
-			}
-
-			hr = dx.d3dDevice->CreateRenderTargetView( backBuffer, NULL, &dx.renderTargetView );
-			backBuffer->Release();
-
-			if ( FAILED( hr ) )
-			{
-				ri.Error( ERR_FATAL, "R_Init: Failed to create a D3D10 render target view" );
-			}
-
-			dx.d3dDevice->OMSetRenderTargets( 1, &dx.renderTargetView, NULL );
-
-			// TODO move this to renderer backend
-
-			// setup the viewport
-			D3D10_VIEWPORT vp;
-			vp.Width = glConfig.vidWidth;
-			vp.Height = glConfig.vidHeight;
-			vp.MinDepth = 0.0f;
-			vp.MaxDepth = 1.0f;
-			vp.TopLeftX = 0;
-			vp.TopLeftY = 0;
-			dx.d3dDevice->RSSetViewports( 1, &vp );
-
-#if 0
-			// create the effect
-			DWORD dwShaderFlags = D3D10_SHADER_ENABLE_STRICTNESS;
-#if defined( DEBUG ) || !defined( NDEBUG )
-			// Set the D3D10_SHADER_DEBUG flag to embed debug information in the shaders.
-			// Setting this flag improves the shader debugging experience, but still allows
-			// the shaders to be optimized and to run exactly the way they will run in
-			// the release configuration of this program.
-			dwShaderFlags |= D3D10_SHADER_DEBUG;
-#endif
-
-			byte *effectBuffer;
-			int  effectBufferLen;
-
-			effectBufferLen = ri.FS_ReadFile( "shaders/Generic.fx", ( void ** ) &effectBuffer );
-
-			if ( effectBufferLen == 0 )
-			{
-				ri.Error( ERR_FATAL, "The FX file cannot be located.  Please run this executable from the directory that contains the FX file." );
-			}
-
-			hr = D3DX10CreateEffectFromMemory( effectBuffer, effectBufferLen, "shaders/Generic.fx", NULL, NULL, "fx_4_0", dwShaderFlags, 0,
-			                                   dx.d3dDevice, NULL, NULL, &dx.genericEffect, NULL, NULL );
-
-			if ( FAILED( hr ) )
-			{
-				ri.Error( ERR_FATAL, "D3DX10CreateEffect failed %i", hr );
-			}
-
-			// obtain the technique
-			dx.genericTechnique = dx.genericEffect->GetTechniqueByName( "Render" );
-
-			// define the input layout
-			D3D10_INPUT_ELEMENT_DESC layout[] =
-			{
-				{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D10_INPUT_PER_VERTEX_DATA, 0 },
-			};
-			UINT                     numElements = ARRAY_LEN( layout );
-
-			// create the input layout
-			D3D10_PASS_DESC          PassDesc;
-			dx.genericTechnique->GetPassByIndex( 0 )->GetDesc( &PassDesc );
-
-			hr = dx.d3dDevice->CreateInputLayout( layout, numElements, PassDesc.pIAInputSignature,
-			                                      PassDesc.IAInputSignatureSize, &dx.vertexLayout );
-
-			if ( FAILED( hr ) )
-			{
-				ri.Error( ERR_FATAL, "R_Init: Failed to create a D3D10 input layout" );
-			}
-
-			// set the input layout
-			dx.d3dDevice->IASetInputLayout( dx.vertexLayout );
-
-			// create vertex buffer
-			D3DXVECTOR3       vertices[] =
-			{
-				D3DXVECTOR3( 0.0f,  0.5f,  0.5f ),
-				D3DXVECTOR3( 0.5f,  -0.5f, 0.5f ),
-				D3DXVECTOR3( -0.5f, -0.5f, 0.5f ),
-			};
-			D3D10_BUFFER_DESC bd;
-			bd.Usage = D3D10_USAGE_DEFAULT;
-			bd.ByteWidth = sizeof( D3DXVECTOR3 ) * 3;
-			bd.BindFlags = D3D10_BIND_VERTEX_BUFFER;
-			bd.CPUAccessFlags = 0;
-			bd.MiscFlags = 0;
-			D3D10_SUBRESOURCE_DATA InitData;
-			InitData.pSysMem = vertices;
-			hr = dx.d3dDevice->CreateBuffer( &bd, &InitData, &dx.vertexBuffer );
-
-			if ( FAILED( hr ) )
-			{
-				ri.Error( ERR_FATAL, "R_Init: Failed to create a D3D10 input layout" );
-			}
-
-			// set vertex buffer
-			UINT stride = sizeof( D3DXVECTOR3 );
-			UINT offset = 0;
-			dx.d3dDevice->IASetVertexBuffers( 0, 1, &dx.vertexBuffer, &stride, &offset );
-
-			// set primitive topology
-			dx.d3dDevice->IASetPrimitiveTopology( D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
-#endif
-
-			ri.Printf( PRINT_ALL, "------------------------------------\n" );
-		}
-
-		// init command buffers and SMP
-		R_InitCommandBuffers();
-
-		// print info
-		GfxInfo_f();
-
-		// set default state
-		//D3D10_SetDefaultState();
-#else
-
 		if ( !InitOpenGL() )
 		{
 			return qfalse;
@@ -2068,8 +1803,6 @@ extern "C" {
 
 #if !defined( GLSL_COMPILE_STARTUP_ONLY )
 		GLSL_InitGPUShaders();
-#endif
-
 #endif
 
 		backEndData[ 0 ] = ( backEndData_t * ) ri.Hunk_Alloc( sizeof( *backEndData[ 0 ] ), h_low );
@@ -2236,29 +1969,6 @@ extern "C" {
 
 			GLimp_Shutdown();
 			ri.Tag_Free();
-#if defined( USE_D3D10 )
-
-			if ( dx.d3dDevice )
-			{
-				dx.d3dDevice->ClearState();
-			}
-
-			if ( dx.renderTargetView )
-			{
-				dx.renderTargetView->Release();
-			}
-
-			if ( dx.swapChain )
-			{
-				dx.swapChain->Release();
-			}
-
-			if ( dx.d3dDevice )
-			{
-				dx.d3dDevice->Release();
-			}
-
-#endif
 		}
 
 		tr.registered = qfalse;
@@ -2281,7 +1991,10 @@ extern "C" {
 		   RB_ShowImages();
 		   }
 		 */
-		GLSL_FinishGPUShaders();
+		if ( r_lazyShaders->integer == 1 )
+		{
+			GLSL_FinishGPUShaders();
+		}
 	}
 
 	static void RE_PurgeCache( void )
@@ -2371,6 +2084,8 @@ extern "C" {
 
 		re.DrawRotatedPic = RE_RotatedPic;
 		re.Add2dPolys = RE_2DPolyies;
+		re.ScissorEnable = RE_ScissorEnable;
+		re.ScissorSet = RE_ScissorSet;
 		re.DrawStretchPicGradient = RE_StretchPicGradient;
 
 		re.Glyph = RE_Glyph;
@@ -2446,6 +2161,8 @@ extern "C" {
 		re.UnregisterVisTest = RE_UnregisterVisTest;
 
 		re.SetColorGrading = RE_SetColorGrading;
+
+		re.SetAltShaderTokens = R_SetAltShaderTokens;
 
 		return &re;
 	}

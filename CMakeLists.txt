@@ -26,12 +26,15 @@ if( WIN32 OR MSVC OR CMAKE_SYSTEM_PROCESSOR MATCHES "i.86" OR CMAKE_SYSTEM_PROCE
   set( X86 1 )
 endif()
 
+set( MOUNT_DIR ${CMAKE_SOURCE_DIR}/src )
+set( OBJ_DIR ${CMAKE_BINARY_DIR}/CMakeFiles )
+
 # Check if this is first run and if so set some default flags
 if( NOT DEFINED SUBSEQUENT_RUN )
   set( SUBSEQUENT_RUN 1 CACHE INTERNAL "True if not first run" )
 
   if( MSVC )
-    set( CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /arch:SSE /fp:precise /Oy" CACHE STRING "Flags used by the compiler during release builds" FORCE )
+    set( CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /arch:SSE /fp:fast /Oy" CACHE STRING "Flags used by the compiler during release builds" FORCE )
   else()
     if(NOT MINIMAL_FLAGS)
       # "gcc -msse2" fails on non-x86
@@ -40,11 +43,33 @@ if( NOT DEFINED SUBSEQUENT_RUN )
       else()
         set( CMAKE_USE_SSE2 "" )
       endif()
+
+      macro( try_compiler_option COMPILER_ID COMPILER_VERSION PROP FLAG_TRUE FLAG_FALSE )
+        if( COMPILER_ID STREQUAL "" OR ( CMAKE_C_COMPILER_ID STREQUAL "${COMPILER_ID}" AND NOT ( CMAKE_C_COMPILER_VERSION VERSION_LESS "${COMPILER_VERSION}" ) ) )
+          set( SAVED_FLAGS "${CMAKE_C_FLAGS}" )
+          set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${FLAG_TRUE}" )
+          try_compile( ${PROP}_TEST ${MOUNT_DIR}/tests ${MOUNT_DIR}/tests/test.c
+                       CMAKE_FLAGS "-DCMAKE_C_FLAGS=${CMAKE_C_FLAGS}" )
+          set( CMAKE_C_FLAGS "${SAVED_FLAGS}" )
+          if( ${PROP}_TEST )
+            message( STATUS "Using flag ${FLAG_TRUE}" )
+            set( ${PROP} ${FLAG_TRUE} )
+          else()
+            set( ${PROP} ${FLAG_FALSE} )
+          endif()
+        else()
+          set( ${PROP} ${FLAG_FALSE} )
+        endif()
+      endmacro()
+
+      try_compiler_option( GNU   0.0 DEBUG_SYMBOLS_LEVEL -g3 -g  ) # gcc: macro expansion etc. in gdb
+      try_compiler_option( GNU   4.8 DEBUG_OPTIMISE      -Og ""  ) # gcc 4.8: optimisation level for debug builds
+
       set( CMAKE_C_FLAGS "${CMAKE_USE_SSE2} -pipe" CACHE STRING "Flags used by the compiler during all build types" FORCE )
-      set( CMAKE_C_FLAGS_DEBUG "-g" CACHE STRING "Flags used by the compiler during debug builds." FORCE )
+      set( CMAKE_C_FLAGS_DEBUG "${DEBUG_OPTIMISE} ${DEBUG_SYMBOLS_LEVEL}" CACHE STRING "Flags used by the compiler during debug builds." FORCE )
       set( CMAKE_C_FLAGS_MINSIZEREL "-DNDEBUG -Os" CACHE STRING "Flags used by the compiler during release minsize builds." FORCE )
       set( CMAKE_C_FLAGS_RELEASE "-DNDEBUG -O3 -ffast-math -fomit-frame-pointer -fno-strict-aliasing" CACHE STRING "Flags used by the compiler during release builds" FORCE )
-      set( CMAKE_C_FLAGS_RELWITHDEBINFO "-DNDEBUG -O3 -ffast-math -fomit-frame-pointer -fno-strict-aliasing -g" CACHE STRING "Flags used by the compiler during Release with Debug Info builds." FORCE )
+      set( CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELEASE} -g" CACHE STRING "Flags used by the compiler during Release with Debug Info builds." FORCE )
     else(NOT MINIMAL_FLAGS)
       set( CMAKE_C_FLAGS_DEBUG "" )
       set( CMAKE_C_FLAGS_RELEASE "-DNDEBUG" )
@@ -130,16 +155,15 @@ if( GAME_LIB_LLVM )
 
   include( ${CMAKE_SOURCE_DIR}/cmake/CMakeLLVMInformation.cmake )
   include( ${CMAKE_SOURCE_DIR}/cmake/CMakeLLVMXXInformation.cmake )
-  file( WRITE ${Daemon_BINARY_DIR}/CMakeFiles/CMakeLLVMCompiler.cmake )
-  file( WRITE ${Daemon_BINARY_DIR}/CMakeFiles/CMakeLLVMXXCompiler.cmake )
+  file( WRITE ${OBJ_DIR}/CMakeLLVMCompiler.cmake )
+  file( WRITE ${OBJ_DIR}/CMakeLLVMXXCompiler.cmake )
   enable_language( LLVM )
   enable_language( LLVMXX )
   message( STATUS "Using LLVM" )
 endif()
 
-set( MOUNT_DIR ${CMAKE_SOURCE_DIR}/src )
-set( GPP_DIR ${CMAKE_SOURCE_DIR}/src/gamelogic )
-set( LIB_DIR ${CMAKE_SOURCE_DIR}/src/libs ) # LIB_DIR is also defined in Visual_Studio32/64.cmake
+set( GPP_DIR ${MOUNT_DIR}/gamelogic )
+set( LIB_DIR ${MOUNT_DIR}/libs ) # LIB_DIR is also defined in Visual_Studio32/64.cmake
 set( SDL_DIR ${LIB_DIR}/libsdl )
 set( JPEG_DIR ${LIB_DIR}/jpeg )
 set( GLEW_DIR ${LIB_DIR}/glew )
@@ -205,7 +229,7 @@ if( USE_GIT_DESCRIBE )
   if( EXISTS "${CMAKE_SOURCE_DIR}/.git" )
     find_package( Git )
     if( GIT_FOUND )
-      execute_process( COMMAND git describe --tags --long --dirty=+dirty OUTPUT_VARIABLE GIT_DESCRIBE_REPORT OUTPUT_STRIP_TRAILING_WHITESPACE )
+      execute_process( COMMAND git describe --tags --long --match v* --dirty=+dirty OUTPUT_VARIABLE GIT_DESCRIBE_REPORT OUTPUT_STRIP_TRAILING_WHITESPACE )
       message( STATUS "git reported ${GIT_DESCRIBE_REPORT}" )
       # this may fail with annotated non-release tags
       if( GIT_DESCRIBE_REPORT MATCHES "-0-g.......$" )
@@ -220,38 +244,38 @@ if( USE_GIT_DESCRIBE )
   set( GIT_DESCRIBE ${GIT_DESCRIBE_REPORT} CACHE INTERNAL "commit id reported by Git" FORCE )
 endif()
 
-if( EXISTS "${CMAKE_BINARY_DIR}/CMakeFiles/revision.h" )
-  file( READ "${CMAKE_BINARY_DIR}/CMakeFiles/revision.h" ACTUAL_REVISION_H_CONTENTS )
+if( EXISTS "${OBJ_DIR}/revision.h" )
+  file( READ "${OBJ_DIR}/revision.h" ACTUAL_REVISION_H_CONTENTS )
   if( NOT "${ACTUAL_REVISION_H_CONTENTS}" STREQUAL "${DESIRED_REVISION_H_CONTENTS}" )
-    file( WRITE "${CMAKE_BINARY_DIR}/CMakeFiles/revision.h" "${DESIRED_REVISION_H_CONTENTS}" )
+    file( WRITE "${OBJ_DIR}/revision.h" "${DESIRED_REVISION_H_CONTENTS}" )
   endif()
 else()
-  file( WRITE "${CMAKE_BINARY_DIR}/CMakeFiles/revision.h" "${DESIRED_REVISION_H_CONTENTS}" )
+  file( WRITE "${OBJ_DIR}/revision.h" "${DESIRED_REVISION_H_CONTENTS}" )
 endif()
 
-include_directories( "${CMAKE_BINARY_DIR}/CMakeFiles" )
+include_directories( "${OBJ_DIR}" )
 
 # Import CMakeLists.txt for internal libraries
 if( USE_INTERNAL_SDL )
-  add_subdirectory( ${SDL_DIR} )
+  add_subdirectory( ${SDL_DIR} ${OBJ_DIR}/libsdl )
   set( SDL_LIBRARY INTERNAL_SDL INTERNAL_SDLMain CACHE STRING "SDL library" FORCE )
   set( SDL_INCLUDE_DIR ${SDL_DIR}/include CACHE STRING "SDL include directory" FORCE )
 endif()
 
 if( USE_INTERNAL_JPEG )
-  add_subdirectory( ${JPEG_DIR} )
+  add_subdirectory( ${JPEG_DIR} ${OBJ_DIR}/libjpeg )
   set( JPEG_LIBRARY INTERNAL_JPEG CACHE STRING "JPEG library" FORCE )
   set( JPEG_INCLUDE_DIR ${JPEG_DIR} CACHE STRING "JPEG include directory" FORCE )
 endif()
 
 if( USE_INTERNAL_GLEW )
-  add_subdirectory( ${GLEW_DIR} )
+  add_subdirectory( ${GLEW_DIR} ${OBJ_DIR}/libglew )
   set( GLEW_LIBRARY INTERNAL_GLEW CACHE STRING "Glew library" FORCE )
   set( GLEW_INCLUDE_DIR ${GLEW_DIR}/include CACHE STRING "Glew include directory" FORCE )
 endif()
 
 if( USE_INTERNAL_WEBP )
-  add_subdirectory( ${WEBP_DIR} )
+  add_subdirectory( ${WEBP_DIR} ${OBJ_DIR}/libwebp )
   set( WEBP_LIBRARY INTERNAL_WEBP CACHE STRING "WebP library" FORCE )
   set( WEBP_INCLUDE_DIR ${WEBP_DIR} CACHE STRING "WebP include directory" FORCE )
 endif()
@@ -260,7 +284,7 @@ endif()
 set( CPACK_PACKAGE_FILE_NAME "Unvanquished" )
 set( CPACK_PACKAGE_ICON "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cpack/OS_X/Unvanquished.icns" )
 set( CPACK_PACKAGE_DESCRIPTION_SUMMARY "Daemon Unvanquished client" )
-set( CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.txt" )
+set( CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.md" )
 set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/GPL.txt" )
 # Mac OS X Bundle specific settings
 set( CPACK_BUNDLE_NAME ${CPACK_PACKAGE_FILE_NAME} )
@@ -409,10 +433,23 @@ endif(NOT MINIMAL_FLAGS)
 # Define Build Files #
 ######################
 
-set( SHAREDLIST
+set( SHAREDLIST_C
   ${MOUNT_DIR}/engine/qcommon/q_shared.c
   ${MOUNT_DIR}/engine/qcommon/q_unicode.c
   ${MOUNT_DIR}/engine/qcommon/q_math.c
+)
+
+set ( SHAREDLIST_H
+  ${MOUNT_DIR}/engine/qcommon/q_shared.h
+  ${MOUNT_DIR}/engine/qcommon/q_platform.h
+  ${MOUNT_DIR}/engine/qcommon/q_unicode.h
+  ${MOUNT_DIR}/engine/qcommon/unicode_data.h
+  ${MOUNT_DIR}/engine/qcommon/logging.h
+)
+
+set ( SHAREDLIST
+  ${SHAREDLIST_C}
+  ${SHAREDLIST_H}
 )
 
 set( OPENEXRLIST
@@ -449,6 +486,12 @@ set( RENDERERLIST
   ${MOUNT_DIR}/engine/renderer/tr_sky.c
   ${MOUNT_DIR}/engine/renderer/tr_surface.c
   ${MOUNT_DIR}/engine/renderer/tr_world.c
+  ${MOUNT_DIR}/engine/renderer/tr_local.h
+  ${MOUNT_DIR}/engine/renderer/tr_types.h
+  ${MOUNT_DIR}/engine/renderer/tr_public.h
+  ${MOUNT_DIR}/engine/renderer/tr_bonematrix.h
+  ${MOUNT_DIR}/engine/renderer/tr_bonematrix.c
+  ${MOUNT_DIR}/engine/renderer/anorms256.h
 )
 
 set( RENDERERGLLIST
@@ -495,6 +538,13 @@ set( RENDERERGLLIST
   ${MOUNT_DIR}/engine/rendererGL/tr_vbo.c
   ${MOUNT_DIR}/engine/rendererGL/tr_world.cpp
   ${MOUNT_DIR}/engine/qcommon/md4.c
+  ${MOUNT_DIR}/engine/rendererGL/tr_local.h
+  ${MOUNT_DIR}/engine/renderer/tr_public.h
+  ${MOUNT_DIR}/engine/renderer/tr_bonematrix.h
+  ${MOUNT_DIR}/engine/renderer/tr_bonematrix.c
+  ${MOUNT_DIR}/engine/rendererGL/gl_shader.h
+  ${MOUNT_DIR}/engine/rendererGL/tr_image.h
+  ${MOUNT_DIR}/engine/rendererGL/tr_model_skel.h
 )
 
 set( SERVERLIST
@@ -507,6 +557,9 @@ set( SERVERLIST
   ${MOUNT_DIR}/engine/server/sv_net_chan.c
   ${MOUNT_DIR}/engine/server/sv_snapshot.c
   ${MOUNT_DIR}/engine/server/sv_world.c
+  ${MOUNT_DIR}/engine/server/server.h
+  ${MOUNT_DIR}/engine/server/g_api.h
+  ${MOUNT_DIR}/engine/qcommon/print_translated.h
 )
 
 set( QCOMMON_ARCH "" )
@@ -523,14 +576,23 @@ set( QCOMMONLIST
   ${MOUNT_DIR}/engine/qcommon/cm_polylib.c
   ${MOUNT_DIR}/engine/qcommon/cm_test.c
   ${MOUNT_DIR}/engine/qcommon/cm_trace.c
+  ${MOUNT_DIR}/engine/qcommon/cm_local.h
+  ${MOUNT_DIR}/engine/qcommon/cm_patch.h
+  ${MOUNT_DIR}/engine/qcommon/cm_polylib.h
+  ${MOUNT_DIR}/engine/qcommon/cm_public.h
   ${MOUNT_DIR}/engine/qcommon/cmd.c
   ${MOUNT_DIR}/engine/qcommon/common.c
   ${MOUNT_DIR}/engine/qcommon/crypto.c
+  ${MOUNT_DIR}/engine/qcommon/crypto.h
   ${MOUNT_DIR}/engine/qcommon/cvar.c
+  ${MOUNT_DIR}/engine/qcommon/cvar.h
   ${MOUNT_DIR}/engine/qcommon/files.c
+  ${MOUNT_DIR}/engine/qcommon/qfiles.h
   ${MOUNT_DIR}/engine/qcommon/htable.c
+  ${MOUNT_DIR}/engine/qcommon/htable.h
   ${MOUNT_DIR}/engine/qcommon/huffman.c
   ${MOUNT_DIR}/engine/qcommon/md4.c
+  ${MOUNT_DIR}/engine/qcommon/md4.h
   ${MOUNT_DIR}/engine/qcommon/md5.c
   ${MOUNT_DIR}/engine/qcommon/msg.c
   ${MOUNT_DIR}/engine/qcommon/net_chan.c
@@ -538,9 +600,14 @@ set( QCOMMONLIST
   ${MOUNT_DIR}/engine/qcommon/parse.c
   ${MOUNT_DIR}/engine/qcommon/translation.cpp
   ${MOUNT_DIR}/engine/qcommon/unzip.c
+  ${MOUNT_DIR}/engine/qcommon/unzip.h
   ${MOUNT_DIR}/engine/qcommon/ioapi.c
   ${MOUNT_DIR}/engine/qcommon/vm.c
+  ${MOUNT_DIR}/engine/qcommon/vm_local.h
+  ${MOUNT_DIR}/engine/qcommon/vm_traps.h
   ${MOUNT_DIR}/engine/qcommon/vm_interpreted.c
+  ${MOUNT_DIR}/engine/qcommon/qcommon.h
+  ${MOUNT_DIR}/engine/qcommon/surfaceflags.h
   ${QCOMMON_ARCH}
 )
 
@@ -567,7 +634,7 @@ elseif( BUILD_ARCH STREQUAL "i386" OR BUILD_ARCH STREQUAL "x32" OR BUILD_ARCH ST
 endif()
 
 if( GAME_LIB_LLVM )
-  set( QCOMMONLIST ${QCOMMONLIST} ${MOUNT_DIR}/engine/qcommon/vm_llvm.cpp )
+  set( QCOMMONLIST ${QCOMMONLIST} ${MOUNT_DIR}/engine/qcommon/vm_llvm.cpp ${MOUNT_DIR}/engine/qcommon/vm_llvm.h )
 endif()
 
 if( USE_PHYSICS )
@@ -575,6 +642,9 @@ if( USE_PHYSICS )
 endif()
 
 set( CLIENTLIST
+  ${MOUNT_DIR}/engine/client/cg_api.h
+  ${MOUNT_DIR}/engine/client/ui_api.h
+  ${MOUNT_DIR}/engine/client/client.h	
   ${MOUNT_DIR}/engine/client/cin_ogm.c
   ${MOUNT_DIR}/engine/client/cl_avi.c
   ${MOUNT_DIR}/engine/client/cl_cgame.c
@@ -583,6 +653,8 @@ set( CLIENTLIST
   ${MOUNT_DIR}/engine/client/cl_input.c
   ${MOUNT_DIR}/engine/client/cl_irc.c
   ${MOUNT_DIR}/engine/client/cl_keys.c
+  ${MOUNT_DIR}/engine/client/keycodes.h
+  ${MOUNT_DIR}/engine/client/keys.h
   ${MOUNT_DIR}/engine/client/cl_main.c
   ${MOUNT_DIR}/engine/client/cl_net_chan.c
   ${MOUNT_DIR}/engine/client/cl_parse.c
@@ -591,6 +663,9 @@ set( CLIENTLIST
   ${MOUNT_DIR}/engine/client/cl_logs.c
   ${MOUNT_DIR}/engine/client/snd_adpcm.c
   ${MOUNT_DIR}/engine/client/snd_codec.c
+  ${MOUNT_DIR}/engine/client/snd_codec.h
+  ${MOUNT_DIR}/engine/client/snd_local.h
+  ${MOUNT_DIR}/engine/client/snd_public.h
   ${MOUNT_DIR}/engine/client/snd_codec_ogg.c
   ${MOUNT_DIR}/engine/client/snd_codec_wav.c
   ${MOUNT_DIR}/engine/client/snd_dma.c
@@ -600,10 +675,11 @@ set( CLIENTLIST
   ${MOUNT_DIR}/engine/client/snd_mix.c
   ${MOUNT_DIR}/engine/client/snd_wavelet.c
   ${MOUNT_DIR}/engine/client/qal.c
+  ${MOUNT_DIR}/engine/client/qal.h
 )
 
 if( USE_MUMBLE )
-  set( CLIENTLIST ${CLIENTLIST} ${MOUNT_DIR}/engine/client/libmumblelink.c )
+  set( CLIENTLIST ${CLIENTLIST} ${MOUNT_DIR}/engine/client/libmumblelink.c ${MOUNT_DIR}/engine/client/libmumblelink.h )
 endif()
 
 if( USE_CPUINFO )
@@ -620,6 +696,7 @@ if( ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
     ${MOUNT_DIR}/engine/sys/sys_main.c
     ${MOUNT_DIR}/engine/sys/con_log.c
     ${MOUNT_DIR}/engine/sys/con_${CONSOLE}.c
+	${MOUNT_DIR}/engine/sys/sys_local.h
   )
 else()
   set( SDLBASELIST
@@ -627,7 +704,12 @@ else()
     ${MOUNT_DIR}/engine/sys/sys_main.c
     ${MOUNT_DIR}/engine/sys/con_log.c
     ${MOUNT_DIR}/engine/sys/con_${CONSOLE}.c
+	${MOUNT_DIR}/engine/sys/sys_local.h
   )
+endif()
+
+if ( WINDOWS )
+	set( SDLBASELIST ${SDLBASELIST} ${MOUNT_DIR}/engine/sys/sys_win32.h )
 endif()
 
 # Append Visual Studio specific files to SDLBASELIST
@@ -668,6 +750,7 @@ set( CGAMEGPP_BASE
   ${GPP_DIR}/cgame/cg_ents.c
   ${GPP_DIR}/cgame/cg_event.c
   ${GPP_DIR}/cgame/cg_marks.c
+  ${GPP_DIR}/cgame/cg_minimap.c
   ${GPP_DIR}/cgame/cg_players.c
   ${GPP_DIR}/cgame/cg_playerstate.c
   ${GPP_DIR}/cgame/cg_predict.c
@@ -683,13 +766,16 @@ set( CGAMEGPP_BASE
   ${GPP_DIR}/cgame/cg_utils.c
   ${GPP_DIR}/ui/ui_shared.c
   ${GPP_DIR}/ui/ui_utf8.c
-  ${SHAREDLIST}
+  ${SHAREDLIST_C}
 )
 
 set( CGAMEGPP_SO
   ${CGAMEGPP_BASE}
+  ${SHAREDLIST_H}
   ${GPP_DIR}/cgame/cg_api.c
   ${GPP_DIR}/cgame/cgame.def
+  ${MOUNT_DIR}/engine/client/cg_api.h
+  ${MOUNT_DIR}/engine/qcommon/print_translated.h
 )
 
 set( CGAMEGPP_QVM
@@ -732,13 +818,15 @@ set( GAMEGPP_BASE
   ${GPP_DIR}/game/g_weapon.c
   ${GPP_DIR}/game/g_admin.c
   ${GPP_DIR}/game/g_namelog.c
-  ${SHAREDLIST}
+  ${SHAREDLIST_C}
 )
 
 set( GAMEGPP_SO
   ${GAMEGPP_BASE}
+  ${SHAREDLIST_H}
   ${GPP_DIR}/game/g_api.c
   ${GPP_DIR}/game/game.def
+  ${MOUNT_DIR}/engine/server/g_api.h
 )
 
 set( GAMEGPP_QVM
@@ -755,13 +843,15 @@ set( UIGPP_BASE
   ${GPP_DIR}/game/bg_lib.c
   ${GPP_DIR}/game/bg_alloc.c
   ${GPP_DIR}/ui/ui_utf8.c
-  ${SHAREDLIST}
+  ${SHAREDLIST_C}
 )
 
 set( UIGPP_SO
   ${UIGPP_BASE}
+  ${SHAREDLIST_H}
   ${GPP_DIR}/ui/ui_api.c
   ${GPP_DIR}/ui/ui.def
+  ${MOUNT_DIR}/engine/client/ui_api.h
 )
 
 set( UIGPP_QVM
@@ -963,7 +1053,7 @@ set( Q3RCC_LIST
   ${MOUNT_DIR}/tools/lcc/src/trace.c
   ${MOUNT_DIR}/tools/lcc/src/tree.c
   ${MOUNT_DIR}/tools/lcc/src/types.c
-  ${CMAKE_BINARY_DIR}/CMakeFiles/dagcheck.c
+  ${OBJ_DIR}/dagcheck.c
 )
 
 set( Q3CPP_LIST
@@ -1148,7 +1238,7 @@ function( GAMELIB )
   endif()
 
   if( GAME_QVM AND GAMELIB_QVM_FILES )
-    set( QVM_DIR ${CMAKE_BINARY_DIR}/CMakeFiles/${GAMELIB_LIB_NAME}-qvm.dir )
+    set( QVM_DIR ${OBJ_DIR}/${GAMELIB_LIB_NAME}-qvm.dir )
     set( QVM_CPP_OPTIONS
       -I"${MOUNT_DIR}/gamelogic/game"
       -I"${MOUNT_DIR}/engine/qcommon"
@@ -1277,14 +1367,14 @@ if( BUILD_OLD_RENDERER )
   find_package( PNG REQUIRED )
   find_package( Freetype REQUIRED )
   find_package( GLEW REQUIRED )
-
-  include_directories( ${PNG_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS} ${SDL_INCLUDE_DIR} )
-  target_link_libraries( renderer ${PNG_LIBRARIES} ${SDL_LIBRARY} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} ${JPEG_LIBRARIES} ${FREETYPE_LIBRARIES} )
-
   find_package( WebP REQUIRED )
-  set_property( TARGET renderer APPEND PROPERTY COMPILE_DEFINITIONS )
-  include_directories( ${WEBP_INCLUDE_DIRS} )
-  target_link_libraries( renderer ${WEBP_LIBRARIES} )
+  
+  if( UNIX )
+    find_package( X11 )
+  endif()
+
+  include_directories( ${PNG_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS} ${SDL_INCLUDE_DIR} ${X11_INCLUDE_DIR} ${WEBP_INCLUDE_DIRS} )
+  target_link_libraries( renderer ${PNG_LIBRARIES} ${SDL_LIBRARY} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} ${JPEG_LIBRARIES} ${FREETYPE_LIBRARIES} ${WEBP_LIBRARIES} )
 
   # This section finds and provides OPTIONAL dependencies to target renderer
 endif()
@@ -1314,14 +1404,14 @@ if( BUILD_NEW_RENDERER )
   find_package( PNG REQUIRED )
   find_package( Freetype REQUIRED )
   find_package( GLEW REQUIRED )
-
-  include_directories( ${PNG_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS} ${SDL_INCLUDE_DIR} )
-  target_link_libraries( rendererGL ${PNG_LIBRARIES} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} ${JPEG_LIBRARIES} ${FREETYPE_LIBRARIES} ${SDL_LIBRARY} )
-
   find_package( WebP REQUIRED )
-  set_property( TARGET rendererGL APPEND PROPERTY COMPILE_DEFINITIONS )
-  include_directories( ${WEBP_INCLUDE_DIRS} )
-  target_link_libraries( rendererGL ${WEBP_LIBRARIES} )
+
+  if( UNIX )
+    find_package( X11 )
+  endif()
+
+  include_directories( ${PNG_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS} ${SDL_INCLUDE_DIR} ${X11_INCLUDE_DIR} ${WEBP_INCLUDE_DIRS} )
+  target_link_libraries( rendererGL ${PNG_LIBRARIES} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} ${JPEG_LIBRARIES} ${FREETYPE_LIBRARIES} ${SDL_LIBRARY} ${WEBP_LIBRARIES} )
 
   # This section finds and provides OPTIONAL dependencies to target rendererGL
   if( USE_GLSL_OPTIMIZER )
@@ -1336,7 +1426,7 @@ endif()
 ########################
 
 if( USE_GLSL_OPTIMIZER )
-  add_subdirectory( ${LIB_DIR}/glsl-optimizer )
+  add_subdirectory( ${LIB_DIR}/glsl-optimizer ${OBJ_DIR}/glsl )
 endif()
 
 ###############

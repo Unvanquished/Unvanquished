@@ -256,22 +256,19 @@ gentity_t *G_SelectUnvanquishedSpawnPoint( team_t team, vec3_t preference, vec3_
 {
 	gentity_t *spot = NULL;
 
+	/* team must exist, or there will be a sigsegv */
+	assert(team == TEAM_HUMANS || team == TEAM_ALIENS);
+	if( level.team[ team ].numSpawns <= 0 )
+	{
+		return NULL;
+	}
+
 	if ( team == TEAM_ALIENS )
 	{
-		if ( level.numAlienSpawns <= 0 )
-		{
-			return NULL;
-		}
-
 		spot = G_SelectSpawnBuildable( preference, BA_A_SPAWN );
 	}
 	else if ( team == TEAM_HUMANS )
 	{
-		if ( level.numHumanSpawns <= 0 )
-		{
-			return NULL;
-		}
-
 		spot = G_SelectSpawnBuildable( preference, BA_H_SPAWN );
 	}
 
@@ -316,40 +313,39 @@ static gentity_t *G_SelectSpectatorSpawnPoint( vec3_t origin, vec3_t angles )
 ===========
 G_SelectAlienLockSpawnPoint
 
-Try to find a spawn point for alien intermission otherwise
-use spectator intermission spawn.
-============
+Historical wrapper which should be removed. See G_SelectLockSpawnPoint.
+===========
 */
 gentity_t *G_SelectAlienLockSpawnPoint( vec3_t origin, vec3_t angles )
 {
-	gentity_t *spot;
-
-	spot = G_PickRandomEntityOfClass( S_POS_ALIEN_INTERMISSION );
-
-	if ( !spot )
-	{
-		return G_SelectSpectatorSpawnPoint( origin, angles );
-	}
-
-	VectorCopy( spot->s.origin, origin );
-	VectorCopy( spot->s.angles, angles );
-
-	return spot;
+	return G_SelectLockSpawnPoint(origin, angles, S_POS_ALIEN_INTERMISSION );
 }
 
 /*
 ===========
 G_SelectHumanLockSpawnPoint
 
-Try to find a spawn point for human intermission otherwise
-use spectator intermission spawn.
-============
+Historical wrapper which should be removed. See G_SelectLockSpawnPoint.
+===========
 */
 gentity_t *G_SelectHumanLockSpawnPoint( vec3_t origin, vec3_t angles )
 {
+	return G_SelectLockSpawnPoint(origin, angles, S_POS_HUMAN_INTERMISSION );
+}
+
+/*
+===========
+G_SelectLockSpawnPoint
+
+Try to find a spawn point for a team intermission otherwise
+use spectator intermission spawn.
+============
+*/
+gentity_t *G_SelectLockSpawnPoint( vec3_t origin, vec3_t angles , char const* intermission )
+{
 	gentity_t *spot;
 
-	spot = G_PickRandomEntityOfClass( S_POS_HUMAN_INTERMISSION );
+	spot = G_PickRandomEntityOfClass( intermission );
 
 	if ( !spot )
 	{
@@ -778,6 +774,21 @@ static void G_ClientCleanName( const char *in, char *out, int outSize, gclient_t
 			len += 2;
 			continue;
 		}
+		else if ( in[ 0 ] == '^' && !in[ 1 ] )
+		{
+			// single trailing ^ will mess up some things
+
+			// make sure room in dest for both chars
+			if ( len > outSize - 2 )
+			{
+				break;
+			}
+
+			*out++ = '^';
+			*out++ = '^';
+			len += 2;
+			continue;
+		}
 		else if ( !g_emoticonsAllowedInNames.integer && G_IsEmoticon( in, &escaped ) )
 		{
 			// make sure room in dest for both chars
@@ -854,6 +865,12 @@ static void G_ClientCleanName( const char *in, char *out, int outSize, gclient_t
 		invalid = qtrue;
 	}
 
+	// don't allow names beginning with digits
+	if ( *p >= '0' && *p <= '9' )
+	{
+		invalid = qtrue;
+	}
+
 	// limit no. of code points
 	if ( Q_UTF8_PrintStrlen( p ) > MAX_NAME_LENGTH_CP )
 	{
@@ -865,69 +882,6 @@ static void G_ClientCleanName( const char *in, char *out, int outSize, gclient_t
 	{
 		Q_strncpyz( p, G_UnnamedClientName( client ), outSize );
 	}
-}
-
-/*
-======================
-G_NonSegModel
-
-Reads an animation.cfg to check for nonsegmentation
-======================
-*/
-static qboolean G_NonSegModel( const char *filename )
-{
-	char         *text_p;
-	int          len;
-	char         *token;
-	char         text[ 20000 ];
-	fileHandle_t f;
-
-	// load the file
-	len = trap_FS_FOpenFile( filename, &f, FS_READ );
-
-	if ( !f )
-	{
-		G_Printf( "File not found: %s\n", filename );
-		return qfalse;
-	}
-
-	if ( len < 0 )
-	{
-		return qfalse;
-	}
-
-	if ( len == 0 || len >= sizeof( text ) - 1 )
-	{
-		trap_FS_FCloseFile( f );
-		G_Printf( "File %s is %s\n", filename, len == 0 ? "empty" : "too long" );
-		return qfalse;
-	}
-
-	trap_FS_Read( text, len, f );
-	text[ len ] = 0;
-	trap_FS_FCloseFile( f );
-
-	// parse the text
-	text_p = text;
-
-	// read optional parameters
-	while ( 1 )
-	{
-		token = COM_Parse( &text_p );
-
-		//EOF
-		if ( !token[ 0 ] )
-		{
-			break;
-		}
-
-		if ( !Q_stricmp( token, "nonsegmented" ) )
-		{
-			return qtrue;
-		}
-	}
-
-	return qfalse;
 }
 
 /*
@@ -947,7 +901,6 @@ char *ClientUserinfoChanged( int clientNum, qboolean forceName )
 	char      *s;
 	char      model[ MAX_QPATH ];
 	char      buffer[ MAX_QPATH ];
-	char      filename[ MAX_QPATH ];
 	char      oldname[ MAX_NAME_LENGTH ];
 	char      newname[ MAX_NAME_LENGTH ];
 	char      err[ MAX_STRING_CHARS ];
@@ -1066,11 +1019,7 @@ char *ClientUserinfoChanged( int clientNum, qboolean forceName )
 		Com_sprintf( buffer, MAX_QPATH, "%s/%s",  BG_ClassModelConfig( client->pers.classSelection )->modelName,
 		             BG_ClassModelConfig( client->pers.classSelection )->skinName );
 
-		//model segmentation
-		Com_sprintf( filename, sizeof( filename ), "models/players/%s/animation.cfg",
-		             BG_ClassModelConfig( client->pers.classSelection )->modelName );
-
-		if ( G_NonSegModel( filename ) )
+		if ( BG_ClassModelConfig( client->pers.classSelection )->segmented )
 		{
 			client->ps.persistant[ PERS_STATE ] |= PS_NONSEGMODEL;
 		}
@@ -1249,7 +1198,7 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 	{
 		return "Invalid pubkey key";
 	}
-	
+
 	trap_GenFingerprint( pubkey, sizeof( pubkey ), client->pers.guid, sizeof( client->pers.guid ) );
 
 	client->pers.admin = G_admin_admin( client->pers.guid );
@@ -1257,7 +1206,7 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 
 	if ( client->pers.admin )
 	{
-		trap_RealTime( &client->pers.admin->lastSeen );
+		trap_GMTime( &client->pers.admin->lastSeen );
 	}
 
 	// check for admin ban
@@ -1289,7 +1238,7 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 		{
 			continue;
 		}
-		
+
 		if ( !Q_stricmp( client->pers.guid, level.clients[ i ].pers.guid ) )
 		{
 			if ( !G_ClientIsLagging( level.clients + i ) )
@@ -1297,11 +1246,11 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 				trap_SendServerCommand( i, "cp \"Your GUID is not secure\"" );
 				return "Duplicate GUID";
 			}
-			
+
 			trap_DropClient( i, "Ghost" );
 		}
 	}
-	
+
 	client->pers.connected = CON_CONNECTING;
 
 	// read or initialize the session data
@@ -1348,6 +1297,26 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 
 /*
 ===========
+ClientAdminChallenge
+============
+*/
+void ClientAdminChallenge( int clientNum )
+{
+	gclient_t       *client = level.clients + clientNum;
+	g_admin_admin_t *admin = client->pers.admin;
+
+	if ( !client->pers.pubkey_authenticated && admin && admin->pubkey[ 0 ] && ( level.time - client->pers.pubkey_challengedAt ) >= 6000 )
+	{
+		trap_SendServerCommand( clientNum, va( "pubkey_decrypt %s", admin->msg2 ) );
+		client->pers.pubkey_challengedAt = level.time ^ ( 5 * clientNum ); // a small amount of jitter 
+
+		// copy the decrypted message because generating a new message will overwrite it
+		G_admin_writeconfig();
+	}
+}
+
+/*
+===========
 ClientBegin
 
 Called when a client has finished connecting, and is ready
@@ -1360,14 +1329,11 @@ void ClientBegin( int clientNum )
 	gentity_t       *ent;
 	gclient_t       *client;
 	int             flags;
-	g_admin_admin_t *admin;
 	char            startMsg[ MAX_STRING_CHARS ];
 
 	ent = g_entities + clientNum;
 
 	client = level.clients + clientNum;
-
-	admin = client->pers.admin;
 
 	// ignore if client already entered the game
 	if ( client->pers.connected != CON_CONNECTING )
@@ -1388,12 +1354,7 @@ void ClientBegin( int clientNum )
 	client->pers.connected = CON_CONNECTED;
 	client->pers.enterTime = level.time;
 
-	if ( !client->pers.pubkey_authenticated && admin && admin->pubkey[ 0 ] )
-	{
-		trap_SendServerCommand( ent - g_entities, va( "pubkey_decrypt %s", admin->msg2 ) );
-		// copy the decrypted message because generating a new message will overwrite it
-		G_admin_writeconfig();
-	}
+	ClientAdminChallenge( clientNum );
 
 	// save eflags around this, because changing teams will
 	// cause this to happen with a valid entity, and we
@@ -1428,6 +1389,25 @@ void ClientBegin( int clientNum )
 	if ( !client->pers.admin )
 	{
 		G_ListCommands( ent );
+	}
+
+	// display the help menu, if connecting the first time
+	if ( !client->sess.seenWelcome )
+	{
+		client->sess.seenWelcome = 1;
+
+		// 0 - don't show
+		// 1 - always show to all
+		// 2 - show only to unregistered
+		switch ( g_showHelpOnConnection.integer )
+		{
+		case 0:
+			if (0)
+		default:
+			if ( !client->pers.admin )
+		case 1:
+			G_TriggerMenu( client->ps.clientNum, MN_WELCOME );
+		}
 	}
 }
 
@@ -1525,10 +1505,11 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 
 		spawnPoint = spawn;
 
-		if ( ent != spawn )
+		if ( spawnPoint->s.eType == ET_BUILDABLE )
 		{
-			//start spawn animation on spawnPoint
 			G_SetBuildableAnim( spawnPoint, BANIM_SPAWN1, qtrue );
+
+			spawnPoint->buildableStatsCount++;
 
 			if ( spawnPoint->buildableTeam == TEAM_ALIENS )
 			{
@@ -1651,6 +1632,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	ent->client->ps.stats[ STAT_TEAM ] = ent->client->pers.teamSelection;
 
 	ent->client->ps.stats[ STAT_BUILDABLE ] = BA_NONE;
+	ent->client->ps.stats[ STAT_PREDICTION ] = 0;
 	ent->client->ps.stats[ STAT_STATE ] = 0;
 	VectorSet( ent->client->ps.grapplePoint, 0.0f, 0.0f, 1.0f );
 
@@ -1782,9 +1764,6 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	// positively link the client, even if the command times are weird
 	if ( client->sess.spectatorState == SPECTATOR_NOT )
 	{
-		ent->r.svFlags |= SVF_CLIENTS_IN_RANGE;
-		ent->r.clientRadius = MAX( HELMET_RANGE, ALIENSENSE_RANGE );
-
 		BG_PlayerStateToEntityState( &client->ps, &ent->s, qtrue );
 		VectorCopy( ent->client->ps.origin, ent->r.currentOrigin );
 		trap_LinkEntity( ent );

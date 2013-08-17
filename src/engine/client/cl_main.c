@@ -144,7 +144,6 @@ cvar_t                 *cl_waveoffset; //bani
 
 cvar_t                 *cl_packetloss; //bani
 cvar_t                 *cl_packetdelay; //bani
-extern qboolean        sv_cheats; //bani
 
 cvar_t                 *cl_consoleKeys;
 cvar_t                 *cl_consoleFont;
@@ -1393,7 +1392,7 @@ void CL_PlayDemo_f( void )
 			Com_sprintf( name, sizeof( name ), "demos/%s.dm_%d", arg, prot_ver );
 		}
 
-		FS_FOpenFileRead( name, &clc.demofile, qtrue );
+		FS_FOpenFileRead_Impure( name, &clc.demofile, qtrue );
 		prot_ver++;
 	}
 
@@ -1413,8 +1412,6 @@ void CL_PlayDemo_f( void )
 	{
 		CL_WriteWaveOpen();
 	}
-
-	Q_strncpyz( cls.servername, arg, sizeof( cls.servername ) );
 
 	// read demo messages until connected
 	while ( cls.state >= CA_CONNECTED && cls.state < CA_PRIMED )
@@ -1652,6 +1649,7 @@ void CL_MapLoading( void )
 		Cvar_Set( "sv_nextmap", "" );
 		CL_Disconnect( qtrue );
 		Q_strncpyz( cls.servername, "localhost", sizeof( cls.servername ) );
+		*cls.reconnectCmd = 0; // can't reconnect to this!
 		cls.state = CA_CHALLENGING; // so the connect screen is drawn
 		cls.keyCatchers = 0;
 		SCR_UpdateScreen();
@@ -1971,13 +1969,18 @@ CL_Reconnect_f
 */
 void CL_Reconnect_f( void )
 {
-	if ( !strlen( cls.servername ) || !strcmp( cls.servername, "localhost" ) )
+	if ( !*cls.servername )
+	{
+		Com_Printf("%s", _( "Can't reconnect to nothing.\n" ));
+	}
+	else if ( !*cls.reconnectCmd )
 	{
 		Com_Printf("%s", _( "Can't reconnect to localhost.\n" ));
-		return;
 	}
-
-	Cbuf_AddText( va( "connect %s\n", cls.servername ) );
+	else
+	{
+		Cbuf_AddText( cls.reconnectCmd );
+	}
 }
 
 /*
@@ -2066,6 +2069,7 @@ void CL_Connect_f( void )
 	Con_Close();
 
 	Q_strncpyz( cls.servername, server, sizeof( cls.servername ) );
+	Q_strncpyz( cls.reconnectCmd, Cmd_Cmd(), sizeof( cls.reconnectCmd ) );
 
 	if ( !NET_StringToAdr( cls.servername, &clc.serverAddress, family ) )
 	{
@@ -2203,7 +2207,19 @@ void CL_ResetPureClientAtServer( void )
 	CL_AddReliableCommand( "vdr" );
 }
 
-static void CL_GenerateRSAKeys( void )
+static void CL_GetRSAKeysFileName( char *buffer, size_t size )
+{
+	if ( cl_profile && cl_profile->string[ 0 ] )
+	{
+		Q_snprintf( buffer, size, "profiles/%s/%s", cl_profile->string, RSAKEY_FILE );
+	}
+	else
+	{
+		Q_snprintf( buffer, size, "%s", RSAKEY_FILE );
+	}
+}
+
+static void CL_GenerateRSAKeys( const char *fileName )
 {
 	struct nettle_buffer key_buffer;
 	int                  key_buffer_len = 0;
@@ -2223,18 +2239,13 @@ static void CL_GenerateRSAKeys( void )
 		Com_Error( ERR_FATAL, "Error converting RSA keypair to sexp" );
 	}
 
-	if ( cl_profile && cl_profile->string[ 0 ] )
-	{
-		f = FS_FOpenFileWrite( va( "profiles/%s/%s", cl_profile->string, RSAKEY_FILE ) );
-	}
-	else
-	{
-		f = FS_FOpenFileWrite( RSAKEY_FILE );
-	}
+	Com_Printf( _( "^5Regenerating RSA keypair; writing to %s\n" ), fileName );
+
+	f = FS_FOpenFileWrite( fileName );
 
 	if ( !f )
 	{
-		Com_Error( ERR_FATAL, _( "Daemon could not open %s for writing the RSA keypair" ), RSAKEY_FILE );
+		Com_Error( ERR_FATAL, "Daemon could not open %s for writing the RSA keypair", RSAKEY_FILE );
 	}
 
 	FS_FChmod( f, 0600 ); // owner r/w, no other access
@@ -2258,24 +2269,22 @@ static void CL_LoadRSAKeys( void )
 {
 	int                  len;
 	fileHandle_t         f;
+	char                 fileName[ MAX_QPATH ];
 	uint8_t              *buf;
 
 	rsa_public_key_init( &public_key );
 	rsa_private_key_init( &private_key );
 
-	if( cl_profile && cl_profile->string[ 0 ] )
-	{
-		len = FS_FOpenFileRead( va( "profiles/%s/%s", cl_profile->string, RSAKEY_FILE ), &f, qtrue );
-	}
-	else
-	{
-		len = FS_FOpenFileRead( RSAKEY_FILE, &f, qtrue );
-	}
+	CL_GetRSAKeysFileName( fileName, sizeof( fileName ) );
+
+	Com_Printf( _( "^5Loading RSA keys from %s\n" ), fileName );
+
+	len = FS_FOpenFileRead( fileName, &f, qtrue );
 
 	if ( !f || len < 1 )
 	{
-		Com_Printf( "%s", _( "Daemon RSA public-key file not found, regenerating\n" ) );
-		CL_GenerateRSAKeys();
+		Com_Printf( "^2%s", _( "Daemon RSA public-key file not found, regenerating\n" ) );
+		CL_GenerateRSAKeys( fileName );
 		return;
 	}
 
@@ -2285,9 +2294,9 @@ static void CL_LoadRSAKeys( void )
 
 	if ( !rsa_keypair_from_sexp( &public_key, &private_key, 0, len, buf ) )
 	{
-		Com_Printf( "%s", _( "Invalid RSA keypair in file, regenerating\n" ) );
+		Com_Printf( "^1%s", _( "Invalid RSA keypair in file, regenerating\n" ) );
 		Z_Free( buf );
-		CL_GenerateRSAKeys();
+		CL_GenerateRSAKeys( fileName );
 		return;
 	}
 
@@ -2453,7 +2462,6 @@ void CL_UpdateProfile( void )
 {
 	if( cl_profile->modified )
 	{
-		CL_LoadRSAKeys();
 		cl_profile->modified = qfalse;
 	}
 }
@@ -2887,6 +2895,7 @@ void CL_CheckForResend( void )
 		{
 			char key[ RSA_STRING_LENGTH ];
 
+			CL_LoadRSAKeys();
 			mpz_get_str( key, 16, public_key.n);
 			// sending back the challenge
 			port = Cvar_VariableValue( "net_qport" );
@@ -4618,7 +4627,6 @@ void CL_Init( void )
 	Cbuf_Execute();
 
 	Cvar_Set( "cl_running", "1" );
-	CL_LoadRSAKeys();
 
 	CL_OpenClientLog();
 	CL_WriteClientLog( "`~-     Client Opened     -~`\n" );

@@ -64,7 +64,7 @@ qboolean G_SpawnString( const char *key, const char *defaultString, char **out )
  *
  * use this with caution, as it might persist unprepared cvars (see cvartable)
  */
-static qboolean G_SpawnStringIntoCVar( const char *key, const char *cvarName )
+static qboolean G_SpawnStringIntoCVarIfSet( const char *key, const char *cvarName )
 {
 	char     *tmpString;
 
@@ -75,6 +75,14 @@ static qboolean G_SpawnStringIntoCVar( const char *key, const char *cvarName )
 	}
 
 	return qfalse;
+}
+
+static void G_SpawnStringIntoCVar( const char *key, const char *cvarName )
+{
+	char     *tmpString;
+
+	G_SpawnString( key, "", &tmpString );
+	trap_Cvar_Set( cvarName, tmpString );
 }
 
 qboolean G_SpawnBoolean( const char *key, qboolean defaultqboolean )
@@ -816,7 +824,9 @@ void G_SpawnGEntityFromSpawnVars( void )
 	 */
 	if( level.numSpawnVars <= 1 )
 	{
-		G_Error( S_ERROR "encountered ghost-entity #%i with only one field: %s = %s\n", spawningEntity->s.number, level.spawnVars[ 0 ][ 0 ], level.spawnVars[ 0 ][ 1 ] );
+		G_Printf( S_ERROR "encountered ghost-entity #%i with only one field: %s = %s\n", spawningEntity->s.number, level.spawnVars[ 0 ][ 0 ], level.spawnVars[ 0 ][ 1 ] );
+		G_FreeEntity( spawningEntity );
+		return;
 	}
 
 	// move editor origin to pos
@@ -1043,18 +1053,23 @@ void SP_worldspawn( void )
 	trap_SetConfigstring( CS_MESSAGE, s );  // map specific message
 
 	if(G_SpawnString( "colorGrade", "", &s ))
-		trap_SetConfigstring( CS_GRADING_TEXTURES, s );
+	{
+		trap_SetConfigstring( CS_GRADING_TEXTURES, va( "%i %f %s", -1, 0.0f, s ) );
+	}
+
+	if(G_SpawnString( "gradingTexture", "", &s ))
+		trap_SetConfigstring( CS_GRADING_TEXTURES, va( "%i %f %s", 0, 0.0f, s ) );
 
 	trap_SetConfigstring( CS_MOTD, g_motd.string );  // message of the day
 
-	G_SpawnStringIntoCVar( "gravity", "g_gravity" );
+	G_SpawnStringIntoCVarIfSet( "gravity", "g_gravity" );
 
-	G_SpawnStringIntoCVar( "humanMaxStage", "g_humanRepeaterBuildPoints" );
-	G_SpawnStringIntoCVar( "alienMaxStage", "g_alienMaxStage" );
+	G_SpawnStringIntoCVarIfSet( "humanMaxStage", "g_humanMaxStage" );
+	G_SpawnStringIntoCVarIfSet( "alienMaxStage", "g_alienMaxStage" );
 
-	G_SpawnStringIntoCVar( "humanBuildPoints", "g_humanBuildPoints" );
-	G_SpawnStringIntoCVar( "humanRepeaterBuildPoints", "g_humanRepeaterBuildPoints" );
-	G_SpawnStringIntoCVar( "alienBuildPoints", "g_alienBuildPoints" );
+	G_SpawnStringIntoCVarIfSet( "humanBuildPoints", "g_humanBuildPoints" );
+	G_SpawnStringIntoCVarIfSet( "humanRepeaterBuildPoints", "g_humanRepeaterBuildPoints" );
+	G_SpawnStringIntoCVarIfSet( "alienBuildPoints", "g_alienBuildPoints" );
 
 	G_SpawnStringIntoCVar( "disabledEquipment", "g_disabledEquipment" );
 	G_SpawnStringIntoCVar( "disabledClasses", "g_disabledClasses" );
@@ -1073,7 +1088,7 @@ void SP_worldspawn( void )
 
 	if ( g_doWarmup.integer )
 	{
-		level.warmupTime = level.time - level.startTime + ( g_warmup.integer * 1000 );
+		level.warmupTime = level.matchTime + ( g_warmup.integer * 1000 );
 		trap_SetConfigstring( CS_WARMUP, va( "%i", level.warmupTime ) );
 		G_LogPrintf( "Warmup: %i\n", g_warmup.integer );
 	}

@@ -35,7 +35,6 @@ static bind_t bindings[] =
 {
 	{ "+useitem",       N_( "Activate Upgrade" ),                      { -1, -1 } },
 	{ "+speed",         N_( "Run/Walk" ),                              { -1, -1 } },
-	{ "+dodge",         N_( "Dodge" ),                                 { -1, -1 } },
 	{ "+sprint",        N_( "Sprint" ),                                { -1, -1 } },
 	{ "+moveup",        N_( "Jump" ),                                  { -1, -1 } },
 	{ "+movedown",      N_( "Crouch" ),                                { -1, -1 } },
@@ -61,7 +60,7 @@ CG_GetBindings
 */
 static void CG_GetBindings( team_t team )
 {
-	int  i, j, numKeys;
+	unsigned  i, j, numKeys;
 	char buffer[ MAX_STRING_CHARS ];
 
 	for ( i = 0; i < numBindings; i++ )
@@ -103,7 +102,7 @@ CG_KeyNameForCommand
 */
 static const char *CG_KeyNameForCommand( const char *command )
 {
-	int         i, j;
+	unsigned    i;
 	static char buffer[ 2 ][ MAX_STRING_CHARS ];
 	static int  which = 1;
 	char        keyName[ 2 ][ 32 ];
@@ -271,6 +270,8 @@ CG_AlienLevel0Text
 */
 static void CG_AlienLevel0Text( char *text, playerState_t *ps )
 {
+	Q_UNUSED(ps);
+
 	Q_strcat( text, MAX_TUTORIAL_TEXT,
 	          _( "Touch humans to damage them\n"
 	             "Look at their heads (or jump) to try to bite their heads\n"
@@ -360,6 +361,8 @@ CG_AlienLevel4Text
 */
 static void CG_AlienLevel4Text( char *text, playerState_t *ps )
 {
+	Q_UNUSED(ps);
+
 	Q_strcat( text, MAX_TUTORIAL_TEXT,
 	          va( _( "Press %s to swipe\n" ),
 	              CG_KeyNameForCommand( "+attack" ) ) );
@@ -545,10 +548,6 @@ static void CG_HumanText( char *text, playerState_t *ps )
 	Q_strcat( text, MAX_TUTORIAL_TEXT,
 	          va( _( "Press %s and any direction to sprint\n" ),
 	              CG_KeyNameForCommand( "+sprint" ) ) );
-
-	Q_strcat( text, MAX_TUTORIAL_TEXT,
-	          va( _( "Press %s and back or strafe to dodge\n" ),
-	              CG_KeyNameForCommand( "+dodge" ) ) );
 }
 
 /*

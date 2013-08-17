@@ -253,30 +253,6 @@ void RB_AddQuadStamp( vec3_t origin, vec3_t left, vec3_t up, byte *color )
 
 /*
 ==============
-RB_SurfaceSplash
-==============
-*/
-static void RB_SurfaceSplash( void )
-{
-	vec3_t left, up;
-	float  radius;
-
-	// calculate the xyz locations for the four corners
-	radius = backEnd.currentEntity->e.radius;
-
-	VectorSet( left, -radius, 0, 0 );
-	VectorSet( up, 0, radius, 0 );
-
-	if ( backEnd.viewParms.isMirror )
-	{
-		VectorSubtract( vec3_origin, left, left );
-	}
-
-	RB_AddQuadStamp( backEnd.currentEntity->e.origin, left, up, backEnd.currentEntity->e.shaderRGBA );
-}
-
-/*
-==============
 RB_SurfaceSprite
 ==============
 */
@@ -721,242 +697,6 @@ void RB_SurfaceBeam( void )
 }
 
 //================================================================================
-
-static void DoRailCore( const vec3_t start, const vec3_t end, const vec3_t up, float len, float spanWidth )
-{
-	float spanWidth2;
-	int   vbase;
-	float t; // = len / 256.0f;
-
-	vbase = tess.numVertexes;
-
-	// Gordon: configurable tile
-	if ( backEnd.currentEntity->e.radius > 0 )
-	{
-		t = len / backEnd.currentEntity->e.radius;
-	}
-	else
-	{
-		t = len / 256.f;
-	}
-
-	spanWidth2 = -spanWidth;
-
-	// FIXME: use quad stamp?
-	VectorMA( start, spanWidth, up, tess.xyz[ tess.numVertexes ].v );
-	tess.texCoords0[ tess.numVertexes ].v[ 0 ] = 0;
-	tess.texCoords0[ tess.numVertexes ].v[ 1 ] = 0;
-	tess.vertexColors[ tess.numVertexes ].v[ 0 ] = backEnd.currentEntity->e.shaderRGBA[ 0 ];
-	tess.vertexColors[ tess.numVertexes ].v[ 1 ] = backEnd.currentEntity->e.shaderRGBA[ 1 ];
-	tess.vertexColors[ tess.numVertexes ].v[ 2 ] = backEnd.currentEntity->e.shaderRGBA[ 2 ];
-	tess.vertexColors[ tess.numVertexes ].v[ 3 ] = backEnd.currentEntity->e.shaderRGBA[ 3 ];
-	tess.numVertexes++;
-
-	VectorMA( start, spanWidth2, up, tess.xyz[ tess.numVertexes ].v );
-	tess.texCoords0[ tess.numVertexes ].v[ 0 ] = 0;
-	tess.texCoords0[ tess.numVertexes ].v[ 1 ] = 1;
-	tess.vertexColors[ tess.numVertexes ].v[ 0 ] = backEnd.currentEntity->e.shaderRGBA[ 0 ];
-	tess.vertexColors[ tess.numVertexes ].v[ 1 ] = backEnd.currentEntity->e.shaderRGBA[ 1 ];
-	tess.vertexColors[ tess.numVertexes ].v[ 2 ] = backEnd.currentEntity->e.shaderRGBA[ 2 ];
-	tess.vertexColors[ tess.numVertexes ].v[ 3 ] = backEnd.currentEntity->e.shaderRGBA[ 3 ];
-	tess.numVertexes++;
-
-	VectorMA( end, spanWidth, up, tess.xyz[ tess.numVertexes ].v );
-
-	tess.texCoords0[ tess.numVertexes ].v[ 0 ] = t;
-	tess.texCoords0[ tess.numVertexes ].v[ 1 ] = 0;
-	tess.vertexColors[ tess.numVertexes ].v[ 0 ] = backEnd.currentEntity->e.shaderRGBA[ 0 ];
-	tess.vertexColors[ tess.numVertexes ].v[ 1 ] = backEnd.currentEntity->e.shaderRGBA[ 1 ];
-	tess.vertexColors[ tess.numVertexes ].v[ 2 ] = backEnd.currentEntity->e.shaderRGBA[ 2 ];
-	tess.vertexColors[ tess.numVertexes ].v[ 3 ] = backEnd.currentEntity->e.shaderRGBA[ 3 ];
-	tess.numVertexes++;
-
-	VectorMA( end, spanWidth2, up, tess.xyz[ tess.numVertexes ].v );
-	tess.texCoords0[ tess.numVertexes ].v[ 0 ] = t;
-	tess.texCoords0[ tess.numVertexes ].v[ 1 ] = 1;
-	tess.vertexColors[ tess.numVertexes ].v[ 0 ] = backEnd.currentEntity->e.shaderRGBA[ 0 ];
-	tess.vertexColors[ tess.numVertexes ].v[ 1 ] = backEnd.currentEntity->e.shaderRGBA[ 1 ];
-	tess.vertexColors[ tess.numVertexes ].v[ 2 ] = backEnd.currentEntity->e.shaderRGBA[ 2 ];
-	tess.vertexColors[ tess.numVertexes ].v[ 3 ] = backEnd.currentEntity->e.shaderRGBA[ 3 ];
-	tess.numVertexes++;
-
-	tess.indexes[ tess.numIndexes++ ] = vbase;
-	tess.indexes[ tess.numIndexes++ ] = vbase + 1;
-	tess.indexes[ tess.numIndexes++ ] = vbase + 2;
-
-	tess.indexes[ tess.numIndexes++ ] = vbase + 2;
-	tess.indexes[ tess.numIndexes++ ] = vbase + 1;
-	tess.indexes[ tess.numIndexes++ ] = vbase + 3;
-}
-
-static void DoRailDiscs( int numSegs, const vec3_t start, const vec3_t dir, const vec3_t right, const vec3_t up )
-{
-	int    i;
-	vec3_t pos[ 4 ];
-	vec3_t v;
-	int    spanWidth = r_railWidth->integer;
-	float  c, s;
-	float  scale;
-
-	if ( numSegs > 1 )
-	{
-		numSegs--;
-	}
-
-	if ( !numSegs )
-	{
-		return;
-	}
-
-	scale = 0.25;
-
-	for ( i = 0; i < 4; i++ )
-	{
-		c = cos( DEG2RAD( 45 + i * 90 ) );
-		s = sin( DEG2RAD( 45 + i * 90 ) );
-		v[ 0 ] = ( right[ 0 ] * c + up[ 0 ] * s ) * scale * spanWidth;
-		v[ 1 ] = ( right[ 1 ] * c + up[ 1 ] * s ) * scale * spanWidth;
-		v[ 2 ] = ( right[ 2 ] * c + up[ 2 ] * s ) * scale * spanWidth;
-		VectorAdd( start, v, pos[ i ] );
-
-		if ( numSegs > 1 )
-		{
-			// offset by 1 segment if we're doing a long distance shot
-			VectorAdd( pos[ i ], dir, pos[ i ] );
-		}
-	}
-
-	for ( i = 0; i < numSegs; i++ )
-	{
-		int j;
-
-		RB_CHECKOVERFLOW( 4, 6 );
-
-		for ( j = 0; j < 4; j++ )
-		{
-			VectorCopy( pos[ j ], tess.xyz[ tess.numVertexes ].v );
-			tess.texCoords0[ tess.numVertexes ].v[ 0 ] = ( j < 2 );
-			tess.texCoords0[ tess.numVertexes ].v[ 1 ] = ( j && j != 3 );
-			tess.vertexColors[ tess.numVertexes ].v[ 0 ] = backEnd.currentEntity->e.shaderRGBA[ 0 ];
-			tess.vertexColors[ tess.numVertexes ].v[ 1 ] = backEnd.currentEntity->e.shaderRGBA[ 1 ];
-			tess.vertexColors[ tess.numVertexes ].v[ 2 ] = backEnd.currentEntity->e.shaderRGBA[ 2 ];
-			tess.numVertexes++;
-
-			VectorAdd( pos[ j ], dir, pos[ j ] );
-		}
-
-		tess.indexes[ tess.numIndexes++ ] = tess.numVertexes - 4 + 0;
-		tess.indexes[ tess.numIndexes++ ] = tess.numVertexes - 4 + 1;
-		tess.indexes[ tess.numIndexes++ ] = tess.numVertexes - 4 + 3;
-		tess.indexes[ tess.numIndexes++ ] = tess.numVertexes - 4 + 3;
-		tess.indexes[ tess.numIndexes++ ] = tess.numVertexes - 4 + 1;
-		tess.indexes[ tess.numIndexes++ ] = tess.numVertexes - 4 + 2;
-	}
-}
-
-/*
-** RB_SurfaceRailRinges
-*/
-void RB_SurfaceRailRings( void )
-{
-	refEntity_t *e;
-	int         numSegs;
-	int         len;
-	vec3_t      vec;
-	vec3_t      right, up;
-	vec3_t      start, end;
-
-	e = &backEnd.currentEntity->e;
-
-	VectorCopy( e->oldorigin, start );
-	VectorCopy( e->origin, end );
-
-	// compute variables
-	VectorSubtract( end, start, vec );
-	len = VectorNormalize( vec );
-	MakeNormalVectors( vec, right, up );
-	numSegs = ( len ) / r_railSegmentLength->value;
-
-	if ( numSegs <= 0 )
-	{
-		numSegs = 1;
-	}
-
-	VectorScale( vec, r_railSegmentLength->value, vec );
-
-	DoRailDiscs( numSegs, start, vec, right, up );
-}
-
-/*
-** RB_SurfaceRailCore
-*/
-void RB_SurfaceRailCore( void )
-{
-	refEntity_t *e;
-	int         len;
-	vec3_t      right;
-	vec3_t      vec;
-	vec3_t      start, end;
-	vec3_t      v1, v2;
-
-	e = &backEnd.currentEntity->e;
-
-	VectorCopy( e->oldorigin, start );
-	VectorCopy( e->origin, end );
-
-	VectorSubtract( end, start, vec );
-	len = VectorNormalize( vec );
-
-	// compute side vector
-	VectorSubtract( start, backEnd.viewParms.orientation.origin, v1 );
-	VectorNormalize( v1 );
-	VectorSubtract( end, backEnd.viewParms.orientation.origin, v2 );
-	VectorNormalize( v2 );
-	CrossProduct( v1, v2, right );
-	VectorNormalize( right );
-
-	DoRailCore( start, end, right, len, e->frame > 0 ? e->frame : 1 );
-}
-
-/*
-** RB_SurfaceLightningBolt
-*/
-void RB_SurfaceLightningBolt( void )
-{
-	refEntity_t *e;
-	int         len;
-	vec3_t      right;
-	vec3_t      vec;
-	vec3_t      start, end;
-	vec3_t      v1, v2;
-	int         i;
-
-	e = &backEnd.currentEntity->e;
-
-	VectorCopy( e->oldorigin, end );
-	VectorCopy( e->origin, start );
-
-	// compute variables
-	VectorSubtract( end, start, vec );
-	len = VectorNormalize( vec );
-
-	// compute side vector
-	VectorSubtract( start, backEnd.viewParms.orientation.origin, v1 );
-	VectorNormalize( v1 );
-	VectorSubtract( end, backEnd.viewParms.orientation.origin, v2 );
-	VectorNormalize( v2 );
-	CrossProduct( v1, v2, right );
-	VectorNormalize( right );
-
-	for ( i = 0; i < 4; i++ )
-	{
-		vec3_t temp;
-
-		DoRailCore( start, end, right, len, 8 );
-		RotatePointAroundVector( temp, vec, right, 45 );
-		VectorCopy( temp, right );
-	}
-}
 
 /*
 ** LerpMeshVertexes
@@ -1672,11 +1412,9 @@ static void RB_SurfaceMD5( md5Surface_t *srf )
 	int             numVertexes;
 	md5Model_t      *model;
 	md5Vertex_t     *v;
-	md5Bone_t       *bone;
 	md5Triangle_t   *tri;
-	static matrix_t boneMatrices[ MAX_BONES ];
-	vec3_t          tmpVert;
-	vec3_t          tmpPosition, tmpNormal;
+	static ALIGNED( 16, boneMatrix_t boneMatrices[ MAX_BONES ] );
+	boneMatrix_t    tmpMat;
 	md5Weight_t     *w;
 
 	GLimp_LogComment( "--- Tess_SurfaceMD5 ---\n" );
@@ -1702,18 +1440,15 @@ static void RB_SurfaceMD5( md5Surface_t *srf )
 
 		if ( backEnd.currentEntity->e.skeleton.type == SK_ABSOLUTE )
 		{
-
-			MatrixSetupTransformFromQuat( boneMatrices[ i ], backEnd.currentEntity->e.skeleton.bones[ i ].rotation,
-			                              backEnd.currentEntity->e.skeleton.bones[ i ].origin );
-			MatrixMultiplyScale( boneMatrices[ i ],
-			                  backEnd.currentEntity->e.skeleton.scale[ 0 ],
-			                  backEnd.currentEntity->e.skeleton.scale[ 1 ], backEnd.currentEntity->e.skeleton.scale[ 2 ] );
-			MatrixMultiply2( boneMatrices[ i ], model->bones[ i ].inverseTransform );
+			BoneMatrixSetupTransformWithScale( tmpMat, backEnd.currentEntity->e.skeleton.bones[ i ].rotation,
+			                              backEnd.currentEntity->e.skeleton.bones[ i ].origin,
+			                              backEnd.currentEntity->e.skeleton.scale );
+			BoneMatrixMultiply( tmpMat, model->bones[ i ].inverseTransform, boneMatrices[ i ] );
 		}
 		else
 #endif
 		{
-			MatrixIdentity( boneMatrices[ i ] );
+			BoneMatrixIdentity( boneMatrices[ i ] );
 		}
 	}
 
@@ -1722,29 +1457,34 @@ static void RB_SurfaceMD5( md5Surface_t *srf )
 
 	for ( j = 0, v = srf->verts; j < numVertexes; j++, v++ )
 	{
-		VectorClear( tmpPosition );
-		VectorClear( tmpNormal );
-		for ( k = 0, w = v->weights[ 0 ]; k < v->numWeights; k++, w++ )
+#if id386_sse
+		__m128 a, b, c;
+
+		w = v->weights[ 0 ];
+		BoneMatrixMulSSE( &a, &b, &c, w->boneWeight, boneMatrices[ w->boneIndex ] );
+
+		for ( k = 1, w = v->weights[ 1 ]; k < v->numWeights; k++, w++ )
 		{
-			bone = &model->bones[ w->boneIndex ];
-
-			MatrixTransformPoint( boneMatrices[ w->boneIndex ], v->position, tmpVert );
-			VectorMA( tmpPosition, w->boneWeight, tmpVert, tmpPosition );
-
-			MatrixTransformNormal( boneMatrices[ w->boneIndex ], v->normal, tmpVert );
-			VectorMA( tmpNormal, w->boneWeight, tmpVert, tmpNormal );
+			BoneMatrixMadSSE( &a, &b, &c, w->boneWeight, boneMatrices[ w->boneIndex ] );
 		}
-		VectorNormalize( tmpNormal );
 
-		tess.xyz[ tess.numVertexes + j ].v[ 0 ] = tmpPosition[ 0 ];
-		tess.xyz[ tess.numVertexes + j ].v[ 1 ] = tmpPosition[ 1 ];
-		tess.xyz[ tess.numVertexes + j ].v[ 2 ] = tmpPosition[ 2 ];
+		BoneMatrixTransform4SSE( a, b, c, v->position, tess.xyz[ tess.numVertexes + j ].v );
+		BoneMatrixTransform4NormalizeSSE( a, b, c, v->normal, tess.normal[ tess.numVertexes + j ].v );
+#else
+		w = v->weights[ 0 ];
+		BoneMatrixMul( tmpMat, w->boneWeight, boneMatrices[ w->boneIndex ] );
+
+		for ( k = 1, w = v->weights[ 1 ]; k < v->numWeights; k++, w++ )
+		{
+			BoneMatrixMad( tmpMat, w->boneWeight, boneMatrices[ w->boneIndex ] );
+		}
+
+		BoneMatrixTransformPoint( tmpMat, v->position, tess.xyz[ tess.numVertexes + j ].v );
 		tess.xyz[ tess.numVertexes + j ].v[ 3 ] = 1;
 
-		tess.normal[ tess.numVertexes + j ].v[ 0 ] = tmpNormal[ 0 ];
-		tess.normal[ tess.numVertexes + j ].v[ 1 ] = tmpNormal[ 1 ];
-		tess.normal[ tess.numVertexes + j ].v[ 2 ] = tmpNormal[ 2 ];
-		tess.normal[ tess.numVertexes + j ].v[ 3 ] = 1;
+		BoneMatrixTransformNormal( tmpMat, v->normal, tess.normal[ tess.numVertexes + j ].v );
+		VectorNormalize( tess.normal[ tess.numVertexes + j ].v );
+#endif
 
 		tess.texCoords0[ tess.numVertexes + j ].v[ 0 ] = v->texCoords[ 0 ];
 		tess.texCoords0[ tess.numVertexes + j ].v[ 1 ] = v->texCoords[ 1 ];
@@ -1800,28 +1540,12 @@ void RB_SurfaceEntity( surfaceType_t *surfType )
 {
 	switch ( backEnd.currentEntity->e.reType )
 	{
-		case RT_SPLASH:
-			RB_SurfaceSplash();
-			break;
-
 		case RT_SPRITE:
 			RB_SurfaceSprite();
 			break;
 
 		case RT_BEAM:
 			RB_SurfaceBeam();
-			break;
-
-		case RT_RAIL_CORE:
-			RB_SurfaceRailCore();
-			break;
-
-		case RT_RAIL_RINGS:
-			RB_SurfaceRailRings();
-			break;
-
-		case RT_LIGHTNING:
-			RB_SurfaceLightningBolt();
 			break;
 
 		default:

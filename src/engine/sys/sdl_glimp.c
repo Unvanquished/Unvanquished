@@ -1388,6 +1388,26 @@ static void GLimp_XreaLInitExtensions( void )
 		ri.Printf( PRINT_ALL, "...GL_ARB_texture_float not found\n" );
 	}
 
+	// GL_ARB_texture_rg
+	glConfig2.textureRGAvailable = qfalse;
+
+	if ( glConfig.driverType == GLDRV_OPENGL3 || GLEW_ARB_texture_rg )
+	{
+		if ( r_ext_texture_rg->integer )
+		{
+			glConfig2.textureRGAvailable = qtrue;
+			ri.Printf( PRINT_ALL, "...using GL_ARB_texture_rg\n" );
+		}
+		else
+		{
+			ri.Printf( PRINT_ALL, "...ignoring GL_ARB_texture_rg\n" );
+		}
+	}
+	else
+	{
+		ri.Printf( PRINT_ALL, "...GL_ARB_texture_rg not found\n" );
+	}
+
 	// GL_ARB_texture_compression
 	glConfig.textureCompression = TC_NONE;
 
@@ -1685,8 +1705,20 @@ static void GLimp_XreaLInitExtensions( void )
 #ifdef GLEW_ARB_get_program_binary
 	if( GLEW_ARB_get_program_binary )
 	{
-		ri.Printf( PRINT_ALL, "...using GL_ARB_get_program_binary\n");
-		glConfig2.getProgramBinaryAvailable = qtrue;
+		int formats = 0;
+
+		glGetIntegerv( GL_NUM_PROGRAM_BINARY_FORMATS, &formats );
+
+		if ( !formats )
+		{
+			ri.Printf( PRINT_ALL, "...GL_ARB_get_program_binary found, but with no binary formats\n");
+			glConfig2.getProgramBinaryAvailable = qfalse;
+		}
+		else
+		{
+			ri.Printf( PRINT_ALL, "...using GL_ARB_get_program_binary\n");
+			glConfig2.getProgramBinaryAvailable = qtrue;
+		}
 	}
 	else
 #endif
@@ -1820,7 +1852,7 @@ static void GLimp_InitExtensions( void )
 static void reportDriverType( qboolean force )
 {
 	static const char *const drivers[] = {
-		"integrated", "stand-alone", "Voodoo", "OpenGL 3+", "Mesa"
+		"integrated", "stand-alone", "OpenGL 3+", "Mesa"
 	};
 	if (glConfig.driverType > GLDRV_UNKNOWN && (int) glConfig.driverType < ARRAY_LEN( drivers ) )
 	{
@@ -1833,8 +1865,7 @@ static void reportDriverType( qboolean force )
 static void reportHardwareType( qboolean force )
 {
 	static const char *const hardware[] = {
-		"generic", "Voodoo", "Riva 128", "Rage Pro", "Permedia 2",
-		"ATI Radeon", "AMD Radeon DX10-class", "nVidia DX10-class"
+		"generic", "ATI Radeon", "AMD Radeon DX10-class", "nVidia DX10-class"
 	};
 	if (glConfig.hardwareType > GLHW_UNKNOWN && (int) glConfig.hardwareType < ARRAY_LEN( hardware ) )
 	{
@@ -2107,10 +2138,6 @@ success:
 		{
 			driverType = GLDRV_STANDALONE;
 		}
-		else if ( !Q_stricmp( forceGL->string, "voodoo" ))
-		{
-			driverType = GLDRV_VOODOO;
-		}
 		else if ( !Q_stricmp( forceGL->string, "opengl3" ))
 		{
 			driverType = GLDRV_OPENGL3;
@@ -2125,22 +2152,6 @@ success:
 		if      ( !Q_stricmp( forceGL->string, "generic" ))
 		{
 			hardwareType = GLHW_GENERIC;
-		}
-		else if ( !Q_stricmp( forceGL->string, "voodoo" ))
-		{
-			hardwareType = GLHW_3DFX_2D3D;
-		}
-		else if ( !Q_stricmp( forceGL->string, "riva128" ))
-		{
-			hardwareType = GLHW_RIVA128;
-		}
-		else if ( !Q_stricmp( forceGL->string, "ragepro" ))
-		{
-			hardwareType = GLHW_RAGEPRO;
-		}
-		else if ( !Q_stricmp( forceGL->string, "permedia2" ))
-		{
-			hardwareType = GLHW_PERMEDIA2;
 		}
 		else if ( !Q_stricmp( forceGL->string, "ati" ))
 		{

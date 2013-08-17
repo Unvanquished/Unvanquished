@@ -223,6 +223,30 @@ void CG_ClearClipRegion( void )
 
 /*
 ================
+CG_EnableScissor
+
+Enables the GL scissor test to be used for rotated images
+DrawStretchPic seems to reset the scissor
+=================
+*/
+void CG_EnableScissor( qboolean enable )
+{
+    trap_R_ScissorEnable(enable);
+}
+
+/*
+================
+CG_SetScissor
+=================
+*/
+void CG_SetScissor( int x, int y, int w, int h )
+{
+    //Converts the Y axis
+    trap_R_ScissorSet( x, cgs.glconfig.vidHeight - y - h, w, h );
+}
+
+/*
+================
 CG_DrawFadePic
 
 Coordinates are 640*480 virtual values

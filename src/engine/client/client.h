@@ -341,7 +341,8 @@ typedef struct
 
 	qboolean    doCachePurge; // Arnout: empty the renderer cache as soon as possible
 
-	char        servername[ MAX_OSPATH ]; // name of server from original connect (used by reconnect)
+	char        servername[ MAX_OSPATH ]; // name of server from original connect
+	char        reconnectCmd[ MAX_STRING_CHARS ]; // command to be used on reconnection
 
 	// when the server clears the hunk, all of these must be restarted
 	qboolean rendererStarted;
@@ -542,9 +543,6 @@ extern  cvar_t *cl_voipShowSender;
 extern  cvar_t *cl_voip;
 #endif
 
-//bani
-extern qboolean sv_cheats;
-
 //=================================================
 
 //
@@ -588,6 +586,12 @@ qboolean    CL_InitRef( const char *renderer );
 int         CL_ServerStatus( char *serverAddress, char *serverStatusString, int maxLen );
 
 void CL_Record( const char *name );
+
+//
+// cl_keys (for input usage)
+//
+int             Key_GetKeyNumber(void);
+unsigned int    Key_GetKeyTime(void);
 
 //
 // cl_input
@@ -636,6 +640,9 @@ qboolean CL_UIOwnsMouse ( void );
 
 void IN_Notebook( void );
 void IN_Help( void );
+
+void IN_KeysUp( unsigned int check, int key, int time );
+void IN_PrepareKeyUp( void );
 
 //----(SA)
 

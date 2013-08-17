@@ -643,6 +643,7 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
       BUILDTIME = 1 << 10,
       VALUE = 1 << 11,
       RADAR = 1 << 12,
+      POWERCONSUMPTION = 1 << 13
     };
 
     if( !BG_ReadWholeFile( filename, text_buffer, sizeof(text_buffer) ) )
@@ -679,6 +680,14 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
             ba->buildPoints = atoi(token);
 
             defined |= BUILDPOINTS;
+        }
+        else if ( !Q_stricmp( token, "powerConsumption" ) )
+        {
+            PARSE(text, token);
+
+            ba->powerConsumption = atoi(token);
+
+            defined |= POWERCONSUMPTION;
         }
         else if ( !Q_stricmp( token, "stage" ) )
         {
@@ -1334,6 +1343,47 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
         Com_Printf( S_ERROR "%s not defined in %s\n",
                     token, filename );
     }
+}
+
+/*
+======================
+BG_NonSegModel
+
+Reads an animation.cfg to check for nonsegmentation
+======================
+*/
+qboolean BG_NonSegModel( const char *filename )
+{
+	char         *text_p;
+	char         *token;
+	char         text[ 20000 ];
+
+	if ( !BG_ReadWholeFile( filename, text, sizeof( text ) ) )
+	{
+		return qfalse;
+	}
+
+	// parse the text
+	text_p = text;
+
+	// read optional parameters
+	while ( 1 )
+	{
+		token = COM_Parse( &text_p );
+
+		//EOF
+		if ( !token[ 0 ] )
+		{
+			break;
+		}
+
+		if ( !Q_stricmp( token, "nonsegmented" ) )
+		{
+			return qtrue;
+		}
+	}
+
+	return qfalse;
 }
 
 /*

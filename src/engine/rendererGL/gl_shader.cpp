@@ -88,11 +88,7 @@ void GLShaderManager::freeAll( void )
 		_shaderBuildQueue.pop();
 	}
 
-	_beginBuildTime = 0;
-	_endBuildTime = 0;
 	_totalBuildTime = 0;
-	_lastBuildTime = 1;
-	_lastBuildStartTime = 0;
 }
 
 void GLShaderManager::UpdateShaderProgramUniformLocations( GLShader *shader, shaderProgram_t *shaderProgram ) const
@@ -113,6 +109,32 @@ void GLShaderManager::UpdateShaderProgramUniformLocations( GLShader *shader, sha
 
 		uniform->UpdateShaderProgramUniformLocation( shaderProgram );
 	}
+}
+
+static inline void AddGLSLDefine( std::string &defines, const std::string define, int value )
+{
+	defines += "#ifndef " + define + "\n#define " + define + " ";
+	defines += va( "%d\n", value );
+	defines += "#endif\n";
+}
+
+static inline void AddGLSLDefine( std::string &defines, const std::string define, float value )
+{
+	defines += "#ifndef " + define + "\n#define " + define + " ";
+	defines += va( "%f\n", value );
+	defines += "#endif\n";
+}
+
+static inline void AddGLSLDefine( std::string &defines, const std::string define, float v1, float v2 )
+{
+	defines += "#ifndef " + define + "\n#define " + define + " ";
+	defines += va( "vec2( %f, %f )\n", v1, v2 );
+	defines += "#endif\n";
+}
+
+static inline void AddGLSLDefine( std::string &defines, const std::string define )
+{
+	defines += "#ifndef " + define + "\n#define " + define + "\n#endif\n";
 }
 
 std::string     GLShaderManager::BuildGPUShaderText( const char *mainShaderName,
@@ -186,427 +208,321 @@ std::string     GLShaderManager::BuildGPUShaderText( const char *mainShaderName,
 		ri.Error( ERR_DROP, "Couldn't load %s", filename );
 	}
 
-	{
-		static char bufferExtra[ 32000 ];
-		int         sizeExtra;
-
-		char        *bufferFinal = NULL;
-		int         sizeFinal;
-
-		float       fbufWidthScale, fbufHeightScale;
-		float       npotWidthScale, npotHeightScale;
-
-		Com_Memset( bufferExtra, 0, sizeof( bufferExtra ) );
+	std::string bufferExtra;
+	
+	bufferExtra.reserve( 4096 );
 
 #if defined( COMPAT_Q3A ) || defined( COMPAT_ET )
-		Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef COMPAT_Q3A\n#define COMPAT_Q3A 1\n#endif\n" );
+	AddGLSLDefine( bufferExtra, "COMPAT_Q3A", 1 );
 #endif
 
 #if defined( COMPAT_ET )
-		Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef COMPAT_ET\n#define COMPAT_ET 1\n#endif\n" );
+	AddGLSLDefine( bufferExtra, "COMPAT_ET", 1 );
 #endif
 
-		// HACK: add some macros to avoid extra uniforms and save speed and code maintenance
-		Q_strcat( bufferExtra, sizeof( bufferExtra ),
-		          va( "#ifndef r_SpecularExponent\n#define r_SpecularExponent %f\n#endif\n", r_specularExponent->value ) );
+	if( glConfig2.textureRGAvailable ) {
+		AddGLSLDefine( bufferExtra, "TEXTURE_RG", 1 );
+	}
 
-		Q_strcat( bufferExtra, sizeof( bufferExtra ),
-		          va( "#ifndef r_SpecularExponent2\n#define r_SpecularExponent2 %f\n#endif\n", r_specularExponent2->value ) );
+	AddGLSLDefine( bufferExtra, "r_SpecularScale", r_specularScale->value );
 
-		Q_strcat( bufferExtra, sizeof( bufferExtra ),
-		          va( "#ifndef r_SpecularScale\n#define r_SpecularScale %f\n#endif\n", r_specularScale->value ) );
-		//Q_strcat(bufferExtra, sizeof(bufferExtra),
-		//       va("#ifndef r_NormalScale\n#define r_NormalScale %f\n#endif\n", r_normalScale->value));
+	//AddGLSLDefine( bufferExtra, "r_NormalScale", r_normalScale->value );
 
-		Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef M_PI\n#define M_PI 3.14159265358979323846f\n#endif\n" );
+	AddGLSLDefine( bufferExtra, "M_PI", static_cast<float>( M_PI ) );
+	AddGLSLDefine( bufferExtra, "MAX_SHADOWMAPS", MAX_SHADOWMAPS );
+	AddGLSLDefine( bufferExtra, "MAX_SHADER_DEFORM_PARMS", MAX_SHADER_DEFORM_PARMS );
 
-		Q_strcat( bufferExtra, sizeof( bufferExtra ), va( "#ifndef MAX_SHADOWMAPS\n#define MAX_SHADOWMAPS %i\n#endif\n", MAX_SHADOWMAPS ) );
+	AddGLSLDefine( bufferExtra, "deform_t" );
+	AddGLSLDefine( bufferExtra, "DEFORM_WAVE", DEFORM_WAVE );
+	AddGLSLDefine( bufferExtra, "DEFORM_BULGE", DEFORM_BULGE );
+	AddGLSLDefine( bufferExtra, "DEFORM_MOVE", DEFORM_MOVE );
 
-		Q_strcat( bufferExtra, sizeof( bufferExtra ), va( "#ifndef MAX_SHADER_DEFORM_PARMS\n#define MAX_SHADER_DEFORM_PARMS %i\n#endif\n", MAX_SHADER_DEFORM_PARMS ) );
+	AddGLSLDefine( bufferExtra, "genFunc_t" );
+	AddGLSLDefine( bufferExtra, "GF_NONE", static_cast<float>( GF_NONE ) );
+	AddGLSLDefine( bufferExtra, "GF_SIN", static_cast<float>( GF_SIN ) );
+	AddGLSLDefine( bufferExtra, "GF_SQUARE", static_cast<float>( GF_SQUARE ) );
+	AddGLSLDefine( bufferExtra, "GF_TRIANGLE", static_cast<float>( GF_TRIANGLE ) );
+	AddGLSLDefine( bufferExtra, "GF_SAWTOOTH", static_cast<float>( GF_SAWTOOTH ) );
+	AddGLSLDefine( bufferExtra, "GF_INVERSE_SAWTOOTH", static_cast<float>( GF_INVERSE_SAWTOOTH ) );
+	AddGLSLDefine( bufferExtra, "GF_NOISE", static_cast<float>( GF_NOISE ) );
 
-		Q_strcat( bufferExtra, sizeof( bufferExtra ),
-		          va( "#ifndef deform_t\n"
-		              "#define deform_t\n"
-		              "#define DEFORM_WAVE %i\n"
-		              "#define DEFORM_BULGE %i\n"
-		              "#define DEFORM_MOVE %i\n"
-		              "#endif\n",
-		              DEFORM_WAVE,
-		              DEFORM_BULGE,
-		              DEFORM_MOVE ) );
+	/*
+	AddGLSLDefine( bufferExtra, "deformGen_t" );
+	AddGLSLDefine( bufferExtra, "DGEN_WAVE_SIN", static_cast<float>( DGEN_WAVE_SIN ) );
+	AddGLSLDefine( bufferExtra, "DGEN_WAVE_SQUARE", static_cast<float>( DGEN_WAVE_SQUARE ) );
+	AddGLSLDefine( bufferExtra, "DGEN_WAVE_TRIANGLE", static_cast<float>( DGEN_WAVE_TRIANGLE ) );
+	AddGLSLDefine( bufferExtra, "DGEN_WAVE_SAWTOOTH", static_cast<float>( DGEN_WAVE_SAWTOOTH ) );
+	AddGLSLDefine( bufferExtra, "DGEN_WAVE_INVERSE_SAWTOOH", static_cast<float>( DGEN_WAVE_INVERSE_SAWTOOTH ) );
+	AddGLSLDefine( bufferExtra, "DGEN_BULGE", static_cast<float>( DGEN_BULGE ) );
+	AddGLSLDefine( bufferExtra, "DGEN_MOVE", static_cast<float>( DGEN_MOVE ) );
 
-		Q_strcat( bufferExtra, sizeof( bufferExtra ),
-		          va( "#ifndef genFunc_t\n"
-		              "#define genFunc_t\n"
-		              "#define GF_NONE %1.1f\n"
-		              "#define GF_SIN %1.1f\n"
-		              "#define GF_SQUARE %1.1f\n"
-		              "#define GF_TRIANGLE %1.1f\n"
-		              "#define GF_SAWTOOTH %1.1f\n"
-		              "#define GF_INVERSE_SAWTOOTH %1.1f\n"
-		              "#define GF_NOISE %1.1f\n"
-		              "#endif\n",
-		              ( float ) GF_NONE,
-		              ( float ) GF_SIN,
-		              ( float ) GF_SQUARE,
-		              ( float ) GF_TRIANGLE,
-		              ( float ) GF_SAWTOOTH,
-		              ( float ) GF_INVERSE_SAWTOOTH,
-		              ( float ) GF_NOISE ) );
+	AddGLSLDefine( bufferExtra, "colorGen_t" );
+	AddGLSLDefine( bufferExtra, "CGEN_VERTEX", CGEN_VERTEX );
+	AddGLSLDefine( bufferExtra, "CGEN_ONE_MINUS_VERTEX", CGEN_ONE_MINUX_VERTEX );
 
-		/*
-		Q_strcat(bufferExtra, sizeof(bufferExtra),
-		                                 va("#ifndef deformGen_t\n"
-		                                        "#define deformGen_t\n"
-		                                        "#define DGEN_WAVE_SIN %1.1f\n"
-		                                        "#define DGEN_WAVE_SQUARE %1.1f\n"
-		                                        "#define DGEN_WAVE_TRIANGLE %1.1f\n"
-		                                        "#define DGEN_WAVE_SAWTOOTH %1.1f\n"
-		                                        "#define DGEN_WAVE_INVERSE_SAWTOOTH %1.1f\n"
-		                                        "#define DGEN_BULGE %i\n"
-		                                        "#define DGEN_MOVE %i\n"
-		                                        "#endif\n",
-		                                        (float)DGEN_WAVE_SIN,
-		                                        (float)DGEN_WAVE_SQUARE,
-		                                        (float)DGEN_WAVE_TRIANGLE,
-		                                        (float)DGEN_WAVE_SAWTOOTH,
-		                                        (float)DGEN_WAVE_INVERSE_SAWTOOTH,
-		                                        DGEN_BULGE,
-		                                        DGEN_MOVE));
-		                                */
+	AddGLSLDefine( bufferExtra, "alphaGen_t" );
+	AddGLSLDefine( bufferExtra, "AGEN_VERTEX", AGEN_VERTEX );
+	AddGLSLDefine( bufferExtra, "AGEN_ONE_MINUS_VERTEX", AGEN_ONE_MINUS_VERTEX );
+	*/
 
-		/*
-		Q_strcat(bufferExtra, sizeof(bufferExtra),
-		                                 va("#ifndef colorGen_t\n"
-		                                        "#define colorGen_t\n"
-		                                        "#define CGEN_VERTEX %i\n"
-		                                        "#define CGEN_ONE_MINUS_VERTEX %i\n"
-		                                        "#endif\n",
-		                                        CGEN_VERTEX,
-		                                        CGEN_ONE_MINUS_VERTEX));
+	float fbufWidthScale = Q_recip( ( float ) glConfig.vidWidth );
+	float fbufHeightScale = Q_recip( ( float ) glConfig.vidHeight );
 
-		Q_strcat(bufferExtra, sizeof(bufferExtra),
-		                                                 va("#ifndef alphaGen_t\n"
-		                                                        "#define alphaGen_t\n"
-		                                                        "#define AGEN_VERTEX %i\n"
-		                                                        "#define AGEN_ONE_MINUS_VERTEX %i\n"
-		                                                        "#endif\n",
-		                                                        AGEN_VERTEX,
-		                                                        AGEN_ONE_MINUS_VERTEX));
-		                                                        */
+	AddGLSLDefine( bufferExtra, "r_FBufScale", fbufWidthScale, fbufHeightScale );
 
-		fbufWidthScale = Q_recip( ( float ) glConfig.vidWidth );
-		fbufHeightScale = Q_recip( ( float ) glConfig.vidHeight );
-		Q_strcat( bufferExtra, sizeof( bufferExtra ),
-		          va( "#ifndef r_FBufScale\n#define r_FBufScale vec2(%f, %f)\n#endif\n", fbufWidthScale, fbufHeightScale ) );
+	float npotWidthScale = 1;
+	float npotHeightScale = 1;
 
-		if ( glConfig2.textureNPOTAvailable )
+	if ( !glConfig2.textureNPOTAvailable )
+	{
+		npotWidthScale = ( float ) glConfig.vidWidth / ( float ) NearestPowerOfTwo( glConfig.vidWidth );
+		npotHeightScale = ( float ) glConfig.vidHeight / ( float ) NearestPowerOfTwo( glConfig.vidHeight );
+	}
+
+	AddGLSLDefine( bufferExtra, "r_NPOTScale", npotWidthScale, npotHeightScale );
+		
+	if ( glConfig.driverType == GLDRV_MESA )
+	{
+		AddGLSLDefine( bufferExtra, "GLDRV_MESA", 1 );
+	}
+
+	if ( glConfig.hardwareType == GLHW_ATI )
+	{
+		AddGLSLDefine( bufferExtra, "GLHW_ATI", 1 );
+	}
+	else if ( glConfig.hardwareType == GLHW_ATI_DX10 )
+	{
+		AddGLSLDefine( bufferExtra, "GLHW_ATI_DX10", 1 );
+	}
+	else if ( glConfig.hardwareType == GLHW_NV_DX10 )
+	{
+		AddGLSLDefine( bufferExtra, "GLHW_NV_DX10", 1 );
+	}
+
+	if ( r_shadows->integer >= SHADOWING_ESM16 && glConfig2.textureFloatAvailable && glConfig2.framebufferObjectAvailable )
+	{
+		if ( r_shadows->integer == SHADOWING_ESM16 || r_shadows->integer == SHADOWING_ESM32 )
 		{
-			npotWidthScale = 1;
-			npotHeightScale = 1;
+			AddGLSLDefine( bufferExtra, "ESM", 1 );
+		}
+		else if ( r_shadows->integer == SHADOWING_EVSM32 )
+		{
+			AddGLSLDefine( bufferExtra, "EVSM", 1 );
+			// The exponents for the EVSM techniques should be less than ln(FLT_MAX/FILTER_SIZE)/2 {ln(FLT_MAX/1)/2 ~44.3}
+			//         42.9 is the maximum possible value for FILTER_SIZE=15
+			//         42.0 is the truncated value that we pass into the sample
+			AddGLSLDefine( bufferExtra, "r_EVSMExponents", 42.0f, 42.0f );
+			if ( r_evsmPostProcess->integer )
+			{
+				AddGLSLDefine( bufferExtra,"r_EVSMPostProcess", 1 );
+			}
 		}
 		else
 		{
-			npotWidthScale = ( float ) glConfig.vidWidth / ( float ) NearestPowerOfTwo( glConfig.vidWidth );
-			npotHeightScale = ( float ) glConfig.vidHeight / ( float ) NearestPowerOfTwo( glConfig.vidHeight );
+			AddGLSLDefine( bufferExtra, "VSM", 1 );
+
+			if ( glConfig.hardwareType == GLHW_ATI )
+			{
+				AddGLSLDefine( bufferExtra, "VSM_CLAMP", 1 );
+			}
 		}
 
-		Q_strcat( bufferExtra, sizeof( bufferExtra ),
-		          va( "#ifndef r_NPOTScale\n#define r_NPOTScale vec2(%f, %f)\n#endif\n", npotWidthScale, npotHeightScale ) );
-
-		if ( glConfig.driverType == GLDRV_MESA )
+		if ( ( glConfig.hardwareType == GLHW_NV_DX10 || glConfig.hardwareType == GLHW_ATI_DX10 ) && r_shadows->integer == SHADOWING_VSM32 )
 		{
-			Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef GLDRV_MESA\n#define GLDRV_MESA 1\n#endif\n" );
+			AddGLSLDefine( bufferExtra, "VSM_EPSILON", 0.000001f );
 		}
-
-		if ( glConfig.hardwareType == GLHW_ATI )
+		else
 		{
-			Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef GLHW_ATI\n#define GLHW_ATI 1\n#endif\n" );
+			AddGLSLDefine( bufferExtra, "VSM_EPSILON", 0.0001f );
 		}
-		else if ( glConfig.hardwareType == GLHW_ATI_DX10 )
+
+		if ( r_lightBleedReduction->value )
 		{
-			Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef GLHW_ATI_DX10\n#define GLHW_ATI_DX10 1\n#endif\n" );
+			AddGLSLDefine( bufferExtra, "r_LightBleedReduction", r_lightBleedReduction->value );
 		}
-		else if ( glConfig.hardwareType == GLHW_NV_DX10 )
+
+		if ( r_overDarkeningFactor->value )
 		{
-			Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef GLHW_NV_DX10\n#define GLHW_NV_DX10 1\n#endif\n" );
+			AddGLSLDefine( bufferExtra, "r_OverDarkeningFactor", r_overDarkeningFactor->value );
 		}
 
-		if ( r_shadows->integer >= SHADOWING_ESM16 && glConfig2.textureFloatAvailable && glConfig2.framebufferObjectAvailable )
+		if ( r_shadowMapDepthScale->value )
 		{
-			if ( r_shadows->integer == SHADOWING_ESM16 || r_shadows->integer == SHADOWING_ESM32 )
-			{
-				Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef ESM\n#define ESM 1\n#endif\n" );
-			}
-			else if ( r_shadows->integer == SHADOWING_EVSM32 )
-			{
-				Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef EVSM\n#define EVSM 1\n#endif\n" );
-
-				// The exponents for the EVSM techniques should be less than ln(FLT_MAX/FILTER_SIZE)/2 {ln(FLT_MAX/1)/2 ~44.3}
-				//         42.9 is the maximum possible value for FILTER_SIZE=15
-				//         42.0 is the truncated value that we pass into the sample
-				Q_strcat( bufferExtra, sizeof( bufferExtra ),
-				          va( "#ifndef r_EVSMExponents\n#define r_EVSMExponents vec2(%f, %f)\n#endif\n", 42.0f, 42.0f ) );
-
-				if ( r_evsmPostProcess->integer )
-				{
-					Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef r_EVSMPostProcess\n#define r_EVSMPostProcess 1\n#endif\n" );
-				}
-			}
-			else
-			{
-				Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef VSM\n#define VSM 1\n#endif\n" );
-
-				if ( glConfig.hardwareType == GLHW_ATI )
-				{
-					Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef VSM_CLAMP\n#define VSM_CLAMP 1\n#endif\n" );
-				}
-			}
-
-			if ( ( glConfig.hardwareType == GLHW_NV_DX10 || glConfig.hardwareType == GLHW_ATI_DX10 ) && r_shadows->integer == SHADOWING_VSM32 )
-			{
-				Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef VSM_EPSILON\n#define VSM_EPSILON 0.000001\n#endif\n" );
-			}
-			else
-			{
-				Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef VSM_EPSILON\n#define VSM_EPSILON 0.0001\n#endif\n" );
-			}
-
-			if ( r_lightBleedReduction->value )
-			{
-				Q_strcat( bufferExtra, sizeof( bufferExtra ),
-				          va( "#ifndef r_LightBleedReduction\n#define r_LightBleedReduction %f\n#endif\n",
-				              r_lightBleedReduction->value ) );
-			}
-
-			if ( r_overDarkeningFactor->value )
-			{
-				Q_strcat( bufferExtra, sizeof( bufferExtra ),
-				          va( "#ifndef r_OverDarkeningFactor\n#define r_OverDarkeningFactor %f\n#endif\n",
-				              r_overDarkeningFactor->value ) );
-			}
-
-			if ( r_shadowMapDepthScale->value )
-			{
-				Q_strcat( bufferExtra, sizeof( bufferExtra ),
-				          va( "#ifndef r_ShadowMapDepthScale\n#define r_ShadowMapDepthScale %f\n#endif\n",
-				              r_shadowMapDepthScale->value ) );
-			}
-
-			if ( r_debugShadowMaps->integer )
-			{
-				Q_strcat( bufferExtra, sizeof( bufferExtra ),
-				          va( "#ifndef r_DebugShadowMaps\n#define r_DebugShadowMaps %i\n#endif\n", r_debugShadowMaps->integer ) );
-			}
-
-			/*
-			if(r_softShadows->integer == 1)
-			{
-			        Q_strcat(bufferExtra, sizeof(bufferExtra), "#ifndef PCF_2X2\n#define PCF_2X2 1\n#endif\n");
-			}
-			else if(r_softShadows->integer == 2)
-			{
-			        Q_strcat(bufferExtra, sizeof(bufferExtra), "#ifndef PCF_3X3\n#define PCF_3X3 1\n#endif\n");
-			}
-			else if(r_softShadows->integer == 3)
-			{
-			        Q_strcat(bufferExtra, sizeof(bufferExtra), "#ifndef PCF_4X4\n#define PCF_4X4 1\n#endif\n");
-			}
-			else if(r_softShadows->integer == 4)
-			{
-			        Q_strcat(bufferExtra, sizeof(bufferExtra), "#ifndef PCF_5X5\n#define PCF_5X5 1\n#endif\n");
-			}
-			else if(r_softShadows->integer == 5)
-			{
-			        Q_strcat(bufferExtra, sizeof(bufferExtra), "#ifndef PCF_6X6\n#define PCF_6X6 1\n#endif\n");
-			}
-			*/
-			if ( r_softShadows->integer == 6 )
-			{
-				Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef PCSS\n#define PCSS 1\n#endif\n" );
-			}
-			else if ( r_softShadows->integer )
-			{
-				Q_strcat( bufferExtra, sizeof( bufferExtra ),
-				          va( "#ifndef r_PCFSamples\n#define r_PCFSamples %1.1f\n#endif\n", r_softShadows->value + 1.0f ) );
-			}
-
-			if ( r_parallelShadowSplits->integer )
-			{
-				Q_strcat( bufferExtra, sizeof( bufferExtra ),
-				          va( "#ifndef r_ParallelShadowSplits_%i\n#define r_ParallelShadowSplits_%i\n#endif\n", r_parallelShadowSplits->integer, r_parallelShadowSplits->integer ) );
-			}
-
-			if ( r_showParallelShadowSplits->integer )
-			{
-				Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef r_ShowParallelShadowSplits\n#define r_ShowParallelShadowSplits 1\n#endif\n" );
-			}
+			AddGLSLDefine( bufferExtra, "r_ShadowMapDepthScale", r_shadowMapDepthScale->value );
 		}
 
-		if ( r_deferredShading->integer && glConfig2.maxColorAttachments >= 4 && glConfig2.textureFloatAvailable &&
-		     glConfig2.drawBuffersAvailable && glConfig2.maxDrawBuffers >= 4 )
+		if ( r_debugShadowMaps->integer )
 		{
-			if ( r_deferredShading->integer == DS_STANDARD )
-			{
-				Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef r_DeferredShading\n#define r_DeferredShading 1\n#endif\n" );
-			}
+			AddGLSLDefine( bufferExtra, "r_DebugShadowMaps", r_debugShadowMaps->integer );
 		}
 
-		if ( r_hdrRendering->integer && glConfig2.framebufferObjectAvailable && glConfig2.textureFloatAvailable )
+		/*
+		if(r_softShadows->integer == 1)
 		{
-			Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef r_HDRRendering\n#define r_HDRRendering 1\n#endif\n" );
-
-			Q_strcat( bufferExtra, sizeof( bufferExtra ),
-			          va( "#ifndef r_HDRContrastThreshold\n#define r_HDRContrastThreshold %f\n#endif\n",
-			              r_hdrContrastThreshold->value ) );
-
-			Q_strcat( bufferExtra, sizeof( bufferExtra ),
-			          va( "#ifndef r_HDRContrastOffset\n#define r_HDRContrastOffset %f\n#endif\n",
-			              r_hdrContrastOffset->value ) );
-
-			Q_strcat( bufferExtra, sizeof( bufferExtra ),
-			          va( "#ifndef r_HDRToneMappingOperator\n#define r_HDRToneMappingOperator_%i\n#endif\n",
-			              r_hdrToneMappingOperator->integer ) );
-
-			Q_strcat( bufferExtra, sizeof( bufferExtra ),
-			          va( "#ifndef r_HDRGamma\n#define r_HDRGamma %f\n#endif\n",
-			              r_hdrGamma->value ) );
+			AddGLSLDefine( bufferExtra, "PCF_2X2", 1 );
 		}
-
-		if ( r_precomputedLighting->integer )
+		else if(r_softShadows->integer == 2)
 		{
-			Q_strcat( bufferExtra, sizeof( bufferExtra ),
-			          "#ifndef r_precomputedLighting\n#define r_precomputedLighting 1\n#endif\n" );
+			AddGLSLDefine( bufferExtra, "PCF_3X3", 1 );
+		}
+		else if(r_softShadows->integer == 3)
+		{
+			AddGLSLDefine( bufferExtra, "PCF_4X4", 1 );
+		}
+		else if(r_softShadows->integer == 4)
+		{
+			AddGLSLDefine( bufferExtra, "PCF_5X5", 1 );
+		}
+		else if(r_softShadows->integer == 5)
+		{
+			AddGLSLDefine( bufferExtra, "PCF_6X6", 1 );
+		}
+		*/
+		if ( r_softShadows->integer == 6 )
+		{
+			AddGLSLDefine( bufferExtra, "PCSS", 1 );
+		}
+		else if ( r_softShadows->integer )
+		{
+			AddGLSLDefine( bufferExtra, "r_PCFSamples", r_softShadows->value + 1.0f );
 		}
 
-		if ( r_heatHazeFix->integer && glConfig2.framebufferBlitAvailable && /*glConfig.hardwareType != GLHW_ATI && glConfig.hardwareType != GLHW_ATI_DX10 &&*/ glConfig.driverType != GLDRV_MESA )
+		if ( r_parallelShadowSplits->integer )
 		{
-			Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef r_heatHazeFix\n#define r_heatHazeFix 1\n#endif\n" );
+			AddGLSLDefine( bufferExtra, va( "r_ParallelShadowSplits_%d", r_parallelShadowSplits->integer ) );
 		}
 
-		if ( r_showLightMaps->integer )
+		if ( r_showParallelShadowSplits->integer )
 		{
-			Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef r_showLightMaps\n#define r_showLightMaps 1\n#endif\n" );
+			AddGLSLDefine( bufferExtra, "r_ShowParallelShadowSplits", 1 );
 		}
+	}
 
-		if ( r_showDeluxeMaps->integer )
+	if ( r_deferredShading->integer && glConfig2.maxColorAttachments >= 4 && glConfig2.textureFloatAvailable &&
+		    glConfig2.drawBuffersAvailable && glConfig2.maxDrawBuffers >= 4 )
+	{
+		if ( r_deferredShading->integer == DS_STANDARD )
 		{
-			Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef r_showDeluxeMaps\n#define r_showDeluxeMaps 1\n#endif\n" );
+			AddGLSLDefine( bufferExtra, "r_DeferredShading", 1 );
 		}
+	}
+
+	if ( r_hdrRendering->integer && glConfig2.framebufferObjectAvailable && glConfig2.textureFloatAvailable )
+	{
+		AddGLSLDefine( bufferExtra, "r_HDRRendering", 1 );
+		AddGLSLDefine( bufferExtra, "r_HDRContrastThreshold", r_hdrContrastThreshold->value );
+		AddGLSLDefine( bufferExtra, "r_HDRContrastOffset", r_hdrContrastOffset->value );
+		AddGLSLDefine( bufferExtra, va( "r_HDRToneMappingOperator_%d", r_hdrToneMappingOperator->integer ) );
+		AddGLSLDefine( bufferExtra, "r_HDRGamma", r_hdrGamma->value );
+	}
+
+	if ( r_precomputedLighting->integer )
+	{
+		AddGLSLDefine( bufferExtra, "r_precomputedLighting", 1 );
+	}
+
+	if ( r_heatHazeFix->integer && glConfig2.framebufferBlitAvailable && /*glConfig.hardwareType != GLHW_ATI && glConfig.hardwareType != GLHW_ATI_DX10 &&*/ glConfig.driverType != GLDRV_MESA )
+	{
+		AddGLSLDefine( bufferExtra, "r_heatHazeFix", 1 );
+	}
+
+	if ( r_showLightMaps->integer )
+	{
+		AddGLSLDefine( bufferExtra, "r_showLightMaps", r_showLightMaps->integer );
+	}
+
+	if ( r_showDeluxeMaps->integer )
+	{
+		AddGLSLDefine( bufferExtra, "r_showDeluxeMaps", r_showDeluxeMaps->integer );
+	}
 
 #ifdef EXPERIMENTAL
 
-		if ( r_screenSpaceAmbientOcclusion->integer )
+	if ( r_screenSpaceAmbientOcclusion->integer )
+	{
+		int             i;
+		static vec3_t   jitter[ 32 ];
+		static qboolean jitterInit = qfalse;
+
+		if ( !jitterInit )
 		{
-			int             i;
-			static vec3_t   jitter[ 32 ];
-			static qboolean jitterInit = qfalse;
-
-			if ( !jitterInit )
+			for ( i = 0; i < 32; i++ )
 			{
-				for ( i = 0; i < 32; i++ )
-				{
-					float *jit = &jitter[ i ][ 0 ];
+				float *jit = &jitter[ i ][ 0 ];
 
-					float rad = crandom() * 1024.0f; // FIXME radius;
-					float a = crandom() * M_PI * 2;
-					float b = crandom() * M_PI * 2;
+				float rad = crandom() * 1024.0f; // FIXME radius;
+				float a = crandom() * M_PI * 2;
+				float b = crandom() * M_PI * 2;
 
-					jit[ 0 ] = rad * sin( a ) * cos( b );
-					jit[ 1 ] = rad * sin( a ) * sin( b );
-					jit[ 2 ] = rad * cos( a );
-				}
-
-				jitterInit = qtrue;
+				jit[ 0 ] = rad * sin( a ) * cos( b );
+				jit[ 1 ] = rad * sin( a ) * sin( b );
+				jit[ 2 ] = rad * cos( a );
 			}
 
-			// TODO
+			jitterInit = qtrue;
 		}
+
+		// TODO
+	}
 
 #endif
 
-		if ( glConfig2.vboVertexSkinningAvailable )
-		{
-			Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef r_VertexSkinning\n#define r_VertexSkinning 1\n#endif\n" );
+	if ( glConfig2.vboVertexSkinningAvailable )
+	{
+		AddGLSLDefine( bufferExtra, "r_VertexSkinning", 1 );
+		AddGLSLDefine( bufferExtra, "MAX_GLSL_BONES", glConfig2.maxVertexSkinningBones );
+	}
+	else
+	{
+		AddGLSLDefine( bufferExtra, "MAX_GLSL_BONES", 4 );
+	}
 
-			Q_strcat( bufferExtra, sizeof( bufferExtra ),
-			          va( "#ifndef MAX_GLSL_BONES\n#define MAX_GLSL_BONES %i\n#endif\n", glConfig2.maxVertexSkinningBones ) );
-		}
-		else
-		{
-			Q_strcat( bufferExtra, sizeof( bufferExtra ),
-			          va( "#ifndef MAX_GLSL_BONES\n#define MAX_GLSL_BONES %i\n#endif\n", 4 ) );
-		}
+	/*
+	if(glConfig.drawBuffersAvailable && glConfig.maxDrawBuffers >= 4)
+	{
+		AddGLSLDefine( bufferExtra, "GL_ARB_draw_buffers", 1 );
+		bufferExtra += "#extension GL_ARB_draw_buffers : enable\n";
+	}
+	*/
 
-		/*
-		   if(glConfig.drawBuffersAvailable && glConfig.maxDrawBuffers >= 4)
-		   {
-		   //Q_strcat(bufferExtra, sizeof(bufferExtra), "#ifndef GL_ARB_draw_buffers\n#define GL_ARB_draw_buffers 1\n#endif\n");
-		   Q_strcat(bufferExtra, sizeof(bufferExtra), "#extension GL_ARB_draw_buffers : enable\n");
-		   }
-		 */
+	if ( r_wrapAroundLighting->value )
+	{
+		AddGLSLDefine( bufferExtra, "r_WrapAroundLighting", r_wrapAroundLighting->value );
+	}
 
-		if ( r_wrapAroundLighting->value )
-		{
-			Q_strcat( bufferExtra, sizeof( bufferExtra ),
-			          va( "#ifndef r_WrapAroundLighting\n#define r_WrapAroundLighting %f\n#endif\n",
-			              r_wrapAroundLighting->value ) );
-		}
+	if ( r_halfLambertLighting->integer )
+	{
+		AddGLSLDefine( bufferExtra, "r_HalfLambertLighting", 1 );
+	}
 
-		if ( r_halfLambertLighting->integer )
-		{
-			Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef r_HalfLambertLighting\n#define r_HalfLambertLighting 1\n#endif\n" );
-		}
+	if ( r_rimLighting->integer )
+	{
+		AddGLSLDefine( bufferExtra, "r_RimLighting", 1 );
+		AddGLSLDefine( bufferExtra, "r_RimExponent", r_rimExponent->value );
+	}
 
-		if ( r_rimLighting->integer )
-		{
-			Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef r_RimLighting\n#define r_RimLighting 1\n#endif\n" );
-			Q_strcat( bufferExtra, sizeof( bufferExtra ), va( "#ifndef r_RimExponent\n#define r_RimExponent %f\n#endif\n",
-			          r_rimExponent->value ) );
-		}
-
-		// OK we added a lot of stuff but if we do something bad in the GLSL shaders then we want the proper line
-		// so we have to reset the line counting
-		Q_strcat( bufferExtra, sizeof( bufferExtra ), "#line 0\n" );
-
-		sizeExtra = strlen( bufferExtra );
-		sizeFinal = sizeExtra + mainSize + libsBuffer.size();
-
-		//ri.Printf(PRINT_ALL, "GLSL extra: %s\n", bufferExtra);
-
-		bufferFinal = ( char * ) ri.Hunk_AllocateTempMemory( sizeFinal );
-
-		strcpy( bufferFinal, bufferExtra );
-
-		if ( libsBuffer.size() > 0 )
-		{
-			Q_strcat( bufferFinal, sizeFinal, libsBuffer.c_str() );
-		}
-
-		Q_strcat( bufferFinal, sizeFinal, mainBuffer );
+	// OK we added a lot of stuff but if we do something bad in the GLSL shaders then we want the proper line
+	// so we have to reset the line counting
+	bufferExtra += "#line 0\n";
+	shaderText = bufferExtra + libsBuffer + mainBuffer;
 
 #if 0
+	{
+		static char msgPart[ 1024 ];
+		int         i;
+		ri.Printf( PRINT_WARNING, "----------------------------------------------------------\n" );
+		ri.Printf( PRINT_WARNING, "CONCATENATED shader '%s' ----------\n", filename );
+		ri.Printf( PRINT_WARNING, " BEGIN ---------------------------------------------------\n" );
+
+		for ( i = 0; i < sizeFinal; i += 1024 )
 		{
-			static char msgPart[ 1024 ];
-			int         i;
-			ri.Printf( PRINT_WARNING, "----------------------------------------------------------\n" );
-			ri.Printf( PRINT_WARNING, "CONCATENATED shader '%s' ----------\n", filename );
-			ri.Printf( PRINT_WARNING, " BEGIN ---------------------------------------------------\n" );
-
-			for ( i = 0; i < sizeFinal; i += 1024 )
-			{
-				Q_strncpyz( msgPart, bufferFinal + i, sizeof( msgPart ) );
-				ri.Printf( PRINT_ALL, "%s", msgPart );
-			}
-
-			ri.Printf( PRINT_WARNING, " END-- ---------------------------------------------------\n" );
+			Q_strncpyz( msgPart, shaderText.c_str() + i, sizeof( msgPart ) );
+			ri.Printf( PRINT_ALL, "%s", msgPart );
 		}
-#endif
 
-		shaderText = std::string( bufferFinal, sizeFinal );
-
-		ri.Hunk_FreeTempMemory( bufferFinal );
+		ri.Printf( PRINT_WARNING, " END-- ---------------------------------------------------\n" );
 	}
+#endif
 
 	ri.FS_FreeFile( mainBuffer );
 
@@ -618,12 +534,6 @@ bool GLShaderManager::buildPermutation( GLShader *shader, size_t i )
 	std::string compileMacros;
 	int  startTime = ri.Milliseconds();
 	int  endTime;
-
-	// record start of shader building
-	if ( !_beginBuildTime )
-	{
-		_beginBuildTime = ri.Milliseconds();
-	}
 
 	// program already exists
 	if ( shader->_shaderPrograms[ i ].program )
@@ -663,25 +573,8 @@ bool GLShaderManager::buildPermutation( GLShader *shader, size_t i )
 	return false;
 }
 
-void GLShaderManager::buildIncremental( int dt )
+void GLShaderManager::buildAll( )
 {
-	int ntime = ri.Milliseconds();
-
-	if ( dt )
-	{
-		// try to keep framerate at least at 125fps
-		float frameTimeLeft = MAX( 1000 - 125 * backEnd.pc.msec, 1 );
-
-		int buildInterval = ceilf( 1000 * _lastBuildTime / frameTimeLeft );
-
-		if ( ntime - _lastBuildStartTime < buildInterval )
-		{
-			return;
-		}
-	}
-
-	_lastBuildStartTime = ntime;
-
 	while ( !_shaderBuildQueue.empty() )
 	{
 		GLShader *shader = _shaderBuildQueue.front();
@@ -690,45 +583,17 @@ void GLShaderManager::buildIncremental( int dt )
 
 		for( i = 0; i < numPermutations; i++ )
 		{
-			// stop after building one permutation
-			if ( buildPermutation( shader, i ) )
-			{
-				break;
-			}
+			buildPermutation( shader, i );
 		}
 
-		// successfully built a permutation
-		if ( i != numPermutations )
-		{
-			break;
-		}
-
-		// already built all permutations of this shader, so remove it from the queue and try the next shader
-		// this is done to help stabilize differences between frame times if this function is called once per frame
 		_shaderBuildQueue.pop();
-
-		if ( _shaderBuildQueue.empty() )
-		{
-			_endBuildTime = ri.Milliseconds();
-
-			// record times when completely finished
-			ri.Printf( PRINT_DEVELOPER, "glsl shaders took %d msec over a %d msec interval to build\n", _totalBuildTime, _endBuildTime - _beginBuildTime );
-
-			if( r_recompileShaders->integer )
-			{
-				ri.Cvar_Set( "r_recompileShaders", "0" );
-			}
-		}
 	}
 
-	_lastBuildTime = ri.Milliseconds() - ntime;
-}
+	ri.Printf( PRINT_DEVELOPER, "glsl shaders took %d msec to build\n", _totalBuildTime );
 
-void GLShaderManager::buildAll( )
-{
-	while ( !_shaderBuildQueue.empty() )
+	if( r_recompileShaders->integer )
 	{
-		buildIncremental( 0 );
+		ri.Cvar_Set( "r_recompileShaders", "0" );
 	}
 }
 
@@ -1102,11 +967,12 @@ void GLShaderManager::PrintShaderSource( GLuint object ) const
 
 	glGetShaderSource( object, maxLength, &maxLength, msg );
 
-	for ( i = 0; i < maxLength; i += 1024 )
+	for ( i = 0; i < maxLength; i += sizeof( msgPart ) - 1 )
 	{
 		Q_strncpyz( msgPart, msg + i, sizeof( msgPart ) );
-		ri.Printf( PRINT_ALL, "%s\n", msgPart );
+		ri.Printf( PRINT_ALL, "%s", msgPart );
 	}
+	ri.Printf( PRINT_ALL, "\n" );
 
 	ri.Hunk_FreeTempMemory( msg );
 }
@@ -1147,12 +1013,12 @@ void GLShaderManager::PrintInfoLog( GLuint object, bool developerOnly ) const
 		ri.Printf( print, "link log:\n" );
 	}
 
-	for ( i = 0; i < maxLength; i += 1024 )
+	for ( i = 0; i < maxLength; i += sizeof( msgPart ) - 1 )
 	{
 		Q_strncpyz( msgPart, msg + i, sizeof( msgPart ) );
-
-		ri.Printf( print, "%s\n", msgPart );
+		ri.Printf( print, "%s", msgPart );
 	}
+	ri.Printf( PRINT_ALL, "\n" );
 
 	ri.Hunk_FreeTempMemory( msg );
 }
@@ -1196,64 +1062,10 @@ void GLShaderManager::ValidateProgram( GLuint program ) const
 
 void GLShaderManager::BindAttribLocations( GLuint program ) const
 {
-	//if(attribs & ATTR_POSITION)
-	glBindAttribLocation( program, ATTR_INDEX_POSITION, "attr_Position" );
-
-	//if(attribs & ATTR_TEXCOORD)
-	glBindAttribLocation( program, ATTR_INDEX_TEXCOORD0, "attr_TexCoord0" );
-
-	//if(attribs & ATTR_LIGHTCOORD)
-	glBindAttribLocation( program, ATTR_INDEX_TEXCOORD1, "attr_TexCoord1" );
-
-//  if(attribs & ATTR_TEXCOORD2)
-//      glBindAttribLocation(program, ATTR_INDEX_TEXCOORD2, "attr_TexCoord2");
-
-//  if(attribs & ATTR_TEXCOORD3)
-//      glBindAttribLocation(program, ATTR_INDEX_TEXCOORD3, "attr_TexCoord3");
-
-	//if(attribs & ATTR_TANGENT)
-	glBindAttribLocation( program, ATTR_INDEX_TANGENT, "attr_Tangent" );
-
-	//if(attribs & ATTR_BINORMAL)
-	glBindAttribLocation( program, ATTR_INDEX_BINORMAL, "attr_Binormal" );
-
-	//if(attribs & ATTR_NORMAL)
-	glBindAttribLocation( program, ATTR_INDEX_NORMAL, "attr_Normal" );
-
-	//if(attribs & ATTR_COLOR)
-	glBindAttribLocation( program, ATTR_INDEX_COLOR, "attr_Color" );
-
-#if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
-	//if(attribs & ATTR_PAINTCOLOR)
-	glBindAttribLocation( program, ATTR_INDEX_PAINTCOLOR, "attr_PaintColor" );
-#endif
-
-	//if(attribs & ATTR_AMBIENTLIGHT)
-	glBindAttribLocation( program, ATTR_INDEX_AMBIENTLIGHT, "attr_AmbientLight" );
-
-	//if(attribs & ATTR_DIRECTEDLIGHT)
-	glBindAttribLocation( program, ATTR_INDEX_DIRECTEDLIGHT, "attr_DirectedLight" );
-
-	//if(attribs & ATTR_LIGHTDIRECTION)
-	glBindAttribLocation( program, ATTR_INDEX_LIGHTDIRECTION, "attr_LightDirection" );
-
-	//if(glConfig2.vboVertexSkinningAvailable)
+	for ( uint32_t i = 0; i < ATTR_INDEX_MAX; i++ )
 	{
-		glBindAttribLocation( program, ATTR_INDEX_BONE_INDEXES, "attr_BoneIndexes" );
-		glBindAttribLocation( program, ATTR_INDEX_BONE_WEIGHTS, "attr_BoneWeights" );
+		glBindAttribLocation( program, i, attributeNames[ i ] );
 	}
-
-	//if(attribs & ATTR_POSITION2)
-	glBindAttribLocation( program, ATTR_INDEX_POSITION2, "attr_Position2" );
-
-	//if(attribs & ATTR_TANGENT2)
-	glBindAttribLocation( program, ATTR_INDEX_TANGENT2, "attr_Tangent2" );
-
-	//if(attribs & ATTR_BINORMAL2)
-	glBindAttribLocation( program, ATTR_INDEX_BINORMAL2, "attr_Binormal2" );
-
-	//if(attribs & ATTR_NORMAL2)
-	glBindAttribLocation( program, ATTR_INDEX_NORMAL2, "attr_Normal2" );
 }
 
 bool GLCompileMacro_USE_VERTEX_SKINNING::HasConflictingMacros( size_t permutation, const std::vector< GLCompileMacro * > &macros ) const
@@ -1514,6 +1326,8 @@ GLShader_lightMapping::GLShader_lightMapping( GLShaderManager *manager ) :
 	u_DiffuseTextureMatrix( this ),
 	u_NormalTextureMatrix( this ),
 	u_SpecularTextureMatrix( this ),
+	u_GlowTextureMatrix( this ),
+	u_SpecularExponent( this ),
 	u_ColorModulate( this ),
 	u_Color( this ),
 	u_AlphaThreshold( this ),
@@ -1524,7 +1338,8 @@ GLShader_lightMapping::GLShader_lightMapping( GLShaderManager *manager ) :
 	GLDeformStage( this ),
 	GLCompileMacro_USE_DEFORM_VERTEXES( this ),
 	GLCompileMacro_USE_NORMAL_MAPPING( this ),
-	GLCompileMacro_USE_PARALLAX_MAPPING( this )  //,
+	GLCompileMacro_USE_PARALLAX_MAPPING( this ),
+	GLCompileMacro_USE_GLOW_MAPPING( this )//,
 	//GLCompileMacro_TWOSIDED(this)
 {
 }
@@ -1554,6 +1369,7 @@ void GLShader_lightMapping::SetShaderProgramUniforms( shaderProgram_t *shaderPro
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_SpecularMap" ),  2 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_LightMap" ), 3 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_DeluxeMap" ), 4 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_GlowMap" ), 5 );
 }
 
 GLShader_vertexLighting_DBS_entity::GLShader_vertexLighting_DBS_entity( GLShaderManager *manager ) :
@@ -1561,6 +1377,8 @@ GLShader_vertexLighting_DBS_entity::GLShader_vertexLighting_DBS_entity( GLShader
 	u_DiffuseTextureMatrix( this ),
 	u_NormalTextureMatrix( this ),
 	u_SpecularTextureMatrix( this ),
+	u_GlowTextureMatrix( this ),
+	u_SpecularExponent( this ),
 	u_AlphaThreshold( this ),
 	u_AmbientColor( this ),
 	u_ViewOrigin( this ),
@@ -1578,7 +1396,8 @@ GLShader_vertexLighting_DBS_entity::GLShader_vertexLighting_DBS_entity( GLShader
 	GLCompileMacro_USE_DEFORM_VERTEXES( this ),
 	GLCompileMacro_USE_NORMAL_MAPPING( this ),
 	GLCompileMacro_USE_PARALLAX_MAPPING( this ),
-	GLCompileMacro_USE_REFLECTIVE_SPECULAR( this )  //,
+	GLCompileMacro_USE_REFLECTIVE_SPECULAR( this ),
+	GLCompileMacro_USE_GLOW_MAPPING( this )//,
 	//GLCompileMacro_TWOSIDED(this)
 {
 }
@@ -1610,6 +1429,7 @@ void GLShader_vertexLighting_DBS_entity::SetShaderProgramUniforms( shaderProgram
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_SpecularMap" ), 2 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_EnvironmentMap0" ), 3 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_EnvironmentMap1" ), 4 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_GlowMap" ), 5 );
 }
 
 GLShader_vertexLighting_DBS_world::GLShader_vertexLighting_DBS_world( GLShaderManager *manager ) :
@@ -1620,6 +1440,8 @@ GLShader_vertexLighting_DBS_world::GLShader_vertexLighting_DBS_world( GLShaderMa
 	u_DiffuseTextureMatrix( this ),
 	u_NormalTextureMatrix( this ),
 	u_SpecularTextureMatrix( this ),
+	u_GlowTextureMatrix( this ),
+	u_SpecularExponent( this ),
 	u_ColorModulate( this ),
 	u_Color( this ),
 	u_AlphaThreshold( this ),
@@ -1631,7 +1453,8 @@ GLShader_vertexLighting_DBS_world::GLShader_vertexLighting_DBS_world( GLShaderMa
 	GLDeformStage( this ),
 	GLCompileMacro_USE_DEFORM_VERTEXES( this ),
 	GLCompileMacro_USE_NORMAL_MAPPING( this ),
-	GLCompileMacro_USE_PARALLAX_MAPPING( this )  //,
+	GLCompileMacro_USE_PARALLAX_MAPPING( this ),
+	GLCompileMacro_USE_GLOW_MAPPING( this )//,
 	//GLCompileMacro_TWOSIDED(this)
 {
 }
@@ -1658,6 +1481,7 @@ void GLShader_vertexLighting_DBS_world::SetShaderProgramUniforms( shaderProgram_
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_DiffuseMap" ), 0 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_NormalMap" ), 1 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_SpecularMap" ), 2 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_GlowMap" ), 3 );
 }
 
 GLShader_forwardLighting_omniXYZ::GLShader_forwardLighting_omniXYZ( GLShaderManager *manager ):
@@ -1665,6 +1489,7 @@ GLShader_forwardLighting_omniXYZ::GLShader_forwardLighting_omniXYZ( GLShaderMana
 	u_DiffuseTextureMatrix( this ),
 	u_NormalTextureMatrix( this ),
 	u_SpecularTextureMatrix( this ),
+	u_SpecularExponent( this ),
 	u_AlphaThreshold( this ),
 	u_ColorModulate( this ),
 	u_Color( this ),
@@ -1720,11 +1545,9 @@ void GLShader_forwardLighting_omniXYZ::SetShaderProgramUniforms( shaderProgram_t
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_SpecularMap" ), 2 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_AttenuationMapXY" ), 3 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_AttenuationMapZ" ), 4 );
-	//if(r_shadows->integer >= SHADOWING_ESM16)
-	{
-		glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap" ), 5 );
-	}
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap" ), 5 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_RandomMap" ), 6 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowClipMap" ), 7 );
 }
 
 GLShader_forwardLighting_projXYZ::GLShader_forwardLighting_projXYZ( GLShaderManager *manager ):
@@ -1732,6 +1555,7 @@ GLShader_forwardLighting_projXYZ::GLShader_forwardLighting_projXYZ( GLShaderMana
 	u_DiffuseTextureMatrix( this ),
 	u_NormalTextureMatrix( this ),
 	u_SpecularTextureMatrix( this ),
+	u_SpecularExponent( this ),
 	u_AlphaThreshold( this ),
 	u_ColorModulate( this ),
 	u_Color( this ),
@@ -1789,11 +1613,9 @@ void GLShader_forwardLighting_projXYZ::SetShaderProgramUniforms( shaderProgram_t
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_SpecularMap" ), 2 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_AttenuationMapXY" ), 3 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_AttenuationMapZ" ), 4 );
-	//if(r_shadows->integer >= SHADOWING_ESM16)
-	{
-		glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap0" ), 5 );
-	}
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap0" ), 5 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_RandomMap" ), 6 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowClipMap0" ), 7 );
 }
 
 GLShader_forwardLighting_directionalSun::GLShader_forwardLighting_directionalSun( GLShaderManager *manager ):
@@ -1801,6 +1623,7 @@ GLShader_forwardLighting_directionalSun::GLShader_forwardLighting_directionalSun
 	u_DiffuseTextureMatrix( this ),
 	u_NormalTextureMatrix( this ),
 	u_SpecularTextureMatrix( this ),
+	u_SpecularExponent( this ),
 	u_AlphaThreshold( this ),
 	u_ColorModulate( this ),
 	u_Color( this ),
@@ -1860,14 +1683,16 @@ void GLShader_forwardLighting_directionalSun::SetShaderProgramUniforms( shaderPr
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_SpecularMap" ), 2 );
 	//glUniform1i(glGetUniformLocation( shaderProgram->program, "u_AttenuationMapXY" ), 3);
 	//glUniform1i(glGetUniformLocation( shaderProgram->program, "u_AttenuationMapZ" ), 4);
-	//if(r_shadows->integer >= SHADOWING_ESM16)
-	{
-		glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap0" ), 5 );
-		glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap1" ), 6 );
-		glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap2" ), 7 );
-		glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap3" ), 8 );
-		glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap4" ), 9 );
-	}
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap0" ), 5 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap1" ), 6 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap2" ), 7 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap3" ), 8 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap4" ), 9 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowClipMap0" ), 10 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowClipMap1" ), 11 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowClipMap2" ), 12 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowClipMap3" ), 13 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowClipMap4" ), 14 );
 }
 
 GLShader_deferredLighting_omniXYZ::GLShader_deferredLighting_omniXYZ( GLShaderManager *manager ):
@@ -1906,10 +1731,8 @@ void GLShader_deferredLighting_omniXYZ::SetShaderProgramUniforms( shaderProgram_
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_DepthMap" ), 3 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_AttenuationMapXY" ), 4 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_AttenuationMapZ" ), 5 );
-	//if(r_shadows->integer >= SHADOWING_ESM16)
-	{
-		glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap" ), 6 );
-	}
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap" ), 6 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowClipMap" ), 7 );
 }
 
 GLShader_deferredLighting_projXYZ::GLShader_deferredLighting_projXYZ( GLShaderManager *manager ):
@@ -1949,10 +1772,8 @@ void GLShader_deferredLighting_projXYZ::SetShaderProgramUniforms( shaderProgram_
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_DepthMap" ), 3 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_AttenuationMapXY" ), 4 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_AttenuationMapZ" ), 5 );
-	//if(r_shadows->integer >= SHADOWING_ESM16)
-	{
-		glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap0" ), 6 );
-	}
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap0" ), 6 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowClipMap0" ), 7 );
 }
 
 GLShader_deferredLighting_directionalSun::GLShader_deferredLighting_directionalSun( GLShaderManager *manager ):
@@ -1994,14 +1815,16 @@ void GLShader_deferredLighting_directionalSun::SetShaderProgramUniforms( shaderP
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_DepthMap" ), 3 );
 	//glUniform1i(glGetUniformLocation( shaderProgram->program, "u_AttenuationMapXY" ), 4);
 	//glUniform1i(glGetUniformLocation( shaderProgram->program, "u_AttenuationMapZ" ), 5);
-	//if(r_shadows->integer >= SHADOWING_ESM16)
-	{
-		glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap0" ), 6 );
-		glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap1" ), 7 );
-		glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap2" ), 8 );
-		glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap3" ), 9 );
-		glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap4" ), 10 );
-	}
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap0" ), 6 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap1" ), 7 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap2" ), 8 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap3" ), 9 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap4" ), 10 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowClipMap0" ), 11 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowClipMap1" ), 12 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowClipMap2" ), 13 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowClipMap3" ), 14 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowClipMap4" ), 15 );
 }
 
 GLShader_geometricFill::GLShader_geometricFill( GLShaderManager *manager ):
@@ -2018,6 +1841,7 @@ GLShader_geometricFill::GLShader_geometricFill( GLShaderManager *manager ):
 	u_BoneMatrix( this ),
 	u_VertexInterpolation( this ),
 	u_DepthScale( this ),
+	u_SpecularExponent( this ),
 	GLDeformStage( this ),
 	GLCompileMacro_USE_VERTEX_SKINNING( this ),
 	GLCompileMacro_USE_VERTEX_ANIMATION( this ),
@@ -2308,7 +2132,8 @@ void GLShader_cameraEffects::SetShaderProgramUniforms( shaderProgram_t *shaderPr
 GLShader_blurX::GLShader_blurX( GLShaderManager *manager ) :
 	GLShader( "blurX", ATTR_POSITION, manager ),
 	u_ModelViewProjectionMatrix( this ),
-	u_DeformMagnitude( this )
+	u_DeformMagnitude( this ),
+	u_TexScale( this )
 {
 }
 
@@ -2320,7 +2145,8 @@ void GLShader_blurX::SetShaderProgramUniforms( shaderProgram_t *shaderProgram )
 GLShader_blurY::GLShader_blurY( GLShaderManager *manager ) :
 	GLShader( "blurY", ATTR_POSITION, manager ),
 	u_ModelViewProjectionMatrix( this ),
-	u_DeformMagnitude( this )
+	u_DeformMagnitude( this ),
+	u_TexScale( this )
 {
 }
 
@@ -2373,6 +2199,7 @@ void GLShader_lightVolume_omni::SetShaderProgramUniforms( shaderProgram_t *shade
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_AttenuationMapXY" ), 1 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_AttenuationMapZ" ), 2 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap" ), 3 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowClipMap" ), 4 );
 }
 
 GLShader_deferredShadowing_proj::GLShader_deferredShadowing_proj( GLShaderManager *manager ) :
@@ -2395,6 +2222,7 @@ void GLShader_deferredShadowing_proj::SetShaderProgramUniforms( shaderProgram_t 
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_AttenuationMapXY" ), 1 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_AttenuationMapZ" ), 2 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowMap" ), 3 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ShadowClipMap" ), 4 );
 }
 
 GLShader_liquid::GLShader_liquid( GLShaderManager *manager ) :
@@ -2415,6 +2243,7 @@ GLShader_liquid::GLShader_liquid( GLShaderManager *manager ) :
 	u_NormalScale( this ),
 	u_FogDensity( this ),
 	u_FogColor( this ),
+	u_SpecularExponent( this ),
 	GLCompileMacro_USE_PARALLAX_MAPPING( this )
 {
 }

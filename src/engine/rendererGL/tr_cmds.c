@@ -573,6 +573,49 @@ void RE_2DPolyies( polyVert_t *verts, int numverts, qhandle_t hShader )
 }
 
 /*
+================
+RE_ScissorEnable
+================
+*/
+void RE_ScissorEnable( qboolean enable )
+{
+	scissorEnableCommand_t *cmd;
+
+	cmd = R_GetCommandBuffer( sizeof( *cmd ) );
+
+	if ( !cmd )
+	{
+		return;
+	}
+
+	cmd->commandId = RC_SCISSORENABLE;
+	cmd->enable = enable;
+}
+
+/*
+=============
+RE_ScissorSet
+=============
+*/
+void RE_ScissorSet( int x, int y, int w, int h )
+{
+	scissorSetCommand_t *cmd;
+
+	cmd = R_GetCommandBuffer( sizeof( *cmd ) );
+
+	if ( !cmd )
+	{
+		return;
+	}
+
+	cmd->commandId = RC_SCISSORSET;
+	cmd->x = x;
+	cmd->y = y;
+	cmd->w = w;
+	cmd->h = h;
+}
+
+/*
 =============
 RE_RotatedPic
 =============
@@ -668,28 +711,11 @@ void RE_BeginFrame( stereoFrame_t stereoFrame )
 
 	GLimp_LogComment( "--- RE_BeginFrame ---\n" );
 
-#if defined( USE_D3D10 )
-	// TODO
-#else
 	glState.finishCalled = qfalse;
-#endif
 
 	tr.frameCount++;
 	tr.frameSceneNum = 0;
 	tr.viewCount = 0;
-
-#if defined( USE_D3D10 )
-	// draw buffer stuff
-	cmd = R_GetCommandBuffer( sizeof( *cmd ) );
-
-	if ( !cmd )
-	{
-		return;
-	}
-
-	cmd->commandId = RC_DRAW_BUFFER;
-	cmd->buffer = 0;
-#else
 
 	// do overdraw measurement
 	if ( r_measureOverdraw->integer )
@@ -836,8 +862,6 @@ void RE_BeginFrame( stereoFrame_t stereoFrame )
 			cmd->buffer = ( int ) GL_BACK;
 		}
 	}
-
-#endif
 }
 
 /*

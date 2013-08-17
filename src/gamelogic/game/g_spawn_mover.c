@@ -2515,11 +2515,23 @@ STATIC
 
 void SP_func_static( gentity_t *self )
 {
+	char *gradingTexture;
+	float gradingDistance;
+
 	trap_SetBrushModel( self, self->model );
 	InitMover( self );
 	reset_moverspeed( self, 100 ); //TODO do we need this at all?
 	VectorCopy( self->s.origin, self->s.pos.trBase );
 	VectorCopy( self->s.origin, self->r.currentOrigin );
+
+	// check if this func_static has a colorgrading texture
+	if( self->model[0] == '*' &&
+	    G_SpawnString( "gradingTexture", "", &gradingTexture ) ) {
+		G_SpawnFloat( "gradingDistance", "250", &gradingDistance );
+
+		G_GradingTextureIndex( va( "%s %f %s", self->model + 1,
+					   gradingDistance, gradingTexture ) );
+	}
 }
 
 void SP_func_dynamic( gentity_t *self )
@@ -2716,7 +2728,7 @@ void SP_func_spawn( gentity_t *self )
   self->reset = func_spawn_reset;
 }
 
-void func_destructable_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod )
+void func_destructable_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
 {
 	self->takedamage = qfalse;
 	trap_UnlinkEntity( self );
@@ -2744,7 +2756,7 @@ void func_destructable_act( gentity_t *self, gentity_t *caller, gentity_t *activ
     trap_UnlinkEntity( self );
     if( self->health <= 0 )
     {
-    	func_destructable_die( self, caller, activator, 0, MOD_UNKNOWN );
+    	func_destructable_die( self, caller, activator, MOD_UNKNOWN );
     }
   }
   else

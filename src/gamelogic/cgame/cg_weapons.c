@@ -98,7 +98,7 @@ static void CG_LoadCustomCrosshairs( void )
 		return;
 	}
 
-	if ( len == 0 || len >= sizeof( text ) - 1 )
+	if ( len == 0 || len + 1 >= (int) sizeof( text ) )
 	{
 		CG_Printf( len == 0 ? "File %s is empty\n" : "File %s is too long\n", cg_crosshairFile.string );
 		trap_FS_FCloseFile( f );
@@ -212,7 +212,7 @@ static qboolean CG_ParseWeaponAnimationFile( const char *filename, weaponInfo_t 
 		return qfalse;
 	}
 
-	if ( len == 0 || len >= sizeof( text ) - 1 )
+	if ( len == 0 || len + 1 >= (int) sizeof( text ) )
 	{
 		CG_Printf( len == 0 ? "File %s is empty\n" : "File %s is too long\n", filename );
 		trap_FS_FCloseFile( f );
@@ -846,7 +846,7 @@ static qboolean CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo
 		return qfalse;
 	}
 
-	if ( len == 0 || len >= sizeof( text ) - 1 )
+	if ( len == 0 || len + 1 >= (int) sizeof( text ) )
 	{
 		trap_FS_FCloseFile( f );
 		CG_Printf( len == 0 ? "File %s is empty\n" : "File %s is too long\n", filename );
@@ -1663,9 +1663,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 	}
 
 	// Lucifer cannon charge warning beep
-	if ( weaponNum == WP_LUCIFER_CANNON &&
-	     ( cent->currentState.eFlags & EF_WARN_CHARGE ) &&
-	     cg.snap->ps.stats[ STAT_TEAM ] != TEAM_ALIENS )
+	if ( weaponNum == WP_LUCIFER_CANNON && ( cent->currentState.eFlags & EF_WARN_CHARGE ) )
 	{
 		trap_S_AddLoopingSound( cent->currentState.number, cent->lerpOrigin,
 		                        vec3_origin, ps ? cgs.media.lCannonWarningSound :
@@ -2557,6 +2555,8 @@ void CG_MissileHitWall( weapon_t weaponNum, weaponMode_t weaponMode, int clientN
 	int          c;
 	float        radius = 1.0f;
 	weaponInfo_t *weapon = &cg_weapons[ weaponNum ];
+
+	Q_UNUSED(clientNum);
 
 	if ( weaponMode <= WPM_NONE || weaponMode >= WPM_NUM_WEAPONMODES )
 	{

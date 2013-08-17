@@ -30,26 +30,21 @@ R_AddBrushModelInteractions
 Determine which dynamic lights may effect this bmodel
 =============
 */
-void R_AddBrushModelInteractions( trRefEntity_t *ent, trRefLight_t *light )
+void R_AddBrushModelInteractions( trRefEntity_t *ent, trRefLight_t *light, interactionType_t iaType )
 {
 	int               i;
 	bspSurface_t      *surf;
 	bspModel_t        *bspModel = NULL;
 	model_t           *pModel = NULL;
 	byte              cubeSideBits;
-	interactionType_t iaType = IA_DEFAULT;
 
 	// cull the entire model if it is outside the view frustum
 	// and we don't care about proper shadowing
 	if ( ent->cull == CULL_OUT )
 	{
-		if ( r_shadows->integer <= SHADOWING_BLOB || light->l.noShadows )
-		{
+		iaType &= ~IA_LIGHT;
+		if ( !iaType ) {
 			return;
-		}
-		else
-		{
-			iaType = IA_SHADOWONLY;
 		}
 	}
 
@@ -58,14 +53,14 @@ void R_AddBrushModelInteractions( trRefEntity_t *ent, trRefLight_t *light )
 
 	if ( light->l.inverseShadows )
 	{
-		if ( iaType != IA_LIGHTONLY && ( light->l.noShadowID && ( light->l.noShadowID != ent->e.noShadowID ) ) )
+		if ( (iaType & IA_SHADOW) && ( light->l.noShadowID && ( light->l.noShadowID != ent->e.noShadowID ) ) )
 		{
 			return;
 		}
 	}
 	else
 	{
-		if ( iaType != IA_LIGHTONLY && ( light->l.noShadowID && ( light->l.noShadowID == ent->e.noShadowID ) ) )
+		if ( (iaType & IA_SHADOW) && ( light->l.noShadowID && ( light->l.noShadowID == ent->e.noShadowID ) ) )
 		{
 			return;
 		}
@@ -584,7 +579,7 @@ void R_SetupLightLocalBounds( trRefLight_t *light )
 				int    j;
 				vec3_t farCorners[ 4 ];
 				//vec4_t      frustum[6];
-				vec4_t *frustum = light->localFrustum;
+				const vec4_t *frustum = (const vec4_t *)light->localFrustum;
 
 				ClearBounds( light->localBounds[ 0 ], light->localBounds[ 1 ] );
 
@@ -599,21 +594,14 @@ void R_SetupLightLocalBounds( trRefLight_t *light )
 				        MatrixTransformPlane2(light->viewMatrix, frustum[j]);
 				}
 				*/
-
-				PlanesGetIntersectionPoint( frustum[ FRUSTUM_LEFT ], frustum[ FRUSTUM_TOP ], frustum[ FRUSTUM_FAR ], farCorners[ 0 ] );
-				PlanesGetIntersectionPoint( frustum[ FRUSTUM_RIGHT ], frustum[ FRUSTUM_TOP ], frustum[ FRUSTUM_FAR ], farCorners[ 1 ] );
-				PlanesGetIntersectionPoint( frustum[ FRUSTUM_RIGHT ], frustum[ FRUSTUM_BOTTOM ], frustum[ FRUSTUM_FAR ], farCorners[ 2 ] );
-				PlanesGetIntersectionPoint( frustum[ FRUSTUM_LEFT ], frustum[ FRUSTUM_BOTTOM ], frustum[ FRUSTUM_FAR ], farCorners[ 3 ] );
+				R_CalcFrustumFarCorners( frustum, farCorners );
 
 				if ( !VectorCompare( light->l.projStart, vec3_origin ) )
 				{
 					vec3_t nearCorners[ 4 ];
 
 					// calculate the vertices defining the top area
-					PlanesGetIntersectionPoint( frustum[ FRUSTUM_LEFT ], frustum[ FRUSTUM_TOP ], frustum[ FRUSTUM_NEAR ], nearCorners[ 0 ] );
-					PlanesGetIntersectionPoint( frustum[ FRUSTUM_RIGHT ], frustum[ FRUSTUM_TOP ], frustum[ FRUSTUM_NEAR ], nearCorners[ 1 ] );
-					PlanesGetIntersectionPoint( frustum[ FRUSTUM_RIGHT ], frustum[ FRUSTUM_BOTTOM ], frustum[ FRUSTUM_NEAR ], nearCorners[ 2 ] );
-					PlanesGetIntersectionPoint( frustum[ FRUSTUM_LEFT ], frustum[ FRUSTUM_BOTTOM ], frustum[ FRUSTUM_NEAR ], nearCorners[ 3 ] );
+					R_CalcFrustumNearCorners( frustum, nearCorners );
 
 					for ( j = 0; j < 4; j++ )
 					{
@@ -703,6 +691,93 @@ void R_SetupLightView( trRefLight_t *light )
 
 		default:
 			ri.Error( ERR_DROP, "R_SetupLightView: Bad rlType" );
+	}
+}
+
+void R_TessLight( const trRefLight_t *light, const vec4_t color )
+{
+	int j;
+
+	switch( light->l.rlType )
+	{
+		case RL_OMNI:
+		case RL_DIRECTIONAL:
+			Tess_AddCube( vec3_origin, light->localBounds[ 0 ], light->localBounds[ 1 ], color ? color : colorWhite );
+			break;
+		case RL_PROJ:
+			{
+				vec3_t farCorners[ 4 ];
+				vec4_t quadVerts[ 4 ];
+				const vec4_t *frustum = light->localFrustum;
+
+				R_CalcFrustumFarCorners( frustum, farCorners );
+
+				if ( !VectorCompare( light->l.projStart, vec3_origin ) )
+				{
+					vec3_t nearCorners[ 4 ];
+
+					// calculate the vertices defining the top area
+					R_CalcFrustumNearCorners( frustum, nearCorners );
+
+					// draw outer surfaces
+					for ( j = 0; j < 4; j++ )
+					{
+						Vector4Set( quadVerts[ 0 ], nearCorners[ j ][ 0 ], nearCorners[ j ][ 1 ], nearCorners[ j ][ 2 ], 1 );
+						Vector4Set( quadVerts[ 1 ], farCorners[ j ][ 0 ], farCorners[ j ][ 1 ], farCorners[ j ][ 2 ], 1 );
+						Vector4Set( quadVerts[ 2 ], farCorners[( j + 1 ) % 4 ][ 0 ], farCorners[( j + 1 ) % 4 ][ 1 ], farCorners[( j + 1 ) % 4 ][ 2 ], 1 );
+						Vector4Set( quadVerts[ 3 ], nearCorners[( j + 1 ) % 4 ][ 0 ], nearCorners[( j + 1 ) % 4 ][ 1 ], nearCorners[( j + 1 ) % 4 ][ 2 ], 1 );
+						Tess_AddQuadStamp2( quadVerts, color ? color : colorCyan );
+					}
+
+					// draw far cap
+					Vector4Set( quadVerts[ 0 ], farCorners[ 3 ][ 0 ], farCorners[ 3 ][ 1 ], farCorners[ 3 ][ 2 ], 1 );
+					Vector4Set( quadVerts[ 1 ], farCorners[ 2 ][ 0 ], farCorners[ 2 ][ 1 ], farCorners[ 2 ][ 2 ], 1 );
+					Vector4Set( quadVerts[ 2 ], farCorners[ 1 ][ 0 ], farCorners[ 1 ][ 1 ], farCorners[ 1 ][ 2 ], 1 );
+					Vector4Set( quadVerts[ 3 ], farCorners[ 0 ][ 0 ], farCorners[ 0 ][ 1 ], farCorners[ 0 ][ 2 ], 1 );
+					Tess_AddQuadStamp2( quadVerts, color ? color : colorRed );
+
+					// draw near cap
+					Vector4Set( quadVerts[ 0 ], nearCorners[ 0 ][ 0 ], nearCorners[ 0 ][ 1 ], nearCorners[ 0 ][ 2 ], 1 );
+					Vector4Set( quadVerts[ 1 ], nearCorners[ 1 ][ 0 ], nearCorners[ 1 ][ 1 ], nearCorners[ 1 ][ 2 ], 1 );
+					Vector4Set( quadVerts[ 2 ], nearCorners[ 2 ][ 0 ], nearCorners[ 2 ][ 1 ], nearCorners[ 2 ][ 2 ], 1 );
+					Vector4Set( quadVerts[ 3 ], nearCorners[ 3 ][ 0 ], nearCorners[ 3 ][ 1 ], nearCorners[ 3 ][ 2 ], 1 );
+					Tess_AddQuadStamp2( quadVerts, color ? color : colorGreen );
+				}
+				else
+				{
+					vec3_t top;
+
+					// no light_start, just use the top vertex (doesn't need to be mirrored)
+					PlanesGetIntersectionPoint( frustum[ FRUSTUM_LEFT ], frustum[ FRUSTUM_RIGHT ], frustum[ FRUSTUM_TOP ], top );
+
+					// draw pyramid
+					for ( j = 0; j < 4; j++ )
+					{
+						const float *c = color ? color : colorCyan;
+
+						VectorCopy( top, tess.xyz[ tess.numVertexes ] );
+						Vector4Copy( c, tess.colors[ tess.numVertexes ] );
+						tess.indexes[ tess.numIndexes++ ] = tess.numVertexes;
+						tess.numVertexes++;
+
+						VectorCopy( farCorners[( j + 1 ) % 4 ], tess.xyz[ tess.numVertexes ] );
+						Vector4Copy( c, tess.colors[ tess.numVertexes ] );
+						tess.indexes[ tess.numIndexes++ ] = tess.numVertexes;
+						tess.numVertexes++;
+
+						VectorCopy( farCorners[ j ], tess.xyz[ tess.numVertexes ] );
+						Vector4Copy( c, tess.colors[ tess.numVertexes ] );
+						tess.indexes[ tess.numIndexes++ ] = tess.numVertexes;
+						tess.numVertexes++;
+					}
+
+					Vector4Set( quadVerts[ 0 ], farCorners[ 0 ][ 0 ], farCorners[ 0 ][ 1 ], farCorners[ 0 ][ 2 ], 1 );
+					Vector4Set( quadVerts[ 1 ], farCorners[ 1 ][ 0 ], farCorners[ 1 ][ 1 ], farCorners[ 1 ][ 2 ], 1 );
+					Vector4Set( quadVerts[ 2 ], farCorners[ 2 ][ 0 ], farCorners[ 2 ][ 1 ], farCorners[ 2 ][ 2 ], 1 );
+					Vector4Set( quadVerts[ 3 ], farCorners[ 3 ][ 0 ], farCorners[ 3 ][ 1 ], farCorners[ 3 ][ 2 ], 1 );
+					Tess_AddQuadStamp2( quadVerts, color ? color : colorRed );
+				}
+			}
 	}
 }
 
@@ -802,10 +877,8 @@ void R_SetupLightFrustum( trRefLight_t *light )
 
 	if ( light->isStatic )
 	{
-		int           i, j;
-		vec4_t        quadVerts[ 4 ];
-		srfVert_t     *verts;
-		srfTriangle_t *triangles;
+		int           i;
+		vboData_t     data;
 
 		if ( glConfig.smpActive )
 		{
@@ -816,156 +889,25 @@ void R_SetupLightFrustum( trRefLight_t *light )
 		tess.numIndexes = 0;
 		tess.numVertexes = 0;
 
-		switch ( light->l.rlType )
+		R_TessLight( light, NULL );
+
+		memset( &data, 0, sizeof( data ) );
+		data.xyz = ( vec3_t * ) ri.Hunk_AllocateTempMemory( tess.numVertexes * sizeof( *data.xyz ) );
+
+		for ( i = 0; i < tess.numVertexes; i++ )
 		{
-			case RL_OMNI:
-			case RL_DIRECTIONAL:
-				{
-					vec3_t worldBounds[ 2 ];
-
-					MatrixTransformPoint( light->transformMatrix, light->localBounds[ 0 ], worldBounds[ 0 ] );
-					MatrixTransformPoint( light->transformMatrix, light->localBounds[ 1 ], worldBounds[ 1 ] );
-
-					Tess_AddCube( vec3_origin, worldBounds[ 0 ], worldBounds[ 1 ], colorWhite );
-
-					verts = ri.Hunk_AllocateTempMemory( tess.numVertexes * sizeof( srfVert_t ) );
-					triangles = ri.Hunk_AllocateTempMemory( ( tess.numIndexes / 3 ) * sizeof( srfTriangle_t ) );
-
-					for ( i = 0; i < tess.numVertexes; i++ )
-					{
-						VectorCopy( tess.xyz[ i ], verts[ i ].xyz );
-					}
-
-					for ( i = 0; i < ( tess.numIndexes / 3 ); i++ )
-					{
-						triangles[ i ].indexes[ 0 ] = tess.indexes[ i * 3 + 0 ];
-						triangles[ i ].indexes[ 1 ] = tess.indexes[ i * 3 + 1 ];
-						triangles[ i ].indexes[ 2 ] = tess.indexes[ i * 3 + 2 ];
-					}
-
-					light->frustumVBO = R_CreateVBO2( "staticLightFrustum_VBO", tess.numVertexes, verts, ATTR_POSITION, VBO_USAGE_STATIC );
-					light->frustumIBO = R_CreateIBO2( "staticLightFrustum_IBO", tess.numIndexes / 3, triangles, VBO_USAGE_STATIC );
-
-					ri.Hunk_FreeTempMemory( triangles );
-					ri.Hunk_FreeTempMemory( verts );
-
-					light->frustumVerts = tess.numVertexes;
-					light->frustumIndexes = tess.numIndexes;
-					break;
-				}
-
-			case RL_PROJ:
-				{
-					vec3_t farCorners[ 4 ];
-					vec4_t frustum[ 6 ];
-
-					// transform local frustum to world space
-					for ( i = 0; i < 6; i++ )
-					{
-						MatrixTransformPlane( light->transformMatrix, light->localFrustum[ i ], frustum[ i ] );
-					}
-
-					PlanesGetIntersectionPoint( frustum[ FRUSTUM_LEFT ], frustum[ FRUSTUM_TOP ], frustum[ FRUSTUM_FAR ], farCorners[ 0 ] );
-					PlanesGetIntersectionPoint( frustum[ FRUSTUM_RIGHT ], frustum[ FRUSTUM_TOP ], frustum[ FRUSTUM_FAR ], farCorners[ 1 ] );
-					PlanesGetIntersectionPoint( frustum[ FRUSTUM_RIGHT ], frustum[ FRUSTUM_BOTTOM ], frustum[ FRUSTUM_FAR ], farCorners[ 2 ] );
-					PlanesGetIntersectionPoint( frustum[ FRUSTUM_LEFT ], frustum[ FRUSTUM_BOTTOM ], frustum[ FRUSTUM_FAR ], farCorners[ 3 ] );
-
-					if ( !VectorCompare( light->l.projStart, vec3_origin ) )
-					{
-						vec3_t nearCorners[ 4 ];
-
-						// calculate the vertices defining the top area
-						PlanesGetIntersectionPoint( frustum[ FRUSTUM_LEFT ], frustum[ FRUSTUM_TOP ], frustum[ FRUSTUM_NEAR ], nearCorners[ 0 ] );
-						PlanesGetIntersectionPoint( frustum[ FRUSTUM_RIGHT ], frustum[ FRUSTUM_TOP ], frustum[ FRUSTUM_NEAR ], nearCorners[ 1 ] );
-						PlanesGetIntersectionPoint( frustum[ FRUSTUM_RIGHT ], frustum[ FRUSTUM_BOTTOM ], frustum[ FRUSTUM_NEAR ], nearCorners[ 2 ] );
-						PlanesGetIntersectionPoint( frustum[ FRUSTUM_LEFT ], frustum[ FRUSTUM_BOTTOM ], frustum[ FRUSTUM_NEAR ], nearCorners[ 3 ] );
-
-						// draw outer surfaces
-						for ( j = 0; j < 4; j++ )
-						{
-							Vector4Set( quadVerts[ 3 ], nearCorners[ j ][ 0 ], nearCorners[ j ][ 1 ], nearCorners[ j ][ 2 ], 1 );
-							Vector4Set( quadVerts[ 2 ], farCorners[ j ][ 0 ], farCorners[ j ][ 1 ], farCorners[ j ][ 2 ], 1 );
-							Vector4Set( quadVerts[ 1 ], farCorners[( j + 1 ) % 4 ][ 0 ], farCorners[( j + 1 ) % 4 ][ 1 ], farCorners[( j + 1 ) % 4 ][ 2 ], 1 );
-							Vector4Set( quadVerts[ 0 ], nearCorners[( j + 1 ) % 4 ][ 0 ], nearCorners[( j + 1 ) % 4 ][ 1 ], nearCorners[( j + 1 ) % 4 ][ 2 ], 1 );
-							Tess_AddQuadStamp2( quadVerts, colorCyan );
-						}
-
-						// draw far cap
-						Vector4Set( quadVerts[ 0 ], farCorners[ 0 ][ 0 ], farCorners[ 0 ][ 1 ], farCorners[ 0 ][ 2 ], 1 );
-						Vector4Set( quadVerts[ 1 ], farCorners[ 1 ][ 0 ], farCorners[ 1 ][ 1 ], farCorners[ 1 ][ 2 ], 1 );
-						Vector4Set( quadVerts[ 2 ], farCorners[ 2 ][ 0 ], farCorners[ 2 ][ 1 ], farCorners[ 2 ][ 2 ], 1 );
-						Vector4Set( quadVerts[ 3 ], farCorners[ 3 ][ 0 ], farCorners[ 3 ][ 1 ], farCorners[ 3 ][ 2 ], 1 );
-						Tess_AddQuadStamp2( quadVerts, colorRed );
-
-						// draw near cap
-						Vector4Set( quadVerts[ 3 ], nearCorners[ 0 ][ 0 ], nearCorners[ 0 ][ 1 ], nearCorners[ 0 ][ 2 ], 1 );
-						Vector4Set( quadVerts[ 2 ], nearCorners[ 1 ][ 0 ], nearCorners[ 1 ][ 1 ], nearCorners[ 1 ][ 2 ], 1 );
-						Vector4Set( quadVerts[ 1 ], nearCorners[ 2 ][ 0 ], nearCorners[ 2 ][ 1 ], nearCorners[ 2 ][ 2 ], 1 );
-						Vector4Set( quadVerts[ 0 ], nearCorners[ 3 ][ 0 ], nearCorners[ 3 ][ 1 ], nearCorners[ 3 ][ 2 ], 1 );
-						Tess_AddQuadStamp2( quadVerts, colorGreen );
-					}
-					else
-					{
-						vec3_t top;
-
-						// no light_start, just use the top vertex (doesn't need to be mirrored)
-						PlanesGetIntersectionPoint( frustum[ FRUSTUM_LEFT ], frustum[ FRUSTUM_RIGHT ], frustum[ FRUSTUM_TOP ], top );
-
-						// draw pyramid
-						for ( j = 0; j < 4; j++ )
-						{
-							VectorCopy( top, tess.xyz[ tess.numVertexes ] );
-							Vector4Copy( colorCyan, tess.colors[ tess.numVertexes ] );
-							tess.indexes[ tess.numIndexes++ ] = tess.numVertexes;
-							tess.numVertexes++;
-
-							VectorCopy( farCorners[( j + 1 ) % 4 ], tess.xyz[ tess.numVertexes ] );
-							Vector4Copy( colorCyan, tess.colors[ tess.numVertexes ] );
-							tess.indexes[ tess.numIndexes++ ] = tess.numVertexes;
-							tess.numVertexes++;
-
-							VectorCopy( farCorners[ j ], tess.xyz[ tess.numVertexes ] );
-							Vector4Copy( colorCyan, tess.colors[ tess.numVertexes ] );
-							tess.indexes[ tess.numIndexes++ ] = tess.numVertexes;
-							tess.numVertexes++;
-						}
-
-						Vector4Set( quadVerts[ 0 ], farCorners[ 0 ][ 0 ], farCorners[ 0 ][ 1 ], farCorners[ 0 ][ 2 ], 1 );
-						Vector4Set( quadVerts[ 1 ], farCorners[ 1 ][ 0 ], farCorners[ 1 ][ 1 ], farCorners[ 1 ][ 2 ], 1 );
-						Vector4Set( quadVerts[ 2 ], farCorners[ 2 ][ 0 ], farCorners[ 2 ][ 1 ], farCorners[ 2 ][ 2 ], 1 );
-						Vector4Set( quadVerts[ 3 ], farCorners[ 3 ][ 0 ], farCorners[ 3 ][ 1 ], farCorners[ 3 ][ 2 ], 1 );
-						Tess_AddQuadStamp2( quadVerts, colorRed );
-					}
-
-					verts = ri.Hunk_AllocateTempMemory( tess.numVertexes * sizeof( srfVert_t ) );
-					triangles = ri.Hunk_AllocateTempMemory( ( tess.numIndexes / 3 ) * sizeof( srfTriangle_t ) );
-
-					for ( i = 0; i < tess.numVertexes; i++ )
-					{
-						VectorCopy( tess.xyz[ i ], verts[ i ].xyz );
-					}
-
-					for ( i = 0; i < ( tess.numIndexes / 3 ); i++ )
-					{
-						triangles[ i ].indexes[ 0 ] = tess.indexes[ i * 3 + 0 ];
-						triangles[ i ].indexes[ 1 ] = tess.indexes[ i * 3 + 1 ];
-						triangles[ i ].indexes[ 2 ] = tess.indexes[ i * 3 + 2 ];
-					}
-
-					light->frustumVBO = R_CreateVBO2( "staticLightFrustum_VBO", tess.numVertexes, verts, ATTR_POSITION, VBO_USAGE_STATIC );
-					light->frustumIBO = R_CreateIBO2( "staticLightFrustum_IBO", tess.numIndexes / 3, triangles, VBO_USAGE_STATIC );
-
-					ri.Hunk_FreeTempMemory( triangles );
-					ri.Hunk_FreeTempMemory( verts );
-
-					light->frustumVerts = tess.numVertexes;
-					light->frustumIndexes = tess.numIndexes;
-					break;
-				}
-
-			default:
-				break;
+			// transform to world space
+			MatrixTransformPoint( light->transformMatrix, tess.xyz[ i ], data.xyz[ i ] );
 		}
+		data.numVerts = tess.numVertexes;
+
+		light->frustumVBO = R_CreateStaticVBO( "staticLightFrustum_VBO", data, VBO_LAYOUT_SEPERATE );
+		light->frustumIBO = R_CreateStaticIBO( "staticLightFrustum_IBO", tess.indexes, tess.numIndexes );
+
+		ri.Hunk_FreeTempMemory( data.xyz );
+
+		light->frustumVerts = tess.numVertexes;
+		light->frustumIndexes = tess.numIndexes;
 
 		tess.multiDrawPrimitives = 0;
 		tess.numIndexes = 0;
@@ -1197,18 +1139,11 @@ qboolean R_AddLightInteraction( trRefLight_t *light, surfaceType_t *surface, sha
 	// update counters
 	light->numInteractions++;
 
-	switch ( iaType )
-	{
-		case IA_SHADOWONLY:
-			light->numShadowOnlyInteractions++;
-			break;
-
-		case IA_LIGHTONLY:
-			light->numLightOnlyInteractions++;
-			break;
-
-		default:
-			break;
+	if( !(iaType & IA_LIGHT) ) {
+		light->numShadowOnlyInteractions++;
+	}
+	if( !(iaType & (IA_SHADOW | IA_SHADOWCLIP) ) ) {
+		light->numLightOnlyInteractions++;
 	}
 
 	ia->next = NULL;
@@ -1218,7 +1153,7 @@ qboolean R_AddLightInteraction( trRefLight_t *light, surfaceType_t *surface, sha
 	ia->light = light;
 	ia->entity = tr.currentEntity;
 	ia->surface = surface;
-	ia->surfaceShader = surfaceShader;
+	ia->shaderNum = surfaceShader->sortedIndex;
 
 	ia->cubeSideBits = cubeSideBits;
 
@@ -1264,12 +1199,12 @@ static int InteractionCompare( const void *a, const void *b )
 #if 1
 
 	// shader first
-	if ( ( ( interaction_t * ) a )->surfaceShader < ( ( interaction_t * ) b )->surfaceShader )
+	if ( ( ( interaction_t * ) a )->shaderNum < ( ( interaction_t * ) b )->shaderNum )
 	{
 		return -1;
 	}
 
-	else if ( ( ( interaction_t * ) a )->surfaceShader > ( ( interaction_t * ) b )->surfaceShader )
+	else if ( ( ( interaction_t * ) a )->shaderNum > ( ( interaction_t * ) b )->shaderNum )
 	{
 		return 1;
 	}
@@ -1566,12 +1501,9 @@ void R_SetupLightScissor( trRefLight_t *light )
 			{
 				int    j;
 				vec3_t farCorners[ 4 ];
-				vec4_t *frustum = light->localFrustum;
+				const vec4_t *frustum = (const vec4_t *)light->localFrustum;
 
-				PlanesGetIntersectionPoint( frustum[ FRUSTUM_LEFT ], frustum[ FRUSTUM_TOP ], frustum[ FRUSTUM_FAR ], farCorners[ 0 ] );
-				PlanesGetIntersectionPoint( frustum[ FRUSTUM_RIGHT ], frustum[ FRUSTUM_TOP ], frustum[ FRUSTUM_FAR ], farCorners[ 1 ] );
-				PlanesGetIntersectionPoint( frustum[ FRUSTUM_RIGHT ], frustum[ FRUSTUM_BOTTOM ], frustum[ FRUSTUM_FAR ], farCorners[ 2 ] );
-				PlanesGetIntersectionPoint( frustum[ FRUSTUM_LEFT ], frustum[ FRUSTUM_BOTTOM ], frustum[ FRUSTUM_FAR ], farCorners[ 3 ] );
+				R_CalcFrustumFarCorners( frustum, farCorners );
 #if 1
 
 				if ( !VectorCompare( light->l.projStart, vec3_origin ) )
@@ -1579,10 +1511,7 @@ void R_SetupLightScissor( trRefLight_t *light )
 					vec3_t nearCorners[ 4 ];
 
 					// calculate the vertices defining the top area
-					PlanesGetIntersectionPoint( frustum[ FRUSTUM_LEFT ], frustum[ FRUSTUM_TOP ], frustum[ FRUSTUM_NEAR ], nearCorners[ 0 ] );
-					PlanesGetIntersectionPoint( frustum[ FRUSTUM_RIGHT ], frustum[ FRUSTUM_TOP ], frustum[ FRUSTUM_NEAR ], nearCorners[ 1 ] );
-					PlanesGetIntersectionPoint( frustum[ FRUSTUM_RIGHT ], frustum[ FRUSTUM_BOTTOM ], frustum[ FRUSTUM_NEAR ], nearCorners[ 2 ] );
-					PlanesGetIntersectionPoint( frustum[ FRUSTUM_LEFT ], frustum[ FRUSTUM_BOTTOM ], frustum[ FRUSTUM_NEAR ], nearCorners[ 3 ] );
+					R_CalcFrustumNearCorners( frustum, nearCorners );
 
 					for ( j = 0; j < 4; j++ )
 					{
@@ -1640,10 +1569,8 @@ byte R_CalcLightCubeSideBits( trRefLight_t *light, vec3_t worldBounds[ 2 ] )
 	int        cubeSide;
 	byte       cubeSideBits;
 	float      xMin, xMax, yMin, yMax;
-	float      width, height, depth;
 	float      zNear, zFar;
 	float      fovX, fovY;
-	float      *proj;
 	vec3_t     angles;
 	matrix_t   tmpMatrix, rotationMatrix, transformMatrix, viewMatrix, projectionMatrix, viewProjectionMatrix;
 	frustum_t  frustum;
@@ -1745,27 +1672,7 @@ byte R_CalcLightCubeSideBits( trRefLight_t *light, vec3_t worldBounds[ 2 ] )
 		yMax = zNear * tan( fovY * M_PI / 360.0f );
 		yMin = -yMax;
 
-		width = xMax - xMin;
-		height = yMax - yMin;
-		depth = zFar - zNear;
-
-		proj = projectionMatrix;
-		proj[ 0 ] = ( 2 * zNear ) / width;
-		proj[ 4 ] = 0;
-		proj[ 8 ] = ( xMax + xMin ) / width;
-		proj[ 12 ] = 0;
-		proj[ 1 ] = 0;
-		proj[ 5 ] = ( 2 * zNear ) / height;
-		proj[ 9 ] = ( yMax + yMin ) / height;
-		proj[ 13 ] = 0;
-		proj[ 2 ] = 0;
-		proj[ 6 ] = 0;
-		proj[ 10 ] = - ( zFar + zNear ) / depth;
-		proj[ 14 ] = - ( 2 * zFar * zNear ) / depth;
-		proj[ 3 ] = 0;
-		proj[ 7 ] = 0;
-		proj[ 11 ] = -1;
-		proj[ 15 ] = 0;
+		MatrixPerspectiveProjection( projectionMatrix, xMin, xMax, yMin, yMax, zNear, zFar );
 
 		// calculate frustum planes using the modelview projection matrix
 		MatrixMultiply( projectionMatrix, viewMatrix, viewProjectionMatrix );

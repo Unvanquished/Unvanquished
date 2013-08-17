@@ -130,14 +130,12 @@ and whenever the server updates any serverinfo flagged cvars
 void CG_ParseServerinfo( void )
 {
 	const char *info;
-	char       *mapname;
 
 	info = CG_ConfigString( CS_SERVERINFO );
 	cgs.timelimit = atoi( Info_ValueForKey( info, "timelimit" ) );
 	cgs.maxclients = atoi( Info_ValueForKey( info, "sv_maxclients" ) );
 	cgs.markDeconstruct = atoi( Info_ValueForKey( info, "g_markDeconstruct" ) );
-	mapname = Info_ValueForKey( info, "mapname" );
-	Com_sprintf( cgs.mapname, sizeof( cgs.mapname ), "maps/%s.bsp", mapname );
+	Q_strncpyz( cgs.mapname, Info_ValueForKey( info, "mapname" ), sizeof(cgs.mapname) );
 }
 
 /*
@@ -165,27 +163,25 @@ Called on load to set the initial values from configure strings
 */
 void CG_SetConfigValues( void )
 {
-	const char *alienStages = CG_ConfigString( CS_ALIEN_STAGES );
-	const char *humanStages = CG_ConfigString( CS_HUMAN_STAGES );
+	const char *alienStage = CG_ConfigString( CS_ALIEN_STAGE );
+	const char *humanStage = CG_ConfigString( CS_HUMAN_STAGE );
 
-	if ( alienStages[ 0 ] )
+	if ( alienStage[ 0 ] )
 	{
-		sscanf( alienStages, "%d %d %d", &cgs.alienStage, &cgs.alienCredits,
-		        &cgs.alienNextStageThreshold );
+		sscanf( alienStage, "%d", &cgs.alienStage );
 	}
 	else
 	{
-		cgs.alienStage = cgs.alienCredits = cgs.alienNextStageThreshold = 0;
+		cgs.alienStage = -1;
 	}
 
-	if ( humanStages[ 0 ] )
+	if ( humanStage[ 0 ] )
 	{
-		sscanf( humanStages, "%d %d %d", &cgs.humanStage, &cgs.humanCredits,
-		        &cgs.humanNextStageThreshold );
+		sscanf( humanStage, "%d", &cgs.humanStage );
 	}
 	else
 	{
-		cgs.humanStage = cgs.humanCredits = cgs.humanNextStageThreshold = 0;
+		cgs.humanStage = -1;
 	}
 
 	cgs.levelStartTime = atoi( CG_ConfigString( CS_LEVEL_START_TIME ) );
@@ -253,13 +249,24 @@ CG_AnnounceAlienStageTransition
 */
 static void CG_AnnounceAlienStageTransition( stage_t from, stage_t to )
 {
+	Q_UNUSED(from);
+	Q_UNUSED(to);
+
 	if ( cg.predictedPlayerState.stats[ STAT_TEAM ] != TEAM_ALIENS )
 	{
 		return;
 	}
 
-	trap_S_StartLocalSound( cgs.media.alienStageTransition, CHAN_ANNOUNCER );
-	CG_CenterPrint( _("We have evolved!"), 200, GIANTCHAR_WIDTH * 4 );
+	if ( to > from )
+	{
+		trap_S_StartLocalSound( cgs.media.alienStageTransition, CHAN_ANNOUNCER );
+		CG_CenterPrint( _("We have evolved!"), 200, GIANTCHAR_WIDTH * 4 );
+	}
+	else if ( to < from )
+	{
+		trap_S_StartLocalSound( cgs.media.alienStageTransition, CHAN_ANNOUNCER ); // TODO: Add alien stage down sound
+		CG_CenterPrint( _("^1We have devolved!"), 200, GIANTCHAR_WIDTH * 4 );
+	}
 }
 
 /*
@@ -269,13 +276,24 @@ CG_AnnounceHumanStageTransition
 */
 static void CG_AnnounceHumanStageTransition( stage_t from, stage_t to )
 {
+	Q_UNUSED(from);
+	Q_UNUSED(to);
+
 	if ( cg.predictedPlayerState.stats[ STAT_TEAM ] != TEAM_HUMANS )
 	{
 		return;
 	}
 
-	trap_S_StartLocalSound( cgs.media.humanStageTransition, CHAN_ANNOUNCER );
-	CG_CenterPrint( _("Reinforcements have arrived!"), 200, GIANTCHAR_WIDTH * 4 );
+	if ( to > from )
+	{
+		trap_S_StartLocalSound( cgs.media.humanStageTransition, CHAN_ANNOUNCER );
+		CG_CenterPrint( _("Reinforcements have arrived!"), 200, GIANTCHAR_WIDTH * 4 );
+	}
+	else if ( to < from )
+	{
+		trap_S_StartLocalSound( cgs.media.humanStageTransition, CHAN_ANNOUNCER ); // TODO: Add human stage down sound
+		CG_CenterPrint( _("^1Reinforcements are lost!"), 200, GIANTCHAR_WIDTH * 4 );
+	}
 }
 
 /*
@@ -313,14 +331,13 @@ static void CG_ConfigStringModified( void )
 	{
 		CG_ParseWarmup();
 	}
-	else if ( num == CS_ALIEN_STAGES )
+	else if ( num == CS_ALIEN_STAGE )
 	{
 		stage_t oldAlienStage = cgs.alienStage;
 
 		if ( str[ 0 ] )
 		{
-			sscanf( str, "%d %d %d", &cgs.alienStage, &cgs.alienCredits,
-			        &cgs.alienNextStageThreshold );
+			sscanf( str, "%d", &cgs.alienStage );
 
 			if ( cgs.alienStage != oldAlienStage )
 			{
@@ -329,17 +346,16 @@ static void CG_ConfigStringModified( void )
 		}
 		else
 		{
-			cgs.alienStage = cgs.alienCredits = cgs.alienNextStageThreshold = 0;
+			cgs.alienStage = -1;
 		}
 	}
-	else if ( num == CS_HUMAN_STAGES )
+	else if ( num == CS_HUMAN_STAGE )
 	{
 		stage_t oldHumanStage = cgs.humanStage;
 
 		if ( str[ 0 ] )
 		{
-			sscanf( str, "%d %d %d", &cgs.humanStage, &cgs.humanCredits,
-			        &cgs.humanNextStageThreshold );
+			sscanf( str, "%d", &cgs.humanStage );
 
 			if ( cgs.humanStage != oldHumanStage )
 			{
@@ -348,7 +364,7 @@ static void CG_ConfigStringModified( void )
 		}
 		else
 		{
-			cgs.humanStage = cgs.humanCredits = cgs.humanNextStageThreshold = 0;
+			cgs.humanStage = 0;
 		}
 	}
 	else if ( num == CS_LEVEL_START_TIME )
@@ -410,8 +426,7 @@ static void CG_ConfigStringModified( void )
 	}
 	else if ( num >= CS_GRADING_TEXTURES && num < CS_GRADING_TEXTURES + MAX_GRADING_TEXTURES )
 	{
-		cgs.gameGradingTextures[ num - CS_GRADING_TEXTURES ] =
-				trap_R_RegisterShader(CG_Argv(1), RSF_NOMIP | RSF_NOLIGHTSCALE);
+		CG_RegisterGrading( num - CS_GRADING_TEXTURES, str );
 	}
 	else if ( num >= CS_PARTICLE_SYSTEMS && num < CS_PARTICLE_SYSTEMS + MAX_GAME_PARTICLE_SYSTEMS )
 	{
@@ -506,6 +521,11 @@ void CG_Menu( int menu, int arg )
 
 	switch ( menu )
 	{
+	        case MN_WELCOME:
+	                cmd = "menu ingame_help\n";
+	                type = DT_INTERACTIVE;
+	                break;
+
 		case MN_TEAM:
 			cmd = "menu tremulous_teamselect\n";
 			type = DT_INTERACTIVE;
@@ -585,9 +605,6 @@ void CG_Menu( int menu, int arg )
 
 			//===============================
 
-			// Since cheating commands have no default binds, they will often be done
-			// via console. In light of this, perhaps opening a menu is
-			// counterintuitive
 		case MN_CMD_CHEAT:
 			//longMsg   = "This action is considered cheating. It can only be used "
 			//            "in cheat mode, which is not enabled on this server.";
@@ -656,7 +673,6 @@ void CG_Menu( int menu, int arg )
 			type = DT_BUILD;
 			break;
 
-			// FIXME: MN_H_ and MN_A_?
 		case MN_B_LASTSPAWN:
 			longMsg = _("This action would remove your team's last spawn point, "
 			          "which often quickly results in a loss. Try building more "
@@ -665,11 +681,9 @@ void CG_Menu( int menu, int arg )
 			type = DT_MISC_CP;
 			break;
 
-		case MN_B_SUDDENDEATH:
-			longMsg = _("Neither team has prevailed after a certain time and the "
-			          "game has entered Sudden Death. During Sudden Death "
-			          "building is not allowed.");
-			shortMsg = _("Cannot build during Sudden Death");
+		case MN_B_DISABLED:
+			longMsg = _("Building has been disabled on the server for your team.");
+			shortMsg = _("Building has been disabled for your team");
 			type = DT_BUILD;
 			break;
 
@@ -682,10 +696,9 @@ void CG_Menu( int menu, int arg )
 			break;
 
 		case MN_B_SURRENDER:
-			longMsg = _("Your team has decided to admit defeat and concede the game:"
-			          "traitors and cowards are not allowed to build.");
-			// too harsh?
-			shortMsg = _("Building is denied to traitorous cowards");
+			longMsg = _("Your team has decided to admit defeat and concede the game: "
+			            "There's no point in building anything anymore.");
+			shortMsg = _("Cannot build after admitting defeat");
 			type = DT_MISC_CP;
 			break;
 
@@ -694,16 +707,16 @@ void CG_Menu( int menu, int arg )
 		case MN_H_NOBP:
 			if ( cgs.markDeconstruct )
 			{
-				longMsg = _("There is no power remaining. Free up power by marking "
-				          "existing buildable objects.");
+				longMsg = _("There are no resources remaining. Free up resources by "
+				            "marking existing buildables for deconstruction.");
 			}
 			else
 			{
-				longMsg = _("There is no power remaining. Free up power by deconstructing "
-				          "existing buildable objects.");
+				longMsg = _("There are no resources remaining. Free up resources by "
+				            "deconstructing existing buildables.");
 			}
 
-			shortMsg = _("There is no power remaining");
+			shortMsg = _("There are no resources remaining");
 			type = DT_BUILD;
 			break;
 
@@ -711,6 +724,12 @@ void CG_Menu( int menu, int arg )
 			longMsg = _("This buildable is not powered. Build a Reactor and/or Repeater "
 			          "in order to power it.");
 			shortMsg = _("This buildable is not powered");
+			type = DT_BUILD;
+			break;
+
+		case MN_H_NOREACTOR:
+			longMsg = _("Buildables cannot materialize without a reactor.");
+			shortMsg = _("There is no reactor");
 			type = DT_BUILD;
 			break;
 
@@ -722,22 +741,24 @@ void CG_Menu( int menu, int arg )
 			break;
 
 		case MN_H_NOPOWERHERE:
-			longMsg = _("There is no power here. If available, a Repeater may be used to "
-			          "transmit power to this location.");
-			shortMsg = _("There is no power here");
+			longMsg = _("There is not enough power in this area. Keep a distance to other "
+			            "buildables or build a repeater to increase the local capacity.");
+			shortMsg = _("There is not enough power here");
 			type = DT_BUILD;
 			break;
 
+		case MN_H_DRILLPOWERSOURCE:
+			longMsg = _("Drills require a close power source since they transmit resources"
+			            " via the power gird. Build it near a reactor or repeater.");
+			shortMsg = _("The drill requires a close power source");
+			type = DT_BUILD;
+			break;
+
+		// unused - DCC isn't required to build anything
 		case MN_H_NODCC:
 			longMsg = _("There is no Defense Computer. A Defense Computer is needed to "
 			          "build this.");
 			shortMsg = _("There is no Defense Computer");
-			type = DT_BUILD;
-			break;
-
-		case MN_H_RPTPOWERHERE:
-			longMsg = _("This area already has power. A Repeater is not required here.");
-			shortMsg = _("This area already has power");
 			type = DT_BUILD;
 			break;
 
@@ -1139,12 +1160,12 @@ static void CG_Say( const char *name, int clientNum, saymode_t mode, const char 
 		case SAY_TEAM:
 		case SAY_AREA:
 		case SAY_TPRIVMSG:
-			if ( cg.snap->ps.stats[ STAT_TEAM ] == TEAM_ALIENS )
+			if ( cgs.clientinfo[ clientNum ].team == TEAM_ALIENS )
 			{
 				trap_S_StartLocalSound( cgs.media.alienTalkSound, CHAN_LOCAL_SOUND );
 				break;
 			}
-			else if ( cg.snap->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
+			else if ( cgs.clientinfo[ clientNum ].team == TEAM_HUMANS )
 			{
 				trap_S_StartLocalSound( cgs.media.humanTalkSound, CHAN_LOCAL_SOUND );
 				break;

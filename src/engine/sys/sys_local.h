@@ -46,6 +46,8 @@ void         IN_Frame( void );
 void         IN_Shutdown( void );
 void         IN_Restart( void );
 
+void         IN_DropInputsForFrame( void );
+
 // Console
 void         CON_Shutdown( void );
 void         CON_Init( void );
@@ -68,3 +70,5 @@ void     Sys_PrintCpuInfo( void );
 void     Sys_PrintMemoryInfo( void );
 
 int      Sys_GetPID( void );
+
+void     Sys_HelpText( const char * );

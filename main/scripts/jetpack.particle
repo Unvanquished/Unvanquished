@@ -1,0 +1,99 @@
+jetPackDescendPS
+{
+  ejector
+  {
+    particle
+    {
+      shader sync gfx/sprites/smoke
+
+      parentVelocityFraction  1.0
+      velocityType      tag
+      velocityDir       linear
+      velocityMagnitude 100
+      velocity          0 0 0 ~2.0
+
+      accelerationType      static
+      accelerationDir       linear
+      accelerationMagnitude 10
+      acceleration          0 0 -1 0
+
+      radius 0 4.0 20.0
+      alpha  0 0.5 0.0
+      rotation 0 ~360 -
+      bounce 0.5
+
+      lifeTime 1500
+    }
+
+    count infinite
+    delay 0
+    period 90 - ~0%
+  }
+}
+
+jetPackAscendPS
+{
+  ejector
+  {
+    particle
+    {
+      shader sync gfx/sprites/smoke
+
+      parentVelocityFraction  1.0
+      velocityType      tag
+      velocityDir       linear
+      velocityMagnitude 60
+      velocity          0 0 0 ~15.0
+
+      accelerationType      static
+      accelerationDir       linear
+      accelerationMagnitude 10
+      acceleration          0 0 -1 0
+
+      radius 0 4.0 20.0
+      alpha  0 0.5 0.0
+      rotation 0 ~360 -
+      bounce 0.5
+
+      lifeTime 1500
+    }
+
+    count infinite
+    delay 0
+    period 70 - ~0%
+  }
+}
+
+jetPackHoverPS
+{
+  ejector
+  {
+    particle
+    {
+      shader sync gfx/sprites/smoke
+
+      parentVelocityFraction  1.0
+      velocityType      tag
+      velocityDir       linear
+      velocityMagnitude 80
+      velocity          0 0 0 ~7.0
+
+      accelerationType      static
+      accelerationDir       linear
+      accelerationMagnitude 10
+      acceleration          0 0 -1 0
+
+      radius 0 4.0 20.0
+      alpha  0 0.5 0.0
+      rotation 0 ~360 -
+      bounce 0.5
+
+      lifeTime 1500
+    }
+
+    count infinite
+    delay 0
+    period 80 - ~0%
+  }
+}
+

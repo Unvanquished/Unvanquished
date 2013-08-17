@@ -10,12 +10,13 @@ equ strncpy                               -4
 equ sin                                   -5
 equ cos                                   -6
 equ asin                                  -7
-equ tanf                                  -8
-equ atanf                                 -9
+equ tan                                   -8
+equ atan                                  -9
 equ atan2                                 -10
 equ sqrt                                  -11
 equ floor                                 -12
 equ ceil                                  -13
+equ exp                                   -14
 equ trap_SyscallABIVersion                -256
 equ trap_Print                            -257
 equ trap_Error                            -258
@@ -64,7 +65,7 @@ equ trap_BotAllocateClient                -298
 equ trap_BotFreeClient                    -299
 equ trap_GetUsercmd                       -300
 equ trap_GetEntityToken                   -301
-equ trap_RealTime                         -302
+equ trap_GMTime                           -302
 equ trap_SnapVector                       -303
 equ trap_SendGameStat                     -304
 equ trap_AddCommand                       -305

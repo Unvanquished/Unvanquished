@@ -280,7 +280,6 @@ extern "C" void Trans_Init( void )
 {
 	char langList[ MAX_TOKEN_CHARS ] = "";
 	char encList[ MAX_TOKEN_CHARS ] = "";
-	FL_Locale           *locale;
 	std::set<Language>  langs;
 	Language            lang;
 
@@ -315,6 +314,13 @@ extern "C" void Trans_Init( void )
 	Cvar_Set( "trans_languages", langList );
 	Cvar_Set( "trans_encodings", encList );
 
+	Com_Printf( P_( "Loaded %u language\n", "Loaded %u languages\n", langs.size() ), ( int )langs.size() );
+}
+
+void Trans_LoadDefaultLanguage( void )
+{
+	FL_Locale           *locale;
+
 	// Only detect locale if no previous language set.
 	if( !language->string[0] )
 	{
@@ -328,20 +334,23 @@ extern "C" void Trans_Init( void )
 		else
 		{
 			Cvar_Set( "language", va( "%s%s%s", locale->lang,
-									  locale->country[0] ? "_" : "",
-									  locale->country ) );
+						  locale->country[0] ? "_" : "",
+						  locale->country ) );
 		}
 
 		FL_FreeLocale( &locale );
 	}
 
 	Trans_SetLanguage( language->string );
-
-	Com_Printf( P_( "Loaded %u language\n", "Loaded %u languages\n", langs.size() ), ( int )langs.size() );
 }
 
 const char* Trans_Gettext_Internal( const char *msgid, DictionaryManager& manager )
 {
+	if ( !msgid )
+	{
+		return msgid;
+	}
+
 	num = ( num + 1 ) & 3;
 	Q_strncpyz( gettextbuffer[ num ], manager.get_dictionary().translate( msgid ).c_str(), sizeof( gettextbuffer[ num ] ) );
 	return gettextbuffer[ num ];
@@ -349,6 +358,11 @@ const char* Trans_Gettext_Internal( const char *msgid, DictionaryManager& manage
 
 const char* Trans_Pgettext_Internal( const char *ctxt, const char *msgid, DictionaryManager& manager )
 {
+	if ( !ctxt || !msgid )
+	{
+		return msgid;
+	}
+
 	num = ( num + 1 ) & 3;
 	Q_strncpyz( gettextbuffer[ num ], manager.get_dictionary().translate_ctxt( ctxt, msgid ).c_str(), sizeof( gettextbuffer[ num ] ) );
 	return gettextbuffer[ num ];
@@ -356,6 +370,21 @@ const char* Trans_Pgettext_Internal( const char *ctxt, const char *msgid, Dictio
 
 const char* Trans_GettextPlural_Internal( const char *msgid, const char *msgid_plural, int number, DictionaryManager& manager )
 {
+	if ( !msgid || !msgid_plural )
+	{
+		if ( msgid )
+		{
+			return msgid;
+		}
+
+		if ( msgid_plural )
+		{
+			return msgid_plural;
+		}
+
+		return NULL;
+	}
+
 	num = ( num + 1 ) & 3;
 	Q_strncpyz( gettextbuffer[ num ], manager.get_dictionary().translate_plural( msgid, msgid_plural, number ).c_str(), sizeof( gettextbuffer[ num ] ) );
 	return gettextbuffer[ num ];

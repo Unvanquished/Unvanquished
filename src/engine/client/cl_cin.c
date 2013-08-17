@@ -37,9 +37,6 @@ Maryland 20850 USA.
  *
  * desc:    video and cinematic playback
  *
- *
- * cl_glconfig.hwtype trtypes 3dfx/ragepro need 256x256
- *
  *****************************************************************************/
 
 //#define ADAPTED_TO_STREAMING_SOUND

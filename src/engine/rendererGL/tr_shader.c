@@ -50,6 +50,8 @@ static char          implicitMap[ MAX_QPATH ];
 static unsigned      implicitStateBits;
 static cullType_t    implicitCullType;
 
+static char          whenTokens[ MAX_STRING_CHARS ];
+
 /*
 ================
 return a hash value for the filename
@@ -2248,6 +2250,10 @@ static qboolean ParseStage( shaderStage_t *stage, char **text )
 			{
 				stage->type = ST_SPECULARMAP;
 			}
+			else if ( !Q_stricmp( token, "glowMap" ) )
+			{
+				stage->type = ST_GLOWMAP;
+			}
 			else
 			{
 				// complex double blends
@@ -2305,6 +2311,10 @@ static qboolean ParseStage( shaderStage_t *stage, char **text )
 			else if ( !Q_stricmp( token, "specularMap" ) )
 			{
 				stage->type = ST_SPECULARMAP;
+			}
+			else if ( !Q_stricmp( token, "glowMap" ) )
+			{
+				stage->type = ST_GLOWMAP;
 			}
 			else if ( !Q_stricmp( token, "reflectionMap" ) )
 			{
@@ -2758,6 +2768,14 @@ static qboolean ParseStage( shaderStage_t *stage, char **text )
 		{
 			polyModeBits |= GLS_POLYMODE_LINE;
 		}
+		else if ( !Q_stricmp( token, "specularExponentMin" ) )
+		{
+			ParseExpression( text, &stage->specularExponentMin );
+		}
+		else if ( !Q_stricmp( token, "specularExponentMax" ) )
+		{
+			ParseExpression( text, &stage->specularExponentMax );
+		}
 		// refractionIndex <arithmetic expression>
 		else if ( !Q_stricmp( token, "refractionIndex" ) )
 		{
@@ -3149,11 +3167,7 @@ static void ParseSkyParms( char **text )
 		shader.sky.cloudHeight = 512;
 	}
 
-#if defined( USE_D3D10 )
-	// TODO
-#else
 	R_InitSkyTexCoords( shader.sky.cloudHeight );
-#endif
 
 	// innerbox
 	token = COM_ParseExt2( text, qfalse );
@@ -3535,7 +3549,7 @@ static void ParseGlowMap( shaderStage_t *stage, char **text )
 	char buffer[ 1024 ] = "";
 
 	stage->active = qtrue;
-	stage->type = ST_COLORMAP;
+	stage->type = ST_GLOWMAP;
 	stage->rgbGen = CGEN_IDENTITY;
 	stage->stateBits = GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE; // blend add
 
@@ -4734,6 +4748,46 @@ static qboolean ParseShader( char *_text )
 			SurfaceParm( "noShadows" );
 			continue;
 		}
+		// when <state> <shader name>
+		else if ( !Q_stricmp( token, "when" ) )
+		{
+			int i;
+			const char *p;
+			int index = 0;
+
+			token = COM_ParseExt2( text, qfalse );
+
+			for ( i = 1, p = whenTokens; i < MAX_ALTSHADERS && *p; ++i, p += strlen( p ) + 1 )
+			{
+				if ( !Q_stricmp( token, p ) )
+				{
+					index = i;
+					break;
+				}
+			}
+
+			if ( index == 0 )
+			{
+				ri.Printf( PRINT_WARNING, "WARNING: unknown parameter '%s' for 'when' in '%s'\n", token, shader.name );
+			}
+			else
+			{
+				int tokenLen;
+
+				token = COM_ParseExt( text, qfalse );
+
+				if ( !token[ 0 ] )
+				{
+					ri.Printf( PRINT_WARNING, "WARNING: missing shader name for 'when'\n" );
+					continue;
+				}
+
+				tokenLen = strlen( token ) + 1;
+				shader.altShader[ index ].index = 0;
+				shader.altShader[ index ].name = ri.Hunk_Alloc( sizeof( char ) * tokenLen, h_low );
+				Q_strncpyz( shader.altShader[ index ].name, token, tokenLen );
+			}
+		}
 		else if ( SurfaceParm( token ) )
 		{
 			continue;
@@ -4819,11 +4873,13 @@ static void CollapseStages( void )
 	qboolean      hasNormalStage;
 	qboolean      hasSpecularStage;
 	qboolean      hasReflectionStage;
+	qboolean      hasGlowStage;
 
 	shaderStage_t tmpDiffuseStage;
 	shaderStage_t tmpNormalStage;
 	shaderStage_t tmpSpecularStage;
 	shaderStage_t tmpReflectionStage;
+	shaderStage_t tmpGlowStage;
 
 #if defined( COMPAT_Q3A ) || defined( COMPAT_ET )
 	shaderStage_t tmpColorStage;
@@ -4853,10 +4909,12 @@ static void CollapseStages( void )
 		hasNormalStage = qfalse;
 		hasSpecularStage = qfalse;
 		hasReflectionStage = qfalse;
+		hasGlowStage = qfalse;
 
 		Com_Memset( &tmpDiffuseStage, 0, sizeof( shaderStage_t ) );
 		Com_Memset( &tmpNormalStage, 0, sizeof( shaderStage_t ) );
 		Com_Memset( &tmpSpecularStage, 0, sizeof( shaderStage_t ) );
+		Com_Memset( &tmpGlowStage, 0, sizeof( shaderStage_t ) );
 
 #if defined( COMPAT_Q3A ) || defined( COMPAT_ET )
 		Com_Memset( &tmpColorStage, 0, sizeof( shaderStage_t ) );
@@ -4869,9 +4927,6 @@ static void CollapseStages( void )
 		}
 
 		if (
-#if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
-		  stages[ j ].type == ST_COLORMAP ||
-#endif
 		  stages[ j ].type == ST_REFRACTIONMAP ||
 		  stages[ j ].type == ST_DISPERSIONMAP ||
 		  stages[ j ].type == ST_SKYBOXMAP ||
@@ -4963,7 +5018,7 @@ static void CollapseStages( void )
 		*/
 #endif
 
-		for ( i = 0; i < 3; i++ )
+		for ( i = 0; i < 4; i++ )
 		{
 			if ( ( j + i ) >= MAX_SHADER_STAGES )
 			{
@@ -4995,14 +5050,44 @@ static void CollapseStages( void )
 				hasReflectionStage = qtrue;
 				tmpReflectionStage = stages[ j + i ];
 			}
+			else if ( stages[ j + i ].type == ST_GLOWMAP && !hasGlowStage )
+			{
+				hasGlowStage = qtrue;
+				tmpGlowStage = stages[ j + i ];
+			}
 		}
 
 		// NOTE: Tr3B - merge as many stages as possible
 
-		// try to merge diffuse/normal/specular
+		// try to merge diffuse/normal/specular/glow
 		if ( hasDiffuseStage         &&
 		     hasNormalStage          &&
-		     hasSpecularStage
+		     hasSpecularStage        &&
+		     hasGlowStage
+		   )
+		{
+			//ri.Printf(PRINT_ALL, "lighting_DBSG\n");
+
+			tmpShader.collapseType = COLLAPSE_lighting_DBSG;
+
+			tmpStages[ numStages ] = tmpDiffuseStage;
+			tmpStages[ numStages ].type = ST_COLLAPSE_lighting_DBSG;
+
+			tmpStages[ numStages ].bundle[ TB_NORMALMAP ] = tmpNormalStage.bundle[ 0 ];
+
+			tmpStages[ numStages ].bundle[ TB_SPECULARMAP ] = tmpSpecularStage.bundle[ 0 ];
+			tmpStages[ numStages ].specularExponentMin = tmpSpecularStage.specularExponentMin;
+			tmpStages[ numStages ].specularExponentMax = tmpSpecularStage.specularExponentMax;
+
+			tmpStages[ numStages ].bundle[ TB_GLOWMAP ] = tmpGlowStage.bundle[ 0 ];
+			numStages++;
+			j += 3;
+			continue;
+		}
+		// try to merge diffuse/normal/specular
+		else if ( hasDiffuseStage         &&
+		          hasNormalStage          &&
+		          hasSpecularStage
 		   )
 		{
 			//ri.Printf(PRINT_ALL, "lighting_DBS\n");
@@ -5013,8 +5098,30 @@ static void CollapseStages( void )
 			tmpStages[ numStages ].type = ST_COLLAPSE_lighting_DBS;
 
 			tmpStages[ numStages ].bundle[ TB_NORMALMAP ] = tmpNormalStage.bundle[ 0 ];
-			tmpStages[ numStages ].bundle[ TB_SPECULARMAP ] = tmpSpecularStage.bundle[ 0 ];
 
+			tmpStages[ numStages ].bundle[ TB_SPECULARMAP ] = tmpSpecularStage.bundle[ 0 ];
+			tmpStages[ numStages ].specularExponentMin = tmpSpecularStage.specularExponentMin;
+			tmpStages[ numStages ].specularExponentMax = tmpSpecularStage.specularExponentMax;
+
+			numStages++;
+			j += 2;
+			continue;
+		}
+		// try to merge diffuse/normal/glow
+		else if ( hasDiffuseStage         &&
+		          hasNormalStage          &&
+		          hasGlowStage
+		        )
+		{
+			//ri.Printf(PRINT_ALL, "lighting_DBG\n");
+
+			tmpShader.collapseType = COLLAPSE_lighting_DBG;
+
+			tmpStages[ numStages ] = tmpDiffuseStage;
+			tmpStages[ numStages ].type = ST_COLLAPSE_lighting_DBG;
+
+			tmpStages[ numStages ].bundle[ TB_NORMALMAP ] = tmpNormalStage.bundle[ 0 ];
+			tmpStages[ numStages ].bundle[ TB_GLOWMAP ] = tmpGlowStage.bundle[ 0 ];
 			numStages++;
 			j += 2;
 			continue;
@@ -5317,7 +5424,8 @@ from the current global working shader
 */
 static shader_t *FinishShader( void )
 {
-	int stage;
+	int      stage, i;
+	shader_t *ret;
 
 	// set sky stuff appropriate
 	if ( shader.isSky )
@@ -5571,7 +5679,20 @@ static shader_t *FinishShader( void )
 		shader.sort = SS_FOG;
 	}
 
-	return GeneratePermanentShader();
+	ret = GeneratePermanentShader();
+
+	for ( i = 1; i < MAX_ALTSHADERS; ++i )
+	{
+		if ( ret->altShader[ i ].name )
+		{
+			// flags were previously stashed in altShader[0].index
+			shader_t *sh = R_FindShader( ret->altShader[ i ].name, ret->type, ret->altShader[ 0 ].index );
+
+			ret->altShader[ i ].index = sh->defaultShader ? 0 : sh->index;
+		}
+	}
+
+	return ret;
 }
 
 //========================================================================================
@@ -5932,6 +6053,8 @@ shader_t       *R_FindShader( const char *name, shaderType_t type,
 			return sh;
 		}
 	}
+
+	shader.altShader[ 0 ].index = flags; // save for later use (in case of alternativer shaders)
 
 	// make sure the render thread is stopped, because we are probably
 	// going to have to upload an image
@@ -7135,4 +7258,24 @@ void R_InitShaders( void )
 	ScanAndLoadShaderFiles();
 
 	CreateExternalShaders();
+}
+
+/*
+==================
+R_SetAltShaderKeywords
+==================
+*/
+void R_SetAltShaderTokens( const char *list )
+{
+	char *p;
+
+	memset( whenTokens, 0, sizeof( whenTokens ) );
+	Q_strncpyz( whenTokens, list, sizeof( whenTokens ) - 1 ); // will have double-NUL termination
+
+	p = whenTokens - 1;
+
+	while ( ( p = strchr( p + 1, ',' ) ) )
+	{
+		*p = 0;
+	}
 }

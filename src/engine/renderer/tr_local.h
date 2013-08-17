@@ -39,9 +39,9 @@ Maryland 20850 USA.
 #include "../qcommon/qfiles.h"
 #include "../qcommon/qcommon.h"
 #include "tr_public.h"
-#if !defined USE_D3D10
+#include "tr_bonematrix.h"
+
 #include <GL/glew.h>
-#endif
 
 // everything that is needed by the backend needs
 // to be double buffered to allow it to run in
@@ -95,9 +95,9 @@ typedef struct image_s
 	char           imgName[ MAX_QPATH ]; // game path, including extension
 	int            width, height; // source image
 	int            uploadWidth, uploadHeight; // after power of two and picmip but not including clamp to MAX_TEXTURE_SIZE
-#if !defined USE_D3D10
+
 	GLuint         texnum; // gl texture binding
-#endif
+
 	int            frameUsed; // for texture usage in frame statistics
 
 	int            internalFormat;
@@ -601,6 +601,12 @@ typedef struct shader_s
 	struct shader_s *remappedShader; // current shader this one is remapped too
 
 	int             shaderStates[ MAX_STATES_PER_SHADER ]; // index to valid shader states
+
+	struct {
+		char *name;
+		int  index;
+		int  spare[7]; // possible future expansion
+	} altShader[ MAX_ALTSHADERS ]; // state-based remapping; note that index 0 is unused
 
 	struct shader_s *next;
 } shader_t;
@@ -1180,18 +1186,17 @@ typedef struct
 	vec3_t  offset;
 } md5Weight_t;
 
-typedef struct
+// align for sse skinning
+typedef ALIGNED( 16, struct
 {
-	vec3_t      position;
+	vec4_t      position;
+	vec4_t      normal;
 	vec2_t      texCoords;
-	vec3_t      tangent;
-	vec3_t      binormal;
-	vec3_t      normal;
 
 	uint32_t    firstWeight;
 	uint16_t    numWeights;
 	md5Weight_t **weights;
-} md5Vertex_t;
+} md5Vertex_t );
 
 typedef struct
 {
@@ -1224,7 +1229,7 @@ typedef struct
 	int8_t   parentIndex; // parent index (-1 if root)
 	vec3_t   origin;
 	quat_t   rotation;
-	matrix_t inverseTransform; // full inverse for tangent space transformation
+	boneMatrix_t inverseTransform; // full inverse for tangent space transformation
 } md5Bone_t;
 
 typedef struct md5Model_s
@@ -1484,6 +1489,15 @@ typedef struct visTest_s
 	float             lastResult;
 } visTest_t;
 
+typedef struct
+{
+	qboolean status;
+	int      x;
+	int      y;
+	int      w;
+	int      h;
+} scissorState_t;
+
 /*
 ** trGlobals_t
 **
@@ -1603,7 +1617,8 @@ typedef struct
 	float    fogTable[ FOG_TABLE_SIZE ];
 
 	// RF, temp var used while parsing shader only
-	int allowCompress;
+	int            allowCompress;
+	scissorState_t scissor;
 } trGlobals_t;
 
 extern backEndState_t backEnd;
@@ -1619,10 +1634,6 @@ extern float          displayAspect; // FIXME
 //
 extern cvar_t *r_flareSize;
 extern cvar_t *r_flareFade;
-
-extern cvar_t *r_railWidth;
-extern cvar_t *r_railCoreWidth;
-extern cvar_t *r_railSegmentLength;
 
 extern cvar_t *r_ignore; // used for debugging anything
 extern cvar_t *r_verbose; // used for verbose debug spew
@@ -2352,6 +2363,21 @@ typedef struct
 
 typedef struct
 {
+	int       commandId;
+	qboolean  enable;
+} scissorEnableCommand_t;
+
+typedef struct
+{
+	int       commandId;
+	int       x;
+	int       y;
+	int       w;
+	int       h;
+} scissorSetCommand_t;
+
+typedef struct
+{
 	int         commandId;
 	trRefdef_t  refdef;
 	viewParms_t viewParms;
@@ -2399,6 +2425,8 @@ typedef enum
   RC_SET_COLOR,
   RC_STRETCH_PIC,
   RC_2DPOLYS,
+  RC_SCISSORENABLE,
+  RC_SCISSORSET,
   RC_ROTATED_PIC,
   RC_STRETCH_PIC_GRADIENT, // (SA) added
   RC_DRAW_SURFS,
@@ -2474,6 +2502,8 @@ void                                RE_StretchPicGradient( float x, float y, flo
     float s1, float t1, float s2, float t2, qhandle_t hShader, const float *gradientColor,
     int gradientType );
 void                                RE_2DPolyies( polyVert_t *verts, int numverts, qhandle_t hShader );
+void                                RE_ScissorEnable( qboolean enable );
+void                                RE_ScissorSet( int x, int y, int w, int h );
 void                                RE_SetGlobalFog( qboolean restore, int duration, float r, float g, float b, float depthForOpaque );
 void                                RE_BeginFrame( stereoFrame_t stereoFrame );
 void                                RE_EndFrame( int *frontEndMsec, int *backEndMsec );
@@ -2542,6 +2572,8 @@ void     R_PurgeLightmapShaders( void );
 void     R_LoadCacheShaders( void );
 
 // done.
+
+void     R_SetAltShaderTokens( const char * );
 
 //------------------------------------------------------------------------------
 // Ridah, mesh compression

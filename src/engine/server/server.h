@@ -337,6 +337,7 @@ extern cvar_t         *sv_maxclients;
 
 extern cvar_t         *sv_privateClients;
 extern cvar_t         *sv_hostname;
+extern cvar_t         *sv_statsURL;
 extern cvar_t         *sv_master[ MAX_MASTER_SERVERS ];
 extern cvar_t         *sv_reconnectlimit;
 extern cvar_t         *sv_padPackets;
@@ -396,7 +397,7 @@ void       SV_MasterShutdown( void );
 void       SV_MasterGameStat( const char *data );
 
 //bani - bugtraq 12534
-qboolean   SV_VerifyChallenge( char *challenge );
+qboolean   SV_VerifyChallenge( const char *challenge );
 
 //
 // sv_init.c

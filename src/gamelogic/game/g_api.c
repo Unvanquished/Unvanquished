@@ -141,7 +141,7 @@ int trap_FS_FOpenFile( const char *qpath, fileHandle_t *f, fsMode_t mode )
 }
 
 //13.
-//FS_Read2(VMA(1), args[2], args[3]);
+//FS_Read(VMA(1), args[2], args[3]);
 void trap_FS_Read( void *buffer, int len, fileHandle_t f )
 {
 	syscall( G_FS_READ, buffer, len, f );
@@ -376,10 +376,10 @@ qboolean trap_GetEntityToken( char *buffer, int bufferSize )
 }
 
 //45.
-//return Com_RealTime(VMA(1));
-int trap_RealTime( qtime_t *qtime )
+//return Com_GMTime(VMA(1));
+int trap_GMTime( qtime_t *qtime )
 {
-	return syscall( G_REAL_TIME, qtime );
+	return syscall( G_GM_TIME, qtime );
 }
 
 //46.

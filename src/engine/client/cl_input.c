@@ -60,6 +60,7 @@ at the same time.
 */
 
 static kbutton_t  kb[ NUM_BUTTONS ];
+static char       *keyup[ MAX_KEYS ];
 
 // Arnout: doubleTap button mapping
 // FIXME: should be registered by cgame code
@@ -90,19 +91,8 @@ void IN_MLookUp( void )
 
 void IN_KeyDown( kbutton_t *b )
 {
-	int  k;
-	char *c;
-
-	c = Cmd_Argv( 1 );
-
-	if ( c[ 0 ] )
-	{
-		k = atoi( c );
-	}
-	else
-	{
-		k = -1; // typed manually at the console for continuous down
-	}
+	qboolean nokey = ( Cmd_Argc() > 1 );
+	int      k = nokey ? -1 : Key_GetKeyNumber(); // -1 if typed manually at the console for continuous down
 
 	if ( k == b->down[ 0 ] || k == b->down[ 1 ] )
 	{
@@ -129,8 +119,7 @@ void IN_KeyDown( kbutton_t *b )
 	}
 
 	// save timestamp for partial frame summing
-	c = Cmd_Argv( 2 );
-	b->downtime = atoi( c );
+	b->downtime = nokey ? 0 : Key_GetKeyTime();
 
 	b->active = qtrue;
 	b->wasPressed = qtrue;
@@ -138,17 +127,11 @@ void IN_KeyDown( kbutton_t *b )
 
 void IN_KeyUp( kbutton_t *b )
 {
-	int      k;
-	char     *c;
 	unsigned uptime;
+	qboolean nokey = ( Cmd_Argc() > 1 );
+	int      k = nokey ? -1 : Key_GetKeyNumber(); // -1 if typed manually at the console for continuous down
 
-	c = Cmd_Argv( 1 );
-
-	if ( c[ 0 ] )
-	{
-		k = atoi( c );
-	}
-	else
+	if ( k < 0 )
 	{
 		// typed manually at the console, assume for unsticking, so clear all
 		b->down[ 0 ] = b->down[ 1 ] = 0;
@@ -156,17 +139,15 @@ void IN_KeyUp( kbutton_t *b )
 		return;
 	}
 
-	if ( b->down[ 0 ] == k )
+	// If this key is marked as down for this button, clear it
+	// Also clear sticky state (don't care if there was no key-down)
+	if ( b->down[ 0 ] == k || b->down[ 0 ] < 0 )
 	{
 		b->down[ 0 ] = 0;
 	}
-	else if ( b->down[ 1 ] == k )
+	if ( b->down[ 1 ] == k || b->down[ 1 ] < 0 )
 	{
 		b->down[ 1 ] = 0;
-	}
-	else
-	{
-		return; // key up without corresponding down (menu pass-through)
 	}
 
 	if ( b->down[ 0 ] || b->down[ 1 ] )
@@ -177,8 +158,7 @@ void IN_KeyUp( kbutton_t *b )
 	b->active = qfalse;
 
 	// save timestamp for partial frame summing
-	c = Cmd_Argv( 2 );
-	uptime = atoi( c );
+	uptime = nokey ? 0 : Key_GetKeyTime();
 
 	if ( uptime )
 	{
@@ -244,16 +224,6 @@ float CL_KeyState( kbutton_t *key )
 	}
 
 	return val;
-}
-
-void IN_ButtonDown( int arg )
-{
-	IN_KeyDown( &kb[ arg ] );
-}
-
-void IN_ButtonUp( int arg )
-{
-	IN_KeyUp( &kb[ arg ] );
 }
 
 #ifdef USE_VOIP
@@ -1201,26 +1171,197 @@ void CL_SendCmd( void )
 	CL_WritePacket();
 }
 
+static char *registeredButtonCommands[ USERCMD_BUTTONS ] = { NULL };
+
+struct{
+	const char* name;
+	int key;
+} builtinButtonCommands [] = {
+	"moveup",     KB_UP,
+	"movedown",   KB_DOWN,
+	"left",       KB_LEFT,
+	"right",      KB_RIGHT,
+	"forward",    KB_FORWARD,
+	"back",       KB_BACK,
+	"lookup",     KB_LOOKUP,
+	"lookdown",   KB_LOOKDOWN,
+	"strafe",     KB_STRAFE,
+	"moveleft",   KB_MOVELEFT,
+	"moveright",  KB_MOVERIGHT,
+	"speed",      KB_SPEED,
+	"mlook",      KB_MLOOK,
+	NULL, 0
+};
+
+//A proxy command for +/-commands
+void IN_BuiltinButtonCommand( void )
+{
+	int i = 0;
+	const char* name = Cmd_Argv(0);
+	qboolean isPlus = name[0] == '+';
+	int key = -1;
+
+	//Remove the modifier
+	name ++;
+
+	//Search in the button commands given by cgame
+	for ( i = 0; i < USERCMD_BUTTONS; ++i )
+	{
+		if ( registeredButtonCommands[ i ] )
+		{
+			if( !Q_stricmp( registeredButtonCommands[ i ] + 1, name ) )
+			{
+				key = KB_BUTTONS + i;
+				break;
+			}
+		}
+	}
+
+	//Search in the builtin button commands
+	if ( key == -1 )
+	{
+		i = 0;
+		while( builtinButtonCommands[i].name != NULL )
+		{
+			if ( !Q_stricmp( builtinButtonCommands[i].name, name ) )
+			{
+				key = builtinButtonCommands[i].key;
+				break;
+			}
+			i++;
+		}
+	}
+
+	//We have a match, fire the right event
+	if ( key != -1 )
+	{
+		if(isPlus)
+		{
+			IN_KeyDown( &kb[ key ] );
+		}
+		else
+		{
+			IN_KeyUp( &kb[ key ] );
+		}
+	}
+}
+
+void IN_KeysUp( unsigned int check, int key, int time )
+{
+	int i;
+	qboolean first = qtrue;
+
+	for ( i = 0; i < USERCMD_BUTTONS; ++i )
+	{
+		if ( kb[ KB_BUTTONS + i ].down[ 0 ] == key || kb[ KB_BUTTONS + i ].down[ 1 ] == key )
+		{
+			if ( first )
+			{
+				Cbuf_AddText( va( "setkeydata %d %d %u\n", check, key + 1, time ) );
+				first = qfalse;
+			}
+
+			Cbuf_AddText( va( "-%s\n", registeredButtonCommands[ i ] + 1 ) ); // command name includes '+'
+		}
+	}
+
+	for ( i = 0; builtinButtonCommands[i].name; ++i )
+	{
+		if ( kb[ builtinButtonCommands[i].key ].down[ 0 ] == key || kb[ builtinButtonCommands[i].key ].down[ 1 ] == key )
+		{
+			if ( first )
+			{
+				Cbuf_AddText( va( "setkeydata %d %d %u\n", check, key + 1, time ) );
+				first = qfalse;
+			}
+
+			Cbuf_AddText( va( "-%s\n", builtinButtonCommands[i].name ) ); // command name doesn't include '+'
+		}
+	}
+
+	if ( !first )
+	{
+		Cbuf_AddText( va( "setkeydata %d\n", check ) );
+	}
+
+	// Pseudo-button commands handled here
+	// After the setkeydata so that they can't go adding more commands
+	if ( keyup[ key ] )
+	{
+		Cbuf_AddText( keyup[ key ] );
+		Z_Free( keyup[ key ] );
+		keyup[ key ] = NULL;
+	}
+}
+
+/*
+============
+IN_PrepareKeyUp
+
+For pseudo-button commands which don't need key/time info but do need to be executed on key-up.
+Called by the +command code.
+============
+*/
+void IN_PrepareKeyUp( void )
+{
+	char *cmd;
+	int  key;
+
+	// Get the current key no. If negative, return
+	key = Key_GetKeyNumber();
+
+	if ( key < 0 )
+	{
+		return;
+	}
+
+	// Get the command & check that it's a +command
+	cmd = Cmd_Argv( 0 );
+
+	if ( *cmd != '+' )
+	{
+		return;
+	}
+
+	++cmd; // skip the '+'
+
+	// Add the command to what's already marked for this command
+	if ( keyup[ key ] )
+	{
+		char *newcmd = Z_Malloc( strlen( keyup[ key ] ) + strlen( cmd ) + 3 );
+		sprintf( newcmd, "%s-%s\n", keyup[ key ], cmd );
+		Z_Free( keyup[ key ] );
+		keyup[ key ] = newcmd;
+	}
+	else
+	{
+		keyup[ key ] = Z_Malloc( strlen( cmd ) + 3 );
+		sprintf( keyup[ key ], "-%s\n", cmd );
+	}
+}
+
 /*
 ============
 CL_RegisterButtonCommands
+
+Get a list of buttons from cgame (USERCMD_BUTTONS comma sperated names)
+and registers the appropriate commands.
 ============
 */
 void CL_RegisterButtonCommands( const char *cmd_names )
 {
-	static char    *registered[ USERCMD_BUTTONS ] = { NULL };
-	char           name[ 100 ];
-	int            i;
+	char name[100];
+	int i;
 
 	for ( i = 0; i < USERCMD_BUTTONS; ++i )
 	{
-		if ( registered[ i ] )
+		if ( registeredButtonCommands[ i ] )
 		{
-			Cmd_RemoveCommand( registered[ i ] );
-			registered[ i ][ 0 ] = '-';
-			Cmd_RemoveCommand( registered[ i ] );
-			Z_Free( registered[ i ] );
-			registered[ i ] = NULL;
+			Cmd_RemoveCommand( registeredButtonCommands[ i ] );
+			registeredButtonCommands[ i ][ 0 ] = '-';
+			Cmd_RemoveCommand( registeredButtonCommands[ i ] );
+			Z_Free( registeredButtonCommands[ i ] );
+			registeredButtonCommands[ i ] = NULL;
 		}
 	}
 
@@ -1240,12 +1381,13 @@ void CL_RegisterButtonCommands( const char *cmd_names )
 		Q_snprintf( name + 1, sizeof( name ) - 1, "%.*s",
 		            (int)( term ? ( term - cmd_names ) : sizeof ( name ) - 1 ), cmd_names );
 
-		if ( Cmd_AddButtonCommand( name + 1, KB_BUTTONS + i ) )
-		{
-			// store a copy of the name, '+'-prefixed ready for unregistration
-			name[0] = '+';
-			registered[i] = CopyString( name );
-		}
+		name[0] = '-';
+		Cmd_AddCommand( name, IN_BuiltinButtonCommand );
+		name[0] = '+';
+		Cmd_AddCommand( name, IN_BuiltinButtonCommand );
+
+		// store a copy of the name, '+'-prefixed ready for unregistration
+		registeredButtonCommands[i] = CopyString( name );
 
 		cmd_names = term + !!term;
 	}
@@ -1263,21 +1405,16 @@ CL_InitInput
 */
 void CL_InitInput( void )
 {
+	int i = 0;
+
 	Cmd_AddCommand ("centerview", IN_CenterView);
 
-	Cmd_AddButtonCommand( "moveup",     KB_UP );
-	Cmd_AddButtonCommand( "movedown",   KB_DOWN );
-	Cmd_AddButtonCommand( "left",       KB_LEFT );
-	Cmd_AddButtonCommand( "right",      KB_RIGHT );
-	Cmd_AddButtonCommand( "forward",    KB_FORWARD );
-	Cmd_AddButtonCommand( "back",       KB_BACK );
-	Cmd_AddButtonCommand( "lookup",     KB_LOOKUP );
-	Cmd_AddButtonCommand( "lookdown",   KB_LOOKDOWN );
-	Cmd_AddButtonCommand( "strafe",     KB_STRAFE );
-	Cmd_AddButtonCommand( "moveleft",   KB_MOVELEFT );
-	Cmd_AddButtonCommand( "moveright",  KB_MOVERIGHT );
-	Cmd_AddButtonCommand( "speed",      KB_SPEED );
-	Cmd_AddButtonCommand( "mlook",      KB_MLOOK );
+	while( builtinButtonCommands[i].name != NULL )
+	{
+		Cmd_AddCommand( va( "-%s", builtinButtonCommands[i].name ), IN_BuiltinButtonCommand );
+		Cmd_AddCommand( va( "+%s", builtinButtonCommands[i].name ), IN_BuiltinButtonCommand );
+		i++;
+	}
 
 	//Cmd_AddCommand ("notebook",IN_Notebook);
 	Cmd_AddCommand( "help", IN_Help );
@@ -1298,5 +1435,16 @@ CL_ClearKeys
 */
 void CL_ClearKeys( void )
 {
+	int i;
+
+	for ( i = 0; i < ARRAY_LEN( keyup ); ++i )
+	{
+		if ( keyup[ i ] )
+		{
+			Z_Free( keyup[ i ] );
+			keyup[ i ] = NULL;
+		}
+	}
+
 	memset( kb, 0, sizeof( kb ) );
 }

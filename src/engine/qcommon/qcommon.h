@@ -139,7 +139,7 @@ NET
 
 #define MAX_PACKET_USERCMDS 32 // max number of usercmd_t in a packet
 
-#define PORT_ANY            -1
+#define PORT_ANY            0
 
 #define MAX_MASTER_SERVERS  5
 
@@ -432,9 +432,6 @@ typedef void ( *xcommand_arg_t )( int );
 void Cmd_Init( void );
 
 void     Cmd_AddCommand( const char *cmd_name, xcommand_t function );
-#ifndef DEDICATED
-qboolean Cmd_AddButtonCommand( const char *cmd_name, int parameter );
-#endif
 
 // called by the init functions of other parts of the program to
 // register commands and functions to call for them.
@@ -561,6 +558,7 @@ fileHandle_t FS_SV_FOpenFileWrite( const char *filename );
 int          FS_SV_FOpenFileRead( const char *filename, fileHandle_t *fp );
 void         FS_SV_Rename( const char *from, const char *to );
 int          FS_FOpenFileRead( const char *qpath, fileHandle_t *file, qboolean uniqueFILE );
+int          FS_FOpenFileRead_Impure( const char *filename, fileHandle_t *file, qboolean uniqueFILE );
 
 /*
 if uniqueFILE is true, then a new FILE will be fopened even if the file
@@ -588,7 +586,6 @@ int FS_Delete( char *filename );  // only works inside the 'save' directory (for
 
 int FS_Write( const void *buffer, int len, fileHandle_t f );
 
-int FS_Read2( void *buffer, int len, fileHandle_t f );
 int FS_Read( void *buffer, int len, fileHandle_t f );
 
 // properly handles partial reads and reads from other dlls
@@ -812,6 +809,13 @@ char       *Com_MD5File( const char *filename, int length );
 void       Com_MD5Buffer( const char *pubkey, int size, char *buffer, int bufsize );
 int        Com_FilterPath( char *filter, char *name, int casesensitive );
 int        Com_RealTime( qtime_t *qtime );
+int        Com_GMTime( qtime_t *qtime );
+// Com_Time: client gets local time, server gets GMT
+#ifdef DEDICATED
+#define Com_Time(t) Com_GMTime(t)
+#else
+#define Com_Time(t) Com_RealTime(t)
+#endif
 qboolean   Com_SafeMode( void );
 
 qboolean   Com_IsVoipTarget( uint8_t *voipTargets, int voipTargetsSize, int clientNum );
@@ -1270,6 +1274,7 @@ void Com_RandomBytes( byte *string, int len );
 #define P_(x, y, c) Trans_GettextPlural(x, y, c)
 
 void Trans_Init( void );
+void Trans_LoadDefaultLanguage( void );
 const char* Trans_Gettext( const char *msgid ) __attribute__((__format_arg__(1)));
 const char* Trans_Pgettext( const char *ctxt, const char *msgid ) __attribute__((__format_arg__(2)));
 const char* Trans_GettextPlural( const char *msgid, const char *msgid_plural, int num ) __attribute__((__format_arg__(1))) __attribute__((__format_arg__(2)));

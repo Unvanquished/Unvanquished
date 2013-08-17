@@ -826,40 +826,68 @@ optionally through a list of given values
 void Cvar_Toggle_f( void )
 {
 	int        i, c;
+	int        listfirst = 2;
+	int        step = 1;
 	const char *varname, *curval;
 
 	c = Cmd_Argc();
 
+	// at least two parameters regardless
 	if ( c < 2 )
 	{
-		Cmd_PrintUsage(_("<variable> [<value> …]"), NULL);
-		return;
+		goto print_usage;
 	}
 
 	varname = Cmd_Argv( 1 );
 
-	if ( c == 2 )
+	// step direction
+	if ( !strcmp( varname, "+" ) )
+	{
+		// step = 1;
+		listfirst = 3;
+		varname = Cmd_Argv( 2 );
+	}
+	else if ( !strcmp( varname, "-" ) )
+	{
+		step = -1;
+		listfirst = 3;
+		varname = Cmd_Argv( 2 );
+	}
+
+	// we now know how many parameters are needed
+	if ( c < listfirst )
+	{
+		goto print_usage;
+	}
+
+	// simple case: just toggle between 0 and 1
+	if ( c == listfirst )
 	{
 		Cvar_Set2( varname, va( "%d", !Cvar_VariableValue( varname ) ), qfalse );
 		return;
 	}
 
-	curval = Cvar_VariableString( Cmd_Argv( 1 ) );
+	// need to look through the supplied list
+	curval = Cvar_VariableString( varname );
+	c -= listfirst; // convenience
 
-	// don't bother checking the last value for a match, since the desired
-	//  behaviour is the same as if the last value didn't match:
-	//  set the variable to the first value
-	for ( i = 2; i < c - 1; ++i )
+	for ( i = 0; i < c; ++i )
 	{
-		if ( !strcmp( curval, Cmd_Argv( i ) ) )
+		if ( !strcmp( curval, Cmd_Argv( listfirst + i ) ) )
 		{
-			Cvar_Set2( varname, Cmd_Argv( i + 1 ), qfalse );
+			Cvar_Set2( varname, Cmd_Argv( listfirst + ( i + c + step ) % c ), qfalse );
 			return;
 		}
 	}
 
 	// fallback
-	Cvar_Set2( varname, Cmd_Argv( 2 ), qfalse );
+	Cvar_Set2( varname, Cmd_Argv( listfirst ), qfalse );
+
+	// done
+	return;
+
+print_usage:
+	Cmd_PrintUsage(_("[+|-] <variable> [<value>…]"), NULL);
 }
 
 /*
@@ -919,43 +947,45 @@ void Cvar_Cycle_f( void )
 	Cvar_Set2( Cmd_Argv( 1 ), va( "%i", value ), qfalse );
 }
 
-/*
-============
-Cvar_Set_f
-
-Allows setting and defining of arbitrary cvars from console, even if they
-weren't declared in C code.
-============
-*/
-void Cvar_Set_f( void )
+static char *Cvar_Set_FromCmd(void)
 {
 	int  c, unsafe = 0;
-	char *value;
+	char *name, *value;
+	int  nameIndex = 1;
 
 	c = Cmd_Argc();
 
 	if ( c < 3 )
 	{
-		Cmd_PrintUsage(_("<variable> <value> [unsafe]"), NULL);
-		return;
+		Cmd_PrintUsage(_("[-unsafe] <variable> <value>"), NULL);
+		return NULL;
 	}
 
-	// ydnar: handle unsafe vars
-	if ( c >= 4 && !strcmp( Cmd_Argv( c - 1 ), "unsafe" ) )
+	// handle unsafe vars
+	if ( c >= 4 && !strcmp( Cmd_Argv( nameIndex ), "-unsafe" ) )
+	{
+		++nameIndex;
+		unsafe = 1;
+	}
+	// FIXME: trailing 'unsafe' is deprecated and will go away soon (at the earliest, a19).
+	else if ( c >= 4 && !strcmp( Cmd_Argv( c - 1 ), "unsafe" ) )
 	{
 		c--;
-		unsafe = 1;
-
-		if ( com_crashed != NULL && com_crashed->integer )
-		{
-			Com_Printf(_( "%s is unsafe. Check com_crashed.\n"), Cmd_Argv( 1 ) );
-			return;
-		}
+		unsafe = 2;
 	}
 
-	value = strdup( Cmd_Cmd_FromNth( 2 ) );   // 3rd arg onwards, raw
+	name = Cmd_Argv( nameIndex );
 
-	if ( unsafe )
+	if ( unsafe && com_crashed != NULL && com_crashed->integer )
+	{
+		Com_Printf(_( "%s is unsafe. Check com_crashed.\n"), name );
+		return NULL;
+	}
+
+	value = strdup( Cmd_Cmd_FromNth( nameIndex + 1 ) );   // 3rd arg onwards, raw
+
+        // FIXME: deprecated code
+	if ( unsafe == 2 )
 	{
 		char *end = value + strlen( value );
 
@@ -993,22 +1023,25 @@ void Cvar_Set_f( void )
 		end[ 1 ] = 0; // end of string :-)
 	}
 
-	Cvar_Set2( Cmd_Argv( 1 ), Cmd_UnquoteString( value ), qfalse );
+	Cvar_Set2( name, Cmd_UnquoteString( value ), qfalse );
 	free( value );
+
+	return name;
 }
 
 static void Cvar_Set_Flagged( int flag )
 {
 	cvar_t *v;
+	char   *name;
 
 	if ( Cmd_Argc() < 3 )
 	{
-		Cmd_PrintUsage(_("<variable> <value> [unsafe]"), NULL);
+		Cmd_PrintUsage(_("[-unsafe] <variable> <value>"), NULL);
 		return;
 	}
 
-	Cvar_Set_f();
-	v = Cvar_FindVar( Cmd_Argv( 1 ) );
+	name = Cvar_Set_FromCmd();
+	v = name ? Cvar_FindVar( name ) : NULL;
 
 	if ( !v )
 	{
@@ -1018,6 +1051,18 @@ static void Cvar_Set_Flagged( int flag )
 	v->flags |= flag;
 }
 
+/*
+============
+Cvar_Set_f
+
+Allows setting and defining of arbitrary cvars from console, even if they
+weren't declared in C code.
+============
+*/
+void Cvar_Set_f( void )
+{
+	Cvar_Set_FromCmd();
+}
 /*
 ============
 Cvar_SetU_f
@@ -1091,11 +1136,10 @@ void Cvar_WriteVariables( fileHandle_t f )
 				continue;
 
 			// write the latched value, even if it hasn't taken effect yet
-			Com_sprintf( buffer, sizeof( buffer ), "seta %s %s%s\n",
+			Com_sprintf( buffer, sizeof( buffer ), "seta %s%s %s\n",
+			             ( var->flags & CVAR_UNSAFE ) ? "-unsafe " : "",
 			             var->name,
-			             Cmd_QuoteString( var->latchedString ? var->latchedString : var->string ),
-			             ( var->flags & CVAR_UNSAFE ) ? " unsafe" : "" );
-
+			             Cmd_QuoteString( var->latchedString ? var->latchedString : var->string ) );
 			FS_Printf( f, "%s", buffer );
 		}
 	}
@@ -1487,6 +1531,28 @@ void Cvar_CompleteCvarName( char *args, int argNum )
 }
 
 /*
+==================
+Cvar_CompleteToggle
+==================
+*/
+static void Cvar_CompleteToggle( char *args, int argNum )
+{
+	if ( argNum == 3 )
+	{
+		// Skip "<cmd> "
+		char *p = Com_SkipTokens( args, 1, " " );
+
+		if ( *p == '+' || *p == '-' )
+		{
+			args = p;
+			--argNum;
+		}
+	}
+
+	Cvar_CompleteCvarName( args, argNum );
+}
+
+/*
 ============
 Cvar_Init
 
@@ -1498,7 +1564,7 @@ void Cvar_Init( void )
 	cvar_cheats = Cvar_Get( "sv_cheats", "1", CVAR_ROM | CVAR_SYSTEMINFO );
 
 	Cmd_AddCommand( "toggle", Cvar_Toggle_f );
-	Cmd_SetCommandCompletionFunc( "toggle", Cvar_CompleteCvarName );
+	Cmd_SetCommandCompletionFunc( "toggle", Cvar_CompleteToggle );
 	Cmd_AddCommand( "cycle", Cvar_Cycle_f );  // ydnar
 	Cmd_SetCommandCompletionFunc( "cycle", Cvar_CompleteCvarName );
 	Cmd_AddCommand( "set", Cvar_Set_f );

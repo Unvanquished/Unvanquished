@@ -26,12 +26,15 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 static byte          s_intensitytable[ 256 ];
 static unsigned char s_gammatable[ 256 ];
 
-#if !defined( USE_D3D10 )
 int                  gl_filter_min = GL_LINEAR_MIPMAP_NEAREST;
 int                  gl_filter_max = GL_LINEAR;
-#endif
 
 image_t              *r_imageHashTable[ IMAGE_FILE_HASH_SIZE ];
+
+#define Tex_ByteToFloat(v) ( ( (int)(v) - 128 ) / 127.0f )
+#define Tex_FloatToByte(v) ( 128 + (byte) ( (v) * 127.0f + 0.5 ) )
+//#define Tex_ByteToFloat(v) ( ( (float)(v) / 127.5f ) - 1.0f )
+//#define Tex_FloatToByte(v) (byte)( roundf( ( (v) + 1.0f ) * 127.5f ) )
 
 /*
 ** R_GammaCorrect
@@ -46,7 +49,6 @@ void R_GammaCorrect( byte *buffer, int bufSize )
 	}
 }
 
-#if !defined( USE_D3D10 )
 typedef struct
 {
 	const char *name;
@@ -62,7 +64,6 @@ static const textureMode_t modes[] =
 	{ "GL_NEAREST_MIPMAP_LINEAR",  GL_NEAREST_MIPMAP_LINEAR,  GL_NEAREST },
 	{ "GL_LINEAR_MIPMAP_LINEAR",   GL_LINEAR_MIPMAP_LINEAR,   GL_LINEAR  }
 };
-#endif
 
 /*
 ================
@@ -217,10 +218,6 @@ void R_ImageList_f( void )
 		ri.Printf( PRINT_ALL, "%4i: %4i %4i  %s   ",
 		           i, image->uploadWidth, image->uploadHeight, yesno[ image->filterType == FT_DEFAULT ] );
 
-#if defined( USE_D3D10 )
-		// TODO
-#else
-
 		switch ( image->type )
 		{
 			case GL_TEXTURE_2D:
@@ -290,6 +287,16 @@ void R_ImageList_f( void )
 				imageDataSize *= 4;
 				break;
 
+			case GL_R16F:
+				ri.Printf( PRINT_ALL, "R16F     " );
+				imageDataSize *= 2;
+				break;
+
+			case GL_R32F:
+				ri.Printf( PRINT_ALL, "R32F     " );
+				imageDataSize *= 4;
+				break;
+
 			case GL_LUMINANCE_ALPHA16F_ARB:
 				ri.Printf( PRINT_ALL, "LA16F    " );
 				imageDataSize *= 4;
@@ -297,6 +304,16 @@ void R_ImageList_f( void )
 
 			case GL_LUMINANCE_ALPHA32F_ARB:
 				ri.Printf( PRINT_ALL, "LA32F    " );
+				imageDataSize *= 8;
+				break;
+
+			case GL_RG16F:
+				ri.Printf( PRINT_ALL, "RG16F    " );
+				imageDataSize *= 4;
+				break;
+
+			case GL_RG32F:
+				ri.Printf( PRINT_ALL, "RG32F    " );
 				imageDataSize *= 8;
 				break;
 
@@ -345,8 +362,6 @@ void R_ImageList_f( void )
 				imageDataSize *= 4;
 				break;
 		}
-
-#endif
 
 		switch ( image->wrapType )
 		{
@@ -410,7 +425,6 @@ static void ResampleTexture( unsigned *in, int inwidth, int inheight, unsigned *
 	unsigned frac, fracstep;
 	unsigned p1[ 2048 ], p2[ 2048 ];
 	byte     *pix1, *pix2, *pix3, *pix4;
-	float    inv127 = 1.0f / 127.0f;
 	vec3_t   n, n2, n3, n4;
 
 	// NOTE: Tr3B - limitation not needed anymore
@@ -437,7 +451,7 @@ static void ResampleTexture( unsigned *in, int inwidth, int inheight, unsigned *
 
 	if ( normalMap )
 	{
-		for ( y = 0; y < outheight; y++, out += outwidth )
+		for ( y = 0; y < outheight; y++ )
 		{
 			inrow = in + inwidth * ( int )( ( y + 0.25 ) * inheight / outheight );
 			inrow2 = in + inwidth * ( int )( ( y + 0.75 ) * inheight / outheight );
@@ -451,21 +465,21 @@ static void ResampleTexture( unsigned *in, int inwidth, int inheight, unsigned *
 				pix3 = ( byte * ) inrow2 + p1[ x ];
 				pix4 = ( byte * ) inrow2 + p2[ x ];
 
-				n[ 0 ] = ( pix1[ 0 ] * inv127 - 1.0 );
-				n[ 1 ] = ( pix1[ 1 ] * inv127 - 1.0 );
-				n[ 2 ] = ( pix1[ 2 ] * inv127 - 1.0 );
+				n[ 0 ] = Tex_ByteToFloat( pix1[ 0 ] );
+				n[ 1 ] = Tex_ByteToFloat( pix1[ 1 ] );
+				n[ 2 ] = Tex_ByteToFloat( pix1[ 2 ] );
 
-				n2[ 0 ] = ( pix2[ 0 ] * inv127 - 1.0 );
-				n2[ 1 ] = ( pix2[ 1 ] * inv127 - 1.0 );
-				n2[ 2 ] = ( pix2[ 2 ] * inv127 - 1.0 );
+				n2[ 0 ] = Tex_ByteToFloat( pix2[ 0 ] );
+				n2[ 1 ] = Tex_ByteToFloat( pix2[ 1 ] );
+				n2[ 2 ] = Tex_ByteToFloat( pix2[ 2 ] );
 
-				n3[ 0 ] = ( pix3[ 0 ] * inv127 - 1.0 );
-				n3[ 1 ] = ( pix3[ 1 ] * inv127 - 1.0 );
-				n3[ 2 ] = ( pix3[ 2 ] * inv127 - 1.0 );
+				n3[ 0 ] = Tex_ByteToFloat( pix3[ 0 ] );
+				n3[ 1 ] = Tex_ByteToFloat( pix3[ 1 ] );
+				n3[ 2 ] = Tex_ByteToFloat( pix3[ 2 ] );
 
-				n4[ 0 ] = ( pix4[ 0 ] * inv127 - 1.0 );
-				n4[ 1 ] = ( pix4[ 1 ] * inv127 - 1.0 );
-				n4[ 2 ] = ( pix4[ 2 ] * inv127 - 1.0 );
+				n4[ 0 ] = Tex_ByteToFloat( pix4[ 0 ] );
+				n4[ 1 ] = Tex_ByteToFloat( pix4[ 1 ] );
+				n4[ 2 ] = Tex_ByteToFloat( pix4[ 2 ] );
 
 				VectorAdd( n, n2, n );
 				VectorAdd( n, n3, n );
@@ -476,16 +490,18 @@ static void ResampleTexture( unsigned *in, int inwidth, int inheight, unsigned *
 					VectorSet( n, 0, 0, 1 );
 				}
 
-				( ( byte * )( out + x ) ) [ 0 ] = ( byte )( 128 + 127 * n[ 0 ] );
-				( ( byte * )( out + x ) ) [ 1 ] = ( byte )( 128 + 127 * n[ 1 ] );
-				( ( byte * )( out + x ) ) [ 2 ] = ( byte )( 128 + 127 * n[ 2 ] );
-				( ( byte * )( out + x ) ) [ 3 ] = ( byte )( 128 + 127 * 1.0 );
+				( ( byte * )( out ) ) [ 0 ] = Tex_FloatToByte( n[ 0 ] );
+				( ( byte * )( out ) ) [ 1 ] = Tex_FloatToByte( n[ 1 ] );
+				( ( byte * )( out ) ) [ 2 ] = Tex_FloatToByte( n[ 2 ] );
+				( ( byte * )( out ) ) [ 3 ] = 255;
+
+				++out;
 			}
 		}
 	}
 	else
 	{
-		for ( y = 0; y < outheight; y++, out += outwidth )
+		for ( y = 0; y < outheight; y++ )
 		{
 			inrow = in + inwidth * ( int )( ( y + 0.25 ) * inheight / outheight );
 			inrow2 = in + inwidth * ( int )( ( y + 0.75 ) * inheight / outheight );
@@ -499,10 +515,12 @@ static void ResampleTexture( unsigned *in, int inwidth, int inheight, unsigned *
 				pix3 = ( byte * ) inrow2 + p1[ x ];
 				pix4 = ( byte * ) inrow2 + p2[ x ];
 
-				( ( byte * )( out + x ) ) [ 0 ] = ( pix1[ 0 ] + pix2[ 0 ] + pix3[ 0 ] + pix4[ 0 ] ) >> 2;
-				( ( byte * )( out + x ) ) [ 1 ] = ( pix1[ 1 ] + pix2[ 1 ] + pix3[ 1 ] + pix4[ 1 ] ) >> 2;
-				( ( byte * )( out + x ) ) [ 2 ] = ( pix1[ 2 ] + pix2[ 2 ] + pix3[ 2 ] + pix4[ 2 ] ) >> 2;
-				( ( byte * )( out + x ) ) [ 3 ] = ( pix1[ 3 ] + pix2[ 3 ] + pix3[ 3 ] + pix4[ 3 ] ) >> 2;
+				( ( byte * )( out ) ) [ 0 ] = ( pix1[ 0 ] + pix2[ 0 ] + pix3[ 0 ] + pix4[ 0 ] ) >> 2;
+				( ( byte * )( out ) ) [ 1 ] = ( pix1[ 1 ] + pix2[ 1 ] + pix3[ 1 ] + pix4[ 1 ] ) >> 2;
+				( ( byte * )( out ) ) [ 2 ] = ( pix1[ 2 ] + pix2[ 2 ] + pix3[ 2 ] + pix4[ 2 ] ) >> 2;
+				( ( byte * )( out ) ) [ 3 ] = ( pix1[ 3 ] + pix2[ 3 ] + pix3[ 3 ] + pix4[ 3 ] ) >> 2;
+
+				++out;
 			}
 		}
 	}
@@ -584,43 +602,41 @@ static void R_MipMap2( unsigned *in, int inWidth, int inHeight )
 	int      i, j, k;
 	byte     *outpix;
 	int      inWidthMask, inHeightMask;
-	int      total;
 	int      outWidth, outHeight;
 	unsigned *temp;
+	byte     *row[ 4 ];
 
 	outWidth = inWidth >> 1;
 	outHeight = inHeight >> 1;
 	temp = ri.Hunk_AllocateTempMemory( outWidth * outHeight * 4 );
+	outpix = (byte *) temp;
 
-	inWidthMask = inWidth - 1;
-	inHeightMask = inHeight - 1;
+	inWidthMask = ( inWidth << 2 ) - 1; // applied to row indices
+	inHeightMask = inHeight - 1; // applied to in indices
 
-	for ( i = 0; i < outHeight; i++ )
+	row[ 1 ] = (byte *) &in[( -1 & inHeightMask ) * inWidth ];
+	row[ 2 ] = (byte *) &in[   0                            ];
+	row[ 3 ] = (byte *) &in[(  1 & inHeightMask ) * inWidth ];
+
+	for ( i = 0; i < inHeight; i += 2 ) // count source, row pairs
 	{
-		for ( j = 0; j < outWidth; j++ )
-		{
-			outpix = ( byte * )( temp + i * outWidth + j );
+		row[ 0 ] = row[ 1 ];
+		row[ 1 ] = row[ 2 ];
+		row[ 2 ] = row[ 3 ];
+		row[ 3 ] = (byte *) &in[ ( ( i + 2 ) & inHeightMask ) * inWidth ];
 
-			for ( k = 0; k < 4; k++ )
+		for ( j = 0; j < inWidth * 4; j += 8 ) // count source, bytes comprising texel pairs
+		{
+			for ( k = j; k < j + 4; k++ )
 			{
-				total =
-				  1 * ( ( byte * ) &in[( ( i * 2 - 1 ) & inHeightMask ) * inWidth + ( ( j * 2 - 1 ) & inWidthMask ) ] ) [ k ] +
-				  2 * ( ( byte * ) &in[( ( i * 2 - 1 ) & inHeightMask ) * inWidth + ( ( j * 2 ) & inWidthMask ) ] ) [ k ] +
-				  2 * ( ( byte * ) &in[( ( i * 2 - 1 ) & inHeightMask ) * inWidth + ( ( j * 2 + 1 ) & inWidthMask ) ] ) [ k ] +
-				  1 * ( ( byte * ) &in[( ( i * 2 - 1 ) & inHeightMask ) * inWidth + ( ( j * 2 + 2 ) & inWidthMask ) ] ) [ k ] +
-				  2 * ( ( byte * ) &in[( ( i * 2 ) & inHeightMask ) * inWidth + ( ( j * 2 - 1 ) & inWidthMask ) ] ) [ k ] +
-				  4 * ( ( byte * ) &in[( ( i * 2 ) & inHeightMask ) * inWidth + ( ( j * 2 ) & inWidthMask ) ] ) [ k ] +
-				  4 * ( ( byte * ) &in[( ( i * 2 ) & inHeightMask ) * inWidth + ( ( j * 2 + 1 ) & inWidthMask ) ] ) [ k ] +
-				  2 * ( ( byte * ) &in[( ( i * 2 ) & inHeightMask ) * inWidth + ( ( j * 2 + 2 ) & inWidthMask ) ] ) [ k ] +
-				  2 * ( ( byte * ) &in[( ( i * 2 + 1 ) & inHeightMask ) * inWidth + ( ( j * 2 - 1 ) & inWidthMask ) ] ) [ k ] +
-				  4 * ( ( byte * ) &in[( ( i * 2 + 1 ) & inHeightMask ) * inWidth + ( ( j * 2 ) & inWidthMask ) ] ) [ k ] +
-				  4 * ( ( byte * ) &in[( ( i * 2 + 1 ) & inHeightMask ) * inWidth + ( ( j * 2 + 1 ) & inWidthMask ) ] ) [ k ] +
-				  2 * ( ( byte * ) &in[( ( i * 2 + 1 ) & inHeightMask ) * inWidth + ( ( j * 2 + 2 ) & inWidthMask ) ] ) [ k ] +
-				  1 * ( ( byte * ) &in[( ( i * 2 + 2 ) & inHeightMask ) * inWidth + ( ( j * 2 - 1 ) & inWidthMask ) ] ) [ k ] +
-				  2 * ( ( byte * ) &in[( ( i * 2 + 2 ) & inHeightMask ) * inWidth + ( ( j * 2 ) & inWidthMask ) ] ) [ k ] +
-				  2 * ( ( byte * ) &in[( ( i * 2 + 2 ) & inHeightMask ) * inWidth + ( ( j * 2 + 1 ) & inWidthMask ) ] ) [ k ] +
-				  1 * ( ( byte * ) &in[( ( i * 2 + 2 ) & inHeightMask ) * inWidth + ( ( j * 2 + 2 ) & inWidthMask ) ] ) [ k ];
-				outpix[ k ] = total / 36;
+				const int km1 = ( k - 4 ) & inWidthMask;
+				const int kp1 = ( k + 4 ) & inWidthMask;
+				const int kp2 = ( k + 8 ) & inWidthMask;
+
+				*outpix++ = ( 1 * row[ 0 ][ km1 ] + 2 * row[ 0 ][ k   ] + 2 * row[ 0 ][ kp1 ] + 1 * row[ 0 ][ kp2 ] +
+				              2 * row[ 1 ][ km1 ] + 4 * row[ 1 ][ k   ] + 4 * row[ 1 ][ kp1 ] + 2 * row[ 1 ][ kp2 ] +
+				              2 * row[ 2 ][ km1 ] + 4 * row[ 2 ][ k   ] + 4 * row[ 2 ][ kp1 ] + 2 * row[ 2 ][ kp2 ] +
+				              1 * row[ 3 ][ km1 ] + 2 * row[ 3 ][ k   ] + 2 * row[ 3 ][ kp1 ] + 1 * row[ 3 ][ kp2 ] ) / 36;
 			}
 		}
 	}
@@ -700,8 +716,6 @@ static void R_MipNormalMap( byte *in, int width, int height )
 	vec4_t n;
 	vec_t  length;
 
-	float  inv255 = 1.0f / 255.0f;
-
 	if ( width == 1 && height == 1 )
 	{
 		return;
@@ -716,25 +730,23 @@ static void R_MipNormalMap( byte *in, int width, int height )
 	{
 		for ( j = 0; j < width; j += 8, out += 4, in += 8 )
 		{
-			n[ 0 ] = ( in[ 0 ] * inv255 - 0.5 ) * 2.0 +
-			         ( in[ 4 ] * inv255 - 0.5 ) * 2.0 +
-			         ( in[ width + 0 ] * inv255 - 0.5 ) * 2.0 +
-			         ( in[ width + 4 ] * inv255 - 0.5 ) * 2.0;
+			// these calculations were centred on 127.5: (p / 255.0 - 0.5) * 2.0
+			n[ 0 ] = Tex_ByteToFloat( in[ 0 ] ) +
+			         Tex_ByteToFloat( in[ 4 ] ) +
+			         Tex_ByteToFloat( in[ width + 0 ] ) +
+			         Tex_ByteToFloat( in[ width + 4 ] );
 
-			n[ 1 ] = ( in[ 1 ] * inv255 - 0.5 ) * 2.0 +
-			         ( in[ 5 ] * inv255 - 0.5 ) * 2.0 +
-			         ( in[ width + 1 ] * inv255 - 0.5 ) * 2.0 +
-			         ( in[ width + 5 ] * inv255 - 0.5 ) * 2.0;
+			n[ 1 ] = Tex_ByteToFloat( in[ 1 ] ) +
+			         Tex_ByteToFloat( in[ 5 ] ) +
+			         Tex_ByteToFloat( in[ width + 1 ] ) +
+			         Tex_ByteToFloat( in[ width + 5 ] );
 
-			n[ 2 ] = ( in[ 2 ] * inv255 - 0.5 ) * 2.0 +
-			         ( in[ 6 ] * inv255 - 0.5 ) * 2.0 +
-			         ( in[ width + 2 ] * inv255 - 0.5 ) * 2.0 +
-			         ( in[ width + 6 ] * inv255 - 0.5 ) * 2.0;
+			n[ 2 ] = Tex_ByteToFloat( in[ 2 ] ) +
+			         Tex_ByteToFloat( in[ 6 ] ) +
+			         Tex_ByteToFloat( in[ width + 2 ] ) +
+			         Tex_ByteToFloat( in[ width + 6 ] );
 
-			n[ 3 ] = ( inv255 * in[ 3 ] ) +
-			         ( inv255 * in[ 7 ] ) +
-			         ( inv255 * in[ width + 3 ] ) +
-			         ( inv255 * in[ width + 7 ] );
+			n[ 3 ] = ( in[ 3 ] + in[ 7 ] + in[ width + 3 ] +  in[ width + 7 ] ) / 255.0f;
 
 			length = VectorLength( n );
 
@@ -749,9 +761,9 @@ static void R_MipNormalMap( byte *in, int width, int height )
 				VectorSet( n, 0.0, 0.0, 1.0 );
 			}
 
-			out[ 0 ] = ( byte )( 128 + 127 * n[ 0 ] );
-			out[ 1 ] = ( byte )( 128 + 127 * n[ 1 ] );
-			out[ 2 ] = ( byte )( 128 + 127 * n[ 2 ] );
+			out[ 0 ] = Tex_FloatToByte( n[ 0 ] );
+			out[ 1 ] = Tex_FloatToByte( n[ 1 ] );
+			out[ 2 ] = Tex_FloatToByte( n[ 2 ] );
 			out[ 3 ] = ( byte )( n[ 3 ] * 255.0 / 4.0 );
 			//out[3] = (in[3] + in[7] + in[width + 3] + in[width + 7]) >> 2;
 		}
@@ -760,17 +772,15 @@ static void R_MipNormalMap( byte *in, int width, int height )
 
 // *INDENT-ON*
 
-static void R_HeightMapToNormalMap( byte *in, int width, int height, float scale )
+static void R_HeightMapToNormalMap( byte *img, int width, int height, float scale )
 {
 	int    x, y;
 	float  r, g, b;
 	float  c, cx, cy;
 	float  dcx, dcy;
-	float  inv255 = 1.0f / 255.0f;
 	vec3_t n;
-	byte   *out;
 
-	out = in;
+	const int row = 4 * width;
 
 	for ( y = 0; y < height; y++ )
 	{
@@ -779,43 +789,39 @@ static void R_HeightMapToNormalMap( byte *in, int width, int height, float scale
 			// convert the pixel at x, y in the bump map to a normal (float)
 
 			// expand [0,255] texel values to the [0,1] range
-			r = in[ 4 * ( y * width + x ) + 0 ];
-			g = in[ 4 * ( y * width + x ) + 1 ];
-			b = in[ 4 * ( y * width + x ) + 2 ];
+			r = img[ 0 ];
+			g = img[ 1 ];
+			b = img[ 2 ];
 
-			c = ( r + g + b ) * inv255;
+			c = ( r + g + b ) / 255.0f;
 
 			// expand the texel to its right
 			if ( x == width - 1 )
 			{
-				r = in[ 4 * ( y * width + x ) + 0 ];
-				g = in[ 4 * ( y * width + x ) + 1 ];
-				b = in[ 4 * ( y * width + x ) + 2 ];
+				cx = c; // at edge, don't wrap
 			}
 			else
 			{
-				r = in[ 4 * ( y * width + ( ( x + 1 ) % width ) ) + 0 ];
-				g = in[ 4 * ( y * width + ( ( x + 1 ) % width ) ) + 1 ];
-				b = in[ 4 * ( y * width + ( ( x + 1 ) % width ) ) + 2 ];
-			}
+				r = img[ 4 ];
+				g = img[ 5 ];
+				b = img[ 6 ];
 
-			cx = ( r + g + b ) * inv255;
+				cx = ( r + g + b ) / 255.0f;
+			}
 
 			// expand the texel one up
 			if ( y == height - 1 )
 			{
-				r = in[ 4 * ( y * width + x ) + 0 ];
-				g = in[ 4 * ( y * width + x ) + 1 ];
-				b = in[ 4 * ( y * width + x ) + 2 ];
+				cy = c; // at edge, don't wrap
 			}
 			else
 			{
-				r = in[ 4 * ( ( ( y + 1 ) % height ) * width + x ) + 0 ];
-				g = in[ 4 * ( ( ( y + 1 ) % height ) * width + x ) + 1 ];
-				b = in[ 4 * ( ( ( y + 1 ) % height ) * width + x ) + 2 ];
-			}
+				r = img[ row ];
+				g = img[ row + 1 ];
+				b = img[ row + 2 ];
 
-			cy = ( r + g + b ) * inv255;
+				cy = ( r + g + b ) / 255.0f;
+			}
 
 			dcx = scale * ( c - cx );
 			dcy = scale * ( c - cy );
@@ -830,166 +836,125 @@ static void R_HeightMapToNormalMap( byte *in, int width, int height, float scale
 
 			// repack the normalized vector into an RGB unsigned byte
 			// vector in the normal map image
-			*out++ = ( byte )( 128 + 127 * n[ 0 ] );
-			*out++ = ( byte )( 128 + 127 * n[ 1 ] );
-			*out++ = ( byte )( 128 + 127 * n[ 2 ] );
+			*img++ = Tex_FloatToByte( n[ 0 ] );
+			*img++ = Tex_FloatToByte( n[ 1 ] );
+			*img++ = Tex_FloatToByte( n[ 2 ] );
 
 			// put in no height as displacement map by default
-			*out++ = ( byte ) 0; //(Q_bound(0, c * 255.0 / 3.0, 255));
+			*img++ = ( byte ) 0; //(Q_bound(0, c * 255.0 / 3.0, 255));
 		}
 	}
 }
 
-static void R_DisplaceMap( byte *in, byte *in2, int width, int height )
+static void R_DisplaceMap( byte *img, const byte *in2, int width, int height )
 {
-	int    x, y;
-	vec3_t n;
-	int    avg;
-	float  inv255 = 1.0f / 255.0f;
-	byte   *out;
+	int i;
 
-	out = in;
+	img += 3;
 
-	for ( y = 0; y < height; y++ )
+	for ( i = height * width; i; --i )
 	{
-		for ( x = 0; x < width; x++ )
-		{
-			n[ 0 ] = ( in[ 4 * ( y * width + x ) + 0 ] * inv255 - 0.5 ) * 2.0;
-			n[ 1 ] = ( in[ 4 * ( y * width + x ) + 1 ] * inv255 - 0.5 ) * 2.0;
-			n[ 2 ] = ( in[ 4 * ( y * width + x ) + 2 ] * inv255 - 0.5 ) * 2.0;
-
-			avg = 0;
-			avg += in2[ 4 * ( y * width + x ) + 0 ];
-			avg += in2[ 4 * ( y * width + x ) + 1 ];
-			avg += in2[ 4 * ( y * width + x ) + 2 ];
-			avg /= 3;
-
-			*out++ = ( byte )( 128 + 127 * n[ 0 ] );
-			*out++ = ( byte )( 128 + 127 * n[ 1 ] );
-			*out++ = ( byte )( 128 + 127 * n[ 2 ] );
-			*out++ = ( byte )( avg );
-		}
+		*img = ( in2[ 0 ] + in2[ 1 ] + in2[ 2 ] ) / 3;
+		img += 4;
+		in2 += 4;
 	}
 }
 
-static void R_AddNormals( byte *in, byte *in2, int width, int height )
+
+static void R_AddGloss( byte *img, byte *in2, int width, int height )
 {
-	int    x, y;
+	int i;
+
+	img += 3;
+
+	for ( i = height * width; i; --i )
+	{
+		// seperate gloss maps should always be greyscale, but do the average anyway 
+		*img = ( byte ) ( (int)in2[ 0 ] + (int)in2[ 1 ] + (int)in2[ 2 ] )/ 3;
+		in2 += 4;
+		img += 4;
+	}
+}
+
+static void R_AddNormals( byte *img, byte *in2, int width, int height )
+{
+	int    i;
 	vec3_t n;
 	byte   a;
 	byte   a2;
 
-	for ( y = 0; y < height; y++ )
+	for ( i = width * height; i; --i )
 	{
-		for ( x = 0; x < width; x++ )
+		n[ 0 ] = Tex_ByteToFloat( img[ 0 ] ) + Tex_ByteToFloat( in2[ 0 ] );
+		n[ 1 ] = Tex_ByteToFloat( img[ 1 ] ) + Tex_ByteToFloat( in2[ 1 ] );
+		n[ 2 ] = Tex_ByteToFloat( img[ 2 ] ) + Tex_ByteToFloat( in2[ 2 ] );
+
+		a = img[ 3 ];
+		a2 = in2[ 3 ];
+
+		if ( !VectorNormalize( n ) )
 		{
-			byte *d1, *d2;
-
-			d1 = in + ( y * width + x ) * 4;
-			d2 = in2 + ( y * width + x ) * 4;
-
-			n[ 0 ] = ( d1[ 0 ] - 128 ) / 127.0f;
-			n[ 1 ] = ( d1[ 1 ] - 128 ) / 127.0f;
-			n[ 2 ] = ( d1[ 2 ] - 128 ) / 127.0f;
-
-			n[ 0 ] += ( d2[ 0 ] - 128 ) / 127.0f;
-			n[ 1 ] += ( d2[ 1 ] - 128 ) / 127.0f;
-			n[ 2 ] += ( d2[ 2 ] - 128 ) / 127.0f;
-
-			a = d1[ 3 ];
-			a2 = d2[ 3 ];
-
-			if ( !VectorNormalize( n ) )
-			{
-				VectorSet( n, 0, 0, 1 );
-			}
-
-			d1[ 0 ] = ( byte )( 127 * n[ 0 ] + 128 );
-			d1[ 1 ] = ( byte )( 127 * n[ 1 ] + 128 );
-			d1[ 2 ] = ( byte )( 127 * n[ 2 ] + 128 );
-			d1[ 3 ] = ( byte )( Q_bound( 0, a + a2, 255 ) );
+			VectorSet( n, 0, 0, 1 );
 		}
+
+		img[ 0 ] = Tex_FloatToByte( n[ 0 ] );
+		img[ 1 ] = Tex_FloatToByte( n[ 1 ] );
+		img[ 2 ] = Tex_FloatToByte( n[ 2 ] );
+		img[ 3 ] = ( byte )( Q_bound( 0, a + a2, 255 ) );
+
+		img += 4;
+		in2 += 4;
 	}
 }
 
-static void R_InvertAlpha( byte *in, int width, int height )
+static void R_InvertAlpha( byte *img, int width, int height )
 {
-	int  x, y;
-	byte *out;
+	int i;
 
-	out = in;
+	img += 3;
 
-	for ( y = 0; y < height; y++ )
+	for ( i = width * height; i; --i )
 	{
-		for ( x = 0; x < width; x++ )
-		{
-			out[ 4 * ( y * width + x ) + 3 ] = 255 - in[ 4 * ( y * width + x ) + 3 ];
-		}
+		*img = 255 - *img;
+		img += 4;
 	}
 }
 
-static void R_InvertColor( byte *in, int width, int height )
+static void R_InvertColor( byte *img, int width, int height )
 {
-	int  x, y;
-	byte *out;
+	int i;
 
-	out = in;
-
-	for ( y = 0; y < height; y++ )
+	for ( i = width * height; i; --i )
 	{
-		for ( x = 0; x < width; x++ )
-		{
-			out[ 4 * ( y * width + x ) + 0 ] = 255 - in[ 4 * ( y * width + x ) + 0 ];
-			out[ 4 * ( y * width + x ) + 1 ] = 255 - in[ 4 * ( y * width + x ) + 1 ];
-			out[ 4 * ( y * width + x ) + 2 ] = 255 - in[ 4 * ( y * width + x ) + 2 ];
-		}
+		img[ 0 ] = 255 - img[ 0 ];
+		img[ 1 ] = 255 - img[ 1 ];
+		img[ 2 ] = 255 - img[ 2 ];
+		img += 4;
 	}
 }
 
-static void R_MakeIntensity( byte *in, int width, int height )
+static void R_MakeIntensity( byte *img, int width, int height )
 {
-	int  x, y;
-	byte *out;
-	byte red;
+	int i;
 
-	out = in;
-
-	for ( y = 0; y < height; y++ )
+	for ( i = width * height; i; --i )
 	{
-		for ( x = 0; x < width; x++ )
-		{
-			red = out[ 4 * ( y * width + x ) + 0 ];
-
-			out[ 4 * ( y * width + x ) + 1 ] = red;
-			out[ 4 * ( y * width + x ) + 2 ] = red;
-			out[ 4 * ( y * width + x ) + 3 ] = red;
-		}
+		img[ 3 ] = img[ 2 ] = img[ 1 ] = img[ 0 ];
+		img += 4;
 	}
 }
 
-static void R_MakeAlpha( byte *in, int width, int height )
+static void R_MakeAlpha( byte *img, int width, int height )
 {
-	int  x, y;
-	byte *out;
-	int  avg;
+	int i;
 
-	out = in;
-
-	for ( y = 0; y < height; y++ )
+	for ( i = width * height; i; --i )
 	{
-		for ( x = 0; x < width; x++ )
-		{
-			avg = 0;
-			avg += out[ 4 * ( y * width + x ) + 0 ];
-			avg += out[ 4 * ( y * width + x ) + 1 ];
-			avg += out[ 4 * ( y * width + x ) + 2 ];
-			avg /= 3;
-
-			out[ 4 * ( y * width + x ) + 0 ] = 255;
-			out[ 4 * ( y * width + x ) + 1 ] = 255;
-			out[ 4 * ( y * width + x ) + 2 ] = 255;
-			out[ 4 * ( y * width + x ) + 3 ] = ( byte ) avg;
-		}
+		img[ 3 ] = ( img[ 0 ] + img[ 1 ] + img[ 2 ] ) / 3;
+		img[ 2 ] = 255;
+		img[ 1 ] = 255;
+		img[ 0 ] = 255;
+		img += 4;
 	}
 }
 
@@ -1062,9 +1027,6 @@ R_UploadImage
 */
 void R_UploadImage( const byte **dataArray, int numData, image_t *image )
 {
-#if defined( USE_D3D10 )
-	// TODO
-#else
 	const byte *data = dataArray[ 0 ];
 	byte       *scaledBuffer = NULL;
 	int        scaledWidth, scaledHeight;
@@ -1182,7 +1144,7 @@ void R_UploadImage( const byte **dataArray, int numData, image_t *image )
 		internalFormat = GL_DEPTH24_STENCIL8_EXT;
 	}
 	else if ( glConfig2.textureFloatAvailable &&
-	          ( image->bits & ( IF_RGBA16F | IF_RGBA32F | IF_RGBA16 | IF_LA16F | IF_LA32F | IF_ALPHA16F | IF_ALPHA32F ) ) )
+	          ( image->bits & ( IF_RGBA16F | IF_RGBA32F | IF_RGBA16 | IF_TWOCOMP16F | IF_TWOCOMP32F | IF_ONECOMP16F | IF_ONECOMP32F ) ) )
 	{
 		if ( image->bits & IF_RGBA16F )
 		{
@@ -1192,25 +1154,29 @@ void R_UploadImage( const byte **dataArray, int numData, image_t *image )
 		{
 			internalFormat = GL_RGBA32F;
 		}
-		else if ( image->bits & IF_LA16F )
+		else if ( image->bits & IF_TWOCOMP16F )
 		{
-			internalFormat = GL_LUMINANCE_ALPHA16F_ARB;
+			internalFormat = glConfig2.textureRGAvailable ?
+			  GL_RG16F : GL_LUMINANCE_ALPHA16F_ARB;
 		}
-		else if ( image->bits & IF_LA32F )
+		else if ( image->bits & IF_TWOCOMP32F )
 		{
-			internalFormat = GL_LUMINANCE_ALPHA32F_ARB;
+			internalFormat = glConfig2.textureRGAvailable ?
+			  GL_RG32F : GL_LUMINANCE_ALPHA32F_ARB;
 		}
 		else if ( image->bits & IF_RGBA16 )
 		{
 			internalFormat = GL_RGBA16;
 		}
-		else if ( image->bits & IF_ALPHA16F )
+		else if ( image->bits & IF_ONECOMP16F )
 		{
-			internalFormat = GL_ALPHA16F_ARB;
+			internalFormat = glConfig2.textureRGAvailable ?
+			  GL_R16F : GL_ALPHA16F_ARB;
 		}
-		else if ( image->bits & IF_ALPHA32F )
+		else if ( image->bits & IF_ONECOMP32F )
 		{
-			internalFormat = GL_ALPHA32F_ARB;
+			internalFormat = glConfig2.textureRGAvailable ?
+			  GL_R32F : GL_ALPHA32F_ARB;
 		}
 	}
 	else if ( image->bits & IF_RGBE )
@@ -1333,7 +1299,7 @@ void R_UploadImage( const byte **dataArray, int numData, image_t *image )
 						 ( image->bits & IF_NORMALMAP ) );
 			}
 
-			if ( !( image->bits & ( IF_NORMALMAP | IF_RGBA16F | IF_RGBA32F | IF_LA16F | IF_LA32F | IF_NOLIGHTSCALE ) ) )
+			if ( !( image->bits & ( IF_NORMALMAP | IF_RGBA16F | IF_RGBA32F | IF_TWOCOMP16F | IF_TWOCOMP32F | IF_NOLIGHTSCALE ) ) )
 			{
 				R_LightScaleTexture( ( unsigned * ) scaledBuffer, scaledWidth, scaledHeight, image->filterType == FT_DEFAULT );
 			}
@@ -1519,8 +1485,6 @@ void R_UploadImage( const byte **dataArray, int numData, image_t *image )
 	{
 		ri.Hunk_FreeTempMemory( scaledBuffer );
 	}
-
-#endif // defined(USE_D3D10)
 }
 
 /*
@@ -1544,11 +1508,7 @@ image_t        *R_AllocImage( const char *name, qboolean linkIntoHashTable )
 	image = ri.Hunk_Alloc( sizeof( image_t ), h_low );
 	Com_Memset( image, 0, sizeof( image_t ) );
 
-#if defined( USE_D3D10 )
-	// TODO
-#else
 	glGenTextures( 1, &image->texnum );
-#endif
 
 	Com_AddToGrowList( &tr.images, image );
 
@@ -1582,11 +1542,7 @@ image_t        *R_CreateImage( const char *name,
 		return NULL;
 	}
 
-#if defined( USE_D3D10 )
-	// TODO
-#else
 	image->type = GL_TEXTURE_2D;
-#endif
 
 	image->width = width;
 	image->height = height;
@@ -1595,20 +1551,12 @@ image_t        *R_CreateImage( const char *name,
 	image->filterType = filterType;
 	image->wrapType = wrapType;
 
-#if defined( USE_D3D10 )
-	// TODO
-#else
 	GL_Bind( image );
-#endif
 
 	R_UploadImage( &pic, 1, image );
 
-#if defined( USE_D3D10 )
-	// TODO
-#else
 	//GL_Unbind();
 	glBindTexture( image->type, 0 );
-#endif
 
 	return image;
 }
@@ -1675,11 +1623,7 @@ image_t        *R_CreateCubeImage( const char *name,
 		return NULL;
 	}
 
-#if defined( USE_D3D10 )
-	// TODO
-#else
 	image->type = GL_TEXTURE_CUBE_MAP;
-#endif
 
 	image->width = width;
 	image->height = height;
@@ -1688,19 +1632,11 @@ image_t        *R_CreateCubeImage( const char *name,
 	image->filterType = filterType;
 	image->wrapType = wrapType;
 
-#if defined( USE_D3D10 )
-	// TODO
-#else
 	GL_Bind( image );
-#endif
 
 	R_UploadImage( pic, 6, image );
 
-#if defined( USE_D3D10 )
-	// TODO
-#else
 	glBindTexture( image->type, 0 );
-#endif
 
 	return image;
 }
@@ -1727,11 +1663,7 @@ image_t        *R_Create3DImage( const char *name,
 		return NULL;
 	}
 
-#if defined( USE_D3D10 )
-	// TODO
-#else
 	image->type = GL_TEXTURE_3D;
-#endif
 
 	image->width = width;
 	image->height = height;
@@ -1745,19 +1677,12 @@ image_t        *R_Create3DImage( const char *name,
 	image->filterType = filterType;
 	image->wrapType = wrapType;
 
-#if defined( USE_D3D10 )
-	// TODO
-#else
 	GL_Bind( image );
-#endif
 
 	R_UploadImage( pics, depth, image );
 
-#if defined( USE_D3D10 )
-	// TODO
-#else
 	glBindTexture( image->type, 0 );
-#endif
+
 	ri.Hunk_FreeTempMemory( pics );
 
 	return image;
@@ -1878,6 +1803,72 @@ static qboolean ParseDisplaceMap( char **text, byte **pic, int *width, int *heig
 	*bits &= ~IF_ALPHA;
 	*bits |= IF_NORMALMAP;
 	*bits |= IF_DISPLACEMAP;
+
+	return qtrue;
+}
+
+static qboolean ParseAddGloss( char **text, byte **pic, int *width, int *height, int *bits, const char *materialName )
+{
+	char *token;
+	byte *pic2;
+	int  width2, height2;
+
+	token = COM_ParseExt2( text, qfalse );
+
+	if ( token[ 0 ] != '(' )
+	{
+		ri.Printf( PRINT_WARNING, "WARNING: expecting '(', found '%s' for addGloss\n", token );
+		return qfalse;
+	}
+
+	R_LoadImage( text, pic, width, height, bits, materialName );
+
+	if ( !pic )
+	{
+		ri.Printf( PRINT_WARNING, "WARNING: failed loading of first image ( specular ) for addGloss\n" );
+		return qfalse;
+	}
+
+	token = COM_ParseExt2( text, qfalse );
+
+	if ( token[ 0 ] != ',' )
+	{
+		ri.Printf( PRINT_WARNING, "WARNING: no matching ',' found for addGloss\n" );
+		return qfalse;
+	}
+
+	R_LoadImage( text, &pic2, &width2, &height2, bits, materialName );
+
+	if ( !pic2 )
+	{
+		ri.Printf( PRINT_WARNING, "WARNING: failed loading of second image ( gloss ) for addGloss\n" );
+		return qfalse;
+	}
+
+	token = COM_ParseExt2( text, qfalse );
+
+	if ( token[ 0 ] != ')' )
+	{
+		ri.Printf( PRINT_WARNING, "WARNING: expecting ')', found '%s' for addGloss\n", token );
+	}
+
+	if ( *width != width2 || *height != height2 )
+	{
+		ri.Printf( PRINT_WARNING, "WARNING: images for specularMap and glossMap have different dimensions (%i x %i != %i x %i)\n",
+		           *width, *height, width2, height2 );
+
+		//ri.Free(*pic);
+		//*pic = NULL;
+
+		ri.Free( pic2 );
+		return qfalse;
+	}
+
+	R_AddGloss( *pic, pic2, *width, *height );
+
+	ri.Free( pic2 );
+
+	*bits &= ~IF_ALPHA;
 
 	return qtrue;
 }
@@ -2226,6 +2217,16 @@ static void R_LoadImage( char **buffer, byte **pic, int *width, int *height, int
 			}
 		}
 	}
+	else if ( !Q_stricmp( token, "addGloss" ) )
+	{
+		if ( !ParseAddGloss( buffer, pic, width, height, bits, materialName ) )
+		{
+			if ( materialName && materialName[ 0 ] != '\0' )
+			{
+				ri.Printf( PRINT_WARNING, "WARNING: failed to parse addGloss(<map>, <map>) expression for shader '%s'\n", materialName );
+			}
+		}
+	}
 	else
 	{
 		qboolean   orgNameFailed = qfalse;
@@ -2361,11 +2362,6 @@ image_t        *R_FindImageFile( const char *imageName, int bits, filterType_t f
 		}
 	}
 
-#if defined( USE_D3D10 )
-	// TODO
-#else
-#endif
-
 #if 0
 	if ( glConfig.textureCompression == TC_S3TC && !( bits & IF_NOCOMPRESSION ) && Q_strnicmp( imageName, "fonts", 5 ) )
 	{
@@ -2438,61 +2434,40 @@ image_t        *R_FindImageFile( const char *imageName, int bits, filterType_t f
 	return image;
 }
 
-static INLINE void SwapPixel( byte *inout, int x, int y, int x2, int y2, int width, int height )
-{
-	byte color[ 4 ];
-	byte color2[ 4 ];
-
-	color[ 0 ] = inout[ 4 * ( y * width + x ) + 0 ];
-	color[ 1 ] = inout[ 4 * ( y * width + x ) + 1 ];
-	color[ 2 ] = inout[ 4 * ( y * width + x ) + 2 ];
-	color[ 3 ] = inout[ 4 * ( y * width + x ) + 3 ];
-
-	color2[ 0 ] = inout[ 4 * ( y2 * width + x2 ) + 0 ];
-	color2[ 1 ] = inout[ 4 * ( y2 * width + x2 ) + 1 ];
-	color2[ 2 ] = inout[ 4 * ( y2 * width + x2 ) + 2 ];
-	color2[ 3 ] = inout[ 4 * ( y2 * width + x2 ) + 3 ];
-
-	inout[ 4 * ( y * width + x ) + 0 ] = color2[ 0 ];
-	inout[ 4 * ( y * width + x ) + 1 ] = color2[ 1 ];
-	inout[ 4 * ( y * width + x ) + 2 ] = color2[ 2 ];
-	inout[ 4 * ( y * width + x ) + 3 ] = color2[ 3 ];
-
-	inout[ 4 * ( y2 * width + x2 ) + 0 ] = color[ 0 ];
-	inout[ 4 * ( y2 * width + x2 ) + 1 ] = color[ 1 ];
-	inout[ 4 * ( y2 * width + x2 ) + 2 ] = color[ 2 ];
-	inout[ 4 * ( y2 * width + x2 ) + 3 ] = color[ 3 ];
-}
-
 static void R_Flip( byte *in, int width, int height )
 {
+	int32_t *data = (int32_t *) in;
 	int x, y;
-//	byte           *out;
-
-//	out = in;
 
 	for ( y = 0; y < height; y++ )
 	{
 		for ( x = 0; x < width / 2; x++ )
 		{
-			SwapPixel( in, x, y, ( width - 1 - x ), y, width, height );
+			int32_t texel = data[ x ];
+			data[ x ] = data[ width - 1 - x ];
+			data[ width - 1 - x ] = texel;
 		}
+		data += width;
 	}
 }
 
 static void R_Flop( byte *in, int width, int height )
 {
-	int x, y;
-//	byte           *out;
-
-//	out = in;
+	int32_t *upper = (int32_t *) in;
+	int32_t *lower = (int32_t *) in + ( height - 1 ) * width;
+	int     x, y;
 
 	for ( y = 0; y < height / 2; y++ )
 	{
 		for ( x = 0; x < width; x++ )
 		{
-			SwapPixel( in, x, y, x, ( height - 1 - y ), width, height );
+			int32_t texel = upper[ x ];
+			upper[ x ] = lower[ x ];
+			lower[ x ] = texel;
 		}
+
+		upper += width;
+		lower -= width;
 	}
 }
 
@@ -2528,7 +2503,7 @@ static void R_Rotate( byte *in, int width, int height, int degrees )
 			{
 				x2 = ( width - ( 1 + y ) );
 				y2 = x;
-
+ 
 				tmp[ 4 * ( y2 * width + x2 ) + 0 ] = color[ 0 ];
 				tmp[ 4 * ( y2 * width + x2 ) + 1 ] = color[ 1 ];
 				tmp[ 4 * ( y2 * width + x2 ) + 2 ] = color[ 2 ];
@@ -2674,10 +2649,6 @@ image_t        *R_FindCubeImage( const char *imageName, int bits, filterType_t f
 		}
 	}
 
-#if defined( USE_D3D10 )
-	// TODO
-#else
-
 	if ( glConfig.textureCompression == TC_S3TC && !( bits & IF_NOCOMPRESSION ) && Q_strnicmp( imageName, "fonts", 5 ) )
 	{
 		Q_strncpyz( ddsName, imageName, sizeof( ddsName ) );
@@ -2693,8 +2664,6 @@ image_t        *R_FindCubeImage( const char *imageName, int bits, filterType_t f
 			return image;
 		}
 	}
-
-#endif
 
 #if 0
 	else if ( r_tryCachedDDSImages->integer && !( bits & IF_NOCOMPRESSION ) && Q_strnicmp( name, "fonts", 5 ) )
@@ -2885,24 +2854,25 @@ R_CreateFogImage
 static void R_CreateFogImage( void )
 {
 	int   x, y;
-	byte  *data;
+	byte  *data, *ptr;
 	//float           g;
 	float d;
 	float borderColor[ 4 ];
 
-	data = ri.Hunk_AllocateTempMemory( FOG_S * FOG_T * 4 );
+	ptr = data = ri.Hunk_AllocateTempMemory( FOG_S * FOG_T * 4 );
 
 	//g = 2.0;
 
 	// S is distance, T is depth
-	for ( x = 0; x < FOG_S; x++ )
+	for ( y = 0; y < FOG_T; y++ )
 	{
-		for ( y = 0; y < FOG_T; y++ )
+		for ( x = 0; x < FOG_S; x++ )
 		{
 			d = R_FogFactor( ( x + 0.5f ) / FOG_S, ( y + 0.5f ) / FOG_T );
 
-			data[( y * FOG_S + x ) * 4 + 0 ] = data[( y * FOG_S + x ) * 4 + 1 ] = data[( y * FOG_S + x ) * 4 + 2 ] = 255;
-			data[( y * FOG_S + x ) * 4 + 3 ] = 255 * d;
+			ptr[ 0 ] = ptr[ 1 ] = ptr[ 2 ] = 255;
+			ptr[ 3 ] = 255 * d;
+			ptr += 4;
 		}
 	}
 
@@ -2953,13 +2923,14 @@ static void R_CreateRandomNormalsImage( void )
 {
 	int  x, y;
 	byte data[ DEFAULT_SIZE ][ DEFAULT_SIZE ][ 4 ];
+	byte *ptr = &data[0][0][0];
 
 	// the default image will be a box, to allow you to see the mapping coordinates
 	Com_Memset( data, 32, sizeof( data ) );
 
-	for ( x = 0; x < DEFAULT_SIZE; x++ )
+	for ( y = 0; y < DEFAULT_SIZE; y++ )
 	{
-		for ( y = 0; y < DEFAULT_SIZE; y++ )
+		for ( x = 0; x < DEFAULT_SIZE; x++ )
 		{
 			vec3_t n;
 			float  r, angle;
@@ -2972,10 +2943,11 @@ static void R_CreateRandomNormalsImage( void )
 
 			//VectorSet(n, crandom(), crandom(), crandom());
 
-			data[ y ][ x ][ 0 ] = ( byte )( 128 + 127 * n[ 0 ] );
-			data[ y ][ x ][ 1 ] = ( byte )( 128 + 127 * n[ 1 ] );
-			data[ y ][ x ][ 2 ] = ( byte )( 128 + 127 * n[ 2 ] );
-			data[ y ][ x ][ 3 ] = 255;
+			ptr[ 0 ] = ( byte )( 128 + 127 * n[ 0 ] );
+			ptr[ 1 ] = ( byte )( 128 + 127 * n[ 1 ] );
+			ptr[ 2 ] = ( byte )( 128 + 127 * n[ 2 ] );
+			ptr[ 3 ] = 255;
+			ptr += 4;
 		}
 	}
 
@@ -2996,12 +2968,13 @@ static void R_CreateAttenuationXYImage( void )
 {
 	int  x, y;
 	byte data[ ATTENUATION_XY_SIZE ][ ATTENUATION_XY_SIZE ][ 4 ];
+	byte *ptr = &data[0][0][0];
 	int  b;
 
 	// make a centered inverse-square falloff blob for dynamic lighting
-	for ( x = 0; x < ATTENUATION_XY_SIZE; x++ )
+	for ( y = 0; y < ATTENUATION_XY_SIZE; y++ )
 	{
-		for ( y = 0; y < ATTENUATION_XY_SIZE; y++ )
+		for ( x = 0; x < ATTENUATION_XY_SIZE; x++ )
 		{
 			float d;
 
@@ -3018,8 +2991,9 @@ static void R_CreateAttenuationXYImage( void )
 				b = 0;
 			}
 
-			data[ y ][ x ][ 0 ] = data[ y ][ x ][ 1 ] = data[ y ][ x ][ 2 ] = b;
-			data[ y ][ x ][ 3 ] = 255;
+			ptr[ 0 ] = ptr[ 1 ] = ptr[ 2 ] = b;
+			ptr[ 3 ] = 255;
+			ptr += 4;
 		}
 	}
 
@@ -3351,107 +3325,69 @@ static void R_CreateShadowMapFBOImage( void )
 {
 	int  i;
 	int  width, height;
+	int numShadowMaps = ( r_softShadowsPP->integer && r_shadows->integer >= SHADOWING_VSM16 ) ? MAX_SHADOWMAPS * 2 : MAX_SHADOWMAPS;
+	int format, filter;
 
 	if ( !glConfig2.textureFloatAvailable || r_shadows->integer < SHADOWING_ESM16 )
 	{
 		return;
 	}
 
-	for ( i = 0; i < MAX_SHADOWMAPS; i++ )
+	if ( r_shadows->integer == SHADOWING_ESM32 )
 	{
-		width = height = shadowMapResolutions[ i ];
-
-		if ( glConfig.driverType == GLDRV_OPENGL3 || ( glConfig.hardwareType == GLHW_NV_DX10 || glConfig.hardwareType == GLHW_ATI_DX10 ) )
+		format = IF_NOPICMIP | IF_ONECOMP32F;
+	}
+	else if ( r_shadows->integer == SHADOWING_VSM32 )
+	{
+		format = IF_NOPICMIP | IF_TWOCOMP32F;
+	}
+	else if ( r_shadows->integer == SHADOWING_EVSM32 )
+	{
+		if ( r_evsmPostProcess->integer )
 		{
-			// we can do the most expensive filtering types with OpenGL 3 hardware
-			if ( r_shadows->integer == SHADOWING_ESM32 )
-			{
-				tr.shadowMapFBOImage[ i ] = R_CreateImage( va( "_shadowMapFBO%d", i ), NULL, width, height, IF_NOPICMIP | IF_ALPHA32F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
-			}
-			else if ( r_shadows->integer == SHADOWING_VSM32 )
-			{
-				tr.shadowMapFBOImage[ i ] = R_CreateImage( va( "_shadowMapFBO%d", i ), NULL, width, height, IF_NOPICMIP | IF_LA32F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
-			}
-			else if ( r_shadows->integer == SHADOWING_EVSM32 )
-			{
-				if ( r_evsmPostProcess->integer )
-				{
-					tr.shadowMapFBOImage[ i ] = R_CreateImage( va( "_shadowMapFBO%d", i ), NULL, width, height, IF_NOPICMIP | IF_ALPHA32F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
-				}
-				else
-				{
-					tr.shadowMapFBOImage[ i ] = R_CreateImage( va( "_shadowMapFBO%d", i ), NULL, width, height, IF_NOPICMIP | IF_RGBA32F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
-				}
-			}
-			else
-			{
-				tr.shadowMapFBOImage[ i ] = R_CreateImage( va( "_shadowMapFBO%d", i ), NULL, width, height, IF_NOPICMIP | IF_RGBA16F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
-			}
+			format = IF_NOPICMIP | IF_ONECOMP32F;
 		}
 		else
 		{
-			if ( r_shadows->integer == SHADOWING_ESM16 )
-			{
-				tr.shadowMapFBOImage[ i ] = R_CreateImage( va( "_shadowMapFBO%d", i ), NULL, width, height, IF_NOPICMIP | IF_ALPHA16F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
-			}
-			else if ( r_shadows->integer == SHADOWING_ESM16 )
-			{
-				tr.shadowMapFBOImage[ i ] = R_CreateImage( va( "_shadowMapFBO%d", i ), NULL, width, height, IF_NOPICMIP | IF_LA16F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
-			}
-			else
-			{
-				tr.shadowMapFBOImage[ i ] = R_CreateImage( va( "_shadowMapFBO%d", i ), NULL, width, height, IF_NOPICMIP | IF_RGBA16F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
-			}
+			format = IF_NOPICMIP | IF_RGBA32F;
 		}
+	}
+	else if ( r_shadows->integer == SHADOWING_ESM16 )
+	{
+		format = IF_NOPICMIP | IF_ONECOMP16F;
+	}
+	else if ( r_shadows->integer == SHADOWING_VSM16 )
+	{
+		format = IF_NOPICMIP | IF_TWOCOMP16F;
+	}
+	else
+	{
+		format = IF_NOPICMIP | IF_RGBA16F;
+	}
+	if( r_shadowMapLinearFilter->integer )
+	{
+		filter = FT_LINEAR;
+	}
+	else
+	{
+		filter = FT_NEAREST;
+	}
+
+	for ( i = 0; i < numShadowMaps; i++ )
+	{
+		width = height = shadowMapResolutions[ i % MAX_SHADOWMAPS ];
+
+		tr.shadowMapFBOImage[ i ] = R_CreateImage( va( "_shadowMapFBO%d", i ), NULL, width, height, format, filter, WT_EDGE_CLAMP );
+		tr.shadowClipMapFBOImage[ i ] = R_CreateImage( va( "_shadowClipMapFBO%d", i ), NULL, width, height, format, filter, WT_EDGE_CLAMP );
 	}
 
 	// sun shadow maps
-	for ( i = 0; i < MAX_SHADOWMAPS; i++ )
+	for ( i = 0; i < numShadowMaps; i++ )
 	{
-		width = height = sunShadowMapResolutions[ i ];
+		width = height = sunShadowMapResolutions[ i % MAX_SHADOWMAPS ];
 
-		if ( glConfig.driverType == GLDRV_OPENGL3 || ( glConfig.hardwareType == GLHW_NV_DX10 || glConfig.hardwareType == GLHW_ATI_DX10 ) )
-		{
-			// we can do the most expensive filtering types with OpenGL 3 hardware
-			if ( r_shadows->integer == SHADOWING_ESM32 )
-			{
-				tr.sunShadowMapFBOImage[ i ] = R_CreateImage( va( "_sunShadowMapFBO%d", i ), NULL, width, height, IF_NOPICMIP | IF_ALPHA32F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
-			}
-			else if ( r_shadows->integer == SHADOWING_VSM32 )
-			{
-				tr.sunShadowMapFBOImage[ i ] = R_CreateImage( va( "_sunShadowMapFBO%d", i ), NULL, width, height, IF_NOPICMIP | IF_LA32F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
-			}
-			else if ( r_shadows->integer == SHADOWING_EVSM32 )
-			{
-				if ( r_evsmPostProcess->integer )
-				{
-					tr.sunShadowMapFBOImage[ i ] = R_CreateImage( va( "_sunShadowMapFBO%d", i ), NULL, width, height, IF_NOPICMIP | IF_DEPTH24, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
-				}
-				else
-				{
-					tr.sunShadowMapFBOImage[ i ] = R_CreateImage( va( "_sunShadowMapFBO%d", i ), NULL, width, height, IF_NOPICMIP | IF_RGBA32F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
-				}
-			}
-			else
-			{
-				tr.sunShadowMapFBOImage[ i ] = R_CreateImage( va( "_sunShadowMapFBO%d", i ), NULL, width, height, IF_NOPICMIP | IF_RGBA16F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
-			}
-		}
-		else
-		{
-			if ( r_shadows->integer == SHADOWING_ESM16 )
-			{
-				tr.sunShadowMapFBOImage[ i ] = R_CreateImage( va( "_sunShadowMapFBO%d", i ), NULL, width, height, IF_NOPICMIP | IF_ALPHA16F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
-			}
-			else if ( r_shadows->integer == SHADOWING_VSM16 )
-			{
-				tr.sunShadowMapFBOImage[ i ] = R_CreateImage( va( "_sunShadowMapFBO%d", i ), NULL, width, height, IF_NOPICMIP | IF_LA16F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
-			}
-			else
-			{
-				tr.sunShadowMapFBOImage[ i ] = R_CreateImage( va( "_sunShadowMapFBO%d", i ), NULL, width, height, IF_NOPICMIP | IF_RGBA16F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
-			}
-		}
+		tr.sunShadowMapFBOImage[ i ] = R_CreateImage( va( "_sunShadowMapFBO%d", i ), NULL, width, height, format, filter, WT_EDGE_CLAMP );
+		tr.sunShadowClipMapFBOImage[ i ] = R_CreateImage( va( "_sunShadowClipMapFBO%d", i ), NULL, width, height, format, filter, WT_EDGE_CLAMP );
 	}
 }
 
@@ -3463,10 +3399,51 @@ static void R_CreateShadowCubeFBOImage( void )
 	int  i, j;
 	int  width, height;
 	byte *data[ 6 ];
+	int format, filter;
 
 	if ( !glConfig2.textureFloatAvailable || r_shadows->integer < SHADOWING_ESM16 )
 	{
 		return;
+	}
+
+	if ( r_shadows->integer == SHADOWING_ESM32 )
+	{
+		format = IF_NOPICMIP | IF_ONECOMP32F;
+	}
+	else if ( r_shadows->integer == SHADOWING_VSM32 )
+	{
+		format = IF_NOPICMIP | IF_TWOCOMP32F;
+	}
+	else if ( r_shadows->integer == SHADOWING_EVSM32 )
+	{
+		if ( r_evsmPostProcess->integer )
+		{
+			format = IF_NOPICMIP | IF_ONECOMP32F;
+		}
+		else
+		{
+			format = IF_NOPICMIP | IF_RGBA32F;
+		}
+	}
+	else if ( r_shadows->integer == SHADOWING_ESM16 )
+	{
+		format = IF_NOPICMIP | IF_ONECOMP16F;
+	}
+	else if ( r_shadows->integer == SHADOWING_VSM16 )
+	{
+		format = IF_NOPICMIP | IF_TWOCOMP16F;
+	}
+	else
+	{
+		format = IF_NOPICMIP | IF_RGBA16F;
+	}
+	if( r_shadowMapLinearFilter->integer )
+	{
+		filter = FT_LINEAR;
+	}
+	else
+	{
+		filter = FT_NEAREST;
 	}
 
 	for ( j = 0; j < 5; j++ )
@@ -3478,47 +3455,8 @@ static void R_CreateShadowCubeFBOImage( void )
 			data[ i ] = NULL;
 		}
 
-		if ( glConfig.driverType == GLDRV_OPENGL3 || ( glConfig.hardwareType == GLHW_NV_DX10 || glConfig.hardwareType == GLHW_ATI_DX10 ) )
-		{
-			if ( r_shadows->integer == SHADOWING_ESM32 )
-			{
-				tr.shadowCubeFBOImage[ j ] = R_CreateCubeImage( va( "_shadowCubeFBO%d", j ), ( const byte ** ) data, width, height, IF_NOPICMIP | IF_ALPHA32F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
-			}
-			else if ( r_shadows->integer == SHADOWING_VSM32 )
-			{
-				tr.shadowCubeFBOImage[ j ] = R_CreateCubeImage( va( "_shadowCubeFBO%d", j ), ( const byte ** ) data, width, height, IF_NOPICMIP | IF_LA32F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
-			}
-			else if ( r_shadows->integer == SHADOWING_EVSM32 )
-			{
-				if ( r_evsmPostProcess->integer )
-				{
-					tr.shadowCubeFBOImage[ j ] = R_CreateCubeImage( va( "_shadowCubeFBO%d", j ), ( const byte ** ) data, width, height, IF_NOPICMIP | IF_ALPHA32F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
-				}
-				else
-				{
-					tr.shadowCubeFBOImage[ j ] = R_CreateCubeImage( va( "_shadowCubeFBO%d", j ), ( const byte ** ) data, width, height, IF_NOPICMIP | IF_RGBA32F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
-				}
-			}
-			else
-			{
-				tr.shadowCubeFBOImage[ j ] = R_CreateCubeImage( va( "_shadowCubeFBO%d", j ), ( const byte ** ) data, width, height, IF_NOPICMIP | IF_RGBA16F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
-			}
-		}
-		else
-		{
-			if ( r_shadows->integer == SHADOWING_VSM16 )
-			{
-				tr.shadowCubeFBOImage[ j ] = R_CreateCubeImage( va( "_shadowCubeFBO%d", j ), ( const byte ** ) data, width, height, IF_NOPICMIP | IF_ALPHA16F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
-			}
-			else if ( r_shadows->integer == SHADOWING_VSM16 )
-			{
-				tr.shadowCubeFBOImage[ j ] = R_CreateCubeImage( va( "_shadowCubeFBO%d", j ), ( const byte ** ) data, width, height, IF_NOPICMIP | IF_LA16F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
-			}
-			else
-			{
-				tr.shadowCubeFBOImage[ j ] = R_CreateCubeImage( va( "_shadowCubeFBO%d", j ), ( const byte ** ) data, width, height, IF_NOPICMIP | IF_RGBA16F, ( r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST ), WT_EDGE_CLAMP );
-			}
-		}
+		tr.shadowCubeFBOImage[ j ] = R_CreateCubeImage( va( "_shadowCubeFBO%d", j ), ( const byte ** ) data, width, height, format, filter, WT_EDGE_CLAMP );
+		tr.shadowClipCubeFBOImage[ j ] = R_CreateCubeImage( va( "_shadowClipCubeFBO%d", j ), ( const byte ** ) data, width, height, format, filter, WT_EDGE_CLAMP );
 	}
 }
 
@@ -3633,57 +3571,38 @@ void R_CreateBuiltinImages( void )
 	tr.blackImage = R_CreateImage( "_black", ( byte * ) data, 8, 8, IF_NOPICMIP, FT_LINEAR, WT_REPEAT );
 
 	// red
-	for ( x = 0; x < DEFAULT_SIZE; x++ )
+	for ( x = DEFAULT_SIZE * DEFAULT_SIZE, out = &data[0][0][0]; x; --x, out += 4 )
 	{
-		for ( y = 0; y < DEFAULT_SIZE; y++ )
-		{
-			data[ y ][ x ][ 0 ] = 255;
-			data[ y ][ x ][ 1 ] = 0;
-			data[ y ][ x ][ 2 ] = 0;
-			data[ y ][ x ][ 3 ] = 255;
-		}
+		out[ 1 ] = out[ 2 ] = 0;
+		out[ 0 ] = out[ 3 ] = 255;
 	}
 
 	tr.redImage = R_CreateImage( "_red", ( byte * ) data, 8, 8, IF_NOPICMIP, FT_LINEAR, WT_REPEAT );
 
 	// green
-	for ( x = 0; x < DEFAULT_SIZE; x++ )
+	for ( x = DEFAULT_SIZE * DEFAULT_SIZE, out = &data[0][0][0]; x; --x, out += 4 )
 	{
-		for ( y = 0; y < DEFAULT_SIZE; y++ )
-		{
-			data[ y ][ x ][ 0 ] = 0;
-			data[ y ][ x ][ 1 ] = 255;
-			data[ y ][ x ][ 2 ] = 0;
-			data[ y ][ x ][ 3 ] = 255;
-		}
+		out[ 0 ] = out[ 2 ] = 0;
+		out[ 1 ] = out[ 3 ] = 255;
 	}
 
 	tr.greenImage = R_CreateImage( "_green", ( byte * ) data, 8, 8, IF_NOPICMIP, FT_LINEAR, WT_REPEAT );
 
 	// blue
-	for ( x = 0; x < DEFAULT_SIZE; x++ )
+	for ( x = DEFAULT_SIZE * DEFAULT_SIZE, out = &data[0][0][0]; x; --x, out += 4 )
 	{
-		for ( y = 0; y < DEFAULT_SIZE; y++ )
-		{
-			data[ y ][ x ][ 0 ] = 0;
-			data[ y ][ x ][ 1 ] = 0;
-			data[ y ][ x ][ 2 ] = 255;
-			data[ y ][ x ][ 3 ] = 255;
-		}
+		out[ 0 ] = out[ 1 ] = 0;
+		out[ 2 ] = out[ 3 ] = 255;
 	}
 
 	tr.blueImage = R_CreateImage( "_blue", ( byte * ) data, 8, 8, IF_NOPICMIP, FT_LINEAR, WT_REPEAT );
 
 	// generate a default normalmap with a zero heightmap
-	for ( x = 0; x < DEFAULT_SIZE; x++ )
+	for ( x = DEFAULT_SIZE * DEFAULT_SIZE, out = &data[0][0][0]; x; --x, out += 4 )
 	{
-		for ( y = 0; y < DEFAULT_SIZE; y++ )
-		{
-			data[ y ][ x ][ 0 ] = 128;
-			data[ y ][ x ][ 1 ] = 128;
-			data[ y ][ x ][ 2 ] = 255;
-			data[ y ][ x ][ 3 ] = 0;
-		}
+		out[ 0 ] = out[ 1 ] = 128;
+		out[ 2 ] = 255;
+		out[ 3 ] = 0;
 	}
 
 	tr.flatImage = R_CreateImage( "_flat", ( byte * ) data, 8, 8, IF_NOPICMIP | IF_NORMALMAP, FT_LINEAR, WT_REPEAT );
@@ -3947,7 +3866,7 @@ int RE_GetTextureId( const char *name )
 	int     i;
 	image_t *image;
 
-	ri.Printf( PRINT_ALL, S_COLOR_YELLOW "RE_GetTextureId [%s].\n", name );
+	ri.Printf( PRINT_DEVELOPER, S_COLOR_YELLOW "RE_GetTextureId [%s].\n", name );
 
 	for ( i = 0; i < tr.images.currentElements; i++ )
 	{

@@ -1,3 +1,53 @@
+unvanquished (0.18.0-1) unstable; urgency=low
+
+  * Release of alpha 18.
+  * Launch script:
+    - Only prepend ‘+’ if missing.
+    - Handle URL-escaped ‘[’ and ‘]’ around unv:// IPv6. (Suopid Iceweasel.)
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Mon, 05 Aug 2013 04:12:59 +0100
+
+unvanquished (0.17.0-1) unstable; urgency=low
+
+  * Release of alpha 17.
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Mon, 08 Jul 2013 02:14:05 +0100
+
+unvanquished (0.16.0-1) unstable; urgency=low
+
+  * Release of alpha 16.
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Mon, 03 Jun 2013 01:38:59 +0100
+
+unvanquished (0.15.0-2) unstable; urgency=low
+
+  * Switch off the GLSL optimiser: rely on mesa or taintware instead.
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Sat, 25 May 2013 15:25:24 +0100
+
+unvanquished (0.15.0-1) unstable; urgency=low
+
+  * Release of alpha 15.
+  * Implemented ‘unvanquished --gdb’.
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Mon, 06 May 2013 01:37:58 +0100
+
+unvanquished (0.14.0-2) unstable; urgency=low
+
+  * Bug fixes and optimisations.
+    - GL3: Improve R_AddNormals (image accuracy, some loading speedup).
+    - GL3: Eliminate a few useless calculations when uploading images.
+    - GL: Handle a few keywords which presence caused missing textures.
+    - Fix a possible buffer overflow in the OpenAL code.
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Sat, 13 Apr 2013 01:26:12 +0100
+
+unvanquished (0.14.0-1) unstable; urgency=low
+
+  * Release of alpha 14.
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Mon, 08 Apr 2013 01:43:54 +0100
+
 unvanquished (0.13.1-1) unstable; urgency=low
 
   * Bugfix release.

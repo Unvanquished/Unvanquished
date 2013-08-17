@@ -515,7 +515,7 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 
 		case G_FS_READ:
 		        VM_CheckBlock( args[1], args[2], "FSREAD" );
-			FS_Read2( VMA( 1 ), args[ 2 ], args[ 3 ] );
+			FS_Read( VMA( 1 ), args[ 2 ], args[ 3 ] );
 			return 0;
 
 		case G_FS_WRITE:
@@ -653,8 +653,8 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 				}
 			}
 
-		case G_REAL_TIME:
-			return Com_RealTime( VMA( 1 ) );
+		case G_GM_TIME:
+			return Com_GMTime( VMA( 1 ) );
 
 		case G_SNAPVECTOR:
 			Q_SnapVector( VMA( 1 ) );
