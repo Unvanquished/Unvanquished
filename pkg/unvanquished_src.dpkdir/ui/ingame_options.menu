@@ -557,7 +557,7 @@
 			play "sound/misc/menu1.wav"; uiScript glCustom,
 			3 )
 	MULTIX	( geffects, "Texture Detail:", "r_picmip",
-			"Low" 2 "Intermediate" 1 "High" 0,
+			"Low (1:4)" 2 "Medium (1:2)" 1 "Full (1:1)" 0,
 			play "sound/misc/menu1.wav"; uiScript glCustom,
 			4 )
 	MULTIX	( geffects, "Texture Filter:", "r_texturemode",
