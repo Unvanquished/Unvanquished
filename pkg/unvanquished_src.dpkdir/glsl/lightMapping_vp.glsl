@@ -22,9 +22,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 /* lightMapping_vp.glsl */
 
-attribute vec4		attr_Position;
-attribute vec4		attr_TexCoord0;
-attribute vec4		attr_TexCoord1;
+attribute vec3 		attr_Position;
+attribute vec2 		attr_TexCoord0;
+attribute vec2 		attr_TexCoord1;
 attribute vec3		attr_Tangent;
 attribute vec3		attr_Binormal;
 attribute vec3		attr_Normal;
@@ -33,6 +33,7 @@ attribute vec4		attr_Color;
 uniform mat4		u_DiffuseTextureMatrix;
 uniform mat4		u_NormalTextureMatrix;
 uniform mat4		u_SpecularTextureMatrix;
+uniform mat4		u_GlowTextureMatrix;
 uniform mat4		u_ModelMatrix;
 uniform mat4		u_ModelViewProjectionMatrix;
 
@@ -42,8 +43,8 @@ uniform vec4		u_ColorModulate;
 uniform vec4		u_Color;
 
 varying vec3		var_Position;
-varying vec4		var_TexDiffuseNormal;
-varying vec2		var_TexSpecular;
+varying vec4		var_TexDiffuseGlow;
+varying vec4		var_TexNormalSpecular;
 varying vec2		var_TexLight;
 varying vec3		var_Tangent;
 varying vec3		var_Binormal;
@@ -54,7 +55,7 @@ varying vec4		var_Color;
 
 void	main()
 {
-	vec4 position = attr_Position;
+	vec4 position = vec4(attr_Position, 1.0);
 
 #if defined(USE_DEFORM_VERTEXES)
 	position = DeformPosition2(	position,
@@ -67,24 +68,27 @@ void	main()
 #if 1
 	gl_Position = u_ModelViewProjectionMatrix * position;
 #else
-	gl_Position.xy = attr_TexCoord1 * 2.0 - 1.0;
+	gl_Position.xy = vec4(attr_TexCoord1, 0.0, 1.0) * 2.0 - 1.0;
 	gl_Position.z = 0.0;
 	gl_Position.w = 1.0;
 #endif
 
 
 	// transform diffusemap texcoords
-	var_TexDiffuseNormal.st = (u_DiffuseTextureMatrix * attr_TexCoord0).st;
+	var_TexDiffuseGlow.st = (u_DiffuseTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0)).st;
 	var_TexLight = attr_TexCoord1.st;
 
 #if defined(USE_NORMAL_MAPPING)
 	// transform normalmap texcoords
-	var_TexDiffuseNormal.pq = (u_NormalTextureMatrix * attr_TexCoord0).st;
+	var_TexNormalSpecular.st = (u_NormalTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0)).st;
 
 	// transform specularmap texcoords
-	var_TexSpecular = (u_SpecularTextureMatrix * attr_TexCoord0).st;
+	var_TexNormalSpecular.pq = (u_SpecularTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0)).st;
 #endif
 
+#if defined(USE_GLOW_MAPPING)
+	var_TexDiffuseGlow.pq = (u_GlowTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0)).st;
+#endif
 
 #if 0
 

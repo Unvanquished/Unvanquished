@@ -1,0 +1,15 @@
+blastertrail
+{
+  beam
+  {
+    shader		gfx/weapons/blastertrail
+    segments		2
+    width		1 0
+    alpha 		1.0 0.0
+    segmentTime		20
+    fadeOutTime		5
+    textureType		stretch 1.0 0.0
+
+    //jitter 1 10
+  }
+}

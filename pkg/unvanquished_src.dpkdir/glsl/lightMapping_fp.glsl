@@ -25,15 +25,17 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 uniform sampler2D	u_DiffuseMap;
 uniform sampler2D	u_NormalMap;
 uniform sampler2D	u_SpecularMap;
+uniform sampler2D	u_GlowMap;
 uniform sampler2D	u_LightMap;
 uniform sampler2D	u_DeluxeMap;
 uniform float		u_AlphaThreshold;
 uniform vec3		u_ViewOrigin;
 uniform float		u_DepthScale;
+uniform vec2		u_SpecularExponent;
 
 varying vec3		var_Position;
-varying vec4		var_TexDiffuseNormal;
-varying vec2		var_TexSpecular;
+varying vec4		var_TexDiffuseGlow;
+varying vec4		var_TexNormalSpecular;
 varying vec2		var_TexLight;
 
 varying vec3		var_Tangent;
@@ -47,22 +49,18 @@ void	main()
 {
 #if defined(USE_NORMAL_MAPPING)
 
-	vec2 texDiffuse = var_TexDiffuseNormal.st;
-	vec2 texNormal = var_TexDiffuseNormal.pq;
-	vec2 texSpecular = var_TexSpecular.st;
+	vec2 texDiffuse = var_TexDiffuseGlow.st;
+	vec2 texNormal = var_TexNormalSpecular.st;
+	vec2 texSpecular = var_TexNormalSpecular.pq;
 
 	// invert tangent space for two sided surfaces
-	mat3 tangentToWorldMatrix;
+	mat3 tangentToWorldMatrix = mat3(var_Tangent.xyz, var_Binormal.xyz, var_Normal.xyz);
 #if defined(TWOSIDED)
 	if(gl_FrontFacing)
 	{
-		tangentToWorldMatrix = mat3(-var_Tangent.xyz, -var_Binormal.xyz, -var_Normal.xyz);
+		tangentToWorldMatrix = -tangentToWorldMatrix;
 	}
-	else
 #endif
-	{
-		tangentToWorldMatrix = mat3(var_Tangent.xyz, var_Binormal.xyz, var_Normal.xyz);
-	}
 
 	// compute view direction in world space
 	vec3 I = normalize(u_ViewOrigin - var_Position);
@@ -70,17 +68,8 @@ void	main()
 #if defined(USE_PARALLAX_MAPPING)
 	// ray intersect in view direction
 
-	mat3 worldToTangentMatrix;
-	#if defined(GLHW_ATI) || defined(GLHW_ATI_DX10) || defined(GLDRV_MESA)
-	worldToTangentMatrix = mat3(tangentToWorldMatrix[0][0], tangentToWorldMatrix[1][0], tangentToWorldMatrix[2][0],
-								tangentToWorldMatrix[0][1], tangentToWorldMatrix[1][1], tangentToWorldMatrix[2][1],
-								tangentToWorldMatrix[0][2], tangentToWorldMatrix[1][2], tangentToWorldMatrix[2][2]);
-	#else
-	worldToTangentMatrix = transpose(tangentToWorldMatrix);
-	#endif
-
 	// compute view direction in tangent space
-	vec3 V = worldToTangentMatrix * (u_ViewOrigin - var_Position.xyz);
+	vec3 V = I * tangentToWorldMatrix;
 	V = normalize(V);
 
 	// size and start position of search in texture space
@@ -133,7 +122,7 @@ void	main()
 	vec3 lightColor = texture2D(u_LightMap, var_TexLight).rgb;
 
 	// compute the specular term
-	vec3 specular = texture2D(u_SpecularMap, texSpecular).rgb;
+	vec4 specular = texture2D(u_SpecularMap, texSpecular).rgba;
 
 	float NdotL = clamp(dot(N, L), 0.0, 1.0);
 
@@ -152,14 +141,14 @@ void	main()
 	color.rgb *= clamp(lightColorNoNdotL.rgb * NdotL, lightColor.rgb * 0.3, lightColor.rgb);
 	//color.rgb *= diffuse.rgb;
 	//color.rgb = L * 0.5 + 0.5;
-	color.rgb += specular * lightColorNoNdotL * pow(clamp(dot(N, H), 0.0, 1.0), r_SpecularExponent) * r_SpecularScale;
+	color.rgb += specular.rgb * lightColorNoNdotL * pow(clamp(dot(N, H), 0.0, 1.0), u_SpecularExponent.x * specular.a + u_SpecularExponent.y) * r_SpecularScale;
 	color.a = var_Color.a;	// for terrain blending
 
 
 #else // USE_NORMAL_MAPPING
 
 	// compute the diffuse term
-	vec4 diffuse = texture2D(u_DiffuseMap, var_TexDiffuseNormal.st);
+	vec4 diffuse = texture2D(u_DiffuseMap, var_TexDiffuseGlow.st);
 
 	if( abs(diffuse.a + u_AlphaThreshold) <= 1.0 )
 	{
@@ -167,18 +156,14 @@ void	main()
 		return;
 	}
 
-	vec3 N;
+	vec3 N = normalize(var_Normal);
 
 #if defined(TWOSIDED)
 	if(gl_FrontFacing)
 	{
-		N = -normalize(var_Normal);
+		N = -N;
 	}
-	else
 #endif
-	{
-		N = normalize(var_Normal);
-	}
 
 	vec3 specular = vec3(0.0, 0.0, 0.0);
 
@@ -189,7 +174,9 @@ void	main()
 	color.rgb *= lightColor;
 	color.a = var_Color.a;	// for terrain blending
 #endif
-
+#if defined(USE_GLOW_MAPPING)
+	color.rgb += texture2D(u_GlowMap, var_TexDiffuseGlow.pq).rgb;
+#endif
 	// convert normal to [0,1] color space
 	N = N * 0.5 + 0.5;
 

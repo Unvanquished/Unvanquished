@@ -22,6 +22,15 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 /* debugShadowMap_fp.glsl */
 
+/* swizzle one- and two-component textures to RG */
+#ifdef TEXTURE_RG
+#  define SWIZ1 r
+#  define SWIZ2 rg
+#else
+#  define SWIZ1 a
+#  define SWIZ2 ar
+#endif
+
 uniform sampler2D	u_ShadowMap;
 
 varying vec2		var_TexCoord;
@@ -30,17 +39,17 @@ void	main()
 {
 #if defined(ESM)
 
-	vec4 shadowMoments = texture2D(u_ShadowMap, var_TexCoord);
+	float shadowMoments = texture2D(u_ShadowMap, var_TexCoord).SWIZ1;
 
-	float shadowDistance = shadowMoments.a;
+	float shadowDistance = shadowMoments;
 
 	gl_FragColor = vec4(shadowDistance, 0.0, 0.0, 1.0);
 
 #elif defined(VSM)
-	vec4 shadowMoments = texture2D(u_ShadowMap, var_TexCoord);
+	vec2 shadowMoments = texture2D(u_ShadowMap, var_TexCoord).SWIZ2;
 
 	float shadowDistance = shadowMoments.r;
-	float shadowDistanceSquared = shadowMoments.a;
+	float shadowDistanceSquared = shadowMoments.g;
 
 	gl_FragColor = vec4(shadowDistance, 0.0, 0.0, 1.0);
 

@@ -36,6 +36,7 @@ uniform float		u_FresnelBias;
 uniform float		u_NormalScale;
 uniform mat4		u_ModelMatrix;
 uniform mat4		u_UnprojectMatrix;
+uniform vec2		u_SpecularExponent;
 
 varying vec3		var_Position;
 varying vec2		var_TexNormal;
@@ -105,20 +106,11 @@ void	main()
 	// compute incident ray
 	vec3 I = normalize(u_ViewOrigin - var_Position);
 
-	mat3 tangentToWorldMatrix;
+	mat3 tangentToWorldMatrix = mat3(var_Tangent.xyz, var_Binormal.xyz, var_Normal.xyz);
 	if(gl_FrontFacing)
-		tangentToWorldMatrix = mat3(-var_Tangent.xyz, -var_Binormal.xyz, -var_Normal.xyz);
-	else
-		tangentToWorldMatrix = mat3(var_Tangent.xyz, var_Binormal.xyz, var_Normal.xyz);
-
-	mat3 worldToTangentMatrix;
-#if defined(GLHW_ATI) || defined(GLHW_ATI_DX10) || defined(GLDRV_MESA)
-	worldToTangentMatrix = mat3(tangentToWorldMatrix[0][0], tangentToWorldMatrix[1][0], tangentToWorldMatrix[2][0],
-								tangentToWorldMatrix[0][1], tangentToWorldMatrix[1][1], tangentToWorldMatrix[2][1],
-								tangentToWorldMatrix[0][2], tangentToWorldMatrix[1][2], tangentToWorldMatrix[2][2]);
-#else
-	worldToTangentMatrix = transpose(tangentToWorldMatrix);
-#endif
+	{
+		tangentToWorldMatrix = -tangentToWorldMatrix;
+	}
 
 	// calculate the screen texcoord in the 0.0 to 1.0 range
 	vec2 texScreen = gl_FragCoord.st * r_FBufScale * r_NPOTScale;
@@ -126,7 +118,7 @@ void	main()
 
 #if defined(USE_PARALLAX_MAPPING)
 	// compute view direction in tangent space
-	vec3 V = worldToTangentMatrix * (I);
+	vec3 V = I * tangentToWorldMatrix;
 	V = normalize(V);
 
 	// ray intersect in view direction
@@ -193,7 +185,7 @@ void	main()
 	vec3 light = var_LightColor.rgb * clamp(dot(N2, L), 0.0, 1.0);
 
 	// compute the specular term
-	vec3 specular = reflectColor * var_LightColor.rgb * pow(clamp(dot(N2, H), 0.0, 1.0), r_SpecularExponent) * r_SpecularScale;
+	vec3 specular = reflectColor * var_LightColor.rgb * pow(clamp(dot(N2, H), 0.0, 1.0), u_SpecularExponent.x + u_SpecularExponent.y) * r_SpecularScale;
 	color.rgb += specular;
 
 	gl_FragColor = color;

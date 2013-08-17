@@ -22,13 +22,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 /* generic_vp.glsl */
 
-attribute vec4		attr_Position;
-attribute vec4		attr_TexCoord0;
-attribute vec4		attr_TexCoord1;
+attribute vec3 		attr_Position;
+attribute vec2 		attr_TexCoord0;
+attribute vec2 		attr_TexCoord1;
 attribute vec3		attr_Normal;
 attribute vec4		attr_Color;
 
-attribute vec4		attr_Position2;
+attribute vec3 		attr_Position2;
 attribute vec3		attr_Normal2;
 
 uniform float		u_VertexInterpolation;
@@ -43,13 +43,8 @@ uniform vec4		u_Color;
 uniform mat4		u_ModelMatrix;
 uniform mat4		u_ModelViewProjectionMatrix;
 
-varying vec3		var_Position;
 varying vec2		var_Tex;
 varying vec4		var_Color;
-
-
-
-
 
 void	main()
 {
@@ -69,7 +64,7 @@ void	main()
 						position, normal);
 
 #else
-	position = attr_Position;
+	position = vec4(attr_Position, 1.0);
 	normal = attr_Normal;
 #endif
 
@@ -83,18 +78,16 @@ void	main()
 	// transform vertex position into homogenous clip-space
 	gl_Position = u_ModelViewProjectionMatrix * position;
 
-	// transform position into world space
-	var_Position = mat3(u_ModelMatrix) * position.xyz;
-
 	// transform texcoords
 	vec4 texCoord;
 #if defined(USE_TCGEN_ENVIRONMENT)
 	{
+		position = (mat3(u_ModelMatrix) * position.xyz).xyzx;
 		vec3 viewer = normalize(u_ViewOrigin - position.xyz);
 
-		float d = dot(attr_Normal, viewer);
+		float d = dot(normal, viewer);
 
-		vec3 reflected = attr_Normal * 2.0 * d - viewer;
+		vec3 reflected = normal * 2.0 * d - viewer;
 
 		texCoord.s = 0.5 + reflected.y * 0.5;
 		texCoord.t = 0.5 - reflected.z * 0.5;
@@ -102,9 +95,9 @@ void	main()
 		texCoord.w = 1;
 	}
 #elif defined(USE_TCGEN_LIGHTMAP)
-	texCoord = attr_TexCoord1;
+	texCoord = vec4(attr_TexCoord1, 0.0, 1.0);
 #else
-	texCoord = attr_TexCoord0;
+	texCoord = vec4(attr_TexCoord0, 0.0, 1.0);
 #endif
 
 	var_Tex = (u_ColorTextureMatrix * texCoord).st;
