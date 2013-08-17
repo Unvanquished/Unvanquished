@@ -108,6 +108,7 @@ bool FontFaceHandle::Initialise(FT_Face ft_face, const String& _charset, int _si
 int FontFaceHandle::GetStringWidth(const WString& string, word prior_character, word default_character)
 {
 	int width = 0;
+	bool update = false;
 
 	for (size_t i = 0; i < string.Length(); i++)
 	{
@@ -120,23 +121,11 @@ int FontFaceHandle::GetStringWidth(const WString& string, word prior_character, 
 
 			if (!(fonts_generated[ chunk / 8 ] & (1 << (chunk % 8))))
 			{
-				int num = 0;
 				UnicodeRange range(chunk * 256, (chunk * 256) + 255);
 				fonts_generated[ chunk / 8 ] |= (1 << (chunk % 8));
 				if (BuildGlyphMap(ft_face, range))
 				{
-
-					for (size_t j = 0; j < layer_configurations.size(); ++j)
-					{
-						for (size_t k = 0; k < layer_configurations[j].size(); ++k)
-						{
-							layer_configurations[j][k]->AddNewGlyphs();
-							num++;
-						}
-					}
-
-					Log::Message(Log::LT_INFO, "Added new glyphs to %d layers", num);
-
+					update = true;
 					i--;
 				}
 				continue;
@@ -166,6 +155,22 @@ int FontFaceHandle::GetStringWidth(const WString& string, word prior_character, 
 		width += iterator->second.advance;
 
 		prior_character = character_code;
+	}
+
+	if ( update )
+	{
+		int num = 0;
+		for (size_t j = 0; j < layer_configurations.size(); ++j)
+		{
+			for (size_t k = 0; k < layer_configurations[j].size(); ++k)
+			{
+				layer_configurations[j][k]->AddNewGlyphs();
+				num++;
+			}
+		}
+
+		Log::Message(Log::LT_INFO, "Added new glyphs to %d layers", num);
+
 	}
 
 	return width;
@@ -387,9 +392,6 @@ bool FontFaceHandle::BuildGlyphMap(FT_Face ft_face, const UnicodeRange& unicode_
 	bool success = false;
 	for (word character_code = (word) (Math::Max< unsigned int >(unicode_range.min_codepoint, 32)); character_code <= unicode_range.max_codepoint; ++character_code)
 	{
-		if (glyphs.find(character_code) != glyphs.end())
-			continue;
-
 		int index = FT_Get_Char_Index(ft_face, character_code);
 		if (index != 0)
 		{
