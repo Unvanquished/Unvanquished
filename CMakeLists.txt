@@ -162,7 +162,6 @@ if( MSVC )
     set_linker_flag( "/LTCG" )
   endif()
 else()
-  # Amanieu: Look into enabling strict aliasing
   set_c_cxx_flag( "-ffast-math" )
   set_c_cxx_flag( "-fno-strict-aliasing" )
   set_c_cxx_flag( "-fomit-frame-pointer" RELEASE )
@@ -241,6 +240,11 @@ endif()
 # QVM compatibility
 if( ENABLE_QVM_COMPAT )
   add_definitions( -DQVM_COMPAT )
+endif()
+
+# Mumble link support
+if( USE_MUMBLE )
+  add_definitions( -DUSE_MUMBLE )
 endif()
 
 ################################################################################
@@ -655,83 +659,6 @@ set( UIGPP_BASE
   ${ENGINE_DIR}/client/ui_api.h
 )
 
-set( SPEEXLIST
-  ${LIB_DIR}/libspeex/libspeex/bits.c
-  ${LIB_DIR}/libspeex/libspeex/buffer.c
-  ${LIB_DIR}/libspeex/libspeex/cb_search.c
-  ${LIB_DIR}/libspeex/libspeex/exc_10_16_table.c
-  ${LIB_DIR}/libspeex/libspeex/exc_10_32_table.c
-  ${LIB_DIR}/libspeex/libspeex/exc_20_32_table.c
-  ${LIB_DIR}/libspeex/libspeex/exc_5_256_table.c
-  ${LIB_DIR}/libspeex/libspeex/exc_5_64_table.c
-  ${LIB_DIR}/libspeex/libspeex/exc_8_128_table.c
-  ${LIB_DIR}/libspeex/libspeex/fftwrap.c
-  ${LIB_DIR}/libspeex/libspeex/filterbank.c
-  ${LIB_DIR}/libspeex/libspeex/filters.c
-  ${LIB_DIR}/libspeex/libspeex/gain_table.c
-  ${LIB_DIR}/libspeex/libspeex/gain_table_lbr.c
-  ${LIB_DIR}/libspeex/libspeex/hexc_10_32_table.c
-  ${LIB_DIR}/libspeex/libspeex/hexc_table.c
-  ${LIB_DIR}/libspeex/libspeex/high_lsp_tables.c
-  ${LIB_DIR}/libspeex/libspeex/jitter.c
-  ${LIB_DIR}/libspeex/libspeex/kiss_fft.c
-  ${LIB_DIR}/libspeex/libspeex/kiss_fftr.c
-  ${LIB_DIR}/libspeex/libspeex/lpc.c
-  ${LIB_DIR}/libspeex/libspeex/lsp.c
-  ${LIB_DIR}/libspeex/libspeex/lsp_tables_nb.c
-  ${LIB_DIR}/libspeex/libspeex/ltp.c
-  ${LIB_DIR}/libspeex/libspeex/mdf.c
-  ${LIB_DIR}/libspeex/libspeex/modes.c
-  ${LIB_DIR}/libspeex/libspeex/modes_wb.c
-  ${LIB_DIR}/libspeex/libspeex/nb_celp.c
-  ${LIB_DIR}/libspeex/libspeex/preprocess.c
-  ${LIB_DIR}/libspeex/libspeex/quant_lsp.c
-  ${LIB_DIR}/libspeex/libspeex/resample.c
-  ${LIB_DIR}/libspeex/libspeex/sb_celp.c
-  ${LIB_DIR}/libspeex/libspeex/smallft.c
-  ${LIB_DIR}/libspeex/libspeex/speex.c
-  ${LIB_DIR}/libspeex/libspeex/speex_callbacks.c
-  ${LIB_DIR}/libspeex/libspeex/speex_header.c
-  ${LIB_DIR}/libspeex/libspeex/stereo.c
-  ${LIB_DIR}/libspeex/libspeex/vbr.c
-  ${LIB_DIR}/libspeex/libspeex/vq.c
-  ${LIB_DIR}/libspeex/libspeex/window.c
-)
-
-set( NETTLELIST
-  ${LIB_DIR}/nettle/nettle/bignum.c
-  ${LIB_DIR}/nettle/nettle/bignum-random.c
-  ${LIB_DIR}/nettle/nettle/buffer-init.c
-  ${LIB_DIR}/nettle/nettle/nettle-buffer.c
-  ${LIB_DIR}/nettle/nettle/nettle-internal.c
-  ${LIB_DIR}/nettle/nettle/rsa2sexp.c
-  ${LIB_DIR}/nettle/nettle/rsa.c
-  ${LIB_DIR}/nettle/nettle/rsa-decrypt.c
-  ${LIB_DIR}/nettle/nettle/rsa-encrypt.c
-  ${LIB_DIR}/nettle/nettle/rsa-keygen.c
-  ${LIB_DIR}/nettle/nettle/rsa-sign.c
-  ${LIB_DIR}/nettle/nettle/sexp2bignum.c
-  ${LIB_DIR}/nettle/nettle/sexp2rsa.c
-  ${LIB_DIR}/nettle/nettle/sexp.c
-  ${LIB_DIR}/nettle/nettle/sexp-format.c
-)
-
-set( ZLIBLIST
-  ${LIB_DIR}/zlib/adler32.c
-  ${LIB_DIR}/zlib/compress.c
-  ${LIB_DIR}/zlib/crc32.c
-  ${LIB_DIR}/zlib/deflate.c
-  ${LIB_DIR}/zlib/gzio.c
-  ${LIB_DIR}/zlib/infback.c
-  ${LIB_DIR}/zlib/inffast.c
-  ${LIB_DIR}/zlib/inflate.c
-  ${LIB_DIR}/zlib/inftrees.c
-  ${LIB_DIR}/zlib/ioapi.c
-  ${LIB_DIR}/zlib/trees.c
-  ${LIB_DIR}/zlib/uncompr.c
-  ${LIB_DIR}/zlib/zutil.c
-)
-
 set( WIN_RC ${ENGINE_DIR}/sys/daemon.rc )
 
 set( TINYGETTEXT_LIST
@@ -800,21 +727,12 @@ set_source_files_properties( ${EVERYTHING_C} PROPERTIES LANGUAGE CXX )
 # Libraries
 ################################################################################
 
-# Amanieu: Need to add proper if wrappers so that compilation doesn't fail because of a dep we don't need
-
 # These variables are defined
 # LIBS_BASE, LIBSRC_BASE
 # LIBS_ENGINE, LIBSRC_ENGINE
 # LIBS_RENDERER, LIBSRC_RENDERER
 # LIBS_BASECLIENT, LIBSRC_BASECLIENT
 # LIBS_CLIENT, LIBSRC_CLIENT
-
-# We provide some pre-built packages for Windows, make find_package optional
-if( WIN32 )
-  set( OPTIONAL_WIN32 )
-else()
-  set( OPTIONAL_WIN32 REQUIRED )
-endif()
 
 # C99 int types for MSVC
 if( MSVC )
@@ -823,8 +741,7 @@ endif()
 
 # Base OS libs
 if( WIN32 )
-  # Amanieu: Check if psapi is really needed
-  set( LIBS_BASE ${LIBS_BASE} winmm ws2_32 psapi )
+  set( LIBS_ENGINE ${LIBS_ENGINE} winmm ws2_32 )
 else()
   find_library( LIBM m )
   if( LIBM )
@@ -845,16 +762,6 @@ else()
   if( MAC )
     set( LIBS_CLIENT ${LIBS_CLIENT} "-framework Carbon" "-framework IOKit" "-framework Cocoa" )
   endif()
-endif()
-
-# zlib
-find_package( ZLIB )
-if( ZLIB_FOUND )
-  include_directories( ${ZLIB_INCLUDE_DIRS} )
-  set( LIBS_BASE ${LIBS_BASE} ${ZLIB_LIBRARIES} )
-else()
-  include_directories( ${LIB_DIR}/zlib )
-  set( LIBSRC_BASE ${LIBSRC_BASE} ${ZLIBLIST} )
 endif()
 
 # Tinygettext
@@ -885,23 +792,19 @@ endif()
 
 # SDL, required for all targets on win32 because of iconv
 if( BUILD_CLIENT OR BUILD_NEW_RENDERER OR BUILD_OLD_RENDERER OR WIN32 )
-  find_package( SDL ${OPTIONAL_WIN32} )
-  if( SDL_FOUND )
-    include_directories( ${SDL_INCLUDE_DIR} )
-    set( LIBS_CLIENT ${LIBS_CLIENT} ${SDL_LIBRARY} )
-    set( LIBS_RENDERER ${LIBS_RENDERER} ${SDL_LIBRARY} )
-    set( LIBS_RENDERERGL ${LIBS_RENDERERGL} ${SDL_LIBRARY} )
-    if( MAC )
-      # Mac OS X does not provide a SDLMain.dylib so we must compile our own
-      add_library( INTERNAL_SDLMain ${ENGINE_DIR}/sys/SDLMain.mm )
-      set( LIBS_CLIENT ${LIBS_CLIENT} INTERNAL_SDLMain )
-    endif()
+  find_package( SDL REQUIRED )
+  include_directories( ${SDL_INCLUDE_DIR} )
+  if( WIN32 )
+    set( LIBS_ENGINE ${LIBS_ENGINE} ${SDL_LIBRARY} )
   else()
-    add_subdirectory( ${LIB_DIR}/libsdl ${OBJ_DIR}/libsdl )
-    include_directories( ${LIB_DIR}/libsdl/include )
-    set( LIBS_CLIENT ${LIBS_CLIENT} INTERNAL_SDL INTERNAL_SDLMain )
-    set( LIBS_RENDERER ${LIBS_RENDERER} INTERNAL_SDL )
-    set( LIBS_RENDERERGL ${LIBS_RENDERERGL} INTERNAL_SDL )
+    set( LIBS_CLIENT ${LIBS_CLIENT} ${SDL_LIBRARY} )
+  endif()
+  set( LIBS_RENDERER ${LIBS_RENDERER} ${SDL_LIBRARY} )
+  set( LIBS_RENDERERGL ${LIBS_RENDERERGL} ${SDL_LIBRARY} )
+  if( MAC )
+    # Mac OS X does not provide a SDLMain.dylib so we must compile our own
+    add_library( INTERNAL_SDLMain ${ENGINE_DIR}/sys/SDLMain.mm )
+    set( LIBS_CLIENT ${LIBS_CLIENT} INTERNAL_SDLMain )
   endif()
 
   # Used by tinygettext to use SDL_iconv instead of base iconv
@@ -909,175 +812,84 @@ if( BUILD_CLIENT OR BUILD_NEW_RENDERER OR BUILD_OLD_RENDERER OR WIN32 )
     add_definitions( -DHAVE_SDL )
   endif()
 endif()
-mark_as_advanced( SDLMAIN_LIBRARY SDL_LIBRARY SDL_INCLUDE_DIR )
+mark_as_advanced( SDLMAIN_LIBRARY SDL_LIBRARY SDL_INCLUDE_DIR MINGW32_LIBRARY )
 
-# GMP
-find_package( GMP ${OPTIONAL_WIN32} )
-if( GMP_FOUND )
-  include_directories( ${GMP_INCLUDE_DIR} )
-  set( LIBS_ENGINE ${LIBS_ENGINE} ${GMP_LIBRARIES} )
-else()
-  include_directories( ${LIB_DIR}/gmp/include )
-  if( ARCH STREQUAL "x86" )
-    set( LIBS_ENGINE ${LIBS_ENGINE} ${LIB_DIR}/gmp/libs/win32/mpir.lib )
-  elseif( ARCH STREQUAL "x86_64" )
-    set( LIBS_ENGINE ${LIBS_ENGINE} ${LIB_DIR}/gmp/libs/win64/mpir.lib )
-  endif()
-endif()
+# zlib
+find_package( ZLIB REQUIRED )
+include_directories( ${ZLIB_INCLUDE_DIRS} )
+set( LIBS_BASE ${LIBS_BASE} ${ZLIB_LIBRARIES} )
 
 # Nettle
-find_package( Nettle )
-if( NETTLE_FOUND )
-  include_directories( ${NETTLE_INCLUDE_DIR} )
-  set( LIBS_ENGINE ${LIBS_ENGINE} ${NETTLE_LIBRARIES} )
-else()
-  include_directories( ${LIB_DIR}/nettle )
-  set( LIBSRC_ENGINE ${LIBSRC_ENGINE} ${NETTLELIST} )
-endif()
+find_package( Nettle REQUIRED )
+include_directories( ${NETTLE_INCLUDE_DIR} )
+set( LIBS_ENGINE ${LIBS_ENGINE} ${NETTLE_LIBRARIES} )
+
+# GMP
+find_package( GMP REQUIRED )
+include_directories( ${GMP_INCLUDE_DIR} )
+set( LIBS_ENGINE ${LIBS_ENGINE} ${GMP_LIBRARIES} )
 
 # Speex
 if( BUILD_CLIENT AND USE_VOIP )
-  find_package( Speex )
-  if( SPEEX_FOUND )
-    include_directories( ${SPEEX_INCLUDE_DIR} )
-    set( LIBS_CLIENT ${LIBS_CLIENT} ${SPEEX_LIBRARIES} )
-  else()
-    add_definitions( -DFLOATING_POINT )
-    include_directories( ${LIB_DIR}/libspeex/include )
-    set( LIBSRC_CLIENT ${LIBSRC_CLIENT} ${SPEEXLIST} )
-  endif()
-endif()
-
-# Mumble
-if( USE_MUMBLE )
-  add_definitions( -DUSE_MUMBLE )
+  find_package( Speex REQUIRED )
+  include_directories( ${SPEEX_INCLUDE_DIR} )
+  set( LIBS_CLIENT ${LIBS_CLIENT} ${SPEEX_LIBRARIES} )
 endif()
 
 # Ogg
 if( BUILD_CLIENT )
-  find_package( Ogg ${OPTIONAL_WIN32} )
-  if( OGG_FOUND )
-    include_directories( ${OGG_INCLUDE_DIRS} )
-    set( LIBS_CLIENT ${LIBS_CLIENT} ${OGG_LIBRARIES} )
-  else()
-    include_directories( ${LIB_DIR}/libogg/include )
-    if( ARCH STREQUAL "x86" )
-      set( LIBS_CLIENT ${LIBS_CLIENT} ${LIB_DIR}/libogg/libs/win32/release/libogg.lib )
-    elseif( ARCH STREQUAL "x86_64" )
-      set( LIBS_CLIENT ${LIBS_CLIENT} ${LIB_DIR}/libogg/libs/win64/release/libogg.lib )
-    endif()
-  endif()
+  find_package( Ogg REQUIRED )
+  include_directories( ${OGG_INCLUDE_DIRS} )
+  set( LIBS_CLIENT ${LIBS_CLIENT} ${OGG_LIBRARIES} )
 endif()
 
 # Vorbis
 if( BUILD_CLIENT )
-  add_definitions( -DUSE_CODEC_VORBIS )
-  find_package( Vorbis ${OPTIONAL_WIN32} )
-  if( VORBIS_FOUND )
-    include_directories( ${VORBIS_INCLUDE_DIRS} )
-    set( LIBS_CLIENT ${LIBS_CLIENT} ${VORBIS_LIBRARIES} )
-  else()
-    include_directories( ${LIB_DIR}/libvorbis/include )
-    if( ARCH STREQUAL "x86" )
-      set( LIBS_CLIENT ${LIBS_CLIENT}
-        ${LIB_DIR}/libvorbis/libs/Win32/Release/libvorbis.lib
-        ${LIB_DIR}/libvorbis/libs/Win32/Release/libvorbisfile.lib
-      )
-    elseif( ARCH STREQUAL "x86_64" )
-      set( LIBS_CLIENT ${LIBS_CLIENT}
-        ${LIB_DIR}/libvorbis/libs/x64/Release/libvorbis.lib
-        ${LIB_DIR}/libvorbis/libs/x64/Release/libvorbisfile.lib
-      )
-    endif()
-  endif()
+  find_package( Vorbis REQUIRED )
+  include_directories( ${VORBIS_INCLUDE_DIRS} )
+  set( LIBS_CLIENT ${LIBS_CLIENT} ${VORBIS_LIBRARIES} )
 endif()
 
 # Theora
 if( BUILD_CLIENT )
-  add_definitions( -DUSE_CIN_THEORA )
-  find_package( Theora ${OPTIONAL_WIN32} )
-  if( THEORA_FOUND )
-    include_directories( ${THEORA_INCLUDE_DIRS} )
-    set( LIBS_CLIENT ${LIBS_CLIENT} ${THEORA_LIBRARIES} )
-  else()
-    include_directories( ${LIB_DIR}/libtheora/include )
-    if( ARCH STREQUAL "x86" )
-      set( LIBS_CLIENT ${LIBS_CLIENT} ${LIB_DIR}/libtheora/libs/win32/release/libtheora.lib )
-    elseif( ARCH STREQUAL "x86_64" )
-      set( LIBS_CLIENT ${LIBS_CLIENT} ${LIB_DIR}/libtheora/libs/win64/release/libtheora.lib )
-    endif()
-  endif()
+  find_package( Theora REQUIRED )
+  include_directories( ${THEORA_INCLUDE_DIRS} )
+  set( LIBS_CLIENT ${LIBS_CLIENT} ${THEORA_LIBRARIES} )
 endif()
 
 # WebP
 if( BUILD_NEW_RENDERER OR BUILD_OLD_RENDERER )
-  find_package( WebP )
-  if( WEBP_FOUND )
-    include_directories( ${WEBP_INCLUDE_DIRS} )
-    set( LIBS_RENDERER ${LIBS_RENDERER} ${WEBP_LIBRARIES} )
-  else()
-    add_subdirectory( ${LIB_DIR}/libwebp ${OBJ_DIR}/libwebp )
-    include_directories( ${LIB_DIR}/libwebp )
-    set( LIBS_RENDERER ${LIBS_RENDERER} INTERNAL_WEBP )
-  endif()
+  find_package( WebP REQUIRED )
+  include_directories( ${WEBP_INCLUDE_DIRS} )
+  set( LIBS_RENDERER ${LIBS_RENDERER} ${WEBP_LIBRARIES} )
 endif()
 
 # JPEG
 if( BUILD_NEW_RENDERER OR BUILD_OLD_RENDERER )
-  find_package( JPEG )
-  if( JPEG_FOUND )
-    include_directories( ${JPEG_INCLUDE_DIR} )
-    set( LIBS_RENDERER ${LIBS_RENDERER} ${JPEG_LIBRARIES} )
-  else()
-    add_subdirectory( ${LIB_DIR}/jpeg ${OBJ_DIR}/libjpeg )
-    include_directories( ${LIB_DIR}/jpeg )
-    set( LIBSRC_RENDERER ${LIBSRC_RENDERER} ${JPEGLIST} )
-  endif()
+  find_package( JPEG REQUIRED )
+  include_directories( ${JPEG_INCLUDE_DIR} )
+  set( LIBS_RENDERER ${LIBS_RENDERER} ${JPEG_LIBRARIES} )
 endif()
 
 # PNG
 if( BUILD_NEW_RENDERER OR BUILD_OLD_RENDERER )
-  find_package( PNG ${OPTIONAL_WIN32} )
-  if( PNG_FOUND )
-    include_directories( ${PNG_INCLUDE_DIRS} )
-    set( LIBS_RENDERER ${LIBS_RENDERER} ${PNG_LIBRARIES} )
-  else()
-    include_directories( ${LIB_DIR}/libpng )
-    if( ARCH STREQUAL "x86" )
-      set( LIBS_RENDERER ${LIBS_RENDERER} ${LIB_DIR}/libpng/libs/win32/libpng.lib )
-    elseif( ARCH STREQUAL "x86_64" )
-      set( LIBS_RENDERER ${LIBS_RENDERER} ${LIB_DIR}/libpng/libs/win32/libpng.lib )
-    endif()
-  endif()
+  find_package( PNG REQUIRED )
+  include_directories( ${PNG_INCLUDE_DIRS} )
+  set( LIBS_RENDERER ${LIBS_RENDERER} ${PNG_LIBRARIES} )
 endif()
 
 # Freetype
 if( BUILD_NEW_RENDERER OR BUILD_OLD_RENDERER )
-  find_package( Freetype ${OPTIONAL_WIN32} )
-  if( FREETYPE_FOUND )
-    include_directories( ${FREETYPE_INCLUDE_DIRS} )
-    set( LIBS_RENDERER ${LIBS_RENDERER} ${FREETYPE_LIBRARIES} )
-  else()
-    include_directories( ${LIB_DIR}/freetype/include/freetype2 )
-    if( ARCH STREQUAL "x86" )
-      set( LIBS_RENDERER ${LIBS_RENDERER} ${LIB_DIR}/freetype/lib/freetype.lib )
-    elseif( ARCH STREQUAL "x86_64" )
-      set( LIBS_RENDERER ${LIBS_RENDERER} ${LIB_DIR}/freetype/lib/x64/freetype.lib )
-    endif()
-  endif()
+  find_package( Freetype REQUIRED )
+  include_directories( ${FREETYPE_INCLUDE_DIRS} )
+  set( LIBS_RENDERER ${LIBS_RENDERER} ${FREETYPE_LIBRARIES} )
 endif()
 
 # GLEW
 if( BUILD_NEW_RENDERER OR BUILD_OLD_RENDERER )
-  find_package( GLEW )
-  if( GLEW_FOUND )
-    include_directories( ${GLEW_INCLUDE_DIR} )
-    set( LIBS_RENDERER ${LIBS_RENDERER} ${GLEW_LIBRARIES} )
-  else()
-    add_subdirectory( ${LIB_DIR}/glew ${OBJ_DIR}/libglew )
-    include_directories( ${LIB_DIR}/glew/include )
-    set( LIBS_RENDERER ${LIBS_RENDERER} INTERNAL_GLEW )
-  endif()
+  find_package( GLEW REQUIRED )
+  include_directories( ${GLEW_INCLUDE_DIR} )
+  set( LIBS_RENDERER ${LIBS_RENDERER} ${GLEW_LIBRARIES} )
 endif()
 
 # OpenGL
@@ -1097,42 +909,20 @@ endif()
 
 # OpenAL
 if( BUILD_CLIENT )
+  find_package( OpenAL REQUIRED )
+  include_directories( ${OPENAL_INCLUDE_DIR} )
   if( USE_OPENAL_DLOPEN )
     add_definitions( -DUSE_OPENAL_DLOPEN )
-    find_package( OpenAL )
   else()
-    find_package( OpenAL ${OPTIONAL_WIN32} )
-    if( OPENAL_FOUND )
-      set( LIBS_CLIENT ${LIBS_CLIENT} ${OPENAL_LIBRARY} )
-    else()
-      if( ARCH STREQUAL "x86" )
-        set( LIBS_CLIENT ${LIBS_CLIENT} ${LIB_DIR}/openal/libs/win32/OpenAL32.lib )
-      elseif( ARCH STREQUAL "x86_64" )
-        set( LIBS_CLIENT ${LIBS_CLIENT} ${LIB_DIR}/openal/libs/win64/OpenAL32.lib )
-      endif()
-    endif()
-  endif()
-  if( OPENAL_FOUND )
-    include_directories( ${OPENAL_INCLUDE_DIR} )
-  else()
-    include_directories( ${LIB_DIR}/openal/include )
+    set( LIBS_CLIENT ${LIBS_CLIENT} ${OPENAL_LIBRARY} )
   endif()
 endif()
 
 # CURL
 if( BUILD_CLIENT OR BUILD_TTY_CLIENT )
-  find_package( CURL ${OPTIONAL_WIN32} )
-  if( CURL_FOUND )
-    include_directories( ${CURL_INCLUDE_DIRS} )
-    set( LIBS_CLIENTBASE ${LIBS_CLIENTBASE} ${CURL_LIBRARIES} )
-  else()
-    include_directories( ${LIB_DIR}/curl-7.21.6/include )
-    if( ARCH STREQUAL "x86" )
-      set( LIBS_CLIENTBASE ${LIBS_CLIENTBASE} ${LIB_DIR}/curl-7.21.6/lib/win32/release/libcurl_imp.lib )
-    elseif( ARCH STREQUAL "x86_64" )
-      set( LIBS_CLIENTBASE ${LIBS_CLIENTBASE} ${LIB_DIR}/curl-7.21.6/lib/win64/release/libcurl_imp.lib )
-    endif()
-  endif()
+  find_package( CURL REQUIRED )
+  include_directories( ${CURL_INCLUDE_DIRS} )
+  set( LIBS_CLIENTBASE ${LIBS_CLIENTBASE} ${CURL_LIBRARIES} )
 endif()
 
 # Curses, disabled for Windows
@@ -1218,7 +1008,7 @@ if( BUILD_CLIENT )
   # Setup target client
   add_executable( client ${SERVERLIST} ${CLIENTLIST} ${SDLLIST} ${ENGINELIST} ${SHAREDLIST}
     ${LIBSRC_BASE} ${LIBSRC_ENGINE} ${LIBSRC_CLIENTBASE} ${LIBSRC_CLIENT} ${WIN_RC} )
-  target_link_libraries( client ${LIBS_BASE} ${LIBS_ENGINE} ${LIBS_CLIENTBASE} ${LIBS_CLIENT} )
+  target_link_libraries( client ${LIBS_CLIENT} ${LIBS_CLIENTBASE} ${LIBS_ENGINE} ${LIBS_BASE} )
   if( USE_VOIP )
     # Set it here so the tty client doesn't try to handle voip
     set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_VOIP )
@@ -1237,7 +1027,7 @@ if( BUILD_SERVER )
   add_executable( server ${SERVERLIST} ${ENGINELIST} ${SHAREDLIST} ${LIBSRC_BASE} ${LIBSRC_ENGINE}
     ${ENGINE_DIR}/null/null_client.c  ${ENGINE_DIR}/null/null_input.c
     ${ENGINE_DIR}/null/null_snddma.c ${WIN_RC} )
-  target_link_libraries( server ${LIBS_BASE} ${LIBS_ENGINE} )
+  target_link_libraries( server ${LIBS_ENGINE} ${LIBS_BASE} )
   set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS DEDICATED )
   set_target_properties( server PROPERTIES OUTPUT_NAME "daemonded" PREFIX "" )
 
@@ -1253,7 +1043,7 @@ if( BUILD_TTY_CLIENT )
   add_executable( ttyclient ${SERVERLIST} ${CLIENTLIST} ${ENGINELIST} ${SHAREDLIST}
     ${LIBSRC_BASE} ${LIBSRC_ENGINE} ${LIBSRC_CLIENTBASE} ${WIN_RC}
     ${ENGINE_DIR}/null/null_input.c ${ENGINE_DIR}/null/null_snddma.c ${ENGINE_DIR}/null/null_renderer.c )
-  target_link_libraries( ttyclient ${LIBS_BASE} ${LIBS_ENGINE} ${LIBS_CLIENTBASE} )
+  target_link_libraries( ttyclient ${LIBS_CLIENTBASE} ${LIBS_ENGINE} ${LIBS_BASE} )
   set_property( TARGET ttyclient APPEND PROPERTY COMPILE_DEFINITIONS BUILD_TTY_CLIENT REF_HARD_LINKED )
   set_target_properties( ttyclient PROPERTIES OUTPUT_NAME "daemon-tty" PREFIX "" )
 
@@ -1272,7 +1062,7 @@ if( BUILD_OLD_RENDERER )
   # Setup target renderer
   add_library( renderer MODULE ${RENDERERLIST} ${SHAREDLIST} ${LIBSRC_BASE} ${LIBSRC_RENDERER}
     ${ENGINE_DIR}/sys/sdl_glimp.c ${ENGINE_DIR}/sys/sdl_gamma.c )
-  target_link_libraries( renderer ${LIBS_BASE} ${LIBS_RENDERER} client )
+  target_link_libraries( renderer ${LIBS_RENDERER} ${LIBS_BASE} client )
   set_target_properties( renderer PROPERTIES OUTPUT_NAME "rendererGL" )
 
   # Setup CPack for target renderer
@@ -1287,7 +1077,7 @@ if( BUILD_NEW_RENDERER )
   add_library( rendererGL MODULE ${RENDERERGLLIST} ${SHAREDLIST} ${LIBSRC_BASE} ${LIBSRC_RENDERER}
     ${ENGINE_DIR}/sys/sdl_glimp.c ${ENGINE_DIR}/sys/sdl_gamma.c )
   set_property( TARGET rendererGL APPEND PROPERTY COMPILE_DEFINITIONS USE_XREAL_RENDERER )
-  target_link_libraries( rendererGL ${LIBS_BASE} ${LIBS_RENDERER} client )
+  target_link_libraries( rendererGL ${LIBS_RENDERER} ${LIBS_BASE} client )
   set_target_properties( rendererGL PROPERTIES OUTPUT_NAME "rendererGL3" )
 
   # Setup CPack for target rendererGL
