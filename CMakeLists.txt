@@ -785,11 +785,6 @@ set_source_files_properties( ${EVERYTHING_C} PROPERTIES LANGUAGE CXX )
 # LIBS_BASECLIENT, LIBSRC_BASECLIENT
 # LIBS_CLIENT, LIBSRC_CLIENT
 
-# C99 int types for MSVC
-if( MSVC )
-  include_directories( ${LIB_DIR}/msinttypes )
-endif()
-
 # Base OS libs
 if( WIN32 )
   set( LIBS_ENGINE ${LIBS_ENGINE} winmm ws2_32 )

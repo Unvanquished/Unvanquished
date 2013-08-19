@@ -48,12 +48,6 @@ and one exported function: Perform
 
 #include "../framework/CommandSystem.h"
 
-#ifdef _MSC_VER
-#include "../../libs/msinttypes/inttypes.h"
-#else
-#include <inttypes.h>
-#endif
-
 #include "vm_local.h"
 #include "vm_traps.h"
 
