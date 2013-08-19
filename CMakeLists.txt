@@ -1052,7 +1052,7 @@ GAMELIB( LIB_NAME game
 
 if( BUILD_CLIENT )
   # Setup target client
-  add_executable( client ${SERVERLIST} ${CLIENTLIST} ${SDLLIST} ${ENGINELIST} ${SHAREDLIST}
+  add_executable( client WIN32 ${SERVERLIST} ${CLIENTLIST} ${SDLLIST} ${ENGINELIST} ${SHAREDLIST}
     ${LIBSRC_BASE} ${LIBSRC_ENGINE} ${LIBSRC_CLIENTBASE} ${LIBSRC_CLIENT} ${WIN_RC} )
   target_link_libraries( client ${LIBS_CLIENT} ${LIBS_CLIENTBASE} ${LIBS_ENGINE} ${LIBS_BASE} )
   if( USE_VOIP )
@@ -1086,7 +1086,7 @@ endif()
 
 if( BUILD_TTY_CLIENT )
   # Setup the target ttyclient
-  add_executable( ttyclient ${SERVERLIST} ${CLIENTLIST} ${ENGINELIST} ${SHAREDLIST}
+  add_executable( ttyclient WIN32 ${SERVERLIST} ${CLIENTLIST} ${ENGINELIST} ${SHAREDLIST}
     ${LIBSRC_BASE} ${LIBSRC_ENGINE} ${LIBSRC_CLIENTBASE} ${WIN_RC}
     ${ENGINE_DIR}/null/null_input.c ${ENGINE_DIR}/null/null_snddma.c ${ENGINE_DIR}/null/null_renderer.c )
   target_link_libraries( ttyclient ${LIBS_CLIENTBASE} ${LIBS_ENGINE} ${LIBS_BASE} )
