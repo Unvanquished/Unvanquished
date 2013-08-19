@@ -1,0 +1,53 @@
+****** addch.c
+****** addstr.c
+****** attr.c
+****** color.c
+****** insch.c
+****** instr.c
+****** overlay.c
+            Compiler warning changes (mostly explicit type-casting).  These
+            shouldn't actually affect the way the code works.  They either
+            caused certain "nuisance" warnings to go away,  or enabled me to
+            set higher warning levels without getting a flood of warnings.
+
+****** getch.c
+****** mouse.c
+            Triple-click mouse support changes:
+
+****** kernel.c
+            Changes to allow different cursor types (block, underline,
+            outline):
+
+****** keyname.c
+            Added names of new characters (Ctrl-semicolon,  Ctrl-0 through
+            Ctrl-9,  etc.).
+
+****** slk.c
+            Almost re-wrote 'slk.c' entirely to allow for many different
+            possible SLK  layouts,  and to allow changing them in mid-run.
+            See 'newtest.c' for how that works,  or read comments in the code.
+            (And yes,  it is all backward-compatible.)
+
+****** termattr.c
+            Changed to add left/right-line and italic styles.
+
+****** window.c
+            Changed to avoid accessing uninitialized variables when
+            debugging.  (Not a security/stability issue,  I hasten to
+            add.  Just that the debug info was garbage.)
+
+   'curses.h' changes:
+
+         Added 64-bit chtypes,  and A_OVERLINE and A_STRIKEOUT #defines
+         Added a line (currently commented out) redefining KEY_MAX to allow
+            for a slew of new keys (see above comment on 'keyname.c')
+         Added six more mouse buttons (only two of which are supported as
+            yet,  and those only in Win32a... but I wanted to future-proof)
+         Be warned:  if you look in 'pdcwin.h' in the Win32a directory,
+            you'll see _many_ proposed changes for 'curses.h':
+                -- #defines for cursor styles;
+                -- #defines for additional alternate character set characters;
+                -- #defines for keys not currently recognized in Curses,
+                     even though every flavor probably could recognize them
+                     (Ctl-0 through Ctl-9,  for example)
+                -- prototype and #defines for PDC_set_function_key( ).

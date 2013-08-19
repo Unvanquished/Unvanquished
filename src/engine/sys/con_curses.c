@@ -163,8 +163,12 @@ Update the cursor position
 #ifdef USE_CURSES_W
 static INLINE int CON_wcwidth( const char *s )
 {
+#ifdef _WIN32
+	return 1;
+#else
 	int w = wcwidth( Q_UTF8_CodePoint( s ) );
 	return w < 0 ? 0 : w;
+#endif
 }
 #endif
 
@@ -446,7 +450,6 @@ void CON_Init( void )
 	// then SIGTTIN or SIGTTOU is emitted; if not caught, turns into a SIGSTP
 	signal( SIGTTIN, SIG_IGN );
 	signal( SIGTTOU, SIG_IGN );
-#endif
 
 	// Make sure we're on a tty
 	if ( !isatty( STDIN_FILENO ) || !isatty( STDOUT_FILENO ) )
@@ -454,10 +457,12 @@ void CON_Init( void )
 		CON_Init_tty();
 		return;
 	}
+#endif
 
 	// Initialize curses and set up the root window
 	if ( !curses_on )
 	{
+#ifndef _WIN32
 		SCREEN *test = newterm( NULL, stdout, stdin );
 
 		if ( !test )
@@ -470,6 +475,7 @@ void CON_Init( void )
 		endwin();
 		delscreen( test );
 		setlocale(LC_CTYPE, "");
+#endif
 		initscr();
 		cbreak();
 		noecho();

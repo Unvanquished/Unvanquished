@@ -683,6 +683,57 @@ set( TINYGETTEXT_LIST
   ${LIB_DIR}/findlocale/findlocale.c
 )
 
+set( PDCURSESLIST
+  ${LIB_DIR}/pdcurses/pdcurses/addch.c
+  ${LIB_DIR}/pdcurses/pdcurses/addchstr.c
+  ${LIB_DIR}/pdcurses/pdcurses/addstr.c
+  ${LIB_DIR}/pdcurses/pdcurses/attr.c
+  ${LIB_DIR}/pdcurses/pdcurses/beep.c
+  ${LIB_DIR}/pdcurses/pdcurses/bkgd.c
+  ${LIB_DIR}/pdcurses/pdcurses/border.c
+  ${LIB_DIR}/pdcurses/pdcurses/clear.c
+  ${LIB_DIR}/pdcurses/pdcurses/color.c
+  ${LIB_DIR}/pdcurses/pdcurses/debug.c
+  ${LIB_DIR}/pdcurses/pdcurses/delch.c
+  ${LIB_DIR}/pdcurses/pdcurses/deleteln.c
+  ${LIB_DIR}/pdcurses/pdcurses/deprec.c
+  ${LIB_DIR}/pdcurses/pdcurses/getch.c
+  ${LIB_DIR}/pdcurses/pdcurses/getstr.c
+  ${LIB_DIR}/pdcurses/pdcurses/getyx.c
+  ${LIB_DIR}/pdcurses/pdcurses/inch.c
+  ${LIB_DIR}/pdcurses/pdcurses/inchstr.c
+  ${LIB_DIR}/pdcurses/pdcurses/initscr.c
+  ${LIB_DIR}/pdcurses/pdcurses/inopts.c
+  ${LIB_DIR}/pdcurses/pdcurses/insch.c
+  ${LIB_DIR}/pdcurses/pdcurses/insstr.c
+  ${LIB_DIR}/pdcurses/pdcurses/instr.c
+  ${LIB_DIR}/pdcurses/pdcurses/kernel.c
+  ${LIB_DIR}/pdcurses/pdcurses/mouse.c
+  ${LIB_DIR}/pdcurses/pdcurses/move.c
+  ${LIB_DIR}/pdcurses/pdcurses/outopts.c
+  ${LIB_DIR}/pdcurses/pdcurses/overlay.c
+  ${LIB_DIR}/pdcurses/pdcurses/pad.c
+  ${LIB_DIR}/pdcurses/pdcurses/panel.c
+  ${LIB_DIR}/pdcurses/pdcurses/printw.c
+  ${LIB_DIR}/pdcurses/pdcurses/refresh.c
+  ${LIB_DIR}/pdcurses/pdcurses/scanw.c
+  ${LIB_DIR}/pdcurses/pdcurses/scr_dump.c
+  ${LIB_DIR}/pdcurses/pdcurses/scroll.c
+  ${LIB_DIR}/pdcurses/pdcurses/slk.c
+  ${LIB_DIR}/pdcurses/pdcurses/termattr.c
+  ${LIB_DIR}/pdcurses/pdcurses/terminfo.c
+  ${LIB_DIR}/pdcurses/pdcurses/touch.c
+  ${LIB_DIR}/pdcurses/pdcurses/util.c
+  ${LIB_DIR}/pdcurses/pdcurses/window.c
+  ${LIB_DIR}/pdcurses/win32a/pdcclip.c
+  ${LIB_DIR}/pdcurses/win32a/pdcdisp.c
+  ${LIB_DIR}/pdcurses/win32a/pdcgetsc.c
+  ${LIB_DIR}/pdcurses/win32a/pdckbd.c
+  ${LIB_DIR}/pdcurses/win32a/pdcscrn.c
+  ${LIB_DIR}/pdcurses/win32a/pdcsetsc.c
+  ${LIB_DIR}/pdcurses/win32a/pdcutil.c
+)
+
 if( MAC )
   set( NACL_LIST_NATIVE
     ${LIB_DIR}/nacl/nacl.cpp
@@ -925,19 +976,19 @@ if( BUILD_CLIENT OR BUILD_TTY_CLIENT )
   set( LIBS_CLIENTBASE ${LIBS_CLIENTBASE} ${CURL_LIBRARIES} )
 endif()
 
-# Curses, disabled for Windows
-if( USE_CURSES AND NOT WIN32 )
-  set( CURSES_NEED_NCURSES 1 ) # Tells FindCurses that ncurses is required
-  find_package( CursesW )
-  if( CURSESW_FOUND )
-    add_definitions( -DUSE_CURSES -DUSE_CURSES_W )
+# Curses, pdcurses on Windows and ncursesw on Unix
+if( USE_CURSES )
+  add_definitions( -DUSE_CURSES -DUSE_CURSES_W )
+  if( WIN32 )
+    add_definitions( -DPDC_WIDE -DPDC_FORCE_UTF8 )
+    include_directories( ${LIB_DIR}/pdcurses )
+    set( LIBSRC_ENGINE ${LIBSRC_ENGINE} ${PDCURSESLIST} )
+    set( LIBS_ENGINE ${LIBS_ENGINE} gdi32 comdlg32 )
+  else()
+    set( CURSES_NEED_NCURSES 1 ) # Tells FindCurses that ncurses is required
+    find_package( CursesW REQUIRED )
     include_directories( ${CURSESW_INCLUDE_DIR} )
     set( LIBS_ENGINE ${LIBS_ENGINE} ${CURSESW_LIBRARIES} )
-  else()
-    find_package( Curses REQUIRED )
-    add_definitions( -DUSE_CURSES )
-    include_directories( ${CURSES_INCLUDE_DIR} )
-    set( LIBS_ENGINE ${LIBS_ENGINE} ${CURSES_LIBRARIES} )
   endif()
 endif()
 
@@ -1024,7 +1075,7 @@ endif()
 
 if( BUILD_SERVER )
   # Setup the target Server
-  add_executable( server ${SERVERLIST} ${ENGINELIST} ${SHAREDLIST} ${LIBSRC_BASE} ${LIBSRC_ENGINE}
+  add_executable( server WIN32 ${SERVERLIST} ${ENGINELIST} ${SHAREDLIST} ${LIBSRC_BASE} ${LIBSRC_ENGINE}
     ${ENGINE_DIR}/null/null_client.c  ${ENGINE_DIR}/null/null_input.c
     ${ENGINE_DIR}/null/null_snddma.c ${WIN_RC} )
   target_link_libraries( server ${LIBS_ENGINE} ${LIBS_BASE} )
