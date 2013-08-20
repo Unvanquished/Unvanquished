@@ -193,7 +193,7 @@ else()
       message( FATAL_ERROR "C++11 not supported by compiler" )
     endif()
   endif()
-  
+
   # Use libc++ on Mac because the shipped libstdc++ version is too old
   if( MAC )
     set_c_cxx_flag( "-stdlib=libc++")
@@ -310,11 +310,6 @@ set( SHAREDLIST_HACK
   ${ENGINE_DIR}/qcommon/./q_shared.c
   ${ENGINE_DIR}/qcommon/./q_unicode.c
   ${ENGINE_DIR}/qcommon/./q_math.c
-  ${ENGINE_DIR}/qcommon/q_shared.h
-  ${ENGINE_DIR}/qcommon/q_platform.h
-  ${ENGINE_DIR}/qcommon/q_unicode.h
-  ${ENGINE_DIR}/qcommon/unicode_data.h
-  ${ENGINE_DIR}/qcommon/logging.h
 )
 
 set( RENDERERLIST
@@ -406,7 +401,7 @@ set( RENDERERGLLIST
   ${ENGINE_DIR}/renderer/tr_public.h
   ${ENGINE_DIR}/rendererGL/gl_shader.h
   ${ENGINE_DIR}/rendererGL/tr_image.h
-  ${ENGINE_DIR}/rendererGL/tr_model_skel.h 
+  ${ENGINE_DIR}/rendererGL/tr_model_skel.h
 )
 
 set( SERVERLIST
@@ -421,7 +416,7 @@ set( SERVERLIST
   ${ENGINE_DIR}/server/sv_world.c
   ${ENGINE_DIR}/server/server.h
   ${ENGINE_DIR}/server/g_api.h
-  ${ENGINE_DIR}/qcommon/print_translated.h 
+  ${ENGINE_DIR}/qcommon/print_translated.h
 )
 
 set( ENGINELIST
@@ -449,7 +444,7 @@ set( ENGINELIST
   ${ENGINE_DIR}/qcommon/cm_local.h
   ${ENGINE_DIR}/qcommon/cm_patch.h
   ${ENGINE_DIR}/qcommon/cm_polylib.h
-  ${ENGINE_DIR}/qcommon/cm_public.h 
+  ${ENGINE_DIR}/qcommon/cm_public.h
   ${ENGINE_DIR}/qcommon/cmd.c
   ${ENGINE_DIR}/qcommon/common.c
   ${ENGINE_DIR}/qcommon/crypto.c
@@ -604,7 +599,7 @@ set( CGAMEGPP_BASE
   ${GAMELOGIC_DIR}/ui/ui_utf8.c
   ${GAMELOGIC_DIR}/cgame/cg_api.c
   ${ENGINE_DIR}/client/cg_api.h
-  ${ENGINE_DIR}/qcommon/print_translated.h 
+  ${ENGINE_DIR}/qcommon/print_translated.h
 )
 
 set( GAMEGPP_BASE
@@ -643,7 +638,7 @@ set( GAMEGPP_BASE
   ${GAMELOGIC_DIR}/game/g_admin.c
   ${GAMELOGIC_DIR}/game/g_namelog.c
   ${GAMELOGIC_DIR}/game/g_api.cpp
-  ${ENGINE_DIR}/server/g_api.h 
+  ${ENGINE_DIR}/server/g_api.h
 )
 
 set( UIGPP_BASE
@@ -837,7 +832,7 @@ if( NOT ENABLE_QVM_COMPAT )
 endif()
 
 # SDL, required for all targets on win32 because of iconv
-if( BUILD_CLIENT OR BUILD_NEW_RENDERER OR BUILD_OLD_RENDERER OR WIN32 )
+if( BUILD_CLIENT OR BUILD_NEW_RENDERER OR BUILD_OLD_RENDERER OR ( WIN32 AND ( BUILD_TTY_CLIENT OR BUILD_SERVER ) ) )
   find_package( SDL REQUIRED )
   include_directories( ${SDL_INCLUDE_DIR} )
   if( WIN32 )

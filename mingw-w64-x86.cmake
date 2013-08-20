@@ -22,4 +22,3 @@ SET(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 # extra definitions for included libraries
 add_definitions(-DCURL_STATICLIB -DGLEW_STATIC)
 SET(CURL_LIBRARY ${CMAKE_SOURCE_DIR}/external_deps/win32/libcurl.a wldap32 ${CMAKE_SOURCE_DIR}/external_deps/win32/libz.a ws2_32)
-SET(SDL_LIBRARY mingw32 ${CMAKE_SOURCE_DIR}/external_deps/win32/libSDLmain.a ${CMAKE_SOURCE_DIR}/external_deps/win32/libSDL.a -mwindows m user32 gdi32 winmm dxguid)
