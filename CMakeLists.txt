@@ -1110,6 +1110,9 @@ if( BUILD_OLD_RENDERER )
     ${ENGINE_DIR}/sys/sdl_glimp.c ${ENGINE_DIR}/sys/sdl_gamma.c )
   target_link_libraries( renderer ${LIBS_RENDERER} ${LIBS_BASE} client )
   set_target_properties( renderer PROPERTIES OUTPUT_NAME "rendererGL" )
+  if( WIN32 )
+    set_target_properties( renderer PROPERTIES PREFIX "" )
+  endif()
 
   # Setup CPack for target renderer
   install( TARGETS renderer DESTINATION "Unvanquished" )
@@ -1125,6 +1128,9 @@ if( BUILD_NEW_RENDERER )
   set_property( TARGET rendererGL APPEND PROPERTY COMPILE_DEFINITIONS USE_XREAL_RENDERER )
   target_link_libraries( rendererGL ${LIBS_RENDERER} ${LIBS_BASE} client )
   set_target_properties( rendererGL PROPERTIES OUTPUT_NAME "rendererGL3" )
+  if( WIN32 )
+    set_target_properties( rendererGL PROPERTIES PREFIX "" )
+  endif()
 
   # Setup CPack for target rendererGL
   install( TARGETS rendererGL DESTINATION "Unvanquished" )

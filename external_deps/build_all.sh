@@ -1,0 +1,15 @@
+#!/bin/sh
+./build_zlib.sh
+./build_PNG.sh
+./build_JPEG.sh
+./build_FreeType.sh
+./build_GLEW.sh
+./build_WebP.sh
+./build_GMP.sh
+./build_Nettle.sh
+./build_ogg.sh
+./build_vorbis.sh
+./build_theora.sh
+./build_speex.sh
+./build_curl.sh
+./build_OpenAL.sh
