@@ -206,7 +206,7 @@ G_MissileImpact
 void G_MissileImpact( gentity_t *ent, trace_t *trace )
 {
 	gentity_t *other, *attacker, *neighbor;
-	qboolean  returnAfterDamage = qfalse;
+	qboolean  doDamage = qtrue, returnAfterDamage = qfalse;
 	vec3_t    dir;
 
 	other = &g_entities[ trace->entityNum ];
@@ -299,6 +299,7 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace )
 		else if ( other->s.eType == ET_BUILDABLE && other->buildableTeam == TEAM_ALIENS )
 		{
 			other->onFire = qfalse;
+			doDamage = qfalse;
 		}
 	}
 	else if ( !strcmp( ent->classname, "hive" ) )
@@ -338,24 +339,20 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace )
 	}
 
 	// impact damage
-	if ( other->takedamage )
+	if ( doDamage && ent->damage && other->takedamage )
 	{
-		// FIXME: wrong damage direction?
-		if ( ent->damage )
+		vec3_t dir;
+
+		BG_EvaluateTrajectoryDelta( &ent->s.pos, level.time, dir );
+
+		if ( VectorNormalize( dir ) == 0 )
 		{
-			vec3_t dir;
-
-			BG_EvaluateTrajectoryDelta( &ent->s.pos, level.time, dir );
-
-			if ( VectorNormalize( dir ) == 0 )
-			{
-				dir[ 2 ] = 1; // stepped on a grenade
-			}
-
-			G_Damage( other, ent, attacker, dir, ent->s.origin,
-			          roundf( ent->damage * MissileTimeDmgMod( ent ) ),
-			          DAMAGE_NO_LOCDAMAGE, ent->methodOfDeath );
+			dir[ 2 ] = 1; // stepped on a grenade
 		}
+
+		G_Damage( other, ent, attacker, dir, ent->s.origin,
+				  roundf( ent->damage * MissileTimeDmgMod( ent ) ),
+				  DAMAGE_NO_LOCDAMAGE, ent->methodOfDeath );
 	}
 
 	if ( returnAfterDamage )
@@ -366,8 +363,7 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace )
 	// is it cheaper in bandwidth to just remove this ent and create a new
 	// one, rather than changing the missile into the explosion?
 
-	if ( other->takedamage &&
-	     ( other->s.eType == ET_PLAYER || other->s.eType == ET_BUILDABLE ) )
+	if ( other->takedamage && ( other->s.eType == ET_PLAYER || other->s.eType == ET_BUILDABLE ) )
 	{
 		G_AddEvent( ent, EV_MISSILE_HIT, DirToByte( trace->plane.normal ) );
 		ent->s.otherEntityNum = other->s.number;
@@ -391,7 +387,7 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace )
 	G_SetOrigin( ent, trace->endpos );
 
 	// splash damage (doesn't apply to person directly hit)
-	if ( ent->splashDamage )
+	if ( doDamage && ent->splashDamage )
 	{
 		G_RadiusDamage( trace->endpos, ent->parent,
 		                ent->splashDamage * MissileTimeSplashDmgMod( ent ),
