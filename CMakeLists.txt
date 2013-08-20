@@ -464,9 +464,6 @@ set( ENGINELIST
   ${ENGINE_DIR}/qcommon/net_ip.c
   ${ENGINE_DIR}/qcommon/parse.c
   ${ENGINE_DIR}/qcommon/translation.cpp
-  ${ENGINE_DIR}/qcommon/unzip.c
-  ${ENGINE_DIR}/qcommon/unzip.h
-  ${ENGINE_DIR}/qcommon/ioapi.c
   ${ENGINE_DIR}/sys/sys_main.c
   ${ENGINE_DIR}/sys/con_log.c
   ${ENGINE_DIR}/qcommon/qcommon.h
@@ -656,6 +653,13 @@ set( UIGPP_BASE
 
 set( WIN_RC ${ENGINE_DIR}/sys/daemon.rc )
 
+set( MINIZIP_LIST
+  ${LIB_DIR}/minizip/ioapi.c
+  ${LIB_DIR}/minizip/ioapi.h
+  ${LIB_DIR}/minizip/unzip.c
+  ${LIB_DIR}/minizip/unzip.h
+)
+
 set( TINYGETTEXT_LIST
   ${LIB_DIR}/tinygettext/dictionary_manager.hpp
   ${LIB_DIR}/tinygettext/file_system.hpp
@@ -804,6 +808,9 @@ else()
     set( LIBS_CLIENT ${LIBS_CLIENT} "-framework Carbon" "-framework IOKit" "-framework Cocoa" )
   endif()
 endif()
+
+# Minizip
+set( LIBSRC_ENGINE ${LIBSRC_ENGINE} ${MINIZIP_LIST} )
 
 # Tinygettext
 set( LIBSRC_ENGINE ${LIBSRC_ENGINE} ${TINYGETTEXT_LIST} )

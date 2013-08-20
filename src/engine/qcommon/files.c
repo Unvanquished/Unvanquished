@@ -42,7 +42,7 @@ Maryland 20850 USA.
 
 #include "../qcommon/q_shared.h"
 #include "qcommon.h"
-#include "unzip.h"
+#include "../../libs/minizip/unzip.h"
 
 #include "../framework/CommandSystem.h"
 #include "../../shared/String.h"
