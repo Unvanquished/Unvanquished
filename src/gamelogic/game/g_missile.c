@@ -299,7 +299,21 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace )
 		else if ( other->s.eType == ET_BUILDABLE && other->buildableTeam == TEAM_ALIENS )
 		{
 			other->onFire = qfalse;
+			other->fireImmunityUntil = level.time + ABUILDER_BLOB_FIRE_IMMUNITY;
 			doDamage = qfalse;
+		}
+		else if ( other->s.number == ENTITYNUM_WORLD )
+		{
+			// put out floor fires in range
+			neighbor = NULL;
+			while ( neighbor = G_IterateEntitiesWithinRadius( neighbor, trace->endpos,
+			                                                  ABUILDER_BLOB_FIRE_STOP_RANGE ) )
+			{
+				if ( neighbor->s.eType == ET_FIRE )
+				{
+					G_FreeEntity( neighbor );
+				}
+			}
 		}
 	}
 	else if ( !strcmp( ent->classname, "hive" ) )
