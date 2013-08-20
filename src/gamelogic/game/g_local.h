@@ -246,6 +246,7 @@ struct gentity_s
 	 * Alien buildables can burn, which is a lot of fun if they are close.
 	 */
 	qboolean     onFire;
+	int          fireImmunityUntil;
 	int          nextBurnDamage;
 	int          nextBurnSplashDamage;
 	int          nextBurnStopCheck;

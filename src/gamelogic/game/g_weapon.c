@@ -1574,6 +1574,12 @@ void G_ImpactAttack( gentity_t *attacker, gentity_t *victim )
 		return;
 	}
 
+	// don't do friendly fire
+	if ( OnSameTeam( attacker, victim ) )
+	{
+		return;
+	}
+
 	// attacker must be above victim
 	if ( attacker->client->ps.origin[ 2 ] + attacker->r.mins[ 2 ] <
 	     victim->s.origin[ 2 ] + victim->r.maxs[ 2 ] )
@@ -1588,8 +1594,7 @@ void G_ImpactAttack( gentity_t *attacker, gentity_t *victim )
 	impactDamage = ( int )( impactEnergy * IMPACTDMG_JOULE_TO_DAMAGE );
 
 	// deal impact damage to both clients and structures, use a threshold for friendly fire
-	if ( ( !OnSameTeam( attacker, victim ) && impactDamage > 0                     ) ||
-	     (  OnSameTeam( attacker, victim ) && impactDamage > IMPACTDMG_FF_THRESHOLD ) )
+	if ( impactDamage > 0 )
 	{
 		// calculate knockback direction
 		VectorSubtract( victim->s.origin, attacker->client->ps.origin, knockbackDir );

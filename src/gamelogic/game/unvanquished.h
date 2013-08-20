@@ -44,6 +44,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define ABUILDER_BLOB_SPEED           800.0f
 #define ABUILDER_BLOB_SPEED_MOD       0.5f
 #define ABUILDER_BLOB_TIME            2000
+#define ABUILDER_BLOB_FIRE_IMMUNITY   3000   // in ms, friendly buildables gain immunity for fire on hit
+#define ABUILDER_BLOB_FIRE_STOP_RANGE 20     // granger spit that hits a surface kills environmental fire in this range
 
 #define LEVEL0_BITE_DMG               ADM(36)
 #define LEVEL0_BITE_RANGE             64.0f
@@ -458,7 +460,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // impact and weight damage
 #define IMPACTDMG_JOULE_TO_DAMAGE          0.002f  // in 1/J
 #define IMPACTDMG_QU_TO_METER              0.03125 // in m/qu
-#define IMPACTDMG_FF_THRESHOLD             30      // ignore friendly crush damage below this
 #define WEIGHTDMG_DMG_MODIFIER             0.25f   // multiply with weight difference to get DPS
 #define WEIGHTDMG_DPS_THRESHOLD            10      // ignore weight damage per second below this
 #define WEIGHTDMG_REPEAT                   200     // in ms, low value reduces damage precision

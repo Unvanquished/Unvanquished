@@ -973,7 +973,7 @@ void G_IgniteBuildable( gentity_t *self, gentity_t *fireStarter )
 		return;
 	}
 
-	if ( !self->onFire )
+	if ( !self->onFire && level.time > self->fireImmunityUntil )
 	{
 		self->onFire = qtrue;
 		self->fireStarter = fireStarter;
