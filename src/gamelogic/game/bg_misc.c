@@ -560,6 +560,7 @@ static const weaponData_t bg_weaponsData[] =
 	{ WP_ALEVEL1_UPG,       "level1upg" },
 	{ WP_ALEVEL2,           "level2"    },
 	{ WP_ALEVEL2_UPG,       "level2upg" },
+	{ WP_ALEVELFLY,         "levelfly"  },
 	{ WP_ALEVEL3,           "level3"    },
 	{ WP_ALEVEL3_UPG,       "level3upg" },
 	{ WP_ALEVEL4,           "level4"    },
