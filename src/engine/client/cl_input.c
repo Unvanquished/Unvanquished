@@ -231,6 +231,7 @@ void IN_VoipRecordDown( void )
 {
 	//IN_KeyDown(&in_voiprecord);
 	IN_KeyDown( &kb[ KB_VOIPRECORD ] );
+	IN_PrepareKeyUp();
 	Cvar_Set( "cl_voipSend", "1" );
 }
 
