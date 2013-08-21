@@ -320,13 +320,13 @@ void SharedMemoryPtr::Close()
 {
 	if (!addr)
 		return;
-	addr = nullptr;
 
 #ifdef _WIN32
 	UnmapViewOfFile(addr);
 #else
 	munmap(addr, size);
 #endif
+	addr = nullptr;
 }
 
 bool SocketPair(IPCHandle& first, IPCHandle& second)
