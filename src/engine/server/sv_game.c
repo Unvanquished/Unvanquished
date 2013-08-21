@@ -1204,7 +1204,8 @@ void GameVM::Syscall(int index, RPC::Reader& inputs, RPC::Writer& outputs)
 	case G_LOCATE_GAME_DATA:
 	{
 		NaCl::IPCHandle sharedMemory = inputs.ReadHandle();
-		shmRegion = sharedMemory.Map();
+		if (!shmRegion)
+			shmRegion = sharedMemory.Map();
 		int numEntities = inputs.ReadInt();
 		int entitySize = inputs.ReadInt();
 		int playerSize = inputs.ReadInt();
