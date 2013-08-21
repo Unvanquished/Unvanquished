@@ -53,7 +53,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define LEVEL0_BITE_REPEAT            500
 #define LEVEL0_POUNCE_DISTANCE        300 // pitch between LEVEL0_POUNCE_MINPITCH and pi/4 results in this distance
 #define LEVEL0_POUNCE_MINPITCH        M_PI / 12.0f // 15°, minimum pitch that will result in full pounce distance
-#define LEVEL0_POUNCE_COOLDOWN        1800
+#define LEVEL0_POUNCE_COOLDOWN        2000
 #define LEVEL0_WALLPOUNCE_MAGNITUDE   600
 #define LEVEL0_WALLPOUNCE_COOLDOWN    750
 #define LEVEL0_SIDEPOUNCE_MAGNITUDE   400
