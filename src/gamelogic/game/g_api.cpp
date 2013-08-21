@@ -316,9 +316,13 @@ int trap_FS_GetFileList(const char *path, const char *extension, char *listbuf, 
 // The actual shared memory region is handled in this file, and is pretty much invisible to the rest of the code
 void trap_LocateGameData(gentity_t *gEnts, int numGEntities, int sizeofGEntity_t, playerState_t *clients, int sizeofGClient)
 {
+	static bool firstTime = true;
 	RPC::Writer input;
 	input.WriteInt(G_LOCATE_GAME_DATA);
-	input.WriteHandle(shmRegion);
+	if (firstTime) {
+		input.WriteHandle(shmRegion);
+		firstTime = false;
+	}
 	input.WriteInt(numGEntities);
 	input.WriteInt(sizeofGEntity_t);
 	input.WriteInt(sizeofGClient);
