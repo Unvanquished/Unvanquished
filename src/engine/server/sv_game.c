@@ -361,7 +361,7 @@ void SV_LocateGameData( const NaCl::SharedMemoryPtr& shmRegion, int numGEntities
 	sv.gentitySize = sizeofGEntity_t;
 	sv.num_entities = numGEntities;
 
-	sv.gameClients = reinterpret_cast<playerState_t*>(base + numGEntities * sizeofGEntity_t);
+	sv.gameClients = reinterpret_cast<playerState_t*>(base + MAX_GENTITIES * sizeofGEntity_t);
 	sv.gameClientSize = sizeofGameClient;
 }
 #endif
