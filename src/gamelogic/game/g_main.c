@@ -98,6 +98,7 @@ vmCvar_t           g_maxNameChanges;
 vmCvar_t           g_initialBuildPoints;
 vmCvar_t           g_initialMineRate;
 vmCvar_t           g_mineRateHalfLife;
+vmCvar_t           g_minimumMineRate;
 
 vmCvar_t           g_confidenceHalfLife;
 vmCvar_t           g_minimumStageTime;
@@ -273,6 +274,7 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_initialBuildPoints,          "g_initialBuildPoints",          DEFAULT_INITIAL_BUILD_POINTS,       CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_initialMineRate,             "g_initialMineRate",             DEFAULT_INITIAL_MINE_RATE,          CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_mineRateHalfLife,            "g_mineRateHalfLife",            DEFAULT_MINE_RATE_HALF_LIFE,        CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_minimumMineRate,             "g_minimumMineRate",             DEFAULT_MINIMUM_MINE_RATE,          CVAR_ARCHIVE,                                    0, qfalse           },
 
 	{ &g_confidenceHalfLife,          "g_confidenceHalfLife",          DEFAULT_CONFIDENCE_HALF_LIFE,       CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_minimumStageTime,            "g_minimumStageTime",            DEFAULT_MINIMUM_STAGE_TIME,         CVAR_ARCHIVE,                                    0, qfalse           },
@@ -1353,11 +1355,14 @@ G_CalculateMineRate
 Recalculate the mine rate and the teams mine efficiencies
 ============
 */
+#define CALCULATE_MINE_RATE_PERIOD 1000
+
 void G_CalculateMineRate( void )
 {
 	int              i, playerNum;
 	gentity_t        *ent, *player;
 	gclient_t        *client;
+	float            tmp;
 
 	static int       nextCalculation = 0;
 
@@ -1369,6 +1374,7 @@ void G_CalculateMineRate( void )
 	level.team[ TEAM_HUMANS ].mineEfficiency = 0;
 	level.team[ TEAM_ALIENS ].mineEfficiency = 0;
 
+	// sum up mine rates of RGS
 	for ( i = MAX_CLIENTS, ent = g_entities + i; i < level.num_entities; i++, ent++ )
 	{
 		if ( ent->s.eType != ET_BUILDABLE )
@@ -1388,8 +1394,24 @@ void G_CalculateMineRate( void )
 		}
 	}
 
-	// ln(2) ~= 0.6931472
-	level.mineRate = g_initialMineRate.value * exp( ( -0.6931472f * level.matchTime ) / ( 60000.0f * g_mineRateHalfLife.value ) );
+	// minimum mine rate
+	if ( G_Reactor()  && level.team[ TEAM_HUMANS ].mineEfficiency < g_minimumMineRate.integer )
+	{
+		level.team[ TEAM_HUMANS ].mineEfficiency = g_minimumMineRate.integer;
+	}
+	if ( G_Overmind() && level.team[ TEAM_ALIENS ].mineEfficiency < g_minimumMineRate.integer )
+	{
+		level.team[ TEAM_ALIENS ].mineEfficiency = g_minimumMineRate.integer;
+	}
+
+	// calculate level wide mine rate. ln(2) ~= 0.6931472
+	level.mineRate = g_initialMineRate.value *
+	                 exp( ( -0.6931472f * level.matchTime ) / ( 60000.0f * g_mineRateHalfLife.value ) );
+
+	// add build points
+	tmp = ( level.mineRate / 60.0f ) * ( CALCULATE_MINE_RATE_PERIOD / 1000.0f ) / 100.0f;
+	G_ModifyBuildPoints( TEAM_HUMANS, tmp * level.team[ TEAM_HUMANS ].mineEfficiency );
+	G_ModifyBuildPoints( TEAM_ALIENS, tmp * level.team[ TEAM_ALIENS ].mineEfficiency );
 
 	// send to clients
 	for ( playerNum = 0; playerNum < level.maxclients; playerNum++ )
@@ -1418,7 +1440,7 @@ void G_CalculateMineRate( void )
 		}
 	}
 
-	nextCalculation = level.time + 1000;
+	nextCalculation = level.time + CALCULATE_MINE_RATE_PERIOD;
 }
 
 /*

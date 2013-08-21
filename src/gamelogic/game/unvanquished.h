@@ -487,6 +487,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define DEFAULT_INITIAL_BUILD_POINTS       "50"  // in BP
 #define DEFAULT_INITIAL_MINE_RATE          "8"   // in (BP/min)/RGS
 #define DEFAULT_MINE_RATE_HALF_LIFE        "20"  // in min
+#define DEFAULT_MINIMUM_MINE_RATE          "50"
 
 // confidence & stages
 #define CONFIDENCE_PER_CREDIT              0.01f // used to award confidence based on credit rewards
