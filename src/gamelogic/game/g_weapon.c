@@ -1587,6 +1587,14 @@ void G_ImpactAttack( gentity_t *attacker, gentity_t *victim )
 		return;
 	}
 
+	// allow the granger airlifting ritual
+	if ( victim->client && BG_UpgradeIsActive( UP_JETPACK, victim->client->ps.stats ) &&
+	     ( attacker->client->pers.classSelection == PCL_ALIEN_BUILDER0 ||
+	       attacker->client->pers.classSelection == PCL_ALIEN_BUILDER0_UPG ) )
+	{
+		return;
+	}
+
 	// calculate impact damage
 	attackerMass = BG_Class( attacker->client->pers.classSelection )->mass;
 	impactVelocity = fabs( attacker->client->pmext.fallImpactVelocity[ 2 ] ) * IMPACTDMG_QU_TO_METER; // in m/s
