@@ -913,19 +913,19 @@ void CL_Record_f( void )
 
 	if ( Cmd_Argc() > 2 )
 	{
-		Cmd_PrintUsage("<name>", NULL);
+		Cmd_PrintUsage( "<name>", NULL );
 		return;
 	}
 
 	if ( clc.demorecording )
 	{
-		Com_Log(LOG_ERROR, _( "Already recording." ));
+		Com_Log( LOG_ERROR, _( "Already recording." ) );
 		return;
 	}
 
 	if ( cls.state != CA_ACTIVE )
 	{
-		Com_Log(LOG_ERROR, _( "You must be in a level to record." ));
+		Com_Log( LOG_ERROR, _( "You must be in a level to record." ) );
 		return;
 	}
 
@@ -933,7 +933,7 @@ void CL_Record_f( void )
 	// sync 0 doesn't prevent recording, so not forcing it off .. everyone does g_sync 1 ; record ; g_sync 0 ..
 	if ( NET_IsLocalAddress( clc.serverAddress ) && !Cvar_VariableValue( "g_synchronousClients" ) )
 	{
-		Com_Logf( LOG_WARN, _( "You should set '%s' for smoother demo recording" ), "g_synchronousClients 1");
+		Com_Logf( LOG_WARN, _( "You should set '%s' for smoother demo recording" ), "g_synchronousClients 1" );
 	}
 
 	if ( Cmd_Argc() == 2 )
@@ -942,23 +942,44 @@ void CL_Record_f( void )
 		Q_strncpyz( demoName, s, sizeof( demoName ) );
 		Com_sprintf( name, sizeof( name ), "demos/%s.dm_%d", demoName, PROTOCOL_VERSION );
 	}
+
 	else
 	{
-		int number;
+		char    name[ 256 ];
+		char    mapname[ MAX_QPATH ];
+		char    *period;
+		qtime_t time;
 
-		// scan for a free demo name
-		for ( number = 0; number <= 9999; number++ )
+		Com_RealTime( &time );
+
+		Q_strncpyz( mapname, cl.mapname, MAX_QPATH );
+
+		for ( period = mapname; *period; period++ )
 		{
-			CL_DemoFilename( number, demoName );
-			Com_sprintf( name, sizeof( name ), "demos/%s.dm_%d", demoName, PROTOCOL_VERSION );
-
-			len = FS_ReadFile( name, NULL );
-
-			if ( len <= 0 )
+			if ( *period == '.' )
 			{
-				break; // file doesn't exist
+				*period = '\0';
+				break;
 			}
 		}
+
+		for ( period = mapname; *period; period++ )
+		{
+			if ( *period == '/' )
+			{
+				break;
+			}
+		}
+
+		if ( *period )
+		{
+			period++;
+		}
+
+		Com_sprintf( name, sizeof( name ), "demos/%s-%s_%04i-%02i-%02i_%02i%02i%02i.dm_%d", NET_AdrToString( clc.serverAddress ), period,
+		             1900 + time.tm_year, time.tm_mon + 1, time.tm_mday,
+		             time.tm_hour, time.tm_min, time.tm_sec,
+		             PROTOCOL_VERSION );
 	}
 
 	CL_Record( name );
