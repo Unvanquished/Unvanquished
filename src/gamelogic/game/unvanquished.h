@@ -53,7 +53,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define LEVEL0_BITE_REPEAT            500
 #define LEVEL0_POUNCE_DISTANCE        300 // pitch between LEVEL0_POUNCE_MINPITCH and pi/4 results in this distance
 #define LEVEL0_POUNCE_MINPITCH        M_PI / 12.0f // 15°, minimum pitch that will result in full pounce distance
-#define LEVEL0_POUNCE_COOLDOWN        1800
+#define LEVEL0_POUNCE_COOLDOWN        2000
 #define LEVEL0_WALLPOUNCE_MAGNITUDE   600
 #define LEVEL0_WALLPOUNCE_COOLDOWN    750
 #define LEVEL0_SIDEPOUNCE_MAGNITUDE   400
@@ -487,6 +487,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define DEFAULT_INITIAL_BUILD_POINTS       "50"  // in BP
 #define DEFAULT_INITIAL_MINE_RATE          "8"   // in (BP/min)/RGS
 #define DEFAULT_MINE_RATE_HALF_LIFE        "20"  // in min
+#define DEFAULT_MINIMUM_MINE_RATE          "50"
 
 // confidence & stages
 #define CONFIDENCE_PER_CREDIT              0.01f // used to award confidence based on credit rewards

@@ -1471,7 +1471,6 @@ void ALeech_Think( gentity_t *self )
 	if ( active )
 	{
 		resources = self->s.weapon / 60000.0f;
-		G_ModifyBuildPoints( TEAM_ALIENS, resources );
 		self->buildableStatsTotalF += resources;
 	}
 }
@@ -3317,7 +3316,6 @@ void HDrill_Think( gentity_t *self )
 	if ( active )
 	{
 		resources = self->s.weapon / 60000.0f;
-		G_ModifyBuildPoints( TEAM_HUMANS, resources );
 		self->buildableStatsTotalF += resources;
 	}
 

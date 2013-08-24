@@ -1327,6 +1327,7 @@ extern  vmCvar_t pmove_accurate;
 extern  vmCvar_t g_initialMineRate;
 extern  vmCvar_t g_initialBuildPoints;
 extern  vmCvar_t g_mineRateHalfLife;
+extern  vmCvar_t g_minimumMineRate;
 
 extern  vmCvar_t g_confidenceHalfLife;
 extern  vmCvar_t g_minimumStageTime;
