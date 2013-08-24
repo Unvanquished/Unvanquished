@@ -42,7 +42,6 @@ qhandle_t RE_RegisterModel( const char *name ) { return 1; }
 qhandle_t RE_RegisterSkin( const char *name ) { return 1; }
 qhandle_t RE_RegisterShader( const char *name, RegisterShaderFlags_t flags ) { return 1; }
 qhandle_t RE_RegisterShaderNoMip( const char *name ) { return 1; }
-qhandle_t RE_RegisterLightAttenuation( const char *name ) { return  1; }
 void RE_RegisterFont( const char *fontName, const char *fallbackName, int pointSize, fontInfo_t *font ) { }
 void RE_Glyph( fontInfo_t *font, const char *str, glyphInfo_t *glyphh ) { }
 void RE_GlyphChar( fontInfo_t *font, int ch, glyphInfo_t *glyph ) { }
@@ -134,7 +133,6 @@ extern "C" {
 		re.RegisterSkin = RE_RegisterSkin;
 		re.RegisterShader = RE_RegisterShader;
 		#if defined( USE_REFLIGHT )
-		re.RegisterShaderLightAttenuation = RE_RegisterLightAttenuation;
 		#endif
 		re.RegisterFont = RE_RegisterFont;
 		re.Glyph = RE_Glyph;
