@@ -318,7 +318,7 @@ void PM_StepEvent( const vec3_t from, const vec3_t to, const vec3_t normal )
 		}
 	}
 
-	if ( pm->debugLevel )
+	if ( pm->debugLevel > 1 )
 	{
 		Com_Printf( "%i:stepped\n", c_pmove );
 	}
@@ -355,7 +355,7 @@ qboolean PM_StepSlideMove( qboolean gravity, qboolean predictive )
 		if ( trace.fraction > 0.01f && trace.fraction < 1.0f &&
 		     !trace.allsolid && pml.groundPlane != qfalse )
 		{
-			if ( pm->debugLevel )
+			if ( pm->debugLevel > 1 )
 			{
 				Com_Printf( "%d: step down\n", c_pmove );
 			}
@@ -387,7 +387,7 @@ qboolean PM_StepSlideMove( qboolean gravity, qboolean predictive )
 
 		if ( trace.allsolid )
 		{
-			if ( pm->debugLevel )
+			if ( pm->debugLevel > 1 )
 			{
 				Com_Printf( "%i:bend can't step\n", c_pmove );
 			}
@@ -406,7 +406,7 @@ qboolean PM_StepSlideMove( qboolean gravity, qboolean predictive )
 
 		if ( PM_SlideMove( gravity ) == 0 )
 		{
-			if ( pm->debugLevel )
+			if ( pm->debugLevel > 1 )
 			{
 				Com_Printf( "%d: step up\n", c_pmove );
 			}

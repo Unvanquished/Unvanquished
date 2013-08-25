@@ -1316,6 +1316,8 @@ typedef struct
 	qhandle_t   humanBuildableBleedPS;
 	qhandle_t   alienBuildableBurnPS;
 
+	qhandle_t   floorFirePS;
+
 	qhandle_t   teslaZapTS;
 
 	sfxHandle_t lCannonWarningSound;
@@ -1380,6 +1382,8 @@ typedef struct
 	int      maxclients;
 	char     mapname[ MAX_QPATH ];
 	qboolean markDeconstruct; // Whether or not buildables are marked
+	int      powerReactorRange;
+	int      powerRepeaterRange;
 
 	int      voteTime[ NUM_TEAMS ];
 	int      voteYes[ NUM_TEAMS ];
