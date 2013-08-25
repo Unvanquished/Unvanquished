@@ -88,6 +88,20 @@
     "The [advgranger] advanced granger's spit attack can be used to put out "
     "fires."
   }
+  "[dretch] Dretch pounce"
+  {
+    "The [dretch] dretch now has a pounce ability. A pounce can be started with"
+    " ATTACK2.\n"
+    "\n"
+    "After the pounce a cooldown period will set in. The cooldown is different "
+    "for forward, sidewards/backwards and off-wall pounces.\n"
+    "\n"
+    "When moving forward or standing still, flat angles will result in greater "
+    "speed, so the pounce can be used to quickly get to the head of distant "
+    "enemies but it isn't well suited for getting high up. When strafing or "
+    "moving backwards, the dretch will dodge. When pouncing off a wall, it will "
+    "attempt to go to the surface you are aiming at."
+  }
   "[dev] Miscellaneous"
   {
     "The human dodge has been removed, stamina has been increased.\n"
