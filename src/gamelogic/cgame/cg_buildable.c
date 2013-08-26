@@ -787,7 +787,7 @@ static void CG_SetBuildableLerpFrameAnimation( buildable_t buildable, lerpFrame_
 		{
 			oldbSkeleton = bSkeleton;
 
-			if ( lf->old_animation != NULL )
+			if ( lf->old_animation != NULL && lf->old_animation->handle )
 			{
 				if ( !trap_R_BuildSkeleton( &oldbSkeleton, lf->old_animation->handle, lf->oldFrame, lf->frame, lf->blendlerp, lf->old_animation->clearOrigin ) )
 				{
@@ -1510,7 +1510,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 	else
 	{
 		bs = &cgs.humanBuildStat;
-	}            
+	}
 
 	if ( !bs->loaded )
 	{

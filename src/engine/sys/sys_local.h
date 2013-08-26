@@ -70,3 +70,5 @@ void     Sys_PrintCpuInfo( void );
 void     Sys_PrintMemoryInfo( void );
 
 int      Sys_GetPID( void );
+
+void     Sys_HelpText( const char * );

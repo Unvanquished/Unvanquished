@@ -1871,7 +1871,7 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 	if ( !down )
 	{
 		// Handle any +commands which were invoked on the corresponding key-down
-		IN_KeysUp( plusCommand.check, key, time );
+		Cbuf_AddText( va( "keyup %d %d %u\n", plusCommand.check, key, time, kb ) );
 
 		if ( cls.keyCatchers & KEYCATCH_UI && uivm )
 		{

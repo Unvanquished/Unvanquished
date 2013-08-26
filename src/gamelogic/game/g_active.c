@@ -2291,7 +2291,7 @@ void ClientThink_real( gentity_t *ent )
 	if ( ent->suicideTime > 0 && ent->suicideTime < level.time )
 	{
 		ent->client->ps.stats[ STAT_HEALTH ] = ent->health = 0;
-		player_die( ent, ent, ent, 100000, MOD_SUICIDE );
+		player_die( ent, ent, ent, MOD_SUICIDE );
 
 		ent->suicideTime = 0;
 	}

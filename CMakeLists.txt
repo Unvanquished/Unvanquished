@@ -1412,14 +1412,14 @@ if( BUILD_OLD_RENDERER )
   find_package( PNG REQUIRED )
   find_package( Freetype REQUIRED )
   find_package( GLEW REQUIRED )
-
-  include_directories( ${PNG_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS} ${SDL_INCLUDE_DIR} )
-  target_link_libraries( renderer ${PNG_LIBRARIES} ${SDL_LIBRARY} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} ${JPEG_LIBRARIES} ${FREETYPE_LIBRARIES} )
-
   find_package( WebP REQUIRED )
-  set_property( TARGET renderer APPEND PROPERTY COMPILE_DEFINITIONS )
-  include_directories( ${WEBP_INCLUDE_DIRS} )
-  target_link_libraries( renderer ${WEBP_LIBRARIES} )
+  
+  if( UNIX )
+    find_package( X11 )
+  endif()
+
+  include_directories( ${PNG_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS} ${SDL_INCLUDE_DIR} ${X11_INCLUDE_DIR} ${WEBP_INCLUDE_DIRS} )
+  target_link_libraries( renderer ${PNG_LIBRARIES} ${SDL_LIBRARY} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} ${JPEG_LIBRARIES} ${FREETYPE_LIBRARIES} ${WEBP_LIBRARIES} )
 
   # This section finds and provides OPTIONAL dependencies to target renderer
 endif()
@@ -1449,14 +1449,14 @@ if( BUILD_NEW_RENDERER )
   find_package( PNG REQUIRED )
   find_package( Freetype REQUIRED )
   find_package( GLEW REQUIRED )
-
-  include_directories( ${PNG_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS} ${SDL_INCLUDE_DIR} )
-  target_link_libraries( rendererGL ${PNG_LIBRARIES} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} ${JPEG_LIBRARIES} ${FREETYPE_LIBRARIES} ${SDL_LIBRARY} )
-
   find_package( WebP REQUIRED )
-  set_property( TARGET rendererGL APPEND PROPERTY COMPILE_DEFINITIONS )
-  include_directories( ${WEBP_INCLUDE_DIRS} )
-  target_link_libraries( rendererGL ${WEBP_LIBRARIES} )
+
+  if( UNIX )
+    find_package( X11 )
+  endif()
+
+  include_directories( ${PNG_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS} ${SDL_INCLUDE_DIR} ${X11_INCLUDE_DIR} ${WEBP_INCLUDE_DIRS} )
+  target_link_libraries( rendererGL ${PNG_LIBRARIES} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} ${JPEG_LIBRARIES} ${FREETYPE_LIBRARIES} ${SDL_LIBRARY} ${WEBP_LIBRARIES} )
 
   # This section finds and provides OPTIONAL dependencies to target rendererGL
   if( USE_GLSL_OPTIMIZER )

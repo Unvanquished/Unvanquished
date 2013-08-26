@@ -371,7 +371,7 @@ struct gentity_s
 	void ( *touch )( gentity_t *self, gentity_t *other, trace_t *trace );
 	void ( *use )( gentity_t *self, gentity_t *other, gentity_t *activator );
 	void ( *pain )( gentity_t *self, gentity_t *attacker, int damage );
-	void ( *die )( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod );
+	void ( *die )( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod );
 
 	qboolean  takedamage;
 
@@ -1152,7 +1152,7 @@ gentity_t *G_SelectHumanLockSpawnPoint( vec3_t origin, vec3_t angles );
 void      respawn( gentity_t *ent );
 void      BeginIntermission( void );
 void      ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const vec3_t angles );
-void      player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod );
+void      player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod );
 qboolean  SpotWouldTelefrag( gentity_t *spot );
 qboolean  G_IsUnnamed( const char *name );
 

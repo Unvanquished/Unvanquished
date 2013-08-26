@@ -743,7 +743,7 @@ nullDieFunction
 hack to prevent compilers complaining about function pointer -> NULL conversion
 ================
 */
-static void nullDieFunction( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod )
+static void nullDieFunction( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
 {
 }
 
@@ -899,7 +899,7 @@ Called when an Alien buildable is killed and enters a brief dead state prior to
 exploding.
 ================
 */
-void AGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod )
+void AGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
 {
 	G_SetBuildableAnim( self, self->powered ? BANIM_DESTROY1 : BANIM_DESTROY_UNPOWERED, qtrue );
 	G_SetIdleBuildableAnim( self, BANIM_DESTROYED );
@@ -910,7 +910,8 @@ void AGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, i
 	self->s.eFlags &= ~EF_FIRING; //prevent any firing effects
 	self->powered = qfalse;
 
-	if ( self->spawned && damage < BG_Buildable( self->s.modelindex )->health )
+	// fully grown and not blasted to smithereens
+	if ( self->spawned && -self->health < BG_Buildable( self->s.modelindex )->health )
 	{
 		// blast after brief period
 		self->nextthink = level.time + ALIEN_DETONATION_DELAY
@@ -1327,9 +1328,9 @@ ABarricade_Die
 Called when an alien barricade dies
 ================
 */
-void ABarricade_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod )
+void ABarricade_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
 {
-	AGeneric_Die( self, inflictor, attacker, damage, mod );
+	AGeneric_Die( self, inflictor, attacker, mod );
 	ABarricade_Shrink( self, qtrue );
 }
 
@@ -1482,9 +1483,9 @@ ALeech_Die
 Called when a Alien Leech dies
 ================
 */
-void ALeech_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod )
+void ALeech_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
 {
-	AGeneric_Die( self, inflictor, attacker, damage, mod );
+	AGeneric_Die( self, inflictor, attacker, mod );
 
 	self->s.weapon = 0;
 	self->s.weaponAnim = 0;
@@ -2401,7 +2402,7 @@ HGeneric_Die
 Called when a human buildable dies.
 ================
 */
-void HGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod )
+void HGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
 {
 	G_SetBuildableAnim( self, self->powered ? BANIM_DESTROY1 : BANIM_DESTROY_UNPOWERED, qtrue );
 	G_SetIdleBuildableAnim( self, BANIM_DESTROYED );
@@ -2688,7 +2689,7 @@ Die function for Human Medistation
 ================
 */
 void HMedistat_Die( gentity_t *self, gentity_t *inflictor,
-                    gentity_t *attacker, int damage, int mod )
+                    gentity_t *attacker, int mod )
 {
 	//clear target's healing flag
 	if ( self->target && self->target->client )
@@ -2696,7 +2697,7 @@ void HMedistat_Die( gentity_t *self, gentity_t *inflictor,
 		self->target->client->ps.stats[ STAT_STATE ] &= ~SS_HEALING_ACTIVE;
 	}
 
-	HGeneric_Die( self, inflictor, attacker, damage, mod );
+	HGeneric_Die( self, inflictor, attacker, mod );
 }
 
 /*
@@ -3329,9 +3330,9 @@ HDrill_Die
 Called when a Human Drill dies
 ================
 */
-void HDrill_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod )
+void HDrill_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
 {
-	HGeneric_Die( self, inflictor, attacker, damage, mod );
+	HGeneric_Die( self, inflictor, attacker, mod );
 
 	self->s.weapon = 0;
 	self->s.weaponAnim = 0;
