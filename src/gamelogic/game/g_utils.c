@@ -913,7 +913,12 @@ void G_FireThink( gentity_t *self )
 		self->nextBurnSpreadCheck = level.time + BURN_SPREAD_PERIOD * BURN_PERIODS_RAND_FACTOR;
 	}
 
-	self->nextthink = level.time;
+	// HACK: Assume that all non-ET_FIRE entities that can catch fire will think frequently enough.
+	// TODO: Add support for multiple think functions with individual timers.
+	if ( self->s.eType == ET_FIRE )
+	{
+		self->nextthink = level.time;
+	}
 }
 
 /*
