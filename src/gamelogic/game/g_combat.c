@@ -113,7 +113,7 @@ void DoCheckAutoStrip( gentity_t *self )
 	int   enemy_team_stage;
 	float enemy_team_avg = 0.0f;
 
-	float fGameMinutes = (float)level.time / (float)(1000 * 60);
+	float fGameMinutes = (float)( level.time - level.startTime ) / (float)(1000 * 60);
 					 // if i am not mistaken,
 					 // level.time is in mili seconds, so to get minutes / ( 1000 * 60 )
 
@@ -199,7 +199,7 @@ void DoCheckAutoStrip( gentity_t *self )
 
 			if( player->client->ps.stats[ STAT_TEAM ] == TEAM_ALIENS )
 				++my_team_players;
-			else
+			else if( player->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
 				++enemy_team_players;
 		}
 	}
@@ -221,7 +221,7 @@ void DoCheckAutoStrip( gentity_t *self )
 
 			if( player->client->ps.stats[ STAT_TEAM ] == TEAM_ALIENS )
 				++enemy_team_players;
-			else
+			else if( player->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
 				++my_team_players;
 		}
 	}
