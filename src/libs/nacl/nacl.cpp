@@ -229,8 +229,8 @@ bool InternalRecvMsg(OSHandleType handle, std::vector<char>& buffer, std::vector
 			goto fail;
 		desc_ptr += sizeof(uint32_t);
 
-		uint64_t size;
-		int32_t flags;
+		uint64_t size = 0;
+		int32_t flags = 0;
 		if (tag == NACL_DESC_SHM) {
 			if (desc_end - desc_ptr < (int)sizeof(uint64_t))
 				goto fail;
@@ -460,12 +460,24 @@ Module InternalLoadModule(NaClHandle* pair, const char* const* args, const char*
 		cmdline += "\"";
 	}
 
+	// Convert command line to UTF-16
+	int wcmdline_length = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, cmdline.c_str(), -1, NULL, 0);
+	if (wcmdline_length == 0) {
+		NaClClose(pair[0]);
+		NaClClose(pair[1]);
+		return Module();
+	}
+	std::unique_ptr<wchar_t[]> wcmdline(new wchar_t[wcmdline_length]);
+	MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, cmdline.c_str(), -1, wcmdline.get(), wcmdline_length);
+
 	// Build environment data
 	std::vector<char> env_data;
 	while (*env) {
+		// Include the terminating NUL byte
 		env_data.insert(env_data.begin(), *env, *env + strlen(*env) + 1);
 		env++;
 	}
+	// Terminate the environment string with an extra NUL byte
 	env_data.push_back('\0');
 
 	// Create a job object to ensure the process is terminated if the parent dies
@@ -479,11 +491,12 @@ Module InternalLoadModule(NaClHandle* pair, const char* const* args, const char*
 		return Module();
 	}
 
-	STARTUPINFOA startup_info;
+	STARTUPINFOW startup_info;
 	PROCESS_INFORMATION process_information;
 	memset(&startup_info, 0, sizeof(startup_info));
 	startup_info.cb = sizeof(startup_info);
-	if (!CreateProcessA(NULL, const_cast<char*>(cmdline.c_str()), NULL, NULL, TRUE, CREATE_SUSPENDED | CREATE_BREAKAWAY_FROM_JOB | DETACHED_PROCESS, env_data.data(), NULL, &startup_info, &process_information)) {
+	if (!CreateProcessW(NULL, wcmdline.get(), NULL, NULL, TRUE, CREATE_SUSPENDED | CREATE_BREAKAWAY_FROM_JOB | DETACHED_PROCESS, env_data.data(), NULL, &startup_info, &process_information)) {
+		CloseHandle(job);
 		NaClClose(pair[0]);
 		NaClClose(pair[1]);
 		return Module();
@@ -491,6 +504,7 @@ Module InternalLoadModule(NaClHandle* pair, const char* const* args, const char*
 
 	if (!AssignProcessToJobObject(job, process_information.hProcess)) {
 		TerminateProcess(process_information.hProcess, 0);
+		CloseHandle(job);
 		CloseHandle(process_information.hThread);
 		CloseHandle(process_information.hProcess);
 		NaClClose(pair[0]);
@@ -565,7 +579,7 @@ Module LoadModule(const char* module, const LoaderParams* nacl_params, bool use_
 	if (nacl_params)
 		snprintf(root_sock_handle, sizeof(root_sock_handle), "NACLENV_ROOT_SOCKET=%d", ROOT_SOCKET_FD);
 	else
-		snprintf(root_sock_handle, sizeof(root_sock_handle), "ROOT_SOCKET=%d", pair[1]);
+		snprintf(root_sock_handle, sizeof(root_sock_handle), "ROOT_SOCKET=%d", (int)pair[1]);
 	const char* env[] = {root_sock_handle, NULL};
 
 	// Generate command line
@@ -587,10 +601,10 @@ Module LoadModule(const char* module, const LoaderParams* nacl_params, bool use_
 			args.push_back("-B");
 			args.push_back(nacl_params->irt);
 		}
-		args.push_back("-f");
-		args.push_back(module);
 		args.push_back("-i");
 		args.push_back(root_sock_redir);
+		args.push_back("--");
+		args.push_back(module);
 	} else {
 		if (use_debugger) {
 			args.push_back("/usr/bin/gdbserver");
