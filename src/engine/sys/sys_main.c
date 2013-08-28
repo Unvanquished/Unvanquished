@@ -34,8 +34,6 @@ Maryland 20850 USA.
 
 #include "revision.h"
 
-#include <CPUInfo.h>
-
 #include <signal.h>
 #include <stdlib.h>
 #include <limits.h>
@@ -192,46 +190,20 @@ void NORETURN Sys_Quit( void )
 Sys_GetProcessorFeatures
 =================
 */
-cpuFeatures_t Sys_GetProcessorFeatures( void )
+int Sys_GetProcessorFeatures( void )
 {
-#ifdef USE_CPUINFO
-	cpuFeatures_t features = 0;
-	CPUINFO       cpuinfo;
+	int features = 0;
 
-	GetCPUInfo( &cpuinfo, CI_FALSE );
-
-	if ( HasCPUID( &cpuinfo ) ) { features |= CF_RDTSC; }
-
-	if ( HasMMX( &cpuinfo ) ) { features |= CF_MMX; }
-
-	if ( HasMMXExt( &cpuinfo ) ) { features |= CF_MMX_EXT; }
-
-	if ( Has3DNow( &cpuinfo ) ) { features |= CF_3DNOW; }
-
-	if ( Has3DNowExt( &cpuinfo ) ) { features |= CF_3DNOW_EXT; }
-
-	if ( HasSSE( &cpuinfo ) ) { features |= CF_SSE; }
-
-	if ( HasSSE2( &cpuinfo ) ) { features |= CF_SSE2; }
-
-	if ( HasSSE3( &cpuinfo ) ) { features |= CF_SSE3; }
-
-	if ( HasSSSE3( &cpuinfo ) ) { features |= CF_SSSE3; }
-
-	if ( HasSSE4_1( &cpuinfo ) ) { features |= CF_SSE4_1; }
-
-	if ( HasSSE4_2( &cpuinfo ) ) { features |= CF_SSE4_2; }
-
-	if ( HasHTT( &cpuinfo ) ) { features |= CF_HasHTT; }
-
-	if ( HasSerial( &cpuinfo ) ) { features |= CF_HasSerial; }
-
-	if ( Is64Bit( &cpuinfo ) ) { features |= CF_Is64Bit; }
+	if( SDL_HasRDTSC( ) ) features |= CF_RDTSC;
+	if( SDL_HasMMX( ) ) features |= CF_MMX;
+	if( SDL_HasMMXExt( ) ) features |= CF_MMX_EXT;
+	if( SDL_Has3DNow( ) ) features |= CF_3DNOW;
+	if( SDL_Has3DNowExt( ) ) features |= CF_3DNOW_EXT;
+	if( SDL_HasSSE( ) ) features |= CF_SSE;
+	if( SDL_HasSSE2( ) ) features |= CF_SSE2;
+	if( SDL_HasAltiVec( ) ) features |= CF_ALTIVEC;
 
 	return features;
-#else
-	return 0;
-#endif
 }
 
 /*
