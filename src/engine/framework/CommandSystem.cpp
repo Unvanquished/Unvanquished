@@ -161,11 +161,6 @@ namespace Cmd {
         }
 
         //TODO: remove that and add default command handlers or something
-        // check cvars
-        if (Cvar_Command(args)) {
-            return;
-        }
-
         // check client game commands
         if (com_cl_running && com_cl_running->integer && CL_GameCommand()) {
             return;

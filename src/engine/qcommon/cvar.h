@@ -131,8 +131,6 @@ namespace Cmd {
     class Args;
 }
 
-bool Cvar_Command(const Cmd::Args& args);
-
 /**
  * writes lines containing "set variable value" for all variables
  * with the archive flag set to true.

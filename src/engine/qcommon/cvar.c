@@ -193,39 +193,6 @@ void Cvar_SetCheatState( void ) {
 
 /*
 ============
-Cvar_Command
-
-Handles variable inspection and changing from the console
-============
-*/
-bool Cvar_Command(const Cmd::Args& args) {
-    if (args.Argc() == 0) {
-        return false;
-    }
-
-    cvar_t* var = Cvar_FindVar(args.Argv(0).c_str());
-
-	if (!var) {
-	    return false;
-	}
-
-    if (args.Argc() == 1) {
-        //Just print the cvar
-        Com_Printf(_("\"%s\" is \"%s^7\" default: \"%s^7\"\n"), var->name, var->string, var->resetString);
-
-        if (var->latchedString) {
-            Com_Printf(_("latched: \"%s\"\n"), var->latchedString);
-        }
-        return true;
-    }
-
-    // set the value if forcing isn't required
-    Cvar_Set(var->name, args.Argv(1).c_str());
-    return true;
-}
-
-/*
-============
 Cvar_WriteVariables
 
 Appends lines containing "set variable value" for all variables

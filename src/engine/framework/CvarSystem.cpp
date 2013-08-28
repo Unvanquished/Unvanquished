@@ -23,6 +23,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "CvarSystem.h"
+#include "CommandSystem.h"
 #include "../../shared/String.h"
 #include "../../shared/Command.h"
 
@@ -108,13 +109,32 @@ namespace Cvar {
         return *cvars;
     }
 
+    class CvarCommand : public Cmd::CmdBase {
+        public:
+            CvarCommand() : Cmd::CmdBase(Cmd::CVAR) {
+            }
+
+            void Run(const Cmd::Args& args) const override{
+                CvarMap& cvars = GetCvarMap();
+                const std::string& name = args.Argv(0);
+                cvarRecord_t* var = cvars[name];
+
+                if (args.Argc() < 2) {
+                    Com_Printf(_("\"%s\" is \"%s^7\" default: \"%s^7\"\n"), name.c_str(), var->value.c_str(), var->resetValue.c_str());
+                } else {
+                    SetValue(name, args.Argv(1));
+                }
+            }
+    };
+    static CvarCommand cvarCommand;
+
     void SetValue(const std::string& cvarName, std::string value, int flags) {
         CvarMap& cvars = GetCvarMap();
 
         if (not cvars.count(cvarName)) {
             //The user creates a new cvar through a command.
             cvars[cvarName] = new cvarRecord_t{value, value, flags | CVAR_USER_CREATED, "user created", nullptr};
-            //TODO add the command
+            Cmd::AddCommand(cvarName, cvarCommand, "user created");
             GetCCvar(cvarName, *cvars[cvarName]);
 
         } else {
@@ -164,7 +184,7 @@ namespace Cvar {
 
         if (not cvars.count(name)) {
             //Create the cvar and parse its default value
-            cvars[name] = new cvarRecord_t{defaultValue, defaultValue, flags, std::move(description), proxy};
+            cvars[name] = new cvarRecord_t{defaultValue, defaultValue, flags, description, proxy};
 
             if (proxy) { //TODO replace me with an assert once we do not need to support the C API
                 bool valueCorrect = proxy->OnValueChanged(defaultValue);
@@ -173,6 +193,7 @@ namespace Cvar {
                 }
             }
             GetCCvar(name, *cvars[name]);
+            Cmd::AddCommand(name, cvarCommand, std::move(description));
 
         } else {
             cvarRecord_t* cvar = cvars[name];

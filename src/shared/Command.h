@@ -38,13 +38,14 @@ namespace Cmd {
      */
     enum {
         BASE             = BIT(0),
-        ALIAS            = BIT(1),
-        SYSTEM           = BIT(2),
-        RENDERER         = BIT(3),
-        SOUND            = BIT(4),
-        GAME             = BIT(5),
-        CGAME            = BIT(6),
-        UI               = BIT(7),
+        CVAR             = BIT(1),
+        ALIAS            = BIT(2),
+        SYSTEM           = BIT(3),
+        RENDERER         = BIT(4),
+        SOUND            = BIT(5),
+        GAME             = BIT(6),
+        CGAME            = BIT(7),
+        UI               = BIT(8),
         PROXY_FOR_OLD    = BIT(31) // OLD: The command has been registered through the proxy function in cmd.c
     };
 
