@@ -240,6 +240,7 @@ namespace Cvar {
 
         return res;
     }
+
     ///////////////
 
     cvar_t* FindCCvar(const std::string& cvarName) {
@@ -280,4 +281,158 @@ namespace Cvar {
 
         return info;
     }
+
+    //////////////////////////
+
+    class SetCmd: public Cmd::StaticCmd {
+        public:
+            SetCmd(const std::string& name, int flags): Cmd::StaticCmd(name, Cmd::BASE, N_("sets the value of a cvar")), flags(flags) {
+            }
+
+            void Run(const Cmd::Args& args) const override{
+                int argc = args.Argc();
+                int nameIndex = 1;
+                bool unsafe = false;
+
+                if (argc < 3) {
+                    Com_Printf("'%s'\n", args.RawCmd().c_str());
+                    PrintUsage(args, _("[-unsafe] <variable> <value>"), "");
+                    return;
+                }
+
+                if (argc >= 4 and args.Argv(1) == "-unsafe") {
+                    nameIndex = 2;
+                    unsafe = true;
+                }
+
+                const std::string& name = args.Argv(nameIndex);
+
+                //TODO
+                if (unsafe and com_crashed != nullptr and com_crashed->integer != 0) {
+                    Com_Printf(_("%s is unsafe. Check com_crashed.\n"), name.c_str());
+                    return;
+                }
+
+                const std::string& value = args.Argv(nameIndex + 1);
+
+                //TODO no flags in the argument
+                Cvar::SetValue(name, value, flags);
+            }
+
+            std::vector<std::string> Complete(int pos, const Cmd::Args& args) const override{
+                int argNum = args.PosToArg(pos);
+
+                if (argNum == 1 or (argNum == 2 and args.Argv(1) == "-unsafe")) {
+                    return Cvar::CompleteName(args.ArgPrefix(pos));
+                }
+
+                return {};
+            }
+
+        private:
+            int flags;
+    };
+    static SetCmd SetCmdRegistration("set", 0);
+    static SetCmd SetuCmdRegistration("setu", CVAR_USERINFO);
+    static SetCmd SetsCmdRegistration("sets", CVAR_SERVERINFO);
+    static SetCmd SetaCmdRegistration("seta", CVAR_ARCHIVE);
+
+    class ResetCmd: public Cmd::StaticCmd {
+        public:
+            ResetCmd(): Cmd::StaticCmd("reset", Cmd::BASE, N_("resets a variable")) {
+            }
+
+            void Run(const Cmd::Args& args) const override {
+                if (args.Argc() != 2) {
+                    PrintUsage(args, _("<variable>"), "");
+                    return;
+                }
+
+                const std::string& name = args.Argv(1);
+                CvarMap& cvars = GetCvarMap();
+
+                if (cvars.count(name)) {
+                    cvarRecord_t* cvar = cvars[name];
+                    Cvar::SetValue(name, cvar->resetValue);
+                } else {
+                    Com_Printf(_("Cvar '%s' doesn't exist\n"), name.c_str());
+                }
+            }
+
+            std::vector<std::string> Complete(int pos, const Cmd::Args& args) const override{
+                int argNum = args.PosToArg(pos);
+
+                if (argNum == 1) {
+                    return Cvar::CompleteName(args.ArgPrefix(pos));
+                }
+
+                return {};
+            }
+    };
+    static ResetCmd ResetCmdRegistration;
+
+    //TODO: print the description
+    class ListCvars: public Cmd::StaticCmd {
+        public:
+            ListCvars(): Cmd::StaticCmd("listCvars", Cmd::BASE, N_("lists variables")) {
+            }
+
+            void Run(const Cmd::Args& args) const override {
+                CvarMap& cvars = GetCvarMap();
+
+                bool raw;
+                std::string match = "";
+
+                //Read parameters
+                if (args.Argc() > 1) {
+                    match = args.Argv(1);
+                    if (match == "-raw") {
+                        raw = true;
+                        match = (args.Argc() > 2) ? args.Argv(2) : "";
+                    }
+                }
+
+                std::vector<cvarRecord_t*> matches;
+                std::vector<std::string> matchesNames;
+                int maxNameLength = 0;
+
+                //Find all the matching cvars
+                for (auto& record : cvars) {
+                    if (Q_stristr(record.first.c_str(), match.c_str())) {
+                        matchesNames.push_back(record.first);
+                        matches.push_back(record.second);
+                        maxNameLength = MAX(maxNameLength, record.first.length());
+                    }
+                }
+
+                //Print the matches, keeping the flags and descriptions aligned
+                for (int i = 0; i < matches.size(); i++) {
+                    const std::string& name = matchesNames[i];
+                    cvarRecord_t* var = matches[i];
+
+                    std::string filler = std::string(maxNameLength - name.length(), ' ');
+                    Com_Printf("  %s%s", name.c_str(), filler.c_str());
+
+                    std::string flags = "";
+                    flags += (var->flags & CVAR_SERVERINFO) ? "S" : "_";
+                    flags += (var->flags & CVAR_SYSTEMINFO) ? "s" : "_";
+                    flags += (var->flags & CVAR_USERINFO) ? "U" : "_";
+                    flags += (var->flags & CVAR_ROM) ? "R" : "_";
+                    flags += (var->flags & CVAR_INIT) ? "I" : "_";
+                    flags += (var->flags & CVAR_ARCHIVE) ? "A" : "_";
+                    flags += (var->flags & CVAR_LATCH) ? "L" : "_";
+                    flags += (var->flags & CVAR_CHEAT) ? "C" : "_";
+                    flags += (var->flags & CVAR_USER_CREATED) ? "?" : "_";
+
+                    Com_Printf("%s ", flags.c_str());
+
+                    //TODO: the raw parameter is not handled, need a function to escape carets
+                    Com_Printf("%s\n", Cmd::Escape(var->value, true).c_str());
+                }
+
+                Com_Printf("%zu cvars\n", matches.size());
+            }
+    };
+    static ListCvars ListCvarsRegistration;
+
 }

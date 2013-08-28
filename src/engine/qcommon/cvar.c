@@ -47,10 +47,6 @@ cvar_t        *cvar_vars;
 cvar_t        *cvar_cheats;
 int           cvar_modifiedFlags;
 
-#define MAX_CVARS 2048
-cvar_t        cvar_indexes[ MAX_CVARS ];
-int           cvar_numIndexes;
-
 /*
 ============
 Cvar_FindVar
@@ -134,7 +130,6 @@ The flags will be or'ed in if the variable exists.
 */
 cvar_t *Cvar_Get(const char* name, const char* value, int flags) {
     Cvar::Register(nullptr, name, "a cvar created through the C API", flags, value);
-//    Com_Printf("%i\n", Cvar_FindVar(name)->integer);
     return Cvar_FindVar(name);
 }
 
@@ -228,160 +223,6 @@ bool Cvar_Command(const Cmd::Args& args) {
     Cvar_Set(var->name, args.Argv(1).c_str());
     return true;
 }
-
-/*
-============
-SetCmd
-============
-*/
-class SetCmd: public Cmd::StaticCmd {
-    public:
-        SetCmd(const std::string& name, int flags): Cmd::StaticCmd(name, Cmd::BASE, N_("sets the value of a cvar")), flags(flags) {
-        }
-
-        void Run(const Cmd::Args& args) const override{
-            int argc = args.Argc();
-            int nameIndex = 1;
-            bool unsafe = false;
-
-            if (argc < 3) {
-                Com_Printf("'%s'\n", args.RawCmd().c_str());
-                PrintUsage(args, _("[-unsafe] <variable> <value>"), "");
-                return;
-            }
-
-            if (argc >= 4 and args.Argv(1) == "-unsafe") {
-                nameIndex = 2;
-                unsafe = true;
-            }
-
-            const std::string& name = args.Argv(nameIndex);
-
-            if (unsafe and com_crashed != nullptr and com_crashed->integer != 0) {
-                Com_Printf(_("%s is unsafe. Check com_crashed.\n"), name.c_str());
-                return;
-            }
-
-            const std::string& value = args.Argv(nameIndex + 1);
-            Cvar_Set(name.c_str(), value.c_str());
-
-            cvar_t* var = Cvar_FindVar(name.c_str());
-            var->flags |= flags;
-        }
-
-        std::vector<std::string> Complete(int pos, const Cmd::Args& args) const override{
-            int argNum = args.PosToArg(pos);
-
-            if (argNum == 1 or (argNum == 2 and args.Argv(1) == "-unsafe")) {
-                return CVar::CompleteName(args.ArgPrefix(pos));
-            }
-
-            return {};
-        }
-
-    private:
-        int flags;
-};
-static SetCmd SetCmdRegistration("set", 0);
-static SetCmd SetuCmdRegistration("setu", CVAR_USERINFO);
-static SetCmd SetsCmdRegistration("sets", CVAR_SERVERINFO);
-static SetCmd SetaCmdRegistration("seta", CVAR_ARCHIVE);
-
-/*
-============
-ResetCmd
-============
-*/
-class ResetCmd: public Cmd::StaticCmd {
-    public:
-        ResetCmd(): Cmd::StaticCmd("reset", Cmd::BASE, N_("resets a variable")) {
-        }
-
-        void Run(const Cmd::Args& args) const override {
-            if (args.Argc() != 2) {
-                PrintUsage(args, _("<variable>"), "");
-            } else {
-                Cvar_Reset(args.Argv(1).c_str());
-            }
-        }
-
-        std::vector<std::string> Complete(int pos, const Cmd::Args& args) const override{
-            int argNum = args.PosToArg(pos);
-
-            if (argNum == 1) {
-                return CVar::CompleteName(args.ArgPrefix(pos));
-            }
-
-            return {};
-        }
-};
-static ResetCmd ResetCmdRegistration;
-
-/*
-============
-ListCmd
-============
-*/
-//TODO
-/*
-class ListCmd: public Cmd::StaticCmd {
-    public:
-        ListCmd(): Cmd::StaticCmd("listCvars", Cmd::BASE, N_("lists variables")) {
-        }
-
-        void Run(const Cmd::Args& args) const override {
-            bool raw;
-            std::string match = "";
-
-            //Read parameters
-            if (args.Argc() > 1) {
-                match = args.Argv(1);
-                if (match == "-raw") {
-                    raw = true;
-                    match = (args.Argc() > 2) ? args.Argv(2) : "";
-                }
-            }
-
-            std::vector<cvar_t*> matches;
-            int maxNameLength = 0;
-
-            //Find all the matching cvars
-            for (cvar_t* var = cvar_vars; var; var = var->next) {
-                if (Q_stristr(var->name, match.c_str())) {
-                    matches.push_back(var);
-                    maxNameLength = MAX(maxNameLength, strlen(var->name));
-                }
-            }
-
-            //Print the matches, keeping the flags and descriptions aligned
-            for (auto var: matches) {
-                std::string filler = std::string(maxNameLength - strlen(var->name), ' ');
-                Com_Printf("  %s%s", var->name, filler.c_str());
-
-                std::string flags = "";
-                flags += (var->flags & CVAR_SERVERINFO) ? "S" : "_";
-                flags += (var->flags & CVAR_SYSTEMINFO) ? "s" : "_";
-                flags += (var->flags & CVAR_USERINFO) ? "U" : "_";
-                flags += (var->flags & CVAR_ROM) ? "R" : "_";
-                flags += (var->flags & CVAR_INIT) ? "I" : "_";
-                flags += (var->flags & CVAR_ARCHIVE) ? "A" : "_";
-                flags += (var->flags & CVAR_LATCH) ? "L" : "_";
-                flags += (var->flags & CVAR_CHEAT) ? "C" : "_";
-                flags += (var->flags & CVAR_USER_CREATED) ? "?" : "_";
-                flags += (var->transient) ? "T" : " ";
-
-                Com_Printf("%s ", flags.c_str());
-
-                //TODO: the raw parameter is not handled, need a function to escape carets
-                Com_Printf("%s\n", Cmd::Escape(var->string, true).c_str());
-            }
-
-            Com_Printf("%zu cvars\n", matches.size());
-            Com_Printf("%i cvars indexed\n", cvar_numIndexes);
-        }
-};
-static ListCmd ListCmdRegistration;
-*/
 
 /*
 ============
