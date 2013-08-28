@@ -2053,6 +2053,10 @@ void CL_Connect_f( void )
 		*offset = 0;
 	}
 
+	//Copy the arguments before they can be overwritten, afater that server is invalid
+	Q_strncpyz( cls.servername, server, sizeof( cls.servername ) );
+	Q_strncpyz( cls.reconnectCmd, Cmd_Cmd(), sizeof( cls.reconnectCmd ) );
+
 	S_StopAllSounds(); // NERVE - SMF
 
 	Cvar_Set( "ui_connecting", "1" );
@@ -2075,9 +2079,6 @@ void CL_Connect_f( void )
 
 	CL_Disconnect( qtrue );
 	Con_Close();
-
-	Q_strncpyz( cls.servername, server, sizeof( cls.servername ) );
-	Q_strncpyz( cls.reconnectCmd, Cmd_Cmd(), sizeof( cls.reconnectCmd ) );
 
 	if ( !NET_StringToAdr( cls.servername, &clc.serverAddress, family ) )
 	{
