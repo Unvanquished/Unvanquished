@@ -422,6 +422,8 @@ set( SERVERLIST
 set( ENGINELIST
   ${SHARED_DIR}/Command.cpp
   ${SHARED_DIR}/Command.h
+  ${SHARED_DIR}/Cvar.cpp
+  ${SHARED_DIR}/Cvar.h
   ${SHARED_DIR}/LineEditData.cpp
   ${SHARED_DIR}/LineEditData.h
   ${SHARED_DIR}/String.cpp
@@ -430,6 +432,8 @@ set( ENGINELIST
   ${ENGINE_DIR}/framework/BaseCommands.h
   ${ENGINE_DIR}/framework/CommandSystem.cpp
   ${ENGINE_DIR}/framework/CommandSystem.h
+  ${ENGINE_DIR}/framework/CvarSystem.cpp
+  ${ENGINE_DIR}/framework/CvarSystem.h
   ${ENGINE_DIR}/framework/ConsoleField.cpp
   ${ENGINE_DIR}/framework/ConsoleField.h
   ${ENGINE_DIR}/framework/ConsoleHistory.cpp

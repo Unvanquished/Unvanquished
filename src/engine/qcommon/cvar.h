@@ -50,14 +50,16 @@
 typedef struct cvar_s
 {
 	char *name;
-	char *string;
+	char *string = 0;
 	char *resetString; // cvar_restart will reset to this value
-	char *latchedString; // for CVAR_LATCH vars
+	char *latchedString = 0; // for CVAR_LATCH vars
 	int flags;
 	qboolean modified; // set each time the cvar is changed
 	int modificationCount; // incremented each time the cvar is changed
 	float value; // atof( string )
 	int integer; // atoi( string )
+
+    int index; //for vmCvar_t
 
 	/**
 	 * indicate whether the cvar won't be archived, even if it's an ARCHIVE flagged cvar.
