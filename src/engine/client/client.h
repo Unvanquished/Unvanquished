@@ -649,7 +649,6 @@ qboolean CL_UIOwnsMouse ( void );
 void IN_Notebook( void );
 void IN_Help( void );
 
-void IN_KeysUp( unsigned int check, int key, int time );
 void IN_PrepareKeyUp( void );
 
 //----(SA)

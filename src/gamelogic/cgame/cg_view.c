@@ -1220,14 +1220,23 @@ static void CG_smoothWWTransitions( playerState_t *ps, const vec3_t in, vec3_t o
 	AnglesToAxis( in, inAxis );
 
 	//if we are moving from one surface to another smooth the transition
-	if( !VectorCompareEpsilon( surfNormal, cg.lastNormal,.01 ) )
+	if( !VectorCompareEpsilon( surfNormal, cg.lastNormal, 0.01f ) )
 	{
 		AnglesToAxis( cg.lastVangles, lastAxis );
+
 		rotAngle = DotProduct( inAxis[ 0 ], lastAxis[ 0 ] ) +
 		           DotProduct( inAxis[ 1 ], lastAxis[ 1 ] ) +
 		           DotProduct( inAxis[ 2 ], lastAxis[ 2 ] );
 
-		rotAngle = RAD2DEG( acos( ( rotAngle - 1.0f ) / 2.0f ) );
+		// if inAxis and lastAxis collinear, prevent NaN on acos( -1 )
+		if ( rotAngle < -0.9999f )
+		{
+			rotAngle = 180.0f;
+		}
+		else
+		{
+			rotAngle = RAD2DEG( acos( ( rotAngle - 1.0f ) / 2.0f ) );
+		}
 
 		CrossProduct( lastAxis[ 0 ], inAxis[ 0 ], temp );
 		VectorCopy( temp, rotAxis );

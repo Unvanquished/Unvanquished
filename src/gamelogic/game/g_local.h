@@ -70,6 +70,8 @@ typedef struct variatingTime_s variatingTime_t;
 #define DECON_OPTION_PROTECT       32
 #define DECON_OPTION_CHECK(option) ( g_markDeconstruct.integer & DECON_OPTION_##option )
 
+#define BURN_PERIODS_RAND_FACTOR   ( 1.0f + ( random() - 0.5f ) * 2.0f * BURN_PERIODS_RAND )
+
 struct variatingTime_s
 {
 	float time;
@@ -241,7 +243,9 @@ struct gentity_s
 	 * Alien buildables can burn, which is a lot of fun if they are close.
 	 */
 	qboolean     onFire;
+	int          fireImmunityUntil;
 	int          nextBurnDamage;
+	int          nextBurnSplashDamage;
 	int          nextBurnStopCheck;
 	int          nextBurnSpreadCheck;
 	gentity_t    *fireStarter;
@@ -369,6 +373,7 @@ struct gentity_s
 	qboolean  takedamage;
 
 	int       flightSplashDamage; // quad will increase this without increasing radius
+	int       flightSplashRadius;
 	int       splashDamage; // quad will increase this without increasing radius
 	int       splashRadius;
 	int       methodOfDeath;
@@ -620,7 +625,7 @@ struct gclient_s
 	int        trampleBuildablesHitPos;
 	int        trampleBuildablesHit[ MAX_TRAMPLE_BUILDABLES_TRACKED ];
 
-	int        lastCrushTime; // Tyrant crush
+	int        nextCrushTime;
 };
 
 typedef struct spawnQueue_s
@@ -1042,6 +1047,9 @@ void       G_CloseMenus( int clientNum );
 void       G_AddConfidence( team_t team, confidence_t type, confidence_reason_t reason,
                             confidence_qualifier_t qualifier, float amount, gentity_t *source );
 
+void       G_FireThink( gentity_t *self );
+gentity_t  *G_SpawnFire(vec3_t origin, vec3_t normal, gentity_t *fireStarter );
+
 //
 // g_combat.c
 //
@@ -1053,7 +1061,7 @@ void     G_SelectiveDamage( gentity_t *targ, gentity_t *inflictor, gentity_t *at
 qboolean G_RadiusDamage( vec3_t origin, gentity_t *attacker, float damage, float radius,
                          gentity_t *ignore, int mod );
 qboolean G_SelectiveRadiusDamage( vec3_t origin, gentity_t *attacker, float damage, float radius,
-                                  gentity_t *ignore, int mod, int team );
+                                  gentity_t *ignore, int mod, int ignoreTeam );
 void     G_RewardAttackers( gentity_t *self );
 void     G_AddCreditsToScore( gentity_t *self, int credits );
 void     G_AddConfidenceToScore( gentity_t *self, float confidence );
@@ -1111,7 +1119,8 @@ void     CheckGrabAttack( gentity_t *ent );
 qboolean CheckPounceAttack( gentity_t *ent );
 void     CheckCkitRepair( gentity_t *ent );
 void     G_ChargeAttack( gentity_t *ent, gentity_t *victim );
-void     G_CrushAttack( gentity_t *ent, gentity_t *victim );
+void     G_ImpactAttack(gentity_t *attacker, gentity_t *victim );
+void     G_WeightAttack(gentity_t *attacker, gentity_t *victim );
 void     G_UpdateZaps( int msec );
 void     G_ClearPlayerZapEffects( gentity_t *player );
 
@@ -1306,6 +1315,7 @@ extern  vmCvar_t pmove_accurate;
 extern  vmCvar_t g_initialMineRate;
 extern  vmCvar_t g_initialBuildPoints;
 extern  vmCvar_t g_mineRateHalfLife;
+extern  vmCvar_t g_minimumMineRate;
 
 extern  vmCvar_t g_confidenceHalfLife;
 extern  vmCvar_t g_minimumStageTime;
@@ -1335,12 +1345,6 @@ extern  vmCvar_t g_alienOffCreepRegenHalfLife;
 
 extern  vmCvar_t g_teamImbalanceWarnings;
 extern  vmCvar_t g_freeFundPeriod;
-
-extern  vmCvar_t g_luciHalfLifeTime;
-extern  vmCvar_t g_luciFullPowerTime;
-extern  vmCvar_t g_pulseHalfLifeTime;
-extern  vmCvar_t g_pulseFullPowerTime;
-extern  vmCvar_t g_flameFadeout;
 
 extern  vmCvar_t g_unlagged;
 

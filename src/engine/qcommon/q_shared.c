@@ -705,7 +705,7 @@ const char *Com_EntityTypeName(entityType_t entityType)
 	case ET_PUSHER:           return "PUSHER";
 	case ET_TELEPORTER:       return "TELEPORTER";
 	case ET_INVISIBLE:        return "INVISIBLE";
-	case ET_GRAPPLE:          return "GRAPPLE";
+	case ET_FIRE:             return "FIRE";
 	case ET_CORPSE:           return "CORPSE";
 	case ET_PARTICLE_SYSTEM:  return "PARTICLE_SYSTEM";
 	case ET_ANIMMAPOBJ:       return "ANIMMAPOBJ";
