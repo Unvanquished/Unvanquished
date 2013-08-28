@@ -163,6 +163,37 @@ static INLINE void BoneMatrixTransformPoint( const boneMatrix_t m, const vec3_t 
 	out[ 2 ] = m[ 8 ] * p[ 0 ] + m[ 9 ] * p[ 1 ] + m[ 10 ] * p[ 2 ] + m[ 11 ];
 }
 
+static INLINE void BoneMatrixAdjointTranspose( boneMatrix_t m )
+{
+	float a0 = m[ 0 ];
+	float a1 = m[ 1 ];
+	float a2 = m[ 2 ];
+
+	float b0 = m[ 4 ];
+	float b1 = m[ 5 ];
+	float b2 = m[ 6 ];
+
+	float c0 = m[ 8 ];
+	float c1 = m[ 9 ];
+	float c2 = m[ 10 ];
+
+	// the 3x3 adjoint matrix is computed using 3 cross products
+	m[ 0 ] = b1 * c2 - b2 * c1;
+	m[ 1 ] = b2 * c0 - b0 * c2;
+	m[ 2 ] = b0 * c1 - b1 * c0;
+	m[ 3 ] = 0;
+
+	m[ 4 ] = c1 * a2 - c2 * a1;
+	m[ 5 ] = c2 * a0 - c0 * a2;
+	m[ 6 ] = c0 * a1 - c1 * a0;
+	m[ 7 ] = 0;
+
+	m[ 8 ] = a1 * b2 - a2 * b1;
+	m[ 9 ] = a2 * b0 - a0 * b2;
+	m[ 10 ] = a0 * b1 - a1 * b0;
+	m[ 11 ] = 0;
+}
+
 static INLINE void BoneMatrixTransformNormal( const boneMatrix_t m, const vec3_t p, vec3_t out )
 {
 	out[ 0 ] = m[ 0 ] * p[ 0 ] + m[ 1 ] * p[ 1 ] + m[ 2 ] * p[ 2 ];
@@ -220,6 +251,25 @@ static ALWAYS_INLINE void BoneMatrixTransformPointSSE( __m128 a, __m128 b, __m12
 	s1 = _mm_add_ps( _mm_unpacklo_ps( x, z ), _mm_unpackhi_ps( x, z ) );
 	s2 = _mm_add_ps( _mm_unpacklo_ps( y, z ), _mm_unpackhi_ps( y, z ) );
 	_mm_store_ps( out, _mm_add_ps( _mm_unpacklo_ps( s1, s2 ), _mm_unpackhi_ps( s1, s2 ) ) );
+}
+
+static ALWAYS_INLINE void BoneMatrixAdjointTransposeSSE( __m128 *a, __m128 *b, __m128 *c )
+{
+	__m128 shufa = _mm_shuffle_ps( *a, *a, _MM_SHUFFLE( 3, 0, 2, 1 ) );
+	__m128 shufa2 = _mm_shuffle_ps( *a, *a, _MM_SHUFFLE( 3, 1, 0, 2 ) );
+	__m128 shufb = _mm_shuffle_ps( *b, *b, _MM_SHUFFLE( 3, 0, 2, 1 ) );
+	__m128 shufb2 = _mm_shuffle_ps( *b, *b, _MM_SHUFFLE( 3, 1, 0, 2 ) );
+	__m128 shufc = _mm_shuffle_ps( *c, *c, _MM_SHUFFLE( 3, 0, 2, 1 ) );
+	__m128 shufc2 = _mm_shuffle_ps( *c, *c, _MM_SHUFFLE( 3, 1, 0, 2 ) );
+
+	// b x c
+	*a = _mm_sub_ps( _mm_mul_ps( shufb, shufc2 ), _mm_mul_ps( shufb2, shufc ) );
+
+	// c x a
+	*b = _mm_sub_ps( _mm_mul_ps( shufc, shufa2 ), _mm_mul_ps( shufc2, shufa ) );
+
+	// a x b
+	*c = _mm_sub_ps( _mm_mul_ps( shufa, shufb2 ), _mm_mul_ps( shufa2, shufb ) );
 }
 
 // outputs ( x, y, z, ? )
