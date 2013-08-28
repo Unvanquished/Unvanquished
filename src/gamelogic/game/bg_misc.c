@@ -802,23 +802,30 @@ void BG_UnloadAllConfigs( void )
     for ( i = 0; i < bg_numBuildables; i++ )
     {
         buildableAttributes_t *ba = &bg_buildableList[i];
-        BG_Free( (char *)ba->humanName );
-        BG_Free( (char *)ba->info );
+
+        if ( ba )
+        {
+            BG_Free( (char *)ba->humanName );
+            BG_Free( (char *)ba->info );
+        }
     }
 
     for ( i = 0; i < bg_numClasses; i++ )
     {
         classAttributes_t *ca = &bg_classList[i];
 
-        // Do not free the statically allocated empty string
-        if( *ca->info != '\0' )
+        if ( ca )
         {
-            BG_Free( (char *)ca->info );
-        }
+            // Do not free the statically allocated empty string
+            if( *ca->info != '\0' )
+            {
+                BG_Free( (char *)ca->info );
+            }
 
-        if( *ca->fovCvar != '\0' )
-        {
-            BG_Free( (char *)ca->fovCvar );
+            if( *ca->fovCvar != '\0' )
+            {
+                BG_Free( (char *)ca->fovCvar );
+            }
         }
     }
 
@@ -830,22 +837,30 @@ void BG_UnloadAllConfigs( void )
     for ( i = 0; i < bg_numWeapons; i++ )
     {
         weaponAttributes_t *wa = &bg_weapons[i];
-        BG_Free( (char *)wa->humanName );
 
-        if( *wa->info != '\0' )
+        if ( wa )
         {
-            BG_Free( (char *)wa->info );
+            BG_Free( (char *)wa->humanName );
+
+            if( *wa->info != '\0' )
+            {
+                BG_Free( (char *)wa->info );
+            }
         }
     }
 
     for ( i = 0; i < bg_numUpgrades; i++ )
     {
         upgradeAttributes_t *ua = &bg_upgrades[i];
-        BG_Free( (char *)ua->humanName );
 
-        if( *ua->info != '\0' )
+        if ( ua )
         {
-            BG_Free( (char *)ua->info );
+            BG_Free( (char *)ua->humanName );
+
+            if( *ua->info != '\0' )
+            {
+                BG_Free( (char *)ua->info );
+            }
         }
     }
 }
