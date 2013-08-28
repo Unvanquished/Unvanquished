@@ -1709,7 +1709,6 @@ qboolean consoleButtonWasPressed = qfalse;
 void CL_KeyEvent( int key, qboolean down, unsigned time )
 {
 	char     *kb;
-	char     cmd[ 1024 ];
 	qboolean bypassMenu = qfalse; // NERVE - SMF
 	qboolean onlybinds = qfalse;
 

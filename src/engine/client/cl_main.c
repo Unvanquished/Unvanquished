@@ -908,7 +908,6 @@ static char demoName[ MAX_QPATH ]; // compiler bug workaround
 void CL_Record_f( void )
 {
 	char name[ MAX_OSPATH ];
-	int  len;
 	char *s;
 
 	if ( Cmd_Argc() > 2 )
