@@ -203,7 +203,9 @@ static ALWAYS_INLINE void BoneMatrixMadSSE(  __m128 *oa, __m128 *ob, __m128 *oc,
 	*oc = _mm_add_ps( *oc, _mm_mul_ps( c, w ) );
 }
 
-static ALWAYS_INLINE void BoneMatrixTransform4SSE( __m128 a, __m128 b, __m128 c, const vec4_t in, vec4_t out )
+// expects in[ 3 ] == 1
+// outputs ( x, y, z, ? )
+static ALWAYS_INLINE void BoneMatrixTransformPointSSE( __m128 a, __m128 b, __m128 c, const vec4_t in, vec4_t out )
 {
 	__m128 p, x, y, z, s1, s2;
 	assert_16_byte_aligned( in );
@@ -220,9 +222,13 @@ static ALWAYS_INLINE void BoneMatrixTransform4SSE( __m128 a, __m128 b, __m128 c,
 	_mm_store_ps( out, _mm_add_ps( _mm_unpacklo_ps( s1, s2 ), _mm_unpackhi_ps( s1, s2 ) ) );
 }
 
-static ALWAYS_INLINE void BoneMatrixTransform4NormalizeSSE( __m128 a, __m128 b, __m128 c, const vec4_t in, vec4_t out )
+// outputs ( x, y, z, ? )
+// does not normalize output
+static ALWAYS_INLINE void BoneMatrixTransformNormalSSE( __m128 a, __m128 b, __m128 c, const vec4_t in, vec4_t out )
 {
-	__m128 p, x, y, z, s1, s2, s3;
+	__m128 p, x, y, z;
+	__m128 xy01, xy23;
+	__m128 xyz0, xyz1, xyz2;
 	assert_16_byte_aligned( in );
 	assert_16_byte_aligned( out );
 
@@ -232,18 +238,56 @@ static ALWAYS_INLINE void BoneMatrixTransform4NormalizeSSE( __m128 a, __m128 b, 
 	y = _mm_mul_ps( b, p );
 	z = _mm_mul_ps( c, p );
 
-	s1 = _mm_add_ps( _mm_unpacklo_ps( x, z ), _mm_unpackhi_ps( x, z ) );
-	s2 = _mm_add_ps( _mm_unpacklo_ps( y, z ), _mm_unpackhi_ps( y, z ) );
-	s3 = _mm_add_ps( _mm_unpacklo_ps( s1, s2 ), _mm_unpackhi_ps( s1, s2 ) );
-	
-	// normalize result
-	s1 = _mm_mul_ps( s3, s3 );
-	s2 = _mm_add_ss( _mm_movehl_ps( s2, s1 ), s1 );
-	s2 = _mm_add_ss( s2, _mm_shuffle_ps( s1, s1, _MM_SHUFFLE( 1, 1, 1, 1 ) ) );
-	
-	s2 = _mm_rsqrt_ss( s2 );
+	xy01 = _mm_unpacklo_ps( x, y );
+	xyz0 = _mm_shuffle_ps( xy01, z, _MM_SHUFFLE( 3, 0, 1, 0 ) );
+	xyz1 = _mm_shuffle_ps( xy01, z, _MM_SHUFFLE( 3, 1, 3, 2 ) );
 
-	_mm_store_ps( out, _mm_mul_ps( s3, _mm_shuffle_ps( s2, s2, _MM_SHUFFLE( 0, 0, 0, 0 ) ) ) );
+	xy23 = _mm_unpackhi_ps( x, y );
+	xyz2 = _mm_shuffle_ps( xy23, z, _MM_SHUFFLE( 3, 2, 1, 0 ) );
+
+	_mm_store_ps( out, _mm_add_ps( _mm_add_ps( xyz0, xyz1 ), xyz2 ) );
+}
+
+// outputs ( x, y, z, ? )
+// normalizes output
+static ALWAYS_INLINE void BoneMatrixTransformNormalNSSE( __m128 a, __m128 b, __m128 c, const vec4_t in, vec4_t out )
+{
+	__m128 p, x, y, z;
+	__m128 xy01, xy23;
+	__m128 xyz0, xyz1, xyz2;
+	__m128 xyz;
+	__m128 xyzsq;
+	__m128 dotp;
+	__m128 ilen;
+	assert_16_byte_aligned( in );
+	assert_16_byte_aligned( out );
+
+	p = _mm_load_ps( in );
+
+	x = _mm_mul_ps( a, p );
+	y = _mm_mul_ps( b, p );
+	z = _mm_mul_ps( c, p );
+
+	xy01 = _mm_unpacklo_ps( x, y );
+	xyz0 = _mm_shuffle_ps( xy01, z, _MM_SHUFFLE( 3, 0, 1, 0 ) );
+	xyz1 = _mm_shuffle_ps( xy01, z, _MM_SHUFFLE( 3, 1, 3, 2 ) );
+
+	xy23 = _mm_unpackhi_ps( x, y );
+	xyz2 = _mm_shuffle_ps( xy23, z, _MM_SHUFFLE( 3, 2, 1, 0 ) );
+
+	xyz = _mm_add_ps( _mm_add_ps( xyz0, xyz1 ), xyz2 );
+
+	// normalize result
+	xyzsq = _mm_mul_ps( xyz, xyz );
+
+	dotp = _mm_movehl_ps( xyz2, xyzsq );
+	dotp = _mm_add_ss( dotp, xyzsq );
+	dotp = _mm_add_ss( dotp, _mm_shuffle_ps( xyzsq, xyzsq, _MM_SHUFFLE( 1, 1, 1, 1 ) ) );
+	
+	ilen = _mm_rsqrt_ss( dotp );
+	ilen = _mm_shuffle_ps( ilen, ilen, _MM_SHUFFLE( 0, 0, 0, 0 ) );
+
+	_mm_store_ps( out, _mm_mul_ps( xyz, ilen ) );
 }
 #endif
 #endif

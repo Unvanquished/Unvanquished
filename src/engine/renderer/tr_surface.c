@@ -1468,8 +1468,8 @@ static void RB_SurfaceMD5( md5Surface_t *srf )
 			BoneMatrixMadSSE( &a, &b, &c, w->boneWeight, boneMatrices[ w->boneIndex ] );
 		}
 
-		BoneMatrixTransform4SSE( a, b, c, v->position, tess.xyz[ tess.numVertexes + j ].v );
-		BoneMatrixTransform4NormalizeSSE( a, b, c, v->normal, tess.normal[ tess.numVertexes + j ].v );
+		BoneMatrixTransformPointSSE( a, b, c, v->position, tess.xyz[ tess.numVertexes + j ].v );
+		BoneMatrixTransformNormalNSSE( a, b, c, v->normal, tess.normal[ tess.numVertexes + j ].v );
 #else
 		w = v->weights[ 0 ];
 		BoneMatrixMul( tmpMat, w->boneWeight, boneMatrices[ w->boneIndex ] );
@@ -1483,7 +1483,7 @@ static void RB_SurfaceMD5( md5Surface_t *srf )
 		tess.xyz[ tess.numVertexes + j ].v[ 3 ] = 1;
 
 		BoneMatrixTransformNormal( tmpMat, v->normal, tess.normal[ tess.numVertexes + j ].v );
-		VectorNormalize( tess.normal[ tess.numVertexes + j ].v );
+		VectorNormalizeFast( tess.normal[ tess.numVertexes + j ].v );
 #endif
 
 		tess.texCoords0[ tess.numVertexes + j ].v[ 0 ] = v->texCoords[ 0 ];
