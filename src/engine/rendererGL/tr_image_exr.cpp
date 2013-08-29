@@ -32,7 +32,7 @@ extern "C"
 #endif
 
 //#include <OpenEXR/half.h>
-#include "../../openexr/half.h"
+#include "../../libs/openexr/half.h"
 
 #ifdef __cplusplus
 extern          "C"
