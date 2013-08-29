@@ -73,7 +73,11 @@ Tess_CheckOverflow
 */
 void Tess_CheckOverflow( int verts, int indexes )
 {
-	Tess_CheckVBOAndIBO( tess.vbo, tess.ibo );
+	// FIXME: need to check if a vbo is bound, otherwise we fail on startup
+	if ( glState.currentVBO != NULL && glState.currentIBO != NULL )
+	{
+		Tess_CheckVBOAndIBO( tess.vbo, tess.ibo );
+	}
 
 	if ( tess.numVertexes + verts < SHADER_MAX_VERTEXES && tess.numIndexes + indexes < SHADER_MAX_INDEXES )
 	{
