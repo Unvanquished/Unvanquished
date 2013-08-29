@@ -185,6 +185,7 @@ vmCvar_t           g_strip_playerDmgPrcnt;
 vmCvar_t           g_allowDonations;
 
 vmCvar_t           g_AutoStrip;
+vmCvar_t           g_AutoStrip_IgnoreBots;
 vmCvar_t           g_AutoStrip_MinKillToFeed;
 vmCvar_t           g_AutoStrip_MinKills;
 vmCvar_t           g_AutoStrip_KillsPerStage;
@@ -418,6 +419,7 @@ static cvarTable_t gameCvarTable[] =
 
 	// cicho-sza add-on:
 	{ &g_AutoStrip,                      "g_AutoStrip",                      "0",                          CVAR_SERVERINFO | CVAR_ARCHIVE,                  0, qtrue            },
+	{ &g_AutoStrip_IgnoreBots,           "g_AutoStrip_IgnoreBots",           "0",                          CVAR_ARCHIVE,                                    0, qtrue            },
 	{ &g_AutoStrip_DebugMsg,             "g_AutoStrip_DebugMsg",             "0",                          CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_AutoStrip_MinKillToFeed,        "g_AutoStrip_MinKillToFeed",        "1.0",                        CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_AutoStrip_MinKills,             "g_AutoStrip_MinKills",             "5",                          CVAR_ARCHIVE,                                    0, qfalse           },

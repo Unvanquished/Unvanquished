@@ -1382,6 +1382,7 @@ extern  vmCvar_t  g_strip_playerDmgPrcnt;
 
 // cicho-sza add-on:
 extern  vmCvar_t  g_AutoStrip;
+extern  vmCvar_t  g_AutoStrip_IgnoreBots;
 extern  vmCvar_t  g_AutoStrip_MinKillToFeed;
 extern  vmCvar_t  g_AutoStrip_MinKills;
 extern  vmCvar_t  g_AutoStrip_KillsPerStage;

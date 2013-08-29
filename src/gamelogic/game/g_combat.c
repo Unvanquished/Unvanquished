@@ -146,7 +146,7 @@ void DoCheckAutoStrip( gentity_t *self )
 	// ========================================================
 
 	// never strip bots
-	if ( self->r.svFlags & SVF_BOT ) return;
+	if ( g_AutoStrip_IgnoreBots.integer && ( self->r.svFlags & SVF_BOT ) ) return;
 
 	// now, let's start checking
 	my_kills = self->client->pers.namelog->damageStats.kills;
@@ -197,7 +197,7 @@ void DoCheckAutoStrip( gentity_t *self )
 			if (!g_entities[i].inuse) continue;
 			player = &g_entities[i];
 
-			if ( !player->client || ( player->r.svFlags & SVF_BOT ) ) continue;
+			if ( !player->client || ( g_AutoStrip_IgnoreBots.integer && ( player->r.svFlags & SVF_BOT ) ) ) continue;
 
 			if( player->client->ps.stats[ STAT_TEAM ] == TEAM_ALIENS )
 			{
@@ -222,7 +222,7 @@ void DoCheckAutoStrip( gentity_t *self )
 			if (!g_entities[i].inuse) continue;
 			player = &g_entities[i];
 
-			if ( !player->client || ( player->r.svFlags & SVF_BOT ) ) continue;
+			if ( !player->client || ( g_AutoStrip_IgnoreBots.integer && ( player->r.svFlags & SVF_BOT ) ) ) continue;
 
 			if( player->client->ps.stats[ STAT_TEAM ] == TEAM_ALIENS )
 			{
