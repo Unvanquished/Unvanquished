@@ -98,9 +98,9 @@ void DoCheckAutoStrip( gentity_t *self )
 	float AS_kpm_treshold;
 
 
-	int   my_kills;
+	float my_kills;
 	int   my_deaths;
-	int   my_killingSpree;
+	float my_killingSpree;
 	float my_kill_ratio;
 
 	int   my_team_players = 0;
@@ -150,7 +150,7 @@ void DoCheckAutoStrip( gentity_t *self )
 	if ( my_kills < AS_min_kills )
 	{
 		if (AS_debug>0)
-			G_AdminMessage( NULL, va( "::debug info (auto-strip) | my_kills < AS_min_kills (%d < %d)",
+			G_AdminMessage( NULL, va( "::debug info (auto-strip) | my_kills < AS_min_kills (%f < %d)",
 			                          my_kills, AS_min_kills) );
 		return; // minimal "kill count" condition - not met
 	}
@@ -160,7 +160,7 @@ void DoCheckAutoStrip( gentity_t *self )
 		if ( my_kills < AS_allowed_kpm * fGameMinutes )
 		{
 			if ( AS_debug > 0 )
-				G_AdminMessage( NULL, va ("::debug info (auto-strip) | my_kills < allowed_kpm * game minutes (%d < %f * %f)",
+				G_AdminMessage( NULL, va ("::debug info (auto-strip) | my_kills < allowed_kpm * game minutes (%f < %f * %f)",
 				                          my_kills, AS_allowed_kpm, fGameMinutes ) );
 			return; // minimal "allowed kills per minute" condition not exceeded
 		}
@@ -169,7 +169,7 @@ void DoCheckAutoStrip( gentity_t *self )
 	my_deaths = self->client->pers.namelog->damageStats.deaths;
 	if (my_deaths == 0) ++my_deaths; // do not divide by 0 :)
 
-	my_kill_ratio = ( (float)my_kills / (float)my_deaths );
+	my_kill_ratio = ( my_kills / (float)my_deaths );
 	if ( my_kill_ratio < AS_min_kill_ratio )
 	{
 		if (AS_debug>0)
@@ -245,7 +245,7 @@ void DoCheckAutoStrip( gentity_t *self )
 				AS_killingSpreeLvl = AS_min_kills;
 
 			if ( AS_debug > 0 )
-				G_AdminMessage( NULL, va( "::debug info (auto-strip) | killing spree = %d, killing spree allowed = %d",
+				G_AdminMessage( NULL, va( "::debug info (auto-strip) | killing spree = %f, killing spree allowed = %d",
 				                my_killingSpree, AS_killingSpreeLvl ) );
 
 			if ( my_killingSpree > AS_killingSpreeLvl )
@@ -254,13 +254,13 @@ void DoCheckAutoStrip( gentity_t *self )
 				self->client->pers.namelog->strip = qtrue;
 
 				G_AdminMessage( NULL,
-				                va ( "^7Player %s^7 was auto-stripped (killing spree: %d, killing spree allowed: %d).",
+				                va ( "^7Player %s^7 was auto-stripped (killing spree: %f, killing spree allowed: %d).",
 				                     self->client->pers.netname,
 				                     my_killingSpree,
 				                     AS_killingSpreeLvl )
 				              );
 
-				trap_SendServerCommand( self - g_entities, "cp \"^1You have been stripped!\"" );
+				trap_SendServerCommand( self - g_entities, "cp \"^1You have been stripped!\n^:Reason: killing spree\"" );
 
 				return;
 			}
@@ -275,13 +275,13 @@ void DoCheckAutoStrip( gentity_t *self )
 			self->client->pers.namelog->strip = qtrue;
 
 			G_AdminMessage( NULL,
-						va( "^7Player %s^7 was auto-stripped (kills per minute. Kills: %d, allowed: %f).",
+						va( "^7Player %s^7 was auto-stripped (kills per minute. Kills: %f, allowed: %f).",
 							self->client->pers.netname,
 							my_kills,
 							(AS_kpm_treshold * fGameMinutes) )
 			);
 			trap_SendServerCommand( self - g_entities,
-							"cp \"^1You have been stripped!\""
+							"cp \"^1You have been stripped!\b^:Reason: kills per minute\""
 			);
 			return;
 		}
@@ -294,7 +294,7 @@ void DoCheckAutoStrip( gentity_t *self )
 	if ( my_kills < AS_kills_per_stage * (my_team_stage+1) )
 	{
 		if ( AS_debug > 0 )
-			G_AdminMessage( NULL, va( "::debug info (auto-strip) | my_kills < AS_kills_per_stage * stage (%d < %d)",
+			G_AdminMessage( NULL, va( "::debug info (auto-strip) | my_kills < AS_kills_per_stage * stage (%f < %d)",
 			                          my_kills, (AS_kills_per_stage * (my_team_stage+1)) ) );
 		return; // minimal "stage kill count" condition - not met
 	}
@@ -325,7 +325,7 @@ void DoCheckAutoStrip( gentity_t *self )
 
 	if (AS_debug>0)
 		G_AdminMessage( NULL,
-		                va( "::debug info (auto-strip)\n my_team treshold: %f\n enemy_team treshold: %f\n my_kills: %d",
+		                va( "::debug info (auto-strip)\n my_team threshold: %f\n enemy_team threshold: %f\n my_kills: %f",
 		                    my_team_avg,
 		                    enemy_team_avg,
 		                    my_kills )
@@ -342,7 +342,7 @@ void DoCheckAutoStrip( gentity_t *self )
 		                    (my_kills > my_team_avg)?"own team avg":"enemy team avg" )
 		              );
 
-		trap_SendServerCommand( self - g_entities, "cp \"^1You have been stripped!\"" );
+		trap_SendServerCommand( self - g_entities, va( "cp \"^1You have been stripped!\n^:Reason: well above %s average\"", (my_kills > my_team_avg) ? "own team avg" : "enemy team avg" ) );
 	}
 }
 
@@ -465,7 +465,9 @@ float G_RewardAttackers( gentity_t *self )
 	// Give credits and empty the array
 	for ( i = 0; i < level.maxclients; i++ )
 	{
-		int stageValue = value * self->credits[ i ] / totalDamage;
+		float damageFrac = self->credits[ i ] / totalDamage;
+		int   stageValue = value * damageFrac;
+
 		player = g_entities + i;
 
 		if ( player->client->pers.teamSelection != team )
@@ -485,6 +487,9 @@ float G_RewardAttackers( gentity_t *self )
 			// killing buildables earns score, but not credits
 			if ( self->s.eType != ET_BUILDABLE )
 			{
+				player->client->pers.namelog->damageStats.kills        += damageFrac;
+				player->client->pers.namelog->damageStats.killingSpree += damageFrac;
+
 				G_AddCreditToClient( player->client, stageValue, qtrue );
 
 				// add to stage counters
@@ -601,9 +606,6 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 
 	if ( attacker && attacker->client )
 	{
-		attacker->client->pers.namelog->damageStats.kills++;
-		attacker->client->pers.namelog->damageStats.killingSpree++;
-
 		if ( attacker == self )
 		{
 			self->client->pers.namelog->damageStats.suicides++;
@@ -611,11 +613,6 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 		else if ( OnSameTeam( self, attacker ) )
 		{
 			attacker->client->pers.namelog->damageStats.teamkills++;
-		}
-
-		if ( !attacker->client->pers.namelog->strip )
-		{
-			DoCheckAutoStrip( attacker );
 		}
 
 		if ( ( attacker == self || OnSameTeam( self, attacker ) ) )
@@ -649,6 +646,11 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 		{
 			AddScore( self, -HUMAN_TK_SUICIDE_PENALTY );
 		}
+	}
+
+	if ( attacker && attacker->client && !attacker->client->pers.namelog->strip )
+	{
+		DoCheckAutoStrip( attacker );
 	}
 
 	self->client->pers.namelog->damageStats.deaths++;

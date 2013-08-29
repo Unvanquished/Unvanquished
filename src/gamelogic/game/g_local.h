@@ -438,11 +438,11 @@ typedef struct
  */
 typedef struct
 {
-	short kills;
+	float kills;
+	float killingSpree;
 	short deaths;
 	short suicides;
 	short teamkills;
-	short killingSpree;
 } damageStats_t;
 
 // namelog
