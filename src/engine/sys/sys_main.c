@@ -193,7 +193,7 @@ Sys_GetProcessorFeatures
 int Sys_GetProcessorFeatures( void )
 {
 	int features = 0;
-
+#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 	if( SDL_HasRDTSC( ) ) features |= CF_RDTSC;
 	if( SDL_HasMMX( ) ) features |= CF_MMX;
 	if( SDL_HasMMXExt( ) ) features |= CF_MMX_EXT;
@@ -202,7 +202,7 @@ int Sys_GetProcessorFeatures( void )
 	if( SDL_HasSSE( ) ) features |= CF_SSE;
 	if( SDL_HasSSE2( ) ) features |= CF_SSE2;
 	if( SDL_HasAltiVec( ) ) features |= CF_ALTIVEC;
-
+#endif
 	return features;
 }
 
