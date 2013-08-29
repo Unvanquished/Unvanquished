@@ -145,6 +145,9 @@ void DoCheckAutoStrip( gentity_t *self )
 		return;
 	// ========================================================
 
+	// never strip bots
+	if ( self->r.svFlags & SVF_BOT ) return;
+
 	// now, let's start checking
 	my_kills = self->client->pers.namelog->damageStats.kills;
 	if ( my_kills < AS_min_kills )
