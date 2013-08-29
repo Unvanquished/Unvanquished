@@ -157,6 +157,27 @@ static void Tess_SurfaceVertsAndTris( const srfVert_t *verts, const srfTriangle_
 #endif
 }
 
+static qboolean Tess_SurfaceVBO( VBO_t *vbo, IBO_t *ibo, int numVerts, int numIndexes, int firstIndex )
+{
+	if ( !vbo || !ibo )
+	{
+		return qfalse;
+	}
+
+	if ( tess.skipVBO || ShaderRequiresCPUDeforms( tess.surfaceShader ) || tess.stageIteratorFunc == &Tess_StageIteratorSky )
+	{
+		return qfalse;
+	}
+
+	Tess_CheckVBOAndIBO( vbo, ibo );
+
+	tess.multiDrawIndexes[ tess.multiDrawPrimitives ] = ( glIndex_t * ) BUFFER_OFFSET( firstIndex * sizeof( glIndex_t ) );
+	tess.multiDrawCounts[ tess.multiDrawPrimitives ] = numIndexes;
+
+	tess.multiDrawPrimitives++;
+	return qtrue;
+}
+
 /*
 ==============
 Tess_AddQuadStampExt
@@ -996,21 +1017,10 @@ static void Tess_SurfaceFace( srfSurfaceFace_t *srf )
 {
 	GLimp_LogComment( "--- Tess_SurfaceFace ---\n" );
 
-	if ( r_vboFaces->integer && srf->vbo && srf->ibo &&
-	     !tess.skipVBO &&
-	     !ShaderRequiresCPUDeforms( tess.surfaceShader ) &&
-	     tess.stageIteratorFunc != &Tess_StageIteratorSky )
+	if ( !r_vboFaces->integer || !Tess_SurfaceVBO( srf->vbo, srf->ibo, srf->numVerts, srf->numTriangles * 3, srf->firstTriangle * 3 ) )
 	{
-		Tess_CheckVBOAndIBO( srf->vbo, srf->ibo );
-
-		tess.multiDrawIndexes[ tess.multiDrawPrimitives ] = ( glIndex_t * ) BUFFER_OFFSET( srf->firstTriangle * 3 * sizeof( glIndex_t ) );
-		tess.multiDrawCounts[ tess.multiDrawPrimitives ] = srf->numTriangles * 3;
-
-		tess.multiDrawPrimitives++;
-		return;
+		Tess_SurfaceVertsAndTris( srf->verts, srf->triangles, srf->numVerts, srf->numTriangles );
 	}
-
-	Tess_SurfaceVertsAndTris( srf->verts, srf->triangles, srf->numVerts, srf->numTriangles );
 }
 
 /*
@@ -1022,18 +1032,10 @@ static void Tess_SurfaceGrid( srfGridMesh_t *srf )
 {
 	GLimp_LogComment( "--- Tess_SurfaceGrid ---\n" );
 
-	if ( r_vboCurves->integer && srf->vbo && srf->ibo && !ShaderRequiresCPUDeforms( tess.surfaceShader ) )
+	if ( !r_vboCurves->integer || !Tess_SurfaceVBO( srf->vbo, srf->ibo, srf->numVerts, srf->numTriangles * 3, srf->firstTriangle * 3 ) )
 	{
-		Tess_CheckVBOAndIBO( srf->vbo, srf->ibo );
-
-		tess.multiDrawIndexes[ tess.multiDrawPrimitives ] = ( glIndex_t * ) BUFFER_OFFSET( srf->firstTriangle * 3 * sizeof( glIndex_t ) );
-		tess.multiDrawCounts[ tess.multiDrawPrimitives ] = srf->numTriangles * 3;
-
-		tess.multiDrawPrimitives++;
-		return;
+		Tess_SurfaceVertsAndTris( srf->verts, srf->triangles, srf->numVerts, srf->numTriangles );
 	}
-
-	Tess_SurfaceVertsAndTris( srf->verts, srf->triangles, srf->numVerts, srf->numTriangles );
 }
 
 /*
@@ -1045,18 +1047,10 @@ static void Tess_SurfaceTriangles( srfTriangles_t *srf )
 {
 	GLimp_LogComment( "--- Tess_SurfaceTriangles ---\n" );
 
-	if ( r_vboTriangles->integer && srf->vbo && srf->ibo && !ShaderRequiresCPUDeforms( tess.surfaceShader ) )
+	if ( !r_vboTriangles->integer || !Tess_SurfaceVBO( srf->vbo, srf->ibo, srf->numVerts, srf->numTriangles * 3, srf->firstTriangle * 3 ) )
 	{
-		Tess_CheckVBOAndIBO( srf->vbo, srf->ibo );
-
-		tess.multiDrawIndexes[ tess.multiDrawPrimitives ] = ( glIndex_t * ) BUFFER_OFFSET( srf->firstTriangle * 3 * sizeof( glIndex_t ) );
-		tess.multiDrawCounts[ tess.multiDrawPrimitives ] = srf->numTriangles * 3;
-
-		tess.multiDrawPrimitives++;
-		return;
+		Tess_SurfaceVertsAndTris( srf->verts, srf->triangles, srf->numVerts, srf->numTriangles );
 	}
-
-	Tess_SurfaceVertsAndTris( srf->verts, srf->triangles, srf->numVerts, srf->numTriangles );
 }
 
 /*
