@@ -104,12 +104,12 @@ void DoCheckAutoStrip( gentity_t *self )
 	float my_kill_ratio;
 
 	int   my_team_players = 0;
-	int   my_team_kills;
+	float my_team_kills = 0.0f;
 	int   my_team_stage;
 	float my_team_avg = 0.0f;
 
 	int   enemy_team_players = 0;
-	int   enemy_team_kills;
+	float enemy_team_kills = 0.0f;
 	int   enemy_team_stage;
 	float enemy_team_avg = 0.0f;
 
@@ -184,51 +184,58 @@ void DoCheckAutoStrip( gentity_t *self )
 		return; // minimal "efficiency" condition - not met
 	}
 
+	// level.{human,alien}kills are not adequate here - they include kills by bots
+
 	if ( self->client->pers.teamSelection == TEAM_ALIENS )
 	{
-		my_team_kills = level.alienKills;
 		my_team_stage = g_alienStage.integer;
-
-		enemy_team_kills = level.humanKills;
 		enemy_team_stage = g_humanStage.integer;
 
-		// get current teams sizes
+		// get current team sizes & kills (ignoring bots)
 		for( i = 0; i < MAX_CLIENTS; i++ )
 		{
 			if (!g_entities[i].inuse) continue;
 			player = &g_entities[i];
 
-			if( !player->client ) continue;
+			if ( !player->client || ( player->r.svFlags & SVF_BOT ) ) continue;
 
 			if( player->client->ps.stats[ STAT_TEAM ] == TEAM_ALIENS )
+			{
 				++my_team_players;
+				my_team_kills += player->client->pers.namelog->damageStats.kills;
+			}
 			else if( player->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
+			{
 				++enemy_team_players;
+				enemy_team_kills += player->client->pers.namelog->damageStats.kills;
+			}
 		}
 	}
 	else
 	{
-		my_team_kills = level.humanKills;
 		my_team_stage = g_humanStage.integer;
-
-		enemy_team_kills = level.alienKills;
 		enemy_team_stage = g_alienStage.integer;
 
-		// get current teams sizes
+		// get current team sizes & kills (ignoring bots)
 		for( i = 0; i < MAX_CLIENTS; i++ )
 		{
 			if (!g_entities[i].inuse) continue;
 			player = &g_entities[i];
 
-			if( !player->client ) continue;
+			if ( !player->client || ( player->r.svFlags & SVF_BOT ) ) continue;
 
 			if( player->client->ps.stats[ STAT_TEAM ] == TEAM_ALIENS )
-				++enemy_team_players;
-			else if( player->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
+			{
 				++my_team_players;
+				my_team_kills += player->client->pers.namelog->damageStats.kills;
+			}
+			else if( player->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
+			{
+				++enemy_team_players;
+				enemy_team_kills += player->client->pers.namelog->damageStats.kills;
+			}
 		}
 	}
-
 
 	AS_killingSpreeLvl = g_AutoStrip_KillingSpreeLvl.integer;
 	if ( AS_killingSpreeLvl > 0 )
