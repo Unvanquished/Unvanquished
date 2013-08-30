@@ -97,6 +97,7 @@ void DoCheckAutoStrip( gentity_t *self )
 	float AS_allowed_kpm; // kills per minute. I am not proud of this short ;)
 	float AS_kpm_treshold;
 
+	team_t my_team;
 
 	float my_kills;
 	int   my_deaths;
@@ -133,6 +134,8 @@ void DoCheckAutoStrip( gentity_t *self )
 	AS_allowed_kpm     = g_AutoStrip_kpmAllowed.value;       //   0; 0 = off
 	AS_kpm_treshold    = g_AutoStrip_kpmTreshold.value;      //   0; 0 = off
 
+	my_team = self->client->pers.teamSelection == TEAM_ALIENS;
+
 	// safety check.. this should never happen, but :)
 	// ========================================================
 	if ( !self ) return;
@@ -141,7 +144,7 @@ void DoCheckAutoStrip( gentity_t *self )
 
 	if ( self->client->pers.namelog->strip ) return;
 
-	if ( !( ( self->client->pers.teamSelection == TEAM_ALIENS ) || ( self->client->pers.teamSelection == TEAM_HUMANS ) ) )
+	if ( my_team == TEAM_NONE )
 		return;
 	// ========================================================
 
@@ -186,54 +189,35 @@ void DoCheckAutoStrip( gentity_t *self )
 
 	// level.{human,alien}kills are not adequate here - they include kills by bots
 
-	if ( self->client->pers.teamSelection == TEAM_ALIENS )
+	if ( my_team == TEAM_ALIENS )
 	{
 		my_team_stage = g_alienStage.integer;
 		enemy_team_stage = g_humanStage.integer;
-
-		// get current team sizes & kills (ignoring bots)
-		for( i = 0; i < MAX_CLIENTS; i++ )
-		{
-			if (!g_entities[i].inuse) continue;
-			player = &g_entities[i];
-
-			if ( !player->client || ( g_AutoStrip_IgnoreBots.integer && ( player->r.svFlags & SVF_BOT ) ) ) continue;
-
-			if( player->client->ps.stats[ STAT_TEAM ] == TEAM_ALIENS )
-			{
-				++my_team_players;
-				my_team_kills += player->client->pers.namelog->damageStats.kills;
-			}
-			else if( player->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
-			{
-				++enemy_team_players;
-				enemy_team_kills += player->client->pers.namelog->damageStats.kills;
-			}
-		}
 	}
 	else
 	{
 		my_team_stage = g_humanStage.integer;
 		enemy_team_stage = g_alienStage.integer;
+	}
 
-		// get current team sizes & kills (ignoring bots)
-		for( i = 0; i < MAX_CLIENTS; i++ )
+	// get current team sizes & kills (ignoring bots)
+	for( i = 0; i < MAX_CLIENTS; i++ )
+	{
+		if (!g_entities[i].inuse) continue;
+
+		player = &g_entities[i];
+
+		if ( !player->client || ( g_AutoStrip_IgnoreBots.integer && ( player->r.svFlags & SVF_BOT ) ) ) continue;
+
+		if( player->client->ps.stats[ STAT_TEAM ] == my_team )
 		{
-			if (!g_entities[i].inuse) continue;
-			player = &g_entities[i];
-
-			if ( !player->client || ( g_AutoStrip_IgnoreBots.integer && ( player->r.svFlags & SVF_BOT ) ) ) continue;
-
-			if( player->client->ps.stats[ STAT_TEAM ] == TEAM_ALIENS )
-			{
-				++my_team_players;
-				my_team_kills += player->client->pers.namelog->damageStats.kills;
-			}
-			else if( player->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
-			{
-				++enemy_team_players;
-				enemy_team_kills += player->client->pers.namelog->damageStats.kills;
-			}
+			++my_team_players;
+			my_team_kills += player->client->pers.namelog->damageStats.kills;
+		}
+		else if( player->client->ps.stats[ STAT_TEAM ] != TEAM_NONE )
+		{
+			++enemy_team_players;
+			enemy_team_kills += player->client->pers.namelog->damageStats.kills;
 		}
 	}
 
