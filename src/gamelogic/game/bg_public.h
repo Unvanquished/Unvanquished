@@ -250,14 +250,14 @@ typedef enum
   // netcode has space for 2 more
 } statIndex_t;
 
-#define SCA_WALLCLIMBER     0x00000001
-#define SCA_TAKESFALLDAMAGE 0x00000002
-#define SCA_CANZOOM         0x00000004
-#define SCA_FOVWARPS        0x00000008
-#define SCA_ALIENSENSE      0x00000010
-#define SCA_CANUSELADDERS   0x00000020
-#define SCA_WALLJUMPER      0x00000040
-#define SCA_FLYER           0x00000080
+#define SCA_WALLCLIMBER     BIT(1)
+#define SCA_TAKESFALLDAMAGE BIT(2)
+#define SCA_CANZOOM         BIT(3)
+#define SCA_FOVWARPS        BIT(4)
+#define SCA_ALIENSENSE      BIT(5)
+#define SCA_CANUSELADDERS   BIT(6)
+#define SCA_WALLJUMPER      BIT(7)
+#define SCA_FLYER           BIT(8)
 
 #define SS_WALLCLIMBING     BIT(0)
 #define SS_CREEPSLOWED      BIT(1)
