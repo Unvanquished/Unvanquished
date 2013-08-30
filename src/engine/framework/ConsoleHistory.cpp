@@ -28,6 +28,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <vector>
 #include <memory>
+#include <algorithm>
 
 //TODO: make it thread safe.
 namespace Console {

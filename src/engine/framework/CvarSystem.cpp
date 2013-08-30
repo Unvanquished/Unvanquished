@@ -102,7 +102,7 @@ namespace Cvar {
         cvar_modifiedFlags |= var.flags;
     }
 
-    typedef typename std::unordered_map<std::string, cvarRecord_t*> CvarMap;
+    typedef std::unordered_map<std::string, cvarRecord_t*> CvarMap;
 
     CvarMap& GetCvarMap() {
         static CvarMap* cvars = new CvarMap();

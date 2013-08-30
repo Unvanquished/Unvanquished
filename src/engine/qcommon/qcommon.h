@@ -807,7 +807,7 @@ void QDECL Com_Log( log_level_t level, const char* message );
 #define    PrintBanner(text) Com_Printf("----- %s -----\n", text );
 
 // *INDENT-ON*
-void       Com_Quit_f( void ) NORETURN;
+void NORETURN Com_Quit_f( void );
 int        Com_EventLoop( void );
 int        Com_Milliseconds( void );  // will be journaled properly
 unsigned   Com_BlockChecksum( const void *buffer, int length );
@@ -1115,8 +1115,8 @@ void                  *Sys_LoadFunction( void *dllHandle, const char *functionNa
 const char            *Sys_GetCurrentUser( void );
 int                   Sys_GetPID( void );
 
-void QDECL            Sys_Error( const char *error, ... ) PRINTF_LIKE(1) NORETURN;
-void                  Sys_Quit( void ) NORETURN;
+void QDECL NORETURN   Sys_Error( const char *error, ... ) PRINTF_LIKE(1);
+void NORETURN         Sys_Quit( void );
 char                  *Sys_GetClipboardData( clipboard_t clip );  // note that this isn't journaled...
 
 void                  Sys_Print( const char *msg );

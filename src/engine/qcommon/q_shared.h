@@ -113,6 +113,7 @@ Maryland 20850 USA.
 #include <sys/stat.h> // rain
 #include <float.h>
 #include <stdint.h>
+#include <iso646.h>
 
 // vsnprintf is ISO/IEC 9899:1999
 // abstracting this to make it portable
@@ -1060,10 +1061,6 @@ void         ByteToDir( int b, vec3_t dir );
 	char       *Q_strupr( char *s1 );
 	char       *Q_strrchr( const char *string, int c );
 	const char *Q_stristr( const char *s, const char *find );
-
-#if defined(_WIN32) && !defined(__MINGW32__)
-double rint( double x );
-#endif
 
 // buffer size safe library replacements
 // NOTE : had problem with loading QVM modules

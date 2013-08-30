@@ -38,11 +38,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #undef COLOR_CYAN
 #undef COLOR_WHITE
 
+#ifndef _WIN32
 #include <fcntl.h>
 #include <signal.h>
 #include <unistd.h>
 #include <locale.h>
-#ifndef _WIN32
 #include <sys/ioctl.h>
 #endif
 

@@ -65,8 +65,8 @@ namespace Util {
             std::u32string buffer;
             int scrollSize;
             int width;
-            int scroll = 0;
-            int cursor = 0;
+            int scroll;
+            int cursor;
     };
 
 }

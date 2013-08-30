@@ -50,9 +50,9 @@
 typedef struct cvar_s
 {
 	char *name;
-	char *string = 0;
+	char *string;
 	char *resetString; // cvar_restart will reset to this value
-	char *latchedString = 0; // for CVAR_LATCH vars
+	char *latchedString; // for CVAR_LATCH vars
 	int flags;
 	qboolean modified; // set each time the cvar is changed
 	int modificationCount; // incremented each time the cvar is changed

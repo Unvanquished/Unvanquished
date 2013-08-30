@@ -62,7 +62,7 @@ void     Sys_GLimpSafeInit( void );
 void     Sys_GLimpInit( void );
 void     Sys_PlatformInit( void );
 void     Sys_PlatformExit( void );
-void     Sys_SigHandler( int signal ) NORETURN;
+void NORETURN Sys_SigHandler( int signal );
 void     Sys_ErrorDialog( const char *error );
 void     Sys_AnsiColorPrint( const char *msg );
 

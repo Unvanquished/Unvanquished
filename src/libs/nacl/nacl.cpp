@@ -32,6 +32,11 @@
 #define JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE 0x2000
 #endif
 
+// On windows use _snprintf instead of snprintf
+#ifdef _WIN32
+#define snprintf _snprintf
+#endif
+
 // Definitions taken from nacl_desc_base.h
 enum NaClDescTypeTag {
   NACL_DESC_INVALID,

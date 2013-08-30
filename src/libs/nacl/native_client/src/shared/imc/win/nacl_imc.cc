@@ -22,9 +22,9 @@
 #ifdef __MINGW32__
 #include <stdint.h>
 #define sprintf_s snprintf
+#endif
 #ifndef UINT32_MAX
 #define UINT32_MAX ((uint32_t)0xffffffff)
-#endif
 #endif
 
 #include "native_client/src/include/atomic_ops.h"

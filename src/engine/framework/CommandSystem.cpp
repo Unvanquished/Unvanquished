@@ -38,7 +38,7 @@ namespace Cmd {
         const CmdBase* cmd;
     };
 
-    typedef typename std::unordered_map<std::string, commandRecord_t> CommandMap;
+    typedef std::unordered_map<std::string, commandRecord_t> CommandMap;
 
     CommandMap& GetCommandMap() {
         static CommandMap* commands = new CommandMap();

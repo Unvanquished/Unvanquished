@@ -1171,7 +1171,7 @@ void       G_AdminMessage( gentity_t *ent, const char *string );
 void QDECL G_LogPrintf( const char *fmt, ... ) PRINTF_LIKE(1);
 void       SendScoreboardMessageToAllClients( void );
 void QDECL G_Printf( const char *fmt, ... ) PRINTF_LIKE(1);
-void QDECL G_Error( const char *fmt, ... ) PRINTF_LIKE(1) NORETURN;
+void QDECL NORETURN G_Error( const char *fmt, ... ) PRINTF_LIKE(1);
 void       G_Vote( gentity_t *ent, team_t team, qboolean voting );
 void       G_ResetVote( team_t team );
 void       G_ExecuteVote( team_t team );
@@ -1403,7 +1403,7 @@ extern  vmCvar_t g_combatCooldown;
 extern  vmCvar_t g_debugEntities;
 
 void             trap_Print( const char *string );
-void             trap_Error( const char *string ) NORETURN;
+void NORETURN    trap_Error( const char *string );
 int              trap_Milliseconds( void );
 void             trap_Cvar_Register( vmCvar_t *cvar, const char *var_name, const char *value, int flags );
 void             trap_Cvar_Set( const char *var_name, const char *value );

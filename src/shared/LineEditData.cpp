@@ -25,13 +25,14 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #include "LineEditData.h"
 
 #include <string.h>
+#include <algorithm>
 
 //TODO: use a std::string instead of a fixed size char* ?
 //TODO: support MAJ-selection ?
 
 namespace Util {
     LineEditData::LineEditData(int size, int scrollSize)
-    :scrollSize(scrollSize), width(size) {
+    :scrollSize(scrollSize), width(size), scroll(0), cursor(0) {
     }
     const std::u32string& LineEditData::GetText() const {
         return buffer;

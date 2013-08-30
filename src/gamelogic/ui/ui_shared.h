@@ -431,7 +431,7 @@ typedef struct
 	void ( *getBindingBuf )( int keynum, int team, char *buf, int buflen );
 	void ( *setBinding )( int keynum, int team, const char *binding );
 	void ( *executeText )( int exec_when, const char *text );
-	void ( *Error )( int level, const char *error, ... ) PRINTF_LIKE(2) NORETURN;
+	void ( *Error )( int level, const char *error, ... ) PRINTF_LIKE(2);
 	void ( *Print )( const char *msg, ... ) PRINTF_LIKE(1);
 	void ( *Pause )( qboolean b );
 	int ( *ownerDrawWidth )( int ownerDraw, float scale );

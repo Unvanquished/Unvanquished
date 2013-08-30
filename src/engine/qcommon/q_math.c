@@ -3601,21 +3601,3 @@ void QuatTransformVector( const quat_t q, const vec3_t in, vec3_t out )
 	MatrixFromQuat( m, q );
 	MatrixTransformNormal( m, in, out );
 }
-
-#if defined(_WIN32) && !defined(__MINGW32__)
-double rint( double x )
-{
-	// This is slow, but provides correct rounding behavior
-	// Ties at 0.5 are rounded to the nearest even
-	const double two_to_52 = 4.5035996273704960e+15;
-	double fa = fabs(a);
-	double r = two_to_52 + fa;
-	if (fa >= two_to_52) {
-		r = a;
-	} else {
-		r = r - two_to_52;
-		r = _copysign(r, a);
-	}
-	return r;
-}
-#endif

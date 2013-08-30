@@ -27,6 +27,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #include "../../shared/String.h"
 #include "../qcommon/q_shared.h"
 #include <locale>
+#include <algorithm>
 
 namespace Console {
 

@@ -1643,7 +1643,7 @@ const char *CG_ConfigString( int index );
 const char *CG_Argv( int arg );
 
 void QDECL CG_Printf( const char *msg, ... ) PRINTF_LIKE(1);
-void QDECL CG_Error( const char *msg, ... ) PRINTF_LIKE(1) NORETURN;
+void QDECL NORETURN CG_Error( const char *msg, ... ) PRINTF_LIKE(1);
 
 void       CG_StartMusic( void );
 
