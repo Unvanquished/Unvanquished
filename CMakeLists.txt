@@ -300,7 +300,6 @@ set( SHAREDLIST
   ${ENGINE_DIR}/qcommon/q_unicode.c
   ${ENGINE_DIR}/qcommon/q_math.c
   ${ENGINE_DIR}/qcommon/q_shared.h
-  ${ENGINE_DIR}/qcommon/q_platform.h
   ${ENGINE_DIR}/qcommon/q_unicode.h
   ${ENGINE_DIR}/qcommon/unicode_data.h
   ${ENGINE_DIR}/qcommon/logging.h
