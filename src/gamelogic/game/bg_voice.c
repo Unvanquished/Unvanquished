@@ -61,7 +61,7 @@ BG_VoiceList
 */
 static voice_t *BG_VoiceList( void )
 {
-	char    fileList[ MAX_VOICES * ( MAX_VOICE_NAME_LEN + 8 ) ] = { "" };
+	char    fileList[ MAX_VOICES * ( MAX_VOICE_NAME_LEN + 6 ) ] = { "" };
 	int     numFiles, i, fileLen = 0;
 	int     count = 0;
 	char    *filePtr;
@@ -104,7 +104,7 @@ static voice_t *BG_VoiceList( void )
 			continue;
 		}
 
-		if ( fileLen > MAX_VOICE_NAME_LEN + 8 )
+		if ( fileLen >= MAX_VOICE_NAME_LEN + 6 )
 		{
 			Com_Printf( S_WARNING "MAX_VOICE_NAME_LEN is %d. "
 			            "skipping \"%s\", filename too long\n", MAX_VOICE_NAME_LEN, filePtr );
