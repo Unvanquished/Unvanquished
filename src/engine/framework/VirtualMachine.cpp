@@ -50,7 +50,12 @@ static NaCl::Module TryLoad(const char* name, const char* path, const char* game
 		char nexe[MAX_QPATH];
 		char sel_ldr[MAX_QPATH];
 		char irt[MAX_QPATH];
-		Com_sprintf(nexe, sizeof(nexe), "%s.nexe", name);
+#if defined(__x86_64__) || defined(_WIN64)
+		const char* arch = "x86_64";
+#else
+		const char* arch = "x86";
+#endif
+		Com_sprintf(nexe, sizeof(nexe), "%s-%s.nexe", name, arch);
 		Com_sprintf(sel_ldr, sizeof(sel_ldr), "%s/sel_ldr%s", path, EXE_EXT);
 		Com_sprintf(irt, sizeof(irt), "%s/irt_core.nexe", path);
 		NaCl::LoaderParams params = {sel_ldr, irt, nullptr};

@@ -44,20 +44,21 @@ cmake_dependent_option( USE_VOIP             "Compile with VOIP support"        
 cmake_dependent_option( USE_CURSES           "Use the curses console"                                1 "BUILD_CLIENT OR BUILD_SERVER OR BUILD_TTY_CLIENT" 0 )
 cmake_dependent_option( USE_OPENAL_DLOPEN    "Use dlopen to load OpenAL"                             1 BUILD_CLIENT                   0 )
 
+set( NACL_SDK_PATH "" CACHE PATH "Path to native client SDK" )
+if( BUILD_GAME_NACL AND NOT NACL_SDK_PATH )
+  message( SEND_ERROR "You need to set the path to the native client SDK" )
+endif()
+
 ################################################################################
 # Determine platform
 ################################################################################
 
 # When adding a new platform, look at all the places WIN32, MAC and LINUX are used
-if( WIN32 )
-  set( PLATFORM "win32" )
-elseif( CMAKE_SYSTEM_NAME MATCHES "Darwin" )
+if( CMAKE_SYSTEM_NAME MATCHES "Darwin" )
   set( MAC ON )
-  set( PLATFORM "mac" )
 elseif( CMAKE_SYSTEM_NAME MATCHES "Linux" )
   set( LINUX ON )
-  set( PLATFORM "linux" )
-else()
+elseif( NOT WIN32 )
   message( FATAL_ERROR "Platform not supported" )
 endif()
 
@@ -66,28 +67,17 @@ endif()
 ################################################################################
 
 # When adding a new architecture, look at all the places ARCH is used
-if( WIN32 )
-  # CMAKE_SYSTEM_PROCESSOR is not reliable under windows
+if( CMAKE_SYSTEM_PROCESSOR MATCHES "i.86" OR CMAKE_SYSTEM_PROCESSOR STREQUAL "x86" )
+  # Sometimes CMAKE_SYSTEM_PROCESSOR returns x86 on x86_64
   if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
     set( ARCH "x86_64" )
-  elseif( CMAKE_SIZEOF_VOID_P EQUAL 4 )
+  else()
     set( ARCH "x86" )
-  else()
-    set( ARCH ${CMAKE_SYSTEM_PROCESSOR} )
   endif()
+elseif( CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64" OR CMAKE_SYSTEM_PROCESSOR STREQUAL "amd64" )
+ set( ARCH "x86_64" )
 else()
-  if( CMAKE_SYSTEM_PROCESSOR MATCHES "i.86" OR CMAKE_SYSTEM_PROCESSOR STREQUAL "x86" )
-    # Sometimes CMAKE_SYSTEM_PROCESSOR returns x86 on x86_64
-    if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
-      set( ARCH "x86_64" )
-    else()
-      set( ARCH "x86" )
-    endif()
-  elseif( CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64" OR CMAKE_SYSTEM_PROCESSOR STREQUAL "amd64" )
-   set( ARCH "x86_64" )
-  else()
-    set( ARCH ${CMAKE_SYSTEM_PROCESSOR} )
-  endif()
+  message( FATAL_ERROR "Architecture not supported" )
 endif()
 
 ################################################################################
@@ -161,7 +151,6 @@ if( MSVC )
     set_c_cxx_flag( "/GL" RELEASE )
     set_linker_flag( "/LTCG" )
   endif()
-  set_linker_flag( "/SAFESEH:NO" )
 else()
   set_c_cxx_flag( "-ffast-math" )
   set_c_cxx_flag( "-fno-strict-aliasing" )
@@ -197,7 +186,7 @@ else()
 
   # Use libc++ on Mac because the shipped libstdc++ version is too old
   if( MAC )
-    set_c_cxx_flag( "-stdlib=libc++")
+    set_c_cxx_flag( "-stdlib=libc++" )
   endif()
 
   # Hardening
@@ -259,6 +248,20 @@ set( ENGINE_DIR ${MOUNT_DIR}/engine )
 set( SHARED_DIR ${MOUNT_DIR}/shared )
 set( GAMELOGIC_DIR ${MOUNT_DIR}/gamelogic )
 set( LIB_DIR ${MOUNT_DIR}/libs )
+if( CMAKE_HOST_WIN32 )
+  set( PNACL_TOOLCHAIN ${NACL_SDK_PATH}/toolchain/win_x86_pnacl/newlib/bin )
+  set( PNACL_BIN_EXT ".bat" )
+elseif( CMAKE_HOST_SYSTEM_NAME MATCHES "Darwin" )
+  set( PNACL_TOOLCHAIN ${NACL_SDK_PATH}/toolchain/mac_x86_pnacl/newlib/bin )
+  set( PNACL_BIN_EXT "" )
+elseif( CMAKE_HOST_SYSTEM_NAME MATCHES "Linux" )
+  if( CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "x86_64" OR CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "amd64" )
+    set( PNACL_TOOLCHAIN ${NACL_SDK_PATH}/toolchain/linux_x86_pnacl/newlib/bin64 )
+  else()
+    set( PNACL_TOOLCHAIN ${NACL_SDK_PATH}/toolchain/linux_x86_pnacl/newlib/bin )
+  endif()
+  set( PNACL_BIN_EXT "" )
+endif()
 
 ################################################################################
 # Git revision info
@@ -1032,7 +1035,6 @@ function( GAMELIB )
       set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL "MinSizeRel/${GAMELIB_OUTPUT_DIR}" )
       set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO "RelWithDebInfo/${GAMELIB_OUTPUT_DIR}" )
     endif()
-    set( GAMELIB_COMPILE_DEF_NATIVE ${GAMELIB_COMPILE_DEF} )
 
     # HACK: Compile shared files as C
     set_source_files_properties( ${SHAREDLIST_HACK} PROPERTIES LANGUAGE C )
@@ -1040,7 +1042,100 @@ function( GAMELIB )
     target_link_libraries( ${GAMELIB_LIB_NAME} ${LIBS_BASE} )
     set_target_properties( ${GAMELIB_LIB_NAME} PROPERTIES
       RUNTIME_OUTPUT_DIRECTORY ${GAMELIB_OUTPUT_DIR}
-      COMPILE_DEFINITIONS "${GAMELIB_COMPILE_DEF}"
+      COMPILE_DEFINITIONS ${GAMELIB_COMPILE_DEF}
+    )
+  endif()
+
+  if( BUILD_GAME_NACL )
+    # Determine compiler and translator options
+    set( QVM_CPP_OPTIONS
+      -I"${LIB_DIR}/nacl"
+      -DNACL_BUILD_ARCH=x86 # Not actually used
+      -DNACL_BUILD_SUBARCH=64 # Not actually used
+      -O3
+      -ffast-math
+      -fvisibility=hidden
+      -fomit-frame-pointer
+      -g3
+      -Wall
+      --pnacl-allow-exceptions
+    )
+    set( QVM_TRANSLATE_OPTIONS
+      -O3
+      --allow-llvm-bitcode-input
+      --pnacl-allow-exceptions
+    )
+    foreach( DEF ${GAMELIB_COMPILE_DEF} )
+      set( QVM_CPP_OPTIONS ${QVM_CPP_OPTIONS} -D${DEF} )
+    endforeach()
+
+    # Compile C files with clang and C++ files with clang++
+    set( QVM_OBJECTS )
+    foreach( QVM_FILE ${GAMELIB_LIB_FILES} ${SHAREDLIST} ${NACL_LIST_MODULE} )
+      get_filename_component( QVM_FILENAME ${QVM_FILE} NAME_WE )
+      get_filename_component( QVM_FILEDIR ${QVM_FILE} PATH )
+      get_filename_component( QVM_EXT ${QVM_FILE} EXT )
+      set( QVM_COMPONENT ${OBJ_DIR}/${GAMELIB_LIB_NAME}-nacl.dir/${QVM_FILENAME} )
+
+      if( QVM_EXT STREQUAL .c )
+        add_custom_command( OUTPUT ${QVM_COMPONENT}.o
+          COMMAND ${PNACL_TOOLCHAIN}/pnacl-clang${PNACL_BIN_EXT}
+            ${QVM_CPP_OPTIONS}
+            -c
+            -o ${QVM_COMPONENT}.o
+            ${QVM_FILE}
+          DEPENDS ${QVM_FILE}
+          IMPLICIT_DEPENDS C ${QVM_FILE}
+        )
+        set( QVM_OBJECTS ${QVM_OBJECTS} ${QVM_COMPONENT}.o )
+      elseif( QVM_EXT STREQUAL .cpp OR QVM_EXT STREQUAL .cc )
+        add_custom_command( OUTPUT ${QVM_COMPONENT}.o
+          COMMAND ${PNACL_TOOLCHAIN}/pnacl-clang++${PNACL_BIN_EXT}
+            -std=gnu++11
+            ${QVM_CPP_OPTIONS}
+            -c
+            -o ${QVM_COMPONENT}.o
+            ${QVM_FILE}
+          DEPENDS ${QVM_FILE}
+          IMPLICIT_DEPENDS CXX ${QVM_FILE}
+        )
+        set( QVM_OBJECTS ${QVM_OBJECTS} ${QVM_COMPONENT}.o )
+      endif()
+    endforeach()
+
+    # Generate PNaCL platform-independant executable
+    add_custom_command(
+      OUTPUT ${CMAKE_BINARY_DIR}/${GAMELIB_OUTPUT_DIR}/${GAMELIB_LIB_NAME}.pexe
+      COMMAND ${PNACL_TOOLCHAIN}/pnacl-clang++${PNACL_BIN_EXT}
+        ${QVM_CPP_OPTIONS}
+        -o ${CMAKE_BINARY_DIR}/${GAMELIB_OUTPUT_DIR}/${GAMELIB_LIB_NAME}.pexe
+        ${QVM_OBJECTS}
+      DEPENDS ${QVM_OBJECTS}
+    )
+
+    # Generate NaCl executables for x86 and x86_64
+    add_custom_command(
+      OUTPUT ${CMAKE_BINARY_DIR}/${GAMELIB_OUTPUT_DIR}/${GAMELIB_LIB_NAME}-x86.nexe
+      COMMAND ${PNACL_TOOLCHAIN}/pnacl-translate${PNACL_BIN_EXT}
+        ${QVM_TRANSLATE_OPTIONS}
+        -arch i686
+        -o ${CMAKE_BINARY_DIR}/${GAMELIB_OUTPUT_DIR}/${GAMELIB_LIB_NAME}-x86.nexe
+        ${CMAKE_BINARY_DIR}/${GAMELIB_OUTPUT_DIR}/${GAMELIB_LIB_NAME}.pexe
+      DEPENDS ${CMAKE_BINARY_DIR}/${GAMELIB_OUTPUT_DIR}/${GAMELIB_LIB_NAME}.pexe
+    )
+    add_custom_command(
+      OUTPUT ${CMAKE_BINARY_DIR}/${GAMELIB_OUTPUT_DIR}/${GAMELIB_LIB_NAME}-x86_64.nexe
+      COMMAND ${PNACL_TOOLCHAIN}/pnacl-translate${PNACL_BIN_EXT}
+        ${QVM_TRANSLATE_OPTIONS}
+        -arch x86-64
+        -o ${CMAKE_BINARY_DIR}/${GAMELIB_OUTPUT_DIR}/${GAMELIB_LIB_NAME}-x86_64.nexe
+        ${CMAKE_BINARY_DIR}/${GAMELIB_OUTPUT_DIR}/${GAMELIB_LIB_NAME}.pexe
+      DEPENDS ${CMAKE_BINARY_DIR}/${GAMELIB_OUTPUT_DIR}/${GAMELIB_LIB_NAME}.pexe
+    )
+
+    # Dummy target to get CMake to execute the commands
+    add_custom_target( ${GAMELIB_LIB_NAME}-nacl ALL
+      DEPENDS ${CMAKE_BINARY_DIR}/${GAMELIB_OUTPUT_DIR}/${GAMELIB_LIB_NAME}-x86_64.nexe ${CMAKE_BINARY_DIR}/${GAMELIB_OUTPUT_DIR}/${GAMELIB_LIB_NAME}-x86.nexe
     )
   endif()
 
