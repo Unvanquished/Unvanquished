@@ -98,6 +98,7 @@ void DoCheckAutoStrip( gentity_t *self )
 	float AS_kpm_treshold;
 
 	team_t my_team;
+	qboolean am_bot;
 
 	float my_kills;
 	int   my_deaths;
@@ -105,11 +106,13 @@ void DoCheckAutoStrip( gentity_t *self )
 	float my_kill_ratio;
 
 	int   my_team_players = 0;
+	int   my_team_bots = 0;
 	float my_team_kills = 0.0f;
 	int   my_team_stage;
 	float my_team_avg = 0.0f;
 
 	int   enemy_team_players = 0;
+	int   enemy_team_bots = 0;
 	float enemy_team_kills = 0.0f;
 	int   enemy_team_stage;
 	float enemy_team_avg = 0.0f;
@@ -148,8 +151,59 @@ void DoCheckAutoStrip( gentity_t *self )
 		return;
 	// ========================================================
 
-	// never strip bots
-	if ( g_AutoStrip_IgnoreBots.integer && ( self->r.svFlags & SVF_BOT ) ) return;
+	am_bot = !!( self->r.svFlags & SVF_BOT );
+
+	// never strip bots (if ignoring them)
+	if ( g_AutoStrip_IgnoreBots.integer && am_bot )
+	{
+		if (AS_debug>0)
+			G_AdminMessage( NULL, "::debug info (auto-strip) | not stripping bots" );
+		return;
+	}
+
+	// level.{human,alien}kills are not adequate here - they include kills by bots
+
+	if ( my_team == TEAM_ALIENS )
+	{
+		my_team_stage = g_alienStage.integer;
+		enemy_team_stage = g_humanStage.integer;
+	}
+	else
+	{
+		my_team_stage = g_humanStage.integer;
+		enemy_team_stage = g_alienStage.integer;
+	}
+
+	// get current team sizes & kills (ignoring bots)
+	for( i = 0; i < MAX_CLIENTS; i++ )
+	{
+		if (!g_entities[i].inuse) continue;
+
+		player = &g_entities[i];
+
+		if ( !player->client || ( g_AutoStrip_IgnoreBots.integer && ( player->r.svFlags & SVF_BOT ) ) ) continue;
+
+		if( player->client->ps.stats[ STAT_TEAM ] == my_team )
+		{
+			if ( player->r.svFlags & SVF_BOT ) ++my_team_bots;
+			++my_team_players;
+			my_team_kills += player->client->pers.namelog->damageStats.kills;
+		}
+		else if( player->client->ps.stats[ STAT_TEAM ] != TEAM_NONE )
+		{
+			if ( player->r.svFlags & SVF_BOT ) ++enemy_team_bots;
+			++enemy_team_players;
+			enemy_team_kills += player->client->pers.namelog->damageStats.kills;
+		}
+	}
+
+	// don't strip live players if the enemy is all bots
+	if ( enemy_team_players == enemy_team_bots && !am_bot )
+	{
+		if (AS_debug>0)
+			G_AdminMessage( NULL, "::debug info (auto-strip) | enemy has no live players" );
+		return;
+	}
 
 	// now, let's start checking
 	my_kills = self->client->pers.namelog->damageStats.kills;
@@ -185,40 +239,6 @@ void DoCheckAutoStrip( gentity_t *self )
 		}
 
 		return; // minimal "efficiency" condition - not met
-	}
-
-	// level.{human,alien}kills are not adequate here - they include kills by bots
-
-	if ( my_team == TEAM_ALIENS )
-	{
-		my_team_stage = g_alienStage.integer;
-		enemy_team_stage = g_humanStage.integer;
-	}
-	else
-	{
-		my_team_stage = g_humanStage.integer;
-		enemy_team_stage = g_alienStage.integer;
-	}
-
-	// get current team sizes & kills (ignoring bots)
-	for( i = 0; i < MAX_CLIENTS; i++ )
-	{
-		if (!g_entities[i].inuse) continue;
-
-		player = &g_entities[i];
-
-		if ( !player->client || ( g_AutoStrip_IgnoreBots.integer && ( player->r.svFlags & SVF_BOT ) ) ) continue;
-
-		if( player->client->ps.stats[ STAT_TEAM ] == my_team )
-		{
-			++my_team_players;
-			my_team_kills += player->client->pers.namelog->damageStats.kills;
-		}
-		else if( player->client->ps.stats[ STAT_TEAM ] != TEAM_NONE )
-		{
-			++enemy_team_players;
-			enemy_team_kills += player->client->pers.namelog->damageStats.kills;
-		}
 	}
 
 	AS_killingSpreeLvl = g_AutoStrip_KillingSpreeLvl.integer;
