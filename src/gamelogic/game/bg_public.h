@@ -257,6 +257,7 @@ typedef enum
 #define SCA_ALIENSENSE      0x00000010
 #define SCA_CANUSELADDERS   0x00000020
 #define SCA_WALLJUMPER      0x00000040
+#define SCA_FLYER           0x00000080
 
 #define SS_WALLCLIMBING     BIT(0)
 #define SS_CREEPSLOWED      BIT(1)
