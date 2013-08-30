@@ -44,11 +44,21 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define ABUILDER_BLOB_SPEED           800.0f
 #define ABUILDER_BLOB_SPEED_MOD       0.5f
 #define ABUILDER_BLOB_TIME            2000
+#define ABUILDER_BLOB_FIRE_IMMUNITY   3000   // in ms, friendly buildables gain immunity for fire on hit
+#define ABUILDER_BLOB_FIRE_STOP_RANGE 20     // granger spit that hits a surface kills environmental fire in this range
 
 #define LEVEL0_BITE_DMG               ADM(36)
 #define LEVEL0_BITE_RANGE             64.0f
 #define LEVEL0_BITE_WIDTH             6.0f
 #define LEVEL0_BITE_REPEAT            500
+#define LEVEL0_POUNCE_DISTANCE        300 // pitch between LEVEL0_POUNCE_MINPITCH and pi/4 results in this distance
+#define LEVEL0_POUNCE_MINPITCH        M_PI / 12.0f // 15°, minimum pitch that will result in full pounce distance
+#define LEVEL0_POUNCE_COOLDOWN        2000
+#define LEVEL0_WALLPOUNCE_MAGNITUDE   600
+#define LEVEL0_WALLPOUNCE_COOLDOWN    750
+#define LEVEL0_SIDEPOUNCE_MAGNITUDE   400
+#define LEVEL0_SIDEPOUNCE_DIR_Z       0.4f // in ]0.0f,1.0f], fixed Z-coordinate of sidepounce
+#define LEVEL0_SIDEPOUNCE_COOLDOWN    750
 
 #define LEVEL1_CLAW_DMG               ADM(32)
 #define LEVEL1_CLAW_RANGE             80.0f // Claw and grab range normalized. Not sure on this one, but it was pretty widely requested.
@@ -205,7 +215,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define CREEP_SCALEDOWN_TIME    3000
 
 #define BURN_DAMAGE             10
-#define BURN_DAMAGE_PERIOD      1000
+#define BURN_DAMAGE_PERIOD      1000 // high, so we don't get popcorn sound with all the damage anims
+#define BURN_SPLDAMAGE          10
+#define BURN_SPLDAMAGE_RADIUS   60
+#define BURN_SPLDAMAGE_PERIOD   500
 #define BURN_STOP_PERIOD        2500
 #define BURN_STOP_CHANCE        0.5f
 #define BURN_SPREAD_PERIOD      1000
@@ -285,9 +298,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
 #define HUMAN_WDMG_MODIFIER      1.0f
-#define HDM(d) ((int)((float)d * HUMAN_WDMG_MODIFIER ))
+#define HDM(d)                   ((int)((float)d * HUMAN_WDMG_MODIFIER ))
 
-#define BLASTER_SPREAD           200
 #define BLASTER_SPEED            1400
 #define BLASTER_DMG              HDM(10)
 #define BLASTER_SIZE             5
@@ -309,36 +321,38 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define SHOTGUN_DMG              HDM(5)
 #define SHOTGUN_RANGE            ( 8192 * 12 )
 
-#define LASGUN_REPEAT            200
-#define LASGUN_K_SCALE           1.0f
 #define LASGUN_DAMAGE            HDM(9)
 
 #define MDRIVER_DMG              HDM(40)
-#define MDRIVER_REPEAT           1000
-#define MDRIVER_K_SCALE          1.0f
 
-#define CHAINGUN_SPREAD          900
 #define CHAINGUN_DMG             HDM(6)
+#define CHAINGUN_SPREAD          900
 
-#define FLAMER_DMG               HDM(12)
-#define FLAMER_FLIGHTDAMAGE      HDM(1)
-#define FLAMER_SPLASHDAMAGE      HDM(6)
-#define FLAMER_RADIUS            25
-#define FLAMER_SIZE              5      // missile bounding box
+#define FLAMER_DAMAGE            HDM(10)
+#define FLAMER_DAMAGE_MAXDST_MOD 0.5f    // damage decreases linearly from full damage to this during missile lifetime
+#define FLAMER_SPLASH_DAMAGE     FLAMER_DAMAGE
+#define FLAMER_SPLASH_RADIUS     50
+#define FLAMER_SPLASH_MINDST_MOD 0.5f    // splash damage increases linearly from this to full damage during lifetime
+#define FLAMER_SIZE              5
 #define FLAMER_LIFETIME          750.0f
 #define FLAMER_SPEED             400.0f
-#define FLAMER_LAG               0.65f  // part of player velocity that is added to the fireball
+#define FLAMER_LAG               0.65f   // part of player velocity that is added to the fireball
 #define FLAMER_IGNITE_RADIUS     50
 #define FLAMER_IGNITE_CHANCE     0.5f
 #define FLAMER_IGNITE_SPLCHANCE  0.1f
+#define FLAMER_LEAVE_FIRE_CHANCE 0.3f
 
 #define PRIFLE_DMG               HDM(9)
 #define PRIFLE_SPEED             1200
+#define PRIFLE_DAMAGE_FULL_TIME  0 // in ms, full damage for this time
+#define PRIFLE_DAMAGE_HALF_LIFE  0 // in ms, damage half life time after full damage period, 0 = off
 #define PRIFLE_SIZE              5
 
 #define LCANNON_DAMAGE           HDM(265)
 #define LCANNON_RADIUS           150 // primary splash damage radius
-#define LCANNON_SIZE             5 // missile bounding box radius
+#define LCANNON_DAMAGE_FULL_TIME 0 // in ms, full damage for this time
+#define LCANNON_DAMAGE_HALF_LIFE 0 // in ms, damage half life time after full damage period, 0 = off
+#define LCANNON_SIZE             5 // missile bounding box radiusa
 #define LCANNON_SECONDARY_DAMAGE HDM(30)
 #define LCANNON_SECONDARY_RADIUS 75 // secondary splash damage radius
 #define LCANNON_SECONDARY_SPEED  1400
@@ -435,10 +449,20 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * Misc
  */
 
+// fire
+#define FIRE_MIN_DISTANCE                  20.0f
+
 // fall distance
-#define MIN_FALL_DISTANCE                  30.0f //the fall distance at which fall damage kicks in
-#define MAX_FALL_DISTANCE                  120.0f //the fall distance at which maximum damage is dealt
+#define MIN_FALL_DISTANCE                  30.0f  // the fall distance at which fall damage kicks in
+#define MAX_FALL_DISTANCE                  120.0f // the fall distance at which maximum damage is dealt
 #define AVG_FALL_DISTANCE                  (( MIN_FALL_DISTANCE + MAX_FALL_DISTANCE ) / 2.0f )
+
+// impact and weight damage
+#define IMPACTDMG_JOULE_TO_DAMAGE          0.002f  // in 1/J
+#define IMPACTDMG_QU_TO_METER              0.03125 // in m/qu
+#define WEIGHTDMG_DMG_MODIFIER             0.25f   // multiply with weight difference to get DPS
+#define WEIGHTDMG_DPS_THRESHOLD            10      // ignore weight damage per second below this
+#define WEIGHTDMG_REPEAT                   200     // in ms, low value reduces damage precision
 
 // buildable explosion
 #define HUMAN_DETONATION_DELAY             4000
@@ -463,6 +487,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define DEFAULT_INITIAL_BUILD_POINTS       "50"  // in BP
 #define DEFAULT_INITIAL_MINE_RATE          "8"   // in (BP/min)/RGS
 #define DEFAULT_MINE_RATE_HALF_LIFE        "20"  // in min
+#define DEFAULT_MINIMUM_MINE_RATE          "50"
 
 // confidence & stages
 #define CONFIDENCE_PER_CREDIT              0.01f // used to award confidence based on credit rewards

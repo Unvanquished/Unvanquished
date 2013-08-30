@@ -110,6 +110,8 @@ static const char *const modNames[] =
 	"MOD_FLAMER",
 	"MOD_FLAMER_SPLASH",
 	"MOD_BURN",
+	"MOD_WEIGHT_H",
+
 	"MOD_GRENADE",
 	"MOD_WATER",
 	"MOD_SLIME",
@@ -132,7 +134,7 @@ static const char *const modNames[] =
 	"MOD_LEVEL2_ZAP",
 	"MOD_LEVEL4_CLAW",
 	"MOD_LEVEL4_TRAMPLE",
-	"MOD_LEVEL4_CRUSH",
+	"MOD_WEIGHT_A",
 
 	"MOD_SLOWBLOB",
 	"MOD_POISON",
@@ -1252,8 +1254,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	}
 
 	// don't do friendly fire on movement attacks
-	if ( ( mod == MOD_LEVEL4_TRAMPLE || mod == MOD_LEVEL3_POUNCE ||
-	       mod == MOD_LEVEL4_CRUSH ) &&
+	if ( ( mod == MOD_LEVEL4_TRAMPLE || mod == MOD_LEVEL3_POUNCE ) &&
 	     targ->s.eType == ET_BUILDABLE && targ->buildableTeam == TEAM_ALIENS )
 	{
 		return;
@@ -1266,16 +1267,16 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		// if the attacker was on the same team
 		if ( targ != attacker && OnSameTeam( targ, attacker ) )
 		{
-			// don't do friendly fire on movement attacks
-			if ( mod == MOD_LEVEL4_TRAMPLE || mod == MOD_LEVEL3_POUNCE ||
-			     mod == MOD_LEVEL4_CRUSH )
+			// never do friendly fire on movement attacks
+			if ( mod == MOD_LEVEL4_TRAMPLE || mod == MOD_LEVEL3_POUNCE )
 			{
 				return;
 			}
 
 			// if dretchpunt is enabled and this is a dretch, do dretchpunt instead of damage
-			if ( g_dretchPunt.integer &&
-			     targ->client->ps.stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL0 )
+			if ( g_dretchPunt.integer && targ->client &&
+			     ( targ->client->ps.stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL0 ||
+			       targ->client->ps.stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL0_UPG ) )
 			{
 				vec3_t dir, push;
 
@@ -1531,7 +1532,7 @@ G_SelectiveRadiusDamage
 ============
 */
 qboolean G_SelectiveRadiusDamage( vec3_t origin, gentity_t *attacker, float damage,
-                                  float radius, gentity_t *ignore, int mod, int team )
+                                  float radius, gentity_t *ignore, int mod, int ignoreTeam )
 {
 	float     points, dist;
 	gentity_t *ent;
@@ -1539,7 +1540,6 @@ qboolean G_SelectiveRadiusDamage( vec3_t origin, gentity_t *attacker, float dama
 	int       numListedEntities;
 	vec3_t    mins, maxs;
 	vec3_t    v;
-	vec3_t    dir;
 	int       i, e;
 	qboolean  hitClient = qfalse;
 
@@ -1602,16 +1602,13 @@ qboolean G_SelectiveRadiusDamage( vec3_t origin, gentity_t *attacker, float dama
 		points = damage * ( 1.0 - dist / radius );
 
 		if ( CanDamage( ent, origin ) && ent->client &&
-		     ent->client->ps.stats[ STAT_TEAM ] != team )
+		     ent->client->ps.stats[ STAT_TEAM ] != ignoreTeam )
 		{
-			VectorSubtract( ent->r.currentOrigin, origin, dir );
-			// push the center of mass higher than the origin so players
-			// get knocked into the air more
-			dir[ 2 ] += 24;
-			VectorNormalize( dir );
 			hitClient = qtrue;
-			G_Damage( ent, NULL, attacker, dir, origin,
-			          ( int ) points, DAMAGE_RADIUS | DAMAGE_NO_LOCDAMAGE, mod );
+
+			// don't do knockback, since an attack that spares one team is most likely not based on kinetic energy
+			G_Damage( ent, NULL, attacker, NULL, origin, ( int ) points,
+			          DAMAGE_RADIUS | DAMAGE_NO_LOCDAMAGE | DAMAGE_NO_KNOCKBACK, mod );
 		}
 	}
 

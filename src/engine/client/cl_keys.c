@@ -1709,7 +1709,6 @@ qboolean consoleButtonWasPressed = qfalse;
 void CL_KeyEvent( int key, qboolean down, unsigned time )
 {
 	char     *kb;
-	char     cmd[ 1024 ];
 	qboolean bypassMenu = qfalse; // NERVE - SMF
 	qboolean onlybinds = qfalse;
 
@@ -1871,7 +1870,7 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 	if ( !down )
 	{
 		// Handle any +commands which were invoked on the corresponding key-down
-		IN_KeysUp( plusCommand.check, key, time );
+		Cbuf_AddText( va( "keyup %d %d %u\n", plusCommand.check, key, time ) );
 
 		if ( cls.keyCatchers & KEYCATCH_UI && uivm )
 		{

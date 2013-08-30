@@ -356,7 +356,6 @@ but not on every player enter or exit.
 void SV_MasterHeartbeat( const char *hbname )
 {
 	int             i;
-	int             res;
 	int             netenabled;
 
 	netenabled = Cvar_VariableIntegerValue( "net_enabled" );
