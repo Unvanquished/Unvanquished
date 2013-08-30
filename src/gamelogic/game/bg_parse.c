@@ -1074,7 +1074,7 @@ Parses a configuration file describing the attributes of a class
 
 void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
 {
-    char *token;
+    char *token = NULL;
     char text_buffer[ 20000 ];
     char* text;
     configVar_t* var;

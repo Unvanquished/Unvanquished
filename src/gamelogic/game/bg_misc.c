@@ -819,12 +819,12 @@ void BG_UnloadAllConfigs( void )
         if ( ca )
         {
             // Do not free the statically allocated empty string
-            if( *ca->info != '\0' )
+            if( ca->info && *ca->info != '\0' )
             {
                 BG_Free( (char *)ca->info );
             }
 
-            if( *ca->fovCvar != '\0' )
+            if( ca->fovCvar && *ca->fovCvar != '\0' )
             {
                 BG_Free( (char *)ca->fovCvar );
             }
@@ -844,7 +844,7 @@ void BG_UnloadAllConfigs( void )
         {
             BG_Free( (char *)wa->humanName );
 
-            if( *wa->info != '\0' )
+            if( wa->info && *wa->info != '\0' )
             {
                 BG_Free( (char *)wa->info );
             }
@@ -859,7 +859,7 @@ void BG_UnloadAllConfigs( void )
         {
             BG_Free( (char *)ua->humanName );
 
-            if( *ua->info != '\0' )
+            if( ua->info && *ua->info != '\0' )
             {
                 BG_Free( (char *)ua->info );
             }
