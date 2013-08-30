@@ -4560,10 +4560,10 @@ void PM_UpdateViewAngles( playerState_t *ps, const usercmd_t *cmd )
 	}
 }
 
-#if defined(Q3_VM) || ( defined(_WIN32) && !defined(__MINGW32__) )
+#ifdef Q3_VM
 static float roundf( float v )
 {
-	return (int)( v + ( v < 0 ? -0.5 : 0.5 ) );
+	return floorf( v + 0.5 );
 }
 #endif
 
