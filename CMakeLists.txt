@@ -192,7 +192,12 @@ else()
   # Hardening
   add_definitions( -D_FORTIFY_SOURCE=2 )
   if( ENABLE_HARDENING )
-    try_c_cxx_flag( FSTACK_PROTECTOR "-fstack-protector" )
+    try_c_cxx_flag( FSTACK_PROTECTOR "-fno-strict-overflow" )
+    try_c_cxx_flag( FSTACK_PROTECTOR "-fstack-protector-all" )
+    try_c_cxx_flag( FSTACK_PROTECTOR "--param ssp-buffer-size=1" )
+    try_c_cxx_flag( FSTACK_PROTECTOR "-Wstack-protector" )
+    try_c_cxx_flag( FSTACK_PROTECTOR "-fPIE" )
+    try_linker_flag( FSTACK_PROTECTOR "-pie" )
   endif()
 
   # Linker flags
@@ -201,6 +206,11 @@ else()
   try_linker_flag( LINKER_AS_NEEDED "-Wl,--as-needed" )
   try_linker_flag( LINKER_NO_UNDEFINED "-Wl,--no-undefined" )
   try_linker_flag( LINKER_Z_RELRO "-Wl,-z,relro" )
+  try_linker_flag( LINKER_Z_NOW "-Wl,-z,now" )
+  if( WIN32 )
+    try_linker_flag( LINKER_DYNAMICBASE "-Wl,--dynamicbase" )
+    try_linker_flag( LINKER_NXCOMPAT "-Wl,--nxcompat" )
+  endif()
 
   # LTO support, only used on release builds
   if( ENABLE_LTO )
