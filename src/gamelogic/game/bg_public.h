@@ -177,8 +177,8 @@ typedef enum
 
 typedef struct
 {
-	int   pouncePayload;
-	float fallVelocity;
+	int    pouncePayload;
+	vec3_t fallImpactVelocity;
 } pmoveExt_t;
 
 #define MAXTOUCH 32
@@ -353,6 +353,7 @@ typedef enum
   WP_NONE,
 
   WP_ALEVEL0,
+  WP_ALEVEL0_UPG,
   WP_ALEVEL1,
   WP_ALEVEL1_UPG,
   WP_ALEVEL2,
@@ -846,6 +847,7 @@ typedef enum
 
   //offensive classes
   PCL_ALIEN_LEVEL0,
+  PCL_ALIEN_LEVEL0_UPG,
   PCL_ALIEN_LEVEL1,
   PCL_ALIEN_LEVEL1_UPG,
   PCL_ALIEN_LEVEL2,
@@ -907,6 +909,8 @@ typedef enum
   MOD_FLAMER_SPLASH,
   MOD_BURN,
   MOD_GRENADE,
+  MOD_WEIGHT_H,
+
   MOD_WATER,
   MOD_SLIME,
   MOD_LAVA,
@@ -928,7 +932,7 @@ typedef enum
   MOD_LEVEL2_ZAP,
   MOD_LEVEL4_CLAW,
   MOD_LEVEL4_TRAMPLE,
-  MOD_LEVEL4_CRUSH,
+  MOD_WEIGHT_A,
 
   MOD_SLOWBLOB,
   MOD_POISON,
@@ -1014,6 +1018,7 @@ typedef struct
 	float    stopSpeed;
 	float    jumpMagnitude;
 	float    knockbackScale;
+	int      mass;
 
 	int      cost;
 	int      value;

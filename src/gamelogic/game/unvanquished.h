@@ -44,16 +44,27 @@ extern int   ABUILDER_BLOB_DMG;
 extern float ABUILDER_BLOB_SPEED;
 extern float ABUILDER_BLOB_SPEED_MOD;
 extern int   ABUILDER_BLOB_TIME;
+#define ABUILDER_BLOB_FIRE_IMMUNITY   3000   // in ms, friendly buildables gain immunity for fire on hit
+#define ABUILDER_BLOB_FIRE_STOP_RANGE 20     // granger spit that hits a surface kills environmental fire in this range
 
 extern int   LEVEL0_BITE_DMG;
 extern float LEVEL0_BITE_RANGE;
 extern float LEVEL0_BITE_WIDTH;
 extern int   LEVEL0_BITE_REPEAT;
+#define LEVEL0_POUNCE_DISTANCE        300 // pitch between LEVEL0_POUNCE_MINPITCH and pi/4 results in this distance
+#define LEVEL0_POUNCE_MINPITCH        M_PI / 12.0f // 15°, minimum pitch that will result in full pounce distance
+#define LEVEL0_POUNCE_COOLDOWN        2000
+#define LEVEL0_WALLPOUNCE_MAGNITUDE   600
+#define LEVEL0_WALLPOUNCE_COOLDOWN    750
+#define LEVEL0_SIDEPOUNCE_MAGNITUDE   400
+#define LEVEL0_SIDEPOUNCE_DIR_Z       0.4f // in ]0.0f,1.0f], fixed Z-coordinate of sidepounce
+#define LEVEL0_SIDEPOUNCE_COOLDOWN    750
 
 extern int   LEVEL1_CLAW_DMG;
 extern float LEVEL1_CLAW_RANGE;
 extern float LEVEL1_CLAW_U_RANGE;
 extern float LEVEL1_CLAW_WIDTH;
+#define LEVEL1_CLAW_K_SCALE           1.0f
 extern float LEVEL1_GRAB_RANGE;
 extern float LEVEL1_GRAB_U_RANGE;
 extern int   LEVEL1_GRAB_TIME;
@@ -201,7 +212,10 @@ extern int   LEVEL4_CRUSH_REPEAT;
 #define CREEP_SCALEDOWN_TIME    3000
 
 #define BURN_DAMAGE             10
-#define BURN_DAMAGE_PERIOD      1000
+#define BURN_DAMAGE_PERIOD      1000 // high, so we don't get popcorn sound with all the damage anims
+#define BURN_SPLDAMAGE          10
+#define BURN_SPLDAMAGE_RADIUS   60
+#define BURN_SPLDAMAGE_PERIOD   500
 #define BURN_STOP_PERIOD        2500
 #define BURN_STOP_CHANCE        0.5f
 #define BURN_SPREAD_PERIOD      1000
@@ -281,7 +295,7 @@ extern int   LEVEL4_CRUSH_REPEAT;
  */
 
 #define HUMAN_WDMG_MODIFIER      1.0f
-#define HDM(d) ((int)((float)d * HUMAN_WDMG_MODIFIER ))
+#define HDM(d)                   ((int)((float)d * HUMAN_WDMG_MODIFIER ))
 
 extern int   BLASTER_SPREAD;
 extern int   BLASTER_SPEED;
@@ -323,24 +337,35 @@ extern float FLAMER_LAG;
 extern float FLAMER_IGNITE_RADIUS;
 extern float FLAMER_IGNITE_CHANCE;
 extern float FLAMER_IGNITE_SPLCHANCE;
+#define FLAMER_DAMAGE            HDM(10)
+#define FLAMER_DAMAGE_MAXDST_MOD 0.5f    // damage decreases linearly from full damage to this during missile lifetime
+#define FLAMER_SPLASH_DAMAGE     FLAMER_DAMAGE
+#define FLAMER_SPLASH_RADIUS     50
+#define FLAMER_SPLASH_MINDST_MOD 0.5f    // splash damage increases linearly from this to full damage during lifetime
+#define FLAMER_LEAVE_FIRE_CHANCE 0.3f
 
 extern int   PRIFLE_DMG;
 extern int   PRIFLE_SPEED;
+#define PRIFLE_DAMAGE_FULL_TIME  0 // in ms, full damage for this time
+#define PRIFLE_DAMAGE_HALF_LIFE  0 // in ms, damage half life time after full damage period, 0 = off
 extern int   PRIFLE_SIZE;
 
 extern int   LCANNON_DAMAGE;
 extern int   LCANNON_RADIUS;
+#define LCANNON_DAMAGE_FULL_TIME 0 // in ms, full damage for this time
+#define LCANNON_DAMAGE_HALF_LIFE 0 // in ms, damage half life time after full damage period, 0 = off
 extern int   LCANNON_SIZE;
 extern int   LCANNON_SECONDARY_DAMAGE;
 extern int   LCANNON_SECONDARY_RADIUS;
 extern int   LCANNON_SECONDARY_SPEED;
+#define LCANNON_SECONDARY_RELOAD 2000
 extern int   LCANNON_SPEED;
 extern int   LCANNON_CHARGE_TIME_MAX;
 extern int   LCANNON_CHARGE_TIME_MIN;
 extern int   LCANNON_CHARGE_TIME_WARN;
 extern int   LCANNON_CHARGE_AMMO;
 
-#define HBUILD_HEALRATE             18
+#define HBUILD_HEALRATE          18
 
 /*
  * HUMAN upgrades
@@ -426,10 +451,20 @@ extern int   REACTOR_ATTACK_DCC_DAMAGE;
  * Misc
  */
 
+// fire
+#define FIRE_MIN_DISTANCE                  20.0f
+
 // fall distance
-#define MIN_FALL_DISTANCE                  30.0f //the fall distance at which fall damage kicks in
-#define MAX_FALL_DISTANCE                  120.0f //the fall distance at which maximum damage is dealt
+#define MIN_FALL_DISTANCE                  30.0f  // the fall distance at which fall damage kicks in
+#define MAX_FALL_DISTANCE                  120.0f // the fall distance at which maximum damage is dealt
 #define AVG_FALL_DISTANCE                  (( MIN_FALL_DISTANCE + MAX_FALL_DISTANCE ) / 2.0f )
+
+// impact and weight damage
+#define IMPACTDMG_JOULE_TO_DAMAGE          0.002f  // in 1/J
+#define IMPACTDMG_QU_TO_METER              0.03125 // in m/qu
+#define WEIGHTDMG_DMG_MODIFIER             0.25f   // multiply with weight difference to get DPS
+#define WEIGHTDMG_DPS_THRESHOLD            10      // ignore weight damage per second below this
+#define WEIGHTDMG_REPEAT                   200     // in ms, low value reduces damage precision
 
 // buildable explosion
 #define HUMAN_DETONATION_DELAY             5000
@@ -454,6 +489,7 @@ extern int   REACTOR_ATTACK_DCC_DAMAGE;
 #define DEFAULT_INITIAL_BUILD_POINTS       "50"  // in BP
 #define DEFAULT_INITIAL_MINE_RATE          "8"   // in (BP/min)/RGS
 #define DEFAULT_MINE_RATE_HALF_LIFE        "20"  // in min
+#define DEFAULT_MINIMUM_MINE_RATE          "50"
 
 // confidence & stages
 #define CONFIDENCE_PER_CREDIT              0.01f // used to award confidence based on credit rewards

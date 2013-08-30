@@ -145,17 +145,35 @@ OnSameTeam
 */
 qboolean OnSameTeam( gentity_t *ent1, gentity_t *ent2 )
 {
-	if ( !ent1->client || !ent2->client )
+	team_t team1, team2;
+
+	if ( ent1->client )
+	{
+		team1 = ent1->client->pers.teamSelection;
+	}
+	else if ( ent1->s.eType == ET_BUILDABLE )
+	{
+		team1 = ent1->buildableTeam;
+	}
+	else
 	{
 		return qfalse;
 	}
 
-	if ( ent1->client->pers.teamSelection == ent2->client->pers.teamSelection )
+	if ( ent2->client )
 	{
-		return qtrue;
+		team2 = ent2->client->pers.teamSelection;
+	}
+	else if ( ent2->s.eType == ET_BUILDABLE )
+	{
+		team2 = ent2->buildableTeam;
+	}
+	else
+	{
+		return qfalse;
 	}
 
-	return qfalse;
+	return ( team1 == team2 );
 }
 
 /*

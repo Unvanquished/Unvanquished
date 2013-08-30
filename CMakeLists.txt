@@ -113,7 +113,6 @@ cmake_dependent_option( USE_VOIP             "Compile with VOIP support"        
 cmake_dependent_option( USE_CIN_XVID         "Encode videos with XViD"                               1 BUILD_CLIENT                   0 )
 cmake_dependent_option( USE_INTERNAL_SDL     "Use SDL files included with Unvanquished"              0 BUILD_CLIENT                   0 )
 
-cmake_dependent_option( USE_CPUINFO          "Use CPUInfo (if compilation fails, then disable this)" 1 "X86 AND (BUILD_CLIENT OR BUILD_SERVER)" 0 )
 cmake_dependent_option( USE_CURSES           "Use the curses console"                                1 "BUILD_CLIENT OR BUILD_SERVER" 0 )
 cmake_dependent_option( USE_PHYSICS          "Compile with Newton Physics"                           0 "BUILD_CLIENT OR BUILD_SERVER" 0 )
 cmake_dependent_option( USE_INTERNAL_CRYPTO  "Use internal crypto (nettle)"                          0 "BUILD_CLIENT OR BUILD_SERVER" 0 )
@@ -682,13 +681,6 @@ set( CLIENTLIST
 
 if( USE_MUMBLE )
   set( CLIENTLIST ${CLIENTLIST} ${MOUNT_DIR}/engine/client/libmumblelink.c ${MOUNT_DIR}/engine/client/libmumblelink.h )
-endif()
-
-if( USE_CPUINFO )
-  set( CPUINFOLIST
-    ${MOUNT_DIR}/libs/cpuinfo/CPUInfo.c
-  )
-  add_definitions( -DUSE_CPUINFO )
 endif()
 
 if( ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
@@ -1651,11 +1643,10 @@ endif()
 
 if( BUILD_CLIENT )
   # Setup target client
-  add_executable( client ${SERVERLIST} ${CLIENTLIST} ${SDLBASELIST}
-    ${CPUINFOLIST} ${SDLLIST} ${QCOMMONLIST} ${SHAREDLIST} ${CRYPTOLIST} ${TINYGETTEXT_LIST}
+  add_executable( client ${SERVERLIST} ${CLIENTLIST} ${SDLBASELIST} ${SDLLIST} ${QCOMMONLIST} ${SHAREDLIST} ${CRYPTOLIST} ${TINYGETTEXT_LIST}
     ${DATABASELIST} ${MOUNT_DIR}/engine/qcommon/dl_main_curl.c ${SPEEXLIST} ${OPUSLIST} ${WIN_RC} )
   add_dependencies( client rendererGL )
-  include_directories( ${MOUNT_DIR}/libs/cpuinfo ${NEWTON_INCLUDES} )
+  include_directories( ${NEWTON_INCLUDES} )
   target_link_libraries( client ${OS_LIBRARIES} ${NEWTON_LIBRARY} )
   set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_XREAL_RENDERER COMPAT_ET USE_REFENTITY_ANIMATIONSYSTEM HAVE_SDL USE_CODEC_OPUS )
   set_target_properties( client PROPERTIES OUTPUT_NAME "daemon" PREFIX "" LINKER_LANGUAGE CXX )
@@ -1810,12 +1801,12 @@ endif()
 
 if( BUILD_SERVER )
   # Setup the target Server
-  add_executable( server ${SERVERLIST} ${SDLBASELIST} ${CPUINFOLIST}
+  add_executable( server ${SERVERLIST} ${SDLBASELIST}
     ${QCOMMONLIST} ${SHAREDLIST} ${DATABASELIST} ${CRYPTOLIST}
     ${MOUNT_DIR}/engine/null/null_client.c ${TINYGETTEXT_LIST}
     ${MOUNT_DIR}/engine/null/null_input.c ${MOUNT_DIR}/engine/null/null_snddma.c
     ${MOUNT_DIR}/engine/qcommon/dl_main_stubs.c ${WIN_RC} )
-  include_directories( ${MOUNT_DIR}/libs/cpuinfo ${NEWTON_INCLUDES} )
+  include_directories( ${NEWTON_INCLUDES} )
   target_link_libraries( server ${OS_LIBRARIES} ${NEWTON_LIBRARY} )
   set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS DEDICATED COMPAT_ET )
   set_target_properties( server PROPERTIES OUTPUT_NAME "daemonded" PREFIX "" LINKER_LANGUAGE CXX )
@@ -1927,12 +1918,12 @@ endif()
 ####################
 if( BUILD_TTY_CLIENT )
   # Setup the target Server
-  add_executable( ttyclient ${SERVERLIST} ${CLIENTLIST} ${SDLBASELIST} ${CPUINFOLIST}
+  add_executable( ttyclient ${SERVERLIST} ${CLIENTLIST} ${SDLBASELIST}
     ${QCOMMONLIST} ${SHAREDLIST} ${DATABASELIST} ${CRYPTOLIST}
     ${TINYGETTEXT_LIST}
     ${MOUNT_DIR}/engine/qcommon/dl_main_stubs.c ${WIN_RC}
     ${MOUNT_DIR}/engine/null/null_input.c ${MOUNT_DIR}/engine/null/null_snddma.c ${MOUNT_DIR}/engine/null/null_renderer.c )
-  include_directories( ${MOUNT_DIR}/libs/cpuinfo ${NEWTON_INCLUDES} )
+  include_directories( ${NEWTON_INCLUDES} )
   target_link_libraries( ttyclient ${OS_LIBRARIES} ${NEWTON_LIBRARY} )
   set_property( TARGET ttyclient APPEND PROPERTY COMPILE_DEFINITIONS COMPAT_ET BUILD_TTY_CLIENT REF_HARD_LINKED )
   set_target_properties( ttyclient PROPERTIES OUTPUT_NAME "daemon-tty" PREFIX "" LINKER_LANGUAGE CXX )

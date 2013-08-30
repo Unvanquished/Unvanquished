@@ -1867,7 +1867,6 @@ void NET_Config( qboolean enableNetworking )
 	qboolean stop;
 	qboolean start;
 	qboolean svRunning;
-	qboolean svChanged;
 
 	// get any latched changes to cvars
 	modified = NET_GetCvars();
