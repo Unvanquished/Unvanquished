@@ -134,8 +134,6 @@ void DoCheckAutoStrip( gentity_t *self )
 	AS_allowed_kpm     = g_AutoStrip_kpmAllowed.value;       //   0; 0 = off
 	AS_kpm_treshold    = g_AutoStrip_kpmTreshold.value;      //   0; 0 = off
 
-	my_team = self->client->pers.teamSelection == TEAM_ALIENS;
-
 	// safety check.. this should never happen, but :)
 	// ========================================================
 	if ( !self ) return;
@@ -143,6 +141,8 @@ void DoCheckAutoStrip( gentity_t *self )
 	if ( !self->client ) return;
 
 	if ( self->client->pers.namelog->strip ) return;
+
+	my_team = self->client->pers.teamSelection;
 
 	if ( my_team == TEAM_NONE )
 		return;
