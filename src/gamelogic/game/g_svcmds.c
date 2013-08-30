@@ -332,7 +332,7 @@ static void Svcmd_LayoutSave_f( void )
 
 	// sanitize name
 	s = &str[ 0 ];
-	srt2[ 0 ] = 0;
+	str2[ 0 ] = 0;
 
 	while ( *s && i < sizeof( str2 ) - 1 )
 	{
