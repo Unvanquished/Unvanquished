@@ -210,6 +210,11 @@ extern int memcmp( void *, void *, size_t );
 #define Q_snprintf  snprintf
 #endif
 
+// msvc does not have roundf
+#ifdef _MSC_VER
+#define roundf( f ) ( floor( f + 0.5 ) )
+#endif
+
 #ifdef _MSC_VER
 #include <io.h>
 

@@ -3494,7 +3494,6 @@ void G_BuildableThink( gentity_t *ent, int msec )
 	int   maxHealth = BG_Buildable( ent->s.modelindex )->health;
 	int   regenRate = BG_Buildable( ent->s.modelindex )->regenRate;
 	int   buildTime = BG_Buildable( ent->s.modelindex )->buildTime;
-	int   reason;
 
 	//toggle spawned flag for buildables
 	if ( !ent->spawned && ent->health > 0 && !level.pausedTime )
