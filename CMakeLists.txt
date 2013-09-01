@@ -155,6 +155,7 @@ else()
   set_c_cxx_flag( "-ffast-math" )
   set_c_cxx_flag( "-fno-strict-aliasing" )
   set_c_cxx_flag( "-fomit-frame-pointer" RELEASE )
+  set_c_cxx_flag( "-fomit-frame-pointer" MINSIZEREL )
 
   # Set arch on x86 to SSE2 minimum and enable CMPXCHG16B
   if( ARCH STREQUAL "x86" )
@@ -172,7 +173,8 @@ else()
   try_c_cxx_flag( FVISIBILITY_HIDDEN "-fvisibility=hidden" )
 
   # Extra debug flags
-  set_c_cxx_flag( "-g3" )
+  set_c_cxx_flag( "-g3" DEBUG )
+  set_c_cxx_flag( "-g3" RELWITHDEBINFO )
   try_c_cxx_flag( OPTIMIZE_DEBUG "-Og" DEBUG )
 
   # C++11 support
@@ -1031,130 +1033,143 @@ install( DIRECTORY ${CMAKE_BINARY_DIR}/main DESTINATION "Unvanquished" )
 
 # Function to setup all the Game/Cgame/UI libraries
 include( CMakeParseArguments )
-function( GAMELIB )
+function( GAMEMODULE )
   # ParseArguments setup
-  set( oneValueArgs LIB_NAME OUTPUT_DIR )
-  set( multiValueArgs COMPILE_DEF LIB_FILES )
-  cmake_parse_arguments( GAMELIB "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
+  set( oneValueArgs NAME OUTPUT_DIR )
+  set( multiValueArgs COMPILE_DEF FILES )
+  cmake_parse_arguments( GAMEMODULE "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
 
   if( BUILD_GAME_NATIVE )
-    # Xcode places the game libraries in the incorrect location. This should fix it
-    if( XCODE_VERSION OR MSVC )
-      set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE "Release/${GAMELIB_OUTPUT_DIR}" )
-      set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG "Debug/${GAMELIB_OUTPUT_DIR}" )
-      set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL "MinSizeRel/${GAMELIB_OUTPUT_DIR}" )
-      set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO "RelWithDebInfo/${GAMELIB_OUTPUT_DIR}" )
-    endif()
-
     # HACK: Compile shared files as C
     set_source_files_properties( ${SHAREDLIST_HACK} PROPERTIES LANGUAGE C )
-    add_executable( ${GAMELIB_LIB_NAME} ${GAMELIB_LIB_FILES} ${SHAREDLIST_HACK} ${NACL_LIST_NATIVE} )
-    target_link_libraries( ${GAMELIB_LIB_NAME} ${LIBS_BASE} )
-    set_target_properties( ${GAMELIB_LIB_NAME} PROPERTIES
-      RUNTIME_OUTPUT_DIRECTORY ${GAMELIB_OUTPUT_DIR}
-      COMPILE_DEFINITIONS ${GAMELIB_COMPILE_DEF}
+    add_executable( ${GAMEMODULE_NAME}-native ${GAMEMODULE_FILES} ${SHAREDLIST_HACK} ${NACL_LIST_NATIVE} )
+    target_link_libraries( ${GAMEMODULE_NAME}-native ${LIBS_BASE} )
+    set_target_properties( ${GAMEMODULE_NAME}-native PROPERTIES
+      RUNTIME_OUTPUT_DIRECTORY ${GAMEMODULE_OUTPUT_DIR}
+      RUNTIME_OUTPUT_DIRECTORY_RELEASE "Release/${GAMEMODULE_OUTPUT_DIR}"
+      RUNTIME_OUTPUT_DIRECTORY_DEBUG "Debug/${GAMEMODULE_OUTPUT_DIR}"
+      RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL "MinSizeRel/${GAMEMODULE_OUTPUT_DIR}"
+      RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO "RelWithDebInfo/${GAMEMODULE_OUTPUT_DIR}"
+      COMPILE_DEFINITIONS ${GAMEMODULE_COMPILE_DEF}
     )
   endif()
 
   if( BUILD_GAME_NACL )
     # Determine compiler and translator options
-    set( QVM_CPP_OPTIONS
-      -I"${LIB_DIR}/nacl"
+    set( NACL_COMPILE_OPTIONS
+      -I${LIB_DIR}/nacl
       -DNACL_BUILD_ARCH=x86 # Not actually used
       -DNACL_BUILD_SUBARCH=64 # Not actually used
-      -O3
+      -Wall
       -ffast-math
       -fvisibility=hidden
-      -fomit-frame-pointer
-      -g3
-      -Wall
       --pnacl-allow-exceptions
+      $<$<CONFIG:None>:-O3>
+      $<$<CONFIG:None>:-fomit-frame-pointer>
+      $<$<CONFIG:None>:-DNDEBUG>
+      $<$<CONFIG:Release>:-O3>
+      $<$<CONFIG:Release>:-fomit-frame-pointer>
+      $<$<CONFIG:Release>:-DNDEBUG>
+      $<$<CONFIG:Debug>:-O0>
+      $<$<CONFIG:Debug>:-g3>
+      $<$<CONFIG:RelWithDebInfo>:-O2>
+      $<$<CONFIG:RelWithDebInfo>:-DNDEBUG>
+      $<$<CONFIG:RelWithDebInfo>:-g3>
+      $<$<CONFIG:MinSizeRel>:-Os>
+      $<$<CONFIG:MinSizeRel>:-fomit-frame-pointer>
+      $<$<CONFIG:MinSizeRel>:-DNDEBUG>
     )
-    set( QVM_TRANSLATE_OPTIONS
-      -O3
+    set( NACL_TRANSLATE_OPTIONS
       --allow-llvm-bitcode-input
       --pnacl-allow-exceptions
+      $<$<CONFIG:None>:-O3>
+      $<$<CONFIG:Release>:-O3>
+      $<$<CONFIG:Debug>:-O0>
+      $<$<CONFIG:RelWithDebInfo>:-O2>
+      $<$<CONFIG:MinSizeRel>:-O2>
     )
-    foreach( DEF ${GAMELIB_COMPILE_DEF} )
-      set( QVM_CPP_OPTIONS ${QVM_CPP_OPTIONS} -D${DEF} )
+    foreach( DEF ${GAMEMODULE_COMPILE_DEF} )
+      set( NACL_COMPILE_OPTIONS ${NACL_COMPILE_OPTIONS} -D${DEF} )
     endforeach()
 
     # Compile C files with clang and C++ files with clang++
-    set( QVM_OBJECTS )
-    foreach( QVM_FILE ${GAMELIB_LIB_FILES} ${SHAREDLIST} ${NACL_LIST_MODULE} )
-      get_filename_component( QVM_FILENAME ${QVM_FILE} NAME_WE )
-      get_filename_component( QVM_FILEDIR ${QVM_FILE} PATH )
-      get_filename_component( QVM_EXT ${QVM_FILE} EXT )
-      set( QVM_COMPONENT ${OBJ_DIR}/${GAMELIB_LIB_NAME}-nacl.dir/${QVM_FILENAME} )
+    set( OBJECTS )
+    foreach( FILE ${GAMEMODULE_FILES} ${SHAREDLIST} ${NACL_LIST_MODULE} )
+      get_filename_component( FILENAME ${FILE} NAME_WE )
+      get_filename_component( FILEDIR ${FILE} PATH )
+      get_filename_component( EXT ${FILE} EXT )
+      set( OBJ ${OBJ_DIR}/${GAMEMODULE_NAME}-nacl.dir/${FILENAME}.o )
 
-      if( QVM_EXT STREQUAL .c )
-        add_custom_command( OUTPUT ${QVM_COMPONENT}.o
+      if( EXT STREQUAL .c )
+        add_custom_command( OUTPUT ${OBJ}
           COMMAND ${PNACL_TOOLCHAIN}/pnacl-clang${PNACL_BIN_EXT}
-            ${QVM_CPP_OPTIONS}
+            ${NACL_COMPILE_OPTIONS}
             -c
-            -o ${QVM_COMPONENT}.o
-            ${QVM_FILE}
-          DEPENDS ${QVM_FILE}
-          IMPLICIT_DEPENDS C ${QVM_FILE}
+            -o ${OBJ}
+            ${FILE}
+          DEPENDS ${FILE}
+          IMPLICIT_DEPENDS C ${FILE}
         )
-        set( QVM_OBJECTS ${QVM_OBJECTS} ${QVM_COMPONENT}.o )
-      elseif( QVM_EXT STREQUAL .cpp OR QVM_EXT STREQUAL .cc )
-        add_custom_command( OUTPUT ${QVM_COMPONENT}.o
+        set( OBJECTS ${OBJECTS} ${OBJ} )
+      elseif( EXT STREQUAL .cpp OR EXT STREQUAL .cc )
+        add_custom_command( OUTPUT ${OBJ}
           COMMAND ${PNACL_TOOLCHAIN}/pnacl-clang++${PNACL_BIN_EXT}
             -std=gnu++11
-            ${QVM_CPP_OPTIONS}
+            ${NACL_COMPILE_OPTIONS}
             -c
-            -o ${QVM_COMPONENT}.o
-            ${QVM_FILE}
-          DEPENDS ${QVM_FILE}
-          IMPLICIT_DEPENDS CXX ${QVM_FILE}
+            -o ${OBJ}
+            ${FILE}
+          DEPENDS ${FILE}
+          IMPLICIT_DEPENDS CXX ${FILE}
         )
-        set( QVM_OBJECTS ${QVM_OBJECTS} ${QVM_COMPONENT}.o )
+        set( OBJECTS ${OBJECTS} ${OBJ} )
       endif()
     endforeach()
 
     # Generate PNaCL platform-independant executable
     add_custom_command(
-      OUTPUT ${CMAKE_BINARY_DIR}/${GAMELIB_OUTPUT_DIR}/${GAMELIB_LIB_NAME}.pexe
+      OUTPUT ${CMAKE_BINARY_DIR}/${GAMEMODULE_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
       COMMAND ${PNACL_TOOLCHAIN}/pnacl-clang++${PNACL_BIN_EXT}
-        ${QVM_CPP_OPTIONS}
-        -o ${CMAKE_BINARY_DIR}/${GAMELIB_OUTPUT_DIR}/${GAMELIB_LIB_NAME}.pexe
-        ${QVM_OBJECTS}
-      DEPENDS ${QVM_OBJECTS}
+        ${NACL_COMPILE_OPTIONS}
+        -o ${CMAKE_BINARY_DIR}/${GAMEMODULE_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
+        ${OBJECTS}
+      DEPENDS ${OBJECTS}
     )
 
     # Generate NaCl executables for x86 and x86_64
     add_custom_command(
-      OUTPUT ${CMAKE_BINARY_DIR}/${GAMELIB_OUTPUT_DIR}/${GAMELIB_LIB_NAME}-x86.nexe
+      OUTPUT ${CMAKE_BINARY_DIR}/${GAMEMODULE_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86.nexe
       COMMAND ${PNACL_TOOLCHAIN}/pnacl-translate${PNACL_BIN_EXT}
-        ${QVM_TRANSLATE_OPTIONS}
+        ${NACL_TRANSLATE_OPTIONS}
         -arch i686
-        -o ${CMAKE_BINARY_DIR}/${GAMELIB_OUTPUT_DIR}/${GAMELIB_LIB_NAME}-x86.nexe
-        ${CMAKE_BINARY_DIR}/${GAMELIB_OUTPUT_DIR}/${GAMELIB_LIB_NAME}.pexe
-      DEPENDS ${CMAKE_BINARY_DIR}/${GAMELIB_OUTPUT_DIR}/${GAMELIB_LIB_NAME}.pexe
+        -o ${CMAKE_BINARY_DIR}/${GAMEMODULE_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86.nexe
+        ${CMAKE_BINARY_DIR}/${GAMEMODULE_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
+      DEPENDS ${CMAKE_BINARY_DIR}/${GAMEMODULE_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
     )
     add_custom_command(
-      OUTPUT ${CMAKE_BINARY_DIR}/${GAMELIB_OUTPUT_DIR}/${GAMELIB_LIB_NAME}-x86_64.nexe
+      OUTPUT ${CMAKE_BINARY_DIR}/${GAMEMODULE_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86_64.nexe
       COMMAND ${PNACL_TOOLCHAIN}/pnacl-translate${PNACL_BIN_EXT}
-        ${QVM_TRANSLATE_OPTIONS}
+        ${NACL_TRANSLATE_OPTIONS}
         -arch x86-64
-        -o ${CMAKE_BINARY_DIR}/${GAMELIB_OUTPUT_DIR}/${GAMELIB_LIB_NAME}-x86_64.nexe
-        ${CMAKE_BINARY_DIR}/${GAMELIB_OUTPUT_DIR}/${GAMELIB_LIB_NAME}.pexe
-      DEPENDS ${CMAKE_BINARY_DIR}/${GAMELIB_OUTPUT_DIR}/${GAMELIB_LIB_NAME}.pexe
+        -o ${CMAKE_BINARY_DIR}/${GAMEMODULE_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86_64.nexe
+        ${CMAKE_BINARY_DIR}/${GAMEMODULE_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
+      DEPENDS ${CMAKE_BINARY_DIR}/${GAMEMODULE_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
     )
 
     # Dummy target to get CMake to execute the commands
-    add_custom_target( ${GAMELIB_LIB_NAME}-nacl ALL
-      DEPENDS ${CMAKE_BINARY_DIR}/${GAMELIB_OUTPUT_DIR}/${GAMELIB_LIB_NAME}-x86_64.nexe ${CMAKE_BINARY_DIR}/${GAMELIB_OUTPUT_DIR}/${GAMELIB_LIB_NAME}-x86.nexe
+    add_custom_target( ${GAMEMODULE_NAME}-nacl ALL
+      DEPENDS ${CMAKE_BINARY_DIR}/${GAMEMODULE_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
+        ${CMAKE_BINARY_DIR}/${GAMEMODULE_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86.nexe
+        ${CMAKE_BINARY_DIR}/${GAMEMODULE_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86_64.nexe
     )
   endif()
 
 endfunction()
 
-GAMELIB( LIB_NAME game
+GAMEMODULE( NAME game
   OUTPUT_DIR main
   COMPILE_DEF GAME
-  LIB_FILES ${GAMEGPP_BASE}
+  FILES ${GAMEGPP_BASE}
 )
 
 ################################################################################
