@@ -382,7 +382,6 @@ static configVar_t bg_configVars[] =
 	{"w_level3_clawDmg", INTEGER, qfalse, &LEVEL3_CLAW_DMG},
 	{"w_level3_clawRange", FLOAT, qfalse, &LEVEL3_CLAW_RANGE},
 	{"w_level3_clawWidth", FLOAT, qfalse, &LEVEL3_CLAW_WIDTH},
-	{"w_level3_pounceCancelTime", INTEGER, qfalse, &LEVEL3_POUNCE_TIME},
 	{"w_level3_pounceDmg", INTEGER, qfalse, &LEVEL3_POUNCE_DMG},
 	{"w_level3_pounceDuration", INTEGER, qfalse, &LEVEL3_POUNCE_TIME},
 	{"w_level3_pounceJumpMagnitude", INTEGER, qfalse, &LEVEL3_POUNCE_JUMP_MAG},
