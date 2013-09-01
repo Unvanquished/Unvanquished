@@ -3880,6 +3880,9 @@ static void UI_RunMenuScript( char **args )
 		}
 		else if ( Q_stricmp( name, "applyProfile" ) == 0 )
 		{
+			if ( uiInfo.profileList[ uiInfo.profileIndex ].name == NULL )
+				// no default profile yet
+				return;
 			Q_strncpyz( cl_profile.string, uiInfo.profileList[ uiInfo.profileIndex ].name, sizeof( cl_profile.string ) );
 			Q_CleanStr( cl_profile.string );
 			Q_CleanDirName( cl_profile.string );
@@ -3892,6 +3895,9 @@ static void UI_RunMenuScript( char **args )
 		{
 			fileHandle_t    f;
 
+			if ( uiInfo.profileList[ uiInfo.profileIndex ].name == NULL )
+				// no default profile yet
+				return;
 			Q_strncpyz( cl_defaultProfile.string, uiInfo.profileList[ uiInfo.profileIndex ].name, sizeof( cl_profile.string ) );
 			Q_CleanStr( cl_defaultProfile.string );
 			Q_CleanDirName( cl_defaultProfile.string );
