@@ -5060,6 +5060,7 @@ void UI_ParseLanguages( void )
 	{
 		if( *p == '"' && quoted )
 		{
+		        temp[ index ] = 0;
 			uiInfo.languages[ lang++ ].name = String_Alloc( temp );
 			quoted = qfalse;
 			index = 0;
@@ -5081,6 +5082,7 @@ void UI_ParseLanguages( void )
 	{
 		if( *p == '"' && quoted )
 		{
+		        temp[ index ] = 0;
 			uiInfo.languages[ lang++ ].lang = String_Alloc( temp );
 			quoted = qfalse;
 			index = 0;
