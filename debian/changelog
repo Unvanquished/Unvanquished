@@ -1,3 +1,9 @@
+unvanquished (0.19.0-1) unstable; urgency=low
+
+  * Release of alpha 19.
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Sun, 01 Sep 2013 21:17:27 +0100
+
 unvanquished (0.18.0-2) unstable; urgency=low
 
   * .pk3 downloading fixes:
