@@ -178,7 +178,7 @@ typedef struct
 	refBone_t         bones[ MAX_BONES ];
 
 	vec3_t            bounds[ 2 ]; // bounds of all applied animations
-	vec3_t            scale;
+	vec_t             scale;
 } refSkeleton_t;
 #endif
 

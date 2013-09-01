@@ -857,10 +857,7 @@ static qboolean CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo
 	text[ len ] = 0;
 	trap_FS_FCloseFile( f );
 
-	for ( i = 0; i < 3; i++ )
-	{
-		wi->scale[ i ] = 1.0;
-	}
+	wi->scale = 1.0f;
 
 	// parse the text
 	text_p = text;
@@ -1208,16 +1205,11 @@ static qboolean CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo
 				continue;
 			}
 
-			for ( i = 0; i < 3; i++ )
+			token = COM_ParseExt2( &text_p, qfalse );
+
+			if ( token )
 			{
-				token = COM_ParseExt2( &text_p, qfalse );
-
-				if ( !token )
-				{
-					break;
-				}
-
-				wi->scale[ i ] = atof( token );
+				wi->scale = atof( token );
 			}
 
 			continue;

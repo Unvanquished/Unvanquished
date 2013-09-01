@@ -1145,10 +1145,8 @@ void CG_GhostBuildable( buildable_t buildable )
 
 	if ( cg_buildables[ buildable ].md5 )
 	{
-		vec3_t Scale;
-		Scale[0] = Scale[1] = Scale[2] = scale;
 		trap_R_BuildSkeleton( &ent.skeleton, cg_buildables[ buildable ].animations[ BANIM_IDLE1 ].handle, 0, 0, 0, qfalse );
-		CG_TransformSkeleton( &ent.skeleton, Scale );
+		CG_TransformSkeleton( &ent.skeleton, scale );
 
 		VectorCopy( mins, ent.skeleton.bounds[ 0 ] );
 		VectorCopy( maxs, ent.skeleton.bounds[ 1 ] );
@@ -2252,11 +2250,10 @@ void CG_Buildable( centity_t *cent )
 
 	if ( cg_buildables[ es->modelindex ].md5 )
 	{
-		vec3_t    Scale;
 		qboolean  spawned = ( es->eFlags & EF_B_SPAWNED ) || ( team == TEAM_HUMANS ); // If buildable has spawned or is a human buildable, don't alter the size
 
-		Scale[0] = Scale[1] = Scale[2] = spawned ? scale :
-		       scale * (float) sin ( 0.5f * (cg.time - es->time) / buildable->buildTime * M_PI );
+		float realScale = spawned ? scale :
+			scale * (float) sin ( 0.5f * (cg.time - es->time) / buildable->buildTime * M_PI );
 		ent.skeleton = bSkeleton;
 
 		if( es->modelindex == BA_H_MGTURRET )
@@ -2273,7 +2270,7 @@ void CG_Buildable( centity_t *cent )
 			QuatMultiply0( ent.skeleton.bones[ 6 ].rotation, rotation );
 		}
 
-		CG_TransformSkeleton( &ent.skeleton, Scale );
+		CG_TransformSkeleton( &ent.skeleton, realScale );
 		VectorCopy(mins, ent.skeleton.bounds[ 0 ]);
 		VectorCopy(maxs, ent.skeleton.bounds[ 1 ]);
 

@@ -151,9 +151,7 @@ static qboolean CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 	ci->fixedlegs = qfalse;
 	ci->fixedtorso = qfalse;
 	ci->numLegBones = 0;
-	ci->modelScale[ 0 ] = 1;
-	ci->modelScale[ 1 ] = 1;
-	ci->modelScale[ 2 ] = 1;
+	ci->modelScale = 1.0f;
 	ci->leftShoulderBone = 0;
 	ci->rightShoulderBone = 0;
 
@@ -253,16 +251,11 @@ static qboolean CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 		}
 		else if ( !Q_stricmp( token, "modelScale" ) )
 		{
-			for ( i = 0; i < 3; i++ )
+			token = COM_ParseExt2( &text_p, qfalse );
+
+			if ( token )
 			{
-				token = COM_ParseExt2( &text_p, qfalse );
-
-				if ( !token )
-				{
-					break;
-				}
-
-				ci->modelScale[ i ] = atof( token );
+				ci->modelScale = atof( token );
 			}
 
 			continue;
@@ -1367,7 +1360,7 @@ CG_CopyClientInfoModel
 static void CG_CopyClientInfoModel( clientInfo_t *from, clientInfo_t *to )
 {
 	VectorCopy( from->headOffset, to->headOffset );
-	VectorCopy( from->modelScale, to->modelScale );
+	to->modelScale = from->modelScale;
 	to->footsteps = from->footsteps;
 	to->gender = from->gender;
 

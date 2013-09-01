@@ -75,7 +75,7 @@ static INLINE void BoneMatrixSetupTransform( boneMatrix_t m, const quat_t rot, c
 	m[ 11 ] = origin[ 2 ];
 }
 
-static INLINE void BoneMatrixSetupTransformWithScale( boneMatrix_t m, const quat_t rot, const vec3_t origin, const vec3_t scale )
+static INLINE void BoneMatrixSetupTransformWithScale( boneMatrix_t m, const quat_t rot, const vec3_t origin, const vec_t scale )
 {
 	float xx = 2.0f * rot[ 0 ] * rot[ 0 ];
 	float yy = 2.0f * rot[ 1 ] * rot[ 1 ];
@@ -87,17 +87,17 @@ static INLINE void BoneMatrixSetupTransformWithScale( boneMatrix_t m, const quat
 	float wy = 2.0f * rot[ 3 ] * rot[ 1 ];
 	float wz = 2.0f * rot[ 3 ] * rot[ 2 ];
 
-	m[ 0 ] = scale[ 0 ] * ( 1.0f - ( yy + zz ) );
-	m[ 1 ] = scale[ 0 ] * ( xy - wz );
-	m[ 2 ] = scale[ 0 ] * ( xz + wy );
+	m[ 0 ] = scale * ( 1.0f - ( yy + zz ) );
+	m[ 1 ] = scale * ( xy - wz );
+	m[ 2 ] = scale * ( xz + wy );
 	m[ 3 ] = origin[ 0 ];
-	m[ 4 ] = scale[ 1 ] * ( xy + wz );
-	m[ 5 ] = scale[ 1 ] * ( 1.0f - ( xx + zz ) );
-	m[ 6 ] = scale[ 1 ] * ( yz - wx );
+	m[ 4 ] = scale * ( xy + wz );
+	m[ 5 ] = scale * ( 1.0f - ( xx + zz ) );
+	m[ 6 ] = scale * ( yz - wx );
 	m[ 7 ] = origin[ 1 ];
-	m[ 8 ] = scale[ 2 ] * ( xz - wy );
-	m[ 9 ] = scale[ 2 ] * ( yz + wx );
-	m[ 10 ] = scale[ 2 ] * ( 1.0f - ( xx + yy ) );
+	m[ 8 ] = scale * ( xz - wy );
+	m[ 9 ] = scale * ( yz + wx );
+	m[ 10 ] = scale * ( 1.0f - ( xx + yy ) );
 	m[ 11 ] = origin[ 2 ];
 }
 
