@@ -35,26 +35,27 @@ attribute vec3		attr_LightDirection;
 uniform mat4		u_DiffuseTextureMatrix;
 uniform mat4		u_NormalTextureMatrix;
 uniform mat4		u_SpecularTextureMatrix;
+uniform mat4		u_GlowTextureMatrix;
 uniform mat4		u_ModelViewProjectionMatrix;
 
 uniform float		u_Time;
 
 uniform vec4		u_ColorModulate;
 uniform vec4		u_Color;
+uniform vec3		u_ViewOrigin;
 
-varying vec3		var_Position;
-varying vec4		var_TexDiffuseNormal;
-//varying vec2		var_TexSpecular;
+varying vec4		var_TexDiffuseGlow;
+
 #if defined(USE_NORMAL_MAPPING)
+varying vec4		var_TexNormalSpecular;
+varying vec3		var_ViewDir;
 varying vec3		var_AmbientLight;
 varying vec3		var_DirectedLight;
 varying vec3		var_LightDirection;
 #else
+varying vec3		var_Normal;
 varying vec4		var_LightColor;
 #endif
-varying vec3		var_Tangent;
-varying vec3		var_Binormal;
-varying vec3		var_Normal;
 
 
 
@@ -72,34 +73,38 @@ void	main()
 	// transform vertex position into homogenous clip-space
 	gl_Position = u_ModelViewProjectionMatrix * position;
 
-	// assign position in object space
-	var_Position = position.xyz;
-
 	// transform diffusemap texcoords
-	var_TexDiffuseNormal.st = (u_DiffuseTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0)).st;
+	var_TexDiffuseGlow.st = (u_DiffuseTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0)).st;
 
 #if defined(USE_NORMAL_MAPPING)
 	// transform normalmap texcoords
-	var_TexDiffuseNormal.pq = (u_NormalTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0)).st;
+	var_TexNormalSpecular.st = (u_NormalTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0)).st;
 
 	// transform specularmap texture coords
-//	var_TexSpecular = (u_SpecularTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0)).st;
+	var_TexNormalSpecular.pq = (u_SpecularTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0)).st;
 
-	// assign vertex to light vector in object space
 	var_AmbientLight = attr_AmbientLight;
-	// assign vertex to light vector in object space
 	var_DirectedLight = attr_DirectedLight;
-	// assign vertex to light vector in object space
-	var_LightDirection = attr_LightDirection;
+	
+	// construct object-space-to-tangent-space 3x3 matrix
+	mat3 objectToTangentMatrix = mat3( attr_Tangent.x, attr_Binormal.x, attr_Normal.x,
+							attr_Tangent.y, attr_Binormal.y, attr_Normal.y,
+							attr_Tangent.z, attr_Binormal.z, attr_Normal.z	);
+
+	
+	// assign vertex to light vector in tangent space
+	var_LightDirection = objectToTangentMatrix * attr_LightDirection;
+	
+	// assign vertex to view origin vector in tangent space
+	var_ViewDir = objectToTangentMatrix * normalize( u_ViewOrigin - position.xyz );
 #else
 	// assign color
 	var_LightColor = attr_Color * u_ColorModulate + u_Color;
-#endif
-
-#if defined(USE_NORMAL_MAPPING)
-	var_Tangent = attr_Tangent;
-	var_Binormal = attr_Binormal;
-#endif
-
+	
 	var_Normal = attr_Normal;
+#endif
+
+#if defined(USE_GLOW_MAPPING)
+	var_TexDiffuseGlow.pq = ( u_GlowTextureMatrix * vec4(attr_TexCoord0, 0.0, 1.0) ).st;
+#endif
 }

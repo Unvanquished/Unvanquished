@@ -31,29 +31,45 @@ int            g_numArmourRegions[ UP_NUM_UPGRADES ];
 
 /*
 ============
-AddScore
+AddScoreHelper
 
-Adds score to the client
+Helper function for G_AddCreditsToScore and G_AddConfidenceToScore.
 ============
 */
-void AddScore( gentity_t *ent, int score )
+static void AddScoreHelper( gentity_t *self, float score )
 {
-	if ( !ent->client )
+	if ( !self->client || self->client->pers.connected != CON_CONNECTED )
 	{
 		return;
 	}
 
-	// make alien and human scores equivalent
-	if ( ent->client->pers.teamSelection == TEAM_ALIENS )
-	{
-		score = rint( ( ( float ) score ) / 2.0f );
-	}
+	self->client->ps.persistant[ PERS_SCORE ] += ( int )( score + 0.5f );
 
-	// scale values down to fit the scoreboard better
-	score = rint( ( ( float ) score ) / 50.0f );
-
-	ent->client->ps.persistant[ PERS_SCORE ] += score;
 	CalculateRanks();
+}
+
+/*
+============
+G_AddCreditsToScore
+
+Adds score to the client, input represents a credit value.
+============
+*/
+void G_AddCreditsToScore( gentity_t *self, int credits )
+{
+	AddScoreHelper( self, credits * SCORE_PER_CREDIT );
+}
+
+/*
+============
+G_AddConfidenceToScore
+
+Adds score to the client, input represents a confidence value.
+============
+*/
+void G_AddConfidenceToScore( gentity_t *self, float confidence )
+{
+	AddScoreHelper( self, confidence * SCORE_PER_CONFIDENCE );
 }
 
 /*
@@ -93,6 +109,9 @@ static const char *const modNames[] =
 	"MOD_LCANNON_SPLASH",
 	"MOD_FLAMER",
 	"MOD_FLAMER_SPLASH",
+	"MOD_BURN",
+	"MOD_WEIGHT_H",
+
 	"MOD_GRENADE",
 	"MOD_WATER",
 	"MOD_SLIME",
@@ -115,7 +134,7 @@ static const char *const modNames[] =
 	"MOD_LEVEL2_ZAP",
 	"MOD_LEVEL4_CLAW",
 	"MOD_LEVEL4_TRAMPLE",
-	"MOD_LEVEL4_CRUSH",
+	"MOD_WEIGHT_A",
 
 	"MOD_SLOWBLOB",
 	"MOD_POISON",
@@ -139,114 +158,153 @@ static const char *const modNames[] =
 G_RewardAttackers
 
 Function to distribute rewards to entities that killed this one.
-Returns the total damage dealt.
 ==================
 */
-float G_RewardAttackers( gentity_t *self )
+void G_RewardAttackers( gentity_t *self )
 {
-	float     value, totalDamage = 0;
-	int       team, i, maxHealth = 0;
-	int       alienCredits = 0, humanCredits = 0;
+	float     value, reward;
+	int       playerNum, enemyDamage, maxHealth, damageShare;
 	gentity_t *player;
+	team_t    ownTeam, playerTeam;
+	confidence_reason_t    reason;
+	confidence_qualifier_t qualifier;
 
-	// Total up all the damage done by non-teammates
-	for ( i = 0; i < level.maxclients; i++ )
-	{
-		player = g_entities + i;
-
-		if ( !OnSameTeam( self, player ) ||
-		     self->buildableTeam != player->client->ps.stats[ STAT_TEAM ] )
-		{
-			totalDamage += ( float ) self->credits[ i ];
-		}
-	}
-
-	if ( totalDamage <= 0.0f )
-	{
-		return 0.0f;
-	}
-
-	// Only give credits for killing players and buildables
+	// Only reward killing players and buildables
 	if ( self->client )
 	{
-		value = BG_GetValueOfPlayer( &self->client->ps );
-		team = self->client->pers.teamSelection;
+		ownTeam = self->client->pers.teamSelection;
 		maxHealth = self->client->ps.stats[ STAT_MAX_HEALTH ];
+		value = ( float )BG_GetValueOfPlayer( &self->client->ps );
 	}
 	else if ( self->s.eType == ET_BUILDABLE )
 	{
-		value = BG_Buildable( self->s.modelindex )->value;
+		ownTeam = self->buildableTeam;
+		maxHealth = BG_Buildable( self->s.modelindex )->health;
+		value = ( float )BG_Buildable( self->s.modelindex )->value;
 
-		// only give partial credits for a buildable not yet completed
+		// Give partial credits for buildables in construction
 		if ( !self->spawned )
 		{
-			value *= ( float )( level.time - self->creationTime ) /
-			         BG_Buildable( self->s.modelindex )->buildTime;
+			value *= ( float )( level.time - self->creationTime ) / BG_Buildable( self->s.modelindex )->buildTime;
 		}
-
-		team = self->buildableTeam;
-		maxHealth = BG_Buildable( self->s.modelindex )->health;
 	}
 	else
 	{
-		return totalDamage;
+		return;
 	}
 
-	// Give credits and empty the array
-	for ( i = 0; i < level.maxclients; i++ )
+	enemyDamage = 0;
+
+	// Sum up damage dealt by enemies
+	for ( playerNum = 0; playerNum < level.maxclients; playerNum++ )
 	{
-		int stageValue = value * self->credits[ i ] / totalDamage;
-		player = g_entities + i;
+		player = &g_entities[ playerNum ];
+		playerTeam = player->client->pers.teamSelection;
 
-		if ( player->client->pers.teamSelection != team )
+		// Player must be on the other team
+		if ( playerTeam == ownTeam || playerTeam <= TEAM_NONE || playerTeam >= NUM_TEAMS )
 		{
-			if ( totalDamage < maxHealth )
-			{
-				stageValue *= totalDamage / maxHealth;
-			}
-
-			if ( !self->credits[ i ] || player->client->ps.stats[ STAT_TEAM ] == team )
-			{
-				continue;
-			}
-
-			AddScore( player, stageValue );
-
-			// killing buildables earns score, but not credits
-			if ( self->s.eType != ET_BUILDABLE )
-			{
-				G_AddCreditToClient( player->client, stageValue, qtrue );
-
-				// add to stage counters
-				if ( player->client->ps.stats[ STAT_TEAM ] == TEAM_ALIENS )
-				{
-					alienCredits += stageValue;
-				}
-				else if ( player->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
-				{
-					humanCredits += stageValue;
-				}
-			}
+			continue;
 		}
 
-		self->credits[ i ] = 0;
+		enemyDamage += self->credits[ playerNum ];
 	}
 
-	if ( alienCredits )
+	if ( enemyDamage <= 0 )
 	{
-		trap_Cvar_Set( "g_alienCredits",
-		               va( "%d", g_alienCredits.integer + alienCredits ) );
-		trap_Cvar_Update( &g_alienCredits );
+		return;
 	}
 
-	if ( humanCredits )
+	// Give individual rewards
+	for ( playerNum = 0; playerNum < level.maxclients; playerNum++ )
 	{
-		trap_Cvar_Set( "g_humanCredits",
-		               va( "%d", g_humanCredits.integer + humanCredits ) );
-		trap_Cvar_Update( &g_humanCredits );
-	}
+		player = &g_entities[ playerNum ];
+		playerTeam = player->client->pers.teamSelection;
+		damageShare = self->credits[ playerNum ];
 
-	return totalDamage;
+		// Clear reward array
+		self->credits[ playerNum ] = 0;
+
+		// Player must be on the other team
+		if ( playerTeam == ownTeam || playerTeam <= TEAM_NONE || playerTeam >= NUM_TEAMS )
+		{
+			continue;
+		}
+
+		// Player must have dealt damage
+		if ( damageShare <= 0 )
+		{
+			continue;
+		}
+
+		reward = value * ( damageShare / ( float )maxHealth );
+
+		if ( reward <= 0.0f )
+		{
+			continue;
+		}
+
+		if ( self->s.eType == ET_BUILDABLE )
+		{
+			G_AddConfidenceToScore( player, reward );
+
+			switch ( self->s.modelindex )
+			{
+				case BA_A_OVERMIND:
+				case BA_H_REACTOR:
+					reason = CONF_REAS_DESTR_CRUCIAL;
+					break;
+
+				case BA_A_ACIDTUBE:
+				case BA_A_TRAPPER:
+				case BA_A_HIVE:
+				case BA_H_MGTURRET:
+				case BA_H_TESLAGEN:
+					reason = CONF_REAS_DESTR_AGGRESSIVE;
+					break;
+
+				default:
+					reason = CONF_REAS_DESTR_SUPPORT;
+			}
+
+			qualifier = CONF_QUAL_NONE;
+
+			G_AddConfidence( playerTeam, CONFIDENCE_DESTRUCTION, reason, qualifier, reward, player );
+		}
+		else
+		{
+			G_AddCreditsToScore( player, ( int )reward );
+			G_AddCreditToClient( player->client, ( short )reward, qtrue );
+
+			// Give confidence for killing non-naked players outside the friendly base
+			switch ( self->client->ps.stats[ STAT_CLASS ] )
+			{
+				case PCL_ALIEN_LEVEL0:
+				case PCL_ALIEN_BUILDER0:
+				case PCL_ALIEN_BUILDER0_UPG:
+					break;
+
+				case PCL_HUMAN:
+					// Treat a human just wearing light armor as naked
+					if ( ( int )value <= BG_Class( PCL_HUMAN )->value +
+					                     ( BG_Upgrade( UP_LIGHTARMOUR )->price / 2 ) )
+					{
+						break;
+					}
+
+				default:
+					if ( G_InsideBase( player, qtrue ) || G_InsideBase( self, qfalse ) )
+					{
+						break;
+					}
+
+					qualifier = CONF_QUAL_OUTSIDE_OWN_BASE;
+
+					G_AddConfidence( playerTeam, CONFIDENCE_KILLING, CONF_REAS_KILLING,
+					                 qualifier, reward * CONFIDENCE_PER_CREDIT, player );
+			}
+		}
+	}
 }
 
 /*
@@ -254,7 +312,7 @@ float G_RewardAttackers( gentity_t *self )
 player_die
 ==================
 */
-void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int meansOfDeath )
+void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int meansOfDeath )
 {
 	gentity_t *ent;
 	int       anim;
@@ -324,8 +382,6 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	ent->s.otherEntityNum2 = killer;
 	ent->r.svFlags = SVF_BROADCAST; // send to everyone
 
-	self->client->ps.persistant[ PERS_KILLED ]++;
-
 	if ( attacker && attacker->client )
 	{
 		if ( ( attacker == self || OnSameTeam( self, attacker ) ) )
@@ -334,12 +390,12 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 			if ( attacker->client->ps.stats[ STAT_TEAM ] == TEAM_ALIENS )
 			{
 				G_AddCreditToClient( attacker->client, -ALIEN_TK_SUICIDE_PENALTY, qtrue );
-				AddScore( attacker, -ALIEN_TK_SUICIDE_PENALTY );
+				G_AddCreditsToScore( attacker, -ALIEN_TK_SUICIDE_PENALTY );
 			}
 			else if ( attacker->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
 			{
 				G_AddCreditToClient( attacker->client, -HUMAN_TK_SUICIDE_PENALTY, qtrue );
-				AddScore( attacker, -HUMAN_TK_SUICIDE_PENALTY );
+				G_AddCreditsToScore( attacker, -HUMAN_TK_SUICIDE_PENALTY );
 			}
 		}
 		else if ( g_showKillerHP.integer )
@@ -353,11 +409,11 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	{
 		if ( self->client->ps.stats[ STAT_TEAM ] == TEAM_ALIENS )
 		{
-			AddScore( self, -ALIEN_TK_SUICIDE_PENALTY );
+			G_AddCreditsToScore( self, -ALIEN_TK_SUICIDE_PENALTY );
 		}
 		else if ( self->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
 		{
-			AddScore( self, -HUMAN_TK_SUICIDE_PENALTY );
+			G_AddCreditsToScore( self, -HUMAN_TK_SUICIDE_PENALTY );
 		}
 	}
 
@@ -1077,7 +1133,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
                vec3_t dir, vec3_t point, int damage, int dflags, int mod )
 {
 	gclient_t *client;
-	int       take;
+	int       take, loss;
 	int       asave = 0;
 	int       knockback;
 
@@ -1198,8 +1254,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	}
 
 	// don't do friendly fire on movement attacks
-	if ( ( mod == MOD_LEVEL4_TRAMPLE || mod == MOD_LEVEL3_POUNCE ||
-	       mod == MOD_LEVEL4_CRUSH ) &&
+	if ( ( mod == MOD_LEVEL4_TRAMPLE || mod == MOD_LEVEL3_POUNCE ) &&
 	     targ->s.eType == ET_BUILDABLE && targ->buildableTeam == TEAM_ALIENS )
 	{
 		return;
@@ -1212,16 +1267,16 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		// if the attacker was on the same team
 		if ( targ != attacker && OnSameTeam( targ, attacker ) )
 		{
-			// don't do friendly fire on movement attacks
-			if ( mod == MOD_LEVEL4_TRAMPLE || mod == MOD_LEVEL3_POUNCE ||
-			     mod == MOD_LEVEL4_CRUSH )
+			// never do friendly fire on movement attacks
+			if ( mod == MOD_LEVEL4_TRAMPLE || mod == MOD_LEVEL3_POUNCE )
 			{
 				return;
 			}
 
 			// if dretchpunt is enabled and this is a dretch, do dretchpunt instead of damage
-			if ( g_dretchPunt.integer &&
-			     targ->client->ps.stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL0 )
+			if ( g_dretchPunt.integer && targ->client &&
+			     ( targ->client->ps.stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL0 ||
+			       targ->client->ps.stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL0_UPG ) )
 			{
 				vec3_t dir, push;
 
@@ -1265,21 +1320,6 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		// Update the last combat time.
 		targ->client->lastCombatTime = level.time;
 		attacker->client->lastCombatTime = level.time;
-	}
-
-	// add to the attacker's hit counter
-	if ( attacker->client && targ != attacker && targ->health > 0
-	     && targ->s.eType != ET_MISSILE
-	     && targ->s.eType != ET_GENERAL )
-	{
-		if ( OnSameTeam( targ, attacker ) )
-		{
-			attacker->client->ps.persistant[ PERS_HITS ]--;
-		}
-		else
-		{
-			attacker->client->ps.persistant[ PERS_HITS ]++;
-		}
 	}
 
 	take = damage;
@@ -1357,10 +1397,28 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		targ->lastDamageTime = level.time;
 		targ->nextRegenTime = level.time + ALIEN_REGEN_DAMAGE_TIME;
 
-		// add to the attackers "account" on the target
-		if ( attacker->client && attacker != targ )
+		if ( attacker != targ )
 		{
-			targ->credits[ attacker->client->ps.clientNum ] += take;
+			if ( targ->health < 0 )
+			{
+				loss = ( take + targ->health );
+			}
+			else
+			{
+				loss = take;
+			}
+
+			// add to the attackers "account" on the target
+			if ( attacker->client )
+			{
+				targ->credits[ attacker->client->ps.clientNum ] += loss;
+			}
+
+			// update buildable stats
+			if ( attacker->s.eType == ET_BUILDABLE && attacker->health > 0 )
+			{
+				attacker->buildableStatsTotal += loss;
+			}
 		}
 
 		if ( targ->health <= 0 )
@@ -1375,7 +1433,13 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 				targ->health = -999;
 			}
 
-			targ->die( targ, inflictor, attacker, take, mod );
+			targ->die( targ, inflictor, attacker, mod );
+
+			// update buildable stats
+			if ( attacker->s.eType == ET_BUILDABLE && attacker->health > 0 )
+			{
+				attacker->buildableStatsCount++;
+			}
 
 			if(!targ->client) //call the onDie event only on non living entities
 			{
@@ -1468,7 +1532,7 @@ G_SelectiveRadiusDamage
 ============
 */
 qboolean G_SelectiveRadiusDamage( vec3_t origin, gentity_t *attacker, float damage,
-                                  float radius, gentity_t *ignore, int mod, int team )
+                                  float radius, gentity_t *ignore, int mod, int ignoreTeam )
 {
 	float     points, dist;
 	gentity_t *ent;
@@ -1476,7 +1540,6 @@ qboolean G_SelectiveRadiusDamage( vec3_t origin, gentity_t *attacker, float dama
 	int       numListedEntities;
 	vec3_t    mins, maxs;
 	vec3_t    v;
-	vec3_t    dir;
 	int       i, e;
 	qboolean  hitClient = qfalse;
 
@@ -1539,16 +1602,13 @@ qboolean G_SelectiveRadiusDamage( vec3_t origin, gentity_t *attacker, float dama
 		points = damage * ( 1.0 - dist / radius );
 
 		if ( CanDamage( ent, origin ) && ent->client &&
-		     ent->client->ps.stats[ STAT_TEAM ] != team )
+		     ent->client->ps.stats[ STAT_TEAM ] != ignoreTeam )
 		{
-			VectorSubtract( ent->r.currentOrigin, origin, dir );
-			// push the center of mass higher than the origin so players
-			// get knocked into the air more
-			dir[ 2 ] += 24;
-			VectorNormalize( dir );
 			hitClient = qtrue;
-			G_Damage( ent, NULL, attacker, dir, origin,
-			          ( int ) points, DAMAGE_RADIUS | DAMAGE_NO_LOCDAMAGE, mod );
+
+			// don't do knockback, since an attack that spares one team is most likely not based on kinetic energy
+			G_Damage( ent, NULL, attacker, NULL, origin, ( int ) points,
+			          DAMAGE_RADIUS | DAMAGE_NO_LOCDAMAGE | DAMAGE_NO_KNOCKBACK, mod );
 		}
 	}
 

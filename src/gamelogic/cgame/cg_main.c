@@ -551,6 +551,10 @@ static void CG_SetPVars( void )
 			trap_Cvar_Set( "p_classname", "Dretch" );
 			break;
 
+		case PCL_ALIEN_LEVEL0_UPG:
+			trap_Cvar_Set( "p_classname", "Advanced Dretch" );
+			break;
+
 		case PCL_ALIEN_LEVEL1:
 			trap_Cvar_Set( "p_classname", "Basilisk" );
 			break;
@@ -649,6 +653,7 @@ static void CG_SetPVars( void )
 			break;
 
 		case WP_ALEVEL0:
+		case WP_ALEVEL0_UPG:
 			trap_Cvar_Set( "p_weaponname", "Teeth" );
 			break;
 
@@ -818,9 +823,9 @@ void CG_UpdateBuildableRangeMarkerMask( void )
 			else if ( !Q_stricmp( p, "all" ) )
 			{
 				brmMask |= ( 1 << BA_A_OVERMIND ) | ( 1 << BA_A_SPAWN ) |
-				           ( 1 << BA_A_ACIDTUBE ) | ( 1 << BA_A_TRAPPER ) | ( 1 << BA_A_HIVE ) | ( 1 << BA_A_BOOSTER ) |
+				           ( 1 << BA_A_ACIDTUBE ) | ( 1 << BA_A_TRAPPER ) | ( 1 << BA_A_HIVE ) | ( 1 << BA_A_LEECH ) | ( 1 << BA_A_BOOSTER ) |
 				           ( 1 << BA_H_REACTOR ) | ( 1 << BA_H_REPEATER ) | ( 1 << BA_H_DCC ) |
-				           ( 1 << BA_H_MGTURRET ) | ( 1 << BA_H_TESLAGEN );
+				           ( 1 << BA_H_MGTURRET ) | ( 1 << BA_H_TESLAGEN ) | ( 1 << BA_H_DRILL );
 			}
 			else if ( !Q_stricmp( p, "none" ) )
 			{
@@ -835,13 +840,13 @@ void CG_UpdateBuildableRangeMarkerMask( void )
 				{
 					pp = p + 5;
 					only = ( 1 << BA_A_OVERMIND ) | ( 1 << BA_A_SPAWN ) |
-					       ( 1 << BA_A_ACIDTUBE ) | ( 1 << BA_A_TRAPPER ) | ( 1 << BA_A_HIVE ) | ( 1 << BA_A_BOOSTER );
+					       ( 1 << BA_A_ACIDTUBE ) | ( 1 << BA_A_TRAPPER ) | ( 1 << BA_A_HIVE ) | ( 1 << BA_A_LEECH ) | ( 1 << BA_A_BOOSTER );
 				}
 				else if ( !Q_strnicmp( p, "human", 5 ) )
 				{
 					pp = p + 5;
 					only = ( 1 << BA_H_REACTOR ) | ( 1 << BA_H_REPEATER ) | ( 1 << BA_H_DCC ) |
-					       ( 1 << BA_H_MGTURRET ) | ( 1 << BA_H_TESLAGEN );
+					       ( 1 << BA_H_MGTURRET ) | ( 1 << BA_H_TESLAGEN ) | ( 1 << BA_H_DRILL );
 				}
 				else
 				{
@@ -855,8 +860,8 @@ void CG_UpdateBuildableRangeMarkerMask( void )
 				}
 				else if ( !Q_stricmp( pp, "support" ) )
 				{
-					brmMask |= only & ( ( 1 << BA_A_OVERMIND ) | ( 1 << BA_A_SPAWN ) | ( 1 << BA_A_BOOSTER ) |
-					                    ( 1 << BA_H_REACTOR ) | ( 1 << BA_H_REPEATER ) | ( 1 << BA_H_DCC ) );
+					brmMask |= only & ( ( 1 << BA_A_OVERMIND ) | ( 1 << BA_A_SPAWN ) | ( 1 << BA_A_LEECH ) | ( 1 << BA_A_BOOSTER ) |
+					                    ( 1 << BA_H_REACTOR ) | ( 1 << BA_H_REPEATER ) | ( 1 << BA_H_DCC ) | ( 1 << BA_H_DRILL ) );
 				}
 				else if ( !Q_stricmp( pp, "offensive" ) )
 				{
@@ -1355,9 +1360,9 @@ static void CG_RegisterSounds( void )
 	cgs.media.alienEvolveSound = trap_S_RegisterSound( "sound/player/alienevolve.wav", qfalse );
 
 	cgs.media.alienBuildableExplosion = trap_S_RegisterSound( "sound/buildables/alien/explosion.wav", qfalse );
-	cgs.media.alienBuildableDamage = trap_S_RegisterSound( "sound/buildables/alien/damage.wav", qfalse );
 	cgs.media.alienBuildablePrebuild = trap_S_RegisterSound( "sound/buildables/alien/prebuild.wav", qfalse );
 
+	cgs.media.humanBuildableDying = trap_S_RegisterSound( "sound/buildables/human/dying.wav", qfalse );
 	cgs.media.humanBuildableExplosion = trap_S_RegisterSound( "sound/buildables/human/explosion.wav", qfalse );
 	cgs.media.humanBuildablePrebuild = trap_S_RegisterSound( "sound/buildables/human/prebuild.wav", qfalse );
 
@@ -1549,10 +1554,14 @@ static void CG_RegisterGraphics( void )
 	cgs.media.humanBuildableDamagedPS = CG_RegisterParticleSystem( "humanBuildableDamagedPS" );
 	cgs.media.alienBuildableDamagedPS = CG_RegisterParticleSystem( "alienBuildableDamagedPS" );
 	cgs.media.humanBuildableDestroyedPS = CG_RegisterParticleSystem( "humanBuildableDestroyedPS" );
+	cgs.media.humanBuildableNovaPS = CG_RegisterParticleSystem( "humanBuildableNovaPS" );
 	cgs.media.alienBuildableDestroyedPS = CG_RegisterParticleSystem( "alienBuildableDestroyedPS" );
 
 	cgs.media.humanBuildableBleedPS = CG_RegisterParticleSystem( "humanBuildableBleedPS" );
 	cgs.media.alienBuildableBleedPS = CG_RegisterParticleSystem( "alienBuildableBleedPS" );
+	cgs.media.alienBuildableBurnPS  = CG_RegisterParticleSystem( "alienBuildableBurnPS" );
+
+	cgs.media.floorFirePS = CG_RegisterParticleSystem( "floorFirePS" );
 
 	cgs.media.alienBleedPS = CG_RegisterParticleSystem( "alienBleedPS" );
 	cgs.media.humanBleedPS = CG_RegisterParticleSystem( "humanBleedPS" );
@@ -2819,6 +2828,7 @@ const vec3_t cg_shaderColors[ SHC_NUM_SHADER_COLORS ] =
 	{ 0.3f,   0.35f,    0.625f   }, // light blue
 	{ 0.0f,   0.625f,   0.563f   }, // green-cyan
 	{ 0.313f, 0.0f,     0.625f   }, // violet
+	{ 0.54f,  0.0f,     1.0f     }, // indigo
 	{ 0.625f, 0.625f,   0.0f     }, // yellow
 	{ 0.875f, 0.313f,   0.0f     }, // orange
 	{ 0.375f, 0.625f,   0.375f   }, // light green

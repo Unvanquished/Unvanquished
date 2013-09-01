@@ -757,7 +757,8 @@ void Sys_ErrorDialog( const char *error )
 	const char   *homepath = Cvar_VariableString( "fs_homepath" );
 	const char   *gamedir = Cvar_VariableString( "fs_game" );
 	const char   *fileName = "crashlog.txt";
-	char         *ospath = FS_BuildOSPath( homepath, gamedir, fileName );
+	char         *ospath = FS_BuildOSPath( homepath, gamedir, "" );
+	char         *ospathfile = FS_BuildOSPath( ospath, "", fileName );
 
 	Sys_Print( va( "%s\n", error ) );
 
@@ -768,11 +769,11 @@ void Sys_ErrorDialog( const char *error )
 		SDL_WM_GrabInput( SDL_GRAB_OFF );
 	}
 
-	Sys_Dialog( DT_ERROR, va( "%s. See \"%s\" for details.", error, ospath ), "Error" );
+	Sys_Dialog( DT_ERROR, va( "%s. See \"%s\" for details.", error, ospathfile ), "Error" );
 #endif
 
 	// Make sure the write path for the crashlog exists...
-	if ( FS_CreatePath( ospath ) )
+	if ( !Sys_Mkdir( ospath ) )
 	{
 		Com_Printf( "ERROR: couldn't create path '%s' for crash log.\n", ospath );
 		return;
@@ -781,7 +782,7 @@ void Sys_ErrorDialog( const char *error )
 	// We might be crashing because we maxed out the Quake MAX_FILE_HANDLES,
 	// which will come through here, so we don't want to recurse forever by
 	// calling FS_FOpenFileWrite()...use the Unix system APIs instead.
-	f = open( ospath, O_CREAT | O_TRUNC | O_WRONLY, 0640 );
+	f = open( ospathfile, O_CREAT | O_TRUNC | O_WRONLY, 0640 );
 
 	if ( f == -1 )
 	{
@@ -1136,11 +1137,27 @@ Sys_IsNumLockDown
 qboolean Sys_IsNumLockDown( void )
 {
 #if !defined(MACOS_X) && !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
-	Display        *dpy = XOpenDisplay(":0");
+	const char     *denv = getenv( "DISPLAY" );
+	Display        *dpy;
 	XKeyboardState x;
 
-	XGetKeyboardControl(dpy, &x);
-	XCloseDisplay(dpy);
+	if ( denv != NULL && strlen( denv ) > 0 )
+		dpy = XOpenDisplay(denv);
+	else
+		dpy = XOpenDisplay(":0");
+
+	if ( dpy == 0 )
+	{
+		Com_Printf( _("ERROR: cannot determine numlock state as we couldn't\n" 
+		              "grab your non-standard (e.g. not ':0') X display.\n"
+		              "ensure the 'DISPLAY' environment variable is set.\n") );
+		return qtrue;
+	}
+	else
+	{
+		XGetKeyboardControl(dpy, &x);
+		XCloseDisplay(dpy);
+	}
 
 	return (x.led_mask & 2) ? qtrue : qfalse;
 #else

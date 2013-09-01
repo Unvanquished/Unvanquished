@@ -201,6 +201,7 @@ static void CG_Obituary( entityState_t *ent )
 		switch ( mod )
 		{
 			case MOD_FLAMER_SPLASH:
+			case MOD_BURN:
 				if ( cg_emoticonsInMessages.integer )
 				{
 					message = "[flamer] %s\n";
@@ -385,6 +386,7 @@ static void CG_Obituary( entityState_t *ent )
 				break;
 
 			case MOD_FLAMER:
+			case MOD_FLAMER_SPLASH:
 				if ( cg_emoticonsInMessages.integer )
 				{
 					message = "%s%s^7 [flamer] %s\n";
@@ -396,7 +398,7 @@ static void CG_Obituary( entityState_t *ent )
 				}
 				break;
 
-			case MOD_FLAMER_SPLASH:
+			case MOD_BURN:
 				if ( cg_emoticonsInMessages.integer )
 				{
 					message = "%s%s^7 [flamer] %s\n";
@@ -404,7 +406,7 @@ static void CG_Obituary( entityState_t *ent )
 				}
 				else
 				{
-					message = G_( "%s ^7was toasted by %s%s^7's flamer\n" );
+					message = G_( "%s ^7was burned by %s%s^7's fire\n" );
 				}
 				break;
 
@@ -572,10 +574,11 @@ static void CG_Obituary( entityState_t *ent )
 				}
 				break;
 
-			case MOD_LEVEL4_CRUSH:
+			case MOD_WEIGHT_H:
+			case MOD_WEIGHT_A:
 				if ( cg_emoticonsInMessages.integer )
 				{
-					message = "%s%s^7 [tyrant] %s\n";
+					message = "%s%s^7 crushed %s\n";
 					attackerFirst = qtrue;
 				}
 				else
@@ -762,6 +765,99 @@ static void CG_Level2Zap( entityState_t *es )
 	}
 
 	source->level2ZapTime = cg.time;
+}
+
+/*
+==============
+CG_Confidence
+
+Notify player of generated confidence
+==============
+*/
+void CG_Confidence( entityState_t *es )
+{
+	const char *message;
+	const char *reason;
+	const char *qualifier;
+
+	switch ( es->eventParm ) // reason
+	{
+		case CONF_REAS_STAGEUP:
+			reason = _("Staging up");
+			break;
+
+		case CONF_REAS_STAGEDOWN:
+			reason = _("Staging down");
+			break;
+
+		case CONF_REAS_KILLING:
+			reason = _("Killing an enemy");
+			break;
+
+		case CONF_REAS_DESTR_CRUCIAL:
+			reason = _("Destroying a crucial structure");
+			break;
+
+		case CONF_REAS_DESTR_AGGRESSIVE:
+			reason = _("Destroying an aggressive structure");
+			break;
+
+		case CONF_REAS_DESTR_SUPPORT:
+			reason = _("Destroying a support structure");
+			break;
+
+		case CONF_REAS_BUILD_CRUCIAL:
+			reason = _("Building a crucial structure");
+			break;
+
+		case CONF_REAS_BUILD_AGGRESSIVE:
+			reason = _("Building an aggressive structure");
+			break;
+
+		case CONF_REAS_BUILD_SUPPORT:
+			reason = _("Building a support structure");
+			break;
+
+		case CONF_REAS_DECON:
+			reason = _("Deconstructing a structure");
+			break;
+
+		default:
+			reason = _("Your actions");
+	}
+
+	switch ( es->otherEntityNum ) // qualifier
+	{
+		case CONF_QUAL_IN_ENEMEY_BASE:
+			qualifier = _(" inside the enemy base");
+			break;
+
+		case CONF_QUAL_CLOSE_TO_ENEMY_BASE:
+			qualifier = _(" close to the enemy base");
+			break;
+
+		case CONF_QUAL_OUTSIDE_OWN_BASE:
+			qualifier = _(" outside your own base");
+			break;
+
+		case CONF_QUAL_IN_OWN_BASE:
+			qualifier = _(" inside your own base");
+			break;
+
+		default:
+			qualifier = "";
+	}
+
+	if ( es->groundEntityNum ) // amount is negative
+	{
+		message = _("%s%s " S_COLOR_RED "lost" S_COLOR_WHITE " your team %.1f confidence\n");
+	}
+	else
+	{
+		message = _("%s%s " S_COLOR_GREEN "earned" S_COLOR_WHITE " your team %.1f confidence\n");
+	}
+
+	CG_Printf( message, reason, qualifier, es->otherEntityNum2 / 10.0f );
 }
 
 /*
@@ -1148,9 +1244,13 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			CG_MissileHitWall( es->weapon, es->generic1, 0, position, dir, IMPACTSOUND_METAL, es->torsoAnim );
 			break;
 
+		case EV_HUMAN_BUILDABLE_DYING:
+			CG_HumanBuildableDying( es->modelindex, position );
+			break;
+
 		case EV_HUMAN_BUILDABLE_EXPLOSION:
 			ByteToDir( es->eventParm, dir );
-			CG_HumanBuildableExplosion( position, dir );
+			CG_HumanBuildableExplosion( es->modelindex, position, dir );
 			break;
 
 		case EV_ALIEN_BUILDABLE_EXPLOSION:
@@ -1372,6 +1472,10 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 
 		case EV_LEV2_ZAP:
 			CG_Level2Zap( es );
+			break;
+
+		case EV_CONFIDENCE:
+			CG_Confidence( es );
 			break;
 
 		default:

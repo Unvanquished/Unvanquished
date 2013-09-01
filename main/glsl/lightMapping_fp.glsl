@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 uniform sampler2D	u_DiffuseMap;
 uniform sampler2D	u_NormalMap;
 uniform sampler2D	u_SpecularMap;
+uniform sampler2D	u_GlowMap;
 uniform sampler2D	u_LightMap;
 uniform sampler2D	u_DeluxeMap;
 uniform float		u_AlphaThreshold;
@@ -33,8 +34,8 @@ uniform float		u_DepthScale;
 uniform vec2		u_SpecularExponent;
 
 varying vec3		var_Position;
-varying vec4		var_TexDiffuseNormal;
-varying vec2		var_TexSpecular;
+varying vec4		var_TexDiffuseGlow;
+varying vec4		var_TexNormalSpecular;
 varying vec2		var_TexLight;
 
 varying vec3		var_Tangent;
@@ -48,9 +49,9 @@ void	main()
 {
 #if defined(USE_NORMAL_MAPPING)
 
-	vec2 texDiffuse = var_TexDiffuseNormal.st;
-	vec2 texNormal = var_TexDiffuseNormal.pq;
-	vec2 texSpecular = var_TexSpecular.st;
+	vec2 texDiffuse = var_TexDiffuseGlow.st;
+	vec2 texNormal = var_TexNormalSpecular.st;
+	vec2 texSpecular = var_TexNormalSpecular.pq;
 
 	// invert tangent space for two sided surfaces
 	mat3 tangentToWorldMatrix = mat3(var_Tangent.xyz, var_Binormal.xyz, var_Normal.xyz);
@@ -147,7 +148,7 @@ void	main()
 #else // USE_NORMAL_MAPPING
 
 	// compute the diffuse term
-	vec4 diffuse = texture2D(u_DiffuseMap, var_TexDiffuseNormal.st);
+	vec4 diffuse = texture2D(u_DiffuseMap, var_TexDiffuseGlow.st);
 
 	if( abs(diffuse.a + u_AlphaThreshold) <= 1.0 )
 	{
@@ -173,7 +174,9 @@ void	main()
 	color.rgb *= lightColor;
 	color.a = var_Color.a;	// for terrain blending
 #endif
-
+#if defined(USE_GLOW_MAPPING)
+	color.rgb += texture2D(u_GlowMap, var_TexDiffuseGlow.pq).rgb;
+#endif
 	// convert normal to [0,1] color space
 	N = N * 0.5 + 0.5;
 

@@ -1626,7 +1626,7 @@ Find out whether we have SSE support for Q_ftol function
 static void Com_DetectSSE( void )
 {
 #if !idx64 && !idx64_32
-	cpuFeatures_t feat;
+	int feat;
 
 	feat = Sys_GetProcessorFeatures();
 

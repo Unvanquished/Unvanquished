@@ -447,7 +447,7 @@ void Tess_Begin( void ( *stageIteratorFunc )( void ),
 
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;
-
+	tess.attribsSet = 0;
 	tess.multiDrawPrimitives = 0;
 
 	// materials are optional
@@ -636,6 +636,7 @@ static void Render_vertexLighting_DBS_entity( int stage )
 	GL_State( stateBits );
 
 	bool normalMapping = r_normalMapping->integer && ( pStage->bundle[ TB_NORMALMAP ].image[ 0 ] != NULL );
+	bool glowMapping = ( pStage->bundle[ TB_GLOWMAP ].image[ 0 ] != NULL );
 
 	// choose right shader program ----------------------------------
 	gl_vertexLightingShader_DBS_entity->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
@@ -647,6 +648,8 @@ static void Render_vertexLighting_DBS_entity( int stage )
 	gl_vertexLightingShader_DBS_entity->SetParallaxMapping( normalMapping && r_parallaxMapping->integer && tess.surfaceShader->parallax );
 
 	gl_vertexLightingShader_DBS_entity->SetReflectiveSpecular( normalMapping && tr.cubeHashTable != NULL );
+
+	gl_vertexLightingShader_DBS_entity->SetGlowMapping( glowMapping );
 
 //	gl_vertexLightingShader_DBS_entity->SetMacro_TWOSIDED(tess.surfaceShader->cullType);
 
@@ -834,6 +837,14 @@ static void Render_vertexLighting_DBS_entity( int stage )
 		}
 	}
 
+	if ( glowMapping )
+	{
+		GL_SelectTexture( 5 );
+		GL_Bind( pStage->bundle[ TB_GLOWMAP ].image[ 0 ] );
+
+		gl_vertexLightingShader_DBS_entity->SetUniform_GlowTextureMatrix( tess.svars.texMatrices[ TB_GLOWMAP ] );
+	}
+
 	gl_vertexLightingShader_DBS_entity->SetRequiredVertexPointers();
 
 	Tess_DrawElements();
@@ -854,12 +865,14 @@ static void Render_vertexLighting_DBS_world( int stage )
 	stateBits = pStage->stateBits;
 
 	bool normalMapping = r_normalMapping->integer && ( pStage->bundle[ TB_NORMALMAP ].image[ 0 ] != NULL );
+	bool glowMapping = ( pStage->bundle[ TB_GLOWMAP ].image[ 0 ] != NULL );
 
 	// choose right shader program ----------------------------------
 	gl_vertexLightingShader_DBS_world->SetDeformVertexes( tess.surfaceShader->numDeforms );
 
 	gl_vertexLightingShader_DBS_world->SetNormalMapping( normalMapping );
 	gl_vertexLightingShader_DBS_world->SetParallaxMapping( normalMapping && r_parallaxMapping->integer && tess.surfaceShader->parallax );
+	gl_vertexLightingShader_DBS_world->SetGlowMapping( glowMapping );
 
 //	gl_vertexLightingShader_DBS_world->SetMacro_TWOSIDED(tess.surfaceShader->cullType);
 
@@ -984,6 +997,14 @@ static void Render_vertexLighting_DBS_world( int stage )
 		gl_vertexLightingShader_DBS_world->SetUniform_SpecularExponent( minSpec, maxSpec );
 	}
 
+	if ( glowMapping )
+	{
+		GL_SelectTexture( 3 );
+		GL_Bind( pStage->bundle[ TB_GLOWMAP ].image[ 0 ] );
+
+		gl_vertexLightingShader_DBS_world->SetUniform_GlowTextureMatrix( tess.svars.texMatrices[ TB_GLOWMAP ] );
+	}
+
 	gl_vertexLightingShader_DBS_world->SetRequiredVertexPointers();
 
 	Tess_DrawElements();
@@ -997,6 +1018,7 @@ static void Render_lightMapping( int stage, bool asColorMap, bool normalMapping 
 	uint32_t      stateBits;
 	colorGen_t    rgbGen;
 	alphaGen_t    alphaGen;
+	bool glowMapping = false;
 
 	GLimp_LogComment( "--- Render_lightMapping ---\n" );
 
@@ -1040,12 +1062,18 @@ static void Render_lightMapping( int stage, bool asColorMap, bool normalMapping 
 		normalMapping = false;
 	}
 
+	if ( pStage->bundle[ TB_GLOWMAP ].image[ 0 ] != NULL )
+	{
+		glowMapping = true;
+	}
+
 	// choose right shader program ----------------------------------
 
 	gl_lightMappingShader->SetDeformVertexes( tess.surfaceShader->numDeforms );
 
 	gl_lightMappingShader->SetNormalMapping( normalMapping );
 	gl_lightMappingShader->SetParallaxMapping( normalMapping && r_parallaxMapping->integer && tess.surfaceShader->parallax );
+	gl_lightMappingShader->SetGlowMapping( glowMapping );
 
 //	gl_lightMappingShader->SetMacro_TWOSIDED(tess.surfaceShader->cullType);
 
@@ -1138,6 +1166,14 @@ static void Render_lightMapping( int stage, bool asColorMap, bool normalMapping 
 	// bind u_LightMap
 	GL_SelectTexture( 3 );
 	BindLightMap();
+
+	if ( glowMapping )
+	{
+		GL_SelectTexture( 5 );
+		GL_Bind( pStage->bundle[ TB_GLOWMAP ].image[ 0 ] );
+
+		gl_lightMappingShader->SetUniform_GlowTextureMatrix( tess.svars.texMatrices[ TB_GLOWMAP ] );
+	}
 
 	gl_lightMappingShader->SetRequiredVertexPointers();
 
@@ -3334,8 +3370,7 @@ void Tess_StageIteratorDebug()
 
 	if ( !glState.currentVBO || !glState.currentIBO || glState.currentVBO == tess.vbo || glState.currentIBO == tess.ibo )
 	{
-		// Tr3B: FIXME analyze required vertex attribs by the current material
-		Tess_UpdateVBOs( 0 );
+		Tess_UpdateVBOs( tess.attribsSet );
 	}
 
 	Tess_DrawElements();
@@ -3429,8 +3464,7 @@ void Tess_StageIteratorGeneric()
 
 	if ( !glState.currentVBO || !glState.currentIBO || glState.currentVBO == tess.vbo || glState.currentIBO == tess.ibo )
 	{
-		// Tr3B: FIXME analyze required vertex attribs by the current material
-		Tess_UpdateVBOs( 0 );
+		Tess_UpdateVBOs( tess.attribsSet );
 	}
 
 	// set GL fog
@@ -3510,6 +3544,8 @@ void Tess_StageIteratorGeneric()
 #endif
 
 			case ST_DIFFUSEMAP:
+			case ST_COLLAPSE_lighting_DBSG:
+			case ST_COLLAPSE_lighting_DBG:
 			case ST_COLLAPSE_lighting_DB:
 			case ST_COLLAPSE_lighting_DBS:
 				{
@@ -3653,8 +3689,7 @@ void Tess_StageIteratorGBuffer()
 
 	if ( !glState.currentVBO || !glState.currentIBO || glState.currentVBO == tess.vbo || glState.currentIBO == tess.ibo )
 	{
-		// Tr3B: FIXME analyze required vertex attribs by the current material
-		Tess_UpdateVBOs( 0 );
+		Tess_UpdateVBOs( tess.attribsSet );
 	}
 
 	// set face culling appropriately
@@ -3710,6 +3745,8 @@ void Tess_StageIteratorGBuffer()
 				}
 
 			case ST_DIFFUSEMAP:
+			case ST_COLLAPSE_lighting_DBSG:
+			case ST_COLLAPSE_lighting_DBG:
 			case ST_COLLAPSE_lighting_DB:
 			case ST_COLLAPSE_lighting_DBS:
 				{
@@ -3868,8 +3905,7 @@ void Tess_StageIteratorGBufferNormalsOnly()
 
 	if ( !glState.currentVBO || !glState.currentIBO || glState.currentVBO == tess.vbo || glState.currentIBO == tess.ibo )
 	{
-		// Tr3B: FIXME analyze required vertex attribs by the current material
-		Tess_UpdateVBOs( 0 );
+		Tess_UpdateVBOs( tess.attribsSet );
 	}
 
 	// set face culling appropriately
@@ -3927,6 +3963,8 @@ void Tess_StageIteratorGBufferNormalsOnly()
 				}
 
 			case ST_DIFFUSEMAP:
+			case ST_COLLAPSE_lighting_DBSG:
+			case ST_COLLAPSE_lighting_DBG:
 			case ST_COLLAPSE_lighting_DB:
 			case ST_COLLAPSE_lighting_DBS:
 				{
@@ -4028,6 +4066,8 @@ void Tess_StageIteratorDepthFill()
 #endif
 
 			case ST_DIFFUSEMAP:
+			case ST_COLLAPSE_lighting_DBSG:
+			case ST_COLLAPSE_lighting_DBG:
 			case ST_COLLAPSE_lighting_DB:
 			case ST_COLLAPSE_lighting_DBS:
 				{
@@ -4114,6 +4154,8 @@ void Tess_StageIteratorShadowFill()
 			case ST_LIGHTMAP:
 #endif
 			case ST_DIFFUSEMAP:
+			case ST_COLLAPSE_lighting_DBSG:
+			case ST_COLLAPSE_lighting_DBG:
 			case ST_COLLAPSE_lighting_DB:
 			case ST_COLLAPSE_lighting_DBS:
 				{
@@ -4155,8 +4197,7 @@ void Tess_StageIteratorLighting()
 
 	if ( !glState.currentVBO || !glState.currentIBO || glState.currentVBO == tess.vbo || glState.currentIBO == tess.ibo )
 	{
-		// Tr3B: FIXME analyze required vertex attribs by the current material
-		Tess_UpdateVBOs( 0 );
+		Tess_UpdateVBOs( tess.attribsSet );
 	}
 
 	// set OpenGL state for lighting
@@ -4323,6 +4364,7 @@ void Tess_End()
 	tess.multiDrawPrimitives = 0;
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;
+	tess.attribsSet = 0;
 
 	GLimp_LogComment( "--- Tess_End ---\n" );
 

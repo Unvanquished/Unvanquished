@@ -12,6 +12,7 @@
 
 #import "SDL/SDL.h"
 #import "SDLMain.h"
+#import "sys_local.h"
 
 #define SDL_USE_CPS 1
 
@@ -281,6 +282,21 @@ void Cbuf_AddText( const char *text );
 /* Main entry point to executable - should *not* be SDL_main! */
 int main ( int argc, char **argv )
 {
+	if ( argc > 1 )
+	{
+		if ( !strcmp( argv[1], "--help" ) || !strcmp( argv[1], "-h" ) )
+		{
+			Sys_HelpText( argv[0] );
+			return 0;
+		}
+
+		if ( !strcmp( argv[1], "--version" ) || !strcmp( argv[1], "-v" ) )
+		{
+			printf( PRODUCT_NAME " " PRODUCT_VERSION "\n" );
+			return 0;
+		}
+	}
+
 	/* Copy the arguments into a global variable */
 	/* This is passed if we are launched by double-clicking */
 	if ( argc >= 2 && strncmp( argv[ 1 ], "-psn", 4 ) == 0 )

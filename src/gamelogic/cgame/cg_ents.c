@@ -686,6 +686,30 @@ static void CG_Portal( centity_t *cent )
 
 //============================================================================
 
+/*
+===============
+CG_Fire
+===============
+*/
+void CG_Fire( centity_t *cent )
+{
+	// TODO: Add burning sound
+	// trap_S_StartSound( origin, ENTITYNUM_WORLD, CHAN_AUTO, cgs.media. );
+
+	if ( !CG_IsParticleSystemValid( &cent->entityPS ) )
+	{
+		// TODO: Use different particle systems for different normals
+		cent->entityPS = CG_SpawnNewParticleSystem( cgs.media.floorFirePS );
+
+		if ( CG_IsParticleSystemValid( &cent->entityPS ) )
+		{
+			CG_SetParticleSystemNormal( cent->entityPS, cent->currentState.origin2 );
+			CG_SetAttachmentPoint( &cent->entityPS->attachment, cent->currentState.origin );
+			CG_AttachToPoint( &cent->entityPS->attachment );
+		}
+	}
+}
+
 #define SETBOUNDS(v1,v2,r) (( v1 )[ 0 ] = ( -r / 2 ),( v1 )[ 1 ] = ( -r / 2 ),( v1 )[ 2 ] = ( -r / 2 ), \
                             ( v2 )[ 0 ] = ( r / 2 ),( v2 )[ 1 ] = ( r / 2 ),( v2 )[ 2 ] = ( r / 2 ))
 #define RADIUSSTEP     0.5f
@@ -1105,6 +1129,7 @@ static void CG_CEntityPVSEnter( centity_t *cent )
 	cent->jetPackPS = NULL;
 	cent->jetPackState = JPS_OFF;
 	cent->buildablePS = NULL;
+	cent->buildableStatusPS = NULL;
 	cent->entityPS = NULL;
 	cent->entityPSMissing = qfalse;
 
@@ -1146,6 +1171,13 @@ static void CG_CEntityPVSLeave( centity_t *cent )
 		case ET_LIGHTFLARE:
 			trap_UnregisterVisTest( cent->lfs.hTest );
 			cent->lfs.hTest = 0;
+			break;
+
+		case ET_FIRE:
+			if ( CG_IsParticleSystemValid( &cent->entityPS ) )
+			{
+				CG_DestroyParticleSystem( &cent->entityPS );
+			}
 			break;
 
 		default:
@@ -1218,6 +1250,10 @@ static void CG_AddCEntity( centity_t *cent )
 
 		case ET_SPEAKER:
 			CG_Speaker( cent );
+			break;
+
+		case ET_FIRE:
+			CG_Fire( cent );
 			break;
 
 		case ET_PARTICLE_SYSTEM:

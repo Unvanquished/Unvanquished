@@ -329,7 +329,7 @@ static void CG_CompleteGive( void )
 	unsigned               i = 0;
 	static const char give[][ 12 ] =
 	{
-		"all", "health", "funds", "stamina", "poison", "gas", "ammo"
+		"all", "health", "funds", "stamina", "poison", "gas", "ammo", "confidence", "bp"
 	};
 
 	for( i = 0; i < ARRAY_LEN( give ); i++ )
@@ -527,10 +527,11 @@ void CG_InitConsoleCommands( void )
 	trap_AddCommand( "reload" );
 	trap_AddCommand( "destroy" );
 	trap_AddCommand( "deconstruct" );
+	trap_AddCommand( "ignite" );
 
 	trap_RegisterButtonCommands(
 	    // 0      12       3     45      6        78       9ABCDEF      <- bit nos.
-	      "attack,,useitem,taunt,,sprint,activate,,attack2,,,,,,rally,dodge"
+	      "attack,,useitem,taunt,,sprint,activate,,attack2,,,,,,rally"
 	    );
 }
 
