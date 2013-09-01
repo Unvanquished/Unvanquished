@@ -35,3 +35,9 @@ models/players/human_base/head
 	normalMap models/players/human_base/head_n
 	specularMap models/players/human_base/head_s
 }
+models/weapons/hand2
+{
+	diffuseMap models/players/human_base/arm_d
+	normalMap models/players/human_base/arm_n
+	specularMap models/players/human_base/arm_s
+}
