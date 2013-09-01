@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-07-07 23:10+0200\n"
-"PO-Revision-Date: 2013-06-14 17:41+0000\n"
+"PO-Revision-Date: 2013-08-18 15:23+0000\n"
 "Last-Translator: Adrián <adriyetichaves@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: gl\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Pootle 2.5.0-beta1\n"
-"X-POOTLE-MTIME: 1371231699.0\n"
+"X-POOTLE-MTIME: 1376839397.0\n"
 
 #: tremulous_alien_builder_hud.menu:47 tremulous_alien_builder_hud.menu:49
 #: tremulous_alien_builder_hud.menu:48
@@ -3075,17 +3075,20 @@ msgstr "^3readconfig: ^7cargáronse $1$ niveis, $2$ administradores, $3$ expulsi
 msgid ""
 "^3time: ^7time is ^d$1$:$2$:$3$^7 UTC – game runs for ^d$4$:$5$^7 with "
 "Sudden Death in ^d$6$:$7$^7\n"
-msgstr ""
+msgstr "^3time: ^7a hora é ^d$1$:$2$:$3$^7 UTC. A partida leva en marcha ^d$4$:$5$^7 "
+"e entrarase en morte súbita en ^d$6$:$7$^7.\n"
 
 #: src/gamelogic/game/g_admin.c:2101
 msgid ""
 "^3time: ^7time is ^d$1$:$2$:$3$^7 UTC – game runs for ^d$4$:$5$^7 hitting "
 "Timelimit in ^d$6$:$7$^7\n"
-msgstr ""
+msgstr "^3time: ^7a hora é ^d$1$:$2$:$3$^7 UTC. A partida leva en marcha ^d$4$:$5$^7 "
+"e chegarase ao límite de tempo en ^d$6$:$7$^7.\n"
 
 #: src/gamelogic/game/g_admin.c:2106
 msgid "^3time: ^7time is ^d$1$:$2$:$3$^7 UTC – game time is ^d$4$:$5$^7\n"
-msgstr ""
+msgstr "^3time: ^7a hora é ^d$1$:$2$:$3$^7 UTC. A partida leva en marcha "
+"^d$4$:$5$^7.\n"
 
 #: src/gamelogic/game/g_admin.c:2132
 msgid "^3setlevel: ^7usage: setlevel [name|slot#] [level]\n"
@@ -4212,11 +4215,11 @@ msgstr "Gañan os extraterrestres.\n"
 
 #: src/gamelogic/game/g_main.c:2589
 msgid "Vote failed ($1$ of $2$; quorum not reached)\n"
-msgstr ""
+msgstr "Non se aprobou a votación ($1$ de $2$, non houbo quórum).\n"
 
 #: src/gamelogic/game/g_main.c:2589
 msgid "Team vote failed ($1$ of $2$; quorum not reached)\n"
-msgstr ""
+msgstr "Non se aprobou a votación de equipo ($1$ de $2$, non houbo quórum).\n"
 
 #: src/gamelogic/game/g_main.c:2594
 msgid "Vote passed ($1$ — $2$)\n"
