@@ -467,7 +467,7 @@ extern int   REACTOR_ATTACK_DCC_DAMAGE;
 #define WEIGHTDMG_REPEAT                   200     // in ms, low value reduces damage precision
 
 // buildable explosion
-#define HUMAN_DETONATION_DELAY             5000
+#define HUMAN_DETONATION_DELAY             4000
 #define ALIEN_DETONATION_DELAY             5000
 #define DETONATION_DELAY_RAND_RANGE        0.25f
 

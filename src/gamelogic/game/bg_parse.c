@@ -273,11 +273,11 @@ static configVar_t bg_configVars[] =
 
 	{"u_battpack_ammoCapacityModifier", FLOAT, qfalse, &BATTPACK_MODIFIER},
 
-	{"u_bsuit_poisonCloudProtection", INTEGER, qfalse, &BSUIT_POISON_PROTECTION},
-	{"u_bsuit_poisonProtection", INTEGER, qfalse, &BSUIT_PCLOUD_PROTECTION},
+	{"u_bsuit_poisonCloudProtection", INTEGER, qfalse, &BSUIT_PCLOUD_PROTECTION},
+	{"u_bsuit_poisonProtection", INTEGER, qfalse, &BSUIT_POISON_PROTECTION},
 
-	{"u_helmet_poisonCloudProtection", INTEGER, qfalse, &HELMET_POISON_PROTECTION},
-	{"u_helmet_poisonProtection", INTEGER, qfalse, &HELMET_PCLOUD_PROTECTION},
+	{"u_helmet_poisonCloudProtection", INTEGER, qfalse, &HELMET_PCLOUD_PROTECTION},
+	{"u_helmet_poisonProtection", INTEGER, qfalse, &HELMET_POISON_PROTECTION},
 	{"u_helmet_radarRange", FLOAT, qfalse, &HELMET_RANGE},
 
 	{"u_jetpack_disableChance", FLOAT, qfalse, &JETPACK_DISABLE_CHANCE},
@@ -285,8 +285,8 @@ static configVar_t bg_configVars[] =
 	{"u_jetpack_riseSpeed", FLOAT, qfalse, &JETPACK_FLOAT_SPEED},
 	{"u_jetpack_sinkSpeed", FLOAT, qfalse, &JETPACK_SINK_SPEED},
 
-	{"u_larmour_poisonCloudProtection", INTEGER, qfalse, &LIGHTARMOUR_POISON_PROTECTION},
-	{"u_larmour_poisonProtection", INTEGER, qfalse, &LIGHTARMOUR_PCLOUD_PROTECTION},
+	{"u_larmour_poisonCloudProtection", INTEGER, qfalse, &LIGHTARMOUR_PCLOUD_PROTECTION},
+	{"u_larmour_poisonProtection", INTEGER, qfalse, &LIGHTARMOUR_POISON_PROTECTION},
 
 	{"u_medkit_poisonImmunityTime", INTEGER, qfalse, &MEDKIT_POISON_IMMUNITY_TIME},
 	{"u_medkit_startupSpeed", INTEGER, qfalse, &MEDKIT_STARTUP_SPEED},
