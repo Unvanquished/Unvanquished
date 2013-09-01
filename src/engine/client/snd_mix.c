@@ -34,7 +34,7 @@ int     *snd_p;
 int      snd_linear_count;
 short   *snd_out;
 
-#if	!id386                                        // if configured not to use asm
+#if 1 //!id386                                        // if configured not to use asm
 
 void S_WriteLinearBlastStereo16( void )
 {
