@@ -633,37 +633,47 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 	}
 #endif
 
+	STATIC_INLINE unsigned int Q_floatBitsToUint( float number ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
+	{
+		floatint_t t;
+
+		t.f = number;
+		return t.ui;
+	}
+#endif
+
+	STATIC_INLINE float Q_uintBitsToFloat( unsigned int number ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
+	{
+		floatint_t t;
+
+		t.ui = number;
+		return t.f;
+	}
+#endif
+
 	STATIC_INLINE float Q_rsqrt( float number ) IFDECLARE
 #ifdef Q3_VM_INSTANTIATE
 	{
+		float x = 0.5f * number;
 		float y;
-#if id386_sse || defined( __x86_64__ )
+
+		// compute approximate inverse square root
+#if defined( idx86_sse )
 		_mm_store_ss( &y, _mm_rsqrt_ss( _mm_load_ss( &number ) ) );
 #elif idppc
-		float x = 0.5f * number;
 
 #ifdef __GNUC__
 		asm( "frsqrte %0, %1" : "=f"( y ) : "f"( number ) );
 #else
 		y = __frsqrte( number );
 #endif
-		return y * ( 1.5f - ( x * y * y ) );
 #else
-		union
-		{
-			float f;
-			int   i;
-		} t;
-
-		float       x2;
-		const float threehalfs = 1.5F;
-
-		x2 = number * 0.5F;
-		t.f = number;
-		t.i = 0x5f3759df - ( t.i >> 1 ); // what the fuck?
-		y = t.f;
-		y = y * ( threehalfs - ( x2 * y * y ) ); // 1st iteration
+		y = Q_uintBitsToFloat( 0x5f3759df - (Q_floatBitsToUint( number ) >> 1) );
+		y *= ( 1.5f - ( x * y * y ) ); // initial iteration
 #endif
+		//y *= ( 1.5f - ( x * y * y ) ); // second iteration for higher precision
 		return y;
 	}
 #endif
@@ -1031,6 +1041,38 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 	}
 #endif
 
+	STATIC_INLINE void QuatZero( quat_t o ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
+	{
+		o[ 0 ] = 0.0f;
+		o[ 1 ] = 0.0f;
+		o[ 2 ] = 0.0f;
+		o[ 3 ] = 0.0f;
+	}
+#endif
+
+	STATIC_INLINE void QuatAdd( const quat_t p, const quat_t q,
+				    quat_t o ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
+	{
+		o[ 0 ] = p[ 0 ] + q[ 0 ];
+		o[ 1 ] = p[ 1 ] + q[ 1 ];
+		o[ 2 ] = p[ 2 ] + q[ 2 ];
+		o[ 3 ] = p[ 3 ] + q[ 3 ];
+	}
+#endif
+
+	STATIC_INLINE void QuatMA( const quat_t p, float f, const quat_t q,
+				   quat_t o ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
+	{
+		o[ 0 ] = p[ 0 ] + f * q[ 0 ];
+		o[ 1 ] = p[ 1 ] + f * q[ 1 ];
+		o[ 2 ] = p[ 2 ] + f * q[ 2 ];
+		o[ 3 ] = p[ 3 ] + f * q[ 3 ];
+	}
+#endif
+
 	/*
 	STATIC_INLINE int QuatCompare(const quat_t a, const quat_t b)
 	{
@@ -1126,6 +1168,7 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 
 	void QuatSlerp( const quat_t from, const quat_t to, float frac, quat_t out );
 	void QuatTransformVector( const quat_t q, const vec3_t in, vec3_t out );
+	void QuatTransformVectorInverse( const quat_t q, const vec3_t in, vec3_t out );
 
 //=============================================
 

@@ -1392,11 +1392,11 @@ Goals:
 #define HUNK_MAGIC      0x89537892
 #define HUNK_FREE_MAGIC 0x89537893
 
-typedef struct
+typedef ALIGNED(16, struct
 {
 	int magic;
 	int size;
-} hunkHeader_t;
+}) hunkHeader_t;
 
 typedef struct
 {
@@ -1406,7 +1406,7 @@ typedef struct
 	int tempHighwater;
 } hunkUsed_t;
 
-typedef struct hunkblock_s
+typedef ALIGNED(16, struct hunkblock_s
 {
 	int                size;
 	byte               printed;
@@ -1415,7 +1415,7 @@ typedef struct hunkblock_s
 	const char         *label;
 	const char         *file;
 	int                line;
-} hunkblock_t;
+ }) hunkblock_t;
 
 static hunkblock_t *hunkblocks;
 

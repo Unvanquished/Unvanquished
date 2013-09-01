@@ -383,23 +383,23 @@ void ClampColor( vec4_t color )
 
 vec_t PlaneNormalize( vec4_t plane )
 {
-	vec_t length, ilength;
+	vec_t length2, ilength;
 
-	length = sqrt( plane[ 0 ] * plane[ 0 ] + plane[ 1 ] * plane[ 1 ] + plane[ 2 ] * plane[ 2 ] );
+	length2 = DotProduct( plane, plane );
 
-	if ( length == 0 )
+	if ( length2 == 0.0f )
 	{
 		VectorClear( plane );
-		return 0;
+		return 0.0f;
 	}
 
-	ilength = 1.0 / length;
+	ilength = Q_rsqrt( length2 );
 	plane[ 0 ] = plane[ 0 ] * ilength;
 	plane[ 1 ] = plane[ 1 ] * ilength;
 	plane[ 2 ] = plane[ 2 ] * ilength;
 	plane[ 3 ] = plane[ 3 ] * ilength;
 
-	return length;
+	return length2 * ilength;
 }
 
 /*
@@ -603,17 +603,7 @@ Don't pass doubles to this
 */
 int Q_isnan( float x )
 {
-	union
-	{
-		float        f;
-		unsigned int i;
-	} t;
-
-	t.f = x;
-	t.i &= 0x7FFFFFFF;
-	t.i = 0x7F800000 - t.i;
-
-	return ( int )( ( unsigned int ) t.i >> 31 );
+	return (Q_floatBitsToUint( x ) & 0x7fffffff) > 0x7f800000;
 }
 
 void vectoangles( const vec3_t value1, vec3_t angles )
@@ -1156,17 +1146,14 @@ vec_t VectorNormalize( vec3_t v )
 {
 	float length, ilength;
 
-	length = v[ 0 ] * v[ 0 ] + v[ 1 ] * v[ 1 ] + v[ 2 ] * v[ 2 ];
+	length = DotProduct( v, v );
 
-	if ( length )
+	if ( length != 0.0f )
 	{
-		/* writing it this way allows gcc to recognize that rsqrt can be used */
-	 	ilength = 1/(float)sqrt (length);
+	 	ilength = Q_rsqrt( length );
 		/* sqrt(length) = length * (1 / sqrt(length)) */
 		length *= ilength;
-		v[ 0 ] *= ilength;
-		v[ 1 ] *= ilength;
-		v[ 2 ] *= ilength;
+		VectorScale( v, ilength, v );
 	}
 
 	return length;
@@ -1182,9 +1169,7 @@ void VectorNormalizeFast( vec3_t v )
 
 	ilength = Q_rsqrt( DotProduct( v, v ) );
 
-	v[ 0 ] *= ilength;
-	v[ 1 ] *= ilength;
-	v[ 2 ] *= ilength;
+	VectorScale( v, ilength, v );
 }
 
 vec_t VectorNormalize2( const vec3_t v, vec3_t out )
@@ -1195,13 +1180,10 @@ vec_t VectorNormalize2( const vec3_t v, vec3_t out )
 
 	if ( length )
 	{
-		/* writing it this way allows gcc to recognize that rsqrt can be used */
-	 	ilength = 1/(float)sqrt (length);
+	 	ilength = Q_rsqrt( length );
 		/* sqrt(length) = length * (1 / sqrt(length)) */
 		length *= ilength;
-		out[ 0 ] = v[ 0 ] * ilength;
-		out[ 1 ] = v[ 1 ] * ilength;
-		out[ 2 ] = v[ 2 ] * ilength;
+		VectorScale( v, ilength, out );
 	}
 	else
 	{
@@ -2208,8 +2190,7 @@ void MatrixSetupShear( matrix_t m, vec_t x, vec_t y )
 
 void MatrixMultiply( const matrix_t a, const matrix_t b, matrix_t out )
 {
-#if id386_sse || defined( __x86_64__ )
-//#error MatrixMultiply
+#if idx86_sse
 	int    i;
 	__m128 _t0, _t1, _t2, _t3, _t4, _t5, _t6, _t7;
 
@@ -3265,12 +3246,12 @@ vec_t QuatNormalize( quat_t q )
 {
 	float length, ilength;
 
-	length = q[ 0 ] * q[ 0 ] + q[ 1 ] * q[ 1 ] + q[ 2 ] * q[ 2 ] + q[ 3 ] * q[ 3 ];
-	length = sqrt( length );
+	length = DotProduct4( q, q );
 
 	if ( length )
 	{
-		ilength = 1 / length;
+		ilength = Q_rsqrt( length );
+		length *= ilength;
 		q[ 0 ] *= ilength;
 		q[ 1 ] *= ilength;
 		q[ 2 ] *= ilength;
@@ -3597,10 +3578,34 @@ void QuatSlerp( const quat_t from, const quat_t to, float frac, quat_t out )
 
 void QuatTransformVector( const quat_t q, const vec3_t in, vec3_t out )
 {
+#if 0
 	matrix_t m;
 
 	MatrixFromQuat( m, q );
 	MatrixTransformNormal( m, in, out );
+#else
+	vec3_t tmp, tmp2;
+
+	CrossProduct( q, in, tmp );
+	VectorScale( tmp, 2.0f, tmp );
+	CrossProduct( q, tmp, tmp2 );
+	VectorMA( in, q[3], tmp, out );
+	VectorAdd( out, tmp2, out );
+#endif
+}
+
+void QuatTransformVectorInverse( const quat_t q, const vec3_t in, vec3_t out )
+{
+	vec3_t tmp, tmp2;
+
+	// The inverse rotation is obtained by negating the vector
+	// component of q, but that is mathematically the same as
+	// swapping the arguments of the cross product.
+	CrossProduct( in, q, tmp );
+	VectorScale( tmp, 2.0f, tmp );
+	CrossProduct( tmp, q, tmp2 );
+	VectorMA( in, q[3], tmp, out );
+	VectorAdd( out, tmp2, out );
 }
 
 #if defined(_WIN32) && !defined(__MINGW32__)

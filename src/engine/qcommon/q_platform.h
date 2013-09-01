@@ -64,15 +64,27 @@ Maryland 20850 USA.
 #define id386_3dnow 0
 #endif
 #if defined(__SSE__) || _M_IX86_FP >= 1
-#define id386_sse   1
+#define idx86_sse   1
 #include <xmmintrin.h>
 #else
-#define id386_sse   0
+#define idx86_sse   0
 #endif
 #else
 #define id386       0
 #define id386_3dnow 0
-#define id386_sse   0
+#endif
+
+#if ( defined( __x86_64__ )) && !defined( C_ONLY )
+#if defined(__SSE__)
+#define idx86_sse   1
+#include <xmmintrin.h>
+#else
+#define idx86_sse   0
+#endif
+#endif
+
+#ifndef idx86_sse
+#define idx86_sse 0
 #endif
 
 #if ( defined( powerc ) || defined( powerpc ) || defined( ppc ) || \
