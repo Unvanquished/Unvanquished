@@ -606,6 +606,7 @@ Module LoadModule(const char* module, const LoaderParams* nacl_params, bool use_
 			args.push_back("-B");
 			args.push_back(nacl_params->irt);
 		}
+		args.push_back("-e");
 		args.push_back("-i");
 		args.push_back(root_sock_redir);
 		args.push_back("--");
