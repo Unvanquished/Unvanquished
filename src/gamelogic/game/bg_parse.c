@@ -341,7 +341,7 @@ static configVar_t bg_configVars[] =
 	{"w_level0_biteRepeat", INTEGER, qfalse, &LEVEL0_BITE_REPEAT},
 	{"w_level0_biteWidth", FLOAT, qfalse, &LEVEL0_BITE_WIDTH},
 
-	{"w_level1upg_clawRange", INTEGER, qfalse, &LEVEL1_CLAW_U_RANGE},
+	{"w_level1upg_clawRange", FLOAT, qfalse, &LEVEL1_CLAW_U_RANGE},
 	{"w_level1upg_grabRange", FLOAT, qfalse, &LEVEL1_GRAB_U_RANGE},
 	{"w_level1upg_grabTime", INTEGER, qfalse, &LEVEL1_GRAB_U_TIME},
 	{"w_level1upg_poisonCloudDuration", INTEGER, qfalse, &LEVEL1_PCLOUD_TIME},
@@ -357,7 +357,7 @@ static configVar_t bg_configVars[] =
 	{"w_level1_regenMod", FLOAT, qfalse, &LEVEL1_REGEN_MOD},
 	{"w_level1_regenScoreGain", INTEGER, qfalse, &LEVEL1_REGEN_SCOREINC},
 
-	{"w_level2upg_clawRange", INTEGER, qfalse, &LEVEL2_CLAW_U_RANGE},
+	{"w_level2upg_clawRange", FLOAT, qfalse, &LEVEL2_CLAW_U_RANGE},
 	{"w_level2upg_zapChainFalloff", FLOAT, qfalse, &LEVEL2_AREAZAP_CHAIN_FALLOFF},
 	{"w_level2upg_zapChainRange", FLOAT, qfalse, &LEVEL2_AREAZAP_CHAIN_RANGE},
 	{"w_level2upg_zapDmg", INTEGER, qfalse, &LEVEL2_AREAZAP_DMG},
