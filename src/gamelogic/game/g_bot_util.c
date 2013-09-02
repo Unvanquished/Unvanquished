@@ -414,10 +414,10 @@ void BotGetDesiredBuy( gentity_t *self, weapon_t *weapon, upgrade_t *upgrades, i
 	usableCapital -= BG_Weapon( *weapon )->price;
 
 	//finally, see if we can buy a battpack
-	if ( BG_Weapon( *weapon )->usesEnergy && usableCapital >= BATTPACK_PRICE && level.team[ TEAM_HUMANS ].stage >= S2 && upgrades[0] != UP_BATTLESUIT )
+	if ( BG_Weapon( *weapon )->usesEnergy && usableCapital >= BG_Upgrade( UP_BATTPACK )->price && level.team[ TEAM_HUMANS ].stage >= S2 && upgrades[0] != UP_BATTLESUIT )
 	{
 		upgrades[( *numUpgrades )++] = UP_BATTPACK;
-		usableCapital -= BATTPACK_PRICE;
+		usableCapital -= BG_Upgrade( UP_BATTPACK )->price;
 	}
 
 	//now test to see if we already have all of these items
