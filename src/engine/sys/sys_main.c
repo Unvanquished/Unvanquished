@@ -190,9 +190,20 @@ void NORETURN Sys_Quit( void )
 Sys_GetProcessorFeatures
 =================
 */
-cpuFeatures_t Sys_GetProcessorFeatures( void )
+int Sys_GetProcessorFeatures( void )
 {
-	return ( cpuFeatures_t ) 0;
+	int features = 0;
+#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
+	if( SDL_HasRDTSC( ) ) features |= CF_RDTSC;
+	if( SDL_HasMMX( ) ) features |= CF_MMX;
+	if( SDL_HasMMXExt( ) ) features |= CF_MMX_EXT;
+	if( SDL_Has3DNow( ) ) features |= CF_3DNOW;
+	if( SDL_Has3DNowExt( ) ) features |= CF_3DNOW_EXT;
+	if( SDL_HasSSE( ) ) features |= CF_SSE;
+	if( SDL_HasSSE2( ) ) features |= CF_SSE2;
+	if( SDL_HasAltiVec( ) ) features |= CF_ALTIVEC;
+#endif
+	return features;
 }
 
 /*

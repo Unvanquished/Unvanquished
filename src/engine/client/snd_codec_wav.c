@@ -1,148 +1,119 @@
 /*
 ===========================================================================
-
-Daemon GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2005 Id Software, Inc.
 Copyright (C) 2005 Stuart Dalton (badcdev@gmail.com)
 
-This file is part of the Daemon GPL Source Code (Daemon Source Code).
+This file is part of Daemon source code.
 
-Daemon Source Code is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+Daemon source code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 2 of the License,
+or (at your option) any later version.
 
-Daemon Source Code is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
+Daemon source code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
-
-In addition, the Daemon Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following the
-terms and conditions of the GNU General Public License which accompanied the Daemon
-Source Code.  If not, please request a copy in writing from id Software at the address
-below.
-
-If you have questions concerning this license or the applicable additional terms, you
-may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville,
-Maryland 20850 USA.
-
+along with Daemon source code; if not, write to the Free Software
+Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
-/*
- * snd_codec_wav.c
- * RIFF WAVE reader decoder
- *
- * 2005-08-31
- *  Started, based on id's decoder
- *
- * 2005-09-01
- *  Fixed chunk parsing code to deal with unexpected chunks (fixes Padman)
- */
-
-#include "../client/client.h"
+#include "client.h"
 #include "snd_codec.h"
 
 /*
- * Wave file reading
- */
+=================
+FGetLittleLong
+=================
+*/
 static int FGetLittleLong( fileHandle_t f )
 {
-	int v;
+	int		v;
 
 	FS_Read( &v, sizeof( v ), f );
 
 	return LittleLong( v );
 }
 
-static int FGetLittleShort( fileHandle_t f )
+/*
+=================
+FGetLittleShort
+=================
+*/
+static short FGetLittleShort( fileHandle_t f )
 {
-	short v;
+	short	v;
 
 	FS_Read( &v, sizeof( v ), f );
 
 	return LittleShort( v );
 }
 
-static int readChunkInfo( fileHandle_t f, char *name )
+/*
+=================
+S_ReadChunkInfo
+=================
+*/
+static int S_ReadChunkInfo( fileHandle_t f, char *name )
 {
 	int len, r;
 
-	name[ 4 ] = 0;
+	name[4] = 0;
 
 	r = FS_Read( name, 4, f );
 
 	if ( r != 4 )
-	{
-		return 0;
-	}
+		return -1;
 
 	len = FGetLittleLong( f );
 
-	if ( len < 0 || len > 0xffffffff )
+	if ( len < 0 )
 	{
-		return 0;
+		Com_Printf( S_COLOR_YELLOW "WARNING: Negative chunk length\n" );
+		return -1;
 	}
 
-	len = ( len + 1 ) & ~1; // pad to word boundary
 	return len;
 }
 
-static void skipChunk( fileHandle_t f, int length )
+/*
+=================
+S_FindRIFFChunk
+
+Returns the length of the data in the chunk, or -1 if not found
+=================
+*/
+static int S_FindRIFFChunk( fileHandle_t f, char *chunk )
 {
-	byte buffer[ 32 * 1024 ];
+	char	name[5];
+	int		len;
 
-	while ( length > 0 )
+	while ( ( len = S_ReadChunkInfo( f, name ) ) >= 0 )
 	{
-		int toread = length;
-
-		if ( toread > sizeof( buffer ) )
-		{
-			toread = sizeof( buffer );
-		}
-
-		FS_Read( buffer, toread, f );
-		length -= toread;
-	}
-}
-
-// returns the length of the data in the chunk, or 0 if not found
-static int S_FindWavChunk( fileHandle_t f, char *chunk )
-{
-	char name[ 5 ];
-	int  len;
-
-	// This is a bit dangerous...
-	while ( 1 )
-	{
-		len = readChunkInfo( f, name );
-
-		// Read failure?
-		if ( len == 0 )
-		{
-			return 0;
-		}
-
 		// If this is the right chunk, return
 		if ( !Q_strncmp( name, chunk, 4 ) )
-		{
 			return len;
-		}
 
 		len = PAD( len, 2 );
 
 		// Not the right chunk - skip it
 		FS_Seek( f, len, FS_SEEK_CUR );
 	}
+
+	return -1;
 }
 
+/*
+=================
+S_ByteSwapRawSamples
+=================
+*/
 static void S_ByteSwapRawSamples( int samples, int width, int s_channels, const byte *data )
 {
-	int i;
+	int		i;
 
 	if ( width != 2 )
 	{
@@ -159,48 +130,61 @@ static void S_ByteSwapRawSamples( int samples, int width, int s_channels, const 
 		samples <<= 1;
 	}
 
-	for ( i = 0; i < samples; i++ )
+	for ( i = 0 ; i < samples ; i++ )
 	{
-		( ( short * ) data ) [ i ] = LittleShort( ( ( short * ) data ) [ i ] );
+		( ( short * )data )[i] = LittleShort( ( ( short * )data )[i] );
 	}
 }
 
-static qboolean read_wav_header( fileHandle_t file, snd_info_t *info )
+/*
+=================
+S_ReadRIFFHeader
+=================
+*/
+static qboolean S_ReadRIFFHeader( fileHandle_t file, snd_info_t *info )
 {
-	char dump[ 16 ];
-//	int wav_format;
-	int  fmtlen = 0;
+	char dump[16];
+	int bits;
+	int fmtlen = 0;
 
 	// skip the riff wav header
 	FS_Read( dump, 12, file );
 
 	// Scan for the format chunk
-	if ( ( fmtlen = S_FindWavChunk( file, "fmt " ) ) == 0 )
+	if ( ( fmtlen = S_FindRIFFChunk( file, "fmt " ) ) < 0 )
 	{
-		Com_Printf( "No ‘fmt’ chunk\n" );
+		Com_Printf( S_COLOR_RED "ERROR: Couldn't find \"fmt\" chunk\n" );
 		return qfalse;
 	}
 
 	// Save the parameters
-	/*wav_format = */ FGetLittleShort( file );
+	FGetLittleShort( file ); // wav_format
 	info->channels = FGetLittleShort( file );
 	info->rate = FGetLittleLong( file );
 	FGetLittleLong( file );
 	FGetLittleShort( file );
-	info->width = FGetLittleShort( file ) / 8;
+	bits = FGetLittleShort( file );
+
+	if ( bits < 8 )
+	{
+		Com_Printf( S_COLOR_RED "ERROR: Less than 8 bit sound is not supported\n" );
+		return qfalse;
+	}
+
+	info->width = bits / 8;
 	info->dataofs = 0;
 
 	// Skip the rest of the format chunk if required
 	if ( fmtlen > 16 )
 	{
 		fmtlen -= 16;
-		skipChunk( file, fmtlen );
+		FS_Seek( file, fmtlen, FS_SEEK_CUR );
 	}
 
 	// Scan for the data chunk
-	if ( ( info->size = S_FindWavChunk( file, "data" ) ) == 0 )
+	if ( ( info->size = S_FindRIFFChunk( file, "data" ) ) < 0 )
 	{
-		Com_Printf("%s", _( "No ‘data’ chunk\n" ));
+		Com_Printf( S_COLOR_RED "ERROR: Couldn't find \"data\" chunk\n" );
 		return qfalse;
 	}
 
@@ -209,38 +193,41 @@ static qboolean read_wav_header( fileHandle_t file, snd_info_t *info )
 	return qtrue;
 }
 
-/*
- * WAV codec
- */
+// WAV codec
 snd_codec_t wav_codec =
 {
-	".wav",
-	codec_wav_load,
-	codec_wav_open,
-	codec_wav_read,
-	codec_wav_close,
+	"wav",
+	S_WAV_CodecLoad,
+	S_WAV_CodecOpenStream,
+	S_WAV_CodecReadStream,
+	S_WAV_CodecCloseStream,
 	NULL
 };
 
-void *codec_wav_load( const char *filename, snd_info_t *info )
+/*
+=================
+S_WAV_CodecLoad
+=================
+*/
+void *S_WAV_CodecLoad( const char *filename, snd_info_t *info )
 {
 	fileHandle_t file;
-	void         *buffer;
+	void *buffer;
 
 	// Try to open the file
 	FS_FOpenFileRead( filename, &file, qtrue );
 
 	if ( !file )
 	{
-		Com_Printf(_( "Can't read sound file %s\n"), filename );
 		return NULL;
 	}
 
 	// Read the RIFF header
-	if ( !read_wav_header( file, info ) )
+	if ( !S_ReadRIFFHeader( file, info ) )
 	{
 		FS_FCloseFile( file );
-		Com_Printf(_( "Can't understand wav file %s\n"), filename );
+		Com_Printf( S_COLOR_RED "ERROR: Incorrect/unsupported format in \"%s\"\n",
+		            filename );
 		return NULL;
 	}
 
@@ -250,60 +237,70 @@ void *codec_wav_load( const char *filename, snd_info_t *info )
 	if ( !buffer )
 	{
 		FS_FCloseFile( file );
-		Com_Printf( _( S_ERROR "Out of memory reading \"%s\"\n"), filename );
+		Com_Printf( S_COLOR_RED "ERROR: Out of memory reading \"%s\"\n",
+		            filename );
 		return NULL;
 	}
 
 	// Read, byteswap
 	FS_Read( buffer, info->size, file );
-	S_ByteSwapRawSamples( info->samples, info->width, info->channels, ( byte * ) buffer );
+	S_ByteSwapRawSamples( info->samples, info->width, info->channels, ( byte * )buffer );
 
 	// Close and return
 	FS_FCloseFile( file );
 	return buffer;
 }
 
-snd_stream_t *codec_wav_open( const char *filename )
+/*
+=================
+S_WAV_CodecOpenStream
+=================
+*/
+snd_stream_t *S_WAV_CodecOpenStream( const char *filename )
 {
 	snd_stream_t *rv;
 
 	// Open
-	rv = codec_util_open( filename, &wav_codec );
+	rv = S_CodecUtilOpen( filename, &wav_codec );
 
 	if ( !rv )
-	{
 		return NULL;
-	}
 
 	// Read the RIFF header
-	if ( !read_wav_header( rv->file, &rv->info ) )
+	if ( !S_ReadRIFFHeader( rv->file, &rv->info ) )
 	{
-		codec_util_close( rv );
+		S_CodecUtilClose( &rv );
 		return NULL;
 	}
 
 	return rv;
 }
 
-void codec_wav_close( snd_stream_t *stream )
+/*
+=================
+S_WAV_CodecCloseStream
+=================
+*/
+void S_WAV_CodecCloseStream( snd_stream_t *stream )
 {
-	codec_util_close( stream );
+	S_CodecUtilClose( &stream );
 }
 
-int codec_wav_read( snd_stream_t *stream, int bytes, void *buffer )
+/*
+=================
+S_WAV_CodecReadStream
+=================
+*/
+int S_WAV_CodecReadStream( snd_stream_t *stream, int bytes, void *buffer )
 {
 	int remaining = stream->info.size - stream->pos;
 	int samples;
 
 	if ( remaining <= 0 )
-	{
 		return 0;
-	}
 
 	if ( bytes > remaining )
-	{
 		bytes = remaining;
-	}
 
 	stream->pos += bytes;
 	samples = ( bytes / stream->info.width ) / stream->info.channels;

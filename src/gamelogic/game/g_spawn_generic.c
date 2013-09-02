@@ -116,9 +116,8 @@ void SP_target_push( gentity_t *self )
 		VectorCopy( self->s.origin, self->r.absmax );
 		self->think = think_aimAtTarget;
 		self->nextthink = level.time + FRAMETIME;
+		self->act = target_push_act;
 	}
-
-	self->act = target_push_act;
 }
 
 /*

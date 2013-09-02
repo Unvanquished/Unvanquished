@@ -1655,7 +1655,7 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 	if ( !down )
 	{
 		// Handle any +commands which were invoked on the corresponding key-down
-		Cmd::ExecuteCommand(va("keyup %d %d %u\n", plusCommand.check, key, time, kb));
+		Cmd::ExecuteCommand(va("keyup %d %d %u\n", plusCommand.check, key, time));
 
 		if ( cls.keyCatchers & KEYCATCH_UI && uivm )
 		{

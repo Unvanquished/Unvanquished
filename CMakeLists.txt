@@ -556,6 +556,7 @@ set( CLIENTLIST
   ${ENGINE_DIR}/client/snd_local.h
   ${ENGINE_DIR}/client/snd_public.h
   ${ENGINE_DIR}/client/snd_codec_ogg.c
+  ${ENGINE_DIR}/client/snd_codec_opus.c
   ${ENGINE_DIR}/client/snd_codec_wav.c
   ${ENGINE_DIR}/client/snd_dma.c
   ${ENGINE_DIR}/client/snd_openal.c
@@ -915,6 +916,13 @@ if( BUILD_CLIENT )
   find_package( Vorbis REQUIRED )
   include_directories( ${VORBIS_INCLUDE_DIRS} )
   set( LIBS_CLIENT ${LIBS_CLIENT} ${VORBIS_LIBRARIES} )
+endif()
+
+# Opus
+if( BUILD_CLIENT )
+  find_package( Opus REQUIRED )
+  include_directories( ${OPUS_INCLUDE_DIRS} )
+  set( LIBS_CLIENT ${LIBS_CLIENT} ${OPUS_LIBRARIES} )
 endif()
 
 # Theora

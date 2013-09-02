@@ -582,7 +582,7 @@ void R_Modellist_f( void )
 		{
 			for ( j = 0; j < MD3_MAX_LODS; j++ )
 			{
-				if ( mod->mdv[ j ] && mod->mdv[ j ] != mod->mdv[ j - 1 ] )
+				if ( mod->mdv[ j ] && ( j == 0 || mod->mdv[ j ] != mod->mdv[ j - 1 ] ) )
 				{
 					mdvModel_t   *mdvModel;
 					mdvSurface_t *mdvSurface;

@@ -37,20 +37,20 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define ALIEN_WDMG_MODIFIER           1.0f
 #define ADM(d) ((int)((float)d * ALIEN_WDMG_MODIFIER ))
 
-#define ABUILDER_CLAW_DMG             ADM(20)
-#define ABUILDER_CLAW_RANGE           64.0f
-#define ABUILDER_CLAW_WIDTH           4.0f
-#define ABUILDER_BLOB_DMG             ADM(4)
-#define ABUILDER_BLOB_SPEED           800.0f
-#define ABUILDER_BLOB_SPEED_MOD       0.5f
-#define ABUILDER_BLOB_TIME            2000
+extern int   ABUILDER_CLAW_DMG;
+extern float ABUILDER_CLAW_RANGE;
+extern float ABUILDER_CLAW_WIDTH;
+extern int   ABUILDER_BLOB_DMG;
+extern float ABUILDER_BLOB_SPEED;
+extern float ABUILDER_BLOB_SPEED_MOD;
+extern int   ABUILDER_BLOB_TIME;
 #define ABUILDER_BLOB_FIRE_IMMUNITY   3000   // in ms, friendly buildables gain immunity for fire on hit
 #define ABUILDER_BLOB_FIRE_STOP_RANGE 20     // granger spit that hits a surface kills environmental fire in this range
 
-#define LEVEL0_BITE_DMG               ADM(36)
-#define LEVEL0_BITE_RANGE             64.0f
-#define LEVEL0_BITE_WIDTH             6.0f
-#define LEVEL0_BITE_REPEAT            500
+extern int   LEVEL0_BITE_DMG;
+extern float LEVEL0_BITE_RANGE;
+extern float LEVEL0_BITE_WIDTH;
+extern int   LEVEL0_BITE_REPEAT;
 #define LEVEL0_POUNCE_DISTANCE        300 // pitch between LEVEL0_POUNCE_MINPITCH and pi/4 results in this distance
 #define LEVEL0_POUNCE_MINPITCH        M_PI / 12.0f // 15°, minimum pitch that will result in full pounce distance
 #define LEVEL0_POUNCE_COOLDOWN        2000
@@ -60,73 +60,70 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define LEVEL0_SIDEPOUNCE_DIR_Z       0.4f // in ]0.0f,1.0f], fixed Z-coordinate of sidepounce
 #define LEVEL0_SIDEPOUNCE_COOLDOWN    750
 
-#define LEVEL1_CLAW_DMG               ADM(32)
-#define LEVEL1_CLAW_RANGE             80.0f // Claw and grab range normalized. Not sure on this one, but it was pretty widely requested.
-#define LEVEL1_CLAW_U_RANGE           LEVEL1_CLAW_RANGE + 3.0f
-#define LEVEL1_CLAW_WIDTH             10.0f
+extern int   LEVEL1_CLAW_DMG;
+extern float LEVEL1_CLAW_RANGE;
+extern float LEVEL1_CLAW_U_RANGE;
+extern float LEVEL1_CLAW_WIDTH;
 #define LEVEL1_CLAW_K_SCALE           1.0f
-#define LEVEL1_GRAB_RANGE             80.0f // Claw and grab range normalized.
-#define LEVEL1_GRAB_U_RANGE           LEVEL1_GRAB_RANGE + 3.0f
-#define LEVEL1_GRAB_TIME              300
-#define LEVEL1_GRAB_U_TIME            300
-#define LEVEL1_PCLOUD_DMG             ADM(4)
-#define LEVEL1_PCLOUD_RANGE           120.0f
-#define LEVEL1_PCLOUD_TIME            10000
-#define LEVEL1_REGEN_MOD              2.0f
-#define LEVEL1_UPG_REGEN_MOD          3.0f
-#define LEVEL1_REGEN_SCOREINC         AVM(100) // score added for healing per 10s
-#define LEVEL1_UPG_REGEN_SCOREINC     AVM(200)
+extern float LEVEL1_GRAB_RANGE;
+extern float LEVEL1_GRAB_U_RANGE;
+extern int   LEVEL1_GRAB_TIME;
+extern int   LEVEL1_GRAB_U_TIME;
+extern float LEVEL1_PCLOUD_RANGE;
+extern int   LEVEL1_PCLOUD_TIME;
+extern float LEVEL1_REGEN_MOD;
+extern float LEVEL1_UPG_REGEN_MOD;
+extern int   LEVEL1_REGEN_SCOREINC;
+extern int   LEVEL1_UPG_REGEN_SCOREINC;
 
-#define LEVEL2_CLAW_DMG               ADM(40)
-#define LEVEL2_CLAW_RANGE             80.0f
-#define LEVEL2_CLAW_U_RANGE           LEVEL2_CLAW_RANGE + 2.0f
-#define LEVEL2_CLAW_WIDTH             14.0f
-#define LEVEL2_AREAZAP_DMG            ADM(60)
-#define LEVEL2_AREAZAP_RANGE          200.0f
-#define LEVEL2_AREAZAP_CHAIN_RANGE    150.0f
-#define LEVEL2_AREAZAP_CHAIN_FALLOFF  8.0f
-#define LEVEL2_AREAZAP_WIDTH          15.0f
-#define LEVEL2_AREAZAP_TIME           1000
-#define LEVEL2_AREAZAP_MAX_TARGETS    5
-#define LEVEL2_WALLJUMP_MAXSPEED      1000.0f
+extern int   LEVEL2_CLAW_DMG;
+extern float LEVEL2_CLAW_RANGE;
+extern float LEVEL2_CLAW_U_RANGE;
+extern float LEVEL2_CLAW_WIDTH;
+extern int   LEVEL2_AREAZAP_DMG;
+extern float LEVEL2_AREAZAP_RANGE;
+extern float LEVEL2_AREAZAP_CHAIN_RANGE;
+extern float LEVEL2_AREAZAP_CHAIN_FALLOFF;
+extern float LEVEL2_AREAZAP_WIDTH;
+extern int   LEVEL2_AREAZAP_TIME;
+extern float LEVEL2_WALLJUMP_MAXSPEED;
+#define LEVEL2_AREAZAP_MAX_TARGETS 5
 
-#define LEVEL3_CLAW_DMG               ADM(80)
-#define LEVEL3_CLAW_RANGE             80.0f // Increased claw range
-#define LEVEL3_CLAW_UPG_RANGE         LEVEL3_CLAW_RANGE + 3.0f
-#define LEVEL3_CLAW_WIDTH             11.0f //
-#define LEVEL3_POUNCE_DMG             ADM(75) // Reduced damage. Pounce is very powerful as it is.
-#define LEVEL3_POUNCE_RANGE           55.0f // Pounce range raised by 7.0. May need to be nerfed, still want to test like this though.
-#define LEVEL3_POUNCE_UPG_RANGE       LEVEL3_POUNCE_RANGE + 3.0f
-#define LEVEL3_POUNCE_WIDTH           12.0f // Pounce width narrowed. May scale this down even further.
-#define LEVEL3_POUNCE_TIME            800 // Reduced this by 100ms, may need nerfing.
-#define LEVEL3_POUNCE_TIME_UPG        800 // Evened with standard goon. I'd like to keep this here even if standard goon charge time is raised.
-#define LEVEL3_POUNCE_TIME_MIN        200 // msec before which pounce cancels
-#define LEVEL3_POUNCE_REPEAT          400 // msec before a new pounce starts
-#define LEVEL3_POUNCE_SPEED_MOD       0.85f // Whales: Reduced the slowdown from a charged pounce by 0.10
-#define LEVEL3_POUNCE_JUMP_MAG        750 // Raised by 50,
-#define LEVEL3_POUNCE_JUMP_MAG_UPG    850 // Raised by 50.
-#define LEVEL3_BOUNCEBALL_DMG         ADM(110)
-#define LEVEL3_BOUNCEBALL_SPEED       1000.0f
-#define LEVEL3_BOUNCEBALL_RADIUS      75
-#define LEVEL3_BOUNCEBALL_REGEN       12500 // Reduced regen time.
+extern int   LEVEL3_CLAW_DMG;
+extern float LEVEL3_CLAW_RANGE;
+extern float LEVEL3_CLAW_UPG_RANGE;
+extern float LEVEL3_CLAW_WIDTH;
+extern int   LEVEL3_POUNCE_DMG;
+extern float LEVEL3_POUNCE_RANGE;
+extern float LEVEL3_POUNCE_UPG_RANGE;
+extern float LEVEL3_POUNCE_WIDTH;
+extern int   LEVEL3_POUNCE_TIME;
+extern int   LEVEL3_POUNCE_TIME_UPG;
+extern int   LEVEL3_POUNCE_TIME_MIN;
+extern int   LEVEL3_POUNCE_REPEAT;
+extern float LEVEL3_POUNCE_SPEED_MOD;
+extern int   LEVEL3_POUNCE_JUMP_MAG;
+extern int   LEVEL3_POUNCE_JUMP_MAG_UPG;
+extern int   LEVEL3_BOUNCEBALL_DMG;
+extern float LEVEL3_BOUNCEBALL_SPEED;
+extern int   LEVEL3_BOUNCEBALL_RADIUS;
+extern int   LEVEL3_BOUNCEBALL_REGEN;
 
-#define LEVEL4_CLAW_DMG               ADM(100)
-#define LEVEL4_CLAW_RANGE             100.0f
-#define LEVEL4_CLAW_WIDTH             14.0f
-#define LEVEL4_CLAW_HEIGHT            20.0f
-
-#define LEVEL4_TRAMPLE_DMG            ADM(85) // 111 -> 85
-#define LEVEL4_TRAMPLE_SPEED          2.0f
-#define LEVEL4_TRAMPLE_CHARGE_MIN     375 // minimum msec to start a charge
-#define LEVEL4_TRAMPLE_CHARGE_MAX     1000 // msec to maximum charge stored
-#define LEVEL4_TRAMPLE_CHARGE_TRIGGER 3000 // msec charge starts on its own
-#define LEVEL4_TRAMPLE_DURATION       3000 // msec trample lasts on full charge
-#define LEVEL4_TRAMPLE_STOP_PENALTY   1 // charge lost per msec when stopped
-#define LEVEL4_TRAMPLE_REPEAT         300 // Time until charge rehits a player Ishq: 100->300
-
-#define LEVEL4_CRUSH_DAMAGE_PER_V     0.5f // damage per falling velocity
-#define LEVEL4_CRUSH_DAMAGE           120 // to players only
-#define LEVEL4_CRUSH_REPEAT           500 // player damage repeat
+extern int   LEVEL4_CLAW_DMG;
+extern float LEVEL4_CLAW_RANGE;
+extern float LEVEL4_CLAW_WIDTH;
+extern float LEVEL4_CLAW_HEIGHT;
+extern int   LEVEL4_TRAMPLE_DMG;
+extern float LEVEL4_TRAMPLE_SPEED;
+extern int   LEVEL4_TRAMPLE_CHARGE_MIN;
+extern int   LEVEL4_TRAMPLE_CHARGE_MAX;
+extern int   LEVEL4_TRAMPLE_CHARGE_TRIGGER;
+extern int   LEVEL4_TRAMPLE_DURATION;
+extern int   LEVEL4_TRAMPLE_STOP_PENALTY;
+extern int   LEVEL4_TRAMPLE_REPEAT;
+extern float LEVEL4_CRUSH_DAMAGE_PER_V;
+extern int   LEVEL4_CRUSH_DAMAGE;
+extern int   LEVEL4_CRUSH_REPEAT;
 
 /*
  * ALIEN classes
@@ -300,68 +297,73 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define HUMAN_WDMG_MODIFIER      1.0f
 #define HDM(d)                   ((int)((float)d * HUMAN_WDMG_MODIFIER ))
 
-#define BLASTER_SPEED            1400
-#define BLASTER_DMG              HDM(10)
-#define BLASTER_SIZE             5
+extern int   BLASTER_SPREAD;
+extern int   BLASTER_SPEED;
+extern int   BLASTER_DMG;
+extern int   BLASTER_SIZE;
 
-#define RIFLE_SPREAD             250 // Raised by 50.
-#define RIFLE_DMG                HDM(5)
+extern int   RIFLE_SPREAD;
+extern int   RIFLE_DMG;
 
-#define PAINSAW_DAMAGE           HDM(11)
-#define PAINSAW_RANGE            64.0f
-#define PAINSAW_WIDTH            0.0f
-#define PAINSAW_HEIGHT           8.0f
+extern int   PAINSAW_DAMAGE;
+extern float PAINSAW_RANGE;
+extern float PAINSAW_WIDTH;
+extern float PAINSAW_HEIGHT;
 
-#define GRENADE_DAMAGE           HDM(310)
-#define GRENADE_RANGE            192.0f
-#define GRENADE_SPEED            400.0f
+extern int   GRENADE_DAMAGE;
+extern float GRENADE_RANGE;
+extern float GRENADE_SPEED;
 
-#define SHOTGUN_PELLETS          11 //used to sync server and client side
-#define SHOTGUN_SPREAD           790
-#define SHOTGUN_DMG              HDM(5)
-#define SHOTGUN_RANGE            ( 8192 * 12 )
+extern int   SHOTGUN_DMG;
+extern int   SHOTGUN_RANGE;
+extern int   SHOTGUN_PELLETS;
+extern int   SHOTGUN_SPREAD;
 
-#define LASGUN_DAMAGE            HDM(9)
+extern int   LASGUN_DAMAGE;
 
-#define MDRIVER_DMG              HDM(40)
+extern int   MDRIVER_DMG;
 
-#define CHAINGUN_DMG             HDM(6)
-#define CHAINGUN_SPREAD          900
+extern int   CHAINGUN_SPREAD;
+extern int   CHAINGUN_DMG;
 
+extern int   FLAMER_DMG;
+extern int   FLAMER_FLIGHTDAMAGE;
+extern int   FLAMER_SPLASHDAMAGE;
+extern int   FLAMER_RADIUS;
+extern int   FLAMER_SIZE;
+extern float FLAMER_LIFETIME;
+extern float FLAMER_SPEED;
+extern float FLAMER_LAG;
+extern float FLAMER_IGNITE_RADIUS;
+extern float FLAMER_IGNITE_CHANCE;
+extern float FLAMER_IGNITE_SPLCHANCE;
 #define FLAMER_DAMAGE            HDM(10)
 #define FLAMER_DAMAGE_MAXDST_MOD 0.5f    // damage decreases linearly from full damage to this during missile lifetime
 #define FLAMER_SPLASH_DAMAGE     FLAMER_DAMAGE
 #define FLAMER_SPLASH_RADIUS     50
 #define FLAMER_SPLASH_MINDST_MOD 0.5f    // splash damage increases linearly from this to full damage during lifetime
-#define FLAMER_SIZE              5
-#define FLAMER_LIFETIME          750.0f
-#define FLAMER_SPEED             400.0f
-#define FLAMER_LAG               0.65f   // part of player velocity that is added to the fireball
-#define FLAMER_IGNITE_RADIUS     50
-#define FLAMER_IGNITE_CHANCE     0.5f
-#define FLAMER_IGNITE_SPLCHANCE  0.1f
 #define FLAMER_LEAVE_FIRE_CHANCE 0.3f
 
-#define PRIFLE_DMG               HDM(9)
-#define PRIFLE_SPEED             1200
+extern int   PRIFLE_DMG;
+extern int   PRIFLE_SPEED;
 #define PRIFLE_DAMAGE_FULL_TIME  0 // in ms, full damage for this time
 #define PRIFLE_DAMAGE_HALF_LIFE  0 // in ms, damage half life time after full damage period, 0 = off
-#define PRIFLE_SIZE              5
+extern int   PRIFLE_SIZE;
 
-#define LCANNON_DAMAGE           HDM(265)
-#define LCANNON_RADIUS           150 // primary splash damage radius
+extern int   LCANNON_DAMAGE;
+extern int   LCANNON_RADIUS;
 #define LCANNON_DAMAGE_FULL_TIME 0 // in ms, full damage for this time
 #define LCANNON_DAMAGE_HALF_LIFE 0 // in ms, damage half life time after full damage period, 0 = off
-#define LCANNON_SIZE             5 // missile bounding box radiusa
-#define LCANNON_SECONDARY_DAMAGE HDM(30)
-#define LCANNON_SECONDARY_RADIUS 75 // secondary splash damage radius
-#define LCANNON_SECONDARY_SPEED  1400
+extern int   LCANNON_SIZE;
+extern int   LCANNON_SECONDARY_DAMAGE;
+extern int   LCANNON_SECONDARY_RADIUS;
+extern int   LCANNON_SECONDARY_SPEED;
 #define LCANNON_SECONDARY_RELOAD 2000
-#define LCANNON_SPEED            700
-#define LCANNON_CHARGE_TIME_MAX  3000
-#define LCANNON_CHARGE_TIME_MIN  100
-#define LCANNON_CHARGE_TIME_WARN 2000
-#define LCANNON_CHARGE_AMMO      10 // ammo cost of a full charge shot
+extern int   LCANNON_SPEED;
+extern int   LCANNON_CHARGE_TIME_MAX;
+extern int   LCANNON_CHARGE_TIME_MIN;
+extern int   LCANNON_CHARGE_TIME_WARN;
+extern int   LCANNON_CHARGE_AMMO;
 
 #define HBUILD_HEALRATE          18
 
@@ -369,55 +371,55 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * HUMAN upgrades
  */
 
-#define LIGHTARMOUR_POISON_PROTECTION 1
-#define LIGHTARMOUR_PCLOUD_PROTECTION 1000
+extern int   LIGHTARMOUR_POISON_PROTECTION;
+extern int   LIGHTARMOUR_PCLOUD_PROTECTION;
 
-#define HELMET_RANGE                  1000.0f
-#define HELMET_POISON_PROTECTION      1
-#define HELMET_PCLOUD_PROTECTION      1000
+extern float HELMET_RANGE;
+extern int   HELMET_POISON_PROTECTION;
+extern int   HELMET_PCLOUD_PROTECTION;
 
-#define BATTPACK_PRICE                100
-#define BATTPACK_MODIFIER             1.5f //modifier for extra energy storage available
+extern float BATTPACK_MODIFIER;
 
-#define JETPACK_FLOAT_SPEED           128.0f //up movement speed
-#define JETPACK_SINK_SPEED            192.0f //down movement speed
-#define JETPACK_DISABLE_TIME          1000 //time to disable the jetpack when player damaged
-#define JETPACK_DISABLE_CHANCE        0.3f
+extern float JETPACK_FLOAT_SPEED;
+extern float JETPACK_SINK_SPEED;
+extern int   JETPACK_DISABLE_TIME;
+extern float JETPACK_DISABLE_CHANCE;
 
-#define BSUIT_PRICE                   400
-#define BSUIT_POISON_PROTECTION       3
-#define BSUIT_PCLOUD_PROTECTION       3000
+extern int   BSUIT_POISON_PROTECTION;
+extern int   BSUIT_PCLOUD_PROTECTION;
 
-#define MEDKIT_POISON_IMMUNITY_TIME   2000 // Added two second poison immunity from medkit.
-#define MEDKIT_STARTUP_TIME           4000
-#define MEDKIT_STARTUP_SPEED          5
+extern int   MEDKIT_POISON_IMMUNITY_TIME;
+extern int   MEDKIT_STARTUP_TIME;
+extern int   MEDKIT_STARTUP_SPEED;
 
 /*
  * HUMAN buildables
  */
-#define MGTURRET_RANGE            400.0
-#define MGTURRET_REPEAT           150.0
-#define MGTURRET_ANGULARSPEED     12
-#define MGTURRET_ACCURACY_TO_FIRE 0
-#define MGTURRET_VERTICALCAP      30 // +/- maximum pitch
-#define MGTURRET_SPREAD           200
-#define MGTURRET_DMG              HDM(8)
-#define MGTURRET_SPINUP_TIME      750 // time between target sighted and fire
+extern float REACTOR_BASESIZE;
+extern float REPEATER_BASESIZE;
 
-#define TESLAGEN_RANGE            250.0
-#define TESLAGEN_REPEAT           200.0
-#define TESLAGEN_DMG              HDM(10)
+extern float MGTURRET_RANGE;
+extern int   MGTURRET_ANGULARSPEED;
+extern int   MGTURRET_ACCURACY_TO_FIRE;
+extern int   MGTURRET_VERTICALCAP;
+extern int   MGTURRET_SPREAD;
+extern int   MGTURRET_DMG;
+extern int   MGTURRET_SPINUP_TIME;
 
-#define DC_ATTACK_PERIOD          10000 // how often to spam "under attack"
-#define DC_HEALRATE               4
-#define DC_RANGE                  1000
+extern float TESLAGEN_RANGE;
+extern int   TESLAGEN_REPEAT;
+extern int   TESLAGEN_DMG;
 
-#define REACTOR_ATTACK_RANGE      100.0f
-#define REACTOR_ATTACK_REPEAT     1000
-#define REACTOR_ATTACK_DAMAGE     40
-#define REACTOR_ATTACK_DCC_REPEAT 1000
-#define REACTOR_ATTACK_DCC_RANGE  150.0f
-#define REACTOR_ATTACK_DCC_DAMAGE 40
+extern int   DC_ATTACK_PERIOD;
+extern int   DC_HEALRATE;
+extern int   DC_RANGE;
+
+extern float REACTOR_ATTACK_RANGE;
+extern int   REACTOR_ATTACK_REPEAT;
+extern int   REACTOR_ATTACK_DAMAGE;
+extern float REACTOR_ATTACK_DCC_RANGE;
+extern int   REACTOR_ATTACK_DCC_REPEAT;
+extern int   REACTOR_ATTACK_DCC_DAMAGE;
 
 /*
  * HUMAN misc

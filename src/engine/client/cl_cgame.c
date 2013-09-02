@@ -832,11 +832,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			S_StartSound( (float*) VMA( 1 ), args[ 2 ], args[ 3 ], args[ 4 ] );
 			return 0;
 
-		case CG_S_STARTSOUNDEX:
-			cls.nCgameSoundSyscalls ++;
-			S_StartSoundEx( (float*) VMA( 1 ), args[ 2 ], args[ 3 ], args[ 4 ] );
-			return 0;
-
 		case CG_S_STARTLOCALSOUND:
 			cls.nCgameSoundSyscalls ++;
 			S_StartLocalSound( args[ 1 ], args[ 2 ] );
@@ -885,19 +880,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			cls.nCgameSoundSyscalls ++;
 			S_UpdateEntityPosition( args[ 1 ], (float*) VMA( 2 ) );
 			return 0;
-
-		case CG_S_GETVOICEAMPLITUDE:
-			cls.nCgameSoundSyscalls ++;
-			return S_GetVoiceAmplitude( args[ 1 ] );
-
-		case CG_S_GETSOUNDLENGTH:
-			cls.nCgameSoundSyscalls ++;
-			return S_GetSoundLength( args[ 1 ] );
-
-			// ydnar: for looped sound starts
-		case CG_S_GETCURRENTSOUNDTIME:
-			cls.nCgameSoundSyscalls ++;
-			return S_GetCurrentSoundTime();
 
 		case CG_S_RESPATIALIZE:
 			cls.nCgameSoundSyscalls ++;
@@ -1270,10 +1252,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 		case CG_R_LIGHTFORPOINT:
 			cls.nCgameRenderSyscalls ++;
 			return re.LightForPoint( (float*) VMA( 1 ), (float*) VMA( 2 ), (float*) VMA( 3 ), (float*) VMA( 4 ) );
-
-		case CG_S_SOUNDDURATION:
-			cls.nCgameSoundSyscalls ++;
-			return S_SoundDuration( args[ 1 ] );
 
 		case CG_R_REGISTERANIMATION:
 			cls.nCgameRenderSyscalls ++;

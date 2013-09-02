@@ -1114,6 +1114,10 @@ qboolean R_AddLightInteraction( trRefLight_t *light, surfaceType_t *surface, sha
 			return qfalse;
 		}
 	}
+	else
+	{
+		return qfalse;
+	}
 
 	// instead of checking for overflow, we just mask the index
 	// so it wraps around

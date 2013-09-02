@@ -106,6 +106,7 @@ void GL_TextureFilter( image_t *image, filterType_t filterType )
 	if ( !image )
 	{
 		ri.Printf( PRINT_WARNING, "GL_TextureFilter: NULL image\n" );
+		return;
 	}
 	else
 	{
@@ -1716,7 +1717,7 @@ static void RB_RenderInteractions()
 		backEnd.currentLight = light = iaFirst->light;
 
 		// skip all interactions of this light because it failed the occlusion query
-		if ( glConfig2.occlusionQueryBits && glConfig.driverType != GLDRV_MESA && r_dynamicLightOcclusionCulling->integer && !ia->occlusionQuerySamples )
+		if ( glConfig2.occlusionQueryBits && glConfig.driverType != GLDRV_MESA && r_dynamicLightOcclusionCulling->integer && !iaFirst->occlusionQuerySamples )
 		{
 			continue;
 		}

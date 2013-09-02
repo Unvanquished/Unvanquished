@@ -757,7 +757,8 @@ void Sys_ErrorDialog( const char *error )
 	const char   *homepath = Cvar_VariableString( "fs_homepath" );
 	const char   *gamedir = Cvar_VariableString( "fs_game" );
 	const char   *fileName = "crashlog.txt";
-	char         *ospath = FS_BuildOSPath( homepath, gamedir, fileName );
+	char         *ospath = FS_BuildOSPath( homepath, gamedir, "" );
+	char         *ospathfile = FS_BuildOSPath( ospath, "", fileName );
 
 	Sys_Print( va( "%s\n", error ) );
 
@@ -768,7 +769,7 @@ void Sys_ErrorDialog( const char *error )
 		SDL_WM_GrabInput( SDL_GRAB_OFF );
 	}
 
-	Sys_Dialog( DT_ERROR, va( "%s. See \"%s\" for details.", error, ospath ), "Error" );
+	Sys_Dialog( DT_ERROR, va( "%s. See \"%s\" for details.", error, ospathfile ), "Error" );
 #endif
 
 	// Make sure the write path for the crashlog exists...
@@ -781,7 +782,7 @@ void Sys_ErrorDialog( const char *error )
 	// We might be crashing because we maxed out the Quake MAX_FILE_HANDLES,
 	// which will come through here, so we don't want to recurse forever by
 	// calling FS_FOpenFileWrite()...use the Unix system APIs instead.
-	f = open( ospath, O_CREAT | O_TRUNC | O_WRONLY, 0640 );
+	f = open( ospathfile, O_CREAT | O_TRUNC | O_WRONLY, 0640 );
 
 	if ( f == -1 )
 	{

@@ -41,10 +41,10 @@ Maryland 20850 USA.
 #define PRODUCT_NAME            "Unvanquished"
 #define PRODUCT_NAME_UPPER      "UNVANQUISHED" // Case, No spaces
 #define PRODUCT_NAME_LOWER      "unvanquished" // No case, No spaces
-#define PRODUCT_VERSION         "0.18.0"
+#define PRODUCT_VERSION         "0.19.0"
 
 #define ENGINE_NAME             "Daemon Engine"
-#define ENGINE_VERSION          "0.18.0"
+#define ENGINE_VERSION          "0.19.0"
 
 #ifdef REVISION
 # define Q3_VERSION             PRODUCT_NAME " " PRODUCT_VERSION " " REVISION
@@ -123,6 +123,11 @@ Maryland 20850 USA.
 #else
 #define Q_vsnprintf vsnprintf
 #define Q_snprintf  snprintf
+#endif
+
+// msvc does not have roundf
+#ifdef _MSC_VER
+#define roundf( f ) ( floor( f + 0.5 ) )
 #endif
 
 //=============================================================
@@ -524,7 +529,7 @@ void         ByteToDir( int b, vec3_t dir );
 
 #define DotProduct4(x, y)            (( x )[ 0 ] * ( y )[ 0 ] + ( x )[ 1 ] * ( y )[ 1 ] + ( x )[ 2 ] * ( y )[ 2 ] + ( x )[ 3 ] * ( y )[ 3 ] )
 
-#define SnapVector( v )              do { ( v )[ 0 ] = ( (int)( ( v )[ 0 ] ) ); ( v )[ 1 ] = ( (int)( ( v )[ 1 ] ) ); ( v )[ 2 ] = ( (int)( ( v )[ 2 ] ) ); } while ( 0 )
+#define SnapVector( v )              do { ( v )[ 0 ] = ( floor( ( v )[ 0 ] + 0.5f ) ); ( v )[ 1 ] = ( floor( ( v )[ 1 ] + 0.5f ) ); ( v )[ 2 ] = ( floor( ( v )[ 2 ] + 0.5f ) ); } while ( 0 )
 
 // just in case you don't want to use the macros
 	vec_t    _DotProduct( const vec3_t v1, const vec3_t v2 );

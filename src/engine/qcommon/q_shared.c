@@ -897,9 +897,10 @@ int COM_Compress( char *data_p )
 				size++;
 			}
 		}
+
+		*datao = 0;
 	}
 
-	*datao = 0;
 	return size;
 }
 
@@ -2428,7 +2429,7 @@ qboolean Q_strreplace( char *dest, int destsize, const char *find, const char *r
 {
 	int  lstart, lfind, lreplace, lend;
 	char *s;
-	char backup[ 32000 ]; // big, but small enough to fit in PPC stack
+	static char backup[ 32000 ];
 
 	lend = strlen( dest );
 
@@ -2616,7 +2617,7 @@ char     *QDECL PRINTF_LIKE(1) va( const char *format, ... )
 {
 	va_list     argptr;
 #define MAX_VA_STRING 32000
-	static char temp_buffer[ MAX_VA_STRING ];
+	static char temp_buffer[ MAX_VA_STRING + 1 ];
 	static char string[ MAX_VA_STRING ]; // in case va is called by nested functions
 	static int  index = 0;
 	char        *buf;
@@ -2624,6 +2625,7 @@ char     *QDECL PRINTF_LIKE(1) va( const char *format, ... )
 
 	va_start( argptr, format );
 	Q_vsnprintf( temp_buffer, sizeof( temp_buffer ), format, argptr );
+	temp_buffer[ MAX_VA_STRING ] = 0;
 	va_end( argptr );
 
 	if ( ( len = strlen( temp_buffer ) ) >= MAX_VA_STRING )
@@ -2638,7 +2640,6 @@ char     *QDECL PRINTF_LIKE(1) va( const char *format, ... )
 
 	buf = &string[ index ];
 	memcpy( buf, temp_buffer, len + 1 );
-
 	index += len + 1;
 
 	return buf;

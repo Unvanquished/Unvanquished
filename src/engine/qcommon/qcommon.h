@@ -772,20 +772,21 @@ MISC
 // returned by Sys_GetProcessorFeatures
 typedef enum
 {
-  CF_RDTSC = 1 << 0,
-  CF_MMX = 1 << 1,
-  CF_MMX_EXT = 1 << 2,
-  CF_3DNOW = 1 << 3,
-  CF_3DNOW_EXT = 1 << 4,
-  CF_SSE = 1 << 5,
-  CF_SSE2 = 1 << 6,
-  CF_SSE3 = 1 << 7,
-  CF_SSSE3 = 1 << 8,
-  CF_SSE4_1 = 1 << 9,
-  CF_SSE4_2 = 1 << 10,
-  CF_HasHTT = 1 << 11,
-  CF_HasSerial = 1 << 12,
-  CF_Is64Bit = 1 << 13
+  CF_RDTSC = BIT( 0 ),
+  CF_MMX = BIT( 1 ),
+  CF_MMX_EXT = BIT( 2 ),
+  CF_3DNOW = BIT( 3 ),
+  CF_3DNOW_EXT = BIT( 4 ),
+  CF_SSE = BIT( 5 ),
+  CF_SSE2 = BIT( 6 ),
+  CF_SSE3 = BIT( 7 ),
+  CF_SSSE3 = BIT( 8 ),
+  CF_SSE4_1 = BIT( 9 ),
+  CF_SSE4_2 = BIT( 10 ),
+  CF_ALTIVEC = BIT( 11 ),
+  CF_HasHTT = BIT( 12 ),
+  CF_HasSerial = BIT( 13 ),
+  CF_Is64Bit = BIT( 14 )
 } cpuFeatures_t;
 
 // TTimo
@@ -1130,7 +1131,7 @@ qboolean      Sys_RandomBytes( byte *string, int len );
 // the system console is shown when a dedicated server is running
 void          Sys_DisplaySystemConsole( qboolean show );
 
-cpuFeatures_t Sys_GetProcessorFeatures( void );
+int           Sys_GetProcessorFeatures( void );
 
 void          Sys_SetErrorText( const char *text );
 

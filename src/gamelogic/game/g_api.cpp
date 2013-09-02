@@ -680,15 +680,6 @@ sfxHandle_t trap_RegisterSound(const char *sample, qboolean compressed)
 	return output.ReadInt();
 }
 
-int trap_GetSoundLength(sfxHandle_t sfxHandle)
-{
-	RPC::Writer input;
-	input.WriteInt(G_GET_SOUND_LENGTH);
-	input.WriteInt(sfxHandle);
-	RPC::Reader output = DoRPC(input);
-	return output.ReadInt();
-}
-
 int trap_Parse_AddGlobalDefine(const char *define)
 {
 	RPC::Writer input;

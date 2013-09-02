@@ -163,6 +163,37 @@ static INLINE void BoneMatrixTransformPoint( const boneMatrix_t m, const vec3_t 
 	out[ 2 ] = m[ 8 ] * p[ 0 ] + m[ 9 ] * p[ 1 ] + m[ 10 ] * p[ 2 ] + m[ 11 ];
 }
 
+static INLINE void BoneMatrixAdjointTranspose( boneMatrix_t m )
+{
+	float a0 = m[ 0 ];
+	float a1 = m[ 1 ];
+	float a2 = m[ 2 ];
+
+	float b0 = m[ 4 ];
+	float b1 = m[ 5 ];
+	float b2 = m[ 6 ];
+
+	float c0 = m[ 8 ];
+	float c1 = m[ 9 ];
+	float c2 = m[ 10 ];
+
+	// the 3x3 adjoint matrix is computed using 3 cross products
+	m[ 0 ] = b1 * c2 - b2 * c1;
+	m[ 1 ] = b2 * c0 - b0 * c2;
+	m[ 2 ] = b0 * c1 - b1 * c0;
+	m[ 3 ] = 0;
+
+	m[ 4 ] = c1 * a2 - c2 * a1;
+	m[ 5 ] = c2 * a0 - c0 * a2;
+	m[ 6 ] = c0 * a1 - c1 * a0;
+	m[ 7 ] = 0;
+
+	m[ 8 ] = a1 * b2 - a2 * b1;
+	m[ 9 ] = a2 * b0 - a0 * b2;
+	m[ 10 ] = a0 * b1 - a1 * b0;
+	m[ 11 ] = 0;
+}
+
 static INLINE void BoneMatrixTransformNormal( const boneMatrix_t m, const vec3_t p, vec3_t out )
 {
 	out[ 0 ] = m[ 0 ] * p[ 0 ] + m[ 1 ] * p[ 1 ] + m[ 2 ] * p[ 2 ];
@@ -203,7 +234,9 @@ static INLINE void BoneMatrixMadSSE(  __m128 *oa, __m128 *ob, __m128 *oc, float 
 	*oc = _mm_add_ps( *oc, _mm_mul_ps( c, w ) );
 }
 
-static INLINE void BoneMatrixTransform4SSE( __m128 a, __m128 b, __m128 c, const vec4_t in, vec4_t out )
+// expects in[ 3 ] == 1
+// outputs ( x, y, z, ? )
+static INLINE void BoneMatrixTransformPointSSE( __m128 a, __m128 b, __m128 c, const vec4_t in, vec4_t out )
 {
 	__m128 p, x, y, z, s1, s2;
 	assert_16_byte_aligned( in );
@@ -220,9 +253,32 @@ static INLINE void BoneMatrixTransform4SSE( __m128 a, __m128 b, __m128 c, const 
 	_mm_store_ps( out, _mm_add_ps( _mm_unpacklo_ps( s1, s2 ), _mm_unpackhi_ps( s1, s2 ) ) );
 }
 
-static INLINE void BoneMatrixTransform4NormalizeSSE( __m128 a, __m128 b, __m128 c, const vec4_t in, vec4_t out )
+static INLINE void BoneMatrixAdjointTransposeSSE( __m128 *a, __m128 *b, __m128 *c )
 {
-	__m128 p, x, y, z, s1, s2, s3;
+	__m128 shufa = _mm_shuffle_ps( *a, *a, _MM_SHUFFLE( 3, 0, 2, 1 ) );
+	__m128 shufa2 = _mm_shuffle_ps( *a, *a, _MM_SHUFFLE( 3, 1, 0, 2 ) );
+	__m128 shufb = _mm_shuffle_ps( *b, *b, _MM_SHUFFLE( 3, 0, 2, 1 ) );
+	__m128 shufb2 = _mm_shuffle_ps( *b, *b, _MM_SHUFFLE( 3, 1, 0, 2 ) );
+	__m128 shufc = _mm_shuffle_ps( *c, *c, _MM_SHUFFLE( 3, 0, 2, 1 ) );
+	__m128 shufc2 = _mm_shuffle_ps( *c, *c, _MM_SHUFFLE( 3, 1, 0, 2 ) );
+
+	// b x c
+	*a = _mm_sub_ps( _mm_mul_ps( shufb, shufc2 ), _mm_mul_ps( shufb2, shufc ) );
+
+	// c x a
+	*b = _mm_sub_ps( _mm_mul_ps( shufc, shufa2 ), _mm_mul_ps( shufc2, shufa ) );
+
+	// a x b
+	*c = _mm_sub_ps( _mm_mul_ps( shufa, shufb2 ), _mm_mul_ps( shufa2, shufb ) );
+}
+
+// outputs ( x, y, z, ? )
+// does not normalize output
+static INLINE void BoneMatrixTransformNormalSSE( __m128 a, __m128 b, __m128 c, const vec4_t in, vec4_t out )
+{
+	__m128 p, x, y, z;
+	__m128 xy01, xy23;
+	__m128 xyz0, xyz1, xyz2;
 	assert_16_byte_aligned( in );
 	assert_16_byte_aligned( out );
 
@@ -232,18 +288,56 @@ static INLINE void BoneMatrixTransform4NormalizeSSE( __m128 a, __m128 b, __m128 
 	y = _mm_mul_ps( b, p );
 	z = _mm_mul_ps( c, p );
 
-	s1 = _mm_add_ps( _mm_unpacklo_ps( x, z ), _mm_unpackhi_ps( x, z ) );
-	s2 = _mm_add_ps( _mm_unpacklo_ps( y, z ), _mm_unpackhi_ps( y, z ) );
-	s3 = _mm_add_ps( _mm_unpacklo_ps( s1, s2 ), _mm_unpackhi_ps( s1, s2 ) );
-	
-	// normalize result
-	s1 = _mm_mul_ps( s3, s3 );
-	s2 = _mm_add_ss( _mm_movehl_ps( s2, s1 ), s1 );
-	s2 = _mm_add_ss( s2, _mm_shuffle_ps( s1, s1, _MM_SHUFFLE( 1, 1, 1, 1 ) ) );
-	
-	s2 = _mm_rsqrt_ss( s2 );
+	xy01 = _mm_unpacklo_ps( x, y );
+	xyz0 = _mm_shuffle_ps( xy01, z, _MM_SHUFFLE( 3, 0, 1, 0 ) );
+	xyz1 = _mm_shuffle_ps( xy01, z, _MM_SHUFFLE( 3, 1, 3, 2 ) );
 
-	_mm_store_ps( out, _mm_mul_ps( s3, _mm_shuffle_ps( s2, s2, _MM_SHUFFLE( 0, 0, 0, 0 ) ) ) );
+	xy23 = _mm_unpackhi_ps( x, y );
+	xyz2 = _mm_shuffle_ps( xy23, z, _MM_SHUFFLE( 3, 2, 1, 0 ) );
+
+	_mm_store_ps( out, _mm_add_ps( _mm_add_ps( xyz0, xyz1 ), xyz2 ) );
+}
+
+// outputs ( x, y, z, ? )
+// normalizes output
+static INLINE void BoneMatrixTransformNormalNSSE( __m128 a, __m128 b, __m128 c, const vec4_t in, vec4_t out )
+{
+	__m128 p, x, y, z;
+	__m128 xy01, xy23;
+	__m128 xyz0, xyz1, xyz2;
+	__m128 xyz;
+	__m128 xyzsq;
+	__m128 dotp;
+	__m128 ilen;
+	assert_16_byte_aligned( in );
+	assert_16_byte_aligned( out );
+
+	p = _mm_load_ps( in );
+
+	x = _mm_mul_ps( a, p );
+	y = _mm_mul_ps( b, p );
+	z = _mm_mul_ps( c, p );
+
+	xy01 = _mm_unpacklo_ps( x, y );
+	xyz0 = _mm_shuffle_ps( xy01, z, _MM_SHUFFLE( 3, 0, 1, 0 ) );
+	xyz1 = _mm_shuffle_ps( xy01, z, _MM_SHUFFLE( 3, 1, 3, 2 ) );
+
+	xy23 = _mm_unpackhi_ps( x, y );
+	xyz2 = _mm_shuffle_ps( xy23, z, _MM_SHUFFLE( 3, 2, 1, 0 ) );
+
+	xyz = _mm_add_ps( _mm_add_ps( xyz0, xyz1 ), xyz2 );
+
+	// normalize result
+	xyzsq = _mm_mul_ps( xyz, xyz );
+
+	dotp = _mm_movehl_ps( xyz2, xyzsq );
+	dotp = _mm_add_ss( dotp, xyzsq );
+	dotp = _mm_add_ss( dotp, _mm_shuffle_ps( xyzsq, xyzsq, _MM_SHUFFLE( 1, 1, 1, 1 ) ) );
+	
+	ilen = _mm_rsqrt_ss( dotp );
+	ilen = _mm_shuffle_ps( ilen, ilen, _MM_SHUFFLE( 0, 0, 0, 0 ) );
+
+	_mm_store_ps( out, _mm_mul_ps( xyz, ilen ) );
 }
 #endif
 #endif

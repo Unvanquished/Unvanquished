@@ -1514,7 +1514,7 @@ void G_CalculateStageThresholds( void )
 	gentity_t    *player;
 	gclient_t    *client;
 	int          playerNum, S2BT, S3BT, S2IPP, S3IPP;
-	float        modifier, ANAP, ANHP;
+	float        modifier;
 	float        ANP[ NUM_TEAMS ];
 
 	static int   nextCalculation = 0;
@@ -1586,7 +1586,6 @@ void G_CalculateStages( void )
 	team_t     team;
 	int        confidence,
 	           stage,
-	           stageModCount,
 	           maxStage,
 	           S2Threshold,
 	           S3Threshold,
@@ -1597,8 +1596,7 @@ void G_CalculateStages( void )
 	           nextThreshold,
 	           prevThreshold;
 	float      bonus;
-	const char *stageCVar,
-	           *teamName;
+	const char *teamName;
 
 	static int nextCalculation = 0;
 
