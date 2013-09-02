@@ -38,7 +38,7 @@ void G_AddCreditToClient( gclient_t *client, short credit, qboolean cap )
 {
 	int capAmount;
 
-	if ( !client )
+	if ( !client || client->pers.connected != CON_CONNECTED )
 	{
 		return;
 	}
