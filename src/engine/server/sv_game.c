@@ -413,7 +413,6 @@ void SV_GameBinaryMessageReceived( int cno, const char *buf, int buflen, int com
 //==============================================
 
 extern int S_RegisterSound( const char *name, qboolean compressed );
-extern int S_GetSoundLength( sfxHandle_t sfxHandle );
 
 /*
 ====================
@@ -685,9 +684,6 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 #else
 			return S_RegisterSound( VMA( 1 ), args[ 2 ] );
 #endif ///// (SA) DOOMSOUND
-
-		case G_GET_SOUND_LENGTH:
-			return S_GetSoundLength( args[ 1 ] );
 
 		case G_PARSE_ADD_GLOBAL_DEFINE:
 			return Parse_AddGlobalDefine( VMA( 1 ) );

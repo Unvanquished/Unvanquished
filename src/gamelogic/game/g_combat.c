@@ -38,7 +38,7 @@ Helper function for G_AddCreditsToScore and G_AddConfidenceToScore.
 */
 static void AddScoreHelper( gentity_t *self, float score )
 {
-	if ( !self->client )
+	if ( !self->client || self->client->pers.connected != CON_CONNECTED )
 	{
 		return;
 	}

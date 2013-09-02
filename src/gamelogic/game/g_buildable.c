@@ -2526,17 +2526,13 @@ Think function for Human Reactor
 void HReactor_Think( gentity_t *self )
 {
 	int       entityList[ MAX_GENTITIES ];
-	vec3_t    range = { REACTOR_ATTACK_RANGE,
-	                    REACTOR_ATTACK_RANGE,
-	                    REACTOR_ATTACK_RANGE
-	                  };
-	vec3_t    dccrange = { REACTOR_ATTACK_DCC_RANGE,
-	                       REACTOR_ATTACK_DCC_RANGE,
-	                       REACTOR_ATTACK_DCC_RANGE
-	                     };
+	vec3_t    range, dccrange;
 	vec3_t    mins, maxs;
 	int       i, num;
 	gentity_t *enemy, *tent;
+
+    VectorSet( range, REACTOR_ATTACK_RANGE, REACTOR_ATTACK_RANGE, REACTOR_ATTACK_RANGE );
+    VectorSet( dccrange, REACTOR_ATTACK_DCC_RANGE, REACTOR_ATTACK_DCC_RANGE, REACTOR_ATTACK_DCC_RANGE );
 
 	if ( self->dcc )
 	{
@@ -3498,7 +3494,6 @@ void G_BuildableThink( gentity_t *ent, int msec )
 	int   maxHealth = BG_Buildable( ent->s.modelindex )->health;
 	int   regenRate = BG_Buildable( ent->s.modelindex )->regenRate;
 	int   buildTime = BG_Buildable( ent->s.modelindex )->buildTime;
-	int   reason;
 
 	//toggle spawned flag for buildables
 	if ( !ent->spawned && ent->health > 0 && !level.pausedTime )

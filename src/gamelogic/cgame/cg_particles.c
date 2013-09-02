@@ -2268,6 +2268,9 @@ static void CG_EvaluateParticlePhysics( particle_t *p )
 			else
 				VectorClear( acceleration );
 			break;
+		default:
+			VectorClear( acceleration );
+			break;
 	}
 
 #define MAX_ACC_RADIUS 1000.0f

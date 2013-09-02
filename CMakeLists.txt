@@ -133,6 +133,7 @@ cmake_dependent_option( USE_OPENAL_DLOPEN    "Use dlopen to load OpenAL"        
 cmake_dependent_option( USE_CIN_THEORA       "Compile with support for Theora"             1 USE_CODEC_VORBIS 0 )
 cmake_dependent_option( USE_INTERNAL_SPEEX   "Use internal speex"                          0 USE_VOIP         0 )
 cmake_dependent_option( USE_INTERNAL_GLEW    "Use internal GLEW"                           0 BUILD_CLIENT     0 )
+cmake_dependent_option( USE_INTERNAL_OPUS    "Use internal Opus"                           1 BUILD_CLIENT     0 )
 
 cmake_dependent_option( USE_INTERNAL_WEBP    "Use internal WebP"                           0 BUILD_CLIENT     0 )
 
@@ -613,9 +614,9 @@ set( QCOMMONLIST
 # Visual studio can't handle inline assembly
 if( MSVC )
   if( ${BUILD_ARCH} STREQUAL "i386" )
-    set( ASM_APP ml )
+    set( ASM_APP ml /safeseh)
   else()
-    set( ASM_APP ml64 -D idx64=1 )
+    set( ASM_APP ml64 -D idx64=1 /safeseh )
   endif()
   set( QCOMMONLIST ${QCOMMONLIST} ftola.obj snapvector.obj )
   # Work around - bugs in cmake prevent adding asm files to target in VS projects
@@ -643,7 +644,7 @@ endif()
 set( CLIENTLIST
   ${MOUNT_DIR}/engine/client/cg_api.h
   ${MOUNT_DIR}/engine/client/ui_api.h
-  ${MOUNT_DIR}/engine/client/client.h	
+  ${MOUNT_DIR}/engine/client/client.h
   ${MOUNT_DIR}/engine/client/cin_ogm.c
   ${MOUNT_DIR}/engine/client/cl_avi.c
   ${MOUNT_DIR}/engine/client/cl_cgame.c
@@ -667,6 +668,7 @@ set( CLIENTLIST
   ${MOUNT_DIR}/engine/client/snd_public.h
   ${MOUNT_DIR}/engine/client/snd_codec_ogg.c
   ${MOUNT_DIR}/engine/client/snd_codec_wav.c
+  ${MOUNT_DIR}/engine/client/snd_codec_opus.c
   ${MOUNT_DIR}/engine/client/snd_dma.c
   ${MOUNT_DIR}/engine/client/snd_openal.c
   ${MOUNT_DIR}/engine/client/snd_main.c
@@ -983,6 +985,203 @@ if( USE_VOIP AND USE_INTERNAL_SPEEX )
     ${MOUNT_DIR}/libs/libspeex/libspeex/vq.c
     ${MOUNT_DIR}/libs/libspeex/libspeex/window.c
   )
+endif()
+if ( USE_INTERNAL_OPUS )
+		set( OPUSLIST
+		${LIB_DIR}/opus-1.0.2/celt/_kiss_fft_guts.h
+		${LIB_DIR}/opus-1.0.2/celt/arch.h
+		${LIB_DIR}/opus-1.0.2/celt/bands.c
+		${LIB_DIR}/opus-1.0.2/celt/bands.h
+		${LIB_DIR}/opus-1.0.2/celt/celt.c
+		${LIB_DIR}/opus-1.0.2/celt/celt.h
+		${LIB_DIR}/opus-1.0.2/celt/celt_lpc.c
+		${LIB_DIR}/opus-1.0.2/celt/celt_lpc.h
+		${LIB_DIR}/opus-1.0.2/celt/cwrs.c
+		${LIB_DIR}/opus-1.0.2/celt/cwrs.h
+		${LIB_DIR}/opus-1.0.2/celt/ecintrin.h
+		${LIB_DIR}/opus-1.0.2/celt/entcode.c
+		${LIB_DIR}/opus-1.0.2/celt/entcode.h
+		${LIB_DIR}/opus-1.0.2/celt/entdec.c
+		${LIB_DIR}/opus-1.0.2/celt/entdec.h
+		${LIB_DIR}/opus-1.0.2/celt/entenc.c
+		${LIB_DIR}/opus-1.0.2/celt/entenc.h
+		${LIB_DIR}/opus-1.0.2/celt/fixed_debug.h
+		${LIB_DIR}/opus-1.0.2/celt/fixed_generic.h
+		${LIB_DIR}/opus-1.0.2/celt/float_cast.h
+		${LIB_DIR}/opus-1.0.2/celt/kiss_fft.c
+		${LIB_DIR}/opus-1.0.2/celt/kiss_fft.h
+		${LIB_DIR}/opus-1.0.2/celt/laplace.c
+		${LIB_DIR}/opus-1.0.2/celt/laplace.h
+		${LIB_DIR}/opus-1.0.2/celt/mathops.c
+		${LIB_DIR}/opus-1.0.2/celt/mathops.h
+		${LIB_DIR}/opus-1.0.2/celt/mdct.c
+		${LIB_DIR}/opus-1.0.2/celt/mdct.h
+		${LIB_DIR}/opus-1.0.2/celt/mfrngcod.h
+		${LIB_DIR}/opus-1.0.2/celt/modes.c
+		${LIB_DIR}/opus-1.0.2/celt/modes.h
+		${LIB_DIR}/opus-1.0.2/celt/os_support.h
+		${LIB_DIR}/opus-1.0.2/celt/pitch.c
+		${LIB_DIR}/opus-1.0.2/celt/pitch.h
+		${LIB_DIR}/opus-1.0.2/celt/quant_bands.c
+		${LIB_DIR}/opus-1.0.2/celt/quant_bands.h
+		${LIB_DIR}/opus-1.0.2/celt/rate.c
+		${LIB_DIR}/opus-1.0.2/celt/rate.h
+		${LIB_DIR}/opus-1.0.2/celt/stack_alloc.h
+		${LIB_DIR}/opus-1.0.2/celt/static_modes_fixed.h
+		${LIB_DIR}/opus-1.0.2/celt/static_modes_float.h
+		${LIB_DIR}/opus-1.0.2/celt/vq.c
+		${LIB_DIR}/opus-1.0.2/celt/vq.h
+		${LIB_DIR}/opus-1.0.2/include/opus.h
+		${LIB_DIR}/opus-1.0.2/include/opus_custom.h
+		${LIB_DIR}/opus-1.0.2/include/opus_defines.h
+		${LIB_DIR}/opus-1.0.2/include/opus_multistream.h
+		${LIB_DIR}/opus-1.0.2/include/opus_types.h
+		${LIB_DIR}/opus-1.0.2/silk/A2NLSF.c
+		${LIB_DIR}/opus-1.0.2/silk/ana_filt_bank_1.c
+		${LIB_DIR}/opus-1.0.2/silk/API.h
+		${LIB_DIR}/opus-1.0.2/silk/biquad_alt.c
+		${LIB_DIR}/opus-1.0.2/silk/bwexpander.c
+		${LIB_DIR}/opus-1.0.2/silk/bwexpander_32.c
+		${LIB_DIR}/opus-1.0.2/silk/check_control_input.c
+		${LIB_DIR}/opus-1.0.2/silk/CNG.c
+		${LIB_DIR}/opus-1.0.2/silk/code_signs.c
+		${LIB_DIR}/opus-1.0.2/silk/control.h
+		${LIB_DIR}/opus-1.0.2/silk/control_audio_bandwidth.c
+		${LIB_DIR}/opus-1.0.2/silk/control_codec.c
+		${LIB_DIR}/opus-1.0.2/silk/control_SNR.c
+		${LIB_DIR}/opus-1.0.2/silk/debug.c
+		${LIB_DIR}/opus-1.0.2/silk/debug.h
+		${LIB_DIR}/opus-1.0.2/silk/dec_API.c
+		${LIB_DIR}/opus-1.0.2/silk/decode_core.c
+		${LIB_DIR}/opus-1.0.2/silk/decode_frame.c
+		${LIB_DIR}/opus-1.0.2/silk/decode_indices.c
+		${LIB_DIR}/opus-1.0.2/silk/decode_parameters.c
+		${LIB_DIR}/opus-1.0.2/silk/decode_pitch.c
+		${LIB_DIR}/opus-1.0.2/silk/decode_pulses.c
+		${LIB_DIR}/opus-1.0.2/silk/decoder_set_fs.c
+		${LIB_DIR}/opus-1.0.2/silk/define.h
+		${LIB_DIR}/opus-1.0.2/silk/enc_API.c
+		${LIB_DIR}/opus-1.0.2/silk/encode_indices.c
+		${LIB_DIR}/opus-1.0.2/silk/encode_pulses.c
+		${LIB_DIR}/opus-1.0.2/silk/errors.h
+		${LIB_DIR}/opus-1.0.2/silk/float/apply_sine_window_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/float/autocorrelation_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/float/burg_modified_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/float/bwexpander_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/float/corrMatrix_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/float/encode_frame_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/float/energy_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/float/find_LPC_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/float/find_LTP_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/float/find_pitch_lags_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/float/find_pred_coefs_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/float/inner_product_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/float/k2a_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/float/levinsondurbin_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/float/LPC_analysis_filter_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/float/LPC_inv_pred_gain_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/float/LTP_analysis_filter_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/float/LTP_scale_ctrl_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/float/main_FLP.h
+		${LIB_DIR}/opus-1.0.2/silk/float/noise_shape_analysis_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/float/pitch_analysis_core_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/float/prefilter_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/float/process_gains_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/float/regularize_correlations_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/float/residual_energy_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/float/scale_copy_vector_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/float/scale_vector_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/float/schur_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/float/SigProc_FLP.h
+		${LIB_DIR}/opus-1.0.2/silk/float/solve_LS_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/float/sort_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/float/structs_FLP.h
+		${LIB_DIR}/opus-1.0.2/silk/float/warped_autocorrelation_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/float/wrappers_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/gain_quant.c
+		${LIB_DIR}/opus-1.0.2/silk/HP_variable_cutoff.c
+		${LIB_DIR}/opus-1.0.2/silk/init_decoder.c
+		${LIB_DIR}/opus-1.0.2/silk/init_encoder.c
+		${LIB_DIR}/opus-1.0.2/silk/Inlines.h
+		${LIB_DIR}/opus-1.0.2/silk/inner_prod_aligned.c
+		${LIB_DIR}/opus-1.0.2/silk/interpolate.c
+		${LIB_DIR}/opus-1.0.2/silk/lin2log.c
+		${LIB_DIR}/opus-1.0.2/silk/log2lin.c
+		${LIB_DIR}/opus-1.0.2/silk/LP_variable_cutoff.c
+		${LIB_DIR}/opus-1.0.2/silk/LPC_analysis_filter.c
+		${LIB_DIR}/opus-1.0.2/silk/LPC_inv_pred_gain.c
+		${LIB_DIR}/opus-1.0.2/silk/MacroCount.h
+		${LIB_DIR}/opus-1.0.2/silk/MacroDebug.h
+		${LIB_DIR}/opus-1.0.2/silk/macros.h
+		${LIB_DIR}/opus-1.0.2/silk/main.h
+		${LIB_DIR}/opus-1.0.2/silk/NLSF2A.c
+		${LIB_DIR}/opus-1.0.2/silk/NLSF_decode.c
+		${LIB_DIR}/opus-1.0.2/silk/NLSF_del_dec_quant.c
+		${LIB_DIR}/opus-1.0.2/silk/NLSF_encode.c
+		${LIB_DIR}/opus-1.0.2/silk/NLSF_stabilize.c
+		${LIB_DIR}/opus-1.0.2/silk/NLSF_unpack.c
+		${LIB_DIR}/opus-1.0.2/silk/NLSF_VQ.c
+		${LIB_DIR}/opus-1.0.2/silk/NLSF_VQ_weights_laroia.c
+		${LIB_DIR}/opus-1.0.2/silk/NSQ.c
+		${LIB_DIR}/opus-1.0.2/silk/NSQ_del_dec.c
+		${LIB_DIR}/opus-1.0.2/silk/pitch_est_defines.h
+		${LIB_DIR}/opus-1.0.2/silk/pitch_est_tables.c
+		${LIB_DIR}/opus-1.0.2/silk/PLC.c
+		${LIB_DIR}/opus-1.0.2/silk/PLC.h
+		${LIB_DIR}/opus-1.0.2/silk/process_NLSFs.c
+		${LIB_DIR}/opus-1.0.2/silk/quant_LTP_gains.c
+		${LIB_DIR}/opus-1.0.2/silk/resampler.c
+		${LIB_DIR}/opus-1.0.2/silk/resampler_down2.c
+		${LIB_DIR}/opus-1.0.2/silk/resampler_down2_3.c
+		${LIB_DIR}/opus-1.0.2/silk/resampler_private.h
+		${LIB_DIR}/opus-1.0.2/silk/resampler_private_AR2.c
+		${LIB_DIR}/opus-1.0.2/silk/resampler_private_down_FIR.c
+		${LIB_DIR}/opus-1.0.2/silk/resampler_private_IIR_FIR.c
+		${LIB_DIR}/opus-1.0.2/silk/resampler_private_up2_HQ.c
+		${LIB_DIR}/opus-1.0.2/silk/resampler_rom.c
+		${LIB_DIR}/opus-1.0.2/silk/resampler_rom.h
+		${LIB_DIR}/opus-1.0.2/silk/resampler_structs.h
+		${LIB_DIR}/opus-1.0.2/silk/shell_coder.c
+		${LIB_DIR}/opus-1.0.2/silk/sigm_Q15.c
+		${LIB_DIR}/opus-1.0.2/silk/SigProc_FIX.h
+		${LIB_DIR}/opus-1.0.2/silk/sort.c
+		${LIB_DIR}/opus-1.0.2/silk/stereo_decode_pred.c
+		${LIB_DIR}/opus-1.0.2/silk/stereo_encode_pred.c
+		${LIB_DIR}/opus-1.0.2/silk/stereo_find_predictor.c
+		${LIB_DIR}/opus-1.0.2/silk/stereo_LR_to_MS.c
+		${LIB_DIR}/opus-1.0.2/silk/stereo_MS_to_LR.c
+		${LIB_DIR}/opus-1.0.2/silk/stereo_quant_pred.c
+		${LIB_DIR}/opus-1.0.2/silk/structs.h
+		${LIB_DIR}/opus-1.0.2/silk/sum_sqr_shift.c
+		${LIB_DIR}/opus-1.0.2/silk/table_LSF_cos.c
+		${LIB_DIR}/opus-1.0.2/silk/tables.h
+		${LIB_DIR}/opus-1.0.2/silk/tables_gain.c
+		${LIB_DIR}/opus-1.0.2/silk/tables_LTP.c
+		${LIB_DIR}/opus-1.0.2/silk/tables_NLSF_CB_NB_MB.c
+		${LIB_DIR}/opus-1.0.2/silk/tables_NLSF_CB_WB.c
+		${LIB_DIR}/opus-1.0.2/silk/tables_other.c
+		${LIB_DIR}/opus-1.0.2/silk/tables_pitch_lag.c
+		${LIB_DIR}/opus-1.0.2/silk/tables_pulses_per_block.c
+		${LIB_DIR}/opus-1.0.2/silk/tuning_parameters.h
+		${LIB_DIR}/opus-1.0.2/silk/typedef.h
+		${LIB_DIR}/opus-1.0.2/silk/VAD.c
+		${LIB_DIR}/opus-1.0.2/silk/VQ_WMat_EC.c
+		${LIB_DIR}/opus-1.0.2/src/opus.c
+		${LIB_DIR}/opus-1.0.2/src/opus_decoder.c
+		${LIB_DIR}/opus-1.0.2/src/opus_encoder.c
+		${LIB_DIR}/opus-1.0.2/src/opus_multistream.c
+		${LIB_DIR}/opus-1.0.2/src/opus_private.h
+		${LIB_DIR}/opus-1.0.2/src/repacketizer.c
+		${LIB_DIR}/opusfile-0.2/include/opusfile.h
+		${LIB_DIR}/opusfile-0.2/src/http.c
+		${LIB_DIR}/opusfile-0.2/src/info.c
+		${LIB_DIR}/opusfile-0.2/src/internal.c
+		${LIB_DIR}/opusfile-0.2/src/internal.h
+		${LIB_DIR}/opusfile-0.2/src/opusfile.c
+		${LIB_DIR}/opusfile-0.2/src/stream.c
+	)
+else()
+	set(OPUSLIST)
 endif()
 
 if( USE_INTERNAL_CRYPTO )
@@ -1445,11 +1644,11 @@ endif()
 if( BUILD_CLIENT )
   # Setup target client
   add_executable( client ${SERVERLIST} ${CLIENTLIST} ${SDLBASELIST} ${SDLLIST} ${QCOMMONLIST} ${SHAREDLIST} ${CRYPTOLIST} ${TINYGETTEXT_LIST}
-    ${DATABASELIST} ${MOUNT_DIR}/engine/qcommon/dl_main_curl.c ${SPEEXLIST} ${WIN_RC} )
+    ${DATABASELIST} ${MOUNT_DIR}/engine/qcommon/dl_main_curl.c ${SPEEXLIST} ${OPUSLIST} ${WIN_RC} )
   add_dependencies( client rendererGL )
   include_directories( ${NEWTON_INCLUDES} )
   target_link_libraries( client ${OS_LIBRARIES} ${NEWTON_LIBRARY} )
-  set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_XREAL_RENDERER COMPAT_ET USE_REFENTITY_ANIMATIONSYSTEM HAVE_SDL )
+  set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_XREAL_RENDERER COMPAT_ET USE_REFENTITY_ANIMATIONSYSTEM HAVE_SDL USE_CODEC_OPUS )
   set_target_properties( client PROPERTIES OUTPUT_NAME "daemon" PREFIX "" LINKER_LANGUAGE CXX )
 
   # Setup CPack for target client
@@ -1472,7 +1671,7 @@ if( BUILD_CLIENT )
   # Visual Studio specific settings
   if( MSVC )
     include_directories( ${MOUNT_DIR}/libs/msinttypes )
-    set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS ZLIB_WINAPI HAVE_CONFIG_H )
+    set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS ZLIB_WINAPI )
   endif()
 
   # This section finds and provides REQUIRED dependencies to target client
@@ -1517,6 +1716,8 @@ if( BUILD_CLIENT )
     set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_VOIP )
     if( NOT MSVC )
       set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS FLOATING_POINT )
+    else()
+      set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS HAVE_CONFIG_H )
     endif()
     if( USE_INTERNAL_SPEEX )
       # BEFORE is required to prevent system headers being used
@@ -1526,6 +1727,20 @@ if( BUILD_CLIENT )
       include_directories( ${SPEEX_INCLUDE_DIRS} )
       target_link_libraries( client ${SPEEX_LIBRARIES} )
     endif()
+  endif()
+
+  if( USE_INTERNAL_OPUS )
+      if( NOT MSVC )
+        set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_ALLOCA FLOATING_POINT OPUS_BUILD )
+      else()
+        set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS HAVE_CONFIG_H )
+        include_directories( ${LIB_DIR}/opus-1.0.2/include/win32 )
+      endif()
+      include_directories( ${LIB_DIR}/opusfile-0.2/include ${LIB_DIR}/opus-1.0.2/include ${LIB_DIR}/opus-1.0.2/celt ${LIB_DIR}/opus-1.0.2/silk ${LIB_DIR}/opus-1.0.2/silk/float )
+  else()
+      find_package( Opus REQUIRED )
+      include_directories( ${OPUS_INCLUDE_DIRS} )
+      target_link_libraries( client ${OPUS_LIBRARIES} )
   endif()
 
   if( USE_CODEC_VORBIS )
