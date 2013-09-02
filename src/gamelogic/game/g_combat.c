@@ -637,8 +637,10 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 			killerName = "<world>";
 		}
 
-		if( attacker == self ) self->client->pers.namelog->damageStats.suicides++;
-		else if( OnSameTeam( self, attacker ) ) attacker->client->pers.namelog->damageStats.teamkills++;
+		if( attacker == self )
+			self->client->pers.namelog->damageStats.suicides++;
+		else if( attacker->client && attacker->client->pers.namelog && OnSameTeam( self, attacker ) )
+			attacker->client->pers.namelog->damageStats.teamkills++;
 	}
 	else
 	{
