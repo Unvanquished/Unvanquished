@@ -593,7 +593,7 @@ void G_RGSCalculateRate( gentity_t *self )
 	gentity_t       *rgs;
 	float           rate, d, dr, q;
 
-	if ( !self->s.modelindex == BA_A_LEECH && !self->s.modelindex == BA_H_DRILL )
+	if ( self->s.modelindex != BA_A_LEECH && self->s.modelindex != BA_H_DRILL )
 	{
 		return;
 	}
@@ -666,7 +666,7 @@ void G_RGSInformNeighbors( gentity_t *self )
 	gentity_t       *rgs;
 	float           d;
 
-	if ( !self->s.modelindex == BA_A_LEECH && !self->s.modelindex == BA_H_DRILL )
+	if ( self->s.modelindex != BA_A_LEECH && self->s.modelindex != BA_H_DRILL )
 	{
 		return;
 	}
