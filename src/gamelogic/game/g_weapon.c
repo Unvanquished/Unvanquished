@@ -605,15 +605,7 @@ FLAME THROWER
 
 void flamerFire( gentity_t *ent )
 {
-	vec3_t origin;
-
-	// Correct muzzle so that the missile does not start in the ceiling
-	VectorMA( muzzle, -7.0f, up, origin );
-
-	// Correct muzzle so that the missile fires from the player's hand
-	VectorMA( origin, 4.5f, right, origin );
-
-	fire_flamer( ent, origin, forward );
+	fire_flamer( ent, muzzle, forward );
 }
 
 /*
@@ -820,12 +812,12 @@ BUILD GUN
 
 ======================================================================
 */
+
 void CheckCkitRepair( gentity_t *ent )
 {
 	vec3_t    viewOrigin, forward, end;
 	trace_t   tr;
 	gentity_t *traceEnt;
-	int       bHealth;
 
 	if ( ent->client->ps.weaponTime > 0 ||
 	     ent->client->ps.stats[ STAT_MISC ] > 0 )
@@ -843,15 +835,17 @@ void CheckCkitRepair( gentity_t *ent )
 	if ( tr.fraction < 1.0f && traceEnt->spawned && traceEnt->health > 0 &&
 	     traceEnt->s.eType == ET_BUILDABLE && traceEnt->buildableTeam == TEAM_HUMANS )
 	{
-		bHealth = BG_Buildable( traceEnt->s.modelindex )->health;
+		const buildableAttributes_t *buildable;
 
-		if ( traceEnt->health < bHealth )
+		buildable = BG_Buildable( traceEnt->s.modelindex );
+
+		if ( traceEnt->health < buildable->health )
 		{
 			traceEnt->health += HBUILD_HEALRATE;
 
-			if ( traceEnt->health >= bHealth )
+			if ( traceEnt->health >= buildable->health )
 			{
-				traceEnt->health = bHealth;
+				traceEnt->health = buildable->health;
 				G_AddEvent( ent, EV_BUILD_REPAIRED, 0 );
 			}
 			else
@@ -875,6 +869,7 @@ void cancelBuildFire( gentity_t *ent )
 	if ( ent->client->ps.stats[ STAT_BUILDABLE ] != BA_NONE )
 	{
 		ent->client->ps.stats[ STAT_BUILDABLE ] = BA_NONE;
+		ent->client->ps.stats[ STAT_PREDICTION ] = 0;
 		return;
 	}
 
@@ -1104,11 +1099,13 @@ poisonCloud
 void poisonCloud( gentity_t *ent )
 {
 	int       entityList[ MAX_GENTITIES ];
-	vec3_t    range = { LEVEL1_PCLOUD_RANGE, LEVEL1_PCLOUD_RANGE, LEVEL1_PCLOUD_RANGE };
+	vec3_t    range;
 	vec3_t    mins, maxs;
 	int       i, num;
 	gentity_t *humanPlayer;
 	trace_t   tr;
+
+	VectorSet(range, LEVEL1_PCLOUD_RANGE, LEVEL1_PCLOUD_RANGE, LEVEL1_PCLOUD_RANGE);
 
 	VectorAdd( ent->client->ps.origin, range, maxs );
 	VectorSubtract( ent->client->ps.origin, range, mins );
@@ -1163,15 +1160,14 @@ static void G_FindZapChainTargets( zap_t *zap )
 {
 	gentity_t *ent = zap->targets[ 0 ]; // the source
 	int       entityList[ MAX_GENTITIES ];
-	vec3_t    range = { LEVEL2_AREAZAP_CHAIN_RANGE,
-	                    LEVEL2_AREAZAP_CHAIN_RANGE,
-	                    LEVEL2_AREAZAP_CHAIN_RANGE
-	                  };
+	vec3_t    range;
 	vec3_t    mins, maxs;
 	int       i, num;
 	gentity_t *enemy;
 	trace_t   tr;
 	float     distance;
+
+	VectorSet(range, LEVEL2_AREAZAP_CHAIN_RANGE, LEVEL2_AREAZAP_CHAIN_RANGE, LEVEL2_AREAZAP_CHAIN_RANGE);
 
 	VectorAdd( ent->s.origin, range, maxs );
 	VectorSubtract( ent->s.origin, range, mins );
@@ -1542,55 +1538,139 @@ void G_ChargeAttack( gentity_t *ent, gentity_t *victim )
 }
 
 /*
-===============
-G_CrushAttack
+======================================================================
 
-Should only be called if there was an impact between a tyrant and another player
+GENERIC
+
+======================================================================
+*/
+
+static INLINE meansOfDeath_t G_ModWeight( const gentity_t *ent )
+{
+	return ent->client->pers.teamSelection == TEAM_HUMANS ? MOD_WEIGHT_H : MOD_WEIGHT_A;
+}
+
+/*
+===============
+G_ImpactAttack
+
+TODO: Handle generic impact damage (e.g. pounce).
 ===============
 */
-void G_CrushAttack( gentity_t *ent, gentity_t *victim )
+void G_ImpactAttack( gentity_t *attacker, gentity_t *victim )
 {
-	vec3_t dir;
-	float  jump;
-	int    damage;
+	float  impactVelocity, impactEnergy;
+	vec3_t knockbackDir;
+	int    attackerMass, impactDamage;
 
-	if ( !victim->takedamage ||
-	     ent->client->ps.origin[ 2 ] + ent->r.mins[ 2 ] <
-	     victim->s.origin[ 2 ] + victim->r.maxs[ 2 ] ||
-	     ( victim->client &&
-	       victim->client->ps.groundEntityNum == ENTITYNUM_NONE ) )
+	// self must be a client
+	if ( !attacker->client )
 	{
 		return;
 	}
 
-	// Deal velocity based damage to target
-	jump = BG_Class( ent->client->ps.stats[ STAT_CLASS ] )->jumpMagnitude;
-	damage = ( ent->client->pmext.fallVelocity + jump ) *
-	         -LEVEL4_CRUSH_DAMAGE_PER_V;
-
-	if ( damage < 0 )
-	{
-		damage = 0;
-	}
-
-	// Players also get damaged periodically
-	if ( victim->client &&
-	     ent->client->lastCrushTime + LEVEL4_CRUSH_REPEAT < level.time )
-	{
-		ent->client->lastCrushTime = level.time;
-		damage += LEVEL4_CRUSH_DAMAGE;
-	}
-
-	if ( damage < 1 )
+	// ignore invincible targets
+	if ( !victim->takedamage )
 	{
 		return;
 	}
 
-	// Crush the victim over a period of time
-	VectorSubtract( victim->s.origin, ent->client->ps.origin, dir );
-	VectorNormalize( dir );
-	G_Damage( victim, ent, ent, dir, victim->s.origin, damage,
-	          DAMAGE_NO_LOCDAMAGE, MOD_LEVEL4_CRUSH );
+	// don't do friendly fire
+	if ( OnSameTeam( attacker, victim ) )
+	{
+		return;
+	}
+
+	// attacker must be above victim
+	if ( attacker->client->ps.origin[ 2 ] + attacker->r.mins[ 2 ] <
+	     victim->s.origin[ 2 ] + victim->r.maxs[ 2 ] )
+	{
+		return;
+	}
+
+	// allow the granger airlifting ritual
+	if ( victim->client && BG_UpgradeIsActive( UP_JETPACK, victim->client->ps.stats ) &&
+	     ( attacker->client->pers.classSelection == PCL_ALIEN_BUILDER0 ||
+	       attacker->client->pers.classSelection == PCL_ALIEN_BUILDER0_UPG ) )
+	{
+		return;
+	}
+
+	// calculate impact damage
+	attackerMass = BG_Class( attacker->client->pers.classSelection )->mass;
+	impactVelocity = fabs( attacker->client->pmext.fallImpactVelocity[ 2 ] ) * IMPACTDMG_QU_TO_METER; // in m/s
+	impactEnergy = attackerMass * impactVelocity * impactVelocity; // in J
+	impactDamage = ( int )( impactEnergy * IMPACTDMG_JOULE_TO_DAMAGE );
+
+	// deal impact damage to both clients and structures, use a threshold for friendly fire
+	if ( impactDamage > 0 )
+	{
+		// calculate knockback direction
+		VectorSubtract( victim->s.origin, attacker->client->ps.origin, knockbackDir );
+		VectorNormalize( knockbackDir );
+
+		G_Damage( victim, attacker, attacker, knockbackDir, victim->s.origin, impactDamage,
+		          DAMAGE_NO_LOCDAMAGE, G_ModWeight( attacker ) );
+	}
+}
+
+/*
+===============
+G_WeightAttack
+===============
+*/
+void G_WeightAttack( gentity_t *attacker, gentity_t *victim )
+{
+	float  weightDPS;
+	int    attackerMass, victimMass, weightDamage;
+
+	// weigth damage is only dealt between clients
+	if ( !attacker->client || !victim->client )
+	{
+		return;
+	}
+
+	// ignore invincible targets
+	if ( !victim->takedamage )
+	{
+		return;
+	}
+
+	// attacker must be above victim
+	if ( attacker->client->ps.origin[ 2 ] + attacker->r.mins[ 2 ] <
+	     victim->s.origin[ 2 ] + victim->r.maxs[ 2 ] )
+	{
+		return;
+	}
+
+	// victim must be on the ground
+	if ( victim->client->ps.groundEntityNum == ENTITYNUM_NONE )
+	{
+		return;
+	}
+
+	// check timer
+	if ( victim->client->nextCrushTime > level.time )
+	{
+		return;
+	}
+
+	attackerMass = BG_Class( attacker->client->pers.classSelection )->mass;
+	victimMass = BG_Class( victim->client->pers.classSelection )->mass;
+	weightDPS = WEIGHTDMG_DMG_MODIFIER * MAX( attackerMass - victimMass, 0 );
+
+	if ( weightDPS > WEIGHTDMG_DPS_THRESHOLD )
+	{
+		weightDamage = ( int )( weightDPS * ( WEIGHTDMG_REPEAT / 1000.0f ) );
+
+		if ( weightDamage > 0 )
+		{
+			G_Damage( victim, attacker, attacker, NULL, victim->s.origin, weightDamage,
+					  DAMAGE_NO_LOCDAMAGE, G_ModWeight( attacker ) );
+		}
+	}
+
+	victim->client->nextCrushTime = level.time + WEIGHTDMG_REPEAT;
 }
 
 //======================================================================

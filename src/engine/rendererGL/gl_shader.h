@@ -137,7 +137,7 @@ public:
 	{
 		if ( _compileMacros.size() >= MAX_SHADER_MACROS )
 		{
-			ri.Error( ERR_DROP, "Can't register more than 9 compile macros for a single shader" );
+			ri.Error( ERR_DROP, "Can't register more than %i compile macros for a single shader", MAX_SHADER_MACROS );
 		}
 
 		_compileMacros.push_back( compileMacro );
@@ -624,7 +624,8 @@ protected:
 	  EYE_OUTSIDE,
 	  BRIGHTPASS_FILTER,
 	  LIGHT_DIRECTIONAL,
-	  USE_GBUFFER
+	  USE_GBUFFER,
+	  USE_GLOW_MAPPING
 	};
 
 public:
@@ -1355,6 +1356,48 @@ public:
 	}
 };
 
+class GLCompileMacro_USE_GLOW_MAPPING :
+	GLCompileMacro
+{
+public:
+	GLCompileMacro_USE_GLOW_MAPPING( GLShader *shader ) :
+		GLCompileMacro( shader )
+	{
+	}
+
+	const char *GetName() const
+	{
+		return "USE_GLOW_MAPPING";
+	}
+
+	EGLCompileMacro GetType() const
+	{
+		return USE_GLOW_MAPPING;
+	}
+
+	void EnableMacro_USE_GLOW_MAPPING()
+	{
+		EnableMacro();
+	}
+
+	void DisableMacro_USE_GLOW_MAPPING()
+	{
+		DisableMacro();
+	}
+
+	void SetGlowMapping( bool enable )
+	{
+		if ( enable )
+		{
+			EnableMacro();
+		}
+		else
+		{
+			DisableMacro();
+		}
+	}
+};
+
 class u_ColorTextureMatrix :
 	GLUniformMatrix4f
 {
@@ -1410,6 +1453,21 @@ public:
 	}
 
 	void SetUniform_SpecularTextureMatrix( const matrix_t m )
+	{
+		this->SetValue( GL_FALSE, m );
+	}
+};
+
+class u_GlowTextureMatrix :
+	GLUniformMatrix4f
+{
+public:
+	u_GlowTextureMatrix( GLShader *shader ) :
+		GLUniformMatrix4f( shader, "u_GlowTextureMatrix" )
+	{
+	}
+
+	void SetUniform_GlowTextureMatrix( const matrix_t m )
 	{
 		this->SetValue( GL_FALSE, m );
 	}
@@ -2305,6 +2363,7 @@ class GLShader_lightMapping :
 	public u_DiffuseTextureMatrix,
 	public u_NormalTextureMatrix,
 	public u_SpecularTextureMatrix,
+	public u_GlowTextureMatrix,
 	public u_SpecularExponent,
 	public u_ColorModulate,
 	public u_Color,
@@ -2316,7 +2375,8 @@ class GLShader_lightMapping :
 	public GLDeformStage,
 	public GLCompileMacro_USE_DEFORM_VERTEXES,
 	public GLCompileMacro_USE_NORMAL_MAPPING,
-	public GLCompileMacro_USE_PARALLAX_MAPPING //,
+	public GLCompileMacro_USE_PARALLAX_MAPPING,
+	public GLCompileMacro_USE_GLOW_MAPPING
 //public GLCompileMacro_TWOSIDED
 {
 public:
@@ -2332,6 +2392,7 @@ class GLShader_vertexLighting_DBS_entity :
 	public u_DiffuseTextureMatrix,
 	public u_NormalTextureMatrix,
 	public u_SpecularTextureMatrix,
+	public u_GlowTextureMatrix,
 	public u_SpecularExponent,
 	public u_AlphaThreshold,
 	public u_AmbientColor,
@@ -2350,7 +2411,8 @@ class GLShader_vertexLighting_DBS_entity :
 	public GLCompileMacro_USE_DEFORM_VERTEXES,
 	public GLCompileMacro_USE_NORMAL_MAPPING,
 	public GLCompileMacro_USE_PARALLAX_MAPPING,
-	public GLCompileMacro_USE_REFLECTIVE_SPECULAR //,
+	public GLCompileMacro_USE_REFLECTIVE_SPECULAR,
+	public GLCompileMacro_USE_GLOW_MAPPING
 //public GLCompileMacro_TWOSIDED
 {
 public:
@@ -2366,6 +2428,7 @@ class GLShader_vertexLighting_DBS_world :
 	public u_DiffuseTextureMatrix,
 	public u_NormalTextureMatrix,
 	public u_SpecularTextureMatrix,
+	public u_GlowTextureMatrix,
 	public u_SpecularExponent,
 	public u_ColorModulate,
 	public u_Color,
@@ -2378,7 +2441,8 @@ class GLShader_vertexLighting_DBS_world :
 	public GLDeformStage,
 	public GLCompileMacro_USE_DEFORM_VERTEXES,
 	public GLCompileMacro_USE_NORMAL_MAPPING,
-	public GLCompileMacro_USE_PARALLAX_MAPPING //,
+	public GLCompileMacro_USE_PARALLAX_MAPPING,
+	public GLCompileMacro_USE_GLOW_MAPPING
 //public GLCompileMacro_TWOSIDED
 //public GLCompileMacro_USE_GBUFFER
 {

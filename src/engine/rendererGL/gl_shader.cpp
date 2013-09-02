@@ -967,11 +967,12 @@ void GLShaderManager::PrintShaderSource( GLuint object ) const
 
 	glGetShaderSource( object, maxLength, &maxLength, msg );
 
-	for ( i = 0; i < maxLength; i += 1024 )
+	for ( i = 0; i < maxLength; i += sizeof( msgPart ) - 1 )
 	{
 		Q_strncpyz( msgPart, msg + i, sizeof( msgPart ) );
-		ri.Printf( PRINT_ALL, "%s\n", msgPart );
+		ri.Printf( PRINT_ALL, "%s", msgPart );
 	}
+	ri.Printf( PRINT_ALL, "\n" );
 
 	ri.Hunk_FreeTempMemory( msg );
 }
@@ -1012,12 +1013,12 @@ void GLShaderManager::PrintInfoLog( GLuint object, bool developerOnly ) const
 		ri.Printf( print, "link log:\n" );
 	}
 
-	for ( i = 0; i < maxLength; i += 1024 )
+	for ( i = 0; i < maxLength; i += sizeof( msgPart ) - 1 )
 	{
 		Q_strncpyz( msgPart, msg + i, sizeof( msgPart ) );
-
-		ri.Printf( print, "%s\n", msgPart );
+		ri.Printf( print, "%s", msgPart );
 	}
+	ri.Printf( PRINT_ALL, "\n" );
 
 	ri.Hunk_FreeTempMemory( msg );
 }
@@ -1325,6 +1326,7 @@ GLShader_lightMapping::GLShader_lightMapping( GLShaderManager *manager ) :
 	u_DiffuseTextureMatrix( this ),
 	u_NormalTextureMatrix( this ),
 	u_SpecularTextureMatrix( this ),
+	u_GlowTextureMatrix( this ),
 	u_SpecularExponent( this ),
 	u_ColorModulate( this ),
 	u_Color( this ),
@@ -1336,7 +1338,8 @@ GLShader_lightMapping::GLShader_lightMapping( GLShaderManager *manager ) :
 	GLDeformStage( this ),
 	GLCompileMacro_USE_DEFORM_VERTEXES( this ),
 	GLCompileMacro_USE_NORMAL_MAPPING( this ),
-	GLCompileMacro_USE_PARALLAX_MAPPING( this )  //,
+	GLCompileMacro_USE_PARALLAX_MAPPING( this ),
+	GLCompileMacro_USE_GLOW_MAPPING( this )//,
 	//GLCompileMacro_TWOSIDED(this)
 {
 }
@@ -1366,6 +1369,7 @@ void GLShader_lightMapping::SetShaderProgramUniforms( shaderProgram_t *shaderPro
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_SpecularMap" ),  2 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_LightMap" ), 3 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_DeluxeMap" ), 4 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_GlowMap" ), 5 );
 }
 
 GLShader_vertexLighting_DBS_entity::GLShader_vertexLighting_DBS_entity( GLShaderManager *manager ) :
@@ -1373,6 +1377,7 @@ GLShader_vertexLighting_DBS_entity::GLShader_vertexLighting_DBS_entity( GLShader
 	u_DiffuseTextureMatrix( this ),
 	u_NormalTextureMatrix( this ),
 	u_SpecularTextureMatrix( this ),
+	u_GlowTextureMatrix( this ),
 	u_SpecularExponent( this ),
 	u_AlphaThreshold( this ),
 	u_AmbientColor( this ),
@@ -1391,7 +1396,8 @@ GLShader_vertexLighting_DBS_entity::GLShader_vertexLighting_DBS_entity( GLShader
 	GLCompileMacro_USE_DEFORM_VERTEXES( this ),
 	GLCompileMacro_USE_NORMAL_MAPPING( this ),
 	GLCompileMacro_USE_PARALLAX_MAPPING( this ),
-	GLCompileMacro_USE_REFLECTIVE_SPECULAR( this )  //,
+	GLCompileMacro_USE_REFLECTIVE_SPECULAR( this ),
+	GLCompileMacro_USE_GLOW_MAPPING( this )//,
 	//GLCompileMacro_TWOSIDED(this)
 {
 }
@@ -1423,6 +1429,7 @@ void GLShader_vertexLighting_DBS_entity::SetShaderProgramUniforms( shaderProgram
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_SpecularMap" ), 2 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_EnvironmentMap0" ), 3 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_EnvironmentMap1" ), 4 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_GlowMap" ), 5 );
 }
 
 GLShader_vertexLighting_DBS_world::GLShader_vertexLighting_DBS_world( GLShaderManager *manager ) :
@@ -1433,6 +1440,7 @@ GLShader_vertexLighting_DBS_world::GLShader_vertexLighting_DBS_world( GLShaderMa
 	u_DiffuseTextureMatrix( this ),
 	u_NormalTextureMatrix( this ),
 	u_SpecularTextureMatrix( this ),
+	u_GlowTextureMatrix( this ),
 	u_SpecularExponent( this ),
 	u_ColorModulate( this ),
 	u_Color( this ),
@@ -1445,7 +1453,8 @@ GLShader_vertexLighting_DBS_world::GLShader_vertexLighting_DBS_world( GLShaderMa
 	GLDeformStage( this ),
 	GLCompileMacro_USE_DEFORM_VERTEXES( this ),
 	GLCompileMacro_USE_NORMAL_MAPPING( this ),
-	GLCompileMacro_USE_PARALLAX_MAPPING( this )  //,
+	GLCompileMacro_USE_PARALLAX_MAPPING( this ),
+	GLCompileMacro_USE_GLOW_MAPPING( this )//,
 	//GLCompileMacro_TWOSIDED(this)
 {
 }
@@ -1472,6 +1481,7 @@ void GLShader_vertexLighting_DBS_world::SetShaderProgramUniforms( shaderProgram_
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_DiffuseMap" ), 0 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_NormalMap" ), 1 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_SpecularMap" ), 2 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_GlowMap" ), 3 );
 }
 
 GLShader_forwardLighting_omniXYZ::GLShader_forwardLighting_omniXYZ( GLShaderManager *manager ):

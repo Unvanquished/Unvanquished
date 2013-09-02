@@ -637,80 +637,40 @@ PM_CheckWaterPounce
 */
 static void PM_CheckWaterPounce( void )
 {
-	if ( pm->ps->weapon != WP_ALEVEL3 &&
-	     pm->ps->weapon != WP_ALEVEL3_UPG )
+	// Check for valid class
+	switch ( pm->ps->weapon )
 	{
-		return;
+		case WP_ALEVEL0_UPG:
+		case WP_ALEVEL3:
+		case WP_ALEVEL3_UPG:
+			break;
+
+		default:
+			return;
 	}
 
 	// We were pouncing, but we've landed into water
 	if ( ( pm->waterlevel > 1 ) && ( pm->ps->pm_flags & PMF_CHARGE ) )
 	{
 		pm->ps->pm_flags &= ~PMF_CHARGE;
-		pm->ps->weaponTime += LEVEL3_POUNCE_REPEAT;
+
+		switch ( pm->ps->weapon )
+		{
+			case WP_ALEVEL3:
+			case WP_ALEVEL3_UPG:
+				pm->ps->weaponTime += LEVEL3_POUNCE_REPEAT;
+				break;
+		}
 	}
 }
 
 /*
 =============
-PM_CheckPounce
+PM_PlayJumpingAnimation
 =============
 */
-static qboolean PM_CheckPounce( void )
+static void PM_PlayJumpingAnimation( void )
 {
-	int jumpMagnitude;
-
-	if ( pm->ps->weapon != WP_ALEVEL3 &&
-	     pm->ps->weapon != WP_ALEVEL3_UPG )
-	{
-		return qfalse;
-	}
-
-	// We were pouncing, but we've landed
-	if ( pm->ps->groundEntityNum != ENTITYNUM_NONE &&
-	     ( pm->ps->pm_flags & PMF_CHARGE ) )
-	{
-		pm->ps->pm_flags &= ~PMF_CHARGE;
-		pm->ps->weaponTime += LEVEL3_POUNCE_REPEAT;
-		return qfalse;
-	}
-
-	// We're building up for a pounce
-	if ( usercmdButtonPressed( pm->cmd.buttons, BUTTON_ATTACK2 ) )
-	{
-		pm->ps->pm_flags &= ~PMF_CHARGE;
-		return qfalse;
-	}
-
-	// Can't start a pounce
-	if ( ( pm->ps->pm_flags & PMF_CHARGE ) ||
-	     pm->ps->stats[ STAT_MISC ] < LEVEL3_POUNCE_TIME_MIN ||
-	     pm->ps->groundEntityNum == ENTITYNUM_NONE )
-	{
-		return qfalse;
-	}
-
-	// Give the player forward velocity and simulate a jump
-	pml.groundPlane = qfalse;
-	pml.walking = qfalse;
-	pm->ps->pm_flags |= PMF_CHARGE;
-	pm->ps->groundEntityNum = ENTITYNUM_NONE;
-
-	if ( pm->ps->weapon == WP_ALEVEL3 )
-	{
-		jumpMagnitude = pm->ps->stats[ STAT_MISC ] *
-		                LEVEL3_POUNCE_JUMP_MAG / LEVEL3_POUNCE_TIME;
-	}
-	else
-	{
-		jumpMagnitude = pm->ps->stats[ STAT_MISC ] *
-		                LEVEL3_POUNCE_JUMP_MAG_UPG / LEVEL3_POUNCE_TIME_UPG;
-	}
-
-	VectorMA( pm->ps->velocity, jumpMagnitude, pml.forward, pm->ps->velocity );
-	PM_AddEvent( EV_JUMP );
-
-	// Play jumping animation
 	if ( pm->cmd.forwardmove >= 0 )
 	{
 		if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
@@ -737,10 +697,412 @@ static qboolean PM_CheckPounce( void )
 
 		pm->ps->pm_flags |= PMF_BACKWARDS_JUMP;
 	}
+}
 
-	pm->pmext->pouncePayload = pm->ps->stats[ STAT_MISC ];
-	pm->ps->stats[ STAT_MISC ] = 0;
+/*
+=============
+PM_GetTrajectoryAngleForVelocity
 
+Given an origin, a target point and an initial velocity v0, calculate the two possible
+pitch angles and corresponding directions for reaching the target on a parabolic trajectory.
+
+Returns qtrue when angles contains the two possible pitch angles and dir1 and dir2
+contain the corresponding directions. Returns qfalse when the target is out of reach.
+=============
+*/
+static qboolean PM_GetTrajectoryPitch(
+        vec3_t origin, vec3_t target, float v0, vec2_t angles, vec3_t dir1, vec3_t dir2 )
+{
+	vec3_t t3;    // target relative to origin in 3D space
+	vec2_t t;     // relative target in 2D space (ignoring yaw angle)
+	float  tmp;   // temporary variable
+	float  g;     // gravity
+	float  v02;   // v0 * v0
+
+	VectorSubtract( target, origin, t3 );
+
+	if ( pm->debugLevel > 0 )
+	{
+		Com_Printf( "[PM_GetTrajectoryPitch] 3D: %.1f %.1f %.1f (%.1f qu)\n",
+		            t3[ 0 ], t3[ 1 ], t3[ 2 ], VectorLength( t3 ) );
+	}
+
+	// abort if the distance is very small
+	if ( VectorLength( t3 ) < 0.1f )
+	{
+		return qfalse;
+	}
+
+	g = ( float )pm->ps->gravity;
+	v02 = v0 * v0;
+
+	// create a 2D representation of the problem by cutting out the plane that contains
+	// the trajectory
+	t[ 1 ] = t3[ 2 ];
+	t[ 0 ] = sqrt( t3[ 0 ] * t3[ 0 ] + t3[ 1 ] * t3[ 1 ] );
+
+	if ( pm->debugLevel > 0 )
+	{
+		Com_Printf("[PM_GetTrajectoryPitch] 2D: %.1f %.1f (%.1f qu)\n",
+		           t[ 0 ], t[ 1 ], sqrt( t[ 0 ] * t[ 0 ] + t[ 1 ] * t[ 1 ] ) );
+	}
+
+	// calculate the angles
+	tmp = v02 * v02 - g * ( g * t[ 0 ] * t[ 0 ] + 2.0f * t[ 1 ] * v02 );
+
+	if ( tmp < 0.0f )
+	{
+		// target not reachable
+		return qfalse;
+	}
+
+	tmp = sqrt( tmp );
+
+	angles[ 0 ] = atanf( ( v02 + tmp ) / ( g * t[ 0 ] ) );
+	angles[ 1 ] = atanf( ( v02 - tmp ) / ( g * t[ 0 ] ) );
+
+	if ( pm->debugLevel > 0 )
+	{
+		Com_Printf( "[PM_GetTrajectoryPitch] Angles: %.1f°, %.1f°\n",
+		            180.0f / M_PI * angles[ 0 ], 180.0f / M_PI * angles[ 1 ] );
+	}
+
+	// calculate the corresponding directions for both angles
+	dir1[ 0 ] = dir2[ 0 ] = t3[ 0 ];
+	dir1[ 1 ] = dir2[ 1 ] = t3[ 1 ];
+
+	if ( fabs( t3[ 0 ] ) < 0.01f && fabs( t3[ 1 ] ) < 0.01f ) // epsilon to prevent DBZ
+	{
+		// if target is below or above origin, we already know the direction
+		dir1[ 2 ] = dir2[ 2 ] = t3[ 2 ];
+	}
+	else
+	{
+		// normalize direction so it can be rotated more easily
+		dir1[ 2 ] = dir2[ 2 ] = 0.0f;
+		VectorNormalize( dir1 );
+		VectorNormalize( dir2 );
+
+		// angles are in ]-pi/2,pi/2[, so cos != 0
+		dir1[ 2 ] = sqrt( 1.0f / cos( angles[ 0 ] ) - 1.0f );
+		dir2[ 2 ] = sqrt( 1.0f / cos( angles[ 1 ] ) - 1.0f );
+
+		if ( angles[ 0 ] < 0.0f )
+		{
+			dir1[ 2 ] = -dir1[ 2 ];
+		}
+
+		if ( angles[ 1 ] < 0.0f )
+		{
+			dir2[ 2 ] = -dir2[ 2 ];
+		}
+	}
+
+	VectorNormalize( dir1 );
+	VectorNormalize( dir2 );
+
+	if ( pm->debugLevel > 0 )
+	{
+		Com_Printf( "[PM_GetTrajectoryPitch] Dirs: ( %.2f, %.2f, %.2f ), ( %.2f, %.2f, %.2f )\n",
+		            dir1[ 0 ], dir1[ 1 ], dir1[ 2 ], dir2[ 0 ], dir2[ 1 ], dir2[ 2 ] );
+	}
+
+	return qtrue;
+}
+
+/*
+=============
+PM_CheckPounce
+=============
+*/
+static qboolean PM_CheckPounce( void )
+{
+	int      jumpMagnitude;
+	vec3_t   jumpDirection, groundDirection;
+	float    pitch;
+
+	// Check for valid class
+	switch ( pm->ps->weapon )
+	{
+		case WP_ALEVEL0_UPG:
+		case WP_ALEVEL3:
+		case WP_ALEVEL3_UPG:
+			break;
+
+		default:
+			return qfalse;
+	}
+
+	// Handle landing
+	if ( pm->ps->groundEntityNum != ENTITYNUM_NONE && ( pm->ps->pm_flags & PMF_CHARGE ) )
+	{
+		// end the pounce
+		pm->ps->pm_flags &= ~PMF_CHARGE;
+
+		// goon pounce delays bite attacks
+		switch ( pm->ps->weapon )
+		{
+			case WP_ALEVEL3:
+			case WP_ALEVEL3_UPG:
+				pm->ps->weaponTime += LEVEL3_POUNCE_REPEAT;
+				break;
+		}
+
+		return qfalse;
+	}
+
+	// Check class-specific conditions for starting a pounce
+	switch ( pm->ps->weapon )
+	{
+		case WP_ALEVEL0_UPG:
+			// Check if player wants to pounce
+			if ( !usercmdButtonPressed( pm->cmd.buttons, BUTTON_ATTACK2 ) )
+			{
+				return qfalse;
+			}
+
+			// Check if cooldown is over
+			if ( pm->ps->stats[ STAT_MISC ] > 0 )
+			{
+				return qfalse;
+			}
+			break;
+
+		case WP_ALEVEL3:
+		case WP_ALEVEL3_UPG:
+			// Don't pounce while still charging
+			if ( usercmdButtonPressed( pm->cmd.buttons, BUTTON_ATTACK2 ) )
+			{
+				pm->ps->pm_flags &= ~PMF_CHARGE;
+
+				return qfalse;
+			}
+
+			// Pounce if minimum charge time has passed and the charge button isn't held anymore
+			if ( pm->ps->stats[ STAT_MISC ] < LEVEL3_POUNCE_TIME_MIN )
+			{
+				return qfalse;
+			}
+			break;
+	}
+
+	// Check if already pouncing
+	if ( pm->ps->pm_flags & PMF_CHARGE )
+	{
+		return qfalse;
+	}
+
+	// Check if in air
+	if ( pm->ps->groundEntityNum == ENTITYNUM_NONE )
+	{
+		return qfalse;
+	}
+
+	// Calculate jump parameters
+	switch ( pm->ps->weapon )
+	{
+		case WP_ALEVEL0_UPG:
+			// wallwalking
+			if ( pm->ps->groundEntityNum == ENTITYNUM_WORLD && pml.groundTrace.plane.normal[ 2 ] <= 0.1f )
+			{
+				// get jump magnitude
+				jumpMagnitude = LEVEL0_WALLPOUNCE_MAGNITUDE;
+
+				// if looking in the direction of the surface, jump in opposite normal direction
+				if ( DotProduct( pml.groundTrace.plane.normal, pml.forward ) < 0.0f )
+				{
+					VectorCopy( pml.groundTrace.plane.normal, jumpDirection );
+				}
+				// otherwise try to find a trajectory to the surface point the player is looking at
+				else
+				{
+					trace_t  trace;
+					vec3_t   traceTarget, endpos, trajectoryDir1, trajectoryDir2;
+					vec2_t   trajectoryAngles;
+					float    zCorrection;
+					qboolean foundTrajectory;
+
+					VectorMA( pm->ps->origin, 10000.0f, pml.forward, traceTarget );
+
+					pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, traceTarget,
+					           pm->ps->clientNum, MASK_SOLID );
+
+					foundTrajectory = ( trace.fraction < 1.0f );
+
+					// HACK: make sure we don't just tangent if we want to attach to the ceiling
+					//       this is done by moving the target point inside a ceiling's surface
+					if ( foundTrajectory )
+					{
+						VectorCopy( trace.endpos, endpos );
+
+						if ( trace.plane.normal[ 2 ] < 0.0f )
+						{
+							zCorrection = 64.0f * trace.plane.normal[ 2 ];
+
+							if ( pm->debugLevel > 0 )
+							{
+								Com_Printf( "[PM_CheckPounce] Aiming at ceiling; move target into surface by %.2f\n",
+								            zCorrection );
+							}
+
+							VectorMA( endpos, zCorrection, trace.plane.normal, endpos );
+						}
+					}
+
+					// if there is a possible trajectoy they come in pairs, use the shorter one
+					if ( foundTrajectory &&
+					     PM_GetTrajectoryPitch( pm->ps->origin, endpos, jumpMagnitude, trajectoryAngles,
+					                            trajectoryDir1, trajectoryDir2 ) )
+					{
+						if ( trajectoryDir1[ 2 ] < trajectoryDir2[ 2 ] )
+						{
+							if ( pm->debugLevel > 0 )
+							{
+								Com_Printf("[PM_CheckPounce] Using angle #1\n");
+							}
+
+							VectorCopy( trajectoryDir1, jumpDirection );
+						}
+						else
+						{
+							if ( pm->debugLevel > 0 )
+							{
+								Com_Printf("[PM_CheckPounce] Using angle #2\n");
+							}
+
+							VectorCopy( trajectoryDir2, jumpDirection );
+						}
+
+						// HACK: make sure we get off the ceiling if jumping to an adjacent wall
+						//       this is done by subsequently rotating the jump direction in surface
+						//       normal direction until their angle is below a threshold
+						while ( DotProduct( jumpDirection, pml.groundTrace.plane.normal ) <= 0.1f ) // acos(0.1) ~= 85°
+						{
+							VectorMA( jumpDirection, 0.1f, pml.groundTrace.plane.normal, jumpDirection );
+							VectorNormalize( jumpDirection );
+
+							if ( pm->debugLevel > 0 )
+							{
+								Com_Printf("[PM_CheckPounce] Adjusting jump direction to get off the surface: "
+								           "( %.2f, %.2f, %.2f )\n",
+								           jumpDirection[ 0 ], jumpDirection[ 1 ], jumpDirection[ 2 ] );
+							}
+
+						}
+					}
+					// resort to jumping in view direction
+					else
+					{
+						if ( pm->debugLevel > 0 )
+						{
+							Com_Printf("[PM_CheckPounce] Failed to find a trajectory\n");
+						}
+
+						VectorCopy( pml.forward, jumpDirection );
+					}
+				}
+
+				// add cooldown
+				pm->ps->stats[ STAT_MISC ] = LEVEL0_WALLPOUNCE_COOLDOWN;
+			}
+			// moving foward or standing still
+			else if ( pm->cmd.forwardmove > 0 || ( pm->cmd.forwardmove == 0 && pm->cmd.rightmove == 0) )
+			{
+				// get jump direction
+				VectorCopy( pml.forward, jumpDirection );
+				jumpDirection[ 2 ] = fabs( jumpDirection[ 2 ] );
+
+				// calculate jump magnitude so that jump length is fixed for pitch between
+				// LEVEL0_POUNCE_MINPITCH and pi/4 (45°)
+				groundDirection[ 0 ] = jumpDirection[ 0 ];
+				groundDirection[ 1 ] = jumpDirection[ 1 ];
+				groundDirection[ 2 ] = 0.0f;
+				VectorNormalize( groundDirection );
+
+				pitch = acos( groundDirection[ 0 ] * jumpDirection[ 0 ] +
+							  groundDirection[ 1 ] * jumpDirection[ 1 ] );
+
+				if ( pitch > M_PI / 4.0f ) // 45°
+				{
+					pitch = M_PI / 4.0f;
+				}
+				else if ( pitch < LEVEL0_POUNCE_MINPITCH )
+				{
+					pitch = LEVEL0_POUNCE_MINPITCH;
+				}
+
+				jumpMagnitude = ( int )sqrt( LEVEL0_POUNCE_DISTANCE * pm->ps->gravity / sin( 2.0f * pitch ) );
+
+				// add cooldown
+				pm->ps->stats[ STAT_MISC ] = LEVEL0_POUNCE_COOLDOWN;
+			}
+			// going backwards or strafing
+			else if ( pm->cmd.forwardmove < 0 || pm->cmd.rightmove != 0 )
+			{
+				// get jump direction
+				if ( pm->cmd.forwardmove < 0 )
+				{
+					VectorNegate( pml.forward, jumpDirection );
+				}
+				else if ( pm->cmd.rightmove < 0 )
+				{
+					VectorNegate( pml.right, jumpDirection );
+				}
+				else
+				{
+					VectorCopy( pml.right, jumpDirection );
+				}
+
+				jumpDirection[ 2 ] = LEVEL0_SIDEPOUNCE_DIR_Z;
+
+				// get jump magnitude
+				jumpMagnitude = LEVEL0_SIDEPOUNCE_MAGNITUDE;
+
+				// add cooldown
+				pm->ps->stats[ STAT_MISC ] = LEVEL0_SIDEPOUNCE_COOLDOWN;
+			}
+
+			break;
+
+		case WP_ALEVEL3:
+		case WP_ALEVEL3_UPG:
+			if ( pm->ps->weapon == WP_ALEVEL3 )
+			{
+				jumpMagnitude = pm->ps->stats[ STAT_MISC ]
+				              * LEVEL3_POUNCE_JUMP_MAG / LEVEL3_POUNCE_TIME;
+			}
+			else
+			{
+				jumpMagnitude = pm->ps->stats[ STAT_MISC ]
+				              * LEVEL3_POUNCE_JUMP_MAG_UPG / LEVEL3_POUNCE_TIME_UPG;
+			}
+
+			VectorCopy( pml.forward, jumpDirection );
+
+			// save payload
+			pm->pmext->pouncePayload = pm->ps->stats[ STAT_MISC ];
+
+			// reset charge bar
+			pm->ps->stats[ STAT_MISC ] = 0;
+
+			break;
+
+		default:
+			return qfalse;
+	}
+
+	// Prepare a simulated jump
+	pml.groundPlane = qfalse;
+	pml.walking = qfalse;
+	pm->ps->pm_flags |= PMF_CHARGE;
+	pm->ps->groundEntityNum = ENTITYNUM_NONE;
+
+	// Jump
+	VectorMA( pm->ps->velocity, jumpMagnitude, jumpDirection, pm->ps->velocity );
+	PM_AddEvent( EV_JUMP );
+	PM_PlayJumpingAnimation();
+
+	// We started to pounce
 	return qtrue;
 }
 
@@ -867,33 +1229,7 @@ static qboolean PM_CheckWallJump( void )
 	}
 
 	PM_AddEvent( EV_JUMP );
-
-	if ( pm->cmd.forwardmove >= 0 )
-	{
-		if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
-		{
-			PM_ForceLegsAnim( LEGS_JUMP );
-		}
-		else
-		{
-			PM_ForceLegsAnim( NSPA_JUMP );
-		}
-
-		pm->ps->pm_flags &= ~PMF_BACKWARDS_JUMP;
-	}
-	else
-	{
-		if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
-		{
-			PM_ForceLegsAnim( LEGS_JUMPB );
-		}
-		else
-		{
-			PM_ForceLegsAnim( NSPA_JUMPBACK );
-		}
-
-		pm->ps->pm_flags |= PMF_BACKWARDS_JUMP;
-	}
+	PM_PlayJumpingAnimation();
 
 	return qtrue;
 }
@@ -934,13 +1270,6 @@ static qboolean PM_CheckJump( void )
 
 	if ( ( pm->ps->stats[ STAT_TEAM ] == TEAM_HUMANS ) &&
 	     ( pm->ps->stats[ STAT_STAMINA ] < STAMINA_SLOW_LEVEL + STAMINA_JUMP_TAKE ) )
-	{
-		return qfalse;
-	}
-
-	//no bunny hopping off a dodge
-	if ( pm->ps->stats[ STAT_TEAM ] == TEAM_HUMANS &&
-	     pm->ps->pm_time > HUMAN_DODGE_TIMEOUT - 500 ) // Let the human jump half a second into the dodge cooldown
 	{
 		return qfalse;
 	}
@@ -995,33 +1324,7 @@ static qboolean PM_CheckJump( void )
 	          normal, pm->ps->velocity );
 
 	PM_AddEvent( EV_JUMP );
-
-	if ( pm->cmd.forwardmove >= 0 )
-	{
-		if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
-		{
-			PM_ForceLegsAnim( LEGS_JUMP );
-		}
-		else
-		{
-			PM_ForceLegsAnim( NSPA_JUMP );
-		}
-
-		pm->ps->pm_flags &= ~PMF_BACKWARDS_JUMP;
-	}
-	else
-	{
-		if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
-		{
-			PM_ForceLegsAnim( LEGS_JUMPB );
-		}
-		else
-		{
-			PM_ForceLegsAnim( NSPA_JUMPBACK );
-		}
-
-		pm->ps->pm_flags |= PMF_BACKWARDS_JUMP;
-	}
+	PM_PlayJumpingAnimation();
 
 	return qtrue;
 }
@@ -1076,152 +1379,6 @@ static qboolean PM_CheckWaterJump( void )
 
 	pm->ps->pm_flags |= PMF_TIME_WATERJUMP;
 	pm->ps->pm_time = 2000;
-
-	return qtrue;
-}
-
-/*
-==================
-PM_CheckDodge
-
-Checks the dodge key and starts a human dodge or sprint
-==================
-*/
-static qboolean PM_CheckDodge( void )
-{
-	vec3_t right, forward, velocity = { 0.0f, 0.0f, 0.0f };
-	float  jump, sideModifier;
-	int    i;
-
-	if ( pm->ps->stats[ STAT_TEAM ] != TEAM_HUMANS )
-	{
-		return qfalse;
-	}
-
-	// Landed a dodge
-	if ( ( pm->ps->pm_flags & PMF_CHARGE ) &&
-	     pm->ps->groundEntityNum != ENTITYNUM_NONE )
-	{
-		pm->ps->pm_flags = ( pm->ps->pm_flags & ~PMF_CHARGE ) | PMF_TIME_LAND;
-		pm->ps->pm_time = HUMAN_DODGE_TIMEOUT;
-	}
-
-	// Reasons why we can't start a dodge or sprint
-	if ( pm->ps->pm_type != PM_NORMAL || pm->ps->stats[ STAT_STAMINA ] < STAMINA_SLOW_LEVEL + STAMINA_DODGE_TAKE ||
-	     ( pm->ps->pm_flags & PMF_DUCKED ) )
-	{
-		return qfalse;
-	}
-
-	// Can't dodge forward
-	if ( pm->cmd.forwardmove > 0 )
-	{
-		return qfalse;
-	}
-
-	if ( pm->cmd.doubleTap == DT_BACK || pm->cmd.doubleTap == DT_MOVELEFT || pm->cmd.doubleTap == DT_MOVERIGHT )
-	{
-		switch ( pm->cmd.doubleTap )
-		{
-			case DT_BACK:
-				pm->cmd.forwardmove = -1;
-				break;
-
-			case DT_MOVELEFT:
-				pm->cmd.rightmove = -1;
-				break;
-
-			case DT_MOVERIGHT:
-				pm->cmd.rightmove = 1;
-				break;
-		}
-
-		usercmdPressButton( pm->cmd.buttons, BUTTON_DODGE );
-	}
-
-	// Reasons why we can't start a dodge only
-	if ( pm->ps->pm_flags & ( PMF_TIME_LAND | PMF_CHARGE ) ||
-	     pm->ps->groundEntityNum == ENTITYNUM_NONE ||
-	     !usercmdButtonPressed( pm->cmd.buttons, BUTTON_DODGE ) )
-	{
-		return qfalse;
-	}
-
-	// Dodge direction specified with movement keys
-	if ( ( !pm->cmd.rightmove && !pm->cmd.forwardmove ) || pm->cmd.upmove )
-	{
-		return qfalse;
-	}
-
-	AngleVectors( pm->ps->viewangles, NULL, right, NULL );
-	forward[ 0 ] = -right[ 1 ];
-	forward[ 1 ] = right[ 0 ];
-	forward[ 2 ] = 0.0f;
-
-	// Dodge magnitude is based on the jump magnitude scaled by the modifiers
-	jump = BG_Class( pm->ps->stats[ STAT_CLASS ] )->jumpMagnitude;
-
-	if ( pm->cmd.rightmove && pm->cmd.forwardmove )
-	{
-		jump *= ( 0.5f * M_SQRT2 );
-	}
-
-	// Weaken dodge if slowed
-	if ( ( pm->ps->stats[ STAT_STATE ] & SS_SLOWLOCKED )  ||
-	     ( pm->ps->stats[ STAT_STATE ] & SS_CREEPSLOWED ) ||
-	     ( pm->ps->eFlags & EF_POISONCLOUDED ) )
-	{
-		sideModifier = HUMAN_DODGE_SLOWED_MODIFIER;
-	}
-	else
-	{
-		sideModifier = HUMAN_DODGE_SIDE_MODIFIER;
-	}
-
-	// The dodge sets minimum velocity
-	if ( pm->cmd.rightmove )
-	{
-		if ( pm->cmd.rightmove < 0 )
-		{
-			VectorNegate( right, right );
-		}
-
-		VectorMA( velocity, jump * sideModifier, right, velocity );
-	}
-
-	if ( pm->cmd.forwardmove )
-	{
-		if ( pm->cmd.forwardmove < 0 )
-		{
-			VectorNegate( forward, forward );
-		}
-
-		VectorMA( velocity, jump * sideModifier, forward, velocity );
-	}
-
-	velocity[ 2 ] = jump * HUMAN_DODGE_UP_MODIFIER;
-
-	// Make sure client has minimum velocity
-	for ( i = 0; i < 3; i++ )
-	{
-		if ( ( velocity[ i ] < 0.0f &&
-		       pm->ps->velocity[ i ] > velocity[ i ] ) ||
-		     ( velocity[ i ] > 0.0f &&
-		       pm->ps->velocity[ i ] < velocity[ i ] ) )
-		{
-			pm->ps->velocity[ i ] = velocity[ i ];
-		}
-	}
-
-	// Jumped away
-	pml.groundPlane = qfalse;
-	pml.walking = qfalse;
-	pm->ps->groundEntityNum = ENTITYNUM_NONE;
-	pm->ps->pm_flags |= PMF_CHARGE;
-	pm->ps->stats[ STAT_STAMINA ] -= STAMINA_DODGE_TAKE;
-	pm->ps->legsAnim = ( ( pm->ps->legsAnim & ANIM_TOGGLEBIT ) ^
-	                     ANIM_TOGGLEBIT ) | LEGS_JUMP;
-	PM_AddEvent( EV_JUMP );
 
 	return qtrue;
 }
@@ -2129,7 +2286,7 @@ static int PM_CorrectAllSolid( trace_t *trace )
 	int    i, j, k;
 	vec3_t point;
 
-	if ( pm->debugLevel )
+	if ( pm->debugLevel > 1 )
 	{
 		Com_Printf( "%i:allsolid\n", c_pmove );
 	}
@@ -2183,7 +2340,7 @@ static void PM_GroundTraceMissed( void )
 	if ( pm->ps->groundEntityNum != ENTITYNUM_NONE )
 	{
 		// we just transitioned into freefall
-		if ( pm->debugLevel )
+		if ( pm->debugLevel > 1 )
 		{
 			Com_Printf( "%i:lift\n", c_pmove );
 		}
@@ -2244,9 +2401,21 @@ static void PM_GroundTraceMissed( void )
 PM_GroundClimbTrace
 =============
 */
+// ATP - Attachpoints for wallwalking
+// order is important!
+enum {
+	GCT_ATP_MOVEDIRECTION,
+	GCT_ATP_GROUND,
+	GCT_ATP_STEPMOVE,
+	GCT_ATP_UNDERNEATH,
+	GCT_ATP_CEILING,
+	GCT_ATP_FALLBACK,
+	NUM_GCT_ATP
+};
+
 static void PM_GroundClimbTrace( void )
 {
-	vec3_t      surfNormal, movedir, lookdir, point;
+	vec3_t      surfNormal, moveDir, lookDir, point, velocityDir;
 	vec3_t      toAngles, surfAngles;
 	trace_t     trace;
 	int         i;
@@ -2261,63 +2430,70 @@ static void PM_GroundClimbTrace( void )
 	float       ldDOTtCs, d;
 	vec3_t      abc;
 
-	static const vec3_t refNormal = { 0.0f, 0.0f, 1.0f };
+	static const vec3_t refNormal = { 0.0f, 0.0f, 1.0f };      // really the floor's normal. refactor?
 	static const vec3_t ceilingNormal = { 0.0f, 0.0f, -1.0f };
-	static const vec3_t horizontal = { 1.0f, 0.0f, 0.0f }; //arbituary vector perpendicular to refNormal
+	static const vec3_t horizontal = { 1.0f, 0.0f, 0.0f };     // arbitrary vector orthogonal to refNormal
 
 	BG_GetClientNormal( pm->ps, surfNormal );
 
-	//construct a vector which reflects the direction the player is looking wrt the surface normal
-	ProjectPointOnPlane( movedir, pml.forward, surfNormal );
-	VectorNormalize( movedir );
+	// construct a vector which reflects the direction the player is looking at
+	// with respect to the surface normal
+	ProjectPointOnPlane( moveDir, pml.forward, surfNormal );
+	VectorNormalize( moveDir );
 
-	VectorCopy( movedir, lookdir );
+	VectorCopy( moveDir, lookDir );
 
 	if ( pm->cmd.forwardmove < 0 )
 	{
-		VectorNegate( movedir, movedir );
+		VectorNegate( moveDir, moveDir );
 	}
 
-	//allow strafe transitions
+	// allow strafe transitions
 	if ( pm->cmd.rightmove )
 	{
-		VectorCopy( pml.right, movedir );
+		VectorCopy( pml.right, moveDir );
 
 		if ( pm->cmd.rightmove < 0 )
 		{
-			VectorNegate( movedir, movedir );
+			VectorNegate( moveDir, moveDir );
 		}
 	}
 
-	for ( i = 0; i <= 4; i++ )
+	// get direction of velocity
+	VectorCopy( pm->ps->velocity, velocityDir );
+	VectorNormalize( velocityDir );
+
+	// try to attach to a surface
+	for ( i = 0; i <= NUM_GCT_ATP; i++ )
 	{
 		switch ( i )
 		{
-			case 0:
-
-				//we are going to step this frame so skip the transition test
+			case GCT_ATP_MOVEDIRECTION:
+				// we are going to step this frame so skip the transition test
 				if ( PM_PredictStepMove() )
 				{
 					continue;
 				}
 
-				//trace into direction we are moving
-				VectorMA( pm->ps->origin, 0.25f, movedir, point );
+				// trace into direction we are moving
+				VectorMA( pm->ps->origin, 0.25f, moveDir, point );
 				pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask );
+
 				break;
 
-			case 1:
-				//trace straight down anto "ground" surface
-				//mask out CONTENTS_BODY to not hit other players and avoid the camera flipping out when
+			case GCT_ATP_GROUND:
+				// trace straight down onto "ground" surface
+				// mask out CONTENTS_BODY to not hit other players and avoid the camera flipping out when
 				// wallwalkers touch
 				VectorMA( pm->ps->origin, -0.25f, surfNormal, point );
 				pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask & ~CONTENTS_BODY );
+
 				break;
 
-			case 2:
+			case GCT_ATP_STEPMOVE:
 				if ( pml.groundPlane != qfalse && PM_PredictStepMove() )
 				{
-					//step down
+					// step down
 					VectorMA( pm->ps->origin, -STEPSIZE, surfNormal, point );
 					pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask );
 				}
@@ -2328,13 +2504,12 @@ static void PM_GroundClimbTrace( void )
 
 				break;
 
-			case 3:
-
-				//trace "underneath" BBOX so we can traverse angles > 180deg
+			case GCT_ATP_UNDERNEATH:
+				// trace "underneath" BBOX so we can traverse angles > 180deg
 				if ( pml.groundPlane != qfalse )
 				{
 					VectorMA( pm->ps->origin, -16.0f, surfNormal, point );
-					VectorMA( point, -16.0f, movedir, point );
+					VectorMA( point, -16.0f, moveDir, point );
 					pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask );
 				}
 				else
@@ -2344,29 +2519,45 @@ static void PM_GroundClimbTrace( void )
 
 				break;
 
-			case 4:
-				//fall back so we don't have to modify PM_GroundTrace too much
+			case GCT_ATP_CEILING:
+				// attach to the ceiling if we get close enough during a jump that goes roughly upwards
+				if ( velocityDir[ 2 ] > 0.2f ) // acos( 0.2f ) ~= 80°
+				{
+					VectorMA( pm->ps->origin, -16.0f, ceilingNormal, point );
+					pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask & ~CONTENTS_BODY );
+					break;
+				}
+				else
+				{
+					continue;
+				}
+
+			case GCT_ATP_FALLBACK:
+				// fall back so we don't have to modify PM_GroundTrace too much
 				VectorCopy( pm->ps->origin, point );
 				point[ 2 ] = pm->ps->origin[ 2 ] - 0.25f;
 				pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask );
+
 				break;
 		}
 
-		//if we hit something
+		// check if we hit something
 		if ( trace.fraction < 1.0f && !( trace.surfaceFlags & ( SURF_SKY | SURF_SLICK ) ) &&
 		     !( trace.entityNum != ENTITYNUM_WORLD && i != 4 ) )
 		{
-			if ( i == 2 || i == 3 )
+			// check if we attached to a new surface (?)
+			if ( i == GCT_ATP_STEPMOVE || i == GCT_ATP_UNDERNEATH || i == GCT_ATP_CEILING )
 			{
-				if ( i == 2 )
+				// add step event if necessary
+				if ( i == GCT_ATP_STEPMOVE )
 				{
 					PM_StepEvent( pm->ps->origin, trace.endpos, surfNormal );
 				}
 
+				// snap our origin to the new surface
 				VectorCopy( trace.endpos, pm->ps->origin );
 			}
 
-			//calculate a bunch of stuff...
 			CrossProduct( trace.plane.normal, surfNormal, traceCROSSsurf );
 			VectorNormalize( traceCROSSsurf );
 
@@ -2376,7 +2567,7 @@ static void PM_GroundClimbTrace( void )
 			CrossProduct( surfNormal, refNormal, surfCROSSref );
 			VectorNormalize( surfCROSSref );
 
-			//calculate angle between surf and trace
+			// calculate angle between surf and trace
 			traceDOTsurf = DotProduct( trace.plane.normal, surfNormal );
 			traceANGsurf = RAD2DEG( acos( traceDOTsurf ) );
 
@@ -2385,7 +2576,7 @@ static void PM_GroundClimbTrace( void )
 				traceANGsurf -= 180.0f;
 			}
 
-			//calculate angle between trace and ref
+			// calculate angle between trace and ref
 			traceDOTref = DotProduct( trace.plane.normal, refNormal );
 			traceANGref = RAD2DEG( acos( traceDOTref ) );
 
@@ -2394,7 +2585,7 @@ static void PM_GroundClimbTrace( void )
 				traceANGref -= 180.0f;
 			}
 
-			//calculate angle between surf and ref
+			// calculate angle between surf and ref
 			surfDOTref = DotProduct( surfNormal, refNormal );
 			surfANGref = RAD2DEG( acos( surfDOTref ) );
 
@@ -2403,13 +2594,14 @@ static void PM_GroundClimbTrace( void )
 				surfANGref -= 180.0f;
 			}
 
-			//if the trace result and old surface normal are different then we must have transided to a new
-			//surface... do some stuff...
+			// if the trace result and old surface normal are different then we must have transided to a new surface
 			if ( !VectorCompareEpsilon( trace.plane.normal, surfNormal, eps ) )
 			{
-				//if the trace result or the old vector is not the floor or ceiling correct the YAW angle
-				if ( !VectorCompareEpsilon( trace.plane.normal, refNormal, eps ) && !VectorCompareEpsilon( surfNormal, refNormal, eps ) &&
-				     !VectorCompareEpsilon( trace.plane.normal, ceilingNormal, eps ) && !VectorCompareEpsilon( surfNormal, ceilingNormal, eps ) )
+				// if the trace result or the old vector is not the floor or ceiling correct the YAW angle
+				if ( !VectorCompareEpsilon( trace.plane.normal, refNormal, eps ) &&
+				     !VectorCompareEpsilon( surfNormal, refNormal, eps ) &&
+				     !VectorCompareEpsilon( trace.plane.normal, ceilingNormal, eps ) &&
+				     !VectorCompareEpsilon( surfNormal, ceilingNormal, eps ) )
 				{
 					//behold the evil mindfuck from hell
 					//it has fucked mind like nothing has fucked mind before
@@ -2442,28 +2634,28 @@ static void PM_GroundClimbTrace( void )
 					pm->ps->delta_angles[ YAW ] -= rTtANGrTsTt;
 				}
 
-				//construct a plane dividing the surf and trace normals
+				// construct a plane dividing the surf and trace normals
 				CrossProduct( traceCROSSsurf, surfNormal, abc );
 				VectorNormalize( abc );
 				d = DotProduct( abc, pm->ps->origin );
 
-				//construct a point representing where the player is looking
-				VectorAdd( pm->ps->origin, lookdir, point );
+				// construct a point representing where the player is looking
+				VectorAdd( pm->ps->origin, lookDir, point );
 
-				//check whether point is on one side of the plane, if so invert the correction angle
+				// check whether point is on one side of the plane, if so invert the correction angle
 				if ( ( abc[ 0 ] * point[ 0 ] + abc[ 1 ] * point[ 1 ] + abc[ 2 ] * point[ 2 ] - d ) > 0 )
 				{
 					traceANGsurf = -traceANGsurf;
 				}
 
-				//find the . product of the lookdir and traceCROSSsurf
-				if ( ( ldDOTtCs = DotProduct( lookdir, traceCROSSsurf ) ) < 0.0f )
+				// find the . product of the lookdir and traceCROSSsurf
+				if ( ( ldDOTtCs = DotProduct( lookDir, traceCROSSsurf ) ) < 0.0f )
 				{
 					VectorInverse( traceCROSSsurf );
-					ldDOTtCs = DotProduct( lookdir, traceCROSSsurf );
+					ldDOTtCs = DotProduct( lookDir, traceCROSSsurf );
 				}
 
-				//set the correction angle
+				// set the correction angle
 				traceANGsurf *= 1.0f - ldDOTtCs;
 
 				if ( !( pm->ps->persistant[ PERS_STATE ] & PS_WALLCLIMBINGFOLLOW ) )
@@ -2472,17 +2664,39 @@ static void PM_GroundClimbTrace( void )
 					pm->ps->delta_angles[ PITCH ] -= ANGLE2SHORT( traceANGsurf );
 				}
 
-				//transition from wall to ceiling
-				//normal for subsequent viewangle rotations
+				// transition to ceiling
+				// calculate axis for subsequent viewangle rotations
 				if ( VectorCompareEpsilon( trace.plane.normal, ceilingNormal, eps ) )
 				{
-					CrossProduct( surfNormal, trace.plane.normal, pm->ps->grapplePoint );
-					VectorNormalize( pm->ps->grapplePoint );
+					if ( fabs( DotProduct( surfNormal, trace.plane.normal ) ) < ( 1.0f - eps ) )
+					{
+						// we had a smooth transition, rotate along old surface x new surface
+						CrossProduct( surfNormal, trace.plane.normal, pm->ps->grapplePoint );
+						VectorNormalize( pm->ps->grapplePoint ); // necessary?
+					}
+					else
+					{
+						// rotate view around itself
+						VectorCopy( pml.forward, pm->ps->grapplePoint );
+						pm->ps->grapplePoint[ 2 ] = 0.0f;
+
+						// sanity check grapplePoint, use an arbitrary axis as fallback
+						if ( VectorLength( pm->ps->grapplePoint ) < eps )
+						{
+							VectorCopy( horizontal, pm->ps->grapplePoint );
+						}
+						else
+						{
+							VectorNormalize( pm->ps->grapplePoint );
+						}
+					}
+
+					// we are now on the ceiling
 					pm->ps->eFlags |= EF_WALLCLIMBCEILING;
 				}
 
-				//transition from ceiling to wall
-				//we need to do some different angle correction here cos GPISROTVEC
+				// transition from ceiling
+				// we need to do some different angle correction here because grapplePoint is a rotation axis
 				if ( VectorCompareEpsilon( surfNormal, ceilingNormal, eps ) )
 				{
 					vectoangles( trace.plane.normal, toAngles );
@@ -2492,25 +2706,25 @@ static void PM_GroundClimbTrace( void )
 				}
 			}
 
+			// we have ground
 			pml.groundTrace = trace;
 
-			//so everything knows where we're wallclimbing (ie client side)
+			// we are climbing on a wall
 			pm->ps->eFlags |= EF_WALLCLIMB;
 
-			//if we're not stuck to the ceiling then set grapplePoint to be a surface normal
+			// if we're not at the ceiling, set grapplePoint to be a surface normal
 			if ( !VectorCompareEpsilon( trace.plane.normal, ceilingNormal, eps ) )
 			{
-				//so we know what surface we're stuck to
 				VectorCopy( trace.plane.normal, pm->ps->grapplePoint );
 				pm->ps->eFlags &= ~EF_WALLCLIMBCEILING;
 			}
 
-			//IMPORTANT: break out of the for loop if we've hit something
+			// we hit something, so stop searching for a surface to attach to
 			break;
 		}
 		else if ( trace.allsolid )
 		{
-			// do something corrective if the trace starts in a solid...
+			// do something corrective if the trace starts in a solid
 			if ( !PM_CorrectAllSolid( &trace ) )
 			{
 				return;
@@ -2518,52 +2732,67 @@ static void PM_GroundClimbTrace( void )
 		}
 	}
 
+	// check if we are in free wall (the last trace didn't hit)
 	if ( trace.fraction >= 1.0f )
 	{
-		// if the trace didn't hit anything, we are in free fall
 		PM_GroundTraceMissed();
 		pml.groundPlane = qfalse;
 		pml.walking = qfalse;
 
-		//just transitioned from ceiling to floor... apply delta correction
+		// if we were wallwalking the last frame, apply delta correction
 		if( pm->ps->eFlags & EF_WALLCLIMB || pm->ps->eFlags & EF_WALLCLIMBCEILING)
 		{
-			vec3_t  forward, rotated, angles;
+			vec3_t forward, rotated, angles;
 
-			if(!(pm->ps->eFlags & EF_WALLCLIMBCEILING))
-				VectorCopy(pm->ps->grapplePoint,surfNormal);
-			else
-				VectorSet( surfNormal, 0, 0, -1 );
-
-			//only correct if we were on a ceiling
-			if(surfNormal[2] < 0)
+			if ( pm->ps->eFlags & EF_WALLCLIMBCEILING )
 			{
-				//The actual problem is with BG_RotateAxis()
-				//The rotation applied there causes our view to turn around
-				//We correct this here
+				// we were walking on the ceiling
+				VectorSet( surfNormal, 0, 0, -1 );
+			}
+			else
+			{
+				// we were walking on a wall or the floor
+				VectorCopy( pm->ps->grapplePoint, surfNormal );
+			}
+
+			// delta correction is only necessary if our view was upside down
+			// the actual problem is with BG_RotateAxis()
+			// the rotation applied there causes our view to turn around
+			if ( surfNormal[ 2 ] < 0 )
+			{
 				vec3_t xNormal;
+
 				AngleVectors( pm->ps->viewangles, forward, NULL, NULL );
-				if(pm->ps->eFlags & EF_WALLCLIMBCEILING)
+
+				if ( pm->ps->eFlags & EF_WALLCLIMBCEILING )
 				{
-					VectorCopy(pm->ps->grapplePoint, xNormal);
+					// we were walking on the ceiling
+					VectorCopy( pm->ps->grapplePoint, xNormal );
 				}
-				else {
+				else
+				{
+					// we were walking on a wall
 					CrossProduct( surfNormal, refNormal, xNormal );
 					VectorNormalize( xNormal );
 				}
-				RotatePointAroundVector(rotated, xNormal, forward, 180);
+
+				RotatePointAroundVector( rotated, xNormal, forward, 180 );
 				vectoangles( rotated, angles );
 				pm->ps->delta_angles[ YAW ] -= ANGLE2SHORT( angles[ YAW ] - pm->ps->viewangles[ YAW ] );
 			}
-		}
-		pm->ps->eFlags &= ~EF_WALLCLIMB;
-		pm->ps->eFlags &= ~EF_WALLCLIMBCEILING;
 
-		//we get very bizarre effects if we don't do this :0
+			// we are not wallwalking anymore
+			pm->ps->eFlags &= ~EF_WALLCLIMB;
+			pm->ps->eFlags &= ~EF_WALLCLIMBCEILING;
+		}
+
+		// rotate view back to horizontal (?)
 		VectorCopy( refNormal, pm->ps->grapplePoint );
+
 		return;
 	}
 
+	// we are on a surface
 	pml.groundPlane = qtrue;
 	pml.walking = qtrue;
 
@@ -2575,9 +2804,6 @@ static void PM_GroundClimbTrace( void )
 	}
 
 	pm->ps->groundEntityNum = trace.entityNum;
-
-	// don't reset the z velocity for slopes
-//  pm->ps->velocity[2] = 0;
 
 	PM_AddTouchEnt( trace.entityNum );
 }
@@ -2731,7 +2957,7 @@ static void PM_GroundTrace( void )
 	// check if getting thrown off the ground
 	if ( pm->ps->velocity[ 2 ] > 0.0f && DotProduct( pm->ps->velocity, trace.plane.normal ) > 10.0f )
 	{
-		if ( pm->debugLevel )
+		if ( pm->debugLevel > 1 )
 		{
 			Com_Printf( "%i:kickoff\n", c_pmove );
 		}
@@ -2773,7 +2999,7 @@ static void PM_GroundTrace( void )
 	// slopes that are too steep will not be considered onground
 	if ( trace.plane.normal[ 2 ] < MIN_WALK_NORMAL )
 	{
-		if ( pm->debugLevel )
+		if ( pm->debugLevel > 1 )
 		{
 			Com_Printf( "%i:steep\n", c_pmove );
 		}
@@ -2799,13 +3025,13 @@ static void PM_GroundTrace( void )
 	if ( pm->ps->groundEntityNum == ENTITYNUM_NONE )
 	{
 		// just hit the ground
-		if ( pm->debugLevel )
+		if ( pm->debugLevel > 1 )
 		{
 			Com_Printf( "%i:Land\n", c_pmove );
 		}
 
-		// communicate the fall velocity to the server
-		pm->pmext->fallVelocity = pml.previous_velocity[ 2 ];
+		// communicate the impact velocity to the server
+		VectorCopy( pml.previous_velocity, pm->pmext->fallImpactVelocity );
 
 		PM_Land();
 		if ( BG_ClassHasAbility( pm->ps->stats[ STAT_CLASS ], SCA_TAKESFALLDAMAGE ) )
@@ -2817,7 +3043,7 @@ static void PM_GroundTrace( void )
 	pm->ps->groundEntityNum = trace.entityNum;
 
 	// don't reset the z velocity for slopes
-//  pm->ps->velocity[2] = 0;
+	//pm->ps->velocity[2] = 0;
 
 	PM_AddTouchEnt( trace.entityNum );
 }
@@ -3406,13 +3632,23 @@ static void PM_Weapon( void )
 		return;
 	}
 
-	// Charging for a pounce or canceling a pounce
+	// Pounce cooldown (advanced dretch)
+	if ( pm->ps->weapon == WP_ALEVEL0_UPG )
+	{
+		pm->ps->stats[ STAT_MISC ] -= pml.msec;
+
+		if ( pm->ps->stats[ STAT_MISC ] < 0 )
+		{
+			pm->ps->stats[ STAT_MISC ] = 0;
+		}
+	}
+
+	// Charging for a pounce or canceling a pounce (dragoon)
 	if ( pm->ps->weapon == WP_ALEVEL3 || pm->ps->weapon == WP_ALEVEL3_UPG )
 	{
 		int max;
 
-		max = pm->ps->weapon == WP_ALEVEL3 ? LEVEL3_POUNCE_TIME :
-		      LEVEL3_POUNCE_TIME_UPG;
+		max = pm->ps->weapon == WP_ALEVEL3 ? LEVEL3_POUNCE_TIME : LEVEL3_POUNCE_TIME_UPG;
 
 		if ( usercmdButtonPressed( pm->cmd.buttons, BUTTON_ATTACK2 ) )
 		{
@@ -3732,6 +3968,7 @@ static void PM_Weapon( void )
 	switch ( pm->ps->weapon )
 	{
 		case WP_ALEVEL0:
+		case WP_ALEVEL0_UPG:
 			//venom is only autohit
 			return;
 
@@ -3883,6 +4120,7 @@ static void PM_Weapon( void )
 		switch ( pm->ps->weapon )
 		{
 			case WP_ALEVEL0:
+			case WP_ALEVEL0_UPG:
 				pm->ps->generic1 = WPM_PRIMARY;
 				PM_AddEvent( EV_FIRE_WEAPON );
 				addTime = BG_Weapon( pm->ps->weapon )->repeatRate1;
@@ -4322,10 +4560,10 @@ void PM_UpdateViewAngles( playerState_t *ps, const usercmd_t *cmd )
 	}
 }
 
-#if defined(Q3_VM) || ( defined(_WIN32) && !defined(__MINGW32__) )
+#ifdef Q3_VM
 static float roundf( float v )
 {
-	return (int)( v + ( v < 0 ? -0.5 : 0.5 ) );
+	return floorf( v + 0.5 );
 }
 #endif
 
@@ -4535,7 +4773,6 @@ void PmoveSingle( pmove_t *pmove )
 	}
 
 	PM_DropTimers();
-	PM_CheckDodge();
 
 	if ( pm->ps->pm_type == PM_JETPACK )
 	{

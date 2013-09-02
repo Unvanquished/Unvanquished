@@ -208,7 +208,9 @@ void G_SetClientSound( gentity_t *ent )
 
 /*
 ==============
-ClientShove
+GetClientMass
+
+TODO: Define player class masses in config files
 ==============
 */
 static int GetClientMass( gentity_t *ent )
@@ -234,6 +236,11 @@ static int GetClientMass( gentity_t *ent )
 	return entMass;
 }
 
+/*
+==============
+ClientShove
+==============
+*/
 static void ClientShove( gentity_t *ent, gentity_t *victim )
 {
 	vec3_t dir, push;
@@ -342,6 +349,11 @@ void ClientImpacts( gentity_t *ent, pmove_t *pm )
 	trace_t   trace;
 	gentity_t *other;
 
+	if( !ent->client )
+	{
+		return;
+	}
+
 	// clear a fake trace struct for touch function
 	memset( &trace, 0, sizeof( trace ) );
 
@@ -358,15 +370,18 @@ void ClientImpacts( gentity_t *ent, pmove_t *pm )
 			other->client->unlaggedCalc.used = qfalse;
 		}
 
-		// tyrant impact attacks
+		// deal impact and weight damage
+		G_ImpactAttack( ent, other );
+		G_WeightAttack( ent, other );
+
+		// tyrant trample
 		if ( ent->client->ps.weapon == WP_ALEVEL4 )
 		{
 			G_ChargeAttack( ent, other );
-			G_CrushAttack( ent, other );
 		}
 
 		// shove players
-		if ( ent->client && other->client )
+		if ( other->client )
 		{
 			ClientShove( ent, other );
 
@@ -499,6 +514,7 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 	gclient_t *client;
 	int       clientNum;
 	qboolean  attack1, attack3, following, queued;
+	team_t    team;
 
 	client = ent->client;
 
@@ -532,13 +548,10 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 	}
 
 	// Check to see if we are in the spawn queue
-	if ( client->pers.teamSelection == TEAM_ALIENS )
+	team = client->pers.teamSelection;
+	if ( team == TEAM_ALIENS || team == TEAM_HUMANS )
 	{
-		queued = G_SearchSpawnQueue( &level.alienSpawnQueue, ent - g_entities );
-	}
-	else if ( client->pers.teamSelection == TEAM_HUMANS )
-	{
-		queued = G_SearchSpawnQueue( &level.humanSpawnQueue, ent - g_entities );
+		queued = G_SearchSpawnQueue( &level.team[ team ].spawnQueue, ent - g_entities );
 	}
 	else
 	{
@@ -548,19 +561,16 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 	// Wants to get out of spawn queue
 	if ( attack1 && queued )
 	{
+		team_t team;
 		if ( client->sess.spectatorState == SPECTATOR_FOLLOW )
 		{
 			G_StopFollowing( ent );
 		}
 
-		if ( client->ps.stats[ STAT_TEAM ] == TEAM_ALIENS )
-		{
-			G_RemoveFromSpawnQueue( &level.alienSpawnQueue, client->ps.clientNum );
-		}
-		else if ( client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
-		{
-			G_RemoveFromSpawnQueue( &level.humanSpawnQueue, client->ps.clientNum );
-		}
+		team = client->ps.stats[ STAT_TEAM ];
+		//be sure that only valid team "numbers" can be used.
+		assert(team == TEAM_ALIENS || team == TEAM_HUMANS);
+		G_RemoveFromSpawnQueue( &level.team[ team ].spawnQueue, client->ps.clientNum );
 
 		client->pers.classSelection = PCL_NONE;
 		client->pers.humanItemSelection = WP_NONE;
@@ -640,18 +650,11 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 		// Set the queue position and spawn count for the client side
 		if ( client->ps.pm_flags & PMF_QUEUED )
 		{
-			if ( client->ps.stats[ STAT_TEAM ] == TEAM_ALIENS )
-			{
-				client->ps.persistant[ PERS_QUEUEPOS ] =
-				  G_GetPosInSpawnQueue( &level.alienSpawnQueue, client->ps.clientNum );
-				client->ps.persistant[ PERS_SPAWNS ] = level.numAlienSpawns;
-			}
-			else if ( client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
-			{
-				client->ps.persistant[ PERS_QUEUEPOS ] =
-				  G_GetPosInSpawnQueue( &level.humanSpawnQueue, client->ps.clientNum );
-				client->ps.persistant[ PERS_SPAWNS ] = level.numHumanSpawns;
-			}
+			team_t team = client->ps.stats[ STAT_TEAM ];
+			/* team must exist, or there will be a sigsegv */
+			assert(team == TEAM_HUMANS || team == TEAM_ALIENS);
+			client->ps.persistant[ PERS_SPAWNS ] = level.team[ team ].numSpawns;
+			client->ps.persistant[ PERS_QUEUEPOS ] = G_GetPosInSpawnQueue( &level.team[ team ].spawnQueue, client->ps.clientNum );
 		}
 	}
 }
@@ -715,6 +718,74 @@ qboolean ClientInactivityTimer( gentity_t *ent )
 	return qtrue;
 }
 
+static void G_ReplenishHumanHealth( gentity_t *self )
+{
+	gclient_t *client;
+	int       remainingStartupTime, clientNum;
+
+	if ( !self )
+	{
+		return;
+	}
+
+	client = self->client;
+
+	if ( !client || client->pers.teamSelection != TEAM_HUMANS )
+	{
+		return;
+	}
+
+	// check if medikit is active
+	if ( !( client->ps.stats[ STAT_STATE ] & SS_HEALING_2X ) )
+	{
+		return;
+	}
+
+	// stop if client is fully healed
+	if ( self->health >= client->ps.stats[ STAT_MAX_HEALTH ] )
+	{
+		self->health = client->ps.stats[ STAT_MAX_HEALTH ];
+		client->medKitHealthToRestore = 0;
+		client->ps.stats[ STAT_STATE ] &= ~SS_HEALING_2X;
+
+		// clear rewards array
+		for ( clientNum = 0; clientNum < level.maxclients; clientNum++ )
+		{
+			self->credits[ clientNum ] = 0;
+		}
+
+		return;
+	}
+
+	// stop if client is dead or medikit is depleted
+	if ( client->medKitHealthToRestore <= 0 || client->ps.pm_type == PM_DEAD )
+	{
+		client->medKitHealthToRestore = 0;
+		client->ps.stats[ STAT_STATE ] &= ~SS_HEALING_2X;
+
+		return;
+	}
+
+	remainingStartupTime = MEDKIT_STARTUP_TIME - ( level.time - client->lastMedKitTime );
+
+	// increase heal rate during startup
+	if ( remainingStartupTime > 0 )
+	{
+		if ( level.time < client->medKitIncrementTime )
+		{
+			return;
+		}
+		else
+		{
+			client->medKitIncrementTime = level.time + ( remainingStartupTime / MEDKIT_STARTUP_SPEED );
+		}
+	}
+
+	// heal
+	client->medKitHealthToRestore--;
+	self->health++;
+}
+
 /*
 ==================
 ClientTimerActions
@@ -724,13 +795,14 @@ Actions that happen once a second
 */
 void ClientTimerActions( gentity_t *ent, int msec )
 {
-	gclient_t *client;
-	usercmd_t *ucmd;
-	int       aForward, aRight;
-	qboolean  walking = qfalse, stopped = qfalse,
-	          crouched = qfalse, jumping = qfalse,
-	          strafing = qfalse;
-	int       i;
+	gclient_t   *client;
+	usercmd_t   *ucmd;
+	int         aForward, aRight;
+	qboolean    walking = qfalse, stopped = qfalse,
+	            crouched = qfalse, jumping = qfalse,
+	            strafing = qfalse;
+	int         i;
+	buildable_t buildable;
 
 	ucmd = &ent->client->pers.cmd;
 
@@ -819,9 +891,10 @@ void ClientTimerActions( gentity_t *ent, int msec )
 			case WP_ABUILD:
 			case WP_ABUILD2:
 			case WP_HBUILD:
+				buildable = client->ps.stats[ STAT_BUILDABLE ] & ~SB_VALID_TOGGLEBIT;
 
 				// Set validity bit on buildable
-				if ( ( client->ps.stats[ STAT_BUILDABLE ] & ~SB_VALID_TOGGLEBIT ) > BA_NONE )
+				if ( buildable > BA_NONE )
 				{
 					vec3_t forward, aimDir, normal;
 					vec3_t dummy, dummy2;
@@ -835,14 +908,18 @@ void ClientTimerActions( gentity_t *ent, int msec )
 
 					dist = BG_Class( ent->client->ps.stats[ STAT_CLASS ] )->buildDist * DotProduct( forward, aimDir );
 
-					if ( G_CanBuild( ent, client->ps.stats[ STAT_BUILDABLE ] & ~SB_VALID_TOGGLEBIT,
-					                 dist, dummy, dummy2, &dummy3 ) == IBE_NONE )
+					if ( G_CanBuild( ent, buildable, dist, dummy, dummy2, &dummy3 ) == IBE_NONE )
 					{
 						client->ps.stats[ STAT_BUILDABLE ] |= SB_VALID_TOGGLEBIT;
 					}
 					else
 					{
 						client->ps.stats[ STAT_BUILDABLE ] &= ~SB_VALID_TOGGLEBIT;
+					}
+
+					if ( buildable == BA_H_DRILL || buildable == BA_A_LEECH )
+					{
+						client->ps.stats[ STAT_PREDICTION ] = G_RGSPredictEfficiency( dummy );
 					}
 
 					// Let the client know which buildables will be removed by building
@@ -872,47 +949,8 @@ void ClientTimerActions( gentity_t *ent, int msec )
 				break;
 		}
 
-		if ( ent->client->pers.teamSelection == TEAM_HUMANS &&
-		     ( client->ps.stats[ STAT_STATE ] & SS_HEALING_2X ) )
-		{
-			int remainingStartupTime = MEDKIT_STARTUP_TIME - ( level.time - client->lastMedKitTime );
-
-			if ( remainingStartupTime < 0 )
-			{
-				if ( ent->health < ent->client->ps.stats[ STAT_MAX_HEALTH ] &&
-				     ent->client->medKitHealthToRestore &&
-				     ent->client->ps.pm_type != PM_DEAD )
-				{
-					ent->client->medKitHealthToRestore--;
-					ent->health++;
-				}
-				else
-				{
-					ent->client->ps.stats[ STAT_STATE ] &= ~SS_HEALING_2X;
-				}
-			}
-			else
-			{
-				if ( ent->health < ent->client->ps.stats[ STAT_MAX_HEALTH ] &&
-				     ent->client->medKitHealthToRestore &&
-				     ent->client->ps.pm_type != PM_DEAD )
-				{
-					//partial increase
-					if ( level.time > client->medKitIncrementTime )
-					{
-						ent->client->medKitHealthToRestore--;
-						ent->health++;
-
-						client->medKitIncrementTime = level.time +
-						                              ( remainingStartupTime / MEDKIT_STARTUP_SPEED );
-					}
-				}
-				else
-				{
-					ent->client->ps.stats[ STAT_STATE ] &= ~SS_HEALING_2X;
-				}
-			}
-		}
+		// replenish human health
+		G_ReplenishHumanHealth( ent );
 	}
 
 	while ( client->time1000 >= 1000 )
@@ -973,16 +1011,13 @@ void ClientTimerActions( gentity_t *ent, int msec )
 		     client->pers.aliveSeconds % g_freeFundPeriod.integer == 0 )
 		{
 			// Give clients some credit periodically
-			if ( G_TimeTilSuddenDeath() > 0 )
+			if ( client->ps.stats[ STAT_TEAM ] == TEAM_ALIENS )
 			{
-				if ( client->ps.stats[ STAT_TEAM ] == TEAM_ALIENS )
-				{
-					G_AddCreditToClient( client, FREEKILL_ALIEN, qtrue );
-				}
-				else if ( client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
-				{
-					G_AddCreditToClient( client, FREEKILL_HUMAN, qtrue );
-				}
+				G_AddCreditToClient( client, FREEKILL_ALIEN, qtrue );
+			}
+			else if ( client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
+			{
+				G_AddCreditToClient( client, FREEKILL_HUMAN, qtrue );
 			}
 		}
 	}
@@ -994,11 +1029,11 @@ void ClientTimerActions( gentity_t *ent, int msec )
 		if ( ent->client->ps.weapon == WP_ABUILD ||
 		     ent->client->ps.weapon == WP_ABUILD2 )
 		{
-			AddScore( ent, ALIEN_BUILDER_SCOREINC );
+			G_AddCreditsToScore( ent, ALIEN_BUILDER_SCOREINC );
 		}
 		else if ( ent->client->ps.weapon == WP_HBUILD )
 		{
-			AddScore( ent, HUMAN_BUILDER_SCOREINC );
+			G_AddCreditsToScore( ent, HUMAN_BUILDER_SCOREINC );
 		}
 
 		// Give score to basis that healed other aliens
@@ -1006,11 +1041,11 @@ void ClientTimerActions( gentity_t *ent, int msec )
 		{
 			if ( client->ps.weapon == WP_ALEVEL1 )
 			{
-				AddScore( ent, LEVEL1_REGEN_SCOREINC );
+				G_AddCreditsToScore( ent, LEVEL1_REGEN_SCOREINC );
 			}
 			else if ( client->ps.weapon == WP_ALEVEL1_UPG )
 			{
-				AddScore( ent, LEVEL1_UPG_REGEN_SCOREINC );
+				G_AddCreditsToScore( ent, LEVEL1_UPG_REGEN_SCOREINC );
 			}
 
 			ent->client->pers.hasHealed = qfalse;
@@ -1077,10 +1112,10 @@ void ClientEvents( gentity_t *ent, int oldEventSequence )
 	vec3_t    dir;
 	vec3_t    point, mins;
 	float     fallDistance;
-	class_t   class;
+	class_t   pcl;
 
 	client = ent->client;
-	class = client->ps.stats[ STAT_CLASS ];
+	pcl = client->ps.stats[ STAT_CLASS ];
 
 	if ( oldEventSequence < client->ps.eventSequence - MAX_EVENTS )
 	{
@@ -1112,11 +1147,11 @@ void ClientEvents( gentity_t *ent, int oldEventSequence )
 					fallDistance = 1.0f;
 				}
 
-				damage = ( int )( ( float ) BG_Class( class )->health *
-				                  BG_Class( class )->fallDamage * fallDistance );
+				damage = ( int )( ( float ) BG_Class( pcl )->health *
+				                  BG_Class( pcl )->fallDamage * fallDistance );
 
 				VectorSet( dir, 0, 0, 1 );
-				BG_ClassBoundingBox( class, mins, NULL, NULL, NULL, NULL );
+				BG_ClassBoundingBox( pcl, mins, NULL, NULL, NULL, NULL );
 				mins[ 0 ] = mins[ 1 ] = 0.0f;
 				VectorAdd( client->ps.origin, mins, point );
 
@@ -1557,9 +1592,181 @@ static void G_UnlaggedDetectCollisions( gentity_t *ent )
 	G_UnlaggedOff();
 }
 
+
+/*
+================
+G_FindHealth
+
+Attempt to find a health source for self.
+
+Returns SS_HEALING_ACTIVE when on creep,
+        SS_HEALING_2X when there is a source for double healing,
+        SS_HEALING_3X when there is a source for triple healing
+        or any combination of these flags, if more than one is true.
+
+Sets creepTime on self if appropriate.
+================
+*/
+static int G_FindHealth( gentity_t *self )
+{
+	int entityList[ MAX_GENTITIES ];
+	int i, num, ret = 0;
+	float distance;
+	vec3_t range, mins, maxs;
+	gclient_t *client = self->client;
+
+	if ( !client )
+	{
+		return 0;
+	}
+
+	VectorSet( range, CREEP_BASESIZE, CREEP_BASESIZE, CREEP_BASESIZE );
+	VectorAdd( client->ps.origin, range, maxs );
+	VectorSubtract( client->ps.origin, range, mins );
+
+	num = trap_EntitiesInBox( mins, maxs, entityList, MAX_GENTITIES );
+
+	for ( i = 0; i < num; ++i )
+	{
+		gentity_t *boost = &g_entities[ entityList[ i ] ];
+
+		distance = Distance( boost->s.origin, self->s.origin );
+
+		if ( boost->s.eType == ET_PLAYER && boost->client &&
+		     boost->client->pers.teamSelection == client->pers.teamSelection &&
+		     boost->health > 0 && distance < REGEN_BOOST_RANGE )
+		{
+			if ( boost->client->ps.stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL1 )
+			{
+				ret |= SS_HEALING_2X;
+			}
+			else if ( boost->client->ps.stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL1_UPG )
+			{
+				ret |= SS_HEALING_3X;
+			}
+		}
+		else if ( boost->s.eType == ET_BUILDABLE && boost->spawned && boost->health > 0 &&
+		          boost->powered && boost->buildableTeam == client->pers.teamSelection )
+		{
+			if ( ( boost->s.modelindex == BA_A_SPAWN || boost->s.modelindex == BA_A_OVERMIND ) && ( int )distance < CREEP_BASESIZE )
+			{
+				ret |= SS_HEALING_ACTIVE;
+			}
+			else if ( boost->s.modelindex == BA_A_BOOSTER && distance < REGEN_BOOST_RANGE )
+			{
+				ret |= SS_HEALING_3X;
+			}
+		}
+	}
+
+	if ( ret )
+	{
+		self->creepTime = level.time;
+	}
+
+	return ret;
+}
+
+static void G_ReplenishAlienHealth( gentity_t *self )
+{
+	gclient_t *client;
+	float     regenBaseRate, modifier;
+	int       foundHealthSource, count, interval, clientNum;
+
+	client = self->client;
+
+	// Check if client is an alien and has the healing ability
+	if ( !client || client->pers.teamSelection != TEAM_ALIENS ||
+	     self->health <= 0 || level.surrenderTeam == client->pers.teamSelection )
+	{
+		return;
+	}
+
+	regenBaseRate = BG_Class( client->ps.stats[ STAT_CLASS ] )->regenRate;
+
+	if ( regenBaseRate == 0 )
+	{
+		return;
+	}
+
+	foundHealthSource = G_FindHealth( self );
+
+	if ( self->nextRegenTime < level.time )
+	{
+		// Clear healing state, then set it accordingly
+		client->ps.stats[ STAT_STATE ] &= ~( SS_HEALING_ACTIVE | SS_HEALING_2X | SS_HEALING_3X );
+
+		if ( !foundHealthSource )
+		{
+			if ( g_alienOffCreepRegenHalfLife.value < 1 )
+			{
+				modifier = ALIEN_REGEN_NOCREEP_MOD;
+			}
+			else
+			{
+				// Exponentially decrease healing rate when not on creep. ln(2) ~= 0.6931472
+				modifier = exp( ( 0.6931472f / ( 1000.0f * g_alienOffCreepRegenHalfLife.value ) ) * ( self->creepTime - level.time ) );
+
+				// Prevent possible overflow/division by zero and keep a minimum heal rate
+				if ( modifier < 0.1f )
+				{
+					modifier = 0.1f;
+				}
+			}
+		}
+		else if ( foundHealthSource & SS_HEALING_3X )
+		{
+			modifier = 3.0f;
+			client->ps.stats[ STAT_STATE ] |= ( SS_HEALING_ACTIVE | SS_HEALING_3X );
+		}
+		else if ( foundHealthSource & SS_HEALING_2X )
+		{
+			modifier = 2.0f;
+			client->ps.stats[ STAT_STATE ] |= ( SS_HEALING_ACTIVE | SS_HEALING_2X );
+		}
+		else if ( foundHealthSource & SS_HEALING_ACTIVE )
+		{
+			modifier = 1.0f;
+			client->ps.stats[ STAT_STATE ] |= SS_HEALING_ACTIVE;
+		}
+
+		interval = ( int )( 1000.0f / ( regenBaseRate * modifier ) );
+
+		// If recovery interval is less than frametime, compensate
+		count = MAX( 1 + ( level.time - self->nextRegenTime ) / interval, 0 );
+
+		self->health += count;
+
+		// If at full health, clear damage counters
+		if ( self->health >= client->ps.stats[ STAT_MAX_HEALTH ] )
+		{
+			self->health = client->ps.stats[ STAT_MAX_HEALTH ];
+
+			for ( clientNum = 0; clientNum < MAX_CLIENTS; clientNum++ )
+			{
+				self->credits[ clientNum ] = 0;
+			}
+		}
+
+		self->nextRegenTime = level.time + count * interval;
+	}
+	else if ( !( client->ps.stats[ STAT_STATE ] & SS_HEALING_ACTIVE ) && foundHealthSource )
+	{
+		client->ps.stats[ STAT_STATE ] |= SS_HEALING_ACTIVE;
+
+		// Don't immediately start regeneration to prevent players from quickly
+		// hopping in and out of a creep area to increase their heal rate
+		self->nextRegenTime = level.time + ( 1000 / regenBaseRate );
+	}
+	else if ( ( client->ps.stats[ STAT_STATE ] & SS_HEALING_ACTIVE ) && !foundHealthSource )
+	{
+		client->ps.stats[ STAT_STATE ] &= ~( SS_HEALING_ACTIVE );
+	}
+}
+
 /*
 ==============
-ClientThink
+ClientThink_real
 
 This will be called once for each client frame, which will
 usually be a couple times for each server frame on fast clients.
@@ -1790,112 +1997,9 @@ void ClientThink_real( gentity_t *ent )
 	}
 
 	// Replenish alien health
-	if ( level.surrenderTeam != client->pers.teamSelection &&
-	     ent->nextRegenTime >= 0 && ent->nextRegenTime < level.time )
-	{
-		float regenRate =
-		  BG_Class( ent->client->ps.stats[ STAT_CLASS ] )->regenRate;
+	G_ReplenishAlienHealth( ent );
 
-		if ( ent->health <= 0 || ent->nextRegenTime < 0 || regenRate == 0 )
-		{
-			ent->nextRegenTime = -1; // no regen
-		}
-		else
-		{
-			int    entityList[ MAX_GENTITIES ];
-			int    i, num;
-			int    count, interval;
-			vec3_t range, mins, maxs;
-			float  modifier = 1.0f;
-
-			VectorSet( range, REGEN_BOOST_RANGE, REGEN_BOOST_RANGE,
-			           REGEN_BOOST_RANGE );
-			VectorAdd( client->ps.origin, range, maxs );
-			VectorSubtract( client->ps.origin, range, mins );
-
-			num = trap_EntitiesInBox( mins, maxs, entityList, MAX_GENTITIES );
-
-			for ( i = 0; i < num; i++ )
-			{
-				gentity_t *boost = &g_entities[ entityList[ i ] ];
-
-				if ( Distance( client->ps.origin, boost->s.origin ) > REGEN_BOOST_RANGE )
-				{
-					continue;
-				}
-
-				if ( modifier < BOOSTER_REGEN_MOD && boost->s.eType == ET_BUILDABLE &&
-				     boost->s.modelindex == BA_A_BOOSTER && boost->spawned &&
-				     boost->health > 0 && boost->powered )
-				{
-					modifier = BOOSTER_REGEN_MOD;
-					continue;
-				}
-
-				if ( boost->s.eType == ET_PLAYER && boost->client &&
-				     boost->client->pers.teamSelection ==
-				     ent->client->pers.teamSelection && boost->health > 0 )
-				{
-					class_t  class = boost->client->ps.stats[ STAT_CLASS ];
-					qboolean didBoost = qfalse;
-
-					if ( class == PCL_ALIEN_LEVEL1 && modifier < LEVEL1_REGEN_MOD )
-					{
-						modifier = LEVEL1_REGEN_MOD;
-						didBoost = qtrue;
-					}
-					else if ( class == PCL_ALIEN_LEVEL1_UPG &&
-					          modifier < LEVEL1_UPG_REGEN_MOD )
-					{
-						modifier = LEVEL1_UPG_REGEN_MOD;
-						didBoost = qtrue;
-					}
-
-					if ( didBoost && ent->health < client->ps.stats[ STAT_MAX_HEALTH ] )
-					{
-						boost->client->pers.hasHealed = qtrue;
-					}
-				}
-			}
-
-			// Transmit heal rate to the client so it can be displayed on the HUD
-			client->ps.stats[ STAT_STATE ] |= SS_HEALING_ACTIVE;
-			client->ps.stats[ STAT_STATE ] &= ~( SS_HEALING_2X | SS_HEALING_3X );
-
-			if ( modifier == 1.0f && !G_FindCreep( ent ) )
-			{
-				client->ps.stats[ STAT_STATE ] &= ~SS_HEALING_ACTIVE;
-				modifier *= ALIEN_REGEN_NOCREEP_MOD;
-			}
-			else if ( modifier >= 3.0f )
-			{
-				client->ps.stats[ STAT_STATE ] |= SS_HEALING_3X;
-			}
-			else if ( modifier >= 2.0f )
-			{
-				client->ps.stats[ STAT_STATE ] |= SS_HEALING_2X;
-			}
-
-			interval = 1000 / ( regenRate * modifier );
-			// if recovery interval is less than frametime, compensate
-			count = 1 + ( level.time - ent->nextRegenTime ) / interval;
-
-			ent->health += count;
-			ent->nextRegenTime += count * interval;
-
-			// if at max health, clear damage counters
-			if ( ent->health >= client->ps.stats[ STAT_MAX_HEALTH ] )
-			{
-				ent->health = client->ps.stats[ STAT_MAX_HEALTH ];
-
-				for ( i = 0; i < MAX_CLIENTS; i++ )
-				{
-					ent->credits[ i ] = 0;
-				}
-			}
-		}
-	}
-
+	// Throw human grenade
 	if ( BG_InventoryContainsUpgrade( UP_GRENADE, client->ps.stats ) &&
 	     BG_UpgradeIsActive( UP_GRENADE, client->ps.stats ) )
 	{
@@ -1957,8 +2061,8 @@ void ClientThink_real( gentity_t *ent )
 		usercmdPressButton( ent->client->pers.cmd.buttons, BUTTON_GESTURE );
 	}
 
-	// clear fall velocity before every pmove
-	client->pmext.fallVelocity = 0.0f;
+	// clear fall impact velocity before every pmove
+	VectorSet( client->pmext.fallImpactVelocity, 0.0f, 0.0f, 0.0f );
 
 	pm.ps = &client->ps;
 	pm.pmext = &client->pmext;
@@ -2010,6 +2114,7 @@ void ClientThink_real( gentity_t *ent )
 	switch ( client->ps.weapon )
 	{
 		case WP_ALEVEL0:
+		case WP_ALEVEL0_UPG:
 			if ( !CheckVenomAttack( ent ) )
 			{
 				client->ps.weaponstate = WEAPON_READY;
@@ -2158,7 +2263,7 @@ void ClientThink_real( gentity_t *ent )
 			{
 				if ( BG_AlienCanEvolve( client->ps.stats[ STAT_CLASS ],
 				                        client->pers.credit,
-				                        g_alienStage.integer ) )
+				                        level.team[ TEAM_ALIENS ].stage ) )
 				{
 					//no nearby objects and alien - show class menu
 					G_TriggerMenu( ent->client->ps.clientNum, MN_A_INFEST );
@@ -2172,10 +2277,8 @@ void ClientThink_real( gentity_t *ent )
 		}
 	}
 
-	client->ps.persistant[ PERS_BP ] = G_GetBuildPoints( client->ps.origin,
-	                                   client->ps.stats[ STAT_TEAM ] );
-	client->ps.persistant[ PERS_MARKEDBP ] = G_GetMarkedBuildPoints( client->ps.origin,
-	    client->ps.stats[ STAT_TEAM ] );
+	client->ps.persistant[ PERS_BP ] = G_GetBuildPointsInt( client->ps.stats[ STAT_TEAM ] );
+	client->ps.persistant[ PERS_MARKEDBP ] = G_GetMarkedBuildPointsInt( client->ps.stats[ STAT_TEAM ] );
 
 	if ( client->ps.persistant[ PERS_BP ] < 0 )
 	{
@@ -2188,7 +2291,7 @@ void ClientThink_real( gentity_t *ent )
 	if ( ent->suicideTime > 0 && ent->suicideTime < level.time )
 	{
 		ent->client->ps.stats[ STAT_HEALTH ] = ent->health = 0;
-		player_die( ent, ent, ent, 100000, MOD_SUICIDE );
+		player_die( ent, ent, ent, MOD_SUICIDE );
 
 		ent->suicideTime = 0;
 	}
@@ -2208,8 +2311,7 @@ void ClientThink( int clientNum )
 	ent = g_entities + clientNum;
 	trap_GetUsercmd( clientNum, &ent->client->pers.cmd );
 
-	// mark the time we got info, so we can display the
-	// phone jack if they don't get any for a while
+	// mark the time we got info, so we can display the phone jack if we don't get any for a while
 	ent->client->lastCmdTime = level.time;
 
 	if(!( ent->r.svFlags & SVF_BOT ) && !g_synchronousClients.integer )

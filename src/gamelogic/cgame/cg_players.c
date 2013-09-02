@@ -1790,7 +1790,7 @@ static void CG_RunCorpseLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAni
 
 	anim = lf->animation;
 
-	if ( !anim->frameLerp )
+	if ( !anim || !anim->frameLerp )
 	{
 		return; // shouldn't happen
 	}

@@ -1,24 +1,24 @@
 /*
-===========================================================================
-Copyright (C) 1999-2005 Id Software, Inc.
+ = *==========================================================================
+ Copyright (C) 1999-2005 Id Software, Inc.
 
-This file is part of Daemon.
+ This file is part of Daemon.
 
-Daemon is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the License,
-or (at your option) any later version.
+ Daemon is free software; you can redistribute it
+ and/or modify it under the terms of the GNU General Public License as
+ published by the Free Software Foundation; either version 2 of the License,
+ or (at your option) any later version.
 
-Daemon is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+ Daemon is distributed in the hope that it will be
+ useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Daemon; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-===========================================================================
-*/
+ You should have received a copy of the GNU General Public License
+ along with Daemon; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ ===========================================================================
+ */
 
 #include "g_bot_parse.h"
 #include "g_bot_util.h"
@@ -27,10 +27,10 @@ static botMemory_t g_botMind[MAX_CLIENTS];
 static AITreeList_t treeList;
 
 /*
-=======================
-Bot management functions
-=======================
-*/
+ = *======================
+ Bot management functions
+ =======================
+ */
 static struct
 {
 	int count;
@@ -75,26 +75,26 @@ qboolean G_BotClearNames( void )
 			return qfalse;
 		}
 
-	for ( i = 0; i < botNames[TEAM_HUMANS].count; ++i )
-		if ( botNames[TEAM_HUMANS].name[i].inUse )
-		{
-			return qfalse;
-		}
+		for ( i = 0; i < botNames[TEAM_HUMANS].count; ++i )
+			if ( botNames[TEAM_HUMANS].name[i].inUse )
+			{
+				return qfalse;
+			}
 
-	for ( i = 0; i < botNames[TEAM_ALIENS].count; ++i )
-	{
-		BG_Free( botNames[TEAM_ALIENS].name[i].name );
-	}
+			for ( i = 0; i < botNames[TEAM_ALIENS].count; ++i )
+			{
+				BG_Free( botNames[TEAM_ALIENS].name[i].name );
+			}
 
-	for ( i = 0; i < botNames[TEAM_HUMANS].count; ++i )
-	{
-		BG_Free( botNames[TEAM_HUMANS].name[i].name );
-	}
+			for ( i = 0; i < botNames[TEAM_HUMANS].count; ++i )
+			{
+				BG_Free( botNames[TEAM_HUMANS].name[i].name );
+			}
 
-	botNames[TEAM_ALIENS].count = 0;
-	botNames[TEAM_HUMANS].count = 0;
+			botNames[TEAM_ALIENS].count = 0;
+			botNames[TEAM_HUMANS].count = 0;
 
-	return qtrue;
+			return qtrue;
 }
 
 int G_BotAddNames( team_t team, int arg, int last )
@@ -117,13 +117,13 @@ int G_BotAddNames( team_t team, int arg, int last )
 					goto next;
 				}
 
-		botNames[team].name[i].name = ( char * )BG_Alloc( strlen( name ) + 1 );
-		strcpy( botNames[team].name[i].name, name );
+				botNames[team].name[i].name = ( char * )BG_Alloc( strlen( name ) + 1 );
+			strcpy( botNames[team].name[i].name, name );
 
 		botNames[team].count = ++i;
 		++added;
 
-next:
+		next:
 		;
 	}
 
@@ -173,7 +173,6 @@ qboolean G_BotSetDefaults( int clientNum, team_t team, int skill, const char* be
 	gentity_t *self = &g_entities[ clientNum ];
 	botMind = self->botMind = &g_botMind[clientNum];
 
-	botMind->enemyLastSeen = 0;
 	botMind->botTeam = team;
 	BotSetNavmesh( self, self->client->ps.stats[ STAT_CLASS ] );
 
@@ -181,6 +180,7 @@ qboolean G_BotSetDefaults( int clientNum, team_t team, int skill, const char* be
 	botMind->numRunningNodes = 0;
 	botMind->currentNode = NULL;
 	memset( &botMind->nav, 0, sizeof( botMind->nav ) );
+	BotResetEnemyQueue( &botMind->enemyQueue );
 
 	botMind->behaviorTree = ReadBehaviorTree( behavior, &treeList );
 
@@ -309,7 +309,7 @@ void G_BotDel( int clientNum )
 	}
 
 	trap_SendServerCommand( -1, va( "print_tr %s %s", QQ( N_( "$1$^7 disconnected\n" ) ),
-	                                Quote( bot->client->pers.netname ) ) );
+					Quote( bot->client->pers.netname ) ) );
 	trap_DropClient( clientNum, "disconnected" );
 }
 
@@ -337,10 +337,10 @@ void G_BotDelAllBots( void )
 }
 
 /*
-=======================
-Bot Thinks
-=======================
-*/
+ = *======================
+ Bot Thinks
+ =======================
+ */
 
 void G_BotThink( gentity_t *self )
 {
@@ -426,13 +426,10 @@ void G_BotSpectatorThink( gentity_t *self )
 		//check for humans in the spawn que
 		{
 			spawnQueue_t *sq;
-			if ( self->client->pers.teamSelection == TEAM_HUMANS )
+			if ( self->client->pers.teamSelection > TEAM_NONE &&
+			     self->client->pers.teamSelection < NUM_TEAMS )
 			{
-				sq = &level.humanSpawnQueue;
-			}
-			else if ( self->client->pers.teamSelection == TEAM_ALIENS )
-			{
-				sq = &level.alienSpawnQueue;
+				sq = &level.team[ self->client->pers.teamSelection ].spawnQueue;
 			}
 			else
 			{
@@ -451,8 +448,7 @@ void G_BotSpectatorThink( gentity_t *self )
 	//reset stuff
 	BotSetTarget( &self->botMind->goal, NULL, NULL );
 	self->botMind->bestEnemy.ent = NULL;
-	self->botMind->timeFoundEnemy = 0;
-	self->botMind->enemyLastSeen = 0;
+	BotResetEnemyQueue( &self->botMind->enemyQueue );
 	self->botMind->currentNode = NULL;
 	memset( &self->botMind->nav, 0, sizeof( self->botMind->nav ) );
 	self->botMind->futureAimTime = 0;
@@ -479,16 +475,15 @@ void G_BotSpectatorThink( gentity_t *self )
 			{
 				self->client->pers.humanItemSelection = WP_HBUILD;
 			}
-
-			G_PushSpawnQueue( &level.humanSpawnQueue, clientNum );
 		}
 		else if ( teamnum == TEAM_ALIENS )
 		{
 			self->client->pers.classSelection = PCL_ALIEN_LEVEL0;
 			self->client->ps.stats[STAT_CLASS] = PCL_ALIEN_LEVEL0;
 			BotSetNavmesh( self, PCL_ALIEN_LEVEL0 );
-			G_PushSpawnQueue( &level.alienSpawnQueue, clientNum );
 		}
+
+		G_PushSpawnQueue( &level.team[ teamnum ].spawnQueue, clientNum );
 	}
 	else
 	{

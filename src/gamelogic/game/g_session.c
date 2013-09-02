@@ -47,13 +47,14 @@ static void G_WriteClientSessionData( int clientNum )
 	gclient_t  *client = &level.clients[ clientNum ];
 	botMemory_t  *mind = g_entities[ clientNum ].botMind;
 
-	s = va( "%i %i %i %i %i %s %s",
+	s = va( "%i %i %i %i %i %i %s %s",
 	        client->sess.spectatorTime,
 	        client->sess.spectatorState,
 	        client->sess.spectatorClient,
 	        client->sess.restartTeam,
+	        client->sess.seenWelcome,
 	        mind ? mind->botSkill.level : 0,
-			( mind && mind->behaviorTree ) ? mind->behaviorTree->name : "default",
+	        ( mind && mind->behaviorTree ) ? mind->behaviorTree->name : "default",
 	        Com_ClientListString( &client->sess.ignoreList )
 	      );
 
@@ -82,13 +83,14 @@ void G_ReadSessionData( gclient_t *client )
 	var = va( "session%li", ( long )( client - level.clients ) );
 	trap_Cvar_VariableStringBuffer( var, s, sizeof( s ) );
 
-	sscanf( s, "%i %i %i %i %i %64s %16s",
+	sscanf( s, "%i %i %i %i %i %i %64s %16s",
 	        &client->sess.spectatorTime,
 	        &spectatorState,
 	        &client->sess.spectatorClient,
 	        &restartTeam,
+	        &client->sess.seenWelcome,
 	        &botSkill,
-			botTree,
+	        botTree,
 	        ignorelist
 	      );
 
@@ -142,6 +144,7 @@ void G_InitSessionData( gclient_t *client, const char *userinfo )
 	sess->botTree[ 0 ] = '\0';
 
 	memset( &sess->ignoreList, 0, sizeof( sess->ignoreList ) );
+	sess->seenWelcome = 0;
 
 	G_WriteClientSessionData( client - level.clients );
 }

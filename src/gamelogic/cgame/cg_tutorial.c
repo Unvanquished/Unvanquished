@@ -35,7 +35,6 @@ static bind_t bindings[] =
 {
 	{ "+useitem",       N_( "Activate Upgrade" ),                      { -1, -1 } },
 	{ "+speed",         N_( "Run/Walk" ),                              { -1, -1 } },
-	{ "+dodge",         N_( "Dodge" ),                                 { -1, -1 } },
 	{ "+sprint",        N_( "Sprint" ),                                { -1, -1 } },
 	{ "+moveup",        N_( "Jump" ),                                  { -1, -1 } },
 	{ "+movedown",      N_( "Crouch" ),                                { -1, -1 } },
@@ -275,11 +274,18 @@ static void CG_AlienLevel0Text( char *text, playerState_t *ps )
 
 	Q_strcat( text, MAX_TUTORIAL_TEXT,
 	          _( "Touch humans to damage them\n"
-	             "Look at their heads (or jump) to try to bite their heads\n"
-	             "Head-bites cause more damage\n" ) );
+	             "Aim at their heads to cause more damage\n" ) );
+
 	Q_strcat( text, MAX_TUTORIAL_TEXT,
 	          va( _( "Press %s to walk on walls\n" ),
 	              CG_KeyNameForCommand( "+movedown" ) ) );
+
+	if ( ps->stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL0_UPG )
+	{
+		Q_strcat( text, MAX_TUTORIAL_TEXT,
+		          va( _( "Press %s to pounce\n" ),
+		              CG_KeyNameForCommand( "+attack2" ) ) );
+	}
 }
 
 /*
@@ -549,10 +555,6 @@ static void CG_HumanText( char *text, playerState_t *ps )
 	Q_strcat( text, MAX_TUTORIAL_TEXT,
 	          va( _( "Press %s and any direction to sprint\n" ),
 	              CG_KeyNameForCommand( "+sprint" ) ) );
-
-	Q_strcat( text, MAX_TUTORIAL_TEXT,
-	          va( _( "Press %s and back or strafe to dodge\n" ),
-	              CG_KeyNameForCommand( "+dodge" ) ) );
 }
 
 /*
@@ -659,6 +661,7 @@ const char *CG_TutorialText( void )
 					break;
 
 				case PCL_ALIEN_LEVEL0:
+				case PCL_ALIEN_LEVEL0_UPG:
 					CG_AlienLevel0Text( text, ps );
 					break;
 

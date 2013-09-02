@@ -231,6 +231,7 @@ void IN_VoipRecordDown( void )
 {
 	//IN_KeyDown(&in_voiprecord);
 	IN_KeyDown( &kb[ KB_VOIPRECORD ] );
+	IN_PrepareKeyUp();
 	Cvar_Set( "cl_voipSend", "1" );
 }
 
@@ -1246,10 +1247,16 @@ void IN_BuiltinButtonCommand( void )
 	}
 }
 
-void IN_KeysUp( unsigned int check, int key, int time )
+void IN_KeysUp_f( void )
 {
+	unsigned int check;
+	int key, time;
 	int i;
 	qboolean first = qtrue;
+
+	check = atoi( Cmd_Argv( 1 ) );
+	key   = atoi( Cmd_Argv( 2 ) );
+	time  = atoi( Cmd_Argv( 3 ) );
 
 	for ( i = 0; i < USERCMD_BUTTONS; ++i )
 	{
@@ -1257,11 +1264,11 @@ void IN_KeysUp( unsigned int check, int key, int time )
 		{
 			if ( first )
 			{
-				Cbuf_AddText( va( "setkeydata %d %d %u\n", check, key + 1, time ) );
+				Cmd_ExecuteString( va( "setkeydata %d %d %u\n", check, key + 1, time ) );
 				first = qfalse;
 			}
 
-			Cbuf_AddText( va( "-%s\n", registeredButtonCommands[ i ] + 1 ) ); // command name includes '+'
+			Cmd_ExecuteString( va( "-%s\n", registeredButtonCommands[ i ] + 1 ) ); // command name includes '+'
 		}
 	}
 
@@ -1271,24 +1278,24 @@ void IN_KeysUp( unsigned int check, int key, int time )
 		{
 			if ( first )
 			{
-				Cbuf_AddText( va( "setkeydata %d %d %u\n", check, key + 1, time ) );
+				Cmd_ExecuteString( va( "setkeydata %d %d %u\n", check, key + 1, time ) );
 				first = qfalse;
 			}
 
-			Cbuf_AddText( va( "-%s\n", builtinButtonCommands[i].name ) ); // command name doesn't include '+'
+			Cmd_ExecuteString( va( "-%s\n", builtinButtonCommands[i].name ) ); // command name doesn't include '+'
 		}
 	}
 
 	if ( !first )
 	{
-		Cbuf_AddText( va( "setkeydata %d\n", check ) );
+		Cmd_ExecuteString( va( "setkeydata %d\n", check ) );
 	}
 
 	// Pseudo-button commands handled here
 	// After the setkeydata so that they can't go adding more commands
 	if ( keyup[ key ] )
 	{
-		Cbuf_AddText( keyup[ key ] );
+		Cmd_ExecuteString( keyup[ key ] );
 		Z_Free( keyup[ key ] );
 		keyup[ key ] = NULL;
 	}
@@ -1423,6 +1430,8 @@ void CL_InitInput( void )
 	Cmd_AddCommand( "+voiprecord", IN_VoipRecordDown );
 	Cmd_AddCommand( "-voiprecord", IN_VoipRecordUp );
 #endif
+
+	Cmd_AddCommand( "keyup", IN_KeysUp_f );
 
 	cl_nodelta = Cvar_Get( "cl_nodelta", "0", 0 );
 	cl_debugMove = Cvar_Get( "cl_debugMove", "0", 0 );

@@ -1,24 +1,24 @@
 /*
-===========================================================================
-Copyright (C) 1999-2005 Id Software, Inc.
+ = *==========================================================================
+ Copyright (C) 1999-2005 Id Software, Inc.
 
-This file is part of Daemon.
+ This file is part of Daemon.
 
-Daemon is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the License,
-or (at your option) any later version.
+ Daemon is free software; you can redistribute it
+ and/or modify it under the terms of the GNU General Public License as
+ published by the Free Software Foundation; either version 2 of the License,
+ or (at your option) any later version.
 
-Daemon is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+ Daemon is distributed in the hope that it will be
+ useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Daemon; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-===========================================================================
-*/
+ You should have received a copy of the GNU General Public License
+ along with Daemon; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ ===========================================================================
+ */
 #include "g_bot_ai.h"
 #include "g_bot_util.h"
 
@@ -53,10 +53,10 @@ void BotError( const char* fmt, ... )
 }
 
 /*
-=======================
-Scoring functions for logic
-=======================
-*/
+ = *======================
+ Scoring functions for logic
+ =======================
+ */
 float BotGetBaseRushScore( gentity_t *ent )
 {
 
@@ -266,12 +266,12 @@ float BotGetEnemyPriority( gentity_t *self, gentity_t *ent )
 
 qboolean BotCanEvolveToClass( gentity_t *self, class_t newClass )
 {
-	if ( self->client->pers.namelog->strip && !BG_Strip_ClassAllowedInStage( newClass, (stage_t) g_alienStage.integer ) )
+	if ( self->client->pers.namelog->strip && !BG_Strip_ClassAllowedInStage( newClass, level.team[ TEAM_ALIENS ].stage ) )
 	{
 		return qfalse;
 	}
 
-	return ( BG_ClassCanEvolveFromTo( ( class_t )self->client->ps.stats[STAT_CLASS], newClass, self->client->ps.persistant[PERS_CREDIT], g_alienStage.integer, 0 ) >= 0 );
+	return ( BG_ClassCanEvolveFromTo( ( class_t )self->client->ps.stats[STAT_CLASS], newClass, self->client->ps.persistant[PERS_CREDIT], level.team[ TEAM_ALIENS ].stage ) >= 0 );
 }
 
 qboolean WeaponIsEmpty( weapon_t weapon, playerState_t ps )
@@ -342,12 +342,12 @@ int BotValueOfUpgrades( gentity_t *self )
 
 static qboolean BotCanBuyWeapon( const gentity_t *self, weapon_t weapon )
 {
-	return !self->client->pers.namelog->strip || BG_Strip_WeaponAllowedInStage( weapon, ( stage_t )g_humanStage.integer );
+	return !self->client->pers.namelog->strip || BG_Strip_WeaponAllowedInStage( weapon, level.team[ TEAM_HUMANS ].stage );
 }
 
 static qboolean BotCanBuyUpgrade( const gentity_t *self, upgrade_t upgrade )
 {
-	return !self->client->pers.namelog->strip || BG_Strip_UpgradeAllowedInStage( upgrade, ( stage_t )g_humanStage.integer );
+	return !self->client->pers.namelog->strip || BG_Strip_UpgradeAllowedInStage( upgrade, level.team[ TEAM_HUMANS ].stage );
 }
 
 void BotGetDesiredBuy( gentity_t *self, weapon_t *weapon, upgrade_t *upgrades, int *numUpgrades )
@@ -358,20 +358,20 @@ void BotGetDesiredBuy( gentity_t *self, weapon_t *weapon, upgrade_t *upgrades, i
 	int usableCapital = credits + equipmentPrice;
 
 	//decide what upgrade(s) to buy
-	if ( g_humanStage.integer >= 2 && usableCapital >= ( BG_Weapon( WP_PAIN_SAW )->price + BG_Upgrade( UP_BATTLESUIT )->price ) &&
+	if ( level.team[ TEAM_HUMANS ].stage >= S3 && usableCapital >= ( BG_Weapon( WP_PAIN_SAW )->price + BG_Upgrade( UP_BATTLESUIT )->price ) &&
 	     BotCanBuyWeapon( self, WP_PAIN_SAW ) && BotCanBuyUpgrade( self, UP_BATTLESUIT ) )
 	{
 		upgrades[0] = UP_BATTLESUIT;
 		*numUpgrades = 1;
 	}
-	else if ( g_humanStage.integer >= 1 && usableCapital >= ( BG_Weapon( WP_SHOTGUN )->price + BG_Upgrade( UP_LIGHTARMOUR )->price + BG_Upgrade( UP_HELMET )->price ) &&
+	else if ( level.team[ TEAM_HUMANS ].stage >= S2 && usableCapital >= ( BG_Weapon( WP_SHOTGUN )->price + BG_Upgrade( UP_LIGHTARMOUR )->price + BG_Upgrade( UP_HELMET )->price ) &&
 	          BotCanBuyWeapon( self, WP_SHOTGUN ) && BotCanBuyUpgrade( self, UP_LIGHTARMOUR ) && BotCanBuyUpgrade( self, UP_HELMET ) )
 	{
 		upgrades[0] = UP_LIGHTARMOUR;
 		upgrades[1] = UP_HELMET;
 		*numUpgrades = 2;
 	}
-	else if ( g_humanStage.integer >= 0 && usableCapital >= ( BG_Weapon( WP_PAIN_SAW )->price + BG_Upgrade( UP_LIGHTARMOUR )->price ) &&
+	else if ( level.team[ TEAM_HUMANS ].stage >= S1 && usableCapital >= ( BG_Weapon( WP_PAIN_SAW )->price + BG_Upgrade( UP_LIGHTARMOUR )->price ) &&
 	          BotCanBuyWeapon( self, WP_PAIN_SAW ) && BotCanBuyUpgrade( self, UP_LIGHTARMOUR ) )
 	{
 		upgrades[0] = UP_LIGHTARMOUR;
@@ -388,39 +388,39 @@ void BotGetDesiredBuy( gentity_t *self, weapon_t *weapon, upgrade_t *upgrades, i
 	}
 
 	//now decide what weapon to buy
-	if ( g_humanStage.integer >= 2  && usableCapital >= BG_Weapon( WP_LUCIFER_CANNON )->price && g_bot_lcannon.integer && BotCanBuyWeapon( self, WP_LUCIFER_CANNON ) )
+	if ( level.team[ TEAM_HUMANS ].stage >= S3  && usableCapital >= BG_Weapon( WP_LUCIFER_CANNON )->price && g_bot_lcannon.integer && BotCanBuyWeapon( self, WP_LUCIFER_CANNON ) )
 	{
 		*weapon = WP_LUCIFER_CANNON;;
 	}
-	else if ( g_humanStage.integer >= 2 && usableCapital >= BG_Weapon( WP_CHAINGUN )->price && upgrades[0] == UP_BATTLESUIT && g_bot_chaingun.integer && BotCanBuyWeapon( self, WP_CHAINGUN ) )
+	else if ( level.team[ TEAM_HUMANS ].stage >= S3 && usableCapital >= BG_Weapon( WP_CHAINGUN )->price && upgrades[0] == UP_BATTLESUIT && g_bot_chaingun.integer && BotCanBuyWeapon( self, WP_CHAINGUN ) )
 	{
 		*weapon = WP_CHAINGUN;
 	}
-	else if ( g_humanStage.integer >= 1 && g_alienStage.integer < 2 && usableCapital >= BG_Weapon( WP_FLAMER )->price && g_bot_flamer.integer && BotCanBuyWeapon( self, WP_FLAMER ) )
+	else if ( level.team[ TEAM_HUMANS ].stage >= S2 && level.team[ TEAM_ALIENS ].stage < S3 && usableCapital >= BG_Weapon( WP_FLAMER )->price && g_bot_flamer.integer && BotCanBuyWeapon( self, WP_FLAMER ) )
 	{
 		*weapon = WP_FLAMER;
 	}
-	else if ( g_humanStage.integer >= 1 && usableCapital >= BG_Weapon( WP_PULSE_RIFLE )->price && g_bot_prifle.integer && BotCanBuyWeapon( self, WP_PULSE_RIFLE ) )
+	else if ( level.team[ TEAM_HUMANS ].stage >= S2 && usableCapital >= BG_Weapon( WP_PULSE_RIFLE )->price && g_bot_prifle.integer && BotCanBuyWeapon( self, WP_PULSE_RIFLE ) )
 	{
 		*weapon = WP_PULSE_RIFLE;
 	}
-	else if ( g_humanStage.integer >= 0 && usableCapital >= BG_Weapon( WP_CHAINGUN )->price && g_bot_chaingun.integer && BotCanBuyWeapon( self, WP_CHAINGUN ) )
+	else if ( level.team[ TEAM_HUMANS ].stage >= S1 && usableCapital >= BG_Weapon( WP_CHAINGUN )->price && g_bot_chaingun.integer && BotCanBuyWeapon( self, WP_CHAINGUN ) )
 	{
 		*weapon = WP_CHAINGUN;;
 	}
-	else if ( g_humanStage.integer >= 0 && usableCapital >= BG_Weapon( WP_MASS_DRIVER )->price && g_bot_mdriver.integer && BotCanBuyWeapon( self, WP_MASS_DRIVER ) )
+	else if ( level.team[ TEAM_HUMANS ].stage >= S1 && usableCapital >= BG_Weapon( WP_MASS_DRIVER )->price && g_bot_mdriver.integer && BotCanBuyWeapon( self, WP_MASS_DRIVER ) )
 	{
 		*weapon = WP_MASS_DRIVER;
 	}
-	else if ( g_humanStage.integer >= 0 && usableCapital >= BG_Weapon( WP_LAS_GUN )->price && g_bot_lasgun.integer && BotCanBuyWeapon( self, WP_LAS_GUN ) )
+	else if ( level.team[ TEAM_HUMANS ].stage >= S1 && usableCapital >= BG_Weapon( WP_LAS_GUN )->price && g_bot_lasgun.integer && BotCanBuyWeapon( self, WP_LAS_GUN ) )
 	{
 		*weapon = WP_LAS_GUN;
 	}
-	else if ( g_humanStage.integer >= 0 && usableCapital >= BG_Weapon( WP_SHOTGUN )->price && g_bot_shotgun.integer && BotCanBuyWeapon( self, WP_SHOTGUN ) )
+	else if ( level.team[ TEAM_HUMANS ].stage >= S1 && usableCapital >= BG_Weapon( WP_SHOTGUN )->price && g_bot_shotgun.integer && BotCanBuyWeapon( self, WP_SHOTGUN ) )
 	{
 		*weapon = WP_SHOTGUN;
 	}
-	else if ( g_humanStage.integer >= 0 && usableCapital >= BG_Weapon( WP_PAIN_SAW )->price && g_bot_painsaw.integer && BotCanBuyWeapon( self, WP_PAIN_SAW ) )
+	else if ( level.team[ TEAM_HUMANS ].stage >= S1 && usableCapital >= BG_Weapon( WP_PAIN_SAW )->price && g_bot_painsaw.integer && BotCanBuyWeapon( self, WP_PAIN_SAW ) )
 	{
 		*weapon = WP_PAIN_SAW;
 	}
@@ -432,10 +432,10 @@ void BotGetDesiredBuy( gentity_t *self, weapon_t *weapon, upgrade_t *upgrades, i
 	usableCapital -= BG_Weapon( *weapon )->price;
 
 	//finally, see if we can buy a battpack
-	if ( BG_Weapon( *weapon )->usesEnergy && usableCapital >= BATTPACK_PRICE && g_humanStage.integer >= 1 && upgrades[0] != UP_BATTLESUIT && BotCanBuyUpgrade( self, UP_BATTPACK ) )
+	if ( BG_Weapon( *weapon )->usesEnergy && usableCapital >= BG_Upgrade( UP_BATTPACK )->price && level.team[ TEAM_HUMANS ].stage >= S2 && upgrades[0] != UP_BATTLESUIT && BotCanBuyUpgrade( self, UP_BATTPACK ) )
 	{
 		upgrades[( *numUpgrades )++] = UP_BATTPACK;
-		usableCapital -= BATTPACK_PRICE;
+		usableCapital -= BG_Upgrade( UP_BATTPACK )->price;
 	}
 
 	//now test to see if we already have all of these items
@@ -470,10 +470,10 @@ void BotGetDesiredBuy( gentity_t *self, weapon_t *weapon, upgrade_t *upgrades, i
 	}
 }
 /*
-=======================
-Entity Querys
-=======================
-*/
+ = *======================
+ Entity Querys
+ =======================
+ */
 gentity_t* BotFindBuilding( gentity_t *self, int buildingType, int range )
 {
 	float minDistance = -1;
@@ -633,46 +633,24 @@ gentity_t* BotFindBestEnemy( gentity_t *self )
 	for ( target = g_entities; target < &g_entities[level.num_entities - 1]; target++ )
 	{
 		float newScore;
-		//ignore entities that arnt in use
-		if ( !target->inuse )
+
+		if ( !BotEnemyIsValid( self, target ) )
 		{
 			continue;
-		}
-
-		//ignore dead targets
-		if ( target->health <= 0 )
-		{
-			continue;
-		}
-
-		//ignore buildings if we cant attack them
-		if ( target->s.eType == ET_BUILDABLE && ( !g_bot_attackStruct.integer || self->client->ps.stats[STAT_CLASS] == PCL_ALIEN_LEVEL0 ) )
-		{
-			continue;
-		}
-
-		//ignore neutrals
-		if ( BotGetEntityTeam( target ) == TEAM_NONE )
-		{
-			continue;
-		}
-
-		//ignore teamates
-		if ( BotGetEntityTeam( target ) == BotGetEntityTeam( self ) )
-		{
-			continue;
-		}
-
-		//ignore spectators
-		if ( target->client )
-		{
-			if ( target->client->sess.spectatorState != SPECTATOR_NOT )
-			{
-				continue;
-			}
 		}
 
 		if ( DistanceSquared( self->s.origin, target->s.origin ) > Square( ALIENSENSE_RANGE ) )
+		{
+			continue;
+		}
+
+		if ( target->s.eType == ET_PLAYER && self->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS 
+		    && BotAimAngle( self, target->s.origin ) > g_bot_fov.value / 2 )
+		{
+			continue;
+		}
+
+		if ( target == self->botMind->goal.ent )
 		{
 			continue;
 		}
@@ -821,10 +799,10 @@ botTarget_t BotGetRoamTarget( gentity_t *self )
 	return target;
 }
 /*
-========================
-BotTarget Helpers
-========================
-*/
+ = *=======================
+ BotTarget Helpers
+ ========================
+ */
 
 void BotSetTarget( botTarget_t *target, gentity_t *ent, vec3_t pos )
 {
@@ -927,7 +905,7 @@ void BotTargetToRouteTarget( gentity_t *self, botTarget_t target, botRouteTarget
 
 	BotGetTargetPos( target, routeTarget->pos );
 
-	// move center a bit lower so we don't get polys above the object 
+	// move center a bit lower so we don't get polys above the object
 	// and get polys below the object on a slope
 	routeTarget->pos[ 2 ] -= routeTarget->polyExtents[ 2 ] / 2;
 
@@ -1196,7 +1174,7 @@ qboolean BotTargetInAttackRange( gentity_t *self, botTarget_t target )
 
 	trap_Trace( &trace, muzzle, mins, maxs, targetPos, self->s.number, MASK_SHOT );
 
-	if ( self->client->ps.stats[STAT_TEAM] != BotGetEntityTeam( &g_entities[trace.entityNum] ) 
+	if ( self->client->ps.stats[STAT_TEAM] != BotGetEntityTeam( &g_entities[trace.entityNum] )
 		&& BotGetEntityTeam( &g_entities[ trace.entityNum ] ) != TEAM_NONE
 		&& Distance( muzzle, trace.endpos ) <= MAX( range, secondaryRange ) )
 	{
@@ -1245,10 +1223,10 @@ qboolean BotTargetIsVisible( gentity_t *self, botTarget_t target, int mask )
 	return qfalse;
 }
 /*
-========================
-Bot Aiming
-========================
-*/
+ = *=======================
+ Bot Aiming
+ ========================
+ */
 void BotGetIdealAimLocation( gentity_t *self, botTarget_t target, vec3_t aimLocation )
 {
 	//get the position of the target
@@ -1386,28 +1364,24 @@ void BotSlowAim( gentity_t *self, vec3_t target, float slowAmount )
 	VectorMA( viewBase, length, skilledVec, target );
 }
 
-float BotAimNegligence( gentity_t *self, botTarget_t target )
+float BotAimAngle( gentity_t *self, vec3_t pos )
 {
+	vec3_t viewPos;
 	vec3_t forward;
 	vec3_t ideal;
-	vec3_t targetPos;
-	vec3_t viewPos;
-	float angle;
+
 	AngleVectors( self->client->ps.viewangles, forward, NULL, NULL );
 	BG_GetClientViewOrigin( &self->client->ps, viewPos );
-	BotGetIdealAimLocation( self, target, targetPos );
-	VectorSubtract( targetPos, viewPos, ideal );
-	VectorNormalize( ideal );
-	angle = DotProduct( ideal, forward );
-	angle = RAD2DEG( acos( angle ) );
-	return angle;
+	VectorSubtract( pos, viewPos, ideal );
+
+	return AngleBetweenVectors( forward, ideal );
 }
 
 /*
-========================
-Bot Team Querys
-========================
-*/
+ = *=======================
+ Bot Team Querys
+ ========================
+ */
 
 int FindBots( int *botEntityNumbers, int maxBots, team_t team )
 {
@@ -1437,14 +1411,10 @@ qboolean PlayersBehindBotInSpawnQueue( gentity_t *self )
 	int botPos = 0, lastPlayerPos = 0;
 	spawnQueue_t *sq;
 
-	if ( self->client->pers.teamSelection == TEAM_HUMANS )
+	if ( self->client->pers.teamSelection > TEAM_NONE &&
+	     self->client->pers.teamSelection < NUM_TEAMS )
 	{
-		sq = &level.humanSpawnQueue;
-	}
-
-	else if ( self->client->pers.teamSelection == TEAM_ALIENS )
-	{
-		sq = &level.alienSpawnQueue;
+		sq = &level.team[ self->client->pers.teamSelection ].spawnQueue;
 	}
 	else
 	{
@@ -1518,10 +1488,10 @@ qboolean BotTeamateHasWeapon( gentity_t *self, int weapon )
 }
 
 /*
-========================
-Misc Bot Stuff
-========================
-*/
+ = *=======================
+ Misc Bot Stuff
+ ========================
+ */
 void BotFireWeapon( weaponMode_t mode, usercmd_t *botCmdBuffer )
 {
 	if ( mode == WPM_PRIMARY )
@@ -1580,7 +1550,7 @@ void BotClassMovement( gentity_t *self, qboolean inAttackRange )
 			break;
 		case PCL_ALIEN_LEVEL3_UPG:
 			if ( BotGetTargetType( self->botMind->goal ) == ET_BUILDABLE && self->client->ps.ammo > 0
-			        && inAttackRange )
+				&& inAttackRange )
 			{
 				//dont move when sniping buildings
 				BotStandStill( self );
@@ -1638,7 +1608,7 @@ float CalcAimPitch( gentity_t *self, botTarget_t target, vec_t launchSpeed )
 		v += 5;
 		check = Square( Square( v ) ) - g * ( g * Square( x ) + 2 * y * Square( v ) );
 	}
-	
+
 	//calculate required angle of launch
 	angle1 = atanf( ( Square( v ) + sqrt( check ) ) / ( g * x ) );
 	angle2 = atanf( ( Square( v ) - sqrt( check ) ) / ( g * x ) );
@@ -1715,9 +1685,9 @@ void BotFireWeaponAI( gentity_t *self )
 				BotFireWeapon( WPM_PRIMARY, botCmdBuffer );    //basi swipe
 			}
 			/*
-			else
-			BotFireWeapn(WPM_SECONDARY,botCmdBuffer); //basi poisen
-			*/
+			 *		else
+			 *		BotFireWeapn(WPM_SECONDARY,botCmdBuffer); //basi poisen
+			 */
 			break;
 		case WP_ALEVEL2:
 			BotFireWeapon( WPM_PRIMARY, botCmdBuffer ); //mara swipe
@@ -1818,7 +1788,7 @@ qboolean BotEvolveToClass( gentity_t *ent, class_t newClass )
 			other = &g_entities[ entityList[ i ] ];
 
 			if ( ( other->client && other->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS ) ||
-			        ( other->s.eType == ET_BUILDABLE && other->buildableTeam == TEAM_HUMANS ) )
+				( other->s.eType == ET_BUILDABLE && other->buildableTeam == TEAM_HUMANS ) )
 			{
 				return qfalse;
 			}
@@ -1829,18 +1799,18 @@ qboolean BotEvolveToClass( gentity_t *ent, class_t newClass )
 			return qfalse;
 		}
 
-		numLevels = BG_ClassCanEvolveFromTo( currentClass, newClass, ( short )ent->client->ps.persistant[ PERS_CREDIT ], g_alienStage.integer, 0 );
+		numLevels = BG_ClassCanEvolveFromTo( currentClass, newClass, ( short )ent->client->ps.persistant[ PERS_CREDIT ], level.team[ TEAM_ALIENS ].stage );
 
 		if ( G_RoomForClassChange( ent, newClass, infestOrigin ) )
 		{
 			//...check we can evolve to that class
 			if ( numLevels >= 0 &&
-			        BG_ClassAllowedInStage( newClass, ( stage_t )g_alienStage.integer ) &&
-			        BG_ClassIsAllowed( newClass ) )
+				BG_ClassAllowedInStage( newClass, level.team[ TEAM_ALIENS ].stage ) &&
+				BG_ClassIsAllowed( newClass ) )
 			{
 
 				ent->client->pers.evolveHealthFraction = ( float )ent->client->ps.stats[ STAT_HEALTH ] /
-				        ( float )BG_Class( currentClass )->health;
+				( float )BG_Class( currentClass )->health;
 
 				if ( ent->client->pers.evolveHealthFraction < 0.0f )
 				{
@@ -1901,13 +1871,13 @@ void BotBuyWeapon( gentity_t *self, weapon_t weapon )
 		}
 
 		//are we /allowed/ to buy this?
-		if ( !BG_WeaponAllowedInStage( weapon, ( stage_t )g_humanStage.integer ) || !BG_WeaponIsAllowed( weapon ) )
+		if ( !BG_WeaponAllowedInStage( weapon, level.team[ TEAM_HUMANS ].stage ) || !BG_WeaponIsAllowed( weapon ) )
 		{
 			return;
 		}
 
 		//are we /denied/ this (stripped)? (shouldn't happen - should be caught before we get here)
-		if ( self->client->pers.namelog->strip && !BG_Strip_WeaponAllowedInStage( weapon, ( stage_t )g_humanStage.integer ) )
+		if ( self->client->pers.namelog->strip && !BG_Strip_WeaponAllowedInStage( weapon, level.team[ TEAM_HUMANS ].stage ) )
 		{
 			return;
 		}
@@ -1935,7 +1905,7 @@ void BotBuyWeapon( gentity_t *self, weapon_t weapon )
 		self->client->ps.clips = BG_Weapon( weapon )->maxClips;
 
 		if ( BG_Weapon( weapon )->usesEnergy &&
-		        BG_InventoryContainsUpgrade( UP_BATTPACK, self->client->ps.stats ) )
+			BG_InventoryContainsUpgrade( UP_BATTPACK, self->client->ps.stats ) )
 		{
 			self->client->ps.ammo *= BATTPACK_MODIFIER;
 		}
@@ -1961,9 +1931,9 @@ void BotBuyUpgrade( gentity_t *self, upgrade_t upgrade )
 
 	// Only give energy from reactors or repeaters
 	if ( upgrade == UP_AMMO &&
-	        BG_Weapon( ( weapon_t )self->client->ps.stats[ STAT_WEAPON ] )->usesEnergy &&
-	        ( G_BuildableRange( self->client->ps.origin, 100, BA_H_REACTOR ) ||
-	          G_BuildableRange( self->client->ps.origin, 100, BA_H_REPEATER ) ) )
+		BG_Weapon( ( weapon_t )self->client->ps.stats[ STAT_WEAPON ] )->usesEnergy &&
+		( G_BuildableRange( self->client->ps.origin, 100, BA_H_REACTOR ) ||
+		G_BuildableRange( self->client->ps.origin, 100, BA_H_REPEATER ) ) )
 	{
 		energyOnly = qtrue;
 	}
@@ -2009,13 +1979,13 @@ void BotBuyUpgrade( gentity_t *self, upgrade_t upgrade )
 		}
 
 		//are we /allowed/ to buy this?
-		if ( !BG_UpgradeAllowedInStage( upgrade, ( stage_t )g_humanStage.integer ) || !BG_UpgradeIsAllowed( upgrade ) )
+		if ( !BG_UpgradeAllowedInStage( upgrade, level.team[ TEAM_HUMANS ].stage ) || !BG_UpgradeIsAllowed( upgrade ) )
 		{
 			return;
 		}
 
 		//are we /denied/ this (stripped)? (shouldn't happen - should be caught before we get here)
-		if ( self->client->pers.namelog->strip && !BG_Strip_UpgradeAllowedInStage( upgrade, ( stage_t )g_humanStage.integer ) )
+		if ( self->client->pers.namelog->strip && !BG_Strip_UpgradeAllowedInStage( upgrade, level.team[ TEAM_HUMANS ].stage ) )
 		{
 			return;
 		}
@@ -2087,7 +2057,7 @@ void BotSellWeapons( gentity_t *self )
 		}
 
 		if ( BG_InventoryContainsWeapon( i, self->client->ps.stats ) &&
-		        BG_Weapon( ( weapon_t )i )->purchasable )
+			BG_Weapon( ( weapon_t )i )->purchasable )
 		{
 			self->client->ps.stats[ STAT_WEAPON ] = WP_NONE;
 
@@ -2118,7 +2088,7 @@ void BotSellAll( gentity_t *self )
 	{
 		//remove upgrade if carried
 		if ( BG_InventoryContainsUpgrade( i, self->client->ps.stats ) &&
-		        BG_Upgrade( ( upgrade_t )i )->purchasable )
+			BG_Upgrade( ( upgrade_t )i )->purchasable )
 		{
 
 			// shouldn't really need to test for this, but just to be safe
@@ -2168,47 +2138,110 @@ void BotSetSkillLevel( gentity_t *self, int skill )
 	}
 }
 
+void BotResetEnemyQueue( enemyQueue_t *queue )
+{
+	queue->front = 0;
+	queue->back = 0;
+	memset( queue->enemys, 0, sizeof( queue->enemys ) );
+}
+
+void BotPushEnemy( enemyQueue_t *queue, gentity_t *enemy )
+{
+	if ( enemy )
+	{
+		if ( ( queue->back + 1 ) % MAX_ENEMY_QUEUE != queue->front )
+		{
+			queue->enemys[ queue->back ].ent = enemy;
+			queue->enemys[ queue->back ].timeFound = level.time;
+			queue->back = ( queue->back + 1 ) % MAX_ENEMY_QUEUE;
+		}
+	}
+}
+
+gentity_t *BotPopEnemy( enemyQueue_t *queue )
+{
+	// queue empty
+	if ( queue->front == queue->back )
+	{
+		return NULL;
+	}
+
+	if ( level.time - queue->enemys[ queue->front ].timeFound >= g_bot_reactiontime.integer )
+	{
+		gentity_t *ret = queue->enemys[ queue->front ].ent;
+		queue->front = ( queue->front + 1 ) % MAX_ENEMY_QUEUE;
+		return ret;
+	}
+
+	return NULL;
+}
+
+qboolean BotEnemyIsValid( gentity_t *self, gentity_t *enemy )
+{
+	if ( !enemy->inuse )
+	{
+		return qfalse;
+	}
+
+	if ( enemy->health <= 0 )
+	{
+		return qfalse;
+	}
+
+	//ignore buildings if we cant attack them
+	if ( enemy->s.eType == ET_BUILDABLE && ( !g_bot_attackStruct.integer || self->client->ps.stats[STAT_CLASS] == PCL_ALIEN_LEVEL0 ) )
+	{
+		return qfalse;
+	}
+
+	if ( BotGetEntityTeam( enemy ) == self->client->ps.stats[ STAT_TEAM ] )
+	{
+		return qfalse;
+	}
+
+	if ( BotGetEntityTeam( enemy ) == TEAM_NONE )
+	{
+		return qfalse;
+	}
+
+	if ( enemy->client && enemy->client->sess.spectatorState != SPECTATOR_NOT )
+	{
+		return qfalse;
+	}
+
+	return qtrue;
+}
+
 void BotPain( gentity_t *self, gentity_t *attacker, int damage )
 {
 	if ( BotGetEntityTeam( attacker ) != TEAM_NONE && BotGetEntityTeam( attacker ) != self->client->ps.stats[ STAT_TEAM ] )
 	{
 		if ( attacker->s.eType == ET_PLAYER )
 		{
-			self->botMind->bestEnemy.ent = attacker;
-			self->botMind->bestEnemy.distance = Distance( self->s.origin, attacker->s.origin );
-			self->botMind->enemyLastSeen = level.time;
-			self->botMind->timeFoundEnemy = level.time - g_bot_reactiontime.integer; // alert immediately
+			BotPushEnemy( &self->botMind->enemyQueue, attacker );
 		}
 	}
 }
 
 void BotSearchForEnemy( gentity_t *self )
 {
-	botTarget_t target;
 	gentity_t *enemy = BotFindBestEnemy( self );
+	enemyQueue_t *queue = &self->botMind->enemyQueue;
+	BotPushEnemy( queue, enemy );
 
-	if ( enemy )
+	do
 	{
-		BotSetTarget( &target, enemy, NULL );
+		enemy = BotPopEnemy( queue );
+	} while ( enemy && !BotEnemyIsValid( self, enemy ) );
 
-		if ( enemy->s.eType != ET_PLAYER || ( enemy->s.eType == ET_PLAYER 
-			&& ( self->client->ps.stats[ STAT_TEAM ] == TEAM_ALIENS || BotAimNegligence( self, target ) <= g_bot_fov.value / 2 ) ) )
-		{
-			// don't reset timeFoundEnemy unless we were not previously alerted to an enemy because we don't want to reset our reaction time
-			if ( !self->botMind->bestEnemy.ent )
-			{
-				self->botMind->timeFoundEnemy = level.time;
-			}
-			self->botMind->bestEnemy.ent = enemy;
-			self->botMind->bestEnemy.distance = Distance( self->s.origin, enemy->s.origin );
-			self->botMind->enemyLastSeen = level.time;
-		}
+	self->botMind->bestEnemy.ent = enemy;
+
+	if ( self->botMind->bestEnemy.ent ) 
+	{
+		self->botMind->bestEnemy.distance = Distance( self->s.origin, self->botMind->bestEnemy.ent->s.origin );
 	}
-	
-	if ( level.time - self->botMind->enemyLastSeen > g_bot_chasetime.integer )
+	else
 	{
-		// reset after a while if we haven't seen an enemy
-		self->botMind->bestEnemy.ent = NULL;
 		self->botMind->bestEnemy.distance = INT_MAX;
 	}
 }

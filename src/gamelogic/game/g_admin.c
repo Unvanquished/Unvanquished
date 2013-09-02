@@ -2189,29 +2189,19 @@ qboolean G_admin_readconfig( gentity_t *ent )
 qboolean G_admin_time( gentity_t *ent )
 {
 	qtime_t qt;
-	int gameDuration, timelimitTime, gameMinutes, gameSeconds, remainingMinutes, remainingSeconds;
+	int timelimitTime, gameMinutes, gameSeconds, remainingMinutes, remainingSeconds;
 
 	trap_GMTime( &qt );
 
-	gameDuration = (level.time - level.startTime);
-
-	gameMinutes = gameDuration/1000 / 60;
-	gameSeconds = gameDuration/1000 % 60;
+	gameMinutes = level.matchTime/1000 / 60;
+	gameSeconds = level.matchTime/1000 % 60;
 
 	timelimitTime = level.timelimit * 60000; //timelimit is in minutes
 
-	if(gameDuration < level.suddenDeathBeginTime)
+	if(level.matchTime < timelimitTime)
 	{
-		remainingMinutes = (level.suddenDeathBeginTime - gameDuration)/1000 / 60;
-		remainingSeconds = (level.suddenDeathBeginTime - gameDuration)/1000 % 60 + 1;
-
-		ADMP( va( "%s %02i %02i %02i %02i %02i %i %02i", QQ( N_("^3time: ^7time is ^d$1$:$2$:$3$^7 UTC – game runs for ^d$4$:$5$^7 with Sudden Death in ^d$6$:$7$^7\n") ),
-			          qt.tm_hour, qt.tm_min, qt.tm_sec, gameMinutes, gameSeconds, remainingMinutes, remainingSeconds) );
-	}
-	else if(gameDuration < timelimitTime)
-	{
-		remainingMinutes = (timelimitTime - gameDuration)/1000 / 60;
-		remainingSeconds = (timelimitTime - gameDuration)/1000 % 60 + 1;
+		remainingMinutes = (timelimitTime - level.matchTime)/1000 / 60;
+		remainingSeconds = (timelimitTime - level.matchTime)/1000 % 60 + 1;
 
 		ADMP( va( "%s %02i %02i %02i %02i %02i %i %02i", QQ( N_("^3time: ^7time is ^d$1$:$2$:$3$^7 UTC – game runs for ^d$4$:$5$^7 hitting Timelimit in ^d$6$:$7$^7\n") ),
 	          qt.tm_hour, qt.tm_min, qt.tm_sec, gameMinutes, gameSeconds, remainingMinutes, remainingSeconds ) );
@@ -4109,19 +4099,19 @@ qboolean G_admin_endvote( gentity_t *ent )
 		QQ( N_("^3$1$: ^7$2$^7 decided that everyone voted Yes\n") ),
 			  command, G_quoted_admin_name( ent ) );
 
-	if ( !level.voteTime[ team ] )
+	if ( !level.team[ team ].voteTime )
 	{
 		ADMP( va( "%s %s", QQ( N_("^3$1$: ^7no vote in progress\n") ), command ) );
 		return qfalse;
 	}
 
 	admin_log( BG_TeamName( team ) );
-	level.voteNo[ team ] = cancel ? level.numVotingClients[ team ] : 0;
-	level.voteYes[ team ] = cancel ? 0 : level.numVotingClients[ team ];
-	level.quorum[ team ] = 0;
+	level.team[ team ].voteNo = cancel ? level.team[ team ].numVotingClients : 0;
+	level.team[ team ].voteYes = cancel ? 0 : level.team[ team ].numVotingClients;
+	level.team[ team ].quorum = 0;
 	G_CheckVote( team );
 
-	if ( !Q_strncmp( level.voteDisplayString[ team ], "Extend", 6 ) &&
+	if ( !Q_strncmp( level.team[ team ].voteDisplayString, "Extend", 6 ) &&
 	     level.extend_vote_count > 0 )
 	{
 		level.extend_vote_count--;
@@ -4613,26 +4603,15 @@ qboolean G_admin_lock( gentity_t *ent )
 	trap_Argv( 1, teamName, sizeof( teamName ) );
 	team = G_TeamFromString( teamName );
 
-	if ( team == TEAM_ALIENS )
+	if ( team == TEAM_ALIENS || team== TEAM_HUMANS )
 	{
-		if ( level.alienTeamLocked == lock )
+		if ( level.team[ team ].locked == lock )
 		{
 			fail = qtrue;
 		}
 		else
 		{
-			level.alienTeamLocked = lock;
-		}
-	}
-	else if ( team == TEAM_HUMANS )
-	{
-		if ( level.humanTeamLocked == lock )
-		{
-			fail = qtrue;
-		}
-		else
-		{
-			level.humanTeamLocked = lock;
+			level.team[ team ].locked = lock;
 		}
 	}
 	else

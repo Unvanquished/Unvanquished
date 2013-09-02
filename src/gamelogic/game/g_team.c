@@ -145,17 +145,35 @@ OnSameTeam
 */
 qboolean OnSameTeam( gentity_t *ent1, gentity_t *ent2 )
 {
-	if ( !ent1->client || !ent2->client )
+	team_t team1, team2;
+
+	if ( ent1->client )
+	{
+		team1 = ent1->client->pers.teamSelection;
+	}
+	else if ( ent1->s.eType == ET_BUILDABLE )
+	{
+		team1 = ent1->buildableTeam;
+	}
+	else
 	{
 		return qfalse;
 	}
 
-	if ( ent1->client->pers.teamSelection == ent2->client->pers.teamSelection )
+	if ( ent2->client )
 	{
-		return qtrue;
+		team2 = ent2->client->pers.teamSelection;
+	}
+	else if ( ent2->s.eType == ET_BUILDABLE )
+	{
+		team2 = ent2->buildableTeam;
+	}
+	else
+	{
+		return qfalse;
 	}
 
-	return qfalse;
+	return ( team1 == team2 );
 }
 
 /*
@@ -215,8 +233,8 @@ void G_UpdateTeamConfigStrings( void )
 	trap_SetConfigstringRestrictions( CS_VOTE_YES + TEAM_HUMANS,    &alienTeam );
 	trap_SetConfigstringRestrictions( CS_VOTE_NO + TEAM_HUMANS,     &alienTeam );
 
-	trap_SetConfigstringRestrictions( CS_ALIEN_STAGES, &humanTeam );
-	trap_SetConfigstringRestrictions( CS_HUMAN_STAGES, &alienTeam );
+	trap_SetConfigstringRestrictions( CS_ALIEN_STAGE, &humanTeam );
+	trap_SetConfigstringRestrictions( CS_HUMAN_STAGE, &alienTeam );
 }
 
 /*
@@ -230,13 +248,9 @@ void G_LeaveTeam( gentity_t *self )
 	gentity_t *ent;
 	int       i;
 
-	if ( team == TEAM_ALIENS )
+	if ( TEAM_ALIENS == team || TEAM_HUMANS == team )
 	{
-		G_RemoveFromSpawnQueue( &level.alienSpawnQueue, self->client->ps.clientNum );
-	}
-	else if ( team == TEAM_HUMANS )
-	{
-		G_RemoveFromSpawnQueue( &level.humanSpawnQueue, self->client->ps.clientNum );
+		G_RemoveFromSpawnQueue( &level.team[ team ].spawnQueue, self->client->ps.clientNum );
 	}
 	else
 	{
@@ -589,15 +603,15 @@ void CheckTeamStatus( void )
 	{
 		level.lastTeamImbalancedTime = level.time;
 
-		if ( level.numAlienSpawns > 0 &&
-		     level.numHumanClients - level.numAlienClients > 2 )
+		if ( level.team[ TEAM_ALIENS ].numSpawns > 0 &&
+		     level.team[ TEAM_HUMANS ].numClients - level.team[ TEAM_ALIENS ].numClients > 2 )
 		{
 			trap_SendServerCommand( -1, "print_tr \"" N_("Teams are imbalanced. "
 			                        "Humans have more players.\n") "\"" );
 			level.numTeamImbalanceWarnings++;
 		}
-		else if ( level.numHumanSpawns > 0 &&
-		          level.numAlienClients - level.numHumanClients > 2 )
+		else if ( level.team[ TEAM_HUMANS ].numSpawns > 0 &&
+		          level.team[ TEAM_ALIENS ].numClients - level.team[ TEAM_HUMANS ].numClients > 2 )
 		{
 			trap_SendServerCommand( -1, "print_tr \"" N_("Teams are imbalanced. "
 			                        "Aliens have more players.\n") "\"" );

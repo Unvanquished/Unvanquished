@@ -126,7 +126,7 @@ extern "C" void BotSetNavMesh( int botClientNum, qhandle_t nav )
 	Bot_t *bot = &agents[ botClientNum ];
 
 	bot->nav = &BotNavData[ nav ];
-	bot->needReplan = qtrue;
+	bot->needReplan = true;
 }
 
 void GetEntPosition( int num, rVec &pos )
@@ -222,7 +222,7 @@ extern "C" void BotUpdateCorridor( int botClientNum, const botRouteTarget_t *tar
 		{
 			if ( FindRoute( bot, spos, rtarget, false ) )
 			{
-				bot->needReplan = qfalse;
+				bot->needReplan = false;
 			}
 		}
 

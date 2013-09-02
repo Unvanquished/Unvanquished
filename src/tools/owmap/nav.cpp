@@ -86,7 +86,6 @@ static void WriteNavMeshFile( const char* agentname, const dtTileCache *tileCach
 	FILE *file = NULL;
 	char filename[ 1024 ];
 	NavMeshSetHeader header;
-	qboolean swapEndian = qfalse;
 	const int maxTiles = tileCache->getTileCount();
 
 	for( int i = 0; i < maxTiles; i++ )
@@ -99,18 +98,13 @@ static void WriteNavMeshFile( const char* agentname, const dtTileCache *tileCach
 		numTiles++;
 	}
 
-	if ( NAVMESHSET_MAGIC != LittleLong( NAVMESHSET_MAGIC ) )
-	{
-		swapEndian = qtrue;
-	}
-
 	header.magic = NAVMESHSET_MAGIC;
 	header.version = NAVMESHSET_VERSION;
 	header.numTiles = numTiles;
-	memcpy( &header.cacheParams, tileCache->getParams(), sizeof( header.cacheParams ) );
-	memcpy( &header.params, params, sizeof( header.params ) );
-
-	SwapBlock( ( int * ) &header, sizeof( header ) );
+	header.cacheParams = *tileCache->getParams();
+	header.params = *params;
+	
+	SwapNavMeshSetHeader( header );
 
 	strcpy( filename, source );
 	StripExtension( filename );
@@ -138,14 +132,13 @@ static void WriteNavMeshFile( const char* agentname, const dtTileCache *tileCach
 		tileHeader.tileRef = tileCache->getTileRef( tile );
 		tileHeader.dataSize = tile->dataSize;
 
-		SwapBlock( ( int * ) &tileHeader, sizeof( tileHeader ) );
-
+		SwapNavMeshTileHeader( tileHeader );
 		fwrite( &tileHeader, sizeof( tileHeader ), 1, file );
 
 		unsigned char* data = ( unsigned char * ) malloc( tile->dataSize );
 
 		memcpy( data, tile->data, tile->dataSize );
-		if ( swapEndian )
+		if ( LittleLong( 1 ) != 1 )
 		{
 			dtTileCacheHeaderSwapEndian( data, tile->dataSize );
 		}

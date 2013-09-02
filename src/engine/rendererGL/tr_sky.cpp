@@ -477,8 +477,6 @@ static void FillCloudySkySide( const int mins[ 2 ], const int maxs[ 2 ], qboolea
 
 			tess.texCoords[ tess.numVertexes ][ 0 ] = s_skyTexCoords[ t ][ s ][ 0 ];
 			tess.texCoords[ tess.numVertexes ][ 1 ] = s_skyTexCoords[ t ][ s ][ 1 ];
-			tess.texCoords[ tess.numVertexes ][ 2 ] = 0;
-			tess.texCoords[ tess.numVertexes ][ 3 ] = 1;
 
 			tess.numVertexes++;
 
@@ -488,6 +486,8 @@ static void FillCloudySkySide( const int mins[ 2 ], const int maxs[ 2 ], qboolea
 			}
 		}
 	}
+
+	tess.attribsSet |= ATTR_POSITION | ATTR_TEXCOORD;
 
 	// only add indexes for one pass, otherwise it would draw multiple times for each pass
 	if ( addIndexes )
@@ -527,6 +527,7 @@ static void DrawSkyBox( shader_t *shader )
 	tess.multiDrawPrimitives = 0;
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;
+	tess.attribsSet = 0;
 
 	GL_State( GLS_DEFAULT );
 
@@ -602,9 +603,7 @@ static void DrawSkyBox( shader_t *shader )
 		// only add indexes for first stage
 		FillCloudySkySide( sky_mins_subd, sky_maxs_subd, qtrue );
 	}
-
-	// Tr3B: FIXME analyze required vertex attribs by the current material
-	Tess_UpdateVBOs( 0 );
+	Tess_UpdateVBOs( tess.attribsSet );
 
 	Tess_DrawElements();
 }
@@ -736,6 +735,7 @@ static void BuildCloudData()
 	tess.multiDrawPrimitives = 0;
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;
+	tess.attribsSet = 0;
 
 	if ( tess.surfaceShader->sky.cloudHeight )
 	{
@@ -895,8 +895,6 @@ void RB_DrawSun( void )
 	tess.xyz[ tess.numVertexes ][ 3 ] = 1;
 	tess.texCoords[ tess.numVertexes ][ 0 ] = 0;
 	tess.texCoords[ tess.numVertexes ][ 1 ] = 0;
-	tess.texCoords[ tess.numVertexes ][ 2 ] = 0;
-	tess.texCoords[ tess.numVertexes ][ 3 ] = 1;
 	tess.colors[ tess.numVertexes ][ 0 ] = 1;
 	tess.colors[ tess.numVertexes ][ 1 ] = 1;
 	tess.colors[ tess.numVertexes ][ 2 ] = 1;
@@ -909,8 +907,6 @@ void RB_DrawSun( void )
 	tess.xyz[ tess.numVertexes ][ 3 ] = 1;
 	tess.texCoords[ tess.numVertexes ][ 0 ] = 0;
 	tess.texCoords[ tess.numVertexes ][ 1 ] = 1;
-	tess.texCoords[ tess.numVertexes ][ 2 ] = 0;
-	tess.texCoords[ tess.numVertexes ][ 3 ] = 1;
 	tess.colors[ tess.numVertexes ][ 0 ] = 1;
 	tess.colors[ tess.numVertexes ][ 1 ] = 1;
 	tess.colors[ tess.numVertexes ][ 2 ] = 1;
@@ -923,8 +919,6 @@ void RB_DrawSun( void )
 	tess.xyz[ tess.numVertexes ][ 3 ] = 1;
 	tess.texCoords[ tess.numVertexes ][ 0 ] = 1;
 	tess.texCoords[ tess.numVertexes ][ 1 ] = 1;
-	tess.texCoords[ tess.numVertexes ][ 2 ] = 0;
-	tess.texCoords[ tess.numVertexes ][ 3 ] = 1;
 	tess.colors[ tess.numVertexes ][ 0 ] = 1;
 	tess.colors[ tess.numVertexes ][ 1 ] = 1;
 	tess.colors[ tess.numVertexes ][ 2 ] = 1;
@@ -937,8 +931,6 @@ void RB_DrawSun( void )
 	tess.xyz[ tess.numVertexes ][ 3 ] = 1;
 	tess.texCoords[ tess.numVertexes ][ 0 ] = 1;
 	tess.texCoords[ tess.numVertexes ][ 1 ] = 0;
-	tess.texCoords[ tess.numVertexes ][ 2 ] = 0;
-	tess.texCoords[ tess.numVertexes ][ 3 ] = 1;
 	tess.colors[ tess.numVertexes ][ 0 ] = 1;
 	tess.colors[ tess.numVertexes ][ 1 ] = 1;
 	tess.colors[ tess.numVertexes ][ 2 ] = 1;

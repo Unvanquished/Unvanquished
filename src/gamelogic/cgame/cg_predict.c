@@ -188,6 +188,8 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
 		}
 		else if ( collisionType == TT_BISPHERE )
 		{
+			assert( maxs != NULL );
+			assert( mins != NULL );
 			trap_CM_TransformedBiSphereTrace( &trace, start, end,
 			                                  mins[ 0 ], maxs[ 0 ], cmodel, mask, origin );
 		}
