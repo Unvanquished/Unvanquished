@@ -558,8 +558,11 @@ void G_RewardAttackers( gentity_t *self )
 		}
 		else
 		{
-			player->client->pers.namelog->damageStats.kills        += damageFrac;
-			player->client->pers.namelog->damageStats.killingSpree += damageFrac;
+			if ( player->client && player->client->pers.connected == CON_CONNECTED )
+			{
+				player->client->pers.namelog->damageStats.kills        += damageFrac;
+				player->client->pers.namelog->damageStats.killingSpree += damageFrac;
+			}
 
 			G_AddCreditsToScore( player, ( int )reward );
 			G_AddCreditToClient( player->client, ( short )reward, qtrue );
