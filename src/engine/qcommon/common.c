@@ -2200,7 +2200,7 @@ void Com_Init( char *commandLine )
 
 	pid = Sys_GetPID();
 
-	Com_Printf( "%s %s %s\n%s\n", Q3_VERSION, PLATFORM_STRING, __DATE__, commandLine );
+	Com_Printf( "%s %s %s %s\n%s\n", Q3_VERSION, PLATFORM_STRING, ARCH_STRING, __DATE__, commandLine );
 
 	if ( setjmp( abortframe ) )
 	{
@@ -2395,7 +2395,7 @@ void Com_Init( char *commandLine )
 	Cmd_AddCommand( "writebindings", Com_WriteBindings_f );
 #endif
 
-	s = va( "%s %s %s", Q3_VERSION, PLATFORM_STRING, __DATE__ );
+	s = va( "%s %s %s %s", Q3_VERSION, PLATFORM_STRING, ARCH_STRING, __DATE__ );
 	com_version = Cvar_Get( "version", s, CVAR_ROM | CVAR_SERVERINFO );
 
 	Sys_Init();

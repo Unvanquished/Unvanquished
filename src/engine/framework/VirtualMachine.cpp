@@ -50,15 +50,18 @@ static NaCl::Module TryLoad(const char* name, const char* path, const char* game
 		char nexe[MAX_QPATH];
 		char sel_ldr[MAX_QPATH];
 		char irt[MAX_QPATH];
-#if defined(__x86_64__) || defined(_WIN64)
-		const char* arch = "x86_64";
+#ifdef __linux__
+		char bootstrap[MAX_QPATH];
 #else
-		const char* arch = "x86";
+		const char* bootstrap = nullptr;
 #endif
-		Com_sprintf(nexe, sizeof(nexe), "%s-%s.nexe", name, arch);
+		Com_sprintf(nexe, sizeof(nexe), "%s-%s.nexe", name, ARCH_STRING);
 		Com_sprintf(sel_ldr, sizeof(sel_ldr), "%s/sel_ldr%s", path, EXE_EXT);
-		Com_sprintf(irt, sizeof(irt), "%s/irt_core.nexe", path);
-		NaCl::LoaderParams params = {sel_ldr, irt, nullptr};
+		Com_sprintf(irt, sizeof(irt), "%s/irt_core-%s.nexe", path, ARCH_STRING);
+#ifdef __linux__
+		Com_sprintf(bootstrap, sizeof(bootstrap), "%s/nacl_helper_bootstrap%s", path, EXE_EXT);
+#endif
+		NaCl::LoaderParams params = {sel_ldr, irt, bootstrap};
 		out = NaCl::LoadModule(FS_BuildOSPath(path, game, nexe), &params, debug);
 	} else
 		Com_Error(ERR_DROP, "Invalid VM type");
