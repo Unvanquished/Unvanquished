@@ -191,8 +191,13 @@ else()
     set_c_cxx_flag( "-stdlib=libc++" )
   endif()
 
-  # Hardening
-  add_definitions( -D_FORTIFY_SOURCE=2 )
+  # Hardening, don't set _FORTIFY_SOURCE with -O0
+  if( FLAG_OPTIMIZE_DEBUG )
+    set_c_cxx_flag( "-D_FORTIFY_SOURCE=2" DEBUG )
+  endif()
+  set_c_cxx_flag( "-D_FORTIFY_SOURCE=2" RELEASE )
+  set_c_cxx_flag( "-D_FORTIFY_SOURCE=2" RELWITHDEBINFO )
+  set_c_cxx_flag( "-D_FORTIFY_SOURCE=2" MINSIZEREL )
   if( ENABLE_HARDENING )
     try_c_cxx_flag( FSTACK_PROTECTOR "-fno-strict-overflow" )
     try_c_cxx_flag( FSTACK_PROTECTOR "-fstack-protector-all" )
