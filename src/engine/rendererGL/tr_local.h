@@ -30,10 +30,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "../renderer/tr_bonematrix.h"
 
-#if defined( __cplusplus )
-extern "C" {
-#endif
-
 #include "../renderer/tr_public.h"
 
 #include <GL/glew.h>
@@ -2723,10 +2719,8 @@ extern "C" {
 		image_t *cubemap;
 	} cubemapProbe_t;
 
-#if defined( __cplusplus )
 	class GLShader;
 	class GLShader_vertexLighting_DBS_entity;
-#endif
 
 	typedef struct
 	{
@@ -4237,10 +4231,6 @@ extern "C" {
 	void       RE_Finish( void );
 
 	void       R_SetAltShaderTokens( const char * );
-
-#if defined( __cplusplus )
-}
-#endif
 
 // NOTE TTimo linux works with float gamma value, not the gamma table
 //   the params won't be used, getting the r_gamma cvar directly
