@@ -778,6 +778,8 @@ void BG_InitAllConfigs( void )
 	BG_InitWeaponAttributes();
 	BG_InitUpgradeAttributes();
 
+	BG_CheckConfigVars();
+
 	config_loaded = qtrue;
 }
 

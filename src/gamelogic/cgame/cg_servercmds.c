@@ -1007,6 +1007,7 @@ static void CG_Say( const char *name, int clientNum, saymode_t mode, const char 
 	char *location = "";
 	char color;
 	char *maybeColon;
+	team_t team = TEAM_NONE;
 
 	if ( clientNum >= 0 && clientNum < MAX_CLIENTS )
 	{
@@ -1014,7 +1015,7 @@ static void CG_Say( const char *name, int clientNum, saymode_t mode, const char 
 		char         *tcolor = S_COLOR_WHITE;
 
 		name = ci->name;
-
+		team = ci->team;
 		if ( ci->team == TEAM_ALIENS )
 		{
 			tcolor = S_COLOR_RED;
@@ -1092,7 +1093,7 @@ static void CG_Say( const char *name, int clientNum, saymode_t mode, const char 
 		maybeColon = ":";
 	}
 
-	color = '0' + UI_GetChatColour( mode, cgs.clientinfo[ clientNum ].team );
+	color = '0' + UI_GetChatColour( mode, team );
 
 	switch ( mode )
 	{

@@ -243,9 +243,9 @@ extern LPALCCAPTURESTART        qalcCaptureStart;
 extern LPALCCAPTURESTOP         qalcCaptureStop;
 extern LPALCCAPTURESAMPLES      qalcCaptureSamples;
 
+#endif // USE_OPENAL_DLOPEN
+
 qboolean                        QAL_Init( const char *libname );
 void                            QAL_Shutdown( void );
-
-#endif // USE_OPENAL_DLOPEN
 
 #endif // __QAL_H__

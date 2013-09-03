@@ -2797,7 +2797,7 @@ void SP_func_destructable( gentity_t *self )
   self->die = func_destructable_die;
   self->act = func_destructable_act;
 
-  if( !self->spawnflags & 1 )
+  if( !( self->spawnflags & 1 ) )
   {
     trap_LinkEntity( self );
     self->takedamage = qtrue;

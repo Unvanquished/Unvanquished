@@ -12,6 +12,7 @@
 
 #import "SDL/SDL.h"
 #import "SDLMain.h"
+#import "sys_local.h"
 
 #define SDL_USE_CPS 1
 
