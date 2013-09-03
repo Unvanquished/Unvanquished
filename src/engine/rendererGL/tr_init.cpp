@@ -1902,7 +1902,6 @@ extern "C" {
 		{
 			R_SyncRenderThread();
 
-			R_ShutdownCommandBuffers();
 			R_ShutdownImages();
 			R_ShutdownVBOs();
 			R_ShutdownFBOs();
@@ -1946,7 +1945,12 @@ extern "C" {
 			GLSL_ShutdownGPUShaders();
 #endif
 
-			//GLimp_ShutdownRenderThread();
+			if ( !destroyWindow )
+			{
+				R_ShutdownCommandBuffers();
+
+				GLimp_ShutdownRenderThread();
+			}
 		}
 
 		R_DoneFreeType();
@@ -1958,15 +1962,12 @@ extern "C" {
 		// Maybe an OpenGL driver problem. It is safer to destroy the context in that case or you will get really weird crashes when rendering stuff.
 		//
 
-#if !defined( SMP ) // && !defined(USE_JAVA)
-
-		if ( destroyWindow )
-#endif
+		if ( destroyWindow || glConfig.smpActive )
 		{
 #if defined( GLSL_COMPILE_STARTUP_ONLY )
 			GLSL_ShutdownGPUShaders();
 #endif
-
+			R_ShutdownCommandBuffers();
 			GLimp_Shutdown();
 			ri.Tag_Free();
 		}
