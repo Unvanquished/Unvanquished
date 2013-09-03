@@ -154,8 +154,7 @@ bool InternalSendMsg(OSHandleType handle, const void* data, size_t len, IPCHandl
 	hdr.flags = 0;
 	iov[0].base = &internal_hdr;
 	iov[0].length = sizeof(NaClInternalHeader);
-	if (desc_bytes != 0)
-		iov[1].base = &desc_buffer[0];
+	iov[1].base = desc_buffer.get();
 	iov[1].length = desc_bytes;
 	iov[2].base = const_cast<void*>(data);
 	iov[2].length = len;
