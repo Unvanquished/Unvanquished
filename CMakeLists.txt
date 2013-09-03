@@ -53,12 +53,10 @@ endif()
 # Determine platform
 ################################################################################
 
-# When adding a new platform, look at all the places WIN32, MAC and LINUX are used
-if( CMAKE_SYSTEM_NAME MATCHES "Darwin" )
-  set( MAC ON )
-elseif( CMAKE_SYSTEM_NAME MATCHES "Linux" )
+# When adding a new platform, look at all the places WIN32, APPLE and LINUX are used
+if( CMAKE_SYSTEM_NAME MATCHES "Linux" )
   set( LINUX ON )
-elseif( NOT WIN32 )
+elseif( NOT WIN32 AND NOT APPLE )
   message( FATAL_ERROR "Platform not supported" )
 endif()
 
@@ -187,7 +185,7 @@ else()
   endif()
 
   # Use libc++ on Mac because the shipped libstdc++ version is too old
-  if( MAC )
+  if( APPLE )
     set_c_cxx_flag( "-stdlib=libc++" )
   endif()
 
@@ -268,7 +266,7 @@ set( LIB_DIR ${MOUNT_DIR}/libs )
 if( CMAKE_HOST_WIN32 )
   set( PNACL_TOOLCHAIN ${NACL_SDK_PATH}/toolchain/win_x86_pnacl/newlib/bin )
   set( PNACL_BIN_EXT ".bat" )
-elseif( CMAKE_HOST_SYSTEM_NAME MATCHES "Darwin" )
+elseif( CMAKE_HOST_APPLE )
   set( PNACL_TOOLCHAIN ${NACL_SDK_PATH}/toolchain/mac_x86_pnacl/newlib/bin )
   set( PNACL_BIN_EXT "" )
 elseif( CMAKE_HOST_SYSTEM_NAME MATCHES "Linux" )
@@ -524,7 +522,7 @@ else()
   )
 endif()
 
-if( MAC )
+if( APPLE )
   set( ENGINELIST ${ENGINELIST}
     ${ENGINE_DIR}/sys/sys_osx.mm
   )
@@ -758,7 +756,7 @@ set( PDCURSESLIST
   ${LIB_DIR}/pdcurses/win32a/pdcutil.c
 )
 
-if( MAC )
+if( APPLE )
   set( NACL_LIST_NATIVE
     ${LIB_DIR}/nacl/nacl.cpp
     ${LIB_DIR}/nacl/native_client/src/shared/imc/nacl_imc_common.cc
@@ -829,7 +827,7 @@ else()
   set( LIBS_ENGINE ${LIBS_ENGINE} ${CMAKE_DL_LIBS} )
   find_package( Threads REQUIRED )
   set( LIBS_BASE ${LIBS_BASE} ${CMAKE_THREAD_LIBS_INIT} )
-  if( MAC )
+  if( APPLE )
     set( LIBS_CLIENT ${LIBS_CLIENT} "-framework Carbon" "-framework IOKit" "-framework Cocoa" )
   endif()
 endif()
@@ -841,7 +839,7 @@ set( LIBSRC_ENGINE ${LIBSRC_ENGINE} ${MINIZIP_LIST} )
 set( LIBSRC_ENGINE ${LIBSRC_ENGINE} ${TINYGETTEXT_LIST} )
 
 # Native client
-if( MAC )
+if( APPLE )
   add_definitions( -DNACL_WINDOWS=0 -DNACL_LINUX=0 -DNACL_ANDRIOD=0 -DNACL_OSX=1 )
 elseif( LINUX )
   add_definitions( -DNACL_WINDOWS=0 -DNACL_LINUX=1 -DNACL_ANDRIOD=0 -DNACL_OSX=0 )
@@ -874,7 +872,7 @@ if( BUILD_CLIENT OR BUILD_NEW_RENDERER OR BUILD_OLD_RENDERER OR ( WIN32 AND ( BU
   endif()
   set( LIBS_RENDERER ${LIBS_RENDERER} ${SDL_LIBRARY} )
   set( LIBS_RENDERERGL ${LIBS_RENDERERGL} ${SDL_LIBRARY} )
-  if( MAC )
+  if( APPLE )
     # Mac OS X does not provide a SDLMain.dylib so we must compile our own
     add_library( INTERNAL_SDLMain ${ENGINE_DIR}/sys/SDLMain.mm )
     set( LIBS_CLIENT ${LIBS_CLIENT} INTERNAL_SDLMain )
