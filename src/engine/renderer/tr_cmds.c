@@ -229,7 +229,7 @@ void R_SyncRenderThread( void )
 		return;
 	}
 
-	GLimp_FrontEndSleep();
+	GLimp_SyncRenderThread();
 }
 
 /*

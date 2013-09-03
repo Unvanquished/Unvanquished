@@ -377,6 +377,16 @@ void GLimp_FrontEndSleep( void )
 		}
 	}
 	SDL_UnlockMutex( smpMutex );
+}
+
+/*
+===============
+GLimp_SyncRenderThread
+===============
+*/
+void GLimp_SyncRenderThread( void )
+{
+	GLimp_FrontEndSleep();
 
 	GLimp_SetCurrentContext( qtrue );
 }
@@ -425,6 +435,10 @@ void           *GLimp_RendererSleep( void )
 }
 
 void GLimp_FrontEndSleep( void )
+{
+}
+
+void GLimp_SyncRenderThread( void )
 {
 }
 
