@@ -4012,6 +4012,13 @@ extern "C" {
 
 	typedef struct
 	{
+		int     commandId;
+		image_t *image;
+		int     slot;
+	} setColorGradingCommand_t;
+
+	typedef struct
+	{
 		int commandId;
 		int buffer;
 	} drawBufferCommand_t;
@@ -4135,6 +4142,7 @@ extern "C" {
 	typedef enum
 	{
 	  RC_END_OF_LIST,
+	  RC_SET_COLORGRADING,
 	  RC_SET_COLOR,
 	  RC_STRETCH_PIC,
 	  RC_2DPOLYS,

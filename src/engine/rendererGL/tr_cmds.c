@@ -411,6 +411,61 @@ void RE_SetColor( const float *rgba )
 
 /*
 =============
+RE_SetColorGrading
+=============
+*/
+void RE_SetColorGrading( int slot, qhandle_t hShader )
+{
+	setColorGradingCommand_t *cmd;
+	shader_t *shader = R_GetShaderByHandle( hShader );
+	image_t *image;
+
+	if ( !tr.registered )
+	{
+		return;
+	}
+
+	if ( slot < 0 || slot > 3 )
+	{
+		return;
+	}
+
+	if ( shader->defaultShader || !shader->stages[ 0 ] )
+	{
+		return;
+	}
+
+	image = shader->stages[ 0 ]->bundle[ 0 ].image[ 0 ];
+
+	if ( !image )
+	{
+		return;
+	}
+
+	if ( image->width != REF_COLORGRADEMAP_SIZE && image->height != REF_COLORGRADEMAP_SIZE )
+	{
+		return;
+	}
+
+	if ( image->width * image->height != REF_COLORGRADEMAP_STORE_SIZE )
+	{
+		return;
+	}
+
+	cmd = ( setColorGradingCommand_t * ) R_GetCommandBuffer( sizeof( *cmd ) );
+
+	if ( !cmd )
+	{
+		return;
+	}
+
+	cmd->slot = slot;
+	cmd->image = image;
+	cmd->commandId = RC_SET_COLORGRADING;
+}
+
+/*
+=============
 R_ClipRegion
 =============
 */

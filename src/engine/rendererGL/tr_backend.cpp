@@ -9107,6 +9107,58 @@ const void     *RB_SetColor( const void *data )
 
 /*
 =============
+RB_SetColorGrading
+=============
+*/
+const void *RB_SetColorGrading( const void *data )
+{
+	const setColorGradingCommand_t *cmd;
+
+	GLimp_LogComment( "--- RB_SetColorGrading ---\n" );
+
+	cmd = ( const setColorGradingCommand_t * ) data;
+
+	GL_Unbind();
+
+	glBindBuffer( GL_PIXEL_PACK_BUFFER, tr.colorGradePBO );
+
+	glBindTexture( GL_TEXTURE_2D, cmd->image->texnum );
+	glGetTexImage( GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
+	glBindBuffer( GL_PIXEL_PACK_BUFFER, 0 );
+
+	glBindBuffer( GL_PIXEL_UNPACK_BUFFER, tr.colorGradePBO );
+	glBindTexture( GL_TEXTURE_3D, tr.colorGradeImage->texnum );
+
+	if ( cmd->image->width == REF_COLORGRADEMAP_SIZE )
+	{
+		glTexSubImage3D( GL_TEXTURE_3D, 0, 0, 0, cmd->slot * REF_COLORGRADEMAP_SIZE,
+		                 REF_COLORGRADEMAP_SIZE, REF_COLORGRADEMAP_SIZE, REF_COLORGRADEMAP_SIZE,
+		                 GL_RGBA, GL_UNSIGNED_BYTE, NULL );
+	}
+	else
+	{
+		int i;
+
+		glPixelStorei( GL_UNPACK_ROW_LENGTH, REF_COLORGRADEMAP_SIZE * REF_COLORGRADEMAP_SIZE );
+
+		for ( i = 0; i < 16; i++ )
+		{
+			glTexSubImage3D( GL_TEXTURE_3D, 0, 0, 0, i + cmd->slot * REF_COLORGRADEMAP_SIZE,
+			                 REF_COLORGRADEMAP_SIZE, REF_COLORGRADEMAP_SIZE, 1,
+			                 GL_RGBA, GL_UNSIGNED_BYTE, ( ( color4ub_t * ) NULL ) + REF_COLORGRADEMAP_SIZE );
+		}
+
+		glPixelStorei( GL_UNPACK_ROW_LENGTH, 0 );
+	}
+
+	glBindTexture( GL_TEXTURE_3D, 0 );
+	glBindBuffer( GL_PIXEL_UNPACK_BUFFER, 0 );
+
+	return ( const void * ) ( cmd + 1 );
+}
+
+/*
+=============
 RB_StretchPic
 =============
 */
@@ -9917,6 +9969,10 @@ void RB_ExecuteRenderCommands( const void *data )
 	{
 		switch ( * ( const int * ) data )
 		{
+			case RC_SET_COLORGRADING:
+				data = RB_SetColorGrading( data );
+				break;
+
 			case RC_SET_COLOR:
 				data = RB_SetColor( data );
 				break;
