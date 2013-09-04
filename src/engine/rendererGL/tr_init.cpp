@@ -1962,7 +1962,7 @@ extern "C" {
 		// Maybe an OpenGL driver problem. It is safer to destroy the context in that case or you will get really weird crashes when rendering stuff.
 		//
 
-		if ( destroyWindow || glConfig.smpActive )
+		if ( destroyWindow || r_smp->integer )
 		{
 #if defined( GLSL_COMPILE_STARTUP_ONLY )
 			GLSL_ShutdownGPUShaders();
