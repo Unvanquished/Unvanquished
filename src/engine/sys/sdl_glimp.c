@@ -1917,6 +1917,10 @@ qboolean GLimp_Init( void )
 		ri.Cvar_Set( "com_abnormalExit", "0" );
 	}
 
+#if __linux__
+	XInitThreads();
+#endif
+
 	//Sys_SetEnv("SDL_VIDEO_CENTERED", r_centerWindow->integer ? "1" : "");
 
 	//ri.Sys_GLimpInit();
