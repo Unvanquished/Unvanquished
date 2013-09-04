@@ -3266,6 +3266,7 @@ extern "C" {
 	extern cvar_t *r_bloomBlur;
 	extern cvar_t *r_bloomPasses;
 	extern cvar_t *r_rotoscope;
+	extern cvar_t *r_FXAA;
 	extern cvar_t *r_cameraPostFX;
 	extern cvar_t *r_cameraVignette;
 	extern cvar_t *r_cameraFilmGrain;

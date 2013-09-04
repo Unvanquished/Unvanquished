@@ -311,6 +311,7 @@ extern "C" {
 	cvar_t      *r_bloomBlur;
 	cvar_t      *r_bloomPasses;
 	cvar_t      *r_rotoscope;
+	cvar_t      *r_FXAA;
 	cvar_t      *r_cameraPostFX;
 	cvar_t      *r_cameraVignette;
 	cvar_t      *r_cameraFilmGrain;
@@ -1555,6 +1556,7 @@ extern "C" {
 		r_bloomBlur = ri.Cvar_Get( "r_bloomBlur", "1.0", CVAR_CHEAT );
 		r_bloomPasses = ri.Cvar_Get( "r_bloomPasses", "2", CVAR_CHEAT );
 		r_rotoscope = ri.Cvar_Get( "r_rotoscope", "0", CVAR_ARCHIVE );
+		r_FXAA = ri.Cvar_Get( "r_FXAA", "0", CVAR_ARCHIVE );
 		r_cameraPostFX = ri.Cvar_Get( "r_cameraPostFX", "1", CVAR_ARCHIVE );
 		r_cameraVignette = ri.Cvar_Get( "r_cameraVignette", "0", CVAR_ARCHIVE );
 		r_cameraFilmGrain = ri.Cvar_Get( "r_cameraFilmGrain", "0", CVAR_ARCHIVE );

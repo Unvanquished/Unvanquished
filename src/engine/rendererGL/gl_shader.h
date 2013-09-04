@@ -3007,6 +3007,15 @@ public:
 	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
 };
 
+class GLShader_fxaa :
+	public GLShader
+{
+public:
+	GLShader_fxaa( GLShaderManager *manager );
+	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
+	void BuildShaderFragmentLibNames( std::string& fragmentInlines );
+};
+
 extern GLShader_generic                         *gl_genericShader;
 extern GLShader_lightMapping                    *gl_lightMappingShader;
 extern GLShader_vertexLighting_DBS_entity       *gl_vertexLightingShader_DBS_entity;
@@ -3040,6 +3049,7 @@ extern GLShader_volumetricFog                   *gl_volumetricFogShader;
 extern GLShader_screenSpaceAmbientOcclusion     *gl_screenSpaceAmbientOcclusionShader;
 extern GLShader_depthOfField                    *gl_depthOfFieldShader;
 extern GLShader_motionblur                      *gl_motionblurShader;
+extern GLShader_fxaa                            *gl_fxaaShader;
 extern GLShaderManager                           gl_shaderManager;
 
 #endif // GL_SHADER_H

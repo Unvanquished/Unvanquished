@@ -5115,6 +5115,53 @@ void RB_RenderRotoscope( void )
 #endif
 }
 
+void RB_FXAA( void )
+{
+	matrix_t ortho;
+
+	static vec4_t quadVerts[4] = {
+		{ -1.0f, -1.0f, 0.0f, 1.0f },
+		{  1.0f, -1.0f, 0.0f, 1.0f },
+		{  1.0f,  1.0f, 0.0f, 1.0f },
+		{ -1.0f,  1.0f, 0.0f, 1.0f }
+	};
+
+	GLimp_LogComment( "--- RB_FXAA ---\n" );
+
+	if ( ( backEnd.refdef.rdflags & RDF_NOWORLDMODEL ) ||
+	     backEnd.viewParms.isPortal )
+	{
+		return;
+	}
+
+	if ( !r_FXAA->integer )
+	{
+		return;
+	}
+
+	GL_State( GLS_DEPTHTEST_DISABLE );
+	GL_Cull( CT_TWO_SIDED );
+
+	// copy the framebuffer in a texture
+	// TODO: it is pretty inefficient
+	GL_SelectTexture( 0 );
+	GL_Bind( tr.currentRenderImage );
+	glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0, tr.currentRenderImage->uploadWidth,
+						 tr.currentRenderImage->uploadHeight );
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	// set the shader parameters
+	gl_fxaaShader->BindProgram();
+
+	R_BindNullFBO();
+
+	Tess_InstantQuad( quadVerts );
+
+	GL_CheckErrors();
+}
+
 void RB_CameraPostFX( void )
 {
 	matrix_t ortho;
@@ -8771,9 +8818,6 @@ static void RB_RenderView( void )
 		// copy offscreen rendered HDR scene to the current OpenGL context
 		RB_RenderDeferredHDRResultToFrameBuffer();
 
-		// render rotoscope post process effect
-		RB_RenderRotoscope();
-
 #if 0
 		// add the sun flare
 		RB_DrawSun();
@@ -8846,6 +8890,8 @@ static void RB_RenderView( void )
 
 #endif
 	}
+
+	RB_FXAA();
 
 	// render chromatric aberration
 	RB_CameraPostFX();
