@@ -23,12 +23,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "gl_shader.h"
 
-#if defined( USE_GLSL_OPTIMIZER )
-#include "../../libs/glsl-optimizer/src/glsl/glsl_optimizer.h"
-
-struct glslopt_ctx *s_glslOptimizer;
-
-#endif
 // *INDENT-OFF*
 
 GLShader_generic                         *gl_genericShader = NULL;
@@ -765,10 +759,6 @@ void GLShaderManager::SaveShaderBinary( GLShader *shader, size_t programNum )
 void GLShaderManager::CompileAndLinkGPUShaderProgram( GLShader *shader, shaderProgram_t *program,
     const std::string &compileMacros ) const
 {
-#ifdef USE_GLSL_OPTIMIZER
-	bool        optimize = r_glslOptimizer->integer ? true : false;
-#endif
-
 	//ri.Printf(PRINT_DEVELOPER, "------- GPU shader -------\n");
 	// header of the glsl shader
 	std::string vertexHeader;
@@ -828,84 +818,6 @@ void GLShaderManager::CompileAndLinkGPUShaderProgram( GLShader *shader, shaderPr
 	// add them
 	std::string vertexShaderTextWithMacros = vertexHeader + macrosString + shader->_vertexShaderText;
 	std::string fragmentShaderTextWithMacros = fragmentHeader + macrosString + shader->_fragmentShaderText;
-#ifdef USE_GLSL_OPTIMIZER
-	if( optimize )
-	{
-		static char         msgPart[ 1024 ];
-		int                 length = 0;
-		int                 i;
-
-		glslopt_shader *shaderOptimized = glslopt_optimize( s_glslOptimizer, kGlslOptShaderVertex, vertexShaderTextWithMacros.c_str(), 0 );
-		if( glslopt_get_status( shaderOptimized ) )
-		{
-			vertexShaderTextWithMacros = glslopt_get_output( shaderOptimized );
-
-			ri.Printf( PRINT_DEVELOPER, "----------------------------------------------------------\n" );
-			ri.Printf( PRINT_DEVELOPER, "OPTIMIZED VERTEX shader '%s' ----------\n", shader->GetName().c_str() );
-			ri.Printf( PRINT_DEVELOPER, " BEGIN ---------------------------------------------------\n" );
-
-			length = strlen( vertexShaderTextWithMacros.c_str() );
-
-			for ( i = 0; i < length; i += 1024 )
-			{
-				Q_strncpyz( msgPart, vertexShaderTextWithMacros.c_str() + i, sizeof( msgPart ) );
-				ri.Printf( PRINT_DEVELOPER, "%s\n", msgPart );
-			}
-
-			ri.Printf( PRINT_DEVELOPER, " END-- ---------------------------------------------------\n" );
-		}
-		else
-		{
-			const char *errorLog = glslopt_get_log( shaderOptimized );
-
-			length = strlen( errorLog );
-
-			for ( i = 0; i < length; i += 1024 )
-			{
-				Q_strncpyz( msgPart, errorLog + i, sizeof( msgPart ) );
-				ri.Printf( PRINT_WARNING, "%s\n", msgPart );
-			}
-
-			ri.Printf( PRINT_WARNING, "^1Couldn't optimize VERTEX shader %s\n", shader->GetName().c_str() );
-		}
-		glslopt_shader_delete( shaderOptimized );
-
-		glslopt_shader *shaderOptimized1 = glslopt_optimize( s_glslOptimizer, kGlslOptShaderFragment, fragmentShaderTextWithMacros.c_str(), 0 );
-		if( glslopt_get_status( shaderOptimized1 ) )
-		{
-			fragmentShaderTextWithMacros = glslopt_get_output( shaderOptimized1 );
-
-			ri.Printf( PRINT_DEVELOPER, "----------------------------------------------------------\n" );
-			ri.Printf( PRINT_DEVELOPER, "OPTIMIZED FRAGMENT shader '%s' ----------\n", shader->GetName().c_str() );
-			ri.Printf( PRINT_DEVELOPER, " BEGIN ---------------------------------------------------\n" );
-
-			length = strlen( fragmentShaderTextWithMacros.c_str() );
-
-			for ( i = 0; i < length; i += 1024 )
-			{
-				Q_strncpyz( msgPart, fragmentShaderTextWithMacros.c_str() + i, sizeof( msgPart ) );
-				ri.Printf( PRINT_DEVELOPER, "%s\n", msgPart );
-			}
-
-			ri.Printf( PRINT_DEVELOPER, " END-- ---------------------------------------------------\n" );
-		}
-		else
-		{
-			const char *errorLog = glslopt_get_log( shaderOptimized1 );
-
-			length = strlen( errorLog );
-
-			for ( i = 0; i < length; i += 1024 )
-			{
-				Q_strncpyz( msgPart, errorLog + i, sizeof( msgPart ) );
-				ri.Printf( PRINT_WARNING, "%s\n", msgPart );
-			}
-
-			ri.Printf( PRINT_WARNING, "^1Couldn't optimize FRAGMENT shader %s\n", shader->GetName().c_str() );
-		}
-		glslopt_shader_delete( shaderOptimized1 );
-	}
-#endif
 	CompileGPUShader( program->program, shader->GetName().c_str(), vertexShaderTextWithMacros.c_str(), vertexShaderTextWithMacros.length(), GL_VERTEX_SHADER );
 	CompileGPUShader( program->program, shader->GetName().c_str(), fragmentShaderTextWithMacros.c_str(), fragmentShaderTextWithMacros.length(), GL_FRAGMENT_SHADER );
 	BindAttribLocations( program->program );
