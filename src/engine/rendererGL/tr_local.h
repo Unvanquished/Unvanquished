@@ -4194,9 +4194,6 @@ extern "C" {
 	void                                *R_GetCommandBuffer( int bytes );
 	void                                RB_ExecuteRenderCommands( const void *data );
 
-	void                                R_InitCommandBuffers( void );
-	void                                R_ShutdownCommandBuffers( void );
-
 	void                                R_SyncRenderThread( void );
 
 	void                                R_AddDrawViewCmd( void );

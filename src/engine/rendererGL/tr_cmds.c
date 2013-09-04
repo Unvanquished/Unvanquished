@@ -158,46 +158,6 @@ void R_PerformanceCounters( void )
 
 /*
 ====================
-R_InitCommandBuffers
-====================
-*/
-void R_InitCommandBuffers( void )
-{
-	glConfig.smpActive = qfalse;
-
-	if ( r_smp->integer )
-	{
-		ri.Printf( PRINT_ALL, "Trying SMP acceleration...\n" );
-
-		if ( GLimp_SpawnRenderThread( RB_RenderThread ) )
-		{
-			ri.Printf( PRINT_ALL, "...succeeded.\n" );
-			glConfig.smpActive = qtrue;
-		}
-		else
-		{
-			ri.Printf( PRINT_ALL, "...failed.\n" );
-		}
-	}
-}
-
-/*
-====================
-R_ShutdownCommandBuffers
-====================
-*/
-void R_ShutdownCommandBuffers( void )
-{
-	// kill the rendering thread
-	if ( glConfig.smpActive )
-	{
-		GLimp_WakeRenderer( NULL );
-		glConfig.smpActive = qfalse;
-	}
-}
-
-/*
-====================
 R_IssueRenderCommands
 ====================
 */

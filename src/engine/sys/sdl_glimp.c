@@ -301,8 +301,10 @@ void GLimp_ShutdownRenderThread( void )
 {
 	if ( renderThread != NULL )
 	{
+		GLimp_WakeRenderer( NULL );
 		SDL_WaitThread( renderThread, NULL );
 		renderThread = NULL;
+		glConfig.smpActive = qfalse;
 	}
 
 	if ( smpMutex != NULL )
@@ -478,9 +480,6 @@ void GLimp_Shutdown( void )
 
 	ri.IN_Shutdown();
 
-	SDL_QuitSubSystem( SDL_INIT_VIDEO );
-	screen = NULL;
-
 #if defined( SMP )
 
 	if ( renderThread != NULL )
@@ -490,6 +489,9 @@ void GLimp_Shutdown( void )
 	}
 
 #endif
+
+	SDL_QuitSubSystem( SDL_INIT_VIDEO );
+	screen = NULL;
 
 	Com_Memset( &glConfig, 0, sizeof( glConfig ) );
 	Com_Memset( &glState, 0, sizeof( glState ) );

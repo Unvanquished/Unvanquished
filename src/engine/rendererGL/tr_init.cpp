@@ -393,12 +393,24 @@ extern "C" {
 #if defined( GLSL_COMPILE_STARTUP_ONLY )
 			GLSL_InitGPUShaders();
 #endif
+			glConfig.smpActive = qfalse;
+
+			if ( r_smp->integer )
+			{
+				ri.Printf( PRINT_ALL, "Trying SMP acceleration...\n" );
+
+				if ( GLimp_SpawnRenderThread( RB_RenderThread ) )
+				{
+					ri.Printf( PRINT_ALL, "...succeeded.\n" );
+					glConfig.smpActive = qtrue;
+				}
+				else
+				{
+					ri.Printf( PRINT_ALL, "...failed.\n" );
+				}
+			}
 		}
 
-		GL_CheckErrors();
-
-		// init command buffers and SMP
-		R_InitCommandBuffers();
 		GL_CheckErrors();
 
 		// set default state
@@ -1936,30 +1948,16 @@ extern "C" {
 #if !defined( GLSL_COMPILE_STARTUP_ONLY )
 			GLSL_ShutdownGPUShaders();
 #endif
-
-			if ( !destroyWindow )
-			{
-				R_ShutdownCommandBuffers();
-
-				GLimp_ShutdownRenderThread();
-			}
 		}
 
 		R_DoneFreeType();
 
 		// shut down platform specific OpenGL stuff
-
-		// Tr3B: this should be always executed if we want to avoid some GLSL problems with SMP
-		// Update: Having the JVM running with all its threads can cause problems with an old OpenGL context.
-		// Maybe an OpenGL driver problem. It is safer to destroy the context in that case or you will get really weird crashes when rendering stuff.
-		//
-
-		if ( destroyWindow || r_smp->integer )
+		if ( destroyWindow )
 		{
 #if defined( GLSL_COMPILE_STARTUP_ONLY )
 			GLSL_ShutdownGPUShaders();
 #endif
-			R_ShutdownCommandBuffers();
 			GLimp_Shutdown();
 			ri.Tag_Free();
 		}
