@@ -1077,6 +1077,8 @@ retry:
 		return RSERR_OLD_GL;
 	}
 
+#else
+	GLimp_GetCurrentContext(); // setup context information for GLimp_SetCurrentContext()
 #endif
 
 	GLimp_DetectAvailableModes();
