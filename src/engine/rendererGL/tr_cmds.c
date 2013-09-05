@@ -158,46 +158,6 @@ void R_PerformanceCounters( void )
 
 /*
 ====================
-R_InitCommandBuffers
-====================
-*/
-void R_InitCommandBuffers( void )
-{
-	glConfig.smpActive = qfalse;
-
-	if ( r_smp->integer )
-	{
-		ri.Printf( PRINT_ALL, "Trying SMP acceleration...\n" );
-
-		if ( GLimp_SpawnRenderThread( RB_RenderThread ) )
-		{
-			ri.Printf( PRINT_ALL, "...succeeded.\n" );
-			glConfig.smpActive = qtrue;
-		}
-		else
-		{
-			ri.Printf( PRINT_ALL, "...failed.\n" );
-		}
-	}
-}
-
-/*
-====================
-R_ShutdownCommandBuffers
-====================
-*/
-void R_ShutdownCommandBuffers( void )
-{
-	// kill the rendering thread
-	if ( glConfig.smpActive )
-	{
-		GLimp_WakeRenderer( NULL );
-		glConfig.smpActive = qfalse;
-	}
-}
-
-/*
-====================
 R_IssueRenderCommands
 ====================
 */
@@ -288,7 +248,7 @@ void R_SyncRenderThread( void )
 		return;
 	}
 
-	GLimp_FrontEndSleep();
+	GLimp_SyncRenderThread();
 }
 
 /*
@@ -407,6 +367,61 @@ void RE_SetColor( const float *rgba )
 	cmd->color[ 1 ] = rgba[ 1 ];
 	cmd->color[ 2 ] = rgba[ 2 ];
 	cmd->color[ 3 ] = rgba[ 3 ];
+}
+
+/*
+=============
+RE_SetColorGrading
+=============
+*/
+void RE_SetColorGrading( int slot, qhandle_t hShader )
+{
+	setColorGradingCommand_t *cmd;
+	shader_t *shader = R_GetShaderByHandle( hShader );
+	image_t *image;
+
+	if ( !tr.registered )
+	{
+		return;
+	}
+
+	if ( slot < 0 || slot > 3 )
+	{
+		return;
+	}
+
+	if ( shader->defaultShader || !shader->stages[ 0 ] )
+	{
+		return;
+	}
+
+	image = shader->stages[ 0 ]->bundle[ 0 ].image[ 0 ];
+
+	if ( !image )
+	{
+		return;
+	}
+
+	if ( image->width != REF_COLORGRADEMAP_SIZE && image->height != REF_COLORGRADEMAP_SIZE )
+	{
+		return;
+	}
+
+	if ( image->width * image->height != REF_COLORGRADEMAP_STORE_SIZE )
+	{
+		return;
+	}
+
+	cmd = ( setColorGradingCommand_t * ) R_GetCommandBuffer( sizeof( *cmd ) );
+
+	if ( !cmd )
+	{
+		return;
+	}
+
+	cmd->slot = slot;
+	cmd->image = image;
+	cmd->commandId = RC_SET_COLORGRADING;
 }
 
 /*

@@ -3266,16 +3266,13 @@ extern "C" {
 	extern cvar_t *r_bloomBlur;
 	extern cvar_t *r_bloomPasses;
 	extern cvar_t *r_rotoscope;
+	extern cvar_t *r_FXAA;
 	extern cvar_t *r_cameraPostFX;
 	extern cvar_t *r_cameraVignette;
 	extern cvar_t *r_cameraFilmGrain;
 	extern cvar_t *r_cameraFilmGrainScale;
 
 	extern cvar_t *r_evsmPostProcess;
-
-#ifdef USE_GLSL_OPTIMIZER
-	extern cvar_t *r_glslOptimizer;
-#endif
 
 	extern cvar_t *r_fontScale;
 
@@ -3521,6 +3518,7 @@ extern "C" {
 	void     GLimp_ShutdownRenderThread( void );
 	void     *GLimp_RendererSleep( void );
 	void     GLimp_FrontEndSleep( void );
+	void     GLimp_SyncRenderThread( void );
 	void     GLimp_WakeRenderer( void *data );
 
 	void     GLimp_LogComment( const char *comment );
@@ -4012,6 +4010,13 @@ extern "C" {
 
 	typedef struct
 	{
+		int     commandId;
+		image_t *image;
+		int     slot;
+	} setColorGradingCommand_t;
+
+	typedef struct
+	{
 		int commandId;
 		int buffer;
 	} drawBufferCommand_t;
@@ -4135,6 +4140,7 @@ extern "C" {
 	typedef enum
 	{
 	  RC_END_OF_LIST,
+	  RC_SET_COLORGRADING,
 	  RC_SET_COLOR,
 	  RC_STRETCH_PIC,
 	  RC_2DPOLYS,
@@ -4188,9 +4194,6 @@ extern "C" {
 
 	void                                *R_GetCommandBuffer( int bytes );
 	void                                RB_ExecuteRenderCommands( const void *data );
-
-	void                                R_InitCommandBuffers( void );
-	void                                R_ShutdownCommandBuffers( void );
 
 	void                                R_SyncRenderThread( void );
 

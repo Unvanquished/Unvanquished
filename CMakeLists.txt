@@ -106,7 +106,8 @@ option( ENABLE_BUNDLING      "When packaging automatically include all non-syste
 
 cmake_dependent_option( BUILD_OLD_RENDERER   "Build old renderer library"                            1 BUILD_CLIENT                   0 )
 cmake_dependent_option( BUILD_NEW_RENDERER   "Build new renderer library"                            1 BUILD_CLIENT                   0 )
-cmake_dependent_option( USE_OPENAL           "Use OpenAL"                                            1 BUILD_CLIENT                   0 )
+cmake_dependent_option( USE_SMP              "Puts the renderer backend in another thread"           1 BUILD_NEW_RENDERER             0 )
+cmake_dependent_option( USE_OPENAL           "Use OpenAL"                                            0 BUILD_CLIENT                   0 )
 cmake_dependent_option( USE_CODEC_VORBIS     "Compile with support for Vorbis"                       1 BUILD_CLIENT                   0 )
 cmake_dependent_option( USE_MUMBLE           "Compile with support for Mumble"                       1 BUILD_CLIENT                   0 )
 cmake_dependent_option( USE_VOIP             "Compile with VOIP support"                             1 "BUILD_CLIENT OR BUILD_SERVER" 0 )
@@ -120,7 +121,6 @@ cmake_dependent_option( USE_INTERNAL_CRYPTO  "Use internal crypto (nettle)"     
 cmake_dependent_option( USE_INTERNAL_JPEG    "Use JPEG files included with Unvanquished"             0
                                                                         "BUILD_OLD_RENDERER OR BUILD_NEW_RENDERER OR BUILD_DAEMONMAP" 0 )
 
-cmake_dependent_option( USE_GLSL_OPTIMIZER   "Compile with GLSL Optimizer"                           1 BUILD_NEW_RENDERER             0 )
 cmake_dependent_option( USE_SDL_ICONV        "Compile with SDL's iconv implementation"               1 BUILD_CLIENT                   0 )
 
 cmake_dependent_option( HAVE_BZIP2           "Compile with BZip2 support"                            0 "HAVE_BZIP2"                   0 )
@@ -1601,23 +1601,14 @@ if( BUILD_NEW_RENDERER )
     find_package( X11 )
   endif()
 
+  if( USE_SMP )
+      set_property( TARGET rendererGL APPEND PROPERTY COMPILE_DEFINITIONS SMP )
+  endif()
+
   include_directories( ${PNG_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS} ${SDL_INCLUDE_DIR} ${X11_INCLUDE_DIR} ${WEBP_INCLUDE_DIRS} )
   target_link_libraries( rendererGL ${PNG_LIBRARIES} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} ${JPEG_LIBRARIES} ${FREETYPE_LIBRARIES} ${SDL_LIBRARY} ${WEBP_LIBRARIES} )
 
   # This section finds and provides OPTIONAL dependencies to target rendererGL
-  if( USE_GLSL_OPTIMIZER )
-    include_directories( ${LIB_DIR}/glsl-optimizer/include )
-    target_link_libraries( rendererGL glsl_optimizer )
-    set_property( TARGET rendererGL APPEND PROPERTY COMPILE_DEFINITIONS USE_GLSL_OPTIMIZER )
-  endif()
-endif()
-
-########################
-# Build GLSL Optimizer #
-########################
-
-if( USE_GLSL_OPTIMIZER )
-  add_subdirectory( ${LIB_DIR}/glsl-optimizer ${OBJ_DIR}/glsl )
 endif()
 
 ###############

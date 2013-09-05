@@ -971,10 +971,7 @@ static void R_InitUnitCubeVBO( void )
 	vboData_t     data;
 	int           i;
 
-	if ( glConfig.smpActive )
-	{
-		ri.Error( ERR_FATAL, "R_InitUnitCubeVBO: FIXME SMP" );
-	}
+	R_SyncRenderThread();
 
 	tess.multiDrawPrimitives = 0;
 	tess.numIndexes = 0;
