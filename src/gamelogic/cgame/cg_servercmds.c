@@ -94,7 +94,7 @@ static void CG_ParseTeamInfo( void )
 		client = atoi( CG_Argv( i ) );
 
 		// wrong team? skip to the next one
-		if ( cgs.clientinfo[ client ].team != cg.snap->ps.stats[ STAT_TEAM ] )
+		if ( cgs.clientinfo[ client ].team != cg.snap->ps.persistant[ PERS_TEAM ] )
 		{
 			return;
 		}
@@ -110,7 +110,7 @@ static void CG_ParseTeamInfo( void )
 		cgs.clientinfo[ client ].curWeaponClass = atoi( CG_Argv( ++i ) );
 		cgs.clientinfo[ client ].credit         = atoi( CG_Argv( ++i ) );
 
-		if( cg.snap->ps.stats[ STAT_TEAM ] != TEAM_ALIENS )
+		if( cg.snap->ps.persistant[ PERS_TEAM ] != TEAM_ALIENS )
 		{
 			cgs.clientinfo[ client ].upgrade = atoi( CG_Argv( ++i ) );
 		}
@@ -254,7 +254,7 @@ static void CG_AnnounceAlienStageTransition( stage_t from, stage_t to )
 	Q_UNUSED(from);
 	Q_UNUSED(to);
 
-	if ( cg.predictedPlayerState.stats[ STAT_TEAM ] != TEAM_ALIENS )
+	if ( cg.predictedPlayerState.persistant[ PERS_TEAM ] != TEAM_ALIENS )
 	{
 		return;
 	}
@@ -281,7 +281,7 @@ static void CG_AnnounceHumanStageTransition( stage_t from, stage_t to )
 	Q_UNUSED(from);
 	Q_UNUSED(to);
 
-	if ( cg.predictedPlayerState.stats[ STAT_TEAM ] != TEAM_HUMANS )
+	if ( cg.predictedPlayerState.persistant[ PERS_TEAM ] != TEAM_HUMANS )
 	{
 		return;
 	}
@@ -505,7 +505,7 @@ void CG_Menu( int menu, int arg )
 	const char   *dialog;
 	dialogType_t type = 0; // controls which cg_disable var will switch it off
 
-	switch ( cg.snap->ps.stats[ STAT_TEAM ] )
+	switch ( cg.snap->ps.persistant[ PERS_TEAM ] )
 	{
 		case TEAM_ALIENS:
 			dialog = "menu tremulous_alien_dialog\n";

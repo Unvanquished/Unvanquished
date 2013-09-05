@@ -2537,7 +2537,7 @@ static qboolean Cmd_Class_internal( gentity_t *ent, const char *s, qboolean repo
 			{
 				other = &g_entities[ entityList[ i ] ];
 
-				if ( ( other->client && other->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS ) ||
+				if ( ( other->client && other->client->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS ) ||
 				     ( other->s.eType == ET_BUILDABLE && other->buildableTeam == TEAM_HUMANS &&
 				       other->powered ) )
 				{
@@ -3529,7 +3529,7 @@ void Cmd_Build_f( gentity_t *ent )
 
 	buildable = BG_BuildableByName( s )->number;
 
-	team = ent->client->ps.stats[ STAT_TEAM ];
+	team = ent->client->ps.persistant[ PERS_TEAM ];
 
 	if ( buildable != BA_NONE &&
 	     ( ( 1 << ent->client->ps.weapon ) & BG_Buildable( buildable )->buildWeapon ) &&
@@ -3697,8 +3697,6 @@ to free floating spectator mode
 */
 void G_StopFollowing( gentity_t *ent )
 {
-	ent->client->ps.stats[ STAT_TEAM ] = ent->client->ps.persistant[ PERS_TEAM ];
-
 	if ( ent->client->ps.persistant[ PERS_TEAM ] == TEAM_NONE )
 	{
 		ent->client->sess.spectatorState =
@@ -3765,7 +3763,6 @@ void G_FollowLockView( gentity_t *ent )
 	  ent->client->ps.persistant[ PERS_SPECSTATE ] = SPECTATOR_FOLLOW;
 	ent->client->ps.clientNum = clientNum;
 	ent->client->ps.pm_flags &= ~PMF_FOLLOW;
-	ent->client->ps.stats[ STAT_TEAM ] = ent->client->ps.persistant[ PERS_TEAM ];
 	ent->client->ps.stats[ STAT_STATE ] &= ~SS_WALLCLIMBING;
 	ent->client->ps.stats[ STAT_VIEWLOCK ] = 0;
 	ent->client->ps.eFlags &= ~( EF_WALLCLIMB | EF_WALLCLIMBCEILING );

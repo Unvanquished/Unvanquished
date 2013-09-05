@@ -498,10 +498,10 @@ static void CG_SetPVars( void )
 	if ( ( ps->pm_flags & PMF_FOLLOW ) )
 		return;
 
-	trap_Cvar_Set( "p_teamname", BG_TeamName( ps->stats[ STAT_TEAM ] ) );
+	trap_Cvar_Set( "p_teamname", BG_TeamName( ps->persistant[ PERS_TEAM ] ) );
 
 	// while we're here, set stage
-	switch ( ps->stats[ STAT_TEAM ] )
+	switch ( ps->persistant[ PERS_TEAM ] )
 	{
 		case TEAM_ALIENS:
 			stage = cgs.alienStage;
@@ -693,7 +693,7 @@ static void CG_SetPVars( void )
 	{
 		const buildableAttributes_t *buildable = BG_Buildable( i );
 
-		if ( buildable->team == ps->stats[ STAT_TEAM ] &&
+		if ( buildable->team == ps->persistant[ PERS_TEAM ] &&
 		     BG_BuildableAllowedInStage( i, stage ) &&
 		     (buildable->buildWeapon & ( 1 << ps->stats[ STAT_WEAPON ] ) ) )
 
@@ -751,7 +751,7 @@ static void CG_SetUIVars( void )
 
 	trap_Cvar_Set( "ui_carriage", carriageCvar );
 
-	switch ( ps->stats[ STAT_TEAM ] )
+	switch ( ps->persistant[ PERS_TEAM ] )
 	{
 		case TEAM_NONE:
 			trap_Cvar_Set( "ui_stages", va( "%d %d", cgs.alienStage, cgs.humanStage ) );
@@ -903,18 +903,18 @@ void CG_NotifyHooks( void )
 	ps = &cg.snap->ps;
 	if ( !( ps->pm_flags & PMF_FOLLOW ) )
 	{
-		if( lastTeam != ps->stats[ STAT_TEAM ] )
+		if( lastTeam != ps->persistant[ PERS_TEAM ] )
 		{
-			trap_notify_onTeamChange( ps->stats[ STAT_TEAM ] );
+			trap_notify_onTeamChange( ps->persistant[ PERS_TEAM ] );
 
 			/* execute team-specific config files */
-			trap_Cvar_VariableStringBuffer( va( "cg_%sConfig", BG_TeamName( ps->stats[ STAT_TEAM ] ) ), config, sizeof( config ) );
+			trap_Cvar_VariableStringBuffer( va( "cg_%sConfig", BG_TeamName( ps->persistant[ PERS_TEAM ] ) ), config, sizeof( config ) );
 			if ( config[ 0 ] )
 			{
 				trap_SendConsoleCommand( va( "exec %s\n", Quote( config ) ) );
 			}
 
-			lastTeam = ps->stats[ STAT_TEAM ];
+			lastTeam = ps->persistant[ PERS_TEAM ];
 		}
 	}
 }
@@ -2340,7 +2340,7 @@ static const char *CG_FeederItemText( int feederID, int index, int column, qhand
 	else if ( cg.snap->ps.pm_type == PM_SPECTATOR ||
 	          cg.snap->ps.pm_type == PM_NOCLIP ||
 	          cg.snap->ps.pm_flags & PMF_FOLLOW ||
-	          team == cg.snap->ps.stats[ STAT_TEAM ] ||
+	          team == cg.snap->ps.persistant[ PERS_TEAM ] ||
 	          cg.intermissionStarted )
 	{
 		showIcons = qtrue;

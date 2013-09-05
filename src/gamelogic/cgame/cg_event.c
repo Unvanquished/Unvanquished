@@ -1375,7 +1375,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			break;
 
 		case EV_OVERMIND_ATTACK:
-			if ( cg.predictedPlayerState.stats[ STAT_TEAM ] == TEAM_ALIENS )
+			if ( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_ALIENS )
 			{
 				trap_S_StartLocalSound( cgs.media.alienOvermindAttack, CHAN_ANNOUNCER );
 				CG_CenterPrint( "The Overmind is under attack!", 200, GIANTCHAR_WIDTH * 4 );
@@ -1384,7 +1384,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			break;
 
 		case EV_OVERMIND_DYING:
-			if ( cg.predictedPlayerState.stats[ STAT_TEAM ] == TEAM_ALIENS )
+			if ( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_ALIENS )
 			{
 				trap_S_StartLocalSound( cgs.media.alienOvermindDying, CHAN_ANNOUNCER );
 				CG_CenterPrint( "The Overmind is dying!", 200, GIANTCHAR_WIDTH * 4 );
@@ -1393,7 +1393,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			break;
 
 		case EV_DCC_ATTACK:
-			if ( cg.predictedPlayerState.stats[ STAT_TEAM ] == TEAM_HUMANS )
+			if ( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_HUMANS )
 			{
 				//trap_S_StartLocalSound( cgs.media.humanDCCAttack, CHAN_ANNOUNCER );
 				CG_CenterPrint( "Our base is under attack!", 200, GIANTCHAR_WIDTH * 4 );
@@ -1406,7 +1406,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			break;
 
 		case EV_OVERMIND_SPAWNS:
-			if ( cg.predictedPlayerState.stats[ STAT_TEAM ] == TEAM_ALIENS )
+			if ( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_ALIENS )
 			{
 				trap_S_StartLocalSound( cgs.media.alienOvermindSpawns, CHAN_ANNOUNCER );
 				CG_CenterPrint( "The Overmind needs spawns!", 200, GIANTCHAR_WIDTH * 4 );

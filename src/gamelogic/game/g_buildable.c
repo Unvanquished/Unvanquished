@@ -570,7 +570,7 @@ static void AGeneric_CreepSlow( gentity_t *self )
 			continue;
 		}
 
-		if ( enemy->client && enemy->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS &&
+		if ( enemy->client && enemy->client->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS &&
 		     enemy->client->ps.groundEntityNum != ENTITYNUM_NONE )
 		{
 			enemy->client->ps.stats[ STAT_STATE ] |= SS_CREEPSLOWED;
@@ -1402,7 +1402,7 @@ void AAcidTube_Think( gentity_t *self )
 			enemy = &g_entities[ entityList[ i ] ];
 
 			// fast checks first: not a target, or not human
-			if ( ( enemy->flags & FL_NOTARGET ) || !enemy->client || enemy->client->ps.stats[ STAT_TEAM ] != TEAM_HUMANS )
+			if ( ( enemy->flags & FL_NOTARGET ) || !enemy->client || enemy->client->ps.persistant[ PERS_TEAM ] != TEAM_HUMANS )
 			{
 				continue;
 			}
@@ -1498,7 +1498,7 @@ static qboolean AHive_CheckTarget( gentity_t *self, gentity_t *enemy )
 
 	// Check if this is a valid target
 	if ( enemy->health <= 0 || !enemy->client ||
-	     enemy->client->ps.stats[ STAT_TEAM ] != TEAM_HUMANS )
+	     enemy->client->ps.persistant[ PERS_TEAM ] != TEAM_HUMANS )
 	{
 		return qfalse;
 	}
@@ -1627,7 +1627,7 @@ void ABooster_Touch( gentity_t *self, gentity_t *other, trace_t *trace )
 		return;
 	}
 
-	if ( client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
+	if ( client->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS )
 	{
 		return;
 	}
@@ -1748,7 +1748,7 @@ qboolean ATrapper_CheckTarget( gentity_t *self, gentity_t *target, int range )
 		return qfalse;
 	}
 
-	if ( target->client->ps.stats[ STAT_TEAM ] == TEAM_ALIENS ) // one of us?
+	if ( target->client->ps.persistant[ PERS_TEAM ] == TEAM_ALIENS ) // one of us?
 	{
 		return qfalse;
 	}
@@ -2557,7 +2557,7 @@ void HReactor_Think( gentity_t *self )
 			enemy = &g_entities[ entityList[ i ] ];
 
 			if ( !enemy->client ||
-			     enemy->client->ps.stats[ STAT_TEAM ] != TEAM_ALIENS )
+			     enemy->client->ps.persistant[ PERS_TEAM ] != TEAM_ALIENS )
 			{
 				continue;
 			}
@@ -2620,7 +2620,7 @@ void HArmoury_Activate( gentity_t *self, gentity_t *other, gentity_t *activator 
 	if ( self->spawned )
 	{
 		//only humans can activate this
-		if ( activator->client->ps.stats[ STAT_TEAM ] != TEAM_HUMANS )
+		if ( activator->client->ps.persistant[ PERS_TEAM ] != TEAM_HUMANS )
 		{
 			return;
 		}
@@ -2775,7 +2775,7 @@ void HMedistat_Think( gentity_t *self )
 		client = player->client;
 
 		// only react to humans
-		if ( !client || client->ps.stats[ STAT_TEAM ] != TEAM_HUMANS )
+		if ( !client || client->ps.persistant[ PERS_TEAM ] != TEAM_HUMANS )
 		{
 			continue;
 		}
@@ -3250,7 +3250,7 @@ void HTeslaGen_Think( gentity_t *self )
 			}
 
 			if ( self->target->client && self->target->health > 0 &&
-			     self->target->client->ps.stats[ STAT_TEAM ] == TEAM_ALIENS &&
+			     self->target->client->ps.persistant[ PERS_TEAM ] == TEAM_ALIENS &&
 			     Distance( origin, self->target->s.pos.trBase ) <= TESLAGEN_RANGE )
 			{
 				FireWeapon( self );
@@ -4484,7 +4484,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 		reason = tempReason;
 	}
 
-	if ( ent->client->ps.stats[ STAT_TEAM ] == TEAM_ALIENS )
+	if ( ent->client->ps.persistant[ PERS_TEAM ] == TEAM_ALIENS )
 	{
 		// Check for Overmind
 		if ( buildable != BA_A_OVERMIND )
@@ -4516,7 +4516,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 			reason = IBE_DISABLED;
 		}
 	}
-	else if ( ent->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
+	else if ( ent->client->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS )
 	{
 		// Check for Reactor
 		if ( buildable != BA_H_REACTOR )
@@ -4841,7 +4841,7 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 	if ( builder && builder->client )
 	{
 	        // readable and the model name shouldn't need quoting
-		G_TeamCommand( builder->client->ps.stats[ STAT_TEAM ],
+		G_TeamCommand( builder->client->ps.persistant[ PERS_TEAM ],
 		               va( "print_tr %s %s %s %s", ( readable[ 0 ] ) ?
 						QQ( N_("$1$ ^2built^7 by $2$^7, ^3replacing^7 $3$\n") ) :
 						QQ( N_("$1$ ^2built^7 by $2$$3$\n") ),

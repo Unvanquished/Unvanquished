@@ -239,7 +239,7 @@ typedef enum
   STAT_WEAPON, // current primary weapon
   STAT_MAX_HEALTH, // health / armor limit
   STAT_CLASS, // player class (for aliens AND humans)
-  STAT_TEAM, // player team
+  STAT_UNUSED_1, // UNUSED
   STAT_STAMINA, // stamina (human only)
   STAT_STATE, // client states e.g. wall climbing
   STAT_MISC, // for uh...misc stuff (pounce, trample, lcannon)

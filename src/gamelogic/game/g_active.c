@@ -522,7 +522,7 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 			G_StopFollowing( ent );
 		}
 
-		team = client->ps.stats[ STAT_TEAM ];
+		team = client->ps.persistant[ PERS_TEAM ];
 		//be sure that only valid team "numbers" can be used.
 		assert(team == TEAM_ALIENS || team == TEAM_HUMANS);
 		G_RemoveFromSpawnQueue( &level.team[ team ].spawnQueue, client->ps.clientNum );
@@ -605,7 +605,7 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 		// Set the queue position and spawn count for the client side
 		if ( client->ps.pm_flags & PMF_QUEUED )
 		{
-			team_t team = client->ps.stats[ STAT_TEAM ];
+			team_t team = client->ps.persistant[ PERS_TEAM ];
 			/* team must exist, or there will be a sigsegv */
 			assert(team == TEAM_HUMANS || team == TEAM_ALIENS);
 			client->ps.persistant[ PERS_SPAWNS ] = level.team[ team ].numSpawns;
@@ -934,14 +934,14 @@ void ClientTimerActions( gentity_t *ent, int msec )
 		}
 
 		// turn off life support when a team admits defeat
-		if ( client->ps.stats[ STAT_TEAM ] == TEAM_ALIENS &&
+		if ( client->ps.persistant[ PERS_TEAM ] == TEAM_ALIENS &&
 		     level.surrenderTeam == TEAM_ALIENS )
 		{
 			G_Damage( ent, NULL, NULL, NULL, NULL,
 			          BG_Class( client->ps.stats[ STAT_CLASS ] )->regenRate,
 			          DAMAGE_NO_ARMOR, MOD_SUICIDE );
 		}
-		else if ( client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS &&
+		else if ( client->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS &&
 		          level.surrenderTeam == TEAM_HUMANS )
 		{
 			G_Damage( ent, NULL, NULL, NULL, NULL, 5, DAMAGE_NO_ARMOR, MOD_SUICIDE );
@@ -963,11 +963,11 @@ void ClientTimerActions( gentity_t *ent, int msec )
 		     client->pers.aliveSeconds % g_freeFundPeriod.integer == 0 )
 		{
 			// Give clients some credit periodically
-			if ( client->ps.stats[ STAT_TEAM ] == TEAM_ALIENS )
+			if ( client->ps.persistant[ PERS_TEAM ] == TEAM_ALIENS )
 			{
 				G_AddCreditToClient( client, FREEKILL_ALIEN, qtrue );
 			}
-			else if ( client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
+			else if ( client->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS )
 			{
 				G_AddCreditToClient( client, FREEKILL_HUMAN, qtrue );
 			}
@@ -2177,8 +2177,8 @@ void ClientThink_real( gentity_t *ent )
 		traceEnt = &g_entities[ trace.entityNum ];
 
 		if ( traceEnt && traceEnt->use
-				&& ( !traceEnt->buildableTeam || traceEnt->buildableTeam == client->ps.stats[ STAT_TEAM ] )
-				&& ( !traceEnt->conditions.team || traceEnt->conditions.team == client->ps.stats[ STAT_TEAM ] ))
+				&& ( !traceEnt->buildableTeam || traceEnt->buildableTeam == client->ps.persistant[ PERS_TEAM ] )
+				&& ( !traceEnt->conditions.team || traceEnt->conditions.team == client->ps.persistant[ PERS_TEAM ] ))
 		{
 			if ( g_debugEntities.integer > 1 )
 				G_Printf("Debug: Calling entity->use for player facing %s\n", etos(traceEnt));
@@ -2198,7 +2198,7 @@ void ClientThink_real( gentity_t *ent )
 			{
 				traceEnt = &g_entities[ entityList[ i ] ];
 
-				if ( traceEnt && traceEnt->use && traceEnt->buildableTeam == client->ps.stats[ STAT_TEAM ])
+				if ( traceEnt && traceEnt->use && traceEnt->buildableTeam == client->ps.persistant[ PERS_TEAM ])
 				{
 					if ( g_debugEntities.integer > 1 )
 						G_Printf("Debug: Calling entity->use after an area-search for %s\n", etos(traceEnt));
@@ -2208,7 +2208,7 @@ void ClientThink_real( gentity_t *ent )
 				}
 			}
 
-			if ( i == num && client->ps.stats[ STAT_TEAM ] == TEAM_ALIENS )
+			if ( i == num && client->ps.persistant[ PERS_TEAM ] == TEAM_ALIENS )
 			{
 				if ( BG_AlienCanEvolve( client->ps.stats[ STAT_CLASS ],
 				                        client->pers.credit,
@@ -2226,8 +2226,8 @@ void ClientThink_real( gentity_t *ent )
 		}
 	}
 
-	client->ps.persistant[ PERS_BP ] = G_GetBuildPointsInt( client->ps.stats[ STAT_TEAM ] );
-	client->ps.persistant[ PERS_MARKEDBP ] = G_GetMarkedBuildPointsInt( client->ps.stats[ STAT_TEAM ] );
+	client->ps.persistant[ PERS_BP ] = G_GetBuildPointsInt( client->ps.persistant[ PERS_TEAM ] );
+	client->ps.persistant[ PERS_MARKEDBP ] = G_GetMarkedBuildPointsInt( client->ps.persistant[ PERS_TEAM ] );
 
 	if ( client->ps.persistant[ PERS_BP ] < 0 )
 	{

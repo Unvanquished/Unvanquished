@@ -433,7 +433,7 @@ static void SpawnCorpse( gentity_t *ent )
 	body->s.clientNum = ent->client->ps.stats[ STAT_CLASS ];
 	body->nonSegModel = ent->client->ps.persistant[ PERS_STATE ] & PS_NONSEGMODEL;
 
-	if ( ent->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
+	if ( ent->client->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS )
 	{
 		body->classname = "humanCorpse";
 	}
@@ -1629,8 +1629,6 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	client->ps.persistant[ PERS_NEWWEAPON ] = 0;
 
 	ent->client->ps.stats[ STAT_CLASS ] = ent->client->pers.classSelection;
-	ent->client->ps.stats[ STAT_TEAM ] = ent->client->ps.persistant[ PERS_TEAM ];
-
 	ent->client->ps.stats[ STAT_BUILDABLE ] = BA_NONE;
 	ent->client->ps.stats[ STAT_PREDICTION ] = 0;
 	ent->client->ps.stats[ STAT_STATE ] = 0;
@@ -1662,7 +1660,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 
 	//give aliens some spawn velocity
 	if ( client->sess.spectatorState == SPECTATOR_NOT &&
-	     client->ps.stats[ STAT_TEAM ] == TEAM_ALIENS )
+	     client->ps.persistant[ PERS_TEAM ] == TEAM_ALIENS )
 	{
 		if ( ent == spawn )
 		{
@@ -1690,7 +1688,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 		}
 	}
 	else if ( client->sess.spectatorState == SPECTATOR_NOT &&
-	          client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
+	          client->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS )
 	{
 		spawn_angles[ YAW ] += 180.0f;
 		AngleNormalize360( spawn_angles[ YAW ] );

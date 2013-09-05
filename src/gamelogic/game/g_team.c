@@ -197,7 +197,7 @@ static clientList_t G_ClientListForTeam( team_t team )
 			continue;
 		}
 
-		if ( ent->inuse && ( ent->client->ps.stats[ STAT_TEAM ] == team ) )
+		if ( ent->inuse && ( ent->client->ps.persistant[ PERS_TEAM ] == team ) )
 		{
 			Com_ClientListAdd( &clientList, ent->client->ps.clientNum );
 		}
@@ -558,8 +558,8 @@ void CheckTeamStatus( void )
 				continue;
 			}
 
-			if ( ent->inuse && ( ent->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS ||
-			                     ent->client->ps.stats[ STAT_TEAM ] == TEAM_ALIENS ) )
+			if ( ent->inuse && ( ent->client->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS ||
+			                     ent->client->ps.persistant[ PERS_TEAM ] == TEAM_ALIENS ) )
 			{
 				loc = Team_GetLocation( ent );
 

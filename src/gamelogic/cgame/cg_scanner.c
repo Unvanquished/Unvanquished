@@ -50,7 +50,7 @@ static void CG_UpdateRadarVisibility( void ) {
 			float fadeOut = bld->radarFadeOut;
 
 			if( fadeOut <= 0.0f ||
-			    cent->currentState.modelindex2 == cg.predictedPlayerState.stats[ STAT_TEAM ] ||
+			    cent->currentState.modelindex2 == cg.predictedPlayerState.persistant[ PERS_TEAM ] ||
 			    cent->buildableAnim != bld->idleAnim ) {
 				cent->radarVisibility = 1.0f;
 			} else {
@@ -126,7 +126,7 @@ void CG_UpdateEntityPositions( void )
 
 	CG_UpdateRadarVisibility();
 
-	if ( cg.predictedPlayerState.stats[ STAT_TEAM ] == TEAM_HUMANS )
+	if ( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_HUMANS )
 	{
 		if ( entityPositions.lastUpdateTime + HUMAN_SCANNER_UPDATE_PERIOD > cg.time )
 		{

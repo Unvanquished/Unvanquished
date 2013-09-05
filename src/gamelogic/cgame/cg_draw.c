@@ -376,7 +376,7 @@ static void CG_DrawPlayerCreditsValue( rectDef_t *rect, vec4_t color, qboolean p
 	{
 		Vector4Copy( color, localColor );
 
-		if ( cg.predictedPlayerState.stats[ STAT_TEAM ] == TEAM_ALIENS )
+		if ( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_ALIENS )
 		{
 			if ( !BG_AlienCanEvolve( cg.predictedPlayerState.stats[ STAT_CLASS ],
 			                         value, cgs.alienStage ) &&
@@ -410,7 +410,7 @@ static void CG_DrawPlayerCreditsFraction( rectDef_t *rect, vec4_t color, qhandle
 	float height;
 	rectDef_t aRect;
 
-	if ( cg.predictedPlayerState.stats[ STAT_TEAM ] != TEAM_ALIENS )
+	if ( cg.predictedPlayerState.persistant[ PERS_TEAM ] != TEAM_ALIENS )
 	{
 		return;
 	}
@@ -446,7 +446,7 @@ static void CG_DrawPlayerAlienEvos( rectDef_t *rect, float text_x, float text_y,
 	{
 		Vector4Copy( color, localColor );
 
-		if ( cg.predictedPlayerState.stats[ STAT_TEAM ] == TEAM_ALIENS )
+		if ( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_ALIENS )
 		{
 			if ( !BG_AlienCanEvolve( cg.predictedPlayerState.stats[ STAT_CLASS ],
 			                         value, cgs.alienStage ) &&
@@ -1041,7 +1041,7 @@ static void CG_DrawUsableBuildable( rectDef_t *rect, qhandle_t shader, vec4_t co
 	es = &cg_entities[ trace.entityNum ].currentState;
 
 	if ( es->eType == ET_BUILDABLE && BG_Buildable( es->modelindex )->usable &&
-	     cg.predictedPlayerState.stats[ STAT_TEAM ] == BG_Buildable( es->modelindex )->team )
+	     cg.predictedPlayerState.persistant[ PERS_TEAM ] == BG_Buildable( es->modelindex )->team )
 	{
 		//hack to prevent showing the usable buildable when you aren't carrying an energy weapon
 		if ( ( es->modelindex == BA_H_REACTOR || es->modelindex == BA_H_REPEATER ) &&
@@ -1172,7 +1172,7 @@ static void CG_DrawPlayerHealthCross( rectDef_t *rect, vec4_t ref_color )
 	}
 	else if ( cg.snap->ps.stats[ STAT_STATE ] & SS_HEALING_2X )
 	{
-		if ( cg.snap->ps.stats[ STAT_TEAM ] == TEAM_ALIENS )
+		if ( cg.snap->ps.persistant[ PERS_TEAM ] == TEAM_ALIENS )
 		{
 			shader = cgs.media.healthCross2X;
 		}
@@ -1189,7 +1189,7 @@ static void CG_DrawPlayerHealthCross( rectDef_t *rect, vec4_t ref_color )
 	// Pick the alpha value
 	Vector4Copy( ref_color, color );
 
-	if ( cg.snap->ps.stats[ STAT_TEAM ] == TEAM_HUMANS &&
+	if ( cg.snap->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS &&
 	     cg.snap->ps.stats[ STAT_HEALTH ] < 10 )
 	{
 		color[ 0 ] = 1.0f;
@@ -1598,7 +1598,7 @@ static void CG_DrawPlayerClipMeter( rectDef_t *rect, int align, vec4_t color, qh
 	int      maxAmmo;
 	weapon_t weapon;
 
-	if ( cg.predictedPlayerState.stats[ STAT_TEAM ] != TEAM_HUMANS )
+	if ( cg.predictedPlayerState.persistant[ PERS_TEAM ] != TEAM_HUMANS )
 	{
 		return;
 	}
@@ -2107,7 +2107,7 @@ static void CG_DrawStageReport( rectDef_t *rect, float text_x, float text_y,
 		return;
 	}
 
-	switch ( cg.snap->ps.stats[ STAT_TEAM ] )
+	switch ( cg.snap->ps.persistant[ PERS_TEAM ] )
 	{
 		case TEAM_ALIENS:
 			stage = cgs.alienStage;
@@ -2535,7 +2535,7 @@ static void CG_DrawTeamOverlay( rectDef_t *rect, float scale, vec4_t color )
 			CG_DrawPic( x + leftMargin, y, iconSize, iconSize,
 			            cg_weapons[ curWeapon ].weaponIcon );
 
-			if ( cg.predictedPlayerState.stats[ STAT_TEAM ] == TEAM_HUMANS )
+			if ( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_HUMANS )
 			{
 				if ( ci->upgrade != UP_NONE )
 				{
@@ -3257,7 +3257,7 @@ void CG_DrawWeaponIcon( rectDef_t *rect, vec4_t color )
 		}
 	}
 
-	if ( cg.predictedPlayerState.stats[ STAT_TEAM ] == TEAM_ALIENS &&
+	if ( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_ALIENS &&
 	     !BG_AlienCanEvolve( cg.predictedPlayerState.stats[ STAT_CLASS ],
 	                         ps->persistant[ PERS_CREDIT ], cgs.alienStage ) )
 	{
@@ -3390,7 +3390,7 @@ static void CG_ScanForCrosshairEntity( void )
 		entityState_t *s = &cg_entities[ trace.entityNum ].currentState;
 
 		if ( s->eType == ET_BUILDABLE && BG_Buildable( s->modelindex )->team ==
-		     cg.snap->ps.stats[ STAT_TEAM ] )
+		     cg.snap->ps.persistant[ PERS_TEAM ] )
 		{
 			cg.crosshairBuildable = trace.entityNum;
 		}
@@ -3410,10 +3410,10 @@ static void CG_ScanForCrosshairEntity( void )
 
 	team = cgs.clientinfo[ trace.entityNum ].team;
 
-	if ( cg.snap->ps.stats[ STAT_TEAM ] != TEAM_NONE )
+	if ( cg.snap->ps.persistant[ PERS_TEAM ] != TEAM_NONE )
 	{
 		//only display team names of those on the same team as this player
-		if ( team != cg.snap->ps.stats[ STAT_TEAM ] )
+		if ( team != cg.snap->ps.persistant[ PERS_TEAM ] )
 		{
 			return;
 		}
@@ -3521,7 +3521,7 @@ static void CG_DrawCrosshairNames( rectDef_t *rect, float scale, int textStyle )
 
 	// add health from overlay info to the crosshair client name
 	if ( cg_teamOverlayUserinfo.integer &&
-	     cg.snap->ps.stats[ STAT_TEAM ] != TEAM_NONE &&
+	     cg.snap->ps.persistant[ PERS_TEAM ] != TEAM_NONE &&
 	     cgs.teamInfoReceived &&
 	     cgs.clientinfo[ cg.crosshairClientNum ].health > 0 )
 	{
@@ -4337,7 +4337,7 @@ static void CG_DrawLighting( void )
 
 	//fade to black if stamina is low
 	if ( ( cg.snap->ps.stats[ STAT_STAMINA ] < STAMINA_BLACKOUT_LEVEL ) &&
-	     ( cg.snap->ps.stats[ STAT_TEAM ] == TEAM_HUMANS ) )
+	     ( cg.snap->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS ) )
 	{
 		vec4_t black = { 0, 0, 0, 0 };
 		black[ 3 ] = 1.0 - ( ( float )( cg.snap->ps.stats[ STAT_STAMINA ] + STAMINA_MAX ) / ( STAMINA_MAX + STAMINA_BLACKOUT_LEVEL ) );
@@ -4708,7 +4708,7 @@ static void CG_Draw2D( void )
 	if ( cg.snap->ps.pm_type == PM_INTERMISSION )
 	{
 		CG_DrawVote( TEAM_NONE );
-		CG_DrawVote( cg.predictedPlayerState.stats[ STAT_TEAM ] );
+		CG_DrawVote( cg.predictedPlayerState.persistant[ PERS_TEAM ] );
 		CG_DrawIntermission();
 		return;
 	}
@@ -4748,7 +4748,7 @@ static void CG_Draw2D( void )
 	}
 
 	CG_DrawVote( TEAM_NONE );
-	CG_DrawVote( cg.predictedPlayerState.stats[ STAT_TEAM ] );
+	CG_DrawVote( cg.predictedPlayerState.persistant[ PERS_TEAM ] );
 	CG_DrawWarmup();
 	CG_DrawQueue();
 
@@ -4833,11 +4833,11 @@ static void CG_PainBlend( void )
 		return;
 	}
 
-	if ( cg.snap->ps.stats[ STAT_TEAM ] == TEAM_ALIENS )
+	if ( cg.snap->ps.persistant[ PERS_TEAM ] == TEAM_ALIENS )
 	{
 		VectorSet( color, 0.43f, 0.8f, 0.37f );
 	}
-	else if ( cg.snap->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
+	else if ( cg.snap->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS )
 	{
 		VectorSet( color, 0.8f, 0.0f, 0.0f );
 	}

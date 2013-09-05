@@ -1610,7 +1610,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 
 	// hack to make the kit obscure view
 	if ( cg_drawGun.integer && visible &&
-	     cg.predictedPlayerState.stats[ STAT_TEAM ] == TEAM_HUMANS &&
+	     cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_HUMANS &&
 	     CG_WorldToScreen( origin, &x, &y ) )
 	{
 		if ( x > 450 && y > 290 )
@@ -2440,7 +2440,7 @@ void CG_Buildable( centity_t *cent )
 	CG_BuildableParticleEffects( cent );
 
 	// draw range marker if enabled
-	if( team == cg.predictedPlayerState.stats[ STAT_TEAM ] ) {
+	if( team == cg.predictedPlayerState.persistant[ PERS_TEAM ] ) {
 		qboolean drawRange;
 		float dist, maxDist = MAX( HELMET_RANGE, ALIENSENSE_RANGE );
 

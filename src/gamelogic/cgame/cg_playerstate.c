@@ -341,7 +341,7 @@ void CG_TransitionPlayerState( playerState_t *ps, playerState_t *ops )
 	}
 
 	// changed team
-	if ( ps->stats[ STAT_TEAM ] != ops->stats[ STAT_TEAM ] )
+	if ( ps->persistant[ PERS_TEAM ] != ops->persistant[ PERS_TEAM ] )
 	{
 		cg.lastHealthCross = 0;
 		cg.chargeMeterAlpha = 0.0f;

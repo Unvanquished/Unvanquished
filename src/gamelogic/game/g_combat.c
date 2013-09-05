@@ -387,12 +387,12 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 		if ( ( attacker == self || OnSameTeam( self, attacker ) ) )
 		{
 			//punish team kills and suicides
-			if ( attacker->client->ps.stats[ STAT_TEAM ] == TEAM_ALIENS )
+			if ( attacker->client->ps.persistant[ PERS_TEAM ] == TEAM_ALIENS )
 			{
 				G_AddCreditToClient( attacker->client, -ALIEN_TK_SUICIDE_PENALTY, qtrue );
 				G_AddCreditsToScore( attacker, -ALIEN_TK_SUICIDE_PENALTY );
 			}
-			else if ( attacker->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
+			else if ( attacker->client->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS )
 			{
 				G_AddCreditToClient( attacker->client, -HUMAN_TK_SUICIDE_PENALTY, qtrue );
 				G_AddCreditsToScore( attacker, -HUMAN_TK_SUICIDE_PENALTY );
@@ -407,11 +407,11 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	}
 	else if ( attacker->s.eType != ET_BUILDABLE )
 	{
-		if ( self->client->ps.stats[ STAT_TEAM ] == TEAM_ALIENS )
+		if ( self->client->ps.persistant[ PERS_TEAM ] == TEAM_ALIENS )
 		{
 			G_AddCreditsToScore( self, -ALIEN_TK_SUICIDE_PENALTY );
 		}
-		else if ( self->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
+		else if ( self->client->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS )
 		{
 			G_AddCreditsToScore( self, -HUMAN_TK_SUICIDE_PENALTY );
 		}
@@ -1123,7 +1123,7 @@ dflags    these flags are used to control how T_Damage works
 void G_SelectiveDamage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
                         vec3_t dir, vec3_t point, int damage, int dflags, int mod, int team )
 {
-	if ( targ->client && ( team != targ->client->ps.stats[ STAT_TEAM ] ) )
+	if ( targ->client && ( team != targ->client->ps.persistant[ PERS_TEAM ] ) )
 	{
 		G_Damage( targ, inflictor, attacker, dir, point, damage, dflags, mod );
 	}
@@ -1351,7 +1351,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		//if boosted poison every attack
 		if ( attacker->client && (attacker->client->ps.stats[ STAT_STATE ] & SS_BOOSTED) )
 		{
-			if ( targ->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS &&
+			if ( targ->client->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS &&
 			     mod != MOD_LEVEL2_ZAP && mod != MOD_POISON &&
 			     mod != MOD_LEVEL1_PCLOUD && mod != MOD_HSPAWN &&
 			     mod != MOD_ASPAWN && targ->client->poisonImmunityTime < level.time )
@@ -1593,7 +1593,7 @@ qboolean G_SelectiveRadiusDamage( vec3_t origin, gentity_t *attacker, float dama
 		points = damage * ( 1.0 - dist / radius );
 
 		if ( CanDamage( ent, origin ) && ent->client &&
-		     ent->client->ps.stats[ STAT_TEAM ] != ignoreTeam )
+		     ent->client->ps.persistant[ PERS_TEAM ] != ignoreTeam )
 		{
 			hitClient = qtrue;
 
@@ -1767,7 +1767,7 @@ void G_LogDestruction( gentity_t *self, gentity_t *actor, int mod )
 	if ( actor->client && actor->client->ps.persistant[ PERS_TEAM ] ==
 	     BG_Buildable( self->s.modelindex )->team )
 	{
-		G_TeamCommand( actor->client->ps.stats[ STAT_TEAM ],
+		G_TeamCommand( actor->client->ps.persistant[ PERS_TEAM ],
 		               va( "print_tr %s %s %s", mod == MOD_DECONSTRUCT ? QQ( N_("$1$ ^3DECONSTRUCTED^7 by $2$\n") ) :
 						   QQ( N_("$1$ ^3DESTROYED^7 by $2$\n") ),
 		                   Quote( BG_Buildable( self->s.modelindex )->humanName ),

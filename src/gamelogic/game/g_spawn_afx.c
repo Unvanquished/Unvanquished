@@ -348,7 +348,7 @@ void env_afx_ammo_touch( gentity_t *self, gentity_t *other, trace_t *trace )
 		return;
 	}
 
-	if ( other->client->ps.stats[ STAT_TEAM ] != TEAM_HUMANS )
+	if ( other->client->ps.persistant[ PERS_TEAM ] != TEAM_HUMANS )
 	{
 		return;
 	}

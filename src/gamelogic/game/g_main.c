@@ -2484,7 +2484,7 @@ void G_SendGameStat( team_t team )
 			ping = cl->ps.ping < 999 ? cl->ps.ping : 999;
 		}
 
-		switch ( cl->ps.stats[ STAT_TEAM ] )
+		switch ( cl->ps.persistant[ PERS_TEAM ] )
 		{
 			case TEAM_ALIENS:
 				teamChar = 'A';
@@ -2558,7 +2558,7 @@ void LogExit( const char *string )
 
 		cl = &level.clients[ level.sortedClients[ i ] ];
 
-		if ( cl->ps.stats[ STAT_TEAM ] == TEAM_NONE )
+		if ( cl->ps.persistant[ PERS_TEAM ] == TEAM_NONE )
 		{
 			continue;
 		}
@@ -2617,7 +2617,7 @@ void CheckIntermissionExit( void )
 			continue;
 		}
 
-		if ( cl->ps.stats[ STAT_TEAM ] == TEAM_NONE )
+		if ( cl->ps.persistant[ PERS_TEAM ] == TEAM_NONE )
 		{
 			continue;
 		}
