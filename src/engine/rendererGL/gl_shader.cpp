@@ -769,10 +769,8 @@ void GLShaderManager::CompileAndLinkGPUShaderProgram( GLShader *shader, shaderPr
 	{
 		// HACK: abuse the GLSL preprocessor to turn GLSL 1.20 shaders into 1.30 ones
 
-		vertexHeader += "#version 130\n"
-		                "#define FXAA_GLSL_130 1\n";
-		fragmentHeader += "#version 130\n"
-		                  "#define FXAA_GLSL_130 1\n";
+		vertexHeader += "#version 130\n";
+		fragmentHeader += "#version 130\n";
 
 		vertexHeader += "#define attribute in\n";
 		vertexHeader += "#define varying out\n";
@@ -792,10 +790,8 @@ void GLShaderManager::CompileAndLinkGPUShaderProgram( GLShader *shader, shaderPr
 	}
 	else
 	{
-		vertexHeader += "#version 120\n"
-		                "#define FXAA_GLSL_120 1\n";
-		fragmentHeader += "#version 120\n"
-		                  "#define FXAA_GLSL_120 1\n";
+		vertexHeader += "#version 120\n";
+		fragmentHeader += "#version 120\n";
 	}
 
 	// permutation macros
