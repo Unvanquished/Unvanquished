@@ -1651,7 +1651,6 @@ void       CG_NotifyHooks( void );
 void       CG_UpdateCvars( void );
 
 int        CG_CrosshairPlayer( void );
-int        CG_LastAttacker( void );
 void       CG_LoadMenus( const char *menuFile );
 void       CG_KeyEvent( int key, int chr, int flags );
 void       CG_MouseEvent( int x, int y );

@@ -767,7 +767,7 @@ void G_TeamToClientmask( team_t team, int *loMask, int *hiMask )
 	{
 		client = g_entities[ clientNum ].client;
 
-		if ( client && client->pers.teamSelection == team )
+		if ( client && client->ps.persistant[ PERS_TEAM ] == team )
 		{
 			if ( clientNum < 32 )
 			{
@@ -822,7 +822,7 @@ void G_AddConfidence( team_t team, confidence_t type, confidence_reason_t reason
 	{
 		client = source->client;
 
-		if ( client && client->pers.teamSelection == team )
+		if ( client && client->ps.persistant[ PERS_TEAM ] == team )
 		{
 			event = G_NewTempEntity( client->ps.origin, EV_CONFIDENCE );
 			event->r.svFlags = SVF_SINGLECLIENT;

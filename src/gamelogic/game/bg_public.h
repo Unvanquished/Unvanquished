@@ -285,7 +285,7 @@ typedef enum
   PERS_SPAWNS, // how many spawns your team has
   PERS_SPECSTATE,
   PERS_SPAWN_COUNT, // incremented every respawn
-  PERS_ATTACKER, // clientnum of last damage inflicter
+  PERS_TEAM, // persistant team selection
   PERS_RGS_EFFICIENCY, // summed efficiency of all friendly RGS
   PERS_STATE,
   PERS_CREDIT, // human credit

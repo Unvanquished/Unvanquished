@@ -356,7 +356,7 @@ static gentity_t* GetMainBuilding( gentity_t *self, qboolean ownBase )
 
 	if ( self->client )
 	{
-		team = self->client->pers.teamSelection;
+		team = self->client->ps.persistant[ PERS_TEAM ];
 	}
 	else if ( self->s.eType == ET_BUILDABLE )
 	{
@@ -1085,7 +1085,7 @@ void ASpawn_Think( gentity_t *self )
 					return;
 				}
 				else if( g_antiSpawnBlock.integer &&
-				         ent->client && ent->client->pers.teamSelection == TEAM_ALIENS )
+				         ent->client && ent->client->ps.persistant[ PERS_TEAM ] == TEAM_ALIENS )
 				{
 					PuntBlocker( self, ent );
 				}
@@ -1351,7 +1351,7 @@ void ABarricade_Touch( gentity_t *self, gentity_t *other, trace_t *trace )
 	gclient_t *client = other->client;
 	int       client_z, min_z;
 
-	if ( !client || client->pers.teamSelection != TEAM_ALIENS )
+	if ( !client || client->ps.persistant[ PERS_TEAM ] != TEAM_ALIENS )
 	{
 		return;
 	}
@@ -2464,7 +2464,7 @@ void HSpawn_Think( gentity_t *self )
 					return;
 				}
 				else if( g_antiSpawnBlock.integer &&
-				         ent->client && ent->client->pers.teamSelection == TEAM_HUMANS )
+				         ent->client && ent->client->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS )
 				{
 					PuntBlocker( self, ent );
 				}
@@ -2894,7 +2894,7 @@ qboolean HMGTurret_CheckTarget( gentity_t *self, gentity_t *target,
 	vec3_t  dir, end;
 
 	if ( !target || target->health <= 0 || !target->client ||
-	     target->client->pers.teamSelection != TEAM_ALIENS )
+	     target->client->ps.persistant[ PERS_TEAM ] != TEAM_ALIENS )
 	{
 		return qfalse;
 	}
@@ -3346,7 +3346,7 @@ static int QueueValue( gentity_t *self )
 
 		damageTotal += self->credits[ i ];
 
-		if ( self->buildableTeam != player->client->pers.teamSelection )
+		if ( self->buildableTeam != player->client->ps.persistant[ PERS_TEAM ] )
 		{
 			queueFraction += self->credits[ i ];
 		}

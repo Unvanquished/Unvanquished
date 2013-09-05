@@ -91,8 +91,8 @@ void G_TeamCommand( team_t team, const char *cmd )
 	{
 		if ( level.clients[ i ].pers.connected == CON_CONNECTED )
 		{
-			if ( level.clients[ i ].pers.teamSelection == team ||
-			     ( level.clients[ i ].pers.teamSelection == TEAM_NONE &&
+			if ( level.clients[ i ].ps.persistant[ PERS_TEAM ] == team ||
+			     ( level.clients[ i ].ps.persistant[ PERS_TEAM ] == TEAM_NONE &&
 			       G_admin_permission( &g_entities[ i ], ADMF_SPEC_ALLCHAT ) ) )
 			{
 				trap_SendServerCommand( i, cmd );
@@ -114,7 +114,7 @@ void G_AreaTeamCommand( gentity_t *ent, const char *cmd )
 	int    num, i;
 	vec3_t range = { 1000.0f, 1000.0f, 1000.0f };
 	vec3_t mins, maxs;
-	team_t team = ent->client->pers.teamSelection;
+	team_t team = ent->client->ps.persistant[ PERS_TEAM ];
 
 	for ( i = 0; i < 3; i++ )
 	{
@@ -130,7 +130,7 @@ void G_AreaTeamCommand( gentity_t *ent, const char *cmd )
 	{
 		if ( g_entities[ entityList[ i ] ].client && g_entities[ entityList[ i ] ].client->pers.connected == CON_CONNECTED )
 		{
-			if ( g_entities[ entityList[ i ] ].client->pers.teamSelection == team )
+			if ( g_entities[ entityList[ i ] ].client->ps.persistant[ PERS_TEAM ] == team )
 			{
 				trap_SendServerCommand( entityList[ i ], cmd );
 			}
@@ -149,7 +149,7 @@ qboolean OnSameTeam( gentity_t *ent1, gentity_t *ent2 )
 
 	if ( ent1->client )
 	{
-		team1 = ent1->client->pers.teamSelection;
+		team1 = ent1->client->ps.persistant[ PERS_TEAM ];
 	}
 	else if ( ent1->s.eType == ET_BUILDABLE )
 	{
@@ -162,7 +162,7 @@ qboolean OnSameTeam( gentity_t *ent1, gentity_t *ent2 )
 
 	if ( ent2->client )
 	{
-		team2 = ent2->client->pers.teamSelection;
+		team2 = ent2->client->ps.persistant[ PERS_TEAM ];
 	}
 	else if ( ent2->s.eType == ET_BUILDABLE )
 	{
@@ -244,7 +244,7 @@ G_LeaveTeam
 */
 void G_LeaveTeam( gentity_t *self )
 {
-	team_t    team = self->client->pers.teamSelection;
+	team_t    team = self->client->ps.persistant[ PERS_TEAM ];
 	gentity_t *ent;
 	int       i;
 
@@ -305,7 +305,7 @@ G_ChangeTeam
 */
 void G_ChangeTeam( gentity_t *ent, team_t newTeam )
 {
-	team_t oldTeam = ent->client->pers.teamSelection;
+	team_t oldTeam = ent->client->ps.persistant[ PERS_TEAM ];
 
 	if ( oldTeam == newTeam )
 	{
@@ -314,7 +314,7 @@ void G_ChangeTeam( gentity_t *ent, team_t newTeam )
 
 	G_LeaveTeam( ent );
 	ent->client->pers.teamChangeTime = level.time;
-	ent->client->pers.teamSelection = newTeam;
+	ent->client->ps.persistant[ PERS_TEAM ] = newTeam;
 	ent->client->pers.teamInfo = level.startTime - 1;
 	ent->client->pers.classSelection = PCL_NONE;
 	ClientSpawn( ent, NULL, NULL, NULL );
@@ -426,7 +426,7 @@ void TeamplayInfoMessage( gentity_t *ent )
 		return;
 	}
 
-	if ( ent->client->pers.teamSelection == TEAM_NONE )
+	if ( ent->client->ps.persistant[ PERS_TEAM ] == TEAM_NONE )
 	{
 		if ( ent->client->sess.spectatorState == SPECTATOR_FREE ||
 		     ent->client->sess.spectatorClient < 0 )
@@ -435,11 +435,11 @@ void TeamplayInfoMessage( gentity_t *ent )
 		}
 
 		team = g_entities[ ent->client->sess.spectatorClient ].client->
-		       pers.teamSelection;
+		       ps.persistant[ PERS_TEAM ];
 	}
 	else
 	{
-		team = ent->client->pers.teamSelection;
+		team = ent->client->ps.persistant[ PERS_TEAM ];
 	}
 
 	string[ 0 ] = '\0';
@@ -450,7 +450,7 @@ void TeamplayInfoMessage( gentity_t *ent )
 		player = g_entities + i;
 		cl = player->client;
 
-		if ( ent == player || !cl || team != cl->pers.teamSelection ||
+		if ( ent == player || !cl || team != cl->ps.persistant[ PERS_TEAM ] ||
 		     !player->inuse )
 		{
 			continue;
@@ -467,7 +467,7 @@ void TeamplayInfoMessage( gentity_t *ent )
 			curWeaponClass = WP_NONE;
 			upgrade = UP_NONE;
 		}
-		else if ( cl->pers.teamSelection == TEAM_HUMANS )
+		else if ( cl->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS )
 		{
 			curWeaponClass = cl->ps.weapon;
 
@@ -496,7 +496,7 @@ void TeamplayInfoMessage( gentity_t *ent )
 				upgrade = UP_NONE;
 			}
 		}
-		else if ( cl->pers.teamSelection == TEAM_ALIENS )
+		else if ( cl->ps.persistant[ PERS_TEAM ] == TEAM_ALIENS )
 		{
 			curWeaponClass = cl->ps.stats[ STAT_CLASS ];
 			upgrade = UP_NONE;

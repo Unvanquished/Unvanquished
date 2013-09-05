@@ -1118,7 +1118,7 @@ void poisonCloud( gentity_t *ent )
 		humanPlayer = &g_entities[ entityList[ i ] ];
 
 		if ( humanPlayer->client &&
-		     humanPlayer->client->pers.teamSelection == TEAM_HUMANS )
+		     humanPlayer->client->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS )
 		{
 			trap_Trace( &tr, muzzle, NULL, NULL, humanPlayer->s.origin,
 			            humanPlayer->s.number, CONTENTS_SOLID );
@@ -1547,7 +1547,7 @@ GENERIC
 
 static INLINE meansOfDeath_t G_ModWeight( const gentity_t *ent )
 {
-	return ent->client->pers.teamSelection == TEAM_HUMANS ? MOD_WEIGHT_H : MOD_WEIGHT_A;
+	return ent->client->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS ? MOD_WEIGHT_H : MOD_WEIGHT_A;
 }
 
 /*

@@ -45,7 +45,7 @@ void G_AddCreditToClient( gclient_t *client, short credit, qboolean cap )
 
 	if ( cap && credit > 0 )
 	{
-		capAmount = client->pers.teamSelection == TEAM_ALIENS ?
+		capAmount = client->ps.persistant[ PERS_TEAM ] == TEAM_ALIENS ?
 		            ALIEN_MAX_CREDITS : HUMAN_MAX_CREDITS;
 
 		if ( client->pers.credit < capAmount )
@@ -1126,7 +1126,7 @@ char *ClientUserinfoChanged( int clientNum, qboolean forceName )
 
 	Com_sprintf( userinfo, sizeof( userinfo ),
 	             "n\\%s\\t\\%i\\model\\%s\\ig\\%16s\\v\\%s",
-	             client->pers.netname, client->pers.teamSelection, model,
+	             client->pers.netname, client->ps.persistant[ PERS_TEAM ], model,
 	             Com_ClientListString( &client->sess.ignoreList ),
 	             client->pers.voice );
 
@@ -1443,7 +1443,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	index = ent - g_entities;
 	client = ent->client;
 
-	teamLocal = client->pers.teamSelection;
+	teamLocal = client->ps.persistant[ PERS_TEAM ];
 
 	//if client is dead and following teammate, stop following before spawning
 	if ( client->sess.spectatorClient != -1 )
@@ -1629,7 +1629,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	client->ps.persistant[ PERS_NEWWEAPON ] = 0;
 
 	ent->client->ps.stats[ STAT_CLASS ] = ent->client->pers.classSelection;
-	ent->client->ps.stats[ STAT_TEAM ] = ent->client->pers.teamSelection;
+	ent->client->ps.stats[ STAT_TEAM ] = ent->client->ps.persistant[ PERS_TEAM ];
 
 	ent->client->ps.stats[ STAT_BUILDABLE ] = BA_NONE;
 	ent->client->ps.stats[ STAT_PREDICTION ] = 0;
@@ -1707,7 +1707,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 		trap_LinkEntity( ent );
 
 		// force the base weapon up
-		if ( client->pers.teamSelection == TEAM_HUMANS )
+		if ( client->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS )
 		{
 			G_ForceWeaponChange( ent, weapon );
 		}

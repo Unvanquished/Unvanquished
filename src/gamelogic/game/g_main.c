@@ -1426,7 +1426,7 @@ void G_CalculateMineRate( void )
 			continue;
 		}
 
-		team = client->pers.teamSelection;
+		team = client->ps.persistant[ PERS_TEAM ];
 
 		client->ps.persistant[ PERS_MINERATE ] = ( short )( level.mineRate * 10.0f );
 
@@ -1507,7 +1507,7 @@ void G_DecreaseConfidence( void )
 			continue;
 		}
 
-		team = client->pers.teamSelection;
+		team = client->ps.persistant[ PERS_TEAM ];
 
 		if ( team > TEAM_NONE && team < NUM_TEAMS )
 		{
@@ -1627,7 +1627,7 @@ void G_CalculateStageThresholds( void )
 			continue;
 		}
 
-		team = client->pers.teamSelection;
+		team = client->ps.persistant[ PERS_TEAM ];
 
 		if ( TEAM_ALIENS == team || TEAM_HUMANS == team )
 		{
@@ -1834,7 +1834,7 @@ void CalculateRanks( void )
 		{
 			level.sortedClients[ level.numConnectedClients ] = i;
 			level.numConnectedClients++;
-			P[ i ] = ( char ) '0' + level.clients[ i ].pers.teamSelection;
+			P[ i ] = ( char ) '0' + level.clients[ i ].ps.persistant[ PERS_TEAM ];
 
 			level.team[ TEAM_NONE ].numVotingClients++;
 
@@ -1843,12 +1843,12 @@ void CalculateRanks( void )
 				continue;
 			}
 
-			if ( level.clients[ i ].pers.teamSelection != TEAM_NONE )
+			if ( level.clients[ i ].ps.persistant[ PERS_TEAM ] != TEAM_NONE )
 			{
 				team_t team;
 				level.numPlayingClients++;
 
-				team=level.clients[ i ].pers.teamSelection;
+				team=level.clients[ i ].ps.persistant[ PERS_TEAM ];
 				level.team[ team ].numClients++;
 				if ( level.clients[ i ].sess.spectatorState == SPECTATOR_NOT )
 				{
@@ -2189,8 +2189,8 @@ static void GetAverageDistanceToBase( int teamDistance[] )
 			continue;
 		}
 
-		teamDistance[ client->pers.teamSelection ] += ( int )G_DistanceToBase( playerEnt, qtrue );
-		teamCnt[ client->pers.teamSelection ]++;
+		teamDistance[ client->ps.persistant[ PERS_TEAM ] ] += ( int )G_DistanceToBase( playerEnt, qtrue );
+		teamCnt[ client->ps.persistant[ PERS_TEAM ] ]++;
 	}
 
 	//TODO merge G_Overmind() and G_Reactor() into a unique function (did not read them yet, but I bet is will not be so hard)
@@ -2230,7 +2230,7 @@ static void GetAverageCredits( int teamCredits[], int teamValue[] )
 			continue;
 		}
 
-		team = client->pers.teamSelection;
+		team = client->ps.persistant[ PERS_TEAM ];
 
 		teamCredits[ team ] += client->pers.credit;
 		teamValue[ team ] += BG_GetValueOfPlayer( &client->ps );

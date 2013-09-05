@@ -217,11 +217,11 @@ static int GetClientMass( gentity_t *ent )
 {
 	int entMass = 100;
 
-	if ( ent->client->pers.teamSelection == TEAM_ALIENS )
+	if ( ent->client->ps.persistant[ PERS_TEAM ] == TEAM_ALIENS )
 	{
 		entMass = BG_Class( ent->client->pers.classSelection )->health;
 	}
-	else if ( ent->client->pers.teamSelection == TEAM_HUMANS )
+	else if ( ent->client->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS )
 	{
 		if ( BG_InventoryContainsUpgrade( UP_BATTLESUIT, ent->client->ps.stats ) )
 		{
@@ -503,7 +503,7 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 	}
 
 	// Check to see if we are in the spawn queue
-	team = client->pers.teamSelection;
+	team = client->ps.persistant[ PERS_TEAM ];
 	if ( team == TEAM_ALIENS || team == TEAM_HUMANS )
 	{
 		queued = G_SearchSpawnQueue( &level.team[ team ].spawnQueue, ent - g_entities );
@@ -541,15 +541,15 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 			G_StopFollowing( ent );
 		}
 
-		if ( client->pers.teamSelection == TEAM_NONE )
+		if ( client->ps.persistant[ PERS_TEAM ] == TEAM_NONE )
 		{
 			G_TriggerMenu( client->ps.clientNum, MN_TEAM );
 		}
-		else if ( client->pers.teamSelection == TEAM_ALIENS )
+		else if ( client->ps.persistant[ PERS_TEAM ] == TEAM_ALIENS )
 		{
 			G_TriggerMenu( client->ps.clientNum, MN_A_CLASS );
 		}
-		else if ( client->pers.teamSelection == TEAM_HUMANS )
+		else if ( client->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS )
 		{
 			G_TriggerMenu( client->ps.clientNum, MN_H_SPAWN );
 		}
@@ -649,7 +649,7 @@ qboolean ClientInactivityTimer( gentity_t *ent )
 			{
 				trap_SendServerCommand( -1,
 				                        va( "print_tr %s %s %s", QQ( N_("$1$^7 moved from $2$ to spectators due to inactivity\n") ),
-				                            Quote( client->pers.netname ), Quote( BG_TeamName( client->pers.teamSelection ) ) ) );
+				                            Quote( client->pers.netname ), Quote( BG_TeamName( client->ps.persistant[ PERS_TEAM ] ) ) ) );
 				G_LogPrintf( "Inactivity: %d\n", (int)( client - level.clients ) );
 				G_ChangeTeam( ent, TEAM_NONE );
 			}
@@ -685,7 +685,7 @@ static void G_ReplenishHumanHealth( gentity_t *self )
 
 	client = self->client;
 
-	if ( !client || client->pers.teamSelection != TEAM_HUMANS )
+	if ( !client || client->ps.persistant[ PERS_TEAM ] != TEAM_HUMANS )
 	{
 		return;
 	}
@@ -1585,7 +1585,7 @@ static int G_FindHealth( gentity_t *self )
 		distance = Distance( boost->s.origin, self->s.origin );
 
 		if ( boost->s.eType == ET_PLAYER && boost->client &&
-		     boost->client->pers.teamSelection == client->pers.teamSelection &&
+		     boost->client->ps.persistant[ PERS_TEAM ] == client->ps.persistant[ PERS_TEAM ] &&
 		     boost->health > 0 && distance < REGEN_BOOST_RANGE )
 		{
 			if ( boost->client->ps.stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL1 )
@@ -1598,7 +1598,7 @@ static int G_FindHealth( gentity_t *self )
 			}
 		}
 		else if ( boost->s.eType == ET_BUILDABLE && boost->spawned && boost->health > 0 &&
-		          boost->powered && boost->buildableTeam == client->pers.teamSelection )
+		          boost->powered && boost->buildableTeam == client->ps.persistant[ PERS_TEAM ] )
 		{
 			if ( ( boost->s.modelindex == BA_A_SPAWN || boost->s.modelindex == BA_A_OVERMIND ) && ( int )distance < CREEP_BASESIZE )
 			{
@@ -1628,8 +1628,8 @@ static void G_ReplenishAlienHealth( gentity_t *self )
 	client = self->client;
 
 	// Check if client is an alien and has the healing ability
-	if ( !client || client->pers.teamSelection != TEAM_ALIENS ||
-	     self->health <= 0 || level.surrenderTeam == client->pers.teamSelection )
+	if ( !client || client->ps.persistant[ PERS_TEAM ] != TEAM_ALIENS ||
+	     self->health <= 0 || level.surrenderTeam == client->ps.persistant[ PERS_TEAM ] )
 	{
 		return;
 	}
@@ -1867,11 +1867,11 @@ void ClientThink_real( gentity_t *ent )
 	}
 
 	// Is power/creep available for the client's team?
-	if ( client->pers.teamSelection == TEAM_HUMANS && G_Reactor() )
+	if ( client->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS && G_Reactor() )
 	{
 		client->ps.eFlags |= EF_POWER_AVAILABLE;
 	}
-	else if ( client->pers.teamSelection == TEAM_ALIENS && G_Overmind() )
+	else if ( client->ps.persistant[ PERS_TEAM ] == TEAM_ALIENS && G_Overmind() )
 	{
 		client->ps.eFlags |= EF_POWER_AVAILABLE;
 	}

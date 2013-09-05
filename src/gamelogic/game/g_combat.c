@@ -172,7 +172,7 @@ void G_RewardAttackers( gentity_t *self )
 	// Only reward killing players and buildables
 	if ( self->client )
 	{
-		ownTeam = self->client->pers.teamSelection;
+		ownTeam = self->client->ps.persistant[ PERS_TEAM ];
 		maxHealth = self->client->ps.stats[ STAT_MAX_HEALTH ];
 		value = ( float )BG_GetValueOfPlayer( &self->client->ps );
 	}
@@ -199,7 +199,7 @@ void G_RewardAttackers( gentity_t *self )
 	for ( playerNum = 0; playerNum < level.maxclients; playerNum++ )
 	{
 		player = &g_entities[ playerNum ];
-		playerTeam = player->client->pers.teamSelection;
+		playerTeam = player->client->ps.persistant[ PERS_TEAM ];
 
 		// Player must be on the other team
 		if ( playerTeam == ownTeam || playerTeam <= TEAM_NONE || playerTeam >= NUM_TEAMS )
@@ -219,7 +219,7 @@ void G_RewardAttackers( gentity_t *self )
 	for ( playerNum = 0; playerNum < level.maxclients; playerNum++ )
 	{
 		player = &g_entities[ playerNum ];
-		playerTeam = player->client->pers.teamSelection;
+		playerTeam = player->client->ps.persistant[ PERS_TEAM ];
 		damageShare = self->credits[ playerNum ];
 
 		// Clear reward array
@@ -1299,7 +1299,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		     mod != MOD_DECONSTRUCT && mod != MOD_SUICIDE &&
 		     mod != MOD_REPLACE && mod != MOD_NOCREEP )
 		{
-			if ( targ->buildableTeam == attacker->client->pers.teamSelection &&
+			if ( targ->buildableTeam == attacker->client->ps.persistant[ PERS_TEAM ] &&
 			     !g_friendlyBuildableFire.integer )
 			{
 				return;
@@ -1329,15 +1329,6 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	// at the end of the frame
 	if ( client )
 	{
-		if ( attacker )
-		{
-			client->ps.persistant[ PERS_ATTACKER ] = attacker->s.number;
-		}
-		else
-		{
-			client->ps.persistant[ PERS_ATTACKER ] = ENTITYNUM_WORLD;
-		}
-
 		client->damage_armor += asave;
 		client->damage_blood += take;
 		client->damage_knockback += knockback;
@@ -1730,7 +1721,7 @@ void G_LogDestruction( gentity_t *self, gentity_t *actor, int mod )
 		default:
 			if ( actor->client )
 			{
-				if ( actor->client->pers.teamSelection ==
+				if ( actor->client->ps.persistant[ PERS_TEAM ] ==
 				     BG_Buildable( self->s.modelindex )->team )
 				{
 					fate = BF_TEAMKILL;
@@ -1768,12 +1759,12 @@ void G_LogDestruction( gentity_t *self, gentity_t *actor, int mod )
 	// No-power deaths for humans come after some minutes and it's confusing
 	//  when the messages appear attributed to the deconner. Just don't print them.
 	if ( mod == MOD_NOCREEP && actor->client &&
-	     actor->client->pers.teamSelection == TEAM_HUMANS )
+	     actor->client->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS )
 	{
 		return;
 	}
 
-	if ( actor->client && actor->client->pers.teamSelection ==
+	if ( actor->client && actor->client->ps.persistant[ PERS_TEAM ] ==
 	     BG_Buildable( self->s.modelindex )->team )
 	{
 		G_TeamCommand( actor->client->ps.stats[ STAT_TEAM ],
