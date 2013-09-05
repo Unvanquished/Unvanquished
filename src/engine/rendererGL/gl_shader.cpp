@@ -765,7 +765,7 @@ void GLShaderManager::CompileAndLinkGPUShaderProgram( GLShader *shader, shaderPr
 	std::string vertexHeader;
 	std::string fragmentHeader;
 
-	if ( strcmp( glConfig2.shadingLanguageVersion, "1.20" ) )
+	if ( glConfig2.shadingLanguageVersion != 120 )
 	{
 		// HACK: abuse the GLSL preprocessor to turn GLSL 1.20 shaders into 1.30 ones
 
