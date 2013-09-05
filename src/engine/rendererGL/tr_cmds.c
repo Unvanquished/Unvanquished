@@ -311,11 +311,11 @@ R_AddRunVisTestsCmd
 
 =============
 */
-void R_AddRunVisTestsCmd( visTest_t **visTests, int numVisTests )
+void R_AddRunVisTestsCmd( void )
 {
 	runVisTestsCommand_t *cmd;
 
-	cmd = R_GetCommandBuffer( sizeof( *cmd ) );
+	cmd = ( runVisTestsCommand_t * ) R_GetCommandBuffer( sizeof( *cmd ) );
 
 	if ( !cmd )
 	{
@@ -323,9 +323,6 @@ void R_AddRunVisTestsCmd( visTest_t **visTests, int numVisTests )
 	}
 
 	cmd->commandId = RC_RUN_VISTESTS;
-
-	cmd->visTests = visTests;
-	cmd->numVisTests = numVisTests;
 
 	cmd->refdef = tr.refdef;
 	cmd->viewParms = tr.viewParms;
@@ -909,6 +906,9 @@ void RE_EndFrame( int *frontEndMsec, int *backEndMsec )
 	// use the other buffers next frame, because another CPU
 	// may still be rendering into the current ones
 	R_ToggleSmpFrame();
+
+	// update the results of the vis tests
+	R_UpdateVisTests();
 
 	if ( frontEndMsec )
 	{

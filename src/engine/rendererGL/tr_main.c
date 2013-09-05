@@ -3587,7 +3587,7 @@ void R_RenderView( viewParms_t *parms )
 
 	R_SortDrawSurfs();
 
-	R_AddRunVisTestsCmd( tr.refdef.visTests, tr.refdef.numVisTests );
+	R_AddRunVisTestsCmd();
 
 	// draw main system development information (surface outlines, etc)
 	R_DebugGraphics();

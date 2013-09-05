@@ -1865,6 +1865,8 @@ extern "C" {
 			glGenQueries( MAX_OCCLUSION_QUERIES, tr.occlusionQueryObjects );
 		}
 
+		R_InitVisTests();
+
 		GL_CheckErrors();
 
 		// print info
