@@ -608,8 +608,9 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 			team_t team = client->ps.persistant[ PERS_TEAM ];
 			/* team must exist, or there will be a sigsegv */
 			assert(team == TEAM_HUMANS || team == TEAM_ALIENS);
-			client->ps.persistant[ PERS_SPAWNS ] = level.team[ team ].numSpawns;
-			client->ps.persistant[ PERS_QUEUEPOS ] = G_GetPosInSpawnQueue( &level.team[ team ].spawnQueue, client->ps.clientNum );
+			client->ps.persistant[ PERS_SPAWNQUEUE ] = level.team[ team ].numSpawns;
+			client->ps.persistant[ PERS_SPAWNQUEUE ] |= G_GetPosInSpawnQueue( &level.team[ team ].spawnQueue,
+			                                                                  client->ps.clientNum ) << 8;
 		}
 	}
 }

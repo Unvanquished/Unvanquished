@@ -4599,7 +4599,7 @@ static qboolean CG_DrawQueue( void )
 {
 	float  w;
 	vec4_t color;
-	int    position;
+	int    position, spawns;
 	char   buffer[ MAX_STRING_CHARS ];
 
 	if ( !( cg.snap->ps.pm_flags & PMF_QUEUED ) )
@@ -4612,7 +4612,8 @@ static qboolean CG_DrawQueue( void )
 	color[ 2 ] = 1;
 	color[ 3 ] = 1;
 
-	position = cg.snap->ps.persistant[ PERS_QUEUEPOS ] + 1;
+	spawns   = cg.snap->ps.persistant[ PERS_SPAWNQUEUE ] & 0x000000ff;
+	position = cg.snap->ps.persistant[ PERS_SPAWNQUEUE ] >> 8;
 
 	if ( position < 1 )
 	{
@@ -4631,16 +4632,14 @@ static qboolean CG_DrawQueue( void )
 	w = UI_Text_Width( buffer, 0.7f );
 	UI_Text_Paint( 320 - w / 2, 360, 0.7f, color, buffer, 0, ITEM_TEXTSTYLE_SHADOWED );
 
-	if ( cg.snap->ps.persistant[ PERS_SPAWNS ] == 0 )
+	if ( spawns == 0 )
 	{
 		Com_sprintf( buffer, MAX_STRING_CHARS, _("There are no spawns remaining") );
 	}
 	else
 	{
 		Com_sprintf( buffer, MAX_STRING_CHARS,
-		             P_( "There is 1 spawn remaining", "There are %d spawns remaining",
-		                cg.snap->ps.persistant[ PERS_SPAWNS ]),
-		             cg.snap->ps.persistant[ PERS_SPAWNS ] );
+		             P_( "There is 1 spawn remaining", "There are %d spawns remaining", spawns ), spawns );
 	}
 
 	w = UI_Text_Width( buffer, 0.7f );

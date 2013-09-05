@@ -1209,11 +1209,11 @@ int G_GetPosInSpawnQueue( spawnQueue_t *sq, int clientNum )
 			{
 				if ( i < sq->front )
 				{
-					return i + MAX_CLIENTS - sq->front;
+					return i + MAX_CLIENTS - sq->front + 1;
 				}
 				else
 				{
-					return i - sq->front;
+					return i - sq->front + 1;
 				}
 			}
 
@@ -1222,7 +1222,7 @@ int G_GetPosInSpawnQueue( spawnQueue_t *sq, int clientNum )
 		while ( i != QUEUE_PLUS1( sq->back ) );
 	}
 
-	return -1;
+	return 0;
 }
 
 /*

@@ -280,20 +280,20 @@ typedef enum
 // cleared on respawn
 typedef enum
 {
-  PERS_SCORE, // !!! MUST NOT CHANGE, SERVER AND GAME BOTH REFERENCE !!!
-  PERS_CONFIDENCE, // the total confidence of a team
-  PERS_SPAWNS, // how many spawns your team has
+  PERS_SCORE,          // !!! MUST NOT CHANGE, SERVER AND GAME BOTH REFERENCE !!!
+  PERS_CONFIDENCE,     // the total confidence of a team
+  PERS_SPAWNQUEUE,     // number of spawns and position in spawn queue
   PERS_SPECSTATE,
-  PERS_SPAWN_COUNT, // incremented every respawn
-  PERS_TEAM, // persistant team selection
+  PERS_SPAWN_COUNT,    // incremented every respawn
+  PERS_TEAM,           // persistant team selection
   PERS_RGS_EFFICIENCY, // summed efficiency of all friendly RGS
   PERS_STATE,
-  PERS_CREDIT, // human credit
-  PERS_QUEUEPOS, // position in the spawn queue
-  PERS_NEWWEAPON, // weapon to switch to
+  PERS_CREDIT,         // human credit
+  PERS_UNUSED_1,       // UNUSED
+  PERS_NEWWEAPON,      // weapon to switch to
   PERS_BP,
   PERS_MARKEDBP,
-  PERS_MINERATE, // level wide base mine rate. TODO: calculate clientside
+  PERS_MINERATE,       // level wide base mine rate. TODO: calculate clientside
   PERS_THRESHOLD_STAGE2,
   PERS_THRESHOLD_STAGE3
   // netcode has space for 0 more. TODO: extend
