@@ -9728,9 +9728,6 @@ const void *RB_RunVisTests( const void *data )
 
 		gl_genericShader->BindProgram();
 
-		GL_State( GLS_DEPTHMASK_TRUE );
-		GL_VertexAttribsState( ATTR_POSITION );
-
 		gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
 		gl_genericShader->SetUniform_Color( colorWhite );
 
@@ -9746,16 +9743,15 @@ const void *RB_RunVisTests( const void *data )
 
 		Tess_UpdateVBOs( ATTR_POSITION );
 
-		glColorMask( GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE );
-		glDisable( GL_DEPTH_TEST );
+		GL_State( GLS_DEPTHTEST_DISABLE | GLS_COLORMASK_BITS );
 		glBeginQuery( GL_SAMPLES_PASSED, testState->hQueryRef );
-		glDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL );
+		Tess_DrawElements();
 		glEndQuery( GL_SAMPLES_PASSED );
-		glEnable( GL_DEPTH_TEST );
+
+		GL_State( GLS_COLORMASK_BITS );
 		glBeginQuery( GL_SAMPLES_PASSED, testState->hQuery );
-		glDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL );
+		Tess_DrawElements();
 		glEndQuery( GL_SAMPLES_PASSED );
-		glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
 
 		tess.numIndexes = 0;
 		tess.numVertexes = 0;
