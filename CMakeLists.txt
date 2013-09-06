@@ -735,6 +735,7 @@ set( CGAMEGPP_BASE
   ${GPP_DIR}/game/bg_lib.c
   ${GPP_DIR}/game/bg_alloc.c
   ${GPP_DIR}/game/bg_voice.c
+  ${GPP_DIR}/game/bg_teamprogress.c
   ${GPP_DIR}/cgame/cg_consolecmds.c
   ${GPP_DIR}/cgame/cg_buildable.c
   ${GPP_DIR}/cgame/cg_animation.c
@@ -785,6 +786,7 @@ set( GAMEGPP_BASE
   ${GPP_DIR}/game/bg_lib.c
   ${GPP_DIR}/game/bg_alloc.c
   ${GPP_DIR}/game/bg_voice.c
+  ${GPP_DIR}/game/bg_teamprogress.c
   ${GPP_DIR}/game/g_active.c
   ${GPP_DIR}/game/g_client.c
   ${GPP_DIR}/game/g_cmds.c
@@ -836,6 +838,7 @@ set( UIGPP_BASE
   ${GPP_DIR}/game/bg_parse.c
   ${GPP_DIR}/game/bg_lib.c
   ${GPP_DIR}/game/bg_alloc.c
+  ${GPP_DIR}/game/bg_teamprogress.c
   ${GPP_DIR}/ui/ui_utf8.c
   ${SHAREDLIST_C}
 )

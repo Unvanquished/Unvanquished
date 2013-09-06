@@ -825,6 +825,9 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 	// the map might disable some things
 	BG_InitAllowedGameElements();
 
+	// Initialize item locking state
+	BG_InitUnlockackables();
+
 	// general initialization
 	G_FindEntityGroups();
 	G_InitSetEntities();
@@ -3301,6 +3304,7 @@ void G_RunFrame( int levelTime )
 	G_CalculateAvgPlayers();
 	G_CalculateStageThresholds();
 	G_CalculateStages();
+	G_UpdateUnlockables();
 	G_SpawnClients( TEAM_ALIENS );
 	G_SpawnClients( TEAM_HUMANS );
 	G_UpdateZaps( msec );

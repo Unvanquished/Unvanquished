@@ -2431,7 +2431,7 @@ static qboolean Cmd_Class_internal( gentity_t *ent, const char *s, qboolean repo
 				return qfalse;
 			}
 
-			if ( !BG_ClassIsAllowed( newClass ) )
+			if ( BG_ClassDisabled( newClass ) )
 			{
 				if ( report )
 				{
@@ -2440,7 +2440,7 @@ static qboolean Cmd_Class_internal( gentity_t *ent, const char *s, qboolean repo
 				return qfalse;
 			}
 
-			if ( !BG_ClassAllowedInStage( newClass, level.team[ TEAM_ALIENS ].stage ) )
+			if ( !BG_ClassUnlocked( newClass ) )
 			{
 				if ( report )
 				{
@@ -2463,12 +2463,12 @@ static qboolean Cmd_Class_internal( gentity_t *ent, const char *s, qboolean repo
 		{
 			//set the item to spawn with
 			if ( !Q_stricmp( s, BG_Weapon( WP_MACHINEGUN )->name ) &&
-			     BG_WeaponIsAllowed( WP_MACHINEGUN ) )
+			     !BG_WeaponDisabled( WP_MACHINEGUN ) )
 			{
 				ent->client->pers.humanItemSelection = WP_MACHINEGUN;
 			}
 			else if ( !Q_stricmp( s, BG_Weapon( WP_HBUILD )->name ) &&
-			          BG_WeaponIsAllowed( WP_HBUILD ) )
+			          !BG_WeaponDisabled( WP_HBUILD ) )
 			{
 				ent->client->pers.humanItemSelection = WP_HBUILD;
 			}
@@ -3286,7 +3286,7 @@ static qboolean Cmd_Buy_internal( gentity_t *ent, const char *s, qboolean sellCo
 		}
 
 		//are we /allowed/ to buy this?
-		if ( !BG_WeaponAllowedInStage( weapon, level.team[ TEAM_HUMANS ].stage ) || !BG_WeaponIsAllowed( weapon ) )
+		if ( !BG_WeaponUnlocked( weapon ) || BG_WeaponDisabled( weapon ) )
 		{
 			goto cant_buy;
 		}
@@ -3370,7 +3370,7 @@ static qboolean Cmd_Buy_internal( gentity_t *ent, const char *s, qboolean sellCo
 		}
 
 		//are we /allowed/ to buy this?
-		if ( !BG_UpgradeAllowedInStage( upgrade, level.team[ TEAM_HUMANS ].stage ) || !BG_UpgradeIsAllowed( upgrade ) )
+		if ( !BG_UpgradeUnlocked( upgrade ) || BG_UpgradeDisabled( upgrade ) )
 		{
 			goto cant_buy;
 		}
@@ -3533,7 +3533,7 @@ void Cmd_Build_f( gentity_t *ent )
 
 	if ( buildable != BA_NONE &&
 	     ( ( 1 << ent->client->ps.weapon ) & BG_Buildable( buildable )->buildWeapon ) &&
-	     BG_BuildableIsAllowed( buildable ) && BG_BuildableAllowedInStage( buildable, level.team[ team ].stage ) )
+	     !BG_BuildableDisabled( buildable ) && BG_BuildableUnlocked( buildable ) )
 	{
 		dynMenu_t err;
 		vec3_t forward, aimDir;

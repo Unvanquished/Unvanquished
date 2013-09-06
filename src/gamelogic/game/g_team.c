@@ -347,6 +347,9 @@ void G_ChangeTeam( gentity_t *ent, team_t newTeam )
 	// Copy credits to ps for the client
 	ent->client->ps.persistant[ PERS_CREDIT ] = ent->client->pers.credit;
 
+	// Update PERS_UNLOCKABLES in the same frame as PERS_TEAM to prevent bad status change notifications
+	ent->client->ps.persistant[ PERS_UNLOCKABLES ] = G_ExportUnlockablesToMask( newTeam );
+
 	ClientUserinfoChanged( ent->client->ps.clientNum, qfalse );
 
 	G_UpdateTeamConfigStrings();

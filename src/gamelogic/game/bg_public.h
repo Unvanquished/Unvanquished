@@ -289,7 +289,7 @@ typedef enum
   PERS_RGS_EFFICIENCY, // summed efficiency of all friendly RGS
   PERS_STATE,
   PERS_CREDIT,         // human credit
-  PERS_UNUSED_1,       // UNUSED
+  PERS_UNLOCKABLES,    // status of unlockable items of a team
   PERS_NEWWEAPON,      // weapon to switch to
   PERS_BP,
   PERS_MARKEDBP,
@@ -995,6 +995,7 @@ typedef struct
 	const char *fovCvar;
 
 	int      stages;
+	int      unlockThreshold;
 
 	int      health;
 	float    fallDamage;
@@ -1073,6 +1074,7 @@ typedef struct
 	int         buildPoints;
 	int         powerConsumption;
 	int         stages;
+	int         unlockThreshold;
 
 	int         health;
 	int         regenRate;
@@ -1129,6 +1131,7 @@ typedef struct
 
 	int      price;
 	int      stages;
+	int      unlockThreshold;
 
 	int      slots;
 
@@ -1166,6 +1169,7 @@ typedef struct
 
 	int       price;
 	int       stages;
+	int       unlockThreshold;
 
 	int       slots;
 
@@ -1194,11 +1198,10 @@ qboolean BG_RotateAxis( vec3_t surfNormal, vec3_t inAxis[ 3 ],
                         vec3_t outAxis[ 3 ], qboolean inverse, qboolean ceiling );
 void     BG_GetClientNormal( const playerState_t *ps, vec3_t normal );
 void     BG_GetClientViewOrigin( const playerState_t *ps, vec3_t viewOrigin );
-void     BG_PositionBuildableRelativeToPlayer( playerState_t *ps,
-    const vec3_t mins, const vec3_t maxs,
-    void ( *trace )( trace_t *, const vec3_t, const vec3_t,
-                     const vec3_t, const vec3_t, int, int ),
-    vec3_t outOrigin, vec3_t outAngles, trace_t *tr );
+void     BG_PositionBuildableRelativeToPlayer( playerState_t *ps, const vec3_t mins, const vec3_t maxs,
+                                               void ( *trace )( trace_t *, const vec3_t, const vec3_t,
+                                               const vec3_t, const vec3_t, int, int ),
+                                               vec3_t outOrigin, vec3_t outAngles, trace_t *tr );
 int                         BG_GetValueOfPlayer( playerState_t *ps );
 qboolean                    BG_PlayerCanChangeWeapon( playerState_t *ps );
 int                         BG_PlayerPoisonCloudTime( playerState_t *ps );
@@ -1210,24 +1213,20 @@ int                         BG_UnpackEntityNumbers( entityState_t *es, int *enti
 const buildableAttributes_t *BG_BuildableByName( const char *name );
 const buildableAttributes_t *BG_BuildableByEntityName( const char *name );
 const buildableAttributes_t *BG_Buildable( buildable_t buildable );
-qboolean                    BG_BuildableAllowedInStage( buildable_t buildable,
-    stage_t stage );
+qboolean                    BG_BuildableAllowedInStage( buildable_t buildable, stage_t stage );
 
 buildableModelConfig_t      *BG_BuildableModelConfig( buildable_t buildable );
-void                        BG_BuildableBoundingBox( buildable_t buildable,
-    vec3_t mins, vec3_t maxs );
+void                        BG_BuildableBoundingBox( buildable_t buildable, vec3_t mins, vec3_t maxs );
 
 const classAttributes_t     *BG_ClassByName( const char *name );
 
 const classAttributes_t     *BG_Class( class_t pClass );
-qboolean                    BG_ClassAllowedInStage( class_t pClass,
-    stage_t stage );
+qboolean                    BG_ClassAllowedInStage( class_t pClass, stage_t stage );
 
 classModelConfig_t          *BG_ClassModelConfig( class_t pClass );
 
-void                        BG_ClassBoundingBox( class_t pClass, vec3_t mins,
-    vec3_t maxs, vec3_t cmaxs,
-    vec3_t dmins, vec3_t dmaxs );
+void                        BG_ClassBoundingBox( class_t pClass, vec3_t mins, vec3_t maxs, vec3_t cmaxs,
+                                                 vec3_t dmins, vec3_t dmaxs );
 qboolean                    BG_ClassHasAbility( class_t pClass, int ability );
 
 int                         BG_ClassCanEvolveFromTo(class_t from, class_t to, int credits, int stage);
@@ -1235,13 +1234,11 @@ qboolean                    BG_AlienCanEvolve(class_t from, int credits, int ali
 
 const weaponAttributes_t  *BG_WeaponByName( const char *name );
 const weaponAttributes_t  *BG_Weapon( weapon_t weapon );
-qboolean                  BG_WeaponAllowedInStage( weapon_t weapon,
-    stage_t stage );
+qboolean                  BG_WeaponAllowedInStage( weapon_t weapon, stage_t stage );
 
 const upgradeAttributes_t *BG_UpgradeByName( const char *name );
 const upgradeAttributes_t *BG_Upgrade( upgrade_t upgrade );
-qboolean                  BG_UpgradeAllowedInStage( upgrade_t upgrade,
-    stage_t stage );
+qboolean                  BG_UpgradeAllowedInStage( upgrade_t upgrade, stage_t stage );
 
 void                      BG_InitAllConfigs( void );
 void                      BG_UnloadAllConfigs( void );
@@ -1256,6 +1253,22 @@ void                      BG_ParseClassAttributeFile( const char *filename, clas
 void                      BG_ParseClassModelFile( const char *filename, classModelConfig_t *cc );
 void                      BG_ParseWeaponAttributeFile( const char *filename, weaponAttributes_t *wa );
 void                      BG_ParseUpgradeAttributeFile( const char *filename, upgradeAttributes_t *ua );
+
+// bg_teamprogress.c
+void     BG_InitUnlockackables( void );
+void     BG_ImportUnlockablesFromMask( team_t team, int mask );
+qboolean BG_WeaponUnlocked( weapon_t weapon );
+qboolean BG_UpgradeUnlocked( upgrade_t upgrade );
+qboolean BG_BuildableUnlocked( buildable_t buildable );
+qboolean BG_ClassUnlocked( class_t class_ );
+#ifdef GAME
+void     G_UpdateUnlockables( void );
+int      G_ExportUnlockablesToMask( team_t team );
+#endif
+void     UI_UpdateUnlockables( void );
+#ifdef UI
+
+#endif
 
 // content masks
 #define MASK_ALL         ( -1 )
@@ -1294,11 +1307,11 @@ void     BG_ParseCSVEquipmentList( const char *string, weapon_t *weapons, int we
 void     BG_ParseCSVClassList( const char *string, class_t *classes, int classesSize );
 void     BG_ParseCSVBuildableList( const char *string, buildable_t *buildables, int buildablesSize );
 void     BG_InitAllowedGameElements( void );
-qboolean BG_WeaponIsAllowed( weapon_t weapon );
-qboolean BG_UpgradeIsAllowed( upgrade_t upgrade );
+qboolean BG_WeaponDisabled( weapon_t weapon );
+qboolean BG_UpgradeDisabled( upgrade_t upgrade );
 
-qboolean BG_ClassIsAllowed( class_t class );
-qboolean BG_BuildableIsAllowed( buildable_t buildable );
+qboolean BG_ClassDisabled( class_t class_ );
+qboolean BG_BuildableDisabled( buildable_t buildable );
 
 weapon_t BG_PrimaryWeapon( int stats[] );
 

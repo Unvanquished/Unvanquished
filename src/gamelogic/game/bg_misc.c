@@ -349,11 +349,10 @@ const classAttributes_t *BG_Class( class_t pClass )
 
 /*
 ==============
-BG_ClassAllowedInStage
+BG_ClassAllowed
 ==============
 */
-qboolean BG_ClassAllowedInStage( class_t pClass,
-                                 stage_t stage )
+qboolean BG_ClassAllowedInStage( class_t pClass, stage_t stage )
 {
 	int stages = BG_Class( pClass )->stages;
 
@@ -437,7 +436,7 @@ int BG_ClassCanEvolveFromTo( class_t from, class_t to, int credits, int stage )
 		return -1;
 	}
 
-	if ( !BG_ClassAllowedInStage( to, stage ) || !BG_ClassIsAllowed( to ) )
+	if ( !BG_ClassUnlocked( to ) || BG_ClassDisabled( to ) )
 	{
 		return -1;
 	}
@@ -2265,7 +2264,7 @@ void BG_InitAllowedGameElements( void )
 BG_WeaponIsAllowed
 ============
 */
-qboolean BG_WeaponIsAllowed( weapon_t weapon )
+qboolean BG_WeaponDisabled( weapon_t weapon )
 {
 	int i;
 
@@ -2274,11 +2273,11 @@ qboolean BG_WeaponIsAllowed( weapon_t weapon )
 	{
 		if ( bg_disabledGameElements.weapons[ i ] == weapon )
 		{
-			return qfalse;
+			return qtrue;
 		}
 	}
 
-	return qtrue;
+	return qfalse;
 }
 
 /*
@@ -2286,7 +2285,7 @@ qboolean BG_WeaponIsAllowed( weapon_t weapon )
 BG_UpgradeIsAllowed
 ============
 */
-qboolean BG_UpgradeIsAllowed( upgrade_t upgrade )
+qboolean BG_UpgradeDisabled( upgrade_t upgrade )
 {
 	int i;
 
@@ -2295,32 +2294,32 @@ qboolean BG_UpgradeIsAllowed( upgrade_t upgrade )
 	{
 		if ( bg_disabledGameElements.upgrades[ i ] == upgrade )
 		{
-			return qfalse;
+			return qtrue;
 		}
 	}
 
-	return qtrue;
+	return qfalse;
 }
 
 /*
 ============
-BG_ClassIsAllowed
+BG_ClassDisabled
 ============
 */
-qboolean BG_ClassIsAllowed( class_t class )
+qboolean BG_ClassDisabled( class_t class_ )
 {
 	int i;
 
 	for ( i = 0; i < PCL_NUM_CLASSES &&
 	      bg_disabledGameElements.classes[ i ] != PCL_NONE; i++ )
 	{
-		if ( bg_disabledGameElements.classes[ i ] == class )
+		if ( bg_disabledGameElements.classes[ i ] == class_ )
 		{
-			return qfalse;
+			return qtrue;
 		}
 	}
 
-	return qtrue;
+	return qfalse;
 }
 
 /*
@@ -2328,7 +2327,7 @@ qboolean BG_ClassIsAllowed( class_t class )
 BG_BuildableIsAllowed
 ============
 */
-qboolean BG_BuildableIsAllowed( buildable_t buildable )
+qboolean BG_BuildableDisabled( buildable_t buildable )
 {
 	int i;
 
@@ -2337,11 +2336,11 @@ qboolean BG_BuildableIsAllowed( buildable_t buildable )
 	{
 		if ( bg_disabledGameElements.buildables[ i ] == buildable )
 		{
-			return qfalse;
+			return qtrue;
 		}
 	}
 
-	return qtrue;
+	return qfalse;
 }
 
 /*

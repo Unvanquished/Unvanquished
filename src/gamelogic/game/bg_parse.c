@@ -647,7 +647,8 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
 		BUILDTIME = 1 << 10,
 		VALUE = 1 << 11,
 		RADAR = 1 << 12,
-		POWERCONSUMPTION = 1 << 13
+		POWERCONSUMPTION = 1 << 13,
+		UNLOCKTHRESHOLD = 1 << 14
 	};
 
 	if( !BG_ReadWholeFile( filename, text_buffer, sizeof(text_buffer) ) )
@@ -886,6 +887,13 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
 			ba->radarFadeOut = atof(token);
 			defined |= RADAR;
 		}
+		else if ( !Q_stricmp( token, "unlockThreshold" ) )
+		{
+			PARSE(text, token);
+
+			ba->unlockThreshold = atoi(token);
+			defined |= UNLOCKTHRESHOLD;
+		}
 		else if( (var = BG_FindConfigVar( va( "b_%s_%s", ba->name, token ) ) ) != NULL )
 		{
 			BG_ParseConfigVar( var, &text, filename );
@@ -1095,7 +1103,8 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
 		COST = 1 << 15,
 		VALUE = 1 << 16,
 		RADAR = 1 << 17,
-		MASS = 1 << 18
+		MASS = 1 << 18,
+		UNLOCKTHRESHOLD = 1 << 19
 	};
 
 	if( !BG_ReadWholeFile( filename, text_buffer, sizeof(text_buffer) ) )
@@ -1310,6 +1319,13 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
 			ca->radarFadeOut = atof( token );
 
 			defined |= RADAR;
+		}
+		else if ( !Q_stricmp( token, "unlockThreshold" ) )
+		{
+			PARSE(text, token);
+
+			ca->unlockThreshold = atoi(token);
+			defined |= UNLOCKTHRESHOLD;
 		}
 		else if( (var = BG_FindConfigVar( va( "c_%s_%s", ca->name, token ) ) ) != NULL )
 		{
@@ -1682,6 +1698,7 @@ void BG_ParseWeaponAttributeFile( const char *filename, weaponAttributes_t *wa )
 		RATE = 1 << 4,
 		AMMO = 1 << 5,
 		TEAM = 1 << 6,
+		UNLOCKTHRESHOLD = 1 << 7
 	};
 
 	if( !BG_ReadWholeFile( filename, text_buffer, sizeof(text_buffer) ) )
@@ -1829,6 +1846,13 @@ void BG_ParseWeaponAttributeFile( const char *filename, weaponAttributes_t *wa )
 
 			defined |= TEAM;
 		}
+		else if ( !Q_stricmp( token, "unlockThreshold" ) )
+		{
+			PARSE(text, token);
+
+			wa->unlockThreshold = atoi(token);
+			defined |= UNLOCKTHRESHOLD;
+		}
 		else if( (var = BG_FindConfigVar( va( "w_%s_%s", wa->name, token ) ) ) != NULL )
 		{
 			BG_ParseConfigVar( var, &text, filename );
@@ -1876,6 +1900,7 @@ void BG_ParseUpgradeAttributeFile( const char *filename, upgradeAttributes_t *ua
 		STAGE = 1 << 3,
 		ICON = 1 << 4,
 		TEAM = 1 << 5,
+		UNLOCKTHRESHOLD = 1 << 6
 	};
 
 	if( !BG_ReadWholeFile( filename, text_buffer, sizeof(text_buffer) ) )
@@ -1963,6 +1988,13 @@ void BG_ParseUpgradeAttributeFile( const char *filename, upgradeAttributes_t *ua
 		else if ( !Q_stricmp( token, "isUsable" ) )
 		{
 			ua->usable = qtrue;
+		}
+		else if ( !Q_stricmp( token, "unlockThreshold" ) )
+		{
+			PARSE(text, token);
+
+			ua->unlockThreshold = atoi(token);
+			defined |= UNLOCKTHRESHOLD;
 		}
 		else if( (var = BG_FindConfigVar( va( "u_%s_%s", ua->name, token ) ) ) != NULL )
 		{

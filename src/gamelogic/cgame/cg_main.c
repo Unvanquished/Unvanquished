@@ -246,6 +246,7 @@ vmCvar_t        ui_dialog;
 vmCvar_t        ui_voteActive;
 vmCvar_t        ui_alienTeamVoteActive;
 vmCvar_t        ui_humanTeamVoteActive;
+vmCvar_t        ui_unlockables;
 
 vmCvar_t        cg_debugRandom;
 
@@ -409,6 +410,7 @@ static const cvarTable_t cvarTable[] =
 	{ &ui_voteActive,                  "ui_voteActive",                  "0",            CVAR_ROM                     },
 	{ &ui_humanTeamVoteActive,         "ui_humanTeamVoteActive",         "0",            CVAR_ROM                     },
 	{ &ui_alienTeamVoteActive,         "ui_alienTeamVoteActive",         "0",            CVAR_ROM                     },
+    { &ui_unlockables,                 "ui_unlockables",                 "0 0",          CVAR_ROM                     },
 
 	{ &cg_debugRandom,                 "cg_debugRandom",                 "0",            0                            },
 
@@ -694,7 +696,7 @@ static void CG_SetPVars( void )
 		const buildableAttributes_t *buildable = BG_Buildable( i );
 
 		if ( buildable->team == ps->persistant[ PERS_TEAM ] &&
-		     BG_BuildableAllowedInStage( i, stage ) &&
+		     BG_BuildableUnlocked( i ) &&
 		     (buildable->buildWeapon & ( 1 << ps->stats[ STAT_WEAPON ] ) ) )
 
 		{
@@ -2661,6 +2663,9 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 	BG_InitAllConfigs();
 
 	BG_InitAllowedGameElements();
+
+	// Initialize item locking state
+	BG_InitUnlockackables();
 
 	CG_RegisterCvars();
 
