@@ -758,7 +758,7 @@ void Sys_ErrorDialog( const char *error )
 	const char   *gamedir = Cvar_VariableString( "fs_game" );
 	const char   *fileName = "crashlog.txt";
 	char         *ospath = FS_BuildOSPath( homepath, gamedir, "" );
-	char         *ospathfile = FS_BuildOSPath( ospath, "", fileName );
+	char         *ospathfile = FS_BuildOSPath( homepath, gamedir, fileName );
 
 	Sys_Print( va( "%s\n", error ) );
 
