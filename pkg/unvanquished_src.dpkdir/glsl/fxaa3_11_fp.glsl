@@ -233,7 +233,7 @@ A. Or use FXAA_GREEN_AS_LUMA.
 #endif
 /*--------------------------------------------------------------------------*/
 #ifndef FXAA_GLSL_130
-    #define FXAA_GLSL_130 0yy
+    #define FXAA_GLSL_130 0
 #endif
 /*--------------------------------------------------------------------------*/
 #ifndef FXAA_HLSL_3
