@@ -269,6 +269,7 @@ int G_ExportUnlockablesToMask( team_t team )
 
 static void InformUnlockableStatusChange( unlockable_t *unlockable, qboolean unlocked )
 {
+	/*
 	if ( Disabled( unlockable ) )
 	{
 		return;
@@ -282,15 +283,59 @@ static void InformUnlockableStatusChange( unlockable_t *unlockable, qboolean unl
 	{
 		Com_Printf( "%s " S_COLOR_RED   "locked\n",   UnlockableHumanName( unlockable ) );
 	}
+	*/
+}
+
+static void InformUnlockableStatusChanges( int *statusChanges, int count )
+{
+	char         text[ MAX_STRING_CHARS ];
+	int          unlockableNum;
+	qboolean     firstPass = qtrue;
+	unlockable_t *unlockable;
+
+	for ( unlockableNum = 0; unlockableNum < NUM_UNLOCKABLES; unlockableNum++ )
+	{
+		unlockable = &unlockables[ unlockableNum ];
+
+		if ( !statusChanges[ unlockableNum ] || Disabled( unlockable ) )
+		{
+			continue;
+		}
+
+		if ( firstPass )
+		{
+			if ( statusChanges[ unlockableNum ] > 0 )
+			{
+				Com_sprintf( text, sizeof( text ),
+				             S_COLOR_GREEN "ITEM%s UNLOCKED: " S_COLOR_WHITE "\n", ( count > 1 ) ? "S" : "" );
+			}
+			else
+			{
+				Com_sprintf( text, sizeof( text ),
+				             S_COLOR_RED   "ITEM%s LOCKED: "   S_COLOR_WHITE "\n", ( count > 1 ) ? "S" : "" );
+			}
+		}
+		else
+		{
+			Com_sprintf( text, sizeof( text ), "%s%s", text, ", " );
+		}
+
+		Com_sprintf( text, sizeof( text ), "%s%s", text, UnlockableHumanName( unlockable ) );
+
+		firstPass = qfalse;
+	}
+
+	Com_Printf( "%s", text );
 }
 
 void BG_ImportUnlockablesFromMask( team_t team, int mask )
 {
-	int              unlockableNum, teamUnlockableNum = 0, itemNum = 0, unlockThreshold, teamNum;
+	int              unlockableNum, teamUnlockableNum = 0, itemNum = 0, unlockThreshold;
 	unlockable_t     *unlockable;
 	unlockableType_t unlockableType = 0;
 	team_t           currentTeam;
 	qboolean         newStatus;
+	int              statusChanges[ NUM_UNLOCKABLES ], statusChangeCount = 0;
 
 	// maintain a cache to prevent redundant imports
 	static qboolean cacheValid = qfalse;
@@ -307,6 +352,9 @@ void BG_ImportUnlockablesFromMask( team_t team, int mask )
 	cacheValid = qtrue;
 	lastMask   = mask;
 	lastTeam   = team;
+
+	// no status change yet
+	memset( statusChanges, 0, sizeof( statusChanges ) );
 
 	for ( unlockableNum = 0; unlockableNum < NUM_UNLOCKABLES; unlockableNum++ )
 	{
@@ -369,6 +417,9 @@ void BG_ImportUnlockablesFromMask( team_t team, int mask )
 			     unlockable->unlocked != newStatus )
 			{
 				InformUnlockableStatusChange( unlockable, newStatus );
+
+				statusChanges[ unlockableNum ] = newStatus ? 1 : -1;
+				statusChangeCount++;
 			}
 #endif
 
@@ -387,6 +438,12 @@ void BG_ImportUnlockablesFromMask( team_t team, int mask )
 	}
 
 #ifdef CGAME
+	// notify client about status changes
+	if ( statusChangeCount )
+	{
+		InformUnlockableStatusChanges( statusChanges, statusChangeCount );
+	}
+
 	// export team and mask into cvar for UI
 	trap_Cvar_Set( "ui_unlockables", va( "%d %d", team, mask ) );
 #endif
