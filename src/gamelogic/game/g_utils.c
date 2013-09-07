@@ -843,6 +843,30 @@ void G_AddConfidence( team_t team, confidence_t type, confidence_reason_t reason
 		event->s.otherEntityNum2 = ( int )( fabs( amount ) * 10.0f + 0.5f );
 		event->s.groundEntityNum = amount < 0 ? qtrue : qfalse;
 	}
+
+	// Hack: Notify legacy stage sensors, assume 100 confidence is a stage
+	{
+		int   stage;
+		float confidence;
+
+		for ( stage = 1; stage < 3; stage++ )
+		{
+			confidence = stage * 100.0f;
+
+			if ( ( level.team[ team ].confidence[ CONFIDENCE_SUM ]          < confidence ) ==
+			     ( level.team[ team ].confidence[ CONFIDENCE_SUM ] + amount > confidence ) )
+			{
+				if      ( amount > 0.0f )
+				{
+					G_notify_sensor_stage( team, stage - 1, stage     );
+				}
+				else if ( amount < 0.0f )
+				{
+					G_notify_sensor_stage( team, stage,     stage - 1 );
+				}
+			}
+		}
+	}
 }
 
 

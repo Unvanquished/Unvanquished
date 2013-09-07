@@ -89,8 +89,8 @@ enum
   CS_BOTINFO,
   CS_CLIENTS_READY,
 
-  CS_ALIEN_STAGE,
-  CS_HUMAN_STAGE,
+  CS_UNUSED_1,
+  CS_UNUSED_2,
 
   CS_MODELS,
   CS_SOUNDS = CS_MODELS + MAX_MODELS,
@@ -293,10 +293,8 @@ typedef enum
   PERS_NEWWEAPON,      // weapon to switch to
   PERS_BP,
   PERS_MARKEDBP,
-  PERS_MINERATE,       // level wide base mine rate. TODO: calculate clientside
-  PERS_THRESHOLD_STAGE2,
-  PERS_THRESHOLD_STAGE3
-  // netcode has space for 0 more. TODO: extend
+  PERS_MINERATE        // level wide base mine rate. TODO: calculate clientside
+  // netcode has space for 2 more. TODO: extend
 } persEnum_t;
 
 #define PS_WALLCLIMBINGFOLLOW 0x00000001
@@ -602,7 +600,7 @@ typedef enum
   MN_A_UNKNOWNCLASS,
   MN_A_CLASSNOTSPAWN,
   MN_A_CLASSNOTALLOWED,
-  MN_A_CLASSNOTATSTAGE,
+  MN_A_CLASSLOCKED,
 
   //shared build
   MN_B_NOROOM,
@@ -956,9 +954,6 @@ typedef enum
 {
 	CONF_REAS_NONE,
 
-	CONF_REAS_STAGEUP,
-	CONF_REAS_STAGEDOWN,
-
 	CONF_REAS_KILLING,
 
 	CONF_REAS_DESTR_CRUCIAL,
@@ -994,7 +989,6 @@ typedef struct
 	const char *info;
 	const char *fovCvar;
 
-	int      stages;
 	int      unlockThreshold;
 
 	int      health;
@@ -1048,14 +1042,6 @@ typedef struct
 	qboolean segmented;
 } classModelConfig_t;
 
-//stages
-typedef enum
-{
-  S1,
-  S2,
-  S3
-} stage_t;
-
 #define MAX_BUILDABLE_MODELS 3
 
 // buildable item record
@@ -1073,7 +1059,6 @@ typedef struct
 
 	int         buildPoints;
 	int         powerConsumption;
-	int         stages;
 	int         unlockThreshold;
 
 	int         health;
@@ -1130,7 +1115,6 @@ typedef struct
 	weapon_t number;
 
 	int      price;
-	int      stages;
 	int      unlockThreshold;
 
 	int      slots;
@@ -1168,7 +1152,6 @@ typedef struct
 	upgrade_t number;
 
 	int       price;
-	int       stages;
 	int       unlockThreshold;
 
 	int       slots;
@@ -1213,7 +1196,6 @@ int                         BG_UnpackEntityNumbers( entityState_t *es, int *enti
 const buildableAttributes_t *BG_BuildableByName( const char *name );
 const buildableAttributes_t *BG_BuildableByEntityName( const char *name );
 const buildableAttributes_t *BG_Buildable( buildable_t buildable );
-qboolean                    BG_BuildableAllowedInStage( buildable_t buildable, stage_t stage );
 
 buildableModelConfig_t      *BG_BuildableModelConfig( buildable_t buildable );
 void                        BG_BuildableBoundingBox( buildable_t buildable, vec3_t mins, vec3_t maxs );
@@ -1221,7 +1203,6 @@ void                        BG_BuildableBoundingBox( buildable_t buildable, vec3
 const classAttributes_t     *BG_ClassByName( const char *name );
 
 const classAttributes_t     *BG_Class( class_t pClass );
-qboolean                    BG_ClassAllowedInStage( class_t pClass, stage_t stage );
 
 classModelConfig_t          *BG_ClassModelConfig( class_t pClass );
 
@@ -1229,16 +1210,14 @@ void                        BG_ClassBoundingBox( class_t pClass, vec3_t mins, ve
                                                  vec3_t dmins, vec3_t dmaxs );
 qboolean                    BG_ClassHasAbility( class_t pClass, int ability );
 
-int                         BG_ClassCanEvolveFromTo(class_t from, class_t to, int credits, int stage);
-qboolean                    BG_AlienCanEvolve(class_t from, int credits, int alienStage );
+int                         BG_ClassCanEvolveFromTo(class_t from, class_t to, int credits);
+qboolean                    BG_AlienCanEvolve(class_t from, int credits);
 
 const weaponAttributes_t  *BG_WeaponByName( const char *name );
 const weaponAttributes_t  *BG_Weapon( weapon_t weapon );
-qboolean                  BG_WeaponAllowedInStage( weapon_t weapon, stage_t stage );
 
 const upgradeAttributes_t *BG_UpgradeByName( const char *name );
 const upgradeAttributes_t *BG_Upgrade( upgrade_t upgrade );
-qboolean                  BG_UpgradeAllowedInStage( upgrade_t upgrade, stage_t stage );
 
 void                      BG_InitAllConfigs( void );
 void                      BG_UnloadAllConfigs( void );

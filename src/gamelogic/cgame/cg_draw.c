@@ -378,8 +378,7 @@ static void CG_DrawPlayerCreditsValue( rectDef_t *rect, vec4_t color, qboolean p
 
 		if ( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_ALIENS )
 		{
-			if ( !BG_AlienCanEvolve( cg.predictedPlayerState.stats[ STAT_CLASS ],
-			                         value, cgs.alienStage ) &&
+			if ( !BG_AlienCanEvolve( cg.predictedPlayerState.stats[ STAT_CLASS ], value ) &&
 			     cg.time - cg.lastEvolveAttempt <= NO_CREDITS_TIME &&
 			     ( ( cg.time - cg.lastEvolveAttempt ) / 300 ) & 1 )
 			{
@@ -448,8 +447,7 @@ static void CG_DrawPlayerAlienEvos( rectDef_t *rect, float text_x, float text_y,
 
 		if ( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_ALIENS )
 		{
-			if ( !BG_AlienCanEvolve( cg.predictedPlayerState.stats[ STAT_CLASS ],
-			                         value, cgs.alienStage ) &&
+			if ( !BG_AlienCanEvolve( cg.predictedPlayerState.stats[ STAT_CLASS ], value ) &&
 			     cg.time - cg.lastEvolveAttempt <= NO_CREDITS_TIME &&
 			     ( ( cg.time - cg.lastEvolveAttempt ) / 300 ) & 1 )
 			{
@@ -2040,107 +2038,55 @@ CG_DrawTeamLabel
 static void CG_DrawTeamLabel( rectDef_t *rect, team_t team, float text_x, float text_y,
                               vec4_t color, float scale, int textalign, int textvalign, int textStyle )
 {
-	const char *t;
-	char  stage[ MAX_TOKEN_CHARS ];
-	char  *s;
+	const char *teamName;
 	float tx, ty;
-
-	stage[ 0 ] = '\0';
 
 	switch ( team )
 	{
 		case TEAM_ALIENS:
-			t = _("Aliens");
-
-			if ( cg.intermissionStarted )
-			{
-				Com_sprintf( stage, MAX_TOKEN_CHARS, _("(Stage %d)"), cgs.alienStage + 1 );
-			}
-
+			teamName = _("Aliens");
 			break;
 
 		case TEAM_HUMANS:
-			t = _("Humans");
-
-			if ( cg.intermissionStarted )
-			{
-				Com_sprintf( stage, MAX_TOKEN_CHARS, _("(Stage %d)"), cgs.humanStage + 1 );
-			}
-
+			teamName = _("Humans");
 			break;
 
 		default:
-			t = "";
+			teamName = "";
 			break;
 	}
 
-	switch ( textalign )
-	{
-		default:
-		case ALIGN_LEFT:
-			s = va( "%s %s", t, stage );
-			break;
-
-		case ALIGN_RIGHT:
-			s = va( "%s %s", stage, t );
-			break;
-	}
-
-	CG_AlignText( rect, s, scale, 0.0f, 0.0f, textalign, textvalign, &tx, &ty );
-	UI_Text_Paint( text_x + tx, text_y + ty, scale, color, s, 0, textStyle );
+	CG_AlignText( rect, teamName, scale, 0.0f, 0.0f, textalign, textvalign, &tx, &ty );
+	UI_Text_Paint( text_x + tx, text_y + ty, scale, color, teamName, 0, textStyle );
 }
 
 /*
 ==================
-CG_DrawStageReport
+CG_DrawConfidence
 ==================
 */
-static void CG_DrawStageReport( rectDef_t *rect, float text_x, float text_y,
-                                vec4_t color, float scale, int textalign, int textvalign, int textStyle )
+static void CG_DrawConfidence( rectDef_t *rect, float text_x, float text_y,
+                               vec4_t color, float scale, int textalign, int textvalign, int textStyle )
 {
-	char  s[ MAX_TOKEN_CHARS ];
-	float tx, ty, confidence;
-	int   stage, stage2Threshold, stage3Threshold;
+	char   s[ MAX_TOKEN_CHARS ];
+	float  tx, ty, confidence;
+	team_t team;
 
 	if ( cg.intermissionStarted )
 	{
 		return;
 	}
 
-	switch ( cg.snap->ps.persistant[ PERS_TEAM ] )
+	team = cg.snap->ps.persistant[ PERS_TEAM ];
+
+	if ( team <= TEAM_NONE || team >= NUM_TEAMS )
 	{
-		case TEAM_ALIENS:
-			stage = cgs.alienStage;
-			break;
-
-		case TEAM_HUMANS:
-			stage = cgs.humanStage;
-			break;
-
-		default:
-			return;
+		return;
 	}
 
 	confidence = cg.predictedPlayerState.persistant[ PERS_CONFIDENCE ] / 10.0f;
 
-	stage2Threshold = cg.predictedPlayerState.persistant[ PERS_THRESHOLD_STAGE2 ];
-	stage3Threshold = cg.predictedPlayerState.persistant[ PERS_THRESHOLD_STAGE3 ];
-
-	if ( stage == S1 )
-	{
-		Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d, %.1f confidence, ↑%d"),
-					 stage + 1, confidence, stage2Threshold );
-	}
-	else if ( stage == S3 )
-	{
-		Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d, %.1f confidence, ↓%d"),
-					 stage + 1, confidence, stage3Threshold );
-	}
-	else
-	{
-		Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d, %.1f confidence, ↑%d ↓%d"),
-					 stage + 1, confidence, stage3Threshold, stage2Threshold );
-	}
+	Com_sprintf( s, MAX_TOKEN_CHARS, _("%.1f confidence"), confidence );
 
 	CG_AlignText( rect, s, scale, 0.0f, 0.0f, textalign, textvalign, &tx, &ty );
 
@@ -3258,8 +3204,7 @@ void CG_DrawWeaponIcon( rectDef_t *rect, vec4_t color )
 	}
 
 	if ( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_ALIENS &&
-	     !BG_AlienCanEvolve( cg.predictedPlayerState.stats[ STAT_CLASS ],
-	                         ps->persistant[ PERS_CREDIT ], cgs.alienStage ) )
+	     !BG_AlienCanEvolve( cg.predictedPlayerState.stats[ STAT_CLASS ], ps->persistant[ PERS_CREDIT ] ) )
 	{
 		if ( cg.time - cg.lastEvolveAttempt <= NO_CREDITS_TIME )
 		{
@@ -4081,7 +4026,7 @@ void CG_OwnerDraw( rectDef_t *rect, float text_x,
 			break;
 
 		case CG_STAGE_REPORT_TEXT:
-			CG_DrawStageReport( rect, text_x, text_y, foreColor, scale, textalign, textvalign, textStyle );
+			CG_DrawConfidence( rect, text_x, text_y, foreColor, scale, textalign, textvalign, textStyle );
 			break;
 
 		case CG_ALIENS_SCORE_LABEL:

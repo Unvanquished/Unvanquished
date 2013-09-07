@@ -91,7 +91,7 @@ struct variatingTime_s
 typedef struct
 {
 	team_t   team;
-	stage_t  stage;
+	int      stage;
 
 	class_t     classes[ PCL_NUM_CLASSES ];
 	weapon_t    weapons[ WP_NUM_WEAPONS ];
@@ -869,13 +869,8 @@ typedef struct
 		int              mineEfficiency;
 		int              kills;
 		spawnQueue_t     spawnQueue;
-		int              stage2Time;
-		int              stage3Time;
 		qboolean         locked;
 		float            confidence[ NUM_CONFIDENCE_TYPES ];
-		stage_t          stage;
-		int              stage2Threshold;
-		int              stage3Threshold;
 	} team[ NUM_TEAMS ];
 } level_locals_t;
 
@@ -1312,14 +1307,6 @@ extern  vmCvar_t g_mineRateHalfLife;
 extern  vmCvar_t g_minimumMineRate;
 
 extern  vmCvar_t g_confidenceHalfLife;
-extern  vmCvar_t g_minimumStageTime;
-extern  vmCvar_t g_stage2BaseThreshold;
-extern  vmCvar_t g_stage3BaseThreshold;
-extern  vmCvar_t g_stage2IncreasePerPlayer;
-extern  vmCvar_t g_stage3IncreasePerPlayer;
-extern  vmCvar_t g_stageThresholdHalfLife;
-extern  vmCvar_t g_humanMaxStage;
-extern  vmCvar_t g_alienMaxStage;
 
 extern  vmCvar_t g_humanAllowBuilding;
 extern  vmCvar_t g_alienAllowBuilding;

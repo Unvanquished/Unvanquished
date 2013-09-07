@@ -467,24 +467,6 @@ qboolean BG_ReadWholeFile( const char *filename, char *buffer, int size)
 	return qtrue;
 }
 
-static int BG_StageFromNumber( int i )
-{
-	if( i == 1 )
-	{
-		return (1 << S1) | (1 << S2) | (1 << S3);
-	}
-	if( i == 2 )
-	{
-		return (1 << S2) | (1 << S3);
-	}
-	if( i == 3 )
-	{
-		return 1 << S3;
-	}
-
-	return 0;
-}
-
 static int BG_ParseTeam(char* token)
 {
 	if ( !Q_stricmp( token, "aliens" ) )
@@ -639,7 +621,7 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
 		DESCRIPTION = 1 << 2,
 		NORMAL = 1 << 3,
 		BUILDPOINTS = 1 << 4,
-		STAGE = 1 << 5,
+		// unused
 		HEALTH = 1 << 6,
 		DEATHMOD = 1 << 7,
 		TEAM = 1 << 8,
@@ -693,15 +675,6 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
 			ba->powerConsumption = atoi(token);
 
 			defined |= POWERCONSUMPTION;
-		}
-		else if ( !Q_stricmp( token, "stage" ) )
-		{
-			PARSE(text, token);
-
-			//It depends heavily on the definition of S1 S2 S3
-			ba->stages = BG_StageFromNumber( atoi(token) );
-
-			defined |= STAGE;
 		}
 		else if ( !Q_stricmp( token, "health" ) )
 		{
@@ -907,7 +880,6 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
 	if ( !( defined & HUMANNAME) ) { token = "humanName"; }
 	else if ( !( defined & DESCRIPTION) ) { token = "description"; }
 	else if ( !( defined & BUILDPOINTS) ) { token = "buildPoints"; }
-	else if ( !( defined & STAGE) ) { token = "stage"; }
 	else if ( !( defined & HEALTH) ) { token = "health"; }
 	else if ( !( defined & DEATHMOD) ) { token = "meansOfDeath"; }
 	else if ( !( defined & TEAM) ) { token = "team"; }
@@ -1087,7 +1059,7 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
 	{
 		INFO = 1 << 0,
 		FOVCVAR = 1 << 1,
-		STAGE = 1 << 2,
+		// unused
 		HEALTH = 1 << 3,
 		FALLDAMAGE = 1 << 4,
 		REGEN = 1 << 5,
@@ -1148,14 +1120,6 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
 			}
 
 			defined |= FOVCVAR;
-		}
-		else if ( !Q_stricmp( token, "stage" ) )
-		{
-			PARSE(text, token);
-
-			ca->stages = BG_StageFromNumber( atoi(token) );
-
-			defined |= STAGE;
 		}
 		else if ( !Q_stricmp( token, "health" ) )
 		{
@@ -1347,7 +1311,6 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
 
 	if ( !( defined & INFO ) ) { token = "description"; }
 	else if ( !( defined & FOVCVAR ) ) { token = "fovCvar"; }
-	else if ( !( defined & STAGE ) ) { token = "stage"; }
 	else if ( !( defined & HEALTH ) ) { token = "health"; }
 	else if ( !( defined & FALLDAMAGE ) ) { token = "fallDamage"; }
 	else if ( !( defined & REGEN ) ) { token = "regen"; }
@@ -1693,7 +1656,7 @@ void BG_ParseWeaponAttributeFile( const char *filename, weaponAttributes_t *wa )
 	{
 		NAME = 1 << 0,
 		INFO = 1 << 1,
-		STAGE = 1 << 2,
+		// unused
 		PRICE = 1 << 3,
 		RATE = 1 << 4,
 		AMMO = 1 << 5,
@@ -1735,14 +1698,6 @@ void BG_ParseWeaponAttributeFile( const char *filename, weaponAttributes_t *wa )
 			}
 
 			defined |= INFO;
-		}
-		else if ( !Q_stricmp( token, "stage" ) )
-		{
-			PARSE(text, token);
-
-			wa->stages = BG_StageFromNumber( atoi( token ) );
-
-			defined |= STAGE;
 		}
 		else if ( !Q_stricmp( token, "usedSlots" ) )
 		{
@@ -1865,7 +1820,6 @@ void BG_ParseWeaponAttributeFile( const char *filename, weaponAttributes_t *wa )
 
 	if ( !( defined & NAME ) ) { token = "humanName"; }
 	else if ( !( defined & INFO ) ) { token = "description"; }
-	else if ( !( defined & STAGE ) ) { token = "stage"; }
 	else if ( !( defined & PRICE ) ) { token = "price"; }
 	else if ( !( defined & RATE ) ) { token = "primaryAttackRate"; }
 	else if ( !( defined & AMMO ) ) { token = "maxAmmo or infiniteAmmo"; }
@@ -1897,7 +1851,7 @@ void BG_ParseUpgradeAttributeFile( const char *filename, upgradeAttributes_t *ua
 		NAME = 1 << 0,
 		PRICE = 1 << 1,
 		INFO = 1 << 2,
-		STAGE = 1 << 3,
+		// unused
 		ICON = 1 << 4,
 		TEAM = 1 << 5,
 		UNLOCKTHRESHOLD = 1 << 6
@@ -1937,14 +1891,6 @@ void BG_ParseUpgradeAttributeFile( const char *filename, upgradeAttributes_t *ua
 			}
 
 			defined |= INFO;
-		}
-		else if ( !Q_stricmp( token, "stage" ) )
-		{
-			PARSE(text, token);
-
-			ua->stages = BG_StageFromNumber( atoi( token ) );
-
-			defined |= STAGE;
 		}
 		else if ( !Q_stricmp( token, "usedSlots" ) )
 		{
@@ -2008,7 +1954,6 @@ void BG_ParseUpgradeAttributeFile( const char *filename, upgradeAttributes_t *ua
 
 	if ( !( defined & NAME ) ) { token = "humanName"; }
 	else if ( !( defined & INFO ) ) { token = "description"; }
-	else if ( !( defined & STAGE ) ) { token = "stage"; }
 	else if ( !( defined & PRICE ) ) { token = "price"; }
 	else if ( !( defined & ICON ) ) { token = "icon"; }
 	else if ( !( defined & TEAM ) ) { token = "team"; }

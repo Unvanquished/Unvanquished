@@ -122,26 +122,6 @@ const buildableAttributes_t *BG_Buildable( buildable_t buildable )
 }
 
 /*
-==============
-BG_BuildableAllowedInStage
-==============
-*/
-qboolean BG_BuildableAllowedInStage( buildable_t buildable,
-                                     stage_t stage )
-{
-	int stages = BG_Buildable( buildable )->stages;
-
-	if ( stages & ( 1 << stage ) )
-	{
-		return qtrue;
-	}
-	else
-	{
-		return qfalse;
-	}
-}
-
-/*
 ===============
 BG_InitBuildableAttributes
 ===============
@@ -347,18 +327,6 @@ const classAttributes_t *BG_Class( class_t pClass )
 	       &bg_classList[ pClass ] : &nullClass;
 }
 
-/*
-==============
-BG_ClassAllowed
-==============
-*/
-qboolean BG_ClassAllowedInStage( class_t pClass, stage_t stage )
-{
-	int stages = BG_Class( pClass )->stages;
-
-	return stages & ( 1 << stage );
-}
-
 static classModelConfig_t bg_classModelConfigList[ PCL_NUM_CLASSES ];
 
 /*
@@ -425,7 +393,7 @@ qboolean BG_ClassHasAbility( class_t pClass, int ability )
 BG_ClassCanEvolveFromTo
 ==============
 */
-int BG_ClassCanEvolveFromTo( class_t from, class_t to, int credits, int stage )
+int BG_ClassCanEvolveFromTo( class_t from, class_t to, int credits )
 {
 	int fromCost, toCost, evolveCost;
 
@@ -479,13 +447,13 @@ int BG_ClassCanEvolveFromTo( class_t from, class_t to, int credits, int stage )
 BG_AlienCanEvolve
 ==============
 */
-qboolean BG_AlienCanEvolve( class_t from, int credits, int stage )
+qboolean BG_AlienCanEvolve( class_t from, int credits )
 {
 	class_t to;
 
 	for ( to = PCL_NONE + 1; to < PCL_NUM_CLASSES; to++ )
 	{
-		if ( BG_ClassCanEvolveFromTo( from, to, credits, stage ) >= 0 )
+		if ( BG_ClassCanEvolveFromTo( from, to, credits ) >= 0 )
 		{
 			return qtrue;
 		}
@@ -621,18 +589,6 @@ const weaponAttributes_t *BG_Weapon( weapon_t weapon )
 }
 
 /*
-==============
-BG_WeaponAllowedInStage
-==============
-*/
-qboolean BG_WeaponAllowedInStage( weapon_t weapon, stage_t stage )
-{
-	int stages = BG_Weapon( weapon )->stages;
-
-	return stages & ( 1 << stage );
-}
-
-/*
 ===============
 BG_InitWeaponAttributes
 ===============
@@ -717,18 +673,6 @@ const upgradeAttributes_t *BG_Upgrade( upgrade_t upgrade )
 {
 	return ( upgrade > UP_NONE && upgrade < UP_NUM_UPGRADES ) ?
 	       &bg_upgrades[ upgrade - 1 ] : &nullUpgrade;
-}
-
-/*
-==============
-BG_UpgradeAllowedInStage
-==============
-*/
-qboolean BG_UpgradeAllowedInStage( upgrade_t upgrade, stage_t stage )
-{
-	int stages = BG_Upgrade( upgrade )->stages;
-
-	return stages & ( 1 << stage );
 }
 
 /*

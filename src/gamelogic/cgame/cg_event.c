@@ -782,14 +782,6 @@ void CG_Confidence( entityState_t *es )
 
 	switch ( es->eventParm ) // reason
 	{
-		case CONF_REAS_STAGEUP:
-			reason = _("Staging up");
-			break;
-
-		case CONF_REAS_STAGEDOWN:
-			reason = _("Staging down");
-			break;
-
 		case CONF_REAS_KILLING:
 			reason = _("Killing an enemy");
 			break;

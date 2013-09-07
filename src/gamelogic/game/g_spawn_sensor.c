@@ -236,7 +236,7 @@ G_notify_sensor_stage
 Called when stages change
 ===============
 */
-void G_notify_sensor_stage( team_t team, stage_t previousStage, stage_t newStage )
+void G_notify_sensor_stage( team_t team, int previousStage, int newStage )
 {
 	gentity_t *entities = NULL;
 

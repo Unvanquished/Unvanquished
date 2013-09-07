@@ -241,7 +241,6 @@ vmCvar_t        cg_debugVoices;
 
 vmCvar_t        ui_currentClass;
 vmCvar_t        ui_carriage;
-vmCvar_t        ui_stages;
 vmCvar_t        ui_dialog;
 vmCvar_t        ui_voteActive;
 vmCvar_t        ui_alienTeamVoteActive;
@@ -405,7 +404,6 @@ static const cvarTable_t cvarTable[] =
 	// communication cvars set by the cgame to be read by ui
 	{ &ui_currentClass,                "ui_currentClass",                "0",            CVAR_ROM                     },
 	{ &ui_carriage,                    "ui_carriage",                    "",             CVAR_ROM                     },
-	{ &ui_stages,                      "ui_stages",                      "0 0",          CVAR_ROM                     },
 	{ &ui_dialog,                      "ui_dialog",                      "Text not set", CVAR_ROM                     },
 	{ &ui_voteActive,                  "ui_voteActive",                  "0",            CVAR_ROM                     },
 	{ &ui_humanTeamVoteActive,         "ui_humanTeamVoteActive",         "0",            CVAR_ROM                     },
@@ -487,7 +485,7 @@ static void CG_SetPVars( void )
 {
 	playerState_t *ps;
 	char          buffer[ MAX_CVAR_VALUE_STRING ];
-	int           i, stage = 0;
+	int           i;
 	qboolean      first;
 
 	if ( !cg.snap )
@@ -502,15 +500,10 @@ static void CG_SetPVars( void )
 
 	trap_Cvar_Set( "p_teamname", BG_TeamName( ps->persistant[ PERS_TEAM ] ) );
 
-	// while we're here, set stage
 	switch ( ps->persistant[ PERS_TEAM ] )
 	{
 		case TEAM_ALIENS:
-			stage = cgs.alienStage;
-			break;
-
 		case TEAM_HUMANS:
-			stage = cgs.humanStage;
 			break;
 
 		default:
@@ -525,7 +518,6 @@ static void CG_SetPVars( void )
 			 */
 			trap_Cvar_Set( "p_class" , "0" );
 			trap_Cvar_Set( "p_weapon", "0" );
-			trap_Cvar_Set( "p_stage", "0" );
 			trap_Cvar_Set( "p_hp", "0" );
 			trap_Cvar_Set( "p_maxhp", "0" );
 			trap_Cvar_Set( "p_ammo", "0" );
@@ -533,7 +525,6 @@ static void CG_SetPVars( void )
 			return;
 	}
 
-	trap_Cvar_Set( "p_stage", va( "%d", stage ) );
 	trap_Cvar_Set( "p_class", va( "%d", ps->stats[ STAT_CLASS ] ) );
 
 	switch ( ps->stats[ STAT_CLASS ] )
@@ -687,7 +678,6 @@ static void CG_SetPVars( void )
 	trap_Cvar_Set( "p_clips", va( "%d", ps->clips ) );
 
 	// set p_availableBuildings to a space-separated list of buildings
-	// limited to those available given team, stage and class
 	first = qtrue;
 	*buffer = 0;
 
@@ -752,23 +742,6 @@ static void CG_SetUIVars( void )
 	strcat( carriageCvar, "$" );
 
 	trap_Cvar_Set( "ui_carriage", carriageCvar );
-
-	switch ( ps->persistant[ PERS_TEAM ] )
-	{
-		case TEAM_NONE:
-			trap_Cvar_Set( "ui_stages", va( "%d %d", cgs.alienStage, cgs.humanStage ) );
-			return;
-
-		case TEAM_ALIENS:
-			//dont send human stages to aliens
-			trap_Cvar_Set( "ui_stages", va( "%d %d", cgs.alienStage, -1 ) );
-			break;
-
-		case TEAM_HUMANS:
-			//dont send alien stages to humans
-			trap_Cvar_Set( "ui_stages", va( "%d %d", -1, cgs.humanStage ) );
-			break;
-	}
 }
 
 /*
@@ -1281,8 +1254,8 @@ static void CG_RegisterSounds( void )
 	char       name[ MAX_QPATH ];
 	const char *soundName;
 
-	cgs.media.alienStageTransition = trap_S_RegisterSound( "sound/announcements/overmindevolved.wav", qtrue );
-	cgs.media.humanStageTransition = trap_S_RegisterSound( "sound/announcements/reinforcement.wav", qtrue );
+	cgs.media.weHaveEvolved = trap_S_RegisterSound( "sound/announcements/overmindevolved.wav", qtrue );
+	cgs.media.reinforcement = trap_S_RegisterSound( "sound/announcements/reinforcement.wav", qtrue );
 
 	cgs.media.alienOvermindAttack = trap_S_RegisterSound( "sound/announcements/overmindattack.wav", qtrue );
 	cgs.media.alienOvermindDying = trap_S_RegisterSound( "sound/announcements/overminddying.wav", qtrue );

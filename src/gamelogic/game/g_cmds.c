@@ -2444,7 +2444,7 @@ static qboolean Cmd_Class_internal( gentity_t *ent, const char *s, qboolean repo
 			{
 				if ( report )
 				{
-					G_TriggerMenuArgs( ent->client->ps.clientNum, MN_A_CLASSNOTATSTAGE, newClass );
+					G_TriggerMenuArgs( ent->client->ps.clientNum, MN_A_CLASSLOCKED, newClass );
 				}
 				return qfalse;
 			}
@@ -2571,7 +2571,7 @@ static qboolean Cmd_Class_internal( gentity_t *ent, const char *s, qboolean repo
 				return qfalse;
 			}
 
-			cost = BG_ClassCanEvolveFromTo( currentClass, newClass, ent->client->pers.credit, level.team[ TEAM_ALIENS ].stage );
+			cost = BG_ClassCanEvolveFromTo( currentClass, newClass, ent->client->pers.credit );
 
 			if ( G_RoomForClassChange( ent, newClass, infestOrigin ) )
 			{

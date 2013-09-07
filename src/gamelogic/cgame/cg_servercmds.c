@@ -165,27 +165,6 @@ Called on load to set the initial values from configure strings
 */
 void CG_SetConfigValues( void )
 {
-	const char *alienStage = CG_ConfigString( CS_ALIEN_STAGE );
-	const char *humanStage = CG_ConfigString( CS_HUMAN_STAGE );
-
-	if ( alienStage[ 0 ] )
-	{
-		sscanf( alienStage, "%d", &cgs.alienStage );
-	}
-	else
-	{
-		cgs.alienStage = -1;
-	}
-
-	if ( humanStage[ 0 ] )
-	{
-		sscanf( humanStage, "%d", &cgs.humanStage );
-	}
-	else
-	{
-		cgs.humanStage = -1;
-	}
-
 	cgs.levelStartTime = atoi( CG_ConfigString( CS_LEVEL_START_TIME ) );
 	cg.warmupTime = atoi( CG_ConfigString( CS_WARMUP ) );
 }
@@ -246,60 +225,6 @@ void CG_ShaderStateChanged( void )
 
 /*
 ================
-CG_AnnounceAlienStageTransition
-================
-*/
-static void CG_AnnounceAlienStageTransition( stage_t from, stage_t to )
-{
-	Q_UNUSED(from);
-	Q_UNUSED(to);
-
-	if ( cg.predictedPlayerState.persistant[ PERS_TEAM ] != TEAM_ALIENS )
-	{
-		return;
-	}
-
-	if ( to > from )
-	{
-		trap_S_StartLocalSound( cgs.media.alienStageTransition, CHAN_ANNOUNCER );
-		CG_CenterPrint( _("We have evolved!"), 200, GIANTCHAR_WIDTH * 4 );
-	}
-	else if ( to < from )
-	{
-		trap_S_StartLocalSound( cgs.media.alienStageTransition, CHAN_ANNOUNCER ); // TODO: Add alien stage down sound
-		CG_CenterPrint( _("^1We have devolved!"), 200, GIANTCHAR_WIDTH * 4 );
-	}
-}
-
-/*
-================
-CG_AnnounceHumanStageTransition
-================
-*/
-static void CG_AnnounceHumanStageTransition( stage_t from, stage_t to )
-{
-	Q_UNUSED(from);
-	Q_UNUSED(to);
-
-	if ( cg.predictedPlayerState.persistant[ PERS_TEAM ] != TEAM_HUMANS )
-	{
-		return;
-	}
-
-	if ( to > from )
-	{
-		trap_S_StartLocalSound( cgs.media.humanStageTransition, CHAN_ANNOUNCER );
-		CG_CenterPrint( _("Reinforcements have arrived!"), 200, GIANTCHAR_WIDTH * 4 );
-	}
-	else if ( to < from )
-	{
-		trap_S_StartLocalSound( cgs.media.humanStageTransition, CHAN_ANNOUNCER ); // TODO: Add human stage down sound
-		CG_CenterPrint( _("^1Reinforcements are lost!"), 200, GIANTCHAR_WIDTH * 4 );
-	}
-}
-
-/*
-================
 CG_ConfigStringModified
 
 ================
@@ -332,42 +257,6 @@ static void CG_ConfigStringModified( void )
 	else if ( num == CS_WARMUP )
 	{
 		CG_ParseWarmup();
-	}
-	else if ( num == CS_ALIEN_STAGE )
-	{
-		stage_t oldAlienStage = cgs.alienStage;
-
-		if ( str[ 0 ] )
-		{
-			sscanf( str, "%d", &cgs.alienStage );
-
-			if ( cgs.alienStage != oldAlienStage )
-			{
-				CG_AnnounceAlienStageTransition( oldAlienStage, cgs.alienStage );
-			}
-		}
-		else
-		{
-			cgs.alienStage = -1;
-		}
-	}
-	else if ( num == CS_HUMAN_STAGE )
-	{
-		stage_t oldHumanStage = cgs.humanStage;
-
-		if ( str[ 0 ] )
-		{
-			sscanf( str, "%d", &cgs.humanStage );
-
-			if ( cgs.humanStage != oldHumanStage )
-			{
-				CG_AnnounceHumanStageTransition( oldHumanStage, cgs.humanStage );
-			}
-		}
-		else
-		{
-			cgs.humanStage = 0;
-		}
 	}
 	else if ( num == CS_LEVEL_START_TIME )
 	{
@@ -925,10 +814,9 @@ void CG_Menu( int menu, int arg )
 			type = DT_ARMOURYEVOLVE;
 			break;
 
-		case MN_A_CLASSNOTATSTAGE:
-			shortMsg = va( _("The %s is not allowed at Stage %d"),
-			               _( BG_ClassModelConfig( arg )->humanName ),
-			               cgs.alienStage + 1 );
+		case MN_A_CLASSLOCKED:
+			shortMsg = va( _("The %s has not been unlocked yet"),
+			               _( BG_ClassModelConfig( arg )->humanName ) );
 			type = DT_ARMOURYEVOLVE;
 			break;
 
