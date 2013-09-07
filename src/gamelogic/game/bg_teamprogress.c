@@ -103,7 +103,7 @@ static qboolean Disabled( unlockable_t *unlockable )
 		case UNLT_CLASS:     return BG_ClassDisabled( unlockable->num );
 	}
 
-	Com_Error( ERR_FATAL, "IsDisabled: Unlockable has unknown type" );
+	Com_Error( ERR_FATAL, "Disabled: Unlockable has unknown type" );
 	return qfalse;
 }
 
@@ -343,7 +343,7 @@ void BG_ImportUnlockablesFromMask( team_t team, int mask )
 				break;
 
 			default:
-				Com_Error( ERR_FATAL, "CG_ImportUnlockablesFromMask: Unknown unlockable type" );
+				Com_Error( ERR_FATAL, "BG_ImportUnlockablesFromMask: Unknown unlockable type" );
 		}
 
 		unlockThreshold = MAX( unlockThreshold, 0 );
