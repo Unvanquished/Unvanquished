@@ -516,27 +516,16 @@ qboolean BG_ClassUnlocked( class_t class_ )
 	return Unlocked( UNLT_CLASS, ( int )class_ );
 }
 
-int BG_IterateConfidenceThresholds( int threshold, qboolean *unlocked, team_t team )
+
+
+int BG_IterateConfidenceThresholds( int unlockableNum, team_t team, int *threshold, qboolean *unlocked )
 {
 	unlockable_t unlockable;
 
-	static int    unlockableNum     = 0;
-	static int    expectedThreshold = 0;
-	static team_t lastTeam          = 0;
-
-	// restart if explicitly asked for
-	if ( threshold == 0 )
+	if ( unlockableNum < 0 )
 	{
 		unlockableNum = 0;
 	}
-
-	// restart on unexpected input
-	if ( threshold != expectedThreshold || team != lastTeam )
-	{
-		unlockableNum = 0;
-	}
-
-	lastTeam       = team;
 
 	for ( ; unlockableNum < NUM_UNLOCKABLES; unlockableNum++ )
 	{
@@ -546,24 +535,18 @@ int BG_IterateConfidenceThresholds( int threshold, qboolean *unlocked, team_t te
 		{
 			if ( unlockable.unlocked )
 			{
-				expectedThreshold = unlockable.lockThreshold;
-				*unlocked = qtrue;
+				*threshold = unlockable.lockThreshold;
+				*unlocked  = qtrue;
 			}
 			else
 			{
-				expectedThreshold = unlockable.unlockThreshold;
-				*unlocked = qfalse;
+				*threshold = unlockable.unlockThreshold;
+				*unlocked  = qfalse;
 			}
 
-			if ( expectedThreshold <= threshold )
-			{
-				continue;
-			}
-
-			return expectedThreshold;
+			return unlockableNum + 1;
 		}
 	}
 
-	expectedThreshold = 0;
-	return expectedThreshold;
+	return 0;
 }

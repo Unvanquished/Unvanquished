@@ -1481,7 +1481,7 @@ static void CG_DrawPlayerConfidenceBar( rectDef_t *rect, vec4_t foreColor, vec4_
 	// data
 	playerState_t *ps;
 	float         confidence, fraction;
-	int           threshold = 0;
+	int           unlockableNum, threshold;
 	team_t        team;
 	qboolean      unlocked;
 
@@ -1536,7 +1536,8 @@ static void CG_DrawPlayerConfidenceBar( rectDef_t *rect, vec4_t foreColor, vec4_
 	CG_DrawPic( x, y, w * fraction, h, cgs.media.whiteShader );
 
 	// draw threshold markers
-	while ( threshold = BG_IterateConfidenceThresholds( threshold, &unlocked, team ) )
+	unlockableNum = 0;
+	while ( unlockableNum = BG_IterateConfidenceThresholds( unlockableNum, team, &threshold, &unlocked ) )
 	{
 		fraction = threshold / CONFIDENCE_BAR_MAX;
 
