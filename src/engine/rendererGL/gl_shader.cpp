@@ -58,6 +58,7 @@ GLShader_volumetricFog                   *gl_volumetricFogShader = NULL;
 GLShader_screenSpaceAmbientOcclusion     *gl_screenSpaceAmbientOcclusionShader = NULL;
 GLShader_depthOfField                    *gl_depthOfFieldShader = NULL;
 GLShader_motionblur                      *gl_motionblurShader = NULL;
+GLShader_fxaa                            *gl_fxaaShader = NULL;
 GLShaderManager                           gl_shaderManager;
 
 GLShaderManager::~GLShaderManager( )
@@ -764,7 +765,7 @@ void GLShaderManager::CompileAndLinkGPUShaderProgram( GLShader *shader, shaderPr
 	std::string vertexHeader;
 	std::string fragmentHeader;
 
-	if ( glConfig.driverType == GLDRV_OPENGL3 )
+	if ( glConfig2.shadingLanguageVersion != 120 )
 	{
 		// HACK: abuse the GLSL preprocessor to turn GLSL 1.20 shaders into 1.30 ones
 
@@ -2219,4 +2220,19 @@ void GLShader_motionblur::SetShaderProgramUniforms( shaderProgram_t *shaderProgr
 {
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ColorMap" ), 0 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_DepthMap" ), 1 );
+}
+
+GLShader_fxaa::GLShader_fxaa( GLShaderManager *manager ) :
+	GLShader( "fxaa", ATTR_POSITION, manager )
+{
+}
+
+void GLShader_fxaa::SetShaderProgramUniforms( shaderProgram_t *shaderProgram )
+{
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ColorMap" ), 0 );
+}
+
+void GLShader_fxaa::BuildShaderFragmentLibNames( std::string& fragmentInlines )
+{
+	fragmentInlines += "fxaa3_11";
 }

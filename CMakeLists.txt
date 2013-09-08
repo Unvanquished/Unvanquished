@@ -43,6 +43,7 @@ cmake_dependent_option( USE_MUMBLE "Compile with support for Mumble" 1 BUILD_CLI
 cmake_dependent_option( USE_VOIP "Compile with VOIP support" 1 "BUILD_CLIENT OR BUILD_SERVER" 0 )
 cmake_dependent_option( USE_CURSES "Use the curses console" 1 "BUILD_CLIENT OR BUILD_SERVER OR BUILD_TTY_CLIENT" 0 )
 cmake_dependent_option( USE_OPENAL_DLOPEN "Use dlopen to load OpenAL" 1 BUILD_CLIENT 0 )
+cmake_dependent_option( USE_SMP "Compile with support for running the renderer in a separate thread" 1 BUILD_NEW_RENDERER 0 )
 
 set( NACL_SDK_PATH "" CACHE PATH "Path to native client SDK" )
 if( BUILD_GAME_NACL AND NOT NACL_SDK_PATH )
@@ -1267,6 +1268,9 @@ if( BUILD_NEW_RENDERER )
   set_target_properties( rendererGL PROPERTIES OUTPUT_NAME "rendererGL3" )
   if( WIN32 )
     set_target_properties( rendererGL PROPERTIES PREFIX "" )
+  endif()
+  if( USE_SMP )
+    set_property( TARGET rendererGL APPEND PROPERTY COMPILE_DEFINITIONS SMP )
   endif()
 
   # Setup CPack for target rendererGL

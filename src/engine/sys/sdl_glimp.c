@@ -301,8 +301,10 @@ void GLimp_ShutdownRenderThread( void )
 {
 	if ( renderThread != NULL )
 	{
+		GLimp_WakeRenderer( NULL );
 		SDL_WaitThread( renderThread, NULL );
 		renderThread = NULL;
+		glConfig.smpActive = qfalse;
 	}
 
 	if ( smpMutex != NULL )
@@ -377,6 +379,16 @@ void GLimp_FrontEndSleep( void )
 		}
 	}
 	SDL_UnlockMutex( smpMutex );
+}
+
+/*
+===============
+GLimp_SyncRenderThread
+===============
+*/
+void GLimp_SyncRenderThread( void )
+{
+	GLimp_FrontEndSleep();
 
 	GLimp_SetCurrentContext( qtrue );
 }
@@ -428,6 +440,10 @@ void GLimp_FrontEndSleep( void )
 {
 }
 
+void GLimp_SyncRenderThread( void )
+{
+}
+
 void GLimp_WakeRenderer( void *data )
 {
 }
@@ -464,9 +480,6 @@ void GLimp_Shutdown( void )
 
 	ri.IN_Shutdown();
 
-	SDL_QuitSubSystem( SDL_INIT_VIDEO );
-	screen = NULL;
-
 #if defined( SMP )
 
 	if ( renderThread != NULL )
@@ -476,6 +489,9 @@ void GLimp_Shutdown( void )
 	}
 
 #endif
+
+	SDL_QuitSubSystem( SDL_INIT_VIDEO );
+	screen = NULL;
 
 	Com_Memset( &glConfig, 0, sizeof( glConfig ) );
 	Com_Memset( &glState, 0, sizeof( glState ) );
@@ -1061,6 +1077,8 @@ retry:
 		return RSERR_OLD_GL;
 	}
 
+#else
+	GLimp_GetCurrentContext(); // setup context information for GLimp_SetCurrentContext()
 #endif
 
 	GLimp_DetectAvailableModes();
@@ -1295,8 +1313,18 @@ static void GLimp_XreaLInitExtensions( void )
 	// GL_ARB_shading_language_100
 	if ( GLEW_ARB_shading_language_100 )
 	{
-		Q_strncpyz( glConfig2.shadingLanguageVersion, ( char * ) glGetString( GL_SHADING_LANGUAGE_VERSION_ARB ),
-		            sizeof( glConfig2.shadingLanguageVersion ) );
+		int majorVersion, minorVersion;
+
+		Q_strncpyz( glConfig2.shadingLanguageVersionString, ( char * ) glGetString( GL_SHADING_LANGUAGE_VERSION_ARB ),
+		            sizeof( glConfig2.shadingLanguageVersionString ) );
+		if ( sscanf( glConfig2.shadingLanguageVersionString, "%i.%i", &majorVersion, &minorVersion ) != 2 )
+		{
+			ri.Printf( PRINT_ALL, "WARNING: unrecognized shading language version string format\n" );
+		}
+
+		glConfig2.shadingLanguageVersion = majorVersion * 100 + minorVersion;
+
+		ri.Printf( PRINT_ALL, "...found shading language version %i\n", glConfig2.shadingLanguageVersion );
 		ri.Printf( PRINT_ALL, "...using GL_ARB_shading_language_100\n" );
 	}
 	else
@@ -1902,6 +1930,10 @@ qboolean GLimp_Init( void )
 		ri.Cvar_Set( "r_centerWindow", "0" );
 		ri.Cvar_Set( "com_abnormalExit", "0" );
 	}
+
+#if __linux__
+	XInitThreads();
+#endif
 
 	//Sys_SetEnv("SDL_VIDEO_CENTERED", r_centerWindow->integer ? "1" : "");
 

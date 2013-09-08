@@ -152,6 +152,8 @@ void GLSL_InitGPUShaders( void )
 
 	gl_shaderManager.load( gl_motionblurShader );
 
+	gl_shaderManager.load( gl_fxaaShader );
+
 	if ( !r_lazyShaders->integer )
 	{
 		gl_shaderManager.buildAll();
@@ -197,6 +199,7 @@ void GLSL_ShutdownGPUShaders( void )
 	gl_screenSpaceAmbientOcclusionShader = NULL;
 	gl_depthOfFieldShader = NULL;
 	gl_motionblurShader = NULL;
+	gl_fxaaShader = NULL;
 
 	GL_BindNullProgram();
 }

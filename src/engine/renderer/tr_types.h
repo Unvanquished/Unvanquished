@@ -489,7 +489,8 @@ typedef struct
 	qboolean occlusionQueryAvailable;
 	int      occlusionQueryBits;
 
-	char     shadingLanguageVersion[ MAX_STRING_CHARS ];
+	char     shadingLanguageVersionString[ MAX_STRING_CHARS ];
+	int      shadingLanguageVersion;
 
 	int      maxVertexUniforms;
 //	int             maxVaryingFloats;

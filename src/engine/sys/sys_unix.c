@@ -1137,11 +1137,27 @@ Sys_IsNumLockDown
 qboolean Sys_IsNumLockDown( void )
 {
 #if !defined(MACOS_X) && !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
-	Display        *dpy = XOpenDisplay(":0");
+	const char     *denv = getenv( "DISPLAY" );
+	Display        *dpy;
 	XKeyboardState x;
 
-	XGetKeyboardControl(dpy, &x);
-	XCloseDisplay(dpy);
+	if ( denv != NULL && strlen( denv ) > 0 )
+		dpy = XOpenDisplay(denv);
+	else
+		dpy = XOpenDisplay(":0");
+
+	if ( dpy == 0 )
+	{
+		Com_Printf( _("ERROR: cannot determine numlock state as we couldn't\n" 
+		              "grab your non-standard (e.g. not ':0') X display.\n"
+		              "ensure the 'DISPLAY' environment variable is set.\n") );
+		return qtrue;
+	}
+	else
+	{
+		XGetKeyboardControl(dpy, &x);
+		XCloseDisplay(dpy);
+	}
 
 	return (x.led_mask & 2) ? qtrue : qfalse;
 #else

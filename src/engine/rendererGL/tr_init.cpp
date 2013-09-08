@@ -307,6 +307,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	cvar_t      *r_bloomBlur;
 	cvar_t      *r_bloomPasses;
 	cvar_t      *r_rotoscope;
+	cvar_t      *r_FXAA;
 	cvar_t      *r_cameraPostFX;
 	cvar_t      *r_cameraVignette;
 	cvar_t      *r_cameraFilmGrain;
@@ -389,12 +390,24 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #if defined( GLSL_COMPILE_STARTUP_ONLY )
 			GLSL_InitGPUShaders();
 #endif
+			glConfig.smpActive = qfalse;
+
+			if ( r_smp->integer )
+			{
+				ri.Printf( PRINT_ALL, "Trying SMP acceleration...\n" );
+
+				if ( GLimp_SpawnRenderThread( RB_RenderThread ) )
+				{
+					ri.Printf( PRINT_ALL, "...succeeded.\n" );
+					glConfig.smpActive = qtrue;
+				}
+				else
+				{
+					ri.Printf( PRINT_ALL, "...failed.\n" );
+				}
+			}
 		}
 
-		GL_CheckErrors();
-
-		// init command buffers and SMP
-		R_InitCommandBuffers();
 		GL_CheckErrors();
 
 		// set default state
@@ -1209,7 +1222,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		   }
 		 */
 
-		ri.Printf( PRINT_ALL, "GL_SHADING_LANGUAGE_VERSION: %s\n", glConfig2.shadingLanguageVersion );
+		ri.Printf( PRINT_ALL, "GL_SHADING_LANGUAGE_VERSION: %s\n", glConfig2.shadingLanguageVersionString );
 
 		ri.Printf( PRINT_ALL, "GL_MAX_VERTEX_UNIFORM_COMPONENTS %d\n", glConfig2.maxVertexUniforms );
 //	ri.Printf(PRINT_ALL, "GL_MAX_VARYING_FLOATS %d\n", glConfig2.maxVaryingFloats);
@@ -1539,6 +1552,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		r_bloomBlur = ri.Cvar_Get( "r_bloomBlur", "1.0", CVAR_CHEAT );
 		r_bloomPasses = ri.Cvar_Get( "r_bloomPasses", "2", CVAR_CHEAT );
 		r_rotoscope = ri.Cvar_Get( "r_rotoscope", "0", CVAR_ARCHIVE );
+		r_FXAA = ri.Cvar_Get( "r_FXAA", "0", CVAR_ARCHIVE );
 		r_cameraPostFX = ri.Cvar_Get( "r_cameraPostFX", "1", CVAR_ARCHIVE );
 		r_cameraVignette = ri.Cvar_Get( "r_cameraVignette", "0", CVAR_ARCHIVE );
 		r_cameraFilmGrain = ri.Cvar_Get( "r_cameraFilmGrain", "0", CVAR_ARCHIVE );
@@ -1841,6 +1855,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 			glGenQueries( MAX_OCCLUSION_QUERIES, tr.occlusionQueryObjects );
 		}
 
+		R_InitVisTests();
+
 		GL_CheckErrors();
 
 		// print info
@@ -1884,7 +1900,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		{
 			R_SyncRenderThread();
 
-			R_ShutdownCommandBuffers();
 			R_ShutdownImages();
 			R_ShutdownVBOs();
 			R_ShutdownFBOs();
@@ -1927,28 +1942,16 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #if !defined( GLSL_COMPILE_STARTUP_ONLY )
 			GLSL_ShutdownGPUShaders();
 #endif
-
-			//GLimp_ShutdownRenderThread();
 		}
 
 		R_DoneFreeType();
 
 		// shut down platform specific OpenGL stuff
-
-		// Tr3B: this should be always executed if we want to avoid some GLSL problems with SMP
-		// Update: Having the JVM running with all its threads can cause problems with an old OpenGL context.
-		// Maybe an OpenGL driver problem. It is safer to destroy the context in that case or you will get really weird crashes when rendering stuff.
-		//
-
-#if !defined( SMP ) // && !defined(USE_JAVA)
-
 		if ( destroyWindow )
-#endif
 		{
 #if defined( GLSL_COMPILE_STARTUP_ONLY )
 			GLSL_ShutdownGPUShaders();
 #endif
-
 			GLimp_Shutdown();
 			ri.Tag_Free();
 		}

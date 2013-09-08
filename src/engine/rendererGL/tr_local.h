@@ -1452,7 +1452,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #endif
 
 		int                    numVisTests;
-		struct visTest_s       **visTests;
+		struct visTestResult_s *visTests;
 	} trRefdef_t;
 
 //=================================================================================
@@ -2677,6 +2677,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		int   msec; // total msec for backend run
 	} backEndCounters_t;
 
+	// for the backend to keep track of vis tests
+	typedef struct
+	{
+		GLuint   hQuery, hQueryRef;
+		qboolean running;
+	} visTestQueries_t;
+
 // all state modified by the back end is separated
 // from the front end state
 	typedef struct
@@ -2686,6 +2693,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		viewParms_t       viewParms;
 		orientationr_t    orientation;
 		backEndCounters_t pc;
+		visTestQueries_t  visTestQueries[ MAX_VISTESTS ];
 		qboolean          isHyperspace;
 		trRefEntity_t     *currentEntity;
 		trRefLight_t      *currentLight; // only used when lighting interactions
@@ -2704,14 +2712,24 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 	typedef struct visTest_s
 	{
-		vec3_t            position;
-		float             depthAdjust; // move position this distance to camera
-		float             area; // size of the quad used to test vis
-		GLuint            hQuery, hQueryRef;
-		qboolean          registered;
-		qboolean          running;
-		float             lastResult;
+		vec3_t   position;
+		float    depthAdjust;
+		float    area;
+		qboolean registered;
+		float    lastResult;
 	} visTest_t;
+
+	typedef struct visTestResult_s
+	{
+		qhandle_t visTestHandle;
+		vec3_t    position;
+		float     depthAdjust; // move position this distance to camera
+		float     area; // size of the quad used to test vis
+
+		qboolean  discardExisting; // true if the currently running vis test should be discarded
+
+		float     lastResult; // updated by backend
+	} visTestResult_t;
 
 	typedef struct
 	{
@@ -2947,7 +2965,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		shaderTable_t *shaderTables[ MAX_SHADER_TABLES ];
 
 		int           numVisTests;
-		visTest_t     *visTests[ MAX_VISTESTS ];
+		visTest_t     visTests[ MAX_VISTESTS ];
 
 		float         sinTable[ FUNCTABLE_SIZE ];
 		float         squareTable[ FUNCTABLE_SIZE ];
@@ -3262,6 +3280,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	extern cvar_t *r_bloomBlur;
 	extern cvar_t *r_bloomPasses;
 	extern cvar_t *r_rotoscope;
+	extern cvar_t *r_FXAA;
 	extern cvar_t *r_cameraPostFX;
 	extern cvar_t *r_cameraVignette;
 	extern cvar_t *r_cameraFilmGrain;
@@ -3513,6 +3532,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	void     GLimp_ShutdownRenderThread( void );
 	void     *GLimp_RendererSleep( void );
 	void     GLimp_FrontEndSleep( void );
+	void     GLimp_SyncRenderThread( void );
 	void     GLimp_WakeRenderer( void *data );
 
 	void     GLimp_LogComment( const char *comment );
@@ -3880,6 +3900,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 				   float depthAdjust, float area );
 	float RE_CheckVisibility( qhandle_t hTest );
 	void RE_UnregisterVisTest( qhandle_t hTest );
+	void R_UpdateVisTests( void );
+	void R_InitVisTests( void );
 	void R_ShutdownVisTests( void );
 	/*
 	=============================================================
@@ -3994,6 +4016,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 	typedef struct
 	{
+		int     commandId;
+		image_t *image;
+		int     slot;
+	} setColorGradingCommand_t;
+
+	typedef struct
+	{
 		int commandId;
 		int buffer;
 	} drawBufferCommand_t;
@@ -4077,8 +4106,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		int         commandId;
 		trRefdef_t  refdef;
 		viewParms_t viewParms;
-		visTest_t   **visTests;
-		int         numVisTests;
 	} runVisTestsCommand_t;
 
 	typedef enum
@@ -4117,6 +4144,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	typedef enum
 	{
 	  RC_END_OF_LIST,
+	  RC_SET_COLORGRADING,
 	  RC_SET_COLOR,
 	  RC_STRETCH_PIC,
 	  RC_2DPOLYS,
@@ -4159,7 +4187,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		decalProjector_t    decalProjectors[ MAX_DECAL_PROJECTORS ];
 		srfDecal_t          decals[ MAX_DECALS ];
 
-		visTest_t           *visTests[ MAX_VISTESTS ];
+		// the backend communicates to the frontend through visTestResult_t
+		int                 numVisTests;
+		visTestResult_t     visTests[ MAX_VISTESTS ];
 
 		renderCommandList_t commands;
 	} backEndData_t;
@@ -4171,15 +4201,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	void                                *R_GetCommandBuffer( int bytes );
 	void                                RB_ExecuteRenderCommands( const void *data );
 
-	void                                R_InitCommandBuffers( void );
-	void                                R_ShutdownCommandBuffers( void );
-
 	void                                R_SyncRenderThread( void );
 
 	void                                R_AddDrawViewCmd( void );
 
 	void                                RE_SetColor( const float *rgba );
-	void                                R_AddRunVisTestsCmd( visTest_t **visTests, int numVisTests );
+	void                                R_AddRunVisTestsCmd( void );
 	void                                RE_SetClipRegion( const float *region );
 	void                                RE_StretchPic( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader );
 	void                                RE_RotatedPic( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader, float angle );  // NERVE - SMF
