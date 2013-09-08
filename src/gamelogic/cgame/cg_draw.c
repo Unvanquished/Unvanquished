@@ -1473,6 +1473,95 @@ static void CG_DrawPlayerChargeBar( rectDef_t *rect, vec4_t ref_color,
 	}
 }
 
+#define CONFIDENCE_BAR_MAX       300.0f
+#define CONFIDENCE_BAR_MARKWIDTH 0.5f
+
+static void CG_DrawPlayerConfidenceBar( rectDef_t *rect, vec4_t foreColor, vec4_t backColor, float borderSize )
+{
+	// data
+	playerState_t *ps;
+	float         confidence, fraction;
+	int           threshold = 0;
+	team_t        team;
+	qboolean      unlocked;
+
+	// display
+	vec4_t        color;
+	float         x, y, w, h, b;
+
+	ps = &cg.predictedPlayerState;
+
+	team       = ps->persistant[ PERS_TEAM ];
+	confidence = ps->persistant[ PERS_CONFIDENCE ] / 10.0f;
+
+	x = rect->x;
+	y = rect->y;
+	w = rect->w;
+	h = rect->h;
+	b = borderSize;
+
+	// draw border
+	trap_R_SetColor( backColor );
+	CG_DrawPic( x,         y,         w, b,            cgs.media.whiteShader ); // upper horizontal
+	CG_DrawPic( x,         y + h - b, w, b,            cgs.media.whiteShader ); // lower horizontal
+	CG_DrawPic( x,         y + b,     b, h - 2.0f * b, cgs.media.whiteShader ); // left  vertical
+	CG_DrawPic( x + w - b, y + b,     b, h - 2.0f * b, cgs.media.whiteShader ); // right vertical
+
+	// adjust rect to draw inside border
+	x += b;
+	y += b;
+	w -= 2.0f * b;
+	h -= 2.0f * b;
+
+	// draw background
+	Vector4Copy( backColor, color );
+	color[ 3 ] *= 0.5f;
+
+	trap_R_SetColor( color );
+	CG_DrawPic( x, y, w, h, cgs.media.whiteShader );
+
+	// draw confidence bar
+	fraction = confidence / CONFIDENCE_BAR_MAX;
+
+	if ( fraction < 0.0f )
+	{
+		fraction = 0.0f;
+	}
+	else if ( fraction > 1.0f )
+	{
+		fraction = 1.0f;
+	}
+
+	trap_R_SetColor( foreColor );
+	CG_DrawPic( x, y, w * fraction, h, cgs.media.whiteShader );
+
+	// draw threshold markers
+	while ( threshold = BG_IterateConfidenceThresholds( threshold, &unlocked, team ) )
+	{
+		fraction = threshold / CONFIDENCE_BAR_MAX;
+
+		if ( unlocked )
+		{
+			color[ 0 ] = 1.0f;
+			color[ 1 ] = 0.0f;
+			color[ 2 ] = 0.0f;
+			color[ 3 ] = 1.0f;
+		}
+		else
+		{
+			color[ 0 ] = 0.0f;
+			color[ 1 ] = 1.0f;
+			color[ 2 ] = 0.0f;
+			color[ 3 ] = 1.0f;
+		}
+
+		trap_R_SetColor( color );
+		CG_DrawPic( x + w * fraction, y, CONFIDENCE_BAR_MARKWIDTH, h, cgs.media.whiteShader );
+	}
+
+	trap_R_SetColor( NULL );
+}
+
 static void CG_DrawPlayerStaminaBar( rectDef_t *rect, vec4_t foreColor, qhandle_t shader )
 {
 	playerState_t *ps = &cg.snap->ps;
@@ -4025,8 +4114,12 @@ void CG_OwnerDraw( rectDef_t *rect, float text_x,
 			CG_DrawCrosshair( rect, foreColor );
 			break;
 
-		case CG_STAGE_REPORT_TEXT:
+		case CG_CONFIDENCE_TEXT:
 			CG_DrawConfidence( rect, text_x, text_y, foreColor, scale, textalign, textvalign, textStyle );
+			break;
+
+		case CG_CONFIDENCE_BAR:
+			CG_DrawPlayerConfidenceBar( rect, foreColor, backColor, borderSize );
 			break;
 
 		case CG_ALIENS_SCORE_LABEL:

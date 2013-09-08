@@ -301,10 +301,12 @@ itemDef
 	textscale 0.85
 	ownerdraw CG_TEAMOVERLAY
 }
-//STAGE REPORT
+
+//CONFIDENCE TEXT
+/*
 itemDef
 {
-	name stagereport
+	name "stagereport"
 	textalign ALIGN_LEFT
 	textvalign VALIGN_TOP
     textscale .35
@@ -313,7 +315,20 @@ itemDef
 	rect 220 462 200 30
 	decoration
 	visible MENU_TRUE
-	ownerdraw CG_STAGE_REPORT_TEXT
+	ownerdraw CG_CONFIDENCE_TEXT
+}
+*/
+
+//CONFIDENCE BAR
+itemDef
+{
+	name "confidencebar"
+	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B .3
+	backcolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B .2
+	rect 160 465 300 13
+	decoration
+	visible MENU_TRUE
+	ownerdraw CG_CONFIDENCE_BAR
 }
 
 //CROSSHAIR HEALTH METER

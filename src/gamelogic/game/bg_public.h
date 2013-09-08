@@ -1240,6 +1240,7 @@ qboolean BG_WeaponUnlocked( weapon_t weapon );
 qboolean BG_UpgradeUnlocked( upgrade_t upgrade );
 qboolean BG_BuildableUnlocked( buildable_t buildable );
 qboolean BG_ClassUnlocked( class_t class_ );
+int      BG_IterateConfidenceThresholds(int threshold , qboolean *unlocked, team_t team);
 #ifdef GAME
 void     G_UpdateUnlockables( void );
 int      G_ExportUnlockablesToMask( team_t team );

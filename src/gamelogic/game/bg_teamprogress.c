@@ -63,7 +63,8 @@ typedef struct unlockable_s
 	team_t   team;
 	qboolean unlocked;
 	qboolean statusKnown;
-	qboolean threshold;
+	qboolean unlockThreshold;
+	qboolean lockThreshold;
 } unlockable_t;
 
 // ----
@@ -179,16 +180,17 @@ void G_UpdateUnlockables( void )
 		unlockThreshold = MAX( unlockThreshold, 0 );
 		confidence = ( int )level.team[ team ].confidence[ CONFIDENCE_SUM ];
 
-		unlockable->type        = unlockableType;
-		unlockable->num         = itemNum;
-		unlockable->team        = team;
-		unlockable->statusKnown = qtrue;
-		unlockable->threshold   = unlockThreshold;
+		unlockable->type            = unlockableType;
+		unlockable->num             = itemNum;
+		unlockable->team            = team;
+		unlockable->statusKnown     = qtrue;
+		unlockable->unlockThreshold = unlockThreshold;
+		unlockable->lockThreshold   = unlockThreshold * LOCK_RATIO;
 
 		// calculate the item's locking state
 		unlockable->unlocked = (
 		    !unlockThreshold || confidence >= unlockThreshold ||
-		    ( unlockable->unlocked && confidence >= unlockThreshold * LOCK_RATIO )
+		    ( unlockable->unlocked && confidence >= unlockable->lockThreshold )
 		);
 
 		itemNum++;
@@ -237,7 +239,7 @@ int G_ExportUnlockablesToMask( team_t team )
 	// build the mask
 	for ( unlockable = 0; unlockable < NUM_UNLOCKABLES; unlockable++ )
 	{
-		if ( unlockables[ unlockable ].threshold && unlockables[ unlockable ].team == team )
+		if ( unlockables[ unlockable ].unlockThreshold && unlockables[ unlockable ].team == team )
 		{
 			if ( teamUnlockableNum > 15 ) // 16 bit available for transmission
 			{
@@ -396,10 +398,11 @@ void BG_ImportUnlockablesFromMask( team_t team, int mask )
 
 		unlockThreshold = MAX( unlockThreshold, 0 );
 
-		unlockable->type        = unlockableType;
-		unlockable->num         = itemNum;
-		unlockable->team        = currentTeam;
-		unlockable->threshold   = unlockThreshold;
+		unlockable->type            = unlockableType;
+		unlockable->num             = itemNum;
+		unlockable->team            = currentTeam;
+		unlockable->unlockThreshold = unlockThreshold;
+		unlockable->lockThreshold   = unlockThreshold * LOCK_RATIO;
 
 		// retrieve the item's locking state
 		if ( !unlockThreshold )
@@ -511,4 +514,56 @@ qboolean BG_ClassUnlocked( class_t class_ )
 	CheckStatusKnowledge( UNLT_CLASS, ( int )class_ );
 
 	return Unlocked( UNLT_CLASS, ( int )class_ );
+}
+
+int BG_IterateConfidenceThresholds( int threshold, qboolean *unlocked, team_t team )
+{
+	unlockable_t unlockable;
+
+	static int    unlockableNum     = 0;
+	static int    expectedThreshold = 0;
+	static team_t lastTeam          = 0;
+
+	// restart if explicitly asked for
+	if ( threshold == 0 )
+	{
+		unlockableNum = 0;
+	}
+
+	// restart on unexpected input
+	if ( threshold != expectedThreshold || team != lastTeam )
+	{
+		unlockableNum = 0;
+	}
+
+	lastTeam       = team;
+
+	for ( ; unlockableNum < NUM_UNLOCKABLES; unlockableNum++ )
+	{
+		unlockable = unlockables[ unlockableNum ];
+
+		if ( unlockable.team == team && unlockable.unlockThreshold )
+		{
+			if ( unlockable.unlocked )
+			{
+				expectedThreshold = unlockable.lockThreshold;
+				*unlocked = qtrue;
+			}
+			else
+			{
+				expectedThreshold = unlockable.unlockThreshold;
+				*unlocked = qfalse;
+			}
+
+			if ( expectedThreshold <= threshold )
+			{
+				continue;
+			}
+
+			return expectedThreshold;
+		}
+	}
+
+	expectedThreshold = 0;
+	return expectedThreshold;
 }
