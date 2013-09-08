@@ -273,7 +273,7 @@ typedef enum
 #define SS_HEALING_ACTIVE   BIT(11) // medistat for humans, creep for aliens
 #define SS_HEALING_2X       BIT(12) // medkit or double healing rate
 #define SS_HEALING_3X       BIT(13) // triple healing rate
-
+#define SS_FLYING           BIT(14)
 #define SB_VALID_TOGGLEBIT  0x00002000
 
 // player_state->persistent[] indexes

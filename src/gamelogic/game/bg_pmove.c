@@ -1323,6 +1323,11 @@ static qboolean PM_CheckJump( void )
 	VectorMA( pm->ps->velocity, BG_Class( pm->ps->stats[ STAT_CLASS ] )->jumpMagnitude,
 	          normal, pm->ps->velocity );
 
+	if ( BG_ClassHasAbility( pm->ps->stats[ STAT_CLASS ], SCA_FLYER ) )
+	{
+		pm->ps->stats[ STAT_STATE ] |= SS_FLYING;
+	}
+
 	PM_AddEvent( EV_JUMP );
 	PM_PlayJumpingAnimation();
 
@@ -1591,6 +1596,17 @@ static void PM_FlyMove( void )
 	PM_Accelerate( wishdir, wishspeed, pm_flyaccelerate );
 
 	PM_StepSlideMove( qfalse, qfalse );
+}
+
+/*
+===================
+PM_AlienFlyMove
+===================
+*/
+static void PM_AlienFlyMove( void )
+{
+
+	PM_FlyMove();
 }
 
 /*
@@ -2144,6 +2160,12 @@ Play landing animation
 */
 static void PM_Land( void )
 {
+	// Stop flying if flying
+	if ( pm->ps->stats[ STAT_STATE ] & SS_FLYING )
+	{
+		pm->ps->stats[ STAT_STATE ] &= ~SS_FLYING;
+	}
+
 	// decide which landing animation to use
 	if ( pm->ps->pm_flags & PMF_BACKWARDS_JUMP )
 	{
@@ -4777,6 +4799,10 @@ void PmoveSingle( pmove_t *pmove )
 	if ( pm->ps->pm_type == PM_JETPACK )
 	{
 		PM_JetPackMove();
+	}
+	else if ( pm->ps->stats[ STAT_STATE ] & SS_FLYING )
+	{
+		PM_AlienFlyMove();
 	}
 	else if ( pm->ps->pm_flags & PMF_TIME_WATERJUMP )
 	{
