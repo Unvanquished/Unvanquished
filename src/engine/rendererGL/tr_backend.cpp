@@ -5115,6 +5115,53 @@ void RB_RenderRotoscope( void )
 #endif
 }
 
+void RB_FXAA( void )
+{
+	matrix_t ortho;
+
+	static vec4_t quadVerts[4] = {
+		{ -1.0f, -1.0f, 0.0f, 1.0f },
+		{  1.0f, -1.0f, 0.0f, 1.0f },
+		{  1.0f,  1.0f, 0.0f, 1.0f },
+		{ -1.0f,  1.0f, 0.0f, 1.0f }
+	};
+
+	GLimp_LogComment( "--- RB_FXAA ---\n" );
+
+	if ( ( backEnd.refdef.rdflags & RDF_NOWORLDMODEL ) ||
+	     backEnd.viewParms.isPortal )
+	{
+		return;
+	}
+
+	if ( !r_FXAA->integer )
+	{
+		return;
+	}
+
+	GL_State( GLS_DEPTHTEST_DISABLE );
+	GL_Cull( CT_TWO_SIDED );
+
+	// copy the framebuffer in a texture
+	// TODO: it is pretty inefficient
+	GL_SelectTexture( 0 );
+	GL_Bind( tr.currentRenderImage );
+	glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0, tr.currentRenderImage->uploadWidth,
+						 tr.currentRenderImage->uploadHeight );
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	// set the shader parameters
+	gl_fxaaShader->BindProgram();
+
+	R_BindNullFBO();
+
+	Tess_InstantQuad( quadVerts );
+
+	GL_CheckErrors();
+}
+
 void RB_CameraPostFX( void )
 {
 	matrix_t ortho;
@@ -8771,9 +8818,6 @@ static void RB_RenderView( void )
 		// copy offscreen rendered HDR scene to the current OpenGL context
 		RB_RenderDeferredHDRResultToFrameBuffer();
 
-		// render rotoscope post process effect
-		RB_RenderRotoscope();
-
 #if 0
 		// add the sun flare
 		RB_DrawSun();
@@ -8846,6 +8890,8 @@ static void RB_RenderView( void )
 
 #endif
 	}
+
+	RB_FXAA();
 
 	// render chromatric aberration
 	RB_CameraPostFX();
@@ -9103,6 +9149,58 @@ const void     *RB_SetColor( const void *data )
 	backEnd.color2D[ 3 ] = cmd->color[ 3 ];
 
 	return ( const void * )( cmd + 1 );
+}
+
+/*
+=============
+RB_SetColorGrading
+=============
+*/
+const void *RB_SetColorGrading( const void *data )
+{
+	const setColorGradingCommand_t *cmd;
+
+	GLimp_LogComment( "--- RB_SetColorGrading ---\n" );
+
+	cmd = ( const setColorGradingCommand_t * ) data;
+
+	GL_Unbind();
+
+	glBindBuffer( GL_PIXEL_PACK_BUFFER, tr.colorGradePBO );
+
+	glBindTexture( GL_TEXTURE_2D, cmd->image->texnum );
+	glGetTexImage( GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
+	glBindBuffer( GL_PIXEL_PACK_BUFFER, 0 );
+
+	glBindBuffer( GL_PIXEL_UNPACK_BUFFER, tr.colorGradePBO );
+	glBindTexture( GL_TEXTURE_3D, tr.colorGradeImage->texnum );
+
+	if ( cmd->image->width == REF_COLORGRADEMAP_SIZE )
+	{
+		glTexSubImage3D( GL_TEXTURE_3D, 0, 0, 0, cmd->slot * REF_COLORGRADEMAP_SIZE,
+		                 REF_COLORGRADEMAP_SIZE, REF_COLORGRADEMAP_SIZE, REF_COLORGRADEMAP_SIZE,
+		                 GL_RGBA, GL_UNSIGNED_BYTE, NULL );
+	}
+	else
+	{
+		int i;
+
+		glPixelStorei( GL_UNPACK_ROW_LENGTH, REF_COLORGRADEMAP_SIZE * REF_COLORGRADEMAP_SIZE );
+
+		for ( i = 0; i < 16; i++ )
+		{
+			glTexSubImage3D( GL_TEXTURE_3D, 0, 0, 0, i + cmd->slot * REF_COLORGRADEMAP_SIZE,
+			                 REF_COLORGRADEMAP_SIZE, REF_COLORGRADEMAP_SIZE, 1,
+			                 GL_RGBA, GL_UNSIGNED_BYTE, ( ( color4ub_t * ) NULL ) + REF_COLORGRADEMAP_SIZE );
+		}
+
+		glPixelStorei( GL_UNPACK_ROW_LENGTH, 0 );
+	}
+
+	glBindTexture( GL_TEXTURE_3D, 0 );
+	glBindBuffer( GL_PIXEL_UNPACK_BUFFER, 0 );
+
+	return ( const void * ) ( cmd + 1 );
 }
 
 /*
@@ -9541,37 +9639,49 @@ const void *RB_RunVisTests( const void *data )
 	backEnd.refdef = cmd->refdef;
 	backEnd.viewParms = cmd->viewParms;
 
-	for( i = 0; i < cmd->numVisTests; i++ ) {
-		visTest_t *test = cmd->visTests[ i ];
-		vec3_t     diff;
-		vec3_t     center, left, up;
+	for ( i = 0; i < backEnd.refdef.numVisTests; i++ )
+	{
+		vec3_t           diff;
+		vec3_t           center, left, up;
+		visTestResult_t  *test = &backEnd.refdef.visTests[ i ];
+		visTestQueries_t *testState = &backEnd.visTestQueries[ test->visTestHandle - 1 ];
 
-		if( test->running ) {
+		if ( testState->running && !test->discardExisting )
+		{
 			GLint  available;
 			GLuint result, resultRef;
 
-			glGetQueryObjectiv( test->hQuery,
+			glGetQueryObjectiv( testState->hQuery,
 					    GL_QUERY_RESULT_AVAILABLE,
 					    &available );
 			if( !available )
+			{
 				continue;
+			}
 
-			glGetQueryObjectiv( test->hQueryRef,
+			glGetQueryObjectiv( testState->hQueryRef,
 					    GL_QUERY_RESULT_AVAILABLE,
 					    &available );
-			if( !available )
+			if ( !available )
+			{
 				continue;
+			}
 
-			glGetQueryObjectuiv( test->hQueryRef, GL_QUERY_RESULT,
+			glGetQueryObjectuiv( testState->hQueryRef, GL_QUERY_RESULT,
 					     &resultRef );
-			glGetQueryObjectuiv( test->hQuery, GL_QUERY_RESULT,
+			glGetQueryObjectuiv( testState->hQuery, GL_QUERY_RESULT,
 					     &result );
 
-			if( resultRef > 0 )
+			if ( resultRef > 0 )
+			{
 				test->lastResult = (float)result / (float)resultRef;
+			}
 			else
+			{
 				test->lastResult = 0.0f;
-			test->running = qfalse;
+			}
+
+			testState->running = qfalse;
 		}
 
 		VectorSubtract( backEnd.orientation.viewOrigin,
@@ -9584,43 +9694,39 @@ const void *RB_RunVisTests( const void *data )
 		VectorScale( backEnd.viewParms.orientation.axis[ 2 ],
 			     test->area, up );
 
-		tess.xyz[0][0] = center[0] + left[0] + up[0];
-		tess.xyz[0][1] = center[1] + left[1] + up[1];
-		tess.xyz[0][2] = center[2] + left[2] + up[2];
-		tess.xyz[0][3] = 1.0f;
-		tess.xyz[1][0] = center[0] - left[0] + up[0];
-		tess.xyz[1][1] = center[1] - left[1] + up[1];
-		tess.xyz[1][2] = center[2] - left[2] + up[2];
-		tess.xyz[1][3] = 1.0f;
-		tess.xyz[2][0] = center[0] - left[0] - up[0];
-		tess.xyz[2][1] = center[1] - left[1] - up[1];
-		tess.xyz[2][2] = center[2] - left[2] - up[2];
-		tess.xyz[2][3] = 1.0f;
-		tess.xyz[3][0] = center[0] + left[0] - up[0];
-		tess.xyz[3][1] = center[1] + left[1] - up[1];
-		tess.xyz[3][2] = center[2] + left[2] - up[2];
-		tess.xyz[3][3] = 1.0f;
+		tess.xyz[ 0 ][ 0 ] = center[ 0 ] + left[ 0 ] + up[ 0 ];
+		tess.xyz[ 0 ][ 1 ] = center[ 1 ] + left[ 1 ] + up[ 1 ];
+		tess.xyz[ 0 ][ 2 ] = center[ 2 ] + left[ 2 ] + up[ 2 ];
+		tess.xyz[ 0 ][ 3 ] = 1.0f;
+		tess.xyz[ 1 ][ 0 ] = center[ 0 ] - left[ 0 ] + up[ 0 ];
+		tess.xyz[ 1 ][ 1 ] = center[ 1 ] - left[ 1 ] + up[ 1 ];
+		tess.xyz[ 1 ][ 2 ] = center[ 2 ] - left[ 2 ] + up[ 2 ];
+		tess.xyz[ 1 ][ 3 ] = 1.0f;
+		tess.xyz[ 2 ][ 0 ] = center[ 0 ] - left[ 0 ] - up[ 0 ];
+		tess.xyz[ 2 ][ 1 ] = center[ 1 ] - left[ 1 ] - up[ 1 ];
+		tess.xyz[ 2 ][ 2 ] = center[ 2 ] - left[ 2 ] - up[ 2 ];
+		tess.xyz[ 2 ][ 3 ] = 1.0f;
+		tess.xyz[ 3 ][ 0 ] = center[ 0 ] + left[ 0 ] - up[ 0 ];
+		tess.xyz[ 3 ][ 1 ] = center[ 1 ] + left[ 1 ] - up[ 1 ];
+		tess.xyz[ 3 ][ 2 ] = center[ 2 ] + left[ 2 ] - up[ 2 ];
+		tess.xyz[ 3 ][ 3 ] = 1.0f;
 		tess.numVertexes = 4;
 
-		tess.indexes[0] = 0;
-		tess.indexes[1] = 1;
-		tess.indexes[2] = 2;
-		tess.indexes[3] = 0;
-		tess.indexes[4] = 2;
-		tess.indexes[5] = 3;
+		tess.indexes[ 0 ] = 0;
+		tess.indexes[ 1 ] = 1;
+		tess.indexes[ 2 ] = 2;
+		tess.indexes[ 3 ] = 0;
+		tess.indexes[ 4 ] = 2;
+		tess.indexes[ 5 ] = 3;
 		tess.numIndexes = 6;
 
 		gl_genericShader->DisableVertexSkinning();
 		gl_genericShader->DisableVertexAnimation();
-
 		gl_genericShader->DisableDeformVertexes();
 		gl_genericShader->DisableTCGenEnvironment();
 		gl_genericShader->DisableTCGenLightmap();
 
 		gl_genericShader->BindProgram();
-
-		GL_State( GLS_DEPTHMASK_TRUE );
-		GL_VertexAttribsState( ATTR_POSITION );
 
 		gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
 		gl_genericShader->SetUniform_Color( colorWhite );
@@ -9637,24 +9743,23 @@ const void *RB_RunVisTests( const void *data )
 
 		Tess_UpdateVBOs( ATTR_POSITION );
 
-		glColorMask( GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE );
-		glDisable( GL_DEPTH_TEST );
-		glBeginQuery( GL_SAMPLES_PASSED, test->hQueryRef );
-		glDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL );
+		GL_State( GLS_DEPTHTEST_DISABLE | GLS_COLORMASK_BITS );
+		glBeginQuery( GL_SAMPLES_PASSED, testState->hQueryRef );
+		Tess_DrawElements();
 		glEndQuery( GL_SAMPLES_PASSED );
-		glEnable( GL_DEPTH_TEST );
-		glBeginQuery( GL_SAMPLES_PASSED, test->hQuery );
-		glDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL );
+
+		GL_State( GLS_COLORMASK_BITS );
+		glBeginQuery( GL_SAMPLES_PASSED, testState->hQuery );
+		Tess_DrawElements();
 		glEndQuery( GL_SAMPLES_PASSED );
-		glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
 
 		tess.numIndexes = 0;
 		tess.numVertexes = 0;
 		tess.multiDrawPrimitives = 0;
-		test->running = qtrue;
-       }
+		testState->running = qtrue;
+	}
 
-       return ( const void * )( cmd + 1 );
+	return ( const void * )( cmd + 1 );
 }
 
 /*
@@ -9917,6 +10022,10 @@ void RB_ExecuteRenderCommands( const void *data )
 	{
 		switch ( * ( const int * ) data )
 		{
+			case RC_SET_COLORGRADING:
+				data = RB_SetColorGrading( data );
+				break;
+
 			case RC_SET_COLOR:
 				data = RB_SetColor( data );
 				break;
