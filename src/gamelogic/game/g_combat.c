@@ -269,7 +269,7 @@ void G_RewardAttackers( gentity_t *self )
 
 			qualifier = CONF_QUAL_NONE;
 
-			G_AddConfidence( playerTeam, CONFIDENCE_DESTRUCTION, reason, qualifier, reward, player );
+			G_AddConfidence( playerTeam, reason, qualifier, reward, player );
 		}
 		else
 		{
@@ -300,8 +300,8 @@ void G_RewardAttackers( gentity_t *self )
 
 					qualifier = CONF_QUAL_OUTSIDE_OWN_BASE;
 
-					G_AddConfidence( playerTeam, CONFIDENCE_KILLING, CONF_REAS_KILLING,
-					                 qualifier, reward * CONFIDENCE_PER_CREDIT, player );
+					G_AddConfidence( playerTeam, CONF_REAS_KILLING, qualifier,
+					                 reward * CONFIDENCE_PER_CREDIT, player );
 			}
 		}
 	}

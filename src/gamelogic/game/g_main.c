@@ -1422,86 +1422,6 @@ void G_CalculateMineRate( void )
 
 /*
 ============
-G_DecreaseConfidence
-
-Decreases both teams confidence according to g_confidenceHalfLife.
-g_confidenceHalfLife <= 0 disables decrease.
-============
-*/
-#define DECREASE_CONFIDENCE_PERIOD 1000
-
-void G_DecreaseConfidence( void )
-{
-	team_t       team;
-	confidence_t type;
-	float        *confidence;
-	int          playerNum;
-	gentity_t    *player;
-	gclient_t    *client;
-
-	static float decreaseFactor = 1.0f, lastConfidenceHalfLife = 0.0f;
-	static int   nextCalculation = 0;
-
-	if ( level.time < nextCalculation )
-	{
-		return;
-	}
-
-	if ( g_confidenceHalfLife.value <= 0.0f )
-	{
-		return;
-	}
-
-	if ( lastConfidenceHalfLife != g_confidenceHalfLife.value )
-	{
-		// ln(2) ~= 0.6931472
-		decreaseFactor = exp( ( -0.6931472f / ( ( 60000.0f / DECREASE_CONFIDENCE_PERIOD ) * g_confidenceHalfLife.value ) ) );
-
-		lastConfidenceHalfLife = g_confidenceHalfLife.value;
-	}
-
-	// decrease all types of confidence for all teams
-	for ( team = TEAM_NONE + 1; team < NUM_TEAMS; team++ )
-	{
-		confidence = level.team[ team ].confidence;
-		confidence[ CONFIDENCE_SUM ] = 0.0f;
-
-		for ( type = CONFIDENCE_SUM + 1; type < NUM_CONFIDENCE_TYPES; type++ )
-		{
-			confidence[ type ] *= decreaseFactor;
-			confidence[ CONFIDENCE_SUM ] += confidence[ type ];
-		}
-	}
-
-	// send to clients
-	for ( playerNum = 0; playerNum < level.maxclients; playerNum++ )
-	{
-		player = &g_entities[ playerNum ];
-		client = player->client;
-
-		if ( !client )
-		{
-			continue;
-		}
-
-		team = client->ps.persistant[ PERS_TEAM ];
-
-		if ( team > TEAM_NONE && team < NUM_TEAMS )
-		{
-			client->ps.persistant[ PERS_CONFIDENCE ] = ( short )
-				( level.team[ team ].confidence[ CONFIDENCE_SUM ] * 10.0f + 0.5f );
-		}
-		else
-		{
-			client->ps.persistant[ PERS_CONFIDENCE ] = 0;
-		}
-	}
-
-	nextCalculation = level.time + DECREASE_CONFIDENCE_PERIOD;
-}
-
-/*
-============
 G_CalculateAvgPlayers
 
 Calculates the average number of players on each team.
@@ -2074,7 +1994,7 @@ static void G_LogGameplayStats( int state )
 			for( team = TEAM_NONE + 1; team < NUM_TEAMS; team++ )
 			{
 				num[ team ] = level.team[ team ].numClients;
-				Con[ team ] = ( int )level.team[ team ].confidence[ CONFIDENCE_SUM ];
+				Con[ team ] = ( int )level.team[ team ].confidence;
 				ME [ team ] = level.team[ team ].mineEfficiency;
 				BP [ team ] = level.team[ team ].buildPoints;
 			}
@@ -3029,7 +2949,6 @@ void G_RunFrame( int levelTime )
 	G_CalculateMineRate();
 	G_DecreaseConfidence();
 	G_CalculateAvgPlayers();
-	G_UpdateUnlockables();
 	G_SpawnClients( TEAM_ALIENS );
 	G_SpawnClients( TEAM_HUMANS );
 	G_UpdateZaps( msec );

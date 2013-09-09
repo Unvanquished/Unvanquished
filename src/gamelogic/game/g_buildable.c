@@ -3509,7 +3509,7 @@ void G_BuildableThink( gentity_t *ent, int msec )
 			}
 
 			// Award confidence
-			G_AddConfidence( BG_Buildable( ent->s.modelindex )->team, CONFIDENCE_BUILDING,
+			G_AddConfidence( BG_Buildable( ent->s.modelindex )->team,
 			                 BuildableConfidenceReason( ent->s.modelindex ), CONF_QUAL_NONE,
 			                 G_BuildingConfidenceReward( ent ),
 			                 &g_entities[ ent->builtBy->slot ] );
@@ -3888,8 +3888,7 @@ void G_Deconstruct( gentity_t *self, gentity_t *deconner, meansOfDeath_t deconTy
 		confidence = G_BuildingConfidenceReward( self );
 	}
 
-	G_AddConfidence( self->buildableTeam, CONFIDENCE_BUILDING, CONF_REAS_DECON, CONF_QUAL_NONE,
-	                -confidence, deconner );
+	G_AddConfidence( self->buildableTeam, CONF_REAS_DECON, CONF_QUAL_NONE, -confidence, deconner );
 
 	// deconstruct
 	G_Damage( self, NULL, deconner, NULL, NULL, self->health, 0, deconType );
@@ -5653,7 +5652,7 @@ void G_BuildLogRevert( int id )
 
 	for ( i = 0; i < NUM_TEAMS; ++i )
 	{
-		G_AddConfidence( i, CONFIDENCE_ADMIN, CONF_REAS_NONE, CONF_QUAL_NONE, confidenceChange[ i ], NULL );
+		G_AddConfidence( i, CONF_REAS_NONE, CONF_QUAL_NONE, confidenceChange[ i ], NULL );
 	}
 }
 

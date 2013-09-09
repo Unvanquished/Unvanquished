@@ -596,8 +596,7 @@ void Cmd_Give_f( gentity_t *ent )
 			amount = atof( name + 11 );
 		}
 
-		G_AddConfidence( ent->client->ps.persistant[ PERS_TEAM ], CONFIDENCE_GENERAL, CONF_REAS_NONE,
-		                 CONF_QUAL_NONE, amount, ent );
+		G_AddConfidence( ent->client->ps.persistant[ PERS_TEAM ], CONF_REAS_NONE, CONF_QUAL_NONE, amount, ent );
 	}
 
 	if ( ent->client->ps.stats[ STAT_HEALTH ] <= 0 ||

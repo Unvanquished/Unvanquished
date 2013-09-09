@@ -132,13 +132,6 @@ void G_UpdateUnlockables( void )
 	unlockableType_t unlockableType = 0;
 	team_t           team;
 
-	static int nextCalculation = 0;
-
-	if ( level.time < nextCalculation )
-	{
-		return;
-	}
-
 	for ( unlockableNum = 0; unlockableNum < NUM_UNLOCKABLES; unlockableNum++ )
 	{
 		unlockable = &unlockables[ unlockableNum ];
@@ -178,7 +171,7 @@ void G_UpdateUnlockables( void )
 		}
 
 		unlockThreshold = MAX( unlockThreshold, 0 );
-		confidence = ( int )level.team[ team ].confidence[ CONFIDENCE_SUM ];
+		confidence = ( int )level.team[ team ].confidence;
 
 		unlockable->type            = unlockableType;
 		unlockable->num             = itemNum;
@@ -203,8 +196,6 @@ void G_UpdateUnlockables( void )
 
 	// GAME knows about all teams
 	unlockablesTeamKnowledge = TEAM_ALL;
-
-	nextCalculation = level.time + UNLOCKABLES_CALCULATION_PERIOD;
 }
 #endif
 
