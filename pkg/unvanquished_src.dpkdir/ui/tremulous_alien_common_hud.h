@@ -276,18 +276,20 @@ itemDef
 	background "ui/assets/human/buildstat/health.tga"
 }
 
-// //CHARGE BAR BG
-// itemDef
-// {
-// 	name "chargebg"
-// 	rect 288 422 64 16
-// 	aspectBias ALIGN_CENTER
-// 	visible MENU_TRUE
-// 	decoration
-// 	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0.25
-// 	ownerdraw CG_PLAYER_CHARGE_BAR_BG
-// 	background "ui/assets/neutral/charge_bg_h.tga"
-// }
+//CHARGE BAR BG
+/*
+temDef
+{
+	name "chargebg"
+	rect 288 422 64 16
+	aspectBias ALIGN_CENTER
+	visible MENU_TRUE
+	decoration
+	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0.25
+	ownerdraw CG_PLAYER_CHARGE_BAR_BG
+	background "ui/assets/neutral/charge_bg_h.tga"
+}
+*/
 
 //TEAM OVERLAY
 itemDef
@@ -323,9 +325,11 @@ itemDef
 itemDef
 {
 	name "confidencebar"
-	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B .3
+	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B .25
 	backcolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B .2
-	rect 160 465 300 13
+	//rect 0 140 8 200 // left
+	rect 154 464 332 12 // bottom
+	aspectBias ALIGN_CENTER
 	decoration
 	visible MENU_TRUE
 	ownerdraw CG_CONFIDENCE_BAR
