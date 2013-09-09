@@ -1053,8 +1053,10 @@ typedef struct
 
 	// crosshair client ID
 	int crosshairBuildable;
+	int crosshairBuildableIsEnemy;
 	int crosshairClientNum;
 	int crosshairClientTime;
+	int crosshairIsOnEnemy;
 
 	// attacking player
 	int attackerTime;
@@ -1192,6 +1194,32 @@ typedef struct
 	qhandle_t scannerBlipShader;
 	qhandle_t scannerBlipBldgShader;
 	qhandle_t scannerLineShader;
+
+	//crosshairIndicators
+	qhandle_t crosshairIndicatorShaderHuman;
+	qhandle_t crosshairIndicatorShaderHumanGlow;
+	qhandle_t crosshairIndicatorShaderAlienBuilder;
+	qhandle_t crosshairIndicatorShaderAlienBuilderUpg;
+	qhandle_t crosshairIndicatorShaderAlien0;
+	qhandle_t crosshairIndicatorShaderAlien0Upg;
+	qhandle_t crosshairIndicatorShaderAlien1;
+	qhandle_t crosshairIndicatorShaderAlien1Upg;
+	qhandle_t crosshairIndicatorShaderAlien2;
+	qhandle_t crosshairIndicatorShaderAlien2Upg;
+	qhandle_t crosshairIndicatorShaderAlien3;
+	qhandle_t crosshairIndicatorShaderAlien3Upg;
+	qhandle_t crosshairIndicatorShaderAlien4;
+	qhandle_t crosshairIndicatorShaderAlienBuilderGlow;
+	qhandle_t crosshairIndicatorShaderAlienBuilderUpgGlow;
+	qhandle_t crosshairIndicatorShaderAlien0Glow;
+	qhandle_t crosshairIndicatorShaderAlien0UpgGlow;
+	qhandle_t crosshairIndicatorShaderAlien1Glow;
+	qhandle_t crosshairIndicatorShaderAlien1UpgGlow;
+	qhandle_t crosshairIndicatorShaderAlien2Glow;
+	qhandle_t crosshairIndicatorShaderAlien2UpgGlow;
+	qhandle_t crosshairIndicatorShaderAlien3Glow;
+	qhandle_t crosshairIndicatorShaderAlien3UpgGlow;
+	qhandle_t crosshairIndicatorShaderAlien4Glow;
 
 	qhandle_t teamOverlayShader;
 
@@ -1491,6 +1519,7 @@ extern  vmCvar_t            cg_drawBuildableHealth;
 extern  vmCvar_t            cg_drawMinimap;
 extern  vmCvar_t            cg_minimapActive;
 extern  vmCvar_t            cg_crosshairSize;
+extern  vmCvar_t            cg_indicatorSize;
 extern  vmCvar_t            cg_crosshairFile;
 extern  vmCvar_t            cg_drawTeamOverlay;
 extern  vmCvar_t            cg_teamOverlaySortMode;
