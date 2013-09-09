@@ -1502,7 +1502,9 @@ void CalculateRanks( void )
 		{
 			level.sortedClients[ level.numConnectedClients ] = i;
 			level.numConnectedClients++;
-			P[ i ] = ( char ) '0' + level.clients[ i ].ps.persistant[ PERS_TEAM ];
+
+			team = level.clients[ i ].ps.persistant[ PERS_TEAM ];
+			P[ i ] = ( char ) '0' + team;
 
 			level.team[ TEAM_NONE ].numVotingClients++;
 
@@ -1511,12 +1513,9 @@ void CalculateRanks( void )
 				continue;
 			}
 
-			if ( level.clients[ i ].ps.persistant[ PERS_TEAM ] != TEAM_NONE )
+			if ( team != TEAM_NONE )
 			{
-				team_t team;
 				level.numPlayingClients++;
-
-				team=level.clients[ i ].ps.persistant[ PERS_TEAM ];
 				level.team[ team ].numClients++;
 				if ( level.clients[ i ].sess.spectatorState == SPECTATOR_NOT )
 				{
