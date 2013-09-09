@@ -199,13 +199,13 @@ void DoCheckAutoStrip( gentity_t *self )
 
 		if ( !player->client || ( g_AutoStrip_IgnoreBots.integer && ( player->r.svFlags & SVF_BOT ) ) ) continue;
 
-		if( player->client->ps.stats[ STAT_TEAM ] == my_team )
+		if( player->client->pers.teamSelection == my_team )
 		{
 			if ( player->r.svFlags & SVF_BOT ) ++my_team_bots;
 			++my_team_players;
 			my_team_kills += player->client->pers.namelog->damageStats.kills;
 		}
-		else if( player->client->ps.stats[ STAT_TEAM ] != TEAM_NONE )
+		else if( player->client->pers.teamSelection != TEAM_NONE )
 		{
 			if ( player->r.svFlags & SVF_BOT ) ++enemy_team_bots;
 			++enemy_team_players;
