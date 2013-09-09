@@ -1168,6 +1168,10 @@ typedef struct
 
 	int                     numBinaryShadersUsed;
 	cgBinaryShaderSetting_t binaryShaderSettings[ NUM_BINARY_SHADERS ];
+
+	// confidence
+	float                   confidenceGained;
+	int                     confidenceGainedTime;
 } cg_t;
 
 // all of the model, shader, and sound references that are

@@ -1475,19 +1475,20 @@ static void CG_DrawPlayerChargeBar( rectDef_t *rect, vec4_t ref_color,
 
 #define CONFIDENCE_BAR_MAX       300.0f
 #define CONFIDENCE_BAR_MARKWIDTH 0.5f
+#define CONFIDENCE_BAR_GLOWTIME  2000
 
 static void CG_DrawPlayerConfidenceBar( rectDef_t *rect, vec4_t foreColor, vec4_t backColor, float borderSize )
 {
 	// data
 	playerState_t *ps;
-	float         confidence, fraction;
+	float         confidence, rawFraction, fraction, glowFraction, glowOffset;
 	int           unlockableNum, threshold;
 	team_t        team;
 	qboolean      unlocked;
 
 	// display
 	vec4_t        color;
-	float         x, y, w, h, b;
+	float         x, y, w, h, b, glowStrength;
 	qboolean      vertical;
 
 	ps = &cg.predictedPlayerState;
@@ -1524,7 +1525,7 @@ static void CG_DrawPlayerConfidenceBar( rectDef_t *rect, vec4_t foreColor, vec4_
 	CG_DrawPic( x, y, w, h, cgs.media.whiteShader );
 
 	// draw confidence bar
-	fraction = confidence / CONFIDENCE_BAR_MAX;
+	fraction = rawFraction = confidence / CONFIDENCE_BAR_MAX;
 
 	if ( fraction < 0.0f )
 	{
@@ -1544,6 +1545,61 @@ static void CG_DrawPlayerConfidenceBar( rectDef_t *rect, vec4_t foreColor, vec4_
 	else
 	{
 		CG_DrawPic( x, y, w * fraction, h, cgs.media.whiteShader );
+	}
+
+	// draw glow on confidence event
+	if ( cg.confidenceGainedTime + CONFIDENCE_BAR_GLOWTIME > cg.time )
+	{
+		glowFraction = fabs( cg.confidenceGained / CONFIDENCE_BAR_MAX );
+		glowStrength = ( CONFIDENCE_BAR_GLOWTIME - ( cg.time - cg.confidenceGainedTime ) ) /
+		               ( float )CONFIDENCE_BAR_GLOWTIME;
+
+		if ( cg.confidenceGained > 0.0f )
+		{
+			if ( vertical )
+			{
+				glowOffset = 0.0f;
+			}
+			else
+			{
+				glowOffset = glowFraction;
+			}
+
+			color[ 0 ] = 1.0f;
+			color[ 1 ] = 1.0f;
+			color[ 2 ] = 1.0f;
+			color[ 3 ] = 0.5f * glowStrength;
+		}
+		else
+		{
+			if ( vertical )
+			{
+				glowOffset = glowFraction;
+			}
+			else
+			{
+				glowOffset = 0.0f;
+			}
+
+			color[ 0 ] = 1.0f;
+			color[ 1 ] = 1.0f;
+			color[ 2 ] = 0.0f;
+			color[ 3 ] = 0.5f * glowStrength;
+		}
+
+		trap_R_SetColor( color );
+		CG_SetClipRegion( x, y, w, h );
+
+		if ( vertical )
+		{
+			CG_DrawPic( x, y + h * ( 1.0f - ( rawFraction + glowOffset ) ), w, h * glowFraction, cgs.media.whiteShader );
+		}
+		else
+		{
+			CG_DrawPic( x + w * ( rawFraction - glowOffset ), y, w * glowFraction, h, cgs.media.whiteShader );
+		}
+
+		CG_ClearClipRegion();
 	}
 
 	// draw threshold markers
