@@ -1488,6 +1488,7 @@ static void CG_DrawPlayerConfidenceBar( rectDef_t *rect, vec4_t foreColor, vec4_
 	// display
 	vec4_t        color;
 	float         x, y, w, h, b;
+	qboolean      vertical;
 
 	ps = &cg.predictedPlayerState;
 
@@ -1499,6 +1500,8 @@ static void CG_DrawPlayerConfidenceBar( rectDef_t *rect, vec4_t foreColor, vec4_
 	w = rect->w;
 	h = rect->h;
 	b = borderSize;
+
+	vertical = ( h > w );
 
 	// draw border
 	trap_R_SetColor( backColor );
@@ -1533,7 +1536,15 @@ static void CG_DrawPlayerConfidenceBar( rectDef_t *rect, vec4_t foreColor, vec4_
 	}
 
 	trap_R_SetColor( foreColor );
-	CG_DrawPic( x, y, w * fraction, h, cgs.media.whiteShader );
+
+	if ( vertical )
+	{
+		CG_DrawPic( x, y + h * ( 1.0f - fraction ), w, h * fraction, cgs.media.whiteShader );
+	}
+	else
+	{
+		CG_DrawPic( x, y, w * fraction, h, cgs.media.whiteShader );
+	}
 
 	// draw threshold markers
 	unlockableNum = 0;
@@ -1541,10 +1552,15 @@ static void CG_DrawPlayerConfidenceBar( rectDef_t *rect, vec4_t foreColor, vec4_
 	{
 		fraction = threshold / CONFIDENCE_BAR_MAX;
 
+		if ( fraction > 1.0f )
+		{
+			fraction = 1.0f;
+		}
+
 		if ( unlocked )
 		{
 			color[ 0 ] = 1.0f;
-			color[ 1 ] = 0.0f;
+			color[ 1 ] = 1.0f;
 			color[ 2 ] = 0.0f;
 			color[ 3 ] = 1.0f;
 		}
@@ -1557,7 +1573,15 @@ static void CG_DrawPlayerConfidenceBar( rectDef_t *rect, vec4_t foreColor, vec4_
 		}
 
 		trap_R_SetColor( color );
-		CG_DrawPic( x + w * fraction, y, CONFIDENCE_BAR_MARKWIDTH, h, cgs.media.whiteShader );
+
+		if ( vertical )
+		{
+			CG_DrawPic( x, y + h * ( 1.0f - fraction ), w, CONFIDENCE_BAR_MARKWIDTH, cgs.media.whiteShader );
+		}
+		else
+		{
+			CG_DrawPic( x + w * fraction, y, CONFIDENCE_BAR_MARKWIDTH, h, cgs.media.whiteShader );
+		}
 	}
 
 	trap_R_SetColor( NULL );
