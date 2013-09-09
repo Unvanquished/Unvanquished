@@ -2146,7 +2146,7 @@ void ClientThink_real( gentity_t *ent )
 	}
 
 	// inform client about the state of unlockable items
-	client->ps.persistant[ PERS_UNLOCKABLES ] = G_ExportUnlockablesToMask( client->ps.persistant[ PERS_TEAM ] );
+	client->ps.persistant[ PERS_UNLOCKABLES ] = BG_UnlockablesMask( client->ps.persistant[ PERS_TEAM ] );
 
 	// Don't think anymore if dead
 	if ( client->ps.stats[ STAT_HEALTH ] <= 0 )

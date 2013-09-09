@@ -43,8 +43,6 @@ along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 // TODO: Make LOCK_RATIO a (synchronized) cvar
 #define LOCK_RATIO      0.8f
 
-#define UNLOCKABLES_CALCULATION_PERIOD 1000
-
 #define NUM_UNLOCKABLES WP_NUM_WEAPONS + UP_NUM_UPGRADES + BA_NUM_BUILDABLES + PCL_NUM_CLASSES
 
 typedef enum
@@ -75,10 +73,11 @@ unlockable_t     unlockables[ NUM_UNLOCKABLES ];
 int              unlockablesTypeOffset[ UNLT_NUM_UNLOCKABLETYPES ];
 unlockableType_t unlockablesType[ NUM_UNLOCKABLES ];
 team_t           unlockablesTeamKnowledge;
+int              unlockablesMask[ NUM_TEAMS ];
 
-// -------
-// methods
-// -------
+// -------------
+// local methods
+// -------------
 
 static const char *UnlockableHumanName( unlockable_t *unlockable )
 {
@@ -108,175 +107,8 @@ static qboolean Disabled( unlockable_t *unlockable )
 	return qfalse;
 }
 
-void BG_InitUnlockackables( void )
-{
-	memset( unlockables, 0, sizeof( unlockables ) );
-
-	unlockablesTypeOffset[ UNLT_WEAPON ]    = 0;
-	unlockablesTypeOffset[ UNLT_UPGRADE ]   = WP_NUM_WEAPONS;
-	unlockablesTypeOffset[ UNLT_BUILDABLE ] = unlockablesTypeOffset[ UNLT_UPGRADE ]   + UP_NUM_UPGRADES;
-	unlockablesTypeOffset[ UNLT_CLASS ]     = unlockablesTypeOffset[ UNLT_BUILDABLE ] + BA_NUM_BUILDABLES;
-
-	unlockablesTeamKnowledge = TEAM_NONE;
-
-#ifdef GAME
-	G_UpdateUnlockables();
-#endif
-}
-
-#ifdef GAME
-void G_UpdateUnlockables( void )
-{
-	int              itemNum = 0, unlockableNum, unlockThreshold, confidence;
-	unlockable_t     *unlockable;
-	unlockableType_t unlockableType = 0;
-	team_t           team;
-
-	for ( unlockableNum = 0; unlockableNum < NUM_UNLOCKABLES; unlockableNum++ )
-	{
-		unlockable = &unlockables[ unlockableNum ];
-
-		// also iterate over item types, itemNum is a per-type counter
-		while ( unlockableType < UNLT_NUM_UNLOCKABLETYPES - 1 &&
-		        unlockableNum == unlockablesTypeOffset[ unlockableType + 1 ] )
-		{
-			unlockableType++;
-			itemNum = 0;
-		}
-
-		switch ( unlockableType )
-		{
-			case UNLT_WEAPON:
-				team            = BG_Weapon( itemNum )->team;
-				unlockThreshold = BG_Weapon( itemNum )->unlockThreshold;
-				break;
-
-			case UNLT_UPGRADE:
-				team            = TEAM_HUMANS;
-				unlockThreshold = BG_Upgrade( itemNum )->unlockThreshold;
-				break;
-
-			case UNLT_BUILDABLE:
-				team            = BG_Buildable( itemNum )->team;
-				unlockThreshold = BG_Buildable( itemNum )->unlockThreshold;
-				break;
-
-			case UNLT_CLASS:
-				team            = TEAM_ALIENS;
-				unlockThreshold = BG_Class( itemNum )->unlockThreshold;
-				break;
-
-			default:
-				Com_Error( ERR_FATAL, "G_UpdateUnlockables: Unknown unlockable type" );
-		}
-
-		unlockThreshold = MAX( unlockThreshold, 0 );
-		confidence = ( int )level.team[ team ].confidence;
-
-		unlockable->type            = unlockableType;
-		unlockable->num             = itemNum;
-		unlockable->team            = team;
-		unlockable->statusKnown     = qtrue;
-		unlockable->unlockThreshold = unlockThreshold;
-		unlockable->lockThreshold   = unlockThreshold * LOCK_RATIO;
-
-		// calculate the item's locking state
-		unlockable->unlocked = (
-		    !unlockThreshold || confidence >= unlockThreshold ||
-		    ( unlockable->unlocked && confidence >= unlockable->lockThreshold )
-		);
-
-		itemNum++;
-
-		/*Com_Printf( "G_UpdateUnlockables: Team %s, Type %s, Item %s, Confidence %d, Threshold %d, "
-		            "Unlocked %d, Synchronize %d\n",
-		            BG_TeamName( team ), UnlockableTypeName( unlockable ), UnlockableName( unlockable ),
-		            confidence, unlockThreshold, unlockable->unlocked, unlockable->synchronize );*/
-	}
-
-	// GAME knows about all teams
-	unlockablesTeamKnowledge = TEAM_ALL;
-}
-#endif
-
-#ifdef GAME
-int G_ExportUnlockablesToMask( team_t team )
-{
-	int unlockable, teamUnlockableNum = 0, mask = 0, teamNum;
-
-	// maintain a cache
-	static int      cachedMask[ NUM_TEAMS ];
-	static qboolean cacheValid[ NUM_TEAMS ];
-	static qboolean firstRun = qtrue;
-	static int      nextMaskCalculation = 0;
-
-	// cache is invalid on first run
-	if ( firstRun )
-	{
-		firstRun = qfalse;
-
-		for ( teamNum = 0; teamNum < NUM_TEAMS; teamNum++ )
-		{
-			cacheValid[ NUM_TEAMS ] = qfalse;
-		}
-	}
-
-	// use cache if it's recent enough
-	if ( level.time < nextMaskCalculation && cacheValid[ team ] )
-	{
-		return cachedMask[ team ];
-	}
-
-	// build the mask
-	for ( unlockable = 0; unlockable < NUM_UNLOCKABLES; unlockable++ )
-	{
-		if ( unlockables[ unlockable ].unlockThreshold && unlockables[ unlockable ].team == team )
-		{
-			if ( teamUnlockableNum > 15 ) // 16 bit available for transmission
-			{
-				Com_Error( ERR_FATAL, "G_ExportUnlockablesToMask: Number of unlockable items for a team exceeded" );
-			}
-
-			if ( !unlockables[ unlockable ].statusKnown )
-			{
-				Com_Error( ERR_FATAL, "G_ExportUnlockablesToMask: Called before G_UpdateUnlockables" );
-			}
-
-			if ( unlockables[ unlockable ].unlocked )
-			{
-				mask |= ( 1 << teamUnlockableNum );
-			}
-
-			teamUnlockableNum++;
-		}
-	}
-
-	// cache the result
-	cacheValid[ team ] = qtrue;
-	cachedMask[ team ] = mask;
-	nextMaskCalculation = level.time + UNLOCKABLES_CALCULATION_PERIOD;
-
-	return mask;
-}
-#endif
-
 static void InformUnlockableStatusChange( unlockable_t *unlockable, qboolean unlocked )
 {
-	/*
-	if ( Disabled( unlockable ) )
-	{
-		return;
-	}
-
-	if ( unlocked )
-	{
-		Com_Printf( "%s " S_COLOR_GREEN "unlocked\n", UnlockableHumanName( unlockable ) );
-	}
-	else
-	{
-		Com_Printf( "%s " S_COLOR_RED   "locked\n",   UnlockableHumanName( unlockable ) );
-	}
-	*/
 }
 
 static void InformUnlockableStatusChanges( int *statusChanges, int count )
@@ -319,6 +151,46 @@ static void InformUnlockableStatusChanges( int *statusChanges, int count )
 	}
 
 	Com_Printf( "%s\n", text );
+}
+
+
+static INLINE qboolean Unlocked( unlockableType_t type, int itemNum )
+{
+	return unlockables[ unlockablesTypeOffset[ type ] + itemNum ].unlocked;
+}
+
+static INLINE void CheckStatusKnowledge( unlockableType_t type, int itemNum )
+{
+	unlockable_t dummy;
+
+	if ( !unlockables[ unlockablesTypeOffset[ type ] + itemNum ].statusKnown )
+	{
+		dummy.type = type;
+		dummy.num  = itemNum;
+
+		Com_Printf( S_WARNING "Asked for the status of unlockable item %s but the status is unknown.\n",
+		            UnlockableHumanName( &dummy ) );
+	}
+}
+
+// ----------
+// BG methods
+// ----------
+
+void BG_InitUnlockackables( void )
+{
+	memset( unlockables, 0, sizeof( unlockables ) );
+
+	unlockablesTypeOffset[ UNLT_WEAPON ]    = 0;
+	unlockablesTypeOffset[ UNLT_UPGRADE ]   = WP_NUM_WEAPONS;
+	unlockablesTypeOffset[ UNLT_BUILDABLE ] = unlockablesTypeOffset[ UNLT_UPGRADE ]   + UP_NUM_UPGRADES;
+	unlockablesTypeOffset[ UNLT_CLASS ]     = unlockablesTypeOffset[ UNLT_BUILDABLE ] + BA_NUM_BUILDABLES;
+
+	unlockablesTeamKnowledge = TEAM_NONE;
+
+#ifdef GAME
+	G_UpdateUnlockables();
+#endif
 }
 
 void BG_ImportUnlockablesFromMask( team_t team, int mask )
@@ -444,39 +316,19 @@ void BG_ImportUnlockablesFromMask( team_t team, int mask )
 
 	// we only know the state for one team
 	unlockablesTeamKnowledge = team;
+
+	// save mask for later use
+	unlockablesMask[ team ] = mask;
 }
 
-#ifdef UI
-void UI_UpdateUnlockables( void )
+int BG_UnlockablesMask( team_t team )
 {
-	char   buffer[ MAX_TOKEN_CHARS ];
-	team_t team;
-	int    mask;
-
-	trap_Cvar_VariableStringBuffer( "ui_unlockables", buffer, sizeof( buffer ) );
-	sscanf( buffer, "%d %d", ( int * )&team, &mask );
-
-	BG_ImportUnlockablesFromMask( team, mask );
-}
-#endif
-
-static INLINE qboolean Unlocked( unlockableType_t type, int itemNum )
-{
-	return unlockables[ unlockablesTypeOffset[ type ] + itemNum ].unlocked;
-}
-
-static INLINE void CheckStatusKnowledge( unlockableType_t type, int itemNum )
-{
-	unlockable_t dummy;
-
-	if ( !unlockables[ unlockablesTypeOffset[ type ] + itemNum ].statusKnown )
+	if ( unlockablesTeamKnowledge != team && unlockablesTeamKnowledge != TEAM_ALL )
 	{
-		dummy.type = type;
-		dummy.num  = itemNum;
-
-		Com_Printf( S_WARNING "Asked for the status of unlockable item %s but the status is unknown.\n",
-		            UnlockableHumanName( &dummy ) );
+		Com_Error( ERR_FATAL, "G_GetUnlockablesMask: Requested mask for a team with unknown unlockable status" );
 	}
+
+	return unlockablesMask[ team ];
 }
 
 qboolean BG_WeaponUnlocked( weapon_t weapon )
@@ -506,8 +358,6 @@ qboolean BG_ClassUnlocked( class_t class_ )
 
 	return Unlocked( UNLT_CLASS, ( int )class_ );
 }
-
-
 
 int BG_IterateConfidenceThresholds( int unlockableNum, team_t team, int *threshold, qboolean *unlocked )
 {
@@ -541,3 +391,142 @@ int BG_IterateConfidenceThresholds( int unlockableNum, team_t team, int *thresho
 
 	return 0;
 }
+
+// ------------
+// GAME methods
+// ------------
+
+#ifdef GAME
+static void UpdateUnlockablesMask( void )
+{
+	int    unlockable, unlockableNum[ NUM_TEAMS ];
+	team_t team;
+
+	for ( team = TEAM_NONE + 1; team < NUM_TEAMS; team++ )
+	{
+		unlockableNum[ team ] = 0;
+		unlockablesMask[ team ] = 0;
+	}
+
+	for ( unlockable = 0; unlockable < NUM_UNLOCKABLES; unlockable++ )
+	{
+		if ( unlockables[ unlockable ].unlockThreshold )
+		{
+			team = unlockables[ unlockable ].team;
+
+			if ( unlockableNum[ team ] > 15 ) // 16 bit available for transmission
+			{
+				Com_Error( ERR_FATAL, "UpdateUnlockablesMask: Number of unlockable items for a team exceeded" );
+			}
+
+			if ( !unlockables[ unlockable ].statusKnown )
+			{
+				Com_Error( ERR_FATAL, "UpdateUnlockablesMask: Called before G_UpdateUnlockables" );
+			}
+
+			if ( unlockables[ unlockable ].unlocked )
+			{
+				unlockablesMask[ team ] |= ( 1 << unlockableNum[ team ] );
+			}
+
+			unlockableNum[ team ]++;
+		}
+	}
+}
+#endif
+
+#ifdef GAME
+void G_UpdateUnlockables( void )
+{
+	int              itemNum = 0, unlockableNum, unlockThreshold, confidence;
+	unlockable_t     *unlockable;
+	unlockableType_t unlockableType = 0;
+	team_t           team;
+
+	for ( unlockableNum = 0; unlockableNum < NUM_UNLOCKABLES; unlockableNum++ )
+	{
+		unlockable = &unlockables[ unlockableNum ];
+
+		// also iterate over item types, itemNum is a per-type counter
+		while ( unlockableType < UNLT_NUM_UNLOCKABLETYPES - 1 &&
+		        unlockableNum == unlockablesTypeOffset[ unlockableType + 1 ] )
+		{
+			unlockableType++;
+			itemNum = 0;
+		}
+
+		switch ( unlockableType )
+		{
+			case UNLT_WEAPON:
+				team            = BG_Weapon( itemNum )->team;
+				unlockThreshold = BG_Weapon( itemNum )->unlockThreshold;
+				break;
+
+			case UNLT_UPGRADE:
+				team            = TEAM_HUMANS;
+				unlockThreshold = BG_Upgrade( itemNum )->unlockThreshold;
+				break;
+
+			case UNLT_BUILDABLE:
+				team            = BG_Buildable( itemNum )->team;
+				unlockThreshold = BG_Buildable( itemNum )->unlockThreshold;
+				break;
+
+			case UNLT_CLASS:
+				team            = TEAM_ALIENS;
+				unlockThreshold = BG_Class( itemNum )->unlockThreshold;
+				break;
+
+			default:
+				Com_Error( ERR_FATAL, "G_UpdateUnlockables: Unknown unlockable type" );
+		}
+
+		unlockThreshold = MAX( unlockThreshold, 0 );
+		confidence = ( int )level.team[ team ].confidence;
+
+		unlockable->type            = unlockableType;
+		unlockable->num             = itemNum;
+		unlockable->team            = team;
+		unlockable->statusKnown     = qtrue;
+		unlockable->unlockThreshold = unlockThreshold;
+		unlockable->lockThreshold   = unlockThreshold * LOCK_RATIO;
+
+		// calculate the item's locking state
+		unlockable->unlocked = (
+		    !unlockThreshold || confidence >= unlockThreshold ||
+		    ( unlockable->unlocked && confidence >= unlockable->lockThreshold )
+		);
+
+		itemNum++;
+
+		/*Com_Printf( "G_UpdateUnlockables: Team %s, Type %s, Item %s, Confidence %d, Threshold %d, "
+		            "Unlocked %d, Synchronize %d\n",
+		            BG_TeamName( team ), UnlockableTypeName( unlockable ), UnlockableName( unlockable ),
+		            confidence, unlockThreshold, unlockable->unlocked, unlockable->synchronize );*/
+	}
+
+	// GAME knows about all teams
+	unlockablesTeamKnowledge = TEAM_ALL;
+
+	// generate masks for network transmission
+	UpdateUnlockablesMask();
+}
+#endif
+
+// ----------
+// UI methods
+// ----------
+
+#ifdef UI
+void UI_UpdateUnlockables( void )
+{
+	char   buffer[ MAX_TOKEN_CHARS ];
+	team_t team;
+	int    mask;
+
+	trap_Cvar_VariableStringBuffer( "ui_unlockables", buffer, sizeof( buffer ) );
+	sscanf( buffer, "%d %d", ( int * )&team, &mask );
+
+	BG_ImportUnlockablesFromMask( team, mask );
+}
+#endif

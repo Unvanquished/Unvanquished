@@ -1236,6 +1236,7 @@ void                      BG_ParseUpgradeAttributeFile( const char *filename, up
 // bg_teamprogress.c
 void     BG_InitUnlockackables( void );
 void     BG_ImportUnlockablesFromMask( team_t team, int mask );
+int      BG_UnlockablesMask( team_t team );
 qboolean BG_WeaponUnlocked( weapon_t weapon );
 qboolean BG_UpgradeUnlocked( upgrade_t upgrade );
 qboolean BG_BuildableUnlocked( buildable_t buildable );
@@ -1243,11 +1244,9 @@ qboolean BG_ClassUnlocked( class_t class_ );
 int      BG_IterateConfidenceThresholds( int unlockableNum, team_t team , int *threshold, qboolean *unlocked );
 #ifdef GAME
 void     G_UpdateUnlockables( void );
-int      G_ExportUnlockablesToMask( team_t team );
 #endif
-void     UI_UpdateUnlockables( void );
 #ifdef UI
-
+void     UI_UpdateUnlockables( void );
 #endif
 
 // content masks
