@@ -27,6 +27,22 @@ along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 
 /*
 ===============
+ConfidenceChanged
+
+Has to be called whenever the confidence of a team has been modified.
+===============
+*/
+void INLINE ConfidenceChanged( void )
+{
+	// send to clients
+	G_SendConfidenceToClients();
+
+	// check team progress
+	G_UpdateUnlockables();
+}
+
+/*
+===============
 G_SendConfidenceToClients
 
 Sends current team confidence to all clients via playerState_t.
@@ -62,7 +78,6 @@ void G_SendConfidenceToClients( void )
 		}
 	}
 }
-
 
 /*
 ============
@@ -105,11 +120,7 @@ void G_DecreaseConfidence( void )
 		level.team[ team ].confidence *= decreaseFactor;
 	}
 
-	// send to clients
-	G_SendConfidenceToClients();
-
-	// check team progress
-	G_UpdateUnlockables();
+	ConfidenceChanged();
 
 	nextCalculation = level.time + DECREASE_CONFIDENCE_PERIOD;
 }
@@ -135,11 +146,7 @@ void G_AddConfidence( team_t team, confidence_reason_t reason, confidence_qualif
 
 	level.team[ team ].confidence += amount;
 
-	// send to clients
-	G_SendConfidenceToClients();
-
-	// check team progress
-	G_UpdateUnlockables();
+	ConfidenceChanged();
 
 	// notify source
 	if ( source )
