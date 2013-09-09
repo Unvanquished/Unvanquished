@@ -428,7 +428,7 @@ AINodeStatus_t BotEvaluateNode( gentity_t *self, AIGenericNode_t *node )
 
 AINodeStatus_t BotActionFireWeapon( gentity_t *self, AIGenericNode_t *node ) 
 {
-	if ( WeaponIsEmpty( BG_GetPlayerWeapon( &self->client->ps ), self->client->ps ) && self->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
+	if ( WeaponIsEmpty( BG_GetPlayerWeapon( &self->client->ps ), self->client->ps ) && self->client->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS )
 	{
 		G_ForceWeaponChange( self, WP_BLASTER );
 	}
@@ -470,7 +470,7 @@ AINodeStatus_t BotActionDeactivateUpgrade( gentity_t *self, AIGenericNode_t *nod
 
 AINodeStatus_t BotActionAimAtGoal( gentity_t *self, AIGenericNode_t *node )
 {
-	if ( BotGetTargetTeam( self->botMind->goal ) != self->client->ps.stats[ STAT_TEAM ] )
+	if ( BotGetTargetTeam( self->botMind->goal ) != self->client->ps.persistant[ PERS_TEAM ] )
 	{
 		BotAimAtEnemy( self );
 	}
@@ -570,7 +570,7 @@ AINodeStatus_t BotActionSay( gentity_t *self, AIGenericNode_t *node )
 
 AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 {
-	team_t myTeam = ( team_t ) self->client->ps.stats[ STAT_TEAM ];
+	team_t myTeam = ( team_t ) self->client->ps.persistant[ PERS_TEAM ];
 
 	if ( self->botMind->currentNode != node )
 	{
@@ -872,7 +872,7 @@ AINodeStatus_t BotActionRush( gentity_t *self, AIGenericNode_t *node )
 
 AINodeStatus_t BotActionHeal( gentity_t *self, AIGenericNode_t *node )
 {
-	if ( self->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
+	if ( self->client->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS )
 	{
 		return BotActionHealH( self, node );
 	}
@@ -907,7 +907,7 @@ AINodeStatus_t BotActionEvolve ( gentity_t *self, AIGenericNode_t *node )
 			status = STATUS_SUCCESS;
 		}
 	}
-	else if ( BotCanEvolveToClass( self, PCL_ALIEN_LEVEL3 ) && ( !BG_ClassAllowedInStage( PCL_ALIEN_LEVEL3_UPG, level.team[ TEAM_ALIENS ].stage ) || !g_bot_level2upg.integer || !g_bot_level3upg.integer ) && g_bot_level3.integer )
+	else if ( BotCanEvolveToClass( self, PCL_ALIEN_LEVEL3 ) && ( !BG_ClassUnlocked( PCL_ALIEN_LEVEL3_UPG ) || !g_bot_level2upg.integer || !g_bot_level3upg.integer ) && g_bot_level3.integer )
 	{
 		if ( BotEvolveToClass( self, PCL_ALIEN_LEVEL3 ) )
 		{
@@ -921,21 +921,21 @@ AINodeStatus_t BotActionEvolve ( gentity_t *self, AIGenericNode_t *node )
 			status = STATUS_SUCCESS;
 		}
 	}
-	else if ( BotCanEvolveToClass( self, PCL_ALIEN_LEVEL2 ) && ( level.team[ TEAM_HUMANS ].stage == S1 || !g_bot_level2upg.integer )  && g_bot_level2.integer )
+	else if ( BotCanEvolveToClass( self, PCL_ALIEN_LEVEL2 ) && g_bot_level2.integer )
 	{
 		if ( BotEvolveToClass( self, PCL_ALIEN_LEVEL2 ) )
 		{
 			status = STATUS_SUCCESS;
 		}
 	}
-	else if ( BotCanEvolveToClass( self, PCL_ALIEN_LEVEL1_UPG ) && level.team[ TEAM_HUMANS ].stage == S1 && g_bot_level1upg.integer )
+	else if ( BotCanEvolveToClass( self, PCL_ALIEN_LEVEL1_UPG ) && g_bot_level1upg.integer )
 	{
 		if ( BotEvolveToClass( self, PCL_ALIEN_LEVEL1_UPG ) )
 		{
 			status = STATUS_SUCCESS;
 		}
 	}
-	else if ( BotCanEvolveToClass( self, PCL_ALIEN_LEVEL1 ) && level.team[ TEAM_HUMANS ].stage == S1 && g_bot_level1.integer )
+	else if ( BotCanEvolveToClass( self, PCL_ALIEN_LEVEL1 ) && g_bot_level1.integer )
 	{
 		if ( BotEvolveToClass( self, PCL_ALIEN_LEVEL1 ) )
 		{
@@ -977,7 +977,7 @@ AINodeStatus_t BotActionHealA( gentity_t *self, AIGenericNode_t *node )
 		return STATUS_FAILURE;
 	}
 
-	if ( self->client->ps.stats[STAT_TEAM] != TEAM_ALIENS )
+	if ( self->client->ps.persistant[ PERS_TEAM ] != TEAM_ALIENS )
 	{
 		return STATUS_FAILURE;
 	}
@@ -1032,7 +1032,7 @@ AINodeStatus_t BotActionHealH( gentity_t *self, AIGenericNode_t *node )
 	qboolean fullyHealed = BG_Class( self->client->ps.stats[ STAT_CLASS ] )->health <= self->client->ps.stats[ STAT_HEALTH ] &&
 	                       BG_InventoryContainsUpgrade( UP_MEDKIT, self->client->ps.stats );
 
-	if ( self->client->ps.stats[STAT_TEAM] != TEAM_HUMANS )
+	if ( self->client->ps.persistant[ PERS_TEAM ] != TEAM_HUMANS )
 	{
 		return STATUS_FAILURE;
 	}

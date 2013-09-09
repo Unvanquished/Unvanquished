@@ -79,9 +79,6 @@ Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3,
 		case CG_CROSSHAIR_PLAYER:
 			return CG_CrosshairPlayer();
 
-		case CG_LAST_ATTACKER:
-			return CG_LastAttacker();
-
 		case CG_KEY_EVENT:
 			if ( arg1 & ( 1 << KEYEVSTATE_CHAR ) )
 			{
@@ -244,11 +241,11 @@ vmCvar_t        cg_debugVoices;
 
 vmCvar_t        ui_currentClass;
 vmCvar_t        ui_carriage;
-vmCvar_t        ui_stages;
 vmCvar_t        ui_dialog;
 vmCvar_t        ui_voteActive;
 vmCvar_t        ui_alienTeamVoteActive;
 vmCvar_t        ui_humanTeamVoteActive;
+vmCvar_t        ui_unlockables;
 
 vmCvar_t        cg_debugRandom;
 
@@ -407,11 +404,11 @@ static const cvarTable_t cvarTable[] =
 	// communication cvars set by the cgame to be read by ui
 	{ &ui_currentClass,                "ui_currentClass",                "0",            CVAR_ROM                     },
 	{ &ui_carriage,                    "ui_carriage",                    "",             CVAR_ROM                     },
-	{ &ui_stages,                      "ui_stages",                      "0 0",          CVAR_ROM                     },
 	{ &ui_dialog,                      "ui_dialog",                      "Text not set", CVAR_ROM                     },
 	{ &ui_voteActive,                  "ui_voteActive",                  "0",            CVAR_ROM                     },
 	{ &ui_humanTeamVoteActive,         "ui_humanTeamVoteActive",         "0",            CVAR_ROM                     },
 	{ &ui_alienTeamVoteActive,         "ui_alienTeamVoteActive",         "0",            CVAR_ROM                     },
+    { &ui_unlockables,                 "ui_unlockables",                 "0 0",          CVAR_ROM                     },
 
 	{ &cg_debugRandom,                 "cg_debugRandom",                 "0",            0                            },
 
@@ -488,7 +485,7 @@ static void CG_SetPVars( void )
 {
 	playerState_t *ps;
 	char          buffer[ MAX_CVAR_VALUE_STRING ];
-	int           i, stage = 0;
+	int           i;
 	qboolean      first;
 
 	if ( !cg.snap )
@@ -501,17 +498,12 @@ static void CG_SetPVars( void )
 	if ( ( ps->pm_flags & PMF_FOLLOW ) )
 		return;
 
-	trap_Cvar_Set( "p_teamname", BG_TeamName( ps->stats[ STAT_TEAM ] ) );
+	trap_Cvar_Set( "p_teamname", BG_TeamName( ps->persistant[ PERS_TEAM ] ) );
 
-	// while we're here, set stage
-	switch ( ps->stats[ STAT_TEAM ] )
+	switch ( ps->persistant[ PERS_TEAM ] )
 	{
 		case TEAM_ALIENS:
-			stage = cgs.alienStage;
-			break;
-
 		case TEAM_HUMANS:
-			stage = cgs.humanStage;
 			break;
 
 		default:
@@ -526,7 +518,6 @@ static void CG_SetPVars( void )
 			 */
 			trap_Cvar_Set( "p_class" , "0" );
 			trap_Cvar_Set( "p_weapon", "0" );
-			trap_Cvar_Set( "p_stage", "0" );
 			trap_Cvar_Set( "p_hp", "0" );
 			trap_Cvar_Set( "p_maxhp", "0" );
 			trap_Cvar_Set( "p_ammo", "0" );
@@ -534,7 +525,6 @@ static void CG_SetPVars( void )
 			return;
 	}
 
-	trap_Cvar_Set( "p_stage", va( "%d", stage ) );
 	trap_Cvar_Set( "p_class", va( "%d", ps->stats[ STAT_CLASS ] ) );
 
 	switch ( ps->stats[ STAT_CLASS ] )
@@ -688,7 +678,6 @@ static void CG_SetPVars( void )
 	trap_Cvar_Set( "p_clips", va( "%d", ps->clips ) );
 
 	// set p_availableBuildings to a space-separated list of buildings
-	// limited to those available given team, stage and class
 	first = qtrue;
 	*buffer = 0;
 
@@ -696,8 +685,8 @@ static void CG_SetPVars( void )
 	{
 		const buildableAttributes_t *buildable = BG_Buildable( i );
 
-		if ( buildable->team == ps->stats[ STAT_TEAM ] &&
-		     BG_BuildableAllowedInStage( i, stage ) &&
+		if ( buildable->team == ps->persistant[ PERS_TEAM ] &&
+		     BG_BuildableUnlocked( i ) &&
 		     (buildable->buildWeapon & ( 1 << ps->stats[ STAT_WEAPON ] ) ) )
 
 		{
@@ -753,23 +742,6 @@ static void CG_SetUIVars( void )
 	strcat( carriageCvar, "$" );
 
 	trap_Cvar_Set( "ui_carriage", carriageCvar );
-
-	switch ( ps->stats[ STAT_TEAM ] )
-	{
-		case TEAM_NONE:
-			trap_Cvar_Set( "ui_stages", va( "%d %d", cgs.alienStage, cgs.humanStage ) );
-			return;
-
-		case TEAM_ALIENS:
-			//dont send human stages to aliens
-			trap_Cvar_Set( "ui_stages", va( "%d %d", cgs.alienStage, -1 ) );
-			break;
-
-		case TEAM_HUMANS:
-			//dont send alien stages to humans
-			trap_Cvar_Set( "ui_stages", va( "%d %d", -1, cgs.humanStage ) );
-			break;
-	}
 }
 
 /*
@@ -906,18 +878,18 @@ void CG_NotifyHooks( void )
 	ps = &cg.snap->ps;
 	if ( !( ps->pm_flags & PMF_FOLLOW ) )
 	{
-		if( lastTeam != ps->stats[ STAT_TEAM ] )
+		if( lastTeam != ps->persistant[ PERS_TEAM ] )
 		{
-			trap_notify_onTeamChange( ps->stats[ STAT_TEAM ] );
+			trap_notify_onTeamChange( ps->persistant[ PERS_TEAM ] );
 
 			/* execute team-specific config files */
-			trap_Cvar_VariableStringBuffer( va( "cg_%sConfig", BG_TeamName( ps->stats[ STAT_TEAM ] ) ), config, sizeof( config ) );
+			trap_Cvar_VariableStringBuffer( va( "cg_%sConfig", BG_TeamName( ps->persistant[ PERS_TEAM ] ) ), config, sizeof( config ) );
 			if ( config[ 0 ] )
 			{
 				trap_SendConsoleCommand( va( "exec %s\n", Quote( config ) ) );
 			}
 
-			lastTeam = ps->stats[ STAT_TEAM ];
+			lastTeam = ps->persistant[ PERS_TEAM ];
 		}
 	}
 }
@@ -954,16 +926,6 @@ int CG_CrosshairPlayer( void )
 	}
 
 	return cg.crosshairClientNum;
-}
-
-int CG_LastAttacker( void )
-{
-	if ( !cg.attackerTime )
-	{
-		return -1;
-	}
-
-	return cg.snap->ps.persistant[ PERS_ATTACKER ];
 }
 
 /*
@@ -1292,8 +1254,8 @@ static void CG_RegisterSounds( void )
 	char       name[ MAX_QPATH ];
 	const char *soundName;
 
-	cgs.media.alienStageTransition = trap_S_RegisterSound( "sound/announcements/overmindevolved.wav", qtrue );
-	cgs.media.humanStageTransition = trap_S_RegisterSound( "sound/announcements/reinforcement.wav", qtrue );
+	cgs.media.weHaveEvolved = trap_S_RegisterSound( "sound/announcements/overmindevolved.wav", qtrue );
+	cgs.media.reinforcement = trap_S_RegisterSound( "sound/announcements/reinforcement.wav", qtrue );
 
 	cgs.media.alienOvermindAttack = trap_S_RegisterSound( "sound/announcements/overmindattack.wav", qtrue );
 	cgs.media.alienOvermindDying = trap_S_RegisterSound( "sound/announcements/overminddying.wav", qtrue );
@@ -2353,7 +2315,7 @@ static const char *CG_FeederItemText( int feederID, int index, int column, qhand
 	else if ( cg.snap->ps.pm_type == PM_SPECTATOR ||
 	          cg.snap->ps.pm_type == PM_NOCLIP ||
 	          cg.snap->ps.pm_flags & PMF_FOLLOW ||
-	          team == cg.snap->ps.stats[ STAT_TEAM ] ||
+	          team == cg.snap->ps.persistant[ PERS_TEAM ] ||
 	          cg.intermissionStarted )
 	{
 		showIcons = qtrue;
@@ -2674,6 +2636,9 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 	BG_InitAllConfigs();
 
 	BG_InitAllowedGameElements();
+
+	// Initialize item locking state
+	BG_InitUnlockackables();
 
 	CG_RegisterCvars();
 

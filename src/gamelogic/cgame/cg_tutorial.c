@@ -173,7 +173,7 @@ static entityState_t *CG_BuildableInRange( playerState_t *ps, float *healthFract
 	}
 
 	if ( es->eType == ET_BUILDABLE &&
-	     ps->stats[ STAT_TEAM ] == BG_Buildable( es->modelindex )->team )
+	     ps->persistant[ PERS_TEAM ] == BG_Buildable( es->modelindex )->team )
 	{
 		return es;
 	}
@@ -639,7 +639,7 @@ const char *CG_TutorialText( void )
 
 	if ( refreshBindings == 0 )
 	{
-		CG_GetBindings( ps->stats[ STAT_TEAM ] );
+		CG_GetBindings( ps->persistant[ PERS_TEAM ] );
 	}
 
 	refreshBindings = ( refreshBindings + 1 ) % BINDING_REFRESH_INTERVAL;
@@ -693,11 +693,9 @@ const char *CG_TutorialText( void )
 					break;
 			}
 
-			if ( ps->stats[ STAT_TEAM ] == TEAM_ALIENS )
+			if ( ps->persistant[ PERS_TEAM ] == TEAM_ALIENS )
 			{
-				if ( BG_AlienCanEvolve( ps->stats[ STAT_CLASS ],
-				                        ps->persistant[ PERS_CREDIT ],
-				                        cgs.alienStage ) )
+				if ( BG_AlienCanEvolve( ps->stats[ STAT_CLASS ], ps->persistant[ PERS_CREDIT ] ) )
 				{
 					Q_strcat( text, MAX_TUTORIAL_TEXT,
 					          va( _( "Press %s to evolve\n" ),

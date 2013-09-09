@@ -256,7 +256,7 @@ itemDef
     forecolor .51 .51 .51 1
 	decoration
 	visible MENU_TRUE
-	ownerdraw CG_STAGE_REPORT_TEXT
+	ownerdraw CG_CONFIDENCE_TEXT
 }
 
 //CROSSHAIR HEALTH METER

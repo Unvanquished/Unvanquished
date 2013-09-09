@@ -1168,6 +1168,10 @@ typedef struct
 
 	int                     numBinaryShadersUsed;
 	cgBinaryShaderSetting_t binaryShaderSettings[ NUM_BINARY_SHADERS ];
+
+	// confidence
+	float                   confidenceGained;
+	int                     confidenceGainedTime;
 } cg_t;
 
 // all of the model, shader, and sound references that are
@@ -1261,8 +1265,8 @@ typedef struct
 
 	sfxHandle_t medkitUseSound;
 
-	sfxHandle_t alienStageTransition;
-	sfxHandle_t humanStageTransition;
+	sfxHandle_t weHaveEvolved;
+	sfxHandle_t reinforcement;
 
 	sfxHandle_t alienOvermindAttack;
 	sfxHandle_t alienOvermindDying;
@@ -1393,9 +1397,6 @@ typedef struct
 	char     voteString[ NUM_TEAMS ][ MAX_STRING_TOKENS ];
 
 	int      levelStartTime;
-
-	int      alienStage;
-	int      humanStage;
 
 	//
 	// locally derived information from gamestate
@@ -1610,11 +1611,11 @@ extern  vmCvar_t            cg_debugVoices;
 
 extern  vmCvar_t            ui_currentClass;
 extern  vmCvar_t            ui_carriage;
-extern  vmCvar_t            ui_stages;
 extern  vmCvar_t            ui_dialog;
 extern  vmCvar_t            ui_voteActive;
 extern  vmCvar_t            ui_alienTeamVoteActive;
 extern  vmCvar_t            ui_humanTeamVoteActive;
+extern  vmCvar_t            ui_unlockables;
 
 extern vmCvar_t             cg_debugRandom;
 
@@ -1651,7 +1652,6 @@ void       CG_NotifyHooks( void );
 void       CG_UpdateCvars( void );
 
 int        CG_CrosshairPlayer( void );
-int        CG_LastAttacker( void );
 void       CG_LoadMenus( const char *menuFile );
 void       CG_KeyEvent( int key, int chr, int flags );
 void       CG_MouseEvent( int x, int y );

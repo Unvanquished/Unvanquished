@@ -392,7 +392,7 @@ static float PM_CmdScale( usercmd_t *cmd, qboolean zFlight )
 	float scale;
 	float modifier = 1.0f;
 
-	if ( pm->ps->stats[ STAT_TEAM ] == TEAM_HUMANS && pm->ps->pm_type == PM_NORMAL )
+	if ( pm->ps->persistant[ PERS_TEAM ] == TEAM_HUMANS && pm->ps->pm_type == PM_NORMAL )
 	{
 		qboolean wasSprinting;
 		qboolean sprint;
@@ -1268,7 +1268,7 @@ static qboolean PM_CheckJump( void )
 		return qfalse;
 	}
 
-	if ( ( pm->ps->stats[ STAT_TEAM ] == TEAM_HUMANS ) &&
+	if ( ( pm->ps->persistant[ PERS_TEAM ] == TEAM_HUMANS ) &&
 	     ( pm->ps->stats[ STAT_STAMINA ] < STAMINA_SLOW_LEVEL + STAMINA_JUMP_TAKE ) )
 	{
 		return qfalse;
@@ -1305,7 +1305,7 @@ static qboolean PM_CheckJump( void )
 	pm->ps->pm_flags |= PMF_JUMP_HELD;
 
 	// take some stamina off
-	if ( pm->ps->stats[ STAT_TEAM ] == TEAM_HUMANS )
+	if ( pm->ps->persistant[ PERS_TEAM ] == TEAM_HUMANS )
 	{
 		pm->ps->stats[ STAT_STAMINA ] -= STAMINA_JUMP_TAKE;
 	}

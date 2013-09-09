@@ -89,7 +89,7 @@ static AIValue_t alertedToEnemy( gentity_t *self, const AIValue_t *params )
 
 static AIValue_t botTeam( gentity_t *self, const AIValue_t *params )
 {
-	return AIBoxInt( self->client->ps.stats[ STAT_TEAM ] );
+	return AIBoxInt( self->client->ps.persistant[ PERS_TEAM ] );
 }
 
 static AIValue_t goalTeam( gentity_t *self, const AIValue_t *params )
@@ -123,7 +123,7 @@ static AIValue_t goalDead( gentity_t *self, const AIValue_t *params )
 	{
 		dead = qtrue;
 	}
-	else if ( goal->ent->s.eType == ET_BUILDABLE && goal->ent->buildableTeam == self->client->ps.stats[ STAT_TEAM ] && !goal->ent->powered )
+	else if ( goal->ent->s.eType == ET_BUILDABLE && goal->ent->buildableTeam == self->client->ps.persistant[ PERS_TEAM ] && !goal->ent->powered )
 	{
 		dead = qtrue;
 	}
@@ -262,14 +262,14 @@ static AIValue_t botCanEvolveTo( gentity_t *self, const AIValue_t *params )
 	return AIBoxInt( BotCanEvolveToClass( self, c ) );
 }
 
-static AIValue_t humanStage( gentity_t *self, const AIValue_t *params )
+static AIValue_t humanConfidence( gentity_t *self, const AIValue_t *params )
 {
-	return AIBoxInt( level.team[ TEAM_HUMANS ].stage );
+	return AIBoxInt( level.team[ TEAM_HUMANS ].confidence );
 }
 
-static AIValue_t alienStage( gentity_t *self, const AIValue_t *params )
+static AIValue_t alienConfidence( gentity_t *self, const AIValue_t *params )
 {
-	return AIBoxInt( level.team[ TEAM_ALIENS ].stage );
+	return AIBoxInt( level.team[ TEAM_ALIENS ].confidence );
 }
 
 static AIValue_t randomChance( gentity_t *self, const AIValue_t *params )
@@ -336,7 +336,7 @@ static const struct AIConditionMap_s
 } conditionFuncs[] =
 {
 	{ "alertedToEnemy",    VALUE_INT,   alertedToEnemy,    0 },
-	{ "alienStage",        VALUE_INT,   alienStage,        0 },
+	{ "alienConfidence",   VALUE_INT,   alienConfidence,   0 },
 	{ "baseRushScore",     VALUE_FLOAT, baseRushScore,     0 },
 	{ "buildingIsDamaged", VALUE_INT,   buildingIsDamaged, 0 },
 	{ "canEvolveTo",       VALUE_INT,   botCanEvolveTo,    1 },
@@ -352,7 +352,7 @@ static const struct AIConditionMap_s
 	{ "haveUpgrade",       VALUE_INT,   haveUpgrade,       1 },
 	{ "haveWeapon",        VALUE_INT,   haveWeapon,        1 },
 	{ "healScore",         VALUE_FLOAT, healScore,         0 },
-	{ "humanStage",        VALUE_INT,   humanStage,        0 },
+	{ "humanConfidence",   VALUE_INT,   humanConfidence,   0 },
 	{ "inAttackRange",     VALUE_INT,   inAttackRange,     1 },
 	{ "isVisible",         VALUE_INT,   isVisible,         1 },
 	{ "percentHealth",     VALUE_FLOAT, percentHealth,     1 },
@@ -1328,10 +1328,6 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	D( SAY_AREA );
 	D( SAY_AREA_TEAM );
 	
-	D( S1 );
-	D( S2 );
-	D( S3 );
-
 	Q_strncpyz( treefilename, va( "bots/%s.bt", name ), sizeof( treefilename ) );
 
 	handle = trap_Parse_LoadSource( treefilename );

@@ -767,7 +767,7 @@ void G_TeamToClientmask( team_t team, int *loMask, int *hiMask )
 	{
 		client = g_entities[ clientNum ].client;
 
-		if ( client && client->pers.teamSelection == team )
+		if ( client && client->ps.persistant[ PERS_TEAM ] == team )
 		{
 			if ( clientNum < 32 )
 			{
@@ -780,71 +780,6 @@ void G_TeamToClientmask( team_t team, int *loMask, int *hiMask )
 		}
 	}
 }
-
-/*
-===============
-G_AddConfidence
-
-Awards confidence to a team. Will notify the client hwo earned it if given, otherwise the whole team.
-===============
-*/
-void G_AddConfidence( team_t team, confidence_t type, confidence_reason_t reason,
-                      confidence_qualifier_t qualifier, float amount, gentity_t *source )
-{
-	float     *confidence;
-	gentity_t *event = NULL;
-	gclient_t *client;
-
-	if ( team > TEAM_NONE && team < NUM_TEAMS )
-	{
-		confidence = level.team[ team ].confidence;
-	}
-	else
-	{
-		return;
-	}
-
-	if ( type <= CONFIDENCE_SUM || type >= NUM_CONFIDENCE_TYPES )
-	{
-		return;
-	}
-
-	confidence[ type ] += amount;
-
-	// changes caused by admin action (e.g. revert) are never notified to clients
-	if ( type == CONFIDENCE_ADMIN )
-	{
-		return;
-	}
-
-	// notify client or whole team, depending on source
-	if ( source )
-	{
-		client = source->client;
-
-		if ( client && client->pers.teamSelection == team )
-		{
-			event = G_NewTempEntity( client->ps.origin, EV_CONFIDENCE );
-			event->r.svFlags = SVF_SINGLECLIENT;
-			event->r.singleClient = client->ps.clientNum;
-		}
-	}
-	else
-	{
-		event = G_NewTempEntity( vec3_origin, EV_CONFIDENCE );
-		event->r.svFlags = ( SVF_BROADCAST | SVF_CLIENTMASK );
-		G_TeamToClientmask( team, &( event->r.loMask ), &( event->r.hiMask ) );
-	}
-
-	if ( event )
-	{
-		event->s.eventParm = reason;
-		event->s.otherEntityNum = qualifier;
-		event->s.otherEntityNum2 = ( int )( fabs( amount ) * 10.0f + 0.5f );
-		event->s.groundEntityNum = amount < 0 ? qtrue : qfalse;
-	}
-}
-
 
 /*
 ===============

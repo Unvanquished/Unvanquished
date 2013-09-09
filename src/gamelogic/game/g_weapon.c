@@ -983,7 +983,7 @@ qboolean CheckVenomAttack( gentity_t *ent )
 
 	if ( traceEnt->client )
 	{
-		if ( traceEnt->client->ps.stats[ STAT_TEAM ] == TEAM_ALIENS )
+		if ( traceEnt->client->ps.persistant[ PERS_TEAM ] == TEAM_ALIENS )
 		{
 			return qfalse;
 		}
@@ -1051,7 +1051,7 @@ void CheckGrabAttack( gentity_t *ent )
 
 	if ( traceEnt->client )
 	{
-		if ( traceEnt->client->ps.stats[ STAT_TEAM ] == TEAM_ALIENS )
+		if ( traceEnt->client->ps.persistant[ PERS_TEAM ] == TEAM_ALIENS )
 		{
 			return;
 		}
@@ -1118,7 +1118,7 @@ void poisonCloud( gentity_t *ent )
 		humanPlayer = &g_entities[ entityList[ i ] ];
 
 		if ( humanPlayer->client &&
-		     humanPlayer->client->pers.teamSelection == TEAM_HUMANS )
+		     humanPlayer->client->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS )
 		{
 			trap_Trace( &tr, muzzle, NULL, NULL, humanPlayer->s.origin,
 			            humanPlayer->s.number, CONTENTS_SOLID );
@@ -1187,7 +1187,7 @@ static void G_FindZapChainTargets( zap_t *zap )
 		distance = Distance( ent->s.origin, enemy->s.origin );
 
 		if ( ( ( enemy->client &&
-		         enemy->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS ) ||
+		         enemy->client->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS ) ||
 		       ( enemy->s.eType == ET_BUILDABLE &&
 		         BG_Buildable( enemy->s.modelindex )->team == TEAM_HUMANS ) ) &&
 		     enemy->health > 0 && // only chain to living targets
@@ -1392,7 +1392,7 @@ void areaZapFire( gentity_t *ent )
 		return;
 	}
 
-	if ( ( traceEnt->client && traceEnt->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS ) ||
+	if ( ( traceEnt->client && traceEnt->client->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS ) ||
 	     ( traceEnt->s.eType == ET_BUILDABLE &&
 	       BG_Buildable( traceEnt->s.modelindex )->team == TEAM_HUMANS ) )
 	{
@@ -1547,7 +1547,7 @@ GENERIC
 
 static INLINE meansOfDeath_t G_ModWeight( const gentity_t *ent )
 {
-	return ent->client->pers.teamSelection == TEAM_HUMANS ? MOD_WEIGHT_H : MOD_WEIGHT_A;
+	return ent->client->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS ? MOD_WEIGHT_H : MOD_WEIGHT_A;
 }
 
 /*

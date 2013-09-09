@@ -114,7 +114,7 @@ void trigger_multiple_act( gentity_t *self, gentity_t *caller, gentity_t *activa
 		return; // can't retrigger until the wait is over
 
 	if ( activator && activator->client && self->conditions.team &&
-	   ( activator->client->ps.stats[ STAT_TEAM ] != self->conditions.team ) )
+	   ( activator->client->ps.persistant[ PERS_TEAM ] != self->conditions.team ) )
 		return;
 
 	G_FireEntity( self, self->activator );
@@ -236,7 +236,7 @@ G_notify_sensor_stage
 Called when stages change
 ===============
 */
-void G_notify_sensor_stage( team_t team, stage_t previousStage, stage_t newStage )
+void G_notify_sensor_stage( team_t team, int previousStage, int newStage )
 {
 	gentity_t *entities = NULL;
 
@@ -476,14 +476,14 @@ void sensor_player_touch( gentity_t *self, gentity_t *activator, trace_t *trace 
 		return; // can't retrigger until the wait is over
 	}
 
-	if ( self->conditions.team && ( activator->client->ps.stats[ STAT_TEAM ] != self->conditions.team ) )
+	if ( self->conditions.team && ( activator->client->ps.persistant[ PERS_TEAM ] != self->conditions.team ) )
 		return;
 
-	if ( ( self->conditions.upgrades[0] || self->conditions.weapons[0] ) && activator->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
+	if ( ( self->conditions.upgrades[0] || self->conditions.weapons[0] ) && activator->client->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS )
 	{
 		shouldFire = sensor_equipment_match( self, activator );
 	}
-	else if ( self->conditions.classes[0] && activator->client->ps.stats[ STAT_TEAM ] == TEAM_ALIENS )
+	else if ( self->conditions.classes[0] && activator->client->ps.persistant[ PERS_TEAM ] == TEAM_ALIENS )
 	{
 		shouldFire = sensor_class_match( self, activator );
 	}

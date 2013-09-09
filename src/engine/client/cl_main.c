@@ -483,12 +483,7 @@ void CL_VoipParseTargets( void )
 			}
 			else
 			{
-				if ( !Q_strnicmp( target, "attacker", 8 ) )
-				{
-					val = VM_Call( cgvm, CG_LAST_ATTACKER );
-					target += 8;
-				}
-				else if ( !Q_strnicmp( target, "crosshair", 9 ) )
+				if ( !Q_strnicmp( target, "crosshair", 9 ) )
 				{
 					val = VM_Call( cgvm, CG_CROSSHAIR_PLAYER );
 					target += 9;

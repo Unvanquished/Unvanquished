@@ -376,10 +376,9 @@ static void CG_DrawPlayerCreditsValue( rectDef_t *rect, vec4_t color, qboolean p
 	{
 		Vector4Copy( color, localColor );
 
-		if ( cg.predictedPlayerState.stats[ STAT_TEAM ] == TEAM_ALIENS )
+		if ( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_ALIENS )
 		{
-			if ( !BG_AlienCanEvolve( cg.predictedPlayerState.stats[ STAT_CLASS ],
-			                         value, cgs.alienStage ) &&
+			if ( !BG_AlienCanEvolve( cg.predictedPlayerState.stats[ STAT_CLASS ], value ) &&
 			     cg.time - cg.lastEvolveAttempt <= NO_CREDITS_TIME &&
 			     ( ( cg.time - cg.lastEvolveAttempt ) / 300 ) & 1 )
 			{
@@ -410,7 +409,7 @@ static void CG_DrawPlayerCreditsFraction( rectDef_t *rect, vec4_t color, qhandle
 	float height;
 	rectDef_t aRect;
 
-	if ( cg.predictedPlayerState.stats[ STAT_TEAM ] != TEAM_ALIENS )
+	if ( cg.predictedPlayerState.persistant[ PERS_TEAM ] != TEAM_ALIENS )
 	{
 		return;
 	}
@@ -446,10 +445,9 @@ static void CG_DrawPlayerAlienEvos( rectDef_t *rect, float text_x, float text_y,
 	{
 		Vector4Copy( color, localColor );
 
-		if ( cg.predictedPlayerState.stats[ STAT_TEAM ] == TEAM_ALIENS )
+		if ( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_ALIENS )
 		{
-			if ( !BG_AlienCanEvolve( cg.predictedPlayerState.stats[ STAT_CLASS ],
-			                         value, cgs.alienStage ) &&
+			if ( !BG_AlienCanEvolve( cg.predictedPlayerState.stats[ STAT_CLASS ], value ) &&
 			     cg.time - cg.lastEvolveAttempt <= NO_CREDITS_TIME &&
 			     ( ( cg.time - cg.lastEvolveAttempt ) / 300 ) & 1 )
 			{
@@ -1041,7 +1039,7 @@ static void CG_DrawUsableBuildable( rectDef_t *rect, qhandle_t shader, vec4_t co
 	es = &cg_entities[ trace.entityNum ].currentState;
 
 	if ( es->eType == ET_BUILDABLE && BG_Buildable( es->modelindex )->usable &&
-	     cg.predictedPlayerState.stats[ STAT_TEAM ] == BG_Buildable( es->modelindex )->team )
+	     cg.predictedPlayerState.persistant[ PERS_TEAM ] == BG_Buildable( es->modelindex )->team )
 	{
 		//hack to prevent showing the usable buildable when you aren't carrying an energy weapon
 		if ( ( es->modelindex == BA_H_REACTOR || es->modelindex == BA_H_REPEATER ) &&
@@ -1172,7 +1170,7 @@ static void CG_DrawPlayerHealthCross( rectDef_t *rect, vec4_t ref_color )
 	}
 	else if ( cg.snap->ps.stats[ STAT_STATE ] & SS_HEALING_2X )
 	{
-		if ( cg.snap->ps.stats[ STAT_TEAM ] == TEAM_ALIENS )
+		if ( cg.snap->ps.persistant[ PERS_TEAM ] == TEAM_ALIENS )
 		{
 			shader = cgs.media.healthCross2X;
 		}
@@ -1189,7 +1187,7 @@ static void CG_DrawPlayerHealthCross( rectDef_t *rect, vec4_t ref_color )
 	// Pick the alpha value
 	Vector4Copy( ref_color, color );
 
-	if ( cg.snap->ps.stats[ STAT_TEAM ] == TEAM_HUMANS &&
+	if ( cg.snap->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS &&
 	     cg.snap->ps.stats[ STAT_HEALTH ] < 10 )
 	{
 		color[ 0 ] = 1.0f;
@@ -1475,6 +1473,176 @@ static void CG_DrawPlayerChargeBar( rectDef_t *rect, vec4_t ref_color,
 	}
 }
 
+#define CONFIDENCE_BAR_MAX       300.0f
+#define CONFIDENCE_BAR_MARKWIDTH 0.5f
+#define CONFIDENCE_BAR_GLOWTIME  2000
+
+static void CG_DrawPlayerConfidenceBar( rectDef_t *rect, vec4_t foreColor, vec4_t backColor, float borderSize )
+{
+	// data
+	playerState_t *ps;
+	float         confidence, rawFraction, fraction, glowFraction, glowOffset;
+	int           unlockableNum, threshold;
+	team_t        team;
+	qboolean      unlocked;
+
+	// display
+	vec4_t        color;
+	float         x, y, w, h, b, glowStrength;
+	qboolean      vertical;
+
+	ps = &cg.predictedPlayerState;
+
+	team       = ps->persistant[ PERS_TEAM ];
+	confidence = ps->persistant[ PERS_CONFIDENCE ] / 10.0f;
+
+	x = rect->x;
+	y = rect->y;
+	w = rect->w;
+	h = rect->h;
+	b = borderSize;
+
+	vertical = ( h > w );
+
+	// draw border
+	trap_R_SetColor( backColor );
+	CG_DrawPic( x,         y,         w, b,            cgs.media.whiteShader ); // upper horizontal
+	CG_DrawPic( x,         y + h - b, w, b,            cgs.media.whiteShader ); // lower horizontal
+	CG_DrawPic( x,         y + b,     b, h - 2.0f * b, cgs.media.whiteShader ); // left  vertical
+	CG_DrawPic( x + w - b, y + b,     b, h - 2.0f * b, cgs.media.whiteShader ); // right vertical
+
+	// adjust rect to draw inside border
+	x += b;
+	y += b;
+	w -= 2.0f * b;
+	h -= 2.0f * b;
+
+	// draw background
+	Vector4Copy( backColor, color );
+	color[ 3 ] *= 0.5f;
+
+	trap_R_SetColor( color );
+	CG_DrawPic( x, y, w, h, cgs.media.whiteShader );
+
+	// draw confidence bar
+	fraction = rawFraction = confidence / CONFIDENCE_BAR_MAX;
+
+	if ( fraction < 0.0f )
+	{
+		fraction = 0.0f;
+	}
+	else if ( fraction > 1.0f )
+	{
+		fraction = 1.0f;
+	}
+
+	trap_R_SetColor( foreColor );
+
+	if ( vertical )
+	{
+		CG_DrawPic( x, y + h * ( 1.0f - fraction ), w, h * fraction, cgs.media.whiteShader );
+	}
+	else
+	{
+		CG_DrawPic( x, y, w * fraction, h, cgs.media.whiteShader );
+	}
+
+	// draw glow on confidence event
+	if ( cg.confidenceGainedTime + CONFIDENCE_BAR_GLOWTIME > cg.time )
+	{
+		glowFraction = fabs( cg.confidenceGained / CONFIDENCE_BAR_MAX );
+		glowStrength = ( CONFIDENCE_BAR_GLOWTIME - ( cg.time - cg.confidenceGainedTime ) ) /
+		               ( float )CONFIDENCE_BAR_GLOWTIME;
+
+		if ( cg.confidenceGained > 0.0f )
+		{
+			if ( vertical )
+			{
+				glowOffset = 0.0f;
+			}
+			else
+			{
+				glowOffset = glowFraction;
+			}
+
+			color[ 0 ] = 1.0f;
+			color[ 1 ] = 1.0f;
+			color[ 2 ] = 1.0f;
+			color[ 3 ] = 0.5f * glowStrength;
+		}
+		else
+		{
+			if ( vertical )
+			{
+				glowOffset = glowFraction;
+			}
+			else
+			{
+				glowOffset = 0.0f;
+			}
+
+			color[ 0 ] = 1.0f;
+			color[ 1 ] = 1.0f;
+			color[ 2 ] = 0.0f;
+			color[ 3 ] = 0.5f * glowStrength;
+		}
+
+		trap_R_SetColor( color );
+		CG_SetClipRegion( x, y, w, h );
+
+		if ( vertical )
+		{
+			CG_DrawPic( x, y + h * ( 1.0f - ( rawFraction + glowOffset ) ), w, h * glowFraction, cgs.media.whiteShader );
+		}
+		else
+		{
+			CG_DrawPic( x + w * ( rawFraction - glowOffset ), y, w * glowFraction, h, cgs.media.whiteShader );
+		}
+
+		CG_ClearClipRegion();
+	}
+
+	// draw threshold markers
+	unlockableNum = 0;
+	while ( unlockableNum = BG_IterateConfidenceThresholds( unlockableNum, team, &threshold, &unlocked ) )
+	{
+		fraction = threshold / CONFIDENCE_BAR_MAX;
+
+		if ( fraction > 1.0f )
+		{
+			fraction = 1.0f;
+		}
+
+		if ( unlocked )
+		{
+			color[ 0 ] = 1.0f;
+			color[ 1 ] = 1.0f;
+			color[ 2 ] = 0.0f;
+			color[ 3 ] = 1.0f;
+		}
+		else
+		{
+			color[ 0 ] = 0.0f;
+			color[ 1 ] = 1.0f;
+			color[ 2 ] = 0.0f;
+			color[ 3 ] = 1.0f;
+		}
+
+		trap_R_SetColor( color );
+
+		if ( vertical )
+		{
+			CG_DrawPic( x, y + h * ( 1.0f - fraction ), w, CONFIDENCE_BAR_MARKWIDTH, cgs.media.whiteShader );
+		}
+		else
+		{
+			CG_DrawPic( x + w * fraction, y, CONFIDENCE_BAR_MARKWIDTH, h, cgs.media.whiteShader );
+		}
+	}
+
+	trap_R_SetColor( NULL );
+}
+
 static void CG_DrawPlayerStaminaBar( rectDef_t *rect, vec4_t foreColor, qhandle_t shader )
 {
 	playerState_t *ps = &cg.snap->ps;
@@ -1598,7 +1766,7 @@ static void CG_DrawPlayerClipMeter( rectDef_t *rect, int align, vec4_t color, qh
 	int      maxAmmo;
 	weapon_t weapon;
 
-	if ( cg.predictedPlayerState.stats[ STAT_TEAM ] != TEAM_HUMANS )
+	if ( cg.predictedPlayerState.persistant[ PERS_TEAM ] != TEAM_HUMANS )
 	{
 		return;
 	}
@@ -2040,107 +2208,55 @@ CG_DrawTeamLabel
 static void CG_DrawTeamLabel( rectDef_t *rect, team_t team, float text_x, float text_y,
                               vec4_t color, float scale, int textalign, int textvalign, int textStyle )
 {
-	const char *t;
-	char  stage[ MAX_TOKEN_CHARS ];
-	char  *s;
+	const char *teamName;
 	float tx, ty;
-
-	stage[ 0 ] = '\0';
 
 	switch ( team )
 	{
 		case TEAM_ALIENS:
-			t = _("Aliens");
-
-			if ( cg.intermissionStarted )
-			{
-				Com_sprintf( stage, MAX_TOKEN_CHARS, _("(Stage %d)"), cgs.alienStage + 1 );
-			}
-
+			teamName = _("Aliens");
 			break;
 
 		case TEAM_HUMANS:
-			t = _("Humans");
-
-			if ( cg.intermissionStarted )
-			{
-				Com_sprintf( stage, MAX_TOKEN_CHARS, _("(Stage %d)"), cgs.humanStage + 1 );
-			}
-
+			teamName = _("Humans");
 			break;
 
 		default:
-			t = "";
+			teamName = "";
 			break;
 	}
 
-	switch ( textalign )
-	{
-		default:
-		case ALIGN_LEFT:
-			s = va( "%s %s", t, stage );
-			break;
-
-		case ALIGN_RIGHT:
-			s = va( "%s %s", stage, t );
-			break;
-	}
-
-	CG_AlignText( rect, s, scale, 0.0f, 0.0f, textalign, textvalign, &tx, &ty );
-	UI_Text_Paint( text_x + tx, text_y + ty, scale, color, s, 0, textStyle );
+	CG_AlignText( rect, teamName, scale, 0.0f, 0.0f, textalign, textvalign, &tx, &ty );
+	UI_Text_Paint( text_x + tx, text_y + ty, scale, color, teamName, 0, textStyle );
 }
 
 /*
 ==================
-CG_DrawStageReport
+CG_DrawConfidence
 ==================
 */
-static void CG_DrawStageReport( rectDef_t *rect, float text_x, float text_y,
-                                vec4_t color, float scale, int textalign, int textvalign, int textStyle )
+static void CG_DrawConfidence( rectDef_t *rect, float text_x, float text_y,
+                               vec4_t color, float scale, int textalign, int textvalign, int textStyle )
 {
-	char  s[ MAX_TOKEN_CHARS ];
-	float tx, ty, confidence;
-	int   stage, stage2Threshold, stage3Threshold;
+	char   s[ MAX_TOKEN_CHARS ];
+	float  tx, ty, confidence;
+	team_t team;
 
 	if ( cg.intermissionStarted )
 	{
 		return;
 	}
 
-	switch ( cg.snap->ps.stats[ STAT_TEAM ] )
+	team = cg.snap->ps.persistant[ PERS_TEAM ];
+
+	if ( team <= TEAM_NONE || team >= NUM_TEAMS )
 	{
-		case TEAM_ALIENS:
-			stage = cgs.alienStage;
-			break;
-
-		case TEAM_HUMANS:
-			stage = cgs.humanStage;
-			break;
-
-		default:
-			return;
+		return;
 	}
 
 	confidence = cg.predictedPlayerState.persistant[ PERS_CONFIDENCE ] / 10.0f;
 
-	stage2Threshold = cg.predictedPlayerState.persistant[ PERS_THRESHOLD_STAGE2 ];
-	stage3Threshold = cg.predictedPlayerState.persistant[ PERS_THRESHOLD_STAGE3 ];
-
-	if ( stage == S1 )
-	{
-		Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d, %.1f confidence, ↑%d"),
-					 stage + 1, confidence, stage2Threshold );
-	}
-	else if ( stage == S3 )
-	{
-		Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d, %.1f confidence, ↓%d"),
-					 stage + 1, confidence, stage3Threshold );
-	}
-	else
-	{
-		Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d, %.1f confidence, ↑%d ↓%d"),
-					 stage + 1, confidence, stage3Threshold, stage2Threshold );
-	}
+	Com_sprintf( s, MAX_TOKEN_CHARS, _("%.1f confidence"), confidence );
 
 	CG_AlignText( rect, s, scale, 0.0f, 0.0f, textalign, textvalign, &tx, &ty );
 
@@ -2535,7 +2651,7 @@ static void CG_DrawTeamOverlay( rectDef_t *rect, float scale, vec4_t color )
 			CG_DrawPic( x + leftMargin, y, iconSize, iconSize,
 			            cg_weapons[ curWeapon ].weaponIcon );
 
-			if ( cg.predictedPlayerState.stats[ STAT_TEAM ] == TEAM_HUMANS )
+			if ( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_HUMANS )
 			{
 				if ( ci->upgrade != UP_NONE )
 				{
@@ -3257,9 +3373,8 @@ void CG_DrawWeaponIcon( rectDef_t *rect, vec4_t color )
 		}
 	}
 
-	if ( cg.predictedPlayerState.stats[ STAT_TEAM ] == TEAM_ALIENS &&
-	     !BG_AlienCanEvolve( cg.predictedPlayerState.stats[ STAT_CLASS ],
-	                         ps->persistant[ PERS_CREDIT ], cgs.alienStage ) )
+	if ( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_ALIENS &&
+	     !BG_AlienCanEvolve( cg.predictedPlayerState.stats[ STAT_CLASS ], ps->persistant[ PERS_CREDIT ] ) )
 	{
 		if ( cg.time - cg.lastEvolveAttempt <= NO_CREDITS_TIME )
 		{
@@ -3390,7 +3505,7 @@ static void CG_ScanForCrosshairEntity( void )
 		entityState_t *s = &cg_entities[ trace.entityNum ].currentState;
 
 		if ( s->eType == ET_BUILDABLE && BG_Buildable( s->modelindex )->team ==
-		     cg.snap->ps.stats[ STAT_TEAM ] )
+		     cg.snap->ps.persistant[ PERS_TEAM ] )
 		{
 			cg.crosshairBuildable = trace.entityNum;
 		}
@@ -3410,10 +3525,10 @@ static void CG_ScanForCrosshairEntity( void )
 
 	team = cgs.clientinfo[ trace.entityNum ].team;
 
-	if ( cg.snap->ps.stats[ STAT_TEAM ] != TEAM_NONE )
+	if ( cg.snap->ps.persistant[ PERS_TEAM ] != TEAM_NONE )
 	{
 		//only display team names of those on the same team as this player
-		if ( team != cg.snap->ps.stats[ STAT_TEAM ] )
+		if ( team != cg.snap->ps.persistant[ PERS_TEAM ] )
 		{
 			return;
 		}
@@ -3521,7 +3636,7 @@ static void CG_DrawCrosshairNames( rectDef_t *rect, float scale, int textStyle )
 
 	// add health from overlay info to the crosshair client name
 	if ( cg_teamOverlayUserinfo.integer &&
-	     cg.snap->ps.stats[ STAT_TEAM ] != TEAM_NONE &&
+	     cg.snap->ps.persistant[ PERS_TEAM ] != TEAM_NONE &&
 	     cgs.teamInfoReceived &&
 	     cgs.clientinfo[ cg.crosshairClientNum ].health > 0 )
 	{
@@ -4080,8 +4195,12 @@ void CG_OwnerDraw( rectDef_t *rect, float text_x,
 			CG_DrawCrosshair( rect, foreColor );
 			break;
 
-		case CG_STAGE_REPORT_TEXT:
-			CG_DrawStageReport( rect, text_x, text_y, foreColor, scale, textalign, textvalign, textStyle );
+		case CG_CONFIDENCE_TEXT:
+			CG_DrawConfidence( rect, text_x, text_y, foreColor, scale, textalign, textvalign, textStyle );
+			break;
+
+		case CG_CONFIDENCE_BAR:
+			CG_DrawPlayerConfidenceBar( rect, foreColor, backColor, borderSize );
 			break;
 
 		case CG_ALIENS_SCORE_LABEL:
@@ -4337,7 +4456,7 @@ static void CG_DrawLighting( void )
 
 	//fade to black if stamina is low
 	if ( ( cg.snap->ps.stats[ STAT_STAMINA ] < STAMINA_BLACKOUT_LEVEL ) &&
-	     ( cg.snap->ps.stats[ STAT_TEAM ] == TEAM_HUMANS ) )
+	     ( cg.snap->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS ) )
 	{
 		vec4_t black = { 0, 0, 0, 0 };
 		black[ 3 ] = 1.0 - ( ( float )( cg.snap->ps.stats[ STAT_STAMINA ] + STAMINA_MAX ) / ( STAMINA_MAX + STAMINA_BLACKOUT_LEVEL ) );
@@ -4599,7 +4718,7 @@ static qboolean CG_DrawQueue( void )
 {
 	float  w;
 	vec4_t color;
-	int    position;
+	int    position, spawns;
 	char   buffer[ MAX_STRING_CHARS ];
 
 	if ( !( cg.snap->ps.pm_flags & PMF_QUEUED ) )
@@ -4612,7 +4731,8 @@ static qboolean CG_DrawQueue( void )
 	color[ 2 ] = 1;
 	color[ 3 ] = 1;
 
-	position = cg.snap->ps.persistant[ PERS_QUEUEPOS ] + 1;
+	spawns   = cg.snap->ps.persistant[ PERS_SPAWNQUEUE ] & 0x000000ff;
+	position = cg.snap->ps.persistant[ PERS_SPAWNQUEUE ] >> 8;
 
 	if ( position < 1 )
 	{
@@ -4631,16 +4751,14 @@ static qboolean CG_DrawQueue( void )
 	w = UI_Text_Width( buffer, 0.7f );
 	UI_Text_Paint( 320 - w / 2, 360, 0.7f, color, buffer, 0, ITEM_TEXTSTYLE_SHADOWED );
 
-	if ( cg.snap->ps.persistant[ PERS_SPAWNS ] == 0 )
+	if ( spawns == 0 )
 	{
 		Com_sprintf( buffer, MAX_STRING_CHARS, _("There are no spawns remaining") );
 	}
 	else
 	{
 		Com_sprintf( buffer, MAX_STRING_CHARS,
-		             P_( "There is 1 spawn remaining", "There are %d spawns remaining",
-		                cg.snap->ps.persistant[ PERS_SPAWNS ]),
-		             cg.snap->ps.persistant[ PERS_SPAWNS ] );
+		             P_( "There is 1 spawn remaining", "There are %d spawns remaining", spawns ), spawns );
 	}
 
 	w = UI_Text_Width( buffer, 0.7f );
@@ -4708,7 +4826,7 @@ static void CG_Draw2D( void )
 	if ( cg.snap->ps.pm_type == PM_INTERMISSION )
 	{
 		CG_DrawVote( TEAM_NONE );
-		CG_DrawVote( cg.predictedPlayerState.stats[ STAT_TEAM ] );
+		CG_DrawVote( cg.predictedPlayerState.persistant[ PERS_TEAM ] );
 		CG_DrawIntermission();
 		return;
 	}
@@ -4748,7 +4866,7 @@ static void CG_Draw2D( void )
 	}
 
 	CG_DrawVote( TEAM_NONE );
-	CG_DrawVote( cg.predictedPlayerState.stats[ STAT_TEAM ] );
+	CG_DrawVote( cg.predictedPlayerState.persistant[ PERS_TEAM ] );
 	CG_DrawWarmup();
 	CG_DrawQueue();
 
@@ -4833,11 +4951,11 @@ static void CG_PainBlend( void )
 		return;
 	}
 
-	if ( cg.snap->ps.stats[ STAT_TEAM ] == TEAM_ALIENS )
+	if ( cg.snap->ps.persistant[ PERS_TEAM ] == TEAM_ALIENS )
 	{
 		VectorSet( color, 0.43f, 0.8f, 0.37f );
 	}
-	else if ( cg.snap->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
+	else if ( cg.snap->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS )
 	{
 		VectorSet( color, 0.8f, 0.0f, 0.0f );
 	}
