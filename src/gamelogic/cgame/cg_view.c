@@ -1861,9 +1861,6 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 	cg.time = serverTime;
 	cg.demoPlayback = demoPlayback;
 
-	// update cvars
-	CG_UpdateCvars();
-
 	CG_NotifyHooks();
 
 	// any looped sounds will be respecified as entities
@@ -1892,6 +1889,12 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 
 	// update cg.predictedPlayerState
 	CG_PredictPlayerState();
+
+	// update unlockables data (needs valid predictedPlayerState)
+	CG_UpdateUnlockables( &cg.predictedPlayerState );
+
+	// update cvars (needs valid unlockables data)
+	CG_UpdateCvars();
 
 	// decide on third person view
 	cg.renderingThirdPerson = ( cg_thirdPerson.integer || ( cg.snap->ps.stats[ STAT_HEALTH ] <= 0 ) ||

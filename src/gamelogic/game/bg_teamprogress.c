@@ -181,6 +181,9 @@ static INLINE void CheckStatusKnowledge( unlockableType_t type, int itemNum )
 
 void BG_InitUnlockackables( void )
 {
+	unlockablesDataAvailable = qfalse;
+	unlockablesTeamKnowledge = TEAM_NONE;
+
 	memset( unlockables, 0, sizeof( unlockables ) );
 	memset( unlockablesMask, 0, sizeof( unlockablesMask ) );
 
@@ -188,9 +191,6 @@ void BG_InitUnlockackables( void )
 	unlockablesTypeOffset[ UNLT_UPGRADE ]   = WP_NUM_WEAPONS;
 	unlockablesTypeOffset[ UNLT_BUILDABLE ] = unlockablesTypeOffset[ UNLT_UPGRADE ]   + UP_NUM_UPGRADES;
 	unlockablesTypeOffset[ UNLT_CLASS ]     = unlockablesTypeOffset[ UNLT_BUILDABLE ] + BA_NUM_BUILDABLES;
-
-	unlockablesDataAvailable = qfalse;
-	unlockablesTeamKnowledge = TEAM_NONE;
 
 #ifdef GAME
 	G_UpdateUnlockables();
@@ -207,20 +207,18 @@ void BG_ImportUnlockablesFromMask( team_t team, int mask )
 	int              statusChanges[ NUM_UNLOCKABLES ], statusChangeCount = 0;
 
 	// maintain a cache to prevent redundant imports
-	static qboolean cacheValid = qfalse;
-	static team_t   lastMask   = 0;
-	static team_t   lastTeam   = TEAM_NONE;
+	static int    lastMask = 0;
+	static team_t lastTeam = TEAM_NONE;
 
 	// just import if data is unavailable, cached mask is outdated or team has changed
-	if ( unlockablesDataAvailable && cacheValid && team == lastTeam && mask == lastMask )
+	if ( unlockablesDataAvailable && team == lastTeam && mask == lastMask )
 	{
 		return;
 	}
 
 	// cache input
-	cacheValid = qtrue;
-	lastMask   = mask;
-	lastTeam   = team;
+	lastMask = mask;
+	lastTeam = team;
 
 	// no status change yet
 	memset( statusChanges, 0, sizeof( statusChanges ) );
