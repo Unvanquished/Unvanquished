@@ -311,16 +311,13 @@ extern "C" {
 	cvar_t      *r_bloomBlur;
 	cvar_t      *r_bloomPasses;
 	cvar_t      *r_rotoscope;
+	cvar_t      *r_FXAA;
 	cvar_t      *r_cameraPostFX;
 	cvar_t      *r_cameraVignette;
 	cvar_t      *r_cameraFilmGrain;
 	cvar_t      *r_cameraFilmGrainScale;
 
 	cvar_t      *r_evsmPostProcess;
-
-#ifdef USE_GLSL_OPTIMIZER
-	cvar_t      *r_glslOptimizer;
-#endif
 
 	cvar_t      *r_fontScale;
 
@@ -397,12 +394,24 @@ extern "C" {
 #if defined( GLSL_COMPILE_STARTUP_ONLY )
 			GLSL_InitGPUShaders();
 #endif
+			glConfig.smpActive = qfalse;
+
+			if ( r_smp->integer )
+			{
+				ri.Printf( PRINT_ALL, "Trying SMP acceleration...\n" );
+
+				if ( GLimp_SpawnRenderThread( RB_RenderThread ) )
+				{
+					ri.Printf( PRINT_ALL, "...succeeded.\n" );
+					glConfig.smpActive = qtrue;
+				}
+				else
+				{
+					ri.Printf( PRINT_ALL, "...failed.\n" );
+				}
+			}
 		}
 
-		GL_CheckErrors();
-
-		// init command buffers and SMP
-		R_InitCommandBuffers();
 		GL_CheckErrors();
 
 		// set default state
@@ -1217,7 +1226,7 @@ extern "C" {
 		   }
 		 */
 
-		ri.Printf( PRINT_ALL, "GL_SHADING_LANGUAGE_VERSION: %s\n", glConfig2.shadingLanguageVersion );
+		ri.Printf( PRINT_ALL, "GL_SHADING_LANGUAGE_VERSION: %s\n", glConfig2.shadingLanguageVersionString );
 
 		ri.Printf( PRINT_ALL, "GL_MAX_VERTEX_UNIFORM_COMPONENTS %d\n", glConfig2.maxVertexUniforms );
 //	ri.Printf(PRINT_ALL, "GL_MAX_VARYING_FLOATS %d\n", glConfig2.maxVaryingFloats);
@@ -1547,6 +1556,7 @@ extern "C" {
 		r_bloomBlur = ri.Cvar_Get( "r_bloomBlur", "1.0", CVAR_CHEAT );
 		r_bloomPasses = ri.Cvar_Get( "r_bloomPasses", "2", CVAR_CHEAT );
 		r_rotoscope = ri.Cvar_Get( "r_rotoscope", "0", CVAR_ARCHIVE );
+		r_FXAA = ri.Cvar_Get( "r_FXAA", "0", CVAR_ARCHIVE );
 		r_cameraPostFX = ri.Cvar_Get( "r_cameraPostFX", "1", CVAR_ARCHIVE );
 		r_cameraVignette = ri.Cvar_Get( "r_cameraVignette", "0", CVAR_ARCHIVE );
 		r_cameraFilmGrain = ri.Cvar_Get( "r_cameraFilmGrain", "0", CVAR_ARCHIVE );
@@ -1713,10 +1723,6 @@ extern "C" {
 		r_showDeferredRender = ri.Cvar_Get( "r_showDeferredRender", "0", CVAR_CHEAT );
 		r_showDeferredLight = ri.Cvar_Get( "r_showDeferredLight", "0", CVAR_CHEAT );
 
-#ifdef USE_GLSL_OPTIMIZER
-		r_glslOptimizer = ri.Cvar_Get( "r_glslOptimizer", "0", CVAR_ARCHIVE | CVAR_SHADER );
-#endif
-
 		r_fontScale = ri.Cvar_Get( "r_fontScale", "36", CVAR_ARCHIVE | CVAR_LATCH );
 
 		// make sure all the commands added here are also removed in R_Shutdown
@@ -1859,6 +1865,8 @@ extern "C" {
 			glGenQueries( MAX_OCCLUSION_QUERIES, tr.occlusionQueryObjects );
 		}
 
+		R_InitVisTests();
+
 		GL_CheckErrors();
 
 		// print info
@@ -1902,7 +1910,6 @@ extern "C" {
 		{
 			R_SyncRenderThread();
 
-			R_ShutdownCommandBuffers();
 			R_ShutdownImages();
 			R_ShutdownVBOs();
 			R_ShutdownFBOs();
@@ -1945,28 +1952,16 @@ extern "C" {
 #if !defined( GLSL_COMPILE_STARTUP_ONLY )
 			GLSL_ShutdownGPUShaders();
 #endif
-
-			//GLimp_ShutdownRenderThread();
 		}
 
 		R_DoneFreeType();
 
 		// shut down platform specific OpenGL stuff
-
-		// Tr3B: this should be always executed if we want to avoid some GLSL problems with SMP
-		// Update: Having the JVM running with all its threads can cause problems with an old OpenGL context.
-		// Maybe an OpenGL driver problem. It is safer to destroy the context in that case or you will get really weird crashes when rendering stuff.
-		//
-
-#if !defined( SMP ) // && !defined(USE_JAVA)
-
 		if ( destroyWindow )
-#endif
 		{
 #if defined( GLSL_COMPILE_STARTUP_ONLY )
 			GLSL_ShutdownGPUShaders();
 #endif
-
 			GLimp_Shutdown();
 			ri.Tag_Free();
 		}

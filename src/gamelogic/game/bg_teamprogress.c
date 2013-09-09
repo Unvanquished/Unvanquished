@@ -69,11 +69,13 @@ typedef struct unlockable_s
 // data
 // ----
 
-unlockable_t     unlockables[ NUM_UNLOCKABLES ];
-int              unlockablesTypeOffset[ UNLT_NUM_UNLOCKABLETYPES ];
-unlockableType_t unlockablesType[ NUM_UNLOCKABLES ];
+qboolean         unlockablesDataAvailable;
 team_t           unlockablesTeamKnowledge;
+
+unlockable_t     unlockables[ NUM_UNLOCKABLES ];
 int              unlockablesMask[ NUM_TEAMS ];
+
+int              unlockablesTypeOffset[ UNLT_NUM_UNLOCKABLETYPES ];
 
 // -------------
 // local methods
@@ -180,12 +182,14 @@ static INLINE void CheckStatusKnowledge( unlockableType_t type, int itemNum )
 void BG_InitUnlockackables( void )
 {
 	memset( unlockables, 0, sizeof( unlockables ) );
+	memset( unlockablesMask, 0, sizeof( unlockablesMask ) );
 
 	unlockablesTypeOffset[ UNLT_WEAPON ]    = 0;
 	unlockablesTypeOffset[ UNLT_UPGRADE ]   = WP_NUM_WEAPONS;
 	unlockablesTypeOffset[ UNLT_BUILDABLE ] = unlockablesTypeOffset[ UNLT_UPGRADE ]   + UP_NUM_UPGRADES;
 	unlockablesTypeOffset[ UNLT_CLASS ]     = unlockablesTypeOffset[ UNLT_BUILDABLE ] + BA_NUM_BUILDABLES;
 
+	unlockablesDataAvailable = qfalse;
 	unlockablesTeamKnowledge = TEAM_NONE;
 
 #ifdef GAME
@@ -207,8 +211,8 @@ void BG_ImportUnlockablesFromMask( team_t team, int mask )
 	static team_t   lastMask   = 0;
 	static team_t   lastTeam   = TEAM_NONE;
 
-	// just import if cached mask is outdated or team has changed
-	if ( cacheValid && team == lastTeam && mask == lastMask )
+	// just import if data is unavailable, cached mask is outdated or team has changed
+	if ( unlockablesDataAvailable && cacheValid && team == lastTeam && mask == lastMask )
 	{
 		return;
 	}
@@ -315,6 +319,7 @@ void BG_ImportUnlockablesFromMask( team_t team, int mask )
 #endif
 
 	// we only know the state for one team
+	unlockablesDataAvailable = qtrue;
 	unlockablesTeamKnowledge = team;
 
 	// save mask for later use
@@ -506,10 +511,22 @@ void G_UpdateUnlockables( void )
 	}
 
 	// GAME knows about all teams
+	unlockablesDataAvailable = qtrue;
 	unlockablesTeamKnowledge = TEAM_ALL;
 
 	// generate masks for network transmission
 	UpdateUnlockablesMask();
+}
+#endif
+
+// -------------
+// CGAME methods
+// -------------
+
+#ifdef CGAME
+void CG_UpdateUnlockables( playerState_t *ps )
+{
+	BG_ImportUnlockablesFromMask( ps->persistant[ PERS_TEAM ], ps->persistant[ PERS_UNLOCKABLES ] );
 }
 #endif
 

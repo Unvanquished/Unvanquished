@@ -346,12 +346,12 @@ void CG_TransitionPlayerState( playerState_t *ps, playerState_t *ops )
 		cg.lastHealthCross = 0;
 		cg.chargeMeterAlpha = 0.0f;
 
-		BG_ImportUnlockablesFromMask( ps->persistant[ PERS_TEAM ], ps->persistant[ PERS_UNLOCKABLES ] );
+		CG_UpdateUnlockables( ps );
 	}
 
 	// item locking state
 	if ( ps->persistant[ PERS_UNLOCKABLES ] != ops->persistant[ PERS_UNLOCKABLES ] )
 	{
-		BG_ImportUnlockablesFromMask( ps->persistant[ PERS_TEAM ], ps->persistant[ PERS_UNLOCKABLES ] );
+		CG_UpdateUnlockables( ps );
 	}
 }

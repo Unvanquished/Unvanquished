@@ -681,6 +681,9 @@ static void CG_SetPVars( void )
 	first = qtrue;
 	*buffer = 0;
 
+	// make sure unlockable data is valid (necessary after vid_restart)
+	CG_UpdateUnlockables( ps );
+
 	for ( i = BA_NONE; i < BA_NUM_BUILDABLES; ++i )
 	{
 		const buildableAttributes_t *buildable = BG_Buildable( i );

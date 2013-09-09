@@ -24,9 +24,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "tr_local.h"
 #include "gl_shader.h"
 
-#if defined( USE_GLSL_OPTIMIZER )
-#include "../../libs/glsl-optimizer/src/glsl/glsl_optimizer.h"
-#endif
 /*
 =================================================================================
 THIS ENTIRE FILE IS BACK END!
@@ -41,10 +38,6 @@ void GLSL_InitGPUShaders( void )
 	R_SyncRenderThread();
 
 	GL_CheckErrors();
-
-#if defined( USE_GLSL_OPTIMIZER )
-	s_glslOptimizer = glslopt_initialize( false );
-#endif
 
 	// single texture rendering
 	gl_shaderManager.load( gl_genericShader );
@@ -159,6 +152,8 @@ void GLSL_InitGPUShaders( void )
 
 	gl_shaderManager.load( gl_motionblurShader );
 
+	gl_shaderManager.load( gl_fxaaShader );
+
 	if ( !r_lazyShaders->integer )
 	{
 		gl_shaderManager.buildAll();
@@ -204,12 +199,9 @@ void GLSL_ShutdownGPUShaders( void )
 	gl_screenSpaceAmbientOcclusionShader = NULL;
 	gl_depthOfFieldShader = NULL;
 	gl_motionblurShader = NULL;
+	gl_fxaaShader = NULL;
 
 	GL_BindNullProgram();
-
-#if defined( USE_GLSL_OPTIMIZER )
-	glslopt_cleanup( s_glslOptimizer );
-#endif
 }
 
 void GLSL_FinishGPUShaders( void )
