@@ -363,11 +363,11 @@ itemDef
       ownerdraw CG_TEAMOVERLAY
     }
 
-
-	//STAGE REPORT
+	//CONFIDENCE TEXT
+	/*
 	itemDef
 	{
-		name stagereport
+		name "stagereport"
 		textalign ALIGN_LEFT
 		textvalign VALIGN_TOP
 		textscale 0.27
@@ -375,7 +375,23 @@ itemDef
 		forecolor  COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 1
 		decoration
 		visible MENU_TRUE
-		ownerdraw CG_STAGE_REPORT_TEXT
+		ownerdraw CG_CONFIDENCE_TEXT
+	}
+	*/
+
+	//CONFIDENCE BAR
+	itemDef
+	{
+		name "confidencebar"
+		forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B .3
+		backcolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B .2
+		//rect 170 2 300 8 // top
+		//rect 0 140 8 200 // left
+		rect 0 467 152 13 // below health
+		aspectBias ALIGN_LEFT
+		decoration
+		visible MENU_TRUE
+		ownerdraw CG_CONFIDENCE_BAR
 	}
 
     itemDef
