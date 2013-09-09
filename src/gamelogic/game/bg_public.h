@@ -1245,6 +1245,9 @@ int      BG_IterateConfidenceThresholds( int unlockableNum, team_t team , int *t
 #ifdef GAME
 void     G_UpdateUnlockables( void );
 #endif
+#ifdef CGAME
+void     CG_UpdateUnlockables( playerState_t *ps );
+#endif
 #ifdef UI
 void     UI_UpdateUnlockables( void );
 #endif
