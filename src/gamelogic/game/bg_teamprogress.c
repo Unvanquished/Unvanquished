@@ -441,7 +441,8 @@ static void UpdateUnlockablesMask( void )
 #ifdef GAME
 void G_UpdateUnlockables( void )
 {
-	int              itemNum = 0, unlockableNum, unlockThreshold, confidence;
+	int              itemNum = 0, unlockableNum, unlockThreshold;
+	float            confidence;
 	unlockable_t     *unlockable;
 	unlockableType_t unlockableType = 0;
 	team_t           team;
@@ -485,7 +486,7 @@ void G_UpdateUnlockables( void )
 		}
 
 		unlockThreshold = MAX( unlockThreshold, 0 );
-		confidence = ( int )level.team[ team ].confidence;
+		confidence = level.team[ team ].confidence;
 
 		unlockable->type            = unlockableType;
 		unlockable->num             = itemNum;
