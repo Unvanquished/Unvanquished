@@ -116,7 +116,7 @@ float BotGetHealScore( gentity_t *self )
 	float percentHealth = 0;
 	float maxHealth = BG_Class( ( class_t ) self->client->ps.stats[ STAT_CLASS ] )->health;
 
-	if ( self->client->ps.persistant[ PERS_TEAM ] == TEAM_ALIENS )
+	if ( self->client->pers.team == TEAM_ALIENS )
 	{
 		if ( self->botMind->closestBuildings[ BA_A_BOOSTER ].ent )
 		{
@@ -570,7 +570,7 @@ void BotFindDamagedFriendlyStructure( gentity_t *self )
 			continue;
 		}
 
-		if ( target->buildableTeam != self->client->ps.persistant[ PERS_TEAM ] )
+		if ( target->buildableTeam != self->client->pers.team )
 		{
 			continue;
 		}
@@ -629,7 +629,7 @@ gentity_t* BotFindBestEnemy( gentity_t *self )
 			continue;
 		}
 
-		if ( target->s.eType == ET_PLAYER && self->client->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS
+		if ( target->s.eType == ET_PLAYER && self->client->pers.team == TEAM_HUMANS
 		    && BotAimAngle( self, target->s.origin ) > g_bot_fov.value / 2 )
 		{
 			continue;
@@ -756,7 +756,7 @@ botTarget_t BotGetRetreatTarget( gentity_t *self )
 	botTarget_t target;
 	gentity_t* retreatTarget = NULL;
 	//FIXME, this seems like it could be done better...
-	if ( self->client->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS )
+	if ( self->client->pers.team == TEAM_HUMANS )
 	{
 		if ( self->botMind->closestBuildings[BA_H_REACTOR].ent )
 		{
@@ -934,7 +934,7 @@ team_t BotGetEntityTeam( gentity_t *ent )
 	}
 	if ( ent->client )
 	{
-		return ( team_t )ent->client->ps.persistant[ PERS_TEAM ];
+		return ( team_t )ent->client->pers.team;
 	}
 	else if ( ent->s.eType == ET_BUILDABLE )
 	{
@@ -1159,7 +1159,7 @@ qboolean BotTargetInAttackRange( gentity_t *self, botTarget_t target )
 
 	trap_Trace( &trace, muzzle, mins, maxs, targetPos, self->s.number, MASK_SHOT );
 
-	if ( self->client->ps.persistant[ PERS_TEAM ] != BotGetEntityTeam( &g_entities[trace.entityNum] )
+	if ( self->client->pers.team != BotGetEntityTeam( &g_entities[trace.entityNum] )
 		&& BotGetEntityTeam( &g_entities[ trace.entityNum ] ) != TEAM_NONE
 		&& Distance( muzzle, trace.endpos ) <= MAX( range, secondaryRange ) )
 	{
@@ -1379,7 +1379,7 @@ int FindBots( int *botEntityNumbers, int maxBots, team_t team )
 		testEntity = &g_entities[i];
 		if ( testEntity->r.svFlags & SVF_BOT )
 		{
-			if ( testEntity->client->ps.persistant[ PERS_TEAM ] == team && numBots < maxBots )
+			if ( testEntity->client->pers.team == team && numBots < maxBots )
 			{
 				botEntityNumbers[numBots++] = i;
 			}
@@ -1396,10 +1396,10 @@ qboolean PlayersBehindBotInSpawnQueue( gentity_t *self )
 	int botPos = 0, lastPlayerPos = 0;
 	spawnQueue_t *sq;
 
-	if ( self->client->ps.persistant[ PERS_TEAM ] > TEAM_NONE &&
-	     self->client->ps.persistant[ PERS_TEAM ] < NUM_TEAMS )
+	if ( self->client->pers.team > TEAM_NONE &&
+	     self->client->pers.team < NUM_TEAMS )
 	{
-		sq = &level.team[ self->client->ps.persistant[ PERS_TEAM ] ].spawnQueue;
+		sq = &level.team[ self->client->pers.team ].spawnQueue;
 	}
 	else
 	{
@@ -1455,7 +1455,7 @@ qboolean BotTeamateHasWeapon( gentity_t *self, int weapon )
 {
 	int botNumbers[MAX_CLIENTS];
 	int i;
-	int numBots = FindBots( botNumbers, MAX_CLIENTS, ( team_t ) self->client->ps.persistant[ PERS_TEAM ] );
+	int numBots = FindBots( botNumbers, MAX_CLIENTS, ( team_t ) self->client->pers.team );
 
 	for ( i = 0; i < numBots; i++ )
 	{
@@ -1772,7 +1772,7 @@ qboolean BotEvolveToClass( gentity_t *ent, class_t newClass )
 		{
 			other = &g_entities[ entityList[ i ] ];
 
-			if ( ( other->client && other->client->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS ) ||
+			if ( ( other->client && other->client->pers.team == TEAM_HUMANS ) ||
 				( other->s.eType == ET_BUILDABLE && other->buildableTeam == TEAM_HUMANS ) )
 			{
 				return qfalse;
@@ -2164,7 +2164,7 @@ qboolean BotEnemyIsValid( gentity_t *self, gentity_t *enemy )
 		return qfalse;
 	}
 
-	if ( BotGetEntityTeam( enemy ) == self->client->ps.persistant[ PERS_TEAM ] )
+	if ( BotGetEntityTeam( enemy ) == self->client->pers.team )
 	{
 		return qfalse;
 	}
@@ -2184,7 +2184,7 @@ qboolean BotEnemyIsValid( gentity_t *self, gentity_t *enemy )
 
 void BotPain( gentity_t *self, gentity_t *attacker, int damage )
 {
-	if ( BotGetEntityTeam( attacker ) != TEAM_NONE && BotGetEntityTeam( attacker ) != self->client->ps.persistant[ PERS_TEAM ] )
+	if ( BotGetEntityTeam( attacker ) != TEAM_NONE && BotGetEntityTeam( attacker ) != self->client->pers.team )
 	{
 		if ( attacker->s.eType == ET_PLAYER )
 		{

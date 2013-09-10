@@ -368,7 +368,7 @@ static gentity_t* GetMainBuilding( gentity_t *self, qboolean ownBase )
 
 	if ( self->client )
 	{
-		team = self->client->ps.persistant[ PERS_TEAM ];
+		team = self->client->pers.team;
 	}
 	else if ( self->s.eType == ET_BUILDABLE )
 	{
@@ -582,7 +582,7 @@ static void AGeneric_CreepSlow( gentity_t *self )
 			continue;
 		}
 
-		if ( enemy->client && enemy->client->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS &&
+		if ( enemy->client && enemy->client->pers.team == TEAM_HUMANS &&
 		     enemy->client->ps.groundEntityNum != ENTITYNUM_NONE )
 		{
 			enemy->client->ps.stats[ STAT_STATE ] |= SS_CREEPSLOWED;
@@ -1097,7 +1097,7 @@ void ASpawn_Think( gentity_t *self )
 					return;
 				}
 				else if( g_antiSpawnBlock.integer &&
-				         ent->client && ent->client->ps.persistant[ PERS_TEAM ] == TEAM_ALIENS )
+				         ent->client && ent->client->pers.team == TEAM_ALIENS )
 				{
 					PuntBlocker( self, ent );
 				}
@@ -1363,7 +1363,7 @@ void ABarricade_Touch( gentity_t *self, gentity_t *other, trace_t *trace )
 	gclient_t *client = other->client;
 	int       client_z, min_z;
 
-	if ( !client || client->ps.persistant[ PERS_TEAM ] != TEAM_ALIENS )
+	if ( !client || client->pers.team != TEAM_ALIENS )
 	{
 		return;
 	}
@@ -1414,7 +1414,7 @@ void AAcidTube_Think( gentity_t *self )
 			enemy = &g_entities[ entityList[ i ] ];
 
 			// fast checks first: not a target, or not human
-			if ( ( enemy->flags & FL_NOTARGET ) || !enemy->client || enemy->client->ps.persistant[ PERS_TEAM ] != TEAM_HUMANS )
+			if ( ( enemy->flags & FL_NOTARGET ) || !enemy->client || enemy->client->pers.team != TEAM_HUMANS )
 			{
 				continue;
 			}
@@ -1510,7 +1510,7 @@ static qboolean AHive_CheckTarget( gentity_t *self, gentity_t *enemy )
 
 	// Check if this is a valid target
 	if ( enemy->health <= 0 || !enemy->client ||
-	     enemy->client->ps.persistant[ PERS_TEAM ] != TEAM_HUMANS )
+	     enemy->client->pers.team != TEAM_HUMANS )
 	{
 		return qfalse;
 	}
@@ -1639,7 +1639,7 @@ void ABooster_Touch( gentity_t *self, gentity_t *other, trace_t *trace )
 		return;
 	}
 
-	if ( client->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS )
+	if ( client->pers.team == TEAM_HUMANS )
 	{
 		return;
 	}
@@ -1760,7 +1760,7 @@ qboolean ATrapper_CheckTarget( gentity_t *self, gentity_t *target, int range )
 		return qfalse;
 	}
 
-	if ( target->client->ps.persistant[ PERS_TEAM ] == TEAM_ALIENS ) // one of us?
+	if ( target->client->pers.team == TEAM_ALIENS ) // one of us?
 	{
 		return qfalse;
 	}
@@ -2476,7 +2476,7 @@ void HSpawn_Think( gentity_t *self )
 					return;
 				}
 				else if( g_antiSpawnBlock.integer &&
-				         ent->client && ent->client->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS )
+				         ent->client && ent->client->pers.team == TEAM_HUMANS )
 				{
 					PuntBlocker( self, ent );
 				}
@@ -2569,7 +2569,7 @@ void HReactor_Think( gentity_t *self )
 			enemy = &g_entities[ entityList[ i ] ];
 
 			if ( !enemy->client ||
-			     enemy->client->ps.persistant[ PERS_TEAM ] != TEAM_ALIENS )
+			     enemy->client->pers.team != TEAM_ALIENS )
 			{
 				continue;
 			}
@@ -2632,7 +2632,7 @@ void HArmoury_Activate( gentity_t *self, gentity_t *other, gentity_t *activator 
 	if ( self->spawned )
 	{
 		//only humans can activate this
-		if ( activator->client->ps.persistant[ PERS_TEAM ] != TEAM_HUMANS )
+		if ( activator->client->pers.team != TEAM_HUMANS )
 		{
 			return;
 		}
@@ -2787,7 +2787,7 @@ void HMedistat_Think( gentity_t *self )
 		client = player->client;
 
 		// only react to humans
-		if ( !client || client->ps.persistant[ PERS_TEAM ] != TEAM_HUMANS )
+		if ( !client || client->pers.team != TEAM_HUMANS )
 		{
 			continue;
 		}
@@ -2906,7 +2906,7 @@ qboolean HMGTurret_CheckTarget( gentity_t *self, gentity_t *target,
 	vec3_t  dir, end;
 
 	if ( !target || target->health <= 0 || !target->client ||
-	     target->client->ps.persistant[ PERS_TEAM ] != TEAM_ALIENS )
+	     target->client->pers.team != TEAM_ALIENS )
 	{
 		return qfalse;
 	}
@@ -3262,7 +3262,7 @@ void HTeslaGen_Think( gentity_t *self )
 			}
 
 			if ( self->target->client && self->target->health > 0 &&
-			     self->target->client->ps.persistant[ PERS_TEAM ] == TEAM_ALIENS &&
+			     self->target->client->pers.team == TEAM_ALIENS &&
 			     Distance( origin, self->target->s.pos.trBase ) <= TESLAGEN_RANGE )
 			{
 				FireWeapon( self );
@@ -3358,7 +3358,7 @@ static int QueueValue( gentity_t *self )
 
 		damageTotal += self->credits[ i ];
 
-		if ( self->buildableTeam != player->client->ps.persistant[ PERS_TEAM ] )
+		if ( self->buildableTeam != player->client->pers.team )
 		{
 			queueFraction += self->credits[ i ];
 		}
@@ -4495,7 +4495,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 		reason = tempReason;
 	}
 
-	if ( ent->client->ps.persistant[ PERS_TEAM ] == TEAM_ALIENS )
+	if ( ent->client->pers.team == TEAM_ALIENS )
 	{
 		// Check for Overmind
 		if ( buildable != BA_A_OVERMIND )
@@ -4527,7 +4527,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 			reason = IBE_DISABLED;
 		}
 	}
-	else if ( ent->client->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS )
+	else if ( ent->client->pers.team == TEAM_HUMANS )
 	{
 		// Check for Reactor
 		if ( buildable != BA_H_REACTOR )
@@ -4897,7 +4897,7 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 	if ( builder && builder->client )
 	{
 	        // readable and the model name shouldn't need quoting
-		G_TeamCommand( builder->client->ps.persistant[ PERS_TEAM ],
+		G_TeamCommand( builder->client->pers.team,
 		               va( "print_tr %s %s %s %s", ( readable[ 0 ] ) ?
 						QQ( N_("$1$ ^2built^7 by $2$^7, ^3replacing^7 $3$\n") ) :
 						QQ( N_("$1$ ^2built^7 by $2$$3$\n") ),

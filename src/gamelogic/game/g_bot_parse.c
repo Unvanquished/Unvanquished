@@ -89,7 +89,7 @@ static AIValue_t alertedToEnemy( gentity_t *self, const AIValue_t *params )
 
 static AIValue_t botTeam( gentity_t *self, const AIValue_t *params )
 {
-	return AIBoxInt( self->client->ps.persistant[ PERS_TEAM ] );
+	return AIBoxInt( self->client->pers.team );
 }
 
 static AIValue_t goalTeam( gentity_t *self, const AIValue_t *params )
@@ -123,7 +123,7 @@ static AIValue_t goalDead( gentity_t *self, const AIValue_t *params )
 	{
 		dead = qtrue;
 	}
-	else if ( goal->ent->s.eType == ET_BUILDABLE && goal->ent->buildableTeam == self->client->ps.persistant[ PERS_TEAM ] && !goal->ent->powered )
+	else if ( goal->ent->s.eType == ET_BUILDABLE && goal->ent->buildableTeam == self->client->pers.team && !goal->ent->powered )
 	{
 		dead = qtrue;
 	}

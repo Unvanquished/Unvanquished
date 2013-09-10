@@ -526,7 +526,9 @@ typedef struct
 	int               aliveSeconds; // time player has been alive in seconds
 	qboolean          hasHealed; // has healed a player (basi regen aura) in the last 10sec (for score use)
 
-	// used to save persistent[] values while in SPECTATOR_FOLLOW mode
+	// These have a copy in playerState_t.persistent but we use them in GAME so they don't get invalidated by
+	// SPECTATOR_FOLLOW mode
+	int team;
 	int credit;
 
 	int voted;

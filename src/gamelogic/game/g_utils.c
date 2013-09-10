@@ -767,7 +767,7 @@ void G_TeamToClientmask( team_t team, int *loMask, int *hiMask )
 	{
 		client = g_entities[ clientNum ].client;
 
-		if ( client && client->ps.persistant[ PERS_TEAM ] == team )
+		if ( client && client->pers.team == team )
 		{
 			if ( clientNum < 32 )
 			{

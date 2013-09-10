@@ -65,7 +65,7 @@ void G_SendConfidenceToClients( void )
 			continue;
 		}
 
-		team = client->ps.persistant[ PERS_TEAM ];
+		team = client->pers.team;
 
 		if ( team > TEAM_NONE && team < NUM_TEAMS )
 		{
@@ -153,7 +153,7 @@ void G_AddConfidence( team_t team, confidence_reason_t reason, confidence_qualif
 	{
 		client = source->client;
 
-		if ( client && client->ps.persistant[ PERS_TEAM ] == team )
+		if ( client && client->pers.team == team )
 		{
 			event = G_NewTempEntity( client->ps.origin, EV_CONFIDENCE );
 			event->r.svFlags = SVF_SINGLECLIENT;
