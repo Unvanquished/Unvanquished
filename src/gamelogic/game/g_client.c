@@ -45,7 +45,7 @@ void G_AddCreditToClient( gclient_t *client, short credit, qboolean cap )
 
 	if ( cap && credit > 0 )
 	{
-		capAmount = client->ps.persistant[ PERS_TEAM ] == TEAM_ALIENS ?
+		capAmount = client->pers.team == TEAM_ALIENS ?
 		            ALIEN_MAX_CREDITS : HUMAN_MAX_CREDITS;
 
 		if ( client->pers.credit < capAmount )
@@ -433,7 +433,7 @@ static void SpawnCorpse( gentity_t *ent )
 	body->s.clientNum = ent->client->ps.stats[ STAT_CLASS ];
 	body->nonSegModel = ent->client->ps.persistant[ PERS_STATE ] & PS_NONSEGMODEL;
 
-	if ( ent->client->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS )
+	if ( ent->client->pers.team == TEAM_HUMANS )
 	{
 		body->classname = "humanCorpse";
 	}
@@ -1126,7 +1126,7 @@ char *ClientUserinfoChanged( int clientNum, qboolean forceName )
 
 	Com_sprintf( userinfo, sizeof( userinfo ),
 	             "n\\%s\\t\\%i\\model\\%s\\ig\\%16s\\v\\%s",
-	             client->pers.netname, client->ps.persistant[ PERS_TEAM ], model,
+	             client->pers.netname, client->pers.team, model,
 	             Com_ClientListString( &client->sess.ignoreList ),
 	             client->pers.voice );
 
@@ -1443,7 +1443,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	index = ent - g_entities;
 	client = ent->client;
 
-	teamLocal = client->ps.persistant[ PERS_TEAM ];
+	teamLocal = client->pers.team;
 
 	//if client is dead and following teammate, stop following before spawning
 	if ( client->sess.spectatorClient != -1 )
@@ -1628,6 +1628,8 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	// We just spawned, not changing weapons
 	client->ps.persistant[ PERS_NEWWEAPON ] = 0;
 
+	client->ps.persistant[ PERS_TEAM ] = client->pers.team;
+
 	ent->client->ps.stats[ STAT_CLASS ] = ent->client->pers.classSelection;
 	ent->client->ps.stats[ STAT_BUILDABLE ] = BA_NONE;
 	ent->client->ps.stats[ STAT_PREDICTION ] = 0;
@@ -1660,7 +1662,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 
 	//give aliens some spawn velocity
 	if ( client->sess.spectatorState == SPECTATOR_NOT &&
-	     client->ps.persistant[ PERS_TEAM ] == TEAM_ALIENS )
+	     client->pers.team == TEAM_ALIENS )
 	{
 		if ( ent == spawn )
 		{
@@ -1688,7 +1690,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 		}
 	}
 	else if ( client->sess.spectatorState == SPECTATOR_NOT &&
-	          client->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS )
+	          client->pers.team == TEAM_HUMANS )
 	{
 		spawn_angles[ YAW ] += 180.0f;
 		AngleNormalize360( spawn_angles[ YAW ] );
@@ -1705,7 +1707,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 		trap_LinkEntity( ent );
 
 		// force the base weapon up
-		if ( client->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS )
+		if ( client->pers.team == TEAM_HUMANS )
 		{
 			G_ForceWeaponChange( ent, weapon );
 		}

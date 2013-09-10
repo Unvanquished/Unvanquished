@@ -217,11 +217,11 @@ static int GetClientMass( gentity_t *ent )
 {
 	int entMass = 100;
 
-	if ( ent->client->ps.persistant[ PERS_TEAM ] == TEAM_ALIENS )
+	if ( ent->client->pers.team == TEAM_ALIENS )
 	{
 		entMass = BG_Class( ent->client->pers.classSelection )->health;
 	}
-	else if ( ent->client->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS )
+	else if ( ent->client->pers.team == TEAM_HUMANS )
 	{
 		if ( BG_InventoryContainsUpgrade( UP_BATTLESUIT, ent->client->ps.stats ) )
 		{
@@ -503,7 +503,7 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 	}
 
 	// Check to see if we are in the spawn queue
-	team = client->ps.persistant[ PERS_TEAM ];
+	team = client->pers.team;
 	if ( team == TEAM_ALIENS || team == TEAM_HUMANS )
 	{
 		queued = G_SearchSpawnQueue( &level.team[ team ].spawnQueue, ent - g_entities );
@@ -522,7 +522,7 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 			G_StopFollowing( ent );
 		}
 
-		team = client->ps.persistant[ PERS_TEAM ];
+		team = client->pers.team;
 		//be sure that only valid team "numbers" can be used.
 		assert(team == TEAM_ALIENS || team == TEAM_HUMANS);
 		G_RemoveFromSpawnQueue( &level.team[ team ].spawnQueue, client->ps.clientNum );
@@ -541,15 +541,15 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 			G_StopFollowing( ent );
 		}
 
-		if ( client->ps.persistant[ PERS_TEAM ] == TEAM_NONE )
+		if ( client->pers.team == TEAM_NONE )
 		{
 			G_TriggerMenu( client->ps.clientNum, MN_TEAM );
 		}
-		else if ( client->ps.persistant[ PERS_TEAM ] == TEAM_ALIENS )
+		else if ( client->pers.team == TEAM_ALIENS )
 		{
 			G_TriggerMenu( client->ps.clientNum, MN_A_CLASS );
 		}
-		else if ( client->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS )
+		else if ( client->pers.team == TEAM_HUMANS )
 		{
 			G_TriggerMenu( client->ps.clientNum, MN_H_SPAWN );
 		}
@@ -605,7 +605,7 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 		// Set the queue position and spawn count for the client side
 		if ( client->ps.pm_flags & PMF_QUEUED )
 		{
-			team_t team = client->ps.persistant[ PERS_TEAM ];
+			team_t team = client->pers.team;
 			/* team must exist, or there will be a sigsegv */
 			assert(team == TEAM_HUMANS || team == TEAM_ALIENS);
 			client->ps.persistant[ PERS_SPAWNQUEUE ] = level.team[ team ].numSpawns;
@@ -650,7 +650,7 @@ qboolean ClientInactivityTimer( gentity_t *ent )
 			{
 				trap_SendServerCommand( -1,
 				                        va( "print_tr %s %s %s", QQ( N_("$1$^7 moved from $2$ to spectators due to inactivity\n") ),
-				                            Quote( client->pers.netname ), Quote( BG_TeamName( client->ps.persistant[ PERS_TEAM ] ) ) ) );
+				                            Quote( client->pers.netname ), Quote( BG_TeamName( client->pers.team ) ) ) );
 				G_LogPrintf( "Inactivity: %d\n", (int)( client - level.clients ) );
 				G_ChangeTeam( ent, TEAM_NONE );
 			}
@@ -686,7 +686,7 @@ static void G_ReplenishHumanHealth( gentity_t *self )
 
 	client = self->client;
 
-	if ( !client || client->ps.persistant[ PERS_TEAM ] != TEAM_HUMANS )
+	if ( !client || client->pers.team != TEAM_HUMANS )
 	{
 		return;
 	}
@@ -935,14 +935,14 @@ void ClientTimerActions( gentity_t *ent, int msec )
 		}
 
 		// turn off life support when a team admits defeat
-		if ( client->ps.persistant[ PERS_TEAM ] == TEAM_ALIENS &&
+		if ( client->pers.team == TEAM_ALIENS &&
 		     level.surrenderTeam == TEAM_ALIENS )
 		{
 			G_Damage( ent, NULL, NULL, NULL, NULL,
 			          BG_Class( client->ps.stats[ STAT_CLASS ] )->regenRate,
 			          DAMAGE_NO_ARMOR, MOD_SUICIDE );
 		}
-		else if ( client->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS &&
+		else if ( client->pers.team == TEAM_HUMANS &&
 		          level.surrenderTeam == TEAM_HUMANS )
 		{
 			G_Damage( ent, NULL, NULL, NULL, NULL, 5, DAMAGE_NO_ARMOR, MOD_SUICIDE );
@@ -964,11 +964,11 @@ void ClientTimerActions( gentity_t *ent, int msec )
 		     client->pers.aliveSeconds % g_freeFundPeriod.integer == 0 )
 		{
 			// Give clients some credit periodically
-			if ( client->ps.persistant[ PERS_TEAM ] == TEAM_ALIENS )
+			if ( client->pers.team == TEAM_ALIENS )
 			{
 				G_AddCreditToClient( client, FREEKILL_ALIEN, qtrue );
 			}
-			else if ( client->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS )
+			else if ( client->pers.team == TEAM_HUMANS )
 			{
 				G_AddCreditToClient( client, FREEKILL_HUMAN, qtrue );
 			}
@@ -1586,7 +1586,7 @@ static int G_FindHealth( gentity_t *self )
 		distance = Distance( boost->s.origin, self->s.origin );
 
 		if ( boost->s.eType == ET_PLAYER && boost->client &&
-		     boost->client->ps.persistant[ PERS_TEAM ] == client->ps.persistant[ PERS_TEAM ] &&
+		     boost->client->pers.team == client->pers.team &&
 		     boost->health > 0 && distance < REGEN_BOOST_RANGE )
 		{
 			if ( boost->client->ps.stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL1 )
@@ -1599,7 +1599,7 @@ static int G_FindHealth( gentity_t *self )
 			}
 		}
 		else if ( boost->s.eType == ET_BUILDABLE && boost->spawned && boost->health > 0 &&
-		          boost->powered && boost->buildableTeam == client->ps.persistant[ PERS_TEAM ] )
+		          boost->powered && boost->buildableTeam == client->pers.team )
 		{
 			if ( ( boost->s.modelindex == BA_A_SPAWN || boost->s.modelindex == BA_A_OVERMIND ) && ( int )distance < CREEP_BASESIZE )
 			{
@@ -1629,8 +1629,8 @@ static void G_ReplenishAlienHealth( gentity_t *self )
 	client = self->client;
 
 	// Check if client is an alien and has the healing ability
-	if ( !client || client->ps.persistant[ PERS_TEAM ] != TEAM_ALIENS ||
-	     self->health <= 0 || level.surrenderTeam == client->ps.persistant[ PERS_TEAM ] )
+	if ( !client || client->pers.team != TEAM_ALIENS ||
+	     self->health <= 0 || level.surrenderTeam == client->pers.team )
 	{
 		return;
 	}
@@ -1868,11 +1868,11 @@ void ClientThink_real( gentity_t *ent )
 	}
 
 	// Is power/creep available for the client's team?
-	if ( client->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS && G_Reactor() )
+	if ( client->pers.team == TEAM_HUMANS && G_Reactor() )
 	{
 		client->ps.eFlags |= EF_POWER_AVAILABLE;
 	}
-	else if ( client->ps.persistant[ PERS_TEAM ] == TEAM_ALIENS && G_Overmind() )
+	else if ( client->pers.team == TEAM_ALIENS && G_Overmind() )
 	{
 		client->ps.eFlags |= EF_POWER_AVAILABLE;
 	}
@@ -2146,7 +2146,7 @@ void ClientThink_real( gentity_t *ent )
 	}
 
 	// inform client about the state of unlockable items
-	client->ps.persistant[ PERS_UNLOCKABLES ] = BG_UnlockablesMask( client->ps.persistant[ PERS_TEAM ] );
+	client->ps.persistant[ PERS_UNLOCKABLES ] = BG_UnlockablesMask( client->pers.team );
 
 	// Don't think anymore if dead
 	if ( client->ps.stats[ STAT_HEALTH ] <= 0 )
@@ -2181,8 +2181,8 @@ void ClientThink_real( gentity_t *ent )
 		traceEnt = &g_entities[ trace.entityNum ];
 
 		if ( traceEnt && traceEnt->use
-				&& ( !traceEnt->buildableTeam || traceEnt->buildableTeam == client->ps.persistant[ PERS_TEAM ] )
-				&& ( !traceEnt->conditions.team || traceEnt->conditions.team == client->ps.persistant[ PERS_TEAM ] ))
+				&& ( !traceEnt->buildableTeam || traceEnt->buildableTeam == client->pers.team )
+				&& ( !traceEnt->conditions.team || traceEnt->conditions.team == client->pers.team ))
 		{
 			if ( g_debugEntities.integer > 1 )
 				G_Printf("Debug: Calling entity->use for player facing %s\n", etos(traceEnt));
@@ -2202,7 +2202,7 @@ void ClientThink_real( gentity_t *ent )
 			{
 				traceEnt = &g_entities[ entityList[ i ] ];
 
-				if ( traceEnt && traceEnt->use && traceEnt->buildableTeam == client->ps.persistant[ PERS_TEAM ])
+				if ( traceEnt && traceEnt->use && traceEnt->buildableTeam == client->pers.team)
 				{
 					if ( g_debugEntities.integer > 1 )
 						G_Printf("Debug: Calling entity->use after an area-search for %s\n", etos(traceEnt));
@@ -2212,7 +2212,7 @@ void ClientThink_real( gentity_t *ent )
 				}
 			}
 
-			if ( i == num && client->ps.persistant[ PERS_TEAM ] == TEAM_ALIENS )
+			if ( i == num && client->pers.team == TEAM_ALIENS )
 			{
 				if ( BG_AlienCanEvolve( client->ps.stats[ STAT_CLASS ], client->pers.credit ) )
 				{
@@ -2228,8 +2228,8 @@ void ClientThink_real( gentity_t *ent )
 		}
 	}
 
-	client->ps.persistant[ PERS_BP ] = G_GetBuildPointsInt( client->ps.persistant[ PERS_TEAM ] );
-	client->ps.persistant[ PERS_MARKEDBP ] = G_GetMarkedBuildPointsInt( client->ps.persistant[ PERS_TEAM ] );
+	client->ps.persistant[ PERS_BP ] = G_GetBuildPointsInt( client->pers.team );
+	client->ps.persistant[ PERS_MARKEDBP ] = G_GetMarkedBuildPointsInt( client->pers.team );
 
 	if ( client->ps.persistant[ PERS_BP ] < 0 )
 	{
@@ -2305,6 +2305,7 @@ void SpectatorClientEndFrame( gentity_t *ent )
 
 			if ( cl->pers.connected == CON_CONNECTED )
 			{
+				// Save
 				score = ent->client->ps.persistant[ PERS_SCORE ];
 				ping = ent->client->ps.ping;
 

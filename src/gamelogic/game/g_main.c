@@ -1403,7 +1403,7 @@ void G_CalculateMineRate( void )
 			continue;
 		}
 
-		team = client->ps.persistant[ PERS_TEAM ];
+		team = client->pers.team;
 
 		client->ps.persistant[ PERS_MINERATE ] = ( short )( level.mineRate * 10.0f );
 
@@ -1503,7 +1503,7 @@ void CalculateRanks( void )
 			level.sortedClients[ level.numConnectedClients ] = i;
 			level.numConnectedClients++;
 
-			team = level.clients[ i ].ps.persistant[ PERS_TEAM ];
+			team = level.clients[ i ].pers.team;
 			P[ i ] = ( char ) '0' + team;
 
 			level.team[ TEAM_NONE ].numVotingClients++;
@@ -1856,8 +1856,8 @@ static void GetAverageDistanceToBase( int teamDistance[] )
 			continue;
 		}
 
-		teamDistance[ client->ps.persistant[ PERS_TEAM ] ] += ( int )G_DistanceToBase( playerEnt, qtrue );
-		teamCnt[ client->ps.persistant[ PERS_TEAM ] ]++;
+		teamDistance[ client->pers.team ] += ( int )G_DistanceToBase( playerEnt, qtrue );
+		teamCnt[ client->pers.team ]++;
 	}
 
 	//TODO merge G_Overmind() and G_Reactor() into a unique function (did not read them yet, but I bet is will not be so hard)
@@ -1897,7 +1897,7 @@ static void GetAverageCredits( int teamCredits[], int teamValue[] )
 			continue;
 		}
 
-		team = client->ps.persistant[ PERS_TEAM ];
+		team = client->pers.team;
 
 		teamCredits[ team ] += client->pers.credit;
 		teamValue[ team ] += BG_GetValueOfPlayer( &client->ps );
@@ -2133,7 +2133,7 @@ void G_SendGameStat( team_t team )
 			ping = cl->ps.ping < 999 ? cl->ps.ping : 999;
 		}
 
-		switch ( cl->ps.persistant[ PERS_TEAM ] )
+		switch ( cl->pers.team )
 		{
 			case TEAM_ALIENS:
 				teamChar = 'A';
@@ -2207,7 +2207,7 @@ void LogExit( const char *string )
 
 		cl = &level.clients[ level.sortedClients[ i ] ];
 
-		if ( cl->ps.persistant[ PERS_TEAM ] == TEAM_NONE )
+		if ( cl->pers.team == TEAM_NONE )
 		{
 			continue;
 		}
@@ -2266,7 +2266,7 @@ void CheckIntermissionExit( void )
 			continue;
 		}
 
-		if ( cl->ps.persistant[ PERS_TEAM ] == TEAM_NONE )
+		if ( cl->pers.team == TEAM_NONE )
 		{
 			continue;
 		}

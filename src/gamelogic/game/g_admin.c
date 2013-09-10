@@ -2913,7 +2913,7 @@ qboolean G_admin_putteam( gentity_t *ent )
 		return qfalse;
 	}
 
-	if ( vic->client->ps.persistant[ PERS_TEAM ] == teamnum )
+	if ( vic->client->pers.team == teamnum )
 	{
 		return qfalse;
 	}
@@ -2999,7 +2999,7 @@ qboolean G_admin_speclock( gentity_t *ent )
 	admin_log( va( "%d (%s) \"%s" S_COLOR_WHITE "\" SPECTATE %s%s", pid, vic->client->pers.guid,
 	               vic->client->pers.netname, time, duration ) );
 
-	if ( vic->client->ps.persistant[ PERS_TEAM ] != TEAM_NONE )
+	if ( vic->client->pers.team != TEAM_NONE )
 	{
 		G_ChangeTeam( vic, TEAM_NONE );
 		AP( va( "print_tr %s %s %s %s %s", QQ( N_("^3speclock: ^7$1$^7 put $2$^7 on to the spectators team and blocked team-change for $3$$4t$\n") ),
@@ -3493,13 +3493,13 @@ qboolean G_admin_listplayers( gentity_t *ent )
 		}
 		else
 		{
-			t = toupper( * ( BG_TeamName( p->ps.persistant[ PERS_TEAM ] ) ) );
+			t = toupper( * ( BG_TeamName( p->pers.team ) ) );
 
-			if ( p->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS )
+			if ( p->pers.team == TEAM_HUMANS )
 			{
 				c = COLOR_CYAN;
 			}
-			else if ( p->ps.persistant[ PERS_TEAM ] == TEAM_ALIENS )
+			else if ( p->pers.team == TEAM_ALIENS )
 			{
 				c = COLOR_RED;
 			}
@@ -3884,7 +3884,7 @@ qboolean G_admin_allready( gentity_t *ent )
 			continue;
 		}
 
-		if ( cl->ps.persistant[ PERS_TEAM ] == TEAM_NONE )
+		if ( cl->pers.team == TEAM_NONE )
 		{
 			continue;
 		}
@@ -3974,7 +3974,7 @@ qboolean G_admin_spec999( gentity_t *ent )
 			continue;
 		}
 
-		if ( vic->client->ps.persistant[ PERS_TEAM ] == TEAM_NONE )
+		if ( vic->client->pers.team == TEAM_NONE )
 		{
 			continue;
 		}
@@ -4117,12 +4117,12 @@ qboolean G_admin_restart( gentity_t *ent )
 				continue;
 			}
 
-			if ( cl->ps.persistant[ PERS_TEAM ] == TEAM_NONE )
+			if ( cl->pers.team == TEAM_NONE )
 			{
 				continue;
 			}
 
-			cl->sess.restartTeam = cl->ps.persistant[ PERS_TEAM ];
+			cl->sess.restartTeam = cl->pers.team;
 		}
 
 		trap_Cvar_Set( "g_mapRestarted", "yk" );
@@ -4138,11 +4138,11 @@ qboolean G_admin_restart( gentity_t *ent )
 				continue;
 			}
 
-			if ( cl->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS )
+			if ( cl->pers.team == TEAM_HUMANS )
 			{
 				cl->sess.restartTeam = TEAM_ALIENS;
 			}
-			else if ( cl->ps.persistant[ PERS_TEAM ] == TEAM_ALIENS )
+			else if ( cl->pers.team == TEAM_ALIENS )
 			{
 				cl->sess.restartTeam = TEAM_HUMANS;
 			}
@@ -4825,7 +4825,7 @@ qboolean G_admin_builder( gentity_t *ent )
 
 	AngleVectors( ent->client->ps.viewangles, forward, right, up );
 
-	if ( ent->client->ps.persistant[ PERS_TEAM ] != TEAM_NONE &&
+	if ( ent->client->pers.team != TEAM_NONE &&
 	     ent->client->sess.spectatorState == SPECTATOR_NOT )
 	{
 		CalcMuzzlePoint( ent, forward, right, up, start );
@@ -4845,8 +4845,8 @@ qboolean G_admin_builder( gentity_t *ent )
 		const char *builder, *buildingName;
 
 		if ( !buildlog &&
-		     ent->client->ps.persistant[ PERS_TEAM ] != TEAM_NONE &&
-		     ent->client->ps.persistant[ PERS_TEAM ] != traceEnt->buildableTeam )
+		     ent->client->pers.team != TEAM_NONE &&
+		     ent->client->pers.team != traceEnt->buildableTeam )
 		{
 			ADMP( QQ( N_("^3builder: ^7structure not owned by your team\n" ) ) );
 			return qfalse;
@@ -4958,7 +4958,7 @@ qboolean G_admin_buildlog( gentity_t *ent )
 	buildLog_t *log;
 
 	admin = !ent || G_admin_permission( ent, "buildlog_admin" );
-	team = admin ? TEAM_NONE : ent->client->ps.persistant[ PERS_TEAM ];
+	team = admin ? TEAM_NONE : ent->client->pers.team;
 
 	if ( !admin && team == TEAM_NONE )
 	{
@@ -5025,7 +5025,7 @@ qboolean G_admin_buildlog( gentity_t *ent )
 		return qfalse;
 	}
 
-	if ( ent && ent->client->ps.persistant[ PERS_TEAM ] != TEAM_NONE )
+	if ( ent && ent->client->pers.team != TEAM_NONE )
 	{
 		if ( team == TEAM_NONE )
 		{

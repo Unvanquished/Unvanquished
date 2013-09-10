@@ -281,7 +281,7 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace )
 	}
 	else if ( !strcmp( ent->classname, "lockblob" ) )
 	{
-		if ( other->client && other->client->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS )
+		if ( other->client && other->client->pers.team == TEAM_HUMANS )
 		{
 			other->client->ps.stats[ STAT_STATE ] |= SS_BLOBLOCKED;
 			other->client->lastLockTime = level.time;
@@ -291,7 +291,7 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace )
 	}
 	else if ( !strcmp( ent->classname, "slowblob" ) )
 	{
-		if ( other->client && other->client->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS )
+		if ( other->client && other->client->pers.team == TEAM_HUMANS )
 		{
 			other->client->ps.stats[ STAT_STATE ] |= SS_SLOWLOCKED;
 			other->client->lastSlowTime = level.time;
@@ -341,7 +341,7 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace )
 			ent->nextthink = level.time + FRAMETIME;
 
 			//only damage humans
-			if ( other->client && other->client->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS )
+			if ( other->client && other->client->pers.team == TEAM_HUMANS )
 			{
 				returnAfterDamage = qtrue;
 			}
@@ -794,7 +794,7 @@ void HiveMissileThink( gentity_t *self )
 
 		if ( ent->client &&
 		     ent->health > 0 &&
-		     ent->client->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS &&
+		     ent->client->pers.team == TEAM_HUMANS &&
 		     nearest > ( d = DistanceSquared( ent->r.currentOrigin, self->r.currentOrigin ) ) )
 		{
 			trap_Trace( &tr, self->r.currentOrigin, self->r.mins, self->r.maxs,
