@@ -46,7 +46,6 @@ namespace Cvar {
         protected:
             std::string name;
 
-        protected:
             void Register(std::string description, int flags, std::string defaultValue);
             void SetValue(std::string value);
     };
@@ -62,10 +61,10 @@ namespace Cvar {
             T Get();
             T operator*();
 
-            //Outside code can also change the value
+            //Outside code can also change the value but it won't be seen immediately after with a .Get()
             void Set(T newValue);
 
-            //Called by the cvar system when the value is changed from somewhere else
+            //Called by the cvar system when the value is changed
             virtual bool OnValueChanged(const std::string& text);
 
         protected:

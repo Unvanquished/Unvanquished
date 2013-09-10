@@ -69,11 +69,11 @@ namespace Console {
 
         std::string current = Str::UTF32To8(GetText());
         int slashOffset = 0;
-        std::string slashChar(current, 0, 1);
-        if (slashChar[0] == '/' or slashChar[0] == '\\') {
+        std::string slashPrefix(current, 0, 1);
+        if (slashPrefix[0] == '/' or slashPrefix[0] == '\\') {
             slashOffset = 1;
         } else {
-            slashChar = "";
+            slashPrefix = "";
         }
         std::string commandText(current.c_str() + slashOffset);
 
@@ -133,7 +133,7 @@ namespace Console {
             }
         }
 
-        SetText(Str::UTF8To32(slashChar + commandText));
+        SetText(Str::UTF8To32(slashPrefix + commandText));
         SetCursor(argStartPos + completedArg.size() + slashOffset + commandStart);
     }
 
