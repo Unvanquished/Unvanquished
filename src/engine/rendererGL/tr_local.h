@@ -3385,6 +3385,7 @@ extern "C" {
 	void BindAnimatedImage( textureBundle_t *bundle );
 	void GL_TextureFilter( image_t *image, filterType_t filterType );
 	void GL_BindProgram( shaderProgram_t *program );
+	void GL_BindToTMU( int unit, image_t *image );
 	void GL_BindNullProgram( void );
 	void GL_SetDefaultState( void );
 	void GL_SelectTexture( int unit );

@@ -1120,8 +1120,7 @@ static void Tess_SurfaceBeam( void )
 	}
 
 	GL_BindProgram( 0 );
-	GL_SelectTexture( 0 );
-	GL_Bind( tr.whiteImage );
+	GL_BindToTMU( 0 ,tr.whiteImage );
 
 	GL_State( GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE );
 

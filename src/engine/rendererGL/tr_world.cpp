@@ -2115,8 +2115,7 @@ static void R_CoherentHierachicalCulling()
 	gl_genericShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
 	// bind u_ColorMap
-	GL_SelectTexture( 0 );
-	GL_Bind( tr.whiteImage );
+	GL_BindToTMU( 0, tr.whiteImage );
 	gl_genericShader->SetUniform_ColorTextureMatrix( matrixIdentity );
 
 #if 0
