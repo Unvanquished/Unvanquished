@@ -69,9 +69,11 @@ namespace Console {
 
         std::string current = Str::UTF32To8(GetText());
         int slashOffset = 0;
-        char slashChar = current[0];
-        if (slashChar == '/' or slashChar == '\\') {
+        std::string slashChar(current, 0, 1);
+        if (slashChar[0] == '/' or slashChar[0] == '\\') {
             slashOffset = 1;
+        } else {
+            slashChar = "";
         }
         std::string commandText(current.c_str() + slashOffset);
 
@@ -121,7 +123,7 @@ namespace Console {
         }
 
         //Insert the completed arg
-        commandText.replace(commandStart + argStartPos, cursorPos - argStartPos - 1, completedArg);
+        commandText.replace(commandStart + argStartPos, (cursorPos - slashOffset) - argStartPos, completedArg);
 
         //Print the matches if it is ambiguous
         //TODO: multi column nice print?
