@@ -50,10 +50,9 @@ namespace Cvar {
 
     void Register(CvarProxy* proxy, const std::string& name, std::string description, int flags, const std::string& defaultValue);
     void Unregister(const std::string& name);
-    void InnerSet(const std::string& name, std::string value);
     std::vector<std::string> CompleteName(const std::string& prefix);
 
-    //////////FUNCTION FOR TE C API
+    //////////FUNCTION FOR THE C API
 
     cvar_t* FindCCvar(const std::string& cvarName);
     void WriteVariables(fileHandle_t f);

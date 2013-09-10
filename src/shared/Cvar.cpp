@@ -27,21 +27,28 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "../engine/qcommon/q_shared.h"
 #include "../engine/qcommon/qcommon.h"
+#include "./String.h"
 
 namespace Cvar {
 
-    CvarProxy::CvarProxy(std::string name_, std::string description, int flags, std::string defaultValue)
-        : name(std::move(name_)) {
-        Cvar::Register(this, name, std::move(description), flags, std::move(defaultValue));
-        //Todo move that somewhere else
+    CvarProxy::CvarProxy(std::string name) : name(std::move(name)) {
     }
 
-    CvarProxy::~CvarProxy() {
-        Cvar::Unregister(name);
+    void CvarProxy::Register(std::string description, int flags, std::string defaultValue) {
+        ::Cvar::Register(this, name, std::move(description), flags, std::move(defaultValue));
     }
 
-    void CvarProxy::SetValue(std::string newValue) const{
-        Cvar::InnerSet(name, std::move(newValue));
+    void CvarProxy::SetValue(std::string value) {
+        ::Cvar::SetValue(name, std::move(value));
+    }
+
+    bool ParseCvarValue(std::string value, int& result) {
+        //TODO: this accepts "1a" as a valid int
+        return Str::ToInt(std::move(value), result);
+    }
+
+    std::string SerializeCvarValue(int value) {
+        return std::to_string(value);
     }
 
 }

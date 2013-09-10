@@ -33,6 +33,12 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <unordered_map>
 
+void f(int a) {
+    Com_Printf("my_int's new value is %i\n", a);
+}
+
+Cvar::Callback<Cvar::Cvar<int>> my_int("my_int", f, "awesome cvar", 0, "42");
+
 //TODO: thread safety (not possible with the C API that doesn't care at all about this)
 
 namespace Cvar {
@@ -241,16 +247,6 @@ namespace Cvar {
         } //TODO else what?
     }
 
-    void InnerSet(const std::string& name, std::string value) {
-        CvarMap& cvars = GetCvarMap();
-
-        if (cvars.count(name)) {
-            cvarRecord_t* cvar = cvars[name];
-            cvar->value = std::move(value);
-            SetCCvar(name, *cvar);
-        } //TODO else what?
-    }
-
     std::vector<std::string> CompleteName(const std::string& prefix) {
         CvarMap& cvars = GetCvarMap();
 
@@ -345,14 +341,14 @@ namespace Cvar {
                 const std::string& value = args.Argv(nameIndex + 1);
 
                 //TODO no flags in the argument
-                Cvar::SetValue(name, value, flags);
+                ::Cvar::SetValue(name, value, flags);
             }
 
             std::vector<std::string> Complete(int pos, const Cmd::Args& args) const override{
                 int argNum = args.PosToArg(pos);
 
                 if (argNum == 1 or (argNum == 2 and args.Argv(1) == "-unsafe")) {
-                    return Cvar::CompleteName(args.ArgPrefix(pos));
+                    return ::Cvar::CompleteName(args.ArgPrefix(pos));
                 }
 
                 return {};
@@ -382,7 +378,7 @@ namespace Cvar {
 
                 if (cvars.count(name)) {
                     cvarRecord_t* cvar = cvars[name];
-                    Cvar::SetValue(name, cvar->resetValue);
+                    ::Cvar::SetValue(name, cvar->resetValue);
                 } else {
                     Com_Printf(_("Cvar '%s' doesn't exist\n"), name.c_str());
                 }
@@ -392,7 +388,7 @@ namespace Cvar {
                 int argNum = args.PosToArg(pos);
 
                 if (argNum == 1) {
-                    return Cvar::CompleteName(args.ArgPrefix(pos));
+                    return ::Cvar::CompleteName(args.ArgPrefix(pos));
                 }
 
                 return {};
