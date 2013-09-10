@@ -155,8 +155,10 @@ namespace Cmd {
         }
 
         const std::string& cmdName = args.Argv(0);
-        if (commands.count(cmdName)) {
-            commands[cmdName].cmd->Run(args);
+
+        auto it = commands.find(cmdName);
+        if (it != commands.end()) {
+            it->second.cmd->Run(args);
             return;
         }
 
@@ -207,12 +209,12 @@ namespace Cmd {
         if (argNum > 0) {
             const std::string& cmdName = args.Argv(0);
 
-            if (!commands.count(cmdName)) {
+            auto it = commands.find(cmdName);
+            if (it == commands.end()) {
                 return {};
             }
 
-            const CmdBase* cmd = commands[cmdName].cmd;
-            return cmd->Complete(pos, args);
+            return it->second.cmd->Complete(pos, args);
         } else {
             return CommandNames(args.Argv(0));
         }

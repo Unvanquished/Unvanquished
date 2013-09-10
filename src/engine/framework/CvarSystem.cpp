@@ -131,14 +131,15 @@ namespace Cvar {
     void SetValue(const std::string& cvarName, std::string value, int flags) {
         CvarMap& cvars = GetCvarMap();
 
-        if (not cvars.count(cvarName)) {
+        auto it = cvars.find(cvarName);
+        if (it == cvars.end()) {
             //The user creates a new cvar through a command.
             cvars[cvarName] = new cvarRecord_t{value, value, flags | CVAR_USER_CREATED, "user created", nullptr};
             Cmd::AddCommand(cvarName, cvarCommand, "user created");
             GetCCvar(cvarName, *cvars[cvarName]);
 
         } else {
-            cvarRecord_t* cvar = cvars[cvarName];
+            cvarRecord_t* cvar = it->second;
 
             //TODO: do not update constant cvars
             /*if (cvar->flags & CVAR_ROM) {
@@ -182,7 +183,8 @@ namespace Cvar {
     void Register(CvarProxy* proxy, const std::string& name, std::string description, int flags, const std::string& defaultValue) {
         CvarMap& cvars = GetCvarMap();
 
-        if (not cvars.count(name)) {
+        auto it = cvars.find(name);
+        if (it == cvars.end()) {
             //Create the cvar and parse its default value
             cvars[name] = new cvarRecord_t{defaultValue, defaultValue, flags, description, proxy};
 
@@ -196,7 +198,7 @@ namespace Cvar {
             Cmd::AddCommand(name, cvarCommand, std::move(description));
 
         } else {
-            cvarRecord_t* cvar = cvars[name];
+            cvarRecord_t* cvar = it->second;
 
             if (cvar->proxy) {
                 Com_Printf(_("Cvar %s cannot be registered twice\n"), name.c_str());
@@ -303,7 +305,13 @@ namespace Cvar {
         return info;
     }
 
-    //////////////////////////
+    /*
+    ===============================================================================
+
+    Cvar:: Cvar-related commands
+
+    ===============================================================================
+    */
 
     class SetCmd: public Cmd::StaticCmd {
         public:
