@@ -1601,7 +1601,7 @@ extern "C" {
 		r_logFile = ri.Cvar_Get( "r_logFile", "0", CVAR_CHEAT );
 		r_debugSurface = ri.Cvar_Get( "r_debugSurface", "0", CVAR_CHEAT );
 		r_nobind = ri.Cvar_Get( "r_nobind", "0", CVAR_CHEAT );
-		r_clear = ri.Cvar_Get( "r_clear", "1", CVAR_CHEAT );
+		r_clear = ri.Cvar_Get( "r_clear", "0", CVAR_CHEAT );
 		r_offsetFactor = ri.Cvar_Get( "r_offsetFactor", "-1", CVAR_CHEAT );
 		r_offsetUnits = ri.Cvar_Get( "r_offsetUnits", "-2", CVAR_CHEAT );
 		r_forceSpecular = ri.Cvar_Get( "r_forceSpecular", "0", CVAR_CHEAT );
