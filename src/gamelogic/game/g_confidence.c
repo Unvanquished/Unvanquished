@@ -234,7 +234,7 @@ void G_DecreaseConfidence( void )
 	// decrease confidence
 	for ( team = TEAM_NONE + 1; team < NUM_TEAMS; team++ )
 	{
-		amount = level.team[ team ].confidence * ( 1.0f - decreaseFactor );
+		amount = level.team[ team ].confidence * ( decreaseFactor - 1.0f );
 
 		level.team[ team ].confidence += amount;
 
