@@ -37,7 +37,7 @@ void f(int a) {
     Com_Printf("my_int's new value is %i\n", a);
 }
 
-Cvar::Callback<Cvar::Cvar<int>> my_int("my_int", f, "awesome cvar", 0, "42");
+Cvar::Callback<Cvar::Cvar<int>> my_int("my_int", "awesome cvar", 0, "42", f);
 
 //TODO: thread safety (not possible with the C API that doesn't care at all about this)
 

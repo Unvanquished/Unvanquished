@@ -31,10 +31,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace Cvar {
 
-    CvarProxy::CvarProxy(std::string name) : name(std::move(name)) {
-    }
-
-    void CvarProxy::Register(std::string description, int flags, std::string defaultValue) {
+    CvarProxy::CvarProxy(std::string name, std::string description, int flags, std::string defaultValue) : name(std::move(name)) {
         ::Cvar::Register(this, name, std::move(description), flags, std::move(defaultValue));
     }
 

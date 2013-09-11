@@ -45,14 +45,13 @@ namespace Cvar {
     //All cvars inherit from this class
     class CvarProxy {
         public:
-            CvarProxy(std::string name);
+            CvarProxy(std::string name, std::string description, int flags, std::string defaultValue);
 
             virtual bool OnValueChanged(const std::string& newValue) = 0;
 
         protected:
             std::string name;
 
-            void Register(std::string description, int flags, std::string defaultValue);
             void SetValue(std::string value);
     };
 
@@ -73,8 +72,6 @@ namespace Cvar {
             virtual bool OnValueChanged(const std::string& text);
 
         protected:
-            Cvar(std::string name);
-
             bool Parse(std::string text, T& value);
             virtual bool Validate(const T& value);
 
@@ -92,10 +89,6 @@ namespace Cvar {
 
             virtual bool OnValueChanged(const std::string& newValue);
 
-        protected:
-            template <typename ... Args>
-            Callback(std::string name, std::function<void(value_type)> callback, Args ... args);
-
         private:
             std::function<void(value_type)> callback;
     };
@@ -109,12 +102,9 @@ namespace Cvar {
     // Cvar<T>
 
     template<typename T>
-    Cvar<T>::Cvar(std::string name, std::string description, int flags, std::string defaultValue): CvarProxy(std::move(name)) {
-        Register(std::move(description), flags, std::move(defaultValue));
-    }
-
-    template<typename T>
-    Cvar<T>::Cvar(std::string name): CvarProxy(std::move(name)) {
+    Cvar<T>::Cvar(std::string name, std::string description, int flags, std::string defaultValue)
+    : CvarProxy(std::move(name), std::move(description), flags, defaultValue) {
+        Parse(std::move(defaultValue), value);
     }
 
     template<typename T>
@@ -153,13 +143,9 @@ namespace Cvar {
 
     template <typename Base>
     template <typename ... Args>
-    Callback<Base>::Callback(std::string name, std::string description, int flags, std::string defaultValue, std::function<void(value_type)> callback, Args ... args): Base(std::move(name), std::forward<Args>(args) ...), callback(callback) {
-        this->Register(std::move(description), flags, std::move(defaultValue));
-    }
-
-    template <typename Base>
-    template <typename ... Args>
-    Callback<Base>::Callback(std::string name, std::function<void(value_type)> callback, Args ... args): Base(std::move(name), std::forward<Args>(args) ...), callback(callback) {
+    Callback<Base>::Callback(std::string name, std::string description, int flags, std::string defaultValue, std::function<void(value_type)> callback, Args ... args)
+    : Base(std::move(name), std::move(description), flags, std::move(defaultValue), std::forward<Args>(args) ...),
+    callback(callback) {
     }
 
     template <typename Base>
