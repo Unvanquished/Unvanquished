@@ -42,6 +42,22 @@ namespace Cvar {
         ::Cvar::SetValue(name, std::move(value));
     }
 
+    bool ParseCvarValue(std::string value, bool& result) {
+        if (value == "1" or value == "on" or value == "yes" or value == "enable") {
+            result = true;
+            return true;
+        } else if (value == "0" or value == "off" or value == "no" or value == "disable") {
+            result = false;
+            return true;
+        }
+        return true;
+    }
+
+    std::string SerializeCvarValue(bool value) {
+        //TODO: we keep compatibility with integer-style booleans for now but we should use "on" and "off" once we are merged
+        return value ? "1" : "0";
+    }
+
     bool ParseCvarValue(std::string value, int& result) {
         //TODO: this accepts "1a" as a valid int
         return Str::ToInt(std::move(value), result);
