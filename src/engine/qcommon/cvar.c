@@ -44,7 +44,6 @@ Maryland 20850 USA.
 #include <unordered_map>
 
 cvar_t        *cvar_vars;
-cvar_t        *cvar_cheats;
 int           cvar_modifiedFlags;
 
 /*
@@ -167,32 +166,6 @@ void Cvar_Reset(const char* name) {
 
 /*
 ============
-Cvar_SetCheatState
-
-Any testing variables will be reset to the safe values
-============
-*/
-void Cvar_SetCheatState( void ) {
-    //TODO
-    /*
-	cvar_t *var;
-
-	// set all default vars to the safe value
-	for ( var = cvar_vars; var; var = var->next )
-	{
-		if ( var->flags & CVAR_CHEAT )
-		{
-			if ( strcmp( var->resetString, var->string ) )
-			{
-				Cvar_Set( var->name, var->resetString );
-			}
-		}
-	}
-	*/
-}
-
-/*
-============
 Cvar_WriteVariables
 
 Appends lines containing "set variable value" for all variables
@@ -284,18 +257,6 @@ void Cvar_Update(vmCvar_t *vmCvar) {
 
 	vmCvar->value = cv->value;
 	vmCvar->integer = cv->integer;
-}
-
-/*
-============
-Cvar_Init
-
-Reads in all archived cvars
-============
-*/
-void Cvar_Init( void )
-{
-	cvar_cheats = Cvar_Get( "sv_cheats", "1", CVAR_ROM | CVAR_SYSTEMINFO );
 }
 
 namespace CVar {

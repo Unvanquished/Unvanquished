@@ -845,8 +845,6 @@ void SV_Init( void )
 	sv_statsURL = Cvar_Get( "sv_statsURL", "", CVAR_SERVERINFO | CVAR_ARCHIVE );
 
 	// systeminfo
-	//bani - added cvar_t for sv_cheats so server engine can reference it
-	sv_cheats = Cvar_Get( "sv_cheats", "1", CVAR_SYSTEMINFO | CVAR_ROM );
 	sv_serverid = Cvar_Get( "sv_serverid", "0", CVAR_SYSTEMINFO | CVAR_ROM );
 #ifdef DEDICATED
 	sv_pure = Cvar_Get( "sv_pure", "1", CVAR_SYSTEMINFO );

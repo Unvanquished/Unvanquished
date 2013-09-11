@@ -2210,8 +2210,6 @@ void Com_Init( char *commandLine )
 	// bk001129 - do this before anything else decides to push events
 	Com_InitPushEvent();
 
-	Cvar_Init();
-
 	// prepare enough of the subsystems to handle
 	// cvar and command buffer management
 	Com_ParseCommandLine( commandLine );

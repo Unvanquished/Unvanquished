@@ -120,8 +120,6 @@ void Cvar_LatchedVariableStringBuffer(const char *var_name, char *buffer,
 // reset all testing vars to a safe value
 void Cvar_Reset(const char *var_name);
 
-void Cvar_SetCheatState(void);
-
 /**
  * called by Cmd_ExecuteString when Cmd_Argv(0) doesn't match a known
  * command.  Returns true if the command was a variable reference that
@@ -136,8 +134,6 @@ namespace Cmd {
  * with the archive flag set to true.
  */
 void Cvar_WriteVariables(fileHandle_t f);
-
-void Cvar_Init(void);
 
 /**
  * returns an info string containing all the cvars that have the given bit set

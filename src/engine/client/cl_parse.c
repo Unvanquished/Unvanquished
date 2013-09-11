@@ -500,13 +500,6 @@ void CL_SystemInfoChanged( void )
 	clc.voipEnabled = atoi( s );
 #endif
 
-	s = Info_ValueForKey( systemInfo, "sv_cheats" );
-
-	if ( atoi( s ) == 0 )
-	{
-		Cvar_SetCheatState();
-	}
-
 	// check pure server string
 	s = Info_ValueForKey( systemInfo, "sv_paks" );
 	t = Info_ValueForKey( systemInfo, "sv_pakNames" );

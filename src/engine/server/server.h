@@ -397,7 +397,6 @@ extern cvar_t *sv_wwwDlDisconnected;
 extern cvar_t *sv_wwwFallbackURL;
 
 //bani
-extern cvar_t *sv_cheats;
 extern cvar_t *sv_packetdelay;
 
 //fretn

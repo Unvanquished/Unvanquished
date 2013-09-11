@@ -33,15 +33,14 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <unordered_map>
 
-void f(int a) {
-    Com_Printf("my_int's new value is %i\n", a);
-}
-
-Cvar::Callback<Cvar::Cvar<int>> my_int("my_int", "awesome cvar", 0, "42", f);
-
 //TODO: thread safety (not possible with the C API that doesn't care at all about this)
 
 namespace Cvar {
+
+    //The server gives the sv_cheats cvar to the client, on 'off' it prevents the user from changing Cvar::CHEAT cvars
+    //TODO: implement the equivalent of CVAR_ROM that allows the engine to change this cvar but not the user
+    void SetCheatMode(bool cheats);
+    Callback<Cvar<bool>> cvar_cheats("sv_cheats", "can cheats be used in the current game", SYSTEMINFO, true, SetCheatMode);
 
     struct cvarRecord_t {
         std::string value;
@@ -153,7 +152,10 @@ namespace Cvar {
                 return;
             }*/
 
-            //TODO: handle CVAR_CHEAT
+            if (*cvar_cheats && cvar->flags & CHEAT) {
+                Com_Printf(_("%s is cheat-protected.\n"), cvarName.c_str());
+                return;
+            }
 
             std::string oldValue = std::move(cvar->value);
             cvar->value = std::move(value);
@@ -194,12 +196,6 @@ namespace Cvar {
             //Create the cvar and parse its default value
             cvars[name] = new cvarRecord_t{defaultValue, defaultValue, flags, description, proxy};
 
-            if (proxy) { //TODO replace me with an assert once we do not need to support the C API
-                bool valueCorrect = proxy->OnValueChanged(defaultValue);
-                if(not valueCorrect) {
-                    Com_Printf(_("Default value '%s' is not correct for cvar '%s'\n"), defaultValue.c_str(), name.c_str());
-                }
-            }
             GetCCvar(name, *cvars[name]);
             Cmd::AddCommand(name, cvarCommand, std::move(description));
 
@@ -258,6 +254,30 @@ namespace Cvar {
         }
 
         return res;
+    }
+
+    void SetCheatMode(bool cheats) {
+        if (not cheats) {
+            return;
+        }
+
+        CvarMap& cvars = GetCvarMap();
+
+        for (auto it : cvars) {
+            cvarRecord_t* cvar = it.second;
+
+            if (cvar->flags & CHEAT && cvar->value != cvar->resetValue) {
+                cvar->value = cvar->resetValue;
+                SetCCvar(it.first, *cvar);
+
+                if (cvar->proxy) {
+                    bool valueCorrect = cvar->proxy->OnValueChanged(cvar->resetValue);
+                    if(not valueCorrect) {
+                        Com_Printf(_("Default value '%s' is not correct for cvar '%s'\n"), cvar->resetValue.c_str(), it.first.c_str());
+                    }
+                }
+            }
+        }
     }
 
     ///////////////
