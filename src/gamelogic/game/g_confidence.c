@@ -28,12 +28,16 @@ along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 // -----------
 
 // This also sets the frequency for G_UpdateUnlockables
-#define DECREASE_CONFIDENCE_PERIOD 500
+#define DECREASE_CONFIDENCE_PERIOD  500
+
+// Used for legacy stage sensors
+#define CONFIDENCE_PER_LEGACY_STAGE 100
 
 typedef enum
 {
 	CONF_GENERIC,
 	CONF_BUILDING,
+	CONF_DECONSTRUCTING,
 	CONF_DESTROYING,
 	CONF_KILLING,
 
@@ -43,6 +47,19 @@ typedef enum
 // -------------
 // local methods
 // -------------
+
+const char *ConfidenceTypeToReason( confidence_t type )
+{
+	switch ( type )
+	{
+		case CONF_GENERIC:        return "generic actions";
+		case CONF_BUILDING:       return "building a structure";
+		case CONF_DECONSTRUCTING: return "deconstructing a structure";
+		case CONF_DESTROYING:     return "destryoing a structure";
+		case CONF_KILLING:        return "killing a player";
+		default:                  return "(unknown confidence type)";
+	}
+}
 
 /**
  * Has to be called whenever the confidence of a team has been modified.
@@ -79,6 +96,35 @@ void ConfidenceChanged( void )
 }
 
 /**
+ * Notifies legacy stage sensors by assuming a certain amount of confidence is a stage.
+ *
+ * To be called after the team's confidence has been modified.
+ */
+void NotifyLegacyStageSensors( team_t team, float amount )
+{
+	int   stage;
+	float confidence;
+
+	for ( stage = 1; stage < 3; stage++ )
+	{
+		confidence = stage * ( float )CONFIDENCE_PER_LEGACY_STAGE;
+
+		if ( ( level.team[ team ].confidence - amount < confidence ) ==
+		     ( level.team[ team ].confidence          > confidence ) )
+		{
+			if      ( amount > 0.0f )
+			{
+				G_notify_sensor_stage( team, stage - 1, stage     );
+			}
+			else if ( amount < 0.0f )
+			{
+				G_notify_sensor_stage( team, stage,     stage - 1 );
+			}
+		}
+	}
+}
+
+/**
  * Awards confidence to a team.
  *
  * Will notify the client hwo earned it if given, otherwise the whole team, with an event.
@@ -88,6 +134,7 @@ static void AddConfidence( confidence_t type, team_t team, float amount,
 {
 	gentity_t *event = NULL;
 	gclient_t *client;
+	char      *clientName;
 
 	if ( team <= TEAM_NONE || team >= NUM_TEAMS )
 	{
@@ -129,29 +176,23 @@ static void AddConfidence( confidence_t type, team_t team, float amount,
 		event->s.groundEntityNum = amount < 0.0f ? qtrue : qfalse;
 	}
 
-	// HACK: Notify legacy stage sensors, assume 100 confidence is a stage
-	// TODO: Make this work with confidence decrease, too
+	// notify legacy stage sensors
+	NotifyLegacyStageSensors( team, amount );
+
+	if ( g_debugConfidence.integer > 0 )
 	{
-		int   stage;
-		float confidence;
-
-		for ( stage = 1; stage < 3; stage++ )
+		if ( source && source->client )
 		{
-			confidence = stage * 100.0f;
-
-			if ( ( level.team[ team ].confidence          < confidence ) ==
-			     ( level.team[ team ].confidence + amount > confidence ) )
-			{
-				if      ( amount > 0.0f )
-				{
-					G_notify_sensor_stage( team, stage - 1, stage     );
-				}
-				else if ( amount < 0.0f )
-				{
-					G_notify_sensor_stage( team, stage,     stage - 1 );
-				}
-			}
+			clientName = source->client->pers.netname;
 		}
+		else
+		{
+			clientName = "no source";
+		}
+
+		Com_Printf( "Confidence: %.2f to %s (%s by %s for %s)\n",
+		            amount, BG_TeamNamePlural( team ), amount < 0.0f ? "lost" : "earned",
+		            clientName, ConfidenceTypeToReason( type ) );
 	}
 }
 
@@ -165,6 +206,7 @@ static void AddConfidence( confidence_t type, team_t team, float amount,
 void G_DecreaseConfidence( void )
 {
 	team_t       team;
+	float        amount;
 
 	static float decreaseFactor = 1.0f, lastConfidenceHalfLife = 0.0f;
 	static int   nextCalculation = 0;
@@ -192,7 +234,12 @@ void G_DecreaseConfidence( void )
 	// decrease confidence
 	for ( team = TEAM_NONE + 1; team < NUM_TEAMS; team++ )
 	{
-		level.team[ team ].confidence *= decreaseFactor;
+		amount = level.team[ team ].confidence * ( 1.0f - decreaseFactor );
+
+		level.team[ team ].confidence += amount;
+
+		// notify legacy stage sensors
+		NotifyLegacyStageSensors( team, amount );
 	}
 
 	ConfidenceChanged();
@@ -302,7 +349,7 @@ float G_RemoveConfidenceForDecon( gentity_t *buildable, gentity_t *deconner )
 	// Calculate reward
 	penalty = -value * healthFraction;
 
-	AddConfidence( CONF_BUILDING, team, penalty, deconner, qfalse );
+	AddConfidence( CONF_DECONSTRUCTING, team, penalty, deconner, qfalse );
 
 	return penalty;
 }
