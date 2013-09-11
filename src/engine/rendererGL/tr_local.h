@@ -3067,7 +3067,6 @@ extern "C" {
 	extern cvar_t *r_nocull;
 	extern cvar_t *r_facePlaneCull; // enables culling of planar surfaces with back side test
 	extern cvar_t *r_nocurves;
-	extern cvar_t *r_nobatching;
 	extern cvar_t *r_noLightScissors;
 	extern cvar_t *r_noLightVisCull;
 	extern cvar_t *r_noInteractionSort;
@@ -3076,7 +3075,6 @@ extern "C" {
 	extern cvar_t *r_mode; // video mode
 	extern cvar_t *r_fullscreen;
 	extern cvar_t *r_gamma;
-	extern cvar_t *r_displayRefresh; // optional display refresh option
 	extern cvar_t *r_ignorehwgamma; // overrides hardware gamma capabilities
 
 	extern cvar_t *r_ext_compressed_textures; // these control use of specific extensions
@@ -3157,14 +3155,12 @@ extern "C" {
 	extern cvar_t *r_debugShadowMaps;
 	extern cvar_t *r_noShadowFrustums;
 	extern cvar_t *r_noLightFrustums;
-	extern cvar_t *r_shadowMapLuminanceAlpha;
 	extern cvar_t *r_shadowMapLinearFilter;
 	extern cvar_t *r_lightBleedReduction;
 	extern cvar_t *r_overDarkeningFactor;
 	extern cvar_t *r_shadowMapDepthScale;
 	extern cvar_t *r_parallelShadowSplits;
 	extern cvar_t *r_parallelShadowSplitWeight;
-	extern cvar_t *r_lightSpacePerspectiveWarping;
 
 	extern cvar_t *r_intensity;
 
