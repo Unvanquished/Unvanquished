@@ -59,7 +59,7 @@ namespace Cvar {
         public:
             typedef T value_type;
 
-            Cvar(std::string name, std::string description, int flags, std::string defaultValue);
+            Cvar(std::string name, std::string description, int flags, value_type defaultValue);
 
             //Outside code accesses the Cvar value by doing my_cvar.Get() or *my_cvar
             T Get();
@@ -85,7 +85,7 @@ namespace Cvar {
             typedef typename Base::value_type value_type;
 
             template <typename ... Args>
-            Callback(std::string name, std::string description, int flags, std::string defaultValue, std::function<void(value_type)> callback, Args ... args);
+            Callback(std::string name, std::string description, int flags, value_type, std::function<void(value_type)> callback, Args ... args);
 
             virtual bool OnValueChanged(const std::string& newValue);
 
@@ -95,16 +95,16 @@ namespace Cvar {
 
     //Cvars can be extended for different types of values
     bool ParseCvarValue(std::string value, bool& result);
-    std::string SerializeCvarVale(bool value);
+    std::string SerializeCvarValue(bool value);
     bool ParseCvarValue(std::string value, int& result);
-    std::string SerializeCvarVale(int value);
+    std::string SerializeCvarValue(int value);
 
     // Cvar<T>
 
     template<typename T>
-    Cvar<T>::Cvar(std::string name, std::string description, int flags, std::string defaultValue)
-    : CvarProxy(std::move(name), std::move(description), flags, defaultValue) {
-        Parse(std::move(defaultValue), value);
+    Cvar<T>::Cvar(std::string name, std::string description, int flags, value_type defaultValue)
+    : CvarProxy(std::move(name), std::move(description), flags, SerializeCvarValue(defaultValue)) {
+        value = std::move(defaultValue);
     }
 
     template<typename T>
@@ -143,7 +143,7 @@ namespace Cvar {
 
     template <typename Base>
     template <typename ... Args>
-    Callback<Base>::Callback(std::string name, std::string description, int flags, std::string defaultValue, std::function<void(value_type)> callback, Args ... args)
+    Callback<Base>::Callback(std::string name, std::string description, int flags, value_type defaultValue, std::function<void(value_type)> callback, Args ... args)
     : Base(std::move(name), std::move(description), flags, std::move(defaultValue), std::forward<Args>(args) ...),
     callback(callback) {
     }

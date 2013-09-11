@@ -31,7 +31,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace Cvar {
 
-    CvarProxy::CvarProxy(std::string name, std::string description, int flags, std::string defaultValue) : name(std::move(name)) {
+    CvarProxy::CvarProxy(std::string name_, std::string description, int flags, std::string defaultValue) : name(std::move(name_)) {
         ::Cvar::Register(this, name, std::move(description), flags, std::move(defaultValue));
     }
 
@@ -40,14 +40,14 @@ namespace Cvar {
     }
 
     bool ParseCvarValue(std::string value, bool& result) {
-        if (value == "1" or value == "on" or value == "yes" or value == "enable") {
+        if (value == "1" or value == "on" or value == "yes" or value == "true" or value == "enable") {
             result = true;
             return true;
-        } else if (value == "0" or value == "off" or value == "no" or value == "disable") {
+        } else if (value == "0" or value == "off" or value == "no" or value == "false" or value == "disable") {
             result = false;
             return true;
         }
-        return true;
+        return false;
     }
 
     std::string SerializeCvarValue(bool value) {
