@@ -162,30 +162,29 @@ Function to distribute rewards to entities that killed this one.
 */
 void G_RewardAttackers( gentity_t *self )
 {
-	float     value, reward;
+	float     value, share, reward;
 	int       playerNum, enemyDamage, maxHealth, damageShare;
 	gentity_t *player;
 	team_t    ownTeam, playerTeam;
-	confidence_reason_t    reason;
-	confidence_qualifier_t qualifier;
 
 	// Only reward killing players and buildables
 	if ( self->client )
 	{
-		ownTeam = self->client->pers.team;
+		ownTeam   = self->client->pers.team;
 		maxHealth = self->client->ps.stats[ STAT_MAX_HEALTH ];
-		value = ( float )BG_GetValueOfPlayer( &self->client->ps );
+		value     = BG_GetValueOfPlayer( &self->client->ps );
 	}
 	else if ( self->s.eType == ET_BUILDABLE )
 	{
-		ownTeam = self->buildableTeam;
+		ownTeam   = self->buildableTeam;
 		maxHealth = BG_Buildable( self->s.modelindex )->health;
-		value = ( float )BG_Buildable( self->s.modelindex )->value;
+		value     = BG_Buildable( self->s.modelindex )->value;
 
 		// Give partial credits for buildables in construction
 		if ( !self->spawned )
 		{
-			value *= ( float )( level.time - self->creationTime ) / BG_Buildable( self->s.modelindex )->buildTime;
+			value *= ( level.time - self->creationTime ) /
+			         ( float )BG_Buildable( self->s.modelindex )->buildTime;
 		}
 	}
 	else
@@ -193,12 +192,12 @@ void G_RewardAttackers( gentity_t *self )
 		return;
 	}
 
+	// Sum up damage dealt by enemies
 	enemyDamage = 0;
 
-	// Sum up damage dealt by enemies
 	for ( playerNum = 0; playerNum < level.maxclients; playerNum++ )
 	{
-		player = &g_entities[ playerNum ];
+		player     = &g_entities[ playerNum ];
 		playerTeam = player->client->pers.team;
 
 		// Player must be on the other team
@@ -218,8 +217,8 @@ void G_RewardAttackers( gentity_t *self )
 	// Give individual rewards
 	for ( playerNum = 0; playerNum < level.maxclients; playerNum++ )
 	{
-		player = &g_entities[ playerNum ];
-		playerTeam = player->client->pers.team;
+		player      = &g_entities[ playerNum ];
+		playerTeam  = player->client->pers.team;
 		damageShare = self->credits[ playerNum ];
 
 		// Clear reward array
@@ -237,74 +236,32 @@ void G_RewardAttackers( gentity_t *self )
 			continue;
 		}
 
-		reward = value * ( damageShare / ( float )maxHealth );
-
-		if ( reward <= 0.0f )
-		{
-			continue;
-		}
+		share  = damageShare / ( float )maxHealth;
+		reward = value * share;
 
 		if ( self->s.eType == ET_BUILDABLE )
 		{
+			// Add score
 			G_AddConfidenceToScore( player, reward );
 
-			switch ( self->s.modelindex )
-			{
-				case BA_A_OVERMIND:
-				case BA_H_REACTOR:
-					reason = CONF_REAS_DESTR_CRUCIAL;
-					break;
-
-				case BA_A_ACIDTUBE:
-				case BA_A_TRAPPER:
-				case BA_A_HIVE:
-				case BA_H_MGTURRET:
-				case BA_H_TESLAGEN:
-					reason = CONF_REAS_DESTR_AGGRESSIVE;
-					break;
-
-				default:
-					reason = CONF_REAS_DESTR_SUPPORT;
-			}
-
-			qualifier = CONF_QUAL_NONE;
-
-			G_AddConfidence( playerTeam, reason, qualifier, reward, player );
+			// Add confidence
+			G_AddConfidenceForDestroyingStep( self, player, share );
 		}
 		else
 		{
+			// Add score
 			G_AddCreditsToScore( player, ( int )reward );
+
+			// Add credits
 			G_AddCreditToClient( player->client, ( short )reward, qtrue );
 
-			// Give confidence for killing non-naked players outside the friendly base
-			switch ( self->client->ps.stats[ STAT_CLASS ] )
-			{
-				case PCL_ALIEN_LEVEL0:
-				case PCL_ALIEN_BUILDER0:
-				case PCL_ALIEN_BUILDER0_UPG:
-					break;
-
-				case PCL_HUMAN:
-					// Treat a human just wearing light armor as naked
-					if ( ( int )value <= BG_Class( PCL_HUMAN )->value +
-					                     ( BG_Upgrade( UP_LIGHTARMOUR )->price / 2 ) )
-					{
-						break;
-					}
-
-				default:
-					if ( G_InsideBase( player, qtrue ) || G_InsideBase( self, qfalse ) )
-					{
-						break;
-					}
-
-					qualifier = CONF_QUAL_OUTSIDE_OWN_BASE;
-
-					G_AddConfidence( playerTeam, CONF_REAS_KILLING, qualifier,
-					                 reward * CONFIDENCE_PER_CREDIT, player );
-			}
+			// Add confidence
+			G_AddConfidenceForKillingStep( self, player, share );
 		}
 	}
+
+	// Complete confidence modification
+	G_AddConfidenceEnd();
 }
 
 /*

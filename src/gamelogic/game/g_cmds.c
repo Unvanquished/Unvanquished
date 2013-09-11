@@ -589,14 +589,14 @@ void Cmd_Give_f( gentity_t *ent )
 	{
 		if ( give_all || trap_Argc() < 3 )
 		{
-			amount = 500.0f;
+			amount = 300.0f;
 		}
 		else
 		{
 			amount = atof( name + 11 );
 		}
 
-		G_AddConfidence( ent->client->pers.team, CONF_REAS_NONE, CONF_QUAL_NONE, amount, ent );
+		G_AddConfidenceGeneric( ent->client->pers.team, amount );
 	}
 
 	if ( ent->client->ps.stats[ STAT_HEALTH ] <= 0 ||

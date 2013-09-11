@@ -1167,10 +1167,15 @@ void ClientAdminChallenge( int clientNum );
 //
 // g_confidence.c
 //
-void G_SendConfidenceToClients( void );
-void G_DecreaseConfidence( void );
-void G_AddConfidence( team_t team, confidence_reason_t reason,  confidence_qualifier_t qualifier,
-                      float amount, gentity_t *source );
+void  G_DecreaseConfidence( void );
+float G_AddConfidenceGeneric( team_t team, float amount );
+float G_AddConfidenceGenericStep( team_t team, float amount );
+float G_PredictConfidenceForBuilding( gentity_t *buildable );
+float G_AddConfidenceForBuilding( gentity_t *buildable );
+float G_RemoveConfidenceForDecon( gentity_t *buildable, gentity_t *deconner );
+float G_AddConfidenceForKillingStep( gentity_t *victim, gentity_t *attacker, float share );
+float G_AddConfidenceForDestroyingStep( gentity_t *buildable, gentity_t *attacker, float share );
+void  G_AddConfidenceEnd( void );
 
 //
 // g_active.c
