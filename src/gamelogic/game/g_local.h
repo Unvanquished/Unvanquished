@@ -1182,10 +1182,15 @@ void ClientAdminChallenge( int clientNum );
 //
 // g_confidence.c
 //
-void G_SendConfidenceToClients( void );
-void G_DecreaseConfidence( void );
-void G_AddConfidence( team_t team, confidence_reason_t reason,  confidence_qualifier_t qualifier,
-                      float amount, gentity_t *source );
+void  G_DecreaseConfidence( void );
+float G_AddConfidenceGeneric( team_t team, float amount );
+float G_AddConfidenceGenericStep( team_t team, float amount );
+float G_PredictConfidenceForBuilding( gentity_t *buildable );
+float G_AddConfidenceForBuilding( gentity_t *buildable );
+float G_RemoveConfidenceForDecon( gentity_t *buildable, gentity_t *deconner );
+float G_AddConfidenceForKillingStep( gentity_t *victim, gentity_t *attacker, float share );
+float G_AddConfidenceForDestroyingStep( gentity_t *buildable, gentity_t *attacker, float share );
+void  G_AddConfidenceEnd( void );
 
 //
 // g_active.c
@@ -1281,6 +1286,7 @@ extern  vmCvar_t g_knockback;
 extern  vmCvar_t g_inactivity;
 extern  vmCvar_t g_debugMove;
 extern  vmCvar_t g_debugDamage;
+extern  vmCvar_t g_debugConfidence;
 extern  vmCvar_t g_synchronousClients;
 extern  vmCvar_t g_motd;
 extern  vmCvar_t g_warmup;

@@ -3454,48 +3454,6 @@ void G_BuildableTouchTriggers( gentity_t *ent )
 
 /*
 ===============
-G_BuildingConfidenceReward
-
-Calculates the amount of confidence awarded for building a structure.
-Stores the reward with the buildable so it can be reverted on deconstruction.
-===============
-*/
-#define BCR_MODIFIER 0.6f
-
-static float G_BuildingConfidenceReward( gentity_t *self )
-{
-	if ( !self || self->s.eType != ET_BUILDABLE )
-	{
-		return 0.0f;
-	}
-
-	self->confidenceEarned = BG_Buildable( self->s.modelindex )->value * BCR_MODIFIER;
-
-	return self->confidenceEarned;
-}
-
-static int BuildableConfidenceReason( int modelindex )
-{
-	switch ( modelindex )
-	{
-		case BA_A_OVERMIND:
-		case BA_H_REACTOR:
-			return CONF_REAS_BUILD_CRUCIAL;
-
-		case BA_A_ACIDTUBE:
-		case BA_A_TRAPPER:
-		case BA_A_HIVE:
-		case BA_H_MGTURRET:
-		case BA_H_TESLAGEN:
-			return CONF_REAS_BUILD_AGGRESSIVE;
-
-		default:
-			return CONF_REAS_BUILD_SUPPORT;
-	}
-}
-
-/*
-===============
 G_BuildableThink
 
 General think function for buildables
@@ -3521,10 +3479,7 @@ void G_BuildableThink( gentity_t *ent, int msec )
 			}
 
 			// Award confidence
-			G_AddConfidence( BG_Buildable( ent->s.modelindex )->team,
-			                 BuildableConfidenceReason( ent->s.modelindex ), CONF_QUAL_NONE,
-			                 G_BuildingConfidenceReward( ent ),
-			                 &g_entities[ ent->builtBy->slot ] );
+			G_AddConfidenceForBuilding( ent );
 		}
 	}
 
@@ -3891,16 +3846,7 @@ void G_Deconstruct( gentity_t *self, gentity_t *deconner, meansOfDeath_t deconTy
 	G_ModifyBuildPoints( self->buildableTeam, refund );
 
 	// remove confidence
-	if ( self->confidenceEarned )
-	{
-		confidence = self->confidenceEarned;
-	}
-	else
-	{
-		confidence = G_BuildingConfidenceReward( self );
-	}
-
-	G_AddConfidence( self->buildableTeam, CONF_REAS_DECON, CONF_QUAL_NONE, -confidence, deconner );
+	G_RemoveConfidenceForDecon( self, deconner );
 
 	// deconstruct
 	G_Damage( self, NULL, deconner, NULL, NULL, self->health, 0, deconType );
@@ -4918,7 +4864,8 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 
 	if ( log )
 	{
-		G_BuildingConfidenceReward( built ); // get this set NOW for the build log
+		// HACK: Assume the buildable got build in full
+		built->confidenceEarned = G_PredictConfidenceForBuilding( built );
 		G_BuildLogSet( log, built );
 	}
 
@@ -5636,7 +5583,7 @@ void G_BuildLogRevert( int id )
 {
 	buildLog_t *log;
 	gentity_t  *ent;
-	int        i;
+	team_t     team;
 	vec3_t     dist;
 	gentity_t  *builder;
 	float      confidenceChange[ NUM_TEAMS ] = { 0 };
@@ -5651,9 +5598,9 @@ void G_BuildLogRevert( int id )
 
 		switch ( log->fate ) {
 		case BF_CONSTRUCT:
-			for ( i = MAX_CLIENTS; i < level.num_entities; i++ )
+			for ( team = MAX_CLIENTS; team < level.num_entities; team++ )
 			{
-				ent = &g_entities[ i ];
+				ent = &g_entities[ team ];
 
 				if ( ( ( ent->s.eType == ET_BUILDABLE &&
 				         ent->health > 0 ) ||
@@ -5673,7 +5620,7 @@ void G_BuildLogRevert( int id )
 
 						// Give back resources
 						G_ModifyBuildPoints( ent->buildableTeam, BG_Buildable( ent->s.modelindex )->buildPoints );
-						confidenceChange[ log->buildableTeam] -= log->confidenceEarned;
+						confidenceChange[ log->buildableTeam ] -= log->confidenceEarned;
 						G_FreeEntity( ent );
 						break;
 					}
@@ -5707,10 +5654,12 @@ void G_BuildLogRevert( int id )
 		}
 	}
 
-	for ( i = 0; i < NUM_TEAMS; ++i )
+	for ( team = TEAM_NONE + 1; team < NUM_TEAMS; ++team )
 	{
-		G_AddConfidence( i, CONF_REAS_NONE, CONF_QUAL_NONE, confidenceChange[ i ], NULL );
+		G_AddConfidenceGenericStep( team, confidenceChange[ team ] );
 	}
+
+	G_AddConfidenceEnd();
 }
 
 /*
