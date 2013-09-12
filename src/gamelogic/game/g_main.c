@@ -62,7 +62,6 @@ vmCvar_t           g_knockback;
 vmCvar_t           g_inactivity;
 vmCvar_t           g_debugMove;
 vmCvar_t           g_debugDamage;
-vmCvar_t           g_debugConfidence;
 vmCvar_t           g_motd;
 vmCvar_t           g_synchronousClients;
 vmCvar_t           g_warmup;
@@ -101,7 +100,9 @@ vmCvar_t           g_initialMineRate;
 vmCvar_t           g_mineRateHalfLife;
 vmCvar_t           g_minimumMineRate;
 
+vmCvar_t           g_debugConfidence;
 vmCvar_t           g_confidenceHalfLife;
+vmCvar_t           g_unlockableMinTime;
 
 vmCvar_t           g_humanAllowBuilding;
 vmCvar_t           g_alienAllowBuilding;
@@ -237,7 +238,6 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_inactivity,                  "g_inactivity",                  "0",                                0,                                               0, qtrue            },
 	{ &g_debugMove,                   "g_debugMove",                   "0",                                0,                                               0, qfalse           },
 	{ &g_debugDamage,                 "g_debugDamage",                 "0",                                0,                                               0, qfalse           },
-	{ &g_debugConfidence,             "g_debugConfidence",             "0",                                0,                                               0, qfalse           },
 	{ &g_motd,                        "g_motd",                        "",                                 0,                                               0, qfalse           },
 
 	{ &g_allowVote,                   "g_allowVote",                   "1",                                CVAR_ARCHIVE,                                    0, qfalse           },
@@ -268,7 +268,9 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_mineRateHalfLife,            "g_mineRateHalfLife",            DEFAULT_MINE_RATE_HALF_LIFE,        CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_minimumMineRate,             "g_minimumMineRate",             DEFAULT_MINIMUM_MINE_RATE,          CVAR_ARCHIVE,                                    0, qfalse           },
 
-	{ &g_confidenceHalfLife,          "g_confidenceHalfLife",          DEFAULT_CONFIDENCE_HALF_LIFE,       CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_debugConfidence,             "g_debugConfidence",             "0",                                0,                                               0, qfalse           },
+	{ &g_confidenceHalfLife,          "g_confidenceHalfLife",          DEFAULT_CONFIDENCE_HALF_LIFE,       CVAR_SERVERINFO | CVAR_ARCHIVE,                  0, qfalse           },
+	{ &g_unlockableMinTime,           "g_unlockableMinTime",           DEFAULT_UNLOCKABLE_MIN_TIME,        CVAR_SERVERINFO | CVAR_ARCHIVE,                  0, qfalse           },
 
 	{ &g_humanAllowBuilding,          "g_humanAllowBuilding",          "1",                                0,                                               0, qfalse           },
 	{ &g_alienAllowBuilding,          "g_alienAllowBuilding",          "1",                                0,                                               0, qfalse           },

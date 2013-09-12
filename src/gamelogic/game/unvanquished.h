@@ -493,6 +493,7 @@ extern int   REACTOR_ATTACK_DCC_DAMAGE;
 
 // confidence
 #define DEFAULT_CONFIDENCE_HALF_LIFE       "5"   // in min
+#define DEFAULT_UNLOCKABLE_MIN_TIME        "60"  // in s
 #define CONFIDENCE_PER_CREDIT              0.01f // used to award confidence based on credit rewards
 #define CONFIDENCE_BUILDING_BASEMOD        0.6f  // building award in relation to destruction
 

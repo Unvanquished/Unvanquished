@@ -29,7 +29,7 @@ along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 #endif
 
 #ifdef CGAME
-#include "../../engine/client/cg_api.h"
+#include "../cgame/cg_local.h"
 #endif
 
 #ifdef UI
@@ -39,9 +39,6 @@ along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 // -----------
 // definitions
 // -----------
-
-// TODO: Make LOCK_RATIO a (synchronized) cvar
-#define LOCK_RATIO      0.8f
 
 #define NUM_UNLOCKABLES WP_NUM_WEAPONS + UP_NUM_UPGRADES + BA_NUM_BUILDABLES + PCL_NUM_CLASSES
 
@@ -175,6 +172,53 @@ static INLINE void CheckStatusKnowledge( unlockableType_t type, int itemNum )
 	}
 }
 
+static float UnlockToLockThreshold( float unlockThreshold )
+{
+	float confidenceHalfLife = 0.0f;
+	float unlockableMinTime  = 0.0f;
+
+	// maintain cache
+	static float lastConfidenceHalfLife = 0.0f;
+	static float lastunlockableMinTime  = 0.0f;
+	static float lastMod                = 0.0f;
+
+	// retrieve relevant settings
+#ifdef GAME
+	confidenceHalfLife = g_confidenceHalfLife.value;
+	unlockableMinTime  = g_unlockableMinTime.value;
+#endif
+#ifdef CGAME
+	confidenceHalfLife = cgs.confidenceHalfLife;
+	unlockableMinTime  = cgs.unlockableMinTime;
+#endif
+#ifdef UI
+	// NOT IMPLEMENTED
+	return unlockThreshold;
+#endif
+
+	// a half life time of 0 means there is no decrease, so we don't need to alter thresholds
+	if ( confidenceHalfLife <= 0.0f )
+	{
+		return unlockThreshold;
+	}
+
+	// do cache lookup
+	if ( lastConfidenceHalfLife == confidenceHalfLife &&
+	     lastunlockableMinTime  == unlockableMinTime  &&
+	     lastMod > 0.0f )
+	{
+		return lastMod * unlockThreshold;
+	}
+
+	lastConfidenceHalfLife = confidenceHalfLife;
+	lastunlockableMinTime  = unlockableMinTime;
+
+	// ln(2) ~= 0.6931472
+	lastMod = exp( -0.6931472f * ( unlockableMinTime / ( confidenceHalfLife * 60.0f ) ) );
+
+	return lastMod * unlockThreshold;
+}
+
 // ----------
 // BG methods
 // ----------
@@ -267,7 +311,7 @@ void BG_ImportUnlockablesFromMask( team_t team, int mask )
 		unlockable->num             = itemNum;
 		unlockable->team            = currentTeam;
 		unlockable->unlockThreshold = unlockThreshold;
-		unlockable->lockThreshold   = unlockThreshold * LOCK_RATIO;
+		unlockable->lockThreshold   = UnlockToLockThreshold( unlockThreshold );
 
 		// retrieve the item's locking state
 		if ( !unlockThreshold )
@@ -493,7 +537,7 @@ void G_UpdateUnlockables( void )
 		unlockable->team            = team;
 		unlockable->statusKnown     = qtrue;
 		unlockable->unlockThreshold = unlockThreshold;
-		unlockable->lockThreshold   = unlockThreshold * LOCK_RATIO;
+		unlockable->lockThreshold   = UnlockToLockThreshold( unlockThreshold );
 
 		// calculate the item's locking state
 		unlockable->unlocked = (

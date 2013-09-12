@@ -1271,7 +1271,6 @@ extern  vmCvar_t g_knockback;
 extern  vmCvar_t g_inactivity;
 extern  vmCvar_t g_debugMove;
 extern  vmCvar_t g_debugDamage;
-extern  vmCvar_t g_debugConfidence;
 extern  vmCvar_t g_synchronousClients;
 extern  vmCvar_t g_motd;
 extern  vmCvar_t g_warmup;
@@ -1302,7 +1301,9 @@ extern  vmCvar_t g_initialBuildPoints;
 extern  vmCvar_t g_mineRateHalfLife;
 extern  vmCvar_t g_minimumMineRate;
 
+extern  vmCvar_t g_debugConfidence;
 extern  vmCvar_t g_confidenceHalfLife;
+extern  vmCvar_t g_unlockableMinTime;
 
 extern  vmCvar_t g_humanAllowBuilding;
 extern  vmCvar_t g_alienAllowBuilding;
