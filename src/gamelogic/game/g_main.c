@@ -102,7 +102,13 @@ vmCvar_t           g_minimumMineRate;
 
 vmCvar_t           g_debugConfidence;
 vmCvar_t           g_confidenceHalfLife;
+vmCvar_t           g_confidenceRewardDoubleTime;
 vmCvar_t           g_unlockableMinTime;
+vmCvar_t           g_confidenceBaseMod;
+vmCvar_t           g_confidenceKillMod;
+vmCvar_t           g_confidenceBuildMod;
+vmCvar_t           g_confidenceDeconMod;
+vmCvar_t           g_confidenceDestroyMod;
 
 vmCvar_t           g_humanAllowBuilding;
 vmCvar_t           g_alienAllowBuilding;
@@ -270,7 +276,13 @@ static cvarTable_t gameCvarTable[] =
 
 	{ &g_debugConfidence,             "g_debugConfidence",             "0",                                0,                                               0, qfalse           },
 	{ &g_confidenceHalfLife,          "g_confidenceHalfLife",          DEFAULT_CONFIDENCE_HALF_LIFE,       CVAR_SERVERINFO | CVAR_ARCHIVE,                  0, qfalse           },
+	{ &g_confidenceRewardDoubleTime,  "g_confidenceRewardDoubleTime",  DEFAULT_CONF_REWARD_DOUBLE_TIME,    CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_unlockableMinTime,           "g_unlockableMinTime",           DEFAULT_UNLOCKABLE_MIN_TIME,        CVAR_SERVERINFO | CVAR_ARCHIVE,                  0, qfalse           },
+	{ &g_confidenceBaseMod,           "g_confidenceBaseMod",           DEFAULT_CONFIDENCE_BASE_MOD,        CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_confidenceKillMod,           "g_confidenceKillMod",           DEFAULT_CONFIDENCE_KILL_MOD,        CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_confidenceBuildMod,          "g_confidenceBuildMod",          DEFAULT_CONFIDENCE_BUILD_MOD,       CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_confidenceDeconMod,          "g_confidenceDeconMod",          DEFAULT_CONFIDENCE_DECON_MOD,       CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_confidenceDestroyMod,        "g_confidenceDestroyMod",        DEFAULT_CONFIDENCE_DESTROY_MOD,     CVAR_ARCHIVE,                                    0, qfalse           },
 
 	{ &g_humanAllowBuilding,          "g_humanAllowBuilding",          "1",                                0,                                               0, qfalse           },
 	{ &g_alienAllowBuilding,          "g_alienAllowBuilding",          "1",                                0,                                               0, qfalse           },

@@ -1303,7 +1303,13 @@ extern  vmCvar_t g_minimumMineRate;
 
 extern  vmCvar_t g_debugConfidence;
 extern  vmCvar_t g_confidenceHalfLife;
+extern  vmCvar_t g_confidenceRewardDoubleTime;
 extern  vmCvar_t g_unlockableMinTime;
+extern  vmCvar_t g_confidenceBaseMod;
+extern  vmCvar_t g_confidenceKillMod;
+extern  vmCvar_t g_confidenceBuildMod;
+extern  vmCvar_t g_confidenceDeconMod;
+extern  vmCvar_t g_confidenceDestroyMod;
 
 extern  vmCvar_t g_humanAllowBuilding;
 extern  vmCvar_t g_alienAllowBuilding;
