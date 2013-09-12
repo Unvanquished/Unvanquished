@@ -65,8 +65,6 @@ extern "C" {
 
 #define GLSL_COMPILE_STARTUP_ONLY  1
 
-//#define USE_BSP_CLUSTERSURFACE_MERGING 1
-
 // visibility tests: check if a 3D-point is visible
 // results may be delayed, but for visual effect like flares this
 // shouldn't matter
@@ -2050,16 +2048,6 @@ extern "C" {
 		bspSurface_t **viewSurfaces;
 	} bspNode_t;
 
-#if defined( USE_BSP_CLUSTERSURFACE_MERGING )
-	typedef struct
-	{
-		int          numMarkSurfaces;
-		bspSurface_t **markSurfaces;
-
-		vec3_t       origin; // used for cubemaps
-	} bspCluster_t;
-#endif
-
 	/*
 	typedef struct
 	{
@@ -2183,18 +2171,11 @@ extern "C" {
 		interactionCache_t **interactions;
 
 		int                numClusters;
-#if defined( USE_BSP_CLUSTERSURFACE_MERGING )
-		bspCluster_t       *clusters;
-#endif
+
 		int                clusterBytes;
 		const byte         *vis; // may be passed in by CM_LoadMap to save space
 		byte       *visvis; // clusters visible from visible clusters
 		byte               *novis; // clusterBytes of 0xff
-
-#if defined( USE_BSP_CLUSTERSURFACE_MERGING )
-		int        numClusterVBOSurfaces[ MAX_VISCOUNTS ];
-		growList_t clusterVBOSurfaces[ MAX_VISCOUNTS ]; // updated every time when changing the view cluster
-#endif
 
 		char     *entityString;
 		char     *entityParsePoint;
@@ -3243,12 +3224,6 @@ extern "C" {
 	extern cvar_t *r_vboDeformVertexes;
 	extern cvar_t *r_vboSmoothNormals;
 
-#if defined( USE_BSP_CLUSTERSURFACE_MERGING )
-	extern cvar_t *r_mergeClusterSurfaces;
-	extern cvar_t *r_mergeClusterFaces;
-	extern cvar_t *r_mergeClusterCurves;
-	extern cvar_t *r_mergeClusterTriangles;
-#endif
 	extern cvar_t *r_mergeLeafSurfaces;
 
 	extern cvar_t *r_deferredShading;

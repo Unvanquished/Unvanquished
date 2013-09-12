@@ -263,12 +263,6 @@ extern "C" {
 	cvar_t      *r_vboDeformVertexes;
 	cvar_t      *r_vboSmoothNormals;
 
-#if defined( USE_BSP_CLUSTERSURFACE_MERGING )
-	cvar_t      *r_mergeClusterSurfaces;
-	cvar_t      *r_mergeClusterFaces;
-	cvar_t      *r_mergeClusterCurves;
-	cvar_t      *r_mergeClusterTriangles;
-#endif
 	cvar_t      *r_mergeLeafSurfaces;
 	cvar_t      *r_deferredShading;
 	cvar_t      *r_parallaxMapping;
@@ -1504,16 +1498,8 @@ extern "C" {
 		r_vboDeformVertexes = ri.Cvar_Get( "r_vboDeformVertexes", "0", CVAR_ARCHIVE | CVAR_LATCH );
 		r_vboSmoothNormals = ri.Cvar_Get( "r_vboSmoothNormals", "1", CVAR_ARCHIVE | CVAR_LATCH );
 
-#if defined( USE_BSP_CLUSTERSURFACE_MERGING )
-		r_mergeClusterSurfaces = ri.Cvar_Get( "r_mergeClusterSurfaces", "0", CVAR_CHEAT );
-		r_mergeClusterFaces = ri.Cvar_Get( "r_mergeClusterFaces", "1", CVAR_CHEAT );
-		r_mergeClusterCurves = ri.Cvar_Get( "r_mergeClusterCurves", "1", CVAR_CHEAT );
-		r_mergeClusterTriangles = ri.Cvar_Get( "r_mergeClusterTriangles", "1", CVAR_CHEAT );
-#endif
-
-		r_mergeLeafSurfaces = ri.Cvar_Get( "r_mergeLeafSurfaces", "0", CVAR_ARCHIVE | CVAR_LATCH );	
-		r_dynamicBspOcclusionCulling = ri.Cvar_Get( "r_dynamicBspOcclusionCulling", "0", CVAR_ARCHIVE );
-		r_dynamicEntityOcclusionCulling = ri.Cvar_Get( "r_dynamicEntityOcclusionCulling", "0", CVAR_CHEAT );
+		r_mergeLeafSurfaces = ri.Cvar_Get( "r_mergeLeafSurfaces", "0", CVAR_ARCHIVE | CVAR_LATCH );
+		r_dynamicBspOcclusionCulling = ri.Cvar_Get( "r_dynamicBspOcclusionCulling", "0", CVAR_ARCHIVE );		r_dynamicEntityOcclusionCulling = ri.Cvar_Get( "r_dynamicEntityOcclusionCulling", "0", CVAR_CHEAT );
 		r_dynamicLightOcclusionCulling = ri.Cvar_Get( "r_dynamicLightOcclusionCulling", "0", CVAR_CHEAT );
 		r_chcMaxPrevInvisNodesBatchSize = ri.Cvar_Get( "r_chcMaxPrevInvisNodesBatchSize", "50", CVAR_CHEAT );
 		r_chcMaxVisibleFrames = ri.Cvar_Get( "r_chcMaxVisibleFrames", "10", CVAR_CHEAT );
