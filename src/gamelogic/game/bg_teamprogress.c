@@ -176,6 +176,7 @@ static float UnlockToLockThreshold( float unlockThreshold )
 {
 	float confidenceHalfLife = 0.0f;
 	float unlockableMinTime  = 0.0f;
+	char  buffer[ MAX_TOKEN_CHARS ];
 
 	// maintain cache
 	static float lastConfidenceHalfLife = 0.0f;
@@ -192,9 +193,10 @@ static float UnlockToLockThreshold( float unlockThreshold )
 	unlockableMinTime  = cgs.unlockableMinTime;
 #endif
 #ifdef UI
-	// NOT IMPLEMENTED
-	Com_Error( ERR_FATAL, "UnlockToLockThreshold: Called from within UI subsystem, "
-	                      "where access to necessary data is not implemented" );
+	trap_Cvar_VariableStringBuffer( "ui_confidenceHalfLife", buffer, sizeof( buffer ) );
+	sscanf( buffer, "%f", &confidenceHalfLife );
+	trap_Cvar_VariableStringBuffer( "ui_unlockableMinTime",  buffer, sizeof( buffer ) );
+	sscanf( buffer, "%f", &unlockableMinTime );
 #endif
 
 	// a half life time of 0 means there is no decrease, so we don't need to alter thresholds

@@ -138,10 +138,14 @@ void CG_ParseServerinfo( void )
 	cgs.markDeconstruct    = atoi( Info_ValueForKey( info, "g_markDeconstruct" ) );
 	cgs.powerReactorRange  = atoi( Info_ValueForKey( info, "g_powerReactorRange" ) );
 	cgs.powerRepeaterRange = atoi( Info_ValueForKey( info, "g_powerRepeaterRange" ) );
-	cgs.confidenceHalfLife = atoi( Info_ValueForKey( info, "g_confidenceHalfLife" ) );
-	cgs.unlockableMinTime  = atoi( Info_ValueForKey( info, "g_unlockableMinTime" ) );
+	cgs.confidenceHalfLife = atof( Info_ValueForKey( info, "g_confidenceHalfLife" ) );
+	cgs.unlockableMinTime  = atof( Info_ValueForKey( info, "g_unlockableMinTime" ) );
 
 	Q_strncpyz( cgs.mapname, Info_ValueForKey( info, "mapname" ), sizeof(cgs.mapname) );
+
+	// pass some of these to UI
+	trap_Cvar_Set( "ui_confidenceHalfLife", va( "%f", cgs.confidenceHalfLife ) );
+	trap_Cvar_Set( "ui_unlockableMinTime",  va( "%f", cgs.unlockableMinTime ) );
 }
 
 /*

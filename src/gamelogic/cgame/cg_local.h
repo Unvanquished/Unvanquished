@@ -1388,8 +1388,8 @@ typedef struct
 	qboolean markDeconstruct; // Whether or not buildables are marked
 	int      powerReactorRange;
 	int      powerRepeaterRange;
-	int      confidenceHalfLife; // used for confidence bar (un)lock markers
-	int      unlockableMinTime;  // used for confidence bar (un)lock markers
+	float    confidenceHalfLife; // used for confidence bar (un)lock markers
+	float    unlockableMinTime;  // used for confidence bar (un)lock markers
 
 	int      voteTime[ NUM_TEAMS ];
 	int      voteYes[ NUM_TEAMS ];

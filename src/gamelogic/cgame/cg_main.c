@@ -246,6 +246,8 @@ vmCvar_t        ui_voteActive;
 vmCvar_t        ui_alienTeamVoteActive;
 vmCvar_t        ui_humanTeamVoteActive;
 vmCvar_t        ui_unlockables;
+vmCvar_t        ui_confidenceHalfLife;
+vmCvar_t        ui_unlockablesMinTime;
 
 vmCvar_t        cg_debugRandom;
 
@@ -408,7 +410,9 @@ static const cvarTable_t cvarTable[] =
 	{ &ui_voteActive,                  "ui_voteActive",                  "0",            CVAR_ROM                     },
 	{ &ui_humanTeamVoteActive,         "ui_humanTeamVoteActive",         "0",            CVAR_ROM                     },
 	{ &ui_alienTeamVoteActive,         "ui_alienTeamVoteActive",         "0",            CVAR_ROM                     },
-    { &ui_unlockables,                 "ui_unlockables",                 "0 0",          CVAR_ROM                     },
+	{ &ui_unlockables,                 "ui_unlockables",                 "0 0",          CVAR_ROM                     },
+	{ &ui_confidenceHalfLife,          "ui_confidenceHalfLife",          "0",            CVAR_ROM                     },
+	{ &ui_unlockablesMinTime,          "ui_unlockablesMinTime",          "0",            CVAR_ROM                     },
 
 	{ &cg_debugRandom,                 "cg_debugRandom",                 "0",            0                            },
 
