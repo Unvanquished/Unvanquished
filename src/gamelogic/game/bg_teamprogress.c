@@ -193,7 +193,8 @@ static float UnlockToLockThreshold( float unlockThreshold )
 #endif
 #ifdef UI
 	// NOT IMPLEMENTED
-	return unlockThreshold;
+	Com_Error( ERR_FATAL, "UnlockToLockThreshold: Called from within UI subsystem, "
+	                      "where access to necessary data is not implemented" );
 #endif
 
 	// a half life time of 0 means there is no decrease, so we don't need to alter thresholds

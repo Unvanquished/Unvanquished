@@ -27,7 +27,7 @@ along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 // definitions
 // -----------
 
-// This also sets the frequency for G_UpdateUnlockables
+// This also sets a minimum frequency for G_UpdateUnlockables
 #define DECREASE_CONFIDENCE_PERIOD  500
 
 // Used for legacy stage sensors
@@ -260,7 +260,7 @@ float G_AddConfidenceGeneric( team_t team, float amount )
 /**
  * Adds confidence.
  *
- * G_AddConfidenceEnd has to be called after all G_AddConfidenceFor*Step steps are done.
+ * G_AddConfidenceEnd has to be called after all G_AddConfidence*Step steps are done.
  */
 float G_AddConfidenceGenericStep( team_t team, float amount )
 {
@@ -357,7 +357,7 @@ float G_RemoveConfidenceForDecon( gentity_t *buildable, gentity_t *deconner )
 /**
  * Adds confidence for destroying a buildable.
  *
- * G_AddConfidenceEnd has to be called after all G_AddConfidenceFor*Step steps are done.
+ * G_AddConfidenceEnd has to be called after all G_AddConfidence*Step steps are done.
  */
 float G_AddConfidenceForDestroyingStep( gentity_t *buildable, gentity_t *attacker, float share )
 {
@@ -390,7 +390,7 @@ float G_AddConfidenceForDestroyingStep( gentity_t *buildable, gentity_t *attacke
 /**
  * Adds confidence for killing a player.
  *
- * G_AddConfidenceEnd has to be called after all G_AddConfidenceFor*Step steps are done.
+ * G_AddConfidenceEnd has to be called after all G_AddConfidence*Step steps are done.
  */
 float G_AddConfidenceForKillingStep( gentity_t *victim, gentity_t *attacker, float share )
 {
@@ -421,7 +421,7 @@ float G_AddConfidenceForKillingStep( gentity_t *victim, gentity_t *attacker, flo
 }
 
 /**
- * Has to be called after the last G_AddConfidenceFor*Step step.
+ * Has to be called after the last G_AddConfidence*Step step.
  */
 void G_AddConfidenceEnd( void )
 {
