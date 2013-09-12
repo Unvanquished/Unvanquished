@@ -492,9 +492,15 @@ extern int   REACTOR_ATTACK_DCC_DAMAGE;
 #define DEFAULT_MINIMUM_MINE_RATE          "50"
 
 // confidence
-#define DEFAULT_CONFIDENCE_HALF_LIFE       "5"   // in min
 #define CONFIDENCE_PER_CREDIT              0.01f // used to award confidence based on credit rewards
-#define CONFIDENCE_BUILDING_BASEMOD        0.6f  // building award in relation to destruction
+#define DEFAULT_CONFIDENCE_HALF_LIFE       "5"   // in min
+#define DEFAULT_CONF_REWARD_DOUBLE_TIME    "30"  // in min
+#define DEFAULT_UNLOCKABLE_MIN_TIME        "60"  // in s
+#define DEFAULT_CONFIDENCE_BASE_MOD        "1.0"
+#define DEFAULT_CONFIDENCE_KILL_MOD        "1.0"
+#define DEFAULT_CONFIDENCE_BUILD_MOD       "0.6"
+#define DEFAULT_CONFIDENCE_DECON_MOD       "1.0" // used on top of build mod
+#define DEFAULT_CONFIDENCE_DESTROY_MOD     "1.0"
 
 #define MAXIMUM_BUILD_TIME                 20000 // used for pie timer
 

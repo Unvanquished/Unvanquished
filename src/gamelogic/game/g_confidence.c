@@ -27,7 +27,7 @@ along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 // definitions
 // -----------
 
-// This also sets the frequency for G_UpdateUnlockables
+// This also sets a minimum frequency for G_UpdateUnlockables
 #define DECREASE_CONFIDENCE_PERIOD  500
 
 // Used for legacy stage sensors
@@ -124,13 +124,84 @@ void NotifyLegacyStageSensors( team_t team, float amount )
 	}
 }
 
+static INLINE float ConfidenceTimeMod( void )
+{
+	if ( g_confidenceRewardDoubleTime.value <= 0.0f )
+	{
+		return 1.0f;
+	}
+	else
+	{
+		// ln(2) ~= 0.6931472
+		return exp( 0.6931472f * ( ( level.matchTime / 60000.0f ) / g_confidenceRewardDoubleTime.value ) );
+	}
+}
+
+/**
+ * Modifies a confidence reward based on type, player count and match time.
+ */
+static float ConfidenceMod( confidence_t type )
+{
+	float baseMod, typeMod, timeMod, playerCountMod, mod;
+
+	// type mod
+	switch ( type )
+	{
+		case CONF_KILLING:
+			baseMod        = g_confidenceBaseMod.value;
+			typeMod        = g_confidenceKillMod.value;
+			timeMod        = ConfidenceTimeMod();
+			playerCountMod = 1.0f;
+			break;
+
+		case CONF_BUILDING:
+			baseMod        = g_confidenceBaseMod.value;
+			typeMod        = g_confidenceBuildMod.value;
+			timeMod        = ConfidenceTimeMod();
+			playerCountMod = 1.0f;
+			break;
+
+		case CONF_DECONSTRUCTING:
+			// always used on top of build mod, so neutral baseMod/timeMod/playerCountMod
+			baseMod        = 1.0f;
+			typeMod        = g_confidenceDeconMod.value;
+			timeMod        = 1.0f;
+			playerCountMod = 1.0f;
+			break;
+
+		case CONF_DESTROYING:
+			baseMod        = g_confidenceBaseMod.value;
+			typeMod        = g_confidenceDestroyMod.value;
+			timeMod        = ConfidenceTimeMod();
+			playerCountMod = 1.0f;
+			break;
+
+		case CONF_GENERIC:
+		default:
+			baseMod        = 1.0f;
+			typeMod        = 1.0f;
+			timeMod        = 1.0f;
+			playerCountMod = 1.0f;
+	}
+
+	mod = baseMod * typeMod * timeMod * playerCountMod;
+
+	if ( g_debugConfidence.integer > 1 )
+	{
+		Com_Printf( "Confidence mod for %s: Base %.2f, Type %.2f, Time %.2f, Playercount %.2f → %.2f\n",
+		            ConfidenceTypeToReason( type ), baseMod, typeMod, timeMod, playerCountMod, mod );
+	}
+
+	return mod;
+}
+
 /**
  * Awards confidence to a team.
  *
  * Will notify the client hwo earned it if given, otherwise the whole team, with an event.
  */
-static void AddConfidence( confidence_t type, team_t team, float amount,
-                           gentity_t *source, qboolean skipChangeHook )
+static float AddConfidence( confidence_t type, team_t team, float amount,
+                            gentity_t *source, qboolean skipChangeHook )
 {
 	gentity_t *event = NULL;
 	gclient_t *client;
@@ -138,46 +209,53 @@ static void AddConfidence( confidence_t type, team_t team, float amount,
 
 	if ( team <= TEAM_NONE || team >= NUM_TEAMS )
 	{
-		return;
+		return 0.0f;
 	}
 
-	level.team[ team ].confidence += amount;
+	// apply modifier
+	amount *= ConfidenceMod( type );
 
-	if ( !skipChangeHook )
+	if ( amount != 0.0f )
 	{
-		ConfidenceChanged();
-	}
+		// add confidence to team
+		level.team[ team ].confidence += amount;
 
-	// notify source
-	if ( source )
-	{
-		client = source->client;
-
-		if ( client && client->pers.team == team )
+		// run change hook if requested
+		if ( !skipChangeHook )
 		{
-			event = G_NewTempEntity( client->ps.origin, EV_CONFIDENCE );
-			event->r.svFlags = SVF_SINGLECLIENT;
-			event->r.singleClient = client->ps.clientNum;
+			ConfidenceChanged();
 		}
-	}
-	else
-	{
-		event = G_NewTempEntity( vec3_origin, EV_CONFIDENCE );
-		event->r.svFlags = ( SVF_BROADCAST | SVF_CLIENTMASK );
-		G_TeamToClientmask( team, &( event->r.loMask ), &( event->r.hiMask ) );
-	}
 
-	if ( event )
-	{
-		// TODO: Use more bits for confidence value
-		event->s.eventParm = 0;
-		event->s.otherEntityNum = 0;
-		event->s.otherEntityNum2 = ( int )( fabs( amount ) * 10.0f + 0.5f );
-		event->s.groundEntityNum = amount < 0.0f ? qtrue : qfalse;
-	}
+		// notify source
+		if ( source )
+		{
+			client = source->client;
 
-	// notify legacy stage sensors
-	NotifyLegacyStageSensors( team, amount );
+			if ( client && client->pers.team == team )
+			{
+				event = G_NewTempEntity( client->ps.origin, EV_CONFIDENCE );
+				event->r.svFlags = SVF_SINGLECLIENT;
+				event->r.singleClient = client->ps.clientNum;
+			}
+		}
+		else
+		{
+			event = G_NewTempEntity( vec3_origin, EV_CONFIDENCE );
+			event->r.svFlags = ( SVF_BROADCAST | SVF_CLIENTMASK );
+			G_TeamToClientmask( team, &( event->r.loMask ), &( event->r.hiMask ) );
+		}
+		if ( event )
+		{
+			// TODO: Use more bits for confidence value
+			event->s.eventParm = 0;
+			event->s.otherEntityNum = 0;
+			event->s.otherEntityNum2 = ( int )( fabs( amount ) * 10.0f + 0.5f );
+			event->s.groundEntityNum = amount < 0.0f ? qtrue : qfalse;
+		}
+
+		// notify legacy stage sensors
+		NotifyLegacyStageSensors( team, amount );
+	}
 
 	if ( g_debugConfidence.integer > 0 )
 	{
@@ -194,6 +272,8 @@ static void AddConfidence( confidence_t type, team_t team, float amount,
 		            amount, BG_TeamNamePlural( team ), amount < 0.0f ? "lost" : "earned",
 		            clientName, ConfidenceTypeToReason( type ) );
 	}
+
+	return amount;
 }
 
 // ------------
@@ -260,7 +340,7 @@ float G_AddConfidenceGeneric( team_t team, float amount )
 /**
  * Adds confidence.
  *
- * G_AddConfidenceEnd has to be called after all G_AddConfidenceFor*Step steps are done.
+ * G_AddConfidenceEnd has to be called after all G_AddConfidence*Step steps are done.
  */
 float G_AddConfidenceGenericStep( team_t team, float amount )
 {
@@ -273,20 +353,16 @@ float G_AddConfidenceGenericStep( team_t team, float amount )
  * Predicts the confidence reward for building a buildable.
  *
  * Is used for the buildlog entry, which is written before the actual reward happens.
+ * Also used to calculate the deconstruction penalty for preplaced buildables.
  */
 float G_PredictConfidenceForBuilding( gentity_t *buildable )
 {
-	float     value, reward;
-
 	if ( !buildable || !buildable->s.eType == ET_BUILDABLE )
 	{
 		return 0.0f;
 	}
 
-	value   = BG_Buildable( buildable->s.modelindex )->value;
-	reward = value * CONFIDENCE_BUILDING_BASEMOD;
-
-	return reward;
+	return BG_Buildable( buildable->s.modelindex )->value * ConfidenceMod( CONF_BUILDING );
 }
 
 /**
@@ -309,10 +385,7 @@ float G_AddConfidenceForBuilding( gentity_t *buildable )
 	team    = BG_Buildable( buildable->s.modelindex )->team;
 	builder = &g_entities[ buildable->builtBy->slot ];
 
-	// Calculate reward
-	reward = value * CONFIDENCE_BUILDING_BASEMOD;
-
-	AddConfidence( CONF_BUILDING, team, reward, builder, qfalse );
+	reward = AddConfidence( CONF_BUILDING, team, value, builder, qfalse );
 
 	// Save reward with buildable so it can be reverted
 	buildable->confidenceEarned = reward;
@@ -325,7 +398,7 @@ float G_AddConfidenceForBuilding( gentity_t *buildable )
  */
 float G_RemoveConfidenceForDecon( gentity_t *buildable, gentity_t *deconner )
 {
-	float     healthFraction, value, penalty;
+	float     healthFraction, value;
 	team_t    team;
 
 	// sanity check buildable
@@ -343,25 +416,23 @@ float G_RemoveConfidenceForDecon( gentity_t *buildable, gentity_t *deconner )
 	}
 	else
 	{
-		value = BG_Buildable( buildable->s.modelindex )->value * CONFIDENCE_BUILDING_BASEMOD;
+		// assume the buildable has just been built
+		value = G_PredictConfidenceForBuilding( buildable );
 	}
 
-	// Calculate reward
-	penalty = -value * healthFraction;
+	value *= healthFraction;
 
-	AddConfidence( CONF_DECONSTRUCTING, team, penalty, deconner, qfalse );
-
-	return penalty;
+	return AddConfidence( CONF_DECONSTRUCTING, team, -value, deconner, qfalse );
 }
 
 /**
  * Adds confidence for destroying a buildable.
  *
- * G_AddConfidenceEnd has to be called after all G_AddConfidenceFor*Step steps are done.
+ * G_AddConfidenceEnd has to be called after all G_AddConfidence*Step steps are done.
  */
 float G_AddConfidenceForDestroyingStep( gentity_t *buildable, gentity_t *attacker, float share )
 {
-	float  value, reward;
+	float  value;
 	team_t team;
 
 	// sanity check buildable
@@ -376,25 +447,20 @@ float G_AddConfidenceForDestroyingStep( gentity_t *buildable, gentity_t *attacke
 		return 0.0f;
 	}
 
-	value = BG_Buildable( buildable->s.modelindex )->value;
+	value = BG_Buildable( buildable->s.modelindex )->value * share;
 	team  = attacker->client->pers.team;
 
-	// Calculate reward
-	reward = value * share;
-
-	AddConfidence( CONF_DESTROYING, team, reward, attacker, qtrue );
-
-	return reward;
+	return AddConfidence( CONF_DESTROYING, team, value, attacker, qtrue );
 }
 
 /**
  * Adds confidence for killing a player.
  *
- * G_AddConfidenceEnd has to be called after all G_AddConfidenceFor*Step steps are done.
+ * G_AddConfidenceEnd has to be called after all G_AddConfidence*Step steps are done.
  */
 float G_AddConfidenceForKillingStep( gentity_t *victim, gentity_t *attacker, float share )
 {
-	float     value, reward;
+	float     value;
 	team_t    team;
 
 	// sanity check victim
@@ -409,19 +475,14 @@ float G_AddConfidenceForKillingStep( gentity_t *victim, gentity_t *attacker, flo
 		return 0.0f;
 	}
 
-	value = BG_GetValueOfPlayer( &victim->client->ps );
+	value = BG_GetValueOfPlayer( &victim->client->ps ) * CONFIDENCE_PER_CREDIT * share;
 	team  = attacker->client->pers.team;
 
-	// Calculate reward
-	reward = value * CONFIDENCE_PER_CREDIT * share;
-
-	AddConfidence( CONF_KILLING, team, reward, attacker, qtrue );
-
-	return reward;
+	return AddConfidence( CONF_KILLING, team, value, attacker, qtrue );
 }
 
 /**
- * Has to be called after the last G_AddConfidenceFor*Step step.
+ * Has to be called after the last G_AddConfidence*Step step.
  */
 void G_AddConfidenceEnd( void )
 {
