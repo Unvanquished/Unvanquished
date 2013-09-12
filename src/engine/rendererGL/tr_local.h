@@ -1890,14 +1890,17 @@ extern "C" {
 	{
 		surfaceType_t   surfaceType;
 
+		vec3_t          bounds[ 2 ];
+		vec3_t          origin;
+		float           radius;
+
 		struct shader_s *shader; // FIXME move this to somewhere else
 
 		int             lightmapNum; // FIXME get rid of this by merging all lightmaps at level load
-
-		// culling information
-		vec3_t bounds[ 2 ];
+		int             fogIndex;
 
 		// backEnd stats
+		int firstIndex;
 		int numIndexes;
 		int numVerts;
 
@@ -2044,6 +2047,7 @@ extern "C" {
 
 		int          numMarkSurfaces;
 		bspSurface_t **markSurfaces;
+		bspSurface_t **viewSurfaces;
 	} bspNode_t;
 
 #if defined( USE_BSP_CLUSTERSURFACE_MERGING )
@@ -2149,6 +2153,11 @@ extern "C" {
 
 		int                numMarkSurfaces;
 		bspSurface_t       **markSurfaces;
+
+		bspSurface_t       **viewSurfaces;
+
+		int                numMergedSurfaces;
+		bspSurface_t       *mergedSurfaces;
 
 		int                numFogs;
 		fog_t              *fogs;
@@ -2548,6 +2557,7 @@ extern "C" {
 	*/
 	typedef struct
 	{
+		int c_box_cull_in, c_box_cull_out;
 		int c_sphere_cull_in, c_sphere_cull_out;
 		int c_plane_cull_in, c_plane_cull_out;
 
@@ -3239,6 +3249,7 @@ extern "C" {
 	extern cvar_t *r_mergeClusterCurves;
 	extern cvar_t *r_mergeClusterTriangles;
 #endif
+	extern cvar_t *r_mergeLeafSurfaces;
 
 	extern cvar_t *r_deferredShading;
 	extern cvar_t *r_parallaxMapping;
@@ -3315,6 +3326,7 @@ extern "C" {
 	void           R_LocalNormalToWorld( const vec3_t local, vec3_t world );
 	void           R_LocalPointToWorld( const vec3_t local, vec3_t world );
 
+	cullResult_t   R_CullBox( vec3_t worldBounds[ 2 ] );
 	cullResult_t   R_CullLocalBox( vec3_t bounds[ 2 ] );
 	int            R_CullLocalPointAndRadius( vec3_t origin, float radius );
 	int            R_CullPointAndRadius( vec3_t origin, float radius );

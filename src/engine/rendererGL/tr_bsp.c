@@ -4994,6 +4994,56 @@ void SmoothNormals( const char *name, srfVert_t *verts, int numTotalVerts )
 
 #endif
 
+static int LeafSurfaceCompare( const void *a, const void *b )
+{
+	bspSurface_t *aa, *bb;
+
+	aa = * ( bspSurface_t ** ) a;
+	bb = * ( bspSurface_t ** ) b;
+
+	// shader first
+	if ( aa->shader < bb->shader )
+	{
+		return -1;
+	}
+
+	else if ( aa->shader > bb->shader )
+	{
+		return 1;
+	}
+
+	// by lightmap
+	if ( aa->lightmapNum < bb->lightmapNum )
+	{
+		return -1;
+	}
+
+	else if ( aa->lightmapNum > bb->lightmapNum )
+	{
+		return 1;
+	}
+
+	if ( aa->fogIndex < bb->fogIndex )
+	{
+		return -1;
+	}
+	else if ( aa->fogIndex > bb->fogIndex )
+	{
+		return 1;
+	}
+
+	if ( aa->viewCount < bb->viewCount )
+	{
+		return -1;
+	}
+	else if ( aa->viewCount > bb->viewCount )
+	{
+		return 1;
+	}
+
+	return 0;
+}
+
 /*
 ===============
 R_CreateWorldVBO
@@ -5011,14 +5061,14 @@ static void R_CreateWorldVBO( void )
 	int           numTriangles;
 	srfTriangle_t *triangles;
 
-	int             numSurfaces;
+	int            numSurfaces;
 	bspSurface_t  *surface;
-	
 	bspSurface_t  **surfaces;
-
-//	trRefLight_t   *light;
-
-	int startTime, endTime;
+	int            numUnmergedSurfaces;
+	int            numMergedSurfaces;
+	bspSurface_t  *mergedSurf;
+	int           oldViewCount;
+	int           startTime, endTime;
 
 	startTime = ri.Milliseconds();
 
@@ -5028,7 +5078,7 @@ static void R_CreateWorldVBO( void )
 
 	for ( k = 0, surface = &s_worldData.surfaces[ 0 ]; k < s_worldData.numWorldSurfaces; k++, surface++ )
 	{
-		if ( ShaderRequiresCPUDeforms( surface->shader ) )
+		if ( surface->shader->isSky || surface->shader->isPortal || ShaderRequiresCPUDeforms( surface->shader ) )
 		{
 			continue;
 		}
@@ -5067,12 +5117,94 @@ static void R_CreateWorldVBO( void )
 		return;
 	}
 
+	// reset surface view counts
+	for ( i = 0, surface = s_worldData.surfaces; i < s_worldData.numSurfaces; i++, surface++ )
+	{
+		surface->viewCount = -1;
+	}
+
+	if ( r_mergeLeafSurfaces->integer )
+	{
+		// mark matching surfaces
+		for ( i = 0; i < s_worldData.numnodes - s_worldData.numDecisionNodes; i++ )
+		{
+			bspNode_t *leaf = s_worldData.nodes + s_worldData.numDecisionNodes + i;
+
+			for ( j = 0; j < leaf->numMarkSurfaces; j++ )
+			{
+				bspSurface_t *surf1;
+				shader_t *shader1;
+				int fogIndex1;
+				int lightMapNum1;
+				qboolean merged = qfalse;
+				surf1 = leaf->markSurfaces[ j ];
+
+				if ( surf1->viewCount != -1 )
+				{
+					continue;
+				}
+
+				if ( *surf1->data != SF_GRID && *surf1->data != SF_TRIANGLES && *surf1->data != SF_FACE )
+				{
+					continue;
+				}
+
+				shader1 = surf1->shader;
+
+				if ( shader1->isSky || shader1->isPortal || ShaderRequiresCPUDeforms( shader1 ) )
+				{
+					continue;
+				}
+
+				fogIndex1 = surf1->fogIndex;
+				lightMapNum1 = surf1->lightmapNum;
+				surf1->viewCount = surf1 - s_worldData.surfaces;
+
+				for ( k = j + 1; k < leaf->numMarkSurfaces; k++ )
+				{
+					bspSurface_t *surf2;
+					shader_t *shader2;
+					int fogIndex2;
+					int lightMapNum2;
+
+					surf2 = leaf->markSurfaces[ k ];
+
+					if ( surf2->viewCount != -1 )
+					{
+						continue;
+					}
+
+					if ( *surf2->data != SF_GRID && *surf2->data != SF_TRIANGLES && *surf2->data != SF_FACE )
+					{
+						continue;
+					}
+
+					shader2 = surf2->shader;
+					fogIndex2 = surf2->fogIndex;
+					lightMapNum2 = surf2->lightmapNum;
+					if ( shader1 != shader2 || fogIndex1 != fogIndex2 || lightMapNum1 != lightMapNum2 )
+					{
+						continue;
+					}
+
+					surf2->viewCount = surf1->viewCount;
+					merged = qtrue;
+				}
+
+				if ( !merged )
+				{
+					surf1->viewCount = -1;
+				}
+			}
+		}
+	}
+
 	surfaces = ( bspSurface_t ** ) ri.Hunk_AllocateTempMemory( sizeof( *surfaces ) * numSurfaces );
 
 	numSurfaces = 0;
 	for ( k = 0, surface = &s_worldData.surfaces[ 0 ]; k < s_worldData.numWorldSurfaces; k++, surface++ )
 	{
-		if ( ShaderRequiresCPUDeforms( surface->shader ) )
+		if ( surface->shader->isSky || surface->shader->isPortal || ShaderRequiresCPUDeforms( surface->shader ) )
 		{
 			continue;
 		}
@@ -5083,7 +5215,7 @@ static void R_CreateWorldVBO( void )
 		}
 	}
 
-	qsort( surfaces, numSurfaces, sizeof( *surfaces ), BSPSurfaceCompare );
+	qsort( surfaces, numSurfaces, sizeof( *surfaces ), LeafSurfaceCompare );
 
 	ri.Printf( PRINT_DEVELOPER, "...calculating world VBO ( %i verts %i tris )\n", numVerts, numTriangles );
 
@@ -5095,12 +5227,14 @@ static void R_CreateWorldVBO( void )
 	s_worldData.numTriangles = numTriangles;
 	s_worldData.triangles = triangles = ( srfTriangle_t * ) ri.Hunk_Alloc( numTriangles * sizeof( srfTriangle_t ), h_low );
 
-	// set up triangle indices
+	// set up triangle and vertex arrays
 	numVerts = 0;
 	numTriangles = 0;
 
-	for ( k = 0, surface = surfaces[ 0 ]; k < numSurfaces; k++, surface = surfaces[ k ] )
+	for ( k = 0; k < numSurfaces; k++ )
 	{
+		surface = surfaces[ k ];
+
 		if ( *surface->data == SF_FACE )
 		{
 			srfSurfaceFace_t *srf = ( srfSurfaceFace_t * ) surface->data;
@@ -5199,6 +5333,7 @@ static void R_CreateWorldVBO( void )
 		}
 	}
 
+	// create vbo and ibo
 #if 0
 	numVerts = OptimizeVertices( numVerts, verts, numTriangles, triangles, optimizedVerts, CompareWorldVert );
 
@@ -5224,45 +5359,183 @@ static void R_CreateWorldVBO( void )
 
 	s_worldData.ibo = R_CreateStaticIBO2( va( "staticBspModel0_IBO %i", 0 ), numTriangles, triangles );
 
+	if ( r_mergeLeafSurfaces->integer )
+	{
+		// count merged/unmerged surfaces
+		numMergedSurfaces = 0;
+		numUnmergedSurfaces = 0;
+		oldViewCount = -2;
+		for ( i = 0; i < numSurfaces; i++ )
+		{
+			surface = surfaces[ i ];
+
+			if ( surface->viewCount == -1 )
+			{
+				numUnmergedSurfaces++;
+			}
+			else if ( surface->viewCount != oldViewCount )
+			{
+				oldViewCount = surface->viewCount;
+				numMergedSurfaces++;
+			}
+		}
+
+		// Allocate merged surfaces
+		s_worldData.mergedSurfaces = ( bspSurface_t * ) ri.Hunk_Alloc( sizeof( *s_worldData.mergedSurfaces ) * numMergedSurfaces, h_low );
+
+		// actually merge surfaces
+		mergedSurf = s_worldData.mergedSurfaces;
+		oldViewCount = -2;
+		for ( i = 0; i < numSurfaces; i++ )
+		{
+			vec3_t bounds[ 2 ];
+			int numVerts = 0;
+			int numIndexes = 0;
+			int firstIndex = numTriangles * 3;
+			srfVBOMesh_t *vboSurf;
+			bspSurface_t *surf1 = surfaces[ i ];
+
+			// skip unmergable surfaces
+			if ( surf1->viewCount == -1 )
+			{
+				continue;
+			}
+
+			// skip surfaces that have already been merged
+			if ( surf1->viewCount == oldViewCount )
+			{
+				continue;
+			}
+
+			oldViewCount = surf1->viewCount;
+
+			if ( *surf1->data == SF_FACE )
+			{
+				srfSurfaceFace_t *face = ( srfSurfaceFace_t * ) surf1->data;
+				firstIndex = face->firstTriangle * 3;
+			}
+			else if ( *surf1->data == SF_TRIANGLES )
+			{
+				srfTriangles_t *tris = ( srfTriangles_t * ) surf1->data;
+				firstIndex = tris->firstTriangle * 3;
+			}
+			else if ( *surf1->data == SF_GRID )
+			{
+				srfGridMesh_t *grid = ( srfGridMesh_t * ) surf1->data;
+				firstIndex = grid->firstTriangle * 3;
+			}
+
+			// count verts and indexes and add bounds for the merged surface
+			ClearBounds( bounds[ 0 ], bounds[ 1 ] );
+			for ( j = i; j < numSurfaces; j++ )
+			{
+				bspSurface_t *surf2 = surfaces[ j ];
+
+				// stop merging when we hit a surface that can't be merged
+				if ( surf2->viewCount != surf1->viewCount )
+				{
+					break;
+				}
+
+				if ( *surf2->data == SF_FACE )
+				{
+					srfSurfaceFace_t *face = ( srfSurfaceFace_t * ) surf2->data;
+					numIndexes += face->numTriangles * 3;
+					numVerts += face->numVerts;
+					BoundsAdd( bounds[ 0 ], bounds[ 1 ], face->bounds[ 0 ], face->bounds[ 1 ] );
+				}
+				else if ( *surf2->data == SF_TRIANGLES )
+				{
+					srfTriangles_t *tris = ( srfTriangles_t * ) surf2->data;
+					numIndexes += tris->numTriangles * 3;
+					numVerts += tris->numVerts;
+					BoundsAdd( bounds[ 0 ], bounds[ 1 ], tris->bounds[ 0 ], tris->bounds[ 1 ] );
+				}
+				else if ( *surf2->data == SF_GRID )
+				{
+					srfGridMesh_t *grid = ( srfGridMesh_t * ) surf2->data;
+					numIndexes += grid->numTriangles * 3;
+					numVerts += grid->numVerts;
+					BoundsAdd( bounds[ 0 ], bounds[ 1 ], grid->bounds[ 0 ], grid->bounds[ 1 ] );
+				}
+			}
+
+			if ( !numIndexes || !numVerts )
+			{
+				continue;
+			}
+
+			vboSurf = ( srfVBOMesh_t * ) ri.Hunk_Alloc( sizeof( *vboSurf ), h_low );
+			memset( vboSurf, 0, sizeof( *vboSurf ) );
+			vboSurf->surfaceType = SF_VBO_MESH;
+
+			vboSurf->numIndexes = numIndexes;
+			vboSurf->numVerts = numVerts;
+			vboSurf->firstIndex = firstIndex;
+
+			vboSurf->shader = surf1->shader;
+			vboSurf->fogIndex = surf1->fogIndex;
+			vboSurf->lightmapNum = surf1->lightmapNum;
+			vboSurf->vbo = s_worldData.vbo;
+			vboSurf->ibo = s_worldData.ibo;
+
+			VectorCopy( bounds[ 0 ], vboSurf->bounds[ 0 ] );
+			VectorCopy( bounds[ 1 ], vboSurf->bounds[ 1 ] );
+			SphereFromBounds( vboSurf->bounds[ 0 ], vboSurf->bounds[ 1 ], vboSurf->origin, &vboSurf->radius );
+	
+			mergedSurf->data = ( surfaceType_t * ) vboSurf;
+			mergedSurf->fogIndex = surf1->fogIndex;
+			mergedSurf->shader = surf1->shader;
+			mergedSurf->lightmapNum = surf1->lightmapNum;
+			mergedSurf->viewCount = -1;
+
+			// redirect view surfaces to this surf
+			for ( k = 0; k < s_worldData.numMarkSurfaces; k++ )
+			{
+				bspSurface_t **view = s_worldData.viewSurfaces + k;
+
+				if ( ( *view )->viewCount == surf1->viewCount )
+				{
+					*view = mergedSurf;
+				}
+			}
+
+			mergedSurf++;
+		}
+	}
 	endTime = ri.Milliseconds();
 	ri.Printf( PRINT_DEVELOPER, "world VBO calculation time = %5.2f seconds\n", ( endTime - startTime ) / 1000.0 );
+	
+	if ( r_mergeLeafSurfaces->integer )
+	{
+		ri.Printf( PRINT_DEVELOPER, "Processed %d surfaces into %d merged, %d unmerged\n", numSurfaces, numMergedSurfaces, numUnmergedSurfaces );
+	}
 
 	// point triangle surfaces to world VBO
-	for ( k = 0, surface = surfaces[ 0 ]; k < numSurfaces; k++, surface = surfaces[ k ] )
+	for ( k = 0; k < numSurfaces; k++ )
 	{
+		surface = surfaces[ k ];
+
 		if ( *surface->data == SF_FACE )
 		{
 			srfSurfaceFace_t *srf = ( srfSurfaceFace_t * ) surface->data;
-
-			//if(r_vboFaces->integer && srf->numVerts && srf->numTriangles)
-			{
-				srf->vbo = s_worldData.vbo;
-				srf->ibo = s_worldData.ibo;
-				//srf->ibo = R_CreateIBO2(va("staticBspModel0_planarSurface_IBO %i", k), srf->numTriangles, triangles + srf->firstTriangle, VBO_USAGE_STATIC);
-			}
+			srf->vbo = s_worldData.vbo;
+			srf->ibo = s_worldData.ibo;
 		}
 		else if ( *surface->data == SF_GRID )
 		{
 			srfGridMesh_t *srf = ( srfGridMesh_t * ) surface->data;
-
-			//if(r_vboCurves->integer && srf->numVerts && srf->numTriangles)
-			{
-				srf->vbo = s_worldData.vbo;
-				srf->ibo = s_worldData.ibo;
-				//srf->ibo = R_CreateIBO2(va("staticBspModel0_curveSurface_IBO %i", k), srf->numTriangles, triangles + srf->firstTriangle, VBO_USAGE_STATIC);
-			}
+			srf->vbo = s_worldData.vbo;
+			srf->ibo = s_worldData.ibo;
 		}
 		else if ( *surface->data == SF_TRIANGLES )
 		{
 			srfTriangles_t *srf = ( srfTriangles_t * ) surface->data;
-
-			//if(r_vboTriangles->integer && srf->numVerts && srf->numTriangles)
-			{
-				srf->vbo = s_worldData.vbo;
-				srf->ibo = s_worldData.ibo;
-				//srf->ibo = R_CreateIBO2(va("staticBspModel0_triangleSurface_IBO %i", k), srf->numTriangles, triangles + srf->firstTriangle, VBO_USAGE_STATIC);
-			}
+			srf->vbo = s_worldData.vbo;
+			srf->ibo = s_worldData.ibo;
 		}
+
+		surface->viewCount = -1;
 	}
 
 	// Tr3B: FIXME move this to somewhere else?
@@ -5434,7 +5707,6 @@ static void R_CreateSubModelVBOs( void )
 					if ( *surface2->data == SF_FACE )
 					{
 						srfSurfaceFace_t *face = ( srfSurfaceFace_t * ) surface2->data;
-
 						if ( face->numVerts )
 						{
 							numVerts += face->numVerts;
@@ -5448,7 +5720,6 @@ static void R_CreateSubModelVBOs( void )
 					else if ( *surface2->data == SF_GRID )
 					{
 						srfGridMesh_t *grid = ( srfGridMesh_t * ) surface2->data;
-
 						if ( grid->numVerts )
 						{
 							numVerts += grid->numVerts;
@@ -5462,7 +5733,6 @@ static void R_CreateSubModelVBOs( void )
 					else if ( *surface2->data == SF_TRIANGLES )
 					{
 						srfTriangles_t *tri = ( srfTriangles_t * ) surface2->data;
-
 						if ( tri->numVerts )
 						{
 							numVerts += tri->numVerts;
@@ -5676,7 +5946,7 @@ static void R_CreateSubModelVBOs( void )
 #endif
 
 				vboSurf->ibo = R_CreateStaticIBO2( va( "staticBspModel%i_IBO %i", m, vboSurfaces.currentElements ), numTriangles, triangles );
-
+				SphereFromBounds( vboSurf->bounds[ 0 ], vboSurf->bounds[ 1 ], vboSurf->origin, &vboSurf->radius );
 				ri.Hunk_FreeTempMemory( triangles );
 				ri.Hunk_FreeTempMemory( optimizedVerts );
 				ri.Hunk_FreeTempMemory( verts );
@@ -6041,6 +6311,7 @@ static void R_LoadNodesAndLeafs( lump_t *nodeLump, lump_t *leafLump )
 		}
 
 		out->markSurfaces = s_worldData.markSurfaces + LittleLong( inLeaf->firstLeafSurface );
+		out->viewSurfaces = s_worldData.viewSurfaces + LittleLong( inLeaf->firstLeafSurface );
 		out->numMarkSurfaces = LittleLong( inLeaf->numLeafSurfaces );
 	}
 
@@ -6190,11 +6461,13 @@ static void R_LoadMarksurfaces( lump_t *l )
 
 	s_worldData.markSurfaces = out;
 	s_worldData.numMarkSurfaces = count;
+	s_worldData.viewSurfaces = ( bspSurface_t ** ) ri.Hunk_Alloc( count * sizeof( *out ), h_low );
 
 	for ( i = 0; i < count; i++ )
 	{
 		j = LittleLong( in[ i ] );
 		out[ i ] = s_worldData.surfaces + j;
+		s_worldData.viewSurfaces[ i ] = out[ i ];
 	}
 }
 

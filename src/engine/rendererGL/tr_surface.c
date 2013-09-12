@@ -1609,20 +1609,8 @@ static void Tess_SurfaceVBOMesh( srfVBOMesh_t *srf )
 {
 	GLimp_LogComment( "--- Tess_SurfaceVBOMesh ---\n" );
 
-	if ( !srf->vbo || !srf->ibo )
-	{
-		return;
-	}
 
-	Tess_EndBegin();
-
-	R_BindVBO( srf->vbo );
-	R_BindIBO( srf->ibo );
-
-	tess.numIndexes = srf->numIndexes;
-	tess.numVertexes = srf->numVerts;
-
-	Tess_End();
+	Tess_SurfaceVBO( srf->vbo, srf->ibo, srf->numVerts, srf->numIndexes, srf->firstIndex );
 }
 
 /*

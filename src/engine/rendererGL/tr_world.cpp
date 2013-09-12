@@ -141,38 +141,21 @@ static qboolean R_CullSurface( surfaceType_t *surface, shader_t *shader, int *fr
 	}
 
 	// ydnar: made surface culling generic, inline with q3map2 surface classification
-	switch ( *surface )
+	if ( *surface == SF_GRID && r_nocurves->integer )
 	{
-		case SF_FACE:
-		case SF_TRIANGLES:
-			break;
+		return qtrue;
+	}
 
-		case SF_GRID:
-			if ( r_nocurves->integer )
-			{
-				return qtrue;
-			}
-
-			break;
-
-			/*
-			case SF_FOLIAGE:
-			if(!r_drawfoliage->value)
-			{
-			        return qtrue;
-			}
-			break;
-			*/
-
-		default:
-			return qtrue;
+	if ( *surface != SF_FACE && *surface != SF_TRIANGLES && *surface != SF_VBO_MESH && *surface != SF_GRID )
+	{
+		return qtrue;
 	}
 
 	// get generic surface
 	gen = ( srfGeneric_t * ) surface;
 
 	// plane cull
-	if ( gen->plane.type != PLANE_NON_PLANAR && r_facePlaneCull->integer )
+	if ( *surface == SF_FACE && r_facePlaneCull->integer )
 	{
 		d = DotProduct( tr.orientation.viewOrigin, gen->plane.normal ) - gen->plane.dist;
 
@@ -204,8 +187,27 @@ static qboolean R_CullSurface( surfaceType_t *surface, shader_t *shader, int *fr
 		tr.pc.c_plane_cull_in++;
 	}
 
+	if ( *surface == SF_VBO_MESH )
 	{
-		// try sphere cull
+		if ( tr.currentEntity != &tr.worldEntity )
+		{
+			cull = R_CullLocalBox( gen->bounds );
+		}
+		else
+		{
+			cull = R_CullBox( gen->bounds );
+		}
+
+		if ( cull == CULL_OUT )
+		{
+			tr.pc.c_box_cull_out++;
+			return qtrue;
+		}
+
+		tr.pc.c_box_cull_in++;
+	}
+	else
+	{
 		if ( tr.currentEntity != &tr.worldEntity )
 		{
 			cull = R_CullLocalPointAndRadius( gen->origin, gen->radius );
@@ -332,24 +334,9 @@ static void R_AddInteractionSurface( bspSurface_t *surf, trRefLight_t *light )
 	}
 }
 
-/*
-======================
-R_AddWorldSurface
-======================
-*/
-static void R_AddWorldSurface( bspSurface_t *surf, int decalBits )
+static void R_AddDecalSurface( bspSurface_t *surf, int decalBits )
 {
-	int      i, frontFace;
-	shader_t *shader;
-
-	if ( surf->viewCount == tr.viewCountNoReset )
-	{
-		return;
-	}
-
-	surf->viewCount = tr.viewCountNoReset;
-
-	shader = surf->shader;
+	int i;
 
 	// add decals
 	if ( decalBits )
@@ -363,6 +350,23 @@ static void R_AddWorldSurface( bspSurface_t *surf, int decalBits )
 			}
 		}
 	}
+}
+
+/*
+======================
+R_AddWorldSurface
+======================
+*/
+static qboolean R_AddWorldSurface( bspSurface_t *surf )
+{
+	int      frontFace;
+
+	if ( surf->viewCount == tr.viewCountNoReset )
+	{
+		return qfalse;
+	}
+
+	surf->viewCount = tr.viewCountNoReset;
 
 #if defined( USE_BSP_CLUSTERSURFACE_MERGING )
 
@@ -381,10 +385,11 @@ static void R_AddWorldSurface( bspSurface_t *surf, int decalBits )
 	// try to cull before lighting or adding
 	if ( R_CullSurface( surf->data, surf->shader, &frontFace ) )
 	{
-		return;
+		return qtrue;
 	}
 
 	R_AddDrawSurf( surf->data, surf->shader, surf->lightmapNum, surf->fogIndex );
+	return qtrue;
 }
 
 /*
@@ -526,7 +531,8 @@ void R_AddBSPModelSurfaces( trRefEntity_t *ent )
 static void R_AddLeafSurfaces( bspNode_t *node, int decalBits )
 {
 	int          c;
-	bspSurface_t *surf, **mark;
+	bspSurface_t **mark;
+	bspSurface_t **view;
 
 	tr.pc.c_leafs++;
 
@@ -564,14 +570,18 @@ static void R_AddLeafSurfaces( bspNode_t *node, int decalBits )
 	// add the individual surfaces
 	mark = node->markSurfaces;
 	c = node->numMarkSurfaces;
+	view = node->viewSurfaces;
 
 	while ( c-- )
 	{
 		// the surface may have already been added if it
 		// spans multiple leafs
-		surf = *mark;
-		R_AddWorldSurface( surf, decalBits );
+		if ( R_AddWorldSurface( *view ) )
+		{
+			R_AddDecalSurface( *mark, decalBits );
+		}
 		mark++;
+		view++;
 	}
 }
 
@@ -1441,7 +1451,7 @@ static void R_MarkLeaves( void )
 	}
 }
 
-static void DrawLeaf( bspNode_t *node, int decalBits )
+static void DrawLeaf( bspNode_t *node )
 {
 	// leaf node, so add mark surfaces
 	int          c;
@@ -1481,7 +1491,7 @@ static void DrawLeaf( bspNode_t *node, int decalBits )
 	}
 
 	// add the individual surfaces
-	mark = node->markSurfaces;
+	mark = node->viewSurfaces;
 	c = node->numMarkSurfaces;
 
 	while ( c-- )
@@ -1489,7 +1499,7 @@ static void DrawLeaf( bspNode_t *node, int decalBits )
 		// the surface may have already been added if it
 		// spans multiple leafs
 		surf = *mark;
-		R_AddWorldSurface( surf, decalBits );
+		R_AddWorldSurface( surf );
 		mark++;
 	}
 }
@@ -2020,7 +2030,7 @@ static void BuildNodeTraversalStackPost_r( bspNode_t *node )
 		{
 			if ( node->visible[ tr.viewCount ] )
 			{
-				DrawLeaf( node, tr.refdef.decalBits );
+				DrawLeaf( node );
 			}
 
 			break;
