@@ -527,7 +527,7 @@ void SVC_Status( netadr_t from )
 		return;
 	}
 
-	strcpy( infostring, Cvar_InfoString( CVAR_SERVERINFO | CVAR_SERVERINFO_NOUPDATE, qfalse ) );
+	strcpy( infostring, Cvar_InfoString( CVAR_SERVERINFO, qfalse ) );
 
 	// echo back the parameter to status. so master servers can use it as a challenge
 	// to prevent timed spoofed reply packets that add ghost servers
@@ -1353,14 +1353,8 @@ void SV_Frame( int msec )
 	// update infostrings if anything has been changed
 	if ( cvar_modifiedFlags & CVAR_SERVERINFO )
 	{
-		SV_SetConfigstring( CS_SERVERINFO, Cvar_InfoString( CVAR_SERVERINFO | CVAR_SERVERINFO_NOUPDATE, qfalse ) );
+		SV_SetConfigstring( CS_SERVERINFO, Cvar_InfoString( CVAR_SERVERINFO, qfalse ) );
 		cvar_modifiedFlags &= ~CVAR_SERVERINFO;
-	}
-
-	if ( cvar_modifiedFlags & CVAR_SERVERINFO_NOUPDATE )
-	{
-		SV_SetConfigstringNoUpdate( CS_SERVERINFO, Cvar_InfoString( CVAR_SERVERINFO | CVAR_SERVERINFO_NOUPDATE, qfalse ) );
-		cvar_modifiedFlags &= ~CVAR_SERVERINFO_NOUPDATE;
 	}
 
 	if ( cvar_modifiedFlags & CVAR_SYSTEMINFO )
