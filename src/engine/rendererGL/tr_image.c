@@ -1586,9 +1586,9 @@ image_t *R_CreateGlyph( const char *name, const byte *pic, int width, int height
 
 	image->uploadWidth = width;
 	image->uploadHeight = height;
-	image->internalFormat = GL_LUMINANCE_ALPHA;
+	image->internalFormat = GL_RGBA;
 
-	glTexImage2D( GL_TEXTURE_2D, 0, GL_LUMINANCE_ALPHA, width, height, 0, GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, pic );
+	glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pic );
 
 	GL_CheckErrors();
 
