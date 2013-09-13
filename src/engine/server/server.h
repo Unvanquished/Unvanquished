@@ -560,4 +560,7 @@ void     SV_Netchan_FreeQueue( client_t *client );
 #define DLNOTIFY_BEGIN    0x00000002 // "clientDownload: 4 : beginning ..."
 #define DLNOTIFY_ALL      ( DLNOTIFY_REDIRECT | DLNOTIFY_BEGIN )
 
+
+void SV_GeoIP_Init( void );
+
 #endif /* SERVER_H_ */

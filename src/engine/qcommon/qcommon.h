@@ -201,6 +201,10 @@ void       NET_LeaveMulticast6( void );
 
 void       NET_Sleep( int msec );
 
+#ifdef HAVE_GEOIP
+const char *NET_GeoIP_Country( const netadr_t *a );
+#endif
+
 //----(SA)  increased for larger submodel entity counts
 #define MAX_MSGLEN           32768 // max length of a message, which may
 //#define   MAX_MSGLEN              16384       // max length of a message, which may

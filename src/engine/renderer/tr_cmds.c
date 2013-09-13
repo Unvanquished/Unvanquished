@@ -669,8 +669,6 @@ void RE_BeginFrame( stereoFrame_t stereoFrame )
 		return;
 	}
 
-	glState.finishCalled = qfalse;
-
 	tr.frameCount++;
 	tr.frameSceneNum = 0;
 
