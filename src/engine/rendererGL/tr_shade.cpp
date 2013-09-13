@@ -342,11 +342,11 @@ static void DrawTris()
 	gl_genericShader->DisableTCGenLightmap();
 
 	gl_genericShader->BindProgram();
-	gl_genericShader->SetRequiredVertexPointers();
 
 	GL_State( GLS_POLYMODE_LINE | GLS_DEPTHMASK_TRUE );
 
 	gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
+
 	if ( r_showBatches->integer || r_showLightBatches->integer )
 	{
 		gl_genericShader->SetUniform_Color( g_color_table[ backEnd.pc.c_batches % 8 ] );
@@ -384,6 +384,7 @@ static void DrawTris()
 	// bind u_ColorMap
 	GL_BindToTMU( 0, tr.whiteImage ); 
 	gl_genericShader->SetUniform_ColorTextureMatrix( tess.svars.texMatrices[ TB_COLORMAP ] );
+	gl_genericShader->SetRequiredVertexPointers();
 
 	glDepthRange( 0, 0 );
 

@@ -4494,7 +4494,6 @@ void RB_RenderLightOcclusionQueries()
 		gl_genericShader->DisableTCGenEnvironment();
 
 		gl_genericShader->BindProgram();
-		gl_genericShader->SetRequiredVertexPointers();
 
 		GL_Cull( CT_TWO_SIDED );
 
@@ -4504,6 +4503,7 @@ void RB_RenderLightOcclusionQueries()
 		gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
 		gl_genericShader->SetUniform_ColorModulate( CGEN_VERTEX, AGEN_VERTEX );
 		gl_genericShader->SetUniform_Color( colorBlack );
+		gl_genericShader->SetRequiredVertexPointers();
 
 		// bind u_ColorMap
 		GL_BindToTMU( 0, tr.whiteImage ); 
@@ -5030,7 +5030,6 @@ void RB_RenderEntityOcclusionQueries()
 		gl_genericShader->DisableTCGenEnvironment();
 
 		gl_genericShader->BindProgram();
-		gl_genericShader->SetRequiredVertexPointers();
 
 		GL_Cull( CT_TWO_SIDED );
 
@@ -5040,6 +5039,7 @@ void RB_RenderEntityOcclusionQueries()
 		gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
 		gl_genericShader->SetUniform_ColorModulate( CGEN_CONST, AGEN_CONST );
 		gl_genericShader->SetUniform_Color( colorBlue );
+		gl_genericShader->SetRequiredVertexPointers();
 
 		// bind u_ColorMap
 		GL_BindToTMU( 0, tr.whiteImage ); 
