@@ -51,30 +51,14 @@ void GLSL_InitGPUShaders( void )
 	// standard light mapping
 	gl_shaderManager.load( gl_lightMappingShader );
 
-	// geometric-buffer fill rendering with diffuse + bump + specular
-	if ( DS_STANDARD_ENABLED() )
-	{
-		// G-Buffer construction
-		gl_shaderManager.load( gl_geometricFillShader );
+	// omni-directional specular bump mapping ( Doom3 style )
+	gl_shaderManager.load( gl_forwardLightingShader_omniXYZ );
 
-		// deferred omni-directional lighting post process effect
-		gl_shaderManager.load( gl_deferredLightingShader_omniXYZ );
+	// projective lighting ( Doom3 style )
+	gl_shaderManager.load( gl_forwardLightingShader_projXYZ );
 
-		gl_shaderManager.load( gl_deferredLightingShader_projXYZ );
-
-		gl_shaderManager.load( gl_deferredLightingShader_directionalSun );
-	}
-	else
-	{
-		// omni-directional specular bump mapping ( Doom3 style )
-		gl_shaderManager.load( gl_forwardLightingShader_omniXYZ );
-
-		// projective lighting ( Doom3 style )
-		gl_shaderManager.load( gl_forwardLightingShader_projXYZ );
-
-		// directional sun lighting ( Doom3 style )
-		gl_shaderManager.load( gl_forwardLightingShader_directionalSun );
-	}
+	// directional sun lighting ( Doom3 style )
+	gl_shaderManager.load( gl_forwardLightingShader_directionalSun );
 
 #if !defined( GLSL_COMPILE_STARTUP_ONLY )
 
@@ -91,9 +75,6 @@ void GLSL_InitGPUShaders( void )
 	// volumetric lighting
 	gl_shaderManager.load( gl_lightVolumeShader_omni );
 #endif
-
-	// UT3 style player shadowing
-	gl_shaderManager.load( gl_deferredShadowingShader_proj );
 
 #endif // #if !defined(GLSL_COMPILE_STARTUP_ONLY)
 
@@ -170,17 +151,12 @@ void GLSL_ShutdownGPUShaders( void )
 	gl_vertexLightingShader_DBS_entity = NULL;
 	gl_vertexLightingShader_DBS_world = NULL;
 	gl_lightMappingShader = NULL;
-	gl_geometricFillShader = NULL;
-	gl_deferredLightingShader_omniXYZ = NULL;
-	gl_deferredLightingShader_projXYZ = NULL;
-	gl_deferredLightingShader_directionalSun = NULL;
 	gl_forwardLightingShader_omniXYZ = NULL;
 	gl_forwardLightingShader_projXYZ = NULL;
 	gl_forwardLightingShader_directionalSun = NULL;
 	gl_depthToColorShader = NULL;
 	gl_shadowFillShader = NULL;
 	gl_lightVolumeShader_omni = NULL;
-	gl_deferredShadowingShader_proj = NULL;
 	gl_reflectionShader = NULL;
 	gl_skyboxShader = NULL;
 	gl_fogQuake3Shader = NULL;
@@ -486,14 +462,6 @@ void Tess_Begin( void ( *stageIteratorFunc )( void ),
 		{
 			tess.stageIteratorFunc = &Tess_StageIteratorSky;
 			tess.stageIteratorFunc2 = &Tess_StageIteratorDepthFill;
-		}
-	}
-	else if ( tess.stageIteratorFunc == Tess_StageIteratorGBuffer )
-	{
-		if ( isSky )
-		{
-			tess.stageIteratorFunc = &Tess_StageIteratorSky;
-			tess.stageIteratorFunc2 = &Tess_StageIteratorGBuffer;
 		}
 	}
 
@@ -1140,156 +1108,6 @@ static void Render_lightMapping( int stage, bool asColorMap, bool normalMapping 
 	}
 
 	gl_lightMappingShader->SetRequiredVertexPointers();
-
-	Tess_DrawElements();
-
-	GL_CheckErrors();
-}
-
-static void Render_geometricFill( int stage, bool cmap2black )
-{
-	shaderStage_t *pStage;
-	uint32_t      stateBits;
-//	vec4_t          ambientColor;
-
-	GLimp_LogComment( "--- Render_geometricFill ---\n" );
-
-	pStage = tess.surfaceStages[ stage ];
-
-	// remove blend mode
-	stateBits = pStage->stateBits;
-	stateBits &= ~( GLS_SRCBLEND_BITS | GLS_DSTBLEND_BITS );
-
-	GL_State( stateBits );
-
-	bool normalMapping = r_normalMapping->integer && ( pStage->bundle[ TB_NORMALMAP ].image[ 0 ] != NULL );
-
-	// choose right shader program ----------------------------------
-	gl_geometricFillShader->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
-	gl_geometricFillShader->SetVertexAnimation( glState.vertexAttribsInterpolation > 0 );
-
-	gl_geometricFillShader->SetDeformVertexes( tess.surfaceShader->numDeforms );
-
-	gl_geometricFillShader->SetNormalMapping( normalMapping );
-	gl_geometricFillShader->SetParallaxMapping( normalMapping && r_parallaxMapping->integer && tess.surfaceShader->parallax );
-
-	gl_geometricFillShader->SetReflectiveSpecular( false );  //normalMapping && tr.cubeHashTable != NULL);
-
-//	gl_geometricFillShader->SetMacro_TWOSIDED(tess.surfaceShader->cullType);
-
-	gl_geometricFillShader->BindProgram();
-
-	// end choose right shader program ------------------------------
-
-	/*
-	{
-	        if(r_precomputedLighting->integer)
-	        {
-	                VectorCopy(backEnd.currentEntity->ambientLight, ambientColor);
-	                ClampColor(ambientColor);
-	        }
-	        else if(r_forceAmbient->integer)
-	        {
-	                ambientColor[0] = r_forceAmbient->value;
-	                ambientColor[1] = r_forceAmbient->value;
-	                ambientColor[2] = r_forceAmbient->value;
-	        }
-	        else
-	        {
-	                VectorClear(ambientColor);
-	        }
-	}
-	*/
-
-	gl_geometricFillShader->SetUniform_AlphaTest( pStage->stateBits );
-	gl_geometricFillShader->SetUniform_ViewOrigin( backEnd.viewParms.orientation.origin );  // world space
-//	gl_geometricFillShader->SetUniform_AmbientColor(ambientColor);
-
-	gl_geometricFillShader->SetUniform_ModelMatrix( backEnd.orientation.transformMatrix );
-//	gl_geometricFillShader->SetUniform_ModelViewMatrix(glState.modelViewMatrix[glState.stackIndex]);
-	gl_geometricFillShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
-
-	// u_BoneMatrix
-	if ( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning )
-	{
-		gl_geometricFillShader->SetUniform_BoneMatrix( tess.numBoneMatrices, tess.boneMatrices );
-	}
-
-	// u_VertexInterpolation
-	if ( glState.vertexAttribsInterpolation > 0 )
-	{
-		gl_geometricFillShader->SetUniform_VertexInterpolation( glState.vertexAttribsInterpolation );
-	}
-
-	// u_DeformParms
-	if ( tess.surfaceShader->numDeforms )
-	{
-		gl_geometricFillShader->SetUniform_DeformParms( tess.surfaceShader->deforms, tess.surfaceShader->numDeforms );
-		gl_geometricFillShader->SetUniform_Time( backEnd.refdef.floatTime );
-	}
-
-	// u_DepthScale
-	if ( r_parallaxMapping->integer && tess.surfaceShader->parallax )
-	{
-		float depthScale;
-
-		depthScale = RB_EvalExpression( &pStage->depthScaleExp, r_parallaxDepthScale->value );
-		gl_geometricFillShader->SetUniform_DepthScale( depthScale );
-	}
-
-	//if(r_deferredShading->integer == DS_STANDARD)
-	{
-		// bind u_DiffuseMap
-		if ( cmap2black )
-		{
-			GL_BindToTMU( 0, tr.blackImage );
-		}
-		else
-		{
-			GL_BindToTMU( 0, pStage->bundle[ TB_DIFFUSEMAP ].image[ 0 ] );
-		}
-
-		gl_geometricFillShader->SetUniform_DiffuseTextureMatrix( tess.svars.texMatrices[ TB_DIFFUSEMAP ] );
-	}
-
-	if ( normalMapping )
-	{
-		// bind u_NormalMap
-		if ( pStage->bundle[ TB_NORMALMAP ].image[ 0 ] )
-		{
-			GL_BindToTMU( 1, pStage->bundle[ TB_NORMALMAP ].image[ 0 ] );
-		}
-		else
-		{
-			GL_BindToTMU( 1, tr.flatImage );
-		}
-
-		gl_geometricFillShader->SetUniform_NormalTextureMatrix( tess.svars.texMatrices[ TB_NORMALMAP ] );
-
-		if ( r_deferredShading->integer == DS_STANDARD )
-		{
-			// bind u_SpecularMap
-			if ( r_forceSpecular->integer )
-			{
-				GL_BindToTMU( 2, pStage->bundle[ TB_DIFFUSEMAP ].image[ 0 ] );
-			}
-			else if ( pStage->bundle[ TB_SPECULARMAP ].image[ 0 ] )
-			{
-				GL_BindToTMU( 2, pStage->bundle[ TB_SPECULARMAP ].image[ 0 ] );
-			}
-			else
-			{
-				GL_BindToTMU( 2, tr.blackImage );
-			}
-
-			float specMin = RB_EvalExpression( &pStage->specularExponentMin, r_specularExponentMin->value );
-			float specMax = RB_EvalExpression( &pStage->specularExponentMax, r_specularExponentMax->value );
-			gl_geometricFillShader->SetUniform_SpecularExponent( specMin, specMax );
-			gl_geometricFillShader->SetUniform_SpecularTextureMatrix( tess.svars.texMatrices[ TB_SPECULARMAP ] );
-		}
-	}
-
-	gl_geometricFillShader->SetRequiredVertexPointers();
 
 	Tess_DrawElements();
 
@@ -2333,17 +2151,7 @@ static void Render_heatHaze( int stage )
 
 		previousFBO = glState.currentFBO;
 
-		if ( DS_STANDARD_ENABLED() )
-		{
-			// copy deferredRenderFBO to occlusionRenderFBO
-			glBindFramebufferEXT( GL_READ_FRAMEBUFFER_EXT, tr.geometricRenderFBO->frameBuffer );
-			glBindFramebufferEXT( GL_DRAW_FRAMEBUFFER_EXT, tr.occlusionRenderFBO->frameBuffer );
-			glBlitFramebufferEXT( 0, 0, tr.deferredRenderFBO->width, tr.deferredRenderFBO->height,
-			                      0, 0, tr.occlusionRenderFBO->width, tr.occlusionRenderFBO->height,
-			                      GL_DEPTH_BUFFER_BIT,
-			                      GL_NEAREST );
-		}
-		else if ( HDR_ENABLED() )
+		if ( HDR_ENABLED() )
 		{
 			GL_CheckErrors();
 
@@ -2493,11 +2301,7 @@ static void Render_heatHaze( int stage )
 	gl_heatHazeShader->SetUniform_NormalTextureMatrix( tess.svars.texMatrices[ TB_COLORMAP ] );
 
 	// bind u_CurrentMap
-	if ( DS_STANDARD_ENABLED() )
-	{
-		GL_BindToTMU( 1, tr.deferredRenderFBOImage );
-	}
-	else if ( HDR_ENABLED() )
+	if ( HDR_ENABLED() )
 	{
 		GL_BindToTMU( 1, tr.deferredRenderFBOImage );
 	}
@@ -2776,18 +2580,7 @@ static void Render_volumetricFog()
 
 		previousFBO = glState.currentFBO;
 
-		if ( r_deferredShading->integer && glConfig2.framebufferObjectAvailable && glConfig2.textureFloatAvailable &&
-		     glConfig2.drawBuffersAvailable && glConfig2.maxDrawBuffers >= 4 )
-		{
-			// copy deferredRenderFBO to occlusionRenderFBO
-			glBindFramebufferEXT( GL_READ_FRAMEBUFFER_EXT, tr.deferredRenderFBO->frameBuffer );
-			glBindFramebufferEXT( GL_DRAW_FRAMEBUFFER_EXT, tr.occlusionRenderFBO->frameBuffer );
-			glBlitFramebufferEXT( 0, 0, tr.deferredRenderFBO->width, tr.deferredRenderFBO->height,
-			                      0, 0, tr.occlusionRenderFBO->width, tr.occlusionRenderFBO->height,
-			                      GL_DEPTH_BUFFER_BIT,
-			                      GL_NEAREST );
-		}
-		else if ( r_hdrRendering->integer && glConfig2.framebufferObjectAvailable && glConfig2.textureFloatAvailable )
+		if ( r_hdrRendering->integer && glConfig2.framebufferObjectAvailable && glConfig2.textureFloatAvailable )
 		{
 			// copy deferredRenderFBO to occlusionRenderFBO
 			glBindFramebufferEXT( GL_READ_FRAMEBUFFER_EXT, tr.deferredRenderFBO->frameBuffer );
@@ -2868,12 +2661,7 @@ static void Render_volumetricFog()
 		gl_volumetricFogShader->SetUniform_FogColor( fogColor );
 
 		// bind u_DepthMap
-		if ( r_deferredShading->integer && glConfig2.framebufferObjectAvailable && glConfig2.textureFloatAvailable &&
-		     glConfig2.drawBuffersAvailable && glConfig2.maxDrawBuffers >= 4 )
-		{
-			GL_BindToTMU( 0, tr.depthRenderImage );
-		}
-		else if ( r_hdrRendering->integer && glConfig2.framebufferObjectAvailable && glConfig2.textureFloatAvailable )
+		if ( r_hdrRendering->integer && glConfig2.framebufferObjectAvailable && glConfig2.textureFloatAvailable )
 		{
 			GL_BindToTMU( 0, tr.depthRenderImage );
 		}
@@ -3566,328 +3354,6 @@ void Tess_StageIteratorGeneric()
 	if ( !r_noFog->integer && tess.fogNum >= 1 && tess.surfaceShader->fogPass )
 	{
 		Render_fog();
-	}
-
-	// reset polygon offset
-	if ( tess.surfaceShader->polygonOffset )
-	{
-		glDisable( GL_POLYGON_OFFSET_FILL );
-	}
-}
-
-void Tess_StageIteratorGBuffer()
-{
-	int  stage;
-	bool diffuseRendered = false;
-
-	// log this call
-	if ( r_logFile->integer )
-	{
-		// don't just call LogComment, or we will get
-		// a call to va() every frame!
-		GLimp_LogComment( va
-		                  ( "--- Tess_StageIteratorGBuffer( %s, %i vertices, %i triangles ) ---\n", tess.surfaceShader->name,
-		                    tess.numVertexes, tess.numIndexes / 3 ) );
-	}
-
-	GL_CheckErrors();
-
-	Tess_DeformGeometry();
-
-	if ( !glState.currentVBO || !glState.currentIBO || glState.currentVBO == tess.vbo || glState.currentIBO == tess.ibo )
-	{
-		Tess_UpdateVBOs( tess.attribsSet );
-	}
-
-	// set face culling appropriately
-	if( backEnd.currentEntity->e.renderfx & RF_SWAPCULL )
-		GL_Cull( ReverseCull( tess.surfaceShader->cullType ) );
-	else
-		GL_Cull( tess.surfaceShader->cullType );
-
-	// set polygon offset if necessary
-	if ( tess.surfaceShader->polygonOffset )
-	{
-		glEnable( GL_POLYGON_OFFSET_FILL );
-		GL_PolygonOffset( r_offsetFactor->value, r_offsetUnits->value );
-	}
-
-	// call shader function
-	for ( stage = 0; stage < MAX_SHADER_STAGES; stage++ )
-	{
-		shaderStage_t *pStage = tess.surfaceStages[ stage ];
-
-		if ( !pStage )
-		{
-			break;
-		}
-
-		if ( !RB_EvalExpression( &pStage->ifExp, 1.0 ) )
-		{
-			continue;
-		}
-
-		Tess_ComputeColor( pStage );
-		Tess_ComputeTexMatrices( pStage );
-
-		switch ( pStage->type )
-		{
-			case ST_COLORMAP:
-				{
-					R_BindFBO( tr.geometricRenderFBO );
-					glDrawBuffers( 1, geometricRenderTargets );
-
-					Render_generic( stage );
-
-					if ( tess.surfaceShader->sort <= SS_OPAQUE &&
-					     !( pStage->stateBits & ( GLS_SRCBLEND_BITS | GLS_DSTBLEND_BITS ) ) &&
-					     !diffuseRendered )
-					{
-						glDrawBuffers( 4, geometricRenderTargets );
-
-						Render_geometricFill( stage, true );
-					}
-
-					break;
-				}
-
-			case ST_DIFFUSEMAP:
-			case ST_COLLAPSE_lighting_DBSG:
-			case ST_COLLAPSE_lighting_DBG:
-			case ST_COLLAPSE_lighting_DB:
-			case ST_COLLAPSE_lighting_DBS:
-				{
-					if ( r_precomputedLighting->integer || r_vertexLighting->integer )
-					{
-						R_BindFBO( tr.geometricRenderFBO );
-						glDrawBuffers( 4, geometricRenderTargets );
-
-						if ( !r_vertexLighting->integer && tess.lightmapNum >= 0 && tess.lightmapNum < tr.lightmaps.currentElements )
-						{
-							if ( tr.worldDeluxeMapping && r_normalMapping->integer )
-							{
-								Render_lightMapping( stage, false, true );
-								diffuseRendered = true;
-							}
-							else
-							{
-								Render_lightMapping( stage, false, false );
-								diffuseRendered = true;
-							}
-						}
-						else if ( backEnd.currentEntity != &tr.worldEntity )
-						{
-							Render_vertexLighting_DBS_entity( stage );
-							diffuseRendered = true;
-						}
-						else
-						{
-							Render_vertexLighting_DBS_world( stage );
-							diffuseRendered = true;
-						}
-					}
-					else
-					{
-						R_BindFBO( tr.geometricRenderFBO );
-						glDrawBuffers( 4, geometricRenderTargets );
-
-						Render_geometricFill( stage, false );
-						diffuseRendered = true;
-					}
-
-					break;
-				}
-
-			case ST_COLLAPSE_reflection_CB:
-			case ST_REFLECTIONMAP:
-				{
-					R_BindFBO( tr.geometricRenderFBO );
-					glDrawBuffers( 1, geometricRenderTargets );
-
-					Render_reflection_CB( stage );
-					break;
-				}
-
-			case ST_REFRACTIONMAP:
-				{
-					/*
-					if(r_deferredShading->integer == DS_STANDARD)
-					{
-
-					        R_BindFBO(tr.deferredRenderFBO);
-					        Render_refraction_C(stage);
-					}
-					*/
-					break;
-				}
-
-			case ST_DISPERSIONMAP:
-				{
-					R_BindFBO( tr.geometricRenderFBO );
-					glDrawBuffers( 1, geometricRenderTargets );
-
-					Render_dispersion_C( stage );
-					break;
-				}
-
-			case ST_SKYBOXMAP:
-				{
-					R_BindFBO( tr.geometricRenderFBO );
-					glDrawBuffers( 4, geometricRenderTargets );
-
-					Render_skybox( stage );
-					break;
-				}
-
-			case ST_SCREENMAP:
-				{
-					R_BindFBO( tr.geometricRenderFBO );
-					glDrawBuffers( 1, geometricRenderTargets );
-
-					Render_screen( stage );
-					break;
-				}
-
-			case ST_PORTALMAP:
-				{
-					R_BindFBO( tr.geometricRenderFBO );
-					glDrawBuffers( 1, geometricRenderTargets );
-
-					Render_portal( stage );
-					break;
-				}
-
-			case ST_HEATHAZEMAP:
-				{
-					R_BindFBO( tr.geometricRenderFBO );
-					glDrawBuffers( 1, geometricRenderTargets );
-
-					Render_heatHaze( stage );
-					break;
-				}
-
-			case ST_LIQUIDMAP:
-				{
-					R_BindFBO( tr.geometricRenderFBO );
-					glDrawBuffers( 1, geometricRenderTargets );
-
-					Render_liquid( stage );
-					break;
-				}
-
-			default:
-				break;
-		}
-	}
-
-	if ( !r_noFog->integer && tess.fogNum >= 1 && tess.surfaceShader->fogPass )
-	{
-		Render_fog();
-	}
-
-	// reset polygon offset
-	if ( tess.surfaceShader->polygonOffset )
-	{
-		glDisable( GL_POLYGON_OFFSET_FILL );
-	}
-}
-
-void Tess_StageIteratorGBufferNormalsOnly()
-{
-	int stage;
-
-	// log this call
-	if ( r_logFile->integer )
-	{
-		// don't just call LogComment, or we will get
-		// a call to va() every frame!
-		GLimp_LogComment( va
-		                  ( "--- Tess_StageIteratorGBufferNormalsOnly( %s, %i vertices, %i triangles ) ---\n", tess.surfaceShader->name,
-		                    tess.numVertexes, tess.numIndexes / 3 ) );
-	}
-
-	GL_CheckErrors();
-
-	Tess_DeformGeometry();
-
-	if ( !glState.currentVBO || !glState.currentIBO || glState.currentVBO == tess.vbo || glState.currentIBO == tess.ibo )
-	{
-		Tess_UpdateVBOs( tess.attribsSet );
-	}
-
-	// set face culling appropriately
-	if( backEnd.currentEntity->e.renderfx & RF_SWAPCULL )
-		GL_Cull( ReverseCull( tess.surfaceShader->cullType ) );
-	else
-		GL_Cull( tess.surfaceShader->cullType );
-
-	// set polygon offset if necessary
-	if ( tess.surfaceShader->polygonOffset )
-	{
-		glEnable( GL_POLYGON_OFFSET_FILL );
-		GL_PolygonOffset( r_offsetFactor->value, r_offsetUnits->value );
-	}
-
-	// call shader function
-	for ( stage = 0; stage < MAX_SHADER_STAGES; stage++ )
-	{
-		shaderStage_t *pStage = tess.surfaceStages[ stage ];
-
-		if ( !pStage )
-		{
-			break;
-		}
-
-		if ( !RB_EvalExpression( &pStage->ifExp, 1.0 ) )
-		{
-			continue;
-		}
-
-		//Tess_ComputeColor(pStage);
-		Tess_ComputeTexMatrices( pStage );
-
-		switch ( pStage->type )
-		{
-			case ST_COLORMAP:
-				{
-#if 1
-
-					if ( tess.surfaceShader->sort <= SS_OPAQUE &&
-					     !( pStage->stateBits & ( GLS_SRCBLEND_BITS | GLS_DSTBLEND_BITS ) ) &&
-					     ( pStage->stateBits & ( GLS_DEPTHMASK_TRUE ) )
-					   )
-					{
-#if defined( OFFSCREEN_PREPASS_LIGHTING )
-						R_BindFBO( tr.geometricRenderFBO );
-#else
-						R_BindNullFBO();
-#endif
-						Render_geometricFill( stage, true );
-					}
-
-#endif
-					break;
-				}
-
-			case ST_DIFFUSEMAP:
-			case ST_COLLAPSE_lighting_DBSG:
-			case ST_COLLAPSE_lighting_DBG:
-			case ST_COLLAPSE_lighting_DB:
-			case ST_COLLAPSE_lighting_DBS:
-				{
-#if defined( OFFSCREEN_PREPASS_LIGHTING )
-					R_BindFBO( tr.geometricRenderFBO );
-#else
-					R_BindNullFBO();
-#endif
-
-					Render_geometricFill( stage, false );
-					break;
-				}
-
-			default:
-				break;
-		}
 	}
 
 	// reset polygon offset

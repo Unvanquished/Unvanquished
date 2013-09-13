@@ -3030,28 +3030,19 @@ void R_AddLightInteractions( void )
 		light->numLightOnlyInteractions = 0;
 		light->noSort = qfalse;
 
-		if ( r_deferredShading->integer && r_shadows->integer < SHADOWING_ESM16 )
+		if ( light->isStatic )
 		{
-			// add one fake interaction for this light
-			// because the renderer backend only loops through interactions
-			R_AddLightInteraction( light, NULL, NULL, CUBESIDE_CLIPALL, IA_DEFAULT );
+			R_AddPrecachedWorldInteractions( light );
 		}
 		else
 		{
-			if ( light->isStatic )
-			{
-				R_AddPrecachedWorldInteractions( light );
-			}
-			else
-			{
-				R_AddWorldInteractions( light );
-			}
-
-			R_AddEntityInteractions( light );
-
-			// Tr3B: fun but slow
-			//R_AddPolygonInteractions(light);
+			R_AddWorldInteractions( light );
 		}
+
+		R_AddEntityInteractions( light );
+
+		// Tr3B: fun but slow
+		//R_AddPolygonInteractions(light);
 
 		if ( light->numInteractions && light->numInteractions != light->numShadowOnlyInteractions )
 		{

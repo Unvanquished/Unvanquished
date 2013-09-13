@@ -3290,26 +3290,6 @@ static void R_CreateDeferredRenderFBOImages( void )
 		height = NearestPowerOfTwo( glConfig.vidHeight );
 	}
 
-	if ( DS_STANDARD_ENABLED() )
-	{
-		tr.deferredDiffuseFBOImage = R_CreateImage( "_deferredDiffuseFBO", NULL, width, height, IF_NOPICMIP | IF_NOCOMPRESSION, FT_NEAREST, WT_CLAMP );
-		tr.deferredNormalFBOImage = R_CreateImage( "_deferredNormalFBO", NULL, width, height, IF_NOPICMIP | IF_NOCOMPRESSION, FT_NEAREST, WT_CLAMP );
-		tr.deferredSpecularFBOImage = R_CreateImage( "_deferredSpecularFBO", NULL, width, height, IF_NOPICMIP | IF_NOCOMPRESSION, FT_NEAREST, WT_CLAMP );
-	}
-	else //if(DS_PREPASS_LIGHTING_ENABLED())
-	{
-		tr.deferredNormalFBOImage = R_CreateImage( "_deferredNormalFBO", NULL, width, height, IF_NOPICMIP | IF_NOCOMPRESSION, FT_NEAREST, WT_CLAMP );
-
-		if ( HDR_ENABLED() )
-		{
-			tr.lightRenderFBOImage = R_CreateImage( "_lightRenderFBO", NULL, width, height, IF_NOPICMIP | IF_RGBA16F, FT_NEAREST, WT_CLAMP );
-		}
-		else
-		{
-			tr.lightRenderFBOImage = R_CreateImage( "_lightRenderFBO", NULL, width, height, IF_NOPICMIP | IF_NOCOMPRESSION, FT_NEAREST, WT_CLAMP );
-		}
-	}
-
 	if ( HDR_ENABLED() )
 	{
 		tr.deferredRenderFBOImage = R_CreateImage( "_deferredRenderFBO", NULL, width, height, IF_NOPICMIP | IF_RGBA16F, FT_NEAREST, WT_CLAMP );
