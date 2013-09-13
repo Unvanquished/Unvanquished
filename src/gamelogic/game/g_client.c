@@ -1278,8 +1278,18 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 	// don't do the "xxx connected" messages if they were caried over from previous level
 	if ( firstTime )
 	{
-		trap_SendServerCommand( -1, va( "print_tr %s %s", QQ( N_("$1$^7 connected\n") ),
-		                                Quote( client->pers.netname ) ) );
+		const char *country = Info_ValueForKey( userinfo, "geoip" );
+
+		if ( g_geoip.integer && country && *country )
+		{
+			trap_SendServerCommand( -1, va( "print_tr %s %s %s", QQ( N_("$1$^7 connected from $2$\n") ),
+			                                Quote( client->pers.netname ), Quote( country ) ) );
+		}
+		else
+		{
+			trap_SendServerCommand( -1, va( "print_tr %s %s", QQ( N_("$1$^7 connected\n") ),
+			                                Quote( client->pers.netname ) ) );
+		}
 	}
 
 	// count current clients and rank for scoreboard
