@@ -1642,12 +1642,15 @@ function( find_package_geoip )
     find_package( PkgConfig )
     if( PKG_CONFIG_FOUND )
       pkg_check_modules( GEOIP geoip )
-      find_path( GEOIP_INCLUDE_DIRS GeoIP.h HINTS ${PC_GEOIP_INCLUDEDIR} ${PC_GEOIP_INCLUDE_DIRS} )
-      find_library( GEOIP_LIBRARY NAMES GeoIP libGeoIP HINTS ${PC_GEOIP_LIBDIR} ${PC_GEOIP_LIBRARY_DIRS} )
-      mark_as_advanced( GEOIP_INCLUDE_DIRS GEOIP_LIBRARY )
+      if ( GEOIP_FOUND )
+        find_path( GEOIP_INCLUDE_DIRS GeoIP.h HINTS ${PC_GEOIP_INCLUDEDIR} ${PC_GEOIP_INCLUDE_DIRS} )
+        find_library( GEOIP_LIBRARY NAMES GeoIP libGeoIP HINTS ${PC_GEOIP_LIBDIR} ${PC_GEOIP_LIBRARY_DIRS} )
+        mark_as_advanced( GEOIP_INCLUDE_DIRS GEOIP_LIBRARY )
+      endif()
     endif()
-  else()
-    set( GEOIP_FOUND 0 CACHE INTERNAL "" )
+  endif()
+  if ( NOT USE_GEOIP OR NOT PKG_CONFIG_FOUND )
+    set( GEOIP_FOUND "" CACHE INTERNAL "" )
   endif()
 endfunction()
 
@@ -1700,6 +1703,8 @@ if( BUILD_CLIENT )
 
   if( GEOIP_FOUND )
     set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS HAVE_GEOIP )
+    include_directories( ${GEOIP_INCLUDE_DIRS} )
+    target_link_libraries( client ${GEOIP_LIBRARIES} )
   endif()
 
   if( USE_INTERNAL_CRYPTO )
@@ -1711,8 +1716,8 @@ if( BUILD_CLIENT )
     target_link_libraries( client ${NETTLE_LIBRARIES} )
   endif()
 
-  include_directories( ${OPENGL_INCLUDE_DIR} ${SDL_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIR} ${GMP_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS} ${CURL_INCLUDE_DIRS} ${GEOIP_INCLUDE_DIRS} )
-  target_link_libraries( client ${OPENGL_LIBRARIES} ${SDL_LIBRARY} ${FREETYPE_LIBRARIES} ${GLEW_LIBRARY} ${GMP_LIBRARIES} ${ZLIB_LIBRARIES} ${CURL_LIBRARIES} ${GEOIP_LIBRARIES} )
+  include_directories( ${OPENGL_INCLUDE_DIR} ${SDL_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIR} ${GMP_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS} ${CURL_INCLUDE_DIRS} )
+  target_link_libraries( client ${OPENGL_LIBRARIES} ${SDL_LIBRARY} ${FREETYPE_LIBRARIES} ${GLEW_LIBRARY} ${GMP_LIBRARIES} ${ZLIB_LIBRARIES} ${CURL_LIBRARIES} )
 
   # This section finds and provides OPTIONAL dependencies to target client
   if( USE_OPENAL )
@@ -1860,6 +1865,8 @@ if( BUILD_SERVER )
 
   if( GEOIP_FOUND )
     set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS HAVE_GEOIP )
+    include_directories( ${GEOIP_INCLUDE_DIRS} )
+    target_link_libraries( server ${GEOIP_LIBRARIES} )
   endif()
 
   if( USE_INTERNAL_CRYPTO )
@@ -1871,8 +1878,8 @@ if( BUILD_SERVER )
     target_link_libraries( server ${NETTLE_LIBRARIES} )
   endif()
 
-  include_directories( ${GMP_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS} ${GEOIP_INCLUDE_DIRS} )
-  target_link_libraries( server ${GMP_LIBRARIES} ${ZLIB_LIBRARIES} ${GEOIP_LIBRARIES} )
+  include_directories( ${GMP_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS} )
+  target_link_libraries( server ${GMP_LIBRARIES} ${ZLIB_LIBRARIES} )
 
   # The following section finds the OPTIONAL dependencies and makes them available to the target
 
@@ -1982,6 +1989,8 @@ if( BUILD_TTY_CLIENT )
 
   if( GEOIP_FOUND )
     set_property( TARGET ttyclient APPEND PROPERTY COMPILE_DEFINITIONS HAVE_GEOIP )
+    include_directories( ${GEOIP_INCLUDE_DIRS} )
+    target_link_libraries( ttyclient ${GEOIP_LIBRARIES} )
   endif()
 
   if( USE_INTERNAL_CRYPTO )
@@ -1993,8 +2002,8 @@ if( BUILD_TTY_CLIENT )
     target_link_libraries( ttyclient ${NETTLE_LIBRARIES} )
   endif()
 
-  include_directories( ${GMP_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS} ${GEOIP_INCLUDE_DIRS} )
-  target_link_libraries( ttyclient ${GMP_LIBRARIES} ${ZLIB_LIBRARIES} ${GEOIP_LIBRARIES} )
+  include_directories( ${GMP_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS} )
+  target_link_libraries( ttyclient ${GMP_LIBRARIES} ${ZLIB_LIBRARIES} )
 
   # The following section finds the OPTIONAL dependencies and makes them available to the target
 
