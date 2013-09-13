@@ -1522,7 +1522,7 @@ void SV_UserinfoChanged( client_t *cl )
 	// in the future, (val) will be a protocol version string, so only
 	//  accept explicitly 1, not generally non-zero.
 	val = Info_ValueForKey( cl->userinfo, "cl_voip" );
-	cl->hasVoip = ( atoi( val ) == 1 ) ? qtrue : qfalse;
+	cl->hasVoip = ( atoi( val ) == 1 && ( !cl->gentity || !( cl->gentity->r.svFlags & SVF_BOT ) ) ) ? qtrue : qfalse;
 #endif
 
 	// TTimo
@@ -2049,6 +2049,10 @@ void SV_UserVoip( client_t *cl, msg_t *msg )
 		else if ( !client->hasVoip )
 		{
 			continue; // no VoIP support, or unsupported protocol
+		}
+		else if ( client->gentity && ( client->gentity->r.svFlags & SVF_BOT ) ) 
+		{
+			continue; // client is a bot
 		}
 		else if ( client->muteAllVoip )
 		{
