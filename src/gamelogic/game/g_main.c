@@ -185,6 +185,8 @@ vmCvar_t           g_tag;
 vmCvar_t           g_showKillerHP;
 vmCvar_t           g_combatCooldown;
 
+vmCvar_t           g_geoip;
+
 vmCvar_t           g_debugEntities;
 
 // copy cvars that can be set in worldspawn so they can be restored later
@@ -358,8 +360,9 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_tag,                         "g_tag",                         "unv",                              CVAR_INIT,                                       0, qfalse           },
 
 	{ &g_showKillerHP,                "g_showKillerHP",                "0",                                CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_combatCooldown,              "g_combatCooldown",              "15",                               CVAR_ARCHIVE,                                    0, qfalse           }
+	{ &g_combatCooldown,              "g_combatCooldown",              "15",                               CVAR_ARCHIVE,                                    0, qfalse           },
 
+	{ &g_geoip,                       "g_geoip",                       "1",                                CVAR_ARCHIVE,                                    0, qfalse           },
 };
 
 static const size_t gameCvarTableSize = ARRAY_LEN( gameCvarTable );

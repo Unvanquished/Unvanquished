@@ -1167,6 +1167,7 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 	gentity_t       *ent;
 	char            reason[ MAX_STRING_CHARS ] = { "" };
 	int             i;
+	const char      *country;
 
 	ent = &g_entities[ clientNum ];
 	client = &level.clients[ clientNum ];
@@ -1275,11 +1276,22 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 	             client->pers.netname,
 	             DECOLOR_OFF, client->pers.netname, DECOLOR_ON );
 
+	country = Info_ValueForKey( userinfo, "geoip" );
+	Q_strncpyz( client->pers.country, country, sizeof( client->pers.country ) );
+
 	// don't do the "xxx connected" messages if they were caried over from previous level
 	if ( firstTime )
 	{
-		trap_SendServerCommand( -1, va( "print_tr %s %s", QQ( N_("$1$^7 connected\n") ),
-		                                Quote( client->pers.netname ) ) );
+		if ( g_geoip.integer && country && *country )
+		{
+			trap_SendServerCommand( -1, va( "print_tr %s %s %s", QQ( N_("$1$^7 connected from $2$\n") ),
+			                                Quote( client->pers.netname ), Quote( country ) ) );
+		}
+		else
+		{
+			trap_SendServerCommand( -1, va( "print_tr %s %s", QQ( N_("$1$^7 connected\n") ),
+			                                Quote( client->pers.netname ) ) );
+		}
 	}
 
 	// count current clients and rank for scoreboard
