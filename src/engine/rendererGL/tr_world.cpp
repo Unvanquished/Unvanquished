@@ -141,38 +141,21 @@ static qboolean R_CullSurface( surfaceType_t *surface, shader_t *shader, int *fr
 	}
 
 	// ydnar: made surface culling generic, inline with q3map2 surface classification
-	switch ( *surface )
+	if ( *surface == SF_GRID && r_nocurves->integer )
 	{
-		case SF_FACE:
-		case SF_TRIANGLES:
-			break;
+		return qtrue;
+	}
 
-		case SF_GRID:
-			if ( r_nocurves->integer )
-			{
-				return qtrue;
-			}
-
-			break;
-
-			/*
-			case SF_FOLIAGE:
-			if(!r_drawfoliage->value)
-			{
-			        return qtrue;
-			}
-			break;
-			*/
-
-		default:
-			return qtrue;
+	if ( *surface != SF_FACE && *surface != SF_TRIANGLES && *surface != SF_VBO_MESH && *surface != SF_GRID )
+	{
+		return qtrue;
 	}
 
 	// get generic surface
 	gen = ( srfGeneric_t * ) surface;
 
 	// plane cull
-	if ( gen->plane.type != PLANE_NON_PLANAR && r_facePlaneCull->integer )
+	if ( *surface == SF_FACE && r_facePlaneCull->integer )
 	{
 		d = DotProduct( tr.orientation.viewOrigin, gen->plane.normal ) - gen->plane.dist;
 
@@ -204,8 +187,27 @@ static qboolean R_CullSurface( surfaceType_t *surface, shader_t *shader, int *fr
 		tr.pc.c_plane_cull_in++;
 	}
 
+	if ( *surface == SF_VBO_MESH )
 	{
-		// try sphere cull
+		if ( tr.currentEntity != &tr.worldEntity )
+		{
+			cull = R_CullLocalBox( gen->bounds );
+		}
+		else
+		{
+			cull = R_CullBox( gen->bounds );
+		}
+
+		if ( cull == CULL_OUT )
+		{
+			tr.pc.c_box_cull_out++;
+			return qtrue;
+		}
+
+		tr.pc.c_box_cull_in++;
+	}
+	else
+	{
 		if ( tr.currentEntity != &tr.worldEntity )
 		{
 			cull = R_CullLocalPointAndRadius( gen->origin, gen->radius );
@@ -332,24 +334,9 @@ static void R_AddInteractionSurface( bspSurface_t *surf, trRefLight_t *light )
 	}
 }
 
-/*
-======================
-R_AddWorldSurface
-======================
-*/
-static void R_AddWorldSurface( bspSurface_t *surf, int decalBits )
+static void R_AddDecalSurface( bspSurface_t *surf, int decalBits )
 {
-	int      i, frontFace;
-	shader_t *shader;
-
-	if ( surf->viewCount == tr.viewCountNoReset )
-	{
-		return;
-	}
-
-	surf->viewCount = tr.viewCountNoReset;
-
-	shader = surf->shader;
+	int i;
 
 	// add decals
 	if ( decalBits )
@@ -363,28 +350,32 @@ static void R_AddWorldSurface( bspSurface_t *surf, int decalBits )
 			}
 		}
 	}
+}
 
-#if defined( USE_BSP_CLUSTERSURFACE_MERGING )
+/*
+======================
+R_AddWorldSurface
+======================
+*/
+static qboolean R_AddWorldSurface( bspSurface_t *surf )
+{
+	int      frontFace;
 
-	if ( r_mergeClusterSurfaces->integer &&
-	     !r_dynamicBspOcclusionCulling->integer &&
-	     ( ( r_mergeClusterFaces->integer && *surf->data == SF_FACE ) ||
-	       ( r_mergeClusterCurves->integer && *surf->data == SF_GRID ) ||
-	       ( r_mergeClusterTriangles->integer && *surf->data == SF_TRIANGLES ) ) &&
-	     !shader->isSky && !shader->isPortal && !ShaderRequiresCPUDeforms( shader ) )
+	if ( surf->viewCount == tr.viewCountNoReset )
 	{
-		return;
+		return qfalse;
 	}
 
-#endif
+	surf->viewCount = tr.viewCountNoReset;
 
 	// try to cull before lighting or adding
 	if ( R_CullSurface( surf->data, surf->shader, &frontFace ) )
 	{
-		return;
+		return qtrue;
 	}
 
 	R_AddDrawSurf( surf->data, surf->shader, surf->lightmapNum, surf->fogIndex );
+	return qtrue;
 }
 
 /*
@@ -526,7 +517,8 @@ void R_AddBSPModelSurfaces( trRefEntity_t *ent )
 static void R_AddLeafSurfaces( bspNode_t *node, int decalBits )
 {
 	int          c;
-	bspSurface_t *surf, **mark;
+	bspSurface_t **mark;
+	bspSurface_t **view;
 
 	tr.pc.c_leafs++;
 
@@ -564,14 +556,18 @@ static void R_AddLeafSurfaces( bspNode_t *node, int decalBits )
 	// add the individual surfaces
 	mark = node->markSurfaces;
 	c = node->numMarkSurfaces;
+	view = node->viewSurfaces;
 
 	while ( c-- )
 	{
 		// the surface may have already been added if it
 		// spans multiple leafs
-		surf = *mark;
-		R_AddWorldSurface( surf, decalBits );
+		if ( R_AddWorldSurface( *view ) )
+		{
+			R_AddDecalSurface( *mark, decalBits );
+		}
 		mark++;
+		view++;
 	}
 }
 
@@ -921,377 +917,6 @@ static int BSPSurfaceCompare( const void *a, const void *b )
 
 /*
 ===============
-R_UpdateClusterSurfaces()
-===============
-*/
-#if defined( USE_BSP_CLUSTERSURFACE_MERGING )
-static void R_UpdateClusterSurfaces()
-{
-	int i, k, l;
-
-	int numVerts;
-	int numTriangles;
-
-//  static glIndex_t indexes[MAX_MAP_DRAW_INDEXES];
-//  static byte     indexes[MAX_MAP_DRAW_INDEXES * sizeof(glIndex_t)];
-	glIndex_t    *indexes;
-	int          indexesSize;
-
-	shader_t     *shader, *oldShader;
-	int          lightmapNum, oldLightmapNum;
-
-	int          numSurfaces;
-	bspSurface_t *surface, *surface2;
-	bspSurface_t **surfacesSorted;
-
-	bspCluster_t *cluster;
-
-	srfVBOMesh_t *vboSurf;
-	IBO_t        *ibo;
-
-	vec3_t       bounds[ 2 ];
-
-	if ( tr.visClusters[ tr.visIndex ] < 0 || tr.visClusters[ tr.visIndex ] >= tr.world->numClusters )
-	{
-		// Tr3B: this is not a bug, the super cluster is the last one in the array
-		cluster = &tr.world->clusters[ tr.world->numClusters ];
-	}
-	else
-	{
-		cluster = &tr.world->clusters[ tr.visClusters[ tr.visIndex ] ];
-	}
-
-	tr.world->numClusterVBOSurfaces[ tr.visIndex ] = 0;
-
-	// count number of static cluster surfaces
-	numSurfaces = 0;
-
-	for ( k = 0; k < cluster->numMarkSurfaces; k++ )
-	{
-		surface = cluster->markSurfaces[ k ];
-		shader = surface->shader;
-
-		if ( shader->isSky )
-		{
-			continue;
-		}
-
-		if ( shader->isPortal )
-		{
-			continue;
-		}
-
-		if ( ShaderRequiresCPUDeforms( shader ) )
-		{
-			continue;
-		}
-
-		numSurfaces++;
-	}
-
-	if ( !numSurfaces )
-	{
-		return;
-	}
-
-	// build interaction caches list
-	surfacesSorted = ( bspSurface_t ** ) ri.Hunk_AllocateTempMemory( numSurfaces * sizeof( surfacesSorted[ 0 ] ) );
-
-	numSurfaces = 0;
-
-	for ( k = 0; k < cluster->numMarkSurfaces; k++ )
-	{
-		surface = cluster->markSurfaces[ k ];
-		shader = surface->shader;
-
-		if ( shader->isSky )
-		{
-			continue;
-		}
-
-		if ( shader->isPortal )
-		{
-			continue;
-		}
-
-		if ( ShaderRequiresCPUDeforms( shader ) )
-		{
-			continue;
-		}
-
-		surfacesSorted[ numSurfaces ] = surface;
-		numSurfaces++;
-	}
-
-	// sort surfaces by shader
-	qsort( surfacesSorted, numSurfaces, sizeof( surfacesSorted ), BSPSurfaceCompare );
-
-	shader = oldShader = NULL;
-	lightmapNum = oldLightmapNum = -1;
-
-	for ( k = 0; k < numSurfaces; k++ )
-	{
-		surface = surfacesSorted[ k ];
-		shader = surface->shader;
-		lightmapNum = surface->lightmapNum;
-
-		if ( shader != oldShader || ( r_precomputedLighting->integer ? lightmapNum != oldLightmapNum : 0 ) )
-		{
-			oldShader = shader;
-			oldLightmapNum = lightmapNum;
-
-			// count vertices and indices
-			numVerts = 0;
-			numTriangles = 0;
-
-			for ( l = k; l < numSurfaces; l++ )
-			{
-				surface2 = surfacesSorted[ l ];
-
-				if ( surface2->shader != shader || surface2->lightmapNum != lightmapNum )
-				{
-					continue;
-				}
-
-				if ( *surface2->data == SF_FACE )
-				{
-					srfSurfaceFace_t *face = ( srfSurfaceFace_t * ) surface2->data;
-
-					if ( !r_mergeClusterFaces->integer )
-					{
-						continue;
-					}
-
-					if ( face->numVerts )
-					{
-						numVerts += face->numVerts;
-					}
-
-					if ( face->numTriangles )
-					{
-						numTriangles += face->numTriangles;
-					}
-				}
-				else if ( *surface2->data == SF_GRID )
-				{
-					srfGridMesh_t *grid = ( srfGridMesh_t * ) surface2->data;
-
-					if ( !r_mergeClusterCurves->integer )
-					{
-						continue;
-					}
-
-					if ( grid->numVerts )
-					{
-						numVerts += grid->numVerts;
-					}
-
-					if ( grid->numTriangles )
-					{
-						numTriangles += grid->numTriangles;
-					}
-				}
-				else if ( *surface2->data == SF_TRIANGLES )
-				{
-					srfTriangles_t *tri = ( srfTriangles_t * ) surface2->data;
-
-					if ( !r_mergeClusterTriangles->integer )
-					{
-						continue;
-					}
-
-					if ( tri->numVerts )
-					{
-						numVerts += tri->numVerts;
-					}
-
-					if ( tri->numTriangles )
-					{
-						numTriangles += tri->numTriangles;
-					}
-				}
-			}
-
-			if ( !numVerts || !numTriangles )
-			{
-				continue;
-			}
-
-			ClearBounds( bounds[ 0 ], bounds[ 1 ] );
-
-			// build triangle indices
-			indexesSize = numTriangles * 3 * sizeof( glIndex_t );
-			indexes = ( glIndex_t * ) ri.Hunk_AllocateTempMemory( indexesSize );
-
-			numTriangles = 0;
-
-			for ( l = k; l < numSurfaces; l++ )
-			{
-				surface2 = surfacesSorted[ l ];
-
-				if ( surface2->shader != shader || surface2->lightmapNum != lightmapNum )
-				{
-					continue;
-				}
-
-				// set up triangle indices
-				if ( *surface2->data == SF_FACE )
-				{
-					srfSurfaceFace_t *srf = ( srfSurfaceFace_t * ) surface2->data;
-
-					if ( !r_mergeClusterFaces->integer )
-					{
-						continue;
-					}
-
-					if ( srf->numTriangles )
-					{
-						srfTriangle_t *tri;
-
-						for ( i = 0, tri = tr.world->triangles + srf->firstTriangle; i < srf->numTriangles; i++, tri++ )
-						{
-							indexes[ numTriangles * 3 + i * 3 + 0 ] = tri->indexes[ 0 ];
-							indexes[ numTriangles * 3 + i * 3 + 1 ] = tri->indexes[ 1 ];
-							indexes[ numTriangles * 3 + i * 3 + 2 ] = tri->indexes[ 2 ];
-						}
-
-						numTriangles += srf->numTriangles;
-						BoundsAdd( bounds[ 0 ], bounds[ 1 ], srf->bounds[ 0 ], srf->bounds[ 1 ] );
-					}
-				}
-				else if ( *surface2->data == SF_GRID )
-				{
-					srfGridMesh_t *srf = ( srfGridMesh_t * ) surface2->data;
-
-					if ( !r_mergeClusterCurves->integer )
-					{
-						continue;
-					}
-
-					if ( srf->numTriangles )
-					{
-						srfTriangle_t *tri;
-
-						for ( i = 0, tri = tr.world->triangles + srf->firstTriangle; i < srf->numTriangles; i++, tri++ )
-						{
-							indexes[ numTriangles * 3 + i * 3 + 0 ] = tri->indexes[ 0 ];
-							indexes[ numTriangles * 3 + i * 3 + 1 ] = tri->indexes[ 1 ];
-							indexes[ numTriangles * 3 + i * 3 + 2 ] = tri->indexes[ 2 ];
-						}
-
-						numTriangles += srf->numTriangles;
-						BoundsAdd( bounds[ 0 ], bounds[ 1 ], srf->bounds[ 0 ], srf->bounds[ 1 ] );
-					}
-				}
-				else if ( *surface2->data == SF_TRIANGLES )
-				{
-					srfTriangles_t *srf = ( srfTriangles_t * ) surface2->data;
-
-					if ( !r_mergeClusterTriangles->integer )
-					{
-						continue;
-					}
-
-					if ( srf->numTriangles )
-					{
-						srfTriangle_t *tri;
-
-						for ( i = 0, tri = tr.world->triangles + srf->firstTriangle; i < srf->numTriangles; i++, tri++ )
-						{
-							indexes[ numTriangles * 3 + i * 3 + 0 ] = tri->indexes[ 0 ];
-							indexes[ numTriangles * 3 + i * 3 + 1 ] = tri->indexes[ 1 ];
-							indexes[ numTriangles * 3 + i * 3 + 2 ] = tri->indexes[ 2 ];
-						}
-
-						numTriangles += srf->numTriangles;
-						BoundsAdd( bounds[ 0 ], bounds[ 1 ], srf->bounds[ 0 ], srf->bounds[ 1 ] );
-					}
-				}
-			}
-
-			if ( tr.world->numClusterVBOSurfaces[ tr.visIndex ] < tr.world->clusterVBOSurfaces[ tr.visIndex ].currentElements )
-			{
-				vboSurf =
-				  ( srfVBOMesh_t * ) Com_GrowListElement( &tr.world->clusterVBOSurfaces[ tr.visIndex ],
-				      tr.world->numClusterVBOSurfaces[ tr.visIndex ] );
-				ibo = vboSurf->ibo;
-
-				/*
-				   if(ibo->indexesVBO)
-				   {
-				   glDeleteBuffers(1, &ibo->indexesVBO);
-				   ibo->indexesVBO = 0;
-				   }
-				 */
-
-				//Com_Dealloc(ibo);
-				//Com_Dealloc(vboSurf);
-			}
-			else
-			{
-				vboSurf = ( srfVBOMesh_t * ) ri.Hunk_Alloc( sizeof( *vboSurf ), h_low );
-				vboSurf->surfaceType = SF_VBO_MESH;
-
-				vboSurf->vbo = tr.world->vbo;
-				vboSurf->ibo = ibo = ( IBO_t * ) ri.Hunk_Alloc( sizeof( *ibo ), h_low );
-
-				glGenBuffers( 1, &ibo->indexesVBO );
-
-				Com_AddToGrowList( &tr.world->clusterVBOSurfaces[ tr.visIndex ], vboSurf );
-			}
-
-			//ri.Printf(PRINT_ALL, "creating VBO cluster surface for shader '%s'\n", shader->name);
-
-			// update surface properties
-			vboSurf->numIndexes = numTriangles * 3;
-			vboSurf->numVerts = numVerts;
-
-			vboSurf->shader = shader;
-			vboSurf->lightmapNum = lightmapNum;
-
-			VectorCopy( bounds[ 0 ], vboSurf->bounds[ 0 ] );
-			VectorCopy( bounds[ 1 ], vboSurf->bounds[ 1 ] );
-
-			// make sure the render thread is stopped
-			R_SyncRenderThread();
-
-			// update IBO
-			Q_strncpyz( ibo->name,
-			            va( "staticWorldMesh_IBO_visIndex%i_surface%i", tr.visIndex, tr.world->numClusterVBOSurfaces[ tr.visIndex ] ),
-			            sizeof( ibo->name ) );
-			ibo->indexesSize = indexesSize;
-
-			R_BindIBO( ibo );
-
-			glBufferData( GL_ELEMENT_ARRAY_BUFFER, indexesSize, indexes, GL_DYNAMIC_DRAW_ARB );
-
-			R_BindNullIBO();
-
-			//GL_CheckErrors();
-
-			ri.Hunk_FreeTempMemory( indexes );
-
-			tr.world->numClusterVBOSurfaces[ tr.visIndex ]++;
-		}
-	}
-
-	ri.Hunk_FreeTempMemory( surfacesSorted );
-
-	if ( r_showcluster->modified || r_showcluster->integer )
-	{
-		r_showcluster->modified = qfalse;
-
-		if ( r_showcluster->integer )
-		{
-			ri.Printf( PRINT_ALL, "  surfaces:%i\n", tr.world->numClusterVBOSurfaces[ tr.visIndex ] );
-		}
-	}
-}
-
-#endif // #if defined(USE_BSP_CLUSTERSURFACE_MERGING)
-
-/*
-===============
 R_MarkLeaves
 
 Mark the leaves and nodes that are in the PVS for the current
@@ -1364,15 +989,6 @@ static void R_MarkLeaves( void )
 	}
 	*/
 
-#if defined( USE_BSP_CLUSTERSURFACE_MERGING )
-
-	if ( r_mergeClusterSurfaces->integer && !r_dynamicBspOcclusionCulling->integer )
-	{
-		R_UpdateClusterSurfaces();
-	}
-
-#endif
-
 	if ( r_novis->integer || tr.visClusters[ tr.visIndex ] == -1 )
 	{
 		for ( i = 0; i < tr.world->numnodes; i++ )
@@ -1441,7 +1057,7 @@ static void R_MarkLeaves( void )
 	}
 }
 
-static void DrawLeaf( bspNode_t *node, int decalBits )
+static void DrawLeaf( bspNode_t *node )
 {
 	// leaf node, so add mark surfaces
 	int          c;
@@ -1481,7 +1097,7 @@ static void DrawLeaf( bspNode_t *node, int decalBits )
 	}
 
 	// add the individual surfaces
-	mark = node->markSurfaces;
+	mark = node->viewSurfaces;
 	c = node->numMarkSurfaces;
 
 	while ( c-- )
@@ -1489,7 +1105,7 @@ static void DrawLeaf( bspNode_t *node, int decalBits )
 		// the surface may have already been added if it
 		// spans multiple leafs
 		surf = *mark;
-		R_AddWorldSurface( surf, decalBits );
+		R_AddWorldSurface( surf );
 		mark++;
 	}
 }
@@ -2020,7 +1636,7 @@ static void BuildNodeTraversalStackPost_r( bspNode_t *node )
 		{
 			if ( node->visible[ tr.viewCount ] )
 			{
-				DrawLeaf( node, tr.refdef.decalBits );
+				DrawLeaf( node );
 			}
 
 			break;
@@ -2115,8 +1731,7 @@ static void R_CoherentHierachicalCulling()
 	gl_genericShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
 	// bind u_ColorMap
-	GL_SelectTexture( 0 );
-	GL_Bind( tr.whiteImage );
+	GL_BindToTMU( 0, tr.whiteImage );
 	gl_genericShader->SetUniform_ColorTextureMatrix( matrixIdentity );
 
 #if 0
@@ -2508,7 +2123,8 @@ void R_AddWorldSurfaces( void )
 		R_MarkLeaves();
 
 		// update the bsp nodes with the dynamic occlusion query results
-		if ( glConfig2.occlusionQueryBits && glConfig.driverType != GLDRV_MESA && r_dynamicBspOcclusionCulling->integer )
+		// FIXME: SMP
+		if ( !glConfig.smpActive && glConfig2.occlusionQueryBits && glConfig.driverType != GLDRV_MESA && r_dynamicBspOcclusionCulling->integer )
 		{
 			R_CoherentHierachicalCulling();
 		}
@@ -2524,40 +2140,6 @@ void R_AddWorldSurfaces( void )
 
 		// ydnar: add decal surfaces
 		R_AddDecalSurfaces( tr.world->models );
-
-#if defined( USE_BSP_CLUSTERSURFACE_MERGING )
-
-		if ( r_mergeClusterSurfaces->integer && !r_dynamicBspOcclusionCulling->integer )
-		{
-			int          j, i;
-			srfVBOMesh_t *srf;
-			shader_t     *shader;
-			cplane_t     *frust;
-			int          r;
-
-			for ( j = 0; j < tr.world->numClusterVBOSurfaces[ tr.visIndex ]; j++ )
-			{
-				srf = ( srfVBOMesh_t * ) Com_GrowListElement( &tr.world->clusterVBOSurfaces[ tr.visIndex ], j );
-				shader = srf->shader;
-
-				for ( i = 0; i < FRUSTUM_PLANES; i++ )
-				{
-					frust = &tr.viewParms.frustums[ 0 ][ i ];
-
-					r = BoxOnPlaneSide( srf->bounds[ 0 ], srf->bounds[ 1 ], frust );
-
-					if ( r == 2 )
-					{
-						// completely outside frustum
-						continue;
-					}
-				}
-
-				R_AddDrawSurf( ( surfaceType_t * ) srf, shader, srf->lightmapNum, 0 );
-			}
-		}
-
-#endif
 	}
 }
 

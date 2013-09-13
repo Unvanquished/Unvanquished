@@ -417,6 +417,9 @@ static void RE_StoreImage( fontInfo_t *font, int chunk, int page, int from, int 
 
 	char          fileName[ MAX_QPATH ];
 
+	// about to render an image
+	R_SyncRenderThread();
+
 	// maybe crop image while retaining power-of-2 height
 	i = 1;
 	y = FONT_SIZE;

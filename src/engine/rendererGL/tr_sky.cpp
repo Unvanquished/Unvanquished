@@ -1045,8 +1045,7 @@ void Tess_StageIteratorSky( void )
 			gl_skyboxShader->SetRequiredVertexPointers();
 
 			// bind u_ColorMap
-			GL_SelectTexture( 0 );
-			GL_Bind( tess.surfaceShader->sky.outerbox );
+			GL_BindToTMU( 0, tess.surfaceShader->sky.outerbox );
 
 			DrawSkyBox( tess.surfaceShader );
 #endif

@@ -67,8 +67,9 @@ void R_PerformanceCounters( void )
 	}
 	else if ( r_speeds->integer == RSPEEDS_CULLING )
 	{
-		ri.Printf( PRINT_ALL, "(gen) %i sin %i sout %i pin %i pout\n",
-		           tr.pc.c_sphere_cull_in, tr.pc.c_sphere_cull_out, tr.pc.c_plane_cull_in, tr.pc.c_plane_cull_out );
+		ri.Printf( PRINT_ALL, "(gen) %i sin %i sout %i pin %i pout %i bin %i bout\n",
+		           tr.pc.c_sphere_cull_in, tr.pc.c_sphere_cull_out, tr.pc.c_plane_cull_in, tr.pc.c_plane_cull_out,
+		           tr.pc.c_box_cull_in, tr.pc.c_box_cull_out );
 
 		ri.Printf( PRINT_ALL, "(patch) %i sin %i sclip %i sout %i bin %i bclip %i bout\n",
 		           tr.pc.c_sphere_cull_patch_in, tr.pc.c_sphere_cull_patch_clip,
@@ -154,46 +155,6 @@ void R_PerformanceCounters( void )
 
 	Com_Memset( &tr.pc, 0, sizeof( tr.pc ) );
 	Com_Memset( &backEnd.pc, 0, sizeof( backEnd.pc ) );
-}
-
-/*
-====================
-R_InitCommandBuffers
-====================
-*/
-void R_InitCommandBuffers( void )
-{
-	glConfig.smpActive = qfalse;
-
-	if ( r_smp->integer )
-	{
-		ri.Printf( PRINT_ALL, "Trying SMP acceleration...\n" );
-
-		if ( GLimp_SpawnRenderThread( RB_RenderThread ) )
-		{
-			ri.Printf( PRINT_ALL, "...succeeded.\n" );
-			glConfig.smpActive = qtrue;
-		}
-		else
-		{
-			ri.Printf( PRINT_ALL, "...failed.\n" );
-		}
-	}
-}
-
-/*
-====================
-R_ShutdownCommandBuffers
-====================
-*/
-void R_ShutdownCommandBuffers( void )
-{
-	// kill the rendering thread
-	if ( glConfig.smpActive )
-	{
-		GLimp_WakeRenderer( NULL );
-		glConfig.smpActive = qfalse;
-	}
 }
 
 /*
@@ -288,7 +249,7 @@ void R_SyncRenderThread( void )
 		return;
 	}
 
-	GLimp_FrontEndSleep();
+	GLimp_SyncRenderThread();
 }
 
 /*
@@ -351,11 +312,11 @@ R_AddRunVisTestsCmd
 
 =============
 */
-void R_AddRunVisTestsCmd( visTest_t **visTests, int numVisTests )
+void R_AddRunVisTestsCmd( void )
 {
 	runVisTestsCommand_t *cmd;
 
-	cmd = R_GetCommandBuffer( sizeof( *cmd ) );
+	cmd = ( runVisTestsCommand_t * ) R_GetCommandBuffer( sizeof( *cmd ) );
 
 	if ( !cmd )
 	{
@@ -363,9 +324,6 @@ void R_AddRunVisTestsCmd( visTest_t **visTests, int numVisTests )
 	}
 
 	cmd->commandId = RC_RUN_VISTESTS;
-
-	cmd->visTests = visTests;
-	cmd->numVisTests = numVisTests;
 
 	cmd->refdef = tr.refdef;
 	cmd->viewParms = tr.viewParms;
@@ -407,6 +365,61 @@ void RE_SetColor( const float *rgba )
 	cmd->color[ 1 ] = rgba[ 1 ];
 	cmd->color[ 2 ] = rgba[ 2 ];
 	cmd->color[ 3 ] = rgba[ 3 ];
+}
+
+/*
+=============
+RE_SetColorGrading
+=============
+*/
+void RE_SetColorGrading( int slot, qhandle_t hShader )
+{
+	setColorGradingCommand_t *cmd;
+	shader_t *shader = R_GetShaderByHandle( hShader );
+	image_t *image;
+
+	if ( !tr.registered )
+	{
+		return;
+	}
+
+	if ( slot < 0 || slot > 3 )
+	{
+		return;
+	}
+
+	if ( shader->defaultShader || !shader->stages[ 0 ] )
+	{
+		return;
+	}
+
+	image = shader->stages[ 0 ]->bundle[ 0 ].image[ 0 ];
+
+	if ( !image )
+	{
+		return;
+	}
+
+	if ( image->width != REF_COLORGRADEMAP_SIZE && image->height != REF_COLORGRADEMAP_SIZE )
+	{
+		return;
+	}
+
+	if ( image->width * image->height != REF_COLORGRADEMAP_STORE_SIZE )
+	{
+		return;
+	}
+
+	cmd = ( setColorGradingCommand_t * ) R_GetCommandBuffer( sizeof( *cmd ) );
+
+	if ( !cmd )
+	{
+		return;
+	}
+
+	cmd->slot = slot;
+	cmd->image = image;
+	cmd->commandId = RC_SET_COLORGRADING;
 }
 
 /*
@@ -711,8 +724,6 @@ void RE_BeginFrame( stereoFrame_t stereoFrame )
 
 	GLimp_LogComment( "--- RE_BeginFrame ---\n" );
 
-	glState.finishCalled = qfalse;
-
 	tr.frameCount++;
 	tr.frameSceneNum = 0;
 	tr.viewCount = 0;
@@ -894,6 +905,9 @@ void RE_EndFrame( int *frontEndMsec, int *backEndMsec )
 	// use the other buffers next frame, because another CPU
 	// may still be rendering into the current ones
 	R_ToggleSmpFrame();
+
+	// update the results of the vis tests
+	R_UpdateVisTests();
 
 	if ( frontEndMsec )
 	{

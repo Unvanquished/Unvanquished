@@ -65,8 +65,6 @@ extern "C" {
 
 #define GLSL_COMPILE_STARTUP_ONLY  1
 
-//#define USE_BSP_CLUSTERSURFACE_MERGING 1
-
 // visibility tests: check if a 3D-point is visible
 // results may be delayed, but for visual effect like flares this
 // shouldn't matter
@@ -1454,7 +1452,7 @@ extern "C" {
 #endif
 
 		int                    numVisTests;
-		struct visTest_s       **visTests;
+		struct visTestResult_s *visTests;
 	} trRefdef_t;
 
 //=================================================================================
@@ -1890,14 +1888,17 @@ extern "C" {
 	{
 		surfaceType_t   surfaceType;
 
+		vec3_t          bounds[ 2 ];
+		vec3_t          origin;
+		float           radius;
+
 		struct shader_s *shader; // FIXME move this to somewhere else
 
 		int             lightmapNum; // FIXME get rid of this by merging all lightmaps at level load
-
-		// culling information
-		vec3_t bounds[ 2 ];
+		int             fogIndex;
 
 		// backEnd stats
+		int firstIndex;
 		int numIndexes;
 		int numVerts;
 
@@ -2044,17 +2045,8 @@ extern "C" {
 
 		int          numMarkSurfaces;
 		bspSurface_t **markSurfaces;
+		bspSurface_t **viewSurfaces;
 	} bspNode_t;
-
-#if defined( USE_BSP_CLUSTERSURFACE_MERGING )
-	typedef struct
-	{
-		int          numMarkSurfaces;
-		bspSurface_t **markSurfaces;
-
-		vec3_t       origin; // used for cubemaps
-	} bspCluster_t;
-#endif
 
 	/*
 	typedef struct
@@ -2150,6 +2142,11 @@ extern "C" {
 		int                numMarkSurfaces;
 		bspSurface_t       **markSurfaces;
 
+		bspSurface_t       **viewSurfaces;
+
+		int                numMergedSurfaces;
+		bspSurface_t       *mergedSurfaces;
+
 		int                numFogs;
 		fog_t              *fogs;
 
@@ -2174,18 +2171,11 @@ extern "C" {
 		interactionCache_t **interactions;
 
 		int                numClusters;
-#if defined( USE_BSP_CLUSTERSURFACE_MERGING )
-		bspCluster_t       *clusters;
-#endif
+
 		int                clusterBytes;
 		const byte         *vis; // may be passed in by CM_LoadMap to save space
 		byte       *visvis; // clusters visible from visible clusters
 		byte               *novis; // clusterBytes of 0xff
-
-#if defined( USE_BSP_CLUSTERSURFACE_MERGING )
-		int        numClusterVBOSurfaces[ MAX_VISCOUNTS ];
-		growList_t clusterVBOSurfaces[ MAX_VISCOUNTS ]; // updated every time when changing the view cluster
-#endif
 
 		char     *entityString;
 		char     *entityParsePoint;
@@ -2548,6 +2538,7 @@ extern "C" {
 	*/
 	typedef struct
 	{
+		int c_box_cull_in, c_box_cull_out;
 		int c_sphere_cull_in, c_sphere_cull_out;
 		int c_plane_cull_in, c_plane_cull_out;
 
@@ -2679,6 +2670,13 @@ extern "C" {
 		int   msec; // total msec for backend run
 	} backEndCounters_t;
 
+	// for the backend to keep track of vis tests
+	typedef struct
+	{
+		GLuint   hQuery, hQueryRef;
+		qboolean running;
+	} visTestQueries_t;
+
 // all state modified by the back end is separated
 // from the front end state
 	typedef struct
@@ -2688,6 +2686,7 @@ extern "C" {
 		viewParms_t       viewParms;
 		orientationr_t    orientation;
 		backEndCounters_t pc;
+		visTestQueries_t  visTestQueries[ MAX_VISTESTS ];
 		qboolean          isHyperspace;
 		trRefEntity_t     *currentEntity;
 		trRefLight_t      *currentLight; // only used when lighting interactions
@@ -2706,14 +2705,24 @@ extern "C" {
 
 	typedef struct visTest_s
 	{
-		vec3_t            position;
-		float             depthAdjust; // move position this distance to camera
-		float             area; // size of the quad used to test vis
-		GLuint            hQuery, hQueryRef;
-		qboolean          registered;
-		qboolean          running;
-		float             lastResult;
+		vec3_t   position;
+		float    depthAdjust;
+		float    area;
+		qboolean registered;
+		float    lastResult;
 	} visTest_t;
+
+	typedef struct visTestResult_s
+	{
+		qhandle_t visTestHandle;
+		vec3_t    position;
+		float     depthAdjust; // move position this distance to camera
+		float     area; // size of the quad used to test vis
+
+		qboolean  discardExisting; // true if the currently running vis test should be discarded
+
+		float     lastResult; // updated by backend
+	} visTestResult_t;
 
 	typedef struct
 	{
@@ -2951,7 +2960,7 @@ extern "C" {
 		shaderTable_t *shaderTables[ MAX_SHADER_TABLES ];
 
 		int           numVisTests;
-		visTest_t     *visTests[ MAX_VISTESTS ];
+		visTest_t     visTests[ MAX_VISTESTS ];
 
 		float         sinTable[ FUNCTABLE_SIZE ];
 		float         squareTable[ FUNCTABLE_SIZE ];
@@ -3049,7 +3058,6 @@ extern "C" {
 	extern cvar_t *r_nocull;
 	extern cvar_t *r_facePlaneCull; // enables culling of planar surfaces with back side test
 	extern cvar_t *r_nocurves;
-	extern cvar_t *r_nobatching;
 	extern cvar_t *r_noLightScissors;
 	extern cvar_t *r_noLightVisCull;
 	extern cvar_t *r_noInteractionSort;
@@ -3058,7 +3066,6 @@ extern "C" {
 	extern cvar_t *r_mode; // video mode
 	extern cvar_t *r_fullscreen;
 	extern cvar_t *r_gamma;
-	extern cvar_t *r_displayRefresh; // optional display refresh option
 	extern cvar_t *r_ignorehwgamma; // overrides hardware gamma capabilities
 
 	extern cvar_t *r_ext_compressed_textures; // these control use of specific extensions
@@ -3139,14 +3146,12 @@ extern "C" {
 	extern cvar_t *r_debugShadowMaps;
 	extern cvar_t *r_noShadowFrustums;
 	extern cvar_t *r_noLightFrustums;
-	extern cvar_t *r_shadowMapLuminanceAlpha;
 	extern cvar_t *r_shadowMapLinearFilter;
 	extern cvar_t *r_lightBleedReduction;
 	extern cvar_t *r_overDarkeningFactor;
 	extern cvar_t *r_shadowMapDepthScale;
 	extern cvar_t *r_parallelShadowSplits;
 	extern cvar_t *r_parallelShadowSplitWeight;
-	extern cvar_t *r_lightSpacePerspectiveWarping;
 
 	extern cvar_t *r_intensity;
 
@@ -3219,12 +3224,7 @@ extern "C" {
 	extern cvar_t *r_vboDeformVertexes;
 	extern cvar_t *r_vboSmoothNormals;
 
-#if defined( USE_BSP_CLUSTERSURFACE_MERGING )
-	extern cvar_t *r_mergeClusterSurfaces;
-	extern cvar_t *r_mergeClusterFaces;
-	extern cvar_t *r_mergeClusterCurves;
-	extern cvar_t *r_mergeClusterTriangles;
-#endif
+	extern cvar_t *r_mergeLeafSurfaces;
 
 	extern cvar_t *r_deferredShading;
 	extern cvar_t *r_parallaxMapping;
@@ -3266,16 +3266,13 @@ extern "C" {
 	extern cvar_t *r_bloomBlur;
 	extern cvar_t *r_bloomPasses;
 	extern cvar_t *r_rotoscope;
+	extern cvar_t *r_FXAA;
 	extern cvar_t *r_cameraPostFX;
 	extern cvar_t *r_cameraVignette;
 	extern cvar_t *r_cameraFilmGrain;
 	extern cvar_t *r_cameraFilmGrainScale;
 
 	extern cvar_t *r_evsmPostProcess;
-
-#ifdef USE_GLSL_OPTIMIZER
-	extern cvar_t *r_glslOptimizer;
-#endif
 
 	extern cvar_t *r_fontScale;
 
@@ -3304,6 +3301,7 @@ extern "C" {
 	void           R_LocalNormalToWorld( const vec3_t local, vec3_t world );
 	void           R_LocalPointToWorld( const vec3_t local, vec3_t world );
 
+	cullResult_t   R_CullBox( vec3_t worldBounds[ 2 ] );
 	cullResult_t   R_CullLocalBox( vec3_t bounds[ 2 ] );
 	int            R_CullLocalPointAndRadius( vec3_t origin, float radius );
 	int            R_CullPointAndRadius( vec3_t origin, float radius );
@@ -3374,6 +3372,7 @@ extern "C" {
 	void BindAnimatedImage( textureBundle_t *bundle );
 	void GL_TextureFilter( image_t *image, filterType_t filterType );
 	void GL_BindProgram( shaderProgram_t *program );
+	void GL_BindToTMU( int unit, image_t *image );
 	void GL_BindNullProgram( void );
 	void GL_SetDefaultState( void );
 	void GL_SelectTexture( int unit );
@@ -3525,6 +3524,7 @@ extern "C" {
 	void     GLimp_ShutdownRenderThread( void );
 	void     *GLimp_RendererSleep( void );
 	void     GLimp_FrontEndSleep( void );
+	void     GLimp_SyncRenderThread( void );
 	void     GLimp_WakeRenderer( void *data );
 
 	void     GLimp_LogComment( const char *comment );
@@ -3896,6 +3896,8 @@ extern "C" {
 				   float depthAdjust, float area );
 	float RE_CheckVisibility( qhandle_t hTest );
 	void RE_UnregisterVisTest( qhandle_t hTest );
+	void R_UpdateVisTests( void );
+	void R_InitVisTests( void );
 	void R_ShutdownVisTests( void );
 	/*
 	=============================================================
@@ -4016,6 +4018,13 @@ extern "C" {
 
 	typedef struct
 	{
+		int     commandId;
+		image_t *image;
+		int     slot;
+	} setColorGradingCommand_t;
+
+	typedef struct
+	{
 		int commandId;
 		int buffer;
 	} drawBufferCommand_t;
@@ -4099,8 +4108,6 @@ extern "C" {
 		int         commandId;
 		trRefdef_t  refdef;
 		viewParms_t viewParms;
-		visTest_t   **visTests;
-		int         numVisTests;
 	} runVisTestsCommand_t;
 
 	typedef enum
@@ -4139,6 +4146,7 @@ extern "C" {
 	typedef enum
 	{
 	  RC_END_OF_LIST,
+	  RC_SET_COLORGRADING,
 	  RC_SET_COLOR,
 	  RC_STRETCH_PIC,
 	  RC_2DPOLYS,
@@ -4181,7 +4189,9 @@ extern "C" {
 		decalProjector_t    decalProjectors[ MAX_DECAL_PROJECTORS ];
 		srfDecal_t          decals[ MAX_DECALS ];
 
-		visTest_t           *visTests[ MAX_VISTESTS ];
+		// the backend communicates to the frontend through visTestResult_t
+		int                 numVisTests;
+		visTestResult_t     visTests[ MAX_VISTESTS ];
 
 		renderCommandList_t commands;
 	} backEndData_t;
@@ -4193,15 +4203,12 @@ extern "C" {
 	void                                *R_GetCommandBuffer( int bytes );
 	void                                RB_ExecuteRenderCommands( const void *data );
 
-	void                                R_InitCommandBuffers( void );
-	void                                R_ShutdownCommandBuffers( void );
-
 	void                                R_SyncRenderThread( void );
 
 	void                                R_AddDrawViewCmd( void );
 
 	void                                RE_SetColor( const float *rgba );
-	void                                R_AddRunVisTestsCmd( visTest_t **visTests, int numVisTests );
+	void                                R_AddRunVisTestsCmd( void );
 	void                                RE_SetClipRegion( const float *region );
 	void                                RE_StretchPic( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader );
 	void                                RE_RotatedPic( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader, float angle );  // NERVE - SMF

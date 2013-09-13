@@ -187,6 +187,8 @@ vmCvar_t           g_tag;
 vmCvar_t           g_showKillerHP;
 vmCvar_t           g_combatCooldown;
 
+vmCvar_t           g_geoip;
+
 vmCvar_t           g_strip_structDmgPrcnt;
 vmCvar_t           g_strip_playerDmgPrcnt;
 
@@ -427,6 +429,8 @@ static cvarTable_t gameCvarTable[] =
 
 	{ &g_showKillerHP,                "g_showKillerHP",                "0",                                CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_combatCooldown,              "g_combatCooldown",              "15",                               CVAR_ARCHIVE,                                    0, qfalse           },
+
+	{ &g_geoip,                       "g_geoip",                       "1",                                CVAR_ARCHIVE,                                    0, qfalse           },
 
 	{ &g_allowDonations,              "g_allowDonations",              "1",                                CVAR_ARCHIVE,                                    0, qfalse           },
 

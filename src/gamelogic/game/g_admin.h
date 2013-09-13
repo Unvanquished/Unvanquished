@@ -214,6 +214,7 @@ qboolean        G_admin_specunlock( gentity_t *ent );
 qboolean        G_admin_listadmins( gentity_t *ent );
 qboolean        G_admin_listinactive( gentity_t *ent );
 qboolean        G_admin_listlayouts( gentity_t *ent );
+qboolean        G_admin_listgeoip( gentity_t *ent );
 qboolean        G_admin_listplayers( gentity_t *ent );
 qboolean        G_admin_listrotation( gentity_t *ent );
 qboolean        G_admin_changemap( gentity_t *ent );
