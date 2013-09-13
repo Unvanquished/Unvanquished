@@ -403,6 +403,23 @@ typedef enum
   UP_NUM_UPGRADES
 } upgrade_t;
 
+typedef enum
+{
+	MIS_NONE,
+
+	MIS_FLAMER,
+	MIS_BLASTER,
+	MIS_PRIFLE,
+	MIS_LCANNON,
+	MIS_GRENADE,
+	MIS_HIVE,
+	MIS_LOCKBLOB,
+	MIS_SLOWBLOB,
+	MIS_BOUNCEBALL,
+
+	MIS_NUM_MISSILES
+} missile_t;
+
 // bitmasks for upgrade slots
 #define SLOT_NONE     0x00000000
 #define SLOT_HEAD     0x00000001
@@ -890,6 +907,8 @@ typedef enum
 
 // means of death
 // keep modNames[] in g_combat.c in sync with this list!
+// keep bg_meansOfDeathData[] in g_misc.c in sync, too!
+// TODO: Get rid of the former and use the latter instead
 typedef enum
 {
   MOD_UNKNOWN,
@@ -1139,6 +1158,25 @@ typedef struct
 	team_t    team;
 } upgradeAttributes_t;
 
+// missile record
+typedef struct
+{
+	missile_t      number;
+	const char     *name;
+	qboolean       pointAgainstWorld;
+	int            damage;
+	meansOfDeath_t meansOfDeath;
+	int            splashDamage;
+	int            splashRadius;
+	meansOfDeath_t splashMeansOfDeath;
+	int            clipmask;
+	int            size;
+	trType_t       trajectoryType;
+	int            speed;
+	float          lag;
+	int            flags;
+} missileAttributes_t;
+
 qboolean BG_WeaponIsFull( weapon_t weapon, int stats[], int ammo, int clips );
 qboolean BG_InventoryContainsWeapon( int weapon, int stats[] );
 int      BG_SlotsForInventory( int stats[] );
@@ -1190,6 +1228,11 @@ const weaponAttributes_t  *BG_Weapon( weapon_t weapon );
 const upgradeAttributes_t *BG_UpgradeByName( const char *name );
 const upgradeAttributes_t *BG_Upgrade( upgrade_t upgrade );
 
+const missileAttributes_t *BG_MissileByName( const char *name );
+const missileAttributes_t *BG_Missile( missile_t missile );
+
+meansOfDeath_t            BG_MeansOfDeathByName( const char *name );
+
 void                      BG_InitAllConfigs( void );
 void                      BG_UnloadAllConfigs( void );
 
@@ -1203,6 +1246,7 @@ void                      BG_ParseClassAttributeFile( const char *filename, clas
 void                      BG_ParseClassModelFile( const char *filename, classModelConfig_t *cc );
 void                      BG_ParseWeaponAttributeFile( const char *filename, weaponAttributes_t *wa );
 void                      BG_ParseUpgradeAttributeFile( const char *filename, upgradeAttributes_t *ua );
+void                      BG_ParseMissileAttributeFile( const char *filename, missileAttributes_t *ma );
 
 // bg_teamprogress.c
 void     BG_InitUnlockackables( void );

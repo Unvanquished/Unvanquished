@@ -1065,7 +1065,7 @@ gentity_t *fire_lockblob( gentity_t *self, vec3_t start, vec3_t dir );
 gentity_t *fire_slowBlob( gentity_t *self, vec3_t start, vec3_t dir );
 gentity_t *fire_bounceBall( gentity_t *self, vec3_t start, vec3_t dir );
 gentity_t *fire_hive( gentity_t *self, vec3_t start, vec3_t dir );
-gentity_t *launch_grenade( gentity_t *self, vec3_t start, vec3_t dir );
+gentity_t *fire_grenade( gentity_t *self, vec3_t start, vec3_t dir );
 
 
 //

@@ -159,12 +159,12 @@ static float MissileTimeSplashDmgMod( gentity_t *ent )
 
 /*
 ================
-G_ExplodeMissile
+ExplodeMissile
 
 Explode a missile without an impact.
 ================
 */
-void G_ExplodeMissile( gentity_t *ent )
+static void ExplodeMissile( gentity_t *ent )
 {
 	vec3_t dir;
 	vec3_t origin;
@@ -200,10 +200,10 @@ void G_ExplodeMissile( gentity_t *ent )
 
 /*
 ================
-G_MissileImpact
+MissileImpact
 ================
 */
-void G_MissileImpact( gentity_t *ent, trace_t *trace )
+static void MissileImpact( gentity_t *ent, trace_t *trace )
 {
 	gentity_t *other, *attacker, *neighbor;
 	qboolean  doDamage = qtrue, returnAfterDamage = qfalse;
@@ -240,7 +240,7 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace )
 
 		return;
 	}
-	else if ( !strcmp( ent->classname, "flame" ) )
+	else if ( !strcmp( ent->classname, "flamer" ) )
 	{
 		// ignite alien buildables on direct hit
 		if ( other->s.eType == ET_BUILDABLE && other->buildableTeam == TEAM_ALIENS )
@@ -337,7 +337,7 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace )
 			//prevent collision with the client when returning
 			ent->r.ownerNum = other->s.number;
 
-			ent->think = G_ExplodeMissile;
+			ent->think = ExplodeMissile;
 			ent->nextthink = level.time + FRAMETIME;
 
 			//only damage humans
@@ -488,7 +488,7 @@ void G_RunMissile( gentity_t *ent )
 			return;
 		}
 
-		G_MissileImpact( ent, &tr );
+		MissileImpact( ent, &tr );
 
 		if ( ent->s.eType != ET_MISSILE )
 		{
@@ -511,47 +511,103 @@ void G_RunMissile( gentity_t *ent )
 }
 
 /*
+================
+SpawnMissile
+================
+*/
+static gentity_t *SpawnMissile( missile_t missile, gentity_t *parent, vec3_t start, vec3_t dir,
+                                gentity_t *target, void ( *think )( gentity_t *self ), int nextthink )
+{
+	gentity_t                 *m;
+	const missileAttributes_t *ma;
+	vec3_t                    velocity;
+
+	if ( !parent )
+	{
+		return NULL;
+	}
+
+	ma = BG_Missile( missile );
+
+	m = G_NewEntity();
+
+	// generic
+	m->s.eType             = ET_MISSILE;
+	m->r.ownerNum          = parent->s.number;
+	m->parent              = parent;
+	m->target              = target;
+	m->think               = think;
+	m->nextthink           = nextthink;
+
+	// from attribute config file
+	m->s.modelindex        = ma->number; // TODO: Check if modelindex is usable
+	m->classname           = ma->name;
+	m->pointAgainstWorld   = ma->pointAgainstWorld;
+	m->damage              = ma->damage;
+	m->methodOfDeath       = ma->meansOfDeath;
+	m->splashDamage        = ma->splashDamage;
+	m->splashRadius        = ma->splashRadius;
+	m->splashMethodOfDeath = ma->splashMeansOfDeath;
+	m->clipmask            = ma->clipmask;
+	m->r.mins[ 0 ]         =
+	m->r.mins[ 1 ]         =
+	m->r.mins[ 2 ]         = -ma->size;
+	m->r.maxs[ 0 ]         =
+	m->r.maxs[ 1 ]         =
+	m->r.maxs[ 2 ]         = ma->size;
+	m->s.eFlags            = ma->flags;
+
+	// not yet implemented / deprecated
+	m->flightSplashDamage  = 0;
+	m->flightSplashRadius  = 0;
+
+	// trajectory
+	{
+		// set trajectory type
+		m->s.pos.trType = ma->trajectoryType;
+
+		// move a bit on the first frame
+		m->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME;
+
+		// set starting point
+		VectorCopy( start, m->s.pos.trBase );
+		VectorCopy( start, m->r.currentOrigin );
+
+		// set speed
+		VectorScale( dir, ma->speed, velocity );
+
+		// add lag
+		if ( ma->lag && parent->client )
+		{
+			VectorMA( velocity, ma->lag, parent->client->ps.velocity, velocity );
+		}
+
+		// copy velocity
+		VectorCopy( velocity, m->s.pos.trDelta );
+
+		// save net bandwidth
+		SnapVector( m->s.pos.trDelta );
+	}
+
+	return m;
+}
+
+/*
 =================
 fire_flamer
 =================
 */
 gentity_t *fire_flamer( gentity_t *self, vec3_t start, vec3_t dir )
 {
-	gentity_t *bolt;
-	vec3_t    pvel;
+	gentity_t *m;
 
-	bolt = G_NewEntity();
-	bolt->classname = "flame";
-	bolt->pointAgainstWorld = qfalse;
-	bolt->nextthink = level.time + FLAMER_LIFETIME;
-	bolt->think = G_FreeEntity; // don't do splash when dying
-	bolt->s.eType = ET_MISSILE;
-	bolt->s.weapon = WP_FLAMER;
-	bolt->s.generic1 = self->s.generic1; //weaponMode
-	bolt->r.ownerNum = self->s.number;
-	bolt->parent = self;
-	bolt->damage = FLAMER_DAMAGE;
-	bolt->flightSplashDamage = 0;
-	bolt->flightSplashRadius = 0;
-	bolt->splashDamage = FLAMER_SPLASH_DAMAGE;
-	bolt->splashRadius = FLAMER_SPLASH_RADIUS;
-	bolt->methodOfDeath = MOD_FLAMER;
-	bolt->splashMethodOfDeath = MOD_FLAMER_SPLASH;
-	bolt->clipmask = MASK_SHOT;
-	bolt->target = NULL;
-	bolt->r.mins[ 0 ] = bolt->r.mins[ 1 ] = bolt->r.mins[ 2 ] = -FLAMER_SIZE;
-	bolt->r.maxs[ 0 ] = bolt->r.maxs[ 1 ] = bolt->r.maxs[ 2 ] = FLAMER_SIZE;
+	m = SpawnMissile( MIS_FLAMER, self, start, dir, NULL, G_FreeEntity, level.time + FLAMER_LIFETIME );
 
-	bolt->s.pos.trType = TR_LINEAR;
-	bolt->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME; // move a bit on the very first frame
-	VectorCopy( start, bolt->s.pos.trBase );
-	VectorScale( self->client->ps.velocity, FLAMER_LAG, pvel );
-	VectorMA( pvel, FLAMER_SPEED, dir, bolt->s.pos.trDelta );
-	SnapVector( bolt->s.pos.trDelta );  // save net bandwidth
+	// TODO: Decouple missiles from weapons by introducing a missile "model" (effect) file
+	m->s.weapon = WP_FLAMER;
+	m->s.generic1 = self->s.generic1; // weaponMode
 
-	VectorCopy( start, bolt->r.currentOrigin );
-
-	return bolt;
+	return m;
 }
 
 /*
@@ -561,39 +617,15 @@ fire_blaster
 */
 gentity_t *fire_blaster( gentity_t *self, vec3_t start, vec3_t dir )
 {
-	gentity_t *bolt;
+	gentity_t *m;
 
-	bolt = G_NewEntity();
-	bolt->classname = "blaster";
-	bolt->pointAgainstWorld = qtrue;
-	bolt->nextthink = level.time + 10000;
-	bolt->think = G_ExplodeMissile;
-	bolt->s.eType = ET_MISSILE;
-	bolt->s.weapon = WP_BLASTER;
-	bolt->s.generic1 = self->s.generic1; //weaponMode
-	bolt->r.ownerNum = self->s.number;
-	bolt->parent = self;
-	bolt->damage = BLASTER_DMG;
-	bolt->flightSplashDamage = 0;
-	bolt->flightSplashRadius = 0;
-	bolt->splashDamage = 0;
-	bolt->splashRadius = 0;
-	bolt->methodOfDeath = MOD_BLASTER;
-	bolt->splashMethodOfDeath = MOD_BLASTER;
-	bolt->clipmask = MASK_SHOT;
-	bolt->target = NULL;
-	bolt->r.mins[ 0 ] = bolt->r.mins[ 1 ] = bolt->r.mins[ 2 ] = -BLASTER_SIZE;
-	bolt->r.maxs[ 0 ] = bolt->r.maxs[ 1 ] = bolt->r.maxs[ 2 ] = BLASTER_SIZE;
+	m = SpawnMissile( MIS_BLASTER, self, start, dir, NULL, ExplodeMissile, level.time + 10000 );
 
-	bolt->s.pos.trType = TR_LINEAR;
-	bolt->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME; // move a bit on the very first frame
-	VectorCopy( start, bolt->s.pos.trBase );
-	VectorScale( dir, BLASTER_SPEED, bolt->s.pos.trDelta );
-	SnapVector( bolt->s.pos.trDelta );  // save net bandwidth
+	// TODO: Decouple missiles from weapons by introducing a missile "model" (effect) file
+	m->s.weapon = WP_BLASTER;
+	m->s.generic1 = self->s.generic1; // weaponMode
 
-	VectorCopy( start, bolt->r.currentOrigin );
-
-	return bolt;
+	return m;
 }
 
 /*
@@ -603,39 +635,15 @@ fire_pulseRifle
 */
 gentity_t *fire_pulseRifle( gentity_t *self, vec3_t start, vec3_t dir )
 {
-	gentity_t *bolt;
+	gentity_t *m;
 
-	bolt = G_NewEntity();
-	bolt->classname = "pulse";
-	bolt->pointAgainstWorld = qtrue;
-	bolt->nextthink = level.time + 10000;
-	bolt->think = G_ExplodeMissile;
-	bolt->s.eType = ET_MISSILE;
-	bolt->s.weapon = WP_PULSE_RIFLE;
-	bolt->s.generic1 = self->s.generic1; //weaponMode
-	bolt->r.ownerNum = self->s.number;
-	bolt->parent = self;
-	bolt->damage = PRIFLE_DMG;
-	bolt->flightSplashDamage = 0;
-	bolt->flightSplashRadius = 0;
-	bolt->splashDamage = 0;
-	bolt->splashRadius = 0;
-	bolt->methodOfDeath = MOD_PRIFLE;
-	bolt->splashMethodOfDeath = MOD_PRIFLE;
-	bolt->clipmask = MASK_SHOT;
-	bolt->target = NULL;
-	bolt->r.mins[ 0 ] = bolt->r.mins[ 1 ] = bolt->r.mins[ 2 ] = -PRIFLE_SIZE;
-	bolt->r.maxs[ 0 ] = bolt->r.maxs[ 1 ] = bolt->r.maxs[ 2 ] = PRIFLE_SIZE;
+	m = SpawnMissile( MIS_BLASTER, self, start, dir, NULL, ExplodeMissile, level.time + 10000 );
 
-	bolt->s.pos.trType = TR_LINEAR;
-	bolt->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME; // move a bit on the very first frame
-	VectorCopy( start, bolt->s.pos.trBase );
-	VectorScale( dir, PRIFLE_SPEED, bolt->s.pos.trDelta );
-	SnapVector( bolt->s.pos.trDelta );  // save net bandwidth
+	// TODO: Decouple missiles from weapons by introducing a missile "model" (effect) file
+	m->s.weapon = WP_BLASTER;
+	m->s.generic1 = self->s.generic1; // weaponMode
 
-	VectorCopy( start, bolt->r.currentOrigin );
-
-	return bolt;
+	return m;
 }
 
 /*
@@ -646,63 +654,44 @@ fire_luciferCannon
 gentity_t *fire_luciferCannon( gentity_t *self, vec3_t start, vec3_t dir,
                                int damage, int radius, int speed )
 {
-	gentity_t *bolt;
+	gentity_t *m;
+	int       nextthink;
 	float     charge;
 
-	bolt = G_NewEntity();
-	bolt->classname = "lcannon";
-	bolt->pointAgainstWorld = qtrue;
-
+	// explode in front of player when overcharged
 	if ( damage == LCANNON_DAMAGE )
 	{
-		bolt->nextthink = level.time;
+		nextthink = level.time;
 	}
 	else
 	{
-		bolt->nextthink = level.time + 10000;
+		nextthink = level.time + 10000;
 	}
 
-	bolt->think = G_ExplodeMissile;
-	bolt->s.eType = ET_MISSILE;
-	bolt->s.weapon = WP_LUCIFER_CANNON;
-	bolt->s.generic1 = self->s.generic1; //weaponMode
-	bolt->r.ownerNum = self->s.number;
-	bolt->parent = self;
-	bolt->damage = damage;
-	bolt->flightSplashDamage = 0;
-	bolt->flightSplashRadius = 0;
-	bolt->splashDamage = damage / 2;
-	bolt->splashRadius = radius;
-	bolt->methodOfDeath = MOD_LCANNON;
-	bolt->splashMethodOfDeath = MOD_LCANNON_SPLASH;
-	bolt->clipmask = MASK_SHOT;
-	bolt->target = NULL;
+	m = SpawnMissile( MIS_LCANNON, self, start, dir, NULL, ExplodeMissile, nextthink );
 
-	// Give the missile a small bounding box
-	bolt->r.mins[ 0 ] = bolt->r.mins[ 1 ] = bolt->r.mins[ 2 ] =
-	    -LCANNON_SIZE;
-	bolt->r.maxs[ 0 ] = bolt->r.maxs[ 1 ] = bolt->r.maxs[ 2 ] =
-	    -bolt->r.mins[ 0 ];
+	// some values are set in the code
+	m->damage       = damage;
+	m->splashDamage = damage / 2;
+	m->splashRadius = radius;
+	VectorScale( dir, speed, m->s.pos.trDelta );
+	SnapVector( m->s.pos.trDelta ); // save net bandwidth
 
-	// Pass the missile charge through
+	// pass the missile charge through
 	charge = ( float )( damage - LCANNON_SECONDARY_DAMAGE ) / LCANNON_DAMAGE;
-	bolt->s.torsoAnim = charge * 255;
 
-	if ( bolt->s.torsoAnim < 0 )
+	m->s.torsoAnim = charge * 255;
+
+	if ( m->s.torsoAnim < 0 )
 	{
-		bolt->s.torsoAnim = 0;
+		m->s.torsoAnim = 0;
 	}
 
-	bolt->s.pos.trType = TR_LINEAR;
-	bolt->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME; // move a bit on the very first frame
-	VectorCopy( start, bolt->s.pos.trBase );
-	VectorScale( dir, speed, bolt->s.pos.trDelta );
-	SnapVector( bolt->s.pos.trDelta );  // save net bandwidth
+	// TODO: Decouple missiles from weapons by introducing a missile "model" (effect) file
+	m->s.weapon   = WP_LUCIFER_CANNON;
+	m->s.generic1 = self->s.generic1; // weaponMode
 
-	VectorCopy( start, bolt->r.currentOrigin );
-
-//	Com_Printf("Luciball power = %d, speed = %d/s.\n", damage, speed);
-	return bolt;
+	return m;
 }
 
 /*
@@ -710,48 +699,18 @@ gentity_t *fire_luciferCannon( gentity_t *self, vec3_t start, vec3_t dir,
 launch_grenade
 =================
 */
-gentity_t *launch_grenade( gentity_t *self, vec3_t start, vec3_t dir )
+gentity_t *fire_grenade( gentity_t *self, vec3_t start, vec3_t dir )
 {
-	gentity_t *bolt;
+	gentity_t *m;
 
-	bolt = G_NewEntity();
-	bolt->classname = "grenade";
-	bolt->pointAgainstWorld = qfalse;
-	bolt->nextthink = level.time + 5000;
-	bolt->think = G_ExplodeMissile;
-	bolt->s.eType = ET_MISSILE;
-	bolt->s.weapon = WP_GRENADE;
-	bolt->s.eFlags = EF_BOUNCE_HALF;
-	bolt->s.generic1 = WPM_PRIMARY; //weaponMode
-	bolt->r.ownerNum = self->s.number;
-	bolt->parent = self;
-	bolt->damage = GRENADE_DAMAGE;
-	bolt->flightSplashDamage = 0;
-	bolt->flightSplashRadius = 0;
-	bolt->splashDamage = GRENADE_DAMAGE;
-	bolt->splashRadius = GRENADE_RANGE;
-	bolt->methodOfDeath = MOD_GRENADE;
-	bolt->splashMethodOfDeath = MOD_GRENADE;
-	bolt->clipmask = MASK_SHOT;
-	bolt->target = NULL;
-	bolt->r.mins[ 0 ] = bolt->r.mins[ 1 ] = bolt->r.mins[ 2 ] = -3.0f;
-	bolt->r.maxs[ 0 ] = bolt->r.maxs[ 1 ] = bolt->r.maxs[ 2 ] = 3.0f;
-	bolt->s.time = level.time;
+	m = SpawnMissile( MIS_GRENADE, self, start, dir, NULL, ExplodeMissile, level.time + 5000 );
 
-	bolt->s.pos.trType = TR_GRAVITY;
-	bolt->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME; // move a bit on the very first frame
-	VectorCopy( start, bolt->s.pos.trBase );
-	VectorScale( dir, GRENADE_SPEED, bolt->s.pos.trDelta );
-	SnapVector( bolt->s.pos.trDelta );  // save net bandwidth
+	// TODO: Decouple missiles from weapons by introducing a missile "model" (effect) file
+	m->s.weapon   = WP_GRENADE;
+	m->s.generic1 = WPM_PRIMARY; // weaponMode
 
-	VectorCopy( start, bolt->r.currentOrigin );
-
-	trap_SendServerCommand( self - g_entities, "vcommand grenade" );
-
-	return bolt;
+	return m;
 }
-
-//=============================================================================
 
 /*
 ================
@@ -774,7 +733,7 @@ void HiveMissileThink( gentity_t *self )
 		self->s.pos.trType = TR_STATIONARY;
 		self->s.pos.trTime = level.time;
 
-		self->think = G_ExplodeMissile;
+		self->think = ExplodeMissile;
 		self->nextthink = level.time + 50;
 		self->parent->active = qfalse; //allow the parent to start again
 		return;
@@ -827,40 +786,18 @@ fire_hive
 */
 gentity_t *fire_hive( gentity_t *self, vec3_t start, vec3_t dir )
 {
-	gentity_t *bolt;
+	gentity_t *m;
 
-	bolt = G_NewEntity();
-	bolt->classname = "hive";
-	bolt->pointAgainstWorld = qfalse;
-	bolt->nextthink = level.time + HIVE_DIR_CHANGE_PERIOD;
-	bolt->think = HiveMissileThink;
-	bolt->s.eType = ET_MISSILE;
-	bolt->s.eFlags |= EF_BOUNCE | EF_NO_BOUNCE_SOUND;
-	bolt->s.weapon = WP_HIVE;
-	bolt->s.generic1 = WPM_PRIMARY; //weaponMode
-	bolt->r.ownerNum = self->s.number;
-	bolt->parent = self;
-	bolt->damage = HIVE_DMG;
-	bolt->flightSplashDamage = 0;
-	bolt->flightSplashRadius = 0;
-	bolt->splashDamage = 0;
-	bolt->splashRadius = 0;
-	bolt->methodOfDeath = MOD_SWARM;
-	bolt->clipmask = MASK_SHOT;
-	bolt->target = self->target;
-	bolt->timestamp = level.time + HIVE_LIFETIME;
+	m = SpawnMissile( MIS_HIVE, self, start, dir, self->target, HiveMissileThink, level.time + HIVE_DIR_CHANGE_PERIOD );
 
-	bolt->s.pos.trType = TR_LINEAR;
-	bolt->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME; // move a bit on the very first frame
-	VectorCopy( start, bolt->s.pos.trBase );
-	VectorScale( dir, HIVE_SPEED, bolt->s.pos.trDelta );
-	SnapVector( bolt->s.pos.trDelta );  // save net bandwidth
-	VectorCopy( start, bolt->r.currentOrigin );
+	m->timestamp = level.time + HIVE_LIFETIME;
 
-	return bolt;
+	// TODO: Decouple missiles from weapons by introducing a missile "model" (effect) file
+	m->s.weapon   = WP_HIVE;
+	m->s.generic1 = WPM_PRIMARY; // weaponMode
+
+	return m;
 }
-
-//=============================================================================
 
 /*
 =================
@@ -869,35 +806,15 @@ fire_lockblob
 */
 gentity_t *fire_lockblob( gentity_t *self, vec3_t start, vec3_t dir )
 {
-	gentity_t *bolt;
+	gentity_t *m;
 
-	bolt = G_NewEntity();
-	bolt->classname = "lockblob";
-	bolt->pointAgainstWorld = qtrue;
-	bolt->nextthink = level.time + 15000;
-	bolt->think = G_ExplodeMissile;
-	bolt->s.eType = ET_MISSILE;
-	bolt->s.weapon = WP_LOCKBLOB_LAUNCHER;
-	bolt->s.generic1 = WPM_PRIMARY; //weaponMode
-	bolt->r.ownerNum = self->s.number;
-	bolt->parent = self;
-	bolt->damage = 0;
-	bolt->flightSplashDamage = 0;
-	bolt->flightSplashRadius = 0;
-	bolt->splashDamage = 0;
-	bolt->splashRadius = 0;
-	bolt->methodOfDeath = MOD_UNKNOWN; //doesn't do damage so will never kill
-	bolt->clipmask = MASK_SHOT;
-	bolt->target = NULL;
+	m = SpawnMissile( MIS_LOCKBLOB, self, start, dir, NULL, ExplodeMissile, level.time + 15000 );
 
-	bolt->s.pos.trType = TR_LINEAR;
-	bolt->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME; // move a bit on the very first frame
-	VectorCopy( start, bolt->s.pos.trBase );
-	VectorScale( dir, LOCKBLOB_SPEED, bolt->s.pos.trDelta );
-	SnapVector( bolt->s.pos.trDelta );  // save net bandwidth
-	VectorCopy( start, bolt->r.currentOrigin );
+	// TODO: Decouple missiles from weapons by introducing a missile "model" (effect) file
+	m->s.weapon   = WP_LOCKBLOB_LAUNCHER;
+	m->s.generic1 = WPM_PRIMARY; // weaponMode
 
-	return bolt;
+	return m;
 }
 
 /*
@@ -907,36 +824,15 @@ fire_slowBlob
 */
 gentity_t *fire_slowBlob( gentity_t *self, vec3_t start, vec3_t dir )
 {
-	gentity_t *bolt;
+	gentity_t *m;
 
-	bolt = G_NewEntity();
-	bolt->classname = "slowblob";
-	bolt->pointAgainstWorld = qtrue;
-	bolt->nextthink = level.time + 15000;
-	bolt->think = G_ExplodeMissile;
-	bolt->s.eType = ET_MISSILE;
-	bolt->s.weapon = WP_ABUILD2;
-	bolt->s.generic1 = self->s.generic1; //weaponMode
-	bolt->r.ownerNum = self->s.number;
-	bolt->parent = self;
-	bolt->damage = ABUILDER_BLOB_DMG;
-	bolt->flightSplashDamage = 0;
-	bolt->flightSplashRadius = 0;
-	bolt->splashDamage = 0;
-	bolt->splashRadius = 0;
-	bolt->methodOfDeath = MOD_SLOWBLOB;
-	bolt->splashMethodOfDeath = MOD_SLOWBLOB;
-	bolt->clipmask = MASK_SHOT;
-	bolt->target = NULL;
+	m = SpawnMissile( MIS_SLOWBLOB, self, start, dir, NULL, ExplodeMissile, level.time + 15000 );
 
-	bolt->s.pos.trType = TR_GRAVITY;
-	bolt->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME; // move a bit on the very first frame
-	VectorCopy( start, bolt->s.pos.trBase );
-	VectorScale( dir, ABUILDER_BLOB_SPEED, bolt->s.pos.trDelta );
-	SnapVector( bolt->s.pos.trDelta );  // save net bandwidth
-	VectorCopy( start, bolt->r.currentOrigin );
+	// TODO: Decouple missiles from weapons by introducing a missile "model" (effect) file
+	m->s.weapon   = WP_ABUILD2;
+	m->s.generic1 = self->s.generic1; // weaponMode
 
-	return bolt;
+	return m;
 }
 
 /*
@@ -946,34 +842,13 @@ fire_bounceBall
 */
 gentity_t *fire_bounceBall( gentity_t *self, vec3_t start, vec3_t dir )
 {
-	gentity_t *bolt;
+	gentity_t *m;
 
-	bolt = G_NewEntity();
-	bolt->classname = "bounceball";
-	bolt->pointAgainstWorld = qtrue;
-	bolt->nextthink = level.time + 3000;
-	bolt->think = G_ExplodeMissile;
-	bolt->s.eType = ET_MISSILE;
-	bolt->s.weapon = WP_ALEVEL3_UPG;
-	bolt->s.generic1 = self->s.generic1; //weaponMode
-	bolt->r.ownerNum = self->s.number;
-	bolt->parent = self;
-	bolt->damage = LEVEL3_BOUNCEBALL_DMG;
-	bolt->flightSplashDamage = 0;
-	bolt->flightSplashRadius = 0;
-	bolt->splashDamage = LEVEL3_BOUNCEBALL_DMG;
-	bolt->splashRadius = LEVEL3_BOUNCEBALL_RADIUS;
-	bolt->methodOfDeath = MOD_LEVEL3_BOUNCEBALL;
-	bolt->splashMethodOfDeath = MOD_LEVEL3_BOUNCEBALL;
-	bolt->clipmask = MASK_SHOT;
-	bolt->target = NULL;
+	m = SpawnMissile( MIS_BOUNCEBALL, self, start, dir, NULL, ExplodeMissile, level.time + 3000 );
 
-	bolt->s.pos.trType = TR_GRAVITY;
-	bolt->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME; // move a bit on the very first frame
-	VectorCopy( start, bolt->s.pos.trBase );
-	VectorScale( dir, LEVEL3_BOUNCEBALL_SPEED, bolt->s.pos.trDelta );
-	SnapVector( bolt->s.pos.trDelta );  // save net bandwidth
-	VectorCopy( start, bolt->r.currentOrigin );
+	// TODO: Decouple missiles from weapons by introducing a missile "model" (effect) file
+	m->s.weapon   = WP_ALEVEL3_UPG;
+	m->s.generic1 = self->s.generic1; // weaponMode
 
-	return bolt;
+	return m;
 }

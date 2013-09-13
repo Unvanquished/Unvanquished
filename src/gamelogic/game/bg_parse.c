@@ -545,6 +545,80 @@ static int BG_ParseSlotList(char** text)
 	return slots;
 }
 
+static int BG_ParseClipmask( char *token )
+{
+	if      ( !Q_stricmp( token, "MASK_ALL" ) )
+	{
+		return MASK_ALL;
+	}
+	else if ( !Q_stricmp( token, "MASK_SOLID" ) )
+	{
+		return MASK_SOLID;
+	}
+	else if ( !Q_stricmp( token, "MASK_PLAYERSOLID" ) )
+	{
+		return MASK_PLAYERSOLID;
+	}
+	else if ( !Q_stricmp( token, "MASK_DEADSOLID" ) )
+	{
+		return MASK_DEADSOLID;
+	}
+	else if ( !Q_stricmp( token, "MASK_WATER" ) )
+	{
+		return MASK_WATER;
+	}
+	else if ( !Q_stricmp( token, "MASK_OPAQUE" ) )
+	{
+		return MASK_OPAQUE;
+	}
+	else if ( !Q_stricmp( token, "MASK_SHOT" ) )
+	{
+		return MASK_SHOT;
+	}
+	else
+	{
+		Com_Printf( S_ERROR "unknown clipmask value '%s'\n", token );
+		return 0;
+	}
+}
+
+static trType_t BG_ParseTrajectoryType( char *token )
+{
+	if      ( !Q_stricmp( token, "TR_STATIONARY" ) )
+	{
+		return TR_STATIONARY;
+	}
+	else if ( !Q_stricmp( token, "TR_INTERPOLATE" ) )
+	{
+		return TR_INTERPOLATE;
+	}
+	else if ( !Q_stricmp( token, "TR_LINEAR" ) )
+	{
+		return TR_LINEAR;
+	}
+	else if ( !Q_stricmp( token, "TR_LINEAR_STOP" ) )
+	{
+		return TR_LINEAR_STOP;
+	}
+	else if ( !Q_stricmp( token, "TR_SINE" ) )
+	{
+		return TR_SINE;
+	}
+	else if ( !Q_stricmp( token, "TR_GRAVITY" ) )
+	{
+		return TR_GRAVITY;
+	}
+	else if ( !Q_stricmp( token, "TR_BUOYANCY" ) )
+	{
+		return TR_BUOYANCY;
+	}
+	else
+	{
+		Com_Printf( S_ERROR "unknown trajectory value '%s'\n", token );
+		return TR_STATIONARY;
+	}
+}
+
 int configVarComparator(const void* a, const void* b)
 {
 	const configVar_t *ca = (const configVar_t*) a;
@@ -1958,6 +2032,155 @@ void BG_ParseUpgradeAttributeFile( const char *filename, upgradeAttributes_t *ua
 	else if ( !( defined & ICON ) ) { token = "icon"; }
 	else if ( !( defined & TEAM ) ) { token = "team"; }
 	else { token = ""; }
+
+	if ( strlen( token ) > 0 )
+	{
+		Com_Printf( S_ERROR "%s not defined in %s\n", token, filename );
+	}
+}
+
+
+/*
+======================
+BG_ParseMissileAttributeFile
+
+Parses a configuration file describing the attributes of a missile
+======================
+*/
+void BG_ParseMissileAttributeFile( const char *filename, missileAttributes_t *ma )
+{
+	char        *token;
+	char        text_buffer[ 20000 ];
+	char        *text;
+	//configVar_t *var;
+	int         defined = 0;
+
+	enum
+	{
+		POINT_AGAINST_WORLD   = 1 <<  0,
+		DAMAGE                = 1 <<  1,
+		MEANS_OF_DEATH        = 1 <<  2,
+		SPLASH_DAMAGE         = 1 <<  3,
+		SPLASH_RADIUS         = 1 <<  4,
+		SPLASH_MEANS_OF_DEATH = 1 <<  5,
+		CLIPMASK              = 1 <<  6,
+		SIZE                  = 1 <<  7,
+		TRAJECTORY            = 1 <<  8,
+		SPEED                 = 1 <<  9,
+		LAG                   = 1 << 10,
+		BOUNCE_FULL           = 1 << 11,
+		BOUNCE_HALF           = 1 << 12,
+		BOUNCE_NO_SOUND       = 1 << 13
+	};
+
+	if( !BG_ReadWholeFile( filename, text_buffer, sizeof(text_buffer) ) )
+	{
+		return;
+	}
+
+	text = text_buffer;
+
+	while ( 1 )
+	{
+		PARSE( text, token );
+
+		if      ( !Q_stricmp( token, "pointAgainstWorld" ) )
+		{
+			ma->pointAgainstWorld = qtrue;
+			defined |= POINT_AGAINST_WORLD;
+		}
+		else if ( !Q_stricmp( token, "damage" ) )
+		{
+			PARSE( text, token );
+			ma->damage = atoi( token );
+			defined |= DAMAGE;
+		}
+		else if ( !Q_stricmp( token, "meansOfDeath" ) )
+		{
+			PARSE( text, token );
+			ma->meansOfDeath = BG_MeansOfDeathByName( token );
+			defined |= MEANS_OF_DEATH;
+		}
+		else if ( !Q_stricmp( token, "splashDamage" ) )
+		{
+			PARSE( text, token );
+			ma->splashDamage = atoi( token );
+			defined |= SPLASH_DAMAGE;
+		}
+		else if ( !Q_stricmp( token, "splashRadius" ) )
+		{
+			PARSE( text, token );
+			ma->splashRadius = atoi( token );
+			defined |= SPLASH_RADIUS;
+		}
+		else if ( !Q_stricmp( token, "splashMeansOfDeath" ) )
+		{
+			PARSE( text, token );
+			ma->splashMeansOfDeath = BG_MeansOfDeathByName( token );
+			defined |= SPLASH_MEANS_OF_DEATH;
+		}
+		else if ( !Q_stricmp( token, "clipmask" ) )
+		{
+			PARSE( text, token );
+			ma->clipmask = BG_ParseClipmask( token );
+			defined |= CLIPMASK;
+		}
+		else if ( !Q_stricmp( token, "size" ) )
+		{
+			PARSE( text, token );
+			ma->size = atoi( token );
+			defined |= SIZE;
+		}
+		else if ( !Q_stricmp( token, "trajectory" ) )
+		{
+			PARSE( text, token );
+			ma->trajectoryType = BG_ParseTrajectoryType( token );
+			defined |= TRAJECTORY;
+		}
+		else if ( !Q_stricmp( token, "speed" ) )
+		{
+			PARSE( text, token );
+			ma->speed = atoi( token );
+			defined |= SPEED;
+		}
+		else if ( !Q_stricmp( token, "lag" ) )
+		{
+			PARSE( text, token );
+			ma->lag = atof( token );
+			defined |= LAG;
+		}
+		else if ( !Q_stricmp( token, "bounceFull" ) )
+		{
+			ma->flags |= EF_BOUNCE;
+			defined |= BOUNCE_FULL;
+		}
+		else if ( !Q_stricmp( token, "bounceHalf" ) )
+		{
+			ma->flags |= EF_BOUNCE_HALF;
+			defined |= BOUNCE_HALF;
+		}
+		else if ( !Q_stricmp( token, "bounceNoSound" ) )
+		{
+			ma->flags |= EF_NO_BOUNCE_SOUND;
+			defined |= BOUNCE_NO_SOUND;
+		}
+		/*else if( (var = BG_FindConfigVar( va( "m_%s_%s", ma->name, token ) ) ) != NULL )
+		{
+			BG_ParseConfigVar( var, &text, filename );
+		}*/
+		else
+		{
+			Com_Printf( S_ERROR "%s: unknown token '%s'\n", filename, token );
+		}
+	}
+
+	if      ( !( defined & DAMAGE ) )         { token = "damage"; }
+	else if ( !( defined & MEANS_OF_DEATH ) ) { token = "meansOfDeath"; }
+	else if ( !( defined & CLIPMASK ) )       { token = "clipmask"; }
+	else if ( !( defined & SIZE ) )           { token = "size"; }
+	else if ( !( defined & TRAJECTORY ) )     { token = "trajectory"; }
+	else if ( !( defined & SPEED ) )          { token = "speed"; }
+	else                                      { token = ""; }
 
 	if ( strlen( token ) > 0 )
 	{

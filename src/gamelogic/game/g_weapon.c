@@ -618,7 +618,7 @@ GRENADE
 
 void throwGrenade( gentity_t *ent )
 {
-	launch_grenade( ent, muzzle, forward );
+	fire_grenade( ent, muzzle, forward );
 }
 
 /*
