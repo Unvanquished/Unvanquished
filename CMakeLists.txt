@@ -137,6 +137,8 @@ cmake_dependent_option( USE_INTERNAL_OPUS    "Use internal Opus"                
 
 cmake_dependent_option( USE_INTERNAL_WEBP    "Use internal WebP"                           0 BUILD_CLIENT     0 )
 
+cmake_dependent_option( USE_GEOIP            "Use libgeoip"                                1 "BUILD_SERVER OR BUILD_CLIENT OR BUILD_TTY_CLIENT" 0 )
+
 cmake_dependent_option( ENABLE_W_EXTRA       "Use -Wextra"                                 0 ENABLE_W_ALL     0 )
 
 cmake_dependent_option( ENABLE_FSTACKPROT    "Enable stack protection if available"        1 ENABLE_HARDENING 0 )
@@ -1628,6 +1630,26 @@ if( USE_CURSES )
   endif()
 endif()
 
+##############
+# Find GeoIP #
+##############
+function( find_package_geoip )
+  if( USE_GEOIP )
+    find_package( PkgConfig )
+    if( PKG_CONFIG_FOUND )
+      pkg_check_modules( GEOIP geoip )
+      if ( GEOIP_FOUND )
+        find_path( GEOIP_INCLUDE_DIRS GeoIP.h HINTS ${PC_GEOIP_INCLUDEDIR} ${PC_GEOIP_INCLUDE_DIRS} )
+        find_library( GEOIP_LIBRARY NAMES GeoIP libGeoIP HINTS ${PC_GEOIP_LIBDIR} ${PC_GEOIP_LIBRARY_DIRS} )
+        mark_as_advanced( GEOIP_INCLUDE_DIRS GEOIP_LIBRARY )
+      endif()
+    endif()
+  endif()
+  if ( NOT USE_GEOIP OR NOT PKG_CONFIG_FOUND )
+    set( GEOIP_FOUND "" CACHE INTERNAL "" )
+  endif()
+endfunction()
+
 ################
 # Build Client #
 ################
@@ -1673,6 +1695,13 @@ if( BUILD_CLIENT )
   find_package( GMP REQUIRED )
   find_package( ZLIB REQUIRED )
   find_package( CURL REQUIRED )
+  find_package_geoip()
+
+  if( GEOIP_FOUND )
+    set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS HAVE_GEOIP )
+    include_directories( ${GEOIP_INCLUDE_DIRS} )
+    target_link_libraries( client ${GEOIP_LIBRARIES} )
+  endif()
 
   if( USE_INTERNAL_CRYPTO )
     # BEFORE is required to prevent system headers from being used
@@ -1828,6 +1857,13 @@ if( BUILD_SERVER )
   # The following section finds the REQUIRED dependencies and makes them available to the target
   find_package( GMP REQUIRED )
   find_package( ZLIB REQUIRED )
+  find_package_geoip()
+
+  if( GEOIP_FOUND )
+    set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS HAVE_GEOIP )
+    include_directories( ${GEOIP_INCLUDE_DIRS} )
+    target_link_libraries( server ${GEOIP_LIBRARIES} )
+  endif()
 
   if( USE_INTERNAL_CRYPTO )
     # BEFORE is required to prevent system headers from being used
@@ -1945,6 +1981,13 @@ if( BUILD_TTY_CLIENT )
   # The following section finds the REQUIRED dependencies and makes them available to the target
   find_package( GMP REQUIRED )
   find_package( ZLIB REQUIRED )
+  find_package_geoip()
+
+  if( GEOIP_FOUND )
+    set_property( TARGET ttyclient APPEND PROPERTY COMPILE_DEFINITIONS HAVE_GEOIP )
+    include_directories( ${GEOIP_INCLUDE_DIRS} )
+    target_link_libraries( ttyclient ${GEOIP_LIBRARIES} )
+  endif()
 
   if( USE_INTERNAL_CRYPTO )
     # BEFORE is required to prevent system headers from being used
