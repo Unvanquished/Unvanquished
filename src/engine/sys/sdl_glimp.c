@@ -741,19 +741,10 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 			SDL_GL_SetAttribute( SDL_GL_MULTISAMPLESAMPLES, samples );
 			SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
 #if USE_XREAL_RENDERER
+			if ( r_glCoreProfile->integer || r_glDebugProfile->integer )
 			{
-				int major = 3;
-				int minor = 2;
-
-				if ( r_glMajorVersion->integer )
-				{
-					major = r_glMajorVersion->integer;
-				}
-			
-				if ( r_glMinorVersion->integer )
-				{
-					minor = r_glMinorVersion->integer;
-				}
+				int major = r_glMajorVersion->integer;
+				int minor = r_glMinorVersion->integer;
 
 				SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, major );
 				SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, minor );
@@ -765,6 +756,11 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 				else
 				{
 					SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY );
+				}
+
+				if ( r_glDebugProfile->integer )
+				{
+					SDL_GL_SetAttribute( SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG );
 				}
 			}
 #endif
