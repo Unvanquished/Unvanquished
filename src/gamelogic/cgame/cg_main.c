@@ -1170,6 +1170,7 @@ enum {
 	LOAD_SOUNDS,
 	LOAD_GEOMETRY,
 	LOAD_ASSETS,
+	LOAD_CONFIGS,
 	LOAD_WEAPONS,
 	LOAD_UPGRADES,
 	LOAD_BUILDINGS,
@@ -1221,6 +1222,9 @@ static void CG_UpdateLoadingStep( cgLoadingStep_t step )
 			break;
 		case LOAD_ASSETS:
 			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.66f, choose("Taking pictures of the world", "Using your laptop's camera", "Adding texture to concrete", "Drawing smiley faces", NULL) );
+			break;
+		case LOAD_CONFIGS:
+			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.80f, choose("Reading the manual", "Looking at blueprints", NULL) );
 			break;
 		case LOAD_WEAPONS:
 			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.90f, choose("Setting up the armoury", "Sharpening the aliens' claws", "Overloading lucifer cannons", NULL) );
@@ -2636,9 +2640,6 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 	// Dynamic memory
 	BG_InitMemory();
 
-	// load overrides
-	BG_InitAllConfigs();
-
 	BG_InitAllowedGameElements();
 
 	// Initialize item locking state
@@ -2697,8 +2698,14 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 	CG_UpdateLoadingStep( LOAD_SOUNDS );
 	CG_RegisterSounds();
 
+	// updates loading step by itself
 	CG_RegisterGraphics();
 
+	// load configs after initializing particles and trails since it registers some
+	CG_UpdateLoadingStep( LOAD_CONFIGS );
+	BG_InitAllConfigs();
+
+	// load weapons upgrades and buildings after configs
 	CG_UpdateLoadingStep( LOAD_WEAPONS );
 	CG_InitWeapons();
 

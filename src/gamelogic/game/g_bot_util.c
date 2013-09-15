@@ -1012,7 +1012,7 @@ qboolean BotTargetInAttackRange( gentity_t *self, botTarget_t target )
 	float width = 0, height = 0;
 
 	AngleVectors( self->client->ps.viewangles, forward, right, up );
-	CalcMuzzlePoint( self, forward, right, up , muzzle );
+	G_CalcMuzzlePoint( self, forward, right, up , muzzle );
 	BotGetTargetPos( target, targetPos );
 	switch ( self->client->ps.weapon )
 	{
@@ -1178,7 +1178,7 @@ qboolean BotTargetIsVisible( gentity_t *self, botTarget_t target, int mask )
 	vec3_t  forward, right, up;
 
 	AngleVectors( self->client->ps.viewangles, forward, right, up );
-	CalcMuzzlePoint( self, forward, right, up, muzzle );
+	G_CalcMuzzlePoint( self, forward, right, up, muzzle );
 	BotGetTargetPos( target, targetPos );
 
 	if ( !trap_InPVS( muzzle, targetPos ) )
@@ -1567,7 +1567,7 @@ float CalcAimPitch( gentity_t *self, botTarget_t target, vec_t launchSpeed )
 
 	BotGetTargetPos( target, targetPos );
 	AngleVectors( self->s.origin, forward, right, up );
-	CalcMuzzlePoint( self, forward, right, up, muzzle );
+	G_CalcMuzzlePoint( self, forward, right, up, muzzle );
 	VectorCopy( muzzle, startPos );
 
 	//project everything onto a 2D plane with initial position at (0,0)
@@ -1632,7 +1632,7 @@ void BotFireWeaponAI( gentity_t *self )
 	usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
 
 	AngleVectors( self->client->ps.viewangles, forward, right, up );
-	CalcMuzzlePoint( self, forward, right, up, muzzle );
+	G_CalcMuzzlePoint( self, forward, right, up, muzzle );
 	BotGetIdealAimLocation( self, self->botMind->goal, targetPos );
 
 	trap_Trace( &trace, muzzle, NULL, NULL, targetPos, -1, MASK_SHOT );

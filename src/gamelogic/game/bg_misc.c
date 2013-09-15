@@ -703,6 +703,175 @@ void BG_InitUpgradeAttributes( void )
 
 ////////////////////////////////////////////////////////////////////////////////
 
+typedef struct
+{
+	int         number;
+	const char* name;
+} missileData_t;
+
+static const missileData_t bg_missilesData[] =
+{
+  { MIS_FLAMER,       "flamer"       },
+  { MIS_BLASTER,      "blaster"      },
+  { MIS_PRIFLE,       "prifle"       },
+  { MIS_LCANNON,      "lcannon"      },
+  { MIS_LCANNON2,     "lcannon2"     },
+  { MIS_GRENADE,      "grenade"      },
+  { MIS_HIVE,         "hive"         },
+  { MIS_LOCKBLOB,     "lockblob"     },
+  { MIS_SLOWBLOB,     "slowblob"     },
+  { MIS_BOUNCEBALL,   "bounceball"   }
+};
+
+static const size_t              bg_numMissiles = ARRAY_LEN( bg_missilesData );
+static missileAttributes_t       bg_missiles[ ARRAY_LEN( bg_missilesData ) ];
+static const missileAttributes_t nullMissile = { 0 };
+
+/*
+==============
+BG_MissileByName
+==============
+*/
+const missileAttributes_t *BG_MissileByName( const char *name )
+{
+	int i;
+
+	for ( i = 0; i < bg_numMissiles; i++ )
+	{
+		if ( !Q_stricmp( bg_missiles[ i ].name, name ) )
+		{
+			return &bg_missiles[ i ];
+		}
+	}
+
+	return &nullMissile;
+}
+
+/*
+==============
+BG_Missile
+==============
+*/
+const missileAttributes_t *BG_Missile( missile_t missile )
+{
+	return ( missile > MIS_NONE && missile < MIS_NUM_MISSILES ) ?
+	       &bg_missiles[ missile - 1 ] : &nullMissile;
+}
+
+/*
+===============
+BG_InitMissileAttributes
+===============
+*/
+void BG_InitMissileAttributes( void )
+{
+	int                 i;
+	const missileData_t *md;
+	missileAttributes_t *ma;
+
+	for ( i = 0; i < bg_numMissiles; i++ )
+	{
+		md = &bg_missilesData[i];
+		ma = &bg_missiles[i];
+
+		Com_Memset( ma, 0, sizeof( missileAttributes_t ) );
+
+		ma->name   = md->name;
+		ma->number = md->number;
+
+		// for simplicity, read both from a single file
+		BG_ParseMissileAttributeFile( va( "configs/missiles/%s.missile.cfg", ma->name ), ma );
+		BG_ParseMissileDisplayFile(   va( "configs/missiles/%s.missile.cfg", ma->name ), ma );
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+typedef struct
+{
+	meansOfDeath_t number;
+	const char     *name;
+} meansOfDeathData_t;
+
+static const meansOfDeathData_t bg_meansOfDeathData[] =
+{
+	{ MOD_ABUILDER_CLAW, "MOD_ABUILDER_CLAW" },
+	{ MOD_UNKNOWN, "MOD_UNKNOWN" },
+	{ MOD_SHOTGUN, "MOD_SHOTGUN" },
+	{ MOD_BLASTER, "MOD_BLASTER" },
+	{ MOD_PAINSAW, "MOD_PAINSAW" },
+	{ MOD_MACHINEGUN, "MOD_MACHINEGUN" },
+	{ MOD_CHAINGUN, "MOD_CHAINGUN" },
+	{ MOD_PRIFLE, "MOD_PRIFLE" },
+	{ MOD_MDRIVER, "MOD_MDRIVER" },
+	{ MOD_LASGUN, "MOD_LASGUN" },
+	{ MOD_LCANNON, "MOD_LCANNON" },
+	{ MOD_LCANNON_SPLASH, "MOD_LCANNON_SPLASH" },
+	{ MOD_FLAMER, "MOD_FLAMER" },
+	{ MOD_FLAMER_SPLASH, "MOD_FLAMER_SPLASH" },
+	{ MOD_BURN, "MOD_BURN" },
+	{ MOD_GRENADE, "MOD_GRENADE" },
+	{ MOD_WEIGHT_H, "MOD_WEIGHT_H" },
+	{ MOD_WATER, "MOD_WATER" },
+	{ MOD_SLIME, "MOD_SLIME" },
+	{ MOD_LAVA, "MOD_LAVA" },
+	{ MOD_CRUSH, "MOD_CRUSH" },
+	{ MOD_TELEFRAG, "MOD_TELEFRAG" },
+	{ MOD_FALLING, "MOD_FALLING" },
+	{ MOD_SUICIDE, "MOD_SUICIDE" },
+	{ MOD_TARGET_LASER, "MOD_TARGET_LASER" },
+	{ MOD_TRIGGER_HURT, "MOD_TRIGGER_HURT" },
+	{ MOD_ABUILDER_CLAW, "MOD_ABUILDER_CLAW" },
+	{ MOD_LEVEL0_BITE, "MOD_LEVEL0_BITE" },
+	{ MOD_LEVEL1_CLAW, "MOD_LEVEL1_CLAW" },
+	{ MOD_LEVEL1_PCLOUD, "MOD_LEVEL1_PCLOUD" },
+	{ MOD_LEVEL3_CLAW, "MOD_LEVEL3_CLAW" },
+	{ MOD_LEVEL3_POUNCE, "MOD_LEVEL3_POUNCE" },
+	{ MOD_LEVEL3_BOUNCEBALL, "MOD_LEVEL3_BOUNCEBALL" },
+	{ MOD_LEVEL2_CLAW, "MOD_LEVEL2_CLAW" },
+	{ MOD_LEVEL2_ZAP, "MOD_LEVEL2_ZAP" },
+	{ MOD_LEVEL4_CLAW, "MOD_LEVEL4_CLAW" },
+	{ MOD_LEVEL4_TRAMPLE, "MOD_LEVEL4_TRAMPLE" },
+	{ MOD_WEIGHT_A, "MOD_WEIGHT_A" },
+	{ MOD_SLOWBLOB, "MOD_SLOWBLOB" },
+	{ MOD_POISON, "MOD_POISON" },
+	{ MOD_SWARM, "MOD_SWARM" },
+	{ MOD_HSPAWN, "MOD_HSPAWN" },
+	{ MOD_TESLAGEN, "MOD_TESLAGEN" },
+	{ MOD_MGTURRET, "MOD_MGTURRET" },
+	{ MOD_REACTOR, "MOD_REACTOR" },
+	{ MOD_ASPAWN, "MOD_ASPAWN" },
+	{ MOD_ATUBE, "MOD_ATUBE" },
+	{ MOD_OVERMIND, "MOD_OVERMIND" },
+	{ MOD_DECONSTRUCT, "MOD_DECONSTRUCT" },
+	{ MOD_REPLACE, "MOD_REPLACE" },
+	{ MOD_NOCREEP, "MOD_NOCREEP" }
+};
+
+static const size_t bg_numMeansOfDeath = ARRAY_LEN( bg_meansOfDeathData );
+
+/*
+==============
+BG_MeansOfDeathByName
+==============
+*/
+meansOfDeath_t BG_MeansOfDeathByName( const char *name )
+{
+	int i;
+
+	for ( i = 0; i < bg_numMeansOfDeath; i++ )
+	{
+		if ( !Q_stricmp( bg_meansOfDeathData[ i ].name, name ) )
+		{
+			return bg_meansOfDeathData[ i ].number;
+		}
+	}
+
+	return MOD_UNKNOWN;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 /*
 ================
 BG_InitAllConfigs
@@ -720,6 +889,7 @@ void BG_InitAllConfigs( void )
 	BG_InitClassModelConfigs();
 	BG_InitWeaponAttributes();
 	BG_InitUpgradeAttributes();
+	BG_InitMissileAttributes();
 
 	BG_CheckConfigVars();
 
