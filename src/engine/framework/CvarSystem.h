@@ -43,20 +43,23 @@ namespace Cvar {
     //CVAR_TEMP seems useless, don't put the CVAR_ARCHIVE and CVAR_CHEAT
     //CVAR_SERVERINFO_NOUPDATE is not used
 
-    void SetValue(const std::string& cvarName, std::string value, int flags = 0);
+    void SetValue(const std::string& cvarName, std::string value);
+    void SetValueForce(const std::string& cvarName, std::string value);
     std::string GetValue(const std::string& cvarName);
 
     //////////INTERNAL API
 
     void Register(CvarProxy* proxy, const std::string& name, std::string description, int flags, const std::string& defaultValue);
-    void Unregister(const std::string& name);
+    void Unregister(const std::string& cvarName);
     std::vector<std::string> CompleteName(const std::string& prefix);
+    void AddFlags(const std::string& cvarName, int flags);
 
     //////////FUNCTION FOR THE C API
 
     cvar_t* FindCCvar(const std::string& cvarName);
     void WriteVariables(fileHandle_t f);
     char* InfoString(int flag, bool big);
+    void SetValueCProxy(const std::string& cvarName, std::string value);
 
 }
 

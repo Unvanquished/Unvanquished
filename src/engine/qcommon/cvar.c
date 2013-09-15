@@ -138,7 +138,7 @@ Cvar_Set
 ============
 */
 void Cvar_Set(const char* name, const char* value) {
-    Cvar::SetValue(name, value);
+    Cvar::SetValueCProxy(name, value);
 }
 
 /*

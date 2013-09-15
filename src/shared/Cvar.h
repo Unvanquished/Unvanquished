@@ -39,6 +39,7 @@ namespace Cvar {
         USERINFO   = BIT(1),
         SERVERINFO = BIT(2),
         SYSTEMINFO = BIT(3),
+        ROM        = BIT(6),
         CHEAT      = BIT(9)
     };
 

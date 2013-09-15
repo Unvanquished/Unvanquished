@@ -38,9 +38,8 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 namespace Cvar {
 
     //The server gives the sv_cheats cvar to the client, on 'off' it prevents the user from changing Cvar::CHEAT cvars
-    //TODO: implement the equivalent of CVAR_ROM that allows the engine to change this cvar but not the user
     void SetCheatMode(bool cheats);
-    Callback<Cvar<bool>> cvar_cheats("sv_cheats", "can cheats be used in the current game", SYSTEMINFO, true, SetCheatMode);
+    Callback<Cvar<bool>> cvar_cheats("sv_cheats", "bool - can cheats be used in the current game", SYSTEMINFO | ROM, true, SetCheatMode);
 
     struct cvarRecord_t {
         std::string value;
@@ -133,10 +132,11 @@ namespace Cvar {
     };
     static CvarCommand cvarCommand;
 
-    void SetValue(const std::string& cvarName, std::string value, int flags) {
+    void InternalSetValue(const std::string& cvarName, std::string value, int flags, bool rom, bool warnRom) {
         CvarMap& cvars = GetCvarMap();
 
         auto it = cvars.find(cvarName);
+        //TODO: rom means the cvar should have been created before?
         if (it == cvars.end()) {
             //The user creates a new cvar through a command.
             cvars[cvarName] = new cvarRecord_t{value, value, flags | CVAR_USER_CREATED, "user created", nullptr};
@@ -146,11 +146,14 @@ namespace Cvar {
         } else {
             cvarRecord_t* cvar = it->second;
 
-            //TODO: do not update constant cvars
-            /*if (cvar->flags & CVAR_ROM) {
+            if (cvar->flags & (CVAR_ROM | CVAR_INIT) and not rom) {
                 Com_Printf(_("%s is read only.\n"), cvarName.c_str());
                 return;
-            }*/
+            }
+
+            if (rom and warnRom and not cvar->flags & (CVAR_ROM | CVAR_INIT)) {
+                Com_Printf("SetValueROM called on non-ROM cvar '%s'\n", cvarName.c_str());
+            }
 
             if (*cvar_cheats && cvar->flags & CHEAT) {
                 Com_Printf(_("%s is cheat-protected.\n"), cvarName.c_str());
@@ -176,6 +179,14 @@ namespace Cvar {
 
     }
 
+    void SetValue(const std::string& cvarName, std::string value) {
+        InternalSetValue(cvarName, std::move(value), 0, false, true);
+    }
+
+    void SetValueROM(const std::string& cvarName, std::string value) {
+        InternalSetValue(cvarName, std::move(value), 0, true, true);
+    }
+
     std::string GetValue(const std::string& cvarName) {
         CvarMap& cvars = GetCvarMap();
         std::string result = "";
@@ -187,7 +198,6 @@ namespace Cvar {
         return result;
     }
 
-    //TODO create command
     void Register(CvarProxy* proxy, const std::string& name, std::string description, int flags, const std::string& defaultValue) {
         CvarMap& cvars = GetCvarMap();
 
@@ -232,11 +242,12 @@ namespace Cvar {
         }
     }
 
-    void Unregister(const std::string& name) {
+    void Unregister(const std::string& cvarName) {
         CvarMap& cvars = GetCvarMap();
 
-        if (cvars.count(name)) {
-            cvarRecord_t* cvar = cvars[name];
+        auto it = cvars.find(cvarName);
+        if (it != cvars.end()) {
+            cvarRecord_t* cvar = it->second;
 
             cvar->proxy = nullptr;
             cvar->flags |= CVAR_USER_CREATED;
@@ -254,6 +265,16 @@ namespace Cvar {
         }
 
         return res;
+    }
+
+    void AddFlags(const std::string& cvarName, int flags) {
+        CvarMap& cvars = GetCvarMap();
+
+        auto it = cvars.find(cvarName);
+        if (it != cvars.end()) {
+            cvarRecord_t* cvar = it->second;
+            cvar->flags |= flags;
+        } //TODO else what?
     }
 
     void SetCheatMode(bool cheats) {
@@ -298,7 +319,7 @@ namespace Cvar {
         for (auto it : cvars) {
             cvarRecord_t* cvar = it.second;
 
-            if (cvar->flags & CVAR_ARCHIVE) {
+            if (cvar->flags & ARCHIVE) {
                 FS_Printf(f, "seta %s %s\n", it.first.c_str(), Cmd::Escape(cvar->value, true).c_str());
             }
         }
@@ -319,6 +340,10 @@ namespace Cvar {
         }
 
         return info;
+    }
+
+    void SetValueCProxy(const std::string& cvarName, std::string value) {
+        InternalSetValue(cvarName, std::move(value), 0, true, false);
     }
 
     /*
@@ -361,7 +386,8 @@ namespace Cvar {
                 const std::string& value = args.Argv(nameIndex + 1);
 
                 //TODO no flags in the argument
-                ::Cvar::SetValue(name, value, flags);
+                ::Cvar::SetValue(name, value);
+                ::Cvar::AddFlags(name, flags);
             }
 
             std::vector<std::string> Complete(int pos, const Cmd::Args& args) const override{
@@ -378,9 +404,9 @@ namespace Cvar {
             int flags;
     };
     static SetCmd SetCmdRegistration("set", 0);
-    static SetCmd SetuCmdRegistration("setu", CVAR_USERINFO);
-    static SetCmd SetsCmdRegistration("sets", CVAR_SERVERINFO);
-    static SetCmd SetaCmdRegistration("seta", CVAR_ARCHIVE);
+    static SetCmd SetuCmdRegistration("setu", USERINFO);
+    static SetCmd SetsCmdRegistration("sets", SERVERINFO);
+    static SetCmd SetaCmdRegistration("seta", ARCHIVE);
 
     class ResetCmd: public Cmd::StaticCmd {
         public:
@@ -459,14 +485,14 @@ namespace Cvar {
                     Com_Printf("  %s%s", name.c_str(), filler.c_str());
 
                     std::string flags = "";
-                    flags += (var->flags & CVAR_SERVERINFO) ? "S" : "_";
-                    flags += (var->flags & CVAR_SYSTEMINFO) ? "s" : "_";
-                    flags += (var->flags & CVAR_USERINFO) ? "U" : "_";
-                    flags += (var->flags & CVAR_ROM) ? "R" : "_";
+                    flags += (var->flags & SERVERINFO) ? "S" : "_";
+                    flags += (var->flags & SYSTEMINFO) ? "s" : "_";
+                    flags += (var->flags & USERINFO) ? "U" : "_";
+                    flags += (var->flags & ROM) ? "R" : "_";
                     flags += (var->flags & CVAR_INIT) ? "I" : "_";
-                    flags += (var->flags & CVAR_ARCHIVE) ? "A" : "_";
+                    flags += (var->flags & ARCHIVE) ? "A" : "_";
                     flags += (var->flags & CVAR_LATCH) ? "L" : "_";
-                    flags += (var->flags & CVAR_CHEAT) ? "C" : "_";
+                    flags += (var->flags & CHEAT) ? "C" : "_";
                     flags += (var->flags & CVAR_USER_CREATED) ? "?" : "_";
 
                     Com_Printf("%s ", flags.c_str());
