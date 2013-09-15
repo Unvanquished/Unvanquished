@@ -71,6 +71,11 @@ static cvar_t *in_xbox360ControllerDebug = NULL;
 
 static SDL_Window *window = NULL;
 
+SDL_Window *IN_GetWindow( void )
+{
+	return window;
+}
+
 /*
 ===============
 IN_PrintKey

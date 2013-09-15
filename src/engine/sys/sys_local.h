@@ -48,6 +48,9 @@ void         IN_Restart( void );
 
 void         IN_DropInputsForFrame( void );
 
+typedef struct SDL_Window SDL_Window;
+SDL_Window   *IN_GetWindow( void );
+
 // Console
 void         CON_Shutdown( void );
 void         CON_Init( void );
