@@ -711,15 +711,16 @@ typedef struct
 
 static const missileData_t bg_missilesData[] =
 {
-  { MIS_FLAMER,     "flamer"     },
-  { MIS_BLASTER,    "blaster"    },
-  { MIS_PRIFLE,     "prifle"     },
-  { MIS_LCANNON,    "lcannon"    },
-  { MIS_GRENADE,    "grenade"    },
-  { MIS_HIVE,       "hive"       },
-  { MIS_LOCKBLOB,   "lockblob"   },
-  { MIS_SLOWBLOB,   "slowblob"   },
-  { MIS_BOUNCEBALL, "bounceball" }
+  { MIS_FLAMER,       "flamer"       },
+  { MIS_BLASTER,      "blaster"      },
+  { MIS_PRIFLE,       "prifle"       },
+  { MIS_LCANNON,      "lcannon"      },
+  { MIS_LCANNON2,     "lcannon2"     },
+  { MIS_GRENADE,      "grenade"      },
+  { MIS_HIVE,         "hive"         },
+  { MIS_LOCKBLOB,     "lockblob"     },
+  { MIS_SLOWBLOB,     "slowblob"     },
+  { MIS_BOUNCEBALL,   "bounceball"   }
 };
 
 static const size_t              bg_numMissiles = ARRAY_LEN( bg_missilesData );
@@ -778,7 +779,9 @@ void BG_InitMissileAttributes( void )
 		ma->name   = md->name;
 		ma->number = md->number;
 
-		BG_ParseMissileAttributeFile( va( "configs/missiles/%s.attr.cfg", ma->name ), ma );
+		// for simplicity, read both from a single file
+		BG_ParseMissileAttributeFile( va( "configs/missiles/%s.missile.cfg", ma->name ), ma );
+		BG_ParseMissileDisplayFile(   va( "configs/missiles/%s.missile.cfg", ma->name ), ma );
 	}
 }
 

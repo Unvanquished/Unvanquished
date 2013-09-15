@@ -842,9 +842,6 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 
 	switch ( event )
 	{
-			//
-			// movement generated events
-			//
 		case EV_FOOTSTEP:
 			if ( cg_footsteps.integer && ci->footsteps != FOOTSTEP_NONE )
 			{
@@ -1088,12 +1085,8 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			trap_S_StartSound( NULL, es->number, CHAN_AUTO, CG_CustomSound( es->number, "*gasp.wav" ) );
 			break;
 
-			//
-			// weapon events
-			//
 		case EV_NOAMMO:
-			trap_S_StartSound( NULL, es->number, CHAN_WEAPON,
-			                   cgs.media.weaponEmptyClick );
+			trap_S_StartSound( NULL, es->number, CHAN_WEAPON, cgs.media.weaponEmptyClick );
 			break;
 
 		case EV_CHANGE_WEAPON:
@@ -1101,15 +1094,15 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			break;
 
 		case EV_FIRE_WEAPON:
-			CG_FireWeapon( cent, WPM_PRIMARY );
+			CG_HandleFireWeapon( cent, WPM_PRIMARY );
 			break;
 
 		case EV_FIRE_WEAPON2:
-			CG_FireWeapon( cent, WPM_SECONDARY );
+			CG_HandleFireWeapon( cent, WPM_SECONDARY );
 			break;
 
 		case EV_FIRE_WEAPON3:
-			CG_FireWeapon( cent, WPM_TERTIARY );
+			CG_HandleFireWeapon( cent, WPM_TERTIARY );
 			break;
 
 		case EV_WEAPON_RELOAD:
@@ -1119,11 +1112,6 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			}
 			break;
 
-			//=================================================================
-
-			//
-			// other events
-			//
 		case EV_PLAYER_TELEPORT_IN:
 			//deprecated
 			break;
@@ -1156,22 +1144,34 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 
 			break;
 
-			//
-			// missile impacts
-			//
-		case EV_MISSILE_HIT:
+		case EV_WEAPON_HIT_ENTITY:
 			ByteToDir( es->eventParm, dir );
-			CG_MissileHitEntity( es->weapon, es->generic1, position, dir, es->otherEntityNum, es->torsoAnim );
+			CG_HandleWeaponHitEntity( es->weapon, es->generic1, position, dir, es->otherEntityNum, es->otherEntityNum2,
+			                          es->torsoAnim );
 			break;
 
-		case EV_MISSILE_MISS:
+		case EV_WEAPON_HIT_ENVIRONMENT:
 			ByteToDir( es->eventParm, dir );
-			CG_MissileHitWall( es->weapon, es->generic1, 0, position, dir, IMPACTSOUND_DEFAULT, es->torsoAnim );
+			CG_HandleWeaponHitWall( es->weapon, es->generic1, position, dir, IMPACTSOUND_DEFAULT, es->torsoAnim );
 			break;
 
-		case EV_MISSILE_MISS_METAL:
+		case EV_MISSILE_HIT_ENTITY:
 			ByteToDir( es->eventParm, dir );
-			CG_MissileHitWall( es->weapon, es->generic1, 0, position, dir, IMPACTSOUND_METAL, es->torsoAnim );
+			CG_HandleMissileHitEntity( es, position, dir, es->otherEntityNum, es->torsoAnim );
+			break;
+
+		case EV_MISSILE_HIT_ENVIRONMENT:
+			ByteToDir( es->eventParm, dir );
+			CG_HandleMissileHitWall( es, position, dir, IMPACTSOUND_DEFAULT, es->torsoAnim );
+			break;
+
+		case EV_MISSILE_HIT_METAL:
+			ByteToDir( es->eventParm, dir );
+			CG_HandleMissileHitWall( es, position, dir, IMPACTSOUND_METAL,   es->torsoAnim );
+			break;
+
+		case EV_SHOTGUN:
+			CG_HandleFireShotgun( es );
 			break;
 
 		case EV_HUMAN_BUILDABLE_DYING:
@@ -1211,19 +1211,6 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 					}
 				}
 			}
-			break;
-
-		case EV_BULLET_HIT_WALL:
-			ByteToDir( es->eventParm, dir );
-			CG_Bullet( es->pos.trBase, es->otherEntityNum, dir, qfalse, ENTITYNUM_WORLD );
-			break;
-
-		case EV_BULLET_HIT_FLESH:
-			CG_Bullet( es->pos.trBase, es->otherEntityNum, dir, qtrue, es->eventParm );
-			break;
-
-		case EV_SHOTGUN:
-			CG_ShotgunFire( es );
 			break;
 
 		case EV_GENERAL_SOUND:

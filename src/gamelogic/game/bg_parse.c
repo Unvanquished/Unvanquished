@@ -26,6 +26,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA	02110-1301	USA
 #include "../../engine/qcommon/q_shared.h"
 #include "bg_public.h"
 
+#ifdef CGAME
+#include "../cgame/cg_local.h"
+#endif
+
 int  trap_FS_FOpenFile( const char *qpath, fileHandle_t *f, fsMode_t mode );
 void trap_FS_Read( void *buffer, int len, fileHandle_t f );
 void trap_FS_Write( const void *buffer, int len, fileHandle_t f );
@@ -467,7 +471,7 @@ qboolean BG_ReadWholeFile( const char *filename, char *buffer, int size)
 	return qtrue;
 }
 
-static int BG_ParseTeam(char* token)
+static int ParseTeam(char* token)
 {
 	if ( !Q_stricmp( token, "aliens" ) )
 	{
@@ -484,7 +488,7 @@ static int BG_ParseTeam(char* token)
 	}
 }
 
-static int BG_ParseSlotList(char** text)
+static int ParseSlotList(char** text)
 {
 	int slots = 0;
 	char* token;
@@ -545,7 +549,7 @@ static int BG_ParseSlotList(char** text)
 	return slots;
 }
 
-static int BG_ParseClipmask( char *token )
+static int ParseClipmask( char *token )
 {
 	if      ( !Q_stricmp( token, "MASK_ALL" ) )
 	{
@@ -582,7 +586,7 @@ static int BG_ParseClipmask( char *token )
 	}
 }
 
-static trType_t BG_ParseTrajectoryType( char *token )
+static trType_t ParseTrajectoryType( char *token )
 {
 	if      ( !Q_stricmp( token, "TR_STATIONARY" ) )
 	{
@@ -799,7 +803,7 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
 		{
 			PARSE(text, token);
 
-			ba->team = BG_ParseTeam(token);
+			ba->team = ParseTeam(token);
 
 			defined |= TEAM;
 		}
@@ -1775,7 +1779,7 @@ void BG_ParseWeaponAttributeFile( const char *filename, weaponAttributes_t *wa )
 		}
 		else if ( !Q_stricmp( token, "usedSlots" ) )
 		{
-			wa->slots = BG_ParseSlotList( &text );
+			wa->slots = ParseSlotList( &text );
 		}
 		else if ( !Q_stricmp( token, "price" ) )
 		{
@@ -1871,7 +1875,7 @@ void BG_ParseWeaponAttributeFile( const char *filename, weaponAttributes_t *wa )
 		{
 			PARSE(text, token);
 
-			wa->team = BG_ParseTeam( token );
+			wa->team = ParseTeam( token );
 
 			defined |= TEAM;
 		}
@@ -1968,7 +1972,7 @@ void BG_ParseUpgradeAttributeFile( const char *filename, upgradeAttributes_t *ua
 		}
 		else if ( !Q_stricmp( token, "usedSlots" ) )
 		{
-			ua->slots = BG_ParseSlotList( &text );
+			ua->slots = ParseSlotList( &text );
 		}
 		else if ( !Q_stricmp( token, "icon" ) )
 		{
@@ -1997,7 +2001,7 @@ void BG_ParseUpgradeAttributeFile( const char *filename, upgradeAttributes_t *ua
 		{
 			PARSE(text, token);
 
-			ua->team = BG_ParseTeam( token );
+			ua->team = ParseTeam( token );
 
 			defined |= TEAM;
 		}
@@ -2044,7 +2048,8 @@ void BG_ParseUpgradeAttributeFile( const char *filename, upgradeAttributes_t *ua
 ======================
 BG_ParseMissileAttributeFile
 
-Parses a configuration file describing the attributes of a missile
+Parses a configuration file describing the attributes of a missile.
+Can be the same as the display configuration file.
 ======================
 */
 void BG_ParseMissileAttributeFile( const char *filename, missileAttributes_t *ma )
@@ -2122,7 +2127,7 @@ void BG_ParseMissileAttributeFile( const char *filename, missileAttributes_t *ma
 		else if ( !Q_stricmp( token, "clipmask" ) )
 		{
 			PARSE( text, token );
-			ma->clipmask = BG_ParseClipmask( token );
+			ma->clipmask = ParseClipmask( token );
 			defined |= CLIPMASK;
 		}
 		else if ( !Q_stricmp( token, "size" ) )
@@ -2134,7 +2139,7 @@ void BG_ParseMissileAttributeFile( const char *filename, missileAttributes_t *ma
 		else if ( !Q_stricmp( token, "trajectory" ) )
 		{
 			PARSE( text, token );
-			ma->trajectoryType = BG_ParseTrajectoryType( token );
+			ma->trajectoryType = ParseTrajectoryType( token );
 			defined |= TRAJECTORY;
 		}
 		else if ( !Q_stricmp( token, "speed" ) )
@@ -2168,10 +2173,10 @@ void BG_ParseMissileAttributeFile( const char *filename, missileAttributes_t *ma
 		{
 			BG_ParseConfigVar( var, &text, filename );
 		}*/
-		else
+		/*else
 		{
-			Com_Printf( S_ERROR "%s: unknown token '%s'\n", filename, token );
-		}
+			Com_Printf( S_WARNING "%s: unknown token '%s'\n", filename, token );
+		}*/
 	}
 
 	if      ( !( defined & DAMAGE ) )         { token = "damage"; }
@@ -2185,5 +2190,276 @@ void BG_ParseMissileAttributeFile( const char *filename, missileAttributes_t *ma
 	if ( strlen( token ) > 0 )
 	{
 		Com_Printf( S_ERROR "%s not defined in %s\n", token, filename );
+	}
+}
+
+/*
+======================
+BG_ParseMissileDisplayFile
+
+Parses a configuration file describing the looks of a missile and its impact.
+Can be the same as the attribute configuration file.
+======================
+*/
+void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
+{
+	char        *token;
+	char        text_buffer[ 20000 ];
+	char        *text;
+	int         defined = 0;
+	int         index;
+
+	enum
+	{
+		MODEL            = 1 <<  0,
+		SOUND            = 1 <<  1,
+		DLIGHT           = 1 <<  2,
+		DLIGHT_INTENSITY = 1 <<  3,
+		DLIGHT_COLOR     = 1 <<  4,
+		RENDERFX         = 1 <<  5,
+		SPRITE           = 1 <<  6,
+		SPRITE_SIZE      = 1 <<  7,
+		SPRITE_CHARGE    = 1 <<  8,
+		PARTICLE_SYSTEM  = 1 <<  9,
+		TRAIL_SYSTEM     = 1 << 10,
+		ROTATES          = 1 << 11,
+		ANIM_START_FRAME = 1 << 12,
+		ANIM_NUM_FRAMES  = 1 << 13,
+		ANIM_FRAME_RATE  = 1 << 14,
+		ANIM_LOOPING     = 1 << 15,
+		ALWAYS_IMPACT    = 1 << 16,
+		IMPACT_PARTICLE  = 1 << 17,
+		IMPACT_MARK      = 1 << 18,
+		IMPACT_MARK_SIZE = 1 << 19,
+		IMPACT_SOUND     = 1 << 20,
+		IMPACT_FLESH_SND = 1 << 21
+	};
+
+	if( !BG_ReadWholeFile( filename, text_buffer, sizeof( text_buffer ) ) )
+	{
+		return;
+	}
+
+	text = text_buffer;
+
+	while ( qtrue )
+	{
+		PARSE( text, token );
+
+		if      ( !Q_stricmp( token, "model" ) )
+		{
+			PARSE( text, token );
+#ifdef CGAME
+			ma->model = trap_R_RegisterModel( token );
+#endif
+			defined |= MODEL;
+		}
+		else if ( !Q_stricmp( token, "sound" ) )
+		{
+			PARSE( text, token );
+#ifdef CGAME
+			ma->sound = trap_S_RegisterSound( token, qfalse );
+#endif
+			defined |= SOUND;
+		}
+		else if ( !Q_stricmp( token, "dlight" ) )
+		{
+			PARSE( text, token );
+			ma->dlight = atof( token );
+			defined |= DLIGHT;
+			ma->usesDlight = qtrue;
+		}
+		else if ( !Q_stricmp( token, "dlightIntensity" ) )
+		{
+			PARSE( text, token );
+			ma->dlightIntensity = atof( token );
+			defined |= DLIGHT_INTENSITY;
+			ma->usesDlight = qtrue;
+		}
+		else if ( !Q_stricmp( token, "dlightColor" ) )
+		{
+			PARSE( text, token );
+			ma->dlightColor[ 0 ] = atof( token );
+			PARSE( text, token );
+			ma->dlightColor[ 1 ] = atof( token );
+			PARSE( text, token );
+			ma->dlightColor[ 2 ] = atof( token );
+			defined |= DLIGHT_COLOR;
+			ma->usesDlight = qtrue;
+		}
+		else if ( !Q_stricmp( token, "renderfx" ) )
+		{
+			PARSE( text, token );
+			ma->renderfx = atoi( token );
+			defined |= RENDERFX;
+		}
+		else if ( !Q_stricmp( token, "sprite" ) )
+		{
+			PARSE( text, token );
+#ifdef CGAME
+			ma->sprite = trap_R_RegisterShader( token, RSF_DEFAULT );
+#endif
+			defined |= SPRITE;
+			ma->usesSprite = qtrue;
+		}
+		else if ( !Q_stricmp( token, "spriteSize" ) )
+		{
+			PARSE( text, token );
+			ma->spriteSize = atoi( token );
+			defined |= SPRITE_SIZE;
+			ma->usesSprite = qtrue;
+		}
+		else if ( !Q_stricmp( token, "spriteCharge" ) )
+		{
+			PARSE( text, token );
+			ma->spriteCharge = atof( token );
+			defined |= SPRITE_CHARGE;
+			ma->usesSprite = qtrue;
+		}
+		else if ( !Q_stricmp( token, "particleSystem" ) )
+		{
+			PARSE( text, token );
+#ifdef CGAME
+			ma->particleSystem = CG_RegisterParticleSystem( token );
+#endif
+			defined |= PARTICLE_SYSTEM;
+		}
+		else if ( !Q_stricmp( token, "trailSystem" ) )
+		{
+			PARSE( text, token );
+#ifdef CGAME
+			ma->trailSystem = CG_RegisterTrailSystem( token );
+#endif
+			defined |= TRAIL_SYSTEM;
+		}
+		else if ( !Q_stricmp( token, "rotates" ) )
+		{
+			ma->rotates = qtrue;
+			defined |= ROTATES;
+		}
+		else if ( !Q_stricmp( token, "animStartFrame" ) )
+		{
+			PARSE( text, token );
+			ma->animStartFrame = atoi( token );
+			defined |= ANIM_START_FRAME;
+			ma->usesAnim = qtrue;
+		}
+		else if ( !Q_stricmp( token, "animNumFrames" ) )
+		{
+			PARSE( text, token );
+			ma->animNumFrames = atoi( token );
+			defined |= ANIM_NUM_FRAMES;
+			ma->usesAnim = qtrue;
+		}
+		else if ( !Q_stricmp( token, "animFrameRate" ) )
+		{
+			PARSE( text, token );
+			ma->animFrameRate = atoi( token );
+			defined |= ANIM_FRAME_RATE;
+			ma->usesAnim = qtrue;
+		}
+		else if ( !Q_stricmp( token, "animLooping" ) )
+		{
+			ma->animLooping = qtrue;
+			defined |= ANIM_LOOPING;
+			ma->usesAnim = qtrue;
+		}
+		else if ( !Q_stricmp( token, "alwaysImpact" ) )
+		{
+			ma->alwaysImpact = qtrue;
+			defined |= ALWAYS_IMPACT;
+		}
+		else if ( !Q_stricmp( token, "impactParticleSystem" ) )
+		{
+			PARSE( text, token );
+#ifdef CGAME
+			ma->impactParticleSystem = CG_RegisterParticleSystem( token );
+#endif
+			defined |= IMPACT_PARTICLE;
+		}
+		else if ( !Q_stricmp( token, "impactMark" ) )
+		{
+			PARSE( text, token );
+#ifdef CGAME
+			ma->impactMark = trap_R_RegisterShader( token, RSF_DEFAULT );
+#endif
+			defined |= IMPACT_MARK;
+			ma->usesImpactMark = qtrue;
+		}
+		else if ( !Q_stricmp( token, "impactMarkSize" ) )
+		{
+			PARSE( text, token );
+			ma->impactMarkSize = atoi( token );
+			defined |= IMPACT_MARK_SIZE;
+			ma->usesImpactMark = qtrue;
+		}
+		else if ( !Q_stricmp( token, "impactSound" ) )
+		{
+			PARSE( text, token );
+			index = atoi( token );
+			PARSE( text, token );
+#ifdef CGAME
+			if ( index >= 0 && index < 4 )
+			{
+				ma->impactSound[ index ] = trap_S_RegisterSound( token, qfalse );
+			}
+#endif
+			defined |= IMPACT_SOUND;
+		}
+		else if ( !Q_stricmp( token, "impactFleshSound" ) )
+		{
+			PARSE( text, token );
+			index = atoi( token );
+			PARSE( text, token );
+#ifdef CGAME
+			if ( index >= 0 && index < 4 )
+			{
+				ma->impactFleshSound[ index ] = trap_S_RegisterSound( token, qfalse );
+			}
+#endif
+			defined |= IMPACT_FLESH_SND;
+		}
+		/*else
+		{
+			Com_Printf( S_WARNING "%s: unknown token '%s'\n", filename, token );
+		}*/
+	}
+
+	// check sprite data set for completeness
+	if ( ma->usesSprite && (
+	     !( defined & SPRITE        ) ||
+	     !( defined & SPRITE_SIZE   ) ) )
+	{
+		ma->usesSprite = qfalse;
+		Com_Printf( S_ERROR "Not all mandatory sprite vars defined in %s\n", filename );
+	}
+
+	// check animation data set for completeness
+	if ( ma->usesAnim && (
+	     !( defined & ANIM_START_FRAME ) ||
+	     !( defined & ANIM_NUM_FRAMES  ) ||
+	     !( defined & ANIM_FRAME_RATE  ) ) )
+	{
+		ma->usesAnim = qfalse;
+		Com_Printf( S_ERROR "Not all mandatory animation vars defined in %s\n", filename );
+	}
+
+	// check dlight data set for completeness
+	if ( ma->usesDlight && (
+	     !( defined & DLIGHT           ) ||
+	     !( defined & DLIGHT_INTENSITY ) ||
+	     !( defined & DLIGHT_COLOR     ) ) )
+	{
+		ma->usesDlight = qfalse;
+		Com_Printf( S_ERROR "Not all mandatory dlight vars defined in %s\n", filename );
+	}
+
+	// check impactMark data set for completeness
+	if ( ma->usesImpactMark && (
+	     !( defined & IMPACT_MARK      ) ||
+	     !( defined & IMPACT_MARK_SIZE ) ) )
+	{
+		ma->usesImpactMark = qfalse;
+		Com_Printf( S_ERROR "Not all mandatory impactMark vars defined in %s\n", filename );
 	}
 }

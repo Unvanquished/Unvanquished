@@ -182,7 +182,7 @@ static void ExplodeMissile( gentity_t *ent )
 	if ( ent->s.weapon != WP_LOCKBLOB_LAUNCHER &&
 	     ent->s.weapon != WP_FLAMER )
 	{
-		G_AddEvent( ent, EV_MISSILE_MISS, DirToByte( dir ) );
+		G_AddEvent( ent, EV_MISSILE_HIT_ENVIRONMENT, DirToByte( dir ) );
 	}
 
 	ent->freeAfterEvent = qtrue;
@@ -379,16 +379,16 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 
 	if ( other->takedamage && ( other->s.eType == ET_PLAYER || other->s.eType == ET_BUILDABLE ) )
 	{
-		G_AddEvent( ent, EV_MISSILE_HIT, DirToByte( trace->plane.normal ) );
+		G_AddEvent( ent, EV_MISSILE_HIT_ENTITY, DirToByte( trace->plane.normal ) );
 		ent->s.otherEntityNum = other->s.number;
 	}
 	else if ( trace->surfaceFlags & SURF_METAL )
 	{
-		G_AddEvent( ent, EV_MISSILE_MISS_METAL, DirToByte( trace->plane.normal ) );
+		G_AddEvent( ent, EV_MISSILE_HIT_METAL, DirToByte( trace->plane.normal ) );
 	}
 	else
 	{
-		G_AddEvent( ent, EV_MISSILE_MISS, DirToByte( trace->plane.normal ) );
+		G_AddEvent( ent, EV_MISSILE_HIT_ENVIRONMENT, DirToByte( trace->plane.normal ) );
 	}
 
 	ent->freeAfterEvent = qtrue;
@@ -603,10 +603,6 @@ gentity_t *fire_flamer( gentity_t *self, vec3_t start, vec3_t dir )
 
 	m = SpawnMissile( MIS_FLAMER, self, start, dir, NULL, G_FreeEntity, level.time + FLAMER_LIFETIME );
 
-	// TODO: Decouple missiles from weapons by introducing a missile "model" (effect) file
-	m->s.weapon = WP_FLAMER;
-	m->s.generic1 = self->s.generic1; // weaponMode
-
 	return m;
 }
 
@@ -621,10 +617,6 @@ gentity_t *fire_blaster( gentity_t *self, vec3_t start, vec3_t dir )
 
 	m = SpawnMissile( MIS_BLASTER, self, start, dir, NULL, ExplodeMissile, level.time + 10000 );
 
-	// TODO: Decouple missiles from weapons by introducing a missile "model" (effect) file
-	m->s.weapon = WP_BLASTER;
-	m->s.generic1 = self->s.generic1; // weaponMode
-
 	return m;
 }
 
@@ -637,11 +629,7 @@ gentity_t *fire_pulseRifle( gentity_t *self, vec3_t start, vec3_t dir )
 {
 	gentity_t *m;
 
-	m = SpawnMissile( MIS_BLASTER, self, start, dir, NULL, ExplodeMissile, level.time + 10000 );
-
-	// TODO: Decouple missiles from weapons by introducing a missile "model" (effect) file
-	m->s.weapon = WP_BLASTER;
-	m->s.generic1 = self->s.generic1; // weaponMode
+	m = SpawnMissile( MIS_PRIFLE, self, start, dir, NULL, ExplodeMissile, level.time + 10000 );
 
 	return m;
 }
@@ -654,6 +642,8 @@ fire_luciferCannon
 gentity_t *fire_luciferCannon( gentity_t *self, vec3_t start, vec3_t dir,
                                int damage, int radius, int speed )
 {
+	// TODO: Split this into two functions for primary/secondary fire mode
+
 	gentity_t *m;
 	int       nextthink;
 	float     charge;
@@ -668,28 +658,31 @@ gentity_t *fire_luciferCannon( gentity_t *self, vec3_t start, vec3_t dir,
 		nextthink = level.time + 10000;
 	}
 
-	m = SpawnMissile( MIS_LCANNON, self, start, dir, NULL, ExplodeMissile, nextthink );
-
-	// some values are set in the code
-	m->damage       = damage;
-	m->splashDamage = damage / 2;
-	m->splashRadius = radius;
-	VectorScale( dir, speed, m->s.pos.trDelta );
-	SnapVector( m->s.pos.trDelta ); // save net bandwidth
-
-	// pass the missile charge through
-	charge = ( float )( damage - LCANNON_SECONDARY_DAMAGE ) / LCANNON_DAMAGE;
-
-	m->s.torsoAnim = charge * 255;
-
-	if ( m->s.torsoAnim < 0 )
+	if ( self->s.generic1 == WPM_PRIMARY )
 	{
-		m->s.torsoAnim = 0;
-	}
+		m = SpawnMissile( MIS_LCANNON, self, start, dir, NULL, ExplodeMissile, nextthink );
 
-	// TODO: Decouple missiles from weapons by introducing a missile "model" (effect) file
-	m->s.weapon   = WP_LUCIFER_CANNON;
-	m->s.generic1 = self->s.generic1; // weaponMode
+		// some values are set in the code
+		m->damage       = damage;
+		m->splashDamage = damage / 2;
+		m->splashRadius = radius;
+		VectorScale( dir, speed, m->s.pos.trDelta );
+		SnapVector( m->s.pos.trDelta ); // save net bandwidth
+
+		// pass the missile charge through
+		charge = ( float )( damage - LCANNON_SECONDARY_DAMAGE ) / LCANNON_DAMAGE;
+
+		m->s.torsoAnim = charge * 255;
+
+		if ( m->s.torsoAnim < 0 )
+		{
+			m->s.torsoAnim = 0;
+		}
+	}
+	else
+	{
+		m = SpawnMissile( MIS_LCANNON2, self, start, dir, NULL, ExplodeMissile, nextthink );
+	}
 
 	return m;
 }
@@ -704,10 +697,6 @@ gentity_t *fire_grenade( gentity_t *self, vec3_t start, vec3_t dir )
 	gentity_t *m;
 
 	m = SpawnMissile( MIS_GRENADE, self, start, dir, NULL, ExplodeMissile, level.time + 5000 );
-
-	// TODO: Decouple missiles from weapons by introducing a missile "model" (effect) file
-	m->s.weapon   = WP_GRENADE;
-	m->s.generic1 = WPM_PRIMARY; // weaponMode
 
 	return m;
 }
@@ -792,10 +781,6 @@ gentity_t *fire_hive( gentity_t *self, vec3_t start, vec3_t dir )
 
 	m->timestamp = level.time + HIVE_LIFETIME;
 
-	// TODO: Decouple missiles from weapons by introducing a missile "model" (effect) file
-	m->s.weapon   = WP_HIVE;
-	m->s.generic1 = WPM_PRIMARY; // weaponMode
-
 	return m;
 }
 
@@ -809,10 +794,6 @@ gentity_t *fire_lockblob( gentity_t *self, vec3_t start, vec3_t dir )
 	gentity_t *m;
 
 	m = SpawnMissile( MIS_LOCKBLOB, self, start, dir, NULL, ExplodeMissile, level.time + 15000 );
-
-	// TODO: Decouple missiles from weapons by introducing a missile "model" (effect) file
-	m->s.weapon   = WP_LOCKBLOB_LAUNCHER;
-	m->s.generic1 = WPM_PRIMARY; // weaponMode
 
 	return m;
 }
@@ -828,10 +809,6 @@ gentity_t *fire_slowBlob( gentity_t *self, vec3_t start, vec3_t dir )
 
 	m = SpawnMissile( MIS_SLOWBLOB, self, start, dir, NULL, ExplodeMissile, level.time + 15000 );
 
-	// TODO: Decouple missiles from weapons by introducing a missile "model" (effect) file
-	m->s.weapon   = WP_ABUILD2;
-	m->s.generic1 = self->s.generic1; // weaponMode
-
 	return m;
 }
 
@@ -845,10 +822,6 @@ gentity_t *fire_bounceBall( gentity_t *self, vec3_t start, vec3_t dir )
 	gentity_t *m;
 
 	m = SpawnMissile( MIS_BOUNCEBALL, self, start, dir, NULL, ExplodeMissile, level.time + 3000 );
-
-	// TODO: Decouple missiles from weapons by introducing a missile "model" (effect) file
-	m->s.weapon   = WP_ALEVEL3_UPG;
-	m->s.generic1 = self->s.generic1; // weaponMode
 
 	return m;
 }

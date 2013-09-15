@@ -235,37 +235,10 @@ void SnapVectorNormal( vec3_t v, vec3_t normal )
 
 /*
 ===============
-BloodSpurt
-
-Generates a blood spurt event for traces with accurate end points
-===============
-*/
-static void BloodSpurt( gentity_t *attacker, gentity_t *victim, trace_t *tr )
-{
-	gentity_t *tent;
-
-	if ( !attacker->client )
-	{
-		return;
-	}
-
-	if ( victim->health <= 0 )
-	{
-		return;
-	}
-
-	tent = G_NewTempEntity( tr->endpos, EV_MISSILE_HIT );
-	tent->s.otherEntityNum = victim->s.number;
-	tent->s.eventParm = DirToByte( tr->plane.normal );
-	tent->s.weapon = attacker->s.weapon;
-	tent->s.generic1 = attacker->s.generic1; // weaponMode
-}
-
-/*
-===============
 WideBloodSpurt
 
-Calculates the position of a blood spurt for wide traces and generates an event
+Calculates the position of a blood spurt for wide traces and generates an event.
+Used by melee attacks.
 ===============
 */
 static void WideBloodSpurt( gentity_t *attacker, gentity_t *victim, trace_t *tr )
@@ -320,10 +293,11 @@ static void WideBloodSpurt( gentity_t *attacker, gentity_t *victim, trace_t *tr 
 	VectorNegate( normal, normal );
 	VectorNormalize( normal );
 
-	// Create the blood spurt effect entity
-	tent = G_NewTempEntity( origin, EV_MISSILE_HIT );
+	// send weapon hit event for actual blood effect
+	tent = G_NewTempEntity( origin, EV_WEAPON_HIT_ENTITY );
 	tent->s.eventParm = DirToByte( normal );
 	tent->s.otherEntityNum = victim->s.number;
+	tent->s.otherEntityNum2 = attacker->s.number;
 	tent->s.weapon = attacker->s.weapon;
 	tent->s.generic1 = attacker->s.generic1; // weaponMode
 }
@@ -347,6 +321,7 @@ void meleeAttack( gentity_t *ent, float range, float width, float height,
 	}
 
 	WideBloodSpurt( ent, traceEnt, &tr );
+
 	G_Damage( traceEnt, ent, ent, forward, tr.endpos, damage, DAMAGE_NO_KNOCKBACK, mod );
 }
 
@@ -360,6 +335,8 @@ MACHINEGUN
 
 void bulletFire( gentity_t *ent, float spread, int damage, int mod )
 {
+	// TODO: Merge this with other *Fire functions
+
 	trace_t   tr;
 	vec3_t    end;
 	float     r;
@@ -396,21 +373,29 @@ void bulletFire( gentity_t *ent, float spread, int damage, int mod )
 	// snap the endpos to integers, but nudged towards the line
 	SnapVectorTowards( tr.endpos, muzzle );
 
-	// send bullet impact
+	// send impact
 	if ( traceEnt->takedamage &&
-	     ( traceEnt->s.eType == ET_PLAYER ||
-	       traceEnt->s.eType == ET_BUILDABLE ) )
+	     ( traceEnt->s.eType == ET_BUILDABLE ||
+	       traceEnt->s.eType == ET_PLAYER ) )
 	{
-		tent = G_NewTempEntity( tr.endpos, EV_BULLET_HIT_FLESH );
+		tent = G_NewTempEntity( tr.endpos, EV_WEAPON_HIT_ENTITY );
 		tent->s.eventParm = traceEnt->s.number;
+		tent->s.weapon = ent->s.weapon;
+		tent->s.generic1 = ent->s.generic1; //weaponMode
+
+		// send victim
+		tent->s.otherEntityNum = traceEnt->s.number;
 	}
 	else
 	{
-		tent = G_NewTempEntity( tr.endpos, EV_BULLET_HIT_WALL );
+		tent = G_NewTempEntity( tr.endpos, EV_WEAPON_HIT_ENVIRONMENT );
 		tent->s.eventParm = DirToByte( tr.plane.normal );
+		tent->s.weapon = ent->s.weapon;
+		tent->s.generic1 = ent->s.generic1; //weaponMode
 	}
 
-	tent->s.otherEntityNum = ent->s.number;
+	// send attacker
+	tent->s.otherEntityNum2 = traceEnt->s.number;
 
 	if ( traceEnt->takedamage )
 	{
@@ -495,6 +480,8 @@ MASS DRIVER
 
 void massDriverFire( gentity_t *ent )
 {
+	// TODO: Merge this with other *Fire functions
+
 	trace_t   tr;
 	vec3_t    end;
 	gentity_t *tent;
@@ -521,11 +508,18 @@ void massDriverFire( gentity_t *ent )
 	     ( traceEnt->s.eType == ET_BUILDABLE ||
 	       traceEnt->s.eType == ET_PLAYER ) )
 	{
-		BloodSpurt( ent, traceEnt, &tr );
+		//BloodSpurt( ent, traceEnt, &tr );
+		tent = G_NewTempEntity( tr.endpos, EV_WEAPON_HIT_ENTITY );
+		tent->s.eventParm = DirToByte( tr.plane.normal );
+		tent->s.weapon = ent->s.weapon;
+		tent->s.generic1 = ent->s.generic1; //weaponMode
+
+		// send victim
+		tent->s.otherEntityNum = traceEnt->s.number;
 	}
 	else
 	{
-		tent = G_NewTempEntity( tr.endpos, EV_MISSILE_MISS );
+		tent = G_NewTempEntity( tr.endpos, EV_WEAPON_HIT_ENVIRONMENT );
 		tent->s.eventParm = DirToByte( tr.plane.normal );
 		tent->s.weapon = ent->s.weapon;
 		tent->s.generic1 = ent->s.generic1; //weaponMode
@@ -636,6 +630,8 @@ lasGunFire
 */
 void lasGunFire( gentity_t *ent )
 {
+	// TODO: Merge this with other *Fire functions
+
 	trace_t   tr;
 	vec3_t    end;
 	gentity_t *tent;
@@ -662,11 +658,18 @@ void lasGunFire( gentity_t *ent )
 	     ( traceEnt->s.eType == ET_BUILDABLE ||
 	       traceEnt->s.eType == ET_PLAYER ) )
 	{
-		BloodSpurt( ent, traceEnt, &tr );
+		//BloodSpurt( ent, traceEnt, &tr );
+		tent = G_NewTempEntity( tr.endpos, EV_WEAPON_HIT_ENTITY );
+		tent->s.eventParm = DirToByte( tr.plane.normal );
+		tent->s.weapon = ent->s.weapon;
+		tent->s.generic1 = ent->s.generic1; //weaponMode
+
+		// send victim
+		tent->s.otherEntityNum = traceEnt->s.number;
 	}
 	else
 	{
-		tent = G_NewTempEntity( tr.endpos, EV_MISSILE_MISS );
+		tent = G_NewTempEntity( tr.endpos, EV_WEAPON_HIT_ENVIRONMENT );
 		tent->s.eventParm = DirToByte( tr.plane.normal );
 		tent->s.weapon = ent->s.weapon;
 		tent->s.generic1 = ent->s.generic1; //weaponMode
@@ -689,7 +692,6 @@ PAIN SAW
 void painSawFire( gentity_t *ent )
 {
 	trace_t   tr;
-	vec3_t    temp;
 	gentity_t *tent, *traceEnt;
 
 	G_WideTrace( &tr, ent, PAINSAW_RANGE, PAINSAW_WIDTH, PAINSAW_HEIGHT,
@@ -700,18 +702,20 @@ void painSawFire( gentity_t *ent )
 		return;
 	}
 
-	// hack to line up particle system with weapon model
-	tr.endpos[ 2 ] -= 5.0f;
-
 	// send blood impact
 	if ( traceEnt->s.eType == ET_PLAYER || traceEnt->s.eType == ET_BUILDABLE )
 	{
-		BloodSpurt( ent, traceEnt, &tr );
+		tent = G_NewTempEntity( tr.endpos, EV_WEAPON_HIT_ENTITY );
+		tent->s.eventParm = DirToByte( tr.plane.normal );
+		tent->s.weapon = ent->s.weapon;
+		tent->s.generic1 = ent->s.generic1; //weaponMode
+
+		// send victim
+		tent->s.otherEntityNum = traceEnt->s.number;
 	}
 	else
 	{
-		VectorCopy( tr.endpos, temp );
-		tent = G_NewTempEntity( temp, EV_MISSILE_MISS );
+		tent = G_NewTempEntity( tr.endpos, EV_WEAPON_HIT_ENVIRONMENT );
 		tent->s.eventParm = DirToByte( tr.plane.normal );
 		tent->s.weapon = ent->s.weapon;
 		tent->s.generic1 = ent->s.generic1; //weaponMode

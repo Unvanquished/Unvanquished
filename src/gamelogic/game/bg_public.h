@@ -411,6 +411,7 @@ typedef enum
 	MIS_BLASTER,
 	MIS_PRIFLE,
 	MIS_LCANNON,
+	MIS_LCANNON2,
 	MIS_GRENADE,
 	MIS_HIVE,
 	MIS_LOCKBLOB,
@@ -525,15 +526,15 @@ typedef enum
   EV_GENERAL_SOUND,
   EV_GLOBAL_SOUND, // no attenuation
 
-  EV_BULLET_HIT_FLESH,
-  EV_BULLET_HIT_WALL,
+  EV_WEAPON_HIT_ENTITY,
+  EV_WEAPON_HIT_ENVIRONMENT,
 
   EV_SHOTGUN,
   EV_MASS_DRIVER,
 
-  EV_MISSILE_HIT,
-  EV_MISSILE_MISS,
-  EV_MISSILE_MISS_METAL,
+  EV_MISSILE_HIT_ENTITY,
+  EV_MISSILE_HIT_ENVIRONMENT,
+  EV_MISSILE_HIT_METAL, // necessary?
   EV_TESLATRAIL,
   EV_BULLET, // otherEntity is the shooter
 
@@ -1161,6 +1162,7 @@ typedef struct
 // missile record
 typedef struct
 {
+	// attributes
 	missile_t      number;
 	const char     *name;
 	qboolean       pointAgainstWorld;
@@ -1175,6 +1177,36 @@ typedef struct
 	int            speed;
 	float          lag;
 	int            flags;
+
+	// display
+	qhandle_t      model;
+	sfxHandle_t    sound;
+	qboolean       usesDlight;
+	float          dlight;
+	float          dlightIntensity;
+	vec3_t         dlightColor;
+	int            renderfx;
+	qboolean       usesSprite;
+	qhandle_t      sprite;
+	int            spriteSize;
+	float          spriteCharge;
+	qhandle_t      particleSystem;
+	qhandle_t      trailSystem;
+	qboolean       rotates;
+	qboolean       usesAnim;
+	int            animStartFrame;
+	int            animNumFrames;
+	int            animFrameRate;
+	qboolean       animLooping;
+
+	// impact
+	qboolean       alwaysImpact;
+	qhandle_t      impactParticleSystem;
+	qboolean       usesImpactMark;
+	qhandle_t      impactMark;
+	qhandle_t      impactMarkSize;
+	sfxHandle_t    impactSound[ 4 ];
+	sfxHandle_t    impactFleshSound[ 4 ];
 } missileAttributes_t;
 
 qboolean BG_WeaponIsFull( weapon_t weapon, int stats[], int ammo, int clips );
@@ -1247,6 +1279,7 @@ void                      BG_ParseClassModelFile( const char *filename, classMod
 void                      BG_ParseWeaponAttributeFile( const char *filename, weaponAttributes_t *wa );
 void                      BG_ParseUpgradeAttributeFile( const char *filename, upgradeAttributes_t *ua );
 void                      BG_ParseMissileAttributeFile( const char *filename, missileAttributes_t *ma );
+void                      BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma );
 
 // bg_teamprogress.c
 void     BG_InitUnlockackables( void );

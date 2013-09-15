@@ -418,28 +418,17 @@ CG_LaunchMissile
 */
 static void CG_LaunchMissile( centity_t *cent )
 {
-	entityState_t      *es;
-	const weaponInfo_t *wi;
-	particleSystem_t   *ps;
-	trailSystem_t      *ts;
-	weapon_t           weapon;
-	weaponMode_t       weaponMode;
+	entityState_t             *es;
+	const missileAttributes_t *ma;
+	particleSystem_t          *ps;
+	trailSystem_t             *ts;
 
 	es = &cent->currentState;
+	ma = BG_Missile( es->modelindex );
 
-	weapon = es->weapon;
-
-	if ( weapon >= WP_NUM_WEAPONS )
+	if ( ma->particleSystem )
 	{
-		weapon = WP_NONE;
-	}
-
-	wi = &cg_weapons[ weapon ];
-	weaponMode = es->generic1;
-
-	if ( wi->wim[ weaponMode ].missileParticleSystem )
-	{
-		ps = CG_SpawnNewParticleSystem( wi->wim[ weaponMode ].missileParticleSystem );
+		ps = CG_SpawnNewParticleSystem( ma->particleSystem );
 
 		if ( CG_IsParticleSystemValid( &ps ) )
 		{
@@ -449,9 +438,9 @@ static void CG_LaunchMissile( centity_t *cent )
 		}
 	}
 
-	if ( wi->wim[ weaponMode ].missileTrailSystem )
+	if ( ma->trailSystem )
 	{
-		ts = CG_SpawnNewTrailSystem( wi->wim[ weaponMode ].missileTrailSystem );
+		ts = CG_SpawnNewTrailSystem( ma->trailSystem );
 
 		if ( CG_IsTrailSystemValid( &ts ) )
 		{
@@ -468,47 +457,31 @@ CG_Missile
 */
 static void CG_Missile( centity_t *cent )
 {
-	refEntity_t            ent;
-	entityState_t          *es;
-	const weaponInfo_t     *wi;
-	weapon_t               weapon;
-	weaponMode_t           weaponMode;
-	const weaponInfoMode_t *wim;
+	refEntity_t               ent;
+	entityState_t             *es;
+	const missileAttributes_t *ma;
 
 	es = &cent->currentState;
-
-	weapon = es->weapon;
-
-	if ( weapon >= WP_NUM_WEAPONS )
-	{
-		weapon = WP_NONE;
-	}
-
-	wi = &cg_weapons[ weapon ];
-	weaponMode = es->generic1;
-
-	wim = &wi->wim[ weaponMode ];
+	ma = BG_Missile( es->modelindex );
 
 	// calculate the axis
 	VectorCopy( es->angles, cent->lerpAngles );
 
 	// add dynamic light
-	if ( wim->missileDlight )
+	if ( ma->usesDlight )
 	{
-		trap_R_AddLightToScene( cent->lerpOrigin, wim->missileDlight, wim->missileDlightIntensity,
-		                        wim->missileDlightColor[ 0 ],
-		                        wim->missileDlightColor[ 1 ],
-		                        wim->missileDlightColor[ 2 ], 0, 0 );
+		trap_R_AddLightToScene( cent->lerpOrigin, ma->dlight, ma->dlightIntensity,
+		                        ma->dlightColor[ 0 ], ma->dlightColor[ 1 ], ma->dlightColor[ 2 ], 0, 0 );
 	}
 
 	// add missile sound
-	if ( wim->missileSound )
+	if ( ma->sound )
 	{
 		vec3_t velocity;
 
 		BG_EvaluateTrajectoryDelta( &cent->currentState.pos, cg.time, velocity );
 
-		trap_S_AddLoopingSound( cent->currentState.number, cent->lerpOrigin, velocity, wim->missileSound );
+		trap_S_AddLoopingSound( cent->currentState.number, cent->lerpOrigin, velocity, ma->sound );
 	}
 
 	// create the render entity
@@ -516,13 +489,12 @@ static void CG_Missile( centity_t *cent )
 	VectorCopy( cent->lerpOrigin, ent.origin );
 	VectorCopy( cent->lerpOrigin, ent.oldorigin );
 
-	if ( wim->usesSpriteMissle )
+	if ( ma->usesSprite )
 	{
 		ent.reType = RT_SPRITE;
-		ent.radius = wim->missileSpriteSize +
-		             wim->missileSpriteCharge * es->torsoAnim;
+		ent.radius = ma->spriteSize + ma->spriteCharge * es->torsoAnim;
 		ent.rotation = 0;
-		ent.customShader = wim->missileSprite;
+		ent.customShader = ma->sprite;
 		ent.shaderRGBA[ 0 ] = 0xFF;
 		ent.shaderRGBA[ 1 ] = 0xFF;
 		ent.shaderRGBA[ 2 ] = 0xFF;
@@ -530,8 +502,8 @@ static void CG_Missile( centity_t *cent )
 	}
 	else
 	{
-		ent.hModel = wim->missileModel;
-		ent.renderfx = wim->missileRenderfx | RF_NOSHADOW;
+		ent.hModel = ma->model;
+		ent.renderfx = ma->renderfx | RF_NOSHADOW;
 
 		// convert direction of travel into axis
 		if ( VectorNormalize2( es->pos.trDelta, ent.axis[ 0 ] ) == 0 )
@@ -540,7 +512,7 @@ static void CG_Missile( centity_t *cent )
 		}
 
 		// spin as it moves
-		if ( es->pos.trType != TR_STATIONARY && wim->missileRotates )
+		if ( es->pos.trType != TR_STATIONARY && ma->rotates )
 		{
 			RotateAroundDirection( ent.axis, cg.time / 4 );
 		}
@@ -549,31 +521,30 @@ static void CG_Missile( centity_t *cent )
 			RotateAroundDirection( ent.axis, es->time );
 		}
 
-		if ( wim->missileAnimates )
+		if ( ma->usesAnim )
 		{
 			int timeSinceStart = cg.time - es->time;
 
-			if ( wim->missileAnimLooping )
+			if ( ma->animLooping )
 			{
-				ent.frame = wim->missileAnimStartFrame +
-				            ( int )( ( timeSinceStart / 1000.0f ) * wim->missileAnimFrameRate ) %
-				            wim->missileAnimNumFrames;
+				ent.frame = ma->animStartFrame +
+				            ( int )( ( timeSinceStart / 1000.0f ) * ma->animFrameRate ) % ma->animNumFrames;
 			}
 			else
 			{
-				ent.frame = wim->missileAnimStartFrame +
-				            ( int )( ( timeSinceStart / 1000.0f ) * wim->missileAnimFrameRate );
+				ent.frame = ma->animStartFrame +
+				            ( int )( ( timeSinceStart / 1000.0f ) * ma->animFrameRate );
 
-				if ( ent.frame > ( wim->missileAnimStartFrame + wim->missileAnimNumFrames ) )
+				if ( ent.frame > ( ma->animStartFrame + ma->animNumFrames ) )
 				{
-					ent.frame = wim->missileAnimStartFrame + wim->missileAnimNumFrames;
+					ent.frame = ma->animStartFrame +ma->animNumFrames;
 				}
 			}
 		}
 	}
 
 	//only refresh if there is something to display
-	if ( wim->missileSprite || wim->missileModel )
+	if ( ma->sprite || ma->model )
 	{
 		trap_R_AddRefEntityToScene( &ent );
 	}
