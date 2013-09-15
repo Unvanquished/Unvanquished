@@ -26,8 +26,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "g_local.h"
 
-static  vec3_t forward, right, up;
-static  vec3_t muzzle;
+static vec3_t forward, right, up;
+static vec3_t muzzle;
 
 void G_ForceWeaponChange( gentity_t *ent, weapon_t weapon )
 {
@@ -221,15 +221,41 @@ static void SnapVectorNormal( vec3_t v, vec3_t normal )
 	}
 }
 
-/*
-===============
-Calculates the position of a blood spurt for wide traces and generates an event.
-Used by melee attacks.
-===============
-*/
-static void WideBloodSpurt( gentity_t *attacker, gentity_t *victim, trace_t *tr )
+static void SendRangedHitEvent( gentity_t *attacker, gentity_t *target, trace_t *tr )
 {
-	gentity_t *tent;
+	gentity_t *event;
+
+	// snap the endpos to integers, but nudged towards the line
+	G_SnapVectorTowards( tr->endpos, muzzle );
+
+	if ( target->takedamage && ( target->s.eType == ET_BUILDABLE || target->s.eType == ET_PLAYER ) )
+	{
+		event = G_NewTempEntity( tr->endpos, EV_WEAPON_HIT_ENTITY );
+	}
+	else
+	{
+		event = G_NewTempEntity( tr->endpos, EV_WEAPON_HIT_ENVIRONMENT );
+	}
+
+	// normal
+	event->s.eventParm = DirToByte( tr->plane.normal );
+
+	// victim
+	event->s.otherEntityNum = target->s.number;
+
+	// attacker
+	event->s.otherEntityNum2 = attacker->s.number;
+
+	// weapon
+	event->s.weapon = attacker->s.weapon;
+
+	// weapon mode
+	event->s.generic1 = attacker->s.generic1;
+}
+
+static void SendMeleeHitEvent( gentity_t *attacker, gentity_t *target, trace_t *tr )
+{
+	gentity_t *event;
 	vec3_t    normal, origin;
 	float     mag, radius;
 
@@ -238,25 +264,23 @@ static void WideBloodSpurt( gentity_t *attacker, gentity_t *victim, trace_t *tr 
 		return;
 	}
 
-	if ( victim->health <= 0 )
+	if ( target->health <= 0 )
 	{
 		return;
 	}
 
 	if ( tr )
 	{
-		VectorSubtract( tr->endpos, victim->s.origin, normal );
+		VectorSubtract( tr->endpos, target->s.origin, normal );
 	}
 	else
 	{
-		VectorSubtract( attacker->client->ps.origin,
-		                victim->s.origin, normal );
+		VectorSubtract( attacker->client->ps.origin, target->s.origin, normal );
 	}
 
-	// Normalize the horizontal components of the vector difference to the
-	// "radius" of the bounding box
+	// Normalize the horizontal components of the vector difference to the "radius" of the bounding box
 	mag = sqrt( normal[ 0 ] * normal[ 0 ] + normal[ 1 ] * normal[ 1 ] );
-	radius = victim->r.maxs[ 0 ] * 1.21f;
+	radius = target->r.maxs[ 0 ] * 1.21f;
 
 	if ( mag > radius )
 	{
@@ -265,45 +289,54 @@ static void WideBloodSpurt( gentity_t *attacker, gentity_t *victim, trace_t *tr 
 	}
 
 	// Clamp origin to be within bounding box vertically
-	if ( normal[ 2 ] > victim->r.maxs[ 2 ] )
+	if ( normal[ 2 ] > target->r.maxs[ 2 ] )
 	{
-		normal[ 2 ] = victim->r.maxs[ 2 ];
+		normal[ 2 ] = target->r.maxs[ 2 ];
 	}
 
-	if ( normal[ 2 ] < victim->r.mins[ 2 ] )
+	if ( normal[ 2 ] < target->r.mins[ 2 ] )
 	{
-		normal[ 2 ] = victim->r.mins[ 2 ];
+		normal[ 2 ] = target->r.mins[ 2 ];
 	}
 
-	VectorAdd( victim->s.origin, normal, origin );
+	VectorAdd( target->s.origin, normal, origin );
 	VectorNegate( normal, normal );
 	VectorNormalize( normal );
 
-	// send weapon hit event for actual blood effect
-	tent = G_NewTempEntity( origin, EV_WEAPON_HIT_ENTITY );
-	tent->s.eventParm = DirToByte( normal );
-	tent->s.otherEntityNum = victim->s.number;
-	tent->s.otherEntityNum2 = attacker->s.number;
-	tent->s.weapon = attacker->s.weapon;
-	tent->s.generic1 = attacker->s.generic1; // weaponMode
+	event = G_NewTempEntity( origin, EV_WEAPON_HIT_ENTITY );
+
+	// normal
+	event->s.eventParm = DirToByte( normal );
+
+	// victim
+	event->s.otherEntityNum = target->s.number;
+
+	// attacker
+	event->s.otherEntityNum2 = attacker->s.number;
+
+	// weapon
+	event->s.weapon = attacker->s.weapon;
+
+	// weapon mode
+	event->s.generic1 = attacker->s.generic1;
 }
 
-static void FireMelee( gentity_t *ent, float range, float width, float height,
-                         int damage, meansOfDeath_t mod )
+static void FireMelee( gentity_t *self, float range, float width, float height,
+                       int damage, meansOfDeath_t mod )
 {
 	trace_t   tr;
 	gentity_t *traceEnt;
 
-	G_WideTrace( &tr, ent, range, width, height, &traceEnt );
+	G_WideTrace( &tr, self, range, width, height, &traceEnt );
 
 	if ( traceEnt == NULL || !traceEnt->takedamage )
 	{
 		return;
 	}
 
-	WideBloodSpurt( ent, traceEnt, &tr );
+	SendMeleeHitEvent( self, traceEnt, &tr );
 
-	G_Damage( traceEnt, ent, ent, forward, tr.endpos, damage, DAMAGE_NO_KNOCKBACK, mod );
+	G_Damage( traceEnt, self, self, forward, tr.endpos, damage, DAMAGE_NO_KNOCKBACK, mod );
 }
 
 /*
@@ -314,16 +347,14 @@ MACHINEGUN
 ======================================================================
 */
 
-static void FireBullet( gentity_t *ent, float spread, int damage, int mod )
+static void FireBullet( gentity_t *self, float spread, int damage, int mod )
 {
 	// TODO: Merge this with other *Fire functions
 
 	trace_t   tr;
 	vec3_t    end;
-	float     r;
-	float     u;
-	gentity_t *tent;
-	gentity_t *traceEnt;
+	float     r, u;
+	gentity_t *target;
 
 	r = random() * M_PI * 2.0f;
 	u = sin( r ) * crandom() * spread * 16;
@@ -333,15 +364,15 @@ static void FireBullet( gentity_t *ent, float spread, int damage, int mod )
 	VectorMA( end, u, up, end );
 
 	// don't use unlagged if this is not a client (e.g. turret)
-	if ( ent->client )
+	if ( self->client )
 	{
-		G_UnlaggedOn( ent, muzzle, 8192 * 16 );
-		trap_Trace( &tr, muzzle, NULL, NULL, end, ent->s.number, MASK_SHOT );
+		G_UnlaggedOn( self, muzzle, 8192 * 16 );
+		trap_Trace( &tr, muzzle, NULL, NULL, end, self->s.number, MASK_SHOT );
 		G_UnlaggedOff();
 	}
 	else
 	{
-		trap_Trace( &tr, muzzle, NULL, NULL, end, ent->s.number, MASK_SHOT );
+		trap_Trace( &tr, muzzle, NULL, NULL, end, self->s.number, MASK_SHOT );
 	}
 
 	if ( tr.surfaceFlags & SURF_NOIMPACT )
@@ -349,39 +380,13 @@ static void FireBullet( gentity_t *ent, float spread, int damage, int mod )
 		return;
 	}
 
-	traceEnt = &g_entities[ tr.entityNum ];
+	target = &g_entities[ tr.entityNum ];
 
-	// snap the endpos to integers, but nudged towards the line
-	G_SnapVectorTowards( tr.endpos, muzzle );
+	SendRangedHitEvent( self, target, &tr );
 
-	// send impact
-	if ( traceEnt->takedamage &&
-	     ( traceEnt->s.eType == ET_BUILDABLE ||
-	       traceEnt->s.eType == ET_PLAYER ) )
+	if ( target->takedamage )
 	{
-		tent = G_NewTempEntity( tr.endpos, EV_WEAPON_HIT_ENTITY );
-		tent->s.eventParm = traceEnt->s.number;
-		tent->s.weapon = ent->s.weapon;
-		tent->s.generic1 = ent->s.generic1; //weaponMode
-
-		// send victim
-		tent->s.otherEntityNum = traceEnt->s.number;
-	}
-	else
-	{
-		tent = G_NewTempEntity( tr.endpos, EV_WEAPON_HIT_ENVIRONMENT );
-		tent->s.eventParm = DirToByte( tr.plane.normal );
-		tent->s.weapon = ent->s.weapon;
-		tent->s.generic1 = ent->s.generic1; //weaponMode
-	}
-
-	// send attacker
-	tent->s.otherEntityNum2 = traceEnt->s.number;
-
-	if ( traceEnt->takedamage )
-	{
-		G_Damage( traceEnt, ent, ent, forward, tr.endpos,
-		          damage, 0, mod );
+		G_Damage( target, self, self, forward, tr.endpos, damage, 0, mod );
 	}
 }
 
@@ -398,7 +403,7 @@ SHOTGUN
 Keep this in sync with ShotgunPattern in g_weapon.c!
 ================
 */
-static void ShotgunPattern( vec3_t origin, vec3_t origin2, int seed, gentity_t *ent )
+static void ShotgunPattern( vec3_t origin, vec3_t origin2, int seed, gentity_t *self )
 {
 	int       i;
 	float     r, u, a;
@@ -426,32 +431,34 @@ static void ShotgunPattern( vec3_t origin, vec3_t origin2, int seed, gentity_t *
 		VectorMA( end, r, right, end );
 		VectorMA( end, u, up, end );
 
-		trap_Trace( &tr, origin, NULL, NULL, end, ent->s.number, MASK_SHOT );
+		trap_Trace( &tr, origin, NULL, NULL, end, self->s.number, MASK_SHOT );
 		traceEnt = &g_entities[ tr.entityNum ];
 
-		// send bullet impact
+		// do the damage
 		if ( !( tr.surfaceFlags & SURF_NOIMPACT ) )
 		{
 			if ( traceEnt->takedamage )
 			{
-				G_Damage( traceEnt, ent, ent, forward, tr.endpos,  SHOTGUN_DMG, 0, MOD_SHOTGUN );
+				G_Damage( traceEnt, self, self, forward, tr.endpos, SHOTGUN_DMG, 0, MOD_SHOTGUN );
 			}
 		}
 	}
 }
 
-static void FireShotgun( gentity_t *ent )
+static void FireShotgun( gentity_t *self )
 {
 	gentity_t *tent;
 
-	// send shotgun blast
+	// instead of an EV_WEAPON_HIT_* event, send this so client can generate the same spread pattern
 	tent = G_NewTempEntity( muzzle, EV_SHOTGUN );
 	VectorScale( forward, 4096, tent->s.origin2 );
 	SnapVector( tent->s.origin2 );
 	tent->s.eventParm = rand() / ( RAND_MAX / 0x100 + 1 ); // seed for spread pattern
-	tent->s.otherEntityNum = ent->s.number;
-	G_UnlaggedOn( ent, muzzle, SHOTGUN_RANGE );
-	ShotgunPattern( tent->s.pos.trBase, tent->s.origin2, tent->s.eventParm, ent );
+	tent->s.otherEntityNum = self->s.number;
+
+	// caclulate the pattern and do the damage
+	G_UnlaggedOn( self, muzzle, SHOTGUN_RANGE );
+	ShotgunPattern( tent->s.pos.trBase, tent->s.origin2, tent->s.eventParm, self );
 	G_UnlaggedOff();
 }
 
@@ -463,19 +470,18 @@ MASS DRIVER
 ======================================================================
 */
 
-static void FireMassdriver( gentity_t *ent )
+static void FireMassdriver( gentity_t *self )
 {
 	// TODO: Merge this with other *Fire functions
 
 	trace_t   tr;
 	vec3_t    end;
-	gentity_t *tent;
-	gentity_t *traceEnt;
+	gentity_t *target;
 
 	VectorMA( muzzle, 8192.0f * 16.0f, forward, end );
 
-	G_UnlaggedOn( ent, muzzle, 8192.0f * 16.0f );
-	trap_Trace( &tr, muzzle, NULL, NULL, end, ent->s.number, MASK_SHOT );
+	G_UnlaggedOn( self, muzzle, 8192.0f * 16.0f );
+	trap_Trace( &tr, muzzle, NULL, NULL, end, self->s.number, MASK_SHOT );
 	G_UnlaggedOff();
 
 	if ( tr.surfaceFlags & SURF_NOIMPACT )
@@ -483,37 +489,16 @@ static void FireMassdriver( gentity_t *ent )
 		return;
 	}
 
-	traceEnt = &g_entities[ tr.entityNum ];
+	target = &g_entities[ tr.entityNum ];
 
 	// snap the endpos to integers, but nudged towards the line
 	G_SnapVectorTowards( tr.endpos, muzzle );
 
-	// send impact
-	if ( traceEnt->takedamage &&
-	     ( traceEnt->s.eType == ET_BUILDABLE ||
-	       traceEnt->s.eType == ET_PLAYER ) )
-	{
-		//BloodSpurt( ent, traceEnt, &tr );
-		tent = G_NewTempEntity( tr.endpos, EV_WEAPON_HIT_ENTITY );
-		tent->s.eventParm = DirToByte( tr.plane.normal );
-		tent->s.weapon = ent->s.weapon;
-		tent->s.generic1 = ent->s.generic1; //weaponMode
+	SendRangedHitEvent( self, target, &tr );
 
-		// send victim
-		tent->s.otherEntityNum = traceEnt->s.number;
-	}
-	else
+	if ( target->takedamage )
 	{
-		tent = G_NewTempEntity( tr.endpos, EV_WEAPON_HIT_ENVIRONMENT );
-		tent->s.eventParm = DirToByte( tr.plane.normal );
-		tent->s.weapon = ent->s.weapon;
-		tent->s.generic1 = ent->s.generic1; //weaponMode
-	}
-
-	if ( traceEnt->takedamage )
-	{
-		G_Damage( traceEnt, ent, ent, forward, tr.endpos,
-		          MDRIVER_DMG, 0, MOD_MDRIVER );
+		G_Damage( target, self, self, forward, tr.endpos, MDRIVER_DMG, 0, MOD_MDRIVER );
 	}
 }
 
@@ -677,19 +662,18 @@ LAS GUN
 ======================================================================
 */
 
-static void FireLasgun( gentity_t *ent )
+static void FireLasgun( gentity_t *self )
 {
 	// TODO: Merge this with other *Fire functions
 
 	trace_t   tr;
 	vec3_t    end;
-	gentity_t *tent;
-	gentity_t *traceEnt;
+	gentity_t *target;
 
 	VectorMA( muzzle, 8192 * 16, forward, end );
 
-	G_UnlaggedOn( ent, muzzle, 8192 * 16 );
-	trap_Trace( &tr, muzzle, NULL, NULL, end, ent->s.number, MASK_SHOT );
+	G_UnlaggedOn( self, muzzle, 8192 * 16 );
+	trap_Trace( &tr, muzzle, NULL, NULL, end, self->s.number, MASK_SHOT );
 	G_UnlaggedOff();
 
 	if ( tr.surfaceFlags & SURF_NOIMPACT )
@@ -697,36 +681,16 @@ static void FireLasgun( gentity_t *ent )
 		return;
 	}
 
-	traceEnt = &g_entities[ tr.entityNum ];
+	target = &g_entities[ tr.entityNum ];
 
 	// snap the endpos to integers, but nudged towards the line
 	G_SnapVectorTowards( tr.endpos, muzzle );
 
-	// send impact
-	if ( traceEnt->takedamage &&
-	     ( traceEnt->s.eType == ET_BUILDABLE ||
-	       traceEnt->s.eType == ET_PLAYER ) )
-	{
-		//BloodSpurt( ent, traceEnt, &tr );
-		tent = G_NewTempEntity( tr.endpos, EV_WEAPON_HIT_ENTITY );
-		tent->s.eventParm = DirToByte( tr.plane.normal );
-		tent->s.weapon = ent->s.weapon;
-		tent->s.generic1 = ent->s.generic1; //weaponMode
+	SendRangedHitEvent( self, target, &tr );
 
-		// send victim
-		tent->s.otherEntityNum = traceEnt->s.number;
-	}
-	else
+	if ( target->takedamage )
 	{
-		tent = G_NewTempEntity( tr.endpos, EV_WEAPON_HIT_ENVIRONMENT );
-		tent->s.eventParm = DirToByte( tr.plane.normal );
-		tent->s.weapon = ent->s.weapon;
-		tent->s.generic1 = ent->s.generic1; //weaponMode
-	}
-
-	if ( traceEnt->takedamage )
-	{
-		G_Damage( traceEnt, ent, ent, forward, tr.endpos, LASGUN_DAMAGE, 0, MOD_LASGUN );
+		G_Damage( target, self, self, forward, tr.endpos, LASGUN_DAMAGE, 0, MOD_LASGUN );
 	}
 }
 
@@ -738,39 +702,22 @@ PAIN SAW
 ======================================================================
 */
 
-static void FirePainsaw( gentity_t *ent )
+static void FirePainsaw( gentity_t *self )
 {
 	trace_t   tr;
-	gentity_t *tent, *traceEnt;
+	gentity_t *target;
 
-	G_WideTrace( &tr, ent, PAINSAW_RANGE, PAINSAW_WIDTH, PAINSAW_HEIGHT,
-	             &traceEnt );
+	G_WideTrace( &tr, self, PAINSAW_RANGE, PAINSAW_WIDTH, PAINSAW_HEIGHT, &target );
 
-	if ( !traceEnt || !traceEnt->takedamage )
+	if ( !target || !target->takedamage )
 	{
 		return;
 	}
 
-	// send blood impact
-	if ( traceEnt->s.eType == ET_PLAYER || traceEnt->s.eType == ET_BUILDABLE )
-	{
-		tent = G_NewTempEntity( tr.endpos, EV_WEAPON_HIT_ENTITY );
-		tent->s.eventParm = DirToByte( tr.plane.normal );
-		tent->s.weapon = ent->s.weapon;
-		tent->s.generic1 = ent->s.generic1; //weaponMode
+	// not really a "ranged" weapon, but this is still the right call
+	SendRangedHitEvent( self, target, &tr );
 
-		// send victim
-		tent->s.otherEntityNum = traceEnt->s.number;
-	}
-	else
-	{
-		tent = G_NewTempEntity( tr.endpos, EV_WEAPON_HIT_ENVIRONMENT );
-		tent->s.eventParm = DirToByte( tr.plane.normal );
-		tent->s.weapon = ent->s.weapon;
-		tent->s.generic1 = ent->s.generic1; //weaponMode
-	}
-
-	G_Damage( traceEnt, ent, ent, forward, tr.endpos, PAINSAW_DAMAGE, DAMAGE_NO_KNOCKBACK, MOD_PAINSAW );
+	G_Damage( target, self, self, forward, tr.endpos, PAINSAW_DAMAGE, DAMAGE_NO_KNOCKBACK, MOD_PAINSAW );
 }
 
 /*
@@ -782,7 +729,7 @@ LUCIFER CANNON
 */
 
 static gentity_t *FireLcannonHelper( gentity_t *self, vec3_t start, vec3_t dir,
-                                            int damage, int radius, int speed )
+                                     int damage, int radius, int speed )
 {
 	// TODO: Tidy up this and lcannonFire
 
@@ -908,23 +855,23 @@ BUILD GUN
 ======================================================================
 */
 
-void G_CheckCkitRepair( gentity_t *ent )
+void G_CheckCkitRepair( gentity_t *self )
 {
 	vec3_t    viewOrigin, forward, end;
 	trace_t   tr;
 	gentity_t *traceEnt;
 
-	if ( ent->client->ps.weaponTime > 0 ||
-	     ent->client->ps.stats[ STAT_MISC ] > 0 )
+	if ( self->client->ps.weaponTime > 0 ||
+	     self->client->ps.stats[ STAT_MISC ] > 0 )
 	{
 		return;
 	}
 
-	BG_GetClientViewOrigin( &ent->client->ps, viewOrigin );
-	AngleVectors( ent->client->ps.viewangles, forward, NULL, NULL );
+	BG_GetClientViewOrigin( &self->client->ps, viewOrigin );
+	AngleVectors( self->client->ps.viewangles, forward, NULL, NULL );
 	VectorMA( viewOrigin, 100, forward, end );
 
-	trap_Trace( &tr, viewOrigin, NULL, NULL, end, ent->s.number, MASK_PLAYERSOLID );
+	trap_Trace( &tr, viewOrigin, NULL, NULL, end, self->s.number, MASK_PLAYERSOLID );
 	traceEnt = &g_entities[ tr.entityNum ];
 
 	if ( tr.fraction < 1.0f && traceEnt->spawned && traceEnt->health > 0 &&
@@ -941,64 +888,64 @@ void G_CheckCkitRepair( gentity_t *ent )
 			if ( traceEnt->health >= buildable->health )
 			{
 				traceEnt->health = buildable->health;
-				G_AddEvent( ent, EV_BUILD_REPAIRED, 0 );
+				G_AddEvent( self, EV_BUILD_REPAIRED, 0 );
 			}
 			else
 			{
-				G_AddEvent( ent, EV_BUILD_REPAIR, 0 );
+				G_AddEvent( self, EV_BUILD_REPAIR, 0 );
 			}
 
-			ent->client->ps.weaponTime += BG_Weapon( ent->client->ps.weapon )->repeatRate1;
+			self->client->ps.weaponTime += BG_Weapon( self->client->ps.weapon )->repeatRate1;
 		}
 	}
 }
 
-static void CancelBuild( gentity_t *ent )
+static void CancelBuild( gentity_t *self )
 {
 	// Cancel ghost buildable
-	if ( ent->client->ps.stats[ STAT_BUILDABLE ] != BA_NONE )
+	if ( self->client->ps.stats[ STAT_BUILDABLE ] != BA_NONE )
 	{
-		ent->client->ps.stats[ STAT_BUILDABLE ] = BA_NONE;
-		ent->client->ps.stats[ STAT_PREDICTION ] = 0;
+		self->client->ps.stats[ STAT_BUILDABLE ] = BA_NONE;
+		self->client->ps.stats[ STAT_PREDICTION ] = 0;
 		return;
 	}
 
-	if ( ent->client->ps.weapon == WP_ABUILD ||
-	     ent->client->ps.weapon == WP_ABUILD2 )
+	if ( self->client->ps.weapon == WP_ABUILD ||
+	     self->client->ps.weapon == WP_ABUILD2 )
 	{
-		FireMelee( ent, ABUILDER_CLAW_RANGE, ABUILDER_CLAW_WIDTH,
+		FireMelee( self, ABUILDER_CLAW_RANGE, ABUILDER_CLAW_WIDTH,
 		             ABUILDER_CLAW_WIDTH, ABUILDER_CLAW_DMG, MOD_ABUILDER_CLAW );
 	}
 }
 
-static void FireBuild( gentity_t *ent, dynMenu_t menu )
+static void FireBuild( gentity_t *self, dynMenu_t menu )
 {
-	buildable_t buildable = ( ent->client->ps.stats[ STAT_BUILDABLE ]
+	buildable_t buildable = ( self->client->ps.stats[ STAT_BUILDABLE ]
 	                          & ~SB_VALID_TOGGLEBIT );
 
 	if ( buildable > BA_NONE )
 	{
-		if ( ent->client->ps.stats[ STAT_MISC ] > 0 )
+		if ( self->client->ps.stats[ STAT_MISC ] > 0 )
 		{
-			G_AddEvent( ent, EV_BUILD_DELAY, ent->client->ps.clientNum );
+			G_AddEvent( self, EV_BUILD_DELAY, self->client->ps.clientNum );
 			return;
 		}
 
-		if ( G_BuildIfValid( ent, buildable ) )
+		if ( G_BuildIfValid( self, buildable ) )
 		{
 			if ( !g_cheats.integer )
 			{
-				ent->client->ps.stats[ STAT_MISC ] +=
+				self->client->ps.stats[ STAT_MISC ] +=
 				  BG_Buildable( buildable )->buildTime;
 			}
 
-			ent->client->ps.stats[ STAT_BUILDABLE ] = BA_NONE;
+			self->client->ps.stats[ STAT_BUILDABLE ] = BA_NONE;
 		}
 
 		return;
 	}
 
-	G_TriggerMenu( ent->client->ps.clientNum, menu );
+	G_TriggerMenu( self->client->ps.clientNum, menu );
 }
 
 static void FireSlowblob( gentity_t *self )
@@ -1014,22 +961,22 @@ LEVEL0
 ======================================================================
 */
 
-qboolean G_CheckVenomAttack( gentity_t *ent )
+qboolean G_CheckVenomAttack( gentity_t *self )
 {
 	trace_t   tr;
 	gentity_t *traceEnt;
 	int       damage = LEVEL0_BITE_DMG;
 
-	if ( ent->client->ps.weaponTime )
+	if ( self->client->ps.weaponTime )
 	{
 		return qfalse;
 	}
 
 	// Calculate muzzle point
-	AngleVectors( ent->client->ps.viewangles, forward, right, up );
-	G_CalcMuzzlePoint( ent, forward, right, up, muzzle );
+	AngleVectors( self->client->ps.viewangles, forward, right, up );
+	G_CalcMuzzlePoint( self, forward, right, up, muzzle );
 
-	G_WideTrace( &tr, ent, LEVEL0_BITE_RANGE, LEVEL0_BITE_WIDTH,
+	G_WideTrace( &tr, self, LEVEL0_BITE_RANGE, LEVEL0_BITE_WIDTH,
 	             LEVEL0_BITE_WIDTH, &traceEnt );
 
 	if ( traceEnt == NULL )
@@ -1075,10 +1022,10 @@ qboolean G_CheckVenomAttack( gentity_t *ent )
 	}
 
 	// send blood impact
-	WideBloodSpurt( ent, traceEnt, &tr );
+	SendMeleeHitEvent( self, traceEnt, &tr );
 
-	G_Damage( traceEnt, ent, ent, forward, tr.endpos, damage, DAMAGE_NO_KNOCKBACK, MOD_LEVEL0_BITE );
-	ent->client->ps.weaponTime += LEVEL0_BITE_REPEAT;
+	G_Damage( traceEnt, self, self, forward, tr.endpos, damage, DAMAGE_NO_KNOCKBACK, MOD_LEVEL0_BITE );
+	self->client->ps.weaponTime += LEVEL0_BITE_REPEAT;
 	return qtrue;
 }
 
@@ -1090,27 +1037,27 @@ LEVEL1
 ======================================================================
 */
 
-void G_CheckGrabAttack( gentity_t *ent )
+void G_CheckGrabAttack( gentity_t *self )
 {
 	trace_t   tr;
 	vec3_t    end, dir;
 	gentity_t *traceEnt;
 
 	// set aiming directions
-	AngleVectors( ent->client->ps.viewangles, forward, right, up );
+	AngleVectors( self->client->ps.viewangles, forward, right, up );
 
-	G_CalcMuzzlePoint( ent, forward, right, up, muzzle );
+	G_CalcMuzzlePoint( self, forward, right, up, muzzle );
 
-	if ( ent->client->ps.weapon == WP_ALEVEL1 )
+	if ( self->client->ps.weapon == WP_ALEVEL1 )
 	{
 		VectorMA( muzzle, LEVEL1_GRAB_RANGE, forward, end );
 	}
-	else if ( ent->client->ps.weapon == WP_ALEVEL1_UPG )
+	else if ( self->client->ps.weapon == WP_ALEVEL1_UPG )
 	{
 		VectorMA( muzzle, LEVEL1_GRAB_U_RANGE, forward, end );
 	}
 
-	trap_Trace( &tr, muzzle, NULL, NULL, end, ent->s.number, MASK_SHOT );
+	trap_Trace( &tr, muzzle, NULL, NULL, end, self->s.number, MASK_SHOT );
 
 	if ( tr.surfaceFlags & SURF_NOIMPACT )
 	{
@@ -1142,25 +1089,25 @@ void G_CheckGrabAttack( gentity_t *ent )
 			traceEnt->client->ps.stats[ STAT_VIEWLOCK ] = DirToByte( dir );
 
 			//event for client side grab effect
-			G_AddPredictableEvent( ent, EV_LEV1_GRAB, 0 );
+			G_AddPredictableEvent( self, EV_LEV1_GRAB, 0 );
 		}
 
 		traceEnt->client->ps.stats[ STAT_STATE ] |= SS_GRABBED;
 
-		if ( ent->client->ps.weapon == WP_ALEVEL1 )
+		if ( self->client->ps.weapon == WP_ALEVEL1 )
 		{
 			traceEnt->client->grabExpiryTime = level.time + LEVEL1_GRAB_TIME;
 
 			// Update the last combat time.
-			ent->client->lastCombatTime = level.time + LEVEL1_GRAB_TIME;
+			self->client->lastCombatTime = level.time + LEVEL1_GRAB_TIME;
 			traceEnt->client->lastCombatTime = level.time + LEVEL1_GRAB_TIME;
 		}
-		else if ( ent->client->ps.weapon == WP_ALEVEL1_UPG )
+		else if ( self->client->ps.weapon == WP_ALEVEL1_UPG )
 		{
 			traceEnt->client->grabExpiryTime = level.time + LEVEL1_GRAB_U_TIME;
 
 			// Update the last combat time.
-			ent->client->lastCombatTime = level.time + LEVEL1_GRAB_TIME;
+			self->client->lastCombatTime = level.time + LEVEL1_GRAB_TIME;
 			traceEnt->client->lastCombatTime = level.time + LEVEL1_GRAB_TIME;
 		}
 	}
@@ -1451,33 +1398,33 @@ LEVEL3
 ======================================================================
 */
 
-qboolean G_CheckPounceAttack( gentity_t *ent )
+qboolean G_CheckPounceAttack( gentity_t *self )
 {
 	trace_t   tr;
 	gentity_t *traceEnt;
 	int       damage, timeMax, pounceRange, payload;
 
-	if ( ent->client->pmext.pouncePayload <= 0 )
+	if ( self->client->pmext.pouncePayload <= 0 )
 	{
 		return qfalse;
 	}
 
 	// In case the goon lands on his target, he gets one shot after landing
-	payload = ent->client->pmext.pouncePayload;
+	payload = self->client->pmext.pouncePayload;
 
-	if ( !( ent->client->ps.pm_flags & PMF_CHARGE ) )
+	if ( !( self->client->ps.pm_flags & PMF_CHARGE ) )
 	{
-		ent->client->pmext.pouncePayload = 0;
+		self->client->pmext.pouncePayload = 0;
 	}
 
 	// Calculate muzzle point
-	AngleVectors( ent->client->ps.viewangles, forward, right, up );
-	G_CalcMuzzlePoint( ent, forward, right, up, muzzle );
+	AngleVectors( self->client->ps.viewangles, forward, right, up );
+	G_CalcMuzzlePoint( self, forward, right, up, muzzle );
 
 	// Trace from muzzle to see what we hit
-	pounceRange = ent->client->ps.weapon == WP_ALEVEL3 ? LEVEL3_POUNCE_RANGE :
+	pounceRange = self->client->ps.weapon == WP_ALEVEL3 ? LEVEL3_POUNCE_RANGE :
 	              LEVEL3_POUNCE_UPG_RANGE;
-	G_WideTrace( &tr, ent, pounceRange, LEVEL3_POUNCE_WIDTH,
+	G_WideTrace( &tr, self, pounceRange, LEVEL3_POUNCE_WIDTH,
 	             LEVEL3_POUNCE_WIDTH, &traceEnt );
 
 	if ( traceEnt == NULL )
@@ -1488,7 +1435,7 @@ qboolean G_CheckPounceAttack( gentity_t *ent )
 	// Send blood impact
 	if ( traceEnt->takedamage )
 	{
-		WideBloodSpurt( ent, traceEnt, &tr );
+		SendMeleeHitEvent( self, traceEnt, &tr );
 	}
 
 	if ( !traceEnt->takedamage )
@@ -1497,11 +1444,11 @@ qboolean G_CheckPounceAttack( gentity_t *ent )
 	}
 
 	// Deal damage
-	timeMax = ent->client->ps.weapon == WP_ALEVEL3 ? LEVEL3_POUNCE_TIME :
+	timeMax = self->client->ps.weapon == WP_ALEVEL3 ? LEVEL3_POUNCE_TIME :
 	          LEVEL3_POUNCE_TIME_UPG;
 	damage = payload * LEVEL3_POUNCE_DMG / timeMax;
-	ent->client->pmext.pouncePayload = 0;
-	G_Damage( traceEnt, ent, ent, forward, tr.endpos, damage,
+	self->client->pmext.pouncePayload = 0;
+	G_Damage( traceEnt, self, self, forward, tr.endpos, damage,
 	          DAMAGE_NO_LOCDAMAGE, MOD_LEVEL3_POUNCE );
 
 	return qtrue;
@@ -1520,20 +1467,20 @@ LEVEL4
 ======================================================================
 */
 
-void G_ChargeAttack( gentity_t *ent, gentity_t *victim )
+void G_ChargeAttack( gentity_t *self, gentity_t *victim )
 {
 	int    damage;
 	int    i;
 	vec3_t forward;
 
-	if ( ent->client->ps.stats[ STAT_MISC ] <= 0 ||
-	     !( ent->client->ps.stats[ STAT_STATE ] & SS_CHARGING ) ||
-	     ent->client->ps.weaponTime )
+	if ( self->client->ps.stats[ STAT_MISC ] <= 0 ||
+	     !( self->client->ps.stats[ STAT_STATE ] & SS_CHARGING ) ||
+	     self->client->ps.weaponTime )
 	{
 		return;
 	}
 
-	VectorSubtract( victim->s.origin, ent->s.origin, forward );
+	VectorSubtract( victim->s.origin, self->s.origin, forward );
 	VectorNormalize( forward );
 
 	if ( !victim->takedamage )
@@ -1548,26 +1495,26 @@ void G_ChargeAttack( gentity_t *ent, gentity_t *victim )
 	{
 		for ( i = 0; i < MAX_TRAMPLE_BUILDABLES_TRACKED; i++ )
 		{
-			if ( ent->client->trampleBuildablesHit[ i ] == victim - g_entities )
+			if ( self->client->trampleBuildablesHit[ i ] == victim - g_entities )
 			{
 				return;
 			}
 		}
 
-		ent->client->trampleBuildablesHit[
-		  ent->client->trampleBuildablesHitPos++ % MAX_TRAMPLE_BUILDABLES_TRACKED ] =
+		self->client->trampleBuildablesHit[
+		  self->client->trampleBuildablesHitPos++ % MAX_TRAMPLE_BUILDABLES_TRACKED ] =
 		    victim - g_entities;
 	}
 
-	WideBloodSpurt( ent, victim, NULL );
+	SendMeleeHitEvent( self, victim, NULL );
 
-	damage = LEVEL4_TRAMPLE_DMG * ent->client->ps.stats[ STAT_MISC ] /
+	damage = LEVEL4_TRAMPLE_DMG * self->client->ps.stats[ STAT_MISC ] /
 	         LEVEL4_TRAMPLE_DURATION;
 
-	G_Damage( victim, ent, ent, forward, victim->s.origin, damage,
+	G_Damage( victim, self, self, forward, victim->s.origin, damage,
 	          DAMAGE_NO_LOCDAMAGE, MOD_LEVEL4_TRAMPLE );
 
-	ent->client->ps.weaponTime += LEVEL4_TRAMPLE_REPEAT;
+	self->client->ps.weaponTime += LEVEL4_TRAMPLE_REPEAT;
 }
 
 /*
@@ -1578,19 +1525,19 @@ GENERIC
 ======================================================================
 */
 
-static INLINE meansOfDeath_t G_ModWeight( const gentity_t *ent )
+static INLINE meansOfDeath_t ModWeight( const gentity_t *self )
 {
-	return ent->client->pers.team == TEAM_HUMANS ? MOD_WEIGHT_H : MOD_WEIGHT_A;
+	return self->client->pers.team == TEAM_HUMANS ? MOD_WEIGHT_H : MOD_WEIGHT_A;
 }
 
-void G_ImpactAttack( gentity_t *attacker, gentity_t *victim )
+void G_ImpactAttack( gentity_t *self, gentity_t *victim )
 {
 	float  impactVelocity, impactEnergy;
 	vec3_t knockbackDir;
 	int    attackerMass, impactDamage;
 
 	// self must be a client
-	if ( !attacker->client )
+	if ( !self->client )
 	{
 		return;
 	}
@@ -1602,13 +1549,13 @@ void G_ImpactAttack( gentity_t *attacker, gentity_t *victim )
 	}
 
 	// don't do friendly fire
-	if ( OnSameTeam( attacker, victim ) )
+	if ( OnSameTeam( self, victim ) )
 	{
 		return;
 	}
 
 	// attacker must be above victim
-	if ( attacker->client->ps.origin[ 2 ] + attacker->r.mins[ 2 ] <
+	if ( self->client->ps.origin[ 2 ] + self->r.mins[ 2 ] <
 	     victim->s.origin[ 2 ] + victim->r.maxs[ 2 ] )
 	{
 		return;
@@ -1616,15 +1563,15 @@ void G_ImpactAttack( gentity_t *attacker, gentity_t *victim )
 
 	// allow the granger airlifting ritual
 	if ( victim->client && BG_UpgradeIsActive( UP_JETPACK, victim->client->ps.stats ) &&
-	     ( attacker->client->pers.classSelection == PCL_ALIEN_BUILDER0 ||
-	       attacker->client->pers.classSelection == PCL_ALIEN_BUILDER0_UPG ) )
+	     ( self->client->pers.classSelection == PCL_ALIEN_BUILDER0 ||
+	       self->client->pers.classSelection == PCL_ALIEN_BUILDER0_UPG ) )
 	{
 		return;
 	}
 
 	// calculate impact damage
-	attackerMass = BG_Class( attacker->client->pers.classSelection )->mass;
-	impactVelocity = fabs( attacker->client->pmext.fallImpactVelocity[ 2 ] ) * IMPACTDMG_QU_TO_METER; // in m/s
+	attackerMass = BG_Class( self->client->pers.classSelection )->mass;
+	impactVelocity = fabs( self->client->pmext.fallImpactVelocity[ 2 ] ) * IMPACTDMG_QU_TO_METER; // in m/s
 	impactEnergy = attackerMass * impactVelocity * impactVelocity; // in J
 	impactDamage = ( int )( impactEnergy * IMPACTDMG_JOULE_TO_DAMAGE );
 
@@ -1632,21 +1579,21 @@ void G_ImpactAttack( gentity_t *attacker, gentity_t *victim )
 	if ( impactDamage > 0 )
 	{
 		// calculate knockback direction
-		VectorSubtract( victim->s.origin, attacker->client->ps.origin, knockbackDir );
+		VectorSubtract( victim->s.origin, self->client->ps.origin, knockbackDir );
 		VectorNormalize( knockbackDir );
 
-		G_Damage( victim, attacker, attacker, knockbackDir, victim->s.origin, impactDamage,
-		          DAMAGE_NO_LOCDAMAGE, G_ModWeight( attacker ) );
+		G_Damage( victim, self, self, knockbackDir, victim->s.origin, impactDamage,
+		          DAMAGE_NO_LOCDAMAGE, ModWeight( self ) );
 	}
 }
 
-void G_WeightAttack( gentity_t *attacker, gentity_t *victim )
+void G_WeightAttack( gentity_t *self, gentity_t *victim )
 {
 	float  weightDPS;
 	int    attackerMass, victimMass, weightDamage;
 
 	// weigth damage is only dealt between clients
-	if ( !attacker->client || !victim->client )
+	if ( !self->client || !victim->client )
 	{
 		return;
 	}
@@ -1658,7 +1605,7 @@ void G_WeightAttack( gentity_t *attacker, gentity_t *victim )
 	}
 
 	// attacker must be above victim
-	if ( attacker->client->ps.origin[ 2 ] + attacker->r.mins[ 2 ] <
+	if ( self->client->ps.origin[ 2 ] + self->r.mins[ 2 ] <
 	     victim->s.origin[ 2 ] + victim->r.maxs[ 2 ] )
 	{
 		return;
@@ -1676,7 +1623,7 @@ void G_WeightAttack( gentity_t *attacker, gentity_t *victim )
 		return;
 	}
 
-	attackerMass = BG_Class( attacker->client->pers.classSelection )->mass;
+	attackerMass = BG_Class( self->client->pers.classSelection )->mass;
 	victimMass = BG_Class( victim->client->pers.classSelection )->mass;
 	weightDPS = WEIGHTDMG_DMG_MODIFIER * MAX( attackerMass - victimMass, 0 );
 
@@ -1686,8 +1633,8 @@ void G_WeightAttack( gentity_t *attacker, gentity_t *victim )
 
 		if ( weightDamage > 0 )
 		{
-			G_Damage( victim, attacker, attacker, NULL, victim->s.origin, weightDamage,
-					  DAMAGE_NO_LOCDAMAGE, G_ModWeight( attacker ) );
+			G_Damage( victim, self, self, NULL, victim->s.origin, weightDamage,
+					  DAMAGE_NO_LOCDAMAGE, ModWeight( self ) );
 		}
 	}
 
@@ -1701,39 +1648,39 @@ void G_WeightAttack( gentity_t *attacker, gentity_t *victim )
 Set muzzle location relative to pivoting eye.
 ===============
 */
-void G_CalcMuzzlePoint( gentity_t *ent, vec3_t forward, vec3_t right, vec3_t up, vec3_t muzzlePoint )
+void G_CalcMuzzlePoint( gentity_t *self, vec3_t forward, vec3_t right, vec3_t up, vec3_t muzzlePoint )
 {
 	vec3_t normal;
 
-	VectorCopy( ent->client->ps.origin, muzzlePoint );
-	BG_GetClientNormal( &ent->client->ps, normal );
-	VectorMA( muzzlePoint, ent->client->ps.viewheight, normal, muzzlePoint );
+	VectorCopy( self->client->ps.origin, muzzlePoint );
+	BG_GetClientNormal( &self->client->ps, normal );
+	VectorMA( muzzlePoint, self->client->ps.viewheight, normal, muzzlePoint );
 	VectorMA( muzzlePoint, 1, forward, muzzlePoint );
 	// snap to integer coordinates for more efficient network bandwidth usage
 	SnapVector( muzzlePoint );
 }
 
-void G_FireWeapon3( gentity_t *ent )
+void G_FireWeapon3( gentity_t *self )
 {
-	if ( ent->client )
+	if ( self->client )
 	{
-		AngleVectors( ent->client->ps.viewangles, forward, right, up );
-		G_CalcMuzzlePoint( ent, forward, right, up, muzzle );
+		AngleVectors( self->client->ps.viewangles, forward, right, up );
+		G_CalcMuzzlePoint( self, forward, right, up, muzzle );
 	}
 	else
 	{
-		AngleVectors( ent->s.angles2, forward, right, up );
-		VectorCopy( ent->s.pos.trBase, muzzle );
+		AngleVectors( self->s.angles2, forward, right, up );
+		VectorCopy( self->s.pos.trBase, muzzle );
 	}
 
-	switch ( ent->s.weapon )
+	switch ( self->s.weapon )
 	{
 		case WP_ALEVEL3_UPG:
-			FireBounceball( ent );
+			FireBounceball( self );
 			break;
 
 		case WP_ABUILD2:
-			FireSlowblob( ent );
+			FireSlowblob( self );
 			break;
 
 		default:
@@ -1741,37 +1688,37 @@ void G_FireWeapon3( gentity_t *ent )
 	}
 }
 
-void G_FireWeapon2( gentity_t *ent )
+void G_FireWeapon2( gentity_t *self )
 {
-	if ( ent->client )
+	if ( self->client )
 	{
-		AngleVectors( ent->client->ps.viewangles, forward, right, up );
-		G_CalcMuzzlePoint( ent, forward, right, up, muzzle );
+		AngleVectors( self->client->ps.viewangles, forward, right, up );
+		G_CalcMuzzlePoint( self, forward, right, up, muzzle );
 	}
 	else
 	{
-		AngleVectors( ent->s.angles2, forward, right, up );
-		VectorCopy( ent->s.pos.trBase, muzzle );
+		AngleVectors( self->s.angles2, forward, right, up );
+		VectorCopy( self->s.pos.trBase, muzzle );
 	}
 
-	switch ( ent->s.weapon )
+	switch ( self->s.weapon )
 	{
 		case WP_ALEVEL1_UPG:
-			FirePoisonCloud( ent );
+			FirePoisonCloud( self );
 			break;
 
 		case WP_LUCIFER_CANNON:
-			FireLcannon( ent, qtrue );
+			FireLcannon( self, qtrue );
 			break;
 
 		case WP_ALEVEL2_UPG:
-			FireAreaZap( ent );
+			FireAreaZap( self );
 			break;
 
 		case WP_ABUILD:
 		case WP_ABUILD2:
 		case WP_HBUILD:
-			CancelBuild( ent );
+			CancelBuild( self );
 			break;
 
 		default:
@@ -1779,123 +1726,123 @@ void G_FireWeapon2( gentity_t *ent )
 	}
 }
 
-void G_FireWeapon( gentity_t *ent )
+void G_FireWeapon( gentity_t *self )
 {
-	if ( ent->client )
+	if ( self->client )
 	{
-		AngleVectors( ent->client->ps.viewangles, forward, right, up );
-		G_CalcMuzzlePoint( ent, forward, right, up, muzzle );
+		AngleVectors( self->client->ps.viewangles, forward, right, up );
+		G_CalcMuzzlePoint( self, forward, right, up, muzzle );
 	}
 	else
 	{
-		AngleVectors( ent->turretAim, forward, right, up );
-		VectorCopy( ent->s.pos.trBase, muzzle );
+		AngleVectors( self->turretAim, forward, right, up );
+		VectorCopy( self->s.pos.trBase, muzzle );
 	}
 
-	switch ( ent->s.weapon )
+	switch ( self->s.weapon )
 	{
 		case WP_ALEVEL1:
-			FireMelee( ent, LEVEL1_CLAW_RANGE, LEVEL1_CLAW_WIDTH, LEVEL1_CLAW_WIDTH,
+			FireMelee( self, LEVEL1_CLAW_RANGE, LEVEL1_CLAW_WIDTH, LEVEL1_CLAW_WIDTH,
 			           LEVEL1_CLAW_DMG, MOD_LEVEL1_CLAW );
 			break;
 
 		case WP_ALEVEL1_UPG:
-			FireMelee( ent, LEVEL1_CLAW_U_RANGE, LEVEL1_CLAW_WIDTH, LEVEL1_CLAW_WIDTH,
+			FireMelee( self, LEVEL1_CLAW_U_RANGE, LEVEL1_CLAW_WIDTH, LEVEL1_CLAW_WIDTH,
 			           LEVEL1_CLAW_DMG, MOD_LEVEL1_CLAW );
 			break;
 
 		case WP_ALEVEL3:
-			FireMelee( ent, LEVEL3_CLAW_RANGE, LEVEL3_CLAW_WIDTH, LEVEL3_CLAW_WIDTH,
+			FireMelee( self, LEVEL3_CLAW_RANGE, LEVEL3_CLAW_WIDTH, LEVEL3_CLAW_WIDTH,
 			           LEVEL3_CLAW_DMG, MOD_LEVEL3_CLAW );
 			break;
 
 		case WP_ALEVEL3_UPG:
-			FireMelee( ent, LEVEL3_CLAW_UPG_RANGE, LEVEL3_CLAW_WIDTH, LEVEL3_CLAW_WIDTH,
+			FireMelee( self, LEVEL3_CLAW_UPG_RANGE, LEVEL3_CLAW_WIDTH, LEVEL3_CLAW_WIDTH,
 			           LEVEL3_CLAW_DMG, MOD_LEVEL3_CLAW );
 			break;
 
 		case WP_ALEVEL2:
-			FireMelee( ent, LEVEL2_CLAW_RANGE, LEVEL2_CLAW_WIDTH, LEVEL2_CLAW_WIDTH,
+			FireMelee( self, LEVEL2_CLAW_RANGE, LEVEL2_CLAW_WIDTH, LEVEL2_CLAW_WIDTH,
 			           LEVEL2_CLAW_DMG, MOD_LEVEL2_CLAW );
 			break;
 
 		case WP_ALEVEL2_UPG:
-			FireMelee( ent, LEVEL2_CLAW_U_RANGE, LEVEL2_CLAW_WIDTH, LEVEL2_CLAW_WIDTH,
+			FireMelee( self, LEVEL2_CLAW_U_RANGE, LEVEL2_CLAW_WIDTH, LEVEL2_CLAW_WIDTH,
 			           LEVEL2_CLAW_DMG, MOD_LEVEL2_CLAW );
 			break;
 
 		case WP_ALEVEL4:
-			FireMelee( ent, LEVEL4_CLAW_RANGE, LEVEL4_CLAW_WIDTH, LEVEL4_CLAW_HEIGHT,
+			FireMelee( self, LEVEL4_CLAW_RANGE, LEVEL4_CLAW_WIDTH, LEVEL4_CLAW_HEIGHT,
 			           LEVEL4_CLAW_DMG, MOD_LEVEL4_CLAW );
 			break;
 
 		case WP_BLASTER:
-			FireBlaster( ent );
+			FireBlaster( self );
 			break;
 
 		case WP_MACHINEGUN:
-			FireBullet( ent, RIFLE_SPREAD, RIFLE_DMG, MOD_MACHINEGUN );
+			FireBullet( self, RIFLE_SPREAD, RIFLE_DMG, MOD_MACHINEGUN );
 			break;
 
 		case WP_SHOTGUN:
-			FireShotgun( ent );
+			FireShotgun( self );
 			break;
 
 		case WP_CHAINGUN:
-			FireBullet( ent, CHAINGUN_SPREAD, CHAINGUN_DMG, MOD_CHAINGUN );
+			FireBullet( self, CHAINGUN_SPREAD, CHAINGUN_DMG, MOD_CHAINGUN );
 			break;
 
 		case WP_FLAMER:
-			FireFlamer( ent );
+			FireFlamer( self );
 			break;
 
 		case WP_PULSE_RIFLE:
-			FirePrifle( ent );
+			FirePrifle( self );
 			break;
 
 		case WP_MASS_DRIVER:
-			FireMassdriver( ent );
+			FireMassdriver( self );
 			break;
 
 		case WP_LUCIFER_CANNON:
-			FireLcannon( ent, qfalse );
+			FireLcannon( self, qfalse );
 			break;
 
 		case WP_LAS_GUN:
-			FireLasgun( ent );
+			FireLasgun( self );
 			break;
 
 		case WP_PAIN_SAW:
-			FirePainsaw( ent );
+			FirePainsaw( self );
 			break;
 
 		case WP_GRENADE:
-			FireGrenade( ent );
+			FireGrenade( self );
 			break;
 
 		case WP_LOCKBLOB_LAUNCHER:
-			FireLockblob( ent );
+			FireLockblob( self );
 			break;
 
 		case WP_HIVE:
-			FireHive( ent );
+			FireHive( self );
 			break;
 
 		case WP_TESLAGEN:
-			FireTesla( ent );
+			FireTesla( self );
 			break;
 
 		case WP_MGTURRET:
-			FireBullet( ent, MGTURRET_SPREAD, MGTURRET_DMG, MOD_MGTURRET );
+			FireBullet( self, MGTURRET_SPREAD, MGTURRET_DMG, MOD_MGTURRET );
 			break;
 
 		case WP_ABUILD:
 		case WP_ABUILD2:
-			FireBuild( ent, MN_A_BUILD );
+			FireBuild( self, MN_A_BUILD );
 			break;
 
 		case WP_HBUILD:
-			FireBuild( ent, MN_H_BUILD );
+			FireBuild( self, MN_H_BUILD );
 			break;
 
 		default:
