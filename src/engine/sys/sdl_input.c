@@ -1649,7 +1649,7 @@ void IN_Init( void *windowData )
 
 	appState = SDL_GetWindowFlags( window );
 	Cvar_SetValue( "com_unfocused", !( appState & SDL_WINDOW_INPUT_FOCUS ) );
-	Cvar_SetValue( "com_minimized", !( appState & SDL_WINDOW_MINIMIZED ) );
+	Cvar_SetValue( "com_minimized", ( appState & SDL_WINDOW_MINIMIZED ) );
 
 	IN_InitJoystick();
 	Com_DPrintf( "------------------------------------\n" );
