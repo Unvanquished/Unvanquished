@@ -385,7 +385,6 @@ namespace Cvar {
 
                 const std::string& value = args.Argv(nameIndex + 1);
 
-                //TODO no flags in the argument
                 ::Cvar::SetValue(name, value);
                 ::Cvar::AddFlags(name, flags);
             }

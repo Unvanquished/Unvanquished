@@ -258,9 +258,3 @@ void Cvar_Update(vmCvar_t *vmCvar) {
 	vmCvar->value = cv->value;
 	vmCvar->integer = cv->integer;
 }
-
-namespace CVar {
-    std::vector<std::string> CompleteName(const std::string& prefix) {
-        return Cvar::CompleteName(prefix);
-    }
-}

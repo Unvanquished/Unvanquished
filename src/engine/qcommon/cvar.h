@@ -121,15 +121,6 @@ void Cvar_LatchedVariableStringBuffer(const char *var_name, char *buffer,
 void Cvar_Reset(const char *var_name);
 
 /**
- * called by Cmd_ExecuteString when Cmd_Argv(0) doesn't match a known
- * command.  Returns true if the command was a variable reference that
- * was handled. (print or change)
- */
-namespace Cmd {
-    class Args;
-}
-
-/**
  * writes lines containing "set variable value" for all variables
  * with the archive flag set to true.
  */
@@ -153,9 +144,5 @@ extern int cvar_modifiedFlags;
 #ifndef DEDICATED
 extern qboolean bindingsModified;
 #endif
-
-namespace CVar {
-    std::vector<std::string> CompleteName(const std::string& prefix);
-}
 
 #endif /* CVAR_H_ */

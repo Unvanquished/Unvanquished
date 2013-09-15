@@ -58,7 +58,7 @@ namespace Cmd {
                 int argNum = args.PosToArg(pos);
 
                 if (argNum == 1) {
-                    return CVar::CompleteName(args.ArgPrefix(pos));
+                    return Cvar::CompleteName(args.ArgPrefix(pos));
                 }
 
                 return {};
@@ -205,7 +205,7 @@ namespace Cmd {
                 int argNum = args.PosToArg(pos);
 
                 if (argNum == 1) {
-                    return CVar::CompleteName(args.ArgPrefix(pos));
+                    return Cvar::CompleteName(args.ArgPrefix(pos));
                 }
 
                 return {};
@@ -235,7 +235,7 @@ namespace Cmd {
                 int argNum = args.PosToArg(pos);
 
                 if (argNum >= 1) {
-                    return CVar::CompleteName(args.ArgPrefix(pos));
+                    return Cvar::CompleteName(args.ArgPrefix(pos));
                 }
 
                 return {};
@@ -335,7 +335,7 @@ namespace Cmd {
                 int argNum = args.PosToArg(pos);
 
                 if (argNum == 1) {
-                    return CVar::CompleteName(args.ArgPrefix(pos));
+                    return Cvar::CompleteName(args.ArgPrefix(pos));
                 }
 
                 return {};
@@ -420,7 +420,7 @@ namespace Cmd {
                 int argNum = args.PosToArg(pos);
 
                 if (argNum == 4 or argNum == 5) {
-                    return CVar::CompleteName(args.ArgPrefix(pos));
+                    return Cvar::CompleteName(args.ArgPrefix(pos));
                 }
 
                 return {};
@@ -485,7 +485,7 @@ namespace Cmd {
                 int argNum = args.PosToArg(pos);
 
                 if (argNum == 1 or argNum == 2) {
-                    return CVar::CompleteName(args.ArgPrefix(pos));
+                    return Cvar::CompleteName(args.ArgPrefix(pos));
                 }
 
                 return {};
@@ -543,7 +543,7 @@ namespace Cmd {
                 int argNum = args.PosToArg(pos);
 
                 if (argNum == 1) {
-                    return CVar::CompleteName(args.ArgPrefix(pos));
+                    return Cvar::CompleteName(args.ArgPrefix(pos));
                 }
 
                 return {};
