@@ -1603,10 +1603,52 @@ static void PM_FlyMove( void )
 PM_AlienFlyMove
 ===================
 */
+
+#define SHRIKE_THROTTLE 10.0f
+#define SHRIKE_LIFT_SPEED 4.0f
+#define SHRIKE_TURN_RATE 1.0f
 static void PM_AlienFlyMove( void )
 {
 
-	PM_FlyMove();
+	int    i;
+	vec3_t wishvel = { 0 };
+	float  wishspeed;
+	vec3_t wishdir;
+	float  scale;
+
+	PM_Friction();
+
+	// Handle throttle
+	if ( pm->cmd.forwardmove )
+	{
+		VectorCopy( pm->ps->velocity, wishvel );
+		VectorNormalize( wishvel );
+		VectorScale( wishvel, ( pm->cmd.forwardmove > 0 ) ? SHRIKE_THROTTLE : -SHRIKE_THROTTLE, wishvel );
+	}
+
+	if ( pm->cmd.upmove )
+	{
+		wishvel[ 2 ] += ( pm->cmd.upmove > 0 ) ? SHRIKE_LIFT_SPEED : -SHRIKE_LIFT_SPEED;
+	}
+
+	VectorAdd( wishvel, pm->ps->velocity, pm->ps->velocity );
+
+	// Handle turns
+	if ( pm->cmd.rightmove )
+	{
+		int sign = ( pm->cmd.rightmove > 0 ) ? 1 : -1;
+		static const vec3_t z = { 0, 0, 1 };
+
+		RotatePointAroundVector( pm->ps->velocity, z, pm->ps->velocity, sign * SHRIKE_TURN_RATE );
+	}
+
+
+// 	VectorCopy( wishvel, wishdir );
+// 	wishspeed = VectorNormalize( wishdir );
+
+// 	PM_Accelerate( wishdir, wishspeed, pm_flyaccelerate );
+
+	PM_StepSlideMove( qfalse, qfalse );
 }
 
 /*
