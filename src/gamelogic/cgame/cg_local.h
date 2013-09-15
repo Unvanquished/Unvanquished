@@ -1812,14 +1812,12 @@ void CG_InitWeapons( void );
 void CG_RegisterWeapon( int weaponNum );
 
 void CG_HandleFireWeapon( centity_t *cent, weaponMode_t weaponMode );
-void CG_HandleWeaponHitWall( weapon_t weapon, weaponMode_t weaponMode, vec3_t origin, vec3_t dir,
-                             impactSound_t soundType, int charge );
-void CG_HandleMissileHitWall( entityState_t *es, vec3_t origin, vec3_t dir, impactSound_t soundType, int charge );
-void CG_HandleWeaponHitEntity( weapon_t weaponNum, weaponMode_t weaponMode, vec3_t origin, vec3_t dir, int victimNum,
-                               int attackerNum, int charge );
-void CG_HandleMissileHitEntity( entityState_t *es, vec3_t origin, vec3_t dir, int entityNum, int charge );
-void CG_HandleBullet( vec3_t origin, int sourceEntityNum, vec3_t normal, qboolean flesh, int fleshEntityNum );
 void CG_HandleFireShotgun( entityState_t *es );
+
+void CG_HandleWeaponHitEntity( entityState_t *es, vec3_t origin );
+void CG_HandleWeaponHitWall( entityState_t *es, vec3_t origin );
+void CG_HandleMissileHitEntity( entityState_t *es, vec3_t origin );
+void CG_HandleMissileHitWall( entityState_t *es, vec3_t origin );
 
 void CG_AddViewWeapon( playerState_t *ps );
 void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent );

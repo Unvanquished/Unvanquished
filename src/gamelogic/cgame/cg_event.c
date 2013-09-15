@@ -1145,29 +1145,21 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			break;
 
 		case EV_WEAPON_HIT_ENTITY:
-			ByteToDir( es->eventParm, dir );
-			CG_HandleWeaponHitEntity( es->weapon, es->generic1, position, dir, es->otherEntityNum, es->otherEntityNum2,
-			                          es->torsoAnim );
+			CG_HandleWeaponHitEntity( es, position );
 			break;
 
 		case EV_WEAPON_HIT_ENVIRONMENT:
-			ByteToDir( es->eventParm, dir );
-			CG_HandleWeaponHitWall( es->weapon, es->generic1, position, dir, IMPACTSOUND_DEFAULT, es->torsoAnim );
+			CG_HandleWeaponHitWall( es, position );
 			break;
 
 		case EV_MISSILE_HIT_ENTITY:
-			ByteToDir( es->eventParm, dir );
-			CG_HandleMissileHitEntity( es, position, dir, es->otherEntityNum, es->torsoAnim );
+			CG_HandleMissileHitEntity( es, position );
 			break;
 
+		// currently there is no support for metal sounds
 		case EV_MISSILE_HIT_ENVIRONMENT:
-			ByteToDir( es->eventParm, dir );
-			CG_HandleMissileHitWall( es, position, dir, IMPACTSOUND_DEFAULT, es->torsoAnim );
-			break;
-
 		case EV_MISSILE_HIT_METAL:
-			ByteToDir( es->eventParm, dir );
-			CG_HandleMissileHitWall( es, position, dir, IMPACTSOUND_METAL,   es->torsoAnim );
+			CG_HandleMissileHitWall( es, position );
 			break;
 
 		case EV_SHOTGUN:

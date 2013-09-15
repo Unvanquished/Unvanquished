@@ -2250,11 +2250,6 @@ TODO: Put this into cg_event_weapon.c?
 ===================================================================================================
 */
 
-/*
-======================
-CalcMuzzlePoint
-======================
-*/
 static qboolean CalcMuzzlePoint( int entityNum, vec3_t muzzle )
 {
 	vec3_t    forward;
@@ -2296,27 +2291,64 @@ static qboolean CalcMuzzlePoint( int entityNum, vec3_t muzzle )
 	return qtrue;
 }
 
-/*
-=================
-DrawEntityHitEffect
-
-Impact effect on players and buildables.
-=================
-*/
-static void DrawEntityHitEffect( vec3_t origin, vec3_t normal, int entityNum )
+static void PlayHitSound( vec3_t origin, const sfxHandle_t *impactSound )
 {
-	team_t           team;
-	qhandle_t        psHandle;
+	int c;
+
+	for ( c = 0; c < 4; c++ )
+	{
+		if ( !impactSound[ c ] )
+		{
+			break;
+		}
+	}
+
+	if ( c > 0 )
+	{
+		c = rand() % c;
+
+		if ( impactSound[ c ] )
+		{
+			trap_S_StartSound( origin, ENTITYNUM_WORLD, CHAN_AUTO, impactSound[ c ] );
+		}
+	}
+}
+
+static void DrawGenericHitEffect( vec3_t origin, vec3_t normal, qhandle_t psHandle, int psCharge )
+{
 	particleSystem_t *ps;
 
-	if ( !cg_blood.integer )
+	if ( !psHandle )
 	{
 		return;
 	}
 
-	if ( cg_entities[ entityNum ].currentState.eType == ET_PLAYER )
+	ps = CG_SpawnNewParticleSystem( psHandle );
+
+	if ( !CG_IsParticleSystemValid( &ps ) )
 	{
-		team = cgs.clientinfo[ entityNum ].team;
+		return;
+	}
+
+	CG_SetAttachmentPoint( &ps->attachment, origin );
+	CG_SetParticleSystemNormal( ps, normal );
+	CG_AttachToPoint( &ps->attachment );
+
+	ps->charge = psCharge;
+}
+
+static void DrawEntityHitEffect( vec3_t origin, vec3_t normal, int targetNum )
+{
+	team_t           team;
+	qhandle_t        psHandle;
+	particleSystem_t *ps;
+	centity_t        *target;
+
+	target = &cg_entities[ targetNum ];
+
+	if ( cg_blood.integer && target->currentState.eType == ET_PLAYER )
+	{
+		team = cgs.clientinfo[ targetNum ].team;
 
 		if ( team == TEAM_ALIENS )
 		{
@@ -2331,10 +2363,9 @@ static void DrawEntityHitEffect( vec3_t origin, vec3_t normal, int entityNum )
 			return;
 		}
 	}
-	else if ( cg_entities[ entityNum ].currentState.eType == ET_BUILDABLE )
+	else if ( target->currentState.eType == ET_BUILDABLE )
 	{
-		//ew
-		team = BG_Buildable( cg_entities[ entityNum ].currentState.modelindex )->team;
+		team = BG_Buildable( target->currentState.modelindex )->team;
 
 		if ( team == TEAM_ALIENS )
 		{
@@ -2351,7 +2382,6 @@ static void DrawEntityHitEffect( vec3_t origin, vec3_t normal, int entityNum )
 	}
 	else
 	{
-		Com_Printf( S_WARNING "CG_Bleed: Called with an entityNum that references neither a player nor a buildable.\n" );
 		return;
 	}
 
@@ -2360,18 +2390,13 @@ static void DrawEntityHitEffect( vec3_t origin, vec3_t normal, int entityNum )
 	if ( CG_IsParticleSystemValid( &ps ) )
 	{
 		CG_SetAttachmentPoint( &ps->attachment, origin );
-		CG_SetAttachmentCent( &ps->attachment, &cg_entities[ entityNum ] );
+		CG_SetAttachmentCent( &ps->attachment, &cg_entities[ targetNum ] );
 		CG_AttachToPoint( &ps->attachment );
 
 		CG_SetParticleSystemNormal( ps, normal );
 	}
 }
 
-/*
-===============
-DrawTracer
-===============
-*/
 static void DrawTracer( vec3_t source, vec3_t dest )
 {
 	vec3_t     forward, right;
@@ -2453,8 +2478,6 @@ static void DrawTracer( vec3_t source, vec3_t dest )
 
 /*
 ================
-ShotgunPattern
-
 Performs the same traces the server did to locate local hit effects.
 Keep this in sync with ShotgunPattern in g_weapon.c!
 ================
@@ -2466,6 +2489,7 @@ static void ShotgunPattern( vec3_t origin, vec3_t origin2, int seed, int otherEn
 	vec3_t  end;
 	vec3_t  forward, right, up;
 	trace_t tr;
+	entityState_t dummy;
 
 	// derive the right and up vectors from the forward vector, because
 	// the client won't have any other information
@@ -2490,30 +2514,25 @@ static void ShotgunPattern( vec3_t origin, vec3_t origin2, int seed, int otherEn
 
 		if ( !( tr.surfaceFlags & SURF_NOIMPACT ) )
 		{
+			dummy.weapon          = WP_SHOTGUN;
+			dummy.generic1        = WPM_PRIMARY;
+			dummy.eventParm       = DirToByte( tr.plane.normal );
+			dummy.otherEntityNum  = tr.entityNum;
+			dummy.otherEntityNum2 = 0; // TODO: Set attackerNum
+
 			if ( cg_entities[ tr.entityNum ].currentState.eType == ET_PLAYER ||
 			     cg_entities[ tr.entityNum ].currentState.eType == ET_BUILDABLE )
 			{
-				CG_HandleWeaponHitEntity( WP_SHOTGUN, WPM_PRIMARY, tr.endpos, tr.plane.normal, tr.entityNum, 0, 0 );
-			}
-			else if ( tr.surfaceFlags & SURF_METAL )
-			{
-				CG_HandleWeaponHitWall( WP_SHOTGUN, WPM_PRIMARY, tr.endpos, tr.plane.normal, IMPACTSOUND_METAL, 0 );
+				CG_HandleWeaponHitEntity( &dummy, tr.endpos );
 			}
 			else
 			{
-				CG_HandleWeaponHitWall( WP_SHOTGUN, WPM_PRIMARY, tr.endpos, tr.plane.normal, IMPACTSOUND_DEFAULT, 0 );
+				CG_HandleWeaponHitWall( &dummy, tr.endpos );
 			}
 		}
 	}
 }
 
-/*
-================
-CG_HandleFireWeapon
-
-Caused by EV_FIRE_WEAPON* event
-================
-*/
 void CG_HandleFireWeapon( centity_t *cent, weaponMode_t weaponMode )
 {
 	entityState_t *es;
@@ -2575,13 +2594,6 @@ void CG_HandleFireWeapon( centity_t *cent, weaponMode_t weaponMode )
 	}
 }
 
-/*
-==============
-CG_HandleFireShotgun
-
-Caused by EV_SHOTGUN event
-==============
-*/
 void CG_HandleFireShotgun( entityState_t *es )
 {
 	vec3_t v;
@@ -2594,300 +2606,180 @@ void CG_HandleFireShotgun( entityState_t *es )
 	ShotgunPattern( es->pos.trBase, es->origin2, es->eventParm, es->otherEntityNum );
 }
 
-/*
-=================
-CG_HandleWeaponHitEntit
-
-Caused by both local tracing and weapon hit events
-TODO: Use attackerNum to draw tracers (port it from the deprecated CG_Bullet).
-=================
-*/
-void CG_HandleWeaponHitEntity( weapon_t weaponNum, weaponMode_t weaponMode,
-                               vec3_t origin, vec3_t dir, int victimNum, int attackerNum, int charge )
+void CG_HandleWeaponHitEntity( entityState_t *es, vec3_t origin )
 {
-	vec3_t       normal;
-	weaponInfo_t *weapon = &cg_weapons[ weaponNum ];
+	weapon_t         weapon;
+	weaponMode_t     weaponMode;
+	int              victimNum, attackerNum, psCharge;
+	vec3_t           normal, tracerStart;
+	weaponInfoMode_t *wim;
+	centity_t        *victim;
 
-	VectorCopy( dir, normal );
-	VectorInverse( normal );
+	// retrieve data from event
+	weapon      = es->weapon;
+	weaponMode  = es->generic1;
+	victimNum   = es->otherEntityNum;
+	attackerNum = es->otherEntityNum2;
+	psCharge    = es->torsoAnim;
+	ByteToDir( es->eventParm, normal );
 
+	if ( weaponMode <= WPM_NONE || weaponMode >= WPM_NUM_WEAPONMODES )
+	{
+		weaponMode = WPM_PRIMARY;
+	}
+
+	wim    = &cg_weapons[ weapon ].wim[ weaponMode ];
+	victim = &cg_entities[ victimNum ];
+
+	// generic hit effect
+	if ( wim->alwaysImpact )
+	{
+		DrawGenericHitEffect( origin, normal, wim->impactParticleSystem, psCharge );
+	}
+
+	// entity hit effect
 	DrawEntityHitEffect( origin, normal, victimNum );
 
-	if ( weaponMode <= WPM_NONE || weaponMode >= WPM_NUM_WEAPONMODES )
+	// sound
+	if ( victim->currentState.eType == ET_PLAYER )
 	{
-		weaponMode = WPM_PRIMARY;
+		PlayHitSound( origin, wim->impactFleshSound );
 	}
-
-	if ( weapon->wim[ weaponMode ].alwaysImpact )
+	else if ( victim->currentState.eType == ET_BUILDABLE &&
+			  BG_Buildable( victim->currentState.modelindex )->team == TEAM_ALIENS )
 	{
-		int sound;
-
-		if ( cg_entities[ victimNum ].currentState.eType == ET_PLAYER )
-		{
-			// Players
-			sound = IMPACTSOUND_FLESH;
-		}
-		else if ( cg_entities[ victimNum ].currentState.eType == ET_BUILDABLE &&
-		          BG_Buildable( cg_entities[ victimNum ].currentState.modelindex )->team == TEAM_ALIENS )
-		{
-			// Alien buildables
-			sound = IMPACTSOUND_FLESH;
-		}
-		else
-		{
-			sound = IMPACTSOUND_DEFAULT;
-		}
-
-		CG_HandleWeaponHitWall( weaponNum, weaponMode, origin, dir, sound, charge );
-	}
-}
-
-/*
-=================
-CG_HandleWeaponHitWall
-
-Caused by both local tracing and weapon hit events
-TODO: Receive attackerNum and use it to draw tracers (port it from the deprecated CG_Bullet).
-=================
-*/
-void CG_HandleWeaponHitWall( weapon_t weaponNum, weaponMode_t weaponMode, vec3_t origin, vec3_t dir,
-                             impactSound_t soundType, int charge )
-{
-	qhandle_t    mark = 0;
-	qhandle_t    ps = 0;
-	int          c;
-	float        radius = 1.0f;
-	weaponInfo_t *weapon = &cg_weapons[ weaponNum ];
-
-	if ( weaponMode <= WPM_NONE || weaponMode >= WPM_NUM_WEAPONMODES )
-	{
-		weaponMode = WPM_PRIMARY;
-	}
-
-	mark = weapon->wim[ weaponMode ].impactMark;
-	radius = weapon->wim[ weaponMode ].impactMarkSize;
-	ps = weapon->wim[ weaponMode ].impactParticleSystem;
-
-	if ( soundType == IMPACTSOUND_FLESH )
-	{
-		//flesh sound
-		for ( c = 0; c < 4; c++ )
-		{
-			if ( !weapon->wim[ weaponMode ].impactFleshSound[ c ] )
-			{
-				break;
-			}
-		}
-
-		if ( c > 0 )
-		{
-			c = rand() % c;
-
-			if ( weapon->wim[ weaponMode ].impactFleshSound[ c ] )
-			{
-				trap_S_StartSound( origin, ENTITYNUM_WORLD, CHAN_AUTO, weapon->wim[ weaponMode ].impactFleshSound[ c ] );
-			}
-		}
+		PlayHitSound( origin, wim->impactFleshSound );
 	}
 	else
 	{
-		//generic sound
-		for ( c = 0; c < 4; c++ )
-		{
-			if ( !weapon->wim[ weaponMode ].impactSound[ c ] )
-			{
-				break;
-			}
-		}
-
-		if ( c > 0 )
-		{
-			c = rand() % c;
-
-			if ( weapon->wim[ weaponMode ].impactSound[ c ] )
-			{
-				trap_S_StartSound( origin, ENTITYNUM_WORLD, CHAN_AUTO, weapon->wim[ weaponMode ].impactSound[ c ] );
-			}
-		}
+		PlayHitSound( origin, wim->impactSound );
 	}
 
-	//create impact particle system
-	if ( ps )
+	// tracer
+	if ( attackerNum >= 0 && cg_tracerChance.value > 0 )
 	{
-		particleSystem_t *partSystem = CG_SpawnNewParticleSystem( ps );
-
-		if ( CG_IsParticleSystemValid( &partSystem ) )
+		if ( CalcMuzzlePoint( attackerNum, tracerStart ) )
 		{
-			CG_SetAttachmentPoint( &partSystem->attachment, origin );
-			CG_SetParticleSystemNormal( partSystem, dir );
-			CG_AttachToPoint( &partSystem->attachment );
-			partSystem->charge = charge;
-		}
-	}
-
-	//
-	// impact mark
-	//
-	if ( radius > 0.0f )
-	{
-		CG_ImpactMark( mark, origin, dir, random() * 360, 1, 1, 1, 1, qfalse, radius, qfalse );
-	}
-}
-
-/*
-=================
-CG_HandleMissileHitEntity
-
-Caused by a misile impact event.
-=================
-*/
-void CG_HandleMissileHitEntity( entityState_t *es, vec3_t origin, vec3_t dir, int entityNum, int charge )
-{
-	missileAttributes_t *ma;
-	vec3_t              normal;
-
-	VectorCopy( dir, normal );
-	VectorInverse( normal );
-
-	DrawEntityHitEffect( origin, normal, entityNum );
-
-	if ( ma->alwaysImpact )
-	{
-		int sound;
-
-		if ( cg_entities[ entityNum ].currentState.eType == ET_PLAYER )
-		{
-			// Players
-			sound = IMPACTSOUND_FLESH;
-		}
-		else if ( cg_entities[ entityNum ].currentState.eType == ET_BUILDABLE &&
-		          BG_Buildable( cg_entities[ entityNum ].currentState.modelindex )->team == TEAM_ALIENS )
-		{
-			// Alien buildables
-			sound = IMPACTSOUND_FLESH;
-		}
-		else
-		{
-			sound = IMPACTSOUND_DEFAULT;
-		}
-
-		CG_HandleMissileHitWall( es, origin, dir, sound, charge );
-	}
-}
-
-/*
-=================
-CG_HandleMissileHitWall
-
-Caused by a misile impact event.
-=================
-*/
-void CG_HandleMissileHitWall( entityState_t *es, vec3_t origin, vec3_t dir, impactSound_t soundType, int charge )
-{
-	const missileAttributes_t *ma;
-	particleSystem_t          *ps;
-	int                       soundIndex;
-
-	ma = BG_Missile( es->modelindex );
-
-	if ( soundType == IMPACTSOUND_FLESH )
-	{
-		// flesh sound
-		for ( soundIndex = 0; soundIndex < 4; soundIndex++ )
-		{
-			if ( !ma->impactFleshSound[ soundIndex ] )
-			{
-				break;
-			}
-		}
-
-		if ( soundIndex > 0 )
-		{
-			soundIndex = rand() % soundIndex;
-
-			if ( ma->impactFleshSound[ soundIndex ] )
-			{
-				trap_S_StartSound( origin, ENTITYNUM_WORLD, CHAN_AUTO, ma->impactFleshSound[ soundIndex ] );
-			}
-		}
-	}
-	else
-	{
-		// generic sound
-		for ( soundIndex = 0; soundIndex < 4; soundIndex++ )
-		{
-			if ( !ma->impactSound[ soundIndex ] )
-			{
-				break;
-			}
-		}
-
-		if ( soundIndex > 0 )
-		{
-			soundIndex = rand() % soundIndex;
-
-			if ( ma->impactSound[ soundIndex ] )
-			{
-				trap_S_StartSound( origin, ENTITYNUM_WORLD, CHAN_AUTO, ma->impactSound[ soundIndex ] );
-			}
-		}
-	}
-
-	// create impact particle system
-	if ( ma->impactParticleSystem )
-	{
-		ps = CG_SpawnNewParticleSystem( ma->impactParticleSystem );
-
-		if ( CG_IsParticleSystemValid( &ps ) )
-		{
-			CG_SetAttachmentPoint( &ps->attachment, origin );
-			CG_SetParticleSystemNormal( ps, dir );
-			CG_AttachToPoint( &ps->attachment );
-			ps->charge = charge;
-		}
-	}
-
-	// impact mark
-	if ( ma->impactMark && ma->impactMarkSize > 0.0f )
-	{
-		CG_ImpactMark( ma->impactMark, origin, dir, random() * 360, 1, 1, 1, 1, qfalse,
-		               ma->impactMarkSize, qfalse );
-	}
-}
-
-/*
-======================
-CG_HandleBullet
-
-DEPRECATED
-
-TODO: Port tracer code to CG_HandleWeaponHit* and remove.
-======================
-*/
-void CG_HandleBullet( vec3_t end, int sourceEntityNum, vec3_t normal, qboolean flesh, int fleshEntityNum )
-{
-	vec3_t start;
-
-	// if the shooter is currently valid, calc a source point and possibly do trail effects
-	if ( sourceEntityNum >= 0 && cg_tracerChance.value > 0 )
-	{
-		if ( CalcMuzzlePoint( sourceEntityNum, start ) )
-		{
-			// draw a tracer
 			if ( random() < cg_tracerChance.value )
 			{
-				DrawTracer( start, end );
+				DrawTracer( tracerStart, origin );
 			}
 		}
 	}
+}
 
-	// impact splash and mark
-	if ( flesh )
+void CG_HandleWeaponHitWall( entityState_t *es, vec3_t origin )
+{
+	weapon_t         weapon;
+	weaponMode_t     weaponMode;
+	int              attackerNum, psCharge;
+	vec3_t           normal, tracerStart;
+	weaponInfoMode_t *wim;
+
+	// retrieve data from event
+	weapon      = es->weapon;
+	weaponMode  = es->generic1;
+	//victimNum   = es->otherEntityNum;
+	attackerNum = es->otherEntityNum2;
+	psCharge    = es->torsoAnim;
+	ByteToDir( es->eventParm, normal );
+
+	if ( weaponMode <= WPM_NONE || weaponMode >= WPM_NUM_WEAPONMODES )
 	{
-		DrawEntityHitEffect( end, normal, fleshEntityNum );
+		weaponMode = WPM_PRIMARY;
+	}
+
+	wim = &cg_weapons[ weapon ].wim[ weaponMode ];
+
+	// generic hit effect
+	DrawGenericHitEffect( origin, normal, wim->impactParticleSystem, psCharge );
+
+	// sound
+	PlayHitSound( origin, wim->impactSound );
+
+	// mark
+	if ( wim->impactMark && wim->impactMarkSize > 0.0f )
+	{
+		CG_ImpactMark( wim->impactMark, origin, normal, random() * 360, 1, 1, 1, 1, qfalse, wim->impactMarkSize, qfalse );
+	}
+
+	// tracer
+	if ( attackerNum >= 0 && cg_tracerChance.value > 0 )
+	{
+		if ( CalcMuzzlePoint( attackerNum, tracerStart ) )
+		{
+			if ( random() < cg_tracerChance.value )
+			{
+				DrawTracer( tracerStart, origin );
+			}
+		}
+	}
+}
+
+void CG_HandleMissileHitEntity( entityState_t *es, vec3_t origin )
+{
+	const missileAttributes_t *ma;
+	int                       victimNum, psCharge;
+	vec3_t                    normal;
+	centity_t                 *victim;
+
+	// retrieve data from event
+	ma          = BG_Missile( es->modelindex );
+	victimNum   = es->otherEntityNum;
+	//attackerNum = es->otherEntityNum2;
+	psCharge    = es->torsoAnim;
+	ByteToDir( es->eventParm, normal );
+
+	victim      = &cg_entities[ victimNum ];
+
+	// generic hit effect
+	if ( ma->alwaysImpact )
+	{
+		DrawGenericHitEffect( origin, normal, ma->impactParticleSystem, psCharge );
+	}
+
+	// entity hit effect
+	DrawEntityHitEffect( origin, normal, victimNum );
+
+	// sound
+	if ( victim->currentState.eType == ET_PLAYER )
+	{
+		PlayHitSound( origin, ma->impactFleshSound );
+	}
+	else if ( victim->currentState.eType == ET_BUILDABLE &&
+			  BG_Buildable( victim->currentState.modelindex )->team == TEAM_ALIENS )
+	{
+		PlayHitSound( origin, ma->impactFleshSound );
 	}
 	else
 	{
-		CG_HandleWeaponHitWall( WP_MACHINEGUN, WPM_PRIMARY, end, normal, IMPACTSOUND_DEFAULT, 0 );
+		PlayHitSound( origin, ma->impactSound );
+	}
+}
+
+void CG_HandleMissileHitWall( entityState_t *es, vec3_t origin )
+{
+	const missileAttributes_t *ma;
+	int                       psCharge;
+	vec3_t                    normal;
+
+	// retrieve data from event
+	ma          = BG_Missile( es->modelindex );
+	//victimNum   = es->otherEntityNum;
+	//attackerNum = es->otherEntityNum2;
+	psCharge    = es->torsoAnim;
+	ByteToDir( es->eventParm, normal );
+
+	// generic hit effect
+	DrawGenericHitEffect( origin, normal, ma->impactParticleSystem, psCharge );
+
+	// sound
+	PlayHitSound( origin, ma->impactSound );
+
+	// mark
+	if ( ma->impactMark && ma->impactMarkSize > 0.0f )
+	{
+		CG_ImpactMark( ma->impactMark, origin, normal, random() * 360, 1, 1, 1, 1, qfalse,
+		               ma->impactMarkSize, qfalse );
 	}
 }
