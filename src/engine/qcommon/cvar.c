@@ -128,7 +128,7 @@ The flags will be or'ed in if the variable exists.
 ============
 */
 cvar_t *Cvar_Get(const char* name, const char* value, int flags) {
-    Cvar::Register(nullptr, name, "a cvar created through the C API", flags, value);
+    Cvar::Register(nullptr, name, "created through the C API", flags, value);
     return Cvar_FindVar(name);
 }
 

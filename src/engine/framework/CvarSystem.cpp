@@ -124,7 +124,7 @@ namespace Cvar {
                 cvarRecord_t* var = cvars[name];
 
                 if (args.Argc() < 2) {
-                    Com_Printf(_("\"%s\" is \"%s^7\" default: \"%s^7\"\n"), name.c_str(), var->value.c_str(), var->resetValue.c_str());
+                    Com_Printf(_("\"%s\" is \"%s^7\" default: \"%s^7\" %s\n"), name.c_str(), var->value.c_str(), var->resetValue.c_str(), var->description.c_str());
                 } else {
                     SetValue(name, args.Argv(1));
                 }
@@ -441,7 +441,6 @@ namespace Cvar {
     };
     static ResetCmd ResetCmdRegistration;
 
-    //TODO: print the description
     class ListCvars: public Cmd::StaticCmd {
         public:
             ListCvars(): Cmd::StaticCmd("listCvars", Cmd::BASE, N_("lists variables")) {
@@ -463,21 +462,34 @@ namespace Cvar {
                 }
 
                 std::vector<cvarRecord_t*> matches;
+
                 std::vector<std::string> matchesNames;
                 unsigned long maxNameLength = 0;
+
+                std::vector<std::string> matchesValues;
+                unsigned long maxValueLength = 0;
 
                 //Find all the matching cvars
                 for (auto& record : cvars) {
                     if (Q_stristr(record.first.c_str(), match.c_str())) {
                         matchesNames.push_back(record.first);
+
                         matches.push_back(record.second);
+                        matchesValues.push_back(Cmd::Escape(record.second->value, true));
+
+                        //TODO: the raw parameter is not handled, need a function to escape carets
                         maxNameLength = std::max(maxNameLength, record.first.length());
+                        maxValueLength = std::max(maxValueLength, matchesValues.back().length());
                     }
                 }
+
+                //Do not pad descriptions too much
+                maxValueLength = std::min(maxValueLength, 20UL);
 
                 //Print the matches, keeping the flags and descriptions aligned
                 for (unsigned i = 0; i < matches.size(); i++) {
                     const std::string& name = matchesNames[i];
+                    const std::string& value = matchesValues[i];
                     cvarRecord_t* var = matches[i];
 
                     std::string filler = std::string(maxNameLength - name.length(), ' ');
@@ -496,8 +508,14 @@ namespace Cvar {
 
                     Com_Printf("%s ", flags.c_str());
 
-                    //TODO: the raw parameter is not handled, need a function to escape carets
-                    Com_Printf("%s\n", Cmd::Escape(var->value, true).c_str());
+                    int padding = maxValueLength - value.length();
+                    if (padding > 0) {
+                        filler = std::string(maxValueLength - value.length(), ' ');
+                    } else {
+                        filler = "";
+                    }
+
+                    Com_Printf("%s%s %s\n", value.c_str(), filler.c_str(), var->description.c_str());
                 }
 
                 Com_Printf("%zu cvars\n", matches.size());
