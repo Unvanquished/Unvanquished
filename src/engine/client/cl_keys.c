@@ -731,6 +731,8 @@ void Field_CharEvent( field_t *edit, const char *s )
 		return;
 	}
 
+	len = strlen( edit->buffer );
+
 	width = Q_UTF8_Width( s );
 	offset = Field_CursorToOffset( edit );
 
