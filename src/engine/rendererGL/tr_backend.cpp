@@ -3875,7 +3875,7 @@ void RB_FXAA( void )
 		return;
 	}
 
-	if ( !r_FXAA->integer )
+	if ( !r_FXAA->integer || !gl_fxaaShader )
 	{
 		return;
 	}
