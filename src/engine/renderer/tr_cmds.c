@@ -849,7 +849,7 @@ void RE_EndFrame( int *frontEndMsec, int *backEndMsec )
 		return;
 	}
 
-	cmd = R_GetCommandBuffer( sizeof( *cmd ) );
+	cmd = (swapBuffersCommand_t*) R_GetCommandBuffer( sizeof( *cmd ) );
 
 	if ( !cmd )
 	{
