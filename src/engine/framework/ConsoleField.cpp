@@ -85,7 +85,7 @@ namespace Console {
 
         int index = 0;
         for (index = commandStarts.size(); index --> 0;) {
-            if (commandStarts[index] < GetCursorPos()) {
+            if (commandStarts[index] <= GetCursorPos()) {
                 break;
             }
         }
