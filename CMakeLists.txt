@@ -166,7 +166,7 @@ endif()
 
 set( GPP_DIR ${MOUNT_DIR}/gamelogic )
 set( LIB_DIR ${MOUNT_DIR}/libs ) # LIB_DIR is also defined in Visual_Studio32/64.cmake
-set( SDL_DIR ${LIB_DIR}/libsdl )
+set( SDL_DIR ${LIB_DIR}/libsdl2 )
 set( JPEG_DIR ${LIB_DIR}/jpeg )
 set( GLEW_DIR ${LIB_DIR}/glew )
 set( WEBP_DIR ${LIB_DIR}/libwebp )
@@ -259,8 +259,12 @@ include_directories( "${OBJ_DIR}" )
 
 # Import CMakeLists.txt for internal libraries
 if( USE_INTERNAL_SDL )
-  add_subdirectory( ${SDL_DIR} ${OBJ_DIR}/libsdl )
-  set( SDL_LIBRARY INTERNAL_SDL INTERNAL_SDLMain CACHE STRING "SDL library" FORCE )
+  set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}/Release/${GAMELIB_OUTPUT_DIR}" )
+  set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_BINARY_DIR}/Debug/${GAMELIB_OUTPUT_DIR}" )
+  set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL "${CMAKE_BINARY_DIR}/MinSizeRel/${GAMELIB_OUTPUT_DIR}" )
+  set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO "${CMAKE_BINARY_DIR}/RelWithDebInfo/${GAMELIB_OUTPUT_DIR}" )
+  add_subdirectory( ${SDL_DIR} ${OBJ_DIR}/libsdl2 )
+  set( SDL_LIBRARY SDL2 SDL2main CACHE STRING "SDL library" FORCE )
   set( SDL_INCLUDE_DIR ${SDL_DIR}/include CACHE STRING "SDL include directory" FORCE )
 endif()
 

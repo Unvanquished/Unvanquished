@@ -288,7 +288,7 @@ typedef struct
 	void ( *Sys_GLimpInit )( void );
 
 	// input event handling
-	void ( *IN_Init )( void );
+	void ( *IN_Init )( void *windowData );
 	void ( *IN_Shutdown )( void );
 	void ( *IN_Restart )( void );
 } refimport_t;

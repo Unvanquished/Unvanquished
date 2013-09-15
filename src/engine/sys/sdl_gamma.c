@@ -30,6 +30,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #	include <Windows.h>
 #endif
 
+extern SDL_Window *window;
+
 /*
 =================
 GLimp_SetGamma
@@ -94,5 +96,5 @@ void GLimp_SetGamma( unsigned char red[ 256 ], unsigned char green[ 256 ], unsig
 		}
 	}
 
-	SDL_SetGammaRamp( table[ 0 ], table[ 1 ], table[ 2 ] );
+	SDL_SetWindowGammaRamp( window, table[ 0 ], table[ 1 ], table[ 2 ] );
 }

@@ -542,7 +542,25 @@ void Field_KeyDownEvent( field_t *edit, int key )
 			}
 
 			break;
+		case K_BACKSPACE:
+			{
+				if ( edit->cursor )
+				{
+					int posFrom, posTo;
 
+					posFrom = Field_CursorToOffset( edit );
+					--edit->cursor;
+					posTo = Field_CursorToOffset( edit );
+
+					memmove( edit->buffer + posTo, edit->buffer + posFrom, len + 1 - posFrom );
+
+					if ( edit->cursor < edit->scroll )
+					{
+						edit->scroll--;
+					}
+				}
+			}
+			break;
 		case K_RIGHTARROW:
 			if ( keys[ K_CTRL ].down )
 			{
@@ -594,6 +612,7 @@ void Field_KeyDownEvent( field_t *edit, int key )
 			{
 		case K_HOME:
 				edit->cursor = 0;
+				edit->scroll = 0;
 			}
 
 			break;
@@ -602,7 +621,8 @@ void Field_KeyDownEvent( field_t *edit, int key )
 			if ( keys[ K_CTRL ].down )
 			{
 		case K_END:
-				edit->cursor = len;
+				edit->cursor = Field_OffsetToCursor( edit, len );
+				edit->scroll = edit->cursor - edit->widthInChars;
 			}
 
 			break;
@@ -637,7 +657,36 @@ void Field_KeyDownEvent( field_t *edit, int key )
 				memcpy( p + width, tmp, s - p );
 				edit->cursor += 2;
 			}
+		case 'v':
+			if ( keys[ K_CTRL ].down )
+			{
+				Field_Paste( edit, SELECTION_CLIPBOARD );
+			}
+			break;
+		case 'd':
+			if ( keys[ K_CTRL ].down )
+			{
+				int posTo = Field_CursorToOffset( edit );
 
+				if ( edit->buffer[ posTo ] )
+				{
+					int posFrom = posTo + Q_UTF8_Width( edit->buffer + posTo );
+					memmove( edit->buffer + posTo, edit->buffer + posFrom, len + 1 - posFrom );
+				}
+			}
+			break;
+		case 'c':
+		case 'u':
+			if ( keys[ K_CTRL ].down )
+			{
+				Field_Clear( edit );
+			}
+			break;
+		case 'k':
+			if ( keys[ K_CTRL ].down )
+			{
+				edit->buffer[ Field_CursorToOffset( edit ) ] = '\0';
+			}
 			break;
 	}
 
@@ -668,77 +717,8 @@ void Field_CharEvent( field_t *edit, const char *s )
 {
 	int len, width, oldWidth, offset;
 
-	if ( *s == 'v' - 'a' + 1 ) // ctrl-v is paste
-	{
-		Field_Paste( edit, SELECTION_CLIPBOARD );
-		return;
-	}
-
-	if ( *s == 'c' - 'a' + 1 ||
-	     *s == 'u' - 'a' + 1 ) // ctrl-c or ctrl-u clear the field
-	{
-		Field_Clear( edit );
-		return;
-	}
-
-	if ( *s == 'k' - 'a' + 1 ) // ctrl-k clears to the end of the field
-	{
-		edit->buffer[ Field_CursorToOffset( edit ) ] = '\0';
-		return;
-	}
-
-	len = strlen( edit->buffer );
-
-	if ( *s == 'h' - 'a' + 1 ) // ctrl-h is backspace
-	{
-		if ( edit->cursor )
-		{
-			int posFrom, posTo;
-
-			posFrom = Field_CursorToOffset( edit );
-			--edit->cursor;
-			posTo = Field_CursorToOffset( edit );
-
-			memmove( edit->buffer + posTo, edit->buffer + posFrom, len + 1 - posFrom );
-
-			if ( edit->cursor < edit->scroll )
-			{
-				edit->scroll--;
-			}
-		}
-
-		return;
-	}
-
-	if ( *s == 'd' - 'a' + 1 ) // ctrl-d is delete forward
-	{
-		int posTo = Field_CursorToOffset( edit );
-
-		if ( edit->buffer[ posTo ] )
-		{
-			int posFrom = posTo + Q_UTF8_Width( edit->buffer + posTo );
-			memmove( edit->buffer + posTo, edit->buffer + posFrom, len + 1 - posFrom );
-		}
-
-		return;
-	}
-
-	if ( *s == 'a' - 'a' + 1 ) // ctrl-a is home
-	{
-		edit->cursor = 0;
-		edit->scroll = 0;
-		return;
-	}
-
-	if ( *s == 'e' - 'a' + 1 ) // ctrl-e is end
-	{
-		edit->cursor = Field_OffsetToCursor( edit, len );
-		edit->scroll = edit->cursor - edit->widthInChars;
-		return;
-	}
-
 	//
-	// ignore any other non printable chars
+	// ignore any non printable chars
 	//
 	if ( (unsigned char)*s < 32 || (unsigned char)*s == 0x7f )
 	{
