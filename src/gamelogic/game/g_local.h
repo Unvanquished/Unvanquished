@@ -1056,18 +1056,10 @@ void     G_InitDamageLocations( void );
 //
 // g_missile.c
 //
+void      G_ExplodeMissile( gentity_t *ent );
 void      G_RunMissile( gentity_t *ent );
-
-gentity_t *fire_flamer( gentity_t *self, vec3_t start, vec3_t aimdir );
-gentity_t *fire_blaster( gentity_t *self, vec3_t start, vec3_t dir );
-gentity_t *fire_pulseRifle( gentity_t *self, vec3_t start, vec3_t dir );
-gentity_t *fire_luciferCannon( gentity_t *self, vec3_t start, vec3_t dir, int damage, int radius, int speed );
-gentity_t *fire_lockblob( gentity_t *self, vec3_t start, vec3_t dir );
-gentity_t *fire_slowBlob( gentity_t *self, vec3_t start, vec3_t dir );
-gentity_t *fire_bounceBall( gentity_t *self, vec3_t start, vec3_t dir );
-gentity_t *fire_hive( gentity_t *self, vec3_t start, vec3_t dir );
-gentity_t *launch_grenade( gentity_t *self, vec3_t start, vec3_t dir );
-
+gentity_t *G_SpawnMissile( missile_t missile, gentity_t *parent, vec3_t start, vec3_t dir,
+                           gentity_t *target, void ( *think )( gentity_t *self ), int nextthink );
 
 //
 // g_weapon.c
@@ -1089,17 +1081,20 @@ typedef struct zap_s
 
 void     G_ForceWeaponChange( gentity_t *ent, weapon_t weapon );
 void     G_GiveClientMaxAmmo( gentity_t *ent, qboolean buyingEnergyAmmo );
-void     CalcMuzzlePoint( gentity_t *ent, vec3_t forward, vec3_t right, vec3_t up, vec3_t muzzlePoint );
-void     SnapVectorTowards( vec3_t v, vec3_t to );
-qboolean CheckVenomAttack( gentity_t *ent );
-void     CheckGrabAttack( gentity_t *ent );
-qboolean CheckPounceAttack( gentity_t *ent );
-void     CheckCkitRepair( gentity_t *ent );
-void     G_ChargeAttack( gentity_t *ent, gentity_t *victim );
-void     G_ImpactAttack(gentity_t *attacker, gentity_t *victim );
-void     G_WeightAttack(gentity_t *attacker, gentity_t *victim );
+void     G_CalcMuzzlePoint( gentity_t *self, vec3_t forward, vec3_t right, vec3_t up, vec3_t muzzlePoint );
+void     G_SnapVectorTowards( vec3_t v, vec3_t to );
+qboolean G_CheckVenomAttack( gentity_t *self );
+void     G_CheckGrabAttack( gentity_t *self );
+qboolean G_CheckPounceAttack( gentity_t *self );
+void     G_CheckCkitRepair( gentity_t *self );
+void     G_ChargeAttack( gentity_t *self, gentity_t *victim );
+void     G_ImpactAttack( gentity_t *self, gentity_t *victim );
+void     G_WeightAttack( gentity_t *self, gentity_t *victim );
 void     G_UpdateZaps( int msec );
 void     G_ClearPlayerZapEffects( gentity_t *player );
+void     G_FireWeapon( gentity_t *self );
+void     G_FireWeapon2( gentity_t *self );
+void     G_FireWeapon3( gentity_t *self );
 
 //
 // g_client.c
@@ -1127,13 +1122,6 @@ qboolean  G_IsUnnamed( const char *name );
 qboolean ConsoleCommand( void );
 void     G_RegisterCommands( void );
 void     G_UnregisterCommands( void );
-
-//
-// g_weapon.c
-//
-void FireWeapon( gentity_t *ent );
-void FireWeapon2( gentity_t *ent );
-void FireWeapon3( gentity_t *ent );
 
 //
 // g_main.c

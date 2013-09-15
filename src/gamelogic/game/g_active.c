@@ -1113,15 +1113,15 @@ void ClientEvents( gentity_t *ent, int oldEventSequence )
 				break;
 
 			case EV_FIRE_WEAPON:
-				FireWeapon( ent );
+				G_FireWeapon( ent );
 				break;
 
 			case EV_FIRE_WEAPON2:
-				FireWeapon2( ent );
+				G_FireWeapon2( ent );
 				break;
 
 			case EV_FIRE_WEAPON3:
-				FireWeapon3( ent );
+				G_FireWeapon3( ent );
 				break;
 
 			case EV_NOAMMO:
@@ -1961,7 +1961,7 @@ void ClientThink_real( gentity_t *ent )
 
 		//M-M-M-M-MONSTER HACK
 		ent->s.weapon = WP_GRENADE;
-		FireWeapon( ent );
+		G_FireWeapon( ent );
 		ent->s.weapon = lastWeapon;
 	}
 
@@ -2065,7 +2065,7 @@ void ClientThink_real( gentity_t *ent )
 	{
 		case WP_ALEVEL0:
 		case WP_ALEVEL0_UPG:
-			if ( !CheckVenomAttack( ent ) )
+			if ( !G_CheckVenomAttack( ent ) )
 			{
 				client->ps.weaponstate = WEAPON_READY;
 			}
@@ -2079,12 +2079,12 @@ void ClientThink_real( gentity_t *ent )
 
 		case WP_ALEVEL1:
 		case WP_ALEVEL1_UPG:
-			CheckGrabAttack( ent );
+			G_CheckGrabAttack( ent );
 			break;
 
 		case WP_ALEVEL3:
 		case WP_ALEVEL3_UPG:
-			if ( !CheckPounceAttack( ent ) )
+			if ( !G_CheckPounceAttack( ent ) )
 			{
 				client->ps.weaponstate = WEAPON_READY;
 			}
@@ -2108,7 +2108,7 @@ void ClientThink_real( gentity_t *ent )
 			break;
 
 		case WP_HBUILD:
-			CheckCkitRepair( ent );
+			G_CheckCkitRepair( ent );
 			break;
 
 		default:
