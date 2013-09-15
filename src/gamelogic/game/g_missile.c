@@ -23,15 +23,23 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "g_local.h"
 
+// -----------
+// definitions
+// -----------
+
 #define MISSILE_PRESTEP_TIME 50
 
-/*
-================
-G_BounceMissile
+typedef enum missileTimePowerMod_e {
+	MTPR_LINEAR_DECREASE,
+	MTPR_LINEAR_INCREASE,
+	MTPR_EXPONENTIAL_DECREASE // endTime is half time period, endMod is ignored
+} missileTimePowerMod_t;
 
-================
-*/
-void G_BounceMissile( gentity_t *ent, trace_t *trace )
+// -------------
+// local methods
+// -------------
+
+static void BounceMissile( gentity_t *ent, trace_t *trace )
 {
 	vec3_t velocity;
 	float  dot;
@@ -60,20 +68,7 @@ void G_BounceMissile( gentity_t *ent, trace_t *trace )
 	ent->s.pos.trTime = level.time;
 }
 
-/*
-================
-MissileTimePowerReduce
-
-Helper for MissileTimeDmgMod and MissileTimeSplashDmgMod
-================
-*/
-typedef enum {
-	MTPR_LINEAR_DECREASE,
-	MTPR_LINEAR_INCREASE,
-	MTPR_EXPONENTIAL_DECREASE // endTime is half time period, endMod is ignored
-} missileTimePowerReduce_t;
-
-static float MissileTimePowerMod( gentity_t *self, missileTimePowerReduce_t type,
+static float MissileTimePowerMod( gentity_t *self, missileTimePowerMod_t type,
                                   float startMod, float endMod, int startTime, int endTime )
 {
 	int   lifeTime, affectedTime;
@@ -115,11 +110,6 @@ static float MissileTimePowerMod( gentity_t *self, missileTimePowerReduce_t type
 	}
 }
 
-/*
-================
-MissileTimeDmgMod
-================
-*/
 static float MissileTimeDmgMod( gentity_t *ent )
 {
 	if ( !strcmp( ent->classname, "lcannon" ) )
@@ -141,11 +131,6 @@ static float MissileTimeDmgMod( gentity_t *ent )
 	return 1.0f;
 }
 
-/*
-================
-MissileTimeSplashDmgMod
-================
-*/
 static float MissileTimeSplashDmgMod( gentity_t *ent )
 {
 	if ( !strcmp( ent->classname, "flame" ) )
@@ -157,54 +142,10 @@ static float MissileTimeSplashDmgMod( gentity_t *ent )
 	return 1.0f;
 }
 
-/*
-================
-ExplodeMissile
-
-Explode a missile without an impact.
-================
-*/
-static void ExplodeMissile( gentity_t *ent )
-{
-	vec3_t dir;
-	vec3_t origin;
-
-	BG_EvaluateTrajectory( &ent->s.pos, level.time, origin );
-	SnapVector( origin );
-	G_SetOrigin( ent, origin );
-
-	// we don't have a valid direction, so just point straight up
-	dir[ 0 ] = dir[ 1 ] = 0;
-	dir[ 2 ] = 1;
-
-	ent->s.eType = ET_GENERAL;
-
-	if ( ent->s.weapon != WP_LOCKBLOB_LAUNCHER &&
-	     ent->s.weapon != WP_FLAMER )
-	{
-		G_AddEvent( ent, EV_MISSILE_HIT_ENVIRONMENT, DirToByte( dir ) );
-	}
-
-	ent->freeAfterEvent = qtrue;
-
-	// splash damage
-	if ( ent->splashDamage )
-	{
-		G_RadiusDamage( ent->r.currentOrigin, ent->parent,
-		                ent->splashDamage * MissileTimeSplashDmgMod( ent ),
-		                ent->splashRadius, ent, ent->splashMethodOfDeath );
-	}
-
-	trap_LinkEntity( ent );
-}
-
-/*
-================
-MissileImpact
-================
-*/
 static void MissileImpact( gentity_t *ent, trace_t *trace )
 {
+	// TODO: Move special treatment for certain missiles somewhere else
+
 	gentity_t *other, *attacker, *neighbor;
 	qboolean  doDamage = qtrue, returnAfterDamage = qfalse;
 	vec3_t    dir;
@@ -216,7 +157,7 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 	if ( !other->takedamage &&
 	     ( ent->s.eFlags & ( EF_BOUNCE | EF_BOUNCE_HALF ) ) )
 	{
-		G_BounceMissile( ent, trace );
+		BounceMissile( ent, trace );
 
 		//only play a sound if requested
 		if ( !( ent->s.eFlags & EF_NO_BOUNCE_SOUND ) )
@@ -230,7 +171,7 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 	if ( !strcmp( ent->classname, "grenade" ) )
 	{
 		//grenade doesn't explode on impact
-		G_BounceMissile( ent, trace );
+		BounceMissile( ent, trace );
 
 		//only play a sound if requested
 		if ( !( ent->s.eFlags & EF_NO_BOUNCE_SOUND ) )
@@ -337,7 +278,7 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 			//prevent collision with the client when returning
 			ent->r.ownerNum = other->s.number;
 
-			ent->think = ExplodeMissile;
+			ent->think = G_ExplodeMissile;
 			ent->nextthink = level.time + FRAMETIME;
 
 			//only damage humans
@@ -396,7 +337,7 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 	// change over to a general entity right at the point of impact
 	ent->s.eType = ET_GENERAL;
 
-	SnapVectorTowards( trace->endpos, ent->s.pos.trBase );  // save net bandwidth
+	G_SnapVectorTowards( trace->endpos, ent->s.pos.trBase );  // save net bandwidth
 
 	G_SetOrigin( ent, trace->endpos );
 
@@ -411,11 +352,44 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 	trap_LinkEntity( ent );
 }
 
-/*
-================
-G_RunMissile
-================
-*/
+// ------------
+// GAME methods
+// ------------
+
+void G_ExplodeMissile( gentity_t *ent )
+{
+	vec3_t dir;
+	vec3_t origin;
+
+	BG_EvaluateTrajectory( &ent->s.pos, level.time, origin );
+	SnapVector( origin );
+	G_SetOrigin( ent, origin );
+
+	// we don't have a valid direction, so just point straight up
+	dir[ 0 ] = dir[ 1 ] = 0;
+	dir[ 2 ] = 1;
+
+	ent->s.eType = ET_GENERAL;
+
+	if ( ent->s.weapon != WP_LOCKBLOB_LAUNCHER &&
+	     ent->s.weapon != WP_FLAMER )
+	{
+		G_AddEvent( ent, EV_MISSILE_HIT_ENVIRONMENT, DirToByte( dir ) );
+	}
+
+	ent->freeAfterEvent = qtrue;
+
+	// splash damage
+	if ( ent->splashDamage )
+	{
+		G_RadiusDamage( ent->r.currentOrigin, ent->parent,
+		                ent->splashDamage * MissileTimeSplashDmgMod( ent ),
+		                ent->splashRadius, ent, ent->splashMethodOfDeath );
+	}
+
+	trap_LinkEntity( ent );
+}
+
 void G_RunMissile( gentity_t *ent )
 {
 	vec3_t   origin;
@@ -510,13 +484,8 @@ void G_RunMissile( gentity_t *ent )
 	G_RunThink( ent );
 }
 
-/*
-================
-SpawnMissile
-================
-*/
-static gentity_t *SpawnMissile( missile_t missile, gentity_t *parent, vec3_t start, vec3_t dir,
-                                gentity_t *target, void ( *think )( gentity_t *self ), int nextthink )
+gentity_t *G_SpawnMissile( missile_t missile, gentity_t *parent, vec3_t start, vec3_t dir,
+                           gentity_t *target, void ( *think )( gentity_t *self ), int nextthink )
 {
 	gentity_t                 *m;
 	const missileAttributes_t *ma;
@@ -588,240 +557,6 @@ static gentity_t *SpawnMissile( missile_t missile, gentity_t *parent, vec3_t sta
 		// save net bandwidth
 		SnapVector( m->s.pos.trDelta );
 	}
-
-	return m;
-}
-
-/*
-=================
-fire_flamer
-=================
-*/
-gentity_t *fire_flamer( gentity_t *self, vec3_t start, vec3_t dir )
-{
-	gentity_t *m;
-
-	m = SpawnMissile( MIS_FLAMER, self, start, dir, NULL, G_FreeEntity, level.time + FLAMER_LIFETIME );
-
-	return m;
-}
-
-/*
-=================
-fire_blaster
-=================
-*/
-gentity_t *fire_blaster( gentity_t *self, vec3_t start, vec3_t dir )
-{
-	gentity_t *m;
-
-	m = SpawnMissile( MIS_BLASTER, self, start, dir, NULL, ExplodeMissile, level.time + 10000 );
-
-	return m;
-}
-
-/*
-=================
-fire_pulseRifle
-=================
-*/
-gentity_t *fire_pulseRifle( gentity_t *self, vec3_t start, vec3_t dir )
-{
-	gentity_t *m;
-
-	m = SpawnMissile( MIS_PRIFLE, self, start, dir, NULL, ExplodeMissile, level.time + 10000 );
-
-	return m;
-}
-
-/*
-=================
-fire_luciferCannon
-=================
-*/
-gentity_t *fire_luciferCannon( gentity_t *self, vec3_t start, vec3_t dir,
-                               int damage, int radius, int speed )
-{
-	// TODO: Split this into two functions for primary/secondary fire mode
-
-	gentity_t *m;
-	int       nextthink;
-	float     charge;
-
-	// explode in front of player when overcharged
-	if ( damage == LCANNON_DAMAGE )
-	{
-		nextthink = level.time;
-	}
-	else
-	{
-		nextthink = level.time + 10000;
-	}
-
-	if ( self->s.generic1 == WPM_PRIMARY )
-	{
-		m = SpawnMissile( MIS_LCANNON, self, start, dir, NULL, ExplodeMissile, nextthink );
-
-		// some values are set in the code
-		m->damage       = damage;
-		m->splashDamage = damage / 2;
-		m->splashRadius = radius;
-		VectorScale( dir, speed, m->s.pos.trDelta );
-		SnapVector( m->s.pos.trDelta ); // save net bandwidth
-
-		// pass the missile charge through
-		charge = ( float )( damage - LCANNON_SECONDARY_DAMAGE ) / LCANNON_DAMAGE;
-
-		m->s.torsoAnim = charge * 255;
-
-		if ( m->s.torsoAnim < 0 )
-		{
-			m->s.torsoAnim = 0;
-		}
-	}
-	else
-	{
-		m = SpawnMissile( MIS_LCANNON2, self, start, dir, NULL, ExplodeMissile, nextthink );
-	}
-
-	return m;
-}
-
-/*
-=================
-launch_grenade
-=================
-*/
-gentity_t *fire_grenade( gentity_t *self, vec3_t start, vec3_t dir )
-{
-	gentity_t *m;
-
-	m = SpawnMissile( MIS_GRENADE, self, start, dir, NULL, ExplodeMissile, level.time + 5000 );
-
-	return m;
-}
-
-/*
-================
-HiveMissileThink
-
-Adjusts the trajectory to point towards the target.
-================
-*/
-void HiveMissileThink( gentity_t *self )
-{
-	vec3_t    dir;
-	trace_t   tr;
-	gentity_t *ent;
-	int       i;
-	float     d, nearest;
-
-	if ( level.time > self->timestamp )
-	{
-		VectorCopy( self->r.currentOrigin, self->s.pos.trBase );
-		self->s.pos.trType = TR_STATIONARY;
-		self->s.pos.trTime = level.time;
-
-		self->think = ExplodeMissile;
-		self->nextthink = level.time + 50;
-		self->parent->active = qfalse; //allow the parent to start again
-		return;
-	}
-
-	nearest = DistanceSquared( self->r.currentOrigin, self->target->r.currentOrigin );
-
-	//find the closest human
-	for ( i = 0; i < MAX_CLIENTS; i++ )
-	{
-		ent = &g_entities[ i ];
-
-		if ( ent->flags & FL_NOTARGET )
-		{
-			continue;
-		}
-
-		if ( ent->client &&
-		     ent->health > 0 &&
-		     ent->client->pers.team == TEAM_HUMANS &&
-		     nearest > ( d = DistanceSquared( ent->r.currentOrigin, self->r.currentOrigin ) ) )
-		{
-			trap_Trace( &tr, self->r.currentOrigin, self->r.mins, self->r.maxs,
-			            ent->r.currentOrigin, self->r.ownerNum, self->clipmask );
-
-			if ( tr.entityNum != ENTITYNUM_WORLD )
-			{
-				nearest = d;
-				self->target = ent;
-			}
-		}
-	}
-
-	VectorSubtract( self->target->r.currentOrigin, self->r.currentOrigin, dir );
-	VectorNormalize( dir );
-
-	//change direction towards the player
-	VectorScale( dir, HIVE_SPEED, self->s.pos.trDelta );
-	SnapVector( self->s.pos.trDelta );  // save net bandwidth
-	VectorCopy( self->r.currentOrigin, self->s.pos.trBase );
-	self->s.pos.trTime = level.time;
-
-	self->nextthink = level.time + HIVE_DIR_CHANGE_PERIOD;
-}
-
-/*
-=================
-fire_hive
-=================
-*/
-gentity_t *fire_hive( gentity_t *self, vec3_t start, vec3_t dir )
-{
-	gentity_t *m;
-
-	m = SpawnMissile( MIS_HIVE, self, start, dir, self->target, HiveMissileThink, level.time + HIVE_DIR_CHANGE_PERIOD );
-
-	m->timestamp = level.time + HIVE_LIFETIME;
-
-	return m;
-}
-
-/*
-=================
-fire_lockblob
-=================
-*/
-gentity_t *fire_lockblob( gentity_t *self, vec3_t start, vec3_t dir )
-{
-	gentity_t *m;
-
-	m = SpawnMissile( MIS_LOCKBLOB, self, start, dir, NULL, ExplodeMissile, level.time + 15000 );
-
-	return m;
-}
-
-/*
-=================
-fire_slowBlob
-=================
-*/
-gentity_t *fire_slowBlob( gentity_t *self, vec3_t start, vec3_t dir )
-{
-	gentity_t *m;
-
-	m = SpawnMissile( MIS_SLOWBLOB, self, start, dir, NULL, ExplodeMissile, level.time + 15000 );
-
-	return m;
-}
-
-/*
-=================
-fire_bounceBall
-=================
-*/
-gentity_t *fire_bounceBall( gentity_t *self, vec3_t start, vec3_t dir )
-{
-	gentity_t *m;
-
-	m = SpawnMissile( MIS_BOUNCEBALL, self, start, dir, NULL, ExplodeMissile, level.time + 3000 );
 
 	return m;
 }

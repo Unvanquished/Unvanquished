@@ -4828,7 +4828,7 @@ qboolean G_admin_builder( gentity_t *ent )
 	if ( ent->client->pers.team != TEAM_NONE &&
 	     ent->client->sess.spectatorState == SPECTATOR_NOT )
 	{
-		CalcMuzzlePoint( ent, forward, right, up, start );
+		G_CalcMuzzlePoint( ent, forward, right, up, start );
 	}
 	else
 	{

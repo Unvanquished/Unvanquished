@@ -909,7 +909,7 @@ gentity_t *G_SpawnFire( vec3_t origin, vec3_t normal, gentity_t *fireStarter )
 	// origin
 	VectorCopy( origin, fire->s.origin );
 	VectorAdd( origin, normal, snapHelper );
-	SnapVectorTowards( fire->s.origin, snapHelper ); // save net bandwidth
+	G_SnapVectorTowards( fire->s.origin, snapHelper ); // save net bandwidth
 	VectorCopy( fire->s.origin, fire->r.currentOrigin );
 
 	// send to client

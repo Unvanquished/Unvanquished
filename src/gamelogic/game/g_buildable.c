@@ -1534,7 +1534,7 @@ static qboolean AHive_CheckTarget( gentity_t *self, gentity_t *enemy )
 	vectoangles( dirToTarget, self->turretAim );
 
 	// Fire at target
-	FireWeapon( self );
+	G_FireWeapon( self );
 	G_SetBuildableAnim( self, BANIM_ATTACK1, qfalse );
 	return qtrue;
 }
@@ -1706,7 +1706,7 @@ void ATrapper_FireOnEnemy( gentity_t *self, int firespeed, float range )
 	vectoangles( dirToTarget, self->turretAim );
 
 	//fire at target
-	FireWeapon( self );
+	G_FireWeapon( self );
 	G_SetBuildableAnim( self, BANIM_ATTACK1, qfalse );
 	self->customNumber = level.time + firespeed;
 }
@@ -3192,7 +3192,7 @@ void HMGTurret_Think( gentity_t *self )
 		return;
 	}
 
-	FireWeapon( self );
+	G_FireWeapon( self );
 	self->s.eFlags |= EF_FIRING;
 	self->timestamp = level.time + BG_Buildable( self->s.modelindex )->turretFireSpeed;
 	G_AddEvent( self, EV_FIRE_WEAPON, 0 );
@@ -3253,7 +3253,7 @@ void HTeslaGen_Think( gentity_t *self )
 			     self->target->client->pers.team == TEAM_ALIENS &&
 			     Distance( origin, self->target->s.pos.trBase ) <= TESLAGEN_RANGE )
 			{
-				FireWeapon( self );
+				G_FireWeapon( self );
 			}
 		}
 

@@ -2453,9 +2453,10 @@ static void DrawTracer( vec3_t source, vec3_t dest )
 
 /*
 ================
-CG_ShotgunPattern
+ShotgunPattern
 
 Performs the same traces the server did to locate local hit effects.
+Keep this in sync with ShotgunPattern in g_weapon.c!
 ================
 */
 static void ShotgunPattern( vec3_t origin, vec3_t origin2, int seed, int otherEntNum )
