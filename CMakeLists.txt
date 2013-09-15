@@ -166,7 +166,7 @@ endif()
 
 set( GPP_DIR ${MOUNT_DIR}/gamelogic )
 set( LIB_DIR ${MOUNT_DIR}/libs ) # LIB_DIR is also defined in Visual_Studio32/64.cmake
-set( SDL_DIR ${LIB_DIR}/libsdl2 )
+set( SDL2_DIR ${LIB_DIR}/libsdl2 )
 set( JPEG_DIR ${LIB_DIR}/jpeg )
 set( GLEW_DIR ${LIB_DIR}/glew )
 set( WEBP_DIR ${LIB_DIR}/libwebp )
@@ -263,9 +263,10 @@ if( USE_INTERNAL_SDL )
   set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_BINARY_DIR}/Debug/${GAMELIB_OUTPUT_DIR}" )
   set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL "${CMAKE_BINARY_DIR}/MinSizeRel/${GAMELIB_OUTPUT_DIR}" )
   set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO "${CMAKE_BINARY_DIR}/RelWithDebInfo/${GAMELIB_OUTPUT_DIR}" )
-  add_subdirectory( ${SDL_DIR} ${OBJ_DIR}/libsdl2 )
-  set( SDL_LIBRARY SDL2 SDL2main CACHE STRING "SDL library" FORCE )
-  set( SDL_INCLUDE_DIR ${SDL_DIR}/include CACHE STRING "SDL include directory" FORCE )
+  add_subdirectory( ${SDL2_DIR} ${OBJ_DIR}/libsdl2 )
+  set( SDL2_LIBRARIES SDL2 SDL2main CACHE STRING "SDL library" FORCE )
+  set( SDL2_INCLUDE_DIRS ${SDL2_DIR}/include CACHE STRING "SDL include directory" FORCE )
+  set( SDL2_FOUND "1" CACHE INTERNAL "" )
 endif()
 
 if( USE_INTERNAL_JPEG )
@@ -1559,7 +1560,7 @@ if( BUILD_OLD_RENDERER )
 
   # This section finds and provides REQUIRED dependencies to target renderer
   find_package( OpenGL REQUIRED )
-  find_package( SDL REQUIRED )
+  find_package( SDL2 REQUIRED )
   find_package( JPEG REQUIRED )
   find_package( PNG REQUIRED )
   find_package( Freetype REQUIRED )
@@ -1570,8 +1571,8 @@ if( BUILD_OLD_RENDERER )
     find_package( X11 )
   endif()
 
-  include_directories( ${PNG_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS} ${SDL_INCLUDE_DIR} ${X11_INCLUDE_DIR} ${WEBP_INCLUDE_DIRS} )
-  target_link_libraries( renderer ${PNG_LIBRARIES} ${SDL_LIBRARY} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} ${JPEG_LIBRARIES} ${FREETYPE_LIBRARIES} ${WEBP_LIBRARIES} )
+  include_directories( ${PNG_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS} ${SDL2_INCLUDE_DIRS} ${X11_INCLUDE_DIR} ${WEBP_INCLUDE_DIRS} )
+  target_link_libraries( renderer ${PNG_LIBRARIES} ${SDL2_LIBRARIES} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} ${JPEG_LIBRARIES} ${FREETYPE_LIBRARIES} ${WEBP_LIBRARIES} )
 
   # This section finds and provides OPTIONAL dependencies to target renderer
 endif()
@@ -1596,7 +1597,7 @@ if( BUILD_NEW_RENDERER )
 
   # This section finds and provides REQUIRED dependencies to target rendererGL
   find_package( OpenGL REQUIRED )
-  find_package( SDL REQUIRED )
+  find_package( SDL2 REQUIRED )
   find_package( JPEG REQUIRED )
   find_package( PNG REQUIRED )
   find_package( Freetype REQUIRED )
@@ -1611,8 +1612,8 @@ if( BUILD_NEW_RENDERER )
       set_property( TARGET rendererGL APPEND PROPERTY COMPILE_DEFINITIONS SMP )
   endif()
 
-  include_directories( ${PNG_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS} ${SDL_INCLUDE_DIR} ${X11_INCLUDE_DIR} ${WEBP_INCLUDE_DIRS} )
-  target_link_libraries( rendererGL ${PNG_LIBRARIES} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} ${JPEG_LIBRARIES} ${FREETYPE_LIBRARIES} ${SDL_LIBRARY} ${WEBP_LIBRARIES} )
+  include_directories( ${PNG_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS} ${SDL2_INCLUDE_DIRS} ${X11_INCLUDE_DIR} ${WEBP_INCLUDE_DIRS} )
+  target_link_libraries( rendererGL ${PNG_LIBRARIES} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} ${JPEG_LIBRARIES} ${FREETYPE_LIBRARIES} ${SDL2_LIBRARIES} ${WEBP_LIBRARIES} )
 
   # This section finds and provides OPTIONAL dependencies to target rendererGL
 endif()
@@ -1693,7 +1694,7 @@ if( BUILD_CLIENT )
 
   # This section finds and provides REQUIRED dependencies to target client
   find_package( OpenGL REQUIRED )
-  find_package( SDL REQUIRED )
+  find_package( SDL2 REQUIRED )
   find_package( Freetype REQUIRED )
   find_package( GLEW REQUIRED )
   find_package( GMP REQUIRED )
@@ -1716,8 +1717,8 @@ if( BUILD_CLIENT )
     target_link_libraries( client ${NETTLE_LIBRARIES} )
   endif()
 
-  include_directories( ${OPENGL_INCLUDE_DIR} ${SDL_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIR} ${GMP_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS} ${CURL_INCLUDE_DIRS} )
-  target_link_libraries( client ${OPENGL_LIBRARIES} ${SDL_LIBRARY} ${FREETYPE_LIBRARIES} ${GLEW_LIBRARY} ${GMP_LIBRARIES} ${ZLIB_LIBRARIES} ${CURL_LIBRARIES} )
+  include_directories( ${OPENGL_INCLUDE_DIR} ${SDL2_INCLUDE_DIRS} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIR} ${GMP_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS} ${CURL_INCLUDE_DIRS} )
+  target_link_libraries( client ${OPENGL_LIBRARIES} ${SDL2_LIBRARIES} ${FREETYPE_LIBRARIES} ${GLEW_LIBRARY} ${GMP_LIBRARIES} ${ZLIB_LIBRARIES} ${CURL_LIBRARIES} )
 
   # This section finds and provides OPTIONAL dependencies to target client
   if( USE_OPENAL )
@@ -1907,11 +1908,11 @@ if( BUILD_SERVER )
     target_link_libraries( server ${BZIP2_LIBRARY} )
   endif()
 
-  if( USE_SDL_ICONV )
-    find_package( SDL REQUIRED )
+  if( USE_SDL2_ICONV )
+    find_package( SDL2 REQUIRED )
     set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS HAVE_SDL )
-    include_directories( ${SDL_INCLUDE_DIR} )
-    target_link_libraries( server ${SDL_LIBRARY} )
+    include_directories( ${SDL2_INCLUDE_DIRS} )
+    target_link_libraries( server ${SDL2_LIBRARIES} )
   endif()
 
   if( GAME_LIB_LLVM )
@@ -1943,12 +1944,12 @@ if( BUILD_DAEMONMAP )
 
   # This section finds and provides REQUIRED dependencies to DaemonMap target
   find_package( OpenGL REQUIRED )
-  find_package( SDL REQUIRED )
+  find_package( SDL2 REQUIRED )
   find_package( JPEG REQUIRED )
   find_package( PNG REQUIRED )
   find_package( GLib2 REQUIRED )
-  target_link_libraries( daemonMap ${OPENGL_LIBRARIES} ${SDL_LIBRARY} ${JPEG_LIBRARIES} ${PNG_LIBRARIES} ${GLIB_LIBRARIES} )
-  include_directories( ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${PNG_INCLUDE_DIR} ${SDL_INCLUDE_DIR} ${GLIB_INCLUDE_DIRS} )
+  target_link_libraries( daemonMap ${OPENGL_LIBRARIES} ${SDL2_LIBRARIES} ${JPEG_LIBRARIES} ${PNG_LIBRARIES} ${GLIB_LIBRARIES} )
+  include_directories( ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${PNG_INCLUDE_DIR} ${SDL2_INCLUDE_DIRS} ${GLIB_INCLUDE_DIRS} )
 endif()
 
 ####################
@@ -2027,11 +2028,11 @@ if( BUILD_TTY_CLIENT )
     target_link_libraries( ttyclient ${BZIP2_LIBRARY} )
   endif()
 
-  if( USE_SDL_ICONV )
-    find_package( SDL REQUIRED )
+  if( USE_SDL2_ICONV )
+    find_package( SDL2 REQUIRED )
     set_property( TARGET ttyclient APPEND PROPERTY COMPILE_DEFINITIONS HAVE_SDL )
-    include_directories( ${SDL_INCLUDE_DIR} )
-    target_link_libraries( ttyclient ${SDL_LIBRARY} )
+    include_directories( ${SDL2_INCLUDE_DIRS} )
+    target_link_libraries( ttyclient ${SDL2_LIBRARIES} )
   endif()
 
   if( GAME_LIB_LLVM )
