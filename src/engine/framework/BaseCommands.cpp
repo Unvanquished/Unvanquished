@@ -691,6 +691,7 @@ namespace Cmd {
             }
 
             void Run(const Cmd::Args& args) const override {
+                Q_UNUSED(args); //TODO
                 delays.clear();
             }
     };
@@ -869,6 +870,7 @@ namespace Cmd {
             }
 
             void Run(const Cmd::Args& args) const override{
+                Q_UNUSED(args); //TODO
                 RemoveFlaggedCommands(ALIAS);
                 aliases.clear();
             }
@@ -881,6 +883,7 @@ namespace Cmd {
             }
 
             void Run(const Cmd::Args& args) const override{
+                Q_UNUSED(args); //TODO
                 std::string name;
 
                 if (args.Argc() > 1) {
@@ -891,19 +894,19 @@ namespace Cmd {
 
                 std::vector<const aliasRecord_t*> matches;
                 std::vector<const std::string*> matchesNames;
-                int maxNameLength = 0;
+                unsigned long maxNameLength = 0;
 
                 //Find all the matching aliases and their names
                 for (auto it = aliases.cbegin(); it != aliases.cend(); ++it) {
                     if (Q_stristr(it->first.c_str(), name.c_str())) {
                         matches.push_back(&it->second);
                         matchesNames.push_back(&it->first);
-                        maxNameLength = MAX(maxNameLength, it->first.size());
+                        maxNameLength = std::max(maxNameLength, it->first.size());
                     }
                 }
 
                 //Print the matches, keeping the description aligned
-                for (int i = 0; i < matches.size(); i++) {
+                for (unsigned i = 0; i < matches.size(); i++) {
                     int toFill = maxNameLength - matchesNames[i]->size();
                     Com_Printf("  %s%s ⇒ %s\n", matchesNames[i]->c_str(), std::string(toFill, ' ').c_str(), matches[i]->command.c_str());
                 }

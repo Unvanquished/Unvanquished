@@ -37,7 +37,7 @@ namespace Cmd {
             res = "\"";
         }
 
-        for (int i = 0; i < text.size(); i ++) {
+        for (size_t i = 0; i < text.size(); i ++) {
             char c = text[i];
 
             bool commentStart = (i < text.size() + 1) and (c == '/') and (text[i + 1] == '/' or text[i + 1] == '*');
@@ -61,7 +61,7 @@ namespace Cmd {
         std::string token;
         int tokenStart = 0;
 
-        int pos = 0;
+        size_t pos = 0;
 
         while (pos < text.size()) {
             char c = text[pos ++];
@@ -166,15 +166,15 @@ namespace Cmd {
         }
     }
 
-    std::vector<int> StartsOfCommands(const std::string& text) {
-        std::vector<int> res = {0};
+    std::vector<size_t> StartsOfCommands(const std::string& text) {
+        std::vector<size_t> res = {0};
 
         bool inQuotes = false;
         bool escaped = false;
         bool inComment = false;
         bool inInlineComment = false;
 
-        for (int i = 0; i < text.size(); i++) {
+        for (size_t i = 0; i < text.size(); i++) {
             if (escaped) {
                 escaped = false;
                 continue;
@@ -238,14 +238,14 @@ namespace Cmd {
         std::vector<std::string> res;
         const char *data = commands.data();
 
-        std::vector<int> start = StartsOfCommands(commands);
+        std::vector<size_t> start = StartsOfCommands(commands);
         if (start.back() < commands.size()) {
             start.push_back(commands.size() + 1);
         }
 
-        for(int i = 0; i < start.size() - 1; i++) {
+        for(size_t i = 0; i < start.size() - 1; i++) {
             //Get the command, except the command delimiter character (if there is one)
-            int p = start[i];
+            size_t p = start[i];
 
             //Strip leading white space
             while (p < start[i + 1] && data[p] >= 0 && data[p] <= ' ') {
@@ -270,7 +270,7 @@ namespace Cmd {
         int lastBlockStart = 0;
 
         //Cvar are delimited by $ so we parse a bloc at a time
-        for(int i = 0; i < text.size(); i++){
+        for(size_t i = 0; i < text.size(); i++){
 
             // a \ escapes the next letter so we don't use it for block delimitation
             if (isEscaped) {
@@ -323,7 +323,7 @@ namespace Cmd {
     Args::Args(std::vector<std::string> args_) {
         args = std::move(args_);
 
-        for (int i = 0; i < args.size(); i++) {
+        for (size_t i = 0; i < args.size(); i++) {
             argsStarts.push_back(cmd.size());
             cmd += Escape(args[i]);
             if (i != args.size() - 1) {
@@ -366,7 +366,7 @@ namespace Cmd {
         return cmd;
     }
 
-    std::string Args::RawArgsFrom(int start) const {
+    std::string Args::RawArgsFrom(unsigned start) const {
         if (start < argsStarts.size()) {
             return std::string(cmd.begin() + argsStarts[start], cmd.end());
         } else {
@@ -384,7 +384,7 @@ namespace Cmd {
         return -1;
     }
 
-    int Args::ArgStartPos(int argNum) const {
+    int Args::ArgStartPos(unsigned argNum) const {
         if (argNum > argsStarts.size()) {
             return cmd.size();
         }
@@ -420,6 +420,8 @@ namespace Cmd {
     }
 
     std::vector<std::string> CmdBase::Complete(int argNum, const Args& args) const {
+        Q_UNUSED(argNum); //TODO
+        Q_UNUSED(args); //TODO
         return {};
     }
 

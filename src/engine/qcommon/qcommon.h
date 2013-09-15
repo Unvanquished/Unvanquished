@@ -924,6 +924,7 @@ temp file loading
 // Use malloc instead of the zone allocator
 static inline void* Z_TagMalloc(size_t size, int tag)
 {
+  Q_UNUSED(tag);
   return malloc(size);
 }
 static inline void* Z_Malloc(size_t size)

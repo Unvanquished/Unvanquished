@@ -245,12 +245,13 @@ namespace Cmd {
     */
 
     void ListFlaggedCommands(const Args& args, int flags) {
+        Q_UNUSED(args); //TODO use a prefix
         CommandMap& commands = GetCommandMap();
 
         //TODO: add partial matches as in Doom3BFG
         std::vector<const commandRecord_t*> matches;
         std::vector<const std::string*> matchesNames;
-        int maxNameLength = 0;
+        unsigned long maxNameLength = 0;
 
         //Find all the matching commands and their names
         for (auto it = commands.cbegin(); it != commands.cend(); ++it) {
@@ -259,12 +260,12 @@ namespace Cmd {
             if (record.cmd->GetFlags() & flags) {
                 matches.push_back(&it->second);
                 matchesNames.push_back(&it->first);
-                maxNameLength = MAX(maxNameLength, it->first.size());
+                maxNameLength = std::max(maxNameLength, it->first.size());
             }
         }
 
         //Print the matches, keeping the description aligned
-        for (int i = 0; i < matches.size(); i++) {
+        for (unsigned i = 0; i < matches.size(); i++) {
             int toFill = maxNameLength - matchesNames[i]->size();
             Com_Printf("  %s%s %s\n", matchesNames[i]->c_str(), std::string(toFill, ' ').c_str(), matches[i]->description.c_str());
         }

@@ -51,7 +51,7 @@ namespace Cvar {
         //DO: mutex?
     };
 
-    void SetCCvar(const std::string& name, cvarRecord_t& cvar) {
+    void SetCCvar(cvarRecord_t& cvar) {
         cvar_t& var = cvar.ccvar;
 
         if (cvar.flags & CVAR_LATCH) {
@@ -139,7 +139,7 @@ namespace Cvar {
         //TODO: rom means the cvar should have been created before?
         if (it == cvars.end()) {
             //The user creates a new cvar through a command.
-            cvars[cvarName] = new cvarRecord_t{value, value, flags | CVAR_USER_CREATED, "user created", nullptr};
+            cvars[cvarName] = new cvarRecord_t{value, value, flags | CVAR_USER_CREATED, "user created", nullptr, {}};
             Cmd::AddCommand(cvarName, cvarCommand, "user created");
             GetCCvar(cvarName, *cvars[cvarName]);
 
@@ -174,7 +174,7 @@ namespace Cvar {
                     cvar->value = std::move(oldValue);
                 }
             }
-            SetCCvar(cvarName, *cvar);
+            SetCCvar(*cvar);
         }
 
     }
@@ -204,7 +204,7 @@ namespace Cvar {
         auto it = cvars.find(name);
         if (it == cvars.end()) {
             //Create the cvar and parse its default value
-            cvars[name] = new cvarRecord_t{defaultValue, defaultValue, flags, description, proxy};
+            cvars[name] = new cvarRecord_t{defaultValue, defaultValue, flags, description, proxy, {}};
 
             GetCCvar(name, *cvars[name]);
             Cmd::AddCommand(name, cvarCommand, std::move(description));
@@ -289,7 +289,7 @@ namespace Cvar {
 
             if (cvar->flags & CHEAT && cvar->value != cvar->resetValue) {
                 cvar->value = cvar->resetValue;
-                SetCCvar(it.first, *cvar);
+                SetCCvar(*cvar);
 
                 if (cvar->proxy) {
                     bool valueCorrect = cvar->proxy->OnValueChanged(cvar->resetValue);
@@ -464,19 +464,19 @@ namespace Cvar {
 
                 std::vector<cvarRecord_t*> matches;
                 std::vector<std::string> matchesNames;
-                int maxNameLength = 0;
+                unsigned long maxNameLength = 0;
 
                 //Find all the matching cvars
                 for (auto& record : cvars) {
                     if (Q_stristr(record.first.c_str(), match.c_str())) {
                         matchesNames.push_back(record.first);
                         matches.push_back(record.second);
-                        maxNameLength = MAX(maxNameLength, record.first.length());
+                        maxNameLength = std::max(maxNameLength, record.first.length());
                     }
                 }
 
                 //Print the matches, keeping the flags and descriptions aligned
-                for (int i = 0; i < matches.size(); i++) {
+                for (unsigned i = 0; i < matches.size(); i++) {
                     const std::string& name = matchesNames[i];
                     cvarRecord_t* var = matches[i];
 

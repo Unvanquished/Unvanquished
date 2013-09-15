@@ -52,7 +52,7 @@ namespace Cmd {
     // OLD: Parsing functions that should go in their modules at some point
     std::string Escape(const std::string& text, bool quote = false);
     void Tokenize(const std::string& text, std::vector<std::string>& tokens, std::vector<int>& tokenStarts);
-    std::vector<int> StartsOfCommands(const std::string& text);
+    std::vector<size_t> StartsOfCommands(const std::string& text);
     std::vector<std::string> SplitCommandText(const std::string& commands);
     std::string SubstituteCvars(const std::string& text);
 
@@ -80,12 +80,12 @@ namespace Cmd {
             // Returns the raw command line represented by this Args
             const std::string& RawCmd() const;
             // Returns the raw, unparsed commandline after the given argument
-            std::string RawArgsFrom(int start = 1) const;
+            std::string RawArgsFrom(unsigned start = 1) const;
 
             // Gives the index of the argument of the character at a given pos.
             int PosToArg(int pos) const;
             // Gives the index of the starting character of an argument.
-            int ArgStartPos(int argNum) const;
+            int ArgStartPos(unsigned argNum) const;
 
             std::string ArgPrefix(int pos) const;
 

@@ -42,15 +42,15 @@ namespace Util {
         return GetText().c_str() + scroll;
     }
 
-    int LineEditData::GetViewStartPos() const {
+    unsigned LineEditData::GetViewStartPos() const {
         return scroll;
     }
 
-    int LineEditData::GetCursorPos() const {
+    unsigned LineEditData::GetCursorPos() const {
         return cursor;
     }
 
-    int LineEditData::GetViewCursorPos() const {
+    unsigned LineEditData::GetViewCursorPos() const {
         return cursor - scroll;
     }
 
@@ -122,13 +122,13 @@ namespace Util {
         UpdateScroll();
     }
 
-    int LineEditData::GetWidth() const {
+    unsigned LineEditData::GetWidth() const {
         return width;
     }
 
     void LineEditData::UpdateScroll() {
         if (cursor < scroll) {
-            scroll = std::min(scroll - scrollSize, 0);
+            scroll = std::min(scroll - scrollSize, 0U);
         } else if (cursor > scroll + width) {
             scroll = cursor - width + scrollSize;
         }

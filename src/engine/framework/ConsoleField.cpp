@@ -78,7 +78,7 @@ namespace Console {
         std::string commandText(current.c_str() + slashOffset);
 
         //Split the command text and find the command to complete
-        std::vector<int> commandStarts = Cmd::StartsOfCommands(commandText);
+        std::vector<size_t> commandStarts = Cmd::StartsOfCommands(commandText);
         if (commandStarts.back() < current.size()) {
             commandStarts.push_back(current.size() + 1);
         }

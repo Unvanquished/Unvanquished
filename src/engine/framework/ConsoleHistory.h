@@ -29,7 +29,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace Console {
 
-    typedef int HistoryHandle;
+    typedef unsigned HistoryHandle;
     static const HistoryHandle HISTORY_END = -1;
 
     void SaveHistory();

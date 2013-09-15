@@ -38,9 +38,9 @@ namespace Util {
 
             const std::u32string& GetText() const;
             const char32_t* GetViewText() const;
-            int GetViewStartPos() const;
-            int GetCursorPos() const;
-            int GetViewCursorPos() const;
+            unsigned GetViewStartPos() const;
+            unsigned GetCursorPos() const;
+            unsigned GetViewCursorPos() const;
 
             void SetText(std::u32string text);
 
@@ -58,15 +58,15 @@ namespace Util {
             void Clear();
 
             void SetWidth(int width);
-            int GetWidth() const;
+            unsigned GetWidth() const;
 
         private:
             void UpdateScroll();
             std::u32string buffer;
             int scrollSize;
-            int width;
-            int scroll;
-            int cursor;
+            unsigned width;
+            unsigned scroll;
+            unsigned cursor;
     };
 
 }
