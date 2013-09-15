@@ -1632,6 +1632,7 @@ extern float          displayAspect; // FIXME
 //
 // cvars
 //
+extern cvar_t *r_glAllowSoftware;
 extern cvar_t *r_flareSize;
 extern cvar_t *r_flareFade;
 

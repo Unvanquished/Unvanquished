@@ -740,6 +740,12 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 			SDL_GL_SetAttribute( SDL_GL_MULTISAMPLEBUFFERS, samples ? 1 : 0 );
 			SDL_GL_SetAttribute( SDL_GL_MULTISAMPLESAMPLES, samples );
 			SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
+
+			if ( !r_glAllowSoftware->integer )
+			{
+				SDL_GL_SetAttribute( SDL_GL_ACCELERATED_VISUAL, 1 );
+			}
+
 #if USE_XREAL_RENDERER
 			if ( r_glCoreProfile->integer || r_glDebugProfile->integer )
 			{
@@ -1830,37 +1836,6 @@ success:
 
 	reportDriverType( qfalse );
 	reportHardwareType( qfalse );
-
-	// software renderer...?
-	if ( glConfig.driverType == GLDRV_MESA )
-	{
-		swRenderer = !!getenv( "LIBGL_ALWAYS_SOFTWARE" );
-	}
-
-	if ( !swRenderer )
-	{
-		int i;
-		// known software renderer names go here
-		static const char *const names[] = {
-			"softpipe",
-			"llvmpipe", // has SOME hw acceleration
-			"GDI Generic",
-		};
-
-		for ( i = 0; i < ARRAY_LEN( names ); ++i )
-		{
-			if ( Q_stristr( glConfig.renderer_string, names[ i ] ) )
-			{
-				swRenderer = qtrue;
-				break;
-			}
-		}
-	}
-
-	if ( swRenderer )
-	{
-		ri.Printf( PRINT_WARNING, "WARNING: software renderer detected! Very low frame rates are possible.\n" );
-	}
 
 	{ // allow overriding where the user really does know better
 		cvar_t          *forceGL;

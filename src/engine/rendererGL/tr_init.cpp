@@ -40,6 +40,7 @@ extern "C" {
 	cvar_t      *r_glMinorVersion;
 	cvar_t      *r_glCoreProfile;
 	cvar_t      *r_glDebugProfile;
+	cvar_t      *r_glAllowSoftware;
 
 	cvar_t      *r_flares;
 	cvar_t      *r_flareSize;
@@ -1356,6 +1357,7 @@ extern "C" {
 		r_glMinorVersion = ri.Cvar_Get( "r_glMinorVersion", "", CVAR_LATCH );
 		r_glCoreProfile = ri.Cvar_Get( "r_glCoreProfile", "", CVAR_LATCH );
 		r_glDebugProfile = ri.Cvar_Get( "r_glDebugProfile", "", CVAR_LATCH );
+		r_glAllowSoftware = ri.Cvar_Get( "r_glAllowSoftware", "0", CVAR_LATCH );
 
 		// latched and archived variables
 		r_ext_compressed_textures = ri.Cvar_Get( "r_ext_compressed_textures", "0", CVAR_ARCHIVE | CVAR_LATCH );

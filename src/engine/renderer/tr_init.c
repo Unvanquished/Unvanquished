@@ -44,6 +44,8 @@ float       displayAspect = 0.0f;
 
 static void GfxInfo_f( void );
 
+cvar_t      *r_glAllowSoftware;
+
 cvar_t      *r_flareSize;
 cvar_t      *r_flareFade;
 
@@ -1086,6 +1088,8 @@ R_Register
 */
 void R_Register( void )
 {
+	r_glAllowSoftware = ri.Cvar_Get( "r_glAllowSoftware", "0", CVAR_LATCH );
+
 	//
 	// latched and archived variables
 	//
