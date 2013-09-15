@@ -26,6 +26,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "../engine/qcommon/qcommon.h"
 #include "../engine/framework/CommandSystem.h"
+#include "../engine/framework/CvarSystem.h"
 
 namespace Cmd {
 
@@ -57,12 +58,10 @@ namespace Cmd {
     }
 
     void Tokenize(const std::string& text, std::vector<std::string>& tokens, std::vector<int>& tokenStarts) {
-        const char* raw_text = text.c_str();
         std::string token;
         int tokenStart = 0;
 
         int pos = 0;
-        bool inToken = false;
 
         while (pos < text.size()) {
             char c = text[pos ++];
@@ -287,12 +286,7 @@ namespace Cmd {
                 std::string block(raw_text + lastBlockStart, i - lastBlockStart);
 
                 if (inCvarName) {
-                    //For now we use the cvar C api to get the cvar value but it should be replaced
-                    //by Cvar::get(cvarName)->getString() or something
-                    char cvarValue[ MAX_CVAR_VALUE_STRING ];
-                    Cvar_VariableStringBuffer( block.c_str(), cvarValue, sizeof( cvarValue ) );
-                    result += Escape(std::string(cvarValue));
-
+                    result += Escape(Cvar::GetValue(block));
                     inCvarName = false;
 
                 } else {
@@ -399,7 +393,6 @@ namespace Cmd {
 
     std::string Args::ArgPrefix(int pos) const {
         int argNum = PosToArg(pos);
-        int nChars = pos - argsStarts[argNum];
         return args[argNum].substr(0, pos);
     }
 

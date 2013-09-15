@@ -29,6 +29,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #include <unordered_map>
 
 #include "CommandSystem.h"
+#include "CvarSystem.h"
 #include "../../shared/Command.h"
 #include "../../shared/String.h"
 
@@ -49,7 +50,7 @@ namespace Cmd {
                     return;
                 }
 
-                std::string command = Cvar_VariableString(args.Argv(1).c_str());
+                std::string command = Cvar::GetValue(args.Argv(1));
                 Cmd::BufferCommandText(command, Cmd::AFTER, true);
             }
 
@@ -197,7 +198,7 @@ namespace Cmd {
                 int max = Str::ToInt(args.Argv(3));
                 int number = min + (std::rand() % (max - min));
 
-                Cvar_SetValue(cvar.c_str(), number);
+                Cvar::SetValue(cvar, std::to_string(number));
             }
 
             std::vector<std::string> Complete(int pos, const Args& args) const override{
@@ -225,9 +226,9 @@ namespace Cmd {
 
                 std::string res;
                 for (int i = 2; i < args.Argc(); i++) {
-                    res += Cvar_VariableString(args.Argv(i).c_str());
+                    res += Cvar::GetValue(args.Argv(i));
                 }
-                Cvar_Set(args.Argv(1).c_str(), res.c_str());
+                Cvar::SetValue(args.Argv(1), res);
             }
 
             std::vector<std::string> Complete(int pos, const Args& args) const override{
@@ -254,7 +255,7 @@ namespace Cmd {
                 }
 
                 const std::string& targetName = args.Argv(1);
-                float currentValue = Cvar_VariableValue(targetName.c_str());
+                float currentValue = atof(Cvar::GetValue(targetName).c_str()); //TODO: Str::ToFloat
                 float newValue;
 
                 if (args.Argc() == 3) {
@@ -320,7 +321,7 @@ namespace Cmd {
                     return;
                 }
 
-                Cvar_SetValue(targetName.c_str(), newValue);
+                Cvar::SetValue(targetName, std::to_string(newValue));
             }
 
             void Usage(const Cmd::Args& args) const{
@@ -405,7 +406,7 @@ namespace Cmd {
                     Cmd::BufferCommandText(toRun.c_str() + 1, Cmd::AFTER, true);
 
                 } else {
-                    std::string command = Cvar_VariableString(toRun.c_str());
+                    std::string command = Cvar::GetValue(toRun);
                     Cmd::BufferCommandText(command, Cmd::AFTER, true);
                 }
             }
@@ -459,25 +460,25 @@ namespace Cmd {
 
                 if (args.Argc() == listStart) {
                     //There is no list, toggle between 0 and 1
-                    Cvar_Set(name.c_str(), va("%d", !Cvar_VariableValue(name.c_str())));
+                    Cvar::SetValue(name, va("%d", !Str::ToInt(Cvar::GetValue(name)))); //TODO: use Cvar::ParseValue(bool)
                     return;
                 }
 
                 //Toggle the cvar through a list of values
-                std::string currentValue = Cvar_VariableString(name.c_str());
+                std::string currentValue = Cvar::GetValue(name);
 
                 for(int i = listStart; i < args.Argc(); i++) {
                     if(currentValue == args.Argv(i)) {
                         //Found the current value, choose the next one
                         int next = (i + direction) % (args.Argc() - listStart);
 
-                        Cvar_Set(name.c_str(), args.Argv(next + listStart).c_str());
+                        Cvar::SetValue(name, args.Argv(next + listStart));
                         return;
                     }
                 }
 
                 //fallback
-                Cvar_Set(name.c_str(), args.Argv(listStart).c_str());
+                Cvar::SetValue(name, args.Argv(listStart));
             }
 
             std::vector<std::string> Complete(int pos, const Cmd::Args& args) const override{
@@ -507,7 +508,7 @@ namespace Cmd {
                     return;
                 }
 
-                int oldValue = Cvar_VariableValue(args.Argv(1).c_str());
+                int oldValue = Str::ToInt(Cvar::GetValue(args.Argv(1)));
                 int start = Str::ToInt(args.Argv(2));
                 int end = Str::ToInt(args.Argv(3));
 
@@ -535,7 +536,7 @@ namespace Cmd {
                     }
                 }
 
-                Cvar_Set(args.Argv(1).c_str(), va("%i", newValue));
+                Cvar::SetValue(args.Argv(1), va("%i", newValue));
             }
 
             std::vector<std::string> Complete(int pos, const Cmd::Args& args) const override{
