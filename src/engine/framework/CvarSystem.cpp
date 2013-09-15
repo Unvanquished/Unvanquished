@@ -254,13 +254,14 @@ namespace Cvar {
         } //TODO else what?
     }
 
-    std::vector<std::string> CompleteName(const std::string& prefix) {
+    Cmd::CompletionResult Complete(const std::string& prefix) {
         CvarMap& cvars = GetCvarMap();
 
-        std::vector<std::string> res;
+        Cmd::CompletionResult res;
         for (auto it : cvars) {
             if (Str::IsPrefix(prefix, it.first)) {
-                res.push_back(it.first);
+                //TODO what do we show in the completion?
+                res.push_back(std::make_pair(it.first, it.second->description));
             }
         }
 
@@ -389,11 +390,11 @@ namespace Cvar {
                 ::Cvar::AddFlags(name, flags);
             }
 
-            std::vector<std::string> Complete(int pos, const Cmd::Args& args) const override{
+            Cmd::CompletionResult Complete(int pos, const Cmd::Args& args) const override{
                 int argNum = args.PosToArg(pos);
 
                 if (argNum == 1 or (argNum == 2 and args.Argv(1) == "-unsafe")) {
-                    return ::Cvar::CompleteName(args.ArgPrefix(pos));
+                    return ::Cvar::Complete(args.ArgPrefix(pos));
                 }
 
                 return {};
@@ -429,11 +430,11 @@ namespace Cvar {
                 }
             }
 
-            std::vector<std::string> Complete(int pos, const Cmd::Args& args) const override{
+            Cmd::CompletionResult Complete(int pos, const Cmd::Args& args) const override{
                 int argNum = args.PosToArg(pos);
 
                 if (argNum == 1) {
-                    return ::Cvar::CompleteName(args.ArgPrefix(pos));
+                    return ::Cvar::Complete(args.ArgPrefix(pos));
                 }
 
                 return {};

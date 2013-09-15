@@ -718,7 +718,7 @@ void       FS_FilenameCompletion( const char *dir, const char *ext,
 qboolean   FS_Which( const char *filename, void *searchPath );
 
 namespace FS {
-    std::vector<std::string> CompleteFilenameInDir(const std::string& prefix, const std::string& dir,
+    std::vector<std::pair<std::string, std::string>> CompleteFilenameInDir(const std::string& prefix, const std::string& dir,
                                                    const std::string& extension, bool stripExtension = true);
 }
 

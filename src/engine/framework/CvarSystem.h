@@ -23,6 +23,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "../../shared/Cvar.h"
+#include "../../shared/Command.h"
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
 
@@ -51,7 +52,7 @@ namespace Cvar {
 
     void Register(CvarProxy* proxy, const std::string& name, std::string description, int flags, const std::string& defaultValue);
     void Unregister(const std::string& cvarName);
-    std::vector<std::string> CompleteName(const std::string& prefix);
+    Cmd::CompletionResult Complete(const std::string& prefix);
     void AddFlags(const std::string& cvarName, int flags);
 
     //////////FUNCTION FOR THE C API

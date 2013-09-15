@@ -102,6 +102,7 @@ namespace Cmd {
             std::string cmd;
     };
 
+    typedef std::vector<std::pair<std::string, std::string>> CompletionResult;
 
     /**
      * Commands are defined by subclassing Cmd::CmdBase and defining both
@@ -116,7 +117,7 @@ namespace Cmd {
             // Called when the command is run with the command line args
             virtual void Run(const Args& args) const = 0;
             // Called when the user wants to autocomplete a call to this command.
-            virtual std::vector<std::string> Complete(int pos, const Args& args) const;
+            virtual Cmd::CompletionResult Complete(int pos, const Args& args) const;
 
             // Used by the command system.
             int GetFlags() const;

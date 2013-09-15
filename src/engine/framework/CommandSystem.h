@@ -70,8 +70,8 @@ namespace Cmd {
     void ExecuteCommand(std::string command);
 
     //Completion stuff, highly unstable :-)
-    std::vector<std::string> CommandNames(const std::string& prefix = "");
-    std::vector<std::string> CompleteArgument(std::string command, int pos);
+    CompletionResult CompleteArgument(std::string command, int pos);
+    CompletionResult CompleteCommandNames(const std::string& prefix = "");
 
     //Function to ease the transition to C++
     bool CommandExists(const std::string& name);

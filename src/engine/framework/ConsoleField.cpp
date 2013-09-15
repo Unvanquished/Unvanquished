@@ -104,18 +104,20 @@ namespace Console {
         int argNum = args.PosToArg(cursorPos);
         int argStartPos = args.ArgStartPos(argNum);
 
-        std::vector<std::string> candidates = Cmd::CompleteArgument(command, cursorPos);
+        Cmd::CompletionResult candidates = Cmd::CompleteArgument(command, cursorPos);
         if (candidates.empty()) {
             return;
         }
 
         //Compute the longest common prefix of all the results
-        int prefixSize = candidates[0].size();
+        int prefixSize = candidates[0].first.size();
+        unsigned long maxCandidateLength = 0;
         for (auto& candidate : candidates) {
-            prefixSize = std::min(prefixSize, Str::LongestPrefixSize(candidate, candidates[0]));
+            prefixSize = std::min(prefixSize, Str::LongestPrefixSize(candidate.first, candidates[0].first));
+            maxCandidateLength = std::max(maxCandidateLength, candidate.first.length());
         }
 
-        std::string completedArg(candidates[0], 0, prefixSize);
+        std::string completedArg(candidates[0].first, 0, prefixSize);
 
         //Help the user bash the TAB key
         if (candidates.size() == 1) {
@@ -126,10 +128,10 @@ namespace Console {
         commandText.replace(commandStart + argStartPos, (cursorPos - slashOffset) - argStartPos, completedArg);
 
         //Print the matches if it is ambiguous
-        //TODO: multi column nice print?
         if (candidates.size() >= 2) {
             for (auto& candidate : candidates) {
-                Com_Printf("  %s\n", candidate.c_str());
+                std::string filler(maxCandidateLength - candidate.first.length(), ' ');
+                Com_Printf("  %s%s %s\n", candidate.first.c_str(), filler.c_str(), candidate.second.c_str());
             }
         }
 

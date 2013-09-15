@@ -1424,7 +1424,7 @@ class DemoCmd: public Cmd::StaticCmd {
             //  }
         }
 
-        std::vector<std::string> Complete(int pos, const Cmd::Args& args) const override{
+        Cmd::CompletionResult Complete(int pos, const Cmd::Args& args) const override{
             int argNum = args.PosToArg(pos);
 
             if (argNum == 1) {

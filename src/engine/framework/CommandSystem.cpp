@@ -183,19 +183,7 @@ namespace Cmd {
         CL_ForwardCommandToServer( args.RawCmd().c_str() );
     }
 
-    std::vector<std::string> CommandNames(const std::string& prefix) {
-        CommandMap& commands = GetCommandMap();
-
-        std::vector<std::string> res;
-        for (auto& entry: commands) {
-            if (Str::IsPrefix(prefix, entry.first)) {
-                res.push_back(entry.first);
-            }
-        }
-        return res;
-    }
-
-    std::vector<std::string> CompleteArgument(std::string command, int pos) {
+    CompletionResult CompleteArgument(std::string command, int pos) {
         CommandMap& commands = GetCommandMap();
 
         Args args(std::move(command));
@@ -216,8 +204,20 @@ namespace Cmd {
 
             return it->second.cmd->Complete(pos, args);
         } else {
-            return CommandNames(args.Argv(0));
+            return CompleteCommandNames(args.Argv(0));
         }
+    }
+
+    CompletionResult CompleteCommandNames(const std::string& prefix) {
+        CommandMap& commands = GetCommandMap();
+
+        CompletionResult res;
+        for (auto& entry: commands) {
+            if (Str::IsPrefix(prefix, entry.first)) {
+                res.push_back({entry.first, entry.second.description});
+            }
+        }
+        return res;
     }
 
     const Args& GetCurrentArgs() {

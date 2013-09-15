@@ -419,7 +419,7 @@ namespace Cmd {
     CmdBase::CmdBase(const int flags): flags(flags) {
     }
 
-    std::vector<std::string> CmdBase::Complete(int argNum, const Args& args) const {
+    CompletionResult CmdBase::Complete(int argNum, const Args& args) const {
         Q_UNUSED(argNum); //TODO
         Q_UNUSED(args); //TODO
         return {};

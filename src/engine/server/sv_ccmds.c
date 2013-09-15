@@ -77,7 +77,7 @@ class MapCmd: public Cmd::StaticCmd {
             Cvar_Set("sv_cheats", cheat ? "1" : "0");
         }
 
-        std::vector<std::string> Complete(int pos, const Cmd::Args& args) const override{
+        Cmd::CompletionResult Complete(int pos, const Cmd::Args& args) const override{
             int argNum = args.PosToArg(pos);
 
             if (argNum == 1) {

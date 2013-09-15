@@ -4992,13 +4992,13 @@ void    FS_FilenameCompletion( const char *dir, const char *ext,
 }
 
 namespace FS {
-    std::vector<std::string> CompleteFilenameInDir(const std::string& prefix, const std::string& dir,
+    Cmd::CompletionResult CompleteFilenameInDir(const std::string& prefix, const std::string& dir,
                                                    const std::string& extension, bool stripExtension) {
         int nfiles;
         char** filenames = FS_ListFilteredFiles(dir.c_str(), extension.c_str(), nullptr, &nfiles);
         FS_SortFileList(filenames, nfiles);
 
-        std::vector<std::string> res;
+        Cmd::CompletionResult res;
 
         for (int i = 0; i < nfiles; i++) {
             FS_ConvertPath( filenames[ i ] );
@@ -5011,7 +5011,7 @@ namespace FS {
             }
 
             if (Str::IsPrefix(prefix, filename)) {
-                res.push_back(filename);
+                res.push_back({filename, ""});
             }
         }
 

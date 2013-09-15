@@ -627,7 +627,7 @@ std::unordered_map<std::string, proxyInfo_t> proxies;
 char* completeArgs = NULL;
 int completeArgNum = 0;
 
-std::vector<std::string> completeMatches;
+Cmd::CompletionResult completeMatches;
 //Is registered in the new command system for all the commands registered through the C interface.
 class ProxyCmd: public Cmd::CmdBase {
 	public:
@@ -638,7 +638,7 @@ class ProxyCmd: public Cmd::CmdBase {
 			proxy.cmd();
 		}
 
-		std::vector<std::string> Complete(int pos, const Cmd::Args& args) const override {
+		Cmd::CompletionResult Complete(int pos, const Cmd::Args& args) const override {
 			static char buffer[4096];
 			proxyInfo_t proxy = proxies[args.Argv(0)];
 
@@ -656,7 +656,7 @@ class ProxyCmd: public Cmd::CmdBase {
 ProxyCmd myProxyCmd;
 
 void Cmd_OnCompleteMatch(const char* s) {
-    completeMatches.push_back(s);
+    completeMatches.push_back({s, ""});
 }
 /*
 ============
@@ -703,11 +703,11 @@ Cmd_CommandCompletion
 //TODO
 void Cmd_CommandCompletion( void ( *callback )( const char *s ) )
 {
-	auto names = Cmd::CommandNames();
+	auto names = Cmd::CompleteCommandNames();
 
 	for ( auto name: names )
 	{
-		callback( name.c_str() );
+		callback( name.first.c_str() );
 	}
 }
 
@@ -723,10 +723,10 @@ void Cmd_CompleteArgument( const char *command, char *args, int pos )
 	//TODO?
 	completeArgNum = Cmd::Args(args).PosToArg(pos);
 
-	std::vector<std::string> res = Cmd::CompleteArgument(args, pos);
+	auto res = Cmd::CompleteArgument(args, pos);
 
     for (auto& r : res) {
-        Com_Printf("%s\n", r.c_str());
+        Com_Printf("%s\n", r.first.c_str());
     }
 }
 

@@ -54,11 +54,11 @@ namespace Cmd {
                 Cmd::BufferCommandText(command, Cmd::AFTER, true);
             }
 
-            std::vector<std::string> Complete(int pos, const Args& args) const override{
+            Cmd::CompletionResult Complete(int pos, const Args& args) const override{
                 int argNum = args.PosToArg(pos);
 
                 if (argNum == 1) {
-                    return Cvar::CompleteName(args.ArgPrefix(pos));
+                    return Cvar::Complete(args.ArgPrefix(pos));
                 }
 
                 return {};
@@ -201,11 +201,11 @@ namespace Cmd {
                 Cvar::SetValue(cvar, std::to_string(number));
             }
 
-            std::vector<std::string> Complete(int pos, const Args& args) const override{
+            Cmd::CompletionResult Complete(int pos, const Args& args) const override{
                 int argNum = args.PosToArg(pos);
 
                 if (argNum == 1) {
-                    return Cvar::CompleteName(args.ArgPrefix(pos));
+                    return Cvar::Complete(args.ArgPrefix(pos));
                 }
 
                 return {};
@@ -231,11 +231,11 @@ namespace Cmd {
                 Cvar::SetValue(args.Argv(1), res);
             }
 
-            std::vector<std::string> Complete(int pos, const Args& args) const override{
+            Cmd::CompletionResult Complete(int pos, const Args& args) const override{
                 int argNum = args.PosToArg(pos);
 
                 if (argNum >= 1) {
-                    return Cvar::CompleteName(args.ArgPrefix(pos));
+                    return Cvar::Complete(args.ArgPrefix(pos));
                 }
 
                 return {};
@@ -331,11 +331,11 @@ namespace Cmd {
                 Com_Printf(_("valid operators: + - × * ÷ /\n"));
             }
 
-            std::vector<std::string> Complete(int pos, const Args& args) const override{
+            Cmd::CompletionResult Complete(int pos, const Args& args) const override{
                 int argNum = args.PosToArg(pos);
 
                 if (argNum == 1) {
-                    return Cvar::CompleteName(args.ArgPrefix(pos));
+                    return Cvar::Complete(args.ArgPrefix(pos));
                 }
 
                 return {};
@@ -416,11 +416,11 @@ namespace Cmd {
                 Com_Printf(_("-- commands are cvar names unless prefixed with / or \\\n"));
             }
 
-            std::vector<std::string> Complete(int pos, const Args& args) const override{
+            Cmd::CompletionResult Complete(int pos, const Args& args) const override{
                 int argNum = args.PosToArg(pos);
 
                 if (argNum == 4 or argNum == 5) {
-                    return Cvar::CompleteName(args.ArgPrefix(pos));
+                    return Cvar::Complete(args.ArgPrefix(pos));
                 }
 
                 return {};
@@ -481,11 +481,11 @@ namespace Cmd {
                 Cvar::SetValue(name, args.Argv(listStart));
             }
 
-            std::vector<std::string> Complete(int pos, const Cmd::Args& args) const override{
+            Cmd::CompletionResult Complete(int pos, const Cmd::Args& args) const override{
                 int argNum = args.PosToArg(pos);
 
                 if (argNum == 1 or argNum == 2) {
-                    return Cvar::CompleteName(args.ArgPrefix(pos));
+                    return Cvar::Complete(args.ArgPrefix(pos));
                 }
 
                 return {};
@@ -539,11 +539,11 @@ namespace Cmd {
                 Cvar::SetValue(args.Argv(1), va("%i", newValue));
             }
 
-            std::vector<std::string> Complete(int pos, const Cmd::Args& args) const override{
+            Cmd::CompletionResult Complete(int pos, const Cmd::Args& args) const override{
                 int argNum = args.PosToArg(pos);
 
                 if (argNum == 1) {
-                    return Cvar::CompleteName(args.ArgPrefix(pos));
+                    return Cvar::Complete(args.ArgPrefix(pos));
                 }
 
                 return {};
@@ -590,12 +590,12 @@ namespace Cmd {
         }
     }
 
-    std::vector<std::string> CompleteDelayName(const std::string& prefix) {
-        std::vector<std::string> res;
+    Cmd::CompletionResult CompleteDelayName(const std::string& prefix) {
+        Cmd::CompletionResult res;
 
         for (auto& delay: delays) {
             if (Str::IsPrefix(prefix, delay.name)) {
-                res.push_back(delay.name);
+                res.push_back({delay.name, ""});
             }
         }
 
@@ -638,7 +638,7 @@ namespace Cmd {
                 delays.emplace_back(delayRecord_t{name, command, target, type});
             }
 
-            std::vector<std::string> Complete(int pos, const Args& args) const override{
+            Cmd::CompletionResult Complete(int pos, const Args& args) const override{
                 int argNum = args.PosToArg(pos);
 
                 if (argNum == 1) {
@@ -674,7 +674,7 @@ namespace Cmd {
                 }
             }
 
-            std::vector<std::string> Complete(int pos, const Args& args) const override{
+            Cmd::CompletionResult Complete(int pos, const Args& args) const override{
                 int argNum = args.PosToArg(pos);
 
                 if (argNum == 1) {
@@ -727,12 +727,12 @@ namespace Cmd {
         }
     }
 
-    std::vector<std::string> CompleteAliasName(const std::string& prefix) {
-        std::vector<std::string> res;
+    Cmd::CompletionResult CompleteAliasName(const std::string& prefix) {
+        Cmd::CompletionResult res;
 
         for (auto it: aliases) {
             if (Str::IsPrefix(prefix, it.first)) {
-                res.push_back(it.first);
+                res.push_back({it.first, ""});
             }
         }
 
@@ -819,7 +819,7 @@ namespace Cmd {
                 cvar_modifiedFlags |= CVAR_ARCHIVE;
             }
 
-            std::vector<std::string> Complete(int pos, const Args& args) const override{
+            Cmd::CompletionResult Complete(int pos, const Args& args) const override{
                 int argNum = args.PosToArg(pos);
 
                 if (argNum == 1) {
@@ -852,7 +852,7 @@ namespace Cmd {
                 }
             }
 
-            std::vector<std::string> Complete(int pos, const Args& args) const override{
+            Cmd::CompletionResult Complete(int pos, const Args& args) const override{
                 int argNum = args.PosToArg(pos);
 
                 if (argNum == 1) {
