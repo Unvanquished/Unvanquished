@@ -1442,7 +1442,14 @@ static void IN_ProcessEvents( qboolean dropInput )
 				{
 					char *c = e.text.text;
 
-					Com_QueueEvent( 0, SE_CHAR, 0, 0, 0, CopyString( c ) );
+					while ( *c )
+					{
+						int width = Q_UTF8_Width( c );
+						char *tc = ( char * ) Z_Malloc( width + 1 );
+						memcpy( tc, c, width );
+						Com_QueueEvent( 0, SE_CHAR, width, 0, 0, tc );
+						c+=width;
+					}
 				}
 				break;
 			case SDL_MOUSEMOTION:
