@@ -1692,6 +1692,10 @@ if( BUILD_CLIENT )
     set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS ZLIB_WINAPI )
   endif()
 
+  if( NOT WIN32 )
+    target_link_libraries( client pthread )
+  endif()
+
   # This section finds and provides REQUIRED dependencies to target client
   find_package( OpenGL REQUIRED )
   find_package( SDL2 REQUIRED )
