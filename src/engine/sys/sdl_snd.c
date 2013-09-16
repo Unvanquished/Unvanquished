@@ -49,6 +49,8 @@ static void SNDDMA_AudioCallback( void *userdata, Uint8 *stream, int len )
 {
 	int pos = ( dmapos * ( dma.samplebits / 8 ) );
 
+	memset( stream, 0, len );
+
 	if ( pos >= dmasize )
 	{
 		dmapos = pos = 0;
