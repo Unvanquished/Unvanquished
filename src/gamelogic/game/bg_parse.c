@@ -532,6 +532,10 @@ static int ParseSlotList(char** text)
 		{
 			slots |= SLOT_SIDEARM;
 		}
+		else if ( !Q_stricmp( token, "grenade" ) )
+		{
+			slots |= SLOT_GRENADE;
+		}
 		else
 		{
 			Com_Printf( S_ERROR "unknown slot '%s'\n", token );

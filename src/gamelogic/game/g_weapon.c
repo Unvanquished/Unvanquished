@@ -657,6 +657,62 @@ static void FireGrenade( gentity_t *self )
 /*
 ======================================================================
 
+FIREBOMB
+
+======================================================================
+*/
+
+#define FIREBOMB_SUBMISSILE_COUNT 15
+#define FIREBOMB_IGNITE_RANGE     192
+#define FIREBOMB_TIMER            4000
+
+static void FirebombMissileThink( gentity_t *self )
+{
+	gentity_t *neighbor, *m;
+	int       subMissileNum;
+	vec3_t    dir, upwards = { 0.0f, 0.0f, 1.0f };
+
+	// ignite alien buildables in range
+	neighbor = NULL;
+	while ( neighbor = G_IterateEntitiesWithinRadius( neighbor, self->s.origin, FIREBOMB_IGNITE_RANGE ) )
+	{
+		if ( neighbor->s.eType == ET_BUILDABLE && neighbor->buildableTeam == TEAM_ALIENS &&
+		     G_LineOfSight( self, neighbor ) )
+		{
+				G_IgniteBuildable( neighbor, self->parent );
+		}
+	}
+
+	// set floor below on fire (assumes the firebomb lays on the floor!)
+	G_SpawnFire( self->s.origin, upwards, self->parent );
+
+	// spam fire
+	for ( subMissileNum = 0; subMissileNum < FIREBOMB_SUBMISSILE_COUNT; subMissileNum++ )
+	{
+		dir[ 0 ] = ( rand() / ( float )RAND_MAX ) - 0.5f;
+		dir[ 1 ] = ( rand() / ( float )RAND_MAX ) - 0.5f;
+		dir[ 2 ] = ( rand() / ( float )RAND_MAX ) * 0.5f;
+
+		VectorNormalize( dir );
+
+		m = G_SpawnMissile( MIS_FIREBOMB_SUB, self, self->s.origin, dir, NULL, G_FreeEntity, level.time + 10000 );
+
+		// randomize missile speed
+		VectorScale( m->s.pos.trDelta, ( rand() / ( float )RAND_MAX ) + 0.5f, m->s.pos.trDelta );
+	}
+
+	// explode
+	G_ExplodeMissile( self );
+}
+
+void FireFirebomb( gentity_t *self )
+{
+	G_SpawnMissile( MIS_FIREBOMB, self, muzzle, forward, NULL, FirebombMissileThink, level.time + FIREBOMB_TIMER );
+}
+
+/*
+======================================================================
+
 LAS GUN
 
 ======================================================================
@@ -1867,6 +1923,10 @@ void G_FireUpgrade( gentity_t *self, upgrade_t upgrade )
 	{
 		case UP_GRENADE:
 			FireGrenade( self );
+			break;
+
+		case UP_FIREBOMB:
+			FireFirebomb( self );
 			break;
 	}
 }

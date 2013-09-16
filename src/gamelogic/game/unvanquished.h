@@ -211,8 +211,9 @@ extern int   LEVEL4_CRUSH_REPEAT;
 #define CREEP_ARMOUR_MODIFIER   0.75f
 #define CREEP_SCALEDOWN_TIME    3000
 
+// TODO: Increase burn damage frequencies, make sure burn functions are called frequently
 #define BURN_DAMAGE             10
-#define BURN_DAMAGE_PERIOD      1000 // high, so we don't get popcorn sound with all the damage anims
+#define BURN_DAMAGE_PERIOD      1000
 #define BURN_SPLDAMAGE          10
 #define BURN_SPLDAMAGE_RADIUS   60
 #define BURN_SPLDAMAGE_PERIOD   500
@@ -221,7 +222,7 @@ extern int   LEVEL4_CRUSH_REPEAT;
 #define BURN_SPREAD_PERIOD      1000
 #define BURN_SPREAD_CHANCE      0.2f
 #define BURN_SPREAD_RADIUS      100
-#define BURN_PERIODS_RAND       0.2
+#define BURN_PERIODS_RAND       0.2  // randomization applied to all burn periods
 
 #define PCLOUD_MODIFIER         0.5f
 #define PCLOUD_ARMOUR_MODIFIER  0.75f

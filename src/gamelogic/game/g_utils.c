@@ -917,3 +917,17 @@ gentity_t *G_SpawnFire( vec3_t origin, vec3_t normal, gentity_t *fireStarter )
 
 	return fire;
 }
+
+qboolean G_LineOfSight( gentity_t *ent1, gentity_t *ent2 )
+{
+	trace_t trace;
+
+	if ( !ent1 || !ent2 )
+	{
+		return qfalse;
+	}
+
+	trap_Trace( &trace, ent1->s.origin, NULL, NULL, ent2->s.origin, ent1->s.number, CONTENTS_SOLID );
+
+	return ( trace.entityNum != ENTITYNUM_WORLD );
+}

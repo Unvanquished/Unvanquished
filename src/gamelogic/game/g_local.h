@@ -1026,6 +1026,7 @@ void       G_TeamToClientmask( team_t team, int *loMask, int *hiMask );
 
 void       G_FireThink( gentity_t *self );
 gentity_t  *G_SpawnFire(vec3_t origin, vec3_t normal, gentity_t *fireStarter );
+qboolean   G_LineOfSight( gentity_t *ent1, gentity_t *ent2 );
 
 //
 // g_combat.c

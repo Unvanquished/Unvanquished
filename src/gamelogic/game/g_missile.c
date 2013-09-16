@@ -168,12 +168,12 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 		return;
 	}
 
-	if ( !strcmp( ent->classname, "grenade" ) )
+	if ( !strcmp( ent->classname, "grenade" ) || !strcmp( ent->classname, "firebomb" ) )
 	{
-		//grenade doesn't explode on impact
+		// grenade doesn't explode on impact
 		BounceMissile( ent, trace );
 
-		//only play a sound if requested
+		// only play a sound if requested
 		if ( !( ent->s.eFlags & EF_NO_BOUNCE_SOUND ) )
 		{
 			G_AddEvent( ent, EV_GRENADE_BOUNCE, 0 );
@@ -218,6 +218,20 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 			{
 				G_SpawnFire( trace->endpos, trace->plane.normal, ent->parent );
 			}
+		}
+	}
+	else if ( !strcmp( ent->classname, "firebomb_sub" ) )
+	{
+		// ignite alien buildables on direct hit
+		if ( other->s.eType == ET_BUILDABLE && other->buildableTeam == TEAM_ALIENS )
+		{
+			G_IgniteBuildable( other, ent->parent );
+		}
+
+		// set the environment on fire
+		if ( other->s.number == ENTITYNUM_WORLD )
+		{
+			G_SpawnFire( trace->endpos, trace->plane.normal, ent->parent );
 		}
 	}
 	else if ( !strcmp( ent->classname, "lockblob" ) )
