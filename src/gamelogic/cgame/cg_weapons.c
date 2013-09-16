@@ -63,15 +63,9 @@ void CG_RegisterUpgrade( int upgradeNum )
 
 	upgradeInfo->humanName = BG_Upgrade( upgradeNum )->humanName;
 
-	//la la la la la, i'm not listening!
-	if ( upgradeNum == UP_GRENADE )
+	if ( icon = BG_Upgrade( upgradeNum )->icon )
 	{
-		upgradeInfo->upgradeIcon = cg_weapons[ WP_GRENADE ].weaponIcon;
-	}
-	else if ( ( icon = BG_Upgrade( upgradeNum )->icon ) )
-	{
-		upgradeInfo->upgradeIcon = trap_R_RegisterShader(icon,
-								 RSF_DEFAULT);
+		upgradeInfo->upgradeIcon = trap_R_RegisterShader( icon, RSF_DEFAULT );
 	}
 }
 

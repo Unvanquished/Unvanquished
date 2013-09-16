@@ -1816,10 +1816,6 @@ void G_FireWeapon( gentity_t *self )
 			FirePainsaw( self );
 			break;
 
-		case WP_GRENADE:
-			FireGrenade( self );
-			break;
-
 		case WP_LOCKBLOB_LAUNCHER:
 			FireLockblob( self );
 			break;
@@ -1846,6 +1842,31 @@ void G_FireWeapon( gentity_t *self )
 			break;
 
 		default:
+			break;
+	}
+}
+
+void G_FireUpgrade( gentity_t *self, upgrade_t upgrade )
+{
+	if ( !self || !self->client )
+	{
+		Com_Printf( S_WARNING "G_FireUpgrade: Called with non-player parameter.\n" );
+		return;
+	}
+
+	if ( upgrade <= UP_NONE || upgrade >= UP_NUM_UPGRADES )
+	{
+		Com_Printf( S_WARNING "G_FireUpgrade: Called with unknown upgrade.\n" );
+		return;
+	}
+
+	AngleVectors( self->client->ps.viewangles, forward, right, up );
+	G_CalcMuzzlePoint( self, forward, right, up, muzzle );
+
+	switch ( upgrade )
+	{
+		case UP_GRENADE:
+			FireGrenade( self );
 			break;
 	}
 }

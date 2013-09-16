@@ -541,7 +541,6 @@ static const weaponData_t bg_weaponsData[] =
 	{ WP_FLAMER,            "flamer"    },
 	{ WP_PULSE_RIFLE,       "prifle"    },
 	{ WP_LUCIFER_CANNON,    "lcannon"   },
-	{ WP_GRENADE,           "grenade"   },
 	{ WP_LOCKBLOB_LAUNCHER, "lockblob"  },
 	{ WP_HIVE,              "hive"      },
 	{ WP_TESLAGEN,          "teslagen"  },

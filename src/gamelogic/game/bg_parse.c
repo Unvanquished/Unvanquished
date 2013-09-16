@@ -203,10 +203,6 @@ float PAINSAW_RANGE;
 float PAINSAW_WIDTH;
 float PAINSAW_HEIGHT;
 
-int   GRENADE_DAMAGE;
-float GRENADE_RANGE;
-float GRENADE_SPEED;
-
 int   SHOTGUN_PELLETS;
 int   SHOTGUN_SPREAD;
 int   SHOTGUN_DMG;
@@ -323,10 +319,6 @@ static configVar_t bg_configVars[] =
 	{"w_flamer_size", INTEGER, qfalse, &FLAMER_SIZE },
 	{"w_flamer_speed", FLOAT, qfalse, &FLAMER_SPEED },
 	{"w_flamer_splashDamage", INTEGER, qfalse, &FLAMER_SPLASHDAMAGE },
-
-	{"w_grenade_damage", INTEGER, qfalse, &GRENADE_DAMAGE },
-	{"w_grenade_range", FLOAT, qfalse, &GRENADE_RANGE },
-	{"w_grenade_speed", FLOAT, qfalse, &GRENADE_SPEED },
 
 	{"w_lcannon_chargeAmmo", INTEGER, qfalse, &LCANNON_CHARGE_AMMO },
 	{"w_lcannon_chargeTimeMax", INTEGER, qfalse, &LCANNON_CHARGE_TIME_MAX },

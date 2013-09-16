@@ -310,10 +310,6 @@ extern float PAINSAW_RANGE;
 extern float PAINSAW_WIDTH;
 extern float PAINSAW_HEIGHT;
 
-extern int   GRENADE_DAMAGE;
-extern float GRENADE_RANGE;
-extern float GRENADE_SPEED;
-
 extern int   SHOTGUN_DMG;
 extern int   SHOTGUN_RANGE;
 extern int   SHOTGUN_PELLETS;

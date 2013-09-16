@@ -360,6 +360,7 @@ typedef enum
   WP_ALEVEL3_UPG,
   WP_ALEVEL4,
 
+  // there is some ugly code that assumes WP_BLASTER is the first human weapon
   WP_BLASTER,
   WP_MACHINEGUN,
   WP_PAIN_SAW,
@@ -370,18 +371,16 @@ typedef enum
   WP_FLAMER,
   WP_PULSE_RIFLE,
   WP_LUCIFER_CANNON,
-  WP_GRENADE,
 
   WP_LOCKBLOB_LAUNCHER,
   WP_HIVE,
   WP_TESLAGEN,
   WP_MGTURRET,
 
-  //build weapons must remain in a block
+  // build weapons must remain in a block ← I'm not asking why but I can imagine
   WP_ABUILD,
   WP_ABUILD2,
   WP_HBUILD,
-  //ok?
 
   WP_NUM_WEAPONS
 } weapon_t;

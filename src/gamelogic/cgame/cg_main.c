@@ -642,10 +642,6 @@ static void CG_SetPVars( void )
 			trap_Cvar_Set( "p_weaponname", "Lucifier cannon" );
 			break;
 
-		case WP_GRENADE:
-			trap_Cvar_Set( "p_weaponname", "Grenade" );
-			break;
-
 		case WP_ALEVEL0:
 		case WP_ALEVEL0_UPG:
 			trap_Cvar_Set( "p_weaponname", "Teeth" );

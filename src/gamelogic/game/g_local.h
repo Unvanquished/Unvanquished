@@ -1095,6 +1095,7 @@ void     G_ClearPlayerZapEffects( gentity_t *player );
 void     G_FireWeapon( gentity_t *self );
 void     G_FireWeapon2( gentity_t *self );
 void     G_FireWeapon3( gentity_t *self );
+void     G_FireUpgrade( gentity_t *self, upgrade_t upgrade );
 
 //
 // g_client.c
