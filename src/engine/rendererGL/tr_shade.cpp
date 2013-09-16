@@ -133,7 +133,10 @@ void GLSL_InitGPUShaders( void )
 
 	gl_shaderManager.load( gl_motionblurShader );
 
-	gl_shaderManager.load( gl_fxaaShader );
+	if ( !glBroken.FXAA )
+	{
+		gl_shaderManager.load( gl_fxaaShader );
+        }
 
 	if ( !r_lazyShaders->integer )
 	{
