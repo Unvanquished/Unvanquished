@@ -424,7 +424,7 @@ static void CG_LaunchMissile( centity_t *cent )
 	trailSystem_t             *ts;
 
 	es = &cent->currentState;
-	ma = BG_Missile( es->modelindex );
+	ma = BG_Missile( es->weapon );
 
 	if ( ma->particleSystem )
 	{
@@ -462,7 +462,7 @@ static void CG_Missile( centity_t *cent )
 	const missileAttributes_t *ma;
 
 	es = &cent->currentState;
-	ma = BG_Missile( es->modelindex );
+	ma = BG_Missile( es->weapon );
 
 	// calculate the axis
 	VectorCopy( es->angles, cent->lerpAngles );

@@ -369,15 +369,10 @@ void G_ExplodeMissile( gentity_t *ent )
 	dir[ 0 ] = dir[ 1 ] = 0;
 	dir[ 2 ] = 1;
 
-	ent->s.eType = ET_GENERAL;
-
-	if ( ent->s.weapon != WP_LOCKBLOB_LAUNCHER &&
-	     ent->s.weapon != WP_FLAMER )
-	{
-		G_AddEvent( ent, EV_MISSILE_HIT_ENVIRONMENT, DirToByte( dir ) );
-	}
-
+	// turn the missile into an event carrier
+	ent->s.eType = ET_INVISIBLE;
 	ent->freeAfterEvent = qtrue;
+	G_AddEvent( ent, EV_MISSILE_HIT_ENVIRONMENT, DirToByte( dir ) );
 
 	// splash damage
 	if ( ent->splashDamage )
@@ -509,7 +504,7 @@ gentity_t *G_SpawnMissile( missile_t missile, gentity_t *parent, vec3_t start, v
 	m->nextthink           = nextthink;
 
 	// from attribute config file
-	m->s.modelindex        = ma->number; // TODO: Check if modelindex is usable
+	m->s.weapon            = ma->number;
 	m->classname           = ma->name;
 	m->pointAgainstWorld   = ma->pointAgainstWorld;
 	m->damage              = ma->damage;

@@ -2724,7 +2724,7 @@ void CG_HandleMissileHitEntity( entityState_t *es, vec3_t origin )
 	centity_t                 *victim;
 
 	// retrieve data from event
-	ma          = BG_Missile( es->modelindex );
+	ma          = BG_Missile( es->weapon );
 	victimNum   = es->otherEntityNum;
 	//attackerNum = es->otherEntityNum2;
 	psCharge    = es->torsoAnim;
@@ -2764,7 +2764,7 @@ void CG_HandleMissileHitWall( entityState_t *es, vec3_t origin )
 	vec3_t                    normal;
 
 	// retrieve data from event
-	ma          = BG_Missile( es->modelindex );
+	ma          = BG_Missile( es->weapon );
 	//victimNum   = es->otherEntityNum;
 	//attackerNum = es->otherEntityNum2;
 	psCharge    = es->torsoAnim;
