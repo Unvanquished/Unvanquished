@@ -1927,7 +1927,7 @@ CL_CharEvent
 Characters, already shifted/capslocked/etc.
 ===================
 */
-void CL_CharEvent( const char *key )
+void CL_CharEvent( int c )
 {
 	// the console key should never be used as a char
 	// ydnar: added uk equivalent of shift+`
@@ -1939,22 +1939,22 @@ void CL_CharEvent( const char *key )
 	// distribute the key down event to the appropriate handler
 	if ( cls.keyCatchers & KEYCATCH_CONSOLE )
 	{
-		Field_CharEvent( &g_consoleField, key );
+		Field_CharEvent( &g_consoleField, Q_UTF8_Unstore( c ) );
 	}
 	else if ( cls.keyCatchers & KEYCATCH_UI )
 	{
 		// VMs that don't support i18n distinguish between char and key events by looking at the 11th least significant bit.
 		// Patched VMs look at the second least significant bit to determine whether the event is a char event, and at the third bit
 		// to determine the original 11th least significant bit of the key.
-		VM_Call( uivm, UI_KEY_EVENT, Q_UTF8_Store( key ) | (1 << (K_CHAR_BIT - 1)),
+		VM_Call( uivm, UI_KEY_EVENT, c | (1 << (K_CHAR_BIT - 1)),
 				(qtrue << KEYEVSTATE_DOWN) |
 				(qtrue << KEYEVSTATE_CHAR) |
-				((Q_UTF8_Store( key ) & (1 << (K_CHAR_BIT - 1))) >> ((K_CHAR_BIT - 1) - KEYEVSTATE_BIT)) |
+				((c & (1 << (K_CHAR_BIT - 1))) >> ((K_CHAR_BIT - 1) - KEYEVSTATE_BIT)) |
 				(qtrue << KEYEVSTATE_SUP) );
 	}
 	else if ( cls.state == CA_DISCONNECTED )
 	{
-		Field_CharEvent( &g_consoleField, key );
+		Field_CharEvent( &g_consoleField, Q_UTF8_Unstore( c ) );
 	}
 }
 

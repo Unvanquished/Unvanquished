@@ -2655,7 +2655,7 @@ int Com_EventLoop( void )
 				}
 
 #endif
-				CL_CharEvent( (const char *)ev.evPtr );
+				CL_CharEvent( ev.evValue );
 				break;
 
 			case SE_MOUSE:

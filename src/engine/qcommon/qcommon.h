@@ -988,7 +988,7 @@ void     CL_Frame( int msec );
 qboolean CL_GameCommand( void );
 void     CL_KeyEvent( int key, qboolean down, unsigned time );
 
-void     CL_CharEvent( const char *key );
+void     CL_CharEvent( int c );
 
 // char events are for field typing, not game control
 
