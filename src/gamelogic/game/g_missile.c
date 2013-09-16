@@ -110,33 +110,33 @@ static float MissileTimePowerMod( gentity_t *self, missileTimePowerMod_t type,
 	}
 }
 
-static float MissileTimeDmgMod( gentity_t *ent )
+static float MissileTimeDmgMod( gentity_t *self )
 {
-	if ( !strcmp( ent->classname, "lcannon" ) )
+	switch ( self->s.weapon )
 	{
-		return MissileTimePowerMod( ent, MTPR_EXPONENTIAL_DECREASE, 1.0f, 0.0f,
-		                            LCANNON_DAMAGE_FULL_TIME, LCANNON_DAMAGE_HALF_LIFE );
-	}
-	else if ( !strcmp( ent->classname, "pulse" ) )
-	{
-		return MissileTimePowerMod( ent, MTPR_EXPONENTIAL_DECREASE, 1.0f, 0.0f,
-		                            PRIFLE_DAMAGE_FULL_TIME, PRIFLE_DAMAGE_HALF_LIFE );
-	}
-	else if ( !strcmp( ent->classname, "flame" ) )
-	{
-		return MissileTimePowerMod( ent, MTPR_LINEAR_DECREASE, 1.0f, FLAMER_DAMAGE_MAXDST_MOD,
-		                            0, FLAMER_LIFETIME );
+		case MIS_FLAMER:
+			return MissileTimePowerMod( self, MTPR_LINEAR_DECREASE, 1.0f, FLAMER_DAMAGE_MAXDST_MOD,
+			                            0, FLAMER_LIFETIME );
+
+		case MIS_LCANNON:
+			return MissileTimePowerMod( self, MTPR_EXPONENTIAL_DECREASE, 1.0f, 0.0f,
+			                            LCANNON_DAMAGE_FULL_TIME, LCANNON_DAMAGE_HALF_LIFE );
+
+		case MIS_PRIFLE:
+			return MissileTimePowerMod( self, MTPR_EXPONENTIAL_DECREASE, 1.0f, 0.0f,
+			                            PRIFLE_DAMAGE_FULL_TIME, PRIFLE_DAMAGE_HALF_LIFE );
 	}
 
 	return 1.0f;
 }
 
-static float MissileTimeSplashDmgMod( gentity_t *ent )
+static float MissileTimeSplashDmgMod( gentity_t *self )
 {
-	if ( !strcmp( ent->classname, "flame" ) )
+	switch ( self->s.weapon )
 	{
-		return MissileTimePowerMod( ent, MTPR_LINEAR_INCREASE, FLAMER_SPLASH_MINDST_MOD, 1.0f,
-			                        0, FLAMER_LIFETIME );
+		case MIS_FLAMER:
+			return MissileTimePowerMod( self, MTPR_LINEAR_INCREASE, FLAMER_SPLASH_MINDST_MOD, 1.0f,
+										0, FLAMER_LIFETIME );
 	}
 
 	return 1.0f;
