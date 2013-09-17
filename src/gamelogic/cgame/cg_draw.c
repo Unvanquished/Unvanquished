@@ -3428,9 +3428,7 @@ static void CG_DrawCrosshairIndicator( rectDef_t *rect, vec4_t color)
 	}
 
 	// glow red if enemy is targeted
-	if ( cg.time == cg.crosshairClientTime ||
-	     cg.crosshairBuildableIsEnemy == 1 ||
-	     cg.crosshairIsOnEnemy == 1 )
+	if ( cg.crosshairFoe )
 	{
 		Vector4Copy( colorRed, localColor );
 		dim = 0.8f;
@@ -3465,9 +3463,6 @@ static void CG_DrawCrosshairIndicator( rectDef_t *rect, vec4_t color)
 		CG_DrawPic( x, y, w, h, indicator );
 		trap_R_SetColor( NULL );
 	}
-
-	cg.crosshairIsOnEnemy = -1;
-	cg.crosshairBuildableIsEnemy = 0;
 }
 
 /*
@@ -3526,10 +3521,11 @@ static void CG_DrawCrosshair( rectDef_t *rect, vec4_t color )
 
 	Vector4Copy( color, localColor );
 
-	//aiming at a friendly player/buildable, dim the crosshair
-	if ( cg.time == cg.crosshairClientTime || cg.crosshairBuildable >= 0 )
+	// aiming at a friendly player/buildable, dim the crosshair
+	if ( cg.crosshairFriend )
 	{
 		int i;
+
 		for ( i = 0; i < 3; i++ )
 		{
 			localColor[ i ] *= .5f;
@@ -3551,10 +3547,13 @@ CG_ScanForCrosshairEntity
 */
 static void CG_ScanForCrosshairEntity( void )
 {
-	trace_t trace;
-	vec3_t  start, end;
-	int     content;
-	team_t  team;
+	trace_t       trace;
+	vec3_t        start, end;
+	team_t        ownTeam, targetTeam;
+	entityState_t *targetState;
+
+	cg.crosshairFriend = qfalse;
+	cg.crosshairFoe    = qfalse;
 
 	VectorCopy( cg.refdef.vieworg, start );
 	VectorMA( start, 131072, cg.refdef.viewaxis[ 0 ], end );
@@ -3562,60 +3561,66 @@ static void CG_ScanForCrosshairEntity( void )
 	CG_Trace( &trace, start, vec3_origin, vec3_origin, end,
 	          cg.snap->ps.clientNum, CONTENTS_SOLID | CONTENTS_BODY );
 
-	// if the player is in fog, don't show it
-	content = trap_CM_PointContents( trace.endpos, 0 );
-
-	if ( content & CONTENTS_FOG )
+	// ignore special entities
+	if ( trace.entityNum > ENTITYNUM_MAX_NORMAL )
 	{
 		return;
 	}
 
+	// ignore targets in fog
+	if ( trap_CM_PointContents( trace.endpos, 0 ) & CONTENTS_FOG )
+	{
+		return;
+	}
+
+	ownTeam = cg.snap->ps.persistant[ PERS_TEAM ];
+
 	if ( trace.entityNum >= MAX_CLIENTS )
 	{
-		entityState_t *s = &cg_entities[ trace.entityNum ].currentState;
+		// we have a non-client entity
+		targetState = &cg_entities[ trace.entityNum ].currentState;
 
-		if ( s->eType == ET_BUILDABLE && BG_Buildable( s->modelindex )->team ==
-		     cg.snap->ps.persistant[ PERS_TEAM ] )
+		// set friend/foe if it's a buildable
+		if ( targetState->eType == ET_BUILDABLE )
 		{
-			cg.crosshairBuildable = trace.entityNum;
-		}
-		// indicator related
-		else if ( s->eType == ET_BUILDABLE && BG_Buildable( s->modelindex )->team !=
-		          cg.snap->ps.persistant[ PERS_TEAM ] )
-		{
-			cg.crosshairBuildableIsEnemy = 1;
+			targetTeam = BG_Buildable( targetState->modelindex )->team;
+
+			if ( targetTeam == ownTeam )
+			{
+				cg.crosshairFriend = qtrue;
+			}
+			else if ( targetTeam != TEAM_NONE )
+			{
+				cg.crosshairFoe = qtrue;
+			}
 		}
 
-		else
-		{
-			cg.crosshairBuildable = -1;
-		}
-
-		if ( cg_drawEntityInfo.integer && s->eType )
+		// set more stuff if requested
+		if ( cg_drawEntityInfo.integer && targetState->eType )
 		{
 			cg.crosshairClientNum = trace.entityNum;
 			cg.crosshairClientTime = cg.time;
 		}
-
-		return;
 	}
-
-	team = cgs.clientinfo[ trace.entityNum ].team;
-
-	if ( cg.snap->ps.persistant[ PERS_TEAM ] != TEAM_NONE )
+	else
 	{
-		//only display team names of those on the same team as this player
-		if ( team != cg.snap->ps.persistant[ PERS_TEAM ] )
+		// we have a client entitiy
+		targetTeam = cgs.clientinfo[ trace.entityNum ].team;
+
+		// set friend/foe
+		if ( targetTeam == ownTeam )
 		{
-			//indicator related
-			cg.crosshairIsOnEnemy = 1;
-			return;
+			cg.crosshairFriend = qtrue;
+
+			// only set this for friendly clients as it triggers name display
+			cg.crosshairClientNum = trace.entityNum;
+			cg.crosshairClientTime = cg.time;
+		}
+		else if ( targetTeam != TEAM_NONE )
+		{
+			cg.crosshairFoe = qtrue;
 		}
 	}
-
-	// update the fade timer
-	cg.crosshairClientNum = trace.entityNum;
-	cg.crosshairClientTime = cg.time;
 }
 
 /*

@@ -1053,11 +1053,10 @@ typedef struct
 	int  centerPrintLines;
 
 	// crosshair client ID
-	int crosshairBuildable;
-	int crosshairBuildableIsEnemy;
-	int crosshairClientNum;
-	int crosshairClientTime;
-	int crosshairIsOnEnemy;
+	int      crosshairClientNum;
+	int      crosshairClientTime;
+	qboolean crosshairFriend;
+	qboolean crosshairFoe;
 
 	// attacking player
 	int attackerTime;
