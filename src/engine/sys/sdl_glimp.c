@@ -538,6 +538,16 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 	{
 		display = SDL_GetWindowDisplayIndex( window );
 	}
+	else
+	{
+		// create a hidden window to get desktop display information
+		window = SDL_CreateWindow( "test window", x, y, 0, 0, SDL_WINDOW_HIDDEN  );
+
+		if ( window )
+		{
+			display = SDL_GetWindowDisplayIndex( window );
+		}
+	}
 
 	if ( SDL_GetDesktopDisplayMode( display, &desktopMode ) == 0 )
 	{
