@@ -1058,6 +1058,9 @@ typedef struct
 	qboolean crosshairFriend;
 	qboolean crosshairFoe;
 
+	// whether we hit
+	int hitTime;
+
 	// attacking player
 	int attackerTime;
 

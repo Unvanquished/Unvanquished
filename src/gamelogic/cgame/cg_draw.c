@@ -3398,19 +3398,17 @@ CROSSHAIR
 
 ================================================================================
 */
-/*
-=================
-CG_DrawCrosshairIndicator
-=================
-*/
-static void CG_DrawCrosshairIndicator( rectDef_t *rect, vec4_t color)
+
+#define CROSSHAIR_INDICATOR_HITFADE 500
+
+static void CG_DrawCrosshairIndicator( rectDef_t *rect, vec4_t color )
 {
 	float        x, y, w, h, dim;
 	qhandle_t    indicator;
-	vec4_t       localColor;
+	vec4_t       drawColor, baseColor;
 	weapon_t     weapon;
 	weaponInfo_t *wi;
-	int i;
+	qboolean     onRelevantEntity;
 
 	if ( cg_drawCrosshair.integer == CROSSHAIR_ALWAYSOFF ||
 	     cg.snap->ps.persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT ||
@@ -3427,39 +3425,66 @@ static void CG_DrawCrosshairIndicator( rectDef_t *rect, vec4_t color)
 		return;
 	}
 
-	// glow red if enemy is targeted
-	if ( cg.crosshairFoe )
+	wi = &cg_weapons[ weapon ];
+	indicator = wi->crossHairIndicator;
+
+	if ( !indicator )
 	{
-		Vector4Copy( colorRed, localColor );
-		dim = 0.8f;
+		return;
+	}
+
+	// set base color
+	if ( !BG_Weapon( weapon )->longRanged )
+	{
+		Vector4Set( baseColor, 1.0f, 1.0f, 1.0f, 0.0f );
+		onRelevantEntity = qfalse;
+	}
+	else if ( cg.crosshairFoe )
+	{
+		Vector4Copy( colorRed, baseColor );
+		baseColor[ 3 ] = color[ 3 ] * 0.75f;
+		onRelevantEntity = qtrue;
+	}
+	else if ( cg.crosshairFriend )
+	{
+		Vector4Copy( colorGreen, baseColor );
+		baseColor[ 3 ] = color[ 3 ] * 0.75f;
+		onRelevantEntity = qtrue;
 	}
 	else
 	{
-		Vector4Copy( color, localColor );
-		dim = 0.5f;
+		Vector4Set( baseColor, 1.0f, 1.0f, 1.0f, 0.0f );
+		onRelevantEntity = qfalse;
 	}
 
-	// dim color
-	for ( i = 0; i < 3; i++ )
+	// add hit color
+	if ( cg.hitTime + CROSSHAIR_INDICATOR_HITFADE > cg.time )
 	{
-		localColor[ i ] *= dim;
+		dim = ( ( cg.hitTime + CROSSHAIR_INDICATOR_HITFADE ) - cg.time ) / ( float )CROSSHAIR_INDICATOR_HITFADE;
+
+		Vector4Lerp( dim, baseColor, colorWhite, drawColor );
+	}
+	else if ( !onRelevantEntity )
+	{
+		return;
+	}
+	else
+	{
+		Vector4Copy( baseColor, drawColor );
 	}
 
-	wi = &cg_weapons[ weapon ];
-
+	// set size
 	w = h = wi->crossHairSize * cg_crosshairSize.value;
 	w *= cgDC.aspectScale;
 
-	//FIXME: this still ignores the width/height of the rect, but at least it's
-	//neater than cg_crosshairX/cg_crosshairY
+	// HACK: This ignores the width/height of the rect (does it?)
 	x = rect->x + ( rect->w / 2 ) - ( w / 2 );
 	y = rect->y + ( rect->h / 2 ) - ( h / 2 );
 
-	indicator = wi->crossHairIndicator;
-
+	// draw
 	if ( indicator )
 	{
-		trap_R_SetColor( localColor );
+		trap_R_SetColor( drawColor );
 		CG_DrawPic( x, y, w, h, indicator );
 		trap_R_SetColor( NULL );
 	}
@@ -3512,25 +3537,13 @@ static void CG_DrawCrosshair( rectDef_t *rect, vec4_t color )
 	w = h = wi->crossHairSize * cg_crosshairSize.value;
 	w *= cgDC.aspectScale;
 
-	//FIXME: this still ignores the width/height of the rect, but at least it's
-	//neater than cg_crosshairX/cg_crosshairY
+	// HACK: This ignores the width/height of the rect (does it?)
 	x = rect->x + ( rect->w / 2 ) - ( w / 2 );
 	y = rect->y + ( rect->h / 2 ) - ( h / 2 );
 
 	crosshair = wi->crossHair;
 
 	Vector4Copy( color, localColor );
-
-	// aiming at a friendly player/buildable, dim the crosshair
-	if ( cg.crosshairFriend )
-	{
-		int i;
-
-		for ( i = 0; i < 3; i++ )
-		{
-			localColor[ i ] *= .5f;
-		}
-	}
 
 	if ( crosshair )
 	{
@@ -3580,8 +3593,8 @@ static void CG_ScanForCrosshairEntity( void )
 		// we have a non-client entity
 		targetState = &cg_entities[ trace.entityNum ].currentState;
 
-		// set friend/foe if it's a buildable
-		if ( targetState->eType == ET_BUILDABLE )
+		// set friend/foe if it's a living buildable
+		if ( targetState->eType == ET_BUILDABLE && targetState->generic1 > 0 )
 		{
 			targetTeam = BG_Buildable( targetState->modelindex )->team;
 
@@ -3607,18 +3620,22 @@ static void CG_ScanForCrosshairEntity( void )
 		// we have a client entitiy
 		targetTeam = cgs.clientinfo[ trace.entityNum ].team;
 
-		// set friend/foe
-		if ( targetTeam == ownTeam )
+		// only react to living clients
+		if ( targetState->generic1 > 0 )
 		{
-			cg.crosshairFriend = qtrue;
+			// set friend/foe
+			if ( targetTeam == ownTeam )
+			{
+				cg.crosshairFriend = qtrue;
 
-			// only set this for friendly clients as it triggers name display
-			cg.crosshairClientNum = trace.entityNum;
-			cg.crosshairClientTime = cg.time;
-		}
-		else if ( targetTeam != TEAM_NONE )
-		{
-			cg.crosshairFoe = qtrue;
+				// only set this for friendly clients as it triggers name display
+				cg.crosshairClientNum = trace.entityNum;
+				cg.crosshairClientTime = cg.time;
+			}
+			else if ( targetTeam != TEAM_NONE )
+			{
+				cg.crosshairFoe = qtrue;
+			}
 		}
 	}
 }

@@ -582,6 +582,8 @@ typedef enum
   EV_RPTUSE_SOUND, // trigger a sound
   EV_LEV2_ZAP,
 
+  EV_HIT, // notify client of a hit
+
   EV_CONFIDENCE // notify client of generated confidence
 } entity_event_t;
 

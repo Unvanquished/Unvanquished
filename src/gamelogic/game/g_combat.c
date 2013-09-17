@@ -1086,6 +1086,20 @@ void G_SelectiveDamage( gentity_t *targ, gentity_t *inflictor, gentity_t *attack
 	}
 }
 
+void NotifyClientOfHit( gentity_t *attacker )
+{
+	gentity_t *event;
+
+	if ( !attacker->client )
+	{
+		return;
+	}
+
+	event = G_NewTempEntity( attacker->s.origin, EV_HIT );
+	event->r.svFlags = SVF_SINGLECLIENT;
+	event->r.singleClient = attacker->client->ps.clientNum;
+}
+
 void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
                vec3_t dir, vec3_t point, int damage, int dflags, int mod )
 {
@@ -1356,10 +1370,13 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 				loss = take;
 			}
 
-			// add to the attackers "account" on the target
 			if ( attacker->client )
 			{
+				// add to the attackers "account" on the target
 				targ->credits[ attacker->client->ps.clientNum ] += loss;
+
+				// notify the attacker of a hit
+				NotifyClientOfHit( attacker );
 			}
 
 			// update buildable stats
