@@ -259,14 +259,17 @@ include_directories( "${OBJ_DIR}" )
 
 # Import CMakeLists.txt for internal libraries
 if( USE_INTERNAL_SDL )
-  set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}/Release/${GAMELIB_OUTPUT_DIR}" )
-  set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_BINARY_DIR}/Debug/${GAMELIB_OUTPUT_DIR}" )
-  set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL "${CMAKE_BINARY_DIR}/MinSizeRel/${GAMELIB_OUTPUT_DIR}" )
-  set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO "${CMAKE_BINARY_DIR}/RelWithDebInfo/${GAMELIB_OUTPUT_DIR}" )
-  set( DIRECTX OFF CACHE BOOL "Build SDL with DirectX support" )
   set( SDL_STATIC OFF CACHE BOOL "Build SDL static library" )
-
   add_subdirectory( ${SDL2_DIR} ${OBJ_DIR}/libsdl2 )
+  
+  if( DIRECTX )
+	  if( BUILD_ARCH STREQUAL "i386" )
+		link_directories($ENV{DXSDK_DIR}\\lib\\x86)
+	  elseif( BUILD_ARCH STREQUAL "x86-64" )
+		link_directories($ENV{DXSDK_DIR}\\lib\\x64)
+	  endif()
+  endif()
+  
   set( SDL2_LIBRARIES SDL2 SDL2main CACHE STRING "SDL library" FORCE )
   set( SDL2_INCLUDE_DIRS ${SDL2_DIR}/include CACHE STRING "SDL include directory" FORCE )
   set( SDL2_FOUND "1" CACHE INTERNAL "" )
