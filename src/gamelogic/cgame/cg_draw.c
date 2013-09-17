@@ -3410,7 +3410,7 @@ static void CG_DrawCrosshairIndicator( rectDef_t *rect, vec4_t color )
 	weaponInfo_t *wi;
 	qboolean     onRelevantEntity;
 
-	if ( cg_drawCrosshair.integer == CROSSHAIR_ALWAYSOFF ||
+	if ( !cg_drawCrosshairIndicator.integer ||
 	     cg.snap->ps.persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT ||
 	     cg.snap->ps.pm_type == PM_INTERMISSION ||
 	     cg.renderingThirdPerson )
@@ -3420,7 +3420,8 @@ static void CG_DrawCrosshairIndicator( rectDef_t *rect, vec4_t color )
 
 	weapon = BG_GetPlayerWeapon( &cg.snap->ps );
 
-	if ( cg_drawCrosshair.integer == CROSSHAIR_RANGEDONLY && !BG_Weapon( weapon )->longRanged )
+	if ( cg_drawCrosshairIndicator.integer <= INDICATOR_RANGEDONLY &&
+	     !BG_Weapon( weapon )->longRanged )
 	{
 		return;
 	}
@@ -3434,7 +3435,8 @@ static void CG_DrawCrosshairIndicator( rectDef_t *rect, vec4_t color )
 	}
 
 	// set base color
-	if ( !BG_Weapon( weapon )->longRanged )
+	if ( cg_drawCrosshairIndicator.integer <= INDICATOR_RANGEDONLY_ALLHITS &&
+	     !BG_Weapon( weapon )->longRanged )
 	{
 		Vector4Set( baseColor, 1.0f, 1.0f, 1.0f, 0.0f );
 		onRelevantEntity = qfalse;
@@ -3507,12 +3509,13 @@ static void CG_DrawCrosshair( rectDef_t *rect, vec4_t color )
 
 	weapon = BG_GetPlayerWeapon( &cg.snap->ps );
 
-	if ( cg_drawCrosshair.integer == CROSSHAIR_ALWAYSOFF )
+	if ( !cg_drawCrosshair.integer )
 	{
 		return;
 	}
 
-	if ( cg_drawCrosshair.integer == CROSSHAIR_RANGEDONLY && !BG_Weapon( weapon )->longRanged )
+	if ( cg_drawCrosshair.integer <= CROSSHAIR_RANGEDONLY &&
+	     !BG_Weapon( weapon )->longRanged )
 	{
 		return;
 	}
