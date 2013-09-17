@@ -121,7 +121,7 @@ cmake_dependent_option( USE_INTERNAL_CRYPTO  "Use internal crypto (nettle)"     
 cmake_dependent_option( USE_INTERNAL_JPEG    "Use JPEG files included with Unvanquished"             0
                                                                         "BUILD_OLD_RENDERER OR BUILD_NEW_RENDERER OR BUILD_DAEMONMAP" 0 )
 
-cmake_dependent_option( USE_SDL_ICONV        "Compile with SDL's iconv implementation"               1 BUILD_CLIENT                   0 )
+cmake_dependent_option( USE_SDL2_ICONV        "Compile with SDL's iconv implementation"               1 BUILD_CLIENT                   0 )
 
 cmake_dependent_option( HAVE_BZIP2           "Compile with BZip2 support"                            0 "HAVE_BZIP2"                   0 )
 
@@ -265,6 +265,7 @@ if( USE_INTERNAL_SDL )
   set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO "${CMAKE_BINARY_DIR}/RelWithDebInfo/${GAMELIB_OUTPUT_DIR}" )
   set( DIRECTX OFF CACHE BOOL "Build SDL with DirectX support" )
   set( SDL_STATIC OFF CACHE BOOL "Build SDL static library" )
+
   add_subdirectory( ${SDL2_DIR} ${OBJ_DIR}/libsdl2 )
   set( SDL2_LIBRARIES SDL2 SDL2main CACHE STRING "SDL library" FORCE )
   set( SDL2_INCLUDE_DIRS ${SDL2_DIR}/include CACHE STRING "SDL include directory" FORCE )
