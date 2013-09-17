@@ -108,7 +108,6 @@ static void CG_LoadCustomCrosshairs( void )
 
 	while ( 1 )
 	{
-		qhandle_t shader;
 		token = COM_Parse2( &text_p );
 
 		if ( !*token )
@@ -120,34 +119,74 @@ static void CG_LoadCustomCrosshairs( void )
 		{
 			token = COM_Parse( &text_p );
 
-			if ( !*token )
+			if ( !Q_stricmp( token, "crosshair" ) )
 			{
-				break;
-			}
+				token = COM_Parse( &text_p );
 
-			size = atoi( token );
+				if ( !token )
+				{
+					break;
+				}
 
-			if ( size < 0 )
-			{
-				size = 0;
-			}
+				cg_weapons[ weapon ].crossHair = trap_R_RegisterShader( token, RSF_DEFAULT );
 
-			token = COM_Parse( &text_p );
+				if ( !cg_weapons[ weapon ].crossHair )
+				{
+					CG_Printf( S_ERROR "weapon crosshair not found %s\n", token );
+				}
 
-			if ( !*token )
-			{
-				break;
-			}
-
-			shader = trap_R_RegisterShader(token, RSF_DEFAULT);
-
-			if ( !shader )
-			{
 				continue;
 			}
+			else if ( !Q_stricmp( token, "crosshairIndicator" ) )
+			{
+				token = COM_Parse( &text_p );
 
-			cg_weapons[ weapon ].crossHair = shader;
-			cg_weapons[ weapon ].crossHairSize = size;
+				if ( !token )
+				{
+					break;
+				}
+
+				cg_weapons[ weapon ].crossHairIndicator = trap_R_RegisterShader( token, RSF_DEFAULT );
+
+				if ( !cg_weapons[ weapon ].crossHairIndicator )
+				{
+					CG_Printf( S_ERROR "weapon crosshair indicator not found %s\n", token );
+				}
+
+				continue;
+			}
+			else if ( !Q_stricmp( token, "crosshairSize" ) )
+			{
+				int size;
+
+				token = COM_Parse( &text_p );
+
+				if ( !token )
+				{
+					break;
+				}
+
+				size = atoi( token );
+
+				if ( size < 0 )
+				{
+					size = 0;
+				}
+
+				cg_weapons[ weapon ].crossHairSize = size;
+
+				continue;
+			}
+			else
+			{
+				CG_Printf( S_ERROR "Unexpected keyword %s in crosshair file\n", token );
+				break;
+			}
+		}
+		else
+		{
+			CG_Printf( S_ERROR "Unknown weapon %s in crosshair file\n", token );
+			break;
 		}
 	}
 }
@@ -869,7 +908,43 @@ static qboolean CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo
 		}
 		else if ( !Q_stricmp( token, "crosshair" ) )
 		{
-			int size = 0;
+			token = COM_Parse( &text_p );
+
+			if ( !token )
+			{
+				break;
+			}
+
+			wi->crossHair = trap_R_RegisterShader( token, RSF_DEFAULT );
+
+			if ( !wi->crossHair )
+			{
+				CG_Printf( S_ERROR "weapon crosshair not found %s\n", token );
+			}
+
+			continue;
+		}
+		else if ( !Q_stricmp( token, "crosshairIndicator" ) )
+		{
+			token = COM_Parse( &text_p );
+
+			if ( !token )
+			{
+				break;
+			}
+
+			wi->crossHairIndicator = trap_R_RegisterShader( token, RSF_DEFAULT );
+
+			if ( !wi->crossHair )
+			{
+				CG_Printf( S_ERROR "weapon crosshair indicator not found %s\n", token );
+			}
+
+			continue;
+		}
+		else if ( !Q_stricmp( token, "crosshairSize" ) )
+		{
+			int size;
 
 			token = COM_Parse( &text_p );
 
@@ -885,21 +960,7 @@ static qboolean CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo
 				size = 0;
 			}
 
-			token = COM_Parse( &text_p );
-
-			if ( !token )
-			{
-				break;
-			}
-
-			wi->crossHair = trap_R_RegisterShader(token,
-							      RSF_DEFAULT);
 			wi->crossHairSize = size;
-
-			if ( !wi->crossHair )
-			{
-				CG_Printf( S_ERROR "weapon crosshair not found %s\n", token );
-			}
 
 			continue;
 		}

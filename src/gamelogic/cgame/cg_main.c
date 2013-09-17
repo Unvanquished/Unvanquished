@@ -140,7 +140,6 @@ vmCvar_t        cg_drawMinimap;
 vmCvar_t        cg_minimapActive;
 vmCvar_t        cg_crosshairSize;
 vmCvar_t        cg_crosshairFile;
-vmCvar_t        cg_indicatorSize;
 vmCvar_t        cg_draw2D;
 vmCvar_t        cg_debugAnim;
 vmCvar_t        cg_debugPosition;
@@ -310,7 +309,6 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_minimapActive,               "cg_minimapActive",               "0",            0                            },
 	{ &cg_crosshairSize,               "cg_crosshairSize",               "1",            CVAR_ARCHIVE                 },
 	{ &cg_crosshairFile,               "cg_crosshairFile",               "",             CVAR_ARCHIVE                 },
-	{ &cg_indicatorSize,               "cg_indicatorSize",               "1",            CVAR_ARCHIVE                 },
 	{ &cg_addMarks,                    "cg_marks",                       "1",            CVAR_ARCHIVE                 },
 	{ &cg_lagometer,                   "cg_lagometer",                   "0",            CVAR_ARCHIVE                 },
 	{ &cg_drawSpeed,                   "cg_drawSpeed",                   "0",            CVAR_ARCHIVE                 },
@@ -1436,58 +1434,6 @@ static void CG_RegisterGraphics( void )
 	cgs.media.creepShader = trap_R_RegisterShader("creep", RSF_DEFAULT);
 
 	cgs.media.scannerBlipShader = trap_R_RegisterShader("gfx/2d/blip",
-							    RSF_DEFAULT);
-
-	// crosshairIndicators
-	// human
-	cgs.media.crosshairIndicatorShaderHuman = trap_R_RegisterShader("gfx/2d/indicatorHuman",
-							    RSF_DEFAULT);
-	cgs.media.crosshairIndicatorShaderHumanGlow = trap_R_RegisterShader("gfx/2d/indicatorHumanGlow",
-							    RSF_DEFAULT);
-	// alien
-	cgs.media.crosshairIndicatorShaderAlienBuilder = trap_R_RegisterShader("gfx/2d/indicatorAlienBuilder",
-							    RSF_DEFAULT);
-	cgs.media.crosshairIndicatorShaderAlienBuilderUpg = trap_R_RegisterShader("gfx/2d/indicatorAlienBuilderUpg",
-							    RSF_DEFAULT);
-	cgs.media.crosshairIndicatorShaderAlien0 = trap_R_RegisterShader("gfx/2d/indicatorAlien0",
-							    RSF_DEFAULT);
-	cgs.media.crosshairIndicatorShaderAlien0Upg = trap_R_RegisterShader("gfx/2d/indicatorAlien0upg",
-							    RSF_DEFAULT);
-	cgs.media.crosshairIndicatorShaderAlien1 = trap_R_RegisterShader("gfx/2d/indicatorAlien1",
-							    RSF_DEFAULT);
-	cgs.media.crosshairIndicatorShaderAlien1Upg = trap_R_RegisterShader("gfx/2d/indicatorAlien1upg",
-							    RSF_DEFAULT);
-	cgs.media.crosshairIndicatorShaderAlien2 = trap_R_RegisterShader("gfx/2d/indicatorAlien2",
-							    RSF_DEFAULT);
-	cgs.media.crosshairIndicatorShaderAlien2Upg = trap_R_RegisterShader("gfx/2d/indicatorAlien2upg",
-							    RSF_DEFAULT);
-	cgs.media.crosshairIndicatorShaderAlien3 = trap_R_RegisterShader("gfx/2d/indicatorAlien3",
-							    RSF_DEFAULT);
-	cgs.media.crosshairIndicatorShaderAlien3Upg = trap_R_RegisterShader("gfx/2d/indicatorAlien3upg",
-							    RSF_DEFAULT);
-	cgs.media.crosshairIndicatorShaderAlien4 = trap_R_RegisterShader("gfx/2d/indicatorAlien4",
-							    RSF_DEFAULT);
-	cgs.media.crosshairIndicatorShaderAlienBuilderGlow = trap_R_RegisterShader("gfx/2d/indicatorAlienBuilderGlow",
-							    RSF_DEFAULT);
-	cgs.media.crosshairIndicatorShaderAlienBuilderUpgGlow = trap_R_RegisterShader("gfx/2d/indicatorAlienBuilderUpgGlow",
-							    RSF_DEFAULT);
-	cgs.media.crosshairIndicatorShaderAlien0Glow = trap_R_RegisterShader("gfx/2d/indicatorAlien0Glow",
-							    RSF_DEFAULT);
-	cgs.media.crosshairIndicatorShaderAlien0UpgGlow = trap_R_RegisterShader("gfx/2d/indicatorAlien0upgGlow",
-							    RSF_DEFAULT);
-	cgs.media.crosshairIndicatorShaderAlien1Glow = trap_R_RegisterShader("gfx/2d/indicatorAlien1Glow",
-							    RSF_DEFAULT);
-	cgs.media.crosshairIndicatorShaderAlien1UpgGlow = trap_R_RegisterShader("gfx/2d/indicatorAlien1upgGlow",
-							    RSF_DEFAULT);
-	cgs.media.crosshairIndicatorShaderAlien2Glow = trap_R_RegisterShader("gfx/2d/indicatorAlien2Glow",
-							    RSF_DEFAULT);
-	cgs.media.crosshairIndicatorShaderAlien2UpgGlow = trap_R_RegisterShader("gfx/2d/indicatorAlien2upgGlow",
-							    RSF_DEFAULT);
-	cgs.media.crosshairIndicatorShaderAlien3Glow = trap_R_RegisterShader("gfx/2d/indicatorAlien3Glow",
-							    RSF_DEFAULT);
-	cgs.media.crosshairIndicatorShaderAlien3UpgGlow = trap_R_RegisterShader("gfx/2d/indicatorAlien3upgGlow",
-							    RSF_DEFAULT);
-	cgs.media.crosshairIndicatorShaderAlien4Glow = trap_R_RegisterShader("gfx/2d/indicatorAlien4Glow",
 							    RSF_DEFAULT);
 
 	cgs.media.scannerBlipBldgShader = trap_R_RegisterShader("gfx/2d/blip_bldg",

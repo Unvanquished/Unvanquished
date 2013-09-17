@@ -3405,228 +3405,67 @@ CG_DrawCrosshairIndicator
 */
 static void CG_DrawCrosshairIndicator( rectDef_t *rect, vec4_t color)
 {
-	float        w, h;
-	qhandle_t    hShader;
-	float        x, y;
+	float        x, y, w, h, dim;
+	qhandle_t    indicator;
 	vec4_t       localColor;
 	weapon_t     weapon;
-	int i,red;
-	float dim;
+	weaponInfo_t *wi;
+	int i;
+
+	if ( cg_drawCrosshair.integer == CROSSHAIR_ALWAYSOFF ||
+	     cg.snap->ps.persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT ||
+	     cg.snap->ps.pm_type == PM_INTERMISSION ||
+	     cg.renderingThirdPerson )
+	{
+		return;
+	}
 
 	weapon = BG_GetPlayerWeapon( &cg.snap->ps );
 
-	if ( cg.snap->ps.stats[ STAT_WEAPON] == WP_HBUILD && !BG_Weapon( weapon )->longRanged )
+	if ( cg_drawCrosshair.integer == CROSSHAIR_RANGEDONLY && !BG_Weapon( weapon )->longRanged )
 	{
 		return;
 	}
 
-	if ( cg.snap->ps.persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT )
-	{
-		return;
-	}
-
-	if ( cg.renderingThirdPerson )
-	{
-		return;
-	}
-
-	if ( cg.snap->ps.pm_type == PM_INTERMISSION )
-	{
-		return;
-	}
-
-	// glow red if enemy is targeted, fade out if friendly
-	if ( cg.time == cg.crosshairClientTime || cg.crosshairBuildable > 0 )
-	{
-		Vector4Copy( color, localColor );
-		red = 0;
-		dim = 0.25;
-	}
-
-	else if ( cg.time == cg.crosshairClientTime || cg.crosshairBuildableIsEnemy == 1 || cg.crosshairIsOnEnemy == 1 )
+	// glow red if enemy is targeted
+	if ( cg.time == cg.crosshairClientTime ||
+	     cg.crosshairBuildableIsEnemy == 1 ||
+	     cg.crosshairIsOnEnemy == 1 )
 	{
 		Vector4Copy( colorRed, localColor );
-		red = 1;
-		dim = 0.85f;
+		dim = 0.8f;
 	}
-
 	else
 	{
 		Vector4Copy( color, localColor );
-		red = 0;
-		dim = 0.55f;
+		dim = 0.5f;
 	}
 
+	// dim color
 	for ( i = 0; i < 3; i++ )
 	{
 		localColor[ i ] *= dim;
 	}
 
-	if ( cg.snap->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS )
-	{
-		  if ( red == 1 )
-		  {
-			  hShader = cgs.media.crosshairIndicatorShaderHumanGlow;
-		  }
-		  else
-		  {
-			  hShader = cgs.media.crosshairIndicatorShaderHuman;
-		  }
-		  // FIXME:prevent overlapping hack, due to different human crossHairSizes
-		  if ( cg_crosshairSize.value >= cg_indicatorSize.value )
-		  {
-			  cg_indicatorSize.value = cg_crosshairSize.value;
-		  }
-	}
+	wi = &cg_weapons[ weapon ];
 
-	// adjusting indicator - weapon depended
-	if ( cg.snap->ps.persistant[ PERS_TEAM ] == TEAM_ALIENS )
-	{
-		switch ( cg.snap->ps.stats[ STAT_WEAPON] )
-		{
-			case WP_ABUILD:
-				if ( red == 1 )
-				{
-					hShader = cgs.media.crosshairIndicatorShaderAlienBuilderGlow;
-				}
-				else
-				{
-					hShader = cgs.media.crosshairIndicatorShaderAlienBuilder;
-				}
-				break;
-			case WP_ABUILD2:
-				if ( red == 1 )
-				{
-					hShader = cgs.media.crosshairIndicatorShaderAlienBuilderUpgGlow;
-				}
-				else
-				{
-					hShader = cgs.media.crosshairIndicatorShaderAlienBuilderUpg;
-				}
-				break;
-			case WP_ALEVEL0:
-				if ( red == 1 )
-				{
-					hShader = cgs.media.crosshairIndicatorShaderAlien0Glow;
-				}
-				else
-				{
-					hShader = cgs.media.crosshairIndicatorShaderAlien0;
-				}
-				break;
-			case WP_ALEVEL0_UPG:
-				if ( red == 1 )
-				{
-					hShader = cgs.media.crosshairIndicatorShaderAlien0UpgGlow;
-				}
-				else
-				{
-					hShader = cgs.media.crosshairIndicatorShaderAlien0Upg;
-				}
-				break;
-			case WP_ALEVEL1:
-				if ( red == 1 )
-				{
-					hShader = cgs.media.crosshairIndicatorShaderAlien1Glow;
-				}
-				else
-				{
-					hShader = cgs.media.crosshairIndicatorShaderAlien1;
-				}
-				break;
-			case WP_ALEVEL1_UPG:
-				if ( red == 1 )
-				{
-					hShader = cgs.media.crosshairIndicatorShaderAlien1UpgGlow;
-				}
-				else
-				{
-					hShader = cgs.media.crosshairIndicatorShaderAlien1Upg;
-				}
-				break;
-			case WP_ALEVEL2:
-				if ( red == 1 )
-				{
-					hShader = cgs.media.crosshairIndicatorShaderAlien2Glow;
-				}
-				else
-				{
-					hShader = cgs.media.crosshairIndicatorShaderAlien2;
-				}
-				break;
-			case WP_ALEVEL2_UPG:
-				if ( red == 1 )
-				{
-					hShader = cgs.media.crosshairIndicatorShaderAlien2UpgGlow;
-				}
-				else
-				{
-					hShader = cgs.media.crosshairIndicatorShaderAlien2Upg;
-				}
-				break;
-			case WP_ALEVEL3:
-				if ( red == 1 )
-				{
-					hShader = cgs.media.crosshairIndicatorShaderAlien3Glow;
-				}
-				else
-				{
-					hShader = cgs.media.crosshairIndicatorShaderAlien3;
-				}
-				break;
-			case WP_ALEVEL3_UPG:
-				if ( red == 1 )
-				{
-					hShader = cgs.media.crosshairIndicatorShaderAlien3UpgGlow;
-				}
-				else
-				{
-					hShader = cgs.media.crosshairIndicatorShaderAlien3Upg;
-				}
-				break;
-			case WP_ALEVEL4:
-				if ( red == 1 )
-				{
-					hShader = cgs.media.crosshairIndicatorShaderAlien4Glow;
-				}
-				else
-				{
-					hShader = cgs.media.crosshairIndicatorShaderAlien4;
-				}
-				break;
-			default:
-				if ( red == 1 )
-				{
-					hShader = cgs.media.crosshairIndicatorShaderAlienBuilderGlow;
-				}
-				else
-				{
-					hShader = cgs.media.crosshairIndicatorShaderAlienBuilder;
-				}
-				break;
-		}
-	}
-
-	w = rect->w;
-	h = rect->h;
-
+	w = h = wi->crossHairSize * cg_crosshairSize.value;
 	w *= cgDC.aspectScale;
 
-	w = w * cg_indicatorSize.value;
-	h = h * cg_indicatorSize.value;
-
+	//FIXME: this still ignores the width/height of the rect, but at least it's
+	//neater than cg_crosshairX/cg_crosshairY
 	x = rect->x + ( rect->w / 2 ) - ( w / 2 );
 	y = rect->y + ( rect->h / 2 ) - ( h / 2 );
 
-	if ( hShader != 0)
+	indicator = wi->crossHairIndicator;
+
+	if ( indicator )
 	{
 		trap_R_SetColor( localColor );
-		CG_DrawPic( x, y, w, h, hShader );
+		CG_DrawPic( x, y, w, h, indicator );
 		trap_R_SetColor( NULL );
 	}
 
-	// indicator related
-	// reset
 	cg.crosshairIsOnEnemy = -1;
 	cg.crosshairBuildableIsEnemy = 0;
 }
@@ -3639,13 +3478,12 @@ CG_DrawCrosshair
 static void CG_DrawCrosshair( rectDef_t *rect, vec4_t color )
 {
 	float        w, h;
-	qhandle_t    hShader;
+	qhandle_t    crosshair;
 	float        x, y;
 	weaponInfo_t *wi;
 	weapon_t     weapon;
 
 	vec4_t       localColor;
-	int i;
 
 	weapon = BG_GetPlayerWeapon( &cg.snap->ps );
 
@@ -3654,8 +3492,7 @@ static void CG_DrawCrosshair( rectDef_t *rect, vec4_t color )
 		return;
 	}
 
-	if ( cg_drawCrosshair.integer == CROSSHAIR_RANGEDONLY &&
-	     !BG_Weapon( weapon )->longRanged )
+	if ( cg_drawCrosshair.integer == CROSSHAIR_RANGEDONLY && !BG_Weapon( weapon )->longRanged )
 	{
 		return;
 	}
@@ -3685,13 +3522,9 @@ static void CG_DrawCrosshair( rectDef_t *rect, vec4_t color )
 	x = rect->x + ( rect->w / 2 ) - ( w / 2 );
 	y = rect->y + ( rect->h / 2 ) - ( h / 2 );
 
-	hShader = wi->crossHair;
+	crosshair = wi->crossHair;
 
 	Vector4Copy( color, localColor );
-
-	// draw CorsshairIndicator before localcolor gets changed ( <- deprecated
-	// call goes to OwnerDrraw now )
-	// CG_DrawCrosshairIndicator(rect, localColor);
 
 	//aiming at a friendly player/buildable, dim the crosshair
 	if ( cg.time == cg.crosshairClientTime || cg.crosshairBuildable >= 0 )
@@ -3699,14 +3532,14 @@ static void CG_DrawCrosshair( rectDef_t *rect, vec4_t color )
 		int i;
 		for ( i = 0; i < 3; i++ )
 		{
-			localColor[ i ] *= .25f;
+			localColor[ i ] *= .5f;
 		}
 	}
 
-	if ( hShader != 0)
+	if ( crosshair )
 	{
 		trap_R_SetColor( localColor );
-		CG_DrawPic( x, y, w, h, hShader );
+		CG_DrawPic( x, y, w, h, crosshair );
 		trap_R_SetColor( NULL );
 	}
 }
