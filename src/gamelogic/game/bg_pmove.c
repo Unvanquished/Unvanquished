@@ -4622,6 +4622,11 @@ void PM_UpdateViewAngles( playerState_t *ps, const usercmd_t *cmd )
 			}
 		}
 	}
+
+	if ( ps->stats[ STAT_STATE ] & SS_FLYING )
+	{
+		vectoangles( ps->velocity, ps->viewangles );
+	}
 }
 
 #ifdef Q3_VM
