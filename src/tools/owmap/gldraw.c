@@ -36,16 +36,16 @@ qboolean        drawFlag;
 static qboolean drawInit = qfalse;
 static vec3_t   drawOrigin = { 0, 0, 0 };
 static vec3_t   drawAngles = { 0, 0, 0 };
-static const SDL_VideoInfo *drawVideo = NULL;
-static SDL_Surface *drawScreen = NULL;
+static SDL_GLContext drawVideo = NULL;
+static SDL_Window *drawScreen = NULL;
 
 
 #define	WIN_SIZE	512
 
-
 static void Reshape(int width, int height)
 {
 	float           screenaspect;
+	GLdouble        fW, fH;
 
 	// set up viewport
 	glViewport(0, 0, width, height);
@@ -55,7 +55,10 @@ static void Reshape(int width, int height)
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(90, screenaspect, 2, 16384);
+
+	fH = 1;
+	fW = screenaspect;
+	glFrustum( -fW, fW, -fH, fH, 2, 16384 ); 
 
 	// set up modelview matrix
 	glMatrixMode(GL_MODELVIEW);
@@ -74,6 +77,7 @@ static void Draw_BeginScene(void)
 	//int             w, h, g;
 	//vec_t           mx, my;
 	const char     *glString;
+	int             w, h;
 
 	if(!drawInit)
 	{
@@ -81,18 +85,13 @@ static void Draw_BeginScene(void)
 
 		SDL_Init(SDL_INIT_VIDEO);
 
-		drawVideo = SDL_GetVideoInfo();
-		if(!drawVideo)
-		{
-			Error("Couldn't get video information: %s", SDL_GetError());
-		}
-
 		// Set the minimum requirements for the OpenGL window
 		SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 5);
 		SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 5);
 		SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 5);
 		SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
 		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+		SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
 
 		/* Note the SDL_DOUBLEBUF flag is not required to enable double
 		 * buffering when setting an OpenGL video mode.
@@ -100,20 +99,21 @@ static void Draw_BeginScene(void)
 		 * SDL_GL_DOUBLEBUFFER attribute.
 		 */
 
-		drawScreen = SDL_SetVideoMode(WIN_SIZE, WIN_SIZE, drawVideo->vfmt->BitsPerPixel, SDL_OPENGL | SDL_RESIZABLE);
+		drawScreen = SDL_CreateWindow("OWMap", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 
+		                             WIN_SIZE, WIN_SIZE, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 		if(!drawScreen)
 		{
 			SDL_Quit();
-			Error("Couldn't set GL video mode: %s", SDL_GetError());
+			Error("Couldn't create window: %s", SDL_GetError());
 		}
 
-		if(SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1) < 0)
+		drawVideo = SDL_GL_CreateContext( drawScreen );
+
+		if ( !drawVideo )
 		{
-			Error("Unable to guarantee accelerated " "visual with libSDL < 1.2.10");
+			SDL_Quit();
+			Error( "Unable to create GL context: %s\n", SDL_GetError() );
 		}
-
-		SDL_WM_SetCaption("OWMap", "owmap");
-
 
 		glString = (char *)glGetString(GL_VENDOR);
 		Sys_FPrintf(SYS_VRB, "GL_VENDOR: %s\n", glString);
@@ -129,7 +129,8 @@ static void Draw_BeginScene(void)
 		drawInit = qtrue;
 	}
 
-	Reshape(drawScreen->w, drawScreen->h);
+	SDL_GetWindowSize( drawScreen, &w, &h );
+	Reshape(w, h);
 
 	//glClearColor(1, 0.8, 0.8, 0);
 	glClearColor(0.8, 0.8, 0.8, 0);
@@ -175,7 +176,7 @@ static void Draw_EndScene(void)
 {
 	//Sys_FPrintf(SYS_VRB, "Draw_EndScene()\n");
 
-	SDL_GL_SwapBuffers();
+	SDL_GL_SwapWindow( drawScreen );
 }
 
 static void Draw_Shutdown(void)
@@ -321,18 +322,18 @@ void Draw_Scene(void (*drawFunc) (void))
 		{
 			switch (event.type)
 			{
-				case SDL_VIDEORESIZE:
+				case SDL_WINDOWEVENT:
 				{
-					drawScreen =
-						SDL_SetVideoMode(event.resize.w, event.resize.h, drawVideo->vfmt->BitsPerPixel,
-										 SDL_OPENGL | SDL_RESIZABLE);
-					if(drawScreen)
+					if ( event.window.type == SDL_WINDOWEVENT_RESIZED )
 					{
-						Reshape(drawScreen->w, drawScreen->h);
-					}
-					else
-					{
-						/* Uh oh, we couldn't set the new video mode?? */ ;
+						if(drawScreen)
+						{
+							Reshape(event.window.data1, event.window.data2);
+						}
+						else
+						{
+							/* Uh oh, we couldn't set the new video mode?? */ ;
+						}
 					}
 					break;
 				}
@@ -356,7 +357,8 @@ void Draw_Scene(void (*drawFunc) (void))
 						{		// K_MOUSE2;
 							if(!mouseGrabbed)
 							{
-								SDL_WM_GrabInput(SDL_GRAB_ON);
+								SDL_SetWindowGrab( drawScreen, SDL_TRUE );
+								SDL_SetRelativeMouseMode( SDL_TRUE );
 								SDL_ShowCursor(0);
 								mouseGrabbed = qtrue;
 								mouseGrabbedLastFrame = qtrue;
@@ -364,7 +366,8 @@ void Draw_Scene(void (*drawFunc) (void))
 							else
 							{
 								SDL_ShowCursor(1);
-								SDL_WM_GrabInput(SDL_GRAB_OFF);
+								SDL_SetRelativeMouseMode( SDL_FALSE );
+								SDL_SetWindowGrab( drawScreen, SDL_FALSE );
 								mouseGrabbed = qfalse;
 							}
 							break;
@@ -388,15 +391,15 @@ void Draw_Scene(void (*drawFunc) (void))
 		}
 
 
-		keys = SDL_GetKeyState(NULL);
+		keys = SDL_GetKeyboardState(NULL);
 
-		if(keys[SDLK_ESCAPE])
+		if(keys[SDL_SCANCODE_ESCAPE])
 		{
 			Draw_Shutdown();
 			return;
 		}
 
-		if(keys[SDLK_w])
+		if(keys[SDL_SCANCODE_W])
 		{
 			if(SDL_GetModState() & KMOD_SHIFT)
 			{
@@ -408,7 +411,7 @@ void Draw_Scene(void (*drawFunc) (void))
 			}
 		}
 
-		if(keys[SDLK_s])
+		if(keys[SDL_SCANCODE_S])
 		{
 			if(SDL_GetModState() & KMOD_SHIFT)
 			{
@@ -420,7 +423,7 @@ void Draw_Scene(void (*drawFunc) (void))
 			}
 		}
 
-		if(keys[SDLK_a])
+		if(keys[SDL_SCANCODE_A])
 		{
 			if(SDL_GetModState() & KMOD_SHIFT)
 			{
@@ -432,7 +435,7 @@ void Draw_Scene(void (*drawFunc) (void))
 			}
 		}
 
-		if(keys[SDLK_d])
+		if(keys[SDL_SCANCODE_D])
 		{
 			if(SDL_GetModState() & KMOD_SHIFT)
 			{
@@ -444,7 +447,7 @@ void Draw_Scene(void (*drawFunc) (void))
 			}
 		}
 
-		if(keys[SDLK_SPACE])
+		if(keys[SDL_SCANCODE_SPACE])
 		{
 			//drawOrigin[2] += 1.0 * deltaTime;
 			if(SDL_GetModState() & KMOD_SHIFT)
@@ -457,7 +460,7 @@ void Draw_Scene(void (*drawFunc) (void))
 			}
 		}
 
-		if(keys[SDLK_c])
+		if(keys[SDL_SCANCODE_C])
 		{
 			//drawOrigin[2] -= 1.0 * deltaTime;
 			if(SDL_GetModState() & KMOD_SHIFT)
@@ -470,22 +473,22 @@ void Draw_Scene(void (*drawFunc) (void))
 			}
 		}
 
-		if(keys[SDLK_UP])
+		if(keys[SDL_SCANCODE_UP])
 		{
 			drawAngles[PITCH] -= 1.0 * deltaTime;
 		}
 
-		if(keys[SDLK_DOWN])
+		if(keys[SDL_SCANCODE_DOWN])
 		{
 			drawAngles[PITCH] += 1.0 * deltaTime;
 		}
 
-		if(keys[SDLK_LEFT])
+		if(keys[SDL_SCANCODE_LEFT])
 		{
 			drawAngles[YAW] += 1.0 * deltaTime;
 		}
 
-		if(keys[SDLK_RIGHT])
+		if(keys[SDL_SCANCODE_RIGHT])
 		{
 			drawAngles[YAW] -= 1.0 * deltaTime;
 		}
