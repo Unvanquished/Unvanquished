@@ -1832,7 +1832,7 @@ qboolean S_Base_Init( soundInterface_t *si )
 		return qfalse;
 	}
 
-	s_mixahead = Cvar_Get( "s_mixahead", "1.0", CVAR_ARCHIVE );
+	s_mixahead = Cvar_Get( "s_mixahead", "0.2", CVAR_ARCHIVE );
 	s_mixPreStep = Cvar_Get( "s_mixPreStep", "0.05", CVAR_ARCHIVE );
 	s_show = Cvar_Get( "s_show", "0", CVAR_CHEAT );
 	s_testsound = Cvar_Get( "s_testsound", "0", CVAR_CHEAT );
