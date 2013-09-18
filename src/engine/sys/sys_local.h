@@ -54,7 +54,7 @@ void         IN_Restart( void );
 
 void         IN_DropInputsForFrame( void );
 
-void   *IN_GetWindow( void );
+void        *IN_GetWindow( void );
 
 // Console
 void         CON_Shutdown( void );

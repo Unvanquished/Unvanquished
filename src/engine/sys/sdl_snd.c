@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "../qcommon/q_shared.h"
 #include "../client/snd_local.h"
+#include "sdl2_compat.h"
 
 qboolean        snd_inited = qfalse;
 
@@ -154,13 +155,6 @@ static void SNDDMA_PrintAudiospec( const char *str, const SDL_AudioSpec *spec )
 	Com_Printf( "  Channels: %d\n", ( int ) spec->channels );
 }
 
-#if !SDL_VERSION_ATLEAST( 2, 0, 0 )
-char *SDL_GetCurrentAudioDriver( void )
-{
-	static char buf[ 128 ];
-	return SDL_AudioDriverName( buf, sizeof( buf ) );
-}
-#endif
 /*
 ===============
 SNDDMA_Init

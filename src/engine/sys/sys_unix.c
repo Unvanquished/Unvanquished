@@ -56,6 +56,7 @@ Maryland 20850 USA.
 #if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 #include <SDL.h>
 #include <SDL_syswm.h>
+#include "sdl2_compat.h"
 #endif
 
 #ifndef SIGIOT
@@ -184,10 +185,6 @@ static struct {
 	Window  window;
 	Atom    utf8;
 } x11 = { NULL };
-#endif
-
-#if !SDL_VERSION_ATLEAST( 2, 0, 0 )
-#define SDL_GetWindowWMInfo( w, i ) SDL_GetWMInfo( i )
 #endif
 
 char *Sys_GetClipboardData( clipboard_t clip )
@@ -744,10 +741,6 @@ void Sys_Sleep( int msec )
 		usleep( msec * 1000 );
 	}
 }
-
-#if !SDL_VERSION_ATLEAST( 2, 0, 0 )
-#define SDL_SetWindowGrab( w, g ) SDL_WM_GrabInput( g )
-#endif
 
 /*
 ==============
