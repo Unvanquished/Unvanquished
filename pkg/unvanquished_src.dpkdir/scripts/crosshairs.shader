@@ -97,15 +97,8 @@ gfx/2d/crosshair-flamer_s
 {
 	nopicmip
 	{
-		clampmap gfx/2d/crosshair-flamer1
+		map gfx/2d/crosshair-flamer
 		blendfunc blend
-		tcmod rotate 5
-		rgbGen vertex
-	}
-	{
-		clampmap gfx/2d/crosshair-flamer2
-		blendfunc blend
-		tcmod rotate -5
 		rgbGen vertex
 	}
 }
