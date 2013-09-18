@@ -392,7 +392,7 @@ qboolean GLimp_SpawnRenderThread( void ( *function )( void ) )
 		warned = qtrue;
 	}
 
-#if !defined( MACOS_X ) && !defined( WIN32 ) && !defined ( SDL_VIDEO_DRIVER_X11 )
+#if !defined( MACOS_X ) && !defined( WIN32 ) && !defined ( SDL_VIDEO_DRIVER_X11 ) && !SDL_VERSION_ATLEAST( 2, 0, 0 )
 	return qfalse; /* better safe than sorry for now. */
 #endif
 
