@@ -113,7 +113,7 @@ cmake_dependent_option( USE_MUMBLE           "Compile with support for Mumble"  
 cmake_dependent_option( USE_VOIP             "Compile with VOIP support"                             1 "BUILD_CLIENT OR BUILD_SERVER" 0 )
 cmake_dependent_option( USE_CIN_XVID         "Encode videos with XViD"                               1 BUILD_CLIENT                   0 )
 cmake_dependent_option( USE_INTERNAL_SDL     "Use SDL files included with Unvanquished"              0 BUILD_CLIENT                   0 )
-cmake_dependent_option( USE_SDL2             "Enable SDL 2.0 support (incompatible with SDL 1.2)"    0 BUILD_CLIENT                   0 )
+cmake_dependent_option( USE_SDL2             "Enable SDL 2.0 support (incompatible with SDL 1.2)"    1 BUILD_CLIENT                   0 )
 
 cmake_dependent_option( USE_CURSES           "Use the curses console"                                1 "BUILD_CLIENT OR BUILD_SERVER" 0 )
 cmake_dependent_option( USE_PHYSICS          "Compile with Newton Physics"                           0 "BUILD_CLIENT OR BUILD_SERVER" 0 )
