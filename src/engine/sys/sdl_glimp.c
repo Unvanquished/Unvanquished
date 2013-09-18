@@ -335,6 +335,7 @@ typedef enum
 
 cvar_t                     *r_allowResize; // make window resizable
 cvar_t                     *r_centerWindow;
+cvar_t                     *r_displayIndex;
 cvar_t                     *r_sdlDriver;
 cvar_t                     *r_minimize;
 
@@ -510,7 +511,7 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 	SDL_DisplayMode desktopMode;
 	int         display;
 	Uint32      flags = SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL;
-	int         x = SDL_WINDOWPOS_UNDEFINED, y = SDL_WINDOWPOS_UNDEFINED;
+	int         x, y;
 	GLenum      glewResult;
 
 	ri.Printf( PRINT_ALL, "Initializing OpenGL display\n" );
@@ -520,11 +521,16 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 		flags |= SDL_WINDOW_RESIZABLE;
 	}
 
-	if ( r_centerWindow->integer >= 1 )
+	if ( r_centerWindow->integer )
 	{
 		// center window on specified display
-		x = SDL_WINDOWPOS_CENTERED_DISPLAY( r_centerWindow->integer - 1 );
-		y = SDL_WINDOWPOS_CENTERED_DISPLAY( r_centerWindow->integer - 1 );
+		x = SDL_WINDOWPOS_CENTERED_DISPLAY( r_displayIndex->integer );
+		y = SDL_WINDOWPOS_CENTERED_DISPLAY( r_displayIndex->integer );
+	}
+	else
+	{
+		x = SDL_WINDOWPOS_UNDEFINED_DISPLAY( r_displayIndex->integer );
+		y = SDL_WINDOWPOS_UNDEFINED_DISPLAY( r_displayIndex->integer );
 	}
 
 	icon = SDL_CreateRGBSurfaceFrom( ( void * ) CLIENT_WINDOW_ICON.pixel_data,
@@ -539,23 +545,7 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 #endif
 					);
 
-	// If a window exists, note its display index
-	if ( window != NULL )
-	{
-		display = SDL_GetWindowDisplayIndex( window );
-	}
-	else
-	{
-		// create a hidden window to get desktop display information
-		window = SDL_CreateWindow( "test window", x, y, 0, 0, SDL_WINDOW_HIDDEN  );
-
-		if ( window )
-		{
-			display = SDL_GetWindowDisplayIndex( window );
-		}
-	}
-
-	if ( SDL_GetDesktopDisplayMode( display, &desktopMode ) == 0 )
+	if ( SDL_GetDesktopDisplayMode( r_displayIndex->integer, &desktopMode ) == 0 )
 	{
 		displayAspect = ( float ) desktopMode.w / ( float ) desktopMode.h;
 
@@ -873,6 +863,29 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 	return RSERR_OK;
 }
 
+static void AssertCvarRange( cvar_t *cv, float minVal, float maxVal, qboolean shouldBeIntegral )
+{
+	if ( shouldBeIntegral )
+	{
+		if ( ( int ) cv->value != cv->integer )
+		{
+			ri.Printf( PRINT_WARNING, "WARNING: cvar '%s' must be integral (%f)\n", cv->name, cv->value );
+			ri.Cvar_Set( cv->name, va( "%d", cv->integer ) );
+		}
+	}
+
+	if ( cv->value < minVal )
+	{
+		ri.Printf( PRINT_WARNING, "WARNING: cvar '%s' out of range (%f < %f)\n", cv->name, cv->value, minVal );
+		ri.Cvar_Set( cv->name, va( "%f", minVal ) );
+	}
+	else if ( cv->value > maxVal )
+	{
+		ri.Printf( PRINT_WARNING, "WARNING: cvar '%s' out of range (%f > %f)\n", cv->name, cv->value, maxVal );
+		ri.Cvar_Set( cv->name, va( "%f", maxVal ) );
+	}
+}
+
 /*
 ===============
 GLimp_StartDriverAndSetMode
@@ -881,6 +894,7 @@ GLimp_StartDriverAndSetMode
 static qboolean GLimp_StartDriverAndSetMode( int mode, qboolean fullscreen, qboolean noborder )
 {
 	rserr_t err;
+	int numDisplays;
 
 	if ( !SDL_WasInit( SDL_INIT_VIDEO ) )
 	{
@@ -904,6 +918,15 @@ static qboolean GLimp_StartDriverAndSetMode( int mode, qboolean fullscreen, qboo
 		ri.Printf( PRINT_ALL, "SDL using driver \"%s\"\n", driverName );
 		ri.Cvar_Set( "r_sdlDriver", driverName );
 	}
+
+	numDisplays = SDL_GetNumVideoDisplays();
+
+	if ( numDisplays <= 0 )
+	{
+		ri.Error( ERR_FATAL, "SDL_GetNumVideoDisplays FAILED (%s)\n", SDL_GetError() );
+	}
+
+	AssertCvarRange( r_displayIndex, 0, numDisplays - 1, qtrue );
 
 	if ( fullscreen && ri.Cvar_VariableIntegerValue( "in_nograb" ) )
 	{
@@ -1704,6 +1727,7 @@ qboolean GLimp_Init( void )
 	r_allowResize = ri.Cvar_Get( "r_allowResize", "0", CVAR_ARCHIVE );
 	r_centerWindow = ri.Cvar_Get( "r_centerWindow", "0", CVAR_ARCHIVE );
 	r_minimize = ri.Cvar_Get( "r_minimize", "0", CVAR_TEMP );
+	r_displayIndex = ri.Cvar_Get( "r_displayIndex", "0", CVAR_ARCHIVE );
 
 	if ( ri.Cvar_VariableIntegerValue( "com_abnormalExit" ) )
 	{

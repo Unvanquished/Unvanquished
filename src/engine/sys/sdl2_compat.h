@@ -70,10 +70,12 @@ typedef struct
 #define SDL_WINDOWPOS_CENTERED -1
 #define SDL_WINDOWPOS_CENTERED_DISPLAY( d ) -1
 #define SDL_WINDOWPOS_UNDEFINED -2
+#define SDL_WINDOWPOS_UNDEFINED_DISPLAY( d ) -2
 #define SDL_WINDOW_INPUT_FOCUS SDL_APPINPUTFOCUS
 
 #define SDL_GetWindowFlags( w ) SDL_GetAppState()
 #define SDL_GetWindowDisplayIndex( w ) 0
+#define SDL_GetNumVideoDisplays() 1
 #define SDL_GetWindowFlags( w ) SDL_GetAppState()
 #define SDL_MinimizeWindow( w ) SDL_WM_IconifyWindow()
 #define SDL_SetWindowIcon( w, i ) SDL_WM_SetIcon( i, NULL )
