@@ -89,6 +89,7 @@ typedef SDL_GLContextInternal* SDL_GLContext;
 #define SDL_WINDOW_HIDDEN 0x10
 #define SDL_WINDOW_BORDERLESS SDL_NOFRAME
 #define SDL_WINDOWPOS_CENTERED -1
+#define SDL_WINDOWPOS_CENTERED_DISPLAY( d ) -1
 #define SDL_WINDOWPOS_UNDEFINED -2
 #define SDL_GL_SwapWindow( w ) SDL_GL_SwapBuffers()
 #define SDL_MinimizeWindow( w ) SDL_WM_IconifyWindow()
@@ -806,6 +807,13 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 	if ( r_allowResize->integer )
 	{
 		flags |= SDL_WINDOW_RESIZABLE;
+	}
+
+	if ( r_centerWindow->integer >= 1 )
+	{
+		// center window on specified display
+		x = SDL_WINDOWPOS_CENTERED_DISPLAY( r_centerWindow->integer - 1 );
+		y = SDL_WINDOWPOS_CENTERED_DISPLAY( r_centerWindow->integer - 1 );
 	}
 
 	icon = SDL_CreateRGBSurfaceFrom( ( void * ) CLIENT_WINDOW_ICON.pixel_data,
