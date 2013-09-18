@@ -70,10 +70,6 @@ static cvar_t *in_xbox360ControllerDebug = NULL;
 #define CTRL(a) (( a ) - 'a' + 1 )
 #if !SDL_VERSION_ATLEAST( 2, 0, 0 )
 typedef void * SDL_Window;
-#endif
-static SDL_Window *window = NULL;
-
-#if !SDL_VERSION_ATLEAST( 2, 0, 0 )
 #define SDL_Keycode SDLKey
 #define SDLK_APPLICATION SDLK_COMPOSE
 #define SDLK_SCROLLLOCK SDLK_SCROLLOCK
@@ -101,6 +97,9 @@ static SDL_Window *window = NULL;
 #define SDL_GetWindowFlags( w ) SDL_GetAppState()
 #define SDL_WINDOW_INPUT_FOCUS SDL_APPINPUTFOCUS
 #endif
+
+static SDL_Window *window = NULL;
+
 void *IN_GetWindow( void )
 {
 	return window;
@@ -1513,20 +1512,20 @@ static void IN_ProcessEvents( qboolean dropInput )
 				break;
 #endif
 			case SDL_MOUSEMOTION:
-				if ( dropInput )
+				if ( !dropInput )
 				{
-				}
-				else if ( mouseActive )
-				{
-					Com_QueueEvent( 0, SE_MOUSE, e.motion.xrel, e.motion.yrel, 0, NULL );
-				}
-				else if ( uivm )
-				{
-					// TODO (after no compatibility needed with alpha 8): remove argument
-					int mousepos = VM_Call( uivm, UI_MOUSE_POSITION, 0 );
-					int cursorx = mousepos & 0xFFFF;
-					int cursory = mousepos >> 16;
-					VM_Call( uivm, UI_MOUSE_EVENT, e.motion.x - cursorx, e.motion.y - cursory );
+					if ( mouseActive )
+					{
+						Com_QueueEvent( 0, SE_MOUSE, e.motion.xrel, e.motion.yrel, 0, NULL );
+					}
+					else if ( uivm )
+					{
+						// TODO (after no compatibility needed with alpha 8): remove argument
+						int mousepos = VM_Call( uivm, UI_MOUSE_POSITION, 0 );
+						int cursorx = mousepos & 0xFFFF;
+						int cursory = mousepos >> 16;
+						VM_Call( uivm, UI_MOUSE_EVENT, e.motion.x - cursorx, e.motion.y - cursory );
+					}
 				}
 				break;
 

@@ -118,11 +118,11 @@ int SDL_GL_MakeCurrent( SDL_Window *win, SDL_GLContext context )
 {
 	if ( !context  )
 	{
-#ifdef MACOS_X
+#if MACOS_X
 		return CGLSetCurrentContext( NULL );
 #elif SDL_VIDEO_DRIVER_X11
 		return !glXMakeCurrent( win->dpy, None, NULL );
-#elif _WIN32
+#elif WIN32
 		return !wglMakeCurrent( win->hDC, NULL );
 #else
 		return 1;
@@ -130,11 +130,11 @@ int SDL_GL_MakeCurrent( SDL_Window *win, SDL_GLContext context )
 	}
 	else
 	{
-#ifdef MACOS_X
+#if MACOS_X
 		return CGLSetCurrentContext( win->context );
 #elif SDL_VIDEO_DRIVER_X11
 		return !glxMakeCurrent( win->dpy, win->drawable, win->ctx );
-#elif _WIN32
+#elif WIN32
 		return !wglMakeCurrent( win->hDC, win->hGLRC );
 #else
 		return 1;
@@ -268,7 +268,7 @@ SDL_Window *SDL_CreateWindow( const char *title, int x, int y, int w, int h, uin
 		win.ctx = glxGetCurrentContext();
 		win.dpy = glxGetCurrentDisplay();
 		win.drawable = glxGetCurrentDrawable();
-#elif _WIN32
+#elif WIN32
 		SDL_SysWMinfo info;
 
 		SDL_VERSION( &info.version );
@@ -335,9 +335,6 @@ static void GLimp_SetCurrentContext( qboolean enable )
 		SDL_GL_MakeCurrent( window, NULL );
 	}
 }
-#endif
-
-#ifdef SMP
 
 /*
 ===========================================================
@@ -437,16 +434,6 @@ qboolean GLimp_SpawnRenderThread( void ( *function )( void ) )
 		ri.Printf( PRINT_ALL, "SDL_CreateThread() returned %s\n", SDL_GetError() );
 		GLimp_ShutdownRenderThread();
 		return qfalse;
-	}
-	else
-	{
-		// tma 01/09/07: don't think this is necessary anyway?
-		//
-		// !!! FIXME: No detach API available in SDL!
-		//ret = pthread_detach( renderThread );
-		//if ( ret ) {
-		//ri.Printf( PRINT_ALL, "pthread_detach returned %d: %s", ret, strerror( ret ) );
-		//}
 	}
 
 	return qtrue;
@@ -591,7 +578,7 @@ void GLimp_ShutdownRenderThread( void )
 {
 }
 
-void           *GLimp_RendererSleep( void )
+void *GLimp_RendererSleep( void )
 {
 	return NULL;
 }
@@ -777,7 +764,6 @@ static void GLimp_DetectAvailableModes( void )
 
 	if ( *buf )
 	{
-		buf[ strlen( buf ) - 1 ] = 0;
 		ri.Printf( PRINT_ALL, "Available modes: '%s'\n", buf );
 		ri.Cvar_Set( "r_availableModes", buf );
 	}
@@ -796,11 +782,10 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 	int         samples;
 	int         i = 0;
 	SDL_Surface *icon = NULL;
-	Uint32      flags = SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL;
 	SDL_DisplayMode desktopMode;
 	int         display;
+	Uint32      flags = SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL;
 	int         x = SDL_WINDOWPOS_UNDEFINED, y = SDL_WINDOWPOS_UNDEFINED;
-	GLenum      glewResult;
 
 	ri.Printf( PRINT_ALL, "Initializing OpenGL display\n" );
 
@@ -1119,9 +1104,7 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 
 	//SDL_FreeSurface( icon );
 
-	glewResult = glewInit();
-
-	if ( GLEW_OK != glewResult )
+	if ( glewInit() != GLEW_OK )
 	{
 		// glewInit failed, something is seriously wrong
 		ri.Error( ERR_FATAL, "GLW_StartOpenGL() - could not load OpenGL subsystem: %s", glewGetErrorString( glewResult ) );
