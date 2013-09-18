@@ -504,7 +504,6 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 	int         i = 0;
 	SDL_Surface *icon = NULL;
 	SDL_DisplayMode desktopMode;
-	int         display;
 	Uint32      flags = SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL;
 	int         x, y;
 	GLenum      glewResult;
@@ -741,16 +740,17 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 			SDL_GL_SetAttribute( SDL_GL_MULTISAMPLEBUFFERS, samples ? 1 : 0 );
 			SDL_GL_SetAttribute( SDL_GL_MULTISAMPLESAMPLES, samples );
 			SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
+#if !SDL_VERSION_ATLEAST( 2, 0, 0 )
+			SDL_GL_SetAttribute( SDL_GL_SWAP_CONTROL, r_swapInterval->integer );
+#endif
+
 #if SDL_VERSION_ATLEAST( 2, 0, 0 )
 			if ( !r_glAllowSoftware->integer )
 			{
 				SDL_GL_SetAttribute( SDL_GL_ACCELERATED_VISUAL, 1 );
 			}
-#endif
-#if !SDL_VERSION_ATLEAST( 2, 0, 0 )
-			SDL_GL_SetAttribute( SDL_GL_SWAP_CONTROL, r_swapInterval->integer );
-#endif
-#if USE_XREAL_RENDERER && SDL_VERSION_ATLEAST( 2, 0, 0 )
+
+#if USE_XREAL_RENDERER
 			if ( r_glCoreProfile->integer || r_glDebugProfile->integer )
 			{
 				int major = r_glMajorVersion->integer;
@@ -773,6 +773,7 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 					SDL_GL_SetAttribute( SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG );
 				}
 			}
+#endif
 #endif
 			window = SDL_CreateWindow( CLIENT_WINDOW_TITLE, x, y, glConfig.vidWidth, glConfig.vidHeight, flags );
 
@@ -827,9 +828,7 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 		ri.Printf( PRINT_ALL, "Using GLEW %s\n", glewGetString( GLEW_VERSION ) );
 	}
 
-#if SDL_VERSION_ATLEAST( 2, 0, 0 )
-	// nothing to do
-#else
+#if !SDL_VERSION_ATLEAST( 2, 0, 0 )
 	SDL_GetWindowContext( window );
 #endif
 

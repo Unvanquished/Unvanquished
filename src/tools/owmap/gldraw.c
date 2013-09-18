@@ -296,7 +296,7 @@ void Draw_AABB(const vec3_t origin, const vec3_t mins, const vec3_t maxs, vec4_t
 void Draw_Scene(void (*drawFunc) (void))
 {
 #if defined(USE_OPENGL)
-	Uint8          *keys;
+	const Uint8     *keys;
 	matrix_t        rotation;
 	vec3_t          forward, right, up;
 	qboolean        mouseGrabbed;
@@ -340,17 +340,17 @@ void Draw_Scene(void (*drawFunc) (void))
 					break;
 				}
 #else
-			case SDL_VIDEORESIZE:
-				drawScreen->surface = SDL_SetVideoMode( event.resize.w, event.resize.h, drawVideo->videoInfo->vfmt->BitsPerPixel, SDL_OPENGL | SDL_RESIZABLE );
-				if ( drawScreen )
-				{
-					Reshape( drawScreen->surface->w, drawScreen->surface->h );
-				}
-				else
-				{
-					/* Uh oh, we couldn't set the new video mode?? */ ;
-				}
-				break;
+				case SDL_VIDEORESIZE:
+					drawScreen->surface = SDL_SetVideoMode( event.resize.w, event.resize.h, drawVideo->videoInfo->vfmt->BitsPerPixel, SDL_OPENGL | SDL_RESIZABLE );
+					if ( drawScreen )
+					{
+						Reshape( drawScreen->surface->w, drawScreen->surface->h );
+					}
+					else
+					{
+						/* Uh oh, we couldn't set the new video mode?? */ ;
+					}
+					break;
 #endif
 				case SDL_MOUSEMOTION:
 				{
