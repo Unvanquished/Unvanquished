@@ -511,6 +511,7 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 	int         display;
 	Uint32      flags = SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL;
 	int         x = SDL_WINDOWPOS_UNDEFINED, y = SDL_WINDOWPOS_UNDEFINED;
+	GLenum      glewResult;
 
 	ri.Printf( PRINT_ALL, "Initializing OpenGL display\n" );
 
@@ -829,7 +830,9 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 
 	SDL_FreeSurface( icon );
 
-	if ( glewInit() != GLEW_OK )
+	glewResult = glewInit();
+
+	if ( glewResult != GLEW_OK )
 	{
 		// glewInit failed, something is seriously wrong
 		ri.Error( ERR_FATAL, "GLW_StartOpenGL() - could not load OpenGL subsystem: %s", glewGetErrorString( glewResult ) );
