@@ -1,6 +1,7 @@
 find_package( PkgConfig )
 if( PKG_CONFIG_FOUND )
   pkg_check_modules( SDL2 sdl2 )
+  find_library( SDL2_LIBRARY NAMES ${SDL2_LIBRARIES} HINTS ${SDL2_LIBDIR} ${SDL2_LIBRARY_DIRS} )
 else()
   set( SDL2_FOUND "" CACHE INTERNAL "" )
 endif()
