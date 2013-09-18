@@ -199,9 +199,11 @@ int Sys_GetProcessorFeatures( void )
 	if( SDL_Has3DNow( ) ) features |= CF_3DNOW;
 	if( SDL_HasSSE( ) ) features |= CF_SSE;
 	if( SDL_HasSSE2( ) ) features |= CF_SSE2;
+#if SDL_VERSION_ATLEAST( 2, 0, 0 )
 	if( SDL_HasSSE3( ) ) features |= CF_SSE3;
 	if( SDL_HasSSE41( ) ) features |= CF_SSE4_1;
 	if( SDL_HasSSE42( ) ) features |= CF_SSE4_2;
+#endif
 	if( SDL_HasAltiVec( ) ) features |= CF_ALTIVEC;
 #endif
 	return features;
@@ -573,6 +575,9 @@ void Sys_HelpText( const char *binaryName )
 	        , binaryName );
 }
 
+#if !SDL_VERSION_ATLEAST( 2, 0, 0 )
+#define SDL_GetVersion( v ) *v = *SDL_Linked_Version()
+#endif
 int main( int argc, char **argv )
 {
 	int  i;

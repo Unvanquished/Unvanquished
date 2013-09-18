@@ -34,12 +34,18 @@ Maryland 20850 USA.
 
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
+#include <SDL_version.h>
 
 // Require a minimum version of SDL
+#if SDL_VERSION_ATLEAST( 2, 0, 0 )
 #define MINSDL_MAJOR 2
 #define MINSDL_MINOR 0
 #define MINSDL_PATCH 0
-
+#else
+#define MINSDL_MAJOR 1
+#define MINSDL_MINOR 2
+#define MINSDL_PATCH 10
+#endif
 // Input subsystem
 void         IN_Init( void *windowData );
 void         IN_Frame( void );
@@ -48,8 +54,7 @@ void         IN_Restart( void );
 
 void         IN_DropInputsForFrame( void );
 
-typedef struct SDL_Window SDL_Window;
-SDL_Window   *IN_GetWindow( void );
+void   *IN_GetWindow( void );
 
 // Console
 void         CON_Shutdown( void );

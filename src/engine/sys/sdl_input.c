@@ -68,10 +68,40 @@ static cvar_t *in_xbox360ControllerAvailable = NULL;
 static cvar_t *in_xbox360ControllerDebug = NULL;
 
 #define CTRL(a) (( a ) - 'a' + 1 )
-
+#if !SDL_VERSION_ATLEAST( 2, 0, 0 )
+typedef void * SDL_Window;
+#endif
 static SDL_Window *window = NULL;
 
-SDL_Window *IN_GetWindow( void )
+#if !SDL_VERSION_ATLEAST( 2, 0, 0 )
+#define SDL_Keycode SDLKey
+#define SDLK_APPLICATION SDLK_COMPOSE
+#define SDLK_SCROLLLOCK SDLK_SCROLLOCK
+#define SDLK_LGUI SDLK_LSUPER
+#define SDLK_RGUI SDLK_RSUPER
+#define SDLK_KP_0 SDLK_KP0
+#define SDLK_KP_1 SDLK_KP1
+#define SDLK_KP_2 SDLK_KP2
+#define SDLK_KP_3 SDLK_KP3
+#define SDLK_KP_4 SDLK_KP4
+#define SDLK_KP_5 SDLK_KP5
+#define SDLK_KP_6 SDLK_KP6
+#define SDLK_KP_7 SDLK_KP7
+#define SDLK_KP_8 SDLK_KP8
+#define SDLK_KP_9 SDLK_KP9
+#define SDLK_NUMLOCKCLEAR SDLK_NUMLOCK
+#define SDLK_PRINTSCREEN SDLK_PRINT
+#define KMOD_LGUI KMOD_LMETA
+#define KMOD_RGUI KMOD_RMETA
+#define SDL_Keysym SDL_keysym
+#define SDL_SetWindowGrab( w, t ) SDL_WM_GrabInput( t )
+#define SDL_SetRelativeMouseMode( t )
+#define SDL_WarpMouseInWindow( w, x, y ) SDL_WarpMouse( x, y )
+#define SDL_JoystickNameForIndex( i ) SDL_JoystickName( i )
+#define SDL_GetWindowFlags( w ) SDL_GetAppState()
+#define SDL_WINDOW_INPUT_FOCUS SDL_APPINPUTFOCUS
+#endif
+void *IN_GetWindow( void )
 {
 	return window;
 }
@@ -596,9 +626,13 @@ static void IN_GobbleMotionEvents( void )
 
 	// Gobble any mouse motion events
 	SDL_PumpEvents();
-
+#if SDL_VERSION_ATLEAST( 2, 0, 0 )
 	while ( SDL_PeepEvents( dummy, 1, SDL_GETEVENT,
 	                        SDL_MOUSEMOTION, SDL_MOUSEMOTION ) ) { }
+#else
+	while ( SDL_PeepEvents( dummy, 1, SDL_GETEVENT,
+	                        SDL_EVENTMASK( SDL_MOUSEMOTION ) ) ) { }
+#endif
 }
 
 /*
@@ -1409,6 +1443,19 @@ static void IN_ProcessEvents( qboolean dropInput )
 		return;
 	}
 
+#if !SDL_VERSION_ATLEAST( 2, 0, 0 )
+	if ( cls.keyCatchers == 0 && keyRepeatEnabled )
+	{
+		SDL_EnableKeyRepeat( 0, 0 );
+		keyRepeatEnabled = qfalse;
+	}
+	else if ( !keyRepeatEnabled )
+	{
+		SDL_EnableKeyRepeat( SDL_DEFAULT_REPEAT_DELAY,
+		                     SDL_DEFAULT_REPEAT_INTERVAL );
+		keyRepeatEnabled = qtrue;
+	}
+#endif
 	while ( SDL_PollEvent( &e ) )
 	{
 		switch ( e.type )
@@ -1422,6 +1469,13 @@ static void IN_ProcessEvents( qboolean dropInput )
 					{
 						Com_QueueEvent( 0, SE_KEY, key, qtrue, 0, NULL );
 					}
+
+#if !SDL_VERSION_ATLEAST( 2, 0, 0 )
+					if ( key != K_CONSOLE )
+					{
+						Com_QueueEvent( 0, SE_CHAR, Q_UTF8_Store( Q_UTF8_Encode( e.key.keysym.unicode ) ), 0, 0, NULL );
+					}
+#endif
 
 					lastKeyDown = key;
 				}
@@ -1442,6 +1496,7 @@ static void IN_ProcessEvents( qboolean dropInput )
 				}
 
 				break;
+#if SDL_VERSION_ATLEAST( 2, 0, 0 )
 			case SDL_TEXTINPUT:
 				if ( lastKeyDown != K_CONSOLE )
 				{
@@ -1456,6 +1511,7 @@ static void IN_ProcessEvents( qboolean dropInput )
 					}
 				}
 				break;
+#endif
 			case SDL_MOUSEMOTION:
 				if ( dropInput )
 				{
@@ -1493,17 +1549,25 @@ static void IN_ProcessEvents( qboolean dropInput )
 						case SDL_BUTTON_RIGHT:
 							b = K_MOUSE2;
 							break;
-
-						case SDL_BUTTON_X1:
-							b = K_MOUSE3;
+#if !SDL_VERSION_ATLEAST( 2, 0, 0 )
+						case SDL_BUTTON_WHEELUP:
+							b = K_MWHEELUP;
 							break;
 
-						case SDL_BUTTON_X2:
+						case SDL_BUTTON_WHEELDOWN:
+							b = K_MWHEELDOWN;
+							break;
+#endif
+						case SDL_BUTTON_X1:
 							b = K_MOUSE4;
 							break;
 
+						case SDL_BUTTON_X2:
+							b = K_MOUSE5;
+							break;
+
 						default:
-							b = K_AUX1 + ( e.button.button - SDL_BUTTON_X2 + 1 ) % 16;
+							b = K_AUX1 + ( e.button.button - ( SDL_BUTTON_X2 + 1 ) ) % 16;
 							break;
 					}
 
@@ -1511,6 +1575,7 @@ static void IN_ProcessEvents( qboolean dropInput )
 					                ( e.type == SDL_MOUSEBUTTONDOWN ? qtrue : qfalse ), 0, NULL );
 				}
 				break;
+#if SDL_VERSION_ATLEAST( 2, 0, 0 )
 			case SDL_MOUSEWHEEL:
 				if ( e.wheel.y > 0 )
 				{
@@ -1521,29 +1586,53 @@ static void IN_ProcessEvents( qboolean dropInput )
 					Com_QueueEvent( 0, SE_KEY, K_MWHEELDOWN, qtrue, 0, NULL );
 				}
 				break;
+
+			case SDL_WINDOWEVENT:
+				switch( e.window.event )
+				{
+					case SDL_WINDOWEVENT_RESIZED:
+						{
+							char width[32], height[32];
+							Com_sprintf( width, sizeof( width ), "%d", e.window.data1 );
+							Com_sprintf( height, sizeof( height ), "%d", e.window.data2 );
+							Cvar_Set( "r_customwidth", width );
+							Cvar_Set( "r_customheight", height );
+							Cvar_Set( "r_mode", "-1" );
+						}
+						break;
+
+					case SDL_WINDOWEVENT_MINIMIZED:    Cvar_SetValue( "com_minimized", 1 ); break;
+					case SDL_WINDOWEVENT_MAXIMIZED:    Cvar_SetValue( "com_minimized", 0 ); break;
+					case SDL_WINDOWEVENT_FOCUS_LOST:   Cvar_SetValue( "com_unfocused", 1 ); break;
+					case SDL_WINDOWEVENT_FOCUS_GAINED: Cvar_SetValue( "com_unfocused", 0 ); break;
+				}
+				break;
+#else
+			case SDL_VIDEORESIZE:
+				{
+					char width[32], height[32];
+					Com_sprintf( width, sizeof( width ), "%d", e.resize.w );
+					Com_sprintf( height, sizeof( height ), "%d", e.resize.h );
+					Cvar_Set( "r_customwidth", width );
+					Cvar_Set( "r_customheight", height );
+					Cvar_Set( "r_mode", "-1" );
+				}
+				break;
+			case SDL_ACTIVEEVENT:
+				if ( e.active.state & SDL_APPINPUTFOCUS )
+				{
+					Cvar_SetValue( "com_unfocused", !e.active.gain );
+				}
+
+				if ( e.active.state & SDL_APPACTIVE )
+				{
+					Cvar_SetValue( "com_minimized", !e.active.gain );
+				}
+				break;
+#endif
 			case SDL_QUIT:
 				Cbuf_ExecuteText( EXEC_NOW, "quit Closed window\n" );
 				break;
-
-			switch( e.window.event )
-			{
-				case SDL_WINDOWEVENT_RESIZED:
-					{
-						char width[32], height[32];
-						Com_sprintf( width, sizeof( width ), "%d", e.window.data1 );
-						Com_sprintf( height, sizeof( height ), "%d", e.window.data2 );
-						Cvar_Set( "r_customwidth", width );
-						Cvar_Set( "r_customheight", height );
-						Cvar_Set( "r_mode", "-1" );
-					}
-					break;
-
-				case SDL_WINDOWEVENT_MINIMIZED:    Cvar_SetValue( "com_minimized", 1 ); break;
-				case SDL_WINDOWEVENT_MAXIMIZED:    Cvar_SetValue( "com_minimized", 0 ); break;
-				case SDL_WINDOWEVENT_FOCUS_LOST:   Cvar_SetValue( "com_unfocused", 1 ); break;
-				case SDL_WINDOWEVENT_FOCUS_GAINED: Cvar_SetValue( "com_unfocused", 0 ); break;
-			}
-
 			default:
 				break;
 		}
@@ -1640,16 +1729,23 @@ void IN_Init( void *windowData )
 	in_xbox360Controller = Cvar_Get( "in_xbox360Controller", "1", CVAR_TEMP );
 	in_xbox360ControllerAvailable = Cvar_Get( "in_xbox360ControllerAvailable", "0", CVAR_ROM );
 	in_xbox360ControllerDebug = Cvar_Get( "in_xbox360ControllerDebug", "0", CVAR_TEMP );
-
+#if SDL_VERSION_ATLEAST( 2, 0, 0 )
 	SDL_StartTextInput();
-
+#else
+	SDL_EnableUNICODE( 1 );
+	SDL_EnableKeyRepeat( SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL );
+	keyRepeatEnabled = qtrue;
+#endif
 	mouseAvailable = ( in_mouse->value != 0 );
 	IN_DeactivateMouse( qtrue );
 
 	appState = SDL_GetWindowFlags( window );
 	Cvar_SetValue( "com_unfocused", !( appState & SDL_WINDOW_INPUT_FOCUS ) );
+#if SDL_VERSION_ATLEAST( 2, 0, 0 )
 	Cvar_SetValue( "com_minimized", ( appState & SDL_WINDOW_MINIMIZED ) );
-
+#else
+	Cvar_SetValue( "com_minimized", !( appState & SDL_APPACTIVE ) );
+#endif
 	IN_InitJoystick();
 	Com_DPrintf( "------------------------------------\n" );
 }
@@ -1661,8 +1757,9 @@ IN_Shutdown
 */
 void IN_Shutdown( void )
 {
+#if SDL_VERSION_ATLEAST( 2, 0, 0 )
 	SDL_StopTextInput();
-
+#endif
 	IN_DeactivateMouse( qtrue );
 	mouseAvailable = qfalse;
 

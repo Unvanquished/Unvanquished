@@ -186,6 +186,10 @@ static struct {
 } x11 = { NULL };
 #endif
 
+#if !SDL_VERSION_ATLEAST( 2, 0, 0 )
+#define SDL_GetWindowWMInfo( w, i ) SDL_GetWMInfo( i )
+#endif
+
 char *Sys_GetClipboardData( clipboard_t clip )
 {
 #if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
@@ -268,8 +272,11 @@ char *Sys_GetClipboardData( clipboard_t clip )
 
 			if ( event.type == SDL_SYSWMEVENT )
 			{
+#if SDL_VERSION_ATLEAST( 2, 0, 0 )
 				XEvent xevent = event.syswm.msg->msg.x11.event;
-
+#else
+				XEvent xevent = event.syswm.msg->event.xevent;
+#endif
 				if ( xevent.type == SelectionNotify &&
 				     xevent.xselection.requestor == owner )
 				{
@@ -737,6 +744,10 @@ void Sys_Sleep( int msec )
 		usleep( msec * 1000 );
 	}
 }
+
+#if !SDL_VERSION_ATLEAST( 2, 0, 0 )
+#define SDL_SetWindowGrab( w, g ) SDL_WM_GrabInput( g )
+#endif
 
 /*
 ==============
