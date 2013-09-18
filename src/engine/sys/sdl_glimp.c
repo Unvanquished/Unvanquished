@@ -1102,7 +1102,7 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 
 	} while ( ( !glContext || !window ) && samples );
 
-	//SDL_FreeSurface( icon );
+	SDL_FreeSurface( icon );
 
 	if ( glewInit() != GLEW_OK )
 	{
