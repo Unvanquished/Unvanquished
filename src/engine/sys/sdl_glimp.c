@@ -743,6 +743,23 @@ static void GLimp_DetectAvailableModes( void )
 		qsort( modes, numModes, sizeof( SDL_Rect ), GLimp_CompareModes );
 	}
 
+	// remove all "duplicate" modes
+	// they are caused by modes with differing refresh rates or bits per pixel
+	for ( i = 0; i < numModes - 1; i++ )
+	{
+		if ( modes[ i ].h == modes[ i + 1 ].h && modes[ i ].w == modes[ i + 1 ].w )
+		{
+			// remove duplicate mode
+			int j;
+			for ( j = i; j < numModes - 1; j++ )
+			{
+				modes[ j ] = modes[ j + 1 ];
+			}
+			numModes--;
+			i--;
+		}
+	}
+
 	for ( i = 0; i < numModes; i++ )
 	{
 		const char *newModeString = va( "%ux%u ", modes[ i ].w, modes[ i ].h );
