@@ -306,33 +306,34 @@ static SDL_Window *SDL_CreateWindow( const char *title, int x, int y, int w, int
 	win.videoInfo = &sVideoInfo;
 
 	win.surface = SDL_SetVideoMode( w, h, colorBits, flags );
-	if ( win.surface )
-	{
+
+	return win.surface ? &win : NULL;
+}
+
+static void SDL_GetWindowContext( SDL_Window *win )
+{
 #if MACOS_X
-		win.context = CGLGetCurrentContext();
+	win->context = CGLGetCurrentContext();
 #elif SDL_VIDEO_DRIVER_X11
-		win.ctx = glXGetCurrentContext();
-		win.dpy = glXGetCurrentDisplay();
-		win.drawable = glXGetCurrentDrawable();
+	win->ctx = glXGetCurrentContext();
+	win->dpy = glXGetCurrentDisplay();
+	win->drawable = glXGetCurrentDrawable();
 #elif WIN32
-		SDL_SysWMinfo info;
+	SDL_SysWMinfo info;
 
-		SDL_VERSION( &info.version );
+	SDL_VERSION( &info.version );
 
-		if ( SDL_GetWMInfo( &info ) )
-		{
-			win.hDC = GetDC( info.window );
-			win.hGLRC = info.hglrc;
-		}
-		else
-		{
-			win.hDC = 0;
-			win.hGLRC = NULL;
-		}
-#endif
-		return &win;
+	if ( SDL_GetWMInfo( &info ) )
+	{
+		win->hDC = GetDC( info.window );
+		win->hGLRC = info.hglrc;
 	}
-	return NULL;
+	else
+	{
+		win->hDC = 0;
+		win->hGLRC = NULL;
+	}
+#endif
 }
 
 static void SDL_GetWindowPosition( SDL_Window *w, int *x, int *y )
