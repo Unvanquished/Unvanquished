@@ -244,133 +244,64 @@ namespace Cmd {
     ===============================================================================
     */
 
-    void ListFlaggedCommands(const Args& args, int flags) {
-        Q_UNUSED(args); //TODO use a prefix
-        CommandMap& commands = GetCommandMap();
-
-        //TODO: add partial matches as in Doom3BFG
-        std::vector<const commandRecord_t*> matches;
-        std::vector<const std::string*> matchesNames;
-        unsigned long maxNameLength = 0;
-
-        //Find all the matching commands and their names
-        for (auto it = commands.cbegin(); it != commands.cend(); ++it) {
-            const commandRecord_t& record = it->second;
-
-            if (record.cmd->GetFlags() & flags) {
-                matches.push_back(&it->second);
-                matchesNames.push_back(&it->first);
-                maxNameLength = std::max(maxNameLength, it->first.size());
-            }
-        }
-
-        //Print the matches, keeping the description aligned
-        for (unsigned i = 0; i < matches.size(); i++) {
-            int toFill = maxNameLength - matchesNames[i]->size();
-            Com_Printf("  %s%s %s\n", matchesNames[i]->c_str(), std::string(toFill, ' ').c_str(), matches[i]->description.c_str());
-        }
-
-        Com_Printf("%zu commands\n", matches.size());
-    }
 
     class ListCmdsCmd: public StaticCmd {
         public:
-            ListCmdsCmd(): StaticCmd("listCmds", BASE, "lists all the commands") {
+            ListCmdsCmd(std::string name, int cmdFlags, std::string description, int showCmdFlags)
+            :StaticCmd(std::move(name), cmdFlags, std::move(description)), showCmdFlags(showCmdFlags) {
             }
 
             void Run(const Cmd::Args& args) const override {
-                ListFlaggedCommands(args, ~(CVAR|ALIAS));
+                CommandMap& commands = GetCommandMap();
+
+                std::vector<const commandRecord_t*> matches;
+                std::vector<const std::string*> matchesNames;
+                unsigned long maxNameLength = 0;
+
+                //Find all the matching commands and their names
+                for (auto it = commands.cbegin(); it != commands.cend(); ++it) {
+                    const commandRecord_t& record = it->second;
+
+                    // /listCmds's arguement is used for prefix matching
+                    if (args.Argc() >= 2 and not Str::IsPrefix(args.Argv(1), it->first)) {
+                        continue;
+                    }
+
+                    if (record.cmd->GetFlags() & showCmdFlags) {
+                        matches.push_back(&it->second);
+                        matchesNames.push_back(&it->first);
+                        maxNameLength = std::max(maxNameLength, it->first.size());
+                    }
+                }
+
+                //Print the matches, keeping the description aligned
+                for (unsigned i = 0; i < matches.size(); i++) {
+                    int toFill = maxNameLength - matchesNames[i]->size();
+                    Com_Printf("  %s%s %s\n", matchesNames[i]->c_str(), std::string(toFill, ' ').c_str(), matches[i]->description.c_str());
+                }
+
+                Com_Printf("%zu commands\n", matches.size());
             }
+
+            Cmd::CompletionResult Complete(int pos, const Cmd::Args& args) const override {
+                if (args.PosToArg(pos) == 1) {
+                    return ::Cmd::CompleteCommandNames(args.ArgPrefix(pos));
+                }
+
+                return {};
+            }
+
+        private:
+            int showCmdFlags;
     };
 
-    class ListBaseCmdsCmd: public StaticCmd {
-        public:
-            ListBaseCmdsCmd(): StaticCmd("listBaseCmds", BASE, "lists all the base commands") {
-            }
-
-            void Run(const Cmd::Args& args) const override {
-                ListFlaggedCommands(args, BASE);
-            }
-    };
-
-    class ListSystemCmdsCmd: public StaticCmd {
-        public:
-            ListSystemCmdsCmd(): StaticCmd("listSystemCmds", BASE | SYSTEM, "lists all the system commands") {
-            }
-
-            void Run(const Cmd::Args& args) const override {
-                ListFlaggedCommands(args, SYSTEM);
-            }
-    };
-
-    class ListRendererCmdsCmd: public StaticCmd {
-        public:
-            ListRendererCmdsCmd(): StaticCmd("listRendererCmds", BASE | RENDERER, "lists all the renderer commands") {
-            }
-
-            void Run(const Cmd::Args& args) const override {
-                ListFlaggedCommands(args, RENDERER);
-            }
-    };
-	static ListRendererCmdsCmd listRendererCmdsCmdRegistration;
-
-    class ListSoundCmdsCmd: public StaticCmd {
-        public:
-            ListSoundCmdsCmd(): StaticCmd("listSoundCmds", BASE | SOUND, "lists all the sound commands") {
-            }
-
-            void Run(const Cmd::Args& args) const override {
-                ListFlaggedCommands(args, SOUND);
-            }
-    };
-
-    class ListCGameCmdsCmd: public StaticCmd {
-        public:
-            ListCGameCmdsCmd(): StaticCmd("listCGameCmds", BASE | CGAME, "lists all the client-side game commands") {
-            }
-
-            void Run(const Cmd::Args& args) const override {
-                ListFlaggedCommands(args, CGAME);
-            }
-    };
-
-    class ListGameCmdsCmd: public StaticCmd {
-        public:
-            ListGameCmdsCmd(): StaticCmd("listGameCmds", BASE | GAME, "lists all the server-side game commands") {
-            }
-
-            void Run(const Cmd::Args& args) const override {
-                ListFlaggedCommands(args, GAME);
-            }
-    };
-
-    class ListUICmdsCmd: public StaticCmd {
-        public:
-            ListUICmdsCmd(): StaticCmd("listUICmds", BASE | UI, "lists all the UI commands") {
-            }
-
-            void Run(const Cmd::Args& args) const override {
-                ListFlaggedCommands(args, UI);
-            }
-    };
-
-    class ListOldStyleCmdsCmd: public StaticCmd {
-        public:
-            ListOldStyleCmdsCmd(): StaticCmd("listOldStyleCmds", BASE, "lists all the commands registered through the C interface") {
-            }
-
-            void Run(const Cmd::Args& args) const override {
-                ListFlaggedCommands(args, PROXY_FOR_OLD);
-            }
-    };
-
-    //Automatically register the list<Subsystem>Cmds commands
-	static ListCmdsCmd listCmdsCmdRegistration;
-	static ListBaseCmdsCmd listBaseCmdsCmdRegistration;
-	static ListSystemCmdsCmd listSystemCmdsCmdRegistration;
-	static ListSoundCmdsCmd listSoundCmdsCmdRegistration;
-	static ListCGameCmdsCmd listCGameCmdsCmdRegistration;
-	static ListGameCmdsCmd listGameCmdsCmdRegistration;
-	static ListUICmdsCmd listUICmdsCmdRegistration;
-	static ListOldStyleCmdsCmd listOldStyleCmdsCmdRegistration;
+    static ListCmdsCmd listCmdsRegistration("listCmds", BASE, "lists all the commands", ~(CVAR|ALIAS));
+    static ListCmdsCmd listBaseCmdsRegistration("listBaseCmds", BASE, "lists all the base commands", BASE);
+    static ListCmdsCmd listSystemCmdsRegistration("listSystemCmds", BASE | SYSTEM, "lists all the system commands", SYSTEM);
+    static ListCmdsCmd listRendererCmdsRegistration("listRendererCmds", BASE | RENDERER, "lists all the renderer commands", RENDERER);
+    static ListCmdsCmd listSoundCmdsRegistration("listSoundCmds", BASE | SOUND, "lists all the sound commands", SOUND);
+    static ListCmdsCmd listCGameCmdsRegistration("listCGameCmds", BASE | CGAME, "lists all the client-side game commands", CGAME);
+    static ListCmdsCmd listGameCmdsRegistration("listGameCmds", BASE | GAME, "lists all the server-side game commands", GAME);
+    static ListCmdsCmd listUICmdsRegistration("listUICmds", BASE | UI, "lists all the UI commands", UI);
+    static ListCmdsCmd listOldStyleCmdsRegistration("listOldStyleCmds", BASE, "lists all the commands registered through the C interface", PROXY_FOR_OLD);
 }

@@ -454,7 +454,7 @@ namespace Cvar {
                 }
             }
 
-            Cmd::CompletionResult Complete(int pos, const Cmd::Args& args) const override{
+            Cmd::CompletionResult Complete(int pos, const Cmd::Args& args) const override {
                 int argNum = args.PosToArg(pos);
 
                 if (argNum == 1) {
@@ -544,6 +544,17 @@ namespace Cvar {
                 }
 
                 Com_Printf("%zu cvars\n", matches.size());
+            }
+
+            Cmd::CompletionResult Complete(int pos, const Cmd::Args& args) const override {
+                //TODO handle -raw?
+                int argNum = args.PosToArg(pos);
+
+                if (argNum == 1) {
+                    return ::Cvar::Complete(args.ArgPrefix(pos));
+                }
+
+                return {};
             }
     };
     static ListCvars ListCvarsRegistration;
