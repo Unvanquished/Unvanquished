@@ -28,6 +28,18 @@ static int colorBits = 0;
 
 #if !SDL_VERSION_ATLEAST( 2, 0, 0 )
 
+#ifdef WIN32
+#include <GL/wglew.h>
+#else
+#include <GL/glxew.h>
+#endif
+
+#ifdef MACOS_X
+#include <OpenGL/OpenGL.h>
+#elif SDL_VIDEO_DRIVER_X11
+#include <GL/glx.h>
+#endif
+
 #include <SDL.h>
 #include <SDL_video.h>
 #include <SDL_syswm.h>
@@ -148,18 +160,6 @@ static SDL_GLContext SDL_GL_CreateContext( SDL_Window *w )
 }
 
 #ifdef SMP
-#ifdef WIN32
-#include <GL/wglew.h>
-#else
-#include <GL/glxew.h>
-#endif
-
-#ifdef MACOS_X
-#include <OpenGL/OpenGL.h>
-#elif SDL_VIDEO_DRIVER_X11
-#include <GL/glx.h>
-#endif
-
 static int SDL_GL_MakeCurrent( SDL_Window *win, SDL_GLContext context )
 {
 	if ( !context  )
@@ -179,7 +179,7 @@ static int SDL_GL_MakeCurrent( SDL_Window *win, SDL_GLContext context )
 #if MACOS_X
 		return CGLSetCurrentContext( win->context );
 #elif SDL_VIDEO_DRIVER_X11
-		return !glxMakeCurrent( win->dpy, win->drawable, win->ctx );
+		return !glXMakeCurrent( win->dpy, win->drawable, win->ctx );
 #elif WIN32
 		return !wglMakeCurrent( win->hDC, win->hGLRC );
 #else
@@ -311,9 +311,9 @@ static SDL_Window *SDL_CreateWindow( const char *title, int x, int y, int w, int
 #if MACOS_X
 		win.context = CGLGetCurrentContext();
 #elif SDL_VIDEO_DRIVER_X11
-		win.ctx = glxGetCurrentContext();
-		win.dpy = glxGetCurrentDisplay();
-		win.drawable = glxGetCurrentDrawable();
+		win.ctx = glXGetCurrentContext();
+		win.dpy = glXGetCurrentDisplay();
+		win.drawable = glXGetCurrentDrawable();
 #elif WIN32
 		SDL_SysWMinfo info;
 
