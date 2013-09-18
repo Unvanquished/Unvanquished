@@ -417,15 +417,10 @@ static void GLimp_DetectAvailableModes( void )
 
 	if ( SDL_GetWindowDisplayMode( window, &windowMode ) < 0 )
 	{
-		ri.Printf( PRINT_WARNING, "Couldn't get window display mode, no resolutions detected\n" );
+		ri.Printf( PRINT_WARNING, "Couldn't get window display mode: %s\n", SDL_GetError() );
 		return;
 	}
 
-	if ( !modes )
-	{
-		ri.Printf( PRINT_WARNING, "Can't get list of available modes\n" );
-		return;
-	}
 
 	for ( i = 0; i < SDL_GetNumDisplayModes( display ); i++ )
 	{
@@ -555,7 +550,7 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 	{
 		Com_Memset( &desktopMode, 0, sizeof( SDL_DisplayMode ) );
 
-		ri.Printf( PRINT_ALL, "Cannot determine display aspect, assuming 1.333\n" );
+		ri.Printf( PRINT_ALL, "Cannot determine display aspect (%s), assuming 1.333\n", SDL_GetError() );
 	}
 
 	ri.Printf( PRINT_ALL, "...setting mode %d:", mode );
