@@ -53,30 +53,43 @@ namespace Cvar {
 
     void SetCCvar(cvarRecord_t& cvar) {
         cvar_t& var = cvar.ccvar;
+        bool modified = false;
 
         if (cvar.flags & CVAR_LATCH) {
             if (not var.string) {
                 var.string = CopyString(cvar.value.c_str());
+                modified = true;
             } else {
                 if (var.latchedString) Z_Free(var.latchedString);
                 var.latchedString = CopyString(cvar.value.c_str());
             }
         } else {
-            if (var.string) Z_Free(var.string);
-            var.string = CopyString(cvar.value.c_str());
+            if (var.string) {
+                if (Q_stricmp(var.string, cvar.value.c_str())) {
+                    modified = true;
+                    Z_Free(var.string);
+                    var.string = CopyString(cvar.value.c_str());
+                }
+            } else {
+                var.string = CopyString(cvar.value.c_str());
+                modified = true;
+            }
         }
 
-        var.modified = qtrue;
+        var.modified = modified;
         var.modificationCount++;
         var.value = atof(var.string);
         var.integer = atoi(var.string);
 
-        cvar_modifiedFlags |= var.flags;
+        if (modified) {
+            cvar_modifiedFlags |= var.flags;
+        }
     }
 
     static int registrationCount = 0;
     void GetCCvar(const std::string& name, cvarRecord_t& cvar) {
         cvar_t& var = cvar.ccvar;
+        bool modified = false;
 
         if (not var.name) {
             var.name = CopyString(name.c_str());
@@ -89,21 +102,32 @@ namespace Cvar {
 
         var.flags = cvar.flags;
 
-        if (cvar.flags & CVAR_LATCH and var.latchedString) {
+        if (cvar.flags & CVAR_LATCH and var.latchedString and Q_stricmp(var.string, var.latchedString)) {
             if (var.string) Z_Free(var.string);
             var.string = var.latchedString;
             var.latchedString = 0;
+            modified = true;
         } else {
-            if (var.string) Z_Free(var.string);
-            var.string = CopyString(cvar.value.c_str());
+            if (var.string) {
+                if (Q_stricmp(var.string, cvar.value.c_str())) {
+                    modified = true;
+                    Z_Free(var.string);
+                    var.string = CopyString(cvar.value.c_str());
+                }
+            } else {
+                var.string = CopyString(cvar.value.c_str());
+                modified = true;
+            }
         }
 
-        var.modified = qtrue;
+        var.modified |= modified;
         var.modificationCount++;
         var.value = atof(var.string);
         var.integer = atoi(var.string);
 
-        cvar_modifiedFlags |= var.flags;
+        if (modified) {
+            cvar_modifiedFlags |= var.flags;
+        }
     }
 
     typedef std::unordered_map<std::string, cvarRecord_t*> CvarMap;
