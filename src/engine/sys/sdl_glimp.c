@@ -1984,6 +1984,7 @@ void GLimp_EndFrame( void )
 	{
 		AssertCvarRange( r_swapInterval, -1, 1, qtrue );
 		SDL_GL_SetSwapInterval( r_swapInterval->integer );
+		r_swapInterval->modified = qfalse;
 	}
 #endif
 
