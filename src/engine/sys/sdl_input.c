@@ -1547,13 +1547,16 @@ static void IN_ProcessEvents( qboolean dropInput )
 				break;
 #if SDL_VERSION_ATLEAST( 2, 0, 0 )
 			case SDL_MOUSEWHEEL:
+				// FIXME: mouse wheel support shouldn't use keys!
 				if ( e.wheel.y > 0 )
 				{
 					Com_QueueEvent( 0, SE_KEY, K_MWHEELUP, qtrue, 0, NULL );
+					Com_QueueEvent( 0, SE_KEY, K_MWHEELUP, qfalse, 0, NULL );
 				}
 				else
 				{
 					Com_QueueEvent( 0, SE_KEY, K_MWHEELDOWN, qtrue, 0, NULL );
+					Com_QueueEvent( 0, SE_KEY, K_MWHEELDOWN, qfalse, 0, NULL );
 				}
 				break;
 
