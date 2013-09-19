@@ -1979,6 +1979,14 @@ void GLimp_EndFrame( void )
 		ri.Cvar_Set( "r_minimize", "0" );
 	}
 
+#if SDL_VERSION_ATLEAST( 2, 0, 0 )
+	if ( r_swapInterval->modified )
+	{
+		AssertCvarRange( r_swapInterval, -1, 1, qtrue );
+		SDL_GL_SetSwapInterval( r_swapInterval->integer );
+	}
+#endif
+
 	if ( r_fullscreen->modified )
 	{
 		qboolean    fullscreen;
