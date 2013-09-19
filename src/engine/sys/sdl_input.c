@@ -679,6 +679,15 @@ void IN_DeactivateMouse( qboolean showCursor )
 		SDL_SetWindowGrab( window, SDL_FALSE );
 		SDL_SetRelativeMouseMode( SDL_FALSE );
 
+		if ( uivm )
+		{
+			// TODO (after no compatibility needed with alpha 9): remove argument
+			int mousepos = VM_Call( uivm, UI_MOUSE_POSITION, 0 );
+			int cursorx = mousepos & 0xFFFF;
+			int cursory = mousepos >> 16;
+			SDL_WarpMouseInWindow( window, cursorx, cursory );
+		}
+
 		mouseActive = qfalse;
 	}
 }
