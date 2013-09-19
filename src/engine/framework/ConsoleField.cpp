@@ -67,76 +67,65 @@ namespace Console {
     void Field::AutoComplete() {
         //We want to complete in the middle of a command text with potentially multiple commands
 
-        std::string current = Str::UTF32To8(GetText());
-        int slashOffset = 0;
-        std::string slashPrefix(current, 0, 1);
-        if (slashPrefix[0] == '/' or slashPrefix[0] == '\\') {
-            slashOffset = 1;
-        } else {
-            slashPrefix = "";
+        //Add slash prefix and get command text up to cursor
+        if (GetText().empty() || (GetText()[0] != '/' && GetText()[0] != '\\')) {
+            GetText().insert(0, U"/");
+            SetCursor(GetCursorPos() + 1);
         }
-        std::string commandText(current.c_str() + slashOffset);
+        std::string commandText = Str::UTF32To8(GetText().substr(1, GetCursorPos() - 1));
 
         //Split the command text and find the command to complete
-        std::vector<size_t> commandStarts = Cmd::StartsOfCommands(commandText);
-        if (commandStarts.back() < current.size()) {
-            commandStarts.push_back(current.size() + 1);
-        }
-
-        int index = 0;
-        for (index = commandStarts.size(); index --> 0;) {
-            if (commandStarts[index] <= GetCursorPos()) {
+        std::string::const_iterator commandStart = commandText.begin();
+        while (true) {
+            std::string::const_iterator next = Cmd::SplitCommand(commandText, commandStart);
+            if (next != commandText.end())
+                commandStart = next;
+            else
                 break;
-            }
         }
-        int commandStart = commandStarts[index];
 
-        //Skips whitespaces, like command parsing does
-        //TODO: factor it?
-        while(commandText[commandStart] == ' ') {
-            commandStart ++;
+        //Parse the arguments and get the list of candidates
+        Cmd::Args args(std::string(commandStart, commandText.cend()));
+        int argNum = args.Argc() - 1;
+        std::string prefix;
+        if (!args.Argc() || GetText()[GetCursorPos() - 1] == ' ') {
+            argNum++;
+        } else {
+            prefix = args.Argv(argNum);
         }
-        std::string command(commandText, commandStart, commandStarts[index + 1] - commandStart - 1);
-
-        //Split the command and find the arg to complete
-        Cmd::Args args(command);
-        int cursorPos = GetCursorPos() - commandStart;
-        int argNum = args.PosToArg(cursorPos);
-        int argStartPos = args.ArgStartPos(argNum);
-
-        Cmd::CompletionResult candidates = Cmd::CompleteArgument(command, cursorPos);
+        Cmd::CompletionResult candidates = Cmd::CompleteArgument(args.RawCmd(), args.RawCmd().size());
         if (candidates.empty()) {
             return;
         }
 
         //Compute the longest common prefix of all the results
         int prefixSize = candidates[0].first.size();
-        unsigned long maxCandidateLength = 0;
+        size_t maxCandidateLength = 0;
         for (auto& candidate : candidates) {
             prefixSize = std::min(prefixSize, Str::LongestPrefixSize(candidate.first, candidates[0].first));
             maxCandidateLength = std::max(maxCandidateLength, candidate.first.length());
         }
 
-        std::string completedArg(candidates[0].first, 0, prefixSize);
+        std::string completedArg(candidates[0].first, prefix.size(), prefixSize - prefix.size());
 
         //Help the user bash the TAB key
-        if (candidates.size() == 1) {
+        if (candidates.size() == 1 && GetText()[GetCursorPos()] != ' ') {
             completedArg += " ";
         }
 
         //Insert the completed arg
-        commandText.replace(commandStart + argStartPos, (cursorPos - slashOffset) - argStartPos, completedArg);
+        std::u32string toInsert = Str::UTF8To32(completedArg);
+        GetText().insert(GetCursorPos(), toInsert);
+        SetCursor(GetCursorPos() + toInsert.size());
 
         //Print the matches if it is ambiguous
         if (candidates.size() >= 2) {
+            Com_Printf(S_COLOR_YELLOW "-> " S_COLOR_WHITE "%s\n", Str::UTF32To8(GetText()).c_str());
             for (auto& candidate : candidates) {
                 std::string filler(maxCandidateLength - candidate.first.length(), ' ');
-                Com_Printf("  %s%s %s\n", candidate.first.c_str(), filler.c_str(), candidate.second.c_str());
+                Com_Printf("   %s%s %s\n", candidate.first.c_str(), filler.c_str(), candidate.second.c_str());
             }
         }
-
-        SetText(Str::UTF8To32(slashPrefix + commandText));
-        SetCursor(argStartPos + completedArg.size() + slashOffset + commandStart);
     }
 
 }

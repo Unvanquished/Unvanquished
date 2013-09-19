@@ -37,6 +37,9 @@ namespace Util {
     const std::u32string& LineEditData::GetText() const {
         return buffer;
     }
+    std::u32string& LineEditData::GetText() {
+        return buffer;
+    }
 
     const char32_t* LineEditData::GetViewText() const {
         return GetText().c_str() + scroll;

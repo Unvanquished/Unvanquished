@@ -84,7 +84,7 @@ Maryland 20850 USA.
 
 #define UNNAMED_PLAYER "UnnamedPlayer"
 
-#define Q_UNUSED(x) (void)(sizeof((x), 0))
+#define Q_UNUSED(x) (void)(x)
 
 // for visibility of some functions in system headers
 #undef _GNU_SOURCE

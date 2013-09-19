@@ -345,7 +345,7 @@ namespace Cvar {
             cvarRecord_t* cvar = it.second;
 
             if (cvar->flags & ARCHIVE) {
-                FS_Printf(f, "seta %s %s\n", it.first.c_str(), Cmd::Escape(cvar->value, true).c_str());
+                FS_Printf(f, "seta %s %s\n", it.first.c_str(), Cmd::Escape(cvar->value).c_str());
             }
         }
     }
@@ -500,7 +500,7 @@ namespace Cvar {
                         matchesNames.push_back(record.first);
 
                         matches.push_back(record.second);
-                        matchesValues.push_back(Cmd::Escape(record.second->value, true));
+                        matchesValues.push_back(record.second->value);
 
                         //TODO: the raw parameter is not handled, need a function to escape carets
                         maxNameLength = std::max(maxNameLength, record.first.length());

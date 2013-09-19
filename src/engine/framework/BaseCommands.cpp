@@ -175,7 +175,7 @@ namespace Cmd {
 
             void Run(const Cmd::Args& args) const override {
                 for (int i = 1; i < args.Argc(); i++) {
-                    Com_Printf("%s", args.Argv(i).c_str());
+                    Com_Printf("%s ", args.Argv(i).c_str());
                 }
                 Com_Printf("\n");
             }
@@ -364,7 +364,7 @@ namespace Cmd {
                 bool result;
 
                 if (relation == "=" or relation == "==") {
-                    result = intValue1 = intValue2;
+                    result = intValue1 == intValue2;
 
                 } else if (relation == "!=" or relation == "≠") {
                     result = intValue1 != intValue2;

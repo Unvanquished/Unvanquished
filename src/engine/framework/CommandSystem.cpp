@@ -56,32 +56,30 @@ namespace Cmd {
     std::vector<std::string> commandBuffer;
 
     void BufferCommandText(const std::string& text, execWhen_t when, bool parseCvars) {
-        std::vector<std::string> commands = SplitCommandText(text);
+        std::string::const_iterator current = text.begin();
+        do {
+            std::string::const_iterator next = SplitCommand(text, current);
+            std::string command(current, next != text.cend() ? next - 1 : text.end());
+            if (parseCvars)
+                command = SubstituteCvars(command);
+            switch (when) {
+                case NOW:
+                    ExecuteCommand(std::move(command));
+                    break;
 
-        if (parseCvars) {
-            for (auto& text: commands) {
-                text = SubstituteCvars(text);
+                case AFTER:
+                    commandBuffer.insert(commandBuffer.begin(), std::move(command));
+                    break;
+
+                case END:
+                    commandBuffer.insert(commandBuffer.end(), std::move(command));
+                    break;
+
+                default:
+                    Com_Printf("Cmd::BufferCommandText: unknown execWhen_t %i\n", when);
             }
-        }
-
-        switch (when) {
-            case NOW:
-                for(auto command : commands) {
-                    ExecuteCommand(command);
-                }
-                break;
-
-            case AFTER:
-                commandBuffer.insert(commandBuffer.begin(), commands.begin(), commands.end());
-                break;
-
-            case END:
-                commandBuffer.insert(commandBuffer.end(), commands.begin(), commands.end());
-                break;
-
-            default:
-                Com_Printf("Cmd::BufferCommandText: unknown execWhen_t %i\n", when);
-        }
+            current = next;
+        } while (current != text.end());
     }
 
     //TODO: reimplement the wait command, maybe?

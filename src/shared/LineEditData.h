@@ -37,6 +37,7 @@ namespace Util {
             LineEditData(int size, int scrollSize = defaultScrollSize);
 
             const std::u32string& GetText() const;
+            std::u32string& GetText();
             const char32_t* GetViewText() const;
             unsigned GetViewStartPos() const;
             unsigned GetCursorPos() const;
