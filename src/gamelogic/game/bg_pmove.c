@@ -1607,6 +1607,8 @@ PM_AlienFlyMove
 #define SHRIKE_THROTTLE 10.0f
 #define SHRIKE_LIFT_SPEED 4.0f
 #define SHRIKE_TURN_RATE 1.0f
+#define SHRIKE_FLIGHT_MAXSPEED 750.0f
+
 static void PM_AlienFlyMove( void )
 {
 
@@ -1621,9 +1623,11 @@ static void PM_AlienFlyMove( void )
 	// Handle throttle
 	if ( pm->cmd.forwardmove )
 	{
+		float currentSpeed;
+
 		VectorCopy( pm->ps->velocity, wishvel );
-		VectorNormalize( wishvel );
-		VectorScale( wishvel, ( pm->cmd.forwardmove > 0 ) ? SHRIKE_THROTTLE : -SHRIKE_THROTTLE, wishvel );
+		currentSpeed = VectorNormalize( wishvel );
+		VectorScale( wishvel, MIN( SHRIKE_FLIGHT_MAXSPEED - currentSpeed, ( pm->cmd.forwardmove > 0 ) ? SHRIKE_THROTTLE : -SHRIKE_THROTTLE ), wishvel );
 	}
 
 	if ( pm->cmd.upmove )
