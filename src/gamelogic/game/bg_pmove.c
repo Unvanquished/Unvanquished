@@ -1640,7 +1640,7 @@ static void PM_AlienFlyMove( void )
 	// Handle turns
 	if ( pm->cmd.rightmove )
 	{
-		int sign = ( pm->cmd.rightmove > 0 ) ? 1 : -1;
+		int sign = ( pm->cmd.rightmove > 0 ) ? -1 : 1;
 		static const vec3_t z = { 0, 0, 1 };
 
 		RotatePointAroundVector( pm->ps->velocity, z, pm->ps->velocity, sign * SHRIKE_TURN_RATE );
