@@ -628,7 +628,7 @@ static void IN_ActivateMouse( void )
 	}
 
 	// in_nograb makes no sense in fullscreen mode
-	if ( !Cvar_VariableIntegerValue( "r_fullscreen" ) )
+	if ( !cls.glconfig.isFullscreen )
 	{
 		if ( in_nograb->modified || !mouseActive )
 		{
@@ -662,7 +662,7 @@ void IN_DeactivateMouse( qboolean showCursor )
 
 	// Show the cursor when the mouse is disabled,
 	// but not when fullscreen
-	if ( !Cvar_VariableIntegerValue( "r_fullscreen" ) )
+	if ( !cls.glconfig.isFullscreen || SDL_VERSION_ATLEAST( 2, 0, 0 ) )
 	{
 		SDL_ShowCursor( showCursor );
 	}
@@ -1635,13 +1635,13 @@ void IN_Frame( void )
 	// If not DISCONNECTED (main menu) or ACTIVE (in game), we're loading
 	loading = ( cls.state != CA_DISCONNECTED && cls.state != CA_ACTIVE );
 
-	if ( !cls.glconfig.isFullscreen &&
+	if ( ( !cls.glconfig.isFullscreen || SDL_VERSION_ATLEAST( 2, 0, 0 ) ) &&
 	     ( cls.keyCatchers & KEYCATCH_CONSOLE || ( CL_UIOwnsMouse() && !in_uigrab->integer ) ) )
 	{
 		// Console is down, or UI is up, in windowed mode
 		IN_DeactivateMouse( qfalse );
 	}
-	else if ( !cls.glconfig.isFullscreen && loading )
+	else if ( ( !cls.glconfig.isFullscreen || SDL_VERSION_ATLEAST( 2, 0, 0 ) ) && loading )
 	{
 		// Loading in windowed mode
 		IN_DeactivateMouse( qtrue );
