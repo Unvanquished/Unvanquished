@@ -552,7 +552,7 @@ void Field_KeyDownEvent( field_t *edit, int key )
 					--edit->cursor;
 					posTo = Field_CursorToOffset( edit );
 
-					memmove( edit->buffer + posTo, edit->buffer + posFrom, len + 1 - posFrom );
+					memmove( edit->buffer + posTo, edit->buffer + posFrom, strlen( edit->buffer ) + 1 - posFrom );
 
 					if ( edit->cursor < edit->scroll )
 					{
@@ -621,7 +621,7 @@ void Field_KeyDownEvent( field_t *edit, int key )
 			if ( keys[ K_CTRL ].down )
 			{
 		case K_END:
-				edit->cursor = Field_OffsetToCursor( edit, len );
+				edit->cursor = len;
 				edit->scroll = edit->cursor - edit->widthInChars;
 			}
 
@@ -671,7 +671,7 @@ void Field_KeyDownEvent( field_t *edit, int key )
 				if ( edit->buffer[ posTo ] )
 				{
 					int posFrom = posTo + Q_UTF8_Width( edit->buffer + posTo );
-					memmove( edit->buffer + posTo, edit->buffer + posFrom, len + 1 - posFrom );
+					memmove( edit->buffer + posTo, edit->buffer + posFrom, strlen( edit->buffer ) + 1 - posFrom );
 				}
 			}
 			break;
