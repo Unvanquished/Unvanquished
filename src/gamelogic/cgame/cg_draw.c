@@ -4503,7 +4503,7 @@ void CG_MouseEvent( int x, int y )
 
 void CG_KeyEvent( int key, int chr, int flags )
 {
-	if ( !( flags & ( 1 << KEYEVSTATE_DOWN ) ) )
+	if ( !( flags & KEYEVSTATE_DOWN ) )
 	{
 		return;
 	}
