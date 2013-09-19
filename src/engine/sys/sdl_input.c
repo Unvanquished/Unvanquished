@@ -679,15 +679,6 @@ void IN_DeactivateMouse( qboolean showCursor )
 		SDL_SetWindowGrab( window, SDL_FALSE );
 		SDL_SetRelativeMouseMode( SDL_FALSE );
 
-		if ( uivm )
-		{
-			// TODO (after no compatibility needed with alpha 9): remove argument
-			int mousepos = VM_Call( uivm, UI_MOUSE_POSITION, 0 );
-			int cursorx = mousepos & 0xFFFF;
-			int cursory = mousepos >> 16;
-			SDL_WarpMouseInWindow( window, cursorx, cursory );
-		}
-
 		mouseActive = qfalse;
 	}
 }
@@ -1572,6 +1563,7 @@ static void IN_ProcessEvents( qboolean dropInput )
 						break;
 
 					case SDL_WINDOWEVENT_MINIMIZED:    Cvar_SetValue( "com_minimized", 1 ); break;
+					case SDL_WINDOWEVENT_RESTORED:
 					case SDL_WINDOWEVENT_MAXIMIZED:    Cvar_SetValue( "com_minimized", 0 ); break;
 					case SDL_WINDOWEVENT_FOCUS_LOST:   Cvar_SetValue( "com_unfocused", 1 ); break;
 					case SDL_WINDOWEVENT_FOCUS_GAINED: Cvar_SetValue( "com_unfocused", 0 ); break;
