@@ -233,27 +233,34 @@ char *Q_UTF8_Encode( unsigned long codepoint )
 int Q_UTF8_Store( const char *s )
 {
 	int r = 0;
+	const uint8_t *us = ( const uint8_t * ) s;
 
-	if ( !s )
+	if ( !us )
 	{
 		return 0;
 	}
 
-	if ( !( s[ 0 ] & 0x80 ) ) // 0xxxxxxx
+	if ( !( us[ 0 ] & 0x80 ) ) // 0xxxxxxx
 	{
-		r = s[ 0 ];
+		r = us[ 0 ];
 	}
-	else if ( ( s[ 0 ] & 0xE0 ) == 0xC0 ) // 110xxxxx
+	else if ( ( us[ 0 ] & 0xE0 ) == 0xC0 ) // 110xxxxx
 	{
-		r = s[ 0 ] | ( s[ 1 ] << 8 );
+		r = us[ 0 ];
+		r |= ( uint32_t ) us[ 1 ] << 8;
 	}
-	else if ( ( s[ 0 ] & 0xF0 ) == 0xE0 ) // 1110xxxx
+	else if ( ( us[ 0 ] & 0xF0 ) == 0xE0 ) // 1110xxxx
 	{
-		r = s[ 0 ] | ( s[ 1 ] << 8 ) | ( s[ 2 ] << 16 );
+		r = us[ 0 ];
+		r |= ( uint32_t ) us[ 1 ] << 8;
+		r |= ( uint32_t ) us[ 2 ] << 16;
 	}
-	else if ( ( s[ 0 ] & 0xF8 ) == 0xF0 ) // 11110xxx
+	else if ( ( us[ 0 ] & 0xF8 ) == 0xF0 ) // 11110xxx
 	{
-		r = s[ 0 ] | ( s[ 1 ] << 8 ) | ( s[ 2 ] << 16 ) | ( s[ 3 ] << 24 );
+		r = us[ 0 ];
+		r |= ( uint32_t ) us[ 1 ] << 8;
+		r |= ( uint32_t ) us[ 2 ] << 16;
+		r |= ( uint32_t ) us[ 3 ] << 24;
 	}
 
 	return r;
@@ -270,9 +277,9 @@ char *Q_UTF8_Unstore( int e )
 	buf = sbuf[ index ];
 
 	buf[ 0 ] = e & 0xFF;
-	buf[ 1 ] = e & 0xFF00;
-	buf[ 2 ] = e & 0xFF0000;
-	buf[ 3 ] = e & 0xFF000000;
+	buf[ 1 ] = ( e >> 8 ) & 0xFF;
+	buf[ 2 ] = ( e >> 16 ) & 0xFF;
+	buf[ 3 ] = ( e >> 24 ) & 0xFF;
 	buf[ 4 ] = 0;
 
 	return ( char * ) buf;
