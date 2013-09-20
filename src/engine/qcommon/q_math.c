@@ -3608,6 +3608,171 @@ void QuatTransformVectorInverse( const quat_t q, const vec3_t in, vec3_t out )
 	VectorAdd( out, tmp2, out );
 }
 
+// create an identity transform
+void TransInit( transform_t *t ) {
+	QuatClear( t->rot );
+	VectorClear( t->trans );
+	t->scale = 1.0f;
+}
+
+// copy a transform
+void TransCopy( const transform_t *in, transform_t *out ) {
+	Com_Memcpy( out, in, sizeof(transform_t) );
+}
+
+// apply a transform to a point
+void TransformPoint( const transform_t *t, const vec3_t in, vec3_t out ) {
+	QuatTransformVector( t->rot, in, out );
+	VectorScale( out, t->scale, out );
+	VectorAdd( out, t->trans, out );
+}
+
+// apply the inverse of a transform to a point
+void TransformPointInverse( const transform_t *t, const vec3_t in, vec3_t out ) {
+	VectorSubtract( in, t->trans, out );
+	VectorScale( out, 1.0f / t->scale, out );
+	QuatTransformVectorInverse( t->rot, out, out );
+}
+
+// apply a transform to a normal vector (ignore scale and translation)
+void TransformNormalVector( const transform_t *t, const vec3_t in, vec3_t out ) {
+	QuatTransformVector( t->rot, in, out );
+}
+
+// apply the inverse of a transform to a normal vector (ignore scale
+// and translation)
+void TransformNormalVectorInverse( const transform_t *t, const vec3_t in,
+				   vec3_t out ) {
+	QuatTransformVectorInverse( t->rot, in, out );
+}
+
+// initialize a transform with a pure rotation
+void TransInitRotationQuat( const quat_t quat, transform_t *t ) {
+	QuatCopy( quat, t->rot );
+	VectorClear( t->trans );
+	t->scale = 1.0f;
+}
+void TransInitRotation( const vec3_t axis, float angle, transform_t *t ) {
+	float sa = sin( 0.5f * angle );
+	float ca = cos( 0.5f * angle );
+	quat_t q;
+
+	VectorScale( axis, sa, q );
+	q[3] = ca;
+	TransInitRotationQuat( q, t );
+}
+
+// initialize a transform with a pure translation
+void TransInitTranslation( const vec3_t vec, transform_t *t ) {
+	QuatClear( t->rot );
+	VectorCopy( vec, t->trans );
+	t->scale = 1.0f;
+}
+
+// initialize a transform with a pure scale
+void TransInitScale( float factor, transform_t *t ) {
+	QuatClear( t->rot );
+	VectorClear( t->trans );
+	t->scale = factor;
+}
+
+// add a rotation to the start of an existing transform
+void TransInsRotationQuat( const quat_t quat, transform_t *t ) {
+	QuatMultiply0( t->rot, quat );
+}
+void TransInsRotation( const vec3_t axis, float angle, transform_t *t ) {
+	float sa = sin( 0.5f * angle );
+	float ca = cos( 0.5f * angle );
+	quat_t q;
+
+	VectorScale( axis, sa, q );
+	q[3] = ca;
+	TransInsRotationQuat( q, t );
+}
+
+// add a rotation to the end of an existing transform
+void TransAddRotationQuat( const quat_t quat, transform_t *t ) {
+	quat_t tmp;
+
+	QuatTransformVector( quat, t->trans, t->trans );
+	QuatCopy( quat, tmp );
+	QuatMultiply0( tmp, t->rot );
+	QuatCopy( tmp, t->rot );
+}
+
+void TransAddRotation( const vec3_t axis, float angle, transform_t *t ) {
+	float sa = sin( 0.5f * angle );
+	float ca = cos( 0.5f * angle );
+	quat_t q;
+
+	VectorScale( axis, sa, q );
+	q[3] = ca;
+	TransAddRotationQuat( q, t );
+}
+
+// add a scale to the start of an existing transform
+void TransInsScale( float factor, transform_t *t ) {
+	t->scale *= factor;
+}
+
+// add a scale to the end of an existing transform
+void TransAddScale( float factor, transform_t *t ) {
+	VectorScale( t->trans, factor, t->trans );
+	t->scale *= factor;
+}
+
+// add a translation at the start of an existing transformation
+void TransInsTranslation( const vec3_t vec, transform_t *t ) {
+	vec3_t tmp;
+
+	TransformPoint( t, vec, tmp );
+	VectorAdd( t->trans, tmp, t->trans );
+}
+
+// add a translation at the end of an existing transformation
+void TransAddTranslation( const vec3_t vec, transform_t *t ) {
+	VectorAdd( t->trans, vec, t->trans );
+}
+
+// combine transform a and transform b into transform c
+void TransCombine( const transform_t *a, const transform_t *b,
+		   transform_t *out ) {
+	TransCopy( a, out );
+
+	TransAddRotationQuat( b->rot, out );
+	TransAddScale( b->scale, out );
+	TransAddTranslation( b->trans, out );
+}
+
+// compute the inverse transform
+void TransInverse( const transform_t *in, transform_t *out ) {
+	quat_t inverse;
+	transform_t tmp;
+
+	TransInit( &tmp );
+	VectorNegate( in->trans, tmp.trans );
+	TransAddScale( 1.0f / in->scale, &tmp );
+	QuatCopy( in->rot, inverse );
+	QuatInverse( inverse );
+	TransAddRotationQuat( inverse, &tmp );
+	TransCopy( &tmp, out );
+}
+
+// lerp between transforms
+void TransStartLerp( transform_t *t ) {
+	QuatZero( t->rot );
+	VectorClear( t->trans );
+	t->scale = 0.0f;
+}
+void TransAddWeight( float weight, const transform_t *a, transform_t *out ) {
+	QuatMA( out->rot, weight, a->rot, out->rot );
+	VectorMA( out->trans, weight, a->trans, out->trans );
+	out->scale      += a->scale      * weight;
+}
+void TransEndLerp( transform_t *t ) {
+	QuatNormalize( t->rot );
+}
+
 #if defined(_WIN32) && !defined(__MINGW32__)
 double rint( double x )
 {

@@ -1309,8 +1309,7 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 	md5Model_t      *model;
 	md5Vertex_t     *v;
 	srfTriangle_t   *tri;
-	static ALIGNED( 16, boneMatrix_t boneMatrices[ MAX_BONES ] );
-	boneMatrix_t tmpMat;
+	static ALIGNED( 16, transform_t bones[ MAX_BONES ] );
 
 	GLimp_LogComment( "--- Tess_SurfaceMD5 ---\n" );
 
@@ -1339,14 +1338,20 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 
 			if ( backEnd.currentEntity->e.skeleton.type == SK_ABSOLUTE )
 			{
-				BoneMatrixSetupTransformWithScale( boneMatrices[ i ], backEnd.currentEntity->e.skeleton.bones[ i ].rotation,
-				                              backEnd.currentEntity->e.skeleton.bones[ i ].origin,
-				                              backEnd.currentEntity->e.skeleton.scale );
+				refBone_t *bone = &backEnd.currentEntity->e.skeleton.bones[ i ];
+
+				TransInitRotationQuat( model->bones[ i ].rotation, &tess.bones[ i ] );
+				TransAddTranslation( model->bones[ i ].origin, &tess.bones[ i ] );
+				TransInverse( &tess.bones[ i ], &tess.bones[ i ] );
+				TransAddRotationQuat( bone->rotation, &bones[i] );
+				TransAddScale( backEnd.currentEntity->e.skeleton.scale, &bones[ i ] );
+				TransAddTranslation( bone->origin, &bones[ i ] );
 			}
 			else
 #endif
 			{
-				BoneMatrixSetupTransform( boneMatrices[ i ], model->bones[ i ].rotation, model->bones[ i ].origin );
+				TransInitRotationQuat( model->bones[ i ].rotation, &bones[i] );
+				TransAddTranslation( model->bones[ i ].origin, &bones[ i ] );
 			}
 		}
 
@@ -1355,26 +1360,17 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 
 		for ( j = 0, v = srf->verts; j < numVertexes; j++, v++ )
 		{
-#if idx86_sse
-			__m128 a, b, c;
-			BoneMatrixMulSSE( &a, &b, &c, v->boneWeights[ 0 ], boneMatrices[ v->boneIndexes[ 0 ] ] );
+			vec3_t tmp;
 
-			for ( k = 1; k < v->numWeights; k++ )
-			{
-				BoneMatrixMadSSE( &a, &b, &c, v->boneWeights[ k ], boneMatrices[ v->boneIndexes[ k ] ] );
+			VectorClear( v->position );
+			for ( k = 0; k < v->numWeights; k++ ) {
+				TransformPoint( &bones[ v->boneIndexes[ k ] ],
+						v->position, tmp );
+				VectorMA( tess.xyz[ tess.numVertexes + j ],
+					  v->boneWeights[ k ], tmp,
+					  tess.xyz[ tess.numVertexes + j ] );
 			}
 
-			BoneMatrixTransformPointSSE( a, b, c, v->position, tess.xyz[ tess.numVertexes + j ] );
-#else
-			BoneMatrixMul( tmpMat, v->boneWeights[ 0 ], boneMatrices[ v->boneIndexes[ 0 ] ] );
-
-			for ( k = 1; k < v->numWeights; k++ )
-			{
-				BoneMatrixMad( tmpMat, v->boneWeights[ k ], boneMatrices[ v->boneIndexes[ k ] ] );
-			}
-
-			BoneMatrixTransformPoint( tmpMat, v->position, tess.xyz[ tess.numVertexes + j ] );
-#endif
 			tess.texCoords[ tess.numVertexes + j ][ 0 ] = v->texCoords[ 0 ];
 			tess.texCoords[ tess.numVertexes + j ][ 1 ] = v->texCoords[ 1 ];
 		}
@@ -1391,15 +1387,18 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 
 			if ( backEnd.currentEntity->e.skeleton.type == SK_ABSOLUTE )
 			{
-				BoneMatrixSetupTransformWithScale( tmpMat, backEnd.currentEntity->e.skeleton.bones[ i ].rotation,
-				                              backEnd.currentEntity->e.skeleton.bones[ i ].origin,
-				                              backEnd.currentEntity->e.skeleton.scale );
-				BoneMatrixMultiply( tmpMat, model->bones[ i ].inverseTransform, boneMatrices[ i ] );
+				refBone_t *bone = &backEnd.currentEntity->e.skeleton.bones[ i ];
+				TransInitRotationQuat( model->bones[ i ].rotation, &bones[ i ] );
+				TransAddTranslation( model->bones[ i ].origin, &bones[ i ] );
+				TransInverse( &bones[ i ], &bones[ i ] );
+				TransAddRotationQuat( bone->rotation, &bones[ i ] );
+				TransAddTranslation( bone->origin, &bones[ i ] );
+				TransAddScale( backEnd.currentEntity->e.skeleton.scale, &bones[ i ] );
 			}
 			else
 #endif
 			{
-				BoneMatrixIdentity( boneMatrices[ i ] );
+				TransInit( &bones[ i ] );
 			}
 		}
 
@@ -1408,36 +1407,19 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 
 		for ( j = 0, v = srf->verts; j < numVertexes; j++, v++ )
 		{
-#if idx86_sse
-			__m128 a, b, c;
+			transform_t t;
 
-			BoneMatrixMulSSE( &a, &b, &c, v->boneWeights[ 0 ], boneMatrices[ v->boneIndexes[ 0 ] ] );
-
-			for ( k = 1; k < v->numWeights; k++ )
-			{
-				BoneMatrixMadSSE( &a, &b, &c, v->boneWeights[ k ], boneMatrices[ v->boneIndexes[ k ] ] );
+			TransStartLerp( &t );
+			for( k = 0; k < v->numWeights; k++ ) {
+				TransAddWeight( v->boneWeights[ k ],
+						&bones[ v->boneIndexes[ k ] ], &t );
 			}
+			TransEndLerp( &t );
 
-			BoneMatrixTransformPointSSE( a, b, c, v->position, tess.xyz[ tess.numVertexes + j ] );
-
-			BoneMatrixTransformNormalSSE( a, b, c, v->normal, tess.normals[ tess.numVertexes + j ] );
-			BoneMatrixTransformNormalSSE( a, b, c, v->binormal, tess.binormals[ tess.numVertexes + j ] );
-			BoneMatrixTransformNormalSSE( a, b, c, v->tangent, tess.tangents[ tess.numVertexes + j ] );
-#else
-			BoneMatrixMul( tmpMat, v->boneWeights[ 0 ], boneMatrices[ v->boneIndexes[ 0 ] ] );
-
-			for ( k = 1; k < v->numWeights; k++ )
-			{
-				BoneMatrixMad( tmpMat, v->boneWeights[ k ], boneMatrices[ v->boneIndexes[ k ] ] );
-			}
-
-			BoneMatrixTransformPoint( tmpMat, v->position, tess.xyz[ tess.numVertexes + j ] );
-
-			// we do not need to normalize here because we normalize in the fragment shader
-			BoneMatrixTransformNormal( tmpMat, v->normal, tess.normals[ tess.numVertexes + j ] );
-			BoneMatrixTransformNormal( tmpMat, v->binormal, tess.binormals[ tess.numVertexes + j ] );
-			BoneMatrixTransformNormal( tmpMat, v->tangent, tess.tangents[ tess.numVertexes + j ] );
-#endif
+			TransformPoint( &t, v->position, tess.xyz[ tess.numVertexes + j ] );
+			TransformNormalVector( &t, v->normal, tess.normals[ tess.numVertexes + j ] );
+			TransformNormalVector( &t, v->binormal, tess.binormals[ tess.numVertexes + j ] );
+			TransformNormalVector( &t, v->tangent, tess.tangents[ tess.numVertexes + j ] );
 			tess.texCoords[ tess.numVertexes + j ][ 0 ] = v->texCoords[ 0 ];
 			tess.texCoords[ tess.numVertexes + j ][ 1 ] = v->texCoords[ 1 ];
 		}
@@ -1668,7 +1650,6 @@ static void Tess_SurfaceVBOMD5Mesh( srfVBOMD5Mesh_t *srf )
 {
 	int        i;
 	md5Model_t *model;
-	boneMatrix_t   tmpMat;
 
 	GLimp_LogComment( "--- Tess_SurfaceVBOMD5Mesh ---\n" );
 
@@ -1692,14 +1673,18 @@ static void Tess_SurfaceVBOMD5Mesh( srfVBOMD5Mesh_t *srf )
 	if ( backEnd.currentEntity->e.skeleton.type == SK_ABSOLUTE )
 	{
 		tess.vboVertexSkinning = qtrue;
-		tess.numBoneMatrices = srf->numBoneRemap;
+		tess.numBones = srf->numBoneRemap;
 
 		for ( i = 0; i < srf->numBoneRemap; i++ )
 		{
-			BoneMatrixSetupTransformWithScale( tmpMat, backEnd.currentEntity->e.skeleton.bones[ srf->boneRemapInverse[ i ] ].rotation,
-			                              backEnd.currentEntity->e.skeleton.bones[ srf->boneRemapInverse[ i ] ].origin,
-			                              backEnd.currentEntity->e.skeleton.scale );
-			BoneMatrixMultiply( tmpMat, model->bones[ srf->boneRemapInverse[ i ] ].inverseTransform, tess.boneMatrices[ i ] );
+			refBone_t *bone = &backEnd.currentEntity->e.skeleton.bones[ srf->boneRemapInverse[ i ] ];
+
+			TransInitRotationQuat( model->bones[ srf->boneRemapInverse[ i ] ].rotation, &tess.bones[ i ] );
+			TransAddTranslation( model->bones[ srf->boneRemapInverse[ i ] ].origin, &tess.bones[ i ] );
+			TransInverse( &tess.bones[ i ], &tess.bones[ i ] );
+			TransAddRotationQuat( bone->rotation, &tess.bones[ i ] );
+			TransAddScale( backEnd.currentEntity->e.skeleton.scale, &tess.bones[ i ] );
+			TransAddTranslation( bone->origin, &tess.bones[ i ] );
 		}
 	}
 	else

@@ -3466,8 +3466,8 @@ extern "C" {
 		int         multiDrawCounts[ MAX_MULTIDRAW_PRIMITIVES ];
 
 		qboolean    vboVertexSkinning;
-		int         numBoneMatrices;
-		boneMatrix_t    boneMatrices[ MAX_BONES ];
+		int         numBones;
+		transform_t bones[ MAX_BONES ];
 
 		// info extracted from current shader or backend mode
 		void ( *stageIteratorFunc )( void );

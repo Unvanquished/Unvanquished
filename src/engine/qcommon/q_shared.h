@@ -395,6 +395,20 @@ extern int memcmp( void *, void *, size_t );
 	typedef vec_t  matrix3x3_t[ 9 ];
 	typedef vec_t  matrix_t[ 16 ];
 	typedef vec_t  quat_t[ 4 ];
+	
+	// A transform_t represents a product of basic
+	// transformations, which are a rotation about an arbitrary
+	// axis, a uniform scale or a translation. Any a product can
+	// alway be brought into the form rotate, then scale, then
+	// translate. So the whole transform_t can be stored in 8
+	// floats (quat: 4, scale: 1, translation: 3), which is very
+	// convenient for SSE and GLSL, which operate on 4-dimensional
+	// float vectors.
+	typedef struct transform_s {
+		quat_t rot;
+		vec3_t trans;
+		vec_t  scale;
+	} transform_t;
 
 	typedef int    fixed4_t;
 	typedef int    fixed8_t;
@@ -1169,6 +1183,39 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 	void QuatSlerp( const quat_t from, const quat_t to, float frac, quat_t out );
 	void QuatTransformVector( const quat_t q, const vec3_t in, vec3_t out );
 	void QuatTransformVectorInverse( const quat_t q, const vec3_t in, vec3_t out );
+  
+//=============================================
+// combining Transformations
+
+	void TransInit( transform_t *t );
+	void TransCopy( const transform_t *in, transform_t *out );
+
+	void TransformPoint( const transform_t *t, const vec3_t in, vec3_t out );
+	void TransformPointInverse( const transform_t *t, const vec3_t in, vec3_t out );
+	void TransformNormalVector( const transform_t *t, const vec3_t in, vec3_t out );
+	void TransformNormalVectorInverse( const transform_t *t, const vec3_t in, vec3_t out );
+
+	void TransInitRotationQuat( const quat_t quat, transform_t *t );
+	void TransInitRotation( const vec3_t axis, float angle,
+				transform_t *t );
+	void TransInitTranslation( const vec3_t vec, transform_t *t );
+	void TransInitScale( float factor, transform_t *t );
+
+	void TransInsRotationQuat( const quat_t quat, transform_t *t );
+	void TransInsRotation( const vec3_t axis, float angle, transform_t *t );
+	void TransAddRotationQuat( const quat_t quat, transform_t *t );
+	void TransAddRotation( const vec3_t axis, float angle, transform_t *t );
+	void TransInsScale( float factor, transform_t *t );
+	void TransAddScale( float factor, transform_t *t );
+	void TransInsTranslation( const vec3_t vec, transform_t *t );
+	void TransAddTranslation( const vec3_t vec, transform_t *t );
+
+	void TransCombine( const transform_t *a, const transform_t *b,
+			   transform_t *c );
+	void TransInverse( const transform_t *in, transform_t *out );
+	void TransStartLerp( transform_t *t );
+	void TransAddWeight( float weight, const transform_t *a, transform_t *t );
+	void TransEndLerp( transform_t *t );
 
 //=============================================
 
