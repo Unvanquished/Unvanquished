@@ -101,6 +101,12 @@ typedef int SOCKET;
 
 #endif
 
+#ifdef HAVE_GEOIP
+#include <GeoIP.h>
+static GeoIP *geoip_data_4 = NULL;
+static GeoIP *geoip_data_6 = NULL;
+#endif
+
 static qboolean            usingSocks = qfalse;
 static int                 networkingEnabled = 0;
 #ifndef DEDICATED
@@ -1962,6 +1968,40 @@ void NET_Config( qboolean enableNetworking )
 }
 
 /*
+==================
+NET_GeoIP_Country
+==================
+*/
+#ifdef HAVE_GEOIP
+const char *NET_GeoIP_Country( const netadr_t *from )
+{
+	switch ( from->type )
+	{
+	case NA_IP:
+		return geoip_data_4 ? GeoIP_country_name_by_ipnum( geoip_data_4, htonl( *(uint32_t *)from->ip ) ) : NULL;
+
+	case NA_IP6:
+		return geoip_data_6 ? GeoIP_country_name_by_ipnum_v6( geoip_data_6, *(struct in6_addr *)from->ip6 ) : NULL;
+
+	default:
+		return NULL;
+	}
+}
+
+static GeoIP *NET_GeoIP_LoadData (int db)
+{
+	GeoIP *data = GeoIP_open_type (db, GEOIP_INDEX_CACHE);
+
+	if (!data)
+	{
+		data = GeoIP_open_type (db, GEOIP_MEMORY_CACHE);
+	}
+
+	return data;
+}
+#endif
+
+/*
 ====================
 NET_Init
 ====================
@@ -1981,6 +2021,12 @@ void NET_Init( void )
 
 	winsockInitialized = qtrue;
 	Com_Printf( "Winsock Initialized\n" );
+#endif
+
+#ifdef HAVE_GEOIP
+	geoip_data_4 = NET_GeoIP_LoadData( GEOIP_COUNTRY_EDITION );
+	geoip_data_6 = NET_GeoIP_LoadData( GEOIP_COUNTRY_EDITION_V6 );
+	Com_Printf( "Loaded GeoIP data: ^%dIPv4 ^%dIPv6\n", geoip_data_4 ? 2 : 1, geoip_data_6 ? 2 : 1 );
 #endif
 
 	NET_Config( qtrue );

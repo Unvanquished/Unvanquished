@@ -19,6 +19,7 @@ Build-Depends: debhelper (>= 8.0.0), cmake,
 	libopusfile-dev | cmake (<< 2.8.11),
 	libwebp-dev (>> 0.2),
 	libxvidcore-dev | cmake (<< 2.8.5),
+	libgeoip-dev,
 	nettle-dev,
 	zlib1g-dev
 Standards-Version: 3.9.2
@@ -39,7 +40,7 @@ Package: unvanquished-server
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, adduser,
 	unvanquished-common (= ${binary:Version})
-Suggests: unvanquished
+Suggests: unvanquished, geoip-database | geoip-database-contrib
 Conflicts: unvanquished (<< 0.3.5-2~)
 Replaces: unvanquished (<< 0.3.5-2~)
 Description: Team-based FPS game, aliens v. humans - dedicated server

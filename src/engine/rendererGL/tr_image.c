@@ -1586,9 +1586,9 @@ image_t *R_CreateGlyph( const char *name, const byte *pic, int width, int height
 
 	image->uploadWidth = width;
 	image->uploadHeight = height;
-	image->internalFormat = GL_LUMINANCE_ALPHA;
+	image->internalFormat = GL_RGBA;
 
-	glTexImage2D( GL_TEXTURE_2D, 0, GL_LUMINANCE_ALPHA, width, height, 0, GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, pic );
+	glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pic );
 
 	GL_CheckErrors();
 
@@ -3290,26 +3290,6 @@ static void R_CreateDeferredRenderFBOImages( void )
 		height = NearestPowerOfTwo( glConfig.vidHeight );
 	}
 
-	if ( DS_STANDARD_ENABLED() )
-	{
-		tr.deferredDiffuseFBOImage = R_CreateImage( "_deferredDiffuseFBO", NULL, width, height, IF_NOPICMIP | IF_NOCOMPRESSION, FT_NEAREST, WT_CLAMP );
-		tr.deferredNormalFBOImage = R_CreateImage( "_deferredNormalFBO", NULL, width, height, IF_NOPICMIP | IF_NOCOMPRESSION, FT_NEAREST, WT_CLAMP );
-		tr.deferredSpecularFBOImage = R_CreateImage( "_deferredSpecularFBO", NULL, width, height, IF_NOPICMIP | IF_NOCOMPRESSION, FT_NEAREST, WT_CLAMP );
-	}
-	else //if(DS_PREPASS_LIGHTING_ENABLED())
-	{
-		tr.deferredNormalFBOImage = R_CreateImage( "_deferredNormalFBO", NULL, width, height, IF_NOPICMIP | IF_NOCOMPRESSION, FT_NEAREST, WT_CLAMP );
-
-		if ( HDR_ENABLED() )
-		{
-			tr.lightRenderFBOImage = R_CreateImage( "_lightRenderFBO", NULL, width, height, IF_NOPICMIP | IF_RGBA16F, FT_NEAREST, WT_CLAMP );
-		}
-		else
-		{
-			tr.lightRenderFBOImage = R_CreateImage( "_lightRenderFBO", NULL, width, height, IF_NOPICMIP | IF_NOCOMPRESSION, FT_NEAREST, WT_CLAMP );
-		}
-	}
-
 	if ( HDR_ENABLED() )
 	{
 		tr.deferredRenderFBOImage = R_CreateImage( "_deferredRenderFBO", NULL, width, height, IF_NOPICMIP | IF_RGBA16F, FT_NEAREST, WT_CLAMP );
@@ -3881,62 +3861,4 @@ int RE_GetTextureId( const char *name )
 
 //  ri.Printf(PRINT_ALL, "Image not found.\n");
 	return -1;
-}
-
-void RE_SetColorGrading( int slot, qhandle_t hShader )
-{
-	shader_t *shader = R_GetShaderByHandle( hShader );
-	image_t  *image;
-	
-	if( slot < 0 || slot > 3 )
-		return;
-
-	if( shader->defaultShader ||
-	    !shader->stages[0] ||
-	    !(image = shader->stages[0]->bundle[0].image[0] ) ) {
-		return;
-	}
-
-	if( image->width != REF_COLORGRADEMAP_SIZE &&
-	    image->height != REF_COLORGRADEMAP_SIZE ) {
-		return;
-	}
-	if( image->width * image->height != REF_COLORGRADEMAP_STORE_SIZE ) {
-		return;
-	}
-
-	GL_Unbind();
-
-	glBindBuffer( GL_PIXEL_PACK_BUFFER, tr.colorGradePBO );
-
-	glBindTexture( GL_TEXTURE_2D, image->texnum );
-	glGetTexImage( GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
-	glBindBuffer( GL_PIXEL_PACK_BUFFER, 0 );
-
-	glBindBuffer( GL_PIXEL_UNPACK_BUFFER, tr.colorGradePBO );
-	glBindTexture( GL_TEXTURE_3D, tr.colorGradeImage->texnum );
-	if( image->width == REF_COLORGRADEMAP_SIZE ) {
-		glTexSubImage3D( GL_TEXTURE_3D, 0,
-				 0,0, slot * REF_COLORGRADEMAP_SIZE,
-				 REF_COLORGRADEMAP_SIZE,
-				 REF_COLORGRADEMAP_SIZE,
-				 REF_COLORGRADEMAP_SIZE,
-				 GL_RGBA, GL_UNSIGNED_BYTE, NULL );
-	} else {
-		int i;
-		
-		glPixelStorei( GL_UNPACK_ROW_LENGTH, REF_COLORGRADEMAP_SIZE * REF_COLORGRADEMAP_SIZE );
-		for( i = 0; i < 16; i++ ) {
-			glTexSubImage3D( GL_TEXTURE_3D, 0,
-					 0,0,i + slot * REF_COLORGRADEMAP_SIZE,
-					 REF_COLORGRADEMAP_SIZE,
-					 REF_COLORGRADEMAP_SIZE,
-					 1,
-					 GL_RGBA, GL_UNSIGNED_BYTE,
-					 ((color4ub_t *)NULL) + REF_COLORGRADEMAP_SIZE );
-		}
-		glPixelStorei( GL_UNPACK_ROW_LENGTH, 0 );
-	}
-	glBindTexture( GL_TEXTURE_3D, 0 );
-	glBindBuffer( GL_PIXEL_UNPACK_BUFFER, 0 );
 }

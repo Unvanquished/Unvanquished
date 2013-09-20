@@ -509,6 +509,7 @@ typedef struct
 	qboolean          stickySpec; // don't stop spectating a player after they get killed
 	qboolean          pmoveFixed; //
 	char              netname[ MAX_NAME_LENGTH ];
+	char              country[ MAX_NAME_LENGTH ];
 	int               enterTime; // level.time the client entered the game
 	int               location; // player locations
 	int               teamInfo; // level.time of team overlay update (disabled = 0)
@@ -1411,6 +1412,8 @@ extern  vmCvar_t g_censorship;
 
 extern  vmCvar_t g_showKillerHP;
 extern  vmCvar_t g_combatCooldown;
+
+extern  vmCvar_t g_geoip;
 
 extern  vmCvar_t g_debugEntities;
 
