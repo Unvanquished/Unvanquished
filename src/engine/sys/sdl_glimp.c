@@ -24,9 +24,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #ifdef SMP
 #       include <SDL_thread.h>
-#       ifdef SDL_VIDEO_DRIVER_X11
-#               include <X11/Xlib.h>
-#       endif
 #endif
 
 #include <stdarg.h>
