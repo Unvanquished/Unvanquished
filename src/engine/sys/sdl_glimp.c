@@ -340,10 +340,10 @@ void           *GLimp_RendererSleep( void )
 {
 	void *data = NULL;
 
-	GLimp_SetCurrentContext( qfalse );
-
 	SDL_LockMutex( smpMutex );
 	{
+		GLimp_SetCurrentContext( qfalse );
+
 		smpData = NULL;
 		smpDataReady = qfalse;
 
@@ -400,10 +400,10 @@ GLimp_WakeRenderer
 */
 void GLimp_WakeRenderer( void *data )
 {
-	GLimp_SetCurrentContext( qfalse );
-
 	SDL_LockMutex( smpMutex );
 	{
+		GLimp_SetCurrentContext( qfalse );
+
 		assert( smpData == NULL );
 		smpData = data;
 		smpDataReady = qtrue;
