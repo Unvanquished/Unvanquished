@@ -838,6 +838,7 @@ typedef struct weaponInfo_s
 	qhandle_t        ammoIcon;
 
 	qhandle_t        crossHair;
+	qhandle_t        crossHairIndicator;
 	int              crossHairSize;
 
 	sfxHandle_t      readySound;
@@ -1052,9 +1053,13 @@ typedef struct
 	int  centerPrintLines;
 
 	// crosshair client ID
-	int crosshairBuildable;
-	int crosshairClientNum;
-	int crosshairClientTime;
+	int      crosshairClientNum;
+	int      crosshairClientTime;
+	qboolean crosshairFriend;
+	qboolean crosshairFoe;
+
+	// whether we hit
+	int hitTime;
 
 	// attacking player
 	int attackerTime;
@@ -1486,6 +1491,7 @@ extern  vmCvar_t            cg_drawDemoState;
 extern  vmCvar_t            cg_drawSnapshot;
 extern  vmCvar_t            cg_drawChargeBar;
 extern  vmCvar_t            cg_drawCrosshair;
+extern  vmCvar_t            cg_drawCrosshairIndicator;
 extern  vmCvar_t            cg_drawCrosshairNames;
 extern  vmCvar_t            cg_drawBuildableHealth;
 extern  vmCvar_t            cg_drawMinimap;
@@ -1948,10 +1954,20 @@ const char *CG_TutorialText( void );
 //
 //===============================================
 
-// cg_drawCrosshair settings
-#define CROSSHAIR_ALWAYSOFF  0
-#define CROSSHAIR_RANGEDONLY 1
-#define CROSSHAIR_ALWAYSON   2
+// cg_drawCrosshair and cg_drawCrosshairIndicator settings
+enum
+{
+  CROSSHAIR_ALWAYSOFF,
+  CROSSHAIR_RANGEDONLY,
+  CROSSHAIR_ALWAYSON
+};
+enum
+{
+  INDICATOR_ALWAYSOFF,
+  INDICATOR_RANGEDONLY,
+  INDICATOR_RANGEDONLY_ALLHITS, // show melee hit on indicator
+  INDICATOR_ALWAYSON
+};
 
 // menu types for cg_disable*Dialogs
 typedef enum

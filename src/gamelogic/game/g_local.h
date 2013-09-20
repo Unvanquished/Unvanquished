@@ -1038,6 +1038,7 @@ void       G_TeamToClientmask( team_t team, int *loMask, int *hiMask );
 
 void       G_FireThink( gentity_t *self );
 gentity_t  *G_SpawnFire(vec3_t origin, vec3_t normal, gentity_t *fireStarter );
+qboolean   G_LineOfSight( gentity_t *ent1, gentity_t *ent2 );
 
 //
 // g_combat.c
@@ -1107,6 +1108,7 @@ void     G_ClearPlayerZapEffects( gentity_t *player );
 void     G_FireWeapon( gentity_t *self );
 void     G_FireWeapon2( gentity_t *self );
 void     G_FireWeapon3( gentity_t *self );
+void     G_FireUpgrade( gentity_t *self, upgrade_t upgrade );
 
 //
 // g_client.c

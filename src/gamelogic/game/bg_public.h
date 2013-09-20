@@ -360,6 +360,7 @@ typedef enum
   WP_ALEVEL3_UPG,
   WP_ALEVEL4,
 
+  // there is some ugly code that assumes WP_BLASTER is the first human weapon
   WP_BLASTER,
   WP_MACHINEGUN,
   WP_PAIN_SAW,
@@ -370,18 +371,15 @@ typedef enum
   WP_FLAMER,
   WP_PULSE_RIFLE,
   WP_LUCIFER_CANNON,
-  WP_GRENADE,
-
   WP_LOCKBLOB_LAUNCHER,
   WP_HIVE,
   WP_TESLAGEN,
   WP_MGTURRET,
 
-  //build weapons must remain in a block
+  // build weapons must remain in a block ← I'm not asking why but I can imagine
   WP_ABUILD,
   WP_ABUILD2,
   WP_HBUILD,
-  //ok?
 
   WP_NUM_WEAPONS
 } weapon_t;
@@ -397,6 +395,7 @@ typedef enum
   UP_JETPACK,
   UP_BATTLESUIT,
   UP_GRENADE,
+  UP_FIREBOMB,
 
   UP_AMMO,
 
@@ -413,6 +412,8 @@ typedef enum
 	MIS_LCANNON,
 	MIS_LCANNON2,
 	MIS_GRENADE,
+	MIS_FIREBOMB,
+	MIS_FIREBOMB_SUB,
 	MIS_HIVE,
 	MIS_LOCKBLOB,
 	MIS_SLOWBLOB,
@@ -430,6 +431,7 @@ typedef enum
 #define SLOT_BACKPACK 0x00000010
 #define SLOT_WEAPON   0x00000020
 #define SLOT_SIDEARM  0x00000040
+#define SLOT_GRENADE  0x00000080
 
 typedef enum
 {
@@ -579,6 +581,8 @@ typedef enum
 
   EV_RPTUSE_SOUND, // trigger a sound
   EV_LEV2_ZAP,
+
+  EV_HIT, // notify client of a hit
 
   EV_CONFIDENCE // notify client of generated confidence
 } entity_event_t;
@@ -927,8 +931,8 @@ typedef enum
   MOD_FLAMER_SPLASH,
   MOD_BURN,
   MOD_GRENADE,
+  MOD_FIREBOMB,
   MOD_WEIGHT_H,
-
   MOD_WATER,
   MOD_SLIME,
   MOD_LAVA,

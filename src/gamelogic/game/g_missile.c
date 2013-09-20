@@ -110,33 +110,33 @@ static float MissileTimePowerMod( gentity_t *self, missileTimePowerMod_t type,
 	}
 }
 
-static float MissileTimeDmgMod( gentity_t *ent )
+static float MissileTimeDmgMod( gentity_t *self )
 {
-	if ( !strcmp( ent->classname, "lcannon" ) )
+	switch ( self->s.weapon )
 	{
-		return MissileTimePowerMod( ent, MTPR_EXPONENTIAL_DECREASE, 1.0f, 0.0f,
-		                            LCANNON_DAMAGE_FULL_TIME, LCANNON_DAMAGE_HALF_LIFE );
-	}
-	else if ( !strcmp( ent->classname, "pulse" ) )
-	{
-		return MissileTimePowerMod( ent, MTPR_EXPONENTIAL_DECREASE, 1.0f, 0.0f,
-		                            PRIFLE_DAMAGE_FULL_TIME, PRIFLE_DAMAGE_HALF_LIFE );
-	}
-	else if ( !strcmp( ent->classname, "flame" ) )
-	{
-		return MissileTimePowerMod( ent, MTPR_LINEAR_DECREASE, 1.0f, FLAMER_DAMAGE_MAXDST_MOD,
-		                            0, FLAMER_LIFETIME );
+		case MIS_FLAMER:
+			return MissileTimePowerMod( self, MTPR_LINEAR_DECREASE, 1.0f, FLAMER_DAMAGE_MAXDST_MOD,
+			                            0, FLAMER_LIFETIME );
+
+		case MIS_LCANNON:
+			return MissileTimePowerMod( self, MTPR_EXPONENTIAL_DECREASE, 1.0f, 0.0f,
+			                            LCANNON_DAMAGE_FULL_TIME, LCANNON_DAMAGE_HALF_LIFE );
+
+		case MIS_PRIFLE:
+			return MissileTimePowerMod( self, MTPR_EXPONENTIAL_DECREASE, 1.0f, 0.0f,
+			                            PRIFLE_DAMAGE_FULL_TIME, PRIFLE_DAMAGE_HALF_LIFE );
 	}
 
 	return 1.0f;
 }
 
-static float MissileTimeSplashDmgMod( gentity_t *ent )
+static float MissileTimeSplashDmgMod( gentity_t *self )
 {
-	if ( !strcmp( ent->classname, "flame" ) )
+	switch ( self->s.weapon )
 	{
-		return MissileTimePowerMod( ent, MTPR_LINEAR_INCREASE, FLAMER_SPLASH_MINDST_MOD, 1.0f,
-			                        0, FLAMER_LIFETIME );
+		case MIS_FLAMER:
+			return MissileTimePowerMod( self, MTPR_LINEAR_INCREASE, FLAMER_SPLASH_MINDST_MOD, 1.0f,
+										0, FLAMER_LIFETIME );
 	}
 
 	return 1.0f;
@@ -168,12 +168,12 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 		return;
 	}
 
-	if ( !strcmp( ent->classname, "grenade" ) )
+	if ( !strcmp( ent->classname, "grenade" ) || !strcmp( ent->classname, "firebomb" ) )
 	{
-		//grenade doesn't explode on impact
+		// grenade doesn't explode on impact
 		BounceMissile( ent, trace );
 
-		//only play a sound if requested
+		// only play a sound if requested
 		if ( !( ent->s.eFlags & EF_NO_BOUNCE_SOUND ) )
 		{
 			G_AddEvent( ent, EV_GRENADE_BOUNCE, 0 );
@@ -218,6 +218,20 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 			{
 				G_SpawnFire( trace->endpos, trace->plane.normal, ent->parent );
 			}
+		}
+	}
+	else if ( !strcmp( ent->classname, "firebomb_sub" ) )
+	{
+		// ignite alien buildables on direct hit
+		if ( other->s.eType == ET_BUILDABLE && other->buildableTeam == TEAM_ALIENS )
+		{
+			G_IgniteBuildable( other, ent->parent );
+		}
+
+		// set the environment on fire
+		if ( other->s.number == ENTITYNUM_WORLD )
+		{
+			G_SpawnFire( trace->endpos, trace->plane.normal, ent->parent );
 		}
 	}
 	else if ( !strcmp( ent->classname, "lockblob" ) )
@@ -369,15 +383,10 @@ void G_ExplodeMissile( gentity_t *ent )
 	dir[ 0 ] = dir[ 1 ] = 0;
 	dir[ 2 ] = 1;
 
-	ent->s.eType = ET_GENERAL;
-
-	if ( ent->s.weapon != WP_LOCKBLOB_LAUNCHER &&
-	     ent->s.weapon != WP_FLAMER )
-	{
-		G_AddEvent( ent, EV_MISSILE_HIT_ENVIRONMENT, DirToByte( dir ) );
-	}
-
+	// turn the missile into an event carrier
+	ent->s.eType = ET_INVISIBLE;
 	ent->freeAfterEvent = qtrue;
+	G_AddEvent( ent, EV_MISSILE_HIT_ENVIRONMENT, DirToByte( dir ) );
 
 	// splash damage
 	if ( ent->splashDamage )
@@ -509,7 +518,7 @@ gentity_t *G_SpawnMissile( missile_t missile, gentity_t *parent, vec3_t start, v
 	m->nextthink           = nextthink;
 
 	// from attribute config file
-	m->s.modelindex        = ma->number; // TODO: Check if modelindex is usable
+	m->s.weapon            = ma->number;
 	m->classname           = ma->name;
 	m->pointAgainstWorld   = ma->pointAgainstWorld;
 	m->damage              = ma->damage;

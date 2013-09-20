@@ -321,6 +321,17 @@ itemDef
 	ownerdraw CG_PLAYER_CROSSHAIR
 }
 
+//CROSSHAIR INDICATOR
+itemDef
+{
+	name "crosshairIndicator"
+	visible MENU_TRUE
+	decoration
+	rect 320 240 0 0
+	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B .35
+	ownerdraw CG_PLAYER_CROSSHAIR_INDICATOR
+}
+
 //SPECTATOR TEXT
 itemDef
 {

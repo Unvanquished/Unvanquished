@@ -1383,6 +1383,10 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			CG_Level2Zap( es );
 			break;
 
+		case EV_HIT:
+			cg.hitTime = cg.time;
+			break;
+
 		case EV_CONFIDENCE:
 			CG_Confidence( es );
 			break;

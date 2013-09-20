@@ -541,7 +541,6 @@ static const weaponData_t bg_weaponsData[] =
 	{ WP_FLAMER,            "flamer"    },
 	{ WP_PULSE_RIFLE,       "prifle"    },
 	{ WP_LUCIFER_CANNON,    "lcannon"   },
-	{ WP_GRENADE,           "grenade"   },
 	{ WP_LOCKBLOB_LAUNCHER, "lockblob"  },
 	{ WP_HIVE,              "hive"      },
 	{ WP_TESLAGEN,          "teslagen"  },
@@ -635,6 +634,7 @@ static const upgradeData_t bg_upgradesData[] =
 	{ UP_JETPACK,     "jetpack"  },
 	{ UP_BATTLESUIT,  "bsuit"    },
 	{ UP_GRENADE,     "gren"     },
+	{ UP_FIREBOMB,    "firebomb" },
 	{ UP_AMMO,        "ammo"     }
 };
 
@@ -717,6 +717,8 @@ static const missileData_t bg_missilesData[] =
   { MIS_LCANNON,      "lcannon"      },
   { MIS_LCANNON2,     "lcannon2"     },
   { MIS_GRENADE,      "grenade"      },
+  { MIS_FIREBOMB,     "firebomb"     },
+  { MIS_FIREBOMB_SUB, "firebomb_sub" },
   { MIS_HIVE,         "hive"         },
   { MIS_LOCKBLOB,     "lockblob"     },
   { MIS_SLOWBLOB,     "slowblob"     },

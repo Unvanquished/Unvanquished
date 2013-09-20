@@ -2918,7 +2918,24 @@ void Cmd_ActivateItem_f( gentity_t *ent )
 		return;
 	}
 
-	upgrade = BG_UpgradeByName( s )->number;
+	// "grenade" aliased to whatever's in the grenade slot
+	if ( !Q_stricmp( "grenade", s ) )
+	{
+		for ( upgrade = UP_NUM_UPGRADES - 1; upgrade > UP_NONE; --upgrade )
+		{
+			const upgradeAttributes_t *upg = BG_Upgrade( upgrade );
+
+			if ( ( upg->slots & SLOT_GRENADE ) && BG_InventoryContainsUpgrade( upgrade, ent->client->ps.stats ) )
+			{
+				break;
+			}
+		}
+	}
+	else
+	{
+		upgrade = BG_UpgradeByName( s )->number;
+	}
+
 	weapon = BG_WeaponByName( s )->number;
 
 	if ( upgrade != UP_NONE && BG_InventoryContainsUpgrade( upgrade, ent->client->ps.stats ) )
