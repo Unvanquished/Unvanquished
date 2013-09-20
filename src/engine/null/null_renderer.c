@@ -295,6 +295,9 @@ refexport_t    *GetRefAPI( int apiVersion, refimport_t *rimp )
     re.CheckVisibility = RE_CheckVisibility;
     re.UnregisterVisTest = RE_UnregisterVisTest;
 
+    re.SetColorGrading = RE_SetColorGrading;
+    re.SetAltShaderTokens = R_SetAltShaderTokens;
+
     return &re;
 }
 
