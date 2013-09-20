@@ -24,6 +24,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #ifdef SMP
 #       include <SDL_thread.h>
+#if     defined( SDL_VIDEO_DRIVER_X11 ) && !SDL_VERSION_ATLEAST( 2, 0, 0 )
+#       include <X11/Xlib.h>
+#endif
 #endif
 
 #include <stdarg.h>
@@ -1730,7 +1733,9 @@ qboolean GLimp_Init( void )
 		ri.Cvar_Set( "com_abnormalExit", "0" );
 	}
 
-	//Sys_SetEnv("SDL_VIDEO_CENTERED", r_centerWindow->integer ? "1" : "");
+#if defined( SMP ) && defined( SDL_VIDEO_DRIVER_X11 ) && !SDL_VERSION_ATLEAST( 2, 0, 0 )
+	XInitThreads();
+#endif
 
 	// Create the window and set up the context
 	if ( GLimp_StartDriverAndSetMode( r_mode->integer, r_fullscreen->integer, qfalse ) )
