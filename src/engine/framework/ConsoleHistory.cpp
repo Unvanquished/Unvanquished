@@ -47,7 +47,7 @@ namespace Console {
             return;
         }
 
-        for (unsigned i = std::max(0UL, (lines.size()) - SAVED_HISTORY_LINES); i < lines.size(); i++) {
+        for (unsigned i = std::max(0L, ((long)lines.size()) - SAVED_HISTORY_LINES); i < lines.size(); i++) {
             FS_Write(lines[i].data(), lines[i].size(), f);
             FS_Write("\n", 1, f);
         }
