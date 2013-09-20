@@ -485,6 +485,7 @@ set( OPENEXRLIST
 )
 
 set( RENDERERLIST
+  ${MOUNT_DIR}/engine/sys/sdl2_compat.c
   ${MOUNT_DIR}/engine/renderer/tr_animation.c
   ${MOUNT_DIR}/engine/renderer/tr_animation_mdm.c
   ${MOUNT_DIR}/engine/renderer/tr_animation_mds.c
@@ -523,6 +524,7 @@ set( RENDERERLIST
 )
 
 set( RENDERERGLLIST
+  ${MOUNT_DIR}/engine/sys/sdl2_compat.c
   ${MOUNT_DIR}/engine/rendererGL/gl_shader.cpp
   ${MOUNT_DIR}/engine/rendererGL/tr_animation_mdm.c
   ${MOUNT_DIR}/engine/rendererGL/tr_animation.c
@@ -746,6 +748,7 @@ endif()
 set( SDLLIST
   ${MOUNT_DIR}/engine/sys/sdl_input.c
   ${MOUNT_DIR}/engine/sys/sdl_snd.c
+  ${MOUNT_DIR}/engine/sys/sdl2_compat.c
 )
 
 # needed for LLVM & QVM
@@ -881,6 +884,7 @@ set( UIGPP_QVM
 )
 
 set( DAEMONMAPLIST
+  ${MOUNT_DIR}/engine/sys/sdl2_compat.c
   ${MOUNT_DIR}/tools/common/cmdlib.c
   ${MOUNT_DIR}/tools/common/imagelib.c
   ${MOUNT_DIR}/tools/common/inout.c

@@ -341,7 +341,7 @@ void Draw_Scene(void (*drawFunc) (void))
 				}
 #else
 				case SDL_VIDEORESIZE:
-					drawScreen->surface = SDL_SetVideoMode( event.resize.w, event.resize.h, drawVideo->videoInfo->vfmt->BitsPerPixel, SDL_OPENGL | SDL_RESIZABLE );
+					drawScreen->surface = SDL_SetVideoMode( event.resize.w, event.resize.h, SDL_GetVideoInfo()->vfmt->BitsPerPixel, SDL_OPENGL | SDL_RESIZABLE );
 					if ( drawScreen )
 					{
 						Reshape( drawScreen->surface->w, drawScreen->surface->h );

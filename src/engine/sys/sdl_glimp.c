@@ -828,10 +828,6 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 		ri.Printf( PRINT_ALL, "Using GLEW %s\n", glewGetString( GLEW_VERSION ) );
 	}
 
-#if !SDL_VERSION_ATLEAST( 2, 0, 0 )
-	SDL_GetWindowContext( window );
-#endif
-
 #ifdef USE_XREAL_RENDERER
 	{
 		int GLmajor, GLminor;

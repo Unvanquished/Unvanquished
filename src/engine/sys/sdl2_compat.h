@@ -24,26 +24,17 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define SDL2_COMPAT_H
 
 #include <SDL_version.h>
+
+#if SDL_VERSION_ATLEAST( 2, 0, 0 )
 static int colorBits = 0;
+#endif
 
 #if !SDL_VERSION_ATLEAST( 2, 0, 0 )
-
-#ifdef WIN32
-#include <GL/wglew.h>
-#else
-#include <GL/glxew.h>
-#endif
-
-#ifdef MACOS_X
-#include <OpenGL/OpenGL.h>
-#elif SDL_VIDEO_DRIVER_X11
-#include <GL/glx.h>
-#endif
+extern int colorBits; // set this value before SDL_CreateWindow
 
 #include <SDL.h>
 #include <SDL_video.h>
 #include <SDL_syswm.h>
-
 
 // shims for using SDL1.2 with the SDL2 API
 // due to differences in the capabilities of the two APIs
@@ -59,19 +50,10 @@ typedef struct
 
 typedef struct
 {
-	SDL_Surface   *surface;
-	const SDL_VideoInfo *videoInfo;
-#ifdef MACOS_X
-	CGLContextObj context;
-#elif SDL_VIDEO_DRIVER_X11
-	GLXContext  ctx;
-	Display     *dpy;
-	GLXDrawable drawable;
-#elif _WIN32
-	HDC   hDC; // handle to device context
-	HGLRC hGLRC; // handle to GL rendering context
-#endif
+	SDL_Surface         *surface;
 } SDL_Window;
+
+typedef void* SDL_GLContext;
 
 #define SDL_WINDOW_OPENGL SDL_OPENGL
 #define SDL_WINDOW_FULLSCREEN SDL_FULLSCREEN
@@ -141,232 +123,31 @@ typedef struct
 #define SDL_DestroyWindow( w )
 #define SDL_GL_SwapWindow( w ) SDL_GL_SwapBuffers()
 
-typedef struct
-{
-	SDL_Surface *surface;
-	const SDL_VideoInfo *videoInfo;
-} SDL_GLContextInternal;
+const char *SDL_GetCurrentVideoDriver( void );
+const char *SDL_GetCurrentAudioDriver( void );
 
-typedef SDL_GLContextInternal* SDL_GLContext;
-
-static SDL_GLContext SDL_GL_CreateContext( SDL_Window *w )
-{
-	static SDL_GLContextInternal c;
-
-	c.surface = w->surface;
-	c.videoInfo = w->videoInfo;
-
-	return &c;
-}
+SDL_GLContext SDL_GL_CreateContext( SDL_Window *w );
 
 #ifdef SMP
-static int SDL_GL_MakeCurrent( SDL_Window *win, SDL_GLContext context )
-{
-	if ( !context  )
-	{
-#if MACOS_X
-		return CGLSetCurrentContext( NULL );
-#elif SDL_VIDEO_DRIVER_X11
-		return !glXMakeCurrent( win->dpy, None, NULL );
-#elif WIN32
-		return !wglMakeCurrent( win->hDC, NULL );
-#else
-		return 1;
-#endif
-	}
-	else
-	{
-#if MACOS_X
-		return CGLSetCurrentContext( win->context );
-#elif SDL_VIDEO_DRIVER_X11
-		return !glXMakeCurrent( win->dpy, win->drawable, win->ctx );
-#elif WIN32
-		return !wglMakeCurrent( win->hDC, win->hGLRC );
-#else
-		return 1;
-#endif
-	}
-}
+// depends on glewInit() being called before
+int SDL_GL_MakeCurrent( SDL_Window *win, SDL_GLContext context );
 #endif
 
-static SDL_Rect **modes;
+// SDL 1.2 only supports one window
+SDL_Window *SDL_CreateWindow( const char *title, int x, int y, int w, int h, uint32_t flags );
 
-static int SDL_GetWindowDisplayMode( SDL_Window *w, SDL_DisplayMode *mode )
-{
-	modes = SDL_ListModes( w->videoInfo->vfmt, SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN );
-	if ( !modes )
-	{
-		return -1;
-	}
+int SDL_GetWindowDisplayMode( SDL_Window *w, SDL_DisplayMode *mode );
+int SDL_GetNumDisplayModes( int display );
+int SDL_GetDisplayMode( int display, int index, SDL_DisplayMode *mode );
 
-	mode->w = w->surface->w;
-	mode->h = w->surface->h;
-	mode->format = 0;
-	return 1;
-}
+int SDL_SetWindowBrightness( SDL_Window *w, float bright );
+int SDL_SetWindowFullscreen( SDL_Window *w, int fullscreen );
 
-static int SDL_GetNumDisplayModes( int display )
-{
-	int i;
+// SDL 1.2 does not support window positioning
+void SDL_GetWindowPosition( SDL_Window *w, int *x, int *y );
 
-	if ( !modes )
-	{
-		return 0;
-	}
+void SDL_GetWindowSize( SDL_Window *win, int *w, int *h );
+int SDL_GetDesktopDisplayMode( int display, SDL_DisplayMode *mode );
 
-	for ( i = 0; modes[ i ]; i++ ) { }
-	
-	return i;
-}
-
-static int SDL_GetDisplayMode( int display, int index, SDL_DisplayMode *mode )
-{
-	if ( modes == ( SDL_Rect ** ) -1 )
-	{
-		mode->w = 0;
-		mode->h = 0;
-		mode->format = 0;
-	}
-	else
-	{
-		mode->w = modes[ index ]->w;
-		mode->h = modes[ index ]->h;
-		mode->format = 0;
-	}
-	return 0;
-}
-
-static char *SDL_GetCurrentVideoDriver()
-{
-	static char driverName[ 128 ];
-
-	return SDL_VideoDriverName( driverName, sizeof( driverName ) );
-}
-
-static int SDL_SetWindowBrightness( SDL_Window *w, float bright )
-{
-	int result1;
-	int result2;
-
-	result1 = SDL_SetGamma( bright, bright, bright );
-
-	// Mysteriously, if you use an NVidia graphics card and multiple monitors,
-	// SDL_SetGamma will incorrectly return false... the first time; ask
-	// again and you get the correct answer. This is a suspected driver bug, see
-	// http://bugzilla.icculus.org/show_bug.cgi?id=4316
-
-	result2 = SDL_SetGamma( bright, bright, bright );
-
-	return result1 >= 0 || result2 >= 0;
-}
-
-static int SDL_SetWindowFullscreen( SDL_Window *w, int fullscreen )
-{
-	int currentstate = !!( w->surface->flags & SDL_WINDOW_FULLSCREEN );
-
-	if ( currentstate != fullscreen )
-	{
-		if ( SDL_WM_ToggleFullScreen( w->surface ) )
-		{
-			return 0;
-		}
-		else
-		{
-			return -1;
-		}
-	}
-
-	return 0;
-}
-
-static SDL_Window *SDL_CreateWindow( const char *title, int x, int y, int w, int h, uint32_t flags )
-{
-	static SDL_Window win;
-	static SDL_VideoInfo sVideoInfo;
-	static SDL_PixelFormat sPixelFormat;
-
-	if ( flags & SDL_WINDOW_HIDDEN )
-	{
-		win.videoInfo = SDL_GetVideoInfo();
-		memcpy( &sPixelFormat, win.videoInfo->vfmt, sizeof( sPixelFormat ) );
-		sPixelFormat.palette = NULL;
-		memcpy( &sVideoInfo, win.videoInfo, sizeof( sVideoInfo ) );
-		sVideoInfo.vfmt = &sPixelFormat;
-		win.videoInfo = &sVideoInfo;
-		win.surface = SDL_GetVideoSurface();
-		return &win;
-	}
-
-	SDL_WM_SetCaption( title, title );
-	win.videoInfo = SDL_GetVideoInfo();
-	memcpy( &sPixelFormat, win.videoInfo->vfmt, sizeof( sPixelFormat ) );
-	sPixelFormat.palette = NULL;
-	memcpy( &sVideoInfo, win.videoInfo, sizeof( sVideoInfo ) );
-	sVideoInfo.vfmt = &sPixelFormat;
-	win.videoInfo = &sVideoInfo;
-
-	win.surface = SDL_SetVideoMode( w, h, colorBits, flags );
-
-	return win.surface ? &win : NULL;
-}
-
-static void SDL_GetWindowContext( SDL_Window *win )
-{
-#if MACOS_X
-	win->context = CGLGetCurrentContext();
-#elif SDL_VIDEO_DRIVER_X11
-	win->ctx = glXGetCurrentContext();
-	win->dpy = glXGetCurrentDisplay();
-	win->drawable = glXGetCurrentDrawable();
-#elif WIN32
-	SDL_SysWMinfo info;
-
-	SDL_VERSION( &info.version );
-
-	if ( SDL_GetWMInfo( &info ) )
-	{
-		win->hDC = GetDC( info.window );
-		win->hGLRC = info.hglrc;
-	}
-	else
-	{
-		win->hDC = 0;
-		win->hGLRC = NULL;
-	}
-#endif
-}
-
-static void SDL_GetWindowPosition( SDL_Window *w, int *x, int *y )
-{
-	*x = 0;
-	*y = 0;
-}
-
-static void SDL_GetWindowSize( SDL_Window *win, int *w, int *h )
-{
-	const SDL_VideoInfo *vid = SDL_GetVideoInfo();
-	*w = vid->current_w;
-	*h = vid->current_h;
-}
-
-static int SDL_GetDesktopDisplayMode( int display, SDL_DisplayMode *mode )
-{
-	const SDL_VideoInfo *v = SDL_GetVideoInfo();
-	if ( v->current_h > 0 )
-	{
-		mode->h = v->current_h;
-		mode->w = v->current_w;
-		mode->format = 0;
-		return 0;
-	}
-	
-	return -1;
-}
-
-static char *SDL_GetCurrentAudioDriver( void )
-{
-	static char buf[ 128 ];
-	return SDL_AudioDriverName( buf, sizeof( buf ) );
-}
 #endif
 #endif
