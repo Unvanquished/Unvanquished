@@ -25,16 +25,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "../renderer/tr_local.h"
 #include "../qcommon/qcommon.h"
+#include "sdl2_compat.h"
 
 #ifdef _WIN32
 #	include <Windows.h>
 #endif
 
-#if SDL_VERSION_ATLEAST( 2, 0, 0 )
 extern SDL_Window *window;
-#else
-#define SDL_SetWindowGammaRamp( w, r, g, b ) SDL_SetGammaRamp( r, g, b )
-#endif
+
 /*
 =================
 GLimp_SetGamma

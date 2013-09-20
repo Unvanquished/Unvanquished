@@ -76,6 +76,7 @@ typedef void* SDL_GLContext;
 #define SDL_SetWindowGrab( w, t ) SDL_WM_GrabInput( t )
 #define SDL_SetRelativeMouseMode( t )
 #define SDL_WarpMouseInWindow( w, x, y ) SDL_WarpMouse( x, y )
+#define SDL_SetWindowGammaRamp( w, r, g, b ) SDL_SetGammaRamp( r, g, b )
 
 #define SDL_Keycode SDLKey
 #define SDL_Keysym SDL_keysym
