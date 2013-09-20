@@ -62,8 +62,6 @@ float BotGetBaseRushScore( gentity_t *ent )
 
 	switch ( ent->s.weapon )
 	{
-		case WP_GRENADE:
-			return 0.7f;
 		case WP_BLASTER:
 			return 0.1f;
 		case WP_LUCIFER_CANNON:
