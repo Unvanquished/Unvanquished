@@ -210,6 +210,13 @@ static INLINE void CON_CheckScroll( void )
 		{
 			c -= CON_wcwidth( input_field.buffer + input_field.scroll++ );
 		}
+
+		c = Field_OffsetToCursor( &input_field, c );
+
+		if ( c < input_field.scroll )
+		{
+			input_field.scroll = c;
+		}
 	}
 #else
 	else if ( input_field.cursor >= input_field.scroll + input_field.widthInChars )
@@ -775,12 +782,14 @@ char *CON_Input( void )
 			case 1: // Ctrl-A
 			case KEY_HOME:
 				input_field.cursor = 0;
+				input_field.scroll = 0;
 				continue;
 
 			case 5: // Ctrl-E
 			case KEY_END:
 				key_end:
 				input_field.cursor = Q_UTF8_Strlen( input_field.buffer );
+				CON_CheckScroll();
 				continue;
 
 			case KEY_NPAGE:

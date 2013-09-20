@@ -2,6 +2,7 @@ models/buildables/medistat/base_down
 {
 	diffuseMap models/buildables/medistat/medistat_d
 	normalMap models/buildables/medistat/medistat_n
+
 	{
 		stage specularMap
 		map models/buildables/medistat/medistat_s
@@ -14,6 +15,7 @@ models/buildables/medistat/base_dead
 {
 	diffuseMap models/buildables/medistat/medistat_d
 	normalMap models/buildables/medistat/medistat_n
+
 	{
 		stage specularMap
 		map models/buildables/medistat/medistat_s
@@ -33,6 +35,7 @@ models/buildables/medistat/base
 
 	diffuseMap models/buildables/medistat/medistat_d
 	normalMap models/buildables/medistat/medistat_n
+
 	{
 		stage specularMap
 		map models/buildables/medistat/medistat_s
@@ -40,8 +43,16 @@ models/buildables/medistat/base
 		specularExponentMax 128
 	}
 
+	// displays
 	{
-		map models/buildables/medistat/medistat_glow
+		map models/buildables/medistat/medistat_g1
+		blendfunc add
+		rgb 0.5 0.5 0.5
+	}
+
+	// hexagons
+	{
+		map models/buildables/medistat/medistat_g2
 		blendfunc add
 		rgbGen wave sin 0.375 0.1875 0 0.25
 	}
@@ -50,26 +61,18 @@ models/buildables/medistat/base
 	when destroyed models/buildables/medistat/base_dead
 }
 
-/*
-models/buildables/medistat/no_healing
-{
-	cull all
-	diffuseMap models/buildables/medistat/active
-}
-*/
-
 models/buildables/medistat/healing
 {
 	cull none
+
 	{
 		map models/buildables/medistat/active
 		blendfunc blend
 		rgbGen lightingDiffuse
-		tcMod scroll 0.5 0
 	}
 
 	{
-		map models/buildables/medistat/sparkles
+		map models/buildables/medistat/active_noise
 		blendfunc GL_SRC_ALPHA GL_ONE
 		rgbGen wave noise 0.0546875 0.0234375 35 0.25
 		// let's have some fun with this
@@ -78,6 +81,4 @@ models/buildables/medistat/healing
 		tcmod stretch sin 1 0.5 0 0.497
 		tcMod scroll -0.997 0.5
 	}
-
-//	when unpowered models/buildables/medistat/no_healing
 }

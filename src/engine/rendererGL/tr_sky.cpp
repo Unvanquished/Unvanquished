@@ -1005,11 +1005,6 @@ void Tess_StageIteratorSky( void )
 	}
 	else
 	{
-		if ( tess.stageIteratorFunc2 == &Tess_StageIteratorGBuffer )
-		{
-			R_BindFBO( tr.geometricRenderFBO );
-		}
-
 		// go through all the polygons and project them onto
 		// the sky box to see which blocks on each side need
 		// to be drawn
@@ -1058,13 +1053,6 @@ void Tess_StageIteratorSky( void )
 		if ( tess.numVertexes || tess.multiDrawPrimitives )
 		{
 			tess.stageIteratorFunc2();
-		}
-
-		// Tr3B: TODO draw the inner skybox?
-
-		if ( tess.stageIteratorFunc2 == Tess_StageIteratorGBuffer )
-		{
-			R_BindNullFBO();
 		}
 
 		if ( tess.stageIteratorFunc2 != Tess_StageIteratorDepthFill )
