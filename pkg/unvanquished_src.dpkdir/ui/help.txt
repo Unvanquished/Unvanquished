@@ -1,11 +1,11 @@
 ﻿{
-  "[official] ^2Welcome^7"
+  "[official] Welcome"
   {
     "In this section you will find a summary of major gameplay changes since "
     "Tremulous GPP.\n"
     "\n"
-    "Feel free to take part in our weekly development games, ^3each Saturday at"
-    " 21:00 UTC^7 on the »^aDevelopment^7 & ^8Testing^7 ^@Server^7«!"
+    "Feel free to take part in our weekly development games, each "
+    "^1Sunday^7 at ^120:00 UTC^7 on the »^aDev^7 & ^8Testing^7 ^@Server^7«!"
   }
   "[drill] Resources"
   {
@@ -30,21 +30,15 @@
     "\n"
     "The mine rate decreases over time, so that it gets increasingly harder to"
     " acquire resources in a long lasting match. This replaces sudden death.\n"
-    "\n"
   }
   "[bsuit] Stages & Confidence"
   {
-    "Building and destroying structures earns your team a new resource called "
-    "^2confidence^7. If you gain enough confidence your team will stage up.\n"
+    "Building and destroying structures as well as killing enemies earns your "
+    "team a new resource called ^2confidence^7. If you gain enough confidence "
+    "new weapons, strucures or classes will be unlocked.\n"
     "\n"
-    "Confidence decreases exponentially over time so if you idle your team will"
-    " go back down a stage – you will lose access to anything new of whatever "
-    "the lost stage(s) provided, but existing upgrades will remain "
-    "functional.\n"
-    "\n"
-    "Building a structure yields 60% of the value your enemy would get for "
-    "destroying it. There is also a reward for killing an enemy outside your "
-    "own base."
+    "Confidence decreases exponentially over time so if you idle your team will "
+	"lose access to new items. Existing upgrades will remain functional.\n"
   }
   "[ckit] Human building ^21^7"
   {
@@ -77,7 +71,7 @@
   "[flamer] Wildfire"
   {
     "Alien buildables can catch fire when they are hit with the [flamer] flame "
-    "thrower.\n"
+    "thrower or the [grenade] firebomb.\n"
     "\n"
     "If structures are built too close, the fire can jump over to the "
     "unfortunate neighbors.\n"
@@ -88,10 +82,10 @@
     "The [advgranger] advanced granger's spit attack can be used to put out "
     "fires."
   }
-  "[dretch] Dretch pounce"
+  "[dretch] Advanced dretch"
   {
-    "The [dretch] dretch now has a pounce ability. A pounce can be started with"
-    " ATTACK2.\n"
+    "The [dretch] advanced dretch has a pounce ability. A pounce can be "
+	"started with ATTACK2.\n"
     "\n"
     "After the pounce a cooldown period will set in. The cooldown is different "
     "for forward, sidewards/backwards and off-wall pounces.\n"
