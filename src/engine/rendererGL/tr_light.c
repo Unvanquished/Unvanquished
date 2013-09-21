@@ -778,6 +778,8 @@ void R_TessLight( const trRefLight_t *light, const vec4_t color )
 					Tess_AddQuadStamp2( quadVerts, color ? color : colorRed );
 				}
 			}
+		default:
+			break;
 	}
 }
 

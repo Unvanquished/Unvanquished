@@ -1006,7 +1006,7 @@ static qboolean PM_CheckPounce( void )
 				pm->ps->stats[ STAT_MISC ] = LEVEL0_WALLPOUNCE_COOLDOWN;
 			}
 			// moving foward or standing still
-			else if ( pm->cmd.forwardmove > 0 || ( pm->cmd.forwardmove == 0 && pm->cmd.rightmove == 0) )
+			else if ( pm->cmd.forwardmove > 0 || ( pm->cmd.forwardmove == 0 && pm->cmd.rightmove == 0 ) )
 			{
 				// get jump direction
 				VectorCopy( pml.forward, jumpDirection );
@@ -1060,6 +1060,11 @@ static qboolean PM_CheckPounce( void )
 
 				// add cooldown
 				pm->ps->stats[ STAT_MISC ] = LEVEL0_SIDEPOUNCE_COOLDOWN;
+			}
+			// compilers don't get my epic dijkstra-if
+			else
+			{
+				return qfalse;
 			}
 
 			break;

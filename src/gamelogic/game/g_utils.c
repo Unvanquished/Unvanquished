@@ -815,6 +815,8 @@ void G_FireThink( gentity_t *self )
 				case ET_FIRE:
 					G_FreeEntity( self );
 					break;
+				default:
+					break;
 			}
 
 			return;
@@ -827,7 +829,7 @@ void G_FireThink( gentity_t *self )
 	if ( self->nextBurnSpreadCheck < level.time )
 	{
 		neighbor = NULL;
-		while ( neighbor = G_IterateEntitiesWithinRadius( neighbor, self->s.origin, BURN_SPREAD_RADIUS ) )
+		while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, self->s.origin, BURN_SPREAD_RADIUS ) ) )
 		{
 			if ( neighbor->s.eType != ET_BUILDABLE || neighbor->buildableTeam != TEAM_ALIENS )
 			{
@@ -876,7 +878,8 @@ gentity_t *G_SpawnFire( vec3_t origin, vec3_t normal, gentity_t *fireStarter )
 	}
 
 	// don't spawn a fire inside another fire
-	for ( fire = NULL; fire = G_IterateEntitiesWithinRadius( fire, origin, FIRE_MIN_DISTANCE ); )
+	fire = NULL;
+	while ( ( fire = G_IterateEntitiesWithinRadius( fire, origin, FIRE_MIN_DISTANCE ) ) )
 	{
 		if ( fire->s.eType == ET_FIRE )
 		{

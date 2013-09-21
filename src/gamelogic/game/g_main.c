@@ -235,8 +235,6 @@ vmCvar_t g_bot_buildLayout;
 
 // copy cvars that can be set in worldspawn so they can be restored later
 static char        cv_gravity[ MAX_CVAR_VALUE_STRING ];
-static char        cv_humanBuildPoints[ MAX_CVAR_VALUE_STRING ];
-static char        cv_alienBuildPoints[ MAX_CVAR_VALUE_STRING ];
 
 static cvarTable_t gameCvarTable[] =
 {
@@ -2815,7 +2813,6 @@ void CheckCvars( void )
 {
 	static int lastPasswordModCount = -1;
 	static int lastMarkDeconModCount = -1;
-	static int lastNumZones = 0;
 
 	if ( g_password.modificationCount != lastPasswordModCount )
 	{

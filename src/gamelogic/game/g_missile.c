@@ -194,7 +194,7 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 
 		// ignite alien buildables in radius
 		neighbor = NULL;
-		while ( neighbor = G_IterateEntitiesWithinRadius( neighbor, trace->endpos, FLAMER_IGNITE_RADIUS ) )
+		while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, trace->endpos, FLAMER_IGNITE_RADIUS ) ) )
 		{
 			// we already handled other, since it might not always be in FLAMER_IGNITE_RADIUS due to BBOX sizes
 			if ( neighbor == other )
@@ -261,8 +261,8 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 		{
 			// put out floor fires in range
 			neighbor = NULL;
-			while ( neighbor = G_IterateEntitiesWithinRadius( neighbor, trace->endpos,
-			                                                  ABUILDER_BLOB_FIRE_STOP_RANGE ) )
+			while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, trace->endpos,
+			                                                  ABUILDER_BLOB_FIRE_STOP_RANGE ) ) )
 			{
 				if ( neighbor->s.eType == ET_FIRE )
 				{

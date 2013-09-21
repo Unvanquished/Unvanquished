@@ -212,7 +212,7 @@ void R_IssueRenderCommands( qboolean runPerformanceCounters )
 		}
 		else
 		{
-			GLimp_WakeRenderer( cmdList );
+			GLimp_WakeRenderer( cmdList->cmds );
 		}
 	}
 }

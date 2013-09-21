@@ -878,44 +878,6 @@ qboolean R_inPVVS( const vec3_t p1, const vec3_t p2 )
 }
 
 /*
-=================
-BSPSurfaceCompare
-compare function for qsort()
-=================
-*/
-static int BSPSurfaceCompare( const void *a, const void *b )
-{
-	bspSurface_t *aa, *bb;
-
-	aa = * ( bspSurface_t ** ) a;
-	bb = * ( bspSurface_t ** ) b;
-
-	// shader first
-	if ( aa->shader < bb->shader )
-	{
-		return -1;
-	}
-
-	else if ( aa->shader > bb->shader )
-	{
-		return 1;
-	}
-
-	// by lightmap
-	if ( aa->lightmapNum < bb->lightmapNum )
-	{
-		return -1;
-	}
-
-	else if ( aa->lightmapNum > bb->lightmapNum )
-	{
-		return 1;
-	}
-
-	return 0;
-}
-
-/*
 ===============
 R_MarkLeaves
 
