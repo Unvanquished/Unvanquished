@@ -190,10 +190,7 @@ else()
     set_c_cxx_flag( "-stdlib=libc++" )
   endif()
 
-  # Hardening, don't set _FORTIFY_SOURCE with -O0
-  if( FLAG_OPTIMIZE_DEBUG )
-    set_c_cxx_flag( "-D_FORTIFY_SOURCE=2" DEBUG )
-  endif()
+  # Hardening, don't set _FORTIFY_SOURCE in debug builds
   set_c_cxx_flag( "-D_FORTIFY_SOURCE=2" RELEASE )
   set_c_cxx_flag( "-D_FORTIFY_SOURCE=2" RELWITHDEBINFO )
   set_c_cxx_flag( "-D_FORTIFY_SOURCE=2" MINSIZEREL )
