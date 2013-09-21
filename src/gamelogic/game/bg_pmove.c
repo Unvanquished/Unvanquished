@@ -1607,6 +1607,7 @@ PM_AlienFlyMove
 #define SHRIKE_THROTTLE 10.0f
 #define SHRIKE_LIFT_SPEED 4.0f
 #define SHRIKE_TURN_RATE 1.0f
+#define SHRIKE_ROLL_RATE 2.0f
 #define SHRIKE_FLIGHT_MAXSPEED 750.0f
 
 static void PM_AlienFlyMove( void )
@@ -1642,8 +1643,19 @@ static void PM_AlienFlyMove( void )
 	{
 		int sign = ( pm->cmd.rightmove > 0 ) ? -1 : 1;
 		static const vec3_t z = { 0, 0, 1 };
+		float speed = VectorLength( pm->ps->velocity );
+		float rate = sign * SHRIKE_TURN_RATE * ( 1.01f - speed / SHRIKE_FLIGHT_MAXSPEED );
 
-		RotatePointAroundVector( pm->ps->velocity, z, pm->ps->velocity, sign * SHRIKE_TURN_RATE );
+		RotatePointAroundVector( pm->ps->velocity, z, pm->ps->velocity, rate );
+		if ( fabs( pm->ps->viewangles[ ROLL ] ) < fabs( rate * 25.0f ) )
+		{
+			pm->ps->viewangles[ ROLL ] += sign * MIN( fabs( fabs( rate * 25.0f ) ) - SHRIKE_ROLL_RATE, SHRIKE_ROLL_RATE );
+		}
+	}
+	else if ( pm->ps->viewangles[ ROLL ] )
+	{
+		int sign = ( pm->ps->viewangles[ ROLL ] > 0 ) ? -1 : 1;
+		pm->ps->viewangles[ ROLL ] += sign * MIN( fabs( pm->ps->viewangles[ ROLL ] ), SHRIKE_ROLL_RATE );
 	}
 
 
@@ -4565,6 +4577,12 @@ void PM_UpdateViewAngles( playerState_t *ps, const usercmd_t *cmd )
 	//convert the new axis back to angles
 	AxisToAngles( rotaxis, tempang );
 
+	if ( ps->stats[ STAT_STATE ] & SS_FLYING )
+	{
+		tempang[ ROLL ] += ps->viewangles[ ROLL ];
+		ps->viewangles[ ROLL] = 0;
+	}
+
 	//force angles to -180 <= x <= 180
 	for ( i = 0; i < 3; i++ )
 	{
@@ -4629,7 +4647,9 @@ void PM_UpdateViewAngles( playerState_t *ps, const usercmd_t *cmd )
 
 	if ( ps->stats[ STAT_STATE ] & SS_FLYING )
 	{
+		float rot = ps->viewangles[ ROLL ];
 		vectoangles( ps->velocity, ps->viewangles );
+		ps->viewangles[ ROLL ] = rot;
 	}
 }
 
