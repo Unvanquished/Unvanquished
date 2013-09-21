@@ -61,19 +61,25 @@ private:
 	std::string                    _name;
 	std::string                    _mainShaderName;
 protected:
+	int                            _activeMacros;
+	unsigned int                   _checkSum;
+	shaderProgram_t                 *_currentProgram;
+	const uint32_t                 _vertexAttribsRequired;
+	uint32_t                       _vertexAttribs; // can be set by uniforms
+	GLShaderManager                 *_shaderManager;
+	size_t                         _uniformStorageSize;
+
 	std::string                    _fragmentShaderText;
 	std::string                    _vertexShaderText;
-	int                            _activeMacros;
 	std::vector< shaderProgram_t > _shaderPrograms;
-	shaderProgram_t                 *_currentProgram;
-	GLShaderManager                 *_shaderManager;
+
+
 	std::vector< GLUniform * >      _uniforms;
 	std::vector< GLCompileMacro * > _compileMacros;
 
-	size_t                         _uniformStorageSize;
-	const uint32_t                 _vertexAttribsRequired;
-	uint32_t                       _vertexAttribs; // can be set by uniforms
-	unsigned int                   _checkSum;
+	
+
+	
 
 	GLShader( const std::string &name, uint32_t vertexAttribsRequired, GLShaderManager *manager ) :
 		_name( name ),
