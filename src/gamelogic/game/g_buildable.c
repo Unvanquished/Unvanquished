@@ -772,37 +772,6 @@ static int    CompareEntityDistance( const void *a, const void *b )
 	}
 }
 
-/*
-================
-CompareBuildableSparePower
-
-Sorts (human) buildables by expected spare power, lowest first.
-Uses distance as secondary order, lowest first.
-Input are two indices for g_entities.
-compareEntityDistanceOrigin must be set for distance check to work!
-================
-*/
-static int CompareBuildableSparePower( const void *a, const void *b )
-{
-	gentity_t *aEnt, *bEnt;
-
-	aEnt = &g_entities[ *( int* )a ];
-	bEnt = &g_entities[ *( int* )b ];
-
-	if ( aEnt->expectedSparePower < bEnt->expectedSparePower )
-	{
-		return -1;
-	}
-	else if ( bEnt->expectedSparePower < aEnt->expectedSparePower )
-	{
-		return 1;
-	}
-	else
-	{
-		return CompareEntityDistance( a, b );
-	}
-}
-
 //==================================================================================
 //
 // ALIEN BUILDABLES
@@ -1937,7 +1906,7 @@ static qboolean PowerSourceInRange( vec3_t origin )
 {
 	gentity_t *neighbor = NULL;
 
-	while ( neighbor = G_IterateEntitiesWithinRadius( neighbor, origin, PowerRelevantRange() ) )
+	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, origin, PowerRelevantRange() ) ) )
 	{
 		if ( neighbor->s.eType != ET_BUILDABLE )
 		{
@@ -1977,11 +1946,9 @@ static float IncomingInterference( buildable_t buildable, gentity_t *neighbor,
 {
 	float range, power;
 
-	switch ( buildable )
+	if ( buildable == BA_H_REPEATER || buildable == BA_H_REACTOR )
 	{
-		case BA_H_REPEATER:
-		case BA_H_REACTOR:
-			return 0.0f;
+		return 0.0f;
 	}
 
 	if ( !neighbor )
@@ -2155,7 +2122,7 @@ static void CalculateSparePower( gentity_t *self )
 	}
 
 	neighbor = NULL;
-	while ( neighbor = G_IterateEntitiesWithinRadius( neighbor, self->s.origin, PowerRelevantRange() ) )
+	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, self->s.origin, PowerRelevantRange() ) ) )
 	{
 		if ( self == neighbor )
 		{
@@ -4055,7 +4022,7 @@ static qboolean PredictBuildablePower( buildable_t buildable, vec3_t origin )
 	ownPrediction = g_powerBaseSupply.integer - BG_Buildable( buildable )->powerConsumption;
 
 	neighbor = NULL;
-	while ( neighbor = G_IterateEntitiesWithinRadius( neighbor, origin, PowerRelevantRange() ) )
+	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, origin, PowerRelevantRange() ) ) )
 	{
 		// only predict interference with friendly buildables
 		if ( neighbor->s.eType != ET_BUILDABLE || neighbor->buildableTeam != TEAM_HUMANS )
@@ -4078,7 +4045,7 @@ static qboolean PredictBuildablePower( buildable_t buildable, vec3_t origin )
 		if ( neighborPrediction < 0.0f && distance < g_powerCompetitionRange.integer )
 		{
 			buddy = NULL;
-			while ( buddy = G_IterateEntitiesWithinRadius( buddy, neighbor->s.origin, PowerRelevantRange() ) )
+			while ( ( buddy = G_IterateEntitiesWithinRadius( buddy, neighbor->s.origin, PowerRelevantRange() ) ) )
 			{
 				if ( IsSetForDeconstruction( buddy ) )
 				{
@@ -4210,7 +4177,7 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 		neighbor = NULL;
 
 		// assemble a list of closeby human buildable IDs
-		while ( neighbor = G_IterateEntitiesWithinRadius( neighbor, origin, PowerRelevantRange() ) )
+		while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, origin, PowerRelevantRange() ) ) )
 		{
 			if ( neighbor->s.eType != ET_BUILDABLE || neighbor->buildableTeam != TEAM_HUMANS )
 			{
