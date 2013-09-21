@@ -133,7 +133,10 @@ void GLSL_InitGPUShaders( void )
 
 	gl_shaderManager.load( gl_motionblurShader );
 
-	gl_shaderManager.load( gl_fxaaShader );
+	if ( !glBroken.FXAA )
+	{
+		gl_shaderManager.load( gl_fxaaShader );
+        }
 
 	if ( !r_lazyShaders->integer )
 	{
@@ -2565,10 +2568,11 @@ static void Render_fog()
 	GL_CheckErrors();
 }
 
+#if 0
 // see Fog Polygon Volumes documentation by Nvidia for further information
 static void Render_volumetricFog()
 {
-#if 0
+
 	vec3_t viewOrigin;
 	float  fogDensity;
 	GLfloat fogColor[ 3 ];
@@ -2684,8 +2688,8 @@ static void Render_volumetricFog()
 	}
 
 	GL_CheckErrors();
-#endif
 }
+#endif
 
 /*
 ===============

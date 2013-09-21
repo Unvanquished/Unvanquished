@@ -378,7 +378,6 @@ static void R_CopyVertexData( VBO_t *vbo, byte *outData, vboData_t inData )
 		uint32_t j; \
 		type *tmp = ( type * ) ( outData + vbo->attribs[ index ].ofs + v * vbo->attribs[ index ].realStride ); \
 		const type *vert = inData.attr[ v ]; \
-		uint32_t numComponents = vbo->attribs[ index ].numComponents; \
 		uint32_t len = ARRAY_LEN( *inData.attr ); \
 		for ( j = 0; j < len; j++ ) { tmp[ j ] = vert[ j ]; } \
 	} while ( 0 )

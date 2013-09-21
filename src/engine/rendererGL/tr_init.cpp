@@ -304,6 +304,8 @@ extern "C" {
 
 	cvar_t      *r_fontScale;
 
+	glBroken_t  glBroken = {};
+
 	static void AssertCvarRange( cvar_t *cv, float minVal, float maxVal, qboolean shouldBeIntegral )
 	{
 		if ( shouldBeIntegral )
@@ -372,6 +374,12 @@ extern "C" {
 			if ( glConfig.maxTextureSize <= 0 )
 			{
 				glConfig.maxTextureSize = 0;
+			}
+
+			// handle GLSL brokenness here...
+			if ( !strcmp( glConfig.vendor_string, "Intel Open Source Technology Center" ) && strcmp( glConfig.version_string, "3" ) < 0 )
+			{
+				glBroken.FXAA = qtrue;
 			}
 
 #if defined( GLSL_COMPILE_STARTUP_ONLY )
@@ -1312,6 +1320,11 @@ extern "C" {
 				ri.Printf( PRINT_DEVELOPER, "^3Not using GPU vertex skinning: known to be broken with Radeon HD and Mesa\n" );
 				glConfig2.vboVertexSkinningAvailable = qfalse;
 			}
+		}
+
+		if ( glBroken.FXAA )
+		{
+			ri.Printf( PRINT_DEVELOPER, "^3Not using FXAA: shader is not compilable on Intel/Mesa OpenGL 2.1\n" );
 		}
 
 		if ( glConfig.hardwareType == GLHW_NV_DX10 )

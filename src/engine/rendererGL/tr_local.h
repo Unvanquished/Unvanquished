@@ -2956,6 +2956,10 @@ extern "C" {
 		scissorState_t scissor;
 	} trGlobals_t;
 
+	typedef struct {
+		qboolean FXAA;
+	} glBroken_t;
+
 	extern const matrix_t quakeToOpenGLMatrix;
 	extern const matrix_t openGLToQuakeMatrix;
 	extern const matrix_t flipZMatrix;
@@ -2967,6 +2971,8 @@ extern "C" {
 	extern trGlobals_t    tr;
 	extern glconfig_t     glConfig; // outside of TR since it shouldn't be cleared during ref re-init
 	extern glconfig2_t    glConfig2;
+
+	extern glBroken_t     glBroken;
 
 	extern glstate_t      glState; // outside of TR since it shouldn't be cleared during ref re-init
 
