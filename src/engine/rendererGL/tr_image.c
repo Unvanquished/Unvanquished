@@ -1586,9 +1586,9 @@ image_t *R_CreateGlyph( const char *name, const byte *pic, int width, int height
 
 	image->uploadWidth = width;
 	image->uploadHeight = height;
-	image->internalFormat = GL_LUMINANCE_ALPHA;
+	image->internalFormat = GL_RGBA;
 
-	glTexImage2D( GL_TEXTURE_2D, 0, GL_LUMINANCE_ALPHA, width, height, 0, GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, pic );
+	glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pic );
 
 	GL_CheckErrors();
 
@@ -3288,26 +3288,6 @@ static void R_CreateDeferredRenderFBOImages( void )
 	{
 		width = NearestPowerOfTwo( glConfig.vidWidth );
 		height = NearestPowerOfTwo( glConfig.vidHeight );
-	}
-
-	if ( DS_STANDARD_ENABLED() )
-	{
-		tr.deferredDiffuseFBOImage = R_CreateImage( "_deferredDiffuseFBO", NULL, width, height, IF_NOPICMIP | IF_NOCOMPRESSION, FT_NEAREST, WT_CLAMP );
-		tr.deferredNormalFBOImage = R_CreateImage( "_deferredNormalFBO", NULL, width, height, IF_NOPICMIP | IF_NOCOMPRESSION, FT_NEAREST, WT_CLAMP );
-		tr.deferredSpecularFBOImage = R_CreateImage( "_deferredSpecularFBO", NULL, width, height, IF_NOPICMIP | IF_NOCOMPRESSION, FT_NEAREST, WT_CLAMP );
-	}
-	else //if(DS_PREPASS_LIGHTING_ENABLED())
-	{
-		tr.deferredNormalFBOImage = R_CreateImage( "_deferredNormalFBO", NULL, width, height, IF_NOPICMIP | IF_NOCOMPRESSION, FT_NEAREST, WT_CLAMP );
-
-		if ( HDR_ENABLED() )
-		{
-			tr.lightRenderFBOImage = R_CreateImage( "_lightRenderFBO", NULL, width, height, IF_NOPICMIP | IF_RGBA16F, FT_NEAREST, WT_CLAMP );
-		}
-		else
-		{
-			tr.lightRenderFBOImage = R_CreateImage( "_lightRenderFBO", NULL, width, height, IF_NOPICMIP | IF_NOCOMPRESSION, FT_NEAREST, WT_CLAMP );
-		}
 	}
 
 	if ( HDR_ENABLED() )

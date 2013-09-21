@@ -72,13 +72,6 @@ extern "C" {
 
 	typedef enum
 	{
-		DS_DISABLED, // traditional Doom 3 style rendering
-		DS_STANDARD, // deferred rendering like in Stalker
-	}
-	deferredShading_t;
-
-	typedef enum
-	{
 	  RSPEEDS_GENERAL = 1,
 	  RSPEEDS_CULLING,
 	  RSPEEDS_VIEWCLUSTER,
@@ -92,8 +85,6 @@ extern "C" {
 	  RSPEEDS_NEAR_FAR,
 	  RSPEEDS_DECALS
 	} renderSpeeds_t;
-
-#define DS_STANDARD_ENABLED() (( r_deferredShading->integer == DS_STANDARD && glConfig2.maxColorAttachments >= 4 && glConfig2.drawBuffersAvailable && glConfig2.maxDrawBuffers >= 4 && /*glConfig2.framebufferPackedDepthStencilAvailable &&*/ glConfig.driverType != GLDRV_MESA ))
 
 #define HDR_ENABLED()         (( r_hdrRendering->integer && glConfig2.textureFloatAvailable && glConfig2.framebufferObjectAvailable && glConfig2.framebufferBlitAvailable && glConfig.driverType != GLDRV_MESA ))
 
@@ -2660,9 +2651,6 @@ extern "C" {
 		int   c_forwardLightingTime;
 		int   c_forwardTranslucentTime;
 
-		int   c_deferredGBufferTime;
-		int   c_deferredLightingTime;
-
 		int   c_multiDrawElements;
 		int   c_multiDrawPrimitives;
 		int   c_multiVboIndexes;
@@ -2805,11 +2793,7 @@ extern "C" {
 		image_t    *depthRenderImage;
 		image_t    *portalRenderImage;
 
-		image_t    *deferredDiffuseFBOImage;
-		image_t    *deferredNormalFBOImage;
-		image_t    *deferredSpecularFBOImage;
 		image_t    *deferredRenderFBOImage;
-		image_t    *lightRenderFBOImage;
 		image_t    *occlusionRenderFBOImage;
 		image_t    *depthToColorBackFacesFBOImage;
 		image_t    *depthToColorFrontFacesFBOImage;
@@ -2833,9 +2817,7 @@ extern "C" {
 		GLuint   colorGradePBO;
 
 		// framebuffer objects
-		FBO_t *geometricRenderFBO; // is the G-Buffer for deferred shading
-		FBO_t *lightRenderFBO; // is the light buffer which contains all light properties of the light pre pass
-		FBO_t *deferredRenderFBO; // is used by HDR rendering and deferred shading
+		FBO_t *deferredRenderFBO; // is used by HDR rendering
 		FBO_t *portalRenderFBO; // holds a copy of the last currentRender that was rendered into a FBO
 		FBO_t *occlusionRenderFBO; // used for overlapping visibility determination
 		FBO_t *downScaleFBO_quarter;
@@ -2974,6 +2956,10 @@ extern "C" {
 		scissorState_t scissor;
 	} trGlobals_t;
 
+	typedef struct {
+		qboolean FXAA;
+	} glBroken_t;
+
 	extern const matrix_t quakeToOpenGLMatrix;
 	extern const matrix_t openGLToQuakeMatrix;
 	extern const matrix_t flipZMatrix;
@@ -2985,6 +2971,8 @@ extern "C" {
 	extern trGlobals_t    tr;
 	extern glconfig_t     glConfig; // outside of TR since it shouldn't be cleared during ref re-init
 	extern glconfig2_t    glConfig2;
+
+	extern glBroken_t     glBroken;
 
 	extern glstate_t      glState; // outside of TR since it shouldn't be cleared during ref re-init
 
@@ -3206,13 +3194,6 @@ extern "C" {
 	extern cvar_t *r_showParallelShadowSplits;
 	extern cvar_t *r_showDecalProjectors;
 
-	extern cvar_t *r_showDeferredDiffuse;
-	extern cvar_t *r_showDeferredNormal;
-	extern cvar_t *r_showDeferredSpecular;
-	extern cvar_t *r_showDeferredPosition;
-	extern cvar_t *r_showDeferredRender;
-	extern cvar_t *r_showDeferredLight;
-
 	extern cvar_t *r_vboFaces;
 	extern cvar_t *r_vboCurves;
 	extern cvar_t *r_vboTriangles;
@@ -3226,7 +3207,6 @@ extern "C" {
 
 	extern cvar_t *r_mergeLeafSurfaces;
 
-	extern cvar_t *r_deferredShading;
 	extern cvar_t *r_parallaxMapping;
 	extern cvar_t *r_parallaxDepthScale;
 
@@ -3624,8 +3604,6 @@ extern "C" {
 
 	void Tess_StageIteratorDebug( void );
 	void Tess_StageIteratorGeneric( void );
-	void Tess_StageIteratorGBuffer( void );
-	void Tess_StageIteratorGBufferNormalsOnly( void );
 	void Tess_StageIteratorDepthFill( void );
 	void Tess_StageIteratorShadowFill( void );
 	void Tess_StageIteratorLighting( void );

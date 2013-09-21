@@ -33,7 +33,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define USE_UNIFORM_FIREWALL 1
 
 // *INDENT-OFF*
-static const int MAX_SHADER_MACROS = 9;
+static const unsigned int MAX_SHADER_MACROS = 9;
 static const unsigned int GL_SHADER_VERSION = 3;
 
 struct GLShaderHeader
@@ -61,19 +61,25 @@ private:
 	std::string                    _name;
 	std::string                    _mainShaderName;
 protected:
+	int                            _activeMacros;
+	unsigned int                   _checkSum;
+	shaderProgram_t                 *_currentProgram;
+	const uint32_t                 _vertexAttribsRequired;
+	uint32_t                       _vertexAttribs; // can be set by uniforms
+	GLShaderManager                 *_shaderManager;
+	size_t                         _uniformStorageSize;
+
 	std::string                    _fragmentShaderText;
 	std::string                    _vertexShaderText;
-	int                            _activeMacros;
 	std::vector< shaderProgram_t > _shaderPrograms;
-	shaderProgram_t                 *_currentProgram;
-	GLShaderManager                 *_shaderManager;
+
+
 	std::vector< GLUniform * >      _uniforms;
 	std::vector< GLCompileMacro * > _compileMacros;
 
-	size_t                         _uniformStorageSize;
-	const uint32_t                 _vertexAttribsRequired;
-	uint32_t                       _vertexAttribs; // can be set by uniforms
-	unsigned int                   _checkSum;
+	
+
+	
 
 	GLShader( const std::string &name, uint32_t vertexAttribsRequired, GLShaderManager *manager ) :
 		_name( name ),
@@ -137,7 +143,7 @@ public:
 	{
 		if ( _compileMacros.size() >= MAX_SHADER_MACROS )
 		{
-			ri.Error( ERR_DROP, "Can't register more than %i compile macros for a single shader", MAX_SHADER_MACROS );
+			ri.Error( ERR_DROP, "Can't register more than %u compile macros for a single shader", MAX_SHADER_MACROS );
 		}
 
 		_compileMacros.push_back( compileMacro );
@@ -2578,122 +2584,6 @@ public:
 	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
 };
 
-class GLShader_deferredLighting_omniXYZ :
-	public GLShader,
-	public u_ViewOrigin,
-	public u_LightOrigin,
-	public u_LightColor,
-	public u_LightRadius,
-	public u_LightScale,
-	public u_LightWrapAround,
-	public u_LightAttenuationMatrix,
-	public u_LightFrustum,
-	public u_ShadowTexelSize,
-	public u_ShadowBlur,
-	public u_ModelMatrix,
-	public u_ModelViewProjectionMatrix,
-	public u_UnprojectMatrix,
-	public GLDeformStage,
-	public GLCompileMacro_USE_FRUSTUM_CLIPPING,
-	public GLCompileMacro_USE_NORMAL_MAPPING,
-	public GLCompileMacro_USE_SHADOWING //,
-//public GLCompileMacro_TWOSIDED
-{
-public:
-	GLShader_deferredLighting_omniXYZ( GLShaderManager *manager );
-	void BuildShaderCompileMacros( std::string& compileMacros );
-	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
-};
-
-class GLShader_deferredLighting_projXYZ :
-	public GLShader,
-	public u_ViewOrigin,
-	public u_LightOrigin,
-	public u_LightColor,
-	public u_LightRadius,
-	public u_LightScale,
-	public u_LightWrapAround,
-	public u_LightAttenuationMatrix,
-	public u_LightFrustum,
-	public u_ShadowTexelSize,
-	public u_ShadowBlur,
-	public u_ShadowMatrix,
-	public u_ModelMatrix,
-	public u_ModelViewProjectionMatrix,
-	public u_UnprojectMatrix,
-	public GLDeformStage,
-	public GLCompileMacro_USE_FRUSTUM_CLIPPING,
-	public GLCompileMacro_USE_NORMAL_MAPPING,
-	public GLCompileMacro_USE_SHADOWING //,
-//public GLCompileMacro_TWOSIDED
-{
-public:
-	GLShader_deferredLighting_projXYZ( GLShaderManager *manager );
-	void BuildShaderCompileMacros( std::string& compileMacros );
-	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
-};
-
-class GLShader_deferredLighting_directionalSun :
-	public GLShader,
-	public u_ViewOrigin,
-	public u_LightDir,
-	public u_LightColor,
-	public u_LightRadius,
-	public u_LightScale,
-	public u_LightWrapAround,
-	public u_LightAttenuationMatrix,
-	public u_LightFrustum,
-	public u_ShadowTexelSize,
-	public u_ShadowBlur,
-	public u_ShadowMatrix,
-	public u_ShadowParallelSplitDistances,
-	public u_ModelMatrix,
-	public u_ModelViewProjectionMatrix,
-	public u_ViewMatrix,
-	public u_UnprojectMatrix,
-	public GLDeformStage,
-	public GLCompileMacro_USE_FRUSTUM_CLIPPING,
-	public GLCompileMacro_USE_NORMAL_MAPPING,
-	public GLCompileMacro_USE_SHADOWING //,
-//public GLCompileMacro_TWOSIDED
-{
-public:
-	GLShader_deferredLighting_directionalSun( GLShaderManager *manager );
-	void BuildShaderCompileMacros( std::string& compileMacros );
-	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
-};
-
-class GLShader_geometricFill :
-	public GLShader,
-	public u_DiffuseTextureMatrix,
-	public u_NormalTextureMatrix,
-	public u_SpecularTextureMatrix,
-	public u_AlphaThreshold,
-	public u_ColorModulate,
-	public u_Color,
-	public u_ViewOrigin,
-	public u_ModelMatrix,
-	public u_ModelViewProjectionMatrix,
-	public u_BoneMatrix,
-	public u_VertexInterpolation,
-	public u_DepthScale,
-	public u_SpecularExponent,
-	public GLDeformStage,
-	public GLCompileMacro_USE_VERTEX_SKINNING,
-	public GLCompileMacro_USE_VERTEX_ANIMATION,
-	public GLCompileMacro_USE_DEFORM_VERTEXES,
-	public GLCompileMacro_USE_NORMAL_MAPPING,
-	public GLCompileMacro_USE_PARALLAX_MAPPING,
-	public GLCompileMacro_USE_REFLECTIVE_SPECULAR
-{
-public:
-	GLShader_geometricFill( GLShaderManager *manager );
-	void BuildShaderVertexLibNames( std::string& vertexInlines );
-	void BuildShaderFragmentLibNames( std::string& fragmentInlines );
-	void BuildShaderCompileMacros( std::string& compileMacros );
-	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
-};
-
 class GLShader_shadowFill :
 	public GLShader,
 	public u_ColorTextureMatrix,
@@ -2928,23 +2818,6 @@ public:
 	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
 };
 
-class GLShader_deferredShadowing_proj :
-	public GLShader,
-	public u_LightOrigin,
-	public u_LightColor,
-	public u_LightRadius,
-	public u_LightScale,
-	public u_LightAttenuationMatrix,
-	public u_ShadowMatrix,
-	public u_ModelViewProjectionMatrix,
-	public u_UnprojectMatrix,
-	public GLCompileMacro_USE_SHADOWING
-{
-public:
-	GLShader_deferredShadowing_proj( GLShaderManager *manager );
-	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
-};
-
 class GLShader_liquid :
 	public GLShader,
 	public u_NormalTextureMatrix,
@@ -3023,10 +2896,6 @@ extern GLShader_vertexLighting_DBS_world        *gl_vertexLightingShader_DBS_wor
 extern GLShader_forwardLighting_omniXYZ         *gl_forwardLightingShader_omniXYZ;
 extern GLShader_forwardLighting_projXYZ         *gl_forwardLightingShader_projXYZ;
 extern GLShader_forwardLighting_directionalSun *gl_forwardLightingShader_directionalSun;
-extern GLShader_deferredLighting_omniXYZ        *gl_deferredLightingShader_omniXYZ;
-extern GLShader_deferredLighting_projXYZ        *gl_deferredLightingShader_projXYZ;
-extern GLShader_deferredLighting_directionalSun *gl_deferredLightingShader_directionalSun;
-extern GLShader_geometricFill                   *gl_geometricFillShader;
 extern GLShader_shadowFill                      *gl_shadowFillShader;
 extern GLShader_reflection                      *gl_reflectionShader;
 extern GLShader_skybox                          *gl_skyboxShader;
@@ -3043,7 +2912,6 @@ extern GLShader_blurY                           *gl_blurYShader;
 extern GLShader_debugShadowMap                  *gl_debugShadowMapShader;
 extern GLShader_depthToColor                    *gl_depthToColorShader;
 extern GLShader_lightVolume_omni                *gl_lightVolumeShader_omni;
-extern GLShader_deferredShadowing_proj          *gl_deferredShadowingShader_proj;
 extern GLShader_liquid                          *gl_liquidShader;
 extern GLShader_volumetricFog                   *gl_volumetricFogShader;
 extern GLShader_screenSpaceAmbientOcclusion     *gl_screenSpaceAmbientOcclusionShader;

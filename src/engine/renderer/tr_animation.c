@@ -410,52 +410,6 @@ static qboolean R_LoadMD5Anim( skelAnimation_t *skelAnim, void *buffer, int buff
 	return qtrue;
 }
 
-static void GetChunkHeader( memStream_t *s, axChunkHeader_t *chunkHeader )
-{
-	int i;
-
-	for ( i = 0; i < 20; i++ )
-	{
-		chunkHeader->ident[ i ] = MemStreamGetC( s );
-	}
-
-	chunkHeader->flags = MemStreamGetLong( s );
-	chunkHeader->dataSize = MemStreamGetLong( s );
-	chunkHeader->numData = MemStreamGetLong( s );
-}
-
-static void PrintChunkHeader( axChunkHeader_t *chunkHeader )
-{
-#if 0
-	ri.Printf( PRINT_ALL, "----------------------\n" );
-	ri.Printf( PRINT_ALL, "R_LoadPSA: chunk header ident: '%s'\n", chunkHeader->ident );
-	ri.Printf( PRINT_ALL, "R_LoadPSA: chunk header flags: %i\n", chunkHeader->flags );
-	ri.Printf( PRINT_ALL, "R_LoadPSA: chunk header data size: %i\n", chunkHeader->dataSize );
-	ri.Printf( PRINT_ALL, "R_LoadPSA: chunk header num items: %i\n", chunkHeader->numData );
-#endif
-}
-
-static void GetBone( memStream_t *s, axBone_t *bone )
-{
-	int i;
-
-	for ( i = 0; i < 4; i++ )
-	{
-		bone->quat[ i ] = MemStreamGetFloat( s );
-	}
-
-	for ( i = 0; i < 3; i++ )
-	{
-		bone->position[ i ] = MemStreamGetFloat( s );
-	}
-
-	bone->length = MemStreamGetFloat( s );
-
-	bone->xSize = MemStreamGetFloat( s );
-	bone->ySize = MemStreamGetFloat( s );
-	bone->zSize = MemStreamGetFloat( s );
-}
-
 /*
 ===============
 RE_RegisterAnimation

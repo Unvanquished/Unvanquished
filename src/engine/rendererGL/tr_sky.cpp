@@ -722,11 +722,8 @@ static void FillCloudBox( const shader_t *shader, int stage )
 static void BuildCloudData()
 {
 	int      i;
-	shader_t *shader;
 
-	shader = tess.surfaceShader;
-
-	assert( shader->isSky );
+	assert( tess.surfaceShader->isSky );
 
 	sky_min = 1.0 / 256.0f; // FIXME: not correct?
 	sky_max = 255.0 / 256.0f;
@@ -1005,11 +1002,6 @@ void Tess_StageIteratorSky( void )
 	}
 	else
 	{
-		if ( tess.stageIteratorFunc2 == &Tess_StageIteratorGBuffer )
-		{
-			R_BindFBO( tr.geometricRenderFBO );
-		}
-
 		// go through all the polygons and project them onto
 		// the sky box to see which blocks on each side need
 		// to be drawn
@@ -1058,13 +1050,6 @@ void Tess_StageIteratorSky( void )
 		if ( tess.numVertexes || tess.multiDrawPrimitives )
 		{
 			tess.stageIteratorFunc2();
-		}
-
-		// Tr3B: TODO draw the inner skybox?
-
-		if ( tess.stageIteratorFunc2 == Tess_StageIteratorGBuffer )
-		{
-			R_BindNullFBO();
 		}
 
 		if ( tess.stageIteratorFunc2 != Tess_StageIteratorDepthFill )
