@@ -133,7 +133,6 @@ std::string     GLShaderManager::BuildGPUShaderText( const char *mainShaderName,
 {
 	char        filename[ MAX_QPATH ];
 	GLchar      *mainBuffer = NULL;
-	int         mainSize;
 	char        *token;
 	std::string libsBuffer; // all libs concatenated
 
@@ -145,7 +144,6 @@ std::string     GLShaderManager::BuildGPUShaderText( const char *mainShaderName,
 
 	while ( 1 )
 	{
-		int  libSize;
 		char *libBuffer; // single extra lib file
 
 		token = COM_ParseExt2( libs, qfalse );
@@ -166,7 +164,7 @@ std::string     GLShaderManager::BuildGPUShaderText( const char *mainShaderName,
 			ri.Printf( PRINT_DEVELOPER, "...loading fragment shader '%s'\n", filename );
 		}
 
-		libSize = ri.FS_ReadFile( filename, ( void ** ) &libBuffer );
+		ri.FS_ReadFile( filename, ( void ** ) &libBuffer );
 
 		if ( !libBuffer )
 		{
@@ -191,7 +189,7 @@ std::string     GLShaderManager::BuildGPUShaderText( const char *mainShaderName,
 		ri.Printf( PRINT_DEVELOPER, "...loading fragment main() shader '%s'\n", filename );
 	}
 
-	mainSize = ri.FS_ReadFile( filename, ( void ** ) &mainBuffer );
+	ri.FS_ReadFile( filename, ( void ** ) &mainBuffer );
 
 	if ( !mainBuffer )
 	{
@@ -613,8 +611,6 @@ bool GLShaderManager::LoadShaderBinary( GLShader *shader, size_t programNum )
 	void           *binary;
 	byte           *binaryptr;
 	GLShaderHeader shaderHeader;
-	int            numLoaded = 0;
-	int            numProgramsNeeded = 0;
 
 	// we need to recompile the shaders
 	if( r_recompileShaders->integer )

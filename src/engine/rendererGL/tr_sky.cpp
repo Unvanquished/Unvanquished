@@ -722,11 +722,8 @@ static void FillCloudBox( const shader_t *shader, int stage )
 static void BuildCloudData()
 {
 	int      i;
-	shader_t *shader;
 
-	shader = tess.surfaceShader;
-
-	assert( shader->isSky );
+	assert( tess.surfaceShader->isSky );
 
 	sky_min = 1.0 / 256.0f; // FIXME: not correct?
 	sky_max = 255.0 / 256.0f;

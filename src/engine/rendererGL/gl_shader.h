@@ -33,7 +33,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define USE_UNIFORM_FIREWALL 1
 
 // *INDENT-OFF*
-static const int MAX_SHADER_MACROS = 9;
+static const unsigned int MAX_SHADER_MACROS = 9;
 static const unsigned int GL_SHADER_VERSION = 3;
 
 struct GLShaderHeader
@@ -143,7 +143,7 @@ public:
 	{
 		if ( _compileMacros.size() >= MAX_SHADER_MACROS )
 		{
-			ri.Error( ERR_DROP, "Can't register more than %i compile macros for a single shader", MAX_SHADER_MACROS );
+			ri.Error( ERR_DROP, "Can't register more than %u compile macros for a single shader", MAX_SHADER_MACROS );
 		}
 
 		_compileMacros.push_back( compileMacro );
