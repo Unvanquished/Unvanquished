@@ -1442,14 +1442,13 @@ static void IN_ProcessEvents( qboolean dropInput )
 					if ( key )
 					{
 						Com_QueueEvent( 0, SE_KEY, key, qtrue, 0, NULL );
-					}
-
 #if !SDL_VERSION_ATLEAST( 2, 0, 0 )
-					if ( key != K_CONSOLE )
-					{
-						Com_QueueEvent( 0, SE_CHAR, Q_UTF8_Store( Q_UTF8_Encode( e.key.keysym.unicode ) ), 0, 0, NULL );
-					}
+						if ( key != K_CONSOLE ) 
+						{
+							Com_QueueEvent( 0, SE_CHAR, Q_UTF8_Store( Q_UTF8_Encode( e.key.keysym.unicode ) ), 0, 0, NULL );
+						}
 #endif
+					}
 
 					lastKeyDown = key;
 				}
