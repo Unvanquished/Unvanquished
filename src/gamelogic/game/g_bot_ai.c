@@ -256,7 +256,7 @@ AINodeStatus_t BotDecoratorTimer( gentity_t *self, AIGenericNode_t *node )
 
 	int time =  AIUnBoxInt( timer->params[ 0 ] );
 
-	if ( level.time > timer->data[ self->s.number ] + time )
+	if ( ( level.time > timer->data[ self->s.number ] + time ) || ( !timer->data[ self->s.number ] ) )
 	{
 		AINodeStatus_t status = BotEvaluateNode( self, node );
 
