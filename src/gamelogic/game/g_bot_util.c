@@ -895,7 +895,7 @@ void BotTargetToRouteTarget( gentity_t *self, botTarget_t target, botRouteTarget
 		if ( target.ent->s.eType == ET_BUILDABLE || target.ent->s.eType == ET_PLAYER )
 		{
 			// building on wall or cieling ( 0.7 == MIN_WALK_NORMAL )
-			if ( target.ent->s.origin2[ 2 ] < 0.7 || ( target.ent->s.eType == ET_PLAYER ) )
+			if ( target.ent->s.origin2[ 2 ] < 0.7 || target.ent->s.eType == ET_PLAYER )
 			{
 				vec3_t targetPos;
 				vec3_t end;

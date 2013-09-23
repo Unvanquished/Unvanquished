@@ -250,6 +250,27 @@ AINodeStatus_t BotConcurrentNode( gentity_t *self, AIGenericNode_t *node )
 	return STATUS_SUCCESS;
 }
 
+AINodeStatus_t BotDecoratorTimer( gentity_t *self, AIGenericNode_t *node )
+{
+	AIDecoratorNode_t *timer = ( AIDecoratorNode_t * ) node;
+
+	int time =  AIUnBoxInt( timer->params[ 0 ] );
+
+	if ( level.time > timer->data[ self->s.number ] + time )
+	{
+		AINodeStatus_t status = BotEvaluateNode( self, node );
+
+		if ( status == STATUS_FAILURE )
+		{
+			timer->data[ self->s.number ] = level.time;
+		}
+
+		return status;
+	}
+
+	return STATUS_FAILURE;
+}
+
 AINodeStatus_t BotDecoratorReturn( gentity_t *self, AIGenericNode_t *node )
 {
 	AIDecoratorNode_t *dec = ( AIDecoratorNode_t * ) node;

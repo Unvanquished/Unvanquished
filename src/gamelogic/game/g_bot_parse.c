@@ -827,7 +827,8 @@ static const struct AIDecoratorMap_s
 	int          maxparams;
 } AIDecorators[] =
 {
-	{ "return", BotDecoratorReturn, 1, 1 }
+	{ "return", BotDecoratorReturn, 1, 1 },
+	{ "timer", BotDecoratorTimer, 1, 1 }
 };
 
 AIGenericNode_t *ReadDecoratorNode( pc_token_list **list )
