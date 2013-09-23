@@ -3627,7 +3627,7 @@ static void CG_ScanForCrosshairEntity( void )
 		if ( targetState->generic1 > 0 )
 		{
 			// set friend/foe
-			if ( targetTeam == ownTeam )
+			if ( targetTeam == ownTeam && ownTeam != TEAM_NONE )
 			{
 				cg.crosshairFriend = qtrue;
 
@@ -3638,6 +3638,13 @@ static void CG_ScanForCrosshairEntity( void )
 			else if ( targetTeam != TEAM_NONE )
 			{
 				cg.crosshairFoe = qtrue;
+
+				if ( ownTeam == TEAM_NONE )
+				{
+					// spectating, so show the name
+					cg.crosshairClientNum = trace.entityNum;
+					cg.crosshairClientTime = cg.time;
+				}
 			}
 		}
 	}
