@@ -393,7 +393,7 @@ gentity_t* BotGetPathBlocker( gentity_t *self, const vec3_t dir )
 	VectorMA( self->s.origin, TRACE_LENGTH, dir, end );
 
 	trap_Trace( &trace, self->s.origin, playerMins, playerMaxs, end, self->s.number, MASK_SHOT );
-	if ( trace.fraction < 1.0f && trace.plane.normal[ 2 ] < 0.7f )
+	if ( ( trace.fraction < 1.0f && trace.plane.normal[ 2 ] < 0.7f ) || g_entities[ trace.entityNum ].s.eType == ET_BUILDABLE )
 	{
 		return &g_entities[trace.entityNum];
 	}
@@ -424,7 +424,6 @@ qboolean BotShouldJump( gentity_t *self, gentity_t *blocker, const vec3_t dir )
 
 	playerMins[2] += STEPSIZE;
 	playerMaxs[2] += STEPSIZE;
-
 
 	//trap_Print(vtos(self->movedir));
 	VectorMA( self->s.origin, TRACE_LENGTH, dir, end );

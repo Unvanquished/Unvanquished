@@ -594,6 +594,7 @@ void Field_KeyDownEvent( field_t *edit, int key )
 			{
 		case K_HOME:
 				edit->cursor = 0;
+				edit->scroll = 0;
 			}
 
 			break;
@@ -603,6 +604,7 @@ void Field_KeyDownEvent( field_t *edit, int key )
 			{
 		case K_END:
 				edit->cursor = len;
+				edit->scroll = edit->cursor - edit->widthInChars;
 			}
 
 			break;

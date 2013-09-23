@@ -146,7 +146,7 @@ qboolean BotPathIsWalkable( gentity_t *self, botTarget_t target );
 //For a reference of how far a number represents, take a look at tremulous.h
 
 //how long our traces are for obstacle avoidence
-#define BOT_OBSTACLE_AVOID_RANGE 5.0f
+#define BOT_OBSTACLE_AVOID_RANGE 20.0f
 
 //at what hp do we use medkit?
 #define BOT_USEMEDKIT_HP 50

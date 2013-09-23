@@ -7976,11 +7976,6 @@ static void R_CreateVBOLightMeshes( trRefLight_t *light )
 		return;
 	}
 
-	if ( r_deferredShading->integer && r_shadows->integer < SHADOWING_ESM16 )
-	{
-		return;
-	}
-
 	if ( !light->firstInteractionCache )
 	{
 		// this light has no interactions precached

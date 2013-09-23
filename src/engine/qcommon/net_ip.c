@@ -1987,6 +1987,18 @@ const char *NET_GeoIP_Country( const netadr_t *from )
 		return NULL;
 	}
 }
+
+static GeoIP *NET_GeoIP_LoadData (int db)
+{
+	GeoIP *data = GeoIP_open_type (db, GEOIP_INDEX_CACHE);
+
+	if (!data)
+	{
+		data = GeoIP_open_type (db, GEOIP_MEMORY_CACHE);
+	}
+
+	return data;
+}
 #endif
 
 /*
@@ -2012,8 +2024,8 @@ void NET_Init( void )
 #endif
 
 #ifdef HAVE_GEOIP
-	geoip_data_4 = GeoIP_open_type( GEOIP_COUNTRY_EDITION,    GEOIP_INDEX_CACHE );
-	geoip_data_6 = GeoIP_open_type( GEOIP_COUNTRY_EDITION_V6, GEOIP_INDEX_CACHE );
+	geoip_data_4 = NET_GeoIP_LoadData( GEOIP_COUNTRY_EDITION );
+	geoip_data_6 = NET_GeoIP_LoadData( GEOIP_COUNTRY_EDITION_V6 );
 	Com_Printf( "Loaded GeoIP data: ^%dIPv4 ^%dIPv6\n", geoip_data_4 ? 2 : 1, geoip_data_6 ? 2 : 1 );
 #endif
 

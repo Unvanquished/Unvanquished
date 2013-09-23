@@ -62,8 +62,6 @@ float BotGetBaseRushScore( gentity_t *ent )
 
 	switch ( ent->s.weapon )
 	{
-		case WP_GRENADE:
-			return 0.7f;
 		case WP_BLASTER:
 			return 0.1f;
 		case WP_LUCIFER_CANNON:
@@ -912,10 +910,10 @@ void BotTargetToRouteTarget( gentity_t *self, botTarget_t target, botRouteTarget
 	// account for buildings on walls or cielings
 	if ( BotTargetIsEntity( target ) )
 	{
-		if ( target.ent->s.eType == ET_BUILDABLE )
+		if ( target.ent->s.eType == ET_BUILDABLE || target.ent->s.eType == ET_PLAYER )
 		{
 			// building on wall or cieling ( 0.7 == MIN_WALK_NORMAL )
-			if ( target.ent->s.origin2[ 2 ] < 0.7 )
+			if ( target.ent->s.origin2[ 2 ] < 0.7 || ( target.ent->s.eType == ET_PLAYER ) )
 			{
 				vec3_t targetPos;
 				vec3_t end;
