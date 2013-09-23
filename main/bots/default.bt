@@ -46,16 +46,19 @@ selector
 		condition team == TEAM_HUMANS
 		condition !teamateHasWeapon( WP_HBUILD )
 		condition buildingIsDamaged
-		selector
+		decorator timer 50000
 		{
-			condition !haveWeapon( WP_HBUILD )
+			selector
 			{
-				action buy( WP_HBUILD )
-			}
-			
-			condition haveWeapon( WP_HBUILD )
-			{
-				action repair
+				condition !haveWeapon( WP_HBUILD )
+				{
+					action buy( WP_HBUILD )
+				}
+				
+				condition haveWeapon( WP_HBUILD )
+				{
+					action repair
+				}
 			}
 		}
 	}
