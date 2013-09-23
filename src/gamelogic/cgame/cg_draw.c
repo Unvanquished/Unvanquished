@@ -3590,11 +3590,11 @@ static void CG_ScanForCrosshairEntity( void )
 	}
 
 	ownTeam = cg.snap->ps.persistant[ PERS_TEAM ];
+	targetState = &cg_entities[ trace.entityNum ].currentState;
 
 	if ( trace.entityNum >= MAX_CLIENTS )
 	{
 		// we have a non-client entity
-		targetState = &cg_entities[ trace.entityNum ].currentState;
 
 		// set friend/foe if it's a living buildable
 		if ( targetState->eType == ET_BUILDABLE && targetState->generic1 > 0 )
