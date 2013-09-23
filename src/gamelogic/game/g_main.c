@@ -193,8 +193,6 @@ vmCvar_t           g_debugEntities;
 static char        cv_gravity[ MAX_CVAR_VALUE_STRING ];
 static char        cv_humanMaxStage[ MAX_CVAR_VALUE_STRING ];
 static char        cv_alienMaxStage[ MAX_CVAR_VALUE_STRING ];
-static char        cv_humanBuildPoints[ MAX_CVAR_VALUE_STRING ];
-static char        cv_alienBuildPoints[ MAX_CVAR_VALUE_STRING ];
 
 static cvarTable_t gameCvarTable[] =
 {
@@ -3000,7 +2998,6 @@ void CheckCvars( void )
 {
 	static int lastPasswordModCount = -1;
 	static int lastMarkDeconModCount = -1;
-	static int lastNumZones = 0;
 
 	if ( g_password.modificationCount != lastPasswordModCount )
 	{

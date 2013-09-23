@@ -1174,43 +1174,43 @@ void CL_SendCmd( void )
 
 static char *registeredButtonCommands[ USERCMD_BUTTONS ] = { NULL };
 
-struct{
+static const struct{
 	const char* name;
 	int key;
 } builtinButtonCommands [] = {
-	"moveup",     KB_UP,
-	"movedown",   KB_DOWN,
-	"left",       KB_LEFT,
-	"right",      KB_RIGHT,
-	"forward",    KB_FORWARD,
-	"back",       KB_BACK,
-	"lookup",     KB_LOOKUP,
-	"lookdown",   KB_LOOKDOWN,
-	"strafe",     KB_STRAFE,
-	"moveleft",   KB_MOVELEFT,
-	"moveright",  KB_MOVERIGHT,
-	"speed",      KB_SPEED,
-	"mlook",      KB_MLOOK,
-	NULL, 0
+	{ "moveup",     KB_UP        },
+	{ "movedown",   KB_DOWN      },
+	{ "left",       KB_LEFT      },
+	{ "right",      KB_RIGHT     },
+	{ "forward",    KB_FORWARD   },
+	{ "back",       KB_BACK      },
+	{ "lookup",     KB_LOOKUP    },
+	{ "lookdown",   KB_LOOKDOWN  },
+	{ "strafe",     KB_STRAFE    },
+	{ "moveleft",   KB_MOVELEFT  },
+	{ "moveright",  KB_MOVERIGHT },
+	{ "speed",      KB_SPEED     },
+	{ "mlook",      KB_MLOOK     },
+	{ NULL, 0                    }
 };
 
 //A proxy command for +/-commands
 void IN_BuiltinButtonCommand( void )
 {
 	int i = 0;
-	const char* name = Cmd_Argv(0);
-	qboolean isPlus = name[0] == '+';
+	const char* name = Cmd_Argv( 0 );
+	qboolean isPlus = ( name[0] == '+' );
 	int key = -1;
 
 	//Remove the modifier
-	name ++;
+	name++;
 
 	//Search in the button commands given by cgame
 	for ( i = 0; i < USERCMD_BUTTONS; ++i )
 	{
 		if ( registeredButtonCommands[ i ] )
 		{
-			if( !Q_stricmp( registeredButtonCommands[ i ] + 1, name ) )
+			if ( !Q_stricmp( registeredButtonCommands[ i ] + 1, name ) )
 			{
 				key = KB_BUTTONS + i;
 				break;
@@ -1222,7 +1222,7 @@ void IN_BuiltinButtonCommand( void )
 	if ( key == -1 )
 	{
 		i = 0;
-		while( builtinButtonCommands[i].name != NULL )
+		while ( builtinButtonCommands[i].name != NULL )
 		{
 			if ( !Q_stricmp( builtinButtonCommands[i].name, name ) )
 			{
@@ -1236,7 +1236,7 @@ void IN_BuiltinButtonCommand( void )
 	//We have a match, fire the right event
 	if ( key != -1 )
 	{
-		if(isPlus)
+		if ( isPlus )
 		{
 			IN_KeyDown( &kb[ key ] );
 		}
