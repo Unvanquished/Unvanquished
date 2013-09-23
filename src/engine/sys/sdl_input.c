@@ -1431,7 +1431,11 @@ static void IN_ProcessEvents( qboolean dropInput )
 		switch ( e.type )
 		{
 			case SDL_KEYDOWN:
+#if SDL_VERSION_ATLEAST( 2, 0, 0 )
+				if ( !dropInput && ( !e.key.repeat || cls.keyCatchers ) )
+#else
 				if ( !dropInput )
+#endif
 				{
 					key = IN_TranslateSDLToQ3Key( &e.key.keysym, qtrue );
 
