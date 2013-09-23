@@ -1904,7 +1904,7 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 			Console_Key( key );
 		}
 	}
-	else if ( keys[ key ].repeats < 2 ) // don't handle repeats here!
+	else
 	{
 		// send the bound action
 		kb = keys[ key ].binding[ bindTeam ]
