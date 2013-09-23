@@ -3608,6 +3608,7 @@ void QuatTransformVectorInverse( const quat_t q, const vec3_t in, vec3_t out )
 	VectorAdd( out, tmp2, out );
 }
 
+#if !idx86_sse
 // create an identity transform
 void TransInit( transform_t *t ) {
 	QuatClear( t->rot );
@@ -3772,6 +3773,7 @@ void TransAddWeight( float weight, const transform_t *a, transform_t *out ) {
 void TransEndLerp( transform_t *t ) {
 	QuatNormalize( t->rot );
 }
+#endif
 
 #if defined(_WIN32) && !defined(__MINGW32__)
 double rint( double x )
