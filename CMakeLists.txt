@@ -1327,6 +1327,8 @@ if( WIN32 )
 elseif( UNIX )
   if( CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" )
     set( OS_LIBRARIES m z )
+  elseif( CMAKE_SYSTEM_NAME STREQUAL "OpenBSD" )
+    set( OS_LIBRARIES m z )
   elseif( CMAKE_SYSTEM_NAME STREQUAL "Darwin" )
     set( OS_LIBRARIES dl m z )
     # FIXME This looks wrong.
