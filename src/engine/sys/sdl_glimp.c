@@ -1699,9 +1699,6 @@ of OpenGL
 */
 qboolean GLimp_Init( void )
 {
-	//qboolean        success = qtrue;
-	qboolean swRenderer = qfalse;
-
 	glConfig.driverType = GLDRV_ICD;
 
 	r_sdlDriver = ri.Cvar_Get( "r_sdlDriver", "", CVAR_ROM );

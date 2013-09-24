@@ -162,7 +162,7 @@ SNDDMA_Init
 */
 qboolean SNDDMA_Init( void )
 {
-	char          *drivername;
+	const char    *drivername;
 	SDL_AudioSpec desired;
 	SDL_AudioSpec obtained;
 	int           tmp;

@@ -74,7 +74,7 @@ typedef void* SDL_GLContext;
 #define SDL_GetWindowFlags( w ) SDL_GetAppState()
 #define SDL_MinimizeWindow( w ) SDL_WM_IconifyWindow()
 #define SDL_SetWindowIcon( w, i ) SDL_WM_SetIcon( i, NULL )
-#define SDL_SetWindowGrab( w, t ) SDL_WM_GrabInput( t )
+#define SDL_SetWindowGrab( w, t ) SDL_WM_GrabInput( ( SDL_GrabMode ) t )
 #define SDL_SetRelativeMouseMode( t )
 #define SDL_WarpMouseInWindow( w, x, y ) SDL_WarpMouse( x, y )
 #define SDL_SetWindowGammaRamp( w, r, g, b ) SDL_SetGammaRamp( r, g, b )
