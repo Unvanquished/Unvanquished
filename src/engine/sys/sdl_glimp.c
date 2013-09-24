@@ -877,8 +877,11 @@ static qboolean GLimp_StartDriverAndSetMode( int mode, qboolean fullscreen, qboo
 	if ( !SDL_WasInit( SDL_INIT_VIDEO ) )
 	{
 		const char *driverName;
+		SDL_version v;
+		SDL_GetVersion( &v );
 
 		ri.Printf( PRINT_ALL, "SDL_Init( SDL_INIT_VIDEO )... " );
+		ri.Printf( PRINT_ALL, "Using SDL Version %d.%d.%d\n", v.major, v.minor, v.patch );
 
 		if ( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE ) == -1 )
 		{
