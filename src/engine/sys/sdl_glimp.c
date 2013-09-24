@@ -359,8 +359,19 @@ void GLimp_Shutdown( void )
 
 #endif
 
+	if ( glContext )
+	{
+		SDL_GL_DeleteContext( glContext );
+		glContext = NULL;
+	}
+
+	if ( window )
+	{
+		SDL_DestroyWindow( window );
+		window = NULL;
+	}
+
 	SDL_QuitSubSystem( SDL_INIT_VIDEO );
-	window = NULL;
 
 	Com_Memset( &glConfig, 0, sizeof( glConfig ) );
 	Com_Memset( &glState, 0, sizeof( glState ) );
