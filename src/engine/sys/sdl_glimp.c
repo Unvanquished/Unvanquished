@@ -881,7 +881,7 @@ static qboolean GLimp_StartDriverAndSetMode( int mode, qboolean fullscreen, qboo
 		SDL_GetVersion( &v );
 
 		ri.Printf( PRINT_ALL, "SDL_Init( SDL_INIT_VIDEO )... " );
-		ri.Printf( PRINT_ALL, "Using SDL Version %d.%d.%d\n", v.major, v.minor, v.patch );
+		ri.Printf( PRINT_ALL, "Using SDL Version %u.%u.%u\n", v.major, v.minor, v.patch );
 
 		if ( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE ) == -1 )
 		{
