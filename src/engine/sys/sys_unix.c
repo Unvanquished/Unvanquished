@@ -1057,30 +1057,6 @@ dialogResult_t Sys_Dialog( dialogType_t type, const char *message, const char *t
 
 #endif
 
-/*
-==============
-Sys_GLimpSafeInit
-
-Unix specific "safe" GL implementation initialisation
-==============
-*/
-void Sys_GLimpSafeInit( void )
-{
-	// NOP
-}
-
-/*
-==============
-Sys_GLimpInit
-
-Unix specific GL implementation initialisation
-==============
-*/
-void Sys_GLimpInit( void )
-{
-	// NOP
-}
-
 void Sys_SetFloatEnv( void )
 {
 }

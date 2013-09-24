@@ -788,17 +788,6 @@ dialogResult_t Sys_Dialog( dialogType_t type, const char *message, const char *t
 
 /*
 ==============
-Sys_GLimpInit
-
-Windows specific GL implementation initialisation
-==============
-*/
-void Sys_GLimpInit( void )
-{
-}
-
-/*
-==============
 Sys_PlatformInit
 
 Windows specific initialisation

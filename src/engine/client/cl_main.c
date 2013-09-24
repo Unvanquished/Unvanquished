@@ -4368,9 +4368,6 @@ qboolean CL_InitRef( const char *renderer )
 
 	ri.ftol = Q_ftol;
 
-	ri.Sys_GLimpSafeInit;
-	ri.Sys_GLimpInit = Sys_GLimpInit;
-
 	Com_Printf("%s", _( "Calling GetRefAPI…\n" ));
 	ret = GetRefAPI( REF_API_VERSION, &ri );
 

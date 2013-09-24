@@ -1725,14 +1725,6 @@ qboolean GLimp_Init( void )
 		goto success;
 	}
 
-	// Try again, this time in a platform specific "safe mode"
-	//ri.Sys_GLimpSafeInit();
-
-	if ( GLimp_StartDriverAndSetMode( r_mode->integer, r_fullscreen->integer, qfalse ) )
-	{
-		goto success;
-	}
-
 	// Finally, try the default screen resolution
 	if ( r_mode->integer != R_MODE_FALLBACK )
 	{

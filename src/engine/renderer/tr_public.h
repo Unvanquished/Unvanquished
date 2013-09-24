@@ -284,9 +284,6 @@ typedef struct
 	void ( *CL_WriteAVIVideoFrame )( const byte *buffer, int size );
 	// XreaL END
 
-	void ( *Sys_GLimpSafeInit )( void );
-	void ( *Sys_GLimpInit )( void );
-
 	// input event handling
 	void ( *IN_Init )( void *windowData );
 	void ( *IN_Shutdown )( void );
