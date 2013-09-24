@@ -337,7 +337,6 @@ cvar_t                     *r_allowResize; // make window resizable
 cvar_t                     *r_centerWindow;
 cvar_t                     *r_displayIndex;
 cvar_t                     *r_sdlDriver;
-cvar_t                     *r_minimize;
 
 /*
 ===============
@@ -365,6 +364,11 @@ void GLimp_Shutdown( void )
 
 	Com_Memset( &glConfig, 0, sizeof( glConfig ) );
 	Com_Memset( &glState, 0, sizeof( glState ) );
+}
+
+static void GLimp_Minimize( void )
+{
+	SDL_MinimizeWindow( window );
 }
 
 /*
@@ -1704,8 +1708,8 @@ qboolean GLimp_Init( void )
 	r_sdlDriver = ri.Cvar_Get( "r_sdlDriver", "", CVAR_ROM );
 	r_allowResize = ri.Cvar_Get( "r_allowResize", "0", CVAR_ARCHIVE );
 	r_centerWindow = ri.Cvar_Get( "r_centerWindow", "0", CVAR_ARCHIVE );
-	r_minimize = ri.Cvar_Get( "r_minimize", "0", CVAR_TEMP );
 	r_displayIndex = ri.Cvar_Get( "r_displayIndex", "0", CVAR_ARCHIVE );
+	ri.Cmd_AddCommand( "minimize", GLimp_Minimize );
 
 	if ( ri.Cvar_VariableIntegerValue( "com_abnormalExit" ) )
 	{
@@ -1943,12 +1947,6 @@ void GLimp_EndFrame( void )
 	if ( Q_stricmp( r_drawBuffer->string, "GL_FRONT" ) != 0 )
 	{
 		SDL_GL_SwapWindow( window );
-	}
-
-	if ( r_minimize && r_minimize->integer )
-	{
-		SDL_MinimizeWindow( window );
-		ri.Cvar_Set( "r_minimize", "0" );
 	}
 
 #if SDL_VERSION_ATLEAST( 2, 0, 0 )

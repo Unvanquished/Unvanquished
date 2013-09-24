@@ -1762,7 +1762,7 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 		else if ( key == K_TAB )
 		{
 			Key_ClearStates();
-			Cvar_SetValue( "r_minimize", 1 );
+			Cbuf_ExecuteText( EXEC_APPEND, "minimize\n" );
 			return;
 		}
 	}
@@ -1782,7 +1782,7 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 	if ( cl_altTab->integer && keys[ K_ALT ].down && key == K_TAB )
 	{
 		Key_ClearStates();
-		Cvar_SetValue( "r_minimize", 1 );
+		Cbuf_ExecuteText( EXEC_APPEND, "minimize\n" );
 		return;
 	}
 #endif
