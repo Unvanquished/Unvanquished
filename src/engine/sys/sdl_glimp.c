@@ -421,7 +421,6 @@ static void GLimp_DetectAvailableModes( void )
 		return;
 	}
 
-
 	for ( i = 0; i < SDL_GetNumDisplayModes( display ); i++ )
 	{
 		SDL_DisplayMode mode;
@@ -437,7 +436,7 @@ static void GLimp_DetectAvailableModes( void )
 			return;
 		}
 
-		if ( windowMode.format != mode.format )
+		if ( windowMode.format != mode.format || windowMode.refresh_rate != mode.refresh_rate )
 		{
 			continue;
 		}
@@ -450,23 +449,6 @@ static void GLimp_DetectAvailableModes( void )
 	if ( numModes > 1 )
 	{
 		qsort( modes, numModes, sizeof( SDL_Rect ), GLimp_CompareModes );
-	}
-
-	// remove all "duplicate" modes
-	// they are caused by modes with differing refresh rates or bits per pixel
-	for ( i = 0; i < numModes - 1; i++ )
-	{
-		if ( modes[ i ].h == modes[ i + 1 ].h && modes[ i ].w == modes[ i + 1 ].w )
-		{
-			// remove duplicate mode
-			int j;
-			for ( j = i; j < numModes - 1; j++ )
-			{
-				modes[ j ] = modes[ j + 1 ];
-			}
-			numModes--;
-			i--;
-		}
 	}
 
 	for ( i = 0; i < numModes; i++ )

@@ -212,6 +212,7 @@ int SDL_GetWindowDisplayMode( SDL_Window *w, SDL_DisplayMode *mode )
 	mode->w = w->surface->w;
 	mode->h = w->surface->h;
 	mode->format = 0;
+	mode->refresh_rate = 0;
 	return 1;
 }
 
@@ -245,12 +246,14 @@ int SDL_GetDisplayMode( int display, int index, SDL_DisplayMode *mode )
 		mode->w = 0;
 		mode->h = 0;
 		mode->format = 0;
+		mode->refresh_rate = 0;
 	}
 	else
 	{
 		mode->w = modes[ index ]->w;
 		mode->h = modes[ index ]->h;
 		mode->format = 0;
+		mode->refresh_rate = 0;
 	}
 
 	return 0;
