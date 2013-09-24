@@ -28,4 +28,3 @@ branches:
     - debian
     - engine-upgrade
     - nacl
-    - sdl2
