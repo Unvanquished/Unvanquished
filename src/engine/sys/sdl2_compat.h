@@ -46,6 +46,7 @@ typedef struct
 	int w;
 	int h;
 	uint32_t format;
+	int refresh_rate;
 } SDL_DisplayMode;
 
 typedef struct
