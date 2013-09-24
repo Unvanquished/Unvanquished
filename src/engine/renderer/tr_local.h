@@ -1978,6 +1978,7 @@ qboolean   GLimp_Init( void );
 void       GLimp_Shutdown( void );
 void       GLimp_AcquireGL( void );
 
+void     GLimp_HandleCvars( void );
 void     GLimp_EndFrame( void );
 
 qboolean GLimp_SpawnRenderThread( void ( *function )( void ) );

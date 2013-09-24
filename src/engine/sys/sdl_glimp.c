@@ -1948,11 +1948,23 @@ void GLimp_EndFrame( void )
 	{
 		SDL_GL_SwapWindow( window );
 	}
+}
 
+/*
+===============
+GLimp_HandleCvars
+
+Responsible for handling cvars that change the window or GL state
+Should only be called by the main thread
+===============
+*/
+void GLimp_HandleCvars( void )
+{
 #if SDL_VERSION_ATLEAST( 2, 0, 0 )
 	if ( r_swapInterval->modified )
 	{
 		AssertCvarRange( r_swapInterval, -1, 1, qtrue );
+		R_SyncRenderThread();
 		SDL_GL_SetSwapInterval( r_swapInterval->integer );
 		r_swapInterval->modified = qfalse;
 	}

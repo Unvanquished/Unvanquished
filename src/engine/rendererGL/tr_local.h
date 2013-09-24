@@ -3496,6 +3496,7 @@ extern "C" {
 	qboolean GLimp_Init( void );
 	void     GLimp_Shutdown( void );
 	void     GLimp_EndFrame( void );
+	void     GLimp_HandleCvars( void );
 
 	qboolean GLimp_SpawnRenderThread( void ( *function )( void ) );
 	void     GLimp_ShutdownRenderThread( void );
