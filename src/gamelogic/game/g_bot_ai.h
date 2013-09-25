@@ -192,6 +192,7 @@ typedef struct
 	AIGenericNode_t *child;
 	AIValue_t       *params;
 	int             nparams;
+	int             data[ MAX_CLIENTS ]; // bot specific data
 } AIDecoratorNode_t;
 
 typedef struct
@@ -226,6 +227,7 @@ AINodeStatus_t BotSequenceNode( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotConcurrentNode( gentity_t *self, AIGenericNode_t *node );
 
 // decorator nodes
+AINodeStatus_t BotDecoratorTimer( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotDecoratorReturn( gentity_t *self, AIGenericNode_t *node );
 
 // included behavior trees
