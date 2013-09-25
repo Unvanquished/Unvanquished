@@ -256,7 +256,7 @@ AINodeStatus_t BotDecoratorTimer( gentity_t *self, AIGenericNode_t *node )
 
 	if ( level.time > dec->data[ self->s.number ] )
 	{
-		AINodeStatus_t status = BotEvaluateNode( self, node );
+		AINodeStatus_t status = BotEvaluateNode( self, dec->child );
 
 		if ( status == STATUS_FAILURE )
 		{
