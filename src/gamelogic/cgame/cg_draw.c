@@ -3590,11 +3590,11 @@ static void CG_ScanForCrosshairEntity( void )
 	}
 
 	ownTeam = cg.snap->ps.persistant[ PERS_TEAM ];
+	targetState = &cg_entities[ trace.entityNum ].currentState;
 
 	if ( trace.entityNum >= MAX_CLIENTS )
 	{
 		// we have a non-client entity
-		targetState = &cg_entities[ trace.entityNum ].currentState;
 
 		// set friend/foe if it's a living buildable
 		if ( targetState->eType == ET_BUILDABLE && targetState->generic1 > 0 )
@@ -3627,7 +3627,7 @@ static void CG_ScanForCrosshairEntity( void )
 		if ( targetState->generic1 > 0 )
 		{
 			// set friend/foe
-			if ( targetTeam == ownTeam )
+			if ( targetTeam == ownTeam && ownTeam != TEAM_NONE )
 			{
 				cg.crosshairFriend = qtrue;
 
@@ -3638,6 +3638,13 @@ static void CG_ScanForCrosshairEntity( void )
 			else if ( targetTeam != TEAM_NONE )
 			{
 				cg.crosshairFoe = qtrue;
+
+				if ( ownTeam == TEAM_NONE )
+				{
+					// spectating, so show the name
+					cg.crosshairClientNum = trace.entityNum;
+					cg.crosshairClientTime = cg.time;
+				}
 			}
 		}
 	}
@@ -3726,16 +3733,13 @@ static void CG_DrawCrosshairNames( rectDef_t *rect, float scale, int textStyle )
 		name = va( "(" S_COLOR_CYAN "%s" S_COLOR_WHITE "|" S_COLOR_CYAN "#%d" S_COLOR_WHITE ")",
 				Com_EntityTypeName( cg_entities[cg.crosshairClientNum].currentState.eType ), cg.crosshairClientNum );
 	}
+	else if ( cg_drawCrosshairNames.integer >= 2 )
+	{
+		name = va( "%2i: %s", cg.crosshairClientNum, cgs.clientinfo[ cg.crosshairClientNum ].name );
+	}
 	else
 	{
-		if ( cg_drawCrosshairNames.integer >= 2 )
-		{
-			name = va( "%2i: %s", cg.crosshairClientNum, cgs.clientinfo[ cg.crosshairClientNum ].name );
-		}
-		else
-		{
-			name = cgs.clientinfo[ cg.crosshairClientNum ].name;
-		}
+		name = cgs.clientinfo[ cg.crosshairClientNum ].name;
 	}
 
 	// add health from overlay info to the crosshair client name
