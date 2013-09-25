@@ -279,20 +279,20 @@ menuDef
     itemDef
     {
       name "selected"
-      rect 285 0 70 30 //306 454 27 27
+      rect 285 434 70 30
       aspectBias ALIGN_CENTER
       visible MENU_TRUE
       decoration
       forecolor .15 .44 .49 .7
       style WINDOW_STYLE_SHADER
-      background "ui/assets/neutral/selected-top.tga"
+      background "ui/assets/neutral/selected.tga"
     }
 
     //INVENTORY
     itemDef
     {
       name "inventory"
-      rect 182.5 0 275 25
+      rect 182.5 439 275 25
       aspectBias ALIGN_CENTER
       visible MENU_TRUE
       decoration
