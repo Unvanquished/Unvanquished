@@ -22,6 +22,18 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "g_bot_ai.h"
 #include "g_bot_util.h"
 
+/*
+======================
+g_bot_ai.c
+
+This file contains the implementation of the different behavior tree nodes
+
+On each frame, the behavior tree for each bot is evaluated starting from the root node
+Each node returns either STATUS_SUCCESS, STATUS_RUNNING, or STATUS_FAILURE depending on their logic
+The return values are used in various sequences and selectors to change the execution of the tree
+======================
+*/
+
 qboolean isBinaryOp( AIOpType_t op )
 {
 	switch ( op )
@@ -184,7 +196,27 @@ static qboolean NodeIsRunning( gentity_t *self, AIGenericNode_t *node )
 }
 
 /*
-	Behavior tree control-flow nodes
+======================
+Sequences and Selectors
+
+A sequence or selector contains a list of child nodes which are evaluated
+based on a combination of the child node return values and the internal logic
+of the sequence or selector
+
+A selector evaluates its child nodes like an if ( ) else if ( ) loop
+It starts at the first child node, and if the node did not fail, it returns its status
+if the node failed, it evaluates the next child node in the list
+A selector will fail if all of its child nodes fail
+
+A sequence evaluates its child nodes like a series of statements
+It starts at the first previously running child node, and if the node does not succeed, it returns its status
+If the node succeeded, it evaluates the next child node in the list
+A sequence will succeed if all of its child nodes succeed
+
+A concurrent node will always evaluate all of its child nodes unless one fails
+if one fails, the concurrent node will stop executing nodes and return failure
+A concurrent node succeeds if none of its child nodes fail
+======================
 */
 AINodeStatus_t BotSelectorNode( gentity_t *self, AIGenericNode_t *node )
 {
@@ -250,6 +282,13 @@ AINodeStatus_t BotConcurrentNode( gentity_t *self, AIGenericNode_t *node )
 	return STATUS_SUCCESS;
 }
 
+/*
+======================
+Decorators
+
+Decorators are used to add functionality to the child node
+======================
+*/
 AINodeStatus_t BotDecoratorTimer( gentity_t *self, AIGenericNode_t *node )
 {
 	AIDecoratorNode_t *dec = ( AIDecoratorNode_t * ) node;
@@ -369,6 +408,15 @@ qboolean EvalConditionExpression( gentity_t *self, AIExpType_t *exp )
 	return qfalse;
 }
 
+/*
+======================
+BotConditionNode
+
+Runs the child node if the condition expression is true
+If there is no child node, returns success if the conditon expression is true
+returns failure otherwise
+======================
+*/
 AINodeStatus_t BotConditionNode( gentity_t *self, AIGenericNode_t *node )
 {
 	qboolean success = qfalse;
@@ -391,12 +439,29 @@ AINodeStatus_t BotConditionNode( gentity_t *self, AIGenericNode_t *node )
 	return STATUS_FAILURE;
 }
 
+/*
+======================
+BotBehaviorNode
+
+Runs the root node of a behavior tree
+A behavior tree may contain multiple other behavior trees which are run in this way
+======================
+*/
 AINodeStatus_t BotBehaviorNode( gentity_t *self, AIGenericNode_t *node )
 {
 	AIBehaviorTree_t *tree = ( AIBehaviorTree_t * ) node;
 	return BotEvaluateNode( self, tree->root );
 }
 
+/*
+======================
+BotEvaluateNode
+
+Generic node running routine that properly handles 
+running information for sequences and selectors
+This should always be used instead of the node->run function pointer
+======================
+*/
 AINodeStatus_t BotEvaluateNode( gentity_t *self, AIGenericNode_t *node )
 {
 	AINodeStatus_t status = node->run( self, node );
@@ -442,7 +507,13 @@ AINodeStatus_t BotEvaluateNode( gentity_t *self, AIGenericNode_t *node )
 }
 
 /*
-	Behavior tree action nodes
+======================
+Action Nodes
+
+Action nodes are always the leaves of the behavior tree
+They make the bot do a specific thing while leaving decision making
+to the rest of the behavior tree
+======================
 */
 
 AINodeStatus_t BotActionFireWeapon( gentity_t *self, AIGenericNode_t *node ) 
@@ -587,6 +658,7 @@ AINodeStatus_t BotActionSay( gentity_t *self, AIGenericNode_t *node )
 	return STATUS_SUCCESS;
 }
 
+// TODO: Move decision making out of these actions and into the rest of the behavior tree
 AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 {
 	team_t myTeam = ( team_t ) self->client->ps.stats[ STAT_TEAM ];
