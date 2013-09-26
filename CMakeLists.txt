@@ -580,6 +580,10 @@ set( RENDERERGLLIST
 )
 
 set( SERVERLIST
+  ${MOUNT_DIR}/engine/botlib/bot_convert.cpp
+  ${MOUNT_DIR}/engine/botlib/bot_local.cpp
+  ${MOUNT_DIR}/engine/botlib/bot_nav.cpp
+  ${MOUNT_DIR}/engine/botlib/bot_load.cpp
   ${MOUNT_DIR}/engine/server/sv_bot.c
   ${MOUNT_DIR}/engine/server/sv_ccmds.c
   ${MOUNT_DIR}/engine/server/sv_client.c
@@ -676,7 +680,9 @@ endif()
 set( CLIENTLIST
   ${MOUNT_DIR}/engine/client/cg_api.h
   ${MOUNT_DIR}/engine/client/ui_api.h
-  ${MOUNT_DIR}/engine/client/client.h
+  ${MOUNT_DIR}/engine/client/client.h	
+  ${MOUNT_DIR}/engine/botlib/bot_debug.cpp
+  ${MOUNT_DIR}/engine/botlib/bot_nav_edit.cpp
   ${MOUNT_DIR}/engine/client/cin_ogm.c
   ${MOUNT_DIR}/engine/client/cl_avi.c
   ${MOUNT_DIR}/engine/client/cl_cgame.c
@@ -768,6 +774,7 @@ set( CGAMEGPP_BASE
   ${GPP_DIR}/game/bg_lib.c
   ${GPP_DIR}/game/bg_alloc.c
   ${GPP_DIR}/game/bg_voice.c
+  ${GPP_DIR}/game/bg_teamprogress.c
   ${GPP_DIR}/cgame/cg_consolecmds.c
   ${GPP_DIR}/cgame/cg_buildable.c
   ${GPP_DIR}/cgame/cg_animation.c
@@ -818,10 +825,12 @@ set( GAMEGPP_BASE
   ${GPP_DIR}/game/bg_lib.c
   ${GPP_DIR}/game/bg_alloc.c
   ${GPP_DIR}/game/bg_voice.c
+  ${GPP_DIR}/game/bg_teamprogress.c
   ${GPP_DIR}/game/g_active.c
   ${GPP_DIR}/game/g_client.c
   ${GPP_DIR}/game/g_cmds.c
   ${GPP_DIR}/game/g_combat.c
+  ${GPP_DIR}/game/g_confidence.c
   ${GPP_DIR}/game/g_entities.c
   ${GPP_DIR}/game/g_physics.c
   ${GPP_DIR}/game/g_buildable.c
@@ -845,6 +854,11 @@ set( GAMEGPP_BASE
   ${GPP_DIR}/game/g_weapon.c
   ${GPP_DIR}/game/g_admin.c
   ${GPP_DIR}/game/g_namelog.c
+  ${GPP_DIR}/game/g_bot.c
+  ${GPP_DIR}/game/g_bot_ai.c
+  ${GPP_DIR}/game/g_bot_nav.c
+  ${GPP_DIR}/game/g_bot_parse.c
+  ${GPP_DIR}/game/g_bot_util.c
   ${SHAREDLIST_C}
 )
 
@@ -869,6 +883,7 @@ set( UIGPP_BASE
   ${GPP_DIR}/game/bg_parse.c
   ${GPP_DIR}/game/bg_lib.c
   ${GPP_DIR}/game/bg_alloc.c
+  ${GPP_DIR}/game/bg_teamprogress.c
   ${GPP_DIR}/ui/ui_utf8.c
   ${SHAREDLIST_C}
 )
@@ -961,6 +976,7 @@ set( DAEMONMAPLIST
   ${MOUNT_DIR}/tools/owmap/tree.c
   ${MOUNT_DIR}/tools/owmap/vis.c
   ${MOUNT_DIR}/tools/owmap/visflow.c
+  ${MOUNT_DIR}/tools/owmap/nav.cpp
   ${MOUNT_DIR}/libs/zlib/adler32.c
   ${MOUNT_DIR}/libs/zlib/compress.c
   ${MOUNT_DIR}/libs/zlib/crc32.c
@@ -974,6 +990,39 @@ set( DAEMONMAPLIST
   ${MOUNT_DIR}/libs/zlib/trees.c
   ${MOUNT_DIR}/libs/zlib/uncompr.c
   ${MOUNT_DIR}/libs/zlib/zutil.c
+)
+
+set( FASTLZLIST 
+	${MOUNT_DIR}/libs/fastlz/fastlz.c
+)
+
+set( DETOURLIST
+  ${FASTLZLIST}
+  ${MOUNT_DIR}/libs/detour/DetourAlloc.cpp
+  ${MOUNT_DIR}/libs/detour/DetourCommon.cpp
+  ${MOUNT_DIR}/libs/detour/DetourNavMeshBuilder.cpp
+  ${MOUNT_DIR}/libs/detour/DetourNavMesh.cpp
+  ${MOUNT_DIR}/libs/detour/DetourNavMeshQuery.cpp
+  ${MOUNT_DIR}/libs/detour/DetourNode.cpp
+  ${MOUNT_DIR}/libs/detour/DetourPathCorridor.cpp
+  ${MOUNT_DIR}/libs/detour/DetourDebugDraw.cpp
+  ${MOUNT_DIR}/libs/detour/DebugDraw.cpp
+  ${MOUNT_DIR}/libs/detour/DetourTileCache.cpp
+  ${MOUNT_DIR}/libs/detour/DetourTileCacheBuilder.cpp
+)
+
+set( RECASTLIST
+  ${MOUNT_DIR}/libs/recast/RecastAlloc.cpp
+  ${MOUNT_DIR}/libs/recast/RecastArea.cpp
+  ${MOUNT_DIR}/libs/recast/RecastContour.cpp
+  ${MOUNT_DIR}/libs/recast/Recast.cpp
+  ${MOUNT_DIR}/libs/recast/RecastFilter.cpp
+  ${MOUNT_DIR}/libs/recast/RecastLayers.cpp
+  ${MOUNT_DIR}/libs/recast/RecastMesh.cpp
+  ${MOUNT_DIR}/libs/recast/RecastMeshDetail.cpp
+  ${MOUNT_DIR}/libs/recast/RecastRasterization.cpp
+  ${MOUNT_DIR}/libs/recast/RecastRegion.cpp
+  ${MOUNT_DIR}/libs/recast/ChunkyTriMesh.cpp
 )
 
 if( USE_VOIP AND USE_INTERNAL_SPEEX )
@@ -1714,7 +1763,7 @@ endfunction()
 
 if( BUILD_CLIENT )
   # Setup target client
-  add_executable( client ${SERVERLIST} ${CLIENTLIST} ${SDLBASELIST} ${SDLLIST} ${QCOMMONLIST} ${SHAREDLIST} ${CRYPTOLIST} ${TINYGETTEXT_LIST}
+  add_executable( client ${DETOURLIST} ${SERVERLIST} ${CLIENTLIST} ${SDLBASELIST} ${SDLLIST} ${QCOMMONLIST} ${SHAREDLIST} ${CRYPTOLIST} ${TINYGETTEXT_LIST}
     ${DATABASELIST} ${MOUNT_DIR}/engine/qcommon/dl_main_curl.c ${SPEEXLIST} ${WIN_RC} )
   add_dependencies( client rendererGL )
   include_directories( ${NEWTON_INCLUDES} )
@@ -1893,7 +1942,7 @@ endif()
 
 if( BUILD_SERVER )
   # Setup the target Server
-  add_executable( server ${SERVERLIST} ${SDLBASELIST}
+  add_executable( server ${DETOURLIST} ${SERVERLIST} ${SDLBASELIST}
     ${QCOMMONLIST} ${SHAREDLIST} ${DATABASELIST} ${CRYPTOLIST}
     ${MOUNT_DIR}/engine/null/null_client.c ${TINYGETTEXT_LIST}
     ${MOUNT_DIR}/engine/null/null_input.c ${MOUNT_DIR}/engine/null/null_snddma.c
@@ -1984,7 +2033,7 @@ endif()
 ###################
 if( BUILD_DAEMONMAP )
   # Setup DaemonMap target
-  add_executable( daemonMap ${DAEMONMAPLIST} ${WIN_RC} )
+  add_executable( daemonMap ${DAEMONMAPLIST} ${DETOURLIST} ${RECASTLIST} ${WIN_RC} )
   include_directories( ${LIB_DIR}/picomodel ${MOUNT_DIR}/tools/common )
   target_link_libraries( daemonMap ${OS_LIBRARIES} )
   set_property( TARGET daemonMap APPEND PROPERTY COMPILE_DEFINITIONS USE_OPENGL )
@@ -2016,7 +2065,7 @@ endif()
 ####################
 if( BUILD_TTY_CLIENT )
   # Setup the target Server
-  add_executable( ttyclient ${SERVERLIST} ${CLIENTLIST} ${SDLBASELIST}
+  add_executable( ttyclient ${DETOURLIST} ${SERVERLIST} ${CLIENTLIST} ${SDLBASELIST}
     ${QCOMMONLIST} ${SHAREDLIST} ${DATABASELIST} ${CRYPTOLIST}
     ${TINYGETTEXT_LIST}
     ${MOUNT_DIR}/engine/qcommon/dl_main_stubs.c ${WIN_RC}

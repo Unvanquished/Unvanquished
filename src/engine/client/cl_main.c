@@ -42,6 +42,7 @@ Maryland 20850 USA.
 
 #include "../sys/sys_loadlib.h"
 #include "../sys/sys_local.h"
+#include "../botlib/bot_debug.h"
 
 cvar_t *cl_wavefilerecord;
 
@@ -482,12 +483,7 @@ void CL_VoipParseTargets( void )
 			}
 			else
 			{
-				if ( !Q_strnicmp( target, "attacker", 8 ) )
-				{
-					val = VM_Call( cgvm, CG_LAST_ATTACKER );
-					target += 8;
-				}
-				else if ( !Q_strnicmp( target, "crosshair", 9 ) )
+				if ( !Q_strnicmp( target, "crosshair", 9 ) )
 				{
 					val = VM_Call( cgvm, CG_CROSSHAIR_PLAYER );
 					target += 9;
@@ -4367,6 +4363,8 @@ qboolean CL_InitRef( const char *renderer )
 	ri.IN_Restart = IN_Restart;
 
 	ri.ftol = Q_ftol;
+
+	ri.Bot_DrawDebugMesh = BotDebugDrawMesh;
 
 	Com_Printf("%s", _( "Calling GetRefAPI…\n" ));
 	ret = GetRefAPI( REF_API_VERSION, &ri );

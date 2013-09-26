@@ -1555,10 +1555,9 @@ double rint( double x );
 #define KEYCATCH_MESSAGE 0x0004
 #define KEYCATCH_CGAME   0x0008
 
-#define KEYEVSTATE_DOWN 0
-#define KEYEVSTATE_CHAR 1
-#define KEYEVSTATE_BIT  2
-#define KEYEVSTATE_SUP  3
+#define KEYEVSTATE_DOWN 1
+#define KEYEVSTATE_CHAR 2
+#define KEYEVSTATE_SUP  8
 
 // sound channels
 // channel 0 never willingly overrides

@@ -1459,6 +1459,7 @@ static int FS_FOpenFileRead_Internal( const char *filename, fileHandle_t *file, 
 						     Q_stricmp( filename + l - 6, ".arena" ) != 0 &&
 						     Q_stricmp( filename + l - 5, ".menu" ) != 0 &&
 						     Q_stricmp( filename + l - 3, ".po" ) != 0 &&
+						     Q_stricmp( filename + l - 8, ".navMesh" ) != 0 &&
 						     Q_stricmp( filename, "vm/game.qvm" ) != 0  &&
 						     !FS_CheckUIImageFile( filename ) )
 						{

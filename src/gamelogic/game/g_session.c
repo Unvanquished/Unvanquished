@@ -40,17 +40,21 @@ G_WriteClientSessionData
 Called on game shutdown
 ================
 */
-void G_WriteClientSessionData( gclient_t *client )
+static void G_WriteClientSessionData( int clientNum )
 {
 	const char *s;
 	const char *var;
+	gclient_t  *client = &level.clients[ clientNum ];
+	botMemory_t  *mind = g_entities[ clientNum ].botMind;
 
-	s = va( "%i %i %i %i %i %s",
+	s = va( "%i %i %i %i %i %i %s %s",
 	        client->sess.spectatorTime,
 	        client->sess.spectatorState,
 	        client->sess.spectatorClient,
 	        client->sess.restartTeam,
 	        client->sess.seenWelcome,
+	        mind ? mind->botSkill.level : 0,
+	        ( mind && mind->behaviorTree ) ? mind->behaviorTree->name : "default",
 	        Com_ClientListString( &client->sess.ignoreList )
 	      );
 
@@ -72,22 +76,28 @@ void G_ReadSessionData( gclient_t *client )
 	const char *var;
 	int        spectatorState;
 	int        restartTeam;
+	int        botSkill;
+	char       botTree[ MAX_QPATH ];
 	char       ignorelist[ 17 ];
 
 	var = va( "session%li", ( long )( client - level.clients ) );
 	trap_Cvar_VariableStringBuffer( var, s, sizeof( s ) );
 
-	sscanf( s, "%i %i %i %i %i %16s",
+	sscanf( s, "%i %i %i %i %i %i %64s %16s",
 	        &client->sess.spectatorTime,
 	        &spectatorState,
 	        &client->sess.spectatorClient,
 	        &restartTeam,
 	        &client->sess.seenWelcome,
+	        &botSkill,
+	        botTree,
 	        ignorelist
 	      );
 
 	client->sess.spectatorState = ( spectatorState_t ) spectatorState;
 	client->sess.restartTeam = ( team_t ) restartTeam;
+	client->sess.botSkill = botSkill;
+	Q_strncpyz( client->sess.botTree, botTree, sizeof( client->sess.botTree ) );
 	Com_ClientListParse( &client->sess.ignoreList, ignorelist );
 }
 
@@ -130,10 +140,13 @@ void G_InitSessionData( gclient_t *client, const char *userinfo )
 	sess->spectatorState = SPECTATOR_FREE;
 	sess->spectatorTime = level.time;
 	sess->spectatorClient = -1;
+	sess->botSkill = 0;
+	sess->botTree[ 0 ] = '\0';
+
 	memset( &sess->ignoreList, 0, sizeof( sess->ignoreList ) );
 	sess->seenWelcome = 0;
 
-	G_WriteClientSessionData( client );
+	G_WriteClientSessionData( client - level.clients );
 }
 
 /*
@@ -153,7 +166,7 @@ void G_WriteSessionData( void )
 	{
 		if ( level.clients[ i ].pers.connected == CON_CONNECTED )
 		{
-			G_WriteClientSessionData( &level.clients[ i ] );
+			G_WriteClientSessionData( i );
 		}
 	}
 }

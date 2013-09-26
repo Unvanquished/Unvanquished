@@ -510,7 +510,7 @@ CG_MinimapDrawTeammates
 */
 static void CG_MinimapDrawTeammates( const minimap_t* m )
 {
-    int ownTeam = cg.predictedPlayerState.stats[ STAT_TEAM ];
+    int ownTeam = cg.predictedPlayerState.persistant[ PERS_TEAM ];
     int i;
 
     for ( i = 0; i < MAX_GENTITIES; i++ )

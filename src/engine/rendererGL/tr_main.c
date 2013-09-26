@@ -3400,6 +3400,8 @@ void R_DebugText( const vec3_t org, float r, float g, float b, const char *text,
 #endif
 }
 
+static BotDebugInterface_t bi = { DebugDrawBegin, DebugDrawDepthMask, DebugDrawVertex, DebugDrawEnd };
+
 /*
 ====================
 R_DebugGraphics
@@ -3415,10 +3417,16 @@ static void R_DebugGraphics( void )
 		R_SyncRenderThread();
 
 		GL_BindProgram( 0 );
+
 		GL_SelectTexture( 0 );
 		GL_Bind( tr.whiteImage );
+
 		GL_Cull( CT_FRONT_SIDED );
 		ri.CM_DrawDebugSurface( R_DebugPolygon );
+
+		GL_State( GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
+
+		ri.Bot_DrawDebugMesh( &bi );
 	}
 }
 
