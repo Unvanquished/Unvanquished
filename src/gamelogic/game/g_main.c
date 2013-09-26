@@ -169,6 +169,7 @@ vmCvar_t           g_unnamedNumbering;
 vmCvar_t           g_unnamedNamePrefix;
 
 vmCvar_t           g_admin;
+vmCvar_t           g_adminWarn;
 vmCvar_t           g_adminTempBan;
 vmCvar_t           g_adminMaxBan;
 vmCvar_t           g_adminRetainExpiredBans;
@@ -269,7 +270,7 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_smoothClients,               "g_smoothClients",               "1",                                0,                                               0, qfalse           },
 	{ &pmove_fixed,                   "pmove_fixed",                   "0",                                CVAR_SYSTEMINFO,                                 0, qfalse           },
 	{ &pmove_msec,                    "pmove_msec",                    "8",                                CVAR_SYSTEMINFO,                                 0, qfalse           },
-	{ &pmove_accurate,                "pmove_accurate",                "0",                                CVAR_SYSTEMINFO,                                 0, qfalse           },
+	{ &pmove_accurate,                "pmove_accurate",                "1",                                CVAR_SYSTEMINFO,                                 0, qfalse           },
 
 	{ &g_initialBuildPoints,          "g_initialBuildPoints",          DEFAULT_INITIAL_BUILD_POINTS,       CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_initialMineRate,             "g_initialMineRate",             DEFAULT_INITIAL_MINE_RATE,          CVAR_ARCHIVE,                                    0, qfalse           },
@@ -346,9 +347,10 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_unnamedNamePrefix,           "g_unnamedNamePrefix",           UNNAMED_PLAYER"#",                  CVAR_ARCHIVE,                                    0, qfalse           },
 
 	{ &g_admin,                       "g_admin",                       "admin.dat",                        CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_adminWarn,                   "g_adminWarn",                   "1h",                               CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_adminTempBan,                "g_adminTempBan",                "2m",                               CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_adminMaxBan,                 "g_adminMaxBan",                 "2w",                               CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_adminRetainExpiredBans,      "g_adminRetainExpiredBans",      "0",                                CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_adminRetainExpiredBans,      "g_adminRetainExpiredBans",      "1",                                CVAR_ARCHIVE,                                    0, qfalse           },
 
 	{ &g_privateMessages,             "g_privateMessages",             "1",                                CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_specChat,                    "g_specChat",                    "1",                                CVAR_ARCHIVE,                                    0, qfalse           },

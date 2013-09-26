@@ -45,7 +45,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define SYMLOAD(x,y) GetProcAddress(x,y)
 #define OBJFREE(x)   FreeLibrary(x)
 
-#elif defined __linux__ || defined __FreeBSD__ || defined MACOS_X
+#elif defined __linux__ || defined __FreeBSD__ || defined __OpenBSD__ || defined MACOS_X
 #include <unistd.h>
 #include <sys/types.h>
 #include <dlfcn.h>

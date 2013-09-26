@@ -540,6 +540,9 @@ typedef struct
 
 	// level.time when teamoverlay info changed so we know to tell other players.
 	int                 infoChangeTime;
+
+	// warnings in the ban log
+	qboolean            hasWarnings;
 } clientPersistant_t;
 
 #define MAX_UNLAGGED_MARKERS 256
@@ -1382,6 +1385,7 @@ extern  vmCvar_t g_unnamedNumbering;
 extern  vmCvar_t g_unnamedNamePrefix;
 
 extern  vmCvar_t g_admin;
+extern  vmCvar_t g_adminWarn;
 extern  vmCvar_t g_adminTempBan;
 extern  vmCvar_t g_adminMaxBan;
 extern  vmCvar_t g_adminRetainExpiredBans;
