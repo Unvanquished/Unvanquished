@@ -3532,6 +3532,9 @@ static void PM_BeginWeaponChange( int weapon )
 		pm->ps->stats[ STAT_MISC ] = 0;
 	}
 
+    // prevent flamer effect from continuing
+    pm->ps->generic1 = WPM_NOTFIRING;
+
 	pm->ps->weaponstate = WEAPON_DROPPING;
 	pm->ps->weaponTime += 200;
 	pm->ps->persistant[ PERS_NEWWEAPON ] = weapon;
