@@ -31,6 +31,7 @@ Navigation Mesh Loading
 ========================
 */
 
+// FIXME: use nav handle instead of classes
 void G_BotNavInit()
 {
 	qhandle_t navHandle;
@@ -43,6 +44,11 @@ void G_BotNavInit()
 		botClass_t bot;
 		bot.polyFlagsInclude = POLYFLAGS_WALK;
 		bot.polyFlagsExclude = POLYFLAGS_DISABLED;
+
+		if ( i == PCL_ALIEN_LEVEL0_UPG )
+		{
+			continue;
+		}
 
 		Q_strncpyz( bot.name, BG_Class( i )->name, sizeof( bot.name ) );
 
@@ -72,12 +78,20 @@ void G_BotEnableArea( vec3_t origin, vec3_t mins, vec3_t maxs )
 
 void BotSetNavmesh( gentity_t  *self, class_t newClass )
 {
+	int navMeshNum = newClass - 1;
+
 	if ( newClass == PCL_NONE )
 	{
 		return;
 	}
 
-	trap_BotSetNavMesh( self->s.number, newClass - 1 );
+	// advanced dretch uses the same navmesh as the regular dretch
+	if ( newClass == PCL_ALIEN_LEVEL0_UPG )
+	{
+		navMeshNum = PCL_ALIEN_LEVEL0 - 1;
+	}
+
+	trap_BotSetNavMesh( self->s.number, navMeshNum );
 }
 
 /*

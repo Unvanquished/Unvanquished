@@ -91,6 +91,8 @@ float BotGetBaseRushScore( gentity_t *ent )
 			return 0.0f;
 		case WP_ALEVEL0:
 			return 0.0f;
+		case WP_ALEVEL0_UPG:
+			return 0.0f;
 		case WP_ALEVEL1:
 			return 0.2f;
 		case WP_ALEVEL2:
@@ -157,6 +159,9 @@ float BotGetEnemyPriority( gentity_t *self, gentity_t *ent )
 		{
 			case WP_ALEVEL0:
 				enemyScore = 0.1;
+				break;
+			case WP_ALEVEL0_UPG:
+				enemyScore = 0.2;
 				break;
 			case WP_ALEVEL1:
 			case WP_ALEVEL1_UPG:
@@ -251,6 +256,12 @@ float BotGetEnemyPriority( gentity_t *self, gentity_t *ent )
 				break;
 			case BA_A_TRAPPER:
 				enemyScore = 0.8;
+				break;
+			case BA_A_LEECH:
+				enemyScore = 0.6;
+				break;
+			case BA_H_DRILL:
+				enemyScore = 0.6;
 				break;
 			default:
 				enemyScore = 0.5;
@@ -1025,6 +1036,7 @@ qboolean BotTargetInAttackRange( gentity_t *self, botTarget_t target )
 			width = height = ABUILDER_CLAW_WIDTH;
 			break;
 		case WP_ALEVEL0:
+		case WP_ALEVEL0_UPG:
 			range = LEVEL0_BITE_RANGE;
 			secondaryRange = 0;
 			break;
@@ -1497,6 +1509,7 @@ void BotClassMovement( gentity_t *self, qboolean inAttackRange )
 	switch ( self->client->ps.stats[STAT_CLASS] )
 	{
 		case PCL_ALIEN_LEVEL0:
+		case PCL_ALIEN_LEVEL0_UPG:
 			BotStrafeDodge( self );
 			break;
 		case PCL_ALIEN_LEVEL1:
@@ -1658,6 +1671,7 @@ void BotFireWeaponAI( gentity_t *self )
 			}
 			break;
 		case WP_ALEVEL0:
+		case WP_ALEVEL0_UPG:
 			break; //auto hit
 		case WP_ALEVEL1:
 			BotFireWeapon( WPM_PRIMARY, botCmdBuffer ); //basi swipe

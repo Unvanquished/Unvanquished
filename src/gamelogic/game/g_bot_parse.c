@@ -1284,12 +1284,14 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	D( E_A_TRAPPER );
 	D( E_A_BOOSTER );
 	D( E_A_HIVE );
+	D( E_A_LEECH );
 	D( E_H_SPAWN );
 	D( E_H_MGTURRET );
 	D( E_H_TESLAGEN );
 	D( E_H_ARMOURY );
 	D( E_H_DCC );
 	D( E_H_MEDISTAT );
+	D( E_H_DRILL );
 	D( E_H_REACTOR );
 	D( E_H_REPEATER );
 	D( E_GOAL );
@@ -1302,6 +1304,7 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	D( PCL_ALIEN_BUILDER0 );
 	D( PCL_ALIEN_BUILDER0_UPG );
 	D( PCL_ALIEN_LEVEL0 );
+	D( PCL_ALIEN_LEVEL0_UPG );
 	D( PCL_ALIEN_LEVEL1 );
 	D( PCL_ALIEN_LEVEL1_UPG );
 	D( PCL_ALIEN_LEVEL2 );
