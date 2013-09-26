@@ -492,7 +492,6 @@ static qboolean CG_RegisterBuildableAnimation( buildableInfo_t *ci, const char *
 
 	if ( !ci->animations[ anim ].handle )
 	{
-		Com_Printf( "Failed to load animation file %s\n", filename );
 		return qfalse;
 	}
 
@@ -596,9 +595,26 @@ void CG_InitBuildables( void )
 
 						// if the fallback is to be reversed, try loading it
 						// otherwise, or if that fails, use the fallback directly
-						if ( !animTypes[ n ].fallbackReversed ||
-						     !CG_RegisterBuildableAnimation( bi, buildableName, n, animTypes[ o ].name, animTypes[ o ].loop, !animTypes[ n ].reversed, animTypes[ o ].clearOrigin ) )
+						if ( !animTypes[ n ].fallbackReversed )
 						{
+							if ( cg_debugAnim.integer )
+							{
+								Com_Printf( "Failed to load animation '%s' for model '%s': duplicated fallback '%s'\n", animTypes[ n ].name, buildableName, animTypes[ o ].name );
+							}
+
+							bi->animations[ n ] = bi->animations[ o ];
+						}
+						else if ( CG_RegisterBuildableAnimation( bi, buildableName, n, animTypes[ o ].name, animTypes[ o ].loop, !animTypes[ n ].reversed, animTypes[ o ].clearOrigin ) )
+						{
+							if ( cg_debugAnim.integer )
+							{
+								Com_Printf( "Failed to load animation '%s' for model '%s': loaded fallback '%s'\n", animTypes[ n ].name, buildableName, animTypes[ o ].name );
+							}
+						}
+						else
+						{
+							// this one gets printed anyway
+							Com_Printf( S_WARNING "Failed to load animation '%s' and fallback '%s' for model '%s'\n", animTypes[ n ].name, animTypes[ o ].name, buildableName );
 							bi->animations[ n ] = bi->animations[ o ];
 						}
 					}
