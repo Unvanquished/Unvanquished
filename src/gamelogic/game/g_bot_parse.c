@@ -1302,6 +1302,7 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	D( PCL_ALIEN_BUILDER0 );
 	D( PCL_ALIEN_BUILDER0_UPG );
 	D( PCL_ALIEN_LEVEL0 );
+	D( PCL_ALIEN_LEVEL0_UPG );
 	D( PCL_ALIEN_LEVEL1 );
 	D( PCL_ALIEN_LEVEL1_UPG );
 	D( PCL_ALIEN_LEVEL2 );
