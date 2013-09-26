@@ -257,6 +257,12 @@ float BotGetEnemyPriority( gentity_t *self, gentity_t *ent )
 			case BA_A_TRAPPER:
 				enemyScore = 0.8;
 				break;
+			case BA_A_LEECH:
+				enemyScore = 0.6;
+				break;
+			case BA_H_DRILL:
+				enemyScore = 0.6;
+				break;
 			default:
 				enemyScore = 0.5;
 				break;
