@@ -80,14 +80,14 @@ static const struct {
 static const int animLoading[] = {
 	0,
 	//       idle2   pwrdwn  idlunp  cnstr   cnstr2  attack   attack2 spawn   spawn2  pain    pain2   dstry   dstry2  dstryed
-	CG_ANIM( qtrue,  qfalse, qfalse, qtrue,  qtrue,  qtrue,   qtrue,  qtrue,  qfalse, qtrue,  qtrue,  qtrue,  qfalse, qtrue  ), // BA_A_SPAWN
+	CG_ANIM( qtrue,  qfalse, qfalse, qtrue,  qtrue,  qtrue,   qtrue,  qtrue,  qfalse, qtrue,  qtrue,  qtrue,  qtrue,  qtrue  ), // BA_A_SPAWN
 	CG_ANIM( qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qfalse, qtrue  ), // BA_A_OVERMIND
 	CG_ANIM( qtrue,  qtrue,  qtrue,  qtrue,  qfalse, qtrue,   qtrue,  qfalse, qfalse, qtrue,  qtrue,  qtrue,  qtrue,  qtrue  ), // BA_A_BARRICADE
-	CG_ANIM( qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qfalse, qtrue  ), // BA_A_ACIDTUBE
-	CG_ANIM( qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qfalse, qtrue  ), // BA_A_TRAPPER
-	CG_ANIM( qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qfalse, qtrue  ), // BA_A_BOOSTER
-	CG_ANIM( qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qfalse, qtrue  ), // BA_A_HIVE
-	CG_ANIM( qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qfalse, qtrue  ), // BA_A_LEECH
+	CG_ANIM( qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_A_ACIDTUBE
+	CG_ANIM( qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_A_TRAPPER
+	CG_ANIM( qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_A_BOOSTER
+	CG_ANIM( qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_A_HIVE
+	CG_ANIM( qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_A_LEECH
 
 	CG_ANIM( qtrue,  qtrue,  qtrue,  qtrue,  qtrue,  qtrue,   qtrue,  qtrue,  qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_SPAWN
 	CG_ANIM( qfalse, qtrue,  qtrue,  qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_TURRET
