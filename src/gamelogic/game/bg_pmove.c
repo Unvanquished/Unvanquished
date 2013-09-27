@@ -1608,7 +1608,7 @@ PM_AlienFlyMove
 #define SHRIKE_LIFT_SPEED 4.0f
 #define SHRIKE_TURN_RATE 1.0f
 #define SHRIKE_ROLL_RATE 2.0f
-#define SHRIKE_FLIGHT_MAXSPEED 750.0f
+#define SHRIKE_FLIGHT_MAXSPEED 1000.0f
 
 static void PM_AlienFlyMove( void )
 {
