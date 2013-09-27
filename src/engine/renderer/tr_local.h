@@ -1193,9 +1193,10 @@ typedef ALIGNED( 16, struct
 	vec2_t      texCoords;
 
 	uint32_t    firstWeight;
-	uint16_t    numWeights;
-	md5Weight_t **weights;
-} md5Vertex_t );
+	uint32_t    numWeights;
+	uint32_t    boneIndexes[ MAX_WEIGHTS ];
+	float       boneWeights[ MAX_WEIGHTS ];
+} ) md5Vertex_t;
 
 typedef struct
 {

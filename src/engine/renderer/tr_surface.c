@@ -1415,7 +1415,6 @@ static void RB_SurfaceMD5( md5Surface_t *srf )
 	md5Triangle_t   *tri;
 	static ALIGNED( 16, boneMatrix_t boneMatrices[ MAX_BONES ] );
 	boneMatrix_t    tmpMat;
-	md5Weight_t     *w;
 
 	GLimp_LogComment( "--- Tess_SurfaceMD5 ---\n" );
 
@@ -1460,23 +1459,21 @@ static void RB_SurfaceMD5( md5Surface_t *srf )
 #if id386_sse
 		__m128 a, b, c;
 
-		w = v->weights[ 0 ];
-		BoneMatrixMulSSE( &a, &b, &c, w->boneWeight, boneMatrices[ w->boneIndex ] );
+		BoneMatrixMulSSE( &a, &b, &c, v->boneWeights[ 0 ], boneMatrices[ v->boneIndexes[ 0 ] ] );
 
-		for ( k = 1, w = v->weights[ 1 ]; k < v->numWeights; k++, w++ )
+		for ( k = 1; k < v->numWeights; k++ )
 		{
-			BoneMatrixMadSSE( &a, &b, &c, w->boneWeight, boneMatrices[ w->boneIndex ] );
+			BoneMatrixMadSSE( &a, &b, &c, v->boneWeights[ k ], boneMatrices[ v->boneIndexes[ k ] ] );
 		}
 
 		BoneMatrixTransformPointSSE( a, b, c, v->position, tess.xyz[ tess.numVertexes + j ].v );
 		BoneMatrixTransformNormalNSSE( a, b, c, v->normal, tess.normal[ tess.numVertexes + j ].v );
 #else
-		w = v->weights[ 0 ];
-		BoneMatrixMul( tmpMat, w->boneWeight, boneMatrices[ w->boneIndex ] );
+		BoneMatrixMul( tmpMat, v->boneWeights[ 0 ], boneMatrices[ v->boneIndexes[ 0 ] ] );
 
-		for ( k = 1, w = v->weights[ 1 ]; k < v->numWeights; k++, w++ )
+		for ( k = 1; k < v->numWeights; k++ )
 		{
-			BoneMatrixMad( tmpMat, w->boneWeight, boneMatrices[ w->boneIndex ] );
+			BoneMatrixMad( tmpMat, v->boneWeights[ k ], boneMatrices[ v->boneIndexes[ k ] ] );
 		}
 
 		BoneMatrixTransformPoint( tmpMat, v->position, tess.xyz[ tess.numVertexes + j ].v );
