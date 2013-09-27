@@ -2489,6 +2489,11 @@ int cmdcmp( const void *a, const void *b )
 	return b ? Q_stricmp( ( const char * ) a, ( ( dummyCmd_t * ) b )->name ) : 1;
 }
 
+float BG_FlightVelocityToCoefficient( float velocity )
+{
+	return 1.0f / ( 1 + 15 * exp( -velocity / 166.6667f ) );
+}
+
 /*
 ==================
 Quote

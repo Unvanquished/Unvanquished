@@ -1381,6 +1381,7 @@ char *Substring( const char *in, int start, int count );
 char *BG_strdup( const char *string );
 
 const char *Trans_GenderContext( gender_t gender );
+float BG_FlightVelocityToCoefficient( float velocity );
 
 //==================================================================
 #endif /* BG_PUBLIC_H_ */
