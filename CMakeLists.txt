@@ -462,7 +462,6 @@ set( OPENEXRLIST
 
 set( RENDERERLIST
   ${MOUNT_DIR}/engine/renderer/tr_animation.c
-  ${MOUNT_DIR}/engine/renderer/tr_animation_mdm.c
   ${MOUNT_DIR}/engine/renderer/tr_animation_mds.c
   ${MOUNT_DIR}/engine/renderer/tr_backend.c
   ${MOUNT_DIR}/engine/renderer/tr_bsp.c
@@ -500,7 +499,6 @@ set( RENDERERLIST
 
 set( RENDERERGLLIST
   ${MOUNT_DIR}/engine/rendererGL/gl_shader.cpp
-  ${MOUNT_DIR}/engine/rendererGL/tr_animation_mdm.c
   ${MOUNT_DIR}/engine/rendererGL/tr_animation.c
   ${MOUNT_DIR}/engine/rendererGL/tr_backend.cpp
   ${MOUNT_DIR}/engine/rendererGL/tr_bsp.c
@@ -527,7 +525,6 @@ set( RENDERERGLLIST
   ${MOUNT_DIR}/engine/rendererGL/tr_model_md3.c
   ${MOUNT_DIR}/engine/rendererGL/tr_model_md5.c
   ${MOUNT_DIR}/engine/rendererGL/tr_model_mdc.c
-  ${MOUNT_DIR}/engine/rendererGL/tr_model_mdm.c
   ${MOUNT_DIR}/engine/rendererGL/tr_model_psk.c
   ${MOUNT_DIR}/engine/rendererGL/tr_model_skel.c
   ${MOUNT_DIR}/engine/rendererGL/tr_noise.c

@@ -1734,17 +1734,11 @@ void ( *rb_surfaceTable[ SF_NUM_SURFACE_TYPES ] )( void * ) =
 	( void ( * )( void * ) ) Tess_SurfacePolybuffer,  // SF_POLYBUFFER,
 	( void ( * )( void * ) ) Tess_SurfaceDecal,  // SF_DECAL
 	( void ( * )( void * ) ) Tess_SurfaceMDV,  // SF_MDV,
-#if defined( COMPAT_ET )
-	( void ( * )( void * ) ) Tess_MDM_SurfaceAnim,  // SF_MDM,
-#endif
 	( void ( * )( void * ) ) Tess_SurfaceMD5,  // SF_MD5,
 
 	( void ( * )( void * ) ) Tess_SurfaceFlare,  // SF_FLARE,
 	( void ( * )( void * ) ) Tess_SurfaceEntity,  // SF_ENTITY
 	( void ( * )( void * ) ) Tess_SurfaceVBOMesh,  // SF_VBO_MESH
 	( void ( * )( void * ) ) Tess_SurfaceVBOMD5Mesh,  // SF_VBO_MD5MESH
-#if defined( COMPAT_ET )
-	( void ( * )( void * ) ) Tess_SurfaceVBOMDMMesh,  // SF_VBO_MD5MESH
-#endif
 	( void ( * )( void * ) ) Tess_SurfaceVBOMDVMesh  // SF_VBO_MDVMESH
 };

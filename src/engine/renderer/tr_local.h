@@ -791,7 +791,6 @@ typedef enum
   SF_MD3,
   SF_MDC,
   SF_MDS,
-  SF_MDM,
   SF_MD5,
   SF_FLARE,
   SF_ENTITY, // beams, rails, lightning, etc that can be determined by entity
@@ -1310,8 +1309,6 @@ typedef enum
   MOD_MESH,
   MOD_MDS,
   MOD_MDC,
-  MOD_MDM,
-  MOD_MDX,
   MOD_MD5
 } modtype_t;
 
@@ -1321,8 +1318,6 @@ typedef union
 	md3Header_t *md3[ MD3_MAX_LODS ]; // only if type == MOD_MESH
 	mdsHeader_t *mds; // only if type == MOD_MDS
 	mdcHeader_t *mdc[ MD3_MAX_LODS ]; // only if type == MOD_MDC
-	mdmHeader_t *mdm; // only if type == MOD_MDM
-	mdxHeader_t *mdx; // only if type == MOD_MDX
 	md5Model_t  *md5; // only if type == MOD_MD5
 } model_u;
 
@@ -2230,14 +2225,6 @@ void R_AddAnimSurfaces( trRefEntity_t *ent );
 void RB_SurfaceAnim( mdsSurface_t *surfType );
 int  R_GetBoneTag( orientation_t *outTag, mdsHeader_t *mds, int startTagIndex, const refEntity_t *refent,
                    const char *tagName );
-
-//
-// MDM / MDX
-//
-void R_MDM_AddAnimSurfaces( trRefEntity_t *ent );
-void RB_MDM_SurfaceAnim( mdmSurface_t *surfType );
-int  R_MDM_GetBoneTag( orientation_t *outTag, mdmHeader_t *mdm, int startTagIndex, const refEntity_t *refent,
-                       const char *tagName );
 
 /*
 =============================================================
