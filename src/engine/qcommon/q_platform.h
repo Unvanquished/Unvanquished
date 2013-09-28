@@ -52,6 +52,10 @@ Maryland 20850 USA.
 
 #else
 
+#ifdef __x86_64__
+#include <xmmintrin.h>
+#endif
+
 #if ( defined( _M_IX86 ) || defined( __i386__ )) && !defined( C_ONLY )
 #define id386       1
 #if defined SIMD_3DNOW
