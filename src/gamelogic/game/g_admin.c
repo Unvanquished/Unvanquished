@@ -3204,7 +3204,7 @@ qboolean G_admin_warn( gentity_t *ent )
 	G_DecolorString( ConcatArgs( 2 ), reason, sizeof( reason ) );
 
 	// create a ban list entry, set warnCount to -1 to indicate that this should NOT result in denying connection
-	if ( !ent->client->pers.localClient )
+	if ( ent && !ent->client->pers.localClient )
 	{
 		int time = G_admin_parse_time( g_adminWarn.string );
 		admin_create_ban_entry( ent, vic->client->pers.netname, vic->client->pers.guid, &vic->client->pers.ip, MAX(1, time), ( *reason ) ? reason : "warned by admin" )->warnCount = -1;
