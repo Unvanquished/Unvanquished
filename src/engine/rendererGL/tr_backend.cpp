@@ -5938,8 +5938,8 @@ static void RB_RenderDebugUtils()
 #endif
 
 									bone->parentIndex = model->md5->bones[ j ].parentIndex;
-									VectorCopy( model->md5->bones[ j ].origin, bone->origin );
-									VectorCopy( model->md5->bones[ j ].rotation, bone->rotation );
+									TransInitRotationQuat( model->md5->bones[ j ].rotation, &bone->t );
+									TransAddTranslation( model->md5->bones[ j ].origin, &bone->t );
 								}
 
 								skel = &skeleton;
@@ -5968,11 +5968,11 @@ static void RB_RenderDebugUtils()
 					}
 					else
 					{
-						VectorCopy( skel->bones[ parentIndex ].origin, origin );
+						VectorCopy( skel->bones[ parentIndex ].t.trans, origin );
 					}
 
-					VectorCopy( skel->bones[ j ].origin, offset );
-					QuatToVectorsFRU( skel->bones[ j ].rotation, forward, right, up );
+					VectorCopy( skel->bones[ j ].t.trans, offset );
+					QuatToVectorsFRU( skel->bones[ j ].t.rot, forward, right, up );
 
 					VectorSubtract( offset, origin, diff );
 
@@ -6001,7 +6001,7 @@ static void RB_RenderDebugUtils()
 						Tess_AddTetrahedron( tetraVerts, g_color_table[ ColorIndex( j ) ] );
 					}
 
-					MatrixTransformPoint( backEnd.orientation.transformMatrix, skel->bones[ j ].origin, worldOrigins[ j ] );
+					MatrixTransformPoint( backEnd.orientation.transformMatrix, skel->bones[ j ].t.trans, worldOrigins[ j ] );
 				}
 
 				Tess_UpdateVBOs( ATTR_POSITION | ATTR_TEXCOORD | ATTR_COLOR );

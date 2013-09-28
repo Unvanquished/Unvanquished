@@ -1340,12 +1340,11 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 			{
 				refBone_t *bone = &backEnd.currentEntity->e.skeleton.bones[ i ];
 
-				TransInitRotationQuat( model->bones[ i ].rotation, &tess.bones[ i ] );
-				TransAddTranslation( model->bones[ i ].origin, &tess.bones[ i ] );
-				TransInverse( &tess.bones[ i ], &tess.bones[ i ] );
-				TransAddRotationQuat( bone->rotation, &bones[i] );
+				TransInitRotationQuat( model->bones[ i ].rotation, &bones[ i ] );
+				TransAddTranslation( model->bones[ i ].origin, &bones[ i ] );
+				TransInverse( &bones[ i ], &bones[ i ] );
+				TransCombine( &bones[ i ], &bone->t, &bones[ i ] );
 				TransAddScale( backEnd.currentEntity->e.skeleton.scale, &bones[ i ] );
-				TransAddTranslation( bone->origin, &bones[ i ] );
 			}
 			else
 #endif
@@ -1391,14 +1390,13 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 				TransInitRotationQuat( model->bones[ i ].rotation, &bones[ i ] );
 				TransAddTranslation( model->bones[ i ].origin, &bones[ i ] );
 				TransInverse( &bones[ i ], &bones[ i ] );
-				TransAddRotationQuat( bone->rotation, &bones[ i ] );
-				TransAddTranslation( bone->origin, &bones[ i ] );
+				TransCombine( &bones[ i ], &bone->t, &bones[ i ] );
 				TransAddScale( backEnd.currentEntity->e.skeleton.scale, &bones[ i ] );
 			}
 			else
 #endif
 			{
-				TransInit( &bones[ i ] );
+				TransInitScale( backEnd.currentEntity->e.skeleton.scale, &bones[ i ] );
 			}
 		}
 
@@ -1682,9 +1680,10 @@ static void Tess_SurfaceVBOMD5Mesh( srfVBOMD5Mesh_t *srf )
 			TransInitRotationQuat( model->bones[ srf->boneRemapInverse[ i ] ].rotation, &tess.bones[ i ] );
 			TransAddTranslation( model->bones[ srf->boneRemapInverse[ i ] ].origin, &tess.bones[ i ] );
 			TransInverse( &tess.bones[ i ], &tess.bones[ i ] );
-			TransAddRotationQuat( bone->rotation, &tess.bones[ i ] );
+			TransAddRotationQuat( bone->t.rot, &tess.bones[ i ] );
+			//TransCombine( &tess.bones[ i ], &bone->t, &tess.bones[ i ] );
 			TransAddScale( backEnd.currentEntity->e.skeleton.scale, &tess.bones[ i ] );
-			TransAddTranslation( bone->origin, &tess.bones[ i ] );
+			TransAddTranslation( bone->t.trans, &tess.bones[ i ] );
 		}
 	}
 	else

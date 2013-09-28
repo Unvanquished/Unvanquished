@@ -159,8 +159,7 @@ typedef struct
 	char   name[ 64 ];
 #endif
 	short  parentIndex; // parent index (-1 if root)
-	vec3_t origin;
-	quat_t rotation;
+	transform_t t;
 } refBone_t;
 
 typedef enum

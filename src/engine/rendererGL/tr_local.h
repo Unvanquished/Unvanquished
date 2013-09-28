@@ -32,7 +32,6 @@ extern "C" {
 #include "../qcommon/qfiles.h"
 #include "../qcommon/qcommon.h"
 #include "../renderer/tr_public.h"
-#include "../renderer/tr_bonematrix.h"
 
 #include <GL/glew.h>
 
@@ -2276,7 +2275,6 @@ extern "C" {
 		int8_t   parentIndex; // parent index (-1 if root)
 		vec3_t   origin;
 		quat_t   rotation;
-		boneMatrix_t inverseTransform; // full inverse for tangent space transformation
 	} md5Bone_t;
 
 	typedef struct md5Model_s

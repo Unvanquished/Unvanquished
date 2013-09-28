@@ -213,12 +213,12 @@ void CG_TransformSkeleton( refSkeleton_t *skel, const vec_t scale )
 
 			parent = &skel->bones[ bone->parentIndex ];
 
-			QuatTransformVector( parent->rotation, bone->origin, rotated );
+			QuatTransformVector( parent->t.rot, bone->t.trans, rotated );
 			VectorScale( rotated, scale, rotated );
-			VectorAdd( parent->origin, rotated, bone->origin );
+			VectorAdd( parent->t.trans, rotated, bone->t.trans );
 
-			QuatMultiply1( parent->rotation, bone->rotation, quat );
-			QuatCopy( quat, bone->rotation );
+			QuatMultiply1( parent->t.rot, bone->t.rot, quat );
+			QuatCopy( quat, bone->t.rot );
 		}
 	}
 

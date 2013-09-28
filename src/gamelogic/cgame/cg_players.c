@@ -401,11 +401,11 @@ static qboolean CG_DeriveAnimationDelta( const char *modelName, weapon_t weapon,
 
 	for ( i = 0; i < ci->numHandBones; i++ )
 	{
-		VectorSubtract( delta.bones[ ci->handBones[ i ] ].origin, base.bones[ ci->handBones[ i ] ].origin, deltas[ weapon ][ ci->handBones[ i ] ].delta );
+		VectorSubtract( delta.bones[ ci->handBones[ i ] ].t.trans, base.bones[ ci->handBones[ i ] ].t.trans, deltas[ weapon ][ ci->handBones[ i ] ].delta );
 
-		QuatInverse( base.bones[ ci->handBones[ i ] ].rotation );
+		QuatInverse( base.bones[ ci->handBones[ i ] ].t.rot );
 
-		QuatMultiply1( base.bones[ ci->handBones[ i ] ].rotation, delta.bones[ ci->handBones[ i ] ].rotation, deltas[ weapon ][ ci->handBones[ i ] ].rot );
+		QuatMultiply1( base.bones[ ci->handBones[ i ] ].t.rot, delta.bones[ ci->handBones[ i ] ].t.rot, deltas[ weapon ][ ci->handBones[ i ] ].rot );
 	}
 
 	return qtrue;
@@ -3297,8 +3297,8 @@ void CG_Player( centity_t *cent )
 
 				for ( j = 0; j < ci->numHandBones; j++ )
 				{
-					VectorAdd( deltas[ es->weapon ][ ci->handBones[ j ] ].delta, body.skeleton.bones[ ci->handBones[ j ] ].origin, body.skeleton.bones[ ci->handBones[ j ] ].origin );
-					QuatMultiply0( body.skeleton.bones[ ci->handBones[ j ] ].rotation, deltas[ es->weapon ][ ci->handBones[ j ] ].rot );
+					VectorAdd( deltas[ es->weapon ][ ci->handBones[ j ] ].delta, body.skeleton.bones[ ci->handBones[ j ] ].t.trans, body.skeleton.bones[ ci->handBones[ j ] ].t.trans );
+					QuatMultiply0( body.skeleton.bones[ ci->handBones[ j ] ].t.rot, deltas[ es->weapon ][ ci->handBones[ j ] ].rot );
 				}
 			}
 
@@ -3307,7 +3307,7 @@ void CG_Player( centity_t *cent )
 			{
 				quat_t rot;
 				QuatFromAngles( rot, 15, 0, 0 );
-				QuatMultiply0( body.skeleton.bones[ 33 ].rotation, rot );
+				QuatMultiply0( body.skeleton.bones[ 33 ].t.rot, rot );
 			}
 
 			// rotate torso
@@ -3317,7 +3317,7 @@ void CG_Player( centity_t *cent )
 			{
 				// HACK: convert angles to bone system
 				QuatFromAngles( rotation, torsoAngles[ YAW ], 0, 0 );
-				QuatMultiply0( body.skeleton.bones[ boneIndex ].rotation, rotation );
+				QuatMultiply0( body.skeleton.bones[ boneIndex ].t.rot, rotation );
 			}
 
 			// HACK: limit angle (avoids worst of the gun clipping through the body)
@@ -3332,11 +3332,11 @@ void CG_Player( centity_t *cent )
 			}
 
 			QuatFromAngles( rotation, -cent->lerpAngles[ 0 ], 0, 0 );
-			QuatMultiply0( body.skeleton.bones[ ci->rightShoulderBone ].rotation, rotation );
+			QuatMultiply0( body.skeleton.bones[ ci->rightShoulderBone ].t.rot, rotation );
 
 			// Relationships are emphirically derived. They will probably need to be changed upon changes to the human model
 			QuatFromAngles( rotation, cent->lerpAngles[ 0 ], cent->lerpAngles[ 0 ] < 0 ? -cent->lerpAngles[ 0 ] / 9 : -cent->lerpAngles[ 0 ] / ( 8 - ( 5 * ( cent->lerpAngles[ 0 ] / 90 ) ) )  , 0 );
-			QuatMultiply0( body.skeleton.bones[ ci->leftShoulderBone ].rotation, rotation );
+			QuatMultiply0( body.skeleton.bones[ ci->leftShoulderBone ].t.rot, rotation );
 		}
 		else
 		{

@@ -1439,9 +1439,11 @@ static void RB_SurfaceMD5( md5Surface_t *srf )
 
 		if ( backEnd.currentEntity->e.skeleton.type == SK_ABSOLUTE )
 		{
-			BoneMatrixSetupTransformWithScale( tmpMat, backEnd.currentEntity->e.skeleton.bones[ i ].rotation,
-			                              backEnd.currentEntity->e.skeleton.bones[ i ].origin,
-			                              backEnd.currentEntity->e.skeleton.scale );
+			refBone_t *bone = &backEnd.currentEntity->e.skeleton.bones[ i ];
+
+			BoneMatrixSetupTransformWithScale( tmpMat, bone->t.rot,
+							   bone->t.trans,
+							   backEnd.currentEntity->e.skeleton.scale * bone->t.scale );
 			BoneMatrixMultiply( tmpMat, model->bones[ i ].inverseTransform, boneMatrices[ i ] );
 		}
 		else

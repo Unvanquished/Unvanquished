@@ -853,8 +853,7 @@ int RE_BuildSkeleton( refSkeleton_t *skel, qhandle_t hAnim, int startFrame, int 
 
 			if ( channel->parentIndex < 0 && clearOrigin )
 			{
-				VectorClear( skel->bones[ i ].origin );
-				QuatClear( skel->bones[ i ].rotation );
+				VectorClear( skel->bones[ i ].t.trans );
 
 				// move bounding box back
 				VectorSubtract( skel->bounds[ 0 ], lerpedOrigin, skel->bounds[ 0 ] );
@@ -862,10 +861,11 @@ int RE_BuildSkeleton( refSkeleton_t *skel, qhandle_t hAnim, int startFrame, int 
 			}
 			else
 			{
-				VectorCopy( lerpedOrigin, skel->bones[ i ].origin );
+				VectorCopy( lerpedOrigin, skel->bones[ i ].t.trans );
 			}
 
-			QuatCopy( lerpedQuat, skel->bones[ i ].rotation );
+			QuatCopy( lerpedQuat, skel->bones[ i ].t.rot );
+			skel->bones[ i ].t.scale = 1.0f;
 
 #if defined( REFBONE_NAMES )
 			Q_strncpyz( skel->bones[ i ].name, channel->name, sizeof( skel->bones[ i ].name ) );
@@ -904,11 +904,12 @@ int RE_BlendSkeleton( refSkeleton_t *skel, const refSkeleton_t *blend, float fra
 	// lerp between the 2 bone poses
 	for ( i = 0; i < skel->numBones; i++ )
 	{
-		VectorLerp( skel->bones[ i ].origin, blend->bones[ i ].origin, frac, lerpedOrigin );
-		QuatSlerp( skel->bones[ i ].rotation, blend->bones[ i ].rotation, frac, lerpedQuat );
+		VectorLerp( skel->bones[ i ].t.trans, blend->bones[ i ].t.trans, frac, lerpedOrigin );
+		QuatSlerp( skel->bones[ i ].t.rot, blend->bones[ i ].t.rot, frac, lerpedQuat );
 
-		VectorCopy( lerpedOrigin, skel->bones[ i ].origin );
-		QuatCopy( lerpedQuat, skel->bones[ i ].rotation );
+		VectorCopy( lerpedOrigin, skel->bones[ i ].t.trans );
+		QuatCopy( lerpedQuat, skel->bones[ i ].t.rot );
+		skel->bones[ i ].t.scale = Q_lerp( skel->bones[ i ].t.scale, blend->bones[ i ].t.scale, frac );
 	}
 
 	// calculate a bounding box in the current coordinate system
