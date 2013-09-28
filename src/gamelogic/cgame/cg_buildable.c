@@ -593,29 +593,29 @@ void CG_InitBuildables( void )
 					{
 						int o = (int) animTypes[ n ].fallback;
 
-						// if the fallback is to be reversed, try loading it
-						// otherwise, or if that fails, use the fallback directly
-						if ( !animTypes[ n ].fallbackReversed )
+						if ( o == BANIM_NONE )
 						{
+							// missing animation file, no fallback defined
+							Com_Printf( S_WARNING "Failed to load animation file '%s' for model '%s'\n", animTypes[ n ].name, buildableName );
+						}
+						else if ( !bi->animations[ o ].handle )
+						{
+							// no animation file, fallback wasn't loaded
 							if ( cg_debugAnim.integer )
 							{
-								Com_Printf( "Failed to load animation '%s' for model '%s': duplicated fallback '%s'\n", animTypes[ n ].name, buildableName, animTypes[ o ].name );
+								Com_Printf( S_WARNING "No fallback for animation file '%s' for model '%s'\n", animTypes[ n ].name, buildableName );
 							}
+						}
+						else // valid fallback
+						{
+							// copy the animation data
+							bi->animations[ n ] = bi->animations[ o ];
 
-							bi->animations[ n ] = bi->animations[ o ];
-						}
-						else if ( CG_RegisterBuildableAnimation( bi, buildableName, n, animTypes[ o ].name, animTypes[ o ].loop, !animTypes[ n ].reversed, animTypes[ o ].clearOrigin ) )
-						{
-							if ( cg_debugAnim.integer )
+							// and reverse it if needed
+							if ( animTypes[ n ].fallbackReversed )
 							{
-								Com_Printf( "Failed to load animation '%s' for model '%s': loaded fallback '%s'\n", animTypes[ n ].name, buildableName, animTypes[ o ].name );
+									bi->animations[ n ].reversed = !bi->animations[ n ].reversed;
 							}
-						}
-						else
-						{
-							// this one gets printed anyway
-							Com_Printf( S_WARNING "Failed to load animation '%s' and fallback '%s' for model '%s'\n", animTypes[ n ].name, animTypes[ o ].name, buildableName );
-							bi->animations[ n ] = bi->animations[ o ];
 						}
 					}
 				}
