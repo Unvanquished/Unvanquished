@@ -1424,7 +1424,7 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 			BoneMatrixTransformNormalSSE( a, b, c, v->binormal, tess.binormals[ tess.numVertexes + j ] );
 			BoneMatrixTransformNormalSSE( a, b, c, v->tangent, tess.tangents[ tess.numVertexes + j ] );
 #else
-			BoneMatrixMul( tmpMat, v->boneWeights[ k ], boneMatrices[ v->boneIndexes[ k ] ] );
+			BoneMatrixMul( tmpMat, v->boneWeights[ 0 ], boneMatrices[ v->boneIndexes[ 0 ] ] );
 
 			for ( k = 1; k < v->numWeights; k++ )
 			{
