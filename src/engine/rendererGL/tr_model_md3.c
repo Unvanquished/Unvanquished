@@ -28,12 +28,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 /*
 =================
-MDXSurfaceCompare
+MDVSurfaceCompare
 compare function for qsort()
 =================
 */
 #if 0
-static int MDXSurfaceCompare( const void *a, const void *b )
+static int MDVSurfaceCompare( const void *a, const void *b )
 {
 	mdvSurface_t *aa, *bb;
 
@@ -198,7 +198,7 @@ qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const c
 		// change to surface identifier
 		surf->surfaceType = SF_MDV;
 
-		// give pointer to model for Tess_SurfaceMDX
+		// give pointer to model for Tess_SurfaceMDV
 		surf->model = mdvModel;
 
 		// copy surface name

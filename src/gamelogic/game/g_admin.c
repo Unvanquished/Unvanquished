@@ -1478,7 +1478,7 @@ static qboolean G_admin_ban_matches( g_admin_ban_t *ban, gentity_t *ent )
 	         G_AddressCompare( &ban->ip, &ent->client->pers.ip ) );
 }
 
-static g_admin_ban_t *G_admin_match_ban( gentity_t *ent )
+static g_admin_ban_t *G_admin_match_ban( gentity_t *ent, const g_admin_ban_t *start )
 {
 	int           t;
 	g_admin_ban_t *ban;
@@ -1490,7 +1490,7 @@ static g_admin_ban_t *G_admin_match_ban( gentity_t *ent )
 		return NULL;
 	}
 
-	for ( ban = g_admin_bans; ban; ban = ban->next )
+	for ( ban = start ? start->next : g_admin_bans; ban; ban = ban->next )
 	{
 		// 0 is for perm ban
 		if ( ban->expires != 0 && ban->expires <= t )
@@ -1509,7 +1509,7 @@ static g_admin_ban_t *G_admin_match_ban( gentity_t *ent )
 
 qboolean G_admin_ban_check( gentity_t *ent, char *reason, int rlen )
 {
-	g_admin_ban_t *ban;
+	g_admin_ban_t *ban = NULL;
 	char          warningMessage[ MAX_STRING_CHARS ];
 
 	if ( ent->client->pers.localClient )
@@ -1517,8 +1517,16 @@ qboolean G_admin_ban_check( gentity_t *ent, char *reason, int rlen )
 		return qfalse;
 	}
 
-	if ( ( ban = G_admin_match_ban( ent ) ) )
+	while ( ( ban = G_admin_match_ban( ent, ban ) ) )
 	{
+		// warn count -ve ⇒ is a warning, so don't deny connection
+		if ( G_ADMIN_BAN_IS_WARNING( ban ) )
+		{
+			ent->client->pers.hasWarnings = qtrue;
+			continue;
+		}
+
+		// otherwise, it's a ban
 		G_admin_ban_message( ent, ban, reason, rlen,
 		                     warningMessage, sizeof( warningMessage ) );
 
@@ -2218,19 +2226,13 @@ qboolean G_admin_setlevel( gentity_t *ent )
 	return qtrue;
 }
 
-static void admin_create_ban( gentity_t *ent,
-                              char *netname,
-                              char *guid,
-                              addr_t *ip,
-                              int seconds,
-                              char *reason )
+static g_admin_ban_t *admin_create_ban_entry( gentity_t *ent, char *netname, char *guid,
+                                              addr_t *ip, int seconds, const char *reason )
 {
 	g_admin_ban_t *b = NULL;
 	g_admin_ban_t *prev = NULL;
 	qtime_t       qt;
 	int           t;
-	int           i;
-	char          disconnect[ MAX_STRING_CHARS ];
 	int           id = 1;
 	int           expired = 0;
 
@@ -2304,7 +2306,7 @@ static void admin_create_ban( gentity_t *ent,
 	             1900 + qt.tm_year, qt.tm_mon + 1, qt.tm_mday,
 	             qt.tm_hour, qt.tm_min, qt.tm_sec );
 
-
+	Q_strncpyz( b->reason, reason, sizeof( b->reason ) );
 	Q_strncpyz( b->banner, G_admin_name( ent ), sizeof( b->banner ) );
 
 	if ( !seconds )
@@ -2316,14 +2318,19 @@ static void admin_create_ban( gentity_t *ent,
 		b->expires = t + seconds;
 	}
 
-	if ( !*reason )
-	{
-		Q_strncpyz( b->reason, "banned by admin", sizeof( b->reason ) );
-	}
-	else
-	{
-		Q_strncpyz( b->reason, reason, sizeof( b->reason ) );
-	}
+	return b;
+}
+
+static void admin_create_ban( gentity_t *ent,
+                              char *netname,
+                              char *guid,
+                              addr_t *ip,
+                              int seconds,
+                              char *reason )
+{
+	int           i;
+	char          disconnect[ MAX_STRING_CHARS ];
+	g_admin_ban_t *b = admin_create_ban_entry( ent, netname, guid, ip, seconds, ( reason && *reason ) ? reason : "banned by admin" );
 
 	G_admin_ban_message( NULL, b, disconnect, sizeof( disconnect ), NULL, 0 );
 
@@ -2405,6 +2412,35 @@ int G_admin_parse_time( const char *time )
 	}
 
 	return seconds;
+}
+
+static void G_admin_reflag_warnings_ent( int i )
+{
+	const g_admin_ban_t *ban = NULL;
+
+	level.clients[ i ].pers.hasWarnings = qfalse;
+
+	while ( ( ban = G_admin_match_ban( level.gentities + i, ban ) ) )
+	{
+		if ( G_ADMIN_BAN_IS_WARNING( ban ) )
+		{
+			level.clients[ i ].pers.hasWarnings = qtrue;
+			break;
+		}
+	}
+}
+
+static void G_admin_reflag_warnings( void )
+{
+	int                 i;
+
+	for ( i = 0; i < level.maxclients; i++ )
+	{
+		if ( level.clients[ i ].pers.connected != CON_DISCONNECTED )
+		{
+			G_admin_reflag_warnings_ent( i );
+		}
+	}
 }
 
 qboolean G_admin_kick( gentity_t *ent )
@@ -2642,6 +2678,7 @@ qboolean G_admin_unban( gentity_t *ent )
 	char          bs[ 5 ];
 	g_admin_ban_t *ban, *p;
 	qboolean      expireOnly;
+	qboolean      wasWarning;
 
 	if ( trap_Argc() < 2 )
 	{
@@ -2680,6 +2717,8 @@ qboolean G_admin_unban( gentity_t *ent )
 		return qfalse;
 	}
 
+	wasWarning = G_ADMIN_BAN_IS_WARNING( ban );
+
 	admin_log( va( "%d (%s) \"%s" S_COLOR_WHITE "\": \"%s" S_COLOR_WHITE "\": [%s]",
 	               ban->expires ? ban->expires - time : 0, ban->guid, ban->name, ban->reason,
 	               ban->ip.str ) );
@@ -2706,6 +2745,11 @@ qboolean G_admin_unban( gentity_t *ent )
 		}
 
 		BG_Free( ban );
+	}
+
+	if ( wasWarning )
+	{
+		G_admin_reflag_warnings();
 	}
 
 	G_admin_writeconfig();
@@ -2877,6 +2921,11 @@ qboolean G_admin_adjustban( gentity_t *ent )
 	if ( ent )
 	{
 		Q_strncpyz( ban->banner, ent->client->pers.netname, sizeof( ban->banner ) );
+	}
+
+	if ( G_ADMIN_BAN_IS_WARNING( ban ) )
+	{
+		G_admin_reflag_warnings();
 	}
 
 	G_admin_writeconfig();
@@ -3157,6 +3206,15 @@ qboolean G_admin_warn( gentity_t *ent )
 	vic = &g_entities[ pids[ 0 ] ];
 
 	G_DecolorString( ConcatArgs( 2 ), reason, sizeof( reason ) );
+
+	// create a ban list entry, set warnCount to -1 to indicate that this should NOT result in denying connection
+	if ( ent && !ent->client->pers.localClient )
+	{
+		int time = G_admin_parse_time( g_adminWarn.string );
+		admin_create_ban_entry( ent, vic->client->pers.netname, vic->client->pers.guid, &vic->client->pers.ip, MAX(1, time), ( *reason ) ? reason : "warned by admin" )->warnCount = -1;
+		vic->client->pers.hasWarnings = qtrue;
+	}
+
 	CPx( pids[ 0 ], va( "cp \"^1You have been warned by an administrator:\n^3\"%s",
 	                    Quote( reason ) ) );
 	AP( va( "print_tr %s %s %s %s", QQ( N_("^3warn: ^7$1$^7 has been warned: '$2$' by $3$\n") ),
@@ -3541,6 +3599,7 @@ qboolean G_admin_listplayers( gentity_t *ent )
 	g_admin_level_t *d = G_admin_level( 0 );
 	qboolean        hint;
 	qboolean        canset = G_admin_permission( ent, "setlevel" );
+	qboolean	canseeWarn = G_admin_permission( &g_entities[ i ], "warn" ) || G_admin_permission( &g_entities[ i ], "ban" );
 
 	ADMP( va( "%s %d", QQ( N_("^3listplayers: ^7$1$ players connected:\n") ),
 	           level.numConnectedClients ) );
@@ -3627,7 +3686,7 @@ qboolean G_admin_listplayers( gentity_t *ent )
 			}
 		}
 
-		ADMBP( va( "%2i ^%c%c^7 %-2i^2%c^7 %*s^7 ^5%c^1%c%c^7 %s^7 %s%s%s %s\n",
+		ADMBP( va( "%2i ^%c%c^7 %-2i^2%c^7 %*s^7 ^5%c^1%c%c%s^7 %s^7 %s%s%s %s\n",
 		           i,
 		           c,
 		           t,
@@ -3638,6 +3697,7 @@ qboolean G_admin_listplayers( gentity_t *ent )
 		           bot,
 		           muted,
 		           denied,
+		           canseeWarn ? ( p->pers.hasWarnings ? S_COLOR_YELLOW "W" : " " ) : "",
 		           p->pers.netname,
 		           ( registeredname ) ? "(a.k.a. " : "",
 		           ( registeredname ) ? registeredname : "",
@@ -3716,17 +3776,21 @@ static int ban_out( void *ban, char *str )
 		d_color = S_COLOR_CYAN;
 	}
 
-	Com_sprintf( str, MAX_STRING_CHARS, "%-*s %s%-15s " S_COLOR_WHITE "%-8s %s"
-	             "\n          \\__ %s%s%-*s " S_COLOR_WHITE "%s",
-	             MAX_NAME_LENGTH + colorlen1 - 1, b->name,
+	Com_sprintf( str, MAX_STRING_CHARS, "%s\n"
+	             "         %s\\__ %s%s%-*s %s%-15s " S_COLOR_WHITE "%-8s %s\n"
+	             "          %s\\__ %s: " S_COLOR_WHITE "%s",
+	             b->name,
+	             G_ADMIN_BAN_IS_WARNING( b ) ? S_COLOR_YELLOW : S_COLOR_RED,
+	             d_color,
+	             time,
+	             MAX_DURATION_LENGTH - 1,
+	             duration,
 	             ( strchr( b->ip.str, '/' ) ) ? S_COLOR_RED : S_COLOR_WHITE,
 	             b->ip.str,
 	             date,
 	             b->banner,
-	             d_color,
-			     time,
-	             MAX_DURATION_LENGTH - 1,
-	             duration,
+	             G_ADMIN_BAN_IS_WARNING( b ) ? S_COLOR_YELLOW : S_COLOR_RED,
+	             G_ADMIN_BAN_IS_WARNING( b ) ? "WARNING" : "BAN",
 	             b->reason );
 
 	return b->id;

@@ -1839,10 +1839,6 @@ void R_AddEntitySurfaces( void )
 							R_AddAnimSurfaces( ent );
 							break;
 
-						case MOD_MDM:
-							R_MDM_AddAnimSurfaces( ent );
-							break;
-
 						case MOD_MD5:
 							R_AddMD5Surfaces( ent );
 							break;
