@@ -64,4 +64,12 @@ namespace Cvar {
         return std::to_string(value);
     }
 
+    bool ParseCvarValue(std::string value, std::string& result) {
+		result = std::move(value);
+		return true;
+    }
+
+    std::string SerializeCvarValue(std::string value) {
+		return std::move(value);
+    }
 }

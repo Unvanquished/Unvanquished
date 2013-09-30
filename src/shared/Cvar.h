@@ -35,6 +35,7 @@ namespace Cvar {
     //TODO more doc (again)
 
     enum {
+        NONE       = 0,
         ARCHIVE    = BIT(0),
         USERINFO   = BIT(1),
         SERVERINFO = BIT(2),
@@ -99,6 +100,8 @@ namespace Cvar {
     std::string SerializeCvarValue(bool value);
     bool ParseCvarValue(std::string value, int& result);
     std::string SerializeCvarValue(int value);
+    bool ParseCvarValue(std::string value, std::string& result);
+    std::string SerializeCvarValue(std::string value);
 
     // Cvar<T>
 
@@ -137,7 +140,7 @@ namespace Cvar {
 
     template<typename T>
     bool Cvar<T>::Validate(const T& value) {
-        Q_UNUSED(value); //TODO
+        Q_UNUSED(value);
         return true;
     }
 

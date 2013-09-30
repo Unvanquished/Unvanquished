@@ -43,6 +43,7 @@ Maryland 20850 USA.
 #include "../framework/BaseCommands.h"
 #include "../framework/CommandSystem.h"
 #include "../framework/ConsoleHistory.h"
+#include "../../shared/Cvar.h"
 
 // htons
 #if defined __linux__ || defined __FreeBSD__ || defined( MACOS_X ) || defined( __APPLE__ )
@@ -73,7 +74,6 @@ fileHandle_t        com_journalDataFile; // config files are written here
 
 cvar_t              *com_crashed = NULL; // ydnar: set in case of a crash, prevents CVAR_UNSAFE variables from being set from a cfg
 
-cvar_t *com_ignorecrash = NULL; // bani - let experienced users ignore crashes, explicit NULL to make win32 happy
 cvar_t *com_pid; // bani - process id
 
 cvar_t *com_viewlog;
@@ -81,27 +81,21 @@ cvar_t *com_speeds;
 cvar_t *com_developer;
 cvar_t *com_dedicated;
 cvar_t *com_timescale;
-cvar_t *com_fixedtime;
 cvar_t *com_dropsim; // 0.0 to 1.0, simulated packet drops
 cvar_t *com_journal;
-cvar_t *com_maxfps;
 cvar_t *com_timedemo;
 cvar_t *com_sv_running;
 cvar_t *com_cl_running;
 cvar_t *com_logfile; // 1 = buffer log, 2 = flush after each print, 3 = append + flush
-cvar_t *com_pipefile;
-cvar_t *com_showtrace;
 cvar_t *com_version;
 
-cvar_t *con_drawnotify;
 cvar_t *com_ansiColor;
 
 cvar_t *com_consoleCommand;
 
 cvar_t *com_unfocused;
-cvar_t *com_maxfpsUnfocused;
 cvar_t *com_minimized;
-cvar_t *com_maxfpsMinimized;
+
 
 cvar_t *com_introPlayed;
 cvar_t *com_logosPlaying;
@@ -112,9 +106,6 @@ cvar_t *sv_paused;
 cvar_t *com_noErrorInterrupt;
 #endif
 cvar_t *com_recommendedSet;
-
-cvar_t *com_watchdog;
-cvar_t *com_watchdog_cmd;
 
 cvar_t *com_hunkused; // Ridah
 
@@ -2079,6 +2070,7 @@ void Com_SetRecommended( void )
 // bani - checks if profile.pid is valid
 // return qtrue if it is
 // return qfalse if it isn't(!)
+static Cvar::Cvar<bool> ignoreCrash("common.ignoreCrash", "bool - ignores the value of common.crashed", Cvar::NONE, false);
 qboolean Com_CheckProfile( char *profile_path )
 {
 	fileHandle_t f;
@@ -2086,7 +2078,7 @@ qboolean Com_CheckProfile( char *profile_path )
 	int          f_pid;
 
 	//let user override this
-	if ( com_ignorecrash->integer )
+	if ( ignoreCrash.Get() )
 	{
 		return qtrue;
 	}
@@ -2193,6 +2185,20 @@ qboolean Com_WriteProfile( char *profile_path )
 Com_Init
 =================
 */
+
+
+#ifndef _WIN32
+# ifdef DEDICATED
+	const std::string defaultPipeFilename = "svpipe";
+# else
+	const std::string defaultPipeFilename = "pipe";
+# endif
+#else
+	const std::string defaultPipeFilename = "";
+#endif
+//TODO LATCH
+static Cvar::Cvar<std::string> pipeFilename("common.pipefile", "filename - the name of the pipe you can send console commands to", Cvar::ARCHIVE, defaultPipeFilename);
+
 void Com_Init( char *commandLine )
 {
 	char              *s;
@@ -2222,7 +2228,6 @@ void Com_Init( char *commandLine )
 
 	// bani: init this early
 	Com_StartupVariable( "com_ignorecrash" );
-	com_ignorecrash = Cvar_Get( "com_ignorecrash", "0", 0 );
 
 	// ydnar: init crashed variable as early as possible
 	com_crashed = Cvar_Get( "com_crashed", "0", CVAR_TEMP );
@@ -2326,30 +2331,20 @@ void Com_Init( char *commandLine )
 	//
 	// init commands and vars
 	//
-	// Gordon: no need to latch this in ET, our recoil is framerate-independent
-	com_maxfps = Cvar_Get( "com_maxfps", "125", CVAR_ARCHIVE /*|CVAR_LATCH */ );
-
 	com_developer = Cvar_Get( "developer", "0", CVAR_TEMP );
 
 	com_logfile = Cvar_Get( "logfile", "0", CVAR_TEMP );
 
 	com_timescale = Cvar_Get( "timescale", "1", CVAR_CHEAT | CVAR_SYSTEMINFO );
-	com_fixedtime = Cvar_Get( "fixedtime", "0", CVAR_CHEAT );
-	com_showtrace = Cvar_Get( "com_showtrace", "0", CVAR_CHEAT );
 	com_dropsim = Cvar_Get( "com_dropsim", "0", CVAR_CHEAT );
 	com_viewlog = Cvar_Get( "viewlog", "0", CVAR_CHEAT );
 	com_speeds = Cvar_Get( "com_speeds", "0", 0 );
 	com_timedemo = Cvar_Get( "timedemo", "0", CVAR_CHEAT );
 
-	com_watchdog = Cvar_Get( "com_watchdog", "60", CVAR_ARCHIVE );
-	com_watchdog_cmd = Cvar_Get( "com_watchdog_cmd", "", CVAR_ARCHIVE );
-
 	cl_paused = Cvar_Get( "cl_paused", "0", CVAR_ROM );
 	sv_paused = Cvar_Get( "sv_paused", "0", CVAR_ROM );
 	com_sv_running = Cvar_Get( "sv_running", "0", CVAR_ROM );
 	com_cl_running = Cvar_Get( "cl_running", "0", CVAR_ROM );
-
-	con_drawnotify = Cvar_Get( "con_drawnotify", "0", CVAR_CHEAT );
 
 	//on a server, commands have to be used a lot more often than say
 	//we could differentiate server and client, but would change the default behavior many might be used to
@@ -2361,9 +2356,7 @@ void Com_Init( char *commandLine )
 	com_recommendedSet = Cvar_Get( "com_recommendedSet", "0", CVAR_ARCHIVE );
 
 	com_unfocused = Cvar_Get( "com_unfocused", "0", CVAR_ROM );
-	com_maxfpsUnfocused = Cvar_Get( "com_maxfpsUnfocused", "0", CVAR_ARCHIVE );
 	com_minimized = Cvar_Get( "com_minimized", "0", CVAR_ROM );
-	com_maxfpsMinimized = Cvar_Get( "com_maxfpsMinimized", "0", CVAR_ARCHIVE );
 
 #if defined( _WIN32 ) && !defined( NDEBUG )
 	com_noErrorInterrupt = Cvar_Get( "com_noErrorInterrupt", "0", 0 );
@@ -2452,18 +2445,10 @@ void Com_Init( char *commandLine )
 		   //Cvar_Set( "sv_nextmap", "cinematic avlogo.roq" );
 		   } */
 	}
-#ifndef _WIN32
-# ifdef DEDICATED
-	com_pipefile = Cvar_Get( "com_pipefile", "svpipe", CVAR_ARCHIVE | CVAR_LATCH );
-# else
-	com_pipefile = Cvar_Get( "com_pipefile", "pipe", CVAR_ARCHIVE | CVAR_LATCH );
-# endif
-#else
-	com_pipefile = Cvar_Get( "com_pipefile", "", CVAR_ARCHIVE | CVAR_LATCH );
-#endif
-	if ( com_pipefile->string[0] )
+
+	if (not pipeFilename.Get().empty())
 	{
-		pipefile = FS_FCreateOpenPipeFile( com_pipefile->string );
+		pipefile = FS_FCreateOpenPipeFile(pipeFilename.Get().c_str());
 	}
 	com_fullyInitialized = qtrue;
 	Com_Printf( "%s", "--- Common Initialization Complete ---\n" );
@@ -2650,6 +2635,8 @@ void Com_WriteBindings_f( void )
 Com_ModifyMsec
 ================
 */
+static Cvar::Cvar<int> fixedtime("common.framerate.fixed", "int - in milliseconds, forces the frame time, 0 for no effect", Cvar::CHEAT, 0);
+
 int Com_ModifyMsec( int msec )
 {
 	int clampTime;
@@ -2657,9 +2644,9 @@ int Com_ModifyMsec( int msec )
 	//
 	// modify time for debugging values
 	//
-	if ( com_fixedtime->integer )
+	if ( fixedtime.Get() )
 	{
-		msec = com_fixedtime->integer;
+		msec = fixedtime.Get();
 	}
 	else if ( com_timescale->value )
 	{
@@ -2711,6 +2698,17 @@ int Com_ModifyMsec( int msec )
 Com_Frame
 =================
 */
+
+//TODO 0 for the same value as common.maxFPS
+static Cvar::Cvar<int> maxfps("common.framerate.max", "int - the max framerate, 0 for unlimited", Cvar::ARCHIVE, 125);
+static Cvar::Cvar<int> maxfpsUnfocused("common.framerate.maxUnfocused", "int - the max framerate when the game is unfocused, 0 for unlimited", Cvar::ARCHIVE, 0);
+static Cvar::Cvar<int> maxfpsMinimized("common.framerate.maxMinimized", "int - the max framerate when the game is minimized, 0 for unlimited", Cvar::ARCHIVE, 0);
+
+static Cvar::Cvar<int> watchdogThreshold("common.watchdogTime", "int - seconds of server running without a map after which common.watchdogCmd is executed", Cvar::ARCHIVE, 60);
+static Cvar::Cvar<std::string> watchdogCmd("common.watchdogCmd", "string - the command triggered by the watchdog, empty for /quit", Cvar::ARCHIVE, "");
+
+static Cvar::Cvar<bool> showTraceStats("common.showTraceStats", "bool - are physics traces stats printed each frame", Cvar::CHEAT, false);
+
 void Com_Frame( void )
 {
 	int             msec, minMsec;
@@ -2770,17 +2768,17 @@ void Com_Frame( void )
 		}
 		else
 		{
-			if ( com_minimized->integer && com_maxfpsMinimized->integer > 0 )
+			if ( com_minimized->integer && maxfpsMinimized.Get() > 0 )
 			{
-				minMsec = 1000 / com_maxfpsMinimized->integer;
+				minMsec = 1000 / maxfpsMinimized.Get();
 			}
-			else if ( com_unfocused->integer && com_maxfpsUnfocused->integer > 0 )
+			else if ( com_unfocused->integer && maxfpsUnfocused.Get() > 0 )
 			{
-				minMsec = 1000 / com_maxfpsUnfocused->integer;
+				minMsec = 1000 / maxfpsUnfocused.Get();
 			}
-			else if ( com_maxfps->integer > 0 )
+			else if ( maxfps.Get() > 0 )
 			{
-				minMsec = 1000 / com_maxfps->integer;
+				minMsec = 1000 / maxfps.Get();
 			}
 			else
 			{
@@ -2889,7 +2887,7 @@ void Com_Frame( void )
 	//
 	// watchdog
 	//
-	if ( com_dedicated->integer && !com_sv_running->integer && com_watchdog->integer )
+	if ( com_dedicated->integer && !com_sv_running->integer && watchdogThreshold.Get() != 0 )
 	{
 		if ( watchdogTime == 0 )
 		{
@@ -2897,24 +2895,24 @@ void Com_Frame( void )
 		}
 		else
 		{
-			if ( !watchWarn && Sys_Milliseconds() - watchdogTime > ( com_watchdog->integer - 4 ) * 1000 )
+			if ( !watchWarn && Sys_Milliseconds() - watchdogTime > ( watchdogThreshold.Get() - 4 ) * 1000 )
 			{
 				Com_Log( LOG_WARN, _( "watchdog will trigger in 4 seconds" ));
 				watchWarn = qtrue;
 			}
-			else if ( Sys_Milliseconds() - watchdogTime > com_watchdog->integer * 1000 )
+			else if ( Sys_Milliseconds() - watchdogTime > watchdogThreshold.Get() * 1000 )
 			{
 				Com_Printf(_( "Idle server with no map — triggering watchdog\n" ));
 				watchdogTime = 0;
 				watchWarn = qfalse;
 
-				if ( com_watchdog_cmd->string[ 0 ] == '\0' )
+				if ( watchdogCmd.Get().empty() )
 				{
 					Cmd::BufferCommandText("quit");
 				}
 				else
 				{
-					Cmd::BufferCommandText(com_watchdog_cmd->string);
+					Cmd::BufferCommandText(watchdogCmd.Get());
 				}
 			}
 		}
@@ -2942,7 +2940,7 @@ void Com_Frame( void )
 	//
 	// trace optimization tracking
 	//
-	if ( com_showtrace->integer )
+	if ( showTraceStats.Get() )
 	{
 		extern int c_traces, c_brush_traces, c_patch_traces, c_trisoup_traces;
 		extern int c_pointcontents;
@@ -2997,7 +2995,7 @@ void Com_Shutdown( qboolean badProfile )
 	if ( pipefile )
 	{
 		FS_FCloseFile( pipefile );
-		FS_HomeRemove( com_pipefile->string );
+		FS_HomeRemove( pipeFilename.Get().c_str() );
 	}
 }
 
@@ -3082,10 +3080,7 @@ FindMatches
 */
 static void FindMatches( const char *s )
 {
-	int i;
-
     Cmd_OnCompleteMatch(s);
-    return;
 }
 
 /*
@@ -3116,44 +3111,6 @@ static void PrintMatches( const char *s )
 	{
 		Com_Printf( "    %s\n", s );
 	}
-}
-
-/*
-===============
-PrintCvarMatches
-===============
-*/
-static void PrintCvarMatches( const char *s )
-{
-	if ( !Q_strnicmp( s, shortestMatch, strlen( shortestMatch ) ) )
-	{
-		Com_Printf( " %s = \"%s\"\n", s, Cvar_VariableString( s ) );
-	}
-}
-
-/*
-===============
-Field_FindFirstSeparator
-===============
-*/
-static char *Field_FindFirstSeparator( char *s )
-{
-	int i;
-
-	// quotes are ignored, but escapes are processed
-	for ( i = 0; i < strlen( s ); i++ )
-	{
-		if ( s[ i ] == '\\' && s[ i + 1] )
-		{
-			++i;
-		}
-		else if ( s[ i ] == ';' )
-		{
-			return &s[ i ];
-		}
-	}
-
-	return NULL;
 }
 
 /*
@@ -3329,11 +3286,6 @@ qboolean Com_IsVoipTarget( uint8_t *voipTargets, int voipTargetsSize, int client
 
 	return qfalse;
 }
-
-#define CON_HISTORY      64
-#define CON_HISTORY_FILE "conhistory"
-static char history[ CON_HISTORY ][ MAX_EDIT_LINE ];
-static int  hist_current, hist_next;
 
 /*
 ==================
