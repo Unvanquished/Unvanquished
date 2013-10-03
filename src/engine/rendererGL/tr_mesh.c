@@ -71,17 +71,17 @@ static void R_CullMDV( mdvModel_t *model, trRefEntity_t *ent )
 			switch ( R_CullLocalPointAndRadius( newFrame->localOrigin, newFrame->radius ) )
 			{
 				case CULL_OUT:
-					tr.pc.c_sphere_cull_mdx_out++;
+					tr.pc.c_sphere_cull_mdv_out++;
 					ent->cull = CULL_OUT;
 					return;
 
 				case CULL_IN:
-					tr.pc.c_sphere_cull_mdx_in++;
+					tr.pc.c_sphere_cull_mdv_in++;
 					ent->cull = CULL_IN;
 					return;
 
 				case CULL_CLIP:
-					tr.pc.c_sphere_cull_mdx_clip++;
+					tr.pc.c_sphere_cull_mdv_clip++;
 					break;
 			}
 		}
@@ -104,19 +104,19 @@ static void R_CullMDV( mdvModel_t *model, trRefEntity_t *ent )
 			{
 				if ( sphereCull == CULL_OUT )
 				{
-					tr.pc.c_sphere_cull_mdx_out++;
+					tr.pc.c_sphere_cull_mdv_out++;
 					ent->cull = CULL_OUT;
 					return;
 				}
 				else if ( sphereCull == CULL_IN )
 				{
-					tr.pc.c_sphere_cull_mdx_in++;
+					tr.pc.c_sphere_cull_mdv_in++;
 					ent->cull = CULL_IN;
 					return;
 				}
 				else
 				{
-					tr.pc.c_sphere_cull_mdx_clip++;
+					tr.pc.c_sphere_cull_mdv_clip++;
 				}
 			}
 		}
@@ -125,18 +125,18 @@ static void R_CullMDV( mdvModel_t *model, trRefEntity_t *ent )
 	switch ( R_CullLocalBox( ent->localBounds ) )
 	{
 		case CULL_IN:
-			tr.pc.c_box_cull_mdx_in++;
+			tr.pc.c_box_cull_mdv_in++;
 			ent->cull = CULL_IN;
 			return;
 
 		case CULL_CLIP:
-			tr.pc.c_box_cull_mdx_clip++;
+			tr.pc.c_box_cull_mdv_clip++;
 			ent->cull = CULL_CLIP;
 			return;
 
 		case CULL_OUT:
 		default:
-			tr.pc.c_box_cull_mdx_out++;
+			tr.pc.c_box_cull_mdv_out++;
 			ent->cull = CULL_OUT;
 			return;
 	}

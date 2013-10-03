@@ -637,7 +637,7 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 #ifdef Q3_VM_INSTANTIATE
 	{
 		float y;
-#if id386_sse
+#if id386_sse || defined( __x86_64__ )
 		_mm_store_ss( &y, _mm_rsqrt_ss( _mm_load_ss( &number ) ) );
 #elif idppc
 		float x = 0.5f * number;

@@ -1587,9 +1587,6 @@ extern "C" {
 	  SF_DECAL, // ydnar: decal surfaces
 
 	  SF_MDV,
-#if defined( COMPAT_ET )
-	  SF_MDM,
-#endif
 	  SF_MD5,
 
 	  SF_FLARE,
@@ -1597,9 +1594,6 @@ extern "C" {
 
 	  SF_VBO_MESH,
 	  SF_VBO_MD5MESH,
-#if defined( COMPAT_ET )
-	  SF_VBO_MDMMESH,
-#endif
 	  SF_VBO_MDVMESH,
 
 	  SF_NUM_SURFACE_TYPES,
@@ -1920,31 +1914,6 @@ extern "C" {
 		VBO_t *vbo;
 		IBO_t *ibo;
 	} srfVBOMD5Mesh_t;
-
-	typedef struct srfVBOMDMMesh_s
-	{
-		surfaceType_t             surfaceType;
-
-		struct mdmModel_s         *mdmModel;
-
-		struct mdmSurfaceIntern_s *mdmSurface;
-
-		struct shader_s           *shader; // FIXME move this to somewhere else
-
-		int                       skinIndex;
-
-		int                       numBoneRemap;
-		int                       boneRemap[ MAX_BONES ];
-		int                       boneRemapInverse[ MAX_BONES ];
-
-		// backEnd stats
-		int numIndexes;
-		int numVerts;
-
-		// static render data
-		VBO_t *vbo;
-		IBO_t *ibo[ MD3_MAX_LODS ];
-	} srfVBOMDMMesh_t;
 
 	typedef struct srfVBOMDVMesh_s
 	{
@@ -2267,10 +2236,11 @@ extern "C" {
 		vec4_t      normal;
 		vec2_t      texCoords;
 
-		uint16_t    firstWeight;
-		uint16_t    numWeights;
-		md5Weight_t **weights;
-	} md5Vertex_t );
+		uint32_t    firstWeight;
+		uint32_t    numWeights;
+		uint32_t    boneIndexes[ MAX_WEIGHTS ];
+		float       boneWeights[ MAX_WEIGHTS ];
+	} ) md5Vertex_t;
 
 	/*
 	typedef struct
@@ -2322,70 +2292,6 @@ extern "C" {
 
 		vec3_t          bounds[ 2 ];
 	} md5Model_t;
-
-	typedef struct
-	{
-		char   name[ 64 ]; // name of tag
-		vec3_t axis[ 3 ];
-
-		int    boneIndex;
-		vec3_t offset;
-
-		int    numBoneReferences;
-		int    *boneReferences;
-	} mdmTagIntern_t;
-
-	typedef struct mdmSurfaceIntern_s
-	{
-		surfaceType_t surfaceType;
-
-		char          name[ MAX_QPATH ]; // polyset name
-		char          shader[ MAX_QPATH ];
-		int           shaderIndex; // for in-game use
-
-		int           minLod;
-
-		uint32_t      numVerts;
-		md5Vertex_t   *verts;
-
-		uint32_t      numTriangles;
-		srfTriangle_t *triangles;
-
-//	uint32_t        numWeights;
-//	md5Weight_t    *weights;
-
-		int               numBoneReferences;
-		int               *boneReferences;
-
-		int32_t           *collapseMap; // numVerts many
-
-		struct mdmModel_s *model;
-	} mdmSurfaceIntern_t;
-
-	typedef struct mdmModel_s
-	{
-//	uint16_t        numBones;
-//	md5Bone_t      *bones;
-
-		float              lodScale;
-		float              lodBias;
-
-		uint16_t           numTags;
-		mdmTagIntern_t     *tags;
-
-		uint16_t           numSurfaces;
-		mdmSurfaceIntern_t *surfaces;
-
-		uint16_t           numVBOSurfaces;
-		srfVBOMDMMesh_t    **vboSurfaces;
-
-		int                numBoneReferences;
-		int32_t            *boneReferences;
-
-		vec3_t             bounds[ 2 ];
-	} mdmModel_t;
-
-	extern const float mdmLODResolutions[ MD3_MAX_LODS ];
 
 	typedef enum
 	{
@@ -2470,10 +2376,6 @@ extern "C" {
 	  MOD_BAD,
 	  MOD_BSP,
 	  MOD_MESH,
-#if defined( COMPAT_ET )
-	  MOD_MDM,
-	  MOD_MDX,
-#endif
 	  MOD_MD5
 	} modtype_t;
 
@@ -2486,10 +2388,6 @@ extern "C" {
 		int         dataSize; // just for listing purposes
 		bspModel_t  *bsp; // only if type == MOD_BSP
 		mdvModel_t  *mdv[ MD3_MAX_LODS ]; // only if type == MOD_MESH
-#if defined( COMPAT_ET )
-		mdmModel_t  *mdm; // only if type == MOD_MDM
-		mdxHeader_t *mdx; // only if type == MOD_MDX
-#endif
 		md5Model_t  *md5; // only if type == MOD_MD5
 
 		int         numLods;
@@ -2535,8 +2433,8 @@ extern "C" {
 
 		int c_sphere_cull_patch_in, c_sphere_cull_patch_clip, c_sphere_cull_patch_out;
 		int c_box_cull_patch_in, c_box_cull_patch_clip, c_box_cull_patch_out;
-		int c_sphere_cull_mdx_in, c_sphere_cull_mdx_clip, c_sphere_cull_mdx_out;
-		int c_box_cull_mdx_in, c_box_cull_mdx_clip, c_box_cull_mdx_out;
+		int c_sphere_cull_mdv_in, c_sphere_cull_mdv_clip, c_sphere_cull_mdv_out;
+		int c_box_cull_mdv_in, c_box_cull_mdv_clip, c_box_cull_mdv_out;
 		int c_box_cull_md5_in, c_box_cull_md5_clip, c_box_cull_md5_out;
 		int c_box_cull_light_in, c_box_cull_light_clip, c_box_cull_light_out;
 		int c_pvs_cull_light_out;
@@ -3924,23 +3822,6 @@ extern "C" {
 	int             R_GetBoneTag(orientation_t * outTag, mdsHeader_t * mds, int startTagIndex, const refEntity_t * refent,
 	                                                         const char *tagName);
 	                                                         */
-
-	/*
-	=============================================================
-
-	ANIMATED MODELS WOLF:ET  MDM/MDX
-
-	=============================================================
-	*/
-
-	void R_MDM_AddAnimSurfaces( trRefEntity_t *ent );
-	void R_AddMDMInteractions( trRefEntity_t *e, trRefLight_t *light, interactionType_t iaType );
-
-	int  R_MDM_GetBoneTag( orientation_t *outTag, mdmModel_t *mdm, int startTagIndex, const refEntity_t *refent,
-	                       const char *tagName );
-
-	void Tess_MDM_SurfaceAnim( mdmSurfaceIntern_t *surfType );
-	void Tess_SurfaceVBOMDMMesh( srfVBOMDMMesh_t *surfType );
 
 	/*
 	=============================================================

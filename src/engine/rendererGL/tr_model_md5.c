@@ -467,14 +467,25 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 			return qfalse;
 		}
 
-		// loop trough all vertices and set up the vertex weights
+		// loop through all vertices and set up the vertex weights and base positions
 		for ( j = 0, v = surf->verts; j < surf->numVerts; j++, v++ )
 		{
-			v->weights = ri.Hunk_Alloc( sizeof( *v->weights ) * v->numWeights, h_low );
+			md5Weight_t *w = surf->weights + v->firstWeight;
+			Vector4Set( v->position, 0, 0, 0, 1 );
 
-			for ( k = 0; k < v->numWeights; k++ )
+			for ( k = 0; k < v->numWeights; k++, w++ )
 			{
-				v->weights[ k ] = surf->weights + ( v->firstWeight + k );
+				vec3_t offsetVec;
+
+				v->boneIndexes[ k ] = w->boneIndex;
+				v->boneWeights[ k ] = w->boneWeight;
+
+				bone = &md5->bones[ w->boneIndex ];
+
+				QuatTransformVector( bone->rotation, w->offset, offsetVec );
+				VectorAdd( bone->origin, offsetVec, offsetVec );
+
+				VectorMA( v->position, w->boneWeight, offsetVec, v->position );
 			}
 		}
 	}
@@ -486,26 +497,7 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 	{
 		for ( j = 0, v = surf->verts; j < surf->numVerts; j++, v++ )
 		{
-			vec3_t      tmpVert;
-			md5Weight_t *w;
-
-			VectorClear( tmpVert );
-
-			for ( k = 0, w = v->weights[ 0 ]; k < v->numWeights; k++, w++ )
-			{
-				vec3_t offsetVec;
-
-				bone = &md5->bones[ w->boneIndex ];
-
-				QuatTransformVector( bone->rotation, w->offset, offsetVec );
-				VectorAdd( bone->origin, offsetVec, offsetVec );
-
-				VectorMA( tmpVert, w->boneWeight, offsetVec, tmpVert );
-			}
-
-			VectorCopy( tmpVert, v->position );
-			v->position[ 3 ] = 1;
-			AddPointToBounds( tmpVert, md5->bounds[ 0 ], md5->bounds[ 1 ] );
+			AddPointToBounds( v->position, md5->bounds[ 0 ], md5->bounds[ 1 ] );
 		}
 
 		// calc tangent spaces

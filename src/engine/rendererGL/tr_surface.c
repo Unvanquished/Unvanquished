@@ -1310,7 +1310,6 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 	md5Vertex_t     *v;
 	srfTriangle_t   *tri;
 	static ALIGNED( 16, boneMatrix_t boneMatrices[ MAX_BONES ] );
-	md5Weight_t *w;
 	boneMatrix_t tmpMat;
 
 	GLimp_LogComment( "--- Tess_SurfaceMD5 ---\n" );
@@ -1356,24 +1355,22 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 
 		for ( j = 0, v = srf->verts; j < numVertexes; j++, v++ )
 		{
-#if id386_sse
+#if id386_sse || defined( __x86_64__ )
 			__m128 a, b, c;
-			w = v->weights[ 0 ];
-			BoneMatrixMulSSE( &a, &b, &c, w->boneWeight, boneMatrices[ w->boneIndex ] );
+			BoneMatrixMulSSE( &a, &b, &c, v->boneWeights[ 0 ], boneMatrices[ v->boneIndexes[ 0 ] ] );
 
-			for ( k = 1, w = v->weights[ 1 ]; k < v->numWeights; k++, w++ )
+			for ( k = 1; k < v->numWeights; k++ )
 			{
-				BoneMatrixMadSSE( &a, &b, &c, w->boneWeight, boneMatrices[ w->boneIndex ] );
+				BoneMatrixMadSSE( &a, &b, &c, v->boneWeights[ k ], boneMatrices[ v->boneIndexes[ k ] ] );
 			}
 
 			BoneMatrixTransformPointSSE( a, b, c, v->position, tess.xyz[ tess.numVertexes + j ] );
 #else
-			w = v->weights[ 0 ];
-			BoneMatrixMul( tmpMat, w->boneWeight, boneMatrices[ w->boneIndex ] );
+			BoneMatrixMul( tmpMat, v->boneWeights[ 0 ], boneMatrices[ v->boneIndexes[ 0 ] ] );
 
-			for ( k = 1, w = v->weights[ 1 ]; k < v->numWeights; k++, w++ )
+			for ( k = 1; k < v->numWeights; k++ )
 			{
-				BoneMatrixMad( tmpMat, w->boneWeight, boneMatrices[ w->boneIndex ] );
+				BoneMatrixMad( tmpMat, v->boneWeights[ k ], boneMatrices[ v->boneIndexes[ k ] ] );
 			}
 
 			BoneMatrixTransformPoint( tmpMat, v->position, tess.xyz[ tess.numVertexes + j ] );
@@ -1411,15 +1408,14 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 
 		for ( j = 0, v = srf->verts; j < numVertexes; j++, v++ )
 		{
-#if id386_sse
+#if id386_sse || defined( __x86_64__ )
 			__m128 a, b, c;
 
-			w = v->weights[ 0 ];
-			BoneMatrixMulSSE( &a, &b, &c, w->boneWeight, boneMatrices[ w->boneIndex ] );
+			BoneMatrixMulSSE( &a, &b, &c, v->boneWeights[ 0 ], boneMatrices[ v->boneIndexes[ 0 ] ] );
 
-			for ( k = 1, w = v->weights[ 1 ]; k < v->numWeights; k++, w++ )
+			for ( k = 1; k < v->numWeights; k++ )
 			{
-				BoneMatrixMadSSE( &a, &b, &c, w->boneWeight, boneMatrices[ w->boneIndex ] );
+				BoneMatrixMadSSE( &a, &b, &c, v->boneWeights[ k ], boneMatrices[ v->boneIndexes[ k ] ] );
 			}
 
 			BoneMatrixTransformPointSSE( a, b, c, v->position, tess.xyz[ tess.numVertexes + j ] );
@@ -1428,12 +1424,11 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 			BoneMatrixTransformNormalSSE( a, b, c, v->binormal, tess.binormals[ tess.numVertexes + j ] );
 			BoneMatrixTransformNormalSSE( a, b, c, v->tangent, tess.tangents[ tess.numVertexes + j ] );
 #else
-			w = v->weights[ 0 ];
-			BoneMatrixMul( tmpMat, w->boneWeight, boneMatrices[ w->boneIndex ] );
+			BoneMatrixMul( tmpMat, v->boneWeights[ 0 ], boneMatrices[ v->boneIndexes[ 0 ] ] );
 
-			for ( k = 1, w = v->weights[ 1 ]; k < v->numWeights; k++, w++ )
+			for ( k = 1; k < v->numWeights; k++ )
 			{
-				BoneMatrixMad( tmpMat, w->boneWeight, boneMatrices[ w->boneIndex ] );
+				BoneMatrixMad( tmpMat, v->boneWeights[ k ], boneMatrices[ v->boneIndexes[ k ] ] );
 			}
 
 			BoneMatrixTransformPoint( tmpMat, v->position, tess.xyz[ tess.numVertexes + j ] );
@@ -1734,17 +1729,11 @@ void ( *rb_surfaceTable[ SF_NUM_SURFACE_TYPES ] )( void * ) =
 	( void ( * )( void * ) ) Tess_SurfacePolybuffer,  // SF_POLYBUFFER,
 	( void ( * )( void * ) ) Tess_SurfaceDecal,  // SF_DECAL
 	( void ( * )( void * ) ) Tess_SurfaceMDV,  // SF_MDV,
-#if defined( COMPAT_ET )
-	( void ( * )( void * ) ) Tess_MDM_SurfaceAnim,  // SF_MDM,
-#endif
 	( void ( * )( void * ) ) Tess_SurfaceMD5,  // SF_MD5,
 
 	( void ( * )( void * ) ) Tess_SurfaceFlare,  // SF_FLARE,
 	( void ( * )( void * ) ) Tess_SurfaceEntity,  // SF_ENTITY
 	( void ( * )( void * ) ) Tess_SurfaceVBOMesh,  // SF_VBO_MESH
 	( void ( * )( void * ) ) Tess_SurfaceVBOMD5Mesh,  // SF_VBO_MD5MESH
-#if defined( COMPAT_ET )
-	( void ( * )( void * ) ) Tess_SurfaceVBOMDMMesh,  // SF_VBO_MD5MESH
-#endif
 	( void ( * )( void * ) ) Tess_SurfaceVBOMDVMesh  // SF_VBO_MDVMESH
 };

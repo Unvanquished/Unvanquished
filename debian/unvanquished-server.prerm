@@ -5,8 +5,6 @@ set -e
 
 case "$1" in
   remove)
-    # Remove links
-    rm -f /usr/lib/games/unvanquished/base/server.cfg /usr/lib/games/unvanquished/base/maprotation.cfg
     ;;
 
   upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
