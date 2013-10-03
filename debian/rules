@@ -24,8 +24,8 @@ override_dh_auto_configure:
 		 -DCMAKE_SKIP_RPATH=ON \
 		 -DGAME_QVM=OFF \
 		 -DUSE_OPENAL_DLOPEN=OFF \
-		 -DUSE_GLSL_OPTIMIZER=OFF \
 		 -DBUILD_DAEMONMAP=ON \
+		 $(shell test ! -f /usr/include/opus/opus.h || echo -DUSE_INTERNAL_OPUS=OFF) \
 		 $(shell test -f /usr/include/xvid.h || echo -DUSE_CIN_XVID=OFF) \
 		 $(shell test -d /usr/include/webp || echo -DUSE_WEBP=OFF)
 
