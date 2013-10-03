@@ -1,5 +1,7 @@
 unvanquished (0.20.0-1) unstable; urgency=low
 
+  * Add unvanquished-dev, initially containing only unvanquishedmap.
+    (No manpages yet.)
   * Remove some cruft from debian/rules.
 
  -- Darren Salt <devspam@moreofthesa.me.uk>  Thu, 03 Oct 2013 16:50:34 +0100
