@@ -1416,6 +1416,8 @@ typedef struct hunkblock_s
 	const char         *file;
 	int                line;
 } hunkblock_t;
+// for alignment purposes
+#define SIZEOF_HUNKBLOCK_T ( ( sizeof( hunkblock_t ) + 31 ) & ~31 )
 
 static hunkblock_t *hunkblocks;
 
@@ -2021,7 +2023,7 @@ void           *Hunk_Alloc( int size, ha_pref preference )
 	Hunk_SwapBanks();
 
 #ifdef HUNK_DEBUG
-	size += sizeof( hunkblock_t );
+	size += SIZEOF_HUNKBLOCK_T;
 #endif
 
 	// round to cacheline
@@ -2059,13 +2061,13 @@ void           *Hunk_Alloc( int size, ha_pref preference )
 		hunkblock_t *block;
 
 		block = ( hunkblock_t * ) buf;
-		block->size = size - sizeof( hunkblock_t );
+		block->size = size - SIZEOF_HUNKBLOCK_T;
 		block->file = file;
 		block->label = label;
 		block->line = line;
 		block->next = hunkblocks;
 		hunkblocks = block;
-		buf = ( ( byte * ) buf ) + sizeof( hunkblock_t );
+		buf = ( ( byte * ) buf ) + SIZEOF_HUNKBLOCK_T;
 	}
 #endif
 

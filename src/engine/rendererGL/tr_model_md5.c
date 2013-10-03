@@ -309,6 +309,7 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 		}
 
 		surf->verts = ri.Hunk_Alloc( sizeof( *v ) * surf->numVerts, h_low );
+		assert( ((intptr_t) surf->verts & 15) == 0 );
 
 		for ( j = 0, v = surf->verts; j < surf->numVerts; j++, v++ )
 		{
