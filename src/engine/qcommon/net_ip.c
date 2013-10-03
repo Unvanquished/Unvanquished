@@ -1567,12 +1567,12 @@ static void NET_AddLocalAddress( char *ifname, struct sockaddr *addr, struct soc
 
 	if ( numIP < MAX_IPS )
 	{
-		if ( family == AF_INET )
+		if ( family == AF_INET && ( net_enabled->integer & NET_ENABLEV4 ) )
 		{
 			addrlen = sizeof( struct sockaddr_in );
 			localIP[ numIP ].type = NA_IP;
 		}
-		else if ( family == AF_INET6 )
+		else if ( family == AF_INET6 && ( net_enabled->integer & NET_ENABLEV6 ) )
 		{
 			addrlen = sizeof( struct sockaddr_in6 );
 			localIP[ numIP ].type = NA_IP6;
