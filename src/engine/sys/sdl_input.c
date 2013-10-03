@@ -1491,6 +1491,16 @@ static void IN_ProcessEvents( qboolean dropInput )
 					if ( mouseActive )
 					{
 						Com_QueueEvent( 0, SE_MOUSE, e.motion.xrel, e.motion.yrel, 0, NULL );
+#if ( defined( __linux__ ) || defined( __BSD__ ) ) && SDL_VERSION_ATLEAST( 2, 0, 0 )
+						{
+							// work around X window managers and edge-based workspace flipping
+							// - without this, we get LeaveNotify, no mouse button events, EnterNotify;
+							//   we would likely miss some button presses and releases.
+							int w, h;
+							SDL_GetWindowSize( window, &w, &h );
+							SDL_WarpMouseInWindow( window, w / 2, h / 2 );
+						}
+#endif
 					}
 					else if ( uivm )
 					{
