@@ -1343,8 +1343,9 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 				TransInitRotationQuat( model->bones[ i ].rotation, &bones[ i ] );
 				TransAddTranslation( model->bones[ i ].origin, &bones[ i ] );
 				TransInverse( &bones[ i ], &bones[ i ] );
-				TransCombine( &bones[ i ], &bone->t, &bones[ i ] );
+				TransAddRotationQuat( bone->t.rot, &bones[ i ] );
 				TransAddScale( backEnd.currentEntity->e.skeleton.scale, &bones[ i ] );
+				TransAddTranslation( bone->t.trans, &bones[ i ] );
 			}
 			else
 #endif
@@ -1390,8 +1391,9 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 				TransInitRotationQuat( model->bones[ i ].rotation, &bones[ i ] );
 				TransAddTranslation( model->bones[ i ].origin, &bones[ i ] );
 				TransInverse( &bones[ i ], &bones[ i ] );
-				TransCombine( &bones[ i ], &bone->t, &bones[ i ] );
+				TransAddRotationQuat( bone->t.rot, &bones[ i ] );
 				TransAddScale( backEnd.currentEntity->e.skeleton.scale, &bones[ i ] );
+				TransAddTranslation( bone->t.trans, &bones[ i ] );
 			}
 			else
 #endif
@@ -1405,19 +1407,42 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 
 		for ( j = 0, v = srf->verts; j < numVertexes; j++, v++ )
 		{
-			transform_t t;
+			vec3_t tmp;
 
-			TransStartLerp( &t );
+			VectorClear( tess.xyz[ tess.numVertexes + j ] );
+			VectorClear( tess.normals[ tess.numVertexes + j ] );
+			VectorClear( tess.binormals[ tess.numVertexes + j ] );
+			VectorClear( tess.tangents[ tess.numVertexes + j ] );
+
 			for( k = 0; k < v->numWeights; k++ ) {
-				TransAddWeight( v->boneWeights[ k ],
-						&bones[ v->boneIndexes[ k ] ], &t );
-			}
-			TransEndLerp( &t );
+				TransformPoint( &bones[ v->boneIndexes[ k ] ],
+						v->position, tmp );
+				VectorMA( tess.xyz[ tess.numVertexes + j ],
+					  v->boneWeights[ k ], tmp,
+					  tess.xyz[ tess.numVertexes + j ] );
 
-			TransformPoint( &t, v->position, tess.xyz[ tess.numVertexes + j ] );
-			TransformNormalVector( &t, v->normal, tess.normals[ tess.numVertexes + j ] );
-			TransformNormalVector( &t, v->binormal, tess.binormals[ tess.numVertexes + j ] );
-			TransformNormalVector( &t, v->tangent, tess.tangents[ tess.numVertexes + j ] );
+				TransformNormalVector( &bones[ v->boneIndexes[ k ] ],
+						       v->normal, tmp );
+				VectorMA( tess.normals[ tess.numVertexes + j ],
+					  v->boneWeights[ k ], tmp,
+					  tess.normals[ tess.numVertexes + j ] );
+
+				TransformNormalVector( &bones[ v->boneIndexes[ k ] ],
+						       v->tangent, tmp );
+				VectorMA( tess.tangents[ tess.numVertexes + j ],
+					  v->boneWeights[ k ], tmp,
+					  tess.tangents[ tess.numVertexes + j ] );
+
+				TransformNormalVector( &bones[ v->boneIndexes[ k ] ],
+						       v->binormal, tmp );
+				VectorMA( tess.binormals[ tess.numVertexes + j ],
+					  v->boneWeights[ k ], tmp,
+					  tess.binormals[ tess.numVertexes + j ] );
+			}
+			VectorNormalize( tess.normals[ tess.numVertexes + j ] );
+			VectorNormalize( tess.tangents[ tess.numVertexes + j ] );
+			VectorNormalize( tess.binormals[ tess.numVertexes + j ] );
+
 			tess.texCoords[ tess.numVertexes + j ][ 0 ] = v->texCoords[ 0 ];
 			tess.texCoords[ tess.numVertexes + j ][ 1 ] = v->texCoords[ 1 ];
 		}

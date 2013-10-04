@@ -492,8 +492,6 @@ set( RENDERERLIST
   ${MOUNT_DIR}/engine/renderer/tr_local.h
   ${MOUNT_DIR}/engine/renderer/tr_types.h
   ${MOUNT_DIR}/engine/renderer/tr_public.h
-  ${MOUNT_DIR}/engine/renderer/tr_bonematrix.h
-  ${MOUNT_DIR}/engine/renderer/tr_bonematrix.c
   ${MOUNT_DIR}/engine/renderer/anorms256.h
 )
 
@@ -541,8 +539,6 @@ set( RENDERERGLLIST
   ${MOUNT_DIR}/engine/qcommon/md4.c
   ${MOUNT_DIR}/engine/rendererGL/tr_local.h
   ${MOUNT_DIR}/engine/renderer/tr_public.h
-  ${MOUNT_DIR}/engine/renderer/tr_bonematrix.h
-  ${MOUNT_DIR}/engine/renderer/tr_bonematrix.c
   ${MOUNT_DIR}/engine/rendererGL/gl_shader.h
   ${MOUNT_DIR}/engine/rendererGL/tr_image.h
   ${MOUNT_DIR}/engine/rendererGL/tr_model_skel.h

@@ -904,12 +904,14 @@ int RE_BlendSkeleton( refSkeleton_t *skel, const refSkeleton_t *blend, float fra
 	// lerp between the 2 bone poses
 	for ( i = 0; i < skel->numBones; i++ )
 	{
-		VectorLerp( skel->bones[ i ].t.trans, blend->bones[ i ].t.trans, frac, lerpedOrigin );
-		QuatSlerp( skel->bones[ i ].t.rot, blend->bones[ i ].t.rot, frac, lerpedQuat );
+		transform_t trans;
 
-		VectorCopy( lerpedOrigin, skel->bones[ i ].t.trans );
-		QuatCopy( lerpedQuat, skel->bones[ i ].t.rot );
-		skel->bones[ i ].t.scale = Q_lerp( skel->bones[ i ].t.scale, blend->bones[ i ].t.scale, frac );
+		TransStartLerp( &trans );
+		TransAddWeight( 1.0f - frac, &skel->bones[ i ].t, &trans );
+		TransAddWeight( frac, &blend->bones[ i ].t, &trans );
+		TransEndLerp( &trans );
+
+		TransCopy( &trans, &skel->bones[ i ].t );
 	}
 
 	// calculate a bounding box in the current coordinate system
