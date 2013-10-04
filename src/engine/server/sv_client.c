@@ -381,10 +381,7 @@ gotnewcl:
 	ent->r.svFlags = 0;
 
 #ifdef HAVE_GEOIP
-	if ( country )
-	{
-		Info_SetValueForKey( userinfo, "geoip", country, qfalse );
-	}
+	Info_SetValueForKey( userinfo, "geoip", country, qfalse );
 #endif
 
 	// save the challenge
@@ -1559,11 +1556,13 @@ void SV_UserinfoChanged( client_t *cl )
 	if ( !NET_IsLocalAddress( cl->netchan.remoteAddress ) )
 	{
 		Info_SetValueForKey( cl->userinfo, "ip", NET_AdrToString( cl->netchan.remoteAddress ), qfalse );
+		Info_SetValueForKey( cl->userinfo, "geoip", NET_GeoIP_Country( &cl->netchan.remoteAddress ), qfalse );
 	}
 	else
 	{
 		// force the "ip" info key to "localhost" for local clients
 		Info_SetValueForKey( cl->userinfo, "ip", "localhost", qfalse );
+		Info_SetValueForKey( cl->userinfo, "geoip", NET_GeoIP_Country( NULL ), qfalse );
 	}
 
 	// TTimo
