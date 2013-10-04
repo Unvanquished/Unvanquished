@@ -6765,6 +6765,47 @@ void Item_ListBox_Paint( itemDef_t *item )
 
 void Item_Paint( itemDef_t *item );
 
+// check for intersection of some items with the active combobox
+// to prevent z ordering issues causing the active combobox to be obscurred
+qboolean ItemIntersectsActiveComboBox( itemDef_t *item )
+{
+	qboolean cast;
+	vec2_t mins, maxs;
+	vec2_t nmins, nmaxs;
+
+	// only care about these item types
+	if ( item->type != ITEM_TYPE_COMBOBOX )
+	{
+		return qfalse;
+	}
+
+	if ( !g_comboBoxItem || g_comboBoxItem == item )
+	{
+		return qfalse;
+	}
+
+	cast = Item_ComboBox_MaybeCastToListBox( g_comboBoxItem );
+		
+	mins[ 0 ] = g_comboBoxItem->window.rect.x;
+	mins[ 1 ] = g_comboBoxItem->window.rect.y;
+	maxs[ 0 ] = mins[ 0 ] + g_comboBoxItem->window.rect.w;
+	maxs[ 1 ] = mins[ 1 ] + g_comboBoxItem->window.rect.h;
+
+	Item_ComboBox_MaybeUnCastFromListBox( g_comboBoxItem, cast );
+
+	nmins[ 0 ] = item->window.rect.x;
+	nmins[ 1 ] = item->window.rect.y;
+	nmaxs[ 0 ] = nmins[ 0 ] + item->window.rect.w;
+	nmaxs[ 1 ] = nmins[ 1 ] + item->window.rect.h;
+
+	if ( mins[ 0 ] <= nmaxs[ 0 ] && maxs[ 0 ] >= nmins[ 0 ] && maxs[ 1 ] >= nmins[ 1 ] && mins[ 1 ] <= nmaxs[ 1 ] )
+	{
+		return qtrue;
+	}
+
+	return qfalse;
+}
+
 void Item_ComboBox_Paint( itemDef_t *item )
 {
 	float x, y, h;
@@ -7100,6 +7141,11 @@ void Item_Paint( itemDef_t *item )
 	}
 
 	if ( !( item->window.flags & WINDOW_VISIBLE ) )
+	{
+		return;
+	}
+
+	if ( ItemIntersectsActiveComboBox( item ) )
 	{
 		return;
 	}
