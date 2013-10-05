@@ -58,6 +58,17 @@ const int MAX_BOT_PATH = 512;
 const int MAX_PATH_LOOKAHEAD = 5;
 const int MAX_CORNERS = 5;
 const int MAX_ROUTE_PLANS = 2;
+const int MAX_ROUTE_CACHE = 20;
+const int ROUTE_CACHE_TIME = 200;
+
+typedef struct
+{
+	dtPolyRef startRef;
+	dtPolyRef endRef;
+	int       time;
+	dtStatus  status;
+	bool      invalid;
+} dtRouteResult;
 
 typedef struct
 {
@@ -75,8 +86,6 @@ typedef struct
 	dtPathCorridor    corridor;
 	int               clientNum;
 	bool              needReplan;
-	int               lastRoutePlanTime;
-	int               routePlanCounter;
 	float             cornerVerts[ MAX_CORNERS * 3 ];
 	unsigned char     cornerFlags[ MAX_CORNERS ];
 	dtPolyRef         cornerPolys[ MAX_CORNERS ];
@@ -85,6 +94,7 @@ typedef struct
 	rVec              offMeshStart;
 	rVec              offMeshEnd;
 	dtPolyRef         offMeshPoly;
+	dtRouteResult     routeResults[ MAX_ROUTE_CACHE ];
 } Bot_t;
 
 extern int numNavData;

@@ -146,6 +146,97 @@ bool BotFindNearestPoly( Bot_t *bot, rVec coord, dtPolyRef *nearestPoly, rVec &n
 	return true;
 }
 
+static void InvalidateRouteResults( Bot_t *bot )
+{
+	for ( int i = 0; i < MAX_ROUTE_CACHE; i++ )
+	{
+		dtRouteResult &res = bot->routeResults[ i ];
+
+		if ( res.invalid )
+		{
+			continue;
+		}
+
+		if ( svs.time - res.time > ROUTE_CACHE_TIME )
+		{
+			res.invalid = true;
+			continue;
+		}
+
+		if ( !bot->nav->query->isValidPolyRef( res.startRef, &bot->nav->filter ) )
+		{
+			res.invalid = true;
+			continue;
+		}
+
+		if ( !bot->nav->query->isValidPolyRef( res.endRef, &bot->nav->filter ) )
+		{
+			res.invalid = true;
+			continue;
+		}
+	}
+}
+
+static dtRouteResult *FindRouteResult( Bot_t *bot, dtPolyRef start, dtPolyRef end )
+{
+	if ( bot->needReplan )
+	{
+		return NULL; // force replan
+	}
+
+	for ( int i = 0; i < MAX_ROUTE_CACHE; i++ )
+	{
+		dtRouteResult &res = bot->routeResults[ i ];
+
+		if ( res.invalid )
+		{
+			continue;
+		}
+
+		if ( res.startRef != start )
+		{
+			continue;
+		}
+
+		if ( res.endRef != start )
+		{
+			continue;
+		}
+
+		return &res;
+	}
+
+	return NULL;
+}
+
+static void AddRouteResult( Bot_t *bot, dtPolyRef start, dtPolyRef end, dtStatus status )
+{
+	// only store route failures or partial results
+	if ( !dtStatusFailed( status ) && !dtStatusDetail( status, DT_PARTIAL_RESULT ) )
+	{
+		return;
+	}
+
+	dtRouteResult *bestPos = NULL;
+
+	for ( int i = 0; i < MAX_ROUTE_CACHE; i++ )
+	{
+		dtRouteResult &res = bot->routeResults[ i ];
+
+		if ( !bestPos || res.time < bestPos->time || res.invalid )
+		{
+			bestPos = &res;
+		}
+	}
+
+	// add result
+	bestPos->endRef = end;
+	bestPos->startRef = start;
+	bestPos->invalid = false;
+	bestPos->time = svs.time;
+	bestPos->status = status;
+}
+
 bool FindRoute( Bot_t *bot, rVec s, botRouteTargetInternal rtarget, bool allowPartial )
 {
 	rVec start;
@@ -154,18 +245,8 @@ bool FindRoute( Bot_t *bot, rVec s, botRouteTargetInternal rtarget, bool allowPa
 	dtPolyRef pathPolys[ MAX_BOT_PATH ];
 	dtStatus status;
 	int pathNumPolys;
-	int time = svs.time;
 
-	if ( time - bot->lastRoutePlanTime > 200 )
-	{
-		bot->routePlanCounter = 0;
-	}
-
-	//dont pathfind too much
-	if ( bot->routePlanCounter == MAX_ROUTE_PLANS )
-	{
-		return false;
-	}
+	InvalidateRouteResults( bot );
 
 	if ( !BotFindNearestPoly( bot, s, &startRef, start ) )
 	{
@@ -179,10 +260,26 @@ bool FindRoute( Bot_t *bot, rVec s, botRouteTargetInternal rtarget, bool allowPa
 	{
 		return false;
 	}
+
+	// cache failed results
+	dtRouteResult *res = FindRouteResult( bot, startRef, endRef );
+
+	if ( res )
+	{
+		if ( dtStatusFailed( res->status ) )
+		{
+			return false;
+		}
+
+		if ( dtStatusDetail( res->status, DT_PARTIAL_RESULT ) && !allowPartial )
+		{
+			return false;
+		}
+	}
 	
-	bot->lastRoutePlanTime = time;
-	bot->routePlanCounter++;
 	status = bot->nav->query->findPath( startRef, endRef, start, end, &bot->nav->filter, pathPolys, &pathNumPolys, MAX_BOT_PATH );
+
+	AddRouteResult( bot, startRef, endRef, status );
 
 	if ( dtStatusFailed( status ) )
 	{
