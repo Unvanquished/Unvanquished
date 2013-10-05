@@ -3797,7 +3797,6 @@ G_Deconstruct
 */
 void G_Deconstruct( gentity_t *self, gentity_t *deconner, meansOfDeath_t deconType )
 {
-	float confidence;
 	int   refund;
 	const buildableAttributes_t *attr;
 
@@ -3969,11 +3968,9 @@ static qboolean PredictBuildablePower( buildable_t buildable, vec3_t origin )
 	gentity_t       *neighbor, *buddy;
 	float           distance, ownPrediction, neighborPrediction;
 
-	switch ( buildable )
+	if ( buildable == BA_H_REPEATER || buildable == BA_H_REACTOR )
 	{
-		case BA_H_REPEATER:
-		case BA_H_REACTOR:
-			return qtrue;
+		return qtrue;
 	}
 
 	ownPrediction = g_powerBaseSupply.integer - BG_Buildable( buildable )->powerConsumption;
