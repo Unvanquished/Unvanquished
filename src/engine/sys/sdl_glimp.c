@@ -826,7 +826,6 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 	}
 
 #ifdef USE_XREAL_RENDERER
-	SDL_GL_MakeCurrent( window, glContext );
 	{
 		int GLmajor, GLminor;
 		sscanf( ( const char * ) glGetString( GL_VERSION ), "%d.%d", &GLmajor, &GLminor );
@@ -848,7 +847,10 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 		}
 	}
 #endif
-
+#if defined( SMP ) && !SDL_VERSION_ATLEAST( 2, 0, 0 )
+	// setup context for SDL_GL_MakeCurrent
+	SDL_GL_GetCurrentContext();
+#endif
 	GLimp_DetectAvailableModes();
 
 	glstring = ( char * ) glGetString( GL_RENDERER );

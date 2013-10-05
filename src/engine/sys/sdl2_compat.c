@@ -50,13 +50,11 @@ int colorBits = 0;
 #ifdef MACOS_X
 static struct
 {
-	int           init;
 	CGLContextObj ctx;
 } glInfo;
 #elif SDL_VIDEO_DRIVER_X11
 static struct
 {
-	int         init;
 	GLXContext  ctx;
 	Display     *dpy;
 	GLXDrawable drawable;
@@ -64,17 +62,16 @@ static struct
 #elif _WIN32
 static struct
 {
-	int   init;
 	HDC   hDC; // handle to device context
 	HGLRC hGLRC; // handle to GL rendering context
 } glInfo;
-#else
-static struct
-{
-	int   init;
-} glInfo;
 #endif
 #endif // SMP
+
+typedef struct
+{
+	SDL_Surface *surface;
+} SDL_GLContextInternal;
 
 static const SDL_VideoInfo *desktopInfo = NULL; // the desktop video info
 
@@ -86,10 +83,6 @@ static SDL_PixelFormat sPixelFormat;
 
 static SDL_Rect **modes;
 
-typedef struct
-{
-	SDL_Surface *surface;
-} SDL_GLContextInternal;
 
 SDL_GLContext SDL_GL_CreateContext( SDL_Window *w )
 {
@@ -101,42 +94,28 @@ SDL_GLContext SDL_GL_CreateContext( SDL_Window *w )
 }
 
 #ifdef SMP
-static void SDL_SetContext( void )
+SDL_GLContext SDL_GL_GetCurrentContext( void )
 {
-	if ( !glInfo.init )
-	{
 #if MACOS_X
-		glInfo.ctx = CGLGetCurrentContext();
-		glInfo.init = 1;
+	glInfo.ctx = CGLGetCurrentContext();
 #elif SDL_VIDEO_DRIVER_X11
-		glInfo.ctx = glXGetCurrentContext();
-		glInfo.dpy = glXGetCurrentDisplay();
-		glInfo.drawable = glXGetCurrentDrawable();
-		glInfo.init = 1;
+	glInfo.ctx = glXGetCurrentContext();
+	glInfo.dpy = glXGetCurrentDisplay();
+	glInfo.drawable = glXGetCurrentDrawable();
 #elif WIN32
-		SDL_SysWMinfo info;
+	SDL_SysWMinfo info;
 
-		SDL_VERSION( &info.version );
+	SDL_VERSION( &info.version );
 
-		if ( SDL_GetWMInfo( &info ) )
-		{
-			glInfo.hDC = GetDC( info.window );
-			glInfo.hGLRC = info.hglrc;
-			glInfo.init = 1;
-		}
-		else
-		{
-			glInfo.hDC = 0;
-			glInfo.hGLRC = NULL;
-		}
+	SDL_GetWMInfo( &info );
+	glInfo.hDC = GetDC( info.window );
+	glInfo.hGLRC = info.hglrc;
 #endif
-	}
+	return NULL;
 }
 
 int SDL_GL_MakeCurrent( SDL_Window *win, SDL_GLContext context )
 {
-	SDL_SetContext();
-
 	if ( !context  )
 	{
 #if MACOS_X

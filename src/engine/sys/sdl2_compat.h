@@ -131,8 +131,12 @@ const char *SDL_GetCurrentAudioDriver( void );
 SDL_GLContext SDL_GL_CreateContext( SDL_Window *w );
 
 #ifdef SMP
-// depends on glewInit() being called before
 int SDL_GL_MakeCurrent( SDL_Window *win, SDL_GLContext context );
+
+// depends on glewInit() being called before
+// only used to setup data for SDL_GL_MakeCurrent, so it must be called before then
+// will always return NULL
+SDL_GLContext SDL_GL_GetCurrentContext( void );
 #endif
 
 // SDL 1.2 only supports one window
