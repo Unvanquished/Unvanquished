@@ -49,7 +49,7 @@ Maryland 20850 USA.
 #endif
 
 #ifdef SMP
-#include <SDL/SDL_mutex.h>
+#include <SDL_mutex.h>
 #endif
 
 #define MAX_NUM_ARGVS             50
