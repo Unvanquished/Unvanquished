@@ -1669,6 +1669,11 @@ if( BUILD_OLD_RENDERER )
     find_package( X11 )
   endif()
 
+# Disabled - works, but is buggy
+#  if( USE_SMP )
+#    set_property( TARGET renderer APPEND PROPERTY COMPILE_DEFINITIONS SMP )
+#  endif()
+
   include_directories( ${PNG_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS} ${X11_INCLUDE_DIR} ${WEBP_INCLUDE_DIRS} )
   target_link_libraries( renderer ${PNG_LIBRARIES} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} ${JPEG_LIBRARIES} ${FREETYPE_LIBRARIES} ${WEBP_LIBRARIES} )
 
