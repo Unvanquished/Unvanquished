@@ -826,6 +826,7 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 	}
 
 #ifdef USE_XREAL_RENDERER
+	SDL_GL_MakeCurrent( window, glContext );
 	{
 		int GLmajor, GLminor;
 		sscanf( ( const char * ) glGetString( GL_VERSION ), "%d.%d", &GLmajor, &GLminor );
