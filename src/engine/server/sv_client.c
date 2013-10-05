@@ -381,7 +381,11 @@ gotnewcl:
 	ent->r.svFlags = 0;
 
 #ifdef HAVE_GEOIP
-	Info_SetValueForKey( userinfo, "geoip", country, qfalse );
+
+	if ( country )
+	{
+		Info_SetValueForKey( userinfo, "geoip", country, qfalse );
+	}
 #endif
 
 	// save the challenge
@@ -1564,9 +1568,6 @@ void SV_UserinfoChanged( client_t *cl )
 	{
 		// force the "ip" info key to "localhost" for local clients
 		Info_SetValueForKey( cl->userinfo, "ip", "localhost", qfalse );
-#ifdef HAVE_GEOIP
-		Info_SetValueForKey( cl->userinfo, "geoip", NET_GeoIP_Country( NULL ), qfalse );
-#endif
 	}
 
 	// TTimo
