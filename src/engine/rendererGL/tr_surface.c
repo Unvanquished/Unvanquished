@@ -1361,7 +1361,7 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 		{
 			vec3_t tmp;
 
-			VectorClear( v->position );
+			VectorClear( tess.xyz[ tess.numVertexes + j ] );
 			for ( k = 0; k < v->numWeights; k++ ) {
 				TransformPoint( &bones[ v->boneIndexes[ k ] ],
 						v->position, tmp );
