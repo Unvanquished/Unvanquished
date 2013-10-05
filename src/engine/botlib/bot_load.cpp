@@ -104,7 +104,7 @@ void BotLoadOffMeshConnections( const char *filename, NavData_t *nav )
 
 	Cvar_VariableStringBuffer( "mapname", mapname, sizeof( mapname ) );
 	Com_sprintf( filePath, sizeof( filePath ), "maps/%s-%s.navcon", mapname, filename );
-	int len = FS_FOpenFileRead( filePath, &f, qtrue );
+	FS_FOpenFileRead( filePath, &f, qtrue );
 
 	if ( !f )
 	{
