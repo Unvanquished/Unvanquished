@@ -1700,7 +1700,7 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 				 _mm_and_ps( aTS, mask_000W() ) );
 		tmp = _mm_mul_ps( tmp, sseSwizzle( bTS, WWWW ) );
 		out->sseTransScale = _mm_add_ps( tmp, _mm_and_ps( bTS, mask_XYZ0() ) );
-		out->sseRot = sseQuatMul( aRot, bRot );
+		out->sseRot = sseQuatMul( bRot, aRot );
 	}
 	STATIC_INLINE void TransInverse( const transform_t *in,
 					 transform_t *out ) {

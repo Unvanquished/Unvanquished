@@ -1443,9 +1443,8 @@ static void RB_SurfaceMD5( md5Surface_t *srf )
 			TransInitRotationQuat( model->bones[ i ].rotation, &bones[ i ] );
 			TransAddTranslation( model->bones[ i ].origin, &bones[ i ] );
 			TransInverse( &bones[ i ], &bones[ i ] );
-			TransAddRotationQuat( bone->t.rot, &bones[ i ] );
+			TransCombine( &bones[ i ], &bone->t, &bones[ i ] );
 			TransAddScale( backEnd.currentEntity->e.skeleton.scale, &bones[ i ] );
-			TransAddTranslation( bone->t.trans, &bones[ i ] );
 		}
 		else
 #endif
