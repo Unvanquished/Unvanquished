@@ -1922,6 +1922,10 @@ if( BUILD_CLIENT )
   if( MINGW )
     target_link_libraries( client ${SDLMAIN_LIBRARY} )
   endif()
+
+  if( USE_SMP )
+    set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS SMP )
+  endif()
 endif()
 
 ################

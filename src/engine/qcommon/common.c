@@ -48,6 +48,10 @@ Maryland 20850 USA.
 #include <winsock.h>
 #endif
 
+#ifdef SMP
+#include <SDL/SDL_mutex.h>
+#endif
+
 #define MAX_NUM_ARGVS             50
 
 #define MIN_DEDICATED_COMHUNKMEGS 4
@@ -193,6 +197,18 @@ int QDECL VPRINTF_LIKE(1) Com_VPrintf( const char *fmt, va_list argptr )
 	char            msg[ MAXPRINTMSG ];
 	static qboolean opening_qconsole = qfalse;
 
+#ifdef SMP
+	static SDL_mutex *lock = NULL;
+
+	// would be racy, but this gets called prior to renderer threads etc. being started
+	if ( !lock )
+	{
+		lock = SDL_CreateMutex();
+	}
+
+	SDL_LockMutex( lock );
+#endif
+
 	// FIXME TTimo
 	// switched vsprintf -> vsnprintf
 	// rcon could cause buffer overflow
@@ -212,7 +228,7 @@ int QDECL VPRINTF_LIKE(1) Com_VPrintf( const char *fmt, va_list argptr )
 		// only flush the rcon buffer when it's necessary, avoid fragmenting
 		//rd_flush(rd_buffer);
 		//*rd_buffer = 0;
-		return strlen( msg );
+		goto done;
 	}
 
 	// echo to console if we're not a dedicated server
@@ -267,6 +283,10 @@ int QDECL VPRINTF_LIKE(1) Com_VPrintf( const char *fmt, va_list argptr )
 		}
 	}
 
+done:
+#ifdef SMP
+	SDL_UnlockMutex( lock );
+#endif
 	return strlen( msg );
 }
 
