@@ -1568,6 +1568,9 @@ void SV_UserinfoChanged( client_t *cl )
 	{
 		// force the "ip" info key to "localhost" for local clients
 		Info_SetValueForKey( cl->userinfo, "ip", "localhost", qfalse );
+#ifdef HAVE_GEOIP
+		Info_SetValueForKey( cl->userinfo, "geoip", NULL, qfalse );
+#endif
 	}
 
 	// TTimo
