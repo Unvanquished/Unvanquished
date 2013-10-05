@@ -1556,13 +1556,17 @@ void SV_UserinfoChanged( client_t *cl )
 	if ( !NET_IsLocalAddress( cl->netchan.remoteAddress ) )
 	{
 		Info_SetValueForKey( cl->userinfo, "ip", NET_AdrToString( cl->netchan.remoteAddress ), qfalse );
+#ifdef HAVE_GEOIP
 		Info_SetValueForKey( cl->userinfo, "geoip", NET_GeoIP_Country( &cl->netchan.remoteAddress ), qfalse );
+#endif
 	}
 	else
 	{
 		// force the "ip" info key to "localhost" for local clients
 		Info_SetValueForKey( cl->userinfo, "ip", "localhost", qfalse );
+#ifdef HAVE_GEOIP
 		Info_SetValueForKey( cl->userinfo, "geoip", NET_GeoIP_Country( NULL ), qfalse );
+#endif
 	}
 
 	// TTimo
