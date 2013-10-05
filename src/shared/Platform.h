@@ -55,7 +55,6 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #undef __i386__
 #define __i386__ 1
 #define ARCH_STRING "x86"
-#define ARCH_STRING
 #elif defined(__amd64) || defined(__amd64__) || defined(_M_AMD64) || defined(__x86_64__) || defined(_M_X64)
 #undef __x86_64__
 #define __x86_64__ 1
