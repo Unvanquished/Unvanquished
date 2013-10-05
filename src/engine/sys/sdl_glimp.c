@@ -803,7 +803,7 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 
 			break;
 		}
-		
+
 		if ( samples && ( !glContext || !window ) )
 		{
 			r_ext_multisample->integer = 0;
@@ -1758,7 +1758,7 @@ qboolean GLimp_Init( void )
 success:
 	// These values force the UI to disable driver selection
 	glConfig.hardwareType = GLHW_GENERIC;
-	glConfig.deviceSupportsGamma = !r_ignorehwgamma->integer && 
+	glConfig.deviceSupportsGamma = !r_ignorehwgamma->integer &&
 	                               SDL_SetWindowBrightness( window, 1.0f ) >= 0;
 
 	// get our config strings

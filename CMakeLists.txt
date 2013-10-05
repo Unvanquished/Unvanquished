@@ -106,7 +106,7 @@ option( ENABLE_BUNDLING      "When packaging automatically include all non-syste
 
 cmake_dependent_option( BUILD_OLD_RENDERER   "Build old renderer library"                            1 BUILD_CLIENT                   0 )
 cmake_dependent_option( BUILD_NEW_RENDERER   "Build new renderer library"                            1 BUILD_CLIENT                   0 )
-cmake_dependent_option( USE_SMP              "Puts the renderer backend in another thread"           1 BUILD_NEW_RENDERER             0 )
+cmake_dependent_option( USE_SMP              "Puts the renderer backend in another thread"           1 "BUILD_NEW_RENDERER AND USE_SDL2"             0 )
 cmake_dependent_option( USE_OPENAL           "Use OpenAL"                                            1 BUILD_CLIENT                   0 )
 cmake_dependent_option( USE_CODEC_VORBIS     "Compile with support for Vorbis"                       1 BUILD_CLIENT                   0 )
 cmake_dependent_option( USE_MUMBLE           "Compile with support for Mumble"                       1 BUILD_CLIENT                   0 )
@@ -271,8 +271,8 @@ if( USE_INTERNAL_SDL )
 	if( USE_SDL2 )
 	  set( SDL_STATIC OFF CACHE BOOL "Build SDL static library" )
 	  add_subdirectory( ${SDL_DIR} ${OBJ_DIR}/libsdl2 )
-	  
-	  
+
+
 	  if( DIRECTX )
 		  if( BUILD_ARCH STREQUAL "i386" )
 			link_directories($ENV{DXSDK_DIR}\\lib\\x86)
@@ -677,7 +677,7 @@ endif()
 set( CLIENTLIST
   ${MOUNT_DIR}/engine/client/cg_api.h
   ${MOUNT_DIR}/engine/client/ui_api.h
-  ${MOUNT_DIR}/engine/client/client.h	
+  ${MOUNT_DIR}/engine/client/client.h
   ${MOUNT_DIR}/engine/botlib/bot_debug.cpp
   ${MOUNT_DIR}/engine/botlib/bot_nav_edit.cpp
   ${MOUNT_DIR}/engine/client/cin_ogm.c
@@ -989,7 +989,7 @@ set( DAEMONMAPLIST
   ${MOUNT_DIR}/libs/zlib/zutil.c
 )
 
-set( FASTLZLIST 
+set( FASTLZLIST
 	${MOUNT_DIR}/libs/fastlz/fastlz.c
 )
 

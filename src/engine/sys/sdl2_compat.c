@@ -188,7 +188,7 @@ static void SDL_SetVideoModeList( void )
 	}
 }
 
-const char *SDL_GetCurrentVideoDriver( void ) 
+const char *SDL_GetCurrentVideoDriver( void )
 {
 	static char driverName[ 128 ];
 	return SDL_VideoDriverName( driverName, sizeof( driverName ) );
@@ -228,7 +228,7 @@ int SDL_GetNumDisplayModes( int display )
 	}
 
 	for ( i = 0; modes[ i ]; i++ ) { }
-	
+
 	return i;
 }
 
@@ -304,7 +304,7 @@ int SDL_GetDesktopDisplayMode( int display, SDL_DisplayMode *mode )
 		mode->format = 0;
 		return 0;
 	}
-	
+
 	return -1;
 }
 
