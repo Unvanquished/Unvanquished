@@ -313,11 +313,6 @@ static void R_SetupEntityLightingGrid( trRefEntity_t *ent )
 		normal[ 2 ] = tr.sinTable[( lng + ( FUNCTABLE_SIZE / 4 ) ) & FUNCTABLE_MASK ];
 
 		VectorMA( direction, factor, normal, direction );
-
-		// ydnar: test code
-		//% if( strstr( tr.models[ ent->e.hModel ]->name, ".mdm" ) && i == 0 )
-		//%     ri.Printf( PRINT_ALL, "lat: %3d lng: %3d dir: %2.3f %2.3f %2.3f\n",
-		//%         data[ 7 ], data[ 8 ], normal[ 0 ], normal[ 1 ], normal[ 2 ] );
 	}
 
 	if ( totalFactor > 0 && totalFactor < 0.99 )
@@ -584,12 +579,6 @@ void R_SetupEntityLighting( const trRefdef_t *refdef, trRefEntity_t *ent )
 	{
 		VectorNormalize( ent->lightDir );
 	}
-
-	// ydnar: test code
-	//% if( strstr( tr.models[ ent->e.hModel ]->name, ".mdm" ) )
-	//%     ri.Printf( PRINT_ALL, "vec: %f %f %f   localvec: %f %f %f\n",
-	//%         lightDir[ 0 ], lightDir[ 1 ], lightDir[ 2 ],
-	//%         ent->lightDir[ 0 ], ent->lightDir[ 1 ], ent->lightDir[ 2 ] );
 }
 
 /*

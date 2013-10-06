@@ -212,8 +212,6 @@ extern "C" void BotUpdateCorridor( int botClientNum, const botRouteTarget_t *tar
 	rtarget = *target;
 	epos = rtarget.pos;
 
-	bot->routePlanCounter = 0;
-
 	UpdatePathCorridor( bot, spos, rtarget );
 
 	if ( !bot->offMesh )

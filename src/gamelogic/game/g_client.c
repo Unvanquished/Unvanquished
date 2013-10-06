@@ -45,7 +45,7 @@ void G_AddCreditToClient( gclient_t *client, short credit, qboolean cap )
 
 	if ( cap && credit > 0 )
 	{
-		capAmount = client->pers.teamSelection == TEAM_ALIENS ?
+		capAmount = client->pers.team == TEAM_ALIENS ?
 		            ALIEN_MAX_CREDITS : HUMAN_MAX_CREDITS;
 
 		if ( client->pers.credit < capAmount )
@@ -433,7 +433,7 @@ static void SpawnCorpse( gentity_t *ent )
 	body->s.clientNum = ent->client->ps.stats[ STAT_CLASS ];
 	body->nonSegModel = ent->client->ps.persistant[ PERS_STATE ] & PS_NONSEGMODEL;
 
-	if ( ent->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
+	if ( ent->client->pers.team == TEAM_HUMANS )
 	{
 		body->classname = "humanCorpse";
 	}
@@ -1126,7 +1126,7 @@ char *ClientUserinfoChanged( int clientNum, qboolean forceName )
 
 	Com_sprintf( userinfo, sizeof( userinfo ),
 	             "n\\%s\\t\\%i\\model\\%s\\ig\\%16s\\v\\%s",
-	             client->pers.netname, client->pers.teamSelection, model,
+	             client->pers.netname, client->pers.team, model,
 	             Com_ClientListString( &client->sess.ignoreList ),
 	             client->pers.voice );
 
@@ -1167,7 +1167,6 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 	gentity_t       *ent;
 	char            reason[ MAX_STRING_CHARS ] = { "" };
 	int             i;
-	g_admin_admin_t *admin;
 	const char      *country;
 
 	ent = &g_entities[ clientNum ];
@@ -1339,13 +1338,10 @@ Doesn't do things not relevant to bots (which are local GUIDless clients).
 */
 char *ClientBotConnect( int clientNum, qboolean firstTime, team_t team )
 {
-	char            *value;
 	char            *userInfoError;
 	gclient_t       *client;
 	char            userinfo[ MAX_INFO_STRING ];
 	gentity_t       *ent;
-	char            reason[ MAX_STRING_CHARS ] = { "" };
-	int             i;
 
 	ent = &g_entities[ clientNum ];
 	client = &level.clients[ clientNum ];
@@ -1566,7 +1562,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	index = ent - g_entities;
 	client = ent->client;
 
-	teamLocal = client->pers.teamSelection;
+	teamLocal = client->pers.team;
 
 	//if client is dead and following teammate, stop following before spawning
 	if ( client->sess.spectatorClient != -1 )
@@ -1751,9 +1747,9 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	// We just spawned, not changing weapons
 	client->ps.persistant[ PERS_NEWWEAPON ] = 0;
 
-	ent->client->ps.stats[ STAT_CLASS ] = ent->client->pers.classSelection;
-	ent->client->ps.stats[ STAT_TEAM ] = ent->client->pers.teamSelection;
+	client->ps.persistant[ PERS_TEAM ] = client->pers.team;
 
+	ent->client->ps.stats[ STAT_CLASS ] = ent->client->pers.classSelection;
 	ent->client->ps.stats[ STAT_BUILDABLE ] = BA_NONE;
 	ent->client->ps.stats[ STAT_PREDICTION ] = 0;
 	ent->client->ps.stats[ STAT_STATE ] = 0;
@@ -1785,7 +1781,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 
 	//give aliens some spawn velocity
 	if ( client->sess.spectatorState == SPECTATOR_NOT &&
-	     client->ps.stats[ STAT_TEAM ] == TEAM_ALIENS )
+	     client->pers.team == TEAM_ALIENS )
 	{
 		if ( ent == spawn )
 		{
@@ -1813,7 +1809,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 		}
 	}
 	else if ( client->sess.spectatorState == SPECTATOR_NOT &&
-	          client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
+	          client->pers.team == TEAM_HUMANS )
 	{
 		spawn_angles[ YAW ] += 180.0f;
 		AngleNormalize360( spawn_angles[ YAW ] );
@@ -1830,7 +1826,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 		trap_LinkEntity( ent );
 
 		// force the base weapon up
-		if ( client->pers.teamSelection == TEAM_HUMANS )
+		if ( client->pers.team == TEAM_HUMANS )
 		{
 			G_ForceWeaponChange( ent, weapon );
 		}

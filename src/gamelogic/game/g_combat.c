@@ -103,10 +103,11 @@ void LookAtKiller( gentity_t *self, gentity_t *inflictor, gentity_t *attacker )
  */
 void DoCheckAutoStrip( gentity_t *self )
 {
+// FIXME:STRIP - use weapon info etc.
 	float AS_min_kill_ratio;
 	int   AS_debug;
 	int   AS_min_kills;
-	int   AS_kills_per_stage;
+	float AS_kills_per_stage;
 	int   AS_better_team;
 	int   AS_better_enemy;
 	int   AS_killingSpreeLvl;
@@ -124,14 +125,14 @@ void DoCheckAutoStrip( gentity_t *self )
 	int   my_team_players = 0;
 	int   my_team_bots = 0;
 	float my_team_kills = 0.0f;
-	int   my_team_stage;
 	float my_team_avg = 0.0f;
+	float my_team_confidence;
 
 	int   enemy_team_players = 0;
 	int   enemy_team_bots = 0;
 	float enemy_team_kills = 0.0f;
-	int   enemy_team_stage;
 	float enemy_team_avg = 0.0f;
+	float enemy_team_confidence;
 
 	float fGameMinutes = (float)( level.time - level.startTime ) / (float)(1000 * 60);
 					 // if i am not mistaken,
@@ -146,7 +147,6 @@ void DoCheckAutoStrip( gentity_t *self )
 	// get settings
 	AS_min_kill_ratio  = g_AutoStrip_MinKillToFeed.value;    //   1.0f;
 	AS_min_kills       = g_AutoStrip_MinKills.integer;       //   4;
-	AS_kills_per_stage = g_AutoStrip_KillsPerStage.integer;  //   4;
 	AS_better_team     = g_AutoStrip_BetterThanTeam.integer; // 100;
 	AS_better_enemy    = g_AutoStrip_BetterThanEnemy.integer;// 200;
 	AS_debug           = g_AutoStrip_DebugMsg.integer;       //   0;
@@ -161,7 +161,7 @@ void DoCheckAutoStrip( gentity_t *self )
 
 	if ( self->client->pers.namelog->strip ) return;
 
-	my_team = self->client->pers.teamSelection;
+	my_team = self->client->pers.team;
 
 	if ( my_team == TEAM_NONE )
 		return;
@@ -179,15 +179,15 @@ void DoCheckAutoStrip( gentity_t *self )
 
 	// level.{human,alien}kills are not adequate here - they include kills by bots
 
-	if ( my_team == TEAM_ALIENS )
+	if ( my_team == TEAM_HUMANS )
 	{
-		my_team_stage = level.team[ TEAM_ALIENS ].stage;
-		enemy_team_stage = level.team[ TEAM_HUMANS ].stage;
+		my_team_confidence    = level.team[ TEAM_HUMANS ].confidence;
+		enemy_team_confidence = level.team[ TEAM_ALIENS ].confidence;
 	}
 	else
 	{
-		my_team_stage = level.team[ TEAM_HUMANS ].stage;
-		enemy_team_stage = level.team[ TEAM_ALIENS ].stage;
+		my_team_confidence    = level.team[ TEAM_ALIENS ].confidence;
+		enemy_team_confidence = level.team[ TEAM_HUMANS ].confidence;
 	}
 
 	// get current team sizes & kills (ignoring bots)
@@ -199,13 +199,13 @@ void DoCheckAutoStrip( gentity_t *self )
 
 		if ( !player->client || ( g_AutoStrip_IgnoreBots.integer && ( player->r.svFlags & SVF_BOT ) ) ) continue;
 
-		if( player->client->pers.teamSelection == my_team )
+		if( player->client->pers.team == my_team )
 		{
 			if ( player->r.svFlags & SVF_BOT ) ++my_team_bots;
 			++my_team_players;
 			my_team_kills += player->client->pers.namelog->damageStats.kills;
 		}
-		else if( player->client->pers.teamSelection != TEAM_NONE )
+		else if( player->client->pers.team != TEAM_NONE )
 		{
 			if ( player->r.svFlags & SVF_BOT ) ++enemy_team_bots;
 			++enemy_team_players;
@@ -264,11 +264,11 @@ void DoCheckAutoStrip( gentity_t *self )
 		if ( my_killingSpree > 0 )
 		{
 			// allow more killing with higher stages
-			AS_killingSpreeLvl += ( g_AutoStrip_KillingSpreePerStage.integer * my_team_stage );
+			AS_killingSpreeLvl += (int)( (float)g_AutoStrip_KillingSpreePerStage.integer * my_team_confidence / 100.0f );
 
 			// if enemy is at even lower stage than our team, some extra killing is natural,
 			// while facing higher stage enemy makes killing harder (thus shorter killing spree allowed)
-			AS_killingSpreeLvl += ( g_AutoStrip_KillingSpreeStageDif.integer * (my_team_stage - enemy_team_stage) );
+			AS_killingSpreeLvl += (int)( (float)g_AutoStrip_KillingSpreeStageDif.integer * (my_team_confidence - enemy_team_confidence) / 100.0f );
 
 			// ok, last check - if after stage difference modification we didn't end too low
 			if (AS_killingSpreeLvl < AS_min_kills )
@@ -321,11 +321,11 @@ void DoCheckAutoStrip( gentity_t *self )
 		G_AdminMessage( NULL, va( "::debug info (auto-strip) | my_team_players = %d, enemy_team_players = %d",
 									            my_team_players, enemy_team_players ) );
 
-	if ( my_kills < AS_kills_per_stage * (my_team_stage+1) )
+	if ( my_kills < ( AS_kills_per_stage * (my_team_confidence + 100.0f) / 100.0f ) )
 	{
 		if ( AS_debug > 0 )
-			G_AdminMessage( NULL, va( "::debug info (auto-strip) | my_kills < AS_kills_per_stage * stage (%f < %d)",
-			                          my_kills, (AS_kills_per_stage * (my_team_stage+1)) ) );
+			G_AdminMessage( NULL, va( "::debug info (auto-strip) | my_kills < AS_kills_per_stage * stage (%f < %f)",
+			                          my_kills, (AS_kills_per_stage * (my_team_confidence + 100.0f) / 100.0f ) ) );
 		return; // minimal "stage kill count" condition - not met
 	}
 
@@ -394,9 +394,9 @@ static const char *const modNames[] =
 	"MOD_FLAMER",
 	"MOD_FLAMER_SPLASH",
 	"MOD_BURN",
-	"MOD_WEIGHT_H",
-
 	"MOD_GRENADE",
+	"MOD_FIREBOMB",
+	"MOD_WEIGHT_H",
 	"MOD_WATER",
 	"MOD_SLIME",
 	"MOD_LAVA",
@@ -446,30 +446,29 @@ Function to distribute rewards to entities that killed this one.
 */
 void G_RewardAttackers( gentity_t *self )
 {
-	float     value, reward, damageFrac;
+	float     value, share, reward;
 	int       playerNum, enemyDamage, maxHealth, damageShare;
 	gentity_t *player;
 	team_t    ownTeam, playerTeam;
-	confidence_reason_t    reason;
-	confidence_qualifier_t qualifier;
 
 	// Only reward killing players and buildables
 	if ( self->client )
 	{
-		ownTeam = self->client->pers.teamSelection;
+		ownTeam   = self->client->pers.team;
 		maxHealth = self->client->ps.stats[ STAT_MAX_HEALTH ];
-		value = ( float )BG_GetValueOfPlayer( &self->client->ps );
+		value     = BG_GetValueOfPlayer( &self->client->ps );
 	}
 	else if ( self->s.eType == ET_BUILDABLE )
 	{
-		ownTeam = self->buildableTeam;
+		ownTeam   = self->buildableTeam;
 		maxHealth = BG_Buildable( self->s.modelindex )->health;
-		value = ( float )BG_Buildable( self->s.modelindex )->value;
+		value     = BG_Buildable( self->s.modelindex )->value;
 
 		// Give partial credits for buildables in construction
 		if ( !self->spawned )
 		{
-			value *= ( float )( level.time - self->creationTime ) / BG_Buildable( self->s.modelindex )->buildTime;
+			value *= ( level.time - self->creationTime ) /
+			         ( float )BG_Buildable( self->s.modelindex )->buildTime;
 		}
 	}
 	else
@@ -477,13 +476,13 @@ void G_RewardAttackers( gentity_t *self )
 		return;
 	}
 
+	// Sum up damage dealt by enemies
 	enemyDamage = 0;
 
-	// Sum up damage dealt by enemies
 	for ( playerNum = 0; playerNum < level.maxclients; playerNum++ )
 	{
-		player = &g_entities[ playerNum ];
-		playerTeam = player->client->pers.teamSelection;
+		player     = &g_entities[ playerNum ];
+		playerTeam = player->client->pers.team;
 
 		// Player must be on the other team
 		if ( playerTeam == ownTeam || playerTeam <= TEAM_NONE || playerTeam >= NUM_TEAMS )
@@ -502,8 +501,8 @@ void G_RewardAttackers( gentity_t *self )
 	// Give individual rewards
 	for ( playerNum = 0; playerNum < level.maxclients; playerNum++ )
 	{
-		player = &g_entities[ playerNum ];
-		playerTeam = player->client->pers.teamSelection;
+		player      = &g_entities[ playerNum ];
+		playerTeam  = player->client->pers.team;
 		damageShare = self->credits[ playerNum ];
 
 		// Clear reward array
@@ -521,8 +520,8 @@ void G_RewardAttackers( gentity_t *self )
 			continue;
 		}
 
-		damageFrac = damageShare / ( float )maxHealth;
-		reward = value * damageFrac;
+		share  = damageShare / ( float )maxHealth;
+		reward = value * share;
 
 		if ( reward <= 0.0f )
 		{
@@ -531,71 +530,33 @@ void G_RewardAttackers( gentity_t *self )
 
 		if ( self->s.eType == ET_BUILDABLE )
 		{
+			// Add score
 			G_AddConfidenceToScore( player, reward );
 
-			switch ( self->s.modelindex )
-			{
-				case BA_A_OVERMIND:
-				case BA_H_REACTOR:
-					reason = CONF_REAS_DESTR_CRUCIAL;
-					break;
-
-				case BA_A_ACIDTUBE:
-				case BA_A_TRAPPER:
-				case BA_A_HIVE:
-				case BA_H_MGTURRET:
-				case BA_H_TESLAGEN:
-					reason = CONF_REAS_DESTR_AGGRESSIVE;
-					break;
-
-				default:
-					reason = CONF_REAS_DESTR_SUPPORT;
-			}
-
-			qualifier = CONF_QUAL_NONE;
-
-			G_AddConfidence( playerTeam, CONFIDENCE_DESTRUCTION, reason, qualifier, reward, player );
+			// Add confidence
+			G_AddConfidenceForDestroyingStep( self, player, share );
 		}
 		else
 		{
 			if ( player->client && player->client->pers.connected == CON_CONNECTED )
 			{
-				player->client->pers.namelog->damageStats.kills        += damageFrac;
-				player->client->pers.namelog->damageStats.killingSpree += damageFrac;
+				player->client->pers.namelog->damageStats.kills        += share;
+				player->client->pers.namelog->damageStats.killingSpree += share;
 			}
 
+			// Add score
 			G_AddCreditsToScore( player, ( int )reward );
+
+			// Add credits
 			G_AddCreditToClient( player->client, ( short )reward, qtrue );
 
-			// Give confidence for killing non-naked players outside the friendly base
-			switch ( self->client->ps.stats[ STAT_CLASS ] )
-			{
-				case PCL_ALIEN_LEVEL0:
-				case PCL_ALIEN_BUILDER0:
-				case PCL_ALIEN_BUILDER0_UPG:
-					break;
-
-				case PCL_HUMAN:
-					// Treat a human just wearing light armor as naked
-					if ( ( int )value <= BG_Class( PCL_HUMAN )->value +
-					                     ( BG_Upgrade( UP_LIGHTARMOUR )->price / 2 ) )
-					{
-						break;
-					}
-
-				default:
-					if ( G_InsideBase( player, qtrue ) || G_InsideBase( self, qfalse ) )
-					{
-						break;
-					}
-
-					qualifier = CONF_QUAL_OUTSIDE_OWN_BASE;
-
-					G_AddConfidence( playerTeam, CONFIDENCE_KILLING, CONF_REAS_KILLING,
-					                 qualifier, reward * CONFIDENCE_PER_CREDIT, player );
-			}
+			// Add confidence
+			G_AddConfidenceForKillingStep( self, player, share );
 		}
 	}
+
+	// Complete confidence modification
+	G_AddConfidenceEnd();
 }
 
 /*
@@ -692,12 +653,12 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 		if ( ( attacker == self || OnSameTeam( self, attacker ) ) )
 		{
 			//punish team kills and suicides
-			if ( attacker->client->ps.stats[ STAT_TEAM ] == TEAM_ALIENS )
+			if ( attacker->client->pers.team == TEAM_ALIENS )
 			{
 				G_AddCreditToClient( attacker->client, -ALIEN_TK_SUICIDE_PENALTY, qtrue );
 				G_AddCreditsToScore( attacker, -ALIEN_TK_SUICIDE_PENALTY );
 			}
-			else if ( attacker->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
+			else if ( attacker->client->pers.team == TEAM_HUMANS )
 			{
 				G_AddCreditToClient( attacker->client, -HUMAN_TK_SUICIDE_PENALTY, qtrue );
 				G_AddCreditsToScore( attacker, -HUMAN_TK_SUICIDE_PENALTY );
@@ -712,11 +673,11 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	}
 	else if ( attacker->s.eType != ET_BUILDABLE )
 	{
-		if ( self->client->ps.stats[ STAT_TEAM ] == TEAM_ALIENS )
+		if ( self->client->pers.team == TEAM_ALIENS )
 		{
 			G_AddCreditsToScore( self, -ALIEN_TK_SUICIDE_PENALTY );
 		}
-		else if ( self->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
+		else if ( self->client->pers.team == TEAM_HUMANS )
 		{
 			G_AddCreditsToScore( self, -HUMAN_TK_SUICIDE_PENALTY );
 		}
@@ -1436,10 +1397,24 @@ dflags    these flags are used to control how T_Damage works
 void G_SelectiveDamage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
                         vec3_t dir, vec3_t point, int damage, int dflags, int mod, int team )
 {
-	if ( targ->client && ( team != targ->client->ps.stats[ STAT_TEAM ] ) )
+	if ( targ->client && ( team != targ->client->pers.team ) )
 	{
 		G_Damage( targ, inflictor, attacker, dir, point, damage, dflags, mod );
 	}
+}
+
+void NotifyClientOfHit( gentity_t *attacker )
+{
+	gentity_t *event;
+
+	if ( !attacker->client )
+	{
+		return;
+	}
+
+	event = G_NewTempEntity( attacker->s.origin, EV_HIT );
+	event->r.svFlags = SVF_SINGLECLIENT;
+	event->r.singleClient = attacker->client->ps.clientNum;
 }
 
 void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
@@ -1642,7 +1617,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		     mod != MOD_DECONSTRUCT && mod != MOD_SUICIDE &&
 		     mod != MOD_REPLACE && mod != MOD_NOCREEP )
 		{
-			if ( targ->buildableTeam == attacker->client->pers.teamSelection &&
+			if ( targ->buildableTeam == attacker->client->pers.team &&
 			     !g_friendlyBuildableFire.integer )
 			{
 				return;
@@ -1672,15 +1647,6 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	// at the end of the frame
 	if ( client )
 	{
-		if ( attacker )
-		{
-			client->ps.persistant[ PERS_ATTACKER ] = attacker->s.number;
-		}
-		else
-		{
-			client->ps.persistant[ PERS_ATTACKER ] = ENTITYNUM_WORLD;
-		}
-
 		client->damage_armor += asave;
 		client->damage_blood += take;
 		client->damage_knockback += knockback;
@@ -1703,7 +1669,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		//if boosted poison every attack
 		if ( attacker->client && (attacker->client->ps.stats[ STAT_STATE ] & SS_BOOSTED) )
 		{
-			if ( targ->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS &&
+			if ( targ->client->pers.team == TEAM_HUMANS &&
 			     mod != MOD_LEVEL2_ZAP && mod != MOD_POISON &&
 			     mod != MOD_LEVEL1_PCLOUD && mod != MOD_HSPAWN &&
 			     mod != MOD_ASPAWN && targ->client->poisonImmunityTime < level.time )
@@ -1751,10 +1717,13 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 				loss = take;
 			}
 
-			// add to the attackers "account" on the target
 			if ( attacker->client )
 			{
+				// add to the attackers "account" on the target
 				targ->credits[ attacker->client->ps.clientNum ] += loss;
+
+				// notify the attacker of a hit
+				NotifyClientOfHit( attacker );
 			}
 
 			// update buildable stats
@@ -1945,7 +1914,7 @@ qboolean G_SelectiveRadiusDamage( vec3_t origin, gentity_t *attacker, float dama
 		points = damage * ( 1.0 - dist / radius );
 
 		if ( CanDamage( ent, origin ) && ent->client &&
-		     ent->client->ps.stats[ STAT_TEAM ] != ignoreTeam )
+		     ent->client->pers.team != ignoreTeam )
 		{
 			hitClient = qtrue;
 
@@ -2073,7 +2042,7 @@ void G_LogDestruction( gentity_t *self, gentity_t *actor, int mod )
 		default:
 			if ( actor->client )
 			{
-				if ( actor->client->pers.teamSelection ==
+				if ( actor->client->pers.team ==
 				     BG_Buildable( self->s.modelindex )->team )
 				{
 					fate = BF_TEAMKILL;
@@ -2111,15 +2080,15 @@ void G_LogDestruction( gentity_t *self, gentity_t *actor, int mod )
 	// No-power deaths for humans come after some minutes and it's confusing
 	//  when the messages appear attributed to the deconner. Just don't print them.
 	if ( mod == MOD_NOCREEP && actor->client &&
-	     actor->client->pers.teamSelection == TEAM_HUMANS )
+	     actor->client->pers.team == TEAM_HUMANS )
 	{
 		return;
 	}
 
-	if ( actor->client && actor->client->pers.teamSelection ==
+	if ( actor->client && actor->client->pers.team ==
 	     BG_Buildable( self->s.modelindex )->team )
 	{
-		G_TeamCommand( actor->client->ps.stats[ STAT_TEAM ],
+		G_TeamCommand( actor->client->pers.team,
 		               va( "print_tr %s %s %s", mod == MOD_DECONSTRUCT ? QQ( N_("$1$ ^3DECONSTRUCTED^7 by $2$\n") ) :
 						   QQ( N_("$1$ ^3DESTROYED^7 by $2$\n") ),
 		                   Quote( BG_Buildable( self->s.modelindex )->humanName ),

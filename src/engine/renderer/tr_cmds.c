@@ -160,7 +160,7 @@ void R_IssueRenderCommands( qboolean runPerformanceCounters )
 		}
 		else
 		{
-			GLimp_WakeRenderer( cmdList );
+			GLimp_WakeRenderer( cmdList->cmds );
 		}
 	}
 }
@@ -846,6 +846,8 @@ void RE_EndFrame( int *frontEndMsec, int *backEndMsec )
 	{
 		return;
 	}
+
+	GLimp_HandleCvars();
 
 	cmd = R_GetCommandBuffer( sizeof( *cmd ) );
 

@@ -23,14 +23,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "g_bot_parse.h"
 #include "g_bot_util.h"
 
-static void CheckToken( const char *tokenValueName, const char *nodename, const pc_token_t *token, int requiredType )
-{
-	if ( token->type != requiredType )
-	{
-		BotDPrintf( S_COLOR_RED "ERROR: Invalid %s %s after %s on line %d\n", tokenValueName, token->string, nodename, token->line );
-	}
-}
-
 static qboolean expectToken( const char *s, pc_token_list **list, qboolean next )
 {
 	const pc_token_list *current = *list;
@@ -89,7 +81,7 @@ static AIValue_t alertedToEnemy( gentity_t *self, const AIValue_t *params )
 
 static AIValue_t botTeam( gentity_t *self, const AIValue_t *params )
 {
-	return AIBoxInt( self->client->ps.stats[ STAT_TEAM ] );
+	return AIBoxInt( self->client->pers.team );
 }
 
 static AIValue_t goalTeam( gentity_t *self, const AIValue_t *params )
@@ -123,7 +115,7 @@ static AIValue_t goalDead( gentity_t *self, const AIValue_t *params )
 	{
 		dead = qtrue;
 	}
-	else if ( goal->ent->s.eType == ET_BUILDABLE && goal->ent->buildableTeam == self->client->ps.stats[ STAT_TEAM ] && !goal->ent->powered )
+	else if ( goal->ent->s.eType == ET_BUILDABLE && goal->ent->buildableTeam == self->client->pers.team && !goal->ent->powered )
 	{
 		dead = qtrue;
 	}
@@ -152,7 +144,7 @@ static AIValue_t haveUpgrade( gentity_t *self, const AIValue_t *params )
 	return AIBoxInt( !BG_UpgradeIsActive( upgrade, self->client->ps.stats ) && BG_InventoryContainsUpgrade( upgrade, self->client->ps.stats ) );
 }
 
-static AIValue_t botAmmo( gentity_t *self, const AIValue_t *params )
+static AIValue_t percentAmmo( gentity_t *self, const AIValue_t *params )
 {
 	return AIBoxFloat( PercentAmmoRemaining( BG_PrimaryWeapon( self->client->ps.stats ), &self->client->ps ) );
 }
@@ -262,14 +254,14 @@ static AIValue_t botCanEvolveTo( gentity_t *self, const AIValue_t *params )
 	return AIBoxInt( BotCanEvolveToClass( self, c ) );
 }
 
-static AIValue_t humanStage( gentity_t *self, const AIValue_t *params )
+static AIValue_t humanConfidence( gentity_t *self, const AIValue_t *params )
 {
-	return AIBoxInt( level.team[ TEAM_HUMANS ].stage );
+	return AIBoxInt( level.team[ TEAM_HUMANS ].confidence );
 }
 
-static AIValue_t alienStage( gentity_t *self, const AIValue_t *params )
+static AIValue_t alienConfidence( gentity_t *self, const AIValue_t *params )
 {
-	return AIBoxInt( level.team[ TEAM_ALIENS ].stage );
+	return AIBoxInt( level.team[ TEAM_ALIENS ].confidence );
 }
 
 static AIValue_t randomChance( gentity_t *self, const AIValue_t *params )
@@ -336,7 +328,7 @@ static const struct AIConditionMap_s
 } conditionFuncs[] =
 {
 	{ "alertedToEnemy",    VALUE_INT,   alertedToEnemy,    0 },
-	{ "alienStage",        VALUE_INT,   alienStage,        0 },
+	{ "alienConfidence",   VALUE_INT,   alienConfidence,   0 },
 	{ "baseRushScore",     VALUE_FLOAT, baseRushScore,     0 },
 	{ "buildingIsDamaged", VALUE_INT,   buildingIsDamaged, 0 },
 	{ "canEvolveTo",       VALUE_INT,   botCanEvolveTo,    1 },
@@ -352,9 +344,10 @@ static const struct AIConditionMap_s
 	{ "haveUpgrade",       VALUE_INT,   haveUpgrade,       1 },
 	{ "haveWeapon",        VALUE_INT,   haveWeapon,        1 },
 	{ "healScore",         VALUE_FLOAT, healScore,         0 },
-	{ "humanStage",        VALUE_INT,   humanStage,        0 },
+	{ "humanConfidence",   VALUE_INT,   humanConfidence,   0 },
 	{ "inAttackRange",     VALUE_INT,   inAttackRange,     1 },
 	{ "isVisible",         VALUE_INT,   isVisible,         1 },
+	{ "percentAmmo",       VALUE_FLOAT, percentAmmo,       0 },
 	{ "percentHealth",     VALUE_FLOAT, percentHealth,     1 },
 	{ "random",            VALUE_FLOAT, randomChance,      0 },
 	{ "skill",             VALUE_INT,   botSkill,          0 },
@@ -497,7 +490,7 @@ static AIValue_t *parseFunctionParameters( pc_token_list **list, int *nparams, i
 	pc_token_list *parenBegin = current->next;
 	pc_token_list *parenEnd;
 	pc_token_list *parse;
-	AIValue_t     *params;
+	AIValue_t     *params = NULL;
 	int           numParams = 0;
 
 	// functions should always be proceeded by a '(' if they have parameters
@@ -827,7 +820,8 @@ static const struct AIDecoratorMap_s
 	int          maxparams;
 } AIDecorators[] =
 {
-	{ "return", BotDecoratorReturn, 1, 1 }
+	{ "return", BotDecoratorReturn, 1, 1 },
+	{ "timer", BotDecoratorTimer, 1, 1 }
 };
 
 AIGenericNode_t *ReadDecoratorNode( pc_token_list **list )
@@ -1283,12 +1277,14 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	D( E_A_TRAPPER );
 	D( E_A_BOOSTER );
 	D( E_A_HIVE );
+	D( E_A_LEECH );
 	D( E_H_SPAWN );
 	D( E_H_MGTURRET );
 	D( E_H_TESLAGEN );
 	D( E_H_ARMOURY );
 	D( E_H_DCC );
 	D( E_H_MEDISTAT );
+	D( E_H_DRILL );
 	D( E_H_REACTOR );
 	D( E_H_REPEATER );
 	D( E_GOAL );
@@ -1301,6 +1297,7 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	D( PCL_ALIEN_BUILDER0 );
 	D( PCL_ALIEN_BUILDER0_UPG );
 	D( PCL_ALIEN_LEVEL0 );
+	D( PCL_ALIEN_LEVEL0_UPG );
 	D( PCL_ALIEN_LEVEL1 );
 	D( PCL_ALIEN_LEVEL1_UPG );
 	D( PCL_ALIEN_LEVEL2 );
@@ -1328,10 +1325,6 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	D( SAY_AREA );
 	D( SAY_AREA_TEAM );
 	
-	D( S1 );
-	D( S2 );
-	D( S3 );
-
 	Q_strncpyz( treefilename, va( "bots/%s.bt", name ), sizeof( treefilename ) );
 
 	handle = trap_Parse_LoadSource( treefilename );

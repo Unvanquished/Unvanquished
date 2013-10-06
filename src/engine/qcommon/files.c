@@ -3291,9 +3291,15 @@ void FS_Which_f( void )
 	FILE         *temp;
 	char         *filename;
 	char         buf[ MAX_OSPATH ];
+	int          level = 0;
 
 	hash = 0;
 	filename = Cmd_Argv( 1 );
+
+	if ( Cmd_Argc() > 2 )
+	{
+		level = atoi( Cmd_Argv( 2 ) );
+	}
 
 	if ( !filename[ 0 ] )
 	{
@@ -3327,9 +3333,16 @@ void FS_Which_f( void )
 				// case and separator insensitive comparisons
 				if ( !FS_FilenameCompare( pakFile->name, filename ) )
 				{
-					// found it!
-					Com_Printf(_( "File \"%s\" found in \"%s\"\n"), filename, pak->pakFilename );
-					return;
+					if ( !level )
+					{
+						// found it!
+						Com_Printf(_( "File \"%s\" found in \"%s\"\n"), filename, pak->pakFilename );
+						return;
+					}
+					else
+					{
+						level--;
+					}
 				}
 
 				pakFile = pakFile->next;
@@ -3345,6 +3358,12 @@ void FS_Which_f( void )
 
 			if ( !temp )
 			{
+				continue;
+			}
+
+			if ( level )
+			{
+				level--;
 				continue;
 			}
 

@@ -2584,16 +2584,6 @@ void R_AddEntitySurfaces( void )
 						case MOD_MESH:
 							R_AddMDVSurfaces( ent );
 							break;
-#if defined( COMPAT_ET )
-
-						case MOD_MDX:
-							// not a model, just a skeleton
-							break;
-
-						case MOD_MDM:
-							R_MDM_AddAnimSurfaces( ent );
-							break;
-#endif
 
 #if defined( USE_REFENTITY_ANIMATIONSYSTEM )
 
@@ -2699,17 +2689,6 @@ void R_AddEntityInteractions( trRefLight_t *light )
 						case MOD_MESH:
 							R_AddMDVInteractions( ent, light, iaType );
 							break;
-
-#if defined( COMPAT_ET )
-
-						case MOD_MDX:
-							// not a model, just a skeleton
-							break;
-
-						case MOD_MDM:
-							R_AddMDMInteractions( ent, light, iaType );
-							break;
-#endif
 
 #if defined( USE_REFENTITY_ANIMATIONSYSTEM )
 

@@ -31,6 +31,7 @@ Navigation Mesh Loading
 ========================
 */
 
+// FIXME: use nav handle instead of classes
 void G_BotNavInit()
 {
 	qhandle_t navHandle;
@@ -43,6 +44,11 @@ void G_BotNavInit()
 		botClass_t bot;
 		bot.polyFlagsInclude = POLYFLAGS_WALK;
 		bot.polyFlagsExclude = POLYFLAGS_DISABLED;
+
+		if ( i == PCL_ALIEN_LEVEL0_UPG )
+		{
+			continue;
+		}
 
 		Q_strncpyz( bot.name, BG_Class( i )->name, sizeof( bot.name ) );
 
@@ -72,12 +78,20 @@ void G_BotEnableArea( vec3_t origin, vec3_t mins, vec3_t maxs )
 
 void BotSetNavmesh( gentity_t  *self, class_t newClass )
 {
+	int navMeshNum = newClass - 1;
+
 	if ( newClass == PCL_NONE )
 	{
 		return;
 	}
 
-	trap_BotSetNavMesh( self->s.number, newClass - 1 );
+	// advanced dretch uses the same navmesh as the regular dretch
+	if ( newClass == PCL_ALIEN_LEVEL0_UPG )
+	{
+		navMeshNum = PCL_ALIEN_LEVEL0 - 1;
+	}
+
+	trap_BotSetNavMesh( self->s.number, navMeshNum );
 }
 
 /*
@@ -316,7 +330,7 @@ void BotStandStill( gentity_t *self )
 
 qboolean BotJump( gentity_t *self )
 {
-	if ( self->client->ps.stats[STAT_TEAM] == TEAM_HUMANS && self->client->ps.stats[STAT_STAMINA] < STAMINA_SLOW_LEVEL + STAMINA_JUMP_TAKE )
+	if ( self->client->pers.team == TEAM_HUMANS && self->client->ps.stats[STAT_STAMINA] < STAMINA_SLOW_LEVEL + STAMINA_JUMP_TAKE )
 	{
 		return qfalse;
 	}
@@ -335,7 +349,7 @@ qboolean BotSprint( gentity_t *self, qboolean enable )
 		return qfalse;
 	}
 
-	if ( self->client->ps.stats[STAT_TEAM] == TEAM_HUMANS && self->client->ps.stats[STAT_STAMINA] > STAMINA_SLOW_LEVEL + STAMINA_JUMP_TAKE && self->botMind->botSkill.level >= 5 )
+	if ( self->client->pers.team == TEAM_HUMANS && self->client->ps.stats[STAT_STAMINA] > STAMINA_SLOW_LEVEL + STAMINA_JUMP_TAKE && self->botMind->botSkill.level >= 5 )
 	{
 		usercmdPressButton( botCmdBuffer->buttons, BUTTON_SPRINT );
 		BotWalk( self, qfalse );
@@ -536,7 +550,6 @@ qboolean BotFindSteerTarget( gentity_t *self, vec3_t dir )
 }
 qboolean BotAvoidObstacles( gentity_t *self, vec3_t dir )
 {
-	usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
 	gentity_t *blocker;
 
 	blocker = BotGetPathBlocker( self, dir );
@@ -694,7 +707,7 @@ void BotMoveToGoal( gentity_t *self )
 	BotSeek( self, dir );
 
 	//dont sprint or dodge if we dont have enough stamina and are about to slow
-	if ( self->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS && self->client->ps.stats[ STAT_STAMINA ] < STAMINA_SLOW_LEVEL + STAMINA_JUMP_TAKE )
+	if ( self->client->pers.team == TEAM_HUMANS && self->client->ps.stats[ STAT_STAMINA ] < STAMINA_SLOW_LEVEL + STAMINA_JUMP_TAKE )
 	{
 		usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
 

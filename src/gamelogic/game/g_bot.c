@@ -426,10 +426,9 @@ void G_BotSpectatorThink( gentity_t *self )
 		//check for humans in the spawn que
 		{
 			spawnQueue_t *sq;
-			if ( self->client->pers.teamSelection > TEAM_NONE &&
-			     self->client->pers.teamSelection < NUM_TEAMS )
+			if ( self->client->pers.team != TEAM_NONE )
 			{
-				sq = &level.team[ self->client->pers.teamSelection ].spawnQueue;
+				sq = &level.team[ self->client->pers.team ].spawnQueue;
 			}
 			else
 			{
@@ -458,7 +457,7 @@ void G_BotSpectatorThink( gentity_t *self )
 
 	if ( self->client->sess.restartTeam == TEAM_NONE )
 	{
-		int teamnum = self->client->pers.teamSelection;
+		int teamnum = self->client->pers.team;
 		int clientNum = self->client->ps.clientNum;
 
 		if ( teamnum == TEAM_HUMANS )

@@ -141,7 +141,7 @@ extern "C" void BotDebugDrawMesh( BotDebugInterface_t *in )
 	duDebugDrawNavMeshWithClosedList(&dd, *cmd.nav->mesh, *cmd.nav->query, DU_DRAWNAVMESH_OFFMESHCONS | DU_DRAWNAVMESH_CLOSEDLIST);
 	BotDrawNavEdit( &dd );
 
-	for ( int i = 0; i < ARRAY_LEN( agents ); i++ )
+	for ( int i = 0; i < MAX_CLIENTS; i++ )
 	{
 		Bot_t *bot = &agents[ i ];
 

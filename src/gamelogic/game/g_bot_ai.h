@@ -38,12 +38,14 @@ typedef enum
 	E_A_TRAPPER,
 	E_A_BOOSTER,
 	E_A_HIVE,
+	E_A_LEECH,
 	E_H_SPAWN,
 	E_H_MGTURRET,
 	E_H_TESLAGEN,
 	E_H_ARMOURY,
 	E_H_DCC,
 	E_H_MEDISTAT,
+	E_H_DRILL,
 	E_H_REACTOR,
 	E_H_REPEATER,
 	E_GOAL,
@@ -192,6 +194,7 @@ typedef struct
 	AIGenericNode_t *child;
 	AIValue_t       *params;
 	int             nparams;
+	int             data[ MAX_CLIENTS ]; // bot specific data
 } AIDecoratorNode_t;
 
 typedef struct
@@ -226,6 +229,7 @@ AINodeStatus_t BotSequenceNode( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotConcurrentNode( gentity_t *self, AIGenericNode_t *node );
 
 // decorator nodes
+AINodeStatus_t BotDecoratorTimer( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotDecoratorReturn( gentity_t *self, AIGenericNode_t *node );
 
 // included behavior trees

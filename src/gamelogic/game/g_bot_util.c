@@ -91,6 +91,8 @@ float BotGetBaseRushScore( gentity_t *ent )
 			return 0.0f;
 		case WP_ALEVEL0:
 			return 0.0f;
+		case WP_ALEVEL0_UPG:
+			return 0.0f;
 		case WP_ALEVEL1:
 			return 0.2f;
 		case WP_ALEVEL2:
@@ -114,7 +116,7 @@ float BotGetHealScore( gentity_t *self )
 	float percentHealth = 0;
 	float maxHealth = BG_Class( ( class_t ) self->client->ps.stats[ STAT_CLASS ] )->health;
 
-	if ( self->client->ps.stats[ STAT_TEAM ] == TEAM_ALIENS )
+	if ( self->client->pers.team == TEAM_ALIENS )
 	{
 		if ( self->botMind->closestBuildings[ BA_A_BOOSTER ].ent )
 		{
@@ -157,6 +159,9 @@ float BotGetEnemyPriority( gentity_t *self, gentity_t *ent )
 		{
 			case WP_ALEVEL0:
 				enemyScore = 0.1;
+				break;
+			case WP_ALEVEL0_UPG:
+				enemyScore = 0.2;
 				break;
 			case WP_ALEVEL1:
 			case WP_ALEVEL1_UPG:
@@ -252,6 +257,12 @@ float BotGetEnemyPriority( gentity_t *self, gentity_t *ent )
 			case BA_A_TRAPPER:
 				enemyScore = 0.8;
 				break;
+			case BA_A_LEECH:
+				enemyScore = 0.6;
+				break;
+			case BA_H_DRILL:
+				enemyScore = 0.6;
+				break;
 			default:
 				enemyScore = 0.5;
 				break;
@@ -264,12 +275,14 @@ float BotGetEnemyPriority( gentity_t *self, gentity_t *ent )
 
 qboolean BotCanEvolveToClass( gentity_t *self, class_t newClass )
 {
-	if ( self->client->pers.namelog->strip && !BG_Strip_ClassAllowedInStage( newClass, level.team[ TEAM_ALIENS ].stage ) )
+	/* FIXME:STRIP
+	if ( self->client->pers.namelog->strip && !BG_Strip_ClassAllowedInStage( newClass, level.team[ team ].confidence[ CONFIDENCE_SUM ] ) )
 	{
 		return qfalse;
 	}
+	*/
 
-	return ( BG_ClassCanEvolveFromTo( ( class_t )self->client->ps.stats[STAT_CLASS], newClass, self->client->ps.persistant[PERS_CREDIT], level.team[ TEAM_ALIENS ].stage ) >= 0 );
+	return ( BG_ClassCanEvolveFromTo( ( class_t )self->client->ps.stats[STAT_CLASS], newClass, self->client->ps.persistant[PERS_CREDIT] ) >= 0 );
 }
 
 qboolean WeaponIsEmpty( weapon_t weapon, playerState_t ps )
@@ -340,12 +353,16 @@ int BotValueOfUpgrades( gentity_t *self )
 
 static qboolean BotCanBuyWeapon( const gentity_t *self, weapon_t weapon )
 {
-	return !self->client->pers.namelog->strip || BG_Strip_WeaponAllowedInStage( weapon, level.team[ TEAM_HUMANS ].stage );
+	// FIXME:STRIP
+	// return !self->client->pers.namelog->strip || BG_Strip_WeaponAllowedInStage( weapon, level.team[ TEAM_HUMANS ].stage );
+	return BG_WeaponUnlocked( weapon );
 }
 
 static qboolean BotCanBuyUpgrade( const gentity_t *self, upgrade_t upgrade )
 {
-	return !self->client->pers.namelog->strip || BG_Strip_UpgradeAllowedInStage( upgrade, level.team[ TEAM_HUMANS ].stage );
+	// FIXME:STRIP
+	// return !self->client->pers.namelog->strip || BG_Strip_UpgradeAllowedInStage( upgrade, level.team[ TEAM_HUMANS ].stage );
+	return BG_UpgradeUnlocked( upgrade );
 }
 
 void BotGetDesiredBuy( gentity_t *self, weapon_t *weapon, upgrade_t *upgrades, int *numUpgrades )
@@ -356,21 +373,24 @@ void BotGetDesiredBuy( gentity_t *self, weapon_t *weapon, upgrade_t *upgrades, i
 	int usableCapital = credits + equipmentPrice;
 
 	//decide what upgrade(s) to buy
-	if ( level.team[ TEAM_HUMANS ].stage >= S3 && usableCapital >= ( BG_Weapon( WP_PAIN_SAW )->price + BG_Upgrade( UP_BATTLESUIT )->price ) &&
-	     BotCanBuyWeapon( self, WP_PAIN_SAW ) && BotCanBuyUpgrade( self, UP_BATTLESUIT ) )
+	if ( BG_WeaponUnlocked( WP_PAIN_SAW ) && BG_UpgradeUnlocked( UP_BATTLESUIT ) &&
+	     BotCanBuyWeapon( self, WP_PAIN_SAW ) && BotCanBuyUpgrade( self, UP_BATTLESUIT ) &&
+	     usableCapital >= ( BG_Weapon( WP_PAIN_SAW )->price + BG_Upgrade( UP_BATTLESUIT )->price ) )
 	{
 		upgrades[0] = UP_BATTLESUIT;
 		*numUpgrades = 1;
 	}
-	else if ( level.team[ TEAM_HUMANS ].stage >= S2 && usableCapital >= ( BG_Weapon( WP_SHOTGUN )->price + BG_Upgrade( UP_LIGHTARMOUR )->price + BG_Upgrade( UP_HELMET )->price ) &&
-	          BotCanBuyWeapon( self, WP_SHOTGUN ) && BotCanBuyUpgrade( self, UP_LIGHTARMOUR ) && BotCanBuyUpgrade( self, UP_HELMET ) )
+	else if ( BG_WeaponUnlocked( WP_SHOTGUN ) && BG_UpgradeUnlocked( UP_LIGHTARMOUR ) && BG_UpgradeUnlocked( UP_HELMET ) &&
+	          BotCanBuyWeapon( self, WP_SHOTGUN ) && BotCanBuyUpgrade( self, UP_LIGHTARMOUR ) && BotCanBuyUpgrade( self, UP_HELMET ) &&
+	          usableCapital >= ( BG_Weapon( WP_SHOTGUN )->price + BG_Upgrade( UP_LIGHTARMOUR )->price + BG_Upgrade( UP_HELMET )->price ) )
 	{
 		upgrades[0] = UP_LIGHTARMOUR;
 		upgrades[1] = UP_HELMET;
 		*numUpgrades = 2;
 	}
-	else if ( level.team[ TEAM_HUMANS ].stage >= S1 && usableCapital >= ( BG_Weapon( WP_PAIN_SAW )->price + BG_Upgrade( UP_LIGHTARMOUR )->price ) &&
-	          BotCanBuyWeapon( self, WP_PAIN_SAW ) && BotCanBuyUpgrade( self, UP_LIGHTARMOUR ) )
+	else if ( BG_WeaponUnlocked( WP_PAIN_SAW ) && BG_UpgradeUnlocked( UP_LIGHTARMOUR ) &&
+	          BotCanBuyWeapon( self, WP_PAIN_SAW ) && BotCanBuyUpgrade( self, UP_LIGHTARMOUR ) &&
+	          usableCapital >= ( BG_Weapon( WP_PAIN_SAW )->price + BG_Upgrade( UP_LIGHTARMOUR )->price ) )
 	{
 		upgrades[0] = UP_LIGHTARMOUR;
 		*numUpgrades = 1;
@@ -386,39 +406,39 @@ void BotGetDesiredBuy( gentity_t *self, weapon_t *weapon, upgrade_t *upgrades, i
 	}
 
 	//now decide what weapon to buy
-	if ( level.team[ TEAM_HUMANS ].stage >= S3  && usableCapital >= BG_Weapon( WP_LUCIFER_CANNON )->price && g_bot_lcannon.integer && BotCanBuyWeapon( self, WP_LUCIFER_CANNON ) )
+	if ( g_bot_lcannon.integer && BG_WeaponUnlocked( WP_LUCIFER_CANNON ) && usableCapital >= BG_Weapon( WP_LUCIFER_CANNON )->price && BotCanBuyWeapon( self, WP_LUCIFER_CANNON ) )
 	{
 		*weapon = WP_LUCIFER_CANNON;;
 	}
-	else if ( level.team[ TEAM_HUMANS ].stage >= S3 && usableCapital >= BG_Weapon( WP_CHAINGUN )->price && upgrades[0] == UP_BATTLESUIT && g_bot_chaingun.integer && BotCanBuyWeapon( self, WP_CHAINGUN ) )
+	else if ( g_bot_chaingun.integer && BG_WeaponUnlocked( WP_CHAINGUN ) && usableCapital >= BG_Weapon( WP_CHAINGUN )->price && upgrades[0] == UP_BATTLESUIT && BotCanBuyWeapon( self, WP_CHAINGUN ) )
 	{
 		*weapon = WP_CHAINGUN;
 	}
-	else if ( level.team[ TEAM_HUMANS ].stage >= S2 && level.team[ TEAM_ALIENS ].stage < S3 && usableCapital >= BG_Weapon( WP_FLAMER )->price && g_bot_flamer.integer && BotCanBuyWeapon( self, WP_FLAMER ) )
+	else if ( g_bot_flamer.integer && BG_WeaponUnlocked( WP_FLAMER ) && usableCapital >= BG_Weapon( WP_FLAMER )->price && BotCanBuyWeapon( self, WP_FLAMER ) )
 	{
 		*weapon = WP_FLAMER;
 	}
-	else if ( level.team[ TEAM_HUMANS ].stage >= S2 && usableCapital >= BG_Weapon( WP_PULSE_RIFLE )->price && g_bot_prifle.integer && BotCanBuyWeapon( self, WP_PULSE_RIFLE ) )
+	else if ( g_bot_prifle.integer && BG_WeaponUnlocked( WP_PULSE_RIFLE ) && usableCapital >= BG_Weapon( WP_PULSE_RIFLE )->price && BotCanBuyWeapon( self, WP_PULSE_RIFLE ) )
 	{
 		*weapon = WP_PULSE_RIFLE;
 	}
-	else if ( level.team[ TEAM_HUMANS ].stage >= S1 && usableCapital >= BG_Weapon( WP_CHAINGUN )->price && g_bot_chaingun.integer && BotCanBuyWeapon( self, WP_CHAINGUN ) )
+	else if ( g_bot_chaingun.integer && BG_WeaponUnlocked( WP_CHAINGUN ) && usableCapital >= BG_Weapon( WP_CHAINGUN )->price && BotCanBuyWeapon( self, WP_CHAINGUN ) )
 	{
 		*weapon = WP_CHAINGUN;;
 	}
-	else if ( level.team[ TEAM_HUMANS ].stage >= S1 && usableCapital >= BG_Weapon( WP_MASS_DRIVER )->price && g_bot_mdriver.integer && BotCanBuyWeapon( self, WP_MASS_DRIVER ) )
+	else if ( g_bot_mdriver.integer && BG_WeaponUnlocked( WP_MASS_DRIVER ) && usableCapital >= BG_Weapon( WP_MASS_DRIVER )->price && BotCanBuyWeapon( self, WP_MASS_DRIVER ) )
 	{
 		*weapon = WP_MASS_DRIVER;
 	}
-	else if ( level.team[ TEAM_HUMANS ].stage >= S1 && usableCapital >= BG_Weapon( WP_LAS_GUN )->price && g_bot_lasgun.integer && BotCanBuyWeapon( self, WP_LAS_GUN ) )
+	else if ( g_bot_lasgun.integer && BG_WeaponUnlocked( WP_LAS_GUN ) && usableCapital >= BG_Weapon( WP_LAS_GUN )->price && BotCanBuyWeapon( self, WP_LAS_GUN ) )
 	{
 		*weapon = WP_LAS_GUN;
 	}
-	else if ( level.team[ TEAM_HUMANS ].stage >= S1 && usableCapital >= BG_Weapon( WP_SHOTGUN )->price && g_bot_shotgun.integer && BotCanBuyWeapon( self, WP_SHOTGUN ) )
+	else if ( g_bot_shotgun.integer && BG_WeaponUnlocked( WP_SHOTGUN ) && usableCapital >= BG_Weapon( WP_SHOTGUN )->price && BotCanBuyWeapon( self, WP_SHOTGUN ) )
 	{
 		*weapon = WP_SHOTGUN;
 	}
-	else if ( level.team[ TEAM_HUMANS ].stage >= S1 && usableCapital >= BG_Weapon( WP_PAIN_SAW )->price && g_bot_painsaw.integer && BotCanBuyWeapon( self, WP_PAIN_SAW ) )
+	else if ( g_bot_painsaw.integer && BG_WeaponUnlocked( WP_PAIN_SAW ) && usableCapital >= BG_Weapon( WP_PAIN_SAW )->price && BotCanBuyWeapon( self, WP_PAIN_SAW ) )
 	{
 		*weapon = WP_PAIN_SAW;
 	}
@@ -430,7 +450,7 @@ void BotGetDesiredBuy( gentity_t *self, weapon_t *weapon, upgrade_t *upgrades, i
 	usableCapital -= BG_Weapon( *weapon )->price;
 
 	//finally, see if we can buy a battpack
-	if ( BG_Weapon( *weapon )->usesEnergy && usableCapital >= BG_Upgrade( UP_BATTPACK )->price && level.team[ TEAM_HUMANS ].stage >= S2 && upgrades[0] != UP_BATTLESUIT && BotCanBuyUpgrade( self, UP_BATTPACK ) )
+	if ( BG_Weapon( *weapon )->usesEnergy && BG_UpgradeUnlocked( UP_BATTPACK ) && usableCapital >= BG_Upgrade( UP_BATTPACK )->price && upgrades[0] != UP_BATTLESUIT && BotCanBuyUpgrade( self, UP_BATTPACK ) )
 	{
 		upgrades[( *numUpgrades )++] = UP_BATTPACK;
 		usableCapital -= BG_Upgrade( UP_BATTPACK )->price;
@@ -558,9 +578,6 @@ void BotFindClosestBuildings( gentity_t *self )
 
 void BotFindDamagedFriendlyStructure( gentity_t *self )
 {
-	//closest building
-	gentity_t* closestBuilding = NULL;
-
 	float minDistSqr;
 
 	gentity_t *target;
@@ -583,7 +600,7 @@ void BotFindDamagedFriendlyStructure( gentity_t *self )
 			continue;
 		}
 
-		if ( target->buildableTeam != self->client->ps.stats[ STAT_TEAM ] )
+		if ( target->buildableTeam != self->client->pers.team )
 		{
 			continue;
 		}
@@ -642,7 +659,7 @@ gentity_t* BotFindBestEnemy( gentity_t *self )
 			continue;
 		}
 
-		if ( target->s.eType == ET_PLAYER && self->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS 
+		if ( target->s.eType == ET_PLAYER && self->client->pers.team == TEAM_HUMANS
 		    && BotAimAngle( self, target->s.origin ) > g_bot_fov.value / 2 )
 		{
 			continue;
@@ -769,7 +786,7 @@ botTarget_t BotGetRetreatTarget( gentity_t *self )
 	botTarget_t target;
 	gentity_t* retreatTarget = NULL;
 	//FIXME, this seems like it could be done better...
-	if ( self->client->ps.stats[STAT_TEAM] == TEAM_HUMANS )
+	if ( self->client->pers.team == TEAM_HUMANS )
 	{
 		if ( self->botMind->closestBuildings[BA_H_REACTOR].ent )
 		{
@@ -913,7 +930,7 @@ void BotTargetToRouteTarget( gentity_t *self, botTarget_t target, botRouteTarget
 		if ( target.ent->s.eType == ET_BUILDABLE || target.ent->s.eType == ET_PLAYER )
 		{
 			// building on wall or cieling ( 0.7 == MIN_WALK_NORMAL )
-			if ( target.ent->s.origin2[ 2 ] < 0.7 || ( target.ent->s.eType == ET_PLAYER ) )
+			if ( target.ent->s.origin2[ 2 ] < 0.7 || target.ent->s.eType == ET_PLAYER )
 			{
 				vec3_t targetPos;
 				vec3_t end;
@@ -947,7 +964,7 @@ team_t BotGetEntityTeam( gentity_t *ent )
 	}
 	if ( ent->client )
 	{
-		return ( team_t )ent->client->ps.stats[STAT_TEAM];
+		return ( team_t )ent->client->pers.team;
 	}
 	else if ( ent->s.eType == ET_BUILDABLE )
 	{
@@ -1025,7 +1042,7 @@ qboolean BotTargetInAttackRange( gentity_t *self, botTarget_t target )
 	float width = 0, height = 0;
 
 	AngleVectors( self->client->ps.viewangles, forward, right, up );
-	CalcMuzzlePoint( self, forward, right, up , muzzle );
+	G_CalcMuzzlePoint( self, forward, right, up , muzzle );
 	BotGetTargetPos( target, targetPos );
 	switch ( self->client->ps.weapon )
 	{
@@ -1040,6 +1057,7 @@ qboolean BotTargetInAttackRange( gentity_t *self, botTarget_t target )
 			width = height = ABUILDER_CLAW_WIDTH;
 			break;
 		case WP_ALEVEL0:
+		case WP_ALEVEL0_UPG:
 			range = LEVEL0_BITE_RANGE;
 			secondaryRange = 0;
 			break;
@@ -1172,7 +1190,7 @@ qboolean BotTargetInAttackRange( gentity_t *self, botTarget_t target )
 
 	trap_Trace( &trace, muzzle, mins, maxs, targetPos, self->s.number, MASK_SHOT );
 
-	if ( self->client->ps.stats[STAT_TEAM] != BotGetEntityTeam( &g_entities[trace.entityNum] )
+	if ( self->client->pers.team != BotGetEntityTeam( &g_entities[trace.entityNum] )
 		&& BotGetEntityTeam( &g_entities[ trace.entityNum ] ) != TEAM_NONE
 		&& Distance( muzzle, trace.endpos ) <= MAX( range, secondaryRange ) )
 	{
@@ -1191,7 +1209,7 @@ qboolean BotTargetIsVisible( gentity_t *self, botTarget_t target, int mask )
 	vec3_t  forward, right, up;
 
 	AngleVectors( self->client->ps.viewangles, forward, right, up );
-	CalcMuzzlePoint( self, forward, right, up, muzzle );
+	G_CalcMuzzlePoint( self, forward, right, up, muzzle );
 	BotGetTargetPos( target, targetPos );
 
 	if ( !trap_InPVS( muzzle, targetPos ) )
@@ -1392,7 +1410,7 @@ int FindBots( int *botEntityNumbers, int maxBots, team_t team )
 		testEntity = &g_entities[i];
 		if ( testEntity->r.svFlags & SVF_BOT )
 		{
-			if ( testEntity->client->pers.teamSelection == team && numBots < maxBots )
+			if ( testEntity->client->pers.team == team && numBots < maxBots )
 			{
 				botEntityNumbers[numBots++] = i;
 			}
@@ -1409,10 +1427,10 @@ qboolean PlayersBehindBotInSpawnQueue( gentity_t *self )
 	int botPos = 0, lastPlayerPos = 0;
 	spawnQueue_t *sq;
 
-	if ( self->client->pers.teamSelection > TEAM_NONE &&
-	     self->client->pers.teamSelection < NUM_TEAMS )
+	if ( self->client->pers.team > TEAM_NONE &&
+	     self->client->pers.team < NUM_TEAMS )
 	{
-		sq = &level.team[ self->client->pers.teamSelection ].spawnQueue;
+		sq = &level.team[ self->client->pers.team ].spawnQueue;
 	}
 	else
 	{
@@ -1468,7 +1486,7 @@ qboolean BotTeamateHasWeapon( gentity_t *self, int weapon )
 {
 	int botNumbers[MAX_CLIENTS];
 	int i;
-	int numBots = FindBots( botNumbers, MAX_CLIENTS, ( team_t ) self->client->ps.stats[STAT_TEAM] );
+	int numBots = FindBots( botNumbers, MAX_CLIENTS, ( team_t ) self->client->pers.team );
 
 	for ( i = 0; i < numBots; i++ )
 	{
@@ -1512,6 +1530,7 @@ void BotClassMovement( gentity_t *self, qboolean inAttackRange )
 	switch ( self->client->ps.stats[STAT_CLASS] )
 	{
 		case PCL_ALIEN_LEVEL0:
+		case PCL_ALIEN_LEVEL0_UPG:
 			BotStrafeDodge( self );
 			break;
 		case PCL_ALIEN_LEVEL1:
@@ -1580,7 +1599,7 @@ float CalcAimPitch( gentity_t *self, botTarget_t target, vec_t launchSpeed )
 
 	BotGetTargetPos( target, targetPos );
 	AngleVectors( self->s.origin, forward, right, up );
-	CalcMuzzlePoint( self, forward, right, up, muzzle );
+	G_CalcMuzzlePoint( self, forward, right, up, muzzle );
 	VectorCopy( muzzle, startPos );
 
 	//project everything onto a 2D plane with initial position at (0,0)
@@ -1645,7 +1664,7 @@ void BotFireWeaponAI( gentity_t *self )
 	usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
 
 	AngleVectors( self->client->ps.viewangles, forward, right, up );
-	CalcMuzzlePoint( self, forward, right, up, muzzle );
+	G_CalcMuzzlePoint( self, forward, right, up, muzzle );
 	BotGetIdealAimLocation( self, self->botMind->goal, targetPos );
 
 	trap_Trace( &trace, muzzle, NULL, NULL, targetPos, -1, MASK_SHOT );
@@ -1673,6 +1692,7 @@ void BotFireWeaponAI( gentity_t *self )
 			}
 			break;
 		case WP_ALEVEL0:
+		case WP_ALEVEL0_UPG:
 			break; //auto hit
 		case WP_ALEVEL1:
 			BotFireWeapon( WPM_PRIMARY, botCmdBuffer ); //basi swipe
@@ -1785,7 +1805,7 @@ qboolean BotEvolveToClass( gentity_t *ent, class_t newClass )
 		{
 			other = &g_entities[ entityList[ i ] ];
 
-			if ( ( other->client && other->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS ) ||
+			if ( ( other->client && other->client->pers.team == TEAM_HUMANS ) ||
 				( other->s.eType == ET_BUILDABLE && other->buildableTeam == TEAM_HUMANS ) )
 			{
 				return qfalse;
@@ -1797,16 +1817,13 @@ qboolean BotEvolveToClass( gentity_t *ent, class_t newClass )
 			return qfalse;
 		}
 
-		numLevels = BG_ClassCanEvolveFromTo( currentClass, newClass, ( short )ent->client->ps.persistant[ PERS_CREDIT ], level.team[ TEAM_ALIENS ].stage );
+		numLevels = BG_ClassCanEvolveFromTo( currentClass, newClass, ( short )ent->client->ps.persistant[ PERS_CREDIT ] );
 
 		if ( G_RoomForClassChange( ent, newClass, infestOrigin ) )
 		{
 			//...check we can evolve to that class
-			if ( numLevels >= 0 &&
-				BG_ClassAllowedInStage( newClass, level.team[ TEAM_ALIENS ].stage ) &&
-				BG_ClassIsAllowed( newClass ) )
+			if ( numLevels >= 0 && BG_ClassUnlocked( newClass ) && !BG_ClassDisabled( newClass ) )
 			{
-
 				ent->client->pers.evolveHealthFraction = ( float )ent->client->ps.stats[ STAT_HEALTH ] /
 				( float )BG_Class( currentClass )->health;
 
@@ -1869,16 +1886,18 @@ void BotBuyWeapon( gentity_t *self, weapon_t weapon )
 		}
 
 		//are we /allowed/ to buy this?
-		if ( !BG_WeaponAllowedInStage( weapon, level.team[ TEAM_HUMANS ].stage ) || !BG_WeaponIsAllowed( weapon ) )
+		if ( !BG_WeaponUnlocked( weapon ) || BG_WeaponDisabled( weapon ) )
 		{
 			return;
 		}
 
 		//are we /denied/ this (stripped)? (shouldn't happen - should be caught before we get here)
+		/* FIXME:STRIP
 		if ( self->client->pers.namelog->strip && !BG_Strip_WeaponAllowedInStage( weapon, level.team[ TEAM_HUMANS ].stage ) )
 		{
 			return;
 		}
+		*/
 
 		//can afford this?
 		if ( BG_Weapon( weapon )->price > ( short )self->client->pers.credit )
@@ -1977,16 +1996,18 @@ void BotBuyUpgrade( gentity_t *self, upgrade_t upgrade )
 		}
 
 		//are we /allowed/ to buy this?
-		if ( !BG_UpgradeAllowedInStage( upgrade, level.team[ TEAM_HUMANS ].stage ) || !BG_UpgradeIsAllowed( upgrade ) )
+		if ( !BG_UpgradeUnlocked( upgrade ) || BG_UpgradeDisabled( upgrade ) )
 		{
 			return;
 		}
 
 		//are we /denied/ this (stripped)? (shouldn't happen - should be caught before we get here)
+		/* FIXME:STRIP
 		if ( self->client->pers.namelog->strip && !BG_Strip_UpgradeAllowedInStage( upgrade, level.team[ TEAM_HUMANS ].stage ) )
 		{
 			return;
 		}
+		*/
 
 		if ( upgrade == UP_AMMO )
 		{
@@ -2192,7 +2213,7 @@ qboolean BotEnemyIsValid( gentity_t *self, gentity_t *enemy )
 		return qfalse;
 	}
 
-	if ( BotGetEntityTeam( enemy ) == self->client->ps.stats[ STAT_TEAM ] )
+	if ( BotGetEntityTeam( enemy ) == self->client->pers.team )
 	{
 		return qfalse;
 	}
@@ -2212,7 +2233,7 @@ qboolean BotEnemyIsValid( gentity_t *self, gentity_t *enemy )
 
 void BotPain( gentity_t *self, gentity_t *attacker, int damage )
 {
-	if ( BotGetEntityTeam( attacker ) != TEAM_NONE && BotGetEntityTeam( attacker ) != self->client->ps.stats[ STAT_TEAM ] )
+	if ( BotGetEntityTeam( attacker ) != TEAM_NONE && BotGetEntityTeam( attacker ) != self->client->pers.team )
 	{
 		if ( attacker->s.eType == ET_PLAYER )
 		{

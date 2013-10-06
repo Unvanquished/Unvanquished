@@ -113,6 +113,7 @@ cmake_dependent_option( USE_MUMBLE           "Compile with support for Mumble"  
 cmake_dependent_option( USE_VOIP             "Compile with VOIP support"                             1 "BUILD_CLIENT OR BUILD_SERVER" 0 )
 cmake_dependent_option( USE_CIN_XVID         "Encode videos with XViD"                               1 BUILD_CLIENT                   0 )
 cmake_dependent_option( USE_INTERNAL_SDL     "Use SDL files included with Unvanquished"              0 BUILD_CLIENT                   0 )
+cmake_dependent_option( USE_SDL2             "Enable SDL 2.0 support (incompatible with SDL 1.2)"    1 "BUILD_CLIENT OR BUILD_DAEMONMAP" 0 )
 
 cmake_dependent_option( USE_CURSES           "Use the curses console"                                1 "BUILD_CLIENT OR BUILD_SERVER" 0 )
 cmake_dependent_option( USE_PHYSICS          "Compile with Newton Physics"                           0 "BUILD_CLIENT OR BUILD_SERVER" 0 )
@@ -166,7 +167,13 @@ endif()
 
 set( GPP_DIR ${MOUNT_DIR}/gamelogic )
 set( LIB_DIR ${MOUNT_DIR}/libs ) # LIB_DIR is also defined in Visual_Studio32/64.cmake
-set( SDL_DIR ${LIB_DIR}/libsdl )
+
+if( USE_SDL2 )
+	set( SDL_DIR ${LIB_DIR}/libsdl2 )
+else()
+	set( SDL_DIR ${LIB_DIR}/libsdl1.2 )
+endif()
+
 set( JPEG_DIR ${LIB_DIR}/jpeg )
 set( GLEW_DIR ${LIB_DIR}/glew )
 set( WEBP_DIR ${LIB_DIR}/libwebp )
@@ -188,7 +195,9 @@ if( WIN32 )
   set( CONSOLE "win32" )
 elseif( UNIX )
   if( ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
-    add_definitions( -DMACOS_X -DMACOS_X_ACCELERATION_HACK -DUSE_FILE32API -DMACOS_X_CURSOR_HACK )
+    add_definitions( -DMACOS_X -DMACOS_X_ACCELERATION_HACK -DMACOS_X_CURSOR_HACK )
+  elseif( CMAKE_SYSTEM_NAME STREQUAL "Linux" )
+    add_definitions( -D_FILE_OFFSET_BITS=64 )
   endif()
   set( PLATFORM "unix" )
 endif()
@@ -259,9 +268,28 @@ include_directories( "${OBJ_DIR}" )
 
 # Import CMakeLists.txt for internal libraries
 if( USE_INTERNAL_SDL )
-  add_subdirectory( ${SDL_DIR} ${OBJ_DIR}/libsdl )
-  set( SDL_LIBRARY INTERNAL_SDL INTERNAL_SDLMain CACHE STRING "SDL library" FORCE )
-  set( SDL_INCLUDE_DIR ${SDL_DIR}/include CACHE STRING "SDL include directory" FORCE )
+	if( USE_SDL2 )
+	  set( SDL_STATIC OFF CACHE BOOL "Build SDL static library" )
+	  add_subdirectory( ${SDL_DIR} ${OBJ_DIR}/libsdl2 )
+
+
+	  if( DIRECTX )
+		  if( BUILD_ARCH STREQUAL "i386" )
+			link_directories($ENV{DXSDK_DIR}\\lib\\x86)
+		  elseif( BUILD_ARCH STREQUAL "x86-64" )
+			link_directories($ENV{DXSDK_DIR}\\lib\\x64)
+		  endif()
+	  endif()
+
+	  set( SDL2_LIBRARIES SDL2 SDL2main CACHE STRING "SDL library" FORCE )
+	  set( SDL2_INCLUDE_DIRS ${SDL_DIR}/include CACHE STRING "SDL include directory" FORCE )
+	  set( SDL2_FOUND "1" CACHE INTERNAL "" )
+  else()
+	  add_subdirectory( ${SDL_DIR} ${OBJ_DIR}/libsdl )
+	  set( SDL_LIBRARY SDL1.2 SDL1.2main CACHE STRING "SDL library" FORCE )
+	  set( SDL_INCLUDE_DIR ${SDL_DIR}/include CACHE STRING "SDL include directory" FORCE )
+	  set( SDL_FOUND "1" CACHE INTERNAL "" )
+  endif()
 endif()
 
 if( USE_INTERNAL_JPEG )
@@ -459,8 +487,8 @@ set( OPENEXRLIST
 )
 
 set( RENDERERLIST
+  ${MOUNT_DIR}/engine/sys/sdl2_compat.c
   ${MOUNT_DIR}/engine/renderer/tr_animation.c
-  ${MOUNT_DIR}/engine/renderer/tr_animation_mdm.c
   ${MOUNT_DIR}/engine/renderer/tr_animation_mds.c
   ${MOUNT_DIR}/engine/renderer/tr_backend.c
   ${MOUNT_DIR}/engine/renderer/tr_bsp.c
@@ -497,8 +525,8 @@ set( RENDERERLIST
 )
 
 set( RENDERERGLLIST
+  ${MOUNT_DIR}/engine/sys/sdl2_compat.c
   ${MOUNT_DIR}/engine/rendererGL/gl_shader.cpp
-  ${MOUNT_DIR}/engine/rendererGL/tr_animation_mdm.c
   ${MOUNT_DIR}/engine/rendererGL/tr_animation.c
   ${MOUNT_DIR}/engine/rendererGL/tr_backend.cpp
   ${MOUNT_DIR}/engine/rendererGL/tr_bsp.c
@@ -525,7 +553,6 @@ set( RENDERERGLLIST
   ${MOUNT_DIR}/engine/rendererGL/tr_model_md3.c
   ${MOUNT_DIR}/engine/rendererGL/tr_model_md5.c
   ${MOUNT_DIR}/engine/rendererGL/tr_model_mdc.c
-  ${MOUNT_DIR}/engine/rendererGL/tr_model_mdm.c
   ${MOUNT_DIR}/engine/rendererGL/tr_model_psk.c
   ${MOUNT_DIR}/engine/rendererGL/tr_model_skel.c
   ${MOUNT_DIR}/engine/rendererGL/tr_noise.c
@@ -650,7 +677,7 @@ endif()
 set( CLIENTLIST
   ${MOUNT_DIR}/engine/client/cg_api.h
   ${MOUNT_DIR}/engine/client/ui_api.h
-  ${MOUNT_DIR}/engine/client/client.h	
+  ${MOUNT_DIR}/engine/client/client.h
   ${MOUNT_DIR}/engine/botlib/bot_debug.cpp
   ${MOUNT_DIR}/engine/botlib/bot_nav_edit.cpp
   ${MOUNT_DIR}/engine/client/cin_ogm.c
@@ -726,6 +753,7 @@ endif()
 set( SDLLIST
   ${MOUNT_DIR}/engine/sys/sdl_input.c
   ${MOUNT_DIR}/engine/sys/sdl_snd.c
+  ${MOUNT_DIR}/engine/sys/sdl2_compat.c
 )
 
 # needed for LLVM & QVM
@@ -743,6 +771,7 @@ set( CGAMEGPP_BASE
   ${GPP_DIR}/game/bg_lib.c
   ${GPP_DIR}/game/bg_alloc.c
   ${GPP_DIR}/game/bg_voice.c
+  ${GPP_DIR}/game/bg_teamprogress.c
   ${GPP_DIR}/cgame/cg_consolecmds.c
   ${GPP_DIR}/cgame/cg_buildable.c
   ${GPP_DIR}/cgame/cg_animation.c
@@ -793,10 +822,12 @@ set( GAMEGPP_BASE
   ${GPP_DIR}/game/bg_lib.c
   ${GPP_DIR}/game/bg_alloc.c
   ${GPP_DIR}/game/bg_voice.c
+  ${GPP_DIR}/game/bg_teamprogress.c
   ${GPP_DIR}/game/g_active.c
   ${GPP_DIR}/game/g_client.c
   ${GPP_DIR}/game/g_cmds.c
   ${GPP_DIR}/game/g_combat.c
+  ${GPP_DIR}/game/g_confidence.c
   ${GPP_DIR}/game/g_entities.c
   ${GPP_DIR}/game/g_physics.c
   ${GPP_DIR}/game/g_buildable.c
@@ -849,6 +880,7 @@ set( UIGPP_BASE
   ${GPP_DIR}/game/bg_parse.c
   ${GPP_DIR}/game/bg_lib.c
   ${GPP_DIR}/game/bg_alloc.c
+  ${GPP_DIR}/game/bg_teamprogress.c
   ${GPP_DIR}/ui/ui_utf8.c
   ${SHAREDLIST_C}
 )
@@ -866,6 +898,7 @@ set( UIGPP_QVM
 )
 
 set( DAEMONMAPLIST
+  ${MOUNT_DIR}/engine/sys/sdl2_compat.c
   ${MOUNT_DIR}/tools/common/cmdlib.c
   ${MOUNT_DIR}/tools/common/imagelib.c
   ${MOUNT_DIR}/tools/common/inout.c
@@ -1370,6 +1403,8 @@ if( WIN32 )
 elseif( UNIX )
   if( CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" )
     set( OS_LIBRARIES m z )
+  elseif( CMAKE_SYSTEM_NAME STREQUAL "OpenBSD" )
+    set( OS_LIBRARIES m z )
   elseif( CMAKE_SYSTEM_NAME STREQUAL "Darwin" )
     set( OS_LIBRARIES dl m z )
     # FIXME This looks wrong.
@@ -1378,6 +1413,29 @@ elseif( UNIX )
     set( OS_LIBRARIES ${CMAKE_DL_LIBS} m z rt )
   endif()
 endif()
+
+macro( find_and_use_SDL TARGET )
+  if( USE_SDL2 )
+    if( NOT SDL2_FOUND AND NOT USE_INTERNAL_SDL )
+      find_package( SDL2 )
+    endif()
+    include_directories( ${SDL2_INCLUDE_DIRS} )
+    target_link_libraries( ${TARGET} ${SDL2_LIBRARIES} )
+  endif()
+  # Fall back on 1.2
+  if( NOT USE_SDL2 OR NOT SDL2_FOUND )
+    if( NOT SDL_FOUND AND NOT USE_INTERNAL_SDL )
+      find_package( SDL REQUIRED )
+      set( SDL_FOUND "1" CACHE INTERNAL "" )
+    endif()
+    include_directories( ${SDL_INCLUDE_DIR} )
+    target_link_libraries( ${TARGET} ${SDL_LIBRARY} )
+  endif()
+  if( NOT SDL2_FOUND AND NOT SDL_LIBRARY)
+    # shouldn't get here – should fail above if 1.2 isn't found
+    message( FATAL_ERROR "Neither SDL 1.2 nor SDL 2 were found" )
+  endif()
+endmacro()
 
 ###############################
 # Build Game/Cgame/Ui DLL/.so #
@@ -1600,19 +1658,24 @@ if( BUILD_OLD_RENDERER )
 
   # This section finds and provides REQUIRED dependencies to target renderer
   find_package( OpenGL REQUIRED )
-  find_package( SDL REQUIRED )
   find_package( JPEG REQUIRED )
   find_package( PNG REQUIRED )
   find_package( Freetype REQUIRED )
   find_package( GLEW REQUIRED )
   find_package( WebP REQUIRED )
-  
+  find_and_use_SDL( renderer )
+
   if( UNIX )
     find_package( X11 )
   endif()
 
-  include_directories( ${PNG_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS} ${SDL_INCLUDE_DIR} ${X11_INCLUDE_DIR} ${WEBP_INCLUDE_DIRS} )
-  target_link_libraries( renderer ${PNG_LIBRARIES} ${SDL_LIBRARY} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} ${JPEG_LIBRARIES} ${FREETYPE_LIBRARIES} ${WEBP_LIBRARIES} )
+# Disabled - works, but is buggy
+#  if( USE_SMP )
+#    set_property( TARGET renderer APPEND PROPERTY COMPILE_DEFINITIONS SMP )
+#  endif()
+
+  include_directories( ${PNG_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS} ${X11_INCLUDE_DIR} ${WEBP_INCLUDE_DIRS} )
+  target_link_libraries( renderer ${PNG_LIBRARIES} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} ${JPEG_LIBRARIES} ${FREETYPE_LIBRARIES} ${WEBP_LIBRARIES} )
 
   # This section finds and provides OPTIONAL dependencies to target renderer
 endif()
@@ -1637,12 +1700,13 @@ if( BUILD_NEW_RENDERER )
 
   # This section finds and provides REQUIRED dependencies to target rendererGL
   find_package( OpenGL REQUIRED )
-  find_package( SDL REQUIRED )
   find_package( JPEG REQUIRED )
   find_package( PNG REQUIRED )
   find_package( Freetype REQUIRED )
   find_package( GLEW REQUIRED )
   find_package( WebP REQUIRED )
+
+  find_and_use_SDL( rendererGL )
 
   if( UNIX )
     find_package( X11 )
@@ -1652,8 +1716,8 @@ if( BUILD_NEW_RENDERER )
       set_property( TARGET rendererGL APPEND PROPERTY COMPILE_DEFINITIONS SMP )
   endif()
 
-  include_directories( ${PNG_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS} ${SDL_INCLUDE_DIR} ${X11_INCLUDE_DIR} ${WEBP_INCLUDE_DIRS} )
-  target_link_libraries( rendererGL ${PNG_LIBRARIES} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} ${JPEG_LIBRARIES} ${FREETYPE_LIBRARIES} ${SDL_LIBRARY} ${WEBP_LIBRARIES} )
+  include_directories( ${PNG_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS} ${X11_INCLUDE_DIR} ${WEBP_INCLUDE_DIRS} )
+  target_link_libraries( rendererGL ${PNG_LIBRARIES} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} ${JPEG_LIBRARIES} ${FREETYPE_LIBRARIES} ${WEBP_LIBRARIES} )
 
   # This section finds and provides OPTIONAL dependencies to target rendererGL
 endif()
@@ -1702,7 +1766,7 @@ endfunction()
 if( BUILD_CLIENT )
   # Setup target client
   add_executable( client ${DETOURLIST} ${SERVERLIST} ${CLIENTLIST} ${SDLBASELIST} ${SDLLIST} ${QCOMMONLIST} ${SHAREDLIST} ${CRYPTOLIST} ${TINYGETTEXT_LIST}
-    ${DATABASELIST} ${MOUNT_DIR}/engine/qcommon/dl_main_curl.c ${SPEEXLIST} ${OPUSLIST} ${WIN_RC} )
+    ${DATABASELIST} ${MOUNT_DIR}/engine/qcommon/dl_main_curl.c ${SPEEXLIST} ${WIN_RC} )
   add_dependencies( client rendererGL )
   include_directories( ${NEWTON_INCLUDES} )
   target_link_libraries( client ${OS_LIBRARIES} ${NEWTON_LIBRARY} )
@@ -1732,15 +1796,19 @@ if( BUILD_CLIENT )
     set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS ZLIB_WINAPI )
   endif()
 
+  if( NOT WIN32 )
+    target_link_libraries( client pthread )
+  endif()
+
   # This section finds and provides REQUIRED dependencies to target client
   find_package( OpenGL REQUIRED )
-  find_package( SDL REQUIRED )
   find_package( Freetype REQUIRED )
   find_package( GLEW REQUIRED )
   find_package( GMP REQUIRED )
   find_package( ZLIB REQUIRED )
   find_package( CURL REQUIRED )
   find_package_geoip()
+  find_and_use_SDL( client )
 
   if( GEOIP_FOUND )
     set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS HAVE_GEOIP )
@@ -1757,8 +1825,8 @@ if( BUILD_CLIENT )
     target_link_libraries( client ${NETTLE_LIBRARIES} )
   endif()
 
-  include_directories( ${OPENGL_INCLUDE_DIR} ${SDL_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIR} ${GMP_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS} ${CURL_INCLUDE_DIRS} )
-  target_link_libraries( client ${OPENGL_LIBRARIES} ${SDL_LIBRARY} ${FREETYPE_LIBRARIES} ${GLEW_LIBRARY} ${GMP_LIBRARIES} ${ZLIB_LIBRARIES} ${CURL_LIBRARIES} )
+  include_directories( ${OPENGL_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIR} ${GMP_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS} ${CURL_INCLUDE_DIRS} )
+  target_link_libraries( client ${OPENGL_LIBRARIES} ${FREETYPE_LIBRARIES} ${GLEW_LIBRARY} ${GMP_LIBRARIES} ${ZLIB_LIBRARIES} ${CURL_LIBRARIES} )
 
   # This section finds and provides OPTIONAL dependencies to target client
   if( USE_OPENAL )
@@ -1795,13 +1863,16 @@ if( BUILD_CLIENT )
   endif()
 
   if( USE_INTERNAL_OPUS )
+      add_library( INTERNAL_OPUS STATIC ${OPUSLIST} )
       if( NOT MSVC )
-        set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_ALLOCA FLOATING_POINT OPUS_BUILD )
+        set_property( TARGET INTERNAL_OPUS APPEND PROPERTY COMPILE_DEFINITIONS USE_ALLOCA FLOATING_POINT OPUS_BUILD )
       else()
-        set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS HAVE_CONFIG_H )
+        set_property( TARGET INTERNAL_OPUS APPEND PROPERTY COMPILE_DEFINITIONS HAVE_CONFIG_H )
         include_directories( ${LIB_DIR}/opus-1.0.2/include/win32 )
       endif()
       include_directories( ${LIB_DIR}/opusfile-0.2/include ${LIB_DIR}/opus-1.0.2/include ${LIB_DIR}/opus-1.0.2/celt ${LIB_DIR}/opus-1.0.2/silk ${LIB_DIR}/opus-1.0.2/silk/float )
+      set( OPUS_LIBRARIES INTERNAL_OPUS CACHE STRING "Opus Libraries" FORCE )
+      target_link_libraries( client ${OPUS_LIBRARIES} )
   else()
       find_package( Opus REQUIRED )
       include_directories( ${OPUS_INCLUDE_DIRS} )
@@ -1855,6 +1926,10 @@ if( BUILD_CLIENT )
 
   if( MINGW )
     target_link_libraries( client ${SDLMAIN_LIBRARY} )
+  endif()
+
+  if( USE_SMP )
+    set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS SMP )
   endif()
 endif()
 
@@ -1949,10 +2024,8 @@ if( BUILD_SERVER )
   endif()
 
   if( USE_SDL_ICONV )
-    find_package( SDL REQUIRED )
+    find_and_use_SDL( server )
     set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS HAVE_SDL )
-    include_directories( ${SDL_INCLUDE_DIR} )
-    target_link_libraries( server ${SDL_LIBRARY} )
   endif()
 
   if( GAME_LIB_LLVM )
@@ -1984,12 +2057,17 @@ if( BUILD_DAEMONMAP )
 
   # This section finds and provides REQUIRED dependencies to DaemonMap target
   find_package( OpenGL REQUIRED )
-  find_package( SDL REQUIRED )
   find_package( JPEG REQUIRED )
   find_package( PNG REQUIRED )
   find_package( GLib2 REQUIRED )
-  target_link_libraries( daemonMap ${OPENGL_LIBRARIES} ${SDL_LIBRARY} ${JPEG_LIBRARIES} ${PNG_LIBRARIES} ${GLIB_LIBRARIES} )
-  include_directories( ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${PNG_INCLUDE_DIR} ${SDL_INCLUDE_DIR} ${GLIB_INCLUDE_DIRS} )
+  find_and_use_SDL( daemonMap )
+
+  if( NOT WIN32 )
+    target_link_libraries( daemonMap pthread )
+  endif()
+
+  target_link_libraries( daemonMap ${OPENGL_LIBRARIES} ${JPEG_LIBRARIES} ${PNG_LIBRARIES} ${GLIB_LIBRARIES} )
+  include_directories( ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${PNG_INCLUDE_DIR} ${GLIB_INCLUDE_DIRS} )
 endif()
 
 ####################
@@ -2069,10 +2147,8 @@ if( BUILD_TTY_CLIENT )
   endif()
 
   if( USE_SDL_ICONV )
-    find_package( SDL REQUIRED )
+    find_and_use_SDL( ttyclient )
     set_property( TARGET ttyclient APPEND PROPERTY COMPILE_DEFINITIONS HAVE_SDL )
-    include_directories( ${SDL_INCLUDE_DIR} )
-    target_link_libraries( ttyclient ${SDL_LIBRARY} )
   endif()
 
   if( GAME_LIB_LLVM )

@@ -206,12 +206,14 @@ void GL_SelectTexture( int unit )
 
 void GL_BindToTMU( int unit, image_t *image )
 {
+	int texnum = image->texnum;
+
 	if ( unit < 0 || unit > 31 )
 	{
 		ri.Error( ERR_DROP, "GL_BindToTMU: unit %i is out of range\n", unit );
 	}
 
-	if ( glState.currenttextures[ unit ] == image->texnum )
+	if ( glState.currenttextures[ unit ] == texnum )
 	{
 		return;
 	}
@@ -3858,8 +3860,6 @@ void RB_RenderRotoscope( void )
 
 void RB_FXAA( void )
 {
-	matrix_t ortho;
-
 	static vec4_t quadVerts[4] = {
 		{ -1.0f, -1.0f, 0.0f, 1.0f },
 		{  1.0f, -1.0f, 0.0f, 1.0f },
@@ -4666,7 +4666,7 @@ void RB_RenderLightOcclusionQueries()
 					ia->occlusionQuerySamples = 1;
 				}
 
-				if ( ia->occlusionQuerySamples <= 0 )
+				if ( !ia->occlusionQuerySamples )
 				{
 					backEnd.pc.c_occlusionQueriesInteractionsCulled++;
 				}
