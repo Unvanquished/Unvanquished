@@ -100,7 +100,7 @@ test "$STRIP_DEAD" = '' || {
 }
 
 # kill empty directories
-rmdir --ignore-fail-on-non-empty $(find $PACKAGE -type d | sort -r)
+find $PACKAGE -type d -print0 | sort -zr | xargs -0r rmdir --ignore-fail-on-non-empty
 
 # now build the archive
 case "$FORMAT" in
