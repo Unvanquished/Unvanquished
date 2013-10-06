@@ -37,6 +37,12 @@ namespace Str {
 
     std::u32string UTF8To32(const std::string& str);
     std::string UTF32To8(const std::u32string& str);
+
+#ifdef _WIN32
+    std::wstring UTF8To16(const std::string& str);
+    std::string UTF16To8(const std::wstring& str);
+#endif
+
 }
 
 #endif //SHARED_STRING_H_
