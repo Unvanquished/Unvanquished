@@ -112,8 +112,8 @@ cmake_dependent_option( USE_CODEC_VORBIS     "Compile with support for Vorbis"  
 cmake_dependent_option( USE_MUMBLE           "Compile with support for Mumble"                       1 BUILD_CLIENT                   0 )
 cmake_dependent_option( USE_VOIP             "Compile with VOIP support"                             1 "BUILD_CLIENT OR BUILD_SERVER" 0 )
 cmake_dependent_option( USE_CIN_XVID         "Encode videos with XViD"                               1 BUILD_CLIENT                   0 )
-cmake_dependent_option( USE_INTERNAL_SDL     "Use SDL files included with Unvanquished"              0 BUILD_CLIENT                   0 )
-cmake_dependent_option( USE_SDL2             "Enable SDL 2.0 support (incompatible with SDL 1.2)"    1 "BUILD_CLIENT OR BUILD_DAEMONMAP" 0 )
+cmake_dependent_option( USE_INTERNAL_SDL     "Use SDL files included with Unvanquished"              0 "BUILD_CLIENT OR BUILD_SERVER OR BUILD_DAEMONMAP" 0 )
+cmake_dependent_option( USE_SDL2             "Enable SDL 2.0 support (incompatible with SDL 1.2)"    1 "BUILD_CLIENT OR BUILD_SERVER OR BUILD_DAEMONMAP" 0 )
 
 cmake_dependent_option( USE_CURSES           "Use the curses console"                                1 "BUILD_CLIENT OR BUILD_SERVER" 0 )
 cmake_dependent_option( USE_PHYSICS          "Compile with Newton Physics"                           0 "BUILD_CLIENT OR BUILD_SERVER" 0 )
@@ -1978,6 +1978,7 @@ if( BUILD_SERVER )
   find_package( GMP REQUIRED )
   find_package( ZLIB REQUIRED )
   find_package_geoip()
+  find_and_use_SDL( server )
 
   if( GEOIP_FOUND )
     set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS HAVE_GEOIP )
@@ -2024,7 +2025,6 @@ if( BUILD_SERVER )
   endif()
 
   if( USE_SDL_ICONV )
-    find_and_use_SDL( server )
     set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS HAVE_SDL )
   endif()
 
