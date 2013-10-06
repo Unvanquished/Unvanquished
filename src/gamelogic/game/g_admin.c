@@ -857,7 +857,15 @@ void G_admin_writeconfig( void )
 			continue;
 		}
 
-		trap_FS_Write( "[ban]\n", 6, f );
+		if ( G_ADMIN_BAN_IS_WARNING( b ) )
+		{
+			trap_FS_Write( "[warning]\n", 10, f );
+		}
+		else
+		{
+			trap_FS_Write( "[ban]\n", 6, f );
+		}
+
 		trap_FS_Write( "name    = ", 10, f );
 		admin_writeconfig_string( b->name, f );
 		trap_FS_Write( "guid    = ", 10, f );
@@ -1883,7 +1891,7 @@ qboolean G_admin_readconfig( gentity_t *ent )
 			level_open = ban_open = command_open = qfalse;
 			ac++;
 		}
-		else if ( !Q_stricmp( t, "[ban]" ) )
+		else if ( !Q_stricmp( t, "[ban]" ) || !Q_stricmp( t, "[warning]" ) )
 		{
 			if ( b )
 			{
@@ -1896,6 +1904,8 @@ qboolean G_admin_readconfig( gentity_t *ent )
 				b = g_admin_bans = BG_Alloc( sizeof( g_admin_ban_t ) );
 				b->id = 1;
 			}
+
+			b->warnCount = ( t[ 1 ] == 'w' ) ? -1 : 0;
 
 			ban_open = qtrue;
 			level_open = admin_open = command_open = qfalse;
@@ -3599,7 +3609,7 @@ qboolean G_admin_listplayers( gentity_t *ent )
 	g_admin_level_t *d = G_admin_level( 0 );
 	qboolean        hint;
 	qboolean        canset = G_admin_permission( ent, "setlevel" );
-	qboolean	canseeWarn = G_admin_permission( &g_entities[ i ], "warn" ) || G_admin_permission( &g_entities[ i ], "ban" );
+	qboolean	canseeWarn = G_admin_permission( ent, "warn" ) || G_admin_permission( ent, "ban" );
 
 	ADMP( va( "%s %d", QQ( N_("^3listplayers: ^7$1$ players connected:\n") ),
 	           level.numConnectedClients ) );

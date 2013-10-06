@@ -92,8 +92,9 @@ float AIUnBoxFloat( AIValue_t v )
 			return v.l.floatValue;
 		case VALUE_INT:
 			return ( float ) v.l.intValue;
+		default:
+			return 0.0f;
 	}
-	return 0.0f;
 }
 
 int AIUnBoxInt( AIValue_t v )
@@ -104,8 +105,9 @@ int AIUnBoxInt( AIValue_t v )
 			return ( int ) v.l.floatValue;
 		case VALUE_INT:
 			return v.l.intValue;
+		default:
+			return 0;
 	}
-	return 0;
 }
 
 const char *AIUnBoxString( AIValue_t v )
@@ -120,8 +122,9 @@ const char *AIUnBoxString( AIValue_t v )
 			return va( "%d", v.l.intValue );
 		case VALUE_STRING:
 			return v.l.stringValue;
+		default:
+			return empty;
 	}
-	return empty;
 }
 
 double AIUnBoxDouble( AIValue_t v )
@@ -132,8 +135,9 @@ double AIUnBoxDouble( AIValue_t v )
 			return ( double ) v.l.floatValue;
 		case VALUE_INT:
 			return ( double ) v.l.intValue;
+		default:
+			return 0.0;
 	}
-	return 0.0;
 }
 
 void AIDestroyValue( AIValue_t v )
@@ -350,7 +354,6 @@ double EvalValue( gentity_t *self, AIExpType_t *exp )
 qboolean EvaluateBinaryOp( gentity_t *self, AIExpType_t *exp )
 {
 	AIBinaryOp_t *o = ( AIBinaryOp_t * ) exp;
-	qboolean      ret = qfalse;
 
 	switch ( o->opType )
 	{
@@ -1048,7 +1051,6 @@ AINodeStatus_t BotActionHealA( gentity_t *self, AIGenericNode_t *node )
 {
 	const int maxHealth = BG_Class( ( class_t )self->client->ps.stats[STAT_CLASS] )->health;
 	gentity_t *healTarget = NULL;
-	float distToHealer = 0;
 
 	if ( self->botMind->closestBuildings[BA_A_BOOSTER].ent )
 	{

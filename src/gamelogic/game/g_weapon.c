@@ -674,7 +674,7 @@ static void FirebombMissileThink( gentity_t *self )
 
 	// ignite alien buildables in range
 	neighbor = NULL;
-	while ( neighbor = G_IterateEntitiesWithinRadius( neighbor, self->s.origin, FIREBOMB_IGNITE_RANGE ) )
+	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, self->s.origin, FIREBOMB_IGNITE_RANGE ) ) )
 	{
 		if ( neighbor->s.eType == ET_BUILDABLE && neighbor->buildableTeam == TEAM_ALIENS &&
 		     G_LineOfSight( self, neighbor ) )
@@ -1924,9 +1924,10 @@ void G_FireUpgrade( gentity_t *self, upgrade_t upgrade )
 		case UP_GRENADE:
 			FireGrenade( self );
 			break;
-
 		case UP_FIREBOMB:
 			FireFirebomb( self );
+			break;
+		default:
 			break;
 	}
 }

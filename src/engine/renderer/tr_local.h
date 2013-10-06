@@ -1628,6 +1628,7 @@ extern float          displayAspect; // FIXME
 //
 // cvars
 //
+extern cvar_t *r_glAllowSoftware;
 extern cvar_t *r_flareSize;
 extern cvar_t *r_flareFade;
 
@@ -1973,6 +1974,7 @@ qboolean   GLimp_Init( void );
 void       GLimp_Shutdown( void );
 void       GLimp_AcquireGL( void );
 
+void     GLimp_HandleCvars( void );
 void     GLimp_EndFrame( void );
 
 qboolean GLimp_SpawnRenderThread( void ( *function )( void ) );

@@ -1,3 +1,23 @@
+unvanquished (0.20.0-1) unstable; urgency=low
+
+  * Add unvanquished-dev, initially containing only unvanquishedmap.
+    (No manpages yet.)
+  * Remove some cruft from debian/rules.
+  * Update build flags: use external opus where possible, no GLSL optimiser.
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Sun, 06 Oct 2013 15:47:12 +0100
+
+unvanquished (0.19.0-2) unstable; urgency=low
+
+  * Fix crashlog file location.
+  * Text console scrolling fixes.
+  * Put the configuration symlinks in the right directory.
+  * Tidy up /etc/default/unvanquished-server; support IPv6.
+  * Update and fix the default configuration.
+  * Update and fix documentation.
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Sat, 21 Sep 2013 23:56:47 +0100
+
 unvanquished (0.19.0-1) unstable; urgency=low
 
   * Release of alpha 19.

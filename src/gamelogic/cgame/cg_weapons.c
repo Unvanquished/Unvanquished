@@ -63,7 +63,8 @@ void CG_RegisterUpgrade( int upgradeNum )
 
 	upgradeInfo->humanName = BG_Upgrade( upgradeNum )->humanName;
 
-	if ( icon = BG_Upgrade( upgradeNum )->icon )
+	icon = BG_Upgrade( upgradeNum )->icon;
+	if ( icon )
 	{
 		upgradeInfo->upgradeIcon = trap_R_RegisterShader( icon, RSF_DEFAULT );
 	}
@@ -81,7 +82,7 @@ static void CG_LoadCustomCrosshairs( void )
 {
 	char         *text_p, *token;
 	char         text[ 20000 ];
-	int          len, size;
+	int          len;
 	fileHandle_t f;
 	weapon_t     weapon;
 

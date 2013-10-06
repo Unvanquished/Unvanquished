@@ -56,7 +56,7 @@ void CL_PacketEvent( netadr_t from, msg_t *msg )
 {
 }
 
-void CL_CharEvent( const char *key )
+void CL_CharEvent( int c )
 {
 }
 

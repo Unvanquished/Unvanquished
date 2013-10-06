@@ -554,9 +554,6 @@ void BotFindClosestBuildings( gentity_t *self )
 
 void BotFindDamagedFriendlyStructure( gentity_t *self )
 {
-	//closest building
-	gentity_t* closestBuilding = NULL;
-
 	float minDistSqr;
 
 	gentity_t *target;

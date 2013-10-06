@@ -883,6 +883,8 @@ void RE_EndFrame( int *frontEndMsec, int *backEndMsec )
 		return;
 	}
 
+	GLimp_HandleCvars();
+
 	cmd = R_GetCommandBuffer( sizeof( *cmd ) );
 
 	if ( !cmd )

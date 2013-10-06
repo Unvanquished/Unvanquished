@@ -1167,7 +1167,6 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 	gentity_t       *ent;
 	char            reason[ MAX_STRING_CHARS ] = { "" };
 	int             i;
-	g_admin_admin_t *admin;
 	const char      *country;
 
 	ent = &g_entities[ clientNum ];
@@ -1318,13 +1317,10 @@ Doesn't do things not relevant to bots (which are local GUIDless clients).
 */
 char *ClientBotConnect( int clientNum, qboolean firstTime, team_t team )
 {
-	char            *value;
 	char            *userInfoError;
 	gclient_t       *client;
 	char            userinfo[ MAX_INFO_STRING ];
 	gentity_t       *ent;
-	char            reason[ MAX_STRING_CHARS ] = { "" };
-	int             i;
 
 	ent = &g_entities[ clientNum ];
 	client = &level.clients[ clientNum ];

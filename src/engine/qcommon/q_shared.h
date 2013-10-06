@@ -45,10 +45,10 @@ extern "C" {
 #define PRODUCT_NAME            "Unvanquished"
 #define PRODUCT_NAME_UPPER      "UNVANQUISHED" // Case, No spaces
 #define PRODUCT_NAME_LOWER      "unvanquished" // No case, No spaces
-#define PRODUCT_VERSION         "0.19.0"
+#define PRODUCT_VERSION         "0.20.0"
 
 #define ENGINE_NAME             "Daemon Engine"
-#define ENGINE_VERSION          "0.19.0"
+#define ENGINE_VERSION          "0.20.0"
 
 #ifdef REVISION
 # define Q3_VERSION             PRODUCT_NAME " " PRODUCT_VERSION " " REVISION
@@ -1555,10 +1555,9 @@ double rint( double x );
 #define KEYCATCH_MESSAGE 0x0004
 #define KEYCATCH_CGAME   0x0008
 
-#define KEYEVSTATE_DOWN 0
-#define KEYEVSTATE_CHAR 1
-#define KEYEVSTATE_BIT  2
-#define KEYEVSTATE_SUP  3
+#define KEYEVSTATE_DOWN 1
+#define KEYEVSTATE_CHAR 2
+#define KEYEVSTATE_SUP  8
 
 // sound channels
 // channel 0 never willingly overrides

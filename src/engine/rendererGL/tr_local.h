@@ -2883,6 +2883,7 @@ extern "C" {
 	extern cvar_t *r_glMinorVersion;
 	extern cvar_t *r_glCoreProfile;
 	extern cvar_t *r_glDebugProfile;
+	extern cvar_t *r_glAllowSoftware;
 
 	extern cvar_t *r_flares; // light flares
 	extern cvar_t *r_flareSize;
@@ -3397,6 +3398,7 @@ extern "C" {
 	qboolean GLimp_Init( void );
 	void     GLimp_Shutdown( void );
 	void     GLimp_EndFrame( void );
+	void     GLimp_HandleCvars( void );
 
 	qboolean GLimp_SpawnRenderThread( void ( *function )( void ) );
 	void     GLimp_ShutdownRenderThread( void );

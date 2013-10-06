@@ -550,7 +550,6 @@ qboolean BotFindSteerTarget( gentity_t *self, vec3_t dir )
 }
 qboolean BotAvoidObstacles( gentity_t *self, vec3_t dir )
 {
-	usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
 	gentity_t *blocker;
 
 	blocker = BotGetPathBlocker( self, dir );

@@ -104,7 +104,7 @@ void BotLoadOffMeshConnections( const char *filename, NavData_t *nav )
 
 	Cvar_VariableStringBuffer( "mapname", mapname, sizeof( mapname ) );
 	Com_sprintf( filePath, sizeof( filePath ), "maps/%s-%s.navcon", mapname, filename );
-	int len = FS_FOpenFileRead( filePath, &f, qtrue );
+	FS_FOpenFileRead( filePath, &f, qtrue );
 
 	if ( !f )
 	{
@@ -377,10 +377,9 @@ extern "C" qboolean BotSetupNav( const botClass_t *botClass, qhandle_t *navHandl
 			agents[ i ].corridor.reset( 0, clearVec );
 			agents[ i ].clientNum = i;
 			agents[ i ].needReplan = true;
-			agents[ i ].routePlanCounter = 0;
-			agents[ i ].lastRoutePlanTime = 0;
 			agents[ i ].nav = NULL;
 			agents[ i ].offMesh = false;
+			memset( agents[ i ].routeResults, 0, sizeof( agents[ i ].routeResults ) );
 		}
 #ifndef DEDICATED
 		NavEditInit();

@@ -23,14 +23,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "g_bot_parse.h"
 #include "g_bot_util.h"
 
-static void CheckToken( const char *tokenValueName, const char *nodename, const pc_token_t *token, int requiredType )
-{
-	if ( token->type != requiredType )
-	{
-		BotDPrintf( S_COLOR_RED "ERROR: Invalid %s %s after %s on line %d\n", tokenValueName, token->string, nodename, token->line );
-	}
-}
-
 static qboolean expectToken( const char *s, pc_token_list **list, qboolean next )
 {
 	const pc_token_list *current = *list;
@@ -152,7 +144,7 @@ static AIValue_t haveUpgrade( gentity_t *self, const AIValue_t *params )
 	return AIBoxInt( !BG_UpgradeIsActive( upgrade, self->client->ps.stats ) && BG_InventoryContainsUpgrade( upgrade, self->client->ps.stats ) );
 }
 
-static AIValue_t botAmmo( gentity_t *self, const AIValue_t *params )
+static AIValue_t percentAmmo( gentity_t *self, const AIValue_t *params )
 {
 	return AIBoxFloat( PercentAmmoRemaining( BG_PrimaryWeapon( self->client->ps.stats ), &self->client->ps ) );
 }
@@ -355,6 +347,7 @@ static const struct AIConditionMap_s
 	{ "humanConfidence",   VALUE_INT,   humanConfidence,   0 },
 	{ "inAttackRange",     VALUE_INT,   inAttackRange,     1 },
 	{ "isVisible",         VALUE_INT,   isVisible,         1 },
+	{ "percentAmmo",       VALUE_FLOAT, percentAmmo,       0 },
 	{ "percentHealth",     VALUE_FLOAT, percentHealth,     1 },
 	{ "random",            VALUE_FLOAT, randomChance,      0 },
 	{ "skill",             VALUE_INT,   botSkill,          0 },
@@ -497,7 +490,7 @@ static AIValue_t *parseFunctionParameters( pc_token_list **list, int *nparams, i
 	pc_token_list *parenBegin = current->next;
 	pc_token_list *parenEnd;
 	pc_token_list *parse;
-	AIValue_t     *params;
+	AIValue_t     *params = NULL;
 	int           numParams = 0;
 
 	// functions should always be proceeded by a '(' if they have parameters

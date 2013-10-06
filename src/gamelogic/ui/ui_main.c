@@ -181,10 +181,8 @@ Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3,
 			return 0;
 
 		case UI_KEY_EVENT:
-			if ( arg1 & ( 1 << KEYEVSTATE_CHAR ) )
+			if ( arg1 & KEYEVSTATE_CHAR )
 			{
-				arg0 &= ~K_CHAR_FLAG;
-				arg0 |= ( arg1 & ( 1 << KEYEVSTATE_BIT ) ) ? K_CHAR_FLAG : 0;
 				UI_KeyEvent( 0, arg0, arg1 );
 			}
 			else
@@ -5281,13 +5279,13 @@ void UI_KeyEvent( int key, int chr, int flags )
 
 		if ( menu )
 		{
-			if ( key == K_ESCAPE && ( flags & ( 1 << KEYEVSTATE_DOWN ) ) && !Menus_AnyFullScreenVisible() )
+			if ( key == K_ESCAPE && ( flags & KEYEVSTATE_DOWN ) && !Menus_AnyFullScreenVisible() )
 			{
 				Menus_CloseAll();
 			}
 			else
 			{
-				Menu_HandleKey( menu, key, chr, !!( flags & ( 1 << KEYEVSTATE_DOWN ) ) );
+				Menu_HandleKey( menu, key, chr, !!( flags & KEYEVSTATE_DOWN ) );
 			}
 		}
 		else

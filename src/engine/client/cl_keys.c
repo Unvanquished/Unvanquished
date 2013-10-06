@@ -542,7 +542,25 @@ void Field_KeyDownEvent( field_t *edit, int key )
 			}
 
 			break;
+		case K_BACKSPACE:
+			{
+				if ( edit->cursor )
+				{
+					int posFrom, posTo;
 
+					posFrom = Field_CursorToOffset( edit );
+					--edit->cursor;
+					posTo = Field_CursorToOffset( edit );
+
+					memmove( edit->buffer + posTo, edit->buffer + posFrom, strlen( edit->buffer ) + 1 - posFrom );
+
+					if ( edit->cursor < edit->scroll )
+					{
+						edit->scroll--;
+					}
+				}
+			}
+			break;
 		case K_RIGHTARROW:
 			if ( keys[ K_CTRL ].down )
 			{
@@ -639,7 +657,36 @@ void Field_KeyDownEvent( field_t *edit, int key )
 				memcpy( p + width, tmp, s - p );
 				edit->cursor += 2;
 			}
+		case 'v':
+			if ( keys[ K_CTRL ].down )
+			{
+				Field_Paste( edit, SELECTION_CLIPBOARD );
+			}
+			break;
+		case 'd':
+			if ( keys[ K_CTRL ].down )
+			{
+				int posTo = Field_CursorToOffset( edit );
 
+				if ( edit->buffer[ posTo ] )
+				{
+					int posFrom = posTo + Q_UTF8_Width( edit->buffer + posTo );
+					memmove( edit->buffer + posTo, edit->buffer + posFrom, strlen( edit->buffer ) + 1 - posFrom );
+				}
+			}
+			break;
+		case 'c':
+		case 'u':
+			if ( keys[ K_CTRL ].down )
+			{
+				Field_Clear( edit );
+			}
+			break;
+		case 'k':
+			if ( keys[ K_CTRL ].down )
+			{
+				edit->buffer[ Field_CursorToOffset( edit ) ] = '\0';
+			}
 			break;
 	}
 
@@ -670,77 +717,8 @@ void Field_CharEvent( field_t *edit, const char *s )
 {
 	int len, width, oldWidth, offset;
 
-	if ( *s == 'v' - 'a' + 1 ) // ctrl-v is paste
-	{
-		Field_Paste( edit, SELECTION_CLIPBOARD );
-		return;
-	}
-
-	if ( *s == 'c' - 'a' + 1 ||
-	     *s == 'u' - 'a' + 1 ) // ctrl-c or ctrl-u clear the field
-	{
-		Field_Clear( edit );
-		return;
-	}
-
-	if ( *s == 'k' - 'a' + 1 ) // ctrl-k clears to the end of the field
-	{
-		edit->buffer[ Field_CursorToOffset( edit ) ] = '\0';
-		return;
-	}
-
-	len = strlen( edit->buffer );
-
-	if ( *s == 'h' - 'a' + 1 ) // ctrl-h is backspace
-	{
-		if ( edit->cursor )
-		{
-			int posFrom, posTo;
-
-			posFrom = Field_CursorToOffset( edit );
-			--edit->cursor;
-			posTo = Field_CursorToOffset( edit );
-
-			memmove( edit->buffer + posTo, edit->buffer + posFrom, len + 1 - posFrom );
-
-			if ( edit->cursor < edit->scroll )
-			{
-				edit->scroll--;
-			}
-		}
-
-		return;
-	}
-
-	if ( *s == 'd' - 'a' + 1 ) // ctrl-d is delete forward
-	{
-		int posTo = Field_CursorToOffset( edit );
-
-		if ( edit->buffer[ posTo ] )
-		{
-			int posFrom = posTo + Q_UTF8_Width( edit->buffer + posTo );
-			memmove( edit->buffer + posTo, edit->buffer + posFrom, len + 1 - posFrom );
-		}
-
-		return;
-	}
-
-	if ( *s == 'a' - 'a' + 1 ) // ctrl-a is home
-	{
-		edit->cursor = 0;
-		edit->scroll = 0;
-		return;
-	}
-
-	if ( *s == 'e' - 'a' + 1 ) // ctrl-e is end
-	{
-		edit->cursor = Field_OffsetToCursor( edit, len );
-		edit->scroll = edit->cursor - edit->widthInChars;
-		return;
-	}
-
 	//
-	// ignore any other non printable chars
+	// ignore any non printable chars
 	//
 	if ( (unsigned char)*s < 32 || (unsigned char)*s == 0x7f )
 	{
@@ -752,6 +730,8 @@ void Field_CharEvent( field_t *edit, const char *s )
 	{
 		return;
 	}
+
+	len = strlen( edit->buffer );
 
 	width = Q_UTF8_Width( s );
 	offset = Field_CursorToOffset( edit );
@@ -1782,7 +1762,7 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 		else if ( key == K_TAB )
 		{
 			Key_ClearStates();
-			Cvar_SetValue( "r_minimize", 1 );
+			Cbuf_ExecuteText( EXEC_APPEND, "minimize\n" );
 			return;
 		}
 	}
@@ -1802,7 +1782,7 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 	if ( cl_altTab->integer && keys[ K_ALT ].down && key == K_TAB )
 	{
 		Key_ClearStates();
-		Cvar_SetValue( "r_minimize", 1 );
+		Cbuf_ExecuteText( EXEC_APPEND, "minimize\n" );
 		return;
 	}
 #endif
@@ -1947,7 +1927,7 @@ CL_CharEvent
 Characters, already shifted/capslocked/etc.
 ===================
 */
-void CL_CharEvent( const char *key )
+void CL_CharEvent( int c )
 {
 	// the console key should never be used as a char
 	// ydnar: added uk equivalent of shift+`
@@ -1959,22 +1939,15 @@ void CL_CharEvent( const char *key )
 	// distribute the key down event to the appropriate handler
 	if ( cls.keyCatchers & KEYCATCH_CONSOLE )
 	{
-		Field_CharEvent( &g_consoleField, key );
+		Field_CharEvent( &g_consoleField, Q_UTF8_Unstore( c ) );
 	}
 	else if ( cls.keyCatchers & KEYCATCH_UI )
 	{
-		// VMs that don't support i18n distinguish between char and key events by looking at the 11th least significant bit.
-		// Patched VMs look at the second least significant bit to determine whether the event is a char event, and at the third bit
-		// to determine the original 11th least significant bit of the key.
-		VM_Call( uivm, UI_KEY_EVENT, Q_UTF8_Store( key ) | (1 << (K_CHAR_BIT - 1)),
-				(qtrue << KEYEVSTATE_DOWN) |
-				(qtrue << KEYEVSTATE_CHAR) |
-				((Q_UTF8_Store( key ) & (1 << (K_CHAR_BIT - 1))) >> ((K_CHAR_BIT - 1) - KEYEVSTATE_BIT)) |
-				(qtrue << KEYEVSTATE_SUP) );
+		VM_Call( uivm, UI_KEY_EVENT, c, KEYEVSTATE_DOWN | KEYEVSTATE_CHAR | KEYEVSTATE_SUP );
 	}
 	else if ( cls.state == CA_DISCONNECTED )
 	{
-		Field_CharEvent( &g_consoleField, key );
+		Field_CharEvent( &g_consoleField, Q_UTF8_Unstore( c ) );
 	}
 }
 
