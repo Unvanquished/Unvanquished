@@ -49,6 +49,18 @@ Description: Team-based FPS game, aliens v. humans - dedicated server
  .
  This package contains the dedicated server for Unvanquished.
 
+Package: unvanquished-dev
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends},
+	unvanquished-common (= ${binary:Version})
+Suggests: unvanquished, unvanquished-server
+Description: Team-based FPS game, aliens v. humans - dev tools
+ Build a base, defend it against the other team, gain credits for better
+ weapons or more advanced aliens, try to wipe them out.
+ .
+ This package contains unvanquishedmap, a tool for creating bot navigation
+ meshes, map overviews and BSP trees.
+
 Package: unvanquished-common
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, curl
