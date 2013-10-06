@@ -34,6 +34,8 @@ Maryland 20850 USA.
 
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
+
+#ifndef DEDICATED
 #include <SDL_version.h>
 
 // Require a minimum version of SDL
@@ -46,6 +48,9 @@ Maryland 20850 USA.
 #define MINSDL_MINOR 2
 #define MINSDL_PATCH 10
 #endif
+
+#endif
+
 // Input subsystem
 void         IN_Init( void *windowData );
 void         IN_Frame( void );
