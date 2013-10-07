@@ -29,11 +29,11 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace Str {
 
-    int ToInt(const std::string& text) {
+    int ToInt(Str::StringRef text) {
         return atoi(text.c_str());
     }
 
-    bool ToInt(const std::string& text, int& result) {
+    bool ToInt(Str::StringRef text, int& result) {
         char* end;
         const char* start = text.c_str();
         result = strtol(start, &end, 10);
@@ -44,7 +44,7 @@ namespace Str {
         return true;
     }
 
-    bool IsPrefix(const std::string& prefix, const std::string& text) {
+    bool IsPrefix(Str::StringRef prefix, Str::StringRef text) {
         auto res = std::mismatch(prefix.begin(), prefix.end(), text.begin());
         if (res.first == prefix.end()) {
             return true;
@@ -52,7 +52,7 @@ namespace Str {
         return false;
     }
 
-    int LongestPrefixSize(const std::string& text1, const std::string& text2) {
+    int LongestPrefixSize(Str::StringRef text1, Str::StringRef text2) {
         auto res = std::mismatch(text1.begin(), text1.end(), text2.begin());
 
         return res.first - text1.begin();
@@ -152,7 +152,7 @@ namespace Str {
             out.append({char((ch >> 18) | 0xf0), char(((ch >> 12) & 0x3f) | 0x80), char(((ch >> 6) & 0x3f) | 0x80), char((ch & 0x3f) | 0x80)});
     }
 
-    std::u32string UTF8To32(const std::string& str)
+    std::u32string UTF8To32(Str::StringRef str)
     {
         std::u32string out;
         const char* it = str.data();
@@ -163,7 +163,7 @@ namespace Str {
         return out;
     }
 
-    std::string UTF32To8(const std::u32string& str)
+    std::string UTF32To8(Str::BasicStringRef<char32_t> str)
     {
         std::string out;
         for (uint32_t ch: str)
@@ -172,7 +172,7 @@ namespace Str {
     }
 
 #ifdef _WIN32
-    std::wstring UTF8To16(const std::string& str)
+    std::wstring UTF8To16(Str::StringRef str)
     {
         std::wstring out;
         const char* it = str.data();
@@ -188,7 +188,7 @@ namespace Str {
         return out;
     }
 
-    std::string UTF16To8(const std::wstring& str)
+    std::string UTF16To8(Str::BasicStringRef<wchar_t> str)
     {
         std::string out;
         auto it = str.begin();

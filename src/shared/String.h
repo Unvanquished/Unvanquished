@@ -29,18 +29,109 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace Str {
 
-    int ToInt(const std::string& text);
-    bool ToInt(const std::string& text, int& result);
+    template<typename T> class BasicStringRef {
+    public:
+        BasicStringRef(const std::basic_string<T>& other)
+        {
+            ptr = other.c_str();
+            len = other.size();
+        }
+        BasicStringRef(const T* other)
+        {
+            ptr = other;
+            len = std::char_traits<T>::length(other);
+        }
 
-    bool IsPrefix(const std::string& prefix, const std::string& text);
-    int LongestPrefixSize(const std::string& text1, const std::string& text2);
+        const T& operator[](size_t pos) const
+        {
+            return ptr[pos];
+        }
+        const T* begin() const
+        {
+            return ptr;
+        }
+        const T* end() const
+        {
+            return ptr + len;
+        }
+        const T* data() const
+        {
+            return ptr;
+        }
+        const T* c_str() const
+        {
+            return ptr;
+        }
 
-    std::u32string UTF8To32(const std::string& str);
-    std::string UTF32To8(const std::u32string& str);
+        std::basic_string<T> str() const
+        {
+            return std::basic_string<T>(ptr, len);
+        }
+        operator std::basic_string<T>() const
+        {
+            return str();
+        }
+
+        bool empty() const
+        {
+            return len == 0;
+        }
+        size_t size() const
+        {
+            return len;
+        }
+
+        int compare(BasicStringRef other) const
+        {
+            int result = std::char_traits<T>::compare(ptr, other.ptr, std::min(len, other.len));
+            if (result != 0)
+                return result;
+            else
+                return len - other.len;
+        }
+        friend bool operator==(BasicStringRef a, BasicStringRef b)
+        {
+            return a.compare(b) == 0;
+        }
+        friend bool operator!=(BasicStringRef a, BasicStringRef b)
+        {
+            return a.compare(b) != 0;
+        }
+        friend bool operator<(BasicStringRef a, BasicStringRef b)
+        {
+            return a.compare(b) < 0;
+        }
+        friend bool operator<=(BasicStringRef a, BasicStringRef b)
+        {
+            return a.compare(b) <= 0;
+        }
+        friend bool operator>(BasicStringRef a, BasicStringRef b)
+        {
+            return a.compare(b) > 0;
+        }
+        friend bool operator>=(BasicStringRef a, BasicStringRef b)
+        {
+            return a.compare(b) >= 0;
+        }
+
+    private:
+        const T* ptr;
+        size_t len;
+    };
+    typedef BasicStringRef<char> StringRef;
+
+    int ToInt(Str::StringRef text);
+    bool ToInt(Str::StringRef text, int& result);
+
+    bool IsPrefix(Str::StringRef prefix, Str::StringRef text);
+    int LongestPrefixSize(Str::StringRef text1, Str::StringRef text2);
+
+    std::u32string UTF8To32(Str::StringRef str);
+    std::string UTF32To8(Str::BasicStringRef<char32_t> str);
 
 #ifdef _WIN32
-    std::wstring UTF8To16(const std::string& str);
-    std::string UTF16To8(const std::wstring& str);
+    std::wstring UTF8To16(Str::StringRef str);
+    std::string UTF16To8(Str::BasicStringRef<wchar_t> str);
 #endif
 
 }
