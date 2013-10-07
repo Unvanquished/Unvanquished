@@ -2101,6 +2101,10 @@ if( BUILD_TTY_CLIENT )
     set_property( TARGET ttyclient APPEND PROPERTY COMPILE_DEFINITIONS ZLIB_WINAPI )
   endif()
 
+  if( NOT WIN32 )
+    target_link_libraries( ttyclient pthread )
+  endif()
+
   # The following section finds the REQUIRED dependencies and makes them available to the target
   find_package( GMP REQUIRED )
   find_package( ZLIB REQUIRED )
