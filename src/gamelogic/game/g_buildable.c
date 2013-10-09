@@ -157,8 +157,20 @@ static void PuntBlocker( gentity_t *self, gentity_t *blocker )
 	nudge[ 1 ] = crandom() * 100.0f;
 	nudge[ 2 ] = 75.0f;
 
-	VectorAdd( blocker->client->ps.velocity, nudge, blocker->client->ps.velocity );
-	trap_SendServerCommand( blocker - g_entities, "cp \"Don't spawn block!\"" );
+	if ( blocker->r.svFlags & SVF_BOT )
+	{
+	        // nudge the bot (okay, we lose the fractional part)
+		blocker->client->pers.cmd.forwardmove = nudge[0];
+		blocker->client->pers.cmd.rightmove = nudge[1];
+		blocker->client->pers.cmd.upmove = nudge[2];
+		// bots don't double-tap, so use as a nudge flag
+		blocker->client->pers.cmd.doubleTap = 1;
+	}
+	else
+	{
+		VectorAdd( blocker->client->ps.velocity, nudge, blocker->client->ps.velocity );
+		trap_SendServerCommand( blocker - g_entities, "cp \"Don't spawn block!\"" );
+        }
 }
 
 /*
@@ -3785,7 +3797,6 @@ G_Deconstruct
 */
 void G_Deconstruct( gentity_t *self, gentity_t *deconner, meansOfDeath_t deconType )
 {
-	float confidence;
 	int   refund;
 	const buildableAttributes_t *attr;
 
@@ -3957,11 +3968,9 @@ static qboolean PredictBuildablePower( buildable_t buildable, vec3_t origin )
 	gentity_t       *neighbor, *buddy;
 	float           distance, ownPrediction, neighborPrediction;
 
-	switch ( buildable )
+	if ( buildable == BA_H_REPEATER || buildable == BA_H_REACTOR )
 	{
-		case BA_H_REPEATER:
-		case BA_H_REACTOR:
-			return qtrue;
+		return qtrue;
 	}
 
 	ownPrediction = g_powerBaseSupply.integer - BG_Buildable( buildable )->powerConsumption;
@@ -4635,6 +4644,15 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 			built->die = AGeneric_Die;
 			built->think = AOvermind_Think;
 			built->pain = AGeneric_Pain;
+			{
+				vec3_t mins;
+				vec3_t maxs;
+				VectorCopy( built->r.mins, mins );
+				VectorCopy( built->r.maxs, maxs );
+				VectorAdd( mins, origin, mins );
+				VectorAdd( maxs, origin, maxs );
+				trap_BotAddObstacle( mins, maxs, &built->obstacleHandle );
+			}
 			break;
 
 		case BA_H_SPAWN:
@@ -4650,17 +4668,44 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 		case BA_H_TESLAGEN:
 			built->die = HGeneric_Die;
 			built->think = HTeslaGen_Think;
+						{
+				vec3_t mins;
+				vec3_t maxs;
+				VectorCopy( built->r.mins, mins );
+				VectorCopy( built->r.maxs, maxs );
+				VectorAdd( mins, origin, mins );
+				VectorAdd( maxs, origin, maxs );
+				trap_BotAddObstacle( mins, maxs, &built->obstacleHandle );
+			}
 			break;
 
 		case BA_H_ARMOURY:
 			built->think = HArmoury_Think;
 			built->die = HGeneric_Die;
 			built->use = HArmoury_Activate;
+						{
+				vec3_t mins;
+				vec3_t maxs;
+				VectorCopy( built->r.mins, mins );
+				VectorCopy( built->r.maxs, maxs );
+				VectorAdd( mins, origin, mins );
+				VectorAdd( maxs, origin, maxs );
+				trap_BotAddObstacle( mins, maxs, &built->obstacleHandle );
+			}
 			break;
 
 		case BA_H_DCC:
 			built->think = HDCC_Think;
 			built->die = HGeneric_Die;
+						{
+				vec3_t mins;
+				vec3_t maxs;
+				VectorCopy( built->r.mins, mins );
+				VectorCopy( built->r.maxs, maxs );
+				VectorAdd( mins, origin, mins );
+				VectorAdd( maxs, origin, maxs );
+				trap_BotAddObstacle( mins, maxs, &built->obstacleHandle );
+			}
 			break;
 
 		case BA_H_MEDISTAT:
@@ -4678,6 +4723,15 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 			built->die = HGeneric_Die;
 			built->use = HRepeater_Use;
 			built->powered = built->active = qtrue;
+			{
+				vec3_t mins;
+				vec3_t maxs;
+				VectorCopy( built->r.mins, mins );
+				VectorCopy( built->r.maxs, maxs );
+				VectorAdd( mins, origin, mins );
+				VectorAdd( maxs, origin, maxs );
+				trap_BotAddObstacle( mins, maxs, &built->obstacleHandle );
+			}
 			break;
 
 		case BA_H_REPEATER:

@@ -176,7 +176,9 @@ static float UnlockToLockThreshold( float unlockThreshold )
 {
 	float confidenceHalfLife = 0.0f;
 	float unlockableMinTime  = 0.0f;
+#ifdef UI
 	char  buffer[ MAX_TOKEN_CHARS ];
+#endif
 
 	// maintain cache
 	static float lastConfidenceHalfLife = 0.0f;
@@ -251,7 +253,10 @@ void BG_ImportUnlockablesFromMask( team_t team, int mask )
 	unlockableType_t unlockableType = 0;
 	team_t           currentTeam;
 	qboolean         newStatus;
-	int              statusChanges[ NUM_UNLOCKABLES ], statusChangeCount = 0;
+	int              statusChanges[ NUM_UNLOCKABLES ];
+#ifdef CGAME
+	int statusChangeCount = 0;
+#endif
 
 	// maintain a cache to prevent redundant imports
 	static int    lastMask = 0;

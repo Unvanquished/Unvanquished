@@ -86,6 +86,8 @@ vmCvar_t           g_drawVoteReasonRequired;
 vmCvar_t           g_admitDefeatVotesPercent;
 vmCvar_t           g_nextMapVotesPercent;
 vmCvar_t           g_pollVotesPercent;
+vmCvar_t           g_botKickVotesAllowed;
+vmCvar_t           g_botKickVotesAllowedThisMap;
 
 vmCvar_t           g_teamForceBalance;
 vmCvar_t           g_smoothClients;
@@ -169,6 +171,7 @@ vmCvar_t           g_unnamedNumbering;
 vmCvar_t           g_unnamedNamePrefix;
 
 vmCvar_t           g_admin;
+vmCvar_t           g_adminWarn;
 vmCvar_t           g_adminTempBan;
 vmCvar_t           g_adminMaxBan;
 vmCvar_t           g_adminRetainExpiredBans;
@@ -189,6 +192,48 @@ vmCvar_t           g_geoip;
 
 vmCvar_t           g_debugEntities;
 
+// <bot stuff>
+
+// bot buy cvars
+vmCvar_t g_bot_buy;
+vmCvar_t g_bot_rifle;
+vmCvar_t g_bot_painsaw;
+vmCvar_t g_bot_shotgun;
+vmCvar_t g_bot_lasgun;
+vmCvar_t g_bot_mdriver;
+vmCvar_t g_bot_chaingun;
+vmCvar_t g_bot_prifle;
+vmCvar_t g_bot_flamer;
+vmCvar_t g_bot_lcannon;
+
+// bot evolution cvars
+vmCvar_t g_bot_evolve;
+vmCvar_t g_bot_level1;
+vmCvar_t g_bot_level1upg;
+vmCvar_t g_bot_level2;
+vmCvar_t g_bot_level2upg;
+vmCvar_t g_bot_level3;
+vmCvar_t g_bot_level3upg;
+vmCvar_t g_bot_level4;
+
+// misc bot cvars
+vmCvar_t g_bot_attackStruct;
+vmCvar_t g_bot_roam;
+vmCvar_t g_bot_rush;
+vmCvar_t g_bot_repair;
+vmCvar_t g_bot_build;
+vmCvar_t g_bot_retreat;
+vmCvar_t g_bot_fov;
+vmCvar_t g_bot_chasetime;
+vmCvar_t g_bot_reactiontime;
+vmCvar_t g_bot_infinite_funds;
+vmCvar_t g_bot_numInGroup;
+vmCvar_t g_bot_persistent;
+vmCvar_t g_bot_debug;
+vmCvar_t g_bot_buildLayout;
+
+//</bot stuff>
+
 // copy cvars that can be set in worldspawn so they can be restored later
 static char        cv_gravity[ MAX_CVAR_VALUE_STRING ];
 
@@ -204,6 +249,7 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_mapRestarted,                "g_mapRestarted",                "0",                                CVAR_ROM,                                        0, qfalse           },
 	{ NULL,                           "sv_mapname",                    "",                                 CVAR_SERVERINFO | CVAR_ROM,                      0, qfalse           },
 	{ NULL,                           "P",                             "",                                 CVAR_SERVERINFO | CVAR_ROM,                      0, qfalse           },
+	{ NULL,                           "B",                             "",                                 CVAR_SERVERINFO | CVAR_ROM,                      0, qfalse           },
 
 	// latched vars
 
@@ -261,6 +307,8 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_drawVoteReasonRequired,      "g_drawVoteReasonRequired",      "0",                                CVAR_ARCHIVE,                                    0, qtrue            },
 	{ &g_admitDefeatVotesPercent,     "g_admitDefeatVotesPercent",     "74",                               CVAR_ARCHIVE,                                    0, qtrue            },
 	{ &g_pollVotesPercent,            "g_pollVotesPercent",            "0",                                CVAR_ARCHIVE,                                    0, qtrue            },
+	{ &g_botKickVotesAllowed,         "g_botKickVotesAllowed",         "1",                                CVAR_ARCHIVE,                                    0, qtrue            },
+	{ &g_botKickVotesAllowedThisMap,  "g_botKickVotesAllowedThisMap",  "1",                                0,                                               0, qtrue            },
 	{ &g_minNameChangePeriod,         "g_minNameChangePeriod",         "5",                                0,                                               0, qfalse           },
 	{ &g_maxNameChanges,              "g_maxNameChanges",              "5",                                0,                                               0, qfalse           },
 
@@ -344,9 +392,10 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_unnamedNamePrefix,           "g_unnamedNamePrefix",           UNNAMED_PLAYER"#",                  CVAR_ARCHIVE,                                    0, qfalse           },
 
 	{ &g_admin,                       "g_admin",                       "admin.dat",                        CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_adminWarn,                   "g_adminWarn",                   "1h",                               CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_adminTempBan,                "g_adminTempBan",                "2m",                               CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_adminMaxBan,                 "g_adminMaxBan",                 "2w",                               CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_adminRetainExpiredBans,      "g_adminRetainExpiredBans",      "0",                                CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_adminRetainExpiredBans,      "g_adminRetainExpiredBans",      "1",                                CVAR_ARCHIVE,                                    0, qfalse           },
 
 	{ &g_privateMessages,             "g_privateMessages",             "1",                                CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_specChat,                    "g_specChat",                    "1",                                CVAR_ARCHIVE,                                    0, qfalse           },
@@ -361,6 +410,45 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_combatCooldown,              "g_combatCooldown",              "15",                               CVAR_ARCHIVE,                                    0, qfalse           },
 
 	{ &g_geoip,                       "g_geoip",                       "1",                                CVAR_ARCHIVE,                                    0, qfalse           },
+
+	// <bot stuff>
+	// bot buy cvars
+	{ &g_bot_buy, "g_bot_buy", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_rifle, "g_bot_rifle", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_painsaw, "g_bot_painsaw", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_shotgun, "g_bot_shotgun", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_lasgun, "g_bot_lasgun", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_mdriver, "g_bot_mdriver", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_chaingun, "g_bot_chain", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_prifle, "g_bot_prifle", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_flamer, "g_bot_flamer", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_lcannon, "g_bot_lcannon", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+
+	// bot evolution cvars
+	{ &g_bot_evolve, "g_bot_evolve", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_level1, "g_bot_level1", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_level1upg, "g_bot_level1upg", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_level2, "g_bot_level2", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_level2upg, "g_bot_level2upg", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_level3, "g_bot_level3", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_level3upg, "g_bot_level3upg", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_level4, "g_bot_level4", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+
+	// misc bot cvars
+	{ &g_bot_attackStruct, "g_bot_attackStruct", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_roam, "g_bot_roam", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_rush, "g_bot_rush", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_repair, "g_bot_repair", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_build, "g_bot_build", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_retreat, "g_bot_retreat", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_fov, "g_bot_fov", "125", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_chasetime, "g_bot_chasetime", "5000", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_reactiontime, "g_bot_reactiontime", "500", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_infinite_funds, "g_bot_infinite_funds", "0", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_numInGroup, "g_bot_numInGroup", "3", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_debug, "g_bot_debug", "0", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_buildLayout, "g_bot_buildLayout", "botbuild", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse }
+	// </bot stuff>
 };
 
 static const size_t gameCvarTableSize = ARRAY_LEN( gameCvarTable );
@@ -403,6 +491,10 @@ Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3, i
 			return 0;
 
 		case GAME_CLIENT_CONNECT:
+			if ( arg2 )
+			{
+				return ( intptr_t ) ClientBotConnect( arg0, arg1, TEAM_NONE );
+			}
 			return ( intptr_t ) ClientConnect( arg0, arg1 );
 
 		case GAME_CLIENT_THINK:
@@ -554,6 +646,13 @@ void G_InitSetEntities( void )
 	}
 }
 
+static int cvarCompare( const void *a, const void *b )
+{
+	cvarTable_t *ac = ( cvarTable_t * ) a;
+	cvarTable_t *bc = ( cvarTable_t * ) b;
+	return Q_stricmp( ac->cvarName, bc->cvarName );
+}
+
 /*
 =================
 G_RegisterCvars
@@ -563,6 +662,9 @@ void G_RegisterCvars( void )
 {
 	int         i;
 	cvarTable_t *cvarTable;
+
+	// sort the table for fast lookup
+	qsort( gameCvarTable, gameCvarTableSize, sizeof( *gameCvarTable ), cvarCompare );
 
 	for ( i = 0, cvarTable = gameCvarTable; i < gameCvarTableSize; i++, cvarTable++ )
 	{
@@ -633,6 +735,21 @@ void G_RestoreCvars( void )
 			trap_Cvar_Set( cv->cvarName, cv->explicit );
 		}
 	}
+}
+
+vmCvar_t *G_FindCvar( const char *name )
+{
+	cvarTable_t *c = NULL;
+	cvarTable_t comp;
+	comp.cvarName = name;
+	c = ( cvarTable_t * ) bsearch( &comp, gameCvarTable, gameCvarTableSize, sizeof( *gameCvarTable ), cvarCompare );
+
+	if ( !c )
+	{
+		return NULL;
+	}
+
+	return c->vmCvar;
 }
 
 /*
@@ -726,7 +843,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 	{
 		G_Printf( "Not logging to disk\n" );
 	}
-
+	
 	// gameplay statistics logging
 	if ( g_logGameplayStatsFrequency.integer > 0 )
 	{
@@ -753,6 +870,10 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 			G_LogGameplayStats( LOG_GAMEPLAY_STATS_HEADER );
 		}
 	}
+
+	// initialise whether bot vote kicks are allowed
+	// rotation may clear this flag
+	trap_Cvar_Set( "g_botKickVotesAllowedThisMap", g_botKickVotesAllowed.integer ? "1" : "0" );
 
 	// clear these now; they'll be set, if needed, from rotation
 	trap_Cvar_Set( "g_mapStartupMessage", "" );
@@ -816,6 +937,9 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 
 	// load up a custom building layout if there is one
 	G_LayoutLoad();
+
+	// setup bot code
+	G_BotInit();
 
 	// the map might disable some things
 	BG_InitAllowedGameElements();
@@ -941,7 +1065,9 @@ void G_ShutdownGame( int restart )
 	G_WriteSessionData();
 
 	G_admin_cleanup();
+	G_BotCleanup( restart );
 	G_namelog_cleanup();
+
 	G_UnregisterCommands();
 
 	G_ShutdownMapRotations();
@@ -1499,7 +1625,7 @@ void CalculateRanks( void )
 {
 	int  i;
 	team_t team;
-	char P[ MAX_CLIENTS + 1 ] = { "" };
+	char P[ MAX_CLIENTS + 1 ] = "", B[ MAX_CLIENTS + 1 ] = "";
 
 	level.numConnectedClients = 0;
 	level.numPlayingClients = 0;
@@ -1514,16 +1640,36 @@ void CalculateRanks( void )
 	for ( i = 0; i < level.maxclients; i++ )
 	{
 		P[ i ] = '-';
+		B[ i ] = '-';
 
 		if ( level.clients[ i ].pers.connected != CON_DISCONNECTED )
 		{
+			qboolean bot = qfalse;
+			int j;
+
+			for ( j = 0; j < level.num_entities; ++j)
+			{
+				if ( level.gentities[ i ].client == &level.clients[ i ] )
+				{
+					bot = !!(level.gentities[ i ].r.svFlags & SVF_BOT);
+					break;
+				}
+			}
+
 			level.sortedClients[ level.numConnectedClients ] = i;
 			level.numConnectedClients++;
 
 			team = level.clients[ i ].pers.team;
 			P[ i ] = ( char ) '0' + team;
 
-			level.team[ TEAM_NONE ].numVotingClients++;
+			if ( bot )
+			{
+				B[ i ] = 'b';
+			}
+			else
+			{
+				level.team[ TEAM_NONE ].numVotingClients++;
+			}
 
 			if ( level.clients[ i ].pers.connected != CON_CONNECTED )
 			{
@@ -1534,6 +1680,12 @@ void CalculateRanks( void )
 			{
 				level.numPlayingClients++;
 				level.team[ team ].numClients++;
+
+				if ( !bot )
+				{
+					level.team[ team ].numVotingClients++;
+				}
+
 				if ( level.clients[ i ].sess.spectatorState == SPECTATOR_NOT )
 				{
 					level.team[ team ].numLiveClients++;
@@ -1544,10 +1696,10 @@ void CalculateRanks( void )
 
 	level.numNonSpectatorClients = level.team[ TEAM_ALIENS ].numLiveClients +
 	                               level.team[ TEAM_HUMANS ].numLiveClients;
-	level.team[ TEAM_ALIENS ].numVotingClients = level.team[ TEAM_ALIENS ].numClients;
-	level.team[ TEAM_HUMANS ].numVotingClients = level.team[ TEAM_HUMANS ].numClients;
 	P[ i ] = '\0';
 	trap_Cvar_Set( "P", P );
+	B[ i ] = '\0';
+	trap_Cvar_Set( "B", B );
 
 	qsort( level.sortedClients, level.numConnectedClients,
 	       sizeof( level.sortedClients[ 0 ] ), SortRanks );
@@ -2983,5 +3135,6 @@ void G_RunFrame( int levelTime )
 		G_CheckVote( i );
 	}
 
+	trap_BotUpdateObstacles();
 	level.frameMsec = trap_Milliseconds();
 }

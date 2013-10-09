@@ -94,7 +94,11 @@ static const g_admin_cmd_t     g_admin_cmds[] =
 		"specified"),
 		N_("[^3name|slot#|IP(/mask)^7] (^5duration^7) (^5reason^7)")
 	},
-
+	{
+		"bot",          G_admin_bot,         qfalse, "bot",
+		N_("Add/Del/Spec bots"),
+		N_("[^5add|del|spec|unspec^7] [^5name|all^7] [^5aliens/humans^7] (^5skill^7)")
+	},
 	{
 		"builder",      G_admin_builder,     qtrue,  "builder",
 		N_("show who built a structure"),
@@ -853,7 +857,15 @@ void G_admin_writeconfig( void )
 			continue;
 		}
 
-		trap_FS_Write( "[ban]\n", 6, f );
+		if ( G_ADMIN_BAN_IS_WARNING( b ) )
+		{
+			trap_FS_Write( "[warning]\n", 10, f );
+		}
+		else
+		{
+			trap_FS_Write( "[ban]\n", 6, f );
+		}
+
 		trap_FS_Write( "name    = ", 10, f );
 		admin_writeconfig_string( b->name, f );
 		trap_FS_Write( "guid    = ", 10, f );
@@ -1474,7 +1486,7 @@ static qboolean G_admin_ban_matches( g_admin_ban_t *ban, gentity_t *ent )
 	         G_AddressCompare( &ban->ip, &ent->client->pers.ip ) );
 }
 
-static g_admin_ban_t *G_admin_match_ban( gentity_t *ent )
+static g_admin_ban_t *G_admin_match_ban( gentity_t *ent, const g_admin_ban_t *start )
 {
 	int           t;
 	g_admin_ban_t *ban;
@@ -1486,7 +1498,7 @@ static g_admin_ban_t *G_admin_match_ban( gentity_t *ent )
 		return NULL;
 	}
 
-	for ( ban = g_admin_bans; ban; ban = ban->next )
+	for ( ban = start ? start->next : g_admin_bans; ban; ban = ban->next )
 	{
 		// 0 is for perm ban
 		if ( ban->expires != 0 && ban->expires <= t )
@@ -1505,7 +1517,7 @@ static g_admin_ban_t *G_admin_match_ban( gentity_t *ent )
 
 qboolean G_admin_ban_check( gentity_t *ent, char *reason, int rlen )
 {
-	g_admin_ban_t *ban;
+	g_admin_ban_t *ban = NULL;
 	char          warningMessage[ MAX_STRING_CHARS ];
 
 	if ( ent->client->pers.localClient )
@@ -1513,8 +1525,16 @@ qboolean G_admin_ban_check( gentity_t *ent, char *reason, int rlen )
 		return qfalse;
 	}
 
-	if ( ( ban = G_admin_match_ban( ent ) ) )
+	while ( ( ban = G_admin_match_ban( ent, ban ) ) )
 	{
+		// warn count -ve ⇒ is a warning, so don't deny connection
+		if ( G_ADMIN_BAN_IS_WARNING( ban ) )
+		{
+			ent->client->pers.hasWarnings = qtrue;
+			continue;
+		}
+
+		// otherwise, it's a ban
 		G_admin_ban_message( ent, ban, reason, rlen,
 		                     warningMessage, sizeof( warningMessage ) );
 
@@ -1871,7 +1891,7 @@ qboolean G_admin_readconfig( gentity_t *ent )
 			level_open = ban_open = command_open = qfalse;
 			ac++;
 		}
-		else if ( !Q_stricmp( t, "[ban]" ) )
+		else if ( !Q_stricmp( t, "[ban]" ) || !Q_stricmp( t, "[warning]" ) )
 		{
 			if ( b )
 			{
@@ -1884,6 +1904,8 @@ qboolean G_admin_readconfig( gentity_t *ent )
 				b = g_admin_bans = BG_Alloc( sizeof( g_admin_ban_t ) );
 				b->id = 1;
 			}
+
+			b->warnCount = ( t[ 1 ] == 'w' ) ? -1 : 0;
 
 			ban_open = qtrue;
 			level_open = admin_open = command_open = qfalse;
@@ -2214,19 +2236,13 @@ qboolean G_admin_setlevel( gentity_t *ent )
 	return qtrue;
 }
 
-static void admin_create_ban( gentity_t *ent,
-                              char *netname,
-                              char *guid,
-                              addr_t *ip,
-                              int seconds,
-                              char *reason )
+static g_admin_ban_t *admin_create_ban_entry( gentity_t *ent, char *netname, char *guid,
+                                              addr_t *ip, int seconds, const char *reason )
 {
 	g_admin_ban_t *b = NULL;
 	g_admin_ban_t *prev = NULL;
 	qtime_t       qt;
 	int           t;
-	int           i;
-	char          disconnect[ MAX_STRING_CHARS ];
 	int           id = 1;
 	int           expired = 0;
 
@@ -2300,7 +2316,7 @@ static void admin_create_ban( gentity_t *ent,
 	             1900 + qt.tm_year, qt.tm_mon + 1, qt.tm_mday,
 	             qt.tm_hour, qt.tm_min, qt.tm_sec );
 
-
+	Q_strncpyz( b->reason, reason, sizeof( b->reason ) );
 	Q_strncpyz( b->banner, G_admin_name( ent ), sizeof( b->banner ) );
 
 	if ( !seconds )
@@ -2312,14 +2328,19 @@ static void admin_create_ban( gentity_t *ent,
 		b->expires = t + seconds;
 	}
 
-	if ( !*reason )
-	{
-		Q_strncpyz( b->reason, "banned by admin", sizeof( b->reason ) );
-	}
-	else
-	{
-		Q_strncpyz( b->reason, reason, sizeof( b->reason ) );
-	}
+	return b;
+}
+
+static void admin_create_ban( gentity_t *ent,
+                              char *netname,
+                              char *guid,
+                              addr_t *ip,
+                              int seconds,
+                              char *reason )
+{
+	int           i;
+	char          disconnect[ MAX_STRING_CHARS ];
+	g_admin_ban_t *b = admin_create_ban_entry( ent, netname, guid, ip, seconds, ( reason && *reason ) ? reason : "banned by admin" );
 
 	G_admin_ban_message( NULL, b, disconnect, sizeof( disconnect ), NULL, 0 );
 
@@ -2401,6 +2422,35 @@ int G_admin_parse_time( const char *time )
 	}
 
 	return seconds;
+}
+
+static void G_admin_reflag_warnings_ent( int i )
+{
+	const g_admin_ban_t *ban = NULL;
+
+	level.clients[ i ].pers.hasWarnings = qfalse;
+
+	while ( ( ban = G_admin_match_ban( level.gentities + i, ban ) ) )
+	{
+		if ( G_ADMIN_BAN_IS_WARNING( ban ) )
+		{
+			level.clients[ i ].pers.hasWarnings = qtrue;
+			break;
+		}
+	}
+}
+
+static void G_admin_reflag_warnings( void )
+{
+	int                 i;
+
+	for ( i = 0; i < level.maxclients; i++ )
+	{
+		if ( level.clients[ i ].pers.connected != CON_DISCONNECTED )
+		{
+			G_admin_reflag_warnings_ent( i );
+		}
+	}
 }
 
 qboolean G_admin_kick( gentity_t *ent )
@@ -2638,6 +2688,7 @@ qboolean G_admin_unban( gentity_t *ent )
 	char          bs[ 5 ];
 	g_admin_ban_t *ban, *p;
 	qboolean      expireOnly;
+	qboolean      wasWarning;
 
 	if ( trap_Argc() < 2 )
 	{
@@ -2676,6 +2727,8 @@ qboolean G_admin_unban( gentity_t *ent )
 		return qfalse;
 	}
 
+	wasWarning = G_ADMIN_BAN_IS_WARNING( ban );
+
 	admin_log( va( "%d (%s) \"%s" S_COLOR_WHITE "\": \"%s" S_COLOR_WHITE "\": [%s]",
 	               ban->expires ? ban->expires - time : 0, ban->guid, ban->name, ban->reason,
 	               ban->ip.str ) );
@@ -2702,6 +2755,11 @@ qboolean G_admin_unban( gentity_t *ent )
 		}
 
 		BG_Free( ban );
+	}
+
+	if ( wasWarning )
+	{
+		G_admin_reflag_warnings();
 	}
 
 	G_admin_writeconfig();
@@ -2873,6 +2931,11 @@ qboolean G_admin_adjustban( gentity_t *ent )
 	if ( ent )
 	{
 		Q_strncpyz( ban->banner, ent->client->pers.netname, sizeof( ban->banner ) );
+	}
+
+	if ( G_ADMIN_BAN_IS_WARNING( ban ) )
+	{
+		G_admin_reflag_warnings();
 	}
 
 	G_admin_writeconfig();
@@ -3153,6 +3216,15 @@ qboolean G_admin_warn( gentity_t *ent )
 	vic = &g_entities[ pids[ 0 ] ];
 
 	G_DecolorString( ConcatArgs( 2 ), reason, sizeof( reason ) );
+
+	// create a ban list entry, set warnCount to -1 to indicate that this should NOT result in denying connection
+	if ( ent && !ent->client->pers.localClient )
+	{
+		int time = G_admin_parse_time( g_adminWarn.string );
+		admin_create_ban_entry( ent, vic->client->pers.netname, vic->client->pers.guid, &vic->client->pers.ip, MAX(1, time), ( *reason ) ? reason : "warned by admin" )->warnCount = -1;
+		vic->client->pers.hasWarnings = qtrue;
+	}
+
 	CPx( pids[ 0 ], va( "cp \"^1You have been warned by an administrator:\n^3\"%s",
 	                    Quote( reason ) ) );
 	AP( va( "print_tr %s %s %s %s", QQ( N_("^3warn: ^7$1$^7 has been warned: '$2$' by $3$\n") ),
@@ -3528,7 +3600,7 @@ qboolean G_admin_listplayers( gentity_t *ent )
 	char            c, t; // color and team letter
 	char            *registeredname;
 	char            lname[ MAX_NAME_LENGTH ];
-	char            muted, denied;
+	char            bot, muted, denied;
 	int             colorlen;
 	int             authed = 1;
 	char            namecleaned[ MAX_NAME_LENGTH ];
@@ -3537,6 +3609,7 @@ qboolean G_admin_listplayers( gentity_t *ent )
 	g_admin_level_t *d = G_admin_level( 0 );
 	qboolean        hint;
 	qboolean        canset = G_admin_permission( ent, "setlevel" );
+	qboolean	canseeWarn = G_admin_permission( ent, "warn" ) || G_admin_permission( ent, "ban" );
 
 	ADMP( va( "%s %d", QQ( N_("^3listplayers: ^7$1$ players connected:\n") ),
 	           level.numConnectedClients ) );
@@ -3574,6 +3647,7 @@ qboolean G_admin_listplayers( gentity_t *ent )
 			}
 		}
 
+		bot = ( level.gentities[ i ].r.svFlags & SVF_BOT ) ? 'R' : ' ';
 		muted = p->pers.namelog->muted ? 'M' : ' ';
 		denied = p->pers.namelog->denyBuild ? 'B' : ' ';
 
@@ -3622,7 +3696,7 @@ qboolean G_admin_listplayers( gentity_t *ent )
 			}
 		}
 
-		ADMBP( va( "%2i ^%c%c^7 %-2i^2%c^7 %*s^7 ^1%c%c^7 %s^7 %s%s%s %s\n",
+		ADMBP( va( "%2i ^%c%c^7 %-2i^2%c^7 %*s^7 ^5%c^1%c%c%s^7 %s^7 %s%s%s %s\n",
 		           i,
 		           c,
 		           t,
@@ -3630,8 +3704,10 @@ qboolean G_admin_listplayers( gentity_t *ent )
 		           hint ? '*' : ' ',
 		           admin_level_maxname + colorlen,
 		           lname,
+		           bot,
 		           muted,
 		           denied,
+		           canseeWarn ? ( p->pers.hasWarnings ? S_COLOR_YELLOW "W" : " " ) : "",
 		           p->pers.netname,
 		           ( registeredname ) ? "(a.k.a. " : "",
 		           ( registeredname ) ? registeredname : "",
@@ -3710,17 +3786,21 @@ static int ban_out( void *ban, char *str )
 		d_color = S_COLOR_CYAN;
 	}
 
-	Com_sprintf( str, MAX_STRING_CHARS, "%-*s %s%-15s " S_COLOR_WHITE "%-8s %s"
-	             "\n          \\__ %s%s%-*s " S_COLOR_WHITE "%s",
-	             MAX_NAME_LENGTH + colorlen1 - 1, b->name,
+	Com_sprintf( str, MAX_STRING_CHARS, "%s\n"
+	             "         %s\\__ %s%s%-*s %s%-15s " S_COLOR_WHITE "%-8s %s\n"
+	             "          %s\\__ %s: " S_COLOR_WHITE "%s",
+	             b->name,
+	             G_ADMIN_BAN_IS_WARNING( b ) ? S_COLOR_YELLOW : S_COLOR_RED,
+	             d_color,
+	             time,
+	             MAX_DURATION_LENGTH - 1,
+	             duration,
 	             ( strchr( b->ip.str, '/' ) ) ? S_COLOR_RED : S_COLOR_WHITE,
 	             b->ip.str,
 	             date,
 	             b->banner,
-	             d_color,
-			     time,
-	             MAX_DURATION_LENGTH - 1,
-	             duration,
+	             G_ADMIN_BAN_IS_WARNING( b ) ? S_COLOR_YELLOW : S_COLOR_RED,
+	             G_ADMIN_BAN_IS_WARNING( b ) ? "WARNING" : "BAN",
 	             b->reason );
 
 	return b->id;
@@ -5516,6 +5596,219 @@ void G_admin_cleanup( void )
 
 	g_admin_commands = NULL;
 	BG_DefragmentMemory();
+}
+
+qboolean G_admin_bot( gentity_t *ent )
+{
+	int min_args = 3;
+	char arg1[MAX_TOKEN_CHARS];
+	char name[MAX_TOKEN_CHARS];
+	char team[MAX_TOKEN_CHARS];
+	char skill[MAX_TOKEN_CHARS];
+	char err[MAX_STRING_CHARS];
+	char behavior[MAX_QPATH];
+	int skill_int;
+	int i;
+
+	static const char bot_usage[] = QQ( N_( "^3bot: ^7usage: bot add [^5name|*^7] [^5aliens|humans^7] (^5skill^7) (^5behavior^7)\n"
+	                                        "            bot [^5del|spec|unspec^7] [^5name|all^7]\n"
+	                                        "            bot names [^5aliens|humans^7] [^5names…^7]\n"
+	                                        "            bot names [^5clear|list^7]\n" ) );
+
+	if ( trap_Argc() < min_args )
+	{
+		ADMP( bot_usage );
+		return qfalse;
+	}
+	trap_Argv( 1, arg1, sizeof( arg1 ) );
+	trap_Argv( 2, name, sizeof( name ) );
+
+	if ( !Q_stricmp( arg1, "add" ) )
+	{
+		min_args++; //now we also need a team name
+		if ( !Q_stricmp( name, "all" ) )
+		{
+			ADMP( QQ( N_( "bots can't have that name\n" ) ) );
+			return qfalse;
+		}
+		if ( trap_Argc() < min_args )
+		{
+			ADMP( bot_usage );
+			return qfalse;
+		}
+		trap_Argv( 3, team, sizeof( team ) );
+
+		//skill level checks
+		min_args++;
+		if ( trap_Argc() < min_args )
+		{
+			skill_int = 5; //no skill arg
+		}
+		else
+		{
+			trap_Argv( 4, skill, sizeof( skill ) );
+			skill_int = atoi( skill );
+			if ( skill_int < 1 )
+			{
+				skill_int = 1; //skill arg too small, reset to 1
+			}
+			else if ( skill_int > 10 )
+			{
+				skill_int = 10; //skill arg too bit, reset to 10
+			}
+		}
+
+		min_args++;
+		if ( trap_Argc() < min_args )
+		{
+			Q_strncpyz( behavior, "default", sizeof( behavior ) );
+		}
+		else
+		{
+			trap_Argv( 5, behavior, sizeof( behavior ) );
+		}
+		//choose team
+		if ( !Q_stricmp( team, "humans" ) || !Q_stricmp( team, "h" ) )
+		{
+			if ( !G_BotAdd( name, TEAM_HUMANS, skill_int, behavior ) )
+			{
+				ADMP( QQ( "Can't add a bot\n" ) );
+				return qfalse;
+			}
+		}
+		else if ( !Q_stricmp( team, "aliens" ) || !Q_stricmp( team, "a" ) )
+		{
+			if ( !G_BotAdd( name, TEAM_ALIENS, skill_int, behavior ) )
+			{
+				ADMP( QQ( N_( "Can't add a bot\n" ) ) );
+				return qfalse;
+			}
+		}
+		else
+		{
+			ADMP( QQ( N_( "Invalid team name\n" ) ) );
+			ADMP( bot_usage );
+			return qfalse;
+		}
+	}
+	else if ( !Q_stricmp( arg1, "del" ) )
+	{
+		int clientNum = G_ClientNumberFromString( name, err, sizeof( err ) );
+		if ( !Q_stricmp( name, "all" ) )
+		{
+			G_BotDelAllBots();
+		}
+		else if ( clientNum == -1 ) //something went wrong when finding the client Number
+		{
+			ADMP( va( "%s %s %s", QQ( "^3$1$: ^7$2t$" ), "bot", Quote( err ) ) );
+			return qfalse;
+		}
+		else
+		{
+			G_BotDel( clientNum ); //delete the bot
+		}
+	}
+	else if ( !Q_stricmp( arg1, "spec" ) )
+	{
+		int clientNum = G_ClientNumberFromString( name, err, sizeof( err ) );
+		if ( !Q_stricmp( name, "all" ) )
+		{
+			for ( i = 0; i < MAX_CLIENTS; i++ )
+			{
+				if ( g_entities[i].r.svFlags & SVF_BOT )
+				{
+					G_ChangeTeam( &g_entities[i], TEAM_NONE );
+				}
+			}
+			return qtrue;
+		}
+
+		if ( clientNum == -1 )
+		{
+			ADMP( va( "%s %s %s", QQ( "^3$1$: ^7$2t$" ), "bot", Quote( err ) ) );
+			return qfalse;
+		}
+		if ( g_entities[clientNum].r.svFlags & SVF_BOT )
+		{
+			G_ChangeTeam( &g_entities[clientNum], TEAM_NONE );
+		}
+		else
+		{
+			ADMP( QQ( N_( "%s is not a bot\n" ) ) );
+		}
+	}
+	else if ( !Q_stricmp( arg1, "unspec" ) )
+	{
+		int clientNum = G_ClientNumberFromString( name, err, sizeof( err ) );
+		if ( !Q_stricmp( name, "all" ) )
+		{
+			for ( i = 0; i < MAX_CLIENTS; i++ )
+			{
+				if ( g_entities[i].r.svFlags & SVF_BOT && g_entities[i].client->pers.team == TEAM_NONE )
+				{
+					G_ChangeTeam( &g_entities[i], g_entities[i].botMind->botTeam );
+				}
+			}
+			return qtrue;
+		}
+
+		if ( clientNum == -1 )
+		{
+			ADMP( va( "%s %s %s", QQ( "^3$1$: ^7$2t$" ), "bot", Quote( err ) ) );
+			return qfalse;
+		}
+
+		if ( !( g_entities[clientNum].r.svFlags & SVF_BOT ) )
+		{
+			ADMP( QQ( N_( "%s is not a bot\n" ) ) );
+			return qfalse;
+		}
+
+		if ( g_entities[clientNum].client->pers.team != TEAM_NONE )
+		{
+			ADMP( QQ( N_( "%s is not on spectators\n" ) ) );
+			return qfalse;
+		}
+
+		G_ChangeTeam( &g_entities[clientNum], g_entities[clientNum].botMind->botTeam );
+	}
+	else if ( !Q_stricmp( arg1, "names" ) )
+	{
+		if ( !Q_stricmp( name, "humans" ) || !Q_stricmp( name, "h" ) )
+		{
+			i = G_BotAddNames( TEAM_HUMANS, 3, trap_Argc() );
+			ADMP( va( "%s %d", Quote( P_( "added $1$ human bot name\n", "added $1$ human bot names\n", i ) ), i ) );
+		}
+		else if ( !Q_stricmp( name, "aliens" ) || !Q_stricmp( name, "a" ) )
+		{
+			i = G_BotAddNames( TEAM_ALIENS, 3, trap_Argc() );
+			ADMP( va( "%s %d", Quote( P_( "added $1$ alien bot name\n", "added $1$ alien bot names\n", i ) ), i ) );
+		}
+		else if ( !Q_stricmp( name, "clear" ) || !Q_stricmp( name, "c" ) )
+		{
+			if ( !G_BotClearNames() )
+			{
+				ADMP( QQ( N_( "some automatic bot names are in use – not clearing lists\n" ) ) );
+				return qfalse;
+			}
+		}
+		else if ( !Q_stricmp( name, "list" ) || !Q_stricmp( name, "l" ) )
+		{
+			G_BotListNames( ent );
+		}
+		else
+		{
+			goto usage;
+		}
+	}
+	else
+	{
+usage:
+		ADMP( QQ( N_( "Invalid command\n" ) ) );
+		ADMP( bot_usage );
+		return qfalse;
+	}
+	return qtrue;
 }
 
 static qboolean G_admin_maprestarted( gentity_t *ent )

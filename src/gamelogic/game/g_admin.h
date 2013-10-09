@@ -42,6 +42,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define MAX_ADMIN_EXPIRED_BANS   64
 #define G_ADMIN_BAN_EXPIRED(b,t) ( (b)->expires != 0 && (b)->expires <= (t) )
 #define G_ADMIN_BAN_STALE(b,t)   ( (b)->expires != 0 && (b)->expires + ( g_adminRetainExpiredBans.integer ? 86400 : 0 ) <= (t) )
+#define G_ADMIN_BAN_IS_WARNING(b) ( (b)->warnCount < 0 )
 
 /*
  * IMMUNITY - cannot be vote kicked, vote muted
@@ -230,6 +231,7 @@ qboolean        G_admin_l0( gentity_t *ent );  // AA-QVM 1.2
 qboolean        G_admin_l1( gentity_t *ent );  // AA-QVM 1.2
 qboolean        G_admin_register( gentity_t *ent );  // AA-QVM 1.2
 qboolean        G_admin_unregister( gentity_t *ent );  // AA-QVM 1.2
+qboolean        G_admin_bot( gentity_t *ent );
 
 void            G_admin_print( gentity_t *ent, const char *m );
 void            G_admin_print_plural( gentity_t *ent, const char *m, int number );

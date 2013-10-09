@@ -80,14 +80,14 @@ static const struct {
 static const int animLoading[] = {
 	0,
 	//       idle2   pwrdwn  idlunp  cnstr   cnstr2  attack   attack2 spawn   spawn2  pain    pain2   dstry   dstry2  dstryed
-	CG_ANIM( qtrue,  qfalse, qfalse, qtrue,  qtrue,  qtrue,   qtrue,  qtrue,  qfalse, qtrue,  qtrue,  qtrue,  qfalse, qtrue  ), // BA_A_SPAWN
+	CG_ANIM( qtrue,  qfalse, qfalse, qtrue,  qtrue,  qtrue,   qtrue,  qtrue,  qfalse, qtrue,  qtrue,  qtrue,  qtrue,  qtrue  ), // BA_A_SPAWN
 	CG_ANIM( qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qfalse, qtrue  ), // BA_A_OVERMIND
 	CG_ANIM( qtrue,  qtrue,  qtrue,  qtrue,  qfalse, qtrue,   qtrue,  qfalse, qfalse, qtrue,  qtrue,  qtrue,  qtrue,  qtrue  ), // BA_A_BARRICADE
-	CG_ANIM( qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qfalse, qtrue  ), // BA_A_ACIDTUBE
-	CG_ANIM( qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qfalse, qtrue  ), // BA_A_TRAPPER
-	CG_ANIM( qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qfalse, qtrue  ), // BA_A_BOOSTER
-	CG_ANIM( qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qfalse, qtrue  ), // BA_A_HIVE
-	CG_ANIM( qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qfalse, qtrue  ), // BA_A_LEECH
+	CG_ANIM( qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_A_ACIDTUBE
+	CG_ANIM( qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_A_TRAPPER
+	CG_ANIM( qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_A_BOOSTER
+	CG_ANIM( qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_A_HIVE
+	CG_ANIM( qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_A_LEECH
 
 	CG_ANIM( qtrue,  qtrue,  qtrue,  qtrue,  qtrue,  qtrue,   qtrue,  qtrue,  qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_SPAWN
 	CG_ANIM( qfalse, qtrue,  qtrue,  qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_TURRET
@@ -492,7 +492,6 @@ static qboolean CG_RegisterBuildableAnimation( buildableInfo_t *ci, const char *
 
 	if ( !ci->animations[ anim ].handle )
 	{
-		Com_Printf( "Failed to load animation file %s\n", filename );
 		return qfalse;
 	}
 
@@ -594,12 +593,29 @@ void CG_InitBuildables( void )
 					{
 						int o = (int) animTypes[ n ].fallback;
 
-						// if the fallback is to be reversed, try loading it
-						// otherwise, or if that fails, use the fallback directly
-						if ( !animTypes[ n ].fallbackReversed ||
-						     !CG_RegisterBuildableAnimation( bi, buildableName, n, animTypes[ o ].name, animTypes[ o ].loop, !animTypes[ n ].reversed, animTypes[ o ].clearOrigin ) )
+						if ( o == BANIM_NONE )
 						{
+							// missing animation file, no fallback defined
+							Com_Printf( S_WARNING "Failed to load animation file '%s' for model '%s'\n", animTypes[ n ].name, buildableName );
+						}
+						else if ( !bi->animations[ o ].handle )
+						{
+							// no animation file, fallback wasn't loaded
+							if ( cg_debugAnim.integer )
+							{
+								Com_Printf( S_WARNING "No fallback for animation file '%s' for model '%s'\n", animTypes[ n ].name, buildableName );
+							}
+						}
+						else // valid fallback
+						{
+							// copy the animation data
 							bi->animations[ n ] = bi->animations[ o ];
+
+							// and reverse it if needed
+							if ( animTypes[ n ].fallbackReversed )
+							{
+									bi->animations[ n ].reversed = !bi->animations[ n ].reversed;
+							}
 						}
 					}
 				}

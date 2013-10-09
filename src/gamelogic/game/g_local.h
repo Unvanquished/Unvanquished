@@ -32,6 +32,7 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
+// g_local.h -- local definitions for game module
 #ifndef G_LOCAL_H_
 #define G_LOCAL_H_
 
@@ -46,6 +47,8 @@ typedef struct gclient_s gclient_t;
 
 typedef struct variatingTime_s variatingTime_t;
 #include "g_entities.h"
+#include "../../engine/botlib/bot_types.h"
+#include "g_bot.h"
 
 // g_local.h -- local definitions for game module
 //==================================================================
@@ -437,6 +440,9 @@ struct gentity_s
 	int         nextRegenTime;
 
 	qboolean    pointAgainstWorld; // don't use the bbox for map collisions
+
+	qhandle_t   obstacleHandle;
+	botMemory_t *botMind;
 };
 
 typedef enum
@@ -456,6 +462,8 @@ typedef struct
 	spectatorState_t spectatorState;
 	int              spectatorClient; // for chasecam and follow mode
 	team_t           restartTeam; //for !restart keepteams and !restart switchteams
+	int              botSkill;
+	char             botTree[ MAX_QPATH ];
 	clientList_t     ignoreList;
 	int              seenWelcome; // determines if the client has seen server's welcome message
 } clientSession_t;
@@ -541,6 +549,9 @@ typedef struct
 
 	// level.time when teamoverlay info changed so we know to tell other players.
 	int                 infoChangeTime;
+
+	// warnings in the ban log
+	qboolean            hasWarnings;
 } clientPersistant_t;
 
 #define MAX_UNLAGGED_MARKERS 256
@@ -717,7 +728,9 @@ typedef enum {
 	VOTE_MAP,
 	VOTE_LAYOUT,
 	VOTE_NEXT_MAP,
-	VOTE_POLL
+	VOTE_POLL,
+	VOTE_BOT_KICK,
+	VOTE_BOT_SPECTATE
 } voteType_t;
 
 //
@@ -905,6 +918,7 @@ void     G_ListCommands( gentity_t *ent );
 void     G_LoadCensors( void );
 void     G_CensorString( char *out, const char *in, int len, gentity_t *ent );
 qboolean G_CheckStopVote( team_t );
+qboolean G_RoomForClassChange( gentity_t *ent, class_t class, vec3_t newOrigin );
 
 //
 // g_physics.c
@@ -942,10 +956,9 @@ typedef enum
   IBE_MAXERRORS
 } itemBuildError_t;
 
-gentity_t *G_CheckSpawnPoint( int spawnNum, const vec3_t origin,
-                              const vec3_t normal, buildable_t spawn,
-                              vec3_t spawnOrigin );
-
+gentity_t        *G_CheckSpawnPoint( int spawnNum, const vec3_t origin,
+                                     const vec3_t normal, buildable_t spawn,
+                                     vec3_t spawnOrigin );
 qboolean         G_IsDCCBuilt( void );
 int              G_FindDCC( gentity_t *self );
 gentity_t        *G_Reactor( void );
@@ -953,6 +966,8 @@ gentity_t        *G_Overmind( void );
 float            G_DistanceToBase( gentity_t *self, qboolean ownBase );
 qboolean         G_InsideBase( gentity_t *self, qboolean ownBase );
 qboolean         G_FindCreep( gentity_t *self );
+gentity_t        *G_Build( gentity_t *builder, buildable_t buildable,
+                           const vec3_t origin, const vec3_t normal, const vec3_t angles, int groundEntityNum );
 int              G_RGSPredictEfficiency( vec3_t origin );
 void             G_BuildableThink( gentity_t *ent, int msec );
 qboolean         G_BuildableRange( vec3_t origin, float r, buildable_t buildable );
@@ -964,7 +979,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 qboolean         G_BuildIfValid( gentity_t *ent, buildable_t buildable );
 void             G_SetBuildableAnim( gentity_t *ent, buildableAnimNumber_t anim, qboolean force );
 void             G_SetIdleBuildableAnim( gentity_t *ent, buildableAnimNumber_t anim );
-void             G_SpawnBuildable( gentity_t *ent, buildable_t buildable );
+void             G_SpawnBuildable(gentity_t *ent, buildable_t buildable);
 void             G_LayoutSave( const char *name );
 int              G_LayoutList( const char *map, char *list, int len );
 void             G_LayoutSelect( void );
@@ -1144,11 +1159,14 @@ void       G_ResetVote( team_t team );
 void       G_ExecuteVote( team_t team );
 void       G_CheckVote( team_t team );
 void       LogExit( const char *string );
+int        G_TimeTilSuddenDeath( void );
+vmCvar_t  *G_FindCvar( const char *name );
 
 //
 // g_client.c
 //
 char *ClientConnect( int clientNum, qboolean firstTime );
+char *ClientBotConnect( int clientNum, qboolean firstTime, team_t team );
 char *ClientUserinfoChanged( int clientNum, qboolean forceName );
 void ClientDisconnect( int clientNum );
 void ClientBegin( int clientNum );
@@ -1281,6 +1299,8 @@ extern  vmCvar_t g_drawVotesAfter;
 extern  vmCvar_t g_drawVoteReasonRequired;
 extern  vmCvar_t g_admitDefeatVotesPercent;
 extern  vmCvar_t g_pollVotesPercent;
+extern  vmCvar_t g_botKickVotesAllowed;
+extern  vmCvar_t g_botKickVotesAllowedThisMap;
 extern  vmCvar_t g_teamForceBalance;
 extern  vmCvar_t g_smoothClients;
 extern  vmCvar_t pmove_fixed;
@@ -1361,6 +1381,7 @@ extern  vmCvar_t g_unnamedNumbering;
 extern  vmCvar_t g_unnamedNamePrefix;
 
 extern  vmCvar_t g_admin;
+extern  vmCvar_t g_adminWarn;
 extern  vmCvar_t g_adminTempBan;
 extern  vmCvar_t g_adminMaxBan;
 extern  vmCvar_t g_adminRetainExpiredBans;
@@ -1378,6 +1399,45 @@ extern  vmCvar_t g_combatCooldown;
 extern  vmCvar_t g_geoip;
 
 extern  vmCvar_t g_debugEntities;
+
+// <bot stuff>
+// bot buy cvars
+extern vmCvar_t g_bot_buy;
+extern vmCvar_t g_bot_rifle;
+extern vmCvar_t g_bot_painsaw;
+extern vmCvar_t g_bot_shotgun;
+extern vmCvar_t g_bot_lasgun;
+extern vmCvar_t g_bot_mdriver;
+extern vmCvar_t g_bot_chaingun;
+extern vmCvar_t g_bot_prifle;
+extern vmCvar_t g_bot_flamer;
+extern vmCvar_t g_bot_lcannon;
+// bot evolution cvars
+extern vmCvar_t g_bot_evolve;
+extern vmCvar_t g_bot_level1;
+extern vmCvar_t g_bot_level1upg;
+extern vmCvar_t g_bot_level2;
+extern vmCvar_t g_bot_level2upg;
+extern vmCvar_t g_bot_level3;
+extern vmCvar_t g_bot_level3upg;
+extern vmCvar_t g_bot_level4;
+//misc bot cvars
+extern vmCvar_t g_bot_attackStruct;
+extern vmCvar_t g_bot_roam;
+extern vmCvar_t g_bot_rush;
+extern vmCvar_t g_bot_build;
+extern vmCvar_t g_bot_repair;
+extern vmCvar_t g_bot_retreat;
+extern vmCvar_t g_bot_fov;
+extern vmCvar_t g_bot_chasetime;
+extern vmCvar_t g_bot_reactiontime;
+//extern vmCvar_t g_bot_camp;
+extern vmCvar_t g_bot_infinite_funds;
+extern vmCvar_t g_bot_numInGroup;
+extern vmCvar_t g_bot_persistent;
+extern vmCvar_t g_bot_buildLayout;
+extern vmCvar_t g_bot_debug;
+//</bot stuff>
 
 void             trap_Print( const char *string );
 void             trap_Error( const char *string ) NORETURN;
@@ -1454,11 +1514,24 @@ messageStatus_t  trap_MessageStatus( int clientNum );
 int              trap_RSA_GenerateMessage( const char *public_key, const char *cleartext, char *encrypted );
 
 void             trap_QuoteString( const char *str, char *buf, int size );
+
 void             trap_GenFingerprint( const char *pubkey, int size, char *buffer, int bufsize );
 void             trap_GetPlayerPubkey( int clientNum, char *pubkey, int size );
 
 void             trap_GetTimeString( char *buffer, int size, const char *format, const qtime_t *tm );
 
+qboolean         trap_BotSetupNav( const botClass_t *botClass, qhandle_t *navHandle );
+void             trap_BotShutdownNav( void );
+void             trap_BotSetNavMesh( int botClientNum, qhandle_t navHandle );
+qboolean         trap_BotFindRoute( int botClientNum, const botRouteTarget_t *target, qboolean allowPartial );
+qboolean         trap_BotUpdatePath( int botClientNum, const botRouteTarget_t *target, botNavCmd_t *cmd );
+qboolean         trap_BotNavTrace( int botClientNum, botTrace_t *botTrace, const vec3_t start, const vec3_t end );
+void             trap_BotFindRandomPoint( int botClientNum, vec3_t point );
+qboolean         trap_BotFindRandomPointInRadius( int botClientNum, const vec3_t origin, vec3_t point, float radius );
+void             trap_BotEnableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs );
+void             trap_BotDisableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs );
+void             trap_BotAddObstacle( const vec3_t mins, const vec3_t maxs, qhandle_t *handle );
+void             trap_BotRemoveObstacle( qhandle_t handle );
+void             trap_BotUpdateObstacles( void );
 //==================================================================
 #endif /* G_LOCAL_H_ */
-

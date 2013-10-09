@@ -1378,7 +1378,7 @@ typedef struct voiceTrack_s
 	char                *text;
 	int                 enthusiasm;
 	int                 team;
-	int                    class;
+	int                 pClass;
 	int                 weapon;
 	struct voiceTrack_s *next;
 } voiceTrack_t;
@@ -1406,7 +1406,7 @@ voiceCmd_t   *BG_VoiceCmdByNum( voiceCmd_t *head, int num );
 voiceTrack_t *BG_VoiceTrackByNum( voiceTrack_t *head, int num );
 
 voiceTrack_t *BG_VoiceTrackFind( voiceTrack_t *head, team_t team,
-                                 class_t class, weapon_t weapon,
+                                 class_t pClass, weapon_t weapon,
                                  int enthusiasm, int *trackNum );
 
 int  BG_LoadEmoticons( emoticon_t *emoticons, int num );

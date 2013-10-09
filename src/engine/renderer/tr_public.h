@@ -37,6 +37,7 @@ Maryland 20850 USA.
 #define __TR_PUBLIC_H
 
 #include "tr_types.h"
+#include "../../engine/botlib/bot_debug.h"
 
 #define REF_API_VERSION 10
 
@@ -284,13 +285,11 @@ typedef struct
 	void ( *CL_WriteAVIVideoFrame )( const byte *buffer, int size );
 	// XreaL END
 
-	void ( *Sys_GLimpSafeInit )( void );
-	void ( *Sys_GLimpInit )( void );
-
 	// input event handling
-	void ( *IN_Init )( void );
+	void ( *IN_Init )( void *windowData );
 	void ( *IN_Shutdown )( void );
 	void ( *IN_Restart )( void );
+	void ( *Bot_DrawDebugMesh )( BotDebugInterface_t *in );
 } refimport_t;
 
 // this is the only function actually exported at the linker level

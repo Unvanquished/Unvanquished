@@ -36,7 +36,7 @@ Maryland 20850 USA.
 #define __VM_TRAPS_H
 
 // Major: API breakage
-#define SYSCALL_ABI_VERSION_MAJOR 9
+#define SYSCALL_ABI_VERSION_MAJOR 10
 // Minor: API extension
 #define SYSCALL_ABI_VERSION_MINOR 0
 

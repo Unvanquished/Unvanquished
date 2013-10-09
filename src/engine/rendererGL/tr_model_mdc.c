@@ -506,7 +506,7 @@ qboolean R_LoadMDC( model_t *mod, int lod, void *buffer, int bufferSize, const c
 		// change to surface identifier
 		surf->surfaceType = SF_MDV;
 
-		// give pointer to model for Tess_SurfaceMDX
+		// give pointer to model for Tess_SurfaceMDV
 		surf->model = mdvModel;
 
 		// copy surface name
