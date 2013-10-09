@@ -30,7 +30,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace Cmd {
 
-    std::string Escape(const std::string& text) {
+    std::string Escape(Str::StringRef text) {
         std::string res = "\"";
 
         for (size_t i = 0; i < text.size(); i ++) {
@@ -82,14 +82,14 @@ namespace Cmd {
         return true;
     }
 
-    std::string::const_iterator SplitCommand(const std::string& text, std::string::const_iterator start) {
+    const char* SplitCommand(const char* start, const char* end) {
         bool inQuote = false;
         bool inComment = false;
         bool inInlineComment = false;
 
-        while (start != text.end()) {
+        while (start != end) {
             //End of comment
-            if (inInlineComment && start + 1 != text.end() && start[0] == '*' && start[1] == '/') {
+            if (inInlineComment && start + 1 != end && start[0] == '*' && start[1] == '/') {
                 inInlineComment = false;
                 start += 2;
                 continue;
@@ -102,19 +102,19 @@ namespace Cmd {
             }
 
             //Start of comment
-            if (not inQuote && not inComment && start + 1 != text.end() && start[0] == '/' && start[1] == '*') {
+            if (not inQuote && not inComment && start + 1 != end && start[0] == '/' && start[1] == '*') {
                 inInlineComment = true;
                 start += 2;
                 continue;
             }
-            if (not inQuote && start + 1 != text.end() && start[0] == '/' && start[1] == '/') {
+            if (not inQuote && start + 1 != end && start[0] == '/' && start[1] == '/') {
                 inComment = true;
                 start += 2;
                 continue;
             }
 
             //Escaped quote
-            if (inQuote && start + 1 != text.end() && start[0] == '\\' && start[1] == '"') {
+            if (inQuote && start + 1 != end && start[0] == '\\' && start[1] == '"') {
                 start += 2;
                 continue;
             }
@@ -140,11 +140,11 @@ namespace Cmd {
             start++;
         }
 
-        return text.end();
+        return end;
     }
 
-    std::string SubstituteCvars(const std::string& text) {
-        const char* raw_text = text.c_str();
+    std::string SubstituteCvars(Str::StringRef text) {
+        const char* raw_text = text.data();
         std::string result;
 
         bool isEscaped = false;
@@ -352,7 +352,7 @@ namespace Cmd {
         return {};
     }
 
-    void CmdBase::PrintUsage(const Args& args, const std::string& syntax, const std::string& description) {
+    void CmdBase::PrintUsage(const Args& args, Str::StringRef syntax, Str::StringRef description) {
         if(description.empty()) {
             Com_Printf("%s: %s %s\n", _("usage"), args.Argv(0).c_str(), syntax.c_str());
         } else {

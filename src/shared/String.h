@@ -62,6 +62,14 @@ namespace Str {
         {
             return ptr;
         }
+        const T& front() const
+        {
+            return ptr[0];
+        }
+        const T& back() const
+        {
+            return ptr[len - 1];
+        }
 
         std::basic_string<T> str() const
         {

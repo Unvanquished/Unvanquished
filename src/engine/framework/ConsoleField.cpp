@@ -75,17 +75,18 @@ namespace Console {
         std::string commandText = Str::UTF32To8(GetText().substr(1, GetCursorPos() - 1));
 
         //Split the command text and find the command to complete
-        std::string::const_iterator commandStart = commandText.begin();
+        const char* commandStart = commandText.data();
+        const char* commandEnd = commandText.data() + commandText.size();
         while (true) {
-            std::string::const_iterator next = Cmd::SplitCommand(commandText, commandStart);
-            if (next != commandText.end())
+            const char* next = Cmd::SplitCommand(commandStart, commandEnd);
+            if (next != commandEnd)
                 commandStart = next;
             else
                 break;
         }
 
         //Parse the arguments and get the list of candidates
-        Cmd::Args args(std::string(commandStart, commandText.cend()));
+        Cmd::Args args(std::string(commandStart, commandEnd));
         int argNum = args.Argc() - 1;
         std::string prefix;
         if (!args.Argc() || GetText()[GetCursorPos() - 1] == ' ') {

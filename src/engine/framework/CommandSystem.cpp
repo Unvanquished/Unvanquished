@@ -56,10 +56,11 @@ namespace Cmd {
     std::vector<std::string> commandBuffer;
 
     void BufferCommandText(const std::string& text, execWhen_t when, bool parseCvars) {
-        std::string::const_iterator current = text.begin();
+        const char* current = text.data();
+        const char* end = text.data() + text.size();
         do {
-            std::string::const_iterator next = SplitCommand(text, current);
-            std::string command(current, next != text.cend() ? next - 1 : text.end());
+            const char* next = SplitCommand(current, end);
+            std::string command(current, next != end ? next - 1 : end);
             if (parseCvars)
                 command = SubstituteCvars(command);
             switch (when) {
@@ -79,7 +80,7 @@ namespace Cmd {
                     Com_Printf("Cmd::BufferCommandText: unknown execWhen_t %i\n", when);
             }
             current = next;
-        } while (current != text.end());
+        } while (current != end);
     }
 
     //TODO: reimplement the wait command, maybe?

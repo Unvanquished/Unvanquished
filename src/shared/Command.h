@@ -23,6 +23,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "../engine/qcommon/q_shared.h"
+#include "String.h"
 #include <string>
 #include <vector>
 
@@ -50,9 +51,9 @@ namespace Cmd {
     };
 
     // OLD: Parsing functions that should go in their modules at some point
-    std::string Escape(const std::string& text);
-    std::string::const_iterator SplitCommand(const std::string& text, std::string::const_iterator start);
-    std::string SubstituteCvars(const std::string& text);
+    std::string Escape(Str::StringRef text);
+    const char* SplitCommand(const char* start, const char* end);
+    std::string SubstituteCvars(Str::StringRef text);
 
     /**
      * Cmd::Args represents the arguments given to an invoked command.
@@ -121,7 +122,7 @@ namespace Cmd {
             int GetFlags() const;
 
             // Prints the usage of this command with a standard formatting
-            static void PrintUsage(const Args& args, const std::string& syntax, const std::string& description = "");
+            static void PrintUsage(const Args& args, Str::StringRef syntax, Str::StringRef description = "");
 
         protected:
             // Is given the namespace of the command.
