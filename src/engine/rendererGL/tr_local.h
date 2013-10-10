@@ -63,19 +63,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define GLSL_COMPILE_STARTUP_ONLY  1
 
-//#define USE_BSP_CLUSTERSURFACE_MERGING 1
-
 // visibility tests: check if a 3D-point is visible
 // results may be delayed, but for visual effect like flares this
 // shouldn't matter
 #define MAX_VISTESTS          256
-
-	typedef enum
-	{
-		DS_DISABLED, // traditional Doom 3 style rendering
-		DS_STANDARD, // deferred rendering like in Stalker
-	}
-	deferredShading_t;
 
 	typedef enum
 	{
@@ -92,8 +83,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	  RSPEEDS_NEAR_FAR,
 	  RSPEEDS_DECALS
 	} renderSpeeds_t;
-
-#define DS_STANDARD_ENABLED() (( r_deferredShading->integer == DS_STANDARD && glConfig2.maxColorAttachments >= 4 && glConfig2.drawBuffersAvailable && glConfig2.maxDrawBuffers >= 4 && /*glConfig2.framebufferPackedDepthStencilAvailable &&*/ glConfig.driverType != GLDRV_MESA ))
 
 #define HDR_ENABLED()         (( r_hdrRendering->integer && glConfig2.textureFloatAvailable && glConfig2.framebufferObjectAvailable && glConfig2.framebufferBlitAvailable && glConfig.driverType != GLDRV_MESA ))
 
@@ -1596,9 +1585,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	  SF_DECAL, // ydnar: decal surfaces
 
 	  SF_MDV,
-#if defined( COMPAT_ET )
-	  SF_MDM,
-#endif
 	  SF_MD5,
 
 	  SF_FLARE,
@@ -1606,9 +1592,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 	  SF_VBO_MESH,
 	  SF_VBO_MD5MESH,
-#if defined( COMPAT_ET )
-	  SF_VBO_MDMMESH,
-#endif
 	  SF_VBO_MDVMESH,
 
 	  SF_NUM_SURFACE_TYPES,
@@ -1888,14 +1871,17 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	{
 		surfaceType_t   surfaceType;
 
+		vec3_t          bounds[ 2 ];
+		vec3_t          origin;
+		float           radius;
+
 		struct shader_s *shader; // FIXME move this to somewhere else
 
 		int             lightmapNum; // FIXME get rid of this by merging all lightmaps at level load
-
-		// culling information
-		vec3_t bounds[ 2 ];
+		int             fogIndex;
 
 		// backEnd stats
+		int firstIndex;
 		int numIndexes;
 		int numVerts;
 
@@ -1926,31 +1912,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		VBO_t *vbo;
 		IBO_t *ibo;
 	} srfVBOMD5Mesh_t;
-
-	typedef struct srfVBOMDMMesh_s
-	{
-		surfaceType_t             surfaceType;
-
-		struct mdmModel_s         *mdmModel;
-
-		struct mdmSurfaceIntern_s *mdmSurface;
-
-		struct shader_s           *shader; // FIXME move this to somewhere else
-
-		int                       skinIndex;
-
-		int                       numBoneRemap;
-		int                       boneRemap[ MAX_BONES ];
-		int                       boneRemapInverse[ MAX_BONES ];
-
-		// backEnd stats
-		int numIndexes;
-		int numVerts;
-
-		// static render data
-		VBO_t *vbo;
-		IBO_t *ibo[ MD3_MAX_LODS ];
-	} srfVBOMDMMesh_t;
 
 	typedef struct srfVBOMDVMesh_s
 	{
@@ -2042,17 +2003,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 		int          numMarkSurfaces;
 		bspSurface_t **markSurfaces;
+		bspSurface_t **viewSurfaces;
 	} bspNode_t;
-
-#if defined( USE_BSP_CLUSTERSURFACE_MERGING )
-	typedef struct
-	{
-		int          numMarkSurfaces;
-		bspSurface_t **markSurfaces;
-
-		vec3_t       origin; // used for cubemaps
-	} bspCluster_t;
-#endif
 
 	/*
 	typedef struct
@@ -2148,6 +2100,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		int                numMarkSurfaces;
 		bspSurface_t       **markSurfaces;
 
+		bspSurface_t       **viewSurfaces;
+
+		int                numMergedSurfaces;
+		bspSurface_t       *mergedSurfaces;
+
 		int                numFogs;
 		fog_t              *fogs;
 
@@ -2172,18 +2129,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		interactionCache_t **interactions;
 
 		int                numClusters;
-#if defined( USE_BSP_CLUSTERSURFACE_MERGING )
-		bspCluster_t       *clusters;
-#endif
+
 		int                clusterBytes;
 		const byte         *vis; // may be passed in by CM_LoadMap to save space
 		byte       *visvis; // clusters visible from visible clusters
 		byte               *novis; // clusterBytes of 0xff
-
-#if defined( USE_BSP_CLUSTERSURFACE_MERGING )
-		int        numClusterVBOSurfaces[ MAX_VISCOUNTS ];
-		growList_t clusterVBOSurfaces[ MAX_VISCOUNTS ]; // updated every time when changing the view cluster
-#endif
 
 		char     *entityString;
 		char     *entityParsePoint;
@@ -2284,10 +2234,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		vec4_t      normal;
 		vec2_t      texCoords;
 
-		uint16_t    firstWeight;
-		uint16_t    numWeights;
-		md5Weight_t **weights;
-	} md5Vertex_t );
+		uint32_t    firstWeight;
+		uint32_t    numWeights;
+		uint32_t    boneIndexes[ MAX_WEIGHTS ];
+		float       boneWeights[ MAX_WEIGHTS ];
+	} ) md5Vertex_t;
 
 	/*
 	typedef struct
@@ -2339,70 +2290,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 		vec3_t          bounds[ 2 ];
 	} md5Model_t;
-
-	typedef struct
-	{
-		char   name[ 64 ]; // name of tag
-		vec3_t axis[ 3 ];
-
-		int    boneIndex;
-		vec3_t offset;
-
-		int    numBoneReferences;
-		int    *boneReferences;
-	} mdmTagIntern_t;
-
-	typedef struct mdmSurfaceIntern_s
-	{
-		surfaceType_t surfaceType;
-
-		char          name[ MAX_QPATH ]; // polyset name
-		char          shader[ MAX_QPATH ];
-		int           shaderIndex; // for in-game use
-
-		int           minLod;
-
-		uint32_t      numVerts;
-		md5Vertex_t   *verts;
-
-		uint32_t      numTriangles;
-		srfTriangle_t *triangles;
-
-//	uint32_t        numWeights;
-//	md5Weight_t    *weights;
-
-		int               numBoneReferences;
-		int               *boneReferences;
-
-		int32_t           *collapseMap; // numVerts many
-
-		struct mdmModel_s *model;
-	} mdmSurfaceIntern_t;
-
-	typedef struct mdmModel_s
-	{
-//	uint16_t        numBones;
-//	md5Bone_t      *bones;
-
-		float              lodScale;
-		float              lodBias;
-
-		uint16_t           numTags;
-		mdmTagIntern_t     *tags;
-
-		uint16_t           numSurfaces;
-		mdmSurfaceIntern_t *surfaces;
-
-		uint16_t           numVBOSurfaces;
-		srfVBOMDMMesh_t    **vboSurfaces;
-
-		int                numBoneReferences;
-		int32_t            *boneReferences;
-
-		vec3_t             bounds[ 2 ];
-	} mdmModel_t;
-
-	extern const float mdmLODResolutions[ MD3_MAX_LODS ];
 
 	typedef enum
 	{
@@ -2487,10 +2374,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	  MOD_BAD,
 	  MOD_BSP,
 	  MOD_MESH,
-#if defined( COMPAT_ET )
-	  MOD_MDM,
-	  MOD_MDX,
-#endif
 	  MOD_MD5
 	} modtype_t;
 
@@ -2503,10 +2386,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		int         dataSize; // just for listing purposes
 		bspModel_t  *bsp; // only if type == MOD_BSP
 		mdvModel_t  *mdv[ MD3_MAX_LODS ]; // only if type == MOD_MESH
-#if defined( COMPAT_ET )
-		mdmModel_t  *mdm; // only if type == MOD_MDM
-		mdxHeader_t *mdx; // only if type == MOD_MDX
-#endif
 		md5Model_t  *md5; // only if type == MOD_MD5
 
 		int         numLods;
@@ -2546,13 +2425,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	*/
 	typedef struct
 	{
+		int c_box_cull_in, c_box_cull_out;
 		int c_sphere_cull_in, c_sphere_cull_out;
 		int c_plane_cull_in, c_plane_cull_out;
 
 		int c_sphere_cull_patch_in, c_sphere_cull_patch_clip, c_sphere_cull_patch_out;
 		int c_box_cull_patch_in, c_box_cull_patch_clip, c_box_cull_patch_out;
-		int c_sphere_cull_mdx_in, c_sphere_cull_mdx_clip, c_sphere_cull_mdx_out;
-		int c_box_cull_mdx_in, c_box_cull_mdx_clip, c_box_cull_mdx_out;
+		int c_sphere_cull_mdv_in, c_sphere_cull_mdv_clip, c_sphere_cull_mdv_out;
+		int c_box_cull_mdv_in, c_box_cull_mdv_clip, c_box_cull_mdv_out;
 		int c_box_cull_md5_in, c_box_cull_md5_clip, c_box_cull_md5_out;
 		int c_box_cull_light_in, c_box_cull_light_clip, c_box_cull_light_out;
 		int c_pvs_cull_light_out;
@@ -2666,9 +2546,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		int   c_forwardAmbientTime;
 		int   c_forwardLightingTime;
 		int   c_forwardTranslucentTime;
-
-		int   c_deferredGBufferTime;
-		int   c_deferredLightingTime;
 
 		int   c_multiDrawElements;
 		int   c_multiDrawPrimitives;
@@ -2810,11 +2687,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		image_t    *depthRenderImage;
 		image_t    *portalRenderImage;
 
-		image_t    *deferredDiffuseFBOImage;
-		image_t    *deferredNormalFBOImage;
-		image_t    *deferredSpecularFBOImage;
 		image_t    *deferredRenderFBOImage;
-		image_t    *lightRenderFBOImage;
 		image_t    *occlusionRenderFBOImage;
 		image_t    *depthToColorBackFacesFBOImage;
 		image_t    *depthToColorFrontFacesFBOImage;
@@ -2838,9 +2711,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		GLuint   colorGradePBO;
 
 		// framebuffer objects
-		FBO_t *geometricRenderFBO; // is the G-Buffer for deferred shading
-		FBO_t *lightRenderFBO; // is the light buffer which contains all light properties of the light pre pass
-		FBO_t *deferredRenderFBO; // is used by HDR rendering and deferred shading
+		FBO_t *deferredRenderFBO; // is used by HDR rendering
 		FBO_t *portalRenderFBO; // holds a copy of the last currentRender that was rendered into a FBO
 		FBO_t *occlusionRenderFBO; // used for overlapping visibility determination
 		FBO_t *downScaleFBO_quarter;
@@ -2979,6 +2850,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		scissorState_t scissor;
 	} trGlobals_t;
 
+	typedef struct {
+		qboolean FXAA;
+	} glBroken_t;
+
 	extern const matrix_t quakeToOpenGLMatrix;
 	extern const matrix_t openGLToQuakeMatrix;
 	extern const matrix_t flipZMatrix;
@@ -2991,6 +2866,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	extern glconfig_t     glConfig; // outside of TR since it shouldn't be cleared during ref re-init
 	extern glconfig2_t    glConfig2;
 
+	extern glBroken_t     glBroken;
+
 	extern glstate_t      glState; // outside of TR since it shouldn't be cleared during ref re-init
 
 	extern float          displayAspect; // FIXME
@@ -3002,6 +2879,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	extern cvar_t *r_glMinorVersion;
 	extern cvar_t *r_glCoreProfile;
 	extern cvar_t *r_glDebugProfile;
+	extern cvar_t *r_glAllowSoftware;
 
 	extern cvar_t *r_flares; // light flares
 	extern cvar_t *r_flareSize;
@@ -3063,7 +2941,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	extern cvar_t *r_nocull;
 	extern cvar_t *r_facePlaneCull; // enables culling of planar surfaces with back side test
 	extern cvar_t *r_nocurves;
-	extern cvar_t *r_nobatching;
 	extern cvar_t *r_noLightScissors;
 	extern cvar_t *r_noLightVisCull;
 	extern cvar_t *r_noInteractionSort;
@@ -3072,7 +2949,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	extern cvar_t *r_mode; // video mode
 	extern cvar_t *r_fullscreen;
 	extern cvar_t *r_gamma;
-	extern cvar_t *r_displayRefresh; // optional display refresh option
 	extern cvar_t *r_ignorehwgamma; // overrides hardware gamma capabilities
 
 	extern cvar_t *r_ext_compressed_textures; // these control use of specific extensions
@@ -3153,14 +3029,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	extern cvar_t *r_debugShadowMaps;
 	extern cvar_t *r_noShadowFrustums;
 	extern cvar_t *r_noLightFrustums;
-	extern cvar_t *r_shadowMapLuminanceAlpha;
 	extern cvar_t *r_shadowMapLinearFilter;
 	extern cvar_t *r_lightBleedReduction;
 	extern cvar_t *r_overDarkeningFactor;
 	extern cvar_t *r_shadowMapDepthScale;
 	extern cvar_t *r_parallelShadowSplits;
 	extern cvar_t *r_parallelShadowSplitWeight;
-	extern cvar_t *r_lightSpacePerspectiveWarping;
 
 	extern cvar_t *r_intensity;
 
@@ -3215,13 +3089,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	extern cvar_t *r_showParallelShadowSplits;
 	extern cvar_t *r_showDecalProjectors;
 
-	extern cvar_t *r_showDeferredDiffuse;
-	extern cvar_t *r_showDeferredNormal;
-	extern cvar_t *r_showDeferredSpecular;
-	extern cvar_t *r_showDeferredPosition;
-	extern cvar_t *r_showDeferredRender;
-	extern cvar_t *r_showDeferredLight;
-
 	extern cvar_t *r_vboFaces;
 	extern cvar_t *r_vboCurves;
 	extern cvar_t *r_vboTriangles;
@@ -3233,14 +3100,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	extern cvar_t *r_vboDeformVertexes;
 	extern cvar_t *r_vboSmoothNormals;
 
-#if defined( USE_BSP_CLUSTERSURFACE_MERGING )
-	extern cvar_t *r_mergeClusterSurfaces;
-	extern cvar_t *r_mergeClusterFaces;
-	extern cvar_t *r_mergeClusterCurves;
-	extern cvar_t *r_mergeClusterTriangles;
-#endif
+	extern cvar_t *r_mergeLeafSurfaces;
 
-	extern cvar_t *r_deferredShading;
 	extern cvar_t *r_parallaxMapping;
 	extern cvar_t *r_parallaxDepthScale;
 
@@ -3315,6 +3176,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	void           R_LocalNormalToWorld( const vec3_t local, vec3_t world );
 	void           R_LocalPointToWorld( const vec3_t local, vec3_t world );
 
+	cullResult_t   R_CullBox( vec3_t worldBounds[ 2 ] );
 	cullResult_t   R_CullLocalBox( vec3_t bounds[ 2 ] );
 	int            R_CullLocalPointAndRadius( vec3_t origin, float radius );
 	int            R_CullPointAndRadius( vec3_t origin, float radius );
@@ -3368,6 +3230,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	void     R_DebugPolygon( int color, int numPoints, float *points );
 	void     R_DebugText( const vec3_t org, float r, float g, float b, const char *text, qboolean neverOcclude );
 
+	void     DebugDrawVertex(const vec3_t pos, unsigned int color, const vec2_t uv);
+	void     DebugDrawBegin( debugDrawMode_t mode, float size );
+	void     DebugDrawDepthMask(qboolean state);
+	void     DebugDrawEnd( void );
 	/*
 	====================================================================
 
@@ -3381,6 +3247,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	void BindAnimatedImage( textureBundle_t *bundle );
 	void GL_TextureFilter( image_t *image, filterType_t filterType );
 	void GL_BindProgram( shaderProgram_t *program );
+	void GL_BindToTMU( int unit, image_t *image );
 	void GL_BindNullProgram( void );
 	void GL_SetDefaultState( void );
 	void GL_SelectTexture( int unit );
@@ -3527,6 +3394,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	qboolean GLimp_Init( void );
 	void     GLimp_Shutdown( void );
 	void     GLimp_EndFrame( void );
+	void     GLimp_HandleCvars( void );
 
 	qboolean GLimp_SpawnRenderThread( void ( *function )( void ) );
 	void     GLimp_ShutdownRenderThread( void );
@@ -3632,8 +3500,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 	void Tess_StageIteratorDebug( void );
 	void Tess_StageIteratorGeneric( void );
-	void Tess_StageIteratorGBuffer( void );
-	void Tess_StageIteratorGBufferNormalsOnly( void );
 	void Tess_StageIteratorDepthFill( void );
 	void Tess_StageIteratorShadowFill( void );
 	void Tess_StageIteratorLighting( void );
@@ -3942,23 +3808,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	int             R_GetBoneTag(orientation_t * outTag, mdsHeader_t * mds, int startTagIndex, const refEntity_t * refent,
 	                                                         const char *tagName);
 	                                                         */
-
-	/*
-	=============================================================
-
-	ANIMATED MODELS WOLF:ET  MDM/MDX
-
-	=============================================================
-	*/
-
-	void R_MDM_AddAnimSurfaces( trRefEntity_t *ent );
-	void R_AddMDMInteractions( trRefEntity_t *e, trRefLight_t *light, interactionType_t iaType );
-
-	int  R_MDM_GetBoneTag( orientation_t *outTag, mdmModel_t *mdm, int startTagIndex, const refEntity_t *refent,
-	                       const char *tagName );
-
-	void Tess_MDM_SurfaceAnim( mdmSurfaceIntern_t *surfType );
-	void Tess_SurfaceVBOMDMMesh( srfVBOMDMMesh_t *surfType );
 
 	/*
 	=============================================================

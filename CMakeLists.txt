@@ -40,10 +40,12 @@ option( ENABLE_HARDENING "Use stack protection" 0 )
 option( ENABLE_QVM_COMPAT "Configure the engine to use QVMs instead of NaCl" 0 )
 
 cmake_dependent_option( USE_MUMBLE "Compile with support for Mumble" 1 BUILD_CLIENT 0 )
-cmake_dependent_option( USE_VOIP "Compile with VOIP support" 1 "BUILD_CLIENT OR BUILD_SERVER" 0 )
+cmake_dependent_option( USE_VOIP "Compile with VOIP support" 1 "BUILD_CLIENT OR BUILD_SERVER OR BUILD_TTY_CLIENT" 0 )
 cmake_dependent_option( USE_CURSES "Use the curses console" 1 "BUILD_CLIENT OR BUILD_SERVER OR BUILD_TTY_CLIENT" 0 )
 cmake_dependent_option( USE_OPENAL_DLOPEN "Use dlopen to load OpenAL" 1 BUILD_CLIENT 0 )
-cmake_dependent_option( USE_SMP "Compile with support for running the renderer in a separate thread" 1 BUILD_NEW_RENDERER 0 )
+cmake_dependent_option( USE_SMP "Compile with support for running the renderer in a separate thread" 1 BUILD_CLIENT 0 )
+cmake_dependent_option( USE_GEOIP "Use libgeoip" 1 "BUILD_SERVER OR BUILD_CLIENT OR BUILD_TTY_CLIENT" 0 )
+option( USE_SDL2 "Enable SDL 2.0 support (incompatible with SDL 1.2)" 1 )
 
 set( NACL_SDK_PATH "" CACHE PATH "Path to native client SDK" )
 if( BUILD_GAME_NACL AND NOT NACL_SDK_PATH )
@@ -195,12 +197,12 @@ else()
   set_c_cxx_flag( "-D_FORTIFY_SOURCE=2" RELWITHDEBINFO )
   set_c_cxx_flag( "-D_FORTIFY_SOURCE=2" MINSIZEREL )
   if( ENABLE_HARDENING )
-    try_c_cxx_flag( FSTACK_PROTECTOR "-fno-strict-overflow" )
-    try_c_cxx_flag( FSTACK_PROTECTOR "-fstack-protector-all" )
-    try_c_cxx_flag( FSTACK_PROTECTOR "--param ssp-buffer-size=1" )
-    try_c_cxx_flag( FSTACK_PROTECTOR "-Wstack-protector" )
-    try_c_cxx_flag( FSTACK_PROTECTOR "-fPIE" )
-    try_linker_flag( FSTACK_PROTECTOR "-pie" )
+    try_c_cxx_flag( FNO_STRICT_OVERFLOW "-fno-strict-overflow" )
+    try_c_cxx_flag( FSTACK_PROTECTOR_ALL "-fstack-protector-all" )
+    try_c_cxx_flag( PARAM_SSP_BUFFER_SIZE "--param ssp-buffer-size=1" )
+    try_c_cxx_flag( WSTACK_PROTECTOR "-Wstack-protector" )
+    try_c_cxx_flag( FPIE "-fPIE" )
+    try_linker_flag( LINKER_PIE "-pie" )
   endif()
 
   # Linker flags
@@ -329,8 +331,10 @@ set( SHAREDLIST_HACK
 )
 
 set( RENDERERLIST
+  ${ENGINE_DIR}/sys/sdl2_compat.c
+  ${ENGINE_DIR}/sys/sdl_glimp.c
+  ${ENGINE_DIR}/sys/sdl_gamma.c
   ${ENGINE_DIR}/renderer/tr_animation.c
-  ${ENGINE_DIR}/renderer/tr_animation_mdm.c
   ${ENGINE_DIR}/renderer/tr_animation_mds.c
   ${ENGINE_DIR}/renderer/tr_backend.c
   ${ENGINE_DIR}/renderer/tr_bonematrix.c
@@ -367,8 +371,10 @@ set( RENDERERLIST
 )
 
 set( RENDERERGLLIST
+  ${ENGINE_DIR}/sys/sdl2_compat.c
+  ${ENGINE_DIR}/sys/sdl_glimp.c
+  ${ENGINE_DIR}/sys/sdl_gamma.c
   ${ENGINE_DIR}/rendererGL/gl_shader.cpp
-  ${ENGINE_DIR}/rendererGL/tr_animation_mdm.c
   ${ENGINE_DIR}/rendererGL/tr_animation.c
   ${ENGINE_DIR}/rendererGL/tr_backend.cpp
   ${ENGINE_DIR}/renderer/tr_bonematrix.c
@@ -397,7 +403,6 @@ set( RENDERERGLLIST
   ${ENGINE_DIR}/rendererGL/tr_model_md3.c
   ${ENGINE_DIR}/rendererGL/tr_model_md5.c
   ${ENGINE_DIR}/rendererGL/tr_model_mdc.c
-  ${ENGINE_DIR}/rendererGL/tr_model_mdm.c
   ${ENGINE_DIR}/rendererGL/tr_model_psk.c
   ${ENGINE_DIR}/rendererGL/tr_model_skel.c
   ${ENGINE_DIR}/rendererGL/tr_noise.c
@@ -421,6 +426,10 @@ set( RENDERERGLLIST
 )
 
 set( SERVERLIST
+  ${ENGINE_DIR}/botlib/bot_convert.cpp
+  ${ENGINE_DIR}/botlib/bot_local.cpp
+  ${ENGINE_DIR}/botlib/bot_nav.cpp
+  ${ENGINE_DIR}/botlib/bot_load.cpp
   ${ENGINE_DIR}/server/sv_bot.c
   ${ENGINE_DIR}/server/sv_ccmds.c
   ${ENGINE_DIR}/server/sv_client.c
@@ -531,6 +540,8 @@ if( USE_CURSES )
 endif()
 
 set( CLIENTLIST
+  ${ENGINE_DIR}/botlib/bot_debug.cpp
+  ${ENGINE_DIR}/botlib/bot_nav_edit.cpp
   ${ENGINE_DIR}/client/cg_api.h
   ${ENGINE_DIR}/client/ui_api.h
   ${ENGINE_DIR}/client/client.h
@@ -579,16 +590,18 @@ endif()
 set( SDLLIST
   ${ENGINE_DIR}/sys/sdl_input.c
   ${ENGINE_DIR}/sys/sdl_snd.c
+  ${ENGINE_DIR}/sys/sdl2_compat.c
   ${ENGINE_DIR}/sys/sys_local.h
 )
 
-set( CGAMEGPP_BASE
+set( CGAMELIST
   ${GAMELOGIC_DIR}/game/bg_misc.c
   ${GAMELOGIC_DIR}/game/bg_parse.c
   ${GAMELOGIC_DIR}/game/bg_pmove.c
   ${GAMELOGIC_DIR}/game/bg_slidemove.c
   ${GAMELOGIC_DIR}/game/bg_alloc.c
   ${GAMELOGIC_DIR}/game/bg_voice.c
+  ${GAMELOGIC_DIR}/game/bg_teamprogress.c
   ${GAMELOGIC_DIR}/cgame/cg_consolecmds.c
   ${GAMELOGIC_DIR}/cgame/cg_buildable.c
   ${GAMELOGIC_DIR}/cgame/cg_animation.c
@@ -620,7 +633,7 @@ set( CGAMEGPP_BASE
   ${ENGINE_DIR}/qcommon/print_translated.h
 )
 
-set( GAMEGPP_BASE
+set( GAMELIST
   ${GAMELOGIC_DIR}/game/g_main.c
   ${GAMELOGIC_DIR}/game/bg_misc.c
   ${GAMELOGIC_DIR}/game/bg_parse.c
@@ -628,10 +641,12 @@ set( GAMEGPP_BASE
   ${GAMELOGIC_DIR}/game/bg_slidemove.c
   ${GAMELOGIC_DIR}/game/bg_alloc.c
   ${GAMELOGIC_DIR}/game/bg_voice.c
+  ${GAMELOGIC_DIR}/game/bg_teamprogress.c
   ${GAMELOGIC_DIR}/game/g_active.c
   ${GAMELOGIC_DIR}/game/g_client.c
   ${GAMELOGIC_DIR}/game/g_cmds.c
   ${GAMELOGIC_DIR}/game/g_combat.c
+  ${GAMELOGIC_DIR}/game/g_confidence.c
   ${GAMELOGIC_DIR}/game/g_entities.c
   ${GAMELOGIC_DIR}/game/g_physics.c
   ${GAMELOGIC_DIR}/game/g_buildable.c
@@ -655,11 +670,16 @@ set( GAMEGPP_BASE
   ${GAMELOGIC_DIR}/game/g_weapon.c
   ${GAMELOGIC_DIR}/game/g_admin.c
   ${GAMELOGIC_DIR}/game/g_namelog.c
+  ${GAMELOGIC_DIR}/game/g_bot.c
+  ${GAMELOGIC_DIR}/game/g_bot_ai.c
+  ${GAMELOGIC_DIR}/game/g_bot_nav.c
+  ${GAMELOGIC_DIR}/game/g_bot_parse.c
+  ${GAMELOGIC_DIR}/game/g_bot_util.c
   ${GAMELOGIC_DIR}/game/g_api.cpp
   ${ENGINE_DIR}/server/g_api.h
 )
 
-set( UIGPP_BASE
+set( UILIST
   ${GAMELOGIC_DIR}/ui/ui_main.c
   ${GAMELOGIC_DIR}/ui/ui_atoms.c
   ${GAMELOGIC_DIR}/ui/ui_shared.c
@@ -667,6 +687,7 @@ set( UIGPP_BASE
   ${GAMELOGIC_DIR}/game/bg_misc.c
   ${GAMELOGIC_DIR}/game/bg_parse.c
   ${GAMELOGIC_DIR}/game/bg_alloc.c
+  ${GAMELOGIC_DIR}/game/bg_teamprogress.c
   ${GAMELOGIC_DIR}/ui/ui_utf8.c
   ${GAMELOGIC_DIR}/ui/ui_api.c
   ${ENGINE_DIR}/client/ui_api.h
@@ -674,14 +695,14 @@ set( UIGPP_BASE
 
 set( WIN_RC ${ENGINE_DIR}/sys/daemon.rc )
 
-set( MINIZIP_LIST
+set( MINIZIPLIST
   ${LIB_DIR}/minizip/ioapi.c
   ${LIB_DIR}/minizip/ioapi.h
   ${LIB_DIR}/minizip/unzip.c
   ${LIB_DIR}/minizip/unzip.h
 )
 
-set( TINYGETTEXT_LIST
+set( TINYGETTEXTLIST
   ${LIB_DIR}/tinygettext/dictionary_manager.hpp
   ${LIB_DIR}/tinygettext/file_system.hpp
   ${LIB_DIR}/tinygettext/iconv.cpp
@@ -754,22 +775,55 @@ set( PDCURSESLIST
   ${LIB_DIR}/pdcurses/win32a/pdcutil.c
 )
 
+set( FASTLZLIST
+  ${MOUNT_DIR}/libs/fastlz/fastlz.c
+)
+
+set( DETOURLIST
+  ${FASTLZLIST}
+  ${MOUNT_DIR}/libs/detour/DetourAlloc.cpp
+  ${MOUNT_DIR}/libs/detour/DetourCommon.cpp
+  ${MOUNT_DIR}/libs/detour/DetourNavMeshBuilder.cpp
+  ${MOUNT_DIR}/libs/detour/DetourNavMesh.cpp
+  ${MOUNT_DIR}/libs/detour/DetourNavMeshQuery.cpp
+  ${MOUNT_DIR}/libs/detour/DetourNode.cpp
+  ${MOUNT_DIR}/libs/detour/DetourPathCorridor.cpp
+  ${MOUNT_DIR}/libs/detour/DetourDebugDraw.cpp
+  ${MOUNT_DIR}/libs/detour/DebugDraw.cpp
+  ${MOUNT_DIR}/libs/detour/DetourTileCache.cpp
+  ${MOUNT_DIR}/libs/detour/DetourTileCacheBuilder.cpp
+)
+
+set( RECASTLIST
+  ${MOUNT_DIR}/libs/recast/RecastAlloc.cpp
+  ${MOUNT_DIR}/libs/recast/RecastArea.cpp
+  ${MOUNT_DIR}/libs/recast/RecastContour.cpp
+  ${MOUNT_DIR}/libs/recast/Recast.cpp
+  ${MOUNT_DIR}/libs/recast/RecastFilter.cpp
+  ${MOUNT_DIR}/libs/recast/RecastLayers.cpp
+  ${MOUNT_DIR}/libs/recast/RecastMesh.cpp
+  ${MOUNT_DIR}/libs/recast/RecastMeshDetail.cpp
+  ${MOUNT_DIR}/libs/recast/RecastRasterization.cpp
+  ${MOUNT_DIR}/libs/recast/RecastRegion.cpp
+  ${MOUNT_DIR}/libs/recast/ChunkyTriMesh.cpp
+)
+
 if( APPLE )
-  set( NACL_LIST_NATIVE
+  set( NACLLIST_NATIVE
     ${LIB_DIR}/nacl/nacl.cpp
     ${LIB_DIR}/nacl/native_client/src/shared/imc/nacl_imc_common.cc
     ${LIB_DIR}/nacl/native_client/src/shared/imc/posix/nacl_imc_posix.cc
     ${LIB_DIR}/nacl/native_client/src/shared/imc/osx/nacl_imc.cc
   )
 elseif( LINUX )
-  set( NACL_LIST_NATIVE
+  set( NACLLIST_NATIVE
     ${LIB_DIR}/nacl/nacl.cpp
     ${LIB_DIR}/nacl/native_client/src/shared/imc/nacl_imc_common.cc
     ${LIB_DIR}/nacl/native_client/src/shared/imc/posix/nacl_imc_posix.cc
     ${LIB_DIR}/nacl/native_client/src/shared/imc/linux/nacl_imc.cc
   )
 elseif( WIN32 )
-  set( NACL_LIST_NATIVE
+  set( NACLLIST_NATIVE
     ${LIB_DIR}/nacl/nacl.cpp
     ${LIB_DIR}/nacl/native_client/src/shared/imc/nacl_imc_common.cc
     ${LIB_DIR}/nacl/native_client/src/shared/imc/win/nacl_imc.cc
@@ -777,7 +831,7 @@ elseif( WIN32 )
   )
 endif()
 
-set( NACL_LIST_MODULE
+set( NACLLIST_MODULE
   ${LIB_DIR}/nacl/nacl.cpp
   ${LIB_DIR}/nacl/native_client/src/shared/imc/nacl_imc_common.cc
   ${LIB_DIR}/nacl/native_client/src/shared/imc/nacl/nacl_imc.cc
@@ -831,10 +885,21 @@ else()
 endif()
 
 # Minizip
-set( LIBSRC_ENGINE ${LIBSRC_ENGINE} ${MINIZIP_LIST} )
+set( LIBSRC_ENGINE ${LIBSRC_ENGINE} ${MINIZIPLIST} )
 
 # Tinygettext
-set( LIBSRC_ENGINE ${LIBSRC_ENGINE} ${TINYGETTEXT_LIST} )
+set( LIBSRC_ENGINE ${LIBSRC_ENGINE} ${TINYGETTEXTLIST} )
+
+# Detour
+set( LIBSRC_ENGINE ${LIBSRC_ENGINE} ${DETOURLIST} )
+
+# GeoIP
+if( USE_GEOIP )
+  find_package( GeoIP REQUIRED )
+  add_definitions( -DHAVE_GEOIP )
+  set( LIBS_ENGINE ${LIBS_ENGINE} ${GeoIP_LIBRARIES} )
+  include_directories( ${GeoIP_INCLUDE_DIRS} )
+endif()
 
 # Native client
 if( APPLE )
@@ -856,24 +921,36 @@ else()
 endif()
 include_directories( ${LIB_DIR}/nacl )
 if( NOT ENABLE_QVM_COMPAT )
-  set( LIBSRC_ENGINE ${LIBSRC_ENGINE} ${NACL_LIST_NATIVE} )
+  set( LIBSRC_ENGINE ${LIBSRC_ENGINE} ${NACLLIST_NATIVE} )
 endif()
 
 # SDL, required for all targets on win32 because of iconv
 if( BUILD_CLIENT OR BUILD_NEW_RENDERER OR BUILD_OLD_RENDERER OR ( WIN32 AND ( BUILD_TTY_CLIENT OR BUILD_SERVER ) ) )
-  find_package( SDL REQUIRED )
-  include_directories( ${SDL_INCLUDE_DIR} )
-  if( WIN32 )
-    set( LIBS_ENGINE ${LIBS_ENGINE} ${SDL_LIBRARY} )
+  if( USE_SDL2 )
+    find_package( SDL2 REQUIRED )
+    include_directories( ${SDL2_INCLUDE_DIR} )
+    if( WIN32 )
+      set( LIBS_ENGINE ${LIBS_ENGINE} ${SDL2_LIBRARY} )
+    else()
+      set( LIBS_CLIENT ${LIBS_CLIENT} ${SDL2_LIBRARY} )
+    endif()
+    set( LIBS_RENDERER ${LIBS_RENDERER} ${SDL2_LIBRARY} )
+    set( LIBS_RENDERERGL ${LIBS_RENDERERGL} ${SDL2_LIBRARY} )
   else()
-    set( LIBS_CLIENT ${LIBS_CLIENT} ${SDL_LIBRARY} )
-  endif()
-  set( LIBS_RENDERER ${LIBS_RENDERER} ${SDL_LIBRARY} )
-  set( LIBS_RENDERERGL ${LIBS_RENDERERGL} ${SDL_LIBRARY} )
-  if( APPLE )
-    # Mac OS X does not provide a SDLMain.dylib so we must compile our own
-    add_library( INTERNAL_SDLMain ${ENGINE_DIR}/sys/SDLMain.mm )
-    set( LIBS_CLIENT ${LIBS_CLIENT} INTERNAL_SDLMain )
+    find_package( SDL REQUIRED )
+    include_directories( ${SDL_INCLUDE_DIR} )
+    if( WIN32 )
+      set( LIBS_ENGINE ${LIBS_ENGINE} ${SDL_LIBRARY} )
+    else()
+      set( LIBS_CLIENT ${LIBS_CLIENT} ${SDL_LIBRARY} )
+    endif()
+    set( LIBS_RENDERER ${LIBS_RENDERER} ${SDL_LIBRARY} )
+    set( LIBS_RENDERERGL ${LIBS_RENDERERGL} ${SDL_LIBRARY} )
+    if( APPLE )
+      # Mac OS X does not provide a SDLMain.dylib so we must compile our own
+      add_library( INTERNAL_SDLMain ${ENGINE_DIR}/sys/SDLMain.mm )
+      set( LIBS_CLIENT ${LIBS_CLIENT} INTERNAL_SDLMain )
+    endif()
   endif()
 
   # Used by tinygettext to use SDL_iconv instead of base iconv
@@ -1051,14 +1128,11 @@ function( GAMEMODULE )
   if( BUILD_GAME_NATIVE )
     # HACK: Compile shared files as C
     set_source_files_properties( ${SHAREDLIST_HACK} PROPERTIES LANGUAGE C )
-    add_executable( ${GAMEMODULE_NAME}-native ${GAMEMODULE_FILES} ${SHAREDLIST_HACK} ${NACL_LIST_NATIVE} )
+    add_executable( ${GAMEMODULE_NAME}-native ${GAMEMODULE_FILES} ${SHAREDLIST_HACK} ${NACLLIST_NATIVE} )
     target_link_libraries( ${GAMEMODULE_NAME}-native ${LIBS_BASE} )
     set_target_properties( ${GAMEMODULE_NAME}-native PROPERTIES
+      OUTPUT_NAME ${GAMEMODULE_NAME}
       RUNTIME_OUTPUT_DIRECTORY ${GAMEMODULE_OUTPUT_DIR}
-      RUNTIME_OUTPUT_DIRECTORY_RELEASE "Release/${GAMEMODULE_OUTPUT_DIR}"
-      RUNTIME_OUTPUT_DIRECTORY_DEBUG "Debug/${GAMEMODULE_OUTPUT_DIR}"
-      RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL "MinSizeRel/${GAMEMODULE_OUTPUT_DIR}"
-      RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO "RelWithDebInfo/${GAMEMODULE_OUTPUT_DIR}"
       COMPILE_DEFINITIONS ${GAMEMODULE_COMPILE_DEF}
     )
   endif()
@@ -1103,7 +1177,7 @@ function( GAMEMODULE )
 
     # Compile C files with clang and C++ files with clang++
     set( OBJECTS )
-    foreach( FILE ${GAMEMODULE_FILES} ${SHAREDLIST} ${NACL_LIST_MODULE} )
+    foreach( FILE ${GAMEMODULE_FILES} ${SHAREDLIST} ${NACLLIST_MODULE} )
       get_filename_component( FILENAME ${FILE} NAME_WE )
       get_filename_component( FILEDIR ${FILE} PATH )
       get_filename_component( EXT ${FILE} EXT )
@@ -1178,7 +1252,7 @@ endfunction()
 GAMEMODULE( NAME game
   OUTPUT_DIR main
   COMPILE_DEF GAME
-  FILES ${GAMEGPP_BASE}
+  FILES ${GAMELIST}
 )
 
 ################################################################################
@@ -1195,6 +1269,9 @@ if( BUILD_CLIENT )
     set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_VOIP )
   endif()
   set_target_properties( client PROPERTIES OUTPUT_NAME "daemon" PREFIX "" ENABLE_EXPORTS ON )
+  if( USE_SMP )
+    set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS SMP )
+  endif()
 
   # Setup CPack for target client
   install( TARGETS client DESTINATION "Unvanquished" )
@@ -1241,8 +1318,7 @@ endif()
 
 if( BUILD_OLD_RENDERER )
   # Setup target renderer
-  add_library( renderer MODULE ${RENDERERLIST} ${SHAREDLIST} ${LIBSRC_BASE} ${LIBSRC_RENDERER}
-    ${ENGINE_DIR}/sys/sdl_glimp.c ${ENGINE_DIR}/sys/sdl_gamma.c )
+  add_library( renderer MODULE ${RENDERERLIST} ${SHAREDLIST} ${LIBSRC_BASE} ${LIBSRC_RENDERER} )
   target_link_libraries( renderer ${LIBS_RENDERER} ${LIBS_BASE} client )
   set_target_properties( renderer PROPERTIES OUTPUT_NAME "rendererGL" )
   if( WIN32 )
@@ -1258,8 +1334,7 @@ endif()
 
 if( BUILD_NEW_RENDERER )
   # Setup target rendererGL
-  add_library( rendererGL MODULE ${RENDERERGLLIST} ${SHAREDLIST} ${LIBSRC_BASE} ${LIBSRC_RENDERER}
-    ${ENGINE_DIR}/sys/sdl_glimp.c ${ENGINE_DIR}/sys/sdl_gamma.c )
+  add_library( rendererGL MODULE ${RENDERERGLLIST} ${SHAREDLIST} ${LIBSRC_BASE} ${LIBSRC_RENDERER} )
   set_property( TARGET rendererGL APPEND PROPERTY COMPILE_DEFINITIONS USE_XREAL_RENDERER )
   target_link_libraries( rendererGL ${LIBS_RENDERER} ${LIBS_BASE} client )
   set_target_properties( rendererGL PROPERTIES OUTPUT_NAME "rendererGL3" )

@@ -38,7 +38,7 @@ Maryland 20850 USA.
 #ifdef QVM_COMPAT
 
 // Major: API breakage
-#define SYSCALL_ABI_VERSION_MAJOR 9
+#define SYSCALL_ABI_VERSION_MAJOR 10
 // Minor: API extension
 #define SYSCALL_ABI_VERSION_MINOR 0
 

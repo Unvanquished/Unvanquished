@@ -432,7 +432,6 @@ static void RE_StoreImage( fontInfo_t *font, int chunk, int page, int from, int 
 
 	scaledSize /= i;
 
-	buffer = (unsigned char*) ri.Z_Malloc( scaledSize * 2 );
 	max = 0;
 
 	for ( i = 0; i < scaledSize; i++ )
@@ -448,8 +447,11 @@ static void RE_StoreImage( fontInfo_t *font, int chunk, int page, int from, int 
 		max = 255 / max;
 	}
 
+	buffer = ( unsigned char * ) ri.Z_Malloc( scaledSize * 4 );
 	for ( i = j = 0; i < scaledSize; i++ )
 	{
+		buffer[ j++ ] = 255;
+		buffer[ j++ ] = 255;
 		buffer[ j++ ] = 255;
 		buffer[ j++ ] = ( ( float ) bitmap[ i ] * max );
 	}
@@ -459,12 +461,14 @@ static void RE_StoreImage( fontInfo_t *font, int chunk, int page, int from, int 
 	//SavePNG( fileName, buffer, FONT_SIZE, y, 2, qtrue );
 
 	image = R_CreateGlyph( fileName, buffer, FONT_SIZE, y );
+
+	ri.Free( buffer );
+
 #ifdef USE_XREAL_RENDERER
 	h = RE_RegisterShaderFromImage( fileName, image );
 #else
 	h = RE_RegisterShaderFromImage( fileName, LIGHTMAP_2D, image );
 #endif
-	ri.Free( buffer );
 
 	for ( j = from; j < to; j++ )
 	{

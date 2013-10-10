@@ -746,6 +746,42 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 			SV_GetTimeString( ( char * ) VMA( 1 ), args[ 2 ], ( const char * ) VMA( 3 ), ( const qtime_t * ) VMA( 4 ) );
 			return 0;
 
+		case BOT_NAV_SETUP:
+			return BotSetupNav( ( const botClass_t * ) VMA( 1 ), ( qhandle_t * ) VMA( 2 ) );
+		case BOT_NAV_SHUTDOWN:
+			BotShutdownNav();
+			return 0;
+		case BOT_SET_NAVMESH:
+			BotSetNavMesh( args[ 1 ], args[ 2 ] );
+			return 0;
+		case BOT_FIND_ROUTE:
+			return BotFindRouteExt( args[ 1 ], ( const botRouteTarget_t * ) VMA( 2 ), args[ 3 ] );
+		case BOT_UPDATE_PATH:
+			BotUpdateCorridor( args[ 1 ], ( const botRouteTarget_t * ) VMA( 2 ), ( botNavCmd_t * ) VMA( 3 ) );
+			return 0;
+		case BOT_NAV_RAYCAST:
+			return BotNavTrace( args[ 1 ], ( botTrace_t * ) VMA( 2 ), ( const float * ) VMA( 3 ), ( const float * ) VMA( 4 ) );
+		case BOT_NAV_RANDOMPOINT:
+			BotFindRandomPoint( args[ 1 ], ( float * ) VMA( 2 ) );
+			return 0;
+		case BOT_NAV_RANDOMPOINTRADIUS:
+			return BotFindRandomPointInRadius( args[ 1 ], ( const float * ) VMA( 2 ), ( float * ) VMA( 3 ), VMF( 4 ) );
+		case BOT_ENABLE_AREA:
+			BotEnableArea( ( const float * ) VMA( 1 ), ( const float * ) VMA( 2 ), ( const float * ) VMA( 3 ) );
+			return 0;
+		case BOT_DISABLE_AREA:
+			BotDisableArea( ( const float * ) VMA( 1 ), ( const float * ) VMA( 2 ), ( const float * ) VMA( 3 ) );
+			return 0;
+		case BOT_ADD_OBSTACLE:
+			BotAddObstacle( ( const float * ) VMA( 1 ), ( const float * ) VMA( 2 ), ( qhandle_t * ) VMA( 3 ) );
+			return 0;
+		case BOT_REMOVE_OBSTACLE:
+			BotRemoveObstacle( args[ 1 ] );
+			return 0;
+		case BOT_UPDATE_OBSTACLES:
+			BotUpdateObstacles();
+			return 0;
+
 		default:
 			Com_Error( ERR_DROP, "Bad game system trap: %ld", ( long int ) args[ 0 ] );
 			exit(1); // silence warning, and make sure this behaves as expected, if Com_Error's behavior changes
@@ -1516,8 +1552,6 @@ void GameVM::Syscall(int index, RPC::Reader& inputs, RPC::Writer& outputs)
 		break;
 	}
 
-// ===
-
 	case G_SENDMESSAGE:
 	{
 		int clientNum = inputs.ReadInt();
@@ -1579,6 +1613,127 @@ void GameVM::Syscall(int index, RPC::Reader& inputs, RPC::Writer& outputs)
 		outputs.WriteString(buffer.get());
 		break;
 	}
+
+	case BOT_NAV_SETUP:
+	{
+		botClass_t botClass;
+		qhandle_t handle;
+		inputs.Read(&botClass, sizeof(botClass_t));
+		outputs.WriteInt(BotSetupNav(&botClass, &handle));
+		outputs.WriteInt(handle);
+		break;
+	}
+
+	case BOT_NAV_SHUTDOWN:
+		BotShutdownNav();
+		break;
+
+	case BOT_SET_NAVMESH:
+	{
+		int botClientNum = inputs.ReadInt();
+		qhandle_t navHandle = inputs.ReadInt();
+		BotSetNavMesh(botClientNum, navHandle);
+		break;
+	}
+
+	case BOT_FIND_ROUTE:
+	{
+		int botClientNum = inputs.ReadInt();
+		botRouteTarget_t target;
+		inputs.Read(&target, sizeof(botRouteTarget_t));
+		qboolean allowPartial = inputs.ReadInt();
+		outputs.WriteInt(BotFindRouteExt(botClientNum, &target, allowPartial));
+		break;
+	}
+
+	case BOT_UPDATE_PATH:
+	{
+		int botClientNum = inputs.ReadInt();
+		botRouteTarget_t target;
+		inputs.Read(&target, sizeof(botRouteTarget_t));
+		botNavCmd_t cmd;
+		BotUpdateCorridor(botClientNum, &target, &cmd);
+		outputs.Write(&cmd, sizeof(botNavCmd_t));
+		break;
+	}
+
+	case BOT_NAV_RAYCAST:
+	{
+		int botClientNum = inputs.ReadInt();
+		botTrace_t botTrace;
+		vec3_t start;
+		inputs.Read(start, sizeof(vec3_t));
+		vec3_t end;
+		inputs.Read(end, sizeof(vec3_t));
+		outputs.WriteInt(BotNavTrace(botClientNum, &botTrace, start, end));
+		outputs.Write(&botTrace, sizeof(botTrace_t));
+		break;
+	}
+
+	case BOT_NAV_RANDOMPOINT:
+	{
+		int botClientNum = inputs.ReadInt();
+		vec3_t point;
+		BotFindRandomPoint(botClientNum, point);
+		outputs.Write(point, sizeof(vec3_t));
+		break;
+	}
+
+	case BOT_NAV_RANDOMPOINTRADIUS:
+	{
+		int botClientNum = inputs.ReadInt();
+		vec3_t origin;
+		inputs.Read(origin, sizeof(vec3_t));
+		vec3_t point;
+		float radius = inputs.ReadFloat();
+		BotFindRandomPointInRadius(botClientNum, origin, point, radius);
+		outputs.Write(point, sizeof(vec3_t));
+		break;
+	}
+
+	case BOT_ENABLE_AREA:
+	{
+		vec3_t origin;
+		inputs.Read(origin, sizeof(vec3_t));
+		vec3_t mins;
+		inputs.Read(mins, sizeof(vec3_t));
+		vec3_t maxs;
+		inputs.Read(maxs, sizeof(vec3_t));
+		BotEnableArea(origin, mins, maxs);
+		break;
+	}
+
+	case BOT_DISABLE_AREA:
+	{
+		vec3_t origin;
+		inputs.Read(origin, sizeof(vec3_t));
+		vec3_t mins;
+		inputs.Read(mins, sizeof(vec3_t));
+		vec3_t maxs;
+		inputs.Read(maxs, sizeof(vec3_t));
+		BotDisableArea(origin, mins, maxs);
+		break;
+	}
+
+	case BOT_ADD_OBSTACLE:
+	{
+		vec3_t mins;
+		inputs.Read(mins, sizeof(vec3_t));
+		vec3_t maxs;
+		inputs.Read(maxs, sizeof(vec3_t));
+		qhandle_t handle;
+		BotAddObstacle(mins, maxs, &handle);
+		outputs.WriteInt(handle);
+		break;
+	}
+
+	case BOT_REMOVE_OBSTACLE:
+		BotRemoveObstacle(inputs.ReadInt());
+		break;
+
+	case BOT_UPDATE_OBSTACLES:
+		BotUpdateObstacles();
+		break;
 
 	default:
 		Com_Error(ERR_DROP, "Bad game system trap: %d", index);

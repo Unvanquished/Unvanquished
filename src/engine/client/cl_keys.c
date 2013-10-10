@@ -447,7 +447,7 @@ static void Field_Paste(Util::LineEditData& edit, clipboard_t clip )
 
 	while ( pasteLen >= ( width = Q_UTF8_Width( cbd ) ) )
 	{
-		Field_CharEvent( edit, cbd );
+		Field_CharEvent( edit, Q_UTF8_CodePoint( cbd ) );
 
 		cbd += width;
 		pasteLen -= width;
@@ -472,6 +472,10 @@ void Field_KeyDownEvent(Util::LineEditData& edit, int key) {
             edit.DeleteNext();
             break;
 
+        case K_BACKSPACE:
+            edit.DeletePrev();
+            break;
+
         case K_RIGHTARROW:
             if (keys[ K_CTRL ].down) {
                 //TODO: Skip a full word
@@ -490,7 +494,6 @@ void Field_KeyDownEvent(Util::LineEditData& edit, int key) {
             }
             break;
 
-            //TODO: figure out which od KeyDown or CharEvent is called
         case 'a':
             if (keys[ K_CTRL ].down) {
                 edit.CursorStart();
@@ -542,7 +545,28 @@ void Field_KeyDownEvent(Util::LineEditData& edit, int key) {
 
             break;
         */
-
+        case 'v':
+            if (keys[ K_CTRL ].down) {
+                Field_Paste( edit, SELECTION_CLIPBOARD );
+            }
+            break;
+        case 'd':
+            if (keys[ K_CTRL ].down) {
+                edit.DeleteNext();
+            }
+            break;
+        case 'c':
+        case 'u':
+            if (keys[ K_CTRL ].down) {
+                edit.Clear();
+            }
+            break;
+        case 'k':
+            if (keys[ K_CTRL ].down) {
+                // TODO
+                //edit->buffer[ Field_CursorToOffset( edit ) ] = '\0';
+            }
+            break;
     }
 }
 
@@ -551,58 +575,18 @@ void Field_KeyDownEvent(Util::LineEditData& edit, int key) {
 Field_CharEvent
 ==================
 */
-void Field_CharEvent(Util::LineEditData& edit, const char *s )
+void Field_CharEvent(Util::LineEditData& edit, int c )
 {
-    char c = *s + 'a' - 1;
-
-    if (c == 'v') { // ctrl-v is paste
-        Field_Paste(edit, SELECTION_CLIPBOARD);
-        return;
-    }
-
-    if (c == 'c' or c == 'u') { // ctrl-c or ctrl-u clear the field
-        edit.Clear();
-        return;
-    }
-
-    //TODO
-    /*
-       if (c == 'k') { // ctrl-k clears to the end of the field
-       edit->buffer[ Field_CursorToOffset( edit ) ] = '\0';
-       return;
-       }
-       */
-
-    if (c == 'h') { // ctrl-h is backspace
-        edit.DeletePrev();
-        return;
-    }
-
-    if (c == 'd') { // ctrl-d is delete forward
-        edit.DeleteNext();
-        return;
-    }
-
-    if (c == 'a') { // ctrl-a is home
-        edit.CursorStart();
-        return;
-    }
-
-    if (c == 'e') { // ctrl-e is end
-        edit.CursorEnd();
-        return;
-    }
-
     //
-    // ignore any other non printable chars
+    // ignore any non printable chars
     //
-    if ( (unsigned char)*s < 32 || (unsigned char)*s == 0x7f )
+    if ( c < 32 || c == 0x7f )
     {
         return;
     }
 
     // 'unprintable' on Mac - used for cursor keys, function keys etc.
-    if ( (unsigned int)( Q_UTF8_CodePoint( s ) - 0xF700 ) < 0x200u )
+    if ( (unsigned int)( c - 0xF700 ) < 0x200u )
     {
         return;
     }
@@ -610,7 +594,7 @@ void Field_CharEvent(Util::LineEditData& edit, const char *s )
     if (key_overstrikeMode) {
         edit.DeleteNext();
     }
-    edit.AddChar(*s);
+    edit.AddChar(c);
 }
 
 /*
@@ -1565,7 +1549,7 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 		else if ( key == K_TAB )
 		{
 			Key_ClearStates();
-			Cvar_SetValue( "r_minimize", 1 );
+			Cbuf_ExecuteText( EXEC_APPEND, "minimize\n" );
 			return;
 		}
 	}
@@ -1585,7 +1569,7 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 	if ( cl_altTab->integer && keys[ K_ALT ].down && key == K_TAB )
 	{
 		Key_ClearStates();
-		Cvar_SetValue( "r_minimize", 1 );
+		Cbuf_ExecuteText( EXEC_APPEND, "minimize\n" );
 		return;
 	}
 #endif
@@ -1730,7 +1714,7 @@ CL_CharEvent
 Characters, already shifted/capslocked/etc.
 ===================
 */
-void CL_CharEvent( const char *key )
+void CL_CharEvent( int c )
 {
 	// the console key should never be used as a char
 	// ydnar: added uk equivalent of shift+`
@@ -1742,22 +1726,15 @@ void CL_CharEvent( const char *key )
 	// distribute the key down event to the appropriate handler
 	if ( cls.keyCatchers & KEYCATCH_CONSOLE )
 	{
-		Field_CharEvent(g_consoleField, key);
+		Field_CharEvent(g_consoleField, c);
 	}
 	else if ( cls.keyCatchers & KEYCATCH_UI )
 	{
-		// VMs that don't support i18n distinguish between char and key events by looking at the 11th least significant bit.
-		// Patched VMs look at the second least significant bit to determine whether the event is a char event, and at the third bit
-		// to determine the original 11th least significant bit of the key.
-		VM_Call( uivm, UI_KEY_EVENT, Q_UTF8_Store( key ) | (1 << (K_CHAR_BIT - 1)),
-				(qtrue << KEYEVSTATE_DOWN) |
-				(qtrue << KEYEVSTATE_CHAR) |
-				((Q_UTF8_Store( key ) & (1 << (K_CHAR_BIT - 1))) >> ((K_CHAR_BIT - 1) - KEYEVSTATE_BIT)) |
-				(qtrue << KEYEVSTATE_SUP) );
+		VM_Call( uivm, UI_KEY_EVENT, c, KEYEVSTATE_DOWN | KEYEVSTATE_CHAR | KEYEVSTATE_SUP );
 	}
 	else if ( cls.state == CA_DISCONNECTED )
 	{
-		Field_CharEvent(g_consoleField, key);
+		Field_CharEvent(g_consoleField, c);
 	}
 }
 

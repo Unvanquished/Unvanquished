@@ -44,6 +44,8 @@ float       displayAspect = 0.0f;
 
 static void GfxInfo_f( void );
 
+cvar_t      *r_glAllowSoftware;
+
 cvar_t      *r_flareSize;
 cvar_t      *r_flareFade;
 
@@ -51,8 +53,6 @@ cvar_t      *r_ignoreFastPath;
 
 cvar_t      *r_verbose;
 cvar_t      *r_ignore;
-
-cvar_t      *r_displayRefresh;
 
 cvar_t      *r_detailTextures;
 
@@ -1088,6 +1088,8 @@ R_Register
 */
 void R_Register( void )
 {
+	r_glAllowSoftware = ri.Cvar_Get( "r_glAllowSoftware", "0", CVAR_LATCH );
+
 	//
 	// latched and archived variables
 	//
@@ -1160,8 +1162,6 @@ void R_Register( void )
 	//
 	// temporary latched variables that can only change over a restart
 	//
-	r_displayRefresh = ri.Cvar_Get( "r_displayRefresh", "0", CVAR_LATCH | CVAR_UNSAFE );
-	AssertCvarRange( r_displayRefresh, 0, 200, qtrue );
 	r_mapOverBrightBits = ri.Cvar_Get( "r_mapOverBrightBits", "2", CVAR_LATCH );
 	AssertCvarRange( r_mapOverBrightBits, 0, 3, qtrue );
 	r_intensity = ri.Cvar_Get( "r_intensity", "1", CVAR_LATCH );

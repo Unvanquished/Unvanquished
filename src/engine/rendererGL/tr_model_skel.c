@@ -126,7 +126,7 @@ qboolean AddTriangleToVBOTriangleList( growList_t *vboTriangles, skelTriangle_t 
 		{
 			if ( j < v->numWeights )
 			{
-				boneIndex = v->weights[ j ]->boneIndex;
+				boneIndex = v->boneIndexes[ j ];
 				hasWeights = qtrue;
 
 				// is the bone already referenced?
@@ -286,8 +286,8 @@ void AddSurfaceToVBOSurfacesList( growList_t *vboSurfaces, growList_t *vboTriang
 		{
 			if ( k < surf->verts[ j ].numWeights )
 			{
-				data.boneIndexes[ j ][ k ] = vboSurf->boneRemap[ surf->verts[ j ].weights[ k ]->boneIndex ];
-				data.boneWeights[ j ][ k ] = surf->verts[ j ].weights[ k ]->boneWeight;
+				data.boneIndexes[ j ][ k ] = vboSurf->boneRemap[ surf->verts[ j ].boneIndexes[ k ] ];
+				data.boneWeights[ j ][ k ] = surf->verts[ j ].boneWeights[ k ];
 			}
 			else
 			{
@@ -427,8 +427,8 @@ void AddSurfaceToVBOSurfacesList2( growList_t *vboSurfaces, growList_t *vboTrian
 		{
 			if ( k < v->numWeights )
 			{
-				data.boneIndexes[ j ][ k ] = vboSurf->boneRemap[ v->weights[ k ]->boneIndex ];
-				data.boneWeights[ j ][ k ] = v->weights[ k ]->boneWeight;
+				data.boneIndexes[ j ][ k ] = vboSurf->boneRemap[ v->boneIndexes[ k ] ];
+				data.boneWeights[ j ][ k ] = v->boneWeights[ k ];
 			}
 			else
 			{

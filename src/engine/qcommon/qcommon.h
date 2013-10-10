@@ -136,6 +136,12 @@ NET
 // disables IPv6 multicast support if set.
 #define NET_DISABLEMCAST    0x08
 
+// right type anyway || ( DUAL && proto enabled && ( other proto disabled || appropriate IPv6 pref ) )
+#define NET_IS_IPv4( type ) ( ( type ) == NA_IP  || ( ( type ) == NA_IP_DUAL && ( net_enabled->integer & NET_ENABLEV4 ) && ( ( ~net_enabled->integer & NET_ENABLEV6) || ( ~net_enabled->integer & NET_PRIOV6 ) ) ) )
+#define NET_IS_IPv6( type ) ( ( type ) == NA_IP6 || ( ( type ) == NA_IP_DUAL && ( net_enabled->integer & NET_ENABLEV6 ) && ( ( ~net_enabled->integer & NET_ENABLEV4) || (  net_enabled->integer & NET_PRIOV6 ) ) ) )
+// if NA_IP_DUAL, get the preferred type (falling back on NA_IP)
+#define NET_TYPE( type )    ( NET_IS_IPv4( type ) ? NA_IP : NET_IS_IPv6( type ) ? NA_IP6 : ( ( type ) == NA_IP_DUAL ) ? NA_IP : ( type ) )
+
 #define PACKET_BACKUP       32 // number of old messages that must be kept on client and
 // server for delta comrpession and ping estimation
 #define PACKET_MASK         ( PACKET_BACKUP - 1 )
@@ -161,6 +167,7 @@ typedef enum
   NA_BROADCAST,
   NA_IP,
   NA_IP6,
+  NA_IP_DUAL,
   NA_MULTICAST6,
   NA_UNSPEC
 } netadrtype_t;
@@ -179,9 +186,12 @@ typedef struct
     byte           ip[ 4 ];
     byte           ip6[ 16 ];
 
-    unsigned short port;
+    unsigned short port; // port which is in use
+    unsigned short port4, port6; // ports to choose from
     unsigned long  scope_id; // Needed for IPv6 link-local addresses
 } netadr_t;
+
+extern cvar_t       *net_enabled;
 
 void       NET_Init( void );
 void       NET_Shutdown( void );
@@ -203,6 +213,10 @@ void       NET_JoinMulticast6( void );
 void       NET_LeaveMulticast6( void );
 
 void       NET_Sleep( int msec );
+
+#ifdef HAVE_GEOIP
+const char *NET_GeoIP_Country( const netadr_t *a );
+#endif
 
 //----(SA)  increased for larger submodel entity counts
 #define MAX_MSGLEN           32768 // max length of a message, which may
@@ -980,7 +994,7 @@ void     CL_Frame( int msec );
 qboolean CL_GameCommand( void );
 void     CL_KeyEvent( int key, qboolean down, unsigned time );
 
-void     CL_CharEvent( const char *key );
+void     CL_CharEvent( int c );
 
 // char events are for field typing, not game control
 

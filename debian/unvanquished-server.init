@@ -37,7 +37,9 @@ unvanquished_start() {
     start-stop-daemon --start --quiet --pidfile $PIDFILE --oknodo \
 	--background --exec $BINARY --startas $DAEMON \
 	--make-pidfile --chuid unvanquished-server \
-	-- $DAEMON_OPTS > /dev/null 2>&1 || return 1
+	-- ${NET_IP:++set net_ip }${NET_IP} \
+	   ${NET_IP6:++set net_ip6 }${NET_IP6} \
+	   $DAEMON_OPTS > /dev/null 2>&1 || return 1
     return 0
 }
 

@@ -381,6 +381,9 @@ typedef struct
 	int          numGlobalServerAddresses;
 	netadr_t     globalServerAddresses[ MAX_GLOBAL_SERVERS ];
 
+	int          numserverLinks;
+	netadr_t     serverLinks[ MAX_GLOBAL_SERVERS ];
+
 	int          numfavoriteservers;
 	serverInfo_t favoriteServers[ MAX_OTHER_SERVERS ];
 

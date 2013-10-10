@@ -122,26 +122,6 @@ const buildableAttributes_t *BG_Buildable( buildable_t buildable )
 }
 
 /*
-==============
-BG_BuildableAllowedInStage
-==============
-*/
-qboolean BG_BuildableAllowedInStage( buildable_t buildable,
-                                     stage_t stage )
-{
-	int stages = BG_Buildable( buildable )->stages;
-
-	if ( stages & ( 1 << stage ) )
-	{
-		return qtrue;
-	}
-	else
-	{
-		return qfalse;
-	}
-}
-
-/*
 ===============
 BG_InitBuildableAttributes
 ===============
@@ -347,19 +327,6 @@ const classAttributes_t *BG_Class( class_t pClass )
 	       &bg_classList[ pClass ] : &nullClass;
 }
 
-/*
-==============
-BG_ClassAllowedInStage
-==============
-*/
-qboolean BG_ClassAllowedInStage( class_t pClass,
-                                 stage_t stage )
-{
-	int stages = BG_Class( pClass )->stages;
-
-	return stages & ( 1 << stage );
-}
-
 static classModelConfig_t bg_classModelConfigList[ PCL_NUM_CLASSES ];
 
 /*
@@ -426,7 +393,7 @@ qboolean BG_ClassHasAbility( class_t pClass, int ability )
 BG_ClassCanEvolveFromTo
 ==============
 */
-int BG_ClassCanEvolveFromTo( class_t from, class_t to, int credits, int stage )
+int BG_ClassCanEvolveFromTo( class_t from, class_t to, int credits )
 {
 	int fromCost, toCost, evolveCost;
 
@@ -437,7 +404,7 @@ int BG_ClassCanEvolveFromTo( class_t from, class_t to, int credits, int stage )
 		return -1;
 	}
 
-	if ( !BG_ClassAllowedInStage( to, stage ) || !BG_ClassIsAllowed( to ) )
+	if ( !BG_ClassUnlocked( to ) || BG_ClassDisabled( to ) )
 	{
 		return -1;
 	}
@@ -480,13 +447,13 @@ int BG_ClassCanEvolveFromTo( class_t from, class_t to, int credits, int stage )
 BG_AlienCanEvolve
 ==============
 */
-qboolean BG_AlienCanEvolve( class_t from, int credits, int stage )
+qboolean BG_AlienCanEvolve( class_t from, int credits )
 {
 	class_t to;
 
 	for ( to = PCL_NONE + 1; to < PCL_NUM_CLASSES; to++ )
 	{
-		if ( BG_ClassCanEvolveFromTo( from, to, credits, stage ) >= 0 )
+		if ( BG_ClassCanEvolveFromTo( from, to, credits ) >= 0 )
 		{
 			return qtrue;
 		}
@@ -574,7 +541,6 @@ static const weaponData_t bg_weaponsData[] =
 	{ WP_FLAMER,            "flamer"    },
 	{ WP_PULSE_RIFLE,       "prifle"    },
 	{ WP_LUCIFER_CANNON,    "lcannon"   },
-	{ WP_GRENADE,           "grenade"   },
 	{ WP_LOCKBLOB_LAUNCHER, "lockblob"  },
 	{ WP_HIVE,              "hive"      },
 	{ WP_TESLAGEN,          "teslagen"  },
@@ -619,18 +585,6 @@ const weaponAttributes_t *BG_Weapon( weapon_t weapon )
 {
 	return ( weapon > WP_NONE && weapon < WP_NUM_WEAPONS ) ?
 	       &bg_weapons[ weapon - 1 ] : &nullWeapon;
-}
-
-/*
-==============
-BG_WeaponAllowedInStage
-==============
-*/
-qboolean BG_WeaponAllowedInStage( weapon_t weapon, stage_t stage )
-{
-	int stages = BG_Weapon( weapon )->stages;
-
-	return stages & ( 1 << stage );
 }
 
 /*
@@ -680,6 +634,7 @@ static const upgradeData_t bg_upgradesData[] =
 	{ UP_JETPACK,     "jetpack"  },
 	{ UP_BATTLESUIT,  "bsuit"    },
 	{ UP_GRENADE,     "gren"     },
+	{ UP_FIREBOMB,    "firebomb" },
 	{ UP_AMMO,        "ammo"     }
 };
 
@@ -721,18 +676,6 @@ const upgradeAttributes_t *BG_Upgrade( upgrade_t upgrade )
 }
 
 /*
-==============
-BG_UpgradeAllowedInStage
-==============
-*/
-qboolean BG_UpgradeAllowedInStage( upgrade_t upgrade, stage_t stage )
-{
-	int stages = BG_Upgrade( upgrade )->stages;
-
-	return stages & ( 1 << stage );
-}
-
-/*
 ===============
 BG_InitUpgradeAttributes
 ===============
@@ -760,6 +703,177 @@ void BG_InitUpgradeAttributes( void )
 
 ////////////////////////////////////////////////////////////////////////////////
 
+typedef struct
+{
+	int         number;
+	const char* name;
+} missileData_t;
+
+static const missileData_t bg_missilesData[] =
+{
+  { MIS_FLAMER,       "flamer"       },
+  { MIS_BLASTER,      "blaster"      },
+  { MIS_PRIFLE,       "prifle"       },
+  { MIS_LCANNON,      "lcannon"      },
+  { MIS_LCANNON2,     "lcannon2"     },
+  { MIS_GRENADE,      "grenade"      },
+  { MIS_FIREBOMB,     "firebomb"     },
+  { MIS_FIREBOMB_SUB, "firebomb_sub" },
+  { MIS_HIVE,         "hive"         },
+  { MIS_LOCKBLOB,     "lockblob"     },
+  { MIS_SLOWBLOB,     "slowblob"     },
+  { MIS_BOUNCEBALL,   "bounceball"   }
+};
+
+static const size_t              bg_numMissiles = ARRAY_LEN( bg_missilesData );
+static missileAttributes_t       bg_missiles[ ARRAY_LEN( bg_missilesData ) ];
+static const missileAttributes_t nullMissile = { 0 };
+
+/*
+==============
+BG_MissileByName
+==============
+*/
+const missileAttributes_t *BG_MissileByName( const char *name )
+{
+	int i;
+
+	for ( i = 0; i < bg_numMissiles; i++ )
+	{
+		if ( !Q_stricmp( bg_missiles[ i ].name, name ) )
+		{
+			return &bg_missiles[ i ];
+		}
+	}
+
+	return &nullMissile;
+}
+
+/*
+==============
+BG_Missile
+==============
+*/
+const missileAttributes_t *BG_Missile( missile_t missile )
+{
+	return ( missile > MIS_NONE && missile < MIS_NUM_MISSILES ) ?
+	       &bg_missiles[ missile - 1 ] : &nullMissile;
+}
+
+/*
+===============
+BG_InitMissileAttributes
+===============
+*/
+void BG_InitMissileAttributes( void )
+{
+	int                 i;
+	const missileData_t *md;
+	missileAttributes_t *ma;
+
+	for ( i = 0; i < bg_numMissiles; i++ )
+	{
+		md = &bg_missilesData[i];
+		ma = &bg_missiles[i];
+
+		Com_Memset( ma, 0, sizeof( missileAttributes_t ) );
+
+		ma->name   = md->name;
+		ma->number = md->number;
+
+		// for simplicity, read both from a single file
+		BG_ParseMissileAttributeFile( va( "configs/missiles/%s.missile.cfg", ma->name ), ma );
+		BG_ParseMissileDisplayFile(   va( "configs/missiles/%s.missile.cfg", ma->name ), ma );
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+typedef struct
+{
+	meansOfDeath_t number;
+	const char     *name;
+} meansOfDeathData_t;
+
+static const meansOfDeathData_t bg_meansOfDeathData[] =
+{
+	{ MOD_ABUILDER_CLAW, "MOD_ABUILDER_CLAW" },
+	{ MOD_UNKNOWN, "MOD_UNKNOWN" },
+	{ MOD_SHOTGUN, "MOD_SHOTGUN" },
+	{ MOD_BLASTER, "MOD_BLASTER" },
+	{ MOD_PAINSAW, "MOD_PAINSAW" },
+	{ MOD_MACHINEGUN, "MOD_MACHINEGUN" },
+	{ MOD_CHAINGUN, "MOD_CHAINGUN" },
+	{ MOD_PRIFLE, "MOD_PRIFLE" },
+	{ MOD_MDRIVER, "MOD_MDRIVER" },
+	{ MOD_LASGUN, "MOD_LASGUN" },
+	{ MOD_LCANNON, "MOD_LCANNON" },
+	{ MOD_LCANNON_SPLASH, "MOD_LCANNON_SPLASH" },
+	{ MOD_FLAMER, "MOD_FLAMER" },
+	{ MOD_FLAMER_SPLASH, "MOD_FLAMER_SPLASH" },
+	{ MOD_BURN, "MOD_BURN" },
+	{ MOD_GRENADE, "MOD_GRENADE" },
+	{ MOD_WEIGHT_H, "MOD_WEIGHT_H" },
+	{ MOD_WATER, "MOD_WATER" },
+	{ MOD_SLIME, "MOD_SLIME" },
+	{ MOD_LAVA, "MOD_LAVA" },
+	{ MOD_CRUSH, "MOD_CRUSH" },
+	{ MOD_TELEFRAG, "MOD_TELEFRAG" },
+	{ MOD_FALLING, "MOD_FALLING" },
+	{ MOD_SUICIDE, "MOD_SUICIDE" },
+	{ MOD_TARGET_LASER, "MOD_TARGET_LASER" },
+	{ MOD_TRIGGER_HURT, "MOD_TRIGGER_HURT" },
+	{ MOD_ABUILDER_CLAW, "MOD_ABUILDER_CLAW" },
+	{ MOD_LEVEL0_BITE, "MOD_LEVEL0_BITE" },
+	{ MOD_LEVEL1_CLAW, "MOD_LEVEL1_CLAW" },
+	{ MOD_LEVEL1_PCLOUD, "MOD_LEVEL1_PCLOUD" },
+	{ MOD_LEVEL3_CLAW, "MOD_LEVEL3_CLAW" },
+	{ MOD_LEVEL3_POUNCE, "MOD_LEVEL3_POUNCE" },
+	{ MOD_LEVEL3_BOUNCEBALL, "MOD_LEVEL3_BOUNCEBALL" },
+	{ MOD_LEVEL2_CLAW, "MOD_LEVEL2_CLAW" },
+	{ MOD_LEVEL2_ZAP, "MOD_LEVEL2_ZAP" },
+	{ MOD_LEVEL4_CLAW, "MOD_LEVEL4_CLAW" },
+	{ MOD_LEVEL4_TRAMPLE, "MOD_LEVEL4_TRAMPLE" },
+	{ MOD_WEIGHT_A, "MOD_WEIGHT_A" },
+	{ MOD_SLOWBLOB, "MOD_SLOWBLOB" },
+	{ MOD_POISON, "MOD_POISON" },
+	{ MOD_SWARM, "MOD_SWARM" },
+	{ MOD_HSPAWN, "MOD_HSPAWN" },
+	{ MOD_TESLAGEN, "MOD_TESLAGEN" },
+	{ MOD_MGTURRET, "MOD_MGTURRET" },
+	{ MOD_REACTOR, "MOD_REACTOR" },
+	{ MOD_ASPAWN, "MOD_ASPAWN" },
+	{ MOD_ATUBE, "MOD_ATUBE" },
+	{ MOD_OVERMIND, "MOD_OVERMIND" },
+	{ MOD_DECONSTRUCT, "MOD_DECONSTRUCT" },
+	{ MOD_REPLACE, "MOD_REPLACE" },
+	{ MOD_NOCREEP, "MOD_NOCREEP" }
+};
+
+static const size_t bg_numMeansOfDeath = ARRAY_LEN( bg_meansOfDeathData );
+
+/*
+==============
+BG_MeansOfDeathByName
+==============
+*/
+meansOfDeath_t BG_MeansOfDeathByName( const char *name )
+{
+	int i;
+
+	for ( i = 0; i < bg_numMeansOfDeath; i++ )
+	{
+		if ( !Q_stricmp( bg_meansOfDeathData[ i ].name, name ) )
+		{
+			return bg_meansOfDeathData[ i ].number;
+		}
+	}
+
+	return MOD_UNKNOWN;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 /*
 ================
 BG_InitAllConfigs
@@ -777,6 +891,7 @@ void BG_InitAllConfigs( void )
 	BG_InitClassModelConfigs();
 	BG_InitWeaponAttributes();
 	BG_InitUpgradeAttributes();
+	BG_InitMissileAttributes();
 
 	BG_CheckConfigVars();
 
@@ -1253,7 +1368,7 @@ void BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s, qboolean 
 	}
 
 	// use misc field to store team/class info:
-	s->misc = ps->stats[ STAT_TEAM ] | ( ps->stats[ STAT_CLASS ] << 8 );
+	s->misc = ps->persistant[ PERS_TEAM ] | ( ps->stats[ STAT_CLASS ] << 8 );
 
 	// have to get the surfNormal through somehow...
 	VectorCopy( ps->grapplePoint, s->angles2 );
@@ -1386,7 +1501,7 @@ void BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_t *s
 	}
 
 	// use misc field to store team/class info:
-	s->misc = ps->stats[ STAT_TEAM ] | ( ps->stats[ STAT_CLASS ] << 8 );
+	s->misc = ps->persistant[ PERS_TEAM ] | ( ps->stats[ STAT_CLASS ] << 8 );
 
 	// have to get the surfNormal through somehow...
 	VectorCopy( ps->grapplePoint, s->angles2 );
@@ -1434,7 +1549,10 @@ Does the player hold a weapon?
 qboolean BG_InventoryContainsWeapon( int weapon, int stats[] )
 {
 	// humans always have a blaster
-	if ( stats[ STAT_TEAM ] == TEAM_HUMANS && weapon == WP_BLASTER )
+	// HACK: Determine team by checking for STAT_CLASS since we merged STAT_TEAM into PERS_TEAM
+	//       This hack will vanish as soon as the blast isn't the only possible sidearm weapon anymore
+	if ( ( stats[ STAT_CLASS ] == PCL_HUMAN || stats[ STAT_CLASS ] == PCL_HUMAN_BSUIT ) &&
+	     weapon == WP_BLASTER )
 	{
 		return qtrue;
 	}
@@ -1455,7 +1573,9 @@ int BG_SlotsForInventory( int stats[] )
 
 	slots = BG_Weapon( stats[ STAT_WEAPON ] )->slots;
 
-	if ( stats[ STAT_TEAM ] == TEAM_HUMANS )
+	// HACK: Determine team by checking for STAT_CLASS since we merged STAT_TEAM into PERS_TEAM
+	//       This hack will vanish as soon as the blast isn't the only possible sidearm weapon anymore
+	if ( stats[ STAT_CLASS ] == PCL_HUMAN || stats[ STAT_CLASS ] == PCL_HUMAN_BSUIT )
 	{
 		slots |= BG_Weapon( WP_BLASTER )->slots;
 	}
@@ -1704,7 +1824,7 @@ int BG_GetValueOfPlayer( playerState_t *ps )
 	equipmentPrice = 0;
 
 	// Humans have worth from their equipment as well
-	if ( ps->stats[ STAT_TEAM ] == TEAM_HUMANS )
+	if ( ps->persistant[ PERS_TEAM ] == TEAM_HUMANS )
 	{
 		for ( upgradeNum = UP_NONE + 1; upgradeNum < UP_NUM_UPGRADES; upgradeNum++ )
 		{
@@ -2260,7 +2380,7 @@ void BG_InitAllowedGameElements( void )
 BG_WeaponIsAllowed
 ============
 */
-qboolean BG_WeaponIsAllowed( weapon_t weapon )
+qboolean BG_WeaponDisabled( weapon_t weapon )
 {
 	int i;
 
@@ -2269,11 +2389,11 @@ qboolean BG_WeaponIsAllowed( weapon_t weapon )
 	{
 		if ( bg_disabledGameElements.weapons[ i ] == weapon )
 		{
-			return qfalse;
+			return qtrue;
 		}
 	}
 
-	return qtrue;
+	return qfalse;
 }
 
 /*
@@ -2281,7 +2401,7 @@ qboolean BG_WeaponIsAllowed( weapon_t weapon )
 BG_UpgradeIsAllowed
 ============
 */
-qboolean BG_UpgradeIsAllowed( upgrade_t upgrade )
+qboolean BG_UpgradeDisabled( upgrade_t upgrade )
 {
 	int i;
 
@@ -2290,32 +2410,32 @@ qboolean BG_UpgradeIsAllowed( upgrade_t upgrade )
 	{
 		if ( bg_disabledGameElements.upgrades[ i ] == upgrade )
 		{
-			return qfalse;
+			return qtrue;
 		}
 	}
 
-	return qtrue;
+	return qfalse;
 }
 
 /*
 ============
-BG_ClassIsAllowed
+BG_ClassDisabled
 ============
 */
-qboolean BG_ClassIsAllowed( class_t class )
+qboolean BG_ClassDisabled( class_t class_ )
 {
 	int i;
 
 	for ( i = 0; i < PCL_NUM_CLASSES &&
 	      bg_disabledGameElements.classes[ i ] != PCL_NONE; i++ )
 	{
-		if ( bg_disabledGameElements.classes[ i ] == class )
+		if ( bg_disabledGameElements.classes[ i ] == class_ )
 		{
-			return qfalse;
+			return qtrue;
 		}
 	}
 
-	return qtrue;
+	return qfalse;
 }
 
 /*
@@ -2323,7 +2443,7 @@ qboolean BG_ClassIsAllowed( class_t class )
 BG_BuildableIsAllowed
 ============
 */
-qboolean BG_BuildableIsAllowed( buildable_t buildable )
+qboolean BG_BuildableDisabled( buildable_t buildable )
 {
 	int i;
 
@@ -2332,11 +2452,11 @@ qboolean BG_BuildableIsAllowed( buildable_t buildable )
 	{
 		if ( bg_disabledGameElements.buildables[ i ] == buildable )
 		{
-			return qfalse;
+			return qtrue;
 		}
 	}
 
-	return qtrue;
+	return qfalse;
 }
 
 /*

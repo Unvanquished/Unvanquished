@@ -53,7 +53,7 @@ extern int      bindTeam;
 // NOTE TTimo the declaration of field_t and Field_Clear is now in qcommon/qcommon.h
 
 void            Field_KeyDownEvent(Util::LineEditData& edit, int key );
-void            Field_CharEvent(Util::LineEditData& edit, const char *ch );
+void            Field_CharEvent(Util::LineEditData& edit, int c );
 void            Field_Draw(const Util::LineEditData& edit, int x, int y, qboolean showCursor, qboolean noColorEscape, float alpha );
 void            Field_BigDraw(Util::LineEditData& edit, int x, int y, qboolean showCursor, qboolean noColorEscape );
 

@@ -67,17 +67,18 @@ void R_PerformanceCounters( void )
 	}
 	else if ( r_speeds->integer == RSPEEDS_CULLING )
 	{
-		ri.Printf( PRINT_ALL, "(gen) %i sin %i sout %i pin %i pout\n",
-		           tr.pc.c_sphere_cull_in, tr.pc.c_sphere_cull_out, tr.pc.c_plane_cull_in, tr.pc.c_plane_cull_out );
+		ri.Printf( PRINT_ALL, "(gen) %i sin %i sout %i pin %i pout %i bin %i bout\n",
+		           tr.pc.c_sphere_cull_in, tr.pc.c_sphere_cull_out, tr.pc.c_plane_cull_in, tr.pc.c_plane_cull_out,
+		           tr.pc.c_box_cull_in, tr.pc.c_box_cull_out );
 
 		ri.Printf( PRINT_ALL, "(patch) %i sin %i sclip %i sout %i bin %i bclip %i bout\n",
 		           tr.pc.c_sphere_cull_patch_in, tr.pc.c_sphere_cull_patch_clip,
 		           tr.pc.c_sphere_cull_patch_out, tr.pc.c_box_cull_patch_in,
 		           tr.pc.c_box_cull_patch_clip, tr.pc.c_box_cull_patch_out );
 
-		ri.Printf( PRINT_ALL, "(mdx) %i sin %i sclip %i sout %i bin %i bclip %i bout\n",
-		           tr.pc.c_sphere_cull_mdx_in, tr.pc.c_sphere_cull_mdx_clip,
-		           tr.pc.c_sphere_cull_mdx_out, tr.pc.c_box_cull_mdx_in, tr.pc.c_box_cull_mdx_clip, tr.pc.c_box_cull_mdx_out );
+		ri.Printf( PRINT_ALL, "(mdv) %i sin %i sclip %i sout %i bin %i bclip %i bout\n",
+		           tr.pc.c_sphere_cull_mdv_in, tr.pc.c_sphere_cull_mdv_clip,
+		           tr.pc.c_sphere_cull_mdv_out, tr.pc.c_box_cull_mdv_in, tr.pc.c_box_cull_mdv_clip, tr.pc.c_box_cull_mdv_out );
 
 		ri.Printf( PRINT_ALL, "(md5) %i bin %i bclip %i bout\n",
 		           tr.pc.c_box_cull_md5_in, tr.pc.c_box_cull_md5_clip, tr.pc.c_box_cull_md5_out );
@@ -122,16 +123,8 @@ void R_PerformanceCounters( void )
 	}
 	else if ( r_speeds->integer == RSPEEDS_SHADING_TIMES )
 	{
-		if ( DS_STANDARD_ENABLED() )
-		{
-			ri.Printf( PRINT_ALL, "deferred shading times: g-buffer:%i lighting:%i translucent:%i\n", backEnd.pc.c_deferredGBufferTime,
-			           backEnd.pc.c_deferredLightingTime, backEnd.pc.c_forwardTranslucentTime );
-		}
-		else
-		{
-			ri.Printf( PRINT_ALL, "forward shading times: ambient:%i lighting:%i\n", backEnd.pc.c_forwardAmbientTime,
+		ri.Printf( PRINT_ALL, "forward shading times: ambient:%i lighting:%i\n", backEnd.pc.c_forwardAmbientTime,
 			           backEnd.pc.c_forwardLightingTime );
-		}
 	}
 	else if ( r_speeds->integer == RSPEEDS_CHC )
 	{
@@ -219,7 +212,7 @@ void R_IssueRenderCommands( qboolean runPerformanceCounters )
 		}
 		else
 		{
-			GLimp_WakeRenderer( cmdList );
+			GLimp_WakeRenderer( cmdList->cmds );
 		}
 	}
 }
@@ -723,8 +716,6 @@ void RE_BeginFrame( stereoFrame_t stereoFrame )
 
 	GLimp_LogComment( "--- RE_BeginFrame ---\n" );
 
-	glState.finishCalled = qfalse;
-
 	tr.frameCount++;
 	tr.frameSceneNum = 0;
 	tr.viewCount = 0;
@@ -891,6 +882,8 @@ void RE_EndFrame( int *frontEndMsec, int *backEndMsec )
 	{
 		return;
 	}
+
+	GLimp_HandleCvars();
 
 	cmd = (swapBuffersCommand_t*) R_GetCommandBuffer( sizeof( *cmd ) );
 

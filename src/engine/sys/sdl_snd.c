@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "../qcommon/q_shared.h"
 #include "../client/snd_local.h"
+#include "sdl2_compat.h"
 
 qboolean        snd_inited = qfalse;
 
@@ -48,6 +49,8 @@ SNDDMA_AudioCallback
 static void SNDDMA_AudioCallback( void *userdata, Uint8 *stream, int len )
 {
 	int pos = ( dmapos * ( dma.samplebits / 8 ) );
+
+	memset( stream, 0, len );
 
 	if ( pos >= dmasize )
 	{
@@ -159,7 +162,7 @@ SNDDMA_Init
 */
 qboolean SNDDMA_Init( void )
 {
-	char          drivername[ 128 ];
+	const char    *drivername;
 	SDL_AudioSpec desired;
 	SDL_AudioSpec obtained;
 	int           tmp;
@@ -191,9 +194,11 @@ qboolean SNDDMA_Init( void )
 
 	Com_Printf( "OK\n" );
 
-	if ( SDL_AudioDriverName( drivername, sizeof( drivername ) ) == NULL )
+	drivername = SDL_GetCurrentAudioDriver();
+
+	if ( !drivername )
 	{
-		strcpy( drivername, "(UNKNOWN)" );
+		drivername = "(UNKNOWN)";
 	}
 
 	Com_Printf( "SDL audio driver is \"%s\".\n", drivername );

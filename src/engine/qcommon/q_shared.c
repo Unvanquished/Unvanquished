@@ -2896,19 +2896,19 @@ void Info_SetValueForKey( char *s, const char *key, const char *value, qboolean 
 		Com_Error( ERR_DROP, "Info_SetValueForKey: oversize infostring [%s] [%s] [%s]", s, key, value );
 	}
 
-	if ( strchr( key, '\\' ) || strchr( value, '\\' ) )
+	if ( strchr( key, '\\' ) || ( value && strchr( value, '\\' ) ) )
 	{
 		Com_Printf( "Can't use keys or values with a \\\n" );
 		return;
 	}
 
-	if ( strchr( key, ';' ) || strchr( value, ';' ) )
+	if ( strchr( key, ';' ) || ( value && strchr( value, ';' ) ) )
 	{
 		Com_Printf( "Can't use keys or values with a semicolon\n" );
 		return;
 	}
 
-	if ( strchr( key, '\"' ) || strchr( value, '\"' ) )
+	if ( strchr( key, '\"' ) || ( value && strchr( value, '\"' ) ) )
 	{
 		Com_Printf( "Can't use keys or values with a \"\n" );
 		return;

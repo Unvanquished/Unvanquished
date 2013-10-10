@@ -123,8 +123,8 @@ typedef enum cgameImport_s
   CG_R_GETMODELSHADER,
   CG_R_REGISTERSHADER,
   CG_R_REGISTERFONT,
-  CG_UNUSED_1,
-  CG_UNUSED_2,
+  CG_UNUSED_IMPORT_1,
+  CG_UNUSED_IMPORT_2,
   CG_R_CLEARSCENE,
   CG_R_ADDREFENTITYTOSCENE,
   CG_R_ADDREFLIGHTSTOSCENE,
@@ -265,8 +265,8 @@ typedef enum
   CG_CROSSHAIR_PLAYER,
 //  int (*CG_CrosshairPlayer)( void );
 
-  CG_LAST_ATTACKER,
-//  int (*CG_LastAttacker)( void );
+  CG_UNUSED_EXPORT_1,
+//  UNUSED
 
   CG_KEY_EVENT,
 //  void    (*CG_KeyEvent)( int key, qboolean down );

@@ -53,6 +53,10 @@ Maryland 20850 USA.
 #include <winsock.h>
 #endif
 
+#ifdef SMP
+#include <SDL_mutex.h>
+#endif
+
 #define MAX_NUM_ARGVS             50
 
 #define MIN_DEDICATED_COMHUNKMEGS 4
@@ -176,6 +180,18 @@ int QDECL VPRINTF_LIKE(1) Com_VPrintf( const char *fmt, va_list argptr )
 	char            msg[ MAXPRINTMSG ];
 	static qboolean opening_qconsole = qfalse;
 
+#ifdef SMP
+	static SDL_mutex *lock = NULL;
+
+	// would be racy, but this gets called prior to renderer threads etc. being started
+	if ( !lock )
+	{
+		lock = SDL_CreateMutex();
+	}
+
+	SDL_LockMutex( lock );
+#endif
+
 	// FIXME TTimo
 	// switched vsprintf -> vsnprintf
 	// rcon could cause buffer overflow
@@ -195,7 +211,7 @@ int QDECL VPRINTF_LIKE(1) Com_VPrintf( const char *fmt, va_list argptr )
 		// only flush the rcon buffer when it's necessary, avoid fragmenting
 		//rd_flush(rd_buffer);
 		//*rd_buffer = 0;
-		return strlen( msg );
+		goto done;
 	}
 
 	// echo to console if we're not a dedicated server
@@ -250,6 +266,10 @@ int QDECL VPRINTF_LIKE(1) Com_VPrintf( const char *fmt, va_list argptr )
 		}
 	}
 
+done:
+#ifdef SMP
+	SDL_UnlockMutex( lock );
+#endif
 	return strlen( msg );
 }
 
@@ -833,6 +853,8 @@ typedef struct hunkblock_s
 	const char         *file;
 	int                line;
 } hunkblock_t;
+// for alignment purposes
+#define SIZEOF_HUNKBLOCK_T ( ( sizeof( hunkblock_t ) + 31 ) & ~31 )
 
 static hunkblock_t *hunkblocks;
 
@@ -1229,7 +1251,7 @@ void           *Hunk_Alloc( int size, ha_pref preference )
 	Hunk_SwapBanks();
 
 #ifdef HUNK_DEBUG
-	size += sizeof( hunkblock_t );
+	size += SIZEOF_HUNKBLOCK_T;
 #endif
 
 	// round to cacheline
@@ -1267,13 +1289,13 @@ void           *Hunk_Alloc( int size, ha_pref preference )
 		hunkblock_t *block;
 
 		block = ( hunkblock_t * ) buf;
-		block->size = size - sizeof( hunkblock_t );
+		block->size = size - SIZEOF_HUNKBLOCK_T;
 		block->file = file;
 		block->label = label;
 		block->line = line;
 		block->next = hunkblocks;
 		hunkblocks = block;
-		buf = ( ( byte * ) buf ) + sizeof( hunkblock_t );
+		buf = ( ( byte * ) buf ) + SIZEOF_HUNKBLOCK_T;
 	}
 #endif
 
@@ -1863,7 +1885,7 @@ int Com_EventLoop( void )
 				}
 
 #endif
-				CL_CharEvent( (const char *)ev.evPtr );
+				CL_CharEvent( ev.evValue );
 				break;
 
 			case SE_MOUSE:

@@ -129,7 +129,6 @@ qboolean R_LoadPSK( model_t *mod, void *buffer, int bufferSize, const char *modN
 
 	md5Model_t        *md5;
 	md5Bone_t         *md5Bone;
-	md5Weight_t       *weight;
 
 	vec3_t            boneOrigin;
 	quat_t            boneQuat;
@@ -635,23 +634,13 @@ qboolean R_LoadPSK( model_t *mod, void *buffer, int bufferSize, const char *modN
 			//ri.Printf(PRINT_WARNING, "R_LoadPSK: vertex %i requires more weights %i than the maximum of %i in model '%s'\n", i, vboVert->numWeights, MAX_WEIGHTS, modName);
 		}
 
-		vboVert->weights = (md5Weight_t**) ri.Hunk_Alloc( sizeof( *vboVert->weights ) * vboVert->numWeights, h_low );
-
 		for ( j = 0, axWeight = axWeights, k = 0; j < numWeights; j++, axWeight++ )
 		{
 			if ( axWeight->pointIndex == vertex->pointIndex && axWeight->weight > 0.0f )
 			{
-				weight = (md5Weight_t*) ri.Hunk_Alloc( sizeof( *weight ), h_low );
-
-				weight->boneIndex = axWeight->boneIndex;
-				weight->boneWeight = axWeight->weight;
-
-				// FIXME?
-				weight->offset[ 0 ] = refBones[ axWeight->boneIndex ].bone.xSize;
-				weight->offset[ 1 ] = refBones[ axWeight->boneIndex ].bone.ySize;
-				weight->offset[ 2 ] = refBones[ axWeight->boneIndex ].bone.zSize;
-
-				vboVert->weights[ k++ ] = weight;
+				vboVert->boneIndexes[ k ] = axWeight->boneIndex;
+				vboVert->boneWeights[ k ] = axWeight->weight;
+				k++;
 			}
 		}
 

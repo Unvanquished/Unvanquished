@@ -378,7 +378,6 @@ static void R_CopyVertexData( VBO_t *vbo, byte *outData, vboData_t inData )
 		uint32_t j; \
 		type *tmp = ( type * ) ( outData + vbo->attribs[ index ].ofs + v * vbo->attribs[ index ].realStride ); \
 		const type *vert = inData.attr[ v ]; \
-		uint32_t numComponents = vbo->attribs[ index ].numComponents; \
 		uint32_t len = ARRAY_LEN( *inData.attr ); \
 		for ( j = 0; j < len; j++ ) { tmp[ j ] = vert[ j ]; } \
 	} while ( 0 )
@@ -1085,34 +1084,6 @@ void R_ShutdownVBOs( void )
 		}
 	}
 
-#if defined( USE_BSP_CLUSTERSURFACE_MERGING )
-
-	if ( tr.world )
-	{
-		int j;
-
-		for ( j = 0; j < MAX_VISCOUNTS; j++ )
-		{
-			// FIXME: clean up this code
-			for ( i = 0; i < tr.world->clusterVBOSurfaces[ j ].currentElements; i++ )
-			{
-				srfVBOMesh_t *vboSurf;
-
-				vboSurf = ( srfVBOMesh_t * ) Com_GrowListElement( &tr.world->clusterVBOSurfaces[ j ], i );
-				ibo = vboSurf->ibo;
-
-				if ( ibo->indexesVBO )
-				{
-					glDeleteBuffers( 1, &ibo->indexesVBO );
-				}
-			}
-
-			Com_DestroyGrowList( &tr.world->clusterVBOSurfaces[ j ] );
-		}
-	}
-
-#endif // #if defined(USE_BSP_CLUSTERSURFACE_MERGING)
-
 	Com_DestroyGrowList( &tr.vbos );
 	Com_DestroyGrowList( &tr.ibos );
 }
@@ -1142,32 +1113,6 @@ void R_VBOList_f( void )
 
 		vertexesSize += vbo->vertexesSize;
 	}
-
-#if defined( USE_BSP_CLUSTERSURFACE_MERGING )
-
-	if ( tr.world )
-	{
-		int j;
-
-		for ( j = 0; j < MAX_VISCOUNTS; j++ )
-		{
-			// FIXME: clean up this code
-			for ( i = 0; i < tr.world->clusterVBOSurfaces[ j ].currentElements; i++ )
-			{
-				srfVBOMesh_t *vboSurf;
-
-				vboSurf = ( srfVBOMesh_t * ) Com_GrowListElement( &tr.world->clusterVBOSurfaces[ j ], i );
-				ibo = vboSurf->ibo;
-
-				ri.Printf( PRINT_ALL, "%d.%02d MB %s\n", ibo->indexesSize / ( 1024 * 1024 ),
-				           ( ibo->indexesSize % ( 1024 * 1024 ) ) * 100 / ( 1024 * 1024 ), ibo->name );
-
-				indexesSize += ibo->indexesSize;
-			}
-		}
-	}
-
-#endif // #if defined(USE_BSP_CLUSTERSURFACE_MERGING)
 
 	for ( i = 0; i < tr.ibos.currentElements; i++ )
 	{

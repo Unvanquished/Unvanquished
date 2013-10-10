@@ -51,8 +51,8 @@ static void VMMain(int index, RPC::Reader& inputs, RPC::Writer& outputs)
 	{
 		int clientNum = inputs.ReadInt();
 		qboolean firstTime = inputs.ReadInt();
-		qboolean isBot = inputs.ReadInt(); // Amanieu: This seems to be unused?
-		const char* denied = ClientConnect(clientNum, firstTime);
+		qboolean isBot = inputs.ReadInt();
+		const char* denied = isBot ? ClientBotConnect(clientNum, firstTime, TEAM_NONE) : ClientConnect(clientNum, firstTime);
 		outputs.WriteInt(denied ? qtrue : qfalse);
 		if (denied)
 			outputs.WriteString(denied);
@@ -799,4 +799,133 @@ void trap_GetTimeString(char *buffer, int size, const char *format, const qtime_
 	input.Write(tm, sizeof(qtime_t));
 	RPC::Reader output = DoRPC(input);
 	Q_strncpyz(buffer, output.ReadString(), size);
+}
+
+qboolean trap_BotSetupNav(const botClass_t *botClass, qhandle_t *navHandle)
+{
+	RPC::Writer input;
+	input.WriteInt(BOT_NAV_SETUP);
+	input.Write(botClass, sizeof(botClass_t));
+	RPC::Reader output = DoRPC(input);
+	qboolean ret = output.ReadInt();
+	*navHandle = output.ReadInt();
+	return ret;
+}
+
+void trap_BotShutdownNav(void)
+{
+	RPC::Writer input;
+	input.WriteInt(BOT_NAV_SHUTDOWN);
+	DoRPC(input);
+}
+
+void trap_BotSetNavMesh(int botClientNum, qhandle_t navHandle)
+{
+	RPC::Writer input;
+	input.WriteInt(BOT_SET_NAVMESH);
+	input.WriteInt(botClientNum);
+	input.WriteInt(navHandle);
+	DoRPC(input);
+}
+
+qboolean trap_BotFindRoute(int botClientNum, const botRouteTarget_t *target, qboolean allowPartial)
+{
+	RPC::Writer input;
+	input.WriteInt(BOT_FIND_ROUTE);
+	input.WriteInt(botClientNum);
+	input.Write(target, sizeof(botRouteTarget_t));
+	input.WriteInt(allowPartial);
+	RPC::Reader output = DoRPC(input);
+	return output.ReadInt();
+}
+
+qboolean trap_BotUpdatePath(int botClientNum, const botRouteTarget_t *target, botNavCmd_t *cmd)
+{
+	RPC::Writer input;
+	input.WriteInt(BOT_UPDATE_PATH);
+	input.WriteInt(botClientNum);
+	input.Write(target, sizeof(botRouteTarget_t));
+	RPC::Reader output = DoRPC(input);
+	output.Read(cmd, sizeof(botNavCmd_t));
+	return 0; // Amanieu: This always returns 0, but the value isn't used
+}
+
+qboolean trap_BotNavTrace(int botClientNum, botTrace_t *botTrace, const vec3_t start, const vec3_t end)
+{
+	RPC::Writer input;
+	input.WriteInt(BOT_NAV_RAYCAST);
+	input.WriteInt(botClientNum);
+	input.Write(start, sizeof(vec3_t));
+	input.Write(end, sizeof(vec3_t));
+	RPC::Reader output = DoRPC(input);
+	qboolean ret = output.ReadInt();
+	output.Read(botTrace, sizeof(botTrace_t));
+	return ret;
+}
+
+void trap_BotFindRandomPoint(int botClientNum, vec3_t point)
+{
+	RPC::Writer input;
+	input.WriteInt(BOT_NAV_RANDOMPOINT);
+	input.WriteInt(botClientNum);
+	RPC::Reader output = DoRPC(input);
+	output.Read(point, sizeof(vec3_t));
+}
+
+qboolean trap_BotFindRandomPointInRadius(int botClientNum, const vec3_t origin, vec3_t point, float radius)
+{
+	RPC::Writer input;
+	input.WriteInt(BOT_NAV_RANDOMPOINT);
+	input.WriteInt(botClientNum);
+	input.Write(origin, sizeof(vec3_t));
+	input.WriteFloat(radius);
+	RPC::Reader output = DoRPC(input);
+	qboolean ret = output.ReadInt();
+	output.Read(point, sizeof(vec3_t));
+	return ret;
+}
+
+void trap_BotEnableArea(const vec3_t origin, const vec3_t mins, const vec3_t maxs)
+{
+	RPC::Writer input;
+	input.WriteInt(BOT_ENABLE_AREA);
+	input.Write(origin, sizeof(vec3_t));
+	input.Write(mins, sizeof(vec3_t));
+	input.Write(maxs, sizeof(vec3_t));
+	DoRPC(input);
+}
+
+void trap_BotDisableArea(const vec3_t origin, const vec3_t mins, const vec3_t maxs)
+{
+	RPC::Writer input;
+	input.WriteInt(BOT_DISABLE_AREA);
+	input.Write(origin, sizeof(vec3_t));
+	input.Write(mins, sizeof(vec3_t));
+	input.Write(maxs, sizeof(vec3_t));
+	DoRPC(input);
+}
+
+void trap_BotAddObstacle(const vec3_t mins, const vec3_t maxs, qhandle_t *handle)
+{
+	RPC::Writer input;
+	input.WriteInt(BOT_ADD_OBSTACLE);
+	input.Write(mins, sizeof(vec3_t));
+	input.Write(maxs, sizeof(vec3_t));
+	RPC::Reader output = DoRPC(input);
+	*handle = output.ReadInt();
+}
+
+void trap_BotRemoveObstacle(qhandle_t handle)
+{
+	RPC::Writer input;
+	input.WriteInt(BOT_REMOVE_OBSTACLE);
+	input.WriteInt(handle);
+	DoRPC(input);
+}
+
+void trap_BotUpdateObstacles(void)
+{
+	RPC::Writer input;
+	input.WriteInt(BOT_UPDATE_OBSTACLES);
+	DoRPC(input);
 }

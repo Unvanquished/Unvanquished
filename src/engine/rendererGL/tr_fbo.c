@@ -461,94 +461,40 @@ void R_InitFBOs( void )
 	// make sure the render thread is stopped
 	R_SyncRenderThread();
 
-	if ( DS_STANDARD_ENABLED() )
+	if ( glConfig2.textureNPOTAvailable )
 	{
-		// geometricRender FBO as G-Buffer for deferred shading
-		ri.Printf( PRINT_ALL, "Deferred Shading enabled\n" );
-
-		if ( glConfig2.textureNPOTAvailable )
-		{
-			width = glConfig.vidWidth;
-			height = glConfig.vidHeight;
-		}
-		else
-		{
-			width = NearestPowerOfTwo( glConfig.vidWidth );
-			height = NearestPowerOfTwo( glConfig.vidHeight );
-		}
-
-		tr.geometricRenderFBO = R_CreateFBO( "_geometricRender", width, height );
-		R_BindFBO( tr.geometricRenderFBO );
-
-#if 0
-
-		if ( glConfig2.framebufferPackedDepthStencilAvailable )
-		{
-			R_AttachFBOTexturePackedDepthStencil( tr.depthRenderImage->texnum );
-		}
-
-		else if ( glConfig.hardwareType == GLHW_ATI || glConfig.hardwareType == GLHW_ATI_DX10 ) // || glConfig.hardwareType == GLHW_NV_DX10)
-		{
-			R_AttachFBOTextureDepth( tr.depthRenderImage->texnum );
-		}
-		else
-#endif
-		{
-			R_AttachFBOTextureDepth( tr.depthRenderImage->texnum );
-		}
-
-		// enable all attachments as draw buffers
-		//glDrawBuffers(4, geometricRenderTargets);
-
-		R_AttachFBOTexture2D( GL_TEXTURE_2D, tr.deferredRenderFBOImage->texnum, 0 );
-
-		R_AttachFBOTexture2D( GL_TEXTURE_2D, tr.deferredDiffuseFBOImage->texnum, 1 );
-
-		R_AttachFBOTexture2D( GL_TEXTURE_2D, tr.deferredNormalFBOImage->texnum, 2 );
-
-		R_AttachFBOTexture2D( GL_TEXTURE_2D, tr.deferredSpecularFBOImage->texnum, 3 );
-
-		R_CheckFBO( tr.geometricRenderFBO );
+		width = glConfig.vidWidth;
+		height = glConfig.vidHeight;
 	}
 	else
 	{
-		// forward shading
+		width = NearestPowerOfTwo( glConfig.vidWidth );
+		height = NearestPowerOfTwo( glConfig.vidHeight );
+	}
 
-		if ( glConfig2.textureNPOTAvailable )
-		{
-			width = glConfig.vidWidth;
-			height = glConfig.vidHeight;
-		}
-		else
-		{
-			width = NearestPowerOfTwo( glConfig.vidWidth );
-			height = NearestPowerOfTwo( glConfig.vidHeight );
-		}
+	// deferredRender FBO for the HDR or LDR context
+	tr.deferredRenderFBO = R_CreateFBO( "_deferredRender", width, height );
+	R_BindFBO( tr.deferredRenderFBO );
 
-		// deferredRender FBO for the HDR or LDR context
-		tr.deferredRenderFBO = R_CreateFBO( "_deferredRender", width, height );
-		R_BindFBO( tr.deferredRenderFBO );
-
-		R_AttachFBOTexture2D( GL_TEXTURE_2D, tr.deferredRenderFBOImage->texnum, 0 );
+	R_AttachFBOTexture2D( GL_TEXTURE_2D, tr.deferredRenderFBOImage->texnum, 0 );
 
 #if 0
 
-		if ( glConfig2.framebufferPackedDepthStencilAvailable )
-		{
-			R_AttachFBOTexturePackedDepthStencil( tr.depthRenderImage->texnum );
-		}
-		else if ( glConfig.hardwareType == GLHW_ATI || glConfig.hardwareType == GLHW_ATI_DX10 ) // || glConfig.hardwareType == GLHW_NV_DX10)
-		{
-			R_AttachFBOTextureDepth( tr.depthRenderImage->texnum );
-		}
-		else
-#endif
-		{
-			R_AttachFBOTextureDepth( tr.depthRenderImage->texnum );
-		}
-
-		R_CheckFBO( tr.deferredRenderFBO );
+	if ( glConfig2.framebufferPackedDepthStencilAvailable )
+	{
+		R_AttachFBOTexturePackedDepthStencil( tr.depthRenderImage->texnum );
 	}
+	else if ( glConfig.hardwareType == GLHW_ATI || glConfig.hardwareType == GLHW_ATI_DX10 ) // || glConfig.hardwareType == GLHW_NV_DX10)
+	{
+		R_AttachFBOTextureDepth( tr.depthRenderImage->texnum );
+	}
+	else
+#endif
+	{
+		R_AttachFBOTextureDepth( tr.depthRenderImage->texnum );
+	}
+
+	R_CheckFBO( tr.deferredRenderFBO );
 
 	if ( glConfig2.framebufferBlitAvailable )
 	{

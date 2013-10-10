@@ -45,7 +45,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #define PATH_SEP '/'
 #define PLATFORM_STRING "Linux"
 #elif defined(__native_client__)
-#define ARCH_STRING "Native Client"
+#define PLATFORM_STRING "Native Client"
 #else
 #error "Platform not supported"
 #endif
