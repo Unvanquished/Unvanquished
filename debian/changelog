@@ -1,3 +1,10 @@
+unvanquished (0.20.0-2) unstable; urgency=low
+
+  * Fix some console input regressions specific to SDL 1.2.
+    (This release is built only where SDL 1.2 is used.)
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Thu, 10 Oct 2013 17:34:17 +0100
+
 unvanquished (0.20.0-1) unstable; urgency=low
 
   * Add unvanquished-dev, initially containing only unvanquishedmap.
