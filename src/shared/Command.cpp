@@ -31,13 +31,22 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 namespace Cmd {
 
     std::string Escape(Str::StringRef text) {
+        // Only escape if necessary: the text contains a quote
+        if (!strchr(text.c_str(), '\"'))
+            return text;
+
         std::string res = "\"";
 
         for (size_t i = 0; i < text.size(); i ++) {
-            if (text[i] == '\"') {
-                res.push_back('\\');
+            if (text[i] == '\\') {
+                // Place slash outside quotes
+                res.append("\"\\\"");
+            } else if (text[i] == '\"') {
+                // Escape quote with a slash
+                res.append("\\\"");
+            } else {
+                res.push_back(text[i]);
             }
-            res.push_back(text[i]);
         }
 
         res += "\"";
