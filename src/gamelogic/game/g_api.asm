@@ -88,3 +88,16 @@ equ trap_QuoteString                      -321
 equ trap_GenFingerprint                   -322
 equ trap_GetPlayerPubkey                  -323
 equ trap_GetTimeString                    -324
+equ trap_BotSetupNav                      -325
+equ trap_BotShutdownNav                   -326
+equ trap_BotSetNavMesh                    -327
+equ trap_BotFindRoute                     -328
+equ trap_BotUpdatePath                    -329
+equ trap_BotNavTrace                      -330
+equ trap_BotFindRandomPoint               -331
+equ trap_BotFindRandomPointInRadius       -332
+equ trap_BotEnableArea                    -333
+equ trap_BotDisableArea                   -334
+equ trap_BotAddObstacle                   -335
+equ trap_BotRemoveObstacle                -336
+equ trap_BotUpdateObstacles               -337

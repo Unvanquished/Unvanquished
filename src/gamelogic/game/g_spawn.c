@@ -1022,9 +1022,6 @@ Every map should have exactly one.
 ; humanRepeaterBuildPoints: maximum amount of power the humans can use around each repeater. [g_humanRepeaterBuildPoints]
 ; alienBuildPoints: maximum amount of sentience available to the overmind. [g_alienBuildPoints]
 
-; humanMaxStage: The highest stage the humans are allowed to use (0/1/2). [g_alienMaxStage (2)]
-; alienMaxStage: The highest stage the aliens are allowed to use (0/1/2). [g_humanMaxStage (2)]
-
 ; disabledEquipment: A comma delimited list of human weapons or upgrades to disable for this map. [g_disabledEquipment ()]
 ; disabledClasses: A comma delimited list of alien classes to disable for this map. [g_disabledClasses ()]
 ; disabledBuildables: A comma delimited list of buildables to disable for this map. [g_disabledBuildables ()]
@@ -1063,9 +1060,6 @@ void SP_worldspawn( void )
 	trap_SetConfigstring( CS_MOTD, g_motd.string );  // message of the day
 
 	G_SpawnStringIntoCVarIfSet( "gravity", "g_gravity" );
-
-	G_SpawnStringIntoCVarIfSet( "humanMaxStage", "g_humanMaxStage" );
-	G_SpawnStringIntoCVarIfSet( "alienMaxStage", "g_alienMaxStage" );
 
 	G_SpawnStringIntoCVarIfSet( "humanBuildPoints", "g_humanBuildPoints" );
 	G_SpawnStringIntoCVarIfSet( "humanRepeaterBuildPoints", "g_humanRepeaterBuildPoints" );

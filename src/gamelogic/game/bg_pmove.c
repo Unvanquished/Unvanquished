@@ -413,7 +413,7 @@ static float PM_CmdScale( usercmd_t *cmd, qboolean zFlight )
 	float scale;
 	float modifier = 1.0f;
 
-	if ( pm->ps->stats[ STAT_TEAM ] == TEAM_HUMANS && pm->ps->pm_type == PM_NORMAL )
+	if ( pm->ps->persistant[ PERS_TEAM ] == TEAM_HUMANS && pm->ps->pm_type == PM_NORMAL )
 	{
 		qboolean wasSprinting;
 		qboolean sprint;
@@ -1027,7 +1027,7 @@ static qboolean PM_CheckPounce( void )
 				pm->ps->stats[ STAT_MISC ] = LEVEL0_WALLPOUNCE_COOLDOWN;
 			}
 			// moving foward or standing still
-			else if ( pm->cmd.forwardmove > 0 || ( pm->cmd.forwardmove == 0 && pm->cmd.rightmove == 0) )
+			else if ( pm->cmd.forwardmove > 0 || ( pm->cmd.forwardmove == 0 && pm->cmd.rightmove == 0 ) )
 			{
 				// get jump direction
 				VectorCopy( pml.forward, jumpDirection );
@@ -1081,6 +1081,11 @@ static qboolean PM_CheckPounce( void )
 
 				// add cooldown
 				pm->ps->stats[ STAT_MISC ] = LEVEL0_SIDEPOUNCE_COOLDOWN;
+			}
+			// compilers don't get my epic dijkstra-if
+			else
+			{
+				return qfalse;
 			}
 
 			break;
@@ -1289,7 +1294,7 @@ static qboolean PM_CheckJump( void )
 		return qfalse;
 	}
 
-	if ( ( pm->ps->stats[ STAT_TEAM ] == TEAM_HUMANS ) &&
+	if ( ( pm->ps->persistant[ PERS_TEAM ] == TEAM_HUMANS ) &&
 	     ( pm->ps->stats[ STAT_STAMINA ] < STAMINA_SLOW_LEVEL + STAMINA_JUMP_TAKE ) )
 	{
 		return qfalse;
@@ -1326,7 +1331,7 @@ static qboolean PM_CheckJump( void )
 	pm->ps->pm_flags |= PMF_JUMP_HELD;
 
 	// take some stamina off
-	if ( pm->ps->stats[ STAT_TEAM ] == TEAM_HUMANS )
+	if ( pm->ps->persistant[ PERS_TEAM ] == TEAM_HUMANS )
 	{
 		pm->ps->stats[ STAT_STAMINA ] -= STAMINA_JUMP_TAKE;
 	}
@@ -3640,6 +3645,9 @@ static void PM_BeginWeaponChange( int weapon )
 	{
 		pm->ps->stats[ STAT_MISC ] = 0;
 	}
+
+	// prevent flamer effect from continuing
+	pm->ps->generic1 = WPM_NOTFIRING;
 
 	pm->ps->weaponstate = WEAPON_DROPPING;
 	pm->ps->weaponTime += 200;

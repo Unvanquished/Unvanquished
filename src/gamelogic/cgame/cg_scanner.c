@@ -50,7 +50,7 @@ static void CG_UpdateRadarVisibility( void ) {
 			float fadeOut = bld->radarFadeOut;
 
 			if( fadeOut <= 0.0f ||
-			    cent->currentState.modelindex2 == cg.predictedPlayerState.stats[ STAT_TEAM ] ||
+			    cent->currentState.modelindex2 == cg.predictedPlayerState.persistant[ PERS_TEAM ] ||
 			    cent->buildableAnim != bld->idleAnim ) {
 				cent->radarVisibility = 1.0f;
 			} else {
@@ -62,7 +62,7 @@ static void CG_UpdateRadarVisibility( void ) {
 
 			if ( !(cent->currentState.eFlags & EF_POWER_AVAILABLE ) ) {
 				cent->radarVisibility = 1.0f;
-			} else if ( ci->nonsegmented ) {
+			} else if ( ci->nonsegmented || ci->gender == GENDER_NEUTER ) {
 				switch( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT) {
 				case NSPA_STAND:
 				case NSPA_DEATH1:
@@ -126,7 +126,7 @@ void CG_UpdateEntityPositions( void )
 
 	CG_UpdateRadarVisibility();
 
-	if ( cg.predictedPlayerState.stats[ STAT_TEAM ] == TEAM_HUMANS )
+	if ( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_HUMANS )
 	{
 		if ( entityPositions.lastUpdateTime + HUMAN_SCANNER_UPDATE_PERIOD > cg.time )
 		{

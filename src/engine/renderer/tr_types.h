@@ -42,7 +42,7 @@ Maryland 20850 USA.
 // XreaL BEGIN
 #define MAX_REF_LIGHTS     1024
 #define MAX_REF_ENTITIES   1023 // can't be increased without changing drawsurf bit packing
-#define MAX_BONES          128 // RB: same as MDX_MAX_BONES
+#define MAX_BONES          128
 #define MAX_WEIGHTS        4 // GPU vertex skinning limit, never change this without rewriting many GLSL shaders
 // XreaL END
 

@@ -211,8 +211,9 @@ extern int   LEVEL4_CRUSH_REPEAT;
 #define CREEP_ARMOUR_MODIFIER   0.75f
 #define CREEP_SCALEDOWN_TIME    3000
 
+// TODO: Increase burn damage frequencies, make sure burn functions are called frequently
 #define BURN_DAMAGE             10
-#define BURN_DAMAGE_PERIOD      1000 // high, so we don't get popcorn sound with all the damage anims
+#define BURN_DAMAGE_PERIOD      1000
 #define BURN_SPLDAMAGE          10
 #define BURN_SPLDAMAGE_RADIUS   60
 #define BURN_SPLDAMAGE_PERIOD   500
@@ -221,7 +222,7 @@ extern int   LEVEL4_CRUSH_REPEAT;
 #define BURN_SPREAD_PERIOD      1000
 #define BURN_SPREAD_CHANCE      0.2f
 #define BURN_SPREAD_RADIUS      100
-#define BURN_PERIODS_RAND       0.2
+#define BURN_PERIODS_RAND       0.2  // randomization applied to all burn periods
 
 #define PCLOUD_MODIFIER         0.5f
 #define PCLOUD_ARMOUR_MODIFIER  0.75f
@@ -309,10 +310,6 @@ extern int   PAINSAW_DAMAGE;
 extern float PAINSAW_RANGE;
 extern float PAINSAW_WIDTH;
 extern float PAINSAW_HEIGHT;
-
-extern int   GRENADE_DAMAGE;
-extern float GRENADE_RANGE;
-extern float GRENADE_SPEED;
 
 extern int   SHOTGUN_DMG;
 extern int   SHOTGUN_RANGE;
@@ -492,17 +489,16 @@ extern int   REACTOR_ATTACK_DCC_DAMAGE;
 #define DEFAULT_MINE_RATE_HALF_LIFE        "20"  // in min
 #define DEFAULT_MINIMUM_MINE_RATE          "50"
 
-// confidence & stages
+// confidence
 #define CONFIDENCE_PER_CREDIT              0.01f // used to award confidence based on credit rewards
 #define DEFAULT_CONFIDENCE_HALF_LIFE       "5"   // in min
-#define DEFAULT_MINIMUM_STAGE_TIME         "60"  // in s. how long to keep a new stage at minimum
-#define DEFAULT_STAGE2_BASE_THRESHOLD      "100"
-#define DEFAULT_STAGE3_BASE_THRESHOLD      "250"
-#define DEFAULT_STAGE2_INC_PER_PLAYER      "10"
-#define DEFAULT_STAGE3_INC_PER_PLAYER      "25"
-#define DEFAULT_STAGE_THRESHOLD_HALF_LIFE  "30"
-#define DEFAULT_ALIEN_MAX_STAGE            "2"
-#define DEFAULT_HUMAN_MAX_STAGE            "2"
+#define DEFAULT_CONF_REWARD_DOUBLE_TIME    "30"  // in min
+#define DEFAULT_UNLOCKABLE_MIN_TIME        "60"  // in s
+#define DEFAULT_CONFIDENCE_BASE_MOD        "0.8"
+#define DEFAULT_CONFIDENCE_KILL_MOD        "1.0"
+#define DEFAULT_CONFIDENCE_BUILD_MOD       "0.6"
+#define DEFAULT_CONFIDENCE_DECON_MOD       "1.0" // used on top of build mod
+#define DEFAULT_CONFIDENCE_DESTROY_MOD     "0.8"
 
 #define MAXIMUM_BUILD_TIME                 20000 // used for pie timer
 

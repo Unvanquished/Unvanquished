@@ -843,7 +843,7 @@ void CG_OffsetFirstPersonView( void )
 	}
 
 	// this *feels* more realisitic for humans
-	if ( cg.predictedPlayerState.stats[ STAT_TEAM ] == TEAM_HUMANS &&
+	if ( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_HUMANS &&
 	     ( cg.predictedPlayerState.pm_type == PM_NORMAL ||
 	       cg.predictedPlayerState.pm_type == PM_JETPACK ) )
 	{
@@ -1449,7 +1449,7 @@ static void CG_CalcColorGradingForPoint( vec3_t loc )
 static void CG_ChooseCgradingEffectAndFade( const playerState_t* ps, qhandle_t* effect, float* fade )
 {
 	int health = ps->stats[ STAT_HEALTH ];
-	int team = ps->stats[ STAT_TEAM ];
+	int team = ps->persistant[ PERS_TEAM ];
 	int class = ps->stats[ STAT_CLASS ];
 	qboolean playing = team == TEAM_HUMANS || team == TEAM_ALIENS;
 	float chargeProgress = CG_ChargeProgress();
@@ -1861,9 +1861,6 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 	cg.time = serverTime;
 	cg.demoPlayback = demoPlayback;
 
-	// update cvars
-	CG_UpdateCvars();
-
 	CG_NotifyHooks();
 
 	// any looped sounds will be respecified as entities
@@ -1892,6 +1889,12 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 
 	// update cg.predictedPlayerState
 	CG_PredictPlayerState();
+
+	// update unlockables data (needs valid predictedPlayerState)
+	CG_UpdateUnlockables( &cg.predictedPlayerState );
+
+	// update cvars (needs valid unlockables data)
+	CG_UpdateCvars();
 
 	// decide on third person view
 	cg.renderingThirdPerson = ( cg_thirdPerson.integer || ( cg.snap->ps.stats[ STAT_HEALTH ] <= 0 ) ||

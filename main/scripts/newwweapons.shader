@@ -138,7 +138,7 @@ models/weapons/lgun/zlasgun
 
 models/weapons/lgun/grill
 {
-	diffuseMap models/weapons/lgun/zlasgun/grill_COLOR
+	diffuseMap models/weapons/lgun/grill_COLOR
 	normalMap models/weapons/lgun/grill_NRM
 	specularMap models/weapons/lgun/grill_SPEC
 }
