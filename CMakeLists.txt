@@ -1759,13 +1759,47 @@ function( find_package_geoip )
   endif()
 endfunction()
 
+########################
+# Required static libs #
+########################
+
+if( BUILD_CLIENT OR BUILD_TTY_CLIENT OR BUILD_SERVER OR BUILD_DAEMONMAP )
+  add_library( detour OBJECT ${DETOURLIST} )
+  set_target_properties( detour PROPERTIES OUTPUT_NAME "detour" PREFIX "" LINKER_LANGUAGE CXX )
+
+  # Mac OS X specific settings
+  if( ${CMAKE_SYSTEM_NAME} STREQUAL "Darwin" )
+    # Mac OS X has some trouble with PIC code under X86/32.
+    if( BUILD_ARCH STREQUAL "i386" )
+      set_target_properties( detour PROPERTIES COMPILE_FLAGS "-mdynamic-no-pic" LINK_FLAGS "-read_only_relocs suppress" )
+    endif()
+  endif()
+endif()
+
+if( USE_INTERNAL_CRYPTO AND ( USE_BUILD_CLIENT OR BUILD_TTY_CLIENT OR BUILD_SERVER ) )
+  add_library( nettle OBJECT ${CRYPTOLIST} )
+  set_target_properties( nettle PROPERTIES OUTPUT_NAME "nettle" PREFIX "" LINKER_LANGUAGE C )
+
+  # Mac OS X specific settings
+  if( ${CMAKE_SYSTEM_NAME} STREQUAL "Darwin" )
+    # Mac OS X has some trouble with PIC code under X86/32.
+    if( BUILD_ARCH STREQUAL "i386" )
+      set_target_properties( detour PROPERTIES COMPILE_FLAGS "-mdynamic-no-pic" LINK_FLAGS "-read_only_relocs suppress" )
+    endif()
+  endif()
+  set( CRYPTO_OBJS $<TARGET_OBJECTS:nettle> )
+else()
+  set( CRYPTO_OBJS )
+endif()
+
 ################
 # Build Client #
 ################
 
 if( BUILD_CLIENT )
   # Setup target client
-  add_executable( client ${DETOURLIST} ${SERVERLIST} ${CLIENTLIST} ${SDLBASELIST} ${SDLLIST} ${QCOMMONLIST} ${SHAREDLIST} ${CRYPTOLIST} ${TINYGETTEXT_LIST}
+  add_executable( client ${SERVERLIST} ${CLIENTLIST} ${SDLBASELIST} ${SDLLIST} ${QCOMMONLIST} ${SHAREDLIST} ${TINYGETTEXT_LIST}
+    $<TARGET_OBJECTS:detour> ${CRYPTO_OBJS}
     ${DATABASELIST} ${MOUNT_DIR}/engine/qcommon/dl_main_curl.c ${SPEEXLIST} ${WIN_RC} )
   add_dependencies( client rendererGL )
   include_directories( ${NEWTON_INCLUDES} )
@@ -1948,8 +1982,9 @@ endif()
 
 if( BUILD_SERVER )
   # Setup the target Server
-  add_executable( server ${DETOURLIST} ${SERVERLIST} ${SDLBASELIST}
-    ${QCOMMONLIST} ${SHAREDLIST} ${DATABASELIST} ${CRYPTOLIST}
+  add_executable( server ${SERVERLIST} ${SDLBASELIST}
+    ${QCOMMONLIST} ${SHAREDLIST} ${DATABASELIST}
+    $<TARGET_OBJECTS:detour> ${CRYPTO_OBJS}
     ${MOUNT_DIR}/engine/null/null_client.c ${TINYGETTEXT_LIST}
     ${MOUNT_DIR}/engine/null/null_input.c ${MOUNT_DIR}/engine/null/null_snddma.c
     ${MOUNT_DIR}/engine/qcommon/dl_main_stubs.c ${WIN_RC} )
@@ -2039,7 +2074,7 @@ endif()
 ###################
 if( BUILD_DAEMONMAP )
   # Setup DaemonMap target
-  add_executable( daemonMap ${DAEMONMAPLIST} ${DETOURLIST} ${RECASTLIST} ${WIN_RC} )
+  add_executable( daemonMap ${DAEMONMAPLIST} $<TARGET_OBJECTS:detour> ${RECASTLIST} ${WIN_RC} )
   include_directories( ${LIB_DIR}/picomodel ${MOUNT_DIR}/tools/common )
   target_link_libraries( daemonMap ${OS_LIBRARIES} )
   set_property( TARGET daemonMap APPEND PROPERTY COMPILE_DEFINITIONS USE_OPENGL )
@@ -2075,8 +2110,9 @@ endif()
 ####################
 if( BUILD_TTY_CLIENT )
   # Setup the target Server
-  add_executable( ttyclient ${DETOURLIST} ${SERVERLIST} ${CLIENTLIST} ${SDLBASELIST}
-    ${QCOMMONLIST} ${SHAREDLIST} ${DATABASELIST} ${CRYPTOLIST}
+  add_executable( ttyclient ${SERVERLIST} ${CLIENTLIST} ${SDLBASELIST}
+    ${QCOMMONLIST} ${SHAREDLIST} ${DATABASELIST}
+    $<TARGET_OBJECTS:detour> ${CRYPTO_OBJS}
     ${TINYGETTEXT_LIST}
     ${MOUNT_DIR}/engine/qcommon/dl_main_stubs.c ${WIN_RC}
     ${MOUNT_DIR}/engine/null/null_input.c ${MOUNT_DIR}/engine/null/null_snddma.c ${MOUNT_DIR}/engine/null/null_renderer.c )
