@@ -1379,7 +1379,7 @@ intptr_t VM_SystemCall( intptr_t *args )
 
 		case TRAP_CEIL:
 			return FloatAsInt( ceil( VMF( 1 ) ) );
-			
+
 		case TRAP_EXP:
 			return FloatAsInt( exp( VMF( 1 ) ) );
 

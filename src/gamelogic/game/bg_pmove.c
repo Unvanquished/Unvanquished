@@ -322,6 +322,27 @@ static void PM_Friction( void )
 
 /*
 ==============
+PM_Drag
+
+Handles drag calculations for flight
+==============
+*/
+static void PM_Drag( void )
+{
+	vec3_t velocityDir;
+	float speed;
+	float drop;
+
+	VectorCopy( pm->ps->velocity, velocityDir );
+	speed = VectorNormalize( velocityDir );
+	drop = speed * 0.75f * pml.frametime;
+	speed -= drop;
+	VectorScale( velocityDir, speed, velocityDir );
+	VectorCopy( velocityDir, pm->ps->velocity );
+}
+
+/*
+==============
 PM_Accelerate
 
 Handles user intended acceleration
@@ -1609,6 +1630,7 @@ PM_AlienFlyMove
 #define SHRIKE_TURN_RATE 1.0f
 #define SHRIKE_ROLL_RATE 2.0f
 #define SHRIKE_FLIGHT_MAXSPEED 1000.0f
+#define SHRIKE_STALL_SPEED 300.0f
 
 static void PM_AlienFlyMove( void )
 {
@@ -1620,15 +1642,21 @@ static void PM_AlienFlyMove( void )
 	float  scale;
 
 	PM_Friction();
+	PM_Drag();
 
 	// Handle throttle
 	if ( pm->cmd.forwardmove )
 	{
 		float currentSpeed;
+		float throttleRate = ( pm->cmd.forwardmove > 0 ) ? SHRIKE_THROTTLE : -SHRIKE_THROTTLE;
 
-		VectorCopy( pm->ps->velocity, wishvel );
-		currentSpeed = VectorNormalize( wishvel );
-		VectorScale( wishvel, MIN( SHRIKE_FLIGHT_MAXSPEED - currentSpeed, ( pm->cmd.forwardmove > 0 ) ? SHRIKE_THROTTLE : -SHRIKE_THROTTLE ), wishvel );
+		// Only throttle if we have the stamina to do so
+		if ( ( throttleRate > 0 && (int)( STAMINA_FLAP_TAKE * BG_FlightVelocityToCoefficient( VectorLength( pm->ps->velocity ) ) < ( pm->ps->stats[ STAT_STAMINA ] + STAMINA_MAX ) ) ) || throttleRate < 0 )
+		{
+			VectorCopy( pm->ps->velocity, wishvel );
+			currentSpeed = VectorNormalize( wishvel );
+			VectorScale( wishvel, MIN( SHRIKE_FLIGHT_MAXSPEED - currentSpeed, throttleRate ), wishvel );
+		}
 	}
 
 	if ( pm->cmd.upmove )
@@ -1637,6 +1665,7 @@ static void PM_AlienFlyMove( void )
 	}
 
 	VectorAdd( wishvel, pm->ps->velocity, pm->ps->velocity );
+
 
 	// Handle turns
 	if ( pm->cmd.rightmove )

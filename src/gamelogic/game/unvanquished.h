@@ -436,6 +436,7 @@ extern int   REACTOR_ATTACK_DCC_DAMAGE;
 #define STAMINA_MEDISTAT_RESTORE      30 // stacked on STOP or WALK
 #define STAMINA_SPRINT_TAKE           6
 #define STAMINA_JUMP_TAKE             250 // Doubled jump requirement. Can perform ~8 jumps.
+#define STAMINA_FLAP_TAKE             200
 #define STAMINA_MAX                   2000 // Doubled maximum stamina.
 #define STAMINA_BREATHING_LEVEL       0
 #define STAMINA_SLOW_LEVEL            -1000 // doubled to match doubled stamina

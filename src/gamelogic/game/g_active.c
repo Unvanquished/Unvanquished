@@ -755,7 +755,8 @@ void ClientTimerActions( gentity_t *ent, int msec )
 	int         aForward, aRight;
 	qboolean    walking = qfalse, stopped = qfalse,
 	            crouched = qfalse, jumping = qfalse,
-	            strafing = qfalse;
+	            strafing = qfalse, flying = qfalse,
+		    flapping = qfalse;
 	int         i;
 	buildable_t buildable;
 
@@ -787,6 +788,16 @@ void ClientTimerActions( gentity_t *ent, int msec )
 		crouched = qtrue;
 	}
 
+	if ( ent->client->ps.stats[ STAT_STATE ] & SS_FLYING )
+	{
+		flying = qtrue;
+
+		if ( ucmd->forwardmove > 0 )
+		{
+			flapping = qtrue;
+		}
+	}
+
 	client = ent->client;
 	client->time100 += msec;
 	client->time1000 += msec;
@@ -811,6 +822,14 @@ void ClientTimerActions( gentity_t *ent, int msec )
 		else if ( walking || crouched )
 		{
 			client->ps.stats[ STAT_STAMINA ] += STAMINA_WALK_RESTORE;
+		}
+		else if ( flapping )
+		{
+			client->ps.stats[ STAT_STAMINA ] -= (int)( STAMINA_FLAP_TAKE * BG_FlightVelocityToCoefficient( VectorLength( client->ps.velocity ) ) );
+		}
+		else if ( !flapping && client->ps.stats[ STAT_CLASS ] == PCL_ALIEN_LEVELFLY )
+		{
+			client->ps.stats[ STAT_STAMINA ] += STAMINA_STOP_RESTORE / 2;
 		}
 
 		// Check stamina limits
