@@ -6871,7 +6871,12 @@ void DebugDrawDepthMask(qboolean state)
 }
 
 void DebugDrawVertex(const vec3_t pos, unsigned int color, const vec2_t uv) {
-	vec4_t colors = {color & 0xFF, (color >> 8) & 0xFF, (color >> 16) & 0xFF, (color >> 24) & 0xFF};
+	vec4_t colors = {
+		static_cast<vec_t>(color & 0xFF),
+		static_cast<vec_t>((color >> 8) & 0xFF),
+		static_cast<vec_t>((color >> 16) & 0xFF),
+		static_cast<vec_t>((color >> 24) & 0xFF)
+	};
 	Vector4Scale(colors, 1.0f/255.0f, colors);
 
 	//we have reached the maximum number of verts we can batch

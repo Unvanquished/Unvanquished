@@ -594,6 +594,12 @@ set( SDLLIST
   ${ENGINE_DIR}/sys/sys_local.h
 )
 
+if( USE_SDL2 )
+  set( SDLLIST ${SDLLIST}
+    ${ENGINE_DIR}/sys/sdl2_compat.c
+  )
+endif()
+
 set( CGAMELIST
   ${GAMELOGIC_DIR}/game/bg_misc.c
   ${GAMELOGIC_DIR}/game/bg_parse.c
@@ -1043,6 +1049,7 @@ if( BUILD_NEW_RENDERER OR BUILD_OLD_RENDERER )
   find_package( GLEW REQUIRED )
   include_directories( ${GLEW_INCLUDE_DIR} )
   set( LIBS_RENDERER ${LIBS_RENDERER} ${GLEW_LIBRARIES} )
+  set( LIBS_CLIENT ${LIBS_CLIENT} ${GLEW_LIBRARIES} )
 endif()
 
 # OpenGL
@@ -1050,6 +1057,7 @@ if( BUILD_NEW_RENDERER OR BUILD_OLD_RENDERER )
   find_package( OpenGL REQUIRED )
   include_directories( ${OPENGL_INCLUDE_DIR} )
   set( LIBS_RENDERER ${LIBS_RENDERER} ${OPENGL_LIBRARIES} )
+  set( LIBS_CLIENT ${LIBS_CLIENT} ${OPENGL_LIBRARIES} )
 endif()
 
 # X11
