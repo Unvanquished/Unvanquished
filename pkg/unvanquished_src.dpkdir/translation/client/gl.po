@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-07-07 23:10+0200\n"
-"PO-Revision-Date: 2013-06-04 06:44+0000\n"
+"PO-Revision-Date: 2013-08-18 15:19+0000\n"
 "Last-Translator: Adrián <adriyetichaves@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: gl\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Pootle 2.5.0-beta1\n"
-"X-POOTLE-MTIME: 1370328290.0\n"
+"X-POOTLE-MTIME: 1376839194.0\n"
 
 #: src/engine/client/cl_cgame.c:471
 msgid "Server sent a pubkey_decrypt command, but sent nothing to decrypt!"
@@ -439,7 +439,7 @@ msgstr "Non estás conectado a un servidor.\n"
 
 #: src/engine/client/cl_main.c:1975
 msgid "Can't reconnect to nothing.\n"
-msgstr ""
+msgstr "Non é posíbel volver conectarse á nada.\n"
 
 #: src/engine/client/cl_main.c:1979
 msgid "Can't reconnect to localhost.\n"
@@ -475,7 +475,7 @@ msgstr "Conéctate a un servidor ou define a variábel «rconAddress» para exec
 #: src/engine/client/cl_main.c:2243
 #, c-format
 msgid "^5Regenerating RSA keypair; writing to %s\n"
-msgstr ""
+msgstr "^5Volvendo xerar o par de chaves RSA en «%s».\n"
 
 #: src/engine/client/cl_main.c:2258
 msgid "Daemon RSA keys generated\n"
@@ -484,7 +484,7 @@ msgstr "Xeráronse as chaves RSA do servizo.\n"
 #: src/engine/client/cl_main.c:2281
 #, c-format
 msgid "^5Loading RSA keys from %s\n"
-msgstr ""
+msgstr "^5Cargando as chaves RSA de «%s».\n"
 
 #: src/engine/client/cl_main.c:2287
 msgid "Daemon RSA public-key file not found, regenerating\n"
@@ -1040,7 +1040,7 @@ msgstr "Fechado: «%s».\n"
 
 #: src/engine/qcommon/cvar.c:890
 msgid "[+|-] <variable> [<value>…]"
-msgstr ""
+msgstr "[+|-] <variábel> [<valor>…]"
 
 #: src/engine/qcommon/cvar.c:906
 msgid "<variable> <start> <end> [<step>]"
@@ -1102,12 +1102,12 @@ msgstr "Non foi posíbel atopar o ficheiro «%s».\n"
 #: src/engine/qcommon/net_ip.c:1057
 #, c-format
 msgid "Opening IP socket: %s:%s\n"
-msgstr ""
+msgstr "Abrindo un sócket IP: %s:%s\n"
 
 #: src/engine/qcommon/net_ip.c:1141
 #, c-format
 msgid "Opening IP6 socket: %s%s%s:%s\n"
-msgstr ""
+msgstr "Abrindo un sócket IP6: %s%s%s:%s\n"
 
 #: src/engine/qcommon/net_ip.c:1343
 msgid "Opening connection to SOCKS server.\n"
