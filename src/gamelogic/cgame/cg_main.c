@@ -83,14 +83,9 @@ Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3,
 		case CG_CROSSHAIR_PLAYER:
 			return CG_CrosshairPlayer();
 
-		case CG_LAST_ATTACKER:
-			return CG_LastAttacker();
-
 		case CG_KEY_EVENT:
-			if ( arg1 & ( 1 << KEYEVSTATE_CHAR ) )
+			if ( arg1 & KEYEVSTATE_CHAR )
 			{
-				arg0 &= ~K_CHAR_FLAG;
-				arg0 |= ( !!( arg1 & ( 1 << KEYEVSTATE_BIT ) ) ) << ( K_CHAR_BIT - 1 );
 				CG_KeyEvent( 0, arg0, arg1 );
 			}
 			else
@@ -160,6 +155,7 @@ vmCvar_t        cg_drawDemoState;
 vmCvar_t        cg_drawSnapshot;
 vmCvar_t        cg_drawChargeBar;
 vmCvar_t        cg_drawCrosshair;
+vmCvar_t        cg_drawCrosshairIndicator;
 vmCvar_t        cg_drawCrosshairNames;
 vmCvar_t        cg_drawBuildableHealth;
 vmCvar_t        cg_drawMinimap;
@@ -267,11 +263,13 @@ vmCvar_t        cg_debugVoices;
 
 vmCvar_t        ui_currentClass;
 vmCvar_t        ui_carriage;
-vmCvar_t        ui_stages;
 vmCvar_t        ui_dialog;
 vmCvar_t        ui_voteActive;
 vmCvar_t        ui_alienTeamVoteActive;
 vmCvar_t        ui_humanTeamVoteActive;
+vmCvar_t        ui_unlockables;
+vmCvar_t        ui_confidenceHalfLife;
+vmCvar_t        ui_unlockablesMinTime;
 
 vmCvar_t        cg_debugRandom;
 
@@ -327,6 +325,7 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_drawSnapshot,                "cg_drawSnapshot",                "0",            CVAR_ARCHIVE                 },
 	{ &cg_drawChargeBar,               "cg_drawChargeBar",               "1",            CVAR_ARCHIVE                 },
 	{ &cg_drawCrosshair,               "cg_drawCrosshair",               "2",            CVAR_ARCHIVE                 },
+	{ &cg_drawCrosshairIndicator,      "cg_drawCrosshairIndicator",      "2",            CVAR_ARCHIVE                 },
 	{ &cg_drawCrosshairNames,          "cg_drawCrosshairNames",          "1",            CVAR_ARCHIVE                 },
 	{ &cg_drawBuildableHealth,         "cg_drawBuildableHealth",         "1",            CVAR_ARCHIVE                 },
 	{ &cg_drawMinimap,                 "cg_drawMinimap",                 "1",            CVAR_ARCHIVE                 },
@@ -430,11 +429,13 @@ static const cvarTable_t cvarTable[] =
 	// communication cvars set by the cgame to be read by ui
 	{ &ui_currentClass,                "ui_currentClass",                "0",            CVAR_ROM                     },
 	{ &ui_carriage,                    "ui_carriage",                    "",             CVAR_ROM                     },
-	{ &ui_stages,                      "ui_stages",                      "0 0",          CVAR_ROM                     },
 	{ &ui_dialog,                      "ui_dialog",                      "Text not set", CVAR_ROM                     },
 	{ &ui_voteActive,                  "ui_voteActive",                  "0",            CVAR_ROM                     },
 	{ &ui_humanTeamVoteActive,         "ui_humanTeamVoteActive",         "0",            CVAR_ROM                     },
 	{ &ui_alienTeamVoteActive,         "ui_alienTeamVoteActive",         "0",            CVAR_ROM                     },
+	{ &ui_unlockables,                 "ui_unlockables",                 "0 0",          CVAR_ROM                     },
+	{ &ui_confidenceHalfLife,          "ui_confidenceHalfLife",          "0",            CVAR_ROM                     },
+	{ &ui_unlockablesMinTime,          "ui_unlockablesMinTime",          "0",            CVAR_ROM                     },
 
 	{ &cg_debugRandom,                 "cg_debugRandom",                 "0",            0                            },
 
@@ -511,7 +512,7 @@ static void CG_SetPVars( void )
 {
 	playerState_t *ps;
 	char          buffer[ MAX_CVAR_VALUE_STRING ];
-	int           i, stage = 0;
+	int           i;
 	qboolean      first;
 
 	if ( !cg.snap )
@@ -524,17 +525,12 @@ static void CG_SetPVars( void )
 	if ( ( ps->pm_flags & PMF_FOLLOW ) )
 		return;
 
-	trap_Cvar_Set( "p_teamname", BG_TeamName( ps->stats[ STAT_TEAM ] ) );
+	trap_Cvar_Set( "p_teamname", BG_TeamName( ps->persistant[ PERS_TEAM ] ) );
 
-	// while we're here, set stage
-	switch ( ps->stats[ STAT_TEAM ] )
+	switch ( ps->persistant[ PERS_TEAM ] )
 	{
 		case TEAM_ALIENS:
-			stage = cgs.alienStage;
-			break;
-
 		case TEAM_HUMANS:
-			stage = cgs.humanStage;
 			break;
 
 		default:
@@ -549,7 +545,6 @@ static void CG_SetPVars( void )
 			 */
 			trap_Cvar_Set( "p_class" , "0" );
 			trap_Cvar_Set( "p_weapon", "0" );
-			trap_Cvar_Set( "p_stage", "0" );
 			trap_Cvar_Set( "p_hp", "0" );
 			trap_Cvar_Set( "p_maxhp", "0" );
 			trap_Cvar_Set( "p_ammo", "0" );
@@ -557,7 +552,6 @@ static void CG_SetPVars( void )
 			return;
 	}
 
-	trap_Cvar_Set( "p_stage", va( "%d", stage ) );
 	trap_Cvar_Set( "p_class", va( "%d", ps->stats[ STAT_CLASS ] ) );
 
 	switch ( ps->stats[ STAT_CLASS ] )
@@ -572,6 +566,10 @@ static void CG_SetPVars( void )
 
 		case PCL_ALIEN_LEVEL0:
 			trap_Cvar_Set( "p_classname", "Dretch" );
+			break;
+
+		case PCL_ALIEN_LEVEL0_UPG:
+			trap_Cvar_Set( "p_classname", "Advanced Dretch" );
 			break;
 
 		case PCL_ALIEN_LEVEL1:
@@ -667,11 +665,8 @@ static void CG_SetPVars( void )
 			trap_Cvar_Set( "p_weaponname", "Lucifier cannon" );
 			break;
 
-		case WP_GRENADE:
-			trap_Cvar_Set( "p_weaponname", "Grenade" );
-			break;
-
 		case WP_ALEVEL0:
+		case WP_ALEVEL0_UPG:
 			trap_Cvar_Set( "p_weaponname", "Teeth" );
 			break;
 
@@ -706,7 +701,6 @@ static void CG_SetPVars( void )
 	trap_Cvar_Set( "p_clips", va( "%d", ps->clips ) );
 
 	// set p_availableBuildings to a space-separated list of buildings
-	// limited to those available given team, stage and class
 	first = qtrue;
 	*buffer = 0;
 
@@ -714,8 +708,8 @@ static void CG_SetPVars( void )
 	{
 		const buildableAttributes_t *buildable = BG_Buildable( i );
 
-		if ( buildable->team == ps->stats[ STAT_TEAM ] &&
-		     BG_BuildableAllowedInStage( i, stage ) &&
+		if ( buildable->team == ps->persistant[ PERS_TEAM ] &&
+		     BG_BuildableUnlocked( i ) &&
 		     (buildable->buildWeapon & ( 1 << ps->stats[ STAT_WEAPON ] ) ) )
 
 		{
@@ -771,23 +765,6 @@ static void CG_SetUIVars( void )
 	strcat( carriageCvar, "$" );
 
 	trap_Cvar_Set( "ui_carriage", carriageCvar );
-
-	switch ( ps->stats[ STAT_TEAM ] )
-	{
-		case TEAM_NONE:
-			trap_Cvar_Set( "ui_stages", va( "%d %d", cgs.alienStage, cgs.humanStage ) );
-			return;
-
-		case TEAM_ALIENS:
-			//dont send human stages to aliens
-			trap_Cvar_Set( "ui_stages", va( "%d %d", cgs.alienStage, -1 ) );
-			break;
-
-		case TEAM_HUMANS:
-			//dont send alien stages to humans
-			trap_Cvar_Set( "ui_stages", va( "%d %d", -1, cgs.humanStage ) );
-			break;
-	}
 }
 
 /*
@@ -841,9 +818,9 @@ void CG_UpdateBuildableRangeMarkerMask( void )
 			else if ( !Q_stricmp( p, "all" ) )
 			{
 				brmMask |= ( 1 << BA_A_OVERMIND ) | ( 1 << BA_A_SPAWN ) |
-				           ( 1 << BA_A_ACIDTUBE ) | ( 1 << BA_A_TRAPPER ) | ( 1 << BA_A_HIVE ) | ( 1 << BA_A_BOOSTER ) |
+				           ( 1 << BA_A_ACIDTUBE ) | ( 1 << BA_A_TRAPPER ) | ( 1 << BA_A_HIVE ) | ( 1 << BA_A_LEECH ) | ( 1 << BA_A_BOOSTER ) |
 				           ( 1 << BA_H_REACTOR ) | ( 1 << BA_H_REPEATER ) | ( 1 << BA_H_DCC ) |
-				           ( 1 << BA_H_MGTURRET ) | ( 1 << BA_H_TESLAGEN );
+				           ( 1 << BA_H_MGTURRET ) | ( 1 << BA_H_TESLAGEN ) | ( 1 << BA_H_DRILL );
 			}
 			else if ( !Q_stricmp( p, "none" ) )
 			{
@@ -858,13 +835,13 @@ void CG_UpdateBuildableRangeMarkerMask( void )
 				{
 					pp = p + 5;
 					only = ( 1 << BA_A_OVERMIND ) | ( 1 << BA_A_SPAWN ) |
-					       ( 1 << BA_A_ACIDTUBE ) | ( 1 << BA_A_TRAPPER ) | ( 1 << BA_A_HIVE ) | ( 1 << BA_A_BOOSTER );
+					       ( 1 << BA_A_ACIDTUBE ) | ( 1 << BA_A_TRAPPER ) | ( 1 << BA_A_HIVE ) | ( 1 << BA_A_LEECH ) | ( 1 << BA_A_BOOSTER );
 				}
 				else if ( !Q_strnicmp( p, "human", 5 ) )
 				{
 					pp = p + 5;
 					only = ( 1 << BA_H_REACTOR ) | ( 1 << BA_H_REPEATER ) | ( 1 << BA_H_DCC ) |
-					       ( 1 << BA_H_MGTURRET ) | ( 1 << BA_H_TESLAGEN );
+					       ( 1 << BA_H_MGTURRET ) | ( 1 << BA_H_TESLAGEN ) | ( 1 << BA_H_DRILL );
 				}
 				else
 				{
@@ -878,8 +855,8 @@ void CG_UpdateBuildableRangeMarkerMask( void )
 				}
 				else if ( !Q_stricmp( pp, "support" ) )
 				{
-					brmMask |= only & ( ( 1 << BA_A_OVERMIND ) | ( 1 << BA_A_SPAWN ) | ( 1 << BA_A_BOOSTER ) |
-					                    ( 1 << BA_H_REACTOR ) | ( 1 << BA_H_REPEATER ) | ( 1 << BA_H_DCC ) );
+					brmMask |= only & ( ( 1 << BA_A_OVERMIND ) | ( 1 << BA_A_SPAWN ) | ( 1 << BA_A_LEECH ) | ( 1 << BA_A_BOOSTER ) |
+					                    ( 1 << BA_H_REACTOR ) | ( 1 << BA_H_REPEATER ) | ( 1 << BA_H_DCC ) | ( 1 << BA_H_DRILL ) );
 				}
 				else if ( !Q_stricmp( pp, "offensive" ) )
 				{
@@ -924,18 +901,18 @@ void CG_NotifyHooks( void )
 	ps = &cg.snap->ps;
 	if ( !( ps->pm_flags & PMF_FOLLOW ) )
 	{
-		if( lastTeam != ps->stats[ STAT_TEAM ] )
+		if( lastTeam != ps->persistant[ PERS_TEAM ] )
 		{
-			trap_notify_onTeamChange( ps->stats[ STAT_TEAM ] );
+			trap_notify_onTeamChange( ps->persistant[ PERS_TEAM ] );
 
 			/* execute team-specific config files */
-			trap_Cvar_VariableStringBuffer( va( "cg_%sConfig", BG_TeamName( ps->stats[ STAT_TEAM ] ) ), config, sizeof( config ) );
+			trap_Cvar_VariableStringBuffer( va( "cg_%sConfig", BG_TeamName( ps->persistant[ PERS_TEAM ] ) ), config, sizeof( config ) );
 			if ( config[ 0 ] )
 			{
 				trap_SendConsoleCommand( va( "exec %s\n", Quote( config ) ) );
 			}
 
-			lastTeam = ps->stats[ STAT_TEAM ];
+			lastTeam = ps->persistant[ PERS_TEAM ];
 		}
 	}
 }
@@ -972,16 +949,6 @@ int CG_CrosshairPlayer( void )
 	}
 
 	return cg.crosshairClientNum;
-}
-
-int CG_LastAttacker( void )
-{
-	if ( !cg.attackerTime )
-	{
-		return -1;
-	}
-
-	return cg.snap->ps.persistant[ PERS_ATTACKER ];
 }
 
 /*
@@ -1236,6 +1203,7 @@ enum {
 	LOAD_SOUNDS,
 	LOAD_GEOMETRY,
 	LOAD_ASSETS,
+	LOAD_CONFIGS,
 	LOAD_WEAPONS,
 	LOAD_UPGRADES,
 	LOAD_BUILDINGS,
@@ -1288,6 +1256,9 @@ static void CG_UpdateLoadingStep( cgLoadingStep_t step )
 		case LOAD_ASSETS:
 			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.66f, choose("Taking pictures of the world", "Using your laptop's camera", "Adding texture to concrete", "Drawing smiley faces", NULL) );
 			break;
+		case LOAD_CONFIGS:
+			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.80f, choose("Reading the manual", "Looking at blueprints", NULL) );
+			break;
 		case LOAD_WEAPONS:
 			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.90f, choose("Setting up the armoury", "Sharpening the aliens' claws", "Overloading lucifer cannons", NULL) );
 			break;
@@ -1324,8 +1295,8 @@ static void CG_RegisterSounds( void )
 	char       name[ MAX_QPATH ];
 	const char *soundName;
 
-	cgs.media.alienStageTransition = trap_S_RegisterSound( "sound/announcements/overmindevolved.wav", qtrue );
-	cgs.media.humanStageTransition = trap_S_RegisterSound( "sound/announcements/reinforcement.wav", qtrue );
+	cgs.media.weHaveEvolved = trap_S_RegisterSound( "sound/announcements/overmindevolved.wav", qtrue );
+	cgs.media.reinforcement = trap_S_RegisterSound( "sound/announcements/reinforcement.wav", qtrue );
 
 	cgs.media.alienOvermindAttack = trap_S_RegisterSound( "sound/announcements/overmindattack.wav", qtrue );
 	cgs.media.alienOvermindDying = trap_S_RegisterSound( "sound/announcements/overminddying.wav", qtrue );
@@ -1392,9 +1363,9 @@ static void CG_RegisterSounds( void )
 	cgs.media.alienEvolveSound = trap_S_RegisterSound( "sound/player/alienevolve.wav", qfalse );
 
 	cgs.media.alienBuildableExplosion = trap_S_RegisterSound( "sound/buildables/alien/explosion.wav", qfalse );
-	cgs.media.alienBuildableDamage = trap_S_RegisterSound( "sound/buildables/alien/damage.wav", qfalse );
 	cgs.media.alienBuildablePrebuild = trap_S_RegisterSound( "sound/buildables/alien/prebuild.wav", qfalse );
 
+	cgs.media.humanBuildableDying = trap_S_RegisterSound( "sound/buildables/human/dying.wav", qfalse );
 	cgs.media.humanBuildableExplosion = trap_S_RegisterSound( "sound/buildables/human/explosion.wav", qfalse );
 	cgs.media.humanBuildablePrebuild = trap_S_RegisterSound( "sound/buildables/human/prebuild.wav", qfalse );
 
@@ -1501,6 +1472,7 @@ static void CG_RegisterGraphics( void )
 
 	cgs.media.scannerBlipShader = trap_R_RegisterShader("gfx/2d/blip",
 							    RSF_DEFAULT);
+
 	cgs.media.scannerBlipBldgShader = trap_R_RegisterShader("gfx/2d/blip_bldg",
 								RSF_DEFAULT);
 
@@ -1586,10 +1558,14 @@ static void CG_RegisterGraphics( void )
 	cgs.media.humanBuildableDamagedPS = CG_RegisterParticleSystem( "humanBuildableDamagedPS" );
 	cgs.media.alienBuildableDamagedPS = CG_RegisterParticleSystem( "alienBuildableDamagedPS" );
 	cgs.media.humanBuildableDestroyedPS = CG_RegisterParticleSystem( "humanBuildableDestroyedPS" );
+	cgs.media.humanBuildableNovaPS = CG_RegisterParticleSystem( "humanBuildableNovaPS" );
 	cgs.media.alienBuildableDestroyedPS = CG_RegisterParticleSystem( "alienBuildableDestroyedPS" );
 
 	cgs.media.humanBuildableBleedPS = CG_RegisterParticleSystem( "humanBuildableBleedPS" );
 	cgs.media.alienBuildableBleedPS = CG_RegisterParticleSystem( "alienBuildableBleedPS" );
+	cgs.media.alienBuildableBurnPS  = CG_RegisterParticleSystem( "alienBuildableBurnPS" );
+
+	cgs.media.floorFirePS = CG_RegisterParticleSystem( "floorFirePS" );
 
 	cgs.media.alienBleedPS = CG_RegisterParticleSystem( "alienBleedPS" );
 	cgs.media.humanBleedPS = CG_RegisterParticleSystem( "humanBleedPS" );
@@ -1896,6 +1872,14 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 	cgs.media.outlineShader = trap_R_RegisterShader("outline",
 							RSF_DEFAULT);
 
+	// Dynamic memory
+	BG_InitMemory();
+
+	BG_InitAllowedGameElements();
+
+	// Initialize item locking state
+	BG_InitUnlockackables();
+
 	CG_RegisterCvars();
 
 	CG_InitConsoleCommands();
@@ -1946,8 +1930,14 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 	CG_UpdateLoadingStep( LOAD_SOUNDS );
 	CG_RegisterSounds();
 
+	// updates loading step by itself
 	CG_RegisterGraphics();
 
+	// load configs after initializing particles and trails since it registers some
+	CG_UpdateLoadingStep( LOAD_CONFIGS );
+	BG_InitAllConfigs();
+
+	// load weapons upgrades and buildings after configs
 	CG_UpdateLoadingStep( LOAD_WEAPONS );
 	CG_InitWeapons();
 
@@ -2046,6 +2036,7 @@ const vec3_t cg_shaderColors[ SHC_NUM_SHADER_COLORS ] =
 	{ 0.3f,   0.35f,    0.625f   }, // light blue
 	{ 0.0f,   0.625f,   0.563f   }, // green-cyan
 	{ 0.313f, 0.0f,     0.625f   }, // violet
+	{ 0.54f,  0.0f,     1.0f     }, // indigo
 	{ 0.625f, 0.625f,   0.0f     }, // yellow
 	{ 0.875f, 0.313f,   0.0f     }, // orange
 	{ 0.375f, 0.625f,   0.375f   }, // light green

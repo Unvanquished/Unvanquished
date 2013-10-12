@@ -2161,6 +2161,12 @@ static qboolean ParseStage( shaderStage_t *stage, char **text )
 			{
 				stage->active = qfalse;
 			}
+			else if ( !Q_stricmp( token, "glowMap" ) )
+			{
+				blendSrcBits = GLS_SRCBLEND_ONE;
+				blendDstBits = GLS_DSTBLEND_ONE;
+				stage->rgbGen = CGEN_IDENTITY;
+			}
 			else
 			{
 				// complex double blends
@@ -2208,6 +2214,12 @@ static qboolean ParseStage( shaderStage_t *stage, char **text )
 			}
 			else if ( !Q_stricmp( token, "diffuseMap" ) )
 			{
+			}
+			else if ( !Q_stricmp( token, "glowMap" ) )
+			{
+				blendSrcBits = GLS_SRCBLEND_ONE;
+				blendDstBits = GLS_DSTBLEND_ONE;
+				stage->rgbGen = CGEN_IDENTITY;
 			}
 			else if ( !Q_stricmp( token, "normalMap" ) || !Q_stricmp( token, "bumpMap" ) )
 			{
@@ -4350,122 +4362,6 @@ static shader_t *GeneratePermanentShader( void )
 	hashTable[ hash ] = newShader;
 
 	return newShader;
-}
-
-/*
-=================
-VertexLightingCollapse
-
-If vertex lighting is enabled, only render a single
-pass, trying to guess which is the correct one to best approximate
-what it is supposed to look like.
-=================
-*/
-static void VertexLightingCollapse( void )
-{
-	int           stage;
-	shaderStage_t *bestStage;
-	int           bestImageRank;
-	int           rank;
-
-	// if we aren't opaque, just use the first pass
-	if ( shader.sort == SS_OPAQUE )
-	{
-		// pick the best texture for the single pass
-		bestStage = &stages[ 0 ];
-		bestImageRank = -999999;
-
-		for ( stage = 0; stage < MAX_SHADER_STAGES; stage++ )
-		{
-			shaderStage_t *pStage = &stages[ stage ];
-
-			if ( !pStage->active )
-			{
-				break;
-			}
-
-			rank = 0;
-
-			if ( pStage->bundle[ 0 ].isLightmap )
-			{
-				rank -= 100;
-			}
-
-			if ( pStage->bundle[ 0 ].tcGen != TCGEN_TEXTURE )
-			{
-				rank -= 5;
-			}
-
-			if ( pStage->bundle[ 0 ].numTexMods )
-			{
-				rank -= 5;
-			}
-
-			if ( pStage->rgbGen != CGEN_IDENTITY && pStage->rgbGen != CGEN_IDENTITY_LIGHTING )
-			{
-				rank -= 3;
-			}
-
-			if ( rank > bestImageRank )
-			{
-				bestImageRank = rank;
-				bestStage = pStage;
-			}
-		}
-
-		stages[ 0 ].bundle[ 0 ] = bestStage->bundle[ 0 ];
-		stages[ 0 ].stateBits &= ~( GLS_DSTBLEND_BITS | GLS_SRCBLEND_BITS );
-		stages[ 0 ].stateBits |= GLS_DEPTHMASK_TRUE;
-
-		if ( shader.lightmapIndex == LIGHTMAP_NONE )
-		{
-			stages[ 0 ].rgbGen = CGEN_LIGHTING_DIFFUSE;
-		}
-		else
-		{
-			stages[ 0 ].rgbGen = CGEN_EXACT_VERTEX;
-		}
-
-		stages[ 0 ].alphaGen = AGEN_SKIP;
-	}
-	else
-	{
-		// don't use a lightmap (tesla coils)
-		if ( stages[ 0 ].bundle[ 0 ].isLightmap )
-		{
-			stages[ 0 ] = stages[ 1 ];
-		}
-
-		// if we were in a cross-fade cgen, apply a hack
-		if ( stages[ 0 ].rgbGen == CGEN_ONE_MINUS_ENTITY || stages[ 1 ].rgbGen == CGEN_ONE_MINUS_ENTITY )
-		{
-			stages[ 0 ].rgbGen = CGEN_IDENTITY_LIGHTING;
-		}
-
-		if ( ( stages[ 0 ].rgbGen == CGEN_WAVEFORM && stages[ 0 ].rgbWave.func == GF_SAWTOOTH )
-		     && ( stages[ 1 ].rgbGen == CGEN_WAVEFORM && stages[ 1 ].rgbWave.func == GF_INVERSE_SAWTOOTH ) )
-		{
-			stages[ 0 ].rgbGen = CGEN_IDENTITY_LIGHTING;
-		}
-
-		if ( ( stages[ 0 ].rgbGen == CGEN_WAVEFORM && stages[ 0 ].rgbWave.func == GF_INVERSE_SAWTOOTH )
-		     && ( stages[ 1 ].rgbGen == CGEN_WAVEFORM && stages[ 1 ].rgbWave.func == GF_SAWTOOTH ) )
-		{
-			stages[ 0 ].rgbGen = CGEN_IDENTITY_LIGHTING;
-		}
-	}
-
-	for ( stage = 1; stage < MAX_SHADER_STAGES; stage++ )
-	{
-		shaderStage_t *pStage = &stages[ stage ];
-
-		if ( !pStage->active )
-		{
-			break;
-		}
-
-		memset( pStage, 0, sizeof( *pStage ) );
-	}
 }
 
 /*

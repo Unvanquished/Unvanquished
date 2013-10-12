@@ -477,8 +477,6 @@ static void FillCloudySkySide( const int mins[ 2 ], const int maxs[ 2 ], qboolea
 
 			tess.texCoords[ tess.numVertexes ][ 0 ] = s_skyTexCoords[ t ][ s ][ 0 ];
 			tess.texCoords[ tess.numVertexes ][ 1 ] = s_skyTexCoords[ t ][ s ][ 1 ];
-			tess.texCoords[ tess.numVertexes ][ 2 ] = 0;
-			tess.texCoords[ tess.numVertexes ][ 3 ] = 1;
 
 			tess.numVertexes++;
 
@@ -488,6 +486,8 @@ static void FillCloudySkySide( const int mins[ 2 ], const int maxs[ 2 ], qboolea
 			}
 		}
 	}
+
+	tess.attribsSet |= ATTR_POSITION | ATTR_TEXCOORD;
 
 	// only add indexes for one pass, otherwise it would draw multiple times for each pass
 	if ( addIndexes )
@@ -527,6 +527,7 @@ static void DrawSkyBox( shader_t *shader )
 	tess.multiDrawPrimitives = 0;
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;
+	tess.attribsSet = 0;
 
 	GL_State( GLS_DEFAULT );
 
@@ -602,9 +603,7 @@ static void DrawSkyBox( shader_t *shader )
 		// only add indexes for first stage
 		FillCloudySkySide( sky_mins_subd, sky_maxs_subd, qtrue );
 	}
-
-	// Tr3B: FIXME analyze required vertex attribs by the current material
-	Tess_UpdateVBOs( 0 );
+	Tess_UpdateVBOs( tess.attribsSet );
 
 	Tess_DrawElements();
 }
@@ -723,11 +722,8 @@ static void FillCloudBox( const shader_t *shader, int stage )
 static void BuildCloudData()
 {
 	int      i;
-	shader_t *shader;
 
-	shader = tess.surfaceShader;
-
-	assert( shader->isSky );
+	assert( tess.surfaceShader->isSky );
 
 	sky_min = 1.0 / 256.0f; // FIXME: not correct?
 	sky_max = 255.0 / 256.0f;
@@ -736,6 +732,7 @@ static void BuildCloudData()
 	tess.multiDrawPrimitives = 0;
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;
+	tess.attribsSet = 0;
 
 	if ( tess.surfaceShader->sky.cloudHeight )
 	{
@@ -895,8 +892,6 @@ void RB_DrawSun( void )
 	tess.xyz[ tess.numVertexes ][ 3 ] = 1;
 	tess.texCoords[ tess.numVertexes ][ 0 ] = 0;
 	tess.texCoords[ tess.numVertexes ][ 1 ] = 0;
-	tess.texCoords[ tess.numVertexes ][ 2 ] = 0;
-	tess.texCoords[ tess.numVertexes ][ 3 ] = 1;
 	tess.colors[ tess.numVertexes ][ 0 ] = 1;
 	tess.colors[ tess.numVertexes ][ 1 ] = 1;
 	tess.colors[ tess.numVertexes ][ 2 ] = 1;
@@ -909,8 +904,6 @@ void RB_DrawSun( void )
 	tess.xyz[ tess.numVertexes ][ 3 ] = 1;
 	tess.texCoords[ tess.numVertexes ][ 0 ] = 0;
 	tess.texCoords[ tess.numVertexes ][ 1 ] = 1;
-	tess.texCoords[ tess.numVertexes ][ 2 ] = 0;
-	tess.texCoords[ tess.numVertexes ][ 3 ] = 1;
 	tess.colors[ tess.numVertexes ][ 0 ] = 1;
 	tess.colors[ tess.numVertexes ][ 1 ] = 1;
 	tess.colors[ tess.numVertexes ][ 2 ] = 1;
@@ -923,8 +916,6 @@ void RB_DrawSun( void )
 	tess.xyz[ tess.numVertexes ][ 3 ] = 1;
 	tess.texCoords[ tess.numVertexes ][ 0 ] = 1;
 	tess.texCoords[ tess.numVertexes ][ 1 ] = 1;
-	tess.texCoords[ tess.numVertexes ][ 2 ] = 0;
-	tess.texCoords[ tess.numVertexes ][ 3 ] = 1;
 	tess.colors[ tess.numVertexes ][ 0 ] = 1;
 	tess.colors[ tess.numVertexes ][ 1 ] = 1;
 	tess.colors[ tess.numVertexes ][ 2 ] = 1;
@@ -937,8 +928,6 @@ void RB_DrawSun( void )
 	tess.xyz[ tess.numVertexes ][ 3 ] = 1;
 	tess.texCoords[ tess.numVertexes ][ 0 ] = 1;
 	tess.texCoords[ tess.numVertexes ][ 1 ] = 0;
-	tess.texCoords[ tess.numVertexes ][ 2 ] = 0;
-	tess.texCoords[ tess.numVertexes ][ 3 ] = 1;
 	tess.colors[ tess.numVertexes ][ 0 ] = 1;
 	tess.colors[ tess.numVertexes ][ 1 ] = 1;
 	tess.colors[ tess.numVertexes ][ 2 ] = 1;
@@ -1013,11 +1002,6 @@ void Tess_StageIteratorSky( void )
 	}
 	else
 	{
-		if ( tess.stageIteratorFunc2 == &Tess_StageIteratorGBuffer )
-		{
-			R_BindFBO( tr.geometricRenderFBO );
-		}
-
 		// go through all the polygons and project them onto
 		// the sky box to see which blocks on each side need
 		// to be drawn
@@ -1053,8 +1037,7 @@ void Tess_StageIteratorSky( void )
 			gl_skyboxShader->SetRequiredVertexPointers();
 
 			// bind u_ColorMap
-			GL_SelectTexture( 0 );
-			GL_Bind( tess.surfaceShader->sky.outerbox );
+			GL_BindToTMU( 0, tess.surfaceShader->sky.outerbox );
 
 			DrawSkyBox( tess.surfaceShader );
 #endif
@@ -1067,13 +1050,6 @@ void Tess_StageIteratorSky( void )
 		if ( tess.numVertexes || tess.multiDrawPrimitives )
 		{
 			tess.stageIteratorFunc2();
-		}
-
-		// Tr3B: TODO draw the inner skybox?
-
-		if ( tess.stageIteratorFunc2 == Tess_StageIteratorGBuffer )
-		{
-			R_BindNullFBO();
 		}
 
 		if ( tess.stageIteratorFunc2 != Tess_StageIteratorDepthFill )

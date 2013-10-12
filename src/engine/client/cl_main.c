@@ -42,6 +42,7 @@ Maryland 20850 USA.
 
 #include "../sys/sys_loadlib.h"
 #include "../sys/sys_local.h"
+#include "../botlib/bot_debug.h"
 
 cvar_t *cl_wavefilerecord;
 
@@ -482,12 +483,7 @@ void CL_VoipParseTargets( void )
 			}
 			else
 			{
-				if ( !Q_strnicmp( target, "attacker", 8 ) )
-				{
-					val = VM_Call( cgvm, CG_LAST_ATTACKER );
-					target += 8;
-				}
-				else if ( !Q_strnicmp( target, "crosshair", 9 ) )
+				if ( !Q_strnicmp( target, "crosshair", 9 ) )
 				{
 					val = VM_Call( cgvm, CG_CROSSHAIR_PLAYER );
 					target += 9;
@@ -908,24 +904,23 @@ static char demoName[ MAX_QPATH ]; // compiler bug workaround
 void CL_Record_f( void )
 {
 	char name[ MAX_OSPATH ];
-	int  len;
 	char *s;
 
 	if ( Cmd_Argc() > 2 )
 	{
-		Cmd_PrintUsage("<name>", NULL);
+		Cmd_PrintUsage( "<name>", NULL );
 		return;
 	}
 
 	if ( clc.demorecording )
 	{
-		Com_Log(LOG_ERROR, _( "Already recording." ));
+		Com_Log( LOG_ERROR, _( "Already recording." ) );
 		return;
 	}
 
 	if ( cls.state != CA_ACTIVE )
 	{
-		Com_Log(LOG_ERROR, _( "You must be in a level to record." ));
+		Com_Log( LOG_ERROR, _( "You must be in a level to record." ) );
 		return;
 	}
 
@@ -933,7 +928,7 @@ void CL_Record_f( void )
 	// sync 0 doesn't prevent recording, so not forcing it off .. everyone does g_sync 1 ; record ; g_sync 0 ..
 	if ( NET_IsLocalAddress( clc.serverAddress ) && !Cvar_VariableValue( "g_synchronousClients" ) )
 	{
-		Com_Logf( LOG_WARN, _( "You should set '%s' for smoother demo recording" ), "g_synchronousClients 1");
+		Com_Logf( LOG_WARN, _( "You should set '%s' for smoother demo recording" ), "g_synchronousClients 1" );
 	}
 
 	if ( Cmd_Argc() == 2 )
@@ -942,23 +937,44 @@ void CL_Record_f( void )
 		Q_strncpyz( demoName, s, sizeof( demoName ) );
 		Com_sprintf( name, sizeof( name ), "demos/%s.dm_%d", demoName, PROTOCOL_VERSION );
 	}
+
 	else
 	{
-		int number;
+		char    name[ 256 ];
+		char    mapname[ MAX_QPATH ];
+		char    *period;
+		qtime_t time;
 
-		// scan for a free demo name
-		for ( number = 0; number <= 9999; number++ )
+		Com_RealTime( &time );
+
+		Q_strncpyz( mapname, cl.mapname, MAX_QPATH );
+
+		for ( period = mapname; *period; period++ )
 		{
-			CL_DemoFilename( number, demoName );
-			Com_sprintf( name, sizeof( name ), "demos/%s.dm_%d", demoName, PROTOCOL_VERSION );
-
-			len = FS_ReadFile( name, NULL );
-
-			if ( len <= 0 )
+			if ( *period == '.' )
 			{
-				break; // file doesn't exist
+				*period = '\0';
+				break;
 			}
 		}
+
+		for ( period = mapname; *period; period++ )
+		{
+			if ( *period == '/' )
+			{
+				break;
+			}
+		}
+
+		if ( *period )
+		{
+			period++;
+		}
+
+		Com_sprintf( name, sizeof( name ), "demos/%s-%s_%04i-%02i-%02i_%02i%02i%02i.dm_%d", NET_AdrToString( clc.serverAddress ), period,
+		             1900 + time.tm_year, time.tm_mon + 1, time.tm_mday,
+		             time.tm_hour, time.tm_min, time.tm_sec,
+		             PROTOCOL_VERSION );
 	}
 
 	CL_Record( name );
@@ -2454,7 +2470,6 @@ void CL_UpdateProfile( void )
 {
 	if( cl_profile->modified )
 	{
-		CL_LoadRSAKeys();
 		cl_profile->modified = qfalse;
 	}
 }
@@ -2888,6 +2903,7 @@ void CL_CheckForResend( void )
 		{
 			char key[ RSA_STRING_LENGTH ];
 
+			CL_LoadRSAKeys();
 			mpz_get_str( key, 16, public_key.n);
 			// sending back the challenge
 			port = Cvar_VariableValue( "net_qport" );
@@ -3178,12 +3194,62 @@ void CL_GSRFeaturedLabel( byte **data, char *buf, int size )
 
 /*
 ===================
+CL_ServerLinksResponsePacket
+===================
+*/
+void CL_ServerLinksResponsePacket( const netadr_t *from, msg_t *msg )
+{
+	int      i, count, total;
+	netadr_t addresses[ MAX_SERVERSPERPACKET ];
+	int      numservers, port;
+	byte      *buffptr;
+	byte      *buffend;
+
+	Com_DPrintf( "CL_ServerLinksResponsePacket\n" );
+
+	if ( msg->data[ 30 ] != 0 )
+	{
+		return;
+	}
+
+	// parse through server response string
+	cls.numserverLinks = 0;
+	buffptr = msg->data + 31; // skip header
+	buffend = msg->data + msg->cursize;
+
+	// Each link contains:
+	// * an IPv4 address & port
+	// * an IPv6 address & port
+	while ( buffptr < buffend - 20 && cls.numserverLinks < ARRAY_LEN( cls.serverLinks ) )
+	{
+		cls.serverLinks[ cls.numserverLinks ].type = NA_IP_DUAL;
+
+		// IPv4 address
+		memcpy( cls.serverLinks[ cls.numserverLinks ].ip, buffptr, 4 );
+		port = buffptr[ 4 ] << 8 | buffptr[ 5 ];
+		cls.serverLinks[ cls.numserverLinks ].port4 = BigShort( port );
+		buffptr += 6;
+
+		// IPv4 address
+		memcpy( cls.serverLinks[ cls.numserverLinks ].ip6, buffptr, 16 );
+		port = buffptr[ 16 ] << 8 | buffptr[ 17 ];
+		cls.serverLinks[ cls.numserverLinks ].port6 = BigShort( port );
+		buffptr += 18;
+
+		++cls.numserverLinks;
+	}
+
+	Com_DPrintf( "%d server address pairs parsed\n", cls.numserverLinks );
+}
+
+/*
+===================
 CL_ServersResponsePacket
 ===================
 */
 void CL_ServersResponsePacket( const netadr_t *from, msg_t *msg, qboolean extended )
 {
-	int      i, count, total;
+	int      i, j, count, total;
 	netadr_t addresses[ MAX_SERVERSPERPACKET ];
 	int      numservers;
 	byte      *buffptr;
@@ -3255,6 +3321,8 @@ void CL_ServersResponsePacket( const netadr_t *from, msg_t *msg, qboolean extend
 
 	while ( buffptr + 1 < buffend )
 	{
+		qboolean duplicate = qfalse;
+
 		// IPv4 address
 		if ( *buffptr == '\\' )
 		{
@@ -3270,7 +3338,41 @@ void CL_ServersResponsePacket( const netadr_t *from, msg_t *msg, qboolean extend
 				addresses[ numservers ].ip[ i ] = *buffptr++;
 			}
 
+			// parse out port
+			addresses[ numservers ].port = ( *buffptr++ ) << 8;
+			addresses[ numservers ].port += *buffptr++;
+			addresses[ numservers ].port = BigShort( addresses[ numservers ].port );
+
 			addresses[ numservers ].type = NA_IP;
+
+			// look up this address in the links list
+			for ( j = 0; j < cls.numserverLinks && !duplicate; ++j )
+			{
+				if ( addresses[ numservers ].port == cls.serverLinks[ j ].port4 && !memcmp( addresses[ numservers ].ip, cls.serverLinks[ j ].ip, 4 ) )
+				{
+					// found it, so look up the corresponding address
+					char s[ NET_ADDRSTRMAXLEN ];
+
+					// hax to get the IP address & port as a string (memcmp etc. SHOULD work, but...)
+					cls.serverLinks[ j ].type = NA_IP6;
+					cls.serverLinks[ j ].port = cls.serverLinks[ j ].port6;
+					strcpy( s, NET_AdrToStringwPort( cls.serverLinks[ j ] ) );
+					cls.serverLinks[j].type = NA_IP_DUAL;
+
+					for ( i = 0; i < numservers; ++i )
+					{
+						if ( !strcmp( s, NET_AdrToStringwPort( addresses[ i ] ) ) )
+						{
+							// found: replace with the preferred address, exit both loops
+							addresses[ i ] = cls.serverLinks[ j ];
+							addresses[ i ].type = NET_TYPE( cls.serverLinks[ j ].type );
+							addresses[ i ].port = ( addresses[ i ].type == NA_IP ) ? cls.serverLinks[ j ].port4 : cls.serverLinks[ j ].port6;
+							duplicate = qtrue;
+							break;
+						}
+					}
+				}
+			}
 		}
 		// IPv6 address, if it's an extended response
 		else if ( extended && *buffptr == '/' )
@@ -3287,8 +3389,42 @@ void CL_ServersResponsePacket( const netadr_t *from, msg_t *msg, qboolean extend
 				addresses[ numservers ].ip6[ i ] = *buffptr++;
 			}
 
+			// parse out port
+			addresses[ numservers ].port = ( *buffptr++ ) << 8;
+			addresses[ numservers ].port += *buffptr++;
+			addresses[ numservers ].port = BigShort( addresses[ numservers ].port );
+
 			addresses[ numservers ].type = NA_IP6;
 			addresses[ numservers ].scope_id = from->scope_id;
+
+			// look up this address in the links list
+			for ( j = 0; j < cls.numserverLinks && !duplicate; ++j )
+			{
+				if ( addresses[ numservers ].port == cls.serverLinks[ j ].port6 && !memcmp( addresses[ numservers ].ip6, cls.serverLinks[ j ].ip6, 16 ) )
+				{
+					// found it, so look up the corresponding address
+					char s[ NET_ADDRSTRMAXLEN ];
+
+					// hax to get the IP address & port as a string (memcmp etc. SHOULD work, but...)
+					cls.serverLinks[ j ].type = NA_IP;
+					cls.serverLinks[ j ].port = cls.serverLinks[ j ].port4;
+					strcpy( s, NET_AdrToStringwPort( cls.serverLinks[ j ] ) );
+					cls.serverLinks[j].type = NA_IP_DUAL;
+
+					for ( i = 0; i < numservers; ++i )
+					{
+						if ( !strcmp( s, NET_AdrToStringwPort( addresses[ i ] ) ) )
+						{
+							// found: replace with the preferred address, exit both loops
+							addresses[ i ] = cls.serverLinks[ j ];
+							addresses[ i ].type = NET_TYPE( cls.serverLinks[ j ].type );
+							addresses[ i ].port = ( addresses[ i ].type == NA_IP ) ? cls.serverLinks[ j ].port4 : cls.serverLinks[ j ].port6;
+							duplicate = qtrue;
+							break;
+						}
+					}
+				}
+			}
 		}
 		else
 		{
@@ -3296,22 +3432,20 @@ void CL_ServersResponsePacket( const netadr_t *from, msg_t *msg, qboolean extend
 			break;
 		}
 
-		// parse out port
-		addresses[ numservers ].port = ( *buffptr++ ) << 8;
-		addresses[ numservers ].port += *buffptr++;
-		addresses[ numservers ].port = BigShort( addresses[ numservers ].port );
-
 		// syntax check
 		if ( *buffptr != '\\' && *buffptr != '/' )
 		{
 			break;
 		}
 
-		numservers++;
-
-		if ( numservers >= MAX_SERVERSPERPACKET )
+		if ( !duplicate )
 		{
-			break;
+			++numservers;
+
+			if ( numservers >= MAX_SERVERSPERPACKET )
+			{
+				break;
+			}
 		}
 	}
 
@@ -3469,6 +3603,13 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg )
 	if ( !Q_strncmp( c, "getserversResponse", 18 ) )
 	{
 		CL_ServersResponsePacket( &from, msg, qfalse );
+		return;
+	}
+
+	// list of servers with both IPv4 and IPv6 addresses; sent back by a master server (extended)
+	if ( !Q_strncmp( c, "getserversExtResponseLinks", 26 ) )
+	{
+		CL_ServerLinksResponsePacket( &from, msg );
 		return;
 	}
 
@@ -4341,8 +4482,7 @@ qboolean CL_InitRef( const char *renderer )
 
 	ri.ftol = Q_ftol;
 
-	ri.Sys_GLimpSafeInit = Sys_GLimpSafeInit;
-	ri.Sys_GLimpInit = Sys_GLimpInit;
+	ri.Bot_DrawDebugMesh = BotDebugDrawMesh;
 
 	Com_Printf("%s", _( "Calling GetRefAPI…\n" ));
 	ret = GetRefAPI( REF_API_VERSION, &ri );
@@ -4620,7 +4760,6 @@ void CL_Init( void )
 	Cbuf_Execute();
 
 	Cvar_Set( "cl_running", "1" );
-	CL_LoadRSAKeys();
 
 	CL_OpenClientLog();
 	CL_WriteClientLog( "`~-     Client Opened     -~`\n" );
@@ -5259,36 +5398,15 @@ void CL_GlobalServers_f( void )
 	Com_DPrintf( "Requesting servers from master %s…\n", masteraddress );
 
 	cls.numglobalservers = -1;
+	cls.numserverLinks = 0;
 	cls.pingUpdateSource = AS_GLOBAL;
 
-	Com_sprintf( command, sizeof( command ), "getserversExt %s %d",
+	Com_sprintf( command, sizeof( command ), "getserversExt %s %d dual",
 	             cl_gamename->string, protocol );
 	// TODO: test if we only have IPv4/IPv6, if so request only the relevant
 	// servers with getserversExt %s %d ipvX
 	// not that big a deal since the extra servers won't respond to getinfo
 	// anyway.
-#if 0
-	// Use the extended query for IPv6 masters
-	if ( to.type == NA_IP6 || to.type == NA_MULTICAST6 )
-	{
-		int v4enabled = Cvar_VariableIntegerValue( "net_enabled" ) & NET_ENABLEV4;
-
-		if ( v4enabled )
-		{
-			Com_sprintf( command, sizeof( command ), "getserversExt %s %s",
-			             cl_gamename->string, Cmd_Argv( 2 ) );
-		}
-		else
-		{
-			Com_sprintf( command, sizeof( command ), "getserversExt %s %s ipv6",
-			             cl_gamename->string, Cmd_Argv( 2 ) );
-		}
-	}
-	else
-	{
-		Com_sprintf( command, sizeof( command ), "getservers %d", protocol );
-	}
-#endif
 
 	for ( i = 3; i < count; i++ )
 	{

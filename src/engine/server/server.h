@@ -38,6 +38,7 @@ Maryland 20850 USA.
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
 #include "../server/g_api.h"
+#include "../botlib/bot_api.h"
 
 //=============================================================================
 
@@ -558,5 +559,8 @@ void     SV_Netchan_FreeQueue( client_t *client );
 #define DLNOTIFY_REDIRECT 0x00000001 // "Redirecting client ..."
 #define DLNOTIFY_BEGIN    0x00000002 // "clientDownload: 4 : beginning ..."
 #define DLNOTIFY_ALL      ( DLNOTIFY_REDIRECT | DLNOTIFY_BEGIN )
+
+
+void SV_GeoIP_Init( void );
 
 #endif /* SERVER_H_ */

@@ -1,3 +1,4 @@
+// still used?
 models/weapons/grenade/grenade_s
 {
 	{
@@ -15,6 +16,7 @@ gfx/grenade/flare_01
 		blendfunc add
 	}
 }
+
 gfx/weapons/grenade_shockwave_haze
 {
   cull none
@@ -25,4 +27,11 @@ gfx/weapons/grenade_shockwave_haze
     deformMagnitude 5.0
     map gfx/weapons/shockwave_normal.tga
   }
+}
+
+models/weapons/grenade/grenade
+{
+    diffuseMap  models/weapons/grenade/grenade.tga
+    normalMap   models/weapons/grenade/grenade_n.tga
+    specularMap models/weapons/grenade/grenade_s.tga
 }

@@ -49,13 +49,13 @@ void target_relay_act( gentity_t *self, gentity_t *caller, gentity_t *activator 
 		return;
 
 	if ( ( self->spawnflags & 1 ) && activator && activator->client &&
-	     activator->client->ps.stats[ STAT_TEAM ] != TEAM_HUMANS )
+	     activator->client->pers.team != TEAM_HUMANS )
 	{
 		return;
 	}
 
 	if ( ( self->spawnflags & 2 ) && activator && activator->client &&
-	     activator->client->ps.stats[ STAT_TEAM ] != TEAM_ALIENS )
+	     activator->client->pers.team != TEAM_ALIENS )
 	{
 		return;
 	}

@@ -201,6 +201,7 @@ static void CG_Obituary( entityState_t *ent )
 		switch ( mod )
 		{
 			case MOD_FLAMER_SPLASH:
+			case MOD_BURN:
 				if ( cg_emoticonsInMessages.integer )
 				{
 					message = "[flamer] %s\n";
@@ -385,6 +386,7 @@ static void CG_Obituary( entityState_t *ent )
 				break;
 
 			case MOD_FLAMER:
+			case MOD_FLAMER_SPLASH:
 				if ( cg_emoticonsInMessages.integer )
 				{
 					message = "%s%s^7 [flamer] %s\n";
@@ -396,7 +398,7 @@ static void CG_Obituary( entityState_t *ent )
 				}
 				break;
 
-			case MOD_FLAMER_SPLASH:
+			case MOD_BURN:
 				if ( cg_emoticonsInMessages.integer )
 				{
 					message = "%s%s^7 [flamer] %s\n";
@@ -404,7 +406,7 @@ static void CG_Obituary( entityState_t *ent )
 				}
 				else
 				{
-					message = G_( "%s ^7was toasted by %s%s^7's flamer\n" );
+					message = G_( "%s ^7was burned by %s%s^7's fire\n" );
 				}
 				break;
 
@@ -572,10 +574,11 @@ static void CG_Obituary( entityState_t *ent )
 				}
 				break;
 
-			case MOD_LEVEL4_CRUSH:
+			case MOD_WEIGHT_H:
+			case MOD_WEIGHT_A:
 				if ( cg_emoticonsInMessages.integer )
 				{
-					message = "%s%s^7 [tyrant] %s\n";
+					message = "%s%s^7 crushed %s\n";
 					attackerFirst = qtrue;
 				}
 				else
@@ -807,6 +810,29 @@ static void CG_Level2Zap( entityState_t *es )
 
 /*
 ==============
+CG_Confidence
+
+Notify player of generated confidence
+==============
+*/
+void CG_Confidence( entityState_t *es )
+{
+	float                  confidence;
+	qboolean               negative;
+	//confidence_reason_t    reason;
+	//confidence_qualifier_t qualifier;
+
+	negative   = es->groundEntityNum;
+	confidence = ( negative ? -es->otherEntityNum2 : es->otherEntityNum2 ) / 10.0f;
+	//reason     = es->eventParm;
+	//qualifier  = es->otherEntityNum;
+
+	cg.confidenceGained     = confidence;
+	cg.confidenceGainedTime = cg.time;
+}
+
+/*
+==============
 CG_EntityEvent
 
 An entity has an event value
@@ -857,9 +883,6 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 
 	switch ( event )
 	{
-			//
-			// movement generated events
-			//
 		case EV_FOOTSTEP:
 			if ( cg_footsteps.integer && ci->footsteps != FOOTSTEP_NONE )
 			{
@@ -1103,12 +1126,8 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			trap_S_StartSound( NULL, es->number, CHAN_AUTO, CG_CustomSound( es->number, "*gasp.wav" ) );
 			break;
 
-			//
-			// weapon events
-			//
 		case EV_NOAMMO:
-			trap_S_StartSound( NULL, es->number, CHAN_WEAPON,
-			                   cgs.media.weaponEmptyClick );
+			trap_S_StartSound( NULL, es->number, CHAN_WEAPON, cgs.media.weaponEmptyClick );
 			break;
 
 		case EV_CHANGE_WEAPON:
@@ -1116,15 +1135,15 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			break;
 
 		case EV_FIRE_WEAPON:
-			CG_FireWeapon( cent, WPM_PRIMARY );
+			CG_HandleFireWeapon( cent, WPM_PRIMARY );
 			break;
 
 		case EV_FIRE_WEAPON2:
-			CG_FireWeapon( cent, WPM_SECONDARY );
+			CG_HandleFireWeapon( cent, WPM_SECONDARY );
 			break;
 
 		case EV_FIRE_WEAPON3:
-			CG_FireWeapon( cent, WPM_TERTIARY );
+			CG_HandleFireWeapon( cent, WPM_TERTIARY );
 			break;
 
 		case EV_WEAPON_RELOAD:
@@ -1134,11 +1153,6 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			}
 			break;
 
-			//=================================================================
-
-			//
-			// other events
-			//
 		case EV_PLAYER_TELEPORT_IN:
 			//deprecated
 			break;
@@ -1171,27 +1185,35 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 
 			break;
 
-			//
-			// missile impacts
-			//
-		case EV_MISSILE_HIT:
-			ByteToDir( es->eventParm, dir );
-			CG_MissileHitEntity( es->weapon, es->generic1, position, dir, es->otherEntityNum, es->torsoAnim );
+		case EV_WEAPON_HIT_ENTITY:
+			CG_HandleWeaponHitEntity( es, position );
 			break;
 
-		case EV_MISSILE_MISS:
-			ByteToDir( es->eventParm, dir );
-			CG_MissileHitWall( es->weapon, es->generic1, 0, position, dir, IMPACTSOUND_DEFAULT, es->torsoAnim );
+		case EV_WEAPON_HIT_ENVIRONMENT:
+			CG_HandleWeaponHitWall( es, position );
 			break;
 
-		case EV_MISSILE_MISS_METAL:
-			ByteToDir( es->eventParm, dir );
-			CG_MissileHitWall( es->weapon, es->generic1, 0, position, dir, IMPACTSOUND_METAL, es->torsoAnim );
+		case EV_MISSILE_HIT_ENTITY:
+			CG_HandleMissileHitEntity( es, position );
+			break;
+
+		// currently there is no support for metal sounds
+		case EV_MISSILE_HIT_ENVIRONMENT:
+		case EV_MISSILE_HIT_METAL:
+			CG_HandleMissileHitWall( es, position );
+			break;
+
+		case EV_SHOTGUN:
+			CG_HandleFireShotgun( es );
+			break;
+
+		case EV_HUMAN_BUILDABLE_DYING:
+			CG_HumanBuildableDying( es->modelindex, position );
 			break;
 
 		case EV_HUMAN_BUILDABLE_EXPLOSION:
 			ByteToDir( es->eventParm, dir );
-			CG_HumanBuildableExplosion( position, dir );
+			CG_HumanBuildableExplosion( es->modelindex, position, dir );
 			break;
 
 		case EV_ALIEN_BUILDABLE_EXPLOSION:
@@ -1222,19 +1244,6 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 					}
 				}
 			}
-			break;
-
-		case EV_BULLET_HIT_WALL:
-			ByteToDir( es->eventParm, dir );
-			CG_Bullet( es->pos.trBase, es->otherEntityNum, dir, qfalse, ENTITYNUM_WORLD );
-			break;
-
-		case EV_BULLET_HIT_FLESH:
-			CG_Bullet( es->pos.trBase, es->otherEntityNum, dir, qtrue, es->eventParm );
-			break;
-
-		case EV_SHOTGUN:
-			CG_ShotgunFire( es );
 			break;
 
 		case EV_GENERAL_SOUND:
@@ -1316,7 +1325,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			break;
 
 		case EV_OVERMIND_ATTACK:
-			if ( cg.predictedPlayerState.stats[ STAT_TEAM ] == TEAM_ALIENS )
+			if ( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_ALIENS )
 			{
 				trap_S_StartLocalSound( cgs.media.alienOvermindAttack, CHAN_ANNOUNCER );
 				CG_CenterPrint( "The Overmind is under attack!", 200, GIANTCHAR_WIDTH * 4 );
@@ -1325,7 +1334,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			break;
 
 		case EV_OVERMIND_DYING:
-			if ( cg.predictedPlayerState.stats[ STAT_TEAM ] == TEAM_ALIENS )
+			if ( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_ALIENS )
 			{
 				trap_S_StartLocalSound( cgs.media.alienOvermindDying, CHAN_ANNOUNCER );
 				CG_CenterPrint( "The Overmind is dying!", 200, GIANTCHAR_WIDTH * 4 );
@@ -1334,7 +1343,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			break;
 
 		case EV_DCC_ATTACK:
-			if ( cg.predictedPlayerState.stats[ STAT_TEAM ] == TEAM_HUMANS )
+			if ( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_HUMANS )
 			{
 				//trap_S_StartLocalSound( cgs.media.humanDCCAttack, CHAN_ANNOUNCER );
 				CG_CenterPrint( "Our base is under attack!", 200, GIANTCHAR_WIDTH * 4 );
@@ -1347,7 +1356,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			break;
 
 		case EV_OVERMIND_SPAWNS:
-			if ( cg.predictedPlayerState.stats[ STAT_TEAM ] == TEAM_ALIENS )
+			if ( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_ALIENS )
 			{
 				trap_S_StartLocalSound( cgs.media.alienOvermindSpawns, CHAN_ANNOUNCER );
 				CG_CenterPrint( "The Overmind needs spawns!", 200, GIANTCHAR_WIDTH * 4 );
@@ -1413,6 +1422,14 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 
 		case EV_LEV2_ZAP:
 			CG_Level2Zap( es );
+			break;
+
+		case EV_HIT:
+			cg.hitTime = cg.time;
+			break;
+
+		case EV_CONFIDENCE:
+			CG_Confidence( es );
 			break;
 
 		default:

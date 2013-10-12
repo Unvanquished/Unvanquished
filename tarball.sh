@@ -81,7 +81,7 @@ find $PACKAGE \( -name '.*' -o -name '*~' -o -name '*.orig' -o -name '*.rej' \) 
 
 # purge all but *required* libraries
 test "$STRIP_SOURCES" = '' ||
-  rm -rf $(ls -1d $PACKAGE/src/libs/* | grep -v '/\(cpuinfo\|openexr\|picomodel\|glsl-optimizer\|findlocale\|tinygettext\|zlib\)')
+  rm -rf $(ls -1d $PACKAGE/src/libs/* | grep -v '/\(cpuinfo\|openexr\|picomodel\|fastlz\|findlocale\|recast\|detour\|tinygettext\|zlib\|opus\)')
 
 # purge binaries
 test "$STRIP_BINARIES" = '' || {
@@ -100,7 +100,7 @@ test "$STRIP_DEAD" = '' || {
 }
 
 # kill empty directories
-rmdir --ignore-fail-on-non-empty $(find $PACKAGE -type d | sort -r)
+find $PACKAGE -type d -print0 | sort -zr | xargs -0r rmdir --ignore-fail-on-non-empty
 
 # now build the archive
 case "$FORMAT" in

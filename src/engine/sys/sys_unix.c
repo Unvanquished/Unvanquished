@@ -56,6 +56,7 @@ Maryland 20850 USA.
 #if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 #include <SDL.h>
 #include <SDL_syswm.h>
+#include "sdl2_compat.h"
 #endif
 
 #ifndef SIGIOT
@@ -182,8 +183,6 @@ Sys_GetClipboardData
 static struct {
 	Display *display;
 	Window  window;
-	void  ( *lockDisplay )( void );
-	void  ( *unlockDisplay )( void );
 	Atom    utf8;
 } x11 = { NULL };
 #endif
@@ -206,7 +205,7 @@ char *Sys_GetClipboardData( clipboard_t clip )
 		SDL_SysWMinfo info;
 
 		SDL_VERSION( &info.version );
-		if ( SDL_GetWMInfo( &info ) != 1 || info.subsystem != SDL_SYSWM_X11 )
+		if ( SDL_GetWindowWMInfo( IN_GetWindow(), &info ) != 1 || info.subsystem != SDL_SYSWM_X11 )
 		{
 			Com_Printf("Not on X11? (%d)\n",info.subsystem);
 			return NULL;
@@ -214,15 +213,13 @@ char *Sys_GetClipboardData( clipboard_t clip )
 
 		x11.display = info.info.x11.display;
 		x11.window = info.info.x11.window;
-		x11.lockDisplay = info.info.x11.lock_func;
-		x11.unlockDisplay = info.info.x11.unlock_func;
 		x11.utf8 = XInternAtom( x11.display, "UTF8_STRING", False );
 
 		SDL_EventState( SDL_SYSWMEVENT, SDL_ENABLE );
 		//SDL_SetEventFilter( Sys_ClipboardFilter );
 	}
 
-	x11.lockDisplay();
+	XLockDisplay( x11.display );
 
 	switch ( clip )
 	{
@@ -249,7 +246,7 @@ char *Sys_GetClipboardData( clipboard_t clip )
 	}
 
 	converted = XInternAtom( x11.display, "UNVANQUISHED_SELECTION", False );
-	x11.unlockDisplay();
+	XUnlockDisplay( x11.display );
 
 	if ( owner == None || owner == x11.window )
 	{
@@ -260,11 +257,11 @@ char *Sys_GetClipboardData( clipboard_t clip )
 	{
 		SDL_Event event;
 
-		x11.lockDisplay();
+		XLockDisplay( x11.display );
 		owner = x11.window;
 		//FIXME: when we can respond to clipboard requests, don't alter selection
 		XConvertSelection( x11.display, selection, x11.utf8, converted, owner, CurrentTime );
-		x11.unlockDisplay();
+		XUnlockDisplay( x11.display );
 
 		for (;;)
 		{
@@ -272,8 +269,11 @@ char *Sys_GetClipboardData( clipboard_t clip )
 
 			if ( event.type == SDL_SYSWMEVENT )
 			{
+#if SDL_VERSION_ATLEAST( 2, 0, 0 )
+				XEvent xevent = event.syswm.msg->msg.x11.event;
+#else
 				XEvent xevent = event.syswm.msg->event.xevent;
-
+#endif
 				if ( xevent.type == SelectionNotify &&
 				     xevent.xselection.requestor == owner )
 				{
@@ -283,7 +283,7 @@ char *Sys_GetClipboardData( clipboard_t clip )
 		}
 	}
 
-	x11.lockDisplay ();
+	XLockDisplay( x11.display );
 
 	if ( XGetWindowProperty( x11.display, owner, converted, 0, INT_MAX / 4,
 	                         False, x11.utf8, &selectionType, &selectionFormat,
@@ -299,11 +299,11 @@ char *Sys_GetClipboardData( clipboard_t clip )
 		}
 		XFree( src );
 
-		x11.unlockDisplay();
+		XUnlockDisplay( x11.display );
 		return dest;
 	}
 
-	x11.unlockDisplay();
+	XUnlockDisplay( x11.display );
 #endif // !DEDICATED
 	return NULL;
 }
@@ -757,7 +757,8 @@ void Sys_ErrorDialog( const char *error )
 	const char   *homepath = Cvar_VariableString( "fs_homepath" );
 	const char   *gamedir = Cvar_VariableString( "fs_game" );
 	const char   *fileName = "crashlog.txt";
-	char         *ospath = FS_BuildOSPath( homepath, gamedir, fileName );
+	char         *ospath = FS_BuildOSPath( homepath, gamedir, "" );
+	char         *ospathfile = FS_BuildOSPath( homepath, gamedir, fileName );
 
 	Sys_Print( va( "%s\n", error ) );
 
@@ -765,14 +766,14 @@ void Sys_ErrorDialog( const char *error )
 	// We may have grabbed input devices. Need to release.
 	if ( SDL_WasInit( SDL_INIT_VIDEO ) )
 	{
-		SDL_WM_GrabInput( SDL_GRAB_OFF );
+		SDL_SetWindowGrab( IN_GetWindow(), qfalse );
 	}
 
-	Sys_Dialog( DT_ERROR, va( "%s. See \"%s\" for details.", error, ospath ), "Error" );
+	Sys_Dialog( DT_ERROR, va( "%s. See \"%s\" for details.", error, ospathfile ), "Error" );
 #endif
 
 	// Make sure the write path for the crashlog exists...
-	if ( FS_CreatePath( ospath ) )
+	if ( !Sys_Mkdir( ospath ) )
 	{
 		Com_Printf( "ERROR: couldn't create path '%s' for crash log.\n", ospath );
 		return;
@@ -781,7 +782,7 @@ void Sys_ErrorDialog( const char *error )
 	// We might be crashing because we maxed out the Quake MAX_FILE_HANDLES,
 	// which will come through here, so we don't want to recurse forever by
 	// calling FS_FOpenFileWrite()...use the Unix system APIs instead.
-	f = open( ospath, O_CREAT | O_TRUNC | O_WRONLY, 0640 );
+	f = open( ospathfile, O_CREAT | O_TRUNC | O_WRONLY, 0640 );
 
 	if ( f == -1 )
 	{
@@ -1056,30 +1057,6 @@ dialogResult_t Sys_Dialog( dialogType_t type, const char *message, const char *t
 
 #endif
 
-/*
-==============
-Sys_GLimpSafeInit
-
-Unix specific "safe" GL implementation initialisation
-==============
-*/
-void Sys_GLimpSafeInit( void )
-{
-	// NOP
-}
-
-/*
-==============
-Sys_GLimpInit
-
-Unix specific GL implementation initialisation
-==============
-*/
-void Sys_GLimpInit( void )
-{
-	// NOP
-}
-
 void Sys_SetFloatEnv( void )
 {
 }
@@ -1136,11 +1113,27 @@ Sys_IsNumLockDown
 qboolean Sys_IsNumLockDown( void )
 {
 #if !defined(MACOS_X) && !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
-	Display        *dpy = XOpenDisplay(":0");
+	const char     *denv = getenv( "DISPLAY" );
+	Display        *dpy;
 	XKeyboardState x;
 
-	XGetKeyboardControl(dpy, &x);
-	XCloseDisplay(dpy);
+	if ( denv != NULL && strlen( denv ) > 0 )
+		dpy = XOpenDisplay(denv);
+	else
+		dpy = XOpenDisplay(":0");
+
+	if ( dpy == 0 )
+	{
+		Com_Printf( _("ERROR: cannot determine numlock state as we couldn't\n" 
+		              "grab your non-standard (e.g. not ':0') X display.\n"
+		              "ensure the 'DISPLAY' environment variable is set.\n") );
+		return qtrue;
+	}
+	else
+	{
+		XGetKeyboardControl(dpy, &x);
+		XCloseDisplay(dpy);
+	}
 
 	return (x.led_mask & 2) ? qtrue : qfalse;
 #else

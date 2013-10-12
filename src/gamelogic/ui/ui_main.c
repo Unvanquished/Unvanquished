@@ -181,10 +181,8 @@ Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3,
 			return 0;
 
 		case UI_KEY_EVENT:
-			if ( arg1 & ( 1 << KEYEVSTATE_CHAR ) )
+			if ( arg1 & KEYEVSTATE_CHAR )
 			{
-				arg0 &= ~K_CHAR_FLAG;
-				arg0 |= ( arg1 & ( 1 << KEYEVSTATE_BIT ) ) ? K_CHAR_FLAG : 0;
 				UI_KeyEvent( 0, arg0, arg1 );
 			}
 			else
@@ -1783,54 +1781,22 @@ qboolean UI_LoadHelp( const char *helpFile )
 
 /*
 ===============
-UI_GetCurrentAlienStage
-===============
-*/
-static stage_t UI_GetCurrentAlienStage( void )
-{
-	char    buffer[ MAX_TOKEN_CHARS ];
-	stage_t stage, dummy;
-
-	trap_Cvar_VariableStringBuffer( "ui_stages", buffer, sizeof( buffer ) );
-	sscanf( buffer, "%d %d", ( int * ) &stage, ( int * ) &dummy );
-
-	return stage;
-}
-
-/*
-===============
-UI_GetCurrentHumanStage
-===============
-*/
-static stage_t UI_GetCurrentHumanStage( void )
-{
-	char    buffer[ MAX_TOKEN_CHARS ];
-	stage_t stage, dummy;
-
-	trap_Cvar_VariableStringBuffer( "ui_stages", buffer, sizeof( buffer ) );
-	sscanf( buffer, "%d %d", ( int * ) &dummy, ( int * ) &stage );
-
-	return stage;
-}
-
-/*
-===============
 UI_DrawInfoPane
 ===============
 */
 static void UI_DrawInfoPane( menuItem_t *item, rectDef_t *rect, float text_x, float text_y,
                              float scale, int textalign, int textvalign, vec4_t color, int textStyle )
 {
-	int        value = 0;
+	int        value = 0, value2 = 0;
 	const char *s = "";
-	const char *string = "";
+	const char *string = "", *string2 = "";
 
-	int        class, credits;
+	int        class_, credits;
 	char       ui_currentClass[ MAX_STRING_CHARS ];
 
 	trap_Cvar_VariableStringBuffer( "ui_currentClass", ui_currentClass, MAX_STRING_CHARS );
 
-	sscanf( ui_currentClass, "%d %d", &class, &credits );
+	sscanf( ui_currentClass, "%d %d", &class_, &credits );
 
 	switch ( item->type )
 	{
@@ -1839,9 +1805,7 @@ static void UI_DrawInfoPane( menuItem_t *item, rectDef_t *rect, float text_x, fl
 			break;
 
 		case INFOTYPE_CLASS:
-			value = ( BG_ClassCanEvolveFromTo( class, item->v.pclass, credits,
-			                                   UI_GetCurrentAlienStage(), 0 ) +
-			          ALIEN_CREDITS_PER_KILL - 1 ) / ALIEN_CREDITS_PER_KILL;
+			value = BG_ClassCanEvolveFromTo( class_, item->v.pclass, credits );
 
 			if ( value < 1 )
 			{
@@ -1855,7 +1819,7 @@ static void UI_DrawInfoPane( menuItem_t *item, rectDef_t *rect, float text_x, fl
 				        _( BG_ClassModelConfig( item->v.pclass )->humanName ),
 				        _( BG_Class( item->v.pclass )->info ),
 				        _( "Frags:" ),
-				        value );
+				        value / CREDITS_PER_EVO );
 			}
 
 			break;
@@ -1904,33 +1868,52 @@ static void UI_DrawInfoPane( menuItem_t *item, rectDef_t *rect, float text_x, fl
 
 		case INFOTYPE_BUILDABLE:
 			value = BG_Buildable( item->v.buildable )->buildPoints;
+			value2 = BG_Buildable( item->v.buildable )->powerConsumption;
+
+			string = va( "%s\n\n%s",
+			             _( BG_Buildable( item->v.buildable )->humanName ),
+			             _( BG_Buildable( item->v.buildable )->info ) );
 
 			switch ( BG_Buildable( item->v.buildable )->team )
 			{
 				case TEAM_ALIENS:
-					string = _("Sentience");
+					// resources
+					if ( value == 0 )
+					{
+						s = va( "%s", string );
+					}
+					else
+					{
+						s = va( "%s\n\n%s: %d",
+						        string, _( "Biomass" ), value );
+					}
+
 					break;
 
 				case TEAM_HUMANS:
-					string = _("Power");
-					break;
+					// resources
+					if ( value == 0 )
+					{
+						string2 = va( "%s", string );
+					}
+					else
+					{
+						string2 = va( "%s\n\n%s: %d",
+						              string, _( "Material" ), value );
+					}
 
-				default:
-					break;
-			}
+					// power consumption
+					if ( value2 == 0 )
+					{
+						s = va( "%s", string2 );
+					}
+					else
+					{
+						s = va( "%s\n%s: %d",
+						        string2, _( "Power" ), value2 );
+					}
 
-			if ( value == 0 )
-			{
-				s = va( "%s\n\n%s",
-				        _( BG_Buildable( item->v.buildable )->humanName ),
-				        _( BG_Buildable( item->v.buildable )->info ) );
-			}
-			else
-			{
-				s = va( "%s\n\n%s\n\n%s: %d",
-				        _( BG_Buildable( item->v.buildable )->humanName ),
-				        _( BG_Buildable( item->v.buildable )->info ),
-				        string, value );
+					break;
 			}
 
 			break;
@@ -2540,19 +2523,21 @@ UI_LoadAlienClasses
 */
 static void UI_LoadAlienClasses( void )
 {
+	UI_UpdateUnlockables();
+
 	uiInfo.alienClassCount = 0;
 
-	if ( BG_ClassIsAllowed( PCL_ALIEN_LEVEL0 ) )
+	if ( !BG_ClassDisabled( PCL_ALIEN_LEVEL0 ) )
 	{
 		UI_AddClass( PCL_ALIEN_LEVEL0 );
 	}
 
-	if ( BG_ClassIsAllowed( PCL_ALIEN_BUILDER0_UPG ) &&
-	     BG_ClassAllowedInStage( PCL_ALIEN_BUILDER0_UPG, UI_GetCurrentAlienStage() ) )
+	if ( !BG_ClassDisabled( PCL_ALIEN_BUILDER0_UPG ) &&
+	     BG_ClassUnlocked( PCL_ALIEN_BUILDER0_UPG ) )
 	{
 		UI_AddClass( PCL_ALIEN_BUILDER0_UPG );
 	}
-	else if ( BG_ClassIsAllowed( PCL_ALIEN_BUILDER0 ) )
+	else if ( !BG_ClassDisabled( PCL_ALIEN_BUILDER0 ) )
 	{
 		UI_AddClass( PCL_ALIEN_BUILDER0 );
 	}
@@ -2584,12 +2569,12 @@ static void UI_LoadHumanItems( void )
 {
 	uiInfo.humanItemCount = 0;
 
-	if ( BG_WeaponIsAllowed( WP_MACHINEGUN ) )
+	if ( !BG_WeaponDisabled( WP_MACHINEGUN ) )
 	{
 		UI_AddItem( WP_MACHINEGUN );
 	}
 
-	if ( BG_WeaponIsAllowed( WP_HBUILD ) )
+	if ( !BG_WeaponDisabled( WP_HBUILD ) )
 	{
 		UI_AddItem( WP_HBUILD );
 	}
@@ -2663,9 +2648,9 @@ UI_LoadHumanArmouryBuys
 static void UI_LoadHumanArmouryBuys( void )
 {
 	int i, j = 0;
-	stage_t stage = UI_GetCurrentHumanStage();
 	int slots = 0;
 
+	UI_UpdateUnlockables();
 	UI_ParseCarriageList();
 
 	for ( i = WP_NONE + 1; i < WP_NUM_WEAPONS; i++ )
@@ -2690,8 +2675,8 @@ static void UI_LoadHumanArmouryBuys( void )
 	{
 		if ( BG_Weapon( i )->team == TEAM_HUMANS &&
 		     BG_Weapon( i )->purchasable &&
-		     BG_WeaponAllowedInStage( i, stage ) &&
-		     BG_WeaponIsAllowed( i ) &&
+		     BG_WeaponUnlocked( i ) &&
+		     !BG_WeaponDisabled( i ) &&
 		     !( BG_Weapon( i )->slots & slots ) &&
 		     !( uiInfo.weapons & ( 1 << i ) ) )
 		{
@@ -2711,8 +2696,8 @@ static void UI_LoadHumanArmouryBuys( void )
 	{
 		if ( BG_Upgrade( i )->team == TEAM_HUMANS &&
 		     BG_Upgrade( i )->purchasable &&
-		     BG_UpgradeAllowedInStage( i, stage ) &&
-		     BG_UpgradeIsAllowed( i ) &&
+		     BG_UpgradeUnlocked( i ) &&
+		     !BG_UpgradeDisabled( i ) &&
 		     !( BG_Upgrade( i )->slots & slots ) &&
 		     !( uiInfo.upgrades & ( 1 << i ) ) )
 		{
@@ -2805,7 +2790,9 @@ static void UI_LoadAlienUpgrades( void )
 
 	int     class, credits;
 	char    ui_currentClass[ MAX_STRING_CHARS ];
-	stage_t stage = UI_GetCurrentAlienStage();
+
+	// BG_ClassCanEvolveFromTo will call BG_ClassUnlocked, so update unlockables
+	UI_UpdateUnlockables();
 
 	trap_Cvar_VariableStringBuffer( "ui_currentClass", ui_currentClass, MAX_STRING_CHARS );
 
@@ -2815,7 +2802,7 @@ static void UI_LoadAlienUpgrades( void )
 
 	for ( i = PCL_NONE + 1; i < PCL_NUM_CLASSES; i++ )
 	{
-		if ( BG_ClassCanEvolveFromTo( class, i, credits, stage, 0 ) >= 0 )
+		if ( BG_ClassCanEvolveFromTo( class, i, credits ) >= 0 )
 		{
 			uiInfo.alienUpgradeList[ j ].text = BG_ClassModelConfig( i )->humanName;
 			uiInfo.alienUpgradeList[ j ].cmd =
@@ -2838,10 +2825,9 @@ UI_LoadAlienBuilds
 static void UI_LoadAlienBuilds( void )
 {
 	int     i, j = 0;
-	stage_t stage;
 
+	UI_UpdateUnlockables();
 	UI_ParseCarriageList();
-	stage = UI_GetCurrentAlienStage();
 
 	uiInfo.alienBuildCount = 0;
 
@@ -2849,8 +2835,8 @@ static void UI_LoadAlienBuilds( void )
 	{
 		if ( BG_Buildable( i )->team == TEAM_ALIENS &&
 		     BG_Buildable( i )->buildWeapon & uiInfo.weapons &&
-		     BG_BuildableAllowedInStage( i, stage ) &&
-		     BG_BuildableIsAllowed( i ) )
+		     BG_BuildableUnlocked( i ) &&
+		     !BG_BuildableDisabled( i ) )
 		{
 			uiInfo.alienBuildList[ j ].text = BG_Buildable( i )->humanName;
 			uiInfo.alienBuildList[ j ].cmd =
@@ -2873,10 +2859,9 @@ UI_LoadHumanBuilds
 static void UI_LoadHumanBuilds( void )
 {
 	int     i, j = 0;
-	stage_t stage;
 
+	UI_UpdateUnlockables();
 	UI_ParseCarriageList();
-	stage = UI_GetCurrentHumanStage();
 
 	uiInfo.humanBuildCount = 0;
 
@@ -2884,8 +2869,8 @@ static void UI_LoadHumanBuilds( void )
 	{
 		if ( BG_Buildable( i )->team == TEAM_HUMANS &&
 		     BG_Buildable( i )->buildWeapon & uiInfo.weapons &&
-		     BG_BuildableAllowedInStage( i, stage ) &&
-		     BG_BuildableIsAllowed( i ) )
+		     BG_BuildableUnlocked( i ) &&
+		     !BG_BuildableDisabled( i ) )
 		{
 			uiInfo.humanBuildList[ j ].text = BG_Buildable( i )->humanName;
 			uiInfo.humanBuildList[ j ].cmd =
@@ -3863,6 +3848,9 @@ static void UI_RunMenuScript( char **args )
 		}
 		else if ( Q_stricmp( name, "applyProfile" ) == 0 )
 		{
+			if ( uiInfo.profileList[ uiInfo.profileIndex ].name == NULL )
+				// no default profile yet
+				return;
 			Q_strncpyz( cl_profile.string, uiInfo.profileList[ uiInfo.profileIndex ].name, sizeof( cl_profile.string ) );
 			Q_CleanStr( cl_profile.string );
 			Q_CleanDirName( cl_profile.string );
@@ -3875,6 +3863,9 @@ static void UI_RunMenuScript( char **args )
 		{
 			fileHandle_t    f;
 
+			if ( uiInfo.profileList[ uiInfo.profileIndex ].name == NULL )
+				// no default profile yet
+				return;
 			Q_strncpyz( cl_defaultProfile.string, uiInfo.profileList[ uiInfo.profileIndex ].name, sizeof( cl_profile.string ) );
 			Q_CleanStr( cl_defaultProfile.string );
 			Q_CleanDirName( cl_defaultProfile.string );
@@ -5043,6 +5034,7 @@ void UI_ParseLanguages( void )
 	{
 		if( *p == '"' && quoted )
 		{
+		        temp[ index ] = 0;
 			uiInfo.languages[ lang++ ].name = String_Alloc( temp );
 			quoted = qfalse;
 			index = 0;
@@ -5064,6 +5056,7 @@ void UI_ParseLanguages( void )
 	{
 		if( *p == '"' && quoted )
 		{
+		        temp[ index ] = 0;
 			uiInfo.languages[ lang++ ].lang = String_Alloc( temp );
 			quoted = qfalse;
 			index = 0;
@@ -5268,6 +5261,9 @@ void UI_Init( void )
 	UI_ParseLanguages();
 	UI_ParseVoipInputs();
 	UI_ParseAlOutputs();
+
+	// Initialize unlockable state
+	BG_InitUnlockackables();
 }
 
 /*
@@ -5283,13 +5279,13 @@ void UI_KeyEvent( int key, int chr, int flags )
 
 		if ( menu )
 		{
-			if ( key == K_ESCAPE && ( flags & ( 1 << KEYEVSTATE_DOWN ) ) && !Menus_AnyFullScreenVisible() )
+			if ( key == K_ESCAPE && ( flags & KEYEVSTATE_DOWN ) && !Menus_AnyFullScreenVisible() )
 			{
 				Menus_CloseAll();
 			}
 			else
 			{
-				Menu_HandleKey( menu, key, chr, !!( flags & ( 1 << KEYEVSTATE_DOWN ) ) );
+				Menu_HandleKey( menu, key, chr, !!( flags & KEYEVSTATE_DOWN ) );
 			}
 		}
 		else

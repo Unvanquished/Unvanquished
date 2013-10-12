@@ -1192,20 +1192,10 @@ image_t *R_CreateGlyph( const char *name, const byte *pic, int width, int height
 {
 	image_t  *image = NULL;
 	long     hash;
-	qboolean noCompress = qfalse;
 
 	if ( strlen( name ) >= MAX_QPATH )
 	{
 		ri.Error( ERR_DROP, "R_CreateImage: \"%s\" is too long", name );
-	}
-
-	if ( r_ext_compressed_textures->integer == 2 && ( tr.allowCompress != qtrue ) )
-	{
-		noCompress = qtrue;
-	}
-	else if ( r_ext_compressed_textures->integer == 1 && ( tr.allowCompress < 0 ) )
-	{
-		noCompress = qtrue;
 	}
 
 	if ( tr.numImages == MAX_DRAWIMAGES )
@@ -1237,8 +1227,7 @@ image_t *R_CreateGlyph( const char *name, const byte *pic, int width, int height
 
 	GL_Bind( image );
 
-	glTexImage2D( GL_TEXTURE_2D, 0, noCompress ? GL_LUMINANCE_ALPHA : GL_COMPRESSED_LUMINANCE_ALPHA,
-	              width, height, 0, GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, pic );
+	glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pic );
 
 	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max );

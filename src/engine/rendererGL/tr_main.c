@@ -540,106 +540,20 @@ float R_CalcFov(float fovX, float width, float height)
 
 /*
 =================
-R_CullLocalBox
+R_CullBox
 
 Returns CULL_IN, CULL_CLIP, or CULL_OUT
 =================
 */
-cullResult_t R_CullLocalBox( vec3_t localBounds[ 2 ] )
+cullResult_t R_CullBox( vec3_t worldBounds[ 2 ] )
 {
-#if 0
-	int      i, j;
-	vec3_t   transformed[ 8 ];
-	float    dists[ 8 ];
-	vec3_t   v;
-	cplane_t *frust;
-	int      anyBack;
-	int      front, back;
-
-	if ( r_nocull->integer )
-	{
-		return CULL_CLIP;
-	}
-
-	// transform into world space
-	for ( i = 0; i < 8; i++ )
-	{
-		v[ 0 ] = localBounds[ i & 1 ][ 0 ];
-		v[ 1 ] = localBounds[( i >> 1 ) & 1 ][ 1 ];
-		v[ 2 ] = localBounds[( i >> 2 ) & 1 ][ 2 ];
-
-		R_LocalPointToWorld( v, transformed[ i ] );
-	}
-
-	// check against frustum planes
-	anyBack = 0;
-
-	for ( i = 0; i < FRUSTUM_PLANES; i++ )
-	{
-		frust = &tr.viewParms.frustums[ 0 ][ i ];
-
-		front = back = 0;
-
-		for ( j = 0; j < 8; j++ )
-		{
-			dists[ j ] = DotProduct( transformed[ j ], frust->normal );
-
-			if ( dists[ j ] > frust->dist )
-			{
-				front = 1;
-
-				if ( back )
-				{
-					break; // a point is in front
-				}
-			}
-			else
-			{
-				back = 1;
-			}
-		}
-
-		if ( !front )
-		{
-			// all points were behind one of the planes
-			return CULL_OUT;
-		}
-
-		anyBack |= back;
-	}
-
-	if ( !anyBack )
-	{
-		return CULL_IN; // completely inside frustum
-	}
-
-	return CULL_CLIP; // partially clipped
-#else
-	int      i, j;
-	vec3_t   transformed;
-	vec3_t   v;
-	cplane_t *frust;
 	qboolean anyClip;
-	int      r;
-	vec3_t   worldBounds[ 2 ];
+	cplane_t *frust;
+	int i, r;
 
 	if ( r_nocull->integer )
 	{
 		return CULL_CLIP;
-	}
-
-	// transform into world space
-	ClearBounds( worldBounds[ 0 ], worldBounds[ 1 ] );
-
-	for ( j = 0; j < 8; j++ )
-	{
-		v[ 0 ] = localBounds[ j & 1 ][ 0 ];
-		v[ 1 ] = localBounds[( j >> 1 ) & 1 ][ 1 ];
-		v[ 2 ] = localBounds[( j >> 2 ) & 1 ][ 2 ];
-
-		R_LocalPointToWorld( v, transformed );
-
-		AddPointToBounds( transformed, worldBounds[ 0 ], worldBounds[ 1 ] );
 	}
 
 	// check against frustum planes
@@ -671,7 +585,37 @@ cullResult_t R_CullLocalBox( vec3_t localBounds[ 2 ] )
 
 	// partially clipped
 	return CULL_CLIP;
-#endif
+}
+
+/*
+=================
+R_CullLocalBox
+
+Returns CULL_IN, CULL_CLIP, or CULL_OUT
+=================
+*/
+cullResult_t R_CullLocalBox( vec3_t localBounds[ 2 ] )
+{
+	int      j;
+	vec3_t   transformed;
+	vec3_t   v;
+	vec3_t   worldBounds[ 2 ];
+
+	// transform into world space
+	ClearBounds( worldBounds[ 0 ], worldBounds[ 1 ] );
+
+	for ( j = 0; j < 8; j++ )
+	{
+		v[ 0 ] = localBounds[ j & 1 ][ 0 ];
+		v[ 1 ] = localBounds[( j >> 1 ) & 1 ][ 1 ];
+		v[ 2 ] = localBounds[( j >> 2 ) & 1 ][ 2 ];
+
+		R_LocalPointToWorld( v, transformed );
+
+		AddPointToBounds( transformed, worldBounds[ 0 ], worldBounds[ 1 ] );
+	}
+
+	return R_CullBox( worldBounds );
 }
 
 /*
@@ -2640,16 +2584,6 @@ void R_AddEntitySurfaces( void )
 						case MOD_MESH:
 							R_AddMDVSurfaces( ent );
 							break;
-#if defined( COMPAT_ET )
-
-						case MOD_MDX:
-							// not a model, just a skeleton
-							break;
-
-						case MOD_MDM:
-							R_MDM_AddAnimSurfaces( ent );
-							break;
-#endif
 
 #if defined( USE_REFENTITY_ANIMATIONSYSTEM )
 
@@ -2755,17 +2689,6 @@ void R_AddEntityInteractions( trRefLight_t *light )
 						case MOD_MESH:
 							R_AddMDVInteractions( ent, light, iaType );
 							break;
-
-#if defined( COMPAT_ET )
-
-						case MOD_MDX:
-							// not a model, just a skeleton
-							break;
-
-						case MOD_MDM:
-							R_AddMDMInteractions( ent, light, iaType );
-							break;
-#endif
 
 #if defined( USE_REFENTITY_ANIMATIONSYSTEM )
 
@@ -3086,28 +3009,19 @@ void R_AddLightInteractions( void )
 		light->numLightOnlyInteractions = 0;
 		light->noSort = qfalse;
 
-		if ( r_deferredShading->integer && r_shadows->integer < SHADOWING_ESM16 )
+		if ( light->isStatic )
 		{
-			// add one fake interaction for this light
-			// because the renderer backend only loops through interactions
-			R_AddLightInteraction( light, NULL, NULL, CUBESIDE_CLIPALL, IA_DEFAULT );
+			R_AddPrecachedWorldInteractions( light );
 		}
 		else
 		{
-			if ( light->isStatic )
-			{
-				R_AddPrecachedWorldInteractions( light );
-			}
-			else
-			{
-				R_AddWorldInteractions( light );
-			}
-
-			R_AddEntityInteractions( light );
-
-			// Tr3B: fun but slow
-			//R_AddPolygonInteractions(light);
+			R_AddWorldInteractions( light );
 		}
+
+		R_AddEntityInteractions( light );
+
+		// Tr3B: fun but slow
+		//R_AddPolygonInteractions(light);
 
 		if ( light->numInteractions && light->numInteractions != light->numShadowOnlyInteractions )
 		{
@@ -3465,6 +3379,8 @@ void R_DebugText( const vec3_t org, float r, float g, float b, const char *text,
 #endif
 }
 
+static BotDebugInterface_t bi = { DebugDrawBegin, DebugDrawDepthMask, DebugDrawVertex, DebugDrawEnd };
+
 /*
 ====================
 R_DebugGraphics
@@ -3480,10 +3396,16 @@ static void R_DebugGraphics( void )
 		R_SyncRenderThread();
 
 		GL_BindProgram( 0 );
+
 		GL_SelectTexture( 0 );
 		GL_Bind( tr.whiteImage );
+
 		GL_Cull( CT_FRONT_SIDED );
 		ri.CM_DrawDebugSurface( R_DebugPolygon );
+
+		GL_State( GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
+
+		ri.Bot_DrawDebugMesh( &bi );
 	}
 }
 
@@ -3587,7 +3509,7 @@ void R_RenderView( viewParms_t *parms )
 
 	R_SortDrawSurfs();
 
-	R_AddRunVisTestsCmd( tr.refdef.visTests, tr.refdef.numVisTests );
+	R_AddRunVisTestsCmd();
 
 	// draw main system development information (surface outlines, etc)
 	R_DebugGraphics();

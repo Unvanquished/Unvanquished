@@ -147,6 +147,11 @@ void G_FreeEntity( gentity_t *entity )
 	if ( g_debugEntities.integer > 2 )
 		G_Printf(S_DEBUG "Freeing Entity %s\n", etos(entity));
 
+	if ( entity->obstacleHandle )
+	{
+		trap_BotRemoveObstacle( entity->obstacleHandle );
+	}
+
 	if( entity->eclass && entity->eclass->instanceCounter > 0)
 		entity->eclass->instanceCounter--;
 
@@ -730,8 +735,6 @@ void G_FireEntity( gentity_t *self, gentity_t *activator )
  */
 void G_ExecuteAct( gentity_t *entity, gentityCall_t *call )
 {
-	gentityCall_t previousCallIn;
-
 	/**
 	 * assertions against programmatic errors
 	 */

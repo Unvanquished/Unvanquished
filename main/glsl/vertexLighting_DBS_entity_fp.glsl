@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 uniform sampler2D	u_DiffuseMap;
 uniform sampler2D	u_NormalMap;
 uniform sampler2D	u_SpecularMap;
+uniform sampler2D	u_GlowMap;
 
 uniform samplerCube	u_EnvironmentMap0;
 uniform samplerCube	u_EnvironmentMap1;
@@ -45,6 +46,9 @@ varying vec2		var_TexNormal;
 varying vec2		var_TexSpecular;
 varying vec3		var_Tangent;
 varying vec3		var_Binormal;
+#endif
+#if defined(USE_GLOW_MAPPING)
+varying vec2		var_TexGlow;
 #endif
 varying vec3		var_Normal;
 
@@ -200,7 +204,9 @@ void	main()
 #if defined(r_RimLighting)
 	color.rgb += 0.7 * emission;
 #endif
-
+#if defined(USE_GLOW_MAPPING)
+	color.rgb += texture2D(u_GlowMap, var_TexGlow).rgb;
+#endif
 	// convert normal to [0,1] color space
 	N = N * 0.5 + 0.5;
 

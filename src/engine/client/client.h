@@ -379,6 +379,9 @@ typedef struct
 	int          numGlobalServerAddresses;
 	netadr_t     globalServerAddresses[ MAX_GLOBAL_SERVERS ];
 
+	int          numserverLinks;
+	netadr_t     serverLinks[ MAX_GLOBAL_SERVERS ];
+
 	int          numfavoriteservers;
 	serverInfo_t favoriteServers[ MAX_OTHER_SERVERS ];
 
@@ -645,7 +648,6 @@ qboolean CL_UIOwnsMouse ( void );
 void IN_Notebook( void );
 void IN_Help( void );
 
-void IN_KeysUp( unsigned int check, int key, int time );
 void IN_PrepareKeyUp( void );
 
 //----(SA)

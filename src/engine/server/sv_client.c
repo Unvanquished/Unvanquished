@@ -128,6 +128,9 @@ void SV_DirectConnect( netadr_t from )
 	char                *denied;
 	int                 count;
 	char                *ip;
+#ifdef HAVE_GEOIP
+	const char          *country;
+#endif
 
 	Com_DPrintf( "SVC_DirectConnect ()\n" );
 
@@ -223,7 +226,21 @@ void SV_DirectConnect( netadr_t from )
 			ping = svs.challenges[ i ].firstPing;
 		}
 
+#ifdef HAVE_GEOIP
+		country = NET_GeoIP_Country( &from );
+
+		if ( country )
+		{
+			Com_Printf(_( "Client %i connecting from %s with %i challenge ping\n"), i, country, ping );
+		}
+		else
+		{
+			Com_Printf(_( "Client %i connecting from somewhere unknown with %i challenge ping\n"), i, ping );
+		}
+#else
 		Com_Printf(_( "Client %i connecting with %i challenge ping\n"), i, ping );
+#endif
+
 		svs.challenges[ i ].connected = qtrue;
 
 		// never reject a LAN client based on ping
@@ -362,6 +379,14 @@ gotnewcl:
 	ent = SV_GentityNum( clientNum );
 	newcl->gentity = ent;
 	ent->r.svFlags = 0;
+
+#ifdef HAVE_GEOIP
+
+	if ( country )
+	{
+		Info_SetValueForKey( userinfo, "geoip", country, qfalse );
+	}
+#endif
 
 	// save the challenge
 	newcl->challenge = challenge;
@@ -1535,11 +1560,17 @@ void SV_UserinfoChanged( client_t *cl )
 	if ( !NET_IsLocalAddress( cl->netchan.remoteAddress ) )
 	{
 		Info_SetValueForKey( cl->userinfo, "ip", NET_AdrToString( cl->netchan.remoteAddress ), qfalse );
+#ifdef HAVE_GEOIP
+		Info_SetValueForKey( cl->userinfo, "geoip", NET_GeoIP_Country( &cl->netchan.remoteAddress ), qfalse );
+#endif
 	}
 	else
 	{
 		// force the "ip" info key to "localhost" for local clients
 		Info_SetValueForKey( cl->userinfo, "ip", "localhost", qfalse );
+#ifdef HAVE_GEOIP
+		Info_SetValueForKey( cl->userinfo, "geoip", NULL, qfalse );
+#endif
 	}
 
 	// TTimo

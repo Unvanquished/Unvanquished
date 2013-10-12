@@ -101,6 +101,12 @@ typedef int SOCKET;
 
 #endif
 
+#ifdef HAVE_GEOIP
+#include <GeoIP.h>
+static GeoIP *geoip_data_4 = NULL;
+static GeoIP *geoip_data_6 = NULL;
+#endif
+
 static qboolean            usingSocks = qfalse;
 static int                 networkingEnabled = 0;
 #ifndef DEDICATED
@@ -109,7 +115,7 @@ static qboolean            serverMode = qfalse;
 #define serverMode (qtrue)
 #endif
 
-static cvar_t              *net_enabled;
+cvar_t                     *net_enabled;
 
 static cvar_t              *net_socksEnabled;
 static cvar_t              *net_socksServer;
@@ -327,13 +333,13 @@ static void NetadrToSockadr( netadr_t *a, struct sockaddr *s )
 	{
 		( ( struct sockaddr_in * ) s )->sin_family = AF_INET;
 		( ( struct sockaddr_in * ) s )->sin_addr.s_addr = * ( int * ) &a->ip;
-		( ( struct sockaddr_in * ) s )->sin_port = a->port;
+		( ( struct sockaddr_in * ) s )->sin_port = ( a->type == NA_IP_DUAL ? a->port4 : a->port );
 	}
-	else if ( a->type == NA_IP6 )
+	else if ( NET_IS_IPv6( a->type ) )
 	{
 		( ( struct sockaddr_in6 * ) s )->sin6_family = AF_INET6;
 		( ( struct sockaddr_in6 * ) s )->sin6_addr = * ( ( struct in6_addr * ) &a->ip6 );
-		( ( struct sockaddr_in6 * ) s )->sin6_port = a->port;
+		( ( struct sockaddr_in6 * ) s )->sin6_port = ( a->type == NA_IP_DUAL ? a->port6 : a->port );
 		( ( struct sockaddr_in6 * ) s )->sin6_scope_id = a->scope_id;
 	}
 	else if ( a->type == NA_MULTICAST6 )
@@ -437,12 +443,12 @@ static qboolean Sys_StringToSockaddr( const char *s, struct sockaddr *sadr, int 
 
 		if ( search )
 		{
-			if ( res->ai_addrlen > sadr_len )
+			if ( search->ai_addrlen > sadr_len )
 			{
-				res->ai_addrlen = sadr_len;
+				search->ai_addrlen = sadr_len;
 			}
 
-			memcpy( sadr, res->ai_addr, res->ai_addrlen );
+			memcpy( sadr, search->ai_addr, search->ai_addrlen );
 			freeaddrinfo( res );
 
 			return qtrue;
@@ -536,17 +542,19 @@ qboolean NET_CompareBaseAdrMask( netadr_t a, netadr_t b, int netmask )
 	byte     cmpmask, *addra, *addrb;
 	int      curbyte;
 
-	if ( a.type != b.type )
+	netadrtype_t a_type = NET_TYPE( a.type );
+
+	if ( a_type != NET_TYPE( b.type ) )
 	{
 		return qfalse;
 	}
 
-	if ( a.type == NA_LOOPBACK )
+	if ( a_type == NA_LOOPBACK )
 	{
 		return qtrue;
 	}
 
-	if ( a.type == NA_IP )
+	if ( a_type == NA_IP )
 	{
 		addra = ( byte * ) &a.ip;
 		addrb = ( byte * ) &b.ip;
@@ -556,7 +564,7 @@ qboolean NET_CompareBaseAdrMask( netadr_t a, netadr_t b, int netmask )
 			netmask = 32;
 		}
 	}
-	else if ( a.type == NA_IP6 )
+	else if ( a_type == NA_IP6 )
 	{
 		addra = ( byte * ) &a.ip6;
 		addrb = ( byte * ) &b.ip6;
@@ -623,7 +631,7 @@ const char      *NET_AdrToString( netadr_t a )
 	{
 		Com_sprintf( s, sizeof( s ), "bot" );
 	}
-	else if ( a.type == NA_IP || a.type == NA_IP6 )
+	else if ( a.type == NA_IP || a.type == NA_IP6 || a.type == NA_IP_DUAL )
 	{
 		struct sockaddr_storage sadr;
 
@@ -647,15 +655,14 @@ const char      *NET_AdrToStringwPort( netadr_t a )
 	{
 		Com_sprintf( s, sizeof( s ), "bot" );
 	}
-	else if ( a.type == NA_IP )
+	else if ( NET_IS_IPv4( a.type ) )
 	{
-		Com_sprintf( s, sizeof( s ), "%s:%lu", NET_AdrToString( a ), ( unsigned long ) ntohs( a.port ) );
+		Com_sprintf( s, sizeof( s ), "%s:%lu", NET_AdrToString( a ), ( unsigned long ) ntohs( a.type == NA_IP_DUAL ? a.port4 : a.port ) );
 	}
-	else if ( a.type == NA_IP6 )
+	else if ( NET_IS_IPv6( a.type ) )
 	{
-		Com_sprintf( s, sizeof( s ), "[%s]:%lu", NET_AdrToString( a ), ( unsigned long ) ntohs( a.port ) );
+		Com_sprintf( s, sizeof( s ), "[%s]:%lu", NET_AdrToString( a ), ( unsigned long ) ntohs( a.type == NA_IP_DUAL ? a.port6 : a.port ) );
 	}
-
 	return s;
 }
 
@@ -830,14 +837,14 @@ void Sys_SendPacket( int length, const void *data, netadr_t to )
 	int                     ret = SOCKET_ERROR;
 	struct sockaddr_storage addr;
 
-	if ( to.type != NA_BROADCAST && to.type != NA_IP && to.type != NA_IP6 && to.type != NA_MULTICAST6 )
+	if ( to.type != NA_BROADCAST && to.type != NA_IP && to.type != NA_IP_DUAL && to.type != NA_IP6 && to.type != NA_MULTICAST6 )
 	{
 		Com_Error( ERR_FATAL, "Sys_SendPacket: bad address type" );
 	}
 
-	if ( ( ip_socket == INVALID_SOCKET && to.type == NA_IP ) ||
+	if ( ( ip_socket == INVALID_SOCKET && NET_IS_IPv4( to.type ) ) ||
 	     ( ip_socket == INVALID_SOCKET && to.type == NA_BROADCAST ) ||
-	     ( ip6_socket == INVALID_SOCKET && to.type == NA_IP6 ) ||
+	     ( ip6_socket == INVALID_SOCKET && NET_IS_IPv6( to.type ) ) ||
 	     ( ip6_socket == INVALID_SOCKET && to.type == NA_MULTICAST6 ) )
 	{
 		return;
@@ -851,7 +858,7 @@ void Sys_SendPacket( int length, const void *data, netadr_t to )
 	memset( &addr, 0, sizeof( addr ) );
 	NetadrToSockadr( &to, ( struct sockaddr * ) &addr );
 
-	if ( usingSocks && to.type == NA_IP )
+	if ( usingSocks && addr.ss_family == AF_INET /*to.type == NA_IP*/ )
 	{
 		socksBuf[ 0 ] = 0; // reserved
 		socksBuf[ 1 ] = 0;
@@ -1561,12 +1568,12 @@ static void NET_AddLocalAddress( char *ifname, struct sockaddr *addr, struct soc
 
 	if ( numIP < MAX_IPS )
 	{
-		if ( family == AF_INET )
+		if ( family == AF_INET && ( net_enabled->integer & NET_ENABLEV4 ) )
 		{
 			addrlen = sizeof( struct sockaddr_in );
 			localIP[ numIP ].type = NA_IP;
 		}
-		else if ( family == AF_INET6 )
+		else if ( family == AF_INET6 && ( net_enabled->integer & NET_ENABLEV6 ) )
 		{
 			addrlen = sizeof( struct sockaddr_in6 );
 			localIP[ numIP ].type = NA_IP6;
@@ -1866,8 +1873,9 @@ void NET_Config( qboolean enableNetworking )
 	qboolean modified;
 	qboolean stop;
 	qboolean start;
+#ifndef DEDICATED
 	qboolean svRunning;
-	qboolean svChanged;
+#endif
 
 	// get any latched changes to cvars
 	modified = NET_GetCvars();
@@ -1961,6 +1969,40 @@ void NET_Config( qboolean enableNetworking )
 }
 
 /*
+==================
+NET_GeoIP_Country
+==================
+*/
+#ifdef HAVE_GEOIP
+const char *NET_GeoIP_Country( const netadr_t *from )
+{
+	switch ( from->type )
+	{
+	case NA_IP:
+		return geoip_data_4 ? GeoIP_country_name_by_ipnum( geoip_data_4, htonl( *(uint32_t *)from->ip ) ) : NULL;
+
+	case NA_IP6:
+		return geoip_data_6 ? GeoIP_country_name_by_ipnum_v6( geoip_data_6, *(struct in6_addr *)from->ip6 ) : NULL;
+
+	default:
+		return NULL;
+	}
+}
+
+static GeoIP *NET_GeoIP_LoadData (int db)
+{
+	GeoIP *data = GeoIP_open_type (db, GEOIP_INDEX_CACHE);
+
+	if (!data)
+	{
+		data = GeoIP_open_type (db, GEOIP_MEMORY_CACHE);
+	}
+
+	return data;
+}
+#endif
+
+/*
 ====================
 NET_Init
 ====================
@@ -1980,6 +2022,12 @@ void NET_Init( void )
 
 	winsockInitialized = qtrue;
 	Com_Printf( "Winsock Initialized\n" );
+#endif
+
+#ifdef HAVE_GEOIP
+	geoip_data_4 = NET_GeoIP_LoadData( GEOIP_COUNTRY_EDITION );
+	geoip_data_6 = NET_GeoIP_LoadData( GEOIP_COUNTRY_EDITION_V6 );
+	Com_Printf( "Loaded GeoIP data: ^%dIPv4 ^%dIPv6\n", geoip_data_4 ? 2 : 1, geoip_data_6 ? 2 : 1 );
 #endif
 
 	NET_Config( qtrue );

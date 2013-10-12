@@ -23,6 +23,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
 
+#ifdef USE_OPENAL
+
 #define ALC_ALL_DEVICES_SPECIFIER 0x1013
 
 #ifndef USE_OPENAL_DLOPEN
@@ -243,9 +245,10 @@ extern LPALCCAPTURESTART        qalcCaptureStart;
 extern LPALCCAPTURESTOP         qalcCaptureStop;
 extern LPALCCAPTURESAMPLES      qalcCaptureSamples;
 
+#endif // USE_OPENAL_DLOPEN
+
 qboolean                        QAL_Init( const char *libname );
 void                            QAL_Shutdown( void );
 
-#endif // USE_OPENAL_DLOPEN
-
+#endif
 #endif // __QAL_H__

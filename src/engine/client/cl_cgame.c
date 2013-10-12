@@ -1676,10 +1676,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			S_StartSound( VMA( 1 ), args[ 2 ], args[ 3 ], args[ 4 ] );
 			return 0;
 
-		case CG_S_STARTSOUNDEX:
-			S_StartSoundEx( VMA( 1 ), args[ 2 ], args[ 3 ], args[ 4 ] );
-			return 0;
-
 		case CG_S_STARTLOCALSOUND:
 			S_StartLocalSound( args[ 1 ], args[ 2 ] );
 			return 0;
@@ -1720,16 +1716,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 		case CG_S_UPDATEENTITYPOSITION:
 			S_UpdateEntityPosition( args[ 1 ], VMA( 2 ) );
 			return 0;
-
-		case CG_S_GETVOICEAMPLITUDE:
-			return S_GetVoiceAmplitude( args[ 1 ] );
-
-		case CG_S_GETSOUNDLENGTH:
-			return S_GetSoundLength( args[ 1 ] );
-
-			// ydnar: for looped sound starts
-		case CG_S_GETCURRENTSOUNDTIME:
-			return S_GetCurrentSoundTime();
 
 		case CG_S_RESPATIALIZE:
 			S_Respatialize( args[ 1 ], VMA( 2 ), VMA( 3 ), args[ 4 ] );
@@ -2047,9 +2033,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 
 		case CG_R_LIGHTFORPOINT:
 			return re.LightForPoint( VMA( 1 ), VMA( 2 ), VMA( 3 ), VMA( 4 ) );
-
-		case CG_S_SOUNDDURATION:
-			return S_SoundDuration( args[ 1 ] );
 
 #if defined( USE_REFENTITY_ANIMATIONSYSTEM )
 		case CG_R_REGISTERANIMATION:

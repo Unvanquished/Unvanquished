@@ -4006,76 +4006,9 @@ qboolean Item_TextField_HandleKey( itemDef_t *item, int key, int chr )
 			item->cursorPos = ui_OffsetToCursor( buff, len );
 		}
 
-		if ( chr > 0 )
+		if ( chr )
 		{
-			if ( chr == 'h' - 'a' + 1 )
-			{
-				// ctrl-h is backspace
-
-				if ( item->cursorPos > 0 )
-				{
-					int index = ui_CursorToOffset( buff, --item->cursorPos );
-					int width = Q_UTF8_Width( buff + index );
-					memmove( buff + index, buff + index + width, len + 1 - index - width );
-				}
-
-				DC->setCVar( item->cvar, buff );
-			}
-			else if ( chr == 'd' - 'a' + 1 )
-			{
-				// ctrl-d is delete
-				goto deleteRight;
-			}
-			else if ( chr == 'c' - 'a' + 1 || chr == 'u' - 'a' + 1 )
-			{
-				// ctrl-c, ctrl-u: clear buffer
-				item->cursorPos = 0;
-				DC->setCVar( item->cvar, "" );
-			}
-			else if ( chr == 'k' - 'a' + 1 )
-			{
-				// ctrl-k: delete to end
-				buff[ ui_CursorToOffset( buff, item->cursorPos ) ] = '\0';
-				DC->setCVar( item->cvar, buff );
-			}
-			else if ( chr == 'a' - 'a' + 1 )
-			{
-				// ctrl-a: home
-				item->cursorPos = 0;
-			}
-			else if ( chr == 'e' - 'a' + 1 )
-			{
-				// ctrl-e: end
-				item->cursorPos = lenChars;
-			}
-			else if ( chr == 'v' - 'a' + 1 )
-			{
-				// ctrl-v: paste
-				UI_Paste( item, buff, SELECTION_CLIPBOARD );
-				DC->setCVar( item->cvar, buff );
-			}
-			else if ( chr == 't' - 'a' + 1 && item->cursorPos )
-			{
-				int i, j, w, tmp[4];
-
-				if ( item->cursorPos == lenChars )
-				{
-					--item->cursorPos;
-				}
-
-				i = ui_CursorToOffset( buff, item->cursorPos - 1 );
-				j = ui_CursorToOffset( buff, item->cursorPos );
-				w = Q_UTF8_Width( buff + j );
-
-				memcpy( tmp, buff + i, j - i );
-				memmove( buff + i, buff + j, w );
-				memcpy( buff + i + w, tmp, j - i );
-
-				++item->cursorPos;
-
-				DC->setCVar( item->cvar, buff );
-			}
-			else if ( chr < 32 || chr == 127 || !item->cvar )
+			if ( ( chr >= 0 && chr < 32 ) || chr == 127 || !item->cvar )
 			{
 				// Ignore any non printable chars
 				releaseFocus = qfalse;
@@ -4125,9 +4058,70 @@ qboolean Item_TextField_HandleKey( itemDef_t *item, int key, int chr )
 		{
 			switch ( key )
 			{
+				case 't':
+					if ( mods[ MOD_CTRL ] && item->cursorPos )
+					{
+						int i, j, w, tmp[4];
+
+						if ( item->cursorPos == lenChars )
+						{
+							--item->cursorPos;
+						}
+
+						i = ui_CursorToOffset( buff, item->cursorPos - 1 );
+						j = ui_CursorToOffset( buff, item->cursorPos );
+						w = Q_UTF8_Width( buff + j );
+
+						memcpy( tmp, buff + i, j - i );
+						memmove( buff + i, buff + j, w );
+						memcpy( buff + i + w, tmp, j - i );
+
+						++item->cursorPos;
+
+						DC->setCVar( item->cvar, buff );
+					}
+					break;
+				case 'v':
+					// ctrl-v: paste
+					if ( mods[ MOD_CTRL ] )
+					{
+						UI_Paste( item, buff, SELECTION_CLIPBOARD );
+						DC->setCVar( item->cvar, buff );
+					}
+					break;
+				case 'k':
+					// ctrl-k: delete to end
+					if ( mods[ MOD_CTRL ] )
+					{
+						buff[ ui_CursorToOffset( buff, item->cursorPos ) ] = '\0';
+						DC->setCVar( item->cvar, buff );
+					}
+					break;
+				case 'c':
+				case 'u':
+					// ctrl-c, ctrl-u: clear buffer
+					if ( mods[ MOD_CTRL ] )
+					{
+						item->cursorPos = 0;
+						DC->setCVar( item->cvar, "" );
+					}
+					break;
+				case 'h':
+					if ( mods[ MOD_CTRL ] )
+					{
+				case K_BACKSPACE:
+						if ( item->cursorPos > 0 )
+						{
+							int index = ui_CursorToOffset( buff, --item->cursorPos );
+							int width = Q_UTF8_Width( buff + index );
+							memmove( buff + index, buff + index + width, len + 1 - index - width );
+						}
+
+						DC->setCVar( item->cvar, buff );
+					}
+					break;
 				case K_DEL:
 				case K_KP_DEL:
-					deleteRight:
 					if ( item->cursorPos < lenChars )
 					{
 						int index = ui_CursorToOffset( buff, item->cursorPos );
@@ -4188,18 +4182,22 @@ qboolean Item_TextField_HandleKey( itemDef_t *item, int key, int chr )
 
 					break;
 
+				case 'a':
+					if ( mods[ MOD_CTRL ] )
+					{
 				case K_HOME:
 				case K_KP_HOME:
-					item->cursorPos = 0;
-
+						item->cursorPos = 0;
+					}
 					break;
-
+				case 'e':
+					if ( mods[ MOD_CTRL ] )
+					{
 				case K_END:
 				case K_KP_END:
-					item->cursorPos = lenChars;
-
+						item->cursorPos = lenChars;
+					}
 					break;
-
 				case K_INS:
 				case K_KP_INS:
 					if ( mods[ MOD_SHIFT ] )
@@ -4211,7 +4209,6 @@ qboolean Item_TextField_HandleKey( itemDef_t *item, int key, int chr )
 					{
 						DC->setOverstrikeMode( !DC->getOverstrikeMode() );
 					}
-
 					break;
 
 				case K_TAB:
@@ -6768,6 +6765,47 @@ void Item_ListBox_Paint( itemDef_t *item )
 
 void Item_Paint( itemDef_t *item );
 
+// check for intersection of some items with the active combobox
+// to prevent z ordering issues causing the active combobox to be obscurred
+qboolean ItemIntersectsActiveComboBox( itemDef_t *item )
+{
+	qboolean cast;
+	vec2_t mins, maxs;
+	vec2_t nmins, nmaxs;
+
+	// only care about these item types
+	if ( item->type != ITEM_TYPE_COMBOBOX )
+	{
+		return qfalse;
+	}
+
+	if ( !g_comboBoxItem || g_comboBoxItem == item )
+	{
+		return qfalse;
+	}
+
+	cast = Item_ComboBox_MaybeCastToListBox( g_comboBoxItem );
+		
+	mins[ 0 ] = g_comboBoxItem->window.rect.x;
+	mins[ 1 ] = g_comboBoxItem->window.rect.y;
+	maxs[ 0 ] = mins[ 0 ] + g_comboBoxItem->window.rect.w;
+	maxs[ 1 ] = mins[ 1 ] + g_comboBoxItem->window.rect.h;
+
+	Item_ComboBox_MaybeUnCastFromListBox( g_comboBoxItem, cast );
+
+	nmins[ 0 ] = item->window.rect.x;
+	nmins[ 1 ] = item->window.rect.y;
+	nmaxs[ 0 ] = nmins[ 0 ] + item->window.rect.w;
+	nmaxs[ 1 ] = nmins[ 1 ] + item->window.rect.h;
+
+	if ( mins[ 0 ] <= nmaxs[ 0 ] && maxs[ 0 ] >= nmins[ 0 ] && maxs[ 1 ] >= nmins[ 1 ] && mins[ 1 ] <= nmaxs[ 1 ] )
+	{
+		return qtrue;
+	}
+
+	return qfalse;
+}
+
 void Item_ComboBox_Paint( itemDef_t *item )
 {
 	float x, y, h;
@@ -7103,6 +7141,11 @@ void Item_Paint( itemDef_t *item )
 	}
 
 	if ( !( item->window.flags & WINDOW_VISIBLE ) )
+	{
+		return;
+	}
+
+	if ( ItemIntersectsActiveComboBox( item ) )
 	{
 		return;
 	}

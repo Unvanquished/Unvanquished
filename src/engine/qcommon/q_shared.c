@@ -706,7 +706,7 @@ const char *Com_EntityTypeName(entityType_t entityType)
 	case ET_PUSHER:           return "PUSHER";
 	case ET_TELEPORTER:       return "TELEPORTER";
 	case ET_INVISIBLE:        return "INVISIBLE";
-	case ET_GRAPPLE:          return "GRAPPLE";
+	case ET_FIRE:             return "FIRE";
 	case ET_CORPSE:           return "CORPSE";
 	case ET_PARTICLE_SYSTEM:  return "PARTICLE_SYSTEM";
 	case ET_ANIMMAPOBJ:       return "ANIMMAPOBJ";
@@ -898,9 +898,10 @@ int COM_Compress( char *data_p )
 				size++;
 			}
 		}
+
+		*datao = 0;
 	}
 
-	*datao = 0;
 	return size;
 }
 
@@ -2430,7 +2431,7 @@ qboolean Q_strreplace( char *dest, int destsize, const char *find, const char *r
 {
 	int  lstart, lfind, lreplace, lend;
 	char *s;
-	char backup[ 32000 ]; // big, but small enough to fit in PPC stack
+	static char backup[ 32000 ];
 
 	lend = strlen( dest );
 
@@ -2618,7 +2619,7 @@ char     *QDECL PRINTF_LIKE(1) va( const char *format, ... )
 {
 	va_list     argptr;
 #define MAX_VA_STRING 32000
-	static char temp_buffer[ MAX_VA_STRING ];
+	static char temp_buffer[ MAX_VA_STRING + 1 ];
 	static char string[ MAX_VA_STRING ]; // in case va is called by nested functions
 	static int  index = 0;
 	char        *buf;
@@ -2626,6 +2627,7 @@ char     *QDECL PRINTF_LIKE(1) va( const char *format, ... )
 
 	va_start( argptr, format );
 	Q_vsnprintf( temp_buffer, sizeof( temp_buffer ), format, argptr );
+	temp_buffer[ MAX_VA_STRING ] = 0;
 	va_end( argptr );
 
 	if ( ( len = strlen( temp_buffer ) ) >= MAX_VA_STRING )
@@ -2640,7 +2642,6 @@ char     *QDECL PRINTF_LIKE(1) va( const char *format, ... )
 
 	buf = &string[ index ];
 	memcpy( buf, temp_buffer, len + 1 );
-
 	index += len + 1;
 
 	return buf;
@@ -2897,19 +2898,19 @@ void Info_SetValueForKey( char *s, const char *key, const char *value, qboolean 
 		Com_Error( ERR_DROP, "Info_SetValueForKey: oversize infostring [%s] [%s] [%s]", s, key, value );
 	}
 
-	if ( strchr( key, '\\' ) || strchr( value, '\\' ) )
+	if ( strchr( key, '\\' ) || ( value && strchr( value, '\\' ) ) )
 	{
 		Com_Printf( "Can't use keys or values with a \\\n" );
 		return;
 	}
 
-	if ( strchr( key, ';' ) || strchr( value, ';' ) )
+	if ( strchr( key, ';' ) || ( value && strchr( value, ';' ) ) )
 	{
 		Com_Printf( "Can't use keys or values with a semicolon\n" );
 		return;
 	}
 
-	if ( strchr( key, '\"' ) || strchr( value, '\"' ) )
+	if ( strchr( key, '\"' ) || ( value && strchr( value, '\"' ) ) )
 	{
 		Com_Printf( "Can't use keys or values with a \"\n" );
 		return;

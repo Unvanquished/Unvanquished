@@ -651,6 +651,7 @@ typedef struct centity_s
 	buildableAnimNumber_t oldBuildableAnim; //to detect when new anims are set
 	qboolean              buildableIdleAnim; //to check if new idle anim
 	particleSystem_t      *buildablePS;
+	particleSystem_t      *buildableStatusPS; // used for steady effects like fire
 	buildableStatus_t     buildableStatus;
 	buildableCache_t      buildableCache; // so we don't recalculate things
 	float                 lastBuildableHealth;
@@ -800,25 +801,6 @@ typedef struct weaponInfoMode_s
 	sfxHandle_t flashSound[ 4 ]; // fast firing weapons randomly choose
 	qboolean    continuousFlash;
 
-	qhandle_t   missileModel;
-	sfxHandle_t missileSound;
-	float       missileDlight;
-	float       missileDlightIntensity;
-	vec3_t      missileDlightColor;
-	int         missileRenderfx;
-	qboolean    usesSpriteMissle;
-	qhandle_t   missileSprite;
-	int         missileSpriteSize;
-	float       missileSpriteCharge;
-	qhandle_t   missileParticleSystem;
-	qhandle_t   missileTrailSystem;
-	qboolean    missileRotates;
-	qboolean    missileAnimates;
-	int         missileAnimStartFrame;
-	int         missileAnimNumFrames;
-	int         missileAnimFrameRate;
-	int         missileAnimLooping;
-
 	sfxHandle_t firingSound;
 
 	qhandle_t   muzzleParticleSystem;
@@ -859,6 +841,7 @@ typedef struct weaponInfo_s
 	qhandle_t        ammoIcon;
 
 	qhandle_t        crossHair;
+	qhandle_t        crossHairIndicator;
 	int              crossHairSize;
 
 	sfxHandle_t      readySound;
@@ -1073,9 +1056,13 @@ typedef struct
 	int  centerPrintLines;
 
 	// crosshair client ID
-	int crosshairBuildable;
-	int crosshairClientNum;
-	int crosshairClientTime;
+	int      crosshairClientNum;
+	int      crosshairClientTime;
+	qboolean crosshairFriend;
+	qboolean crosshairFoe;
+
+	// whether we hit
+	int hitTime;
 
 	// attacking player
 	int attackerTime;
@@ -1171,6 +1158,10 @@ typedef struct
 	int                     numBinaryShadersUsed;
 	cgBinaryShaderSetting_t binaryShaderSettings[ NUM_BINARY_SHADERS ];
 	char                    sayTextType[ MAX_STRING_CHARS ];
+
+	// confidence
+	float                   confidenceGained;
+	int                     confidenceGainedTime;
 } cg_t;
 
 typedef enum
@@ -1287,7 +1278,7 @@ typedef struct
 
 	int selectedAlienSpawnClass;
 
-	int armouryBuyList[3][ ( WP_GRENADE - WP_BLASTER ) + UP_NUM_UPGRADES +1 ];
+	int armouryBuyList[3][ ( WP_LUCIFER_CANNON - WP_BLASTER ) + UP_NUM_UPGRADES + 1 ];
 	int selectedArmouryBuyItem[3];
 	int armouryBuyListCount[3];
 
@@ -1412,16 +1403,16 @@ typedef struct
 
 	sfxHandle_t medkitUseSound;
 
-	sfxHandle_t alienStageTransition;
-	sfxHandle_t humanStageTransition;
+	sfxHandle_t weHaveEvolved;
+	sfxHandle_t reinforcement;
 
 	sfxHandle_t alienOvermindAttack;
 	sfxHandle_t alienOvermindDying;
 	sfxHandle_t alienOvermindSpawns;
 
 	sfxHandle_t alienBuildableExplosion;
-	sfxHandle_t alienBuildableDamage;
 	sfxHandle_t alienBuildablePrebuild;
+	sfxHandle_t humanBuildableDying;
 	sfxHandle_t humanBuildableExplosion;
 	sfxHandle_t humanBuildablePrebuild;
 	sfxHandle_t humanBuildableDamage[ 4 ];
@@ -1457,6 +1448,7 @@ typedef struct
 
 	qhandle_t   humanBuildableDamagedPS;
 	qhandle_t   humanBuildableDestroyedPS;
+	qhandle_t   humanBuildableNovaPS;
 	qhandle_t   alienBuildableDamagedPS;
 	qhandle_t   alienBuildableDestroyedPS;
 
@@ -1464,6 +1456,9 @@ typedef struct
 	qhandle_t   humanBleedPS;
 	qhandle_t   alienBuildableBleedPS;
 	qhandle_t   humanBuildableBleedPS;
+	qhandle_t   alienBuildableBurnPS;
+
+	qhandle_t   floorFirePS;
 
 	qhandle_t   teslaZapTS;
 
@@ -1530,6 +1525,10 @@ typedef struct
 	int      maxclients;
 	char     mapname[ MAX_QPATH ];
 	qboolean markDeconstruct; // Whether or not buildables are marked
+	int      powerReactorRange;
+	int      powerRepeaterRange;
+	float    confidenceHalfLife; // used for confidence bar (un)lock markers
+	float    unlockableMinTime;  // used for confidence bar (un)lock markers
 
 	int      voteTime[ NUM_TEAMS ];
 	int      voteYes[ NUM_TEAMS ];
@@ -1539,13 +1538,6 @@ typedef struct
 	char     voteString[ NUM_TEAMS ][ MAX_STRING_TOKENS ];
 
 	int      levelStartTime;
-
-	int      alienStage;
-	int      humanStage;
-	int      alienCredits;
-	int      humanCredits;
-	int      alienNextStageThreshold;
-	int      humanNextStageThreshold;
 
 	//
 	// locally derived information from gamestate
@@ -1596,6 +1588,7 @@ typedef enum
   SHC_LIGHT_BLUE,
   SHC_GREEN_CYAN,
   SHC_VIOLET,
+  SHC_INDIGO,
   SHC_YELLOW,
   SHC_ORANGE,
   SHC_LIGHT_GREEN,
@@ -1660,6 +1653,7 @@ extern  vmCvar_t            cg_drawDemoState;
 extern  vmCvar_t            cg_drawSnapshot;
 extern  vmCvar_t            cg_drawChargeBar;
 extern  vmCvar_t            cg_drawCrosshair;
+extern  vmCvar_t            cg_drawCrosshairIndicator;
 extern  vmCvar_t            cg_drawCrosshairNames;
 extern  vmCvar_t            cg_drawBuildableHealth;
 extern  vmCvar_t            cg_drawMinimap;
@@ -1768,11 +1762,11 @@ extern  vmCvar_t            cg_debugVoices;
 
 extern  vmCvar_t            ui_currentClass;
 extern  vmCvar_t            ui_carriage;
-extern  vmCvar_t            ui_stages;
 extern  vmCvar_t            ui_dialog;
 extern  vmCvar_t            ui_voteActive;
 extern  vmCvar_t            ui_alienTeamVoteActive;
 extern  vmCvar_t            ui_humanTeamVoteActive;
+extern  vmCvar_t            ui_unlockables;
 
 extern vmCvar_t             cg_debugRandom;
 
@@ -1816,7 +1810,6 @@ void       CG_NotifyHooks( void );
 void       CG_UpdateCvars( void );
 
 int        CG_CrosshairPlayer( void );
-int        CG_LastAttacker( void );
 void       CG_LoadMenus( const char *menuFile );
 void       CG_KeyEvent( int key, int chr, int flags );
 void       CG_MouseEvent( int x, int y );
@@ -1913,7 +1906,6 @@ void        CG_NewClientInfo( int clientNum );
 void        CG_PrecacheClientInfo( class_t class, const char *model, const char *skin );
 sfxHandle_t CG_CustomSound( int clientNum, const char *soundName );
 void        CG_PlayerDisconnect( vec3_t org );
-void        CG_Bleed( vec3_t origin, vec3_t normal, int entityNum );
 centity_t   *CG_GetPlayerLocation( void );
 
 //
@@ -1924,7 +1916,8 @@ void     CG_Buildable( centity_t *cent );
 void     CG_BuildableStatusParse( const char *filename, buildStat_t *bs );
 void     CG_DrawBuildableStatus( void );
 void     CG_InitBuildables( void );
-void     CG_HumanBuildableExplosion( vec3_t origin, vec3_t dir );
+void     CG_HumanBuildableDying( buildable_t buildable, vec3_t origin );
+void     CG_HumanBuildableExplosion( buildable_t buildable, vec3_t origin, vec3_t dir );
 void     CG_AlienBuildableExplosion( vec3_t origin, vec3_t dir );
 qboolean CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t *rmType, float *range, vec3_t rgb );
 
@@ -1974,8 +1967,8 @@ void CG_DrawBoundingBox( vec3_t origin, vec3_t mins, vec3_t maxs );
 void CG_SetEntitySoundPosition( centity_t *cent );
 void CG_AddPacketEntities( void );
 void CG_Beam( centity_t *cent );
-void CG_AdjustPositionForMover( const vec3_t in, int moverNum, int fromTime, int toTime, vec3_t out, vec3_t angles_in, vec3_t angles_out );
-
+void CG_AdjustPositionForMover( const vec3_t in, int moverNum, int fromTime, int toTime, vec3_t out,
+                                vec3_t angles_in, vec3_t angles_out );
 void CG_PositionEntityOnTag( refEntity_t *entity, const refEntity_t *parent,
                              qhandle_t parentModel, const char *tagName );
 void CG_PositionRotatedEntityOnTag( refEntity_t *entity, const refEntity_t *parent,
@@ -1994,13 +1987,13 @@ void CG_RegisterUpgrade( int upgradeNum );
 void CG_InitWeapons( void );
 void CG_RegisterWeapon( int weaponNum );
 
-void CG_FireWeapon( centity_t *cent, weaponMode_t weaponMode );
-void CG_MissileHitWall( weapon_t weapon, weaponMode_t weaponMode, int clientNum,
-                        vec3_t origin, vec3_t dir, impactSound_t soundType, int charge );
-void CG_MissileHitEntity( weapon_t weaponNum, weaponMode_t weaponMode,
-                          vec3_t origin, vec3_t dir, int entityNum, int charge );
-void CG_Bullet( vec3_t origin, int sourceEntityNum, vec3_t normal, qboolean flesh, int fleshEntityNum );
-void CG_ShotgunFire( entityState_t *es );
+void CG_HandleFireWeapon( centity_t *cent, weaponMode_t weaponMode );
+void CG_HandleFireShotgun( entityState_t *es );
+
+void CG_HandleWeaponHitEntity( entityState_t *es, vec3_t origin );
+void CG_HandleWeaponHitWall( entityState_t *es, vec3_t origin );
+void CG_HandleMissileHitEntity( entityState_t *es, vec3_t origin );
+void CG_HandleMissileHitWall( entityState_t *es, vec3_t origin );
 
 void CG_AddViewWeapon( playerState_t *ps );
 void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent );
@@ -2132,10 +2125,20 @@ const char *CG_TutorialText( void );
 //
 //===============================================
 
-// cg_drawCrosshair settings
-#define CROSSHAIR_ALWAYSOFF  0
-#define CROSSHAIR_RANGEDONLY 1
-#define CROSSHAIR_ALWAYSON   2
+// cg_drawCrosshair and cg_drawCrosshairIndicator settings
+enum
+{
+  CROSSHAIR_ALWAYSOFF,
+  CROSSHAIR_RANGEDONLY,
+  CROSSHAIR_ALWAYSON
+};
+enum
+{
+  INDICATOR_ALWAYSOFF,
+  INDICATOR_RANGEDONLY,
+  INDICATOR_RANGEDONLY_ALLHITS, // show melee hit on indicator
+  INDICATOR_ALWAYSON
+};
 
 // menu types for cg_disable*Dialogs
 typedef enum

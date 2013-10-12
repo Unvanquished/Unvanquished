@@ -34,7 +34,7 @@ Maryland 20850 USA.
 #ifndef ROCKET_H
 #define ROCKET_H
 #if defined( __cplusplus )
-
+#ifndef BOTS
 extern Rocket::Core::Context *menuContext;
 extern Rocket::Core::Context *hudContext;
 
@@ -54,7 +54,7 @@ public:
 	Rocket::Core::Dictionary Parameters;
 	Rocket::Core::String cmd;
 };
-
+#endif
 
 extern "C"
 {

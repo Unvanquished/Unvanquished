@@ -44,6 +44,8 @@ float       displayAspect = 0.0f;
 
 static void GfxInfo_f( void );
 
+cvar_t      *r_glAllowSoftware;
+
 cvar_t      *r_flareSize;
 cvar_t      *r_flareFade;
 
@@ -51,8 +53,6 @@ cvar_t      *r_ignoreFastPath;
 
 cvar_t      *r_verbose;
 cvar_t      *r_ignore;
-
-cvar_t      *r_displayRefresh;
 
 cvar_t      *r_detailTextures;
 
@@ -313,10 +313,24 @@ static void InitOpenGL( void )
 		{
 			glConfig.maxTextureSize = 0;
 		}
-	}
 
-	// init command buffers and SMP
-	R_InitCommandBuffers();
+		glConfig.smpActive = qfalse;
+
+		if ( r_smp->integer )
+		{
+			ri.Printf( PRINT_ALL, "Trying SMP acceleration...\n" );
+
+			if ( GLimp_SpawnRenderThread( RB_RenderThread ) )
+			{
+				ri.Printf( PRINT_ALL, "...succeeded.\n" );
+				glConfig.smpActive = qtrue;
+			}
+			else
+			{
+				ri.Printf( PRINT_ALL, "...failed.\n" );
+			}
+		}
+	}
 
 	// set default state
 	GL_SetDefaultState();
@@ -1074,6 +1088,8 @@ R_Register
 */
 void R_Register( void )
 {
+	r_glAllowSoftware = ri.Cvar_Get( "r_glAllowSoftware", "0", CVAR_LATCH );
+
 	//
 	// latched and archived variables
 	//
@@ -1136,17 +1152,9 @@ void R_Register( void )
 	r_customaspect = ri.Cvar_Get( "r_customaspect", "1", CVAR_ARCHIVE | CVAR_LATCH );
 	r_simpleMipMaps = ri.Cvar_Get( "r_simpleMipMaps", "1", CVAR_ARCHIVE | CVAR_LATCH );
 	r_subdivisions = ri.Cvar_Get( "r_subdivisions", "4", CVAR_ARCHIVE | CVAR_LATCH );
-#ifdef MACOS_X
-	// debe: r_smp doesn't work on MACOS_X yet...
-	r_smp = ri.Cvar_Get( "r_smp", "0", CVAR_ARCHIVE | CVAR_LATCH | CVAR_UNSAFE | CVAR_ROM );
-	ri.Cvar_Set( "r_smp", "0" );
-#elif defined WIN32
-	// ydnar: r_smp is nonfunctional on windows
-	r_smp = ri.Cvar_Get( "r_smp", "0", CVAR_ARCHIVE | CVAR_LATCH | CVAR_UNSAFE | CVAR_ROM );
-	ri.Cvar_Set( "r_smp", "0" );
-#else
+
 	r_smp = ri.Cvar_Get( "r_smp", "0", CVAR_ARCHIVE | CVAR_LATCH | CVAR_UNSAFE );
-#endif
+
 	r_ignoreFastPath = ri.Cvar_Get( "r_ignoreFastPath", "0", CVAR_ARCHIVE | CVAR_LATCH );  // ydnar: use fast path by default
 #if MAC_STVEF_HM || MAC_WOLF2_MP
 	r_ati_fsaa_samples = ri.Cvar_Get( "r_ati_fsaa_samples", "1", CVAR_ARCHIVE );  //DAJ valids are 1, 2, 4
@@ -1154,8 +1162,6 @@ void R_Register( void )
 	//
 	// temporary latched variables that can only change over a restart
 	//
-	r_displayRefresh = ri.Cvar_Get( "r_displayRefresh", "0", CVAR_LATCH | CVAR_UNSAFE );
-	AssertCvarRange( r_displayRefresh, 0, 200, qtrue );
 	r_mapOverBrightBits = ri.Cvar_Get( "r_mapOverBrightBits", "2", CVAR_LATCH );
 	AssertCvarRange( r_mapOverBrightBits, 0, 3, qtrue );
 	r_intensity = ri.Cvar_Get( "r_intensity", "1", CVAR_LATCH );
@@ -1379,9 +1385,9 @@ void R_Init( void )
 		backEndData[ 1 ] = NULL;
 	}
 
-	R_ToggleSmpFrame();
-
 	InitOpenGL();
+
+	R_ToggleSmpFrame();
 
 	R_InitImages();
 
@@ -1437,8 +1443,6 @@ void RE_Shutdown( qboolean destroyWindow )
 	ri.Cmd_RemoveCommand( "cropimages" );
 	// done.
 
-	R_ShutdownCommandBuffers();
-
 	// Ridah, keep a backup of the current images if possible
 	// clean out any remaining unused media from the last backup
 	R_PurgeCache();
@@ -1450,14 +1454,10 @@ void RE_Shutdown( qboolean destroyWindow )
 			if ( destroyWindow )
 			{
 				R_SyncRenderThread();
-				R_ShutdownCommandBuffers();
 				R_DeleteTextures();
 			}
 			else
 			{
-				// backup the current media
-				R_ShutdownCommandBuffers();
-
 				R_BackupModels();
 				R_BackupShaders();
 				R_BackupImages();
@@ -1467,7 +1467,6 @@ void RE_Shutdown( qboolean destroyWindow )
 	else if ( tr.registered )
 	{
 		R_SyncRenderThread();
-		R_ShutdownCommandBuffers();
 		R_DeleteTextures();
 	}
 

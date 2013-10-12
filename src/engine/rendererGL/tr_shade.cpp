@@ -24,9 +24,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "tr_local.h"
 #include "gl_shader.h"
 
-#if defined( USE_GLSL_OPTIMIZER )
-#include "../../libs/glsl-optimizer/src/glsl/glsl_optimizer.h"
-#endif
 /*
 =================================================================================
 THIS ENTIRE FILE IS BACK END!
@@ -42,10 +39,6 @@ void GLSL_InitGPUShaders( void )
 
 	GL_CheckErrors();
 
-#if defined( USE_GLSL_OPTIMIZER )
-	s_glslOptimizer = glslopt_initialize( false );
-#endif
-
 	// single texture rendering
 	gl_shaderManager.load( gl_genericShader );
 
@@ -58,30 +51,14 @@ void GLSL_InitGPUShaders( void )
 	// standard light mapping
 	gl_shaderManager.load( gl_lightMappingShader );
 
-	// geometric-buffer fill rendering with diffuse + bump + specular
-	if ( DS_STANDARD_ENABLED() )
-	{
-		// G-Buffer construction
-		gl_shaderManager.load( gl_geometricFillShader );
+	// omni-directional specular bump mapping ( Doom3 style )
+	gl_shaderManager.load( gl_forwardLightingShader_omniXYZ );
 
-		// deferred omni-directional lighting post process effect
-		gl_shaderManager.load( gl_deferredLightingShader_omniXYZ );
+	// projective lighting ( Doom3 style )
+	gl_shaderManager.load( gl_forwardLightingShader_projXYZ );
 
-		gl_shaderManager.load( gl_deferredLightingShader_projXYZ );
-
-		gl_shaderManager.load( gl_deferredLightingShader_directionalSun );
-	}
-	else
-	{
-		// omni-directional specular bump mapping ( Doom3 style )
-		gl_shaderManager.load( gl_forwardLightingShader_omniXYZ );
-
-		// projective lighting ( Doom3 style )
-		gl_shaderManager.load( gl_forwardLightingShader_projXYZ );
-
-		// directional sun lighting ( Doom3 style )
-		gl_shaderManager.load( gl_forwardLightingShader_directionalSun );
-	}
+	// directional sun lighting ( Doom3 style )
+	gl_shaderManager.load( gl_forwardLightingShader_directionalSun );
 
 #if !defined( GLSL_COMPILE_STARTUP_ONLY )
 
@@ -98,9 +75,6 @@ void GLSL_InitGPUShaders( void )
 	// volumetric lighting
 	gl_shaderManager.load( gl_lightVolumeShader_omni );
 #endif
-
-	// UT3 style player shadowing
-	gl_shaderManager.load( gl_deferredShadowingShader_proj );
 
 #endif // #if !defined(GLSL_COMPILE_STARTUP_ONLY)
 
@@ -159,6 +133,11 @@ void GLSL_InitGPUShaders( void )
 
 	gl_shaderManager.load( gl_motionblurShader );
 
+	if ( !glBroken.FXAA )
+	{
+		gl_shaderManager.load( gl_fxaaShader );
+        }
+
 	if ( !r_lazyShaders->integer )
 	{
 		gl_shaderManager.buildAll();
@@ -175,17 +154,12 @@ void GLSL_ShutdownGPUShaders( void )
 	gl_vertexLightingShader_DBS_entity = NULL;
 	gl_vertexLightingShader_DBS_world = NULL;
 	gl_lightMappingShader = NULL;
-	gl_geometricFillShader = NULL;
-	gl_deferredLightingShader_omniXYZ = NULL;
-	gl_deferredLightingShader_projXYZ = NULL;
-	gl_deferredLightingShader_directionalSun = NULL;
 	gl_forwardLightingShader_omniXYZ = NULL;
 	gl_forwardLightingShader_projXYZ = NULL;
 	gl_forwardLightingShader_directionalSun = NULL;
 	gl_depthToColorShader = NULL;
 	gl_shadowFillShader = NULL;
 	gl_lightVolumeShader_omni = NULL;
-	gl_deferredShadowingShader_proj = NULL;
 	gl_reflectionShader = NULL;
 	gl_skyboxShader = NULL;
 	gl_fogQuake3Shader = NULL;
@@ -204,12 +178,9 @@ void GLSL_ShutdownGPUShaders( void )
 	gl_screenSpaceAmbientOcclusionShader = NULL;
 	gl_depthOfFieldShader = NULL;
 	gl_motionblurShader = NULL;
+	gl_fxaaShader = NULL;
 
 	GL_BindNullProgram();
-
-#if defined( USE_GLSL_OPTIMIZER )
-	glslopt_cleanup( s_glslOptimizer );
-#endif
 }
 
 void GLSL_FinishGPUShaders( void )
@@ -302,7 +273,7 @@ ALIGNED( 16, shaderCommands_t tess );
 BindLightMap
 =================
 */
-static void BindLightMap()
+static void BindLightMap( int tmu )
 {
 	image_t *lightmap;
 
@@ -321,11 +292,11 @@ static void BindLightMap()
 
 	if ( !tr.lightmaps.currentElements || !lightmap )
 	{
-		GL_Bind( tr.whiteImage );
+		GL_BindToTMU( tmu, tr.whiteImage );
 		return;
 	}
 
-	GL_Bind( lightmap );
+	GL_BindToTMU( tmu, lightmap );
 }
 
 /*
@@ -333,7 +304,7 @@ static void BindLightMap()
 BindDeluxeMap
 =================
 */
-static void BindDeluxeMap()
+static void BindDeluxeMap( int tmu )
 {
 	image_t *deluxemap;
 
@@ -348,11 +319,11 @@ static void BindDeluxeMap()
 
 	if ( !tr.deluxemaps.currentElements || !deluxemap )
 	{
-		GL_Bind( tr.flatImage );
+		GL_BindToTMU( tmu, tr.flatImage );
 		return;
 	}
 
-	GL_Bind( deluxemap );
+	GL_BindToTMU( tmu, deluxemap );
 }
 
 /*
@@ -374,11 +345,11 @@ static void DrawTris()
 	gl_genericShader->DisableTCGenLightmap();
 
 	gl_genericShader->BindProgram();
-	gl_genericShader->SetRequiredVertexPointers();
 
 	GL_State( GLS_POLYMODE_LINE | GLS_DEPTHMASK_TRUE );
 
 	gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
+
 	if ( r_showBatches->integer || r_showLightBatches->integer )
 	{
 		gl_genericShader->SetUniform_Color( g_color_table[ backEnd.pc.c_batches % 8 ] );
@@ -414,9 +385,9 @@ static void DrawTris()
 	}
 
 	// bind u_ColorMap
-	GL_SelectTexture( 0 );
-	GL_Bind( tr.whiteImage );
+	GL_BindToTMU( 0, tr.whiteImage ); 
 	gl_genericShader->SetUniform_ColorTextureMatrix( tess.svars.texMatrices[ TB_COLORMAP ] );
+	gl_genericShader->SetRequiredVertexPointers();
 
 	glDepthRange( 0, 0 );
 
@@ -447,7 +418,7 @@ void Tess_Begin( void ( *stageIteratorFunc )( void ),
 
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;
-
+	tess.attribsSet = 0;
 	tess.multiDrawPrimitives = 0;
 
 	// materials are optional
@@ -495,14 +466,6 @@ void Tess_Begin( void ( *stageIteratorFunc )( void ),
 		{
 			tess.stageIteratorFunc = &Tess_StageIteratorSky;
 			tess.stageIteratorFunc2 = &Tess_StageIteratorDepthFill;
-		}
-	}
-	else if ( tess.stageIteratorFunc == Tess_StageIteratorGBuffer )
-	{
-		if ( isSky )
-		{
-			tess.stageIteratorFunc = &Tess_StageIteratorSky;
-			tess.stageIteratorFunc2 = &Tess_StageIteratorGBuffer;
 		}
 	}
 
@@ -636,6 +599,7 @@ static void Render_vertexLighting_DBS_entity( int stage )
 	GL_State( stateBits );
 
 	bool normalMapping = r_normalMapping->integer && ( pStage->bundle[ TB_NORMALMAP ].image[ 0 ] != NULL );
+	bool glowMapping = ( pStage->bundle[ TB_GLOWMAP ].image[ 0 ] != NULL );
 
 	// choose right shader program ----------------------------------
 	gl_vertexLightingShader_DBS_entity->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
@@ -647,6 +611,8 @@ static void Render_vertexLighting_DBS_entity( int stage )
 	gl_vertexLightingShader_DBS_entity->SetParallaxMapping( normalMapping && r_parallaxMapping->integer && tess.surfaceShader->parallax );
 
 	gl_vertexLightingShader_DBS_entity->SetReflectiveSpecular( normalMapping && tr.cubeHashTable != NULL );
+
+	gl_vertexLightingShader_DBS_entity->SetGlowMapping( glowMapping );
 
 //	gl_vertexLightingShader_DBS_entity->SetMacro_TWOSIDED(tess.surfaceShader->cullType);
 
@@ -704,36 +670,31 @@ static void Render_vertexLighting_DBS_entity( int stage )
 	}
 
 	// bind u_DiffuseMap
-	GL_SelectTexture( 0 );
-	GL_Bind( pStage->bundle[ TB_DIFFUSEMAP ].image[ 0 ] );
+	GL_BindToTMU( 0, pStage->bundle[ TB_DIFFUSEMAP ].image[ 0 ] ); 
 	gl_vertexLightingShader_DBS_entity->SetUniform_DiffuseTextureMatrix( tess.svars.texMatrices[ TB_DIFFUSEMAP ] );
 
 	if ( normalMapping )
 	{
 		// bind u_NormalMap
-		GL_SelectTexture( 1 );
-
 		if ( pStage->bundle[ TB_NORMALMAP ].image[ 0 ] )
 		{
-			GL_Bind( pStage->bundle[ TB_NORMALMAP ].image[ 0 ] );
+			GL_BindToTMU( 1, pStage->bundle[ TB_NORMALMAP ].image[ 0 ] );
 		}
 		else
 		{
-			GL_Bind( tr.flatImage );
+			GL_BindToTMU( 1, tr.flatImage );
 		}
 
 		gl_vertexLightingShader_DBS_entity->SetUniform_NormalTextureMatrix( tess.svars.texMatrices[ TB_NORMALMAP ] );
 
 		// bind u_SpecularMap
-		GL_SelectTexture( 2 );
-
 		if ( pStage->bundle[ TB_SPECULARMAP ].image[ 0 ] )
 		{
-			GL_Bind( pStage->bundle[ TB_SPECULARMAP ].image[ 0 ] );
+			GL_BindToTMU( 2, pStage->bundle[ TB_SPECULARMAP ].image[ 0 ] );
 		}
 		else
 		{
-			GL_Bind( tr.blackImage );
+			GL_BindToTMU( 2, tr.blackImage );
 		}
 
 		gl_vertexLightingShader_DBS_entity->SetUniform_SpecularTextureMatrix( tess.svars.texMatrices[ TB_SPECULARMAP ] );
@@ -763,20 +724,17 @@ static void Render_vertexLighting_DBS_entity( int stage )
 				GLimp_LogComment( "cubeProbeNearest && cubeProbeSecondNearest == NULL\n" );
 
 				// bind u_EnvironmentMap0
-				GL_SelectTexture( 3 );
-				GL_Bind( tr.whiteCubeImage );
+				GL_BindToTMU( 3, tr.whiteCubeImage ); 
 
 				// bind u_EnvironmentMap1
-				GL_SelectTexture( 4 );
-				GL_Bind( tr.whiteCubeImage );
+				GL_BindToTMU( 4, tr.whiteCubeImage ); 
 			}
 			else if ( cubeProbeNearest == NULL )
 			{
 				GLimp_LogComment( "cubeProbeNearest == NULL\n" );
 
 				// bind u_EnvironmentMap0
-				GL_SelectTexture( 3 );
-				GL_Bind( cubeProbeSecondNearest->cubemap );
+				GL_BindToTMU( 3, cubeProbeSecondNearest->cubemap ); 
 
 				// u_EnvironmentInterpolation
 				gl_vertexLightingShader_DBS_entity->SetUniform_EnvironmentInterpolation( 0.0 );
@@ -786,8 +744,7 @@ static void Render_vertexLighting_DBS_entity( int stage )
 				GLimp_LogComment( "cubeProbeSecondNearest == NULL\n" );
 
 				// bind u_EnvironmentMap0
-				GL_SelectTexture( 3 );
-				GL_Bind( cubeProbeNearest->cubemap );
+				GL_BindToTMU( 3, cubeProbeNearest->cubemap ); 
 
 				// bind u_EnvironmentMap1
 				//GL_SelectTexture(4);
@@ -821,17 +778,22 @@ static void Render_vertexLighting_DBS_entity( int stage )
 				}
 
 				// bind u_EnvironmentMap0
-				GL_SelectTexture( 3 );
-				GL_Bind( cubeProbeNearest->cubemap );
+				GL_BindToTMU( 3, cubeProbeNearest->cubemap ); 
 
 				// bind u_EnvironmentMap1
-				GL_SelectTexture( 4 );
-				GL_Bind( cubeProbeSecondNearest->cubemap );
+				GL_BindToTMU( 4, cubeProbeSecondNearest->cubemap ); 
 
 				// u_EnvironmentInterpolation
 				gl_vertexLightingShader_DBS_entity->SetUniform_EnvironmentInterpolation( interpolate );
 			}
 		}
+	}
+
+	if ( glowMapping )
+	{
+		GL_BindToTMU( 5, pStage->bundle[ TB_GLOWMAP ].image[ 0 ] ); 
+
+		gl_vertexLightingShader_DBS_entity->SetUniform_GlowTextureMatrix( tess.svars.texMatrices[ TB_GLOWMAP ] );
 	}
 
 	gl_vertexLightingShader_DBS_entity->SetRequiredVertexPointers();
@@ -854,12 +816,14 @@ static void Render_vertexLighting_DBS_world( int stage )
 	stateBits = pStage->stateBits;
 
 	bool normalMapping = r_normalMapping->integer && ( pStage->bundle[ TB_NORMALMAP ].image[ 0 ] != NULL );
+	bool glowMapping = ( pStage->bundle[ TB_GLOWMAP ].image[ 0 ] != NULL );
 
 	// choose right shader program ----------------------------------
 	gl_vertexLightingShader_DBS_world->SetDeformVertexes( tess.surfaceShader->numDeforms );
 
 	gl_vertexLightingShader_DBS_world->SetNormalMapping( normalMapping );
 	gl_vertexLightingShader_DBS_world->SetParallaxMapping( normalMapping && r_parallaxMapping->integer && tess.surfaceShader->parallax );
+	gl_vertexLightingShader_DBS_world->SetGlowMapping( glowMapping );
 
 //	gl_vertexLightingShader_DBS_world->SetMacro_TWOSIDED(tess.surfaceShader->cullType);
 
@@ -944,36 +908,31 @@ static void Render_vertexLighting_DBS_world( int stage )
 	}
 
 	// bind u_DiffuseMap
-	GL_SelectTexture( 0 );
-	GL_Bind( pStage->bundle[ TB_DIFFUSEMAP ].image[ 0 ] );
+	GL_BindToTMU( 0, pStage->bundle[ TB_DIFFUSEMAP ].image[ 0 ] ); 
 	gl_vertexLightingShader_DBS_world->SetUniform_DiffuseTextureMatrix( tess.svars.texMatrices[ TB_DIFFUSEMAP ] );
 
 	if ( normalMapping )
 	{
 		// bind u_NormalMap
-		GL_SelectTexture( 1 );
-
 		if ( pStage->bundle[ TB_NORMALMAP ].image[ 0 ] )
 		{
-			GL_Bind( pStage->bundle[ TB_NORMALMAP ].image[ 0 ] );
+			GL_BindToTMU( 1, pStage->bundle[ TB_NORMALMAP ].image[ 0 ] );
 		}
 		else
 		{
-			GL_Bind( tr.flatImage );
+			GL_BindToTMU( 1, tr.flatImage );
 		}
 
 		gl_vertexLightingShader_DBS_world->SetUniform_NormalTextureMatrix( tess.svars.texMatrices[ TB_NORMALMAP ] );
 
 		// bind u_SpecularMap
-		GL_SelectTexture( 2 );
-
 		if ( pStage->bundle[ TB_SPECULARMAP ].image[ 0 ] )
 		{
-			GL_Bind( pStage->bundle[ TB_SPECULARMAP ].image[ 0 ] );
+			GL_BindToTMU( 2, pStage->bundle[ TB_SPECULARMAP ].image[ 0 ] );
 		}
 		else
 		{
-			GL_Bind( tr.blackImage );
+			GL_BindToTMU( 2, tr.blackImage );
 		}
 
 		gl_vertexLightingShader_DBS_world->SetUniform_SpecularTextureMatrix( tess.svars.texMatrices[ TB_SPECULARMAP ] );
@@ -982,6 +941,13 @@ static void Render_vertexLighting_DBS_world( int stage )
 		float maxSpec = RB_EvalExpression( &pStage->specularExponentMax, r_specularExponentMax->value );
 
 		gl_vertexLightingShader_DBS_world->SetUniform_SpecularExponent( minSpec, maxSpec );
+	}
+
+	if ( glowMapping )
+	{
+		GL_BindToTMU( 3, pStage->bundle[ TB_GLOWMAP ].image[ 0 ] ); 
+
+		gl_vertexLightingShader_DBS_world->SetUniform_GlowTextureMatrix( tess.svars.texMatrices[ TB_GLOWMAP ] );
 	}
 
 	gl_vertexLightingShader_DBS_world->SetRequiredVertexPointers();
@@ -997,6 +963,7 @@ static void Render_lightMapping( int stage, bool asColorMap, bool normalMapping 
 	uint32_t      stateBits;
 	colorGen_t    rgbGen;
 	alphaGen_t    alphaGen;
+	bool glowMapping = false;
 
 	GLimp_LogComment( "--- Render_lightMapping ---\n" );
 
@@ -1040,12 +1007,18 @@ static void Render_lightMapping( int stage, bool asColorMap, bool normalMapping 
 		normalMapping = false;
 	}
 
+	if ( pStage->bundle[ TB_GLOWMAP ].image[ 0 ] != NULL )
+	{
+		glowMapping = true;
+	}
+
 	// choose right shader program ----------------------------------
 
 	gl_lightMappingShader->SetDeformVertexes( tess.surfaceShader->numDeforms );
 
 	gl_lightMappingShader->SetNormalMapping( normalMapping );
 	gl_lightMappingShader->SetParallaxMapping( normalMapping && r_parallaxMapping->integer && tess.surfaceShader->parallax );
+	gl_lightMappingShader->SetGlowMapping( glowMapping );
 
 //	gl_lightMappingShader->SetMacro_TWOSIDED(tess.surfaceShader->cullType);
 
@@ -1083,44 +1056,38 @@ static void Render_lightMapping( int stage, bool asColorMap, bool normalMapping 
 	}
 
 	// bind u_DiffuseMap
-	GL_SelectTexture( 0 );
-
 	if ( asColorMap )
 	{
-		GL_Bind( tr.whiteImage );
+		GL_BindToTMU( 0, tr.whiteImage );
 	}
 	else
 	{
-		GL_Bind( pStage->bundle[ TB_DIFFUSEMAP ].image[ 0 ] );
+		GL_BindToTMU( 0, pStage->bundle[ TB_DIFFUSEMAP ].image[ 0 ] );
 		gl_lightMappingShader->SetUniform_DiffuseTextureMatrix( tess.svars.texMatrices[ TB_DIFFUSEMAP ] );
 	}
 
 	if ( normalMapping )
 	{
 		// bind u_NormalMap
-		GL_SelectTexture( 1 );
-
 		if ( pStage->bundle[ TB_NORMALMAP ].image[ 0 ] )
 		{
-			GL_Bind( pStage->bundle[ TB_NORMALMAP ].image[ 0 ] );
+			GL_BindToTMU( 1, pStage->bundle[ TB_NORMALMAP ].image[ 0 ] );
 		}
 		else
 		{
-			GL_Bind( tr.flatImage );
+			GL_BindToTMU( 1, tr.flatImage );
 		}
 
 		gl_lightMappingShader->SetUniform_NormalTextureMatrix( tess.svars.texMatrices[ TB_NORMALMAP ] );
 
 		// bind u_SpecularMap
-		GL_SelectTexture( 2 );
-
 		if ( pStage->bundle[ TB_SPECULARMAP ].image[ 0 ] )
 		{
-			GL_Bind( pStage->bundle[ TB_SPECULARMAP ].image[ 0 ] );
+			GL_BindToTMU( 2, pStage->bundle[ TB_SPECULARMAP ].image[ 0 ] );
 		}
 		else
 		{
-			GL_Bind( tr.blackImage );
+			GL_BindToTMU( 2, tr.blackImage );
 		}
 
 		gl_lightMappingShader->SetUniform_SpecularTextureMatrix( tess.svars.texMatrices[ TB_SPECULARMAP ] );
@@ -1131,171 +1098,20 @@ static void Render_lightMapping( int stage, bool asColorMap, bool normalMapping 
 		gl_lightMappingShader->SetUniform_SpecularExponent( specExpMin, specExpMax );
 
 		// bind u_DeluxeMap
-		GL_SelectTexture( 4 );
-		BindDeluxeMap();
+		BindDeluxeMap( 4 );
 	}
 
 	// bind u_LightMap
-	GL_SelectTexture( 3 );
-	BindLightMap();
+	BindLightMap( 3 );
+
+	if ( glowMapping )
+	{
+		GL_BindToTMU( 5, pStage->bundle[ TB_GLOWMAP ].image[ 0 ] ); 
+
+		gl_lightMappingShader->SetUniform_GlowTextureMatrix( tess.svars.texMatrices[ TB_GLOWMAP ] );
+	}
 
 	gl_lightMappingShader->SetRequiredVertexPointers();
-
-	Tess_DrawElements();
-
-	GL_CheckErrors();
-}
-
-static void Render_geometricFill( int stage, bool cmap2black )
-{
-	shaderStage_t *pStage;
-	uint32_t      stateBits;
-//	vec4_t          ambientColor;
-
-	GLimp_LogComment( "--- Render_geometricFill ---\n" );
-
-	pStage = tess.surfaceStages[ stage ];
-
-	// remove blend mode
-	stateBits = pStage->stateBits;
-	stateBits &= ~( GLS_SRCBLEND_BITS | GLS_DSTBLEND_BITS );
-
-	GL_State( stateBits );
-
-	bool normalMapping = r_normalMapping->integer && ( pStage->bundle[ TB_NORMALMAP ].image[ 0 ] != NULL );
-
-	// choose right shader program ----------------------------------
-	gl_geometricFillShader->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
-	gl_geometricFillShader->SetVertexAnimation( glState.vertexAttribsInterpolation > 0 );
-
-	gl_geometricFillShader->SetDeformVertexes( tess.surfaceShader->numDeforms );
-
-	gl_geometricFillShader->SetNormalMapping( normalMapping );
-	gl_geometricFillShader->SetParallaxMapping( normalMapping && r_parallaxMapping->integer && tess.surfaceShader->parallax );
-
-	gl_geometricFillShader->SetReflectiveSpecular( false );  //normalMapping && tr.cubeHashTable != NULL);
-
-//	gl_geometricFillShader->SetMacro_TWOSIDED(tess.surfaceShader->cullType);
-
-	gl_geometricFillShader->BindProgram();
-
-	// end choose right shader program ------------------------------
-
-	/*
-	{
-	        if(r_precomputedLighting->integer)
-	        {
-	                VectorCopy(backEnd.currentEntity->ambientLight, ambientColor);
-	                ClampColor(ambientColor);
-	        }
-	        else if(r_forceAmbient->integer)
-	        {
-	                ambientColor[0] = r_forceAmbient->value;
-	                ambientColor[1] = r_forceAmbient->value;
-	                ambientColor[2] = r_forceAmbient->value;
-	        }
-	        else
-	        {
-	                VectorClear(ambientColor);
-	        }
-	}
-	*/
-
-	gl_geometricFillShader->SetUniform_AlphaTest( pStage->stateBits );
-	gl_geometricFillShader->SetUniform_ViewOrigin( backEnd.viewParms.orientation.origin );  // world space
-//	gl_geometricFillShader->SetUniform_AmbientColor(ambientColor);
-
-	gl_geometricFillShader->SetUniform_ModelMatrix( backEnd.orientation.transformMatrix );
-//	gl_geometricFillShader->SetUniform_ModelViewMatrix(glState.modelViewMatrix[glState.stackIndex]);
-	gl_geometricFillShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
-
-	// u_BoneMatrix
-	if ( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning )
-	{
-		gl_geometricFillShader->SetUniform_BoneMatrix( tess.numBoneMatrices, tess.boneMatrices );
-	}
-
-	// u_VertexInterpolation
-	if ( glState.vertexAttribsInterpolation > 0 )
-	{
-		gl_geometricFillShader->SetUniform_VertexInterpolation( glState.vertexAttribsInterpolation );
-	}
-
-	// u_DeformParms
-	if ( tess.surfaceShader->numDeforms )
-	{
-		gl_geometricFillShader->SetUniform_DeformParms( tess.surfaceShader->deforms, tess.surfaceShader->numDeforms );
-		gl_geometricFillShader->SetUniform_Time( backEnd.refdef.floatTime );
-	}
-
-	// u_DepthScale
-	if ( r_parallaxMapping->integer && tess.surfaceShader->parallax )
-	{
-		float depthScale;
-
-		depthScale = RB_EvalExpression( &pStage->depthScaleExp, r_parallaxDepthScale->value );
-		gl_geometricFillShader->SetUniform_DepthScale( depthScale );
-	}
-
-	//if(r_deferredShading->integer == DS_STANDARD)
-	{
-		// bind u_DiffuseMap
-		GL_SelectTexture( 0 );
-
-		if ( cmap2black )
-		{
-			GL_Bind( tr.blackImage );
-		}
-		else
-		{
-			GL_Bind( pStage->bundle[ TB_DIFFUSEMAP ].image[ 0 ] );
-		}
-
-		gl_geometricFillShader->SetUniform_DiffuseTextureMatrix( tess.svars.texMatrices[ TB_DIFFUSEMAP ] );
-	}
-
-	if ( normalMapping )
-	{
-		// bind u_NormalMap
-		GL_SelectTexture( 1 );
-
-		if ( pStage->bundle[ TB_NORMALMAP ].image[ 0 ] )
-		{
-			GL_Bind( pStage->bundle[ TB_NORMALMAP ].image[ 0 ] );
-		}
-		else
-		{
-			GL_Bind( tr.flatImage );
-		}
-
-		gl_geometricFillShader->SetUniform_NormalTextureMatrix( tess.svars.texMatrices[ TB_NORMALMAP ] );
-
-		if ( r_deferredShading->integer == DS_STANDARD )
-		{
-			// bind u_SpecularMap
-			GL_SelectTexture( 2 );
-
-			if ( r_forceSpecular->integer )
-			{
-				GL_Bind( pStage->bundle[ TB_DIFFUSEMAP ].image[ 0 ] );
-			}
-			else if ( pStage->bundle[ TB_SPECULARMAP ].image[ 0 ] )
-			{
-				GL_Bind( pStage->bundle[ TB_SPECULARMAP ].image[ 0 ] );
-			}
-			else
-			{
-				GL_Bind( tr.blackImage );
-			}
-
-			float specMin = RB_EvalExpression( &pStage->specularExponentMin, r_specularExponentMin->value );
-			float specMax = RB_EvalExpression( &pStage->specularExponentMax, r_specularExponentMax->value );
-			gl_geometricFillShader->SetUniform_SpecularExponent( specMin, specMax );
-			gl_geometricFillShader->SetUniform_SpecularTextureMatrix( tess.svars.texMatrices[ TB_SPECULARMAP ] );
-		}
-	}
-
-	gl_geometricFillShader->SetRequiredVertexPointers();
 
 	Tess_DrawElements();
 
@@ -1381,17 +1197,15 @@ static void Render_depthFill( int stage )
 	}
 
 	// bind u_ColorMap
-	GL_SelectTexture( 0 );
-
 	if ( tess.surfaceShader->alphaTest )
 	{
-		GL_Bind( pStage->bundle[ TB_DIFFUSEMAP ].image[ 0 ] );
+		GL_BindToTMU( 0, pStage->bundle[ TB_DIFFUSEMAP ].image[ 0 ] );
 		gl_genericShader->SetUniform_ColorTextureMatrix( tess.svars.texMatrices[ TB_DIFFUSEMAP ] );
 	}
 	else
 	{
 		//GL_Bind(tr.defaultImage);
-		GL_Bind( pStage->bundle[ TB_DIFFUSEMAP ].image[ 0 ] );
+		GL_BindToTMU( 0, pStage->bundle[ TB_DIFFUSEMAP ].image[ 0 ] );
 		gl_genericShader->SetUniform_ColorTextureMatrix( matrixIdentity );
 	}
 
@@ -1467,16 +1281,14 @@ static void Render_shadowFill( int stage )
 	}
 
 	// bind u_ColorMap
-	GL_SelectTexture( 0 );
-
 	if ( ( pStage->stateBits & GLS_ATEST_BITS ) != 0 )
 	{
-		GL_Bind( pStage->bundle[ TB_COLORMAP ].image[ 0 ] );
+		GL_BindToTMU( 0, pStage->bundle[ TB_COLORMAP ].image[ 0 ] );
 		gl_shadowFillShader->SetUniform_ColorTextureMatrix( tess.svars.texMatrices[ TB_COLORMAP ] );
 	}
 	else
 	{
-		GL_Bind( tr.whiteImage );
+		GL_BindToTMU( 0, tr.whiteImage );
 	}
 
 	Tess_DrawElements();
@@ -1617,40 +1429,35 @@ static void Render_forwardLighting_DBS_omni( shaderStage_t *diffuseStage,
 	GL_CheckErrors();
 
 	// bind u_DiffuseMap
-	GL_SelectTexture( 0 );
-	GL_Bind( diffuseStage->bundle[ TB_DIFFUSEMAP ].image[ 0 ] );
+	GL_BindToTMU( 0, diffuseStage->bundle[ TB_DIFFUSEMAP ].image[ 0 ] ); 
 	gl_forwardLightingShader_omniXYZ->SetUniform_DiffuseTextureMatrix( tess.svars.texMatrices[ TB_DIFFUSEMAP ] );
 
 	if ( normalMapping )
 	{
 		// bind u_NormalMap
-		GL_SelectTexture( 1 );
-
 		if ( diffuseStage->bundle[ TB_NORMALMAP ].image[ 0 ] )
 		{
-			GL_Bind( diffuseStage->bundle[ TB_NORMALMAP ].image[ 0 ] );
+			GL_BindToTMU( 1, diffuseStage->bundle[ TB_NORMALMAP ].image[ 0 ] );
 		}
 		else
 		{
-			GL_Bind( tr.flatImage );
+			GL_BindToTMU( 1, tr.flatImage );
 		}
 
 		gl_forwardLightingShader_omniXYZ->SetUniform_NormalTextureMatrix( tess.svars.texMatrices[ TB_NORMALMAP ] );
 
 		// bind u_SpecularMap
-		GL_SelectTexture( 2 );
-
 		if ( r_forceSpecular->integer )
 		{
-			GL_Bind( diffuseStage->bundle[ TB_DIFFUSEMAP ].image[ 0 ] );
+			GL_BindToTMU( 2, diffuseStage->bundle[ TB_DIFFUSEMAP ].image[ 0 ] );
 		}
 		else if ( diffuseStage->bundle[ TB_SPECULARMAP ].image[ 0 ] )
 		{
-			GL_Bind( diffuseStage->bundle[ TB_SPECULARMAP ].image[ 0 ] );
+			GL_BindToTMU( 2, diffuseStage->bundle[ TB_SPECULARMAP ].image[ 0 ] );
 		}
 		else
 		{
-			GL_Bind( tr.blackImage );
+			GL_BindToTMU( 2, tr.blackImage );
 		}
 
 		gl_forwardLightingShader_omniXYZ->SetUniform_SpecularTextureMatrix( tess.svars.texMatrices[ TB_SPECULARMAP ] );
@@ -1672,15 +1479,12 @@ static void Render_forwardLighting_DBS_omni( shaderStage_t *diffuseStage,
 	// bind u_ShadowMap
 	if ( shadowCompare )
 	{
-		GL_SelectTexture( 5 );
-		GL_Bind( tr.shadowCubeFBOImage[ light->shadowLOD ] );
-		GL_SelectTexture( 7 );
-		GL_Bind( tr.shadowClipCubeFBOImage[ light->shadowLOD ] );
+		GL_BindToTMU( 5, tr.shadowCubeFBOImage[ light->shadowLOD ] ); 
+		GL_BindToTMU( 7, tr.shadowClipCubeFBOImage[ light->shadowLOD ] ); 
 	}
 
 	// bind u_RandomMap
-	GL_SelectTexture( 6 );
-	GL_Bind( tr.randomNormalsImage );
+	GL_BindToTMU( 6, tr.randomNormalsImage ); 
 
 	gl_forwardLightingShader_omniXYZ->SetRequiredVertexPointers();
 
@@ -1823,40 +1627,35 @@ static void Render_forwardLighting_DBS_proj( shaderStage_t *diffuseStage,
 	GL_CheckErrors();
 
 	// bind u_DiffuseMap
-	GL_SelectTexture( 0 );
-	GL_Bind( diffuseStage->bundle[ TB_DIFFUSEMAP ].image[ 0 ] );
+	GL_BindToTMU( 0, diffuseStage->bundle[ TB_DIFFUSEMAP ].image[ 0 ] ); 
 	gl_forwardLightingShader_projXYZ->SetUniform_DiffuseTextureMatrix( tess.svars.texMatrices[ TB_DIFFUSEMAP ] );
 
 	if ( normalMapping )
 	{
 		// bind u_NormalMap
-		GL_SelectTexture( 1 );
-
 		if ( diffuseStage->bundle[ TB_NORMALMAP ].image[ 0 ] )
 		{
-			GL_Bind( diffuseStage->bundle[ TB_NORMALMAP ].image[ 0 ] );
+			GL_BindToTMU( 1, diffuseStage->bundle[ TB_NORMALMAP ].image[ 0 ] );
 		}
 		else
 		{
-			GL_Bind( tr.flatImage );
+			GL_BindToTMU( 1, tr.flatImage );
 		}
 
 		gl_forwardLightingShader_projXYZ->SetUniform_NormalTextureMatrix( tess.svars.texMatrices[ TB_NORMALMAP ] );
 
 		// bind u_SpecularMap
-		GL_SelectTexture( 2 );
-
 		if ( r_forceSpecular->integer )
 		{
-			GL_Bind( diffuseStage->bundle[ TB_DIFFUSEMAP ].image[ 0 ] );
+			GL_BindToTMU( 2, diffuseStage->bundle[ TB_DIFFUSEMAP ].image[ 0 ] );
 		}
 		else if ( diffuseStage->bundle[ TB_SPECULARMAP ].image[ 0 ] )
 		{
-			GL_Bind( diffuseStage->bundle[ TB_SPECULARMAP ].image[ 0 ] );
+			GL_BindToTMU( 2, diffuseStage->bundle[ TB_SPECULARMAP ].image[ 0 ] );
 		}
 		else
 		{
-			GL_Bind( tr.blackImage );
+			GL_BindToTMU( 2, tr.blackImage );
 		}
 
 		gl_forwardLightingShader_projXYZ->SetUniform_SpecularTextureMatrix( tess.svars.texMatrices[ TB_SPECULARMAP ] );
@@ -1878,15 +1677,12 @@ static void Render_forwardLighting_DBS_proj( shaderStage_t *diffuseStage,
 	// bind u_ShadowMap
 	if ( shadowCompare )
 	{
-		GL_SelectTexture( 5 );
-		GL_Bind( tr.shadowMapFBOImage[ light->shadowLOD ] );
-		GL_SelectTexture( 7 );
-		GL_Bind( tr.shadowClipMapFBOImage[ light->shadowLOD ] );
+		GL_BindToTMU( 5, tr.shadowMapFBOImage[ light->shadowLOD ] ); 
+		GL_BindToTMU( 7, tr.shadowClipMapFBOImage[ light->shadowLOD ] ); 
 	}
 
 	// bind u_RandomMap
-	GL_SelectTexture( 6 );
-	GL_Bind( tr.randomNormalsImage );
+	GL_BindToTMU( 6, tr.randomNormalsImage ); 
 
 	gl_forwardLightingShader_projXYZ->SetRequiredVertexPointers();
 
@@ -2038,40 +1834,35 @@ static void Render_forwardLighting_DBS_directional( shaderStage_t *diffuseStage,
 	GL_CheckErrors();
 
 	// bind u_DiffuseMap
-	GL_SelectTexture( 0 );
-	GL_Bind( diffuseStage->bundle[ TB_DIFFUSEMAP ].image[ 0 ] );
+	GL_BindToTMU( 0, diffuseStage->bundle[ TB_DIFFUSEMAP ].image[ 0 ] ); 
 	gl_forwardLightingShader_directionalSun->SetUniform_DiffuseTextureMatrix( tess.svars.texMatrices[ TB_DIFFUSEMAP ] );
 
 	if ( normalMapping )
 	{
 		// bind u_NormalMap
-		GL_SelectTexture( 1 );
-
 		if ( diffuseStage->bundle[ TB_NORMALMAP ].image[ 0 ] )
 		{
-			GL_Bind( diffuseStage->bundle[ TB_NORMALMAP ].image[ 0 ] );
+			GL_BindToTMU( 1, diffuseStage->bundle[ TB_NORMALMAP ].image[ 0 ] );
 		}
 		else
 		{
-			GL_Bind( tr.flatImage );
+			GL_BindToTMU( 1, tr.flatImage );
 		}
 
 		gl_forwardLightingShader_directionalSun->SetUniform_NormalTextureMatrix( tess.svars.texMatrices[ TB_NORMALMAP ] );
 
 		// bind u_SpecularMap
-		GL_SelectTexture( 2 );
-
 		if ( r_forceSpecular->integer )
 		{
-			GL_Bind( diffuseStage->bundle[ TB_DIFFUSEMAP ].image[ 0 ] );
+			GL_BindToTMU( 2, diffuseStage->bundle[ TB_DIFFUSEMAP ].image[ 0 ] );
 		}
 		else if ( diffuseStage->bundle[ TB_SPECULARMAP ].image[ 0 ] )
 		{
-			GL_Bind( diffuseStage->bundle[ TB_SPECULARMAP ].image[ 0 ] );
+			GL_BindToTMU( 2, diffuseStage->bundle[ TB_SPECULARMAP ].image[ 0 ] );
 		}
 		else
 		{
-			GL_Bind( tr.blackImage );
+			GL_BindToTMU( 2, tr.blackImage );
 		}
 
 		gl_forwardLightingShader_directionalSun->SetUniform_SpecularTextureMatrix( tess.svars.texMatrices[ TB_SPECULARMAP ] );
@@ -2085,41 +1876,31 @@ static void Render_forwardLighting_DBS_directional( shaderStage_t *diffuseStage,
 	// bind u_ShadowMap
 	if ( shadowCompare )
 	{
-		GL_SelectTexture( 5 );
-		GL_Bind( tr.sunShadowMapFBOImage[ 0 ] );
-		GL_SelectTexture( 10 );
-		GL_Bind( tr.sunShadowClipMapFBOImage[ 0 ] );
+		GL_BindToTMU( 5, tr.sunShadowMapFBOImage[ 0 ] ); 
+		GL_BindToTMU( 10, tr.sunShadowClipMapFBOImage[ 0 ] );
 
 		if ( r_parallelShadowSplits->integer >= 1 )
 		{
-			GL_SelectTexture( 6 );
-			GL_Bind( tr.sunShadowMapFBOImage[ 1 ] );
-			GL_SelectTexture( 11 );
-			GL_Bind( tr.sunShadowClipMapFBOImage[ 1 ] );
+			GL_BindToTMU( 6, tr.sunShadowMapFBOImage[ 1 ] ); 
+			GL_BindToTMU( 11, tr.sunShadowClipMapFBOImage[ 1 ] );
 		}
 
 		if ( r_parallelShadowSplits->integer >= 2 )
 		{
-			GL_SelectTexture( 7 );
-			GL_Bind( tr.sunShadowMapFBOImage[ 2 ] );
-			GL_SelectTexture( 12 );
-			GL_Bind( tr.sunShadowClipMapFBOImage[ 2 ] );
+			GL_BindToTMU( 7, tr.sunShadowMapFBOImage[ 2 ] ); ;
+			GL_BindToTMU( 12, tr.sunShadowClipMapFBOImage[ 2 ] );
 		}
 
 		if ( r_parallelShadowSplits->integer >= 3 )
 		{
-			GL_SelectTexture( 8 );
-			GL_Bind( tr.sunShadowMapFBOImage[ 3 ] );
-			GL_SelectTexture( 13 );
-			GL_Bind( tr.sunShadowClipMapFBOImage[ 3 ] );
+			GL_BindToTMU( 8, tr.sunShadowMapFBOImage[ 3 ] ); 
+			GL_BindToTMU( 13, tr.sunShadowClipMapFBOImage[ 3 ] );
 		}
 
 		if ( r_parallelShadowSplits->integer >= 4 )
 		{
-			GL_SelectTexture( 9 );
-			GL_Bind( tr.sunShadowMapFBOImage[ 4 ] );
-			GL_SelectTexture( 14 );
-			GL_Bind( tr.sunShadowClipMapFBOImage[ 4 ] );
+			GL_BindToTMU( 9, tr.sunShadowMapFBOImage[ 4 ] ); 
+			GL_BindToTMU( 14, tr.sunShadowClipMapFBOImage[ 4 ] );
 		}
 	}
 
@@ -2192,8 +1973,7 @@ static void Render_reflection_CB( int stage )
 	// bind u_NormalMap
 	if ( normalMapping )
 	{
-		GL_SelectTexture( 1 );
-		GL_Bind( pStage->bundle[ TB_NORMALMAP ].image[ 0 ] );
+		GL_BindToTMU( 1, pStage->bundle[ TB_NORMALMAP ].image[ 0 ] ); 
 		gl_reflectionShader->SetUniform_NormalTextureMatrix( tess.svars.texMatrices[ TB_NORMALMAP ] );
 	}
 
@@ -2245,8 +2025,7 @@ static void Render_dispersion_C( int stage )
 	}
 
 	// bind u_ColorMap
-	GL_SelectTexture( 0 );
-	GL_Bind( pStage->bundle[ TB_COLORMAP ].image[ 0 ] );
+	GL_BindToTMU( 0, pStage->bundle[ TB_COLORMAP ].image[ 0 ] ); 
 
 	Tess_DrawElements();
 
@@ -2270,8 +2049,7 @@ static void Render_skybox( int stage )
 	gl_skyboxShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
 	// bind u_ColorMap
-	GL_SelectTexture( 0 );
-	GL_Bind( pStage->bundle[ TB_COLORMAP ].image[ 0 ] );
+	GL_BindToTMU( 0, pStage->bundle[ TB_COLORMAP ].image[ 0 ] ); 
 
 	gl_skyboxShader->SetRequiredVertexPointers();
 
@@ -2377,17 +2155,7 @@ static void Render_heatHaze( int stage )
 
 		previousFBO = glState.currentFBO;
 
-		if ( DS_STANDARD_ENABLED() )
-		{
-			// copy deferredRenderFBO to occlusionRenderFBO
-			glBindFramebufferEXT( GL_READ_FRAMEBUFFER_EXT, tr.geometricRenderFBO->frameBuffer );
-			glBindFramebufferEXT( GL_DRAW_FRAMEBUFFER_EXT, tr.occlusionRenderFBO->frameBuffer );
-			glBlitFramebufferEXT( 0, 0, tr.deferredRenderFBO->width, tr.deferredRenderFBO->height,
-			                      0, 0, tr.occlusionRenderFBO->width, tr.occlusionRenderFBO->height,
-			                      GL_DEPTH_BUFFER_BIT,
-			                      GL_NEAREST );
-		}
-		else if ( HDR_ENABLED() )
+		if ( HDR_ENABLED() )
 		{
 			GL_CheckErrors();
 
@@ -2473,8 +2241,7 @@ static void Render_heatHaze( int stage )
 		}
 
 		// bind u_ColorMap
-		GL_SelectTexture( 0 );
-		GL_Bind( tr.whiteImage );
+		GL_BindToTMU( 0, tr.whiteImage ); 
 		//gl_genericShader->SetUniform_ColorTextureMatrix(tess.svars.texMatrices[TB_COLORMAP]);
 
 		gl_genericShader->SetRequiredVertexPointers();
@@ -2534,32 +2301,24 @@ static void Render_heatHaze( int stage )
 	}
 
 	// bind u_NormalMap
-	GL_SelectTexture( 0 );
-	GL_Bind( pStage->bundle[ TB_COLORMAP ].image[ 0 ] );
+	GL_BindToTMU( 0, pStage->bundle[ TB_COLORMAP ].image[ 0 ] ); 
 	gl_heatHazeShader->SetUniform_NormalTextureMatrix( tess.svars.texMatrices[ TB_COLORMAP ] );
 
 	// bind u_CurrentMap
-	GL_SelectTexture( 1 );
-
-	if ( DS_STANDARD_ENABLED() )
+	if ( HDR_ENABLED() )
 	{
-		GL_Bind( tr.deferredRenderFBOImage );
-	}
-	else if ( HDR_ENABLED() )
-	{
-		GL_Bind( tr.deferredRenderFBOImage );
+		GL_BindToTMU( 1, tr.deferredRenderFBOImage );
 	}
 	else
 	{
-		GL_Bind( tr.currentRenderImage );
+		GL_BindToTMU( 1, tr.currentRenderImage );
 		glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0, tr.currentRenderImage->uploadWidth, tr.currentRenderImage->uploadHeight );
 	}
 
 	// bind u_ContrastMap
 	if ( r_heatHazeFix->integer && glConfig2.framebufferBlitAvailable /*&& glConfig.hardwareType != GLHW_ATI && glConfig.hardwareType != GLHW_ATI_DX10*/ && glConfig.driverType != GLDRV_MESA )
 	{
-		GL_SelectTexture( 2 );
-		GL_Bind( tr.occlusionRenderFBOImage );
+		GL_BindToTMU( 2, tr.occlusionRenderFBOImage ); 
 	}
 
 	gl_heatHazeShader->SetRequiredVertexPointers();
@@ -2613,47 +2372,43 @@ static void Render_liquid( int stage )
 	gl_liquidShader->SetUniform_SpecularExponent( specMin, specMAx );
 
 	// capture current color buffer for u_CurrentMap
-	GL_SelectTexture( 0 );
-
 	if ( DS_STANDARD_ENABLED() )
 	{
-		GL_Bind( tr.deferredRenderFBOImage );
+		GL_BindToTMU( 0, tr.deferredRenderFBOImage );
 	}
 	else if ( HDR_ENABLED() )
 	{
-		GL_Bind( tr.deferredRenderFBOImage );
+		GL_BindToTMU( 0, tr.deferredRenderFBOImage );
 	}
 	else
 	{
+		GL_SelectTexture( 0 );
 		GL_Bind( tr.currentRenderImage );
 		glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0, tr.currentRenderImage->uploadWidth, tr.currentRenderImage->uploadHeight );
 	}
 
 	// bind u_PortalMap
-	GL_SelectTexture( 1 );
-	GL_Bind( tr.portalRenderImage );
+	GL_BindToTMU( 1, tr.portalRenderImage ); 
 
 	// bind u_DepthMap
-	GL_SelectTexture( 2 );
-
 	if ( DS_STANDARD_ENABLED() )
 	{
-		GL_Bind( tr.depthRenderImage );
+		GL_BindToTMU( 2, tr.depthRenderImage );
 	}
 	else if ( HDR_ENABLED() )
 	{
-		GL_Bind( tr.depthRenderImage );
+		GL_BindToTMU( 2, tr.depthRenderImage );
 	}
 	else
 	{
 		// depth texture is not bound to a FBO
+		GL_SelectTexture( 2 );
 		GL_Bind( tr.depthRenderImage );
 		glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0, tr.depthRenderImage->uploadWidth, tr.depthRenderImage->uploadHeight );
 	}
 
 	// bind u_NormalMap
-	GL_SelectTexture( 3 );
-	GL_Bind( pStage->bundle[ TB_COLORMAP ].image[ 0 ] );
+	GL_BindToTMU( 3, pStage->bundle[ TB_COLORMAP ].image[ 0 ] ); 
 	gl_liquidShader->SetUniform_NormalTextureMatrix( tess.svars.texMatrices[ TB_COLORMAP ] );
 
 	Tess_DrawElements();
@@ -2803,8 +2558,7 @@ static void Render_fog()
 	}
 
 	// bind u_ColorMap
-	GL_SelectTexture( 0 );
-	GL_Bind( tr.fogImage );
+	GL_BindToTMU( 0, tr.fogImage ); 
 	//gl_fogQuake3Shader->SetUniform_ColorTextureMatrix(tess.svars.texMatrices[TB_COLORMAP]);
 
 	gl_fogQuake3Shader->SetRequiredVertexPointers();
@@ -2814,10 +2568,11 @@ static void Render_fog()
 	GL_CheckErrors();
 }
 
+#if 0
 // see Fog Polygon Volumes documentation by Nvidia for further information
 static void Render_volumetricFog()
 {
-#if 0
+
 	vec3_t viewOrigin;
 	float  fogDensity;
 	GLfloat fogColor[ 3 ];
@@ -2830,18 +2585,7 @@ static void Render_volumetricFog()
 
 		previousFBO = glState.currentFBO;
 
-		if ( r_deferredShading->integer && glConfig2.framebufferObjectAvailable && glConfig2.textureFloatAvailable &&
-		     glConfig2.drawBuffersAvailable && glConfig2.maxDrawBuffers >= 4 )
-		{
-			// copy deferredRenderFBO to occlusionRenderFBO
-			glBindFramebufferEXT( GL_READ_FRAMEBUFFER_EXT, tr.deferredRenderFBO->frameBuffer );
-			glBindFramebufferEXT( GL_DRAW_FRAMEBUFFER_EXT, tr.occlusionRenderFBO->frameBuffer );
-			glBlitFramebufferEXT( 0, 0, tr.deferredRenderFBO->width, tr.deferredRenderFBO->height,
-			                      0, 0, tr.occlusionRenderFBO->width, tr.occlusionRenderFBO->height,
-			                      GL_DEPTH_BUFFER_BIT,
-			                      GL_NEAREST );
-		}
-		else if ( r_hdrRendering->integer && glConfig2.framebufferObjectAvailable && glConfig2.textureFloatAvailable )
+		if ( r_hdrRendering->integer && glConfig2.framebufferObjectAvailable && glConfig2.textureFloatAvailable )
 		{
 			// copy deferredRenderFBO to occlusionRenderFBO
 			glBindFramebufferEXT( GL_READ_FRAMEBUFFER_EXT, tr.deferredRenderFBO->frameBuffer );
@@ -2922,38 +2666,30 @@ static void Render_volumetricFog()
 		gl_volumetricFogShader->SetUniform_FogColor( fogColor );
 
 		// bind u_DepthMap
-		GL_SelectTexture( 0 );
-
-		if ( r_deferredShading->integer && glConfig2.framebufferObjectAvailable && glConfig2.textureFloatAvailable &&
-		     glConfig2.drawBuffersAvailable && glConfig2.maxDrawBuffers >= 4 )
+		if ( r_hdrRendering->integer && glConfig2.framebufferObjectAvailable && glConfig2.textureFloatAvailable )
 		{
-			GL_Bind( tr.depthRenderImage );
-		}
-		else if ( r_hdrRendering->integer && glConfig2.framebufferObjectAvailable && glConfig2.textureFloatAvailable )
-		{
-			GL_Bind( tr.depthRenderImage );
+			GL_BindToTMU( 0, tr.depthRenderImage );
 		}
 		else
 		{
 			// depth texture is not bound to a FBO
+			GL_SelectTexture( 0 );
 			GL_Bind( tr.depthRenderImage );
 			glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0, tr.depthRenderImage->uploadWidth, tr.depthRenderImage->uploadHeight );
 		}
 
 		// bind u_DepthMapBack
-		GL_SelectTexture( 1 );
-		GL_Bind( tr.depthToColorBackFacesFBOImage );
+		GL_BindToTMU( 1, tr.depthToColorBackFacesFBOImage ); 
 
 		// bind u_DepthMapFront
-		GL_SelectTexture( 2 );
-		GL_Bind( tr.depthToColorFrontFacesFBOImage );
+		GL_BindToTMU( 2, tr.depthToColorFrontFacesFBOImage ); 
 
 		Tess_DrawElements();
 	}
 
 	GL_CheckErrors();
-#endif
 }
+#endif
 
 /*
 ===============
@@ -3334,8 +3070,7 @@ void Tess_StageIteratorDebug()
 
 	if ( !glState.currentVBO || !glState.currentIBO || glState.currentVBO == tess.vbo || glState.currentIBO == tess.ibo )
 	{
-		// Tr3B: FIXME analyze required vertex attribs by the current material
-		Tess_UpdateVBOs( 0 );
+		Tess_UpdateVBOs( tess.attribsSet );
 	}
 
 	Tess_DrawElements();
@@ -3429,8 +3164,7 @@ void Tess_StageIteratorGeneric()
 
 	if ( !glState.currentVBO || !glState.currentIBO || glState.currentVBO == tess.vbo || glState.currentIBO == tess.ibo )
 	{
-		// Tr3B: FIXME analyze required vertex attribs by the current material
-		Tess_UpdateVBOs( 0 );
+		Tess_UpdateVBOs( tess.attribsSet );
 	}
 
 	// set GL fog
@@ -3510,6 +3244,8 @@ void Tess_StageIteratorGeneric()
 #endif
 
 			case ST_DIFFUSEMAP:
+			case ST_COLLAPSE_lighting_DBSG:
+			case ST_COLLAPSE_lighting_DBG:
 			case ST_COLLAPSE_lighting_DB:
 			case ST_COLLAPSE_lighting_DBS:
 				{
@@ -3632,326 +3368,6 @@ void Tess_StageIteratorGeneric()
 	}
 }
 
-void Tess_StageIteratorGBuffer()
-{
-	int  stage;
-	bool diffuseRendered = false;
-
-	// log this call
-	if ( r_logFile->integer )
-	{
-		// don't just call LogComment, or we will get
-		// a call to va() every frame!
-		GLimp_LogComment( va
-		                  ( "--- Tess_StageIteratorGBuffer( %s, %i vertices, %i triangles ) ---\n", tess.surfaceShader->name,
-		                    tess.numVertexes, tess.numIndexes / 3 ) );
-	}
-
-	GL_CheckErrors();
-
-	Tess_DeformGeometry();
-
-	if ( !glState.currentVBO || !glState.currentIBO || glState.currentVBO == tess.vbo || glState.currentIBO == tess.ibo )
-	{
-		// Tr3B: FIXME analyze required vertex attribs by the current material
-		Tess_UpdateVBOs( 0 );
-	}
-
-	// set face culling appropriately
-	if( backEnd.currentEntity->e.renderfx & RF_SWAPCULL )
-		GL_Cull( ReverseCull( tess.surfaceShader->cullType ) );
-	else
-		GL_Cull( tess.surfaceShader->cullType );
-
-	// set polygon offset if necessary
-	if ( tess.surfaceShader->polygonOffset )
-	{
-		glEnable( GL_POLYGON_OFFSET_FILL );
-		GL_PolygonOffset( r_offsetFactor->value, r_offsetUnits->value );
-	}
-
-	// call shader function
-	for ( stage = 0; stage < MAX_SHADER_STAGES; stage++ )
-	{
-		shaderStage_t *pStage = tess.surfaceStages[ stage ];
-
-		if ( !pStage )
-		{
-			break;
-		}
-
-		if ( !RB_EvalExpression( &pStage->ifExp, 1.0 ) )
-		{
-			continue;
-		}
-
-		Tess_ComputeColor( pStage );
-		Tess_ComputeTexMatrices( pStage );
-
-		switch ( pStage->type )
-		{
-			case ST_COLORMAP:
-				{
-					R_BindFBO( tr.geometricRenderFBO );
-					glDrawBuffers( 1, geometricRenderTargets );
-
-					Render_generic( stage );
-
-					if ( tess.surfaceShader->sort <= SS_OPAQUE &&
-					     !( pStage->stateBits & ( GLS_SRCBLEND_BITS | GLS_DSTBLEND_BITS ) ) &&
-					     !diffuseRendered )
-					{
-						glDrawBuffers( 4, geometricRenderTargets );
-
-						Render_geometricFill( stage, true );
-					}
-
-					break;
-				}
-
-			case ST_DIFFUSEMAP:
-			case ST_COLLAPSE_lighting_DB:
-			case ST_COLLAPSE_lighting_DBS:
-				{
-					if ( r_precomputedLighting->integer || r_vertexLighting->integer )
-					{
-						R_BindFBO( tr.geometricRenderFBO );
-						glDrawBuffers( 4, geometricRenderTargets );
-
-						if ( !r_vertexLighting->integer && tess.lightmapNum >= 0 && tess.lightmapNum < tr.lightmaps.currentElements )
-						{
-							if ( tr.worldDeluxeMapping && r_normalMapping->integer )
-							{
-								Render_lightMapping( stage, false, true );
-								diffuseRendered = true;
-							}
-							else
-							{
-								Render_lightMapping( stage, false, false );
-								diffuseRendered = true;
-							}
-						}
-						else if ( backEnd.currentEntity != &tr.worldEntity )
-						{
-							Render_vertexLighting_DBS_entity( stage );
-							diffuseRendered = true;
-						}
-						else
-						{
-							Render_vertexLighting_DBS_world( stage );
-							diffuseRendered = true;
-						}
-					}
-					else
-					{
-						R_BindFBO( tr.geometricRenderFBO );
-						glDrawBuffers( 4, geometricRenderTargets );
-
-						Render_geometricFill( stage, false );
-						diffuseRendered = true;
-					}
-
-					break;
-				}
-
-			case ST_COLLAPSE_reflection_CB:
-			case ST_REFLECTIONMAP:
-				{
-					R_BindFBO( tr.geometricRenderFBO );
-					glDrawBuffers( 1, geometricRenderTargets );
-
-					Render_reflection_CB( stage );
-					break;
-				}
-
-			case ST_REFRACTIONMAP:
-				{
-					/*
-					if(r_deferredShading->integer == DS_STANDARD)
-					{
-
-					        R_BindFBO(tr.deferredRenderFBO);
-					        Render_refraction_C(stage);
-					}
-					*/
-					break;
-				}
-
-			case ST_DISPERSIONMAP:
-				{
-					R_BindFBO( tr.geometricRenderFBO );
-					glDrawBuffers( 1, geometricRenderTargets );
-
-					Render_dispersion_C( stage );
-					break;
-				}
-
-			case ST_SKYBOXMAP:
-				{
-					R_BindFBO( tr.geometricRenderFBO );
-					glDrawBuffers( 4, geometricRenderTargets );
-
-					Render_skybox( stage );
-					break;
-				}
-
-			case ST_SCREENMAP:
-				{
-					R_BindFBO( tr.geometricRenderFBO );
-					glDrawBuffers( 1, geometricRenderTargets );
-
-					Render_screen( stage );
-					break;
-				}
-
-			case ST_PORTALMAP:
-				{
-					R_BindFBO( tr.geometricRenderFBO );
-					glDrawBuffers( 1, geometricRenderTargets );
-
-					Render_portal( stage );
-					break;
-				}
-
-			case ST_HEATHAZEMAP:
-				{
-					R_BindFBO( tr.geometricRenderFBO );
-					glDrawBuffers( 1, geometricRenderTargets );
-
-					Render_heatHaze( stage );
-					break;
-				}
-
-			case ST_LIQUIDMAP:
-				{
-					R_BindFBO( tr.geometricRenderFBO );
-					glDrawBuffers( 1, geometricRenderTargets );
-
-					Render_liquid( stage );
-					break;
-				}
-
-			default:
-				break;
-		}
-	}
-
-	if ( !r_noFog->integer && tess.fogNum >= 1 && tess.surfaceShader->fogPass )
-	{
-		Render_fog();
-	}
-
-	// reset polygon offset
-	if ( tess.surfaceShader->polygonOffset )
-	{
-		glDisable( GL_POLYGON_OFFSET_FILL );
-	}
-}
-
-void Tess_StageIteratorGBufferNormalsOnly()
-{
-	int stage;
-
-	// log this call
-	if ( r_logFile->integer )
-	{
-		// don't just call LogComment, or we will get
-		// a call to va() every frame!
-		GLimp_LogComment( va
-		                  ( "--- Tess_StageIteratorGBufferNormalsOnly( %s, %i vertices, %i triangles ) ---\n", tess.surfaceShader->name,
-		                    tess.numVertexes, tess.numIndexes / 3 ) );
-	}
-
-	GL_CheckErrors();
-
-	Tess_DeformGeometry();
-
-	if ( !glState.currentVBO || !glState.currentIBO || glState.currentVBO == tess.vbo || glState.currentIBO == tess.ibo )
-	{
-		// Tr3B: FIXME analyze required vertex attribs by the current material
-		Tess_UpdateVBOs( 0 );
-	}
-
-	// set face culling appropriately
-	if( backEnd.currentEntity->e.renderfx & RF_SWAPCULL )
-		GL_Cull( ReverseCull( tess.surfaceShader->cullType ) );
-	else
-		GL_Cull( tess.surfaceShader->cullType );
-
-	// set polygon offset if necessary
-	if ( tess.surfaceShader->polygonOffset )
-	{
-		glEnable( GL_POLYGON_OFFSET_FILL );
-		GL_PolygonOffset( r_offsetFactor->value, r_offsetUnits->value );
-	}
-
-	// call shader function
-	for ( stage = 0; stage < MAX_SHADER_STAGES; stage++ )
-	{
-		shaderStage_t *pStage = tess.surfaceStages[ stage ];
-
-		if ( !pStage )
-		{
-			break;
-		}
-
-		if ( !RB_EvalExpression( &pStage->ifExp, 1.0 ) )
-		{
-			continue;
-		}
-
-		//Tess_ComputeColor(pStage);
-		Tess_ComputeTexMatrices( pStage );
-
-		switch ( pStage->type )
-		{
-			case ST_COLORMAP:
-				{
-#if 1
-
-					if ( tess.surfaceShader->sort <= SS_OPAQUE &&
-					     !( pStage->stateBits & ( GLS_SRCBLEND_BITS | GLS_DSTBLEND_BITS ) ) &&
-					     ( pStage->stateBits & ( GLS_DEPTHMASK_TRUE ) )
-					   )
-					{
-#if defined( OFFSCREEN_PREPASS_LIGHTING )
-						R_BindFBO( tr.geometricRenderFBO );
-#else
-						R_BindNullFBO();
-#endif
-						Render_geometricFill( stage, true );
-					}
-
-#endif
-					break;
-				}
-
-			case ST_DIFFUSEMAP:
-			case ST_COLLAPSE_lighting_DB:
-			case ST_COLLAPSE_lighting_DBS:
-				{
-#if defined( OFFSCREEN_PREPASS_LIGHTING )
-					R_BindFBO( tr.geometricRenderFBO );
-#else
-					R_BindNullFBO();
-#endif
-
-					Render_geometricFill( stage, false );
-					break;
-				}
-
-			default:
-				break;
-		}
-	}
-
-	// reset polygon offset
-	if ( tess.surfaceShader->polygonOffset )
-	{
-		glDisable( GL_POLYGON_OFFSET_FILL );
-	}
-}
-
 void Tess_StageIteratorDepthFill()
 {
 	int stage;
@@ -4028,6 +3444,8 @@ void Tess_StageIteratorDepthFill()
 #endif
 
 			case ST_DIFFUSEMAP:
+			case ST_COLLAPSE_lighting_DBSG:
+			case ST_COLLAPSE_lighting_DBG:
 			case ST_COLLAPSE_lighting_DB:
 			case ST_COLLAPSE_lighting_DBS:
 				{
@@ -4114,6 +3532,8 @@ void Tess_StageIteratorShadowFill()
 			case ST_LIGHTMAP:
 #endif
 			case ST_DIFFUSEMAP:
+			case ST_COLLAPSE_lighting_DBSG:
+			case ST_COLLAPSE_lighting_DBG:
 			case ST_COLLAPSE_lighting_DB:
 			case ST_COLLAPSE_lighting_DBS:
 				{
@@ -4155,8 +3575,7 @@ void Tess_StageIteratorLighting()
 
 	if ( !glState.currentVBO || !glState.currentIBO || glState.currentVBO == tess.vbo || glState.currentIBO == tess.ibo )
 	{
-		// Tr3B: FIXME analyze required vertex attribs by the current material
-		Tess_UpdateVBOs( 0 );
+		Tess_UpdateVBOs( tess.attribsSet );
 	}
 
 	// set OpenGL state for lighting
@@ -4323,6 +3742,7 @@ void Tess_End()
 	tess.multiDrawPrimitives = 0;
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;
+	tess.attribsSet = 0;
 
 	GLimp_LogComment( "--- Tess_End ---\n" );
 

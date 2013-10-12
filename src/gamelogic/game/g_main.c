@@ -44,8 +44,9 @@ typedef struct
 gentity_t          g_entities[ MAX_GENTITIES ];
 gclient_t          g_clients[ MAX_CLIENTS ];
 
+vmCvar_t           g_showHelpOnConnection;
+
 vmCvar_t           g_timelimit;
-vmCvar_t           g_suddenDeathTime;
 vmCvar_t           g_friendlyFire;
 vmCvar_t           g_friendlyBuildableFire;
 vmCvar_t           g_dretchPunt;
@@ -68,11 +69,10 @@ vmCvar_t           g_doWarmup;
 vmCvar_t           g_lockTeamsAtStart;
 vmCvar_t           g_mapRestarted;
 vmCvar_t           g_logFile;
+vmCvar_t           g_logGameplayStatsFrequency;
 vmCvar_t           g_logFileSync;
 vmCvar_t           g_allowVote;
 vmCvar_t           g_voteLimit;
-vmCvar_t           g_suddenDeathVotePercent;
-vmCvar_t           g_suddenDeathVoteDelay;
 vmCvar_t           g_extendVotesPercent;
 vmCvar_t           g_extendVotesTime;
 vmCvar_t           g_extendVotesCount;
@@ -86,6 +86,8 @@ vmCvar_t           g_drawVoteReasonRequired;
 vmCvar_t           g_admitDefeatVotesPercent;
 vmCvar_t           g_nextMapVotesPercent;
 vmCvar_t           g_pollVotesPercent;
+vmCvar_t           g_botKickVotesAllowed;
+vmCvar_t           g_botKickVotesAllowedThisMap;
 
 vmCvar_t           g_teamForceBalance;
 vmCvar_t           g_smoothClients;
@@ -95,31 +97,39 @@ vmCvar_t           pmove_accurate;
 vmCvar_t           g_minNameChangePeriod;
 vmCvar_t           g_maxNameChanges;
 
-vmCvar_t           g_alienBuildPoints;
-vmCvar_t           g_alienBuildQueueTime;
-vmCvar_t           g_humanBuildPoints;
-vmCvar_t           g_humanBuildQueueTime;
-vmCvar_t           g_humanRepeaterBuildPoints;
-vmCvar_t           g_humanRepeaterBuildQueueTime;
-vmCvar_t           g_humanRepeaterMaxZones;
-vmCvar_t           g_humanStage;
-vmCvar_t           g_humanCredits;
-vmCvar_t           g_humanMaxStage;
-vmCvar_t           g_humanStage2Threshold;
-vmCvar_t           g_humanStage3Threshold;
-vmCvar_t           g_alienStage;
-vmCvar_t           g_alienCredits;
-vmCvar_t           g_alienMaxStage;
-vmCvar_t           g_alienStage2Threshold;
-vmCvar_t           g_alienStage3Threshold;
+vmCvar_t           g_initialBuildPoints;
+vmCvar_t           g_initialMineRate;
+vmCvar_t           g_mineRateHalfLife;
+vmCvar_t           g_minimumMineRate;
+
+vmCvar_t           g_debugConfidence;
+vmCvar_t           g_confidenceHalfLife;
+vmCvar_t           g_confidenceRewardDoubleTime;
+vmCvar_t           g_unlockableMinTime;
+vmCvar_t           g_confidenceBaseMod;
+vmCvar_t           g_confidenceKillMod;
+vmCvar_t           g_confidenceBuildMod;
+vmCvar_t           g_confidenceDeconMod;
+vmCvar_t           g_confidenceDestroyMod;
+
+vmCvar_t           g_humanAllowBuilding;
+vmCvar_t           g_alienAllowBuilding;
+
+vmCvar_t           g_powerCompetitionRange;
+vmCvar_t           g_powerBaseSupply;
+vmCvar_t           g_powerReactorSupply;
+vmCvar_t           g_powerReactorRange;
+vmCvar_t           g_powerRepeaterSupply;
+vmCvar_t           g_powerRepeaterRange;
+vmCvar_t           g_powerLevel1Interference;
+vmCvar_t           g_powerLevel1Range;
+vmCvar_t           g_powerLevel1UpgInterference;
+vmCvar_t           g_powerLevel1UpgRange;
+
+vmCvar_t           g_alienOffCreepRegenHalfLife;
+
 vmCvar_t           g_teamImbalanceWarnings;
 vmCvar_t           g_freeFundPeriod;
-
-vmCvar_t           g_luciHalfLifeTime;
-vmCvar_t           g_luciFullPowerTime;
-vmCvar_t           g_pulseHalfLifeTime;
-vmCvar_t           g_pulseFullPowerTime;
-vmCvar_t           g_flameFadeout;
 
 vmCvar_t           g_unlagged;
 
@@ -161,6 +171,7 @@ vmCvar_t           g_unnamedNumbering;
 vmCvar_t           g_unnamedNamePrefix;
 
 vmCvar_t           g_admin;
+vmCvar_t           g_adminWarn;
 vmCvar_t           g_adminTempBan;
 vmCvar_t           g_adminMaxBan;
 vmCvar_t           g_adminRetainExpiredBans;
@@ -177,15 +188,54 @@ vmCvar_t           g_tag;
 vmCvar_t           g_showKillerHP;
 vmCvar_t           g_combatCooldown;
 
+vmCvar_t           g_geoip;
+
 vmCvar_t           g_debugEntities;
+
+// <bot stuff>
+
+// bot buy cvars
+vmCvar_t g_bot_buy;
+vmCvar_t g_bot_rifle;
+vmCvar_t g_bot_painsaw;
+vmCvar_t g_bot_shotgun;
+vmCvar_t g_bot_lasgun;
+vmCvar_t g_bot_mdriver;
+vmCvar_t g_bot_chaingun;
+vmCvar_t g_bot_prifle;
+vmCvar_t g_bot_flamer;
+vmCvar_t g_bot_lcannon;
+
+// bot evolution cvars
+vmCvar_t g_bot_evolve;
+vmCvar_t g_bot_level1;
+vmCvar_t g_bot_level1upg;
+vmCvar_t g_bot_level2;
+vmCvar_t g_bot_level2upg;
+vmCvar_t g_bot_level3;
+vmCvar_t g_bot_level3upg;
+vmCvar_t g_bot_level4;
+
+// misc bot cvars
+vmCvar_t g_bot_attackStruct;
+vmCvar_t g_bot_roam;
+vmCvar_t g_bot_rush;
+vmCvar_t g_bot_repair;
+vmCvar_t g_bot_build;
+vmCvar_t g_bot_retreat;
+vmCvar_t g_bot_fov;
+vmCvar_t g_bot_chasetime;
+vmCvar_t g_bot_reactiontime;
+vmCvar_t g_bot_infinite_funds;
+vmCvar_t g_bot_numInGroup;
+vmCvar_t g_bot_persistent;
+vmCvar_t g_bot_debug;
+vmCvar_t g_bot_buildLayout;
+
+//</bot stuff>
 
 // copy cvars that can be set in worldspawn so they can be restored later
 static char        cv_gravity[ MAX_CVAR_VALUE_STRING ];
-static char        cv_humanMaxStage[ MAX_CVAR_VALUE_STRING ];
-static char        cv_alienMaxStage[ MAX_CVAR_VALUE_STRING ];
-static char        cv_humanRepeaterBuildPoints[ MAX_CVAR_VALUE_STRING ];
-static char        cv_humanBuildPoints[ MAX_CVAR_VALUE_STRING ];
-static char        cv_alienBuildPoints[ MAX_CVAR_VALUE_STRING ];
 
 static cvarTable_t gameCvarTable[] =
 {
@@ -199,6 +249,7 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_mapRestarted,                "g_mapRestarted",                "0",                                CVAR_ROM,                                        0, qfalse           },
 	{ NULL,                           "sv_mapname",                    "",                                 CVAR_SERVERINFO | CVAR_ROM,                      0, qfalse           },
 	{ NULL,                           "P",                             "",                                 CVAR_SERVERINFO | CVAR_ROM,                      0, qfalse           },
+	{ NULL,                           "B",                             "",                                 CVAR_SERVERINFO | CVAR_ROM,                      0, qfalse           },
 
 	// latched vars
 
@@ -207,10 +258,11 @@ static cvarTable_t gameCvarTable[] =
 	{ NULL,                           "g_mapStartupMessage",           "",                                 0,                                               0, qfalse           },
 
 	// change anytime vars
+	{ &g_showHelpOnConnection,        "g_showHelpOnConnection",        "1",                                CVAR_ARCHIVE,                                    0, qfalse           },
+
 	{ &g_maxGameClients,              "g_maxGameClients",              "0",                                CVAR_SERVERINFO | CVAR_ARCHIVE,                  0, qfalse           },
 
 	{ &g_timelimit,                   "timelimit",                     "0",                                CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue            },
-	{ &g_suddenDeathTime,             "g_suddenDeathTime",             "0",                                CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue            },
 
 	{ &g_synchronousClients,          "g_synchronousClients",          "0",                                CVAR_SYSTEMINFO,                                 0, qfalse           },
 
@@ -223,6 +275,7 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_warmup,                      "g_warmup",                      "10",                               CVAR_ARCHIVE,                                    0, qtrue            },
 	{ &g_doWarmup,                    "g_doWarmup",                    "0",                                CVAR_ARCHIVE,                                    0, qtrue            },
 	{ &g_logFile,                     "g_logFile",                     "games.log",                        CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_logGameplayStatsFrequency,   "g_logGameplayStatsFrequency",   "10",                               CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_logFileSync,                 "g_logFileSync",                 "0",                                CVAR_ARCHIVE,                                    0, qfalse           },
 
 	{ &g_password,                    "g_password",                    "",                                 CVAR_USERINFO,                                   0, qfalse           },
@@ -241,8 +294,6 @@ static cvarTable_t gameCvarTable[] =
 
 	{ &g_allowVote,                   "g_allowVote",                   "1",                                CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_voteLimit,                   "g_voteLimit",                   "5",                                CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_suddenDeathVotePercent,      "g_suddenDeathVotePercent",      "74",                               CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_suddenDeathVoteDelay,        "g_suddenDeathVoteDelay",        "180",                              CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_extendVotesPercent,          "g_extendVotesPercent",          "74",                               CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_extendVotesTime,             "g_extendVotesTime",             "10",                               CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_extendVotesCount,            "g_extendVotesCount",            "2",                                CVAR_ARCHIVE,                                    0, qfalse           },
@@ -256,38 +307,49 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_drawVoteReasonRequired,      "g_drawVoteReasonRequired",      "0",                                CVAR_ARCHIVE,                                    0, qtrue            },
 	{ &g_admitDefeatVotesPercent,     "g_admitDefeatVotesPercent",     "74",                               CVAR_ARCHIVE,                                    0, qtrue            },
 	{ &g_pollVotesPercent,            "g_pollVotesPercent",            "0",                                CVAR_ARCHIVE,                                    0, qtrue            },
+	{ &g_botKickVotesAllowed,         "g_botKickVotesAllowed",         "1",                                CVAR_ARCHIVE,                                    0, qtrue            },
+	{ &g_botKickVotesAllowedThisMap,  "g_botKickVotesAllowedThisMap",  "1",                                0,                                               0, qtrue            },
 	{ &g_minNameChangePeriod,         "g_minNameChangePeriod",         "5",                                0,                                               0, qfalse           },
 	{ &g_maxNameChanges,              "g_maxNameChanges",              "5",                                0,                                               0, qfalse           },
 
 	{ &g_smoothClients,               "g_smoothClients",               "1",                                0,                                               0, qfalse           },
 	{ &pmove_fixed,                   "pmove_fixed",                   "0",                                CVAR_SYSTEMINFO,                                 0, qfalse           },
 	{ &pmove_msec,                    "pmove_msec",                    "8",                                CVAR_SYSTEMINFO,                                 0, qfalse           },
-	{ &pmove_accurate,                "pmove_accurate",                "0",                                CVAR_SYSTEMINFO,                                 0, qfalse           },
-	{ &g_alienBuildPoints,            "g_alienBuildPoints",            DEFAULT_ALIEN_BUILDPOINTS,          0,                                               0, qfalse, cv_alienBuildPoints},
-	{ &g_alienBuildQueueTime,         "g_alienBuildQueueTime",         DEFAULT_ALIEN_QUEUE_TIME,           CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_humanBuildPoints,            "g_humanBuildPoints",            DEFAULT_HUMAN_BUILDPOINTS,          0,                                               0, qfalse, cv_humanBuildPoints},
-	{ &g_humanBuildQueueTime,         "g_humanBuildQueueTime",         DEFAULT_HUMAN_QUEUE_TIME,           CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_humanRepeaterBuildPoints,    "g_humanRepeaterBuildPoints",    DEFAULT_HUMAN_REPEATER_BUILDPOINTS, CVAR_ARCHIVE,                                    0, qfalse, cv_humanRepeaterBuildPoints},
-	{ &g_humanRepeaterMaxZones,       "g_humanRepeaterMaxZones",       DEFAULT_HUMAN_REPEATER_MAX_ZONES,   CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_humanRepeaterBuildQueueTime, "g_humanRepeaterBuildQueueTime", DEFAULT_HUMAN_REPEATER_QUEUE_TIME,  CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_humanStage,                  "g_humanStage",                  "0",                                0,                                               0, qfalse           },
-	{ &g_humanCredits,                "g_humanCredits",                "0",                                0,                                               0, qfalse           },
-	{ &g_humanMaxStage,               "g_humanMaxStage",               DEFAULT_HUMAN_MAX_STAGE,            0,                                               0, qfalse, cv_humanMaxStage},
-	{ &g_humanStage2Threshold,        "g_humanStage2Threshold",        DEFAULT_HUMAN_STAGE2_THRESH,        0,                                               0, qfalse           },
-	{ &g_humanStage3Threshold,        "g_humanStage3Threshold",        DEFAULT_HUMAN_STAGE3_THRESH,        0,                                               0, qfalse           },
-	{ &g_alienStage,                  "g_alienStage",                  "0",                                0,                                               0, qfalse           },
-	{ &g_alienCredits,                "g_alienCredits",                "0",                                0,                                               0, qfalse           },
-	{ &g_alienMaxStage,               "g_alienMaxStage",               DEFAULT_ALIEN_MAX_STAGE,            0,                                               0, qfalse, cv_alienMaxStage},
-	{ &g_alienStage2Threshold,        "g_alienStage2Threshold",        DEFAULT_ALIEN_STAGE2_THRESH,        0,                                               0, qfalse           },
-	{ &g_alienStage3Threshold,        "g_alienStage3Threshold",        DEFAULT_ALIEN_STAGE3_THRESH,        0,                                               0, qfalse           },
+	{ &pmove_accurate,                "pmove_accurate",                "1",                                CVAR_SYSTEMINFO,                                 0, qfalse           },
+
+	{ &g_initialBuildPoints,          "g_initialBuildPoints",          DEFAULT_INITIAL_BUILD_POINTS,       CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_initialMineRate,             "g_initialMineRate",             DEFAULT_INITIAL_MINE_RATE,          CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_mineRateHalfLife,            "g_mineRateHalfLife",            DEFAULT_MINE_RATE_HALF_LIFE,        CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_minimumMineRate,             "g_minimumMineRate",             DEFAULT_MINIMUM_MINE_RATE,          CVAR_ARCHIVE,                                    0, qfalse           },
+
+	{ &g_debugConfidence,             "g_debugConfidence",             "0",                                0,                                               0, qfalse           },
+	{ &g_confidenceHalfLife,          "g_confidenceHalfLife",          DEFAULT_CONFIDENCE_HALF_LIFE,       CVAR_SERVERINFO | CVAR_ARCHIVE,                  0, qfalse           },
+	{ &g_confidenceRewardDoubleTime,  "g_confidenceRewardDoubleTime",  DEFAULT_CONF_REWARD_DOUBLE_TIME,    CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_unlockableMinTime,           "g_unlockableMinTime",           DEFAULT_UNLOCKABLE_MIN_TIME,        CVAR_SERVERINFO | CVAR_ARCHIVE,                  0, qfalse           },
+	{ &g_confidenceBaseMod,           "g_confidenceBaseMod",           DEFAULT_CONFIDENCE_BASE_MOD,        CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_confidenceKillMod,           "g_confidenceKillMod",           DEFAULT_CONFIDENCE_KILL_MOD,        CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_confidenceBuildMod,          "g_confidenceBuildMod",          DEFAULT_CONFIDENCE_BUILD_MOD,       CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_confidenceDeconMod,          "g_confidenceDeconMod",          DEFAULT_CONFIDENCE_DECON_MOD,       CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_confidenceDestroyMod,        "g_confidenceDestroyMod",        DEFAULT_CONFIDENCE_DESTROY_MOD,     CVAR_ARCHIVE,                                    0, qfalse           },
+
+	{ &g_humanAllowBuilding,          "g_humanAllowBuilding",          "1",                                0,                                               0, qfalse           },
+	{ &g_alienAllowBuilding,          "g_alienAllowBuilding",          "1",                                0,                                               0, qfalse           },
+
+	{ &g_powerCompetitionRange,       "g_powerCompetitionRange",       "320",                              CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_powerBaseSupply,             "g_powerBaseSupply",             "20",                               CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_powerReactorSupply,          "g_powerReactorSupply",          "40",                               CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_powerReactorRange,           "g_powerReactorRange",           "800",                              CVAR_SERVERINFO | CVAR_ARCHIVE,                  0, qfalse           },
+	{ &g_powerRepeaterSupply,         "g_powerRepeaterSupply",         "20",                               CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_powerRepeaterRange,          "g_powerRepeaterRange",          "400",                              CVAR_SERVERINFO | CVAR_ARCHIVE,                  0, qfalse           },
+	{ &g_powerLevel1Interference,     "g_powerLevel1Interference",     "13",                               CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_powerLevel1Range,            "g_powerLevel1Range",            "250",                              CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_powerLevel1UpgInterference,  "g_powerLevel1UpgInterference",  "16",                               CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_powerLevel1UpgRange,         "g_powerLevel1UpgRange",         "300",                              CVAR_ARCHIVE,                                    0, qfalse           },
+
+	{ &g_alienOffCreepRegenHalfLife,  "g_alienOffCreepRegenHalfLife",  "0",                                CVAR_ARCHIVE,                                    0, qfalse           },
+
 	{ &g_teamImbalanceWarnings,       "g_teamImbalanceWarnings",       "30",                               CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_freeFundPeriod,              "g_freeFundPeriod",              DEFAULT_FREEKILL_PERIOD,            CVAR_ARCHIVE,                                    0, qtrue            },
-
-	{ &g_luciHalfLifeTime,            "g_luciHalfLifeTime",            "512",                              CVAR_ARCHIVE,                                    0, qtrue            },
-	{ &g_luciFullPowerTime,           "g_luciFullPowerTime",           "0" /*"512"*/,                      CVAR_ARCHIVE,                                    0, qtrue            },
-	{ &g_pulseHalfLifeTime,           "g_pulseHalfLifeTime",           "768",                              CVAR_ARCHIVE,                                    0, qtrue            },
-	{ &g_pulseFullPowerTime,          "g_pulseFullPowerTime",          "0"  ,                              CVAR_ARCHIVE,                                    0, qtrue            },
-	{ &g_flameFadeout,                "g_flameFadeout",                "1",                                CVAR_ARCHIVE,                                    0, qtrue            },
 
 	{ &g_unlagged,                    "g_unlagged",                    "1",                                CVAR_SERVERINFO | CVAR_ARCHIVE,                  0, qtrue            },
 
@@ -330,9 +392,10 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_unnamedNamePrefix,           "g_unnamedNamePrefix",           UNNAMED_PLAYER"#",                  CVAR_ARCHIVE,                                    0, qfalse           },
 
 	{ &g_admin,                       "g_admin",                       "admin.dat",                        CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_adminWarn,                   "g_adminWarn",                   "1h",                               CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_adminTempBan,                "g_adminTempBan",                "2m",                               CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_adminMaxBan,                 "g_adminMaxBan",                 "2w",                               CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_adminRetainExpiredBans,      "g_adminRetainExpiredBans",      "0",                                CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_adminRetainExpiredBans,      "g_adminRetainExpiredBans",      "1",                                CVAR_ARCHIVE,                                    0, qfalse           },
 
 	{ &g_privateMessages,             "g_privateMessages",             "1",                                CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_specChat,                    "g_specChat",                    "1",                                CVAR_ARCHIVE,                                    0, qfalse           },
@@ -344,8 +407,48 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_tag,                         "g_tag",                         "unv",                              CVAR_INIT,                                       0, qfalse           },
 
 	{ &g_showKillerHP,                "g_showKillerHP",                "0",                                CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_combatCooldown,              "g_combatCooldown",              "15",                               CVAR_ARCHIVE,                                    0, qfalse           }
+	{ &g_combatCooldown,              "g_combatCooldown",              "15",                               CVAR_ARCHIVE,                                    0, qfalse           },
 
+	{ &g_geoip,                       "g_geoip",                       "1",                                CVAR_ARCHIVE,                                    0, qfalse           },
+
+	// <bot stuff>
+	// bot buy cvars
+	{ &g_bot_buy, "g_bot_buy", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_rifle, "g_bot_rifle", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_painsaw, "g_bot_painsaw", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_shotgun, "g_bot_shotgun", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_lasgun, "g_bot_lasgun", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_mdriver, "g_bot_mdriver", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_chaingun, "g_bot_chain", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_prifle, "g_bot_prifle", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_flamer, "g_bot_flamer", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_lcannon, "g_bot_lcannon", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+
+	// bot evolution cvars
+	{ &g_bot_evolve, "g_bot_evolve", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_level1, "g_bot_level1", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_level1upg, "g_bot_level1upg", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_level2, "g_bot_level2", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_level2upg, "g_bot_level2upg", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_level3, "g_bot_level3", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_level3upg, "g_bot_level3upg", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_level4, "g_bot_level4", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+
+	// misc bot cvars
+	{ &g_bot_attackStruct, "g_bot_attackStruct", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_roam, "g_bot_roam", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_rush, "g_bot_rush", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_repair, "g_bot_repair", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_build, "g_bot_build", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_retreat, "g_bot_retreat", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_fov, "g_bot_fov", "125", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_chasetime, "g_bot_chasetime", "5000", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_reactiontime, "g_bot_reactiontime", "500", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_infinite_funds, "g_bot_infinite_funds", "0", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_numInGroup, "g_bot_numInGroup", "3", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_debug, "g_bot_debug", "0", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_buildLayout, "g_bot_buildLayout", "botbuild", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse }
+	// </bot stuff>
 };
 
 static const size_t gameCvarTableSize = ARRAY_LEN( gameCvarTable );
@@ -354,9 +457,16 @@ void               G_InitGame( int levelTime, int randomSeed, int restart );
 void               G_RunFrame( int levelTime );
 void               G_ShutdownGame( int restart );
 void               CheckExitRules( void );
-
 void               G_CountSpawns( void );
-void               G_CalculateBuildPoints( void );
+static void        G_LogGameplayStats( int state );
+
+// state field of G_LogGameplayStats
+enum
+{
+	LOG_GAMEPLAY_STATS_HEADER,
+	LOG_GAMEPLAY_STATS_BODY,
+	LOG_GAMEPLAY_STATS_FOOTER
+};
 
 /*
 ================
@@ -381,6 +491,10 @@ Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3, i
 			return 0;
 
 		case GAME_CLIENT_CONNECT:
+			if ( arg2 )
+			{
+				return ( intptr_t ) ClientBotConnect( arg0, arg1, TEAM_NONE );
+			}
 			return ( intptr_t ) ClientConnect( arg0, arg1 );
 
 		case GAME_CLIENT_THINK:
@@ -532,6 +646,13 @@ void G_InitSetEntities( void )
 	}
 }
 
+static int cvarCompare( const void *a, const void *b )
+{
+	cvarTable_t *ac = ( cvarTable_t * ) a;
+	cvarTable_t *bc = ( cvarTable_t * ) b;
+	return Q_stricmp( ac->cvarName, bc->cvarName );
+}
+
 /*
 =================
 G_RegisterCvars
@@ -541,6 +662,9 @@ void G_RegisterCvars( void )
 {
 	int         i;
 	cvarTable_t *cvarTable;
+
+	// sort the table for fast lookup
+	qsort( gameCvarTable, gameCvarTableSize, sizeof( *gameCvarTable ), cvarCompare );
 
 	for ( i = 0, cvarTable = gameCvarTable; i < gameCvarTableSize; i++, cvarTable++ )
 	{
@@ -613,6 +737,21 @@ void G_RestoreCvars( void )
 	}
 }
 
+vmCvar_t *G_FindCvar( const char *name )
+{
+	cvarTable_t *c = NULL;
+	cvarTable_t comp;
+	comp.cvarName = name;
+	c = ( cvarTable_t * ) bsearch( &comp, gameCvarTable, gameCvarTableSize, sizeof( *gameCvarTable ), cvarCompare );
+
+	if ( !c )
+	{
+		return NULL;
+	}
+
+	return c->vmCvar;
+}
+
 /*
 =================
 G_MapConfigs
@@ -666,10 +805,6 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 	memset( &level, 0, sizeof( level ) );
 	level.time = levelTime;
 	level.startTime = levelTime;
-	level.alienStage2Time = level.alienStage3Time
-	                        = level.humanStage2Time
-	                          = level.humanStage3Time
-	                            = level.startTime;
 	level.snd_fry = G_SoundIndex( "sound/misc/fry.wav" );  // FIXME standing in lava / slime
 
 	if ( g_logFile.string[ 0 ] )
@@ -708,6 +843,37 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 	{
 		G_Printf( "Not logging to disk\n" );
 	}
+	
+	// gameplay statistics logging
+	if ( g_logGameplayStatsFrequency.integer > 0 )
+	{
+		char    logfile[ 128 ], mapname[ 64 ];
+		qtime_t qt;
+
+		trap_GMTime( &qt );
+		trap_Cvar_VariableStringBuffer( "mapname", mapname, sizeof( mapname ) );
+
+		Com_sprintf( logfile, sizeof( logfile ),
+		             "stats/gameplay/%04i%02i%02i_%02i%02i%02i_%s.log",
+		             1900 + qt.tm_year, qt.tm_mon + 1, qt.tm_mday,
+		             qt.tm_hour, qt.tm_min, qt.tm_sec,
+		             mapname );
+
+		trap_FS_FOpenFile( logfile, &level.logGameplayFile, FS_WRITE );
+
+		if ( !level.logGameplayFile )
+		{
+			G_Printf( "WARNING: Couldn't open gameplay statistics logfile: %s\n", logfile );
+		}
+		else
+		{
+			G_LogGameplayStats( LOG_GAMEPLAY_STATS_HEADER );
+		}
+	}
+
+	// initialise whether bot vote kicks are allowed
+	// rotation may clear this flag
+	trap_Cvar_Set( "g_botKickVotesAllowedThisMap", g_botKickVotesAllowed.integer ? "1" : "0" );
 
 	// clear these now; they'll be set, if needed, from rotation
 	trap_Cvar_Set( "g_mapStartupMessage", "" );
@@ -772,8 +938,14 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 	// load up a custom building layout if there is one
 	G_LayoutLoad();
 
+	// setup bot code
+	G_BotInit();
+
 	// the map might disable some things
 	BG_InitAllowedGameElements();
+
+	// Initialize item locking state
+	BG_InitUnlockackables();
 
 	// general initialization
 	G_FindEntityGroups();
@@ -781,8 +953,8 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 
 	G_InitDamageLocations();
 	G_InitMapRotations();
-	G_InitSpawnQueue( &level.alienSpawnQueue );
-	G_InitSpawnQueue( &level.humanSpawnQueue );
+	G_InitSpawnQueue( &level.team[ TEAM_ALIENS ].spawnQueue );
+	G_InitSpawnQueue( &level.team[ TEAM_HUMANS ].spawnQueue );
 
 	if ( g_debugMapRotation.integer )
 	{
@@ -792,12 +964,9 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 	level.voices = BG_VoiceInit();
 	BG_PrintVoices( level.voices, g_debugVoices.integer );
 
-	//reset stages
-	trap_Cvar_Set( "g_alienStage", va( "%d", S1 ) );
-	trap_Cvar_Set( "g_humanStage", va( "%d", S1 ) );
-	trap_Cvar_Set( "g_alienCredits", 0 );
-	trap_Cvar_Set( "g_humanCredits", 0 );
-	level.suddenDeathBeginTime = g_suddenDeathTime.integer * 60000;
+	// Give both teams some build points to start out with.
+	level.team[ TEAM_HUMANS ].buildPoints = level.team[ TEAM_ALIENS ].buildPoints
+	                                      = g_initialBuildPoints.integer;
 
 	G_Printf( "-----------------------------------\n" );
 
@@ -810,8 +979,8 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 
 	if ( g_lockTeamsAtStart.integer )
 	{
-		level.alienTeamLocked = qtrue;
-		level.humanTeamLocked = qtrue;
+		level.team[ TEAM_ALIENS ].locked = qtrue;
+		level.team[ TEAM_HUMANS ].locked = qtrue;
 		trap_Cvar_Set( "g_lockTeamsAtStart", "0" );
 	}
 
@@ -833,7 +1002,7 @@ static void G_ClearVotes( qboolean all )
 	{
 		if ( all || G_CheckStopVote( i ) )
 		{
-			level.voteTime[ i ] = 0;
+			level.team[ i ].voteTime = 0;
 			trap_SetConfigstring( CS_VOTE_TIME + i, "" );
 			trap_SetConfigstring( CS_VOTE_STRING + i, "" );
 		}
@@ -853,7 +1022,7 @@ static qboolean G_VotesRunning( void )
 
 	for ( i = 0; i < NUM_TEAMS; i++ )
 	{
-		if ( level.voteTime[ i ] )
+		if ( level.team[ i ].voteTime )
 		{
 			return qtrue;
 		}
@@ -884,11 +1053,21 @@ void G_ShutdownGame( int restart )
 		level.logFile = 0;
 	}
 
+	// finalize logging of gameplay statistics
+	if ( level.logGameplayFile )
+	{
+		G_LogGameplayStats( LOG_GAMEPLAY_STATS_FOOTER );
+		trap_FS_FCloseFile( level.logGameplayFile );
+		level.logGameplayFile = 0;
+	}
+
 	// write all the client session data so we can get it back
 	G_WriteSessionData();
 
 	G_admin_cleanup();
+	G_BotCleanup( restart );
 	G_namelog_cleanup();
+
 	G_UnregisterCommands();
 
 	G_ShutdownMapRotations();
@@ -1150,11 +1329,11 @@ int G_GetPosInSpawnQueue( spawnQueue_t *sq, int clientNum )
 			{
 				if ( i < sq->front )
 				{
-					return i + MAX_CLIENTS - sq->front;
+					return i + MAX_CLIENTS - sq->front + 1;
 				}
 				else
 				{
-					return i - sq->front;
+					return i - sq->front + 1;
 				}
 			}
 
@@ -1163,7 +1342,7 @@ int G_GetPosInSpawnQueue( spawnQueue_t *sq, int clientNum )
 		while ( i != QUEUE_PLUS1( sq->back ) );
 	}
 
-	return -1;
+	return 0;
 }
 
 /*
@@ -1216,16 +1395,10 @@ void G_SpawnClients( team_t team )
 	spawnQueue_t *sq = NULL;
 	int          numSpawns = 0;
 
-	if ( team == TEAM_ALIENS )
-	{
-		sq = &level.alienSpawnQueue;
-		numSpawns = level.numAlienSpawns;
-	}
-	else if ( team == TEAM_HUMANS )
-	{
-		sq = &level.humanSpawnQueue;
-		numSpawns = level.numHumanSpawns;
-	}
+	assert(team == TEAM_ALIENS || team == TEAM_HUMANS);
+	sq = &level.team[ team ].spawnQueue;
+
+	numSpawns = level.team[ team ].numSpawns;
 
 	if ( G_GetSpawnQueueLength( sq ) > 0 && numSpawns > 0 )
 	{
@@ -1264,411 +1437,179 @@ void G_CountSpawns( void )
 	int       i;
 	gentity_t *ent;
 
-	level.numAlienSpawns = 0;
-	level.numHumanSpawns = 0;
+	//I guess this could be changed into one function call per team
+	level.team[ TEAM_ALIENS ].numSpawns = 0;
+	level.team[ TEAM_HUMANS ].numSpawns = 0;
 
 	for ( i = MAX_CLIENTS, ent = g_entities + i; i < level.num_entities; i++, ent++ )
 	{
 		if ( !ent->inuse || ent->s.eType != ET_BUILDABLE || ent->health <= 0 )
 		{
 			continue;
+			// is it really useful? Seriously?
 		}
 
-		if ( ent->s.modelindex == BA_A_SPAWN )
+		//TODO create a function to check if a building is a spawn
+		if( ent->s.modelindex == BA_A_SPAWN || ent->s.modelindex == BA_H_SPAWN )
 		{
-			level.numAlienSpawns++;
-		}
-
-		if ( ent->s.modelindex == BA_H_SPAWN )
-		{
-			level.numHumanSpawns++;
-		}
-	}
-}
-
-/*
-============
-G_TimeTilSuddenDeath
-============
-*/
-#define SUDDENDEATHWARNING 60000
-int G_TimeTilSuddenDeath( void )
-{
-	if ( ( !g_suddenDeathTime.integer && level.suddenDeathBeginTime == 0 ) ||
-	     ( level.suddenDeathBeginTime < 0 ) )
-	{
-		return SUDDENDEATHWARNING + 1; // Always some time away
-	}
-
-	return ( ( level.suddenDeathBeginTime ) - ( level.time - level.startTime ) );
-}
-
-#define PLAYER_COUNT_MOD 5.0f
-
-/*
-============
-G_CalculateBuildPoints
-
-Recalculate the quantity of building points available to the teams
-============
-*/
-void G_CalculateBuildPoints( void )
-{
-	int              i;
-	buildable_t      buildable;
-
-	// BP queue updates
-	while ( level.alienBuildPointQueue > 0 &&
-	        level.alienNextQueueTime < level.time )
-	{
-		level.alienBuildPointQueue--;
-		level.alienNextQueueTime += G_NextQueueTime( level.alienBuildPointQueue,
-		                            g_alienBuildPoints.integer,
-		                            g_alienBuildQueueTime.integer );
-	}
-
-	while ( level.humanBuildPointQueue > 0 &&
-	        level.humanNextQueueTime < level.time )
-	{
-		level.humanBuildPointQueue--;
-		level.humanNextQueueTime += G_NextQueueTime( level.humanBuildPointQueue,
-		                            g_humanBuildPoints.integer,
-		                            g_humanBuildQueueTime.integer );
-	}
-
-	// Sudden Death checks
-	if ( G_TimeTilSuddenDeath() <= 0 && level.suddenDeathWarning < TW_PASSED )
-	{
-		G_LogPrintf( "Beginning Sudden Death\n" );
-		trap_SendServerCommand( -1, "cp \"Sudden Death!\"" );
-		trap_SendServerCommand( -1, "print_tr \"" N_("Beginning Sudden Death.\n") "\"" );
-		level.suddenDeathWarning = TW_PASSED;
-		G_ClearDeconMarks();
-
-		// Clear blueprints, or else structs that cost 0 BP can still be built after SD
-		for ( i = 0; i < level.maxclients; i++ )
-		{
-			if ( g_entities[ i ].client->ps.stats[ STAT_BUILDABLE ] != BA_NONE )
+			team_t team;
+			//TODO create a function to guess the team which own a building depending on it's modelindex
+			switch(ent->s.modelindex)
 			{
-				g_entities[ i ].client->ps.stats[ STAT_BUILDABLE ] = BA_NONE;
+				case BA_A_SPAWN:
+					team = TEAM_ALIENS;
+					break;
+				case BA_H_SPAWN:
+					team = TEAM_HUMANS;
+					break;
 			}
+			level.team[ team ].numSpawns++;
 		}
 	}
-	else if ( G_TimeTilSuddenDeath() <= SUDDENDEATHWARNING &&
-	          level.suddenDeathWarning < TW_IMMINENT )
+}
+
+/*
+============
+G_CalculateMineRate
+
+Recalculate the mine rate and the teams mine efficiencies
+============
+*/
+#define CALCULATE_MINE_RATE_PERIOD 1000
+
+void G_CalculateMineRate( void )
+{
+	int              i, playerNum;
+	gentity_t        *ent, *player;
+	gclient_t        *client;
+	float            tmp;
+
+	static int       nextCalculation = 0;
+
+	if ( level.time < nextCalculation )
 	{
-		trap_SendServerCommand( -1, va( "cp \"Sudden Death in %d seconds!\"",
-		                                G_TimeTilSuddenDeath() / 1000 ) );
-		trap_SendServerCommand( -1, va( "print_tr %s %d", QQ( N_("Sudden Death will begin in $1$ seconds.\n") ),
-		                                G_TimeTilSuddenDeath() / 1000 ) );
-		level.suddenDeathWarning = TW_IMMINENT;
+		return;
 	}
 
-	level.humanBuildPoints = g_humanBuildPoints.integer - level.humanBuildPointQueue;
-	level.alienBuildPoints = g_alienBuildPoints.integer - level.alienBuildPointQueue;
+	level.team[ TEAM_HUMANS ].mineEfficiency = 0;
+	level.team[ TEAM_ALIENS ].mineEfficiency = 0;
 
-	// Reset buildPointZones
-	for ( i = 0; i < g_humanRepeaterMaxZones.integer; i++ )
+	// sum up mine rates of RGS
+	for ( i = MAX_CLIENTS, ent = g_entities + i; i < level.num_entities; i++, ent++ )
 	{
-		buildPointZone_t *zone = &level.buildPointZones[ i ];
-
-		zone->active = qfalse;
-		zone->totalBuildPoints = g_humanRepeaterBuildPoints.integer;
-	}
-
-	// Iterate through entities
-	for ( i = MAX_CLIENTS; i < level.num_entities; i++ )
-	{
-		gentity_t        *ent = &g_entities[ i ];
-		buildPointZone_t *zone;
-		buildable_t      buildable;
-		int              cost;
-
-		if ( ent->s.eType != ET_BUILDABLE || (ent->s.eFlags & EF_DEAD) )
+		if ( ent->s.eType != ET_BUILDABLE )
 		{
 			continue;
 		}
 
-		// mark a zone as active
-		if ( ent->usesBuildPointZone )
+		switch ( ent->s.modelindex )
 		{
-			assert( ent->buildPointZone >= 0 && ent->buildPointZone < g_humanRepeaterMaxZones.integer );
+			case BA_H_DRILL:
+				level.team[ TEAM_HUMANS ].mineEfficiency += ent->s.weaponAnim;
+				break;
 
-			zone = &level.buildPointZones[ ent->buildPointZone ];
-			zone->active = qtrue;
-		}
-
-		// Subtract the BP from the appropriate pool
-		buildable = ent->s.modelindex;
-		cost = BG_Buildable( buildable )->buildPoints;
-
-		if ( ent->buildableTeam == TEAM_ALIENS )
-		{
-			level.alienBuildPoints -= cost;
-		}
-
-		if ( buildable == BA_H_REPEATER )
-		{
-			level.humanBuildPoints -= cost;
-		}
-		else if ( buildable != BA_H_REACTOR )
-		{
-			gentity_t *power = G_PowerEntityForEntity( ent );
-
-			if ( power )
-			{
-				if ( !g_humanRepeaterBuildPoints.integer || power->s.modelindex == BA_H_REACTOR )
-				{
-					level.humanBuildPoints -= cost;
-				}
-				else if ( power->s.modelindex == BA_H_REPEATER && power->usesBuildPointZone )
-				{
-					level.buildPointZones[ power->buildPointZone ].totalBuildPoints -= cost;
-				}
-			}
+			case BA_A_LEECH:
+				level.team[ TEAM_ALIENS ].mineEfficiency += ent->s.weaponAnim;
+				break;
 		}
 	}
 
-	// Finally, update repeater zones and their queues
-	// note that this has to be done after the used BP is calculated
-	for ( i = MAX_CLIENTS; i < level.num_entities; i++ )
+	// minimum mine rate
+	if ( G_Reactor()  && level.team[ TEAM_HUMANS ].mineEfficiency < g_minimumMineRate.integer )
 	{
-		gentity_t *ent = &g_entities[ i ];
+		level.team[ TEAM_HUMANS ].mineEfficiency = g_minimumMineRate.integer;
+	}
+	if ( G_Overmind() && level.team[ TEAM_ALIENS ].mineEfficiency < g_minimumMineRate.integer )
+	{
+		level.team[ TEAM_ALIENS ].mineEfficiency = g_minimumMineRate.integer;
+	}
 
-		if ( ent->s.eType != ET_BUILDABLE || (ent->s.eFlags & EF_DEAD) ||
-		     ent->buildableTeam != TEAM_HUMANS )
+	// calculate level wide mine rate. ln(2) ~= 0.6931472
+	level.mineRate = g_initialMineRate.value *
+	                 exp( ( -0.6931472f * level.matchTime ) / ( 60000.0f * g_mineRateHalfLife.value ) );
+
+	// add build points
+	tmp = ( level.mineRate / 60.0f ) * ( CALCULATE_MINE_RATE_PERIOD / 1000.0f ) / 100.0f;
+	G_ModifyBuildPoints( TEAM_HUMANS, tmp * level.team[ TEAM_HUMANS ].mineEfficiency );
+	G_ModifyBuildPoints( TEAM_ALIENS, tmp * level.team[ TEAM_ALIENS ].mineEfficiency );
+
+	// send to clients
+	for ( playerNum = 0; playerNum < level.maxclients; playerNum++ )
+	{
+		team_t team;
+
+		player = &g_entities[ playerNum ];
+		client = player->client;
+
+		if ( !client )
 		{
 			continue;
 		}
 
-		buildable = ent->s.modelindex;
+		team = client->pers.team;
 
-		if ( buildable != BA_H_REPEATER )
+		client->ps.persistant[ PERS_MINERATE ] = ( short )( level.mineRate * 10.0f );
+
+		if ( team > TEAM_NONE && team < NUM_TEAMS )
 		{
-			continue;
+			client->ps.persistant[ PERS_RGS_EFFICIENCY ] = ( short )level.team[ team ].mineEfficiency;
 		}
-
-		if ( ent->usesBuildPointZone && level.buildPointZones[ ent->buildPointZone ].active )
+		else
 		{
-			buildPointZone_t *zone = &level.buildPointZones[ ent->buildPointZone ];
-
-			if ( G_TimeTilSuddenDeath() > 0 )
-			{
-				// BP queue updates
-				while ( zone->queuedBuildPoints > 0 &&
-				        zone->nextQueueTime < level.time )
-				{
-					zone->queuedBuildPoints--;
-					zone->nextQueueTime += G_NextQueueTime( zone->queuedBuildPoints,
-					                                        zone->totalBuildPoints,
-					                                        g_humanRepeaterBuildQueueTime.integer );
-				}
-			}
-			else
-			{
-				zone->totalBuildPoints = zone->queuedBuildPoints = 0;
-			}
+			client->ps.persistant[ PERS_RGS_EFFICIENCY ] = 0;
 		}
 	}
 
-	if ( level.humanBuildPoints < 0 )
-	{
-		level.humanBuildPoints = 0;
-	}
-
-	if ( level.alienBuildPoints < 0 )
-	{
-		level.alienBuildPoints = 0;
-	}
+	nextCalculation = level.time + CALCULATE_MINE_RATE_PERIOD;
 }
 
 /*
 ============
-G_CalculateStages
-============
-*/
-void G_CalculateStages( void )
-{
-	float      alienPlayerCountMod = level.averageNumAlienClients / PLAYER_COUNT_MOD;
-	float      humanPlayerCountMod = level.averageNumHumanClients / PLAYER_COUNT_MOD;
-	int        alienNextStageThreshold, humanNextStageThreshold;
-	static int lastAlienStageModCount = 1;
-	static int lastHumanStageModCount = 1;
-	static int alienTriggerStage = 0;
-	static int humanTriggerStage = 0;
+G_CalculateAvgPlayers
 
-	if ( alienPlayerCountMod < 0.1f )
-	{
-		alienPlayerCountMod = 0.1f;
-	}
-
-	if ( humanPlayerCountMod < 0.1f )
-	{
-		humanPlayerCountMod = 0.1f;
-	}
-
-	if ( g_alienCredits.integer >=
-	     ( int )( ceil( ( float ) g_alienStage2Threshold.integer * alienPlayerCountMod ) ) &&
-	     g_alienStage.integer == S1 && g_alienMaxStage.integer > S1 )
-	{
-		trap_Cvar_Set( "g_alienStage", va( "%d", S2 ) );
-		level.alienStage2Time = level.time;
-		lastAlienStageModCount = g_alienStage.modificationCount;
-		G_LogPrintf( "Stage: A 2: Aliens reached Stage 2\n" );
-	}
-
-	if ( g_alienCredits.integer >=
-	     ( int )( ceil( ( float ) g_alienStage3Threshold.integer * alienPlayerCountMod ) ) &&
-	     g_alienStage.integer == S2 && g_alienMaxStage.integer > S2 )
-	{
-		trap_Cvar_Set( "g_alienStage", va( "%d", S3 ) );
-		level.alienStage3Time = level.time;
-		lastAlienStageModCount = g_alienStage.modificationCount;
-		G_LogPrintf( "Stage: A 3: Aliens reached Stage 3\n" );
-	}
-
-	if ( g_humanCredits.integer >=
-	     ( int )( ceil( ( float ) g_humanStage2Threshold.integer * humanPlayerCountMod ) ) &&
-	     g_humanStage.integer == S1 && g_humanMaxStage.integer > S1 )
-	{
-		trap_Cvar_Set( "g_humanStage", va( "%d", S2 ) );
-		level.humanStage2Time = level.time;
-		lastHumanStageModCount = g_humanStage.modificationCount;
-		G_LogPrintf( "Stage: H 2: Humans reached Stage 2\n" );
-	}
-
-	if ( g_humanCredits.integer >=
-	     ( int )( ceil( ( float ) g_humanStage3Threshold.integer * humanPlayerCountMod ) ) &&
-	     g_humanStage.integer == S2 && g_humanMaxStage.integer > S2 )
-	{
-		trap_Cvar_Set( "g_humanStage", va( "%d", S3 ) );
-		level.humanStage3Time = level.time;
-		lastHumanStageModCount = g_humanStage.modificationCount;
-		G_LogPrintf( "Stage: H 3: Humans reached Stage 3\n" );
-	}
-
-	if ( g_alienStage.modificationCount > lastAlienStageModCount )
-	{
-		while ( alienTriggerStage < MIN( g_alienStage.integer, S3 ) )
-		{
-			++alienTriggerStage;
-			G_notify_sensor_stage( TEAM_ALIENS, alienTriggerStage - 1, alienTriggerStage );
-		}
-
-		if ( g_alienStage.integer == S2 )
-		{
-			level.alienStage2Time = level.time;
-		}
-		else if ( g_alienStage.integer == S3 )
-		{
-			level.alienStage3Time = level.time;
-		}
-
-		lastAlienStageModCount = g_alienStage.modificationCount;
-	}
-
-	if ( g_humanStage.modificationCount > lastHumanStageModCount )
-	{
-		while ( humanTriggerStage < MIN( g_humanStage.integer, S3 ) )
-		{
-			++humanTriggerStage;
-			G_notify_sensor_stage( TEAM_HUMANS, humanTriggerStage - 1, humanTriggerStage );
-		}
-
-		if ( g_humanStage.integer == S2 )
-		{
-			level.humanStage2Time = level.time;
-		}
-		else if ( g_humanStage.integer == S3 )
-		{
-			level.humanStage3Time = level.time;
-		}
-
-		lastHumanStageModCount = g_humanStage.modificationCount;
-	}
-
-	if ( g_alienStage.integer == S1 && g_alienMaxStage.integer > S1 )
-	{
-		alienNextStageThreshold = ( int )( ceil( ( float ) g_alienStage2Threshold.integer * alienPlayerCountMod ) );
-	}
-	else if ( g_alienStage.integer == S2 && g_alienMaxStage.integer > S2 )
-	{
-		alienNextStageThreshold = ( int )( ceil( ( float ) g_alienStage3Threshold.integer * alienPlayerCountMod ) );
-	}
-	else
-	{
-		alienNextStageThreshold = -1;
-	}
-
-	if ( g_humanStage.integer == S1 && g_humanMaxStage.integer > S1 )
-	{
-		humanNextStageThreshold = ( int )( ceil( ( float ) g_humanStage2Threshold.integer * humanPlayerCountMod ) );
-	}
-	else if ( g_humanStage.integer == S2 && g_humanMaxStage.integer > S2 )
-	{
-		humanNextStageThreshold = ( int )( ceil( ( float ) g_humanStage3Threshold.integer * humanPlayerCountMod ) );
-	}
-	else
-	{
-		humanNextStageThreshold = -1;
-	}
-
-	// save a lot of bandwidth by rounding thresholds up to the nearest 100
-	if ( alienNextStageThreshold > 0 )
-	{
-		alienNextStageThreshold = ceil( ( float ) alienNextStageThreshold / 100 ) * 100;
-	}
-
-	if ( humanNextStageThreshold > 0 )
-	{
-		humanNextStageThreshold = ceil( ( float ) humanNextStageThreshold / 100 ) * 100;
-	}
-
-	trap_SetConfigstring( CS_ALIEN_STAGES, va( "%d %d %d",
-	                      g_alienStage.integer, g_alienCredits.integer,
-	                      alienNextStageThreshold ) );
-
-	trap_SetConfigstring( CS_HUMAN_STAGES, va( "%d %d %d",
-	                      g_humanStage.integer, g_humanCredits.integer,
-	                      humanNextStageThreshold ) );
-}
-
-/*
-============
-CalculateAvgPlayers
-
-Calculates the average number of players playing this game
+Calculates the average number of players on each team.
+Resets completely if all players leave a team.
 ============
 */
 void G_CalculateAvgPlayers( void )
 {
-	//there are no clients or only spectators connected, so
-	//reset the number of samples in order to avoid the situation
-	//where the average tends to 0
-	if ( !level.numAlienClients )
+	team_t     team;
+	int        *samples, currentPlayers;
+	float      *avgPlayers;
+
+	static int nextCalculation = 0;
+
+	if ( level.time < nextCalculation )
 	{
-		level.numAlienSamples = 0;
-		trap_Cvar_Set( "g_alienCredits", "0" );
+		return;
 	}
 
-	if ( !level.numHumanClients )
+	for ( team = TEAM_NONE + 1; team < NUM_TEAMS; team++ )
 	{
-		level.numHumanSamples = 0;
-		trap_Cvar_Set( "g_humanCredits", "0" );
+		samples        = &level.team[ team ].numSamples;
+		currentPlayers =  level.team[ team ].numClients;
+		avgPlayers     = &level.team[ team ].averageNumClients;
+
+		if ( *samples == 0 )
+		{
+			*avgPlayers = ( float )currentPlayers;
+		}
+		else
+		{
+			*avgPlayers = ( ( *avgPlayers * *samples ) + currentPlayers ) / ( *samples + 1 );
+		}
+
+		if ( currentPlayers == 0 )
+		{
+			*samples = 0;
+		}
+		else
+		{
+			(*samples)++;
+		}
 	}
 
-	//calculate average number of clients for stats
-	level.averageNumAlienClients =
-	  ( ( level.averageNumAlienClients * level.numAlienSamples )
-	    + level.numAlienClients ) /
-	  ( float )( level.numAlienSamples + 1 );
-	level.numAlienSamples++;
-
-	level.averageNumHumanClients =
-	  ( ( level.averageNumHumanClients * level.numHumanSamples )
-	    + level.numHumanClients ) /
-	  ( float )( level.numHumanSamples + 1 );
-	level.numHumanSamples++;
+	nextCalculation = level.time + 1000;
 }
 
 /*
@@ -1683,65 +1624,82 @@ and team change.
 void CalculateRanks( void )
 {
 	int  i;
-	char P[ MAX_CLIENTS + 1 ] = { "" };
+	team_t team;
+	char P[ MAX_CLIENTS + 1 ] = "", B[ MAX_CLIENTS + 1 ] = "";
 
 	level.numConnectedClients = 0;
 	level.numPlayingClients = 0;
-	memset( level.numVotingClients, 0, sizeof( level.numVotingClients ) );
-	level.numAlienClients = 0;
-	level.numHumanClients = 0;
-	level.numLiveAlienClients = 0;
-	level.numLiveHumanClients = 0;
+
+	for ( team = TEAM_NONE; team < NUM_TEAMS; team++ )
+	{
+		level.team[ team ].numVotingClients = 0;
+		level.team[ team ].numClients = 0;
+		level.team[ team ].numLiveClients = 0;
+	}
 
 	for ( i = 0; i < level.maxclients; i++ )
 	{
 		P[ i ] = '-';
+		B[ i ] = '-';
 
 		if ( level.clients[ i ].pers.connected != CON_DISCONNECTED )
 		{
+			qboolean bot = qfalse;
+			int j;
+
+			for ( j = 0; j < level.num_entities; ++j)
+			{
+				if ( level.gentities[ i ].client == &level.clients[ i ] )
+				{
+					bot = !!(level.gentities[ i ].r.svFlags & SVF_BOT);
+					break;
+				}
+			}
+
 			level.sortedClients[ level.numConnectedClients ] = i;
 			level.numConnectedClients++;
-			P[ i ] = ( char ) '0' + level.clients[ i ].pers.teamSelection;
 
-			level.numVotingClients[ TEAM_NONE ]++;
+			team = level.clients[ i ].pers.team;
+			P[ i ] = ( char ) '0' + team;
+
+			if ( bot )
+			{
+				B[ i ] = 'b';
+			}
+			else
+			{
+				level.team[ TEAM_NONE ].numVotingClients++;
+			}
 
 			if ( level.clients[ i ].pers.connected != CON_CONNECTED )
 			{
 				continue;
 			}
 
-			if ( level.clients[ i ].pers.teamSelection != TEAM_NONE )
+			if ( team != TEAM_NONE )
 			{
 				level.numPlayingClients++;
+				level.team[ team ].numClients++;
 
-				if ( level.clients[ i ].pers.teamSelection == TEAM_ALIENS )
+				if ( !bot )
 				{
-					level.numAlienClients++;
-
-					if ( level.clients[ i ].sess.spectatorState == SPECTATOR_NOT )
-					{
-						level.numLiveAlienClients++;
-					}
+					level.team[ team ].numVotingClients++;
 				}
-				else if ( level.clients[ i ].pers.teamSelection == TEAM_HUMANS )
-				{
-					level.numHumanClients++;
 
-					if ( level.clients[ i ].sess.spectatorState == SPECTATOR_NOT )
-					{
-						level.numLiveHumanClients++;
-					}
+				if ( level.clients[ i ].sess.spectatorState == SPECTATOR_NOT )
+				{
+					level.team[ team ].numLiveClients++;
 				}
 			}
 		}
 	}
 
-	level.numNonSpectatorClients = level.numLiveAlienClients +
-	                               level.numLiveHumanClients;
-	level.numVotingClients[ TEAM_ALIENS ] = level.numAlienClients;
-	level.numVotingClients[ TEAM_HUMANS ] = level.numHumanClients;
+	level.numNonSpectatorClients = level.team[ TEAM_ALIENS ].numLiveClients +
+	                               level.team[ TEAM_HUMANS ].numLiveClients;
 	P[ i ] = '\0';
 	trap_Cvar_Set( "P", P );
+	B[ i ] = '\0';
+	trap_Cvar_Set( "B", B );
 
 	qsort( level.sortedClients, level.numConnectedClients,
 	       sizeof( level.sortedClients[ 0 ] ), SortRanks );
@@ -2008,7 +1966,7 @@ void QDECL PRINTF_LIKE(1) G_LogPrintf( const char *fmt, ... )
 	char    string[ 1024 ], decolored[ 1024 ];
 	int     min, tens, sec;
 
-	sec = ( level.time - level.startTime ) / 1000;
+	sec = level.matchTime / 1000;
 
 	min = sec / 60;
 	sec -= min * 60;
@@ -2034,6 +1992,246 @@ void QDECL PRINTF_LIKE(1) G_LogPrintf( const char *fmt, ... )
 
 	G_DecolorString( string, decolored, sizeof( decolored ) );
 	trap_FS_Write( decolored, strlen( decolored ), level.logFile );
+}
+
+/*
+=================
+GetAverageDistanceToBase
+
+Calculates the average distance of each teams' players to their main base.
+=================
+*/
+static void GetAverageDistanceToBase( int teamDistance[] )
+{
+	int       teamCnt[ NUM_TEAMS ];
+	int       playerNum;
+	gentity_t *playerEnt;
+	gclient_t *client;
+	team_t    team;
+
+	for ( team = TEAM_ALIENS ; team < NUM_TEAMS ; ++team)
+	{
+		teamCnt[ team ] = 0;
+		teamDistance[ team ] = 0;
+	}
+
+	for ( playerNum = 0; playerNum < MAX_CLIENTS; playerNum++ )
+	{
+		playerEnt = &g_entities[ playerNum ];
+		client = playerEnt->client;
+
+		if ( !client || playerEnt->health <= 0 )
+		{
+			continue;
+		}
+
+		teamDistance[ client->pers.team ] += ( int )G_DistanceToBase( playerEnt, qtrue );
+		teamCnt[ client->pers.team ]++;
+	}
+
+	//TODO merge G_Overmind() and G_Reactor() into a unique function (did not read them yet, but I bet is will not be so hard)
+	teamDistance[ TEAM_ALIENS ] = ( !G_Overmind() || teamCnt[ TEAM_ALIENS ] == 0 ) ? 0 : ( teamDistance[ TEAM_ALIENS ] / teamCnt[ TEAM_ALIENS ] );
+	teamDistance[ TEAM_HUMANS ] = ( !G_Reactor()  || teamCnt[ TEAM_HUMANS ] == 0 ) ? 0 : ( teamDistance[ TEAM_HUMANS ] / teamCnt[ TEAM_HUMANS ] );;
+}
+
+/*
+=================
+GetAverageCredits
+
+Calculates the average amount of spare credits as well as the value of each teams' players.
+=================
+*/
+static void GetAverageCredits( int teamCredits[], int teamValue[] )
+{
+	int       teamCnt[ NUM_TEAMS ];
+	int       playerNum;
+	gentity_t *playerEnt;
+	gclient_t *client;
+	team_t    team;
+
+	for ( team = TEAM_ALIENS ; team < NUM_TEAMS ; ++team)
+	{
+		teamCnt[ team ] = 0;
+		teamCredits[ team ] = 0;
+		teamValue[ team ] = 0;
+	}
+
+	for ( playerNum = 0; playerNum < MAX_CLIENTS; playerNum++ )
+	{
+		playerEnt = &g_entities[ playerNum ];
+		client = playerEnt->client;
+
+		if ( !client )
+		{
+			continue;
+		}
+
+		team = client->pers.team;
+
+		teamCredits[ team ] += client->pers.credit;
+		teamValue[ team ] += BG_GetValueOfPlayer( &client->ps );
+		teamCnt[ team ]++;
+	}
+
+	for ( team = TEAM_ALIENS ; team < NUM_TEAMS ; ++team)
+	{
+		teamCredits[ team ] = ( teamCnt[ team ] == 0 ) ? 0 : ( teamCredits[ team ] / teamCnt[ team ] );
+		teamValue[ team ] = ( teamCnt[ team ] == 0 ) ? 0 : ( teamValue[ team ] / teamCnt[ team ] );
+	}
+}
+
+/*
+=================
+G_LogGameplayStats
+=================
+*/
+// Increment this if you add/change columns or otherwise change the log format
+#define LOG_GAMEPLAY_STATS_VERSION 1
+
+static void G_LogGameplayStats( int state )
+{
+	char       mapname[ 128 ];
+	char       logline[ sizeof( Q3_VERSION ) + sizeof( mapname ) + 1024 ];
+
+	static int nextCalculation = 0;
+
+	if ( state == LOG_GAMEPLAY_STATS_BODY && level.time < nextCalculation )
+	{
+		return;
+	}
+
+	if ( !level.logGameplayFile )
+	{
+		return;
+	}
+
+	switch ( state )
+	{
+		case LOG_GAMEPLAY_STATS_HEADER:
+		{
+			qtime_t t;
+
+			trap_Cvar_VariableStringBuffer( "mapname", mapname, sizeof( mapname ) );
+			trap_GMTime( &t );
+
+			Com_sprintf( logline, sizeof( logline ),
+				     "# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
+				     "#\n"
+				     "# Version: %s\n"
+				     "# Map:     %s\n"
+				     "# Date:    %04i-%02i-%02i\n"
+				     "# Time:    %02i:%02i:%02i\n"
+				     "# Format:  %i\n"
+				     "#\n"
+				     "# g_confidenceHalfLife:      %4i\n"
+				     "# g_initialBuildPoints:      %4i\n"
+				     "# g_initialMineRate:         %4i\n"
+				     "# g_mineRateHalfLife:        %4i\n"
+				     "#\n"
+				     "#  1  2  3    4    5    6    7    8    9   10   11   12   13   14   15   16    17    18\n"
+				     "#  T #A #H ACon HCon  LMR  AME  HME  ABP  HBP ABRV HBRV  ADTB  HDTB ACre HCre AVal HVal\n"
+				     "# -------------------------------------------------------------------------------------\n",
+				     Q3_VERSION,
+				     mapname,
+				     t.tm_year + 1900, t.tm_mon + 1, t.tm_mday,
+				     t.tm_hour, t.tm_min, t.tm_sec,
+				     LOG_GAMEPLAY_STATS_VERSION,
+				     g_confidenceHalfLife.integer,
+				     g_initialBuildPoints.integer,
+				     g_initialMineRate.integer,
+				     g_mineRateHalfLife.integer );
+			break;
+		}
+		case LOG_GAMEPLAY_STATS_BODY:
+		{
+			int    time;
+			float  LMR;
+			team_t team;
+			int    num[ NUM_TEAMS ];
+			int    Con[ NUM_TEAMS ];
+			int    ME [ NUM_TEAMS ];
+			int    BP [ NUM_TEAMS ];
+			int    BRV[ NUM_TEAMS ];
+			int    DTB[ NUM_TEAMS ];
+			int    Cre[ NUM_TEAMS ];
+			int    Val[ NUM_TEAMS ];
+
+			time = level.matchTime / 1000;
+			LMR  = level.mineRate; // float
+
+			for( team = TEAM_NONE + 1; team < NUM_TEAMS; team++ )
+			{
+				num[ team ] = level.team[ team ].numClients;
+				Con[ team ] = ( int )level.team[ team ].confidence;
+				ME [ team ] = level.team[ team ].mineEfficiency;
+				BP [ team ] = level.team[ team ].buildPoints;
+			}
+
+			G_GetBuildableResourceValue( BRV );
+			GetAverageDistanceToBase( DTB );
+			GetAverageCredits( Cre, Val );
+
+			Com_sprintf( logline, sizeof( logline ),
+			             "%4i %2i %2i %4i %4i %4.1f %4i %4i %4i %4i %4i %4i %5i %5i %4i %4i %4i %4i\n",
+			             time, num[ TEAM_ALIENS ], num[ TEAM_HUMANS ], Con[ TEAM_ALIENS ], Con[ TEAM_HUMANS ],
+			             LMR, ME[ TEAM_ALIENS ], ME[ TEAM_HUMANS ], BP[ TEAM_ALIENS ], BP[ TEAM_HUMANS ],
+			             BRV[ TEAM_ALIENS ], BRV[ TEAM_HUMANS ], DTB[ TEAM_ALIENS ], DTB[ TEAM_HUMANS ],
+			             Cre[ TEAM_ALIENS ], Cre[ TEAM_HUMANS ], Val[ TEAM_ALIENS ], Val[ TEAM_HUMANS ] );
+			break;
+		}
+		case LOG_GAMEPLAY_STATS_FOOTER:
+		{
+			const char *winner;
+			int        min, sec;
+
+			switch ( level.lastWin )
+			{
+				case TEAM_ALIENS:
+					winner = "Aliens";
+					break;
+
+				case TEAM_HUMANS:
+					winner = "Humans";
+					break;
+
+				default:
+					winner = "-";
+			}
+
+			min = level.matchTime / 60000;
+			sec = ( level.matchTime / 1000 ) % 60;
+
+			Com_sprintf( logline, sizeof( logline ),
+				     "# ---------------------------------------------------------------------------------------------------------\n"
+				     "#\n"
+				     "# Match duration:  %i:%02i\n"
+				     "# Winning team:    %s\n"
+				     "# Average Players: %.1f\n"
+				     "# Average Aliens:  %.1f\n"
+				     "# Average Humans:  %.1f\n"
+				     "#\n",
+				     min, sec,
+				     winner,
+				     level.team[ TEAM_ALIENS ].averageNumClients +
+				     level.team[ TEAM_HUMANS ].averageNumClients,
+				     level.team[ TEAM_ALIENS ].averageNumClients,
+				     level.team[ TEAM_HUMANS ].averageNumClients);
+			break;
+		}
+		default:
+			return;
+	}
+
+	trap_FS_Write( logline, strlen( logline ), level.logGameplayFile );
+
+	if ( state == LOG_GAMEPLAY_STATS_BODY )
+	{
+		nextCalculation = level.time + MAX( 1, g_logGameplayStatsFrequency.integer ) * 1000;
+	}
+	else
+	{
+		nextCalculation = 0;
+	}
 }
 
 /*
@@ -2077,21 +2275,14 @@ void G_SendGameStat( team_t team )
 	}
 
 	Com_sprintf( data, BIG_INFO_STRING,
-	             "%s %s T:%c A:%f H:%f M:%s D:%d SD:%d AS:%d AS2T:%d AS3T:%d HS:%d HS2T:%d HS3T:%d CL:%d",
+	             "%s %s T:%c A:%f H:%f M:%s D:%d CL:%d",
 	             Q3_VERSION,
 	             g_tag.string,
 	             teamChar,
-	             level.averageNumAlienClients,
-	             level.averageNumHumanClients,
+	             level.team[ TEAM_ALIENS ].averageNumClients,
+	             level.team[ TEAM_HUMANS ].averageNumClients,
 	             map,
-	             level.time - level.startTime,
-	             G_TimeTilSuddenDeath(),
-	             g_alienStage.integer,
-	             level.alienStage2Time - level.startTime,
-	             level.alienStage3Time - level.startTime,
-	             g_humanStage.integer,
-	             level.humanStage2Time - level.startTime,
-	             level.humanStage3Time - level.startTime,
+	             level.matchTime,
 	             level.numConnectedClients );
 
 	dataLength = strlen( data );
@@ -2111,7 +2302,7 @@ void G_SendGameStat( team_t team )
 			ping = cl->ps.ping < 999 ? cl->ps.ping : 999;
 		}
 
-		switch ( cl->ps.stats[ STAT_TEAM ] )
+		switch ( cl->pers.team )
 		{
 			case TEAM_ALIENS:
 				teamChar = 'A';
@@ -2185,7 +2376,7 @@ void LogExit( const char *string )
 
 		cl = &level.clients[ level.sortedClients[ i ] ];
 
-		if ( cl->ps.stats[ STAT_TEAM ] == TEAM_NONE )
+		if ( cl->pers.team == TEAM_NONE )
 		{
 			continue;
 		}
@@ -2244,7 +2435,7 @@ void CheckIntermissionExit( void )
 			continue;
 		}
 
-		if ( cl->ps.stats[ STAT_TEAM ] == TEAM_NONE )
+		if ( cl->pers.team == TEAM_NONE )
 		{
 			continue;
 		}
@@ -2359,7 +2550,7 @@ void CheckExitRules( void )
 
 	if ( level.timelimit )
 	{
-		if ( level.time - level.startTime >= level.timelimit * 60000 )
+		if ( level.matchTime >= level.timelimit * 60000 )
 		{
 			level.lastWin = TEAM_NONE;
 			trap_SendServerCommand( -1, "print_tr \"" N_("Timelimit hit\n") "\"" );
@@ -2369,13 +2560,13 @@ void CheckExitRules( void )
 			G_MapLog_Result( 't' );
 			return;
 		}
-		else if ( level.time - level.startTime >= ( level.timelimit - 5 ) * 60000 &&
+		else if ( level.matchTime >= ( level.timelimit - 5 ) * 60000 &&
 		          level.timelimitWarning < TW_IMMINENT )
 		{
 			trap_SendServerCommand( -1, "cp \"5 minutes remaining!\"" );
 			level.timelimitWarning = TW_IMMINENT;
 		}
-		else if ( level.time - level.startTime >= ( level.timelimit - 1 ) * 60000 &&
+		else if ( level.matchTime >= ( level.timelimit - 1 ) * 60000 &&
 		          level.timelimitWarning < TW_PASSED )
 		{
 			trap_SendServerCommand( -1, "cp \"1 minute remaining!\"" );
@@ -2386,8 +2577,8 @@ void CheckExitRules( void )
 	if ( level.unconditionalWin == TEAM_HUMANS ||
 	     ( level.unconditionalWin != TEAM_ALIENS &&
 	       ( level.time > level.startTime + 1000 ) &&
-	       ( level.numAlienSpawns == 0 ) &&
-	       ( level.numLiveAlienClients == 0 ) ) )
+	       ( level.team[ TEAM_ALIENS ].numSpawns == 0 ) &&
+	       ( level.team[ TEAM_ALIENS ].numLiveClients == 0 ) ) )
 	{
 		//humans win
 		level.lastWin = TEAM_HUMANS;
@@ -2400,8 +2591,8 @@ void CheckExitRules( void )
 	else if ( level.unconditionalWin == TEAM_ALIENS ||
 	          ( level.unconditionalWin != TEAM_HUMANS &&
 	            ( level.time > level.startTime + 1000 ) &&
-	            ( level.numHumanSpawns == 0 ) &&
-	            ( level.numLiveHumanClients == 0 ) ) )
+	            ( level.team[ TEAM_HUMANS ].numSpawns == 0 ) &&
+	            ( level.team[ TEAM_HUMANS ].numLiveClients == 0 ) ) )
 	{
 		//aliens win
 		level.lastWin = TEAM_ALIENS;
@@ -2420,7 +2611,7 @@ G_Vote
 */
 void G_Vote( gentity_t *ent, team_t team, qboolean voting )
 {
-	if ( !level.voteTime[ team ] )
+	if ( !level.team[ team ].voteTime )
 	{
 		return;
 	}
@@ -2437,44 +2628,45 @@ void G_Vote( gentity_t *ent, team_t team, qboolean voting )
 
 	ent->client->pers.voted |= 1 << team;
 
+	//TODO maybe refactor vote no/yes in one and only one variable and divide the NLOC by 2 ?
+
 	if ( voting )
 	{
-		level.voted[ team ]++;
+		level.team[ team ].voted++;
 	}
 	else
 	{
-		level.voted[ team ]--;
+		level.team[ team ].voted--;
 	}
-
 
 	if ( ent->client->pers.voteYes & ( 1 << team ) )
 	{
 		if ( voting )
 		{
-			level.voteYes[ team ]++;
+			level.team[ team ].voteYes++;
 		}
 		else
 		{
-			level.voteYes[ team ]--;
+			level.team[ team ].voteYes--;
 		}
 
 		trap_SetConfigstring( CS_VOTE_YES + team,
-		                      va( "%d", level.voteYes[ team ] ) );
+		                      va( "%d", level.team[ team ].voteYes ) );
 	}
 
 	if ( ent->client->pers.voteNo & ( 1 << team ) )
 	{
 		if ( voting )
 		{
-			level.voteNo[ team ]++;
+			level.team[ team ].voteNo++;
 		}
 		else
 		{
-			level.voteNo[ team ]--;
+			level.team[ team ].voteNo--;
 		}
 
 		trap_SetConfigstring( CS_VOTE_NO + team,
-		                      va( "%d", level.voteNo[ team ] ) );
+		                      va( "%d", level.team[ team ].voteNo ) );
 	}
 }
 
@@ -2482,10 +2674,10 @@ void G_ResetVote( team_t team )
 {
 	int i;
 
-	level.voteTime[ team ] = 0;
-	level.voteYes[ team ] = 0;
-	level.voteNo[ team ] = 0;
-	level.voted[ team ] = 0;
+	level.team[ team ].voteTime = 0;
+	level.team[ team ].voteYes = 0;
+	level.team[ team ].voteNo = 0;
+	level.team[ team ].voted = 0;
 
 	for ( i = 0; i < level.maxclients; i++ )
 	{
@@ -2509,17 +2701,17 @@ FUNCTIONS CALLED EVERY FRAME
 
 void G_ExecuteVote( team_t team )
 {
-	level.voteExecuteTime[ team ] = 0;
+	level.team[ team ].voteExecuteTime = 0;
 
 	trap_SendConsoleCommand( EXEC_APPEND, va( "%s\n",
-	                         level.voteString[ team ] ) );
+	                         level.team[ team ].voteString ) );
 
-	if ( !Q_stricmp( level.voteString[ team ], "map_restart" ) )
+	if ( !Q_stricmp( level.team[ team ].voteString, "map_restart" ) )
 	{
 		G_MapLog_Result( 'r' );
 		level.restarted = qtrue;
 	}
-	else if ( !Q_strnicmp( level.voteString[ team ], "map", 3 ) )
+	else if ( !Q_strnicmp( level.team[ team ].voteString, "map", 3 ) )
 	{
 		G_MapLog_Result( 'm' );
 		level.restarted = qtrue;
@@ -2534,72 +2726,72 @@ G_CheckVote
 */
 void G_CheckVote( team_t team )
 {
-	float    votePassThreshold = ( float ) level.voteThreshold[ team ] / 100.0f;
+	float    votePassThreshold = ( float ) level.team[ team ].voteThreshold / 100.0f;
 	qboolean pass = qfalse;
 	qboolean quorum = qtrue;
 	char     *cmd;
 
-	if ( level.voteExecuteTime[ team ] &&
-	     level.voteExecuteTime[ team ] < level.time )
+	if ( level.team[ team ].voteExecuteTime /* > 0 ?? more readable imho */ &&
+	     level.team[ team ].voteExecuteTime < level.time )
 	{
 		G_ExecuteVote( team );
 	}
 
-	if ( !level.voteTime[ team ] )
+	if ( !level.team[ team ].voteTime )
 	{
 		return;
 	}
 
-	if ( ( level.time - level.voteTime[ team ] >= VOTE_TIME ) ||
-	     ( level.voteYes[ team ] + level.voteNo[ team ] == level.numVotingClients[ team ] ) )
+	if ( ( level.time - level.team[ team ].voteTime >= VOTE_TIME ) ||
+	     ( level.team[ team ].voteYes + level.team[ team ].voteNo == level.team[ team ].numVotingClients ) )
 	{
-		pass = ( level.voteYes[ team ] &&
-		         ( float ) level.voteYes[ team ] / ( ( float ) level.voteYes[ team ] + ( float ) level.voteNo[ team ] ) > votePassThreshold );
+		pass = ( level.team[ team ].voteYes &&
+		         ( float ) level.team[ team ].voteYes / ( ( float ) level.team[ team ].voteYes + ( float ) level.team[ team ].voteNo ) > votePassThreshold );
 	}
 	else
 	{
-		if ( ( float ) level.voteYes[ team ] >
-		     ( float ) level.numVotingClients[ team ] * votePassThreshold )
+		if ( ( float ) level.team[ team ].voteYes >
+		     ( float ) level.team[ team ].numVotingClients * votePassThreshold )
 		{
 			pass = qtrue;
 		}
-		else if ( ( float ) level.voteNo[ team ] <=
-		          ( float ) level.numVotingClients[ team ] * ( 1.0f - votePassThreshold ) )
+		else if ( ( float ) level.team[ team ].voteNo <=
+		          ( float ) level.team[ team ].numVotingClients * ( 1.0f - votePassThreshold ) )
 		{
 			return;
 		}
 	}
 
 	// If quorum is required, check whether at least half of who could vote did
-	if ( level.quorum[ team ] && level.voted[ team ] < floor( powf( level.numVotingClients[ team ], 0.6 ) ) )
+	if ( level.team[ team ].quorum && level.team[ team ].voted < floor( powf( level.team[ team ].numVotingClients, 0.6 ) ) )
 	{
 		quorum = qfalse;
 	}
 
 	if ( pass && quorum )
 	{
-		level.voteExecuteTime[ team ] = level.time + level.voteDelay[ team ];
+		level.team[ team ].voteExecuteTime = level.time + level.team[ team ].voteDelay;
 	}
 
 	G_LogPrintf( "EndVote: %s %s %d %d %d %d\n",
 	             team == TEAM_NONE ? "global" : BG_TeamName( team ),
 	             pass ? "pass" : "fail",
-	             level.voteYes[ team ], level.voteNo[ team ], level.numVotingClients[ team ], level.voted[ team ] );
+	             level.team[ team ].voteYes, level.team[ team ].voteNo, level.team[ team ].numVotingClients, level.team[ team ].voted );
 
 	if ( !quorum )
 	{
 		cmd = va( "print_tr %s %d %d", ( team == TEAM_NONE ) ? QQ( N_("Vote failed ($1$ of $2$; quorum not reached)\n") ) : QQ( N_("Team vote failed ($1$ of $2$; quorum not reached)\n") ),
-		            level.voteYes[ team ] + level.voteNo[ team ], level.numVotingClients[ team ] );
+		            level.team[ team ].voteYes + level.team[ team ].voteNo, level.team[ team ].numVotingClients );
 	}
 	else if ( pass )
 	{
 		cmd = va( "print_tr %s %d %d", ( team == TEAM_NONE ) ? QQ( N_("Vote passed ($1$ — $2$)\n") ) : QQ( N_("Team vote passed ($1$ — $2$)\n") ),
-		            level.voteYes[ team ], level.voteNo[ team ] );
+		            level.team[ team ].voteYes, level.team[ team ].voteNo );
 	}
 	else
 	{
 		cmd = va( "print_tr %s %d %d %.0f", ( team == TEAM_NONE ) ? QQ( N_("Vote failed ($1$ — $2$; $3$% needed)\n") ) : QQ( N_("Team vote failed ($1$ — $2$; $3$% needed)\n") ),
-		            level.voteYes[ team ], level.voteNo[ team ], votePassThreshold * 100 );
+		            level.team[ team ].voteYes, level.team[ team ].voteNo, votePassThreshold * 100 );
 	}
 
 	if ( team == TEAM_NONE )
@@ -2623,8 +2815,6 @@ void CheckCvars( void )
 {
 	static int lastPasswordModCount = -1;
 	static int lastMarkDeconModCount = -1;
-	static int lastSDTimeModCount = -1;
-	static int lastNumZones = 0;
 
 	if ( g_password.modificationCount != lastPasswordModCount )
 	{
@@ -2646,33 +2836,6 @@ void CheckCvars( void )
 	{
 		lastMarkDeconModCount = g_markDeconstruct.modificationCount;
 		G_ClearDeconMarks();
-	}
-
-	// If we change g_suddenDeathTime during a map, we need to update
-	// when sd will begin
-	if ( g_suddenDeathTime.modificationCount != lastSDTimeModCount )
-	{
-		lastSDTimeModCount = g_suddenDeathTime.modificationCount;
-		level.suddenDeathBeginTime = g_suddenDeathTime.integer * 60000;
-	}
-
-	// If the number of zones changes, we need a new array
-	if ( g_humanRepeaterMaxZones.integer != lastNumZones )
-	{
-		buildPointZone_t *newZones;
-		size_t           newsize = g_humanRepeaterMaxZones.integer * sizeof( buildPointZone_t );
-		size_t           oldsize = lastNumZones * sizeof( buildPointZone_t );
-
-		newZones = BG_Alloc( newsize );
-
-		if ( level.buildPointZones )
-		{
-			Com_Memcpy( newZones, level.buildPointZones, MIN( oldsize, newsize ) );
-			BG_Free( level.buildPointZones );
-		}
-
-		level.buildPointZones = newZones;
-		lastNumZones = g_humanRepeaterMaxZones.integer;
 	}
 
 	level.frameMsec = trap_Milliseconds();
@@ -2827,6 +2990,8 @@ void G_RunFrame( int levelTime )
 	level.framenum++;
 	level.previousTime = level.time;
 	level.time = levelTime;
+	level.matchTime = levelTime - level.startTime;
+
 	msec = level.time - level.previousTime;
 
 	// generate public-key messages
@@ -2947,12 +3112,16 @@ void G_RunFrame( int levelTime )
 	G_UnlaggedStore();
 
 	G_CountSpawns();
-	G_CalculateBuildPoints();
-	G_CalculateStages();
+	G_SetHumanBuildablePowerState();
+	G_CalculateMineRate();
+	G_DecreaseConfidence();
+	G_CalculateAvgPlayers();
 	G_SpawnClients( TEAM_ALIENS );
 	G_SpawnClients( TEAM_HUMANS );
-	G_CalculateAvgPlayers();
 	G_UpdateZaps( msec );
+
+	// log gameplay statistics
+	G_LogGameplayStats( LOG_GAMEPLAY_STATS_BODY );
 
 	// see if it is time to end the level
 	CheckExitRules();
@@ -2966,5 +3135,6 @@ void G_RunFrame( int levelTime )
 		G_CheckVote( i );
 	}
 
+	trap_BotUpdateObstacles();
 	level.frameMsec = trap_Milliseconds();
 }

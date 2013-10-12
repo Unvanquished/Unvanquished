@@ -184,16 +184,16 @@ void Svcmd_EntityShow_f( void )
 			if(lastTargetIndex != targetIndex)
 			{
 				G_Printf("Calls %s \"%s:%s\"\n",
-						selection->calltargets[targetIndex].event ? selection->calltargets[targetIndex].event : "onUnknown",
-						selection->calltargets[targetIndex].name,
-						selection->calltargets[targetIndex].action ? selection->calltargets[targetIndex].action : "default");
+						selection->calltargets[ targetIndex ].event ? selection->calltargets[ targetIndex ].event : "onUnknown",
+						selection->calltargets[ targetIndex ].name,
+						selection->calltargets[ targetIndex ].action ? selection->calltargets[ targetIndex ].action : "default");
 				lastTargetIndex = targetIndex;
 			}
 
 			G_Printf(" • %s", etos(possibleTarget));
 			if(possibleTarget->names[1])
 			{
-				G_Printf(" using \"%s\" ∈ ", selection->calltargets[targetIndex].name);
+				G_Printf(" using \"%s\" ∈ ", selection->calltargets[ targetIndex ].name);
 				G_PrintEntityNameList( possibleTarget );
 			}
 			G_Printf("\n");
@@ -332,6 +332,7 @@ static void Svcmd_LayoutSave_f( void )
 
 	// sanitize name
 	s = &str[ 0 ];
+	str2[ 0 ] = 0;
 
 	while ( *s && i < sizeof( str2 ) - 1 )
 	{
@@ -422,20 +423,13 @@ static void Svcmd_TeamWin_f( void )
 {
 	// this is largely made redundant by admitdefeat <team>
 	char cmd[ 6 ];
+	team_t team;
 	trap_Argv( 0, cmd, sizeof( cmd ) );
 
-	switch ( G_TeamFromString( cmd ) )
+	team = G_TeamFromString( cmd );
+	if ( TEAM_ALIENS == team || TEAM_HUMANS == team )
 	{
-		case TEAM_ALIENS:
-			G_BaseSelfDestruct( TEAM_HUMANS );
-			break;
-
-		case TEAM_HUMANS:
-			G_BaseSelfDestruct( TEAM_ALIENS );
-			break;
-
-		default:
-			return;
+		G_BaseSelfDestruct( team );
 	}
 }
 
@@ -447,6 +441,30 @@ static void Svcmd_Evacuation_f( void )
 	G_notify_sensor_end( TEAM_NONE );
 	LogExit( "Evacuation." );
 	G_MapLog_Result( 'd' );
+}
+
+static void Svcmd_Armageddon_f( void )
+{
+	char arg[ 4 ];
+	int percent;
+
+	if ( trap_Argc() != 2 )
+	{
+		G_Printf( "usage: armageddon <percent>\n" );
+		return;
+	}
+
+	trap_Argv( 1, arg, sizeof( arg ) );
+	percent = atoi( arg );
+
+
+	if ( percent < 1 || percent > 100 )
+	{
+		G_Printf( "armageddon: Strength must be between 1 and 100\n" );
+		return;
+	}
+
+	G_Armageddon( percent / 100.0f );
 }
 
 static void Svcmd_MapRotation_f( void )
@@ -621,7 +639,8 @@ static void Svcmd_Pr_f( void )
 
 static void Svcmd_PrintQueue_f( void )
 {
-	char team[ MAX_STRING_CHARS ];
+	team_t team;
+	char teamName[ MAX_STRING_CHARS ];
 
 	if ( trap_Argc() != 2 )
 	{
@@ -629,20 +648,16 @@ static void Svcmd_PrintQueue_f( void )
 		return;
 	}
 
-	trap_Argv( 1, team, sizeof( team ) );
+	trap_Argv( 1, teamName, sizeof( teamName ) );
 
-	switch ( G_TeamFromString( team ) )
+	team = G_TeamFromString(teamName);
+	if ( TEAM_ALIENS == team || TEAM_HUMANS == team )
 	{
-		case TEAM_ALIENS:
-			G_PrintSpawnQueue( &level.alienSpawnQueue );
-			break;
-
-		case TEAM_HUMANS:
-			G_PrintSpawnQueue( &level.humanSpawnQueue );
-			break;
-
-		default:
-			G_Printf( "unknown team\n" );
+		G_PrintSpawnQueue( &level.team[ team ].spawnQueue );
+	}
+	else
+	{
+		G_Printf( "unknown team\n" );
 	}
 }
 
@@ -689,17 +704,6 @@ static void Svcmd_MapLogWrapper( void )
 	Cmd_MapLog_f( NULL );
 }
 
-static void Svcmd_SuddenDeath_f( void )
-{
-	char secs[ 5 ];
-	int  offset;
-	trap_Argv( 1, secs, sizeof( secs ) );
-	offset = atoi( secs );
-
-	level.suddenDeathBeginTime = level.time - level.startTime + offset * 1000;
-	trap_SendServerCommand( -1, va( "cp \"Sudden Death will begin in %ds\"", offset ) );
-}
-
 static void Svcmd_G_AdvanceMapRotation_f( void )
 {
 	G_AdvanceMapRotation( 0 );
@@ -716,6 +720,7 @@ static const struct svcmd
 	{ "admitDefeat",        qfalse, Svcmd_AdmitDefeat_f          },
 	{ "advanceMapRotation", qfalse, Svcmd_G_AdvanceMapRotation_f },
 	{ "alienWin",           qfalse, Svcmd_TeamWin_f              },
+	{ "armageddon",         qfalse, Svcmd_Armageddon_f           },
 	{ "asay",               qtrue,  Svcmd_MessageWrapper         },
 	{ "chat",               qtrue,  Svcmd_MessageWrapper         },
 	{ "cp",                 qtrue,  Svcmd_CenterPrint_f          },
@@ -741,7 +746,6 @@ static const struct svcmd
 	{ "say",                qtrue,  Svcmd_MessageWrapper         },
 	{ "say_team",           qtrue,  Svcmd_TeamMessage_f          },
 	{ "stopMapRotation",    qfalse, G_StopMapRotation            },
-	{ "suddendeath",        qfalse, Svcmd_SuddenDeath_f          }
 };
 
 /*

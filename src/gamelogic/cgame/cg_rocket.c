@@ -331,7 +331,7 @@ void CG_Rocket_LoadHuds( void )
 		if ( !Q_stricmp( token, "human_hud" ) )
 		{
 			// Clear old values
-			for ( i = WP_BLASTER; i < WP_GRENADE; ++i )
+			for ( i = WP_BLASTER; i < WP_LUCIFER_CANNON; ++i )
 			{
 				trap_Rocket_ClearHud( i );
 			}
@@ -358,7 +358,7 @@ void CG_Rocket_LoadHuds( void )
 				}
 
 
-				for ( i = WP_BLASTER; i < WP_GRENADE; ++i )
+				for ( i = WP_BLASTER; i < WP_LUCIFER_CANNON; ++i )
 				{
 					trap_Rocket_AddUnitToHud( i, token );
 				}
@@ -639,7 +639,7 @@ qboolean CG_Rocket_IsCommandAllowed( rocketElementType_t type )
 			return qfalse;
 
 		case ELEMENT_ALIENS:
-			if ( ps->stats[ STAT_TEAM ] == TEAM_ALIENS && ps->stats[ STAT_HEALTH ] > 0 && ps->weapon != WP_NONE )
+			if ( ps->persistant[ PERS_TEAM ] == TEAM_ALIENS && ps->stats[ STAT_HEALTH ] > 0 && ps->weapon != WP_NONE )
 			{
 				return qtrue;
 			}
@@ -647,7 +647,7 @@ qboolean CG_Rocket_IsCommandAllowed( rocketElementType_t type )
 			return qfalse;
 
 		case ELEMENT_HUMANS:
-			if ( ps->stats[ STAT_TEAM ] == TEAM_HUMANS && ps->stats[ STAT_HEALTH ] > 0 && ps->weapon != WP_NONE )
+			if ( ps->persistant[ PERS_TEAM ] == TEAM_HUMANS && ps->stats[ STAT_HEALTH ] > 0 && ps->weapon != WP_NONE )
 			{
 				return qtrue;
 			}
@@ -655,7 +655,7 @@ qboolean CG_Rocket_IsCommandAllowed( rocketElementType_t type )
 			return qfalse;
 
 		case ELEMENT_BOTH:
-			if ( ps->stats[ STAT_TEAM ] != TEAM_NONE && ps->stats[ STAT_HEALTH ] > 0 && ps->weapon != WP_NONE )
+			if ( ps->persistant[ PERS_TEAM ] != TEAM_NONE && ps->stats[ STAT_HEALTH ] > 0 && ps->weapon != WP_NONE )
 			{
 				return qtrue;
 			}

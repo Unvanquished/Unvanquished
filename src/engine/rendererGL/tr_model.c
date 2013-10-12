@@ -30,9 +30,6 @@ qboolean        R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, 
 
 #if defined( COMPAT_ET )
 qboolean        R_LoadMDC( model_t *mod, int lod, void *buffer, int bufferSize, const char *name );
-qboolean        R_LoadMDM( model_t *mod, void *buffer, const char *name );
-static qboolean R_LoadMDX( model_t *mod, void *buffer, const char *name );
-
 #endif
 
 qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *name );
@@ -151,7 +148,7 @@ qhandle_t RE_RegisterModel( const char *name )
 
 #if defined( COMPAT_ET )
 
-	if ( strstr( name, ".mds" ) || strstr( name, ".mdm" ) || strstr( name, ".mdx" ) || strstr( name, ".md5mesh" ) || strstr( name, ".psk" ) )
+	if ( strstr( name, ".mds" ) || strstr( name, ".md5mesh" ) || strstr( name, ".psk" ) )
 #else
 	if ( strstr( name, ".md5mesh" ) || strstr( name, ".psk" ) )
 #endif
@@ -175,15 +172,6 @@ qhandle_t RE_RegisterModel( const char *name )
 			}
 			else
 #endif
-				if ( ident == MDM_IDENT )
-				{
-					loaded = R_LoadMDM( mod, buffer, name );
-				}
-				else if ( ident == MDX_IDENT )
-				{
-					loaded = R_LoadMDX( mod, buffer, name );
-				}
-
 #endif
 
 #if defined( USE_REFENTITY_ANIMATIONSYSTEM )
@@ -334,91 +322,6 @@ fail:
 
 	return 0;
 }
-
-/*
-=================
-R_LoadMDX
-=================
-*/
-#if defined( COMPAT_ET )
-static qboolean R_LoadMDX( model_t *mod, void *buffer, const char *mod_name )
-{
-	int           i, j;
-	mdxHeader_t   *pinmodel, *mdx;
-	mdxFrame_t    *frame;
-	short         *bframe;
-	mdxBoneInfo_t *bi;
-	int           version;
-	int           size;
-	int           frameSize;
-
-	pinmodel = ( mdxHeader_t * ) buffer;
-
-	version = LittleLong( pinmodel->version );
-
-	if ( version != MDX_VERSION )
-	{
-		ri.Printf( PRINT_WARNING, "R_LoadMDX: %s has wrong version (%i should be %i)\n", mod_name, version, MDX_VERSION );
-		return qfalse;
-	}
-
-	mod->type = MOD_MDX;
-	size = LittleLong( pinmodel->ofsEnd );
-	mod->dataSize += size;
-	mdx = mod->mdx = ri.Hunk_Alloc( size, h_low );
-
-	memcpy( mdx, buffer, LittleLong( pinmodel->ofsEnd ) );
-
-	LL( mdx->ident );
-	LL( mdx->version );
-	LL( mdx->numFrames );
-	LL( mdx->numBones );
-	LL( mdx->ofsFrames );
-	LL( mdx->ofsBones );
-	LL( mdx->ofsEnd );
-	LL( mdx->torsoParent );
-
-	if ( LittleLong( 1 ) != 1 )
-	{
-		// swap all the frames
-		frameSize = ( int )( sizeof( mdxBoneFrameCompressed_t ) ) * mdx->numBones;
-
-		for ( i = 0; i < mdx->numFrames; i++ )
-		{
-			frame = ( mdxFrame_t * )( ( byte * ) mdx + mdx->ofsFrames + i * frameSize + i * sizeof( mdxFrame_t ) );
-			frame->radius = LittleFloat( frame->radius );
-
-			for ( j = 0; j < 3; j++ )
-			{
-				frame->bounds[ 0 ][ j ] = LittleFloat( frame->bounds[ 0 ][ j ] );
-				frame->bounds[ 1 ][ j ] = LittleFloat( frame->bounds[ 1 ][ j ] );
-				frame->localOrigin[ j ] = LittleFloat( frame->localOrigin[ j ] );
-				frame->parentOffset[ j ] = LittleFloat( frame->parentOffset[ j ] );
-			}
-
-			bframe = ( short * )( ( byte * ) mdx + mdx->ofsFrames + i * frameSize + ( ( i + 1 ) * sizeof( mdxFrame_t ) ) );
-
-			for ( j = 0; j < mdx->numBones * sizeof( mdxBoneFrameCompressed_t ) / sizeof( short ); j++ )
-			{
-				( ( short * ) bframe ) [ j ] = LittleShort( ( ( short * ) bframe ) [ j ] );
-			}
-		}
-
-		// swap all the bones
-		for ( i = 0; i < mdx->numBones; i++ )
-		{
-			bi = ( mdxBoneInfo_t * )( ( byte * ) mdx + mdx->ofsBones + i * sizeof( mdxBoneInfo_t ) );
-			LL( bi->parent );
-			bi->torsoWeight = LittleFloat( bi->torsoWeight );
-			bi->parentDist = LittleFloat( bi->parentDist );
-			LL( bi->flags );
-		}
-	}
-
-	return qtrue;
-}
-
-#endif // #if defined(COMPAT_ET)
 
 //=============================================================================
 
@@ -585,7 +488,7 @@ void R_Modellist_f( void )
 		{
 			for ( j = 0; j < MD3_MAX_LODS; j++ )
 			{
-				if ( mod->mdv[ j ] && mod->mdv[ j ] != mod->mdv[ j - 1 ] )
+				if ( mod->mdv[ j ] && ( j == 0 || mod->mdv[ j ] != mod->mdv[ j - 1 ] ) )
 				{
 					mdvModel_t   *mdvModel;
 					mdvSurface_t *mdvSurface;
@@ -806,20 +709,7 @@ int RE_LerpTagET( orientation_t *tag, const refEntity_t *refent, const char *tag
 
 	        }
 	        */
-	if ( model->type == MOD_MDM )
-	{
-		// use bone lerping
-		retval = R_MDM_GetBoneTag( tag, model->mdm, startIndex, refent, tagNameIn );
-
-		if ( retval >= 0 )
-		{
-			return retval;
-		}
-
-		// failed
-		return -1;
-	}
-	else if ( model->type == MOD_MD5 )
+	if ( model->type == MOD_MD5 )
 	{
 		vec3_t tmp;
 

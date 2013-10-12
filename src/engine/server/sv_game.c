@@ -413,7 +413,6 @@ void SV_GameBinaryMessageReceived( int cno, const char *buf, int buflen, int com
 //==============================================
 
 extern int S_RegisterSound( const char *name, qboolean compressed );
-extern int S_GetSoundLength( sfxHandle_t sfxHandle );
 
 /*
 ====================
@@ -686,9 +685,6 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 			return S_RegisterSound( VMA( 1 ), args[ 2 ] );
 #endif ///// (SA) DOOMSOUND
 
-		case G_GET_SOUND_LENGTH:
-			return S_GetSoundLength( args[ 1 ] );
-
 		case G_PARSE_ADD_GLOBAL_DEFINE:
 			return Parse_AddGlobalDefine( VMA( 1 ) );
 
@@ -742,11 +738,45 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 			SV_GetPlayerPubkey( args[ 1 ], VMA( 2 ), args[ 3 ] );
 			return 0;
 
-                case G_GETTIMESTRING:
-		        VM_CheckBlock( args[1], args[2], "STRFTIME" );
+        case G_GETTIMESTRING:
+			VM_CheckBlock( args[1], args[2], "STRFTIME" );
 			SV_GetTimeString( VMA( 1 ), args[ 2 ], VMA( 3 ), VMA( 4 ) );
 			return 0;
-			
+		case BOT_NAV_SETUP:
+			return BotSetupNav( VMA( 1 ), VMA( 2 ) );
+		case BOT_NAV_SHUTDOWN:
+			BotShutdownNav();
+			return 0;
+		case BOT_SET_NAVMESH:
+			BotSetNavMesh( args[ 1 ], args[ 2 ] );
+			return 0;
+		case BOT_FIND_ROUTE:
+			return BotFindRouteExt( args[ 1 ], VMA( 2 ), args[ 3 ] );
+		case BOT_UPDATE_PATH:
+			BotUpdateCorridor( args[ 1 ], VMA( 2 ), VMA( 3 ) );
+			return 0;
+		case BOT_NAV_RAYCAST:
+			return BotNavTrace( args[ 1 ], VMA( 2 ), VMA( 3 ), VMA( 4 ) );
+		case BOT_NAV_RANDOMPOINT:
+			BotFindRandomPoint( args[ 1 ], VMA( 2 ) );
+			return 0;
+		case BOT_NAV_RANDOMPOINTRADIUS:
+			return BotFindRandomPointInRadius( args[ 1 ], VMA( 2 ), VMA( 3 ), VMF( 4 ) );
+		case BOT_ENABLE_AREA:
+			BotEnableArea( VMA( 1 ), VMA( 2 ), VMA( 3 ) );
+			return 0;
+		case BOT_DISABLE_AREA:
+			BotDisableArea( VMA( 1 ), VMA( 2 ), VMA( 3 ) );
+			return 0;
+		case BOT_ADD_OBSTACLE:
+			BotAddObstacle( VMA( 1 ), VMA( 2 ), VMA( 3 ) );
+			return 0;
+		case BOT_REMOVE_OBSTACLE:
+			BotRemoveObstacle( args[ 1 ] );
+			return 0;
+		case BOT_UPDATE_OBSTACLES:
+			BotUpdateObstacles();
+			return 0;
 		default:
 			Com_Error( ERR_DROP, "Bad game system trap: %ld", ( long int ) args[ 0 ] );
 			exit(1); // silence warning, and make sure this behaves as expected, if Com_Error's behavior changes

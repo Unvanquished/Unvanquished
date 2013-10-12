@@ -37,86 +37,93 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define ALIEN_WDMG_MODIFIER           1.0f
 #define ADM(d) ((int)((float)d * ALIEN_WDMG_MODIFIER ))
 
-#define ABUILDER_CLAW_DMG             ADM(20)
-#define ABUILDER_CLAW_RANGE           64.0f
-#define ABUILDER_CLAW_WIDTH           4.0f
-#define ABUILDER_BLOB_DMG             ADM(4)
-#define ABUILDER_BLOB_SPEED           800.0f
-#define ABUILDER_BLOB_SPEED_MOD       0.5f
-#define ABUILDER_BLOB_TIME            2000
+extern int   ABUILDER_CLAW_DMG;
+extern float ABUILDER_CLAW_RANGE;
+extern float ABUILDER_CLAW_WIDTH;
+extern int   ABUILDER_BLOB_DMG;
+extern float ABUILDER_BLOB_SPEED;
+extern float ABUILDER_BLOB_SPEED_MOD;
+extern int   ABUILDER_BLOB_TIME;
+#define ABUILDER_BLOB_FIRE_IMMUNITY   3000   // in ms, friendly buildables gain immunity for fire on hit
+#define ABUILDER_BLOB_FIRE_STOP_RANGE 20     // granger spit that hits a surface kills environmental fire in this range
 
-#define LEVEL0_BITE_DMG               ADM(36)
-#define LEVEL0_BITE_RANGE             64.0f
-#define LEVEL0_BITE_WIDTH             6.0f
-#define LEVEL0_BITE_REPEAT            500
+extern int   LEVEL0_BITE_DMG;
+extern float LEVEL0_BITE_RANGE;
+extern float LEVEL0_BITE_WIDTH;
+extern int   LEVEL0_BITE_REPEAT;
+#define LEVEL0_POUNCE_DISTANCE        300 // pitch between LEVEL0_POUNCE_MINPITCH and pi/4 results in this distance
+#define LEVEL0_POUNCE_MINPITCH        M_PI / 12.0f // 15°, minimum pitch that will result in full pounce distance
+#define LEVEL0_POUNCE_COOLDOWN        2000
+#define LEVEL0_WALLPOUNCE_MAGNITUDE   600
+#define LEVEL0_WALLPOUNCE_COOLDOWN    750
+#define LEVEL0_SIDEPOUNCE_MAGNITUDE   400
+#define LEVEL0_SIDEPOUNCE_DIR_Z       0.4f // in ]0.0f,1.0f], fixed Z-coordinate of sidepounce
+#define LEVEL0_SIDEPOUNCE_COOLDOWN    750
 
-#define LEVEL1_CLAW_DMG               ADM(32)
-#define LEVEL1_CLAW_RANGE             80.0f // Claw and grab range normalized. Not sure on this one, but it was pretty widely requested.
-#define LEVEL1_CLAW_U_RANGE           LEVEL1_CLAW_RANGE + 3.0f
-#define LEVEL1_CLAW_WIDTH             10.0f
+extern int   LEVEL1_CLAW_DMG;
+extern float LEVEL1_CLAW_RANGE;
+extern float LEVEL1_CLAW_U_RANGE;
+extern float LEVEL1_CLAW_WIDTH;
 #define LEVEL1_CLAW_K_SCALE           1.0f
-#define LEVEL1_GRAB_RANGE             80.0f // Claw and grab range normalized.
-#define LEVEL1_GRAB_U_RANGE           LEVEL1_GRAB_RANGE + 3.0f
-#define LEVEL1_GRAB_TIME              300
-#define LEVEL1_GRAB_U_TIME            300
-#define LEVEL1_PCLOUD_DMG             ADM(4)
-#define LEVEL1_PCLOUD_RANGE           120.0f
-#define LEVEL1_PCLOUD_TIME            10000
-#define LEVEL1_REGEN_MOD              2.0f
-#define LEVEL1_UPG_REGEN_MOD          3.0f
-#define LEVEL1_REGEN_SCOREINC         AVM(100) // score added for healing per 10s
-#define LEVEL1_UPG_REGEN_SCOREINC     AVM(200)
+extern float LEVEL1_GRAB_RANGE;
+extern float LEVEL1_GRAB_U_RANGE;
+extern int   LEVEL1_GRAB_TIME;
+extern int   LEVEL1_GRAB_U_TIME;
+extern float LEVEL1_PCLOUD_RANGE;
+extern int   LEVEL1_PCLOUD_TIME;
+extern float LEVEL1_REGEN_MOD;
+extern float LEVEL1_UPG_REGEN_MOD;
+extern int   LEVEL1_REGEN_SCOREINC;
+extern int   LEVEL1_UPG_REGEN_SCOREINC;
 
-#define LEVEL2_CLAW_DMG               ADM(40)
-#define LEVEL2_CLAW_RANGE             80.0f
-#define LEVEL2_CLAW_U_RANGE           LEVEL2_CLAW_RANGE + 2.0f
-#define LEVEL2_CLAW_WIDTH             14.0f
-#define LEVEL2_AREAZAP_DMG            ADM(60)
-#define LEVEL2_AREAZAP_RANGE          200.0f
-#define LEVEL2_AREAZAP_CHAIN_RANGE    150.0f
-#define LEVEL2_AREAZAP_CHAIN_FALLOFF  8.0f
-#define LEVEL2_AREAZAP_WIDTH          15.0f
-#define LEVEL2_AREAZAP_TIME           1000
-#define LEVEL2_AREAZAP_MAX_TARGETS    5
-#define LEVEL2_WALLJUMP_MAXSPEED      1000.0f
+extern int   LEVEL2_CLAW_DMG;
+extern float LEVEL2_CLAW_RANGE;
+extern float LEVEL2_CLAW_U_RANGE;
+extern float LEVEL2_CLAW_WIDTH;
+extern int   LEVEL2_AREAZAP_DMG;
+extern float LEVEL2_AREAZAP_RANGE;
+extern float LEVEL2_AREAZAP_CHAIN_RANGE;
+extern float LEVEL2_AREAZAP_CHAIN_FALLOFF;
+extern float LEVEL2_AREAZAP_WIDTH;
+extern int   LEVEL2_AREAZAP_TIME;
+extern float LEVEL2_WALLJUMP_MAXSPEED;
+#define LEVEL2_AREAZAP_MAX_TARGETS 5
 
-#define LEVEL3_CLAW_DMG               ADM(80)
-#define LEVEL3_CLAW_RANGE             80.0f // Increased claw range
-#define LEVEL3_CLAW_UPG_RANGE         LEVEL3_CLAW_RANGE + 3.0f
-#define LEVEL3_CLAW_WIDTH             11.0f //
-#define LEVEL3_POUNCE_DMG             ADM(75) // Reduced damage. Pounce is very powerful as it is.
-#define LEVEL3_POUNCE_RANGE           55.0f // Pounce range raised by 7.0. May need to be nerfed, still want to test like this though.
-#define LEVEL3_POUNCE_UPG_RANGE       LEVEL3_POUNCE_RANGE + 3.0f
-#define LEVEL3_POUNCE_WIDTH           12.0f // Pounce width narrowed. May scale this down even further.
-#define LEVEL3_POUNCE_TIME            800 // Reduced this by 100ms, may need nerfing.
-#define LEVEL3_POUNCE_TIME_UPG        800 // Evened with standard goon. I'd like to keep this here even if standard goon charge time is raised.
-#define LEVEL3_POUNCE_TIME_MIN        200 // msec before which pounce cancels
-#define LEVEL3_POUNCE_REPEAT          400 // msec before a new pounce starts
-#define LEVEL3_POUNCE_SPEED_MOD       0.85f // Whales: Reduced the slowdown from a charged pounce by 0.10
-#define LEVEL3_POUNCE_JUMP_MAG        750 // Raised by 50,
-#define LEVEL3_POUNCE_JUMP_MAG_UPG    850 // Raised by 50.
-#define LEVEL3_BOUNCEBALL_DMG         ADM(110)
-#define LEVEL3_BOUNCEBALL_SPEED       1000.0f
-#define LEVEL3_BOUNCEBALL_RADIUS      75
-#define LEVEL3_BOUNCEBALL_REGEN       12500 // Reduced regen time.
+extern int   LEVEL3_CLAW_DMG;
+extern float LEVEL3_CLAW_RANGE;
+extern float LEVEL3_CLAW_UPG_RANGE;
+extern float LEVEL3_CLAW_WIDTH;
+extern int   LEVEL3_POUNCE_DMG;
+extern float LEVEL3_POUNCE_RANGE;
+extern float LEVEL3_POUNCE_UPG_RANGE;
+extern float LEVEL3_POUNCE_WIDTH;
+extern int   LEVEL3_POUNCE_TIME;
+extern int   LEVEL3_POUNCE_TIME_UPG;
+extern int   LEVEL3_POUNCE_TIME_MIN;
+extern int   LEVEL3_POUNCE_REPEAT;
+extern float LEVEL3_POUNCE_SPEED_MOD;
+extern int   LEVEL3_POUNCE_JUMP_MAG;
+extern int   LEVEL3_POUNCE_JUMP_MAG_UPG;
+extern int   LEVEL3_BOUNCEBALL_DMG;
+extern float LEVEL3_BOUNCEBALL_SPEED;
+extern int   LEVEL3_BOUNCEBALL_RADIUS;
+extern int   LEVEL3_BOUNCEBALL_REGEN;
 
-#define LEVEL4_CLAW_DMG               ADM(100)
-#define LEVEL4_CLAW_RANGE             100.0f
-#define LEVEL4_CLAW_WIDTH             14.0f
-#define LEVEL4_CLAW_HEIGHT            20.0f
-
-#define LEVEL4_TRAMPLE_DMG            ADM(85) // 111 -> 85
-#define LEVEL4_TRAMPLE_SPEED          2.0f
-#define LEVEL4_TRAMPLE_CHARGE_MIN     375 // minimum msec to start a charge
-#define LEVEL4_TRAMPLE_CHARGE_MAX     1000 // msec to maximum charge stored
-#define LEVEL4_TRAMPLE_CHARGE_TRIGGER 3000 // msec charge starts on its own
-#define LEVEL4_TRAMPLE_DURATION       3000 // msec trample lasts on full charge
-#define LEVEL4_TRAMPLE_STOP_PENALTY   1 // charge lost per msec when stopped
-#define LEVEL4_TRAMPLE_REPEAT         300 // Time until charge rehits a player Ishq: 100->300
-
-#define LEVEL4_CRUSH_DAMAGE_PER_V     0.5f // damage per falling velocity
-#define LEVEL4_CRUSH_DAMAGE           120 // to players only
-#define LEVEL4_CRUSH_REPEAT           500 // player damage repeat
+extern int   LEVEL4_CLAW_DMG;
+extern float LEVEL4_CLAW_RANGE;
+extern float LEVEL4_CLAW_WIDTH;
+extern float LEVEL4_CLAW_HEIGHT;
+extern int   LEVEL4_TRAMPLE_DMG;
+extern float LEVEL4_TRAMPLE_SPEED;
+extern int   LEVEL4_TRAMPLE_CHARGE_MIN;
+extern int   LEVEL4_TRAMPLE_CHARGE_MAX;
+extern int   LEVEL4_TRAMPLE_CHARGE_TRIGGER;
+extern int   LEVEL4_TRAMPLE_DURATION;
+extern int   LEVEL4_TRAMPLE_STOP_PENALTY;
+extern int   LEVEL4_TRAMPLE_REPEAT;
+extern float LEVEL4_CRUSH_DAMAGE_PER_V;
+extern int   LEVEL4_CRUSH_DAMAGE;
+extern int   LEVEL4_CRUSH_REPEAT;
 
 /*
  * ALIEN classes
@@ -196,9 +203,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 /*
  * ALIEN buildables
- *
- * CREEP_BASESIZE - the maximum distance a buildable can be from an egg/overmind
- *
  */
 
 #define CREEP_BASESIZE          700
@@ -206,6 +210,19 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define CREEP_MODIFIER          0.5f
 #define CREEP_ARMOUR_MODIFIER   0.75f
 #define CREEP_SCALEDOWN_TIME    3000
+
+// TODO: Increase burn damage frequencies, make sure burn functions are called frequently
+#define BURN_DAMAGE             10
+#define BURN_DAMAGE_PERIOD      1000
+#define BURN_SPLDAMAGE          10
+#define BURN_SPLDAMAGE_RADIUS   60
+#define BURN_SPLDAMAGE_PERIOD   500
+#define BURN_STOP_PERIOD        2500
+#define BURN_STOP_CHANCE        0.5f
+#define BURN_SPREAD_PERIOD      1000
+#define BURN_SPREAD_CHANCE      0.2f
+#define BURN_SPREAD_RADIUS      100
+#define BURN_PERIODS_RAND       0.2  // randomization applied to all burn periods
 
 #define PCLOUD_MODIFIER         0.5f
 #define PCLOUD_ARMOUR_MODIFIER  0.75f
@@ -230,6 +247,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define HIVE_DMG                80
 #define HIVE_SPEED              320.0f
 #define HIVE_DIR_CHANGE_PERIOD  500
+
+#define LEECH_LIFETIME           3000
+#define LEECH_REPEAT             3000
+#define LEECH_K_SCALE            1.0f
+#define LEECH_DMG                80
+#define LEECH_SPEED              320.0f
+#define LEECH_DIR_CHANGE_PERIOD  500
 
 #define LOCKBLOB_SPEED          500.0f
 #define LOCKBLOB_LOCKTIME       5000
@@ -257,10 +281,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define ALIEN_REGEN_DAMAGE_TIME  2000 //msec since damage that regen starts again
 #define ALIEN_REGEN_NOCREEP_MOD  ( 1.0f / 3.0f ) //regen off creep
 
-#define ALIEN_MAX_FRAGS          9
-#define ALIEN_MAX_CREDITS        ( ALIEN_MAX_FRAGS * ALIEN_CREDITS_PER_KILL )
-#define ALIEN_CREDITS_PER_KILL   400
-#define ALIEN_TK_SUICIDE_PENALTY 350
+#define ALIEN_MAX_CREDITS        2000 // CREDITS_PER_EVO converts this to evos for display
+#define ALIEN_TK_SUICIDE_PENALTY 150
 
 /*
  * HUMAN weapons
@@ -274,66 +296,71 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
 #define HUMAN_WDMG_MODIFIER      1.0f
-#define HDM(d) ((int)((float)d * HUMAN_WDMG_MODIFIER ))
+#define HDM(d)                   ((int)((float)d * HUMAN_WDMG_MODIFIER ))
 
-#define BLASTER_SPREAD           200
-#define BLASTER_SPEED            1400
-#define BLASTER_DMG              HDM(10)
-#define BLASTER_SIZE             5
+extern int   BLASTER_SPREAD;
+extern int   BLASTER_SPEED;
+extern int   BLASTER_DMG;
+extern int   BLASTER_SIZE;
 
-#define RIFLE_SPREAD             250 // Raised by 50.
-#define RIFLE_DMG                HDM(5)
+extern int   RIFLE_SPREAD;
+extern int   RIFLE_DMG;
 
-#define PAINSAW_DAMAGE           HDM(11)
-#define PAINSAW_RANGE            64.0f
-#define PAINSAW_WIDTH            0.0f
-#define PAINSAW_HEIGHT           8.0f
+extern int   PAINSAW_DAMAGE;
+extern float PAINSAW_RANGE;
+extern float PAINSAW_WIDTH;
+extern float PAINSAW_HEIGHT;
 
-#define GRENADE_DAMAGE           HDM(310)
-#define GRENADE_RANGE            192.0f
-#define GRENADE_SPEED            400.0f
+extern int   SHOTGUN_DMG;
+extern int   SHOTGUN_RANGE;
+extern int   SHOTGUN_PELLETS;
+extern int   SHOTGUN_SPREAD;
 
-#define SHOTGUN_PELLETS          11 //used to sync server and client side
-#define SHOTGUN_SPREAD           790
-#define SHOTGUN_DMG              HDM(5)
-#define SHOTGUN_RANGE            ( 8192 * 12 )
+extern int   LASGUN_DAMAGE;
 
-#define LASGUN_REPEAT            200
-#define LASGUN_K_SCALE           1.0f
-#define LASGUN_DAMAGE            HDM(9)
+extern int   MDRIVER_DMG;
 
-#define MDRIVER_DMG              HDM(40)
-#define MDRIVER_REPEAT           1000
-#define MDRIVER_K_SCALE          1.0f
+extern int   CHAINGUN_SPREAD;
+extern int   CHAINGUN_DMG;
 
-#define CHAINGUN_SPREAD          900
-#define CHAINGUN_DMG             HDM(6)
+extern int   FLAMER_DMG;
+extern int   FLAMER_FLIGHTDAMAGE;
+extern int   FLAMER_SPLASHDAMAGE;
+extern int   FLAMER_RADIUS;
+extern int   FLAMER_SIZE;
+extern float FLAMER_LIFETIME;
+extern float FLAMER_SPEED;
+extern float FLAMER_LAG;
+extern float FLAMER_IGNITE_RADIUS;
+extern float FLAMER_IGNITE_CHANCE;
+extern float FLAMER_IGNITE_SPLCHANCE;
+#define FLAMER_DAMAGE            HDM(10)
+#define FLAMER_DAMAGE_MAXDST_MOD 0.5f    // damage decreases linearly from full damage to this during missile lifetime
+#define FLAMER_SPLASH_DAMAGE     FLAMER_DAMAGE
+#define FLAMER_SPLASH_RADIUS     50
+#define FLAMER_SPLASH_MINDST_MOD 0.5f    // splash damage increases linearly from this to full damage during lifetime
+#define FLAMER_LEAVE_FIRE_CHANCE 0.3f
 
-#define FLAMER_DMG               HDM(14) // 20->15->14
-#define FLAMER_FLIGHTSPLASHDAMAGE HDM(1)
-#define FLAMER_SPLASHDAMAGE      HDM(6) // 10->7->6
-#define FLAMER_RADIUS            25 //  Radius lowered by 25
-#define FLAMER_SIZE              15 // missile bounding box
-#define FLAMER_LIFETIME          750.0f // Raised by 50.
-#define FLAMER_SPEED             500.0f
-#define FLAMER_LAG               0.65f // the amount of player velocity that is added to the fireball
+extern int   PRIFLE_DMG;
+extern int   PRIFLE_SPEED;
+#define PRIFLE_DAMAGE_FULL_TIME  0 // in ms, full damage for this time
+#define PRIFLE_DAMAGE_HALF_LIFE  0 // in ms, damage half life time after full damage period, 0 = off
+extern int   PRIFLE_SIZE;
 
-#define PRIFLE_DMG               HDM(9)
-#define PRIFLE_SPEED             1200
-#define PRIFLE_SIZE              5
-
-#define LCANNON_DAMAGE           HDM(265)
-#define LCANNON_RADIUS           150 // primary splash damage radius
-#define LCANNON_SIZE             5 // missile bounding box radius
-#define LCANNON_SECONDARY_DAMAGE HDM(30)
-#define LCANNON_SECONDARY_RADIUS 75 // secondary splash damage radius
-#define LCANNON_SECONDARY_SPEED  1400
+extern int   LCANNON_DAMAGE;
+extern int   LCANNON_RADIUS;
+#define LCANNON_DAMAGE_FULL_TIME 0 // in ms, full damage for this time
+#define LCANNON_DAMAGE_HALF_LIFE 0 // in ms, damage half life time after full damage period, 0 = off
+extern int   LCANNON_SIZE;
+extern int   LCANNON_SECONDARY_DAMAGE;
+extern int   LCANNON_SECONDARY_RADIUS;
+extern int   LCANNON_SECONDARY_SPEED;
 #define LCANNON_SECONDARY_RELOAD 2000
-#define LCANNON_SPEED            700
-#define LCANNON_CHARGE_TIME_MAX  3000
-#define LCANNON_CHARGE_TIME_MIN  100
-#define LCANNON_CHARGE_TIME_WARN 2000
-#define LCANNON_CHARGE_AMMO      10 // ammo cost of a full charge shot
+extern int   LCANNON_SPEED;
+extern int   LCANNON_CHARGE_TIME_MAX;
+extern int   LCANNON_CHARGE_TIME_MIN;
+extern int   LCANNON_CHARGE_TIME_WARN;
+extern int   LCANNON_CHARGE_AMMO;
 
 #define HBUILD_HEALRATE          18
 
@@ -341,64 +368,55 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * HUMAN upgrades
  */
 
-#define LIGHTARMOUR_POISON_PROTECTION 1
-#define LIGHTARMOUR_PCLOUD_PROTECTION 1000
+extern int   LIGHTARMOUR_POISON_PROTECTION;
+extern int   LIGHTARMOUR_PCLOUD_PROTECTION;
 
-#define HELMET_RANGE                  1000.0f
-#define HELMET_POISON_PROTECTION      1
-#define HELMET_PCLOUD_PROTECTION      1000
+extern float HELMET_RANGE;
+extern int   HELMET_POISON_PROTECTION;
+extern int   HELMET_PCLOUD_PROTECTION;
 
-#define BATTPACK_PRICE                100
-#define BATTPACK_MODIFIER             1.5f //modifier for extra energy storage available
+extern float BATTPACK_MODIFIER;
 
-#define JETPACK_FLOAT_SPEED           128.0f //up movement speed
-#define JETPACK_SINK_SPEED            192.0f //down movement speed
-#define JETPACK_DISABLE_TIME          1000 //time to disable the jetpack when player damaged
-#define JETPACK_DISABLE_CHANCE        0.3f
+extern float JETPACK_FLOAT_SPEED;
+extern float JETPACK_SINK_SPEED;
+extern int   JETPACK_DISABLE_TIME;
+extern float JETPACK_DISABLE_CHANCE;
 
-#define BSUIT_PRICE                   400
-#define BSUIT_POISON_PROTECTION       3
-#define BSUIT_PCLOUD_PROTECTION       3000
+extern int   BSUIT_POISON_PROTECTION;
+extern int   BSUIT_PCLOUD_PROTECTION;
 
-#define MEDKIT_POISON_IMMUNITY_TIME   2000 // Added two second poison immunity from medkit.
-#define MEDKIT_STARTUP_TIME           4000
-#define MEDKIT_STARTUP_SPEED          5
+extern int   MEDKIT_POISON_IMMUNITY_TIME;
+extern int   MEDKIT_STARTUP_TIME;
+extern int   MEDKIT_STARTUP_SPEED;
 
 /*
  * HUMAN buildables
- *
- * REACTOR_BASESIZE - the maximum distance a buildable can be from a reactor
- * REPEATER_BASESIZE - the maximum distance a buildable can be from a repeater
- *
  */
+extern float REACTOR_BASESIZE;
+extern float REPEATER_BASESIZE;
 
-#define REACTOR_BASESIZE          1000
-#define REPEATER_BASESIZE         500
-#define HUMAN_DETONATION_DELAY    5000
+extern float MGTURRET_RANGE;
+extern int   MGTURRET_ANGULARSPEED;
+extern int   MGTURRET_ACCURACY_TO_FIRE;
+extern int   MGTURRET_VERTICALCAP;
+extern int   MGTURRET_SPREAD;
+extern int   MGTURRET_DMG;
+extern int   MGTURRET_SPINUP_TIME;
 
-#define MGTURRET_RANGE            400.0
-#define MGTURRET_REPEAT           150.0
-#define MGTURRET_ANGULARSPEED     12
-#define MGTURRET_ACCURACY_TO_FIRE 0
-#define MGTURRET_VERTICALCAP      30 // +/- maximum pitch
-#define MGTURRET_SPREAD           200
-#define MGTURRET_DMG              HDM(8)
-#define MGTURRET_SPINUP_TIME      750 // time between target sighted and fire
+extern float TESLAGEN_RANGE;
+extern int   TESLAGEN_REPEAT;
+extern int   TESLAGEN_DMG;
 
-#define TESLAGEN_RANGE            250.0
-#define TESLAGEN_REPEAT           200.0
-#define TESLAGEN_DMG              HDM(10)
+extern int   DC_ATTACK_PERIOD;
+extern int   DC_HEALRATE;
+extern int   DC_RANGE;
 
-#define DC_ATTACK_PERIOD          10000 // how often to spam "under attack"
-#define DC_HEALRATE               4
-#define DC_RANGE                  1000
-
-#define REACTOR_ATTACK_RANGE      100.0f
-#define REACTOR_ATTACK_REPEAT     1000
-#define REACTOR_ATTACK_DAMAGE     40
-#define REACTOR_ATTACK_DCC_REPEAT 1000
-#define REACTOR_ATTACK_DCC_RANGE  150.0f
-#define REACTOR_ATTACK_DCC_DAMAGE 40
+extern float REACTOR_ATTACK_RANGE;
+extern int   REACTOR_ATTACK_REPEAT;
+extern int   REACTOR_ATTACK_DAMAGE;
+extern float REACTOR_ATTACK_DCC_RANGE;
+extern int   REACTOR_ATTACK_DCC_REPEAT;
+extern int   REACTOR_ATTACK_DCC_DAMAGE;
 
 /*
  * HUMAN misc
@@ -408,10 +426,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define HUMAN_JOG_MODIFIER            1.0f
 #define HUMAN_BACK_MODIFIER           0.8f
 #define HUMAN_SIDE_MODIFIER           0.9f
-#define HUMAN_DODGE_SIDE_MODIFIER     2.9f
-#define HUMAN_DODGE_SLOWED_MODIFIER   0.9f
-#define HUMAN_DODGE_UP_MODIFIER       0.5f
-#define HUMAN_DODGE_TIMEOUT           2500 // Reduced dodge cooldown.
 #define HUMAN_LAND_FRICTION           3.0f
 
 #define STAMINA_STOP_RESTORE          30
@@ -419,7 +433,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define STAMINA_MEDISTAT_RESTORE      30 // stacked on STOP or WALK
 #define STAMINA_SPRINT_TAKE           6
 #define STAMINA_JUMP_TAKE             250 // Doubled jump requirement. Can perform ~8 jumps.
-#define STAMINA_DODGE_TAKE            750 // Tripled dodge stamina requirement.
 #define STAMINA_MAX                   2000 // Doubled maximum stamina.
 #define STAMINA_BREATHING_LEVEL       0
 #define STAMINA_SLOW_LEVEL            -1000 // doubled to match doubled stamina
@@ -431,39 +444,60 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define HUMAN_MAX_CREDITS             2000
 #define HUMAN_TK_SUICIDE_PENALTY      150
 
-#define HUMAN_BUILDER_SCOREINC        50 // builders receive this many points every 10 seconds
-#define ALIEN_BUILDER_SCOREINC        AVM(100) // builders receive this many points every 10 seconds
-
-#define HUMAN_BUILDABLE_INACTIVE_TIME 90000
-
 /*
  * Misc
  */
 
-#define MIN_FALL_DISTANCE                  30.0f //the fall distance at which fall damage kicks in
-#define MAX_FALL_DISTANCE                  120.0f //the fall distance at which maximum damage is dealt
+// fire
+#define FIRE_MIN_DISTANCE                  20.0f
+
+// fall distance
+#define MIN_FALL_DISTANCE                  30.0f  // the fall distance at which fall damage kicks in
+#define MAX_FALL_DISTANCE                  120.0f // the fall distance at which maximum damage is dealt
 #define AVG_FALL_DISTANCE                  (( MIN_FALL_DISTANCE + MAX_FALL_DISTANCE ) / 2.0f )
 
-#define DEFAULT_FREEKILL_PERIOD            "120" //seconds
-#define FREEKILL_ALIEN                     ALIEN_CREDITS_PER_KILL
-#define FREEKILL_HUMAN                     LEVEL0_VALUE
+// impact and weight damage
+#define IMPACTDMG_JOULE_TO_DAMAGE          0.002f  // in 1/J
+#define IMPACTDMG_QU_TO_METER              0.03125 // in m/qu
+#define WEIGHTDMG_DMG_MODIFIER             0.25f   // multiply with weight difference to get DPS
+#define WEIGHTDMG_DPS_THRESHOLD            10      // ignore weight damage per second below this
+#define WEIGHTDMG_REPEAT                   200     // in ms, low value reduces damage precision
 
-#define DEFAULT_ALIEN_BUILDPOINTS          "150"
-#define DEFAULT_ALIEN_QUEUE_TIME           "12000"
-#define DEFAULT_ALIEN_STAGE2_THRESH        "12000"
-#define DEFAULT_ALIEN_STAGE3_THRESH        "24000"
-#define DEFAULT_ALIEN_MAX_STAGE            "2"
-#define DEFAULT_HUMAN_BUILDPOINTS          "100"
-#define DEFAULT_HUMAN_QUEUE_TIME           "8000"
-#define DEFAULT_HUMAN_REPEATER_BUILDPOINTS "20"
-#define DEFAULT_HUMAN_REPEATER_QUEUE_TIME  "2000"
-#define DEFAULT_HUMAN_REPEATER_MAX_ZONES   "500"
-#define DEFAULT_HUMAN_STAGE2_THRESH        "6000"
-#define DEFAULT_HUMAN_STAGE3_THRESH        "12000"
-#define DEFAULT_HUMAN_MAX_STAGE            "2"
+// buildable explosion
+#define HUMAN_DETONATION_DELAY             4000
+#define ALIEN_DETONATION_DELAY             5000
+#define DETONATION_DELAY_RAND_RANGE        0.25f
 
-#define DAMAGE_FRACTION_FOR_KILL           0.5f //how much damage players (versus structures) need to
-//do to increment the stage kill counters
+// score
+#define SCORE_PER_CREDIT                   0.02f // used to convert credit rewards to score points
+#define SCORE_PER_CONFIDENCE               1.0f  // used to convert confidence rewards to score points
+#define HUMAN_BUILDER_SCOREINC             50    // in credits/10s
+#define ALIEN_BUILDER_SCOREINC             50    // in credits/10s
+
+// funds
+// Values are in credits. 'evo' is just another unit for credits.
+#define CREDITS_PER_EVO                    100   // Used when alien credits are displayed as evos
+#define DEFAULT_FREEKILL_PERIOD            "120" // in s
+#define FREEKILL_ALIEN                     200   // value of a naked human
+#define FREEKILL_HUMAN                     180   // value of a dretch
+
+// resources
+#define RGS_RANGE                          1000.0f
+#define DEFAULT_INITIAL_BUILD_POINTS       "50"  // in BP
+#define DEFAULT_INITIAL_MINE_RATE          "8"   // in (BP/min)/RGS
+#define DEFAULT_MINE_RATE_HALF_LIFE        "20"  // in min
+#define DEFAULT_MINIMUM_MINE_RATE          "50"
+
+// confidence
+#define CONFIDENCE_PER_CREDIT              0.01f // used to award confidence based on credit rewards
+#define DEFAULT_CONFIDENCE_HALF_LIFE       "5"   // in min
+#define DEFAULT_CONF_REWARD_DOUBLE_TIME    "30"  // in min
+#define DEFAULT_UNLOCKABLE_MIN_TIME        "60"  // in s
+#define DEFAULT_CONFIDENCE_BASE_MOD        "0.8"
+#define DEFAULT_CONFIDENCE_KILL_MOD        "1.0"
+#define DEFAULT_CONFIDENCE_BUILD_MOD       "0.6"
+#define DEFAULT_CONFIDENCE_DECON_MOD       "1.0" // used on top of build mod
+#define DEFAULT_CONFIDENCE_DESTROY_MOD     "0.8"
 
 #define MAXIMUM_BUILD_TIME                 20000 // used for pie timer
 

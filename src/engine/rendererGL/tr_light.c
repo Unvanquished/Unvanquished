@@ -778,6 +778,8 @@ void R_TessLight( const trRefLight_t *light, const vec4_t color )
 					Tess_AddQuadStamp2( quadVerts, color ? color : colorRed );
 				}
 			}
+		default:
+			break;
 	}
 }
 
@@ -880,10 +882,7 @@ void R_SetupLightFrustum( trRefLight_t *light )
 		int           i;
 		vboData_t     data;
 
-		if ( glConfig.smpActive )
-		{
-			ri.Error( ERR_FATAL, "R_SetupLightFrustum: FIXME SMP" );
-		}
+		R_SyncRenderThread();
 
 		tess.multiDrawPrimitives = 0;
 		tess.numIndexes = 0;
@@ -1113,6 +1112,10 @@ qboolean R_AddLightInteraction( trRefLight_t *light, surfaceType_t *surface, sha
 		{
 			return qfalse;
 		}
+	}
+	else
+	{
+		return qfalse;
 	}
 
 	// instead of checking for overflow, we just mask the index

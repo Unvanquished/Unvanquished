@@ -1459,6 +1459,7 @@ static int FS_FOpenFileRead_Internal( const char *filename, fileHandle_t *file, 
 						     Q_stricmp( filename + l - 6, ".arena" ) != 0 &&
 						     Q_stricmp( filename + l - 5, ".menu" ) != 0 &&
 						     Q_stricmp( filename + l - 3, ".po" ) != 0 &&
+						     Q_stricmp( filename + l - 8, ".navMesh" ) != 0 &&
 						     Q_stricmp( filename, "vm/game.qvm" ) != 0  &&
 						     !FS_CheckUIImageFile( filename ) )
 						{
@@ -3292,9 +3293,15 @@ void FS_Which_f( void )
 	FILE         *temp;
 	char         *filename;
 	char         buf[ MAX_OSPATH ];
+	int          level = 0;
 
 	hash = 0;
 	filename = Cmd_Argv( 1 );
+
+	if ( Cmd_Argc() > 2 )
+	{
+		level = atoi( Cmd_Argv( 2 ) );
+	}
 
 	if ( !filename[ 0 ] )
 	{
@@ -3328,9 +3335,16 @@ void FS_Which_f( void )
 				// case and separator insensitive comparisons
 				if ( !FS_FilenameCompare( pakFile->name, filename ) )
 				{
-					// found it!
-					Com_Printf(_( "File \"%s\" found in \"%s\"\n"), filename, pak->pakFilename );
-					return;
+					if ( !level )
+					{
+						// found it!
+						Com_Printf(_( "File \"%s\" found in \"%s\"\n"), filename, pak->pakFilename );
+						return;
+					}
+					else
+					{
+						level--;
+					}
 				}
 
 				pakFile = pakFile->next;
@@ -3346,6 +3360,12 @@ void FS_Which_f( void )
 
 			if ( !temp )
 			{
+				continue;
+			}
+
+			if ( level )
+			{
+				level--;
 				continue;
 			}
 

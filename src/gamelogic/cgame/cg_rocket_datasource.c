@@ -1045,7 +1045,7 @@ void AddHumanSpawnItem( weapon_t weapon )
 {
 	static char data[ MAX_STRING_CHARS ];
 
-	if ( !BG_WeaponIsAllowed( weapon ) )
+	if ( !BG_WeaponUnlocked( weapon ) )
 	{
 		return;
 	}
@@ -1126,7 +1126,7 @@ static void AddWeaponToBuyList( int i, const char *table, int tblIndex )
 
 	buf[ 0 ] = '\0';
 
-	if ( BG_Weapon( i )->purchasable && BG_WeaponAllowedInStage( i, cgs.humanStage ) && !BG_InventoryContainsWeapon( i, cg.predictedPlayerState.stats ) && BG_Weapon( i )->team == TEAM_HUMANS && i != WP_BLASTER )
+	if ( BG_Weapon( i )->purchasable && BG_WeaponUnlocked( i ) && !BG_WeaponDisabled( i ) && !BG_InventoryContainsWeapon( i, cg.predictedPlayerState.stats ) && BG_Weapon( i )->team == TEAM_HUMANS && i != WP_BLASTER )
 	{
 		Info_SetValueForKey( buf, "num", va( "%d", i ), qfalse );
 		Info_SetValueForKey( buf, "name", BG_Weapon( i )->humanName, qfalse );
@@ -1145,7 +1145,7 @@ static void AddUpgradeToBuyList( int i, const char *table, int tblIndex )
 
 	buf[ 0 ] = '\0';
 
-	if ( BG_Upgrade( i )->purchasable && BG_UpgradeAllowedInStage( i, cgs.humanStage ) && !BG_InventoryContainsUpgrade( i, cg.predictedPlayerState.stats ) && i != UP_MEDKIT )
+	if ( BG_Upgrade( i )->purchasable && BG_UpgradeUnlocked( i ) && !BG_UpgradeDisabled( i ) && !BG_InventoryContainsUpgrade( i, cg.predictedPlayerState.stats ) && i != UP_MEDKIT )
 	{
 		Info_SetValueForKey( buf, "num", va( "%d", tblIndex == ROCKETDS_BOTH ? i + WP_NUM_WEAPONS : i ), qfalse );
 		Info_SetValueForKey( buf, "name", BG_Upgrade( i )->humanName, qfalse );
@@ -1409,13 +1409,13 @@ void CG_Rocket_BuildAlienEvolveList( const char *table )
 
 		for ( i = 0; i < PCL_NUM_CLASSES; ++i )
 		{
-			if ( ( cost = BG_ClassCanEvolveFromTo( cg.predictedPlayerState.stats[ STAT_CLASS ], i, cg.predictedPlayerState.persistant[ PERS_CREDIT ], cgs.alienStage, 0 ) ) > 0 )
+			if ( ( cost = BG_ClassCanEvolveFromTo( cg.predictedPlayerState.stats[ STAT_CLASS ], i, cg.predictedPlayerState.persistant[ PERS_CREDIT ] ) ) > 0 )
 			{
 				buf[ 0 ] = '\0';
 
 				Info_SetValueForKey( buf, "name", BG_ClassModelConfig( i )->humanName, qfalse );
 				Info_SetValueForKey( buf, "description", BG_Class( i )->info, qfalse );
-				Info_SetValueForKey( buf, "price", va( "%d", cost / ALIEN_CREDITS_PER_KILL ), qfalse );
+				Info_SetValueForKey( buf, "price", va( "%d", cost / CREDITS_PER_EVO ), qfalse );
 
 				trap_Rocket_DSAddRow( "alienEvolveList", "default", buf );
 
@@ -1434,7 +1434,7 @@ void CG_Rocket_ExecAlienEvolveList( const char *table )
 {
 	class_t evo = rocketInfo.data.alienEvolveList[ rocketInfo.data.selectedAlienEvolve ];
 
-	if ( BG_Class( evo ) && BG_ClassCanEvolveFromTo( cg.predictedPlayerState.stats[ STAT_CLASS ], evo, cg.predictedPlayerState.persistant[ PERS_CREDIT ], cgs.alienStage, 0 ) >= 0 )
+	if ( BG_Class( evo ) && BG_ClassCanEvolveFromTo( cg.predictedPlayerState.stats[ STAT_CLASS ], evo, cg.predictedPlayerState.persistant[ PERS_CREDIT ] ) >= 0 )
 	{
 		trap_SendClientCommand( va( "class %s", BG_Class( evo )->name ) );
 		trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_ALIENEVOLVE ].id, "hide" );
@@ -1462,8 +1462,8 @@ void CG_Rocket_BuildHumanBuildList( const char *table )
 		{
 			if ( BG_Buildable( i )->team == TEAM_HUMANS &&
 				BG_Buildable( i )->buildWeapon & ( 1 << BG_GetPlayerWeapon( &cg.predictedPlayerState ) ) &&
-				BG_BuildableAllowedInStage( i, cgs.humanStage ) &&
-				BG_BuildableIsAllowed( i ) )
+				!BG_BuildableDisabled( i ) &&
+				BG_BuildableUnlocked( i ) )
 			{
 				buf[ 0 ] = '\0';
 
@@ -1516,8 +1516,8 @@ void CG_Rocket_BuildAlienBuildList( const char *table )
 		{
 			if ( BG_Buildable( i )->team == TEAM_ALIENS &&
 				BG_Buildable( i )->buildWeapon & ( 1 << BG_GetPlayerWeapon( &cg.predictedPlayerState ) ) &&
-				BG_BuildableAllowedInStage( i, cgs.alienStage ) &&
-				BG_BuildableIsAllowed( i ) )
+				!BG_BuildableDisabled( i ) &&
+				BG_BuildableUnlocked( i ) )
 			{
 				buf[ 0 ] = '\0';
 
@@ -1553,7 +1553,7 @@ void AddAlienSpawnClass( class_t _class )
 {
 	static char data[ MAX_STRING_CHARS ];
 
-	if ( !BG_ClassIsAllowed( _class ) )
+	if ( !BG_ClassUnlocked( _class ) )
 	{
 		return;
 	}
@@ -1573,7 +1573,7 @@ void CG_Rocket_BuildAlienSpawnList( const char *table )
 	{
 		AddAlienSpawnClass( PCL_ALIEN_LEVEL0 );
 
-		if ( cgs.alienStage )
+		if ( BG_ClassUnlocked( PCL_ALIEN_BUILDER0_UPG ) )
 		{
 			AddAlienSpawnClass( PCL_ALIEN_BUILDER0_UPG );
 		}
@@ -1600,7 +1600,7 @@ void CG_Rocket_ExecAlienSpawnList( const char *table )
 	switch ( rocketInfo.data.selectedAlienSpawnClass )
 	{
 		case 0: _class = "level0"; break;
-		case 1: _class = cgs.alienStage ? "builderupg" : "builder"; break;
+		case 1: _class = BG_ClassUnlocked( PCL_ALIEN_BUILDER0_UPG ) ? "builderupg" : "builder"; break;
 	}
 
 	if ( _class )

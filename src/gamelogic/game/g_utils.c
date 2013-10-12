@@ -748,3 +748,189 @@ qboolean G_AddressCompare( const addr_t *a, const addr_t *b )
 
 	return qtrue;
 }
+
+/*
+===============
+G_TeamToClientmask
+
+Calculates loMask/hiMask as used by SVF_CLIENTMASK type events to match all clients in a team.
+===============
+*/
+void G_TeamToClientmask( team_t team, int *loMask, int *hiMask )
+{
+	int       clientNum;
+	gclient_t *client;
+
+	*loMask = *hiMask = 0;
+
+	for ( clientNum = 0; clientNum < MAX_CLIENTS; clientNum++ )
+	{
+		client = g_entities[ clientNum ].client;
+
+		if ( client && client->pers.team == team )
+		{
+			if ( clientNum < 32 )
+			{
+				*loMask |= BIT( clientNum );
+			}
+			else
+			{
+				*hiMask |= BIT( clientNum - 32 );
+			}
+		}
+	}
+}
+
+/*
+===============
+G_FireThink
+
+Run by fire entities and burning buildables.
+===============
+*/
+void G_FireThink( gentity_t *self )
+{
+	gentity_t *neighbor;
+
+	// damage close players
+	if ( self->nextBurnSplashDamage < level.time )
+	{
+		G_SelectiveRadiusDamage( self->s.origin, self->fireStarter, BURN_SPLDAMAGE,
+								 BURN_SPLDAMAGE_RADIUS, self, MOD_BURN, TEAM_NONE );
+
+		self->nextBurnSplashDamage = level.time + BURN_SPLDAMAGE_PERIOD * BURN_PERIODS_RAND_FACTOR;
+	}
+
+	// chance to stop burning
+	if ( self->nextBurnStopCheck < level.time )
+	{
+		if ( random() < BURN_STOP_CHANCE )
+		{
+			switch ( self->s.eType )
+			{
+				case ET_BUILDABLE:
+					self->onFire = qfalse;
+					break;
+
+				case ET_FIRE:
+					G_FreeEntity( self );
+					break;
+				default:
+					break;
+			}
+
+			return;
+		}
+
+		self->nextBurnStopCheck = level.time + BURN_STOP_PERIOD * BURN_PERIODS_RAND_FACTOR;
+	}
+
+	// chance to ignite close buildables
+	if ( self->nextBurnSpreadCheck < level.time )
+	{
+		neighbor = NULL;
+		while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, self->s.origin, BURN_SPREAD_RADIUS ) ) )
+		{
+			if ( neighbor->s.eType != ET_BUILDABLE || neighbor->buildableTeam != TEAM_ALIENS )
+			{
+				continue;
+			}
+
+			if ( neighbor == self )
+			{
+				continue;
+			}
+
+			if ( random() < BURN_SPREAD_CHANCE )
+			{
+				G_IgniteBuildable( neighbor, self->fireStarter );
+			}
+		}
+
+		self->nextBurnSpreadCheck = level.time + BURN_SPREAD_PERIOD * BURN_PERIODS_RAND_FACTOR;
+	}
+
+	// HACK: Assume that all non-ET_FIRE entities that can catch fire will think frequently enough.
+	// TODO: Add support for multiple think functions with individual timers.
+	if ( self->s.eType == ET_FIRE )
+	{
+		self->nextthink = level.time;
+	}
+}
+
+/*
+===============
+G_SpawnFire
+===============
+*/
+gentity_t *G_SpawnFire( vec3_t origin, vec3_t normal, gentity_t *fireStarter )
+{
+	gentity_t *fire;
+	vec3_t    snapHelper, floorNormal;
+
+	VectorSet( floorNormal, 0.0f, 0.0f, 1.0f );
+
+	// don't spawn fire on walls and ceiling since we can't display it properly yet
+	// TODO: Add fire effects for floor and ceiling
+	if ( DotProduct( normal, floorNormal ) < 0.71f ) // 0.71 ~= cos(45°)
+	{
+		return NULL;
+	}
+
+	// don't spawn a fire inside another fire
+	fire = NULL;
+	while ( ( fire = G_IterateEntitiesWithinRadius( fire, origin, FIRE_MIN_DISTANCE ) ) )
+	{
+		if ( fire->s.eType == ET_FIRE )
+		{
+			return NULL;
+		}
+	}
+
+	fire = G_NewEntity();
+
+	// create a fire entity
+	fire->classname = "fire";
+	fire->s.eType = ET_FIRE;
+	fire->clipmask = 0;
+
+	// thinking
+	fire->think = G_FireThink;
+	fire->nextthink = level.time;
+	fire->nextBurnSplashDamage = level.time + BURN_DAMAGE_PERIOD * BURN_PERIODS_RAND_FACTOR;
+	fire->nextBurnSpreadCheck = level.time + BURN_SPREAD_PERIOD * BURN_PERIODS_RAND_FACTOR;
+	fire->nextBurnStopCheck = level.time + BURN_STOP_PERIOD * BURN_PERIODS_RAND_FACTOR;
+
+	// attacker
+	fire->r.ownerNum = fireStarter->s.number;
+	fire->fireStarter = fireStarter;
+
+	// normal
+	VectorNormalize( normal ); // make sure normal is a direction
+	VectorCopy( normal, fire->s.origin2 );
+
+	// origin
+	VectorCopy( origin, fire->s.origin );
+	VectorAdd( origin, normal, snapHelper );
+	G_SnapVectorTowards( fire->s.origin, snapHelper ); // save net bandwidth
+	VectorCopy( fire->s.origin, fire->r.currentOrigin );
+
+	// send to client
+	trap_LinkEntity( fire );
+
+	return fire;
+}
+
+qboolean G_LineOfSight( gentity_t *ent1, gentity_t *ent2 )
+{
+	trace_t trace;
+
+	if ( !ent1 || !ent2 )
+	{
+		return qfalse;
+	}
+
+	trap_Trace( &trace, ent1->s.origin, NULL, NULL, ent2->s.origin, ent1->s.number, CONTENTS_SOLID );
+
+	return ( trace.entityNum != ENTITYNUM_WORLD );
+}

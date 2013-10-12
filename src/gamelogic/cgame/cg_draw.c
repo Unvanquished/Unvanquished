@@ -63,7 +63,7 @@ void CG_MouseEvent( int x, int y )
 
 void CG_KeyEvent( int key, int chr, int flags )
 {
-	if ( !( flags & ( 1 << KEYEVSTATE_DOWN ) ) )
+	if ( !( flags & KEYEVSTATE_DOWN ) )
 	{
 		return;
 	}
@@ -114,7 +114,7 @@ static void CG_DrawLighting( void )
 
 	//fade to black if stamina is low
 	if ( ( cg.snap->ps.stats[ STAT_STAMINA ] < STAMINA_BLACKOUT_LEVEL ) &&
-	     ( cg.snap->ps.stats[ STAT_TEAM ] == TEAM_HUMANS ) )
+	     ( cg.snap->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS ) )
 	{
 		vec4_t black = { 0, 0, 0, 0 };
 		black[ 3 ] = 1.0 - ( ( float )( cg.snap->ps.stats[ STAT_STAMINA ] + STAMINA_MAX ) / ( STAMINA_MAX + STAMINA_BLACKOUT_LEVEL ) );
@@ -251,7 +251,7 @@ static qboolean CG_DrawQueue( void )
 {
 	float  w;
 	vec4_t color;
-	int    position;
+	int    position, spawns;
 	char   buffer[ MAX_STRING_CHARS ];
 
 	if ( !( cg.snap->ps.pm_flags & PMF_QUEUED ) )
@@ -264,7 +264,8 @@ static qboolean CG_DrawQueue( void )
 	color[ 2 ] = 1;
 	color[ 3 ] = 1;
 
-	position = cg.snap->ps.persistant[ PERS_QUEUEPOS ] + 1;
+	spawns   = cg.snap->ps.persistant[ PERS_SPAWNQUEUE ] & 0x000000ff;
+	position = cg.snap->ps.persistant[ PERS_SPAWNQUEUE ] >> 8;
 
 	if ( position < 1 )
 	{
@@ -282,16 +283,14 @@ static qboolean CG_DrawQueue( void )
 
 // TODO
 
-	if ( cg.snap->ps.persistant[ PERS_SPAWNS ] == 0 )
+	if ( spawns == 0 )
 	{
 		Com_sprintf( buffer, MAX_STRING_CHARS, _("There are no spawns remaining") );
 	}
 	else
 	{
 		Com_sprintf( buffer, MAX_STRING_CHARS,
-		             P_( "There is 1 spawn remaining", "There are %d spawns remaining",
-		                cg.snap->ps.persistant[ PERS_SPAWNS ]),
-		             cg.snap->ps.persistant[ PERS_SPAWNS ] );
+		             P_( "There is 1 spawn remaining", "There are %d spawns remaining", spawns ), spawns );
 	}
 
 // TODO
@@ -354,7 +353,7 @@ static void CG_Draw2D( void )
 	if ( cg.snap->ps.pm_type == PM_INTERMISSION )
 	{
 		CG_DrawVote( TEAM_NONE );
-		CG_DrawVote( cg.predictedPlayerState.stats[ STAT_TEAM ] );
+		CG_DrawVote( cg.predictedPlayerState.persistant[ PERS_TEAM ] );
 		CG_DrawIntermission();
 		return;
 	}
@@ -380,7 +379,7 @@ static void CG_Draw2D( void )
 	}
 
 	CG_DrawVote( TEAM_NONE );
-	CG_DrawVote( cg.predictedPlayerState.stats[ STAT_TEAM ] );
+	CG_DrawVote( cg.predictedPlayerState.persistant[ PERS_TEAM ] );
 	CG_DrawWarmup();
 	CG_DrawQueue();
 
@@ -462,11 +461,11 @@ static void CG_PainBlend( void )
 		return;
 	}
 
-	if ( cg.snap->ps.stats[ STAT_TEAM ] == TEAM_ALIENS )
+	if ( cg.snap->ps.persistant[ PERS_TEAM ] == TEAM_ALIENS )
 	{
 		VectorSet( color, 0.43f, 0.8f, 0.37f );
 	}
-	else if ( cg.snap->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
+	else if ( cg.snap->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS )
 	{
 		VectorSet( color, 0.8f, 0.0f, 0.0f );
 	}

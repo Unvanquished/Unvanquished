@@ -34,7 +34,7 @@ if( NOT DEFINED SUBSEQUENT_RUN )
   set( SUBSEQUENT_RUN 1 CACHE INTERNAL "True if not first run" )
 
   if( MSVC )
-    set( CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /arch:SSE /fp:precise /Oy" CACHE STRING "Flags used by the compiler during release builds" FORCE )
+    set( CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /arch:SSE /fp:fast /Oy" CACHE STRING "Flags used by the compiler during release builds" FORCE )
   else()
     if(NOT MINIMAL_FLAGS)
       # "gcc -msse2" fails on non-x86
@@ -106,14 +106,15 @@ option( ENABLE_BUNDLING      "When packaging automatically include all non-syste
 
 cmake_dependent_option( BUILD_OLD_RENDERER   "Build old renderer library"                            1 BUILD_CLIENT                   0 )
 cmake_dependent_option( BUILD_NEW_RENDERER   "Build new renderer library"                            1 BUILD_CLIENT                   0 )
+cmake_dependent_option( USE_SMP              "Puts the renderer backend in another thread"           1 BUILD_NEW_RENDERER             0 )
 cmake_dependent_option( USE_OPENAL           "Use OpenAL"                                            1 BUILD_CLIENT                   0 )
 cmake_dependent_option( USE_CODEC_VORBIS     "Compile with support for Vorbis"                       1 BUILD_CLIENT                   0 )
 cmake_dependent_option( USE_MUMBLE           "Compile with support for Mumble"                       1 BUILD_CLIENT                   0 )
 cmake_dependent_option( USE_VOIP             "Compile with VOIP support"                             1 "BUILD_CLIENT OR BUILD_SERVER" 0 )
 cmake_dependent_option( USE_CIN_XVID         "Encode videos with XViD"                               1 BUILD_CLIENT                   0 )
-cmake_dependent_option( USE_INTERNAL_SDL     "Use SDL files included with Unvanquished"              0 BUILD_CLIENT                   0 )
+cmake_dependent_option( USE_INTERNAL_SDL     "Use SDL files included with Unvanquished"              0 "BUILD_CLIENT OR BUILD_DAEMONMAP OR USE_SDL_ICONV" 0 )
+cmake_dependent_option( USE_SDL2             "Enable SDL 2.0 support (incompatible with SDL 1.2)"    1 "BUILD_CLIENT OR BUILD_DAEMONMAP OR USE_SDL_ICONV" 0 )
 
-cmake_dependent_option( USE_CPUINFO          "Use CPUInfo (if compilation fails, then disable this)" 1 "X86 AND (BUILD_CLIENT OR BUILD_SERVER)" 0 )
 cmake_dependent_option( USE_CURSES           "Use the curses console"                                1 "BUILD_CLIENT OR BUILD_SERVER" 0 )
 cmake_dependent_option( USE_PHYSICS          "Compile with Newton Physics"                           0 "BUILD_CLIENT OR BUILD_SERVER" 0 )
 cmake_dependent_option( USE_INTERNAL_CRYPTO  "Use internal crypto (nettle)"                          0 "BUILD_CLIENT OR BUILD_SERVER" 0 )
@@ -121,8 +122,7 @@ cmake_dependent_option( USE_INTERNAL_CRYPTO  "Use internal crypto (nettle)"     
 cmake_dependent_option( USE_INTERNAL_JPEG    "Use JPEG files included with Unvanquished"             0
                                                                         "BUILD_OLD_RENDERER OR BUILD_NEW_RENDERER OR BUILD_DAEMONMAP" 0 )
 
-cmake_dependent_option( USE_GLSL_OPTIMIZER   "Compile with GLSL Optimizer"                           1 BUILD_NEW_RENDERER             0 )
-cmake_dependent_option( USE_SDL_ICONV        "Compile with SDL's iconv implementation"               1 BUILD_CLIENT                   0 )
+cmake_dependent_option( USE_SDL_ICONV        "Compile with SDL's iconv implementation"               1 "BUILD_SERVER OR BUILD_TTY_CLIENT OR BUILD_DAEMONMAP" 0 )
 
 cmake_dependent_option( HAVE_BZIP2           "Compile with BZip2 support"                            0 "HAVE_BZIP2"                   0 )
 
@@ -134,8 +134,11 @@ cmake_dependent_option( USE_OPENAL_DLOPEN    "Use dlopen to load OpenAL"        
 cmake_dependent_option( USE_CIN_THEORA       "Compile with support for Theora"             1 USE_CODEC_VORBIS 0 )
 cmake_dependent_option( USE_INTERNAL_SPEEX   "Use internal speex"                          0 USE_VOIP         0 )
 cmake_dependent_option( USE_INTERNAL_GLEW    "Use internal GLEW"                           0 BUILD_CLIENT     0 )
+cmake_dependent_option( USE_INTERNAL_OPUS    "Use internal Opus"                           1 BUILD_CLIENT     0 )
 
 cmake_dependent_option( USE_INTERNAL_WEBP    "Use internal WebP"                           0 BUILD_CLIENT     0 )
+
+cmake_dependent_option( USE_GEOIP            "Use libgeoip"                                1 "BUILD_SERVER OR BUILD_CLIENT OR BUILD_TTY_CLIENT" 0 )
 
 cmake_dependent_option( ENABLE_W_EXTRA       "Use -Wextra"                                 0 ENABLE_W_ALL     0 )
 
@@ -164,7 +167,13 @@ endif()
 
 set( GPP_DIR ${MOUNT_DIR}/gamelogic )
 set( LIB_DIR ${MOUNT_DIR}/libs ) # LIB_DIR is also defined in Visual_Studio32/64.cmake
-set( SDL_DIR ${LIB_DIR}/libsdl )
+
+if( USE_SDL2 )
+	set( SDL_DIR ${LIB_DIR}/libsdl2 )
+else()
+	set( SDL_DIR ${LIB_DIR}/libsdl1.2 )
+endif()
+
 set( JPEG_DIR ${LIB_DIR}/jpeg )
 set( GLEW_DIR ${LIB_DIR}/glew )
 set( WEBP_DIR ${LIB_DIR}/libwebp )
@@ -187,7 +196,9 @@ if( WIN32 )
   set( CONSOLE "win32" )
 elseif( UNIX )
   if( ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
-    add_definitions( -DMACOS_X -DMACOS_X_ACCELERATION_HACK -DUSE_FILE32API -DMACOS_X_CURSOR_HACK )
+    add_definitions( -DMACOS_X -DMACOS_X_ACCELERATION_HACK -DMACOS_X_CURSOR_HACK )
+  elseif( CMAKE_SYSTEM_NAME STREQUAL "Linux" )
+    add_definitions( -D_FILE_OFFSET_BITS=64 )
   endif()
   set( PLATFORM "unix" )
 endif()
@@ -258,9 +269,28 @@ include_directories( "${OBJ_DIR}" )
 
 # Import CMakeLists.txt for internal libraries
 if( USE_INTERNAL_SDL )
-  add_subdirectory( ${SDL_DIR} ${OBJ_DIR}/libsdl )
-  set( SDL_LIBRARY INTERNAL_SDL INTERNAL_SDLMain CACHE STRING "SDL library" FORCE )
-  set( SDL_INCLUDE_DIR ${SDL_DIR}/include CACHE STRING "SDL include directory" FORCE )
+	if( USE_SDL2 )
+	  set( SDL_STATIC OFF CACHE BOOL "Build SDL static library" )
+	  add_subdirectory( ${SDL_DIR} ${OBJ_DIR}/libsdl2 )
+
+
+	  if( DIRECTX )
+		  if( BUILD_ARCH STREQUAL "i386" )
+			link_directories($ENV{DXSDK_DIR}\\lib\\x86)
+		  elseif( BUILD_ARCH STREQUAL "x86-64" )
+			link_directories($ENV{DXSDK_DIR}\\lib\\x64)
+		  endif()
+	  endif()
+
+	  set( SDL2_LIBRARIES SDL2 SDL2main CACHE STRING "SDL library" FORCE )
+	  set( SDL2_INCLUDE_DIRS ${SDL_DIR}/include CACHE STRING "SDL include directory" FORCE )
+	  set( SDL2_FOUND "1" CACHE INTERNAL "" )
+  else()
+	  add_subdirectory( ${SDL_DIR} ${OBJ_DIR}/libsdl )
+	  set( SDL_LIBRARY SDL1.2 SDL1.2main CACHE STRING "SDL library" FORCE )
+	  set( SDL_INCLUDE_DIR ${SDL_DIR}/include CACHE STRING "SDL include directory" FORCE )
+	  set( SDL_FOUND "1" CACHE INTERNAL "" )
+  endif()
 endif()
 
 if( USE_INTERNAL_JPEG )
@@ -460,8 +490,8 @@ set( OPENEXRLIST
 )
 
 set( RENDERERLIST
+  ${MOUNT_DIR}/engine/sys/sdl2_compat.c
   ${MOUNT_DIR}/engine/renderer/tr_animation.c
-  ${MOUNT_DIR}/engine/renderer/tr_animation_mdm.c
   ${MOUNT_DIR}/engine/renderer/tr_animation_mds.c
   ${MOUNT_DIR}/engine/renderer/tr_backend.c
   ${MOUNT_DIR}/engine/renderer/tr_bsp.c
@@ -498,8 +528,8 @@ set( RENDERERLIST
 )
 
 set( RENDERERGLLIST
+  ${MOUNT_DIR}/engine/sys/sdl2_compat.c
   ${MOUNT_DIR}/engine/rendererGL/gl_shader.cpp
-  ${MOUNT_DIR}/engine/rendererGL/tr_animation_mdm.c
   ${MOUNT_DIR}/engine/rendererGL/tr_animation.c
   ${MOUNT_DIR}/engine/rendererGL/tr_backend.cpp
   ${MOUNT_DIR}/engine/rendererGL/tr_bsp.c
@@ -526,7 +556,6 @@ set( RENDERERGLLIST
   ${MOUNT_DIR}/engine/rendererGL/tr_model_md3.c
   ${MOUNT_DIR}/engine/rendererGL/tr_model_md5.c
   ${MOUNT_DIR}/engine/rendererGL/tr_model_mdc.c
-  ${MOUNT_DIR}/engine/rendererGL/tr_model_mdm.c
   ${MOUNT_DIR}/engine/rendererGL/tr_model_psk.c
   ${MOUNT_DIR}/engine/rendererGL/tr_model_skel.c
   ${MOUNT_DIR}/engine/rendererGL/tr_noise.c
@@ -551,6 +580,10 @@ set( RENDERERGLLIST
 )
 
 set( SERVERLIST
+  ${MOUNT_DIR}/engine/botlib/bot_convert.cpp
+  ${MOUNT_DIR}/engine/botlib/bot_local.cpp
+  ${MOUNT_DIR}/engine/botlib/bot_nav.cpp
+  ${MOUNT_DIR}/engine/botlib/bot_load.cpp
   ${MOUNT_DIR}/engine/server/sv_bot.c
   ${MOUNT_DIR}/engine/server/sv_ccmds.c
   ${MOUNT_DIR}/engine/server/sv_client.c
@@ -617,9 +650,9 @@ set( QCOMMONLIST
 # Visual studio can't handle inline assembly
 if( MSVC )
   if( ${BUILD_ARCH} STREQUAL "i386" )
-    set( ASM_APP ml )
+    set( ASM_APP ml /safeseh)
   else()
-    set( ASM_APP ml64 -D idx64=1 )
+    set( ASM_APP ml64 -D idx64=1 /safeseh )
   endif()
   set( QCOMMONLIST ${QCOMMONLIST} ftola.obj snapvector.obj )
   # Work around - bugs in cmake prevent adding asm files to target in VS projects
@@ -648,6 +681,8 @@ set( CLIENTLIST
   ${MOUNT_DIR}/engine/client/cg_api.h
   ${MOUNT_DIR}/engine/client/ui_api.h
   ${MOUNT_DIR}/engine/client/client.h
+  ${MOUNT_DIR}/engine/botlib/bot_debug.cpp
+  ${MOUNT_DIR}/engine/botlib/bot_nav_edit.cpp
   ${MOUNT_DIR}/engine/client/cin_ogm.c
   ${MOUNT_DIR}/engine/client/cl_avi.c
   ${MOUNT_DIR}/engine/client/cl_cgame.c
@@ -670,6 +705,7 @@ set( CLIENTLIST
   ${MOUNT_DIR}/engine/client/snd_public.h
   ${MOUNT_DIR}/engine/client/snd_codec_ogg.c
   ${MOUNT_DIR}/engine/client/snd_codec_wav.c
+  ${MOUNT_DIR}/engine/client/snd_codec_opus.c
   ${MOUNT_DIR}/engine/client/snd_dma.c
   ${MOUNT_DIR}/engine/client/snd_openal.c
   ${MOUNT_DIR}/engine/client/snd_main.c
@@ -693,13 +729,6 @@ set( ROCKET_CLIENTLIST
 
 if( USE_MUMBLE )
   set( CLIENTLIST ${CLIENTLIST} ${MOUNT_DIR}/engine/client/libmumblelink.c ${MOUNT_DIR}/engine/client/libmumblelink.h )
-endif()
-
-if( USE_CPUINFO )
-  set( CPUINFOLIST
-    ${MOUNT_DIR}/libs/cpuinfo/CPUInfo.c
-  )
-  add_definitions( -DUSE_CPUINFO )
 endif()
 
 if( ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
@@ -737,6 +766,7 @@ endif()
 set( SDLLIST
   ${MOUNT_DIR}/engine/sys/sdl_input.c
   ${MOUNT_DIR}/engine/sys/sdl_snd.c
+  ${MOUNT_DIR}/engine/sys/sdl2_compat.c
 )
 
 # needed for LLVM & QVM
@@ -754,6 +784,7 @@ set( CGAMEGPP_BASE
   ${GPP_DIR}/game/bg_lib.c
   ${GPP_DIR}/game/bg_alloc.c
   ${GPP_DIR}/game/bg_voice.c
+  ${GPP_DIR}/game/bg_teamprogress.c
   ${GPP_DIR}/cgame/cg_consolecmds.c
   ${GPP_DIR}/cgame/cg_buildable.c
   ${GPP_DIR}/cgame/cg_animation.c
@@ -810,10 +841,12 @@ set( GAMEGPP_BASE
   ${GPP_DIR}/game/bg_lib.c
   ${GPP_DIR}/game/bg_alloc.c
   ${GPP_DIR}/game/bg_voice.c
+  ${GPP_DIR}/game/bg_teamprogress.c
   ${GPP_DIR}/game/g_active.c
   ${GPP_DIR}/game/g_client.c
   ${GPP_DIR}/game/g_cmds.c
   ${GPP_DIR}/game/g_combat.c
+  ${GPP_DIR}/game/g_confidence.c
   ${GPP_DIR}/game/g_entities.c
   ${GPP_DIR}/game/g_physics.c
   ${GPP_DIR}/game/g_buildable.c
@@ -837,6 +870,11 @@ set( GAMEGPP_BASE
   ${GPP_DIR}/game/g_weapon.c
   ${GPP_DIR}/game/g_admin.c
   ${GPP_DIR}/game/g_namelog.c
+  ${GPP_DIR}/game/g_bot.c
+  ${GPP_DIR}/game/g_bot_ai.c
+  ${GPP_DIR}/game/g_bot_nav.c
+  ${GPP_DIR}/game/g_bot_parse.c
+  ${GPP_DIR}/game/g_bot_util.c
   ${SHAREDLIST_C}
 )
 
@@ -861,6 +899,7 @@ set( UIGPP_BASE
   ${GPP_DIR}/game/bg_parse.c
   ${GPP_DIR}/game/bg_lib.c
   ${GPP_DIR}/game/bg_alloc.c
+  ${GPP_DIR}/game/bg_teamprogress.c
   ${GPP_DIR}/ui/ui_utf8.c
   ${SHAREDLIST_C}
 )
@@ -878,6 +917,7 @@ set( UIGPP_QVM
 )
 
 set( DAEMONMAPLIST
+  ${MOUNT_DIR}/engine/sys/sdl2_compat.c
   ${MOUNT_DIR}/tools/common/cmdlib.c
   ${MOUNT_DIR}/tools/common/imagelib.c
   ${MOUNT_DIR}/tools/common/inout.c
@@ -952,6 +992,7 @@ set( DAEMONMAPLIST
   ${MOUNT_DIR}/tools/owmap/tree.c
   ${MOUNT_DIR}/tools/owmap/vis.c
   ${MOUNT_DIR}/tools/owmap/visflow.c
+  ${MOUNT_DIR}/tools/owmap/nav.cpp
   ${MOUNT_DIR}/libs/zlib/adler32.c
   ${MOUNT_DIR}/libs/zlib/compress.c
   ${MOUNT_DIR}/libs/zlib/crc32.c
@@ -965,6 +1006,39 @@ set( DAEMONMAPLIST
   ${MOUNT_DIR}/libs/zlib/trees.c
   ${MOUNT_DIR}/libs/zlib/uncompr.c
   ${MOUNT_DIR}/libs/zlib/zutil.c
+)
+
+set( FASTLZLIST
+	${MOUNT_DIR}/libs/fastlz/fastlz.c
+)
+
+set( DETOURLIST
+  ${FASTLZLIST}
+  ${MOUNT_DIR}/libs/detour/DetourAlloc.cpp
+  ${MOUNT_DIR}/libs/detour/DetourCommon.cpp
+  ${MOUNT_DIR}/libs/detour/DetourNavMeshBuilder.cpp
+  ${MOUNT_DIR}/libs/detour/DetourNavMesh.cpp
+  ${MOUNT_DIR}/libs/detour/DetourNavMeshQuery.cpp
+  ${MOUNT_DIR}/libs/detour/DetourNode.cpp
+  ${MOUNT_DIR}/libs/detour/DetourPathCorridor.cpp
+  ${MOUNT_DIR}/libs/detour/DetourDebugDraw.cpp
+  ${MOUNT_DIR}/libs/detour/DebugDraw.cpp
+  ${MOUNT_DIR}/libs/detour/DetourTileCache.cpp
+  ${MOUNT_DIR}/libs/detour/DetourTileCacheBuilder.cpp
+)
+
+set( RECASTLIST
+  ${MOUNT_DIR}/libs/recast/RecastAlloc.cpp
+  ${MOUNT_DIR}/libs/recast/RecastArea.cpp
+  ${MOUNT_DIR}/libs/recast/RecastContour.cpp
+  ${MOUNT_DIR}/libs/recast/Recast.cpp
+  ${MOUNT_DIR}/libs/recast/RecastFilter.cpp
+  ${MOUNT_DIR}/libs/recast/RecastLayers.cpp
+  ${MOUNT_DIR}/libs/recast/RecastMesh.cpp
+  ${MOUNT_DIR}/libs/recast/RecastMeshDetail.cpp
+  ${MOUNT_DIR}/libs/recast/RecastRasterization.cpp
+  ${MOUNT_DIR}/libs/recast/RecastRegion.cpp
+  ${MOUNT_DIR}/libs/recast/ChunkyTriMesh.cpp
 )
 
 if( USE_VOIP AND USE_INTERNAL_SPEEX )
@@ -1010,6 +1084,203 @@ if( USE_VOIP AND USE_INTERNAL_SPEEX )
     ${MOUNT_DIR}/libs/libspeex/libspeex/vq.c
     ${MOUNT_DIR}/libs/libspeex/libspeex/window.c
   )
+endif()
+if ( USE_INTERNAL_OPUS )
+		set( OPUSLIST
+		${LIB_DIR}/opus-1.0.2/celt/_kiss_fft_guts.h
+		${LIB_DIR}/opus-1.0.2/celt/arch.h
+		${LIB_DIR}/opus-1.0.2/celt/bands.c
+		${LIB_DIR}/opus-1.0.2/celt/bands.h
+		${LIB_DIR}/opus-1.0.2/celt/celt.c
+		${LIB_DIR}/opus-1.0.2/celt/celt.h
+		${LIB_DIR}/opus-1.0.2/celt/celt_lpc.c
+		${LIB_DIR}/opus-1.0.2/celt/celt_lpc.h
+		${LIB_DIR}/opus-1.0.2/celt/cwrs.c
+		${LIB_DIR}/opus-1.0.2/celt/cwrs.h
+		${LIB_DIR}/opus-1.0.2/celt/ecintrin.h
+		${LIB_DIR}/opus-1.0.2/celt/entcode.c
+		${LIB_DIR}/opus-1.0.2/celt/entcode.h
+		${LIB_DIR}/opus-1.0.2/celt/entdec.c
+		${LIB_DIR}/opus-1.0.2/celt/entdec.h
+		${LIB_DIR}/opus-1.0.2/celt/entenc.c
+		${LIB_DIR}/opus-1.0.2/celt/entenc.h
+		${LIB_DIR}/opus-1.0.2/celt/fixed_debug.h
+		${LIB_DIR}/opus-1.0.2/celt/fixed_generic.h
+		${LIB_DIR}/opus-1.0.2/celt/float_cast.h
+		${LIB_DIR}/opus-1.0.2/celt/kiss_fft.c
+		${LIB_DIR}/opus-1.0.2/celt/kiss_fft.h
+		${LIB_DIR}/opus-1.0.2/celt/laplace.c
+		${LIB_DIR}/opus-1.0.2/celt/laplace.h
+		${LIB_DIR}/opus-1.0.2/celt/mathops.c
+		${LIB_DIR}/opus-1.0.2/celt/mathops.h
+		${LIB_DIR}/opus-1.0.2/celt/mdct.c
+		${LIB_DIR}/opus-1.0.2/celt/mdct.h
+		${LIB_DIR}/opus-1.0.2/celt/mfrngcod.h
+		${LIB_DIR}/opus-1.0.2/celt/modes.c
+		${LIB_DIR}/opus-1.0.2/celt/modes.h
+		${LIB_DIR}/opus-1.0.2/celt/os_support.h
+		${LIB_DIR}/opus-1.0.2/celt/pitch.c
+		${LIB_DIR}/opus-1.0.2/celt/pitch.h
+		${LIB_DIR}/opus-1.0.2/celt/quant_bands.c
+		${LIB_DIR}/opus-1.0.2/celt/quant_bands.h
+		${LIB_DIR}/opus-1.0.2/celt/rate.c
+		${LIB_DIR}/opus-1.0.2/celt/rate.h
+		${LIB_DIR}/opus-1.0.2/celt/stack_alloc.h
+		${LIB_DIR}/opus-1.0.2/celt/static_modes_fixed.h
+		${LIB_DIR}/opus-1.0.2/celt/static_modes_float.h
+		${LIB_DIR}/opus-1.0.2/celt/vq.c
+		${LIB_DIR}/opus-1.0.2/celt/vq.h
+		${LIB_DIR}/opus-1.0.2/include/opus.h
+		${LIB_DIR}/opus-1.0.2/include/opus_custom.h
+		${LIB_DIR}/opus-1.0.2/include/opus_defines.h
+		${LIB_DIR}/opus-1.0.2/include/opus_multistream.h
+		${LIB_DIR}/opus-1.0.2/include/opus_types.h
+		${LIB_DIR}/opus-1.0.2/silk/A2NLSF.c
+		${LIB_DIR}/opus-1.0.2/silk/ana_filt_bank_1.c
+		${LIB_DIR}/opus-1.0.2/silk/API.h
+		${LIB_DIR}/opus-1.0.2/silk/biquad_alt.c
+		${LIB_DIR}/opus-1.0.2/silk/bwexpander.c
+		${LIB_DIR}/opus-1.0.2/silk/bwexpander_32.c
+		${LIB_DIR}/opus-1.0.2/silk/check_control_input.c
+		${LIB_DIR}/opus-1.0.2/silk/CNG.c
+		${LIB_DIR}/opus-1.0.2/silk/code_signs.c
+		${LIB_DIR}/opus-1.0.2/silk/control.h
+		${LIB_DIR}/opus-1.0.2/silk/control_audio_bandwidth.c
+		${LIB_DIR}/opus-1.0.2/silk/control_codec.c
+		${LIB_DIR}/opus-1.0.2/silk/control_SNR.c
+		${LIB_DIR}/opus-1.0.2/silk/debug.c
+		${LIB_DIR}/opus-1.0.2/silk/debug.h
+		${LIB_DIR}/opus-1.0.2/silk/dec_API.c
+		${LIB_DIR}/opus-1.0.2/silk/decode_core.c
+		${LIB_DIR}/opus-1.0.2/silk/decode_frame.c
+		${LIB_DIR}/opus-1.0.2/silk/decode_indices.c
+		${LIB_DIR}/opus-1.0.2/silk/decode_parameters.c
+		${LIB_DIR}/opus-1.0.2/silk/decode_pitch.c
+		${LIB_DIR}/opus-1.0.2/silk/decode_pulses.c
+		${LIB_DIR}/opus-1.0.2/silk/decoder_set_fs.c
+		${LIB_DIR}/opus-1.0.2/silk/define.h
+		${LIB_DIR}/opus-1.0.2/silk/enc_API.c
+		${LIB_DIR}/opus-1.0.2/silk/encode_indices.c
+		${LIB_DIR}/opus-1.0.2/silk/encode_pulses.c
+		${LIB_DIR}/opus-1.0.2/silk/errors.h
+		${LIB_DIR}/opus-1.0.2/silk/float/apply_sine_window_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/float/autocorrelation_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/float/burg_modified_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/float/bwexpander_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/float/corrMatrix_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/float/encode_frame_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/float/energy_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/float/find_LPC_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/float/find_LTP_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/float/find_pitch_lags_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/float/find_pred_coefs_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/float/inner_product_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/float/k2a_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/float/levinsondurbin_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/float/LPC_analysis_filter_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/float/LPC_inv_pred_gain_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/float/LTP_analysis_filter_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/float/LTP_scale_ctrl_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/float/main_FLP.h
+		${LIB_DIR}/opus-1.0.2/silk/float/noise_shape_analysis_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/float/pitch_analysis_core_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/float/prefilter_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/float/process_gains_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/float/regularize_correlations_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/float/residual_energy_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/float/scale_copy_vector_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/float/scale_vector_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/float/schur_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/float/SigProc_FLP.h
+		${LIB_DIR}/opus-1.0.2/silk/float/solve_LS_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/float/sort_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/float/structs_FLP.h
+		${LIB_DIR}/opus-1.0.2/silk/float/warped_autocorrelation_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/float/wrappers_FLP.c
+		${LIB_DIR}/opus-1.0.2/silk/gain_quant.c
+		${LIB_DIR}/opus-1.0.2/silk/HP_variable_cutoff.c
+		${LIB_DIR}/opus-1.0.2/silk/init_decoder.c
+		${LIB_DIR}/opus-1.0.2/silk/init_encoder.c
+		${LIB_DIR}/opus-1.0.2/silk/Inlines.h
+		${LIB_DIR}/opus-1.0.2/silk/inner_prod_aligned.c
+		${LIB_DIR}/opus-1.0.2/silk/interpolate.c
+		${LIB_DIR}/opus-1.0.2/silk/lin2log.c
+		${LIB_DIR}/opus-1.0.2/silk/log2lin.c
+		${LIB_DIR}/opus-1.0.2/silk/LP_variable_cutoff.c
+		${LIB_DIR}/opus-1.0.2/silk/LPC_analysis_filter.c
+		${LIB_DIR}/opus-1.0.2/silk/LPC_inv_pred_gain.c
+		${LIB_DIR}/opus-1.0.2/silk/MacroCount.h
+		${LIB_DIR}/opus-1.0.2/silk/MacroDebug.h
+		${LIB_DIR}/opus-1.0.2/silk/macros.h
+		${LIB_DIR}/opus-1.0.2/silk/main.h
+		${LIB_DIR}/opus-1.0.2/silk/NLSF2A.c
+		${LIB_DIR}/opus-1.0.2/silk/NLSF_decode.c
+		${LIB_DIR}/opus-1.0.2/silk/NLSF_del_dec_quant.c
+		${LIB_DIR}/opus-1.0.2/silk/NLSF_encode.c
+		${LIB_DIR}/opus-1.0.2/silk/NLSF_stabilize.c
+		${LIB_DIR}/opus-1.0.2/silk/NLSF_unpack.c
+		${LIB_DIR}/opus-1.0.2/silk/NLSF_VQ.c
+		${LIB_DIR}/opus-1.0.2/silk/NLSF_VQ_weights_laroia.c
+		${LIB_DIR}/opus-1.0.2/silk/NSQ.c
+		${LIB_DIR}/opus-1.0.2/silk/NSQ_del_dec.c
+		${LIB_DIR}/opus-1.0.2/silk/pitch_est_defines.h
+		${LIB_DIR}/opus-1.0.2/silk/pitch_est_tables.c
+		${LIB_DIR}/opus-1.0.2/silk/PLC.c
+		${LIB_DIR}/opus-1.0.2/silk/PLC.h
+		${LIB_DIR}/opus-1.0.2/silk/process_NLSFs.c
+		${LIB_DIR}/opus-1.0.2/silk/quant_LTP_gains.c
+		${LIB_DIR}/opus-1.0.2/silk/resampler.c
+		${LIB_DIR}/opus-1.0.2/silk/resampler_down2.c
+		${LIB_DIR}/opus-1.0.2/silk/resampler_down2_3.c
+		${LIB_DIR}/opus-1.0.2/silk/resampler_private.h
+		${LIB_DIR}/opus-1.0.2/silk/resampler_private_AR2.c
+		${LIB_DIR}/opus-1.0.2/silk/resampler_private_down_FIR.c
+		${LIB_DIR}/opus-1.0.2/silk/resampler_private_IIR_FIR.c
+		${LIB_DIR}/opus-1.0.2/silk/resampler_private_up2_HQ.c
+		${LIB_DIR}/opus-1.0.2/silk/resampler_rom.c
+		${LIB_DIR}/opus-1.0.2/silk/resampler_rom.h
+		${LIB_DIR}/opus-1.0.2/silk/resampler_structs.h
+		${LIB_DIR}/opus-1.0.2/silk/shell_coder.c
+		${LIB_DIR}/opus-1.0.2/silk/sigm_Q15.c
+		${LIB_DIR}/opus-1.0.2/silk/SigProc_FIX.h
+		${LIB_DIR}/opus-1.0.2/silk/sort.c
+		${LIB_DIR}/opus-1.0.2/silk/stereo_decode_pred.c
+		${LIB_DIR}/opus-1.0.2/silk/stereo_encode_pred.c
+		${LIB_DIR}/opus-1.0.2/silk/stereo_find_predictor.c
+		${LIB_DIR}/opus-1.0.2/silk/stereo_LR_to_MS.c
+		${LIB_DIR}/opus-1.0.2/silk/stereo_MS_to_LR.c
+		${LIB_DIR}/opus-1.0.2/silk/stereo_quant_pred.c
+		${LIB_DIR}/opus-1.0.2/silk/structs.h
+		${LIB_DIR}/opus-1.0.2/silk/sum_sqr_shift.c
+		${LIB_DIR}/opus-1.0.2/silk/table_LSF_cos.c
+		${LIB_DIR}/opus-1.0.2/silk/tables.h
+		${LIB_DIR}/opus-1.0.2/silk/tables_gain.c
+		${LIB_DIR}/opus-1.0.2/silk/tables_LTP.c
+		${LIB_DIR}/opus-1.0.2/silk/tables_NLSF_CB_NB_MB.c
+		${LIB_DIR}/opus-1.0.2/silk/tables_NLSF_CB_WB.c
+		${LIB_DIR}/opus-1.0.2/silk/tables_other.c
+		${LIB_DIR}/opus-1.0.2/silk/tables_pitch_lag.c
+		${LIB_DIR}/opus-1.0.2/silk/tables_pulses_per_block.c
+		${LIB_DIR}/opus-1.0.2/silk/tuning_parameters.h
+		${LIB_DIR}/opus-1.0.2/silk/typedef.h
+		${LIB_DIR}/opus-1.0.2/silk/VAD.c
+		${LIB_DIR}/opus-1.0.2/silk/VQ_WMat_EC.c
+		${LIB_DIR}/opus-1.0.2/src/opus.c
+		${LIB_DIR}/opus-1.0.2/src/opus_decoder.c
+		${LIB_DIR}/opus-1.0.2/src/opus_encoder.c
+		${LIB_DIR}/opus-1.0.2/src/opus_multistream.c
+		${LIB_DIR}/opus-1.0.2/src/opus_private.h
+		${LIB_DIR}/opus-1.0.2/src/repacketizer.c
+		${LIB_DIR}/opusfile-0.2/include/opusfile.h
+		${LIB_DIR}/opusfile-0.2/src/http.c
+		${LIB_DIR}/opusfile-0.2/src/info.c
+		${LIB_DIR}/opusfile-0.2/src/internal.c
+		${LIB_DIR}/opusfile-0.2/src/internal.h
+		${LIB_DIR}/opusfile-0.2/src/opusfile.c
+		${LIB_DIR}/opusfile-0.2/src/stream.c
+	)
+else()
+	set(OPUSLIST)
 endif()
 
 if( USE_INTERNAL_CRYPTO )
@@ -1151,6 +1422,8 @@ if( WIN32 )
 elseif( UNIX )
   if( CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" )
     set( OS_LIBRARIES m z )
+  elseif( CMAKE_SYSTEM_NAME STREQUAL "OpenBSD" )
+    set( OS_LIBRARIES m z )
   elseif( CMAKE_SYSTEM_NAME STREQUAL "Darwin" )
     set( OS_LIBRARIES dl m z )
     # FIXME This looks wrong.
@@ -1159,6 +1432,29 @@ elseif( UNIX )
     set( OS_LIBRARIES ${CMAKE_DL_LIBS} m z rt )
   endif()
 endif()
+
+macro( find_and_use_SDL TARGET )
+  if( USE_SDL2 )
+    if( NOT SDL2_FOUND AND NOT USE_INTERNAL_SDL )
+      find_package( SDL2 )
+    endif()
+    include_directories( ${SDL2_INCLUDE_DIRS} )
+    target_link_libraries( ${TARGET} ${SDL2_LIBRARIES} )
+  endif()
+  # Fall back on 1.2
+  if( NOT USE_SDL2 OR NOT SDL2_FOUND )
+    if( NOT SDL_FOUND AND NOT USE_INTERNAL_SDL )
+      find_package( SDL REQUIRED )
+      set( SDL_FOUND "1" CACHE INTERNAL "" )
+    endif()
+    include_directories( ${SDL_INCLUDE_DIR} )
+    target_link_libraries( ${TARGET} ${SDL_LIBRARY} )
+  endif()
+  if( NOT SDL2_FOUND AND NOT SDL_LIBRARY)
+    # shouldn't get here – should fail above if 1.2 isn't found
+    message( FATAL_ERROR "Neither SDL 1.2 nor SDL 2 were found" )
+  endif()
+endmacro()
 
 ###############################
 # Build Game/Cgame/Ui DLL/.so #
@@ -1381,19 +1677,24 @@ if( BUILD_OLD_RENDERER )
 
   # This section finds and provides REQUIRED dependencies to target renderer
   find_package( OpenGL REQUIRED )
-  find_package( SDL REQUIRED )
   find_package( JPEG REQUIRED )
   find_package( PNG REQUIRED )
   find_package( Freetype REQUIRED )
   find_package( GLEW REQUIRED )
-
-  include_directories( ${PNG_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS} ${SDL_INCLUDE_DIR} )
-  target_link_libraries( renderer ${PNG_LIBRARIES} ${SDL_LIBRARY} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} ${JPEG_LIBRARIES} ${FREETYPE_LIBRARIES} )
-
   find_package( WebP REQUIRED )
-  set_property( TARGET renderer APPEND PROPERTY COMPILE_DEFINITIONS )
-  include_directories( ${WEBP_INCLUDE_DIRS} )
-  target_link_libraries( renderer ${WEBP_LIBRARIES} )
+  find_and_use_SDL( renderer )
+
+  if( UNIX )
+    find_package( X11 )
+  endif()
+
+# Disabled - works, but is buggy
+#  if( USE_SMP )
+#    set_property( TARGET renderer APPEND PROPERTY COMPILE_DEFINITIONS SMP )
+#  endif()
+
+  include_directories( ${PNG_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS} ${X11_INCLUDE_DIR} ${WEBP_INCLUDE_DIRS} )
+  target_link_libraries( renderer ${PNG_LIBRARIES} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} ${JPEG_LIBRARIES} ${FREETYPE_LIBRARIES} ${WEBP_LIBRARIES} )
 
   # This section finds and provides OPTIONAL dependencies to target renderer
 endif()
@@ -1418,34 +1719,26 @@ if( BUILD_NEW_RENDERER )
 
   # This section finds and provides REQUIRED dependencies to target rendererGL
   find_package( OpenGL REQUIRED )
-  find_package( SDL REQUIRED )
   find_package( JPEG REQUIRED )
   find_package( PNG REQUIRED )
   find_package( Freetype REQUIRED )
   find_package( GLEW REQUIRED )
-
-  include_directories( ${PNG_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS} ${SDL_INCLUDE_DIR} )
-  target_link_libraries( rendererGL ${PNG_LIBRARIES} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} ${JPEG_LIBRARIES} ${FREETYPE_LIBRARIES} ${SDL_LIBRARY} )
-
   find_package( WebP REQUIRED )
-  set_property( TARGET rendererGL APPEND PROPERTY COMPILE_DEFINITIONS )
-  include_directories( ${WEBP_INCLUDE_DIRS} )
-  target_link_libraries( rendererGL ${WEBP_LIBRARIES} )
+
+  find_and_use_SDL( rendererGL )
+
+  if( UNIX )
+    find_package( X11 )
+  endif()
+
+  if( USE_SMP )
+      set_property( TARGET rendererGL APPEND PROPERTY COMPILE_DEFINITIONS SMP )
+  endif()
+
+  include_directories( ${PNG_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS} ${X11_INCLUDE_DIR} ${WEBP_INCLUDE_DIRS} )
+  target_link_libraries( rendererGL ${PNG_LIBRARIES} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} ${JPEG_LIBRARIES} ${FREETYPE_LIBRARIES} ${WEBP_LIBRARIES} )
 
   # This section finds and provides OPTIONAL dependencies to target rendererGL
-  if( USE_GLSL_OPTIMIZER )
-    include_directories( ${LIB_DIR}/glsl-optimizer/include )
-    target_link_libraries( rendererGL glsl_optimizer )
-    set_property( TARGET rendererGL APPEND PROPERTY COMPILE_DEFINITIONS USE_GLSL_OPTIMIZER )
-  endif()
-endif()
-
-########################
-# Build GLSL Optimizer #
-########################
-
-if( USE_GLSL_OPTIMIZER )
-  add_subdirectory( ${LIB_DIR}/glsl-optimizer ${OBJ_DIR}/glsl )
 endif()
 
 ###############
@@ -1465,21 +1758,39 @@ if( USE_CURSES )
   endif()
 endif()
 
+##############
+# Find GeoIP #
+##############
+function( find_package_geoip )
+  if( USE_GEOIP )
+    find_package( PkgConfig )
+    if( PKG_CONFIG_FOUND )
+      pkg_check_modules( GEOIP geoip )
+      if ( GEOIP_FOUND )
+        find_path( GEOIP_INCLUDE_DIRS GeoIP.h HINTS ${PC_GEOIP_INCLUDEDIR} ${PC_GEOIP_INCLUDE_DIRS} )
+        find_library( GEOIP_LIBRARY NAMES GeoIP libGeoIP HINTS ${PC_GEOIP_LIBDIR} ${PC_GEOIP_LIBRARY_DIRS} )
+        mark_as_advanced( GEOIP_INCLUDE_DIRS GEOIP_LIBRARY )
+      endif()
+    endif()
+  endif()
+  if ( NOT USE_GEOIP OR NOT PKG_CONFIG_FOUND )
+    set( GEOIP_FOUND "" CACHE INTERNAL "" )
+  endif()
+endfunction()
+
 ################
 # Build Client #
 ################
 
 if( BUILD_CLIENT )
   # Setup target client
-  add_executable( client ${SERVERLIST} ${CLIENTLIST} ${SDLBASELIST}
-    ${CPUINFOLIST} ${SDLLIST} ${QCOMMONLIST} ${SHAREDLIST} ${CRYPTOLIST} ${TINYGETTEXT_LIST}
-    ${DATABASELIST} ${MOUNT_DIR}/engine/qcommon/dl_main_curl.c ${SPEEXLIST} ${WIN_RC} ${ROCKET_CLIENTLIST} )
+  add_executable( client ${DETOURLIST} ${SERVERLIST} ${CLIENTLIST} ${SDLBASELIST} ${SDLLIST} ${QCOMMONLIST} ${SHAREDLIST} ${CRYPTOLIST} ${TINYGETTEXT_LIST}
+    ${DATABASELIST} ${MOUNT_DIR}/engine/qcommon/dl_main_curl.c ${SPEEXLIST} ${WIN_RC}
+    ${ROCKET_CLIENTLIST} )
   add_dependencies( client rendererGL )
-  include_directories( ${MOUNT_DIR}/libs/cpuinfo ${NEWTON_INCLUDES} ${ROCKET_DIR}/Include ${ROCKET_DIR}/Contrib/Include )
+  include_directories( ${NEWTON_INCLUDES} ${ROCKET_DIR}/Include ${ROCKET_DIR}/Contrib/Include )
   target_link_libraries( client ${OS_LIBRARIES} ${NEWTON_LIBRARY} ROCKET_LIB )
-  set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_XREAL_RENDERER COMPAT_ET USE_REFENTITY_ANIMATIONSYSTEM HAVE_SDL )
-  # Required for linking against the LibRocket static library in MSVC
-  set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS STATIC_LIB )
+  set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_XREAL_RENDERER COMPAT_ET USE_REFENTITY_ANIMATIONSYSTEM HAVE_SDL USE_CODEC_OPUS )
   set_target_properties( client PROPERTIES OUTPUT_NAME "daemon" PREFIX "" LINKER_LANGUAGE CXX )
 
   # Setup CPack for target client
@@ -1502,17 +1813,28 @@ if( BUILD_CLIENT )
   # Visual Studio specific settings
   if( MSVC )
     include_directories( ${MOUNT_DIR}/libs/msinttypes )
-    set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS ZLIB_WINAPI HAVE_CONFIG_H )
+    set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS ZLIB_WINAPI )
+  endif()
+
+  if( NOT WIN32 )
+    target_link_libraries( client pthread )
   endif()
 
   # This section finds and provides REQUIRED dependencies to target client
   find_package( OpenGL REQUIRED )
-  find_package( SDL REQUIRED )
   find_package( Freetype REQUIRED )
   find_package( GLEW REQUIRED )
   find_package( GMP REQUIRED )
   find_package( ZLIB REQUIRED )
   find_package( CURL REQUIRED )
+  find_package_geoip()
+  find_and_use_SDL( client )
+
+  if( GEOIP_FOUND )
+    set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS HAVE_GEOIP )
+    include_directories( ${GEOIP_INCLUDE_DIRS} )
+    target_link_libraries( client ${GEOIP_LIBRARIES} )
+  endif()
 
   if( USE_INTERNAL_CRYPTO )
     # BEFORE is required to prevent system headers from being used
@@ -1523,8 +1845,8 @@ if( BUILD_CLIENT )
     target_link_libraries( client ${NETTLE_LIBRARIES} )
   endif()
 
-  include_directories( ${OPENGL_INCLUDE_DIR} ${SDL_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIR} ${GMP_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS} ${CURL_INCLUDE_DIRS} )
-  target_link_libraries( client ${OPENGL_LIBRARIES} ${SDL_LIBRARY} ${FREETYPE_LIBRARIES} ${GLEW_LIBRARY} ${GMP_LIBRARIES} ${ZLIB_LIBRARIES} ${CURL_LIBRARIES} )
+  include_directories( ${OPENGL_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIR} ${GMP_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS} ${CURL_INCLUDE_DIRS} )
+  target_link_libraries( client ${OPENGL_LIBRARIES} ${FREETYPE_LIBRARIES} ${GLEW_LIBRARY} ${GMP_LIBRARIES} ${ZLIB_LIBRARIES} ${CURL_LIBRARIES} )
 
   # This section finds and provides OPTIONAL dependencies to target client
   if( USE_OPENAL )
@@ -1547,6 +1869,8 @@ if( BUILD_CLIENT )
     set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_VOIP )
     if( NOT MSVC )
       set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS FLOATING_POINT )
+    else()
+      set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS HAVE_CONFIG_H )
     endif()
     if( USE_INTERNAL_SPEEX )
       # BEFORE is required to prevent system headers being used
@@ -1556,6 +1880,23 @@ if( BUILD_CLIENT )
       include_directories( ${SPEEX_INCLUDE_DIRS} )
       target_link_libraries( client ${SPEEX_LIBRARIES} )
     endif()
+  endif()
+
+  if( USE_INTERNAL_OPUS )
+      add_library( INTERNAL_OPUS STATIC ${OPUSLIST} )
+      if( NOT MSVC )
+        set_property( TARGET INTERNAL_OPUS APPEND PROPERTY COMPILE_DEFINITIONS USE_ALLOCA FLOATING_POINT OPUS_BUILD )
+      else()
+        set_property( TARGET INTERNAL_OPUS APPEND PROPERTY COMPILE_DEFINITIONS HAVE_CONFIG_H )
+        include_directories( ${LIB_DIR}/opus-1.0.2/include/win32 )
+      endif()
+      include_directories( ${LIB_DIR}/opusfile-0.2/include ${LIB_DIR}/opus-1.0.2/include ${LIB_DIR}/opus-1.0.2/celt ${LIB_DIR}/opus-1.0.2/silk ${LIB_DIR}/opus-1.0.2/silk/float )
+      set( OPUS_LIBRARIES INTERNAL_OPUS CACHE STRING "Opus Libraries" FORCE )
+      target_link_libraries( client ${OPUS_LIBRARIES} )
+  else()
+      find_package( Opus REQUIRED )
+      include_directories( ${OPUS_INCLUDE_DIRS} )
+      target_link_libraries( client ${OPUS_LIBRARIES} )
   endif()
 
   if( USE_CODEC_VORBIS )
@@ -1606,6 +1947,10 @@ if( BUILD_CLIENT )
   if( MINGW )
     target_link_libraries( client ${SDLMAIN_LIBRARY} )
   endif()
+
+  if( USE_SMP )
+    set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS SMP )
+  endif()
 endif()
 
 ################
@@ -1623,12 +1968,12 @@ endif()
 
 if( BUILD_SERVER )
   # Setup the target Server
-  add_executable( server ${SERVERLIST} ${SDLBASELIST} ${CPUINFOLIST}
+  add_executable( server ${DETOURLIST} ${SERVERLIST} ${SDLBASELIST}
     ${QCOMMONLIST} ${SHAREDLIST} ${DATABASELIST} ${CRYPTOLIST}
     ${MOUNT_DIR}/engine/null/null_client.c ${TINYGETTEXT_LIST}
     ${MOUNT_DIR}/engine/null/null_input.c ${MOUNT_DIR}/engine/null/null_snddma.c
     ${MOUNT_DIR}/engine/qcommon/dl_main_stubs.c ${WIN_RC} )
-  include_directories( ${MOUNT_DIR}/libs/cpuinfo ${NEWTON_INCLUDES} )
+  include_directories( ${NEWTON_INCLUDES} )
   target_link_libraries( server ${OS_LIBRARIES} ${NEWTON_LIBRARY} )
   set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS DEDICATED COMPAT_ET )
   set_target_properties( server PROPERTIES OUTPUT_NAME "daemonded" PREFIX "" LINKER_LANGUAGE CXX )
@@ -1652,6 +1997,13 @@ if( BUILD_SERVER )
   # The following section finds the REQUIRED dependencies and makes them available to the target
   find_package( GMP REQUIRED )
   find_package( ZLIB REQUIRED )
+  find_package_geoip()
+
+  if( GEOIP_FOUND )
+    set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS HAVE_GEOIP )
+    include_directories( ${GEOIP_INCLUDE_DIRS} )
+    target_link_libraries( server ${GEOIP_LIBRARIES} )
+  endif()
 
   if( USE_INTERNAL_CRYPTO )
     # BEFORE is required to prevent system headers from being used
@@ -1692,10 +2044,8 @@ if( BUILD_SERVER )
   endif()
 
   if( USE_SDL_ICONV )
-    find_package( SDL REQUIRED )
+    find_and_use_SDL( server )
     set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS HAVE_SDL )
-    include_directories( ${SDL_INCLUDE_DIR} )
-    target_link_libraries( server ${SDL_LIBRARY} )
   endif()
 
   if( GAME_LIB_LLVM )
@@ -1709,7 +2059,7 @@ endif()
 ###################
 if( BUILD_DAEMONMAP )
   # Setup DaemonMap target
-  add_executable( daemonMap ${DAEMONMAPLIST} ${WIN_RC} )
+  add_executable( daemonMap ${DAEMONMAPLIST} ${DETOURLIST} ${RECASTLIST} ${WIN_RC} )
   include_directories( ${LIB_DIR}/picomodel ${MOUNT_DIR}/tools/common )
   target_link_libraries( daemonMap ${OS_LIBRARIES} )
   set_property( TARGET daemonMap APPEND PROPERTY COMPILE_DEFINITIONS USE_OPENGL )
@@ -1727,12 +2077,17 @@ if( BUILD_DAEMONMAP )
 
   # This section finds and provides REQUIRED dependencies to DaemonMap target
   find_package( OpenGL REQUIRED )
-  find_package( SDL REQUIRED )
   find_package( JPEG REQUIRED )
   find_package( PNG REQUIRED )
   find_package( GLib2 REQUIRED )
-  target_link_libraries( daemonMap ${OPENGL_LIBRARIES} ${SDL_LIBRARY} ${JPEG_LIBRARIES} ${PNG_LIBRARIES} ${GLIB_LIBRARIES} )
-  include_directories( ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${PNG_INCLUDE_DIR} ${SDL_INCLUDE_DIR} ${GLIB_INCLUDE_DIRS} )
+  find_and_use_SDL( daemonMap )
+
+  if( NOT WIN32 )
+    target_link_libraries( daemonMap pthread )
+  endif()
+
+  target_link_libraries( daemonMap ${OPENGL_LIBRARIES} ${JPEG_LIBRARIES} ${PNG_LIBRARIES} ${GLIB_LIBRARIES} )
+  include_directories( ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${PNG_INCLUDE_DIR} ${GLIB_INCLUDE_DIRS} )
 endif()
 
 ####################
@@ -1740,12 +2095,12 @@ endif()
 ####################
 if( BUILD_TTY_CLIENT )
   # Setup the target Server
-  add_executable( ttyclient ${SERVERLIST} ${CLIENTLIST} ${SDLBASELIST} ${CPUINFOLIST}
+  add_executable( ttyclient ${DETOURLIST} ${SERVERLIST} ${CLIENTLIST} ${SDLBASELIST}
     ${QCOMMONLIST} ${SHAREDLIST} ${DATABASELIST} ${CRYPTOLIST}
     ${TINYGETTEXT_LIST}
     ${MOUNT_DIR}/engine/qcommon/dl_main_stubs.c ${WIN_RC}
     ${MOUNT_DIR}/engine/null/null_input.c ${MOUNT_DIR}/engine/null/null_snddma.c ${MOUNT_DIR}/engine/null/null_renderer.c ${MOUNT_DIR}/engine/null/null_rocket.c )
-  include_directories( ${MOUNT_DIR}/libs/cpuinfo ${NEWTON_INCLUDES} )
+  include_directories( ${NEWTON_INCLUDES} )
   target_link_libraries( ttyclient ${OS_LIBRARIES} ${NEWTON_LIBRARY} )
   set_property( TARGET ttyclient APPEND PROPERTY COMPILE_DEFINITIONS COMPAT_ET BUILD_TTY_CLIENT REF_HARD_LINKED )
   set_target_properties( ttyclient PROPERTIES OUTPUT_NAME "daemon-tty" PREFIX "" LINKER_LANGUAGE CXX )
@@ -1766,9 +2121,20 @@ if( BUILD_TTY_CLIENT )
     set_property( TARGET ttyclient APPEND PROPERTY COMPILE_DEFINITIONS ZLIB_WINAPI )
   endif()
 
+  if( NOT WIN32 )
+    target_link_libraries( ttyclient pthread )
+  endif()
+
   # The following section finds the REQUIRED dependencies and makes them available to the target
   find_package( GMP REQUIRED )
   find_package( ZLIB REQUIRED )
+  find_package_geoip()
+
+  if( GEOIP_FOUND )
+    set_property( TARGET ttyclient APPEND PROPERTY COMPILE_DEFINITIONS HAVE_GEOIP )
+    include_directories( ${GEOIP_INCLUDE_DIRS} )
+    target_link_libraries( ttyclient ${GEOIP_LIBRARIES} )
+  endif()
 
   if( USE_INTERNAL_CRYPTO )
     # BEFORE is required to prevent system headers from being used
@@ -1805,10 +2171,8 @@ if( BUILD_TTY_CLIENT )
   endif()
 
   if( USE_SDL_ICONV )
-    find_package( SDL REQUIRED )
+    find_and_use_SDL( ttyclient )
     set_property( TARGET ttyclient APPEND PROPERTY COMPILE_DEFINITIONS HAVE_SDL )
-    include_directories( ${SDL_INCLUDE_DIR} )
-    target_link_libraries( ttyclient ${SDL_LIBRARY} )
   endif()
 
   if( GAME_LIB_LLVM )

@@ -1030,6 +1030,7 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 				ci->animations[ TORSO_RAISE ] = ci->animations[ LEGS_IDLE ];
 			}
 
+			// TODO: Don't assume WP_BLASTER is first human weapon
 			for ( i = TORSO_GESTURE_BLASTER, j = WP_BLASTER; i <= TORSO_GESTURE_CKIT; i++, j++ )
 			{
 				if ( i == TORSO_GESTURE ) { continue; }
@@ -1041,9 +1042,10 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 				}
 			}
 
+			// TODO: Don't assume WP_BLASTER is first human weapon
 			for ( i = WP_BLASTER; i < WP_NUM_WEAPONS; i++ )
 			{
-				if ( BG_Weapon( i )->team != TEAM_HUMANS || !BG_Weapon( i )->purchasable || i == WP_GRENADE ) { continue; }
+				if ( BG_Weapon( i )->team != TEAM_HUMANS || !BG_Weapon( i )->purchasable ) { continue; }
 				CG_DeriveAnimationDelta( modelName, i, ci );
 			}
 
@@ -1790,7 +1792,7 @@ static void CG_RunCorpseLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAni
 
 	anim = lf->animation;
 
-	if ( !anim->frameLerp )
+	if ( !anim || !anim->frameLerp )
 	{
 		return; // shouldn't happen
 	}

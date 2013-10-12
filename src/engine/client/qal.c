@@ -27,9 +27,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * Dynamically loads OpenAL
  */
 
-#ifdef USE_OPENAL_DLOPEN
-
 #include "qal.h"
+
+#ifdef USE_OPENAL_DLOPEN
 
 #ifdef USE_SDL
 #include <SDL_loadso.h>
@@ -45,7 +45,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define SYMLOAD(x,y) GetProcAddress(x,y)
 #define OBJFREE(x)   FreeLibrary(x)
 
-#elif defined __linux__ || defined __FreeBSD__ || defined MACOS_X
+#elif defined __linux__ || defined __FreeBSD__ || defined __OpenBSD__ || defined MACOS_X
 #include <unistd.h>
 #include <sys/types.h>
 #include <dlfcn.h>
@@ -150,6 +150,7 @@ static void *GPA( char *str )
 		alinit_fail = qtrue;
 		return NULL;
 	}
+
 	else
 	{
 #ifndef NDEBUG
@@ -360,4 +361,16 @@ void QAL_Shutdown( void )
 	qalcCaptureSamples = NULL;
 }
 
-#endif // USE_OPENAL_DLOPEN
+#else
+
+qboolean QAL_Init( const char *libname )
+{
+	libname = libname; // avoid 'unused' warnings
+	return qtrue;
+}
+
+void QAL_Shutdown( void )
+{
+}
+
+#endif // !USE_OPENAL_DLOPEN

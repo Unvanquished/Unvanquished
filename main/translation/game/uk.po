@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-07-07 23:10+0200\n"
-"PO-Revision-Date: 2013-07-17 19:21+0000\n"
+"PO-Revision-Date: 2013-08-23 15:52+0000\n"
 "Last-Translator: Qrntz <q@penguinishly.org.ua>\n"
 "Language-Team: Ukrainian <kde-i18n-doc@kde.org>\n"
 "Language: uk\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%"
 "10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: Pootle 2.5.0-beta1\n"
-"X-POOTLE-MTIME: 1374088899.0\n"
+"X-POOTLE-MTIME: 1377273168.0\n"
 
 #: tremulous_alien_builder_hud.menu:47 tremulous_alien_builder_hud.menu:49
 #: tremulous_alien_builder_hud.menu:48
@@ -2641,7 +2641,7 @@ msgstr "Затисни та відпусти %s, щоб накинутись\n"
 #: src/gamelogic/cgame/cg_tutorial.c:372
 #, c-format
 msgid "Hold down and release %s while moving forwards to trample\n"
-msgstr ""
+msgstr "Затисніть та відпустіть %s під час руху вперед, щоб чавити\n"
 
 #: src/gamelogic/cgame/cg_tutorial.c:416
 #, c-format
@@ -2677,81 +2677,82 @@ msgstr "Затисни та відпусти %s, щоб зробити заря�
 #: src/gamelogic/cgame/cg_tutorial.c:489
 #, c-format
 msgid "Use %s and %s to select an upgrade\n"
-msgstr ""
+msgstr "Використовуйте %s та %s, щоб вибрати оснащення\n"
 
 #: src/gamelogic/cgame/cg_tutorial.c:496 src/gamelogic/cgame/cg_tutorial.c:543
-#, c-format, fuzzy
+#, c-format
 msgid "Press %s to use the %s\n"
-msgstr "Натисни %s, щоб стріляти з %s\n"
+msgstr "Натисни %s, щоб використати %s\n"
 
 #: src/gamelogic/cgame/cg_tutorial.c:505
-#, c-format, fuzzy
+#, c-format
 msgid "Press %s to use your %s\n"
-msgstr "Натисни %s, щоб стріляти з %s\n"
+msgstr "Натисни %s, щоб використати свій %s\n"
 
 #: src/gamelogic/cgame/cg_tutorial.c:513
 msgid "You are blacking out. Stop sprinting to recover stamina\n"
-msgstr ""
+msgstr "Ти непритомнієш. Зупинись та відпочинь.\n"
 
 #: src/gamelogic/cgame/cg_tutorial.c:518
 msgid "Your stamina is low. Stop sprinting to recover\n"
-msgstr ""
+msgstr "Тобі бракує наснаги. Зупинись, щоб відновити сили.\n"
 
 #: src/gamelogic/cgame/cg_tutorial.c:525
 #, c-format
 msgid ""
 "Press %s to buy equipment upgrades at the %s. Sell your old weapon first!\n"
-msgstr ""
+msgstr "Натисни %s, щоб придбати додаткове оснащення у %s. Спочатку продай свою "
+"стару зброю!\n"
 
 #: src/gamelogic/cgame/cg_tutorial.c:533
 #, c-format
 msgid "Press %s to refill your energy weapon's ammo at the %s\n"
-msgstr ""
+msgstr "Натисни %s, щоб поповнити свою зброю енергією з %s\n"
 
 #: src/gamelogic/cgame/cg_tutorial.c:550
 #, c-format
 msgid "Press %s and any direction to sprint\n"
-msgstr ""
+msgstr "Натисни %s, щоб спринтувати у будь-якому напрямку\n"
 
 #: src/gamelogic/cgame/cg_tutorial.c:554
 #, c-format
 msgid "Press %s and back or strafe to dodge\n"
-msgstr ""
+msgstr "Press %s and back or strafe to dodge\n"
 
 #: src/gamelogic/cgame/cg_tutorial.c:570
 #, c-format
 msgid "Press %s to leave spawn queue\n"
-msgstr ""
+msgstr "Натисни %s, щоб залишити чергу на відродження\n"
 
 #: src/gamelogic/cgame/cg_tutorial.c:576
-#, c-format, fuzzy
+#, c-format
 msgid "Press %s to spawn\n"
-msgstr "Натисни %s, щоб вкусити\n"
+msgstr "Натисни %s, щоб відродитись\n"
 
 #: src/gamelogic/cgame/cg_tutorial.c:583
 #, c-format
 msgid "Press %s to join a team\n"
-msgstr ""
+msgstr "Натисни %s, щоб приєднатися до загону\n"
 
 #: src/gamelogic/cgame/cg_tutorial.c:592
 #, c-format
 msgid "Press %s to switch to chase-cam spectator mode\n"
-msgstr ""
+msgstr "Натисни %s, щоб перемкнути камеру у режим переслідування\n"
 
 #: src/gamelogic/cgame/cg_tutorial.c:598
 #, c-format
 msgid "Press %s to return to free spectator mode\n"
-msgstr ""
+msgstr "Натисни %s, щоб повернутися до вільного спостерігання\n"
 
 #: src/gamelogic/cgame/cg_tutorial.c:604
 #, c-format
 msgid "Press %s to stop following\n"
-msgstr ""
+msgstr "Натисни %s, щоб припинити переслідування\n"
 
 #: src/gamelogic/cgame/cg_tutorial.c:609
 #, c-format
 msgid "Use %s and %s to change between players\n"
-msgstr ""
+msgstr "Використовуй %s та %s, щоб змінювати поточного гравця\n"
 
 #: src/gamelogic/cgame/cg_tutorial.c:615
 #, c-format
@@ -2775,7 +2776,7 @@ msgstr "Очікую інших гравців\n"
 #: src/gamelogic/cgame/cg_tutorial.c:722
 #, c-format
 msgid "Press %s to open the console\n"
-msgstr ""
+msgstr "Натисни %s, щоб відкрити консоль\n"
 
 #: src/gamelogic/cgame/cg_tutorial.c:723
 msgid "Press ESC for the menu"
@@ -2926,10 +2927,11 @@ msgstr ""
 #: src/gamelogic/game/g_admin.c:132 src/gamelogic/game/g_admin.c:327
 msgid "[^3name|slot#|admin#|*level#^7] (^5+^7|^5-^7)[^3flag^7]"
 msgstr ""
+"[^3ім’я|номер слоту|адмін-номер|*номер рівня^7] (^5+^7|^5-^7)[^3позначка^7]"
 
 #: src/gamelogic/game/g_admin.c:137
 msgid "list the flags understood by this server"
-msgstr ""
+msgstr "перелічити адміністративні привілеї, зрозумілі цьому серверу"
 
 #: src/gamelogic/game/g_admin.c:143
 msgid "change the time limit for the current game"
@@ -3130,6 +3132,8 @@ msgid ""
 "clears an admin flag from a player. console can use this command on admin "
 "levels by prefacing a '*' to the admin level value."
 msgstr ""
+"знімає привілеї з гравця. консоль може використовувати цю команду на "
+"адміністративних рівнях, якщо значенню рівня передує '*'."
 
 #: src/gamelogic/game/g_admin.c:332
 msgid "unlock a locked team"
@@ -3217,17 +3221,19 @@ msgstr "^3readconfig: ^7завантажено $1$ рівнів, $2$ адмін�
 msgid ""
 "^3time: ^7time is ^d$1$:$2$:$3$^7 UTC – game runs for ^d$4$:$5$^7 with "
 "Sudden Death in ^d$6$:$7$^7\n"
-msgstr ""
+msgstr "^3time: ^7поточний час ^d$1$:$2$:$3$^7 UTC — гра триває ^d$4$:$5$^7, раптова "
+"смерть через ^d$6$:$7$^7\n"
 
 #: src/gamelogic/game/g_admin.c:2101
 msgid ""
 "^3time: ^7time is ^d$1$:$2$:$3$^7 UTC – game runs for ^d$4$:$5$^7 hitting "
 "Timelimit in ^d$6$:$7$^7\n"
-msgstr ""
+msgstr "3time: ^7поточний час ^d$1$:$2$:$3$^7 UTC — гра триває ^d$4$:$5$^7, "
+"граничний термін через ^d$6$:$7$^7\n"
 
 #: src/gamelogic/game/g_admin.c:2106
 msgid "^3time: ^7time is ^d$1$:$2$:$3$^7 UTC – game time is ^d$4$:$5$^7\n"
-msgstr ""
+msgstr "3time: ^7поточний час ^d$1$:$2$:$3$^7 UTC — гра триває ^d$4$:$5$^7\n"
 
 #: src/gamelogic/game/g_admin.c:2132
 msgid "^3setlevel: ^7usage: setlevel [name|slot#] [level]\n"
@@ -3492,33 +3498,31 @@ msgstr ""
 
 #: src/gamelogic/game/g_admin.c:3806 src/gamelogic/game/g_admin.c:3830
 msgid "^3adminhelp: ^7help for '$1$':\n"
-msgstr ""
+msgstr "^3adminhelp: ^7довідка про '$1$':\n"
 
 #: src/gamelogic/game/g_admin.c:3810 src/gamelogic/game/g_admin.c:3834
 msgid " ^3Description: ^7$1t$\n"
-msgstr ""
+msgstr "^3Опис: ^7$1t$\n"
 
 #: src/gamelogic/game/g_admin.c:3813
 msgid " ^3Syntax: ^7$1$\n"
-msgstr ""
+msgstr " ^3Синтаксис: ^7$1$\n"
 
 #: src/gamelogic/game/g_admin.c:3817 src/gamelogic/game/g_admin.c:3841
 msgid " ^3Flag: ^7'$1$'\n"
-msgstr ""
+msgstr " ^3Позначка: ^7'$1$'\n"
 
 #: src/gamelogic/game/g_admin.c:3837
 msgid " ^3Syntax: ^7$1$ $2t$\n"
-msgstr ""
+msgstr "  ^3Синтаксис: ^7$1$ $2t$\n"
 
 #: src/gamelogic/game/g_admin.c:3850
-#, fuzzy
 msgid "^3adminhelp: ^7you do not have permission to use '$1$'\n"
-msgstr "^3adminhelp: ^7Ви не маєте дозволу на використання '$1$'"
+msgstr "^3adminhelp: ^7ти не маєш дозволу на використання '$1$'\n"
 
 #: src/gamelogic/game/g_admin.c:3851
-#, fuzzy
 msgid "^3adminhelp: ^7no help found for '$1$'\n"
-msgstr "^3adminhelp: ^7не знайдено довідки для '$1$'"
+msgstr "^3adminhelp: ^7не знайдено довідки для '$1$'\n"
 
 #: src/gamelogic/game/g_admin.c:3862
 msgid "^3admintest: ^7you are on the console.\n"
@@ -3618,11 +3622,11 @@ msgstr "^3$1$: ^7команду $2$ було відімкнено $3$\n"
 
 #: src/gamelogic/game/g_admin.c:4524
 msgid "invalid admin flag"
-msgstr ""
+msgstr "недійсний привілей"
 
 #: src/gamelogic/game/g_admin.c:4555
 msgid "too many admin flags, flag not set"
-msgstr ""
+msgstr "забагато привілеїв, не встановлено жодного"
 
 #: src/gamelogic/game/g_admin.c:4564
 msgid "flag was not present"
@@ -3638,70 +3642,72 @@ msgstr "^3Командні позначки:\n"
 
 #: src/gamelogic/game/g_admin.c:4637
 msgid "^3flaglist: ^7listed $1$ ability and $2$ command flags\n"
-msgstr ""
+msgstr "%3flaglist: ^7перелічено $1$ привілеїв та $2$ позначок команд\n"
 
 #: src/gamelogic/game/g_admin.c:4665
 msgid ""
 "^3$1$: ^7usage: $1$ [^3name|slot#|admin#|*level#^7] (^5+^7|^5-^7)[^3flag^7]\n"
-msgstr ""
+msgstr "^3$1$: ^7використання: $1$ [^3ім’я|номер слоту|адмін-номер|*рівень^7] "
+"(^5+^7|^5-^7)[^3позначка^7]\n"
 
 #: src/gamelogic/game/g_admin.c:4675
 msgid "^3$1$: only console can change admin level flags\n"
-msgstr ""
+msgstr "^3$1$: тільки консоль може змінювати привілеї адмін-рівнів\n"
 
 #: src/gamelogic/game/g_admin.c:4684
 msgid "^3$1$: admin level $2$ does not exist\n"
-msgstr ""
+msgstr "^3$1$: адмін-рівень $2$ не існує\n"
 
 #: src/gamelogic/game/g_admin.c:4699
 msgid "^3$1$:^7 your intended victim is not an admin\n"
-msgstr ""
+msgstr "^3$1$:^7 ціль не є адміністратором\n"
 
 #: src/gamelogic/game/g_admin.c:4705
 msgid "^3$1$:^7 your intended victim has a higher admin level than you\n"
-msgstr ""
+msgstr "^3$1$:^7 ціль має вищий адмін-рівень, ніж ти\n"
 
 #: src/gamelogic/game/g_admin.c:4717
 msgid "^3$1$:^7 flags for $2$^7 are '^3$3$^7'\n"
-msgstr ""
+msgstr "^3$1$:^7 привілеї для $2$^7 є '^3$3$^7'\n"
 
 #: src/gamelogic/game/g_admin.c:4723
 msgid "^3$1$:^7 admin level $2$ flags are '$3$'\n"
-msgstr ""
+msgstr "^3$1$:^7 привілеями для рівня $2$ є '$3$'\n"
 
 #: src/gamelogic/game/g_admin.c:4755
 msgid "^3$1$:^7 bad flag name '$2$^7'\n"
-msgstr ""
+msgstr "^3$1$:^7 погана назва привілею '$2$^7'\n"
 
 #: src/gamelogic/game/g_admin.c:4767
 msgid "^3$1$:^7 you may not change your own flags (use rcon)\n"
-msgstr ""
+msgstr "^3$1$:^7 не можна змінювати свої власні привілеї (використай rcon)\n"
 
 #: src/gamelogic/game/g_admin.c:4773
 msgid "^3$1$:^7 you may only change flags that you also have\n"
-msgstr ""
+msgstr "^3$1$:^7 тобі дозволено змінювати лише привілеї, які ти також маєш\n"
 
 #: src/gamelogic/game/g_admin.c:4793
 msgid ""
 "^3$1$: ^7an error occurred when setting flag '^3$2$^7' for $3$^7, $4t$\n"
-msgstr ""
+msgstr "^3$1$: ^7сталася помилка під час встановлення привілею '^3$2$^7' для $3$^7, "
+"$4t$\n"
 
 #: src/gamelogic/game/g_admin.c:4794
 msgid ""
 "^3$1$: ^7an error occurred when clearing flag '^3$2$^7' for $3$^7, $4t$\n"
-msgstr ""
+msgstr "^3$1$: ^7сталася помилка під час зняття привілея '^3$2$^7' для $3$^7, $4t$\n"
 
 #: src/gamelogic/game/g_admin.c:4802
 msgid "^3$1$: ^7flag '$2$' allowed for $3$\n"
-msgstr ""
+msgstr "^3$1$: ^7привілей '$2$' дозволено для $3$\n"
 
 #: src/gamelogic/game/g_admin.c:4803
 msgid "^3$1$: ^7flag '$2$' cleared for $3$\n"
-msgstr ""
+msgstr "^3$1$: ^7привілей '$2$' знято з $3$\n"
 
 #: src/gamelogic/game/g_admin.c:4804
 msgid "^3$1$: ^7flag '$2$' denied for $3$\n"
-msgstr ""
+msgstr "^3$1$: ^7привілей '$2$' заборонено $3$\n"
 
 #: src/gamelogic/game/g_admin.c:4840
 msgid "^3builder: ^7console can't aim.\n"
@@ -3752,7 +3758,6 @@ msgid "^7replaced^7"
 msgstr "^7замінено^7"
 
 #: src/gamelogic/game/g_admin.c:4960
-#, fuzzy
 msgid "^5destroyed^7"
 msgstr "^3зруйновано^7"
 
@@ -4171,9 +4176,8 @@ msgid "$1$^7 called a vote: $2$\n"
 msgstr "$1$^7 скликав голосування: $2$\n"
 
 #: src/gamelogic/game/g_cmds.c:2159
-#, fuzzy
 msgid "$1$^7 called a team vote: $2t$\n"
-msgstr "$1$^7 скликав загонове голосування: "
+msgstr "$1$^7 скликав внутрішнє голосування: $2t$\n"
 
 #: src/gamelogic/game/g_cmds.c:2210
 msgid "$1$: no vote in progress\n"
@@ -4188,9 +4192,9 @@ msgid "$1$: vote cast\n"
 msgstr "$1$: проголосовано\n"
 
 #: src/gamelogic/game/g_cmds.c:2254
-#, fuzzy
 msgid "usage: setviewpos (<x> <y> <z> [<yaw> [<pitch>]] | <entitynum>)\n"
-msgstr "використання: setviewpos <x> <y> <z> [<никання> [<крен>]]\n"
+msgstr "використання: setviewpos (<x> <y> <z> [<никання> [<крен>]] | <номер "
+"сутності>)\n"
 
 #: src/gamelogic/game/g_cmds.c:2869 src/gamelogic/game/g_cmds.c:2899
 #: src/gamelogic/game/g_cmds.c:2951
@@ -4198,9 +4202,8 @@ msgid "You don't have the $1$\n"
 msgstr "Ви не маєте $1$\n"
 
 #: src/gamelogic/game/g_cmds.c:3151
-#, fuzzy
 msgid "You can't buy this item ($1$)\n"
-msgstr "Ви не можете купити цей виріб\n"
+msgstr "Ти не можеш придбати цю річ ($1$)\n"
 
 #: src/gamelogic/game/g_cmds.c:3155
 msgid "You can't buy alien items\n"
@@ -4239,19 +4242,17 @@ msgid "unignore: $1$^7 is not on your ignore list\n"
 msgstr "unignore: $1$^7 не у Вашому чорному списку\n"
 
 #: src/gamelogic/game/g_cmds.c:4130
-#, fuzzy
 msgid "^3listmaps: ^7found $1$ map matching '$2$^7'"
 msgid_plural "^3listmaps: ^7found $1$ maps matching '$2$^7'"
-msgstr[0] "^3listmaps: ^7знайдено $1$ мап(и) збіжних з '$2$^7'"
-msgstr[1] ""
+msgstr[0] "^3listmaps: ^7знайдено $1$ мапу, збіжну з '$2$^7'"
+msgstr[1] "^3listmaps: ^7знайдено $1$ мап, збіжних з '$2$^7'"
 msgstr[2] ""
 
 #: src/gamelogic/game/g_cmds.c:4134
-#, fuzzy
 msgid "^3listmaps: ^7listing $1$ of $2$ map"
 msgid_plural "^3listmaps: ^7listing $1$ of $2$ maps"
-msgstr[0] "^3listmaps: ^7перераховую $1$ з $2$ мап(и)"
-msgstr[1] ""
+msgstr[0] "^3listmaps: ^7перелічую $1$ з $2$ мапи"
+msgstr[1] "^3listmaps: ^7перелічую $1$ з $2$ мап"
 msgstr[2] ""
 
 #: src/gamelogic/game/g_cmds.c:4139
@@ -4349,11 +4350,11 @@ msgstr "Прибульці виграли\n"
 
 #: src/gamelogic/game/g_main.c:2589
 msgid "Vote failed ($1$ of $2$; quorum not reached)\n"
-msgstr ""
+msgstr "Голосування пройшло невдало ($1$ з $2$; кворум не зібрано)\n"
 
 #: src/gamelogic/game/g_main.c:2589
 msgid "Team vote failed ($1$ of $2$; quorum not reached)\n"
-msgstr ""
+msgstr "Внутрішнє голосування пройшло невдало ($1$ з $2$; кворум не зібрано)\n"
 
 #: src/gamelogic/game/g_main.c:2594
 msgid "Vote passed ($1$ — $2$)\n"
@@ -4412,11 +4413,11 @@ msgstr "Команди незбалансовані. Прибульці мают
 
 #: src/gamelogic/ui/ui_main.c:40
 msgid "Favorites"
-msgstr ""
+msgstr "Улюблені"
 
 #: src/gamelogic/ui/ui_main.c:905
 msgid "no servers found"
-msgstr ""
+msgstr "серверів не знайдено"
 
 #: src/gamelogic/ui/ui_main.c:912
 #, c-format
@@ -4426,39 +4427,38 @@ msgstr[0] "%d серверів знайдено з гравцем %s"
 
 #: src/gamelogic/ui/ui_main.c:1857
 msgid "Frags:"
-msgstr ""
+msgstr "Фраґів:"
 
 #: src/gamelogic/ui/ui_main.c:1871 src/gamelogic/ui/ui_main.c:1892
 msgid "Credits: Free"
-msgstr ""
+msgstr "Вартість: безкоштовно"
 
 #: src/gamelogic/ui/ui_main.c:1878 src/gamelogic/ui/ui_main.c:1899
-#, fuzzy
 msgid "Credits:"
-msgstr "Гривні"
+msgstr "Вартість:"
 
 #: src/gamelogic/ui/ui_main.c:1911
 msgid "Sentience"
-msgstr ""
+msgstr "Свідомість"
 
 #: src/gamelogic/ui/ui_main.c:1915
 msgid "Power"
-msgstr ""
+msgstr "Енергія"
 
 #: src/gamelogic/ui/ui_main.c:2070
 #, c-format
 msgid "Waiting for response%s"
-msgstr ""
+msgstr "Очікую відповіді%s"
 
 #: src/gamelogic/ui/ui_main.c:2071
 #, c-format
 msgid "Getting info for %d servers (ESC to cancel)%s"
-msgstr ""
+msgstr "Опитую про %d сервери (ESC для скасування)%s"
 
 #: src/gamelogic/ui/ui_main.c:2075
 #, c-format
 msgid "Refresh Time: %s"
-msgstr ""
+msgstr "Час оновлення: %s"
 
 #: src/gamelogic/ui/ui_main.c:2489
 msgid ""
@@ -4468,6 +4468,11 @@ msgid ""
 "new bases quickly. They possess a range of abilities including basic melee "
 "attacks, movement-crippling poisons and more."
 msgstr ""
+"Чужинці\n"
+"\n"
+"Найбільшою силою чужинців є спритність та швидке будування нових баз. Вони "
+"володіють певними навичками, серед яких прийоми ближнього бою, знерухомлюючі "
+"отрути та ін."
 
 #: src/gamelogic/ui/ui_main.c:2499
 msgid ""
@@ -4478,22 +4483,28 @@ msgid ""
 "upgrades and weapons are available to the humans, each contributing to "
 "eradicate the alien threat."
 msgstr ""
+"Люди\n"
+"\n"
+"Люди — провідники технології. Хоча їх бази довго будуються, їх автоматичні "
+"системи захисту затверджують своє право на існування. Людям доступний "
+"численний ряд вдосконалень та зброї, всі вони націлені на винищення "
+"чужинської навали."
 
 #: src/gamelogic/ui/ui_main.c:2506
 msgid "Spectate"
-msgstr ""
+msgstr "Спостерігати"
 
 #: src/gamelogic/ui/ui_main.c:2509
 msgid "Watch the game without playing."
-msgstr ""
+msgstr "Слідкувати за грою без участі в ній."
 
 #: src/gamelogic/ui/ui_main.c:2511
 msgid "Auto select"
-msgstr ""
+msgstr "Авто-вибір"
 
 #: src/gamelogic/ui/ui_main.c:2514
 msgid "Join the team with the least players."
-msgstr ""
+msgstr "Приєднатися до загону з меншою кількістю гравців."
 
 #: src/gamelogic/ui/ui_main.c:3799 src/gamelogic/ui/ui_main.c:4040
 msgid "Favorite already in list\n"
@@ -4510,62 +4521,62 @@ msgstr "Додано улюблений сервер %s\n"
 
 #: src/gamelogic/ui/ui_main.c:5567
 msgid "Downloading:"
-msgstr ""
+msgstr "Завантажую:"
 
 #: src/gamelogic/ui/ui_main.c:5568
 msgid "Estimated time left:"
-msgstr ""
+msgstr "Приблизно часу залишилось:"
 
 #: src/gamelogic/ui/ui_main.c:5569
 msgid "Transfer rate:"
-msgstr ""
+msgstr "Швидкість передавання:"
 
 #: src/gamelogic/ui/ui_main.c:5604 src/gamelogic/ui/ui_main.c:5635
 msgid "estimating"
-msgstr ""
+msgstr "розраховую"
 
 #: src/gamelogic/ui/ui_main.c:5605 src/gamelogic/ui/ui_main.c:5631
 #: src/gamelogic/ui/ui_main.c:5639
 #, c-format
 msgid "(%s of %s copied)"
-msgstr ""
+msgstr "(%s з %s скопійовано)"
 
 #: src/gamelogic/ui/ui_main.c:5643
 #, c-format
 msgid "(%s copied)"
-msgstr ""
+msgstr "(%s скопійовано)"
 
 #: src/gamelogic/ui/ui_main.c:5695
 #, c-format
 msgid "Loading %s"
-msgstr ""
+msgstr "Завантажується %s"
 
 #: src/gamelogic/ui/ui_main.c:5701
 msgid "Starting up…"
-msgstr ""
+msgstr "Запускаю…"
 
 #: src/gamelogic/ui/ui_main.c:5705
 #, c-format
 msgid "Connecting to %s"
-msgstr ""
+msgstr "З’єднуюся з %s"
 
 #: src/gamelogic/ui/ui_main.c:5728
 #, c-format
 msgid "Awaiting connection…%i"
-msgstr ""
+msgstr "Очікую з’єднання…%i"
 
 #: src/gamelogic/ui/ui_main.c:5732
 #, c-format
 msgid "Awaiting challenge…%i"
-msgstr ""
+msgstr "Очікую виклику…%i"
 
 #: src/gamelogic/ui/ui_main.c:5748
 msgid "Awaiting gamestate…"
-msgstr ""
+msgstr "Очікую стан гри…"
 
 #: src/gamelogic/ui/ui_shared.c:6362
 msgid "Press key"
-msgstr ""
+msgstr "Натисни клавішу"
 
 #: main/ui/createserver.menu:125
 msgid "Host Name:"
@@ -4682,7 +4693,7 @@ msgstr "Клавіша стіноходження перемикає:"
 
 #: main/ui/ingame_options.menu:233 main/ui/options.menu:245
 msgid "Set HUD"
-msgstr ""
+msgstr "Встановити HUD"
 
 #: main/ui/ingame_options.menu:237 main/ui/options.menu:249
 msgid "Show Charge Bar:"
@@ -4694,7 +4705,7 @@ msgstr "Показувати лаґометр:"
 
 #: main/ui/ingame_options.menu:242 main/ui/options.menu:254
 msgid "Mirror Gun"
-msgstr ""
+msgstr "Відзеркалювати зброю"
 
 #: main/ui/ingame_options.menu:244 main/ui/options.menu:256
 msgid "Show FPS:"
@@ -4826,7 +4837,7 @@ msgstr "Жест:"
 
 #: main/ui/ingame_options.menu:406 main/ui/options.menu:418
 msgid "Rally:"
-msgstr ""
+msgstr "Збір:"
 
 #: main/ui/ingame_options.menu:407 main/ui/options.menu:419
 msgid "Chat:"
@@ -4846,7 +4857,7 @@ msgstr "IRC-чат:"
 
 #: main/ui/ingame_options.menu:411 main/ui/options.menu:423
 msgid "VoIP Chat:"
-msgstr ""
+msgstr "Голосовий чат:"
 
 #: main/ui/ingame_options.menu:412 main/ui/options.menu:424
 msgid "Vote Yes:"
@@ -4870,7 +4881,7 @@ msgstr "Меню голосових висловів:"
 
 #: main/ui/ingame_options.menu:417 main/ui/options.menu:429
 msgid "VoIP Menu:"
-msgstr ""
+msgstr "Голосове меню:"
 
 #: main/ui/ingame_options.menu:449 main/ui/options.menu:462
 msgid "Show Scores:"
@@ -4915,19 +4926,19 @@ msgstr "Стиснення текстур:"
 
 #: main/ui/ingame_options.menu:567 main/ui/options.menu:579
 msgid "Normal Mapping:"
-msgstr ""
+msgstr "Нормальне відображення:"
 
 #: main/ui/ingame_options.menu:570 main/ui/options.menu:582
 msgid "Bloom:"
-msgstr ""
+msgstr "Цвітіння:"
 
 #: main/ui/ingame_options.menu:573 main/ui/options.menu:585
 msgid "Rim Lighting:"
-msgstr ""
+msgstr "Коронне освітлення:"
 
 #: main/ui/ingame_options.menu:579 main/ui/options.menu:591
 msgid "Heat Haze:"
-msgstr ""
+msgstr "Теплове марево:"
 
 #: main/ui/ingame_options.menu:617 main/ui/options.menu:629
 msgid "Brightness:"
@@ -4938,9 +4949,8 @@ msgid "Draw Gun:"
 msgstr "Показувати зброю:"
 
 #: main/ui/ingame_options.menu:623 main/ui/options.menu:635
-#, fuzzy
 msgid "Mark On Walls:"
-msgstr "Позначки на стінах:"
+msgstr "Відбитки на стінах:"
 
 #: main/ui/ingame_options.menu:626 main/ui/options.menu:638
 msgid "In Game Videos:"
@@ -4960,15 +4970,15 @@ msgstr "OpenAL:"
 
 #: main/ui/ingame_options.menu:725 main/ui/options.menu:737
 msgid "OpenAL Capture"
-msgstr ""
+msgstr "Захоплення через OpenAL"
 
 #: main/ui/ingame_options.menu:726 main/ui/options.menu:738
 msgid "OpenAL Device:"
-msgstr ""
+msgstr "OpenAL-пристрій:"
 
 #: main/ui/ingame_options.menu:727 main/ui/options.menu:739
 msgid "OpenAL Capture Device:"
-msgstr ""
+msgstr "Пристрій захоплення OpenAL:"
 
 #: main/ui/ingame_options.menu:728 main/ui/options.menu:740
 msgid "Doppler Sound:"
@@ -4980,28 +4990,27 @@ msgstr "Мережа"
 
 #: main/ui/ingame_options.menu:769 main/ui/options.menu:781
 msgid "Enable VoIP:"
-msgstr ""
+msgstr "Увімкнути голосовий чат:"
 
 #: main/ui/ingame_options.menu:770 main/ui/options.menu:782
-#, fuzzy
 msgid "Show VoIP Meter:"
-msgstr "Показувати відправника VoIP:"
+msgstr "Показувати VoIP-лічильник:"
 
 #: main/ui/ingame_options.menu:773 main/ui/options.menu:785
 msgid "Capture Gain:"
-msgstr ""
+msgstr "Підсилення захоплення:"
 
 #: main/ui/ingame_options.menu:774 main/ui/options.menu:786
 msgid "Capture Multiplier:"
-msgstr ""
+msgstr "Множник захоплення:"
 
 #: main/ui/ingame_options.menu:775 main/ui/options.menu:787
 msgid "Voice Activation Detection:"
-msgstr ""
+msgstr "Виявлення голосової активності:"
 
 #: main/ui/ingame_options.menu:776 main/ui/options.menu:788
 msgid "VAD Threshold:"
-msgstr ""
+msgstr "Поріг голосової активації:"
 
 #: main/ui/ingame_options.menu:825 main/ui/options.menu:837
 msgid "Range Marker for Blueprint:"
@@ -5045,27 +5054,27 @@ msgstr "Модифікації"
 
 #: main/ui/options.menu:230
 msgid "Set Profile"
-msgstr ""
+msgstr "Встановити профіль"
 
 #: main/ui/say.menu:56
 msgid "Say"
-msgstr ""
+msgstr "Сказати"
 
 #: main/ui/say.menu:58
 msgid "Say to team"
-msgstr ""
+msgstr "Сказати до загону"
 
 #: main/ui/say.menu:60
 msgid "Say to admins"
-msgstr ""
+msgstr "Сказати до адміністраторів"
 
 #: main/ui/say.menu:62
 msgid "Say to IRC"
-msgstr ""
+msgstr "Сказати у IRC"
 
 #: main/ui/say.menu:64
 msgid "Command"
-msgstr ""
+msgstr "Команда"
 
 #: main/ui/vsays.menu:59
 msgid "Attack"

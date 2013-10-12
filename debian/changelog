@@ -1,3 +1,41 @@
+unvanquished (0.20.0-1) unstable; urgency=low
+
+  * Add unvanquished-dev, initially containing only unvanquishedmap.
+    (No manpages yet.)
+  * Remove some cruft from debian/rules.
+  * Update build flags: use external opus where possible, no GLSL optimiser.
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Sun, 06 Oct 2013 15:47:12 +0100
+
+unvanquished (0.19.0-2) unstable; urgency=low
+
+  * Fix crashlog file location.
+  * Text console scrolling fixes.
+  * Put the configuration symlinks in the right directory.
+  * Tidy up /etc/default/unvanquished-server; support IPv6.
+  * Update and fix the default configuration.
+  * Update and fix documentation.
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Sat, 21 Sep 2013 23:56:47 +0100
+
+unvanquished (0.19.0-1) unstable; urgency=low
+
+  * Release of alpha 19.
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Sun, 01 Sep 2013 21:17:27 +0100
+
+unvanquished (0.18.0-2) unstable; urgency=low
+
+  * .pk3 downloading fixes:
+    - Work around a reported French locale problem by forcing LANG=C.
+    - Tighten up md5sums file validation; fail sooner if download fails.
+    - Properly handle full URLs.
+    - Continue with the next file if a download fails.
+  * Fix an authentication problem which would occur if playing locally then
+    connecting to a server on which you're a registered player.
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Fri, 16 Aug 2013 15:55:55 +0100
+
 unvanquished (0.18.0-1) unstable; urgency=low
 
   * Release of alpha 18.

@@ -45,10 +45,10 @@ extern "C" {
 #define PRODUCT_NAME            "Unvanquished"
 #define PRODUCT_NAME_UPPER      "UNVANQUISHED" // Case, No spaces
 #define PRODUCT_NAME_LOWER      "unvanquished" // No case, No spaces
-#define PRODUCT_VERSION         "0.18.0"
+#define PRODUCT_VERSION         "0.20.0"
 
 #define ENGINE_NAME             "Daemon Engine"
-#define ENGINE_VERSION          "0.18.0"
+#define ENGINE_VERSION          "0.20.0"
 
 #ifdef REVISION
 # define Q3_VERSION             PRODUCT_NAME " " PRODUCT_VERSION " " REVISION
@@ -208,6 +208,11 @@ extern int memcmp( void *, void *, size_t );
 #else
 #define Q_vsnprintf vsnprintf
 #define Q_snprintf  snprintf
+#endif
+
+// msvc does not have roundf
+#ifdef _MSC_VER
+#define roundf( f ) ( floor( f + 0.5 ) )
 #endif
 
 #ifdef _MSC_VER
@@ -624,14 +629,7 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 	STATIC_INLINE long XreaL_Q_ftol( float f ) IFDECLARE
 #ifdef Q3_VM_INSTANTIATE
 	{
-#if id386_sse && defined( _MSC_VER )
-		static int tmp;
-		__asm fld f
-		__asm fistp tmp
-		__asm mov  eax, tmp
-#else
 		return ( long ) f;
-#endif
 	}
 #endif
 
@@ -639,8 +637,9 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 #ifdef Q3_VM_INSTANTIATE
 	{
 		float y;
-
-#if idppc
+#if id386_sse || defined( __x86_64__ )
+		_mm_store_ss( &y, _mm_rsqrt_ss( _mm_load_ss( &number ) ) );
+#elif idppc
 		float x = 0.5f * number;
 
 #ifdef __GNUC__
@@ -649,32 +648,6 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 		y = __frsqrte( number );
 #endif
 		return y * ( 1.5f - ( x * y * y ) );
-
-#elif id386_3dnow && defined __GNUC__
-//#error Q_rqsrt
-		asm volatile
-		(
-		  // lo                                   | hi
-		  "femms                               \n"
-		  "movd           (%%eax),        %%mm0\n" // in                                   |       -
-		  "pfrsqrt        %%mm0,          %%mm1\n" // 1/sqrt(in)                           | 1/sqrt(in)    (approx)
-		  "movq           %%mm1,          %%mm2\n" // 1/sqrt(in)                           | 1/sqrt(in)    (approx)
-		  "pfmul          %%mm1,          %%mm1\n" // (1/sqrt(in))?                        | (1/sqrt(in))?         step 1
-		  "pfrsqit1       %%mm0,          %%mm1\n" // intermediate                                                 step 2
-		  "pfrcpit2       %%mm2,          %%mm1\n" // 1/sqrt(in) (full 24-bit precision)                           step 3
-		  "movd           %%mm1,        (%%edx)\n"
-		  "femms                               \n"
-		  :
-		  : "a"( &number ), "d"( &y ) : "memory"
-		);
-#elif id386_sse && defined __GNUC__
-		asm volatile( "rsqrtss %0, %1" : "=x"( y ) : "x"( number ) );
-#elif id386_sse && defined _MSC_VER
-		__asm
-		{
-			rsqrtss xmm0, number
-			movss y, xmm0
-		}
 #else
 		union
 		{
@@ -715,56 +688,7 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 
 #define SQRTFAST( x ) ( 1.0f / Q_rsqrt( x ) )
 
-// fast float to int conversion
-#if id386 && !( ( defined __linux__ || defined __FreeBSD__ || defined __GNUC__ ) && ( defined __i386__ ) ) // rb010123
-	long myftol( float f );
-
-#elif defined( __MACOS__ )
-#define myftol( x ) (long)( x )
-#else
-	extern long int lrintf( float x );
-
-#define myftol( x ) lrintf( x )
-#endif
-
-#ifdef _MSC_VER
-	STATIC_INLINE long lrintf( float f )
-	{
-#ifdef _M_X64
-		return ( long )( ( f > 0.0f ) ? ( f + 0.5f ) : ( f - 0.5f ) );
-#else
-		int i;
-
-		_asm
-		{
-			fld f
-			fistp i
-		};
-
-		return i;
-#endif
-	}
-
-#endif
-
-#if id386_3dnow && defined __GNUC__ && 0
-	STATIC_INLINE float Q_recip( float in )
-	{
-		vec_t out;
-
-		femms();
-		asm volatile( "movd		(%%eax),	%%mm0\n""pfrcp		%%mm0,		%%mm1\n"                    // (approx)
-		              "pfrcpit1	%%mm1,		%%mm0\n"// (intermediate)
-		              "pfrcpit2	%%mm1,		%%mm0\n"// (full 24-bit)
-		              // out = mm0[low]
-		              "movd		%%mm0,		(%%edx)\n"::"a"( &in ), "d"( &out ) : "memory" );
-
-		femms();
-		return out;
-	}
-#else
-#	define Q_recip(x) ( 1.0f / (x) )
-#endif
+#define Q_recip(x) ( 1.0f / (x) )
 
 	byte         ClampByte( int i );
 	signed char  ClampChar( int i );
@@ -828,7 +752,7 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 
 #define DotProduct4(x, y)            (( x )[ 0 ] * ( y )[ 0 ] + ( x )[ 1 ] * ( y )[ 1 ] + ( x )[ 2 ] * ( y )[ 2 ] + ( x )[ 3 ] * ( y )[ 3 ] )
 
-#define SnapVector( v )              do { v[ 0 ] = ( (int)( v[ 0 ] ) ); v[ 1 ] = ( (int)( v[ 1 ] ) ); v[ 2 ] = ( (int)( v[ 2 ] ) ); } while ( 0 )
+#define SnapVector( v )              do { ( v )[ 0 ] = ( floor( ( v )[ 0 ] + 0.5f ) ); ( v )[ 1 ] = ( floor( ( v )[ 1 ] + 0.5f ) ); ( v )[ 2 ] = ( floor( ( v )[ 2 ] + 0.5f ) ); } while ( 0 )
 
 // just in case you don't want to use the macros
 	vec_t    _DotProduct( const vec3_t v1, const vec3_t v2 );
@@ -1632,10 +1556,9 @@ double rint( double x );
 #define KEYCATCH_MESSAGE 0x0004
 #define KEYCATCH_CGAME   0x0008
 
-#define KEYEVSTATE_DOWN 0
-#define KEYEVSTATE_CHAR 1
-#define KEYEVSTATE_BIT  2
-#define KEYEVSTATE_SUP  3
+#define KEYEVSTATE_DOWN 1
+#define KEYEVSTATE_CHAR 2
+#define KEYEVSTATE_SUP  8
 
 // sound channels
 // channel 0 never willingly overrides
@@ -1995,7 +1918,7 @@ double rint( double x );
 		ET_PUSHER,
 		ET_TELEPORTER,
 		ET_INVISIBLE,
-		ET_GRAPPLE,       // grapple hooked on wall
+		ET_FIRE,
 
 		ET_CORPSE,
 		ET_PARTICLE_SYSTEM,

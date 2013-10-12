@@ -133,6 +133,12 @@ NET
 // disables IPv6 multicast support if set.
 #define NET_DISABLEMCAST    0x08
 
+// right type anyway || ( DUAL && proto enabled && ( other proto disabled || appropriate IPv6 pref ) )
+#define NET_IS_IPv4( type ) ( ( type ) == NA_IP  || ( ( type ) == NA_IP_DUAL && ( net_enabled->integer & NET_ENABLEV4 ) && ( ( ~net_enabled->integer & NET_ENABLEV6) || ( ~net_enabled->integer & NET_PRIOV6 ) ) ) )
+#define NET_IS_IPv6( type ) ( ( type ) == NA_IP6 || ( ( type ) == NA_IP_DUAL && ( net_enabled->integer & NET_ENABLEV6 ) && ( ( ~net_enabled->integer & NET_ENABLEV4) || (  net_enabled->integer & NET_PRIOV6 ) ) ) )
+// if NA_IP_DUAL, get the preferred type (falling back on NA_IP)
+#define NET_TYPE( type )    ( NET_IS_IPv4( type ) ? NA_IP : NET_IS_IPv6( type ) ? NA_IP6 : ( ( type ) == NA_IP_DUAL ) ? NA_IP : ( type ) )
+
 #define PACKET_BACKUP       32 // number of old messages that must be kept on client and
 // server for delta comrpession and ping estimation
 #define PACKET_MASK         ( PACKET_BACKUP - 1 )
@@ -158,6 +164,7 @@ typedef enum
   NA_BROADCAST,
   NA_IP,
   NA_IP6,
+  NA_IP_DUAL,
   NA_MULTICAST6,
   NA_UNSPEC
 } netadrtype_t;
@@ -176,9 +183,12 @@ typedef struct
     byte           ip[ 4 ];
     byte           ip6[ 16 ];
 
-    unsigned short port;
+    unsigned short port; // port which is in use
+    unsigned short port4, port6; // ports to choose from
     unsigned long  scope_id; // Needed for IPv6 link-local addresses
 } netadr_t;
+
+extern cvar_t       *net_enabled;
 
 void       NET_Init( void );
 void       NET_Shutdown( void );
@@ -200,6 +210,10 @@ void       NET_JoinMulticast6( void );
 void       NET_LeaveMulticast6( void );
 
 void       NET_Sleep( int msec );
+
+#ifdef HAVE_GEOIP
+const char *NET_GeoIP_Country( const netadr_t *a );
+#endif
 
 //----(SA)  increased for larger submodel entity counts
 #define MAX_MSGLEN           32768 // max length of a message, which may
@@ -765,20 +779,21 @@ MISC
 // returned by Sys_GetProcessorFeatures
 typedef enum
 {
-  CF_RDTSC = 1 << 0,
-  CF_MMX = 1 << 1,
-  CF_MMX_EXT = 1 << 2,
-  CF_3DNOW = 1 << 3,
-  CF_3DNOW_EXT = 1 << 4,
-  CF_SSE = 1 << 5,
-  CF_SSE2 = 1 << 6,
-  CF_SSE3 = 1 << 7,
-  CF_SSSE3 = 1 << 8,
-  CF_SSE4_1 = 1 << 9,
-  CF_SSE4_2 = 1 << 10,
-  CF_HasHTT = 1 << 11,
-  CF_HasSerial = 1 << 12,
-  CF_Is64Bit = 1 << 13
+  CF_RDTSC = BIT( 0 ),
+  CF_MMX = BIT( 1 ),
+  CF_MMX_EXT = BIT( 2 ),
+  CF_3DNOW = BIT( 3 ),
+  CF_3DNOW_EXT = BIT( 4 ),
+  CF_SSE = BIT( 5 ),
+  CF_SSE2 = BIT( 6 ),
+  CF_SSE3 = BIT( 7 ),
+  CF_SSSE3 = BIT( 8 ),
+  CF_SSE4_1 = BIT( 9 ),
+  CF_SSE4_2 = BIT( 10 ),
+  CF_ALTIVEC = BIT( 11 ),
+  CF_HasHTT = BIT( 12 ),
+  CF_HasSerial = BIT( 13 ),
+  CF_Is64Bit = BIT( 14 )
 } cpuFeatures_t;
 
 // TTimo
@@ -983,7 +998,7 @@ void     CL_Frame( int msec );
 qboolean CL_GameCommand( void );
 void     CL_KeyEvent( int key, qboolean down, unsigned time );
 
-void     CL_CharEvent( const char *key );
+void     CL_CharEvent( int c );
 
 // char events are for field typing, not game control
 
@@ -1128,7 +1143,7 @@ qboolean      Sys_RandomBytes( byte *string, int len );
 // the system console is shown when a dedicated server is running
 void          Sys_DisplaySystemConsole( qboolean show );
 
-cpuFeatures_t Sys_GetProcessorFeatures( void );
+int           Sys_GetProcessorFeatures( void );
 
 void          Sys_SetErrorText( const char *text );
 

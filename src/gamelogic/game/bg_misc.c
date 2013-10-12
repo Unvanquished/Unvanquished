@@ -52,12 +52,14 @@ static const buildableName_t bg_buildableNameList[] =
 	{ BA_A_TRAPPER,   "trapper",   "team_alien_trapper"   },
 	{ BA_A_BOOSTER,   "booster",   "team_alien_booster"   },
 	{ BA_A_HIVE,      "hive",      "team_alien_hive"      },
+	{ BA_A_LEECH,     "leech",     "team_alien_leech"    },
 	{ BA_H_SPAWN,     "telenode",  "team_human_spawn"     },
 	{ BA_H_MGTURRET,  "mgturret",  "team_human_mgturret"  },
 	{ BA_H_TESLAGEN,  "tesla",     "team_human_tesla"     },
 	{ BA_H_ARMOURY,   "arm",       "team_human_armoury"   },
 	{ BA_H_DCC,       "dcc",       "team_human_dcc"       },
 	{ BA_H_MEDISTAT,  "medistat",  "team_human_medistat"  },
+ 	{ BA_H_DRILL,     "drill",     "team_human_drill"     },
 	{ BA_H_REACTOR,   "reactor",   "team_human_reactor"   },
 	{ BA_H_REPEATER,  "repeater",  "team_human_repeater"  }
 };
@@ -117,26 +119,6 @@ const buildableAttributes_t *BG_Buildable( buildable_t buildable )
 {
 	return ( buildable > BA_NONE && buildable < BA_NUM_BUILDABLES ) ?
 	       &bg_buildableList[ buildable - 1 ] : &nullBuildable;
-}
-
-/*
-==============
-BG_BuildableAllowedInStage
-==============
-*/
-qboolean BG_BuildableAllowedInStage( buildable_t buildable,
-                                     stage_t stage )
-{
-	int stages = BG_Buildable( buildable )->stages;
-
-	if ( stages & ( 1 << stage ) )
-	{
-		return qtrue;
-	}
-	else
-	{
-		return qfalse;
-	}
 }
 
 /*
@@ -232,7 +214,6 @@ typedef struct
 	class_t number;
 	const char* name;
 	weapon_t startWeapon;
-	int children[ 3 ];
 } classData_t;
 
 static classData_t bg_classData[] =
@@ -240,80 +221,72 @@ static classData_t bg_classData[] =
 	{
 		PCL_NONE, //int     number;
 		"spectator", //char    *name;
-		WP_NONE, //weapon_t  startWeapon;
-		{ PCL_NONE,               PCL_NONE,             PCL_NONE }, //int     children[ 3 ];
+		WP_NONE //weapon_t  startWeapon;
 	},
 	{
 		PCL_ALIEN_BUILDER0, //int     number;
 		"builder", //char    *name;
-		WP_ABUILD, //weapon_t  startWeapon;
-		{ PCL_ALIEN_BUILDER0_UPG, PCL_ALIEN_LEVEL0,     PCL_NONE }, //int     children[ 3 ];
+		WP_ABUILD //weapon_t  startWeapon;
 	},
 	{
 		PCL_ALIEN_BUILDER0_UPG, //int     number;
 		"builderupg", //char    *name;
-		WP_ABUILD2, //weapon_t  startWeapon;
-		{ PCL_ALIEN_LEVEL0,       PCL_NONE,             PCL_NONE }, //int     children[ 3 ];
+		WP_ABUILD2 //weapon_t  startWeapon;
 	},
 	{
 		PCL_ALIEN_LEVEL0, //int     number;
 		"level0", //char    *name;
-		WP_ALEVEL0, //weapon_t  startWeapon;
-		{ PCL_ALIEN_LEVEL1,       PCL_NONE,             PCL_NONE }, //int     children[ 3 ];
+		WP_ALEVEL0 //weapon_t  startWeapon;
+	},
+    {
+		PCL_ALIEN_LEVEL0_UPG, //int     number;
+		"level0upg", //char    *name;
+		WP_ALEVEL0_UPG //weapon_t  startWeapon;
 	},
 	{
 		PCL_ALIEN_LEVEL1, //int     number;
 		"level1", //char    *name;
-		WP_ALEVEL1, //weapon_t  startWeapon;
-		{ PCL_ALIEN_LEVEL2,       PCL_ALIEN_LEVEL1_UPG, PCL_NONE }, //int     children[ 3 ];
+		WP_ALEVEL1 //weapon_t  startWeapon;
 	},
 	{
 		PCL_ALIEN_LEVEL1_UPG, //int     number;
 		"level1upg", //char    *name;
-		WP_ALEVEL1_UPG, //weapon_t  startWeapon;
-		{ PCL_ALIEN_LEVEL2,       PCL_NONE,             PCL_NONE }, //int     children[ 3 ];
+		WP_ALEVEL1_UPG //weapon_t  startWeapon;
 	},
 	{
 		PCL_ALIEN_LEVEL2, //int     number;
 		"level2", //char    *name;
-		WP_ALEVEL2, //weapon_t  startWeapon;
-		{ PCL_ALIEN_LEVEL3,       PCL_ALIEN_LEVEL2_UPG, PCL_NONE }, //int     children[ 3 ];
+		WP_ALEVEL2 //weapon_t  startWeapon;
 	},
 	{
 		PCL_ALIEN_LEVEL2_UPG, //int     number;
 		"level2upg", //char    *name;
-		WP_ALEVEL2_UPG, //weapon_t  startWeapon;
-		{ PCL_ALIEN_LEVEL3,       PCL_NONE,             PCL_NONE }, //int     children[ 3 ];
+		WP_ALEVEL2_UPG //weapon_t  startWeapon;
 	},
 	{
 		PCL_ALIEN_LEVEL3, //int     number;
 		"level3", //char    *name;
-		WP_ALEVEL3, //weapon_t  startWeapon;
-		{ PCL_ALIEN_LEVEL4,       PCL_ALIEN_LEVEL3_UPG, PCL_NONE }, //int     children[ 3 ];
+		WP_ALEVEL3 //weapon_t  startWeapon;
 	},
 	{
 		PCL_ALIEN_LEVEL3_UPG, //int     number;
 		"level3upg", //char    *name;
-		WP_ALEVEL3_UPG, //weapon_t  startWeapon;
-		{ PCL_ALIEN_LEVEL4,       PCL_NONE,             PCL_NONE }, //int     children[ 3 ];
+		WP_ALEVEL3_UPG //weapon_t  startWeapon;
 	},
 	{
 		PCL_ALIEN_LEVEL4, //int     number;
 		"level4", //char    *name;
-		WP_ALEVEL4, //weapon_t  startWeapon;
-		{ PCL_NONE,               PCL_NONE,             PCL_NONE }, //int     children[ 3 ];
+		WP_ALEVEL4 //weapon_t  startWeapon;
 	},
 	{
 		PCL_HUMAN, //int     number;
 		"human_base", //char    *name;
-		WP_NONE, //special-cased in g_client.c          //weapon_t  startWeapon;
-		{ PCL_NONE,               PCL_NONE,             PCL_NONE }, //int     children[ 3 ];
+		WP_NONE //special-cased in g_client.c          //weapon_t  startWeapon;
 	},
 	{
 		PCL_HUMAN_BSUIT, //int     number;
 		"human_bsuit", //char    *name;
-		WP_NONE, //special-cased in g_client.c          //weapon_t  startWeapon;
-		{ PCL_NONE,               PCL_NONE,             PCL_NONE }, //int     children[ 3 ];
+		WP_NONE //special-cased in g_client.c          //weapon_t  startWeapon;
 	}
 };
 
@@ -352,19 +325,6 @@ const classAttributes_t *BG_Class( class_t pClass )
 {
 	return ( pClass >= PCL_NONE && pClass < PCL_NUM_CLASSES ) ?
 	       &bg_classList[ pClass ] : &nullClass;
-}
-
-/*
-==============
-BG_ClassAllowedInStage
-==============
-*/
-qboolean BG_ClassAllowedInStage( class_t pClass,
-                                 stage_t stage )
-{
-	int stages = BG_Class( pClass )->stages;
-
-	return stages & ( 1 << stage );
 }
 
 static classModelConfig_t bg_classModelConfigList[ PCL_NUM_CLASSES ];
@@ -433,63 +393,53 @@ qboolean BG_ClassHasAbility( class_t pClass, int ability )
 BG_ClassCanEvolveFromTo
 ==============
 */
-int BG_ClassCanEvolveFromTo( class_t fclass,
-                             class_t tclass,
-                             int credits, int stage,
-                             int cost )
+int BG_ClassCanEvolveFromTo( class_t from, class_t to, int credits )
 {
-	int i, j, best, value;
+	int fromCost, toCost, evolveCost;
 
-	if ( credits < cost || fclass == PCL_NONE || tclass == PCL_NONE ||
-	     fclass == tclass )
+	if ( from == to ||
+	     from <= PCL_NONE || from >= PCL_NUM_CLASSES ||
+	     to <= PCL_NONE || to >= PCL_NUM_CLASSES )
 	{
 		return -1;
 	}
 
-	for ( i = 0; i < bg_numClasses; i++ )
+	if ( !BG_ClassUnlocked( to ) || BG_ClassDisabled( to ) )
 	{
-		if ( bg_classList[ i ].number != fclass )
-		{
-			continue;
-		}
-
-		best = credits + 1;
-
-		for ( j = 0; j < 3; j++ )
-		{
-			int thruClass, evolveCost;
-
-			thruClass = bg_classList[ i ].children[ j ];
-
-			if ( thruClass == PCL_NONE || !BG_ClassAllowedInStage( thruClass, stage ) ||
-			     !BG_ClassIsAllowed( thruClass ) )
-			{
-				continue;
-			}
-
-			evolveCost = BG_Class( thruClass )->cost * ALIEN_CREDITS_PER_KILL;
-
-			if ( thruClass == tclass )
-			{
-				value = cost + evolveCost;
-			}
-			else
-			{
-				value = BG_ClassCanEvolveFromTo( thruClass, tclass, credits, stage,
-				                                 cost + evolveCost );
-			}
-
-			if ( value >= 0 && value < best )
-			{
-				best = value;
-			}
-		}
-
-		return best <= credits ? best : -1;
+		return -1;
 	}
 
-	Com_Printf( S_WARNING "fallthrough in BG_ClassCanEvolveFromTo\n" );
-	return -1;
+	fromCost = BG_Class( from )->cost;
+	toCost = BG_Class( to )->cost;
+
+	// don't allow devolving
+	if ( toCost < fromCost )
+	{
+		return -1;
+	}
+
+	// classes w/o a cost are for spawning only
+	if ( toCost == 0 )
+	{
+		// (adv.) granger may evolve into adv. granger or dretch at no cost
+		if ( ( from == PCL_ALIEN_BUILDER0 || from == PCL_ALIEN_BUILDER0_UPG ) &&
+		     ( to == PCL_ALIEN_BUILDER0_UPG || to == PCL_ALIEN_LEVEL0 ) )
+		{
+			return 0;
+		}
+
+		return -1;
+	}
+
+	// evolving between classes of euqal cost costs one evo
+	evolveCost = MAX( toCost - fromCost, CREDITS_PER_EVO );
+
+	if ( credits < evolveCost )
+	{
+		return -1;
+	}
+
+	return evolveCost;
 }
 
 /*
@@ -497,33 +447,18 @@ int BG_ClassCanEvolveFromTo( class_t fclass,
 BG_AlienCanEvolve
 ==============
 */
-qboolean BG_AlienCanEvolve( class_t pClass, int credits, int stage )
+qboolean BG_AlienCanEvolve( class_t from, int credits )
 {
-	int i, j, tclass;
+	class_t to;
 
-	for ( i = 0; i < bg_numClasses; i++ )
+	for ( to = PCL_NONE + 1; to < PCL_NUM_CLASSES; to++ )
 	{
-		if ( bg_classList[ i ].number != pClass )
+		if ( BG_ClassCanEvolveFromTo( from, to, credits ) >= 0 )
 		{
-			continue;
+			return qtrue;
 		}
-
-		for ( j = 0; j < 3; j++ )
-		{
-			tclass = bg_classList[ i ].children[ j ];
-
-			if ( tclass != PCL_NONE && BG_ClassAllowedInStage( tclass, stage ) &&
-			     BG_ClassIsAllowed( tclass ) &&
-			     credits >= BG_Class( tclass )->cost * ALIEN_CREDITS_PER_KILL )
-			{
-				return qtrue;
-			}
-		}
-
-		return qfalse;
 	}
 
-	Com_Printf( S_WARNING "fallthrough in BG_AlienCanEvolve\n" );
 	return qfalse;
 }
 
@@ -546,9 +481,6 @@ void BG_InitClassAttributes( void )
 		ca->number = cd->number;
 		ca->name = cd->name;
 		ca->startWeapon = cd->startWeapon;
-		ca->children[0] = cd->children[0];
-		ca->children[1] = cd->children[1];
-		ca->children[2] = cd->children[2];
 
 		ca->buildDist = 0.0f;
 		ca->bob = 0.0f;
@@ -575,6 +507,8 @@ void BG_InitClassModelConfigs( void )
 
 		BG_ParseClassModelFile( va( "configs/classes/%s.model.cfg",
 		                       BG_Class( i )->name ), cc );
+
+		cc->segmented = cc->modelName[0] ? BG_NonSegModel( va( "models/players/%s/animation.cfg", cc->modelName ) ) : qfalse;
 	}
 }
 
@@ -589,6 +523,7 @@ typedef struct
 static const weaponData_t bg_weaponsData[] =
 {
 	{ WP_ALEVEL0,           "level0"    },
+    { WP_ALEVEL0_UPG,       "level0upg" },
 	{ WP_ALEVEL1,           "level1"    },
 	{ WP_ALEVEL1_UPG,       "level1upg" },
 	{ WP_ALEVEL2,           "level2"    },
@@ -606,7 +541,6 @@ static const weaponData_t bg_weaponsData[] =
 	{ WP_FLAMER,            "flamer"    },
 	{ WP_PULSE_RIFLE,       "prifle"    },
 	{ WP_LUCIFER_CANNON,    "lcannon"   },
-	{ WP_GRENADE,           "grenade"   },
 	{ WP_LOCKBLOB_LAUNCHER, "lockblob"  },
 	{ WP_HIVE,              "hive"      },
 	{ WP_TESLAGEN,          "teslagen"  },
@@ -651,18 +585,6 @@ const weaponAttributes_t *BG_Weapon( weapon_t weapon )
 {
 	return ( weapon > WP_NONE && weapon < WP_NUM_WEAPONS ) ?
 	       &bg_weapons[ weapon - 1 ] : &nullWeapon;
-}
-
-/*
-==============
-BG_WeaponAllowedInStage
-==============
-*/
-qboolean BG_WeaponAllowedInStage( weapon_t weapon, stage_t stage )
-{
-	int stages = BG_Weapon( weapon )->stages;
-
-	return stages & ( 1 << stage );
 }
 
 /*
@@ -712,6 +634,7 @@ static const upgradeData_t bg_upgradesData[] =
 	{ UP_JETPACK,     "jetpack"  },
 	{ UP_BATTLESUIT,  "bsuit"    },
 	{ UP_GRENADE,     "gren"     },
+	{ UP_FIREBOMB,    "firebomb" },
 	{ UP_AMMO,        "ammo"     }
 };
 
@@ -753,18 +676,6 @@ const upgradeAttributes_t *BG_Upgrade( upgrade_t upgrade )
 }
 
 /*
-==============
-BG_UpgradeAllowedInStage
-==============
-*/
-qboolean BG_UpgradeAllowedInStage( upgrade_t upgrade, stage_t stage )
-{
-	int stages = BG_Upgrade( upgrade )->stages;
-
-	return stages & ( 1 << stage );
-}
-
-/*
 ===============
 BG_InitUpgradeAttributes
 ===============
@@ -792,6 +703,177 @@ void BG_InitUpgradeAttributes( void )
 
 ////////////////////////////////////////////////////////////////////////////////
 
+typedef struct
+{
+	int         number;
+	const char* name;
+} missileData_t;
+
+static const missileData_t bg_missilesData[] =
+{
+  { MIS_FLAMER,       "flamer"       },
+  { MIS_BLASTER,      "blaster"      },
+  { MIS_PRIFLE,       "prifle"       },
+  { MIS_LCANNON,      "lcannon"      },
+  { MIS_LCANNON2,     "lcannon2"     },
+  { MIS_GRENADE,      "grenade"      },
+  { MIS_FIREBOMB,     "firebomb"     },
+  { MIS_FIREBOMB_SUB, "firebomb_sub" },
+  { MIS_HIVE,         "hive"         },
+  { MIS_LOCKBLOB,     "lockblob"     },
+  { MIS_SLOWBLOB,     "slowblob"     },
+  { MIS_BOUNCEBALL,   "bounceball"   }
+};
+
+static const size_t              bg_numMissiles = ARRAY_LEN( bg_missilesData );
+static missileAttributes_t       bg_missiles[ ARRAY_LEN( bg_missilesData ) ];
+static const missileAttributes_t nullMissile = { 0 };
+
+/*
+==============
+BG_MissileByName
+==============
+*/
+const missileAttributes_t *BG_MissileByName( const char *name )
+{
+	int i;
+
+	for ( i = 0; i < bg_numMissiles; i++ )
+	{
+		if ( !Q_stricmp( bg_missiles[ i ].name, name ) )
+		{
+			return &bg_missiles[ i ];
+		}
+	}
+
+	return &nullMissile;
+}
+
+/*
+==============
+BG_Missile
+==============
+*/
+const missileAttributes_t *BG_Missile( missile_t missile )
+{
+	return ( missile > MIS_NONE && missile < MIS_NUM_MISSILES ) ?
+	       &bg_missiles[ missile - 1 ] : &nullMissile;
+}
+
+/*
+===============
+BG_InitMissileAttributes
+===============
+*/
+void BG_InitMissileAttributes( void )
+{
+	int                 i;
+	const missileData_t *md;
+	missileAttributes_t *ma;
+
+	for ( i = 0; i < bg_numMissiles; i++ )
+	{
+		md = &bg_missilesData[i];
+		ma = &bg_missiles[i];
+
+		Com_Memset( ma, 0, sizeof( missileAttributes_t ) );
+
+		ma->name   = md->name;
+		ma->number = md->number;
+
+		// for simplicity, read both from a single file
+		BG_ParseMissileAttributeFile( va( "configs/missiles/%s.missile.cfg", ma->name ), ma );
+		BG_ParseMissileDisplayFile(   va( "configs/missiles/%s.missile.cfg", ma->name ), ma );
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+typedef struct
+{
+	meansOfDeath_t number;
+	const char     *name;
+} meansOfDeathData_t;
+
+static const meansOfDeathData_t bg_meansOfDeathData[] =
+{
+	{ MOD_ABUILDER_CLAW, "MOD_ABUILDER_CLAW" },
+	{ MOD_UNKNOWN, "MOD_UNKNOWN" },
+	{ MOD_SHOTGUN, "MOD_SHOTGUN" },
+	{ MOD_BLASTER, "MOD_BLASTER" },
+	{ MOD_PAINSAW, "MOD_PAINSAW" },
+	{ MOD_MACHINEGUN, "MOD_MACHINEGUN" },
+	{ MOD_CHAINGUN, "MOD_CHAINGUN" },
+	{ MOD_PRIFLE, "MOD_PRIFLE" },
+	{ MOD_MDRIVER, "MOD_MDRIVER" },
+	{ MOD_LASGUN, "MOD_LASGUN" },
+	{ MOD_LCANNON, "MOD_LCANNON" },
+	{ MOD_LCANNON_SPLASH, "MOD_LCANNON_SPLASH" },
+	{ MOD_FLAMER, "MOD_FLAMER" },
+	{ MOD_FLAMER_SPLASH, "MOD_FLAMER_SPLASH" },
+	{ MOD_BURN, "MOD_BURN" },
+	{ MOD_GRENADE, "MOD_GRENADE" },
+	{ MOD_WEIGHT_H, "MOD_WEIGHT_H" },
+	{ MOD_WATER, "MOD_WATER" },
+	{ MOD_SLIME, "MOD_SLIME" },
+	{ MOD_LAVA, "MOD_LAVA" },
+	{ MOD_CRUSH, "MOD_CRUSH" },
+	{ MOD_TELEFRAG, "MOD_TELEFRAG" },
+	{ MOD_FALLING, "MOD_FALLING" },
+	{ MOD_SUICIDE, "MOD_SUICIDE" },
+	{ MOD_TARGET_LASER, "MOD_TARGET_LASER" },
+	{ MOD_TRIGGER_HURT, "MOD_TRIGGER_HURT" },
+	{ MOD_ABUILDER_CLAW, "MOD_ABUILDER_CLAW" },
+	{ MOD_LEVEL0_BITE, "MOD_LEVEL0_BITE" },
+	{ MOD_LEVEL1_CLAW, "MOD_LEVEL1_CLAW" },
+	{ MOD_LEVEL1_PCLOUD, "MOD_LEVEL1_PCLOUD" },
+	{ MOD_LEVEL3_CLAW, "MOD_LEVEL3_CLAW" },
+	{ MOD_LEVEL3_POUNCE, "MOD_LEVEL3_POUNCE" },
+	{ MOD_LEVEL3_BOUNCEBALL, "MOD_LEVEL3_BOUNCEBALL" },
+	{ MOD_LEVEL2_CLAW, "MOD_LEVEL2_CLAW" },
+	{ MOD_LEVEL2_ZAP, "MOD_LEVEL2_ZAP" },
+	{ MOD_LEVEL4_CLAW, "MOD_LEVEL4_CLAW" },
+	{ MOD_LEVEL4_TRAMPLE, "MOD_LEVEL4_TRAMPLE" },
+	{ MOD_WEIGHT_A, "MOD_WEIGHT_A" },
+	{ MOD_SLOWBLOB, "MOD_SLOWBLOB" },
+	{ MOD_POISON, "MOD_POISON" },
+	{ MOD_SWARM, "MOD_SWARM" },
+	{ MOD_HSPAWN, "MOD_HSPAWN" },
+	{ MOD_TESLAGEN, "MOD_TESLAGEN" },
+	{ MOD_MGTURRET, "MOD_MGTURRET" },
+	{ MOD_REACTOR, "MOD_REACTOR" },
+	{ MOD_ASPAWN, "MOD_ASPAWN" },
+	{ MOD_ATUBE, "MOD_ATUBE" },
+	{ MOD_OVERMIND, "MOD_OVERMIND" },
+	{ MOD_DECONSTRUCT, "MOD_DECONSTRUCT" },
+	{ MOD_REPLACE, "MOD_REPLACE" },
+	{ MOD_NOCREEP, "MOD_NOCREEP" }
+};
+
+static const size_t bg_numMeansOfDeath = ARRAY_LEN( bg_meansOfDeathData );
+
+/*
+==============
+BG_MeansOfDeathByName
+==============
+*/
+meansOfDeath_t BG_MeansOfDeathByName( const char *name )
+{
+	int i;
+
+	for ( i = 0; i < bg_numMeansOfDeath; i++ )
+	{
+		if ( !Q_stricmp( bg_meansOfDeathData[ i ].name, name ) )
+		{
+			return bg_meansOfDeathData[ i ].number;
+		}
+	}
+
+	return MOD_UNKNOWN;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 /*
 ================
 BG_InitAllConfigs
@@ -809,6 +891,9 @@ void BG_InitAllConfigs( void )
 	BG_InitClassModelConfigs();
 	BG_InitWeaponAttributes();
 	BG_InitUpgradeAttributes();
+	BG_InitMissileAttributes();
+
+	BG_CheckConfigVars();
 
 	config_loaded = qtrue;
 }
@@ -834,23 +919,30 @@ void BG_UnloadAllConfigs( void )
     for ( i = 0; i < bg_numBuildables; i++ )
     {
         buildableAttributes_t *ba = &bg_buildableList[i];
-        BG_Free( (char *)ba->humanName );
-        BG_Free( (char *)ba->info );
+
+        if ( ba )
+        {
+            BG_Free( (char *)ba->humanName );
+            BG_Free( (char *)ba->info );
+        }
     }
 
     for ( i = 0; i < bg_numClasses; i++ )
     {
         classAttributes_t *ca = &bg_classList[i];
 
-        // Do not free the statically allocated empty string
-        if( *ca->info != '\0' )
+        if ( ca )
         {
-            BG_Free( (char *)ca->info );
-        }
+            // Do not free the statically allocated empty string
+            if( ca->info && *ca->info != '\0' )
+            {
+                BG_Free( (char *)ca->info );
+            }
 
-        if( *ca->fovCvar != '\0' )
-        {
-            BG_Free( (char *)ca->fovCvar );
+            if( ca->fovCvar && *ca->fovCvar != '\0' )
+            {
+                BG_Free( (char *)ca->fovCvar );
+            }
         }
     }
 
@@ -862,22 +954,30 @@ void BG_UnloadAllConfigs( void )
     for ( i = 0; i < bg_numWeapons; i++ )
     {
         weaponAttributes_t *wa = &bg_weapons[i];
-        BG_Free( (char *)wa->humanName );
 
-        if( *wa->info != '\0' )
+        if ( wa )
         {
-            BG_Free( (char *)wa->info );
+            BG_Free( (char *)wa->humanName );
+
+            if( wa->info && *wa->info != '\0' )
+            {
+                BG_Free( (char *)wa->info );
+            }
         }
     }
 
     for ( i = 0; i < bg_numUpgrades; i++ )
     {
         upgradeAttributes_t *ua = &bg_upgrades[i];
-        BG_Free( (char *)ua->humanName );
 
-        if( *ua->info != '\0' )
+        if ( ua )
         {
-            BG_Free( (char *)ua->info );
+            BG_Free( (char *)ua->humanName );
+
+            if( ua->info && *ua->info != '\0' )
+            {
+                BG_Free( (char *)ua->info );
+            }
         }
     }
 }
@@ -1268,7 +1368,7 @@ void BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s, qboolean 
 	}
 
 	// use misc field to store team/class info:
-	s->misc = ps->stats[ STAT_TEAM ] | ( ps->stats[ STAT_CLASS ] << 8 );
+	s->misc = ps->persistant[ PERS_TEAM ] | ( ps->stats[ STAT_CLASS ] << 8 );
 
 	// have to get the surfNormal through somehow...
 	VectorCopy( ps->grapplePoint, s->angles2 );
@@ -1401,7 +1501,7 @@ void BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_t *s
 	}
 
 	// use misc field to store team/class info:
-	s->misc = ps->stats[ STAT_TEAM ] | ( ps->stats[ STAT_CLASS ] << 8 );
+	s->misc = ps->persistant[ PERS_TEAM ] | ( ps->stats[ STAT_CLASS ] << 8 );
 
 	// have to get the surfNormal through somehow...
 	VectorCopy( ps->grapplePoint, s->angles2 );
@@ -1449,7 +1549,10 @@ Does the player hold a weapon?
 qboolean BG_InventoryContainsWeapon( int weapon, int stats[] )
 {
 	// humans always have a blaster
-	if ( stats[ STAT_TEAM ] == TEAM_HUMANS && weapon == WP_BLASTER )
+	// HACK: Determine team by checking for STAT_CLASS since we merged STAT_TEAM into PERS_TEAM
+	//       This hack will vanish as soon as the blast isn't the only possible sidearm weapon anymore
+	if ( ( stats[ STAT_CLASS ] == PCL_HUMAN || stats[ STAT_CLASS ] == PCL_HUMAN_BSUIT ) &&
+	     weapon == WP_BLASTER )
 	{
 		return qtrue;
 	}
@@ -1470,7 +1573,9 @@ int BG_SlotsForInventory( int stats[] )
 
 	slots = BG_Weapon( stats[ STAT_WEAPON ] )->slots;
 
-	if ( stats[ STAT_TEAM ] == TEAM_HUMANS )
+	// HACK: Determine team by checking for STAT_CLASS since we merged STAT_TEAM into PERS_TEAM
+	//       This hack will vanish as soon as the blast isn't the only possible sidearm weapon anymore
+	if ( stats[ STAT_CLASS ] == PCL_HUMAN || stats[ STAT_CLASS ] == PCL_HUMAN_BSUIT )
 	{
 		slots |= BG_Weapon( WP_BLASTER )->slots;
 	}
@@ -1714,31 +1819,37 @@ Returns the credit value of a player
 */
 int BG_GetValueOfPlayer( playerState_t *ps )
 {
-	int i, worth = 0;
+	int upgradeNum, equipmentPrice;
 
-	worth = BG_Class( ps->stats[ STAT_CLASS ] )->value;
+	equipmentPrice = 0;
 
 	// Humans have worth from their equipment as well
-	if ( ps->stats[ STAT_TEAM ] == TEAM_HUMANS )
+	if ( ps->persistant[ PERS_TEAM ] == TEAM_HUMANS )
 	{
-		for ( i = UP_NONE + 1; i < UP_NUM_UPGRADES; i++ )
+		for ( upgradeNum = UP_NONE + 1; upgradeNum < UP_NUM_UPGRADES; upgradeNum++ )
 		{
-			if ( BG_InventoryContainsUpgrade( i, ps->stats ) )
+			if ( BG_InventoryContainsUpgrade( upgradeNum, ps->stats ) )
 			{
-				worth += BG_Upgrade( i )->price;
+				equipmentPrice += BG_Upgrade( upgradeNum )->price;
 			}
 		}
 
-		for ( i = WP_NONE + 1; i < WP_NUM_WEAPONS; i++ )
+		for ( upgradeNum = WP_NONE + 1; upgradeNum < WP_NUM_WEAPONS; upgradeNum++ )
 		{
-			if ( BG_InventoryContainsWeapon( i, ps->stats ) )
+			if ( BG_InventoryContainsWeapon( upgradeNum, ps->stats ) )
 			{
-				worth += BG_Weapon( i )->price;
+				equipmentPrice += BG_Weapon( upgradeNum )->price;
 			}
 		}
 	}
 
-	return worth;
+	// In Tremulous, the value of equipment measured in alien class costs was half its price:
+	// Old evo gain for killing a human was (400 + equipmentPrice) / 400.
+	// One old evo equals a value of 200 (2 new evos), which is the new base value of a naked human.
+	// In order not to double the impact of human equipment, set its value to half its price for now.
+	equipmentPrice /= 2;
+
+	return BG_Class( ps->stats[ STAT_CLASS ] )->value + equipmentPrice;
 }
 
 /*
@@ -2269,7 +2380,7 @@ void BG_InitAllowedGameElements( void )
 BG_WeaponIsAllowed
 ============
 */
-qboolean BG_WeaponIsAllowed( weapon_t weapon )
+qboolean BG_WeaponDisabled( weapon_t weapon )
 {
 	int i;
 
@@ -2278,11 +2389,11 @@ qboolean BG_WeaponIsAllowed( weapon_t weapon )
 	{
 		if ( bg_disabledGameElements.weapons[ i ] == weapon )
 		{
-			return qfalse;
+			return qtrue;
 		}
 	}
 
-	return qtrue;
+	return qfalse;
 }
 
 /*
@@ -2290,7 +2401,7 @@ qboolean BG_WeaponIsAllowed( weapon_t weapon )
 BG_UpgradeIsAllowed
 ============
 */
-qboolean BG_UpgradeIsAllowed( upgrade_t upgrade )
+qboolean BG_UpgradeDisabled( upgrade_t upgrade )
 {
 	int i;
 
@@ -2299,32 +2410,32 @@ qboolean BG_UpgradeIsAllowed( upgrade_t upgrade )
 	{
 		if ( bg_disabledGameElements.upgrades[ i ] == upgrade )
 		{
-			return qfalse;
+			return qtrue;
 		}
 	}
 
-	return qtrue;
+	return qfalse;
 }
 
 /*
 ============
-BG_ClassIsAllowed
+BG_ClassDisabled
 ============
 */
-qboolean BG_ClassIsAllowed( class_t class )
+qboolean BG_ClassDisabled( class_t class_ )
 {
 	int i;
 
 	for ( i = 0; i < PCL_NUM_CLASSES &&
 	      bg_disabledGameElements.classes[ i ] != PCL_NONE; i++ )
 	{
-		if ( bg_disabledGameElements.classes[ i ] == class )
+		if ( bg_disabledGameElements.classes[ i ] == class_ )
 		{
-			return qfalse;
+			return qtrue;
 		}
 	}
 
-	return qtrue;
+	return qfalse;
 }
 
 /*
@@ -2332,7 +2443,7 @@ qboolean BG_ClassIsAllowed( class_t class )
 BG_BuildableIsAllowed
 ============
 */
-qboolean BG_BuildableIsAllowed( buildable_t buildable )
+qboolean BG_BuildableDisabled( buildable_t buildable )
 {
 	int i;
 
@@ -2341,11 +2452,11 @@ qboolean BG_BuildableIsAllowed( buildable_t buildable )
 	{
 		if ( bg_disabledGameElements.buildables[ i ] == buildable )
 		{
-			return qfalse;
+			return qtrue;
 		}
 	}
 
-	return qtrue;
+	return qfalse;
 }
 
 /*

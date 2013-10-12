@@ -1415,7 +1415,6 @@ static void RB_SurfaceMD5( md5Surface_t *srf )
 	md5Triangle_t   *tri;
 	static ALIGNED( 16, boneMatrix_t boneMatrices[ MAX_BONES ] );
 	boneMatrix_t    tmpMat;
-	md5Weight_t     *w;
 
 	GLimp_LogComment( "--- Tess_SurfaceMD5 ---\n" );
 
@@ -1457,33 +1456,31 @@ static void RB_SurfaceMD5( md5Surface_t *srf )
 
 	for ( j = 0, v = srf->verts; j < numVertexes; j++, v++ )
 	{
-#if id386_sse
+#if id386_sse || defined( __x86_64__ )
 		__m128 a, b, c;
 
-		w = v->weights[ 0 ];
-		BoneMatrixMulSSE( &a, &b, &c, w->boneWeight, boneMatrices[ w->boneIndex ] );
+		BoneMatrixMulSSE( &a, &b, &c, v->boneWeights[ 0 ], boneMatrices[ v->boneIndexes[ 0 ] ] );
 
-		for ( k = 1, w = v->weights[ 1 ]; k < v->numWeights; k++, w++ )
+		for ( k = 1; k < v->numWeights; k++ )
 		{
-			BoneMatrixMadSSE( &a, &b, &c, w->boneWeight, boneMatrices[ w->boneIndex ] );
+			BoneMatrixMadSSE( &a, &b, &c, v->boneWeights[ k ], boneMatrices[ v->boneIndexes[ k ] ] );
 		}
 
-		BoneMatrixTransform4SSE( a, b, c, v->position, tess.xyz[ tess.numVertexes + j ].v );
-		BoneMatrixTransform4NormalizeSSE( a, b, c, v->normal, tess.normal[ tess.numVertexes + j ].v );
+		BoneMatrixTransformPointSSE( a, b, c, v->position, tess.xyz[ tess.numVertexes + j ].v );
+		BoneMatrixTransformNormalNSSE( a, b, c, v->normal, tess.normal[ tess.numVertexes + j ].v );
 #else
-		w = v->weights[ 0 ];
-		BoneMatrixMul( tmpMat, w->boneWeight, boneMatrices[ w->boneIndex ] );
+		BoneMatrixMul( tmpMat, v->boneWeights[ 0 ], boneMatrices[ v->boneIndexes[ 0 ] ] );
 
-		for ( k = 1, w = v->weights[ 1 ]; k < v->numWeights; k++, w++ )
+		for ( k = 1; k < v->numWeights; k++ )
 		{
-			BoneMatrixMad( tmpMat, w->boneWeight, boneMatrices[ w->boneIndex ] );
+			BoneMatrixMad( tmpMat, v->boneWeights[ k ], boneMatrices[ v->boneIndexes[ k ] ] );
 		}
 
 		BoneMatrixTransformPoint( tmpMat, v->position, tess.xyz[ tess.numVertexes + j ].v );
 		tess.xyz[ tess.numVertexes + j ].v[ 3 ] = 1;
 
 		BoneMatrixTransformNormal( tmpMat, v->normal, tess.normal[ tess.numVertexes + j ].v );
-		VectorNormalize( tess.normal[ tess.numVertexes + j ].v );
+		VectorNormalizeFast( tess.normal[ tess.numVertexes + j ].v );
 #endif
 
 		tess.texCoords0[ tess.numVertexes + j ].v[ 0 ] = v->texCoords[ 0 ];
@@ -1727,7 +1724,6 @@ void ( *rb_surfaceTable[ SF_NUM_SURFACE_TYPES ] )( void * ) =
 	( void ( * )( void * ) ) RB_SurfaceMesh,  // SF_MD3,
 	( void ( * )( void * ) ) RB_SurfaceCMesh,  // SF_MDC,
 	( void ( * )( void * ) ) RB_SurfaceAnim,  // SF_MDS,
-	( void ( * )( void * ) ) RB_MDM_SurfaceAnim,  // SF_MDM,
 	( void ( * )( void * ) ) RB_SurfaceMD5,  // SF_MD5,
 	( void ( * )( void * ) ) RB_SurfaceFlare,  // SF_FLARE,
 	( void ( * )( void * ) ) RB_SurfaceEntity,  // SF_ENTITY

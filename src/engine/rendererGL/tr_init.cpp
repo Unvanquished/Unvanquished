@@ -40,6 +40,7 @@ extern "C" {
 	cvar_t      *r_glMinorVersion;
 	cvar_t      *r_glCoreProfile;
 	cvar_t      *r_glDebugProfile;
+	cvar_t      *r_glAllowSoftware;
 
 	cvar_t      *r_flares;
 	cvar_t      *r_flareSize;
@@ -79,7 +80,6 @@ extern "C" {
 	cvar_t      *r_facePlaneCull;
 	cvar_t      *r_showcluster;
 	cvar_t      *r_nocurves;
-	cvar_t      *r_nobatching;
 	cvar_t      *r_noLightScissors;
 	cvar_t      *r_noLightVisCull;
 	cvar_t      *r_noInteractionSort;
@@ -156,14 +156,12 @@ extern "C" {
 	cvar_t      *r_debugShadowMaps;
 	cvar_t      *r_noShadowFrustums;
 	cvar_t      *r_noLightFrustums;
-	cvar_t      *r_shadowMapLuminanceAlpha;
 	cvar_t      *r_shadowMapLinearFilter;
 	cvar_t      *r_lightBleedReduction;
 	cvar_t      *r_overDarkeningFactor;
 	cvar_t      *r_shadowMapDepthScale;
 	cvar_t      *r_parallelShadowSplits;
 	cvar_t      *r_parallelShadowSplitWeight;
-	cvar_t      *r_lightSpacePerspectiveWarping;
 
 	cvar_t      *r_mode;
 	cvar_t      *r_collapseStages;
@@ -248,13 +246,6 @@ extern "C" {
 	cvar_t      *r_showParallelShadowSplits;
 	cvar_t      *r_showDecalProjectors;
 
-	cvar_t      *r_showDeferredDiffuse;
-	cvar_t      *r_showDeferredNormal;
-	cvar_t      *r_showDeferredSpecular;
-	cvar_t      *r_showDeferredPosition;
-	cvar_t      *r_showDeferredRender;
-	cvar_t      *r_showDeferredLight;
-
 	cvar_t      *r_vboFaces;
 	cvar_t      *r_vboCurves;
 	cvar_t      *r_vboTriangles;
@@ -266,14 +257,7 @@ extern "C" {
 	cvar_t      *r_vboDeformVertexes;
 	cvar_t      *r_vboSmoothNormals;
 
-#if defined( USE_BSP_CLUSTERSURFACE_MERGING )
-	cvar_t      *r_mergeClusterSurfaces;
-	cvar_t      *r_mergeClusterFaces;
-	cvar_t      *r_mergeClusterCurves;
-	cvar_t      *r_mergeClusterTriangles;
-#endif
-
-	cvar_t      *r_deferredShading;
+	cvar_t      *r_mergeLeafSurfaces;
 	cvar_t      *r_parallaxMapping;
 	cvar_t      *r_parallaxDepthScale;
 
@@ -311,6 +295,7 @@ extern "C" {
 	cvar_t      *r_bloomBlur;
 	cvar_t      *r_bloomPasses;
 	cvar_t      *r_rotoscope;
+	cvar_t      *r_FXAA;
 	cvar_t      *r_cameraPostFX;
 	cvar_t      *r_cameraVignette;
 	cvar_t      *r_cameraFilmGrain;
@@ -318,11 +303,9 @@ extern "C" {
 
 	cvar_t      *r_evsmPostProcess;
 
-#ifdef USE_GLSL_OPTIMIZER
-	cvar_t      *r_glslOptimizer;
-#endif
-
 	cvar_t      *r_fontScale;
+
+	glBroken_t  glBroken = {};
 
 	static void AssertCvarRange( cvar_t *cv, float minVal, float maxVal, qboolean shouldBeIntegral )
 	{
@@ -394,15 +377,33 @@ extern "C" {
 				glConfig.maxTextureSize = 0;
 			}
 
+			// handle GLSL brokenness here...
+			if ( !strcmp( glConfig.vendor_string, "Intel Open Source Technology Center" ) && strcmp( glConfig.version_string, "3" ) < 0 )
+			{
+				glBroken.FXAA = qtrue;
+			}
+
 #if defined( GLSL_COMPILE_STARTUP_ONLY )
 			GLSL_InitGPUShaders();
 #endif
+			glConfig.smpActive = qfalse;
+
+			if ( r_smp->integer )
+			{
+				ri.Printf( PRINT_ALL, "Trying SMP acceleration...\n" );
+
+				if ( GLimp_SpawnRenderThread( RB_RenderThread ) )
+				{
+					ri.Printf( PRINT_ALL, "...succeeded.\n" );
+					glConfig.smpActive = qtrue;
+				}
+				else
+				{
+					ri.Printf( PRINT_ALL, "...failed.\n" );
+				}
+			}
 		}
 
-		GL_CheckErrors();
-
-		// init command buffers and SMP
-		R_InitCommandBuffers();
 		GL_CheckErrors();
 
 		// set default state
@@ -1217,7 +1218,7 @@ extern "C" {
 		   }
 		 */
 
-		ri.Printf( PRINT_ALL, "GL_SHADING_LANGUAGE_VERSION: %s\n", glConfig2.shadingLanguageVersion );
+		ri.Printf( PRINT_ALL, "GL_SHADING_LANGUAGE_VERSION: %s\n", glConfig2.shadingLanguageVersionString );
 
 		ri.Printf( PRINT_ALL, "GL_MAX_VERTEX_UNIFORM_COMPONENTS %d\n", glConfig2.maxVertexUniforms );
 //	ri.Printf(PRINT_ALL, "GL_MAX_VARYING_FLOATS %d\n", glConfig2.maxVaryingFloats);
@@ -1322,6 +1323,11 @@ extern "C" {
 			}
 		}
 
+		if ( glBroken.FXAA )
+		{
+			ri.Printf( PRINT_DEVELOPER, "^3Not using FXAA: shader is not compilable on Intel/Mesa OpenGL 2.1\n" );
+		}
+
 		if ( glConfig.hardwareType == GLHW_NV_DX10 )
 		{
 			ri.Printf( PRINT_DEVELOPER, "Using NVIDIA DirectX 10 hardware features\n" );
@@ -1364,6 +1370,7 @@ extern "C" {
 		r_glMinorVersion = ri.Cvar_Get( "r_glMinorVersion", "", CVAR_LATCH );
 		r_glCoreProfile = ri.Cvar_Get( "r_glCoreProfile", "", CVAR_LATCH );
 		r_glDebugProfile = ri.Cvar_Get( "r_glDebugProfile", "", CVAR_LATCH );
+		r_glAllowSoftware = ri.Cvar_Get( "r_glAllowSoftware", "0", CVAR_LATCH );
 
 		// latched and archived variables
 		r_ext_compressed_textures = ri.Cvar_Get( "r_ext_compressed_textures", "0", CVAR_ARCHIVE | CVAR_LATCH );
@@ -1408,7 +1415,6 @@ extern "C" {
 		r_customaspect = ri.Cvar_Get( "r_customaspect", "1", CVAR_ARCHIVE | CVAR_LATCH );
 		r_simpleMipMaps = ri.Cvar_Get( "r_simpleMipMaps", "0", CVAR_ARCHIVE | CVAR_LATCH );
 		r_subdivisions = ri.Cvar_Get( "r_subdivisions", "4", CVAR_ARCHIVE | CVAR_LATCH );
-		r_deferredShading = ri.Cvar_Get( "r_deferredShading", "0", CVAR_ARCHIVE | CVAR_LATCH | CVAR_SHADER | CVAR_CHEAT );
 		r_parallaxMapping = ri.Cvar_Get( "r_parallaxMapping", "0", CVAR_ARCHIVE );
 		r_dynamicLightCastShadows = ri.Cvar_Get( "r_dynamicLightCastShadows", "1", CVAR_ARCHIVE );
 		r_precomputedLighting = ri.Cvar_Get( "r_precomputedLighting", "1", CVAR_ARCHIVE | CVAR_SHADER );
@@ -1443,8 +1449,6 @@ extern "C" {
 		r_smp = ri.Cvar_Get( "r_smp", "0", CVAR_ARCHIVE | CVAR_LATCH );
 
 		// temporary latched variables that can only change over a restart
-		r_displayRefresh = ri.Cvar_Get( "r_displayRefresh", "0", CVAR_LATCH );
-		AssertCvarRange( r_displayRefresh, 0, 200, qtrue );
 #if defined( COMPAT_Q3A ) || defined( COMPAT_ET )
 		r_overBrightBits = ri.Cvar_Get( "r_overBrightBits", "1", CVAR_LATCH );
 		r_mapOverBrightBits = ri.Cvar_Get( "r_mapOverBrightBits", "2", CVAR_LATCH );
@@ -1462,7 +1466,6 @@ extern "C" {
 		r_singleShader = ri.Cvar_Get( "r_singleShader", "0", CVAR_CHEAT | CVAR_LATCH );
 		r_stitchCurves = ri.Cvar_Get( "r_stitchCurves", "1", CVAR_CHEAT | CVAR_LATCH );
 		r_debugShadowMaps = ri.Cvar_Get( "r_debugShadowMaps", "0", CVAR_CHEAT | CVAR_SHADER );
-		r_shadowMapLuminanceAlpha = ri.Cvar_Get( "r_shadowMapLuminanceAlpha", "1", CVAR_ARCHIVE | CVAR_LATCH );
 		r_shadowMapLinearFilter = ri.Cvar_Get( "r_shadowMapLinearFilter", "1", CVAR_CHEAT | CVAR_LATCH );
 		r_lightBleedReduction = ri.Cvar_Get( "r_lightBleedReduction", "0", CVAR_CHEAT | CVAR_SHADER );
 		r_overDarkeningFactor = ri.Cvar_Get( "r_overDarkeningFactor", "30.0", CVAR_CHEAT | CVAR_SHADER );
@@ -1471,8 +1474,6 @@ extern "C" {
 		r_parallelShadowSplitWeight = ri.Cvar_Get( "r_parallelShadowSplitWeight", "0.9", CVAR_CHEAT );
 		r_parallelShadowSplits = ri.Cvar_Get( "r_parallelShadowSplits", "2", CVAR_CHEAT | CVAR_SHADER );
 		AssertCvarRange( r_parallelShadowSplits, 0, MAX_SHADOWMAPS - 1, qtrue );
-
-		r_lightSpacePerspectiveWarping = ri.Cvar_Get( "r_lightSpacePerspectiveWarping", "1", CVAR_CHEAT );
 
 		// archived variables that can change at any time
 		r_lodBias = ri.Cvar_Get( "r_lodBias", "0", CVAR_ARCHIVE );
@@ -1503,15 +1504,8 @@ extern "C" {
 		r_vboDeformVertexes = ri.Cvar_Get( "r_vboDeformVertexes", "0", CVAR_ARCHIVE | CVAR_LATCH );
 		r_vboSmoothNormals = ri.Cvar_Get( "r_vboSmoothNormals", "1", CVAR_ARCHIVE | CVAR_LATCH );
 
-#if defined( USE_BSP_CLUSTERSURFACE_MERGING )
-		r_mergeClusterSurfaces = ri.Cvar_Get( "r_mergeClusterSurfaces", "0", CVAR_CHEAT );
-		r_mergeClusterFaces = ri.Cvar_Get( "r_mergeClusterFaces", "1", CVAR_CHEAT );
-		r_mergeClusterCurves = ri.Cvar_Get( "r_mergeClusterCurves", "1", CVAR_CHEAT );
-		r_mergeClusterTriangles = ri.Cvar_Get( "r_mergeClusterTriangles", "1", CVAR_CHEAT );
-#endif
-
-		r_dynamicBspOcclusionCulling = ri.Cvar_Get( "r_dynamicBspOcclusionCulling", "0", CVAR_ARCHIVE );
-		r_dynamicEntityOcclusionCulling = ri.Cvar_Get( "r_dynamicEntityOcclusionCulling", "0", CVAR_CHEAT );
+		r_mergeLeafSurfaces = ri.Cvar_Get( "r_mergeLeafSurfaces", "0", CVAR_ARCHIVE | CVAR_LATCH );
+		r_dynamicBspOcclusionCulling = ri.Cvar_Get( "r_dynamicBspOcclusionCulling", "0", CVAR_ARCHIVE );		r_dynamicEntityOcclusionCulling = ri.Cvar_Get( "r_dynamicEntityOcclusionCulling", "0", CVAR_CHEAT );
 		r_dynamicLightOcclusionCulling = ri.Cvar_Get( "r_dynamicLightOcclusionCulling", "0", CVAR_CHEAT );
 		r_chcMaxPrevInvisNodesBatchSize = ri.Cvar_Get( "r_chcMaxPrevInvisNodesBatchSize", "50", CVAR_CHEAT );
 		r_chcMaxVisibleFrames = ri.Cvar_Get( "r_chcMaxVisibleFrames", "10", CVAR_CHEAT );
@@ -1519,12 +1513,6 @@ extern "C" {
 		r_chcIgnoreLeaves = ri.Cvar_Get( "r_chcIgnoreLeaves", "0", CVAR_CHEAT );
 
 		r_hdrRendering = ri.Cvar_Get( "r_hdrRendering", "0", CVAR_ARCHIVE | CVAR_SHADER );
-
-		// HACK turn off HDR for development
-		if ( r_deferredShading->integer )
-		{
-			AssertCvarRange( r_hdrRendering, 0, 0, qtrue );
-		}
 
 		r_hdrMinLuminance = ri.Cvar_Get( "r_hdrMinLuminance", "0.18", CVAR_CHEAT );
 		r_hdrMaxLuminance = ri.Cvar_Get( "r_hdrMaxLuminance", "3000", CVAR_CHEAT );
@@ -1547,6 +1535,7 @@ extern "C" {
 		r_bloomBlur = ri.Cvar_Get( "r_bloomBlur", "1.0", CVAR_CHEAT );
 		r_bloomPasses = ri.Cvar_Get( "r_bloomPasses", "2", CVAR_CHEAT );
 		r_rotoscope = ri.Cvar_Get( "r_rotoscope", "0", CVAR_ARCHIVE );
+		r_FXAA = ri.Cvar_Get( "r_FXAA", "0", CVAR_ARCHIVE );
 		r_cameraPostFX = ri.Cvar_Get( "r_cameraPostFX", "1", CVAR_ARCHIVE );
 		r_cameraVignette = ri.Cvar_Get( "r_cameraVignette", "0", CVAR_ARCHIVE );
 		r_cameraFilmGrain = ri.Cvar_Get( "r_cameraFilmGrain", "0", CVAR_ARCHIVE );
@@ -1559,7 +1548,6 @@ extern "C" {
 		r_debugSort = ri.Cvar_Get( "r_debugSort", "0", CVAR_CHEAT );
 
 		r_nocurves = ri.Cvar_Get( "r_nocurves", "0", CVAR_CHEAT );
-		r_nobatching = ri.Cvar_Get( "r_nobatching", "0", CVAR_CHEAT );
 		r_noLightScissors = ri.Cvar_Get( "r_noLightScissors", "0", CVAR_CHEAT );
 		r_noLightVisCull = ri.Cvar_Get( "r_noLightVisCull", "0", CVAR_CHEAT );
 		r_noInteractionSort = ri.Cvar_Get( "r_noInteractionSort", "0", CVAR_CHEAT );
@@ -1591,7 +1579,7 @@ extern "C" {
 		r_logFile = ri.Cvar_Get( "r_logFile", "0", CVAR_CHEAT );
 		r_debugSurface = ri.Cvar_Get( "r_debugSurface", "0", CVAR_CHEAT );
 		r_nobind = ri.Cvar_Get( "r_nobind", "0", CVAR_CHEAT );
-		r_clear = ri.Cvar_Get( "r_clear", "1", CVAR_CHEAT );
+		r_clear = ri.Cvar_Get( "r_clear", "0", CVAR_CHEAT );
 		r_offsetFactor = ri.Cvar_Get( "r_offsetFactor", "-1", CVAR_CHEAT );
 		r_offsetUnits = ri.Cvar_Get( "r_offsetUnits", "-2", CVAR_CHEAT );
 		r_forceSpecular = ri.Cvar_Get( "r_forceSpecular", "0", CVAR_CHEAT );
@@ -1705,17 +1693,6 @@ extern "C" {
 		r_showBspNodes = ri.Cvar_Get( "r_showBspNodes", "0", CVAR_CHEAT );
 		r_showParallelShadowSplits = ri.Cvar_Get( "r_showParallelShadowSplits", "0", CVAR_CHEAT | CVAR_SHADER );
 		r_showDecalProjectors = ri.Cvar_Get( "r_showDecalProjectors", "0", CVAR_CHEAT );
-
-		r_showDeferredDiffuse = ri.Cvar_Get( "r_showDeferredDiffuse", "0", CVAR_CHEAT );
-		r_showDeferredNormal = ri.Cvar_Get( "r_showDeferredNormal", "0", CVAR_CHEAT );
-		r_showDeferredSpecular = ri.Cvar_Get( "r_showDeferredSpecular", "0", CVAR_CHEAT );
-		r_showDeferredPosition = ri.Cvar_Get( "r_showDeferredPosition", "0", CVAR_CHEAT );
-		r_showDeferredRender = ri.Cvar_Get( "r_showDeferredRender", "0", CVAR_CHEAT );
-		r_showDeferredLight = ri.Cvar_Get( "r_showDeferredLight", "0", CVAR_CHEAT );
-
-#ifdef USE_GLSL_OPTIMIZER
-		r_glslOptimizer = ri.Cvar_Get( "r_glslOptimizer", "0", CVAR_ARCHIVE | CVAR_SHADER );
-#endif
 
 		r_fontScale = ri.Cvar_Get( "r_fontScale", "36", CVAR_ARCHIVE | CVAR_LATCH );
 
@@ -1861,6 +1838,8 @@ extern "C" {
 			glGenQueries( MAX_OCCLUSION_QUERIES, tr.occlusionQueryObjects );
 		}
 
+		R_InitVisTests();
+
 		GL_CheckErrors();
 
 		// print info
@@ -1904,7 +1883,6 @@ extern "C" {
 		{
 			R_SyncRenderThread();
 
-			R_ShutdownCommandBuffers();
 			R_ShutdownImages();
 			R_ShutdownVBOs();
 			R_ShutdownFBOs();
@@ -1947,28 +1925,16 @@ extern "C" {
 #if !defined( GLSL_COMPILE_STARTUP_ONLY )
 			GLSL_ShutdownGPUShaders();
 #endif
-
-			//GLimp_ShutdownRenderThread();
 		}
 
 		R_DoneFreeType();
 
 		// shut down platform specific OpenGL stuff
-
-		// Tr3B: this should be always executed if we want to avoid some GLSL problems with SMP
-		// Update: Having the JVM running with all its threads can cause problems with an old OpenGL context.
-		// Maybe an OpenGL driver problem. It is safer to destroy the context in that case or you will get really weird crashes when rendering stuff.
-		//
-
-#if !defined( SMP ) // && !defined(USE_JAVA)
-
 		if ( destroyWindow )
-#endif
 		{
 #if defined( GLSL_COMPILE_STARTUP_ONLY )
 			GLSL_ShutdownGPUShaders();
 #endif
-
 			GLimp_Shutdown();
 			ri.Tag_Free();
 		}

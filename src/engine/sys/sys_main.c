@@ -34,8 +34,6 @@ Maryland 20850 USA.
 
 #include "revision.h"
 
-#include <CPUInfo.h>
-
 #include <signal.h>
 #include <stdlib.h>
 #include <limits.h>
@@ -55,6 +53,7 @@ Maryland 20850 USA.
 
 #if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 #include <SDL.h>
+#include "sdl2_compat.h"
 #endif
 
 #include "sys_local.h"
@@ -192,46 +191,21 @@ void NORETURN Sys_Quit( void )
 Sys_GetProcessorFeatures
 =================
 */
-cpuFeatures_t Sys_GetProcessorFeatures( void )
+int Sys_GetProcessorFeatures( void )
 {
-#ifdef USE_CPUINFO
-	cpuFeatures_t features = 0;
-	CPUINFO       cpuinfo;
-
-	GetCPUInfo( &cpuinfo, CI_FALSE );
-
-	if ( HasCPUID( &cpuinfo ) ) { features |= CF_RDTSC; }
-
-	if ( HasMMX( &cpuinfo ) ) { features |= CF_MMX; }
-
-	if ( HasMMXExt( &cpuinfo ) ) { features |= CF_MMX_EXT; }
-
-	if ( Has3DNow( &cpuinfo ) ) { features |= CF_3DNOW; }
-
-	if ( Has3DNowExt( &cpuinfo ) ) { features |= CF_3DNOW_EXT; }
-
-	if ( HasSSE( &cpuinfo ) ) { features |= CF_SSE; }
-
-	if ( HasSSE2( &cpuinfo ) ) { features |= CF_SSE2; }
-
-	if ( HasSSE3( &cpuinfo ) ) { features |= CF_SSE3; }
-
-	if ( HasSSSE3( &cpuinfo ) ) { features |= CF_SSSE3; }
-
-	if ( HasSSE4_1( &cpuinfo ) ) { features |= CF_SSE4_1; }
-
-	if ( HasSSE4_2( &cpuinfo ) ) { features |= CF_SSE4_2; }
-
-	if ( HasHTT( &cpuinfo ) ) { features |= CF_HasHTT; }
-
-	if ( HasSerial( &cpuinfo ) ) { features |= CF_HasSerial; }
-
-	if ( Is64Bit( &cpuinfo ) ) { features |= CF_Is64Bit; }
-
-	return features;
-#else
-	return 0;
+	int features = 0;
+#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
+	if( SDL_HasRDTSC( ) ) features |= CF_RDTSC;
+	if( SDL_HasMMX( ) ) features |= CF_MMX;
+	if( SDL_Has3DNow( ) ) features |= CF_3DNOW;
+	if( SDL_HasSSE( ) ) features |= CF_SSE;
+	if( SDL_HasSSE2( ) ) features |= CF_SSE2;
+	if( SDL_HasSSE3( ) ) features |= CF_SSE3;
+	if( SDL_HasSSE41( ) ) features |= CF_SSE4_1;
+	if( SDL_HasSSE42( ) ) features |= CF_SSE4_2;
+	if( SDL_HasAltiVec( ) ) features |= CF_ALTIVEC;
 #endif
+	return features;
 }
 
 /*
@@ -586,6 +560,20 @@ void NORETURN Sys_SigHandler( int signal )
 main
 =================
 */
+
+#ifdef DEDICATED
+#define UNVANQUISHED_URL ""
+#else
+#define UNVANQUISHED_URL " [unv://ADDRESS[:PORT]]"
+#endif
+
+void Sys_HelpText( const char *binaryName )
+{
+	printf( PRODUCT_NAME " " PRODUCT_VERSION "\n"
+	        "Usage: %s" UNVANQUISHED_URL " [+COMMAND...]\n"
+	        , binaryName );
+}
+
 int main( int argc, char **argv )
 {
 	int  i;
@@ -593,12 +581,28 @@ int main( int argc, char **argv )
 
 #if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 	// Run time
-	const SDL_version *ver = SDL_Linked_Version();
+	SDL_version ver;
+	SDL_GetVersion( &ver );
 #endif
 
 #ifdef OPENMP
 	int nthreads, tid, procs, maxt, inpar, dynamic, nested;
 #endif
+
+	if ( argc > 1 )
+	{
+		if ( !strcmp( argv[1], "--help" ) || !strcmp( argv[1], "-h" ) )
+		{
+			Sys_HelpText( argv[0] );
+			return 0;
+		}
+
+		if ( !strcmp( argv[1], "--version" ) || !strcmp( argv[1], "-v" ) )
+		{
+			printf( PRODUCT_NAME " " PRODUCT_VERSION "\n" );
+			return 0;
+		}
+	}
 
 #if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 	// SDL version check
@@ -613,12 +617,12 @@ int main( int argc, char **argv )
   XSTRING(MINSDL_MINOR) "." \
   XSTRING(MINSDL_PATCH)
 
-	if ( SDL_VERSIONNUM( ver->major, ver->minor, ver->patch ) <
+	if ( SDL_VERSIONNUM( ver.major, ver.minor, ver.patch ) <
 	     SDL_VERSIONNUM( MINSDL_MAJOR, MINSDL_MINOR, MINSDL_PATCH ) )
 	{
 		Sys_Dialog( DT_ERROR, va( "SDL version " MINSDL_VERSION " or greater is required, "
 		                          "but only version %d.%d.%d was found. You may be able to obtain a more recent copy "
-		                          "from http://www.libsdl.org/.", ver->major, ver->minor, ver->patch ), "SDL Library Too Old" );
+		                          "from http://www.libsdl.org/.", ver.major, ver.minor, ver.patch ), "SDL Library Too Old" );
 
 		Sys_Exit( 1 );
 	}

@@ -36,7 +36,6 @@ int         trap_Parse_SourceFileAndLine( int handle, char *filename, int *line 
 
 #ifdef CGAME
 sfxHandle_t trap_S_RegisterSound( const char *sample, qboolean compressed );
-int         trap_S_SoundDuration( sfxHandle_t handle );
 
 #endif
 
@@ -62,7 +61,7 @@ BG_VoiceList
 */
 static voice_t *BG_VoiceList( void )
 {
-	char    fileList[ MAX_VOICES * ( MAX_VOICE_NAME_LEN + 8 ) ] = { "" };
+	char    fileList[ MAX_VOICES * ( MAX_VOICE_NAME_LEN + 6 ) ] = { "" };
 	int     numFiles, i, fileLen = 0;
 	int     count = 0;
 	char    *filePtr;
@@ -105,7 +104,7 @@ static voice_t *BG_VoiceList( void )
 			continue;
 		}
 
-		if ( fileLen > MAX_VOICE_NAME_LEN + 8 )
+		if ( fileLen >= MAX_VOICE_NAME_LEN + 6 )
 		{
 			Com_Printf( S_WARNING "MAX_VOICE_NAME_LEN is %d. "
 			            "skipping \"%s\", filename too long\n", MAX_VOICE_NAME_LEN, filePtr );
@@ -207,12 +206,12 @@ static qboolean BG_VoiceParseTrack( int handle, voiceTrack_t *voiceTrack )
 			{
 				found = qtrue;
 
-				if ( voiceTrack->class < 0 )
+				if ( voiceTrack->pClass < 0 )
 				{
-					voiceTrack->class = 0;
+					voiceTrack->pClass = 0;
 				}
 
-				voiceTrack->class |= ( 1 << token.intvalue );
+				voiceTrack->pClass |= ( 1 << token.intvalue );
 				foundToken = trap_Parse_ReadToken( handle, &token );
 			}
 
@@ -340,12 +339,12 @@ static voiceTrack_t *BG_VoiceParseCommand( int handle )
 		{
 #ifdef CGAME
 			voiceTracks->track = trap_S_RegisterSound( token.string, qfalse );
-			voiceTracks->duration = trap_S_SoundDuration( voiceTracks->track );
+			voiceTracks->duration = 0; // FIXME: Was always zero...
 #endif
 		}
 
 		voiceTracks->team = -1;
-		voiceTracks->class = -1;
+		voiceTracks->pClass = -1;
 		voiceTracks->weapon = -1;
 		voiceTracks->enthusiasm = 0;
 		voiceTracks->text = NULL;
@@ -503,7 +502,7 @@ void BG_PrintVoices( voice_t *voices, int debugLevel )
 				if ( debugLevel > 2 )
 				{
 					Com_Printf( "    team -> %d\n", voiceTrack->team );
-					Com_Printf( "    class -> %d\n", voiceTrack->class );
+					Com_Printf( "    class -> %d\n", voiceTrack->pClass );
 					Com_Printf( "    weapon -> %d\n", voiceTrack->weapon );
 					Com_Printf( "    enthusiasm -> %d\n", voiceTrack->enthusiasm );
 #ifdef CGAME
@@ -651,7 +650,7 @@ voiceTrack_t *BG_VoiceTrackFind( voiceTrack_t *head, team_t team,
 	while ( vt )
 	{
 		if ( ( vt->team >= 0 && !( vt->team  & ( 1 << team ) ) ) ||
-		     ( vt->class >= 0 && !( vt->class & ( 1 << class ) ) ) ||
+		     ( vt->pClass >= 0 && !( vt->pClass & ( 1 << class ) ) ) ||
 		     vt->enthusiasm > enthusiasm )
 		{
 			vt = vt->next;
@@ -688,7 +687,7 @@ voiceTrack_t *BG_VoiceTrackFind( voiceTrack_t *head, team_t team,
 		j++;
 
 		if ( ( vt->team >= 0 && !( vt->team  & ( 1 << team ) ) ) ||
-		     ( vt->class >= 0 && !( vt->class & ( 1 << class ) ) ) ||
+		     ( vt->pClass >= 0 && !( vt->pClass & ( 1 << class ) ) ) ||
 		     vt->enthusiasm != highestMatch )
 		{
 			vt = vt->next;

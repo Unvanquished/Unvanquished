@@ -799,6 +799,7 @@ void RE_RenderScene( const refdef_t *fd )
 	r_firstSceneLight = r_numLights;
 	r_firstScenePoly = r_numPolys;
 	r_firstScenePolybuffer = r_numPolybuffers;
+	r_firstSceneVisTest = r_numVisTests;
 
 	tr.frontEndMsec += ri.Milliseconds() - startTime;
 }
@@ -837,6 +838,41 @@ void RE_RestoreViewParms( void )
 
 /*
 ================
+R_UpdateVisTests
+
+Update the vis tests with the results
+================
+*/
+void R_UpdateVisTests( void )
+{
+	int i;
+	int numVisTests = backEndData[ tr.smpFrame ]->numVisTests;
+
+	for ( i = 0; i < numVisTests; i++ )
+	{
+		visTestResult_t *res = &backEndData[ tr.smpFrame ]->visTests[ i ];
+		visTest_t *test;
+
+		test = &tr.visTests[ res->visTestHandle - 1 ];
+
+		if ( !test->registered )
+		{
+			continue;
+		}
+
+		// make sure these are testing the same thing
+		if ( VectorCompare( test->position, res->position ) && test->area == res->area && 
+			test->depthAdjust == res->depthAdjust )
+		{
+			test->lastResult = res->lastResult;
+		}
+	}
+
+	backEndData[ tr.smpFrame ]->numVisTests = 0;
+}
+
+/*
+================
 RE_RegisterVisTest
 
 Reserves a VisTest handle. This can be used to query the visibility
@@ -849,27 +885,23 @@ qhandle_t RE_RegisterVisTest( void )
 	int hTest;
 	visTest_t *test;
 
-	for( hTest = 0; hTest < tr.numVisTests; hTest++ ) {
-		test = tr.visTests[ hTest ];
-		if( !test->registered )
+	if ( tr.numVisTests >= MAX_VISTESTS )
+	{
+		ri.Printf( PRINT_WARNING, "WARNING: RE_RegisterVisTest - MAX_VISTESTS hit\n" );
+	}
+
+	for ( hTest = 0; hTest < MAX_VISTESTS; hTest++ )
+	{
+		test = &tr.visTests[ hTest ];
+		if ( !test->registered )
+		{
 			break;
-	}
-
-	if( hTest >= tr.numVisTests ) {
-		if( tr.numVisTests == MAX_VISTESTS ) {
-			ri.Printf( PRINT_WARNING, "WARNING: RE_RegisterVisTest - MAX_VISTESTS hit\n" );
-			return 0;
 		}
-
-		hTest = tr.numVisTests++;
-		test = (visTest_t *)ri.Hunk_Alloc( sizeof( visTest_t ), h_low );
-		tr.visTests[ hTest ] = test;
 	}
 
-	memset( test, 0, sizeof( visTest_t ) );
-	glGenQueries( 1, &test->hQuery );
-	glGenQueries( 1, &test->hQueryRef );
+	memset( test, 0, sizeof( *test ) );
 	test->registered = qtrue;
+	tr.numVisTests++;
 
 	return hTest + 1;
 }
@@ -886,21 +918,45 @@ void RE_AddVisTestToScene( qhandle_t hTest, vec3_t pos, float depthAdjust,
 			   float area )
 {
 	visTest_t *test;
+	visTestResult_t *result;
 
-	if( r_numVisTests == MAX_VISTESTS ) {
+	if ( r_numVisTests == MAX_VISTESTS )
+	{
 		ri.Printf( PRINT_WARNING, "WARNING: RE_AddVisTestToScene - MAX_VISTESTS hit\n" );
 		return;
 	}
 
-	if( hTest <= 0 || hTest > MAX_VISTESTS ||
-	    !(test = tr.visTests[ hTest - 1 ] ) )
+	if ( hTest <= 0 || hTest > MAX_VISTESTS )
+	{
 		return;
+	}
+
+	test = &tr.visTests[ hTest - 1 ];
+
+	result = &backEndData[ tr.smpFrame ]->visTests[ r_numVisTests++ ];
+
+	// cancel the currently running query if the parameters change
+	if ( !VectorCompare( test->position, pos ) || test->depthAdjust != depthAdjust ||
+	     test->area != area )
+	{
+		result->discardExisting = qtrue;
+	}
+	else
+	{
+		result->discardExisting = qfalse;
+	}
+
+	VectorCopy( pos, result->position );
+	result->depthAdjust = depthAdjust;
+	result->area = area;
+	result->visTestHandle = hTest;
+	result->lastResult = test->lastResult;
 
 	VectorCopy( pos, test->position );
 	test->depthAdjust = depthAdjust;
 	test->area = area;
 
-	backEndData[ tr.smpFrame ]->visTests[ r_numVisTests++ ] = test;
+	backEndData[ tr.smpFrame ]->numVisTests = r_numVisTests;
 }
 
 /*
@@ -912,32 +968,55 @@ Query the last available result of a VisTest.
 */
 float RE_CheckVisibility( qhandle_t hTest )
 {
-	if( hTest <= 0 || hTest > MAX_VISTESTS || !tr.visTests[ hTest - 1 ] )
-		return 0.0f;
+	visTest_t *test;
 
-	return tr.visTests[ hTest - 1 ]->lastResult;
+	if ( hTest <= 0 || hTest > MAX_VISTESTS )
+	{
+		return 0.0f;
+	}
+
+	test = &tr.visTests[ hTest - 1 ];
+
+	return test->lastResult;
 }
 
 void RE_UnregisterVisTest( qhandle_t hTest )
 {
-	if( hTest <= 0 || hTest > tr.numVisTests || !tr.visTests[ hTest - 1 ] )
+	if ( hTest <= 0 || hTest > MAX_VISTESTS )
+	{
 		return;
+	}
+	
+	tr.visTests[ hTest - 1 ].registered = qfalse;
+	tr.numVisTests--;
+}
 
-	glDeleteQueries( 1, &tr.visTests[ hTest - 1 ]->hQuery );
-	glDeleteQueries( 1, &tr.visTests[ hTest - 1 ]->hQueryRef );
-	tr.visTests[ hTest - 1 ]->registered = qfalse;
+void R_InitVisTests( void )
+{
+	int hTest;
+
+	memset( tr.visTests, 0, sizeof( tr.visTests ) );
+	tr.numVisTests = 0 ;
+
+	for ( hTest = 0; hTest < MAX_VISTESTS; hTest++ )
+	{
+		visTestQueries_t *test = &backEnd.visTestQueries[ hTest ];
+
+		glGenQueries( 1, &test->hQuery );
+		glGenQueries( 1, &test->hQueryRef );
+		test->running  = qfalse;
+	}
 }
 
 void R_ShutdownVisTests( void )
 {
 	int hTest;
 
-	for( hTest = 0; hTest < tr.numVisTests; hTest++ ) {
-		if( !tr.visTests[ hTest ]->registered )
-			continue;
+	for ( hTest = 0; hTest < MAX_VISTESTS; hTest++ )
+	{
+		visTestQueries_t *test = &backEnd.visTestQueries[ hTest ];
 
-		glDeleteQueries( 1, &tr.visTests[ hTest ]->hQuery );
-		glDeleteQueries( 1, &tr.visTests[ hTest ]->hQueryRef );
-		tr.visTests[ hTest ]->registered = qfalse;
+		glDeleteQueries( 1, &test->hQuery );
+		glDeleteQueries( 1, &test->hQueryRef );
 	}
 }

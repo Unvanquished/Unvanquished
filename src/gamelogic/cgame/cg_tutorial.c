@@ -35,7 +35,6 @@ static bind_t bindings[] =
 {
 	{ "+useitem",       N_( "Activate Upgrade" ),                      { -1, -1 } },
 	{ "+speed",         N_( "Run/Walk" ),                              { -1, -1 } },
-	{ "+dodge",         N_( "Dodge" ),                                 { -1, -1 } },
 	{ "+sprint",        N_( "Sprint" ),                                { -1, -1 } },
 	{ "+moveup",        N_( "Jump" ),                                  { -1, -1 } },
 	{ "+movedown",      N_( "Crouch" ),                                { -1, -1 } },
@@ -174,7 +173,7 @@ static entityState_t *CG_BuildableInRange( playerState_t *ps, float *healthFract
 	}
 
 	if ( es->eType == ET_BUILDABLE &&
-	     ps->stats[ STAT_TEAM ] == BG_Buildable( es->modelindex )->team )
+	     ps->persistant[ PERS_TEAM ] == BG_Buildable( es->modelindex )->team )
 	{
 		return es;
 	}
@@ -275,11 +274,18 @@ static void CG_AlienLevel0Text( char *text, playerState_t *ps )
 
 	Q_strcat( text, MAX_TUTORIAL_TEXT,
 	          _( "Touch humans to damage them\n"
-	             "Look at their heads (or jump) to try to bite their heads\n"
-	             "Head-bites cause more damage\n" ) );
+	             "Aim at their heads to cause more damage\n" ) );
+
 	Q_strcat( text, MAX_TUTORIAL_TEXT,
 	          va( _( "Press %s to walk on walls\n" ),
 	              CG_KeyNameForCommand( "+movedown" ) ) );
+
+	if ( ps->stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL0_UPG )
+	{
+		Q_strcat( text, MAX_TUTORIAL_TEXT,
+		          va( _( "Press %s to pounce\n" ),
+		              CG_KeyNameForCommand( "+attack2" ) ) );
+	}
 }
 
 /*
@@ -549,10 +555,6 @@ static void CG_HumanText( char *text, playerState_t *ps )
 	Q_strcat( text, MAX_TUTORIAL_TEXT,
 	          va( _( "Press %s and any direction to sprint\n" ),
 	              CG_KeyNameForCommand( "+sprint" ) ) );
-
-	Q_strcat( text, MAX_TUTORIAL_TEXT,
-	          va( _( "Press %s and back or strafe to dodge\n" ),
-	              CG_KeyNameForCommand( "+dodge" ) ) );
 }
 
 /*
@@ -637,7 +639,7 @@ const char *CG_TutorialText( void )
 
 	if ( refreshBindings == 0 )
 	{
-		CG_GetBindings( ps->stats[ STAT_TEAM ] );
+		CG_GetBindings( ps->persistant[ PERS_TEAM ] );
 	}
 
 	refreshBindings = ( refreshBindings + 1 ) % BINDING_REFRESH_INTERVAL;
@@ -659,6 +661,7 @@ const char *CG_TutorialText( void )
 					break;
 
 				case PCL_ALIEN_LEVEL0:
+				case PCL_ALIEN_LEVEL0_UPG:
 					CG_AlienLevel0Text( text, ps );
 					break;
 
@@ -690,11 +693,9 @@ const char *CG_TutorialText( void )
 					break;
 			}
 
-			if ( ps->stats[ STAT_TEAM ] == TEAM_ALIENS )
+			if ( ps->persistant[ PERS_TEAM ] == TEAM_ALIENS )
 			{
-				if ( BG_AlienCanEvolve( ps->stats[ STAT_CLASS ],
-				                        ps->persistant[ PERS_CREDIT ],
-				                        cgs.alienStage ) )
+				if ( BG_AlienCanEvolve( ps->stats[ STAT_CLASS ], ps->persistant[ PERS_CREDIT ] ) )
 				{
 					Q_strcat( text, MAX_TUTORIAL_TEXT,
 					          va( _( "Press %s to evolve\n" ),
