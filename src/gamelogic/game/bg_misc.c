@@ -2611,7 +2611,7 @@ int cmdcmp( const void *a, const void *b )
 
 float BG_FlightVelocityToCoefficient( float velocity )
 {
-	return 1.0f / ( 1 + 15 * exp( -velocity / 166.6667f ) );
+	return 1.0f / ( 1 + 25 * exp( -velocity / 166.6667f ) );
 }
 
 /*

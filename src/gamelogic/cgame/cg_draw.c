@@ -1241,7 +1241,7 @@ static void CG_DrawPlayerHealthCross( rectDef_t *rect, vec4_t ref_color )
 float CG_ChargeProgress( void )
 {
 	float progress;
-	int   min = 0, max = 0;
+	int   min = 0, max = 0, stat = STAT_MISC;
 
 	if ( cg.snap->ps.weapon == WP_ALEVEL0_UPG )
 	{
@@ -1276,13 +1276,19 @@ float CG_ChargeProgress( void )
 		min = LCANNON_CHARGE_TIME_MIN;
 		max = LCANNON_CHARGE_TIME_MAX;
 	}
+	else if ( cg.snap->ps.weapon == WP_ALEVELFLY && cg.snap->ps.stats[ STAT_STATE ] && SS_FLYING )
+	{
+		min = -STAMINA_MAX;
+		max = STAMINA_MAX;
+		stat = STAT_STAMINA;
+	}
 
 	if ( max - min <= 0.0f )
 	{
 		return 0.0f;
 	}
 
-	progress = ( ( float ) cg.predictedPlayerState.stats[ STAT_MISC ] - min ) /
+	progress = ( ( float ) cg.predictedPlayerState.stats[ stat ] - min ) /
 	           ( max - min );
 
 	if ( progress > 1.0f )

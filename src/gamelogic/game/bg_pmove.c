@@ -335,7 +335,7 @@ static void PM_Drag( void )
 
 	VectorCopy( pm->ps->velocity, velocityDir );
 	speed = VectorNormalize( velocityDir );
-	drop = speed * 0.75f * pml.frametime;
+	drop = speed * 0.1f * pml.frametime;
 	speed -= drop;
 	VectorScale( velocityDir, speed, velocityDir );
 	VectorCopy( velocityDir, pm->ps->velocity );
