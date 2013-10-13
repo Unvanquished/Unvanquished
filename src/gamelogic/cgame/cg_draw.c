@@ -1643,6 +1643,98 @@ static void CG_DrawPlayerConfidenceBar( rectDef_t *rect, vec4_t foreColor, vec4_
 	trap_R_SetColor( NULL );
 }
 
+static void CG_DrawPlayerUnlockedItems( rectDef_t *rect, vec4_t foreColour )
+{
+	qboolean  vertical;
+	int       i, index, prev, gaps;
+	float     x, y, w, h;
+	team_t    team;
+
+	qhandle_t list[ WP_NUM_WEAPONS + UP_NUM_UPGRADES + PCL_NUM_CLASSES + BA_NUM_BUILDABLES + 4 ] = { 0 };
+
+#define CG_UNLOCKABLE_STEP_TO_NEXT if ( prev < index ) { ++gaps; ++index; } prev = index
+
+	trap_R_SetColor( foreColour );
+
+	// First, go through and find what's to be drawn (get the shader handles)
+	index = prev = gaps = 0;
+	team = cg.predictedPlayerState.persistant[ PERS_TEAM ];
+
+	if ( team == TEAM_HUMANS )
+	{
+		for ( i = 0; i < WP_NUM_WEAPONS; ++i )
+		{
+			if ( cg_weapons[ i ].weaponIcon && BG_Weapon( i )->team == team && BG_WeaponUnlocked( i ) )
+			{
+				list[ index++ ] = cg_weapons[ i ].weaponIcon;
+			}
+		}
+
+		CG_UNLOCKABLE_STEP_TO_NEXT;
+
+		for ( i = 0; i < UP_NUM_UPGRADES; ++i )
+		{
+			if ( cg_upgrades[ i ].upgradeIcon && BG_Upgrade( i )->team == team && BG_UpgradeUnlocked( i ) )
+			{
+				list[ index++ ] = cg_upgrades[ i ].upgradeIcon;
+			}
+		}
+	}
+	else
+	{
+		for ( i = 0; i < PCL_NUM_CLASSES; ++i )
+		{
+			if ( cg_classes[ i ].classIcon && BG_Weapon( BG_Class( i )->startWeapon )->team == team && BG_ClassUnlocked( i ) )
+			{
+				list[ index++ ] = cg_classes[ i ].classIcon;
+			}
+		}
+	}
+
+	CG_UNLOCKABLE_STEP_TO_NEXT;
+
+	for ( i = 0; i < BA_NUM_BUILDABLES; ++i )
+	{
+		if ( cg_buildables[ i ].buildableIcon && BG_Buildable( i )->team == team && BG_BuildableUnlocked( i ) )
+		{
+			list[ index++ ] = cg_buildables[ i ].buildableIcon;
+		}
+	}
+
+	// Got the icon list; prepare to draw
+	x = rect->x;
+	y = rect->y;
+	vertical = ( rect->h > rect->w );
+	h = vertical ? rect->w : rect->h;
+	w = h * cgDC.aspectScale;
+
+	// hard-wired centre align (for now)
+	if ( vertical )
+	{
+		y += ( rect->h - ( index * 2 - gaps ) * h / 2.0f ) / 2.0f;
+	}
+	else
+	{
+		x += ( rect->w - ( index * 2 - gaps ) * w / 2.0f ) / 2.0f;
+	}
+
+	// now draw the icons!
+	for ( i = 0; i < index; ++i )
+	{
+		if ( list[ i ] )
+		{
+			CG_DrawPic( x, y, w, h, list[ i ] );
+			if ( vertical ) { y += h; } else { x += w; }
+		}
+		else
+		{
+			if ( vertical ) { y += h / 2.0f; } else { x += w / 2.0f; }
+		}
+	}
+
+	trap_R_SetColor( NULL );
+}
+
 static void CG_DrawPlayerStaminaBar( rectDef_t *rect, vec4_t foreColor, qhandle_t shader )
 {
 	playerState_t *ps = &cg.snap->ps;
@@ -4313,6 +4405,10 @@ void CG_OwnerDraw( rectDef_t *rect, float text_x,
 
 		case CG_CONFIDENCE_BAR:
 			CG_DrawPlayerConfidenceBar( rect, foreColor, backColor, borderSize );
+			break;
+
+		case CG_UNLOCKED_ITEMS:
+			CG_DrawPlayerUnlockedItems( rect, foreColor );
 			break;
 
 		case CG_ALIENS_SCORE_LABEL:
