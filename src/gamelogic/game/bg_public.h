@@ -982,6 +982,7 @@ typedef struct
 
 	const char *name;
 	const char *info;
+	const char *icon;
 	const char *fovCvar;
 
 	int      unlockThreshold;
@@ -1048,6 +1049,7 @@ typedef struct
 	const char *humanName;
 	const char *info;
 	const char *entityName;
+	const char *icon;
 
 	trType_t    traj;
 	float       bounce;

@@ -862,6 +862,11 @@ typedef struct upgradeInfo_s
 
 typedef struct
 {
+	qhandle_t classIcon;
+} classInfo_t;
+
+typedef struct
+{
 	qboolean    looped;
 	qboolean    enabled;
 
@@ -875,6 +880,9 @@ typedef struct
 
 	//same number of sounds as animations
 	sound_t  sounds[ MAX_BUILDABLE_ANIMATIONS ];
+
+	qhandle_t buildableIcon;
+
 	qboolean md5;
 } buildableInfo_t;
 
@@ -1469,7 +1477,7 @@ extern  displayContextDef_t cgDC;
 
 extern  weaponInfo_t        cg_weapons[ 32 ];
 extern  upgradeInfo_t       cg_upgrades[ 32 ];
-
+extern  classInfo_t         cg_classes[ PCL_NUM_CLASSES ];
 extern  buildableInfo_t     cg_buildables[ BA_NUM_BUILDABLES ];
 
 extern  const vec3_t        cg_shaderColors[ SHC_NUM_SHADER_COLORS ];
@@ -1739,6 +1747,8 @@ void        CG_PrecacheClientInfo( class_t class, const char *model, const char 
 sfxHandle_t CG_CustomSound( int clientNum, const char *soundName );
 void        CG_PlayerDisconnect( vec3_t org );
 centity_t   *CG_GetPlayerLocation( void );
+
+void        CG_InitClasses( void );
 
 //
 // cg_buildable.c

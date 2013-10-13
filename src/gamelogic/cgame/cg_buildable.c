@@ -534,6 +534,7 @@ void CG_InitBuildables( void )
 	char         filename[ MAX_QPATH ];
 	char         soundfile[ MAX_QPATH ];
 	const char   *buildableName;
+	const char   *buildableIcon;
 	const char   *modelFile;
 	int          i;
 	int          j;
@@ -669,6 +670,12 @@ void CG_InitBuildables( void )
 				}
 			}
 		}
+
+		//icon
+		if ( ( buildableIcon = BG_Buildable( i )->icon ) )
+		{
+		        cg_buildables[ i ].buildableIcon = trap_R_RegisterShader( buildableIcon, RSF_DEFAULT );
+                }
 
 		cg.buildablesFraction = ( float ) i / ( float )( BA_NUM_BUILDABLES - 1 );
 		trap_UpdateScreen();
