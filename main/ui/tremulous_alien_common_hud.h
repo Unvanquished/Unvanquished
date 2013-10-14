@@ -312,8 +312,9 @@ itemDef
 itemDef
 {
 	name "unlocked"
-	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 1
-	rect 154 460 332 16 // bottom
+	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 1 // enabled item
+	backcolor ( COMMON_HUD_R / 2 + 0.25 ) ( COMMON_HUD_G / 2 + 0.25 ) ( COMMON_HUD_B / 2 + 0.25 ) 0.5 // disabled item
+	rect 154 460 332 20 // bottom
 	aspectBias ALIGN_CENTER
 	decoration
 	visible MENU_TRUE

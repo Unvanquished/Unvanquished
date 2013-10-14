@@ -1288,6 +1288,22 @@ void                      BG_ParseMissileAttributeFile( const char *filename, mi
 void                      BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma );
 
 // bg_teamprogress.c
+#define NUM_UNLOCKABLES WP_NUM_WEAPONS + UP_NUM_UPGRADES + BA_NUM_BUILDABLES + PCL_NUM_CLASSES
+
+typedef enum
+{
+	UNLT_WEAPON,
+	UNLT_UPGRADE,
+	UNLT_BUILDABLE,
+	UNLT_CLASS,
+	UNLT_NUM_UNLOCKABLETYPES
+} unlockableType_t;
+
+typedef struct {
+	int num;
+	int threshold;
+} confidenceThresholdIterator_t;
+
 void     BG_InitUnlockackables( void );
 void     BG_ImportUnlockablesFromMask( team_t team, int mask );
 int      BG_UnlockablesMask( team_t team );
@@ -1295,7 +1311,10 @@ qboolean BG_WeaponUnlocked( weapon_t weapon );
 qboolean BG_UpgradeUnlocked( upgrade_t upgrade );
 qboolean BG_BuildableUnlocked( buildable_t buildable );
 qboolean BG_ClassUnlocked( class_t class_ );
-int      BG_IterateConfidenceThresholds( int unlockableNum, team_t team , int *threshold, qboolean *unlocked );
+
+unlockableType_t              BG_UnlockableType( int num );
+int                           BG_UnlockableTypeIndex( int num );
+confidenceThresholdIterator_t BG_IterateConfidenceThresholds( confidenceThresholdIterator_t unlockableIter, team_t team, int *threshold, qboolean *unlocked );
 #ifdef GAME
 void     G_UpdateUnlockables( void );
 #endif

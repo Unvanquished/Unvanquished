@@ -1482,9 +1482,11 @@ static void CG_DrawPlayerConfidenceBar( rectDef_t *rect, vec4_t foreColor, vec4_
 	// data
 	playerState_t *ps;
 	float         confidence, rawFraction, fraction, glowFraction, glowOffset;
-	int           unlockableNum, threshold;
+	int           threshold;
 	team_t        team;
 	qboolean      unlocked;
+
+	confidenceThresholdIterator_t unlockableIter = { -1 };
 
 	// display
 	vec4_t        color;
@@ -1603,8 +1605,8 @@ static void CG_DrawPlayerConfidenceBar( rectDef_t *rect, vec4_t foreColor, vec4_
 	}
 
 	// draw threshold markers
-	unlockableNum = 0;
-	while ( unlockableNum = BG_IterateConfidenceThresholds( unlockableNum, team, &threshold, &unlocked ) )
+	while ( ( unlockableIter = BG_IterateConfidenceThresholds( unlockableIter, team, &threshold, &unlocked ) ),
+	        ( unlockableIter.num >= 0 ) )
 	{
 		fraction = threshold / CONFIDENCE_BAR_MAX;
 
@@ -1643,92 +1645,128 @@ static void CG_DrawPlayerConfidenceBar( rectDef_t *rect, vec4_t foreColor, vec4_
 	trap_R_SetColor( NULL );
 }
 
-static void CG_DrawPlayerUnlockedItems( rectDef_t *rect, vec4_t foreColour )
+static INLINE qhandle_t CG_GetUnlockableIcon( int num )
 {
-	qboolean  vertical;
-	int       i, index, prev, gaps;
-	float     x, y, w, h;
+	int index = BG_UnlockableTypeIndex( num );
+
+	switch ( BG_UnlockableType( num ) )
+	{
+		case UNLT_WEAPON:    return cg_weapons[ index ].weaponIcon;
+		case UNLT_UPGRADE:   return cg_upgrades[ index ].upgradeIcon;
+		case UNLT_BUILDABLE: return cg_buildables[ index ].buildableIcon;
+		case UNLT_CLASS:     return cg_classes[ index ].classIcon;
+	}
+	return 0;
+}
+
+static void CG_DrawPlayerUnlockedItems( rectDef_t *rect, vec4_t foreColour, vec4_t backColour, float borderSize )
+{
+	confidenceThresholdIterator_t unlockableIter = { -1, 1 }, previousIter;
+
+	// data
 	team_t    team;
 
-	qhandle_t list[ WP_NUM_WEAPONS + UP_NUM_UPGRADES + PCL_NUM_CLASSES + BA_NUM_BUILDABLES + 4 ] = { 0 };
+	// display
+	float     x, y, w, h, iw, ih;
+	qboolean  vertical;
 
-#define CG_UNLOCKABLE_STEP_TO_NEXT if ( prev < index ) { ++gaps; ++index; } prev = index
+	int       icons, counts;
+	int       count[ 32 ] = { 0 };
+	struct {
+		qhandle_t shader;
+		qboolean  unlocked;
+	} icon[ NUM_UNLOCKABLES ]; // more than enough(!)
 
-	trap_R_SetColor( foreColour );
-
-	// First, go through and find what's to be drawn (get the shader handles)
-	index = prev = gaps = 0;
 	team = cg.predictedPlayerState.persistant[ PERS_TEAM ];
 
-	if ( team == TEAM_HUMANS )
-	{
-		for ( i = 0; i < WP_NUM_WEAPONS; ++i )
-		{
-			if ( cg_weapons[ i ].weaponIcon && BG_Weapon( i )->team == team && BG_WeaponUnlocked( i ) )
-			{
-				list[ index++ ] = cg_weapons[ i ].weaponIcon;
-			}
-		}
-
-		CG_UNLOCKABLE_STEP_TO_NEXT;
-
-		for ( i = 0; i < UP_NUM_UPGRADES; ++i )
-		{
-			if ( cg_upgrades[ i ].upgradeIcon && BG_Upgrade( i )->team == team && BG_UpgradeUnlocked( i ) )
-			{
-				list[ index++ ] = cg_upgrades[ i ].upgradeIcon;
-			}
-		}
-	}
-	else
-	{
-		for ( i = 0; i < PCL_NUM_CLASSES; ++i )
-		{
-			if ( cg_classes[ i ].classIcon && BG_Weapon( BG_Class( i )->startWeapon )->team == team && BG_ClassUnlocked( i ) )
-			{
-				list[ index++ ] = cg_classes[ i ].classIcon;
-			}
-		}
-	}
-
-	CG_UNLOCKABLE_STEP_TO_NEXT;
-
-	for ( i = 0; i < BA_NUM_BUILDABLES; ++i )
-	{
-		if ( cg_buildables[ i ].buildableIcon && BG_Buildable( i )->team == team && BG_BuildableUnlocked( i ) )
-		{
-			list[ index++ ] = cg_buildables[ i ].buildableIcon;
-		}
-	}
-
-	// Got the icon list; prepare to draw
 	x = rect->x;
 	y = rect->y;
-	vertical = ( rect->h > rect->w );
-	h = vertical ? rect->w : rect->h;
-	w = h * cgDC.aspectScale;
+	w = rect->w;
+	h = rect->h;
 
-	// hard-wired centre align (for now)
+	vertical = ( h > w );
+
+	// adjust for borders around the confidence bar, but only along one axis
 	if ( vertical )
 	{
-		y += ( rect->h - ( index * 2 - gaps ) * h / 2.0f ) / 2.0f;
-	}
-	else
+	        x += borderSize;
+	        w -= 2.0f * borderSize;
+        }
+        else
+        {
+	        y += borderSize;
+	        h -= 2.0f * borderSize;
+        }
+
+	ih = vertical ? w : h;
+	iw = ih * cgDC.aspectScale;
+
+	icons = counts = 0;
+
+	for (;;)
 	{
-		x += ( rect->w - ( index * 2 - gaps ) * w / 2.0f ) / 2.0f;
+		qhandle_t shader;
+		int       threshold;
+		qboolean  unlocked;
+
+		previousIter = unlockableIter;
+		unlockableIter = BG_IterateConfidenceThresholds( unlockableIter, team, &threshold, &unlocked );
+
+		if ( previousIter.threshold != unlockableIter.threshold && icons )
+		{
+			count[ counts++ ] = icons;
+		}
+
+		// maybe exit the loop?
+		if ( unlockableIter.num < 0 )
+		{
+			break;
+		}
+
+		// okay, next icon
+		shader = CG_GetUnlockableIcon( unlockableIter.num );
+
+		if ( shader )
+		{
+			icon[ icons ].shader = shader;
+			icon[ icons].unlocked = unlocked;
+			++icons;
+		}
 	}
 
-	// now draw the icons!
-	for ( i = 0; i < index; ++i )
 	{
-		if ( list[ i ] )
+		float gap;
+		int i, j;
+
+		if ( vertical )
 		{
-			CG_DrawPic( x, y, w, h, list[ i ] );
-			if ( vertical ) { y += h; } else { x += w; }
+			y = rect->y + h - ih;
+			gap = h - icons * ih;
 		}
 		else
 		{
-			if ( vertical ) { y += h / 2.0f; } else { x += w / 2.0f; }
+			x = rect->x;
+			gap = w - icons * iw;
+		}
+
+		if ( counts > 2 )
+		{
+			gap /= counts - 1;
+		}
+
+		for ( i = 0, j = 0; i < icons; ++i )
+		{
+			trap_R_SetColor( icon[ i ].unlocked ? foreColour : backColour );
+
+			if ( i == count[ j ] )
+			{
+				++j;
+				if ( vertical ) { y -= gap; } else { x += gap; }
+			}
+
+			CG_DrawPic( x, y, iw, ih, icon[ i ].shader );
+
+			if ( vertical ) { y -= ih; } else { x += iw; }
 		}
 	}
 
@@ -4408,7 +4446,7 @@ void CG_OwnerDraw( rectDef_t *rect, float text_x,
 			break;
 
 		case CG_UNLOCKED_ITEMS:
-			CG_DrawPlayerUnlockedItems( rect, foreColor );
+			CG_DrawPlayerUnlockedItems( rect, foreColor, backColor, borderSize );
 			break;
 
 		case CG_ALIENS_SCORE_LABEL:
