@@ -72,7 +72,11 @@ static struct
 {
 	bool enabled;
 	bool offBegin;
+	bool shownodes;
+	bool showportals;
 	OffMeshConnection pc;
+	rVec start;
+	bool validPathStart;
 	NavData_t *nav;
 } cmd;
 
@@ -136,6 +140,16 @@ extern "C" void BotDebugDrawMesh( BotDebugInterface_t *in )
 	if ( !cmd.nav->mesh || !cmd.nav->query )
 	{
 		return;
+	}
+
+	if ( cmd.shownodes )
+	{
+		duDebugDrawNavMeshNodes( &dd, *cmd.nav->query );
+	}
+
+	if ( cmd.showportals )
+	{
+		duDebugDrawNavMeshPortals( &dd, *cmd.nav->mesh );
 	}
 
 	duDebugDrawNavMeshWithClosedList(&dd, *cmd.nav->mesh, *cmd.nav->query, DU_DRAWNAVMESH_OFFMESHCONS | DU_DRAWNAVMESH_CLOSEDLIST);
@@ -353,6 +367,78 @@ void Cmd_ConnectionSizeDown( void )
 	return adjustConnectionSize( -1 );
 }
 
+void Cmd_NavTest( void )
+{
+	const char usage[] = "Usage: navtest shownodes/hidenodes/showportals/hideportals/startpath/endpath\n";
+	char *arg = NULL;
+	int argc = Cmd_Argc();
+
+	if ( !cmd.enabled )
+	{
+		Com_Printf( "%s", "Can't test navmesh without enabling navedit" );
+		return;
+	}
+
+	if ( argc < 2 )
+	{
+		Com_Printf( "%s", usage );
+		return;
+	}
+
+	arg = Cmd_Argv( 1 );
+
+	if ( !Q_stricmp( arg, "shownodes" ) )
+	{
+		cmd.shownodes = true;
+	}
+	else if ( !Q_stricmp( arg, "hidenodes" ) )
+	{
+		cmd.shownodes = false;
+	}
+	else if ( !Q_stricmp( arg, "showportals" ) )
+	{
+		cmd.showportals = true;
+	}
+	else if ( !Q_stricmp( arg, "hideportals" ) )
+	{
+		cmd.showportals = false;
+	}
+	else if ( !Q_stricmp( arg, "startpath" ) )
+	{
+		if ( GetPointPointedTo( cmd.nav, cmd.start ) )
+		{
+			cmd.validPathStart = true;
+		}
+		else
+		{
+			cmd.validPathStart = false;
+		}
+	}
+	else if ( !Q_stricmp( arg, "endpath" ) )
+	{
+		rVec end;
+		if ( GetPointPointedTo( cmd.nav, end ) && cmd.validPathStart )
+		{
+			dtPolyRef startRef;
+			dtPolyRef endRef;
+			const int maxPath = 512;
+			int npath;
+			dtPolyRef path[ maxPath ];
+			rVec nearPoint;
+			rVec extents( 300, 300, 300 );
+
+			cmd.nav->query->findNearestPoly( cmd.start, extents, &cmd.nav->filter, &startRef, nearPoint );
+			cmd.nav->query->findNearestPoly( end, extents, &cmd.nav->filter, &endRef, nearPoint );
+
+			cmd.nav->query->findPath( startRef, endRef, cmd.start, end, &cmd.nav->filter, path, &npath, maxPath );
+		}
+	}
+	else
+	{
+		Com_Printf( "%s", usage );
+	}
+}
+
 void NavEditInit( void )
 {
 #ifndef DEDICATED
@@ -362,6 +448,7 @@ void NavEditInit( void )
 	Cmd_AddCommand( "addcon", Cmd_AddConnection );
 	Cmd_AddCommand( "conSizeUp", Cmd_ConnectionSizeUp );
 	Cmd_AddCommand( "conSizeDown", Cmd_ConnectionSizeDown );
+	Cmd_AddCommand( "navtest", Cmd_NavTest );
 #endif
 }
 
@@ -372,5 +459,6 @@ void NavEditShutdown( void )
 	Cmd_RemoveCommand( "addcon" );
 	Cmd_RemoveCommand( "conSizeUp" );
 	Cmd_RemoveCommand( "conSizeDown" );
+	Cmd_RemoveCommand( "navtest" );
 #endif
 }
