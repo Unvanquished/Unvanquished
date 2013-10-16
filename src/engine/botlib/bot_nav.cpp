@@ -224,6 +224,8 @@ extern "C" void BotUpdateCorridor( int botClientNum, const botRouteTarget_t *tar
 			}
 		}
 
+		cmd->havePath = !bot->needReplan;
+
 		if ( overOffMeshConnectionStart( bot, spos ) )
 		{
 			dtPolyRef refs[ 2 ];
@@ -286,8 +288,6 @@ extern "C" void BotUpdateCorridor( int botClientNum, const botRouteTarget_t *tar
 			}
 			recast2quake( cmd->tpos );
 		}
-
-		cmd->havePath = !bot->needReplan;
 	}
 	
 	if ( bot->offMesh )
