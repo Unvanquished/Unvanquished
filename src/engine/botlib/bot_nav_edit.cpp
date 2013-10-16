@@ -188,6 +188,7 @@ void Cmd_NavEdit( void )
 
 	if ( !Q_stricmp( arg, "enable" ) )
 	{
+		int i;
 		if ( argc < 3 )
 		{
 			Com_Printf( "%s", usage );
@@ -195,13 +196,19 @@ void Cmd_NavEdit( void )
 		}
 
 		arg = Cmd_Argv( 2 );
-		for ( int i = 0; i < numNavData; i++ )
+		for ( i = 0; i < numNavData; i++ )
 		{
 			if ( !Q_stricmp( BotNavData[ i ].name, arg ) )
 			{
 				cmd.nav = &BotNavData[ i ];
 				break;
 			}
+		}
+
+		if ( i == numNavData )
+		{
+			Com_Printf( "\'%s\' is not a valid navmesh name\n", arg );
+			return;
 		}
 
 		if ( cmd.nav && cmd.nav->mesh && cmd.nav->cache && cmd.nav->query )
