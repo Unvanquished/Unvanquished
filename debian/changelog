@@ -1,3 +1,12 @@
+unvanquished (0.20.0-3) unstable; urgency=low
+
+  * ‘Fix’ input of compose sequences (SDL 2.0).
+  * Handle locale selection issues.
+    - We require that a UTF-8 encoding is available for the locale.
+    - We force LC_NUMERIC="C" to avoid problems with generated GLSL etc.
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Thu, 17 Oct 2013 17:03:32 +0100
+
 unvanquished (0.20.0-2) unstable; urgency=low
 
   * Fix some console input regressions specific to SDL 1.2.
