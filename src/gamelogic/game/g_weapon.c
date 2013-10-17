@@ -1654,6 +1654,12 @@ void G_WeightAttack( gentity_t *self, gentity_t *victim )
 		return;
 	}
 
+	// don't do friendly fire
+	if ( OnSameTeam( self, victim ) )
+	{
+		return;
+	}
+
 	// ignore invincible targets
 	if ( !victim->takedamage )
 	{
