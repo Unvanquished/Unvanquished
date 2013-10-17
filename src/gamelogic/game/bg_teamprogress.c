@@ -113,6 +113,7 @@ static void InformUnlockableStatusChange( unlockable_t *unlockable, qboolean unl
 static void InformUnlockableStatusChanges( int *statusChanges, int count )
 {
 	char         text[ MAX_STRING_CHARS ];
+	char         *textptr = text;
 	int          unlockableNum;
 	qboolean     firstPass = qtrue;
 	unlockable_t *unlockable;
@@ -138,15 +139,18 @@ static void InformUnlockableStatusChanges( int *statusChanges, int count )
 				Com_sprintf( text, sizeof( text ),
 				             S_COLOR_RED   "ITEM%s LOCKED: "   S_COLOR_WHITE, ( count > 1 ) ? "S" : "" );
 			}
+
+			textptr = text + strlen( text );
+			firstPass = qfalse;
 		}
 		else
 		{
-			Com_sprintf( text, sizeof( text ), "%s%s", text, ", " );
+			Com_sprintf( textptr, sizeof( text ) - ( textptr - text ), ", " );
+			textptr += 2;
 		}
 
-		Com_sprintf( text, sizeof( text ), "%s%s", text, UnlockableHumanName( unlockable ) );
-
-		firstPass = qfalse;
+		Com_sprintf( textptr, sizeof( text ) - ( textptr - text ), "%s", UnlockableHumanName( unlockable ) );
+		textptr += strlen( textptr );
 	}
 
 	Com_Printf( "%s\n", text );
