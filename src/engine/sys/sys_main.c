@@ -630,28 +630,6 @@ int main( int argc, char **argv )
 
 #endif
 
-	// Locale initialisation
-	// Set from environment, but try to make LC_CTYPE to use UTF-8 and force LC_NUMERIC to C
-	{
-		char locale[ 64 ], *dot;
-
-		setlocale( LC_ALL, "" );
-		setlocale( LC_NUMERIC, "C" );
-
-		// Get the info for LC_CTYPE (ensuring space for appending)
-		Q_strncpyz( locale, setlocale( LC_CTYPE, NULL ), sizeof( locale ) - 6 );
-
-		// Remove any existing encoding info then set to UTF-8
-		if ( ( dot = strchr( locale, '.') ) )
-		{
-			*dot = 0;
-		}
-		strcat( locale, ".UTF-8" );
-
-		// try current language but with UTF-8, falling back on C.UTF-8
-		setlocale( LC_CTYPE, locale ) || setlocale( LC_CTYPE, "C.UTF-8" );
-	}
-
 #if 0 // looks like broken on !Windows; remove?
 	Sys_PrintCpuInfo();
 	Sys_PrintMemoryInfo();
@@ -695,6 +673,28 @@ int main( int argc, char **argv )
 #endif
 
 	Sys_PlatformInit();
+
+	// Locale initialisation
+	// Set from environment, but try to make LC_CTYPE to use UTF-8 and force LC_NUMERIC to C
+	{
+		char locale[ 64 ], *dot;
+
+		setlocale( LC_ALL, "" );
+		setlocale( LC_NUMERIC, "C" );
+
+		// Get the info for LC_CTYPE (ensuring space for appending)
+		Q_strncpyz( locale, setlocale( LC_CTYPE, NULL ), sizeof( locale ) - 6 );
+
+		// Remove any existing encoding info then set to UTF-8
+		if ( ( dot = strchr( locale, '.') ) )
+		{
+			*dot = 0;
+		}
+		strcat( locale, ".UTF-8" );
+
+		// try current language but with UTF-8, falling back on C.UTF-8
+		setlocale( LC_CTYPE, locale ) || setlocale( LC_CTYPE, "C.UTF-8" );
+	}
 
 	// Set the initial time base
 	Sys_Milliseconds();
