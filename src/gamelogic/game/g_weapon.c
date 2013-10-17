@@ -695,7 +695,8 @@ static void FirebombMissileThink( gentity_t *self )
 
 		VectorNormalize( dir );
 
-		m = G_SpawnMissile( MIS_FIREBOMB_SUB, self, self->s.origin, dir, NULL, G_FreeEntity, level.time + 10000 );
+		// the submissile's parent is the attacker
+		m = G_SpawnMissile( MIS_FIREBOMB_SUB, self->parent, self->s.origin, dir, NULL, G_FreeEntity, level.time + 10000 );
 
 		// randomize missile speed
 		VectorScale( m->s.pos.trDelta, ( rand() / ( float )RAND_MAX ) + 0.5f, m->s.pos.trDelta );
