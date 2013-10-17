@@ -47,7 +47,6 @@ Maryland 20850 USA.
 #include <unistd.h>
 #include <sys/mman.h>
 #include <sys/time.h>
-#include <locale.h>
 #include <pwd.h>
 #include <libgen.h>
 #include <fcntl.h>
@@ -1080,8 +1079,6 @@ void Sys_PlatformInit( void )
 	signal( SIGIOT, Sys_SigHandler );
 	signal( SIGBUS, Sys_SigHandler );
 #endif
-
-	setlocale( LC_ALL, "" );
 
 	stdinIsATTY = isatty( STDIN_FILENO ) &&
 	              !( term && ( !strcmp( term, "raw" ) || !strcmp( term, "dumb" ) ) );
