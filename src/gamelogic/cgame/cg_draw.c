@@ -3410,7 +3410,7 @@ static void CG_DrawCrosshairIndicator( rectDef_t *rect, vec4_t color )
 	weaponInfo_t *wi;
 	qboolean     onRelevantEntity;
 
-	if ( !cg_drawCrosshairIndicator.integer ||
+	if ( ( !cg_drawCrosshairHit.integer && !cg_drawCrosshairFriendFoe.integer ) ||
 	     cg.snap->ps.persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT ||
 	     cg.snap->ps.pm_type == PM_INTERMISSION ||
 	     cg.renderingThirdPerson )
@@ -3419,13 +3419,6 @@ static void CG_DrawCrosshairIndicator( rectDef_t *rect, vec4_t color )
 	}
 
 	weapon = BG_GetPlayerWeapon( &cg.snap->ps );
-
-	if ( cg_drawCrosshairIndicator.integer <= INDICATOR_RANGEDONLY &&
-	     !BG_Weapon( weapon )->longRanged )
-	{
-		return;
-	}
-
 	wi = &cg_weapons[ weapon ];
 	indicator = wi->crossHairIndicator;
 
@@ -3434,24 +3427,27 @@ static void CG_DrawCrosshairIndicator( rectDef_t *rect, vec4_t color )
 		return;
 	}
 
-	// set base color
-	if ( cg_drawCrosshairIndicator.integer <= INDICATOR_RANGEDONLY_ALLHITS &&
-	     !BG_Weapon( weapon )->longRanged )
+	// set base color (friend/foe detection)
+	if ( cg_drawCrosshairFriendFoe.integer >= CROSSHAIR_ALWAYSON ||
+	     ( cg_drawCrosshairFriendFoe.integer >= CROSSHAIR_RANGEDONLY && BG_Weapon( weapon )->longRanged ) )
 	{
-		Vector4Set( baseColor, 1.0f, 1.0f, 1.0f, 0.0f );
-		onRelevantEntity = qfalse;
-	}
-	else if ( cg.crosshairFoe )
-	{
-		Vector4Copy( colorRed, baseColor );
-		baseColor[ 3 ] = color[ 3 ] * 0.75f;
-		onRelevantEntity = qtrue;
-	}
-	else if ( cg.crosshairFriend )
-	{
-		Vector4Copy( colorGreen, baseColor );
-		baseColor[ 3 ] = color[ 3 ] * 0.75f;
-		onRelevantEntity = qtrue;
+		if ( cg.crosshairFoe )
+		{
+			Vector4Copy( colorRed, baseColor );
+			baseColor[ 3 ] = color[ 3 ] * 0.75f;
+			onRelevantEntity = qtrue;
+		}
+		else if ( cg.crosshairFriend )
+		{
+			Vector4Copy( colorGreen, baseColor );
+			baseColor[ 3 ] = color[ 3 ] * 0.75f;
+			onRelevantEntity = qtrue;
+		}
+		else
+		{
+			Vector4Set( baseColor, 1.0f, 1.0f, 1.0f, 0.0f );
+			onRelevantEntity = qfalse;
+		}
 	}
 	else
 	{
@@ -3460,7 +3456,7 @@ static void CG_DrawCrosshairIndicator( rectDef_t *rect, vec4_t color )
 	}
 
 	// add hit color
-	if ( cg.hitTime + CROSSHAIR_INDICATOR_HITFADE > cg.time )
+	if ( cg_drawCrosshairHit.integer && cg.hitTime + CROSSHAIR_INDICATOR_HITFADE > cg.time )
 	{
 		dim = ( ( cg.hitTime + CROSSHAIR_INDICATOR_HITFADE ) - cg.time ) / ( float )CROSSHAIR_INDICATOR_HITFADE;
 
@@ -3484,12 +3480,9 @@ static void CG_DrawCrosshairIndicator( rectDef_t *rect, vec4_t color )
 	y = rect->y + ( rect->h / 2 ) - ( h / 2 );
 
 	// draw
-	if ( indicator )
-	{
-		trap_R_SetColor( drawColor );
-		CG_DrawPic( x, y, w, h, indicator );
-		trap_R_SetColor( NULL );
-	}
+	trap_R_SetColor( drawColor );
+	CG_DrawPic( x, y, w, h, indicator );
+	trap_R_SetColor( NULL );
 }
 
 /*
