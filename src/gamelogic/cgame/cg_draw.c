@@ -29,10 +29,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 menuDef_t *menuScoreboard = NULL;
 
-static void CG_AlignText( rectDef_t *rect, const char *text, float scale,
-                          float w, float h,
-                          int align, int valign,
-                          float *x, float *y )
+void CG_AlignText( rectDef_t *rect, const char *text, float scale,
+                   float w, float h,
+                   int align, int valign,
+                   float *x, float *y )
 {
 	float tx, ty;
 
