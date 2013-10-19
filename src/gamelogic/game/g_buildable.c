@@ -4403,6 +4403,21 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 	if ( ( tempReason = PrepareBuildableReplacement( buildable, origin ) ) != IBE_NONE )
 	{
 		reason = tempReason;
+
+		if ( reason == IBE_NOPOWERHERE || reason == IBE_DRILLPOWERSOURCE )
+		{
+			if ( !G_Reactor() )
+			{
+				reason = IBE_NOREACTOR;
+			}
+		}
+		else if ( reason == IBE_NOCREEP )
+		{
+			if ( !G_Overmind() )
+			{
+				reason = IBE_NOOVERMIND;
+			}
+		}
 	}
 	else if ( ent->client->pers.team == TEAM_ALIENS )
 	{
