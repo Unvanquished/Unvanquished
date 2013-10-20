@@ -11,4 +11,5 @@ models/buildables/acid_tube/acidtube
 	specularMap models/buildables/acid_tube/acidtube_s.tga
 	glowMap models/buildables/acid_tube/acidtube_g.tga
 
+	cull none
 }
