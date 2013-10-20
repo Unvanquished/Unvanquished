@@ -40,17 +40,6 @@ along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 // definitions
 // -----------
 
-#define NUM_UNLOCKABLES WP_NUM_WEAPONS + UP_NUM_UPGRADES + BA_NUM_BUILDABLES + PCL_NUM_CLASSES
-
-typedef enum
-{
-	UNLT_WEAPON,
-	UNLT_UPGRADE,
-	UNLT_BUILDABLE,
-	UNLT_CLASS,
-	UNLT_NUM_UNLOCKABLETYPES
-} unlockableType_t;
-
 typedef struct unlockable_s
 {
 	int      type;
@@ -113,6 +102,7 @@ static void InformUnlockableStatusChange( unlockable_t *unlockable, qboolean unl
 static void InformUnlockableStatusChanges( int *statusChanges, int count )
 {
 	char         text[ MAX_STRING_CHARS ];
+	char         *textptr = text;
 	int          unlockableNum;
 	qboolean     firstPass = qtrue;
 	unlockable_t *unlockable;
@@ -138,15 +128,18 @@ static void InformUnlockableStatusChanges( int *statusChanges, int count )
 				Com_sprintf( text, sizeof( text ),
 				             S_COLOR_RED   "ITEM%s LOCKED: "   S_COLOR_WHITE, ( count > 1 ) ? "S" : "" );
 			}
+
+			textptr = text + strlen( text );
+			firstPass = qfalse;
 		}
 		else
 		{
-			Com_sprintf( text, sizeof( text ), "%s%s", text, ", " );
+			Com_sprintf( textptr, sizeof( text ) - ( textptr - text ), ", " );
+			textptr += 2;
 		}
 
-		Com_sprintf( text, sizeof( text ), "%s%s", text, UnlockableHumanName( unlockable ) );
-
-		firstPass = qfalse;
+		Com_sprintf( textptr, sizeof( text ) - ( textptr - text ), "%s", UnlockableHumanName( unlockable ) );
+		textptr += strlen( textptr );
 	}
 
 	Com_Printf( "%s\n", text );
@@ -386,6 +379,16 @@ int BG_UnlockablesMask( team_t team )
 	return unlockablesMask[ team ];
 }
 
+unlockableType_t BG_UnlockableType( int num )
+{
+	return ( (unsigned) num < NUM_UNLOCKABLES ) ? unlockables[ num ].type : UNLT_NUM_UNLOCKABLETYPES;
+}
+
+int BG_UnlockableTypeIndex( int num )
+{
+	return ( (unsigned) num < NUM_UNLOCKABLES ) ? unlockables[ num ].num : 0;
+}
+
 qboolean BG_WeaponUnlocked( weapon_t weapon )
 {
 	CheckStatusKnowledge( UNLT_WEAPON, ( int )weapon );
@@ -414,37 +417,59 @@ qboolean BG_ClassUnlocked( class_t class_ )
 	return Unlocked( UNLT_CLASS, ( int )class_ );
 }
 
-int BG_IterateConfidenceThresholds( int unlockableNum, team_t team, int *threshold, qboolean *unlocked )
+static int ConfidenceNextThreshold( int threshold )
 {
-	unlockable_t unlockable;
+	int next = 1 << 30;
+	int i;
 
-	if ( unlockableNum < 0 )
+	for ( i = 0; i < NUM_UNLOCKABLES; ++i )
 	{
-		unlockableNum = 0;
-	}
+		int thisThreshold = unlockables[ i ].unlocked ? unlockables[ i ].lockThreshold : unlockables[ i ].unlockThreshold;
 
-	for ( ; unlockableNum < NUM_UNLOCKABLES; unlockableNum++ )
-	{
-		unlockable = unlockables[ unlockableNum ];
-
-		if ( unlockable.team == team && unlockable.unlockThreshold )
+		if ( thisThreshold > threshold && thisThreshold < next )
 		{
-			if ( unlockable.unlocked )
-			{
-				*threshold = unlockable.lockThreshold;
-				*unlocked  = qtrue;
-			}
-			else
-			{
-				*threshold = unlockable.unlockThreshold;
-				*unlocked  = qfalse;
-			}
-
-			return unlockableNum + 1;
+			next = thisThreshold;
 		}
 	}
 
-	return 0;
+	return next < ( 1 << 30 ) ? next : 0;
+}
+
+confidenceThresholdIterator_t BG_IterateConfidenceThresholds( confidenceThresholdIterator_t unlockableIter, team_t team, int *threshold, qboolean *unlocked )
+{
+	static const confidenceThresholdIterator_t finished = { -1, 0 };
+
+	if ( unlockableIter.num < 0 )
+	{
+		unlockableIter.num = -1;
+	}
+
+	for ( ++unlockableIter.num; unlockableIter.num < NUM_UNLOCKABLES; unlockableIter.num++ )
+	{
+		unlockable_t unlockable = unlockables[ unlockableIter.num ];
+		int          thisThreshold = unlockable.unlocked ? unlockable.lockThreshold : unlockable.unlockThreshold;
+
+		if ( unlockable.team == team && unlockable.unlockThreshold && ( !unlockableIter.threshold || unlockableIter.threshold == thisThreshold ) )
+		{
+			*unlocked = unlockable.unlocked;
+			*threshold = thisThreshold;
+
+			return unlockableIter;
+		}
+	}
+
+	if ( unlockableIter.threshold )
+	{
+		unlockableIter.threshold = ConfidenceNextThreshold( unlockableIter.threshold );
+
+		if ( unlockableIter.threshold )
+		{
+			unlockableIter.num = -1;
+			return BG_IterateConfidenceThresholds( unlockableIter, team, threshold, unlocked );
+		}
+	}
+
+	return finished;
 }
 
 // ------------

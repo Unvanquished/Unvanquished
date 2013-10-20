@@ -487,6 +487,7 @@ extern int   REACTOR_ATTACK_DCC_DAMAGE;
 #define DEFAULT_INITIAL_MINE_RATE          "8"   // in (BP/min)/RGS
 #define DEFAULT_MINE_RATE_HALF_LIFE        "20"  // in min
 #define DEFAULT_MINIMUM_MINE_RATE          "50"
+#define BASIC_INCOME_MOD                   1.0f
 
 // confidence
 #define CONFIDENCE_PER_CREDIT              0.01f // used to award confidence based on credit rewards

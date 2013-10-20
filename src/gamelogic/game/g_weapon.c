@@ -695,7 +695,8 @@ static void FirebombMissileThink( gentity_t *self )
 
 		VectorNormalize( dir );
 
-		m = G_SpawnMissile( MIS_FIREBOMB_SUB, self, self->s.origin, dir, NULL, G_FreeEntity, level.time + 10000 );
+		// the submissile's parent is the attacker
+		m = G_SpawnMissile( MIS_FIREBOMB_SUB, self->parent, self->s.origin, dir, NULL, G_FreeEntity, level.time + 10000 );
 
 		// randomize missile speed
 		VectorScale( m->s.pos.trDelta, ( rand() / ( float )RAND_MAX ) + 0.5f, m->s.pos.trDelta );
@@ -976,8 +977,7 @@ static void CancelBuild( gentity_t *self )
 
 static void FireBuild( gentity_t *self, dynMenu_t menu )
 {
-	buildable_t buildable = ( self->client->ps.stats[ STAT_BUILDABLE ]
-	                          & ~SB_VALID_TOGGLEBIT );
+	buildable_t buildable = ( self->client->ps.stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK );
 
 	if ( buildable > BA_NONE )
 	{
@@ -1650,6 +1650,12 @@ void G_WeightAttack( gentity_t *self, gentity_t *victim )
 
 	// weigth damage is only dealt between clients
 	if ( !self->client || !victim->client )
+	{
+		return;
+	}
+
+	// don't do friendly fire
+	if ( OnSameTeam( self, victim ) )
 	{
 		return;
 	}

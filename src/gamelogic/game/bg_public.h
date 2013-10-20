@@ -273,7 +273,37 @@ typedef enum
 #define SS_HEALING_2X       BIT(12) // medkit or double healing rate
 #define SS_HEALING_3X       BIT(13) // triple healing rate
 
-#define SB_VALID_TOGGLEBIT  0x00002000
+// has to fit into 16 bits
+#define SB_BUILDABLE_MASK        0x00FF
+#define SB_BUILDABLE_STATE_MASK  0xFF00
+#define SB_BUILDABLE_STATE_SHIFT 8
+#define SB_BUILDABLE_FROM_IBE(x) ( ( x ) << SB_BUILDABLE_STATE_SHIFT )
+#define SB_BUILDABLE_TO_IBE(x)   ( ( ( x ) & SB_BUILDABLE_STATE_MASK ) >> SB_BUILDABLE_STATE_SHIFT )
+
+typedef enum
+{
+  IBE_NONE,             // no error, can build
+
+  IBE_NOOVERMIND,       // no overmind present
+  IBE_ONEOVERMIND,      // may not build two overminds
+  IBE_NOALIENBP,        // not enough build points (aliens)
+  IBE_NOCREEP,          // no creep in this area
+
+  IBE_NOREACTOR,        // no reactor present
+  IBE_ONEREACTOR,       // may not build two reactors
+  IBE_NOHUMANBP,        // not enough build points (humans)
+  IBE_DRILLPOWERSOURCE, // needs a close power source
+  IBE_NOPOWERHERE,      // not enough power in this area
+  IBE_NODCC,            // needs a defense computer
+
+  IBE_NORMAL,           // surface is too steep
+  IBE_NOROOM,           // no room
+  IBE_SURFACE,          // map doesn't allow building on that surface
+  IBE_DISABLED,         // building has been disabled for team
+  IBE_LASTSPAWN,        // may not replace last spawn with non-spawn
+
+  IBE_MAXERRORS
+} itemBuildError_t;
 
 // player_state->persistent[] indexes
 // these fields are the only part of player_state that isn't
@@ -982,6 +1012,7 @@ typedef struct
 
 	const char *name;
 	const char *info;
+	const char *icon;
 	const char *fovCvar;
 
 	int      unlockThreshold;
@@ -1048,6 +1079,7 @@ typedef struct
 	const char *humanName;
 	const char *info;
 	const char *entityName;
+	const char *icon;
 
 	trType_t    traj;
 	float       bounce;
@@ -1286,6 +1318,22 @@ void                      BG_ParseMissileAttributeFile( const char *filename, mi
 void                      BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma );
 
 // bg_teamprogress.c
+#define NUM_UNLOCKABLES WP_NUM_WEAPONS + UP_NUM_UPGRADES + BA_NUM_BUILDABLES + PCL_NUM_CLASSES
+
+typedef enum
+{
+	UNLT_WEAPON,
+	UNLT_UPGRADE,
+	UNLT_BUILDABLE,
+	UNLT_CLASS,
+	UNLT_NUM_UNLOCKABLETYPES
+} unlockableType_t;
+
+typedef struct {
+	int num;
+	int threshold;
+} confidenceThresholdIterator_t;
+
 void     BG_InitUnlockackables( void );
 void     BG_ImportUnlockablesFromMask( team_t team, int mask );
 int      BG_UnlockablesMask( team_t team );
@@ -1293,7 +1341,10 @@ qboolean BG_WeaponUnlocked( weapon_t weapon );
 qboolean BG_UpgradeUnlocked( upgrade_t upgrade );
 qboolean BG_BuildableUnlocked( buildable_t buildable );
 qboolean BG_ClassUnlocked( class_t class_ );
-int      BG_IterateConfidenceThresholds( int unlockableNum, team_t team , int *threshold, qboolean *unlocked );
+
+unlockableType_t              BG_UnlockableType( int num );
+int                           BG_UnlockableTypeIndex( int num );
+confidenceThresholdIterator_t BG_IterateConfidenceThresholds( confidenceThresholdIterator_t unlockableIter, team_t team, int *threshold, qboolean *unlocked );
 #ifdef GAME
 void     G_UpdateUnlockables( void );
 #endif

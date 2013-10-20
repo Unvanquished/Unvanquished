@@ -931,31 +931,6 @@ void G_Physics( gentity_t *ent, int msec );
 
 #define MAX_ALIEN_BBOX 25
 
-typedef enum
-{
-  IBE_NONE,             // no error, can build
-
-  IBE_NOOVERMIND,       // no overmind present
-  IBE_ONEOVERMIND,      // may not build two overminds
-  IBE_NOALIENBP,        // not enough build points (aliens)
-  IBE_NOCREEP,          // no creep in this area
-
-  IBE_NOREACTOR,        // no reactor present
-  IBE_ONEREACTOR,       // may not build two reactors
-  IBE_NOHUMANBP,        // not enough build points (humans)
-  IBE_DRILLPOWERSOURCE, // needs a close power source
-  IBE_NOPOWERHERE,      // not enough power in this area
-  IBE_NODCC,            // needs a defense computer
-
-  IBE_NORMAL,           // surface is too steep
-  IBE_NOROOM,           // no room
-  IBE_SURFACE,          // map doesn't allow building on that surface
-  IBE_DISABLED,         // building has been disabled for team
-  IBE_LASTSPAWN,        // may not replace last spawn with non-spawn
-
-  IBE_MAXERRORS
-} itemBuildError_t;
-
 gentity_t        *G_CheckSpawnPoint( int spawnNum, const vec3_t origin,
                                      const vec3_t normal, buildable_t spawn,
                                      vec3_t spawnOrigin );

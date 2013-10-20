@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "cg_local.h"
+#include "../game/bg_public.h"
 
 static const char *const cg_buildableSoundNames[ MAX_BUILDABLE_ANIMATIONS ] =
 {
@@ -534,6 +535,7 @@ void CG_InitBuildables( void )
 	char         filename[ MAX_QPATH ];
 	char         soundfile[ MAX_QPATH ];
 	const char   *buildableName;
+	const char   *buildableIcon;
 	const char   *modelFile;
 	int          i;
 	int          j;
@@ -669,6 +671,12 @@ void CG_InitBuildables( void )
 				}
 			}
 		}
+
+		//icon
+		if ( ( buildableIcon = BG_Buildable( i )->icon ) )
+		{
+		        cg_buildables[ i ].buildableIcon = trap_R_RegisterShader( buildableIcon, RSF_DEFAULT );
+                }
 
 		cg.buildablesFraction = ( float ) i / ( float )( BA_NUM_BUILDABLES - 1 );
 		trap_UpdateScreen();
@@ -1091,7 +1099,7 @@ static void CG_DrawBuildableRangeMarker( buildable_t buildable, const vec3_t ori
 CG_GhostBuildable
 ==================
 */
-void CG_GhostBuildable( buildable_t buildable )
+void CG_GhostBuildable( int buildableInfo )
 {
 	refEntity_t   ent;
 	playerState_t *ps;
@@ -1099,6 +1107,7 @@ void CG_GhostBuildable( buildable_t buildable )
 	vec3_t        mins, maxs;
 	trace_t       tr;
 	float         scale;
+	buildable_t   buildable = (buildable_t)( buildableInfo & SB_BUILDABLE_MASK ); // assumed not BA_NONE
 
 	ps = &cg.predictedPlayerState;
 
@@ -1124,14 +1133,9 @@ void CG_GhostBuildable( buildable_t buildable )
 
 	ent.hModel = cg_buildables[ buildable ].models[ 0 ];
 
-	if ( ps->stats[ STAT_BUILDABLE ] & SB_VALID_TOGGLEBIT )
-	{
-		ent.customShader = cgs.media.greenBuildShader;
-	}
-	else
-	{
-		ent.customShader = cgs.media.redBuildShader;
-	}
+	ent.customShader = ( SB_BUILDABLE_TO_IBE( buildableInfo ) == IBE_NONE )
+	                     ? cgs.media.greenBuildShader
+	                     : cgs.media.redBuildShader;
 
 	// Draw predicted RGS efficiency
 	if ( buildable == BA_H_DRILL || buildable == BA_A_LEECH )
@@ -1173,6 +1177,137 @@ void CG_GhostBuildable( buildable_t buildable )
 
 	// add to refresh list
 	trap_R_AddRefEntityToScene( &ent );
+}
+
+static void CG_GhostBuildableStatus( int buildableInfo )
+{
+	playerState_t *ps;
+	vec3_t        angles, entity_origin;
+	vec3_t        mins, maxs;
+	trace_t       tr;
+	float         scale, x, y;
+	buildable_t   buildable = (buildable_t)( buildableInfo & SB_BUILDABLE_MASK ); // assumed not BA_NONE
+
+	ps = &cg.predictedPlayerState;
+
+	BG_BuildableBoundingBox( buildable, mins, maxs );
+
+	BG_PositionBuildableRelativeToPlayer( ps, mins, maxs, CG_Trace, entity_origin, angles, &tr );
+
+	entity_origin[ 2 ] += mins[ 2 ];
+	entity_origin[ 2 ] += ( abs( mins[ 2 ] ) + abs( maxs[ 2 ] ) ) / 2;
+
+	if ( CG_WorldToScreen( entity_origin, &x, &y ) )
+	{
+		team_t team = BG_Buildable( buildable )->team;
+		const buildStat_t *bs = ( team == TEAM_ALIENS )
+		                      ? &cgs.alienBuildStat
+		                      : &cgs.humanBuildStat;
+
+		float  d = Distance( entity_origin, cg.refdef.vieworg );
+		float  picX = x;
+		float  picY = y;
+		float  picH = bs->frameHeight;
+		float  picM;
+		float  scale = ( picH / d ) * 3.0f;
+
+		vec4_t backColour;
+
+		const char *text = NULL;
+		qhandle_t  shader = 0;
+
+		picM = picH * scale;
+		picH = picM * ( 1.0f - bs->verticalMargin );
+
+		backColour[0] = bs->backColor[0];
+		backColour[1] = bs->backColor[1];
+		backColour[2] = bs->backColor[2];
+		backColour[3] = bs->backColor[3] / 3;
+
+		switch ( SB_BUILDABLE_TO_IBE( buildableInfo ) )
+		{
+			case IBE_NOOVERMIND:
+			case IBE_NOREACTOR:
+				shader = bs->noPowerShader;
+				break;
+
+			case IBE_NOALIENBP:
+				text = "[leech]";
+				break;
+
+			case IBE_NOHUMANBP:
+				text = "[drill]";
+				break; 
+
+			case IBE_NOCREEP:
+				text = "[egg]";
+				break;
+
+			case IBE_NOPOWERHERE:
+			case IBE_DRILLPOWERSOURCE:
+				text = "[repeater]";
+				break;
+
+			case IBE_SURFACE:
+				text = "✕";
+				break;
+
+			case IBE_DISABLED:
+				text = "⨂";
+				break;
+
+			case IBE_NODCC:
+				text = "[defcomp]";
+				break;
+
+			case IBE_NORMAL:
+				text = "∡";
+				break;
+
+			case IBE_LASTSPAWN:
+				text = ( team == TEAM_ALIENS ) ? "[eggpod]" : "[telenode]";
+				break;
+
+			case IBE_NOROOM:
+				text = "⧉";
+			default:;
+		}
+
+
+		if ( shader )
+		{
+			trap_R_SetColor( backColour );
+			CG_DrawPic( picX - picM / 2, picY - picM / 2, picM, picM, cgs.media.whiteShader );
+			trap_R_SetColor( bs->foreColor );
+			CG_DrawPic( picX - picH / 2, picY - picH / 2, picH, picH, bs->noPowerShader );
+			trap_R_SetColor( NULL );
+		}
+		if ( text )
+		{
+			rectDef_t rect;
+			float     tx, ty;
+			vec4_t    colour;
+
+			rect.x = picX - 128;
+			rect.y = picY - picH / 2;
+			rect.w = 256;
+			rect.h = picH;
+
+			trap_R_SetColor( backColour );
+
+			CG_AlignText( &rect, text, scale, 0, 0, ALIGN_CENTER, VALIGN_CENTER, &tx, &ty );
+			CG_DrawPic( tx - ( picM - picH ) / 2, ty - ( picM - picH ) / 4 - ( ty - picY ) * 2, ( picX - tx ) * 2 + ( picM - picH ), ( ty - picY ) * 2 + ( picM - picH ), cgs.media.whiteShader );
+
+			trap_R_SetColor( NULL );
+
+			colour[0] = bs->foreColor[0];
+			colour[1] = bs->foreColor[1];
+			colour[2] = bs->foreColor[2];
+			colour[3] = bs->foreColor[3];
+
+			UI_Text_Paint( tx, ty, scale, colour, text, 0, ITEM_TEXTSTYLE_PLAIN );
+		}
+	}
 }
 
 /*
@@ -2054,7 +2189,7 @@ static qboolean CG_BuildableRemovalPending( int entityNum )
 	int           i;
 	playerState_t *ps = &cg.snap->ps;
 
-	if ( !( ps->stats[ STAT_BUILDABLE ] & SB_VALID_TOGGLEBIT ) )
+	if ( SB_BUILDABLE_TO_IBE( ps->stats[ STAT_BUILDABLE ] ) != IBE_NONE )
 	{
 		return qfalse;
 	}
@@ -2105,6 +2240,11 @@ void CG_DrawBuildableStatus( void )
 	{
 		CG_BuildableStatusDisplay( &cg_entities[ buildableList[ i ] ] );
 	}
+
+	if ( cg.predictedPlayerState.stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK )
+	{
+		CG_GhostBuildableStatus( cg.predictedPlayerState.stats[ STAT_BUILDABLE ] );
+        }
 }
 
 #define BUILDABLE_SOUND_PERIOD 500
