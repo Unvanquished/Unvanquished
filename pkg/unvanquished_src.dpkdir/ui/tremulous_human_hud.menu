@@ -374,12 +374,12 @@ menuDef
 	itemDef
 	{
 		name "minerate"
-		rect 200 440 0 20
-		aspectBias ALIGN_CENTER
+		rect 15 455 0 20
+		aspectBias ALIGN_LEFT
 		textstyle ITEM_TEXTSTYLE_PLAIN
-		textscale 0.35
-		forecolor .51 .51 .51 .8
-		ownerdraw CG_LEVEL_MINE_RATE
+		textscale 0.3
+		forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 1
+		ownerdraw CG_MINE_RATE
 		visible MENU_TRUE
 		decoration
 	}
