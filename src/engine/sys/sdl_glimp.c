@@ -968,11 +968,11 @@ static GLenum debugTypes[] =
 	GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR_ARB,
 	GL_DEBUG_TYPE_PORTABILITY_ARB,
 	GL_DEBUG_TYPE_PERFORMANCE_ARB,
-	GL_DEBUG_TYPE_OTHER_ARB               
+	GL_DEBUG_TYPE_OTHER_ARB
 };
 
-static void APIENTRY GLimp_DebugCallback( GLenum source, GLenum type, GLuint id,
-                                          GLenum severity, GLsizei length, const GLchar *message, void *userParam )
+static void QCALL GLimp_DebugCallback( GLenum source, GLenum type, GLuint id,
+                                       GLenum severity, GLsizei length, const GLchar *message, void *userParam )
 {
 	const char *debugTypeName;
 	const char *debugSeverity;
