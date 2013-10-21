@@ -1514,7 +1514,7 @@ void ClientBegin( int clientNum )
 ClientSpawn
 
 Called every time a client is placed fresh in the world:
-after the first ClientBegin, and after each respawn
+after the first ClientBegin, and after each respawn and evolve
 Initializes all non-persistent parts of playerState
 ============
 */
@@ -1825,10 +1825,14 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	usercmdClearButtons( client->latched_buttons );
 
 	// give basic income
-	basicIncome = ( int )( BASIC_INCOME_MOD * level.team[ client->pers.team ].mineEfficiency ) - client->pers.credit;
-	if ( basicIncome > 0 )
+	if ( ent != spawn )
 	{
-		G_AddCreditToClient( client, ( short )basicIncome, qtrue );
+		basicIncome = ( int )( BASIC_INCOME_MOD * level.team[ client->pers.team ].mineEfficiency ) - client->pers.credit;
+
+		if ( basicIncome > 0 )
+		{
+			G_AddCreditToClient( client, ( short )basicIncome, qtrue );
+		}
 	}
 
 	// set default animations
