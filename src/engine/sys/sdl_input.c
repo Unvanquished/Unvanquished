@@ -544,7 +544,11 @@ static keyNum_t IN_TranslateSDLToQ3Key( SDL_Keysym *keysym, qboolean down )
 				key = K_SYSREQ;
 				break;
 
+#if SDL_VERSION_ATLEAST( 2, 0, 0 )
+			case SDLK_APPLICATION:
+#else
 			case SDLK_MENU:
+#endif
 				key = K_MENU;
 				break;
 
@@ -584,7 +588,7 @@ static keyNum_t IN_TranslateSDLToQ3Key( SDL_Keysym *keysym, qboolean down )
 		// Console keys can't be bound or generate characters
 		// (but allow Alt+key for text input)
 		key = K_CONSOLE;
-	}	
+	}
 
 	return key;
 }
@@ -1447,7 +1451,7 @@ static void IN_ProcessEvents( qboolean dropInput )
 					{
 						Com_QueueEvent( 0, SE_KEY, key, qtrue, 0, NULL );
 #if !SDL_VERSION_ATLEAST( 2, 0, 0 )
-						if ( key != K_CONSOLE ) 
+						if ( key != K_CONSOLE )
 						{
 							Com_QueueEvent( 0, SE_CHAR, Q_UTF8_Store( Q_UTF8_Encode( e.key.keysym.unicode ) ), 0, 0, NULL );
 						}
