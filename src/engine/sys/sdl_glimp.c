@@ -1026,9 +1026,6 @@ static void QCALL GLimp_DebugCallback( GLenum source, GLenum type, GLuint id,
 		case GL_DEBUG_SEVERITY_LOW_ARB:
 			debugSeverity = "low";
 			break;
-		case GL_DEBUG_SEVERITY_NOTIFICATION:
-			debugSeverity = "notify";
-			break;
 		default:
 			debugSeverity = "none";
 			break;
