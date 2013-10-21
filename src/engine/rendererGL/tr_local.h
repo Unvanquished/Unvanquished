@@ -86,6 +86,18 @@ extern "C" {
 	  RSPEEDS_DECALS
 	} renderSpeeds_t;
 
+	typedef enum
+	{
+		GLDEBUG_NONE,
+		GLDEBUG_ERROR,
+		GLDEBUG_DEPRECIATED,
+		GLDEBUG_UNDEFINED,
+		GLDEBUG_PORTABILITY,
+		GLDEBUG_PERFORMANCE,
+		GLDEBUG_OTHER,
+		GLDEBUG_ALL
+	} glDebugModes_t;
+
 #define HDR_ENABLED()         (( r_hdrRendering->integer && glConfig2.textureFloatAvailable && glConfig2.framebufferObjectAvailable && glConfig2.framebufferBlitAvailable && glConfig.driverType != GLDRV_MESA ))
 
 #define REF_CUBEMAP_SIZE       32
@@ -2883,6 +2895,7 @@ extern "C" {
 	extern cvar_t *r_glMinorVersion;
 	extern cvar_t *r_glCoreProfile;
 	extern cvar_t *r_glDebugProfile;
+	extern cvar_t *r_glDebugMode;
 	extern cvar_t *r_glAllowSoftware;
 
 	extern cvar_t *r_flares; // light flares
