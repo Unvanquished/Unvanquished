@@ -898,11 +898,11 @@ static float GetPointDamageModifier( gentity_t *targ, damageRegion_t *regions,
 G_CalcDamageModifier
 ============
 */
-static float G_CalcDamageModifier( vec3_t point, gentity_t *targ, gentity_t *attacker, int class, int dflags )
+static float G_CalcDamageModifier( vec3_t point, gentity_t *targ, gentity_t *attacker, int pcl, int dflags )
 {
 	vec3_t targOrigin, bulletPath, bulletAngle, pMINUSfloor, floor, normal;
 	float  clientHeight, hitRelative, hitRatio, modifier;
-	int    hitRotation, i;
+	int    hitRotation, upg;
 
 	if ( point == NULL )
 	{
@@ -912,7 +912,7 @@ static float G_CalcDamageModifier( vec3_t point, gentity_t *targ, gentity_t *att
 	// Don't need to calculate angles and height for non-locational damage
 	if ( dflags & DAMAGE_NO_LOCDAMAGE )
 	{
-		return GetNonLocDamageModifier( targ, class );
+		return GetNonLocDamageModifier( targ, pcl );
 	}
 
 	// Get the point location relative to the floor under the target
@@ -954,21 +954,18 @@ static float G_CalcDamageModifier( vec3_t point, gentity_t *targ, gentity_t *att
 	// Get the yaw of the attack relative to the target's view yaw
 	VectorSubtract( point, targOrigin, bulletPath );
 	vectoangles( bulletPath, bulletAngle );
+	hitRotation = AngleNormalize360( targ->client->ps.viewangles[ YAW ] - bulletAngle[ YAW ] );
 
-	hitRotation = AngleNormalize360( targ->client->ps.viewangles[ YAW ] -
-	                                 bulletAngle[ YAW ] );
-
-	// Get modifiers from the target's damage regions
-	modifier = GetPointDamageModifier( targ, g_damageRegions[ class ],
-	                                   g_numDamageRegions[ class ],
+	// Get damage region modifier
+	modifier = GetPointDamageModifier( targ, g_damageRegions[ pcl ], g_numDamageRegions[ pcl ],
 	                                   hitRotation, hitRatio );
 
-	for ( i = UP_NONE + 1; i < UP_NUM_UPGRADES; i++ )
+	// Get equipment modifier
+	for ( upg = UP_NONE + 1; upg < UP_NUM_UPGRADES; upg++ )
 	{
-		if ( BG_InventoryContainsUpgrade( i, targ->client->ps.stats ) )
+		if ( BG_InventoryContainsUpgrade( upg, targ->client->ps.stats ) )
 		{
-			modifier *= GetPointDamageModifier( targ, g_armourRegions[ i ],
-			                                    g_numArmourRegions[ i ],
+			modifier *= GetPointDamageModifier( targ, g_armourRegions[ upg ], g_numArmourRegions[ upg ],
 			                                    hitRotation, hitRatio );
 		}
 	}
@@ -993,8 +990,7 @@ void G_InitDamageLocations( void )
 	for ( i = PCL_NONE + 1; i < PCL_NUM_CLASSES; i++ )
 	{
 		modelName = BG_ClassModelConfig( i )->modelName;
-		Com_sprintf( filename, sizeof( filename ),
-		             "models/players/%s/locdamage.cfg", modelName );
+		Com_sprintf( filename, sizeof( filename ), "configs/classes/%s.locdamage.cfg", modelName );
 
 		len = trap_FS_FOpenFile( filename, &fileHandle, FS_READ );
 
@@ -1024,7 +1020,7 @@ void G_InitDamageLocations( void )
 	for ( i = UP_NONE + 1; i < UP_NUM_UPGRADES; i++ )
 	{
 		modelName = BG_Upgrade( i )->name;
-		Com_sprintf( filename, sizeof( filename ), "armour/%s.armour", modelName );
+		Com_sprintf( filename, sizeof( filename ), "configs/upgrades/%s.armour.cfg", modelName );
 
 		len = trap_FS_FOpenFile( filename, &fileHandle, FS_READ );
 
