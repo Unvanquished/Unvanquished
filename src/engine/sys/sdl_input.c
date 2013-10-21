@@ -544,12 +544,12 @@ static keyNum_t IN_TranslateSDLToQ3Key( SDL_Keysym *keysym, qboolean down )
 				key = K_SYSREQ;
 				break;
 
-#if SDL_VERSION_ATLEAST( 2, 0, 0 )
-			case SDLK_APPLICATION:
-#else
 			case SDLK_MENU:
-#endif
 				key = K_MENU;
+				break;
+
+			case SDLK_APPLICATION:
+				key = K_COMPOSE;
 				break;
 
 			case SDLK_POWER:
