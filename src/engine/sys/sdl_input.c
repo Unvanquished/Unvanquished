@@ -313,7 +313,7 @@ static keyNum_t IN_TranslateSDLToQ3Key( SDL_Keysym *keysym, qboolean down )
 	keyNum_t key = (keyNum_t) 0;
 
 #if !SDL_VERSION_ATLEAST( 2, 0, 0 )
-	key = keysym->unicode;
+	key = (keyNum_t) keysym->unicode;
 #endif
 
 	if ( keysym->sym >= SDLK_SPACE && keysym->sym < SDLK_DELETE )
