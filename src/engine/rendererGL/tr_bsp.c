@@ -10361,10 +10361,6 @@ void RE_LoadWorldMap( const char *name )
 	RE_SetFog( FOG_CMD_SWITCHFOG, FOG_MAP, 20, 0, 0, 0, 0 );
 #endif
 
-	// make sure the VBO glState entries are save
-	R_BindNullVBO();
-	R_BindNullIBO();
-
 	//----(SA)  set the sun shader if there is one
 	if ( tr.sunShaderName )
 	{
