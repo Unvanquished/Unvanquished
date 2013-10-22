@@ -594,12 +594,6 @@ set( SDLLIST
   ${ENGINE_DIR}/sys/sys_local.h
 )
 
-if( USE_SDL2 )
-  set( SDLLIST ${SDLLIST}
-    ${ENGINE_DIR}/sys/sdl2_compat.c
-  )
-endif()
-
 set( CGAMELIST
   ${GAMELOGIC_DIR}/game/bg_misc.c
   ${GAMELOGIC_DIR}/game/bg_parse.c
