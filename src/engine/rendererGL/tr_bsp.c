@@ -957,7 +957,7 @@ static void R_LoadLightmaps( lump_t *l, const char *bspName )
 					glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
 					glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
 
-					glBindTexture( image->type, 0 );
+					GL_Unbind( image );
 
 					GL_CheckErrors();
 
@@ -10110,11 +10110,7 @@ void R_BuildCubeMaps( void )
 		cubeProbe->cubemap->filterType = FT_LINEAR;
 		cubeProbe->cubemap->wrapType = WT_EDGE_CLAMP;
 
-		GL_Bind( cubeProbe->cubemap );
-
 		R_UploadImage( ( const byte ** ) tr.cubeTemp, 6, cubeProbe->cubemap );
-
-		glBindTexture( cubeProbe->cubemap->type, 0 );
 	}
 
 	ri.Printf( PRINT_ALL, "\n" );

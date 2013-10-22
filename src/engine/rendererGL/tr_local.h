@@ -3254,13 +3254,13 @@ extern "C" {
 	/*
 	====================================================================
 
-	OpenGL WRAPPERS, tr_backend.c
+	OpenGL WRAPPERS, tr_backend.cpp
 
 	====================================================================
 	*/
 	void GL_Bind( image_t *image );
 	void GL_BindNearestCubeMap( const vec3_t xyz );
-	void GL_Unbind( void );
+	void GL_Unbind( image_t *image );
 	void BindAnimatedImage( textureBundle_t *bundle );
 	void GL_TextureFilter( image_t *image, filterType_t filterType );
 	void GL_BindProgram( shaderProgram_t *program );

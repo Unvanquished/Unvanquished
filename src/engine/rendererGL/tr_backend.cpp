@@ -62,11 +62,12 @@ void GL_Bind( image_t *image )
 	}
 }
 
-void GL_Unbind()
+void GL_Unbind( image_t *image )
 {
 	GLimp_LogComment( "--- GL_Unbind() ---\n" );
 
-	glBindTexture( GL_TEXTURE_2D, 0 );
+	glState.currenttextures[ glState.currenttmu ] = 0;
+	glBindTexture( image->type, 0 );
 }
 
 void BindAnimatedImage( textureBundle_t *bundle )
@@ -7656,16 +7657,16 @@ const void *RB_SetColorGrading( const void *data )
 
 	cmd = ( const setColorGradingCommand_t * ) data;
 
-	GL_Unbind();
+	GL_Bind( cmd->image );
 
 	glBindBuffer( GL_PIXEL_PACK_BUFFER, tr.colorGradePBO );
 
-	glBindTexture( GL_TEXTURE_2D, cmd->image->texnum );
-	glGetTexImage( GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
+	glGetTexImage( cmd->image->type, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
 	glBindBuffer( GL_PIXEL_PACK_BUFFER, 0 );
 
 	glBindBuffer( GL_PIXEL_UNPACK_BUFFER, tr.colorGradePBO );
-	glBindTexture( GL_TEXTURE_3D, tr.colorGradeImage->texnum );
+
+	GL_Bind( tr.colorGradeImage );
 
 	if ( cmd->image->width == REF_COLORGRADEMAP_SIZE )
 	{
@@ -7689,7 +7690,6 @@ const void *RB_SetColorGrading( const void *data )
 		glPixelStorei( GL_UNPACK_ROW_LENGTH, 0 );
 	}
 
-	glBindTexture( GL_TEXTURE_3D, 0 );
 	glBindBuffer( GL_PIXEL_UNPACK_BUFFER, 0 );
 
 	return ( const void * ) ( cmd + 1 );
