@@ -123,7 +123,7 @@ namespace Cmd {
             }
 
             //Escaped quote
-            if (inQuote && start + 1 != end && start[0] == '\\' && start[1] == '"') {
+            if (inQuote && start + 1 != end && start[0] == '\\') {
                 start += 2;
                 continue;
             }
