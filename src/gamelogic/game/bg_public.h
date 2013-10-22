@@ -657,7 +657,6 @@ typedef enum
 
   //human build
   MN_H_NOPOWERHERE,
-  MN_H_DRILLPOWERSOURCE,
   MN_H_NOREACTOR,
   MN_H_NOBP,
   MN_H_NOTPOWERED,

@@ -3626,7 +3626,6 @@ void Cmd_Build_f( gentity_t *ent )
 			case IBE_NOCREEP:
 			case IBE_NOROOM:
 			case IBE_NOPOWERHERE:
-			case IBE_DRILLPOWERSOURCE:
 			case IBE_SURFACE:
 			case IBE_NOOVERMIND:
 			case IBE_NOREACTOR:

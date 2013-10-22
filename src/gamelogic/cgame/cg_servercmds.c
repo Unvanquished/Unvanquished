@@ -646,13 +646,6 @@ void CG_Menu( int menu, int arg )
 			type = DT_BUILD;
 			break;
 
-		case MN_H_DRILLPOWERSOURCE:
-			longMsg = _("Drills require a close power source since they transmit resources"
-			            " via the power gird. Build it near a reactor or repeater.");
-			shortMsg = _("The drill requires a close power source");
-			type = DT_BUILD;
-			break;
-
 		// unused - DCC isn't required to build anything
 		case MN_H_NODCC:
 			longMsg = _("There is no Defense Computer. A Defense Computer is needed to "

@@ -2221,11 +2221,6 @@ void G_SetHumanBuildablePowerState()
 			{
 				ent->powered = qtrue;
 			}
-
-			if ( ent->s.modelindex == BA_H_DRILL && !PowerSourceInRange( ent->s.origin ) )
-			{
-				ent->powered = qfalse;
-			}
 		}
 
 		// power down buildables that lack power, highest deficit first
@@ -4446,12 +4441,6 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 			}
 		}
 
-		// Drills need a close power source to work
-		if ( buildable == BA_H_DRILL && !PowerSourceInRange( origin ) )
-		{
-			reason = IBE_DRILLPOWERSOURCE;
-		}
-
 		// Check if buildable requires a DCC
 		if ( BG_Buildable( buildable )->dccTest && !G_IsDCCBuilt() )
 		{
@@ -4463,7 +4452,6 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 		{
 			reason = IBE_SURFACE;
 		}
-
 
 		// Check level permissions
 		if ( !g_humanAllowBuilding.integer )
@@ -4893,10 +4881,6 @@ qboolean G_BuildIfValid( gentity_t *ent, buildable_t buildable )
 
 		case IBE_NOPOWERHERE:
 			G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOPOWERHERE );
-			return qfalse;
-
-		case IBE_DRILLPOWERSOURCE:
-			G_TriggerMenu( ent->client->ps.clientNum, MN_H_DRILLPOWERSOURCE );
 			return qfalse;
 
 		case IBE_NOREACTOR:
