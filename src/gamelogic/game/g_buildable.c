@@ -489,7 +489,7 @@ qboolean G_FindCreep( gentity_t *self )
 
 			if ( ( ent->s.modelindex == BA_A_SPAWN ||
 			       ent->s.modelindex == BA_A_OVERMIND ) &&
-			     ent->spawned && ent->health > 0 )
+			       ent->health > 0 )
 			{
 				VectorSubtract( self->s.origin, ent->s.origin, temp_v );
 				distance = VectorLength( temp_v );
