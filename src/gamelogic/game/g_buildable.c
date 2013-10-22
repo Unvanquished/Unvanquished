@@ -907,11 +907,9 @@ void AGeneric_CreepCheck( gentity_t *self )
 {
 	gentity_t *spawn;
 
-	switch( self->s.modelindex )
+	if ( !BG_Buildable( self->s.modelindex )->creepTest )
 	{
-		case BA_A_OVERMIND:
-		case BA_A_SPAWN:
-			return;
+		return;
 	}
 
 	if ( !G_FindCreep( self ) )
