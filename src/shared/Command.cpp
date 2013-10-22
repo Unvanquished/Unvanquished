@@ -257,9 +257,9 @@ namespace Cmd {
                     if (in[0] == '\"') {
                         in++;
                         break;
-                    } else if (in + 1 !=  cmd.end() && in[0] == '\\' && in[1] == '\"') {
-                        currentToken.push_back('\"');
-                        in++;
+                    } else if (in + 1 !=  cmd.end() && in[0] == '\\') {
+                        currentToken.push_back(in[1]);
+                        in += 2;
                     } else {
                         currentToken.push_back(in[0]);
                         in++;
