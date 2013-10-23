@@ -915,5 +915,5 @@ void CL_GetClipboardData( char *, int, clipboard_t );
 //
 void CL_OpenClientLog(void);
 void CL_CloseClientLog(void);
-void CL_WriteClientLog( char *text );
-void CL_WriteClientChatLog( char *text );
+void CL_WriteClientLog( const char *text );
+void CL_WriteClientChatLog( const char *text );

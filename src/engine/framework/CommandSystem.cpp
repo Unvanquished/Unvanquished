@@ -24,6 +24,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "CommandSystem.h"
 
+#include "../../shared/Log.h"
 #include "../../shared/String.h"
 
 #include <unordered_map>
@@ -32,6 +33,8 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
 //TODO: use case-insensitive comparisons for commands (store the lower case version?)
 namespace Cmd {
+
+    Log::Logger commandLog("common.commands", Log::NOTICE);
 
     struct commandRecord_t {
         std::string description;
@@ -111,7 +114,7 @@ namespace Cmd {
         CommandMap& commands = GetCommandMap();
 
         if (commands.count(name)) {
-			Com_Printf(_( "Cmd::AddCommand: %s already defined\n"), name.c_str() );
+			commandLog.Warn(_("Cmd::AddCommand: %s already defined"), name);
 			return;
         }
 
@@ -146,6 +149,8 @@ namespace Cmd {
 
     void ExecuteCommand(std::string command) {
         CommandMap& commands = GetCommandMap();
+
+        commandLog.Debug("Execing command '%s'", command);
 
         Args args(std::move(command));
         currentArgs = args;

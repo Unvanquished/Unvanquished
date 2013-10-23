@@ -600,7 +600,7 @@ If no console is visible, the text will appear at the top of the game window
 #pragma optimize( "g", off ) // SMF - msvc totally screws this function up with optimize on
 #endif
 
-void CL_ConsolePrint( char *text )
+void CL_ConsolePrint( const char *text )
 {
 	int      y;
 	int      c, i, l;

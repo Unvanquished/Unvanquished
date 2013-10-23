@@ -451,6 +451,8 @@ set( ENGINELIST
   ${SHARED_DIR}/Cvar.h
   ${SHARED_DIR}/LineEditData.cpp
   ${SHARED_DIR}/LineEditData.h
+  ${SHARED_DIR}/Log.cpp
+  ${SHARED_DIR}/Log.h
   ${SHARED_DIR}/String.cpp
   ${SHARED_DIR}/String.h
   ${ENGINE_DIR}/framework/BaseCommands.cpp
@@ -463,6 +465,8 @@ set( ENGINELIST
   ${ENGINE_DIR}/framework/ConsoleField.h
   ${ENGINE_DIR}/framework/ConsoleHistory.cpp
   ${ENGINE_DIR}/framework/ConsoleHistory.h
+  ${ENGINE_DIR}/framework/LogSystem.cpp
+  ${ENGINE_DIR}/framework/LogSystem.h
   ${ENGINE_DIR}/qcommon/cm_load.c
   ${ENGINE_DIR}/qcommon/cm_trisoup.c
   ${ENGINE_DIR}/qcommon/cm_patch.c

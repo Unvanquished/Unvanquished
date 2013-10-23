@@ -43,7 +43,9 @@ Maryland 20850 USA.
 #include "../framework/BaseCommands.h"
 #include "../framework/CommandSystem.h"
 #include "../framework/ConsoleHistory.h"
+#include "../framework/LogSystem.h"
 #include "../../shared/Cvar.h"
+#include "../../shared/Log.h"
 
 // htons
 #if defined __linux__ || defined __FreeBSD__ || defined( MACOS_X ) || defined( __APPLE__ )
@@ -135,34 +137,13 @@ void     CIN_CloseAllVideos( void );
 
 //============================================================================
 
-static char *rd_buffer;
-static int  rd_buffersize;
-static void ( *rd_flush )( char *buffer );
-
+//TODO: reimplement rcon feedback
 void Com_BeginRedirect( char *buffer, int buffersize, void ( *flush )( char * ) )
 {
-	if ( !buffer || !buffersize || !flush )
-	{
-		return;
-	}
-
-	rd_buffer = buffer;
-	rd_buffersize = buffersize;
-	rd_flush = flush;
-
-	*rd_buffer = 0;
 }
 
 void Com_EndRedirect( void )
 {
-	if ( rd_flush )
-	{
-		rd_flush( rd_buffer );
-	}
-
-	rd_buffer = NULL;
-	rd_buffersize = 0;
-	rd_flush = NULL;
 }
 
 /*
@@ -177,9 +158,6 @@ A raw string should NEVER be passed as fmt, because of "%f" type crashers.
 */
 int QDECL VPRINTF_LIKE(1) Com_VPrintf( const char *fmt, va_list argptr )
 {
-	char            msg[ MAXPRINTMSG ];
-	static qboolean opening_qconsole = qfalse;
-
 #ifdef SMP
 	static SDL_mutex *lock = NULL;
 
@@ -192,81 +170,22 @@ int QDECL VPRINTF_LIKE(1) Com_VPrintf( const char *fmt, va_list argptr )
 	SDL_LockMutex( lock );
 #endif
 
-	// FIXME TTimo
-	// switched vsprintf -> vsnprintf
-	// rcon could cause buffer overflow
-	//
-	Q_vsnprintf( msg, sizeof( msg ), fmt, argptr );
+	//Build the message
+	char msg[MAXPRINTMSG];
+	Q_vsnprintf(msg, sizeof(msg), fmt, argptr);
 
-	if ( rd_buffer )
+	//Remove a trailing newline, this is handled by Log::*
+	int len = strlen(msg);
+	if (msg[len - 1] == '\n')
 	{
-		if ( ( strlen( msg ) + strlen( rd_buffer ) ) > ( rd_buffersize - 1 ) )
-		{
-			rd_flush( rd_buffer );
-			*rd_buffer = 0;
-		}
-
-		Q_strcat( rd_buffer, rd_buffersize, msg );
-		// show_bug.cgi?id=51
-		// only flush the rcon buffer when it's necessary, avoid fragmenting
-		//rd_flush(rd_buffer);
-		//*rd_buffer = 0;
-		goto done;
+		msg[len - 1] = '\0';
 	}
 
-	// echo to console if we're not a dedicated server
-	if ( com_dedicated && !com_dedicated->integer )
-	{
-		CL_ConsolePrint( msg );
-	}
+	static const int logTargets = (1 << Log::GRAPHICAL_CONSOLE) | (1 << Log::TTY_CONSOLE) | (1 << Log::CRASHLOG) | (1 << Log::HUD) | (1 << Log::LOGFILE);
+	//TODO: add information about the time
+	//TODO: re-implement rcon feedback
+	Log::Dispatch({0, msg}, logTargets);
 
-	// echo to dedicated console and early console
-	Sys_Print( msg );
-
-	// logfile
-	if ( com_logfile && com_logfile->integer )
-	{
-		// TTimo: only open the qconsole.log if the filesystem is in an initialized state
-		//   also, avoid recursing in the qconsole.log opening (i.e. if fs_debug is on)
-		if ( !logfile && FS_Initialized() && !opening_qconsole )
-		{
-			struct tm *newtime;
-
-			time_t    aclock;
-
-			opening_qconsole = qtrue;
-
-			time( &aclock );
-			newtime = localtime( &aclock );
-
-			if ( com_logfile->integer != 3 )
-			{
-				logfile = FS_FOpenFileWrite( "unvconsole.log" );
-			}
-			else
-			{
-				logfile = FS_FOpenFileAppend( "unvconsole.log" );
-			}
-
-			Com_Printf(_( "logfile opened on %s\n"), asctime( newtime ) );
-
-			if ( com_logfile->integer > 1 )
-			{
-				// force it to not buffer so we get valid
-				// data even if we are crashing
-				FS_ForceFlush( logfile );
-			}
-
-			opening_qconsole = qfalse;
-		}
-
-		if ( logfile && FS_Initialized() )
-		{
-			FS_Write( msg, strlen( msg ), logfile );
-		}
-	}
-
-done:
 #ifdef SMP
 	SDL_UnlockMutex( lock );
 #endif
