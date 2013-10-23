@@ -306,27 +306,10 @@ static qboolean R_CullLightSurface( surfaceType_t *surface, shader_t *shader, tr
 R_AddInteractionSurface
 ======================
 */
-static void R_AddInteractionSurface( bspSurface_t *surf, trRefLight_t *light )
+static void R_AddInteractionSurface( bspSurface_t *surf, trRefLight_t *light, int interactionBits )
 {
-	interactionType_t iaType = IA_DEFAULT;
+	interactionType_t iaType = ( interactionType_t ) interactionBits;
 	byte              cubeSideBits = CUBESIDE_CLIPALL;
-
-	if ( light->restrictInteractionFirst >= 0 )
-	{
-		iaType = IA_DEFAULTCLIP;
-	}
-
-	if ( r_shadows->integer <= SHADOWING_BLOB || light->l.noShadows )
-	{
-		iaType = ( interactionType_t )( iaType & IA_LIGHT );
-	}
-
-	// Tr3B - this surface is maybe not in this view but it may still cast a shadow
-	// into this view
-	if ( surf->viewCount != tr.viewCountNoReset )
-	{
-		iaType = ( interactionType_t )( iaType & ~IA_LIGHT );
-	}
 
 	if ( !iaType )
 	{
@@ -701,17 +684,18 @@ static void R_RecursiveWorldNode( bspNode_t *node, int planeBits, int decalBits 
 R_RecursiveInteractionNode
 ================
 */
-static void R_RecursiveInteractionNode( bspNode_t *node, trRefLight_t *light, int planeBits )
+static void R_RecursiveInteractionNode( bspNode_t *node, trRefLight_t *light, int planeBits, int interactionBits )
 {
 	int i;
 	int r;
 
 	do
 	{
-		// if the node wasn't marked as potentially visible, exit
+		// surfaces that arn't potentially visible may still cast shadows
+		// but we don't bother lighting them since there will be no visible effect
 		if ( node->visCounts[ tr.visIndex ] != tr.visCounts[ tr.visIndex ] )
 		{
-			return;
+			interactionBits &= ~IA_LIGHT;
 		}
 
 		// light already hit node
@@ -727,7 +711,7 @@ static void R_RecursiveInteractionNode( bspNode_t *node, trRefLight_t *light, in
 
 		// Tr3B - even surfaces that belong to nodes that are outside of the view frustum
 		// can cast shadows into the view frustum
-		if ( !r_nocull->integer && r_shadows->integer <= SHADOWING_BLOB )
+		if ( !r_nocull->integer )
 		{
 			for ( i = 0; i < FRUSTUM_PLANES; i++ )
 			{
@@ -737,7 +721,9 @@ static void R_RecursiveInteractionNode( bspNode_t *node, trRefLight_t *light, in
 
 					if ( r == 2 )
 					{
-						return; // culled
+						// this node cannot be lighted, but may cast shadows
+						interactionBits &= ~IA_LIGHT;
+						break;
 					}
 
 					if ( r == 1 )
@@ -751,6 +737,12 @@ static void R_RecursiveInteractionNode( bspNode_t *node, trRefLight_t *light, in
 		if ( node->contents != -1 )
 		{
 			break;
+		}
+
+		// don't waste time with an unused node
+		if ( !interactionBits )
+		{
+			return;
 		}
 
 		// node is just a decision point, so go down both sides
@@ -770,7 +762,7 @@ static void R_RecursiveInteractionNode( bspNode_t *node, trRefLight_t *light, in
 			case 3:
 			default:
 				// recurse down the children, front side first
-				R_RecursiveInteractionNode( node->children[ 0 ], light, planeBits );
+				R_RecursiveInteractionNode( node->children[ 0 ], light, planeBits, interactionBits );
 
 				// tail recurse
 				node = node->children[ 1 ];
@@ -793,7 +785,7 @@ static void R_RecursiveInteractionNode( bspNode_t *node, trRefLight_t *light, in
 			// the surface may have already been added if it
 			// spans multiple leafs
 			surf = *mark;
-			R_AddInteractionSurface( surf, light );
+			R_AddInteractionSurface( surf, light, interactionBits );
 			mark++;
 		}
 	}
@@ -2145,6 +2137,8 @@ R_AddWorldInteractions
 */
 void R_AddWorldInteractions( trRefLight_t *light )
 {
+	int interactionBits;
+
 	if ( !r_drawworld->integer )
 	{
 		return;
@@ -2159,7 +2153,20 @@ void R_AddWorldInteractions( trRefLight_t *light )
 
 	// perform frustum culling and add all the potentially visible surfaces
 	tr.lightCount++;
-	R_RecursiveInteractionNode( tr.world->nodes, light, FRUSTUM_CLIPALL );
+
+	interactionBits = IA_DEFAULT;
+
+	if ( light->restrictInteractionFirst >= 0 )
+	{
+		interactionBits = IA_DEFAULTCLIP;
+	}
+
+	if ( r_shadows->integer <= SHADOWING_BLOB || light->l.noShadows )
+	{
+		interactionBits = interactionBits & IA_LIGHT;
+	}
+
+	R_RecursiveInteractionNode( tr.world->nodes, light, FRUSTUM_CLIPALL, interactionBits );
 }
 
 /*
