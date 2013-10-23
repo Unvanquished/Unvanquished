@@ -230,29 +230,75 @@ static qboolean R_CullSurface( surfaceType_t *surface, shader_t *shader, int *fr
 	return qfalse;
 }
 
-static qboolean R_LightSurfaceGeneric( srfGeneric_t *face, trRefLight_t   *light, byte *cubeSideBits )
+static qboolean R_CullLightSurface( surfaceType_t *surface, shader_t *shader, trRefLight_t *light, byte *cubeSideBits )
 {
-	// do a quick AABB cull
-	if ( !BoundsIntersect( light->worldBounds[ 0 ], light->worldBounds[ 1 ], face->bounds[ 0 ], face->bounds[ 1 ] ) )
+	srfGeneric_t *gen;
+	float        d;
+
+	// allow culling to be disabled
+	if ( r_nocull->integer )
 	{
 		return qfalse;
+	}
+
+	// ydnar: made surface culling generic, inline with q3map2 surface classification
+	if ( *surface == SF_GRID && r_nocurves->integer )
+	{
+		return qtrue;
+	}
+
+	if ( *surface != SF_FACE && *surface != SF_TRIANGLES && *surface != SF_VBO_MESH && *surface != SF_GRID )
+	{
+		return qtrue;
+	}
+
+	gen = ( srfGeneric_t * ) surface;
+
+	// do a quick AABB cull
+	if ( !BoundsIntersect( light->worldBounds[ 0 ], light->worldBounds[ 1 ], gen->bounds[ 0 ], gen->bounds[ 1 ] ) )
+	{
+		return qtrue;
 	}
 
 	// do a more expensive and precise light frustum cull
 	if ( !r_noLightFrustums->integer )
 	{
-		if ( R_CullLightWorldBounds( light, face->bounds ) == CULL_OUT )
+		if ( R_CullLightWorldBounds( light, gen->bounds ) == CULL_OUT )
 		{
-			return qfalse;
+			return qtrue;
+		}
+	}
+
+	// plane cull
+	if ( *surface == SF_FACE && r_facePlaneCull->integer )
+	{
+		d = DotProduct( light->origin, gen->plane.normal ) - gen->plane.dist;
+
+		// don't cull exactly on the plane, because there are levels of rounding
+		// through the BSP, ICD, and hardware that may cause pixel gaps if an
+		// epsilon isn't allowed here
+		if ( shader->cullType == CT_FRONT_SIDED )
+		{
+			if ( d < -8.0f )
+			{
+				return qtrue;
+			}
+		}
+		else if ( shader->cullType == CT_BACK_SIDED )
+		{
+			if ( d > 8.0f )
+			{
+				return qtrue;
+			}
 		}
 	}
 
 	if ( r_cullShadowPyramidFaces->integer )
 	{
-		*cubeSideBits = R_CalcLightCubeSideBits( light, face->bounds );
+		*cubeSideBits = R_CalcLightCubeSideBits( light, gen->bounds );
 	}
 
-	return qtrue;
+	return qfalse;
 }
 
 /*
@@ -262,7 +308,6 @@ R_AddInteractionSurface
 */
 static void R_AddInteractionSurface( bspSurface_t *surf, trRefLight_t *light )
 {
-	qboolean          intersects;
 	interactionType_t iaType = IA_DEFAULT;
 	byte              cubeSideBits = CUBESIDE_CLIPALL;
 
@@ -271,19 +316,21 @@ static void R_AddInteractionSurface( bspSurface_t *surf, trRefLight_t *light )
 		iaType = IA_DEFAULTCLIP;
 	}
 
-	if ( r_shadows->integer <= SHADOWING_BLOB ||
-	     light->l.noShadows ) {
-		iaType = (interactionType_t)(iaType & IA_LIGHT);
+	if ( r_shadows->integer <= SHADOWING_BLOB || light->l.noShadows )
+	{
+		iaType = ( interactionType_t )( iaType & IA_LIGHT );
 	}
 
 	// Tr3B - this surface is maybe not in this view but it may still cast a shadow
 	// into this view
 	if ( surf->viewCount != tr.viewCountNoReset )
 	{
-		iaType = (interactionType_t)(iaType & ~IA_LIGHT);
-		if ( !iaType ) {
-			return;
-		}
+		iaType = ( interactionType_t )( iaType & ~IA_LIGHT );
+	}
+
+	if ( !iaType )
+	{
+		return;
 	}
 
 	if ( surf->lightCount == tr.lightCount )
@@ -300,37 +347,24 @@ static void R_AddInteractionSurface( bspSurface_t *surf, trRefLight_t *light )
 		return;
 	}
 
-	switch ( *surf->data )
-	{
-		case SF_FACE:
-		case SF_GRID:
-		case SF_TRIANGLES:
-			intersects = R_LightSurfaceGeneric( ( srfGeneric_t * ) surf->data, light, &cubeSideBits );
-			break;
-
-		default:
-			intersects = qfalse;
-	};
-
-	if ( intersects )
-	{
-		R_AddLightInteraction( light, surf->data, surf->shader, cubeSideBits, iaType );
-
-		if ( light->isStatic )
-		{
-			tr.pc.c_slightSurfaces++;
-		}
-		else
-		{
-			tr.pc.c_dlightSurfaces++;
-		}
-	}
-	else
+	if ( R_CullLightSurface( surf->data, surf->shader, light, &cubeSideBits ) )
 	{
 		if ( !light->isStatic )
 		{
 			tr.pc.c_dlightSurfacesCulled++;
 		}
+		return;
+	}
+
+	R_AddLightInteraction( light, surf->data, surf->shader, cubeSideBits, iaType );
+
+	if ( light->isStatic )
+	{
+		tr.pc.c_slightSurfaces++;
+	}
+	else
+	{
+		tr.pc.c_dlightSurfaces++;
 	}
 }
 
