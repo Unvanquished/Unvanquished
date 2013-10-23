@@ -428,15 +428,14 @@ extern int   REACTOR_ATTACK_DCC_DAMAGE;
 #define HUMAN_SIDE_MODIFIER           0.9f
 #define HUMAN_LAND_FRICTION           3.0f
 
+// take/restore: per action or 100ms
+#define STAMINA_MAX                   2000
+#define STAMINA_JUMP_TAKE             250
+#define STAMINA_SPRINT_TAKE           5
 #define STAMINA_STOP_RESTORE          30
 #define STAMINA_WALK_RESTORE          15
-#define STAMINA_MEDISTAT_RESTORE      30 // stacked on STOP or WALK
-#define STAMINA_SPRINT_TAKE           6
-#define STAMINA_JUMP_TAKE             250 // Doubled jump requirement. Can perform ~8 jumps.
-#define STAMINA_MAX                   2000 // Doubled maximum stamina.
-#define STAMINA_BREATHING_LEVEL       0
-#define STAMINA_SLOW_LEVEL            -1000 // doubled to match doubled stamina
-#define STAMINA_BLACKOUT_LEVEL        -1600 // Doubled to match doubled stamina
+#define STAMINA_JOG_RESTORE           5
+#define STAMINA_MEDISTAT_RESTORE      30 // stacks
 
 #define HUMAN_SPAWN_REPEAT_TIME       10000
 #define HUMAN_REGEN_DAMAGE_TIME       2000 //msec since damage before dcc repairs

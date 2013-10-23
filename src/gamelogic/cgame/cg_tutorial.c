@@ -513,17 +513,6 @@ static void CG_HumanText( char *text, playerState_t *ps )
 		              _( BG_Upgrade( UP_MEDKIT )->humanName ) ) );
 	}
 
-	if ( ps->stats[ STAT_STAMINA ] <= STAMINA_BLACKOUT_LEVEL )
-	{
-		Q_strcat( text, MAX_TUTORIAL_TEXT,
-		          _( "You are blacking out. Stop sprinting to recover stamina\n" ) );
-	}
-	else if ( ps->stats[ STAT_STAMINA ] <= STAMINA_SLOW_LEVEL )
-	{
-		Q_strcat( text, MAX_TUTORIAL_TEXT,
-		          _( "Your stamina is low. Stop sprinting to recover\n" ) );
-	}
-
 	switch ( cg.nearUsableBuildable )
 	{
 		case BA_H_ARMOURY:

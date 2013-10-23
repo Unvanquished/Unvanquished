@@ -853,7 +853,8 @@ void ClientTimerActions( gentity_t *ent, int msec )
 			client->ps.stats[ STAT_STAMINA ] += STAMINA_STOP_RESTORE;
 		}
 		else if ( ( client->ps.stats[ STAT_STATE ] & SS_SPEEDBOOST ) &&
-		          !usercmdButtonPressed( client->buttons, BUTTON_WALKING ) && !crouched )  // walk overrides sprint
+		          !usercmdButtonPressed( client->buttons, BUTTON_WALKING ) &&
+		          !crouched ) // walk overrides sprint
 		{
 			client->ps.stats[ STAT_STAMINA ] -= STAMINA_SPRINT_TAKE;
 		}
@@ -861,15 +862,19 @@ void ClientTimerActions( gentity_t *ent, int msec )
 		{
 			client->ps.stats[ STAT_STAMINA ] += STAMINA_WALK_RESTORE;
 		}
+		else // assume jogging
+		{
+			client->ps.stats[ STAT_STAMINA ] += STAMINA_JOG_RESTORE;
+		}
 
 		// Check stamina limits
 		if ( client->ps.stats[ STAT_STAMINA ] > STAMINA_MAX )
 		{
 			client->ps.stats[ STAT_STAMINA ] = STAMINA_MAX;
 		}
-		else if ( client->ps.stats[ STAT_STAMINA ] < -STAMINA_MAX )
+		else if ( client->ps.stats[ STAT_STAMINA ] < 0 )
 		{
-			client->ps.stats[ STAT_STAMINA ] = -STAMINA_MAX;
+			client->ps.stats[ STAT_STAMINA ] = 0;
 		}
 
 		if ( weapon == WP_ABUILD || weapon == WP_ABUILD2 ||

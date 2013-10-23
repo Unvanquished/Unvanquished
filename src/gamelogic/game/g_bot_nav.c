@@ -330,7 +330,7 @@ void BotStandStill( gentity_t *self )
 
 qboolean BotJump( gentity_t *self )
 {
-	if ( self->client->pers.team == TEAM_HUMANS && self->client->ps.stats[STAT_STAMINA] < STAMINA_SLOW_LEVEL + STAMINA_JUMP_TAKE )
+	if ( self->client->pers.team == TEAM_HUMANS && self->client->ps.stats[STAT_STAMINA] < STAMINA_JUMP_TAKE )
 	{
 		return qfalse;
 	}
@@ -349,7 +349,8 @@ qboolean BotSprint( gentity_t *self, qboolean enable )
 		return qfalse;
 	}
 
-	if ( self->client->pers.team == TEAM_HUMANS && self->client->ps.stats[STAT_STAMINA] > STAMINA_SLOW_LEVEL + STAMINA_JUMP_TAKE && self->botMind->botSkill.level >= 5 )
+	if ( self->client->pers.team == TEAM_HUMANS && self->client->ps.stats[STAT_STAMINA] > STAMINA_JUMP_TAKE
+	     && self->botMind->botSkill.level >= 5 )
 	{
 		usercmdPressButton( botCmdBuffer->buttons, BUTTON_SPRINT );
 		BotWalk( self, qfalse );
@@ -707,7 +708,7 @@ void BotMoveToGoal( gentity_t *self )
 	BotSeek( self, dir );
 
 	//dont sprint or dodge if we dont have enough stamina and are about to slow
-	if ( self->client->pers.team == TEAM_HUMANS && self->client->ps.stats[ STAT_STAMINA ] < STAMINA_SLOW_LEVEL + STAMINA_JUMP_TAKE )
+	if ( self->client->pers.team == TEAM_HUMANS && self->client->ps.stats[ STAT_STAMINA ] < STAMINA_JUMP_TAKE )
 	{
 		usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
 
