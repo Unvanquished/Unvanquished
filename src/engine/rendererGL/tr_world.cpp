@@ -723,8 +723,8 @@ static void R_RecursiveInteractionNode( bspNode_t *node, trRefLight_t *light, in
 		// inside can be visible OPTIMIZE: don't do this all the way to leafs?
 
 		// Tr3B - even surfaces that belong to nodes that are outside of the view frustum
-		// can cast shadows into the view frustum unless the world cannot cast shadows
-		if ( !r_nocull->integer && ( r_shadows->integer <= SHADOWING_BLOB || light->restrictInteractionFirst >= 0 ) )
+		// can cast shadows into the view frustum
+		if ( !r_nocull->integer && r_shadows->integer <= SHADOWING_BLOB )
 		{
 			for ( i = 0; i < FRUSTUM_PLANES; i++ )
 			{
