@@ -600,6 +600,9 @@ static void R_AddLeafSurfaces( bspNode_t *node, int decalBits )
 		{
 			R_AddDecalSurface( *mark, decalBits );
 		}
+
+		( *mark )->viewCount = tr.viewCountNoReset;
+
 		mark++;
 		view++;
 	}
