@@ -5423,7 +5423,7 @@ static void RB_RenderDebugUtils()
 		ia = NULL;
 		while ( ( ia = IterateLights( ia ) ) )
 		{
-			light = ia->light;
+			backEnd.currentLight = light = ia->light;
 
 			if ( r_showShadowLod->integer )
 			{
