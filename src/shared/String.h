@@ -23,6 +23,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <string>
+#include "../libs/tinyformat/tinyformat.h"
 
 #ifndef SHARED_STRING_H_
 #define SHARED_STRING_H_
@@ -142,6 +143,13 @@ namespace Str {
     std::string UTF16To8(Str::BasicStringRef<wchar_t> str);
 #endif
 
+    template<typename ... Args>
+    std::string Format(const std::string& format, const Args& ... args);
+
+    template<typename ... Args>
+    std::string Format(const std::string& format, const Args& ... args) {
+        return tinyformat::format(format.c_str(), args ...);
+    }
 }
 
 #endif //SHARED_STRING_H_
