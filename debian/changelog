@@ -3,6 +3,7 @@ unvanquished (0.20.0-4) unstable; urgency=low
   * Improve cleanup of /var/games/unvanquished when unvanquished-common is
     purged. Files not added at install/upgrade/reconfigure are not removed.
   * /var/games/unvanquished/main is better owned by unvanquished-common.
+  * Some debconf questions: whether to download .pk3s and, if so, from where.
 
  -- Darren Salt <devspam@moreofthesa.me.uk>  Wed, 23 Oct 2013 14:44:41 +0100
 
