@@ -2795,10 +2795,6 @@ void R_TransformShadowLight( trRefLight_t *light ) {
 	radius = Distance( mids, maxs );
 	dist = Distance( light->l.origin, mids );
 
-	if( dist <= 2.0f * radius ) {
-		return;
-	}
-
 	light->l.rlType = RL_PROJ;
 	VectorSubtract( mids, light->l.origin, forward );
 	VectorNormalize( forward );
