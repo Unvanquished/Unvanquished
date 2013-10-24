@@ -1955,6 +1955,8 @@ extern "C" {
 	{
 		int             viewCount; // if == tr.viewCount, already added
 		int             lightCount;
+		int             interactionBits;
+
 		struct shader_s *shader;
 
 		int16_t         lightmapNum; // -1 = no lightmap

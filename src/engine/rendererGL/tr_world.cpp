@@ -316,13 +316,19 @@ static void R_AddInteractionSurface( bspSurface_t *surf, trRefLight_t *light, in
 		return;
 	}
 
-	if ( surf->lightCount == tr.lightCount )
+	if ( surf->lightCount != tr.lightCount )
 	{
-		// already checked this surface
+		surf->interactionBits = 0;
+		surf->lightCount = tr.lightCount;
+	}
+	
+	if ( surf->interactionBits == ( surf->interactionBits | interactionBits ) )
+	{
+		//already added interactions for this surface
 		return;
 	}
 
-	surf->lightCount = tr.lightCount;
+	surf->interactionBits |= interactionBits;
 
 	//  skip all surfaces that don't matter for lighting only pass
 	if ( surf->shader->isSky || ( !surf->shader->interactLight && surf->shader->noShadows ) )
@@ -734,15 +740,15 @@ static void R_RecursiveInteractionNode( bspNode_t *node, trRefLight_t *light, in
 			}
 		}
 
-		if ( node->contents != -1 )
-		{
-			break;
-		}
-
-		// don't waste time with an unused node
+		// don't waste time on nodes with no interactions
 		if ( !interactionBits )
 		{
 			return;
+		}
+
+		if ( node->contents != -1 )
+		{
+			break;
 		}
 
 		// node is just a decision point, so go down both sides
