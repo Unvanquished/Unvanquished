@@ -669,6 +669,7 @@ typedef struct damageRegion_s
 	float    area, modifier, minHeight, maxHeight;
 	int      minAngle, maxAngle;
 	qboolean crouch;
+	qboolean nonlocational;
 } damageRegion_t;
 
 //status of the warning of certain events
@@ -1043,7 +1044,7 @@ qboolean   G_LineOfSight( gentity_t *ent1, gentity_t *ent2 );
 //
 // g_combat.c
 //
-qboolean CanDamage( gentity_t *targ, vec3_t origin );
+qboolean G_CanDamage( gentity_t *targ, vec3_t origin );
 void     G_KnockbackByDir( gentity_t *target, const vec3_t direction, float strength,
                            qboolean ignoreMass );
 void     G_KnockbackBySource( gentity_t *target, gentity_t *source, float strength,
@@ -1061,6 +1062,8 @@ void     G_AddCreditsToScore( gentity_t *self, int credits );
 void     G_AddConfidenceToScore( gentity_t *self, float confidence );
 void     G_LogDestruction( gentity_t *self, gentity_t *actor, int mod );
 
+float    G_GetNonLocDamageMod( class_t pcl );
+float    G_GetPointDamageMod( gentity_t *target, class_t pcl, float angle, float height );
 void     G_InitDamageLocations( void );
 
 // damage flags
@@ -1130,7 +1133,7 @@ gentity_t *G_SelectHumanLockSpawnPoint( vec3_t origin, vec3_t angles );
 void      respawn( gentity_t *ent );
 void      BeginIntermission( void );
 void      ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const vec3_t angles );
-void      player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod );
+void      G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod );
 qboolean  SpotWouldTelefrag( gentity_t *spot );
 qboolean  G_IsUnnamed( const char *name );
 

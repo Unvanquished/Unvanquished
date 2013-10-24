@@ -138,13 +138,7 @@ int   LEVEL4_CRUSH_DAMAGE;
 int   LEVEL4_CRUSH_REPEAT;
 
 // Human upgrades
-
-int  LIGHTARMOUR_POISON_PROTECTION;
-int  LIGHTARMOUR_PCLOUD_PROTECTION;
-
-float HELMET_RANGE;
-int   HELMET_POISON_PROTECTION;
-int   HELMET_PCLOUD_PROTECTION;
+float RADAR_RANGE;
 
 float BATTPACK_MODIFIER;
 
@@ -152,9 +146,6 @@ float JETPACK_FLOAT_SPEED;
 float JETPACK_SINK_SPEED;
 int   JETPACK_DISABLE_TIME;
 float JETPACK_DISABLE_CHANCE;
-
-int   BSUIT_POISON_PROTECTION;
-int   BSUIT_PCLOUD_PROTECTION;
 
 int   MEDKIT_POISON_IMMUNITY_TIME;
 int   MEDKIT_STARTUP_TIME;
@@ -243,6 +234,7 @@ int   LCANNON_CHARGE_TIME_MIN;
 int   LCANNON_CHARGE_TIME_WARN;
 int   LCANNON_CHARGE_AMMO;
 
+// MUST BE ALPHABETICALLY SORTED!
 static configVar_t bg_configVars[] =
 {
 	{"b_dcc_healRange", INTEGER, qfalse, &DC_RANGE},
@@ -273,24 +265,16 @@ static configVar_t bg_configVars[] =
 
 	{"u_battpack_ammoCapacityModifier", FLOAT, qfalse, &BATTPACK_MODIFIER},
 
-	{"u_bsuit_poisonCloudProtection", INTEGER, qfalse, &BSUIT_PCLOUD_PROTECTION},
-	{"u_bsuit_poisonProtection", INTEGER, qfalse, &BSUIT_POISON_PROTECTION},
-
-	{"u_helmet_poisonCloudProtection", INTEGER, qfalse, &HELMET_PCLOUD_PROTECTION},
-	{"u_helmet_poisonProtection", INTEGER, qfalse, &HELMET_POISON_PROTECTION},
-	{"u_helmet_radarRange", FLOAT, qfalse, &HELMET_RANGE},
-
-	{"u_jetpack_disableChance", FLOAT, qfalse, &JETPACK_DISABLE_CHANCE},
+    {"u_jetpack_disableChance", FLOAT, qfalse, &JETPACK_DISABLE_CHANCE},
 	{"u_jetpack_disableTime", INTEGER, qfalse, &JETPACK_DISABLE_TIME},
 	{"u_jetpack_riseSpeed", FLOAT, qfalse, &JETPACK_FLOAT_SPEED},
 	{"u_jetpack_sinkSpeed", FLOAT, qfalse, &JETPACK_SINK_SPEED},
 
-	{"u_larmour_poisonCloudProtection", INTEGER, qfalse, &LIGHTARMOUR_PCLOUD_PROTECTION},
-	{"u_larmour_poisonProtection", INTEGER, qfalse, &LIGHTARMOUR_POISON_PROTECTION},
-
 	{"u_medkit_poisonImmunityTime", INTEGER, qfalse, &MEDKIT_POISON_IMMUNITY_TIME},
 	{"u_medkit_startupSpeed", INTEGER, qfalse, &MEDKIT_STARTUP_SPEED},
 	{"u_medkit_startupTime", INTEGER, qfalse, &MEDKIT_STARTUP_TIME},
+
+	{"u_radar_radarRange", FLOAT, qfalse, &RADAR_RANGE},
 
 	{"w_abuild_blobDmg", INTEGER, qfalse, &ABUILDER_BLOB_DMG},
 	{"w_abuild_blobSlowTime", INTEGER, qfalse, &ABUILDER_BLOB_TIME},
@@ -465,18 +449,22 @@ qboolean BG_ReadWholeFile( const char *filename, char *buffer, int size)
 
 static int ParseTeam(char* token)
 {
-	if ( !Q_stricmp( token, "aliens" ) )
+	if ( !Q_strnicmp( token, "alien", 5 ) ) // alien(s)
 	{
 		return TEAM_ALIENS;
 	}
-	else if ( !Q_stricmp( token, "humans" ) )
+	else if ( !Q_strnicmp( token, "human", 5 ) ) // human(s)
 	{
 		return TEAM_HUMANS;
+	}
+	else if ( !Q_stricmp( token, "none" ) )
+	{
+		return TEAM_NONE;
 	}
 	else
 	{
 		Com_Printf( S_ERROR "unknown team value '%s'\n", token );
-		return -1;
+		return TEAM_NONE;
 	}
 }
 
@@ -1133,7 +1121,7 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
 	{
 		INFO = 1 << 0,
 		FOVCVAR = 1 << 1,
-		// unused
+		TEAM = 1 << 2,
 		HEALTH = 1 << 3,
 		FALLDAMAGE = 1 << 4,
 		REGEN = 1 << 5,
@@ -1194,6 +1182,14 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
 			}
 
 			defined |= FOVCVAR;
+		}
+		else if ( !Q_stricmp( token, "team" ) )
+		{
+			PARSE(text, token);
+
+			ca->team = ParseTeam( token );
+
+			defined |= TEAM;
 		}
 		else if ( !Q_stricmp( token, "health" ) )
 		{
@@ -1377,6 +1373,7 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
 
 	if ( !( defined & INFO ) ) { token = "description"; }
 	else if ( !( defined & FOVCVAR ) ) { token = "fovCvar"; }
+	else if ( !( defined & TEAM ) ) { token = "team"; }
 	else if ( !( defined & HEALTH ) ) { token = "health"; }
 	else if ( !( defined & FALLDAMAGE ) ) { token = "fallDamage"; }
 	else if ( !( defined & REGEN ) ) { token = "regen"; }

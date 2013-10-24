@@ -389,14 +389,18 @@ typedef enum
   UP_NONE,
 
   UP_LIGHTARMOUR,
-  UP_HELMET,
-  UP_MEDKIT,
+  UP_MEDIUMARMOUR,
+  UP_BATTLESUIT,
+
+  UP_RADAR,
+
   UP_BATTPACK,
   UP_JETPACK,
-  UP_BATTLESUIT,
+
   UP_GRENADE,
   UP_FIREBOMB,
 
+  UP_MEDKIT,
   UP_AMMO,
 
   UP_NUM_UPGRADES
@@ -649,8 +653,7 @@ typedef enum
   MN_H_ITEMHELD,
   MN_H_NOARMOURYHERE,
   MN_H_NOENERGYAMMOHERE,
-  MN_H_NOROOMBSUITON,
-  MN_H_NOROOMBSUITOFF,
+  MN_H_NOROOMARMOURCHANGE,
   MN_H_ARMOURYBUILDTIMER,
   MN_H_DEADTOCLASS,
   MN_H_UNKNOWNSPAWNITEM,
@@ -876,7 +879,9 @@ typedef enum
   PCL_ALIEN_LEVEL4,
 
   //human class
-  PCL_HUMAN,
+  PCL_HUMAN_NAKED,
+  PCL_HUMAN_LIGHT,
+  PCL_HUMAN_MEDIUM,
   PCL_HUMAN_BSUIT,
 
   PCL_NUM_CLASSES
@@ -982,6 +987,8 @@ typedef struct
 	const char *name;
 	const char *info;
 	const char *fovCvar;
+
+	team_t   team;
 
 	int      unlockThreshold;
 
@@ -1251,6 +1258,7 @@ classModelConfig_t          *BG_ClassModelConfig( class_t pClass );
 
 void                        BG_ClassBoundingBox( class_t pClass, vec3_t mins, vec3_t maxs, vec3_t cmaxs,
                                                  vec3_t dmins, vec3_t dmaxs );
+team_t                      BG_ClassTeam( class_t pClass );
 qboolean                    BG_ClassHasAbility( class_t pClass, int ability );
 
 int                         BG_ClassCanEvolveFromTo(class_t from, class_t to, int credits);

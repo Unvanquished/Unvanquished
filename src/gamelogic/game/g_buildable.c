@@ -89,7 +89,7 @@ gentity_t *G_CheckSpawnPoint( int spawnNum, const vec3_t origin,
 	}
 	else if ( spawn == BA_H_SPAWN )
 	{
-		BG_ClassBoundingBox( PCL_HUMAN, cmins, cmaxs, NULL, NULL, NULL );
+		BG_ClassBoundingBox( PCL_HUMAN_NAKED, cmins, cmaxs, NULL, NULL, NULL );
 
 		VectorCopy( origin, localOrigin );
 		localOrigin[ 2 ] += maxs[ 2 ] + fabs( cmins[ 2 ] ) + 1.0f;

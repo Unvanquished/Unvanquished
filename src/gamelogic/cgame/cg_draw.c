@@ -899,7 +899,7 @@ CG_DrawHumanScanner
 */
 static void CG_DrawHumanScanner( rectDef_t *rect, qhandle_t shader, vec4_t color )
 {
-	if ( BG_InventoryContainsUpgrade( UP_HELMET, cg.snap->ps.stats ) )
+	if ( BG_InventoryContainsUpgrade( UP_RADAR, cg.snap->ps.stats ) )
 	{
 		CG_Scanner( rect, shader, color );
 	}
@@ -2506,7 +2506,7 @@ static void CG_DrawTeamOverlay( rectDef_t *rect, float scale, vec4_t color )
 
 			VectorSubtract( cent->lerpOrigin, cg.predictedPlayerState.origin, relOrigin );
 
-			if ( VectorLength( relOrigin ) < HELMET_RANGE )
+			if ( VectorLength( relOrigin ) < RADAR_RANGE )
 			{
 				displayClients[ maxDisplayCount++ ] = cg.snap->entities[ i ].number;
 			}

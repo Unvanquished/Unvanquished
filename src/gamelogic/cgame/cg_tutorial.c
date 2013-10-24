@@ -673,7 +673,9 @@ const char *CG_TutorialText( void )
 					CG_AlienLevel4Text( text, ps );
 					break;
 
-				case PCL_HUMAN:
+				case PCL_HUMAN_NAKED:
+				case PCL_HUMAN_LIGHT:
+				case PCL_HUMAN_MEDIUM:
 				case PCL_HUMAN_BSUIT:
 					CG_HumanText( text, ps );
 					break;

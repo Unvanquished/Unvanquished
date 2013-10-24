@@ -1678,7 +1678,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 		ent->r.contents = CONTENTS_BODY;
 	}
 	ent->clipmask = MASK_PLAYERSOLID;
-	ent->die = player_die;
+	ent->die = G_PlayerDie;
 	ent->waterlevel = 0;
 	ent->watertype = 0;
 	ent->flags &= FL_GODMODE | FL_NOTARGET;
@@ -1704,7 +1704,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	}
 
 	// clear entity values
-	if ( ent->client->pers.classSelection == PCL_HUMAN )
+	if ( ent->client->pers.classSelection == PCL_HUMAN_NAKED )
 	{
 		BG_AddUpgradeToInventory( UP_MEDKIT, client->ps.stats );
 		weapon = client->pers.humanItemSelection;

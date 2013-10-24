@@ -962,28 +962,11 @@ void ClientTimerActions( gentity_t *ent, int msec )
 	{
 		client->time1000 -= 1000;
 
-		//client is poisoned
+		// deal poison damage
 		if ( client->ps.stats[ STAT_STATE ] & SS_POISONED )
 		{
-			int damage = ALIEN_POISON_DMG;
-
-			if ( BG_InventoryContainsUpgrade( UP_BATTLESUIT, client->ps.stats ) )
-			{
-				damage -= BSUIT_POISON_PROTECTION;
-			}
-
-			if ( BG_InventoryContainsUpgrade( UP_HELMET, client->ps.stats ) )
-			{
-				damage -= HELMET_POISON_PROTECTION;
-			}
-
-			if ( BG_InventoryContainsUpgrade( UP_LIGHTARMOUR, client->ps.stats ) )
-			{
-				damage -= LIGHTARMOUR_POISON_PROTECTION;
-			}
-
 			G_Damage( ent, client->lastPoisonClient, client->lastPoisonClient, NULL,
-			          0, damage, 0, MOD_POISON );
+			          NULL, ALIEN_POISON_DMG, DAMAGE_NO_LOCDAMAGE, MOD_POISON );
 		}
 
 		// turn off life support when a team admits defeat
@@ -2303,7 +2286,7 @@ void ClientThink_real( gentity_t *ent )
 	if ( ent->suicideTime > 0 && ent->suicideTime < level.time )
 	{
 		ent->client->ps.stats[ STAT_HEALTH ] = ent->health = 0;
-		player_die( ent, ent, ent, MOD_SUICIDE );
+		G_PlayerDie( ent, ent, ent, MOD_SUICIDE );
 
 		ent->suicideTime = 0;
 	}

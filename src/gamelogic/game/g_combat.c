@@ -23,77 +23,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "g_local.h"
 
+// damage region data
 damageRegion_t g_damageRegions[ PCL_NUM_CLASSES ][ MAX_DAMAGE_REGIONS ];
 int            g_numDamageRegions[ PCL_NUM_CLASSES ];
 
-damageRegion_t g_armourRegions[ UP_NUM_UPGRADES ][ MAX_DAMAGE_REGIONS ];
-int            g_numArmourRegions[ UP_NUM_UPGRADES ];
-
-/*
-============
-AddScoreHelper
-
-Helper function for G_AddCreditsToScore and G_AddConfidenceToScore.
-============
-*/
-static void AddScoreHelper( gentity_t *self, float score )
-{
-	if ( !self->client || self->client->pers.connected != CON_CONNECTED )
-	{
-		return;
-	}
-
-	self->client->ps.persistant[ PERS_SCORE ] += ( int )( score + 0.5f );
-
-	CalculateRanks();
-}
-
-/*
-============
-G_AddCreditsToScore
-
-Adds score to the client, input represents a credit value.
-============
-*/
-void G_AddCreditsToScore( gentity_t *self, int credits )
-{
-	AddScoreHelper( self, credits * SCORE_PER_CREDIT );
-}
-
-/*
-============
-G_AddConfidenceToScore
-
-Adds score to the client, input represents a confidence value.
-============
-*/
-void G_AddConfidenceToScore( gentity_t *self, float confidence )
-{
-	AddScoreHelper( self, confidence * SCORE_PER_CONFIDENCE );
-}
-
-/*
-==================
-LookAtKiller
-==================
-*/
-void LookAtKiller( gentity_t *self, gentity_t *inflictor, gentity_t *attacker )
-{
-	if ( attacker && attacker != self )
-	{
-		self->client->ps.stats[ STAT_VIEWLOCK ] = attacker - g_entities;
-	}
-	else if ( inflictor && inflictor != self )
-	{
-		self->client->ps.stats[ STAT_VIEWLOCK ] = inflictor - g_entities;
-	}
-	else
-	{
-		self->client->ps.stats[ STAT_VIEWLOCK ] = self - g_entities;
-	}
-}
-
 // these are just for logging, the client prints its own messages
+// TODO: Centralize to keep in sync (e.g. bg_mod.c)
 static const char *const modNames[] =
 {
 	"MOD_UNKNOWN",
@@ -153,13 +88,63 @@ static const char *const modNames[] =
 	"MOD_NOCREEP"
 };
 
-/*
-==================
-G_RewardAttackers
+/**
+ * @brief Helper function for G_AddCreditsToScore and G_AddConfidenceToScore.
+ * @param self
+ * @param score
+ */
+static void AddScoreHelper( gentity_t *self, float score )
+{
+	if ( !self->client || self->client->pers.connected != CON_CONNECTED )
+	{
+		return;
+	}
 
-Function to distribute rewards to entities that killed this one.
-==================
-*/
+	self->client->ps.persistant[ PERS_SCORE ] += ( int )( score + 0.5f );
+
+	CalculateRanks();
+}
+
+/**
+ * @brief Adds score to the client, input represents a credit value.
+ * @param self
+ * @param credits
+ */
+void G_AddCreditsToScore( gentity_t *self, int credits )
+{
+	AddScoreHelper( self, credits * SCORE_PER_CREDIT );
+}
+
+/**
+ * @brief Adds score to the client, input represents a confidence value.
+ * @param self
+ * @param confidence
+ */
+void G_AddConfidenceToScore( gentity_t *self, float confidence )
+{
+	AddScoreHelper( self, confidence * SCORE_PER_CONFIDENCE );
+}
+
+void LookAtKiller( gentity_t *self, gentity_t *inflictor, gentity_t *attacker )
+{
+	if ( attacker && attacker != self )
+	{
+		self->client->ps.stats[ STAT_VIEWLOCK ] = attacker - g_entities;
+	}
+	else if ( inflictor && inflictor != self )
+	{
+		self->client->ps.stats[ STAT_VIEWLOCK ] = inflictor - g_entities;
+	}
+	else
+	{
+		self->client->ps.stats[ STAT_VIEWLOCK ] = self - g_entities;
+	}
+}
+
+/**
+ * @brief Function to distribute rewards to entities that killed this one.
+ * @param self
+ */
 void G_RewardAttackers( gentity_t *self )
 {
 	float     value, share, reward;
@@ -264,12 +249,7 @@ void G_RewardAttackers( gentity_t *self )
 	G_AddConfidenceEnd();
 }
 
-/*
-==================
-player_die
-==================
-*/
-void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int meansOfDeath )
+void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int meansOfDeath )
 {
 	gentity_t *ent;
 	int       anim;
@@ -497,12 +477,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	self->client->pers.infoChangeTime = level.time;
 }
 
-/*
-===============
-G_ParseDmgScript
-===============
-*/
-static int G_ParseDmgScript( damageRegion_t *regions, char *buf )
+static int ParseDmgScript( damageRegion_t *regions, char *buf )
 {
 	char  *token;
 	float angleSpan, heightSpan;
@@ -530,13 +505,14 @@ static int G_ParseDmgScript( damageRegion_t *regions, char *buf )
 		}
 
 		// defaults
-		regions[ count ].name[ 0 ] = '\0';
-		regions[ count ].minHeight = 0.0f;
-		regions[ count ].maxHeight = 1.0f;
-		regions[ count ].minAngle = 0.0f;
-		regions[ count ].maxAngle = 360.0f;
-		regions[ count ].modifier = 1.0f;
-		regions[ count ].crouch = qfalse;
+		regions[ count ].name[ 0 ]     = '\0';
+		regions[ count ].minHeight     = 0.0f;
+		regions[ count ].maxHeight     = 1.0f;
+		regions[ count ].minAngle      = 0.0f;
+		regions[ count ].maxAngle      = 360.0f;
+		regions[ count ].modifier      = 1.0f;
+		regions[ count ].crouch        = qfalse;
+		regions[ count ].nonlocational = qfalse;
 
 		while ( 1 )
 		{
@@ -621,6 +597,10 @@ static int G_ParseDmgScript( damageRegion_t *regions, char *buf )
 			{
 				regions[ count ].crouch = qtrue;
 			}
+			else if ( !strcmp( token, "nonlocational" ) )
+			{
+				regions[ count ].nonlocational = qtrue;
+			}
 			else
 			{
 				COM_ParseWarning( "Unknown token \"%s\"", token );
@@ -661,276 +641,136 @@ static int G_ParseDmgScript( damageRegion_t *regions, char *buf )
 	return count;
 }
 
-/*
-============
-GetRegionDamageModifier
-============
-*/
-static float GetRegionDamageModifier( gentity_t *targ, int class, int piece )
+float G_GetNonLocDamageMod( class_t pcl )
 {
-	damageRegion_t *regions, *overlap;
-	float          modifier = 0.0f, areaSum = 0.0f;
-	int            j, i;
-	qboolean       crouch;
+	int            regionNum;
+	damageRegion_t *region;
 
-	crouch = targ->client->ps.pm_flags & PMF_DUCKED;
-	overlap = &g_damageRegions[ class ][ piece ];
-
-	if ( g_debugDamage.integer > 2 )
+	for ( regionNum = 0; regionNum < g_numDamageRegions[ pcl ]; regionNum++ )
 	{
-		G_Printf( "GetRegionDamageModifier():\n"
-		          ".   bodyRegion = [%d %d %f %f] (%s)\n"
-		          ".   modifier = %f\n",
-		          overlap->minAngle, overlap->maxAngle,
-		          overlap->minHeight, overlap->maxHeight,
-		          overlap->name, overlap->modifier );
-	}
+		region = &g_damageRegions[ pcl ][ regionNum ];
 
-	// Find the armour layer modifier, assuming that none of the armour regions
-	// overlap and that any areas that are not covered have a modifier of 1.0
-	for ( j = UP_NONE + 1; j < UP_NUM_UPGRADES; j++ )
-	{
-		if ( !BG_InventoryContainsUpgrade( j, targ->client->ps.stats ) ||
-		     !g_numArmourRegions[ j ] )
+		if ( !region->nonlocational )
 		{
 			continue;
 		}
 
-		regions = g_armourRegions[ j ];
-
-		for ( i = 0; i < g_numArmourRegions[ j ]; i++ )
+		if ( g_debugDamage.integer > 1 )
 		{
-			float overlapMaxA, regionMinA, regionMaxA, angleSpan, heightSpan, area;
-
-			if ( regions[ i ].crouch != crouch )
-			{
-				continue;
-			}
-
-			// Convert overlap angle to 0 to max
-			overlapMaxA = overlap->maxAngle - overlap->minAngle;
-
-			if ( overlapMaxA < 0.0f )
-			{
-				overlapMaxA += 360.0f;
-			}
-
-			// Convert region angles to match overlap
-			regionMinA = regions[ i ].minAngle - overlap->minAngle;
-
-			if ( regionMinA < 0.0f )
-			{
-				regionMinA += 360.0f;
-			}
-
-			regionMaxA = regions[ i ].maxAngle - overlap->minAngle;
-
-			if ( regionMaxA < 0.0f )
-			{
-				regionMaxA += 360.0f;
-			}
-
-			// Overlapping Angle portion
-			if ( regionMinA <= regionMaxA )
-			{
-				angleSpan = 0.0f;
-
-				if ( regionMinA < overlapMaxA )
-				{
-					if ( regionMaxA > overlapMaxA )
-					{
-						regionMaxA = overlapMaxA;
-					}
-
-					angleSpan = regionMaxA - regionMinA;
-				}
-			}
-			else
-			{
-				if ( regionMaxA > overlapMaxA )
-				{
-					regionMaxA = overlapMaxA;
-				}
-
-				angleSpan = regionMaxA;
-
-				if ( regionMinA < overlapMaxA )
-				{
-					angleSpan += overlapMaxA - regionMinA;
-				}
-			}
-
-			angleSpan /= 360.0f;
-
-			// Overlapping height portion
-			heightSpan = MIN( overlap->maxHeight, regions[ i ].maxHeight ) -
-			             MAX( overlap->minHeight, regions[ i ].minHeight );
-
-			if ( heightSpan < 0.0f )
-			{
-				heightSpan = 0.0f;
-			}
-
-			if ( heightSpan > 1.0f )
-			{
-				heightSpan = 1.0f;
-			}
-
-			if ( g_debugDamage.integer > 2 )
-			{
-				G_Printf( ".   armourRegion = [%d %d %f %f] (%s)\n"
-				          ".   .   modifier = %f\n"
-				          ".   .   angleSpan = %f\n"
-				          ".   .   heightSpan = %f\n",
-				          regions[ i ].minAngle, regions[ i ].maxAngle,
-				          regions[ i ].minHeight, regions[ i ].maxHeight,
-				          regions[ i ].name, regions[ i ].modifier,
-				          angleSpan, heightSpan );
-			}
-
-			areaSum += area = angleSpan * heightSpan;
-			modifier += regions[ i ].modifier * area;
-		}
-	}
-
-	if ( g_debugDamage.integer > 2 )
-	{
-		G_Printf( ".   areaSum = %f\n"
-		          ".   armourModifier = %f\n", areaSum, modifier );
-	}
-
-	return overlap->modifier * ( overlap->area + modifier - areaSum );
-}
-
-/*
-============
-GetNonLocDamageModifier
-============
-*/
-static float GetNonLocDamageModifier( gentity_t *targ, int class )
-{
-	float    modifier = 0.0f, area = 0.0f, scale = 0.0f;
-	int      i;
-	qboolean crouch;
-
-	// For every body region, use stretch-armor formula to apply armour modifier
-	// for any overlapping area that armour shares with the body region
-	crouch = targ->client->ps.pm_flags & PMF_DUCKED;
-
-	for ( i = 0; i < g_numDamageRegions[ class ]; i++ )
-	{
-		damageRegion_t *region;
-
-		region = &g_damageRegions[ class ][ i ];
-
-		if ( region->crouch != crouch )
-		{
-			continue;
+			Com_Printf( "GetNonLocDamageModifier( pcl = %s ): "
+			            S_COLOR_GREEN "FOUND:" S_COLOR_WHITE " %.2f\n",
+			            BG_Class( pcl )->name, region->modifier );
 		}
 
-		modifier += GetRegionDamageModifier( targ, class, i );
-
-		scale += region->modifier * region->area;
-		area += region->area;
+		return region->modifier;
 	}
-
-	modifier = !scale ? 1.0f : 1.0f + ( modifier / scale - 1.0f ) * area;
 
 	if ( g_debugDamage.integer > 1 )
 	{
-		G_Printf( "GetNonLocDamageModifier() modifier:%f, area:%f, scale:%f\n",
-		          modifier, area, scale );
+		Com_Printf( "GetNonLocDamageModifier( pcl = %s ): "
+		            S_COLOR_YELLOW "NOT FOUND:" S_COLOR_WHITE " %.2f.\n",
+		            BG_Class( pcl )->name, 1.0f );
 	}
 
-	return modifier;
+	return 1.0f;
 }
 
-/*
-============
-GetPointDamageModifier
-
-Returns the damage region given an angle and a height proportion
-============
-*/
-static float GetPointDamageModifier( gentity_t *targ, damageRegion_t *regions,
-                                     int len, float angle, float height )
+float G_GetPointDamageMod( gentity_t *target, class_t pcl, float angle, float height )
 {
-	float modifier = 1.0f;
-	int   i;
+	int            regionNum;
+	damageRegion_t *region;
+	qboolean       crouching;
 
-	for ( i = 0; i < len; i++ )
+	if ( !target || !target->client )
 	{
-		if ( regions[ i ].crouch != ( targ->client->ps.pm_flags & PMF_DUCKED ) )
-		{
-			continue;
-		}
-
-		// Angle must be within range
-		if ( ( regions[ i ].minAngle <= regions[ i ].maxAngle &&
-		       ( angle < regions[ i ].minAngle ||
-		         angle > regions[ i ].maxAngle ) ) ||
-		     ( regions[ i ].minAngle > regions[ i ].maxAngle &&
-		       angle > regions[ i ].maxAngle && angle < regions[ i ].minAngle ) )
-		{
-			continue;
-		}
-
-		// Height must be within range
-		if ( height < regions[ i ].minHeight || height > regions[ i ].maxHeight )
-		{
-			continue;
-		}
-
-		modifier *= regions[ i ].modifier;
+		return 1.0f;
 	}
 
-	if ( g_debugDamage.integer )
+	crouching = ( target->client->ps.pm_flags & PMF_DUCKED );
+
+	for ( regionNum = 0; regionNum < g_numDamageRegions[ pcl ]; regionNum++ )
 	{
-		G_Printf( "GetDamageRegionModifier(angle = %f, height = %f): %f\n",
-		          angle, height, modifier );
+		region = &g_damageRegions[ pcl ][ regionNum ];
+
+		// ignore nonlocational
+		if ( region->nonlocational )
+		{
+			continue;
+		}
+
+		// crouch state must match
+		if ( region->crouch != crouching )
+		{
+			continue;
+		}
+
+		// height must be within range
+		if ( height < region->minHeight || height > region->maxHeight )
+		{
+			continue;
+		}
+
+		// angle must be within range
+		if ( ( region->minAngle <= region->maxAngle && ( angle < region->minAngle || angle > region->maxAngle ) ) ||
+		     ( region->minAngle >  region->maxAngle && ( angle > region->maxAngle && angle < region->minAngle ) ) )
+		{
+			continue;
+		}
+
+		if ( g_debugDamage.integer > 1 )
+		{
+			G_Printf( "GetPointDamageModifier( pcl = %s, angle = %.2f, height = %.2f ): "
+			          S_COLOR_GREEN "FOUND:" S_COLOR_WHITE " %.2f (%s)\n",
+			          BG_Class( pcl )->name, angle, height, region->modifier, region->name );
+		}
+
+		return region->modifier;
 	}
 
-	return modifier;
+	if ( g_debugDamage.integer > 1 )
+	{
+		G_Printf( "GetPointDamageModifier( pcl = %s, angle = %.2f, height = %.2f ): "
+		          S_COLOR_YELLOW "NOT FOUND:" S_COLOR_WHITE " %.2f\n",
+		          BG_Class( pcl )->name, angle, height, 1.0f );
+	}
+
+	return 1.0f;
 }
 
-/*
-============
-G_CalcDamageModifier
-============
-*/
-static float G_CalcDamageModifier( vec3_t point, gentity_t *targ, gentity_t *attacker, int pcl, int dflags )
+static float CalcDamageModifier( vec3_t point, gentity_t *target, class_t pcl, int damageFlags )
 {
 	vec3_t targOrigin, bulletPath, bulletAngle, pMINUSfloor, floor, normal;
 	float  clientHeight, hitRelative, hitRatio, modifier;
-	int    hitRotation, upg;
+	int    hitRotation;
 
+	// handle nonlocational damage
+	if ( damageFlags & DAMAGE_NO_LOCDAMAGE )
+	{
+		return G_GetNonLocDamageMod( pcl );
+	}
+
+	// need a valid point for point damage
 	if ( point == NULL )
 	{
 		return 1.0f;
 	}
 
-	// Don't need to calculate angles and height for non-locational damage
-	if ( dflags & DAMAGE_NO_LOCDAMAGE )
-	{
-		return GetNonLocDamageModifier( targ, pcl );
-	}
-
 	// Get the point location relative to the floor under the target
-	if ( g_unlagged.integer && targ->client && targ->client->unlaggedCalc.used )
+	if ( g_unlagged.integer && target->client && target->client->unlaggedCalc.used )
 	{
-		VectorCopy( targ->client->unlaggedCalc.origin, targOrigin );
+		VectorCopy( target->client->unlaggedCalc.origin, targOrigin );
 	}
 	else
 	{
-		VectorCopy( targ->r.currentOrigin, targOrigin );
+		VectorCopy( target->r.currentOrigin, targOrigin );
 	}
 
-	BG_GetClientNormal( &targ->client->ps, normal );
-	VectorMA( targOrigin, targ->r.mins[ 2 ], normal, floor );
+	BG_GetClientNormal( &target->client->ps, normal );
+	VectorMA( targOrigin, target->r.mins[ 2 ], normal, floor );
 	VectorSubtract( point, floor, pMINUSfloor );
 
 	// Get the proportion of the target height where the hit landed
-	clientHeight = targ->r.maxs[ 2 ] - targ->r.mins[ 2 ];
+	clientHeight = target->r.maxs[ 2 ] - target->r.mins[ 2 ];
 
 	if ( !clientHeight )
 	{
@@ -954,30 +794,14 @@ static float G_CalcDamageModifier( vec3_t point, gentity_t *targ, gentity_t *att
 	// Get the yaw of the attack relative to the target's view yaw
 	VectorSubtract( point, targOrigin, bulletPath );
 	vectoangles( bulletPath, bulletAngle );
-	hitRotation = AngleNormalize360( targ->client->ps.viewangles[ YAW ] - bulletAngle[ YAW ] );
+	hitRotation = AngleNormalize360( target->client->ps.viewangles[ YAW ] - bulletAngle[ YAW ] );
 
 	// Get damage region modifier
-	modifier = GetPointDamageModifier( targ, g_damageRegions[ pcl ], g_numDamageRegions[ pcl ],
-	                                   hitRotation, hitRatio );
-
-	// Get equipment modifier
-	for ( upg = UP_NONE + 1; upg < UP_NUM_UPGRADES; upg++ )
-	{
-		if ( BG_InventoryContainsUpgrade( upg, targ->client->ps.stats ) )
-		{
-			modifier *= GetPointDamageModifier( targ, g_armourRegions[ upg ], g_numArmourRegions[ upg ],
-			                                    hitRotation, hitRatio );
-		}
-	}
+	modifier = G_GetPointDamageMod( target, pcl, hitRotation, hitRatio );
 
 	return modifier;
 }
 
-/*
-============
-G_InitDamageLocations
-============
-*/
 void G_InitDamageLocations( void )
 {
 	const char   *modelName;
@@ -1014,65 +838,22 @@ void G_InitDamageLocations( void )
 		buffer[ len ] = 0;
 		trap_FS_FCloseFile( fileHandle );
 
-		g_numDamageRegions[ i ] = G_ParseDmgScript( g_damageRegions[ i ], buffer );
-	}
-
-	for ( i = UP_NONE + 1; i < UP_NUM_UPGRADES; i++ )
-	{
-		modelName = BG_Upgrade( i )->name;
-		Com_sprintf( filename, sizeof( filename ), "configs/upgrades/%s.armour.cfg", modelName );
-
-		len = trap_FS_FOpenFile( filename, &fileHandle, FS_READ );
-
-		//no file - no parsage
-		if ( !fileHandle )
-		{
-			continue;
-		}
-
-		if ( len >= MAX_DAMAGE_REGION_TEXT )
-		{
-			G_Printf( S_COLOR_RED "file too large: %s is %i, max allowed is %i\n",
-			          filename, len, MAX_DAMAGE_REGION_TEXT );
-			trap_FS_FCloseFile( fileHandle );
-			continue;
-		}
-
-		COM_BeginParseSession( filename );
-
-		trap_FS_Read( buffer, len, fileHandle );
-		buffer[ len ] = 0;
-		trap_FS_FCloseFile( fileHandle );
-
-		g_numArmourRegions[ i ] = G_ParseDmgScript( g_armourRegions[ i ], buffer );
+		g_numDamageRegions[ i ] = ParseDmgScript( g_damageRegions[ i ], buffer );
 	}
 }
 
-/*
-============
-T_Damage
-
-targ    entity that is being damaged
-inflictor entity that is causing the damage
-attacker  entity that caused the inflictor to damage targ
-  example: targ=monster, inflictor=rocket, attacker=player
-
-dir     direction of the attack for knockback
-point   point at which the damage is being inflicted, used for headshots
-damage    amount of damage being inflicted
-knockback force to be applied against targ as a result of the damage
-
-inflictor, attacker, dir, and point can be NULL for environmental effects
-
-dflags    these flags are used to control how T_Damage works
-  DAMAGE_RADIUS     damage was indirect (from a nearby explosion)
-  DAMAGE_NO_ARMOR     armor does not protect from this damage
-  DAMAGE_NO_KNOCKBACK   do not affect velocity, just view angles
-  DAMAGE_NO_PROTECTION  kills everything except godmode
-============
-*/
-
-// team is the team that is immune to this damage
+/**
+ * @brief G_SelectiveDamage
+ * @param targ
+ * @param inflictor
+ * @param attacker
+ * @param dir
+ * @param point
+ * @param damage
+ * @param dflags
+ * @param mod
+ * @param team team that is immune to this damage
+ */
 void G_SelectiveDamage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
                         vec3_t dir, vec3_t point, int damage, int dflags, int mod, int team )
 {
@@ -1082,7 +863,7 @@ void G_SelectiveDamage( gentity_t *targ, gentity_t *inflictor, gentity_t *attack
 	}
 }
 
-void NotifyClientOfHit( gentity_t *attacker )
+static void NotifyClientOfHit( gentity_t *attacker )
 {
 	gentity_t *event;
 
@@ -1195,11 +976,12 @@ void G_KnockbackBySource( gentity_t *target, gentity_t *source, float strength, 
 
 // TODO: Clean this mess further (split into helper functions)
 void G_Damage( gentity_t *target, gentity_t *inflictor, gentity_t *attacker,
-               vec3_t dir, vec3_t point, int damage, int dflags, int mod )
+               vec3_t dir, vec3_t point, int damage, int damageFlags, int mod )
 {
 	gclient_t *client;
 	int       take, loss;
 	int       knockback;
+	float     modifier;
 
 	if ( !target || !target->takedamage || target->health <= 0 || level.intermissionQueued )
 	{
@@ -1240,7 +1022,7 @@ void G_Damage( gentity_t *target, gentity_t *inflictor, gentity_t *attacker,
 	}
 
 	// do knockback against clients
-	if ( client && !( dflags & DAMAGE_NO_KNOCKBACK ) && dir )
+	if ( client && !( damageFlags & DAMAGE_NO_KNOCKBACK ) && dir )
 	{
 		// scale knockback by weapon
 		if ( inflictor->s.weapon != WP_NONE )
@@ -1276,7 +1058,7 @@ void G_Damage( gentity_t *target, gentity_t *inflictor, gentity_t *attacker,
 	}
 
 	// check for protection
-	if ( !( dflags & DAMAGE_NO_PROTECTION ) )
+	if ( !( damageFlags & DAMAGE_NO_PROTECTION ) )
 	{
 		// check for protection from friendly damage
 		if ( target != attacker && G_OnSameTeam( target, attacker ) )
@@ -1363,8 +1145,8 @@ void G_Damage( gentity_t *target, gentity_t *inflictor, gentity_t *attacker,
 		}
 
 		// apply damage modifier
-		take = ( int )( damage * G_CalcDamageModifier( point, target, attacker,
-		                client->ps.stats[ STAT_CLASS ], dflags ) + 0.5f );
+		modifier = CalcDamageModifier( point, target, client->ps.stats[ STAT_CLASS ], damageFlags );
+		take = ( int )( ( float )damage * modifier + 0.5f );
 
 		// if boosted poison every attack
 		if ( attacker->client &&
@@ -1397,10 +1179,10 @@ void G_Damage( gentity_t *target, gentity_t *inflictor, gentity_t *attacker,
 		take = 1;
 	}
 
-	if ( g_debugDamage.integer )
+	if ( g_debugDamage.integer > 0 )
 	{
-		G_Printf( "%i: client: %i health %i damage: %i\n",
-		          level.time, target->s.number, target->health, take );
+		G_Printf( "G_Damage: %3i (%3i → %3i)\n",
+		          take, target->health, target->health - take );
 	}
 
 	// do the damage
@@ -1484,15 +1266,13 @@ void G_Damage( gentity_t *target, gentity_t *inflictor, gentity_t *attacker,
 	}
 }
 
-/*
-============
-CanDamage
-
-Returns qtrue if the inflictor can directly damage the target.  Used for
-explosions and melee attacks.
-============
-*/
-qboolean CanDamage( gentity_t *targ, vec3_t origin )
+/**
+ * @brief Used for explosions and melee attacks.
+ * @param targ
+ * @param origin
+ * @return qtrue if the inflictor can directly damage the target.
+ */
+qboolean G_CanDamage( gentity_t *targ, vec3_t origin )
 {
 	vec3_t  dest;
 	trace_t tr;
@@ -1556,11 +1336,6 @@ qboolean CanDamage( gentity_t *targ, vec3_t origin )
 	return qfalse;
 }
 
-/*
-============
-G_SelectiveRadiusDamage
-============
-*/
 qboolean G_SelectiveRadiusDamage( vec3_t origin, gentity_t *attacker, float damage,
                                   float radius, gentity_t *ignore, int mod, int ignoreTeam )
 {
@@ -1631,7 +1406,7 @@ qboolean G_SelectiveRadiusDamage( vec3_t origin, gentity_t *attacker, float dama
 
 		points = damage * ( 1.0 - dist / radius );
 
-		if ( CanDamage( ent, origin ) && ent->client &&
+		if ( G_CanDamage( ent, origin ) && ent->client &&
 		     ent->client->pers.team != ignoreTeam )
 		{
 			hitClient = qtrue;
@@ -1646,11 +1421,6 @@ qboolean G_SelectiveRadiusDamage( vec3_t origin, gentity_t *attacker, float dama
 	return hitClient;
 }
 
-/*
-============
-G_RadiusDamage
-============
-*/
 qboolean G_RadiusDamage( vec3_t origin, gentity_t *attacker, float damage,
                          float radius, gentity_t *ignore, int mod )
 {
@@ -1717,7 +1487,7 @@ qboolean G_RadiusDamage( vec3_t origin, gentity_t *attacker, float damage,
 
 		points = damage * ( 1.0 - dist / radius );
 
-		if ( CanDamage( ent, origin ) )
+		if ( G_CanDamage( ent, origin ) )
 		{
 			VectorSubtract( ent->r.currentOrigin, origin, dir );
 			// push the center of mass higher than the origin so players
@@ -1733,13 +1503,12 @@ qboolean G_RadiusDamage( vec3_t origin, gentity_t *attacker, float damage,
 	return hitClient;
 }
 
-/*
-================
-G_LogDestruction
-
-Log deconstruct/destroy events
-================
-*/
+/**
+ * @brief Log deconstruct/destroy events
+ * @param self
+ * @param actor
+ * @param mod
+ */
 void G_LogDestruction( gentity_t *self, gentity_t *actor, int mod )
 {
 	buildFate_t fate;

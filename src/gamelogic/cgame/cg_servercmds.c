@@ -689,17 +689,9 @@ void CG_Menu( int menu, int arg )
 			type = DT_ARMOURYEVOLVE;
 			break;
 
-		case MN_H_NOROOMBSUITON:
-			longMsg = _("There is not enough room here to put on a Battle Suit. "
-			          "Make sure you have enough head room to climb in.");
-			shortMsg = _("Not enough room here to put on a Battle Suit");
-			type = DT_ARMOURYEVOLVE;
-			break;
-
-		case MN_H_NOROOMBSUITOFF:
-			longMsg = _("There is not enough room here to take off your Battle Suit. "
-			          "Make sure you have enough head room to climb out.");
-			shortMsg = _("Not enough room here to take off your Battle Suit");
+		case MN_H_NOROOMARMOURCHANGE:
+			longMsg = _("There is not enough room here to change armour.");
+			shortMsg = _("Not enough room here to change armour.");
 			type = DT_ARMOURYEVOLVE;
 			break;
 

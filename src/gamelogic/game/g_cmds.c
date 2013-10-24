@@ -382,9 +382,9 @@ void ScoreboardMessage( gentity_t *ent )
 			{
 				upgrade = UP_BATTPACK;
 			}
-			else if ( BG_InventoryContainsUpgrade( UP_HELMET, cl->ps.stats ) )
+			else if ( BG_InventoryContainsUpgrade( UP_MEDIUMARMOUR, cl->ps.stats ) )
 			{
-				upgrade = UP_HELMET;
+				upgrade = UP_MEDIUMARMOUR;
 			}
 			else if ( BG_InventoryContainsUpgrade( UP_LIGHTARMOUR, cl->ps.stats ) )
 			{
@@ -761,7 +761,7 @@ void Cmd_Kill_f( gentity_t *ent )
 	if ( g_cheats.integer )
 	{
 		ent->client->ps.stats[ STAT_HEALTH ] = ent->health = 0;
-		player_die( ent, ent, ent, MOD_SUICIDE );
+		G_PlayerDie( ent, ent, ent, MOD_SUICIDE );
 	}
 	else
 	{
@@ -2530,7 +2530,7 @@ static qboolean Cmd_Class_internal( gentity_t *ent, const char *s, qboolean repo
 
 			// spawn from a telenode
 			//TODO merge with alien's code
-			newClass = PCL_HUMAN;
+			newClass = PCL_HUMAN_NAKED;
 			if ( G_PushSpawnQueue( &level.team[ team ].spawnQueue, clientNum ) )
 			{
 				ent->client->pers.classSelection = newClass;
@@ -3095,19 +3095,19 @@ static qboolean Cmd_Sell_upgradeItem( gentity_t *ent, upgrade_t item )
 	}
 
 	// shouldn't really need to test for this, but just to be safe
-	if ( item == UP_BATTLESUIT )
+	if ( item == UP_LIGHTARMOUR || item == UP_MEDIUMARMOUR || item == UP_BATTLESUIT )
 	{
 		vec3_t newOrigin;
 
-		if ( !G_RoomForClassChange( ent, PCL_HUMAN, newOrigin ) )
+		if ( !G_RoomForClassChange( ent, PCL_HUMAN_NAKED, newOrigin ) )
 		{
-			G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOROOMBSUITOFF );
+			G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOROOMARMOURCHANGE );
 			return qfalse;
 		}
 
 		VectorCopy( newOrigin, ent->client->ps.origin );
-		ent->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN;
-		ent->client->pers.classSelection = PCL_HUMAN;
+		ent->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN_NAKED;
+		ent->client->pers.classSelection = PCL_HUMAN_NAKED;
 		ent->client->ps.eFlags ^= EF_TELEPORT_BIT;
 	}
 
@@ -3139,7 +3139,10 @@ static qboolean Cmd_Sell_upgrades( gentity_t *ent )
 
 static qboolean Cmd_Sell_armour( gentity_t *ent )
 {
-	return Cmd_Sell_upgradeItem( ent, UP_LIGHTARMOUR ) | Cmd_Sell_upgradeItem( ent, UP_HELMET ) | Cmd_Sell_upgradeItem( ent, UP_BATTLESUIT );
+	return Cmd_Sell_upgradeItem( ent, UP_LIGHTARMOUR ) |
+	       Cmd_Sell_upgradeItem( ent, UP_MEDIUMARMOUR ) |
+	       Cmd_Sell_upgradeItem( ent, UP_BATTLESUIT ) |
+	       Cmd_Sell_upgradeItem( ent, UP_RADAR );
 }
 
 static qboolean Cmd_Sell_internal( gentity_t *ent, const char *s )
@@ -3297,6 +3300,7 @@ static qboolean Cmd_Buy_internal( gentity_t *ent, const char *s, qboolean sellCo
 	weapon_t  weapon;
 	upgrade_t upgrade;
 	qboolean  energyOnly;
+	vec3_t    newOrigin;
 
 	weapon = BG_WeaponByName( s )->number;
 	upgrade = BG_UpgradeByName( s )->number;
@@ -3477,13 +3481,37 @@ static qboolean Cmd_Buy_internal( gentity_t *ent, const char *s, qboolean sellCo
 		}
 		else
 		{
-			if ( upgrade == UP_BATTLESUIT )
+			if ( upgrade == UP_LIGHTARMOUR )
 			{
-				vec3_t newOrigin;
+				if ( !G_RoomForClassChange( ent, PCL_HUMAN_LIGHT, newOrigin ) )
+				{
+					G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOROOMARMOURCHANGE );
+					return qfalse;
+				}
 
+				VectorCopy( newOrigin, ent->client->ps.origin );
+				ent->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN_LIGHT;
+				ent->client->pers.classSelection = PCL_HUMAN_LIGHT;
+				ent->client->ps.eFlags ^= EF_TELEPORT_BIT;
+			}
+			else if ( upgrade == UP_MEDIUMARMOUR )
+			{
+				if ( !G_RoomForClassChange( ent, PCL_HUMAN_MEDIUM, newOrigin ) )
+				{
+					G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOROOMARMOURCHANGE );
+					return qfalse;
+				}
+
+				VectorCopy( newOrigin, ent->client->ps.origin );
+				ent->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN_MEDIUM;
+				ent->client->pers.classSelection = PCL_HUMAN_MEDIUM;
+				ent->client->ps.eFlags ^= EF_TELEPORT_BIT;
+			}
+			else if ( upgrade == UP_BATTLESUIT )
+			{
 				if ( !G_RoomForClassChange( ent, PCL_HUMAN_BSUIT, newOrigin ) )
 				{
-					G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOROOMBSUITON );
+					G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOROOMARMOURCHANGE );
 					return qfalse;
 				}
 

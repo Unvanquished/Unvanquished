@@ -479,6 +479,7 @@ static float PM_CmdScale( usercmd_t *cmd, qboolean zFlight )
 		if ( pm->ps->stats[ STAT_STATE ] & SS_CREEPSLOWED )
 		{
 			if ( BG_InventoryContainsUpgrade( UP_LIGHTARMOUR, pm->ps->stats ) ||
+			     BG_InventoryContainsUpgrade( UP_MEDIUMARMOUR, pm->ps->stats ) ||
 			     BG_InventoryContainsUpgrade( UP_BATTLESUIT,  pm->ps->stats ) )
 			{
 				modifier *= CREEP_ARMOUR_MODIFIER;
@@ -494,6 +495,7 @@ static float PM_CmdScale( usercmd_t *cmd, qboolean zFlight )
 		if ( pm->ps->eFlags & EF_POISONCLOUDED )
 		{
 			if ( BG_InventoryContainsUpgrade( UP_LIGHTARMOUR, pm->ps->stats ) ||
+			     BG_InventoryContainsUpgrade( UP_MEDIUMARMOUR, pm->ps->stats ) ||
 			     BG_InventoryContainsUpgrade( UP_BATTLESUIT, pm->ps->stats ) )
 			{
 				modifier *= PCLOUD_ARMOUR_MODIFIER;

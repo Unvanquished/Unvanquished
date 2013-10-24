@@ -279,8 +279,18 @@ static classData_t bg_classData[] =
 		WP_ALEVEL4 //weapon_t  startWeapon;
 	},
 	{
-		PCL_HUMAN, //int     number;
-		"human_base", //char    *name;
+		PCL_HUMAN_NAKED, //int     number;
+		"human_naked", //char    *name;
+		WP_NONE //special-cased in g_client.c          //weapon_t  startWeapon;
+	},
+    {
+		PCL_HUMAN_LIGHT, //int     number;
+		"human_light", //char    *name;
+		WP_NONE //special-cased in g_client.c          //weapon_t  startWeapon;
+	},
+    {
+		PCL_HUMAN_MEDIUM, //int     number;
+		"human_medium", //char    *name;
 		WP_NONE //special-cased in g_client.c          //weapon_t  startWeapon;
 	},
 	{
@@ -374,6 +384,11 @@ void BG_ClassBoundingBox( class_t pClass,
 	{
 		VectorCopy( classModelConfig->deadMaxs, dmaxs );
 	}
+}
+
+team_t BG_ClassTeam( class_t pClass )
+{
+	return BG_Class( pClass )->team;
 }
 
 /*
@@ -629,13 +644,18 @@ typedef struct
 static const upgradeData_t bg_upgradesData[] =
 {
 	{ UP_LIGHTARMOUR, "larmour"  },
-	{ UP_HELMET,      "helmet"   },
-	{ UP_MEDKIT,      "medkit"   },
+	{ UP_MEDIUMARMOUR,"marmour"  },
+	{ UP_BATTLESUIT,  "bsuit"    },
+
+	{ UP_RADAR,       "radar"    },
+
 	{ UP_BATTPACK,    "battpack" },
 	{ UP_JETPACK,     "jetpack"  },
-	{ UP_BATTLESUIT,  "bsuit"    },
+
 	{ UP_GRENADE,     "gren"     },
 	{ UP_FIREBOMB,    "firebomb" },
+
+	{ UP_MEDKIT,      "medkit"   },
 	{ UP_AMMO,        "ammo"     }
 };
 
@@ -1552,8 +1572,7 @@ qboolean BG_InventoryContainsWeapon( int weapon, int stats[] )
 	// humans always have a blaster
 	// HACK: Determine team by checking for STAT_CLASS since we merged STAT_TEAM into PERS_TEAM
 	//       This hack will vanish as soon as the blast isn't the only possible sidearm weapon anymore
-	if ( ( stats[ STAT_CLASS ] == PCL_HUMAN || stats[ STAT_CLASS ] == PCL_HUMAN_BSUIT ) &&
-	     weapon == WP_BLASTER )
+	if ( BG_ClassTeam( stats[ STAT_CLASS ] ) == TEAM_HUMANS && weapon == WP_BLASTER )
 	{
 		return qtrue;
 	}
@@ -1576,7 +1595,7 @@ int BG_SlotsForInventory( int stats[] )
 
 	// HACK: Determine team by checking for STAT_CLASS since we merged STAT_TEAM into PERS_TEAM
 	//       This hack will vanish as soon as the blast isn't the only possible sidearm weapon anymore
-	if ( stats[ STAT_CLASS ] == PCL_HUMAN || stats[ STAT_CLASS ] == PCL_HUMAN_BSUIT )
+	if ( BG_ClassTeam( stats[ STAT_CLASS ] ) == TEAM_HUMANS )
 	{
 		slots |= BG_Weapon( WP_BLASTER )->slots;
 	}
@@ -1879,19 +1898,12 @@ int BG_PlayerPoisonCloudTime( playerState_t *ps )
 {
 	int time = LEVEL1_PCLOUD_TIME;
 
-	if ( BG_InventoryContainsUpgrade( UP_BATTLESUIT, ps->stats ) )
+	// HACK: Arbitrary values since we plan to get rid of poison cloud anyway
+	switch ( ps->stats[ STAT_CLASS ] )
 	{
-		time -= BSUIT_PCLOUD_PROTECTION;
-	}
-
-	if ( BG_InventoryContainsUpgrade( UP_HELMET, ps->stats ) )
-	{
-		time -= HELMET_PCLOUD_PROTECTION;
-	}
-
-	if ( BG_InventoryContainsUpgrade( UP_LIGHTARMOUR, ps->stats ) )
-	{
-		time -= LIGHTARMOUR_PCLOUD_PROTECTION;
+		case PCL_HUMAN_LIGHT:  time *= 0.6f; break;
+		case PCL_HUMAN_MEDIUM: time *= 0.3f; break;
+		case PCL_HUMAN_BSUIT:  time *= 0.2f; break;
 	}
 
 	return time;

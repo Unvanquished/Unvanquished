@@ -368,12 +368,7 @@ extern int   LCANNON_CHARGE_AMMO;
  * HUMAN upgrades
  */
 
-extern int   LIGHTARMOUR_POISON_PROTECTION;
-extern int   LIGHTARMOUR_PCLOUD_PROTECTION;
-
-extern float HELMET_RANGE;
-extern int   HELMET_POISON_PROTECTION;
-extern int   HELMET_PCLOUD_PROTECTION;
+extern float RADAR_RANGE;
 
 extern float BATTPACK_MODIFIER;
 
@@ -381,9 +376,6 @@ extern float JETPACK_FLOAT_SPEED;
 extern float JETPACK_SINK_SPEED;
 extern int   JETPACK_DISABLE_TIME;
 extern float JETPACK_DISABLE_CHANCE;
-
-extern int   BSUIT_POISON_PROTECTION;
-extern int   BSUIT_PCLOUD_PROTECTION;
 
 extern int   MEDKIT_POISON_IMMUNITY_TIME;
 extern int   MEDKIT_STARTUP_TIME;
