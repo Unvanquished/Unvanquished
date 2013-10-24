@@ -310,6 +310,7 @@ static void R_AddInteractionSurface( bspSurface_t *surf, trRefLight_t *light, in
 {
 	interactionType_t iaType = ( interactionType_t ) interactionBits;
 	byte              cubeSideBits = CUBESIDE_CLIPALL;
+	qboolean          firstAddition = qfalse;
 
 	if ( !iaType )
 	{
@@ -320,6 +321,7 @@ static void R_AddInteractionSurface( bspSurface_t *surf, trRefLight_t *light, in
 	{
 		surf->interactionBits = 0;
 		surf->lightCount = tr.lightCount;
+		firstAddition = qtrue;
 	}
 	
 	if ( surf->interactionBits == ( surf->interactionBits | interactionBits ) )
@@ -338,7 +340,7 @@ static void R_AddInteractionSurface( bspSurface_t *surf, trRefLight_t *light, in
 
 	if ( R_CullLightSurface( surf->data, surf->shader, light, &cubeSideBits ) )
 	{
-		if ( !light->isStatic )
+		if ( !light->isStatic && firstAddition )
 		{
 			tr.pc.c_dlightSurfacesCulled++;
 		}
@@ -347,13 +349,16 @@ static void R_AddInteractionSurface( bspSurface_t *surf, trRefLight_t *light, in
 
 	R_AddLightInteraction( light, surf->data, surf->shader, cubeSideBits, iaType );
 
-	if ( light->isStatic )
+	if ( firstAddition )
 	{
-		tr.pc.c_slightSurfaces++;
-	}
-	else
-	{
-		tr.pc.c_dlightSurfaces++;
+		if ( light->isStatic )
+		{
+			tr.pc.c_slightSurfaces++;
+		}
+		else
+		{
+			tr.pc.c_dlightSurfaces++;
+		}
 	}
 }
 
