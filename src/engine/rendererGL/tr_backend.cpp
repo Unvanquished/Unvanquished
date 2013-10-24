@@ -5546,6 +5546,7 @@ static void RB_RenderDebugUtils()
 
 				GL_LoadModelViewMatrix( backEnd.orientation.modelViewMatrix );
 				gl_genericShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
+				gl_genericShader->SetUniform_ModelMatrix( backEnd.orientation.transformMatrix );
 
 				R_TessLight( light, lightColor );
 
