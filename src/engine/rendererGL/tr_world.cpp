@@ -308,14 +308,9 @@ R_AddInteractionSurface
 */
 static void R_AddInteractionSurface( bspSurface_t *surf, trRefLight_t *light, int interactionBits )
 {
-	interactionType_t iaType = ( interactionType_t ) interactionBits;
 	byte              cubeSideBits = CUBESIDE_CLIPALL;
 	qboolean          firstAddition = qfalse;
-
-	if ( !iaType )
-	{
-		return;
-	}
+	int               bits;
 
 	if ( surf->lightCount != tr.lightCount )
 	{
@@ -323,14 +318,17 @@ static void R_AddInteractionSurface( bspSurface_t *surf, trRefLight_t *light, in
 		surf->lightCount = tr.lightCount;
 		firstAddition = qtrue;
 	}
-	
-	if ( surf->interactionBits == ( surf->interactionBits | interactionBits ) )
+
+	// only add interactions we haven't already added
+	bits = interactionBits & ~surf->interactionBits;
+
+	if ( !bits )
 	{
-		//already added interactions for this surface
+		// already added these interactions
 		return;
 	}
 
-	surf->interactionBits |= interactionBits;
+	surf->interactionBits |= bits;
 
 	//  skip all surfaces that don't matter for lighting only pass
 	if ( surf->shader->isSky || ( !surf->shader->interactLight && surf->shader->noShadows ) )
@@ -347,7 +345,7 @@ static void R_AddInteractionSurface( bspSurface_t *surf, trRefLight_t *light, in
 		return;
 	}
 
-	R_AddLightInteraction( light, surf->data, surf->shader, cubeSideBits, iaType );
+	R_AddLightInteraction( light, surf->data, surf->shader, cubeSideBits, ( interactionType_t ) bits );
 
 	if ( firstAddition )
 	{
