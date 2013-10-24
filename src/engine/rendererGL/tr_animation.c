@@ -1111,10 +1111,11 @@ void R_AddMD5Interactions( trRefEntity_t *ent, trRefLight_t *light, interactionT
 	if ( ent->cull == CULL_OUT )
 	{
 		iaType &= ~IA_LIGHT;
+	}
 
-		if( !iaType ) {
-			return;
-		}
+	if( !iaType )
+	{
+		return;
 	}
 
 	// avoid drawing of certain objects

@@ -2653,6 +2653,13 @@ void R_AddEntityInteractions( trRefLight_t *light )
 			iaType &= ~IA_SHADOW;
 		}
 
+		if ( light->restrictInteractionFirst >= 0 &&
+		     i >= light->restrictInteractionFirst && 
+		     i <= light->restrictInteractionLast )
+		{
+			iaType &= ~IA_LIGHT;
+		}
+
 		ent = tr.currentEntity = &tr.refdef.entities[ i ];
 
 		//
