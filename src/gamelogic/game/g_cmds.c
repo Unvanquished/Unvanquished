@@ -1174,7 +1174,7 @@ static qboolean G_SayTo( gentity_t *ent, gentity_t *other, saymode_t mode, const
 		return qfalse;
 	}
 
-	if ( ( ent && !OnSameTeam( ent, other ) ) &&
+	if ( ( ent && !G_OnSameTeam( ent, other ) ) &&
 	     ( mode == SAY_TEAM || mode == SAY_AREA || mode == SAY_TPRIVMSG ) )
 	{
 		if ( other->client->pers.team != TEAM_NONE )

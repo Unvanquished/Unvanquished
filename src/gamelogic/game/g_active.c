@@ -47,7 +47,7 @@ void P_DamageFeedback( gentity_t *player )
 	}
 
 	// total points of damage shot at the player this frame
-	count = client->damage_blood + client->damage_armor;
+	count = client->damage_received;
 
 	if ( count == 0 )
 	{
@@ -90,8 +90,7 @@ void P_DamageFeedback( gentity_t *player )
 	//
 	// clear totals
 	//
-	client->damage_blood = 0;
-	client->damage_armor = 0;
+	client->damage_received = 0;
 	client->damage_knockback = 0;
 }
 
@@ -255,7 +254,7 @@ static void ClientShove( gentity_t *ent, gentity_t *victim )
 	}
 
 	// Cannot push enemy players unless they are walking on the player
-	if ( !OnSameTeam( ent, victim ) &&
+	if ( !G_OnSameTeam( ent, victim ) &&
 	     victim->client->ps.groundEntityNum != ent - g_entities )
 	{
 		return;

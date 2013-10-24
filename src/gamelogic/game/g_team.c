@@ -143,7 +143,7 @@ void G_AreaTeamCommand( gentity_t *ent, const char *cmd )
 OnSameTeam
 ==============
 */
-qboolean OnSameTeam( gentity_t *ent1, gentity_t *ent2 )
+qboolean G_OnSameTeam( gentity_t *ent1, gentity_t *ent2 )
 {
 	team_t team1, team2;
 

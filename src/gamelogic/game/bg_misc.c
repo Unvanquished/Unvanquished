@@ -603,12 +603,13 @@ void BG_InitWeaponAttributes( void )
 		wd = &bg_weaponsData[i];
 		wa = &bg_weapons[i];
 
-		//Initialise default values for buildables
 		Com_Memset( wa, 0, sizeof( weaponAttributes_t ) );
 
 		wa->number = wd->number;
-		wa->name = wd->name;
-		wa->knockbackScale = 0.0f;
+		wa->name   = wd->name;
+
+		// set default values for optional fields
+		wa->knockbackScale = 1.0f;
 
 		BG_ParseWeaponAttributeFile( va( "configs/weapon/%s.attr.cfg", wa->name ), wa );
 	}

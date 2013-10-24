@@ -1006,7 +1006,6 @@ typedef struct
 	float    friction;
 	float    stopSpeed;
 	float    jumpMagnitude;
-	float    knockbackScale;
 	int      mass;
 
 	int      cost;

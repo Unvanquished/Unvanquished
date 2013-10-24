@@ -1145,7 +1145,7 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
 		FRICTION = 1 << 11,
 		STOPSPEED = 1 << 12,
 		JUMPMAGNITUDE = 1 << 13,
-		KNOCKBACKSCALE = 1 << 14,
+		// UNUSED
 		COST = 1 << 15,
 		VALUE = 1 << 16,
 		RADAR = 1 << 17,
@@ -1326,14 +1326,6 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
 
 			defined |= JUMPMAGNITUDE;
 		}
-		else if ( !Q_stricmp( token, "knockbackScale" ) )
-		{
-			PARSE(text, token);
-
-			ca->knockbackScale = atof( token );
-
-			defined |= KNOCKBACKSCALE;
-		}
 		else if ( !Q_stricmp( token, "cost" ) )
 		{
 			PARSE(text, token);
@@ -1396,7 +1388,6 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
 	else if ( !( defined & FRICTION ) ) { token = "friction"; }
 	else if ( !( defined & STOPSPEED ) ) { token = "stopSpeed"; }
 	else if ( !( defined & JUMPMAGNITUDE ) ) { token = "jumpMagnitude"; }
-	else if ( !( defined & KNOCKBACKSCALE ) ) { token = "knockbackScale"; }
 	else if ( !( defined & COST ) ) { token = "cost"; }
 	else if ( !( defined & VALUE ) ) { token = "value"; }
 	else if ( !( defined & RADAR ) ) { token = "radarFadeOut"; }
@@ -1835,7 +1826,7 @@ void BG_ParseWeaponAttributeFile( const char *filename, weaponAttributes_t *wa )
 
 			wa->reloadTime = atoi( token );
 		}
-		else if ( !Q_stricmp( token, "knockback" ) )
+		else if ( !Q_stricmp( token, "knockbackScale" ) )
 		{
 			PARSE(text, token);
 

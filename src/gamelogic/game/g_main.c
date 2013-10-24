@@ -62,6 +62,7 @@ vmCvar_t           g_knockback;
 vmCvar_t           g_inactivity;
 vmCvar_t           g_debugMove;
 vmCvar_t           g_debugDamage;
+vmCvar_t           g_debugKnockback;
 vmCvar_t           g_motd;
 vmCvar_t           g_synchronousClients;
 vmCvar_t           g_warmup;
@@ -290,6 +291,7 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_inactivity,                  "g_inactivity",                  "0",                                0,                                               0, qtrue            },
 	{ &g_debugMove,                   "g_debugMove",                   "0",                                0,                                               0, qfalse           },
 	{ &g_debugDamage,                 "g_debugDamage",                 "0",                                0,                                               0, qfalse           },
+	{ &g_debugKnockback,              "g_debugKnockback",              "0",                                0,                                               0, qfalse           },
 	{ &g_motd,                        "g_motd",                        "",                                 0,                                               0, qfalse           },
 
 	{ &g_allowVote,                   "g_allowVote",                   "1",                                CVAR_ARCHIVE,                                    0, qfalse           },

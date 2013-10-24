@@ -341,7 +341,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 
 	if ( attacker && attacker->client )
 	{
-		if ( ( attacker == self || OnSameTeam( self, attacker ) ) )
+		if ( ( attacker == self || G_OnSameTeam( self, attacker ) ) )
 		{
 			//punish team kills and suicides
 			if ( attacker->client->pers.team == TEAM_ALIENS )
@@ -1096,184 +1096,239 @@ void NotifyClientOfHit( gentity_t *attacker )
 	event->r.singleClient = attacker->client->ps.clientNum;
 }
 
-void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
+#define KNOCKBACK_NORMAL_MASS 100
+#define KNOCKBACK_PMOVE_TIME  50
+
+void G_KnockbackByDir( gentity_t *target, const vec3_t direction, float strength,
+                              qboolean ignoreMass )
+{
+	vec3_t dir, vel;
+	int    time, mass;
+	float  massMod;
+	const classAttributes_t *ca;
+
+	// sanity check parameters
+	if ( !target || !target->client || VectorLength( direction ) == 0.0f || strength == 0 )
+	{
+		return;
+	}
+
+	// check target flags
+	if ( target->flags & FL_NO_KNOCKBACK )
+	{
+		return;
+	}
+
+	ca = BG_Class( target->client->ps.stats[ STAT_CLASS ] );
+
+	// normalize direction
+	VectorCopy( direction, dir );
+	VectorNormalize( dir );
+
+	// adjust strength according to client mass
+	if ( !ignoreMass )
+	{
+		if ( ca->mass <= 0 )
+		{
+			mass = KNOCKBACK_NORMAL_MASS;
+		}
+		else
+		{
+			mass = ca->mass;
+		}
+
+		massMod = ( float )KNOCKBACK_NORMAL_MASS / ( float )mass;
+
+		if ( massMod < 0.5f )
+		{
+			massMod = 0.5f;
+		}
+		else if ( massMod > 2.0f )
+		{
+			massMod = 2.0f;
+		}
+	}
+	else
+	{
+		// for debug print
+		massMod = 1.0f;
+	}
+
+	strength *= massMod;
+
+	// adjust client velocity
+	VectorScale( dir, strength, vel );
+	VectorAdd( target->client->ps.velocity, vel, target->client->ps.velocity );
+
+	// set pmove timer so that the client can't cancel out the movement immediately
+	if ( !target->client->ps.pm_time )
+	{
+		target->client->ps.pm_time = KNOCKBACK_PMOVE_TIME;
+		target->client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
+	}
+
+	// print debug info
+	if ( g_debugKnockback.integer )
+	{
+		G_Printf( "%i: Knockback: client: %i, strength: %.1f (massMod: %.1f), time: %i\n",
+		          level.time, target->s.number, strength, massMod, time );
+	}
+}
+
+void G_KnockbackBySource( gentity_t *target, gentity_t *source, float strength, qboolean ignoreMass )
+{
+	vec3_t dir;
+
+	if ( !target || !source )
+	{
+		return;
+	}
+
+	VectorSubtract( target->s.origin, source->s.origin, dir );
+	VectorNormalize( dir );
+
+	G_KnockbackByDir( target, dir, strength, ignoreMass );
+}
+
+#define DAMAGE_TO_KNOCKBACK   5
+#define MAX_FALLDMG_KNOCKBACK 50
+
+// TODO: Clean this mess further (split into helper functions)
+void G_Damage( gentity_t *target, gentity_t *inflictor, gentity_t *attacker,
                vec3_t dir, vec3_t point, int damage, int dflags, int mod )
 {
 	gclient_t *client;
 	int       take, loss;
-	int       asave = 0;
 	int       knockback;
 
-	// Can't deal damage sometimes
-	if ( !targ->takedamage || targ->health <= 0 || level.intermissionQueued )
+	if ( !target || !target->takedamage || target->health <= 0 || level.intermissionQueued )
 	{
 		return;
 	}
 
-	if ( !inflictor )
-	{
-		inflictor = &g_entities[ ENTITYNUM_WORLD ];
-	}
+	client = target->client;
 
-	if ( !attacker )
-	{
-		attacker = &g_entities[ ENTITYNUM_WORLD ];
-	}
-
-	// shootable doors / buttons don't actually have any health unless they have a die or pain function to handle it
-	if ( targ->s.eType == ET_MOVER && !(targ->die || targ->pain ))
-	{
-		if ( ( targ->moverState == MOVER_POS1 || targ->moverState == ROTATOR_POS1 ) )
-		{
-			if( targ->act )
-				targ->act( targ, inflictor, attacker );
-		}
-
-		return;
-	}
-
-	client = targ->client;
-
+	// don't handle noclip clients
 	if ( client && client->noclip )
 	{
 		return;
 	}
 
-	if ( !dir )
+	// set inflictor to world if missing
+	if ( !inflictor )
 	{
-		dflags |= DAMAGE_NO_KNOCKBACK;
+		inflictor = &g_entities[ ENTITYNUM_WORLD ];
 	}
 
-	knockback = damage;
-
-	if ( inflictor->s.weapon != WP_NONE )
+	// set attacker to world if missing
+	if ( !attacker )
 	{
-		knockback = ( int )( ( float ) knockback *
-		                     BG_Weapon( inflictor->s.weapon )->knockbackScale );
+		attacker = &g_entities[ ENTITYNUM_WORLD ];
 	}
 
-	if ( targ->client )
+	// don't handle ET_MOVER w/o die or pain function
+	if ( target->s.eType == ET_MOVER && !( target->die || target->pain ) )
 	{
-		knockback = ( int )( ( float ) knockback *
-		                     BG_Class( targ->client->ps.stats[ STAT_CLASS ] )->knockbackScale );
-	}
-
-	// Too much knockback from falling really far makes you "bounce" and
-	//  looks silly. However, none at all also looks bad. Cap it.
-	if ( mod == MOD_FALLING && knockback > 50 )
-	{
-		knockback = 50;
-	}
-
-	if ( knockback > 200 )
-	{
-		knockback = 200;
-	}
-
-	if ( targ->flags & FL_NO_KNOCKBACK )
-	{
-		knockback = 0;
-	}
-
-	if ( dflags & DAMAGE_NO_KNOCKBACK )
-	{
-		knockback = 0;
-	}
-
-	// figure momentum add, even if the damage won't be taken
-	if ( knockback && targ->client )
-	{
-		vec3_t kvel;
-		float  mass;
-
-		mass = 200;
-
-		VectorScale( dir, g_knockback.value * ( float ) knockback / mass, kvel );
-		VectorAdd( targ->client->ps.velocity, kvel, targ->client->ps.velocity );
-
-		// set the timer so that the other client can't cancel
-		// out the movement immediately
-		if ( !targ->client->ps.pm_time )
+		// special case for ET_MOVER with act function in initial position
+		if ( ( target->moverState == MOVER_POS1 || target->moverState == ROTATOR_POS1 ) &&
+		     target->act )
 		{
-			int t;
-
-			t = knockback * 2;
-
-			if ( t < 50 )
-			{
-				t = 50;
-			}
-
-			if ( t > 200 )
-			{
-				t = 200;
-			}
-
-			targ->client->ps.pm_time = t;
-			targ->client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
+			target->act( target, inflictor, attacker );
 		}
+
+		return;
 	}
 
-	// check for godmode
-	if ( targ->flags & FL_GODMODE )
+	// do knockback against clients
+	if ( client && !( dflags & DAMAGE_NO_KNOCKBACK ) && dir )
+	{
+		// scale knockback by weapon
+		if ( inflictor->s.weapon != WP_NONE )
+		{
+			knockback = ( int )( ( float )damage * BG_Weapon( inflictor->s.weapon )->knockbackScale );
+		}
+		else
+		{
+			knockback = damage;
+		}
+
+		// apply generic damage to knockback modifier
+		knockback *= DAMAGE_TO_KNOCKBACK;
+
+		// HACK: Too much knockback from falling makes you bounce and looks silly
+		if ( mod == MOD_FALLING )
+		{
+			knockback = MIN( knockback, MAX_FALLDMG_KNOCKBACK );
+		}
+
+		G_KnockbackByDir( target, dir, knockback, qfalse );
+	}
+	else
+	{
+		// damage knockback gets saved, so initialize it here
+		knockback = 0;
+	}
+
+	// godmode prevents damage
+	if ( target->flags & FL_GODMODE )
 	{
 		return;
 	}
 
-	// don't do friendly fire on movement attacks
-	if ( ( mod == MOD_LEVEL4_TRAMPLE || mod == MOD_LEVEL3_POUNCE ) &&
-	     targ->s.eType == ET_BUILDABLE && targ->buildableTeam == TEAM_ALIENS )
-	{
-		return;
-	}
-
-	// check for completely getting out of the damage
+	// check for protection
 	if ( !( dflags & DAMAGE_NO_PROTECTION ) )
 	{
-		// if TF_NO_FRIENDLY_FIRE is set, don't do damage to the target
-		// if the attacker was on the same team
-		if ( targ != attacker && OnSameTeam( targ, attacker ) )
+		// check for protection from friendly damage
+		if ( target != attacker && G_OnSameTeam( target, attacker ) )
 		{
-			// never do friendly fire on movement attacks
-			if ( mod == MOD_LEVEL4_TRAMPLE || mod == MOD_LEVEL3_POUNCE )
-			{
-				return;
-			}
-
-			// if dretchpunt is enabled and this is a dretch, do dretchpunt instead of damage
-			if ( g_dretchPunt.integer && targ->client &&
-			     ( targ->client->ps.stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL0 ||
-			       targ->client->ps.stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL0_UPG ) )
-			{
-				vec3_t dir, push;
-
-				VectorSubtract( targ->r.currentOrigin, attacker->r.currentOrigin, dir );
-				VectorNormalizeFast( dir );
-				VectorScale( dir, ( damage * 10.0f ), push );
-				push[ 2 ] = 64.0f;
-				VectorAdd( targ->client->ps.velocity, push, targ->client->ps.velocity );
-				return;
-			}
-
 			// check if friendly fire has been disabled
 			if ( !g_friendlyFire.integer )
 			{
 				return;
 			}
+
+			// don't do friendly damage on movement attacks
+			switch ( mod )
+			{
+				case MOD_LEVEL3_POUNCE:
+				case MOD_LEVEL4_TRAMPLE:
+					return;
+
+				default:
+					break;
+			}
+
+			// if dretchpunt is enabled and this is a dretch, do dretchpunt instead of damage
+			if ( g_dretchPunt.integer && target->client &&
+			     ( target->client->ps.stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL0 ||
+			       target->client->ps.stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL0_UPG ) )
+			{
+				vec3_t dir, push;
+
+				VectorSubtract( target->r.currentOrigin, attacker->r.currentOrigin, dir );
+				VectorNormalizeFast( dir );
+				VectorScale( dir, ( damage * 10.0f ), push );
+				push[ 2 ] = 64.0f;
+
+				VectorAdd( target->client->ps.velocity, push, target->client->ps.velocity );
+
+				return;
+			}
 		}
 
-		if ( targ->s.eType == ET_BUILDABLE && attacker->client &&
+		// for buildables, never protect from damage dealt by building actions
+		if ( target->s.eType == ET_BUILDABLE && attacker->client &&
 		     mod != MOD_DECONSTRUCT && mod != MOD_SUICIDE &&
-		     mod != MOD_REPLACE && mod != MOD_NOCREEP )
+		     mod != MOD_REPLACE     && mod != MOD_NOCREEP )
 		{
-			if ( targ->buildableTeam == attacker->client->pers.team &&
-			     !g_friendlyBuildableFire.integer )
+			// check for protection from friendly buildable damage
+			if ( G_OnSameTeam( target, attacker ) && !g_friendlyBuildableFire.integer )
 			{
 				return;
 			}
 
-			// base is under attack warning if DCC'd
-			if ( targ->buildableTeam == TEAM_HUMANS && G_FindDCC( targ ) &&
+			// issue base attack warning
+			if ( target->buildableTeam == TEAM_HUMANS && G_FindDCC( target ) &&
 			     level.time > level.humanBaseAttackTimer )
 			{
 				level.humanBaseAttackTimer = level.time + DC_ATTACK_PERIOD;
@@ -1282,24 +1337,20 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		}
 	}
 
-	if ( targ && targ->client && attacker && attacker->client )
+	// update combat timers
+	if ( target->client && attacker->client )
 	{
-		// Update the last combat time.
-		targ->client->lastCombatTime = level.time;
+		target->client->lastCombatTime     = level.time;
 		attacker->client->lastCombatTime = level.time;
 	}
 
-	take = damage;
-
-	// add to the damage inflicted on a player this frame
-	// the total will be turned into screen blends and view angle kicks
-	// at the end of the frame
 	if ( client )
 	{
-		client->damage_armor += asave;
-		client->damage_blood += take;
+		// save damage (w/o armor modifier), knockback
+		client->damage_received  += damage;
 		client->damage_knockback += knockback;
 
+		// save damage direction
 		if ( dir )
 		{
 			VectorCopy( dir, client->damage_from );
@@ -1307,29 +1358,40 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		}
 		else
 		{
-			VectorCopy( targ->r.currentOrigin, client->damage_from );
+			VectorCopy( target->r.currentOrigin, client->damage_from );
 			client->damage_fromWorld = qtrue;
 		}
 
-		take = ( int )( take * G_CalcDamageModifier( point, targ, attacker,
-		                client->ps.stats[ STAT_CLASS ],
-		                dflags ) + 0.5f );
+		// apply damage modifier
+		take = ( int )( damage * G_CalcDamageModifier( point, target, attacker,
+		                client->ps.stats[ STAT_CLASS ], dflags ) + 0.5f );
 
-		//if boosted poison every attack
-		if ( attacker->client && (attacker->client->ps.stats[ STAT_STATE ] & SS_BOOSTED) )
+		// if boosted poison every attack
+		if ( attacker->client &&
+		     ( attacker->client->ps.stats[ STAT_STATE ] & SS_BOOSTED ) &&
+		     target->client->pers.team == TEAM_HUMANS &&
+		     target->client->poisonImmunityTime < level.time )
 		{
-			if ( targ->client->pers.team == TEAM_HUMANS &&
-			     mod != MOD_LEVEL2_ZAP && mod != MOD_POISON &&
-			     mod != MOD_LEVEL1_PCLOUD && mod != MOD_HSPAWN &&
-			     mod != MOD_ASPAWN && targ->client->poisonImmunityTime < level.time )
+			switch ( mod )
 			{
-				targ->client->ps.stats[ STAT_STATE ] |= SS_POISONED;
-				targ->client->lastPoisonTime = level.time;
-				targ->client->lastPoisonClient = attacker;
+				case MOD_POISON:
+				case MOD_LEVEL1_PCLOUD:
+				case MOD_LEVEL2_ZAP:
+					break;
+
+				default:
+					target->client->ps.stats[ STAT_STATE ] |= SS_POISONED;
+					target->client->lastPoisonTime = level.time;
+					target->client->lastPoisonClient = attacker;
 			}
 		}
 	}
+	else
+	{
+		take = damage;
+	}
 
+	// make sure damage is done
 	if ( take < 1 )
 	{
 		take = 1;
@@ -1337,81 +1399,88 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 
 	if ( g_debugDamage.integer )
 	{
-		G_Printf( "%i: client:%i health:%i damage:%i armor:%i\n", level.time, targ->s.number,
-		          targ->health, take, asave );
+		G_Printf( "%i: client: %i health %i damage: %i\n",
+		          level.time, target->s.number, target->health, take );
 	}
 
 	// do the damage
-	if ( take )
+	target->health = target->health - take;
+
+	if ( target->client )
 	{
-		targ->health = targ->health - take;
+		target->client->ps.stats[ STAT_HEALTH ] = target->health;
+		target->client->pers.infoChangeTime = level.time; // ?
+	}
 
-		if ( targ->client )
+	target->lastDamageTime = level.time;
+	target->nextRegenTime  = level.time + ALIEN_REGEN_DAMAGE_TIME;
+
+	// handle non-self damage
+	if ( attacker != target )
+	{
+		if ( target->health < 0 )
 		{
-			targ->client->ps.stats[ STAT_HEALTH ] = targ->health;
-			targ->client->pers.infoChangeTime = level.time;
+			loss = ( take + target->health );
+		}
+		else
+		{
+			loss = take;
 		}
 
-		targ->lastDamageTime = level.time;
-		targ->nextRegenTime = level.time + ALIEN_REGEN_DAMAGE_TIME;
-
-		if ( attacker != targ )
+		if ( attacker->client )
 		{
-			if ( targ->health < 0 )
-			{
-				loss = ( take + targ->health );
-			}
-			else
-			{
-				loss = take;
-			}
+			// add to the attackers account on the target
+			target->credits[ attacker->client->ps.clientNum ] += loss;
 
-			if ( attacker->client )
-			{
-				// add to the attackers "account" on the target
-				targ->credits[ attacker->client->ps.clientNum ] += loss;
-
-				// notify the attacker of a hit
-				NotifyClientOfHit( attacker );
-			}
-
-			// update buildable stats
-			if ( attacker->s.eType == ET_BUILDABLE && attacker->health > 0 )
-			{
-				attacker->buildableStatsTotal += loss;
-			}
+			// notify the attacker of a hit
+			NotifyClientOfHit( attacker );
 		}
 
-		if ( targ->health <= 0 )
+		// update buildable stats
+		if ( attacker->s.eType == ET_BUILDABLE && attacker->health > 0 )
 		{
-			if ( client )
-			{
-				targ->flags |= FL_NO_KNOCKBACK;
-			}
-
-			if ( targ->health < -999 )
-			{
-				targ->health = -999;
-			}
-
-			targ->die( targ, inflictor, attacker, mod );
-
-			// update buildable stats
-			if ( attacker->s.eType == ET_BUILDABLE && attacker->health > 0 )
-			{
-				attacker->buildableStatsCount++;
-			}
-
-			if(!targ->client) //call the onDie event only on non living entities
-			{
-				G_EventFireEntity( targ, attacker, ON_DIE );
-			}
-			return;
+			attacker->buildableStatsTotal += loss;
 		}
-		else if ( targ->pain )
+	}
+
+	// handle dying target
+	if ( target->health <= 0 )
+	{
+		// set no knockback flag for clients
+		if ( client )
 		{
-			targ->pain( targ, attacker, take );
+			target->flags |= FL_NO_KNOCKBACK;
 		}
+
+		// cap negative health
+		if ( target->health < -999 )
+		{
+			target->health = -999;
+		}
+
+		// call die function
+		if ( target->die )
+		{
+			target->die( target, inflictor, attacker, mod );
+		}
+
+		// update buildable stats
+		if ( attacker->s.eType == ET_BUILDABLE && attacker->health > 0 )
+		{
+			attacker->buildableStatsCount++;
+		}
+
+		// for non-client victims, fire ON_DIE event
+		if( !target->client )
+		{
+			G_EventFireEntity( target, attacker, ON_DIE );
+		}
+
+		return;
+	}
+	else if ( target->pain )
+	{
+		target->pain( target, attacker, take );
 	}
 }
 
@@ -1567,7 +1636,8 @@ qboolean G_SelectiveRadiusDamage( vec3_t origin, gentity_t *attacker, float dama
 		{
 			hitClient = qtrue;
 
-			// don't do knockback, since an attack that spares one team is most likely not based on kinetic energy
+			// don't do knockback, since an attack that spares one team is most likely
+			// not based on kinetic energy
 			G_Damage( ent, NULL, attacker, NULL, origin, ( int ) points,
 			          DAMAGE_RADIUS | DAMAGE_NO_LOCDAMAGE | DAMAGE_NO_KNOCKBACK, mod );
 		}
