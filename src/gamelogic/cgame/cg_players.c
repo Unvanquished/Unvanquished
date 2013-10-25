@@ -3996,3 +3996,20 @@ centity_t *CG_GetPlayerLocation( void )
 
 	return best;
 }
+
+void CG_InitClasses( void )
+{
+	int i;
+
+	Com_Memset( cg_classes, 0, sizeof( cg_classes ) );
+
+	for ( i = PCL_NONE + 1; i < PCL_NUM_CLASSES; i++ )
+	{
+		const char *icon = BG_Class( i )->icon;
+
+		if ( icon )
+		{
+			cg_classes[ i ].classIcon = trap_R_RegisterShader( icon, RSF_DEFAULT );
+		}
+	}
+}

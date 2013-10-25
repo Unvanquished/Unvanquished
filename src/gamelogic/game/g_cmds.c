@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "g_local.h"
+#include "bg_public.h"
 #include "../../engine/qcommon/q_unicode.h"
 
 /*
@@ -3601,6 +3602,7 @@ void Cmd_Build_f( gentity_t *ent )
 	{
 		dynMenu_t err;
 		vec3_t forward, aimDir;
+		itemBuildError_t reason;
 
 		BG_GetClientNormal( &ent->client->ps, normal );
 		AngleVectors( ent->client->ps.viewangles, aimDir, NULL, NULL );
@@ -3609,26 +3611,30 @@ void Cmd_Build_f( gentity_t *ent )
 
 		dist = BG_Class( ent->client->ps.stats[ STAT_CLASS ] )->buildDist * DotProduct( forward, aimDir );
 
-		ent->client->ps.stats[ STAT_BUILDABLE ] = BA_NONE;
+		reason = G_CanBuild( ent, buildable, dist, origin, normal, &groundEntNum );
+		ent->client->ps.stats[ STAT_BUILDABLE ] = BA_NONE | SB_BUILDABLE_FROM_IBE( reason );
 
 		//these are the errors displayed when the builder first selects something to use
-		switch ( G_CanBuild( ent, buildable, dist, origin, normal, &groundEntNum ) )
+		switch ( reason )
 		{
 			// can place right away, set the blueprint and the valid togglebit
 			case IBE_NONE:
 				err = MN_NONE;
 				// we OR-in the selected builable later
-				ent->client->ps.stats[ STAT_BUILDABLE ] = SB_VALID_TOGGLEBIT;
 				break;
 
 			// can't place yet but maybe soon: start with valid togglebit off
 			case IBE_NORMAL:
-			case IBE_NOCREEP:
 			case IBE_NOROOM:
-			case IBE_NOPOWERHERE:
 			case IBE_SURFACE:
+				err = MN_NONE;
+				break;
+
 			case IBE_NOOVERMIND:
 			case IBE_NOREACTOR:
+			case IBE_NOCREEP:
+			case IBE_NOPOWERHERE:
+			case IBE_DRILLPOWERSOURCE:
 				err = MN_NONE;
 				break;
 

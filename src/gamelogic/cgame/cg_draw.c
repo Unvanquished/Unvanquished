@@ -29,10 +29,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 menuDef_t *menuScoreboard = NULL;
 
-static void CG_AlignText( rectDef_t *rect, const char *text, float scale,
-                          float w, float h,
-                          int align, int valign,
-                          float *x, float *y )
+void CG_AlignText( rectDef_t *rect, const char *text, float scale,
+                   float w, float h,
+                   int align, int valign,
+                   float *x, float *y )
 {
 	float tx, ty;
 
@@ -1366,9 +1366,11 @@ static void CG_DrawPlayerConfidenceBar( rectDef_t *rect, vec4_t foreColor, vec4_
 	// data
 	playerState_t *ps;
 	float         confidence, rawFraction, fraction, glowFraction, glowOffset;
-	int           unlockableNum, threshold;
+	int           threshold;
 	team_t        team;
 	qboolean      unlocked;
+
+	confidenceThresholdIterator_t unlockableIter = { -1 };
 
 	// display
 	vec4_t        color;
@@ -1487,8 +1489,8 @@ static void CG_DrawPlayerConfidenceBar( rectDef_t *rect, vec4_t foreColor, vec4_
 	}
 
 	// draw threshold markers
-	unlockableNum = 0;
-	while ( unlockableNum = BG_IterateConfidenceThresholds( unlockableNum, team, &threshold, &unlocked ) )
+	while ( ( unlockableIter = BG_IterateConfidenceThresholds( unlockableIter, team, &threshold, &unlocked ) ),
+	        ( unlockableIter.num >= 0 ) )
 	{
 		fraction = threshold / CONFIDENCE_BAR_MAX;
 
@@ -1521,6 +1523,134 @@ static void CG_DrawPlayerConfidenceBar( rectDef_t *rect, vec4_t foreColor, vec4_
 		else
 		{
 			CG_DrawPic( x + w * fraction, y, CONFIDENCE_BAR_MARKWIDTH, h, cgs.media.whiteShader );
+		}
+	}
+
+	trap_R_SetColor( NULL );
+}
+
+static INLINE qhandle_t CG_GetUnlockableIcon( int num )
+{
+	int index = BG_UnlockableTypeIndex( num );
+
+	switch ( BG_UnlockableType( num ) )
+	{
+		case UNLT_WEAPON:    return cg_weapons[ index ].weaponIcon;
+		case UNLT_UPGRADE:   return cg_upgrades[ index ].upgradeIcon;
+		case UNLT_BUILDABLE: return cg_buildables[ index ].buildableIcon;
+		case UNLT_CLASS:     return cg_classes[ index ].classIcon;
+	}
+	return 0;
+}
+
+static void CG_DrawPlayerUnlockedItems( rectDef_t *rect, vec4_t foreColour, vec4_t backColour, float borderSize )
+{
+	confidenceThresholdIterator_t unlockableIter = { -1, 1 }, previousIter;
+
+	// data
+	team_t    team;
+
+	// display
+	float     x, y, w, h, iw, ih;
+	qboolean  vertical;
+
+	int       icons, counts;
+	int       count[ 32 ] = { 0 };
+	struct {
+		qhandle_t shader;
+		qboolean  unlocked;
+	} icon[ NUM_UNLOCKABLES ]; // more than enough(!)
+
+	team = cg.predictedPlayerState.persistant[ PERS_TEAM ];
+
+	x = rect->x;
+	y = rect->y;
+	w = rect->w;
+	h = rect->h;
+
+	vertical = ( h > w );
+
+	// adjust for borders around the confidence bar, but only along one axis
+	if ( vertical )
+	{
+	        x += borderSize;
+	        w -= 2.0f * borderSize;
+        }
+        else
+        {
+	        y += borderSize;
+	        h -= 2.0f * borderSize;
+        }
+
+	ih = vertical ? w : h;
+	iw = ih * cgDC.aspectScale;
+
+	icons = counts = 0;
+
+	for (;;)
+	{
+		qhandle_t shader;
+		int       threshold;
+		qboolean  unlocked;
+
+		previousIter = unlockableIter;
+		unlockableIter = BG_IterateConfidenceThresholds( unlockableIter, team, &threshold, &unlocked );
+
+		if ( previousIter.threshold != unlockableIter.threshold && icons )
+		{
+			count[ counts++ ] = icons;
+		}
+
+		// maybe exit the loop?
+		if ( unlockableIter.num < 0 )
+		{
+			break;
+		}
+
+		// okay, next icon
+		shader = CG_GetUnlockableIcon( unlockableIter.num );
+
+		if ( shader )
+		{
+			icon[ icons ].shader = shader;
+			icon[ icons].unlocked = unlocked;
+			++icons;
+		}
+	}
+
+	{
+		float gap;
+		int i, j;
+
+		if ( vertical )
+		{
+			y = rect->y + h - ih;
+			gap = h - icons * ih;
+		}
+		else
+		{
+			x = rect->x;
+			gap = w - icons * iw;
+		}
+
+		if ( counts > 2 )
+		{
+			gap /= counts - 1;
+		}
+
+		for ( i = 0, j = 0; i < icons; ++i )
+		{
+			trap_R_SetColor( icon[ i ].unlocked ? foreColour : backColour );
+
+			if ( i == count[ j ] )
+			{
+				++j;
+				if ( vertical ) { y -= gap; } else { x += gap; }
+			}
+
+			CG_DrawPic( x, y, iw, ih, icon[ i ].shader );
+
+			if ( vertical ) { y -= ih; } else { x += iw; }
 		}
 	}
 
@@ -4228,6 +4358,10 @@ void CG_OwnerDraw( rectDef_t *rect, float text_x,
 
 		case CG_CONFIDENCE_BAR:
 			CG_DrawPlayerConfidenceBar( rect, foreColor, backColor, borderSize );
+			break;
+
+		case CG_UNLOCKED_ITEMS:
+			CG_DrawPlayerUnlockedItems( rect, foreColor, backColor, borderSize );
 			break;
 
 		case CG_ALIENS_SCORE_LABEL:
