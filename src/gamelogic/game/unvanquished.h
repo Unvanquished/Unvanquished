@@ -420,14 +420,8 @@ extern int   REACTOR_ATTACK_DCC_DAMAGE;
 #define HUMAN_SIDE_MODIFIER           0.9f
 #define HUMAN_LAND_FRICTION           3.0f
 
-// take/restore: per action or 100ms
 #define STAMINA_MAX                   2000
-#define STAMINA_JUMP_TAKE             250
-#define STAMINA_SPRINT_TAKE           5
-#define STAMINA_STOP_RESTORE          30
-#define STAMINA_WALK_RESTORE          15
-#define STAMINA_JOG_RESTORE           5
-#define STAMINA_MEDISTAT_RESTORE      30 // stacks
+#define STAMINA_MEDISTAT_RESTORE      30   // 1/(100 ms). stacks.
 
 #define HUMAN_SPAWN_REPEAT_TIME       10000
 #define HUMAN_REGEN_DAMAGE_TIME       2000 //msec since damage before dcc repairs

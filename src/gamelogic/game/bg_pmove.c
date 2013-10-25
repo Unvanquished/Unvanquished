@@ -391,6 +391,9 @@ static float PM_CmdScale( usercmd_t *cmd, qboolean zFlight )
 	float total;
 	float scale;
 	float modifier = 1.0f;
+	int   staminaJumpCost;
+
+	staminaJumpCost = BG_Class( pm->ps->stats[ STAT_CLASS ] )->staminaJumpCost;
 
 	if ( pm->ps->persistant[ PERS_TEAM ] == TEAM_HUMANS && pm->ps->pm_type == PM_NORMAL )
 	{
@@ -428,7 +431,7 @@ static float PM_CmdScale( usercmd_t *cmd, qboolean zFlight )
 				// we were sprinting but ran out of stamina
 				sprint = qfalse;
 			}
-			else if ( !wasSprinting && pm->ps->stats[ STAT_STAMINA ] < STAMINA_JUMP_TAKE )
+			else if ( !wasSprinting && pm->ps->stats[ STAT_STAMINA ] < staminaJumpCost )
 			{
 				// stamina is too low to start sprinting
 				sprint = qfalse;
@@ -469,7 +472,7 @@ static float PM_CmdScale( usercmd_t *cmd, qboolean zFlight )
 		}
 
 		// Cancel jump if low on stamina
-		if ( !zFlight && pm->ps->stats[ STAT_STAMINA ] < STAMINA_JUMP_TAKE )
+		if ( !zFlight && pm->ps->stats[ STAT_STAMINA ] < staminaJumpCost )
 		{
 			cmd->upmove = 0;
 		}
@@ -1271,6 +1274,7 @@ PM_CheckJump
 static qboolean PM_CheckJump( void )
 {
 	vec3_t normal;
+	int    staminaJumpCost;
 
 	if ( pm->ps->groundEntityNum == ENTITYNUM_NONE )
 	{
@@ -1297,8 +1301,10 @@ static qboolean PM_CheckJump( void )
 		return qfalse;
 	}
 
+	staminaJumpCost = BG_Class( pm->ps->stats[ STAT_CLASS ] )->staminaJumpCost;
+
 	if ( ( pm->ps->persistant[ PERS_TEAM ] == TEAM_HUMANS ) &&
-	     ( pm->ps->stats[ STAT_STAMINA ] < STAMINA_JUMP_TAKE ) )
+	     ( pm->ps->stats[ STAT_STAMINA ] < staminaJumpCost ) )
 	{
 		return qfalse;
 	}
@@ -1336,7 +1342,7 @@ static qboolean PM_CheckJump( void )
 	// take some stamina off
 	if ( pm->ps->persistant[ PERS_TEAM ] == TEAM_HUMANS )
 	{
-		pm->ps->stats[ STAT_STAMINA ] -= STAMINA_JUMP_TAKE;
+		pm->ps->stats[ STAT_STAMINA ] -= staminaJumpCost;
 	}
 
 	pm->ps->groundEntityNum = ENTITYNUM_NONE;

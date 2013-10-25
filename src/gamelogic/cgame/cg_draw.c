@@ -1703,10 +1703,12 @@ static void CG_DrawPlayerStaminaBar( rectDef_t *rect, vec4_t foreColor, qhandle_
 	int   stamina;
 	float progress;
 	float warning;
+	int   staminaJumpCost;
 
 	stamina  = cg.snap->ps.stats[ STAT_STAMINA ];
+	staminaJumpCost = BG_Class( cg.snap->ps.stats[ STAT_CLASS ] )->staminaJumpCost;
 	progress = ( float )stamina / ( float )STAMINA_MAX;
-	warning  = -1.0f * ( float )STAMINA_JUMP_TAKE / ( float )STAMINA_MAX;
+	warning  = -1.0f * ( float )staminaJumpCost / ( float )STAMINA_MAX;
 
 	CG_DrawPlayerProgressBar( rect, foreColor, progress, warning, shader );
 }
@@ -1729,15 +1731,17 @@ static void CG_DrawPlayerStaminaBolt( rectDef_t *rect, vec4_t backColor,
 	int      stamina;
 	vec4_t   color;
 	qboolean sprinting;
+	int      staminaJumpCost;
 
 	stamina   = cg.snap->ps.stats[ STAT_STAMINA ];
+	staminaJumpCost = BG_Class( cg.snap->ps.stats[ STAT_CLASS ] )->staminaJumpCost;
 	sprinting = ( cg.predictedPlayerState.stats[ STAT_STATE ] & SS_SPEEDBOOST );
 
 	if ( sprinting )
 	{
 		Vector4Lerp( ( sin( cg.time / 150.0f ) + 1.0f ) / 2.0f, backColor, foreColor, color );
 	}
-	else if ( stamina < STAMINA_JUMP_TAKE )
+	else if ( stamina < staminaJumpCost )
 	{
 		Vector4Copy( backColor, color );
 	}

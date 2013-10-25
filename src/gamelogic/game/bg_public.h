@@ -1015,6 +1015,13 @@ typedef struct
 	float    jumpMagnitude;
 	int      mass;
 
+	// stamina (human only)
+	int      staminaJumpCost;
+	int      staminaSprintCost;
+	int      staminaJogRestore;
+	int      staminaWalkRestore;
+	int      staminaStopRestore;
+
 	int      cost;
 	int      value;
 

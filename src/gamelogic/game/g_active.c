@@ -803,11 +803,13 @@ void ClientTimerActions( gentity_t *ent, int msec )
 	            strafing = qfalse;
 	int         i;
 	buildable_t buildable;
+	const classAttributes_t *ca;
 
 	ucmd = &ent->client->pers.cmd;
+	ca   = BG_Class( ent->client->ps.stats[ STAT_CLASS ] );
 
 	aForward = abs( ucmd->forwardmove );
-	aRight = abs( ucmd->rightmove );
+	aRight   = abs( ucmd->rightmove );
 
 	if ( aForward == 0 && aRight == 0 )
 	{
@@ -849,21 +851,21 @@ void ClientTimerActions( gentity_t *ent, int msec )
 		// Restore or subtract stamina
 		if ( stopped || client->ps.pm_type == PM_JETPACK )
 		{
-			client->ps.stats[ STAT_STAMINA ] += STAMINA_STOP_RESTORE;
+			client->ps.stats[ STAT_STAMINA ] += ca->staminaStopRestore;
 		}
 		else if ( ( client->ps.stats[ STAT_STATE ] & SS_SPEEDBOOST ) &&
 		          !usercmdButtonPressed( client->buttons, BUTTON_WALKING ) &&
 		          !crouched ) // walk overrides sprint
 		{
-			client->ps.stats[ STAT_STAMINA ] -= STAMINA_SPRINT_TAKE;
+			client->ps.stats[ STAT_STAMINA ] -= ca->staminaSprintCost;
 		}
 		else if ( walking || crouched )
 		{
-			client->ps.stats[ STAT_STAMINA ] += STAMINA_WALK_RESTORE;
+			client->ps.stats[ STAT_STAMINA ] += ca->staminaWalkRestore;
 		}
 		else // assume jogging
 		{
-			client->ps.stats[ STAT_STAMINA ] += STAMINA_JOG_RESTORE;
+			client->ps.stats[ STAT_STAMINA ] += ca->staminaJogRestore;
 		}
 
 		// Check stamina limits

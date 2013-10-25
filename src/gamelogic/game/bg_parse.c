@@ -1112,33 +1112,39 @@ Parses a configuration file describing the attributes of a class
 
 void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
 {
-	char *token = NULL;
-	char text_buffer[ 20000 ];
-	char* text;
-	configVar_t* var;
-	int defined = 0;
+	char         *token = NULL;
+	char         text_buffer[ 20000 ];
+	char         *text;
+	configVar_t  *var;
+	int          defined = 0;
+
 	enum
 	{
-		INFO = 1 << 0,
-		FOVCVAR = 1 << 1,
-		TEAM = 1 << 2,
-		HEALTH = 1 << 3,
-		FALLDAMAGE = 1 << 4,
-		REGEN = 1 << 5,
-		FOV = 1 << 6,
-		STEPTIME = 1 << 7,
-		SPEED = 1 << 8,
-		ACCELERATION = 1 << 9,
-		AIRACCELERATION = 1 << 10,
-		FRICTION = 1 << 11,
-		STOPSPEED = 1 << 12,
-		JUMPMAGNITUDE = 1 << 13,
+		INFO               = 1 <<  0,
+		FOVCVAR            = 1 <<  1,
+		TEAM               = 1 <<  2,
+		HEALTH             = 1 <<  3,
+		FALLDAMAGE         = 1 <<  4,
+		REGEN              = 1 <<  5,
+		FOV                = 1 <<  6,
+		STEPTIME           = 1 <<  7,
+		SPEED              = 1 <<  8,
+		ACCELERATION       = 1 <<  9,
+		AIRACCELERATION    = 1 << 10,
+		FRICTION           = 1 << 11,
+		STOPSPEED          = 1 << 12,
+		JUMPMAGNITUDE      = 1 << 13,
 		// UNUSED
-		COST = 1 << 15,
-		VALUE = 1 << 16,
-		RADAR = 1 << 17,
-		MASS = 1 << 18,
-		UNLOCKTHRESHOLD = 1 << 19
+		COST               = 1 << 15,
+		VALUE              = 1 << 16,
+		RADAR              = 1 << 17,
+		MASS               = 1 << 18,
+		UNLOCKTHRESHOLD    = 1 << 19,
+		STAMINAJUMPCOST    = 1 << 20,
+		STAMINASPRINTCOST  = 1 << 21,
+		STAMINAJOGRESTORE  = 1 << 22,
+		STAMINAWALKRESTORE = 1 << 23,
+		STAMINASTOPRESTORE = 1 << 24
 	};
 
 	if( !BG_ReadWholeFile( filename, text_buffer, sizeof(text_buffer) ) )
@@ -1148,7 +1154,6 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
 
 	text = text_buffer;
 
-	// read optional parameters
 	while ( 1 )
 	{
 		PARSE(text, token);
@@ -1156,7 +1161,6 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
 		if ( !Q_stricmp( token, "description" ) )
 		{
 			PARSE(text, token);
-
 			if ( !Q_stricmp( token, "null" ) )
 			{
 				ca->info = "";
@@ -1165,13 +1169,11 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
 			{
 				ca->info = BG_strdup(token);
 			}
-
 			defined |= INFO;
 		}
 		else if ( !Q_stricmp( token, "fovCvar" ) )
 		{
 			PARSE(text, token);
-
 			if ( !Q_stricmp( token, "null" ) )
 			{
 				ca->fovCvar = "";
@@ -1180,42 +1182,32 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
 			{
 				ca->fovCvar = BG_strdup(token);
 			}
-
 			defined |= FOVCVAR;
 		}
 		else if ( !Q_stricmp( token, "team" ) )
 		{
 			PARSE(text, token);
-
 			ca->team = ParseTeam( token );
-
 			defined |= TEAM;
 		}
 		else if ( !Q_stricmp( token, "health" ) )
 		{
 			PARSE(text, token);
-
 			ca->health = atoi( token );
-
 			defined |= HEALTH;
 		}
 		else if ( !Q_stricmp( token, "fallDamage" ) )
 		{
 			PARSE(text, token);
-
 			ca->fallDamage = atof( token );
-
 			defined |= FALLDAMAGE;
 		}
 		else if ( !Q_stricmp( token, "regen" ) )
 		{
 			PARSE(text, token);
-
 			ca->regenRate = atof( token );
-
 			defined |= REGEN;
 		}
-		//Abilities ...
 		else if ( !Q_stricmp( token, "wallClimber" ) )
 		{
 			ca->abilities |= SCA_WALLCLIMBER;
@@ -1243,113 +1235,87 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
 		else if ( !Q_stricmp( token, "buildDistance" ) )
 		{
 			PARSE(text, token);
-
 			ca->buildDist = atof( token );
 		}
 		else if ( !Q_stricmp( token, "fov" ) )
 		{
 			PARSE(text, token);
-
 			ca->fov = atoi( token );
-
 			defined |= FOV;
 		}
 		else if ( !Q_stricmp( token, "bob" ) )
 		{
 			PARSE(text, token);
-
 			ca->bob = atof( token );
 		}
 		else if ( !Q_stricmp( token, "bobCycle" ) )
 		{
 			PARSE(text, token);
-
 			ca->bobCycle = atof( token );
 		}
 		else if ( !Q_stricmp( token, "stepTime" ) )
 		{
 			PARSE(text, token);
-
 			ca->steptime = atoi( token );
-
 			defined |= STEPTIME;
 		}
 		else if ( !Q_stricmp( token, "speed" ) )
 		{
 			PARSE(text, token);
-
 			ca->speed = atof( token );
-
 			defined |= SPEED;
 		}
 		else if ( !Q_stricmp( token, "acceleration" ) )
 		{
 			PARSE(text, token);
-
 			ca->acceleration = atof( token );
-
 			defined |= ACCELERATION;
 		}
 		else if ( !Q_stricmp( token, "airAcceleration" ) )
 		{
 			PARSE(text, token);
-
 			ca->airAcceleration = atof( token );
-
 			defined |= AIRACCELERATION;
 		}
 		else if ( !Q_stricmp( token, "friction" ) )
 		{
 			PARSE(text, token);
-
 			ca->friction = atof( token );
-
 			defined |= FRICTION;
 		}
 		else if ( !Q_stricmp( token, "stopSpeed" ) )
 		{
 			PARSE(text, token);
-
 			ca->stopSpeed = atof( token );
-
 			defined |= STOPSPEED;
 		}
 		else if ( !Q_stricmp( token, "jumpMagnitude" ) )
 		{
 			PARSE(text, token);
-
 			ca->jumpMagnitude = atof( token );
-
 			defined |= JUMPMAGNITUDE;
 		}
 		else if ( !Q_stricmp( token, "cost" ) )
 		{
 			PARSE(text, token);
-
 			ca->cost = atoi( token );
-
 			defined |= COST;
 		}
 		else if ( !Q_stricmp( token, "value" ) )
 		{
 			PARSE(text, token);
-
 			ca->value = atoi( token );
-
 			defined |= VALUE;
 		}
 		else if ( !Q_stricmp( token, "radarFadeOut" ) )
 		{
 			PARSE(text, token);
-
 			ca->radarFadeOut = atof( token );
-
 			defined |= RADAR;
 		}
 		else if ( !Q_stricmp( token, "unlockThreshold" ) )
 		{
 			PARSE(text, token);
-
 			ca->unlockThreshold = atoi(token);
 			defined |= UNLOCKTHRESHOLD;
 		}
@@ -1360,10 +1326,38 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
 		else if ( !Q_stricmp( token, "mass" ) )
 		{
 			PARSE(text, token);
-
 			ca->mass = atoi( token );
-
 			defined |= MASS;
+		}
+		else if ( !Q_stricmp( token, "staminaJumpCost" ) )
+		{
+			PARSE( text, token );
+			ca->staminaJumpCost = atoi( token );
+			defined |= STAMINAJUMPCOST;
+		}
+		else if ( !Q_stricmp( token, "staminaSprintCost" ) )
+		{
+			PARSE( text, token );
+			ca->staminaSprintCost = atoi( token );
+			defined |= STAMINASPRINTCOST;
+		}
+		else if ( !Q_stricmp( token, "staminaJogRestore" ) )
+		{
+			PARSE( text, token );
+			ca->staminaJogRestore = atoi( token );
+			defined |= STAMINAJOGRESTORE;
+		}
+		else if ( !Q_stricmp( token, "staminaWalkRestore" ) )
+		{
+			PARSE( text, token );
+			ca->staminaWalkRestore = atoi( token );
+			defined |= STAMINAWALKRESTORE;
+		}
+		else if ( !Q_stricmp( token, "staminaStopRestore" ) )
+		{
+			PARSE( text, token );
+			ca->staminaStopRestore = atoi( token );
+			defined |= STAMINASTOPRESTORE;
 		}
 		else
 		{
@@ -1371,28 +1365,48 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
 		}
 	}
 
-	if ( !( defined & INFO ) ) { token = "description"; }
-	else if ( !( defined & FOVCVAR ) ) { token = "fovCvar"; }
-	else if ( !( defined & TEAM ) ) { token = "team"; }
-	else if ( !( defined & HEALTH ) ) { token = "health"; }
-	else if ( !( defined & FALLDAMAGE ) ) { token = "fallDamage"; }
-	else if ( !( defined & REGEN ) ) { token = "regen"; }
-	else if ( !( defined & FOV ) ) { token = "fov"; }
-	else if ( !( defined & STEPTIME ) ) { token = "stepTime"; }
-	else if ( !( defined & SPEED ) ) { token = "speed"; }
-	else if ( !( defined & ACCELERATION ) ) { token = "acceleration"; }
-	else if ( !( defined & AIRACCELERATION ) ) { token = "airAcceleration"; }
-	else if ( !( defined & FRICTION ) ) { token = "friction"; }
-	else if ( !( defined & STOPSPEED ) ) { token = "stopSpeed"; }
-	else if ( !( defined & JUMPMAGNITUDE ) ) { token = "jumpMagnitude"; }
-	else if ( !( defined & COST ) ) { token = "cost"; }
-	else if ( !( defined & VALUE ) ) { token = "value"; }
-	else if ( !( defined & RADAR ) ) { token = "radarFadeOut"; }
-	else { token = ""; }
-
-	if ( strlen( token ) > 0 )
+	// check for missing mandatory fields
 	{
-		Com_Printf( S_ERROR "%s not defined in %s\n", token, filename );
+		if      ( !( defined & INFO ) )            { token = "description"; }
+		else if ( !( defined & FOVCVAR ) )         { token = "fovCvar"; }
+		else if ( !( defined & TEAM ) )            { token = "team"; }
+		else if ( !( defined & HEALTH ) )          { token = "health"; }
+		else if ( !( defined & FALLDAMAGE ) )      { token = "fallDamage"; }
+		else if ( !( defined & REGEN ) )           { token = "regen"; }
+		else if ( !( defined & FOV ) )             { token = "fov"; }
+		else if ( !( defined & STEPTIME ) )        { token = "stepTime"; }
+		else if ( !( defined & SPEED ) )           { token = "speed"; }
+		else if ( !( defined & ACCELERATION ) )    { token = "acceleration"; }
+		else if ( !( defined & AIRACCELERATION ) ) { token = "airAcceleration"; }
+		else if ( !( defined & FRICTION ) )        { token = "friction"; }
+		else if ( !( defined & STOPSPEED ) )       { token = "stopSpeed"; }
+		else if ( !( defined & JUMPMAGNITUDE ) )   { token = "jumpMagnitude"; }
+		else if ( !( defined & COST ) )            { token = "cost"; }
+		else if ( !( defined & VALUE ) )           { token = "value"; }
+		else if ( !( defined & RADAR ) )           { token = "radarFadeOut"; }
+		else                                       { token = NULL; }
+
+		if ( token )
+		{
+			Com_Printf( S_ERROR "%s not defined in %s\n", token, filename );
+		}
+	}
+
+	// check for missing mandatory fields for the human team
+	if ( ca->team == TEAM_HUMANS )
+	{
+		if      ( !( defined & STAMINAJUMPCOST ) )    { token = "staminaJumpCost"; }
+		else if ( !( defined & STAMINASPRINTCOST ) )  { token = "staminaSprintCost"; }
+		else if ( !( defined & STAMINAJOGRESTORE ) )  { token = "staminaJogRestore"; }
+		else if ( !( defined & STAMINAWALKRESTORE ) ) { token = "staminaWalkRestore"; }
+		else if ( !( defined & STAMINASTOPRESTORE ) ) { token = "staminaStopRestore"; }
+		else                                          { token = NULL; }
+
+		if ( token )
+		{
+			Com_Printf( S_ERROR "%s (mandatory for human team) not defined in %s\n",
+			            token, filename );
+		}
 	}
 }
 
