@@ -61,7 +61,7 @@ menuDef
 	itemDef
 	{
 		name "minerate"
-		rect 240 440 0 20
+		rect 240 424 0 20
 		aspectBias ALIGN_CENTER
 		textstyle ITEM_TEXTSTYLE_PLAIN
 		textscale 0.35
