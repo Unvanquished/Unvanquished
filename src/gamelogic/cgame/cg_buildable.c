@@ -2394,7 +2394,10 @@ void CG_Buildable( centity_t *cent )
 
 		if( es->modelindex == BA_H_MGTURRET )
 		{
-			quat_t rotation;
+			quat_t   rotation;
+			matrix_t mat;
+			vec3_t   nBounds[ 2 ];
+			vec3_t   p1, p2;
 
 			//FIXME: Don't hard code bones to specific assets. Soon, I should put bone names in
 			// .cfg so we can change it should the rig change.
@@ -2404,6 +2407,18 @@ void CG_Buildable( centity_t *cent )
 
 			QuatFromAngles( rotation, es->angles2[ PITCH ], 0, 0 );
 			QuatMultiply0( ent.skeleton.bones[ 6 ].rotation, rotation );
+
+			// transform bounds so they more accurately reflect the turret's new trasnformation
+			MatrixFromAngles( mat, es->angles2[ PITCH ], es->angles2[ YAW ] - es->angles[ YAW ], 0 );
+
+			MatrixTransformNormal( mat, ent.skeleton.bounds[ 0 ], p1 );
+			MatrixTransformNormal( mat, ent.skeleton.bounds[ 1 ], p2 );
+
+			ClearBounds( nBounds[ 0 ], nBounds[ 1 ] );
+			AddPointToBounds( p1, nBounds[ 0 ], nBounds[ 1 ] );
+			AddPointToBounds( p2, nBounds[ 0 ], nBounds[ 1 ] );
+
+			BoundsAdd( ent.skeleton.bounds[ 0 ], ent.skeleton.bounds[ 1 ], nBounds[ 0 ], nBounds[ 1 ] );
 		}
 
 		CG_TransformSkeleton( &ent.skeleton, Scale );
