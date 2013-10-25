@@ -3352,13 +3352,6 @@ void CG_Player( centity_t *cent )
 		// transform relative bones to absolute ones required for vertex skinning and tag attachments
 		CG_TransformSkeleton( &body.skeleton, ci->modelScale );
 
-		VectorCopy( mins, body.skeleton.bounds[ 0 ]);
-		VectorCopy( maxs, body.skeleton.bounds[ 1 ]);
-
-		//skeleton bounds start at z = 0
-		body.skeleton.bounds[ 0 ][ 2 ] = 0;
-		body.skeleton.bounds[ 1 ][ 2 ] -= mins[ 2 ];
-
 		// add the gun / barrel / flash
 		if ( es->weapon != WP_NONE )
 		{
@@ -3767,12 +3760,6 @@ void CG_Corpse( centity_t *cent )
 		legs.customSkin = ci->bodySkin;
 		legs.skeleton = legsSkeleton;
 		CG_TransformSkeleton( &legs.skeleton, ci->modelScale );
-		VectorCopy( deadZ, legs.skeleton.bounds[ 0 ]);
-		VectorCopy( deadMax, legs.skeleton.bounds[ 1 ]);
-
-		//skeleton bounds start at z = 0
-		legs.skeleton.bounds[ 0 ][ 2 ] = 0;
-		legs.skeleton.bounds[ 1 ][ 2 ] -= deadZ[ 2 ];
 	}
 	else if ( !ci->nonsegmented )
 	{
