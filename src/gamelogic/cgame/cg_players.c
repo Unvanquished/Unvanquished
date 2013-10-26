@@ -4010,6 +4010,11 @@ void CG_InitClasses( void )
 		if ( icon )
 		{
 			cg_classes[ i ].classIcon = trap_R_RegisterShader( icon, RSF_DEFAULT );
+
+			if ( !cg_classes[ i ].classIcon )
+			{
+				Com_Printf( S_ERROR "Failed to load class icon file %s\n", icon );
+			}
 		}
 	}
 }
