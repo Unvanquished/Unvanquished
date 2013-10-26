@@ -683,7 +683,7 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
 		DESCRIPTION = 1 << 2,
 		NORMAL = 1 << 3,
 		BUILDPOINTS = 1 << 4,
-		// unused
+		ICON = 1 << 5,
 		HEALTH = 1 << 6,
 		DEATHMOD = 1 << 7,
 		TEAM = 1 << 8,
@@ -721,6 +721,21 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
 			ba->info = BG_strdup( token );
 
 			defined |= DESCRIPTION;
+		}
+		else if ( !Q_stricmp( token, "icon" ) )
+		{
+			PARSE(text, token);
+
+			if ( !Q_stricmp( token, "null" ) )
+			{
+				ba->icon = NULL;
+			}
+			else
+			{
+				ba->icon = BG_strdup(token);
+			}
+
+			defined |= ICON;
 		}
 		else if ( !Q_stricmp( token, "buildPoints" ) )
 		{
@@ -942,6 +957,7 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
 	if ( !( defined & HUMANNAME) ) { token = "humanName"; }
 	else if ( !( defined & DESCRIPTION) ) { token = "description"; }
 	else if ( !( defined & BUILDPOINTS) ) { token = "buildPoints"; }
+	else if ( !( defined & ICON) ) { token = "icon"; }
 	else if ( !( defined & HEALTH) ) { token = "health"; }
 	else if ( !( defined & DEATHMOD) ) { token = "meansOfDeath"; }
 	else if ( !( defined & TEAM) ) { token = "team"; }
@@ -1134,7 +1150,7 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
 		FRICTION           = 1 << 11,
 		STOPSPEED          = 1 << 12,
 		JUMPMAGNITUDE      = 1 << 13,
-		// UNUSED
+		ICON               = 1 << 14,
 		COST               = 1 << 15,
 		VALUE              = 1 << 16,
 		RADAR              = 1 << 17,
@@ -1170,6 +1186,21 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
 				ca->info = BG_strdup(token);
 			}
 			defined |= INFO;
+		}
+		else if ( !Q_stricmp( token, "icon" ) )
+		{
+			PARSE(text, token);
+
+			if ( !Q_stricmp( token, "null" ) )
+			{
+				ca->icon = NULL;
+			}
+			else
+			{
+				ca->icon = BG_strdup(token);
+			}
+
+			defined |= ICON;
 		}
 		else if ( !Q_stricmp( token, "fovCvar" ) )
 		{
@@ -1381,6 +1412,7 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
 		else if ( !( defined & FRICTION ) )        { token = "friction"; }
 		else if ( !( defined & STOPSPEED ) )       { token = "stopSpeed"; }
 		else if ( !( defined & JUMPMAGNITUDE ) )   { token = "jumpMagnitude"; }
+		else if ( !( defined & ICON ) )            { token = "icon"; }
 		else if ( !( defined & COST ) )            { token = "cost"; }
 		else if ( !( defined & VALUE ) )           { token = "value"; }
 		else if ( !( defined & RADAR ) )           { token = "radarFadeOut"; }

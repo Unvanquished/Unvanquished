@@ -301,11 +301,24 @@ itemDef
 	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B .25
 	backcolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B .2
 	//rect 0 140 8 200 // left
-	rect 154 464 332 12 // bottom
+	rect 154 448 332 12 // bottom
 	aspectBias ALIGN_CENTER
 	decoration
 	visible MENU_TRUE
 	ownerdraw CG_CONFIDENCE_BAR
+}
+
+//UNLOCKED ITEMS
+itemDef
+{
+	name "unlocked"
+	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 1 // enabled item
+	backcolor ( COMMON_HUD_R / 2 + 0.25 ) ( COMMON_HUD_G / 2 + 0.25 ) ( COMMON_HUD_B / 2 + 0.25 ) 0.5 // disabled item
+	rect 154 460 332 20 // bottom
+	aspectBias ALIGN_CENTER
+	decoration
+	visible MENU_TRUE
+	ownerdraw CG_UNLOCKED_ITEMS
 }
 
 //CROSSHAIR HEALTH METER

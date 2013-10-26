@@ -190,7 +190,7 @@ CG_BuilderText
 */
 static void CG_BuilderText( char *text, playerState_t *ps )
 {
-	buildable_t   buildable = ps->stats[ STAT_BUILDABLE ] & ~SB_VALID_TOGGLEBIT;
+	buildable_t   buildable = ps->stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK;
 	entityState_t *es;
 
 	if ( buildable > BA_NONE )
@@ -244,7 +244,7 @@ static void CG_AlienBuilderText( char *text, playerState_t *ps )
 {
 	CG_BuilderText( text, ps );
 
-	if ( ( ps->stats[ STAT_BUILDABLE ] & ~SB_VALID_TOGGLEBIT ) == BA_NONE )
+	if ( ( ps->stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK ) == BA_NONE )
 	{
 		Q_strcat( text, MAX_TUTORIAL_TEXT,
 		          va( _( "Press %s to swipe\n" ),

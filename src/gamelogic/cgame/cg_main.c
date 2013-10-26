@@ -114,7 +114,7 @@ centity_t       cg_entities[ MAX_GENTITIES ];
 
 weaponInfo_t    cg_weapons[ 32 ];
 upgradeInfo_t   cg_upgrades[ 32 ];
-
+classInfo_t     cg_classes[ PCL_NUM_CLASSES ];
 buildableInfo_t cg_buildables[ BA_NUM_BUILDABLES ];
 
 vmCvar_t        cg_teslaTrailTime;
@@ -1179,6 +1179,7 @@ enum {
 	LOAD_CONFIGS,
 	LOAD_WEAPONS,
 	LOAD_UPGRADES,
+	LOAD_CLASSES,
 	LOAD_BUILDINGS,
 	LOAD_REMAINING,
 	LOAD_DONE
@@ -1236,6 +1237,7 @@ static void CG_UpdateLoadingStep( cgLoadingStep_t step )
 			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.90f, choose("Setting up the armoury", "Sharpening the aliens' claws", "Overloading lucifer cannons", NULL) );
 			break;
 		case LOAD_UPGRADES:
+		case LOAD_CLASSES:
 			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.95f, choose("Charging battery packs", "Replicating alien DNA", "Packing tents for jetcampers", NULL) );
 			break;
 		case LOAD_BUILDINGS:
@@ -2718,6 +2720,9 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 
 	CG_UpdateLoadingStep( LOAD_UPGRADES );
 	CG_InitUpgrades();
+
+	CG_UpdateLoadingStep( LOAD_CLASSES );
+	CG_InitClasses();
 
 	CG_UpdateLoadingStep( LOAD_BUILDINGS );
 	CG_InitBuildables();

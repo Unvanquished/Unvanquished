@@ -898,7 +898,7 @@ void ClientTimerActions( gentity_t *ent, int msec )
 			case WP_ABUILD:
 			case WP_ABUILD2:
 			case WP_HBUILD:
-				buildable = client->ps.stats[ STAT_BUILDABLE ] & ~SB_VALID_TOGGLEBIT;
+				buildable = client->ps.stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK;
 
 				// Set validity bit on buildable
 				if ( buildable > BA_NONE )
@@ -915,14 +915,8 @@ void ClientTimerActions( gentity_t *ent, int msec )
 
 					dist = BG_Class( ent->client->ps.stats[ STAT_CLASS ] )->buildDist * DotProduct( forward, aimDir );
 
-					if ( G_CanBuild( ent, buildable, dist, dummy, dummy2, &dummy3 ) == IBE_NONE )
-					{
-						client->ps.stats[ STAT_BUILDABLE ] |= SB_VALID_TOGGLEBIT;
-					}
-					else
-					{
-						client->ps.stats[ STAT_BUILDABLE ] &= ~SB_VALID_TOGGLEBIT;
-					}
+					client->ps.stats[ STAT_BUILDABLE ] &= ~SB_BUILDABLE_STATE_MASK;
+					client->ps.stats[ STAT_BUILDABLE ] |= SB_BUILDABLE_FROM_IBE( G_CanBuild( ent, buildable, dist, dummy, dummy2, &dummy3 ) );
 
 					if ( buildable == BA_H_DRILL || buildable == BA_A_LEECH )
 					{
