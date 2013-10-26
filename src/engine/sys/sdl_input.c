@@ -548,6 +548,10 @@ static keyNum_t IN_TranslateSDLToQ3Key( SDL_Keysym *keysym, qboolean down )
 				key = K_MENU;
 				break;
 
+			case SDLK_APPLICATION:
+				key = K_COMPOSE;
+				break;
+
 			case SDLK_POWER:
 				key = K_POWER;
 				break;
@@ -1693,7 +1697,7 @@ void IN_Init( void *windowData )
 
 	Com_DPrintf( "\n------- Input Initialization -------\n" );
 
-	in_keyboardDebug = Cvar_Get( "in_keyboardDebug", "0", CVAR_ARCHIVE );
+	in_keyboardDebug = Cvar_Get( "in_keyboardDebug", "0", CVAR_TEMP );
 
 	// mouse variables
 	in_mouse = Cvar_Get( "in_mouse", "1", CVAR_ARCHIVE );

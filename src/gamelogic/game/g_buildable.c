@@ -4404,8 +4404,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 	{
 		reason = tempReason;
 	}
-
-	if ( ent->client->pers.team == TEAM_ALIENS )
+	else if ( ent->client->pers.team == TEAM_ALIENS )
 	{
 		// Check for Overmind
 		if ( buildable != BA_A_OVERMIND )
@@ -4426,7 +4425,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 		}
 
 		// Check surface permissions
-		if ( (tr1.surfaceFlags & SURF_NOALIENBUILD) || (contents & CONTENTS_NOALIENBUILD) )
+		if ( (tr1.surfaceFlags & (SURF_NOALIENBUILD | SURF_NOBUILD)) || (contents & (CONTENTS_NOALIENBUILD | CONTENTS_NOBUILD)) )
 		{
 			reason = IBE_SURFACE;
 		}
@@ -4461,7 +4460,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 		}
 
 		// Check permissions
-		if ( (tr1.surfaceFlags & SURF_NOHUMANBUILD) || (contents & CONTENTS_NOHUMANBUILD) )
+		if ( (tr1.surfaceFlags & (SURF_NOHUMANBUILD | SURF_NOBUILD)) || (contents & (CONTENTS_NOHUMANBUILD | CONTENTS_NOBUILD)) )
 		{
 			reason = IBE_SURFACE;
 		}
@@ -4472,12 +4471,6 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 		{
 			reason = IBE_DISABLED;
 		}
-	}
-
-	// Check permission to build here
-	if ( (tr1.surfaceFlags & SURF_NOBUILD) || (contents & CONTENTS_NOBUILD) )
-	{
-		reason = IBE_SURFACE;
 	}
 
 	// Can we only have one of these?
@@ -4521,7 +4514,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 	}
 
 	//this item does not fit here
-	if ( reason == IBE_NONE && ( tr2.fraction < 1.0f || tr3.fraction < 1.0f ) )
+	if ( tr2.fraction < 1.0f || tr3.fraction < 1.0f )
 	{
 		reason = IBE_NOROOM;
 	}

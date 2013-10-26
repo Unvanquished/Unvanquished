@@ -1038,6 +1038,8 @@ void R_UploadImage( const byte **dataArray, int numData, image_t *image )
 	vec4_t     zeroClampBorder = { 0, 0, 0, 1 };
 	vec4_t     alphaZeroClampBorder = { 0, 0, 0, 0 };
 
+	GL_Bind( image );
+
 	if ( glConfig2.textureNPOTAvailable )
 	{
 		scaledWidth = image->width;
@@ -1485,6 +1487,8 @@ void R_UploadImage( const byte **dataArray, int numData, image_t *image )
 	{
 		ri.Hunk_FreeTempMemory( scaledBuffer );
 	}
+
+	GL_Unbind( image );
 }
 
 /*
@@ -1551,12 +1555,7 @@ image_t        *R_CreateImage( const char *name,
 	image->filterType = filterType;
 	image->wrapType = wrapType;
 
-	GL_Bind( image );
-
 	R_UploadImage( &pic, 1, image );
-
-	//GL_Unbind();
-	glBindTexture( image->type, 0 );
 
 	return image;
 }
@@ -1600,7 +1599,7 @@ image_t *R_CreateGlyph( const char *name, const byte *pic, int width, int height
 
 	GL_CheckErrors();
 
-	glBindTexture( GL_TEXTURE_2D, 0 );
+	GL_Unbind( image );
 
 	return image;
 }
@@ -1640,11 +1639,7 @@ image_t        *R_CreateCubeImage( const char *name,
 	image->filterType = filterType;
 	image->wrapType = wrapType;
 
-	GL_Bind( image );
-
 	R_UploadImage( pic, 6, image );
-
-	glBindTexture( image->type, 0 );
 
 	return image;
 }
@@ -1685,11 +1680,7 @@ image_t        *R_Create3DImage( const char *name,
 	image->filterType = filterType;
 	image->wrapType = wrapType;
 
-	GL_Bind( image );
-
 	R_UploadImage( pics, depth, image );
-
-	glBindTexture( image->type, 0 );
 
 	ri.Hunk_FreeTempMemory( pics );
 
