@@ -722,6 +722,7 @@ set( ROCKET_CLIENTLIST
   ${MOUNT_DIR}/engine/client/rocket_datagrid.cpp
   ${MOUNT_DIR}/engine/client/rocket_element.cpp
   ${MOUNT_DIR}/engine/client/rocket_events.cpp
+  ${MOUNT_DIR}/engine/client/rocket_keys.cpp
   ${MOUNT_DIR}/engine/client/rocket_hud.cpp
 
   ${MOUNT_DIR}/engine/client/rocket.cpp

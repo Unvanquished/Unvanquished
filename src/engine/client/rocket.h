@@ -99,6 +99,11 @@ void Rocket_LoadUnit( const char *path );
 void Rocket_AddUnitToHud( int weapon, const char *id );
 void Rocket_ShowHud( int weapon );
 void Rocket_ClearHud( int weapon );
+void Rocket_InitKeys( void );
+keyNum_t Rocket_ToQuake( int key );
+void Rocket_ProcessKeyInput( int key, qboolean down );
+void Rocket_ProcessTextInput( int key );
+void Rocket_MouseMove( int x, int y );
 #if defined( __cplusplus )
 }
 #endif

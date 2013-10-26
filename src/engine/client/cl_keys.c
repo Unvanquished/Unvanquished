@@ -1721,6 +1721,8 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 		return;
 	}
 
+	Rocket_ProcessKeyInput( key, down );
+
 	switch ( key )
 	{
 		case K_KP_PGUP:
@@ -1955,6 +1957,8 @@ void CL_CharEvent( int c )
 	{
 		Field_CharEvent( &g_consoleField, Q_UTF8_Unstore( c ) );
 	}
+
+	Rocket_ProcessTextInput( c );
 }
 
 /*

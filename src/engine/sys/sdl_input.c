@@ -307,7 +307,7 @@ static qboolean IN_IsConsoleKey( keyNum_t key, const unsigned char character )
 IN_TranslateSDLToQ3Key
 ===============
 */
-int IN_SDLKeyToQuakeKey( SDL_keysym *keysym )
+static keyNum_t IN_TranslateSDLToQ3Key( SDL_Keysym *keysym, qboolean down )
 {
 	keyNum_t key = 0;
 
@@ -573,15 +573,6 @@ int IN_SDLKeyToQuakeKey( SDL_keysym *keysym )
 				break;
 		}
 	}
-
-	return key;
-}
-
-static keyNum_t IN_TranslateSDLToQ3Key( SDL_Keysym *keysym, qboolean down )
-{
-	keyNum_t key = IN_SDLKeyToQuakeKey( keysym );
-
-
 
 	if ( in_keyboardDebug->integer )
 	{
@@ -1407,8 +1398,7 @@ static void IN_Xbox360ControllerMove( void )
 IN_ProcessEvents
 ===============
 */
-void InjectRocket( SDL_Event e );
-void Rocket_InjectMouseMotion( int x, int y );
+void Rocket_MouseMove( int x, int y );
 static void IN_ProcessEvents( qboolean dropInput )
 {
 	SDL_Event  e;
@@ -1435,7 +1425,6 @@ static void IN_ProcessEvents( qboolean dropInput )
 #endif
 	while ( SDL_PollEvent( &e ) )
 	{
-		InjectRocket( e );
 		switch ( e.type )
 		{
 			case SDL_KEYDOWN:
@@ -1494,12 +1483,12 @@ static void IN_ProcessEvents( qboolean dropInput )
 				break;
 #endif
 			case SDL_MOUSEMOTION:
-				Rocket_InjectMouseMotion( e.motion.x, e.motion.y );
 				if ( !dropInput )
 				{
 					if ( mouseActive )
 					{
 						Com_QueueEvent( 0, SE_MOUSE, e.motion.xrel, e.motion.yrel, 0, NULL );
+						Rocket_MouseMove( e.motion.x, e.motion.y );
 #if ( defined( __linux__ ) || defined( __BSD__ ) ) && SDL_VERSION_ATLEAST( 2, 0, 0 )
 						{
 							// work around X window managers and edge-based workspace flipping

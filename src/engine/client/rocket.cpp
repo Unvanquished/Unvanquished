@@ -274,150 +274,21 @@ public:
 	}
 };
 
-int SDLK_keymap[SDLK_LAST];
+// Rocket::Core::Input::KeyModifier RocketConvertSDLmod( SDLMod sdl )
+// {
+// 	using namespace Rocket::Core::Input;
+//
+// 	int mod = 0;
+// 	if( sdl & KMOD_SHIFT )	mod |= KM_SHIFT;
+// 	if( sdl & KMOD_CTRL )	mod |= KM_CTRL;
+// 	if( sdl & KMOD_ALT )	mod |= KM_ALT;
+// 	if( sdl & KMOD_META )	mod |= KM_META;
+// 	if( sdl & KMOD_CAPS )	mod |= KM_CAPSLOCK;
+// 	if( sdl & KMOD_NUM )	mod |= KM_NUMLOCK;
+//
+// 	return KeyModifier( mod );
+// }
 
-
-void InitSDLtoRocketKeymap()
-{
-	using namespace Rocket::Core::Input;
-
-	for ( size_t i=0; i<SDL_arraysize(SDLK_keymap); ++i )
-		SDLK_keymap[i] = KI_UNKNOWN;
-
-	SDLK_keymap[SDLK_UNKNOWN] = KI_UNKNOWN;
-	SDLK_keymap[SDLK_SPACE] = KI_SPACE;
-	SDLK_keymap[SDLK_ESCAPE] = KI_ESCAPE;
-	SDLK_keymap[SDLK_0] = KI_0;
-	SDLK_keymap[SDLK_1] = KI_1;
-	SDLK_keymap[SDLK_2] = KI_2;
-	SDLK_keymap[SDLK_3] = KI_3;
-	SDLK_keymap[SDLK_4] = KI_4;
-	SDLK_keymap[SDLK_5] = KI_5;
-	SDLK_keymap[SDLK_6] = KI_6;
-	SDLK_keymap[SDLK_7] = KI_7;
-	SDLK_keymap[SDLK_8] = KI_8;
-	SDLK_keymap[SDLK_9] = KI_9;
-	SDLK_keymap[SDLK_a] = KI_A;
-	SDLK_keymap[SDLK_b] = KI_B;
-	SDLK_keymap[SDLK_c] = KI_C;
-	SDLK_keymap[SDLK_d] = KI_D;
-	SDLK_keymap[SDLK_e] = KI_E;
-	SDLK_keymap[SDLK_f] = KI_F;
-	SDLK_keymap[SDLK_g] = KI_G;
-	SDLK_keymap[SDLK_h] = KI_H;
-	SDLK_keymap[SDLK_i] = KI_I;
-	SDLK_keymap[SDLK_j] = KI_J;
-	SDLK_keymap[SDLK_k] = KI_K;
-	SDLK_keymap[SDLK_l] = KI_L;
-	SDLK_keymap[SDLK_m] = KI_M;
-	SDLK_keymap[SDLK_n] = KI_N;
-	SDLK_keymap[SDLK_o] = KI_O;
-	SDLK_keymap[SDLK_p] = KI_P;
-	SDLK_keymap[SDLK_q] = KI_Q;
-	SDLK_keymap[SDLK_r] = KI_R;
-	SDLK_keymap[SDLK_s] = KI_S;
-	SDLK_keymap[SDLK_t] = KI_T;
-	SDLK_keymap[SDLK_u] = KI_U;
-	SDLK_keymap[SDLK_v] = KI_V;
-	SDLK_keymap[SDLK_w] = KI_W;
-	SDLK_keymap[SDLK_x] = KI_X;
-	SDLK_keymap[SDLK_y] = KI_Y;
-	SDLK_keymap[SDLK_z] = KI_Z;
-	SDLK_keymap[SDLK_SEMICOLON] = KI_OEM_1;
-	SDLK_keymap[SDLK_PLUS] = KI_OEM_PLUS;
-	SDLK_keymap[SDLK_COMMA] = KI_OEM_COMMA;
-	SDLK_keymap[SDLK_MINUS] = KI_OEM_MINUS;
-	SDLK_keymap[SDLK_PERIOD] = KI_OEM_PERIOD;
-	SDLK_keymap[SDLK_SLASH] = KI_OEM_2;
-	SDLK_keymap[SDLK_BACKQUOTE] = KI_OEM_3;
-	SDLK_keymap[SDLK_LEFTBRACKET] = KI_OEM_4;
-	SDLK_keymap[SDLK_BACKSLASH] = KI_OEM_5;
-	SDLK_keymap[SDLK_RIGHTBRACKET] = KI_OEM_6;
-	SDLK_keymap[SDLK_QUOTEDBL] = KI_OEM_7;
-	SDLK_keymap[SDLK_KP0] = KI_NUMPAD0;
-	SDLK_keymap[SDLK_KP1] = KI_NUMPAD1;
-	SDLK_keymap[SDLK_KP2] = KI_NUMPAD2;
-	SDLK_keymap[SDLK_KP3] = KI_NUMPAD3;
-	SDLK_keymap[SDLK_KP4] = KI_NUMPAD4;
-	SDLK_keymap[SDLK_KP5] = KI_NUMPAD5;
-	SDLK_keymap[SDLK_KP6] = KI_NUMPAD6;
-	SDLK_keymap[SDLK_KP7] = KI_NUMPAD7;
-	SDLK_keymap[SDLK_KP8] = KI_NUMPAD8;
-	SDLK_keymap[SDLK_KP9] = KI_NUMPAD9;
-	SDLK_keymap[SDLK_KP_ENTER] = KI_NUMPADENTER;
-	SDLK_keymap[SDLK_KP_MULTIPLY] = KI_MULTIPLY;
-	SDLK_keymap[SDLK_KP_PLUS] = KI_ADD;
-	SDLK_keymap[SDLK_KP_MINUS] = KI_SUBTRACT;
-	SDLK_keymap[SDLK_KP_PERIOD] = KI_DECIMAL;
-	SDLK_keymap[SDLK_KP_DIVIDE] = KI_DIVIDE;
-	SDLK_keymap[SDLK_KP_EQUALS] = KI_OEM_NEC_EQUAL;
-	SDLK_keymap[SDLK_BACKSPACE] = KI_BACK;
-	SDLK_keymap[SDLK_TAB] = KI_TAB;
-	SDLK_keymap[SDLK_CLEAR] = KI_CLEAR;
-	SDLK_keymap[SDLK_RETURN] = KI_RETURN;
-	SDLK_keymap[SDLK_PAUSE] = KI_PAUSE;
-	SDLK_keymap[SDLK_CAPSLOCK] = KI_CAPITAL;
-	SDLK_keymap[SDLK_PAGEUP] = KI_PRIOR;
-	SDLK_keymap[SDLK_PAGEDOWN] = KI_NEXT;
-	SDLK_keymap[SDLK_END] = KI_END;
-	SDLK_keymap[SDLK_HOME] = KI_HOME;
-	SDLK_keymap[SDLK_LEFT] = KI_LEFT;
-	SDLK_keymap[SDLK_UP] = KI_UP;
-	SDLK_keymap[SDLK_RIGHT] = KI_RIGHT;
-	SDLK_keymap[SDLK_DOWN] = KI_DOWN;
-	SDLK_keymap[SDLK_INSERT] = KI_INSERT;
-	SDLK_keymap[SDLK_DELETE] = KI_DELETE;
-	SDLK_keymap[SDLK_HELP] = KI_HELP;
-	SDLK_keymap[SDLK_LSUPER] = KI_LWIN;
-	SDLK_keymap[SDLK_RSUPER] = KI_RWIN;
-	SDLK_keymap[SDLK_F1] = KI_F1;
-	SDLK_keymap[SDLK_F2] = KI_F2;
-	SDLK_keymap[SDLK_F3] = KI_F3;
-	SDLK_keymap[SDLK_F4] = KI_F4;
-	SDLK_keymap[SDLK_F5] = KI_F5;
-	SDLK_keymap[SDLK_F6] = KI_F6;
-	SDLK_keymap[SDLK_F7] = KI_F7;
-	SDLK_keymap[SDLK_F8] = KI_F8;
-	SDLK_keymap[SDLK_F9] = KI_F9;
-	SDLK_keymap[SDLK_F10] = KI_F10;
-	SDLK_keymap[SDLK_F11] = KI_F11;
-	SDLK_keymap[SDLK_F12] = KI_F12;
-	SDLK_keymap[SDLK_F13] = KI_F13;
-	SDLK_keymap[SDLK_F14] = KI_F14;
-	SDLK_keymap[SDLK_F15] = KI_F15;
-	SDLK_keymap[SDLK_NUMLOCK] = KI_NUMLOCK;
-	SDLK_keymap[SDLK_SCROLLOCK] = KI_SCROLL;
-	SDLK_keymap[SDLK_LSHIFT] = KI_LSHIFT;
-	SDLK_keymap[SDLK_RSHIFT] = KI_RSHIFT;
-	SDLK_keymap[SDLK_LCTRL] = KI_LCONTROL;
-	SDLK_keymap[SDLK_RCTRL] = KI_RCONTROL;
-	SDLK_keymap[SDLK_LALT] = KI_LMENU;
-	SDLK_keymap[SDLK_RALT] = KI_RMENU;
-	SDLK_keymap[SDLK_LMETA] = KI_LMETA;
-	SDLK_keymap[SDLK_RMETA] = KI_RMETA;
-}
-
-
-Rocket::Core::Input::KeyModifier RocketConvertSDLmod( SDLMod sdl )
-{
-	using namespace Rocket::Core::Input;
-
-	int mod = 0;
-	if( sdl & KMOD_SHIFT )	mod |= KM_SHIFT;
-	if( sdl & KMOD_CTRL )	mod |= KM_CTRL;
-	if( sdl & KMOD_ALT )	mod |= KM_ALT;
-	if( sdl & KMOD_META )	mod |= KM_META;
-	if( sdl & KMOD_CAPS )	mod |= KM_CAPSLOCK;
-	if( sdl & KMOD_NUM )	mod |= KM_NUMLOCK;
-
-	return KeyModifier( mod );
-}
-
-
-int RocketConvertSDLButton( Uint8 sdlButton )
-{
-	return sdlButton - 1;
-}
 
 void Rocket_Rocket_f( void )
 {
@@ -454,6 +325,14 @@ void Rocket_RocketDebug_f( void )
 	}
 }
 
+void Rocket_PrintKeys_f( void )
+{
+	for ( int i = 0; i < MAX_KEYS; ++i )
+	{
+		Com_Printf("%d -> %s\n", i, Key_KeynumToString(i));
+	}
+}
+
 static DaemonFileInterface fileInterface;
 static DaemonSystemInterface systemInterface;
 static DaemonRenderInterface renderInterface;
@@ -480,8 +359,6 @@ void Rocket_Init( void )
 
 	Rocket::Controls::Initialise();
 
-	InitSDLtoRocketKeymap();
-
 	// Load all fonts in the fonts/ dir...
 	fonts = FS_ListFiles( "fonts/", ".ttf", &numFiles );
 	for ( int i = 0; i < numFiles; ++i )
@@ -499,6 +376,9 @@ void Rocket_Init( void )
 	}
 
 	FS_FreeFileList( fonts );
+
+	// Initialize keymap
+	Rocket_InitKeys();
 
 	// Create the menu context
 	menuContext = Rocket::Core::CreateContext( "menuContext", Rocket::Core::Vector2i( cls.glconfig.vidWidth, cls.glconfig.vidHeight ) );
@@ -530,7 +410,7 @@ void Rocket_Init( void )
 
 	Cmd_AddCommand( "rocket", Rocket_Rocket_f );
 	Cmd_AddCommand( "rocketDebug", Rocket_RocketDebug_f );
-
+	Cmd_AddCommand( "printkeys", Rocket_PrintKeys_f );
 	whiteShader = re.RegisterShader( "white", RSF_DEFAULT );
 }
 
@@ -605,80 +485,6 @@ void Rocket_Update( void )
 	if ( hudContext )
 	{
 		hudContext->Update();
-	}
-}
-
-
- extern "C" void InjectRocket( SDL_Event event )
-{
-	using Rocket::Core::Input::KeyIdentifier;
-
-	if ( !menuContext || !( cls.keyCatchers & KEYCATCH_UI ) || cls.keyCatchers & KEYCATCH_CONSOLE  )
-	{
-		return;
-	}
-
-	switch( event.type )
-	{
-		case SDL_KEYDOWN:
-		{
-			SDLKey sdlkey = event.key.keysym.sym;
-			wchar_t c;
-			c = static_cast<wchar_t>(event.key.keysym.unicode);
-
-			int key = SDLK_keymap[sdlkey]; // The SDLK_keymap array maps SDLK_* to Rocket::Input::KI_*. Defined in sdltorocket.cpp
-			menuContext->ProcessKeyDown( KeyIdentifier( key ), RocketConvertSDLmod( event.key.keysym.mod ) );
-
-			if( event.key.keysym.unicode != 0 && event.key.keysym.unicode != 8 )
-				menuContext->ProcessTextInput( c );
-		}
-		break;
-		case SDL_KEYUP:
-			menuContext->ProcessKeyUp( KeyIdentifier( event.key.keysym.scancode ), RocketConvertSDLmod( event.key.keysym.mod ) );
-			break;
-		case SDL_MOUSEMOTION:
-			menuContext->ProcessMouseMove( event.motion.x, event.motion.y, RocketConvertSDLmod( SDL_GetModState() ) );
-			break;
-		case SDL_MOUSEBUTTONDOWN:
-			switch ( event.button.button )
-			{
-				case 4:
-					menuContext->ProcessMouseWheel( -1, RocketConvertSDLmod( SDL_GetModState()) );
-					break;
-
-				case 5:
-					menuContext->ProcessMouseWheel( 1, RocketConvertSDLmod( SDL_GetModState() ) );
-					break;
-				default:
-					menuContext->ProcessMouseButtonDown( RocketConvertSDLButton(event.button.button), RocketConvertSDLmod( SDL_GetModState() ) );
-			}
-			break;
-		case SDL_MOUSEBUTTONUP:
-			menuContext->ProcessMouseButtonUp( RocketConvertSDLButton(event.button.button), RocketConvertSDLmod( SDL_GetModState() ) );
-			break;
-	}
-}
-
-extern "C" int IN_SDLKeyToQuakeKey( int sym );
-int Rocket_ToQuakeKey( const int rocketKey )
-{
-	for ( size_t i = 0; i < SDL_arraysize( SDLK_keymap ); ++i )
-	{
-		if ( SDLK_keymap[ i ] == rocketKey )
-		{
-			return IN_SDLKeyToQuakeKey( i );
-		}
-	}
-
-	return 0;
-}
-
-
-void Rocket_InjectMouseMotion( int x, int y )
-{
-	if ( menuContext && cls.keyCatchers & KEYCATCH_UI  && !( cls.keyCatchers & KEYCATCH_CONSOLE ) )
-	{
-		menuContext->ProcessMouseMove( x, y, RocketConvertSDLmod( SDL_GetModState() ) );
 	}
 }
 

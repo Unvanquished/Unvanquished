@@ -95,7 +95,7 @@ public:
 
 		else if ( waitingForKeypress && event == "keydown" && event.GetTargetElement() == this )
 		{
-			int newKey = Rocket_ToQuakeKey( ( Rocket::Core::Input::KeyIdentifier ) event.GetParameter< int >( "key_identifier", 0 ) );
+			int newKey = 0;
 
 			BindKey( newKey );
 

@@ -2302,7 +2302,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0;
 
 		case CG_ROCKET_KEYTOQUAKE:
-			return Rocket_ToQuakeKey( args[ 1 ] );
+// 			return Rocket_ToQuakeKey( args[ 1 ] );
 
 		case CG_ROCKET_GETELEMENTABSOLUTEOFFSET:
 			Rocket_GetElementAbsoluteOffset( VMA(1), VMA(2) );
