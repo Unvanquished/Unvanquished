@@ -230,29 +230,75 @@ static qboolean R_CullSurface( surfaceType_t *surface, shader_t *shader, int *fr
 	return qfalse;
 }
 
-static qboolean R_LightSurfaceGeneric( srfGeneric_t *face, trRefLight_t   *light, byte *cubeSideBits )
+static qboolean R_CullLightSurface( surfaceType_t *surface, shader_t *shader, trRefLight_t *light, byte *cubeSideBits )
 {
-	// do a quick AABB cull
-	if ( !BoundsIntersect( light->worldBounds[ 0 ], light->worldBounds[ 1 ], face->bounds[ 0 ], face->bounds[ 1 ] ) )
+	srfGeneric_t *gen;
+	float        d;
+
+	// allow culling to be disabled
+	if ( r_nocull->integer )
 	{
 		return qfalse;
+	}
+
+	// ydnar: made surface culling generic, inline with q3map2 surface classification
+	if ( *surface == SF_GRID && r_nocurves->integer )
+	{
+		return qtrue;
+	}
+
+	if ( *surface != SF_FACE && *surface != SF_TRIANGLES && *surface != SF_VBO_MESH && *surface != SF_GRID )
+	{
+		return qtrue;
+	}
+
+	gen = ( srfGeneric_t * ) surface;
+
+	// do a quick AABB cull
+	if ( !BoundsIntersect( light->worldBounds[ 0 ], light->worldBounds[ 1 ], gen->bounds[ 0 ], gen->bounds[ 1 ] ) )
+	{
+		return qtrue;
 	}
 
 	// do a more expensive and precise light frustum cull
 	if ( !r_noLightFrustums->integer )
 	{
-		if ( R_CullLightWorldBounds( light, face->bounds ) == CULL_OUT )
+		if ( R_CullLightWorldBounds( light, gen->bounds ) == CULL_OUT )
 		{
-			return qfalse;
+			return qtrue;
+		}
+	}
+
+	// plane cull
+	if ( *surface == SF_FACE && r_facePlaneCull->integer )
+	{
+		d = DotProduct( light->origin, gen->plane.normal ) - gen->plane.dist;
+
+		// don't cull exactly on the plane, because there are levels of rounding
+		// through the BSP, ICD, and hardware that may cause pixel gaps if an
+		// epsilon isn't allowed here
+		if ( shader->cullType == CT_FRONT_SIDED )
+		{
+			if ( d < -8.0f )
+			{
+				return qtrue;
+			}
+		}
+		else if ( shader->cullType == CT_BACK_SIDED )
+		{
+			if ( d > 8.0f )
+			{
+				return qtrue;
+			}
 		}
 	}
 
 	if ( r_cullShadowPyramidFaces->integer )
 	{
-		*cubeSideBits = R_CalcLightCubeSideBits( light, face->bounds );
+		*cubeSideBits = R_CalcLightCubeSideBits( light, gen->bounds );
 	}
 
-	return qtrue;
+	return qfalse;
 }
 
 /*
@@ -260,39 +306,29 @@ static qboolean R_LightSurfaceGeneric( srfGeneric_t *face, trRefLight_t   *light
 R_AddInteractionSurface
 ======================
 */
-static void R_AddInteractionSurface( bspSurface_t *surf, trRefLight_t *light )
+static void R_AddInteractionSurface( bspSurface_t *surf, trRefLight_t *light, int interactionBits )
 {
-	qboolean          intersects;
-	interactionType_t iaType = IA_DEFAULT;
 	byte              cubeSideBits = CUBESIDE_CLIPALL;
+	qboolean          firstAddition = qfalse;
+	int               bits;
 
-	if ( light->restrictInteractionFirst >= 0 )
+	if ( surf->lightCount != tr.lightCount )
 	{
-		iaType = IA_DEFAULTCLIP;
+		surf->interactionBits = 0;
+		surf->lightCount = tr.lightCount;
+		firstAddition = qtrue;
 	}
 
-	if ( r_shadows->integer <= SHADOWING_BLOB ||
-	     light->l.noShadows ) {
-		iaType = (interactionType_t)(iaType & IA_LIGHT);
-	}
+	// only add interactions we haven't already added
+	bits = interactionBits & ~surf->interactionBits;
 
-	// Tr3B - this surface is maybe not in this view but it may still cast a shadow
-	// into this view
-	if ( surf->viewCount != tr.viewCountNoReset )
+	if ( !bits )
 	{
-		iaType = (interactionType_t)(iaType & ~IA_LIGHT);
-		if ( !iaType ) {
-			return;
-		}
-	}
-
-	if ( surf->lightCount == tr.lightCount )
-	{
-		// already checked this surface
+		// already added these interactions
 		return;
 	}
 
-	surf->lightCount = tr.lightCount;
+	surf->interactionBits |= bits;
 
 	//  skip all surfaces that don't matter for lighting only pass
 	if ( surf->shader->isSky || ( !surf->shader->interactLight && surf->shader->noShadows ) )
@@ -300,22 +336,19 @@ static void R_AddInteractionSurface( bspSurface_t *surf, trRefLight_t *light )
 		return;
 	}
 
-	switch ( *surf->data )
+	if ( R_CullLightSurface( surf->data, surf->shader, light, &cubeSideBits ) )
 	{
-		case SF_FACE:
-		case SF_GRID:
-		case SF_TRIANGLES:
-			intersects = R_LightSurfaceGeneric( ( srfGeneric_t * ) surf->data, light, &cubeSideBits );
-			break;
+		if ( !light->isStatic && firstAddition )
+		{
+			tr.pc.c_dlightSurfacesCulled++;
+		}
+		return;
+	}
 
-		default:
-			intersects = qfalse;
-	};
+	R_AddLightInteraction( light, surf->data, surf->shader, cubeSideBits, ( interactionType_t ) bits );
 
-	if ( intersects )
+	if ( firstAddition )
 	{
-		R_AddLightInteraction( light, surf->data, surf->shader, cubeSideBits, iaType );
-
 		if ( light->isStatic )
 		{
 			tr.pc.c_slightSurfaces++;
@@ -323,13 +356,6 @@ static void R_AddInteractionSurface( bspSurface_t *surf, trRefLight_t *light )
 		else
 		{
 			tr.pc.c_dlightSurfaces++;
-		}
-	}
-	else
-	{
-		if ( !light->isStatic )
-		{
-			tr.pc.c_dlightSurfacesCulled++;
 		}
 	}
 }
@@ -566,6 +592,9 @@ static void R_AddLeafSurfaces( bspNode_t *node, int decalBits )
 		{
 			R_AddDecalSurface( *mark, decalBits );
 		}
+
+		( *mark )->viewCount = tr.viewCountNoReset;
+
 		mark++;
 		view++;
 	}
@@ -664,17 +693,18 @@ static void R_RecursiveWorldNode( bspNode_t *node, int planeBits, int decalBits 
 R_RecursiveInteractionNode
 ================
 */
-static void R_RecursiveInteractionNode( bspNode_t *node, trRefLight_t *light, int planeBits )
+static void R_RecursiveInteractionNode( bspNode_t *node, trRefLight_t *light, int planeBits, int interactionBits )
 {
 	int i;
 	int r;
 
 	do
 	{
-		// if the node wasn't marked as potentially visible, exit
+		// surfaces that arn't potentially visible may still cast shadows
+		// but we don't bother lighting them since there will be no visible effect
 		if ( node->visCounts[ tr.visIndex ] != tr.visCounts[ tr.visIndex ] )
 		{
-			return;
+			interactionBits &= ~IA_LIGHT;
 		}
 
 		// light already hit node
@@ -689,8 +719,8 @@ static void R_RecursiveInteractionNode( bspNode_t *node, trRefLight_t *light, in
 		// inside can be visible OPTIMIZE: don't do this all the way to leafs?
 
 		// Tr3B - even surfaces that belong to nodes that are outside of the view frustum
-		// can cast shadows into the view frustum unless the world cannot cast shadows
-		if ( !r_nocull->integer && ( r_shadows->integer <= SHADOWING_BLOB || light->restrictInteractionFirst >= 0 ) )
+		// can cast shadows into the view frustum
+		if ( !r_nocull->integer )
 		{
 			for ( i = 0; i < FRUSTUM_PLANES; i++ )
 			{
@@ -700,7 +730,9 @@ static void R_RecursiveInteractionNode( bspNode_t *node, trRefLight_t *light, in
 
 					if ( r == 2 )
 					{
-						return; // culled
+						// this node cannot be lighted, but may cast shadows
+						interactionBits &= ~IA_LIGHT;
+						break;
 					}
 
 					if ( r == 1 )
@@ -709,6 +741,12 @@ static void R_RecursiveInteractionNode( bspNode_t *node, trRefLight_t *light, in
 					}
 				}
 			}
+		}
+
+		// don't waste time on nodes with no interactions
+		if ( !interactionBits )
+		{
+			return;
 		}
 
 		if ( node->contents != -1 )
@@ -733,7 +771,7 @@ static void R_RecursiveInteractionNode( bspNode_t *node, trRefLight_t *light, in
 			case 3:
 			default:
 				// recurse down the children, front side first
-				R_RecursiveInteractionNode( node->children[ 0 ], light, planeBits );
+				R_RecursiveInteractionNode( node->children[ 0 ], light, planeBits, interactionBits );
 
 				// tail recurse
 				node = node->children[ 1 ];
@@ -756,7 +794,7 @@ static void R_RecursiveInteractionNode( bspNode_t *node, trRefLight_t *light, in
 			// the surface may have already been added if it
 			// spans multiple leafs
 			surf = *mark;
-			R_AddInteractionSurface( surf, light );
+			R_AddInteractionSurface( surf, light, interactionBits );
 			mark++;
 		}
 	}
@@ -2108,6 +2146,8 @@ R_AddWorldInteractions
 */
 void R_AddWorldInteractions( trRefLight_t *light )
 {
+	int interactionBits;
+
 	if ( !r_drawworld->integer )
 	{
 		return;
@@ -2122,7 +2162,20 @@ void R_AddWorldInteractions( trRefLight_t *light )
 
 	// perform frustum culling and add all the potentially visible surfaces
 	tr.lightCount++;
-	R_RecursiveInteractionNode( tr.world->nodes, light, FRUSTUM_CLIPALL );
+
+	interactionBits = IA_DEFAULT;
+
+	if ( light->restrictInteractionFirst >= 0 )
+	{
+		interactionBits = IA_DEFAULTCLIP;
+	}
+
+	if ( r_shadows->integer <= SHADOWING_BLOB || light->l.noShadows )
+	{
+		interactionBits = interactionBits & IA_LIGHT;
+	}
+
+	R_RecursiveInteractionNode( tr.world->nodes, light, FRUSTUM_CLIPALL, interactionBits );
 }
 
 /*

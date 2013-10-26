@@ -1228,8 +1228,7 @@ image_t        *R_LoadDDSImageData( void *pImageData, const char *name, int bits
 
 	GL_CheckErrors();
 
-	//GL_Unbind();
-	glBindTexture( ret->type, 0 );
+	GL_Unbind( ret );
 
 ret_error:
 	return ret;

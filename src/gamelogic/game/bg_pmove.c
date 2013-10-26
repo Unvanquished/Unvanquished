@@ -4538,15 +4538,7 @@ void PM_UpdateViewAngles( playerState_t *ps, const usercmd_t *cmd )
 	//force angles to -180 <= x <= 180
 	for ( i = 0; i < 3; i++ )
 	{
-		while ( tempang[ i ] > 180.0f )
-		{
-			tempang[ i ] -= 360.0f;
-		}
-
-		while ( tempang[ i ] < -180.0f )
-		{
-			tempang[ i ] += 360.0f;
-		}
+		tempang[ i ] -= 360.0f * floor( ( tempang[ i ] + 180.0f ) / 360.0f );
 	}
 
 	//actually set the viewangles
@@ -4567,15 +4559,8 @@ void PM_UpdateViewAngles( playerState_t *ps, const usercmd_t *cmd )
 		{
 			float diff = AngleSubtract( ps->viewangles[ i ], angles[ i ] );
 
-			while ( diff > 180.0f )
-			{
-				diff -= 360.0f;
-			}
 
-			while ( diff < -180.0f )
-			{
-				diff += 360.0f;
-			}
+			diff -= 360.0f * floor( ( diff + 180.0f ) / 360.0f );
 
 			if ( diff < -90.0f )
 			{
