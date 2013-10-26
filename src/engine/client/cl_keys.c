@@ -523,6 +523,14 @@ in-game talk, and menu fields
 Key events are used for non-printable characters, others are gotten from char events.
 =================
 */
+
+#include "SDL_version.h"
+#if SDL_VERSION_ATLEAST( 2, 0, 0 )
+# define SDL1_case(v)
+#else
+# define SDL1_case(v) case v:
+#endif
+
 void Field_KeyDownEvent( field_t *edit, int key )
 {
 	int len, width;
@@ -542,6 +550,11 @@ void Field_KeyDownEvent( field_t *edit, int key )
 			}
 
 			break;
+
+#if !SDL_VERSION_ATLEAST( 2, 0, 0 )
+		case 'h':
+			if ( keys[ K_CTRL ].down )
+#endif
 		case K_BACKSPACE:
 			{
 				if ( edit->cursor )
@@ -611,6 +624,7 @@ void Field_KeyDownEvent( field_t *edit, int key )
 			if ( keys[ K_CTRL ].down )
 			{
 		case K_HOME:
+		SDL1_case( 1 )
 				edit->cursor = 0;
 				edit->scroll = 0;
 			}
@@ -621,6 +635,7 @@ void Field_KeyDownEvent( field_t *edit, int key )
 			if ( keys[ K_CTRL ].down )
 			{
 		case K_END:
+		SDL1_case( 5 )
 				edit->cursor = len;
 				edit->scroll = edit->cursor - edit->widthInChars;
 			}
@@ -639,7 +654,9 @@ void Field_KeyDownEvent( field_t *edit, int key )
 			break;
 
 		case 't':
-			if ( keys[ K_CTRL ].down && edit->cursor )
+			if ( keys[ K_CTRL ].down )
+		SDL1_case( 20 )
+			if ( edit->cursor )
 			{
 				char *p, tmp[4];
 
@@ -660,11 +677,13 @@ void Field_KeyDownEvent( field_t *edit, int key )
 		case 'v':
 			if ( keys[ K_CTRL ].down )
 			{
+		SDL1_case( 22 )
 				Field_Paste( edit, SELECTION_CLIPBOARD );
 			}
 			break;
 		case 'd':
 			if ( keys[ K_CTRL ].down )
+		SDL1_case( 4 )
 			{
 				int posTo = Field_CursorToOffset( edit );
 
@@ -679,12 +698,15 @@ void Field_KeyDownEvent( field_t *edit, int key )
 		case 'u':
 			if ( keys[ K_CTRL ].down )
 			{
+		SDL1_case( 3 )
+		SDL1_case( 21 )
 				Field_Clear( edit );
 			}
 			break;
 		case 'k':
 			if ( keys[ K_CTRL ].down )
 			{
+		SDL1_case( 11 )
 				edit->buffer[ Field_CursorToOffset( edit ) ] = '\0';
 			}
 			break;

@@ -2653,6 +2653,13 @@ void R_AddEntityInteractions( trRefLight_t *light )
 			iaType &= ~IA_SHADOW;
 		}
 
+		if ( light->restrictInteractionFirst >= 0 &&
+		     i >= light->restrictInteractionFirst && 
+		     i <= light->restrictInteractionLast )
+		{
+			iaType &= ~IA_LIGHT;
+		}
+
 		ent = tr.currentEntity = &tr.refdef.entities[ i ];
 
 		//
@@ -2794,10 +2801,6 @@ void R_TransformShadowLight( trRefLight_t *light ) {
 	VectorScale( mids, 0.5f, mids );
 	radius = Distance( mids, maxs );
 	dist = Distance( light->l.origin, mids );
-
-	if( dist <= 2.0f * radius ) {
-		return;
-	}
 
 	light->l.rlType = RL_PROJ;
 	VectorSubtract( mids, light->l.origin, forward );

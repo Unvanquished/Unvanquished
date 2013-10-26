@@ -43,9 +43,11 @@ void R_AddBrushModelInteractions( trRefEntity_t *ent, trRefLight_t *light, inter
 	if ( ent->cull == CULL_OUT )
 	{
 		iaType &= ~IA_LIGHT;
-		if ( !iaType ) {
-			return;
-		}
+	}
+
+	if ( !iaType )
+	{
+		return;
 	}
 
 	// avoid drawing of certain objects

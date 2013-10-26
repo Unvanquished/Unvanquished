@@ -35,6 +35,7 @@ if( NOT DEFINED SUBSEQUENT_RUN )
 
   if( MSVC )
     set( CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /arch:SSE /fp:fast /Oy" CACHE STRING "Flags used by the compiler during release builds" FORCE )
+	set( CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO} /arch:SSE /fp:fast /d2Zi+" CACHE STRING "Flags used by the compiler during release builds with debug info" FORCE )
   else()
     if(NOT MINIMAL_FLAGS)
       # "gcc -msse2" fails on non-x86
@@ -112,8 +113,8 @@ cmake_dependent_option( USE_CODEC_VORBIS     "Compile with support for Vorbis"  
 cmake_dependent_option( USE_MUMBLE           "Compile with support for Mumble"                       1 BUILD_CLIENT                   0 )
 cmake_dependent_option( USE_VOIP             "Compile with VOIP support"                             1 "BUILD_CLIENT OR BUILD_SERVER" 0 )
 cmake_dependent_option( USE_CIN_XVID         "Encode videos with XViD"                               1 BUILD_CLIENT                   0 )
-cmake_dependent_option( USE_INTERNAL_SDL     "Use SDL files included with Unvanquished"              0 "BUILD_CLIENT OR BUILD_SERVER OR BUILD_DAEMONMAP" 0 )
-cmake_dependent_option( USE_SDL2             "Enable SDL 2.0 support (incompatible with SDL 1.2)"    1 "BUILD_CLIENT OR BUILD_SERVER OR BUILD_DAEMONMAP" 0 )
+cmake_dependent_option( USE_INTERNAL_SDL     "Use SDL files included with Unvanquished"              0 "BUILD_CLIENT OR BUILD_DAEMONMAP OR USE_SDL_ICONV" 0 )
+cmake_dependent_option( USE_SDL2             "Enable SDL 2.0 support (incompatible with SDL 1.2)"    1 "BUILD_CLIENT OR BUILD_DAEMONMAP OR USE_SDL_ICONV" 0 )
 
 cmake_dependent_option( USE_CURSES           "Use the curses console"                                1 "BUILD_CLIENT OR BUILD_SERVER" 0 )
 cmake_dependent_option( USE_PHYSICS          "Compile with Newton Physics"                           0 "BUILD_CLIENT OR BUILD_SERVER" 0 )
@@ -122,7 +123,7 @@ cmake_dependent_option( USE_INTERNAL_CRYPTO  "Use internal crypto (nettle)"     
 cmake_dependent_option( USE_INTERNAL_JPEG    "Use JPEG files included with Unvanquished"             0
                                                                         "BUILD_OLD_RENDERER OR BUILD_NEW_RENDERER OR BUILD_DAEMONMAP" 0 )
 
-cmake_dependent_option( USE_SDL_ICONV        "Compile with SDL's iconv implementation"               1 BUILD_CLIENT                   0 )
+cmake_dependent_option( USE_SDL_ICONV        "Compile with SDL's iconv implementation"               1 "BUILD_SERVER OR BUILD_TTY_CLIENT OR BUILD_DAEMONMAP" 0 )
 
 cmake_dependent_option( HAVE_BZIP2           "Compile with BZip2 support"                            0 "HAVE_BZIP2"                   0 )
 
@@ -2099,6 +2100,10 @@ if( BUILD_TTY_CLIENT )
   # Visual Studio specific settings
   if( MSVC )
     set_property( TARGET ttyclient APPEND PROPERTY COMPILE_DEFINITIONS ZLIB_WINAPI )
+  endif()
+
+  if( NOT WIN32 )
+    target_link_libraries( ttyclient pthread )
   endif()
 
   # The following section finds the REQUIRED dependencies and makes them available to the target

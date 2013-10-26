@@ -688,6 +688,11 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 		return STATUS_SUCCESS;
 	}
 
+	if ( !self->botMind->nav.havePath )
+	{
+		return STATUS_FAILURE;
+	}
+
 	if ( WeaponIsEmpty( BG_GetPlayerWeapon( &self->client->ps ), self->client->ps ) && myTeam == TEAM_HUMANS )
 	{
 		G_ForceWeaponChange( self, WP_BLASTER );
