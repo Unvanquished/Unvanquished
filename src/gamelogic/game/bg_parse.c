@@ -1152,7 +1152,7 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
 		JUMPMAGNITUDE      = 1 << 13,
 		ICON               = 1 << 14,
 		COST               = 1 << 15,
-		VALUE              = 1 << 16,
+		// UNUSED
 		RADAR              = 1 << 17,
 		MASS               = 1 << 18,
 		UNLOCKTHRESHOLD    = 1 << 19,
@@ -1332,12 +1332,6 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
 			ca->cost = atoi( token );
 			defined |= COST;
 		}
-		else if ( !Q_stricmp( token, "value" ) )
-		{
-			PARSE(text, token);
-			ca->value = atoi( token );
-			defined |= VALUE;
-		}
 		else if ( !Q_stricmp( token, "radarFadeOut" ) )
 		{
 			PARSE(text, token);
@@ -1414,7 +1408,6 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
 		else if ( !( defined & JUMPMAGNITUDE ) )   { token = "jumpMagnitude"; }
 		else if ( !( defined & ICON ) )            { token = "icon"; }
 		else if ( !( defined & COST ) )            { token = "cost"; }
-		else if ( !( defined & VALUE ) )           { token = "value"; }
 		else if ( !( defined & RADAR ) )           { token = "radarFadeOut"; }
 		else                                       { token = NULL; }
 

@@ -462,9 +462,11 @@ extern int   REACTOR_ATTACK_DCC_DAMAGE;
 // funds
 // Values are in credits. 'evo' is just another unit for credits.
 #define CREDITS_PER_EVO                    100   // Used when alien credits are displayed as evos
+#define PLAYER_BASE_VALUE                  200   // base credit value of a player
+#define PLAYER_PRICE_TO_VALUE              0.5f  // fraction of upgrade price added to player value
 #define DEFAULT_FREEKILL_PERIOD            "120" // in s
-#define FREEKILL_ALIEN                     200   // value of a naked human
-#define FREEKILL_HUMAN                     180   // value of a dretch
+#define FREEKILL_ALIEN                     PLAYER_BASE_VALUE
+#define FREEKILL_HUMAN                     PLAYER_BASE_VALUE
 
 // resources
 #define RGS_RANGE                          1000.0f

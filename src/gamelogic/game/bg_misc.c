@@ -1830,46 +1830,55 @@ void BG_PositionBuildableRelativeToPlayer( playerState_t *ps,
 	vectoangles( forward, outAngles );
 }
 
-/*
-===============
-BG_GetValueOfPlayer
-
-Returns the credit value of a player
-===============
-*/
+/**
+ * @brief Calculates the "value" of a player as a base value plus a fraction of the price the
+ *        player paid for upgrades.
+ * @param ps
+ * @return Player value
+ */
 int BG_GetValueOfPlayer( playerState_t *ps )
 {
-	int upgradeNum, equipmentPrice;
+	int price, upgradeNum;
 
-	equipmentPrice = 0;
-
-	// Humans have worth from their equipment as well
-	if ( ps->persistant[ PERS_TEAM ] == TEAM_HUMANS )
+	if ( !ps )
 	{
-		for ( upgradeNum = UP_NONE + 1; upgradeNum < UP_NUM_UPGRADES; upgradeNum++ )
-		{
-			if ( BG_InventoryContainsUpgrade( upgradeNum, ps->stats ) )
-			{
-				equipmentPrice += BG_Upgrade( upgradeNum )->price;
-			}
-		}
-
-		for ( upgradeNum = WP_NONE + 1; upgradeNum < WP_NUM_WEAPONS; upgradeNum++ )
-		{
-			if ( BG_InventoryContainsWeapon( upgradeNum, ps->stats ) )
-			{
-				equipmentPrice += BG_Weapon( upgradeNum )->price;
-			}
-		}
+		return 0;
 	}
 
-	// In Tremulous, the value of equipment measured in alien class costs was half its price:
-	// Old evo gain for killing a human was (400 + equipmentPrice) / 400.
-	// One old evo equals a value of 200 (2 new evos), which is the new base value of a naked human.
-	// In order not to double the impact of human equipment, set its value to half its price for now.
-	equipmentPrice /= 2;
+	price = 0;
 
-	return BG_Class( ps->stats[ STAT_CLASS ] )->value + equipmentPrice;
+	switch ( ps->persistant[ PERS_TEAM ] )
+	{
+		case TEAM_HUMANS:
+			// Add upgrade price
+			for ( upgradeNum = UP_NONE + 1; upgradeNum < UP_NUM_UPGRADES; upgradeNum++ )
+			{
+				if ( BG_InventoryContainsUpgrade( upgradeNum, ps->stats ) )
+				{
+					price += BG_Upgrade( upgradeNum )->price;
+				}
+			}
+
+			// Add weapon price
+			for ( upgradeNum = WP_NONE + 1; upgradeNum < WP_NUM_WEAPONS; upgradeNum++ )
+			{
+				if ( BG_InventoryContainsWeapon( upgradeNum, ps->stats ) )
+				{
+					price += BG_Weapon( upgradeNum )->price;
+				}
+			}
+
+			break;
+
+		case TEAM_ALIENS:
+			price += BG_Class( ps->stats[ STAT_CLASS ] )->cost;
+			break;
+
+		default:
+			return 0;
+	}
+
+	return PLAYER_BASE_VALUE + ( int )( ( float )price * PLAYER_PRICE_TO_VALUE );
 }
 
 /*
