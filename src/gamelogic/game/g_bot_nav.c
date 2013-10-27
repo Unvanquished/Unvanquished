@@ -34,25 +34,33 @@ Navigation Mesh Loading
 // FIXME: use nav handle instead of classes
 void G_BotNavInit()
 {
-	qhandle_t navHandle;
 	int i;
 
 	Com_Printf( "==== Bot Navigation Initialization ==== \n" );
 
 	for ( i = PCL_NONE + 1; i < PCL_NUM_CLASSES; i++ )
 	{
+		classModelConfig_t *model;
 		botClass_t bot;
 		bot.polyFlagsInclude = POLYFLAGS_WALK;
 		bot.polyFlagsExclude = POLYFLAGS_DISABLED;
 
-		if ( i == PCL_ALIEN_LEVEL0_UPG )
+		model = BG_ClassModelConfig( i );
+		if ( model->navMeshClass )
 		{
+			if ( BG_ClassModelConfig( model->navMeshClass )->navMeshClass )
+			{
+				Com_Printf( S_ERROR "class '%s': navmesh reference target class '%s' must have its own navmesh\n",
+				            BG_Class( i )->name, BG_Class( model->navMeshClass )->name );
+				return;
+			}
+
 			continue;
 		}
 
 		Q_strncpyz( bot.name, BG_Class( i )->name, sizeof( bot.name ) );
 
-		if ( !trap_BotSetupNav( &bot, &navHandle ) )
+		if ( !trap_BotSetupNav( &bot, &model->navHandle ) )
 		{
 			return;
 		}
@@ -78,20 +86,20 @@ void G_BotEnableArea( vec3_t origin, vec3_t mins, vec3_t maxs )
 
 void BotSetNavmesh( gentity_t  *self, class_t newClass )
 {
-	int navMeshNum = newClass - 1;
+	int navHandle;
+	const classModelConfig_t *model;
 
 	if ( newClass == PCL_NONE )
 	{
 		return;
 	}
 
-	// advanced dretch uses the same navmesh as the regular dretch
-	if ( newClass == PCL_ALIEN_LEVEL0_UPG )
-	{
-		navMeshNum = PCL_ALIEN_LEVEL0 - 1;
-	}
+	model = BG_ClassModelConfig( newClass );
+	navHandle = model->navMeshClass
+	          ? BG_ClassModelConfig( model->navMeshClass )->navHandle
+	          : model->navHandle;
 
-	trap_BotSetNavMesh( self->s.number, navMeshNum );
+	trap_BotSetNavMesh( self->s.number, navHandle );
 }
 
 /*
