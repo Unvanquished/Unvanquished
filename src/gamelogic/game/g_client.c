@@ -1824,8 +1824,8 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	client->inactivityTime = level.time + g_inactivity.integer * 1000;
 	usercmdClearButtons( client->latched_buttons );
 
-	// give basic income
-	if ( ent != spawn )
+	// give basic income if mine rate above minimum
+	if ( ent != spawn && level.team[ client->pers.team ].mineEfficiency > g_minimumMineRate.integer )
 	{
 		basicIncome = ( int )( BASIC_INCOME_MOD * level.team[ client->pers.team ].mineEfficiency ) - client->pers.credit;
 
