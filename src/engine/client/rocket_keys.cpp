@@ -245,7 +245,12 @@ void Rocket_ProcessMouseClick( int button, qboolean down )
 #define MOUSEWHEEL_DELTA 5
 void Rocket_ProcessKeyInput( int key, qboolean down )
 {
-	// Our input system sends mouse events as key presses. 
+	if ( !menuContext )
+	{
+		return;
+	}
+
+	// Our input system sends mouse events as key presses.
 	if ( ( key >= K_MOUSE1 && key <= K_MOUSE5 ) || ( key >= K_AUX1 && key <= K_AUX16 ) )
 	{
 		Rocket_ProcessMouseClick( key, down );
@@ -311,6 +316,11 @@ int utf8_to_ucs2( const unsigned char *input )
 
 void Rocket_ProcessTextInput( int key )
 {
+	if ( !menuContext )
+	{
+		return;
+	}
+
 	//
 	// ignore any non printable chars
 	//
@@ -325,5 +335,10 @@ void Rocket_ProcessTextInput( int key )
 
 void Rocket_MouseMove( int x, int y )
 {
+	if ( !menuContext )
+	{
+		return;
+	}
+
 	menuContext->ProcessMouseMove( x, y, Rocket_GetKeyModifiers() );
 }
