@@ -82,7 +82,6 @@ void Rocket_GetEventParameters( char *params, int length );
 void Rocket_RegisterDataFormatter( const char *name );
 void Rocket_DataFormatterRawData( int handle, char *name, int nameLength, char *data, int dataLength );
 void Rocket_DataFormatterFormattedData( int handle, const char *data, qboolean parseQuake );
-int Rocket_ToQuakeKey( const int rocketKey );
 void Rocket_GetElementTag( char *tag, int length );
 void Rocket_SetElementDimensions( float x, float y );
 void Rocket_RegisterElement( const char *tag );
