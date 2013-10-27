@@ -117,7 +117,7 @@ public:
 	*/
 	int TranslateString( Rocket::Core::String &translated, const Rocket::Core::String &input )
 	{
-		const char* ret = Trans_Gettext( input.CString() );
+		const char* ret = Trans_GettextGame( input.CString() );
 		translated = ret;
 		return 0;
 	}
