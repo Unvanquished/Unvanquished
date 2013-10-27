@@ -36,7 +36,7 @@ Maryland 20850 USA.
 #include "../qcommon/qcommon.h"
 #include "sys_local.h"
 
-#define MAX_LOG 32768
+#define MAX_LOG 131072
 
 static char         consoleLog[ MAX_LOG ];
 static unsigned int writePos = 0;
