@@ -46,6 +46,7 @@ static qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, const char *name
 static qboolean R_LoadMDS( model_t *mod, void *buffer, const char *name );
 
 qboolean        R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *name );
+qboolean        R_LoadIQModel( model_t *mod, void *buffer, int bufferSize, const char *name );
 
 model_t         *loadmodel;
 
@@ -242,7 +243,7 @@ qhandle_t RE_RegisterModel( const char *name )
 	//
 	numLoaded = 0;
 
-	if ( strstr( name, ".mds" ) || strstr( name, ".md5mesh" ) )
+	if ( strstr( name, ".mds" ) || strstr( name, ".md5mesh" ) || strstr( name, ".iqm" ) )
 	{
 		// try loading skeletal file
 		loaded = qfalse;
@@ -266,6 +267,9 @@ qhandle_t RE_RegisterModel( const char *name )
 				loaded = R_LoadMD5( mod, buf, bufLen, name );
 			}
 
+			if ( !Q_strnicmp( ( const char * ) buf, "INTERQUAKEMODEL", 15 ) ) {
+				loaded = R_LoadIQModel( mod, buf, bufLen, name );
+			}
 #endif
 			ri.FS_FreeFile( buf );
 		}

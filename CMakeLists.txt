@@ -478,6 +478,7 @@ set( RENDERERLIST
   ${MOUNT_DIR}/engine/renderer/tr_marks.c
   ${MOUNT_DIR}/engine/renderer/tr_mesh.c
   ${MOUNT_DIR}/engine/renderer/tr_model.c
+  ${MOUNT_DIR}/engine/renderer/tr_model_iqm.c
   ${MOUNT_DIR}/engine/renderer/tr_model_md5.c
   ${MOUNT_DIR}/engine/renderer/tr_noise.c
   ${MOUNT_DIR}/engine/renderer/tr_scene.c
