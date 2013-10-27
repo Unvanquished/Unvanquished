@@ -7,6 +7,7 @@
 			{
 				wih1h: 50%;
 				height: 70%;
+				font-family: unifont;
 				margin: auto;
 			}
 

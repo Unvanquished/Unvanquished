@@ -1609,6 +1609,7 @@ int numTextures = 0;
 qhandle_t RE_GenerateTexture( const byte *pic, int width, int height )
 {
 	const char *name = va( "rocket%d", numTextures++ );
+	R_SyncRenderThread();
 	return RE_RegisterShaderFromImage( name, R_CreateImage( name, pic, width, height, IF_NOCOMPRESSION | IF_NOPICMIP, FT_LINEAR, WT_CLAMP ) );
 }
 
