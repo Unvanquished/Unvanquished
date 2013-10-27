@@ -620,6 +620,9 @@ gentity_t* BotFindBestEnemy( gentity_t *self )
 	gentity_t *bestVisibleEnemy = NULL;
 	gentity_t *bestInvisibleEnemy = NULL;
 	gentity_t *target;
+	team_t    team = BotGetEntityTeam( self );
+	qboolean  hasRadar = ( team == TEAM_ALIENS ) ||
+	                     ( team == TEAM_HUMANS && BG_InventoryContainsUpgrade( UP_RADAR, self->client->ps.stats ) );
 
 	for ( target = g_entities; target < &g_entities[level.num_entities - 1]; target++ )
 	{
@@ -654,13 +657,13 @@ gentity_t* BotFindBestEnemy( gentity_t *self )
 			bestVisibleEnemyScore = newScore;
 			bestVisibleEnemy = target;
 		}
-		else if ( newScore > bestInvisibleEnemyScore && BotGetEntityTeam( self ) == TEAM_ALIENS )
+		else if ( newScore > bestInvisibleEnemyScore && hasRadar )
 		{
 			bestInvisibleEnemyScore = newScore;
 			bestInvisibleEnemy = target;
 		}
 	}
-	if ( bestVisibleEnemy || BotGetEntityTeam( self ) == TEAM_HUMANS )
+	if ( bestVisibleEnemy || !hasRadar )
 	{
 		return bestVisibleEnemy;
 	}
