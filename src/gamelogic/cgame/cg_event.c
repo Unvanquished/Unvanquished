@@ -716,7 +716,7 @@ void CG_OnPlayerWeaponChange( weapon_t oldWeapon )
 	trap_Rocket_ShowHud( ps->weapon );
 
 	// Rebuild weapon lists if UI is in focus.
-	if ( trap_Key_GetCatcher() == KEYCATCH_UI )
+	if ( trap_Key_GetCatcher() == KEYCATCH_UI && ps->persistant[ PERS_TEAM ] == TEAM_HUMANS )
 	{
 		CG_Rocket_BuildArmourySellList( "default" );
 		CG_Rocket_BuildArmouryBuyList( "default" );
@@ -734,8 +734,10 @@ Called on upgrade change
 
 void CG_OnPlayerUpgradeChange( void )
 {
+	playerState_t *ps = &cg.snap->ps;
+
 	// Rebuild weapon lists if UI is in focus.
-	if ( trap_Key_GetCatcher() == KEYCATCH_UI )
+	if ( trap_Key_GetCatcher() == KEYCATCH_UI && ps->persistant[ PERS_TEAM ] == TEAM_HUMANS )
 	{
 		CG_Rocket_BuildArmourySellList( "default" );
 		CG_Rocket_BuildArmouryBuyList( "default" );
