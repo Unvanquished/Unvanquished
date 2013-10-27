@@ -586,7 +586,7 @@ void InjectCommandLine(char **argv, int beginArgs, int endArgs)
 	char           *sentinel = newCommandLine + sizeof(newCommandLine) - 1;
 	int             i;
 
-	previousCommandLine = ValueForKey(&entities[0], "_owmap_cmdline");
+	previousCommandLine = ValueForKey(&entities[0], "_daemonmap_cmdline");
 	if(previousCommandLine && *previousCommandLine)
 	{
 		inpos = previousCommandLine;
@@ -609,8 +609,8 @@ void InjectCommandLine(char **argv, int beginArgs, int endArgs)
 	}
 
 	*outpos = 0;
-	SetKeyValue(&entities[0], "_owmap_cmdline", newCommandLine);
-	SetKeyValue(&entities[0], "_owmap_version", Q3MAP_VERSION);
+	SetKeyValue(&entities[0], "_daemonmap_cmdline", newCommandLine);
+	SetKeyValue(&entities[0], "_daemonmap_version", Q3MAP_VERSION);
 }
 
 /*
