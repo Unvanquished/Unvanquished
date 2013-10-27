@@ -600,18 +600,18 @@ If no console is visible, the text will appear at the top of the game window
 #pragma optimize( "g", off ) // SMF - msvc totally screws this function up with optimize on
 #endif
 
-void CL_ConsolePrint( const char *text )
+qboolean CL_ConsolePrint( const char *text )
 {
 	int      y;
 	int      c, i, l;
 	int      color;
-	
+
 	CL_WriteClientChatLog( text );
 
 	// for some demos we don't want to ever show anything on the console
 	if ( cl_noprint && cl_noprint->integer )
 	{
-		return;
+		return qtrue;
 	}
 
 	if ( !consoleState.initialized )
@@ -620,10 +620,15 @@ void CL_ConsolePrint( const char *text )
 		consoleState.initialized = Con_CheckResize();
 	}
 
+	//Video hasn't been initialized
+	if ( ! cls.glconfig.vidWidth ) {
+		return qfalse;
+	}
+
 	// NERVE - SMF - work around for text that shows up in console but not in notify
 	if ( !Q_strncmp( text, S_SKIPNOTIFY, 12 ) )
 	{
-			text += 12;
+		text += 12;
 	}
 	else if ( !consoleState.isOpened && strncmp( text, "EXCL: ", 6 ) )
 	{
@@ -703,6 +708,8 @@ void CL_ConsolePrint( const char *text )
 
 		text += Q_UTF8_Width( text );
 	}
+
+	return qtrue;
 }
 
 #if defined( _WIN32 ) && defined( NDEBUG )

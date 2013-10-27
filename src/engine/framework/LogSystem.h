@@ -23,6 +23,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "../../shared/Log.h"
+#include <vector>
 
 #ifndef FRAMEWORK_LOG_SYSTEM_H_
 #define FRAMEWORK_LOG_SYSTEM_H_
@@ -34,7 +35,7 @@ namespace Log {
     class Target {
         public:
             Target();
-            virtual void Process(Log::Event event) = 0;
+            virtual bool Process(std::vector<Log::Event>& events) = 0;
 
         protected:
             void Register(TargetId id);

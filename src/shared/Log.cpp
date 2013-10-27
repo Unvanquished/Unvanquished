@@ -72,7 +72,7 @@ namespace Log {
         }
     }
 
-	//TODO add the time (broken for now because it is journaled)
+	//TODO add the time (broken for now because it is journaled) use Sys_Milliseconds instead (Utils::Milliseconds ?)
     static const int errorTargets = (1 << GRAPHICAL_CONSOLE) | (1 << TTY_CONSOLE) | (1 << CRASHLOG) | (1 << HUD) | (1 << LOGFILE);
     void CodeSourceError(std::string message) {
         Log::Dispatch({/*Com_Milliseconds()*/0, "^1Error: " + message}, errorTargets);

@@ -32,30 +32,35 @@ namespace Log {
 
     static Target* targets[MAX_TARGET_ID];
 
-	//TODO rcon feedback?
 
-    //TODO remove me from Release builds
-    static bool hasTarget = false;
+    //TODO rcon feedback?
 
+    //TODO make it thread safe
+    //TODO make me reentrant // or check it is actually reentrant when using for (Event e : events) do stuff
     void Dispatch(Log::Event event, int targetControl) {
-        if (!hasTarget) {
-            //TODO: shouldn't happen but could be used to debug problems that happen before the targets are registered
-        }
+        static std::vector<Log::Event> buffers[MAX_TARGET_ID];
 
         for (int i = 0; i < MAX_TARGET_ID; i++) {
-            if ((targetControl >> i) & 1 and targets[i]) {
-                targets[i]->Process(event);
+            if ((targetControl >> i) & 1) {
+                auto& buffer = buffers[i];
+                buffer.push_back(event);
+
+                bool processed = false;
+                if (targets[i]) {
+                    processed = targets[i]->Process(buffer);
+                }
+
+                if (processed) {
+                    buffer.clear();
+                } else if (buffer.size() > 105) {
+                    buffer.clear();
+                }
             }
         }
     }
 
     void RegisterTarget(TargetId id, Target* target) {
-        if (targets[id]) {
-            //TODO: log a fail?
-            return;
-        }
         targets[id] = target;
-        hasTarget = true;
     }
 
     Target::Target() {
@@ -74,9 +79,12 @@ namespace Log {
                 this->Register(TTY_CONSOLE);
             }
 
-            virtual void Process(Log::Event event) override {
-                Sys_Print(event.text.c_str());
-                Sys_Print("\n");
+            virtual bool Process(std::vector<Log::Event>& events) override {
+                for (Log::Event event : events)  {
+                    Sys_Print(event.text.c_str());
+                    Sys_Print("\n");
+                }
+                return true;
             }
     };
 
@@ -89,11 +97,22 @@ namespace Log {
                 this->Register(GRAPHICAL_CONSOLE);
             }
 
-            virtual void Process(Log::Event event) override {
-                // echo to console if we're not a dedicated server
+            virtual bool Process(std::vector<Log::Event>& events) override {
                 if (com_dedicated && !com_dedicated->integer) {
-                    CL_ConsolePrint(event.text.c_str());
-                    CL_ConsolePrint("\n");
+                    for (Log::Event event : events) {
+
+                        bool printed = CL_ConsolePrint(event.text.c_str());
+
+                        if (!printed) {
+                            return false;
+                        }
+
+                        CL_ConsolePrint("\n");
+                    }
+
+                    return true;
+                } else {
+                    return false;
                 }
             }
     };
@@ -114,9 +133,10 @@ namespace Log {
                 this->Register(LOGFILE);
             }
 
-            virtual void Process(Log::Event event) override {
+            virtual bool Process(std::vector<Log::Event>& events) override {
+                //If we have no log file drop the events
                 if (not useLogFile.Get()) {
-                    return;
+                    return true;
                 }
 
                 if (logFile == 0 and FS_Initialized() and not recursing) {
@@ -136,8 +156,13 @@ namespace Log {
                 }
 
                 if (logFile != 0) {
-                    std::string text = event.text + "\n";
-                    FS_Write(text.c_str(), text.length(), logFile);
+                    for (Log::Event event : events) {
+                        std::string text = event.text + "\n";
+                        FS_Write(text.c_str(), text.length(), logFile);
+                    }
+                    return true;
+                } else {
+                    return false;
                 }
             }
 
@@ -153,10 +178,10 @@ namespace Log {
         public:
             LegacyTarget(std::string name, TargetId id): name(std::move(name)) {
                 this->Register(id);
-                this->Process({0, "Registered a log Target"});
             }
 
-            virtual void Process(Log::Event event) override {
+            virtual bool Process(std::vector<Log::Event>& events) override {
+                return true;
                 //Com_Printf("%s: %s\n", name.c_str(), event.text.c_str());
             }
 

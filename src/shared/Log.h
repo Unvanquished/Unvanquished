@@ -91,9 +91,7 @@ namespace Log {
 
     template<typename ... Args>
     void Logger::Error(const std::string& format, Args ... args) {
-        if (filterLevel.Get() <= ERROR) {
-            CodeSourceError(Str::Format(format, args ...));
-        }
+        CodeSourceError(Str::Format(format, args ...));
     }
 
     template<typename ... Args>
