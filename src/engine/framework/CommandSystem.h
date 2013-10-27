@@ -34,10 +34,10 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
  * sources. Most commands come from either key bindings or console line input,
  * but entire text files can be execed.
  *
- * The command text is first split into command strings ten tokens,
+ * The command text is first split into command strings then tokens,
  * the first token is the name of the command to be executed
  *
- * NOTE: All the functions in this file most be called from the main thread.
+ * NOTE: All the functions in this file must be called from the main thread.
  */
 
 namespace Cmd {
