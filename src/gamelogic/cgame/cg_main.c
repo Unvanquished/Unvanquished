@@ -1872,9 +1872,6 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 	cgs.media.outlineShader = trap_R_RegisterShader("outline",
 							RSF_DEFAULT);
 
-	// Dynamic memory
-	BG_InitMemory();
-
 	BG_InitAllowedGameElements();
 
 	// Initialize item locking state
