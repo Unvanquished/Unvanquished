@@ -8,14 +8,14 @@
 			}
 			div
 			{
-				font-family: Roboto;
+				font-family: unifont;
 			}
 			div#sidebar, div#logo
 			{
 				position: fixed;
 				left: 0%;
 				width: 25%;
-				font-family: Roboto;
+				font-family: unifont;
 				z-index: 3;
 				margin: auto 0;
 			}
