@@ -5464,6 +5464,12 @@ qboolean G_admin_timelimit( gentity_t *ent )
 				AP( va( "print_tr %s %d %d %s", QQ( N_("^3gametimelimit: ^7time limit set to $1$m from $2$m by $3$\n") ),
 				        timelimit, level.timelimit, G_quoted_admin_name( ent ) ) );
 				level.timelimit = timelimit;
+				// reset 'time remaining' warnings
+				level.timelimitWarning = ( level.matchTime < ( level.timelimit - 5 ) * 60000 )
+				                       ? TW_NOT
+				                       : ( level.matchTime < ( level.timelimit - 1 ) * 60000 )
+				                       ? TW_IMMINENT
+				                       : TW_PASSED;
 			}
 			else
 			{
