@@ -563,7 +563,7 @@ int MiniMapBSPMain(int argc, char **argv)
 	if(argc < 2)
 	{
 		Sys_Printf
-			("Usage: daemonmap [-v] -minimap [-size n] [-sharpen f] [-samples n | -random n] [-o filename.png] [-minmax Xmin Ymin Zmin Xmax Ymax Zmax] <mapname>\n");
+			("Usage: daemonmap [-v] -minimap [-size n] [-sharpen f] [-samples n | -random n] [-border n] [-keepaspect | -nokeepaspect] [-o filename.png] [-minmax Xmin Ymin Zmin Xmax Ymax Zmax] [-black | -white] [-boost] <mapname>\n");
 		return 0;
 	}
 
