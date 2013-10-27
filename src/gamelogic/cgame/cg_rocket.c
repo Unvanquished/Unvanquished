@@ -94,11 +94,6 @@ void CG_Rocket_Init( void )
 	// Dynamic memory
 	BG_InitMemory();
 
-	// load overrides
-	BG_InitAllConfigs();
-
-	BG_InitAllowedGameElements();
-
 
 	// rocket cvars
 	CG_RegisterRocketCvars();
