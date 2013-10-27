@@ -1152,7 +1152,7 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
 		JUMPMAGNITUDE      = 1 << 13,
 		ICON               = 1 << 14,
 		COST               = 1 << 15,
-		// UNUSED
+		SPRINTMOD          = 1 << 16,
 		RADAR              = 1 << 17,
 		MASS               = 1 << 18,
 		UNLOCKTHRESHOLD    = 1 << 19,
@@ -1332,6 +1332,12 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
 			ca->cost = atoi( token );
 			defined |= COST;
 		}
+		else if ( !Q_stricmp( token, "sprintMod" ) )
+		{
+			PARSE(text, token);
+			ca->sprintMod = atof( token );
+			defined |= COST;
+		}
 		else if ( !Q_stricmp( token, "radarFadeOut" ) )
 		{
 			PARSE(text, token);
@@ -1420,7 +1426,8 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
 	// check for missing mandatory fields for the human team
 	if ( ca->team == TEAM_HUMANS )
 	{
-		if      ( !( defined & STAMINAJUMPCOST ) )    { token = "staminaJumpCost"; }
+		if      ( !( defined & SPRINTMOD ) )          { token = "sprintMod"; }
+		else if ( !( defined & STAMINAJUMPCOST ) )    { token = "staminaJumpCost"; }
 		else if ( !( defined & STAMINASPRINTCOST ) )  { token = "staminaSprintCost"; }
 		else if ( !( defined & STAMINAJOGRESTORE ) )  { token = "staminaJogRestore"; }
 		else if ( !( defined & STAMINAWALKRESTORE ) ) { token = "staminaWalkRestore"; }

@@ -1039,6 +1039,7 @@ typedef struct
 	int      steptime;
 
 	float    speed;
+	float    sprintMod;
 	float    acceleration;
 	float    airAcceleration;
 	float    friction;

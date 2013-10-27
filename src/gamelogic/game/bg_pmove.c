@@ -454,7 +454,7 @@ static float PM_CmdScale( usercmd_t *cmd, qboolean zFlight )
 		// TODO: Try to move code upwards so sprinting isn't activated in the first place.
 		if ( sprint && !usercmdButtonPressed( cmd->buttons, BUTTON_WALKING ) )
 		{
-			modifier *= HUMAN_SPRINT_MODIFIER;
+			modifier *= BG_Class( pm->ps->stats[ STAT_CLASS ] )->sprintMod;
 		}
 		else
 		{
@@ -3453,7 +3453,7 @@ static void PM_Footsteps( void )
 
 	if ( pm->ps->stats[ STAT_STATE ] & SS_SPEEDBOOST )
 	{
-		bobmove *= HUMAN_SPRINT_MODIFIER;
+		bobmove *= BG_Class( pm->ps->stats[ STAT_CLASS ] )->sprintMod;
 	}
 
 	// check for footstep / splash sounds
