@@ -466,121 +466,6 @@ static void CG_DrawPlayerAlienEvos( rectDef_t *rect, float text_x, float text_y,
 
 /*
 ==============
-CG_DrawPlayerStamina
-==============
-*/
-static void CG_DrawPlayerStaminaValue( rectDef_t *rect, vec4_t color )
-{
-	playerState_t *ps = &cg.snap->ps;
-	float         stamina = ps->stats[ STAT_STAMINA ];
-	int           percent = 100 * ( stamina + ( float ) STAMINA_MAX ) / ( 2 * ( float ) STAMINA_MAX );
-	vec4_t        localColor;
-
-	Vector4Copy( color, localColor );
-
-	if ( percent < 30  && ( cg.time & 128 ) )
-	{
-		localColor[ 0 ] = 1.0f;
-		localColor[ 1 ] = 0.0f;
-		localColor[ 2 ] = 0.0f;
-	}
-
-	trap_R_SetColor( localColor );
-	CG_DrawField( rect->x - 5, rect->y, 4, rect->w / 4, rect->h, percent );
-	trap_R_SetColor( NULL );
-}
-
-static void CG_DrawPlayerStamina( int ownerDraw, rectDef_t *rect,
-                                  vec4_t backColor, vec4_t foreColor,
-                                  qhandle_t shader )
-{
-	playerState_t *ps = &cg.snap->ps;
-	float         stamina = ps->stats[ STAT_STAMINA ];
-	float         maxStaminaBy3 = ( float ) STAMINA_MAX / 3.0f;
-	float         progress;
-	vec4_t        color;
-
-	switch ( ownerDraw )
-	{
-		case CG_PLAYER_STAMINA_1:
-			progress = ( stamina - 2 * ( int ) maxStaminaBy3 ) / maxStaminaBy3;
-			break;
-
-		case CG_PLAYER_STAMINA_2:
-			progress = ( stamina - ( int ) maxStaminaBy3 ) / maxStaminaBy3;
-			break;
-
-		case CG_PLAYER_STAMINA_3:
-			progress = stamina / maxStaminaBy3;
-			break;
-
-		case CG_PLAYER_STAMINA_4:
-			progress = ( stamina + STAMINA_MAX ) / STAMINA_MAX;
-			break;
-
-		default:
-			return;
-	}
-
-	if ( progress > 1.0f )
-	{
-		progress = 1.0f;
-	}
-	else if ( progress < 0.0f )
-	{
-		progress = 0.0f;
-	}
-
-	Vector4Lerp( progress, backColor, foreColor, color );
-
-	trap_R_SetColor( color );
-	CG_DrawPic( rect->x, rect->y, rect->w, rect->h, shader );
-	trap_R_SetColor( NULL );
-}
-
-/*
-==============
-CG_DrawPlayerStaminaBolt
-==============
-*/
-static void CG_DrawPlayerStaminaBolt( rectDef_t *rect, vec4_t backColor,
-                                      vec4_t foreColor, qhandle_t shader )
-{
-	float  stamina = cg.snap->ps.stats[ STAT_STAMINA ];
-	vec4_t color;
-
-	if ( cg.predictedPlayerState.stats[ STAT_STATE ] & SS_SPEEDBOOST )
-	{
-		if ( stamina >= 0 )
-		{
-			Vector4Lerp( ( sin( cg.time / 150.0f ) + 1 ) / 2,
-			             backColor, foreColor, color );
-		}
-		else
-		{
-			Vector4Lerp( ( sin( cg.time / 2000.0f ) + 1 ) / 2,
-			             backColor, foreColor, color );
-		}
-	}
-	else
-	{
-		if ( stamina < 0 )
-		{
-			Vector4Copy( backColor, color );
-		}
-		else
-		{
-			Vector4Copy( foreColor, color );
-		}
-	}
-
-	trap_R_SetColor( color );
-	CG_DrawPic( rect->x, rect->y, rect->w, rect->h, shader );
-	trap_R_SetColor( NULL );
-}
-
-/*
-==============
 CG_DrawPlayerClipsRing
 ==============
 */
@@ -1014,7 +899,7 @@ CG_DrawHumanScanner
 */
 static void CG_DrawHumanScanner( rectDef_t *rect, qhandle_t shader, vec4_t color )
 {
-	if ( BG_InventoryContainsUpgrade( UP_HELMET, cg.snap->ps.stats ) )
+	if ( BG_InventoryContainsUpgrade( UP_RADAR, cg.snap->ps.stats ) )
 	{
 		CG_Scanner( rect, shader, color );
 	}
@@ -1145,8 +1030,7 @@ static void CG_DrawPlayerClipsValue( rectDef_t *rect, vec4_t color )
 static void CG_DrawPlayerHealthValue( rectDef_t *rect, vec4_t color )
 {
 	trap_R_SetColor( color );
-	CG_DrawField( rect->x, rect->y, 4, rect->w / 4, rect->h,
-	              cg.snap->ps.stats[ STAT_HEALTH ] );
+	CG_DrawField( rect->x, rect->y, 4, rect->w / 4, rect->h, cg.snap->ps.stats[ STAT_HEALTH ] );
 	trap_R_SetColor( NULL );
 }
 
@@ -1773,14 +1657,6 @@ static void CG_DrawPlayerUnlockedItems( rectDef_t *rect, vec4_t foreColour, vec4
 	trap_R_SetColor( NULL );
 }
 
-static void CG_DrawPlayerStaminaBar( rectDef_t *rect, vec4_t foreColor, qhandle_t shader )
-{
-	playerState_t *ps = &cg.snap->ps;
-	int           stamina = ps->stats[ STAT_STAMINA ];
-	float         progress = ( ( float ) stamina + ( float ) STAMINA_MAX ) / ( 2 * ( float ) STAMINA_MAX );
-	CG_DrawPlayerProgressBar( rect, foreColor, progress, -0.3, shader );
-}
-
 static void CG_DrawPlayerBuildTimerBar( rectDef_t *rect, vec4_t foreColor, qhandle_t shader )
 {
 	playerState_t *ps = &cg.snap->ps;
@@ -1950,6 +1826,63 @@ static void CG_DrawPlayerBoostedMeter( rectDef_t *rect, int align, vec4_t foreCo
 		return;
 	}
 
+}
+
+static void CG_DrawPlayerStaminaBar( rectDef_t *rect, vec4_t foreColor, qhandle_t shader )
+{
+	int   stamina;
+	float progress;
+	float warning;
+	int   staminaJumpCost;
+
+	stamina  = cg.snap->ps.stats[ STAT_STAMINA ];
+	staminaJumpCost = BG_Class( cg.snap->ps.stats[ STAT_CLASS ] )->staminaJumpCost;
+	progress = ( float )stamina / ( float )STAMINA_MAX;
+	warning  = -1.0f * ( float )staminaJumpCost / ( float )STAMINA_MAX;
+
+	CG_DrawPlayerProgressBar( rect, foreColor, progress, warning, shader );
+}
+
+static void CG_DrawPlayerStaminaValue( rectDef_t *rect, vec4_t color )
+{
+	int stamina, percent;
+
+	stamina = cg.snap->ps.stats[ STAT_STAMINA ];
+	percent = ( int )( 100.0f * ( float )stamina / ( float )STAMINA_MAX );
+
+	trap_R_SetColor( color );
+	CG_DrawField( rect->x, rect->y, 4, rect->w / 4, rect->h, percent );
+	trap_R_SetColor( NULL );
+}
+
+static void CG_DrawPlayerStaminaBolt( rectDef_t *rect, vec4_t backColor,
+                                      vec4_t foreColor, qhandle_t shader )
+{
+	int      stamina;
+	vec4_t   color;
+	qboolean sprinting;
+	int      staminaJumpCost;
+
+	stamina   = cg.snap->ps.stats[ STAT_STAMINA ];
+	staminaJumpCost = BG_Class( cg.snap->ps.stats[ STAT_CLASS ] )->staminaJumpCost;
+	sprinting = ( cg.predictedPlayerState.stats[ STAT_STATE ] & SS_SPEEDBOOST );
+
+	if ( sprinting )
+	{
+		Vector4Lerp( ( sin( cg.time / 150.0f ) + 1.0f ) / 2.0f, backColor, foreColor, color );
+	}
+	else if ( stamina < staminaJumpCost )
+	{
+		Vector4Copy( backColor, color );
+	}
+	else
+	{
+		Vector4Copy( foreColor, color );
+	}
+
+	trap_R_SetColor( color );
+	CG_DrawPic( rect->x, rect->y, rect->w, rect->h, shader );
+	trap_R_SetColor( NULL );
 }
 
 static void CG_DrawMineRate( rectDef_t *rect, float text_x, float text_y,
@@ -2707,7 +2640,7 @@ static void CG_DrawTeamOverlay( rectDef_t *rect, float scale, vec4_t color )
 
 			VectorSubtract( cent->lerpOrigin, cg.predictedPlayerState.origin, relOrigin );
 
-			if ( VectorLength( relOrigin ) < HELMET_RANGE )
+			if ( VectorLength( relOrigin ) < RADAR_RANGE )
 			{
 				displayClients[ maxDisplayCount++ ] = cg.snap->entities[ i ].number;
 			}
@@ -4275,19 +4208,12 @@ void CG_OwnerDraw( rectDef_t *rect, float text_x,
 			CG_DrawPlayerAlienEvos( rect, text_x, text_y, foreColor, scale, textalign, textvalign, textStyle );
 			break;
 
-		case CG_PLAYER_STAMINA:
+		case CG_PLAYER_STAMINA_BAR:
 			CG_DrawPlayerStaminaBar( rect, foreColor, shader );
 			break;
 
-		case CG_PLAYER_STAMINA_VALUE:
+		case CG_PLAYER_STAMINA:
 			CG_DrawPlayerStaminaValue( rect, foreColor );
-			break;
-
-		case CG_PLAYER_STAMINA_1:
-		case CG_PLAYER_STAMINA_2:
-		case CG_PLAYER_STAMINA_3:
-		case CG_PLAYER_STAMINA_4:
-			CG_DrawPlayerStamina( ownerDraw, rect, backColor, foreColor, shader );
 			break;
 
 		case CG_PLAYER_STAMINA_BOLT:
@@ -4679,32 +4605,6 @@ void CG_RunMenuScript( char **args )
 	Q_UNUSED(args);
 }
 
-//END TA UI
-
-/*
-================
-CG_DrawLighting
-
-================
-*/
-static void CG_DrawLighting( void )
-{
-	centity_t *cent;
-
-	cent = &cg_entities[ cg.snap->ps.clientNum ];
-
-	//fade to black if stamina is low
-	if ( ( cg.snap->ps.stats[ STAT_STAMINA ] < STAMINA_BLACKOUT_LEVEL ) &&
-	     ( cg.snap->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS ) )
-	{
-		vec4_t black = { 0, 0, 0, 0 };
-		black[ 3 ] = 1.0 - ( ( float )( cg.snap->ps.stats[ STAT_STAMINA ] + STAMINA_MAX ) / ( STAMINA_MAX + STAMINA_BLACKOUT_LEVEL ) );
-		trap_R_SetColor( black );
-		CG_DrawPic( 0, 0, 640, 480, cgs.media.whiteShader );
-		trap_R_SetColor( NULL );
-	}
-}
-
 /*
 ===============================================================================
 
@@ -5052,10 +4952,6 @@ CG_Draw2D
 static void CG_Draw2D( void )
 {
 	menuDef_t *menu = NULL;
-
-	// fading to black if stamina runs out
-	// (only 2D that can't be disabled)
-	CG_DrawLighting();
 
 	if ( cg_draw2D.integer == 0 )
 	{

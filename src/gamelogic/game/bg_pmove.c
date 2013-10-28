@@ -391,15 +391,20 @@ static float PM_CmdScale( usercmd_t *cmd, qboolean zFlight )
 	float total;
 	float scale;
 	float modifier = 1.0f;
+	int   staminaJumpCost;
+
+	staminaJumpCost = BG_Class( pm->ps->stats[ STAT_CLASS ] )->staminaJumpCost;
 
 	if ( pm->ps->persistant[ PERS_TEAM ] == TEAM_HUMANS && pm->ps->pm_type == PM_NORMAL )
 	{
-		qboolean wasSprinting;
-		qboolean sprint;
+		qboolean wasSprinting, sprint;
+
 		wasSprinting = sprint = pm->ps->stats[ STAT_STATE ] & SS_SPEEDBOOST;
 
+		// check whether player wants to sprint
 		if ( pm->ps->persistant[ PERS_STATE ] & PS_SPRINTTOGGLE )
 		{
+			// toggle mode
 			if ( usercmdButtonPressed( cmd->buttons, BUTTON_SPRINT ) &&
 			     !( pm->ps->pm_flags & PMF_SPRINTHELD ) )
 			{
@@ -414,58 +419,71 @@ static float PM_CmdScale( usercmd_t *cmd, qboolean zFlight )
 		}
 		else
 		{
+			// non-toggle mode
 			sprint = usercmdButtonPressed( cmd->buttons, BUTTON_SPRINT );
 		}
 
+		// check if sprinting is allowed
+		if ( sprint )
+		{
+			if ( wasSprinting && pm->ps->stats[ STAT_STAMINA ] <= 0 )
+			{
+				// we were sprinting but ran out of stamina
+				sprint = qfalse;
+			}
+			else if ( !wasSprinting && pm->ps->stats[ STAT_STAMINA ] < staminaJumpCost )
+			{
+				// stamina is too low to start sprinting
+				sprint = qfalse;
+			}
+		}
+
+		// start or stop sprint
 		if ( sprint )
 		{
 			pm->ps->stats[ STAT_STATE ] |= SS_SPEEDBOOST;
 		}
-		else if ( wasSprinting && !sprint )
+		else
 		{
 			pm->ps->stats[ STAT_STATE ] &= ~SS_SPEEDBOOST;
 		}
 
 		// Walk overrides sprint. We keep the state that we want to be sprinting
-		//  (above), but don't apply the modifier, and in g_active we skip taking
-		//  the stamina too.
+		// above but don't apply the modifier, and in g_active we skip taking
+		// the stamina too.
+		// TODO: Try to move code upwards so sprinting isn't activated in the first place.
 		if ( sprint && !usercmdButtonPressed( cmd->buttons, BUTTON_WALKING ) )
 		{
-			modifier *= HUMAN_SPRINT_MODIFIER;
+			modifier *= BG_Class( pm->ps->stats[ STAT_CLASS ] )->sprintMod;
 		}
 		else
 		{
 			modifier *= HUMAN_JOG_MODIFIER;
 		}
 
+		// Apply modfiers for strafing and going backwards
 		if ( cmd->forwardmove < 0 )
 		{
-			//can't run backwards
 			modifier *= HUMAN_BACK_MODIFIER;
 		}
 		else if ( cmd->rightmove )
 		{
-			//can't move that fast sideways
 			modifier *= HUMAN_SIDE_MODIFIER;
 		}
 
-		if ( !zFlight )
+		// Cancel jump if low on stamina
+		if ( !zFlight && pm->ps->stats[ STAT_STAMINA ] < staminaJumpCost )
 		{
-			//must have have stamina to jump
-			if ( pm->ps->stats[ STAT_STAMINA ] < STAMINA_SLOW_LEVEL + STAMINA_JUMP_TAKE )
-				cmd->upmove = 0;
+			cmd->upmove = 0;
 		}
 
-		//slow down once stamina depletes
-		if ( pm->ps->stats[ STAT_STAMINA ] <= STAMINA_SLOW_LEVEL )
-		{
-			modifier *= ( float )( pm->ps->stats[ STAT_STAMINA ] + STAMINA_MAX ) / ( float )( STAMINA_SLOW_LEVEL + STAMINA_MAX );
-		}
-
+		// Apply creepslow modifier
+		// TODO: Move modifer into upgrade/class config files of armour items/classes
 		if ( pm->ps->stats[ STAT_STATE ] & SS_CREEPSLOWED )
 		{
 			if ( BG_InventoryContainsUpgrade( UP_LIGHTARMOUR, pm->ps->stats ) ||
-			     BG_InventoryContainsUpgrade( UP_BATTLESUIT, pm->ps->stats ) )
+			     BG_InventoryContainsUpgrade( UP_MEDIUMARMOUR, pm->ps->stats ) ||
+			     BG_InventoryContainsUpgrade( UP_BATTLESUIT,  pm->ps->stats ) )
 			{
 				modifier *= CREEP_ARMOUR_MODIFIER;
 			}
@@ -475,9 +493,12 @@ static float PM_CmdScale( usercmd_t *cmd, qboolean zFlight )
 			}
 		}
 
+		// Apply poisoncloud modifier
+		// TODO: Move modifer into upgrade/class config files of armour items/classes
 		if ( pm->ps->eFlags & EF_POISONCLOUDED )
 		{
 			if ( BG_InventoryContainsUpgrade( UP_LIGHTARMOUR, pm->ps->stats ) ||
+			     BG_InventoryContainsUpgrade( UP_MEDIUMARMOUR, pm->ps->stats ) ||
 			     BG_InventoryContainsUpgrade( UP_BATTLESUIT, pm->ps->stats ) )
 			{
 				modifier *= PCLOUD_ARMOUR_MODIFIER;
@@ -489,26 +510,28 @@ static float PM_CmdScale( usercmd_t *cmd, qboolean zFlight )
 		}
 	}
 
+	// Go faster when using the Tyrant charge attack
 	if ( pm->ps->weapon == WP_ALEVEL4 && pm->ps->pm_flags & PMF_CHARGE )
 	{
-		modifier *= 1.0f + ( pm->ps->stats[ STAT_MISC ] *
-		                     ( LEVEL4_TRAMPLE_SPEED - 1.0f ) /
+		modifier *= 1.0f + ( pm->ps->stats[ STAT_MISC ] * ( LEVEL4_TRAMPLE_SPEED - 1.0f ) /
 		                     LEVEL4_TRAMPLE_DURATION );
 	}
 
-	//slow player if charging up for a pounce
+	// Slow down when charging up for a pounce
 	if ( ( pm->ps->weapon == WP_ALEVEL3 || pm->ps->weapon == WP_ALEVEL3_UPG ) &&
 	     usercmdButtonPressed( cmd->buttons, BUTTON_ATTACK2 ) )
 	{
 		modifier *= LEVEL3_POUNCE_SPEED_MOD;
 	}
 
-	//slow the player if slow locked
+	// Slow down when slow locked
+	// TODO: Introduce armour modifiers for slowlocking
 	if ( pm->ps->stats[ STAT_STATE ] & SS_SLOWLOCKED )
 	{
 		modifier *= ABUILDER_BLOB_SPEED_MOD;
 	}
 
+	// Stand still when grabbed
 	if ( pm->ps->pm_type == PM_GRABBED )
 	{
 		modifier = 0.0f;
@@ -520,12 +543,16 @@ static float PM_CmdScale( usercmd_t *cmd, qboolean zFlight )
 	{
 		max = abs( cmd->rightmove );
 	}
+
 	total = cmd->forwardmove * cmd->forwardmove + cmd->rightmove * cmd->rightmove;
 
 	if ( zFlight )
 	{
 		if ( abs( cmd->upmove ) > max )
+		{
 			max = abs( cmd->upmove );
+		}
+
 		total += cmd->upmove * cmd->upmove;
 	}
 
@@ -1247,6 +1274,7 @@ PM_CheckJump
 static qboolean PM_CheckJump( void )
 {
 	vec3_t normal;
+	int    staminaJumpCost;
 
 	if ( pm->ps->groundEntityNum == ENTITYNUM_NONE )
 	{
@@ -1273,8 +1301,10 @@ static qboolean PM_CheckJump( void )
 		return qfalse;
 	}
 
+	staminaJumpCost = BG_Class( pm->ps->stats[ STAT_CLASS ] )->staminaJumpCost;
+
 	if ( ( pm->ps->persistant[ PERS_TEAM ] == TEAM_HUMANS ) &&
-	     ( pm->ps->stats[ STAT_STAMINA ] < STAMINA_SLOW_LEVEL + STAMINA_JUMP_TAKE ) )
+	     ( pm->ps->stats[ STAT_STAMINA ] < staminaJumpCost ) )
 	{
 		return qfalse;
 	}
@@ -1312,7 +1342,7 @@ static qboolean PM_CheckJump( void )
 	// take some stamina off
 	if ( pm->ps->persistant[ PERS_TEAM ] == TEAM_HUMANS )
 	{
-		pm->ps->stats[ STAT_STAMINA ] -= STAMINA_JUMP_TAKE;
+		pm->ps->stats[ STAT_STAMINA ] -= staminaJumpCost;
 	}
 
 	pm->ps->groundEntityNum = ENTITYNUM_NONE;
@@ -3423,7 +3453,7 @@ static void PM_Footsteps( void )
 
 	if ( pm->ps->stats[ STAT_STATE ] & SS_SPEEDBOOST )
 	{
-		bobmove *= HUMAN_SPRINT_MODIFIER;
+		bobmove *= BG_Class( pm->ps->stats[ STAT_CLASS ] )->sprintMod;
 	}
 
 	// check for footstep / splash sounds

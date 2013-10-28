@@ -330,9 +330,16 @@ void BotStandStill( gentity_t *self )
 
 qboolean BotJump( gentity_t *self )
 {
-	if ( self->client->pers.team == TEAM_HUMANS && self->client->ps.stats[STAT_STAMINA] < STAMINA_SLOW_LEVEL + STAMINA_JUMP_TAKE )
+	int staminaJumpCost;
+
+	if ( self->client->pers.team == TEAM_HUMANS )
 	{
-		return qfalse;
+		staminaJumpCost = BG_Class( self->client->ps.stats[ STAT_CLASS ] )->staminaJumpCost;
+
+		if ( self->client->ps.stats[STAT_STAMINA] < staminaJumpCost )
+		{
+			return qfalse;
+		}
 	}
 
 	self->botMind->cmdBuffer.upmove = 127;
@@ -342,6 +349,7 @@ qboolean BotJump( gentity_t *self )
 qboolean BotSprint( gentity_t *self, qboolean enable )
 {
 	usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
+	int       staminaJumpCost;
 
 	if ( !enable )
 	{
@@ -349,7 +357,11 @@ qboolean BotSprint( gentity_t *self, qboolean enable )
 		return qfalse;
 	}
 
-	if ( self->client->pers.team == TEAM_HUMANS && self->client->ps.stats[STAT_STAMINA] > STAMINA_SLOW_LEVEL + STAMINA_JUMP_TAKE && self->botMind->botSkill.level >= 5 )
+	staminaJumpCost = BG_Class( self->client->ps.stats[ STAT_CLASS ] )->staminaJumpCost;
+
+	if ( self->client->pers.team == TEAM_HUMANS
+	     && self->client->ps.stats[ STAT_STAMINA ] > staminaJumpCost
+	     && self->botMind->botSkill.level >= 5 )
 	{
 		usercmdPressButton( botCmdBuffer->buttons, BUTTON_SPRINT );
 		BotWalk( self, qfalse );
@@ -694,6 +706,7 @@ void BotClampPos( gentity_t *self )
 
 void BotMoveToGoal( gentity_t *self )
 {
+	int    staminaJumpCost;
 	vec3_t dir;
 	VectorCopy( self->botMind->nav.dir, dir );
 
@@ -706,8 +719,11 @@ void BotMoveToGoal( gentity_t *self )
 	BotAvoidObstacles( self, dir );
 	BotSeek( self, dir );
 
+	staminaJumpCost = BG_Class( self->client->ps.stats[ STAT_CLASS ] )->staminaJumpCost;
+
 	//dont sprint or dodge if we dont have enough stamina and are about to slow
-	if ( self->client->pers.team == TEAM_HUMANS && self->client->ps.stats[ STAT_STAMINA ] < STAMINA_SLOW_LEVEL + STAMINA_JUMP_TAKE )
+	if ( self->client->pers.team == TEAM_HUMANS
+	     && self->client->ps.stats[ STAT_STAMINA ] < staminaJumpCost )
 	{
 		usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
 

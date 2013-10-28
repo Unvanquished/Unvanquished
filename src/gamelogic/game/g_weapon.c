@@ -1605,7 +1605,7 @@ void G_ImpactAttack( gentity_t *self, gentity_t *victim )
 	}
 
 	// don't do friendly fire
-	if ( OnSameTeam( self, victim ) )
+	if ( G_OnSameTeam( self, victim ) )
 	{
 		return;
 	}
@@ -1655,7 +1655,7 @@ void G_WeightAttack( gentity_t *self, gentity_t *victim )
 	}
 
 	// don't do friendly fire
-	if ( OnSameTeam( self, victim ) )
+	if ( G_OnSameTeam( self, victim ) )
 	{
 		return;
 	}

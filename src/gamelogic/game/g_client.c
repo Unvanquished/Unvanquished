@@ -1678,7 +1678,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 		ent->r.contents = CONTENTS_BODY;
 	}
 	ent->clipmask = MASK_PLAYERSOLID;
-	ent->die = player_die;
+	ent->die = G_PlayerDie;
 	ent->waterlevel = 0;
 	ent->watertype = 0;
 	ent->flags &= FL_GODMODE | FL_NOTARGET;
@@ -1704,7 +1704,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	}
 
 	// clear entity values
-	if ( ent->client->pers.classSelection == PCL_HUMAN )
+	if ( ent->client->pers.classSelection == PCL_HUMAN_NAKED )
 	{
 		BG_AddUpgradeToInventory( UP_MEDKIT, client->ps.stats );
 		weapon = client->pers.humanItemSelection;
@@ -1824,8 +1824,8 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	client->inactivityTime = level.time + g_inactivity.integer * 1000;
 	usercmdClearButtons( client->latched_buttons );
 
-	// give basic income
-	if ( ent != spawn )
+	// give basic income if mine rate above minimum
+	if ( ent != spawn && level.team[ client->pers.team ].mineEfficiency > g_minimumMineRate.integer )
 	{
 		basicIncome = ( int )( BASIC_INCOME_MOD * level.team[ client->pers.team ].mineEfficiency ) - client->pers.credit;
 

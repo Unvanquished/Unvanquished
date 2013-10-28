@@ -579,8 +579,16 @@ static void CG_SetPVars( void )
 			trap_Cvar_Set( "p_classname", "Tyrant" );
 			break;
 
-		case PCL_HUMAN:
-			trap_Cvar_Set( "p_classname", "Human" );
+		case PCL_HUMAN_NAKED:
+			trap_Cvar_Set( "p_classname", "Naked Human" );
+			break;
+
+		case PCL_HUMAN_LIGHT:
+			trap_Cvar_Set( "p_classname", "Light Human" );
+			break;
+
+		case PCL_HUMAN_MEDIUM:
+			trap_Cvar_Set( "p_classname", "Medium Human" );
 			break;
 
 		case PCL_HUMAN_BSUIT:

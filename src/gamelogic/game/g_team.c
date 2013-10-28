@@ -143,7 +143,7 @@ void G_AreaTeamCommand( gentity_t *ent, const char *cmd )
 OnSameTeam
 ==============
 */
-qboolean OnSameTeam( gentity_t *ent1, gentity_t *ent2 )
+qboolean G_OnSameTeam( gentity_t *ent1, gentity_t *ent2 )
 {
 	team_t team1, team2;
 
@@ -483,9 +483,9 @@ void TeamplayInfoMessage( gentity_t *ent )
 			{
 				upgrade = UP_BATTPACK;
 			}
-			else if ( BG_InventoryContainsUpgrade( UP_HELMET, cl->ps.stats ) )
+			else if ( BG_InventoryContainsUpgrade( UP_RADAR, cl->ps.stats ) )
 			{
-				upgrade = UP_HELMET;
+				upgrade = UP_RADAR;
 			}
 			else if ( BG_InventoryContainsUpgrade( UP_LIGHTARMOUR, cl->ps.stats ) )
 			{
