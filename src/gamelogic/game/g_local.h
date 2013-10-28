@@ -31,7 +31,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #include "../../engine/botlib/bot_types.h"
 
 // shared gamelogic (bg) headers
-#include "bg_public.h"
+#include "../shared/bg_public.h"
 
 // macros and common constants
 #include "g_definitions.h"

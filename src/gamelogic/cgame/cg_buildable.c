@@ -22,7 +22,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "cg_local.h"
-#include "../game/bg_public.h"
 
 static const char *const cg_buildableSoundNames[ MAX_BUILDABLE_ANIMATIONS ] =
 {
