@@ -22,8 +22,17 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "g_local.h"
-#include "bg_public.h"
 #include "../../engine/qcommon/q_unicode.h"
+
+#define CMD_CHEAT        0x0001
+#define CMD_CHEAT_TEAM   0x0002 // is a cheat when used on a team
+#define CMD_MESSAGE      0x0004 // sends message to others (skip when muted)
+#define CMD_TEAM         0x0008 // must be on a team
+#define CMD_SPEC         0x0010 // must be a spectator
+#define CMD_ALIEN        0x0020
+#define CMD_HUMAN        0x0040
+#define CMD_ALIVE        0x0080
+#define CMD_INTERMISSION 0x0100 // valid during intermission
 
 /*
 ==================
@@ -2362,8 +2371,7 @@ void Cmd_SetViewpos_f( gentity_t *ent )
 
 #define AS_OVER_RT3 (( ALIENSENSE_RANGE * 0.5f ) / M_ROOT3 )
 
-qboolean G_RoomForClassChange( gentity_t *ent, class_t class,
-                                      vec3_t newOrigin )
+qboolean G_RoomForClassChange( gentity_t *ent, class_t pcl, vec3_t newOrigin )
 {
 	vec3_t  fromMins, fromMaxs;
 	vec3_t  toMins, toMaxs;
@@ -2374,7 +2382,7 @@ qboolean G_RoomForClassChange( gentity_t *ent, class_t class,
 	class_t oldClass = ent->client->ps.stats[ STAT_CLASS ];
 
 	BG_ClassBoundingBox( oldClass, fromMins, fromMaxs, NULL, NULL, NULL );
-	BG_ClassBoundingBox( class, toMins, toMaxs, NULL, NULL, NULL );
+	BG_ClassBoundingBox( pcl, toMins, toMaxs, NULL, NULL, NULL );
 
 	VectorCopy( ent->client->ps.origin, newOrigin );
 

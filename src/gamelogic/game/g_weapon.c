@@ -940,16 +940,13 @@ void G_CheckCkitRepair( gentity_t *self )
 
 		if ( traceEnt->health < buildable->health )
 		{
-			traceEnt->health += HBUILD_HEALRATE;
-
-			if ( traceEnt->health >= buildable->health )
+			if ( G_Heal( traceEnt, HBUILD_HEALRATE ) )
 			{
-				traceEnt->health = buildable->health;
-				G_AddEvent( self, EV_BUILD_REPAIRED, 0 );
+				G_AddEvent( self, EV_BUILD_REPAIR, 0 );
 			}
 			else
 			{
-				G_AddEvent( self, EV_BUILD_REPAIR, 0 );
+				G_AddEvent( self, EV_BUILD_REPAIRED, 0 );
 			}
 
 			self->client->ps.weaponTime += BG_Weapon( self->client->ps.weapon )->repeatRate1;

@@ -23,6 +23,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "g_local.h"
 
+#define MAX_ALIEN_BBOX 25
+
 /*
 ================
 G_SetBuildableAnim
@@ -2817,19 +2819,11 @@ void HMedistat_Think( gentity_t *self )
 		// restore health
 		if ( player->health < client->ps.stats[ STAT_MAX_HEALTH ] )
 		{
-			player->health++;
+			self->buildableStatsTotal += G_Heal( player, 1 );
 
-			self->buildableStatsTotal++;
-
-			// fully healed
+			// check if fully healed
 			if ( player->health == client->ps.stats[ STAT_MAX_HEALTH ] )
 			{
-				// clear rewards array
-				for ( playerNum = 0; playerNum < level.maxclients; playerNum++ )
-				{
-					player->credits[ playerNum ] = 0;
-				}
-
 				// give medikit
 				if ( !BG_InventoryContainsUpgrade( UP_MEDKIT, client->ps.stats ) )
 				{
@@ -3297,46 +3291,6 @@ void HDrill_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	G_RGSInformNeighbors( self );
 }
 
-//==================================================================================
-
-/*
-============
-G_QueueValue
-============
-*/
-
-static int QueueValue( gentity_t *self )
-{
-	int    i;
-	int    damageTotal = 0;
-	int    queuePoints;
-	float  queueFraction = 0;
-
-	for ( i = 0; i < level.maxclients; i++ )
-	{
-		gentity_t *player = g_entities + i;
-
-		damageTotal += self->credits[ i ];
-
-		if ( self->buildableTeam != player->client->pers.team )
-		{
-			queueFraction += self->credits[ i ];
-		}
-	}
-
-	if ( damageTotal > 0 )
-	{
-		queueFraction = queueFraction / damageTotal;
-	}
-	else // all damage was done by nonclients, so queue everything
-	{
-		queueFraction = 1.0;
-	}
-
-	queuePoints = ( int )( queueFraction * BG_Buildable( self->s.modelindex )->buildPoints );
-	return queuePoints;
-}
-
 /*
 ============
 G_BuildableTouchTriggers
@@ -3452,6 +3406,7 @@ void G_BuildableThink( gentity_t *ent, int msec )
 
 		if ( !ent->spawned && ent->health > 0 )
 		{
+			// don't use G_Heal so the rewards array isn't scaled/cleared
 			ent->health += ( int )( ceil( ( float ) maxHealth / ( float )( buildTime * 0.001f ) ) );
 		}
 		else if ( ent->health > 0 && ent->health < maxHealth )
@@ -3459,23 +3414,12 @@ void G_BuildableThink( gentity_t *ent, int msec )
 			if ( ent->buildableTeam == TEAM_ALIENS && regenRate &&
 			     ( ent->lastDamageTime + ALIEN_REGEN_DAMAGE_TIME ) < level.time )
 			{
-				ent->health += regenRate;
+				G_Heal( ent, regenRate );
 			}
 			else if ( ent->buildableTeam == TEAM_HUMANS && ent->dcc &&
 			          ( ent->lastDamageTime + HUMAN_REGEN_DAMAGE_TIME ) < level.time )
 			{
-				ent->health += DC_HEALRATE * ent->dcc;
-			}
-		}
-
-		if ( ent->health >= maxHealth )
-		{
-			int i;
-			ent->health = maxHealth;
-
-			for ( i = 0; i < MAX_CLIENTS; i++ )
-			{
-				ent->credits[ i ] = 0;
+				G_Heal( ent, DC_HEALRATE * ent->dcc );
 			}
 		}
 	}
@@ -5464,8 +5408,6 @@ void G_BuildLogSet( buildLog_t *log, gentity_t *ent )
 	VectorCopy( ent->s.angles, log->angles );
 	VectorCopy( ent->s.origin2, log->origin2 );
 	VectorCopy( ent->s.angles2, log->angles2 );
-	log->powerSource = ent->powerSource ? ent->powerSource->s.modelindex : BA_NONE;
-	log->powerValue = QueueValue( ent );
 }
 
 void G_BuildLogAuto( gentity_t *actor, gentity_t *buildable, buildFate_t fate )

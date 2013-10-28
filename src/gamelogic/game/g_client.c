@@ -1748,7 +1748,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	//clear the credits array
 	for ( i = 0; i < MAX_CLIENTS; i++ )
 	{
-		ent->credits[ i ] = 0;
+		ent->credits[ i ] = 0.0f;
 	}
 
 	client->ps.stats[ STAT_STAMINA ] = STAMINA_MAX;

@@ -744,15 +744,8 @@ static void G_ReplenishHumanHealth( gentity_t *self )
 	// stop if client is fully healed
 	if ( self->health >= client->ps.stats[ STAT_MAX_HEALTH ] )
 	{
-		self->health = client->ps.stats[ STAT_MAX_HEALTH ];
 		client->medKitHealthToRestore = 0;
 		client->ps.stats[ STAT_STATE ] &= ~SS_HEALING_2X;
-
-		// clear rewards array
-		for ( clientNum = 0; clientNum < level.maxclients; clientNum++ )
-		{
-			self->credits[ clientNum ] = 0;
-		}
 
 		return;
 	}
@@ -782,8 +775,7 @@ static void G_ReplenishHumanHealth( gentity_t *self )
 	}
 
 	// heal
-	client->medKitHealthToRestore--;
-	self->health++;
+	client->medKitHealthToRestore -= G_Heal( self, 1 );
 }
 
 /*
@@ -997,11 +989,11 @@ void ClientTimerActions( gentity_t *ent, int msec )
 			// Give clients some credit periodically
 			if ( client->pers.team == TEAM_ALIENS )
 			{
-				G_AddCreditToClient( client, FREEKILL_ALIEN, qtrue );
+				G_AddCreditToClient( client, PLAYER_BASE_VALUE, qtrue );
 			}
 			else if ( client->pers.team == TEAM_HUMANS )
 			{
-				G_AddCreditToClient( client, FREEKILL_HUMAN, qtrue );
+				G_AddCreditToClient( client, PLAYER_BASE_VALUE, qtrue );
 			}
 		}
 	}
@@ -1719,18 +1711,7 @@ static void G_ReplenishAlienHealth( gentity_t *self )
 		// If recovery interval is less than frametime, compensate
 		count = MAX( 1 + ( level.time - self->nextRegenTime ) / interval, 0 );
 
-		self->health += count;
-
-		// If at full health, clear damage counters
-		if ( self->health >= client->ps.stats[ STAT_MAX_HEALTH ] )
-		{
-			self->health = client->ps.stats[ STAT_MAX_HEALTH ];
-
-			for ( clientNum = 0; clientNum < MAX_CLIENTS; clientNum++ )
-			{
-				self->credits[ clientNum ] = 0;
-			}
-		}
+		G_Heal( self, count );
 
 		self->nextRegenTime = level.time + count * interval;
 	}
