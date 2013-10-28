@@ -48,7 +48,17 @@ menuDef
 		background "ui/assets/human/leftbg.tga"
 	}
 
-	//HEALTH BAR
+	itemDef
+	{
+		name "healthicon"
+		rect 2 439.5 30 30
+		aspectBias ALIGN_LEFT
+		visible MENU_TRUE
+		decoration
+		forecolor 1 .4 .38 1
+		ownerdraw CG_PLAYER_HEALTH_CROSS
+	}
+
 	itemDef
 	{
 		name "healthbar"
@@ -62,7 +72,30 @@ menuDef
 		ownerdraw CG_PLAYER_HEALTH_BAR
 	}
 
-	//STAMINABAR
+	itemDef
+	{
+		name "health"
+		rect 40 445 60 15
+		aspectBias ALIGN_LEFT
+		visible MENU_TRUE
+		decoration
+		forecolor 1 .4 .38 1
+		ownerdraw CG_PLAYER_HEALTH
+	}
+
+	itemDef
+	{
+		name "staminaicon"
+		rect 0 415 25 25
+		aspectBias ALIGN_LEFT
+		visible MENU_TRUE
+		decoration
+		forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0.8
+		backColor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0.2
+		background "ui/assets/human/stamina.tga"
+		ownerdraw CG_PLAYER_STAMINA_BOLT
+	}
+
 	itemDef
 	{
 		name "staminabar"
@@ -73,10 +106,20 @@ menuDef
 		forecolor .51 1 .93 .32
 		backColor 0 0 0 0
 		background "ui/assets/human/buildstat/health.tga"
+		ownerdraw CG_PLAYER_STAMINA_BAR
+	}
+
+	itemDef
+	{
+		name "stamina"
+		rect 40 422 60 15
+		aspectBias ALIGN_LEFT
+		visible MENU_TRUE
+		decoration
+		forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0.8
 		ownerdraw CG_PLAYER_STAMINA
 	}
 
-	//AMMOBAR
 	itemDef
 	{
 		name "ammobar"
@@ -90,7 +133,6 @@ menuDef
 		ownerdraw CG_PLAYER_AMMO_STACK
 	}
 
-	//BUILDTIMERBAR
 	itemDef
 	{
 		name "buildtimerbar"
@@ -104,10 +146,9 @@ menuDef
 		ownerdraw CG_PLAYER_BUILD_TIMER_BAR
 	}
 
-	//CLIPSBAR
 	itemDef
 	{
-		name "ammobar"
+		name "clipsbar"
 		rect 488 444 152 18
 		aspectBias ALIGN_RIGHT
 		visible MENU_TRUE
@@ -118,24 +159,9 @@ menuDef
 		ownerdraw CG_PLAYER_CLIPS_STACK
 	}
 
-	// STAMINA
 	itemDef
 	{
-		name "stamina"
-		rect 0 415 25 25
-		aspectBias ALIGN_LEFT
-		visible MENU_TRUE
-		decoration
-		forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0.8
-		backColor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0.2
-		background "ui/assets/human/stamina.tga"
-		ownerdraw CG_PLAYER_STAMINA_BOLT
-	}
-
-	//CLIP ICON
-	itemDef
-	{
-		name "clip"
+		name "clipicon"
 		rect 492 445 18 18
 		aspectBias ALIGN_RIGHT
 		visible MENU_TRUE
@@ -145,7 +171,6 @@ menuDef
 		forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B .7
 	}
 
-	//CREDITS
 	itemDef
 	{
 		name "creditstext"
@@ -160,18 +185,6 @@ menuDef
 		visible MENU_TRUE
 		decoration
 	}
-
-    //CROSS
-    itemDef
-    {
-      name "cross"
-      rect 2 439.5 30 30
-      aspectBias ALIGN_LEFT
-      visible MENU_TRUE
-      decoration
-      forecolor 1 .4 .38 1
-      ownerdraw CG_PLAYER_HEALTH_CROSS
-    }
 
     //CREDITS
     itemDef
@@ -222,18 +235,6 @@ menuDef
 		decoration
 		forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 1
 		ownerdraw CG_PLAYER_AMMO_VALUE
-	}
-
-	//HEALTH
-	itemDef
-	{
-		name "health"
-		rect 40 445 60 15
-		aspectBias ALIGN_LEFT
-		visible MENU_TRUE
-		decoration
-		forecolor 1 .4 .38 1
-		ownerdraw CG_PLAYER_HEALTH
 	}
 
     //CLIPS
