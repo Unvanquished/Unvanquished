@@ -989,11 +989,11 @@ void ClientTimerActions( gentity_t *ent, int msec )
 			// Give clients some credit periodically
 			if ( client->pers.team == TEAM_ALIENS )
 			{
-				G_AddCreditToClient( client, FREEKILL_ALIEN, qtrue );
+				G_AddCreditToClient( client, PLAYER_BASE_VALUE, qtrue );
 			}
 			else if ( client->pers.team == TEAM_HUMANS )
 			{
-				G_AddCreditToClient( client, FREEKILL_HUMAN, qtrue );
+				G_AddCreditToClient( client, PLAYER_BASE_VALUE, qtrue );
 			}
 		}
 	}

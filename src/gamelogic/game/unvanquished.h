@@ -23,19 +23,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #ifndef UNVANQUISHED_H_
 #define UNVANQUISHED_H_
-//==================================================================
 
 /*
  * ALIEN weapons
- *
- * _REPEAT  - time in msec until the weapon can be used again
- * _DMG     - amount of damage the weapon does
- *
- * ALIEN_WDMG_MODIFIER - overall damage modifier for coarse tuning
- *
  */
-#define ALIEN_WDMG_MODIFIER           1.0f
-#define ADM(d) ((int)((float)d * ALIEN_WDMG_MODIFIER ))
 
 extern int   ABUILDER_CLAW_DMG;
 extern float ABUILDER_CLAW_RANGE;
@@ -64,7 +55,6 @@ extern int   LEVEL1_CLAW_DMG;
 extern float LEVEL1_CLAW_RANGE;
 extern float LEVEL1_CLAW_U_RANGE;
 extern float LEVEL1_CLAW_WIDTH;
-#define LEVEL1_CLAW_K_SCALE           1.0f
 extern float LEVEL1_GRAB_RANGE;
 extern float LEVEL1_GRAB_U_RANGE;
 extern int   LEVEL1_GRAB_TIME;
@@ -75,6 +65,8 @@ extern float LEVEL1_REGEN_MOD;
 extern float LEVEL1_UPG_REGEN_MOD;
 extern int   LEVEL1_REGEN_SCOREINC;
 extern int   LEVEL1_UPG_REGEN_SCOREINC;
+#define PCLOUD_MODIFIER         0.5f
+#define PCLOUD_ARMOUR_MODIFIER  0.75f
 
 extern int   LEVEL2_CLAW_DMG;
 extern float LEVEL2_CLAW_RANGE;
@@ -126,82 +118,6 @@ extern int   LEVEL4_CRUSH_DAMAGE;
 extern int   LEVEL4_CRUSH_REPEAT;
 
 /*
- * ALIEN classes
- *
- * _SPEED   - fraction of Q3A run speed the class can move
- * _REGEN   - health per second regained
- *
- * ALIEN_HLTH_MODIFIER - overall health modifier for coarse tuning
- *
- */
-
-#define ALIEN_HLTH_MODIFIER  1.0f
-#define AHM(h) ((int)((float)h * ALIEN_HLTH_MODIFIER ))
-
-#define ALIEN_VALUE_MODIFIER 1.0f
-#define AVM(h) ((int)((float)h * ALIEN_VALUE_MODIFIER ))
-
-#define ABUILDER_SPEED       0.9f
-#define ABUILDER_VALUE       AVM(240)
-#define ABUILDER_HEALTH      AHM(50)
-#define ABUILDER_REGEN       ( 0.04f * ABUILDER_HEALTH )
-#define ABUILDER_COST        0
-
-#define ABUILDER_UPG_SPEED   0.9f
-#define ABUILDER_UPG_VALUE   AVM(300)
-#define ABUILDER_UPG_HEALTH  AHM(75)
-#define ABUILDER_UPG_REGEN   ( 0.04f * ABUILDER_UPG_HEALTH )
-#define ABUILDER_UPG_COST    0
-
-#define LEVEL0_SPEED         1.4f
-#define LEVEL0_VALUE         AVM(180)
-#define LEVEL0_HEALTH        AHM(25)
-#define LEVEL0_REGEN         ( 0.05f * LEVEL0_HEALTH )
-#define LEVEL0_COST          0
-
-#define LEVEL1_SPEED         1.25f
-#define LEVEL1_VALUE         AVM(270)
-#define LEVEL1_HEALTH        AHM(60)
-#define LEVEL1_REGEN         ( 0.03f * LEVEL1_HEALTH )
-#define LEVEL1_COST          1
-
-#define LEVEL1_UPG_SPEED     1.25f
-#define LEVEL1_UPG_VALUE     AVM(330)
-#define LEVEL1_UPG_HEALTH    AHM(80)
-#define LEVEL1_UPG_REGEN     ( 0.03f * LEVEL1_UPG_HEALTH )
-#define LEVEL1_UPG_COST      1
-
-#define LEVEL2_SPEED         1.2f
-#define LEVEL2_VALUE         AVM(420)
-#define LEVEL2_HEALTH        AHM(150)
-#define LEVEL2_REGEN         ( 0.03f * LEVEL2_HEALTH )
-#define LEVEL2_COST          1
-
-#define LEVEL2_UPG_SPEED     1.2f
-#define LEVEL2_UPG_VALUE     AVM(540)
-#define LEVEL2_UPG_HEALTH    AHM(175)
-#define LEVEL2_UPG_REGEN     ( 0.03f * LEVEL2_UPG_HEALTH )
-#define LEVEL2_UPG_COST      1
-
-#define LEVEL3_SPEED         1.2f // Raised goon speed by .1 to match backpedalling humans. May need nerf.
-#define LEVEL3_VALUE         AVM(600)
-#define LEVEL3_HEALTH        AHM(200)
-#define LEVEL3_REGEN         ( 0.03f * LEVEL3_HEALTH )
-#define LEVEL3_COST          1
-
-#define LEVEL3_UPG_SPEED     1.2f // Raised by .1 to match standard goon.
-#define LEVEL3_UPG_VALUE     AVM(720)
-#define LEVEL3_UPG_HEALTH    AHM(250)
-#define LEVEL3_UPG_REGEN     ( 0.03f * LEVEL3_UPG_HEALTH )
-#define LEVEL3_UPG_COST      1
-
-#define LEVEL4_SPEED         1.1f // Lowered by .1
-#define LEVEL4_VALUE         AVM(960)
-#define LEVEL4_HEALTH        AHM(350)
-#define LEVEL4_REGEN         ( 0.025f * LEVEL4_HEALTH )
-#define LEVEL4_COST          2
-
-/*
  * ALIEN buildables
  */
 
@@ -224,13 +140,9 @@ extern int   LEVEL4_CRUSH_REPEAT;
 #define BURN_SPREAD_RADIUS      100
 #define BURN_PERIODS_RAND       0.2  // randomization applied to all burn periods
 
-#define PCLOUD_MODIFIER         0.5f
-#define PCLOUD_ARMOUR_MODIFIER  0.75f
-
 #define BARRICADE_SHRINKPROP    0.25f
 #define BARRICADE_SHRINKTIMEOUT 500
 
-#define BOOSTER_REGEN_MOD       3.0f
 #define BOOST_TIME              20000
 #define BOOST_WARN_TIME         15000
 
@@ -244,29 +156,17 @@ extern int   LEVEL4_CRUSH_REPEAT;
 #define HIVE_SENSE_RANGE        500.0f
 #define HIVE_LIFETIME           3000
 #define HIVE_REPEAT             3000
-#define HIVE_DMG                80
 #define HIVE_SPEED              320.0f
 #define HIVE_DIR_CHANGE_PERIOD  500
-
-#define LEECH_LIFETIME           3000
-#define LEECH_REPEAT             3000
-#define LEECH_K_SCALE            1.0f
-#define LEECH_DMG                80
-#define LEECH_SPEED              320.0f
-#define LEECH_DIR_CHANGE_PERIOD  500
 
 #define LOCKBLOB_SPEED          500.0f
 #define LOCKBLOB_LOCKTIME       5000
 #define LOCKBLOB_DOT            0.85f // max angle = acos( LOCKBLOB_DOT )
 
 #define OVERMIND_HEALTH         750
-#define OVERMIND_ATTACK_RANGE   150.0f
 
 /*
  * ALIEN misc
- *
- * ALIENSENSE_RANGE - the distance alien sense is useful for
- *
  */
 
 #define ALIENSENSE_RANGE         1000.0f
@@ -286,17 +186,7 @@ extern int   LEVEL4_CRUSH_REPEAT;
 
 /*
  * HUMAN weapons
- *
- * _REPEAT  - time between firings
- * _RELOAD  - time needed to reload
- * _PRICE   - amount in credits weapon costs
- *
- * HUMAN_WDMG_MODIFIER - overall damage modifier for coarse tuning
- *
  */
-
-#define HUMAN_WDMG_MODIFIER      1.0f
-#define HDM(d)                   ((int)((float)d * HUMAN_WDMG_MODIFIER ))
 
 extern int   BLASTER_SPREAD;
 extern int   BLASTER_SPEED;
@@ -334,10 +224,7 @@ extern float FLAMER_LAG;
 extern float FLAMER_IGNITE_RADIUS;
 extern float FLAMER_IGNITE_CHANCE;
 extern float FLAMER_IGNITE_SPLCHANCE;
-#define FLAMER_DAMAGE            HDM(10)
 #define FLAMER_DAMAGE_MAXDST_MOD 0.5f    // damage decreases linearly from full damage to this during missile lifetime
-#define FLAMER_SPLASH_DAMAGE     FLAMER_DAMAGE
-#define FLAMER_SPLASH_RADIUS     50
 #define FLAMER_SPLASH_MINDST_MOD 0.5f    // splash damage increases linearly from this to full damage during lifetime
 #define FLAMER_LEAVE_FIRE_CHANCE 0.3f
 
@@ -355,7 +242,6 @@ extern int   LCANNON_SIZE;
 extern int   LCANNON_SECONDARY_DAMAGE;
 extern int   LCANNON_SECONDARY_RADIUS;
 extern int   LCANNON_SECONDARY_SPEED;
-#define LCANNON_SECONDARY_RELOAD 2000
 extern int   LCANNON_SPEED;
 extern int   LCANNON_CHARGE_TIME_MAX;
 extern int   LCANNON_CHARGE_TIME_MIN;
@@ -384,6 +270,7 @@ extern int   MEDKIT_STARTUP_SPEED;
 /*
  * HUMAN buildables
  */
+
 extern float REACTOR_BASESIZE;
 extern float REPEATER_BASESIZE;
 
@@ -464,8 +351,6 @@ extern int   REACTOR_ATTACK_DCC_DAMAGE;
 #define PLAYER_BASE_VALUE                  200   // base credit value of a player
 #define PLAYER_PRICE_TO_VALUE              0.5f  // fraction of upgrade price added to player value
 #define DEFAULT_FREEKILL_PERIOD            "120" // in s
-#define FREEKILL_ALIEN                     PLAYER_BASE_VALUE
-#define FREEKILL_HUMAN                     PLAYER_BASE_VALUE
 
 // resources
 #define RGS_RANGE                          1000.0f
