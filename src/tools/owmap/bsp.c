@@ -1130,7 +1130,7 @@ int BSPMain(int argc, char **argv)
 
 	/* fixme: print more useful usage here */
 	if(i != (argc - 1))
-		Error("usage: owmap [options] mapfile");
+		Error("usage: daemonmap [options] mapfile");
 
 	/* copy source name */
 	strcpy(source, ExpandArg(argv[i]));

@@ -563,7 +563,7 @@ int MiniMapBSPMain(int argc, char **argv)
 	if(argc < 2)
 	{
 		Sys_Printf
-			("Usage: owmap [-v] -minimap [-size n] [-sharpen f] [-samples n | -random n] [-o filename.png] [-minmax Xmin Ymin Zmin Xmax Ymax Zmax] <mapname>\n");
+			("Usage: daemonmap [-v] -minimap [-size n] [-sharpen f] [-samples n | -random n] [-border n] [-keepaspect | -nokeepaspect] [-o filename.png] [-minmax Xmin Ymin Zmin Xmax Ymax Zmax] [-black | -white] [-boost] <mapname>\n");
 		return 0;
 	}
 
@@ -828,7 +828,7 @@ int FixAAS(int argc, char **argv)
 	/* arg checking */
 	if(argc < 2)
 	{
-		Sys_Printf("Usage: owmap -fixaas [-v] <mapname>\n");
+		Sys_Printf("Usage: daemonmap -fixaas [-v] <mapname>\n");
 		return 0;
 	}
 
@@ -939,7 +939,7 @@ int AnalyzeBSP(int argc, char **argv)
 	/* arg checking */
 	if(argc < 1)
 	{
-		Sys_Printf("Usage: owmap -analyze [-lumpswap] [-v] <mapname>\n");
+		Sys_Printf("Usage: daemonmap -analyze [-lumpswap] [-v] <mapname>\n");
 		return 0;
 	}
 
@@ -1204,7 +1204,7 @@ int ScaleBSPMain(int argc, char **argv)
 	/* arg checking */
 	if(argc < 3)
 	{
-		Sys_Printf("Usage: owmap [-v] -scale [-tex] <value> <mapname>\n");
+		Sys_Printf("Usage: daemonmap [-v] -scale [-tex] <value> <mapname>\n");
 		return 0;
 	}
 
@@ -1221,7 +1221,7 @@ int ScaleBSPMain(int argc, char **argv)
 
 	if(scale[0] == 0.0f || scale[1] == 0.0f || scale[2] == 0.0f)
 	{
-		Sys_Printf("Usage: owmap [-v] -scale [-tex] <value> <mapname>\n");
+		Sys_Printf("Usage: daemonmap [-v] -scale [-tex] <value> <mapname>\n");
 		Sys_Printf("Non-zero scale value required.\n");
 		return 0;
 	}
@@ -1439,7 +1439,7 @@ int ConvertBSPMain(int argc, char **argv)
 	/* arg checking */
 	if(argc < 1)
 	{
-		Sys_Printf("Usage: owmap -scale <value> [-v] <mapname>\n");
+		Sys_Printf("Usage: daemonmap -scale <value> [-v] <mapname>\n");
 		return 0;
 	}
 
@@ -1769,7 +1769,7 @@ int ConvertMapMain(int argc, char **argv)
 
 	if(i != argc - 1)
 	{
-		Error("usage: owmap [general options] -map2map [-<switch> [-<switch> ...]] <mapname.map>\n"
+		Error("usage: daemonmap [general options] -map2map [-<switch> [-<switch> ...]] <mapname.map>\n"
 			  "\n"
 			  "Switches:\n"
 			  " -v                     = verbose output\n"

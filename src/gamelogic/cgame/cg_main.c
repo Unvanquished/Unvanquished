@@ -1254,7 +1254,7 @@ static void CG_UpdateLoadingStep( cgLoadingStep_t step )
 			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.60f, choose("Hello World!", "Making a scene.", NULL) );
 			break;
 		case LOAD_ASSETS:
-			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.66f, choose("Taking pictures of the world", "Using your laptop's camera", "Adding texture to concrete", "Drawing smiley faces", NULL) );
+			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.63f, choose("Taking pictures of the world", "Using your laptop's camera", "Adding texture to concrete", "Drawing smiley faces", NULL) );
 			break;
 		case LOAD_CONFIGS:
 			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.80f, choose("Reading the manual", "Looking at blueprints", NULL) );
@@ -1633,7 +1633,7 @@ static void CG_RegisterGraphics( void )
 		cgs.gameModels[ i ] = trap_R_RegisterModel( modelName );
 	}
 
-	CG_UpdateMediaFraction( 0.8f );
+	CG_UpdateMediaFraction( 0.75f );
 
 	// register all the server specified shaders
 	for ( i = 1; i < MAX_GAME_SHADERS; i++ )
@@ -1651,7 +1651,7 @@ static void CG_RegisterGraphics( void )
 							     RSF_DEFAULT);
 	}
 
-	CG_UpdateMediaFraction( 0.85f );
+	CG_UpdateMediaFraction( 0.77f );
 
 	// register all the server specified grading textures
 	// starting with the world wide one
@@ -1660,7 +1660,7 @@ static void CG_RegisterGraphics( void )
 		CG_RegisterGrading( i, CG_ConfigString( CS_GRADING_TEXTURES + i ) );
 	}
 
-	CG_UpdateMediaFraction( 0.9f );
+	CG_UpdateMediaFraction( 0.79f );
 
 	// register all the server specified particle systems
 	for ( i = 1; i < MAX_GAME_PARTICLE_SYSTEMS; i++ )

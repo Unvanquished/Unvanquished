@@ -217,7 +217,7 @@ int ExportLightmapsMain(int argc, char **argv)
 	/* arg checking */
 	if(argc < 1)
 	{
-		Sys_Printf("Usage: owmap -export [-v] <mapname>\n");
+		Sys_Printf("Usage: daemonmap -export [-v] <mapname>\n");
 		return 0;
 	}
 
@@ -254,7 +254,7 @@ int ImportLightmapsMain(int argc, char **argv)
 	/* arg checking */
 	if(argc < 1)
 	{
-		Sys_Printf("Usage: owmap -import [-v] <mapname>\n");
+		Sys_Printf("Usage: daemonmap -import [-v] <mapname>\n");
 		return 0;
 	}
 
