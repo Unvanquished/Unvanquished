@@ -883,6 +883,14 @@ int BSPMain(int argc, char **argv)
 	char            path[1024], tempSource[1024];
 	qboolean        onlyents = qfalse;
 
+	if ( argv == NULL )
+	{
+		Sys_Printf("Usage: daemonmap [-bsp] [-onlyents] [-tempname NAME] [-tmpout] [-nowater] [-nodetail] [-fulldetail] [-nofog] [-nosubdivide] [-leaktest] [-verboseentities] "
+		           "[-nocurves] [-notjunc] [-fakemap] [-samplesize SIZE] [-minsamplesize SIZE] [-custinfoparms] [-rename] [-ne NUMBER] [-de NUMBER] [-mv COUNT] [-mi COUNT] "
+		           "[-np ANGLE] [-snap SIZE] [-texrange SIZE] [-nohint] [-flat] [-meta] [-patchmeta] [-flares|-noflares] [-skyfix] [-debugsurfaces] [-debuginset] "
+		           "[-debugportals] [-altsplit] [-deep] [-maxarea] [-draw] MAPFILE\n");
+		return 0;
+	}
 
 	/* note it */
 	Sys_Printf("--- BSP ---\n");

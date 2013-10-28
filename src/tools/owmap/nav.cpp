@@ -1292,14 +1292,14 @@ extern "C" int NavMain(int argc, char **argv)
 	float temp;
 	int i;
 
-	/* note it */
-	Sys_Printf("--- Nav ---\n");
-
 	if(argc < 2)
 	{
-		Sys_Printf("Usage: daemonmap -nav [-cellheight f] [-stepsize f] [-includecaulk] [-includesky] [-nogapfilter] <mapname>\n");
+		Sys_Printf("Usage: daemonmap -nav [-cellheight F] [-stepsize F] [-includecaulk] [-includesky] [-nogapfilter] MAPNAME\n");
 		return 0;
 	}
+
+	/* note it */
+	Sys_Printf("--- Nav ---\n");
 
 	/* process arguments */
 	for(i = 1; i < (argc - 1); i++)
