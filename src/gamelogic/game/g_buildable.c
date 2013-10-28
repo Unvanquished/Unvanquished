@@ -3297,46 +3297,6 @@ void HDrill_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	G_RGSInformNeighbors( self );
 }
 
-//==================================================================================
-
-/*
-============
-G_QueueValue
-============
-*/
-
-static int QueueValue( gentity_t *self )
-{
-	int    i;
-	int    damageTotal = 0;
-	int    queuePoints;
-	float  queueFraction = 0;
-
-	for ( i = 0; i < level.maxclients; i++ )
-	{
-		gentity_t *player = g_entities + i;
-
-		damageTotal += self->credits[ i ];
-
-		if ( self->buildableTeam != player->client->pers.team )
-		{
-			queueFraction += self->credits[ i ];
-		}
-	}
-
-	if ( damageTotal > 0 )
-	{
-		queueFraction = queueFraction / damageTotal;
-	}
-	else // all damage was done by nonclients, so queue everything
-	{
-		queueFraction = 1.0;
-	}
-
-	queuePoints = ( int )( queueFraction * BG_Buildable( self->s.modelindex )->buildPoints );
-	return queuePoints;
-}
-
 /*
 ============
 G_BuildableTouchTriggers
@@ -5464,8 +5424,6 @@ void G_BuildLogSet( buildLog_t *log, gentity_t *ent )
 	VectorCopy( ent->s.angles, log->angles );
 	VectorCopy( ent->s.origin2, log->origin2 );
 	VectorCopy( ent->s.angles2, log->angles2 );
-	log->powerSource = ent->powerSource ? ent->powerSource->s.modelindex : BA_NONE;
-	log->powerValue = QueueValue( ent );
 }
 
 void G_BuildLogAuto( gentity_t *actor, gentity_t *buildable, buildFate_t fate )

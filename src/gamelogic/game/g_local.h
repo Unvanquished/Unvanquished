@@ -708,8 +708,6 @@ typedef struct
 	vec3_t      angles;
 	vec3_t      origin2;
 	vec3_t      angles2;
-	buildable_t powerSource;
-	int         powerValue;
 } buildLog_t;
 
 typedef enum {
