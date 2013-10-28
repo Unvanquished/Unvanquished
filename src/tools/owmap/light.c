@@ -2061,6 +2061,21 @@ int LightMain(int argc, char **argv)
 	qboolean        lightSamplesInsist = qfalse;
 
 
+	if (argv == NULL)
+	{
+		Sys_Printf("Usage: daemonmap -light [-pointscale SCALE] [-areascale SCALE] [-skyscale SCALE] [-bouncescale SCALE] [-scale SCALE] [-gridscale SCALE] "
+		           "[-gridambientscale SCALE] [-griddirectionality VALUE] [-gridambientdirectionality VALUE] [-gamma VALUE] [-exposure VALUE] [-compensate VALUE] "
+		           "[-bounce VALUE] [-super[sample] COUNT] [-randomsamples] [-samples [+]COUNT] [-samplesearchbboxsize SIZE] [-filter] [-dark] [-shadeangle ANGLE] "
+		           "[-thresh VALUE] [-approx VALUE] [-[no]deluxemap] [-deluxemode 0|1] [-external] [-lightmapsize SIZE] [-rawlightmapsizelimit SIZE] "
+		           "[-lightmapdir DIRECTORY] [-custinfoparms] [-wolf|q3] [-extradist SIZE] [-sunonly] [-bounceonly] [-nocollapse] [-nolightmapsearch] "
+		           "[-lightmapsearchpower SIZE] [-lightmapsearchblocksize SIZE] [-shade] [-bouncegrid] [-smooth] [-fast|-faster] [-fastgrid] [-fastbounce] "
+		           "[-cheap] [-cheapgrid] [-normalmap] [-trisoup] [-debug] [-debugsurfaces] [-debugunused] [-debugaxis] [-debugcluster] [-debugorigin] "
+		           "[-debugdeluxe] [-export] [-notrace] [-patchshadows] [-samplesize SIZE] [-minsamplesize SIZE] [-novertex] [-nogrid] [-border] [-nosurf] "
+		           "[-dump] [-lomem] [-lightanglehl 0|1] [-nostyles] [-cpma] [-floodlight] [-debugnormals] [-lowquality] [-dirty] [-dirtdebug] [-dirtmode 0|1] "
+		           "[-dirtdepth SIZE] [-dirtscale SCALE] [-dirtgain VALUE] [-trianglecheck] [-extravisnudge] [-fill] MAPNAME\n");
+		return 0;
+	}
+
 	/* note it */
 	Sys_Printf("--- Light ---\n");
 	Sys_Printf("--- ProcessGameSpecific ---\n");
