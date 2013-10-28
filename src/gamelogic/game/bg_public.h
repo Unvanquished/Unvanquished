@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //==================================================================
 
 //Unvanquished balance header
-#include "unvanquished.h"
+#include "bg_gameplay.h"
 
 // because games can change separately from the main system version, we need a
 // second version that must match between game and cgame
