@@ -147,8 +147,8 @@ void LookAtKiller( gentity_t *self, gentity_t *inflictor, gentity_t *attacker )
  */
 void G_RewardAttackers( gentity_t *self )
 {
-	float     value, share, reward;
-	int       playerNum, enemyDamage, maxHealth, damageShare;
+	float     value, share, reward, enemyDamage, damageShare;
+	int       playerNum, maxHealth;
 	gentity_t *player;
 	team_t    ownTeam, playerTeam;
 
@@ -178,7 +178,7 @@ void G_RewardAttackers( gentity_t *self )
 	}
 
 	// Sum up damage dealt by enemies
-	enemyDamage = 0;
+	enemyDamage = 0.0f;
 
 	for ( playerNum = 0; playerNum < level.maxclients; playerNum++ )
 	{
@@ -207,7 +207,7 @@ void G_RewardAttackers( gentity_t *self )
 		damageShare = self->credits[ playerNum ];
 
 		// Clear reward array
-		self->credits[ playerNum ] = 0;
+		self->credits[ playerNum ] = 0.0f;
 
 		// Player must be on the other team
 		if ( playerTeam == ownTeam || playerTeam <= TEAM_NONE || playerTeam >= NUM_TEAMS )
@@ -216,7 +216,7 @@ void G_RewardAttackers( gentity_t *self )
 		}
 
 		// Player must have dealt damage
-		if ( damageShare <= 0 )
+		if ( damageShare <= 0.0f )
 		{
 			continue;
 		}
@@ -1211,8 +1211,8 @@ void G_Damage( gentity_t *target, gentity_t *inflictor, gentity_t *attacker,
 
 		if ( attacker->client )
 		{
-			// add to the attackers account on the target
-			target->credits[ attacker->client->ps.clientNum ] += loss;
+			// add to the attacker's account on the target
+			target->credits[ attacker->client->ps.clientNum ] += ( float )loss;
 
 			// notify the attacker of a hit
 			NotifyClientOfHit( attacker );

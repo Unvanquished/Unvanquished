@@ -2827,7 +2827,7 @@ void HMedistat_Think( gentity_t *self )
 				// clear rewards array
 				for ( playerNum = 0; playerNum < level.maxclients; playerNum++ )
 				{
-					player->credits[ playerNum ] = 0;
+					player->credits[ playerNum ] = 0.0f;
 				}
 
 				// give medikit
@@ -3412,6 +3412,7 @@ void G_BuildableThink( gentity_t *ent, int msec )
 
 		if ( !ent->spawned && ent->health > 0 )
 		{
+			// don't use G_Heal so the rewards array isn't scaled/cleared
 			ent->health += ( int )( ceil( ( float ) maxHealth / ( float )( buildTime * 0.001f ) ) );
 		}
 		else if ( ent->health > 0 && ent->health < maxHealth )
@@ -3419,23 +3420,12 @@ void G_BuildableThink( gentity_t *ent, int msec )
 			if ( ent->buildableTeam == TEAM_ALIENS && regenRate &&
 			     ( ent->lastDamageTime + ALIEN_REGEN_DAMAGE_TIME ) < level.time )
 			{
-				ent->health += regenRate;
+				G_Heal( ent, regenRate );
 			}
 			else if ( ent->buildableTeam == TEAM_HUMANS && ent->dcc &&
 			          ( ent->lastDamageTime + HUMAN_REGEN_DAMAGE_TIME ) < level.time )
 			{
-				ent->health += DC_HEALRATE * ent->dcc;
-			}
-		}
-
-		if ( ent->health >= maxHealth )
-		{
-			int i;
-			ent->health = maxHealth;
-
-			for ( i = 0; i < MAX_CLIENTS; i++ )
-			{
-				ent->credits[ i ] = 0;
+				G_Heal( ent, DC_HEALRATE * ent->dcc );
 			}
 		}
 	}

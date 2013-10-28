@@ -425,7 +425,7 @@ struct gentity_s
 	int         clientSpawnTime; // the time until this spawn can spawn a client
 	int         spawnBlockTime; // timer for anti spawn-block
 
-	int         credits[ MAX_CLIENTS ]; // human credits for each client
+	float       credits[ MAX_CLIENTS ];
 	int         killedBy; // clientNum of killer
 
 	vec3_t      turretAim; // aim vector for turrets
@@ -1014,6 +1014,7 @@ void       G_TeamToClientmask( team_t team, int *loMask, int *hiMask );
 void       G_FireThink( gentity_t *self );
 gentity_t  *G_SpawnFire(vec3_t origin, vec3_t normal, gentity_t *fireStarter );
 qboolean   G_LineOfSight( gentity_t *ent1, gentity_t *ent2 );
+int        G_Heal( gentity_t *self, int amount );
 
 //
 // g_combat.c
