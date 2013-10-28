@@ -725,12 +725,6 @@ qboolean ClientInactivityTimer( gentity_t *ent, qboolean active )
 			                        va( "cp %s", strchr( g_inactivity.string, 's' ) ? N_("\"Ten seconds until inactivity spectate!\n\"") : N_("\"Ten seconds until inactivity drop!\n\"") ) );
 		}
 	}
-	else if ( level.time > client->inactivityTime && !client->inactivityWarning )
-	{
-		client->inactivityWarning = qtrue;
-		trap_SendServerCommand( client - level.clients,
-		                        "cp \"You would have been dropped due to inactivity now\"" );
-	}
 
 	return qtrue;
 }
