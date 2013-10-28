@@ -548,9 +548,11 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 	}
 
 	// Check to see if we are in the spawn queue
+	// Also, if on a team, update the state of unlockable items
 	team = client->pers.team;
 	if ( team == TEAM_ALIENS || team == TEAM_HUMANS )
 	{
+		client->ps.persistant[ PERS_UNLOCKABLES ] = BG_UnlockablesMask( client->pers.team );
 		queued = G_SearchSpawnQueue( &level.team[ team ].spawnQueue, ent - g_entities );
 	}
 	else
