@@ -2817,19 +2817,11 @@ void HMedistat_Think( gentity_t *self )
 		// restore health
 		if ( player->health < client->ps.stats[ STAT_MAX_HEALTH ] )
 		{
-			player->health++;
+			self->buildableStatsTotal += G_Heal( player, 1 );
 
-			self->buildableStatsTotal++;
-
-			// fully healed
+			// check if fully healed
 			if ( player->health == client->ps.stats[ STAT_MAX_HEALTH ] )
 			{
-				// clear rewards array
-				for ( playerNum = 0; playerNum < level.maxclients; playerNum++ )
-				{
-					player->credits[ playerNum ] = 0.0f;
-				}
-
 				// give medikit
 				if ( !BG_InventoryContainsUpgrade( UP_MEDKIT, client->ps.stats ) )
 				{
