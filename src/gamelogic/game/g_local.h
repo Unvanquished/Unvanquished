@@ -33,7 +33,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 // shared gamelogic (bg) headers
 #include "bg_public.h"
 
-// makros and common constants
+// macros and common constants
 #include "g_definitions.h"
 
 // type definitions

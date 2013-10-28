@@ -22,8 +22,8 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
-#ifndef G_DATATYPES_HEADER_H_
-#define G_DATATYPES_HEADER_H_
+#ifndef G_TYPEDEF_H_
+#define G_TYPEDEF_H_
 
 // ---------------
 // primitive types
@@ -103,4 +103,4 @@ typedef enum {
 	VOTE_BOT_SPECTATE
 } voteType_t;
 
-#endif // G_DATATYPES_HEADER_H_
+#endif // G_TYPEDEF_H_
