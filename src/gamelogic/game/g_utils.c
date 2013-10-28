@@ -950,7 +950,7 @@ int G_Heal( gentity_t *self, int amount )
 	// amount must be positive
 	if ( amount <= 0 )
 	{
-		return;
+		return 0;
 	}
 
 	// don't heal dead targets
