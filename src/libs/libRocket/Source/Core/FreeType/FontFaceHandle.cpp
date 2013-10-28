@@ -168,9 +168,6 @@ int FontFaceHandle::GetStringWidth(const WString& string, word prior_character, 
 				num++;
 			}
 		}
-
-		Log::Message(Log::LT_INFO, "Added new glyphs to %d layers", num);
-
 	}
 
 	return width;
