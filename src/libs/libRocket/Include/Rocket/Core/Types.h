@@ -14,7 +14,7 @@
  *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -72,7 +72,7 @@ typedef Colour< float, 1 > Colourf;
 typedef Colour< byte, 255 > Colourb;
 typedef Vector2< float > Vector2f;
 typedef Vector2< int > Vector2i;
-	
+
 
 class Element;
 class Dictionary;
@@ -122,7 +122,7 @@ struct make_non_const<T*>
 template<class derived, class base>
 derived rocket_dynamic_cast(base base_instance)
 {
-	if(base_instance->IsClass(make_non_const<derived>::type::GetStaticClassIdentifier())) 
+	if(base_instance->IsClass(make_non_const<derived>::type::GetStaticClassIdentifier()))
 	{
 		return static_cast<derived>(base_instance);
 	}

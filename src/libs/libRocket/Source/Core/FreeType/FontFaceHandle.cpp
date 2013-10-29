@@ -387,7 +387,7 @@ void FontFaceHandle::GenerateMetrics(FT_Face ft_face)
 bool FontFaceHandle::BuildGlyphMap(FT_Face ft_face, const UnicodeRange& unicode_range)
 {
 	bool success = false;
-	for (word character_code = (word) (Math::Max< unsigned int >(unicode_range.min_codepoint, 32)); character_code <= unicode_range.max_codepoint; ++character_code)
+	for (size_t character_code = (Math::Max< unsigned int >(unicode_range.min_codepoint, 32)); character_code <= unicode_range.max_codepoint; ++character_code)
 	{
 		int index = FT_Get_Char_Index(ft_face, character_code);
 		if (index != 0)
