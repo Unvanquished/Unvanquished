@@ -1533,27 +1533,16 @@ static void CG_DrawPlayerUnlockedItems( rectDef_t *rect, vec4_t foreColour, vec4
 
 	team = cg.predictedPlayerState.persistant[ PERS_TEAM ];
 
-	x = rect->x;
-	y = rect->y;
-	w = rect->w;
-	h = rect->h;
+	w = rect->w - 2 * borderSize;
+	h = rect->h - 2 * borderSize;
 
 	vertical = ( h > w );
 
-	// adjust for borders around the confidence bar, but only along one axis
-	if ( vertical )
-	{
-	        x += borderSize;
-	        w -= 2.0f * borderSize;
-        }
-        else
-        {
-	        y += borderSize;
-	        h -= 2.0f * borderSize;
-        }
-
 	ih = vertical ? w : h;
 	iw = ih * cgDC.aspectScale;
+
+	x = rect->x + borderSize;
+	y = rect->y + borderSize + ( h - ih ) * vertical;
 
 	icons = counts = 0;
 
@@ -1591,21 +1580,37 @@ static void CG_DrawPlayerUnlockedItems( rectDef_t *rect, vec4_t foreColour, vec4
 	{
 		float gap;
 		int i, j;
+		vec4_t unlockedBg, lockedBg;
 
-		if ( vertical )
-		{
-			y = rect->y + h - ih;
-			gap = h - icons * ih;
-		}
-		else
-		{
-			x = rect->x;
-			gap = w - icons * iw;
-		}
+		Vector4Copy( foreColour, unlockedBg );
+		unlockedBg[ 3 ] *= 0.5f;
+		Vector4Copy( backColour, lockedBg );
+		lockedBg[ 3 ] *= 0.5f;
+
+		gap = vertical ? ( h - icons * ih ) : ( w - icons * iw );
 
 		if ( counts > 2 )
 		{
 			gap /= counts - 1;
+		}
+
+		for ( i = 0, j = 0; count[ i ]; ++i )
+		{
+			if ( vertical )
+			{
+				float yb = y - count[ i ] * ih - i * gap;
+				float hb = ( count[ i ] - j ) * ih;
+				CG_DrawRect( x - borderSize, yb - borderSize, iw + 2 * borderSize, hb, borderSize, backColour );
+				CG_FillRect( x, yb, iw, hb - 2 * borderSize, icon[ j ].unlocked ? unlockedBg : lockedBg );
+			}
+			else
+			{
+				float xb = x + j * iw + i * gap;
+				float wb = ( count[ i ] - j ) * iw + 2;
+				CG_DrawRect( xb - borderSize, y - borderSize, wb, ih + 2 * borderSize, borderSize, backColour );
+				CG_FillRect( xb, y, wb - 2 * borderSize, ih, icon[ j ].unlocked ? unlockedBg : lockedBg );
+			}
+			j = count[ i ];
 		}
 
 		for ( i = 0, j = 0; i < icons; ++i )
