@@ -107,12 +107,9 @@ void Cbuf_ExecuteText( int exec_when, const char *text )
 		case EXEC_NOW:
 			if ( text && strlen( text ) > 0 )
 			{
-				Cmd::BufferCommandText(text, Cmd::NOW, true);
+				Cmd::BufferCommandText(text, Cmd::AFTER, true);
 			}
-			else
-			{
-				Cmd::ExecuteCommandBuffer();
-			}
+			Cmd::ExecuteCommandBuffer();
 
 			break;
 

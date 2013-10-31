@@ -48,7 +48,6 @@ namespace Cmd {
      * the command buffer.
      */
     enum execWhen_t {
-        NOW,
         AFTER,
         END
     };

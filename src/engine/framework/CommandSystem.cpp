@@ -68,19 +68,9 @@ namespace Cmd {
             if (parseCvars) {
                 command = SubstituteCvars(command);
             }
-            switch (when) {
-                case NOW:
-                    ExecuteCommand(std::move(command), env);
-                    break;
 
-                case AFTER:
-                case END:
-                    insertPoint = ++commandBuffer.insert(insertPoint, std::make_pair(std::move(command), env));
-                    break;
+            insertPoint = ++commandBuffer.insert(insertPoint, std::make_pair(std::move(command), env));
 
-                default:
-                    Com_Printf("Cmd::BufferCommandText: unknown execWhen_t %i\n", when);
-            }
             current = next;
         } while (current != end);
     }

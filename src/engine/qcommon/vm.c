@@ -552,7 +552,7 @@ vmHeader_t *VM_LoadQVM( vm_t *vm, qboolean alloc )
 	// show where the QVM was loaded from
 	if ( com_developer->integer )
 	{
-		Cmd::BufferCommandText(va("which %s", filename), Cmd::NOW);
+		Cmd::ExecuteCommand(va("which %s", filename));
 	}
 
 	if ( LittleLong( header.h->vmMagic ) == VM_MAGIC_VER2 )
