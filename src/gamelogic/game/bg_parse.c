@@ -1336,7 +1336,7 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
 		{
 			PARSE(text, token);
 			ca->sprintMod = atof( token );
-			defined |= COST;
+			defined |= SPRINTMOD;
 		}
 		else if ( !Q_stricmp( token, "radarFadeOut" ) )
 		{

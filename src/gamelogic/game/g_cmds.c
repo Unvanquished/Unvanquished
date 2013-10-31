@@ -4604,7 +4604,7 @@ static void Cmd_Pubkey_Identify_f( gentity_t *ent )
 	ent->client->pers.pubkey_authenticated = 1;
 	G_admin_authlog( ent );
 	G_admin_cmdlist( ent );
-	CP( "cp \"^2Pubkey authenticated\"\n" );
+	CP( "cp_tr " QQ(N_("^2Pubkey authenticated")) "\n" );
 }
 
 // commands must be in alphabetical order!
