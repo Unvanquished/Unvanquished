@@ -1,11 +1,11 @@
-0,models/players/human_base/head
-1,models/players/human_base/head
+0,models/players/human_naked/head
+1,models/players/human_naked/head
 2,gfx/null
 3,gfx/null
-4,models/players/human_base/head
-5,models/players/human_base/head
-6,models/players/human_base/body
-7,models/players/human_base/head
+4,models/players/human_naked/head
+5,models/players/human_naked/head
+6,models/players/human_naked/body
+7,models/players/human_naked/head
 8,gfx/null
 9,gfx/null
 10,gfx/null
