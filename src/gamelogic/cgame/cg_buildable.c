@@ -1258,7 +1258,7 @@ static void CG_GhostBuildableStatus( int buildableInfo )
 				break;
 
 			case IBE_LASTSPAWN:
-				text = ( team == TEAM_ALIENS ) ? "[eggpod]" : "[telenode]";
+				text = ( team == TEAM_ALIENS ) ? "[egg]" : "[telenode]";
 				break;
 
 			case IBE_NOROOM:
