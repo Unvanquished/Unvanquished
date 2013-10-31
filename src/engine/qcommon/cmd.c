@@ -90,7 +90,7 @@ void Cbuf_AddText( const char *text )
 
 	if (strchr( data, '\n') != NULL)
 	{
-		Cmd::BufferCommandText((char*) data, Cmd::END, true);
+		Cmd::BufferCommandText((char*) data, true);
 		cursize = 0;
 	}
 }
@@ -107,14 +107,14 @@ void Cbuf_ExecuteText( int exec_when, const char *text )
 		case EXEC_NOW:
 			if ( text && strlen( text ) > 0 )
 			{
-				Cmd::BufferCommandText(text, Cmd::AFTER, true);
+				Cmd::BufferCommandTextAfter(text, true);
 			}
 			Cmd::ExecuteCommandBuffer();
 
 			break;
 
 		case EXEC_INSERT:
-            Cmd::BufferCommandText(text, Cmd::AFTER, true);
+            Cmd::BufferCommandTextAfter(text, true);
 			break;
 
 		case EXEC_APPEND:

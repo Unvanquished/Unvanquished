@@ -42,19 +42,10 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace Cmd {
 
-    /**
-     * Commands can be buffered to be executed right NOW,
-     * AFTER the current command or be put at the END of
-     * the command buffer.
-     */
-    enum execWhen_t {
-        AFTER,
-        END
-    };
-
-    //TODO make it thread safe for After and End.
+    //TODO make it thread safe
     // Adds a command text to by executed, optionnally parsing cvars ($cvarname$) if the text is a user input.
-    void BufferCommandText(const std::string& text, execWhen_t when = END, bool parseCvars = false, Environment* env = nullptr);
+    void BufferCommandText(const std::string& text, bool parseCvars = false, Environment* env = nullptr);
+    void BufferCommandTextAfter(const std::string& text, bool parseCvars = false, Environment* env = nullptr);
     // Executes all the buffered commands.
     void ExecuteCommandBuffer();
 

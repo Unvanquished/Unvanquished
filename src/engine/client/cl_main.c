@@ -1510,7 +1510,7 @@ void CL_NextDemo( void )
 	}
 
 	Cvar_Set( "nextdemo", "" );
-	Cmd::BufferCommandText(v, Cmd::AFTER, true);
+	Cmd::BufferCommandTextAfter(v, true);
 	Cmd::ExecuteCommandBuffer();
 }
 
@@ -1982,7 +1982,7 @@ void CL_Reconnect_f( void )
 	}
 	else
 	{
-		Cmd::BufferCommandText(cls.reconnectCmd, Cmd::AFTER, true);
+		Cmd::BufferCommandTextAfter(cls.reconnectCmd, true);
 	}
 }
 

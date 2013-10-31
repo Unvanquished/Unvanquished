@@ -541,7 +541,7 @@ qboolean Com_AddStartupCommands( void )
 			added = qtrue;
 		}
 
-		Cmd::BufferCommandText(com_consoleLines[i], Cmd::AFTER, true);
+		Cmd::BufferCommandTextAfter(com_consoleLines[i], true);
 	}
 
 	return added;
@@ -1813,7 +1813,7 @@ int Com_EventLoop( void )
 				if (cmd[0] == '/' || cmd[0] == '\\')
 				{
 					//make sure, explicit commands are not getting handled with com_consoleCommand
-					Cmd::BufferCommandText(cmd + 1, Cmd::AFTER, true);
+					Cmd::BufferCommandTextAfter(cmd + 1, true);
 				}
 				else
 				{
@@ -1824,7 +1824,7 @@ int Com_EventLoop( void )
 					 *
 					 * the additional space gets trimmed by the parser
 					 */
-					Cmd::BufferCommandText(va("%s %s", com_consoleCommand->string, cmd), Cmd::AFTER, true);
+					Cmd::BufferCommandTextAfter(va("%s %s", com_consoleCommand->string, cmd), true);
 				}
 
 				break;

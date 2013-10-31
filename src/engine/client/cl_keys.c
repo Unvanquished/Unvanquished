@@ -1701,8 +1701,8 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 		if ( kb )
 		{
 			// down-only command
-			Cmd::BufferCommandText(va("setkeydata %d %d %u\n%s\n", plusCommand.check, key + 1, time, kb), Cmd::AFTER, true);
-			Cmd::BufferCommandText(va("setkeydata %d\n", plusCommand.check), Cmd::AFTER, true);
+			Cmd::BufferCommandTextAfter(va("setkeydata %d %d %u\n%s\n", plusCommand.check, key + 1, time, kb), true);
+			Cmd::BufferCommandTextAfter(va("setkeydata %d\n", plusCommand.check), true);
 		}
 	}
 }

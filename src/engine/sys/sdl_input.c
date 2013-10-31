@@ -1622,7 +1622,7 @@ static void IN_ProcessEvents( qboolean dropInput )
 				break;
 #endif
 			case SDL_QUIT:
-				Cmd::BufferCommandText("quit Closed window", Cmd::NOW);
+				Cmd::ExecuteCommand("quit Closed window");
 				break;
 			default:
 				break;

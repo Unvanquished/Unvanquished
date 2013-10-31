@@ -582,7 +582,7 @@ namespace Cmd {
             const delayRecord_t& delay = *it;
 
             if ((delay.type == MSEC and delay.target <= time) or (delay.type == FRAME and delay.target < delayFrame)) {
-                Cmd::BufferCommandText(delay.command, Cmd::END, true);
+                Cmd::BufferCommandText(delay.command, true);
                 it = delays.erase(it);
             } else {
                 it ++;

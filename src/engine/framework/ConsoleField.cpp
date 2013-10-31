@@ -53,11 +53,11 @@ namespace Console {
 
         std::string current = Str::UTF32To8(GetText());
         if (current[0] == '/' or current[0] == '\\') {
-            Cmd::BufferCommandText(current.c_str() + 1, Cmd::END, true);
+            Cmd::BufferCommandText(current.c_str() + 1, true);
         } else if (defaultCommand.empty()) {
-            Cmd::BufferCommandText(current, Cmd::END, true);
+            Cmd::BufferCommandText(current, true);
         } else {
-            Cmd::BufferCommandText(defaultCommand + " " + current, Cmd::END, true);
+            Cmd::BufferCommandText(defaultCommand + " " + current, true);
         }
         AddToHistory(hist, std::move(current));
 

@@ -58,13 +58,14 @@ namespace Cmd {
 
     std::vector<std::pair<std::string, Environment*>> commandBuffer;
 
-    void BufferCommandText(const std::string& text, execWhen_t when, bool parseCvars, Environment* env) {
+    void BufferCommandTextInternal(const std::string& text, bool parseCvars, Environment* env, bool insertAtTheEnd) {
         const char* current = text.data();
         const char* end = text.data() + text.size();
-        auto insertPoint = when == END ? commandBuffer.end() : commandBuffer.begin();
+        auto insertPoint = insertAtTheEnd ? commandBuffer.end() : commandBuffer.begin();
         do {
             const char* next = SplitCommand(current, end);
             std::string command(current, next != end ? next - 1 : end);
+
             if (parseCvars) {
                 command = SubstituteCvars(command);
             }
@@ -75,7 +76,14 @@ namespace Cmd {
         } while (current != end);
     }
 
-    //TODO: reimplement the wait command, maybe?
+    void BufferCommandText(const std::string& text, bool parseCvars, Environment* env) {
+        BufferCommandTextInternal(text, parseCvars, env, true);
+    }
+
+    void BufferCommandTextAfter(const std::string& text, bool parseCvars, Environment* env) {
+        BufferCommandTextInternal(text, parseCvars, env, false);
+    }
+
     void ExecuteCommandBuffer() {
         // Note that commands may be inserted into the buffer while running other commands
         while (not commandBuffer.empty()) {
@@ -250,7 +258,7 @@ namespace Cmd {
 	}
 
 	void DefaultEnvironment::ExecuteAfter(Str::StringRef text, bool parseCvars) {
-		BufferCommandText(text, AFTER, parseCvars, this);
+		BufferCommandTextAfter(text, parseCvars, this);
 	}
 
     /*
