@@ -855,6 +855,7 @@ static const meansOfDeathData_t bg_meansOfDeathData[] =
 	{ MOD_FLAMER_SPLASH, "MOD_FLAMER_SPLASH" },
 	{ MOD_BURN, "MOD_BURN" },
 	{ MOD_GRENADE, "MOD_GRENADE" },
+	{ MOD_FIREBOMB, "MOD_FIREBOMB" },
 	{ MOD_WEIGHT_H, "MOD_WEIGHT_H" },
 	{ MOD_WATER, "MOD_WATER" },
 	{ MOD_SLIME, "MOD_SLIME" },
