@@ -103,6 +103,8 @@ namespace Cmd {
 
     typedef std::vector<std::pair<std::string, std::string>> CompletionResult;
 
+    class Environment;
+
     /**
      * Commands are defined by subclassing Cmd::CmdBase and defining both
      * the Run method and the namespace in which the command is.
@@ -118,18 +120,27 @@ namespace Cmd {
             // Called when the user wants to autocomplete a call to this command.
             virtual Cmd::CompletionResult Complete(int pos, const Args& args) const;
 
+            // Prints the usage of this command with a standard formatting
+            void PrintUsage(const Args& args, Str::StringRef syntax, Str::StringRef description = "") const;
+
             // Used by the command system.
             int GetFlags() const;
-
-            // Prints the usage of this command with a standard formatting
-            static void PrintUsage(const Args& args, Str::StringRef syntax, Str::StringRef description = "");
+            void RunWithEnv(const Args& args, Environment* env);
 
         protected:
             // Is given the namespace of the command.
             CmdBase(int flags);
 
+            // Get the environment the command is executed in to do some special calls
+            Environment& GetEnv() const;
+
+            // A shortcut for this->GetEnv().Print(Str::Format())
+            template <typename ... Args>
+            void Print(Str::StringRef text, Args ... args) const;
+
         private:
             int flags;
+            Environment* env;
     };
 
     /**
@@ -147,6 +158,18 @@ namespace Cmd {
             StaticCmd(std::string name, int flags, std::string description);
             //TODO: sometimes (in the gamelogic) we already know what the flags is, provide another constructor for it.
     };
+
+    class Environment {
+        public:
+            virtual void Print(Str::StringRef text) = 0;
+            virtual void ExecuteAfter(Str::StringRef text, bool parseCvars = false) = 0;
+    };
+
+    template <typename ... Args>
+    void CmdBase::Print(Str::StringRef text, Args ... args) const {
+        env->Print(Str::Format(text, args ...));
+    }
+
 }
 
 #endif // SHARED_COMMAND_H_

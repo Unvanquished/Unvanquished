@@ -143,6 +143,8 @@ namespace Str {
     std::string UTF16To8(Str::BasicStringRef<wchar_t> str);
 #endif
 
+    std::string Format(const std::string& format);
+
     template<typename ... Args>
     std::string Format(const std::string& format, const Args& ... args);
 

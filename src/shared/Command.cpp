@@ -23,6 +23,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "Command.h"
+#include "Log.h"
 
 #include "../engine/qcommon/qcommon.h"
 #include "../engine/framework/CommandSystem.h"
@@ -355,16 +356,25 @@ namespace Cmd {
         return {};
     }
 
-    void CmdBase::PrintUsage(const Args& args, Str::StringRef syntax, Str::StringRef description) {
+    void CmdBase::PrintUsage(const Args& args, Str::StringRef syntax, Str::StringRef description) const {
         if(description.empty()) {
-            Com_Printf("%s: %s %s\n", _("usage"), args.Argv(0).c_str(), syntax.c_str());
+            Print("%s: %s %s\n", _("usage"), args.Argv(0).c_str(), syntax.c_str());
         } else {
-            Com_Printf("%s: %s %s — %s\n", _("usage"), args.Argv(0).c_str(), syntax.c_str(), description.c_str());
+            Print("%s: %s %s — %s\n", _("usage"), args.Argv(0).c_str(), syntax.c_str(), description.c_str());
         }
     }
 
     int CmdBase::GetFlags() const {
         return flags;
+    }
+
+    void CmdBase::RunWithEnv(const Args& args, Environment* env) {
+        this->env = env;
+        Run(args);
+    }
+
+    Environment& CmdBase::GetEnv() const {
+        return *env;
     }
 
     StaticCmd::StaticCmd(std::string name, const int flags, std::string description)

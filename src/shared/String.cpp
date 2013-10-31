@@ -215,4 +215,7 @@ namespace Str {
     }
 #endif
 
+    std::string Format(const std::string& format) {
+        return format;
+    }
 }

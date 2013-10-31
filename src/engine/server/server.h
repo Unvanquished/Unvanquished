@@ -313,7 +313,6 @@ typedef struct
 	int           nextHeartbeatTime;
 	challenge_t   challenges[ MAX_CHALLENGES ]; // to prevent invalid IP addresses from connecting
 	receipt_t     infoReceipts[ MAX_INFO_RECEIPTS ];
-	netadr_t      redirectAddress; // for rcon return messages
 
 	int       sampleTimes[ SERVER_PERFORMANCECOUNTER_SAMPLES ];
 	int       currentSampleIndex;

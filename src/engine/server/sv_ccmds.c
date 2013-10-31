@@ -63,7 +63,7 @@ class MapCmd: public Cmd::StaticCmd {
 
             //Make sure the map exists to avoid typos that would kill the game
             if (FS_ReadFile(mapFilename.c_str(), nullptr) == -1) {
-                Com_Printf(_("Can't find map %s\n"), mapFilename.c_str());
+                Print(_("Can't find map %s\n"), mapFilename.c_str());
                 return;
             }
 

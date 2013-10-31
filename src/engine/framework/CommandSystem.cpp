@@ -38,7 +38,7 @@ namespace Cmd {
 
     struct commandRecord_t {
         std::string description;
-        const CmdBase* cmd;
+        CmdBase* cmd;
     };
 
     typedef std::unordered_map<std::string, commandRecord_t> CommandMap;
@@ -56,11 +56,9 @@ namespace Cmd {
     ===============================================================================
     */
 
-    std::vector<std::string> commandBuffer;
+    std::vector<std::pair<std::string, Environment*>> commandBuffer;
 
-    void BufferCommandText(const std::string& text, execWhen_t when, bool parseCvars) {
-        std::vector<std::string> splittedCommands;
-
+    void BufferCommandText(const std::string& text, execWhen_t when, bool parseCvars, Environment* env) {
         const char* current = text.data();
         const char* end = text.data() + text.size();
         auto insertPoint = when == END ? commandBuffer.end() : commandBuffer.begin();
@@ -72,12 +70,12 @@ namespace Cmd {
             }
             switch (when) {
                 case NOW:
-                    ExecuteCommand(std::move(command));
+                    ExecuteCommand(std::move(command), env);
                     break;
 
                 case AFTER:
                 case END:
-                    insertPoint = ++commandBuffer.insert(insertPoint, std::move(command));
+                    insertPoint = ++commandBuffer.insert(insertPoint, std::make_pair(std::move(command), env));
                     break;
 
                 default:
@@ -91,9 +89,9 @@ namespace Cmd {
     void ExecuteCommandBuffer() {
         // Note that commands may be inserted into the buffer while running other commands
         while (not commandBuffer.empty()) {
-            std::string command = commandBuffer.front();
+            auto command = commandBuffer.front();
             commandBuffer.erase(commandBuffer.begin());
-            ExecuteCommand(command);
+            ExecuteCommand(std::move(command.first), command.second);
         }
         commandBuffer.clear();
     }
@@ -110,7 +108,7 @@ namespace Cmd {
     Args currentArgs;
     Args oldArgs;
 
-    void AddCommand(std::string name, const CmdBase& cmd, std::string description) {
+    void AddCommand(std::string name, CmdBase& cmd, std::string description) {
         CommandMap& commands = GetCommandMap();
 
         if (commands.count(name)) {
@@ -147,10 +145,18 @@ namespace Cmd {
         return commands.count(name);
     }
 
-    void ExecuteCommand(std::string command) {
+    DefaultEnvironment defaultEnv;
+
+    void ExecuteCommand(std::string command, Environment* env) {
         CommandMap& commands = GetCommandMap();
 
-        commandLog.Debug("Execing command '%s'", command);
+        if (not env) {
+            commandLog.Debug("Execing command '%s'", command);
+            env = &defaultEnv;
+        } else {
+            commandLog.Debug("Execing command '%s'", command);
+            //commandLog.Debug("Execing, in environment %s, command '%s'", env->GetName(), command);
+        }
 
         Args args(std::move(command));
         currentArgs = args;
@@ -163,7 +169,7 @@ namespace Cmd {
 
         auto it = commands.find(cmdName);
         if (it != commands.end()) {
-            it->second.cmd->Run(args);
+            it->second.cmd->RunWithEnv(args, env);
             return;
         }
 
@@ -244,6 +250,22 @@ namespace Cmd {
     /*
     ===============================================================================
 
+    Cmd:: DefaultEnvironment
+
+    ===============================================================================
+    */
+
+	void DefaultEnvironment::Print(Str::StringRef text) {
+		Log::CodeSourceNotice(text);
+	}
+
+	void DefaultEnvironment::ExecuteAfter(Str::StringRef text, bool parseCvars) {
+		BufferCommandText(text, AFTER, parseCvars, this);
+	}
+
+    /*
+    ===============================================================================
+
     Cmd:: /list<Subsystem>Commands
 
     ===============================================================================
@@ -282,10 +304,10 @@ namespace Cmd {
                 //Print the matches, keeping the description aligned
                 for (unsigned i = 0; i < matches.size(); i++) {
                     int toFill = maxNameLength - matchesNames[i]->size();
-                    Com_Printf("  %s%s %s\n", matchesNames[i]->c_str(), std::string(toFill, ' ').c_str(), matches[i]->description.c_str());
+                    Print("  %s%s %s\n", matchesNames[i]->c_str(), std::string(toFill, ' ').c_str(), matches[i]->description.c_str());
                 }
 
-                Com_Printf("%zu commands\n", matches.size());
+                Print("%zu commands\n", matches.size());
             }
 
             Cmd::CompletionResult Complete(int pos, const Cmd::Args& args) const override {

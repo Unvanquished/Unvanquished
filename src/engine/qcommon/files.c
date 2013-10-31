@@ -3041,8 +3041,8 @@ class DirCmd: public Cmd::StaticCmd {
             const std::string& path = args.Argv(1);
             const std::string& extension = (args.Argc() == 3) ? args.Argv(2) : "";
 
-            Com_Printf(_("Directory of %s %s\n"), path.c_str(), extension.c_str());
-            Com_Printf("---------------\n");
+            Print(_("Directory of %s %s\n"), path.c_str(), extension.c_str());
+            Print("---------------\n");
 
             int ndirs;
             char** dirnames = FS_ListFiles(path.c_str(), extension.c_str(), &ndirs );
@@ -3196,13 +3196,13 @@ class GlobCmd: public Cmd::StaticCmd {
         void Run(const Cmd::Args& args) const override {
             if (args.Argc() < 2){
                 PrintUsage(args, _("<filter>"), "");
-                Com_Printf(_( "example: fdir *q3dm*.bsp\n"));
+                Print(_( "example: fdir *q3dm*.bsp\n"));
                 return;
             }
 
             const std::string& filter = args.Argv(1);
 
-            Com_Printf("---------------\n");
+            Print("---------------\n");
 
             int ndirs;
             char** dirnames = FS_ListFilteredFiles("", "", filter.c_str(), &ndirs);
@@ -3211,10 +3211,10 @@ class GlobCmd: public Cmd::StaticCmd {
 
             for (int i = 0; i < ndirs; i++) {
                 FS_ConvertPath(dirnames[i]);
-                Com_Printf("  %s\n", dirnames[i]);
+                Print("  %s\n", dirnames[i]);
             }
 
-            Com_Printf(_("%d files listed\n"), ndirs );
+            Print(_("%d files listed\n"), ndirs );
             FS_FreeFileList(dirnames);
         }
 };
@@ -3275,6 +3275,7 @@ class PathCmd: public Cmd::StaticCmd {
         }
 
         void Run(const Cmd::Args& args) const override {
+            //TODO forward the print env
             FS_PrintPath();
         }
 };
@@ -3320,7 +3321,7 @@ class WhichCmd: public Cmd::StaticCmd {
                         // case and separator insensitive comparisons
                         if (!FS_FilenameCompare( pakFile->name, filename.c_str())) {
                             // found it!
-                            Com_Printf(_( "File \"%s\" found in \"%s\"\n"), filename.c_str(), pak->pakFilename);
+                            Print(_( "File \"%s\" found in \"%s\"\n"), filename.c_str(), pak->pakFilename);
                             return;
                         }
 
@@ -3342,12 +3343,12 @@ class WhichCmd: public Cmd::StaticCmd {
                     char buf[ MAX_OSPATH ];
                     Com_sprintf(buf, sizeof(buf), "%s/%s", dir->path, dir->gamedir);
                     FS_ReplaceSeparators(buf);
-                    Com_Printf(_("File \"%s\" found at \"%s\"\n"), filename.c_str(), buf);
+                    Print(_("File \"%s\" found at \"%s\"\n"), filename.c_str(), buf);
                     return;
                 }
             }
 
-            Com_Printf(_("File not found: \"%s\"\n"), filename.c_str());
+            Print(_("File not found: \"%s\"\n"), filename.c_str());
         }
 };
 static WhichCmd WhichCmdRegistration;

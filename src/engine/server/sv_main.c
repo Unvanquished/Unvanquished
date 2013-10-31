@@ -692,17 +692,6 @@ void SVC_Info( netadr_t from )
 }
 
 /*
-==============
-SV_FlushRedirect
-
-==============
-*/
-void SV_FlushRedirect( char *outputbuf )
-{
-	NET_OutOfBandPrint( NS_SERVER, svs.redirectAddress, "print\n%s", outputbuf );
-}
-
-/*
 =================
 SV_CheckDRDoS
 
@@ -822,6 +811,30 @@ Shift down the remaining args
 Redirect all printfs
 ===============
 */
+
+class RconEnvironment: public Cmd::DefaultEnvironment {
+    public:
+        RconEnvironment(netadr_t from, int bufferSize): from(from), bufferSize(bufferSize) {};
+
+        virtual void Print(Str::StringRef text) override {
+            if (text.size() + buffer.size() > bufferSize - 1) {
+                Flush();
+            }
+
+            buffer += text;
+        }
+
+        void Flush() {
+            NET_OutOfBandPrint(NS_SERVER, from, "print\n%s", buffer.c_str());
+            buffer = "";
+        }
+
+    private:
+        netadr_t from;
+        int bufferSize;
+        std::string buffer;
+};
+
 void SVC_RemoteCommand( netadr_t from, msg_t *msg )
 {
 	qboolean     valid;
@@ -834,7 +847,6 @@ void SVC_RemoteCommand( netadr_t from, msg_t *msg )
 	// but we want a server side fix
 	// we must NEVER send an OOB message that will be > 1.31 MAXPRINTMSG (4096)
 #define SV_OUTPUTBUF_LENGTH ( 256 - 16 )
-	char                sv_outputbuf[ SV_OUTPUTBUF_LENGTH ];
 	static unsigned int lasttime = 0;
 	const char          *cmd_aux;
 
@@ -860,22 +872,21 @@ void SVC_RemoteCommand( netadr_t from, msg_t *msg )
 	}
 
 	// start redirecting all print outputs to the packet
-	svs.redirectAddress = from;
 	// FIXME TTimo our rcon redirection could be improved
 	//   big rcon commands such as status lead to sending
 	//   out of band packets on every single call to Com_Printf
 	//   which leads to client overflows
 	//   see show_bug.cgi?id=51
 	//     (also a Q3 issue)
-	Com_BeginRedirect( sv_outputbuf, SV_OUTPUTBUF_LENGTH, SV_FlushRedirect );
+	auto env = RconEnvironment(from, SV_OUTPUTBUF_LENGTH);
 
 	if ( !strlen( sv_rconPassword->string ) )
 	{
-		Com_Printf(_( "No rconpassword set on the server.\n" ));
+		env.Print(_( "No rconpassword set on the server.\n" ));
 	}
 	else if ( !valid )
 	{
-		Com_Printf(_( "Bad rconpassword.\n" ));
+		env.Print(_( "Bad rconpassword.\n" ));
 	}
 	else
 	{
@@ -905,10 +916,10 @@ void SVC_RemoteCommand( netadr_t from, msg_t *msg )
 
 		Q_strcat( remaining, sizeof( remaining ), cmd_aux );
 
-		Cmd::BufferCommandText(remaining, Cmd::NOW, true);
+		Cmd::ExecuteCommand(remaining, &env);
 	}
 
-	Com_EndRedirect();
+	env.Flush();
 }
 
 /*

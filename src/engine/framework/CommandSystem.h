@@ -55,19 +55,19 @@ namespace Cmd {
 
     //TODO make it thread safe for After and End.
     // Adds a command text to by executed, optionnally parsing cvars ($cvarname$) if the text is a user input.
-    void BufferCommandText(const std::string& text, execWhen_t when = END, bool parseCvars = false);
+    void BufferCommandText(const std::string& text, execWhen_t when = END, bool parseCvars = false, Environment* env = nullptr);
     // Executes all the buffered commands.
     void ExecuteCommandBuffer();
 
     // Registers a command
-    void AddCommand(std::string name, const CmdBase& cmd, std::string description);
+    void AddCommand(std::string name, CmdBase& cmd, std::string description);
     // Removes a command
     void RemoveCommand(const std::string& name);
     // Removes all the commands with the given flag
     void RemoveFlaggedCommands(int flag);
 
     // Executes a raw command string as a single command.
-    void ExecuteCommand(std::string command);
+    void ExecuteCommand(std::string command, Environment* env = nullptr);
 
     //Completion stuff, highly unstable :-)
     CompletionResult CompleteArgument(std::string command, int pos);
@@ -79,6 +79,12 @@ namespace Cmd {
     void SetCurrentArgs(const Args& args);
     void SaveArgs();
     void LoadArgs();
+
+    class DefaultEnvironment: public Environment {
+        public:
+            virtual void Print(Str::StringRef text) override;
+            virtual void ExecuteAfter(Str::StringRef text, bool parseCvars) override;
+    };
 }
 
 #endif // FRAMEWORK_COMMAND_SYSTEM_H_

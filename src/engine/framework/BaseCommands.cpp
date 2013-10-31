@@ -51,7 +51,7 @@ namespace Cmd {
                 }
 
                 std::string command = Cvar::GetValue(args.Argv(1));
-                Cmd::BufferCommandText(command, Cmd::AFTER, true);
+                GetEnv().ExecuteAfter(command, true);
             }
 
             Cmd::CompletionResult Complete(int pos, const Args& args) const override{
@@ -112,13 +112,13 @@ namespace Cmd {
                 SetExecArgs(args, filenameArg + 1);
                 if (not ExecFile(filename)) {
                     if (not failSilent) {
-                        Com_Printf(_("couldn't exec '%s'\n"), filename.c_str());
+                        Print(_("couldn't exec '%s'\n"), filename.c_str());
                     }
                     return;
                 }
 
                 if (not executeSilent) {
-                    Com_Printf(_("execing '%s'\n"), filename.c_str());
+                    Print(_("execing '%s'\n"), filename.c_str());
                 }
             }
 
@@ -150,7 +150,7 @@ namespace Cmd {
                     FS_Read(content, len, h);
                     content[len] = '\0';
                     FS_FCloseFile(h);
-                    Cmd::BufferCommandText(content, Cmd::AFTER, true);
+                    GetEnv().ExecuteAfter(content, true);
                     Hunk_FreeTempMemory(content);
                 } else {
                     char* content;
@@ -158,7 +158,7 @@ namespace Cmd {
 
                     if (content) {
                         success = true;
-                        Cmd::BufferCommandText(content, Cmd::AFTER, true);
+                        GetEnv().ExecuteAfter(content, true);
                         FS_FreeFile(content);
                     }
                 }
@@ -175,9 +175,9 @@ namespace Cmd {
 
             void Run(const Cmd::Args& args) const override {
                 for (int i = 1; i < args.Argc(); i++) {
-                    Com_Printf("%s ", args.Argv(i).c_str());
+                    Print("%s ", args.Argv(i).c_str());
                 }
-                Com_Printf("\n");
+                Print("\n");
             }
     };
     static EchoCmd EchoCmdRegistration;
@@ -284,7 +284,7 @@ namespace Cmd {
                         newValue = currentValue * operand;
                     } else if (op == "/" or op == "÷") {
                         if (operand == 0.0f) {
-                            Com_Log(LOG_ERROR, _( "Cannot divide by 0!" ));
+                            Print(_("Error: Cannot divide by 0!"));
                             return;
                         }
                         newValue = currentValue / operand;
@@ -307,7 +307,7 @@ namespace Cmd {
                         newValue = operand1 * operand2;
                     } else if (op == "/" or op == "÷") {
                         if (operand2 == 0.0f) {
-                            Com_Log(LOG_ERROR, _( "Cannot divide by 0!" ));
+                            Print(_("Error: Cannot divide by 0!"));
                             return;
                         }
                         newValue = operand1 / operand2;
@@ -328,7 +328,7 @@ namespace Cmd {
                 PrintUsage(args, _("<variableToSet> = <number> <operator> <number>"), "");
                 PrintUsage(args, _("<variableToSet> <operator> <number>"), "");
                 PrintUsage(args, _("<variableToSet> (++|--)"), "");
-                Com_Printf(_("valid operators: + - × * ÷ /\n"));
+                Print(_("valid operators: + - × * ÷ /\n"));
             }
 
             Cmd::CompletionResult Complete(int pos, const Args& args) const override{
@@ -394,7 +394,7 @@ namespace Cmd {
                     result = value2.find(value1) == std::string::npos;
 
                 } else {
-                    Com_Printf(_( "invalid relation operator in if command. valid relation operators are = != ≠ < > ≥ >= ≤ <= eq ne in !in\n" ));
+                    Print(_( "invalid relation operator in if command. valid relation operators are = != ≠ < > ≥ >= ≤ <= eq ne in !in\n" ));
                     Usage(args);
                     return;
                 }
@@ -403,17 +403,17 @@ namespace Cmd {
 
                 //if it starts with / or \ it is a quoted command
                 if (toRun.size() > 0 and (toRun[0] == '/' or toRun[0] == '\\')) {
-                    Cmd::BufferCommandText(toRun.c_str() + 1, Cmd::AFTER, true);
+                    GetEnv().ExecuteAfter(toRun.c_str() + 1, true);
 
                 } else {
                     std::string command = Cvar::GetValue(toRun);
-                    Cmd::BufferCommandText(command, Cmd::AFTER, true);
+                    GetEnv().ExecuteAfter(command, true);
                 }
             }
 
             void Usage(const Cmd::Args& args) const{
                 PrintUsage(args, _("if <number|string> <relation> <number|string> <cmdthen> (<cmdelse>)"), "compares two numbers or two strings and executes <cmdthen> if true, <cmdelse> if false\n");
-                Com_Printf(_("-- commands are cvar names unless prefixed with / or \\\n"));
+                Print(_("-- commands are cvar names unless prefixed with / or \\\n"));
             }
 
             Cmd::CompletionResult Complete(int pos, const Args& args) const override{
@@ -623,7 +623,7 @@ namespace Cmd {
                 delayType_t type;
 
                 if (target < 1) {
-                    Com_Printf(_("delay: the delay must be a positive integer\n"));
+                    Print(_("delay: the delay must be a positive integer\n"));
                     return;
                 }
 
@@ -749,7 +749,7 @@ namespace Cmd {
                 const std::string& parameters = args.RawArgsFrom(1);
 
                 if (aliases.count(name) == 0) {
-                    Com_Printf("alias %s doesn't exist", name.c_str());
+                    Print("alias %s doesn't exist", name.c_str());
                     return;
                 }
 
@@ -762,10 +762,10 @@ namespace Cmd {
                 }
 
                 if (alias.lastRun == aliasRun) {
-                    Com_Printf("recursive alias call at alias %s", name.c_str());
+                    Print("recursive alias call at alias %s", name.c_str());
                 } else {
                     alias.lastRun = aliasRun;
-                    Cmd::BufferCommandText(alias.command + " " + parameters, NOW, true);
+                    GetEnv().ExecuteAfter(alias.command + " " + parameters, true);
                 }
 
                 if (startsRun) {
@@ -792,9 +792,9 @@ namespace Cmd {
                 //Show an alias
                 if (args.Argc() == 2) {
                     if (aliases.count(name)) {
-                        Com_Printf("%s ⇒ %s\n", name.c_str(), aliases[name].command.c_str());
+                        Print("%s ⇒ %s\n", name.c_str(), aliases[name].command.c_str());
                     } else {
-                        Com_Printf(_("Alias %s does not exist\n"), name.c_str());
+                        Print(_("Alias %s does not exist\n"), name.c_str());
                     }
                     return;
                 }
@@ -808,7 +808,7 @@ namespace Cmd {
                 }
 
                 if (CommandExists(name)) {
-                    Com_Printf(_("Can't override a builtin function with an alias\n"));
+                    Print(_("Can't override a builtin function with an alias\n"));
                     return;
                 }
 
@@ -908,10 +908,10 @@ namespace Cmd {
                 //Print the matches, keeping the description aligned
                 for (unsigned i = 0; i < matches.size(); i++) {
                     int toFill = maxNameLength - matchesNames[i]->size();
-                    Com_Printf("  %s%s ⇒ %s\n", matchesNames[i]->c_str(), std::string(toFill, ' ').c_str(), matches[i]->command.c_str());
+                    Print("  %s%s ⇒ %s\n", matchesNames[i]->c_str(), std::string(toFill, ' ').c_str(), matches[i]->command.c_str());
                 }
 
-                Com_Printf("%zu aliases\n", matches.size());
+                Print("%zu aliases\n", matches.size());
             }
     };
     static ListAliasesCmd ListAliasesCmdRegistration;

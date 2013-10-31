@@ -137,15 +137,6 @@ void     CIN_CloseAllVideos( void );
 
 //============================================================================
 
-//TODO: reimplement rcon feedback
-void Com_BeginRedirect( char *buffer, int buffersize, void ( *flush )( char * ) )
-{
-}
-
-void Com_EndRedirect( void )
-{
-}
-
 /*
 =============
 Com_Printf
