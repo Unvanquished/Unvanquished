@@ -900,15 +900,11 @@ void	main()
 		vec4 shadowMoments = PCF(shadowVert, u_ShadowTexelSize * u_ShadowBlur, r_PCFSamples, shadowClipMoments);
 		#endif
 	#else
+
 	// no filter
 	vec4 shadowMoments, shadowClipMoments;
-	if( shadowVert.x <= 0.0 || shadowVert.x >= shadowVert.w ||
-	    shadowVert.y <= 0.0 || shadowVert.y >= shadowVert.w ) {
-		shadowMoments = vec4(1.0);
-		shadowClipMoments = shadowMoments;
-	} else {
-		FetchShadowMoments(shadowVert.xy / shadowVert.w, shadowMoments, shadowClipMoments);
-	}
+
+	FetchShadowMoments(shadowVert.xy / shadowVert.w, shadowMoments, shadowClipMoments);
 
 	#endif
 
