@@ -1035,6 +1035,7 @@ void R_UploadImage( const byte **dataArray, int numData, image_t *image )
 	GLenum     target;
 	GLenum     format = GL_RGBA;
 	GLenum     internalFormat = GL_RGB;
+	vec4_t     oneClampBorder = { 1, 1, 1, 1 };
 	vec4_t     zeroClampBorder = { 0, 0, 0, 1 };
 	vec4_t     alphaZeroClampBorder = { 0, 0, 0, 0 };
 
@@ -1461,7 +1462,11 @@ void R_UploadImage( const byte **dataArray, int numData, image_t *image )
 			glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
 			glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
 			break;
-
+		case WT_ONE_CLAMP:
+			glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER );
+			glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER );
+			glTexParameterfv( image->type, GL_TEXTURE_BORDER_COLOR, oneClampBorder );
+			break;
 		case WT_ZERO_CLAMP:
 			glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER );
 			glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER );
@@ -3357,8 +3362,8 @@ static void R_CreateShadowMapFBOImage( void )
 	{
 		width = height = shadowMapResolutions[ i % MAX_SHADOWMAPS ];
 
-		tr.shadowMapFBOImage[ i ] = R_CreateImage( va( "_shadowMapFBO%d", i ), NULL, width, height, format, filter, WT_EDGE_CLAMP );
-		tr.shadowClipMapFBOImage[ i ] = R_CreateImage( va( "_shadowClipMapFBO%d", i ), NULL, width, height, format, filter, WT_EDGE_CLAMP );
+		tr.shadowMapFBOImage[ i ] = R_CreateImage( va( "_shadowMapFBO%d", i ), NULL, width, height, format, filter, WT_ONE_CLAMP );
+		tr.shadowClipMapFBOImage[ i ] = R_CreateImage( va( "_shadowClipMapFBO%d", i ), NULL, width, height, format, filter, WT_ONE_CLAMP );
 	}
 
 	// sun shadow maps
@@ -3366,8 +3371,8 @@ static void R_CreateShadowMapFBOImage( void )
 	{
 		width = height = sunShadowMapResolutions[ i % MAX_SHADOWMAPS ];
 
-		tr.sunShadowMapFBOImage[ i ] = R_CreateImage( va( "_sunShadowMapFBO%d", i ), NULL, width, height, format, filter, WT_EDGE_CLAMP );
-		tr.sunShadowClipMapFBOImage[ i ] = R_CreateImage( va( "_sunShadowClipMapFBO%d", i ), NULL, width, height, format, filter, WT_EDGE_CLAMP );
+		tr.sunShadowMapFBOImage[ i ] = R_CreateImage( va( "_sunShadowMapFBO%d", i ), NULL, width, height, format, filter, WT_ONE_CLAMP );
+		tr.sunShadowClipMapFBOImage[ i ] = R_CreateImage( va( "_sunShadowClipMapFBO%d", i ), NULL, width, height, format, filter, WT_ONE_CLAMP );
 	}
 }
 
