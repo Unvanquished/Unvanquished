@@ -305,6 +305,7 @@ static const size_t bg_numClasses = ARRAY_LEN( bg_classData );
 static classAttributes_t bg_classList[ ARRAY_LEN( bg_classData ) ];
 
 static const classAttributes_t nullClass = { 0 };
+static /*const*/ classModelConfig_t nullClassModelConfig = { "" };
 
 /*
 ==============
@@ -338,6 +339,26 @@ const classAttributes_t *BG_Class( class_t pClass )
 }
 
 static classModelConfig_t bg_classModelConfigList[ PCL_NUM_CLASSES ];
+
+/*
+==============
+BG_ClassModelConfigByName
+==============
+*/
+classModelConfig_t *BG_ClassModelConfigByName( const char *name )
+{
+	int i;
+
+	for ( i = 0; i < bg_numClasses; i++ )
+	{
+		if ( !Q_stricmp( bg_classModelConfigList[ i ].humanName, name ) )
+		{
+			return &bg_classModelConfigList[ i ];
+		}
+	}
+
+	return &nullClassModelConfig;
+}
 
 /*
 ==============
@@ -834,6 +855,7 @@ static const meansOfDeathData_t bg_meansOfDeathData[] =
 	{ MOD_FLAMER_SPLASH, "MOD_FLAMER_SPLASH" },
 	{ MOD_BURN, "MOD_BURN" },
 	{ MOD_GRENADE, "MOD_GRENADE" },
+	{ MOD_FIREBOMB, "MOD_FIREBOMB" },
 	{ MOD_WEIGHT_H, "MOD_WEIGHT_H" },
 	{ MOD_WATER, "MOD_WATER" },
 	{ MOD_SLIME, "MOD_SLIME" },

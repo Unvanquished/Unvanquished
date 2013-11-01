@@ -23,6 +23,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "g_local.h"
 
+qboolean ClientInactivityTimer( gentity_t *ent, qboolean active );
+
 /*
 ===============
 G_DamageFeedback
@@ -547,10 +549,17 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 	}
 
 	// Check to see if we are in the spawn queue
+	// Also, do some other checks and updates which players need while spectating
 	team = client->pers.team;
 	if ( team == TEAM_ALIENS || team == TEAM_HUMANS )
 	{
+		client->ps.persistant[ PERS_UNLOCKABLES ] = BG_UnlockablesMask( client->pers.team );
 		queued = G_SearchSpawnQueue( &level.team[ team ].spawnQueue, ent - g_entities );
+
+		if ( !ClientInactivityTimer( ent, queued || !level.team[ team ].numSpawns ) )
+		{
+			return;
+		}
 	}
 	else
 	{
@@ -666,7 +675,7 @@ ClientInactivityTimer
 Returns qfalse if the client is dropped
 =================
 */
-qboolean ClientInactivityTimer( gentity_t *ent )
+qboolean ClientInactivityTimer( gentity_t *ent, qboolean active )
 {
 	gclient_t *client = ent->client;
 
@@ -677,7 +686,8 @@ qboolean ClientInactivityTimer( gentity_t *ent )
 		client->inactivityTime = level.time + 60 * 1000;
 		client->inactivityWarning = qfalse;
 	}
-	else if ( client->pers.cmd.forwardmove ||
+	else if ( active ||
+	          client->pers.cmd.forwardmove ||
 	          client->pers.cmd.rightmove ||
 	          client->pers.cmd.upmove ||
 	          usercmdButtonPressed( client->pers.cmd.buttons, BUTTON_ATTACK ) )
@@ -711,7 +721,7 @@ qboolean ClientInactivityTimer( gentity_t *ent )
 		{
 			client->inactivityWarning = qtrue;
 			trap_SendServerCommand( client - level.clients,
-			                        va( "cp %s", strchr( g_inactivity.string, 's' ) ? N_("\"Ten seconds until inactivity spectate!\n\"") : N_("\"Ten seconds until inactivity drop!\n\"") ) );
+			                        va( "cp_tr %s", strchr( g_inactivity.string, 's' ) ? N_("\"Ten seconds until inactivity spectate!\n\"") : N_("\"Ten seconds until inactivity drop!\n\"") ) );
 		}
 	}
 
@@ -1834,7 +1844,7 @@ void ClientThink_real( gentity_t *ent )
 	G_namelog_update_score( client );
 
 	// check for inactivity timer, but never drop the local client of a non-dedicated server
-	if ( !ClientInactivityTimer( ent ) )
+	if ( !ClientInactivityTimer( ent, qfalse ) )
 	{
 		return;
 	}

@@ -1717,6 +1717,23 @@ void BG_ParseClassModelFile( const char *filename, classModelConfig_t *cc )
 
 			defined |= SHOULDEROFFSETS;
 		}
+		else if ( !Q_stricmp( token, "useNavMesh" ) )
+		{
+			const classModelConfig_t *model;
+
+			PARSE(text, token);
+
+			model = BG_ClassModelConfigByName( token );
+
+			if ( model && *model->modelName )
+			{
+				cc->navMeshClass = model - BG_ClassModelConfig( PCL_NONE );
+			}
+			else
+			{
+				Com_Printf( S_ERROR "%s: unknown or yet-unloaded player model '%s'\n", filename, token );
+			}
+		}
 		else
 		{
 			Com_Printf( S_ERROR "%s: unknown token '%s'\n", filename, token );

@@ -5415,6 +5415,8 @@ static void RB_RenderDebugUtils()
 		// set uniforms
 		gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
 		gl_genericShader->SetUniform_ColorModulate( CGEN_CUSTOM_RGB, AGEN_CUSTOM );
+		
+		gl_genericShader->SetRequiredVertexPointers();
 
 		// bind u_ColorMap
 		GL_BindToTMU( 0, tr.whiteImage ); 
@@ -5482,36 +5484,7 @@ static void RB_RenderDebugUtils()
 			VectorMA( vec3_origin, 16, left, left );
 			VectorMA( vec3_origin, 16, up, up );
 
-			/*
-			// draw axis
-			glBegin(GL_LINES);
-
-			// draw orientation
-			glVertexAttrib4fv(ATTR_INDEX_COLOR, colorRed);
-			glVertex3fv(vec3_origin);
-			glVertex3fv(forward);
-
-			glVertexAttrib4fv(ATTR_INDEX_COLOR, colorGreen);
-			glVertex3fv(vec3_origin);
-			glVertex3fv(left);
-
-			glVertexAttrib4fv(ATTR_INDEX_COLOR, colorBlue);
-			glVertex3fv(vec3_origin);
-			glVertex3fv(up);
-
-			// draw special vectors
-			glVertexAttrib4fv(ATTR_INDEX_COLOR, colorYellow);
-			glVertex3fv(vec3_origin);
-			VectorSubtract(light->origin, backEnd.orientation.origin, tmp);
-			light->transformed[0] = DotProduct(tmp, backEnd.orientation.axis[0]);
-			light->transformed[1] = DotProduct(tmp, backEnd.orientation.axis[1]);
-			light->transformed[2] = DotProduct(tmp, backEnd.orientation.axis[2]);
-			glVertex3fv(light->transformed);
-
-			glEnd();
-			*/
-
-#if 1
+			Tess_Begin( Tess_StageIteratorDebug, NULL, NULL, NULL, qtrue, qtrue, 0, 0 );
 
 			if ( light->isStatic && light->frustumVBO && light->frustumIBO )
 			{
@@ -5519,6 +5492,7 @@ static void RB_RenderDebugUtils()
 				backEnd.orientation = backEnd.viewParms.world;
 				GL_LoadModelViewMatrix( backEnd.viewParms.world.modelViewMatrix );
 				gl_genericShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
+				gl_genericShader->SetUniform_ModelMatrix( backEnd.orientation.transformMatrix );
 
 				R_BindVBO( light->frustumVBO );
 				R_BindIBO( light->frustumIBO );
@@ -5527,19 +5501,9 @@ static void RB_RenderDebugUtils()
 
 				tess.numVertexes = light->frustumVerts;
 				tess.numIndexes = light->frustumIndexes;
-
-				Tess_DrawElements();
-
-				tess.multiDrawPrimitives = 0;
-				tess.numIndexes = 0;
-				tess.numVertexes = 0;
 			}
 			else
-#endif
 			{
-				tess.multiDrawPrimitives = 0;
-				tess.numIndexes = 0;
-				tess.numVertexes = 0;
 
 				// set up the transformation matrix
 				R_RotateLightForViewParms( light, &backEnd.viewParms, &backEnd.orientation );
@@ -5584,14 +5548,9 @@ static void RB_RenderDebugUtils()
 					default:
 						break;
 				}
-
-				Tess_UpdateVBOs( ATTR_POSITION | ATTR_COLOR );
-				Tess_DrawElements();
-
-				tess.multiDrawPrimitives = 0;
-				tess.numIndexes = 0;
-				tess.numVertexes = 0;
 			}
+
+			Tess_End();
 		}
 
 		// go back to the world modelview matrix

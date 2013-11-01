@@ -1079,6 +1079,9 @@ typedef struct
 	float  zOffset;
 	vec3_t shoulderOffsets;
 	qboolean segmented;
+
+	class_t navMeshClass; // if not PCL_NONE, which model's navmesh to use
+	int     navHandle;
 } classModelConfig_t;
 
 #define MAX_BUILDABLE_MODELS 3
@@ -1293,6 +1296,8 @@ void                        BG_BuildableBoundingBox( buildable_t buildable, vec3
 const classAttributes_t     *BG_ClassByName( const char *name );
 
 const classAttributes_t     *BG_Class( class_t pClass );
+
+classModelConfig_t          *BG_ClassModelConfigByName( const char * );
 
 classModelConfig_t          *BG_ClassModelConfig( class_t pClass );
 

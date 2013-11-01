@@ -903,7 +903,6 @@ R_CullMD5
 static void R_CullMD5( trRefEntity_t *ent )
 {
 	int        i;
-	float      boundsRadius;
 
 	if ( ent->e.skeleton.type == SK_INVALID )
 	{
@@ -918,14 +917,12 @@ static void R_CullMD5( trRefEntity_t *ent )
 		// copy a bounding box in the current coordinate system provided by skeleton
 		for ( i = 0; i < 3; i++ )
 		{
-			ent->localBounds[ 0 ][ i ] = ent->e.skeleton.bounds[ 0 ][ i ];
-			ent->localBounds[ 1 ][ i ] = ent->e.skeleton.bounds[ 1 ][ i ];
+			ent->localBounds[ 0 ][ i ] = ent->e.skeleton.bounds[ 0 ][ i ] * ent->e.skeleton.scale[ i ];
+			ent->localBounds[ 1 ][ i ] = ent->e.skeleton.bounds[ 1 ][ i ] * ent->e.skeleton.scale[ i ];
 		}
 	}
 
-	boundsRadius = RadiusFromBounds( ent->localBounds[ 0 ], ent->localBounds[ 1 ] );
-
-	switch ( R_CullPointAndRadius( ent->e.origin, boundsRadius ) )
+	switch ( R_CullLocalBox( ent->localBounds ) )
 	{
 		case CULL_IN:
 			tr.pc.c_box_cull_md5_in++;

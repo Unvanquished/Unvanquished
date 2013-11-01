@@ -1152,13 +1152,6 @@ void CG_GhostBuildable( int buildableInfo )
 		Scale[0] = Scale[1] = Scale[2] = scale;
 		trap_R_BuildSkeleton( &ent.skeleton, cg_buildables[ buildable ].animations[ BANIM_IDLE1 ].handle, 0, 0, 0, qfalse );
 		CG_TransformSkeleton( &ent.skeleton, Scale );
-
-		VectorCopy( mins, ent.skeleton.bounds[ 0 ] );
-		VectorCopy( maxs, ent.skeleton.bounds[ 1 ] );
-
-		//skeleton bounds start at z = 0
-		ent.skeleton.bounds[ 0 ][ 2 ] = 0;
-		ent.skeleton.bounds[ 1 ][ 2 ] -= mins[ 2 ];
 	}
 
 	if ( scale != 1.0f )
@@ -1264,7 +1257,7 @@ static void CG_GhostBuildableStatus( int buildableInfo )
 				break;
 
 			case IBE_LASTSPAWN:
-				text = ( team == TEAM_ALIENS ) ? "[eggpod]" : "[telenode]";
+				text = ( team == TEAM_ALIENS ) ? "[egg]" : "[telenode]";
 				break;
 
 			case IBE_NOROOM:
@@ -2400,7 +2393,10 @@ void CG_Buildable( centity_t *cent )
 
 		if( es->modelindex == BA_H_MGTURRET )
 		{
-			quat_t rotation;
+			quat_t   rotation;
+			matrix_t mat;
+			vec3_t   nBounds[ 2 ];
+			vec3_t   p1, p2;
 
 			//FIXME: Don't hard code bones to specific assets. Soon, I should put bone names in
 			// .cfg so we can change it should the rig change.
@@ -2410,15 +2406,21 @@ void CG_Buildable( centity_t *cent )
 
 			QuatFromAngles( rotation, es->angles2[ PITCH ], 0, 0 );
 			QuatMultiply0( ent.skeleton.bones[ 6 ].rotation, rotation );
+
+			// transform bounds so they more accurately reflect the turret's new trasnformation
+			MatrixFromAngles( mat, es->angles2[ PITCH ], es->angles2[ YAW ] - es->angles[ YAW ], 0 );
+
+			MatrixTransformNormal( mat, ent.skeleton.bounds[ 0 ], p1 );
+			MatrixTransformNormal( mat, ent.skeleton.bounds[ 1 ], p2 );
+
+			ClearBounds( nBounds[ 0 ], nBounds[ 1 ] );
+			AddPointToBounds( p1, nBounds[ 0 ], nBounds[ 1 ] );
+			AddPointToBounds( p2, nBounds[ 0 ], nBounds[ 1 ] );
+
+			BoundsAdd( ent.skeleton.bounds[ 0 ], ent.skeleton.bounds[ 1 ], nBounds[ 0 ], nBounds[ 1 ] );
 		}
 
 		CG_TransformSkeleton( &ent.skeleton, Scale );
-		VectorCopy(mins, ent.skeleton.bounds[ 0 ]);
-		VectorCopy(maxs, ent.skeleton.bounds[ 1 ]);
-
-		//skeleton bounds start at z = 0
-		ent.skeleton.bounds[ 0 ][ 2 ] = 0;
-		ent.skeleton.bounds[ 1 ][ 2 ] -= mins[ 2 ];
 	}
 
 	if ( es->generic1 <= 0 )

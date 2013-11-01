@@ -1391,11 +1391,7 @@ static void CG_DrawPlayerConfidenceBar( rectDef_t *rect, vec4_t foreColor, vec4_
 	vertical = ( h > w );
 
 	// draw border
-	trap_R_SetColor( backColor );
-	CG_DrawPic( x,         y,         w, b,            cgs.media.whiteShader ); // upper horizontal
-	CG_DrawPic( x,         y + h - b, w, b,            cgs.media.whiteShader ); // lower horizontal
-	CG_DrawPic( x,         y + b,     b, h - 2.0f * b, cgs.media.whiteShader ); // left  vertical
-	CG_DrawPic( x + w - b, y + b,     b, h - 2.0f * b, cgs.media.whiteShader ); // right vertical
+	CG_DrawRect( x, y, w, h, borderSize, backColor );
 
 	// adjust rect to draw inside border
 	x += b;
@@ -1406,9 +1402,7 @@ static void CG_DrawPlayerConfidenceBar( rectDef_t *rect, vec4_t foreColor, vec4_
 	// draw background
 	Vector4Copy( backColor, color );
 	color[ 3 ] *= 0.5f;
-
-	trap_R_SetColor( color );
-	CG_DrawPic( x, y, w, h, cgs.media.whiteShader );
+	CG_FillRect( x, y, w, h, color );
 
 	// draw confidence bar
 	fraction = rawFraction = confidence / CONFIDENCE_BAR_MAX;
@@ -1422,15 +1416,13 @@ static void CG_DrawPlayerConfidenceBar( rectDef_t *rect, vec4_t foreColor, vec4_
 		fraction = 1.0f;
 	}
 
-	trap_R_SetColor( foreColor );
-
 	if ( vertical )
 	{
-		CG_DrawPic( x, y + h * ( 1.0f - fraction ), w, h * fraction, cgs.media.whiteShader );
+		CG_FillRect( x, y + h * ( 1.0f - fraction ), w, h * fraction, foreColor );
 	}
 	else
 	{
-		CG_DrawPic( x, y, w * fraction, h, cgs.media.whiteShader );
+		CG_FillRect( x, y, w * fraction, h, foreColor );
 	}
 
 	// draw glow on confidence event
@@ -1442,47 +1434,27 @@ static void CG_DrawPlayerConfidenceBar( rectDef_t *rect, vec4_t foreColor, vec4_
 
 		if ( cg.confidenceGained > 0.0f )
 		{
-			if ( vertical )
-			{
-				glowOffset = 0.0f;
-			}
-			else
-			{
-				glowOffset = glowFraction;
-			}
-
-			color[ 0 ] = 1.0f;
-			color[ 1 ] = 1.0f;
-			color[ 2 ] = 1.0f;
-			color[ 3 ] = 0.5f * glowStrength;
+			glowOffset = vertical ? 0 : glowFraction;
 		}
 		else
 		{
-			if ( vertical )
-			{
-				glowOffset = glowFraction;
-			}
-			else
-			{
-				glowOffset = 0.0f;
-			}
-
-			color[ 0 ] = 1.0f;
-			color[ 1 ] = 1.0f;
-			color[ 2 ] = 0.0f;
-			color[ 3 ] = 0.5f * glowStrength;
+			glowOffset = vertical ? glowFraction : 0;
 		}
 
-		trap_R_SetColor( color );
 		CG_SetClipRegion( x, y, w, h );
+
+		color[ 0 ] = 1.0f;
+		color[ 1 ] = 1.0f;
+		color[ 2 ] = 1.0f;
+		color[ 3 ] = 0.5f * glowStrength;
 
 		if ( vertical )
 		{
-			CG_DrawPic( x, y + h * ( 1.0f - ( rawFraction + glowOffset ) ), w, h * glowFraction, cgs.media.whiteShader );
+			CG_FillRect( x, y + h * ( 1.0f - ( rawFraction + glowOffset ) ), w, h * glowFraction, color );
 		}
 		else
 		{
-			CG_DrawPic( x + w * ( rawFraction - glowOffset ), y, w * glowFraction, h, cgs.media.whiteShader );
+			CG_FillRect( x + w * ( rawFraction - glowOffset ), y, w * glowFraction, h, color );
 		}
 
 		CG_ClearClipRegion();
@@ -1514,15 +1486,13 @@ static void CG_DrawPlayerConfidenceBar( rectDef_t *rect, vec4_t foreColor, vec4_
 			color[ 3 ] = 1.0f;
 		}
 
-		trap_R_SetColor( color );
-
 		if ( vertical )
 		{
-			CG_DrawPic( x, y + h * ( 1.0f - fraction ), w, CONFIDENCE_BAR_MARKWIDTH, cgs.media.whiteShader );
+			CG_FillRect( x, y + h * ( 1.0f - fraction ), w, CONFIDENCE_BAR_MARKWIDTH, color );
 		}
 		else
 		{
-			CG_DrawPic( x + w * fraction, y, CONFIDENCE_BAR_MARKWIDTH, h, cgs.media.whiteShader );
+			CG_FillRect( x + w * fraction, y, CONFIDENCE_BAR_MARKWIDTH, h, color );
 		}
 	}
 
@@ -1563,27 +1533,16 @@ static void CG_DrawPlayerUnlockedItems( rectDef_t *rect, vec4_t foreColour, vec4
 
 	team = cg.predictedPlayerState.persistant[ PERS_TEAM ];
 
-	x = rect->x;
-	y = rect->y;
-	w = rect->w;
-	h = rect->h;
+	w = rect->w - 2 * borderSize;
+	h = rect->h - 2 * borderSize;
 
 	vertical = ( h > w );
 
-	// adjust for borders around the confidence bar, but only along one axis
-	if ( vertical )
-	{
-	        x += borderSize;
-	        w -= 2.0f * borderSize;
-        }
-        else
-        {
-	        y += borderSize;
-	        h -= 2.0f * borderSize;
-        }
-
 	ih = vertical ? w : h;
 	iw = ih * cgDC.aspectScale;
+
+	x = rect->x + borderSize;
+	y = rect->y + borderSize + ( h - ih ) * vertical;
 
 	icons = counts = 0;
 
@@ -1621,21 +1580,37 @@ static void CG_DrawPlayerUnlockedItems( rectDef_t *rect, vec4_t foreColour, vec4
 	{
 		float gap;
 		int i, j;
+		vec4_t unlockedBg, lockedBg;
 
-		if ( vertical )
-		{
-			y = rect->y + h - ih;
-			gap = h - icons * ih;
-		}
-		else
-		{
-			x = rect->x;
-			gap = w - icons * iw;
-		}
+		Vector4Copy( foreColour, unlockedBg );
+		unlockedBg[ 3 ] *= 0.5f;
+		Vector4Copy( backColour, lockedBg );
+		lockedBg[ 3 ] *= 0.5f;
+
+		gap = vertical ? ( h - icons * ih ) : ( w - icons * iw );
 
 		if ( counts > 2 )
 		{
 			gap /= counts - 1;
+		}
+
+		for ( i = 0, j = 0; count[ i ]; ++i )
+		{
+			if ( vertical )
+			{
+				float yb = y - count[ i ] * ih - i * gap;
+				float hb = ( count[ i ] - j ) * ih;
+				CG_DrawRect( x - borderSize, yb - borderSize, iw + 2 * borderSize, hb, borderSize, backColour );
+				CG_FillRect( x, yb, iw, hb - 2 * borderSize, icon[ j ].unlocked ? unlockedBg : lockedBg );
+			}
+			else
+			{
+				float xb = x + j * iw + i * gap;
+				float wb = ( count[ i ] - j ) * iw + 2;
+				CG_DrawRect( xb - borderSize, y - borderSize, wb, ih + 2 * borderSize, borderSize, backColour );
+				CG_FillRect( xb, y, wb - 2 * borderSize, ih, icon[ j ].unlocked ? unlockedBg : lockedBg );
+			}
+			j = count[ i ];
 		}
 
 		for ( i = 0, j = 0; i < icons; ++i )
