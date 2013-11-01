@@ -93,7 +93,7 @@ public:
 			mouse_y = event.GetParameter<int>( "mouse_y", 0 );
 		}
 
-		else if ( waitingForKeypress && event == "keydown" && event.GetTargetElement() == this )
+		else if ( waitingForKeypress && event == "keydown" )
 		{
 			int newKey = Rocket_ToQuake( ( Rocket::Core::Input::KeyIdentifier ) event.GetParameter< int >( "key_identifier", 0 ) );
 
