@@ -14,7 +14,7 @@
  *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -76,6 +76,8 @@ public:
 	/// @return True if the face was loaded successfully, false otherwise.
 	static bool LoadFontFace(const byte* data, int data_length, const String& family, Font::Style style, Font::Weight weight);
 
+	static void SetBackupFace(const String& path);
+
 	/// Returns a handle to a font face that can be used to position and render text. This will return the closest match
 	/// it can find, but in the event a font family is requested that does not exist, NULL will be returned instead of a
 	/// valid handle.
@@ -86,6 +88,10 @@ public:
 	/// @param[in] size The size of desired handle, in points.
 	/// @return A valid handle if a matching (or closely matching) font face was found, NULL otherwise.
 	virtual FontFaceHandle* GetFontFaceHandle(const String& family, const String& charset, Font::Style style, Font::Weight weight, int size);
+
+	static void* GetBackupFace(void);
+	void* backup_face;
+	bool  has_backup_face;
 
 private:
 	FontProvider(void);
@@ -100,6 +106,7 @@ private:
 
     typedef Container::map< String, FontFamily*, StringUtilities::StringComparei >::Type FontFamilyMap;
 	FontFamilyMap font_families;
+
 
 	static FontProvider* instance;
 };

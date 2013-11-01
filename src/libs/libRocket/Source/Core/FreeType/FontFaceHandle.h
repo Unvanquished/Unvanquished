@@ -59,6 +59,7 @@ public:
 	/// @param[in] size The size, in points, of the face this handle should render at.
 	/// @return True if the handle initialised successfully and is ready for rendering, false if an error occured.
 	bool Initialise(FT_Face ft_face, const String& charset, int size);
+	bool Initialise(FT_Face ft_face, FT_Face backup_face, const String& charset, int size);
 
 	/// Returns the width a string will take up if rendered with this handle.
 	/// @param[in] string The string to measure.
@@ -108,6 +109,7 @@ private:
 	uint8_t fonts_generated[ 0xFFFF / 256 / 8 ];
 
 	FT_Face ft_face;
+	FT_Face backup_face;
 
 };
 

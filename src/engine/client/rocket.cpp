@@ -41,6 +41,7 @@ Maryland 20850 USA.
 #include <Rocket/Core.h>
 #include <Rocket/Controls.h>
 #include <Rocket/ProgressBar.h>
+#include <Rocket/Core/FreeType/FontProvider.h>
 #include "rocketDataGrid.h"
 #include "rocketDataFormatter.h"
 #include "rocketEventInstancer.h"
@@ -358,6 +359,9 @@ void Rocket_Init( void )
 	}
 
 	Rocket::Controls::Initialise();
+
+	// Set backup font
+	Rocket::Core::FreeType::FontProvider::SetBackupFace( "fonts/unifont.ttf" );
 
 	// Load all fonts in the fonts/ dir...
 	fonts = FS_ListFiles( "fonts/", ".ttf", &numFiles );

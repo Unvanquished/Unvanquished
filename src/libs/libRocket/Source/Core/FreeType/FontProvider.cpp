@@ -14,7 +14,7 @@
  *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -69,6 +69,9 @@ bool FontProvider::Initialise()
 			Shutdown();
 			return false;
 		}
+
+		instance->backup_face = NULL;
+		instance->has_backup_face = false;
 	}
 
 	return true;
@@ -241,6 +244,25 @@ void* FontProvider::LoadFace(const byte* data, int data_length, const String& so
 	return face;
 }
 
+void FontProvider::SetBackupFace(const String& path)
+{
+	instance->backup_face = instance->LoadFace(path);
+
+	if (instance->backup_face)
+	{
+		instance->has_backup_face = true;
+	}
+}
+
+void* FontProvider::GetBackupFace(void)
+{
+	if (instance->has_backup_face)
+	{
+		return instance->backup_face;
+	}
+
+	return NULL;
+}
 }
 }
 }

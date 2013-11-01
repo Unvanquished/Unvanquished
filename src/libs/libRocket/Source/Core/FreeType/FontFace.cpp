@@ -29,6 +29,7 @@
 #include "FontFace.h"
 #include "FontFaceHandle.h"
 #include <Rocket/Core/Log.h>
+#include <Rocket/Core/FreeType/FontProvider.h>
 
 namespace Rocket {
 namespace Core {
@@ -87,7 +88,7 @@ Rocket::Core::FontFaceHandle* FontFace::GetHandle(const String& _raw_charset, in
 
 	// Construct and initialise the new handle.
 	FontFaceHandle* handle = new FontFaceHandle();
-	if (!handle->Initialise(face, _raw_charset, size))
+	if (!handle->Initialise(face, (FT_Face) FreeType::FontProvider::GetBackupFace(), _raw_charset, size))
 	{
 		handle->RemoveReference();
 		return NULL;

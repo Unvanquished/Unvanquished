@@ -104,6 +104,19 @@ bool FontFaceHandle::Initialise(FT_Face ft_face, const String& _charset, int _si
 	return true;
 }
 
+bool FontFaceHandle::Initialise(FT_Face ft_face, FT_Face backup_face, const String& _charset, int _size)
+{
+	this->backup_face = backup_face;
+	FT_Error error = FT_Set_Char_Size(this->backup_face, 0, _size << 6, 0, 0);
+	if (error != 0)
+	{
+		Log::Message(Log::LT_ERROR, "Unable to set the character size '%d' on the font face '%s %s'.", _size, backup_face->family_name, backup_face->style_name);
+		return false;
+	}
+
+	return Initialise(ft_face, _charset, _size);
+}
+
 // Returns the width a string will take up if rendered with this handle.
 int FontFaceHandle::GetStringWidth(const WString& string, word prior_character, word default_character)
 {
@@ -414,6 +427,36 @@ bool FontFaceHandle::BuildGlyphMap(FT_Face ft_face, const UnicodeRange& unicode_
 			if (!success)
 			{
 				success = true;
+			}
+		}
+		else if (backup_face)
+		{
+			int index = FT_Get_Char_Index(backup_face, character_code);
+			if (index != 0)
+			{
+				FT_Error error = FT_Load_Glyph(backup_face, index, 0);
+				if (error != 0)
+				{
+					Log::Message(Log::LT_WARNING, "Unable to load glyph for character '%u' on the font face '%s %s'; error code: %d.", character_code, backup_face->family_name, backup_face->style_name, error);
+					continue;
+				}
+
+				error = FT_Render_Glyph(backup_face->glyph, FT_RENDER_MODE_NORMAL);
+				if (error != 0)
+				{
+					Log::Message(Log::LT_WARNING, "Unable to render glyph for character '%u' on the font face '%s %s'; error code: %d.", character_code, backup_face->family_name, backup_face->style_name, error);
+					continue;
+				}
+
+				FontGlyph glyph;
+				glyph.character = character_code;
+				BuildGlyph(glyph, backup_face->glyph);
+				glyphs[character_code] = glyph;
+
+				if (!success)
+				{
+					success = true;
+				}
 			}
 		}
 	}
