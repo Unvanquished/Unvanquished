@@ -105,16 +105,9 @@ public:
 		else if ( waitingForKeypress && event == "mousedown" && event.GetTargetElement() == this )
 		{
 			int button = event.GetParameter<int>( "button", 0 );
-			int newKey;
-			switch (button)
-			{
-				case 0: newKey = K_MOUSE1; break;
-				case 1: newKey = K_MOUSE3; break;
-				case 2: newKey = K_MOUSE2; break;
-				default: break;
-			}
 
-			BindKey( newKey );
+			// Convert from Rocket mouse buttons to Quake mouse buttons
+			BindKey( button < 5 ? K_MOUSE1 + button : ( button - 5 ) + K_AUX1 );
 
 			event.StopPropagation();
 		}
