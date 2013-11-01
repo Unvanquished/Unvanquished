@@ -300,6 +300,10 @@ namespace Cvar {
         if (it != cvars.end()) {
             cvarRecord_t* cvar = it->second;
             cvar->flags |= flags;
+
+            //TODO: remove it, overkill ?
+            //Make sure to trigger the event as if this variable was changed
+            cvar_modifiedFlags |= flags;
         } //TODO else what?
     }
 
