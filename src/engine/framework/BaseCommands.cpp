@@ -51,7 +51,7 @@ namespace Cmd {
                 }
 
                 std::string command = Cvar::GetValue(args.Argv(1));
-                GetEnv().ExecuteAfter(command, true);
+                ExecuteAfter(command, true);
             }
 
             Cmd::CompletionResult Complete(int pos, const Args& args) const override{
@@ -150,7 +150,7 @@ namespace Cmd {
                     FS_Read(content, len, h);
                     content[len] = '\0';
                     FS_FCloseFile(h);
-                    GetEnv().ExecuteAfter(content, true);
+                    ExecuteAfter(content, true);
                     Hunk_FreeTempMemory(content);
                 } else {
                     char* content;
@@ -158,7 +158,7 @@ namespace Cmd {
 
                     if (content) {
                         success = true;
-                        GetEnv().ExecuteAfter(content, true);
+                        ExecuteAfter(content, true);
                         FS_FreeFile(content);
                     }
                 }
@@ -403,11 +403,11 @@ namespace Cmd {
 
                 //if it starts with / or \ it is a quoted command
                 if (toRun.size() > 0 and (toRun[0] == '/' or toRun[0] == '\\')) {
-                    GetEnv().ExecuteAfter(toRun.c_str() + 1, true);
+                    ExecuteAfter(toRun.c_str() + 1, true);
 
                 } else {
                     std::string command = Cvar::GetValue(toRun);
-                    GetEnv().ExecuteAfter(command, true);
+                    ExecuteAfter(command, true);
                 }
             }
 
@@ -765,7 +765,7 @@ namespace Cmd {
                     Print("recursive alias call at alias %s", name.c_str());
                 } else {
                     alias.lastRun = aliasRun;
-                    GetEnv().ExecuteAfter(alias.command + " " + parameters, true);
+                    ExecuteAfter(alias.command + " " + parameters, true);
                 }
 
                 if (startsRun) {

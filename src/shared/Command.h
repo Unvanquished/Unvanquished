@@ -130,16 +130,16 @@ namespace Cmd {
             // Is given the namespace of the command.
             CmdBase(int flags);
 
+            // Shortcuts for this->GetEnv().*
+            template <typename ... Args>
+            void Print(Str::StringRef text, Args ... args) const;
+            void ExecuteAfter(Str::StringRef text, bool parseCvars = false) const;
+
+        private:
             // Get the environment the command is executed in to do some special calls
             Environment& GetEnv() const;
 
-            // A shortcut for this->GetEnv().Print(Str::Format())
-            template <typename ... Args>
-            void Print(Str::StringRef text, Args ... args) const;
-
-        private:
             int flags;
-            Environment* env;
     };
 
     /**

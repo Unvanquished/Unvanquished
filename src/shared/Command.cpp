@@ -368,6 +368,10 @@ namespace Cmd {
         return flags;
     }
 
+    void CmdBase::ExecuteAfter(Str::StringRef text, bool parseCvars) const {
+        GetEnv().ExecuteAfter(text, parseCvars);
+    }
+
     Environment& CmdBase::GetEnv() const {
         return *Cmd::GetEnv();
     }
