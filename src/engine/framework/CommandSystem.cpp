@@ -58,7 +58,13 @@ namespace Cmd {
     ===============================================================================
     */
 
-    std::vector<std::pair<std::string, Environment*>> commandBuffer;
+    struct BufferEntry {
+        std::string text;
+        Environment* env;
+        bool parseCvars;
+    };
+
+    std::vector<BufferEntry> commandBuffer;
 
     void BufferCommandTextInternal(const std::string& text, bool parseCvars, Environment* env, bool insertAtTheEnd) {
         const char* current = text.data();
@@ -68,11 +74,8 @@ namespace Cmd {
             const char* next = SplitCommand(current, end);
             std::string command(current, next != end ? next - 1 : end);
 
-            if (parseCvars) {
-                command = SubstituteCvars(command);
-            }
 
-            insertPoint = ++commandBuffer.insert(insertPoint, std::make_pair(std::move(command), env));
+            insertPoint = ++commandBuffer.insert(insertPoint, {std::move(command), env, parseCvars});
 
             current = next;
         } while (current != end);
@@ -89,9 +92,9 @@ namespace Cmd {
     void ExecuteCommandBuffer() {
         // Note that commands may be inserted into the buffer while running other commands
         while (not commandBuffer.empty()) {
-            auto command = commandBuffer.front();
+            auto entry = commandBuffer.front();
             commandBuffer.erase(commandBuffer.begin());
-            ExecuteCommand(std::move(command.first), command.second);
+            ExecuteCommand(std::move(entry.text), entry.parseCvars, entry.env);
         }
         commandBuffer.clear();
     }
@@ -147,7 +150,7 @@ namespace Cmd {
 
     DefaultEnvironment defaultEnv;
 
-    void ExecuteCommand(std::string command, Environment* env) {
+    void ExecuteCommand(std::string command, bool parseCvars, Environment* env) {
         CommandMap& commands = GetCommandMap();
 
         if (not env) {
@@ -156,6 +159,10 @@ namespace Cmd {
         } else {
             commandLog.Debug("Execing command '%s'", command);
             //commandLog.Debug("Execing, in environment %s, command '%s'", env->GetName(), command);
+        }
+
+        if (parseCvars) {
+            command = SubstituteCvars(command);
         }
 
         Args args(std::move(command));

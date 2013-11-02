@@ -57,7 +57,7 @@ namespace Cmd {
     void RemoveFlaggedCommands(int flag);
 
     // Executes a raw command string as a single command.
-    void ExecuteCommand(std::string command, Environment* env = nullptr);
+    void ExecuteCommand(std::string command, bool parseCvars = false, Environment* env = nullptr);
 
     //Completion stuff, highly unstable :-)
     CompletionResult CompleteArgument(std::string command, int pos);
