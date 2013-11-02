@@ -521,6 +521,7 @@ set( RENDERERGLLIST
   ${MOUNT_DIR}/engine/rendererGL/tr_marks.c
   ${MOUNT_DIR}/engine/rendererGL/tr_mesh.c
   ${MOUNT_DIR}/engine/rendererGL/tr_model.c
+  ${MOUNT_DIR}/engine/rendererGL/tr_model_iqm.c
   ${MOUNT_DIR}/engine/rendererGL/tr_model_md3.c
   ${MOUNT_DIR}/engine/rendererGL/tr_model_md5.c
   ${MOUNT_DIR}/engine/rendererGL/tr_model_mdc.c
