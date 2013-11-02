@@ -50,7 +50,7 @@ namespace Cmd {
     void ExecuteCommandBuffer();
 
     // Registers a command
-    void AddCommand(std::string name, CmdBase& cmd, std::string description);
+    void AddCommand(std::string name, const CmdBase& cmd, std::string description);
     // Removes a command
     void RemoveCommand(const std::string& name);
     // Removes all the commands with the given flag
@@ -69,6 +69,9 @@ namespace Cmd {
     void SetCurrentArgs(const Args& args);
     void SaveArgs();
     void LoadArgs();
+
+    //Environment related private functions
+    Environment* GetEnv();
 
     class DefaultEnvironment: public Environment {
         public:

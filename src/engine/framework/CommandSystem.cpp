@@ -38,7 +38,7 @@ namespace Cmd {
 
     struct commandRecord_t {
         std::string description;
-        CmdBase* cmd;
+        const CmdBase* cmd;
     };
 
     typedef std::unordered_map<std::string, commandRecord_t> CommandMap;
@@ -47,6 +47,8 @@ namespace Cmd {
         static CommandMap* commands = new CommandMap();
         return *commands;
     }
+
+    Environment* storedEnvironment = nullptr;
 
     /*
     ===============================================================================
@@ -106,7 +108,7 @@ namespace Cmd {
     Args currentArgs;
     Args oldArgs;
 
-    void AddCommand(std::string name, CmdBase& cmd, std::string description) {
+    void AddCommand(std::string name, const CmdBase& cmd, std::string description) {
         CommandMap& commands = GetCommandMap();
 
         if (commands.count(name)) {
@@ -167,7 +169,8 @@ namespace Cmd {
 
         auto it = commands.find(cmdName);
         if (it != commands.end()) {
-            it->second.cmd->RunWithEnv(args, env);
+            storedEnvironment = env;
+            it->second.cmd->Run(args);
             return;
         }
 
@@ -243,6 +246,10 @@ namespace Cmd {
 
     void LoadArgs() {
         currentArgs = oldArgs;
+    }
+
+    Environment* GetEnv() {
+        return storedEnvironment;
     }
 
     /*

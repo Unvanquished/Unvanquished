@@ -368,13 +368,8 @@ namespace Cmd {
         return flags;
     }
 
-    void CmdBase::RunWithEnv(const Args& args, Environment* env) {
-        this->env = env;
-        Run(args);
-    }
-
     Environment& CmdBase::GetEnv() const {
-        return *env;
+        return *Cmd::GetEnv();
     }
 
     StaticCmd::StaticCmd(std::string name, const int flags, std::string description)

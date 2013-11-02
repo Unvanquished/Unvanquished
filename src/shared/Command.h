@@ -125,7 +125,6 @@ namespace Cmd {
 
             // Used by the command system.
             int GetFlags() const;
-            void RunWithEnv(const Args& args, Environment* env);
 
         protected:
             // Is given the namespace of the command.
@@ -167,7 +166,7 @@ namespace Cmd {
 
     template <typename ... Args>
     void CmdBase::Print(Str::StringRef text, Args ... args) const {
-        env->Print(Str::Format(text, args ...));
+        GetEnv().Print(Str::Format(text, args ...));
     }
 
 }
