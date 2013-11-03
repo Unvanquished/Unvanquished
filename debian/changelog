@@ -4,6 +4,7 @@ unvanquished (0.21.0-1) unstable; urgency=low
     purged. Files not added at install/upgrade/reconfigure are not removed.
   * /var/games/unvanquished/main is better owned by unvanquished-common.
   * Some debconf questions: whether to download .pk3s and, if so, from where.
+  * Updated mapotation.cfg.
 
  -- Darren Salt <devspam@moreofthesa.me.uk>  Sun, 03 Nov 2013 15:50:32 +0000
 
