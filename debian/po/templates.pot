@@ -1,0 +1,78 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: unvanquished\n"
+"Report-Msgid-Bugs-To: unvanquished@packages.debian.org\n"
+"POT-Creation-Date: 2013-10-23 18:13+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. Type: boolean
+#. Description
+#: ../unvanquished-common.templates:1001
+msgid "Download base .pk3 files?"
+msgstr ""
+
+#. Type: boolean
+#. Description
+#: ../unvanquished-common.templates:1001
+msgid ""
+"Unvanquished needs a set of .pk3 files to be able to run. Some of these "
+"files are rather large; their total size is somewhere a little short of 1GB."
+msgstr ""
+
+#. Type: boolean
+#. Description
+#: ../unvanquished-common.templates:1001
+msgid ""
+"If you want to download them as part of package installation, or you have a "
+"local web server which has the necessary files, answer 'yes'."
+msgstr ""
+
+#. Type: boolean
+#. Description
+#: ../unvanquished-common.templates:1001
+msgid ""
+"If you want to manage them manually, answer 'no', but note that if the "
+"correct files are not available in /var/games/unvanquished/main, you may not "
+"be able to start Unvanquished. You can download the files by running, as "
+"root, this command (which will download to the above directory):\n"
+"  unvanquished-download-paks"
+msgstr ""
+
+#. Type: string
+#. Description
+#: ../unvanquished-common.templates:2001
+msgid "Sourceforge mirror or URL from which to download base .pk3 files?"
+msgstr ""
+
+#. Type: string
+#. Description
+#: ../unvanquished-common.templates:2001
+msgid "Unvanquished needs to know where to download the base .pk3 files."
+msgstr ""
+
+#. Type: string
+#. Description
+#: ../unvanquished-common.templates:2001
+msgid ""
+"This location can be a URL, e.g. \"http://example.com/unvanquished/main\", "
+"or a Sourceforge mirror, e.g. \"example\" (which will be expanded to "
+"\"http://example.dl.sourceforge.net/project/unvanquished/Assets/\")."
+msgstr ""
+
+#. Type: string
+#. Description
+#: ../unvanquished-common.templates:2001
+msgid "Leave this blank to use the default Sourceforge mirror."
+msgstr ""

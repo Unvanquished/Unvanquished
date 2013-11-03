@@ -49,7 +49,6 @@ override_dh_installexamples:
 override_dh_installman:
 override_dh_installcatalogs:
 override_dh_installcron:
-override_dh_installdebconf:
 override_dh_installemacsen:
 override_dh_installifupdown:
 override_dh_installinfo:
