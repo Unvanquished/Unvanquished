@@ -41,16 +41,18 @@ namespace Cvar {
     void SetCheatMode(bool cheats);
     Callback<Cvar<bool>> cvar_cheats("sv_cheats", "bool - can cheats be used in the current game", SYSTEMINFO | ROM, true, SetCheatMode);
 
+    // A cvar is some info alongside a potential proxy for the cvar
     struct cvarRecord_t {
         std::string value;
         std::string resetValue;
         int flags;
         std::string description;
         CvarProxy* proxy;
-        cvar_t ccvar;
+        cvar_t ccvar; // The state of the cvar_t used to emulate the C API
         //DO: mutex?
     };
 
+    //Functions that emulate the C API
     void SetCCvar(cvarRecord_t& cvar) {
         cvar_t& var = cvar.ccvar;
         bool modified = false;
@@ -132,11 +134,15 @@ namespace Cvar {
 
     typedef std::unordered_map<std::string, cvarRecord_t*> CvarMap;
 
+    // The order in which static global variables are initialized is undefined and cvar
+    // can be registered before main. The first time this function is called the cvar map
+    // is initialized so we are sure it is initialized as soon as we need it.
     CvarMap& GetCvarMap() {
         static CvarMap* cvars = new CvarMap();
         return *cvars;
     }
 
+    // A command created for each cvar, used for /<cvar>
     class CvarCommand : public Cmd::CmdBase {
         public:
             CvarCommand() : Cmd::CmdBase(Cmd::CVAR) {
@@ -204,6 +210,7 @@ namespace Cvar {
 
     }
 
+    // Simple proxies for SetValueInternal
     void SetValue(const std::string& cvarName, std::string value) {
         InternalSetValue(cvarName, std::move(value), 0, false, true);
     }
@@ -314,6 +321,7 @@ namespace Cvar {
 
         CvarMap& cvars = GetCvarMap();
 
+        // Reset all the CHEAT cvars to their default value
         for (auto it : cvars) {
             cvarRecord_t* cvar = it.second;
 
@@ -331,7 +339,7 @@ namespace Cvar {
         }
     }
 
-    ///////////////
+    // Used by the C API
 
     cvar_t* FindCCvar(const std::string& cvarName) {
         CvarMap& cvars = GetCvarMap();

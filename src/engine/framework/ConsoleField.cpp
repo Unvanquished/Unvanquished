@@ -94,6 +94,8 @@ namespace Console {
         } else {
             prefix = args.Argv(argNum);
         }
+
+        Com_Printf("%s -- %i\n", args.RawCmd().c_str(), args.RawCmd().size());
         Cmd::CompletionResult candidates = Cmd::CompleteArgument(args.RawCmd(), args.RawCmd().size());
         if (candidates.empty()) {
             return;

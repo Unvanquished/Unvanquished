@@ -101,6 +101,7 @@ namespace Cmd {
             std::string cmd;
     };
 
+    // A completion result is a list of (result, short description)
     typedef std::vector<std::pair<std::string, std::string>> CompletionResult;
 
     class Environment;
@@ -131,12 +132,12 @@ namespace Cmd {
             CmdBase(int flags);
 
             // Shortcuts for this->GetEnv().*
+            // Commands should use these functions when possible.
             template <typename ... Args>
             void Print(Str::StringRef text, Args ... args) const;
             void ExecuteAfter(Str::StringRef text, bool parseCvars = false) const;
 
         private:
-            // Get the environment the command is executed in to do some special calls
             Environment& GetEnv() const;
 
             int flags;
@@ -158,11 +159,20 @@ namespace Cmd {
             //TODO: sometimes (in the gamelogic) we already know what the flags is, provide another constructor for it.
     };
 
+    /**
+     * Commands can be run from an environment. For now it is only
+     * used to redirect some calls (Print, ...).
+     *
+     * A DefaultEnvironment in CommandSystem can be inherited from
+     * when not all calls are redefined.
+     */
     class Environment {
         public:
             virtual void Print(Str::StringRef text) = 0;
             virtual void ExecuteAfter(Str::StringRef text, bool parseCvars = false) = 0;
     };
+
+    // Implementation of templates.
 
     template <typename ... Args>
     void CmdBase::Print(Str::StringRef text, Args ... args) const {

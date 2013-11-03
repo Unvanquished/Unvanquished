@@ -32,31 +32,50 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 namespace Cvar {
 
     //TODO more doc
-    //TODO more doc (again)
 
+    /*
+     * Cvars can have different flags that trigger specific behavior.
+     */
     enum {
         NONE       = 0,
-        ARCHIVE    = BIT(0),
-        USERINFO   = BIT(1),
-        SERVERINFO = BIT(2),
-        SYSTEMINFO = BIT(3),
-        ROM        = BIT(6),
-        CHEAT      = BIT(9)
+        ARCHIVE    = BIT(0), // The cvar is saved to the configuration file
+        USERINFO   = BIT(1), // The cvar is sent to the server as part of the client state
+        SERVERINFO = BIT(2), // The cvar is send to the client as part of the server state
+        SYSTEMINFO = BIT(3), // ???
+        ROM        = BIT(6), // The cvar cannot be changed by the user
+        CHEAT      = BIT(9)  // The cvar is a cheat and should stay at its default value on pure servers.
     };
 
-    //All cvars inherit from this class
+    /*
+     * All cvars created by the code inherit from this class although most of the time you'll
+     * want to use Cvar::Cvar. It is basically a callback for hen the value of the cvar changes.
+     * A single CvarProxy can be registered for a given cvar name.
+     */
     class CvarProxy {
         public:
             CvarProxy(std::string name, std::string description, int flags, std::string defaultValue);
 
+            // Called when the value of the cvar changes, returns true if the new value
+            // is valid, false otherwise. If false is returned, the cvar wil keep its old
+            // value.
             virtual bool OnValueChanged(const std::string& newValue) = 0;
 
         protected:
             std::string name;
 
+            // Will trigger another OnValueChanged after a roundtrip in the cvar system.
             void SetValue(std::string value);
     };
 
+    /*
+     * Cvar::Cvar<T> represents a type-checked cvar of type T. The parsed T can
+     * be accessed with .Get() and .Set() will serialize T before setting the value.
+     * It is also automatically registered when created so you can write:
+     *   static Cvar<bool> my_bool_cvar("my_bool_cvar", "bool - a cvar", Cvar::Archive, false);
+     *
+     * The functions bool ParseCvarValue(string, T& res) and string SerializeCvarValue(T)
+     * must be implemented for Cvar<T> to work.
+     */
     template<typename T> class Cvar : public CvarProxy{
         public:
             typedef T value_type;
@@ -74,14 +93,22 @@ namespace Cvar {
             virtual bool OnValueChanged(const std::string& text);
 
         protected:
+            // Used by classes that extend Cvar<T>
             bool Parse(std::string text, T& value);
             virtual bool Validate(const T& value);
 
             T value;
     };
 
+    /*
+     * Cvar::Cvar<T> can be augmented using the following classes
+     */
+
     //TODO do not force people to include functional?
-    //Add a callback that watches external changes to a cvar
+    /*
+     * Callback<CvarType> adds a callback that is called with the parsed value when
+     * the value changes
+     */
     template<typename Base> class Callback : public Base {
         public:
             typedef typename Base::value_type value_type;
@@ -95,13 +122,15 @@ namespace Cvar {
             std::function<void(value_type)> callback;
     };
 
-    //Cvars can be extended for different types of values
+    // Implement Cvar<T> for T = bool, int, string
     bool ParseCvarValue(std::string value, bool& result);
     std::string SerializeCvarValue(bool value);
     bool ParseCvarValue(std::string value, int& result);
     std::string SerializeCvarValue(int value);
     bool ParseCvarValue(std::string value, std::string& result);
     std::string SerializeCvarValue(std::string value);
+
+    // Implementation of templates
 
     // Cvar<T>
 

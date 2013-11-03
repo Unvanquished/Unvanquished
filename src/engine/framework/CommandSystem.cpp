@@ -36,20 +36,6 @@ namespace Cmd {
 
     Log::Logger commandLog("common.commands", Log::NOTICE);
 
-    struct commandRecord_t {
-        std::string description;
-        const CmdBase* cmd;
-    };
-
-    typedef std::unordered_map<std::string, commandRecord_t> CommandMap;
-
-    CommandMap& GetCommandMap() {
-        static CommandMap* commands = new CommandMap();
-        return *commands;
-    }
-
-    Environment* storedEnvironment = nullptr;
-
     /*
     ===============================================================================
 
@@ -58,6 +44,7 @@ namespace Cmd {
     ===============================================================================
     */
 
+    // A buffered command and its environment
     struct BufferEntry {
         std::string text;
         Environment* env;
@@ -67,13 +54,14 @@ namespace Cmd {
     std::vector<BufferEntry> commandBuffer;
 
     void BufferCommandTextInternal(const std::string& text, bool parseCvars, Environment* env, bool insertAtTheEnd) {
+        auto insertPoint = insertAtTheEnd ? commandBuffer.end() : commandBuffer.begin();
+
+        // Iterates over the commands in the text
         const char* current = text.data();
         const char* end = text.data() + text.size();
-        auto insertPoint = insertAtTheEnd ? commandBuffer.end() : commandBuffer.begin();
         do {
             const char* next = SplitCommand(current, end);
             std::string command(current, next != end ? next - 1 : end);
-
 
             insertPoint = ++commandBuffer.insert(insertPoint, {std::move(command), env, parseCvars});
 
@@ -107,6 +95,26 @@ namespace Cmd {
     ===============================================================================
     */
 
+    // Commands are stored alongside their description
+    struct commandRecord_t {
+        std::string description;
+        const CmdBase* cmd;
+    };
+
+    typedef std::unordered_map<std::string, commandRecord_t> CommandMap;
+
+    // Command execution is sequential so we make their environment a global variable.
+    Environment* storedEnvironment = nullptr;
+
+    // The order in which static global variables are initialized is undefined and commands
+    // can be registered before main. The first time this function is called the command map
+    // is initialized so we are sure it is initialized as soon as we need it.
+    CommandMap& GetCommandMap() {
+        static CommandMap* commands = new CommandMap();
+        return *commands;
+    }
+
+    // Used to emalute the C API
     //TODO: remove the need for this
     Args currentArgs;
     Args oldArgs;

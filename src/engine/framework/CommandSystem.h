@@ -28,27 +28,52 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #define FRAMEWORK_COMMAND_SYSTEM_H_
 
 /**
- * Console command execution and command text buffering.
+ * Command execution and command text buffering.
  *
- * Any number of commands can be added in a frame from several different
- * sources. Most commands come from either key bindings or console line input,
- * but entire text files can be execed.
+ * Commands represent "functions" in the code that are invoked with a string,
+ * command strings can come from different sources and are buffered and
+ * executed at least once per frame.
+ * Typically commands come from the console or key bindings but entire files
+ * can be exec'ed and sometimes the code use commands to sent messages between
+ * modules.
  *
- * The command text is first split into command strings then tokens,
- * the first token is the name of the command to be executed
+ * A command text is composed of several commands separated by a semi-colon
+ * or a new line and each command is composed of tokens separated by spaces.
+ * The first token is the command name. Note that additional parsing rules
+ * may apply.
  *
- * NOTE: All the functions in this file must be called from the main thread.
+ * This file contains
+ *
+ * TODO: shared might be moved
+ * See also shared/Command.h for the interface used to define commands.
+ *
+ * CommandSystem is responsible of managing, buffering and executing
+ * commands.
  */
+
+//TODO: figure out the threading mode for commands and change the doc accordingly
 
 namespace Cmd {
 
+    /*
+     * The command buffer stores command to be executed for later.
+     * Command texts can be parsed for cvar substition ($cvarname$)
+     * when run and can also be executed in a custom Environment.
+     */
+
     //TODO make it thread safe
-    // Adds a command text to by executed, optionnally parsing cvars ($cvarname$) if the text is a user input.
+    // Adds a command text to by executed (last, after what's already in the buffer)
     void BufferCommandText(const std::string& text, bool parseCvars = false, Environment* env = nullptr);
+    // Adds a command text to be executed just after the current command (used by commands execute other commands)
     void BufferCommandTextAfter(const std::string& text, bool parseCvars = false, Environment* env = nullptr);
-    // Executes all the buffered commands.
+
+    //TODO: figure out a way to make this convenient for non-main threads
+    // Executes all the buffered commands. Must be called by the main thread.
     void ExecuteCommandBuffer();
 
+    // Managing commands.
+
+    //TODO make it thread safe
     // Registers a command
     void AddCommand(std::string name, const CmdBase& cmd, std::string description);
     // Removes a command
@@ -56,7 +81,8 @@ namespace Cmd {
     // Removes all the commands with the given flag
     void RemoveFlaggedCommands(int flag);
 
-    // Executes a raw command string as a single command.
+    //TODO: figure out a way to make this convenient for non-main threads
+    // Executes a raw command string as a single command. Must be called by the main thread.
     void ExecuteCommand(std::string command, bool parseCvars = false, Environment* env = nullptr);
 
     //Completion stuff, highly unstable :-)
