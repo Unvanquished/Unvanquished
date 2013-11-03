@@ -977,8 +977,7 @@ static void CancelBuild( gentity_t *self )
 
 static void FireBuild( gentity_t *self, dynMenu_t menu )
 {
-	buildable_t buildable = ( self->client->ps.stats[ STAT_BUILDABLE ]
-	                          & ~SB_VALID_TOGGLEBIT );
+	buildable_t buildable = ( self->client->ps.stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK );
 
 	if ( buildable > BA_NONE )
 	{
@@ -1606,7 +1605,7 @@ void G_ImpactAttack( gentity_t *self, gentity_t *victim )
 	}
 
 	// don't do friendly fire
-	if ( OnSameTeam( self, victim ) )
+	if ( G_OnSameTeam( self, victim ) )
 	{
 		return;
 	}
@@ -1656,7 +1655,7 @@ void G_WeightAttack( gentity_t *self, gentity_t *victim )
 	}
 
 	// don't do friendly fire
-	if ( OnSameTeam( self, victim ) )
+	if ( G_OnSameTeam( self, victim ) )
 	{
 		return;
 	}

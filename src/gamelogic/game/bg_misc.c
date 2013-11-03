@@ -279,8 +279,18 @@ static classData_t bg_classData[] =
 		WP_ALEVEL4 //weapon_t  startWeapon;
 	},
 	{
-		PCL_HUMAN, //int     number;
-		"human_base", //char    *name;
+		PCL_HUMAN_NAKED, //int     number;
+		"human_naked", //char    *name;
+		WP_NONE //special-cased in g_client.c          //weapon_t  startWeapon;
+	},
+    {
+		PCL_HUMAN_LIGHT, //int     number;
+		"human_light", //char    *name;
+		WP_NONE //special-cased in g_client.c          //weapon_t  startWeapon;
+	},
+    {
+		PCL_HUMAN_MEDIUM, //int     number;
+		"human_medium", //char    *name;
 		WP_NONE //special-cased in g_client.c          //weapon_t  startWeapon;
 	},
 	{
@@ -295,6 +305,7 @@ static const size_t bg_numClasses = ARRAY_LEN( bg_classData );
 static classAttributes_t bg_classList[ ARRAY_LEN( bg_classData ) ];
 
 static const classAttributes_t nullClass = { 0 };
+static /*const*/ classModelConfig_t nullClassModelConfig = { "" };
 
 /*
 ==============
@@ -328,6 +339,26 @@ const classAttributes_t *BG_Class( class_t pClass )
 }
 
 static classModelConfig_t bg_classModelConfigList[ PCL_NUM_CLASSES ];
+
+/*
+==============
+BG_ClassModelConfigByName
+==============
+*/
+classModelConfig_t *BG_ClassModelConfigByName( const char *name )
+{
+	int i;
+
+	for ( i = 0; i < bg_numClasses; i++ )
+	{
+		if ( !Q_stricmp( bg_classModelConfigList[ i ].humanName, name ) )
+		{
+			return &bg_classModelConfigList[ i ];
+		}
+	}
+
+	return &nullClassModelConfig;
+}
 
 /*
 ==============
@@ -374,6 +405,11 @@ void BG_ClassBoundingBox( class_t pClass,
 	{
 		VectorCopy( classModelConfig->deadMaxs, dmaxs );
 	}
+}
+
+team_t BG_ClassTeam( class_t pClass )
+{
+	return BG_Class( pClass )->team;
 }
 
 /*
@@ -603,12 +639,13 @@ void BG_InitWeaponAttributes( void )
 		wd = &bg_weaponsData[i];
 		wa = &bg_weapons[i];
 
-		//Initialise default values for buildables
 		Com_Memset( wa, 0, sizeof( weaponAttributes_t ) );
 
 		wa->number = wd->number;
-		wa->name = wd->name;
-		wa->knockbackScale = 0.0f;
+		wa->name   = wd->name;
+
+		// set default values for optional fields
+		wa->knockbackScale = 1.0f;
 
 		BG_ParseWeaponAttributeFile( va( "configs/weapon/%s.attr.cfg", wa->name ), wa );
 	}
@@ -628,13 +665,18 @@ typedef struct
 static const upgradeData_t bg_upgradesData[] =
 {
 	{ UP_LIGHTARMOUR, "larmour"  },
-	{ UP_HELMET,      "helmet"   },
-	{ UP_MEDKIT,      "medkit"   },
+	{ UP_MEDIUMARMOUR,"marmour"  },
+	{ UP_BATTLESUIT,  "bsuit"    },
+
+	{ UP_RADAR,       "radar"    },
+
 	{ UP_BATTPACK,    "battpack" },
 	{ UP_JETPACK,     "jetpack"  },
-	{ UP_BATTLESUIT,  "bsuit"    },
+
 	{ UP_GRENADE,     "gren"     },
 	{ UP_FIREBOMB,    "firebomb" },
+
+	{ UP_MEDKIT,      "medkit"   },
 	{ UP_AMMO,        "ammo"     }
 };
 
@@ -813,6 +855,7 @@ static const meansOfDeathData_t bg_meansOfDeathData[] =
 	{ MOD_FLAMER_SPLASH, "MOD_FLAMER_SPLASH" },
 	{ MOD_BURN, "MOD_BURN" },
 	{ MOD_GRENADE, "MOD_GRENADE" },
+	{ MOD_FIREBOMB, "MOD_FIREBOMB" },
 	{ MOD_WEIGHT_H, "MOD_WEIGHT_H" },
 	{ MOD_WATER, "MOD_WATER" },
 	{ MOD_SLIME, "MOD_SLIME" },
@@ -1551,8 +1594,7 @@ qboolean BG_InventoryContainsWeapon( int weapon, int stats[] )
 	// humans always have a blaster
 	// HACK: Determine team by checking for STAT_CLASS since we merged STAT_TEAM into PERS_TEAM
 	//       This hack will vanish as soon as the blast isn't the only possible sidearm weapon anymore
-	if ( ( stats[ STAT_CLASS ] == PCL_HUMAN || stats[ STAT_CLASS ] == PCL_HUMAN_BSUIT ) &&
-	     weapon == WP_BLASTER )
+	if ( BG_ClassTeam( stats[ STAT_CLASS ] ) == TEAM_HUMANS && weapon == WP_BLASTER )
 	{
 		return qtrue;
 	}
@@ -1575,7 +1617,7 @@ int BG_SlotsForInventory( int stats[] )
 
 	// HACK: Determine team by checking for STAT_CLASS since we merged STAT_TEAM into PERS_TEAM
 	//       This hack will vanish as soon as the blast isn't the only possible sidearm weapon anymore
-	if ( stats[ STAT_CLASS ] == PCL_HUMAN || stats[ STAT_CLASS ] == PCL_HUMAN_BSUIT )
+	if ( BG_ClassTeam( stats[ STAT_CLASS ] ) == TEAM_HUMANS )
 	{
 		slots |= BG_Weapon( WP_BLASTER )->slots;
 	}
@@ -1810,46 +1852,55 @@ void BG_PositionBuildableRelativeToPlayer( playerState_t *ps,
 	vectoangles( forward, outAngles );
 }
 
-/*
-===============
-BG_GetValueOfPlayer
-
-Returns the credit value of a player
-===============
-*/
+/**
+ * @brief Calculates the "value" of a player as a base value plus a fraction of the price the
+ *        player paid for upgrades.
+ * @param ps
+ * @return Player value
+ */
 int BG_GetValueOfPlayer( playerState_t *ps )
 {
-	int upgradeNum, equipmentPrice;
+	int price, upgradeNum;
 
-	equipmentPrice = 0;
-
-	// Humans have worth from their equipment as well
-	if ( ps->persistant[ PERS_TEAM ] == TEAM_HUMANS )
+	if ( !ps )
 	{
-		for ( upgradeNum = UP_NONE + 1; upgradeNum < UP_NUM_UPGRADES; upgradeNum++ )
-		{
-			if ( BG_InventoryContainsUpgrade( upgradeNum, ps->stats ) )
-			{
-				equipmentPrice += BG_Upgrade( upgradeNum )->price;
-			}
-		}
-
-		for ( upgradeNum = WP_NONE + 1; upgradeNum < WP_NUM_WEAPONS; upgradeNum++ )
-		{
-			if ( BG_InventoryContainsWeapon( upgradeNum, ps->stats ) )
-			{
-				equipmentPrice += BG_Weapon( upgradeNum )->price;
-			}
-		}
+		return 0;
 	}
 
-	// In Tremulous, the value of equipment measured in alien class costs was half its price:
-	// Old evo gain for killing a human was (400 + equipmentPrice) / 400.
-	// One old evo equals a value of 200 (2 new evos), which is the new base value of a naked human.
-	// In order not to double the impact of human equipment, set its value to half its price for now.
-	equipmentPrice /= 2;
+	price = 0;
 
-	return BG_Class( ps->stats[ STAT_CLASS ] )->value + equipmentPrice;
+	switch ( ps->persistant[ PERS_TEAM ] )
+	{
+		case TEAM_HUMANS:
+			// Add upgrade price
+			for ( upgradeNum = UP_NONE + 1; upgradeNum < UP_NUM_UPGRADES; upgradeNum++ )
+			{
+				if ( BG_InventoryContainsUpgrade( upgradeNum, ps->stats ) )
+				{
+					price += BG_Upgrade( upgradeNum )->price;
+				}
+			}
+
+			// Add weapon price
+			for ( upgradeNum = WP_NONE + 1; upgradeNum < WP_NUM_WEAPONS; upgradeNum++ )
+			{
+				if ( BG_InventoryContainsWeapon( upgradeNum, ps->stats ) )
+				{
+					price += BG_Weapon( upgradeNum )->price;
+				}
+			}
+
+			break;
+
+		case TEAM_ALIENS:
+			price += BG_Class( ps->stats[ STAT_CLASS ] )->cost;
+			break;
+
+		default:
+			return 0;
+	}
+
+	return PLAYER_BASE_VALUE + ( int )( ( float )price * PLAYER_PRICE_TO_VALUE );
 }
 
 /*
@@ -1878,19 +1929,12 @@ int BG_PlayerPoisonCloudTime( playerState_t *ps )
 {
 	int time = LEVEL1_PCLOUD_TIME;
 
-	if ( BG_InventoryContainsUpgrade( UP_BATTLESUIT, ps->stats ) )
+	// HACK: Arbitrary values since we plan to get rid of poison cloud anyway
+	switch ( ps->stats[ STAT_CLASS ] )
 	{
-		time -= BSUIT_PCLOUD_PROTECTION;
-	}
-
-	if ( BG_InventoryContainsUpgrade( UP_HELMET, ps->stats ) )
-	{
-		time -= HELMET_PCLOUD_PROTECTION;
-	}
-
-	if ( BG_InventoryContainsUpgrade( UP_LIGHTARMOUR, ps->stats ) )
-	{
-		time -= LIGHTARMOUR_PCLOUD_PROTECTION;
+		case PCL_HUMAN_LIGHT:  time *= 0.6f; break;
+		case PCL_HUMAN_MEDIUM: time *= 0.3f; break;
+		case PCL_HUMAN_BSUIT:  time *= 0.2f; break;
 	}
 
 	return time;

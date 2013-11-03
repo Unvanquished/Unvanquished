@@ -2532,14 +2532,15 @@ static void UI_LoadAlienClasses( void )
 		UI_AddClass( PCL_ALIEN_LEVEL0 );
 	}
 
+	if ( !BG_ClassDisabled( PCL_ALIEN_BUILDER0 ) )
+	{
+		UI_AddClass( PCL_ALIEN_BUILDER0 );
+	}
+
 	if ( !BG_ClassDisabled( PCL_ALIEN_BUILDER0_UPG ) &&
 	     BG_ClassUnlocked( PCL_ALIEN_BUILDER0_UPG ) )
 	{
 		UI_AddClass( PCL_ALIEN_BUILDER0_UPG );
-	}
-	else if ( !BG_ClassDisabled( PCL_ALIEN_BUILDER0 ) )
-	{
-		UI_AddClass( PCL_ALIEN_BUILDER0 );
 	}
 }
 

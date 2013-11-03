@@ -201,7 +201,6 @@ static void CG_Obituary( entityState_t *ent )
 		switch ( mod )
 		{
 			case MOD_FLAMER_SPLASH:
-			case MOD_BURN:
 				if ( cg_emoticonsInMessages.integer )
 				{
 					message = "[flamer] %s\n";
@@ -209,6 +208,17 @@ static void CG_Obituary( entityState_t *ent )
 				else
 				{
 					message = G_( "%s ^7toasted self\n" );
+				}
+				break;
+
+			case MOD_BURN:
+				if ( cg_emoticonsInMessages.integer )
+				{
+					message = "[fire] %s\n";
+				}
+				else
+				{
+					message = G_( "%s ^7burned self\n" );
 				}
 				break;
 
@@ -227,6 +237,13 @@ static void CG_Obituary( entityState_t *ent )
 				if ( cg_emoticonsInMessages.integer )
 				{
 					message = "[grenade] %s\n";
+				}
+				else
+				// fall-through
+			case MOD_FIREBOMB:
+				if ( cg_emoticonsInMessages.integer )
+				{
+					message = "[firebomb] %s\n";
 				}
 				else
 				{
@@ -443,6 +460,18 @@ static void CG_Obituary( entityState_t *ent )
 				else
 				{
 					message = G_( "%s ^7couldn't escape %s%s^7's grenade\n" );
+				}
+				break;
+
+			case MOD_FIREBOMB:
+				if ( cg_emoticonsInMessages.integer )
+				{
+					message = "%s%s^7 [firebomb] %s\n";
+					attackerFirst = qtrue;
+				}
+				else
+				{
+					message = G_( "%s ^7couldn't escape %s%s^7's firebomb\n" );
 				}
 				break;
 

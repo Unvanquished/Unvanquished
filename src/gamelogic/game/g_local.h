@@ -611,12 +611,10 @@ struct gclient_s
 
 	vec3_t oldOrigin;
 
-	// sum up damage over an entire frame, so
-	// shotgun blasts give a single big kick
-	int      damage_armor; // damage absorbed by armor
-	int      damage_blood; // damage taken out of health
-	int      damage_knockback; // impact damage
-	vec3_t   damage_from; // origin for vector calculation
+	// sum up damage over an entire frame, so shotgun blasts give a single big kick
+	int      damage_received;  // damage received this frame
+	int      damage_knockback; // total knockback this frame
+	vec3_t   damage_from;      // last damage direction
 	qboolean damage_fromWorld; // if true, don't use the damage_from vector
 
 	// timers
@@ -690,6 +688,7 @@ typedef struct damageRegion_s
 	float    area, modifier, minHeight, maxHeight;
 	int      minAngle, maxAngle;
 	qboolean crouch;
+	qboolean nonlocational;
 } damageRegion_t;
 
 //status of the warning of certain events
@@ -950,31 +949,6 @@ void G_Physics( gentity_t *ent, int msec );
 
 #define MAX_ALIEN_BBOX 25
 
-typedef enum
-{
-  IBE_NONE,             // no error, can build
-
-  IBE_NOOVERMIND,       // no overmind present
-  IBE_ONEOVERMIND,      // may not build two overminds
-  IBE_NOALIENBP,        // not enough build points (aliens)
-  IBE_NOCREEP,          // no creep in this area
-
-  IBE_NOREACTOR,        // no reactor present
-  IBE_ONEREACTOR,       // may not build two reactors
-  IBE_NOHUMANBP,        // not enough build points (humans)
-  IBE_DRILLPOWERSOURCE, // needs a close power source
-  IBE_NOPOWERHERE,      // not enough power in this area
-  IBE_NODCC,            // needs a defense computer
-
-  IBE_NORMAL,           // surface is too steep
-  IBE_NOROOM,           // no room
-  IBE_SURFACE,          // map doesn't allow building on that surface
-  IBE_DISABLED,         // building has been disabled for team
-  IBE_LASTSPAWN,        // may not replace last spawn with non-spawn
-
-  IBE_MAXERRORS
-} itemBuildError_t;
-
 gentity_t        *G_CheckSpawnPoint( int spawnNum, const vec3_t origin,
                                      const vec3_t normal, buildable_t spawn,
                                      vec3_t spawnOrigin );
@@ -1065,7 +1039,11 @@ qboolean   G_LineOfSight( gentity_t *ent1, gentity_t *ent2 );
 //
 // g_combat.c
 //
-qboolean CanDamage( gentity_t *targ, vec3_t origin );
+qboolean G_CanDamage( gentity_t *targ, vec3_t origin );
+void     G_KnockbackByDir( gentity_t *target, const vec3_t direction, float strength,
+                           qboolean ignoreMass );
+void     G_KnockbackBySource( gentity_t *target, gentity_t *source, float strength,
+                              qboolean ignoreMass );
 void     G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
                    vec3_t dir, vec3_t point, int damage, int dflags, int mod );
 void     G_SelectiveDamage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_t dir,
@@ -1079,6 +1057,8 @@ void     G_AddCreditsToScore( gentity_t *self, int credits );
 void     G_AddConfidenceToScore( gentity_t *self, float confidence );
 void     G_LogDestruction( gentity_t *self, gentity_t *actor, int mod );
 
+float    G_GetNonLocDamageMod( class_t pcl );
+float    G_GetPointDamageMod( gentity_t *target, class_t pcl, float angle, float height );
 void     G_InitDamageLocations( void );
 
 // damage flags
@@ -1148,7 +1128,7 @@ gentity_t *G_SelectHumanLockSpawnPoint( vec3_t origin, vec3_t angles );
 void      respawn( gentity_t *ent );
 void      BeginIntermission( void );
 void      ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const vec3_t angles );
-void      player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod );
+void      G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod );
 qboolean  SpotWouldTelefrag( gentity_t *spot );
 qboolean  G_IsUnnamed( const char *name );
 
@@ -1223,7 +1203,7 @@ void G_RunClient( gentity_t *ent );
 team_t    G_TeamFromString( const char *str );
 void      G_TeamCommand( team_t team, const char *cmd );
 void      G_AreaTeamCommand( gentity_t *ent, const char *cmd );
-qboolean  OnSameTeam( gentity_t *ent1, gentity_t *ent2 );
+qboolean  G_OnSameTeam( gentity_t *ent1, gentity_t *ent2 );
 void      G_LeaveTeam( gentity_t *self );
 void      G_ChangeTeam( gentity_t *ent, team_t newTeam );
 gentity_t *Team_GetLocation( gentity_t *ent );
@@ -1299,6 +1279,7 @@ extern  vmCvar_t g_knockback;
 extern  vmCvar_t g_inactivity;
 extern  vmCvar_t g_debugMove;
 extern  vmCvar_t g_debugDamage;
+extern  vmCvar_t g_debugKnockback;
 extern  vmCvar_t g_synchronousClients;
 extern  vmCvar_t g_motd;
 extern  vmCvar_t g_warmup;

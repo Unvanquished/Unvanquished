@@ -272,8 +272,14 @@ static qboolean R_CullLightSurface( surfaceType_t *surface, shader_t *shader, tr
 	// plane cull
 	if ( *surface == SF_FACE && r_facePlaneCull->integer )
 	{
-		d = DotProduct( light->origin, gen->plane.normal ) - gen->plane.dist;
-
+		if ( light->l.rlType == RL_DIRECTIONAL )
+		{
+			d = DotProduct( tr.sunDirection, gen->plane.normal );
+		}
+		else
+		{
+			d = DotProduct( light->origin, gen->plane.normal ) - gen->plane.dist;
+		}
 		// don't cull exactly on the plane, because there are levels of rounding
 		// through the BSP, ICD, and hardware that may cause pixel gaps if an
 		// epsilon isn't allowed here

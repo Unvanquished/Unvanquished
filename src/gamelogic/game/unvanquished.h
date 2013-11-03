@@ -368,12 +368,7 @@ extern int   LCANNON_CHARGE_AMMO;
  * HUMAN upgrades
  */
 
-extern int   LIGHTARMOUR_POISON_PROTECTION;
-extern int   LIGHTARMOUR_PCLOUD_PROTECTION;
-
-extern float HELMET_RANGE;
-extern int   HELMET_POISON_PROTECTION;
-extern int   HELMET_PCLOUD_PROTECTION;
+extern float RADAR_RANGE;
 
 extern float BATTPACK_MODIFIER;
 
@@ -381,9 +376,6 @@ extern float JETPACK_FLOAT_SPEED;
 extern float JETPACK_SINK_SPEED;
 extern int   JETPACK_DISABLE_TIME;
 extern float JETPACK_DISABLE_CHANCE;
-
-extern int   BSUIT_POISON_PROTECTION;
-extern int   BSUIT_PCLOUD_PROTECTION;
 
 extern int   MEDKIT_POISON_IMMUNITY_TIME;
 extern int   MEDKIT_STARTUP_TIME;
@@ -422,21 +414,13 @@ extern int   REACTOR_ATTACK_DCC_DAMAGE;
  * HUMAN misc
  */
 
-#define HUMAN_SPRINT_MODIFIER         1.2f
 #define HUMAN_JOG_MODIFIER            1.0f
 #define HUMAN_BACK_MODIFIER           0.8f
 #define HUMAN_SIDE_MODIFIER           0.9f
 #define HUMAN_LAND_FRICTION           3.0f
 
-#define STAMINA_STOP_RESTORE          30
-#define STAMINA_WALK_RESTORE          15
-#define STAMINA_MEDISTAT_RESTORE      30 // stacked on STOP or WALK
-#define STAMINA_SPRINT_TAKE           6
-#define STAMINA_JUMP_TAKE             250 // Doubled jump requirement. Can perform ~8 jumps.
-#define STAMINA_MAX                   2000 // Doubled maximum stamina.
-#define STAMINA_BREATHING_LEVEL       0
-#define STAMINA_SLOW_LEVEL            -1000 // doubled to match doubled stamina
-#define STAMINA_BLACKOUT_LEVEL        -1600 // Doubled to match doubled stamina
+#define STAMINA_MAX                   2000
+#define STAMINA_MEDISTAT_RESTORE      30   // 1/(100 ms). stacks.
 
 #define HUMAN_SPAWN_REPEAT_TIME       10000
 #define HUMAN_REGEN_DAMAGE_TIME       2000 //msec since damage before dcc repairs
@@ -477,9 +461,11 @@ extern int   REACTOR_ATTACK_DCC_DAMAGE;
 // funds
 // Values are in credits. 'evo' is just another unit for credits.
 #define CREDITS_PER_EVO                    100   // Used when alien credits are displayed as evos
+#define PLAYER_BASE_VALUE                  200   // base credit value of a player
+#define PLAYER_PRICE_TO_VALUE              0.5f  // fraction of upgrade price added to player value
 #define DEFAULT_FREEKILL_PERIOD            "120" // in s
-#define FREEKILL_ALIEN                     200   // value of a naked human
-#define FREEKILL_HUMAN                     180   // value of a dretch
+#define FREEKILL_ALIEN                     PLAYER_BASE_VALUE
+#define FREEKILL_HUMAN                     PLAYER_BASE_VALUE
 
 // resources
 #define RGS_RANGE                          1000.0f
@@ -487,6 +473,7 @@ extern int   REACTOR_ATTACK_DCC_DAMAGE;
 #define DEFAULT_INITIAL_MINE_RATE          "8"   // in (BP/min)/RGS
 #define DEFAULT_MINE_RATE_HALF_LIFE        "20"  // in min
 #define DEFAULT_MINIMUM_MINE_RATE          "50"
+#define BASIC_INCOME_MOD                   1.0f
 
 // confidence
 #define CONFIDENCE_PER_CREDIT              0.01f // used to award confidence based on credit rewards

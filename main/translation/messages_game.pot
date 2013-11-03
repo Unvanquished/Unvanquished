@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-07-07 23:10+0200\n"
+"POT-Creation-Date: 2013-10-28 15:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -72,7 +72,7 @@ msgstr ""
 #: ingame_options.menu:553 ingame_options.menu:577 options.menu:237
 #: options.menu:246 options.menu:253 options.menu:255 options.menu:515
 #: options.menu:519 options.menu:565 options.menu:589
-#: src/gamelogic/ui/ui_shared.c:5935 src/gamelogic/ui/ui_shared.c:5939
+#: src/gamelogic/ui/ui_shared.c:5932 src/gamelogic/ui/ui_shared.c:5936
 #: main/ui/vsays.menu:112
 msgid "No"
 msgstr ""
@@ -151,18 +151,16 @@ msgstr ""
 msgid "Video Quality:"
 msgstr ""
 
-#: firstrun.menu:50 ingame_options.menu:490 ingame_options.menu:560
-#: options.menu:503 options.menu:572
+#: firstrun.menu:50 ingame_options.menu:490 options.menu:503
 msgid "High"
 msgstr ""
 
 #: firstrun.menu:50 ingame_options.menu:236 ingame_options.menu:490
-#: ingame_options.menu:560 options.menu:248 options.menu:503 options.menu:572
+#: options.menu:248 options.menu:503
 msgid "Intermediate"
 msgstr ""
 
-#: firstrun.menu:50 ingame_options.menu:490 ingame_options.menu:560
-#: options.menu:503 options.menu:572
+#: firstrun.menu:50 ingame_options.menu:490 options.menu:503
 msgid "Low"
 msgstr ""
 
@@ -216,6 +214,22 @@ msgstr ""
 
 #: huds.menu:112
 msgid "Select"
+msgstr ""
+
+#: ingame.menu:76
+msgid "Game"
+msgstr ""
+
+#: ingame.menu:94 main/ui/main.menu:69
+msgid "Options"
+msgstr ""
+
+#: ingame.menu:112 main/ui/main.menu:67
+msgid "Help"
+msgstr ""
+
+#: ingame.menu:130
+msgid "Exit"
 msgstr ""
 
 #: ingame_game.menu:107
@@ -368,29 +382,13 @@ msgstr ""
 
 #: ingame_leave.menu:113 ingame_leave.menu:167 ingame_options.menu:225
 #: ingame_options.menu:241 ingame_options.menu:577 options.menu:237
-#: options.menu:253 options.menu:589 src/gamelogic/ui/ui_shared.c:5935
-#: src/gamelogic/ui/ui_shared.c:5939 main/ui/vsays.menu:111
+#: options.menu:253 options.menu:589 src/gamelogic/ui/ui_shared.c:5932
+#: src/gamelogic/ui/ui_shared.c:5936 main/ui/vsays.menu:111
 msgid "Yes"
 msgstr ""
 
 #: ingame_leave.menu:153
 msgid "Want To Quit Game?"
-msgstr ""
-
-#: ingame.menu:76
-msgid "Game"
-msgstr ""
-
-#: ingame.menu:94 main/ui/main.menu:69
-msgid "Options"
-msgstr ""
-
-#: ingame.menu:112 main/ui/main.menu:67
-msgid "Help"
-msgstr ""
-
-#: ingame.menu:130
-msgid "Exit"
 msgstr ""
 
 #: ingame_options.menu:79 options.menu:90
@@ -664,6 +662,18 @@ msgstr ""
 #: ingame_options.menu:559 options.menu:571 main/ui/ingame_options.menu:559
 #: main/ui/options.menu:571
 msgid "Texture Detail:"
+msgstr ""
+
+#: ingame_options.menu:560 options.menu:572
+msgid "Low (1:4)"
+msgstr ""
+
+#: ingame_options.menu:560 options.menu:572
+msgid "Medium (1:2)"
+msgstr ""
+
+#: ingame_options.menu:560 options.menu:572
+msgid "Full (1:1)"
 msgstr ""
 
 #: ingame_options.menu:563 options.menu:575 main/ui/ingame_options.menu:563
@@ -948,6 +958,10 @@ msgstr ""
 msgid "SPECTATOR"
 msgstr ""
 
+#: tremulous_human_hud.menu:153
+msgid "Credits"
+msgstr ""
+
 #: tremulous_humanarmoury.menu:130
 msgid "Buy >"
 msgstr ""
@@ -956,10 +970,6 @@ msgstr ""
 msgid "< Sell"
 msgstr ""
 
-#: tremulous_human_hud.menu:161
-msgid "Credits"
-msgstr ""
-
 #: src/gamelogic/cgame/cg_event.c:89
 msgctxt "male"
 msgid "%s ^7fell foul to gravity\n"
@@ -1200,1055 +1210,1040 @@ msgctxt "neuter"
 msgid "%s ^7was hunted down by the swarm\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:210
+#: src/gamelogic/cgame/cg_event.c:211
 msgctxt "male"
 msgid "%s ^7toasted self\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:210
+#: src/gamelogic/cgame/cg_event.c:211
 msgctxt "female"
 msgid "%s ^7toasted self\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:210
+#: src/gamelogic/cgame/cg_event.c:211
 msgctxt "neuter"
 msgid "%s ^7toasted self\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:221
+#: src/gamelogic/cgame/cg_event.c:222
 msgctxt "male"
 msgid "%s ^7irradiated self\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:221
+#: src/gamelogic/cgame/cg_event.c:222
 msgctxt "female"
 msgid "%s ^7irradiated self\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:221
+#: src/gamelogic/cgame/cg_event.c:222
 msgctxt "neuter"
 msgid "%s ^7irradiated self\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:232
+#: src/gamelogic/cgame/cg_event.c:233
 msgctxt "male"
 msgid "%s ^7blew self up\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:232
+#: src/gamelogic/cgame/cg_event.c:233
 msgctxt "female"
 msgid "%s ^7blew self up\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:232
+#: src/gamelogic/cgame/cg_event.c:233
 msgctxt "neuter"
 msgid "%s ^7blew self up\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:243
+#: src/gamelogic/cgame/cg_event.c:244
 msgctxt "male"
 msgid "%s ^7sniped self\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:243
+#: src/gamelogic/cgame/cg_event.c:244
 msgctxt "female"
 msgid "%s ^7sniped self\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:243
+#: src/gamelogic/cgame/cg_event.c:244
 msgctxt "neuter"
 msgid "%s ^7sniped self\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:254
+#: src/gamelogic/cgame/cg_event.c:255
 msgctxt "male"
 msgid "%s ^7pulse rifled self\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:254
+#: src/gamelogic/cgame/cg_event.c:255
 msgctxt "female"
 msgid "%s ^7pulse rifled self\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:254
+#: src/gamelogic/cgame/cg_event.c:255
 msgctxt "neuter"
 msgid "%s ^7pulse rifled self\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:259
+#: src/gamelogic/cgame/cg_event.c:260
 msgctxt "male"
 msgid "%s ^7killed self\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:259
+#: src/gamelogic/cgame/cg_event.c:260
 msgctxt "female"
 msgid "%s ^7killed self\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:259
+#: src/gamelogic/cgame/cg_event.c:260
 msgctxt "neuter"
 msgid "%s ^7killed self\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:299
+#: src/gamelogic/cgame/cg_event.c:300
 msgctxt "male"
 msgid "%s ^7was sawn by %s%s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:299
+#: src/gamelogic/cgame/cg_event.c:300
 msgctxt "female"
 msgid "%s ^7was sawn by %s%s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:299
+#: src/gamelogic/cgame/cg_event.c:300
 msgctxt "neuter"
 msgid "%s ^7was sawn by %s%s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:311
+#: src/gamelogic/cgame/cg_event.c:312
 msgctxt "male"
 msgid "%s ^7was blasted by %s%s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:311
+#: src/gamelogic/cgame/cg_event.c:312
 msgctxt "female"
 msgid "%s ^7was blasted by %s%s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:311
+#: src/gamelogic/cgame/cg_event.c:312
 msgctxt "neuter"
 msgid "%s ^7was blasted by %s%s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:323
+#: src/gamelogic/cgame/cg_event.c:324
 msgctxt "male"
 msgid "%s ^7was machinegunned by %s%s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:323
+#: src/gamelogic/cgame/cg_event.c:324
 msgctxt "female"
 msgid "%s ^7was machinegunned by %s%s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:323
+#: src/gamelogic/cgame/cg_event.c:324
 msgctxt "neuter"
 msgid "%s ^7was machinegunned by %s%s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:335
+#: src/gamelogic/cgame/cg_event.c:336
 msgctxt "male"
 msgid "%s ^7was chaingunned by %s%s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:335
+#: src/gamelogic/cgame/cg_event.c:336
 msgctxt "female"
 msgid "%s ^7was chaingunned by %s%s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:335
+#: src/gamelogic/cgame/cg_event.c:336
 msgctxt "neuter"
 msgid "%s ^7was chaingunned by %s%s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:347
+#: src/gamelogic/cgame/cg_event.c:348
 msgctxt "male"
 msgid "%s ^7was gunned down by %s%s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:347
+#: src/gamelogic/cgame/cg_event.c:348
 msgctxt "female"
 msgid "%s ^7was gunned down by %s%s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:347
+#: src/gamelogic/cgame/cg_event.c:348
 msgctxt "neuter"
 msgid "%s ^7was gunned down by %s%s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:359
+#: src/gamelogic/cgame/cg_event.c:360
 msgctxt "male"
 msgid "%s ^7was pulse rifled by %s%s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:359
+#: src/gamelogic/cgame/cg_event.c:360
 msgctxt "female"
 msgid "%s ^7was pulse rifled by %s%s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:359
+#: src/gamelogic/cgame/cg_event.c:360
 msgctxt "neuter"
 msgid "%s ^7was pulse rifled by %s%s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:371
+#: src/gamelogic/cgame/cg_event.c:372
 msgctxt "male"
 msgid "%s ^7was mass driven by %s%s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:371
+#: src/gamelogic/cgame/cg_event.c:372
 msgctxt "female"
 msgid "%s ^7was mass driven by %s%s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:371
+#: src/gamelogic/cgame/cg_event.c:372
 msgctxt "neuter"
 msgid "%s ^7was mass driven by %s%s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:383
+#: src/gamelogic/cgame/cg_event.c:384
 msgctxt "male"
 msgid "%s ^7was lasgunned by %s%s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:383
+#: src/gamelogic/cgame/cg_event.c:384
 msgctxt "female"
 msgid "%s ^7was lasgunned by %s%s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:383
+#: src/gamelogic/cgame/cg_event.c:384
 msgctxt "neuter"
 msgid "%s ^7was lasgunned by %s%s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:395
+#: src/gamelogic/cgame/cg_event.c:397
 msgctxt "male"
 msgid "%s ^7was grilled by %s%s^7's flamer\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:395
+#: src/gamelogic/cgame/cg_event.c:397
 msgctxt "female"
 msgid "%s ^7was grilled by %s%s^7's flamer\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:395
+#: src/gamelogic/cgame/cg_event.c:397
 msgctxt "neuter"
 msgid "%s ^7was grilled by %s%s^7's flamer\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:407
+#: src/gamelogic/cgame/cg_event.c:409
 msgctxt "male"
-msgid "%s ^7was toasted by %s%s^7's flamer\n"
+msgid "%s ^7was burned by %s%s^7's fire\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:407
+#: src/gamelogic/cgame/cg_event.c:409
 msgctxt "female"
-msgid "%s ^7was toasted by %s%s^7's flamer\n"
+msgid "%s ^7was burned by %s%s^7's fire\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:407
+#: src/gamelogic/cgame/cg_event.c:409
 msgctxt "neuter"
-msgid "%s ^7was toasted by %s%s^7's flamer\n"
+msgid "%s ^7was burned by %s%s^7's fire\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:419
+#: src/gamelogic/cgame/cg_event.c:421
 msgctxt "male"
 msgid "%s ^7felt the full force of %s%s^7's lucifer cannon\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:419
+#: src/gamelogic/cgame/cg_event.c:421
 msgctxt "female"
 msgid "%s ^7felt the full force of %s%s^7's lucifer cannon\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:419
+#: src/gamelogic/cgame/cg_event.c:421
 msgctxt "neuter"
 msgid "%s ^7felt the full force of %s%s^7's lucifer cannon\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:431
+#: src/gamelogic/cgame/cg_event.c:433
 msgctxt "male"
 msgid "%s ^7was caught in the fallout of %s%s^7's lucifer cannon\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:431
+#: src/gamelogic/cgame/cg_event.c:433
 msgctxt "female"
 msgid "%s ^7was caught in the fallout of %s%s^7's lucifer cannon\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:431
+#: src/gamelogic/cgame/cg_event.c:433
 msgctxt "neuter"
 msgid "%s ^7was caught in the fallout of %s%s^7's lucifer cannon\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:443
+#: src/gamelogic/cgame/cg_event.c:445
 msgctxt "male"
 msgid "%s ^7couldn't escape %s%s^7's grenade\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:443
+#: src/gamelogic/cgame/cg_event.c:445
 msgctxt "female"
 msgid "%s ^7couldn't escape %s%s^7's grenade\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:443
+#: src/gamelogic/cgame/cg_event.c:445
 msgctxt "neuter"
 msgid "%s ^7couldn't escape %s%s^7's grenade\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:455
+#: src/gamelogic/cgame/cg_event.c:457
 msgctxt "male"
 msgid "%s ^7should leave %s%s^7's buildings alone\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:455
+#: src/gamelogic/cgame/cg_event.c:457
 msgctxt "female"
 msgid "%s ^7should leave %s%s^7's buildings alone\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:455
+#: src/gamelogic/cgame/cg_event.c:457
 msgctxt "neuter"
 msgid "%s ^7should leave %s%s^7's buildings alone\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:467
+#: src/gamelogic/cgame/cg_event.c:469
 msgctxt "male"
 msgid "%s ^7was bitten by %s%s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:467
+#: src/gamelogic/cgame/cg_event.c:469
 msgctxt "female"
 msgid "%s ^7was bitten by %s%s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:467
+#: src/gamelogic/cgame/cg_event.c:469
 msgctxt "neuter"
 msgid "%s ^7was bitten by %s%s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:479
+#: src/gamelogic/cgame/cg_event.c:481
 msgctxt "male"
 msgid "%s ^7was swiped by %s%s^7's %s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:479
+#: src/gamelogic/cgame/cg_event.c:481
 msgctxt "female"
 msgid "%s ^7was swiped by %s%s^7's %s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:479
+#: src/gamelogic/cgame/cg_event.c:481
 msgctxt "neuter"
 msgid "%s ^7was swiped by %s%s^7's %s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:492
+#: src/gamelogic/cgame/cg_event.c:494
 msgctxt "male"
 msgid "%s ^7was clawed by %s%s^7's %s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:492
+#: src/gamelogic/cgame/cg_event.c:494
 msgctxt "female"
 msgid "%s ^7was clawed by %s%s^7's %s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:492
+#: src/gamelogic/cgame/cg_event.c:494
 msgctxt "neuter"
 msgid "%s ^7was clawed by %s%s^7's %s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:505
+#: src/gamelogic/cgame/cg_event.c:507
 msgctxt "male"
 msgid "%s ^7was zapped by %s%s^7's %s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:505
+#: src/gamelogic/cgame/cg_event.c:507
 msgctxt "female"
 msgid "%s ^7was zapped by %s%s^7's %s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:505
+#: src/gamelogic/cgame/cg_event.c:507
 msgctxt "neuter"
 msgid "%s ^7was zapped by %s%s^7's %s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:518
+#: src/gamelogic/cgame/cg_event.c:520
 msgctxt "male"
 msgid "%s ^7was chomped by %s%s^7's %s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:518
+#: src/gamelogic/cgame/cg_event.c:520
 msgctxt "female"
 msgid "%s ^7was chomped by %s%s^7's %s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:518
+#: src/gamelogic/cgame/cg_event.c:520
 msgctxt "neuter"
 msgid "%s ^7was chomped by %s%s^7's %s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:531
+#: src/gamelogic/cgame/cg_event.c:533
 msgctxt "male"
 msgid "%s ^7was pounced upon by %s%s^7's %s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:531
+#: src/gamelogic/cgame/cg_event.c:533
 msgctxt "female"
 msgid "%s ^7was pounced upon by %s%s^7's %s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:531
+#: src/gamelogic/cgame/cg_event.c:533
 msgctxt "neuter"
 msgid "%s ^7was pounced upon by %s%s^7's %s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:544
+#: src/gamelogic/cgame/cg_event.c:546
 msgctxt "male"
 msgid "%s ^7was sniped by %s%s^7's %s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:544
+#: src/gamelogic/cgame/cg_event.c:546
 msgctxt "female"
 msgid "%s ^7was sniped by %s%s^7's %s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:544
+#: src/gamelogic/cgame/cg_event.c:546
 msgctxt "neuter"
 msgid "%s ^7was sniped by %s%s^7's %s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:557
+#: src/gamelogic/cgame/cg_event.c:559
 msgctxt "male"
 msgid "%s ^7was mauled by %s%s^7's %s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:557
+#: src/gamelogic/cgame/cg_event.c:559
 msgctxt "female"
 msgid "%s ^7was mauled by %s%s^7's %s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:557
+#: src/gamelogic/cgame/cg_event.c:559
 msgctxt "neuter"
 msgid "%s ^7was mauled by %s%s^7's %s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:570
+#: src/gamelogic/cgame/cg_event.c:572
 msgctxt "male"
 msgid "%s ^7should have gotten out of the way of %s%s^7's %s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:570
+#: src/gamelogic/cgame/cg_event.c:572
 msgctxt "female"
 msgid "%s ^7should have gotten out of the way of %s%s^7's %s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:570
+#: src/gamelogic/cgame/cg_event.c:572
 msgctxt "neuter"
 msgid "%s ^7should have gotten out of the way of %s%s^7's %s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:583
+#: src/gamelogic/cgame/cg_event.c:586
 msgctxt "male"
 msgid "%s ^7was crushed under %s%s^7's weight\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:583
+#: src/gamelogic/cgame/cg_event.c:586
 msgctxt "female"
 msgid "%s ^7was crushed under %s%s^7's weight\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:583
+#: src/gamelogic/cgame/cg_event.c:586
 msgctxt "neuter"
 msgid "%s ^7was crushed under %s%s^7's weight\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:595
+#: src/gamelogic/cgame/cg_event.c:598
 msgctxt "male"
 msgid "%s ^7should have used a medkit against %s%s^7's poison\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:595
+#: src/gamelogic/cgame/cg_event.c:598
 msgctxt "female"
 msgid "%s ^7should have used a medkit against %s%s^7's poison\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:595
+#: src/gamelogic/cgame/cg_event.c:598
 msgctxt "neuter"
 msgid "%s ^7should have used a medkit against %s%s^7's poison\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:607
+#: src/gamelogic/cgame/cg_event.c:610
 msgctxt "male"
 msgid "%s ^7was gassed by %s%s^7's %s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:607
+#: src/gamelogic/cgame/cg_event.c:610
 msgctxt "female"
 msgid "%s ^7was gassed by %s%s^7's %s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:607
+#: src/gamelogic/cgame/cg_event.c:610
 msgctxt "neuter"
 msgid "%s ^7was gassed by %s%s^7's %s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:620
+#: src/gamelogic/cgame/cg_event.c:623
 msgctxt "male"
 msgid "%s ^7tried to invade %s%s^7's personal space\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:620
+#: src/gamelogic/cgame/cg_event.c:623
 msgctxt "female"
 msgid "%s ^7tried to invade %s%s^7's personal space\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:620
+#: src/gamelogic/cgame/cg_event.c:623
 msgctxt "neuter"
 msgid "%s ^7tried to invade %s%s^7's personal space\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:625
+#: src/gamelogic/cgame/cg_event.c:628
 msgctxt "male"
 msgid "%s ^7was killed by %s%s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:625
+#: src/gamelogic/cgame/cg_event.c:628
 msgctxt "female"
 msgid "%s ^7was killed by %s%s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:625
+#: src/gamelogic/cgame/cg_event.c:628
 msgctxt "neuter"
 msgid "%s ^7was killed by %s%s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:654
+#: src/gamelogic/cgame/cg_event.c:657
 msgctxt "male"
 msgid "%s^7 died\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:654
+#: src/gamelogic/cgame/cg_event.c:657
 msgctxt "female"
 msgid "%s^7 died\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:654
+#: src/gamelogic/cgame/cg_event.c:657
 msgctxt "neuter"
 msgid "%s^7 died\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_consolecmds.c:165
+#: src/gamelogic/cgame/cg_consolecmds.c:166
 #, c-format
 msgid "Listed %2d clients\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_draw.c:2018 src/gamelogic/ui/ui_main.c:2485
+#: src/gamelogic/cgame/cg_draw.c:1978
+#, c-format
+msgid "%.1f BP/min (%d%% × %.1f)"
+msgstr ""
+
+#: src/gamelogic/cgame/cg_draw.c:2347 src/gamelogic/ui/ui_main.c:2468
 msgid "Aliens"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_draw.c:2022 src/gamelogic/cgame/cg_draw.c:2032
-#, c-format
-msgid "(Stage %d)"
-msgstr ""
-
-#: src/gamelogic/cgame/cg_draw.c:2028 src/gamelogic/ui/ui_main.c:2495
+#: src/gamelogic/cgame/cg_draw.c:2351 src/gamelogic/ui/ui_main.c:2478
 msgid "Humans"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_draw.c:2090 src/gamelogic/cgame/cg_draw.c:2114
+#: src/gamelogic/cgame/cg_draw.c:2389
 #, c-format
-msgid "Stage %d"
+msgid "%.1f confidence"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_draw.c:2094
-#, c-format
-msgid "Stage %d, 1 frag for next stage"
-msgstr ""
-
-#: src/gamelogic/cgame/cg_draw.c:2099
-#, c-format
-msgid "Stage %d, %d frags for next stage"
-msgstr ""
-
-#: src/gamelogic/cgame/cg_draw.c:2118
-#, c-format
-msgid "Stage %d, 1 credit for next stage"
-msgstr ""
-
-#: src/gamelogic/cgame/cg_draw.c:2123
-#, c-format
-msgid "Stage %d, %d credits for next stage"
-msgstr ""
-
-#: src/gamelogic/cgame/cg_draw.c:2760
+#: src/gamelogic/cgame/cg_draw.c:3024
 msgid "Connection Interrupted"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_draw.c:4602
+#: src/gamelogic/cgame/cg_draw.c:4983
 msgid "You are at the front of the spawn queue"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_draw.c:4606
+#: src/gamelogic/cgame/cg_draw.c:4987
 #, c-format
 msgid "You are at position %d in the spawn queue"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_draw.c:4614
+#: src/gamelogic/cgame/cg_draw.c:4995
 msgid "There are no spawns remaining"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_draw.c:4619
+#: src/gamelogic/cgame/cg_draw.c:5000
 #, c-format
 msgid "There is 1 spawn remaining"
 msgid_plural "There are %d spawns remaining"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/gamelogic/cgame/cg_draw.c:4655
+#: src/gamelogic/cgame/cg_draw.c:5034
 msgid "Warmup Time:"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_draw.c:4660
+#: src/gamelogic/cgame/cg_draw.c:5039
 msgid "FIGHT!"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:634 src/gamelogic/cgame/cg_event.c:639
+#: src/gamelogic/cgame/cg_event.c:637 src/gamelogic/cgame/cg_event.c:642
 msgid "^1TEAMMATE^7 "
 msgstr ""
 
-#: src/gamelogic/cgame/cg_event.c:645
+#: src/gamelogic/cgame/cg_event.c:648
 #, c-format
 msgid "You killed ^1TEAMMATE^7 %s"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_players.c:1523
+#: src/gamelogic/cgame/cg_players.c:1525
 #, c-format
 msgid "%s^7 renamed to %s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_players.c:1530
+#: src/gamelogic/cgame/cg_players.c:1532
 #, c-format
 msgid "%s^7 left the %s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_players.c:1535
+#: src/gamelogic/cgame/cg_players.c:1537
 #, c-format
 msgid "%s^7 joined the %s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_players.c:1540
+#: src/gamelogic/cgame/cg_players.c:1542
 #, c-format
 msgid "%s^7 left the %s and joined the %s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:263
-msgid "We have evolved!"
-msgstr ""
-
-#: src/gamelogic/cgame/cg_servercmds.c:282
-msgid "Reinforcements have arrived!"
-msgstr ""
-
-#: src/gamelogic/cgame/cg_servercmds.c:548
+#: src/gamelogic/cgame/cg_servercmds.c:464
 msgid ""
 "The alien team has too many players. Please wait until slots become "
 "available or join the human team."
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:550
+#: src/gamelogic/cgame/cg_servercmds.c:466
 msgid "The alien team has too many players"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:555
+#: src/gamelogic/cgame/cg_servercmds.c:471
 msgid ""
 "The human team has too many players. Please wait until slots become "
 "available or join the alien team."
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:557
+#: src/gamelogic/cgame/cg_servercmds.c:473
 msgid "The human team has too many players"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:562
+#: src/gamelogic/cgame/cg_servercmds.c:478
 msgid "The alien team is locked. You cannot join the aliens at this time."
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:564
+#: src/gamelogic/cgame/cg_servercmds.c:480
 msgid "The alien team is locked"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:569
+#: src/gamelogic/cgame/cg_servercmds.c:485
 msgid "The human team is locked. You cannot join the humans at this time."
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:571
+#: src/gamelogic/cgame/cg_servercmds.c:487
 msgid "The human team is locked"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:576
+#: src/gamelogic/cgame/cg_servercmds.c:492
 msgid ""
 "The maximum number of playing clients has been reached. Please wait until "
 "slots become available."
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:578
+#: src/gamelogic/cgame/cg_servercmds.c:494
 msgid "No free player slots"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:583
+#: src/gamelogic/cgame/cg_servercmds.c:499
 msgid "You must wait until the warmup time is finished before joining a team. "
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:585
+#: src/gamelogic/cgame/cg_servercmds.c:501
 msgid "You cannot join a team during warmup."
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:597
+#: src/gamelogic/cgame/cg_servercmds.c:510
 msgid "Cheats are not enabled on this server"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:602
+#: src/gamelogic/cgame/cg_servercmds.c:515
 msgid ""
 "Cheats are not enabled on this server, so you may not use this command while "
 "on a team"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:610
+#: src/gamelogic/cgame/cg_servercmds.c:523
 msgid "Join a team first"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:617
+#: src/gamelogic/cgame/cg_servercmds.c:530
 msgid "You can only use this command when spectating"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:623
+#: src/gamelogic/cgame/cg_servercmds.c:536
 msgid "Must be alien to use this command"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:629
+#: src/gamelogic/cgame/cg_servercmds.c:542
 msgid "Must be human to use this command"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:635
+#: src/gamelogic/cgame/cg_servercmds.c:548
 msgid "Must be alive to use this command"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:642
+#: src/gamelogic/cgame/cg_servercmds.c:555
 msgid ""
 "There is no room to build here. Move until the structure turns translucent "
 "green, indicating a valid build location."
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:644
+#: src/gamelogic/cgame/cg_servercmds.c:557
 msgid "There is no room to build here"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:649
+#: src/gamelogic/cgame/cg_servercmds.c:562
 msgid ""
 "Cannot build on this surface. The surface is too steep or unsuitable for "
 "building. Please choose another site for this structure."
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:652
+#: src/gamelogic/cgame/cg_servercmds.c:565
 msgid "Cannot build on this surface"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:658
+#: src/gamelogic/cgame/cg_servercmds.c:571
 msgid "You cannot build that structure"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:664
+#: src/gamelogic/cgame/cg_servercmds.c:576
 msgid ""
 "This action would remove your team's last spawn point, which often quickly "
 "results in a loss. Try building more spawns."
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:667
+#: src/gamelogic/cgame/cg_servercmds.c:579
 msgid "You may not deconstruct the last spawn"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:672
-msgid ""
-"Neither team has prevailed after a certain time and the game has entered "
-"Sudden Death. During Sudden Death building is not allowed."
+#: src/gamelogic/cgame/cg_servercmds.c:584
+msgid "Building has been disabled on the server for your team."
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:675
-msgid "Cannot build during Sudden Death"
+#: src/gamelogic/cgame/cg_servercmds.c:585
+msgid "Building has been disabled for your team"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:680
+#: src/gamelogic/cgame/cg_servercmds.c:590
 msgid ""
 "Your teammates have lost faith in your ability to build for the team. You "
 "will not be allowed to build until your team votes to reinstate your "
 "building rights."
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:683
+#: src/gamelogic/cgame/cg_servercmds.c:593
 msgid "Your building rights have been revoked"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:688
+#: src/gamelogic/cgame/cg_servercmds.c:598
 msgid ""
-"Your team has decided to admit defeat and concede the game:traitors and "
-"cowards are not allowed to build."
+"Your team has decided to admit defeat and concede the game: There's no point "
+"in building anything anymore."
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:691
-msgid "Building is denied to traitorous cowards"
+#: src/gamelogic/cgame/cg_servercmds.c:600
+msgid "Cannot build after admitting defeat"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:700
+#: src/gamelogic/cgame/cg_servercmds.c:609
 msgid ""
-"There is no power remaining. Free up power by marking existing buildable "
-"objects."
+"There are no resources remaining. Free up resources by marking existing "
+"buildables for deconstruction."
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:705
+#: src/gamelogic/cgame/cg_servercmds.c:614
 msgid ""
-"There is no power remaining. Free up power by deconstructing existing "
-"buildable objects."
+"There are no resources remaining. Free up resources by deconstructing "
+"existing buildables."
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:709
-msgid "There is no power remaining"
+#: src/gamelogic/cgame/cg_servercmds.c:618
+msgid "There are no resources remaining"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:714
+#: src/gamelogic/cgame/cg_servercmds.c:623
 msgid ""
 "This buildable is not powered. Build a Reactor and/or Repeater in order to "
 "power it."
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:716
+#: src/gamelogic/cgame/cg_servercmds.c:625
 msgid "This buildable is not powered"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:721
+#: src/gamelogic/cgame/cg_servercmds.c:630
+msgid "Buildables cannot materialize without a reactor."
+msgstr ""
+
+#: src/gamelogic/cgame/cg_servercmds.c:631
+msgid "There is no reactor"
+msgstr ""
+
+#: src/gamelogic/cgame/cg_servercmds.c:636
 msgid ""
 "There can only be one Reactor. Deconstruct the existing one if you wish to "
 "move it."
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:723
+#: src/gamelogic/cgame/cg_servercmds.c:638
 msgid "There can only be one Reactor"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:728
+#: src/gamelogic/cgame/cg_servercmds.c:643
 msgid ""
-"There is no power here. If available, a Repeater may be used to transmit "
-"power to this location."
+"There is not enough power in this area. Keep a distance to other buildables "
+"or build a repeater to increase the local capacity."
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:730
-msgid "There is no power here"
+#: src/gamelogic/cgame/cg_servercmds.c:645
+msgid "There is not enough power here"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:735
+#: src/gamelogic/cgame/cg_servercmds.c:650
+msgid ""
+"Drills require a close power source since they transmit resources via the "
+"power gird. Build it near a reactor or repeater."
+msgstr ""
+
+#: src/gamelogic/cgame/cg_servercmds.c:652
+msgid "The drill requires a close power source"
+msgstr ""
+
+#: src/gamelogic/cgame/cg_servercmds.c:658
 msgid ""
 "There is no Defense Computer. A Defense Computer is needed to build this."
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:737
+#: src/gamelogic/cgame/cg_servercmds.c:660
 msgid "There is no Defense Computer"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:742
-msgid "This area already has power. A Repeater is not required here."
-msgstr ""
-
-#: src/gamelogic/cgame/cg_servercmds.c:743
-msgid "This area already has power"
-msgstr ""
-
-#: src/gamelogic/cgame/cg_servercmds.c:748
+#: src/gamelogic/cgame/cg_servercmds.c:665
 msgid ""
 "You have no room to carry this. Please sell any conflicting upgrades before "
 "purchasing this item."
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:750
+#: src/gamelogic/cgame/cg_servercmds.c:667
 msgid "You have no room to carry this"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:755
+#: src/gamelogic/cgame/cg_servercmds.c:672
 msgid ""
 "Insufficient funds. You do not have enough credits to perform this action."
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:757
+#: src/gamelogic/cgame/cg_servercmds.c:674
 msgid "Insufficient funds"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:762
+#: src/gamelogic/cgame/cg_servercmds.c:679
 msgid ""
 "You already hold this item. It is not possible to carry multiple items of "
 "the same type."
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:764
+#: src/gamelogic/cgame/cg_servercmds.c:681
 msgid "You already hold this item"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:769
+#: src/gamelogic/cgame/cg_servercmds.c:686
 msgid ""
 "You must be near a powered Armoury in order to purchase weapons, upgrades or "
 "ammunition."
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:771
+#: src/gamelogic/cgame/cg_servercmds.c:688
 msgid "You must be near a powered Armoury"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:776
+#: src/gamelogic/cgame/cg_servercmds.c:693
 msgid ""
 "You must be near a Reactor or a powered Armoury or Repeater in order to "
 "purchase energy ammunition."
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:778
+#: src/gamelogic/cgame/cg_servercmds.c:695
 msgid "You must be near a Reactor or a powered Armoury or Repeater"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:783
+#: src/gamelogic/cgame/cg_servercmds.c:700
 msgid ""
 "There is not enough room here to put on a Battle Suit. Make sure you have "
 "enough head room to climb in."
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:785
+#: src/gamelogic/cgame/cg_servercmds.c:702
 msgid "Not enough room here to put on a Battle Suit"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:790
+#: src/gamelogic/cgame/cg_servercmds.c:707
 msgid ""
 "There is not enough room here to take off your Battle Suit. Make sure you "
 "have enough head room to climb out."
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:792
+#: src/gamelogic/cgame/cg_servercmds.c:709
 msgid "Not enough room here to take off your Battle Suit"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:797
+#: src/gamelogic/cgame/cg_servercmds.c:714
 msgid ""
 "You are not allowed to buy or sell weapons until your build timer has "
 "expired."
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:799
+#: src/gamelogic/cgame/cg_servercmds.c:716
 msgid "You can not buy or sell weapons until your build timer expires"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:805
+#: src/gamelogic/cgame/cg_servercmds.c:722
 msgid "You must be dead to use the class command"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:810
+#: src/gamelogic/cgame/cg_servercmds.c:727
 msgid "Unknown starting item"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:817
+#: src/gamelogic/cgame/cg_servercmds.c:734
 msgid ""
 "There is no creep here. You must build near existing Eggs or the Overmind. "
 "Alien structures will not support themselves."
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:819
+#: src/gamelogic/cgame/cg_servercmds.c:736
 msgid "There is no creep here"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:824
+#: src/gamelogic/cgame/cg_servercmds.c:741
 msgid ""
 "There is no Overmind. An Overmind must be built to control the structure you "
 "tried to place."
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:826
-#: src/gamelogic/cgame/cg_servercmds.c:861
+#: src/gamelogic/cgame/cg_servercmds.c:743
+#: src/gamelogic/cgame/cg_servercmds.c:778
 msgid "There is no Overmind"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:831
+#: src/gamelogic/cgame/cg_servercmds.c:748
 msgid ""
 "There can only be one Overmind. Deconstruct the existing one if you wish to "
 "move it."
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:833
+#: src/gamelogic/cgame/cg_servercmds.c:750
 msgid "There can only be one Overmind"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:838
+#: src/gamelogic/cgame/cg_servercmds.c:755
 msgid ""
 "The Overmind cannot control any more structures. Deconstruct existing "
 "structures to build more."
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:840
+#: src/gamelogic/cgame/cg_servercmds.c:757
 msgid "The Overmind cannot control any more structures"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:845
+#: src/gamelogic/cgame/cg_servercmds.c:762
 msgid ""
 "There is no room to evolve here. Move away from walls or other nearby "
 "objects and try again."
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:847
+#: src/gamelogic/cgame/cg_servercmds.c:764
 msgid "There is no room to evolve here"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:852
+#: src/gamelogic/cgame/cg_servercmds.c:769
 msgid ""
 "This location is too close to the enemy to evolve. Move away from the "
 "enemy's presence and try again."
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:854
+#: src/gamelogic/cgame/cg_servercmds.c:771
 msgid "This location is too close to the enemy to evolve"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:859
+#: src/gamelogic/cgame/cg_servercmds.c:776
 msgid ""
 "There is no Overmind. An Overmind must be built to allow you to upgrade."
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:866
+#: src/gamelogic/cgame/cg_servercmds.c:783
 msgid "You cannot evolve until your build timer has expired."
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:867
+#: src/gamelogic/cgame/cg_servercmds.c:784
 msgid "You cannot evolve until your build timer expires"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:881
+#: src/gamelogic/cgame/cg_servercmds.c:798
 #, c-format
 msgid "You cannot evolve into a %s"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:887
+#: src/gamelogic/cgame/cg_servercmds.c:804
 msgid "You cannot evolve while wallwalking"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:892
+#: src/gamelogic/cgame/cg_servercmds.c:809
 msgid "Unknown class"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:897
+#: src/gamelogic/cgame/cg_servercmds.c:814
 #, c-format
 msgid "You cannot spawn as a %s"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:903
+#: src/gamelogic/cgame/cg_servercmds.c:820
 #, c-format
 msgid "The %s is not allowed"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:909
+#: src/gamelogic/cgame/cg_servercmds.c:826
 #, c-format
-msgid "The %s is not allowed at Stage %d"
+msgid "The %s has not been unlocked yet"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:916
+#: src/gamelogic/cgame/cg_servercmds.c:832
 #, c-format
 msgid "cgame: debug: no such menu %d\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:1126
+#: src/gamelogic/cgame/cg_servercmds.c:1035
+#, c-format
+msgid "^%cPrivate message from: ^7%s"
+msgstr ""
+
+#: src/gamelogic/cgame/cg_servercmds.c:1043
 #, c-format
 msgid ">> to reply, say: /m %d [your message] <<\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_servercmds.c:1573
+#: src/gamelogic/cgame/cg_servercmds.c:1515
 #, c-format
 msgid "Unknown client game command: %s\n"
 msgstr ""
@@ -2262,334 +2257,329 @@ msgid "Run/Walk"
 msgstr ""
 
 #: src/gamelogic/cgame/cg_tutorial.c:38
-msgid "Dodge"
-msgstr ""
-
-#: src/gamelogic/cgame/cg_tutorial.c:39
 msgid "Sprint"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:40
+#: src/gamelogic/cgame/cg_tutorial.c:39
 msgid "Jump"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:41
+#: src/gamelogic/cgame/cg_tutorial.c:40
 msgid "Crouch"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:42
+#: src/gamelogic/cgame/cg_tutorial.c:41
 msgid "Primary Attack"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:43
+#: src/gamelogic/cgame/cg_tutorial.c:42
 msgid "Secondary Attack"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:44
+#: src/gamelogic/cgame/cg_tutorial.c:43
 msgid "Reload"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:45
+#: src/gamelogic/cgame/cg_tutorial.c:44
 msgid "Buy Ammo"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:46
+#: src/gamelogic/cgame/cg_tutorial.c:45
 msgid "Use Medkit"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:47
+#: src/gamelogic/cgame/cg_tutorial.c:46
 msgid "Use Structure/Evolve"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:49
+#: src/gamelogic/cgame/cg_tutorial.c:48
 msgid "Deconstruct Structure"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:50
+#: src/gamelogic/cgame/cg_tutorial.c:49
 msgid "Previous Upgrade"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:51
+#: src/gamelogic/cgame/cg_tutorial.c:50
 msgid "Next Upgrade"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:52
+#: src/gamelogic/cgame/cg_tutorial.c:51
 msgid "Toggle Console"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:128 src/gamelogic/ui/ui_shared.c:6261
+#: src/gamelogic/cgame/cg_tutorial.c:127 src/gamelogic/ui/ui_shared.c:6258
 #, c-format
 msgid "%s or %s"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:138
+#: src/gamelogic/cgame/cg_tutorial.c:137
 #, c-format
 msgid "\"%s\" (unbound)"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:201
+#: src/gamelogic/cgame/cg_tutorial.c:200
 #, c-format
 msgid "Press %s to place the %s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:204
+#: src/gamelogic/cgame/cg_tutorial.c:203
 #, c-format
 msgid "Press %s to cancel placing the %s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:210
+#: src/gamelogic/cgame/cg_tutorial.c:209
 #, c-format
 msgid "Press %s to build a structure\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:223
+#: src/gamelogic/cgame/cg_tutorial.c:222
 #, c-format
 msgid "Press %s to unmark this structure for replacement\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:228
+#: src/gamelogic/cgame/cg_tutorial.c:227
 #, c-format
 msgid "Press %s to mark this structure for replacement\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:234
+#: src/gamelogic/cgame/cg_tutorial.c:233
 #, c-format
 msgid "Press %s to destroy this structure\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:251 src/gamelogic/cgame/cg_tutorial.c:297
-#: src/gamelogic/cgame/cg_tutorial.c:368
+#: src/gamelogic/cgame/cg_tutorial.c:250 src/gamelogic/cgame/cg_tutorial.c:303
+#: src/gamelogic/cgame/cg_tutorial.c:374
 #, c-format
 msgid "Press %s to swipe\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:258 src/gamelogic/cgame/cg_tutorial.c:349
+#: src/gamelogic/cgame/cg_tutorial.c:257 src/gamelogic/cgame/cg_tutorial.c:355
 #, c-format
 msgid "Press %s to launch a projectile\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:262 src/gamelogic/cgame/cg_tutorial.c:281
-#: src/gamelogic/cgame/cg_tutorial.c:308
+#: src/gamelogic/cgame/cg_tutorial.c:261 src/gamelogic/cgame/cg_tutorial.c:280
+#: src/gamelogic/cgame/cg_tutorial.c:314
 #, c-format
 msgid "Press %s to walk on walls\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:277
+#: src/gamelogic/cgame/cg_tutorial.c:276
 msgid ""
 "Touch humans to damage them\n"
-"Look at their heads (or jump) to try to bite their heads\n"
-"Head-bites cause more damage\n"
+"Aim at their heads to cause more damage\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:293
+#: src/gamelogic/cgame/cg_tutorial.c:286
+#, c-format
+msgid "Press %s to pounce\n"
+msgstr ""
+
+#: src/gamelogic/cgame/cg_tutorial.c:299
 msgid ""
 "Touch humans to grab them\n"
 "Look at them to maintain the grab\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:303
+#: src/gamelogic/cgame/cg_tutorial.c:309
 #, c-format
 msgid "Press %s to spray disorienting gas\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:320 src/gamelogic/cgame/cg_tutorial.c:343
+#: src/gamelogic/cgame/cg_tutorial.c:326 src/gamelogic/cgame/cg_tutorial.c:349
 #, c-format
 msgid "Press %s to bite\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:326
+#: src/gamelogic/cgame/cg_tutorial.c:332
 #, c-format
 msgid "Press %s to invoke an electrical attack\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:331
+#: src/gamelogic/cgame/cg_tutorial.c:337
 #, c-format
 msgid "Hold down %s then touch a wall to wall jump\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:354
+#: src/gamelogic/cgame/cg_tutorial.c:360
 #, c-format
 msgid "Hold down and release %s to pounce\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:372
+#: src/gamelogic/cgame/cg_tutorial.c:378
 #, c-format
 msgid "Hold down and release %s while moving forwards to trample\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:416
+#: src/gamelogic/cgame/cg_tutorial.c:422
 #, c-format
 msgid "Find an Armoury and press %s for more ammo\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:425
+#: src/gamelogic/cgame/cg_tutorial.c:431
 #, c-format
 msgid "Find an Armoury, Reactor, or Repeater and press %s for more ammo\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:445 src/gamelogic/cgame/cg_tutorial.c:452
-#: src/gamelogic/cgame/cg_tutorial.c:474
+#: src/gamelogic/cgame/cg_tutorial.c:451 src/gamelogic/cgame/cg_tutorial.c:458
+#: src/gamelogic/cgame/cg_tutorial.c:480
 #, c-format
 msgid "Press %s to fire the %s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:457
+#: src/gamelogic/cgame/cg_tutorial.c:463
 #, c-format
 msgid "Hold %s to zoom\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:463
+#: src/gamelogic/cgame/cg_tutorial.c:469
 #, c-format
 msgid "Hold %s to activate the %s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:470
+#: src/gamelogic/cgame/cg_tutorial.c:476
 #, c-format
 msgid "Hold and release %s to fire a charged shot\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:489
+#: src/gamelogic/cgame/cg_tutorial.c:495
 #, c-format
 msgid "Use %s and %s to select an upgrade\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:496 src/gamelogic/cgame/cg_tutorial.c:543
+#: src/gamelogic/cgame/cg_tutorial.c:502 src/gamelogic/cgame/cg_tutorial.c:549
 #, c-format
 msgid "Press %s to use the %s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:505
+#: src/gamelogic/cgame/cg_tutorial.c:511
 #, c-format
 msgid "Press %s to use your %s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:513
+#: src/gamelogic/cgame/cg_tutorial.c:519
 msgid "You are blacking out. Stop sprinting to recover stamina\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:518
+#: src/gamelogic/cgame/cg_tutorial.c:524
 msgid "Your stamina is low. Stop sprinting to recover\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:525
+#: src/gamelogic/cgame/cg_tutorial.c:531
 #, c-format
 msgid ""
 "Press %s to buy equipment upgrades at the %s. Sell your old weapon first!\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:533
+#: src/gamelogic/cgame/cg_tutorial.c:539
 #, c-format
 msgid "Press %s to refill your energy weapon's ammo at the %s\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:550
+#: src/gamelogic/cgame/cg_tutorial.c:556
 #, c-format
 msgid "Press %s and any direction to sprint\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:554
-#, c-format
-msgid "Press %s and back or strafe to dodge\n"
-msgstr ""
-
-#: src/gamelogic/cgame/cg_tutorial.c:570
+#: src/gamelogic/cgame/cg_tutorial.c:572
 #, c-format
 msgid "Press %s to leave spawn queue\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:576
+#: src/gamelogic/cgame/cg_tutorial.c:578
 #, c-format
 msgid "Press %s to spawn\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:583
+#: src/gamelogic/cgame/cg_tutorial.c:585
 #, c-format
 msgid "Press %s to join a team\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:592
+#: src/gamelogic/cgame/cg_tutorial.c:594
 #, c-format
 msgid "Press %s to switch to chase-cam spectator mode\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:598
+#: src/gamelogic/cgame/cg_tutorial.c:600
 #, c-format
 msgid "Press %s to return to free spectator mode\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:604
+#: src/gamelogic/cgame/cg_tutorial.c:606
 #, c-format
 msgid "Press %s to stop following\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:609
+#: src/gamelogic/cgame/cg_tutorial.c:611
 #, c-format
 msgid "Use %s and %s to change between players\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:615
+#: src/gamelogic/cgame/cg_tutorial.c:617
 #, c-format
 msgid "Press %s to follow a player\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:700
+#: src/gamelogic/cgame/cg_tutorial.c:701
 #, c-format
 msgid "Press %s to evolve\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:711
+#: src/gamelogic/cgame/cg_tutorial.c:712
 #, c-format
 msgid "Press %s when ready to continue\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:716
+#: src/gamelogic/cgame/cg_tutorial.c:717
 msgid "Waiting for other players to be ready\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:722
+#: src/gamelogic/cgame/cg_tutorial.c:723
 #, c-format
 msgid "Press %s to open the console\n"
 msgstr ""
 
-#: src/gamelogic/cgame/cg_tutorial.c:723
+#: src/gamelogic/cgame/cg_tutorial.c:724
 msgid "Press ESC for the menu"
 msgstr ""
 
-#: src/gamelogic/game/bg_misc.c:2454
+#: src/gamelogic/game/bg_misc.c:2565
 msgid "spectator"
 msgstr ""
 
-#: src/gamelogic/game/bg_misc.c:2459
+#: src/gamelogic/game/bg_misc.c:2570
 msgid "alien"
 msgstr ""
 
-#: src/gamelogic/game/bg_misc.c:2464
+#: src/gamelogic/game/bg_misc.c:2575
 msgid "human"
 msgstr ""
 
-#: src/gamelogic/game/bg_misc.c:2474
+#: src/gamelogic/game/bg_misc.c:2585
 msgid "spectators"
 msgstr ""
 
-#: src/gamelogic/game/bg_misc.c:2479
+#: src/gamelogic/game/bg_misc.c:2590
 msgid "aliens"
 msgstr ""
 
-#: src/gamelogic/game/bg_misc.c:2484
+#: src/gamelogic/game/bg_misc.c:2595
 msgid "humans"
 msgstr ""
 
-#: src/gamelogic/game/g_active.c:648
+#: src/gamelogic/game/g_active.c:697
 msgid "$1$^7 moved from $2$ to spectators due to inactivity\n"
 msgstr ""
 
-#: src/gamelogic/game/g_active.c:666
+#: src/gamelogic/game/g_active.c:715
 msgid ""
 "\"Ten seconds until inactivity spectate!\n"
 "\""
 msgstr ""
 
-#: src/gamelogic/game/g_active.c:666
+#: src/gamelogic/game/g_active.c:715
 msgid ""
 "\"Ten seconds until inactivity drop!\n"
 "\""
@@ -2624,9 +2614,9 @@ msgstr ""
 msgid "restore a player's ability to build"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:80 src/gamelogic/game/g_admin.c:125
-#: src/gamelogic/game/g_admin.c:162 src/gamelogic/game/g_admin.c:308
-#: src/gamelogic/game/g_admin.c:339
+#: src/gamelogic/game/g_admin.c:80 src/gamelogic/game/g_admin.c:129
+#: src/gamelogic/game/g_admin.c:166 src/gamelogic/game/g_admin.c:318
+#: src/gamelogic/game/g_admin.c:349
 msgid "[^3name|slot#^7]"
 msgstr ""
 
@@ -2646,1449 +2636,1562 @@ msgstr ""
 msgid "[^3name|slot#|IP(/mask)^7] (^5duration^7) (^5reason^7)"
 msgstr ""
 
+#: src/gamelogic/game/g_admin.c:99
+msgid "Add/Del/Spec bots"
+msgstr ""
+
 #: src/gamelogic/game/g_admin.c:100
+msgid ""
+"[^5add|del|spec|unspec^7] [^5name|all^7] [^5aliens/humans^7] (^5skill^7)"
+msgstr ""
+
+#: src/gamelogic/game/g_admin.c:104
 msgid "show who built a structure"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:106
+#: src/gamelogic/game/g_admin.c:110
 msgid "show buildable log"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:107
+#: src/gamelogic/game/g_admin.c:111
 msgid "(^5name|slot#^7) (^5id^7)"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:112
+#: src/gamelogic/game/g_admin.c:116
 msgid "cancel a vote taking place"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:118
+#: src/gamelogic/game/g_admin.c:122
 msgid "load a map (and optionally force layout)"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:119
+#: src/gamelogic/game/g_admin.c:123
 msgid "[^3mapname^7] (^5layout^7)"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:124
+#: src/gamelogic/game/g_admin.c:128
 msgid "take away a player's ability to build"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:130
+#: src/gamelogic/game/g_admin.c:134
 msgid ""
 "add an admin flag to a player, prefix flag with '-' to disallow the flag. "
 "console can use this command on admin levels by prefacing a '*' to the admin "
 "level value."
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:132 src/gamelogic/game/g_admin.c:327
+#: src/gamelogic/game/g_admin.c:136 src/gamelogic/game/g_admin.c:337
 msgid "[^3name|slot#|admin#|*level#^7] (^5+^7|^5-^7)[^3flag^7]"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:137
+#: src/gamelogic/game/g_admin.c:141
 msgid "list the flags understood by this server"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:143
+#: src/gamelogic/game/g_admin.c:147
 msgid "change the time limit for the current game"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:144
+#: src/gamelogic/game/g_admin.c:148
 msgid "[^3minutes^7]"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:149
+#: src/gamelogic/game/g_admin.c:153
 msgid "kick a player with an optional reason"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:150
+#: src/gamelogic/game/g_admin.c:154
 msgid "[^3name|slot#^7] (^5reason^7)"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:155
+#: src/gamelogic/game/g_admin.c:159
 msgid "remove name protection from a player by setting them to admin level 0"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:156
+#: src/gamelogic/game/g_admin.c:160
 msgid "[^3name|slot#|admin#^7]"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:161
+#: src/gamelogic/game/g_admin.c:165
 msgid "give a player name protection by setting them to admin level 1"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:167
+#: src/gamelogic/game/g_admin.c:171
 msgid "display a list of all server admins and their levels"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:168
+#: src/gamelogic/game/g_admin.c:172
 msgid "(^5name^7) (^5start admin#^7)"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:173
+#: src/gamelogic/game/g_admin.c:177
+msgid ""
+"display a list of players and which countries they're from (using GeoIP data)"
+msgstr ""
+
+#: src/gamelogic/game/g_admin.c:178
+msgid "(^5name^7)"
+msgstr ""
+
+#: src/gamelogic/game/g_admin.c:183
 msgid "display a list of inactive server admins and their levels"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:174
+#: src/gamelogic/game/g_admin.c:184
 msgid "[^5months^7] (^5start admin#^7)"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:179
+#: src/gamelogic/game/g_admin.c:189
 msgid "display a list of all available layouts for a map"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:180 src/gamelogic/game/g_admin.c:186
+#: src/gamelogic/game/g_admin.c:190 src/gamelogic/game/g_admin.c:196
 msgid "(^5mapname^7)"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:185
+#: src/gamelogic/game/g_admin.c:195
 msgid "display a list of available maps on the server"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:191
+#: src/gamelogic/game/g_admin.c:201
 msgid "display a list of players, their client numbers and their levels"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:197
+#: src/gamelogic/game/g_admin.c:207
 msgid "display the active map rotation"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:203
+#: src/gamelogic/game/g_admin.c:213
 msgid "lock a team to prevent anyone from joining it"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:215
+#: src/gamelogic/game/g_admin.c:225
 msgid "mute a player"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:221
+#: src/gamelogic/game/g_admin.c:231
 msgid "display a list of names used by recently connected players"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:222
+#: src/gamelogic/game/g_admin.c:232
 msgid "(^5name|IP(/mask)^7) (start namelog#)"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:227
+#: src/gamelogic/game/g_admin.c:237
 msgid "go to the next map in the cycle"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:233
+#: src/gamelogic/game/g_admin.c:243
 msgid "pass a vote currently taking place"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:239
+#: src/gamelogic/game/g_admin.c:249
 msgid "Pause (or unpause) the game."
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:245
+#: src/gamelogic/game/g_admin.c:255
 msgid "move a player to a specified team"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:246
+#: src/gamelogic/game/g_admin.c:256
 msgid "[^3name|slot#^7] [^3h|a|s^7]"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:251
+#: src/gamelogic/game/g_admin.c:261
 msgid "reloads the admin config file and refreshes permission flags"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:257
+#: src/gamelogic/game/g_admin.c:267
 msgid "register your name to protect it from being used by other players."
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:263
+#: src/gamelogic/game/g_admin.c:273
 msgid "rename a player"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:264
+#: src/gamelogic/game/g_admin.c:274
 msgid "[^3name|slot#^7] [^3new name^7]"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:269
+#: src/gamelogic/game/g_admin.c:279
 msgid ""
 "restart the current map (optionally using named layout or keeping/switching "
 "teams)"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:270
+#: src/gamelogic/game/g_admin.c:280
 msgid "(^5layout^7) (^5keepteams|switchteams|keepteamslock|switchteamslock^7)"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:275
+#: src/gamelogic/game/g_admin.c:285
 msgid "revert buildables to a given time"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:276
+#: src/gamelogic/game/g_admin.c:286
 msgid "[^3id^7]"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:281
+#: src/gamelogic/game/g_admin.c:291
 msgid "sets the admin level of a player"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:282
+#: src/gamelogic/game/g_admin.c:292
 msgid "[^3name|slot#|admin#^7] [^3level^7]"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:287
+#: src/gamelogic/game/g_admin.c:297
 msgid "display a (partial) list of active bans"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:288
+#: src/gamelogic/game/g_admin.c:298
 msgid "(^5name|IP(/mask)^7) (^5start at ban#^7)"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:293
+#: src/gamelogic/game/g_admin.c:303
 msgid "move 999 pingers to the spectator team"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:299
+#: src/gamelogic/game/g_admin.c:309
 msgid ""
 "move a player to spectators and prevent from joining a team duration is "
 "specified as numbers followed by units 'h' (hours) or 'm' (minutes), or "
 "seconds if no units are specified. End-of-game automatically revokes this"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:302
+#: src/gamelogic/game/g_admin.c:312
 msgid "[^3name|slot#^7] [^3duration^7]"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:307
+#: src/gamelogic/game/g_admin.c:317
 msgid "allow a player to join any team again"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:313
+#: src/gamelogic/game/g_admin.c:323
 msgid "show the current local server time"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:319
+#: src/gamelogic/game/g_admin.c:329
 msgid "unbans a player specified by the slot as seen in showbans"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:320
+#: src/gamelogic/game/g_admin.c:330
 msgid "[^3ban#^7]"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:325
+#: src/gamelogic/game/g_admin.c:335
 msgid ""
 "clears an admin flag from a player. console can use this command on admin "
 "levels by prefacing a '*' to the admin level value."
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:332
+#: src/gamelogic/game/g_admin.c:342
 msgid "unlock a locked team"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:333
+#: src/gamelogic/game/g_admin.c:343
 msgid "[^3a|h^7]"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:338
+#: src/gamelogic/game/g_admin.c:348
 msgid "unmute a muted player"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:344
+#: src/gamelogic/game/g_admin.c:354
 msgid "unregister your name so that it can be used by other players."
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:350
+#: src/gamelogic/game/g_admin.c:360
 msgid "warn a player about his behaviour"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:351
+#: src/gamelogic/game/g_admin.c:361
 msgid "[^3name|slot#^7] [^3reason^7]"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:627
+#: src/gamelogic/game/g_admin.c:591
+msgid "^1You are not pubkey authenticated"
+msgstr ""
+
+#: src/gamelogic/game/g_admin.c:637
 msgid "This name is not allowed:"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:639
+#: src/gamelogic/game/g_admin.c:649
 msgid "Names cannot begin with numbers:"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:661
+#: src/gamelogic/game/g_admin.c:671
 msgid "Names must contain letters:"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:688
+#: src/gamelogic/game/g_admin.c:698
 msgid "This name is already in use:"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:708
+#: src/gamelogic/game/g_admin.c:718
 msgid "Please use another name. This name belongs to an admin:"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:1274
+#: src/gamelogic/game/g_admin.c:1292
 msgid "^3$1$: ^7no player connected in slot $2$\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:1309
+#: src/gamelogic/game/g_admin.c:1327
 msgid "^3$1$: ^7$2$ not in range 0–$3$ or $4$–$5$\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:1361
+#: src/gamelogic/game/g_admin.c:1379
 msgid ""
 "^3$1$:^7 no match, use listplayers or listadmins to find an appropriate "
 "number to use instead of name.\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:1369
+#: src/gamelogic/game/g_admin.c:1387
 msgid "^3$1$:^7 more than one match, use the admin number instead:\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:1604 src/gamelogic/game/g_admin.c:1637
-#: src/gamelogic/game/g_admin.c:5325 src/gamelogic/game/g_cmds.c:1372
+#: src/gamelogic/game/g_admin.c:1630 src/gamelogic/game/g_admin.c:1663
+#: src/gamelogic/game/g_admin.c:5450 src/gamelogic/game/g_cmds.c:1400
 msgid "^3$1$: ^7permission denied\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:1801
+#: src/gamelogic/game/g_admin.c:1827
 msgid ""
 "^3readconfig: g_admin is not set, not loading configuration from a file\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:2041
+#: src/gamelogic/game/g_admin.c:2069
 msgid "^3readconfig: ^7loaded $1$ levels, $2$ admins, $3$ bans, $4$ commands\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:2093
-msgid ""
-"^3time: ^7time is ^d$1$:$2$:$3$^7 UTC – game runs for ^d$4$:$5$^7 with "
-"Sudden Death in ^d$6$:$7$^7\n"
-msgstr ""
-
-#: src/gamelogic/game/g_admin.c:2101
+#: src/gamelogic/game/g_admin.c:2119
 msgid ""
 "^3time: ^7time is ^d$1$:$2$:$3$^7 UTC – game runs for ^d$4$:$5$^7 hitting "
 "Timelimit in ^d$6$:$7$^7\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:2106
+#: src/gamelogic/game/g_admin.c:2124
 msgid "^3time: ^7time is ^d$1$:$2$:$3$^7 UTC – game time is ^d$4$:$5$^7\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:2132
+#: src/gamelogic/game/g_admin.c:2150
 msgid "^3setlevel: ^7usage: setlevel [name|slot#] [level]\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:2141
+#: src/gamelogic/game/g_admin.c:2159
 msgid "^3setlevel: ^7level is not defined\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:2148
+#: src/gamelogic/game/g_admin.c:2166
 msgid ""
 "^3setlevel: ^7you may not use setlevel to set a level higher than your "
 "current level\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:2160
+#: src/gamelogic/game/g_admin.c:2178
 msgid "^3setlevel: ^7your intended victim has the default name\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:2166 src/gamelogic/game/g_admin.c:2444
-#: src/gamelogic/game/g_admin.c:2573 src/gamelogic/game/g_admin.c:2913
-#: src/gamelogic/game/g_admin.c:2970 src/gamelogic/game/g_admin.c:3054
-#: src/gamelogic/game/g_admin.c:3152 src/gamelogic/game/g_admin.c:3195
-#: src/gamelogic/game/g_admin.c:3269 src/gamelogic/game/g_admin.c:4031
+#: src/gamelogic/game/g_admin.c:2184 src/gamelogic/game/g_admin.c:2490
+#: src/gamelogic/game/g_admin.c:2619 src/gamelogic/game/g_admin.c:2972
+#: src/gamelogic/game/g_admin.c:3029 src/gamelogic/game/g_admin.c:3113
+#: src/gamelogic/game/g_admin.c:3211 src/gamelogic/game/g_admin.c:3263
+#: src/gamelogic/game/g_admin.c:3337 src/gamelogic/game/g_admin.c:4167
 msgid ""
 "^3$1$: ^7sorry, but your intended victim has a higher admin level than you\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:2207
+#: src/gamelogic/game/g_admin.c:2225
 msgid "^3setlevel: ^7$1$^7 was given level $2$ admin rights by $3$\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:2427
+#: src/gamelogic/game/g_admin.c:2473
 msgid "^3kick: ^7usage: kick [name] [reason]\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:2451
+#: src/gamelogic/game/g_admin.c:2497
 msgid "^3kick: ^7disconnecting the host would end the game\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:2487
+#: src/gamelogic/game/g_admin.c:2533
 msgid "^3ban: ^7usage: ban [name|slot|address(/mask)] [duration] [reason]\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:2508
+#: src/gamelogic/game/g_admin.c:2554
 msgid "^3ban: ^7you must specify a reason\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:2518
+#: src/gamelogic/game/g_admin.c:2564
 msgid "^3ban: ^7you may not issue permanent bans\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:2530
+#: src/gamelogic/game/g_admin.c:2576
 msgid "^3ban: ^7invalid netmask ($1$ is not one of $2$–$3$)\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:2561
+#: src/gamelogic/game/g_admin.c:2607
 msgid "^3ban: ^7no player found by that IP address\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:2567
+#: src/gamelogic/game/g_admin.c:2613
 msgid "^3ban: ^7no match\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:2580
+#: src/gamelogic/game/g_admin.c:2626
 msgid "^3ban: ^7disconnecting the host would end the game\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:2587
+#: src/gamelogic/game/g_admin.c:2633
 msgid ""
 "^3ban:^7 $1$^7 has been banned by $2$^7; duration: $3$$4t$, reason: $5t$\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:2592
+#: src/gamelogic/game/g_admin.c:2638
 msgid "banned by admin"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:2628
+#: src/gamelogic/game/g_admin.c:2674
 msgid "^3ban: ^7WARNING g_admin not set, not saving ban to a file\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:2648
+#: src/gamelogic/game/g_admin.c:2695
 msgid "^3unban: ^7usage: unban [ban#]\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:2662
+#: src/gamelogic/game/g_admin.c:2709
 msgid "^3unban: ^7invalid ban#\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:2672
+#: src/gamelogic/game/g_admin.c:2719
 msgid "^3unban: ^7you cannot remove permanent bans\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:2679
+#: src/gamelogic/game/g_admin.c:2726
 msgid "^3unban: ^7ban #$1$ has already expired\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:2689
+#: src/gamelogic/game/g_admin.c:2738
 msgid "^3unban: ^7ban #$1$ for $2$^7 has been expired by $3$\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:2696
+#: src/gamelogic/game/g_admin.c:2745
 msgid "^3unban: ^7ban #$1$ for $2$^7 has been removed by $3$\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:2733
+#: src/gamelogic/game/g_admin.c:2787
 msgid "^3adjustban: ^7usage: adjustban [ban#] [/mask] [duration] [reason]\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:2745
+#: src/gamelogic/game/g_admin.c:2799
 msgid "^3adjustban: ^7invalid ban#\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:2755
+#: src/gamelogic/game/g_admin.c:2809
 msgid "^3adjustban: ^7you cannot modify permanent bans\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:2769
+#: src/gamelogic/game/g_admin.c:2823
 msgid "^3adjustban: ^7invalid netmask ($1$ is not one of $2$–$3$)\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:2794
+#: src/gamelogic/game/g_admin.c:2848
 msgid "^3adjustban: ^7new duration must be explicit\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:2813
+#: src/gamelogic/game/g_admin.c:2867
 msgid "^3adjustban: ^7ban duration must be positive\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:2825
+#: src/gamelogic/game/g_admin.c:2879
 msgid "^3adjustban: ^7you may not issue permanent bans\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:2865
+#: src/gamelogic/game/g_admin.c:2919
 msgid ""
 "^3adjustban: ^7ban #$1$ for $2$^7 has been updated by $3$^7 $4t$$5$$6$$7t$$8$"
 "$9t$$10$\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:2899
+#: src/gamelogic/game/g_admin.c:2958
 msgid "^3putteam: ^7usage: putteam [name] [h|a|s]\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:2922
+#: src/gamelogic/game/g_admin.c:2981
 msgid "^3putteam: ^7unknown team $1$\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:2935
+#: src/gamelogic/game/g_admin.c:2994
 msgid "^3putteam: ^7$1$^7 put $2$^7 on to the $3$ team\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:2953
+#: src/gamelogic/game/g_admin.c:3012
 msgid "^3speclock: ^7usage: speclock [name] [duration]\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:3015
+#: src/gamelogic/game/g_admin.c:3074
 msgid ""
 "^3speclock: ^7$1$^7 put $2$^7 on to the spectators team and blocked team-"
 "change for $3$$4t$\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:3021
+#: src/gamelogic/game/g_admin.c:3080
 msgid "^3speclock: ^7$1$^7 blocked team-change for $2$^7 for $3$$4t$\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:3038
+#: src/gamelogic/game/g_admin.c:3097
 msgid "^3specunlock: ^7usage: specunlock [name]\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:3066
+#: src/gamelogic/game/g_admin.c:3125
 msgid "^3specunlock: ^7$1$^7 unblocked team-change for $2$\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:3081
+#: src/gamelogic/game/g_admin.c:3140
 msgid "^3changemap: ^7usage: changemap [map] (layout)\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:3089
+#: src/gamelogic/game/g_admin.c:3148
 msgid "^3changemap: ^7invalid map name '$1$'\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:3105
+#: src/gamelogic/game/g_admin.c:3164
 msgid "^3changemap: ^7invalid layout name '$1$'\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:3117
+#: src/gamelogic/game/g_admin.c:3176
 msgid "^3changemap: ^7map '$1$' started by $2$^7 $3t$$4$$5$\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:3135
+#: src/gamelogic/game/g_admin.c:3194
 msgid "^3warn: ^7usage: warn [name|slot#] [reason]\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:3162
+#: src/gamelogic/game/g_admin.c:3228
+msgid ""
+"^1You have been warned by an administrator:\n"
+"^3$1$"
+msgstr ""
+
+#: src/gamelogic/game/g_admin.c:3230
 msgid "^3warn: ^7$1$^7 has been warned: '$2$' by $3$\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:3180 src/gamelogic/game/g_admin.c:3254
+#: src/gamelogic/game/g_admin.c:3248 src/gamelogic/game/g_admin.c:3322
 msgid "^3$1$: ^7usage: $2$ [name|slot#]\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:3188 src/gamelogic/game/g_admin.c:3262
+#: src/gamelogic/game/g_admin.c:3256 src/gamelogic/game/g_admin.c:3330
 msgid "^3$1$: ^7no match\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:3204
+#: src/gamelogic/game/g_admin.c:3272
 msgid "^3mute: ^7player is already muted\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:3215
+#: src/gamelogic/game/g_admin.c:3280
+msgid "^1You have been unmuted"
+msgstr ""
+
+#: src/gamelogic/game/g_admin.c:3283
 msgid "^3unmute: ^7$1$^7 has been unmuted by $2$\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:3223
+#: src/gamelogic/game/g_admin.c:3291
 msgid "^3unmute: ^7player is not currently muted\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:3234
+#: src/gamelogic/game/g_admin.c:3299
+msgid "^1You've been muted"
+msgstr ""
+
+#: src/gamelogic/game/g_admin.c:3302
 msgid "^3mute: ^7$1$^7 has been muted by $2$\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:3278
+#: src/gamelogic/game/g_admin.c:3346
 msgid "^3denybuild: ^7player already has no building rights\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:3289
+#: src/gamelogic/game/g_admin.c:3354
+msgid "^1You've regained your building rights"
+msgstr ""
+
+#: src/gamelogic/game/g_admin.c:3357
 msgid "^3allowbuild: ^7building rights for ^7$1$^7 restored by $2$\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:3297
+#: src/gamelogic/game/g_admin.c:3365
 msgid "^3allowbuild: ^7player already has building rights\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:3309
+#: src/gamelogic/game/g_admin.c:3374
+msgid "^1You've lost your building rights"
+msgstr ""
+
+#: src/gamelogic/game/g_admin.c:3377
 msgid "^3denybuild: ^7building rights for ^7$1$^7 revoked by $2$\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:3378
+#: src/gamelogic/game/g_admin.c:3446
 msgid "^3listinactive: ^7usage: listinactive [^5months^7] (^5start admin#^7)\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:3439
+#: src/gamelogic/game/g_admin.c:3507
 msgid "^3listlayouts:^7 $1$ layouts found for '$2$':\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:3486
+#: src/gamelogic/game/g_admin.c:3614
 msgid "^3listplayers: ^7$1$ players connected:\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:3788
+#: src/gamelogic/game/g_admin.c:3923
 msgid ""
 "^3adminhelp: ^7$1$ available commands\n"
 "run adminhelp [^3command^7] for adminhelp with a specific command.\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:3806 src/gamelogic/game/g_admin.c:3830
+#: src/gamelogic/game/g_admin.c:3941 src/gamelogic/game/g_admin.c:3965
 msgid "^3adminhelp: ^7help for '$1$':\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:3810 src/gamelogic/game/g_admin.c:3834
+#: src/gamelogic/game/g_admin.c:3945 src/gamelogic/game/g_admin.c:3969
 msgid " ^3Description: ^7$1t$\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:3813
+#: src/gamelogic/game/g_admin.c:3948
 msgid " ^3Syntax: ^7$1$\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:3817 src/gamelogic/game/g_admin.c:3841
+#: src/gamelogic/game/g_admin.c:3952 src/gamelogic/game/g_admin.c:3976
 msgid " ^3Flag: ^7'$1$'\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:3837
+#: src/gamelogic/game/g_admin.c:3972
 msgid " ^3Syntax: ^7$1$ $2t$\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:3850
+#: src/gamelogic/game/g_admin.c:3985
 msgid "^3adminhelp: ^7you do not have permission to use '$1$'\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:3851
+#: src/gamelogic/game/g_admin.c:3986
 msgid "^3adminhelp: ^7no help found for '$1$'\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:3862
+#: src/gamelogic/game/g_admin.c:3997
 msgid "^3admintest: ^7you are on the console.\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:3868
+#: src/gamelogic/game/g_admin.c:4003
 msgid "^3admintest: ^7$1$^7 is a level $2$ admin $3$$4$^7$5$\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:3884
+#: src/gamelogic/game/g_admin.c:4019
 msgid "^3allready: ^7this command is only valid during intermission\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:3905
+#: src/gamelogic/game/g_admin.c:4040
 msgid "^3allready:^7 $1$^7 says everyone is READY now\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:3930
+#: src/gamelogic/game/g_admin.c:4065
 msgid "^3$1$: ^7invalid team '$2$'\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:3934
+#: src/gamelogic/game/g_admin.c:4069
 msgid "^3$1$: ^7$2$^7 decided that everyone voted No\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:3935
+#: src/gamelogic/game/g_admin.c:4070
 msgid "^3$1$: ^7$2$^7 decided that everyone voted Yes\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:3940
+#: src/gamelogic/game/g_admin.c:4075
 msgid "^3$1$: ^7no vote in progress\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:3994
+#: src/gamelogic/game/g_admin.c:4130
 msgid "^3spec999: ^7$1$^7 moved $2$^7 to spectators\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:4014
+#: src/gamelogic/game/g_admin.c:4150
 msgid "^3rename: ^7usage: rename [name] [newname]\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:4044
+#: src/gamelogic/game/g_admin.c:4180
 msgid "^3rename: ^7sorry, but your intended victim is still connecting\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:4052
+#: src/gamelogic/game/g_admin.c:4188
 msgid "^3rename: ^7$1$^7 has been renamed to $2$^7 by $3$\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:4105
+#: src/gamelogic/game/g_admin.c:4241
 msgid "^3restart: ^7layout '$1$' does not exist\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:4164
+#: src/gamelogic/game/g_admin.c:4300
 msgid "^3restart: ^7unrecognised option '$1$'\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:4182
+#: src/gamelogic/game/g_admin.c:4318
 msgid "^3restart: ^7map restarted by $1$ $2$$3t$$4$$5$$6t$$7$\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:4184
+#: src/gamelogic/game/g_admin.c:4320
 msgid "^7(forcing layout '"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:4187
+#: src/gamelogic/game/g_admin.c:4323
 msgid "^7(with teams option: '"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:4195
+#: src/gamelogic/game/g_admin.c:4331
 msgid "^3nextmap: ^7$1$^7 decided to load the next map\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:4433
+#: src/gamelogic/game/g_admin.c:4569
 msgid "^3$1$: ^7usage: $1$ [a|h]\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:4465
+#: src/gamelogic/game/g_admin.c:4590
 msgid "^3$1$: ^7invalid team: '$2$'\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:4471
+#: src/gamelogic/game/g_admin.c:4596
 msgid "^3$1$: ^7the $2$ team is already locked\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:4472
+#: src/gamelogic/game/g_admin.c:4597
 msgid "^3$1$: ^7the $2$ team is not currently locked\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:4479
+#: src/gamelogic/game/g_admin.c:4604
 msgid "^3$1$: ^7the $2$ team has been locked by $3$\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:4485
+#: src/gamelogic/game/g_admin.c:4610
 msgid "^3$1$: ^7the $2$ team has been unlocked by $3$\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:4524
+#: src/gamelogic/game/g_admin.c:4649
 msgid "invalid admin flag"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:4555
+#: src/gamelogic/game/g_admin.c:4680
 msgid "too many admin flags, flag not set"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:4564
+#: src/gamelogic/game/g_admin.c:4689
 msgid "flag was not present"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:4587
+#: src/gamelogic/game/g_admin.c:4712
 msgid "^3Ability flags:\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:4598
+#: src/gamelogic/game/g_admin.c:4723
 msgid "^3Command flags:\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:4637
+#: src/gamelogic/game/g_admin.c:4762
 msgid "^3flaglist: ^7listed $1$ ability and $2$ command flags\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:4665
+#: src/gamelogic/game/g_admin.c:4790
 msgid ""
 "^3$1$: ^7usage: $1$ [^3name|slot#|admin#|*level#^7] (^5+^7|^5-^7)[^3flag^7]\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:4675
+#: src/gamelogic/game/g_admin.c:4800
 msgid "^3$1$: only console can change admin level flags\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:4684
+#: src/gamelogic/game/g_admin.c:4809
 msgid "^3$1$: admin level $2$ does not exist\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:4699
+#: src/gamelogic/game/g_admin.c:4824
 msgid "^3$1$:^7 your intended victim is not an admin\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:4705
+#: src/gamelogic/game/g_admin.c:4830
 msgid "^3$1$:^7 your intended victim has a higher admin level than you\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:4717
+#: src/gamelogic/game/g_admin.c:4842
 msgid "^3$1$:^7 flags for $2$^7 are '^3$3$^7'\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:4723
+#: src/gamelogic/game/g_admin.c:4848
 msgid "^3$1$:^7 admin level $2$ flags are '$3$'\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:4755
+#: src/gamelogic/game/g_admin.c:4880
 msgid "^3$1$:^7 bad flag name '$2$^7'\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:4767
+#: src/gamelogic/game/g_admin.c:4892
 msgid "^3$1$:^7 you may not change your own flags (use rcon)\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:4773
+#: src/gamelogic/game/g_admin.c:4898
 msgid "^3$1$:^7 you may only change flags that you also have\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:4793
+#: src/gamelogic/game/g_admin.c:4918
 msgid ""
 "^3$1$: ^7an error occurred when setting flag '^3$2$^7' for $3$^7, $4t$\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:4794
+#: src/gamelogic/game/g_admin.c:4919
 msgid ""
 "^3$1$: ^7an error occurred when clearing flag '^3$2$^7' for $3$^7, $4t$\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:4802
+#: src/gamelogic/game/g_admin.c:4927
 msgid "^3$1$: ^7flag '$2$' allowed for $3$\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:4803
+#: src/gamelogic/game/g_admin.c:4928
 msgid "^3$1$: ^7flag '$2$' cleared for $3$\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:4804
+#: src/gamelogic/game/g_admin.c:4929
 msgid "^3$1$: ^7flag '$2$' denied for $3$\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:4840
+#: src/gamelogic/game/g_admin.c:4965
 msgid "^3builder: ^7console can't aim.\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:4871
+#: src/gamelogic/game/g_admin.c:4996
 msgid "^3builder: ^7structure not owned by your team\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:4904
+#: src/gamelogic/game/g_admin.c:5029
 msgid "^3builder: ^7$1$ built by $2$^7, buildlog #$3$\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:4909
+#: src/gamelogic/game/g_admin.c:5034
 msgid "^3builder: ^7$1$ built by $2$^7\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:4914
+#: src/gamelogic/game/g_admin.c:5039
 msgid "^3builder: ^7$1$ appears to be a layout item\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:4920
+#: src/gamelogic/game/g_admin.c:5045
 msgid "^3builder: ^7no structure found under crosshair\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:4930
+#: src/gamelogic/game/g_admin.c:5055
 msgid "^3pause: ^7$1$^7 paused the game.\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:4940
+#: src/gamelogic/game/g_admin.c:5065
 msgid "^3pause: ^7Unpausing so soon assumed accidental and ignored.\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:4944
+#: src/gamelogic/game/g_admin.c:5069
 msgid "^3pause: ^7$1$^7 unpaused the game (paused for $2$ sec)\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:4957
+#: src/gamelogic/game/g_admin.c:5082
 msgid "^2built^7"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:4958
+#: src/gamelogic/game/g_admin.c:5083
 msgid "^3deconstructed^7"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:4959
+#: src/gamelogic/game/g_admin.c:5084
 msgid "^7replaced^7"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:4960
+#: src/gamelogic/game/g_admin.c:5085
 msgid "^5destroyed^7"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:4961
+#: src/gamelogic/game/g_admin.c:5086
 msgid "^1TEAMKILLED^7"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:4962
+#: src/gamelogic/game/g_admin.c:5087
 msgid "^7unpowered^7"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:4963
+#: src/gamelogic/game/g_admin.c:5088
 msgid "removed"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:4985
+#: src/gamelogic/game/g_admin.c:5110
 msgid "^3buildlog: ^7spectators have no buildings\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:4991
+#: src/gamelogic/game/g_admin.c:5116
 msgid "^3buildlog: ^7log is empty\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:5019
+#: src/gamelogic/game/g_admin.c:5144
 msgid "^3buildlog: ^7invalid client id\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:5044
+#: src/gamelogic/game/g_admin.c:5169
 msgid "^3buildlog: ^7invalid build ID\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:5053
+#: src/gamelogic/game/g_admin.c:5178
 msgid "^3buildlog: ^7$1$^7 requested a log of recent building activity\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:5060
+#: src/gamelogic/game/g_admin.c:5185
 msgid "^3buildlog: ^7$1$^7 requested a log of recent $2$ building activity\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:5127
+#: src/gamelogic/game/g_admin.c:5252
 msgid "^3buildlog: ^7showing $1$ build logs $2$–$3$ of $4$–$5$.  $6$\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:5146
+#: src/gamelogic/game/g_admin.c:5271
 msgid "^3revert: ^7usage: revert [id]\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:5155
+#: src/gamelogic/game/g_admin.c:5280
 msgid "^3revert: ^7invalid id\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:5164
+#: src/gamelogic/game/g_admin.c:5289
 msgid ""
 "^3revert: ^7you can only revert direct player actions, indicated by ^2* ^7in "
 "buildlog\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:5173
+#: src/gamelogic/game/g_admin.c:5298
 msgid "^3revert: ^7$1$^7 reverted $2$ changes over the past $3$ $4t$\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:5174
+#: src/gamelogic/game/g_admin.c:5299
 msgid "^3revert: ^7$1$^7 reverted $2$ change over the past $3$ $4t$\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:5191
+#: src/gamelogic/game/g_admin.c:5316
 msgid "^3l0: ^7usage: l0 [name|slot#|admin#]\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:5205
+#: src/gamelogic/game/g_admin.c:5330
 msgid "^3l0: ^7your intended victim is not level 1\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:5211
+#: src/gamelogic/game/g_admin.c:5336
 msgid "^3l0: ^7name protection for $1$^7 removed by $2$\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:5226
+#: src/gamelogic/game/g_admin.c:5351
 msgid "^3l1: ^7usage: l1 [name|slot#|admin#]\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:5241
+#: src/gamelogic/game/g_admin.c:5366
 msgid "^3l1: ^7your intended victim is not level 0\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:5247
+#: src/gamelogic/game/g_admin.c:5372
 msgid "^3l1: ^7your intended victim has the default name\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:5253
+#: src/gamelogic/game/g_admin.c:5378
 msgid "^3l1: ^7name protection for $1$^7 enabled by $2$\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:5275
+#: src/gamelogic/game/g_admin.c:5400
 msgid "^3register: ^7you must first change your name\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:5283
+#: src/gamelogic/game/g_admin.c:5408
 msgid "^3register: ^7$1$^7 is now a protected name\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:5298
+#: src/gamelogic/game/g_admin.c:5423
 msgid "^3unregister: ^7you do not have a protected name\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:5305
+#: src/gamelogic/game/g_admin.c:5430
 msgid "^3unregister: ^7$1$^7 is now an unprotected name\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:5319
+#: src/gamelogic/game/g_admin.c:5444
 msgid "^3gametimelimit: ^7time limit for this game is $1$m\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:5339
+#: src/gamelogic/game/g_admin.c:5464
 msgid "^3gametimelimit: ^7time limit set to $1$m from $2$m by $3$\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:5345
+#: src/gamelogic/game/g_admin.c:5476
 msgid "^3gametimelimit: ^7time limit is unchanged\n"
 msgstr ""
 
-#: src/gamelogic/game/g_admin.c:5352
+#: src/gamelogic/game/g_admin.c:5483
 msgid "^3gametimelimit: ^7usage: gametimelimit [minutes]\n"
 msgstr ""
 
-#: src/gamelogic/game/g_buildable.c:4316
+#: src/gamelogic/game/g_admin.c:5619
+msgid ""
+"^3bot: ^7usage: bot add [^5name|*^7] [^5aliens|humans^7] (^5skill^7) "
+"(^5behavior^7)\n"
+"            bot [^5del|spec|unspec^7] [^5name|all^7]\n"
+"            bot names [^5aliens|humans^7] [^5names…^7]\n"
+"            bot names [^5clear|list^7]\n"
+msgstr ""
+
+#: src/gamelogic/game/g_admin.c:5637
+msgid "bots can't have that name\n"
+msgstr ""
+
+#: src/gamelogic/game/g_admin.c:5689
+msgid "Can't add a bot\n"
+msgstr ""
+
+#: src/gamelogic/game/g_admin.c:5695
+msgid "Invalid team name\n"
+msgstr ""
+
+#: src/gamelogic/game/g_admin.c:5743 src/gamelogic/game/g_admin.c:5769
+#, c-format
+msgid "%s is not a bot\n"
+msgstr ""
+
+#: src/gamelogic/game/g_admin.c:5775
+#, c-format
+msgid "%s is not on spectators\n"
+msgstr ""
+
+#: src/gamelogic/game/g_admin.c:5786
+msgid "added $1$ human bot name\n"
+msgid_plural "added $1$ human bot names\n"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/gamelogic/game/g_admin.c:5791
+msgid "added $1$ alien bot name\n"
+msgid_plural "added $1$ alien bot names\n"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/gamelogic/game/g_admin.c:5797
+msgid "some automatic bot names are in use – not clearing lists\n"
+msgstr ""
+
+#: src/gamelogic/game/g_admin.c:5813
+msgid "Invalid command\n"
+msgstr ""
+
+#: src/gamelogic/game/g_bot.c:64
+msgid "^3Alien bot names:\n"
+msgstr ""
+
+#: src/gamelogic/game/g_bot.c:65
+msgid "^3Human bot names:\n"
+msgstr ""
+
+#: src/gamelogic/game/g_bot.c:311
+msgid "$1$^7 disconnected\n"
+msgstr ""
+
+#: src/gamelogic/game/g_buildable.c:4820
 msgid "$1$ ^2built^7 by $2$^7, ^3replacing^7 $3$\n"
 msgstr ""
 
-#: src/gamelogic/game/g_buildable.c:4317
+#: src/gamelogic/game/g_buildable.c:4821
 msgid "$1$ ^2built^7 by $2$$3$\n"
 msgstr ""
 
-#: src/gamelogic/game/g_client.c:996
+#: src/gamelogic/game/g_client.c:949
 msgid "Name change spam protection (g_minNameChangePeriod = $1$)\n"
 msgstr ""
 
-#: src/gamelogic/game/g_client.c:1004
+#: src/gamelogic/game/g_client.c:957
 msgid "Maximum name changes reached (g_maxNameChanges = $1$)\n"
 msgstr ""
 
-#: src/gamelogic/game/g_client.c:1011
+#: src/gamelogic/game/g_client.c:964
 msgid "You cannot change your name while you are muted\n"
 msgstr ""
 
-#: src/gamelogic/game/g_client.c:1332
+#: src/gamelogic/game/g_client.c:1287
+msgid "$1$^7 connected from $2$\n"
+msgstr ""
+
+#: src/gamelogic/game/g_client.c:1292 src/gamelogic/game/g_client.c:1374
 msgid "$1$^7 connected\n"
 msgstr ""
 
-#: src/gamelogic/game/g_client.c:1411
+#: src/gamelogic/game/g_client.c:1470
 msgid "$1$^7 entered the game\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:97
+#: src/gamelogic/game/g_cmds.c:98
 msgid "no connected player by that name or slot #"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:103
+#: src/gamelogic/game/g_cmds.c:104
 msgid "more than one player name matches. be more specific or use the slot #: "
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:152
+#: src/gamelogic/game/g_cmds.c:153
 msgid "no player name or slot # provided\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:169 src/gamelogic/game/g_cmds.c:180
+#: src/gamelogic/game/g_cmds.c:170 src/gamelogic/game/g_cmds.c:181
 msgid "no player connected in that slot #\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:195
+#: src/gamelogic/game/g_cmds.c:196
 msgid "no player name provided\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:203
+#: src/gamelogic/game/g_cmds.c:204
 msgid ""
 "more than one player name matches. be more specific or use the slot #:\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:246
+#: src/gamelogic/game/g_cmds.c:247
 msgid "no connected player by that name or slot #\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:532
+#: src/gamelogic/game/g_cmds.c:534
 msgid "usage: give [what]\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:533
+#: src/gamelogic/game/g_cmds.c:535
 msgid ""
-"usage: valid choices are: all, health, funds [amount], stamina, poison, gas, "
-"ammo\n"
+"usage: valid choices are: all, health, funds [amount], bp [amount], "
+"confidence [amount], stamina, poison, gas, ammo\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:655
+#: src/gamelogic/game/g_cmds.c:685
 msgid "godmode OFF\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:659
+#: src/gamelogic/game/g_cmds.c:689
 msgid "godmode ON\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:682
+#: src/gamelogic/game/g_cmds.c:712
 msgid "notarget OFF\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:686
+#: src/gamelogic/game/g_cmds.c:716
 msgid "notarget ON\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:705
+#: src/gamelogic/game/g_cmds.c:735
 msgid "noclip OFF\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:710
+#: src/gamelogic/game/g_cmds.c:740
 msgid "noclip ON\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:741
+#: src/gamelogic/game/g_cmds.c:771
 msgid "You will suicide in 20 seconds\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:746
+#: src/gamelogic/game/g_cmds.c:776
 msgid "Suicide cancelled\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:796
+#: src/gamelogic/game/g_cmds.c:823
 msgid "You cannot leave your team until $1$ after combat. Try again in $2$s.\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:813
+#: src/gamelogic/game/g_cmds.c:840
 msgid "team: $1$\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:888
+#: src/gamelogic/game/g_cmds.c:917
 msgid "Unknown team: $1$\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:901
+#: src/gamelogic/game/g_cmds.c:930
 msgid "You cannot join a team until the next game.\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:910
+#: src/gamelogic/game/g_cmds.c:939
 msgid "You cannot join a team for another $1$s.\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:1193
+#: src/gamelogic/game/g_cmds.c:1221
 msgid ""
 "say: Global chatting for spectators has been disabled. You may only use team "
 "chat.\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:1261
+#: src/gamelogic/game/g_cmds.c:1289
 msgid "usage: say_area [message]\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:1306
+#: src/gamelogic/game/g_cmds.c:1334
 msgid "usage: say_area_team [message]\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:1414
+#: src/gamelogic/game/g_cmds.c:1442
 msgid "usage: $1$ command [text]\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:1421
+#: src/gamelogic/game/g_cmds.c:1449
 msgid "$1$: voice system is not installed on this server\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:1428
+#: src/gamelogic/game/g_cmds.c:1456
 msgid "$1$: voice system administratively disabled on this server\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:1462
+#: src/gamelogic/game/g_cmds.c:1490
 msgid "$1$: voice '$2$' not found\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:1472
+#: src/gamelogic/game/g_cmds.c:1500
 msgid "$1$: command '$2$' not found in voice '$3$'\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:1492
+#: src/gamelogic/game/g_cmds.c:1520
 msgid ""
 "$1$: no available track for command '$2$', team $3$, class $4$, weapon $5$, "
 "and enthusiasm $6$ in voice '$7$'\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:1550
+#: src/gamelogic/game/g_cmds.c:1578
 msgid "origin: $1$ $2$ $3$\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:1636
+#: src/gamelogic/game/g_cmds.c:1667
 msgid "$1$: voting not allowed here\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:1643
+#: src/gamelogic/game/g_cmds.c:1674
 msgid "$1$: a vote is already in progress\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:1675
+#: src/gamelogic/game/g_cmds.c:1706
 msgid "Invalid vote string\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:1676
+#: src/gamelogic/game/g_cmds.c:1707
 msgid "Valid vote commands are: "
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:1677
+#: src/gamelogic/game/g_cmds.c:1708
 msgid "Valid team-vote commands are: "
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:1745
+#: src/gamelogic/game/g_cmds.c:1776
 msgid "$1$: you have already called the maximum number of votes ($2$)\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:1760
+#: src/gamelogic/game/g_cmds.c:1791 src/gamelogic/game/g_cmds.c:1836
 msgid "'$1$' votes have been disabled\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:1775
+#: src/gamelogic/game/g_cmds.c:1806
 msgid "'$1$' votes are not allowed once $2$ minutes have passed\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:1785
+#: src/gamelogic/game/g_cmds.c:1816
 msgid "'$1$' votes are not allowed until $2$ minutes have passed\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:1795
+#: src/gamelogic/game/g_cmds.c:1826
 msgid "'$1$' votes are only allowed with less than $2$ minutes remaining\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:1806
-msgid "Sudden Death has already begun\n"
-msgstr ""
-
-#: src/gamelogic/game/g_cmds.c:1814
-msgid "Sudden Death is imminent — this vote may have no effect\n"
-msgstr ""
-
-#: src/gamelogic/game/g_cmds.c:1845
+#: src/gamelogic/game/g_cmds.c:1867
 msgid "$1$: no target\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:1864 src/gamelogic/game/g_cmds.c:1878
+#: src/gamelogic/game/g_cmds.c:1886
+msgid "$1$: player is a bot\n"
+msgstr ""
+
+#: src/gamelogic/game/g_cmds.c:1893 src/gamelogic/game/g_cmds.c:1907
 msgid "$1$: admin is immune\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:1886
+#: src/gamelogic/game/g_cmds.c:1915
 msgid "$1$: player is not on your team\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:1897
+#: src/gamelogic/game/g_cmds.c:1925
 msgid "$1$: You must provide a reason\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:1908
+#: src/gamelogic/game/g_cmds.c:1936
 #, c-format
 msgid "Kick player '%s'"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:1916
+#: src/gamelogic/game/g_cmds.c:1944
 #, c-format
 msgid "Move player '%s' to spectators"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:1923
+#: src/gamelogic/game/g_cmds.c:1961
+msgid "$1$: there are no active bots\n"
+msgstr ""
+
+#: src/gamelogic/game/g_cmds.c:1968
+msgid "Remove all bots"
+msgstr ""
+
+#: src/gamelogic/game/g_cmds.c:1973
+msgid "Move all bots to spectators"
+msgstr ""
+
+#: src/gamelogic/game/g_cmds.c:1981
 msgid "$1$: player is already muted\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:1931
+#: src/gamelogic/game/g_cmds.c:1989
 #, c-format
 msgid "Mute player '%s'"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:1938
+#: src/gamelogic/game/g_cmds.c:1996
 msgid "$1$: player is not currently muted\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:1946
+#: src/gamelogic/game/g_cmds.c:2004
 #, c-format
 msgid "Unmute player '%s'"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:1953
+#: src/gamelogic/game/g_cmds.c:2011
 msgid "$1$: player already lost building rights\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:1968
+#: src/gamelogic/game/g_cmds.c:2026
 msgid "$1$: player already has building rights\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:1999
+#: src/gamelogic/game/g_cmds.c:2042
 msgid "callvote: Maximum number of $1$ extend votes has been reached\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:2036 src/gamelogic/game/g_cmds.c:2095
+#: src/gamelogic/game/g_cmds.c:2073
+msgid "$1$: Argument must be anumber between 1 and 100\n"
+msgstr ""
+
+#: src/gamelogic/game/g_cmds.c:2095 src/gamelogic/game/g_cmds.c:2154
 msgid "$1$: 'maps/$2$.bsp' could not be found on the server\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:2072
+#: src/gamelogic/game/g_cmds.c:2131
 msgid "callvote: layout '$1$' could not be found on the server\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:2087
+#: src/gamelogic/game/g_cmds.c:2146
 msgid "$1$: the next map is already set to '$2$'\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:2144
+#: src/gamelogic/game/g_cmds.c:2203
 msgid "$1$^7 called a vote: $2$\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:2159
+#: src/gamelogic/game/g_cmds.c:2218
 msgid "$1$^7 called a team vote: $2t$\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:2210
+#: src/gamelogic/game/g_cmds.c:2269
 msgid "$1$: no vote in progress\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:2217
+#: src/gamelogic/game/g_cmds.c:2276
 msgid "$1$: vote already cast\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:2222
+#: src/gamelogic/game/g_cmds.c:2281
 msgid "$1$: vote cast\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:2254
+#: src/gamelogic/game/g_cmds.c:2313
 msgid "usage: setviewpos (<x> <y> <z> [<yaw> [<pitch>]] | <entitynum>)\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:2869 src/gamelogic/game/g_cmds.c:2899
-#: src/gamelogic/game/g_cmds.c:2951
+#: src/gamelogic/game/g_cmds.c:2957 src/gamelogic/game/g_cmds.c:2987
+#: src/gamelogic/game/g_cmds.c:3039
 msgid "You don't have the $1$\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:3151
-msgid "You can't buy this item ($1$)\n"
-msgstr ""
-
-#: src/gamelogic/game/g_cmds.c:3155
-msgid "You can't buy alien items\n"
-msgstr ""
-
-#: src/gamelogic/game/g_cmds.c:3307
+#: src/gamelogic/game/g_cmds.c:3181
 msgid "You can't sell this weapon\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:3340
+#: src/gamelogic/game/g_cmds.c:3214
 msgid "You can't sell this item\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:3946
+#: src/gamelogic/game/g_cmds.c:3519
+msgid "You can't buy this item ($1$)\n"
+msgstr ""
+
+#: src/gamelogic/game/g_cmds.c:3523
+msgid "You can't buy alien items\n"
+msgstr ""
+
+#: src/gamelogic/game/g_cmds.c:4089
 msgid "usage: $1$ [clientNum | partial name match]\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:3956
+#: src/gamelogic/game/g_cmds.c:4099
 msgid "$1$: no clients match the name '$2$'\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:3969
+#: src/gamelogic/game/g_cmds.c:4112
 msgid "ignore: added $1$^7 to your ignore list\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:3975
+#: src/gamelogic/game/g_cmds.c:4118
 msgid "ignore: $1$^7 is already on your ignore list\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:3986
+#: src/gamelogic/game/g_cmds.c:4129
 msgid "unignore: removed $1$^7 from your ignore list\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:3992
+#: src/gamelogic/game/g_cmds.c:4135
 msgid "unignore: $1$^7 is not on your ignore list\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:4130
+#: src/gamelogic/game/g_cmds.c:4273
 msgid "^3listmaps: ^7found $1$ map matching '$2$^7'"
 msgid_plural "^3listmaps: ^7found $1$ maps matching '$2$^7'"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/gamelogic/game/g_cmds.c:4134
+#: src/gamelogic/game/g_cmds.c:4277
 msgid "^3listmaps: ^7listing $1$ of $2$ map"
 msgid_plural "^3listmaps: ^7listing $1$ of $2$ maps"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/gamelogic/game/g_cmds.c:4139
+#: src/gamelogic/game/g_cmds.c:4282
 msgid ", page $1$ of $2$"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:4144
+#: src/gamelogic/game/g_cmds.c:4287
 msgid ", use 'listmaps $1$$2$$3$' to see more"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:4261
+#: src/gamelogic/game/g_cmds.c:4404
 msgid "^3maplog: ^7recent map results, newest first\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:4406
+#: src/gamelogic/game/g_cmds.c:4549
 msgid "You are flooding: please wait $1$s before trying again\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:4516
+#: src/gamelogic/game/g_cmds.c:4579
+msgid "^2Pubkey authenticated"
+msgstr ""
+
+#: src/gamelogic/game/g_cmds.c:4661
 msgid "Unknown command $1$\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:4684
+#: src/gamelogic/game/g_cmds.c:4829
 msgid "Sorry, but private messages have been disabled\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:4692
+#: src/gamelogic/game/g_cmds.c:4837
 msgid "usage: $1$ [name|slot#] [message]\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:4724
+#: src/gamelogic/game/g_cmds.c:4869
 msgid "^3No player matching ^7 '$1$^7' ^3to send message to.\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:4729
+#: src/gamelogic/game/g_cmds.c:4874
 msgid "^$1$Private message: ^7$2$\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:4734
+#: src/gamelogic/game/g_cmds.c:4879
 msgid "^$1$sent to $2$ player: ^7$3$\n"
 msgid_plural "^$1$sent to $2$ players: ^7$3$\n"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/gamelogic/game/g_cmds.c:4760
+#: src/gamelogic/game/g_cmds.c:4905
 msgid "Sorry, but use of /a by non-admins has been disabled.\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:4765
+#: src/gamelogic/game/g_cmds.c:4910
 msgid ""
 "Your message has been sent to any available admins and to the server logs.\n"
 msgstr ""
 
-#: src/gamelogic/game/g_cmds.c:4772
+#: src/gamelogic/game/g_cmds.c:4917
 msgid "usage: a [message]\n"
 msgstr ""
 
-#: src/gamelogic/game/g_combat.c:347
+#: src/gamelogic/game/g_combat.c:360
 msgid "Your killer, $1$^7, had $2$ HP.\n"
 msgstr ""
 
-#: src/gamelogic/game/g_combat.c:1720
+#: src/gamelogic/game/g_combat.c:1745
 msgid "$1$ ^3DECONSTRUCTED^7 by $2$\n"
 msgstr ""
 
-#: src/gamelogic/game/g_combat.c:1721
+#: src/gamelogic/game/g_combat.c:1746
 msgid "$1$ ^3DESTROYED^7 by $2$\n"
 msgstr ""
 
-#: src/gamelogic/game/g_main.c:584
+#: src/gamelogic/game/g_main.c:708
 msgid "Server: $1$ changed to $2$\n"
 msgstr ""
 
-#: src/gamelogic/game/g_main.c:1344
-msgid "Beginning Sudden Death.\n"
-msgstr ""
-
-#: src/gamelogic/game/g_main.c:1362
-msgid "Sudden Death will begin in $1$ seconds.\n"
-msgstr ""
-
-#: src/gamelogic/game/g_main.c:2363
+#: src/gamelogic/game/g_main.c:2556
 msgid "Timelimit hit\n"
 msgstr ""
 
-#: src/gamelogic/game/g_main.c:2392
+#: src/gamelogic/game/g_main.c:2585
 msgid "Humans win\n"
 msgstr ""
 
-#: src/gamelogic/game/g_main.c:2406
+#: src/gamelogic/game/g_main.c:2599
 msgid "Aliens win\n"
 msgstr ""
 
-#: src/gamelogic/game/g_main.c:2589
+#: src/gamelogic/game/g_main.c:2783
 msgid "Vote failed ($1$ of $2$; quorum not reached)\n"
 msgstr ""
 
-#: src/gamelogic/game/g_main.c:2589
+#: src/gamelogic/game/g_main.c:2783
 msgid "Team vote failed ($1$ of $2$; quorum not reached)\n"
 msgstr ""
 
-#: src/gamelogic/game/g_main.c:2594
+#: src/gamelogic/game/g_main.c:2788
 msgid "Vote passed ($1$ — $2$)\n"
 msgstr ""
 
-#: src/gamelogic/game/g_main.c:2594
+#: src/gamelogic/game/g_main.c:2788
 msgid "Team vote passed ($1$ — $2$)\n"
 msgstr ""
 
-#: src/gamelogic/game/g_main.c:2599
+#: src/gamelogic/game/g_main.c:2793
 #, c-format
 msgid "Vote failed ($1$ — $2$; $3$% needed)\n"
 msgstr ""
 
-#: src/gamelogic/game/g_main.c:2599
+#: src/gamelogic/game/g_main.c:2793
 #, c-format
 msgid "Team vote failed ($1$ — $2$; $3$% needed)\n"
 msgstr ""
 
-#: src/gamelogic/game/g_main.c:2801
+#: src/gamelogic/game/g_main.c:2966
 msgid "Server: Game will auto-unpause in $1$ seconds\n"
 msgstr ""
 
-#: src/gamelogic/game/g_main.c:2817
+#: src/gamelogic/game/g_main.c:2982
 msgid "Server: The game has been unpaused automatically (2 minute max)\n"
 msgstr ""
 
@@ -4100,23 +4203,23 @@ msgstr ""
 msgid "^3listrotation: ^7there are no maps in the active map rotation\n"
 msgstr ""
 
-#: src/gamelogic/game/g_svcmds.c:404
+#: src/gamelogic/game/g_svcmds.c:405
 msgid "Alien team has admitted defeat\n"
 msgstr ""
 
-#: src/gamelogic/game/g_svcmds.c:409
+#: src/gamelogic/game/g_svcmds.c:410
 msgid "Human team has admitted defeat\n"
 msgstr ""
 
-#: src/gamelogic/game/g_svcmds.c:444
+#: src/gamelogic/game/g_svcmds.c:438
 msgid "Evacuation ordered\n"
 msgstr ""
 
-#: src/gamelogic/game/g_team.c:595
+#: src/gamelogic/game/g_team.c:609
 msgid "Teams are imbalanced. Humans have more players.\n"
 msgstr ""
 
-#: src/gamelogic/game/g_team.c:602
+#: src/gamelogic/game/g_team.c:616
 msgid "Teams are imbalanced. Aliens have more players.\n"
 msgstr ""
 
@@ -4124,53 +4227,57 @@ msgstr ""
 msgid "Favorites"
 msgstr ""
 
-#: src/gamelogic/ui/ui_main.c:905
+#: src/gamelogic/ui/ui_main.c:903
 msgid "no servers found"
 msgstr ""
 
-#: src/gamelogic/ui/ui_main.c:912
+#: src/gamelogic/ui/ui_main.c:910
 #, c-format
 msgid "%d server found with player %s"
 msgid_plural "%d servers found with player %s"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/gamelogic/ui/ui_main.c:1857
+#: src/gamelogic/ui/ui_main.c:1821
 msgid "Frags:"
 msgstr ""
 
-#: src/gamelogic/ui/ui_main.c:1871 src/gamelogic/ui/ui_main.c:1892
+#: src/gamelogic/ui/ui_main.c:1835 src/gamelogic/ui/ui_main.c:1856
 msgid "Credits: Free"
 msgstr ""
 
-#: src/gamelogic/ui/ui_main.c:1878 src/gamelogic/ui/ui_main.c:1899
+#: src/gamelogic/ui/ui_main.c:1842 src/gamelogic/ui/ui_main.c:1863
 msgid "Credits:"
 msgstr ""
 
-#: src/gamelogic/ui/ui_main.c:1911
-msgid "Sentience"
+#: src/gamelogic/ui/ui_main.c:1888
+msgid "Biomass"
 msgstr ""
 
-#: src/gamelogic/ui/ui_main.c:1915
+#: src/gamelogic/ui/ui_main.c:1902
+msgid "Material"
+msgstr ""
+
+#: src/gamelogic/ui/ui_main.c:1913
 msgid "Power"
 msgstr ""
 
-#: src/gamelogic/ui/ui_main.c:2070
+#: src/gamelogic/ui/ui_main.c:2053
 #, c-format
 msgid "Waiting for response%s"
 msgstr ""
 
-#: src/gamelogic/ui/ui_main.c:2071
+#: src/gamelogic/ui/ui_main.c:2054
 #, c-format
 msgid "Getting info for %d servers (ESC to cancel)%s"
 msgstr ""
 
-#: src/gamelogic/ui/ui_main.c:2075
+#: src/gamelogic/ui/ui_main.c:2058
 #, c-format
 msgid "Refresh Time: %s"
 msgstr ""
 
-#: src/gamelogic/ui/ui_main.c:2489
+#: src/gamelogic/ui/ui_main.c:2472
 msgid ""
 "The Alien Team\n"
 "\n"
@@ -4179,7 +4286,7 @@ msgid ""
 "attacks, movement-crippling poisons and more."
 msgstr ""
 
-#: src/gamelogic/ui/ui_main.c:2499
+#: src/gamelogic/ui/ui_main.c:2482
 msgid ""
 "The Human Team\n"
 "\n"
@@ -4189,91 +4296,91 @@ msgid ""
 "eradicate the alien threat."
 msgstr ""
 
-#: src/gamelogic/ui/ui_main.c:2506
+#: src/gamelogic/ui/ui_main.c:2489
 msgid "Spectate"
 msgstr ""
 
-#: src/gamelogic/ui/ui_main.c:2509
+#: src/gamelogic/ui/ui_main.c:2492
 msgid "Watch the game without playing."
 msgstr ""
 
-#: src/gamelogic/ui/ui_main.c:2511
+#: src/gamelogic/ui/ui_main.c:2494
 msgid "Auto select"
 msgstr ""
 
-#: src/gamelogic/ui/ui_main.c:2514
+#: src/gamelogic/ui/ui_main.c:2497
 msgid "Join the team with the least players."
 msgstr ""
 
-#: src/gamelogic/ui/ui_main.c:3799 src/gamelogic/ui/ui_main.c:4040
+#: src/gamelogic/ui/ui_main.c:3784 src/gamelogic/ui/ui_main.c:4031
 msgid "Favorite already in list\n"
 msgstr ""
 
-#: src/gamelogic/ui/ui_main.c:3804 src/gamelogic/ui/ui_main.c:4045
+#: src/gamelogic/ui/ui_main.c:3789 src/gamelogic/ui/ui_main.c:4036
 msgid "Favorite list full\n"
 msgstr ""
 
-#: src/gamelogic/ui/ui_main.c:3809 src/gamelogic/ui/ui_main.c:4050
+#: src/gamelogic/ui/ui_main.c:3794 src/gamelogic/ui/ui_main.c:4041
 #, c-format
 msgid "Added favorite server %s\n"
 msgstr ""
 
-#: src/gamelogic/ui/ui_main.c:5567
+#: src/gamelogic/ui/ui_main.c:5563
 msgid "Downloading:"
 msgstr ""
 
-#: src/gamelogic/ui/ui_main.c:5568
+#: src/gamelogic/ui/ui_main.c:5564
 msgid "Estimated time left:"
 msgstr ""
 
-#: src/gamelogic/ui/ui_main.c:5569
+#: src/gamelogic/ui/ui_main.c:5565
 msgid "Transfer rate:"
 msgstr ""
 
-#: src/gamelogic/ui/ui_main.c:5604 src/gamelogic/ui/ui_main.c:5635
+#: src/gamelogic/ui/ui_main.c:5600 src/gamelogic/ui/ui_main.c:5631
 msgid "estimating"
 msgstr ""
 
-#: src/gamelogic/ui/ui_main.c:5605 src/gamelogic/ui/ui_main.c:5631
-#: src/gamelogic/ui/ui_main.c:5639
+#: src/gamelogic/ui/ui_main.c:5601 src/gamelogic/ui/ui_main.c:5627
+#: src/gamelogic/ui/ui_main.c:5635
 #, c-format
 msgid "(%s of %s copied)"
 msgstr ""
 
-#: src/gamelogic/ui/ui_main.c:5643
+#: src/gamelogic/ui/ui_main.c:5639
 #, c-format
 msgid "(%s copied)"
 msgstr ""
 
-#: src/gamelogic/ui/ui_main.c:5695
+#: src/gamelogic/ui/ui_main.c:5691
 #, c-format
 msgid "Loading %s"
 msgstr ""
 
-#: src/gamelogic/ui/ui_main.c:5701
+#: src/gamelogic/ui/ui_main.c:5697
 msgid "Starting up…"
 msgstr ""
 
-#: src/gamelogic/ui/ui_main.c:5705
+#: src/gamelogic/ui/ui_main.c:5701
 #, c-format
 msgid "Connecting to %s"
 msgstr ""
 
-#: src/gamelogic/ui/ui_main.c:5728
+#: src/gamelogic/ui/ui_main.c:5724
 #, c-format
 msgid "Awaiting connection…%i"
 msgstr ""
 
-#: src/gamelogic/ui/ui_main.c:5732
+#: src/gamelogic/ui/ui_main.c:5728
 #, c-format
 msgid "Awaiting challenge…%i"
 msgstr ""
 
-#: src/gamelogic/ui/ui_main.c:5748
+#: src/gamelogic/ui/ui_main.c:5744
 msgid "Awaiting gamestate…"
 msgstr ""
 
-#: src/gamelogic/ui/ui_shared.c:6362
+#: src/gamelogic/ui/ui_shared.c:6359
 msgid "Press key"
 msgstr ""
 

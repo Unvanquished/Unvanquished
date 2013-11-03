@@ -475,6 +475,7 @@ extern "C" {
 	  WT_REPEAT,
 	  WT_CLAMP, // don't repeat the texture for texture coords outside [0, 1]
 	  WT_EDGE_CLAMP,
+	  WT_ONE_CLAMP,
 	  WT_ZERO_CLAMP, // guarantee 0,0,0,255 edge for projected textures
 	  WT_ALPHA_ZERO_CLAMP // guarante 0 alpha edge for projected textures
 	} wrapType_t;

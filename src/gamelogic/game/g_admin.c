@@ -619,7 +619,7 @@ qboolean G_admin_permission( gentity_t *ent, const char *flag )
 
 	if ( ent->client->pers.admin && ent->client->pers.pubkey_authenticated != 1 )
 	{
-		CP( "cp \"^1You are not pubkey authenticated\"\n" );
+		CP( "cp_tr " QQ(N_("^1You are not pubkey authenticated")) "\n" );
 		return qfalse;
 	}
 
@@ -3391,7 +3391,7 @@ qboolean G_admin_warn( gentity_t *ent )
 		vic->client->pers.hasWarnings = qtrue;
 	}
 
-	CPx( pids[ 0 ], va( "cp \"^1You have been warned by an administrator:\n^3\"%s",
+	CPx( pids[ 0 ], va( "cp_tr " QQ(N_("^1You have been warned by an administrator:\n^3$1$")) " %s",
 	                    Quote( reason ) ) );
 	AP( va( "print_tr %s %s %s %s", QQ( N_("^3warn: ^7$1$^7 has been warned: '$2$' by $3$\n") ),
 	        Quote( vic->client->pers.netname ),
@@ -3443,7 +3443,7 @@ qboolean G_admin_mute( gentity_t *ent )
 
 		if ( vic->slot > -1 )
 		{
-			CPx( vic->slot, "cp \"^1You have been unmuted\"" );
+			CPx( vic->slot, "cp_tr " QQ(N_("^1You have been unmuted")) );
 		}
 
 		AP( va( "print_tr %s %s %s", QQ( N_("^3unmute: ^7$1$^7 has been unmuted by $2$\n") ),
@@ -3462,7 +3462,7 @@ qboolean G_admin_mute( gentity_t *ent )
 
 		if ( vic->slot > -1 )
 		{
-			CPx( vic->slot, "cp \"^1You've been muted\"" );
+			CPx( vic->slot, "cp_tr " QQ(N_("^1You've been muted")) );
 		}
 
 		AP( va( "print_tr %s %s %s", QQ( N_("^3mute: ^7$1$^7 has been muted by $2$\n") ),
@@ -3517,7 +3517,7 @@ qboolean G_admin_denybuild( gentity_t *ent )
 
 		if ( vic->slot > -1 )
 		{
-			CPx( vic->slot, "cp \"^1You've regained your building rights\"" );
+			CPx( vic->slot, "cp_tr " QQ(N_("^1You've regained your building rights")) );
 		}
 
 		AP( va( "print_tr %s %s %s", QQ( N_("^3allowbuild: ^7building rights for ^7$1$^7 restored by $2$\n") ),
@@ -3537,7 +3537,7 @@ qboolean G_admin_denybuild( gentity_t *ent )
 		if ( vic->slot > -1 )
 		{
 			level.clients[ vic->slot ].ps.stats[ STAT_BUILDABLE ] = BA_NONE;
-			CPx( vic->slot, "cp \"^1You've lost your building rights\"" );
+			CPx( vic->slot, "cp_tr " QQ(N_("^1You've lost your building rights")) );
 		}
 
 		AP( va( "print_tr %s %s %s", QQ( N_("^3denybuild: ^7building rights for ^7$1$^7 revoked by $2$\n") ),
@@ -5632,6 +5632,12 @@ qboolean G_admin_timelimit( gentity_t *ent )
 				AP( va( "print_tr %s %d %d %s", QQ( N_("^3gametimelimit: ^7time limit set to $1$m from $2$m by $3$\n") ),
 				        timelimit, level.timelimit, G_quoted_admin_name( ent ) ) );
 				level.timelimit = timelimit;
+				// reset 'time remaining' warnings
+				level.timelimitWarning = ( level.matchTime < ( level.timelimit - 5 ) * 60000 )
+				                       ? TW_NOT
+				                       : ( level.matchTime < ( level.timelimit - 1 ) * 60000 )
+				                       ? TW_IMMINENT
+				                       : TW_PASSED;
 			}
 			else
 			{

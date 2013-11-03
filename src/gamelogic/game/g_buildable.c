@@ -89,7 +89,7 @@ gentity_t *G_CheckSpawnPoint( int spawnNum, const vec3_t origin,
 	}
 	else if ( spawn == BA_H_SPAWN )
 	{
-		BG_ClassBoundingBox( PCL_HUMAN, cmins, cmaxs, NULL, NULL, NULL );
+		BG_ClassBoundingBox( PCL_HUMAN_NAKED, cmins, cmaxs, NULL, NULL, NULL );
 
 		VectorCopy( origin, localOrigin );
 		localOrigin[ 2 ] += maxs[ 2 ] + fabs( cmins[ 2 ] ) + 1.0f;
@@ -489,7 +489,7 @@ qboolean G_FindCreep( gentity_t *self )
 
 			if ( ( ent->s.modelindex == BA_A_SPAWN ||
 			       ent->s.modelindex == BA_A_OVERMIND ) &&
-			     ent->spawned && ent->health > 0 )
+			       ent->health > 0 )
 			{
 				VectorSubtract( self->s.origin, ent->s.origin, temp_v );
 				distance = VectorLength( temp_v );
@@ -907,11 +907,9 @@ void AGeneric_CreepCheck( gentity_t *self )
 {
 	gentity_t *spawn;
 
-	switch( self->s.modelindex )
+	if ( !BG_Buildable( self->s.modelindex )->creepTest )
 	{
-		case BA_A_OVERMIND:
-		case BA_A_SPAWN:
-			return;
+		return;
 	}
 
 	if ( !G_FindCreep( self ) )
@@ -2222,11 +2220,6 @@ void G_SetHumanBuildablePowerState()
 			if ( ent->currentSparePower >= 0.0f )
 			{
 				ent->powered = qtrue;
-			}
-
-			if ( ent->s.modelindex == BA_H_DRILL && !PowerSourceInRange( ent->s.origin ) )
-			{
-				ent->powered = qfalse;
 			}
 		}
 
@@ -4403,6 +4396,21 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 	if ( ( tempReason = PrepareBuildableReplacement( buildable, origin ) ) != IBE_NONE )
 	{
 		reason = tempReason;
+
+		if ( reason == IBE_NOPOWERHERE || reason == IBE_DRILLPOWERSOURCE )
+		{
+			if ( !G_Reactor() )
+			{
+				reason = IBE_NOREACTOR;
+			}
+		}
+		else if ( reason == IBE_NOCREEP )
+		{
+			if ( !G_Overmind() )
+			{
+				reason = IBE_NOOVERMIND;
+			}
+		}
 	}
 	else if ( ent->client->pers.team == TEAM_ALIENS )
 	{
@@ -4447,12 +4455,6 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 			}
 		}
 
-		// Drills need a close power source to work
-		if ( buildable == BA_H_DRILL && !PowerSourceInRange( origin ) )
-		{
-			reason = IBE_DRILLPOWERSOURCE;
-		}
-
 		// Check if buildable requires a DCC
 		if ( BG_Buildable( buildable )->dccTest && !G_IsDCCBuilt() )
 		{
@@ -4464,7 +4466,6 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 		{
 			reason = IBE_SURFACE;
 		}
-
 
 		// Check level permissions
 		if ( !g_humanAllowBuilding.integer )
@@ -4888,10 +4889,6 @@ qboolean G_BuildIfValid( gentity_t *ent, buildable_t buildable )
 
 		case IBE_NOPOWERHERE:
 			G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOPOWERHERE );
-			return qfalse;
-
-		case IBE_DRILLPOWERSOURCE:
-			G_TriggerMenu( ent->client->ps.clientNum, MN_H_DRILLPOWERSOURCE );
 			return qfalse;
 
 		case IBE_NOREACTOR:

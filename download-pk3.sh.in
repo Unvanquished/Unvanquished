@@ -92,8 +92,10 @@ CACHE="${2:-${DEST_DIR}}"
 # NOTE THAT THIS INDISCRIMINATELY REMOVES *.tmp FROM DEST & CACHE DIRS
 cleanup ()
 {
-  test "$?" = 0 || echo '[1;31mFAILED.[m'
+  RET="$?"
+  test "$RET" = 0 || echo '[1;31mFAILED.[m'
   rm -f -- "$CACHE/"*.tmp "$DEST_DIR/"*.tmp
+  return "$RET"
 }
 trap cleanup EXIT
 

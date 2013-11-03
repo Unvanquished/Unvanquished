@@ -380,13 +380,27 @@ void BotGetDesiredBuy( gentity_t *self, weapon_t *weapon, upgrade_t *upgrades, i
 		upgrades[0] = UP_BATTLESUIT;
 		*numUpgrades = 1;
 	}
-	else if ( BG_WeaponUnlocked( WP_SHOTGUN ) && BG_UpgradeUnlocked( UP_LIGHTARMOUR ) && BG_UpgradeUnlocked( UP_HELMET ) &&
-	          BotCanBuyWeapon( self, WP_SHOTGUN ) && BotCanBuyUpgrade( self, UP_LIGHTARMOUR ) && BotCanBuyUpgrade( self, UP_HELMET ) &&
-	          usableCapital >= ( BG_Weapon( WP_SHOTGUN )->price + BG_Upgrade( UP_LIGHTARMOUR )->price + BG_Upgrade( UP_HELMET )->price ) )
+	else if ( BG_WeaponUnlocked( WP_SHOTGUN ) && BG_UpgradeUnlocked( UP_MEDIUMARMOUR ) && BG_UpgradeUnlocked( UP_RADAR ) &&
+	          BotCanBuyWeapon( self, WP_SHOTGUN ) && BotCanBuyUpgrade( self, UP_MEDIUMARMOUR ) && BotCanBuyUpgrade( self, UP_RADAR ) &&
+	          usableCapital >= ( BG_Weapon( WP_SHOTGUN )->price + BG_Upgrade( UP_MEDIUMARMOUR )->price + BG_Upgrade( UP_RADAR )->price ) )
+	{
+		upgrades[0] = UP_MEDIUMARMOUR;
+		upgrades[1] = UP_RADAR;
+		*numUpgrades = 2;
+	}
+	else if ( BG_WeaponUnlocked( WP_SHOTGUN ) && BG_UpgradeUnlocked( UP_LIGHTARMOUR ) && BG_UpgradeUnlocked( UP_RADAR ) &&
+	          BotCanBuyWeapon( self, WP_SHOTGUN ) && BotCanBuyUpgrade( self, UP_LIGHTARMOUR ) && BotCanBuyUpgrade( self, UP_RADAR ) &&
+	          usableCapital >= ( BG_Weapon( WP_SHOTGUN )->price + BG_Upgrade( UP_LIGHTARMOUR )->price + BG_Upgrade( UP_RADAR )->price ) )
 	{
 		upgrades[0] = UP_LIGHTARMOUR;
-		upgrades[1] = UP_HELMET;
+		upgrades[1] = UP_RADAR;
 		*numUpgrades = 2;
+	}
+	else if ( BG_WeaponUnlocked( WP_PAIN_SAW ) && BG_UpgradeUnlocked( UP_MEDIUMARMOUR ) &&
+	          usableCapital >= ( BG_Weapon( WP_PAIN_SAW )->price + BG_Upgrade( UP_MEDIUMARMOUR )->price ) )
+	{
+		upgrades[0] = UP_MEDIUMARMOUR;
+		*numUpgrades = 1;
 	}
 	else if ( BG_WeaponUnlocked( WP_PAIN_SAW ) && BG_UpgradeUnlocked( UP_LIGHTARMOUR ) &&
 	          BotCanBuyWeapon( self, WP_PAIN_SAW ) && BotCanBuyUpgrade( self, UP_LIGHTARMOUR ) &&
@@ -644,6 +658,9 @@ gentity_t* BotFindBestEnemy( gentity_t *self )
 	gentity_t *bestVisibleEnemy = NULL;
 	gentity_t *bestInvisibleEnemy = NULL;
 	gentity_t *target;
+	team_t    team = BotGetEntityTeam( self );
+	qboolean  hasRadar = ( team == TEAM_ALIENS ) ||
+	                     ( team == TEAM_HUMANS && BG_InventoryContainsUpgrade( UP_RADAR, self->client->ps.stats ) );
 
 	for ( target = g_entities; target < &g_entities[level.num_entities - 1]; target++ )
 	{
@@ -678,13 +695,13 @@ gentity_t* BotFindBestEnemy( gentity_t *self )
 			bestVisibleEnemyScore = newScore;
 			bestVisibleEnemy = target;
 		}
-		else if ( newScore > bestInvisibleEnemyScore && BotGetEntityTeam( self ) == TEAM_ALIENS )
+		else if ( newScore > bestInvisibleEnemyScore && hasRadar )
 		{
 			bestInvisibleEnemyScore = newScore;
 			bestInvisibleEnemy = target;
 		}
 	}
-	if ( bestVisibleEnemy || BotGetEntityTeam( self ) == TEAM_HUMANS )
+	if ( bestVisibleEnemy || !hasRadar )
 	{
 		return bestVisibleEnemy;
 	}
@@ -1945,6 +1962,7 @@ void BotBuyWeapon( gentity_t *self, weapon_t weapon )
 void BotBuyUpgrade( gentity_t *self, upgrade_t upgrade )
 {
 	qboolean  energyOnly = qfalse;
+	vec3_t    newOrigin;
 
 	// Only give energy from reactors or repeaters
 	if ( upgrade == UP_AMMO &&
@@ -2015,10 +2033,32 @@ void BotBuyUpgrade( gentity_t *self, upgrade_t upgrade )
 		}
 		else
 		{
-			if ( upgrade == UP_BATTLESUIT )
+			if ( upgrade == UP_LIGHTARMOUR )
 			{
-				vec3_t newOrigin;
-
+				if ( !G_RoomForClassChange( self, PCL_HUMAN_LIGHT, newOrigin ) )
+				{
+					return;
+				}
+				VectorCopy( newOrigin, self->client->ps.origin );
+				self->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN_LIGHT;
+				self->client->pers.classSelection = PCL_HUMAN_LIGHT;
+				BotSetNavmesh( self, PCL_HUMAN_LIGHT );
+				self->client->ps.eFlags ^= EF_TELEPORT_BIT;
+			}
+			else if ( upgrade == UP_MEDIUMARMOUR )
+			{
+				if ( !G_RoomForClassChange( self, PCL_HUMAN_MEDIUM, newOrigin ) )
+				{
+					return;
+				}
+				VectorCopy( newOrigin, self->client->ps.origin );
+				self->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN_MEDIUM;
+				self->client->pers.classSelection = PCL_HUMAN_MEDIUM;
+				BotSetNavmesh( self, PCL_HUMAN_MEDIUM );
+				self->client->ps.eFlags ^= EF_TELEPORT_BIT;
+			}
+			else if ( upgrade == UP_BATTLESUIT )
+			{
 				if ( !G_RoomForClassChange( self, PCL_HUMAN_BSUIT, newOrigin ) )
 				{
 					return;
@@ -2111,19 +2151,19 @@ void BotSellAll( gentity_t *self )
 		{
 
 			// shouldn't really need to test for this, but just to be safe
-			if ( i == UP_BATTLESUIT )
+			if ( i == UP_LIGHTARMOUR || i == UP_MEDIUMARMOUR || i == UP_BATTLESUIT )
 			{
 				vec3_t newOrigin;
 
-				if ( !G_RoomForClassChange( self, PCL_HUMAN, newOrigin ) )
+				if ( !G_RoomForClassChange( self, PCL_HUMAN_NAKED, newOrigin ) )
 				{
 					continue;
 				}
 				VectorCopy( newOrigin, self->client->ps.origin );
-				self->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN;
-				self->client->pers.classSelection = PCL_HUMAN;
+				self->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN_NAKED;
+				self->client->pers.classSelection = PCL_HUMAN_NAKED;
 				self->client->ps.eFlags ^= EF_TELEPORT_BIT;
-				BotSetNavmesh( self, PCL_HUMAN );
+				BotSetNavmesh( self, PCL_HUMAN_NAKED );
 			}
 
 			BG_RemoveUpgradeFromInventory( i, self->client->ps.stats );

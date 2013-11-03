@@ -862,6 +862,11 @@ typedef struct upgradeInfo_s
 
 typedef struct
 {
+	qhandle_t classIcon;
+} classInfo_t;
+
+typedef struct
+{
 	qboolean    looped;
 	qboolean    enabled;
 
@@ -875,6 +880,9 @@ typedef struct
 
 	//same number of sounds as animations
 	sound_t  sounds[ MAX_BUILDABLE_ANIMATIONS ];
+
+	qhandle_t buildableIcon;
+
 	qboolean md5;
 } buildableInfo_t;
 
@@ -1469,7 +1477,7 @@ extern  displayContextDef_t cgDC;
 
 extern  weaponInfo_t        cg_weapons[ 32 ];
 extern  upgradeInfo_t       cg_upgrades[ 32 ];
-
+extern  classInfo_t         cg_classes[ PCL_NUM_CLASSES ];
 extern  buildableInfo_t     cg_buildables[ BA_NUM_BUILDABLES ];
 
 extern  const vec3_t        cg_shaderColors[ SHC_NUM_SHADER_COLORS ];
@@ -1491,7 +1499,8 @@ extern  vmCvar_t            cg_drawDemoState;
 extern  vmCvar_t            cg_drawSnapshot;
 extern  vmCvar_t            cg_drawChargeBar;
 extern  vmCvar_t            cg_drawCrosshair;
-extern  vmCvar_t            cg_drawCrosshairIndicator;
+extern  vmCvar_t            cg_drawCrosshairHit;
+extern  vmCvar_t            cg_drawCrosshairFriendFoe;
 extern  vmCvar_t            cg_drawCrosshairNames;
 extern  vmCvar_t            cg_drawBuildableHealth;
 extern  vmCvar_t            cg_drawMinimap;
@@ -1708,6 +1717,7 @@ void     CG_DrawRangeMarker( rangeMarker_t rmType, const vec3_t origin, float ra
 // cg_draw.c
 //
 
+void CG_AlignText( rectDef_t *rect, const char *text, float scale, float w, float h, int align, int valign,float *x, float *y );
 void CG_AddLagometerFrameInfo( void );
 void CG_AddLagometerSnapshotInfo( snapshot_t *snap );
 void CG_AddSpeed( void );
@@ -1740,10 +1750,12 @@ sfxHandle_t CG_CustomSound( int clientNum, const char *soundName );
 void        CG_PlayerDisconnect( vec3_t org );
 centity_t   *CG_GetPlayerLocation( void );
 
+void        CG_InitClasses( void );
+
 //
 // cg_buildable.c
 //
-void     CG_GhostBuildable( buildable_t buildable );
+void     CG_GhostBuildable( int buildableInfo );
 void     CG_Buildable( centity_t *cent );
 void     CG_BuildableStatusParse( const char *filename, buildStat_t *bs );
 void     CG_DrawBuildableStatus( void );
@@ -1954,19 +1966,12 @@ const char *CG_TutorialText( void );
 //
 //===============================================
 
-// cg_drawCrosshair and cg_drawCrosshairIndicator settings
+// cg_drawCrosshair* settings
 enum
 {
   CROSSHAIR_ALWAYSOFF,
   CROSSHAIR_RANGEDONLY,
   CROSSHAIR_ALWAYSON
-};
-enum
-{
-  INDICATOR_ALWAYSOFF,
-  INDICATOR_RANGEDONLY,
-  INDICATOR_RANGEDONLY_ALLHITS, // show melee hit on indicator
-  INDICATOR_ALWAYSON
 };
 
 // menu types for cg_disable*Dialogs
