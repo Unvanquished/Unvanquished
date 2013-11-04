@@ -25,7 +25,7 @@ along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 #include "bg_public.h"
 
 #ifdef GAME
-#include "g_local.h"
+#include "../game/g_local.h"
 #endif
 
 #ifdef CGAME

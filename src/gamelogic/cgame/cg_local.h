@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../../engine/qcommon/q_shared.h"
 #include "../../engine/renderer/tr_types.h"
 #include "../../engine/client/cg_api.h"
-#include "../game/bg_public.h"
+#include "../shared/bg_public.h"
 #include "../ui/ui_shared.h"
 
 // The entire cgame module is unloaded and reloaded on each level change,

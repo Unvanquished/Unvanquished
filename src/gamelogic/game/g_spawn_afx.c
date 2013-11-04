@@ -298,16 +298,7 @@ void env_afx_heal_touch( gentity_t *self, gentity_t *other, trace_t *trace )
 		self->timestamp = level.time + FRAMETIME;
 	}
 
-	max = other->client->ps.stats[ STAT_MAX_HEALTH ];
-
-	other->health += self->damage;
-
-	if ( other->health > max )
-	{
-		other->health = max;
-	}
-
-	other->client->ps.stats[ STAT_HEALTH ] = other->health;
+	G_Heal( other, self->damage );
 }
 
 /*
