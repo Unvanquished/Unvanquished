@@ -615,6 +615,8 @@ typedef enum
   EV_REACTOR_DYING, // reactor destroyed
   EV_DCC_ATTACK, // dcc under attack
 
+  EV_WARN_ATTACK, // a building has been destroyed and the destruction noticed by a nearby om/rc/rrep
+
   EV_MGTURRET_SPINUP, // turret spinup sound should play
 
   EV_RPTUSE_SOUND, // trigger a sound

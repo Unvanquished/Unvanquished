@@ -361,7 +361,8 @@ struct gentity_s
 
 	qboolean    deconstruct; // deconstruct if no BP left
 	int         deconstructTime; // time at which structure marked
-	int         attackTimer, attackLastEvent;
+	int         attackTimer, attackLastEvent; // self being attacked
+	int         warnTimer; // nearby building(s) being attacked
 	int         overmindDyingTimer;
 	int         overmindSpawnsTimer;
 	int         nextPhysicsTime; // buildables don't need to check what they're sitting on

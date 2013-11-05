@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define MAX_ALIEN_BBOX 25
 
 #define PRIMARY_ATTACK_PERIOD 7500
+#define NEARBY_ATTACK_PERIOD  15000
 
 /*
 ================
@@ -62,6 +63,19 @@ static void G_WarnPrimaryUnderAttack( gentity_t *self )
 	}
 
 	self->lastHealth = self->health;
+}
+
+/*
+================
+IsWarnableMOD
+
+True if the means of death allows an under-attack warning.
+================
+*/
+
+static qboolean IsWarnableMOD( int mod )
+{
+	return mod != MOD_UNKNOWN && mod != MOD_TRIGGER_HURT && mod != MOD_DECONSTRUCT && mod != MOD_REPLACE && mod != MOD_NOCREEP;
 }
 
 /*
@@ -911,6 +925,8 @@ exploding.
 */
 void AGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
 {
+	gentity_t *om;
+
 	G_SetBuildableAnim( self, self->powered ? BANIM_DESTROY1 : BANIM_DESTROY_UNPOWERED, qtrue );
 	G_SetIdleBuildableAnim( self, BANIM_DESTROYED );
 
@@ -919,6 +935,13 @@ void AGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, i
 	self->think = AGeneric_Blast;
 	self->s.eFlags &= ~EF_FIRING; //prevent any firing effects
 	self->powered = qfalse;
+
+	// warn if in main base and there's an overmind
+	if ( ( om = G_Overmind() ) && om != self && level.time > om->warnTimer && G_InsideBase( self, qtrue ) && IsWarnableMOD( mod ))
+	{
+		om->warnTimer = level.time + NEARBY_ATTACK_PERIOD; // don't spam
+		G_BroadcastEvent( EV_WARN_ATTACK, 0, TEAM_ALIENS );
+	}
 
 	// fully grown and not blasted to smithereens
 	if ( self->spawned && -self->health < BG_Buildable( self->s.modelindex )->health )
@@ -1946,41 +1969,44 @@ static int PowerRelevantRange()
 
 /*
 ================
-PowerSourceInRange
+NearestPowerSourceInRange
 
 Check if origin is affected by reactor or repeater power.
+If it is, return whichever is nearest (preferring reactor).
 ================
 */
-static qboolean PowerSourceInRange( vec3_t origin )
+static gentity_t *NearestPowerSourceInRange( gentity_t *self )
 {
-	gentity_t *neighbor = NULL;
+	gentity_t *neighbor = G_Reactor();
+	gentity_t *best = NULL;
+	float bestDistance = 3e38f;
 
-	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, origin, PowerRelevantRange() ) ) )
+	if ( neighbor && Distance( self->s.origin, neighbor->s.origin ) < MAX( g_powerReactorRange.integer, INSIDE_BASE_MAX_DISTANCE ) )
+	{
+		return neighbor;
+	}
+
+	neighbor = NULL;
+
+	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, self->s.origin, PowerRelevantRange() ) ) )
 	{
 		if ( neighbor->s.eType != ET_BUILDABLE )
 		{
 			continue;
 		}
 
-		switch ( neighbor->s.modelindex )
+		if ( neighbor->s.modelindex == BA_H_REPEATER )
 		{
-			case BA_H_REACTOR:
-				if ( Distance( origin, neighbor->s.origin ) < g_powerReactorRange.integer )
-				{
-					return qtrue;
-				}
-				break;
-
-			case BA_H_REPEATER:
-				if ( Distance( origin, neighbor->s.origin ) < g_powerRepeaterRange.integer )
-				{
-					return qtrue;
-				}
-				break;
+			float distance = Distance( self->s.origin, neighbor->s.origin );
+			if ( distance < bestDistance )
+			{
+				bestDistance = distance;
+				best = neighbor;
+			}
 		}
 	}
 
-	return qfalse;
+	return ( bestDistance < g_powerRepeaterRange.integer ) ? best : NULL;
 }
 
 /*
@@ -2436,6 +2462,30 @@ void HGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, i
 		// disappear immediately
 		self->think = HGeneric_Disappear;
 		self->nextthink = level.time;
+	}
+
+	// warn if this building was powered, there's a watcher nearby and it's powered too
+	if ( self->s.modelindex != BA_H_REACTOR && self->powered && G_Reactor() && IsWarnableMOD( mod ) )
+	{
+		gentity_t *watcher = NearestPowerSourceInRange( self );
+		gentity_t *location;
+
+		// found reactor or repeater? get location entity
+		if ( watcher )
+		{
+			location = Team_GetLocation( watcher );
+			if ( !location )
+			{
+				location = watcher; // fall back on the watcher (possibly spammy)
+			}
+		}
+
+		// check that the location/repeater/reactor hasn't warned recently
+		if ( location && level.time > location->warnTimer )
+		{
+			location->warnTimer = level.time + NEARBY_ATTACK_PERIOD; // don't spam
+			G_BroadcastEvent( EV_WARN_ATTACK, watcher - level.gentities, TEAM_HUMANS );
+		}
 	}
 
 	G_LogDestruction( self, attacker, mod );

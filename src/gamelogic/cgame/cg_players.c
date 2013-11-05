@@ -3925,17 +3925,14 @@ void CG_PlayerDisconnect( vec3_t org )
 	}
 }
 
-centity_t *CG_GetPlayerLocation( void )
+centity_t *CG_GetLocation( vec3_t origin )
 {
 	int       i;
 	centity_t *eloc, *best;
 	float     bestlen, len;
-	vec3_t    origin;
 
 	best = NULL;
 	bestlen = 3.0f * 8192.0f * 8192.0f;
-
-	VectorCopy( cg.predictedPlayerState.origin, origin );
 
 	for ( i = MAX_CLIENTS; i < MAX_GENTITIES; i++ )
 	{
@@ -3963,6 +3960,14 @@ centity_t *CG_GetPlayerLocation( void )
 	}
 
 	return best;
+}
+
+centity_t *CG_GetPlayerLocation( void )
+{
+	vec3_t    origin;
+
+	VectorCopy( cg.predictedPlayerState.origin, origin );
+	return CG_GetLocation( origin );
 }
 
 void CG_InitClasses( void )

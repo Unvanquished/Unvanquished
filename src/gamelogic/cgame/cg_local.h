@@ -1748,6 +1748,7 @@ void        CG_NewClientInfo( int clientNum );
 void        CG_PrecacheClientInfo( class_t class, const char *model, const char *skin );
 sfxHandle_t CG_CustomSound( int clientNum, const char *soundName );
 void        CG_PlayerDisconnect( vec3_t org );
+centity_t   *CG_GetLocation( vec3_t );
 centity_t   *CG_GetPlayerLocation( void );
 
 void        CG_InitClasses( void );

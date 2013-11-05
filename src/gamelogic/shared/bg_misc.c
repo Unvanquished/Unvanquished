@@ -1251,6 +1251,8 @@ static const char *const eventnames[] =
 	"EV_REACTOR_DYING", // reactor destroyed
 	"EV_DCC_ATTACK", // dcc under attack
 
+	"EV_WARN_ATTACK",
+
 	"EV_MGTURRET_SPINUP", // trigger a sound
 
 	"EV_RPTUSE_SOUND", // trigger a sound

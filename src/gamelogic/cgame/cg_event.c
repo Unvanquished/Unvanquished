@@ -1348,11 +1348,37 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 
 			break;
 
-		case EV_DCC_ATTACK:
-			if ( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_HUMANS )
+		case EV_WARN_ATTACK:
+			// if eventParm is non-zero, this is for humans and there's a nearby reactor or repeater, otherwise it's for aliens
+			if ( es->eventParm >= MAX_CLIENTS && es->eventParm < MAX_GENTITIES )
 			{
-				//trap_S_StartLocalSound( cgs.media.humanDCCAttack, CHAN_ANNOUNCER );
-				CG_CenterPrint( "Our base is under attack!", 200, GIANTCHAR_WIDTH * 4 );
+				const char *location;
+				qboolean    base = cg_entities[ es->eventParm ].currentState.modelindex == BA_H_REACTOR;
+				centity_t  *locent = CG_GetLocation( cg_entities[ es->eventParm ].currentState.origin );
+
+				CG_CenterPrint( base ? _( "Our base is under attack!" ) : _( "A forward base is under attack!" ), 200, GIANTCHAR_WIDTH * 4 );
+
+				if ( locent )
+				{
+					location = CG_ConfigString( CS_LOCATIONS + locent->currentState.generic1 );
+				}
+				else
+				{
+					location = CG_ConfigString( CS_LOCATIONS );
+				}
+
+				if ( location && *location )
+				{
+					Com_Printf( _( "%s Under attack – %s\n" ), base ? "[reactor]" : "[repeater]", location );
+				}
+				else
+				{
+					Com_Printf( _( "%s Under attack\n" ), base ? "[reactor]" : "[repeater]" );
+				}
+			}
+			else // this is for aliens, and the overmind is in range
+			{
+				CG_CenterPrint( _( "Our base is under attack!" ), 200, GIANTCHAR_WIDTH * 4 );
 			}
 
 			break;
