@@ -1156,7 +1156,7 @@ void AOvermind_Think( gentity_t *self )
 		}
 
 		//overmind dying
-		if ( self->health < ( OVERMIND_HEALTH / 10.0f ) && level.time > self->overmindDyingTimer )
+		if ( self->health < ( BG_Buildable( BA_A_OVERMIND )->health / 10.0f ) && level.time > self->overmindDyingTimer )
 		{
 			self->overmindDyingTimer = level.time + OVERMIND_DYING_PERIOD;
 			G_BroadcastEvent( EV_OVERMIND_DYING, 0 );

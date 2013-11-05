@@ -164,8 +164,6 @@ extern int   LEVEL4_CRUSH_REPEAT;
 #define LOCKBLOB_LOCKTIME       5000
 #define LOCKBLOB_DOT            0.85f // max angle = acos( LOCKBLOB_DOT )
 
-#define OVERMIND_HEALTH         750
-
 /*
  * ALIEN misc
  */
