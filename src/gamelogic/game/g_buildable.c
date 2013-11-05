@@ -2476,7 +2476,7 @@ void HGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, i
 			location = Team_GetLocation( watcher );
 			if ( !location )
 			{
-				location = watcher; // fall back on the watcher (possibly spammy)
+				location = level.fakeLocation; // fall back on the fake location
 			}
 		}
 

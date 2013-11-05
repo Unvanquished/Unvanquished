@@ -269,6 +269,7 @@ void       G_SetOrigin( gentity_t *ent, const vec3_t origin );
 // g_spawn.c
 //
 void     G_SpawnEntitiesFromString( void );
+void     G_SpawnFakeEntities( void );
 void     G_ReorderCallTargets( gentity_t *ent );
 char     *G_NewString( const char *string );
 
