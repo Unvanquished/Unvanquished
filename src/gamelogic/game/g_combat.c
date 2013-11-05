@@ -1117,7 +1117,7 @@ void G_Damage( gentity_t *target, gentity_t *inflictor, gentity_t *attacker,
 			     level.time > level.humanBaseAttackTimer )
 			{
 				level.humanBaseAttackTimer = level.time + DC_ATTACK_PERIOD;
-				G_BroadcastEvent( EV_DCC_ATTACK, 0 );
+				G_BroadcastEvent( EV_DCC_ATTACK, 0, TEAM_HUMANS );
 			}
 		}
 	}

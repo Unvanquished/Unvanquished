@@ -58,7 +58,7 @@ static void G_WarnPrimaryUnderAttack( gentity_t *self )
 	{
 		self->attackTimer = level.time + PRIMARY_ATTACK_PERIOD; // don't spam
 		self->attackLastEvent = event;
-		G_BroadcastEvent( event, 0 );
+		G_BroadcastEvent( event, 0, attr->team );
 	}
 
 	self->lastHealth = self->health;
@@ -1171,7 +1171,7 @@ void AOvermind_Think( gentity_t *self )
 			gentity_t *builder;
 
 			self->overmindSpawnsTimer = level.time + OVERMIND_SPAWNS_PERIOD;
-			G_BroadcastEvent( EV_OVERMIND_SPAWNS, 0 );
+			G_BroadcastEvent( EV_OVERMIND_SPAWNS, 0, TEAM_ALIENS );
 
 			for ( i = 0; i < level.numConnectedClients; i++ )
 			{
@@ -1211,7 +1211,7 @@ Called when the overmind dies
 void AOvermind_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
 {
 	AGeneric_Die( self, inflictor, attacker, mod );
-	G_BroadcastEvent( EV_OVERMIND_DYING, 0 );
+	G_BroadcastEvent( EV_OVERMIND_DYING, 0, TEAM_ALIENS );
 }
 
 //==================================================================================
@@ -2629,7 +2629,7 @@ Called when the reactor is destroyed
 void HReactor_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
 {
 	HGeneric_Die( self, inflictor, attacker, mod );
-	G_BroadcastEvent( EV_REACTOR_DYING, 0 );
+	G_BroadcastEvent( EV_REACTOR_DYING, 0, TEAM_HUMANS );
 }
 
 //==================================================================================
