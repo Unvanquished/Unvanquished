@@ -916,6 +916,10 @@ typedef enum
 
   PCL_NUM_CLASSES
 } class_t;
+// convenience bitmasks
+#define PCL_ALIEN_CLASSES ( ( 1 << PCL_HUMAN_NAKED ) - ( 1 << PCL_ALIEN_BUILDER0 ) )
+#define PCL_HUMAN_CLASSES ( ( 1 << PCL_NUM_CLASSES ) - ( 1 << PCL_HUMAN_NAKED ) )
+#define PCL_ALL_CLASSES   ( PCL_ALIEN_CLASSES | PCL_HUMAN_CLASSES )
 
 // spectator state
 typedef enum

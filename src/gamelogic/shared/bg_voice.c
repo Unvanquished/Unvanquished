@@ -176,49 +176,111 @@ static qboolean BG_VoiceParseTrack( int handle, voiceTrack_t *voiceTrack )
 			foundToken = trap_Parse_ReadToken( handle, &token );
 			found = qfalse;
 
-			while ( foundToken && token.type == TT_NUMBER )
+			while ( foundToken )
 			{
-				found = qtrue;
-
 				if ( voiceTrack->team < 0 )
 				{
 					voiceTrack->team = 0;
 				}
 
-				voiceTrack->team |= ( 1 << token.intvalue );
+				if ( !Q_stricmp( token.string, "humans" ) )
+				{
+					voiceTrack->team |= 1 << TEAM_HUMANS;
+				}
+				else if ( !Q_stricmp( token.string, "aliens" ) )
+				{
+					voiceTrack->team |= 1 << TEAM_ALIENS;
+				}
+				else
+				{
+					break;
+				}
+
+				found = qtrue;
 				foundToken = trap_Parse_ReadToken( handle, &token );
 			}
 
 			if ( !found )
 			{
-				BG_VoiceParseError( handle,
-				                    "BG_VoiceParseTrack(): missing \"team\" value" );
+				BG_VoiceParseError( handle, "BG_VoiceParseTrack(): missing \"team\" name" );
 			}
 
 			continue;
 		}
 		else if ( !Q_stricmp( token.string, "class" ) )
 		{
+			qboolean negate = qfalse;
+
 			foundToken = trap_Parse_ReadToken( handle, &token );
 			found = qfalse;
 
-			while ( foundToken && token.type == TT_NUMBER )
+			while ( foundToken )
 			{
-				found = qtrue;
+				classModelConfig_t *model;
+				int                modelno = -1;
 
 				if ( voiceTrack->pClass < 0 )
 				{
 					voiceTrack->pClass = 0;
 				}
 
-				voiceTrack->pClass |= ( 1 << token.intvalue );
+				if ( !Q_stricmp( token.string, "all" ) )
+				{
+					modelno = PCL_ALL_CLASSES;
+				}
+				else if ( !Q_stricmp( token.string, "humans" ) )
+				{
+					modelno = PCL_HUMAN_CLASSES;
+				}
+				else if ( !Q_stricmp( token.string, "aliens" ) )
+				{
+					modelno = PCL_ALIEN_CLASSES;
+				}
+				else if ( !Q_stricmp( token.string, "-" ) ) // this must be outside quotation marks
+				{
+					negate = qtrue;
+					modelno = 0;
+				}
+				else
+				{
+					model = BG_ClassModelConfigByName( token.string );
+
+					if ( model != BG_ClassModelConfigByName( NULL ) )
+					{
+						modelno = 1 << ( model - BG_ClassModelConfig( 0 ) );
+
+						if ( modelno <= 1)
+						{
+							modelno = -1; // match failure
+						}
+					}
+
+				}
+
+				if ( modelno > 0 )
+				{
+					if ( negate )
+					{
+						negate = qfalse;
+						voiceTrack->pClass &= ~modelno;
+					}
+					else
+					{
+						voiceTrack->pClass |= modelno;
+					}
+				}
+				else if ( modelno < 0 )
+				{
+				        break; // possibly the next keyword
+				}
+
+				found = qtrue;
 				foundToken = trap_Parse_ReadToken( handle, &token );
 			}
 
 			if ( !found )
 			{
-				BG_VoiceParseError( handle,
-				                    "BG_VoiceParseTrack(): missing \"class\" value" );
+				BG_VoiceParseError( handle, "BG_VoiceParseTrack(): missing \"class\" name" );
 			}
 
 			continue;

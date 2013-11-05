@@ -316,11 +316,14 @@ const classAttributes_t *BG_ClassByName( const char *name )
 {
 	int i;
 
-	for ( i = 0; i < bg_numClasses; i++ )
+	if ( name )
 	{
-		if ( !Q_stricmp( bg_classList[ i ].name, name ) )
+		for ( i = 0; i < bg_numClasses; i++ )
 		{
-			return &bg_classList[ i ];
+			if ( !Q_stricmp( bg_classList[ i ].name, name ) )
+			{
+				return &bg_classList[ i ];
+			}
 		}
 	}
 
@@ -349,11 +352,14 @@ classModelConfig_t *BG_ClassModelConfigByName( const char *name )
 {
 	int i;
 
-	for ( i = 0; i < bg_numClasses; i++ )
+	if ( name )
 	{
-		if ( !Q_stricmp( bg_classModelConfigList[ i ].humanName, name ) )
+		for ( i = 0; i < bg_numClasses; i++ )
 		{
-			return &bg_classModelConfigList[ i ];
+			if ( !Q_stricmp( bg_classModelConfigList[ i ].humanName, name ) )
+			{
+				return &bg_classModelConfigList[ i ];
+			}
 		}
 	}
 
