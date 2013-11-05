@@ -5012,7 +5012,7 @@ namespace FS {
                 COM_StripExtension3(filename, filename, sizeof(filename));
             }
 
-            if (Str::IsPrefix(prefix, filename)) {
+            if (Str::IsIPrefix(prefix, filename)) {
                 res.push_back({filename, ""});
             }
         }

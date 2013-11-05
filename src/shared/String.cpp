@@ -26,6 +26,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #include "../engine/qcommon/q_shared.h"
 #include <limits>
 #include <algorithm>
+#include <string.h>
 
 namespace Str {
 
@@ -44,18 +45,32 @@ namespace Str {
         return true;
     }
 
+    std::string Lower(Str::StringRef text) {
+        std::string res;
+        res.resize(text.size());
+
+        std::transform(text.begin(), text.end(), res.begin(), tolower);
+
+        return res;
+    }
+
     bool IsPrefix(Str::StringRef prefix, Str::StringRef text) {
         auto res = std::mismatch(prefix.begin(), prefix.end(), text.begin());
-        if (res.first == prefix.end()) {
-            return true;
-        }
-        return false;
+        return res.first == prefix.end();
     }
 
     int LongestPrefixSize(Str::StringRef text1, Str::StringRef text2) {
         auto res = std::mismatch(text1.begin(), text1.end(), text2.begin());
 
         return res.first - text1.begin();
+    }
+
+    bool IsIPrefix(Str::StringRef prefix, Str::StringRef text) {
+        return IsPrefix(Lower(prefix), Lower(text));
+    }
+
+    int LongestIPrefixSize(Str::StringRef text1, Str::StringRef text2) {
+        return LongestPrefixSize(Lower(text1), Lower(text2));
     }
 
     // Unicode encoder/decoder based on http://utfcpp.sourceforge.net/

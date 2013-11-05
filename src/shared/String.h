@@ -132,8 +132,14 @@ namespace Str {
     int ToInt(Str::StringRef text);
     bool ToInt(Str::StringRef text, int& result);
 
+    std::string Lower(Str::StringRef text);
+
     bool IsPrefix(Str::StringRef prefix, Str::StringRef text);
     int LongestPrefixSize(Str::StringRef text1, Str::StringRef text2);
+
+    // Case Insensitive versions
+    bool IsIPrefix(Str::StringRef prefix, Str::StringRef text);
+    int LongestIPrefixSize(Str::StringRef text1, Str::StringRef text2);
 
     std::u32string UTF8To32(Str::StringRef str);
     std::string UTF32To8(Str::BasicStringRef<char32_t> str);

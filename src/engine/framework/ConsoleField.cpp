@@ -95,7 +95,6 @@ namespace Console {
             prefix = args.Argv(argNum);
         }
 
-        Com_Printf("%s -- %i\n", args.RawCmd().c_str(), args.RawCmd().size());
         Cmd::CompletionResult candidates = Cmd::CompleteArgument(args.RawCmd(), args.RawCmd().size());
         if (candidates.empty()) {
             return;
@@ -105,11 +104,11 @@ namespace Console {
         int prefixSize = candidates[0].first.size();
         size_t maxCandidateLength = 0;
         for (auto& candidate : candidates) {
-            prefixSize = std::min(prefixSize, Str::LongestPrefixSize(candidate.first, candidates[0].first));
+            prefixSize = std::min(prefixSize, Str::LongestIPrefixSize(candidate.first, candidates[0].first));
             maxCandidateLength = std::max(maxCandidateLength, candidate.first.length());
         }
 
-        std::string completedArg(candidates[0].first, prefix.size(), prefixSize - prefix.size());
+        std::string completedArg(candidates[0].first, 0, prefixSize);
 
         //Help the user bash the TAB key
         if (candidates.size() == 1 && GetText()[GetCursorPos()] != ' ') {
@@ -118,6 +117,7 @@ namespace Console {
 
         //Insert the completed arg
         std::u32string toInsert = Str::UTF8To32(completedArg);
+        DeletePrev(prefix.size());
         GetText().insert(GetCursorPos(), toInsert);
         SetCursor(GetCursorPos() + toInsert.size());
 

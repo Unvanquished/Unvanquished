@@ -66,18 +66,14 @@ namespace Util {
             scroll = 0;
     }
 
-    void LineEditData::CursorLeft() {
-        if (cursor > 0) {
-            cursor --;
-            UpdateScroll();
-        }
+    void LineEditData::CursorLeft(int times) {
+        cursor = std::max(0, (int)cursor - times);
+        UpdateScroll();
     }
 
-    void LineEditData::CursorRight() {
-        if (cursor < buffer.size()) {
-            cursor ++;
-            UpdateScroll();
-        }
+    void LineEditData::CursorRight(int times) {
+        cursor = std::min(cursor + times, (unsigned)buffer.size());
+        UpdateScroll();
     }
 
     void LineEditData::CursorStart() {
@@ -95,17 +91,15 @@ namespace Util {
         UpdateScroll();
     }
 
-    void LineEditData::DeleteNext() {
-        if (cursor < buffer.size()) {
-            buffer.erase(buffer.begin() + cursor);
-        }
+    void LineEditData::DeleteNext(int times) {
+        buffer.erase(cursor, times);
     }
 
-    void LineEditData::DeletePrev() {
-        if (cursor > 0) {
-            CursorLeft();
-            DeleteNext();
-        }
+    void LineEditData::DeletePrev(int times) {
+        times = std::min(times, (int)cursor);
+
+        CursorLeft(times);
+        DeleteNext(times);
     }
 
     void LineEditData::AddChar(char32_t a) {

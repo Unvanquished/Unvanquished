@@ -291,7 +291,7 @@ namespace Cvar {
 
         Cmd::CompletionResult res;
         for (auto it : cvars) {
-            if (Str::IsPrefix(prefix, it.first)) {
+            if (Str::IsIPrefix(prefix, it.first)) {
                 //TODO what do we show in the completion?
                 res.push_back(std::make_pair(it.first, it.second->description));
             }

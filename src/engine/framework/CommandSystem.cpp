@@ -240,7 +240,7 @@ namespace Cmd {
 
         CompletionResult res;
         for (auto& entry: commands) {
-            if (Str::IsPrefix(prefix, entry.first)) {
+            if (Str::IsIPrefix(prefix, entry.first)) {
                 res.push_back({entry.first, entry.second.description});
             }
         }
@@ -310,7 +310,7 @@ namespace Cmd {
                     const commandRecord_t& record = it->second;
 
                     // /listCmds's arguement is used for prefix matching
-                    if (args.Argc() >= 2 and not Str::IsPrefix(args.Argv(1), it->first)) {
+                    if (args.Argc() >= 2 and not Str::IsIPrefix(args.Argv(1), it->first)) {
                         continue;
                     }
 

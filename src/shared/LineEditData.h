@@ -45,14 +45,14 @@ namespace Util {
 
             void SetText(std::u32string text);
 
-            void CursorLeft();
-            void CursorRight();
+            void CursorLeft(int times = 1);
+            void CursorRight(int times = 1);
             void CursorStart();
             void CursorEnd();
             void SetCursor(int pos);
 
-            void DeleteNext();
-            void DeletePrev();
+            void DeleteNext(int times = 1);
+            void DeletePrev(int times = 1);
 
             void AddChar(char32_t a);
 

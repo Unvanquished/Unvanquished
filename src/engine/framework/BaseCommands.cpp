@@ -594,7 +594,7 @@ namespace Cmd {
         Cmd::CompletionResult res;
 
         for (auto& delay: delays) {
-            if (Str::IsPrefix(prefix, delay.name)) {
+            if (Str::IsIPrefix(prefix, delay.name)) {
                 res.push_back({delay.name, ""});
             }
         }
@@ -731,7 +731,7 @@ namespace Cmd {
         Cmd::CompletionResult res;
 
         for (auto it: aliases) {
-            if (Str::IsPrefix(prefix, it.first)) {
+            if (Str::IsIPrefix(prefix, it.first)) {
                 res.push_back({it.first, ""});
             }
         }
