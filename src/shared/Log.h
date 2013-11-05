@@ -76,6 +76,17 @@ namespace Log {
             Cvar::Cvar<Level> filterLevel;
     };
 
+    template<typename ... Args>
+    void Error(const std::string& foramt, Args ... args);
+
+    template<typename ... Args>
+    void Warn(const std::string& foramt, Args ... args);
+
+    template<typename ... Args>
+    void Notice(const std::string& foramt, Args ... args);
+
+    template<typename ... Args>
+    void Debug(const std::string& foramt, Args ... args);
 
     //Internals
 
@@ -88,6 +99,10 @@ namespace Log {
     void CodeSourceDebug(std::string message);
 
     //TODO: allow commands to be run in an environnement to change the log targets (command typed in the client console -> feedbakc in the client console only, same for TTY, same for RCON)
+
+    // Implementation of templates
+
+    // Logger
 
     template<typename ... Args>
     void Logger::Error(const std::string& format, Args ... args) {
@@ -113,6 +128,28 @@ namespace Log {
         if (filterLevel.Get() <= DEBUG) {
             CodeSourceDebug(Str::Format(format, args ...));
         }
+    }
+
+    // Quick logs
+
+    template<typename ... Args>
+    void Error(const std::string& format, Args ... args) {
+        CodeSourceError(Str::Format(format, args ...));
+    }
+
+    template<typename ... Args>
+    void Warn(const std::string& format, Args ... args) {
+        CodeSourceWarn(Str::Format(format, args ...));
+    }
+
+    template<typename ... Args>
+    void Notice(const std::string& format, Args ... args) {
+        CodeSourceNotice(Str::Format(format, args ...));
+    }
+
+    template<typename ... Args>
+    void Debug(const std::string& format, Args ... args) {
+        CodeSourceDebug(Str::Format(format, args ...));
     }
 }
 
