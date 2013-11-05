@@ -145,6 +145,7 @@ endmacro()
 
 if( MSVC )
   set_c_cxx_flag( "/fp:fast" )
+  set_c_cxx_flag( "/d2Zi+" RELWITHDEBINFO )
   if( ARCH STREQUAL "x86" )
     set_c_cxx_flag( "/arch:SSE2" )
   endif()
@@ -599,13 +600,13 @@ set( SDLLIST
 )
 
 set( CGAMELIST
-  ${GAMELOGIC_DIR}/game/bg_misc.c
-  ${GAMELOGIC_DIR}/game/bg_parse.c
-  ${GAMELOGIC_DIR}/game/bg_pmove.c
-  ${GAMELOGIC_DIR}/game/bg_slidemove.c
-  ${GAMELOGIC_DIR}/game/bg_alloc.c
-  ${GAMELOGIC_DIR}/game/bg_voice.c
-  ${GAMELOGIC_DIR}/game/bg_teamprogress.c
+  ${GAMELOGIC_DIR}/shared/bg_misc.c
+  ${GAMELOGIC_DIR}/shared/bg_parse.c
+  ${GAMELOGIC_DIR}/shared/bg_pmove.c
+  ${GAMELOGIC_DIR}/shared/bg_slidemove.c
+  ${GAMELOGIC_DIR}/shared/bg_alloc.c
+  ${GAMELOGIC_DIR}/shared/bg_voice.c
+  ${GAMELOGIC_DIR}/shared/bg_teamprogress.c
   ${GAMELOGIC_DIR}/cgame/cg_consolecmds.c
   ${GAMELOGIC_DIR}/cgame/cg_buildable.c
   ${GAMELOGIC_DIR}/cgame/cg_animation.c
@@ -639,13 +640,13 @@ set( CGAMELIST
 
 set( GAMELIST
   ${GAMELOGIC_DIR}/game/g_main.c
-  ${GAMELOGIC_DIR}/game/bg_misc.c
-  ${GAMELOGIC_DIR}/game/bg_parse.c
-  ${GAMELOGIC_DIR}/game/bg_pmove.c
-  ${GAMELOGIC_DIR}/game/bg_slidemove.c
-  ${GAMELOGIC_DIR}/game/bg_alloc.c
-  ${GAMELOGIC_DIR}/game/bg_voice.c
-  ${GAMELOGIC_DIR}/game/bg_teamprogress.c
+  ${GAMELOGIC_DIR}/shared/bg_misc.c
+  ${GAMELOGIC_DIR}/shared/bg_parse.c
+  ${GAMELOGIC_DIR}/shared/bg_pmove.c
+  ${GAMELOGIC_DIR}/shared/bg_slidemove.c
+  ${GAMELOGIC_DIR}/shared/bg_alloc.c
+  ${GAMELOGIC_DIR}/shared/bg_voice.c
+  ${GAMELOGIC_DIR}/shared/bg_teamprogress.c
   ${GAMELOGIC_DIR}/game/g_active.c
   ${GAMELOGIC_DIR}/game/g_client.c
   ${GAMELOGIC_DIR}/game/g_cmds.c
@@ -688,10 +689,10 @@ set( UILIST
   ${GAMELOGIC_DIR}/ui/ui_atoms.c
   ${GAMELOGIC_DIR}/ui/ui_shared.c
   ${GAMELOGIC_DIR}/ui/ui_gameinfo.c
-  ${GAMELOGIC_DIR}/game/bg_misc.c
-  ${GAMELOGIC_DIR}/game/bg_parse.c
-  ${GAMELOGIC_DIR}/game/bg_alloc.c
-  ${GAMELOGIC_DIR}/game/bg_teamprogress.c
+  ${GAMELOGIC_DIR}/shared/bg_misc.c
+  ${GAMELOGIC_DIR}/shared/bg_parse.c
+  ${GAMELOGIC_DIR}/shared/bg_alloc.c
+  ${GAMELOGIC_DIR}/shared/bg_teamprogress.c
   ${GAMELOGIC_DIR}/ui/ui_utf8.c
   ${GAMELOGIC_DIR}/ui/ui_api.c
   ${ENGINE_DIR}/client/ui_api.h
