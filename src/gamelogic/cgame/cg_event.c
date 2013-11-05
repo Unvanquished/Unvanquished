@@ -1312,11 +1312,12 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			trap_S_StartSound( NULL, es->number, CHAN_AUTO, cgs.media.buildableRepairedSound );
 			break;
 
-		case EV_OVERMIND_ATTACK:
+		case EV_OVERMIND_ATTACK_1:
+		case EV_OVERMIND_ATTACK_2:
 			if ( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_ALIENS )
 			{
 				trap_S_StartLocalSound( cgs.media.alienOvermindAttack, CHAN_ANNOUNCER );
-				CG_CenterPrint( "The Overmind is under attack!", 200, GIANTCHAR_WIDTH * 4 );
+				CG_CenterPrint( va( "^%c%s", "31"[ event - EV_OVERMIND_ATTACK_1 ], _( "The Overmind is under attack!" ) ), 200, GIANTCHAR_WIDTH * 4 );
 			}
 
 			break;
@@ -1325,7 +1326,24 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			if ( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_ALIENS )
 			{
 				trap_S_StartLocalSound( cgs.media.alienOvermindDying, CHAN_ANNOUNCER );
-				CG_CenterPrint( "The Overmind is dying!", 200, GIANTCHAR_WIDTH * 4 );
+				CG_CenterPrint( _( "^1The Overmind is dying!" ), 200, GIANTCHAR_WIDTH * 4 );
+			}
+
+			break;
+
+		case EV_REACTOR_ATTACK_1:
+		case EV_REACTOR_ATTACK_2:
+			if ( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_HUMANS )
+			{
+				CG_CenterPrint( va( "^%c%s", "31"[ event - EV_REACTOR_ATTACK_1 ], _( "The reactor is under attack!" ) ), 200, GIANTCHAR_WIDTH * 4 );
+			}
+
+			break;
+
+		case EV_REACTOR_DYING:
+			if ( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_HUMANS )
+			{
+				CG_CenterPrint( _( "^1The reactor is about to explode!" ), 200, GIANTCHAR_WIDTH * 4 );
 			}
 
 			break;

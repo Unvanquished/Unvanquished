@@ -361,7 +361,7 @@ struct gentity_s
 
 	qboolean    deconstruct; // deconstruct if no BP left
 	int         deconstructTime; // time at which structure marked
-	int         overmindAttackTimer;
+	int         attackTimer, attackLastEvent;
 	int         overmindDyingTimer;
 	int         overmindSpawnsTimer;
 	int         nextPhysicsTime; // buildables don't need to check what they're sitting on

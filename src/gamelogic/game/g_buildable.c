@@ -25,6 +25,45 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define MAX_ALIEN_BBOX 25
 
+#define PRIMARY_ATTACK_PERIOD 7500
+
+/*
+================
+G_WarnPrimaryUnderAttack
+
+Warns when the team's primary building is under attack.
+Called from overmind and reactor thinkers.
+================
+*/
+
+static void G_WarnPrimaryUnderAttack( gentity_t *self )
+{
+	const buildableAttributes_t *attr = BG_Buildable( self->s.modelindex );
+	float fracHealth, fracLastHealth;
+	int event = 0;
+
+	fracHealth = (float) self->health / (float) attr->health;
+	fracLastHealth = (float) self->lastHealth / (float) attr->health;
+
+	if ( fracHealth < 0.25f && fracLastHealth >= 0.25f )
+	{
+		event = attr->team == TEAM_ALIENS ? EV_OVERMIND_ATTACK_2 : EV_REACTOR_ATTACK_2;
+	}
+	else if ( fracHealth < 0.75f && fracLastHealth >= 0.75f )
+	{
+		event = attr->team == TEAM_ALIENS ? EV_OVERMIND_ATTACK_1 : EV_REACTOR_ATTACK_1;
+	}
+
+	if ( event && ( event != self->attackLastEvent || level.time > self->attackTimer ) )
+	{
+		self->attackTimer = level.time + PRIMARY_ATTACK_PERIOD; // don't spam
+		self->attackLastEvent = event;
+		G_BroadcastEvent( event, 0 );
+	}
+
+	self->lastHealth = self->health;
+}
+
 /*
 ================
 G_SetBuildableAnim
@@ -1086,7 +1125,6 @@ void ASpawn_Think( gentity_t *self )
 
 //==================================================================================
 
-#define OVERMIND_ATTACK_PERIOD 10000
 #define OVERMIND_DYING_PERIOD  5000
 #define OVERMIND_SPAWNS_PERIOD 30000
 
@@ -1155,26 +1193,25 @@ void AOvermind_Think( gentity_t *self )
 			}
 		}
 
-		//overmind dying
-		if ( self->health < ( BG_Buildable( BA_A_OVERMIND )->health / 10.0f ) && level.time > self->overmindDyingTimer )
-		{
-			self->overmindDyingTimer = level.time + OVERMIND_DYING_PERIOD;
-			G_BroadcastEvent( EV_OVERMIND_DYING, 0 );
-		}
-
-		//overmind under attack
-		if ( self->health < self->lastHealth && level.time > self->overmindAttackTimer )
-		{
-			self->overmindAttackTimer = level.time + OVERMIND_ATTACK_PERIOD;
-			G_BroadcastEvent( EV_OVERMIND_ATTACK, 0 );
-		}
-
-		self->lastHealth = self->health;
+		G_WarnPrimaryUnderAttack( self );
 	}
 	else
 	{
 		self->overmindSpawnsTimer = level.time + OVERMIND_SPAWNS_PERIOD;
 	}
+}
+
+/*
+================
+AOvermind_Die
+
+Called when the overmind dies
+================
+*/
+void AOvermind_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
+{
+	AGeneric_Die( self, inflictor, attacker, mod );
+	G_BroadcastEvent( EV_OVERMIND_DYING, 0 );
 }
 
 //==================================================================================
@@ -2568,6 +2605,8 @@ void HReactor_Think( gentity_t *self )
 				                         MOD_REACTOR, TEAM_HUMANS );
 			}
 		}
+
+		G_WarnPrimaryUnderAttack( self );
 	}
 
 	if ( self->dcc )
@@ -2578,6 +2617,19 @@ void HReactor_Think( gentity_t *self )
 	{
 		self->nextthink = level.time + REACTOR_ATTACK_REPEAT;
 	}
+}
+
+/*
+================
+HReactorDie
+
+Called when the reactor is destroyed
+================
+*/
+void HReactor_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
+{
+	HGeneric_Die( self, inflictor, attacker, mod );
+	G_BroadcastEvent( EV_REACTOR_DYING, 0 );
 }
 
 //==================================================================================
@@ -4579,7 +4631,7 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 			break;
 
 		case BA_A_OVERMIND:
-			built->die = AGeneric_Die;
+			built->die = AOvermind_Die;
 			built->think = AOvermind_Think;
 			built->pain = AGeneric_Pain;
 			{
@@ -4658,7 +4710,7 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 
 		case BA_H_REACTOR:
 			built->think = HReactor_Think;
-			built->die = HGeneric_Die;
+			built->die = HReactor_Die;
 			built->use = HRepeater_Use;
 			built->powered = built->active = qtrue;
 			{
