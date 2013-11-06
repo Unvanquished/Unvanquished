@@ -474,6 +474,7 @@ enum
 	LOG_GAMEPLAY_STATS_FOOTER
 };
 
+#ifdef Q3_VM
 /*
 ================
 vmMain
@@ -540,6 +541,8 @@ Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3, i
 
 	return -1;
 }
+#endif
+
 void QDECL PRINTF_LIKE(1) G_Printf( const char *fmt, ... )
 {
 	va_list argptr;
@@ -794,7 +797,9 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 {
 	int i;
 
+#ifdef Q3_VM
 	trap_SyscallABIVersion( SYSCALL_ABI_VERSION_MAJOR, SYSCALL_ABI_VERSION_MINOR );
+#endif
 
 	srand( randomSeed );
 
