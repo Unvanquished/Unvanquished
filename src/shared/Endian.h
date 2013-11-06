@@ -142,6 +142,13 @@ static inline int64_t Swap64(int64_t x)
 }
 static inline float SwapFloat(float x)
 {
+	typedef union
+	{
+		float        f;
+		int          i;
+		unsigned int ui;
+	} floatint_t;
+
 	floatint_t fi;
 	fi.f = x;
 	fi.i = Swap32(fi.i);
