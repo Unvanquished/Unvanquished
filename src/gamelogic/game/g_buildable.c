@@ -493,7 +493,6 @@ G_InsideBase
 
 qboolean G_InsideBase( gentity_t *self, qboolean ownBase )
 {
-	qboolean  inRange, inVis;
 	gentity_t *mainBuilding;
 
 	mainBuilding = GetMainBuilding( self, ownBase );
@@ -503,10 +502,12 @@ qboolean G_InsideBase( gentity_t *self, qboolean ownBase )
 		return qfalse;
 	}
 
-	inRange = ( Distance( self->s.origin, mainBuilding->s.origin ) < INSIDE_BASE_MAX_DISTANCE );
-	inVis = trap_InPVSIgnorePortals( self->s.origin, mainBuilding->s.origin );
+	if ( Distance( self->s.origin, mainBuilding->s.origin ) >= INSIDE_BASE_MAX_DISTANCE )
+	{
+		return qfalse;
+	}
 
-	return ( inRange && inVis );
+	return trap_InPVSIgnorePortals( self->s.origin, mainBuilding->s.origin );
 }
 
 /*
