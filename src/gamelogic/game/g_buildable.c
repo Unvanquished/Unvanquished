@@ -1235,7 +1235,10 @@ Called when the overmind dies
 void AOvermind_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
 {
 	AGeneric_Die( self, inflictor, attacker, mod );
-	G_BroadcastEvent( EV_OVERMIND_DYING, 0, TEAM_ALIENS );
+	if ( IsWarnableMOD( mod ) )
+	{
+		G_BroadcastEvent( EV_OVERMIND_DYING, 0, TEAM_ALIENS );
+	}
 }
 
 //==================================================================================
@@ -2682,7 +2685,10 @@ Called when the reactor is destroyed
 void HReactor_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
 {
 	HGeneric_Die( self, inflictor, attacker, mod );
-	G_BroadcastEvent( EV_REACTOR_DYING, 0, TEAM_HUMANS );
+	if ( IsWarnableMOD( mod ) )
+	{
+		G_BroadcastEvent( EV_REACTOR_DYING, 0, TEAM_HUMANS );
+	}
 }
 
 //==================================================================================
