@@ -2468,7 +2468,8 @@ void HGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, i
 	if ( self->s.modelindex != BA_H_REACTOR && self->powered && G_Reactor() && IsWarnableMOD( mod ) )
 	{
 		qboolean inBase = G_InsideBase( self, qtrue );
-		gentity_t *watcher = inBase ? G_Reactor() : NearestPowerSourceInRange( self );
+		gentity_t *watcher = inBase ? G_Reactor()
+		                            : ( self->s.modelindex == BA_H_REPEATER ) ? self : NearestPowerSourceInRange( self );
 		gentity_t *location = NULL;
 
 		// found reactor or repeater? get location entity
