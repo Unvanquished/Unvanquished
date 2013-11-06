@@ -1587,14 +1587,7 @@ void SV_PrintTranslatedText( const char *text, qboolean broadcast, qboolean plur
 {
 	Cmd_SaveCmdContext();
 	Cmd_TokenizeString( text );
-
-	if ( broadcast )
-	{
-		Com_Printf( "Broadcast: " );
-	}
-
-	PrintTranslatedText_Internal( plural );
-
+	Com_Printf( "%s%s", broadcast ? "Broadcast: " : "", TranslateText_Internal( plural, 1 ) );
 	Cmd_RestoreCmdContext();
 }
 

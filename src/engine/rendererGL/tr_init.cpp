@@ -36,6 +36,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	cvar_t      *r_glMinorVersion;
 	cvar_t      *r_glCoreProfile;
 	cvar_t      *r_glDebugProfile;
+	cvar_t      *r_glDebugMode;
 	cvar_t      *r_glAllowSoftware;
 
 	cvar_t      *r_flares;
@@ -1366,6 +1367,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		r_glMinorVersion = ri.Cvar_Get( "r_glMinorVersion", "", CVAR_LATCH );
 		r_glCoreProfile = ri.Cvar_Get( "r_glCoreProfile", "", CVAR_LATCH );
 		r_glDebugProfile = ri.Cvar_Get( "r_glDebugProfile", "", CVAR_LATCH );
+		r_glDebugMode = ri.Cvar_Get( "r_glDebugMode", "0", CVAR_CHEAT ); 
 		r_glAllowSoftware = ri.Cvar_Get( "r_glAllowSoftware", "0", CVAR_LATCH );
 
 		// latched and archived variables
@@ -1501,7 +1503,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		r_vboSmoothNormals = ri.Cvar_Get( "r_vboSmoothNormals", "1", CVAR_ARCHIVE | CVAR_LATCH );
 
 		r_mergeLeafSurfaces = ri.Cvar_Get( "r_mergeLeafSurfaces", "0", CVAR_ARCHIVE | CVAR_LATCH );
-		r_dynamicBspOcclusionCulling = ri.Cvar_Get( "r_dynamicBspOcclusionCulling", "0", CVAR_ARCHIVE );		r_dynamicEntityOcclusionCulling = ri.Cvar_Get( "r_dynamicEntityOcclusionCulling", "0", CVAR_CHEAT );
+		r_dynamicBspOcclusionCulling = ri.Cvar_Get( "r_dynamicBspOcclusionCulling", "0", CVAR_ARCHIVE );
+		r_dynamicEntityOcclusionCulling = ri.Cvar_Get( "r_dynamicEntityOcclusionCulling", "0", CVAR_CHEAT );
 		r_dynamicLightOcclusionCulling = ri.Cvar_Get( "r_dynamicLightOcclusionCulling", "0", CVAR_CHEAT );
 		r_chcMaxPrevInvisNodesBatchSize = ri.Cvar_Get( "r_chcMaxPrevInvisNodesBatchSize", "50", CVAR_CHEAT );
 		r_chcMaxVisibleFrames = ri.Cvar_Get( "r_chcMaxVisibleFrames", "10", CVAR_CHEAT );

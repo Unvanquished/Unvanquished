@@ -384,10 +384,12 @@ void R_AddMDVInteractions( trRefEntity_t *ent, trRefLight_t *light, interactionT
 	// is outside the view frustum and we don't care about proper shadowing
 	if ( ent->cull == CULL_OUT )
 	{
-		iaType = (interactionType_t) (iaType & (~IA_LIGHT));
-		if ( !iaType ) {
-			return;
-		}
+		iaType = (interactionType_t) (iaType & ~IA_LIGHT);
+	}
+
+	if ( !iaType )
+	{
+		return;
 	}
 
 	// avoid drawing of certain objects

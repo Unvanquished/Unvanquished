@@ -188,10 +188,6 @@ qhandle_t RE_RegisterModel( const char *name )
 
 		if ( loaded )
 		{
-			// make sure the VBO glState entries are save
-			R_BindNullVBO();
-			R_BindNullIBO();
-
 			return mod->index;
 		}
 	}
@@ -268,10 +264,6 @@ qhandle_t RE_RegisterModel( const char *name )
 		}
 		else
 		{
-			// make sure the VBO glState entries are save
-			R_BindNullVBO();
-			R_BindNullIBO();
-
 			mod->numLods++;
 			numLoaded++;
 			// if we have a valid model and are biased
@@ -282,10 +274,6 @@ qhandle_t RE_RegisterModel( const char *name )
 //          }
 		}
 	}
-
-	// make sure the VBO glState entries are save
-	R_BindNullVBO();
-	R_BindNullIBO();
 
 	if ( numLoaded )
 	{
@@ -312,10 +300,6 @@ fail:
 	// we still keep the model_t around, so if the model name is asked for
 	// again, we won't bother scanning the filesystem
 	mod->type = MOD_BAD;
-
-	// make sure the VBO glState entries are save
-	R_BindNullVBO();
-	R_BindNullIBO();
 
 	return 0;
 }

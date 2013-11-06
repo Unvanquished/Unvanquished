@@ -84,6 +84,18 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	  RSPEEDS_DECALS
 	} renderSpeeds_t;
 
+	typedef enum
+	{
+		GLDEBUG_NONE,
+		GLDEBUG_ERROR,
+		GLDEBUG_DEPRECIATED,
+		GLDEBUG_UNDEFINED,
+		GLDEBUG_PORTABILITY,
+		GLDEBUG_PERFORMANCE,
+		GLDEBUG_OTHER,
+		GLDEBUG_ALL
+	} glDebugModes_t;
+
 #define HDR_ENABLED()         (( r_hdrRendering->integer && glConfig2.textureFloatAvailable && glConfig2.framebufferObjectAvailable && glConfig2.framebufferBlitAvailable && glConfig.driverType != GLDRV_MESA ))
 
 #define REF_CUBEMAP_SIZE       32
@@ -461,6 +473,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	  WT_REPEAT,
 	  WT_CLAMP, // don't repeat the texture for texture coords outside [0, 1]
 	  WT_EDGE_CLAMP,
+	  WT_ONE_CLAMP,
 	  WT_ZERO_CLAMP, // guarantee 0,0,0,255 edge for projected textures
 	  WT_ALPHA_ZERO_CLAMP // guarante 0 alpha edge for projected textures
 	} wrapType_t;
@@ -1941,6 +1954,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	{
 		int             viewCount; // if == tr.viewCount, already added
 		int             lightCount;
+		int             interactionBits;
+
 		struct shader_s *shader;
 
 		int16_t         lightmapNum; // -1 = no lightmap
@@ -2879,6 +2894,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	extern cvar_t *r_glMinorVersion;
 	extern cvar_t *r_glCoreProfile;
 	extern cvar_t *r_glDebugProfile;
+	extern cvar_t *r_glDebugMode;
 	extern cvar_t *r_glAllowSoftware;
 
 	extern cvar_t *r_flares; // light flares
@@ -3237,13 +3253,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	/*
 	====================================================================
 
-	OpenGL WRAPPERS, tr_backend.c
+	OpenGL WRAPPERS, tr_backend.cpp
 
 	====================================================================
 	*/
 	void GL_Bind( image_t *image );
 	void GL_BindNearestCubeMap( const vec3_t xyz );
-	void GL_Unbind( void );
+	void GL_Unbind( image_t *image );
 	void BindAnimatedImage( textureBundle_t *bundle );
 	void GL_TextureFilter( image_t *image, filterType_t filterType );
 	void GL_BindProgram( shaderProgram_t *program );

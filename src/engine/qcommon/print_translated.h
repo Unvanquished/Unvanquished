@@ -33,28 +33,25 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #error No translation function? Fail!
 #endif
 
-static void PrintTranslatedText_Internal( qboolean plural )
+static const char *TranslateText_Internal( qboolean plural, int firstTextArg )
 {
-	char        str[ MAX_STRING_CHARS ];
+	static char str[ MAX_STRING_CHARS ];
 	char        buf[ MAX_STRING_CHARS ];
 	const char  *in;
 	int         c, i = 0, totalArgs;
-	int         firstTextArg;
 
 	totalArgs = Cmd_Argc();
 
 	if ( plural )
 	{
-		int        number = atoi( Cmd_Argv( 1 ) );
-		const char *text = Cmd_Argv( 2 );
+		int        number = atoi( Cmd_Argv( firstTextArg ) );
+		const char *text = Cmd_Argv( ++firstTextArg );
 
-		firstTextArg = 2;
 		Q_strncpyz( buf, PLURAL_TRANSLATE_FUNC( text, text, number ), sizeof( buf ) );
 	}
 	else
 	{
-		firstTextArg = 1;
-		Q_strncpyz( buf, TRANSLATE_FUNC( Cmd_Argv( 1 ) ), sizeof( buf ) );
+		Q_strncpyz( buf, TRANSLATE_FUNC( Cmd_Argv( firstTextArg ) ), sizeof( buf ) );
 	}
 
 	in = buf;
@@ -159,5 +156,5 @@ static void PrintTranslatedText_Internal( qboolean plural )
 		}
 	}
 
-	Com_Printf( "%s", str );
+	return str;
 }

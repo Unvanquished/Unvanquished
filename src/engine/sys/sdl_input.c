@@ -549,6 +549,10 @@ static keyNum_t IN_TranslateSDLToQ3Key( SDL_Keysym *keysym, qboolean down )
 				key = K_MENU;
 				break;
 
+			case SDLK_APPLICATION:
+				key = K_COMPOSE;
+				break;
+
 			case SDLK_POWER:
 				key = K_POWER;
 				break;
@@ -1447,7 +1451,7 @@ static void IN_ProcessEvents( qboolean dropInput )
 					{
 						Com_QueueEvent( 0, SE_KEY, key, qtrue, 0, NULL );
 #if !SDL_VERSION_ATLEAST( 2, 0, 0 )
-						if ( key != K_CONSOLE ) 
+						if ( key != K_CONSOLE )
 						{
 							Com_QueueEvent( 0, SE_CHAR, Q_UTF8_Store( Q_UTF8_Encode( e.key.keysym.unicode ) ), 0, 0, NULL );
 						}
@@ -1706,7 +1710,7 @@ void IN_Init( void *windowData )
 
 	Com_DPrintf( "\n------- Input Initialization -------\n" );
 
-	in_keyboardDebug = Cvar_Get( "in_keyboardDebug", "0", CVAR_ARCHIVE );
+	in_keyboardDebug = Cvar_Get( "in_keyboardDebug", "0", CVAR_TEMP );
 
 	// mouse variables
 	in_mouse = Cvar_Get( "in_mouse", "1", CVAR_ARCHIVE );

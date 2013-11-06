@@ -510,9 +510,9 @@ VBO_t *R_CreateDynamicVBO( const char *name, int numVertexes, uint32_t stateBits
 
 	glGenBuffers( 1, &vbo->vertexesVBO );
 
-	glBindBuffer( GL_ARRAY_BUFFER, vbo->vertexesVBO );
+	R_BindVBO( vbo );
 	glBufferData( GL_ARRAY_BUFFER, vbo->vertexesSize, NULL, vbo->usage );
-	glBindBuffer( GL_ARRAY_BUFFER, 0 );
+	R_BindNullVBO();
 
 	GL_CheckErrors();
 
@@ -558,9 +558,9 @@ VBO_t *R_CreateStaticVBO( const char *name, vboData_t data, vboLayout_t layout )
 
 	glGenBuffers( 1, &vbo->vertexesVBO );
 
-	glBindBuffer( GL_ARRAY_BUFFER, vbo->vertexesVBO );
+	R_BindVBO( vbo );
 	glBufferData( GL_ARRAY_BUFFER, vbo->vertexesSize, outData, vbo->usage );
-	glBindBuffer( GL_ARRAY_BUFFER, 0 );
+	R_BindNullVBO();
 
 	GL_CheckErrors();
 
@@ -735,9 +735,9 @@ VBO_t *R_CreateStaticVBO2( const char *name, int numVertexes, srfVert_t *verts, 
 
 	glGenBuffers( 1, &vbo->vertexesVBO );
 
-	glBindBuffer( GL_ARRAY_BUFFER, vbo->vertexesVBO );
+	R_BindVBO( vbo );
 	glBufferData( GL_ARRAY_BUFFER, vbo->vertexesSize, data, vbo->usage );
-	glBindBuffer( GL_ARRAY_BUFFER, 0 );
+	R_BindNullVBO();
 
 	GL_CheckErrors();
 
@@ -774,9 +774,9 @@ IBO_t *R_CreateDynamicIBO( const char *name, int numIndexes )
 
 	glGenBuffers( 1, &ibo->indexesVBO );
 
-	glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo->indexesVBO );
+	R_BindIBO( ibo );
 	glBufferData( GL_ELEMENT_ARRAY_BUFFER, ibo->indexesSize, NULL, GL_DYNAMIC_DRAW );
-	glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+	R_BindNullIBO();
 
 	GL_CheckErrors();
 
@@ -815,9 +815,9 @@ IBO_t *R_CreateStaticIBO( const char *name, glIndex_t *indexes, int numIndexes )
 
 	glGenBuffers( 1, &ibo->indexesVBO );
 
-	glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo->indexesVBO );
+	R_BindIBO( ibo );
 	glBufferData( GL_ELEMENT_ARRAY_BUFFER, ibo->indexesSize, indexes, GL_STATIC_DRAW );
-	glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+	R_BindNullIBO();
 
 	GL_CheckErrors();
 
@@ -1039,9 +1039,6 @@ void R_InitVBOs( void )
 		      REF_COLORGRADEMAP_STORE_SIZE * sizeof(color4ub_t),
 		      NULL, GL_STREAM_COPY );
 	glBindBuffer( GL_PIXEL_PACK_BUFFER, 0 );
-
-	R_BindNullVBO();
-	R_BindNullIBO();
 
 	GL_CheckErrors();
 }

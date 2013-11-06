@@ -1,3 +1,29 @@
+unvanquished (0.21.0-1) unstable; urgency=low
+
+  * Improve cleanup of /var/games/unvanquished when unvanquished-common is
+    purged. Files not added at install/upgrade/reconfigure are not removed.
+  * /var/games/unvanquished/main is better owned by unvanquished-common.
+  * Some debconf questions: whether to download .pk3s and, if so, from where.
+  * Updated mapotation.cfg.
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Sun, 03 Nov 2013 15:50:32 +0000
+
+unvanquished (0.20.0-3) unstable; urgency=low
+
+  * ‘Fix’ input of compose sequences (SDL 2.0).
+  * Handle locale selection issues.
+    - We require that a UTF-8 encoding is available for the locale.
+    - We force LC_NUMERIC="C" to avoid problems with generated GLSL etc.
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Thu, 17 Oct 2013 17:03:32 +0100
+
+unvanquished (0.20.0-2) unstable; urgency=low
+
+  * Fix some console input regressions specific to SDL 1.2.
+    (This release is built only where SDL 1.2 is used.)
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Thu, 10 Oct 2013 17:34:17 +0100
+
 unvanquished (0.20.0-1) unstable; urgency=low
 
   * Add unvanquished-dev, initially containing only unvanquishedmap.

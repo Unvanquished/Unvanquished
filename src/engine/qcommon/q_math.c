@@ -785,17 +785,8 @@ float AngleSubtract( float a1, float a2 )
 {
 	float a = a1 - a2;
 
-	while ( a > 180 )
-	{
-		a -= 360;
-	}
 
-	while ( a < -180 )
-	{
-		a += 360;
-	}
-
-	return a;
+	return a - 360.0f * floor( ( a + 180.0f ) / 360.0f );
 }
 
 void AnglesSubtract( vec3_t v1, vec3_t v2, vec3_t v3 )
@@ -1161,11 +1152,16 @@ vec_t VectorNormalize( vec3_t v )
 	{
 		/* writing it this way allows gcc to recognize that rsqrt can be used */
 	 	ilength = 1/(float)sqrt (length);
-		/* sqrt(length) = length * (1 / sqrt(length)) */
-		length *= ilength;
-		v[ 0 ] *= ilength;
-		v[ 1 ] *= ilength;
-		v[ 2 ] *= ilength;
+
+		// ilength == NaN has been observed here with length == 0 + ε
+		if ( ilength * 2 != ilength )
+		{
+			/* sqrt(length) = length * (1 / sqrt(length)) */
+			length *= ilength;
+			v[ 0 ] *= ilength;
+			v[ 1 ] *= ilength;
+			v[ 2 ] *= ilength;
+		}
 	}
 
 	return length;

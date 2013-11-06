@@ -1035,8 +1035,11 @@ void R_UploadImage( const byte **dataArray, int numData, image_t *image )
 	GLenum     target;
 	GLenum     format = GL_RGBA;
 	GLenum     internalFormat = GL_RGB;
+	vec4_t     oneClampBorder = { 1, 1, 1, 1 };
 	vec4_t     zeroClampBorder = { 0, 0, 0, 1 };
 	vec4_t     alphaZeroClampBorder = { 0, 0, 0, 0 };
+
+	GL_Bind( image );
 
 	if ( glConfig2.textureNPOTAvailable )
 	{
@@ -1459,7 +1462,11 @@ void R_UploadImage( const byte **dataArray, int numData, image_t *image )
 			glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
 			glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
 			break;
-
+		case WT_ONE_CLAMP:
+			glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER );
+			glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER );
+			glTexParameterfv( image->type, GL_TEXTURE_BORDER_COLOR, oneClampBorder );
+			break;
 		case WT_ZERO_CLAMP:
 			glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER );
 			glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER );
@@ -1485,6 +1492,8 @@ void R_UploadImage( const byte **dataArray, int numData, image_t *image )
 	{
 		ri.Hunk_FreeTempMemory( scaledBuffer );
 	}
+
+	GL_Unbind( image );
 }
 
 /*
@@ -1551,12 +1560,7 @@ image_t        *R_CreateImage( const char *name,
 	image->filterType = filterType;
 	image->wrapType = wrapType;
 
-	GL_Bind( image );
-
 	R_UploadImage( &pic, 1, image );
-
-	//GL_Unbind();
-	glBindTexture( image->type, 0 );
 
 	return image;
 }
@@ -1600,7 +1604,7 @@ image_t *R_CreateGlyph( const char *name, const byte *pic, int width, int height
 
 	GL_CheckErrors();
 
-	glBindTexture( GL_TEXTURE_2D, 0 );
+	GL_Unbind( image );
 
 	return image;
 }
@@ -1632,11 +1636,7 @@ image_t        *R_CreateCubeImage( const char *name,
 	image->filterType = filterType;
 	image->wrapType = wrapType;
 
-	GL_Bind( image );
-
 	R_UploadImage( pic, 6, image );
-
-	glBindTexture( image->type, 0 );
 
 	return image;
 }
@@ -1677,11 +1677,7 @@ image_t        *R_Create3DImage( const char *name,
 	image->filterType = filterType;
 	image->wrapType = wrapType;
 
-	GL_Bind( image );
-
 	R_UploadImage( pics, depth, image );
-
-	glBindTexture( image->type, 0 );
 
 	ri.Hunk_FreeTempMemory( pics );
 
@@ -3358,8 +3354,8 @@ static void R_CreateShadowMapFBOImage( void )
 	{
 		width = height = shadowMapResolutions[ i % MAX_SHADOWMAPS ];
 
-		tr.shadowMapFBOImage[ i ] = R_CreateImage( va( "_shadowMapFBO%d", i ), NULL, width, height, format, filter, WT_EDGE_CLAMP );
-		tr.shadowClipMapFBOImage[ i ] = R_CreateImage( va( "_shadowClipMapFBO%d", i ), NULL, width, height, format, filter, WT_EDGE_CLAMP );
+		tr.shadowMapFBOImage[ i ] = R_CreateImage( va( "_shadowMapFBO%d", i ), NULL, width, height, format, filter, WT_ONE_CLAMP );
+		tr.shadowClipMapFBOImage[ i ] = R_CreateImage( va( "_shadowClipMapFBO%d", i ), NULL, width, height, format, filter, WT_ONE_CLAMP );
 	}
 
 	// sun shadow maps
@@ -3367,8 +3363,8 @@ static void R_CreateShadowMapFBOImage( void )
 	{
 		width = height = sunShadowMapResolutions[ i % MAX_SHADOWMAPS ];
 
-		tr.sunShadowMapFBOImage[ i ] = R_CreateImage( va( "_sunShadowMapFBO%d", i ), NULL, width, height, format, filter, WT_EDGE_CLAMP );
-		tr.sunShadowClipMapFBOImage[ i ] = R_CreateImage( va( "_sunShadowClipMapFBO%d", i ), NULL, width, height, format, filter, WT_EDGE_CLAMP );
+		tr.sunShadowMapFBOImage[ i ] = R_CreateImage( va( "_sunShadowMapFBO%d", i ), NULL, width, height, format, filter, WT_ONE_CLAMP );
+		tr.sunShadowClipMapFBOImage[ i ] = R_CreateImage( va( "_sunShadowClipMapFBO%d", i ), NULL, width, height, format, filter, WT_ONE_CLAMP );
 	}
 }
 
