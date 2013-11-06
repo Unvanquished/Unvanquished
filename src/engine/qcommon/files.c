@@ -1896,7 +1896,7 @@ int FS_Write( const void *buffer, int len, fileHandle_t h )
 
 	if ( !fs_searchpaths )
 	{
-		Com_Error( ERR_FATAL, "Filesystem call made without initialization" );
+		//Com_Error( ERR_FATAL, "Filesystem call made without initialization" );
 	}
 
 	if ( !h )
