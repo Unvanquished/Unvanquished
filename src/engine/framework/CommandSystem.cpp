@@ -210,7 +210,7 @@ namespace Cmd {
         CL_ForwardCommandToServer( args.RawCmd().c_str() );
     }
 
-    CompletionResult CompleteArgument(std::string command, int pos) {
+    CompletionResult CompleteArgument(std::string command, int argNum) {
         CommandMap& commands = GetCommandMap();
 
         Args args(std::move(command));
@@ -218,8 +218,6 @@ namespace Cmd {
         if (args.Argc() == 0) {
             return {};
         }
-
-        int argNum = args.PosToArg(pos);
 
         if (argNum > 0) {
             const std::string& cmdName = args.Argv(0);
@@ -229,7 +227,12 @@ namespace Cmd {
                 return {};
             }
 
-            return it->second.cmd->Complete(pos, args);
+            std::string prefix;
+            if (argNum < args.Argc()) {
+                prefix = args.Argv(argNum);
+            }
+
+            return it->second.cmd->Complete(argNum, args, prefix);
         } else {
             return CompleteCommandNames(args.Argv(0));
         }
@@ -330,9 +333,9 @@ namespace Cmd {
                 Print("%zu commands\n", matches.size());
             }
 
-            Cmd::CompletionResult Complete(int pos, const Cmd::Args& args) const override {
-                if (args.PosToArg(pos) == 1) {
-                    return ::Cmd::CompleteCommandNames(args.ArgPrefix(pos));
+            Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, const std::string& prefix) const override {
+                if (argNum == 1) {
+                    return ::Cmd::CompleteCommandNames(prefix);
                 }
 
                 return {};

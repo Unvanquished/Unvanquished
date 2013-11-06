@@ -86,7 +86,7 @@ namespace Cmd {
     void ExecuteCommand(std::string command, bool parseCvars = false, Environment* env = nullptr);
 
     //Completion stuff, highly unstable :-)
-    CompletionResult CompleteArgument(std::string command, int pos);
+    CompletionResult CompleteArgument(std::string command, int argNum);
     CompletionResult CompleteCommandNames(const std::string& prefix = "");
 
     //Function to ease the transition to C++

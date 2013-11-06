@@ -77,13 +77,11 @@ class MapCmd: public Cmd::StaticCmd {
             Cvar_Set("sv_cheats", cheat ? "1" : "0");
         }
 
-        Cmd::CompletionResult Complete(int pos, const Cmd::Args& args) const override{
-            int argNum = args.PosToArg(pos);
-
+        Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, const std::string& prefix) const override{
             if (argNum == 1) {
-                return FS::CompleteFilenameInDir(args.ArgPrefix(pos), "maps", "bsp");
+                return FS::CompleteFilenameInDir(prefix, "maps", "bsp");
             } else if (argNum > 1) {
-                return FS::CompleteFilenameInDir(args.ArgPrefix(pos), "layouts/" + args.Argv(1), "dat");
+                return FS::CompleteFilenameInDir(prefix, "layouts/" + args.Argv(1), "dat");
             }
 
             return {};

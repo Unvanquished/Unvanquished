@@ -1420,11 +1420,9 @@ class DemoCmd: public Cmd::StaticCmd {
             //  }
         }
 
-        Cmd::CompletionResult Complete(int pos, const Cmd::Args& args) const override{
-            int argNum = args.PosToArg(pos);
-
+        Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, const std::string& prefix) const override{
             if (argNum == 1) {
-                return FS::CompleteFilenameInDir(args.ArgPrefix(pos), "demos", ".dm_" + std::to_string(PROTOCOL_VERSION));
+                return FS::CompleteFilenameInDir(prefix, "demos", ".dm_" + std::to_string(PROTOCOL_VERSION));
             }
 
             return {};
@@ -3194,9 +3192,7 @@ CL_ServerLinksResponsePacket
 */
 void CL_ServerLinksResponsePacket( const netadr_t *from, msg_t *msg )
 {
-	int      i, count, total;
-	netadr_t addresses[ MAX_SERVERSPERPACKET ];
-	int      numservers, port;
+	int      port;
 	byte      *buffptr;
 	byte      *buffend;
 

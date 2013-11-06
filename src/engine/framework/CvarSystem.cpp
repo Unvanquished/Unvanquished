@@ -427,11 +427,9 @@ namespace Cvar {
                 ::Cvar::AddFlags(name, flags);
             }
 
-            Cmd::CompletionResult Complete(int pos, const Cmd::Args& args) const override{
-                int argNum = args.PosToArg(pos);
-
+            Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, const std::string& prefix) const override{
                 if (argNum == 1 or (argNum == 2 and args.Argv(1) == "-unsafe")) {
-                    return ::Cvar::Complete(args.ArgPrefix(pos));
+                    return ::Cvar::Complete(prefix);
                 }
 
                 return {};
@@ -467,11 +465,9 @@ namespace Cvar {
                 }
             }
 
-            Cmd::CompletionResult Complete(int pos, const Cmd::Args& args) const override {
-                int argNum = args.PosToArg(pos);
-
+            Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, const std::string& prefix) const override{
                 if (argNum == 1) {
-                    return ::Cvar::Complete(args.ArgPrefix(pos));
+                    return ::Cvar::Complete(prefix);
                 }
 
                 return {};
@@ -559,12 +555,10 @@ namespace Cvar {
                 Com_Printf("%zu cvars\n", matches.size());
             }
 
-            Cmd::CompletionResult Complete(int pos, const Cmd::Args& args) const override {
+            Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, const std::string& prefix) const override{
                 //TODO handle -raw?
-                int argNum = args.PosToArg(pos);
-
                 if (argNum == 1) {
-                    return ::Cvar::Complete(args.ArgPrefix(pos));
+                    return ::Cvar::Complete(prefix);
                 }
 
                 return {};

@@ -119,7 +119,7 @@ namespace Cmd {
             // Called when the command is run with the command line args
             virtual void Run(const Args& args) const = 0;
             // Called when the user wants to autocomplete a call to this command.
-            virtual Cmd::CompletionResult Complete(int pos, const Args& args) const;
+            virtual Cmd::CompletionResult Complete(int argNum, const Args& args, const std::string& prefix) const;
 
             // Prints the usage of this command with a standard formatting
             void PrintUsage(const Args& args, Str::StringRef syntax, Str::StringRef description = "") const;

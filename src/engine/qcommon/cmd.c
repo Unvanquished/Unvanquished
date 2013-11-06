@@ -635,7 +635,7 @@ class ProxyCmd: public Cmd::CmdBase {
 			proxy.cmd();
 		}
 
-		Cmd::CompletionResult Complete(int pos, const Cmd::Args& args) const override {
+		Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, const std::string& prefix) const override {
 			static char buffer[4096];
 			proxyInfo_t proxy = proxies[args.Argv(0)];
 
@@ -644,7 +644,7 @@ class ProxyCmd: public Cmd::CmdBase {
 			}
 			completeMatches.clear();
 			Q_strncpyz(buffer, args.RawCmd().c_str(), 4096);
-			proxy.complete(buffer, args.PosToArg(pos) + 1);
+			proxy.complete(buffer, argNum + 1);
 
 			return completeMatches;
 		}

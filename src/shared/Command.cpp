@@ -350,9 +350,10 @@ namespace Cmd {
     CmdBase::CmdBase(const int flags): flags(flags) {
     }
 
-    CompletionResult CmdBase::Complete(int argNum, const Args& args) const {
-        Q_UNUSED(argNum); //TODO
-        Q_UNUSED(args); //TODO
+    CompletionResult CmdBase::Complete(int argNum, const Args& args, const std::string& prefix) const {
+        Q_UNUSED(argNum);
+        Q_UNUSED(args);
+        Q_UNUSED(prefix);
         return {};
     }
 
