@@ -1446,14 +1446,14 @@ static void CG_GameCmds_f( void )
 }
 
 static const consoleCommand_t svcommands[] =
-{
+{	// sorting: use 'sort -f'
 	{ "achat",            CG_AdminChat_f          },
 	{ "chat",             CG_Chat_f               },
 	{ "cmds",             CG_GameCmds_f           },
 	{ "cp",               CG_CenterPrint_f        },
-	{ "cp_tr",            CG_CenterPrintTR_f      },
 	{ "cpd",              CG_CenterPrint_Delay_f  },
 	{ "cpd_tr",           CG_CenterPrintTR_Delay_f},
+	{ "cp_tr",            CG_CenterPrintTR_f      },
 	{ "cs",               CG_ConfigStringModified },
 	{ "map_restart",      CG_MapRestart           },
 	{ "poisoncloud",      CG_PoisonCloud_f        },
