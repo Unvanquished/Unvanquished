@@ -937,7 +937,7 @@ void AGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, i
 	self->powered = qfalse;
 
 	// warn if in main base and there's an overmind
-	if ( ( om = G_Overmind() ) && om != self && level.time > om->warnTimer && Distance( self->s.origin, om->s.origin ) <= CREEP_BASESIZE && IsWarnableMOD( mod ) )
+	if ( ( om = G_Overmind() ) && om != self && level.time > om->warnTimer && G_InsideBase( self, qtrue ) && IsWarnableMOD( mod ) )
 	{
 		om->warnTimer = level.time + NEARBY_ATTACK_PERIOD; // don't spam
 		G_BroadcastEvent( EV_WARN_ATTACK, 0, TEAM_ALIENS );
@@ -2467,8 +2467,9 @@ void HGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, i
 	// warn if this building was powered, there's a watcher nearby and it's powered too
 	if ( self->s.modelindex != BA_H_REACTOR && self->powered && G_Reactor() && IsWarnableMOD( mod ) )
 	{
-		gentity_t *watcher = NearestPowerSourceInRange( self );
-		gentity_t *location;
+		qboolean inBase = G_InsideBase( self, qtrue );
+		gentity_t *watcher = inBase ? G_Reactor() : NearestPowerSourceInRange( self );
+		gentity_t *location = NULL;
 
 		// found reactor or repeater? get location entity
 		if ( watcher )
@@ -2484,7 +2485,7 @@ void HGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, i
 		if ( location && level.time > location->warnTimer )
 		{
 			location->warnTimer = level.time + NEARBY_ATTACK_PERIOD; // don't spam
-			G_BroadcastEvent( EV_WARN_ATTACK, watcher - level.gentities, TEAM_HUMANS );
+			G_BroadcastEvent( EV_WARN_ATTACK, inBase ? 0 : ( watcher - level.gentities ), TEAM_HUMANS );
 		}
 	}
 
