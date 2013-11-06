@@ -636,9 +636,22 @@ set( CGAMELIST
   ${GAMELOGIC_DIR}/cgame/cg_utils.c
   ${GAMELOGIC_DIR}/ui/ui_shared.c
   ${GAMELOGIC_DIR}/ui/ui_utf8.c
-  ${GAMELOGIC_DIR}/cgame/cg_api.c
   ${ENGINE_DIR}/client/cg_api.h
   ${ENGINE_DIR}/qcommon/print_translated.h
+)
+
+set( CGAMENATIVELIST
+  ${GAMELOGIC_DIR}/cgame/cg_api.c
+)
+
+set( CGAMEQVMLIST
+  ${GAMELOGIC_DIR}/shared/bg_lib.c
+  ${ENGINE_DIR}/qcommon/q_static.c
+  ${SHAREDLIST}
+)
+
+set( CGAMEASMLIST
+  ${GAMELOGIC_DIR}/cgame/cg_api.asm
 )
 
 set( GAMELIST
@@ -683,8 +696,25 @@ set( GAMELIST
   ${GAMELOGIC_DIR}/game/g_bot_nav.c
   ${GAMELOGIC_DIR}/game/g_bot_parse.c
   ${GAMELOGIC_DIR}/game/g_bot_util.c
-  ${GAMELOGIC_DIR}/game/g_api.cpp
   ${ENGINE_DIR}/server/g_api.h
+)
+
+set( GAMENACLLIST
+  ${GAMELOGIC_DIR}/game/g_api.cpp
+)
+
+set( GAMENATIVELIST
+  ${GAMELOGIC_DIR}/game/g_api.c
+)
+
+set( GAMEQVMLIST
+  ${GAMELOGIC_DIR}/shared/bg_lib.c
+  ${ENGINE_DIR}/qcommon/q_static.c
+  ${SHAREDLIST}
+)
+
+set( GAMEASMLIST
+  ${GAMELOGIC_DIR}/game/g_api.asm
 )
 
 set( UILIST
@@ -697,8 +727,21 @@ set( UILIST
   ${GAMELOGIC_DIR}/shared/bg_alloc.c
   ${GAMELOGIC_DIR}/shared/bg_teamprogress.c
   ${GAMELOGIC_DIR}/ui/ui_utf8.c
-  ${GAMELOGIC_DIR}/ui/ui_api.c
   ${ENGINE_DIR}/client/ui_api.h
+)
+
+set( GAMENATIVELIST
+  ${GAMELOGIC_DIR}/game/g_api.c
+)
+
+set( UIQVMLIST
+  ${GAMELOGIC_DIR}/shared/bg_lib.c
+  ${ENGINE_DIR}/qcommon/q_static.c
+  ${SHAREDLIST}
+)
+
+set( UIASMLIST
+  ${GAMELOGIC_DIR}/ui/ui_api.asm
 )
 
 set( WIN_RC ${ENGINE_DIR}/sys/daemon.rc )
@@ -1132,15 +1175,15 @@ include( CMakeParseArguments )
 function( GAMEMODULE )
   # ParseArguments setup
   set( oneValueArgs NAME OUTPUT_DIR )
-  set( multiValueArgs COMPILE_DEF FILES )
+  set( multiValueArgs COMPILE_DEF FILES NACL_FILES NATIVE_FILES QVM_FILES QVM_ASM )
   cmake_parse_arguments( GAMEMODULE "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
 
   if( BUILD_GAME_NATIVE )
     # HACK: Compile shared files as C
     set_source_files_properties( ${SHAREDLIST_HACK} PROPERTIES LANGUAGE C )
-    add_executable( ${GAMEMODULE_NAME}-native ${GAMEMODULE_FILES} ${SHAREDLIST_HACK} ${NACLLIST_NATIVE} )
-    target_link_libraries( ${GAMEMODULE_NAME}-native ${LIBS_BASE} )
-    set_target_properties( ${GAMEMODULE_NAME}-native PROPERTIES
+    add_library( ${GAMEMODULE_NAME} SHARED ${GAMEMODULE_FILES} ${SHAREDLIST_HACK} ${GAMEMODULE_NATIVE_FILES} ${NACLLIST_NATIVE} )
+    target_link_libraries( ${GAMEMODULE_NAME} ${LIBS_BASE} )
+    set_target_properties( ${GAMEMODULE_NAME} PROPERTIES
       OUTPUT_NAME ${GAMEMODULE_NAME}
       RUNTIME_OUTPUT_DIRECTORY ${GAMEMODULE_OUTPUT_DIR}
       COMPILE_DEFINITIONS ${GAMEMODULE_COMPILE_DEF}
@@ -1187,7 +1230,7 @@ function( GAMEMODULE )
 
     # Compile C files with clang and C++ files with clang++
     set( OBJECTS )
-    foreach( FILE ${GAMEMODULE_FILES} ${SHAREDLIST} ${NACLLIST_MODULE} )
+    foreach( FILE ${GAMEMODULE_FILES} ${GAMEMODULE_NACL_FILES} ${SHAREDLIST} ${NACLLIST_MODULE} )
       get_filename_component( FILENAME ${FILE} NAME_WE )
       get_filename_component( FILEDIR ${FILE} PATH )
       get_filename_component( EXT ${FILE} EXT )
@@ -1258,14 +1301,86 @@ function( GAMEMODULE )
   endif()
 
   if( BUILD_GAME_QVM )
-    add_subdirectory( ${LCC_DIR} ${CMAKE_BINARY_DIR}/lcc )
+    set( QVM_DIR ${OBJ_DIR}/${GAMEMODULE_NAME}-qvm.dir )
+    file(MAKE_DIRECTORY ${QVM_DIR})
+
+    set( QVM_COMPILE_OPTIONS "-I\"${MOUNT_DIR}/gamelogic/game\" -I\"${MOUNT_DIR}/engine/qcommon\" -D__inline= -DQ3_VM" )
+    foreach( DEF ${GAMEMODULE_COMPILE_DEF} )
+      set( QVM_COMPILE_OPTIONS ${QVM_COMPILE_OPTIONS} -D${DEF} )
+    endforeach()
+
+    set( OBJECTS )
+    set( QVM_FILES ${GAMEMODULE_FILES} ${GAMEMODULE_QVM_FILES} )#${MOUNT_DIR}/engine/qcommon/q_static.c )
+    foreach( QVM_FILE ${QVM_FILES} )
+      get_filename_component( QVM_FILENAME ${QVM_FILE} NAME_WE )
+      get_filename_component( QVM_FILEDIR ${QVM_FILE} PATH )
+      get_filename_component( QVM_FILEEXT ${QVM_FILE} EXT )
+      set( ASM_FILE ${QVM_DIR}/${QVM_FILENAME}.asm )
+
+      if( QVM_FILEEXT STREQUAL .c )
+        add_custom_command( OUTPUT ${ASM_FILE}
+            COMMAND lcc -target bytecode ${QVM_COMPILE_OPTIONS} ${QVM_FILE} -o ${ASM_FILE}
+          DEPENDS lcc rcc cpp ${QVM_FILE}
+          IMPLICIT_DEPENDS C ${QVM_FILE}
+          WORKING_DIRECTORY ${QVM_DIR}
+        )
+
+        set( OBJECTS ${OBJECTS} ${ASM_FILE} )
+      endif()
+    endforeach()
+
+    # Ensure qvms end up in the correct folder for VS or Xcode projects
+    if( XCODE_VERSION OR MSVC )
+      set( QVM_OUTPUT ${CMAKE_BINARY_DIR}/$<CONFIGURATION>/${GAMEMODULE_OUTPUT_DIR}/vm/${GAMEMODULE_NAME}.qvm )
+    else()
+      set( QVM_OUTPUT ${CMAKE_BINARY_DIR}/${GAMEMODULE_OUTPUT_DIR}/vm/${GAMEMODULE_NAME}.qvm )
+    endif()
+
+    # Link *.asm into a qvm
+    add_custom_command( OUTPUT ${QVM_OUTPUT}
+      COMMAND asm -o ${QVM_OUTPUT} ${OBJECTS} ${GAMEMODULE_QVM_ASM}
+      DEPENDS asm ${OBJECTS} ${GAMEMODULE_QVM_ASM}
+    )
+
+    # Dummy target to get CMake to execute the commands
+    add_custom_target( ${GAMEMODULE_NAME}-qvm ALL
+      DEPENDS ${QVM_OUTPUT}
+    )
   endif()
 endfunction()
+
+if( BUILD_GAME_QVM )
+  add_subdirectory( ${LCC_DIR} ${CMAKE_BINARY_DIR}/lcc )
+endif()
+
+GAMEMODULE( NAME cgame
+  OUTPUT_DIR main
+  COMPILE_DEF CGAME
+  FILES ${CGAMELIST}
+  NACL_FILES ${CGAMENACLLIST}
+  NATIVE_FILES ${CGAMENATIVELIST}
+  QVM_FILES ${CGAMEQVMLIST}
+  QVM_ASM ${CGAMEASMLIST}
+)
 
 GAMEMODULE( NAME game
   OUTPUT_DIR main
   COMPILE_DEF GAME
   FILES ${GAMELIST}
+  NACL_FILES ${GAMENACLLIST}
+  NATIVE_FILES ${GAMENATIVELIST}
+  QVM_FILES ${GAMEQVMLIST}
+  QVM_ASM ${GAMEASMLIST}
+)
+
+GAMEMODULE( NAME ui
+  OUTPUT_DIR main
+  COMPILE_DEF UI
+  FILES ${UILIST}
+  NACL_FILES ${UINACLLIST}
+  NATIVE_FILES ${UINATIVELIST}
+  QVM_FILES ${UIQVMLIST}
+  QVM_ASM ${UIASMLIST}
 )
 
 ################################################################################

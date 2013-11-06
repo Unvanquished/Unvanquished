@@ -122,7 +122,6 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #endif
 
 // Compilers are smart enough to optimize these to a single bswap instruction
-/*
 STATIC_INLINE int16_t Swap16(int16_t x) IFDECLARE
 #ifdef Q3_VM_INSTANTIATE
 {
@@ -167,7 +166,7 @@ STATIC_INLINE float SwapFloat(float x) IFDECLARE
 	return fi.f;
 }
 #endif
-*/
+
 #ifdef Q3_LITTLE_ENDIAN
 
 #define LittleShort(x) (x)

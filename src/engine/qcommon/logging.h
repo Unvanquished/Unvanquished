@@ -35,8 +35,6 @@
 #ifndef LOGGING_H_
 #define LOGGING_H_
 
-#include "q_shared.h"
-
 /**
  * keyword currently used to mark a line as having to be appended to the log, but not notify about it on the HUD
  */
@@ -103,7 +101,7 @@ typedef enum
 } errorParm_t;
 
 // this is only here so the functions in q_shared.c and bg_*.c can link
-void QDECL NORETURN Com_Error( int level, const char *error, ... ) PRINTF_LIKE(2);
+void QDECL Com_Error( int level, const char *error, ... ) PRINTF_LIKE(2) NORETURN;
 void QDECL Com_Printf( const char *msg, ... ) PRINTF_LIKE(1);
 void QDECL Com_DPrintf( const char *msg, ... ) PRINTF_LIKE(1);
 
