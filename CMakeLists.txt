@@ -730,8 +730,8 @@ set( UILIST
   ${ENGINE_DIR}/client/ui_api.h
 )
 
-set( GAMENATIVELIST
-  ${GAMELOGIC_DIR}/game/g_api.c
+set( UINATIVELIST
+  ${GAMELOGIC_DIR}/ui/ui_api.c
 )
 
 set( UIQVMLIST
