@@ -117,6 +117,18 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 // Work around lack of C99 support
 #define __func__ __FUNCTION__
 
+#elif defined(Q3_VM)
+#define DEPRECATED
+#define COLD
+#define NORETURN
+#define PRINTF_LIKE(n)
+#define VPRINTF_LIKE(n)
+#define PRINTF_TRANSLATE_ARG(a)
+#define MALLOC_LIKE
+#define ALIGNED(a,x)
+#define DLLEXPORT
+#define DLLIMPORT
+
 // Other compilers, unsupported
 #else
 #warning "Unsupported compiler"
@@ -131,5 +143,25 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #define DLLEXPORT
 #define DLLIMPORT
 #endif
+
+// Compat macros
+#ifdef Q3_VM
+#define STATIC_INLINE
+#define QDECL
+#define INLINE
+#define Q_EXPORT
+#ifdef Q3_VM_INSTANTIATE
+#define IFDECLARE
+#else
+#define IFDECLARE ;
+#endif
+#else // Q3_VM
+#define Q3_VM_INSTANTIATE
+#define STATIC_INLINE static inline
+#define QDECL
+#define INLINE inline
+#define Q_EXPORT DLLEXPORT
+#define IFDECLARE
+#endif // Q3_VM
 
 #endif // SHARED_COMPILER_H_

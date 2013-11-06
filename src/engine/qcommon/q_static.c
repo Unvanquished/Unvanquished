@@ -2,7 +2,7 @@
 ===========================================================================
 
 Daemon GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 2012 Unvanquished Developers
 
 This file is part of the Daemon GPL Source Code (Daemon Source Code).
 
@@ -32,50 +32,9 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#ifndef __VM_TRAPS_H
-#define __VM_TRAPS_H
-
-#if defined(QVM_COMPAT) || defined(Q3_VM)
-
-// Major: API breakage
-#define SYSCALL_ABI_VERSION_MAJOR 10
-// Minor: API extension
-#define SYSCALL_ABI_VERSION_MINOR 0
-
-// First VM-specific call no.
-#define FIRST_VM_SYSCALL 256
-
-// Calls common to all VMs. Call nos. must be between 0 and FIRST_VM_SYSCALL
-// Comments in this enum are used by the QVM API scanner
-typedef enum sharedImport_s
-{
-  TRAP_MEMSET,               // = memset
-  TRAP_MEMCPY,               // = memcpy
-  TRAP_MEMCMP,               // = memcmp
-  TRAP_STRNCPY,              // = strncpy
-  TRAP_SIN,                  // = sin
-  TRAP_COS,                  // = cos
-  TRAP_ASIN,                 // = asin
-//.TRAP_ACOS,                 // = acos
-  TRAP_TAN,                  // = tan
-  TRAP_ATAN,                 // = atan
-  TRAP_ATAN2,                // = atan2
-  TRAP_SQRT,                 // = sqrt
-  TRAP_FLOOR,                // = floor
-  TRAP_CEIL,                 // = ceil
-  TRAP_EXP,                  // = exp
-
-  TRAP_MATRIXMULTIPLY = 128, // unused
-  TRAP_ANGLEVECTORS,         // unused
-  TRAP_PERPENDICULARVECTOR,  // unused
-
-  TRAP_VERSION = 255
-} sharedTraps_t;
-
-void trap_SyscallABIVersion( int, int );
-
-#else
-#define FIRST_VM_SYSCALL 256
+#ifndef Q3_VM
+#error What? I am part of the QVM code! Go away!
 #endif
 
-#endif
+#define Q3_VM_INSTANTIATE
+#include "q_shared.h"

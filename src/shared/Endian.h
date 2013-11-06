@@ -116,20 +116,29 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
 # define Q3_LITTLE_ENDIAN
 # define Q3_BYTE_ORDER 1234
+#elif defined(Q3_VM)
 #else
 # error The file boost/detail/endian.hpp needs to be set up for your CPU type.
 #endif
 
 // Compilers are smart enough to optimize these to a single bswap instruction
-static inline int16_t Swap16(int16_t x)
+/*
+STATIC_INLINE int16_t Swap16(int16_t x) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 {
 	return (x >> 8) | (x << 8);
 }
-static inline int32_t Swap32(int32_t x)
+#endif
+
+STATIC_INLINE int32_t Swap32(int32_t x) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 {
 	return (x << 24) | ((x << 8) & 0xff0000) | ((x >> 8) & 0xff00) | (x >> 24);
 }
-static inline int64_t Swap64(int64_t x)
+#endif
+
+#ifndef Q3_VM
+STATIC_INLINE int64_t Swap64(int64_t x)
 {
 	return  (x << 56) |
 	       ((x << 40) & 0xff000000000000ULL) |
@@ -140,7 +149,10 @@ static inline int64_t Swap64(int64_t x)
 	       ((x >> 40) & 0xff00ULL) |
 	        (x >> 56);
 }
-static inline float SwapFloat(float x)
+#endif
+
+STATIC_INLINE float SwapFloat(float x) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 {
 	typedef union
 	{
@@ -154,7 +166,8 @@ static inline float SwapFloat(float x)
 	fi.i = Swap32(fi.i);
 	return fi.f;
 }
-
+#endif
+*/
 #ifdef Q3_LITTLE_ENDIAN
 
 #define LittleShort(x) (x)
@@ -172,6 +185,17 @@ static inline float SwapFloat(float x)
 #define LittleLong(x) Swap32(x)
 #define Little64(x) Swap64(x)
 #define LittleFloat(x) SwapFloat(x)
+#define BigShort(x) (x)
+#define BigLong(x) (x)
+#define Big64(x) (x)
+#define BigFloat(x) (x)
+
+#elif defined(Q3_VM)
+
+#define LittleShort(x) (x)
+#define LittleLong(x) (x)
+#define Little64(x) (x)
+#define LittleFloat(x) (x)
 #define BigShort(x) (x)
 #define BigLong(x) (x)
 #define Big64(x) (x)

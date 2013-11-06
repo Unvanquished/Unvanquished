@@ -43,8 +43,13 @@ typedef struct
 	char      *explicit;
 } cvarTable_t;
 
+#ifdef Q3_VM
+gentity_t          g_entities[ MAX_GENTITIES ];
+gclient_t          g_clients[ MAX_GENTITIES ];
+#else
 gentity_t          *g_entities;
 gclient_t          *g_clients;
+#endif
 
 vmCvar_t           g_showHelpOnConnection;
 

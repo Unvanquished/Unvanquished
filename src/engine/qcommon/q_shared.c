@@ -36,6 +36,7 @@ Maryland 20850 USA.
 #include "q_shared.h"
 #include "q_unicode.h"
 
+#ifndef Q3_VM
 /*
 ============================================================================
 
@@ -253,7 +254,7 @@ float MemStreamGetFloat( memStream_t *s )
 
 	return LittleFloat( c.f );
 }
-
+#endif
 //=============================================================================
 
 float Com_Clamp( float min, float max, float value )
@@ -1671,6 +1672,7 @@ int Com_HexStrToInt( const char *str )
 	return -1;
 }
 
+#ifndef Q3_VM
 /*
 ===================
 Com_QuoteStr
@@ -1841,7 +1843,7 @@ const char *Com_ClearForeignCharacters( const char *str )
 
 	return clean;
 }
-
+#endif
 /*
 ============================================================================
 

@@ -47,7 +47,9 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #elif defined(__native_client__)
 #define PLATFORM_STRING "Native Client"
 #else
+#ifndef Q3_VM
 #error "Platform not supported"
+#endif
 #endif
 
 // Architecture-specific configuration
@@ -61,6 +63,8 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #define ARCH_STRING "x86_64"
 #elif defined(__pnacl__)
 #define ARCH_STRING "PNaCl"
+#elif defined(Q3_VM)
+#define ARCH_STRING "QVM_bytecode"
 #else
 #error "Architecture not supported"
 #endif

@@ -35,6 +35,10 @@ Maryland 20850 USA.
 #ifndef Q_SHARED_H_
 #define Q_SHARED_H_
 
+#if defined( __cplusplus )
+extern "C" {
+#endif
+
 // q_shared.h -- included first by ALL program modules.
 // A user mod should never modify this file
 
@@ -86,6 +90,14 @@ Maryland 20850 USA.
 
 #define Q_UNUSED(x) (void)(x)
 
+#ifdef Q3_VM
+
+#include "../../gamelogic/shared/bg_lib.h"
+typedef int intptr_t;
+#define roundf( f ) ( floor( f + 0.5 ) )
+
+#else //Q3_VM
+
 // for visibility of some functions in system headers
 #undef _GNU_SOURCE
 #undef _BSD_SOURCE
@@ -130,6 +142,8 @@ Maryland 20850 USA.
 #define roundf( f ) ( floor( f + 0.5 ) )
 #endif
 
+#endif //Q3_VM
+
 //=============================================================
 
 	typedef unsigned char        byte;
@@ -151,12 +165,6 @@ Maryland 20850 USA.
 #include "../../shared/Compiler.h"
 #include "../../shared/Platform.h"
 #include "../../shared/Endian.h"
-
-// Compat macros
-#define STATIC_INLINE static inline
-#define QDECL
-#define INLINE inline
-#define Q_EXPORT DLLEXPORT
 
 typedef int qhandle_t;
 typedef int sfxHandle_t;
@@ -423,13 +431,14 @@ typedef int clipHandle_t;
 #define S_COLOR_MDPURPLE "^C"
 #define S_COLOR_NULL     "^*"
 
-STATIC_INLINE qboolean Q_IsColorString( const char *p )
+STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 {
 	return ( p[0] == Q_COLOR_ESCAPE &&
 	         ( p[1] == COLOR_NULL || ( p[1] >= '0' && p[1] != Q_COLOR_ESCAPE && p[1] < 'p' ) )
 	       ) ? qtrue : qfalse;
 }
-
+#endif
 
 #define INDENT_MARKER    '\v'
 
@@ -467,15 +476,27 @@ extern quat_t   quatIdentity;
 
 #define Q_ftol(x) ((long)(x))
 
-STATIC_INLINE float Q_rsqrt( float number )
+STATIC_INLINE float Q_rsqrt( float number ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 {
 	return 1.0f / sqrtf( number );
 }
+#endif
 
-STATIC_INLINE float Q_fabs( float x )
+STATIC_INLINE float Q_fabs( float x ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 {
+#ifndef Q3_VM
 	return fabsf( x );
+#else
+	floatint_t tmp;
+
+	tmp.f = x;
+	tmp.i &= 0x7FFFFFFF;
+	return tmp.f;
+#endif
 }
+#endif
 
 #define Q_recip(x) ( 1.0f / (x) )
 
@@ -558,7 +579,8 @@ void         ByteToDir( int b, vec3_t dir );
 	qboolean BoundsIntersectSphere( const vec3_t mins, const vec3_t maxs, const vec3_t origin, vec_t radius );
 	qboolean BoundsIntersectPoint( const vec3_t mins, const vec3_t maxs, const vec3_t origin );
 
-	STATIC_INLINE void BoundsToCorners( const vec3_t mins, const vec3_t maxs, vec3_t corners[ 8 ] )
+	STATIC_INLINE void BoundsToCorners( const vec3_t mins, const vec3_t maxs, vec3_t corners[ 8 ] ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 		VectorSet( corners[ 0 ], mins[ 0 ], maxs[ 1 ], maxs[ 2 ] );
 		VectorSet( corners[ 1 ], maxs[ 0 ], maxs[ 1 ], maxs[ 2 ] );
@@ -569,10 +591,12 @@ void         ByteToDir( int b, vec3_t dir );
 		VectorSet( corners[ 6 ], maxs[ 0 ], mins[ 1 ], mins[ 2 ] );
 		VectorSet( corners[ 7 ], mins[ 0 ], mins[ 1 ], mins[ 2 ] );
 	}
+#endif
 
 	int VectorCompare( const vec3_t v1, const vec3_t v2 );
 
-	STATIC_INLINE int Vector4Compare( const vec4_t v1, const vec4_t v2 )
+	STATIC_INLINE int Vector4Compare( const vec4_t v1, const vec4_t v2 ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 		if ( v1[ 0 ] != v2[ 0 ] || v1[ 1 ] != v2[ 1 ] || v1[ 2 ] != v2[ 2 ] || v1[ 3 ] != v2[ 3 ] )
 		{
@@ -581,15 +605,19 @@ void         ByteToDir( int b, vec3_t dir );
 
 		return 1;
 	}
+#endif
 
-	STATIC_INLINE void VectorLerp( const vec3_t from, const vec3_t to, float frac, vec3_t out )
+	STATIC_INLINE void VectorLerp( const vec3_t from, const vec3_t to, float frac, vec3_t out ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 		out[ 0 ] = from[ 0 ] + ( ( to[ 0 ] - from[ 0 ] ) * frac );
 		out[ 1 ] = from[ 1 ] + ( ( to[ 1 ] - from[ 1 ] ) * frac );
 		out[ 2 ] = from[ 2 ] + ( ( to[ 2 ] - from[ 2 ] ) * frac );
 	}
+#endif
 
-	STATIC_INLINE int VectorCompareEpsilon( const vec3_t v1, const vec3_t v2, float epsilon )
+	STATIC_INLINE int VectorCompareEpsilon( const vec3_t v1, const vec3_t v2, float epsilon ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 		vec3_t d;
 
@@ -605,6 +633,7 @@ void         ByteToDir( int b, vec3_t dir );
 
 		return 1;
 	}
+#endif
 
 	vec_t VectorLength( const vec3_t v );
 	vec_t VectorLengthSquared( const vec3_t v );
@@ -774,10 +803,12 @@ void         ByteToDir( int b, vec3_t dir );
 	void     MatrixScaleTranslateToUnitCube( matrix_t m, const vec3_t mins, const vec3_t maxs );
 	void     MatrixCrop( matrix_t m, const vec3_t mins, const vec3_t maxs );
 
-	STATIC_INLINE void AnglesToMatrix( const vec3_t angles, matrix_t m )
+	STATIC_INLINE void AnglesToMatrix( const vec3_t angles, matrix_t m ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 		MatrixFromAngles( m, angles[ PITCH ], angles[ YAW ], angles[ ROLL ] );
 	}
+#endif
 
 //=============================================
 
@@ -788,16 +819,19 @@ void         ByteToDir( int b, vec3_t dir );
 
 #define QuatCompare(a,b)   (( a )[ 0 ] == ( b )[ 0 ] && ( a )[ 1 ] == ( b )[ 1 ] && ( a )[ 2 ] == ( b )[ 2 ] && ( a )[ 3 ] == ( b )[ 3 ] )
 
-	STATIC_INLINE void QuatClear( quat_t q )
+	STATIC_INLINE void QuatClear( quat_t q ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 		q[ 0 ] = 0;
 		q[ 1 ] = 0;
 		q[ 2 ] = 0;
 		q[ 3 ] = 1;
 	}
+#endif
 
 	/*
-	STATIC_INLINE int QuatCompare(const quat_t a, const quat_t b)
+	STATIC_INLINE int QuatCompare(const quat_t a, const quat_t b) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 	        if(a[0] != b[0] || a[1] != b[1] || a[2] != b[2] || a[3] != b[3])
 	        {
@@ -805,9 +839,11 @@ void         ByteToDir( int b, vec3_t dir );
 	        }
 	        return 1;
 	}
+#endif
 	*/
 
-	STATIC_INLINE void QuatCalcW( quat_t q )
+	STATIC_INLINE void QuatCalcW( quat_t q ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 #if 1
 		vec_t term = 1.0f - ( q[ 0 ] * q[ 0 ] + q[ 1 ] * q[ 1 ] + q[ 2 ] * q[ 2 ] );
@@ -825,35 +861,44 @@ void         ByteToDir( int b, vec3_t dir );
 		q[ 3 ] = sqrt( fabs( 1.0f - ( q[ 0 ] * q[ 0 ] + q[ 1 ] * q[ 1 ] + q[ 2 ] * q[ 2 ] ) ) );
 #endif
 	}
+#endif
 
-	STATIC_INLINE void QuatInverse( quat_t q )
+	STATIC_INLINE void QuatInverse( quat_t q ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 		q[ 0 ] = -q[ 0 ];
 		q[ 1 ] = -q[ 1 ];
 		q[ 2 ] = -q[ 2 ];
 	}
+#endif
 
-	STATIC_INLINE void QuatAntipodal( quat_t q )
+	STATIC_INLINE void QuatAntipodal( quat_t q ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 		q[ 0 ] = -q[ 0 ];
 		q[ 1 ] = -q[ 1 ];
 		q[ 2 ] = -q[ 2 ];
 		q[ 3 ] = -q[ 3 ];
 	}
+#endif
 
-	STATIC_INLINE vec_t QuatLength( const quat_t q )
+	STATIC_INLINE vec_t QuatLength( const quat_t q ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 		return ( vec_t ) sqrt( q[ 0 ] * q[ 0 ] + q[ 1 ] * q[ 1 ] + q[ 2 ] * q[ 2 ] + q[ 3 ] * q[ 3 ] );
 	}
+#endif
 
 	vec_t QuatNormalize( quat_t q );
 
 	void  QuatFromAngles( quat_t q, vec_t pitch, vec_t yaw, vec_t roll );
 
-	STATIC_INLINE void AnglesToQuat( const vec3_t angles, quat_t q )
+	STATIC_INLINE void AnglesToQuat( const vec3_t angles, quat_t q ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 		QuatFromAngles( q, angles[ PITCH ], angles[ YAW ], angles[ ROLL ] );
 	}
+#endif
 
 	void QuatFromMatrix( quat_t q, const matrix_t m );
 	void QuatToVectorsFLU( const quat_t quat, vec3_t forward, vec3_t left, vec3_t up );
@@ -1226,7 +1271,8 @@ void         ByteToDir( int b, vec3_t dir );
 #define PlaneTypeForNormal( x ) ( x[ 0 ] == 1.0 ? PLANE_X : ( x[ 1 ] == 1.0 ? PLANE_Y : ( x[ 2 ] == 1.0 ? PLANE_Z : ( x[ 0 ] == 0.f && x[ 1 ] == 0.f && x[ 2 ] == 0.f ? PLANE_NON_PLANAR : PLANE_NON_AXIAL ) ) ) )
 
 	/*
-	STATIC_INLINE int PlaneTypeForNormal(vec3_t normal)
+	STATIC_INLINE int PlaneTypeForNormal(vec3_t normal) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 	        if(normal[0] == 1.0)
 	                return PLANE_X;
@@ -1239,6 +1285,7 @@ void         ByteToDir( int b, vec3_t dir );
 
 	        return PLANE_NON_AXIAL;
 	}
+#endif
 	*/
 
 // plane_t structure
@@ -1556,27 +1603,36 @@ void         ByteToDir( int b, vec3_t dir );
 	} usercmd_t;
 
 // Some functions for buttons manipulation & testing
-	STATIC_INLINE void usercmdPressButton( byte *buttons, int bit )
+	STATIC_INLINE void usercmdPressButton( byte *buttons, int bit ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 		buttons[bit / 8] |= 1 << ( bit & 7 );
 	}
+#endif
 
-	STATIC_INLINE void usercmdReleaseButton( byte *buttons, int bit )
+	STATIC_INLINE void usercmdReleaseButton( byte *buttons, int bit ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 		buttons[bit / 8] &= ~( 1 << ( bit & 7 ) );
 	}
+#endif
 
-	STATIC_INLINE void usercmdClearButtons( byte *buttons )
+	STATIC_INLINE void usercmdClearButtons( byte *buttons ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 		memset( buttons, 0, USERCMD_BUTTONS / 8 );
 	}
+#endif
 
-	STATIC_INLINE void usercmdCopyButtons( byte *dest, const byte *source )
+	STATIC_INLINE void usercmdCopyButtons( byte *dest, const byte *source ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 		memcpy( dest, source, USERCMD_BUTTONS / 8 );
 	}
+#endif
 
-	STATIC_INLINE void usercmdLatchButtons( byte *dest, const byte *srcNew, const byte *srcOld )
+	STATIC_INLINE void usercmdLatchButtons( byte *dest, const byte *srcNew, const byte *srcOld ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 		int i;
 		for ( i = 0; i < USERCMD_BUTTONS / 8; ++i )
@@ -1584,16 +1640,21 @@ void         ByteToDir( int b, vec3_t dir );
 			 dest[i] |= srcNew[i] & ~srcOld[i];
 		}
 	}
+#endif
 
-	STATIC_INLINE qboolean usercmdButtonPressed( const byte *buttons, int bit )
+	STATIC_INLINE qboolean usercmdButtonPressed( const byte *buttons, int bit ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 		return ( buttons[bit / 8] & ( 1 << ( bit & 7 ) ) ) ? qtrue : qfalse;
 	}
+#endif
 
-	STATIC_INLINE qboolean usercmdButtonsDiffer( const byte *a, const byte *b )
+	STATIC_INLINE qboolean usercmdButtonsDiffer( const byte *a, const byte *b ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 		return memcmp( a, b, USERCMD_BUTTONS / 8 ) ? qtrue : qfalse;
 	}
+#endif
 
 //===================================================================
 
@@ -1874,5 +1935,9 @@ typedef struct
 #define RSA_PUBLIC_EXPONENT 65537
 #define RSA_KEY_LENGTH      2048
 #define RSA_STRING_LENGTH   ( RSA_KEY_LENGTH / 4 + 1 )
+
+#if defined( __cplusplus )
+}
+#endif
 
 #endif /* Q_SHARED_H_ */
