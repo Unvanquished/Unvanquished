@@ -937,7 +937,7 @@ void AGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, i
 	self->powered = qfalse;
 
 	// warn if in main base and there's an overmind
-	if ( ( om = G_Overmind() ) && om != self && level.time > om->warnTimer && G_InsideBase( self, qtrue ) && IsWarnableMOD( mod ))
+	if ( ( om = G_Overmind() ) && om != self && level.time > om->warnTimer && Distance( self->s.origin, om->s.origin ) <= CREEP_BASESIZE && IsWarnableMOD( mod ) )
 	{
 		om->warnTimer = level.time + NEARBY_ATTACK_PERIOD; // don't spam
 		G_BroadcastEvent( EV_WARN_ATTACK, 0, TEAM_ALIENS );
@@ -1981,7 +1981,7 @@ static gentity_t *NearestPowerSourceInRange( gentity_t *self )
 	gentity_t *best = NULL;
 	float bestDistance = 3e38f;
 
-	if ( neighbor && Distance( self->s.origin, neighbor->s.origin ) < MAX( g_powerReactorRange.integer, INSIDE_BASE_MAX_DISTANCE ) )
+	if ( neighbor && Distance( self->s.origin, neighbor->s.origin ) <= g_powerReactorRange.integer )
 	{
 		return neighbor;
 	}
@@ -2006,7 +2006,7 @@ static gentity_t *NearestPowerSourceInRange( gentity_t *self )
 		}
 	}
 
-	return ( bestDistance < g_powerRepeaterRange.integer ) ? best : NULL;
+	return ( bestDistance <= g_powerRepeaterRange.integer ) ? best : NULL;
 }
 
 /*
