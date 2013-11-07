@@ -327,10 +327,10 @@ namespace Cmd {
                 //Print the matches, keeping the description aligned
                 for (unsigned i = 0; i < matches.size(); i++) {
                     int toFill = maxNameLength - matchesNames[i]->size();
-                    Print("  %s%s %s\n", matchesNames[i]->c_str(), std::string(toFill, ' ').c_str(), matches[i]->description.c_str());
+                    Print("  %s%s %s", matchesNames[i]->c_str(), std::string(toFill, ' ').c_str(), matches[i]->description.c_str());
                 }
 
-                Print("%zu commands\n", matches.size());
+                Print("%zu commands", matches.size());
             }
 
             Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, const std::string& prefix) const override {

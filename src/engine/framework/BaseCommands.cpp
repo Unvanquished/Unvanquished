@@ -110,13 +110,13 @@ namespace Cmd {
                 SetExecArgs(args, filenameArg + 1);
                 if (not ExecFile(filename)) {
                     if (not failSilent) {
-                        Print(_("couldn't exec '%s'\n"), filename.c_str());
+                        Print(_("couldn't exec '%s'"), filename.c_str());
                     }
                     return;
                 }
 
                 if (not executeSilent) {
-                    Print(_("execing '%s'\n"), filename.c_str());
+                    Print(_("execing '%s'"), filename.c_str());
                 }
             }
 
@@ -172,10 +172,12 @@ namespace Cmd {
             }
 
             void Run(const Cmd::Args& args) const override {
+                std::string res = "";
+
                 for (int i = 1; i < args.Argc(); i++) {
-                    Print("%s ", args.Argv(i).c_str());
+                    res += args.Argv(i) + " ";
                 }
-                Print("\n");
+                Print(res);
             }
     };
     static EchoCmd EchoCmdRegistration;
@@ -322,7 +324,7 @@ namespace Cmd {
                 PrintUsage(args, _("<variableToSet> = <number> <operator> <number>"), "");
                 PrintUsage(args, _("<variableToSet> <operator> <number>"), "");
                 PrintUsage(args, _("<variableToSet> (++|--)"), "");
-                Print(_("valid operators: + - × * ÷ /\n"));
+                Print(_("valid operators: + - × * ÷ /"));
             }
 
             Cmd::CompletionResult Complete(int argNum, const Args& args, const std::string& prefix) const override{
@@ -386,7 +388,7 @@ namespace Cmd {
                     result = value2.find(value1) == std::string::npos;
 
                 } else {
-                    Print(_( "invalid relation operator in if command. valid relation operators are = != ≠ < > ≥ >= ≤ <= eq ne in !in\n" ));
+                    Print(_( "invalid relation operator in if command. valid relation operators are = != ≠ < > ≥ >= ≤ <= eq ne in !in" ));
                     Usage(args);
                     return;
                 }
@@ -405,7 +407,7 @@ namespace Cmd {
 
             void Usage(const Cmd::Args& args) const{
                 PrintUsage(args, _("if <number|string> <relation> <number|string> <cmdthen> (<cmdelse>)"), "compares two numbers or two strings and executes <cmdthen> if true, <cmdelse> if false\n");
-                Print(_("-- commands are cvar names unless prefixed with / or \\\n"));
+                Print(_("-- commands are cvar names unless prefixed with / or \\"));
             }
 
             Cmd::CompletionResult Complete(int argNum, const Args& args, const std::string& prefix) const override{
@@ -597,7 +599,7 @@ namespace Cmd {
                 int argc = args.Argc();
 
                 if (argc < 3 or argc > 4) {
-		            PrintUsage(args, _( "delay (name) <delay in milliseconds> <command>\n  delay <delay in frames>f <command>"), _("executes <command> after the delay\n" ));
+		            PrintUsage(args, _( "delay (name) <delay in milliseconds> <command>\n  delay <delay in frames>f <command>"), _("executes <command> after the delay" ));
 		            return;
                 }
 
@@ -609,7 +611,7 @@ namespace Cmd {
                 delayType_t type;
 
                 if (target < 1) {
-                    Print(_("delay: the delay must be a positive integer\n"));
+                    Print(_("delay: the delay must be a positive integer"));
                     return;
                 }
 
@@ -774,9 +776,9 @@ namespace Cmd {
                 //Show an alias
                 if (args.Argc() == 2) {
                     if (aliases.count(name)) {
-                        Print("%s ⇒ %s\n", name.c_str(), aliases[name].command.c_str());
+                        Print("%s ⇒ %s", name.c_str(), aliases[name].command.c_str());
                     } else {
-                        Print(_("Alias %s does not exist\n"), name.c_str());
+                        Print(_("Alias %s does not exist"), name.c_str());
                     }
                     return;
                 }
@@ -790,7 +792,7 @@ namespace Cmd {
                 }
 
                 if (CommandExists(name)) {
-                    Print(_("Can't override a builtin function with an alias\n"));
+                    Print(_("Can't override a builtin function with an alias"));
                     return;
                 }
 
@@ -886,10 +888,10 @@ namespace Cmd {
                 //Print the matches, keeping the description aligned
                 for (unsigned i = 0; i < matches.size(); i++) {
                     int toFill = maxNameLength - matchesNames[i]->size();
-                    Print("  %s%s ⇒ %s\n", matchesNames[i]->c_str(), std::string(toFill, ' ').c_str(), matches[i]->command.c_str());
+                    Print("  %s%s ⇒ %s", matchesNames[i]->c_str(), std::string(toFill, ' ').c_str(), matches[i]->command.c_str());
                 }
 
-                Print("%zu aliases\n", matches.size());
+                Print("%zu aliases", matches.size());
             }
     };
     static ListAliasesCmd ListAliasesCmdRegistration;

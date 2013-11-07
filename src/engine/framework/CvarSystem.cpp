@@ -154,7 +154,7 @@ namespace Cvar {
                 cvarRecord_t* var = cvars[name];
 
                 if (args.Argc() < 2) {
-                    Print(_("\"%s\" is \"%s^7\" default: \"%s^7\" %s\n"), name.c_str(), var->value.c_str(), var->resetValue.c_str(), var->description.c_str());
+                    Print(_("\"%s\" is \"%s^7\" default: \"%s^7\" %s"), name.c_str(), var->value.c_str(), var->resetValue.c_str(), var->description.c_str());
                 } else {
                     //TODO forward the print part of the environment
                     SetValue(name, args.Argv(1));
@@ -403,7 +403,6 @@ namespace Cvar {
                 bool unsafe = false;
 
                 if (argc < 3) {
-                    Print("'%s'\n", args.RawCmd().c_str());
                     PrintUsage(args, _("[-unsafe] <variable> <value>"), "");
                     return;
                 }
@@ -417,7 +416,7 @@ namespace Cvar {
 
                 //TODO
                 if (unsafe and com_crashed != nullptr and com_crashed->integer != 0) {
-                    Print(_("%s is unsafe. Check com_crashed.\n"), name.c_str());
+                    Print(_("%s is unsafe. Check com_crashed."), name.c_str());
                     return;
                 }
 
@@ -461,7 +460,7 @@ namespace Cvar {
                     cvarRecord_t* cvar = cvars[name];
                     ::Cvar::SetValue(name, cvar->resetValue);
                 } else {
-                    Print(_("Cvar '%s' doesn't exist\n"), name.c_str());
+                    Print(_("Cvar '%s' doesn't exist"), name.c_str());
                 }
             }
 
@@ -526,8 +525,7 @@ namespace Cvar {
                     const std::string& value = matchesValues[i];
                     cvarRecord_t* var = matches[i];
 
-                    std::string filler = std::string(maxNameLength - name.length(), ' ');
-                    Print("  %s%s", name.c_str(), filler.c_str());
+                    std::string filler1 = std::string(maxNameLength - name.length(), ' ');
 
                     std::string flags = "";
                     flags += (var->flags & SERVERINFO) ? "S" : "_";
@@ -540,19 +538,16 @@ namespace Cvar {
                     flags += (var->flags & CHEAT) ? "C" : "_";
                     flags += (var->flags & CVAR_USER_CREATED) ? "?" : "_";
 
-                    Print("%s ", flags.c_str());
-
                     int padding = maxValueLength - value.length();
+                    std::string filler2;
                     if (padding > 0) {
-                        filler = std::string(maxValueLength - value.length(), ' ');
-                    } else {
-                        filler = "";
+                        filler2 = std::string(maxValueLength - value.length(), ' ');
                     }
 
-                    Print("%s%s %s\n", value.c_str(), filler.c_str(), var->description.c_str());
+                    Print("  %s%s %s %s%s %s", name, filler1, flags, value, filler2, var->description);
                 }
 
-                Com_Printf("%zu cvars\n", matches.size());
+                Print("%zu cvars", matches.size());
             }
 
             Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, const std::string& prefix) const override{
