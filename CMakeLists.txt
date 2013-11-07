@@ -604,6 +604,7 @@ set( SDLLIST
 )
 
 set( CGAMELIST
+  ${GAMELOGIC_DIR}/cgame/cg_main.c #keep it first because vmMain must be the first function compiled in qvms
   ${GAMELOGIC_DIR}/shared/bg_misc.c
   ${GAMELOGIC_DIR}/shared/bg_parse.c
   ${GAMELOGIC_DIR}/shared/bg_pmove.c
@@ -619,7 +620,6 @@ set( CGAMELIST
   ${GAMELOGIC_DIR}/cgame/cg_drawtools.c
   ${GAMELOGIC_DIR}/cgame/cg_ents.c
   ${GAMELOGIC_DIR}/cgame/cg_event.c
-  ${GAMELOGIC_DIR}/cgame/cg_main.c
   ${GAMELOGIC_DIR}/cgame/cg_marks.c
   ${GAMELOGIC_DIR}/cgame/cg_minimap.c
   ${GAMELOGIC_DIR}/cgame/cg_players.c
@@ -656,7 +656,7 @@ set( CGAMEASMLIST
 )
 
 set( GAMELIST
-  ${GAMELOGIC_DIR}/game/g_main.c
+  ${GAMELOGIC_DIR}/game/g_main.c #keep it first because vmMain must be the first function compiled in qvms
   ${GAMELOGIC_DIR}/shared/bg_misc.c
   ${GAMELOGIC_DIR}/shared/bg_parse.c
   ${GAMELOGIC_DIR}/shared/bg_pmove.c
@@ -719,7 +719,7 @@ set( GAMEASMLIST
 )
 
 set( UILIST
-  ${GAMELOGIC_DIR}/ui/ui_main.c
+  ${GAMELOGIC_DIR}/ui/ui_main.c #keep it first because vmMain must be the first function compiled in qvms
   ${GAMELOGIC_DIR}/ui/ui_atoms.c
   ${GAMELOGIC_DIR}/ui/ui_shared.c
   ${GAMELOGIC_DIR}/ui/ui_gameinfo.c

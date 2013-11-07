@@ -2516,12 +2516,12 @@ static void CG_PlayerNonSegAxis( centity_t *cent, vec3_t srcAngles, vec3_t nonSe
 CG_PlayerUpgrade
 ===============
 */
-static refEntity_t jetpack;
-static refEntity_t flash;
 static void CG_PlayerUpgrades( centity_t *cent, refEntity_t *torso )
 {
 	// These are static because otherwise we have >32K of locals, and lcc doesn't like that.
 	// Also, jetpack and battpack are never both in use together, so just #define.
+	static refEntity_t jetpack;
+	static refEntity_t flash;
 #	define battpack jetpack
 
 	int           held, active;
