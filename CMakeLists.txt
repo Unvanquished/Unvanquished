@@ -1194,7 +1194,7 @@ function( GAMEMODULE )
   if( BUILD_GAME_NATIVE )
     # HACK: Compile shared files as C
     set_source_files_properties( ${SHAREDLIST_HACK} PROPERTIES LANGUAGE C )
-    add_library( ${GAMEMODULE_NAME} SHARED ${GAMEMODULE_FILES} ${SHAREDLIST_HACK} ${GAMEMODULE_NATIVE_FILES} )
+    add_library( ${GAMEMODULE_NAME} MODULE ${GAMEMODULE_FILES} ${SHAREDLIST_HACK} ${GAMEMODULE_NATIVE_FILES} )
     target_link_libraries( ${GAMEMODULE_NAME} ${LIBS_BASE} )
     set_target_properties( ${GAMEMODULE_NAME} PROPERTIES
       PREFIX ""
@@ -1317,7 +1317,7 @@ function( GAMEMODULE )
     set( QVM_DIR ${OBJ_DIR}/${GAMEMODULE_NAME}-qvm.dir )
     file(MAKE_DIRECTORY ${QVM_DIR})
 
-    set( QVM_COMPILE_OPTIONS "-I\"${MOUNT_DIR}/gamelogic/game\" -I\"${MOUNT_DIR}/engine/qcommon\" -DQ3_VM" )
+    set( QVM_COMPILE_OPTIONS -I${MOUNT_DIR}/gamelogic/game -I${MOUNT_DIR}/engine/qcommon -DQ3_VM -DQVM_COMPAT )
     foreach( DEF ${GAMEMODULE_COMPILE_DEF} )
       set( QVM_COMPILE_OPTIONS ${QVM_COMPILE_OPTIONS} -D${DEF} )
     endforeach()
