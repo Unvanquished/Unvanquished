@@ -753,42 +753,37 @@ R_CullIQM
 =============
 */
 static int R_CullIQM( trRefEntity_t *ent ) {
-#if 0
-	vec3_t          bounds[2];
-	vec_t           *oldBounds, *newBounds;
-	int             i;
+	vec3_t     localBounds[ 2 ];
 
-	if (!data->bounds) {
-		tr.pc.c_box_cull_md3_clip++;
-		return CULL_CLIP;
+	if ( ent->e.skeleton.type == SK_INVALID )
+	{
+		// no properly set skeleton so use the bounding box by the model instead by the animations
+		IQModel_t *model = tr.currentModel->iqm;
+		IQAnim_t  *anim = model->anims;
+
+		VectorCopy( anim->bounds, localBounds[ 0 ] );
+		VectorCopy( anim->bounds + 3, localBounds[ 1 ] );
+	}
+	else
+	{
+		// copy a bounding box in the current coordinate system provided by skeleton
+		VectorCopy( ent->e.skeleton.bounds[ 0 ], localBounds[ 0 ] );
+		VectorCopy( ent->e.skeleton.bounds[ 1 ], localBounds[ 1 ] );
 	}
 
-	// compute bounds pointers
-	oldBounds = data->bounds + 6*ent->e.oldframe;
-	newBounds = data->bounds + 6*ent->e.frame;
-
-	// calculate a bounding box in the current coordinate system
-	for (i = 0 ; i < 3 ; i++) {
-		bounds[0][i] = oldBounds[i] < newBounds[i] ? oldBounds[i] : newBounds[i];
-		bounds[1][i] = oldBounds[i+3] > newBounds[i+3] ? oldBounds[i+3] : newBounds[i+3];
-	}
-
-	switch ( R_CullLocalBox( bounds ) )
+	switch ( R_CullLocalBox( localBounds ) )
 	{
 	case CULL_IN:
-		tr.pc.c_box_cull_md3_in++;
+		tr.pc.c_box_cull_md5_in++;
 		return CULL_IN;
 	case CULL_CLIP:
-		tr.pc.c_box_cull_md3_clip++;
+		tr.pc.c_box_cull_md5_clip++;
 		return CULL_CLIP;
 	case CULL_OUT:
 	default:
-		tr.pc.c_box_cull_md3_out++;
+		tr.pc.c_box_cull_md5_out++;
 		return CULL_OUT;
 	}
-
-	return CULL_IN;
-#endif
 }
 
 /*
@@ -798,31 +793,39 @@ R_ComputeIQMFogNum
 =================
 */
 int R_ComputeIQMFogNum( trRefEntity_t *ent ) {
-#if 0
-	int                     i, j;
-	fog_t                   *fog;
-	vec_t                   *bounds;
-	static vec_t		defaultBounds[6] = { -8, -8, -8, 8, 8, 8 };
-	vec3_t                  diag, center;
-	vec3_t                  localOrigin;
-	vec_t                   radius;
+	int        i, j;
+	fog_t      *fog;
+	vec3_t     localBounds[ 2 ];
+	vec3_t     diag, center;
+	vec3_t     localOrigin;
+	vec_t      radius;
 
 	if ( tr.refdef.rdflags & RDF_NOWORLDMODEL ) {
 		return 0;
 	}
 
-	// FIXME: non-normalized axis issues
-	if (data->bounds) {
-		bounds = data->bounds + 6*ent->e.frame;
-	} else {
-		bounds = defaultBounds;
+	if ( ent->e.skeleton.type == SK_INVALID )
+	{
+		// no properly set skeleton so use the bounding box by the model instead by the animations
+		IQModel_t *model = tr.currentModel->iqm;
+		IQAnim_t  *anim = model->anims;
+
+		VectorCopy( anim->bounds, localBounds[ 0 ] );
+		VectorCopy( anim->bounds + 3, localBounds[ 1 ] );
 	}
-	VectorSubtract( bounds+3, bounds, diag );
-	VectorMA( bounds, 0.5f, diag, center );
+	else
+	{
+		// copy a bounding box in the current coordinate system provided by skeleton
+		VectorCopy( ent->e.skeleton.bounds[ 0 ], localBounds[ 0 ] );
+		VectorCopy( ent->e.skeleton.bounds[ 1 ], localBounds[ 1 ] );
+	}
+
+	VectorSubtract( localBounds[ 1 ], localBounds[ 0 ], diag );
+	VectorMA( localBounds[ 0 ], 0.5f, diag, center );
 	VectorAdd( ent->e.origin, center, localOrigin );
 	radius = 0.5f * VectorLength( diag );
 
-	for ( i = 1 ; i < tr.world->numfogs ; i++ ) {
+	for ( i = 1 ; i < tr.world->numFogs ; i++ ) {
 		fog = &tr.world->fogs[i];
 		for ( j = 0 ; j < 3 ; j++ ) {
 			if ( localOrigin[j] - radius >= fog->bounds[1][j] ) {
@@ -836,7 +839,7 @@ int R_ComputeIQMFogNum( trRefEntity_t *ent ) {
 			return i;
 		}
 	}
-#endif
+
 	return 0;
 }
 
