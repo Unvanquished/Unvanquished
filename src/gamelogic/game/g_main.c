@@ -43,7 +43,7 @@ typedef struct
 	char      *explicit;
 } cvarTable_t;
 
-#ifdef Q3_VM
+#ifndef NACL
 gentity_t          g_entities[ MAX_GENTITIES ];
 gclient_t          g_clients[ MAX_GENTITIES ];
 #else
@@ -474,7 +474,7 @@ enum
 	LOG_GAMEPLAY_STATS_FOOTER
 };
 
-#ifdef Q3_VM
+#ifndef NACL
 /*
 ================
 vmMain
@@ -797,7 +797,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 {
 	int i;
 
-#ifdef Q3_VM
+#ifndef NACL
 	trap_SyscallABIVersion( SYSCALL_ABI_VERSION_MAJOR, SYSCALL_ABI_VERSION_MINOR );
 #endif
 
