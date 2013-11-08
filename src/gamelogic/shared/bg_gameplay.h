@@ -311,6 +311,10 @@ extern int   REACTOR_ATTACK_DCC_DAMAGE;
 #define HUMAN_MAX_CREDITS             2000
 #define HUMAN_TK_SUICIDE_PENALTY      150
 
+#define JETPACK_TARGETSPEED           350.0f
+#define JETPACK_ACCELERATION          3.0f
+#define JETPACK_JUMPMAG_REDUCTION     0.25f
+
 /*
  * Misc
  */

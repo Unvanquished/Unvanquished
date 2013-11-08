@@ -157,7 +157,7 @@ typedef enum
 #define PMF_CROUCH_HELD    0x000004
 #define PMF_BACKWARDS_JUMP 0x000008 // go into backwards land
 #define PMF_BACKWARDS_RUN  0x000010 // coast down to backwards run
-#define PMF_TIME_LAND      0x000020 // pm_time is time before rejump
+#define PMF_JUMPED         0x000020 // whether we entered the air with a jump
 #define PMF_TIME_KNOCKBACK 0x000040 // pm_time is an air-accelerate only time
 #define PMF_TIME_WATERJUMP 0x000080 // pm_time is waterjump
 #define PMF_RESPAWNED      0x000100 // clear after attack and jump buttons come up
@@ -170,7 +170,7 @@ typedef enum
 #define PMF_WEAPON_SWITCH  0x008000 // force a weapon switch
 #define PMF_SPRINTHELD     0x010000
 
-#define PMF_ALL_TIMES      ( PMF_TIME_WATERJUMP | PMF_TIME_LAND | PMF_TIME_KNOCKBACK | PMF_TIME_WALLJUMP )
+#define PMF_ALL_TIMES      ( PMF_TIME_WATERJUMP | PMF_TIME_KNOCKBACK | PMF_TIME_WALLJUMP )
 
 typedef struct
 {
@@ -236,9 +236,9 @@ typedef enum
   STAT_WEAPON, // current primary weapon
   STAT_MAX_HEALTH, // health / armor limit
   STAT_CLASS, // player class (for aliens AND humans)
-  STAT_UNUSED_1, // UNUSED
+  STAT_STATE2, // more client states
   STAT_STAMINA, // stamina (human only)
-  STAT_STATE, // client states e.g. wall climbing
+  STAT_STATE, // client states
   STAT_MISC, // for uh...misc stuff (pounce, trample, lcannon)
   STAT_BUILDABLE, // which ghost model to display for building
   STAT_FALLDIST, // the distance the player fell
@@ -255,7 +255,7 @@ typedef enum
 #define SCA_CANUSELADDERS   0x00000020
 #define SCA_WALLJUMPER      0x00000040
 
-// STAT_STATE fields. 16/32 bit available?
+// STAT_STATE fields. 16 bit available
 #define SS_WALLCLIMBING     BIT(0)
 #define SS_CREEPSLOWED      BIT(1)
 #define SS_SPEEDBOOST       BIT(2)
@@ -270,8 +270,11 @@ typedef enum
 #define SS_HEALING_ACTIVE   BIT(11) // medistat for humans, creep for aliens
 #define SS_HEALING_2X       BIT(12) // medkit or double healing rate
 #define SS_HEALING_3X       BIT(13) // triple healing rate
-#define SS_JETPACK_ENABLED  BIT(14)
-#define SS_JETPACK_ACTIVE   BIT(15)
+
+// STAT_STATE2 fields. 16 bit available
+#define SS2_JETPACK_ENABLED BIT(0)  // whether jets/wings are extended
+#define SS2_JETPACK_WARM    BIT(1)  // whether we can start a thrust
+#define SS2_JETPACK_ACTIVE  BIT(2)  // whether we are thrusting
 
 // has to fit into 16 bits
 #define SB_BUILDABLE_MASK        0x00FF

@@ -1260,6 +1260,124 @@ static qboolean PM_CheckWallJump( void )
 	return qtrue;
 }
 
+static qboolean PM_CheckJetpack( void )
+{
+	static const vec3_t thrustDir = { 0.0f, 0.0f, 1.0f };
+
+	if ( pm->ps->pm_type != PM_NORMAL ||
+	     pm->ps->persistant[ PERS_TEAM ] != TEAM_HUMANS ||
+	     !BG_InventoryContainsUpgrade( UP_JETPACK, pm->ps->stats ) )
+	{
+		pm->ps->stats[ STAT_STATE2 ] &= ~SS2_JETPACK_ACTIVE;
+		pm->ps->stats[ STAT_STATE2 ] &= ~SS2_JETPACK_WARM;
+		pm->ps->stats[ STAT_STATE2 ] &= ~SS2_JETPACK_ENABLED;
+
+		return qfalse;
+	}
+
+	// enable jetpack when in air
+	if ( pm->ps->groundEntityNum == ENTITYNUM_NONE &&
+	     !( pm->ps->stats[ STAT_STATE2 ] & SS2_JETPACK_ENABLED ) )
+	{
+		if ( pm->debugLevel > 0 )
+		{
+			Com_Printf( "[PM_CheckJetpack] " S_COLOR_CYAN "Jetpack enabled\n" );
+		}
+
+		pm->ps->stats[ STAT_STATE2 ] |= SS2_JETPACK_ENABLED;
+
+		PM_AddEvent( EV_JETPACK_ENABLE );
+
+		return qfalse;
+	}
+
+	// disable jetpack when landed
+	if ( pm->ps->groundEntityNum != ENTITYNUM_NONE &&
+	     ( pm->ps->stats[ STAT_STATE2 ] & SS2_JETPACK_ENABLED ) )
+	{
+		if ( pm->debugLevel > 0 )
+		{
+			Com_Printf( "[PM_CheckJetpack] " S_COLOR_YELLOW "Jetpack disabled\n" );
+		}
+
+		pm->ps->stats[ STAT_STATE2 ] &= ~SS2_JETPACK_WARM;
+		pm->ps->stats[ STAT_STATE2 ] &= ~SS2_JETPACK_ENABLED;
+
+		PM_AddEvent( EV_JETPACK_DISABLE );
+
+		return qfalse;
+	}
+
+	// if jump key not held, stop active thrust
+	if ( pm->cmd.upmove < 10 ) // TODO: Check if less hacky solution exists
+	{
+		if ( pm->ps->stats[ STAT_STATE2 ] & SS2_JETPACK_ACTIVE )
+		{
+			if ( pm->debugLevel > 0 )
+			{
+				Com_Printf( "[PM_CheckJetpack] " S_COLOR_LTORANGE "Jetpack stopped\n" );
+			}
+
+			pm->ps->stats[ STAT_STATE2 ] &= ~SS2_JETPACK_ACTIVE;
+
+			PM_AddEvent( EV_JETPACK_STOP );
+		}
+
+		return qfalse;
+	}
+
+	// only thrust when jetpack enabled
+	if ( !( pm->ps->stats[ STAT_STATE2 ] & SS2_JETPACK_ENABLED ) )
+	{
+		if ( pm->debugLevel > 0 )
+		{
+			Com_Printf( "[PM_CheckJetpack] " S_COLOR_RED "Can't start jetpack: Not enabled\n" );
+		}
+
+		return qfalse;
+	}
+
+	// check thrust starting conditions
+	if ( !( pm->ps->stats[ STAT_STATE2 ] & SS2_JETPACK_WARM ) )
+	{
+		// we got off ground by jumping
+		if ( pm->ps->pm_flags & PMF_JUMPED )
+		{
+			// require the jump key to be held since the jump
+			if ( !( pm->ps->pm_flags & PMF_JUMP_HELD ) )
+			{
+				return qfalse;
+			}
+
+			// wait until at highest spot
+			if ( !( pm->ps->stats[ STAT_STATE2 ] & SS2_JETPACK_ACTIVE ) && pm->ps->velocity[ 2 ] > 0.0f )
+			{
+				return qfalse;
+			}
+		}
+
+		pm->ps->stats[ STAT_STATE2 ] |= SS2_JETPACK_WARM;
+	}
+
+	// start thrust if not already thrusting
+	if ( !( pm->ps->stats[ STAT_STATE2 ] & SS2_JETPACK_ACTIVE ) )
+	{
+		if ( pm->debugLevel > 0 )
+		{
+			Com_Printf( "[PM_CheckJetpack] " S_COLOR_GREEN "Jetpack started\n" );
+		}
+
+		pm->ps->stats[ STAT_STATE2 ] |= SS2_JETPACK_ACTIVE;
+
+		PM_AddEvent( EV_JETPACK_START );
+	}
+
+	// thrust
+	PM_Accelerate( thrustDir, JETPACK_TARGETSPEED, JETPACK_ACCELERATION );
+
+	return qtrue;
+}
+
 /**
  * @brief Disables the jetpack. Without force, the call can get ignored based on previous velocity.
  */
@@ -1280,137 +1398,42 @@ static void PM_LandJetpack( qboolean force )
 		{
 			if ( pm->debugLevel > 0 )
 			{
-				Com_Printf( "[PM_LandJetpack] %.0f° " S_COLOR_GREEN "not landing\n", RAD2DEG( angle ) );
+				Com_Printf( "[PM_LandJetpack] %.0f° Ignored landing\n", RAD2DEG( angle ) );
 			}
 
 			return;
 		}
 	}
 
-	if ( pm->ps->stats[ STAT_STATE ] & SS_JETPACK_ACTIVE )
+	if ( pm->ps->stats[ STAT_STATE2 ] & SS2_JETPACK_ACTIVE )
 	{
 		if ( pm->debugLevel > 0 )
 		{
-			Com_Printf( "[PM_LandJetpack] %.0f° %s" S_COLOR_LTORANGE "stopping\n", RAD2DEG( angle ),
+			Com_Printf( "[PM_LandJetpack] %.0f° %s" S_COLOR_LTORANGE "Landed: Jetpack stopped\n", RAD2DEG( angle ),
 			            force ? S_COLOR_RED "(FORCED) " : "" );
 		}
 
-		pm->ps->stats[ STAT_STATE ] &= ~SS_JETPACK_ACTIVE;
+		pm->ps->stats[ STAT_STATE2 ] &= ~SS2_JETPACK_ACTIVE;
+
 		PM_AddEvent( EV_JETPACK_STOP );
 
-		// mark the jump key held so there is no immediate jump on landing
+		// HACK: mark the jump key held so there is no immediate jump on landing
 		pm->ps->pm_flags |= PMF_JUMP_HELD;
 	}
 
-	if ( pm->ps->stats[ STAT_STATE ] & SS_JETPACK_ENABLED )
+	if ( pm->ps->stats[ STAT_STATE2 ] & SS2_JETPACK_ENABLED )
 	{
 		if ( pm->debugLevel > 0 )
 		{
-			Com_Printf( "[PM_LandJetpack] %.0f° %s" S_COLOR_YELLOW "disabling\n", RAD2DEG( angle ),
+			Com_Printf( "[PM_LandJetpack] %.0f° %s" S_COLOR_YELLOW "Landed: Jetpack disabled\n", RAD2DEG( angle ),
 			            force ? S_COLOR_RED "(FORCED) " : "" );
 		}
 
-		pm->ps->stats[ STAT_STATE ] &= ~SS_JETPACK_ENABLED;
+		pm->ps->stats[ STAT_STATE2 ] &= ~SS2_JETPACK_WARM;
+		pm->ps->stats[ STAT_STATE2 ] &= ~SS2_JETPACK_ENABLED;
+
 		PM_AddEvent( EV_JETPACK_DISABLE );
 	}
-}
-
-#define JETPACK_TARGETSPEED  350.0f
-#define JETPACK_ACCELERATION   3.0f
-
-static qboolean PM_CheckJetpack( void )
-{
-	if ( pm->ps->pm_type != PM_NORMAL ||
-	     pm->ps->persistant[ PERS_TEAM ] != TEAM_HUMANS ||
-	     !BG_InventoryContainsUpgrade( UP_JETPACK, pm->ps->stats ) )
-	{
-		return qfalse;
-	}
-
-	// enable jetpack when in air
-	if ( pm->ps->groundEntityNum == ENTITYNUM_NONE &&
-	     !( pm->ps->stats[ STAT_STATE ] & SS_JETPACK_ENABLED ) )
-	{
-		if ( pm->debugLevel > 0 )
-		{
-			Com_Printf( "[PM_CheckJetpack] " S_COLOR_MAGENTA "enabling\n" );
-		}
-
-		pm->ps->stats[ STAT_STATE ] |= SS_JETPACK_ENABLED;
-		PM_AddEvent( EV_JETPACK_ENABLE );
-
-		return qfalse;
-	}
-
-	// disable jetpack when landed
-	if ( pm->ps->groundEntityNum != ENTITYNUM_NONE &&
-	     ( pm->ps->stats[ STAT_STATE ] & SS_JETPACK_ENABLED ) )
-	{
-		if ( pm->debugLevel > 0 )
-		{
-			Com_Printf( "[PM_CheckJetpack] " S_COLOR_YELLOW "disabling\n" );
-		}
-
-		pm->ps->stats[ STAT_STATE ] &= ~SS_JETPACK_ENABLED;
-		PM_AddEvent( EV_JETPACK_DISABLE );
-
-		return qfalse;
-	}
-
-	// if jump key not held, stop active thrust
-	if ( pm->cmd.upmove < 10 ) // TODO: Check if less hacky solution exists
-	{
-		if ( pm->ps->stats[ STAT_STATE ] & SS_JETPACK_ACTIVE )
-		{
-			if ( pm->debugLevel > 0 )
-			{
-				Com_Printf( "[PM_CheckJetpack] " S_COLOR_LTORANGE "stopping\n" );
-			}
-
-			pm->ps->stats[ STAT_STATE ] &= ~SS_JETPACK_ACTIVE;
-			PM_AddEvent( EV_JETPACK_STOP );
-		}
-
-		return qfalse;
-	}
-
-	// only (start) thrust when jetpack enabled
-	if ( !( pm->ps->stats[ STAT_STATE ] & SS_JETPACK_ENABLED ) )
-	{
-		if ( pm->debugLevel > 0 )
-		{
-			Com_Printf( "[PM_CheckJetpack] " S_COLOR_RED "can't start: not enabled\n" );
-		}
-
-		return qfalse;
-	}
-
-	// don't start thrusters as long as moving upwards
-	if ( !( pm->ps->stats[ STAT_STATE ] & SS_JETPACK_ACTIVE ) && pm->ps->velocity[ 2 ] > 0.0f )
-	{
-		return qfalse;
-	}
-
-	// start thrust if not already thrusting
-	if ( !( pm->ps->stats[ STAT_STATE ] & SS_JETPACK_ACTIVE ) )
-	{
-		if ( pm->debugLevel > 0 )
-		{
-			Com_Printf( "[PM_CheckJetpack] " S_COLOR_GREEN "starting\n" );
-		}
-
-		pm->ps->stats[ STAT_STATE ] |= SS_JETPACK_ACTIVE;
-		PM_AddEvent( EV_JETPACK_START );
-	}
-
-	// thrust
-	{
-		static const vec3_t thrustDir = { 0.0f, 0.0f, 1.0f };
-
-		PM_Accelerate( thrustDir, JETPACK_TARGETSPEED, JETPACK_ACCELERATION );
-	}
-
-	return qtrue;
 }
 
 static qboolean PM_CheckJump( void )
@@ -1465,11 +1488,15 @@ static qboolean PM_CheckJump( void )
 
 	//can't jump whilst grabbed
 	if ( pm->ps->pm_type == PM_GRABBED )
+	{
 		return qfalse;
+	}
 
 	// must wait for jump to be released
 	if ( pm->ps->pm_flags & PMF_JUMP_HELD )
+	{
 		return qfalse;
+	}
 
 	//don't allow walljump for a short while after jumping from the ground
 	if ( BG_ClassHasAbility( pm->ps->stats[ STAT_CLASS ], SCA_WALLJUMPER ) )
@@ -1480,6 +1507,7 @@ static qboolean PM_CheckJump( void )
 
 	pml.groundPlane = qfalse; // jumping away
 	pml.walking = qfalse;
+	pm->ps->pm_flags |= PMF_JUMPED;
 	pm->ps->pm_flags |= PMF_JUMP_HELD;
 	pm->ps->groundEntityNum = ENTITYNUM_NONE;
 
@@ -1496,9 +1524,15 @@ static qboolean PM_CheckJump( void )
 	magnitude = BG_Class( pm->ps->stats[ STAT_CLASS ] )->jumpMagnitude;
 
 	// if jetpack is active, scale down jump magnitude
-	if ( pm->ps->stats[ STAT_STATE ] & SS_JETPACK_ACTIVE )
+	if ( pm->ps->stats[ STAT_STATE2 ] & SS2_JETPACK_ACTIVE )
 	{
-		magnitude *= 0.5f;
+		if ( pm->debugLevel > 0 )
+		{
+			Com_Printf( "[PM_CheckJump] Using jetpack: Decreasing jump magnitude to %.0f%%\n",
+			            JETPACK_JUMPMAG_REDUCTION * 100.0f );
+		}
+
+		magnitude *= JETPACK_JUMPMAG_REDUCTION;
 	}
 
 	// sanity clip velocity Z
@@ -2304,6 +2338,7 @@ static void PM_Land( void )
 		pm->ps->torsoTimer = TIMER_LAND;
 	}
 
+	pm->ps->pm_flags &= ~PMF_JUMPED;
 }
 
 /*

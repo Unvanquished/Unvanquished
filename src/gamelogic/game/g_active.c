@@ -855,7 +855,7 @@ void ClientTimerActions( gentity_t *ent, int msec )
 		{
 			client->ps.stats[ STAT_STAMINA ] += ca->staminaStopRestore;
 		}
-		else if ( client->ps.stats[ STAT_STATE ] & SS_JETPACK_ACTIVE )
+		else if ( client->ps.stats[ STAT_STATE2 ] & SS2_JETPACK_ACTIVE )
 		{
 			// flying the jetpack is roughly as relaxing as jogging
 			client->ps.stats[ STAT_STAMINA ] += ca->staminaJogRestore;

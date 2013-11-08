@@ -1408,7 +1408,7 @@ void BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s, qboolean 
 	s->modelindex2 = 0;
 
 	// copy jetpack state
-	if (ps->stats[ STAT_STATE ] & SS_JETPACK_ENABLED )
+	if (ps->stats[ STAT_STATE2 ] & SS2_JETPACK_ENABLED )
 	{
 		s->modelindex2 |= PF_JETPACK_ENABLED;
 	}
@@ -1417,7 +1417,7 @@ void BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s, qboolean 
 		s->modelindex2 &= ~PF_JETPACK_ENABLED;
 	}
 
-	if ( ps->stats[ STAT_STATE ] & SS_JETPACK_ACTIVE )
+	if ( ps->stats[ STAT_STATE2 ] & SS2_JETPACK_ACTIVE )
 	{
 		s->modelindex2 |= PF_JETPACK_ACTIVE;
 	}
