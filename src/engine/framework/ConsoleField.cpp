@@ -57,7 +57,7 @@ namespace Console {
         } else if (defaultCommand.empty()) {
             Cmd::BufferCommandText(current, true);
         } else {
-            Cmd::BufferCommandText(defaultCommand + " " + current, true);
+            Cmd::BufferCommandText(defaultCommand + " " + Cmd::Escape(current), true);
         }
         AddToHistory(hist, std::move(current));
 
