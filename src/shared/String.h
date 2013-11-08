@@ -23,6 +23,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <string>
+#include <algorithm>
 #include "../libs/tinyformat/tinyformat.h"
 
 #ifndef SHARED_STRING_H_
@@ -140,6 +141,29 @@ namespace Str {
     // Case Insensitive versions
     bool IsIPrefix(Str::StringRef prefix, Str::StringRef text);
     int LongestIPrefixSize(Str::StringRef text1, Str::StringRef text2);
+
+    // Case insensitive Hash and Equal functions for maps
+    struct IHash {
+        size_t operator()(Str::StringRef str) const
+        {
+            std::string temp;
+            temp.reserve(str.size());
+            std::transform(str.begin(), str.end(), std::back_inserter(temp), tolower);
+            return std::hash<std::string>()(temp);
+        }
+    };
+    struct IEqual {
+        bool operator()(Str::StringRef a, Str::StringRef b) const
+        {
+            if (a.size() != b.size())
+                return false;
+            for (size_t i = 0; i < a.size(); i++) {
+                if (tolower(a[i]) != tolower(b[i]))
+                    return false;
+            }
+            return true;
+        }
+    };
 
     std::u32string UTF8To32(Str::StringRef str);
     std::string UTF32To8(Str::BasicStringRef<char32_t> str);

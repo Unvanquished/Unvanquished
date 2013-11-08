@@ -101,7 +101,7 @@ namespace Cmd {
         const CmdBase* cmd;
     };
 
-    typedef std::unordered_map<std::string, commandRecord_t> CommandMap;
+    typedef std::unordered_map<std::string, commandRecord_t, Str::IHash, Str::IEqual> CommandMap;
 
     // Command execution is sequential so we make their environment a global variable.
     Environment* storedEnvironment = nullptr;

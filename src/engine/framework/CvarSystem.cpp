@@ -132,7 +132,7 @@ namespace Cvar {
         }
     }
 
-    typedef std::unordered_map<std::string, cvarRecord_t*> CvarMap;
+    typedef std::unordered_map<std::string, cvarRecord_t*, Str::IHash, Str::IEqual> CvarMap;
 
     // The order in which static global variables are initialized is undefined and cvar
     // can be registered before main. The first time this function is called the cvar map
