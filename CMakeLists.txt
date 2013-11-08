@@ -48,6 +48,8 @@ cmake_dependent_option( USE_OPENAL_DLOPEN "Use dlopen to load OpenAL" 1 BUILD_CL
 cmake_dependent_option( USE_SMP "Compile with support for running the renderer in a separate thread" 1 BUILD_CLIENT 0 )
 cmake_dependent_option( USE_GEOIP "Use libgeoip" 1 "BUILD_SERVER OR BUILD_CLIENT OR BUILD_TTY_CLIENT" 0 )
 option( USE_SDL2 "Enable SDL 2.0 support (incompatible with SDL 1.2)" 1 )
+option( USE_WEXTRA "Enable extra compilation warnings" 0 )
+option( USE_PEDANTIC "Tell the compiler to be pedantic" 0 )
 
 set( NACL_SDK_PATH "" CACHE PATH "Path to native client SDK" )
 if( BUILD_GAME_NACL AND NOT NACL_SDK_PATH )
@@ -231,8 +233,17 @@ else()
 
   # Warning options
   set_c_cxx_flag( "-Wall" )
-  set_c_cxx_flag( "-Wno-sign-compare" )
-  set_c_cxx_flag( "-Wno-write-strings" )
+  if( USE_WEXTRA )
+    set_c_cxx_flag( "-Wextra" )
+  else()
+    set_c_cxx_flag( "-Wno-sign-compare" )
+    set_c_cxx_flag( "-Wno-write-strings" )
+  endif()
+
+  if( USE_PEDANTIC )
+    set_c_cxx_flag("-pedantic")
+  endif()
+
 endif()
 
 # Windows-specific definitions
