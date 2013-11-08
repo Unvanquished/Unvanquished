@@ -27,22 +27,24 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
+#include <mutex>
 
 namespace Log {
 
     static Target* targets[MAX_TARGET_ID];
 
 
-    //TODO rcon feedback?
-
-    //TODO make it thread safe
     //TODO make me reentrant // or check it is actually reentrant when using for (Event e : events) do stuff
+    //TODO think way more about thread safety
     void Dispatch(Log::Event event, int targetControl) {
         static std::vector<Log::Event> buffers[MAX_TARGET_ID];
+        static std::recursive_mutex bufferLocks[MAX_TARGET_ID];
 
         for (int i = 0; i < MAX_TARGET_ID; i++) {
             if ((targetControl >> i) & 1) {
                 auto& buffer = buffers[i];
+                std::lock_guard<std::recursive_mutex> guard(bufferLocks[i]);
+
                 buffer.push_back(event);
 
                 bool processed = false;
@@ -72,7 +74,7 @@ namespace Log {
 
     //Log Targets
     //TODO: move them in their respective modules
-
+    //TODO this one isn't mutlithreaded at all, need a rewrite of the consoles
     class TTYTarget : public Target {
         public:
             TTYTarget() {
@@ -109,6 +111,11 @@ namespace Log {
                     return true;
                 }
 
+                //TODO this is actually wrong because the FS itself doesn't support multiple threads
+                // so we pray it works (it should because the memory touched by FS_Write seems very cold)
+                std::lock_guard<std::recursive_mutex> guard(lock);
+
+                //TODO atomic test and set on recursing
                 if (logFile == 0 and FS_Initialized() and not recursing) {
                     recursing = true;
 
@@ -138,7 +145,9 @@ namespace Log {
 
         private:
             fileHandle_t logFile = 0;
+            //TODO atomic boolean
             bool recursing = false;
+            std::recursive_mutex lock;
     };
 
     static LogFileTarget logfile;
