@@ -233,18 +233,19 @@ typedef enum
   STAT_HEALTH,
   STAT_ITEMS,
   STAT_ACTIVEITEMS,
-  STAT_WEAPON, // current primary weapon
-  STAT_MAX_HEALTH, // health / armor limit
-  STAT_CLASS, // player class (for aliens AND humans)
-  STAT_STATE2, // more client states
-  STAT_STAMINA, // stamina (human only)
-  STAT_STATE, // client states
-  STAT_MISC, // for uh...misc stuff (pounce, trample, lcannon)
-  STAT_BUILDABLE, // which ghost model to display for building
-  STAT_FALLDIST, // the distance the player fell
-  STAT_VIEWLOCK, // direction to lock the view in
-  STAT_PREDICTION // predictions for current player action (RGS efficiency)
-  // netcode has space for 2 more
+  STAT_WEAPON,     // current primary weapon
+  STAT_MAX_HEALTH, // health limit
+  STAT_CLASS,      // player class
+  STAT_STATE2,     // more client states
+  STAT_STAMINA,    // humans: stamina
+  STAT_STATE,      // client states
+  STAT_MISC,       // aliens: pounce, trample; humans: lcannon
+  STAT_BUILDABLE,  // ghost model to display for building
+  STAT_FALLDIST,   // distance the player fell
+  STAT_VIEWLOCK,   // direction to lock the view in
+  STAT_PREDICTION, // predictions for current player action
+  STAT_FUEL        // humans: jetpack fuel
+  // netcode has space for 1 more
 } statIndex_t;
 
 #define SCA_WALLCLIMBER     0x00000001

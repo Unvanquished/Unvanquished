@@ -1354,6 +1354,12 @@ static qboolean PM_CheckJetpack( void )
 				return qfalse;
 			}
 
+			// minimum fuel required
+			if ( pm->ps->stats[ STAT_FUEL ] < JETPACK_FUEL_LOW )
+			{
+				return qfalse;
+			}
+
 			// wait until at highest spot
 			if ( !( pm->ps->stats[ STAT_STATE2 ] & SS2_JETPACK_ACTIVE ) && pm->ps->velocity[ 2 ] > 0.0f )
 			{
@@ -1362,6 +1368,24 @@ static qboolean PM_CheckJetpack( void )
 		}
 
 		pm->ps->stats[ STAT_STATE2 ] |= SS2_JETPACK_WARM;
+	}
+
+	// stop thrusting if out of fuel
+	if ( pm->ps->stats[ STAT_FUEL ] < JETPACK_FUEL_USAGE )
+	{
+		if ( pm->ps->stats[ STAT_STATE2 ] & SS2_JETPACK_ACTIVE )
+		{
+			if ( pm->debugLevel > 0 )
+			{
+				Com_Printf( "[PM_CheckJetpack] " S_COLOR_RED "Out of fuel: Jetpack stopped\n" );
+			}
+
+			pm->ps->stats[ STAT_STATE2 ] &= ~SS2_JETPACK_ACTIVE;
+
+			PM_AddEvent( EV_JETPACK_STOP );
+		}
+
+		return qfalse;
 	}
 
 	// start thrust if not already thrusting
@@ -1390,6 +1414,13 @@ static void PM_LandJetpack( qboolean force )
 {
 	float angle, sideVelocity;
 
+	// when low on fuel, always force a landing
+	if ( pm->ps->stats[ STAT_FUEL ] < JETPACK_FUEL_LOW )
+	{
+		force = qtrue;
+	}
+
+	// allow the player to jump instead of land for some impacts
 	if ( !force )
 	{
 		sideVelocity = sqrt( pml.previous_velocity[ 0 ] * pml.previous_velocity[ 0 ] +
@@ -1397,8 +1428,6 @@ static void PM_LandJetpack( qboolean force )
 
 		angle = atan2( -pml.previous_velocity[ 2 ], sideVelocity );
 
-		// ignore some calls based on previous velocity
-		// this allows the player to jump instead of land for some impact angles
 		if ( angle > 0.0f && angle < M_PI / 4.0f ) // 45°
 		{
 			if ( pm->debugLevel > 0 )

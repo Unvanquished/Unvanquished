@@ -1860,6 +1860,23 @@ static void CG_DrawPlayerStaminaBolt( rectDef_t *rect, vec4_t backColor,
 	trap_R_SetColor( NULL );
 }
 
+static void CG_DrawPlayerFuelBar( rectDef_t *rect, vec4_t foreColor, qhandle_t shader )
+{
+	int   fuel;
+	float progress, warning;
+
+	if ( !BG_InventoryContainsUpgrade( UP_JETPACK, cg.snap->ps.stats ) )
+	{
+		return;
+	}
+
+	fuel     = cg.snap->ps.stats[ STAT_FUEL ];
+	progress = ( float )fuel / ( float )JETPACK_FUEL_MAX;
+	warning  = -1.0f * ( float )JETPACK_FUEL_LOW / ( float )JETPACK_FUEL_MAX;
+
+	CG_DrawPlayerProgressBar( rect, foreColor, progress, warning, shader );
+}
+
 static void CG_DrawMineRate( rectDef_t *rect, float text_x, float text_y,
                              vec4_t color, float scale, int textalign, int textvalign, int textStyle )
 {
@@ -4193,6 +4210,10 @@ void CG_OwnerDraw( rectDef_t *rect, float text_x,
 
 		case CG_PLAYER_STAMINA_BOLT:
 			CG_DrawPlayerStaminaBolt( rect, backColor, foreColor, shader );
+			break;
+
+		case CG_PLAYER_FUEL_BAR:
+			CG_DrawPlayerFuelBar( rect, foreColor, shader );
 			break;
 
 		case CG_PLAYER_AMMO_VALUE:
