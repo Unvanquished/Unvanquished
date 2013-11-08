@@ -68,25 +68,16 @@ namespace Cmd {
             // Represents a command line that is the concatenation of the arguments
             Args(std::vector<std::string> args);
             // Represents the command line
-            Args(std::string command);
+            Args(Str::StringRef command);
 
             // Basic access
             int Argc() const;
             const std::string& Argv(int argNum) const;
 
-            // FIXME: used to preserve an old behavior, is it really needed?
+            // Returns an escaped string which will tokenize into the same args
             std::string EscapedArgs(int start, int end = -1) const;
-            // Returns the raw command line represented by this Args
-            const std::string& RawCmd() const;
-            // Returns the raw, unparsed commandline after the given argument
-            std::string RawArgsFrom(unsigned start) const;
-
-            // Gives the index of the argument of the character at a given pos.
-            int PosToArg(int pos) const;
-            // Gives the index of the starting character of an argument.
-            int ArgStartPos(unsigned argNum) const;
-
-            std::string ArgPrefix(int pos) const;
+            // Concatenate a set of arguments, separated by spaces
+            std::string ConcatArgs(int start, int end = -1) const;
 
             // Returns all the arguments in a vector
             const std::vector<std::string>& ArgVector() const;
@@ -97,8 +88,6 @@ namespace Cmd {
 
         private:
             std::vector<std::string> args;
-            std::vector<int> argsStarts;
-            std::string cmd;
     };
 
     // A completion result is a list of (result, short description)

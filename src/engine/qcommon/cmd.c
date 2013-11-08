@@ -260,56 +260,6 @@ void Cmd_ArgsBuffer( char *buffer, int bufferLength )
 
 /*
 ============
-Cmd_LiteralArgsBuffer
-
-The interpreted versions use this because
-they can't have pointers returned to them
-============
-*/
-void    Cmd_LiteralArgsBuffer( char *buffer, int bufferLength )
-{
-	const Cmd::Args& args = Cmd::GetCurrentArgs();
-	const std::string& res = args.RawCmd();
-	Q_strncpyz( buffer, res.c_str(), MIN(bufferLength, res.size() + 1) );
-}
-
-/*
-============
-Cmd_Cmd
-
-Retrieve the unmodified command string
-For rcon use when you want to transmit without altering quoting
-ATVI Wolfenstein Misc #284
-============
-*/
-const char *Cmd_Cmd( void )
-{
-	static char fatBuffer[4096];
-	Cmd_LiteralArgsBuffer(fatBuffer, 4096);
-	return fatBuffer;
-}
-
-/*
-============
-Cmd_Cmd
-
-Retrieve the unmodified command string
-For rcon use when you want to transmit without altering quoting
-ATVI Wolfenstein Misc #284
-============
-*/
-const char *Cmd_Cmd_FromNth( int count )
-{
-	static char fatBuffer[4096];
-	const Cmd::Args& args = Cmd::GetCurrentArgs();
-	const std::string& res = args.RawArgsFrom(count);
-	strcpy( fatBuffer, res.c_str() );
-
-	return fatBuffer;
-}
-
-/*
-============
 Cmd_TokenizeString
 
 Parses the given string into command line tokens.
@@ -618,7 +568,7 @@ struct proxyInfo_t{
 };
 
 //Contains the commands given through the C interface
-std::unordered_map<std::string, proxyInfo_t> proxies;
+std::unordered_map<std::string, proxyInfo_t, Str::IHash, Str::IEqual> proxies;
 
 //Contains data send to Cmd_CompleteArguments
 char* completeArgs = NULL;
@@ -643,7 +593,8 @@ class ProxyCmd: public Cmd::CmdBase {
 				return {};
 			}
 			completeMatches.clear();
-			Q_strncpyz(buffer, args.RawCmd().c_str(), 4096);
+			//Amanieu: This is broken...
+			Q_strncpyz(buffer, args.ConcatArgs(0).c_str(), 4096);
 			proxy.complete(buffer, argNum + 1);
 
 			return completeMatches;
@@ -706,24 +657,5 @@ void Cmd_CommandCompletion( void ( *callback )( const char *s ) )
 	{
 		callback( name.first.c_str() );
 	}
-}
-
-/*
-============
-Cmd_CompleteArgument
-============
-*/
-
-void Cmd_CompleteArgument( const char *command, char *args, int pos )
-{
-	completeArgs = args;
-	//TODO?
-	completeArgNum = Cmd::Args(args).PosToArg(pos);
-
-	auto res = Cmd::CompleteArgument(args, pos);
-
-    for (auto& r : res) {
-        Com_Printf("%s\n", r.first.c_str());
-    }
 }
 

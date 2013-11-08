@@ -68,7 +68,7 @@ class MapCmd: public Cmd::StaticCmd {
             }
 
             //Gets the layout list from the command but do not override if there is nothing
-            std::string layouts = args.RawArgsFrom(2);
+            std::string layouts = args.ConcatArgs(2);
             if (not layouts.empty()) {
                 Cvar_Set("g_layouts", layouts.c_str());
             }

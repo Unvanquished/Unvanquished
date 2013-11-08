@@ -695,10 +695,9 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 
 		case CG_LITERAL_ARGS:
 			cls.nCgameUselessSyscalls ++;
-			// FIXME
+			// This is only used by CG_CONSOLE_TEXT, so we hack it to put the value in argv[0]
 			VM_CheckBlock( args[1], args[2], "LARGS" );
-			Cmd_LiteralArgsBuffer( (char*) VMA( 1 ), args[ 2 ] );
-//                      Cmd_ArgsBuffer(VMA(1), args[2]);
+			Cmd_ArgvBuffer( 0, (char*) VMA( 1 ), args[ 2 ] );
 			return 0;
 
 		case CG_GETDEMOSTATE:

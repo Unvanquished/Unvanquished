@@ -2048,7 +2048,7 @@ void CL_Connect_f( void )
 
 	//Copy the arguments before they can be overwritten, afater that server is invalid
 	Q_strncpyz( cls.servername, server, sizeof( cls.servername ) );
-	Q_strncpyz( cls.reconnectCmd, Cmd_Cmd(), sizeof( cls.reconnectCmd ) );
+	Q_strncpyz( cls.reconnectCmd, Cmd::GetCurrentArgs().EscapedArgs(0).c_str(), sizeof( cls.reconnectCmd ) );
 
 	S_StopAllSounds(); // NERVE - SMF
 
@@ -2153,7 +2153,7 @@ void CL_Rcon_f( void )
 	Q_strcat( message, MAX_RCON_MESSAGE, " " );
 
 	// ATVI Wolfenstein Misc #284
-	Q_strcat( message, MAX_RCON_MESSAGE, Cmd_Cmd() + 5 );
+	Q_strcat( message, MAX_RCON_MESSAGE, Cmd::GetCurrentArgs().EscapedArgs(1).c_str() );
 
 	if ( cls.state >= CA_CONNECTED )
 	{

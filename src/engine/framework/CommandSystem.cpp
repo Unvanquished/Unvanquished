@@ -53,7 +53,7 @@ namespace Cmd {
 
     std::vector<BufferEntry> commandBuffer;
 
-    void BufferCommandTextInternal(const std::string& text, bool parseCvars, Environment* env, bool insertAtTheEnd) {
+    void BufferCommandTextInternal(Str::StringRef text, bool parseCvars, Environment* env, bool insertAtTheEnd) {
         auto insertPoint = insertAtTheEnd ? commandBuffer.end() : commandBuffer.begin();
 
         // Iterates over the commands in the text
@@ -69,20 +69,20 @@ namespace Cmd {
         } while (current != end);
     }
 
-    void BufferCommandText(const std::string& text, bool parseCvars, Environment* env) {
+    void BufferCommandText(Str::StringRef text, bool parseCvars, Environment* env) {
         BufferCommandTextInternal(text, parseCvars, env, true);
     }
 
-    void BufferCommandTextAfter(const std::string& text, bool parseCvars, Environment* env) {
+    void BufferCommandTextAfter(Str::StringRef text, bool parseCvars, Environment* env) {
         BufferCommandTextInternal(text, parseCvars, env, false);
     }
 
     void ExecuteCommandBuffer() {
         // Note that commands may be inserted into the buffer while running other commands
         while (not commandBuffer.empty()) {
-            auto entry = commandBuffer.front();
+            auto entry = std::move(commandBuffer.front());
             commandBuffer.erase(commandBuffer.begin());
-            ExecuteCommand(std::move(entry.text), entry.parseCvars, entry.env);
+            ExecuteCommand(entry.text, entry.parseCvars, entry.env);
         }
         commandBuffer.clear();
     }
@@ -158,7 +158,7 @@ namespace Cmd {
 
     DefaultEnvironment defaultEnv;
 
-    void ExecuteCommand(std::string command, bool parseCvars, Environment* env) {
+    void ExecuteCommand(Str::StringRef command, bool parseCvars, Environment* env) {
         CommandMap& commands = GetCommandMap();
 
         if (not env) {
@@ -169,11 +169,13 @@ namespace Cmd {
             //commandLog.Debug("Execing, in environment %s, command '%s'", env->GetName(), command);
         }
 
+        std::string parsedString;
         if (parseCvars) {
-            command = SubstituteCvars(command);
+            parsedString = SubstituteCvars(command);
+            command = parsedString;
         }
 
-        Args args(std::move(command));
+        Args args(command);
         currentArgs = args;
 
         if (args.Argc() == 0) {
@@ -207,13 +209,11 @@ namespace Cmd {
 
         // send it as a server command if we are connected
         // (cvars are expanded locally)
-        CL_ForwardCommandToServer( args.RawCmd().c_str() );
+        CL_ForwardCommandToServer(args.EscapedArgs(0).c_str());
     }
 
-    CompletionResult CompleteArgument(std::string command, int argNum) {
+    CompletionResult CompleteArgument(const Args& args, int argNum) {
         CommandMap& commands = GetCommandMap();
-
-        Args args(std::move(command));
 
         if (args.Argc() == 0) {
             return {};

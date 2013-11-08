@@ -123,6 +123,10 @@ namespace Str {
         {
             return a.compare(b) >= 0;
         }
+        friend std::ostream& operator<<(std::ostream& stream, BasicStringRef str)
+        {
+            return stream << str.c_str();
+        }
 
     private:
         const T* ptr;

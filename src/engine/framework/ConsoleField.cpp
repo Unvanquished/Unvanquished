@@ -95,7 +95,7 @@ namespace Console {
             prefix = args.Argv(argNum);
         }
 
-        Cmd::CompletionResult candidates = Cmd::CompleteArgument(args.RawCmd(), argNum);
+        Cmd::CompletionResult candidates = Cmd::CompleteArgument(args, argNum);
         if (candidates.empty()) {
             return;
         }

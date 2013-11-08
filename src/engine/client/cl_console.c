@@ -42,6 +42,7 @@ Maryland 20850 USA.
 #include <string>
 #include <mutex>
 #include "../framework/LogSystem.h"
+#include "../../shared/Command.h"
 
 int g_console_field_width = 78;
 
@@ -638,7 +639,7 @@ qboolean CL_InternalConsolePrint( const char *text )
 	{
 		// feed the text to cgame
 		Cmd_SaveCmdContext();
-		Cmd_TokenizeString( text );
+		Cmd_TokenizeString( Cmd::Escape(text).c_str() );
 		CL_GameConsoleText();
 		Cmd_RestoreCmdContext();
 	}

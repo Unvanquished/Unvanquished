@@ -839,7 +839,6 @@ void SVC_RemoteCommand( netadr_t from, msg_t *msg )
 {
 	qboolean     valid;
 	unsigned int time;
-	char         remaining[ 1024 ];
 
 	// show_bug.cgi?id=376
 	// if we send an OOB print message this size, 1.31 clients die in a Com_Printf buffer overflow
@@ -848,8 +847,6 @@ void SVC_RemoteCommand( netadr_t from, msg_t *msg )
 	// we must NEVER send an OOB message that will be > 1.31 MAXPRINTMSG (4096)
 #define SV_OUTPUTBUF_LENGTH ( 256 - 16 )
 	static unsigned int lasttime = 0;
-	const char          *cmd_aux;
-
 	// TTimo - show_bug.cgi?id=534
 	time = Com_Milliseconds();
 
@@ -890,33 +887,7 @@ void SVC_RemoteCommand( netadr_t from, msg_t *msg )
 	}
 	else
 	{
-		remaining[ 0 ] = 0;
-
-		// ATVI Wolfenstein Misc #284
-		// get the command directly, "rcon <pass> <command>" to avoid quoting issues
-		// extract the command by walking
-		// since the cmd formatting can fuckup (amount of spaces), using a dumb step by step parsing
-		cmd_aux = Cmd_Cmd();
-		cmd_aux += 4;
-
-		while ( cmd_aux[ 0 ] == ' ' )
-		{
-			cmd_aux++;
-		}
-
-		while ( cmd_aux[ 0 ] && cmd_aux[ 0 ] != ' ' ) // password
-		{
-			cmd_aux++;
-		}
-
-		while ( cmd_aux[ 0 ] == ' ' )
-		{
-			cmd_aux++;
-		}
-
-		Q_strcat( remaining, sizeof( remaining ), cmd_aux );
-
-		Cmd::ExecuteCommand(remaining, true, &env);
+		Cmd::ExecuteCommand(Cmd::GetCurrentArgs().EscapedArgs(2), true, &env);
 	}
 
 	env.Flush();

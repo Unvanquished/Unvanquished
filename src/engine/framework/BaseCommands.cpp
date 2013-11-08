@@ -127,8 +127,8 @@ namespace Cmd {
 
             void SetExecArgs(const Cmd::Args& args, int start) const {
                 //Set some cvars up so that scripts file can be used like functions
-                Cvar_Get("arg_all", args.RawArgsFrom(start).c_str(), CVAR_TEMP | CVAR_ROM | CVAR_USER_CREATED);
-                Cvar_Set("arg_all", args.RawArgsFrom(start).c_str());
+                Cvar_Get("arg_all", args.ConcatArgs(start).c_str(), CVAR_TEMP | CVAR_ROM | CVAR_USER_CREATED);
+                Cvar_Set("arg_all", args.ConcatArgs(start).c_str());
                 Cvar_Get("arg_count", va("%i", args.Argc() - start), CVAR_TEMP | CVAR_ROM | CVAR_USER_CREATED);
                 Cvar_Set("arg_count", va("%i", args.Argc() - start));
 
@@ -748,7 +748,7 @@ namespace Cmd {
 
             void Run(const Cmd::Args& args) const override{
                 const std::string& name = args.Argv(0);
-                const std::string& parameters = args.RawArgsFrom(1);
+                const std::string& parameters = args.EscapedArgs(1);
 
                 if (aliases.count(name) == 0) {
                     Print("alias %s doesn't exist", name.c_str());
@@ -802,7 +802,7 @@ namespace Cmd {
                 }
 
                 //Modify or create an alias
-                const std::string& command = args.RawArgsFrom(2);
+                const std::string& command = args.EscapedArgs(2);
 
                 if (aliases.count(name)) {
                     aliases[name].command = command;
@@ -825,7 +825,7 @@ namespace Cmd {
                 if (argNum == 1) {
                     return CompleteAliasName(prefix);
                 } else if (argNum > 1) {
-                    return Cmd::CompleteArgument(args.RawArgsFrom(2), argNum - 2);
+                    return Cmd::CompleteArgument(Cmd::Args(args.EscapedArgs(2)), argNum - 2);
                 }
 
                 return {};

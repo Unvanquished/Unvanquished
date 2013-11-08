@@ -48,7 +48,7 @@ namespace Cmd {
         return res;
     }
 
-    static bool SkipSpaces(std::string::const_iterator& in, std::string::const_iterator end)
+    static bool SkipSpaces(const char*& in, const char* end)
     {
         bool foundSpace = false;
         while (in != end) {
@@ -208,20 +208,10 @@ namespace Cmd {
 
     Args::Args(std::vector<std::string> args_) {
         args = std::move(args_);
-
-        for (size_t i = 0; i < args.size(); i++) {
-            argsStarts.push_back(cmd.size());
-            cmd += Escape(args[i]);
-            if (i != args.size() - 1) {
-                cmd += " ";
-            }
-        }
     }
 
-    Args::Args(std::string command) {
-        cmd = std::move(command);
-
-        std::string::const_iterator in = cmd.begin();
+    Args::Args(Str::StringRef cmd) {
+        const char* in = cmd.begin();
 
         //Skip leading whitespace
         SkipSpaces(in, cmd.end());
@@ -232,16 +222,13 @@ namespace Cmd {
 
         //Build arg tokens
         std::string currentToken;
-        int currentTokenStart = in - cmd.begin();
         while (true) {
             //Check for end of current token
             if (SkipSpaces(in, cmd.end())) {
                  args.push_back(std::move(currentToken));
-                 argsStarts.push_back(currentTokenStart);
                  if (in == cmd.end())
                     return;
                  currentToken.clear();
-                 currentTokenStart = in - cmd.begin();
             }
 
             //Handle quoted strings
@@ -293,38 +280,21 @@ namespace Cmd {
         return res;
     }
 
-    const std::string& Args::RawCmd() const {
-        return cmd;
-    }
+    std::string Args::ConcatArgs(int start, int end) const {
+        std::string res;
 
-    std::string Args::RawArgsFrom(unsigned start) const {
-        if (start < argsStarts.size()) {
-            return std::string(cmd.begin() + argsStarts[start], cmd.end());
-        } else {
-            return "";
+        if (end < 0) {
+            end = args.size() - 1;
         }
-    }
 
-    int Args::PosToArg(int pos) const {
-        for (int i = argsStarts.size(); i-->0;) {
-            if (argsStarts[i] <= pos) {
-                return i;
+        for (int i = start; i < end + 1; i++) {
+            if (i != start) {
+                res += " ";
             }
+            res += args[i];
         }
 
-        return -1;
-    }
-
-    int Args::ArgStartPos(unsigned argNum) const {
-        if (argNum > argsStarts.size()) {
-            return cmd.size();
-        }
-        return argsStarts[argNum];
-    }
-
-    std::string Args::ArgPrefix(int pos) const {
-        int argNum = PosToArg(pos);
-        return args[argNum].substr(0, pos);
+        return res;
     }
 
     const std::vector<std::string>& Args::ArgVector() const {

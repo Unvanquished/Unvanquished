@@ -63,9 +63,9 @@ namespace Cmd {
 
     //TODO make it thread safe
     // Adds a command text to by executed (last, after what's already in the buffer)
-    void BufferCommandText(const std::string& text, bool parseCvars = false, Environment* env = nullptr);
+    void BufferCommandText(Str::StringRef text, bool parseCvars = false, Environment* env = nullptr);
     // Adds a command text to be executed just after the current command (used by commands execute other commands)
-    void BufferCommandTextAfter(const std::string& text, bool parseCvars = false, Environment* env = nullptr);
+    void BufferCommandTextAfter(Str::StringRef text, bool parseCvars = false, Environment* env = nullptr);
 
     //TODO: figure out a way to make this convenient for non-main threads
     // Executes all the buffered commands. Must be called by the main thread.
@@ -83,10 +83,10 @@ namespace Cmd {
 
     //TODO: figure out a way to make this convenient for non-main threads
     // Executes a raw command string as a single command. Must be called by the main thread.
-    void ExecuteCommand(std::string command, bool parseCvars = false, Environment* env = nullptr);
+    void ExecuteCommand(Str::StringRef command, bool parseCvars = false, Environment* env = nullptr);
 
     //Completion stuff, highly unstable :-)
-    CompletionResult CompleteArgument(std::string command, int argNum);
+    CompletionResult CompleteArgument(const Args& args, int argNum);
     CompletionResult CompleteCommandNames(const std::string& prefix = "");
 
     //Function to ease the transition to C++
