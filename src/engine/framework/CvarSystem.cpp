@@ -465,6 +465,8 @@ namespace Cvar {
             }
 
             Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, const std::string& prefix) const override{
+                Q_UNUSED(args);
+
                 if (argNum == 1) {
                     return ::Cvar::Complete(prefix);
                 }
@@ -551,6 +553,8 @@ namespace Cvar {
             }
 
             Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, const std::string& prefix) const override{
+                Q_UNUSED(args);
+
                 //TODO handle -raw?
                 if (argNum == 1) {
                     return ::Cvar::Complete(prefix);

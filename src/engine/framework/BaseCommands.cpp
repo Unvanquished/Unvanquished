@@ -55,6 +55,8 @@ namespace Cmd {
             }
 
             Cmd::CompletionResult Complete(int argNum, const Args& args, const std::string& prefix) const override{
+                Q_UNUSED(args);
+
                 if (argNum == 1) {
                     return Cvar::Complete(prefix);
                 }
@@ -202,6 +204,8 @@ namespace Cmd {
             }
 
             Cmd::CompletionResult Complete(int argNum, const Args& args, const std::string& prefix) const override{
+                Q_UNUSED(args);
+
                 if (argNum == 1) {
                     return Cvar::Complete(prefix);
                 }
@@ -230,6 +234,8 @@ namespace Cmd {
             }
 
             Cmd::CompletionResult Complete(int argNum, const Args& args, const std::string& prefix) const override{
+                Q_UNUSED(args);
+
                 if (argNum >= 1) {
                     return Cvar::Complete(prefix);
                 }
@@ -328,6 +334,8 @@ namespace Cmd {
             }
 
             Cmd::CompletionResult Complete(int argNum, const Args& args, const std::string& prefix) const override{
+                Q_UNUSED(args);
+
                 if (argNum == 1) {
                     return Cvar::Complete(prefix);
                 }
@@ -411,6 +419,8 @@ namespace Cmd {
             }
 
             Cmd::CompletionResult Complete(int argNum, const Args& args, const std::string& prefix) const override{
+                Q_UNUSED(args);
+
                 if (argNum == 4 or argNum == 5) {
                     return Cvar::Complete(prefix);
                 }
@@ -474,6 +484,8 @@ namespace Cmd {
             }
 
             Cmd::CompletionResult Complete(int argNum, const Args& args, const std::string& prefix) const override{
+                Q_UNUSED(args);
+
                 if (argNum == 1 or argNum == 2) {
                     return Cvar::Complete(prefix);
                 }
@@ -530,6 +542,8 @@ namespace Cmd {
             }
 
             Cmd::CompletionResult Complete(int argNum, const Args& args, const std::string& prefix) const override{
+                Q_UNUSED(args);
+
                 if (argNum == 1) {
                     return Cvar::Complete(prefix);
                 }
@@ -627,6 +641,8 @@ namespace Cmd {
             }
 
             Cmd::CompletionResult Complete(int argNum, const Args& args, const std::string& prefix) const override{
+                Q_UNUSED(args);
+
                 if (argNum == 1) {
                     return CompleteDelayName(prefix);
                 }
@@ -661,6 +677,8 @@ namespace Cmd {
             }
 
             Cmd::CompletionResult Complete(int argNum, const Args& args, const std::string& prefix) const override{
+                Q_UNUSED(args);
+
                 if (argNum == 1) {
                     return CompleteDelayName(prefix);
                 }
@@ -835,6 +853,8 @@ namespace Cmd {
             }
 
             Cmd::CompletionResult Complete(int argNum, const Args& args, const std::string& prefix) const override{
+                Q_UNUSED(args);
+
                 if (argNum == 1) {
                     return CompleteAliasName(prefix);
                 }

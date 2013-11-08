@@ -160,6 +160,8 @@ namespace Log {
             }
 
             virtual bool Process(std::vector<Log::Event>& events) override {
+                Q_UNUSED(events);
+
                 return true;
                 //Com_Printf("%s: %s\n", name.c_str(), event.text.c_str());
             }

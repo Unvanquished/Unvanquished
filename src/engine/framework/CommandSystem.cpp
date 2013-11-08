@@ -334,6 +334,8 @@ namespace Cmd {
             }
 
             Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, const std::string& prefix) const override {
+                Q_UNUSED(args);
+
                 if (argNum == 1) {
                     return ::Cmd::CompleteCommandNames(prefix);
                 }
