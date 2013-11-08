@@ -464,11 +464,15 @@ in-game talk, and menu fields
 Key events are used for non-printable characters, others are gotten from char events.
 =================
 */
-#include "SDL_version.h"
-#if SDL_VERSION_ATLEAST( 2, 0, 0 )
+#ifdef BUILD_TTY_CLIENT
 # define SDL1_case(v)
 #else
-# define SDL1_case(v) case v:
+# include "SDL_version.h"
+# if SDL_VERSION_ATLEAST( 2, 0, 0 )
+#  define SDL1_case(v)
+# else
+#  define SDL1_case(v) case v:
+# endif
 #endif
 void Field_KeyDownEvent(Util::LineEditData& edit, int key) {
     key = tolower(key);
@@ -478,9 +482,11 @@ void Field_KeyDownEvent(Util::LineEditData& edit, int key) {
             edit.DeleteNext();
             break;
 
-#if !SDL_VERSION_ATLEAST( 2, 0, 0 )
-		case 'h':
-			if ( keys[ K_CTRL ].down )
+#ifndef BUILD_TTY_CLIENT
+# if !SDL_VERSION_ATLEAST( 2, 0, 0 )
+        case 'h':
+            if ( keys[ K_CTRL ].down )
+# endif
 #endif
         case K_BACKSPACE:
             edit.DeletePrev();
