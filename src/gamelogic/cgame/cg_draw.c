@@ -1842,13 +1842,13 @@ static void CG_DrawPlayerStaminaBolt( rectDef_t *rect, vec4_t backColor,
 	staminaJumpCost = BG_Class( cg.snap->ps.stats[ STAT_CLASS ] )->staminaJumpCost;
 	sprinting = ( cg.predictedPlayerState.stats[ STAT_STATE ] & SS_SPEEDBOOST );
 
-	if ( sprinting )
-	{
-		Vector4Lerp( ( sin( cg.time / 150.0f ) + 1.0f ) / 2.0f, backColor, foreColor, color );
-	}
-	else if ( stamina < staminaJumpCost )
+	if ( stamina < staminaJumpCost )
 	{
 		Vector4Copy( backColor, color );
+	}
+	else if ( sprinting )
+	{
+		Vector4Lerp( ( sin( cg.time / 150.0f ) + 1.0f ) / 2.0f, backColor, foreColor, color );
 	}
 	else
 	{
@@ -1875,6 +1875,56 @@ static void CG_DrawPlayerFuelBar( rectDef_t *rect, vec4_t foreColor, qhandle_t s
 	warning  = -1.0f * ( float )JETPACK_FUEL_LOW / ( float )JETPACK_FUEL_MAX;
 
 	CG_DrawPlayerProgressBar( rect, foreColor, progress, warning, shader );
+}
+
+static void CG_DrawPlayerFuelValue( rectDef_t *rect, vec4_t color )
+{
+	int fuel, percent;
+
+	if ( !BG_InventoryContainsUpgrade( UP_JETPACK, cg.snap->ps.stats ) )
+	{
+		return;
+	}
+
+	fuel    = cg.snap->ps.stats[ STAT_FUEL ];
+	percent = ( int )( 100.0f * ( float )fuel / ( float )JETPACK_FUEL_MAX );
+
+	trap_R_SetColor( color );
+	CG_DrawField( rect->x, rect->y, 4, rect->w / 4, rect->h, percent );
+	trap_R_SetColor( NULL );
+}
+
+static void CG_DrawPlayerFuelIcon( rectDef_t *rect, vec4_t backColor,
+                                   vec4_t foreColor, qhandle_t shader )
+{
+	int      fuel;
+	vec4_t   color;
+	qboolean thrusting;
+
+	if ( !BG_InventoryContainsUpgrade( UP_JETPACK, cg.snap->ps.stats ) )
+	{
+		return;
+	}
+
+	fuel      = cg.snap->ps.stats[ STAT_FUEL ];
+	thrusting = ( cg.snap->ps.stats[ STAT_STATE2 ] & SS2_JETPACK_ACTIVE );
+
+	if ( fuel < JETPACK_FUEL_LOW )
+	{
+		Vector4Copy( backColor, color );
+	}
+	else if ( thrusting )
+	{
+		Vector4Lerp( ( sin( cg.time / 150.0f ) + 1.0f ) / 2.0f, backColor, foreColor, color );
+	}
+	else
+	{
+		Vector4Copy( foreColor, color );
+	}
+
+	trap_R_SetColor( color );
+	CG_DrawPic( rect->x, rect->y, rect->w, rect->h, shader );
+	trap_R_SetColor( NULL );
 }
 
 static void CG_DrawMineRate( rectDef_t *rect, float text_x, float text_y,
@@ -4214,6 +4264,14 @@ void CG_OwnerDraw( rectDef_t *rect, float text_x,
 
 		case CG_PLAYER_FUEL_BAR:
 			CG_DrawPlayerFuelBar( rect, foreColor, shader );
+			break;
+
+		case CG_PLAYER_FUEL_VALUE:
+			CG_DrawPlayerFuelValue( rect, foreColor );
+			break;
+
+		case CG_PLAYER_FUEL_ICON:
+			CG_DrawPlayerFuelIcon( rect, backColor, foreColor, shader );
 			break;
 
 		case CG_PLAYER_AMMO_VALUE:
