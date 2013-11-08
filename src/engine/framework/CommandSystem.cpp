@@ -34,7 +34,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 //TODO: use case-insensitive comparisons for commands (store the lower case version?)
 namespace Cmd {
 
-    Log::Logger commandLog("common.commands", Log::NOTICE);
+    Log::Logger commandLog("common.commands");
 
     /*
     ===============================================================================

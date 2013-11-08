@@ -916,7 +916,7 @@ void SVC_RemoteCommand( netadr_t from, msg_t *msg )
 
 		Q_strcat( remaining, sizeof( remaining ), cmd_aux );
 
-		Cmd::ExecuteCommand(remaining, &env);
+		Cmd::ExecuteCommand(remaining, true, &env);
 	}
 
 	env.Flush();

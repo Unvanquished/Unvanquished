@@ -49,7 +49,7 @@ namespace Log {
             return true;
         }
 
-        if (value == "debug" or value == "none") {
+        if (value == "debug" or value == "all") {
             result = Log::DEBUG;
             return true;
         }

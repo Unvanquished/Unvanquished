@@ -27,7 +27,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef FRAMEWORK_COMMAND_SYSTEM_H_
 #define FRAMEWORK_COMMAND_SYSTEM_H_
 
-/**
+/*
  * Command execution and command text buffering.
  *
  * Commands represent "functions" in the code that are invoked with a string,
