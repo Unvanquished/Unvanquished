@@ -90,36 +90,6 @@ namespace Log {
 
     static TTYTarget tty;
 
-#ifndef DEDICATED
-    class GraphicalTarget : public Target {
-        public:
-            GraphicalTarget() {
-                this->Register(GRAPHICAL_CONSOLE);
-            }
-
-            virtual bool Process(std::vector<Log::Event>& events) override {
-                if (com_dedicated && !com_dedicated->integer) {
-                    for (Log::Event event : events) {
-
-                        bool printed = CL_ConsolePrint(event.text.c_str());
-
-                        if (!printed) {
-                            return false;
-                        }
-
-                        CL_ConsolePrint("\n");
-                    }
-
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-    };
-
-    static GraphicalTarget gui;
-#endif
-
     //TODO for now these change nothing because the file is opened before the cvars are read.
     //TODO add a Callback on these that will make the logFile open a new file or something
     //Or maybe have Com_Init start it ?

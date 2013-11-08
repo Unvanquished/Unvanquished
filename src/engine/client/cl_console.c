@@ -38,6 +38,10 @@ Maryland 20850 USA.
 #include "revision.h"
 #include "client.h"
 #include "../qcommon/q_unicode.h"
+#include <vector>
+#include <string>
+#include <mutex>
+#include "../framework/LogSystem.h"
 
 int g_console_field_width = 78;
 
@@ -589,7 +593,7 @@ void Con_Linefeed( void )
 
 /*
 ================
-CL_ConsolePrint
+CL_InternalConsolePrint
 
 Handles cursor positioning, line wrapping, etc
 All console printing must go through this in order to be logged to disk
@@ -600,7 +604,7 @@ If no console is visible, the text will appear at the top of the game window
 #pragma optimize( "g", off ) // SMF - msvc totally screws this function up with optimize on
 #endif
 
-qboolean CL_ConsolePrint( const char *text )
+qboolean CL_InternalConsolePrint( const char *text )
 {
 	int      y;
 	int      c, i, l;
@@ -1302,6 +1306,10 @@ Con_RunConsole
 runs each frame once independend wheter or not the console is going to be rendered or not
 ==================
 */
+
+static std::vector<std::string> cl_consoleBufferedLines;
+static std::mutex cl_bufferedLinesLock;
+
 void Con_RunConsole( void )
 {
 	//check whether or not the console should be in opened state
@@ -1353,7 +1361,58 @@ void Con_RunConsole( void )
 		 */
 		consoleState.bottomDisplayedLine = consoleState.scrollLineIndex;
 	}
+
+	std::vector<std::string> lines;
+	{
+		std::lock_guard<std::mutex> guard(cl_bufferedLinesLock);
+		lines = std::move(cl_consoleBufferedLines);
+	}
+	for (auto line : lines) {
+		CL_InternalConsolePrint( line.c_str() );
+	}
 }
+
+// Definition of the graphical console log target
+// TODO split with the HUD from it
+
+void CL_ConsolePrint(std::string text) {
+	std::lock_guard<std::mutex> guard(cl_bufferedLinesLock);
+	cl_consoleBufferedLines.push_back(std::move(text));
+}
+
+class GraphicalTarget : public Log::Target {
+	public:
+		GraphicalTarget() {
+			this->Register(Log::GRAPHICAL_CONSOLE);
+		}
+
+		virtual bool Process(std::vector<Log::Event>& events) override {
+			// for some demos we don't want to ever show anything on the console
+			// flush the buffer
+			if ( cl_noprint && cl_noprint->integer )
+			{
+				return true;
+			}
+
+			//Video hasn't been initialized
+			if ( ! cls.glconfig.vidWidth ) {
+				return false;
+			}
+
+			if (com_dedicated && !com_dedicated->integer) {
+				for (Log::Event event : events) {
+					CL_ConsolePrint(std::move(event.text));
+					CL_ConsolePrint("\n");
+				}
+				return true;
+			} else {
+				return false;
+			}
+		}
+};
+
+static GraphicalTarget gui;
+
 
 void Con_PageUp( void )
 {
