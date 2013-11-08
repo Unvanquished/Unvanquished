@@ -54,7 +54,7 @@ namespace Log {
 
                 if (processed) {
                     buffer.clear();
-                } else if (buffer.size() > 105) {
+                } else if (buffer.size() > 512) {
                     buffer.clear();
                 }
             }
