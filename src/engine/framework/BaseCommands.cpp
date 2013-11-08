@@ -715,7 +715,7 @@ namespace Cmd {
         int lastRun;
     };
 
-    static std::unordered_map<std::string, aliasRecord_t> aliases;
+    static std::unordered_map<std::string, aliasRecord_t, Str::IHash, Str::IEqual> aliases;
     static int aliasRun;
     static bool inAliasRun;
 
