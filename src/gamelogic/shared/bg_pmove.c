@@ -430,6 +430,11 @@ static float PM_CmdScale( usercmd_t *cmd, qboolean zFlight )
 				// stamina is too low to start sprinting
 				sprint = qfalse;
 			}
+			else if ( pm->ps->groundEntityNum == ENTITYNUM_NONE )
+			{
+				// can't sprint in air
+				sprint = qfalse;
+			}
 		}
 
 		// start or stop sprint
