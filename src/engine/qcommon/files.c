@@ -3784,11 +3784,6 @@ void FS_Shutdown( qboolean closemfp )
 
 	// any FS_ calls will now be an error until reinitialized
 	fs_searchpaths = NULL;
-
-	Cmd_RemoveCommand( "path" );
-	Cmd_RemoveCommand( "dir" );
-	Cmd_RemoveCommand( "fdir" );
-	Cmd_RemoveCommand( "which" );
 }
 
 /*
