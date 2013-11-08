@@ -122,6 +122,19 @@ menuDef
 
 	itemDef
 	{
+		name "fuelbar"
+		rect 0 398 152 18
+		aspectBias ALIGN_LEFT
+		visible MENU_TRUE
+		decoration
+		forecolor 1.0 1.0 0.0 0.32
+		backColor 0 0 0 0
+		background "ui/assets/human/buildstat/health.tga" // really a white pixel
+		ownerdraw CG_PLAYER_FUEL_BAR
+	}
+
+	itemDef
+	{
 		name "ammobar"
 		rect 488 421 152 18
 		aspectBias ALIGN_RIGHT
