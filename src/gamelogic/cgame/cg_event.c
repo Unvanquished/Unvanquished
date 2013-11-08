@@ -1114,6 +1114,22 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			trap_S_StartSound( NULL, es->number, CHAN_AUTO, CG_CustomSound( es->number, "*gasp.wav" ) );
 			break;
 
+		case EV_JETPACK_ENABLE:
+			// TODO: Trigger jetpack enable animation
+			break;
+
+		case EV_JETPACK_DISABLE:
+			// TODO: Trigger jetpack disable animation
+			break;
+
+		case EV_JETPACK_START:
+			// TODO: Start jetpack gfx/sfx
+			break;
+
+		case EV_JETPACK_STOP:
+			// TODO: Stop jetpack gfx/sfx
+			break;
+
 		case EV_NOAMMO:
 			trap_S_StartSound( NULL, es->number, CHAN_WEAPON, cgs.media.weaponEmptyClick );
 			break;
@@ -1261,7 +1277,6 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			break;
 
 		case EV_PAIN:
-
 			// local player sounds are triggered in CG_CheckLocalSounds,
 			// so ignore events on the player
 			if ( cent->currentState.number != cg.snap->ps.clientNum )

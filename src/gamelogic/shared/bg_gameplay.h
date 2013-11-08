@@ -259,11 +259,6 @@ extern float RADAR_RANGE;
 
 extern float BATTPACK_MODIFIER;
 
-extern float JETPACK_FLOAT_SPEED;
-extern float JETPACK_SINK_SPEED;
-extern int   JETPACK_DISABLE_TIME;
-extern float JETPACK_DISABLE_CHANCE;
-
 extern int   MEDKIT_POISON_IMMUNITY_TIME;
 extern int   MEDKIT_STARTUP_TIME;
 extern int   MEDKIT_STARTUP_SPEED;

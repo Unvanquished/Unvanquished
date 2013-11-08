@@ -1615,7 +1615,7 @@ void G_ImpactAttack( gentity_t *self, gentity_t *victim )
 	}
 
 	// allow the granger airlifting ritual
-	if ( victim->client && BG_UpgradeIsActive( UP_JETPACK, victim->client->ps.stats ) &&
+	if ( victim->client && victim->client->ps.stats[ STAT_STATE ] & SS_JETPACK_ACTIVE &&
 	     ( self->client->pers.classSelection == PCL_ALIEN_BUILDER0 ||
 	       self->client->pers.classSelection == PCL_ALIEN_BUILDER0_UPG ) )
 	{

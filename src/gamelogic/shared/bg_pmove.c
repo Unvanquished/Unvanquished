@@ -294,12 +294,6 @@ static void PM_Friction( void )
 		drop += speed * pm_waterfriction * pm->waterlevel * pml.frametime;
 	}
 
-	// apply flying friction
-	if ( pm->ps->pm_type == PM_JETPACK )
-	{
-		drop += speed * pm_flightfriction * pml.frametime;
-	}
-
 	if ( pm->ps->pm_type == PM_SPECTATOR )
 	{
 		drop += speed * pm_spectatorfriction * pml.frametime;
@@ -1266,15 +1260,164 @@ static qboolean PM_CheckWallJump( void )
 	return qtrue;
 }
 
-/*
-=============
-PM_CheckJump
-=============
-*/
+/**
+ * @brief Disables the jetpack. Without force, the call can get ignored based on previous velocity.
+ */
+static void PM_LandJetpack( qboolean force )
+{
+	float angle, sideVelocity;
+
+	if ( !force )
+	{
+		sideVelocity = sqrt( pml.previous_velocity[ 0 ] * pml.previous_velocity[ 0 ] +
+							 pml.previous_velocity[ 1 ] * pml.previous_velocity[ 1 ] );
+
+		angle = atan2( -pml.previous_velocity[ 2 ], sideVelocity );
+
+		// ignore some calls based on previous velocity
+		// this allows the player to jump instead of land for some impact angles
+		if ( angle > 0.0f && angle < M_PI / 4.0f ) // 45°
+		{
+			if ( pm->debugLevel > 0 )
+			{
+				Com_Printf( "[PM_LandJetpack] %.0f° " S_COLOR_GREEN "not landing\n", RAD2DEG( angle ) );
+			}
+
+			return;
+		}
+	}
+
+	if ( pm->ps->stats[ STAT_STATE ] & SS_JETPACK_ACTIVE )
+	{
+		if ( pm->debugLevel > 0 )
+		{
+			Com_Printf( "[PM_LandJetpack] %.0f° %s" S_COLOR_LTORANGE "stopping\n", RAD2DEG( angle ),
+			            force ? S_COLOR_RED "(FORCED) " : "" );
+		}
+
+		pm->ps->stats[ STAT_STATE ] &= ~SS_JETPACK_ACTIVE;
+		PM_AddEvent( EV_JETPACK_STOP );
+
+		// mark the jump key held so there is no immediate jump on landing
+		pm->ps->pm_flags |= PMF_JUMP_HELD;
+	}
+
+	if ( pm->ps->stats[ STAT_STATE ] & SS_JETPACK_ENABLED )
+	{
+		if ( pm->debugLevel > 0 )
+		{
+			Com_Printf( "[PM_LandJetpack] %.0f° %s" S_COLOR_YELLOW "disabling\n", RAD2DEG( angle ),
+			            force ? S_COLOR_RED "(FORCED) " : "" );
+		}
+
+		pm->ps->stats[ STAT_STATE ] &= ~SS_JETPACK_ENABLED;
+		PM_AddEvent( EV_JETPACK_DISABLE );
+	}
+}
+
+#define JETPACK_TARGETSPEED  350.0f
+#define JETPACK_ACCELERATION   3.0f
+
+static qboolean PM_CheckJetpack( void )
+{
+	if ( pm->ps->pm_type != PM_NORMAL ||
+	     pm->ps->persistant[ PERS_TEAM ] != TEAM_HUMANS ||
+	     !BG_InventoryContainsUpgrade( UP_JETPACK, pm->ps->stats ) )
+	{
+		return qfalse;
+	}
+
+	// enable jetpack when in air
+	if ( pm->ps->groundEntityNum == ENTITYNUM_NONE &&
+	     !( pm->ps->stats[ STAT_STATE ] & SS_JETPACK_ENABLED ) )
+	{
+		if ( pm->debugLevel > 0 )
+		{
+			Com_Printf( "[PM_CheckJetpack] " S_COLOR_MAGENTA "enabling\n" );
+		}
+
+		pm->ps->stats[ STAT_STATE ] |= SS_JETPACK_ENABLED;
+		PM_AddEvent( EV_JETPACK_ENABLE );
+
+		return qfalse;
+	}
+
+	// disable jetpack when landed
+	if ( pm->ps->groundEntityNum != ENTITYNUM_NONE &&
+	     ( pm->ps->stats[ STAT_STATE ] & SS_JETPACK_ENABLED ) )
+	{
+		if ( pm->debugLevel > 0 )
+		{
+			Com_Printf( "[PM_CheckJetpack] " S_COLOR_YELLOW "disabling\n" );
+		}
+
+		pm->ps->stats[ STAT_STATE ] &= ~SS_JETPACK_ENABLED;
+		PM_AddEvent( EV_JETPACK_DISABLE );
+
+		return qfalse;
+	}
+
+	// if jump key not held, stop active thrust
+	if ( pm->cmd.upmove < 10 ) // TODO: Check if less hacky solution exists
+	{
+		if ( pm->ps->stats[ STAT_STATE ] & SS_JETPACK_ACTIVE )
+		{
+			if ( pm->debugLevel > 0 )
+			{
+				Com_Printf( "[PM_CheckJetpack] " S_COLOR_LTORANGE "stopping\n" );
+			}
+
+			pm->ps->stats[ STAT_STATE ] &= ~SS_JETPACK_ACTIVE;
+			PM_AddEvent( EV_JETPACK_STOP );
+		}
+
+		return qfalse;
+	}
+
+	// only (start) thrust when jetpack enabled
+	if ( !( pm->ps->stats[ STAT_STATE ] & SS_JETPACK_ENABLED ) )
+	{
+		if ( pm->debugLevel > 0 )
+		{
+			Com_Printf( "[PM_CheckJetpack] " S_COLOR_RED "can't start: not enabled\n" );
+		}
+
+		return qfalse;
+	}
+
+	// don't start thrusters as long as moving upwards
+	if ( !( pm->ps->stats[ STAT_STATE ] & SS_JETPACK_ACTIVE ) && pm->ps->velocity[ 2 ] > 0.0f )
+	{
+		return qfalse;
+	}
+
+	// start thrust if not already thrusting
+	if ( !( pm->ps->stats[ STAT_STATE ] & SS_JETPACK_ACTIVE ) )
+	{
+		if ( pm->debugLevel > 0 )
+		{
+			Com_Printf( "[PM_CheckJetpack] " S_COLOR_GREEN "starting\n" );
+		}
+
+		pm->ps->stats[ STAT_STATE ] |= SS_JETPACK_ACTIVE;
+		PM_AddEvent( EV_JETPACK_START );
+	}
+
+	// thrust
+	{
+		static const vec3_t thrustDir = { 0.0f, 0.0f, 1.0f };
+
+		PM_Accelerate( thrustDir, JETPACK_TARGETSPEED, JETPACK_ACCELERATION );
+	}
+
+	return qtrue;
+}
+
 static qboolean PM_CheckJump( void )
 {
 	vec3_t normal;
 	int    staminaJumpCost;
+	float  magnitude;
 
 	if ( pm->ps->groundEntityNum == ENTITYNUM_NONE )
 	{
@@ -1338,6 +1481,7 @@ static qboolean PM_CheckJump( void )
 	pml.groundPlane = qfalse; // jumping away
 	pml.walking = qfalse;
 	pm->ps->pm_flags |= PMF_JUMP_HELD;
+	pm->ps->groundEntityNum = ENTITYNUM_NONE;
 
 	// take some stamina off
 	if ( pm->ps->persistant[ PERS_TEAM ] == TEAM_HUMANS )
@@ -1345,18 +1489,25 @@ static qboolean PM_CheckJump( void )
 		pm->ps->stats[ STAT_STAMINA ] -= staminaJumpCost;
 	}
 
-	pm->ps->groundEntityNum = ENTITYNUM_NONE;
-
-	// jump away from wall
+	// jump in surface normal direction
 	BG_GetClientNormal( pm->ps, normal );
 
-	if ( pm->ps->velocity[ 2 ] < 0 )
+	// retrieve jump magnitude
+	magnitude = BG_Class( pm->ps->stats[ STAT_CLASS ] )->jumpMagnitude;
+
+	// if jetpack is active, scale down jump magnitude
+	if ( pm->ps->stats[ STAT_STATE ] & SS_JETPACK_ACTIVE )
 	{
-		pm->ps->velocity[ 2 ] = 0;
+		magnitude *= 0.5f;
 	}
 
-	VectorMA( pm->ps->velocity, BG_Class( pm->ps->stats[ STAT_CLASS ] )->jumpMagnitude,
-	          normal, pm->ps->velocity );
+	// sanity clip velocity Z
+	if ( pm->ps->velocity[ 2 ] < 0.0f )
+	{
+		pm->ps->velocity[ 2 ] = 0.0f;
+	}
+
+	VectorMA( pm->ps->velocity, magnitude, normal, pm->ps->velocity );
 
 	PM_AddEvent( EV_JUMP );
 	PM_PlayJumpingAnimation();
@@ -1364,11 +1515,6 @@ static qboolean PM_CheckJump( void )
 	return qtrue;
 }
 
-/*
-=============
-PM_CheckWaterJump
-=============
-*/
 static qboolean PM_CheckWaterJump( void )
 {
 	vec3_t spot;
@@ -1529,66 +1675,6 @@ static void PM_WaterMove( void )
 	PM_SlideMove( qfalse );
 }
 
-/*
-===================
-PM_JetPackMove
-
-Only with the jetpack
-===================
-*/
-static void PM_JetPackMove( void )
-{
-	int    i;
-	vec3_t wishvel;
-	float  wishspeed;
-	vec3_t wishdir;
-	float  scale;
-
-	PM_Friction();
-
-	scale = PM_CmdScale( &pm->cmd, qtrue );
-
-	// user intentions
-	for ( i = 0; i < 2; i++ )
-	{
-		wishvel[ i ] = scale * pml.forward[ i ] * pm->cmd.forwardmove + scale * pml.right[ i ] * pm->cmd.rightmove;
-	}
-
-	if ( pm->cmd.upmove > 0.0f )
-	{
-		wishvel[ 2 ] = JETPACK_FLOAT_SPEED;
-	}
-	else if ( pm->cmd.upmove < 0.0f )
-	{
-		wishvel[ 2 ] = -JETPACK_SINK_SPEED;
-	}
-	else
-	{
-		wishvel[ 2 ] = 0.0f;
-	}
-
-	VectorCopy( wishvel, wishdir );
-	wishspeed = VectorNormalize( wishdir );
-
-	PM_Accelerate( wishdir, wishspeed, pm_flyaccelerate );
-
-	PM_StepSlideMove( qfalse, qfalse );
-
-	if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
-	{
-		PM_ContinueLegsAnim( LEGS_LAND );
-	}
-	else
-	{
-		PM_ContinueLegsAnim( NSPA_LAND );
-	}
-}
-
-/*
-===================
-PM_FlyMove
-===================
-*/
 static void PM_FlyMove( void )
 {
 	int    i;
@@ -1645,6 +1731,8 @@ static void PM_AirMove( void )
 	usercmd_t cmd;
 
 	PM_CheckWallJump();
+	PM_CheckJetpack();
+
 	PM_Friction();
 
 	fmove = pm->cmd.forwardmove;
@@ -1843,7 +1931,6 @@ static void PM_WalkMove( void )
 
 	if ( PM_CheckJump() || PM_CheckPounce() )
 	{
-		// jumped away
 		if ( pm->waterlevel > 1 )
 		{
 			PM_WaterMove();
@@ -1856,7 +1943,10 @@ static void PM_WalkMove( void )
 		return;
 	}
 
-	//charging
+	// if PM_Land didn't stop the jectpack (e.g. to allow for a jump) but we didn't get away
+	// from the ground, stop it now
+	PM_LandJetpack( qtrue );
+
 	PM_CheckCharge();
 
 	PM_Friction();
@@ -2179,6 +2269,8 @@ Play landing animation
 */
 static void PM_Land( void )
 {
+	PM_LandJetpack( qfalse ); // don't force a stop, sometimes we can push off with a jump
+
 	// decide which landing animation to use
 	if ( pm->ps->pm_flags & PMF_BACKWARDS_JUMP )
 	{
@@ -3069,6 +3161,7 @@ static void PM_GroundTrace( void )
 		VectorCopy( pml.previous_velocity, pm->pmext->fallImpactVelocity );
 
 		PM_Land();
+
 		if ( BG_ClassHasAbility( pm->ps->stats[ STAT_CLASS ], SCA_TAKESFALLDAMAGE ) )
 		{
 			PM_CrashLand();
@@ -3172,8 +3265,7 @@ static void PM_CheckDuck( void )
 	}
 
 	// If the standing and crouching bboxes are the same the class can't crouch
-	if ( ( pm->cmd.upmove < 0 ) && !VectorCompare( PCmaxs, PCcmaxs ) &&
-	     pm->ps->pm_type != PM_JETPACK )
+	if ( pm->cmd.upmove < 0 && !VectorCompare( PCmaxs, PCcmaxs ) )
 	{
 		// duck
 		pm->ps->pm_flags |= PMF_DUCKED;
@@ -4657,21 +4749,6 @@ void PmoveSingle( pmove_t *pmove )
 		pm->ps->eFlags &= ~EF_FIRING3;
 	}
 
-	if ( pm->cmd.doubleTap == DT_UP )
-	{
-		if ( BG_InventoryContainsUpgrade( UP_JETPACK, pm->ps->stats ) )
-		{
-			if ( BG_UpgradeIsActive( UP_JETPACK, pm->ps->stats ) )
-			{
-				BG_DeactivateUpgrade( UP_JETPACK, pm->ps->stats );
-			}
-			else
-			{
-				BG_ActivateUpgrade( UP_JETPACK, pm->ps->stats );
-			}
-		}
-	}
-
 	// clear the respawned flag if attack and use are cleared
 	if ( pm->ps->stats[ STAT_HEALTH ] > 0 &&
 	     !( usercmdButtonPressed( pm->cmd.buttons, BUTTON_ATTACK ) || usercmdButtonPressed( pm->cmd.buttons, BUTTON_USE_HOLDABLE ) ) )
@@ -4797,11 +4874,7 @@ void PmoveSingle( pmove_t *pmove )
 
 	PM_DropTimers();
 
-	if ( pm->ps->pm_type == PM_JETPACK )
-	{
-		PM_JetPackMove();
-	}
-	else if ( pm->ps->pm_flags & PMF_TIME_WATERJUMP )
+	if ( pm->ps->pm_flags & PMF_TIME_WATERJUMP )
 	{
 		PM_WaterJumpMove();
 	}

@@ -131,7 +131,6 @@ typedef enum
   PM_NORMAL, // can accelerate and turn
   PM_NOCLIP, // noclip movement
   PM_SPECTATOR, // still run into walls
-  PM_JETPACK, // jetpack physics
   PM_GRABBED, // like dead, but for when the player is still alive
   PM_DEAD, // no acceleration or turning, but free falling
   PM_FREEZE, // stuck in place with no control
@@ -139,10 +138,8 @@ typedef enum
 } pmtype_t;
 
 // pmtype_t categories
-#define PM_Paralyzed( x ) ( ( x ) == PM_DEAD || ( x ) == PM_FREEZE || \
-                            ( x ) == PM_INTERMISSION )
-#define PM_Live( x )      ( ( x ) == PM_NORMAL || ( x ) == PM_JETPACK || \
-                            ( x ) == PM_GRABBED )
+#define PM_Paralyzed( x ) ( ( x ) == PM_DEAD || ( x ) == PM_FREEZE || ( x ) == PM_INTERMISSION )
+#define PM_Live( x )      ( ( x ) == PM_NORMAL || ( x ) == PM_GRABBED )
 
 typedef enum
 {
@@ -258,6 +255,7 @@ typedef enum
 #define SCA_CANUSELADDERS   0x00000020
 #define SCA_WALLJUMPER      0x00000040
 
+// STAT_STATE fields. 16/32 bit available?
 #define SS_WALLCLIMBING     BIT(0)
 #define SS_CREEPSLOWED      BIT(1)
 #define SS_SPEEDBOOST       BIT(2)
@@ -272,6 +270,8 @@ typedef enum
 #define SS_HEALING_ACTIVE   BIT(11) // medistat for humans, creep for aliens
 #define SS_HEALING_2X       BIT(12) // medkit or double healing rate
 #define SS_HEALING_3X       BIT(13) // triple healing rate
+#define SS_JETPACK_ENABLED  BIT(14)
+#define SS_JETPACK_ACTIVE   BIT(15)
 
 // has to fit into 16 bits
 #define SB_BUILDABLE_MASK        0x00FF
@@ -362,6 +362,10 @@ typedef enum
 #define EF_POISONCLOUDED    0x2000 // player hit with basilisk gas
 #define EF_CONNECTION       0x4000 // draw a connection trouble sprite
 #define EF_BLOBLOCKED       0x8000 // caught by a trapper
+
+// entityState_t->modelIndex2 "public flags" when used for client entities
+#define PF_JETPACK_ENABLED  BIT(0)
+#define PF_JETPACK_ACTIVE   BIT(1)
 
 typedef enum
 {
@@ -541,10 +545,16 @@ typedef enum
   EV_FALLING,
 
   EV_JUMP,
+
   EV_WATER_TOUCH, // foot touches
   EV_WATER_LEAVE, // foot leaves
   EV_WATER_UNDER, // head touches
   EV_WATER_CLEAR, // head leaves
+
+  EV_JETPACK_ENABLE,  // enable jets
+  EV_JETPACK_DISABLE, // disable jets
+  EV_JETPACK_START,   // start thrusting
+  EV_JETPACK_STOP,    // stop thrusting
 
   EV_NOAMMO,
   EV_CHANGE_WEAPON,

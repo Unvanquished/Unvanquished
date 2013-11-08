@@ -851,9 +851,14 @@ void ClientTimerActions( gentity_t *ent, int msec )
 		client->time100 -= 100;
 
 		// Restore or subtract stamina
-		if ( stopped || client->ps.pm_type == PM_JETPACK )
+		if ( stopped )
 		{
 			client->ps.stats[ STAT_STAMINA ] += ca->staminaStopRestore;
+		}
+		else if ( client->ps.stats[ STAT_STATE ] & SS_JETPACK_ACTIVE )
+		{
+			// flying the jetpack is roughly as relaxing as jogging
+			client->ps.stats[ STAT_STAMINA ] += ca->staminaJogRestore;
 		}
 		else if ( ( client->ps.stats[ STAT_STATE ] & SS_SPEEDBOOST ) &&
 		          !usercmdButtonPressed( client->buttons, BUTTON_WALKING ) &&
@@ -1865,10 +1870,6 @@ void ClientThink_real( gentity_t *ent )
 	{
 		client->ps.pm_type = PM_GRABBED;
 	}
-	else if ( BG_InventoryContainsUpgrade( UP_JETPACK, client->ps.stats ) && BG_UpgradeIsActive( UP_JETPACK, client->ps.stats ) )
-	{
-		client->ps.pm_type = PM_JETPACK;
-	}
 	else
 	{
 		client->ps.pm_type = PM_NORMAL;
@@ -2010,25 +2011,6 @@ void ClientThink_real( gentity_t *ent )
 	if ( client->lastCreepSlowTime + CREEP_TIMEOUT < level.time )
 	{
 		client->ps.stats[ STAT_STATE ] &= ~SS_CREEPSLOWED;
-	}
-
-	//randomly disable the jet pack if damaged
-	if ( BG_InventoryContainsUpgrade( UP_JETPACK, client->ps.stats ) &&
-	     BG_UpgradeIsActive( UP_JETPACK, client->ps.stats ) )
-	{
-		if ( ent->lastDamageTime + JETPACK_DISABLE_TIME > level.time )
-		{
-			if ( random() > JETPACK_DISABLE_CHANCE )
-			{
-				client->ps.pm_type = PM_NORMAL;
-			}
-		}
-
-		//switch jetpack off if no reactor
-		if ( !G_Reactor() )
-		{
-			BG_DeactivateUpgrade( UP_JETPACK, client->ps.stats );
-		}
 	}
 
 	// set up for pmove
