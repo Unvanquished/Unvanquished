@@ -1327,11 +1327,12 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			trap_S_StartSound( NULL, es->number, CHAN_AUTO, cgs.media.buildableRepairedSound );
 			break;
 
-		case EV_OVERMIND_ATTACK:
+		case EV_OVERMIND_ATTACK_1:
+		case EV_OVERMIND_ATTACK_2:
 			if ( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_ALIENS )
 			{
 				trap_S_StartLocalSound( cgs.media.alienOvermindAttack, CHAN_ANNOUNCER );
-				CG_CenterPrint( "The Overmind is under attack!", 200, GIANTCHAR_WIDTH * 4 );
+				CG_CenterPrint( va( "^%c%s", "31"[ event - EV_OVERMIND_ATTACK_1 ], _( "The Overmind is under attack!" ) ), 200, GIANTCHAR_WIDTH * 4 );
 			}
 
 			break;
@@ -1340,16 +1341,59 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			if ( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_ALIENS )
 			{
 				trap_S_StartLocalSound( cgs.media.alienOvermindDying, CHAN_ANNOUNCER );
-				CG_CenterPrint( "The Overmind is dying!", 200, GIANTCHAR_WIDTH * 4 );
+				CG_CenterPrint( _( "^1The Overmind is dying!" ), 200, GIANTCHAR_WIDTH * 4 );
 			}
 
 			break;
 
-		case EV_DCC_ATTACK:
+		case EV_REACTOR_ATTACK_1:
+		case EV_REACTOR_ATTACK_2:
 			if ( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_HUMANS )
 			{
-				//trap_S_StartLocalSound( cgs.media.humanDCCAttack, CHAN_ANNOUNCER );
-				CG_CenterPrint( "Our base is under attack!", 200, GIANTCHAR_WIDTH * 4 );
+				CG_CenterPrint( va( "^%c%s", "31"[ event - EV_REACTOR_ATTACK_1 ], _( "The reactor is under attack!" ) ), 200, GIANTCHAR_WIDTH * 4 );
+			}
+
+			break;
+
+		case EV_REACTOR_DYING:
+			if ( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_HUMANS )
+			{
+				CG_CenterPrint( _( "^1The reactor is about to explode!" ), 200, GIANTCHAR_WIDTH * 4 );
+			}
+
+			break;
+
+		case EV_WARN_ATTACK:
+			// if eventParm is non-zero, this is for humans and there's a nearby reactor or repeater, otherwise it's for aliens
+			if ( es->eventParm >= MAX_CLIENTS && es->eventParm < MAX_GENTITIES )
+			{
+				const char *location;
+				qboolean    base = cg_entities[ es->eventParm ].currentState.modelindex == BA_H_REACTOR;
+				centity_t  *locent = CG_GetLocation( cg_entities[ es->eventParm ].currentState.origin );
+
+				CG_CenterPrint( base ? _( "Our base is under attack!" ) : _( "A forward base is under attack!" ), 200, GIANTCHAR_WIDTH * 4 );
+
+				if ( locent )
+				{
+					location = CG_ConfigString( CS_LOCATIONS + locent->currentState.generic1 );
+				}
+				else
+				{
+					location = CG_ConfigString( CS_LOCATIONS );
+				}
+
+				if ( location && *location )
+				{
+					Com_Printf( _( "%s Under attack – %s\n" ), base ? "[reactor]" : "[repeater]", location );
+				}
+				else
+				{
+					Com_Printf( _( "%s Under attack\n" ), base ? "[reactor]" : "[repeater]" );
+				}
+			}
+			else // this is for aliens, and the overmind is in range
+			{
+				CG_CenterPrint( _( "Our base is under attack!" ), 200, GIANTCHAR_WIDTH * 4 );
 			}
 
 			break;

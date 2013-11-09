@@ -401,13 +401,22 @@ G_BroadcastEvent
 Sends an event to every client
 ===============
 */
-void G_BroadcastEvent( int event, int eventParm )
+void G_BroadcastEvent( int event, int eventParm, team_t team )
 {
 	gentity_t *ent;
 
 	ent = G_NewTempEntity( vec3_origin, event );
 	ent->s.eventParm = eventParm;
-	ent->r.svFlags = SVF_BROADCAST; // send to everyone
+
+	if ( team )
+	{
+		G_TeamToClientmask( team, &ent->r.loMask, &ent->r.hiMask );
+		ent->r.svFlags = SVF_BROADCAST | SVF_CLIENTMASK;
+	}
+	else
+	{
+		ent->r.svFlags = SVF_BROADCAST;
+	}
 }
 
 /*

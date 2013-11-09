@@ -938,6 +938,8 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 	level.spawning = qtrue;
 	// parse the key/value pairs and spawn gentities
 	G_SpawnEntitiesFromString();
+	// add any fake entities
+	G_SpawnFakeEntities();
 
 	// load up a custom building layout if there is one
 	G_LayoutLoad();

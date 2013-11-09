@@ -361,7 +361,8 @@ struct gentity_s
 
 	qboolean    deconstruct; // deconstruct if no BP left
 	int         deconstructTime; // time at which structure marked
-	int         overmindAttackTimer;
+	int         attackTimer, attackLastEvent; // self being attacked
+	int         warnTimer; // nearby building(s) being attacked
 	int         overmindDyingTimer;
 	int         overmindSpawnsTimer;
 	int         nextPhysicsTime; // buildables don't need to check what they're sitting on
@@ -687,6 +688,7 @@ struct level_locals_s
 	vec3_t           intermission_angle;
 
 	gentity_t        *locationHead; // head of the location list
+	gentity_t        *fakeLocation; // fake location for anything which might need one
 
 	float            mineRate;
 

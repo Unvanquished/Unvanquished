@@ -25,6 +25,59 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define MAX_ALIEN_BBOX 25
 
+#define PRIMARY_ATTACK_PERIOD 7500
+#define NEARBY_ATTACK_PERIOD  15000
+
+/*
+================
+G_WarnPrimaryUnderAttack
+
+Warns when the team's primary building is under attack.
+Called from overmind and reactor thinkers.
+================
+*/
+
+static void G_WarnPrimaryUnderAttack( gentity_t *self )
+{
+	const buildableAttributes_t *attr = BG_Buildable( self->s.modelindex );
+	float fracHealth, fracLastHealth;
+	int event = 0;
+
+	fracHealth = (float) self->health / (float) attr->health;
+	fracLastHealth = (float) self->lastHealth / (float) attr->health;
+
+	if ( fracHealth < 0.25f && fracLastHealth >= 0.25f )
+	{
+		event = attr->team == TEAM_ALIENS ? EV_OVERMIND_ATTACK_2 : EV_REACTOR_ATTACK_2;
+	}
+	else if ( fracHealth < 0.75f && fracLastHealth >= 0.75f )
+	{
+		event = attr->team == TEAM_ALIENS ? EV_OVERMIND_ATTACK_1 : EV_REACTOR_ATTACK_1;
+	}
+
+	if ( event && ( event != self->attackLastEvent || level.time > self->attackTimer ) )
+	{
+		self->attackTimer = level.time + PRIMARY_ATTACK_PERIOD; // don't spam
+		self->attackLastEvent = event;
+		G_BroadcastEvent( event, 0, attr->team );
+	}
+
+	self->lastHealth = self->health;
+}
+
+/*
+================
+IsWarnableMOD
+
+True if the means of death allows an under-attack warning.
+================
+*/
+
+static qboolean IsWarnableMOD( int mod )
+{
+	return mod != MOD_UNKNOWN && mod != MOD_TRIGGER_HURT && mod != MOD_DECONSTRUCT && mod != MOD_REPLACE && mod != MOD_NOCREEP;
+}
+
 /*
 ================
 G_SetBuildableAnim
@@ -440,7 +493,6 @@ G_InsideBase
 
 qboolean G_InsideBase( gentity_t *self, qboolean ownBase )
 {
-	qboolean  inRange, inVis;
 	gentity_t *mainBuilding;
 
 	mainBuilding = GetMainBuilding( self, ownBase );
@@ -450,10 +502,12 @@ qboolean G_InsideBase( gentity_t *self, qboolean ownBase )
 		return qfalse;
 	}
 
-	inRange = ( Distance( self->s.origin, mainBuilding->s.origin ) < INSIDE_BASE_MAX_DISTANCE );
-	inVis = trap_InPVSIgnorePortals( self->s.origin, mainBuilding->s.origin );
+	if ( Distance( self->s.origin, mainBuilding->s.origin ) >= INSIDE_BASE_MAX_DISTANCE )
+	{
+		return qfalse;
+	}
 
-	return ( inRange && inVis );
+	return trap_InPVSIgnorePortals( self->s.origin, mainBuilding->s.origin );
 }
 
 /*
@@ -872,6 +926,8 @@ exploding.
 */
 void AGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
 {
+	gentity_t *om;
+
 	G_SetBuildableAnim( self, self->powered ? BANIM_DESTROY1 : BANIM_DESTROY_UNPOWERED, qtrue );
 	G_SetIdleBuildableAnim( self, BANIM_DESTROYED );
 
@@ -880,6 +936,13 @@ void AGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, i
 	self->think = AGeneric_Blast;
 	self->s.eFlags &= ~EF_FIRING; //prevent any firing effects
 	self->powered = qfalse;
+
+	// warn if in main base and there's an overmind
+	if ( ( om = G_Overmind() ) && om != self && level.time > om->warnTimer && G_InsideBase( self, qtrue ) && IsWarnableMOD( mod ) )
+	{
+		om->warnTimer = level.time + NEARBY_ATTACK_PERIOD; // don't spam
+		G_BroadcastEvent( EV_WARN_ATTACK, 0, TEAM_ALIENS );
+	}
 
 	// fully grown and not blasted to smithereens
 	if ( self->spawned && -self->health < BG_Buildable( self->s.modelindex )->health )
@@ -1086,7 +1149,6 @@ void ASpawn_Think( gentity_t *self )
 
 //==================================================================================
 
-#define OVERMIND_ATTACK_PERIOD 10000
 #define OVERMIND_DYING_PERIOD  5000
 #define OVERMIND_SPAWNS_PERIOD 30000
 
@@ -1133,7 +1195,7 @@ void AOvermind_Think( gentity_t *self )
 			gentity_t *builder;
 
 			self->overmindSpawnsTimer = level.time + OVERMIND_SPAWNS_PERIOD;
-			G_BroadcastEvent( EV_OVERMIND_SPAWNS, 0 );
+			G_BroadcastEvent( EV_OVERMIND_SPAWNS, 0, TEAM_ALIENS );
 
 			for ( i = 0; i < level.numConnectedClients; i++ )
 			{
@@ -1155,25 +1217,27 @@ void AOvermind_Think( gentity_t *self )
 			}
 		}
 
-		//overmind dying
-		if ( self->health < ( OVERMIND_HEALTH / 10.0f ) && level.time > self->overmindDyingTimer )
-		{
-			self->overmindDyingTimer = level.time + OVERMIND_DYING_PERIOD;
-			G_BroadcastEvent( EV_OVERMIND_DYING, 0 );
-		}
-
-		//overmind under attack
-		if ( self->health < self->lastHealth && level.time > self->overmindAttackTimer )
-		{
-			self->overmindAttackTimer = level.time + OVERMIND_ATTACK_PERIOD;
-			G_BroadcastEvent( EV_OVERMIND_ATTACK, 0 );
-		}
-
-		self->lastHealth = self->health;
+		G_WarnPrimaryUnderAttack( self );
 	}
 	else
 	{
 		self->overmindSpawnsTimer = level.time + OVERMIND_SPAWNS_PERIOD;
+	}
+}
+
+/*
+================
+AOvermind_Die
+
+Called when the overmind dies
+================
+*/
+void AOvermind_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
+{
+	AGeneric_Die( self, inflictor, attacker, mod );
+	if ( IsWarnableMOD( mod ) )
+	{
+		G_BroadcastEvent( EV_OVERMIND_DYING, 0, TEAM_ALIENS );
 	}
 }
 
@@ -1909,41 +1973,44 @@ static int PowerRelevantRange()
 
 /*
 ================
-PowerSourceInRange
+NearestPowerSourceInRange
 
 Check if origin is affected by reactor or repeater power.
+If it is, return whichever is nearest (preferring reactor).
 ================
 */
-static qboolean PowerSourceInRange( vec3_t origin )
+static gentity_t *NearestPowerSourceInRange( gentity_t *self )
 {
-	gentity_t *neighbor = NULL;
+	gentity_t *neighbor = G_Reactor();
+	gentity_t *best = NULL;
+	float bestDistance = 3e38f;
 
-	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, origin, PowerRelevantRange() ) ) )
+	if ( neighbor && Distance( self->s.origin, neighbor->s.origin ) <= g_powerReactorRange.integer )
+	{
+		return neighbor;
+	}
+
+	neighbor = NULL;
+
+	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, self->s.origin, PowerRelevantRange() ) ) )
 	{
 		if ( neighbor->s.eType != ET_BUILDABLE )
 		{
 			continue;
 		}
 
-		switch ( neighbor->s.modelindex )
+		if ( neighbor->s.modelindex == BA_H_REPEATER )
 		{
-			case BA_H_REACTOR:
-				if ( Distance( origin, neighbor->s.origin ) < g_powerReactorRange.integer )
-				{
-					return qtrue;
-				}
-				break;
-
-			case BA_H_REPEATER:
-				if ( Distance( origin, neighbor->s.origin ) < g_powerRepeaterRange.integer )
-				{
-					return qtrue;
-				}
-				break;
+			float distance = Distance( self->s.origin, neighbor->s.origin );
+			if ( distance < bestDistance )
+			{
+				bestDistance = distance;
+				best = neighbor;
+			}
 		}
 	}
 
-	return qfalse;
+	return ( bestDistance <= g_powerRepeaterRange.integer ) ? best : NULL;
 }
 
 /*
@@ -2401,6 +2468,32 @@ void HGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, i
 		self->nextthink = level.time;
 	}
 
+	// warn if this building was powered, there's a watcher nearby and it's powered too
+	if ( self->s.modelindex != BA_H_REACTOR && self->powered && G_Reactor() && IsWarnableMOD( mod ) )
+	{
+		qboolean inBase = G_InsideBase( self, qtrue );
+		gentity_t *watcher = inBase ? G_Reactor()
+		                            : ( self->s.modelindex == BA_H_REPEATER ) ? self : NearestPowerSourceInRange( self );
+		gentity_t *location = NULL;
+
+		// found reactor or repeater? get location entity
+		if ( watcher )
+		{
+			location = Team_GetLocation( watcher );
+			if ( !location )
+			{
+				location = level.fakeLocation; // fall back on the fake location
+			}
+		}
+
+		// check that the location/repeater/reactor hasn't warned recently
+		if ( location && level.time > location->warnTimer )
+		{
+			location->warnTimer = level.time + NEARBY_ATTACK_PERIOD; // don't spam
+			G_BroadcastEvent( EV_WARN_ATTACK, inBase ? 0 : ( watcher - level.gentities ), TEAM_HUMANS );
+		}
+	}
+
 	G_LogDestruction( self, attacker, mod );
 }
 
@@ -2568,6 +2661,8 @@ void HReactor_Think( gentity_t *self )
 				                         MOD_REACTOR, TEAM_HUMANS );
 			}
 		}
+
+		G_WarnPrimaryUnderAttack( self );
 	}
 
 	if ( self->dcc )
@@ -2577,6 +2672,22 @@ void HReactor_Think( gentity_t *self )
 	else
 	{
 		self->nextthink = level.time + REACTOR_ATTACK_REPEAT;
+	}
+}
+
+/*
+================
+HReactorDie
+
+Called when the reactor is destroyed
+================
+*/
+void HReactor_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
+{
+	HGeneric_Die( self, inflictor, attacker, mod );
+	if ( IsWarnableMOD( mod ) )
+	{
+		G_BroadcastEvent( EV_REACTOR_DYING, 0, TEAM_HUMANS );
 	}
 }
 
@@ -4579,7 +4690,7 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 			break;
 
 		case BA_A_OVERMIND:
-			built->die = AGeneric_Die;
+			built->die = AOvermind_Die;
 			built->think = AOvermind_Think;
 			built->pain = AGeneric_Pain;
 			{
@@ -4658,7 +4769,7 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 
 		case BA_H_REACTOR:
 			built->think = HReactor_Think;
-			built->die = HGeneric_Die;
+			built->die = HReactor_Die;
 			built->use = HRepeater_Use;
 			built->powered = built->active = qtrue;
 			{

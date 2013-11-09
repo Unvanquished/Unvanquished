@@ -1241,11 +1241,17 @@ static const char *const eventnames[] =
 	"EV_STOPLOOPINGSOUND",
 	"EV_TAUNT",
 
-	"EV_OVERMIND_ATTACK", // overmind under attack
-	"EV_OVERMIND_DYING", // overmind close to death
+	"EV_OVERMIND_ATTACK_1", // overmind under attack
+	"EV_OVERMIND_ATTACK_2", // overmind under attack
+	"EV_OVERMIND_DYING", // overmind dead
 	"EV_OVERMIND_SPAWNS", // overmind needs spawns
 
+	"EV_REACTOR_ATTACK_1", // reactor under attack
+	"EV_REACTOR_ATTACK_2", // reactor under attack
+	"EV_REACTOR_DYING", // reactor destroyed
 	"EV_DCC_ATTACK", // dcc under attack
+
+	"EV_WARN_ATTACK",
 
 	"EV_MGTURRET_SPINUP", // trigger a sound
 

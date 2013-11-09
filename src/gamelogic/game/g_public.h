@@ -251,7 +251,7 @@ char              *G_CopyString( const char *str );
 char              *vtos( const vec3_t v );
 void              G_AddPredictableEvent( gentity_t *ent, int event, int eventParm );
 void              G_AddEvent( gentity_t *ent, int event, int eventParm );
-void              G_BroadcastEvent( int event, int eventParm );
+void              G_BroadcastEvent( int event, int eventParm, team_t team );
 void              G_SetShaderRemap( const char *oldShader, const char *newShader, float timeOffset );
 const char        *BuildShaderStateConfig( void );
 qboolean          G_ClientIsLagging( gclient_t *client );
