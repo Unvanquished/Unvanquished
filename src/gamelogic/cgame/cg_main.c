@@ -1576,6 +1576,11 @@ static void CG_RegisterGraphics( void )
 	// register the inline models
 	cgs.numInlineModels = trap_CM_NumInlineModels();
 
+	if ( cgs.numInlineModels > MAX_SUBMODELS )
+	{
+		CG_Error( "MAX_SUBMODELS (%d) exceeded by %d", MAX_SUBMODELS, cgs.numInlineModels - MAX_SUBMODELS );
+	}
+
 	for ( i = 1; i < cgs.numInlineModels; i++ )
 	{
 		char   name[ 10 ];

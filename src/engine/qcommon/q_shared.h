@@ -1607,8 +1607,11 @@ double rint( double x );
 #define ENTITYNUM_WORLD          ( MAX_GENTITIES - 2 )
 #define ENTITYNUM_MAX_NORMAL     ( MAX_GENTITIES - 2 )
 
-#define MAX_MODELS               256 // these are sent over the net as 8 bits (Gordon: upped to 9 bits, erm actually it was already at 9 bits, wtf? NEVAR TRUST GAMECODE COMMENTS, comments are evil :E, let's hope it doesn't horribly break anything....)
-#define MAX_SOUNDS               256 // so they cannot be blindly increased
+#define MODELINDEX_BITS          9 // minimum requirement for MAX_SUBMODELS and MAX_MODELS
+
+#define MAX_SUBMODELS            512 // 9 bits sent (see qcommon/msg.c); q3map2 limits to 1024 via MAX_MAP_MODELS; not set to 512 to avoid overlap with fake handles
+#define MAX_MODELS               256 // 9 bits sent (see qcommon/msg.c), but limited by game VM
+#define MAX_SOUNDS               256 // 8 bits sent (via eventParm; see qcommon/msg.c)
 #define MAX_CS_SKINS             64
 #define MAX_CSSTRINGS            32
 
