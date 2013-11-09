@@ -631,6 +631,7 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 
 		client->ps.speed = client->pers.flySpeed;
 		client->ps.stats[ STAT_STAMINA ] = 0;
+		client->ps.stats[ STAT_FUEL ] = 0;
 		client->ps.stats[ STAT_MISC ] = 0;
 		client->ps.stats[ STAT_BUILDABLE ] = BA_NONE;
 		client->ps.stats[ STAT_CLASS ] = PCL_NONE;
@@ -848,10 +849,14 @@ void ClientTimerActions( gentity_t *ent, int msec )
 
 		client->time100 -= 100;
 
-		// Restore or subtract stamina
-		if ( stopped || client->ps.pm_type == PM_JETPACK )
+		// Use/Restore stamina
+		if ( stopped )
 		{
 			client->ps.stats[ STAT_STAMINA ] += ca->staminaStopRestore;
+		}
+		else if ( client->ps.stats[ STAT_STATE2 ] & SS2_JETPACK_ACTIVE )
+		{
+			client->ps.stats[ STAT_STAMINA ] += ca->staminaJogRestore;
 		}
 		else if ( ( client->ps.stats[ STAT_STATE ] & SS_SPEEDBOOST ) &&
 		          !usercmdButtonPressed( client->buttons, BUTTON_WALKING ) &&
@@ -878,10 +883,30 @@ void ClientTimerActions( gentity_t *ent, int msec )
 			client->ps.stats[ STAT_STAMINA ] = 0;
 		}
 
+		// Use/Restore fuel
+		if ( client->ps.stats[ STAT_STATE2 ] & SS2_JETPACK_ACTIVE )
+		{
+			client->ps.stats[ STAT_FUEL ] -= JETPACK_FUEL_USAGE;
+		}
+		else
+		{
+			client->ps.stats[ STAT_FUEL ] += JETPACK_FUEL_RESTORE;
+		}
+
+		// Check fuel limits
+		if ( client->ps.stats[ STAT_FUEL ] > JETPACK_FUEL_MAX )
+		{
+			client->ps.stats[ STAT_FUEL ] = JETPACK_FUEL_MAX;
+		}
+		else if ( client->ps.stats[ STAT_FUEL ] < 0 )
+		{
+			client->ps.stats[ STAT_FUEL ] = 0;
+		}
+
+		// Update build timer
 		if ( weapon == WP_ABUILD || weapon == WP_ABUILD2 ||
 		     BG_InventoryContainsWeapon( WP_HBUILD, client->ps.stats ) )
 		{
-			// Update build timer
 			if ( client->ps.stats[ STAT_MISC ] > 0 )
 			{
 				client->ps.stats[ STAT_MISC ] -= 100;
@@ -893,6 +918,7 @@ void ClientTimerActions( gentity_t *ent, int msec )
 			}
 		}
 
+		// Building related
 		switch ( weapon )
 		{
 			case WP_ABUILD:
@@ -1863,10 +1889,6 @@ void ClientThink_real( gentity_t *ent )
 	{
 		client->ps.pm_type = PM_GRABBED;
 	}
-	else if ( BG_InventoryContainsUpgrade( UP_JETPACK, client->ps.stats ) && BG_UpgradeIsActive( UP_JETPACK, client->ps.stats ) )
-	{
-		client->ps.pm_type = PM_JETPACK;
-	}
 	else
 	{
 		client->ps.pm_type = PM_NORMAL;
@@ -1937,8 +1959,10 @@ void ClientThink_real( gentity_t *ent )
 		client->ps.stats[ STAT_STATE ] &= ~SS_POISONED;
 	}
 
+	// copy global gravity to playerstate
 	client->ps.gravity = g_gravity.value;
 
+	// handle medkit (TODO: move into helper function)
 	if ( BG_InventoryContainsUpgrade( UP_MEDKIT, client->ps.stats ) &&
 	     BG_UpgradeIsActive( UP_MEDKIT, client->ps.stats ) )
 	{
@@ -2005,28 +2029,16 @@ void ClientThink_real( gentity_t *ent )
 		                   BG_Class( client->ps.stats[ STAT_CLASS ] )->speed;
 	}
 
+	// unset creepslowed flag if it's time
 	if ( client->lastCreepSlowTime + CREEP_TIMEOUT < level.time )
 	{
 		client->ps.stats[ STAT_STATE ] &= ~SS_CREEPSLOWED;
 	}
 
-	//randomly disable the jet pack if damaged
-	if ( BG_InventoryContainsUpgrade( UP_JETPACK, client->ps.stats ) &&
-	     BG_UpgradeIsActive( UP_JETPACK, client->ps.stats ) )
+	// unset jetpack damaged flag if it's time
+	if ( client->lastCombatTime + JETPACK_DMG_DISABLE_TIME < level.time )
 	{
-		if ( ent->lastDamageTime + JETPACK_DISABLE_TIME > level.time )
-		{
-			if ( random() > JETPACK_DISABLE_CHANCE )
-			{
-				client->ps.pm_type = PM_NORMAL;
-			}
-		}
-
-		//switch jetpack off if no reactor
-		if ( !G_Reactor() )
-		{
-			BG_DeactivateUpgrade( UP_JETPACK, client->ps.stats );
-		}
+		client->ps.stats[ STAT_STATE2 ] &= ~SS2_JETPACK_DAMAGED;
 	}
 
 	// set up for pmove

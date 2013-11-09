@@ -259,11 +259,6 @@ extern float RADAR_RANGE;
 
 extern float BATTPACK_MODIFIER;
 
-extern float JETPACK_FLOAT_SPEED;
-extern float JETPACK_SINK_SPEED;
-extern int   JETPACK_DISABLE_TIME;
-extern float JETPACK_DISABLE_CHANCE;
-
 extern int   MEDKIT_POISON_IMMUNITY_TIME;
 extern int   MEDKIT_STARTUP_TIME;
 extern int   MEDKIT_STARTUP_SPEED;
@@ -315,6 +310,15 @@ extern int   REACTOR_ATTACK_DCC_DAMAGE;
 
 #define HUMAN_MAX_CREDITS             2000
 #define HUMAN_TK_SUICIDE_PENALTY      150
+
+#define JETPACK_TARGETSPEED           350.0f
+#define JETPACK_ACCELERATION          3.0f
+#define JETPACK_JUMPMAG_REDUCTION     0.25f
+#define JETPACK_DMG_DISABLE_TIME      600  // in ms
+#define JETPACK_FUEL_MAX              2500
+#define JETPACK_FUEL_LOW              400  // some limits apply below this
+#define JETPACK_FUEL_USAGE            50   // in 1/(100 ms)
+#define JETPACK_FUEL_RESTORE          25   // in 1/(100 ms)
 
 /*
  * Misc

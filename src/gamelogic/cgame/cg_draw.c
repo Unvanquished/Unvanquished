@@ -1842,13 +1842,82 @@ static void CG_DrawPlayerStaminaBolt( rectDef_t *rect, vec4_t backColor,
 	staminaJumpCost = BG_Class( cg.snap->ps.stats[ STAT_CLASS ] )->staminaJumpCost;
 	sprinting = ( cg.predictedPlayerState.stats[ STAT_STATE ] & SS_SPEEDBOOST );
 
-	if ( sprinting )
+	if ( stamina < staminaJumpCost )
+	{
+		Vector4Copy( backColor, color );
+	}
+	else if ( sprinting )
 	{
 		Vector4Lerp( ( sin( cg.time / 150.0f ) + 1.0f ) / 2.0f, backColor, foreColor, color );
 	}
-	else if ( stamina < staminaJumpCost )
+	else
+	{
+		Vector4Copy( foreColor, color );
+	}
+
+	trap_R_SetColor( color );
+	CG_DrawPic( rect->x, rect->y, rect->w, rect->h, shader );
+	trap_R_SetColor( NULL );
+}
+
+static void CG_DrawPlayerFuelBar( rectDef_t *rect, vec4_t foreColor, qhandle_t shader )
+{
+	int   fuel;
+	float progress, warning;
+
+	if ( !BG_InventoryContainsUpgrade( UP_JETPACK, cg.snap->ps.stats ) )
+	{
+		return;
+	}
+
+	fuel     = cg.snap->ps.stats[ STAT_FUEL ];
+	progress = ( float )fuel / ( float )JETPACK_FUEL_MAX;
+	warning  = -1.0f * ( float )JETPACK_FUEL_LOW / ( float )JETPACK_FUEL_MAX;
+
+	CG_DrawPlayerProgressBar( rect, foreColor, progress, warning, shader );
+}
+
+static void CG_DrawPlayerFuelValue( rectDef_t *rect, vec4_t color )
+{
+	int fuel, percent;
+
+	if ( !BG_InventoryContainsUpgrade( UP_JETPACK, cg.snap->ps.stats ) )
+	{
+		return;
+	}
+
+	fuel    = cg.snap->ps.stats[ STAT_FUEL ];
+	percent = ( int )( 100.0f * ( float )fuel / ( float )JETPACK_FUEL_MAX );
+
+	trap_R_SetColor( color );
+	CG_DrawField( rect->x, rect->y, 4, rect->w / 4, rect->h, percent );
+	trap_R_SetColor( NULL );
+}
+
+static void CG_DrawPlayerFuelIcon( rectDef_t *rect, vec4_t backColor,
+                                   vec4_t foreColor, qhandle_t shader )
+{
+	vec4_t   color;
+	int      fuel;
+	qboolean pmNormal, damaged, active;
+
+	if ( !BG_InventoryContainsUpgrade( UP_JETPACK, cg.snap->ps.stats ) )
+	{
+		return;
+	}
+
+	fuel     = cg.snap->ps.stats[ STAT_FUEL ];
+	pmNormal = ( cg.snap->ps.pm_type == PM_NORMAL );
+	damaged  = ( cg.snap->ps.stats[ STAT_STATE2 ] & SS2_JETPACK_DAMAGED );
+	active   = ( cg.snap->ps.stats[ STAT_STATE2 ] & SS2_JETPACK_ACTIVE );
+
+	if ( fuel < JETPACK_FUEL_LOW || !pmNormal || damaged )
 	{
 		Vector4Copy( backColor, color );
+	}
+	else if ( active )
+	{
+		Vector4Lerp( ( sin( cg.time / 150.0f ) + 1.0f ) / 2.0f, backColor, foreColor, color );
 	}
 	else
 	{
@@ -4193,6 +4262,18 @@ void CG_OwnerDraw( rectDef_t *rect, float text_x,
 
 		case CG_PLAYER_STAMINA_BOLT:
 			CG_DrawPlayerStaminaBolt( rect, backColor, foreColor, shader );
+			break;
+
+		case CG_PLAYER_FUEL_BAR:
+			CG_DrawPlayerFuelBar( rect, foreColor, shader );
+			break;
+
+		case CG_PLAYER_FUEL_VALUE:
+			CG_DrawPlayerFuelValue( rect, foreColor );
+			break;
+
+		case CG_PLAYER_FUEL_ICON:
+			CG_DrawPlayerFuelIcon( rect, backColor, foreColor, shader );
 			break;
 
 		case CG_PLAYER_AMMO_VALUE:

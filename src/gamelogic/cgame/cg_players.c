@@ -2509,27 +2509,22 @@ static void CG_PlayerNonSegAxis( centity_t *cent, vec3_t srcAngles, vec3_t nonSe
 	AnglesToAxis( localAngles, nonSegAxis );
 }
 
-//==========================================================================
-
-/*
-===============
-CG_PlayerUpgrade
-===============
-*/
 static void CG_PlayerUpgrades( centity_t *cent, refEntity_t *torso )
 {
 	// These are static because otherwise we have >32K of locals, and lcc doesn't like that.
 	// Also, jetpack and battpack are never both in use together, so just #define.
 	QVM_STATIC refEntity_t jetpack;
 	QVM_STATIC refEntity_t flash;
+
 #	define battpack jetpack
 
-	int           held, active;
+	int           held, publicFlags;
 	entityState_t *es = &cent->currentState;
 
-	held = es->modelindex;
-	active = es->modelindex2;
+	held        = es->modelindex;
+	publicFlags = es->modelindex2;
 
+	// jetpack model and effects
 	if ( held & ( 1 << UP_JETPACK ) )
 	{
 		memset( &jetpack, 0, sizeof( jetpack ) );
@@ -2539,102 +2534,76 @@ static void CG_PlayerUpgrades( centity_t *cent, refEntity_t *torso )
 
 		jetpack.hModel = cgs.media.jetpackModel;
 
-		//identity matrix
+		// identity matrix
 		AxisCopy( axisDefault, jetpack.axis );
 
-		//FIXME: change to tag_back when it exists
+		// FIXME: change to tag_back when it exists
 		CG_PositionRotatedEntityOnTag( &jetpack, torso, torso->hModel, "tag_head" );
 
 		trap_R_AddRefEntityToScene( &jetpack );
 
-		if ( active & ( 1 << UP_JETPACK ) )
+		if ( publicFlags & PF_JETPACK_ACTIVE )
 		{
-			if ( es->pos.trDelta[ 2 ] > 10.0f )
+			// spawn ps if necessary
+			if ( cent->jetPackState != JPS_ACTIVE )
 			{
-				if ( cent->jetPackState != JPS_ASCENDING )
+				if ( CG_IsParticleSystemValid( &cent->jetPackPS ) )
 				{
-					if ( CG_IsParticleSystemValid( &cent->jetPackPS ) )
-					{
-						CG_DestroyParticleSystem( &cent->jetPackPS );
-					}
-
-					cent->jetPackPS = CG_SpawnNewParticleSystem( cgs.media.jetPackAscendPS );
-					cent->jetPackState = JPS_ASCENDING;
+					CG_DestroyParticleSystem( &cent->jetPackPS );
 				}
 
-				trap_S_AddLoopingSound( cent->currentState.number, cent->lerpOrigin,
-				                        vec3_origin, cgs.media.jetpackAscendSound );
-			}
-			else if ( es->pos.trDelta[ 2 ] < -10.0f )
-			{
-				if ( cent->jetPackState != JPS_DESCENDING )
-				{
-					if ( CG_IsParticleSystemValid( &cent->jetPackPS ) )
-					{
-						CG_DestroyParticleSystem( &cent->jetPackPS );
-					}
+				cent->jetPackPS = CG_SpawnNewParticleSystem( cgs.media.jetPackThrustPS );
 
-					cent->jetPackPS = CG_SpawnNewParticleSystem( cgs.media.jetPackDescendPS );
-					cent->jetPackState = JPS_DESCENDING;
+				cent->jetPackState = JPS_ACTIVE;
+			}
+
+			// play thrust sound
+			trap_S_AddLoopingSound( cent->currentState.number, cent->lerpOrigin,
+			                        vec3_origin, cgs.media.jetpackThrustLoopSound );
+
+			// Add flash tag (?)
+			{
+				memset( &flash, 0, sizeof( flash ) );
+				VectorCopy( torso->lightingOrigin, flash.lightingOrigin );
+				flash.shadowPlane = torso->shadowPlane;
+				flash.renderfx = torso->renderfx;
+
+				flash.hModel = cgs.media.jetpackFlashModel;
+
+				if ( !flash.hModel )
+				{
+					return;
 				}
 
-				trap_S_AddLoopingSound( cent->currentState.number, cent->lerpOrigin,
-				                        vec3_origin, cgs.media.jetpackDescendSound );
-			}
-			else
-			{
-				if ( cent->jetPackState != JPS_HOVERING )
-				{
-					if ( CG_IsParticleSystemValid( &cent->jetPackPS ) )
-					{
-						CG_DestroyParticleSystem( &cent->jetPackPS );
-					}
+				AxisCopy( axisDefault, flash.axis );
 
-					cent->jetPackPS = CG_SpawnNewParticleSystem( cgs.media.jetPackHoverPS );
-					cent->jetPackState = JPS_HOVERING;
-				}
-
-				trap_S_AddLoopingSound( cent->currentState.number, cent->lerpOrigin,
-				                        vec3_origin, cgs.media.jetpackIdleSound );
+				CG_PositionRotatedEntityOnTag( &flash, &jetpack, jetpack.hModel, "tag_flash" );
+				trap_R_AddRefEntityToScene( &flash );
 			}
 
-			memset( &flash, 0, sizeof( flash ) );
-			VectorCopy( torso->lightingOrigin, flash.lightingOrigin );
-			flash.shadowPlane = torso->shadowPlane;
-			flash.renderfx = torso->renderfx;
-
-			flash.hModel = cgs.media.jetpackFlashModel;
-
-			if ( !flash.hModel )
-			{
-				return;
-			}
-
-			AxisCopy( axisDefault, flash.axis );
-
-			CG_PositionRotatedEntityOnTag( &flash, &jetpack, jetpack.hModel, "tag_flash" );
-			trap_R_AddRefEntityToScene( &flash );
-
+			// attach ps
 			if ( CG_IsParticleSystemValid( &cent->jetPackPS ) )
 			{
-				CG_SetAttachmentTag( &cent->jetPackPS->attachment,
-				                     jetpack, jetpack.hModel, "tag_flash" );
+				CG_SetAttachmentTag( &cent->jetPackPS->attachment, jetpack, jetpack.hModel, "tag_flash" );
 				CG_SetAttachmentCent( &cent->jetPackPS->attachment, cent );
 				CG_AttachToTag( &cent->jetPackPS->attachment );
 			}
 		}
 		else if ( CG_IsParticleSystemValid( &cent->jetPackPS ) )
 		{
+			// disable jetpack ps when not thrusting anymore
 			CG_DestroyParticleSystem( &cent->jetPackPS );
-			cent->jetPackState = JPS_OFF;
+			cent->jetPackState = JPS_INACTIVE;
 		}
 	}
 	else if ( CG_IsParticleSystemValid( &cent->jetPackPS ) )
 	{
+		// disable jetpack ps when not carrying it anymore
 		CG_DestroyParticleSystem( &cent->jetPackPS );
-		cent->jetPackState = JPS_OFF;
+		cent->jetPackState = JPS_INACTIVE;
 	}
 
+	// battery pack
 	if ( held & ( 1 << UP_BATTPACK ) )
 	{
 		memset( &battpack, 0, sizeof( battpack ) );
@@ -2653,6 +2622,7 @@ static void CG_PlayerUpgrades( centity_t *cent, refEntity_t *torso )
 		trap_R_AddRefEntityToScene( &battpack );
 	}
 
+	// creep below bloblocked players
 	if ( es->eFlags & EF_BLOBLOCKED )
 	{
 		vec3_t  temp, origin, up = { 0.0f, 0.0f, 1.0f };
@@ -2673,6 +2643,7 @@ static void CG_PlayerUpgrades( centity_t *cent, refEntity_t *torso )
 			               0.0f, 1.0f, 1.0f, 1.0f, 1.0f, qfalse, size, qtrue );
 		}
 	}
+
 #	undef battpack
 }
 

@@ -1329,9 +1329,7 @@ static void CG_RegisterSounds( void )
 		cgs.gameSounds[ i ] = trap_S_RegisterSound( soundName, qfalse );
 	}
 
-	cgs.media.jetpackDescendSound = trap_S_RegisterSound( "sound/upgrades/jetpack/low.wav", qfalse );
-	cgs.media.jetpackIdleSound = trap_S_RegisterSound( "sound/upgrades/jetpack/idle.wav", qfalse );
-	cgs.media.jetpackAscendSound = trap_S_RegisterSound( "sound/upgrades/jetpack/hi.wav", qfalse );
+	cgs.media.jetpackThrustLoopSound = trap_S_RegisterSound( "sound/upgrades/jetpack/hi.wav", qfalse );
 
 	cgs.media.medkitUseSound = trap_S_RegisterSound( "sound/upgrades/medkit/medkit.wav", qfalse );
 
@@ -1526,9 +1524,7 @@ static void CG_RegisterGraphics( void )
 	cgs.media.alienEvolvePS = CG_RegisterParticleSystem( "alienEvolvePS" );
 	cgs.media.alienAcidTubePS = CG_RegisterParticleSystem( "alienAcidTubePS" );
 
-	cgs.media.jetPackDescendPS = CG_RegisterParticleSystem( "jetPackDescendPS" );
-	cgs.media.jetPackHoverPS = CG_RegisterParticleSystem( "jetPackHoverPS" );
-	cgs.media.jetPackAscendPS = CG_RegisterParticleSystem( "jetPackAscendPS" );
+	cgs.media.jetPackThrustPS = CG_RegisterParticleSystem( "jetPackAscendPS" );
 
 	cgs.media.humanBuildableDamagedPS = CG_RegisterParticleSystem( "humanBuildableDamagedPS" );
 	cgs.media.alienBuildableDamagedPS = CG_RegisterParticleSystem( "alienBuildableDamagedPS" );

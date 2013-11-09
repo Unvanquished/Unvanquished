@@ -79,10 +79,8 @@ typedef enum
 
 typedef enum
 {
-  JPS_OFF,
-  JPS_DESCENDING,
-  JPS_HOVERING,
-  JPS_ASCENDING
+  JPS_INACTIVE,
+  JPS_ACTIVE
 } jetPackState_t;
 
 //======================================================================
@@ -1249,13 +1247,9 @@ typedef struct
 	sfxHandle_t watrOutSound;
 	sfxHandle_t watrUnSound;
 
-	sfxHandle_t jetpackDescendSound;
-	sfxHandle_t jetpackIdleSound;
-	sfxHandle_t jetpackAscendSound;
+	sfxHandle_t jetpackThrustLoopSound;
 
-	qhandle_t   jetPackDescendPS;
-	qhandle_t   jetPackHoverPS;
-	qhandle_t   jetPackAscendPS;
+	qhandle_t   jetPackThrustPS;
 
 	sfxHandle_t medkitUseSound;
 

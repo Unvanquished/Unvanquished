@@ -630,6 +630,11 @@ void Cmd_Give_f( gentity_t *ent )
 		ent->client->ps.stats[ STAT_STAMINA ] = STAMINA_MAX;
 	}
 
+	if ( give_all || Q_stricmp( name, "fuel" ) == 0 )
+	{
+		ent->client->ps.stats[ STAT_FUEL ] = JETPACK_FUEL_MAX;
+	}
+
 	if ( Q_stricmp( name, "poison" ) == 0 )
 	{
 		if ( ent->client->pers.team == TEAM_HUMANS )
