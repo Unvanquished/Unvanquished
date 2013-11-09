@@ -1123,10 +1123,13 @@ void G_Damage( gentity_t *target, gentity_t *inflictor, gentity_t *attacker,
 	}
 
 	// update combat timers
-	if ( target->client && attacker->client )
+	if ( target->client && attacker->client && target != attacker )
 	{
-		target->client->lastCombatTime     = level.time;
+		target->client->lastCombatTime   = level.time;
 		attacker->client->lastCombatTime = level.time;
+
+		// stop jetpack for a short time
+		client->ps.stats[ STAT_STATE2 ] |= SS2_JETPACK_DAMAGED;
 	}
 
 	if ( client )
@@ -1166,7 +1169,7 @@ void G_Damage( gentity_t *target, gentity_t *inflictor, gentity_t *attacker,
 
 				default:
 					target->client->ps.stats[ STAT_STATE ] |= SS_POISONED;
-					target->client->lastPoisonTime = level.time;
+					target->client->lastPoisonTime   = level.time;
 					target->client->lastPoisonClient = attacker;
 			}
 		}

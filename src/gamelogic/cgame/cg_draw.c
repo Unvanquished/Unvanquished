@@ -1897,23 +1897,25 @@ static void CG_DrawPlayerFuelValue( rectDef_t *rect, vec4_t color )
 static void CG_DrawPlayerFuelIcon( rectDef_t *rect, vec4_t backColor,
                                    vec4_t foreColor, qhandle_t shader )
 {
-	int      fuel;
 	vec4_t   color;
-	qboolean thrusting;
+	int      fuel;
+	qboolean pmNormal, damaged, active;
 
 	if ( !BG_InventoryContainsUpgrade( UP_JETPACK, cg.snap->ps.stats ) )
 	{
 		return;
 	}
 
-	fuel      = cg.snap->ps.stats[ STAT_FUEL ];
-	thrusting = ( cg.snap->ps.stats[ STAT_STATE2 ] & SS2_JETPACK_ACTIVE );
+	fuel     = cg.snap->ps.stats[ STAT_FUEL ];
+	pmNormal = ( cg.snap->ps.pm_type == PM_NORMAL );
+	damaged  = ( cg.snap->ps.stats[ STAT_STATE2 ] & SS2_JETPACK_DAMAGED );
+	active   = ( cg.snap->ps.stats[ STAT_STATE2 ] & SS2_JETPACK_ACTIVE );
 
-	if ( fuel < JETPACK_FUEL_LOW )
+	if ( fuel < JETPACK_FUEL_LOW || !pmNormal || damaged )
 	{
 		Vector4Copy( backColor, color );
 	}
-	else if ( thrusting )
+	else if ( active )
 	{
 		Vector4Lerp( ( sin( cg.time / 150.0f ) + 1.0f ) / 2.0f, backColor, foreColor, color );
 	}

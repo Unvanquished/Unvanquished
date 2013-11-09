@@ -314,6 +314,7 @@ extern int   REACTOR_ATTACK_DCC_DAMAGE;
 #define JETPACK_TARGETSPEED           350.0f
 #define JETPACK_ACCELERATION          3.0f
 #define JETPACK_JUMPMAG_REDUCTION     0.25f
+#define JETPACK_DMG_DISABLE_TIME      600  // in ms
 #define JETPACK_FUEL_MAX              2500
 #define JETPACK_FUEL_LOW              400  // some limits apply below this
 #define JETPACK_FUEL_USAGE            50   // in 1/(100 ms)

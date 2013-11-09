@@ -1961,8 +1961,10 @@ void ClientThink_real( gentity_t *ent )
 		client->ps.stats[ STAT_STATE ] &= ~SS_POISONED;
 	}
 
+	// copy global gravity to playerstate
 	client->ps.gravity = g_gravity.value;
 
+	// handle medkit (TODO: move into helper function)
 	if ( BG_InventoryContainsUpgrade( UP_MEDKIT, client->ps.stats ) &&
 	     BG_UpgradeIsActive( UP_MEDKIT, client->ps.stats ) )
 	{
@@ -2029,9 +2031,16 @@ void ClientThink_real( gentity_t *ent )
 		                   BG_Class( client->ps.stats[ STAT_CLASS ] )->speed;
 	}
 
+	// unset creepslowed flag if it's time
 	if ( client->lastCreepSlowTime + CREEP_TIMEOUT < level.time )
 	{
 		client->ps.stats[ STAT_STATE ] &= ~SS_CREEPSLOWED;
+	}
+
+	// unset jetpack damaged flag if it's time
+	if ( client->lastCombatTime + JETPACK_DMG_DISABLE_TIME < level.time )
+	{
+		client->ps.stats[ STAT_STATE2 ] &= ~SS2_JETPACK_DAMAGED;
 	}
 
 	// set up for pmove
