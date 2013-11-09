@@ -1265,6 +1265,10 @@ static qboolean PM_CheckWallJump( void )
 	return qtrue;
 }
 
+/**
+ * @brief PM_CheckJetpack
+ * @return qtrue if and only if thrust was applied
+ */
 static qboolean PM_CheckJetpack( void )
 {
 	static const vec3_t thrustDir = { 0.0f, 0.0f, 1.0f };
@@ -1367,7 +1371,7 @@ static qboolean PM_CheckJetpack( void )
 				return qfalse;
 			}
 
-			// minimum fuel required
+			// minimum fuel required to start from a jump
 			if ( pm->ps->stats[ STAT_FUEL ] < JETPACK_FUEL_LOW )
 			{
 				return qfalse;
@@ -1380,10 +1384,16 @@ static qboolean PM_CheckJetpack( void )
 			}
 		}
 
+		// minimum fuel required
+		if ( pm->ps->stats[ STAT_FUEL ] < JETPACK_FUEL_STOP )
+		{
+			return qfalse;
+		}
+
 		pm->ps->stats[ STAT_STATE2 ] |= SS2_JETPACK_WARM;
 	}
 
-	// stop thrusting if out of fuel
+	// stop thrusting and cold restart engine if completely out of fuel
 	if ( pm->ps->stats[ STAT_FUEL ] < JETPACK_FUEL_USAGE )
 	{
 		if ( pm->ps->stats[ STAT_STATE2 ] & SS2_JETPACK_ACTIVE )
@@ -1394,6 +1404,7 @@ static qboolean PM_CheckJetpack( void )
 			}
 
 			pm->ps->stats[ STAT_STATE2 ] &= ~SS2_JETPACK_ACTIVE;
+			pm->ps->stats[ STAT_STATE2 ] &= ~SS2_JETPACK_WARM;
 
 			PM_AddEvent( EV_JETPACK_STOP );
 		}
@@ -1414,8 +1425,42 @@ static qboolean PM_CheckJetpack( void )
 		PM_AddEvent( EV_JETPACK_START );
 	}
 
+	// clear the jumped flag as the reason we are in air now is the jetpack
+	pm->ps->pm_flags &= ~PMF_JUMPED;
+
 	// thrust
 	PM_Accelerate( thrustDir, JETPACK_TARGETSPEED, JETPACK_ACCELERATION );
+
+	// remove fuel
+	pm->ps->stats[ STAT_FUEL ] -= pml.msec * JETPACK_FUEL_USAGE;
+
+	if ( pm->ps->stats[ STAT_FUEL ] < 0 )
+	{
+		pm->ps->stats[ STAT_FUEL ] = 0;
+	}
+
+	return qtrue;
+}
+
+/**
+ * @brief Restores jetpack fuel
+ * @return qtrue if and only if fuel has been restored
+ */
+static qboolean PM_CheckJetpackRestoreFuel( void )
+{
+	// don't restore fuel when full or jetpack active
+	if ( pm->ps->stats[ STAT_FUEL ] == JETPACK_FUEL_MAX ||
+	     pm->ps->stats[ STAT_STATE2 ] & SS2_JETPACK_ACTIVE )
+	{
+		return qfalse;
+	}
+
+	pm->ps->stats[ STAT_FUEL ] += pml.msec * JETPACK_FUEL_RESTORE;
+
+	if ( pm->ps->stats[ STAT_FUEL ] > JETPACK_FUEL_MAX )
+	{
+		pm->ps->stats[ STAT_FUEL ] = JETPACK_FUEL_MAX;
+	}
 
 	return qtrue;
 }
@@ -4984,6 +5029,9 @@ void PmoveSingle( pmove_t *pmove )
 	{
 		PM_AirMove();
 	}
+
+	// restore jetpack fuel if possible
+	PM_CheckJetpackRestoreFuel();
 
 	PM_Animate();
 
