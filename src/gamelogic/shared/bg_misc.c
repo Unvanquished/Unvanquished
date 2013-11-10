@@ -1420,7 +1420,7 @@ void BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s, qboolean 
 	s->modelindex2 = 0;
 
 	// copy jetpack state
-	if (ps->stats[ STAT_STATE2 ] & SS2_JETPACK_ENABLED )
+	if ( ps->stats[ STAT_STATE2 ] & SS2_JETPACK_ENABLED )
 	{
 		s->modelindex2 |= PF_JETPACK_ENABLED;
 	}
@@ -1554,7 +1554,7 @@ void BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_t *s
 	s->weapon = ps->weapon;
 	s->groundEntityNum = ps->groundEntityNum;
 
-	// HACK: store items held in modelindex
+	// HACK: store held items in modelindex
 	s->modelindex = 0;
 
 	for ( i = UP_NONE + 1; i < UP_NUM_UPGRADES; i++ )
@@ -1563,6 +1563,28 @@ void BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_t *s
 		{
 			s->modelindex |= 1 << i;
 		}
+	}
+
+	// set "public state" flags
+	s->modelindex2 = 0;
+
+	// copy jetpack state
+	if ( ps->stats[ STAT_STATE2 ] & SS2_JETPACK_ENABLED )
+	{
+		s->modelindex2 |= PF_JETPACK_ENABLED;
+	}
+	else
+	{
+		s->modelindex2 &= ~PF_JETPACK_ENABLED;
+	}
+
+	if ( ps->stats[ STAT_STATE2 ] & SS2_JETPACK_ACTIVE )
+	{
+		s->modelindex2 |= PF_JETPACK_ACTIVE;
+	}
+	else
+	{
+		s->modelindex2 &= ~PF_JETPACK_ACTIVE;
 	}
 
 	// use misc field to store team/class info:

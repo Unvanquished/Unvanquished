@@ -849,7 +849,7 @@ void ClientTimerActions( gentity_t *ent, int msec )
 
 		client->time100 -= 100;
 
-		// Use/Restore stamina
+		// Use/Restore stamina (TODO: Move this to pmove to get rid of prediction errors!)
 		if ( stopped )
 		{
 			client->ps.stats[ STAT_STAMINA ] += ca->staminaStopRestore;
@@ -881,26 +881,6 @@ void ClientTimerActions( gentity_t *ent, int msec )
 		else if ( client->ps.stats[ STAT_STAMINA ] < 0 )
 		{
 			client->ps.stats[ STAT_STAMINA ] = 0;
-		}
-
-		// Use/Restore fuel
-		if ( client->ps.stats[ STAT_STATE2 ] & SS2_JETPACK_ACTIVE )
-		{
-			client->ps.stats[ STAT_FUEL ] -= JETPACK_FUEL_USAGE;
-		}
-		else
-		{
-			client->ps.stats[ STAT_FUEL ] += JETPACK_FUEL_RESTORE;
-		}
-
-		// Check fuel limits
-		if ( client->ps.stats[ STAT_FUEL ] > JETPACK_FUEL_MAX )
-		{
-			client->ps.stats[ STAT_FUEL ] = JETPACK_FUEL_MAX;
-		}
-		else if ( client->ps.stats[ STAT_FUEL ] < 0 )
-		{
-			client->ps.stats[ STAT_FUEL ] = 0;
 		}
 
 		// Update build timer

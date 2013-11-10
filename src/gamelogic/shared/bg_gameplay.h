@@ -312,11 +312,12 @@ extern int   REACTOR_ATTACK_DCC_DAMAGE;
 #define JETPACK_TARGETSPEED           350.0f
 #define JETPACK_ACCELERATION          3.0f
 #define JETPACK_JUMPMAG_REDUCTION     0.25f
-#define JETPACK_DMG_DISABLE_TIME      600  // in ms
-#define JETPACK_FUEL_MAX              2500
-#define JETPACK_FUEL_LOW              400  // some limits apply below this
-#define JETPACK_FUEL_USAGE            50   // in 1/(100 ms)
-#define JETPACK_FUEL_RESTORE          25   // in 1/(100 ms)
+#define JETPACK_DMG_DISABLE_TIME      600   // in ms
+#define JETPACK_FUEL_MAX              30000 // needs to be < 2^15
+#define JETPACK_FUEL_USAGE            6     // in 1/ms
+#define JETPACK_FUEL_RESTORE          3     // in 1/ms
+#define JETPACK_FUEL_LOW              JETPACK_FUEL_MAX / 5       // jetpack doesn't start from a jump below this
+#define JETPACK_FUEL_STOP             JETPACK_FUEL_RESTORE * 150 // jetpack doesn't activate below this
 
 /*
  * Misc
