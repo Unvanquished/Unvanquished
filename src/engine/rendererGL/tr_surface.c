@@ -1468,13 +1468,6 @@ void Tess_SurfaceIQM( srfIQModel_t *surf ) {
 
 	Tess_CheckOverflow( surf->num_vertexes, surf->num_triangles * 3 );
 
-	for ( i = 0; i < surf->num_triangles; i++ )
-	{
-		tess.indexes[ tess.numIndexes + i * 3 + 0 ] = offset + model->triangles[ 3 * ( surf->first_triangle + i ) + 0 ];
-		tess.indexes[ tess.numIndexes + i * 3 + 1 ] = offset + model->triangles[ 3 * ( surf->first_triangle + i ) + 1 ];
-		tess.indexes[ tess.numIndexes + i * 3 + 2 ] = offset + model->triangles[ 3 * ( surf->first_triangle + i ) + 2 ];
-	}
-
 	// compute bones
 	for ( i = 0; i < model->num_joints; i++ )
 	{
@@ -1494,6 +1487,27 @@ void Tess_SurfaceIQM( srfIQModel_t *surf ) {
 			TransInit( &bones[ i ] );
 		}
 		TransAddScale( backEnd.currentEntity->e.skeleton.scale, &bones[ i ] );
+	}
+
+	if( surf->vbo && surf->ibo ) {
+		Com_Memcpy( tess.bones, bones, model->num_joints * sizeof(transform_t) );
+		R_BindVBO( surf->vbo );
+		R_BindIBO( surf->ibo );
+		tess.vboVertexSkinning = qtrue;
+
+		tess.multiDrawIndexes[ tess.multiDrawPrimitives ] = ((glIndex_t *)NULL) + surf->first_triangle * 3;
+		tess.multiDrawCounts[ tess.multiDrawPrimitives ] = surf->num_triangles * 3;
+		tess.multiDrawPrimitives++;
+
+		Tess_End();
+		return;
+	}
+
+	for ( i = 0; i < surf->num_triangles; i++ )
+	{
+		tess.indexes[ tess.numIndexes + i * 3 + 0 ] = offset + model->triangles[ 3 * ( surf->first_triangle + i ) + 0 ];
+		tess.indexes[ tess.numIndexes + i * 3 + 1 ] = offset + model->triangles[ 3 * ( surf->first_triangle + i ) + 1 ];
+		tess.indexes[ tess.numIndexes + i * 3 + 2 ] = offset + model->triangles[ 3 * ( surf->first_triangle + i ) + 2 ];
 	}
 
 	tess.attribsSet |= ATTR_POSITION | ATTR_TEXCOORD |

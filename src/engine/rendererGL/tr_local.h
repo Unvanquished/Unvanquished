@@ -2405,6 +2405,9 @@ extern "C" {
 		IQModel_t       *data;
 		int             first_vertex, num_vertexes;
 		int             first_triangle, num_triangles;
+
+		VBO_t *vbo;
+		IBO_t *ibo;
 	} srfIQModel_t;
 
 	typedef struct

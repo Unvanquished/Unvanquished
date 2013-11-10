@@ -463,6 +463,11 @@ qboolean R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 	IQModel_t		*IQModel;
 	IQAnim_t		*IQAnim;
 	srfIQModel_t		*surface;
+	vboData_t               vboData;
+	float                   *colorbuf, *weightbuf;
+	int                     *indexbuf;
+	VBO_t                   *vbo;
+	IBO_t                   *ibo;
 
 	if( !LoadIQMFile( buffer, filesize, mod_name, &len_names ) ) {
 		return qfalse;
@@ -634,33 +639,6 @@ qboolean R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 		}
 	}
 
-	// register shaders
-	// overwrite the material offset with the shader index
-	mesh = IQMPtr( header, header->ofs_meshes );
-	surface = IQModel->surfaces;
-	for( i = 0; i < header->num_meshes; i++, mesh++, surface++ ) {
-		surface->surfaceType = SF_IQM;
-
-		if( mesh->name ) {
-			surface->name = str;
-			name = IQMPtr( header, header->ofs_text + mesh->name );
-			len = strlen( name ) + 1;
-			Com_Memcpy( str, name, len );
-			str += len;
-		} else {
-			surface->name = NULL;
-		}
-
-		surface->shader = R_FindShader( str + mesh->material, SHADER_3D_DYNAMIC, RSF_DEFAULT );
-		if( surface->shader->defaultShader )
-			surface->shader = tr.defaultShader;
-		surface->data = IQModel;
-		surface->first_vertex = mesh->first_vertex;
-		surface->num_vertexes = mesh->num_vertexes;
-		surface->first_triangle = mesh->first_triangle;
-		surface->num_triangles = mesh->num_triangles;
-	}
-
 	// copy vertexarrays and indexes
 	vertexarray = IQMPtr( header, header->ofs_vertexarrays );
 	for( i = 0; i < header->num_vertexarrays; i++, vertexarray++ ) {
@@ -717,6 +695,108 @@ qboolean R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 		IQModel->triangles[3*i+2] = triangle->vertex[2];
 	}
 
+	// convert data where necessary and create VBO
+	if( r_vboModels->integer && glConfig2.vboVertexSkinningAvailable
+	    && IQModel->num_joints <= glConfig2.maxVertexSkinningBones ) {
+		if( IQModel->colors ) {
+			colorbuf = (float *)ri.Hunk_AllocateTempMemory( sizeof(vec4_t) * IQModel->num_vertexes );
+			for( i = 0; i < IQModel->num_vertexes; i++ ) {
+				colorbuf[ 4 * i + 0 ] = IQModel->colors[ 4 * i + 0 ];
+				colorbuf[ 4 * i + 1 ] = IQModel->colors[ 4 * i + 1 ];
+				colorbuf[ 4 * i + 2 ] = IQModel->colors[ 4 * i + 2 ];
+				colorbuf[ 4 * i + 3 ] = IQModel->colors[ 4 * i + 3 ];
+			}
+		} else {
+			colorbuf = NULL;
+		}
+		if( IQModel->blendIndexes ) {
+			indexbuf = (int *)ri.Hunk_AllocateTempMemory( sizeof(int[4]) * IQModel->num_vertexes );
+			for( i = 0; i < IQModel->num_vertexes; i++ ) {
+				indexbuf[ 4 * i + 0 ] = IQModel->blendIndexes[ 4 * i + 0 ];
+				indexbuf[ 4 * i + 1 ] = IQModel->blendIndexes[ 4 * i + 1 ];
+				indexbuf[ 4 * i + 2 ] = IQModel->blendIndexes[ 4 * i + 2 ];
+				indexbuf[ 4 * i + 3 ] = IQModel->blendIndexes[ 4 * i + 3 ];
+			}
+		} else {
+			indexbuf = NULL;
+		}
+		if( IQModel->blendWeights ) {
+			const float weightscale = 1.0f / 255.0f;
+
+			weightbuf = (float *)ri.Hunk_AllocateTempMemory( sizeof(vec4_t) * IQModel->num_vertexes );
+			for( i = 0; i < IQModel->num_vertexes; i++ ) {
+				weightbuf[ 4 * i + 0 ] = weightscale * IQModel->blendWeights[ 4 * i + 0 ];
+				weightbuf[ 4 * i + 1 ] = weightscale * IQModel->blendWeights[ 4 * i + 1 ];
+				weightbuf[ 4 * i + 2 ] = weightscale * IQModel->blendWeights[ 4 * i + 2 ];
+				weightbuf[ 4 * i + 3 ] = weightscale * IQModel->blendWeights[ 4 * i + 3 ];
+			}
+		} else {
+			weightbuf = NULL;
+		}
+
+		vboData.xyz = (vec3_t *)IQModel->positions;
+		vboData.tangent = (vec3_t *)IQModel->tangents;
+		vboData.binormal = (vec3_t *)IQModel->bitangents;
+		vboData.normal = (vec3_t *)IQModel->normals;;
+		vboData.numFrames = 0;
+		vboData.color = (vec4_t *)colorbuf;
+		vboData.st = (vec2_t *)IQModel->texcoords;
+		vboData.lightCoord = NULL;
+		vboData.ambientLight = NULL;
+		vboData.directedLight = NULL;
+		vboData.lightDir = NULL;
+		vboData.boneIndexes = (int (*)[4])indexbuf;
+		vboData.boneWeights = (vec4_t *)weightbuf;
+		vboData.numVerts = IQModel->num_vertexes;
+		vbo = R_CreateStaticVBO( "IQM surface VBO", vboData,
+					 VBO_LAYOUT_SEPERATE );
+
+		if( weightbuf ) {
+			ri.Hunk_FreeTempMemory( weightbuf );
+		}
+		if( indexbuf ) {
+			ri.Hunk_FreeTempMemory( indexbuf );
+		}
+		if( colorbuf ) {
+			ri.Hunk_FreeTempMemory( colorbuf );
+		}
+
+		// create IBO
+		ibo = R_CreateStaticIBO( "IQM surface IBO", IQModel->triangles, IQModel->num_triangles * 3 );
+	} else {
+		vbo = NULL;
+		ibo = NULL;
+	}
+
+	// register shaders
+	// overwrite the material offset with the shader index
+	mesh = IQMPtr( header, header->ofs_meshes );
+	surface = IQModel->surfaces;
+	for( i = 0; i < header->num_meshes; i++, mesh++, surface++ ) {
+		surface->surfaceType = SF_IQM;
+
+		if( mesh->name ) {
+			surface->name = str;
+			name = IQMPtr( header, header->ofs_text + mesh->name );
+			len = strlen( name ) + 1;
+			Com_Memcpy( str, name, len );
+			str += len;
+		} else {
+			surface->name = NULL;
+		}
+
+		surface->shader = R_FindShader( str + mesh->material, SHADER_3D_DYNAMIC, RSF_DEFAULT );
+		if( surface->shader->defaultShader )
+			surface->shader = tr.defaultShader;
+		surface->data = IQModel;
+		surface->first_vertex = mesh->first_vertex;
+		surface->num_vertexes = mesh->num_vertexes;
+		surface->first_triangle = mesh->first_triangle;
+		surface->num_triangles = mesh->num_triangles;
+		surface->vbo = vbo;
+		surface->ibo = ibo;
+	}
+
 	// copy model bounds
 	if(header->ofs_bounds)
 	{
@@ -743,6 +823,8 @@ qboolean R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 		Com_sprintf( name, MAX_QPATH, "%s:%s", mod_name, IQAnim->name );
 		RE_RegisterAnimationIQM( name, IQAnim );
 	}
+
+	// build VBO
 
 	return qtrue;
 }
