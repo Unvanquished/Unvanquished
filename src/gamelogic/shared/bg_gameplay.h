@@ -323,6 +323,9 @@ extern int   REACTOR_ATTACK_DCC_DAMAGE;
  * Misc
  */
 
+#define ENTITY_USE_RANGE                   64.0f
+#define ENTITY_BUY_RANGE                   128.0f
+
 // fire
 #define FIRE_MIN_DISTANCE                  20.0f
 

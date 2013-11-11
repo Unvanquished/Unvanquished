@@ -4188,7 +4188,6 @@ static void PM_Weapon( void )
 	//done reloading so give em some ammo
 	if ( pm->ps->weaponstate == WEAPON_RELOADING )
 	{
-		pm->ps->clips--;
 		pm->ps->ammo = BG_Weapon( pm->ps->weapon )->maxAmmo;
 
 		if ( BG_Weapon( pm->ps->weapon )->usesEnergy &&
@@ -4204,13 +4203,15 @@ static void PM_Weapon( void )
 		return;
 	}
 
-	// check for end of clip
+	//start reloading
 	if ( !BG_Weapon( pm->ps->weapon )->infiniteAmmo &&
 	     ( pm->ps->ammo <= 0 || ( pm->ps->pm_flags & PMF_WEAPON_RELOAD ) ) &&
 	     pm->ps->clips > 0 )
 	{
 		pm->ps->pm_flags &= ~PMF_WEAPON_RELOAD;
 		pm->ps->weaponstate = WEAPON_RELOADING;
+
+		pm->ps->clips--;
 
 		//drop the weapon
 		PM_StartTorsoAnim( TORSO_DROP );

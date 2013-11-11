@@ -1173,7 +1173,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			//do something useful here
 			break;
 
-		case EV_RPTUSE_SOUND:
+		case EV_AMMO_REFILL:
 			trap_S_StartSound( NULL, es->number, CHAN_AUTO, cgs.media.repeaterUseSound );
 			break;
 

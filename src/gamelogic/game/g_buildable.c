@@ -2565,26 +2565,6 @@ void HRepeater_Think( gentity_t *self )
 
 /*
 ================
-HRepeater_Use
-
-Use for human power repeater
-================
-*/
-void HRepeater_Use( gentity_t *self, gentity_t *other, gentity_t *activator )
-{
-	if ( self->health <= 0 || !self->spawned )
-	{
-		return;
-	}
-
-	if ( other && other->client )
-	{
-		G_GiveClientMaxAmmo( other, qtrue );
-	}
-}
-
-/*
-================
 HReactor_Think
 
 Think function for Human Reactor
@@ -2691,35 +2671,25 @@ void HReactor_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, i
 	}
 }
 
-//==================================================================================
-
-/*
-================
-HArmoury_Activate
-
-Called when a human activates an Armoury
-================
-*/
-void HArmoury_Activate( gentity_t *self, gentity_t *other, gentity_t *activator )
+void HArmoury_Use( gentity_t *self, gentity_t *other, gentity_t *activator )
 {
-	if ( self->spawned )
+	if ( !self->spawned )
 	{
-		//only humans can activate this
-		if ( activator->client->pers.team != TEAM_HUMANS )
-		{
-			return;
-		}
-
-		//if this is powered then call the armoury menu
-		if ( self->powered )
-		{
-			G_TriggerMenu( activator->client->ps.clientNum, MN_H_ARMOURY );
-		}
-		else
-		{
-			G_TriggerMenu( activator->client->ps.clientNum, MN_H_NOTPOWERED );
-		}
+		return;
 	}
+
+	if ( activator->client->pers.team != TEAM_HUMANS )
+	{
+		return;
+	}
+
+	if ( !self->powered )
+	{
+		G_TriggerMenu( activator->client->ps.clientNum, MN_H_NOTPOWERED );
+		return;
+	}
+
+	G_TriggerMenu( activator->client->ps.clientNum, MN_H_ARMOURY );
 }
 
 /*
@@ -3588,35 +3558,21 @@ G_BuildableRange
 Check whether a point is within some range of a type of buildable
 ===============
 */
-qboolean G_BuildableRange( vec3_t origin, float r, buildable_t buildable )
+qboolean G_BuildableRange( vec3_t origin, float radius, buildable_t buildable )
 {
-	int       entityList[ MAX_GENTITIES ];
-	vec3_t    range;
-	vec3_t    mins, maxs;
-	int       i, num;
-	gentity_t *ent;
+	gentity_t *neighbor;
 
-	VectorSet( range, r, r, r );
-	VectorAdd( origin, range, maxs );
-	VectorSubtract( origin, range, mins );
+	neighbor = NULL;
 
-	num = trap_EntitiesInBox( mins, maxs, entityList, MAX_GENTITIES );
-
-	for ( i = 0; i < num; i++ )
+	while ( neighbor = G_IterateEntitiesWithinRadius( neighbor, origin, radius ) )
 	{
-		ent = &g_entities[ entityList[ i ] ];
-
-		if ( ent->s.eType != ET_BUILDABLE )
+		if ( neighbor->s.eType != ET_BUILDABLE || !neighbor->spawned || neighbor->health <= 0 ||
+		     ( neighbor->buildableTeam == TEAM_HUMANS && !neighbor->powered ) )
 		{
 			continue;
 		}
 
-		if ( ent->buildableTeam == TEAM_HUMANS && !ent->powered )
-		{
-			continue;
-		}
-
-		if ( ent->s.modelindex == buildable && ent->spawned )
+		if ( neighbor->s.modelindex == buildable )
 		{
 			return qtrue;
 		}
@@ -4731,7 +4687,7 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 		case BA_H_ARMOURY:
 			built->think = HArmoury_Think;
 			built->die = HGeneric_Die;
-			built->use = HArmoury_Activate;
+			built->use = HArmoury_Use;
 						{
 				vec3_t mins;
 				vec3_t maxs;
@@ -4770,7 +4726,6 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 		case BA_H_REACTOR:
 			built->think = HReactor_Think;
 			built->die = HReactor_Die;
-			built->use = HRepeater_Use;
 			built->powered = built->active = qtrue;
 			{
 				vec3_t mins;
@@ -4786,7 +4741,6 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 		case BA_H_REPEATER:
 			built->think = HRepeater_Think;
 			built->die = HGeneric_Die;
-			built->use = HRepeater_Use;
 			built->customNumber = -1;
 			break;
 

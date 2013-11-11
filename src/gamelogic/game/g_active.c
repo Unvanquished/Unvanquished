@@ -958,6 +958,9 @@ void ClientTimerActions( gentity_t *ent, int msec )
 
 		// replenish human health
 		G_ReplenishHumanHealth( ent );
+
+		// Find human ammo and fuel
+		G_FindAmmoAndFuel( ent, qfalse );
 	}
 
 	while ( client->time1000 >= 1000 )
@@ -2180,23 +2183,22 @@ void ClientThink_real( gentity_t *ent )
 	usercmdCopyButtons( client->buttons, ucmd->buttons );
 	usercmdLatchButtons( client->latched_buttons, client->buttons, client->oldbuttons );
 
-	if ( usercmdButtonPressed( client->buttons, BUTTON_ACTIVATE ) && !usercmdButtonPressed( client->oldbuttons, BUTTON_ACTIVATE ) &&
+	if ( usercmdButtonPressed( client->buttons, BUTTON_ACTIVATE ) &&
+	     !usercmdButtonPressed( client->oldbuttons, BUTTON_ACTIVATE ) &&
 	     client->ps.stats[ STAT_HEALTH ] > 0 )
 	{
 		trace_t   trace;
 		vec3_t    view, point;
 		gentity_t *traceEnt;
 
-#define USE_OBJECT_RANGE 64
-
 		int    entityList[ MAX_GENTITIES ];
-		vec3_t range = { USE_OBJECT_RANGE, USE_OBJECT_RANGE, USE_OBJECT_RANGE };
+		vec3_t range = { ENTITY_USE_RANGE, ENTITY_USE_RANGE, ENTITY_USE_RANGE };
 		vec3_t mins, maxs;
 		int    i, num;
 
 		// look for object infront of player
 		AngleVectors( client->ps.viewangles, view, NULL, NULL );
-		VectorMA( client->ps.origin, USE_OBJECT_RANGE, view, point );
+		VectorMA( client->ps.origin, ENTITY_USE_RANGE, view, point );
 		trap_Trace( &trace, client->ps.origin, NULL, NULL, point, ent->s.number, MASK_SHOT );
 
 		traceEnt = &g_entities[ trace.entityNum ];

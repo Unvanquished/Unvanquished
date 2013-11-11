@@ -660,22 +660,8 @@ void Cmd_Give_f( gentity_t *ent )
 
 	if ( give_all || Q_stricmp( name, "ammo" ) == 0 )
 	{
-		gclient_t *client = ent->client;
-
-		if ( client->ps.weapon != WP_ALEVEL3_UPG &&
-		     BG_Weapon( client->ps.weapon )->infiniteAmmo )
-		{
-			return;
-		}
-
-		client->ps.ammo = BG_Weapon( client->ps.weapon )->maxAmmo;
-		client->ps.clips = BG_Weapon( client->ps.weapon )->maxClips;
-
-		if ( BG_Weapon( client->ps.weapon )->usesEnergy &&
-		     BG_InventoryContainsUpgrade( UP_BATTPACK, client->ps.stats ) )
-		{
-			client->ps.ammo = ( int )( ( float ) client->ps.ammo * BATTPACK_MODIFIER );
-		}
+		G_RefillAmmo( ent, qfalse );
+		G_RefillFuel( ent, qfalse );
 	}
 }
 
@@ -3129,7 +3115,7 @@ static qboolean Cmd_Sell_upgradeItem( gentity_t *ent, upgrade_t item )
 
 	if ( item == UP_BATTPACK )
 	{
-		G_GiveClientMaxAmmo( ent, qtrue );
+		G_RefillAmmo( ent, qfalse );
 	}
 
 	// add to funds
@@ -3165,7 +3151,7 @@ static qboolean Cmd_Sell_internal( gentity_t *ent, const char *s )
 	upgrade_t upgrade;
 
 	//no armoury nearby
-	if ( !G_BuildableRange( ent->client->ps.origin, 100, BA_H_ARMOURY ) )
+	if ( !G_BuildableRange( ent->client->ps.origin, ENTITY_BUY_RANGE, BA_H_ARMOURY ) )
 	{
 		G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOARMOURYHERE );
 		return qfalse;
@@ -3320,21 +3306,20 @@ static qboolean Cmd_Buy_internal( gentity_t *ent, const char *s, qboolean sellCo
 	upgrade = BG_UpgradeByName( s )->number;
 
 	// Only give energy from reactors or repeaters
-	if ( G_BuildableRange( ent->client->ps.origin, 100, BA_H_ARMOURY ) )
+	if ( G_BuildableRange( ent->client->ps.origin, ENTITY_BUY_RANGE, BA_H_ARMOURY ) )
 	{
 		energyOnly = qfalse;
 	}
 	else if ( upgrade == UP_AMMO &&
 	          BG_Weapon( ent->client->ps.stats[ STAT_WEAPON ] )->usesEnergy &&
-	          ( G_BuildableRange( ent->client->ps.origin, 100, BA_H_REACTOR ) ||
-	            G_BuildableRange( ent->client->ps.origin, 100, BA_H_REPEATER ) ) )
+	          ( G_BuildableRange( ent->client->ps.origin, ENTITY_BUY_RANGE, BA_H_REACTOR ) ||
+	            G_BuildableRange( ent->client->ps.origin, ENTITY_BUY_RANGE, BA_H_REPEATER ) ) )
 	{
 		energyOnly = qtrue;
 	}
 	else
 	{
-		if ( upgrade == UP_AMMO &&
-		     BG_Weapon( ent->client->ps.weapon )->usesEnergy )
+		if ( upgrade == UP_AMMO && BG_Weapon( ent->client->ps.weapon )->usesEnergy )
 		{
 			G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOENERGYAMMOHERE );
 		}
@@ -3411,15 +3396,7 @@ static qboolean Cmd_Buy_internal( gentity_t *ent, const char *s, qboolean sellCo
 		}
 
 		ent->client->ps.stats[ STAT_WEAPON ] = weapon;
-		ent->client->ps.ammo = BG_Weapon( weapon )->maxAmmo;
-		ent->client->ps.clips = BG_Weapon( weapon )->maxClips;
-
-		if ( BG_Weapon( weapon )->usesEnergy &&
-		     BG_InventoryContainsUpgrade( UP_BATTPACK, ent->client->ps.stats ) )
-		{
-			ent->client->ps.ammo *= BATTPACK_MODIFIER;
-		}
-
+		G_GiveMaxAmmo( ent );
 		G_ForceWeaponChange( ent, weapon );
 
 		//set build delay/pounce etc to 0
@@ -3490,7 +3467,7 @@ static qboolean Cmd_Buy_internal( gentity_t *ent, const char *s, qboolean sellCo
 
 		if ( upgrade == UP_AMMO )
 		{
-			G_GiveClientMaxAmmo( ent, energyOnly );
+			// TODO: Remove UP_AMMO
 			return qtrue;
 		}
 		else
@@ -3541,7 +3518,7 @@ static qboolean Cmd_Buy_internal( gentity_t *ent, const char *s, qboolean sellCo
 
 		if ( upgrade == UP_BATTPACK )
 		{
-			G_GiveClientMaxAmmo( ent, qtrue );
+			G_RefillAmmo( ent, qtrue );
 		}
 
 		//subtract from funds
@@ -3738,17 +3715,22 @@ void Cmd_Reload_f( gentity_t *ent )
 	playerState_t *ps = &ent->client->ps;
 	int           ammo;
 
-	// weapon doesn't ever need reloading
+	// try getting ammo from an external source first
+	G_FindAmmoAndFuel( ent, qtrue );
+
+	// don't reload if the currently held weapon doesn't use ammo
 	if ( BG_Weapon( ps->weapon )->infiniteAmmo )
 	{
 		return;
 	}
 
+	// don't reload if there is no clip
 	if ( ps->clips <= 0 )
 	{
 		return;
 	}
 
+	// apply battery pack modifier
 	if ( BG_Weapon( ps->weapon )->usesEnergy &&
 	     BG_InventoryContainsUpgrade( UP_BATTPACK, ps->stats ) )
 	{

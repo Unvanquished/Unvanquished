@@ -1934,12 +1934,12 @@ void BotBuyUpgrade( gentity_t *self, upgrade_t upgrade )
 	// Only give energy from reactors or repeaters
 	if ( upgrade == UP_AMMO &&
 		BG_Weapon( ( weapon_t )self->client->ps.stats[ STAT_WEAPON ] )->usesEnergy &&
-		( G_BuildableRange( self->client->ps.origin, 100, BA_H_REACTOR ) ||
-		G_BuildableRange( self->client->ps.origin, 100, BA_H_REPEATER ) ) )
+		( G_BuildableRange( self->client->ps.origin, ENTITY_BUY_RANGE, BA_H_REACTOR ) ||
+		G_BuildableRange( self->client->ps.origin, ENTITY_BUY_RANGE, BA_H_REPEATER ) ) )
 	{
 		energyOnly = qtrue;
 	}
-	else if ( G_BuildableRange( self->client->ps.origin, 100, BA_H_ARMOURY ) )
+	else if ( G_BuildableRange( self->client->ps.origin, ENTITY_BUY_RANGE, BA_H_ARMOURY ) )
 	{
 		energyOnly = qfalse;
 	}
@@ -1988,7 +1988,7 @@ void BotBuyUpgrade( gentity_t *self, upgrade_t upgrade )
 
 		if ( upgrade == UP_AMMO )
 		{
-			G_GiveClientMaxAmmo( self, energyOnly );
+			// TODO: Remove UP_AMMO
 		}
 		else
 		{
@@ -2035,7 +2035,7 @@ void BotBuyUpgrade( gentity_t *self, upgrade_t upgrade )
 
 		if ( upgrade == UP_BATTPACK )
 		{
-			G_GiveClientMaxAmmo( self, qtrue );
+			G_RefillAmmo( self, qtrue );
 		}
 
 		//subtract from funds
@@ -2055,7 +2055,7 @@ void BotSellWeapons( gentity_t *self )
 	int i;
 
 	//no armoury nearby
-	if ( !G_BuildableRange( self->client->ps.origin, 100, BA_H_ARMOURY ) )
+	if ( !G_BuildableRange( self->client->ps.origin, ENTITY_BUY_RANGE, BA_H_ARMOURY ) )
 	{
 		return;
 	}
@@ -2095,7 +2095,7 @@ void BotSellAll( gentity_t *self )
 	int i;
 
 	//no armoury nearby
-	if ( !G_BuildableRange( self->client->ps.origin, 100, BA_H_ARMOURY ) )
+	if ( !G_BuildableRange( self->client->ps.origin, ENTITY_BUY_RANGE, BA_H_ARMOURY ) )
 	{
 		return;
 	}
@@ -2129,7 +2129,7 @@ void BotSellAll( gentity_t *self )
 
 			if ( i == UP_BATTPACK )
 			{
-				G_GiveClientMaxAmmo( self, qtrue );
+				G_RefillAmmo( self, qfalse );
 			}
 
 			//add to funds

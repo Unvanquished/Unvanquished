@@ -41,12 +41,10 @@ void G_ForceWeaponChange( gentity_t *ent, weapon_t weapon )
 		ps->weaponstate = WEAPON_READY;
 	}
 
-	if ( weapon == WP_NONE ||
-	     !BG_InventoryContainsWeapon( weapon, ps->stats ) )
+	if ( weapon == WP_NONE || !BG_InventoryContainsWeapon( weapon, ps->stats ) )
 	{
 		// switch to the first non blaster weapon
-		ps->persistant[ PERS_NEWWEAPON ] =
-		  BG_PrimaryWeapon( ent->client->ps.stats );
+		ps->persistant[ PERS_NEWWEAPON ] = BG_PrimaryWeapon( ent->client->ps.stats );
 	}
 	else
 	{
@@ -60,65 +58,232 @@ void G_ForceWeaponChange( gentity_t *ent, weapon_t weapon )
 	ps->pm_flags |= PMF_WEAPON_SWITCH;
 }
 
-void G_GiveClientMaxAmmo( gentity_t *ent, qboolean buyingEnergyAmmo )
+/**
+ * @brief Refills spare ammo clips.
+ * @return qtrue if clips were modified
+ */
+static qboolean GiveMaxClips( gentity_t *self )
 {
-	int      i, maxAmmo, maxClips;
-	qboolean restoredAmmo = qfalse, restoredEnergy = qfalse;
+	playerState_t *ps;
+	const weaponAttributes_t *wa;
 
-	for ( i = WP_NONE + 1; i < WP_NUM_WEAPONS; i++ )
+	if ( !self || !self->client )
 	{
-		qboolean energyWeapon;
+		return qfalse;
+	}
 
-		energyWeapon = BG_Weapon( i )->usesEnergy;
+	ps = &self->client->ps;
+	wa = BG_Weapon( ps->stats[ STAT_WEAPON ] );
 
-		if ( !BG_InventoryContainsWeapon( i, ent->client->ps.stats ) ||
-		     BG_Weapon( i )->infiniteAmmo ||
-		     BG_WeaponIsFull( i, ent->client->ps.stats,
-		                      ent->client->ps.ammo, ent->client->ps.clips ) ||
-		     ( buyingEnergyAmmo && !energyWeapon ) )
+	if ( !wa || wa->infiniteAmmo )
+	{
+		ps->clips = 0;
+
+		return qfalse;
+	}
+
+	if ( ps->clips != wa->maxClips )
+	{
+		ps->clips = wa->maxClips;
+
+		return qtrue;
+	}
+	else
+	{
+		return qfalse;
+	}
+}
+
+/**
+ * @brief Refills current ammo clip.
+ * @return qtrue if ammo was modified
+ */
+static qboolean GiveFullClip( gentity_t *self )
+{
+	playerState_t *ps;
+	const weaponAttributes_t *wa;
+	int   maxAmmo;
+
+	if ( !self || !self->client )
+	{
+		return qfalse;
+	}
+
+	ps = &self->client->ps;
+	wa = BG_Weapon( ps->stats[ STAT_WEAPON ] );
+
+	if ( !wa || wa->infiniteAmmo )
+	{
+		ps->ammo = 0;
+
+		return qfalse;
+	}
+
+	maxAmmo = wa->maxAmmo;
+
+	// apply battery pack modifier
+	if ( wa->usesEnergy && BG_InventoryContainsUpgrade( UP_BATTPACK, ps->stats ) )
+	{
+		maxAmmo *= BATTPACK_MODIFIER;
+	}
+
+	if ( ps->ammo != maxAmmo )
+	{
+		ps->ammo = maxAmmo;
+
+		return qtrue;
+	}
+	else
+	{
+		return qfalse;
+	}
+}
+
+/**
+ * @brief Sets both clips and ammo to full state.
+ */
+void G_GiveMaxAmmo( gentity_t *self )
+{
+	GiveMaxClips( self );
+	GiveFullClip( self );
+}
+
+/**
+ * @brief Refills clips on clip based weapons, refills ammo on other weapons.
+ * @param self
+ * @param triggerEvent If qtrue, trigger an event when ammo was modified.
+ * @return qtrue if ammo was modified.
+ */
+qboolean G_RefillAmmo( gentity_t *self, qboolean triggerEvent )
+{
+	qboolean modified;
+	const weaponAttributes_t *wa;
+
+	if ( !self || !self->client )
+	{
+		return qfalse;
+	}
+
+	wa = BG_Weapon( self->client->ps.stats[ STAT_WEAPON ] );
+
+	if ( wa->maxClips > 0 )
+	{
+		modified = GiveMaxClips( self );
+	}
+	else
+	{
+		self->client->ps.clips = 0;
+		modified = GiveFullClip( self );
+	}
+
+	if ( triggerEvent && modified )
+	{
+		G_AddEvent( self, EV_AMMO_REFILL, 0 );
+	}
+
+	return modified;
+}
+
+/**
+ * @brief Refills jetpack fuel.
+ * @param self
+ * @param triggerEvent If qtrue, trigger an event when fuel was modified.
+ * @return qtrue if fuel was modified.
+ */
+qboolean G_RefillFuel( gentity_t *self, qboolean triggerEvent )
+{
+	if ( !self || !self->client )
+	{
+		return qfalse;
+	}
+
+	// needs a human with jetpack
+	if ( self->client->ps.persistant[ PERS_TEAM ] != TEAM_HUMANS ||
+	     !BG_InventoryContainsUpgrade( UP_JETPACK, self->client->ps.stats ) )
+	{
+		return qfalse;
+	}
+
+	if ( self->client->ps.stats[ STAT_FUEL ] != JETPACK_FUEL_MAX )
+	{
+		self->client->ps.stats[ STAT_FUEL ] = JETPACK_FUEL_MAX;
+
+		if ( triggerEvent )
+		{
+			G_AddEvent( self, EV_AMMO_REFILL, 0 );
+		}
+
+		return qtrue;
+	}
+	else
+	{
+		return qfalse;
+	}
+}
+
+/**
+ * @brief Attempts to refill clips and jetpack fuel from a close source.
+ * @param refillClipLess If qtrue, refill weapons without clips, too.
+ */
+void G_FindAmmoAndFuel( gentity_t *self, qboolean refillClipLess )
+{
+	gentity_t *neighbor = NULL;
+	qboolean  foundAmmoSource = qfalse,
+	          foundFuelSource = qfalse,
+	          playedEvent     = qfalse;
+	const weaponAttributes_t *wa;
+
+	if ( !self || !self->client )
+	{
+		return;
+	}
+
+	wa = BG_Weapon( self->client->ps.stats[ STAT_WEAPON ] );
+
+	// search for ammo/fuel source
+	while ( neighbor = G_IterateEntitiesWithinRadius( neighbor, self->s.origin, ENTITY_BUY_RANGE ) )
+	{
+		// only friendly living buildables provide ammo
+		if ( neighbor->s.eType != ET_BUILDABLE ||
+		     !G_OnSameTeam( self, neighbor ) ||
+		     !neighbor->spawned ||
+		     neighbor->health <= 0 )
 		{
 			continue;
 		}
 
-		maxAmmo = BG_Weapon( i )->maxAmmo;
-		maxClips = BG_Weapon( i )->maxClips;
-
-		// Apply battery pack modifier
-		if ( energyWeapon &&
-		     BG_InventoryContainsUpgrade( UP_BATTPACK, ent->client->ps.stats ) )
+		switch ( neighbor->s.modelindex )
 		{
-			maxAmmo *= BATTPACK_MODIFIER;
-			restoredEnergy = qtrue;
+			case BA_H_ARMOURY:
+				foundAmmoSource = qtrue;
+				foundFuelSource = qtrue;
+				break;
+
+			case BA_H_REACTOR:
+			case BA_H_REPEATER:
+				if ( wa->usesEnergy )
+				{
+					foundAmmoSource = qtrue;
+				}
+				break;
 		}
-
-		ent->client->ps.ammo = maxAmmo;
-		ent->client->ps.clips = maxClips;
-
-		restoredAmmo = qtrue;
 	}
 
-	if ( restoredAmmo )
+	if ( foundAmmoSource )
 	{
-		G_ForceWeaponChange( ent, ent->client->ps.weapon );
+		if ( refillClipLess || wa->maxClips > 0 )
+		{
+			playedEvent = G_RefillAmmo( self, qtrue );
+		}
 	}
 
-	if ( restoredEnergy )
+	if ( foundFuelSource )
 	{
-		G_AddEvent( ent, EV_RPTUSE_SOUND, 0 );
+		if ( !( self->client->ps.stats[ STAT_STATE2 ] & SS2_JETPACK_ENABLED ) )
+		{
+			G_RefillFuel( self, !playedEvent );
+		}
 	}
-}
-
-void G_BounceProjectile( vec3_t start, vec3_t impact, vec3_t dir, vec3_t endout )
-{
-	vec3_t v, newv;
-	float  dot;
-
-	VectorSubtract( impact, start, v );
-	dot = DotProduct( v, dir );
-	VectorMA( v, -2 * dot, dir, newv );
-
-	VectorNormalize( newv );
-	VectorMA( impact, 8192, newv, endout );
 }
 
 /*

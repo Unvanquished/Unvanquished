@@ -52,7 +52,7 @@ qboolean          G_FindCreep( gentity_t *self );
 gentity_t         *G_Build( gentity_t *builder, buildable_t buildable, const vec3_t origin, const vec3_t normal, const vec3_t angles, int groundEntityNum );
 int               G_RGSPredictEfficiency( vec3_t origin );
 void              G_BuildableThink( gentity_t *ent, int msec );
-qboolean          G_BuildableRange( vec3_t origin, float r, buildable_t buildable );
+qboolean          G_BuildableRange( vec3_t origin, float radius, buildable_t buildable );
 void              G_IgniteBuildable( gentity_t *self, gentity_t *fireStarter );
 void              G_ClearDeconMarks( void );
 void              G_Deconstruct( gentity_t *self, gentity_t *deconner, meansOfDeath_t deconType );
@@ -266,7 +266,10 @@ int               G_Heal( gentity_t *self, int amount );
 
 // g_weapon.c
 void              G_ForceWeaponChange( gentity_t *ent, weapon_t weapon );
-void              G_GiveClientMaxAmmo( gentity_t *ent, qboolean buyingEnergyAmmo );
+void              G_GiveMaxAmmo( gentity_t *self );
+qboolean          G_RefillAmmo(gentity_t *self, qboolean triggerEvent );
+qboolean          G_RefillFuel(gentity_t *self, qboolean triggerEvent );
+void              G_FindAmmoAndFuel( gentity_t *self, qboolean refillClipLess );
 void              G_CalcMuzzlePoint( gentity_t *self, vec3_t forward, vec3_t right, vec3_t up, vec3_t muzzlePoint );
 void              G_SnapVectorTowards( vec3_t v, vec3_t to );
 qboolean          G_CheckVenomAttack( gentity_t *self );
