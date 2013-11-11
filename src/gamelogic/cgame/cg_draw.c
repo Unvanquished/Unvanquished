@@ -3449,13 +3449,14 @@ void CG_DrawWeaponIcon( rectDef_t *rect, vec4_t color )
 
 	maxAmmo = BG_Weapon( weapon )->maxAmmo;
 
-	// don't display if dead
-	if ( cg.predictedPlayerState.stats[ STAT_HEALTH ] <= 0 )
+	// don't display if dead or no weapon
+	if ( cg.predictedPlayerState.stats[ STAT_HEALTH ] <= 0 || weapon == WP_NONE )
 	{
 		return;
 	}
 
-	if ( weapon <= WP_NONE || weapon >= WP_NUM_WEAPONS )
+
+	if ( weapon < WP_NONE || weapon >= WP_NUM_WEAPONS )
 	{
 		CG_Error( "CG_DrawWeaponIcon: weapon out of range: %d", weapon );
 	}
