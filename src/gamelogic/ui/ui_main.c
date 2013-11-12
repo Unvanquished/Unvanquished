@@ -2210,13 +2210,19 @@ static void UI_OwnerDraw( rectDef_t *rect,
 			break;
 
 		case UI_HBUYINFOPANE:
-			UI_DrawInfoPane( &uiInfo.humanArmouryBuyList[ uiInfo.humanArmouryBuyIndex ],
-			                 rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
+		        if ( uiInfo.humanArmouryBuyList[ uiInfo.humanArmouryBuyIndex ].v.weapon != WP_NONE )
+		        {
+				UI_DrawInfoPane( &uiInfo.humanArmouryBuyList[ uiInfo.humanArmouryBuyIndex ],
+				                 rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
+                        }
 			break;
 
 		case UI_HSELLINFOPANE:
-			UI_DrawInfoPane( &uiInfo.humanArmourySellList[ uiInfo.humanArmourySellIndex ],
-			                 rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
+		        if ( uiInfo.humanArmourySellList[ uiInfo.humanArmourySellIndex ].v.weapon != WP_NONE )
+		        {
+				UI_DrawInfoPane( &uiInfo.humanArmourySellList[ uiInfo.humanArmourySellIndex ],
+				                 rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
+                        }
 			break;
 
 		case UI_ABUILDINFOPANE:
