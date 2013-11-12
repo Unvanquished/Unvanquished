@@ -3299,34 +3299,15 @@ static qboolean Cmd_Buy_internal( gentity_t *ent, const char *s, qboolean sellCo
 #define Maybe_TriggerMenu(num, reason) do { if ( !quiet ) G_TriggerMenu( (num), (reason) ); } while ( 0 )
 	weapon_t  weapon;
 	upgrade_t upgrade;
-	qboolean  energyOnly;
 	vec3_t    newOrigin;
 
 	weapon = BG_WeaponByName( s )->number;
 	upgrade = BG_UpgradeByName( s )->number;
 
-	// Only give energy from reactors or repeaters
-	if ( G_BuildableRange( ent->client->ps.origin, ENTITY_BUY_RANGE, BA_H_ARMOURY ) )
+	// check if armoury is in reach
+	if ( !G_BuildableRange( ent->client->ps.origin, ENTITY_BUY_RANGE, BA_H_ARMOURY ) )
 	{
-		energyOnly = qfalse;
-	}
-	else if ( upgrade == UP_AMMO &&
-	          BG_Weapon( ent->client->ps.stats[ STAT_WEAPON ] )->usesEnergy &&
-	          ( G_BuildableRange( ent->client->ps.origin, ENTITY_BUY_RANGE, BA_H_REACTOR ) ||
-	            G_BuildableRange( ent->client->ps.origin, ENTITY_BUY_RANGE, BA_H_REPEATER ) ) )
-	{
-		energyOnly = qtrue;
-	}
-	else
-	{
-		if ( upgrade == UP_AMMO && BG_Weapon( ent->client->ps.weapon )->usesEnergy )
-		{
-			G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOENERGYAMMOHERE );
-		}
-		else
-		{
-			G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOARMOURYHERE );
-		}
+		G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOARMOURYHERE );
 
 		return qfalse;
 	}
@@ -3465,56 +3446,48 @@ static qboolean Cmd_Buy_internal( gentity_t *ent, const char *s, qboolean sellCo
 			break; // okay, can buy this
 		}
 
-		if ( upgrade == UP_AMMO )
+		if ( upgrade == UP_LIGHTARMOUR )
 		{
-			// TODO: Remove UP_AMMO
-			return qtrue;
+			if ( !G_RoomForClassChange( ent, PCL_HUMAN_LIGHT, newOrigin ) )
+			{
+				G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOROOMARMOURCHANGE );
+				return qfalse;
+			}
+
+			VectorCopy( newOrigin, ent->client->ps.origin );
+			ent->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN_LIGHT;
+			ent->client->pers.classSelection = PCL_HUMAN_LIGHT;
+			ent->client->ps.eFlags ^= EF_TELEPORT_BIT;
 		}
-		else
+		else if ( upgrade == UP_MEDIUMARMOUR )
 		{
-			if ( upgrade == UP_LIGHTARMOUR )
+			if ( !G_RoomForClassChange( ent, PCL_HUMAN_MEDIUM, newOrigin ) )
 			{
-				if ( !G_RoomForClassChange( ent, PCL_HUMAN_LIGHT, newOrigin ) )
-				{
-					G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOROOMARMOURCHANGE );
-					return qfalse;
-				}
-
-				VectorCopy( newOrigin, ent->client->ps.origin );
-				ent->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN_LIGHT;
-				ent->client->pers.classSelection = PCL_HUMAN_LIGHT;
-				ent->client->ps.eFlags ^= EF_TELEPORT_BIT;
-			}
-			else if ( upgrade == UP_MEDIUMARMOUR )
-			{
-				if ( !G_RoomForClassChange( ent, PCL_HUMAN_MEDIUM, newOrigin ) )
-				{
-					G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOROOMARMOURCHANGE );
-					return qfalse;
-				}
-
-				VectorCopy( newOrigin, ent->client->ps.origin );
-				ent->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN_MEDIUM;
-				ent->client->pers.classSelection = PCL_HUMAN_MEDIUM;
-				ent->client->ps.eFlags ^= EF_TELEPORT_BIT;
-			}
-			else if ( upgrade == UP_BATTLESUIT )
-			{
-				if ( !G_RoomForClassChange( ent, PCL_HUMAN_BSUIT, newOrigin ) )
-				{
-					G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOROOMARMOURCHANGE );
-					return qfalse;
-				}
-
-				VectorCopy( newOrigin, ent->client->ps.origin );
-				ent->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN_BSUIT;
-				ent->client->pers.classSelection = PCL_HUMAN_BSUIT;
-				ent->client->ps.eFlags ^= EF_TELEPORT_BIT;
+				G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOROOMARMOURCHANGE );
+				return qfalse;
 			}
 
-			//add to inventory
-			BG_AddUpgradeToInventory( upgrade, ent->client->ps.stats );
+			VectorCopy( newOrigin, ent->client->ps.origin );
+			ent->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN_MEDIUM;
+			ent->client->pers.classSelection = PCL_HUMAN_MEDIUM;
+			ent->client->ps.eFlags ^= EF_TELEPORT_BIT;
 		}
+		else if ( upgrade == UP_BATTLESUIT )
+		{
+			if ( !G_RoomForClassChange( ent, PCL_HUMAN_BSUIT, newOrigin ) )
+			{
+				G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOROOMARMOURCHANGE );
+				return qfalse;
+			}
+
+			VectorCopy( newOrigin, ent->client->ps.origin );
+			ent->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN_BSUIT;
+			ent->client->pers.classSelection = PCL_HUMAN_BSUIT;
+			ent->client->ps.eFlags ^= EF_TELEPORT_BIT;
+		}
+
+		//add to inventory
+		BG_AddUpgradeToInventory( upgrade, ent->client->ps.stats );
 
 		if ( upgrade == UP_BATTPACK )
 		{

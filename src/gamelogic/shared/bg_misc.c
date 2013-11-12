@@ -682,8 +682,7 @@ static const upgradeData_t bg_upgradesData[] =
 	{ UP_GRENADE,     "gren"     },
 	{ UP_FIREBOMB,    "firebomb" },
 
-	{ UP_MEDKIT,      "medkit"   },
-	{ UP_AMMO,        "ammo"     }
+	{ UP_MEDKIT,      "medkit"   }
 };
 
 static const size_t bg_numUpgrades = ARRAY_LEN( bg_upgradesData );

@@ -440,7 +440,6 @@ typedef enum
   UP_FIREBOMB,
 
   UP_MEDKIT,
-  UP_AMMO,
 
   UP_NUM_UPGRADES
 } upgrade_t;

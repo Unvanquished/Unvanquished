@@ -459,18 +459,13 @@ void BotGetDesiredBuy( gentity_t *self, weapon_t *weapon, upgrade_t *upgrades, i
 				numContain++;
 			}
 		}
-		//we have every upgrade we want to buy, and the weapon we want to buy, so test if we need ammo
+
 		if ( numContain == *numUpgrades )
 		{
 			*numUpgrades = 0;
 			for ( i = 0; i < 3; i++ )
 			{
 				upgrades[i] = UP_NONE;
-			}
-			if ( PercentAmmoRemaining( BG_PrimaryWeapon( self->client->ps.stats ), &self->client->ps ) < BOT_LOW_AMMO )
-			{
-				upgrades[0] = UP_AMMO;
-				*numUpgrades = 1;
 			}
 			*weapon = WP_NONE;
 		}
@@ -1902,15 +1897,7 @@ void BotBuyWeapon( gentity_t *self, weapon_t weapon )
 		}
 
 		self->client->ps.stats[ STAT_WEAPON ] = weapon;
-		self->client->ps.ammo = BG_Weapon( weapon )->maxAmmo;
-		self->client->ps.clips = BG_Weapon( weapon )->maxClips;
-
-		if ( BG_Weapon( weapon )->usesEnergy &&
-			BG_InventoryContainsUpgrade( UP_BATTPACK, self->client->ps.stats ) )
-		{
-			self->client->ps.ammo *= BATTPACK_MODIFIER;
-		}
-
+		G_GiveMaxAmmo( self );
 		G_ForceWeaponChange( self, weapon );
 
 		//set build delay/pounce etc to 0
@@ -1928,25 +1915,7 @@ void BotBuyWeapon( gentity_t *self, weapon_t weapon )
 }
 void BotBuyUpgrade( gentity_t *self, upgrade_t upgrade )
 {
-	qboolean  energyOnly = qfalse;
 	vec3_t    newOrigin;
-
-	// Only give energy from reactors or repeaters
-	if ( upgrade == UP_AMMO &&
-		BG_Weapon( ( weapon_t )self->client->ps.stats[ STAT_WEAPON ] )->usesEnergy &&
-		( G_BuildableRange( self->client->ps.origin, ENTITY_BUY_RANGE, BA_H_REACTOR ) ||
-		G_BuildableRange( self->client->ps.origin, ENTITY_BUY_RANGE, BA_H_REPEATER ) ) )
-	{
-		energyOnly = qtrue;
-	}
-	else if ( G_BuildableRange( self->client->ps.origin, ENTITY_BUY_RANGE, BA_H_ARMOURY ) )
-	{
-		energyOnly = qfalse;
-	}
-	else if ( upgrade == UP_AMMO && BG_Weapon( ( weapon_t )self->client->ps.weapon )->usesEnergy )
-	{
-		return;
-	}
 
 	if ( upgrade != UP_NONE )
 	{
@@ -1986,52 +1955,45 @@ void BotBuyUpgrade( gentity_t *self, upgrade_t upgrade )
 			return;
 		}
 
-		if ( upgrade == UP_AMMO )
+		if ( upgrade == UP_LIGHTARMOUR )
 		{
-			// TODO: Remove UP_AMMO
+			if ( !G_RoomForClassChange( self, PCL_HUMAN_LIGHT, newOrigin ) )
+			{
+				return;
+			}
+			VectorCopy( newOrigin, self->client->ps.origin );
+			self->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN_LIGHT;
+			self->client->pers.classSelection = PCL_HUMAN_LIGHT;
+			BotSetNavmesh( self, PCL_HUMAN_LIGHT );
+			self->client->ps.eFlags ^= EF_TELEPORT_BIT;
 		}
-		else
+		else if ( upgrade == UP_MEDIUMARMOUR )
 		{
-			if ( upgrade == UP_LIGHTARMOUR )
+			if ( !G_RoomForClassChange( self, PCL_HUMAN_MEDIUM, newOrigin ) )
 			{
-				if ( !G_RoomForClassChange( self, PCL_HUMAN_LIGHT, newOrigin ) )
-				{
-					return;
-				}
-				VectorCopy( newOrigin, self->client->ps.origin );
-				self->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN_LIGHT;
-				self->client->pers.classSelection = PCL_HUMAN_LIGHT;
-				BotSetNavmesh( self, PCL_HUMAN_LIGHT );
-				self->client->ps.eFlags ^= EF_TELEPORT_BIT;
+				return;
 			}
-			else if ( upgrade == UP_MEDIUMARMOUR )
+			VectorCopy( newOrigin, self->client->ps.origin );
+			self->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN_MEDIUM;
+			self->client->pers.classSelection = PCL_HUMAN_MEDIUM;
+			BotSetNavmesh( self, PCL_HUMAN_MEDIUM );
+			self->client->ps.eFlags ^= EF_TELEPORT_BIT;
+		}
+		else if ( upgrade == UP_BATTLESUIT )
+		{
+			if ( !G_RoomForClassChange( self, PCL_HUMAN_BSUIT, newOrigin ) )
 			{
-				if ( !G_RoomForClassChange( self, PCL_HUMAN_MEDIUM, newOrigin ) )
-				{
-					return;
-				}
-				VectorCopy( newOrigin, self->client->ps.origin );
-				self->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN_MEDIUM;
-				self->client->pers.classSelection = PCL_HUMAN_MEDIUM;
-				BotSetNavmesh( self, PCL_HUMAN_MEDIUM );
-				self->client->ps.eFlags ^= EF_TELEPORT_BIT;
+				return;
 			}
-			else if ( upgrade == UP_BATTLESUIT )
-			{
-				if ( !G_RoomForClassChange( self, PCL_HUMAN_BSUIT, newOrigin ) )
-				{
-					return;
-				}
-				VectorCopy( newOrigin, self->client->ps.origin );
-				self->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN_BSUIT;
-				self->client->pers.classSelection = PCL_HUMAN_BSUIT;
-				BotSetNavmesh( self, PCL_HUMAN_BSUIT );
-				self->client->ps.eFlags ^= EF_TELEPORT_BIT;
-			}
+			VectorCopy( newOrigin, self->client->ps.origin );
+			self->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN_BSUIT;
+			self->client->pers.classSelection = PCL_HUMAN_BSUIT;
+			BotSetNavmesh( self, PCL_HUMAN_BSUIT );
+			self->client->ps.eFlags ^= EF_TELEPORT_BIT;
+		}
 
-			//add to inventory
-			BG_AddUpgradeToInventory( upgrade, self->client->ps.stats );
-		}
+		//add to inventory
+		BG_AddUpgradeToInventory( upgrade, self->client->ps.stats );
 
 		if ( upgrade == UP_BATTPACK )
 		{
