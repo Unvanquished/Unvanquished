@@ -3558,11 +3558,9 @@ G_BuildableRange
 Check whether a point is within some range of a type of buildable
 ===============
 */
-qboolean G_BuildableRange( vec3_t origin, float radius, buildable_t buildable )
+qboolean G_BuildableInRange( vec3_t origin, float radius, buildable_t buildable )
 {
-	gentity_t *neighbor;
-
-	neighbor = NULL;
+	gentity_t *neighbor = NULL;
 
 	while ( neighbor = G_IterateEntitiesWithinRadius( neighbor, origin, radius ) )
 	{

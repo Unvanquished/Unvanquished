@@ -2017,7 +2017,7 @@ void BotSellWeapons( gentity_t *self )
 	int i;
 
 	//no armoury nearby
-	if ( !G_BuildableRange( self->client->ps.origin, ENTITY_BUY_RANGE, BA_H_ARMOURY ) )
+	if ( !G_BuildableInRange( self->client->ps.origin, ENTITY_BUY_RANGE, BA_H_ARMOURY ) )
 	{
 		return;
 	}
@@ -2057,7 +2057,7 @@ void BotSellAll( gentity_t *self )
 	int i;
 
 	//no armoury nearby
-	if ( !G_BuildableRange( self->client->ps.origin, ENTITY_BUY_RANGE, BA_H_ARMOURY ) )
+	if ( !G_BuildableInRange( self->client->ps.origin, ENTITY_BUY_RANGE, BA_H_ARMOURY ) )
 	{
 		return;
 	}
