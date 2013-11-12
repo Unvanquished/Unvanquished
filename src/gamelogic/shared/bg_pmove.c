@@ -3778,6 +3778,12 @@ static void PM_BeginWeaponChange( int weapon )
 	if ( pm->ps->weaponstate == WEAPON_RELOADING )
 	{
 		pm->ps->weaponTime = 0;
+
+		// return the clip to the ammo pouch
+		if ( pm->ps->clips < BG_Weapon( pm->ps->weapon )->maxClips )
+		{
+			pm->ps->clips++;
+		}
 	}
 
 	//special case to prevent storing a charged up lcannon

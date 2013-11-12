@@ -33,14 +33,6 @@ void G_ForceWeaponChange( gentity_t *ent, weapon_t weapon )
 {
 	playerState_t *ps = &ent->client->ps;
 
-	// stop a reload in progress
-	if ( ps->weaponstate == WEAPON_RELOADING )
-	{
-		ps->torsoAnim = ( ( ps->torsoAnim & ANIM_TOGGLEBIT ) ^ ANIM_TOGGLEBIT ) | TORSO_RAISE;
-		ps->weaponTime = 250;
-		ps->weaponstate = WEAPON_READY;
-	}
-
 	if ( weapon == WP_NONE || !BG_InventoryContainsWeapon( weapon, ps->stats ) )
 	{
 		// switch to the first non blaster weapon
