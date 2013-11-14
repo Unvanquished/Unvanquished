@@ -44,10 +44,13 @@ struct Character
 
 static const Character characters[] = {
 	{ "builder",     20, 40 },
-	{ "builderupg",  20, 40 },
-	{ "human_base",  15, 56 },
+//	{ "builderupg",  20, 40 },
+	{ "human_naked", 15, 56 },
+//	{ "human_light", 15, 56 },
+//	{ "human_medium",15, 56 },
 	{ "human_bsuit", 15, 76 },
 	{ "level0",      15, 30 },
+//	{ "level0upg",   15, 30 },
 	{ "level1",      18, 36 },
 	{ "level1upg",   21, 42 },
 	{ "level2",      23, 36 },
@@ -91,7 +94,7 @@ static void WriteNavMeshFile( const char* agentname, const dtTileCache *tileCach
 	for( int i = 0; i < maxTiles; i++ )
 	{
 		const dtCompressedTile *tile = tileCache->getTile( i );
-		if ( !tile || !tile->header || !tile->dataSize ) 
+		if ( !tile || !tile->header || !tile->dataSize )
 		{
 			continue;
 		}
@@ -103,7 +106,7 @@ static void WriteNavMeshFile( const char* agentname, const dtTileCache *tileCach
 	header.numTiles = numTiles;
 	header.cacheParams = *tileCache->getParams();
 	header.params = *params;
-	
+
 	SwapNavMeshSetHeader( header );
 
 	strcpy( filename, source );
@@ -561,7 +564,7 @@ static qboolean BoundsIntersect( const vec3_t mins, const vec3_t maxs, const vec
 }
 
 static void LoadPatchTris(std::vector<float> &verts, std::vector<int> &tris) {
-	
+
 	vec3_t mins, maxs;
 	int solidFlags = 0;
 	int temp = 0;
@@ -570,7 +573,7 @@ static void LoadPatchTris(std::vector<float> &verts, std::vector<int> &tris) {
 	ApplySurfaceParm( "playerclip", &temp, NULL, NULL );
 	solidFlags |= temp;
 
-	/* 
+	/*
 		Patches are not used during the bsp building process where
 		the generated portals are flooded through from all entity positions
 		if even one entity reaches the void, the map will not be compiled
@@ -587,7 +590,7 @@ static void LoadPatchTris(std::vector<float> &verts, std::vector<int> &tris) {
 
 	vec3_t tmin, tmax;
 
-	// need to recalculate mins and maxs because they no longer represent 
+	// need to recalculate mins and maxs because they no longer represent
 	// the minimum and maximum vector components respectively
 	ClearBounds( tmin, tmax );
 
@@ -1087,7 +1090,7 @@ static int rasterizeTileLayers( rcContext &context, int tx, int ty, const rcConf
 	//rcFilterLedgeSpans (&context, cfg.walkableHeight, cfg.walkableClimb, *rc.solid);
 
 	rcFilterWalkableLowHeightSpans( &context, cfg.walkableHeight, *rc.solid );
-	
+
 	if(filterGaps)
 	{
 		rcFilterGaps( &context, cfg.walkableRadius, cfg.walkableClimb, cfg.walkableHeight, *rc.solid );
@@ -1216,7 +1219,7 @@ static void BuildNavMesh( int characterNum )
 	tcparams.maxSimplificationError = 1.3;
 	tcparams.maxTiles = tw * th * EXPECTED_LAYERS_PER_TILE;
 	tcparams.maxObstacles = 256;
-	
+
 	tileCache = dtAllocTileCache();
 
 	if ( !tileCache )
@@ -1252,7 +1255,7 @@ static void BuildNavMesh( int characterNum )
 			memset( tiles, 0, sizeof( tiles ) );
 
 			int ntiles = rasterizeTileLayers( context, x, y, cfg, tiles, MAX_LAYERS );
-			
+
 			for ( int i = 0; i < ntiles; i++ )
 			{
 				TileCacheData *tile = &tiles[ i ];

@@ -1158,8 +1158,10 @@ may include ANIM_TOGGLEBIT
 static void CG_SetWeaponLerpFrameAnimation( weapon_t weapon, lerpFrame_t *lf, int newAnimation )
 {
 	animation_t *anim;
+	qboolean toggle = qfalse;
 
 	lf->animationNumber = newAnimation;
+	toggle = newAnimation & ANIM_TOGGLEBIT;
 	newAnimation &= ~ANIM_TOGGLEBIT;
 
 	if ( newAnimation < 0 || newAnimation >= MAX_WEAPON_ANIMATIONS )
@@ -1177,7 +1179,7 @@ static void CG_SetWeaponLerpFrameAnimation( weapon_t weapon, lerpFrame_t *lf, in
 		CG_Printf( "Anim: %i\n", newAnimation );
 	}
 
-	if ( &cg_weapons[ weapon ].md5 && oldGunSkeleton.type != SK_INVALID )
+	if ( &cg_weapons[ weapon ].md5 && !toggle && lf && lf->old_animation && lf->old_animation->handle )
 	{
 		if ( !trap_R_BuildSkeleton( &oldGunSkeleton, lf->old_animation->handle, lf->oldFrame, lf->frame, lf->backlerp, lf->old_animation->clearOrigin ) )
 		{
@@ -1747,9 +1749,9 @@ void CG_AddViewWeapon( playerState_t *ps )
 	}
 
 	// draw a prospective buildable infront of the player
-	if ( ( ps->stats[ STAT_BUILDABLE ] & ~SB_VALID_TOGGLEBIT ) > BA_NONE )
+	if ( ( ps->stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK ) > BA_NONE )
 	{
-		CG_GhostBuildable( ps->stats[ STAT_BUILDABLE ] & ~SB_VALID_TOGGLEBIT );
+		CG_GhostBuildable( ps->stats[ STAT_BUILDABLE ] );
 	}
 
 	// no gun if in third person view

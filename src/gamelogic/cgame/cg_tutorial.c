@@ -190,7 +190,7 @@ CG_BuilderText
 */
 static void CG_BuilderText( char *text, playerState_t *ps )
 {
-	buildable_t   buildable = ps->stats[ STAT_BUILDABLE ] & ~SB_VALID_TOGGLEBIT;
+	buildable_t   buildable = ps->stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK;
 	entityState_t *es;
 
 	if ( buildable > BA_NONE )
@@ -244,7 +244,7 @@ static void CG_AlienBuilderText( char *text, playerState_t *ps )
 {
 	CG_BuilderText( text, ps );
 
-	if ( ( ps->stats[ STAT_BUILDABLE ] & ~SB_VALID_TOGGLEBIT ) == BA_NONE )
+	if ( ( ps->stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK ) == BA_NONE )
 	{
 		Q_strcat( text, MAX_TUTORIAL_TEXT,
 		          va( _( "Press %s to swipe\n" ),
@@ -513,17 +513,6 @@ static void CG_HumanText( char *text, playerState_t *ps )
 		              _( BG_Upgrade( UP_MEDKIT )->humanName ) ) );
 	}
 
-	if ( ps->stats[ STAT_STAMINA ] <= STAMINA_BLACKOUT_LEVEL )
-	{
-		Q_strcat( text, MAX_TUTORIAL_TEXT,
-		          _( "You are blacking out. Stop sprinting to recover stamina\n" ) );
-	}
-	else if ( ps->stats[ STAT_STAMINA ] <= STAMINA_SLOW_LEVEL )
-	{
-		Q_strcat( text, MAX_TUTORIAL_TEXT,
-		          _( "Your stamina is low. Stop sprinting to recover\n" ) );
-	}
-
 	switch ( cg.nearUsableBuildable )
 	{
 		case BA_H_ARMOURY:
@@ -684,7 +673,9 @@ const char *CG_TutorialText( void )
 					CG_AlienLevel4Text( text, ps );
 					break;
 
-				case PCL_HUMAN:
+				case PCL_HUMAN_NAKED:
+				case PCL_HUMAN_LIGHT:
+				case PCL_HUMAN_MEDIUM:
 				case PCL_HUMAN_BSUIT:
 					CG_HumanText( text, ps );
 					break;

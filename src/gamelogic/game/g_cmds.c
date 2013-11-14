@@ -24,6 +24,16 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "g_local.h"
 #include "../../engine/qcommon/q_unicode.h"
 
+#define CMD_CHEAT        0x0001
+#define CMD_CHEAT_TEAM   0x0002 // is a cheat when used on a team
+#define CMD_MESSAGE      0x0004 // sends message to others (skip when muted)
+#define CMD_TEAM         0x0008 // must be on a team
+#define CMD_SPEC         0x0010 // must be a spectator
+#define CMD_ALIEN        0x0020
+#define CMD_HUMAN        0x0040
+#define CMD_ALIVE        0x0080
+#define CMD_INTERMISSION 0x0100 // valid during intermission
+
 /*
 ==================
 G_SanitiseString
@@ -382,9 +392,9 @@ void ScoreboardMessage( gentity_t *ent )
 			{
 				upgrade = UP_BATTPACK;
 			}
-			else if ( BG_InventoryContainsUpgrade( UP_HELMET, cl->ps.stats ) )
+			else if ( BG_InventoryContainsUpgrade( UP_MEDIUMARMOUR, cl->ps.stats ) )
 			{
-				upgrade = UP_HELMET;
+				upgrade = UP_MEDIUMARMOUR;
 			}
 			else if ( BG_InventoryContainsUpgrade( UP_LIGHTARMOUR, cl->ps.stats ) )
 			{
@@ -761,7 +771,7 @@ void Cmd_Kill_f( gentity_t *ent )
 	if ( g_cheats.integer )
 	{
 		ent->client->ps.stats[ STAT_HEALTH ] = ent->health = 0;
-		player_die( ent, ent, ent, MOD_SUICIDE );
+		G_PlayerDie( ent, ent, ent, MOD_SUICIDE );
 	}
 	else
 	{
@@ -1174,7 +1184,7 @@ static qboolean G_SayTo( gentity_t *ent, gentity_t *other, saymode_t mode, const
 		return qfalse;
 	}
 
-	if ( ( ent && !OnSameTeam( ent, other ) ) &&
+	if ( ( ent && !G_OnSameTeam( ent, other ) ) &&
 	     ( mode == SAY_TEAM || mode == SAY_AREA || mode == SAY_TPRIVMSG ) )
 	{
 		if ( other->client->pers.team != TEAM_NONE )
@@ -2361,8 +2371,7 @@ void Cmd_SetViewpos_f( gentity_t *ent )
 
 #define AS_OVER_RT3 (( ALIENSENSE_RANGE * 0.5f ) / M_ROOT3 )
 
-qboolean G_RoomForClassChange( gentity_t *ent, class_t class,
-                                      vec3_t newOrigin )
+qboolean G_RoomForClassChange( gentity_t *ent, class_t pcl, vec3_t newOrigin )
 {
 	vec3_t  fromMins, fromMaxs;
 	vec3_t  toMins, toMaxs;
@@ -2373,7 +2382,7 @@ qboolean G_RoomForClassChange( gentity_t *ent, class_t class,
 	class_t oldClass = ent->client->ps.stats[ STAT_CLASS ];
 
 	BG_ClassBoundingBox( oldClass, fromMins, fromMaxs, NULL, NULL, NULL );
-	BG_ClassBoundingBox( class, toMins, toMaxs, NULL, NULL, NULL );
+	BG_ClassBoundingBox( pcl, toMins, toMaxs, NULL, NULL, NULL );
 
 	VectorCopy( ent->client->ps.origin, newOrigin );
 
@@ -2530,7 +2539,7 @@ static qboolean Cmd_Class_internal( gentity_t *ent, const char *s, qboolean repo
 
 			// spawn from a telenode
 			//TODO merge with alien's code
-			newClass = PCL_HUMAN;
+			newClass = PCL_HUMAN_NAKED;
 			if ( G_PushSpawnQueue( &level.team[ team ].spawnQueue, clientNum ) )
 			{
 				ent->client->pers.classSelection = newClass;
@@ -3095,19 +3104,19 @@ static qboolean Cmd_Sell_upgradeItem( gentity_t *ent, upgrade_t item )
 	}
 
 	// shouldn't really need to test for this, but just to be safe
-	if ( item == UP_BATTLESUIT )
+	if ( item == UP_LIGHTARMOUR || item == UP_MEDIUMARMOUR || item == UP_BATTLESUIT )
 	{
 		vec3_t newOrigin;
 
-		if ( !G_RoomForClassChange( ent, PCL_HUMAN, newOrigin ) )
+		if ( !G_RoomForClassChange( ent, PCL_HUMAN_NAKED, newOrigin ) )
 		{
-			G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOROOMBSUITOFF );
+			G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOROOMARMOURCHANGE );
 			return qfalse;
 		}
 
 		VectorCopy( newOrigin, ent->client->ps.origin );
-		ent->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN;
-		ent->client->pers.classSelection = PCL_HUMAN;
+		ent->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN_NAKED;
+		ent->client->pers.classSelection = PCL_HUMAN_NAKED;
 		ent->client->ps.eFlags ^= EF_TELEPORT_BIT;
 	}
 
@@ -3139,7 +3148,10 @@ static qboolean Cmd_Sell_upgrades( gentity_t *ent )
 
 static qboolean Cmd_Sell_armour( gentity_t *ent )
 {
-	return Cmd_Sell_upgradeItem( ent, UP_LIGHTARMOUR ) | Cmd_Sell_upgradeItem( ent, UP_HELMET ) | Cmd_Sell_upgradeItem( ent, UP_BATTLESUIT );
+	return Cmd_Sell_upgradeItem( ent, UP_LIGHTARMOUR ) |
+	       Cmd_Sell_upgradeItem( ent, UP_MEDIUMARMOUR ) |
+	       Cmd_Sell_upgradeItem( ent, UP_BATTLESUIT ) |
+	       Cmd_Sell_upgradeItem( ent, UP_RADAR );
 }
 
 static qboolean Cmd_Sell_internal( gentity_t *ent, const char *s )
@@ -3297,6 +3309,7 @@ static qboolean Cmd_Buy_internal( gentity_t *ent, const char *s, qboolean sellCo
 	weapon_t  weapon;
 	upgrade_t upgrade;
 	qboolean  energyOnly;
+	vec3_t    newOrigin;
 
 	weapon = BG_WeaponByName( s )->number;
 	upgrade = BG_UpgradeByName( s )->number;
@@ -3477,13 +3490,37 @@ static qboolean Cmd_Buy_internal( gentity_t *ent, const char *s, qboolean sellCo
 		}
 		else
 		{
-			if ( upgrade == UP_BATTLESUIT )
+			if ( upgrade == UP_LIGHTARMOUR )
 			{
-				vec3_t newOrigin;
+				if ( !G_RoomForClassChange( ent, PCL_HUMAN_LIGHT, newOrigin ) )
+				{
+					G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOROOMARMOURCHANGE );
+					return qfalse;
+				}
 
+				VectorCopy( newOrigin, ent->client->ps.origin );
+				ent->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN_LIGHT;
+				ent->client->pers.classSelection = PCL_HUMAN_LIGHT;
+				ent->client->ps.eFlags ^= EF_TELEPORT_BIT;
+			}
+			else if ( upgrade == UP_MEDIUMARMOUR )
+			{
+				if ( !G_RoomForClassChange( ent, PCL_HUMAN_MEDIUM, newOrigin ) )
+				{
+					G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOROOMARMOURCHANGE );
+					return qfalse;
+				}
+
+				VectorCopy( newOrigin, ent->client->ps.origin );
+				ent->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN_MEDIUM;
+				ent->client->pers.classSelection = PCL_HUMAN_MEDIUM;
+				ent->client->ps.eFlags ^= EF_TELEPORT_BIT;
+			}
+			else if ( upgrade == UP_BATTLESUIT )
+			{
 				if ( !G_RoomForClassChange( ent, PCL_HUMAN_BSUIT, newOrigin ) )
 				{
-					G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOROOMBSUITON );
+					G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOROOMARMOURCHANGE );
 					return qfalse;
 				}
 
@@ -3601,6 +3638,7 @@ void Cmd_Build_f( gentity_t *ent )
 	{
 		dynMenu_t err;
 		vec3_t forward, aimDir;
+		itemBuildError_t reason;
 
 		BG_GetClientNormal( &ent->client->ps, normal );
 		AngleVectors( ent->client->ps.viewangles, aimDir, NULL, NULL );
@@ -3609,27 +3647,30 @@ void Cmd_Build_f( gentity_t *ent )
 
 		dist = BG_Class( ent->client->ps.stats[ STAT_CLASS ] )->buildDist * DotProduct( forward, aimDir );
 
-		ent->client->ps.stats[ STAT_BUILDABLE ] = BA_NONE;
+		reason = G_CanBuild( ent, buildable, dist, origin, normal, &groundEntNum );
+		ent->client->ps.stats[ STAT_BUILDABLE ] = BA_NONE | SB_BUILDABLE_FROM_IBE( reason );
 
 		//these are the errors displayed when the builder first selects something to use
-		switch ( G_CanBuild( ent, buildable, dist, origin, normal, &groundEntNum ) )
+		switch ( reason )
 		{
 			// can place right away, set the blueprint and the valid togglebit
 			case IBE_NONE:
 				err = MN_NONE;
 				// we OR-in the selected builable later
-				ent->client->ps.stats[ STAT_BUILDABLE ] = SB_VALID_TOGGLEBIT;
 				break;
 
 			// can't place yet but maybe soon: start with valid togglebit off
 			case IBE_NORMAL:
-			case IBE_NOCREEP:
 			case IBE_NOROOM:
-			case IBE_NOPOWERHERE:
-			case IBE_DRILLPOWERSOURCE:
 			case IBE_SURFACE:
+				err = MN_NONE;
+				break;
+
 			case IBE_NOOVERMIND:
 			case IBE_NOREACTOR:
+			case IBE_NOCREEP:
+			case IBE_NOPOWERHERE:
+			case IBE_DRILLPOWERSOURCE:
 				err = MN_NONE;
 				break;
 

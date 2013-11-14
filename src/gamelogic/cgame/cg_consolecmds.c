@@ -147,7 +147,8 @@ static void CG_CompleteClass( void )
 
 	if ( cgs.clientinfo[ cg.clientNum ].team == TEAM_ALIENS )
 	{
-		for ( i = PCL_ALIEN_BUILDER0; i < PCL_HUMAN; i++ )
+		// TODO: Add iterator for alien/human classes
+		for ( i = PCL_ALIEN_BUILDER0; i < PCL_HUMAN_NAKED; i++ )
 		{
 			trap_CompleteCallback( BG_Class( i )->name );
 		}

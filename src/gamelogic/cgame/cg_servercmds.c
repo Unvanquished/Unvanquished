@@ -643,13 +643,6 @@ void CG_Menu( int menuType, int arg )
 			type = DT_BUILD;
 			break;
 
-		case MN_H_DRILLPOWERSOURCE:
-			longMsg = _("Drills require a close power source since they transmit resources"
-			            " via the power gird. Build it near a reactor or repeater.");
-			shortMsg = _("The drill requires a close power source");
-			type = DT_BUILD;
-			break;
-
 		// unused - DCC isn't required to build anything
 		case MN_H_NODCC:
 			longMsg = _("There is no Defense Computer. A Defense Computer is needed to "
@@ -693,17 +686,9 @@ void CG_Menu( int menuType, int arg )
 			type = DT_ARMOURYEVOLVE;
 			break;
 
-		case MN_H_NOROOMBSUITON:
-			longMsg = _("There is not enough room here to put on a Battle Suit. "
-			          "Make sure you have enough head room to climb in.");
-			shortMsg = _("Not enough room here to put on a Battle Suit");
-			type = DT_ARMOURYEVOLVE;
-			break;
-
-		case MN_H_NOROOMBSUITOFF:
-			longMsg = _("There is not enough room here to take off your Battle Suit. "
-			          "Make sure you have enough head room to climb out.");
-			shortMsg = _("Not enough room here to take off your Battle Suit");
+		case MN_H_NOROOMARMOURCHANGE:
+			longMsg = _("There is not enough room here to change armour.");
+			shortMsg = _("Not enough room here to change armour.");
 			type = DT_ARMOURYEVOLVE;
 			break;
 
@@ -1418,14 +1403,14 @@ static void CG_GameCmds_f( void )
 }
 
 static const consoleCommand_t svcommands[] =
-{
+{	// sorting: use 'sort -f'
 	{ "achat",            CG_AdminChat_f          },
 	{ "chat",             CG_Chat_f               },
 	{ "cmds",             CG_GameCmds_f           },
 	{ "cp",               CG_CenterPrint_f        },
-	{ "cp_tr",            CG_CenterPrintTR_f      },
 	{ "cpd",              CG_CenterPrint_Delay_f  },
 	{ "cpd_tr",           CG_CenterPrintTR_Delay_f},
+	{ "cp_tr",            CG_CenterPrintTR_f      },
 	{ "cs",               CG_ConfigStringModified },
 	{ "map_restart",      CG_MapRestart           },
 	{ "poisoncloud",      CG_PoisonCloud_f        },

@@ -83,7 +83,7 @@ static float CG_Rocket_GetStaminaProgress( void )
 	playerState_t *ps = &cg.snap->ps;
 	float         stamina = ps->stats[ STAT_STAMINA ];
 
-	return ( stamina + ( float ) STAMINA_MAX ) / ( 2 * ( float ) STAMINA_MAX );
+	return ( stamina / (float) STAMINA_MAX);
 }
 
 static float CG_Rocket_GetPoisonProgress( void )

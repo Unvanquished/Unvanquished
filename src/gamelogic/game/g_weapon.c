@@ -940,16 +940,13 @@ void G_CheckCkitRepair( gentity_t *self )
 
 		if ( traceEnt->health < buildable->health )
 		{
-			traceEnt->health += HBUILD_HEALRATE;
-
-			if ( traceEnt->health >= buildable->health )
+			if ( G_Heal( traceEnt, HBUILD_HEALRATE ) )
 			{
-				traceEnt->health = buildable->health;
-				G_AddEvent( self, EV_BUILD_REPAIRED, 0 );
+				G_AddEvent( self, EV_BUILD_REPAIR, 0 );
 			}
 			else
 			{
-				G_AddEvent( self, EV_BUILD_REPAIR, 0 );
+				G_AddEvent( self, EV_BUILD_REPAIRED, 0 );
 			}
 
 			self->client->ps.weaponTime += BG_Weapon( self->client->ps.weapon )->repeatRate1;
@@ -977,8 +974,7 @@ static void CancelBuild( gentity_t *self )
 
 static void FireBuild( gentity_t *self, dynMenu_t menu )
 {
-	buildable_t buildable = ( self->client->ps.stats[ STAT_BUILDABLE ]
-	                          & ~SB_VALID_TOGGLEBIT );
+	buildable_t buildable = ( self->client->ps.stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK );
 
 	if ( buildable > BA_NONE )
 	{
@@ -1606,7 +1602,7 @@ void G_ImpactAttack( gentity_t *self, gentity_t *victim )
 	}
 
 	// don't do friendly fire
-	if ( OnSameTeam( self, victim ) )
+	if ( G_OnSameTeam( self, victim ) )
 	{
 		return;
 	}
@@ -1656,7 +1652,7 @@ void G_WeightAttack( gentity_t *self, gentity_t *victim )
 	}
 
 	// don't do friendly fire
-	if ( OnSameTeam( self, victim ) )
+	if ( G_OnSameTeam( self, victim ) )
 	{
 		return;
 	}

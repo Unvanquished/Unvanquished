@@ -212,7 +212,7 @@ static void CG_Rocket_DrawCrosshairIndicator( void )
 	qboolean     onRelevantEntity;
 	rectDef_t    rect;
 
-	if ( !cg_drawCrosshairIndicator.integer ||
+	if ( ( !cg_drawCrosshairHit.integer && !cg_drawCrosshairFriendFoe.integer ) ||
 		cg.snap->ps.persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT ||
 		cg.snap->ps.pm_type == PM_INTERMISSION ||
 		cg.renderingThirdPerson )
@@ -224,13 +224,6 @@ static void CG_Rocket_DrawCrosshairIndicator( void )
 	CG_GetRocketElementColor( color );
 
 	weapon = BG_GetPlayerWeapon( &cg.snap->ps );
-
-	if ( cg_drawCrosshairIndicator.integer <= INDICATOR_RANGEDONLY &&
-		!BG_Weapon( weapon )->longRanged )
-	{
-		return;
-	}
-
 	wi = &cg_weapons[ weapon ];
 	indicator = wi->crossHairIndicator;
 
@@ -239,24 +232,27 @@ static void CG_Rocket_DrawCrosshairIndicator( void )
 		return;
 	}
 
-	// set base color
-	if ( cg_drawCrosshairIndicator.integer <= INDICATOR_RANGEDONLY_ALLHITS &&
-		!BG_Weapon( weapon )->longRanged )
+	// set base color (friend/foe detection)
+	if ( cg_drawCrosshairFriendFoe.integer >= CROSSHAIR_ALWAYSON ||
+		( cg_drawCrosshairFriendFoe.integer >= CROSSHAIR_RANGEDONLY && BG_Weapon( weapon )->longRanged ) )
 	{
-		Vector4Set( baseColor, 1.0f, 1.0f, 1.0f, 0.0f );
-		onRelevantEntity = qfalse;
-	}
-	else if ( cg.crosshairFoe )
-	{
-		Vector4Copy( colorRed, baseColor );
-		baseColor[ 3 ] = color[ 3 ] * 0.75f;
-		onRelevantEntity = qtrue;
-	}
-	else if ( cg.crosshairFriend )
-	{
-		Vector4Copy( colorGreen, baseColor );
-		baseColor[ 3 ] = color[ 3 ] * 0.75f;
-		onRelevantEntity = qtrue;
+		if ( cg.crosshairFoe )
+		{
+			Vector4Copy( colorRed, baseColor );
+			baseColor[ 3 ] = color[ 3 ] * 0.75f;
+			onRelevantEntity = qtrue;
+		}
+		else if ( cg.crosshairFriend )
+		{
+			Vector4Copy( colorGreen, baseColor );
+			baseColor[ 3 ] = color[ 3 ] * 0.75f;
+			onRelevantEntity = qtrue;
+		}
+		else
+		{
+			Vector4Set( baseColor, 1.0f, 1.0f, 1.0f, 0.0f );
+			onRelevantEntity = qfalse;
+		}
 	}
 	else
 	{
@@ -265,7 +261,7 @@ static void CG_Rocket_DrawCrosshairIndicator( void )
 	}
 
 	// add hit color
-	if ( cg.hitTime + CROSSHAIR_INDICATOR_HITFADE > cg.time )
+	if ( cg_drawCrosshairHit.integer && cg.hitTime + CROSSHAIR_INDICATOR_HITFADE > cg.time )
 	{
 		dim = ( ( cg.hitTime + CROSSHAIR_INDICATOR_HITFADE ) - cg.time ) / ( float )CROSSHAIR_INDICATOR_HITFADE;
 
@@ -289,12 +285,9 @@ static void CG_Rocket_DrawCrosshairIndicator( void )
 	y = rect.y + ( rect.h / 2 ) - ( h / 2 );
 
 	// draw
-	if ( indicator )
-	{
-		trap_R_SetColor( drawColor );
-		CG_DrawPic( x, y, w, h, indicator );
-		trap_R_SetColor( NULL );
-	}
+	trap_R_SetColor( drawColor );
+	CG_DrawPic( x, y, w, h, indicator );
+	trap_R_SetColor( NULL );
 }
 
 static void CG_Rocket_DrawCrosshair( void )
@@ -558,7 +551,7 @@ static void CG_Rocket_DrawStaminaValue( void )
 {
 	playerState_t *ps = &cg.snap->ps;
 	float         stamina = ps->stats[ STAT_STAMINA ];
-	int           percent = 100 * ( stamina + ( float ) STAMINA_MAX ) / ( 2 * ( float ) STAMINA_MAX );
+	int           percent = 100 * ( stamina / ( float ) STAMINA_MAX );
 
 	trap_Rocket_SetInnerRML( "", "", va( "%d", percent ), qfalse );
 }
@@ -630,7 +623,7 @@ static void CG_Rocket_DrawHumanScanner( void )
 {
 	rectDef_t rect;
 
-	if ( !BG_InventoryContainsUpgrade( UP_HELMET, cg.snap->ps.stats ) )
+	if ( !BG_InventoryContainsUpgrade( UP_RADAR, cg.snap->ps.stats ) )
 	{
 		trap_Rocket_SetClass( "active", qfalse );
 		return;
@@ -1048,7 +1041,7 @@ static void CG_ScanForCrosshairEntity( void )
 		{
 			targetTeam = BG_Buildable( targetState->modelindex )->team;
 
-			if ( targetTeam == ownTeam )
+			if ( targetTeam == ownTeam && ownTeam != TEAM_NONE )
 			{
 				cg.crosshairFriend = qtrue;
 			}
@@ -1129,16 +1122,13 @@ static void CG_Rocket_DrawCrosshairNames( void )
 		name = va( "(" S_COLOR_CYAN "%s" S_COLOR_WHITE "|" S_COLOR_CYAN "#%d" S_COLOR_WHITE ")",
 			   Com_EntityTypeName( cg_entities[cg.crosshairClientNum].currentState.eType ), cg.crosshairClientNum );
 	}
+	else if ( cg_drawCrosshairNames.integer >= 2 )
+	{
+		name = va( "%2i: %s", cg.crosshairClientNum, cgs.clientinfo[ cg.crosshairClientNum ].name );
+	}
 	else
 	{
-		if ( cg_drawCrosshairNames.integer >= 2 )
-		{
-			name = va( "%2i: %s", cg.crosshairClientNum, cgs.clientinfo[ cg.crosshairClientNum ].name );
-		}
-		else
-		{
-			name = cgs.clientinfo[ cg.crosshairClientNum ].name;
-		}
+		name = cgs.clientinfo[ cg.crosshairClientNum ].name;
 	}
 
 	// add health from overlay info to the crosshair client name
@@ -1853,10 +1843,12 @@ static void CG_Rocket_DrawPlayerConfidenceBar( void )
 	rectDef_t     rect;
 	vec4_t        foreColor, backColor;
 	playerState_t *ps;
-	float         confidence, rawFraction, fraction, glowFraction, glowOffset;
-	int           unlockableNum, threshold;
+	float         confidence, rawFraction, fraction, glowFraction, glowOffset, borderSize;
+	int           threshold;
 	team_t        team;
 	qboolean      unlocked;
+
+	confidenceThresholdIterator_t unlockableIter = { -1 };
 
 	// display
 	vec4_t        color;
@@ -1866,6 +1858,7 @@ static void CG_Rocket_DrawPlayerConfidenceBar( void )
 	CG_GetRocketElementRect( &rect );
 	CG_GetRocketElementBGColor( backColor );
 	CG_GetRocketElementColor( foreColor );
+	trap_Rocket_GetProperty( "border-width", &borderSize, sizeof( borderSize ), ROCKET_FLOAT );
 
 
 	ps = &cg.predictedPlayerState;
@@ -1882,11 +1875,7 @@ static void CG_Rocket_DrawPlayerConfidenceBar( void )
 	vertical = ( h > w );
 
 	// draw border
-	trap_R_SetColor( backColor );
-	CG_DrawPic( x,         y,         w, b,            cgs.media.whiteShader ); // upper horizontal
-	CG_DrawPic( x,         y + h - b, w, b,            cgs.media.whiteShader ); // lower horizontal
-	CG_DrawPic( x,         y + b,     b, h - 2.0f * b, cgs.media.whiteShader ); // left  vertical
-	CG_DrawPic( x + w - b, y + b,     b, h - 2.0f * b, cgs.media.whiteShader ); // right vertical
+	CG_DrawRect( x, y, w, h, borderSize, backColor );
 
 	// adjust rect to draw inside border
 	x += b;
@@ -1897,9 +1886,7 @@ static void CG_Rocket_DrawPlayerConfidenceBar( void )
 	// draw background
 	Vector4Copy( backColor, color );
 	color[ 3 ] *= 0.5f;
-
-	trap_R_SetColor( color );
-	CG_DrawPic( x, y, w, h, cgs.media.whiteShader );
+	CG_FillRect( x, y, w, h, color );
 
 	// draw confidence bar
 	fraction = rawFraction = confidence / CONFIDENCE_BAR_MAX;
@@ -1913,15 +1900,13 @@ static void CG_Rocket_DrawPlayerConfidenceBar( void )
 		fraction = 1.0f;
 	}
 
-	trap_R_SetColor( foreColor );
-
 	if ( vertical )
 	{
-		CG_DrawPic( x, y + h * ( 1.0f - fraction ), w, h * fraction, cgs.media.whiteShader );
+		CG_FillRect( x, y + h * ( 1.0f - fraction ), w, h * fraction, foreColor );
 	}
 	else
 	{
-		CG_DrawPic( x, y, w * fraction, h, cgs.media.whiteShader );
+		CG_FillRect( x, y, w * fraction, h, foreColor );
 	}
 
 	// draw glow on confidence event
@@ -1933,55 +1918,35 @@ static void CG_Rocket_DrawPlayerConfidenceBar( void )
 
 		if ( cg.confidenceGained > 0.0f )
 		{
-			if ( vertical )
-			{
-				glowOffset = 0.0f;
-			}
-			else
-			{
-				glowOffset = glowFraction;
-			}
-
-			color[ 0 ] = 1.0f;
-			color[ 1 ] = 1.0f;
-			color[ 2 ] = 1.0f;
-			color[ 3 ] = 0.5f * glowStrength;
+			glowOffset = vertical ? 0 : glowFraction;
 		}
 		else
 		{
-			if ( vertical )
-			{
-				glowOffset = glowFraction;
-			}
-			else
-			{
-				glowOffset = 0.0f;
-			}
-
-			color[ 0 ] = 1.0f;
-			color[ 1 ] = 1.0f;
-			color[ 2 ] = 0.0f;
-			color[ 3 ] = 0.5f * glowStrength;
+			glowOffset = vertical ? glowFraction : 0;
 		}
 
-		trap_R_SetColor( color );
 		CG_SetClipRegion( x, y, w, h );
+
+		color[ 0 ] = 1.0f;
+		color[ 1 ] = 1.0f;
+		color[ 2 ] = 1.0f;
+		color[ 3 ] = 0.5f * glowStrength;
 
 		if ( vertical )
 		{
-			CG_DrawPic( x, y + h * ( 1.0f - ( rawFraction + glowOffset ) ), w, h * glowFraction, cgs.media.whiteShader );
+			CG_FillRect( x, y + h * ( 1.0f - ( rawFraction + glowOffset ) ), w, h * glowFraction, color );
 		}
 		else
 		{
-			CG_DrawPic( x + w * ( rawFraction - glowOffset ), y, w * glowFraction, h, cgs.media.whiteShader );
+			CG_FillRect( x + w * ( rawFraction - glowOffset ), y, w * glowFraction, h, color );
 		}
 
 		CG_ClearClipRegion();
 	}
 
 	// draw threshold markers
-	unlockableNum = 0;
-	while ( unlockableNum = BG_IterateConfidenceThresholds( unlockableNum, team, &threshold, &unlocked ) )
+	while ( ( unlockableIter = BG_IterateConfidenceThresholds( unlockableIter, team, &threshold, &unlocked ) ),
+		( unlockableIter.num >= 0 ) )
 	{
 		fraction = threshold / CONFIDENCE_BAR_MAX;
 
@@ -2005,25 +1970,25 @@ static void CG_Rocket_DrawPlayerConfidenceBar( void )
 			color[ 3 ] = 1.0f;
 		}
 
-		trap_R_SetColor( color );
-
 		if ( vertical )
 		{
-			CG_DrawPic( x, y + h * ( 1.0f - fraction ), w, CONFIDENCE_BAR_MARKWIDTH, cgs.media.whiteShader );
+			CG_FillRect( x, y + h * ( 1.0f - fraction ), w, CONFIDENCE_BAR_MARKWIDTH, color );
 		}
 		else
 		{
-			CG_DrawPic( x + w * fraction, y, CONFIDENCE_BAR_MARKWIDTH, h, cgs.media.whiteShader );
+			CG_FillRect( x + w * fraction, y, CONFIDENCE_BAR_MARKWIDTH, h, color );
 		}
 	}
 
 	trap_R_SetColor( NULL );
+
 }
 
-void CG_Rocket_DrawLevelMineRate( void )
+void CG_Rocket_DrawMineRate( void )
 {
-	float levelRate;
-	int totalRate;
+	char s[ MAX_TOKEN_CHARS ];
+	float tx, ty, levelRate, rate;
+	int efficiency;
 
 	// check if builder
 	switch ( BG_GetPlayerWeapon( &cg.snap->ps ) )
@@ -2037,12 +2002,153 @@ void CG_Rocket_DrawLevelMineRate( void )
 			return;
 	}
 
-	levelRate = cg.predictedPlayerState.persistant[ PERS_MINERATE ] / 10.0f;
-	totalRate = cg.predictedPlayerState.persistant[ PERS_RGS_EFFICIENCY ];
+	levelRate  = cg.predictedPlayerState.persistant[ PERS_MINERATE ] / 10.0f;
+	efficiency = cg.predictedPlayerState.persistant[ PERS_RGS_EFFICIENCY ];
+	rate       = ( ( efficiency / 100.0f ) * levelRate );
 
-	trap_Rocket_SetInnerRML( "", "", va(_("Level Rate: %.1f Total Rate: %.1f (%d%%)"),
-				 ( levelRate ), ( ( totalRate / 100.0f ) * levelRate ), totalRate ), qfalse );
+	trap_Rocket_SetInnerRML( "", "", va( _("%.1f BP/min (%d%% × %.1f)"), rate, efficiency, levelRate ), qfalse );
 }
+
+static INLINE qhandle_t CG_GetUnlockableIcon( int num )
+{
+	int index = BG_UnlockableTypeIndex( num );
+
+	switch ( BG_UnlockableType( num ) )
+	{
+		case UNLT_WEAPON:    return cg_weapons[ index ].weaponIcon;
+		case UNLT_UPGRADE:   return cg_upgrades[ index ].upgradeIcon;
+		case UNLT_BUILDABLE: return cg_buildables[ index ].buildableIcon;
+		case UNLT_CLASS:     return cg_classes[ index ].classIcon;
+	}
+	return 0;
+}
+
+static void CG_Rocket_DrawPlayerUnlockedItems( void )
+{
+	rectDef_t     rect;
+	vec4_t        foreColour, backColour;
+	confidenceThresholdIterator_t unlockableIter = { -1, 1 }, previousIter;
+
+	// data
+	team_t    team;
+
+	// display
+	float     x, y, w, h, iw, ih, borderSize;
+	qboolean  vertical;
+
+	int       icons, counts;
+	int       count[ 32 ] = { 0 };
+	struct {
+		qhandle_t shader;
+		qboolean  unlocked;
+	} icon[ NUM_UNLOCKABLES ]; // more than enough(!)
+
+	CG_GetRocketElementRect( &rect );
+	CG_GetRocketElementBGColor( backColour );
+	CG_GetRocketElementColor( foreColour );
+	trap_Rocket_GetProperty( "border-width", &borderSize, sizeof( borderSize ), ROCKET_FLOAT );
+
+	team = cg.predictedPlayerState.persistant[ PERS_TEAM ];
+
+	w = rect.w - 2 * borderSize;
+	h = rect.h - 2 * borderSize;
+
+	vertical = ( h > w );
+
+	ih = vertical ? w : h;
+// 	iw = ih * cgDC.aspectScale;
+
+	x = rect.x + borderSize;
+	y = rect.y + borderSize + ( h - ih ) * vertical;
+
+	icons = counts = 0;
+
+	for (;;)
+	{
+		qhandle_t shader;
+		int       threshold;
+		qboolean  unlocked;
+
+		previousIter = unlockableIter;
+		unlockableIter = BG_IterateConfidenceThresholds( unlockableIter, team, &threshold, &unlocked );
+
+		if ( previousIter.threshold != unlockableIter.threshold && icons )
+		{
+			count[ counts++ ] = icons;
+		}
+
+		// maybe exit the loop?
+		if ( unlockableIter.num < 0 )
+		{
+			break;
+		}
+
+		// okay, next icon
+		shader = CG_GetUnlockableIcon( unlockableIter.num );
+
+		if ( shader )
+		{
+			icon[ icons ].shader = shader;
+			icon[ icons].unlocked = unlocked;
+			++icons;
+		}
+	}
+
+	{
+		float gap;
+		int i, j;
+		vec4_t unlockedBg, lockedBg;
+
+		Vector4Copy( foreColour, unlockedBg );
+		unlockedBg[ 3 ] *= 0.5f;
+		Vector4Copy( backColour, lockedBg );
+		lockedBg[ 3 ] *= 0.5f;
+
+		gap = vertical ? ( h - icons * ih ) : ( w - icons * iw );
+
+		if ( counts > 2 )
+		{
+			gap /= counts - 1;
+		}
+
+		for ( i = 0, j = 0; count[ i ]; ++i )
+		{
+			if ( vertical )
+			{
+				float yb = y - count[ i ] * ih - i * gap;
+				float hb = ( count[ i ] - j ) * ih;
+				CG_DrawRect( x - borderSize, yb - borderSize, iw + 2 * borderSize, hb, borderSize, backColour );
+				CG_FillRect( x, yb, iw, hb - 2 * borderSize, icon[ j ].unlocked ? unlockedBg : lockedBg );
+			}
+			else
+			{
+				float xb = x + j * iw + i * gap;
+				float wb = ( count[ i ] - j ) * iw + 2;
+				CG_DrawRect( xb - borderSize, y - borderSize, wb, ih + 2 * borderSize, borderSize, backColour );
+				CG_FillRect( xb, y, wb - 2 * borderSize, ih, icon[ j ].unlocked ? unlockedBg : lockedBg );
+			}
+			j = count[ i ];
+		}
+
+		for ( i = 0, j = 0; i < icons; ++i )
+		{
+			trap_R_SetColor( icon[ i ].unlocked ? foreColour : backColour );
+
+			if ( i == count[ j ] )
+			{
+				++j;
+				if ( vertical ) { y -= gap; } else { x += gap; }
+			}
+
+			CG_DrawPic( x, y, iw, ih, icon[ i ].shader );
+
+			if ( vertical ) { y -= ih; } else { x += iw; }
+		}
+	}
+
+	trap_R_SetColor( NULL );
+}
+
 
 typedef struct
 {
@@ -2079,7 +2185,7 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "lagometer", &CG_Rocket_DrawLagometer, ELEMENT_GAME },
 	{ "levelshot", &CG_Rocket_DrawLevelshot, ELEMENT_ALL },
 	{ "location", &CG_Rocket_DrawLocation, ELEMENT_GAME },
-	{ "mine_rate", &CG_Rocket_DrawLevelMineRate, ELEMENT_BOTH },
+	{ "mine_rate", &CG_Rocket_DrawMineRate, ELEMENT_BOTH },
 	{ "minimap", &CG_Rocket_DrawMinimap, ELEMENT_GAME },
 	{ "scanner", &CG_Rocket_DrawHumanScanner, ELEMENT_HUMANS },
 	{ "speedometer", &CG_Rocket_DrawSpeedGraph, ELEMENT_GAME },
@@ -2087,6 +2193,7 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "stamina_bolt", &CG_Rocket_DrawStaminaBolt, ELEMENT_HUMANS },
 	{ "timer", &CG_Rocket_DrawTimer, ELEMENT_GAME },
 	{ "tutorial", &CG_Rocket_DrawTutorial, ELEMENT_GAME },
+	{ "unlocked_items", &CG_Rocket_DrawPlayerUnlockedItems, ELEMENT_BOTH },
 	{ "usable_buildable", &CG_Rocket_DrawUsableBuildable, ELEMENT_HUMANS },
 	{ "wallwalk", &CG_Rocket_DrawPlayerWallclimbing, ELEMENT_ALIENS },
 	{ "weapon_icon", &CG_Rocket_DrawWeaponIcon, ELEMENT_BOTH },

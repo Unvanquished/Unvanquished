@@ -22,7 +22,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #ifndef __BOT_HEADER
 #define __BOT_HEADER
-#include "g_local.h"
 
 typedef struct
 {

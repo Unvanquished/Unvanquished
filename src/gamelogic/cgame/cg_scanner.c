@@ -235,9 +235,9 @@ static void CG_DrawBlips( rectDef_t *rect, vec3_t origin, vec4_t colour, qhandle
 	Vector4Copy( colour, localColour );
 
 	RotatePointAroundVector( drawOrigin, up, origin, -entityPositions.vangles[ 1 ] - 90 );
-	drawOrigin[ 0 ] /= ( 2 * HELMET_RANGE / rect->w );
-	drawOrigin[ 1 ] /= ( 2 * HELMET_RANGE / rect->h );
-	drawOrigin[ 2 ] /= ( 2 * HELMET_RANGE / rect->w );
+	drawOrigin[ 0 ] /= ( 2 * RADAR_RANGE / rect->w );
+	drawOrigin[ 1 ] /= ( 2 * RADAR_RANGE / rect->h );
+	drawOrigin[ 2 ] /= ( 2 * RADAR_RANGE / rect->w );
 
 	alphaMod = FAR_ALPHA +
 	           ( ( drawOrigin[ 1 ] + ( rect->h / 2.0f ) ) / rect->h ) * ( NEAR_ALPHA - FAR_ALPHA );
@@ -429,7 +429,7 @@ void CG_Scanner( rectDef_t *rect )
 		VectorClear( relOrigin );
 		VectorSubtract( entityPositions.humanBuildablePos[ i ], origin, relOrigin );
 
-		if ( VectorLength( relOrigin ) < HELMET_RANGE && ( relOrigin[ 2 ] < 0 ) )
+		if ( VectorLength( relOrigin ) < RADAR_RANGE && ( relOrigin[ 2 ] < 0 ) )
 		{
 			color_human[3] = alpha * entityPositions.humanBuildableIntensity[ i ];
 			CG_DrawBlips( rect, relOrigin, color_human, cgs.media.scannerBlipBldgShader );
@@ -444,7 +444,7 @@ void CG_Scanner( rectDef_t *rect )
 		VectorClear( relOrigin );
 		VectorSubtract( entityPositions.alienBuildablePos[ i ], origin, relOrigin );
 
-		if ( VectorLength( relOrigin ) < HELMET_RANGE && ( relOrigin[ 2 ] < 0 ) )
+		if ( VectorLength( relOrigin ) < RADAR_RANGE && ( relOrigin[ 2 ] < 0 ) )
 		{
 			color_alien[3] = alpha * entityPositions.alienBuildableIntensity[ i ];
 			CG_DrawBlips( rect, relOrigin, color_alien, cgs.media.scannerBlipBldgShader );
@@ -457,7 +457,7 @@ void CG_Scanner( rectDef_t *rect )
 		VectorClear( relOrigin );
 		VectorSubtract( entityPositions.humanClientPos[ i ], origin, relOrigin );
 
-		if ( VectorLength( relOrigin ) < HELMET_RANGE && ( relOrigin[ 2 ] < 0 ) )
+		if ( VectorLength( relOrigin ) < RADAR_RANGE && ( relOrigin[ 2 ] < 0 ) )
 		{
 			color_human[3] = alpha * entityPositions.humanClientIntensity[ i ];
 
@@ -471,7 +471,7 @@ void CG_Scanner( rectDef_t *rect )
 		VectorClear( relOrigin );
 		VectorSubtract( entityPositions.alienClientPos[ i ], origin, relOrigin );
 
-		if ( VectorLength( relOrigin ) < HELMET_RANGE && ( relOrigin[ 2 ] < 0 ) )
+		if ( VectorLength( relOrigin ) < RADAR_RANGE && ( relOrigin[ 2 ] < 0 ) )
 		{
 			color_alien[3] = alpha * entityPositions.alienClientIntensity[ i ];
 			CG_DrawBlips( rect, relOrigin, color_alien, cgs.media.scannerBlipShader );
@@ -484,7 +484,7 @@ void CG_Scanner( rectDef_t *rect )
 		VectorClear( relOrigin );
 		VectorSubtract( entityPositions.humanBuildablePos[ i ], origin, relOrigin );
 
-		if ( VectorLength( relOrigin ) < HELMET_RANGE && ( relOrigin[ 2 ] > 0 ) )
+		if ( VectorLength( relOrigin ) < RADAR_RANGE && ( relOrigin[ 2 ] > 0 ) )
 		{
 			color_human[3] = 1.5f * alpha * entityPositions.humanBuildableIntensity[ i ];
 			CG_DrawBlips( rect, relOrigin, color_human, cgs.media.scannerBlipBldgShader );
@@ -497,7 +497,7 @@ void CG_Scanner( rectDef_t *rect )
 		VectorClear( relOrigin );
 		VectorSubtract( entityPositions.alienBuildablePos[ i ], origin, relOrigin );
 
-		if ( VectorLength( relOrigin ) < HELMET_RANGE && ( relOrigin[ 2 ] > 0 ) )
+		if ( VectorLength( relOrigin ) < RADAR_RANGE && ( relOrigin[ 2 ] > 0 ) )
 		{
 			color_alien[3] = 1.5f * alpha * entityPositions.alienBuildableIntensity[ i ];
 			CG_DrawBlips( rect, relOrigin, color_alien, cgs.media.scannerBlipBldgShader );
@@ -510,7 +510,7 @@ void CG_Scanner( rectDef_t *rect )
 		VectorClear( relOrigin );
 		VectorSubtract( entityPositions.humanClientPos[ i ], origin, relOrigin );
 
-		if ( VectorLength( relOrigin ) < HELMET_RANGE && ( relOrigin[ 2 ] > 0 ) )
+		if ( VectorLength( relOrigin ) < RADAR_RANGE && ( relOrigin[ 2 ] > 0 ) )
 		{
 			color_human[3] = 1.5f * alpha * entityPositions.humanClientIntensity[ i ];
 			CG_DrawBlips( rect, relOrigin, color_human, cgs.media.scannerBlipShader );
@@ -523,7 +523,7 @@ void CG_Scanner( rectDef_t *rect )
 		VectorClear( relOrigin );
 		VectorSubtract( entityPositions.alienClientPos[ i ], origin, relOrigin );
 
-		if ( VectorLength( relOrigin ) < HELMET_RANGE && ( relOrigin[ 2 ] > 0 ) )
+		if ( VectorLength( relOrigin ) < RADAR_RANGE && ( relOrigin[ 2 ] > 0 ) )
 		{
 			color_alien[3] = 1.5f * alpha * entityPositions.alienClientIntensity[ i ];
 			CG_DrawBlips( rect, relOrigin, color_alien, cgs.media.scannerBlipShader );

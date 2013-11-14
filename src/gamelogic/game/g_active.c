@@ -49,7 +49,7 @@ void P_DamageFeedback( gentity_t *player )
 	}
 
 	// total points of damage shot at the player this frame
-	count = client->damage_blood + client->damage_armor;
+	count = client->damage_received;
 
 	if ( count == 0 )
 	{
@@ -92,8 +92,7 @@ void P_DamageFeedback( gentity_t *player )
 	//
 	// clear totals
 	//
-	client->damage_blood = 0;
-	client->damage_armor = 0;
+	client->damage_received = 0;
 	client->damage_knockback = 0;
 }
 
@@ -257,7 +256,7 @@ static void ClientShove( gentity_t *ent, gentity_t *victim )
 	}
 
 	// Cannot push enemy players unless they are walking on the player
-	if ( !OnSameTeam( ent, victim ) &&
+	if ( !G_OnSameTeam( ent, victim ) &&
 	     victim->client->ps.groundEntityNum != ent - g_entities )
 	{
 		return;
@@ -549,9 +548,10 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 		}
 	}
 
+	team = client->pers.team;
+
 	// Check to see if we are in the spawn queue
 	// Also, do some other checks and updates which players need while spectating
-	team = client->pers.team;
 	if ( team == TEAM_ALIENS || team == TEAM_HUMANS )
 	{
 		client->ps.persistant[ PERS_UNLOCKABLES ] = BG_UnlockablesMask( client->pers.team );
@@ -570,13 +570,11 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 	// Wants to get out of spawn queue
 	if ( attack1 && queued )
 	{
-		team_t team;
 		if ( client->sess.spectatorState == SPECTATOR_FOLLOW )
 		{
 			G_StopFollowing( ent );
 		}
 
-		team = client->pers.team;
 		//be sure that only valid team "numbers" can be used.
 		assert(team == TEAM_ALIENS || team == TEAM_HUMANS);
 		G_RemoveFromSpawnQueue( &level.team[ team ].spawnQueue, client->ps.clientNum );
@@ -595,15 +593,15 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 			G_StopFollowing( ent );
 		}
 
-		if ( client->pers.team == TEAM_NONE )
+		if ( team == TEAM_NONE )
 		{
 			G_TriggerMenu( client->ps.clientNum, MN_TEAM );
 		}
-		else if ( client->pers.team == TEAM_ALIENS )
+		else if ( team == TEAM_ALIENS )
 		{
 			G_TriggerMenu( client->ps.clientNum, MN_A_CLASS );
 		}
-		else if ( client->pers.team == TEAM_HUMANS )
+		else if ( team == TEAM_HUMANS )
 		{
 			G_TriggerMenu( client->ps.clientNum, MN_H_SPAWN );
 		}
@@ -659,7 +657,6 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 		// Set the queue position and spawn count for the client side
 		if ( client->ps.pm_flags & PMF_QUEUED )
 		{
-			team_t team = client->pers.team;
 			/* team must exist, or there will be a sigsegv */
 			assert(team == TEAM_HUMANS || team == TEAM_ALIENS);
 			client->ps.persistant[ PERS_SPAWNQUEUE ] = level.team[ team ].numSpawns;
@@ -755,15 +752,8 @@ static void G_ReplenishHumanHealth( gentity_t *self )
 	// stop if client is fully healed
 	if ( self->health >= client->ps.stats[ STAT_MAX_HEALTH ] )
 	{
-		self->health = client->ps.stats[ STAT_MAX_HEALTH ];
 		client->medKitHealthToRestore = 0;
 		client->ps.stats[ STAT_STATE ] &= ~SS_HEALING_2X;
-
-		// clear rewards array
-		for ( clientNum = 0; clientNum < level.maxclients; clientNum++ )
-		{
-			self->credits[ clientNum ] = 0;
-		}
 
 		return;
 	}
@@ -793,8 +783,7 @@ static void G_ReplenishHumanHealth( gentity_t *self )
 	}
 
 	// heal
-	client->medKitHealthToRestore--;
-	self->health++;
+	client->medKitHealthToRestore -= G_Heal( self, 1 );
 }
 
 /*
@@ -814,11 +803,13 @@ void ClientTimerActions( gentity_t *ent, int msec )
 	            strafing = qfalse;
 	int         i;
 	buildable_t buildable;
+	const classAttributes_t *ca;
 
 	ucmd = &ent->client->pers.cmd;
+	ca   = BG_Class( ent->client->ps.stats[ STAT_CLASS ] );
 
 	aForward = abs( ucmd->forwardmove );
-	aRight = abs( ucmd->rightmove );
+	aRight   = abs( ucmd->rightmove );
 
 	if ( aForward == 0 && aRight == 0 )
 	{
@@ -860,16 +851,21 @@ void ClientTimerActions( gentity_t *ent, int msec )
 		// Restore or subtract stamina
 		if ( stopped || client->ps.pm_type == PM_JETPACK )
 		{
-			client->ps.stats[ STAT_STAMINA ] += STAMINA_STOP_RESTORE;
+			client->ps.stats[ STAT_STAMINA ] += ca->staminaStopRestore;
 		}
 		else if ( ( client->ps.stats[ STAT_STATE ] & SS_SPEEDBOOST ) &&
-		          !usercmdButtonPressed( client->buttons, BUTTON_WALKING ) && !crouched )  // walk overrides sprint
+		          !usercmdButtonPressed( client->buttons, BUTTON_WALKING ) &&
+		          !crouched ) // walk overrides sprint
 		{
-			client->ps.stats[ STAT_STAMINA ] -= STAMINA_SPRINT_TAKE;
+			client->ps.stats[ STAT_STAMINA ] -= ca->staminaSprintCost;
 		}
 		else if ( walking || crouched )
 		{
-			client->ps.stats[ STAT_STAMINA ] += STAMINA_WALK_RESTORE;
+			client->ps.stats[ STAT_STAMINA ] += ca->staminaWalkRestore;
+		}
+		else // assume jogging
+		{
+			client->ps.stats[ STAT_STAMINA ] += ca->staminaJogRestore;
 		}
 
 		// Check stamina limits
@@ -877,9 +873,9 @@ void ClientTimerActions( gentity_t *ent, int msec )
 		{
 			client->ps.stats[ STAT_STAMINA ] = STAMINA_MAX;
 		}
-		else if ( client->ps.stats[ STAT_STAMINA ] < -STAMINA_MAX )
+		else if ( client->ps.stats[ STAT_STAMINA ] < 0 )
 		{
-			client->ps.stats[ STAT_STAMINA ] = -STAMINA_MAX;
+			client->ps.stats[ STAT_STAMINA ] = 0;
 		}
 
 		if ( weapon == WP_ABUILD || weapon == WP_ABUILD2 ||
@@ -902,7 +898,7 @@ void ClientTimerActions( gentity_t *ent, int msec )
 			case WP_ABUILD:
 			case WP_ABUILD2:
 			case WP_HBUILD:
-				buildable = client->ps.stats[ STAT_BUILDABLE ] & ~SB_VALID_TOGGLEBIT;
+				buildable = client->ps.stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK;
 
 				// Set validity bit on buildable
 				if ( buildable > BA_NONE )
@@ -919,14 +915,8 @@ void ClientTimerActions( gentity_t *ent, int msec )
 
 					dist = BG_Class( ent->client->ps.stats[ STAT_CLASS ] )->buildDist * DotProduct( forward, aimDir );
 
-					if ( G_CanBuild( ent, buildable, dist, dummy, dummy2, &dummy3 ) == IBE_NONE )
-					{
-						client->ps.stats[ STAT_BUILDABLE ] |= SB_VALID_TOGGLEBIT;
-					}
-					else
-					{
-						client->ps.stats[ STAT_BUILDABLE ] &= ~SB_VALID_TOGGLEBIT;
-					}
+					client->ps.stats[ STAT_BUILDABLE ] &= ~SB_BUILDABLE_STATE_MASK;
+					client->ps.stats[ STAT_BUILDABLE ] |= SB_BUILDABLE_FROM_IBE( G_CanBuild( ent, buildable, dist, dummy, dummy2, &dummy3 ) );
 
 					if ( buildable == BA_H_DRILL || buildable == BA_A_LEECH )
 					{
@@ -968,28 +958,11 @@ void ClientTimerActions( gentity_t *ent, int msec )
 	{
 		client->time1000 -= 1000;
 
-		//client is poisoned
+		// deal poison damage
 		if ( client->ps.stats[ STAT_STATE ] & SS_POISONED )
 		{
-			int damage = ALIEN_POISON_DMG;
-
-			if ( BG_InventoryContainsUpgrade( UP_BATTLESUIT, client->ps.stats ) )
-			{
-				damage -= BSUIT_POISON_PROTECTION;
-			}
-
-			if ( BG_InventoryContainsUpgrade( UP_HELMET, client->ps.stats ) )
-			{
-				damage -= HELMET_POISON_PROTECTION;
-			}
-
-			if ( BG_InventoryContainsUpgrade( UP_LIGHTARMOUR, client->ps.stats ) )
-			{
-				damage -= LIGHTARMOUR_POISON_PROTECTION;
-			}
-
 			G_Damage( ent, client->lastPoisonClient, client->lastPoisonClient, NULL,
-			          0, damage, 0, MOD_POISON );
+			          NULL, ALIEN_POISON_DMG, DAMAGE_NO_LOCDAMAGE, MOD_POISON );
 		}
 
 		// turn off life support when a team admits defeat
@@ -1024,11 +997,11 @@ void ClientTimerActions( gentity_t *ent, int msec )
 			// Give clients some credit periodically
 			if ( client->pers.team == TEAM_ALIENS )
 			{
-				G_AddCreditToClient( client, FREEKILL_ALIEN, qtrue );
+				G_AddCreditToClient( client, PLAYER_BASE_VALUE, qtrue );
 			}
 			else if ( client->pers.team == TEAM_HUMANS )
 			{
-				G_AddCreditToClient( client, FREEKILL_HUMAN, qtrue );
+				G_AddCreditToClient( client, PLAYER_BASE_VALUE, qtrue );
 			}
 		}
 	}
@@ -1746,18 +1719,7 @@ static void G_ReplenishAlienHealth( gentity_t *self )
 		// If recovery interval is less than frametime, compensate
 		count = MAX( 1 + ( level.time - self->nextRegenTime ) / interval, 0 );
 
-		self->health += count;
-
-		// If at full health, clear damage counters
-		if ( self->health >= client->ps.stats[ STAT_MAX_HEALTH ] )
-		{
-			self->health = client->ps.stats[ STAT_MAX_HEALTH ];
-
-			for ( clientNum = 0; clientNum < MAX_CLIENTS; clientNum++ )
-			{
-				self->credits[ clientNum ] = 0;
-			}
-		}
+		G_Heal( self, count );
 
 		self->nextRegenTime = level.time + count * interval;
 	}
@@ -2309,7 +2271,7 @@ void ClientThink_real( gentity_t *ent )
 	if ( ent->suicideTime > 0 && ent->suicideTime < level.time )
 	{
 		ent->client->ps.stats[ STAT_HEALTH ] = ent->health = 0;
-		player_die( ent, ent, ent, MOD_SUICIDE );
+		G_PlayerDie( ent, ent, ent, MOD_SUICIDE );
 
 		ent->suicideTime = 0;
 	}

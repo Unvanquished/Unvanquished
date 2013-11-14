@@ -536,7 +536,7 @@ char CG_GetColorCharForHealth( int clientnum )
 	}
 	else
 	{
-		maxHealth = BG_Class( PCL_HUMAN )->health;
+		maxHealth = BG_Class( PCL_HUMAN_NAKED )->health;
 	}
 
 	healthPercent = ( int )( 100.0f * ( float ) cgs.clientinfo[ clientnum ].health /

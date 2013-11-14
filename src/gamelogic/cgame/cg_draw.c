@@ -98,32 +98,6 @@ void CG_RunMenuScript( char **args )
 	Q_UNUSED(args);
 }
 
-//END TA UI
-
-/*
-================
-CG_DrawLighting
-
-================
-*/
-static void CG_DrawLighting( void )
-{
-	centity_t *cent;
-
-	cent = &cg_entities[ cg.snap->ps.clientNum ];
-
-	//fade to black if stamina is low
-	if ( ( cg.snap->ps.stats[ STAT_STAMINA ] < STAMINA_BLACKOUT_LEVEL ) &&
-	     ( cg.snap->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS ) )
-	{
-		vec4_t black = { 0, 0, 0, 0 };
-		black[ 3 ] = 1.0 - ( ( float )( cg.snap->ps.stats[ STAT_STAMINA ] + STAMINA_MAX ) / ( STAMINA_MAX + STAMINA_BLACKOUT_LEVEL ) );
-		trap_R_SetColor( black );
-		CG_DrawPic( 0, 0, 640, 480, cgs.media.whiteShader );
-		trap_R_SetColor( NULL );
-	}
-}
-
 /*
 ===============================================================================
 
@@ -340,10 +314,6 @@ CG_Draw2D
 */
 static void CG_Draw2D( void )
 {
-
-	// fading to black if stamina runs out
-	// (only 2D that can't be disabled)
-	CG_DrawLighting();
 
 	if ( cg_draw2D.integer == 0 )
 	{
