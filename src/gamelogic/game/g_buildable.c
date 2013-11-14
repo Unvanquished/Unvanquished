@@ -5503,7 +5503,7 @@ void G_BuildLogRevert( int id )
 	gentity_t  *ent;
 	team_t     team;
 	vec3_t     dist;
-	gentity_t  *builder;
+	gentity_t  *buildable;
 	float      confidenceChange[ NUM_TEAMS ] = { 0 };
 
 	level.numBuildablesForRemoval = 0;
@@ -5514,17 +5514,16 @@ void G_BuildLogRevert( int id )
 	{
 		log = &level.buildLog[ --level.buildId % MAX_BUILDLOG ];
 
-		switch ( log->fate ) {
+		switch ( log->fate )
+		{
 		case BF_CONSTRUCT:
 			for ( team = MAX_CLIENTS; team < level.num_entities; team++ )
 			{
 				ent = &g_entities[ team ];
 
-				if ( ( ( ent->s.eType == ET_BUILDABLE &&
-				         ent->health > 0 ) ||
-				       ( ent->s.eType == ET_GENERAL &&
-				         ent->think == G_BuildLogRevertThink ) ) &&
-				     ent->s.modelindex == log->modelindex )
+				if ( ( ( ent->s.eType == ET_BUILDABLE && ent->health > 0 ) ||
+					   ( ent->s.eType == ET_GENERAL && ent->think == G_BuildLogRevertThink ) ) &&
+					 ent->s.modelindex == log->modelindex )
 				{
 					VectorSubtract( ent->s.pos.trBase, log->origin, dist );
 
@@ -5533,13 +5532,16 @@ void G_BuildLogRevert( int id )
 						if ( ent->s.eType == ET_BUILDABLE )
 						{
 							G_LogPrintf( "revert: remove %d %s\n",
-							             ( int )( ent - g_entities ), BG_Buildable( ent->s.modelindex )->name );
+										 ( int )( ent - g_entities ), BG_Buildable( ent->s.modelindex )->name );
 						}
 
-						// Give back resources
+						// Revert resources
 						G_ModifyBuildPoints( ent->buildableTeam, BG_Buildable( ent->s.modelindex )->buildPoints );
 						confidenceChange[ log->buildableTeam ] -= log->confidenceEarned;
+
+						// Free buildable
 						G_FreeEntity( ent );
+
 						break;
 					}
 				}
@@ -5548,27 +5550,27 @@ void G_BuildLogRevert( int id )
 
 		case BF_DECONSTRUCT:
 		case BF_REPLACE:
-			confidenceChange[ log->buildableTeam ] += log->confidenceEarned;
-			// fall through to default
+				// Revert resources
+				G_ModifyBuildPoints( log->buildableTeam, -BG_Buildable( log->modelindex )->buildPoints );
+				confidenceChange[ log->buildableTeam ] += log->confidenceEarned;
+
+				// Fall through to default
 
 		default:
-			builder = G_NewEntity();
-
-			VectorCopy( log->origin, builder->s.pos.trBase );
-			VectorCopy( log->angles, builder->s.angles );
-			VectorCopy( log->origin2, builder->s.origin2 );
-			VectorCopy( log->angles2, builder->s.angles2 );
-			builder->s.modelindex = log->modelindex;
-			builder->deconstruct = log->deconstruct;
-			builder->deconstructTime = log->deconstructTime;
-			builder->builtBy = log->builtBy;
-			builder->confidenceEarned = log->confidenceEarned;
-			builder->think = G_BuildLogRevertThink;
-			builder->nextthink = level.time + FRAMETIME;
-
-			// Number of thinks before giving up and killing players in the way
-			builder->suicideTime = 30;
-			break;
+			// Spawn buildable
+			buildable = G_NewEntity();
+			VectorCopy( log->origin, buildable->s.pos.trBase );
+			VectorCopy( log->angles, buildable->s.angles );
+			VectorCopy( log->origin2, buildable->s.origin2 );
+			VectorCopy( log->angles2, buildable->s.angles2 );
+			buildable->s.modelindex = log->modelindex;
+			buildable->deconstruct = log->deconstruct;
+			buildable->deconstructTime = log->deconstructTime;
+			buildable->builtBy = log->builtBy;
+			buildable->confidenceEarned = log->confidenceEarned;
+			buildable->think = G_BuildLogRevertThink;
+			buildable->nextthink = level.time + FRAMETIME;
+			buildable->suicideTime = 30; // number of thinks before killing players in the way
 		}
 	}
 
