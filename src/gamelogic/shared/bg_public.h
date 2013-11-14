@@ -298,7 +298,6 @@ typedef enum
   IBE_ONEREACTOR,       // may not build two reactors
   IBE_NOHUMANBP,        // not enough build points (humans)
   IBE_NOPOWERHERE,      // not enough power in this area
-  IBE_NODCC,            // needs a defense computer
 
   IBE_NORMAL,           // surface is too steep
   IBE_NOROOM,           // no room
@@ -707,12 +706,11 @@ typedef enum
   MN_H_DEADTOCLASS,
   MN_H_UNKNOWNSPAWNITEM,
 
-  //human build
+  //human buildables
   MN_H_NOPOWERHERE,
   MN_H_NOREACTOR,
   MN_H_NOBP,
   MN_H_NOTPOWERED,
-  MN_H_NODCC,
   MN_H_ONEREACTOR
 } dynMenu_t;
 

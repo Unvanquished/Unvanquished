@@ -4423,12 +4423,6 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 	}
 	else if ( ent->client->pers.team == TEAM_HUMANS )
 	{
-		// Check if buildable requires a DCC
-		if ( BG_Buildable( buildable )->dccTest && !G_IsDCCBuilt() )
-		{
-			reason = IBE_NODCC;
-		}
-
 		// Check permissions
 		if ( (tr1.surfaceFlags & (SURF_NOHUMANBUILD | SURF_NOBUILD)) || (contents & (CONTENTS_NOHUMANBUILD | CONTENTS_NOBUILD)) )
 		{
@@ -4867,10 +4861,6 @@ qboolean G_BuildIfValid( gentity_t *ent, buildable_t buildable )
 
 		case IBE_NOHUMANBP:
 			G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOBP );
-			return qfalse;
-
-		case IBE_NODCC:
-			G_TriggerMenu( ent->client->ps.clientNum, MN_H_NODCC );
 			return qfalse;
 
 		case IBE_LASTSPAWN:

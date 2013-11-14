@@ -3645,10 +3645,6 @@ void Cmd_Build_f( gentity_t *ent )
 				err = MN_H_ONEREACTOR;
 				break;
 
-			case IBE_NODCC:
-				err = MN_H_NODCC;
-				break;
-
 			case IBE_LASTSPAWN:
 				err = MN_B_LASTSPAWN;
 				break;

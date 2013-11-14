@@ -645,14 +645,6 @@ void CG_Menu( int menu, int arg )
 			type = DT_BUILD;
 			break;
 
-		// unused - DCC isn't required to build anything
-		case MN_H_NODCC:
-			longMsg = _("There is no Defense Computer. A Defense Computer is needed to "
-			          "build this.");
-			shortMsg = _("There is no Defense Computer");
-			type = DT_BUILD;
-			break;
-
 		case MN_H_NOSLOTS:
 			longMsg = _("You have no room to carry this. Please sell any conflicting "
 			          "upgrades before purchasing this item.");

@@ -1247,10 +1247,6 @@ static void CG_GhostBuildableStatus( int buildableInfo )
 				text = "⨂";
 				break;
 
-			case IBE_NODCC:
-				text = "[defcomp]";
-				break;
-
 			case IBE_NORMAL:
 				text = "∡";
 				break;
