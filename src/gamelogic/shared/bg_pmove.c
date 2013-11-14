@@ -430,11 +430,6 @@ static float PM_CmdScale( usercmd_t *cmd, qboolean zFlight )
 				// stamina is too low to start sprinting
 				sprint = qfalse;
 			}
-			else if ( pm->ps->groundEntityNum == ENTITYNUM_NONE )
-			{
-				// can't sprint in air
-				sprint = qfalse;
-			}
 		}
 
 		// start or stop sprint
@@ -3670,7 +3665,7 @@ static void PM_Footsteps( void )
 
 	bobmove *= BG_Class( pm->ps->stats[ STAT_CLASS ] )->bobCycle;
 
-	if ( pm->ps->stats[ STAT_STATE ] & SS_SPEEDBOOST )
+	if ( pm->ps->stats[ STAT_STATE ] & SS_SPEEDBOOST && pm->ps->groundEntityNum != ENTITYNUM_NONE )
 	{
 		bobmove *= BG_Class( pm->ps->stats[ STAT_CLASS ] )->sprintMod;
 	}
