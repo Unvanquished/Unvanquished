@@ -2262,7 +2262,7 @@ void G_SetHumanBuildablePowerState()
 {
 	qboolean  done;
 	float     lowestSparePower;
-	gentity_t *ent, *lowestSparePowerEnt;
+	gentity_t *ent = NULL, *lowestSparePowerEnt;
 
 	static int nextCalculation = 0;
 
