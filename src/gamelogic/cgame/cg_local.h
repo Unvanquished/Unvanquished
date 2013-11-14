@@ -1161,9 +1161,9 @@ typedef struct
 	int                     numBinaryShadersUsed;
 	cgBinaryShaderSetting_t binaryShaderSettings[ NUM_BINARY_SHADERS ];
 
-	// confidence
-	float                   confidenceGained;
-	int                     confidenceGainedTime;
+	// momentum
+	float                   momentumGained;
+	int                     momentumGainedTime;
 } cg_t;
 
 // all of the model, shader, and sound references that are
@@ -1376,8 +1376,8 @@ typedef struct
 	qboolean markDeconstruct; // Whether or not buildables are marked
 	int      powerReactorRange;
 	int      powerRepeaterRange;
-	float    confidenceHalfLife; // used for confidence bar (un)lock markers
-	float    unlockableMinTime;  // used for confidence bar (un)lock markers
+	float    momentumHalfLife; // used for momentum bar (un)lock markers
+	float    unlockableMinTime;  // used for momentum bar (un)lock markers
 
 	int      voteTime[ NUM_TEAMS ];
 	int      voteYes[ NUM_TEAMS ];

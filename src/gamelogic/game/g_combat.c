@@ -92,7 +92,7 @@ static const char *const modNames[] =
 };
 
 /**
- * @brief Helper function for G_AddCreditsToScore and G_AddConfidenceToScore.
+ * @brief Helper function for G_AddCreditsToScore and G_AddMomentumToScore.
  * @param self
  * @param score
  */
@@ -119,13 +119,13 @@ void G_AddCreditsToScore( gentity_t *self, int credits )
 }
 
 /**
- * @brief Adds score to the client, input represents a confidence value.
+ * @brief Adds score to the client, input represents a momentum value.
  * @param self
- * @param confidence
+ * @param momentum
  */
-void G_AddConfidenceToScore( gentity_t *self, float confidence )
+void G_AddMomentumToScore( gentity_t *self, float momentum )
 {
-	AddScoreHelper( self, confidence * SCORE_PER_CONFIDENCE );
+	AddScoreHelper( self, momentum * SCORE_PER_MOMENTUM );
 }
 
 void LookAtKiller( gentity_t *self, gentity_t *inflictor, gentity_t *attacker )
@@ -230,10 +230,10 @@ void G_RewardAttackers( gentity_t *self )
 		if ( self->s.eType == ET_BUILDABLE )
 		{
 			// Add score
-			G_AddConfidenceToScore( player, reward );
+			G_AddMomentumToScore( player, reward );
 
-			// Add confidence
-			G_AddConfidenceForDestroyingStep( self, player, share );
+			// Add momentum
+			G_AddMomentumForDestroyingStep( self, player, share );
 		}
 		else
 		{
@@ -243,13 +243,13 @@ void G_RewardAttackers( gentity_t *self )
 			// Add credits
 			G_AddCreditToClient( player->client, ( short )reward, qtrue );
 
-			// Add confidence
-			G_AddConfidenceForKillingStep( self, player, share );
+			// Add momentum
+			G_AddMomentumForKillingStep( self, player, share );
 		}
 	}
 
-	// Complete confidence modification
-	G_AddConfidenceEnd();
+	// Complete momentum modification
+	G_AddMomentumEnd();
 }
 
 void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int meansOfDeath )

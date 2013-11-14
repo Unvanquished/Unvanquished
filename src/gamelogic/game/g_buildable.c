@@ -3445,8 +3445,8 @@ void G_BuildableThink( gentity_t *ent, int msec )
 				G_TeamCommand( TEAM_ALIENS, "cp \"The Overmind has awakened!\"" );
 			}
 
-			// Award confidence
-			G_AddConfidenceForBuilding( ent );
+			// Award momentum
+			G_AddMomentumForBuilding( ent );
 		}
 	}
 
@@ -3785,8 +3785,8 @@ void G_Deconstruct( gentity_t *self, gentity_t *deconner, meansOfDeath_t deconTy
 	refund = attr->buildPoints * ( self->health / ( float )attr->health );
 	G_ModifyBuildPoints( self->buildableTeam, refund );
 
-	// remove confidence
-	G_RemoveConfidenceForDecon( self, deconner );
+	// remove momentum
+	G_RemoveMomentumForDecon( self, deconner );
 
 	// deconstruct
 	G_Damage( self, NULL, deconner, NULL, NULL, self->health, 0, deconType );
@@ -4789,7 +4789,7 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 	if ( log )
 	{
 		// HACK: Assume the buildable got build in full
-		built->confidenceEarned = G_PredictConfidenceForBuilding( built );
+		built->momentumEarned = G_PredictMomentumForBuilding( built );
 		G_BuildLogSet( log, built );
 	}
 
@@ -5425,7 +5425,7 @@ void G_BuildLogSet( buildLog_t *log, gentity_t *ent )
 	log->deconstruct = ent->deconstruct;
 	log->deconstructTime = ent->deconstructTime;
 	log->builtBy = ent->builtBy;
-	log->confidenceEarned = ent->confidenceEarned;
+	log->momentumEarned = ent->momentumEarned;
 	VectorCopy( ent->s.pos.trBase, log->origin );
 	VectorCopy( ent->s.angles, log->angles );
 	VectorCopy( ent->s.origin2, log->origin2 );
@@ -5488,7 +5488,7 @@ void G_BuildLogRevertThink( gentity_t *ent )
 	}
 
 	built->creationTime = built->s.time = 0;
-	built->confidenceEarned = ent->confidenceEarned;
+	built->momentumEarned = ent->momentumEarned;
 	G_KillBox( built );
 
 	G_LogPrintf( "revert: restore %d %s\n",
@@ -5504,7 +5504,7 @@ void G_BuildLogRevert( int id )
 	team_t     team;
 	vec3_t     dist;
 	gentity_t  *buildable;
-	float      confidenceChange[ NUM_TEAMS ] = { 0 };
+	float      momentumChange[ NUM_TEAMS ] = { 0 };
 
 	level.numBuildablesForRemoval = 0;
 
@@ -5537,7 +5537,7 @@ void G_BuildLogRevert( int id )
 
 						// Revert resources
 						G_ModifyBuildPoints( ent->buildableTeam, BG_Buildable( ent->s.modelindex )->buildPoints );
-						confidenceChange[ log->buildableTeam ] -= log->confidenceEarned;
+						momentumChange[ log->buildableTeam ] -= log->momentumEarned;
 
 						// Free buildable
 						G_FreeEntity( ent );
@@ -5552,7 +5552,7 @@ void G_BuildLogRevert( int id )
 		case BF_REPLACE:
 				// Revert resources
 				G_ModifyBuildPoints( log->buildableTeam, -BG_Buildable( log->modelindex )->buildPoints );
-				confidenceChange[ log->buildableTeam ] += log->confidenceEarned;
+				momentumChange[ log->buildableTeam ] += log->momentumEarned;
 
 				// Fall through to default
 
@@ -5567,7 +5567,7 @@ void G_BuildLogRevert( int id )
 			buildable->deconstruct = log->deconstruct;
 			buildable->deconstructTime = log->deconstructTime;
 			buildable->builtBy = log->builtBy;
-			buildable->confidenceEarned = log->confidenceEarned;
+			buildable->momentumEarned = log->momentumEarned;
 			buildable->think = G_BuildLogRevertThink;
 			buildable->nextthink = level.time + FRAMETIME;
 			buildable->suicideTime = 30; // number of thinks before killing players in the way
@@ -5576,10 +5576,10 @@ void G_BuildLogRevert( int id )
 
 	for ( team = TEAM_NONE + 1; team < NUM_TEAMS; ++team )
 	{
-		G_AddConfidenceGenericStep( team, confidenceChange[ team ] );
+		G_AddMomentumGenericStep( team, momentumChange[ team ] );
 	}
 
-	G_AddConfidenceEnd();
+	G_AddMomentumEnd();
 }
 
 /*

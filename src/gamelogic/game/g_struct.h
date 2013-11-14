@@ -182,9 +182,9 @@ struct gentity_s
 	float        expectedSparePower;
 
 	/**
-	 * The amount of confidence this building generated on construction
+	 * The amount of momentum this building generated on construction
 	 */
-	float        confidenceEarned;
+	float        momentumEarned;
 
 	/**
 	 * Alien buildables can burn, which is a lot of fun if they are close.
@@ -613,7 +613,7 @@ struct buildLog_s
 	namelog_t   *builtBy;
 	team_t      buildableTeam;
 	buildable_t modelindex;
-	float       confidenceEarned;
+	float       momentumEarned;
 	qboolean    deconstruct;
 	int         deconstructTime;
 	vec3_t      origin;
@@ -754,7 +754,7 @@ struct level_locals_s
 		int              kills;
 		spawnQueue_t     spawnQueue;
 		qboolean         locked;
-		float            confidence;
+		float            momentum;
 	} team[ NUM_TEAMS ];
 };
 

@@ -348,7 +348,7 @@ extern int   REACTOR_ATTACK_DCC_DAMAGE;
 
 // score
 #define SCORE_PER_CREDIT                   0.02f // used to convert credit rewards to score points
-#define SCORE_PER_CONFIDENCE               1.0f  // used to convert confidence rewards to score points
+#define SCORE_PER_MOMENTUM               1.0f  // used to convert momentum rewards to score points
 #define HUMAN_BUILDER_SCOREINC             50    // in credits/10s
 #define ALIEN_BUILDER_SCOREINC             50    // in credits/10s
 
@@ -367,16 +367,16 @@ extern int   REACTOR_ATTACK_DCC_DAMAGE;
 #define DEFAULT_MINIMUM_MINE_RATE          "50"
 #define BASIC_INCOME_MOD                   1.0f
 
-// confidence
-#define CONFIDENCE_PER_CREDIT              0.01f // used to award confidence based on credit rewards
-#define DEFAULT_CONFIDENCE_HALF_LIFE       "5"   // in min
+// momentum
+#define MOMENTUM_PER_CREDIT              0.01f // used to award momentum based on credit rewards
+#define DEFAULT_MOMENTUM_HALF_LIFE       "5"   // in min
 #define DEFAULT_CONF_REWARD_DOUBLE_TIME    "30"  // in min
 #define DEFAULT_UNLOCKABLE_MIN_TIME        "60"  // in s
-#define DEFAULT_CONFIDENCE_BASE_MOD        "0.8"
-#define DEFAULT_CONFIDENCE_KILL_MOD        "1.0"
-#define DEFAULT_CONFIDENCE_BUILD_MOD       "0.6"
-#define DEFAULT_CONFIDENCE_DECON_MOD       "1.0" // used on top of build mod
-#define DEFAULT_CONFIDENCE_DESTROY_MOD     "0.8"
+#define DEFAULT_MOMENTUM_BASE_MOD        "0.8"
+#define DEFAULT_MOMENTUM_KILL_MOD        "1.0"
+#define DEFAULT_MOMENTUM_BUILD_MOD       "0.6"
+#define DEFAULT_MOMENTUM_DECON_MOD       "1.0" // used on top of build mod
+#define DEFAULT_MOMENTUM_DESTROY_MOD     "0.8"
 
 #define MAXIMUM_BUILD_TIME                 20000 // used for pie timer
 

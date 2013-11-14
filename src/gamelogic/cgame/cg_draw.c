@@ -1357,20 +1357,20 @@ static void CG_DrawPlayerChargeBar( rectDef_t *rect, vec4_t ref_color,
 	}
 }
 
-#define CONFIDENCE_BAR_MAX       300.0f
-#define CONFIDENCE_BAR_MARKWIDTH 0.5f
-#define CONFIDENCE_BAR_GLOWTIME  2000
+#define MOMENTUM_BAR_MAX       300.0f
+#define MOMENTUM_BAR_MARKWIDTH 0.5f
+#define MOMENTUM_BAR_GLOWTIME  2000
 
-static void CG_DrawPlayerConfidenceBar( rectDef_t *rect, vec4_t foreColor, vec4_t backColor, float borderSize )
+static void CG_DrawPlayerMomentumBar( rectDef_t *rect, vec4_t foreColor, vec4_t backColor, float borderSize )
 {
 	// data
 	playerState_t *ps;
-	float         confidence, rawFraction, fraction, glowFraction, glowOffset;
+	float         momentum, rawFraction, fraction, glowFraction, glowOffset;
 	int           threshold;
 	team_t        team;
 	qboolean      unlocked;
 
-	confidenceThresholdIterator_t unlockableIter = { -1 };
+	momentumThresholdIterator_t unlockableIter = { -1 };
 
 	// display
 	vec4_t        color;
@@ -1380,7 +1380,7 @@ static void CG_DrawPlayerConfidenceBar( rectDef_t *rect, vec4_t foreColor, vec4_
 	ps = &cg.predictedPlayerState;
 
 	team       = ps->persistant[ PERS_TEAM ];
-	confidence = ps->persistant[ PERS_CONFIDENCE ] / 10.0f;
+	momentum = ps->persistant[ PERS_MOMENTUM ] / 10.0f;
 
 	x = rect->x;
 	y = rect->y;
@@ -1404,8 +1404,8 @@ static void CG_DrawPlayerConfidenceBar( rectDef_t *rect, vec4_t foreColor, vec4_
 	color[ 3 ] *= 0.5f;
 	CG_FillRect( x, y, w, h, color );
 
-	// draw confidence bar
-	fraction = rawFraction = confidence / CONFIDENCE_BAR_MAX;
+	// draw momentum bar
+	fraction = rawFraction = momentum / MOMENTUM_BAR_MAX;
 
 	if ( fraction < 0.0f )
 	{
@@ -1425,14 +1425,14 @@ static void CG_DrawPlayerConfidenceBar( rectDef_t *rect, vec4_t foreColor, vec4_
 		CG_FillRect( x, y, w * fraction, h, foreColor );
 	}
 
-	// draw glow on confidence event
-	if ( cg.confidenceGainedTime + CONFIDENCE_BAR_GLOWTIME > cg.time )
+	// draw glow on momentum event
+	if ( cg.momentumGainedTime + MOMENTUM_BAR_GLOWTIME > cg.time )
 	{
-		glowFraction = fabs( cg.confidenceGained / CONFIDENCE_BAR_MAX );
-		glowStrength = ( CONFIDENCE_BAR_GLOWTIME - ( cg.time - cg.confidenceGainedTime ) ) /
-		               ( float )CONFIDENCE_BAR_GLOWTIME;
+		glowFraction = fabs( cg.momentumGained / MOMENTUM_BAR_MAX );
+		glowStrength = ( MOMENTUM_BAR_GLOWTIME - ( cg.time - cg.momentumGainedTime ) ) /
+		               ( float )MOMENTUM_BAR_GLOWTIME;
 
-		if ( cg.confidenceGained > 0.0f )
+		if ( cg.momentumGained > 0.0f )
 		{
 			glowOffset = vertical ? 0 : glowFraction;
 		}
@@ -1461,10 +1461,10 @@ static void CG_DrawPlayerConfidenceBar( rectDef_t *rect, vec4_t foreColor, vec4_
 	}
 
 	// draw threshold markers
-	while ( ( unlockableIter = BG_IterateConfidenceThresholds( unlockableIter, team, &threshold, &unlocked ) ),
+	while ( ( unlockableIter = BG_IterateMomentumThresholds( unlockableIter, team, &threshold, &unlocked ) ),
 	        ( unlockableIter.num >= 0 ) )
 	{
-		fraction = threshold / CONFIDENCE_BAR_MAX;
+		fraction = threshold / MOMENTUM_BAR_MAX;
 
 		if ( fraction > 1.0f )
 		{
@@ -1488,11 +1488,11 @@ static void CG_DrawPlayerConfidenceBar( rectDef_t *rect, vec4_t foreColor, vec4_
 
 		if ( vertical )
 		{
-			CG_FillRect( x, y + h * ( 1.0f - fraction ), w, CONFIDENCE_BAR_MARKWIDTH, color );
+			CG_FillRect( x, y + h * ( 1.0f - fraction ), w, MOMENTUM_BAR_MARKWIDTH, color );
 		}
 		else
 		{
-			CG_FillRect( x + w * fraction, y, CONFIDENCE_BAR_MARKWIDTH, h, color );
+			CG_FillRect( x + w * fraction, y, MOMENTUM_BAR_MARKWIDTH, h, color );
 		}
 	}
 
@@ -1515,7 +1515,7 @@ static INLINE qhandle_t CG_GetUnlockableIcon( int num )
 
 static void CG_DrawPlayerUnlockedItems( rectDef_t *rect, vec4_t foreColour, vec4_t backColour, float borderSize )
 {
-	confidenceThresholdIterator_t unlockableIter = { -1, 1 }, previousIter;
+	momentumThresholdIterator_t unlockableIter = { -1, 1 }, previousIter;
 
 	// data
 	team_t    team;
@@ -1553,7 +1553,7 @@ static void CG_DrawPlayerUnlockedItems( rectDef_t *rect, vec4_t foreColour, vec4
 		qboolean  unlocked;
 
 		previousIter = unlockableIter;
-		unlockableIter = BG_IterateConfidenceThresholds( unlockableIter, team, &threshold, &unlocked );
+		unlockableIter = BG_IterateMomentumThresholds( unlockableIter, team, &threshold, &unlocked );
 
 		if ( previousIter.threshold != unlockableIter.threshold && icons )
 		{
@@ -2339,14 +2339,14 @@ static void CG_DrawTeamLabel( rectDef_t *rect, team_t team, float text_x, float 
 
 /*
 ==================
-CG_DrawConfidence
+CG_DrawMomentum
 ==================
 */
-static void CG_DrawConfidence( rectDef_t *rect, float text_x, float text_y,
+static void CG_DrawMomentum( rectDef_t *rect, float text_x, float text_y,
                                vec4_t color, float scale, int textalign, int textvalign, int textStyle )
 {
 	char   s[ MAX_TOKEN_CHARS ];
-	float  tx, ty, confidence;
+	float  tx, ty, momentum;
 	team_t team;
 
 	if ( cg.intermissionStarted )
@@ -2361,9 +2361,9 @@ static void CG_DrawConfidence( rectDef_t *rect, float text_x, float text_y,
 		return;
 	}
 
-	confidence = cg.predictedPlayerState.persistant[ PERS_CONFIDENCE ] / 10.0f;
+	momentum = cg.predictedPlayerState.persistant[ PERS_MOMENTUM ] / 10.0f;
 
-	Com_sprintf( s, MAX_TOKEN_CHARS, _("%.1f confidence"), confidence );
+	Com_sprintf( s, MAX_TOKEN_CHARS, _("%.1f momentum"), momentum );
 
 	CG_AlignText( rect, s, scale, 0.0f, 0.0f, textalign, textvalign, &tx, &ty );
 
@@ -4412,12 +4412,12 @@ void CG_OwnerDraw( rectDef_t *rect, float text_x,
 			CG_DrawCrosshairIndicator( rect, foreColor );
 			break;
 
-		case CG_CONFIDENCE_TEXT:
-			CG_DrawConfidence( rect, text_x, text_y, foreColor, scale, textalign, textvalign, textStyle );
+		case CG_MOMENTUM_TEXT:
+			CG_DrawMomentum( rect, text_x, text_y, foreColor, scale, textalign, textvalign, textStyle );
 			break;
 
-		case CG_CONFIDENCE_BAR:
-			CG_DrawPlayerConfidenceBar( rect, foreColor, backColor, borderSize );
+		case CG_MOMENTUM_BAR:
+			CG_DrawPlayerMomentumBar( rect, foreColor, backColor, borderSize );
 			break;
 
 		case CG_UNLOCKED_ITEMS:

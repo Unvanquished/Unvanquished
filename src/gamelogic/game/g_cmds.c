@@ -542,7 +542,7 @@ void Cmd_Give_f( gentity_t *ent )
 	{
 		ADMP( QQ( N_( "usage: give [what]\n" ) ) );
 		ADMP( QQ( N_( "usage: valid choices are: all, health, funds [amount], "
-		              "bp [amount], confidence [amount], stamina, "
+		              "bp [amount], momentum [amount], stamina, "
 		              "poison, gas, ammo\n" ) ) );
 		return;
 	}
@@ -594,8 +594,8 @@ void Cmd_Give_f( gentity_t *ent )
 		G_ModifyBuildPoints( ent->client->pers.team, amount );
 	}
 
-	// give confidence
-	if ( Q_strnicmp( name, "confidence", 10 ) == 0 )
+	// give momentum
+	if ( Q_strnicmp( name, "momentum", 8 ) == 0 )
 	{
 		if ( give_all || trap_Argc() < 3 )
 		{
@@ -606,7 +606,7 @@ void Cmd_Give_f( gentity_t *ent )
 			amount = atof( name + 11 );
 		}
 
-		G_AddConfidenceGeneric( ent->client->pers.team, amount );
+		G_AddMomentumGeneric( ent->client->pers.team, amount );
 	}
 
 	if ( ent->client->ps.stats[ STAT_HEALTH ] <= 0 ||

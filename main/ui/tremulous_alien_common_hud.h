@@ -294,10 +294,10 @@ itemDef
 	ownerdraw CG_TEAMOVERLAY
 }
 
-//CONFIDENCE BAR
+//MOMENTUM BAR
 itemDef
 {
-	name "confidencebar"
+	name "momentumbar"
 	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B .25
 	backcolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B .2
 	//rect 0 140 8 200 // left
@@ -305,7 +305,7 @@ itemDef
 	aspectBias ALIGN_CENTER
 	decoration
 	visible MENU_TRUE
-	ownerdraw CG_CONFIDENCE_BAR
+	ownerdraw CG_MOMENTUM_BAR
 }
 
 //UNLOCKED ITEMS

@@ -238,7 +238,7 @@ itemDef
 	rect 3 462 200 15
 	decoration
 	visible MENU_TRUE
-	ownerdraw CG_CONFIDENCE_TEXT
+	ownerdraw CG_MOMENTUM_TEXT
 }
 
 //CROSSHAIR HEALTH METER

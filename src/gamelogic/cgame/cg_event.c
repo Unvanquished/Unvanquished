@@ -798,25 +798,21 @@ static void CG_Level2Zap( entityState_t *es )
 
 /*
 ==============
-CG_Confidence
+CG_Momentum
 
-Notify player of generated confidence
+Notify player of generated momentum
 ==============
 */
-void CG_Confidence( entityState_t *es )
+void CG_Momentum( entityState_t *es )
 {
-	float                  confidence;
+	float                  momentum;
 	qboolean               negative;
-	//confidence_reason_t    reason;
-	//confidence_qualifier_t qualifier;
 
 	negative   = es->groundEntityNum;
-	confidence = ( negative ? -es->otherEntityNum2 : es->otherEntityNum2 ) / 10.0f;
-	//reason     = es->eventParm;
-	//qualifier  = es->otherEntityNum;
+	momentum = ( negative ? -es->otherEntityNum2 : es->otherEntityNum2 ) / 10.0f;
 
-	cg.confidenceGained     = confidence;
-	cg.confidenceGainedTime = cg.time;
+	cg.momentumGained     = momentum;
+	cg.momentumGainedTime = cg.time;
 }
 
 /*
@@ -1475,8 +1471,8 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			cg.hitTime = cg.time;
 			break;
 
-		case EV_CONFIDENCE:
-			CG_Confidence( es );
+		case EV_MOMENTUM:
+			CG_Momentum( es );
 			break;
 
 		default:
