@@ -850,13 +850,13 @@ void ClientTimerActions( gentity_t *ent, int msec )
 		client->time100 -= 100;
 
 		// Use/Restore stamina (TODO: Move this to pmove to get rid of prediction errors!)
-		if ( stopped )
-		{
-			client->ps.stats[ STAT_STAMINA ] += ca->staminaStopRestore;
-		}
-		else if ( client->ps.stats[ STAT_STATE2 ] & SS2_JETPACK_ACTIVE )
+		if ( client->ps.stats[ STAT_STATE2 ] & SS2_JETPACK_WARM )
 		{
 			client->ps.stats[ STAT_STAMINA ] += ca->staminaJogRestore;
+		}
+		else if ( stopped )
+		{
+			client->ps.stats[ STAT_STAMINA ] += ca->staminaStopRestore;
 		}
 		else if ( ( client->ps.stats[ STAT_STATE ] & SS_SPEEDBOOST ) &&
 		          !usercmdButtonPressed( client->buttons, BUTTON_WALKING ) &&
