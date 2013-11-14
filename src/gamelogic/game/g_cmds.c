@@ -3625,7 +3625,6 @@ void Cmd_Build_f( gentity_t *ent )
 			case IBE_NOREACTOR:
 			case IBE_NOCREEP:
 			case IBE_NOPOWERHERE:
-			case IBE_DRILLPOWERSOURCE:
 				err = MN_NONE;
 				break;
 

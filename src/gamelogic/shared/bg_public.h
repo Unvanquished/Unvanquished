@@ -297,7 +297,6 @@ typedef enum
   IBE_NOREACTOR,        // no reactor present
   IBE_ONEREACTOR,       // may not build two reactors
   IBE_NOHUMANBP,        // not enough build points (humans)
-  IBE_DRILLPOWERSOURCE, // needs a close power source
   IBE_NOPOWERHERE,      // not enough power in this area
   IBE_NODCC,            // needs a defense computer
 

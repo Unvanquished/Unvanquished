@@ -1236,7 +1236,6 @@ static void CG_GhostBuildableStatus( int buildableInfo )
 				break;
 
 			case IBE_NOPOWERHERE:
-			case IBE_DRILLPOWERSOURCE:
 				text = "[repeater]";
 				break;
 

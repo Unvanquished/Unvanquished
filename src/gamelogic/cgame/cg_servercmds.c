@@ -601,8 +601,6 @@ void CG_Menu( int menu, int arg )
 			type = DT_MISC_CP;
 			break;
 
-			//===============================
-
 		case MN_H_NOBP:
 			if ( cgs.markDeconstruct )
 			{
@@ -626,23 +624,24 @@ void CG_Menu( int menu, int arg )
 			type = DT_BUILD;
 			break;
 
-		case MN_H_NOREACTOR:
-			longMsg = _("Buildables cannot materialize without a reactor.");
-			shortMsg = _("There is no reactor");
-			type = DT_BUILD;
-			break;
-
-		case MN_H_ONEREACTOR:
-			longMsg = _("There can only be one Reactor. Deconstruct the existing one if you "
-			          "wish to move it.");
-			shortMsg = _("There can only be one Reactor");
-			type = DT_BUILD;
-			break;
-
 		case MN_H_NOPOWERHERE:
 			longMsg = _("There is not enough power in this area. Keep a distance to other "
 			            "buildables or build a repeater to increase the local capacity.");
 			shortMsg = _("There is not enough power here");
+			type = DT_BUILD;
+			break;
+
+		case MN_H_NOREACTOR:
+			longMsg = _("There is no reactor and the local power supply is insufficient. "
+			            "Build the reactor or a repeater to increase the local capacity.");
+			shortMsg = _("There is no reactor and the local power supply is insufficient");
+			type = DT_BUILD;
+			break;
+
+		case MN_H_ONEREACTOR:
+			longMsg = _("There can only be one Reactor. Mark the existing one if you "
+			            "wish to move it.");
+			shortMsg = _("There can only be one Reactor");
 			type = DT_BUILD;
 			break;
 

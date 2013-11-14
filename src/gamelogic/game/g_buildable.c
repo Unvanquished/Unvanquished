@@ -2175,7 +2175,7 @@ static void CalculateSparePower( gentity_t *self )
 {
 	gentity_t *neighbor;
 	float     distance;
-	int       relativeSparePower;
+	int       baseSupply, relativeSparePower;
 
 	if ( self->s.eType != ET_BUILDABLE || self->buildableTeam != TEAM_HUMANS )
 	{
@@ -2189,7 +2189,10 @@ static void CalculateSparePower( gentity_t *self )
 			return;
 	}
 
-	self->expectedSparePower = g_powerBaseSupply.integer - BG_Buildable( self->s.modelindex )->powerConsumption;
+	// reactor enables base supply everywhere on the map
+	baseSupply = G_Reactor() ? g_powerBaseSupply.integer : 0;
+
+	self->expectedSparePower = baseSupply - BG_Buildable( self->s.modelindex )->powerConsumption;
 
 	if ( self->spawned )
 	{
@@ -2258,7 +2261,6 @@ TODO: Assemble a list of relevant entities first.
 void G_SetHumanBuildablePowerState()
 {
 	qboolean  done;
-	int       entityNum;
 	float     lowestSparePower;
 	gentity_t *ent, *lowestSparePowerEnt;
 
@@ -2269,100 +2271,70 @@ void G_SetHumanBuildablePowerState()
 		return;
 	}
 
-	if ( G_Reactor() )
+	// first pass: predict spare power for all buildables,
+	//             power up buildables that have enough power
+	while ( ent = G_IterateEntities( ent, NULL, qtrue, 0, NULL ) )
 	{
-		// first pass: predict spare power for all buildables,
-		//             power up buildables that have enough power,
-		//             power down drills that don't have a close power source
-		for ( entityNum = MAX_CLIENTS; entityNum < level.num_entities; entityNum++ )
+		// discard irrelevant entities
+		if ( ent->s.eType != ET_BUILDABLE || ent->buildableTeam != TEAM_HUMANS )
 		{
-			ent = &g_entities[ entityNum ];
+			continue;
+		}
 
+		CalculateSparePower( ent );
+
+		if ( ent->currentSparePower >= 0.0f )
+		{
+			ent->powered = qtrue;
+		}
+	}
+
+	// power down buildables that lack power, highest deficit first
+	do
+	{
+		lowestSparePower = MAX_QINT;
+
+		// find buildable with highest power deficit
+		while ( ent = G_IterateEntities( ent, NULL, qtrue, 0, NULL ) )
+		{
 			// discard irrelevant entities
 			if ( ent->s.eType != ET_BUILDABLE || ent->buildableTeam != TEAM_HUMANS )
 			{
 				continue;
 			}
 
-			CalculateSparePower( ent );
-
-			if ( ent->currentSparePower >= 0.0f )
-			{
-				ent->powered = qtrue;
-			}
-		}
-
-		// power down buildables that lack power, highest deficit first
-		do
-		{
-			lowestSparePower = MAX_QINT;
-
-			// find buildable with highest power deficit
-			for ( entityNum = MAX_CLIENTS; entityNum < level.num_entities; entityNum++ )
-			{
-				ent = &g_entities[ entityNum ];
-
-				// discard irrelevant entities
-				if ( ent->s.eType != ET_BUILDABLE || ent->buildableTeam != TEAM_HUMANS )
-				{
-					continue;
-				}
-
-				// ignore buildables that haven't yet spawned or are already powered down
-				if ( !ent->spawned || !ent->powered )
-				{
-					continue;
-				}
-
-				CalculateSparePower( ent );
-
-				// never shut down the telenode
-				if ( ent->s.modelindex == BA_H_SPAWN )
-				{
-					continue;
-				}
-
-				if ( ent->currentSparePower < lowestSparePower )
-				{
-					lowestSparePower = ent->currentSparePower;
-					lowestSparePowerEnt = ent;
-				}
-			}
-
-			if ( lowestSparePower < 0.0f )
-			{
-				lowestSparePowerEnt->powered = qfalse;
-				done = qfalse;
-			}
-			else
-			{
-				done = qtrue;
-			}
-		}
-		while ( !done );
-	}
-	else // !G_Reactor()
-	{
-		// power down all buildables
-		for ( entityNum = MAX_CLIENTS; entityNum < level.num_entities; entityNum++ )
-		{
-			ent = &g_entities[ entityNum ];
-
-			if ( ent->s.eType != ET_BUILDABLE || ent->buildableTeam != TEAM_HUMANS )
+			// ignore buildables that haven't yet spawned or are already powered down
+			if ( !ent->spawned || !ent->powered )
 			{
 				continue;
 			}
 
-			// HACK: store relative spare power in entityState_t.clientNum
-			ent->s.clientNum = 0;
+			CalculateSparePower( ent );
 
 			// never shut down the telenode
-			if ( ent->s.modelindex != BA_H_SPAWN )
+			if ( ent->s.modelindex == BA_H_SPAWN )
 			{
-				ent->powered = qfalse;
+				continue;
+			}
+
+			if ( ent->currentSparePower < lowestSparePower )
+			{
+				lowestSparePower = ent->currentSparePower;
+				lowestSparePowerEnt = ent;
 			}
 		}
+
+		if ( lowestSparePower < 0.0f )
+		{
+			lowestSparePowerEnt->powered = qfalse;
+			done = qfalse;
+		}
+		else
+		{
+			done = qtrue;
+		}
 	}
+	while ( !done );
 
 	nextCalculation = level.time + 500;
 }
@@ -3969,13 +3941,15 @@ static qboolean PredictBuildablePower( buildable_t buildable, vec3_t origin )
 {
 	gentity_t       *neighbor, *buddy;
 	float           distance, ownPrediction, neighborPrediction;
+	int             baseSupply;
 
 	if ( buildable == BA_H_REPEATER || buildable == BA_H_REACTOR )
 	{
 		return qtrue;
 	}
 
-	ownPrediction = g_powerBaseSupply.integer - BG_Buildable( buildable )->powerConsumption;
+	baseSupply = G_Reactor() ? g_powerBaseSupply.integer : 0;
+	ownPrediction = baseSupply - BG_Buildable( buildable )->powerConsumption;
 
 	neighbor = NULL;
 	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, origin, PowerRelevantRange() ) ) )
@@ -4406,19 +4380,13 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 	{
 		reason = tempReason;
 
-		if ( reason == IBE_NOPOWERHERE || reason == IBE_DRILLPOWERSOURCE )
+		if ( reason == IBE_NOPOWERHERE && !G_Reactor() )
 		{
-			if ( !G_Reactor() )
-			{
-				reason = IBE_NOREACTOR;
-			}
+			reason = IBE_NOREACTOR;
 		}
-		else if ( reason == IBE_NOCREEP )
+		else if ( reason == IBE_NOCREEP && !G_Overmind() )
 		{
-			if ( !G_Overmind() )
-			{
-				reason = IBE_NOOVERMIND;
-			}
+			reason = IBE_NOOVERMIND;
 		}
 	}
 	else if ( ent->client->pers.team == TEAM_ALIENS )
@@ -4455,15 +4423,6 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 	}
 	else if ( ent->client->pers.team == TEAM_HUMANS )
 	{
-		// Check for Reactor
-		if ( buildable != BA_H_REACTOR )
-		{
-			if ( !G_Reactor() )
-			{
-				reason = IBE_NOREACTOR;
-			}
-		}
-
 		// Check if buildable requires a DCC
 		if ( BG_Buildable( buildable )->dccTest && !G_IsDCCBuilt() )
 		{
