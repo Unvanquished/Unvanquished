@@ -31,13 +31,13 @@
     "The mine rate decreases over time, so that it gets increasingly harder to"
     " acquire resources in a long lasting match. This replaces sudden death.\n"
   }
-  "[bsuit] Stages & Confidence"
+  "[bsuit] Stages & Momentum"
   {
     "Building and destroying structures as well as killing enemies earns your "
-    "team a new resource called ^2confidence^7. If you gain enough confidence "
+    "team a new resource called ^2momentum^7. If you gain enough momentum "
     "new weapons, strucures or classes will be unlocked.\n"
     "\n"
-    "Confidence decreases exponentially over time so if you idle your team will "
+    "Momentum decreases exponentially over time so if you idle your team will "
 	"lose access to new items. Existing upgrades will remain functional.\n"
   }
   "[ckit] Human building ^21^7"
