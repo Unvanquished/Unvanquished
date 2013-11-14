@@ -1559,8 +1559,8 @@ typedef struct
 	sfxHandle_t  gameSounds[ MAX_SOUNDS ];
 
 	int          numInlineModels;
-	qhandle_t    inlineDrawModel[ MAX_MODELS ];
-	vec3_t       inlineModelMidpoints[ MAX_MODELS ];
+	qhandle_t    inlineDrawModel[ MAX_SUBMODELS ];
+	vec3_t       inlineModelMidpoints[ MAX_SUBMODELS ];
 
 	clientInfo_t clientinfo[ MAX_CLIENTS ];
 

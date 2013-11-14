@@ -569,12 +569,12 @@ static void CG_Rocket_DrawWeaponIcon( void )
 
 
 	// don't display if dead
-	if ( cg.predictedPlayerState.stats[ STAT_HEALTH ] <= 0 )
+	if ( cg.predictedPlayerState.stats[ STAT_HEALTH ] <= 0 || weapon == WP_NONE )
 	{
 		return;
 	}
 
-	if ( weapon <= WP_NONE || weapon >= WP_NUM_WEAPONS )
+	if ( weapon < WP_NONE || weapon >= WP_NUM_WEAPONS )
 	{
 		CG_Error( "CG_DrawWeaponIcon: weapon out of range: %d", weapon );
 	}
