@@ -192,6 +192,11 @@ else()
     endif()
   endif()
 
+  # Use MSVC-compatible bitfield layout
+  if( WIN32 )
+    set_c_cxx_flag( "-mms-bitfields" )
+  endif()
+
   # Use libc++ on Mac because the shipped libstdc++ version is too old
   if( APPLE )
     set_c_cxx_flag( "-stdlib=libc++" )
