@@ -147,6 +147,9 @@ void AIDestroyValue( AIValue_t v )
 		case VALUE_STRING:
 			BG_Free( v.l.stringValue );
 			break;
+
+		default:
+			break;
 	}
 }
 

@@ -887,7 +887,7 @@ void G_KnockbackByDir( gentity_t *target, const vec3_t direction, float strength
                               qboolean ignoreMass )
 {
 	vec3_t dir, vel;
-	int    time, mass;
+	int    mass;
 	float  massMod;
 	const classAttributes_t *ca;
 
@@ -954,8 +954,8 @@ void G_KnockbackByDir( gentity_t *target, const vec3_t direction, float strength
 	// print debug info
 	if ( g_debugKnockback.integer )
 	{
-		G_Printf( "%i: Knockback: client: %i, strength: %.1f (massMod: %.1f), time: %i\n",
-		          level.time, target->s.number, strength, massMod, time );
+		G_Printf( "%i: Knockback: client: %i, strength: %.1f (massMod: %.1f)\n",
+		          level.time, target->s.number, strength, massMod );
 	}
 }
 

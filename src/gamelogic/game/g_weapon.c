@@ -247,7 +247,7 @@ qboolean G_FindAmmo( gentity_t *self, qboolean clipsOnly )
 	wa = BG_Weapon( self->client->ps.stats[ STAT_WEAPON ] );
 
 	// search for ammo source
-	while ( neighbor = G_IterateEntitiesWithinRadius( neighbor, self->s.origin, ENTITY_BUY_RANGE ) )
+	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, self->s.origin, ENTITY_BUY_RANGE ) ) )
 	{
 		// only friendly living buildables provide ammo
 		if ( neighbor->s.eType != ET_BUILDABLE ||
@@ -300,7 +300,7 @@ qboolean G_FindFuel( gentity_t *self )
 	}
 
 	// search for fuel source
-	while ( neighbor = G_IterateEntitiesWithinRadius( neighbor, self->s.origin, ENTITY_BUY_RANGE ) )
+	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, self->s.origin, ENTITY_BUY_RANGE ) ) )
 	{
 		// only friendly living buildables provide fuel
 		if ( neighbor->s.eType != ET_BUILDABLE ||

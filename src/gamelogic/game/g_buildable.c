@@ -3534,7 +3534,7 @@ qboolean G_BuildableInRange( vec3_t origin, float radius, buildable_t buildable 
 {
 	gentity_t *neighbor = NULL;
 
-	while ( neighbor = G_IterateEntitiesWithinRadius( neighbor, origin, radius ) )
+	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, origin, radius ) ) )
 	{
 		if ( neighbor->s.eType != ET_BUILDABLE || !neighbor->spawned || neighbor->health <= 0 ||
 		     ( neighbor->buildableTeam == TEAM_HUMANS && !neighbor->powered ) )

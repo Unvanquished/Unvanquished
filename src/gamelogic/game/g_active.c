@@ -730,7 +730,7 @@ qboolean ClientInactivityTimer( gentity_t *ent, qboolean active )
 static void G_ReplenishHumanHealth( gentity_t *self )
 {
 	gclient_t *client;
-	int       remainingStartupTime, clientNum;
+	int       remainingStartupTime;
 
 	if ( !self )
 	{
@@ -1685,7 +1685,7 @@ static void G_ReplenishAlienHealth( gentity_t *self )
 {
 	gclient_t *client;
 	float     regenBaseRate, modifier;
-	int       foundHealthSource, count, interval, clientNum;
+	int       foundHealthSource, count, interval;
 
 	client = self->client;
 
@@ -1710,7 +1710,22 @@ static void G_ReplenishAlienHealth( gentity_t *self )
 		// Clear healing state, then set it accordingly
 		client->ps.stats[ STAT_STATE ] &= ~( SS_HEALING_ACTIVE | SS_HEALING_2X | SS_HEALING_3X );
 
-		if ( !foundHealthSource )
+		if ( foundHealthSource & SS_HEALING_3X )
+		{
+			modifier = 3.0f;
+			client->ps.stats[ STAT_STATE ] |= ( SS_HEALING_ACTIVE | SS_HEALING_3X );
+		}
+		else if ( foundHealthSource & SS_HEALING_2X )
+		{
+			modifier = 2.0f;
+			client->ps.stats[ STAT_STATE ] |= ( SS_HEALING_ACTIVE | SS_HEALING_2X );
+		}
+		else if ( foundHealthSource & SS_HEALING_ACTIVE )
+		{
+			modifier = 1.0f;
+			client->ps.stats[ STAT_STATE ] |= SS_HEALING_ACTIVE;
+		}
+		else
 		{
 			if ( g_alienOffCreepRegenHalfLife.value < 1 )
 			{
@@ -1727,21 +1742,6 @@ static void G_ReplenishAlienHealth( gentity_t *self )
 					modifier = 0.1f;
 				}
 			}
-		}
-		else if ( foundHealthSource & SS_HEALING_3X )
-		{
-			modifier = 3.0f;
-			client->ps.stats[ STAT_STATE ] |= ( SS_HEALING_ACTIVE | SS_HEALING_3X );
-		}
-		else if ( foundHealthSource & SS_HEALING_2X )
-		{
-			modifier = 2.0f;
-			client->ps.stats[ STAT_STATE ] |= ( SS_HEALING_ACTIVE | SS_HEALING_2X );
-		}
-		else if ( foundHealthSource & SS_HEALING_ACTIVE )
-		{
-			modifier = 1.0f;
-			client->ps.stats[ STAT_STATE ] |= SS_HEALING_ACTIVE;
 		}
 
 		interval = ( int )( 1000.0f / ( regenBaseRate * modifier ) );

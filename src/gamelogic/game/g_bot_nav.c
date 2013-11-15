@@ -150,7 +150,7 @@ qboolean GoalInRange( gentity_t *self, float r )
 		return ( Distance( self->s.origin, self->botMind->nav.tpos ) < r );
 	}
 
-	while ( ent = G_IterateEntitiesWithinRadius( ent, self->s.origin, r ) )
+	while ( ( ent = G_IterateEntitiesWithinRadius( ent, self->s.origin, r ) ) )
 	{
 		if ( ent == self->botMind->goal.ent )
 		{
