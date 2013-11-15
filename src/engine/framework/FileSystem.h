@@ -47,61 +47,70 @@ inline std::error_code& throws()
 	return *ptr;
 }
 
-// Generic file interface which can be a real file or a file in a pak
+// Wrapper around stdio
 class File {
 public:
-	// Files are noncopyable
+	File()
+		: fd(nullptr) {}
+	File(FILE* fd)
+		: fd(fd) {}
+
+	// Files are noncopyable but movable
 	File(const File&) = delete;
 	File& operator=(const File&) = delete;
-	File(File&&) = delete;
-	File& operator=(File&&) = delete;
+	File(File&& other)
+		: fd(other.fd)
+	{
+		other.fd = nullptr;
+	}
+	File& operator=(File&& other)
+	{
+		std::swap(fd, other.fd);
+		return *this;
+	}
+
+	// Check if a file is open
+	explicit operator bool() const
+	{
+		return fd != nullptr;
+	}
 
 	// Close the file
-	virtual ~File() {}
-
-	// Get the name of the file
-	const std::string& FileName() const
+	void Close(std::error_code& err = throws());
+	~File()
 	{
-		return filename;
+		// Don't throw in destructor
+		std::error_code err;
+		Close(err);
 	}
 
 	// Get the length of the file
-	virtual offset_t Length(std::error_code& err = throws()) const = 0;
+	offset_t Length(std::error_code& err = throws()) const;
 
 	// Get the timestamp (time of last modification) of the file
-	virtual time_t Timestamp(std::error_code& err = throws()) const = 0;
+	time_t Timestamp(std::error_code& err = throws()) const;
 
 	// File position manipulation
-	virtual void SeekCur(offset_t off, std::error_code& err = throws()) = 0;
-	virtual void SeekSet(offset_t off, std::error_code& err = throws()) = 0;
-	virtual void SeekEnd(offset_t off, std::error_code& err = throws()) = 0;
-	virtual offset_t Tell() const = 0;
+	void SeekCur(offset_t off, std::error_code& err = throws()) const;
+	void SeekSet(offset_t off, std::error_code& err = throws()) const;
+	void SeekEnd(offset_t off, std::error_code& err = throws()) const;
+	offset_t Tell() const;
 
 	// Read/Write from the file
-	virtual size_t Read(void* buffer, size_t length, std::error_code& err = throws()) = 0;
-	virtual void Write(const void* data, size_t length, std::error_code& err = throws()) = 0;
+	size_t Read(void* buffer, size_t length, std::error_code& err = throws()) const;
+	void Write(const void* data, size_t length, std::error_code& err = throws()) const;
 
-	// Flush write buffers
-	virtual void Flush(std::error_code& err = throws()) = 0;
+	// Flush buffers
+	void Flush(std::error_code& err = throws()) const;
 
 	// Read the entire file into a string
-	std::string ReadAll(std::error_code& err = throws());
+	std::string ReadAll(std::error_code& err = throws()) const;
 
 	// Copy the entire file to another file
-	template<typename Pointer> void CopyTo(const Pointer& dest, std::error_code& err = throws())
-	{
-		// Convert smart pointers to raw pointers
-		InternalCopyTo(&*dest, err);
-	}
-
-protected:
-	File(std::string filename)
-		: filename(std::move(filename)) {}
-
-	std::string filename;
+	void CopyTo(const File& dest, std::error_code& err = throws()) const;
 
 private:
-	void InternalCopyTo(File* dest, std::error_code& err);
+	FILE* fd;
 };
 
 // Path manipulation functions
@@ -204,7 +213,7 @@ struct LoadedPak {
 // A namespace is a set of pak files which contain files
 class PakNamespace {
 	struct pakFileInfo_t {
-		LoadedPak* pak;
+		LoadedPak* pak; // Points to an element in the pakList vector
 		offset_t offset;
 	};
 	typedef std::unordered_map<std::string, pakFileInfo_t> fileMap_t;
@@ -247,8 +256,11 @@ public:
 		return pakList;
 	}
 
-	// Open a file for reading
-	std::unique_ptr<File> OpenRead(Str::StringRef path, std::error_code& err = throws()) const;
+	// Read an entire file into a string
+	std::string ReadFile(Str::StringRef path, std::error_code& err = throws()) const;
+
+	// Copy an entire file to another file
+	void CopyFile(Str::StringRef path, const File& dest, std::error_code& err = throws()) const;
 
 	// Check if a file exists
 	bool FileExists(Str::StringRef path) const;
@@ -271,9 +283,9 @@ public:
 namespace RawPath {
 
 	// Open a file for reading/writing/appending/editing
-	std::unique_ptr<File> OpenRead(Str::StringRef path, std::error_code& err = throws());
-	std::unique_ptr<File> OpenWrite(Str::StringRef path, std::error_code& err = throws());
-	std::unique_ptr<File> OpenAppend(Str::StringRef path, std::error_code& err = throws());
+	File OpenRead(Str::StringRef path, std::error_code& err = throws());
+	File OpenWrite(Str::StringRef path, std::error_code& err = throws());
+	File OpenAppend(Str::StringRef path, std::error_code& err = throws());
 
 	// Check if a file exists
 	bool FileExists(Str::StringRef path);
@@ -344,9 +356,9 @@ namespace RawPath {
 namespace HomePath {
 
 	// Open a file for reading/writing/appending/editing
-	std::unique_ptr<File> OpenRead(Str::StringRef path, std::error_code& err = throws());
-	std::unique_ptr<File> OpenWrite(Str::StringRef path, std::error_code& err = throws());
-	std::unique_ptr<File> OpenAppend(Str::StringRef path, std::error_code& err = throws());
+	File OpenRead(Str::StringRef path, std::error_code& err = throws());
+	File OpenWrite(Str::StringRef path, std::error_code& err = throws());
+	File OpenAppend(Str::StringRef path, std::error_code& err = throws());
 
 	// Check if a file exists
 	bool FileExists(Str::StringRef path);

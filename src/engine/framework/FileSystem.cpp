@@ -357,163 +357,241 @@ std::string Path::Build(Str::StringRef base, Str::StringRef path)
 	return out;
 }
 
-// Real file backed by a stdio handle
-class OSFile: public File {
+void File::Close(std::error_code& err)
+{
+	if (fd) {
+		// Always clear fd, even if we throw an exception
+		FILE* tmp = fd;
+		fd = nullptr;
+		if (fclose(tmp) != 0)
+			SetErrorCodeSystem(err);
+		else
+			ClearErrorCode(err);
+	}
+}
+offset_t File::Length(std::error_code& err) const
+{
+	my_stat_t st;
+	if (my_fstat(fileno(fd), &st) != 0) {
+		SetErrorCodeSystem(err);
+		return 0;
+	} else {
+		ClearErrorCode(err);
+		return st.st_size;
+	}
+}
+time_t File::Timestamp(std::error_code& err) const
+{
+	my_stat_t st;
+	if (my_fstat(fileno(fd), &st) != 0) {
+		SetErrorCodeSystem(err);
+		return 0;
+	} else {
+		ClearErrorCode(err);
+		return std::max(st.st_ctime, st.st_mtime);
+	}
+}
+void File::SeekCur(offset_t off, std::error_code& err) const
+{
+	if (my_fseek(fd, off, SEEK_CUR) != 0)
+		SetErrorCodeSystem(err);
+	else
+		ClearErrorCode(err);
+}
+void File::SeekSet(offset_t off, std::error_code& err) const
+{
+	if (my_fseek(fd, off, SEEK_SET) != 0)
+		SetErrorCodeSystem(err);
+	else
+		ClearErrorCode(err);
+}
+void File::SeekEnd(offset_t off, std::error_code& err) const
+{
+	if (my_fseek(fd, off, SEEK_END) != 0)
+		SetErrorCodeSystem(err);
+	else
+		ClearErrorCode(err);
+}
+offset_t File::Tell() const
+{
+	return my_ftell(fd);
+}
+size_t File::Read(void* buffer, size_t length, std::error_code& err) const
+{
+	size_t result = fread(buffer, 1, length, fd);
+	if (result != length && ferror(fd))
+		SetErrorCodeSystem(err);
+	else
+		ClearErrorCode(err);
+	return result;
+}
+void File::Write(const void* data, size_t length, std::error_code& err) const
+{
+	if (fwrite(data, 1, length, fd) != length)
+		SetErrorCodeSystem(err);
+	else
+		ClearErrorCode(err);
+}
+void File::Flush(std::error_code& err) const
+{
+	if (fflush(fd) != 0)
+		SetErrorCodeSystem(err);
+	else
+		ClearErrorCode(err);
+}
+std::string File::ReadAll(std::error_code& err) const
+{
+	offset_t length = Length(err);
+	if (HaveError(err))
+		return "";
+	std::string out;
+	out.resize(length);
+	Read(&out[0], length, err);
+	return out;
+}
+void File::CopyTo(const File& dest, std::error_code& err) const
+{
+	char buffer[65536];
+	while (true) {
+		size_t read = Read(buffer, sizeof(buffer), err);
+		if (HaveError(err) || read == 0)
+			return;
+		dest.Write(buffer, read, err);
+		if (HaveError(err))
+			return;
+	}
+}
+
+// Class representing an open zip archive
+class ZipArchive {
 public:
-	OSFile(std::string filename, FILE* fd)
-		: File(std::move(filename)), fd(fd) {}
-	~OSFile()
+	ZipArchive()
+		: zipFile(nullptr) {}
+
+	// Noncopyable
+	ZipArchive(const ZipArchive&) = delete;
+	ZipArchive& operator=(const ZipArchive&) = delete;
+	ZipArchive(ZipArchive&& other)
+		: zipFile(other.zipFile)
 	{
-		fclose(fd);
+		other.zipFile = nullptr;
 	}
-	virtual offset_t Length(std::error_code& err) const override final
+	ZipArchive& operator=(ZipArchive&& other)
 	{
-		my_stat_t st;
-		if (my_fstat(fileno(fd), &st) != 0) {
+		std::swap(zipFile, other.zipFile);
+		return *this;
+	}
+
+	// Close archive
+	~ZipArchive()
+	{
+		if (zipFile)
+			unzClose(zipFile);
+	}
+
+	// Open an archive
+	static ZipArchive Open(Str::StringRef path, std::error_code& err)
+	{
+		// Initialize the zlib I/O functions
+		zlib_filefunc64_def funcs;
+		funcs.zopen64_file = [](voidpf opaque, const void* filename, int mode) -> voidpf {
+			// Interpret the filename as a file handle
+			Q_UNUSED(opaque);
+			Q_UNUSED(mode);
+			return const_cast<void*>(filename);
+		};
+		funcs.zread_file = [](voidpf opaque, voidpf stream, void* buf, uLong size) -> uLong {
+			Q_UNUSED(opaque);
+			return fread(buf, 1, size, static_cast<FILE*>(stream));
+		};
+		funcs.zwrite_file = [](voidpf opaque, voidpf stream, const void* buf, uLong size) -> uLong {
+			Q_UNUSED(opaque);
+			return fwrite(buf, 1, size, static_cast<FILE*>(stream));
+		};
+		funcs.ztell64_file = [](voidpf opaque, voidpf stream) -> ZPOS64_T {
+			Q_UNUSED(opaque);
+			return my_ftell(static_cast<FILE*>(stream));
+		};
+		funcs.zseek64_file = [](voidpf opaque, voidpf stream, ZPOS64_T offset, int origin) -> long {
+			Q_UNUSED(opaque);
+			switch (origin) {
+			case ZLIB_FILEFUNC_SEEK_CUR:
+				origin = SEEK_CUR;
+				break;
+			case ZLIB_FILEFUNC_SEEK_END:
+				origin = SEEK_END;
+				break;
+			case ZLIB_FILEFUNC_SEEK_SET:
+				origin = SEEK_SET;
+				break;
+			default:
+				return -1;
+			}
+			return my_fseek(static_cast<FILE*>(stream), offset, origin);
+		};
+		funcs.zclose_file = [](voidpf opaque, voidpf stream) -> int {
+			Q_UNUSED(opaque);
+			return fclose(static_cast<FILE*>(stream));
+		};
+		funcs.zerror_file = [](voidpf opaque, voidpf stream) -> int {
+			Q_UNUSED(opaque);
+			return ferror(static_cast<FILE*>(stream));
+		};
+
+		// Open the file
+		FILE* fd = my_fopen(path, 'r');
+		if (!fd) {
 			SetErrorCodeSystem(err);
-			return 0;
-		} else {
-			ClearErrorCode(err);
-			return st.st_size;
+			return ZipArchive();
 		}
-	}
-	virtual time_t Timestamp(std::error_code& err) const override final
-	{
-		my_stat_t st;
-		if (my_fstat(fileno(fd), &st) != 0) {
-			SetErrorCodeSystem(err);
-			return 0;
-		} else {
-			ClearErrorCode(err);
-			return std::max(st.st_ctime, st.st_mtime);
+
+		// Open the zip with zlib
+		unzFile zipFile = unzOpen2_64(fd, &funcs);
+		if (!zipFile) {
+			// Unfortunately unzOpen doesn't return an error code, so we assume UNZ_BADZIPFILE
+			SetErrorCodeZlib(err, UNZ_BADZIPFILE);
+			return ZipArchive();
 		}
+
+		ClearErrorCode(err);
+		ZipArchive out;
+		out.zipFile = zipFile;
+		return out;
 	}
-	virtual void SeekCur(offset_t off, std::error_code& err) override final
+
+	// Open a file in the archive
+	void OpenFile(offset_t offset, std::error_code& err) const
 	{
-		if (my_fseek(fd, off, SEEK_CUR) != 0)
-			SetErrorCodeSystem(err);
-		else
-			ClearErrorCode(err);
-	}
-	virtual void SeekSet(offset_t off, std::error_code& err) override final
-	{
-		if (my_fseek(fd, off, SEEK_SET) != 0)
-			SetErrorCodeSystem(err);
-		else
-			ClearErrorCode(err);
-	}
-	virtual void SeekEnd(offset_t off, std::error_code& err) override final
-	{
-		if (my_fseek(fd, off, SEEK_END) != 0)
-			SetErrorCodeSystem(err);
-		else
-			ClearErrorCode(err);
-	}
-	virtual offset_t Tell() const override final
-	{
-		return my_ftell(fd);
-	}
-	virtual size_t Read(void* buffer, size_t length, std::error_code& err) override final
-	{
-		size_t result = fread(buffer, 1, length, fd);
-		if (result != length && ferror(fd))
-			SetErrorCodeSystem(err);
-		else
-			ClearErrorCode(err);
-		return result;
-	}
-	virtual void Write(const void* data, size_t length, std::error_code& err) override final
-	{
-		if (fwrite(data, 1, length, fd) != length)
-			SetErrorCodeSystem(err);
-		else
-			ClearErrorCode(err);
-	}
-	virtual void Flush(std::error_code& err) override final
-	{
-		if (fflush(fd) != 0)
-			SetErrorCodeSystem(err);
+		// Set position in zip
+		int result = unzSetOffset64(zipFile, offset);
+		if (result != UNZ_OK) {
+			SetErrorCodeZlib(err, result);
+			return;
+		}
+
+		// Open file in zip
+		result = unzOpenCurrentFile(zipFile);
+		if (result != UNZ_OK)
+			SetErrorCodeZlib(err, result);
 		else
 			ClearErrorCode(err);
 	}
 
-private:
-	FILE* fd;
-};
-
-// File inside a zip archive, read-only
-class ZipFile: public File {
-public:
-	ZipFile(std::string filename, unzFile zipFile, FILE* rawZipFile)
-		: File(std::move(filename)), zipFile(zipFile), rawZipFile(rawZipFile) {}
-	~ZipFile()
-	{
-		unzClose(zipFile);
-	}
-
-	virtual offset_t Length(std::error_code& err) const override final
+	// Get the length of the currently open file
+	offset_t FileLength(std::error_code& err) const
 	{
 		unz_file_info64 fileInfo;
 		int result = unzGetCurrentFileInfo64(zipFile, &fileInfo, NULL, 0, NULL, 0, NULL, 0);
 		if (result != UNZ_OK) {
 			SetErrorCodeZlib(err, result);
 			return 0;
-		} else {
-			ClearErrorCode(err);
-			return fileInfo.uncompressed_size;
-		}
-	}
-	virtual time_t Timestamp(std::error_code& err) const override final
-	{
-		my_stat_t st;
-		if (my_fstat(fileno(rawZipFile), &st) != 0) {
-			SetErrorCodeSystem(err);
-			return 0;
-		} else {
-			ClearErrorCode(err);
-			return std::max(st.st_ctime, st.st_mtime);
-		}
-	}
-	virtual void SeekCur(offset_t off, std::error_code& err) override final
-	{
-		SeekSet(Tell() + off, err);
-	}
-	virtual void SeekSet(offset_t off, std::error_code& err) override final
-	{
-		offset_t pos = unztell64(zipFile);
-		if (off < pos) {
-			pos = 0;
-			int result = unzOpenCurrentFile(zipFile);
-			if (result < 0) {
-				SetErrorCodeZlib(err, result);
-				return;
-			}
-		} else
-			off -= pos;
-		char seekBuffer[65536];
-		while (off != 0) {
-			size_t toRead = std::min<size_t>(sizeof(seekBuffer), off);
-			int result = unzReadCurrentFile(zipFile, seekBuffer, toRead);
-			if (result < 0) {
-				SetErrorCodeZlib(err, result);
-				return;
-			}
-			off -= toRead;
 		}
 		ClearErrorCode(err);
+		return fileInfo.uncompressed_size;
 	}
-	virtual void SeekEnd(offset_t off, std::error_code& err) override final
-	{
-		offset_t length = Length(err);
-		if (HaveError(err))
-			return;
-		SeekSet(length + off, err);
-	}
-	virtual offset_t Tell() const override final
-	{
-		return unztell64(zipFile);
-	}
-	virtual size_t Read(void* buffer, size_t length, std::error_code& err) override final
+
+	// Read from the currently open file
+	size_t ReadFile(void* buffer, size_t length, std::error_code& err) const
 	{
 		int result = unzReadCurrentFile(zipFile, buffer, length);
 		if (result < 0)
@@ -522,92 +600,22 @@ public:
 			ClearErrorCode(err);
 		return result;
 	}
-	virtual void Write(const void* data, size_t length, std::error_code& err) override final
+
+	// Close the currently open file and check for CRC errors
+	void CloseFile(std::error_code& err) const
 	{
-		Q_UNUSED(data);
-		Q_UNUSED(length);
-		SetErrorCode(err, EBADF, std::generic_category());
-	}
-	virtual void Flush(std::error_code& err) override final
-	{
-		Q_UNUSED(err);
+		int result = unzCloseCurrentFile(zipFile);
+		if (result != UNZ_OK)
+			SetErrorCodeZlib(err, result);
+		else
+			ClearErrorCode(err);
 	}
 
 private:
 	unzFile zipFile;
-	FILE* rawZipFile;
 };
 
-// Open a zip file
-static std::pair<unzFile, FILE*> OpenZip(Str::StringRef path, std::error_code& err)
-{
-	// Initialize the zlib I/O functions
-	zlib_filefunc64_def funcs;
-	funcs.zopen64_file = [](voidpf opaque, const void* filename, int mode) -> voidpf {
-		// Interpret the filename as a file handle
-		Q_UNUSED(opaque);
-		Q_UNUSED(mode);
-		return const_cast<void*>(filename);
-	};
-	funcs.zread_file = [](voidpf opaque, voidpf stream, void* buf, uLong size) -> uLong {
-		Q_UNUSED(opaque);
-		return fread(buf, 1, size, static_cast<FILE*>(stream));
-	};
-	funcs.zwrite_file = [](voidpf opaque, voidpf stream, const void* buf, uLong size) -> uLong {
-		Q_UNUSED(opaque);
-		return fwrite(buf, 1, size, static_cast<FILE*>(stream));
-	};
-	funcs.ztell64_file = [](voidpf opaque, voidpf stream) -> ZPOS64_T {
-		Q_UNUSED(opaque);
-		return my_ftell(static_cast<FILE*>(stream));
-	};
-	funcs.zseek64_file = [](voidpf opaque, voidpf stream, ZPOS64_T offset, int origin) -> long {
-		Q_UNUSED(opaque);
-		switch (origin) {
-		case ZLIB_FILEFUNC_SEEK_CUR:
-			origin = SEEK_CUR;
-			break;
-		case ZLIB_FILEFUNC_SEEK_END:
-			origin = SEEK_END;
-			break;
-		case ZLIB_FILEFUNC_SEEK_SET:
-			origin = SEEK_SET;
-			break;
-		default:
-			return -1;
-		}
-		return my_fseek(static_cast<FILE*>(stream), offset, origin);
-	};
-	funcs.zclose_file = [](voidpf opaque, voidpf stream) -> int {
-		Q_UNUSED(opaque);
-		return fclose(static_cast<FILE*>(stream));
-	};
-	funcs.zerror_file = [](voidpf opaque, voidpf stream) -> int {
-		Q_UNUSED(opaque);
-		return ferror(static_cast<FILE*>(stream));
-	};
-
-	// Open the file
-	FILE* fd = my_fopen(path, 'r');
-	if (!fd) {
-		SetErrorCodeSystem(err);
-		return {nullptr, nullptr};
-	}
-
-	// Open the zip with zlib
-	unzFile zf = unzOpen2_64(fd, &funcs);
-	if (!zf) {
-		// Unfortunately unzOpen doesn't return an error code, so we assume UNZ_BADZIPFILE
-		// Note that unzOpen will close the file if an error occurs
-		SetErrorCodeZlib(err, UNZ_BADZIPFILE);
-		return {nullptr, nullptr};
-	}
-
-	ClearErrorCode(err);
-	return {zf, fd};
-}
-
-std::unique_ptr<File> PakNamespace::OpenRead(Str::StringRef path, std::error_code& err) const
+std::string PakNamespace::ReadFile(Str::StringRef path, std::error_code& err) const
 {
 	auto it = fileMap.find(path);
 	if (it == fileMap.end()) {
@@ -615,29 +623,93 @@ std::unique_ptr<File> PakNamespace::OpenRead(Str::StringRef path, std::error_cod
 		return nullptr;
 	}
 
-	if (it->second.pak->type == PAK_DIR)
-		return RawPath::OpenRead(Path::Build(it->second.pak->path, path), err);
-	else {
-		unzFile zipFile;
-		FILE* rawZipFile;
-		std::tie(zipFile, rawZipFile) = OpenZip(it->second.pak->path, err);
+	if (it->second.pak->type == PAK_DIR) {
+		// Open file
+		File file = RawPath::OpenRead(Path::Build(it->second.pak->path, path), err);
 		if (HaveError(err))
-			return nullptr;
+			return "";
 
-		int result = unzSetOffset64(zipFile, it->second.offset);
-		if (result != UNZ_OK) {
-			unzClose(zipFile);
-			SetErrorCodeZlib(err, result);
-			return nullptr;
-		}
-		result = unzOpenCurrentFile(zipFile);
-		if (result != UNZ_OK) {
-			unzClose(zipFile);
-			SetErrorCodeZlib(err, result);
-			return nullptr;
+		// Get file length
+		offset_t length = file.Length(err);
+		if (HaveError(err))
+			return "";
+
+		// Read file contents
+		std::string out;
+		out.resize(length);
+		file.Read(&out[0], length, err);
+		return out;
+	} else {
+		// Open zip
+		ZipArchive zipFile = ZipArchive::Open(it->second.pak->path, err);
+		if (HaveError(err))
+			return "";
+
+		// Open file in zip
+		zipFile.OpenFile(it->second.offset, err);
+		if (HaveError(err))
+			return "";
+
+		// Get file length
+		offset_t length = zipFile.FileLength(err);
+		if (HaveError(err))
+			return "";
+
+		// Read file
+		std::string out;
+		out.resize(length);
+		zipFile.ReadFile(&out[0], length, err);
+		if (HaveError(err))
+			return "";
+
+		// Close file and check for CRC errors
+		zipFile.CloseFile(err);
+		if (HaveError(err))
+			return "";
+
+		return out;
+	}
+}
+
+void PakNamespace::CopyFile(Str::StringRef path, const File& dest, std::error_code& err) const
+{
+	auto it = fileMap.find(path);
+	if (it == fileMap.end()) {
+		SetErrorCodeFileNotFound(err);
+		return;
+	}
+
+	if (it->second.pak->type == PAK_DIR) {
+		File file = RawPath::OpenRead(Path::Build(it->second.pak->path, path), err);
+		if (HaveError(err))
+			return;
+		file.CopyTo(dest, err);
+	} else {
+		// Open zip
+		ZipArchive zipFile = ZipArchive::Open(it->second.pak->path, err);
+		if (HaveError(err))
+			return;
+
+		// Open file in zip
+		zipFile.OpenFile(it->second.offset, err);
+		if (HaveError(err))
+			return;
+
+		// Copy contents into destination
+		char buffer[65536];
+		while (true) {
+			offset_t read = zipFile.ReadFile(buffer, sizeof(buffer), err);
+			if (HaveError(err))
+				return;
+			if (read == 0)
+				break;
+			dest.Write(buffer, read, err);
+			if (HaveError(err))
+				return;
 		}
 
-		return std::unique_ptr<File>(new ZipFile(path, zipFile, rawZipFile));
+		// Close file and check for CRC errors
+		zipFile.CloseFile(err);
 	}
 }
 
@@ -670,7 +742,7 @@ time_t PakNamespace::FileTimestamp(Str::StringRef path, std::error_code& err) co
 	int result;
 	if (it->second.pak->type == PAK_DIR)
 		result = my_stat(Path::Build(it->second.pak->path, path), &st);
-	else if (it->second.pak->type == PAK_ZIP)
+	else
 		result = my_stat(it->second.pak->path, &st);
 	if (result != 0) {
 		SetErrorCodeSystem(err);
@@ -678,30 +750,6 @@ time_t PakNamespace::FileTimestamp(Str::StringRef path, std::error_code& err) co
 	} else {
 		ClearErrorCode(err);
 		return std::max(st.st_ctime, st.st_mtime);
-	}
-}
-
-std::string File::ReadAll(std::error_code& err)
-{
-	offset_t length = Length(err);
-	if (HaveError(err))
-		return "";
-	std::string out;
-	out.resize(length);
-	Read(&out[0], length, err);
-	return out;
-}
-
-void File::InternalCopyTo(File* dest, std::error_code& err)
-{
-	char buffer[65536];
-	while (true) {
-		size_t read = Read(buffer, sizeof(buffer), err);
-		if (HaveError(err) || read == 0)
-			return;
-		dest->Write(buffer, read, err);
-		if (HaveError(err))
-			return;
 	}
 }
 
@@ -766,7 +814,7 @@ PakNamespace::RecursiveDirectoryRange PakNamespace::ListFilesRecursive(Str::Stri
 
 namespace RawPath {
 
-static std::unique_ptr<File> OpenMode(Str::StringRef path, char mode, std::error_code& err)
+static File OpenMode(Str::StringRef path, char mode, std::error_code& err)
 {
 	FILE* fd = my_fopen(path, mode);
 	if (!fd) {
@@ -774,18 +822,18 @@ static std::unique_ptr<File> OpenMode(Str::StringRef path, char mode, std::error
 		return nullptr;
 	} else {
 		ClearErrorCode(err);
-		return std::unique_ptr<File>(new OSFile(path, fd));
+		return File(fd);
 	}
 }
-std::unique_ptr<File> OpenRead(Str::StringRef path, std::error_code& err)
+File OpenRead(Str::StringRef path, std::error_code& err)
 {
 	return OpenMode(path, 'r', err);
 }
-std::unique_ptr<File> OpenWrite(Str::StringRef path, std::error_code& err)
+File OpenWrite(Str::StringRef path, std::error_code& err)
 {
 	return OpenMode(path, 'w', err);
 }
-std::unique_ptr<File> OpenAppend(Str::StringRef path, std::error_code& err)
+File OpenAppend(Str::StringRef path, std::error_code& err)
 {
 	return OpenMode(path, 'a', err);
 }
@@ -979,15 +1027,15 @@ RecursiveDirectoryRange ListFilesRecursive(Str::StringRef path, std::error_code&
 
 namespace HomePath {
 
-std::unique_ptr<File> OpenRead(Str::StringRef path, std::error_code& err)
+File OpenRead(Str::StringRef path, std::error_code& err)
 {
 	return RawPath::OpenMode(Path::Build(homePath, path), 'r', err);
 }
-std::unique_ptr<File> OpenWrite(Str::StringRef path, std::error_code& err)
+File OpenWrite(Str::StringRef path, std::error_code& err)
 {
 	return RawPath::OpenMode(Path::Build(homePath, path), 'w', err);
 }
-std::unique_ptr<File> OpenAppend(Str::StringRef path, std::error_code& err)
+File OpenAppend(Str::StringRef path, std::error_code& err)
 {
 	return RawPath::OpenMode(Path::Build(homePath, path), 'a', err);
 }
