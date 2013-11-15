@@ -241,7 +241,7 @@ qboolean G_FindAmmo( gentity_t *self, qboolean clipsOnly )
 
 	if ( !self || !self->client )
 	{
-		return;
+		return qfalse;
 	}
 
 	wa = BG_Weapon( self->client->ps.stats[ STAT_WEAPON ] );
@@ -296,7 +296,7 @@ qboolean G_FindFuel( gentity_t *self )
 
 	if ( !self || !self->client )
 	{
-		return;
+		return qfalse;
 	}
 
 	// search for fuel source
