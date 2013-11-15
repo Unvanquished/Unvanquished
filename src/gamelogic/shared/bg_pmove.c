@@ -1295,23 +1295,6 @@ static qboolean PM_CheckJetpack( void )
 		return qfalse;
 	}
 
-	// disable jetpack when landed (TODO: Since PM_LandJetpack exists, check if this is necessary)
-	if ( pm->ps->groundEntityNum != ENTITYNUM_NONE &&
-	     ( pm->ps->stats[ STAT_STATE2 ] & SS2_JETPACK_ENABLED ) )
-	{
-		if ( pm->debugLevel > 0 )
-		{
-			Com_Printf( "[PM_CheckJetpack] " S_COLOR_YELLOW "Jetpack disabled\n" );
-		}
-
-		pm->ps->stats[ STAT_STATE2 ] &= ~SS2_JETPACK_WARM;
-		pm->ps->stats[ STAT_STATE2 ] &= ~SS2_JETPACK_ENABLED;
-
-		PM_AddEvent( EV_JETPACK_DISABLE );
-
-		return qfalse;
-	}
-
 	// if jump key not held or attacked recently, stop active thrust
 	if ( pm->cmd.upmove < 10 || ( pm->ps->stats[ STAT_STATE2 ] & SS2_JETPACK_DAMAGED ) )
 	{
