@@ -796,21 +796,36 @@ Actions that happen once a second
 */
 void ClientTimerActions( gentity_t *ent, int msec )
 {
-	gclient_t   *client;
-	usercmd_t   *ucmd;
-	int         aForward, aRight;
-	qboolean    walking = qfalse, stopped = qfalse,
-	            crouched = qfalse, jumping = qfalse,
-	            strafing = qfalse;
-	int         i;
-	buildable_t buildable;
+	playerState_t *ps;
+	gclient_t     *client;
+	usercmd_t     *ucmd;
+	int           i, aForward, aRight;
+	qboolean      walking = qfalse,
+	              stopped = qfalse,
+	              crouched = qfalse,
+	              jumping = qfalse,
+	              strafing = qfalse;
+	buildable_t   buildable;
 	const classAttributes_t *ca;
+	const weaponAttributes_t *wa;
 
-	ucmd = &ent->client->pers.cmd;
-	ca   = BG_Class( ent->client->ps.stats[ STAT_CLASS ] );
+	if ( !ent || !ent->client )
+	{
+		return;
+	}
+
+	client = ent->client;
+	ps     = &client->ps;
+	ucmd   = &client->pers.cmd;
+	ca     = BG_Class( ps->stats[ STAT_CLASS ] );
+	wa     = BG_Weapon( ps->stats[ STAT_WEAPON ] );
 
 	aForward = abs( ucmd->forwardmove );
 	aRight   = abs( ucmd->rightmove );
+
+	client->time100 += msec;
+	client->time1000 += msec;
+	client->time10000 += msec;
 
 	if ( aForward == 0 && aRight == 0 )
 	{
@@ -835,13 +850,10 @@ void ClientTimerActions( gentity_t *ent, int msec )
 		crouched = qtrue;
 	}
 
-	client = ent->client;
-	client->time100 += msec;
-	client->time1000 += msec;
-	client->time10000 += msec;
-
 	if( ent->r.svFlags & SVF_BOT )
+	{
 		G_BotThink( ent );
+	}
 
 	while ( client->time100 >= 100 )
 	{
@@ -959,8 +971,17 @@ void ClientTimerActions( gentity_t *ent, int msec )
 		// replenish human health
 		G_ReplenishHumanHealth( ent );
 
-		// Find human ammo and fuel
-		G_FindAmmoAndFuel( ent, qfalse );
+		// refill spare clips for weapons that use them
+		if ( client->lastAmmoReloadTime + wa->reloadTime < level.time )
+		{
+			G_FindAmmo( ent, qtrue );
+		}
+
+		// refill jetpack fuel
+		if ( !( ps->stats[ STAT_STATE2 ] & SS2_JETPACK_ENABLED ) )
+		{
+			G_FindFuel( ent );
+		}
 	}
 
 	while ( client->time1000 >= 1000 )

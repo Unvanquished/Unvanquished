@@ -143,12 +143,13 @@ void G_GiveMaxAmmo( gentity_t *self )
 /**
  * @brief Refills clips on clip based weapons, refills ammo on other weapons.
  * @param self
- * @param triggerEvent If qtrue, trigger an event when ammo was modified.
- * @return qtrue if ammo was modified.
+ * @param triggerEvent If qtrue, trigger an event when relvant resource was modified.
+ * @return qtrue if relevant resource was modified.
  */
 qboolean G_RefillAmmo( gentity_t *self, qboolean triggerEvent )
 {
-	qboolean modified;
+	qboolean modifiedClips = qfalse,
+	         modifiedAmmo  = qfalse;
 	const weaponAttributes_t *wa;
 
 	if ( !self || !self->client )
@@ -160,20 +161,32 @@ qboolean G_RefillAmmo( gentity_t *self, qboolean triggerEvent )
 
 	if ( wa->maxClips > 0 )
 	{
-		modified = GiveMaxClips( self );
+		modifiedClips = GiveMaxClips( self );
 	}
 	else
 	{
-		self->client->ps.clips = 0;
-		modified = GiveFullClip( self );
+		//self->client->ps.clips = 0;
+		modifiedAmmo = GiveFullClip( self );
 	}
 
-	if ( triggerEvent && modified )
+	if ( modifiedAmmo || modifiedClips )
 	{
-		G_AddEvent( self, EV_AMMO_REFILL, 0 );
+		self->client->lastAmmoRefillTime = level.time;
+
+		if ( triggerEvent )
+		{
+			if ( modifiedAmmo )
+			{
+				G_AddEvent( self, EV_AMMO_REFILL, 0 );
+			}
+			else // assume modified clips
+			{
+				G_AddEvent( self, EV_CLIPS_REFILL, 0 );
+			}
+		}
 	}
 
-	return modified;
+	return modifiedClips;
 }
 
 /**
@@ -200,9 +213,11 @@ qboolean G_RefillFuel( gentity_t *self, qboolean triggerEvent )
 	{
 		self->client->ps.stats[ STAT_FUEL ] = JETPACK_FUEL_MAX;
 
+		self->client->lastFuelRefillTime = level.time;
+
 		if ( triggerEvent )
 		{
-			G_AddEvent( self, EV_AMMO_REFILL, 0 );
+			G_AddEvent( self, EV_FUEL_REFILL, 0 );
 		}
 
 		return qtrue;
@@ -214,15 +229,14 @@ qboolean G_RefillFuel( gentity_t *self, qboolean triggerEvent )
 }
 
 /**
- * @brief Attempts to refill clips and jetpack fuel from a close source.
+ * @brief Attempts to refill ammo/clips from a close source.
  * @param refillClipLess If qtrue, refill weapons without clips, too.
+ * @return qtrue if ammo was refilled.
  */
-void G_FindAmmoAndFuel( gentity_t *self, qboolean refillClipLess )
+qboolean G_FindAmmo( gentity_t *self, qboolean clipsOnly )
 {
 	gentity_t *neighbor = NULL;
-	qboolean  foundAmmoSource = qfalse,
-	          foundFuelSource = qfalse,
-	          playedEvent     = qfalse;
+	qboolean  foundSource = qfalse;
 	const weaponAttributes_t *wa;
 
 	if ( !self || !self->client )
@@ -232,7 +246,7 @@ void G_FindAmmoAndFuel( gentity_t *self, qboolean refillClipLess )
 
 	wa = BG_Weapon( self->client->ps.stats[ STAT_WEAPON ] );
 
-	// search for ammo/fuel source
+	// search for ammo source
 	while ( neighbor = G_IterateEntitiesWithinRadius( neighbor, self->s.origin, ENTITY_BUY_RANGE ) )
 	{
 		// only friendly living buildables provide ammo
@@ -247,35 +261,70 @@ void G_FindAmmoAndFuel( gentity_t *self, qboolean refillClipLess )
 		switch ( neighbor->s.modelindex )
 		{
 			case BA_H_ARMOURY:
-				foundAmmoSource = qtrue;
-				foundFuelSource = qtrue;
+				foundSource = qtrue;
 				break;
 
 			case BA_H_REACTOR:
 			case BA_H_REPEATER:
 				if ( wa->usesEnergy )
 				{
-					foundAmmoSource = qtrue;
+					foundSource = qtrue;
 				}
 				break;
 		}
 	}
 
-	if ( foundAmmoSource )
+	if ( foundSource )
 	{
-		if ( refillClipLess || wa->maxClips > 0 )
+		if ( !clipsOnly || wa->maxClips > 0 )
 		{
-			playedEvent = G_RefillAmmo( self, qtrue );
+			return G_RefillAmmo( self, qtrue );
 		}
 	}
 
-	if ( foundFuelSource )
+	return qfalse;
+}
+
+/**
+ * @brief Attempts to refill jetpack fuel from a close source.
+ * @return qtrue if fuel was refilled.
+ */
+qboolean G_FindFuel( gentity_t *self )
+{
+	gentity_t *neighbor = NULL;
+	qboolean  foundSource = qfalse;
+
+	if ( !self || !self->client )
 	{
-		if ( !( self->client->ps.stats[ STAT_STATE2 ] & SS2_JETPACK_ENABLED ) )
+		return;
+	}
+
+	// search for fuel source
+	while ( neighbor = G_IterateEntitiesWithinRadius( neighbor, self->s.origin, ENTITY_BUY_RANGE ) )
+	{
+		// only friendly living buildables provide fuel
+		if ( neighbor->s.eType != ET_BUILDABLE ||
+		     !G_OnSameTeam( self, neighbor ) ||
+		     !neighbor->spawned ||
+		     neighbor->health <= 0 )
 		{
-			G_RefillFuel( self, !playedEvent );
+			continue;
+		}
+
+		switch ( neighbor->s.modelindex )
+		{
+			case BA_H_ARMOURY:
+				foundSource = qtrue;
+				break;
 		}
 	}
+
+	if ( foundSource )
+	{
+		return G_RefillFuel( self, qtrue );
+	}
+
+	return qfalse;
 }
 
 /*

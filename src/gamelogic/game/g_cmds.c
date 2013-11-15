@@ -3673,18 +3673,19 @@ void Cmd_Build_f( gentity_t *ent )
 	}
 }
 
-/*
-=================
-Cmd_Reload_f
-=================
-*/
 void Cmd_Reload_f( gentity_t *ent )
 {
-	playerState_t *ps = &ent->client->ps;
+	playerState_t *ps;
 	int           ammo;
+	const weaponAttributes_t *wa;
 
-	// try getting ammo from an external source first
-	G_FindAmmoAndFuel( ent, qtrue );
+	if ( !ent->client )
+	{
+		return;
+	}
+
+	ps = &ent->client->ps;
+	wa = BG_Weapon( ps->weapon );
 
 	// don't reload if the currently held weapon doesn't use ammo
 	if ( BG_Weapon( ps->weapon )->infiniteAmmo )
@@ -3692,21 +3693,30 @@ void Cmd_Reload_f( gentity_t *ent )
 		return;
 	}
 
-	// don't reload if there is no clip
+	// for clipless weapons, try getting ammo from an external source
+	if ( wa->maxClips == 0 )
+	{
+		if ( ent->client->lastAmmoRefillTime + 1000 < level.time )
+		{
+			G_FindAmmo( ent, qfalse );
+		}
+
+		return;
+	}
+
+	// can't reload if there is no clip
 	if ( ps->clips <= 0 )
 	{
 		return;
 	}
 
+	ammo = wa->maxAmmo;
+
 	// apply battery pack modifier
 	if ( BG_Weapon( ps->weapon )->usesEnergy &&
 	     BG_InventoryContainsUpgrade( UP_BATTPACK, ps->stats ) )
 	{
-		ammo = BG_Weapon( ps->weapon )->maxAmmo * BATTPACK_MODIFIER;
-	}
-	else
-	{
-		ammo = BG_Weapon( ps->weapon )->maxAmmo;
+		ammo *= BATTPACK_MODIFIER;
 	}
 
 	// don't reload when full
@@ -3715,11 +3725,13 @@ void Cmd_Reload_f( gentity_t *ent )
 		return;
 	}
 
-	// the animation, ammo refilling etc. is handled by PM_Weapon
+	// the actual reload process is handled synchronously in PM
 	if ( ent->client->ps.weaponstate != WEAPON_RELOADING )
 	{
 		ent->client->ps.pm_flags |= PMF_WEAPON_RELOAD;
 	}
+
+	ent->client->lastAmmoReloadTime = level.time;
 }
 
 /*

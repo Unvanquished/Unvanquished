@@ -631,7 +631,10 @@ typedef enum
 
   EV_MGTURRET_SPINUP, // turret spinup sound should play
 
-  EV_AMMO_REFILL, // trigger a sound
+  EV_AMMO_REFILL,
+  EV_CLIPS_REFILL,
+  EV_FUEL_REFILL,
+
   EV_LEV2_ZAP,
 
   EV_HIT, // notify client of a hit
