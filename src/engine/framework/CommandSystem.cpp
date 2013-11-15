@@ -320,7 +320,7 @@ namespace Cmd {
                     if (record.cmd->GetFlags() & showCmdFlags) {
                         matches.push_back(&it->second);
                         matchesNames.push_back(&it->first);
-                        maxNameLength = std::max(maxNameLength, it->first.size());
+                        maxNameLength = std::max<size_t>(maxNameLength, it->first.size());
                     }
                 }
 

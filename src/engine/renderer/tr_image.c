@@ -4143,7 +4143,7 @@ static int DDSDecompressDXT1( ddsBuffer_t *dds, int width, int height, unsigned 
 	for ( y = 0; y < yBlocks; y++ )
 	{
 		/* 8 bytes per block */
-		block = ( ddsColorBlock_t * )( ( unsigned long ) dds->data + y * xBlocks * 8 );
+		block = ( ddsColorBlock_t * )( dds->data + y * xBlocks * 8 );
 
 		/* walk x */
 		for ( x = 0; x < xBlocks; x++, block++ )
@@ -4186,7 +4186,7 @@ static int DDSDecompressDXT3( ddsBuffer_t *dds, int width, int height, unsigned 
 	for ( y = 0; y < yBlocks; y++ )
 	{
 		/* 8 bytes per block, 1 block for alpha, 1 block for color */
-		block = ( ddsColorBlock_t * )( ( unsigned long ) dds->data + y * xBlocks * 16 );
+		block = ( ddsColorBlock_t * )( dds->data + y * xBlocks * 16 );
 
 		/* walk x */
 		for ( x = 0; x < xBlocks; x++, block++ )
@@ -4239,7 +4239,7 @@ static int DDSDecompressDXT5( ddsBuffer_t *dds, int width, int height, unsigned 
 	for ( y = 0; y < yBlocks; y++ )
 	{
 		/* 8 bytes per block, 1 block for alpha, 1 block for color */
-		block = ( ddsColorBlock_t * )( ( unsigned long ) dds->data + y * xBlocks * 16 );
+		block = ( ddsColorBlock_t * )( dds->data + y * xBlocks * 16 );
 
 		/* walk x */
 		for ( x = 0; x < xBlocks; x++, block++ )

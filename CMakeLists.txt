@@ -25,7 +25,11 @@ project( Daemon C CXX )
 # Configuration options
 ################################################################################
 
-# Build targets
+option( ENABLE_LTO "Use link-time optimization for release builds" 0 )
+option( ENABLE_BUNDLING "When packaging automatically include all non-system libraries in package" 0 )
+option( ENABLE_HARDENING "Use stack protection" 0 )
+option( ENABLE_QVM_COMPAT "Configure the engine to use QVMs instead of NaCl" 1 )
+
 option( BUILD_CLIENT "Build Daemon client" 1 )
 option( BUILD_SERVER "Build Daemonded server" 1 )
 cmake_dependent_option( BUILD_GAME_NACL_NATIVE "Build native NaCl game logic " 1 "NOT ENABLE_QVM_COMPAT" 0 )
@@ -35,11 +39,6 @@ cmake_dependent_option( BUILD_GAME_QVM "Build QVM game logic" 1 ENABLE_QVM_COMPA
 option( BUILD_TTY_CLIENT "Build Daemon headless client" 1 )
 cmake_dependent_option( BUILD_OLD_RENDERER "Build old renderer library" 1 BUILD_CLIENT 0 )
 cmake_dependent_option( BUILD_NEW_RENDERER "Build new renderer library" 1 BUILD_CLIENT 0 )
-
-option( ENABLE_LTO "Use link-time optimization for release builds" 0 )
-option( ENABLE_BUNDLING "When packaging automatically include all non-system libraries in package" 0 )
-option( ENABLE_HARDENING "Use stack protection" 0 )
-option( ENABLE_QVM_COMPAT "Configure the engine to use QVMs instead of NaCl" 1 )
 
 cmake_dependent_option( USE_MUMBLE "Compile with support for Mumble" 1 BUILD_CLIENT 0 )
 cmake_dependent_option( USE_VOIP "Compile with VOIP support" 1 "BUILD_CLIENT OR BUILD_SERVER OR BUILD_TTY_CLIENT" 0 )
@@ -929,7 +928,7 @@ set_source_files_properties( ${EVERYTHING_C} PROPERTIES LANGUAGE CXX )
 
 # Base OS libs
 if( WIN32 )
-  set( LIBS_ENGINE ${LIBS_ENGINE} winmm ws2_32 )
+  set( LIBS_BASE ${LIBS_BASE} winmm ws2_32 )
 else()
   find_library( LIBM m )
   if( LIBM )
@@ -1478,7 +1477,7 @@ endif()
 if( BUILD_OLD_RENDERER )
   # Setup target renderer
   add_library( renderer MODULE ${RENDERERLIST} ${SHAREDLIST} ${LIBSRC_BASE} ${LIBSRC_RENDERER} )
-  target_link_libraries( renderer ${LIBS_RENDERER} ${LIBS_BASE} client )
+  target_link_libraries( renderer ${LIBS_RENDERER} ${LIBS_BASE} )
   set_target_properties( renderer PROPERTIES OUTPUT_NAME "rendererGL" )
   if( WIN32 )
     set_target_properties( renderer PROPERTIES PREFIX "" )
@@ -1495,7 +1494,7 @@ if( BUILD_NEW_RENDERER )
   # Setup target rendererGL
   add_library( rendererGL MODULE ${RENDERERGLLIST} ${SHAREDLIST} ${LIBSRC_BASE} ${LIBSRC_RENDERER} )
   set_property( TARGET rendererGL APPEND PROPERTY COMPILE_DEFINITIONS USE_XREAL_RENDERER )
-  target_link_libraries( rendererGL ${LIBS_RENDERER} ${LIBS_BASE} client )
+  target_link_libraries( rendererGL ${LIBS_RENDERER} ${LIBS_BASE} )
   set_target_properties( rendererGL PROPERTIES OUTPUT_NAME "rendererGL3" )
   if( WIN32 )
     set_target_properties( rendererGL PROPERTIES PREFIX "" )

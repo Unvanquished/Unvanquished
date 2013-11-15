@@ -513,8 +513,8 @@ namespace Cvar {
                         matchesValues.push_back(record.second->value);
 
                         //TODO: the raw parameter is not handled, need a function to escape carets
-                        maxNameLength = std::max(maxNameLength, record.first.length());
-                        maxValueLength = std::max(maxValueLength, matchesValues.back().length());
+                        maxNameLength = std::max<size_t>(maxNameLength, record.first.length());
+                        maxValueLength = std::max<size_t>(maxValueLength, matchesValues.back().length());
                     }
                 }
 

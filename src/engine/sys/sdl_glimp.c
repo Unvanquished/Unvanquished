@@ -971,6 +971,9 @@ static GLenum debugTypes[] =
 	GL_DEBUG_TYPE_OTHER_ARB
 };
 
+#ifdef _WIN32
+__stdcall
+#endif
 static void GLimp_DebugCallback( GLenum source, GLenum type, GLuint id,
                                        GLenum severity, GLsizei length, const GLchar *message, void *userParam )
 {

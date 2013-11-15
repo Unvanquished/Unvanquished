@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 //The single entry point for LCC to find the defs of the engine
 
+#include <stdint.h>
 #include "../../../shared/Compiler.h"
 #include "../../../shared/Platform.h"
 #include "../../../shared/Endian.h"

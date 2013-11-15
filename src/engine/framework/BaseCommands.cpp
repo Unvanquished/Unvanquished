@@ -901,7 +901,7 @@ namespace Cmd {
                     if (Q_stristr(it->first.c_str(), name.c_str())) {
                         matches.push_back(&it->second);
                         matchesNames.push_back(&it->first);
-                        maxNameLength = std::max(maxNameLength, it->first.size());
+                        maxNameLength = std::max<size_t>(maxNameLength, it->first.size());
                     }
                 }
 
