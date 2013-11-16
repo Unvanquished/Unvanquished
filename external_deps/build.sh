@@ -130,17 +130,17 @@ build_geoip() {
 	export ac_cv_func_malloc_0_nonnull=yes
 	export ac_cv_func_realloc_0_nonnull=yes
 	make distclean || true
-	local OLD_LDFLAGS="${LDFLAGS}"
+	# GeoIP needs -lws2_32 in LDFLAGS
+	local TEMP_LDFLAGS="${LDFLAGS}"
 	case "${PLATFORM}" in
 	mingw*)
-		export LDFLAGS="${LDFLAGS} -lws2_32"
+		TEMP_LDFLAGS="${LDFLAGS} -lws2_32"
 		;;
 	esac
-	./configure --host="${HOST}" --prefix="${PREFIX}" --enable-static --disable-shared
+	LDFLAGS="${TEMP_LDFLAGS}" ./configure --host="${HOST}" --prefix="${PREFIX}" --enable-static --disable-shared
 	make clean
 	make
 	make install
-	export LDFLAGS="${OLD_LDFLAGS}"
 	cd ..
 }
 
