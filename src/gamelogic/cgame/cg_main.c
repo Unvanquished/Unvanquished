@@ -79,14 +79,9 @@ Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3,
 		case CG_CROSSHAIR_PLAYER:
 			return CG_CrosshairPlayer();
 
-		case CG_LAST_ATTACKER:
-			return CG_LastAttacker();
-
 		case CG_KEY_EVENT:
-			if ( arg1 & ( 1 << KEYEVSTATE_CHAR ) )
+			if ( arg1 & KEYEVSTATE_CHAR )
 			{
-				arg0 &= ~K_CHAR_FLAG;
-				arg0 |= ( !!( arg1 & ( 1 << KEYEVSTATE_BIT ) ) ) << ( K_CHAR_BIT - 1 );
 				CG_KeyEvent( 0, arg0, arg1 );
 			}
 			else
@@ -119,7 +114,7 @@ centity_t       cg_entities[ MAX_GENTITIES ];
 
 weaponInfo_t    cg_weapons[ 32 ];
 upgradeInfo_t   cg_upgrades[ 32 ];
-
+classInfo_t     cg_classes[ PCL_NUM_CLASSES ];
 buildableInfo_t cg_buildables[ BA_NUM_BUILDABLES ];
 
 vmCvar_t        cg_teslaTrailTime;
@@ -137,6 +132,8 @@ vmCvar_t        cg_drawDemoState;
 vmCvar_t        cg_drawSnapshot;
 vmCvar_t        cg_drawChargeBar;
 vmCvar_t        cg_drawCrosshair;
+vmCvar_t        cg_drawCrosshairHit;
+vmCvar_t        cg_drawCrosshairFriendFoe;
 vmCvar_t        cg_drawCrosshairNames;
 vmCvar_t        cg_drawBuildableHealth;
 vmCvar_t        cg_drawMinimap;
@@ -244,11 +241,13 @@ vmCvar_t        cg_debugVoices;
 
 vmCvar_t        ui_currentClass;
 vmCvar_t        ui_carriage;
-vmCvar_t        ui_stages;
 vmCvar_t        ui_dialog;
 vmCvar_t        ui_voteActive;
 vmCvar_t        ui_alienTeamVoteActive;
 vmCvar_t        ui_humanTeamVoteActive;
+vmCvar_t        ui_unlockables;
+vmCvar_t        ui_confidenceHalfLife;
+vmCvar_t        ui_unlockablesMinTime;
 
 vmCvar_t        cg_debugRandom;
 
@@ -304,6 +303,8 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_drawSnapshot,                "cg_drawSnapshot",                "0",            CVAR_ARCHIVE                 },
 	{ &cg_drawChargeBar,               "cg_drawChargeBar",               "1",            CVAR_ARCHIVE                 },
 	{ &cg_drawCrosshair,               "cg_drawCrosshair",               "2",            CVAR_ARCHIVE                 },
+	{ &cg_drawCrosshairHit,            "cg_drawCrosshairHit",            "1",            CVAR_ARCHIVE                 },
+	{ &cg_drawCrosshairFriendFoe,      "cg_drawCrosshairFriendFoe",      "0",            CVAR_ARCHIVE                 },
 	{ &cg_drawCrosshairNames,          "cg_drawCrosshairNames",          "1",            CVAR_ARCHIVE                 },
 	{ &cg_drawBuildableHealth,         "cg_drawBuildableHealth",         "1",            CVAR_ARCHIVE                 },
 	{ &cg_drawMinimap,                 "cg_drawMinimap",                 "1",            CVAR_ARCHIVE                 },
@@ -407,11 +408,13 @@ static const cvarTable_t cvarTable[] =
 	// communication cvars set by the cgame to be read by ui
 	{ &ui_currentClass,                "ui_currentClass",                "0",            CVAR_ROM                     },
 	{ &ui_carriage,                    "ui_carriage",                    "",             CVAR_ROM                     },
-	{ &ui_stages,                      "ui_stages",                      "0 0",          CVAR_ROM                     },
 	{ &ui_dialog,                      "ui_dialog",                      "Text not set", CVAR_ROM                     },
 	{ &ui_voteActive,                  "ui_voteActive",                  "0",            CVAR_ROM                     },
 	{ &ui_humanTeamVoteActive,         "ui_humanTeamVoteActive",         "0",            CVAR_ROM                     },
 	{ &ui_alienTeamVoteActive,         "ui_alienTeamVoteActive",         "0",            CVAR_ROM                     },
+	{ &ui_unlockables,                 "ui_unlockables",                 "0 0",          CVAR_ROM                     },
+	{ &ui_confidenceHalfLife,          "ui_confidenceHalfLife",          "0",            CVAR_ROM                     },
+	{ &ui_unlockablesMinTime,          "ui_unlockablesMinTime",          "0",            CVAR_ROM                     },
 
 	{ &cg_debugRandom,                 "cg_debugRandom",                 "0",            0                            },
 
@@ -488,7 +491,7 @@ static void CG_SetPVars( void )
 {
 	playerState_t *ps;
 	char          buffer[ MAX_CVAR_VALUE_STRING ];
-	int           i, stage = 0;
+	int           i;
 	qboolean      first;
 
 	if ( !cg.snap )
@@ -501,17 +504,12 @@ static void CG_SetPVars( void )
 	if ( ( ps->pm_flags & PMF_FOLLOW ) )
 		return;
 
-	trap_Cvar_Set( "p_teamname", BG_TeamName( ps->stats[ STAT_TEAM ] ) );
+	trap_Cvar_Set( "p_teamname", BG_TeamName( ps->persistant[ PERS_TEAM ] ) );
 
-	// while we're here, set stage
-	switch ( ps->stats[ STAT_TEAM ] )
+	switch ( ps->persistant[ PERS_TEAM ] )
 	{
 		case TEAM_ALIENS:
-			stage = cgs.alienStage;
-			break;
-
 		case TEAM_HUMANS:
-			stage = cgs.humanStage;
 			break;
 
 		default:
@@ -526,7 +524,6 @@ static void CG_SetPVars( void )
 			 */
 			trap_Cvar_Set( "p_class" , "0" );
 			trap_Cvar_Set( "p_weapon", "0" );
-			trap_Cvar_Set( "p_stage", "0" );
 			trap_Cvar_Set( "p_hp", "0" );
 			trap_Cvar_Set( "p_maxhp", "0" );
 			trap_Cvar_Set( "p_ammo", "0" );
@@ -534,7 +531,6 @@ static void CG_SetPVars( void )
 			return;
 	}
 
-	trap_Cvar_Set( "p_stage", va( "%d", stage ) );
 	trap_Cvar_Set( "p_class", va( "%d", ps->stats[ STAT_CLASS ] ) );
 
 	switch ( ps->stats[ STAT_CLASS ] )
@@ -583,8 +579,16 @@ static void CG_SetPVars( void )
 			trap_Cvar_Set( "p_classname", "Tyrant" );
 			break;
 
-		case PCL_HUMAN:
-			trap_Cvar_Set( "p_classname", "Human" );
+		case PCL_HUMAN_NAKED:
+			trap_Cvar_Set( "p_classname", "Naked Human" );
+			break;
+
+		case PCL_HUMAN_LIGHT:
+			trap_Cvar_Set( "p_classname", "Light Human" );
+			break;
+
+		case PCL_HUMAN_MEDIUM:
+			trap_Cvar_Set( "p_classname", "Medium Human" );
 			break;
 
 		case PCL_HUMAN_BSUIT:
@@ -648,10 +652,6 @@ static void CG_SetPVars( void )
 			trap_Cvar_Set( "p_weaponname", "Lucifier cannon" );
 			break;
 
-		case WP_GRENADE:
-			trap_Cvar_Set( "p_weaponname", "Grenade" );
-			break;
-
 		case WP_ALEVEL0:
 		case WP_ALEVEL0_UPG:
 			trap_Cvar_Set( "p_weaponname", "Teeth" );
@@ -688,7 +688,6 @@ static void CG_SetPVars( void )
 	trap_Cvar_Set( "p_clips", va( "%d", ps->clips ) );
 
 	// set p_availableBuildings to a space-separated list of buildings
-	// limited to those available given team, stage and class
 	first = qtrue;
 	*buffer = 0;
 
@@ -696,8 +695,8 @@ static void CG_SetPVars( void )
 	{
 		const buildableAttributes_t *buildable = BG_Buildable( i );
 
-		if ( buildable->team == ps->stats[ STAT_TEAM ] &&
-		     BG_BuildableAllowedInStage( i, stage ) &&
+		if ( buildable->team == ps->persistant[ PERS_TEAM ] &&
+		     BG_BuildableUnlocked( i ) &&
 		     (buildable->buildWeapon & ( 1 << ps->stats[ STAT_WEAPON ] ) ) )
 
 		{
@@ -753,23 +752,6 @@ static void CG_SetUIVars( void )
 	strcat( carriageCvar, "$" );
 
 	trap_Cvar_Set( "ui_carriage", carriageCvar );
-
-	switch ( ps->stats[ STAT_TEAM ] )
-	{
-		case TEAM_NONE:
-			trap_Cvar_Set( "ui_stages", va( "%d %d", cgs.alienStage, cgs.humanStage ) );
-			return;
-
-		case TEAM_ALIENS:
-			//dont send human stages to aliens
-			trap_Cvar_Set( "ui_stages", va( "%d %d", cgs.alienStage, -1 ) );
-			break;
-
-		case TEAM_HUMANS:
-			//dont send alien stages to humans
-			trap_Cvar_Set( "ui_stages", va( "%d %d", -1, cgs.humanStage ) );
-			break;
-	}
 }
 
 /*
@@ -906,18 +888,18 @@ void CG_NotifyHooks( void )
 	ps = &cg.snap->ps;
 	if ( !( ps->pm_flags & PMF_FOLLOW ) )
 	{
-		if( lastTeam != ps->stats[ STAT_TEAM ] )
+		if( lastTeam != ps->persistant[ PERS_TEAM ] )
 		{
-			trap_notify_onTeamChange( ps->stats[ STAT_TEAM ] );
+			trap_notify_onTeamChange( ps->persistant[ PERS_TEAM ] );
 
 			/* execute team-specific config files */
-			trap_Cvar_VariableStringBuffer( va( "cg_%sConfig", BG_TeamName( ps->stats[ STAT_TEAM ] ) ), config, sizeof( config ) );
+			trap_Cvar_VariableStringBuffer( va( "cg_%sConfig", BG_TeamName( ps->persistant[ PERS_TEAM ] ) ), config, sizeof( config ) );
 			if ( config[ 0 ] )
 			{
 				trap_SendConsoleCommand( va( "exec %s\n", Quote( config ) ) );
 			}
 
-			lastTeam = ps->stats[ STAT_TEAM ];
+			lastTeam = ps->persistant[ PERS_TEAM ];
 		}
 	}
 }
@@ -954,16 +936,6 @@ int CG_CrosshairPlayer( void )
 	}
 
 	return cg.crosshairClientNum;
-}
-
-int CG_LastAttacker( void )
-{
-	if ( !cg.attackerTime )
-	{
-		return -1;
-	}
-
-	return cg.snap->ps.persistant[ PERS_ATTACKER ];
 }
 
 /*
@@ -1204,8 +1176,10 @@ enum {
 	LOAD_SOUNDS,
 	LOAD_GEOMETRY,
 	LOAD_ASSETS,
+	LOAD_CONFIGS,
 	LOAD_WEAPONS,
 	LOAD_UPGRADES,
+	LOAD_CLASSES,
 	LOAD_BUILDINGS,
 	LOAD_REMAINING,
 	LOAD_DONE
@@ -1254,12 +1228,16 @@ static void CG_UpdateLoadingStep( cgLoadingStep_t step )
 			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.60f, choose("Hello World!", "Making a scene.", NULL) );
 			break;
 		case LOAD_ASSETS:
-			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.66f, choose("Taking pictures of the world", "Using your laptop's camera", "Adding texture to concrete", "Drawing smiley faces", NULL) );
+			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.63f, choose("Taking pictures of the world", "Using your laptop's camera", "Adding texture to concrete", "Drawing smiley faces", NULL) );
+			break;
+		case LOAD_CONFIGS:
+			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.80f, choose("Reading the manual", "Looking at blueprints", NULL) );
 			break;
 		case LOAD_WEAPONS:
 			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.90f, choose("Setting up the armoury", "Sharpening the aliens' claws", "Overloading lucifer cannons", NULL) );
 			break;
 		case LOAD_UPGRADES:
+		case LOAD_CLASSES:
 			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.95f, choose("Charging battery packs", "Replicating alien DNA", "Packing tents for jetcampers", NULL) );
 			break;
 		case LOAD_BUILDINGS:
@@ -1292,8 +1270,8 @@ static void CG_RegisterSounds( void )
 	char       name[ MAX_QPATH ];
 	const char *soundName;
 
-	cgs.media.alienStageTransition = trap_S_RegisterSound( "sound/announcements/overmindevolved.wav", qtrue );
-	cgs.media.humanStageTransition = trap_S_RegisterSound( "sound/announcements/reinforcement.wav", qtrue );
+	cgs.media.weHaveEvolved = trap_S_RegisterSound( "sound/announcements/overmindevolved.wav", qtrue );
+	cgs.media.reinforcement = trap_S_RegisterSound( "sound/announcements/reinforcement.wav", qtrue );
 
 	cgs.media.alienOvermindAttack = trap_S_RegisterSound( "sound/announcements/overmindattack.wav", qtrue );
 	cgs.media.alienOvermindDying = trap_S_RegisterSound( "sound/announcements/overminddying.wav", qtrue );
@@ -1469,6 +1447,7 @@ static void CG_RegisterGraphics( void )
 
 	cgs.media.scannerBlipShader = trap_R_RegisterShader("gfx/2d/blip",
 							    RSF_DEFAULT);
+
 	cgs.media.scannerBlipBldgShader = trap_R_RegisterShader("gfx/2d/blip_bldg",
 								RSF_DEFAULT);
 
@@ -1597,6 +1576,11 @@ static void CG_RegisterGraphics( void )
 	// register the inline models
 	cgs.numInlineModels = trap_CM_NumInlineModels();
 
+	if ( cgs.numInlineModels > MAX_SUBMODELS )
+	{
+		CG_Error( "MAX_SUBMODELS (%d) exceeded by %d", MAX_SUBMODELS, cgs.numInlineModels - MAX_SUBMODELS );
+	}
+
 	for ( i = 1; i < cgs.numInlineModels; i++ )
 	{
 		char   name[ 10 ];
@@ -1629,7 +1613,7 @@ static void CG_RegisterGraphics( void )
 		cgs.gameModels[ i ] = trap_R_RegisterModel( modelName );
 	}
 
-	CG_UpdateMediaFraction( 0.8f );
+	CG_UpdateMediaFraction( 0.75f );
 
 	// register all the server specified shaders
 	for ( i = 1; i < MAX_GAME_SHADERS; i++ )
@@ -1647,7 +1631,7 @@ static void CG_RegisterGraphics( void )
 							     RSF_DEFAULT);
 	}
 
-	CG_UpdateMediaFraction( 0.85f );
+	CG_UpdateMediaFraction( 0.77f );
 
 	// register all the server specified grading textures
 	// starting with the world wide one
@@ -1656,7 +1640,7 @@ static void CG_RegisterGraphics( void )
 		CG_RegisterGrading( i, CG_ConfigString( CS_GRADING_TEXTURES + i ) );
 	}
 
-	CG_UpdateMediaFraction( 0.9f );
+	CG_UpdateMediaFraction( 0.79f );
 
 	// register all the server specified particle systems
 	for ( i = 1; i < MAX_GAME_PARTICLE_SYSTEMS; i++ )
@@ -2353,7 +2337,7 @@ static const char *CG_FeederItemText( int feederID, int index, int column, qhand
 	else if ( cg.snap->ps.pm_type == PM_SPECTATOR ||
 	          cg.snap->ps.pm_type == PM_NOCLIP ||
 	          cg.snap->ps.pm_flags & PMF_FOLLOW ||
-	          team == cg.snap->ps.stats[ STAT_TEAM ] ||
+	          team == cg.snap->ps.persistant[ PERS_TEAM ] ||
 	          cg.intermissionStarted )
 	{
 		showIcons = qtrue;
@@ -2670,10 +2654,10 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 	// Dynamic memory
 	BG_InitMemory();
 
-	// load overrides
-	BG_InitAllConfigs();
-
 	BG_InitAllowedGameElements();
+
+	// Initialize item locking state
+	BG_InitUnlockackables();
 
 	CG_RegisterCvars();
 
@@ -2728,13 +2712,22 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 	CG_UpdateLoadingStep( LOAD_SOUNDS );
 	CG_RegisterSounds();
 
+	// updates loading step by itself
 	CG_RegisterGraphics();
 
+	// load configs after initializing particles and trails since it registers some
+	CG_UpdateLoadingStep( LOAD_CONFIGS );
+	BG_InitAllConfigs();
+
+	// load weapons upgrades and buildings after configs
 	CG_UpdateLoadingStep( LOAD_WEAPONS );
 	CG_InitWeapons();
 
 	CG_UpdateLoadingStep( LOAD_UPGRADES );
 	CG_InitUpgrades();
+
+	CG_UpdateLoadingStep( LOAD_CLASSES );
+	CG_InitClasses();
 
 	CG_UpdateLoadingStep( LOAD_BUILDINGS );
 	CG_InitBuildables();

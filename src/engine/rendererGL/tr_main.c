@@ -2657,6 +2657,13 @@ void R_AddEntityInteractions( trRefLight_t *light )
 			iaType &= ~IA_SHADOW;
 		}
 
+		if ( light->restrictInteractionFirst >= 0 &&
+		     i >= light->restrictInteractionFirst && 
+		     i <= light->restrictInteractionLast )
+		{
+			iaType &= ~IA_LIGHT;
+		}
+
 		ent = tr.currentEntity = &tr.refdef.entities[ i ];
 
 		//
@@ -2802,10 +2809,6 @@ void R_TransformShadowLight( trRefLight_t *light ) {
 	VectorScale( mids, 0.5f, mids );
 	radius = Distance( mids, maxs );
 	dist = Distance( light->l.origin, mids );
-
-	if( dist <= 2.0f * radius ) {
-		return;
-	}
 
 	light->l.rlType = RL_PROJ;
 	VectorSubtract( mids, light->l.origin, forward );
@@ -3387,6 +3390,8 @@ void R_DebugText( const vec3_t org, float r, float g, float b, const char *text,
 #endif
 }
 
+static BotDebugInterface_t bi = { DebugDrawBegin, DebugDrawDepthMask, DebugDrawVertex, DebugDrawEnd };
+
 /*
 ====================
 R_DebugGraphics
@@ -3402,10 +3407,16 @@ static void R_DebugGraphics( void )
 		R_SyncRenderThread();
 
 		GL_BindProgram( 0 );
+
 		GL_SelectTexture( 0 );
 		GL_Bind( tr.whiteImage );
+
 		GL_Cull( CT_FRONT_SIDED );
 		ri.CM_DrawDebugSurface( R_DebugPolygon );
+
+		GL_State( GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
+
+		ri.Bot_DrawDebugMesh( &bi );
 	}
 }
 

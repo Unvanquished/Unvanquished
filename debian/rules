@@ -24,7 +24,8 @@ override_dh_auto_configure:
 		 -DCMAKE_SKIP_RPATH=ON \
 		 -DGAME_QVM=OFF \
 		 -DUSE_OPENAL_DLOPEN=OFF \
-		 -DUSE_GLSL_OPTIMIZER=OFF \
+		 -DBUILD_DAEMONMAP=ON \
+		 $(shell test ! -f /usr/include/opus/opus.h || echo -DUSE_INTERNAL_OPUS=OFF) \
 		 $(shell test -f /usr/include/xvid.h || echo -DUSE_CIN_XVID=OFF) \
 		 $(shell test -d /usr/include/webp || echo -DUSE_WEBP=OFF)
 
@@ -32,7 +33,7 @@ override_dh_auto_install:
 
 override_dh_install:
 	dh_install
-	rename "s/daemon/unvanquished/" '{}' ';' debian/unvanquished*/usr/lib/games/unvanquished/daemon*
+	rename "s/daemon/unvanquished/" debian/unvanquished*/usr/lib/games/unvanquished/daemon*
 
 override_dh_strip:
 	dh_strip --dbg-package=unvanquished-dbg
@@ -48,7 +49,6 @@ override_dh_installexamples:
 override_dh_installman:
 override_dh_installcatalogs:
 override_dh_installcron:
-override_dh_installdebconf:
 override_dh_installemacsen:
 override_dh_installifupdown:
 override_dh_installinfo:

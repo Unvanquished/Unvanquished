@@ -130,8 +130,7 @@ void LokiInitPaths(char *argv0)
 		path = getenv("PATH");
 
 		/* minor setup */
-		last[0] = path[0];
-		last[1] = '\0';
+		last = path;
 		found = qfalse;
 
 		/* go through each : segment of path */
@@ -164,7 +163,7 @@ void LokiInitPaths(char *argv0)
 			/* verify the path */
 			if(access(temp, X_OK) == 0)
 				found++;
-			path = last + 1;
+			path = last + !!*last; // last + 1, unless at end-of-string
 		}
 	}
 

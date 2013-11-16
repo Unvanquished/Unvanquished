@@ -5,11 +5,21 @@
 # set to 1 to enable
 START_DAEMON=0
 
-# DNS name or IP address of your Internet interface.
-# Change it if you're setting up an Internet server.
+# DNS name or IP addresses of your Internet interface.
+# You will need to change at least one of these.
+# Set to "" if you want to let the server auto-detect.
+# IPv4
 NET_IP="localhost"
+# IPv6 (see also net_enabled below)
+NET_IP6="localhost"
 
-# Additional options that are passed to the Daemon.
-# Add "+set dedicated 2" if you want your server advertised on the public
-# server list.
-DAEMON_OPTS="+set net_ip ${NET_IP}"
+# Additional options that are passed to the server binary.
+# Note also options added below.
+DAEMON_OPTS=""
+
+# Uncomment if you want your server advertised on
+# the public server list.
+#DAEMON_OPTS+=" +set dedicated 2"
+
+# Uncomment if you want to be able to connect to this server over IPv6.
+#DAEMON_OPTS+=" +set net_enabled 3"

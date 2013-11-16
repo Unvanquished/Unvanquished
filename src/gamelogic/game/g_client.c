@@ -45,7 +45,7 @@ void G_AddCreditToClient( gclient_t *client, short credit, qboolean cap )
 
 	if ( cap && credit > 0 )
 	{
-		capAmount = client->pers.teamSelection == TEAM_ALIENS ?
+		capAmount = client->pers.team == TEAM_ALIENS ?
 		            ALIEN_MAX_CREDITS : HUMAN_MAX_CREDITS;
 
 		if ( client->pers.credit < capAmount )
@@ -433,7 +433,7 @@ static void SpawnCorpse( gentity_t *ent )
 	body->s.clientNum = ent->client->ps.stats[ STAT_CLASS ];
 	body->nonSegModel = ent->client->ps.persistant[ PERS_STATE ] & PS_NONSEGMODEL;
 
-	if ( ent->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
+	if ( ent->client->pers.team == TEAM_HUMANS )
 	{
 		body->classname = "humanCorpse";
 	}
@@ -1126,7 +1126,7 @@ char *ClientUserinfoChanged( int clientNum, qboolean forceName )
 
 	Com_sprintf( userinfo, sizeof( userinfo ),
 	             "n\\%s\\t\\%i\\model\\%s\\ig\\%16s\\v\\%s",
-	             client->pers.netname, client->pers.teamSelection, model,
+	             client->pers.netname, client->pers.team, model,
 	             Com_ClientListString( &client->sess.ignoreList ),
 	             client->pers.voice );
 
@@ -1201,9 +1201,9 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 	}
 
 	trap_GenFingerprint( pubkey, sizeof( pubkey ), client->pers.guid, sizeof( client->pers.guid ) );
-
 	client->pers.admin = G_admin_admin( client->pers.guid );
-	client->pers.pubkey_authenticated = 0;
+
+	client->pers.pubkey_authenticated = qfalse;
 
 	if ( client->pers.admin )
 	{
@@ -1240,7 +1240,7 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 			continue;
 		}
 
-		if ( !Q_stricmp( client->pers.guid, level.clients[ i ].pers.guid ) )
+		if ( !( g_entities[i].r.svFlags & SVF_BOT ) && !Q_stricmp( client->pers.guid, level.clients[ i ].pers.guid ) )
 		{
 			if ( !G_ClientIsLagging( level.clients + i ) )
 			{
@@ -1272,7 +1272,7 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 	}
 
 	G_LogPrintf( "ClientConnect: %i [%s] (%s) \"%s^7\" \"%c%s%c^7\"\n",
-	             clientNum, client->pers.ip.str, client->pers.guid,
+	             clientNum, client->pers.ip.str[0] ? client->pers.ip.str : "127.0.0.1", client->pers.guid,
 	             client->pers.netname,
 	             DECOLOR_OFF, client->pers.netname, DECOLOR_ON );
 
@@ -1309,6 +1309,92 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 
 /*
 ===========
+ClientBotConnect
+
+Cut-down version of ClientConnect.
+Doesn't do things not relevant to bots (which are local GUIDless clients).
+============
+*/
+char *ClientBotConnect( int clientNum, qboolean firstTime, team_t team )
+{
+	char            *userInfoError;
+	gclient_t       *client;
+	char            userinfo[ MAX_INFO_STRING ];
+	gentity_t       *ent;
+
+	ent = &g_entities[ clientNum ];
+	client = &level.clients[ clientNum ];
+
+	ent->client = client;
+	memset( client, 0, sizeof( *client ) );
+
+	trap_GetUserinfo( clientNum, userinfo, sizeof( userinfo ) );
+
+	client->pers.localClient = qtrue;
+	G_AddressParse( "localhost", &client->pers.ip );
+
+	Q_strncpyz( client->pers.guid, "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", sizeof( client->pers.guid ) );
+	client->pers.admin = NULL;
+	client->pers.pubkey_authenticated = qtrue;
+	client->pers.connected = CON_CONNECTING;
+
+	// read or initialize the session data
+	if ( firstTime )
+	{
+		G_InitSessionData( client, userinfo );
+	}
+
+	G_ReadSessionData( client );
+
+	// get and distribute relevant parameters
+	G_namelog_connect( client );
+	userInfoError = ClientUserinfoChanged( clientNum, qfalse );
+
+	if ( userInfoError != NULL )
+	{
+		return userInfoError;
+	}
+
+	ent->r.svFlags |= SVF_BOT;
+
+	// can happen during reconnection
+	if ( !ent->botMind )
+	{
+		G_BotSetDefaults( clientNum, team, client->sess.botSkill, client->sess.botTree );
+	}
+
+	G_LogPrintf( "ClientConnect: %i [%s] (%s) \"%s^7\" \"%c%s%c^7\" [BOT]\n",
+	             clientNum, client->pers.ip.str[0] ? client->pers.ip.str : "127.0.0.1", client->pers.guid,
+	             client->pers.netname,
+	             DECOLOR_OFF, client->pers.netname, DECOLOR_ON );
+
+	// don't do the "xxx connected" messages if they were caried over from previous level
+	if ( firstTime )
+	{
+		trap_SendServerCommand( -1, va( "print_tr %s %s", QQ( N_("$1$^7 connected\n") ),
+		                                Quote( client->pers.netname ) ) );
+	}
+
+	// count current clients and rank for scoreboard
+	CalculateRanks();
+
+	// if this is after !restart keepteams or !restart switchteams, apply said selection
+	if ( client->sess.restartTeam != TEAM_NONE )
+	{
+//		G_ChangeTeam( ent, client->sess.restartTeam );
+//		client->sess.restartTeam = TEAM_NONE;
+	}
+	else if ( team != TEAM_NONE )
+	{
+//		G_ChangeTeam( ent, team );
+		client->sess.restartTeam = team;
+	}
+
+	return NULL;
+}
+
+/*
+============
 ClientAdminChallenge
 ============
 */
@@ -1428,7 +1514,7 @@ void ClientBegin( int clientNum )
 ClientSpawn
 
 Called every time a client is placed fresh in the world:
-after the first ClientBegin, and after each respawn
+after the first ClientBegin, and after each respawn and evolve
 Initializes all non-persistent parts of playerState
 ============
 */
@@ -1451,11 +1537,12 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	vec3_t             up = { 0.0f, 0.0f, 1.0f };
 	int                maxAmmo, maxClips;
 	weapon_t           weapon;
+	int                basicIncome;
 
 	index = ent - g_entities;
 	client = ent->client;
 
-	teamLocal = client->pers.teamSelection;
+	teamLocal = client->pers.team;
 
 	//if client is dead and following teammate, stop following before spawning
 	if ( client->sess.spectatorClient != -1 )
@@ -1591,7 +1678,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 		ent->r.contents = CONTENTS_BODY;
 	}
 	ent->clipmask = MASK_PLAYERSOLID;
-	ent->die = player_die;
+	ent->die = G_PlayerDie;
 	ent->waterlevel = 0;
 	ent->watertype = 0;
 	ent->flags &= FL_GODMODE | FL_NOTARGET;
@@ -1617,7 +1704,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	}
 
 	// clear entity values
-	if ( ent->client->pers.classSelection == PCL_HUMAN )
+	if ( ent->client->pers.classSelection == PCL_HUMAN_NAKED )
 	{
 		BG_AddUpgradeToInventory( UP_MEDKIT, client->ps.stats );
 		weapon = client->pers.humanItemSelection;
@@ -1640,9 +1727,9 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	// We just spawned, not changing weapons
 	client->ps.persistant[ PERS_NEWWEAPON ] = 0;
 
-	ent->client->ps.stats[ STAT_CLASS ] = ent->client->pers.classSelection;
-	ent->client->ps.stats[ STAT_TEAM ] = ent->client->pers.teamSelection;
+	client->ps.persistant[ PERS_TEAM ] = client->pers.team;
 
+	ent->client->ps.stats[ STAT_CLASS ] = ent->client->pers.classSelection;
 	ent->client->ps.stats[ STAT_BUILDABLE ] = BA_NONE;
 	ent->client->ps.stats[ STAT_PREDICTION ] = 0;
 	ent->client->ps.stats[ STAT_STATE ] = 0;
@@ -1661,7 +1748,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	//clear the credits array
 	for ( i = 0; i < MAX_CLIENTS; i++ )
 	{
-		ent->credits[ i ] = 0;
+		ent->credits[ i ] = 0.0f;
 	}
 
 	client->ps.stats[ STAT_STAMINA ] = STAMINA_MAX;
@@ -1674,7 +1761,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 
 	//give aliens some spawn velocity
 	if ( client->sess.spectatorState == SPECTATOR_NOT &&
-	     client->ps.stats[ STAT_TEAM ] == TEAM_ALIENS )
+	     client->pers.team == TEAM_ALIENS )
 	{
 		if ( ent == spawn )
 		{
@@ -1702,7 +1789,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 		}
 	}
 	else if ( client->sess.spectatorState == SPECTATOR_NOT &&
-	          client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
+	          client->pers.team == TEAM_HUMANS )
 	{
 		spawn_angles[ YAW ] += 180.0f;
 		AngleNormalize360( spawn_angles[ YAW ] );
@@ -1719,7 +1806,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 		trap_LinkEntity( ent );
 
 		// force the base weapon up
-		if ( client->pers.teamSelection == TEAM_HUMANS )
+		if ( client->pers.team == TEAM_HUMANS )
 		{
 			G_ForceWeaponChange( ent, weapon );
 		}
@@ -1736,6 +1823,17 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 
 	client->inactivityTime = level.time + g_inactivity.integer * 1000;
 	usercmdClearButtons( client->latched_buttons );
+
+	// give basic income if mine rate above minimum
+	if ( ent != spawn && level.team[ client->pers.team ].mineEfficiency > g_minimumMineRate.integer )
+	{
+		basicIncome = ( int )( BASIC_INCOME_MOD * level.team[ client->pers.team ].mineEfficiency ) - client->pers.credit;
+
+		if ( basicIncome > 0 )
+		{
+			G_AddCreditToClient( client, ( short )basicIncome, qtrue );
+		}
+	}
 
 	// set default animations
 	client->ps.torsoAnim = TORSO_STAND;

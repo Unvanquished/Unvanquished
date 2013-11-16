@@ -1,11 +1,8 @@
 #define COMMON_HUD_R 1.0
 #define COMMON_HUD_G 0.0
 #define COMMON_HUD_B 0.0
-#include "ui/tremulous_common_hud.h"
 
-//////////////////
-//STATIC OBJECTS//
-//////////////////
+#include "ui/tremulous_common_hud.h"
 
 //BACKGROUND
 itemDef
@@ -51,14 +48,10 @@ itemDef
 	aspectBias ALIGN_RIGHT
 	visible MENU_TRUE
 	decoration
-	forecolor .39 0 .09 .7	
-ownerdraw CG_PLAYER_BOOSTED_METER
+	forecolor .39 0 .09 .7
+	ownerdraw CG_PLAYER_BOOSTED_METER
 	background "ui/assets/alien/poisonbg.tga"
 }
-///////////////////
-//DYNAMIC OBJECTS//
-///////////////////
-
 
 //WALLCLIMB
 itemDef
@@ -116,7 +109,6 @@ itemDef
 	ownerdraw CG_PLAYER_WALLCLIMBING
 }
 
-
 itemDef
 {
 	name "background"
@@ -140,7 +132,6 @@ itemDef
 	style WINDOW_STYLE_SHADER
 	background "ui/assets/alien/rl.tga"
 }
-
 
 //BOOSTED
 itemDef
@@ -169,8 +160,6 @@ itemDef
 	ownerdraw CG_PLAYER_HEALTH
 }
 
-
-
 //CROSS
 itemDef
 {
@@ -183,34 +172,35 @@ itemDef
 	ownerdraw CG_PLAYER_HEALTH_CROSS
 }
 
-// //SMALL LOWER CROSS 
-// itemDef
-// {
-// 	name "cross2"
-// 	rect 279 449 15 15
-// 	aspectBias ALIGN_CENTER
-// 	visible MENU_TRUE
-// 	decoration
-// 	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 1
-// 	backColor 0 0 0 0
-// 	background "ui/assets/neutral/cross.tga"
-// 	style WINDOW_STYLE_SHADER
-// }
-// 
-// //SMALL UPPER CROSS
-// itemDef
-// {
-// 	name "cross3"
-// 	rect 283 437 15 15
-// 	aspectBias ALIGN_CENTER
-// 	visible MENU_TRUE
-// 	decoration
-// 	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 1
-// 	backColor 0 0 0 0
-// 	background "ui/assets/neutral/cross.tga"
-// 	style WINDOW_STYLE_SHADER
-// }
+/*
+//SMALL LOWER CROSS
+itemDef
+{
+	name "cross2"
+	rect 279 449 15 15
+	aspectBias ALIGN_CENTER
+	visible MENU_TRUE
+	decoration
+	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 1
+	backColor 0 0 0 0
+	background "ui/assets/neutral/cross.tga"
+	style WINDOW_STYLE_SHADER
+}
 
+//SMALL UPPER CROSS
+itemDef
+{
+	name "cross3"
+	rect 283 437 15 15
+	aspectBias ALIGN_CENTER
+	visible MENU_TRUE
+	decoration
+	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 1
+	backColor 0 0 0 0
+	background "ui/assets/neutral/cross.tga"
+	style WINDOW_STYLE_SHADER
+}
+*/
 
 //ALIEN CLASS ICON
 itemDef
@@ -238,19 +228,19 @@ itemDef
 }
 
 itemDef
-    {
-      name "creditstext"
-      type ITEM_TYPE_TEXT
-      text "evolution points"
-      style WINDOW_STYLE_EMPTY
+{
+	name "creditstext"
+	type ITEM_TYPE_TEXT
+	text "evolution points"
+	style WINDOW_STYLE_EMPTY
 	aspectBias ALIGN_RIGHT
-      textstyle ITEM_TEXTSTYLE_PLAIN
-      rect 536 460 101 15
-      textscale .35
-      textalign ALIGN_LEFT
-     forecolor .51 .51 .51 1       
-     visible MENU_TRUE
-      decoration
+	textstyle ITEM_TEXTSTYLE_PLAIN
+	rect 536 460 101 15
+	textscale .35
+	textalign ALIGN_LEFT
+	forecolor .51 .51 .51 1
+	visible MENU_TRUE
+	decoration
 }
 
 //ALIENSENSE
@@ -267,27 +257,29 @@ itemDef
 itemDef
 {
 	name "charge"
-	rect  150 460 340 20
+	rect 154 464 332 12
 	aspectBias ALIGN_CENTER
 	visible MENU_TRUE
 	decoration
-	forecolor .48 .02 .03 .5
+	forecolor 1.0 1.0 1.0 0.25
 	ownerdraw CG_PLAYER_CHARGE_BAR
 	background "ui/assets/human/buildstat/health.tga"
 }
 
-// //CHARGE BAR BG
-// itemDef
-// {
-// 	name "chargebg"
-// 	rect 288 422 64 16
-// 	aspectBias ALIGN_CENTER
-// 	visible MENU_TRUE
-// 	decoration
-// 	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0.25
-// 	ownerdraw CG_PLAYER_CHARGE_BAR_BG
-// 	background "ui/assets/neutral/charge_bg_h.tga"
-// }
+//CHARGE BAR BG
+/*
+temDef
+{
+	name "chargebg"
+	rect 288 422 64 16
+	aspectBias ALIGN_CENTER
+	visible MENU_TRUE
+	decoration
+	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0.25
+	ownerdraw CG_PLAYER_CHARGE_BAR_BG
+	background "ui/assets/neutral/charge_bg_h.tga"
+}
+*/
 
 //TEAM OVERLAY
 itemDef
@@ -301,19 +293,32 @@ itemDef
 	textscale 0.85
 	ownerdraw CG_TEAMOVERLAY
 }
-//STAGE REPORT
+
+//CONFIDENCE BAR
 itemDef
 {
-	name stagereport
-	textalign ALIGN_LEFT
-	textvalign VALIGN_TOP
-    textscale .35
-    textalign ALIGN_CENTER
-    forecolor .73 .73 .73 1
-	rect 220 462 200 30
+	name "confidencebar"
+	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B .25
+	backcolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B .2
+	//rect 0 140 8 200 // left
+	rect 154 448 332 12 // bottom
+	aspectBias ALIGN_CENTER
 	decoration
 	visible MENU_TRUE
-	ownerdraw CG_STAGE_REPORT_TEXT
+	ownerdraw CG_CONFIDENCE_BAR
+}
+
+//UNLOCKED ITEMS
+itemDef
+{
+	name "unlocked"
+	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 1 // enabled item
+	backcolor ( COMMON_HUD_R / 2 + 0.25 ) ( COMMON_HUD_G / 2 + 0.25 ) ( COMMON_HUD_B / 2 + 0.25 ) 0.5 // disabled item
+	rect 154 460 332 20 // bottom
+	aspectBias ALIGN_CENTER
+	decoration
+	visible MENU_TRUE
+	ownerdraw CG_UNLOCKED_ITEMS
 }
 
 //CROSSHAIR HEALTH METER

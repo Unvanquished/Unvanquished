@@ -566,7 +566,7 @@ if a user is interested in a server to do a full status
 */
 void SVC_Info( netadr_t from )
 {
-	int  i, count;
+	int  i, count, botCount;
 	char *gamedir;
 	char infostring[ MAX_INFO_STRING ];
 
@@ -593,13 +593,20 @@ void SVC_Info( netadr_t from )
 	SV_ResolveMasterServers();
 
 	// don't count privateclients
-	count = 0;
+	botCount = count = 0;
 
 	for ( i = sv_privateClients->integer; i < sv_maxclients->integer; i++ )
 	{
 		if ( svs.clients[ i ].state >= CS_CONNECTED )
 		{
-			count++;
+			if ( svs.clients[ i ].gentity && ( svs.clients[ i ].gentity->r.svFlags & SVF_BOT ) )
+			{
+				++botCount;
+			}
+			else
+			{
+				++count;
+			}
 		}
 	}
 
@@ -641,6 +648,7 @@ void SVC_Info( netadr_t from )
 	Info_SetValueForKey( infostring, "serverload", va( "%i", svs.serverLoad ), qfalse );
 	Info_SetValueForKey( infostring, "mapname", sv_mapname->string, qfalse );
 	Info_SetValueForKey( infostring, "clients", va( "%i", count ), qfalse );
+	Info_SetValueForKey( infostring, "bots", va( "%i", botCount ), qfalse );
 	Info_SetValueForKey( infostring, "sv_maxclients", va( "%i", sv_maxclients->integer - sv_privateClients->integer ), qfalse );
 	Info_SetValueForKey( infostring, "pure", va( "%i", sv_pure->integer ), qfalse );
 
@@ -1575,14 +1583,7 @@ void SV_PrintTranslatedText( const char *text, qboolean broadcast, qboolean plur
 {
 	Cmd_SaveCmdContext();
 	Cmd_TokenizeString( text );
-
-	if ( broadcast )
-	{
-		Com_Printf( "Broadcast: " );
-	}
-
-	PrintTranslatedText_Internal( plural );
-
+	Com_Printf( "%s%s", broadcast ? "Broadcast: " : "", TranslateText_Internal( plural, 1 ) );
 	Cmd_RestoreCmdContext();
 }
 

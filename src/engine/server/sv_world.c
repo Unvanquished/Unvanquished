@@ -1,3 +1,4 @@
+
 /*
 ===========================================================================
 
@@ -603,7 +604,7 @@ void SV_ClipToEntity( trace_t *trace, const vec3_t start, const vec3_t mins, con
 }
 
 // FIXME: Copied from cm_local.h
-#define BOX_MODEL_HANDLE 511
+#define BOX_MODEL_HANDLE ( MAX_SUBMODELS + 1 )
 
 /*
 ====================

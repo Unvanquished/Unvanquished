@@ -173,7 +173,7 @@ static entityState_t *CG_BuildableInRange( playerState_t *ps, float *healthFract
 	}
 
 	if ( es->eType == ET_BUILDABLE &&
-	     ps->stats[ STAT_TEAM ] == BG_Buildable( es->modelindex )->team )
+	     ps->persistant[ PERS_TEAM ] == BG_Buildable( es->modelindex )->team )
 	{
 		return es;
 	}
@@ -190,7 +190,7 @@ CG_BuilderText
 */
 static void CG_BuilderText( char *text, playerState_t *ps )
 {
-	buildable_t   buildable = ps->stats[ STAT_BUILDABLE ] & ~SB_VALID_TOGGLEBIT;
+	buildable_t   buildable = ps->stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK;
 	entityState_t *es;
 
 	if ( buildable > BA_NONE )
@@ -244,7 +244,7 @@ static void CG_AlienBuilderText( char *text, playerState_t *ps )
 {
 	CG_BuilderText( text, ps );
 
-	if ( ( ps->stats[ STAT_BUILDABLE ] & ~SB_VALID_TOGGLEBIT ) == BA_NONE )
+	if ( ( ps->stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK ) == BA_NONE )
 	{
 		Q_strcat( text, MAX_TUTORIAL_TEXT,
 		          va( _( "Press %s to swipe\n" ),
@@ -513,17 +513,6 @@ static void CG_HumanText( char *text, playerState_t *ps )
 		              _( BG_Upgrade( UP_MEDKIT )->humanName ) ) );
 	}
 
-	if ( ps->stats[ STAT_STAMINA ] <= STAMINA_BLACKOUT_LEVEL )
-	{
-		Q_strcat( text, MAX_TUTORIAL_TEXT,
-		          _( "You are blacking out. Stop sprinting to recover stamina\n" ) );
-	}
-	else if ( ps->stats[ STAT_STAMINA ] <= STAMINA_SLOW_LEVEL )
-	{
-		Q_strcat( text, MAX_TUTORIAL_TEXT,
-		          _( "Your stamina is low. Stop sprinting to recover\n" ) );
-	}
-
 	switch ( cg.nearUsableBuildable )
 	{
 		case BA_H_ARMOURY:
@@ -639,7 +628,7 @@ const char *CG_TutorialText( void )
 
 	if ( refreshBindings == 0 )
 	{
-		CG_GetBindings( ps->stats[ STAT_TEAM ] );
+		CG_GetBindings( ps->persistant[ PERS_TEAM ] );
 	}
 
 	refreshBindings = ( refreshBindings + 1 ) % BINDING_REFRESH_INTERVAL;
@@ -684,7 +673,9 @@ const char *CG_TutorialText( void )
 					CG_AlienLevel4Text( text, ps );
 					break;
 
-				case PCL_HUMAN:
+				case PCL_HUMAN_NAKED:
+				case PCL_HUMAN_LIGHT:
+				case PCL_HUMAN_MEDIUM:
 				case PCL_HUMAN_BSUIT:
 					CG_HumanText( text, ps );
 					break;
@@ -693,11 +684,9 @@ const char *CG_TutorialText( void )
 					break;
 			}
 
-			if ( ps->stats[ STAT_TEAM ] == TEAM_ALIENS )
+			if ( ps->persistant[ PERS_TEAM ] == TEAM_ALIENS )
 			{
-				if ( BG_AlienCanEvolve( ps->stats[ STAT_CLASS ],
-				                        ps->persistant[ PERS_CREDIT ],
-				                        cgs.alienStage ) )
+				if ( BG_AlienCanEvolve( ps->stats[ STAT_CLASS ], ps->persistant[ PERS_CREDIT ] ) )
 				{
 					Q_strcat( text, MAX_TUTORIAL_TEXT,
 					          va( _( "Press %s to evolve\n" ),

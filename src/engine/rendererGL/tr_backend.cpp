@@ -62,11 +62,12 @@ void GL_Bind( image_t *image )
 	}
 }
 
-void GL_Unbind()
+void GL_Unbind( image_t *image )
 {
 	GLimp_LogComment( "--- GL_Unbind() ---\n" );
 
-	glBindTexture( GL_TEXTURE_2D, 0 );
+	glState.currenttextures[ glState.currenttmu ] = 0;
+	glBindTexture( image->type, 0 );
 }
 
 void BindAnimatedImage( textureBundle_t *bundle )
@@ -5414,6 +5415,8 @@ static void RB_RenderDebugUtils()
 		// set uniforms
 		gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
 		gl_genericShader->SetUniform_ColorModulate( CGEN_CUSTOM_RGB, AGEN_CUSTOM );
+		
+		gl_genericShader->SetRequiredVertexPointers();
 
 		// bind u_ColorMap
 		GL_BindToTMU( 0, tr.whiteImage ); 
@@ -5422,7 +5425,7 @@ static void RB_RenderDebugUtils()
 		ia = NULL;
 		while ( ( ia = IterateLights( ia ) ) )
 		{
-			light = ia->light;
+			backEnd.currentLight = light = ia->light;
 
 			if ( r_showShadowLod->integer )
 			{
@@ -5481,36 +5484,7 @@ static void RB_RenderDebugUtils()
 			VectorMA( vec3_origin, 16, left, left );
 			VectorMA( vec3_origin, 16, up, up );
 
-			/*
-			// draw axis
-			glBegin(GL_LINES);
-
-			// draw orientation
-			glVertexAttrib4fv(ATTR_INDEX_COLOR, colorRed);
-			glVertex3fv(vec3_origin);
-			glVertex3fv(forward);
-
-			glVertexAttrib4fv(ATTR_INDEX_COLOR, colorGreen);
-			glVertex3fv(vec3_origin);
-			glVertex3fv(left);
-
-			glVertexAttrib4fv(ATTR_INDEX_COLOR, colorBlue);
-			glVertex3fv(vec3_origin);
-			glVertex3fv(up);
-
-			// draw special vectors
-			glVertexAttrib4fv(ATTR_INDEX_COLOR, colorYellow);
-			glVertex3fv(vec3_origin);
-			VectorSubtract(light->origin, backEnd.orientation.origin, tmp);
-			light->transformed[0] = DotProduct(tmp, backEnd.orientation.axis[0]);
-			light->transformed[1] = DotProduct(tmp, backEnd.orientation.axis[1]);
-			light->transformed[2] = DotProduct(tmp, backEnd.orientation.axis[2]);
-			glVertex3fv(light->transformed);
-
-			glEnd();
-			*/
-
-#if 1
+			Tess_Begin( Tess_StageIteratorDebug, NULL, NULL, NULL, qtrue, qtrue, 0, 0 );
 
 			if ( light->isStatic && light->frustumVBO && light->frustumIBO )
 			{
@@ -5518,6 +5492,7 @@ static void RB_RenderDebugUtils()
 				backEnd.orientation = backEnd.viewParms.world;
 				GL_LoadModelViewMatrix( backEnd.viewParms.world.modelViewMatrix );
 				gl_genericShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
+				gl_genericShader->SetUniform_ModelMatrix( backEnd.orientation.transformMatrix );
 
 				R_BindVBO( light->frustumVBO );
 				R_BindIBO( light->frustumIBO );
@@ -5526,25 +5501,16 @@ static void RB_RenderDebugUtils()
 
 				tess.numVertexes = light->frustumVerts;
 				tess.numIndexes = light->frustumIndexes;
-
-				Tess_DrawElements();
-
-				tess.multiDrawPrimitives = 0;
-				tess.numIndexes = 0;
-				tess.numVertexes = 0;
 			}
 			else
-#endif
 			{
-				tess.multiDrawPrimitives = 0;
-				tess.numIndexes = 0;
-				tess.numVertexes = 0;
 
 				// set up the transformation matrix
 				R_RotateLightForViewParms( light, &backEnd.viewParms, &backEnd.orientation );
 
 				GL_LoadModelViewMatrix( backEnd.orientation.modelViewMatrix );
 				gl_genericShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
+				gl_genericShader->SetUniform_ModelMatrix( backEnd.orientation.transformMatrix );
 
 				R_TessLight( light, lightColor );
 
@@ -5582,14 +5548,9 @@ static void RB_RenderDebugUtils()
 					default:
 						break;
 				}
-
-				Tess_UpdateVBOs( ATTR_POSITION | ATTR_COLOR );
-				Tess_DrawElements();
-
-				tess.multiDrawPrimitives = 0;
-				tess.numIndexes = 0;
-				tess.numVertexes = 0;
 			}
+
+			Tess_End();
 		}
 
 		// go back to the world modelview matrix
@@ -6803,6 +6764,128 @@ static void RB_RenderDebugUtils()
 	GL_CheckErrors();
 }
 
+static unsigned int drawMode;
+static debugDrawMode_t currentDebugDrawMode;
+static int maxDebugVerts;
+static float currentDebugSize;
+
+extern "C" void DebugDrawBegin( debugDrawMode_t mode, float size ) {
+
+	if ( tess.numVertexes )
+	{
+		Tess_End();
+	}
+
+	const vec4_t colorClear = { 0, 0, 0, 0 };
+	currentDebugDrawMode = mode;
+	currentDebugSize = size;
+	switch(mode) {
+		case D_DRAW_POINTS:
+			glPointSize( size );
+			drawMode = GL_POINTS;
+			maxDebugVerts = SHADER_MAX_VERTEXES - 1;
+			break;
+		case D_DRAW_LINES:
+			glLineWidth( size );
+			drawMode = GL_LINES;
+			maxDebugVerts = ( SHADER_MAX_VERTEXES - 1 )/2*2;
+			break;
+		case D_DRAW_TRIS:
+			drawMode = GL_TRIANGLES;
+			maxDebugVerts = ( SHADER_MAX_VERTEXES - 1 )/3*3;
+			break;
+		case D_DRAW_QUADS:
+			drawMode = GL_QUADS;
+			maxDebugVerts = ( SHADER_MAX_VERTEXES - 1 )/4*4;
+			break;
+	}
+
+	gl_genericShader->DisableVertexSkinning();
+	gl_genericShader->DisableVertexAnimation();
+	gl_genericShader->DisableDeformVertexes();
+	gl_genericShader->DisableTCGenEnvironment();
+	gl_genericShader->DisableTCGenLightmap();
+	gl_genericShader->BindProgram();
+
+	GL_State( GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
+	GL_Cull( CT_FRONT_SIDED );
+
+	GL_VertexAttribsState( ATTR_POSITION | ATTR_COLOR | ATTR_TEXCOORD );
+
+	// set uniforms
+	gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
+	gl_genericShader->SetUniform_ColorModulate( CGEN_VERTEX, AGEN_VERTEX );
+	gl_genericShader->SetUniform_Color( colorClear );
+
+	// bind u_ColorMap
+	GL_SelectTexture( 0 );
+	GL_Bind( tr.whiteImage );
+	gl_genericShader->SetUniform_ColorTextureMatrix( matrixIdentity );
+
+	// render in world space
+	backEnd.orientation = backEnd.viewParms.world;
+	GL_LoadModelViewMatrix( backEnd.orientation.modelViewMatrix );
+	gl_genericShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
+
+	GL_CheckErrors();
+}
+
+extern "C" void DebugDrawDepthMask(qboolean state)
+{
+	GL_DepthMask( state ? GL_TRUE : GL_FALSE );
+}
+
+extern "C" void DebugDrawVertex(const vec3_t pos, unsigned int color, const vec2_t uv) {
+	vec4_t colors = {color & 0xFF, (color >> 8) & 0xFF, (color >> 16) & 0xFF, (color >> 24) & 0xFF};
+	Vector4Scale(colors, 1.0f/255.0f, colors);
+
+	//we have reached the maximum number of verts we can batch
+	if( tess.numVertexes == maxDebugVerts ) {
+		//draw the geometry we already have
+		DebugDrawEnd();
+		//start drawing again
+		DebugDrawBegin(currentDebugDrawMode, currentDebugSize);
+	}
+
+	tess.xyz[ tess.numVertexes ][ 0 ] = pos[ 0 ];
+	tess.xyz[ tess.numVertexes ][ 1 ] = pos[ 1 ];
+	tess.xyz[ tess.numVertexes ][ 2 ] = pos[ 2 ];
+	tess.xyz[ tess.numVertexes ][ 3 ] = 1;
+	Vector4Copy(colors, tess.colors[ tess.numVertexes ]);
+	if( uv ) {
+		tess.texCoords[ tess.numVertexes ][ 0 ] = uv[ 0 ];
+		tess.texCoords[ tess.numVertexes ][ 1 ] = uv[ 1 ];
+		tess.texCoords[ tess.numVertexes ][ 2 ] = 0;
+		tess.texCoords[ tess.numVertexes ][ 3 ] = 1;
+	}
+	tess.indexes[ tess.numIndexes ] = tess.numVertexes;
+	tess.numVertexes++;
+	tess.numIndexes++;
+}
+
+extern "C" void DebugDrawEnd( void ) {
+
+	Tess_UpdateVBOs( ATTR_POSITION | ATTR_TEXCOORD | ATTR_COLOR );
+
+	if ( glState.currentVBO && glState.currentIBO )
+	{
+		glDrawElements( drawMode, tess.numIndexes, GL_INDEX_TYPE, BUFFER_OFFSET( 0 ) );
+
+		backEnd.pc.c_drawElements++;
+
+		backEnd.pc.c_vboVertexes += tess.numVertexes;
+		backEnd.pc.c_vboIndexes += tess.numIndexes;
+
+		backEnd.pc.c_indexes += tess.numIndexes;
+		backEnd.pc.c_vertexes += tess.numVertexes;
+	}
+	tess.numVertexes = 0;
+	tess.numIndexes = 0;
+
+	glLineWidth( 1.0f );
+	glPointSize( 1.0f );
+}
+
 /*
 ==================
 RB_RenderView
@@ -7534,16 +7617,16 @@ const void *RB_SetColorGrading( const void *data )
 
 	cmd = ( const setColorGradingCommand_t * ) data;
 
-	GL_Unbind();
+	GL_Bind( cmd->image );
 
 	glBindBuffer( GL_PIXEL_PACK_BUFFER, tr.colorGradePBO );
 
-	glBindTexture( GL_TEXTURE_2D, cmd->image->texnum );
-	glGetTexImage( GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
+	glGetTexImage( cmd->image->type, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
 	glBindBuffer( GL_PIXEL_PACK_BUFFER, 0 );
 
 	glBindBuffer( GL_PIXEL_UNPACK_BUFFER, tr.colorGradePBO );
-	glBindTexture( GL_TEXTURE_3D, tr.colorGradeImage->texnum );
+
+	GL_Bind( tr.colorGradeImage );
 
 	if ( cmd->image->width == REF_COLORGRADEMAP_SIZE )
 	{
@@ -7567,7 +7650,6 @@ const void *RB_SetColorGrading( const void *data )
 		glPixelStorei( GL_UNPACK_ROW_LENGTH, 0 );
 	}
 
-	glBindTexture( GL_TEXTURE_3D, 0 );
 	glBindBuffer( GL_PIXEL_UNPACK_BUFFER, 0 );
 
 	return ( const void * ) ( cmd + 1 );

@@ -776,17 +776,8 @@ float AngleSubtract( float a1, float a2 )
 {
 	float a = a1 - a2;
 
-	while ( a > 180 )
-	{
-		a -= 360;
-	}
 
-	while ( a < -180 )
-	{
-		a += 360;
-	}
-
-	return a;
+	return a - 360.0f * floor( ( a + 180.0f ) / 360.0f );
 }
 
 void AnglesSubtract( vec3_t v1, vec3_t v2, vec3_t v3 )

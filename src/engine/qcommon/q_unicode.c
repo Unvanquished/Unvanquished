@@ -229,66 +229,60 @@ char *Q_UTF8_Encode( unsigned long codepoint )
   return buf;
 }
 
-// s needs to have at least sizeof(int) allocated
+// stores a single UTF8 char inside an int
 int Q_UTF8_Store( const char *s )
 {
-#ifdef Q3_VM
-	int i = 0;
 	int r = 0;
-	while ( s[ i ] )
+	const uint8_t *us = ( const uint8_t * ) s;
+
+	if ( !us )
 	{
-		r |= ( s[ i ] & 0xFF ) << ( i * 3 );
-		++i;
+		return 0;
 	}
-#elif defined Q3_BIG_ENDIAN
-  int r = *(int *)s, i;
-  unsigned char *p = (unsigned char *) &r;
-  for( i = 0; i < sizeof(r) / 2; i++ )
-  {
-    p[i] ^= p[sizeof(r) - 1 - i];
-    p[sizeof(r) - 1 - i] ^= p[i];
-    p[i] ^= p[sizeof(r) - 1 - i];
-  }
-#else
-  int r = *(int *)s;
-  // don't assume that s is NUL-padded to four bytes
-  if ( ( r & 0x000000FF ) == 0 ) { return 0; }
-  if ( ( r & 0x0000FF00 ) == 0 ) { return r & 0x000000FF; }
-  if ( ( r & 0x00FF0000 ) == 0 ) { return r & 0x0000FFFF; }
-  if ( ( r & 0xFF000000 ) == 0 ) { return r & 0x00FFFFFF; }
-#endif
-  return r;
+
+	if ( !( us[ 0 ] & 0x80 ) ) // 0xxxxxxx
+	{
+		r = us[ 0 ];
+	}
+	else if ( ( us[ 0 ] & 0xE0 ) == 0xC0 ) // 110xxxxx
+	{
+		r = us[ 0 ];
+		r |= ( uint32_t ) us[ 1 ] << 8;
+	}
+	else if ( ( us[ 0 ] & 0xF0 ) == 0xE0 ) // 1110xxxx
+	{
+		r = us[ 0 ];
+		r |= ( uint32_t ) us[ 1 ] << 8;
+		r |= ( uint32_t ) us[ 2 ] << 16;
+	}
+	else if ( ( us[ 0 ] & 0xF8 ) == 0xF0 ) // 11110xxx
+	{
+		r = us[ 0 ];
+		r |= ( uint32_t ) us[ 1 ] << 8;
+		r |= ( uint32_t ) us[ 2 ] << 16;
+		r |= ( uint32_t ) us[ 3 ] << 24;
+	}
+
+	return r;
 }
 
+// converts a single UTF8 char stored as an int into a byte array
 char *Q_UTF8_Unstore( int e )
 {
-  static char sbuf[2][5];
-  static int index = 0;
-  char *buf = sbuf[index++ & 1];
+	static unsigned char sbuf[2][5];
+	static int index = 0;
+	unsigned char *buf;
 
-#ifdef Q3_VM
-	int i = 0;
-	while ( e )
-	{
-		buf[ i++ ] = (char) e;
-		e >>= 8;
-	}
-	buf[ i ] = 0;
-#elif defined Q3_BIG_ENDIAN
-  int i;
-  unsigned char *p = (unsigned char *) buf;
-  *(int *)buf = e;
-  for( i = 0; i < sizeof(e) / 2; i++ )
-  {
-    p[i] ^= p[sizeof(e) - 1 - i];
-    p[sizeof(e) - 1 - i] ^= p[i];
-    p[i] ^= p[sizeof(e) - 1 - i];
-  }
-#else
-  *(int *)buf = e;
-#endif
+	index = ( index + 1 ) & 1;
+	buf = sbuf[ index ];
 
-  return buf;
+	buf[ 0 ] = e & 0xFF;
+	buf[ 1 ] = ( e >> 8 ) & 0xFF;
+	buf[ 2 ] = ( e >> 16 ) & 0xFF;
+	buf[ 3 ] = ( e >> 24 ) & 0xFF;
+	buf[ 4 ] = 0;
+
+	return ( char * ) buf;
 }
 
 

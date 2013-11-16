@@ -45,10 +45,10 @@ extern "C" {
 #define PRODUCT_NAME            "Unvanquished"
 #define PRODUCT_NAME_UPPER      "UNVANQUISHED" // Case, No spaces
 #define PRODUCT_NAME_LOWER      "unvanquished" // No case, No spaces
-#define PRODUCT_VERSION         "0.19.0"
+#define PRODUCT_VERSION         "0.21.0"
 
 #define ENGINE_NAME             "Daemon Engine"
-#define ENGINE_VERSION          "0.19.0"
+#define ENGINE_VERSION          PRODUCT_VERSION
 
 #ifdef REVISION
 # define Q3_VERSION             PRODUCT_NAME " " PRODUCT_VERSION " " REVISION
@@ -153,7 +153,7 @@ extern "C" {
 
 #ifdef Q3_VM
 
-#include "../../gamelogic/game/bg_lib.h"
+#include "../../gamelogic/shared/bg_lib.h"
 
 	typedef int intptr_t;
 
@@ -2191,10 +2191,9 @@ double rint( double x );
 #define KEYCATCH_MESSAGE 0x0004
 #define KEYCATCH_CGAME   0x0008
 
-#define KEYEVSTATE_DOWN 0
-#define KEYEVSTATE_CHAR 1
-#define KEYEVSTATE_BIT  2
-#define KEYEVSTATE_SUP  3
+#define KEYEVSTATE_DOWN 1
+#define KEYEVSTATE_CHAR 2
+#define KEYEVSTATE_SUP  8
 
 // sound channels
 // channel 0 never willingly overrides
@@ -2244,8 +2243,11 @@ double rint( double x );
 #define ENTITYNUM_WORLD          ( MAX_GENTITIES - 2 )
 #define ENTITYNUM_MAX_NORMAL     ( MAX_GENTITIES - 2 )
 
-#define MAX_MODELS               256 // these are sent over the net as 8 bits (Gordon: upped to 9 bits, erm actually it was already at 9 bits, wtf? NEVAR TRUST GAMECODE COMMENTS, comments are evil :E, let's hope it doesn't horribly break anything....)
-#define MAX_SOUNDS               256 // so they cannot be blindly increased
+#define MODELINDEX_BITS          9 // minimum requirement for MAX_SUBMODELS and MAX_MODELS
+
+#define MAX_SUBMODELS            512 // 9 bits sent (see qcommon/msg.c); q3map2 limits to 1024 via MAX_MAP_MODELS; not set to 512 to avoid overlap with fake handles
+#define MAX_MODELS               256 // 9 bits sent (see qcommon/msg.c), but limited by game VM
+#define MAX_SOUNDS               256 // 8 bits sent (via eventParm; see qcommon/msg.c)
 #define MAX_CS_SKINS             64
 #define MAX_CSSTRINGS            32
 

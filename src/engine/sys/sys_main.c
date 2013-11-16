@@ -37,6 +37,7 @@ Maryland 20850 USA.
 #include <signal.h>
 #include <stdlib.h>
 #include <limits.h>
+#include <locale.h>
 #include <sys/types.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -53,6 +54,7 @@ Maryland 20850 USA.
 
 #if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 #include <SDL.h>
+#include "sdl2_compat.h"
 #endif
 
 #include "sys_local.h"
@@ -196,11 +198,12 @@ int Sys_GetProcessorFeatures( void )
 #if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 	if( SDL_HasRDTSC( ) ) features |= CF_RDTSC;
 	if( SDL_HasMMX( ) ) features |= CF_MMX;
-	if( SDL_HasMMXExt( ) ) features |= CF_MMX_EXT;
 	if( SDL_Has3DNow( ) ) features |= CF_3DNOW;
-	if( SDL_Has3DNowExt( ) ) features |= CF_3DNOW_EXT;
 	if( SDL_HasSSE( ) ) features |= CF_SSE;
 	if( SDL_HasSSE2( ) ) features |= CF_SSE2;
+	if( SDL_HasSSE3( ) ) features |= CF_SSE3;
+	if( SDL_HasSSE41( ) ) features |= CF_SSE4_1;
+	if( SDL_HasSSE42( ) ) features |= CF_SSE4_2;
 	if( SDL_HasAltiVec( ) ) features |= CF_ALTIVEC;
 #endif
 	return features;
@@ -579,7 +582,8 @@ int main( int argc, char **argv )
 
 #if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 	// Run time
-	const SDL_version *ver = SDL_Linked_Version();
+	SDL_version ver;
+	SDL_GetVersion( &ver );
 #endif
 
 #ifdef OPENMP
@@ -614,12 +618,12 @@ int main( int argc, char **argv )
   XSTRING(MINSDL_MINOR) "." \
   XSTRING(MINSDL_PATCH)
 
-	if ( SDL_VERSIONNUM( ver->major, ver->minor, ver->patch ) <
+	if ( SDL_VERSIONNUM( ver.major, ver.minor, ver.patch ) <
 	     SDL_VERSIONNUM( MINSDL_MAJOR, MINSDL_MINOR, MINSDL_PATCH ) )
 	{
 		Sys_Dialog( DT_ERROR, va( "SDL version " MINSDL_VERSION " or greater is required, "
 		                          "but only version %d.%d.%d was found. You may be able to obtain a more recent copy "
-		                          "from http://www.libsdl.org/.", ver->major, ver->minor, ver->patch ), "SDL Library Too Old" );
+		                          "from http://www.libsdl.org/.", ver.major, ver.minor, ver.patch ), "SDL Library Too Old" );
 
 		Sys_Exit( 1 );
 	}
@@ -669,6 +673,28 @@ int main( int argc, char **argv )
 #endif
 
 	Sys_PlatformInit();
+
+	// Locale initialisation
+	// Set from environment, but try to make LC_CTYPE to use UTF-8 and force LC_NUMERIC to C
+	{
+		char locale[ 64 ], *dot;
+
+		setlocale( LC_ALL, "" );
+		setlocale( LC_NUMERIC, "C" );
+
+		// Get the info for LC_CTYPE (ensuring space for appending)
+		Q_strncpyz( locale, setlocale( LC_CTYPE, NULL ), sizeof( locale ) - 6 );
+
+		// Remove any existing encoding info then set to UTF-8
+		if ( ( dot = strchr( locale, '.') ) )
+		{
+			*dot = 0;
+		}
+		strcat( locale, ".UTF-8" );
+
+		// try current language but with UTF-8, falling back on C.UTF-8
+		setlocale( LC_CTYPE, locale ) || setlocale( LC_CTYPE, "C.UTF-8" );
+	}
 
 	// Set the initial time base
 	Sys_Milliseconds();

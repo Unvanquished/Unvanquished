@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../../engine/qcommon/q_shared.h"
 #include "../../engine/renderer/tr_types.h"
 #include "../../engine/client/cg_api.h"
-#include "../game/bg_public.h"
+#include "../shared/bg_public.h"
 #include "../ui/ui_shared.h"
 
 // The entire cgame module is unloaded and reloaded on each level change,
@@ -798,25 +798,6 @@ typedef struct weaponInfoMode_s
 	sfxHandle_t flashSound[ 4 ]; // fast firing weapons randomly choose
 	qboolean    continuousFlash;
 
-	qhandle_t   missileModel;
-	sfxHandle_t missileSound;
-	float       missileDlight;
-	float       missileDlightIntensity;
-	vec3_t      missileDlightColor;
-	int         missileRenderfx;
-	qboolean    usesSpriteMissle;
-	qhandle_t   missileSprite;
-	int         missileSpriteSize;
-	float       missileSpriteCharge;
-	qhandle_t   missileParticleSystem;
-	qhandle_t   missileTrailSystem;
-	qboolean    missileRotates;
-	qboolean    missileAnimates;
-	int         missileAnimStartFrame;
-	int         missileAnimNumFrames;
-	int         missileAnimFrameRate;
-	int         missileAnimLooping;
-
 	sfxHandle_t firingSound;
 
 	qhandle_t   muzzleParticleSystem;
@@ -857,6 +838,7 @@ typedef struct weaponInfo_s
 	qhandle_t        ammoIcon;
 
 	qhandle_t        crossHair;
+	qhandle_t        crossHairIndicator;
 	int              crossHairSize;
 
 	sfxHandle_t      readySound;
@@ -880,6 +862,11 @@ typedef struct upgradeInfo_s
 
 typedef struct
 {
+	qhandle_t classIcon;
+} classInfo_t;
+
+typedef struct
+{
 	qboolean    looped;
 	qboolean    enabled;
 
@@ -893,6 +880,9 @@ typedef struct
 
 	//same number of sounds as animations
 	sound_t  sounds[ MAX_BUILDABLE_ANIMATIONS ];
+
+	qhandle_t buildableIcon;
+
 	qboolean md5;
 } buildableInfo_t;
 
@@ -1071,9 +1061,13 @@ typedef struct
 	int  centerPrintLines;
 
 	// crosshair client ID
-	int crosshairBuildable;
-	int crosshairClientNum;
-	int crosshairClientTime;
+	int      crosshairClientNum;
+	int      crosshairClientTime;
+	qboolean crosshairFriend;
+	qboolean crosshairFoe;
+
+	// whether we hit
+	int hitTime;
 
 	// attacking player
 	int attackerTime;
@@ -1168,6 +1162,10 @@ typedef struct
 
 	int                     numBinaryShadersUsed;
 	cgBinaryShaderSetting_t binaryShaderSettings[ NUM_BINARY_SHADERS ];
+
+	// confidence
+	float                   confidenceGained;
+	int                     confidenceGainedTime;
 } cg_t;
 
 // all of the model, shader, and sound references that are
@@ -1261,8 +1259,8 @@ typedef struct
 
 	sfxHandle_t medkitUseSound;
 
-	sfxHandle_t alienStageTransition;
-	sfxHandle_t humanStageTransition;
+	sfxHandle_t weHaveEvolved;
+	sfxHandle_t reinforcement;
 
 	sfxHandle_t alienOvermindAttack;
 	sfxHandle_t alienOvermindDying;
@@ -1384,6 +1382,8 @@ typedef struct
 	qboolean markDeconstruct; // Whether or not buildables are marked
 	int      powerReactorRange;
 	int      powerRepeaterRange;
+	float    confidenceHalfLife; // used for confidence bar (un)lock markers
+	float    unlockableMinTime;  // used for confidence bar (un)lock markers
 
 	int      voteTime[ NUM_TEAMS ];
 	int      voteYes[ NUM_TEAMS ];
@@ -1393,9 +1393,6 @@ typedef struct
 	char     voteString[ NUM_TEAMS ][ MAX_STRING_TOKENS ];
 
 	int      levelStartTime;
-
-	int      alienStage;
-	int      humanStage;
 
 	//
 	// locally derived information from gamestate
@@ -1409,8 +1406,8 @@ typedef struct
 	sfxHandle_t  gameSounds[ MAX_SOUNDS ];
 
 	int          numInlineModels;
-	qhandle_t    inlineDrawModel[ MAX_MODELS ];
-	vec3_t       inlineModelMidpoints[ MAX_MODELS ];
+	qhandle_t    inlineDrawModel[ MAX_SUBMODELS ];
+	vec3_t       inlineModelMidpoints[ MAX_SUBMODELS ];
 
 	clientInfo_t clientinfo[ MAX_CLIENTS ];
 
@@ -1480,7 +1477,7 @@ extern  displayContextDef_t cgDC;
 
 extern  weaponInfo_t        cg_weapons[ 32 ];
 extern  upgradeInfo_t       cg_upgrades[ 32 ];
-
+extern  classInfo_t         cg_classes[ PCL_NUM_CLASSES ];
 extern  buildableInfo_t     cg_buildables[ BA_NUM_BUILDABLES ];
 
 extern  const vec3_t        cg_shaderColors[ SHC_NUM_SHADER_COLORS ];
@@ -1502,6 +1499,8 @@ extern  vmCvar_t            cg_drawDemoState;
 extern  vmCvar_t            cg_drawSnapshot;
 extern  vmCvar_t            cg_drawChargeBar;
 extern  vmCvar_t            cg_drawCrosshair;
+extern  vmCvar_t            cg_drawCrosshairHit;
+extern  vmCvar_t            cg_drawCrosshairFriendFoe;
 extern  vmCvar_t            cg_drawCrosshairNames;
 extern  vmCvar_t            cg_drawBuildableHealth;
 extern  vmCvar_t            cg_drawMinimap;
@@ -1610,11 +1609,11 @@ extern  vmCvar_t            cg_debugVoices;
 
 extern  vmCvar_t            ui_currentClass;
 extern  vmCvar_t            ui_carriage;
-extern  vmCvar_t            ui_stages;
 extern  vmCvar_t            ui_dialog;
 extern  vmCvar_t            ui_voteActive;
 extern  vmCvar_t            ui_alienTeamVoteActive;
 extern  vmCvar_t            ui_humanTeamVoteActive;
+extern  vmCvar_t            ui_unlockables;
 
 extern vmCvar_t             cg_debugRandom;
 
@@ -1651,7 +1650,6 @@ void       CG_NotifyHooks( void );
 void       CG_UpdateCvars( void );
 
 int        CG_CrosshairPlayer( void );
-int        CG_LastAttacker( void );
 void       CG_LoadMenus( const char *menuFile );
 void       CG_KeyEvent( int key, int chr, int flags );
 void       CG_MouseEvent( int x, int y );
@@ -1719,6 +1717,7 @@ void     CG_DrawRangeMarker( rangeMarker_t rmType, const vec3_t origin, float ra
 // cg_draw.c
 //
 
+void CG_AlignText( rectDef_t *rect, const char *text, float scale, float w, float h, int align, int valign,float *x, float *y );
 void CG_AddLagometerFrameInfo( void );
 void CG_AddLagometerSnapshotInfo( snapshot_t *snap );
 void CG_AddSpeed( void );
@@ -1749,13 +1748,14 @@ void        CG_NewClientInfo( int clientNum );
 void        CG_PrecacheClientInfo( class_t class, const char *model, const char *skin );
 sfxHandle_t CG_CustomSound( int clientNum, const char *soundName );
 void        CG_PlayerDisconnect( vec3_t org );
-void        CG_Bleed( vec3_t origin, vec3_t normal, int entityNum );
 centity_t   *CG_GetPlayerLocation( void );
+
+void        CG_InitClasses( void );
 
 //
 // cg_buildable.c
 //
-void     CG_GhostBuildable( buildable_t buildable );
+void     CG_GhostBuildable( int buildableInfo );
 void     CG_Buildable( centity_t *cent );
 void     CG_BuildableStatusParse( const char *filename, buildStat_t *bs );
 void     CG_DrawBuildableStatus( void );
@@ -1809,8 +1809,8 @@ void CG_DrawBoundingBox( vec3_t origin, vec3_t mins, vec3_t maxs );
 void CG_SetEntitySoundPosition( centity_t *cent );
 void CG_AddPacketEntities( void );
 void CG_Beam( centity_t *cent );
-void CG_AdjustPositionForMover( const vec3_t in, int moverNum, int fromTime, int toTime, vec3_t out, vec3_t angles_in, vec3_t angles_out );
-
+void CG_AdjustPositionForMover( const vec3_t in, int moverNum, int fromTime, int toTime, vec3_t out,
+                                vec3_t angles_in, vec3_t angles_out );
 void CG_PositionEntityOnTag( refEntity_t *entity, const refEntity_t *parent,
                              qhandle_t parentModel, const char *tagName );
 void CG_PositionRotatedEntityOnTag( refEntity_t *entity, const refEntity_t *parent,
@@ -1829,13 +1829,13 @@ void CG_RegisterUpgrade( int upgradeNum );
 void CG_InitWeapons( void );
 void CG_RegisterWeapon( int weaponNum );
 
-void CG_FireWeapon( centity_t *cent, weaponMode_t weaponMode );
-void CG_MissileHitWall( weapon_t weapon, weaponMode_t weaponMode, int clientNum,
-                        vec3_t origin, vec3_t dir, impactSound_t soundType, int charge );
-void CG_MissileHitEntity( weapon_t weaponNum, weaponMode_t weaponMode,
-                          vec3_t origin, vec3_t dir, int entityNum, int charge );
-void CG_Bullet( vec3_t origin, int sourceEntityNum, vec3_t normal, qboolean flesh, int fleshEntityNum );
-void CG_ShotgunFire( entityState_t *es );
+void CG_HandleFireWeapon( centity_t *cent, weaponMode_t weaponMode );
+void CG_HandleFireShotgun( entityState_t *es );
+
+void CG_HandleWeaponHitEntity( entityState_t *es, vec3_t origin );
+void CG_HandleWeaponHitWall( entityState_t *es, vec3_t origin );
+void CG_HandleMissileHitEntity( entityState_t *es, vec3_t origin );
+void CG_HandleMissileHitWall( entityState_t *es, vec3_t origin );
 
 void CG_AddViewWeapon( playerState_t *ps );
 void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent );
@@ -1966,10 +1966,13 @@ const char *CG_TutorialText( void );
 //
 //===============================================
 
-// cg_drawCrosshair settings
-#define CROSSHAIR_ALWAYSOFF  0
-#define CROSSHAIR_RANGEDONLY 1
-#define CROSSHAIR_ALWAYSON   2
+// cg_drawCrosshair* settings
+enum
+{
+  CROSSHAIR_ALWAYSOFF,
+  CROSSHAIR_RANGEDONLY,
+  CROSSHAIR_ALWAYSON
+};
 
 // menu types for cg_disable*Dialogs
 typedef enum

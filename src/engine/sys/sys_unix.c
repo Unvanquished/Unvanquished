@@ -47,6 +47,7 @@ Maryland 20850 USA.
 #include <unistd.h>
 #include <sys/mman.h>
 #include <sys/time.h>
+#include <locale.h>
 #include <pwd.h>
 #include <libgen.h>
 #include <fcntl.h>
@@ -56,6 +57,7 @@ Maryland 20850 USA.
 #if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 #include <SDL.h>
 #include <SDL_syswm.h>
+#include "sdl2_compat.h"
 #endif
 
 #ifndef SIGIOT
@@ -182,8 +184,6 @@ Sys_GetClipboardData
 static struct {
 	Display *display;
 	Window  window;
-	void  ( *lockDisplay )( void );
-	void  ( *unlockDisplay )( void );
 	Atom    utf8;
 } x11 = { NULL };
 #endif
@@ -206,7 +206,7 @@ char *Sys_GetClipboardData( clipboard_t clip )
 		SDL_SysWMinfo info;
 
 		SDL_VERSION( &info.version );
-		if ( SDL_GetWMInfo( &info ) != 1 || info.subsystem != SDL_SYSWM_X11 )
+		if ( SDL_GetWindowWMInfo( IN_GetWindow(), &info ) != 1 || info.subsystem != SDL_SYSWM_X11 )
 		{
 			Com_Printf("Not on X11? (%d)\n",info.subsystem);
 			return NULL;
@@ -214,15 +214,13 @@ char *Sys_GetClipboardData( clipboard_t clip )
 
 		x11.display = info.info.x11.display;
 		x11.window = info.info.x11.window;
-		x11.lockDisplay = info.info.x11.lock_func;
-		x11.unlockDisplay = info.info.x11.unlock_func;
 		x11.utf8 = XInternAtom( x11.display, "UTF8_STRING", False );
 
 		SDL_EventState( SDL_SYSWMEVENT, SDL_ENABLE );
 		//SDL_SetEventFilter( Sys_ClipboardFilter );
 	}
 
-	x11.lockDisplay();
+	XLockDisplay( x11.display );
 
 	switch ( clip )
 	{
@@ -249,7 +247,7 @@ char *Sys_GetClipboardData( clipboard_t clip )
 	}
 
 	converted = XInternAtom( x11.display, "UNVANQUISHED_SELECTION", False );
-	x11.unlockDisplay();
+	XUnlockDisplay( x11.display );
 
 	if ( owner == None || owner == x11.window )
 	{
@@ -260,11 +258,11 @@ char *Sys_GetClipboardData( clipboard_t clip )
 	{
 		SDL_Event event;
 
-		x11.lockDisplay();
+		XLockDisplay( x11.display );
 		owner = x11.window;
 		//FIXME: when we can respond to clipboard requests, don't alter selection
 		XConvertSelection( x11.display, selection, x11.utf8, converted, owner, CurrentTime );
-		x11.unlockDisplay();
+		XUnlockDisplay( x11.display );
 
 		for (;;)
 		{
@@ -272,8 +270,11 @@ char *Sys_GetClipboardData( clipboard_t clip )
 
 			if ( event.type == SDL_SYSWMEVENT )
 			{
+#if SDL_VERSION_ATLEAST( 2, 0, 0 )
+				XEvent xevent = event.syswm.msg->msg.x11.event;
+#else
 				XEvent xevent = event.syswm.msg->event.xevent;
-
+#endif
 				if ( xevent.type == SelectionNotify &&
 				     xevent.xselection.requestor == owner )
 				{
@@ -283,7 +284,7 @@ char *Sys_GetClipboardData( clipboard_t clip )
 		}
 	}
 
-	x11.lockDisplay ();
+	XLockDisplay( x11.display );
 
 	if ( XGetWindowProperty( x11.display, owner, converted, 0, INT_MAX / 4,
 	                         False, x11.utf8, &selectionType, &selectionFormat,
@@ -299,11 +300,11 @@ char *Sys_GetClipboardData( clipboard_t clip )
 		}
 		XFree( src );
 
-		x11.unlockDisplay();
+		XUnlockDisplay( x11.display );
 		return dest;
 	}
 
-	x11.unlockDisplay();
+	XUnlockDisplay( x11.display );
 #endif // !DEDICATED
 	return NULL;
 }
@@ -758,7 +759,7 @@ void Sys_ErrorDialog( const char *error )
 	const char   *gamedir = Cvar_VariableString( "fs_game" );
 	const char   *fileName = "crashlog.txt";
 	char         *ospath = FS_BuildOSPath( homepath, gamedir, "" );
-	char         *ospathfile = FS_BuildOSPath( ospath, "", fileName );
+	char         *ospathfile = FS_BuildOSPath( homepath, gamedir, fileName );
 
 	Sys_Print( va( "%s\n", error ) );
 
@@ -766,7 +767,7 @@ void Sys_ErrorDialog( const char *error )
 	// We may have grabbed input devices. Need to release.
 	if ( SDL_WasInit( SDL_INIT_VIDEO ) )
 	{
-		SDL_WM_GrabInput( SDL_GRAB_OFF );
+		SDL_SetWindowGrab( IN_GetWindow(), qfalse );
 	}
 
 	Sys_Dialog( DT_ERROR, va( "%s. See \"%s\" for details.", error, ospathfile ), "Error" );
@@ -1057,30 +1058,6 @@ dialogResult_t Sys_Dialog( dialogType_t type, const char *message, const char *t
 
 #endif
 
-/*
-==============
-Sys_GLimpSafeInit
-
-Unix specific "safe" GL implementation initialisation
-==============
-*/
-void Sys_GLimpSafeInit( void )
-{
-	// NOP
-}
-
-/*
-==============
-Sys_GLimpInit
-
-Unix specific GL implementation initialisation
-==============
-*/
-void Sys_GLimpInit( void )
-{
-	// NOP
-}
-
 void Sys_SetFloatEnv( void )
 {
 }
@@ -1103,6 +1080,8 @@ void Sys_PlatformInit( void )
 	signal( SIGIOT, Sys_SigHandler );
 	signal( SIGBUS, Sys_SigHandler );
 #endif
+
+	setlocale( LC_ALL, "" );
 
 	stdinIsATTY = isatty( STDIN_FILENO ) &&
 	              !( term && ( !strcmp( term, "raw" ) || !strcmp( term, "dumb" ) ) );

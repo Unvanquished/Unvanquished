@@ -960,7 +960,6 @@ R_CullMD5
 static void R_CullMD5( trRefEntity_t *ent )
 {
 	int        i;
-	float      boundsRadius;
 
 	if ( ent->e.skeleton.type == SK_INVALID )
 	{
@@ -975,14 +974,12 @@ static void R_CullMD5( trRefEntity_t *ent )
 		// copy a bounding box in the current coordinate system provided by skeleton
 		for ( i = 0; i < 3; i++ )
 		{
-			ent->localBounds[ 0 ][ i ] = ent->e.skeleton.bounds[ 0 ][ i ];
-			ent->localBounds[ 1 ][ i ] = ent->e.skeleton.bounds[ 1 ][ i ];
+			ent->localBounds[ 0 ][ i ] = ent->e.skeleton.bounds[ 0 ][ i ] * ent->e.skeleton.scale;
+			ent->localBounds[ 1 ][ i ] = ent->e.skeleton.bounds[ 1 ][ i ] * ent->e.skeleton.scale;
 		}
 	}
 
-	boundsRadius = RadiusFromBounds( ent->localBounds[ 0 ], ent->localBounds[ 1 ] );
-
-	switch ( R_CullPointAndRadius( ent->e.origin, boundsRadius ) )
+	switch ( R_CullLocalBox( ent->localBounds ) )
 	{
 		case CULL_IN:
 			tr.pc.c_box_cull_md5_in++;
@@ -1355,10 +1352,11 @@ void R_AddMD5Interactions( trRefEntity_t *ent, trRefLight_t *light, interactionT
 	if ( ent->cull == CULL_OUT )
 	{
 		iaType &= ~IA_LIGHT;
+	}
 
-		if( !iaType ) {
-			return;
-		}
+	if( !iaType )
+	{
+		return;
 	}
 
 	// avoid drawing of certain objects
@@ -1733,7 +1731,7 @@ static int IQMBuildSkeleton( refSkeleton_t *skel, skelAnimation_t *skelAnim,
 		bounds = &anim->bounds[ 6 * endFrame ];
 		BoundsAdd( mins, maxs, bounds, bounds + 3 );
 	}
-       
+
 	for ( i = 0; i < anim->num_joints; i++ )
 	{
 		TransStartLerp( &skel->bones[ i ].t );
@@ -1747,7 +1745,7 @@ static int IQMBuildSkeleton( refSkeleton_t *skel, skelAnimation_t *skelAnim,
 
 		skel->bones[ i ].parentIndex = anim->jointParents[ i ];
 	}
-       
+
 	skel->numBones = anim->num_joints;
 	skel->type = SK_RELATIVE;
 	return qtrue;

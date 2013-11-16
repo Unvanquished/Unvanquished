@@ -147,6 +147,11 @@ void G_FreeEntity( gentity_t *entity )
 	if ( g_debugEntities.integer > 2 )
 		G_Printf(S_DEBUG "Freeing Entity %s\n", etos(entity));
 
+	if ( entity->obstacleHandle )
+	{
+		trap_BotRemoveObstacle( entity->obstacleHandle );
+	}
+
 	if( entity->eclass && entity->eclass->instanceCounter > 0)
 		entity->eclass->instanceCounter--;
 

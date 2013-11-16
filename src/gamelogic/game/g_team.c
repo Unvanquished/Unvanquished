@@ -91,8 +91,8 @@ void G_TeamCommand( team_t team, const char *cmd )
 	{
 		if ( level.clients[ i ].pers.connected == CON_CONNECTED )
 		{
-			if ( level.clients[ i ].pers.teamSelection == team ||
-			     ( level.clients[ i ].pers.teamSelection == TEAM_NONE &&
+			if ( level.clients[ i ].pers.team == team ||
+			     ( level.clients[ i ].pers.team == TEAM_NONE &&
 			       G_admin_permission( &g_entities[ i ], ADMF_SPEC_ALLCHAT ) ) )
 			{
 				trap_SendServerCommand( i, cmd );
@@ -114,7 +114,7 @@ void G_AreaTeamCommand( gentity_t *ent, const char *cmd )
 	int    num, i;
 	vec3_t range = { 1000.0f, 1000.0f, 1000.0f };
 	vec3_t mins, maxs;
-	team_t team = ent->client->pers.teamSelection;
+	team_t team = ent->client->pers.team;
 
 	for ( i = 0; i < 3; i++ )
 	{
@@ -130,7 +130,7 @@ void G_AreaTeamCommand( gentity_t *ent, const char *cmd )
 	{
 		if ( g_entities[ entityList[ i ] ].client && g_entities[ entityList[ i ] ].client->pers.connected == CON_CONNECTED )
 		{
-			if ( g_entities[ entityList[ i ] ].client->pers.teamSelection == team )
+			if ( g_entities[ entityList[ i ] ].client->pers.team == team )
 			{
 				trap_SendServerCommand( entityList[ i ], cmd );
 			}
@@ -143,13 +143,13 @@ void G_AreaTeamCommand( gentity_t *ent, const char *cmd )
 OnSameTeam
 ==============
 */
-qboolean OnSameTeam( gentity_t *ent1, gentity_t *ent2 )
+qboolean G_OnSameTeam( gentity_t *ent1, gentity_t *ent2 )
 {
 	team_t team1, team2;
 
 	if ( ent1->client )
 	{
-		team1 = ent1->client->pers.teamSelection;
+		team1 = ent1->client->pers.team;
 	}
 	else if ( ent1->s.eType == ET_BUILDABLE )
 	{
@@ -162,7 +162,7 @@ qboolean OnSameTeam( gentity_t *ent1, gentity_t *ent2 )
 
 	if ( ent2->client )
 	{
-		team2 = ent2->client->pers.teamSelection;
+		team2 = ent2->client->pers.team;
 	}
 	else if ( ent2->s.eType == ET_BUILDABLE )
 	{
@@ -197,7 +197,7 @@ static clientList_t G_ClientListForTeam( team_t team )
 			continue;
 		}
 
-		if ( ent->inuse && ( ent->client->ps.stats[ STAT_TEAM ] == team ) )
+		if ( ent->inuse && ( ent->client->pers.team == team ) )
 		{
 			Com_ClientListAdd( &clientList, ent->client->ps.clientNum );
 		}
@@ -232,9 +232,6 @@ void G_UpdateTeamConfigStrings( void )
 	trap_SetConfigstringRestrictions( CS_VOTE_STRING + TEAM_HUMANS, &alienTeam );
 	trap_SetConfigstringRestrictions( CS_VOTE_YES + TEAM_HUMANS,    &alienTeam );
 	trap_SetConfigstringRestrictions( CS_VOTE_NO + TEAM_HUMANS,     &alienTeam );
-
-	trap_SetConfigstringRestrictions( CS_ALIEN_STAGE, &humanTeam );
-	trap_SetConfigstringRestrictions( CS_HUMAN_STAGE, &alienTeam );
 }
 
 /*
@@ -244,7 +241,7 @@ G_LeaveTeam
 */
 void G_LeaveTeam( gentity_t *self )
 {
-	team_t    team = self->client->pers.teamSelection;
+	team_t    team = self->client->pers.team;
 	gentity_t *ent;
 	int       i;
 
@@ -305,7 +302,7 @@ G_ChangeTeam
 */
 void G_ChangeTeam( gentity_t *ent, team_t newTeam )
 {
-	team_t oldTeam = ent->client->pers.teamSelection;
+	team_t oldTeam = ent->client->pers.team;
 
 	if ( oldTeam == newTeam )
 	{
@@ -314,7 +311,7 @@ void G_ChangeTeam( gentity_t *ent, team_t newTeam )
 
 	G_LeaveTeam( ent );
 	ent->client->pers.teamChangeTime = level.time;
-	ent->client->pers.teamSelection = newTeam;
+	ent->client->pers.team = newTeam;
 	ent->client->pers.teamInfo = level.startTime - 1;
 	ent->client->pers.classSelection = PCL_NONE;
 	ClientSpawn( ent, NULL, NULL, NULL );
@@ -346,6 +343,9 @@ void G_ChangeTeam( gentity_t *ent, team_t newTeam )
 
 	// Copy credits to ps for the client
 	ent->client->ps.persistant[ PERS_CREDIT ] = ent->client->pers.credit;
+
+	// Update PERS_UNLOCKABLES in the same frame as PERS_TEAM to prevent bad status change notifications
+	ent->client->ps.persistant[ PERS_UNLOCKABLES ] = BG_UnlockablesMask( newTeam );
 
 	ClientUserinfoChanged( ent->client->ps.clientNum, qfalse );
 
@@ -426,7 +426,7 @@ void TeamplayInfoMessage( gentity_t *ent )
 		return;
 	}
 
-	if ( ent->client->pers.teamSelection == TEAM_NONE )
+	if ( ent->client->pers.team == TEAM_NONE )
 	{
 		if ( ent->client->sess.spectatorState == SPECTATOR_FREE ||
 		     ent->client->sess.spectatorClient < 0 )
@@ -435,11 +435,11 @@ void TeamplayInfoMessage( gentity_t *ent )
 		}
 
 		team = g_entities[ ent->client->sess.spectatorClient ].client->
-		       pers.teamSelection;
+		       pers.team;
 	}
 	else
 	{
-		team = ent->client->pers.teamSelection;
+		team = ent->client->pers.team;
 	}
 
 	string[ 0 ] = '\0';
@@ -450,7 +450,7 @@ void TeamplayInfoMessage( gentity_t *ent )
 		player = g_entities + i;
 		cl = player->client;
 
-		if ( ent == player || !cl || team != cl->pers.teamSelection ||
+		if ( ent == player || !cl || team != cl->pers.team ||
 		     !player->inuse )
 		{
 			continue;
@@ -467,7 +467,7 @@ void TeamplayInfoMessage( gentity_t *ent )
 			curWeaponClass = WP_NONE;
 			upgrade = UP_NONE;
 		}
-		else if ( cl->pers.teamSelection == TEAM_HUMANS )
+		else if ( cl->pers.team == TEAM_HUMANS )
 		{
 			curWeaponClass = cl->ps.weapon;
 
@@ -483,9 +483,9 @@ void TeamplayInfoMessage( gentity_t *ent )
 			{
 				upgrade = UP_BATTPACK;
 			}
-			else if ( BG_InventoryContainsUpgrade( UP_HELMET, cl->ps.stats ) )
+			else if ( BG_InventoryContainsUpgrade( UP_RADAR, cl->ps.stats ) )
 			{
-				upgrade = UP_HELMET;
+				upgrade = UP_RADAR;
 			}
 			else if ( BG_InventoryContainsUpgrade( UP_LIGHTARMOUR, cl->ps.stats ) )
 			{
@@ -496,7 +496,7 @@ void TeamplayInfoMessage( gentity_t *ent )
 				upgrade = UP_NONE;
 			}
 		}
-		else if ( cl->pers.teamSelection == TEAM_ALIENS )
+		else if ( cl->pers.team == TEAM_ALIENS )
 		{
 			curWeaponClass = cl->ps.stats[ STAT_CLASS ];
 			upgrade = UP_NONE;
@@ -558,8 +558,8 @@ void CheckTeamStatus( void )
 				continue;
 			}
 
-			if ( ent->inuse && ( ent->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS ||
-			                     ent->client->ps.stats[ STAT_TEAM ] == TEAM_ALIENS ) )
+			if ( ent->inuse && ( ent->client->pers.team == TEAM_HUMANS ||
+			                     ent->client->pers.team == TEAM_ALIENS ) )
 			{
 				loc = Team_GetLocation( ent );
 

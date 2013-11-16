@@ -341,17 +341,29 @@ static qboolean CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 }
 
 static qboolean CG_RegisterPlayerAnimation( clientInfo_t *ci, const char *modelName, int anim, const char *animName,
-    qboolean loop, qboolean reversed, qboolean clearOrigin )
+                                            qboolean loop, qboolean reversed, qboolean clearOrigin )
 {
-	char filename[ MAX_QPATH ];
+	char filename[ MAX_QPATH ], newModelName[ MAX_QPATH ];
 	int  frameRate;
 
+	// special handling for human_(naked|light|medium)
+	if ( !Q_stricmp( modelName, "human_naked"   ) ||
+	     !Q_stricmp( modelName, "human_light"   ) ||
+	     !Q_stricmp( modelName, "human_medium" ) )
+	{
+		strncpy( newModelName, "human_nobsuit_common", sizeof( newModelName ) );
+	}
+	else
+	{
+		strncpy( newModelName, modelName, sizeof( newModelName ) );
+	}
+
 	Com_sprintf( filename, sizeof( filename ), "models/players/%s/%s.iqm:%s",
-		     modelName, modelName, animName );
+		     newModelName, newModelName, animName );
 	ci->animations[ anim ].handle = trap_R_RegisterAnimation( filename );
 
 	if ( !ci->animations[ anim ].handle ) {
-		Com_sprintf( filename, sizeof( filename ), "models/players/%s/%s.md5anim", modelName, animName );
+		Com_sprintf( filename, sizeof( filename ), "models/players/%s/%s.md5anim", newModelName, animName );
 		ci->animations[ anim ].handle = trap_R_RegisterAnimation( filename );
 	}
 
@@ -1035,6 +1047,7 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 				ci->animations[ TORSO_RAISE ] = ci->animations[ LEGS_IDLE ];
 			}
 
+			// TODO: Don't assume WP_BLASTER is first human weapon
 			for ( i = TORSO_GESTURE_BLASTER, j = WP_BLASTER; i <= TORSO_GESTURE_CKIT; i++, j++ )
 			{
 				if ( i == TORSO_GESTURE ) { continue; }
@@ -1046,9 +1059,10 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 				}
 			}
 
+			// TODO: Don't assume WP_BLASTER is first human weapon
 			for ( i = WP_BLASTER; i < WP_NUM_WEAPONS; i++ )
 			{
-				if ( BG_Weapon( i )->team != TEAM_HUMANS || !BG_Weapon( i )->purchasable || i == WP_GRENADE ) { continue; }
+				if ( BG_Weapon( i )->team != TEAM_HUMANS || !BG_Weapon( i )->purchasable ) { continue; }
 				CG_DeriveAnimationDelta( modelName, i, ci );
 			}
 
@@ -3203,22 +3217,7 @@ void CG_Player( centity_t *cent )
 
 		// add the body
 		body.hModel = ci->bodyModel;
-		if ( ( held & ( 1 << UP_LIGHTARMOUR ) ) && !( held & ( 1 << UP_HELMET ) ) )
-		{
-			body.customSkin = cgs.media.larmourLegsSkin;
-		}
-		else if ( !( held & ( 1 << UP_LIGHTARMOUR ) ) && ( held & ( 1 << UP_HELMET ) ) )
-		{
-			body.customSkin = cgs.media.larmourHeadSkin;
-		}
-		else if ( ( held & ( 1 << UP_LIGHTARMOUR ) ) && ( held & ( 1 << UP_HELMET ) ) )
-		{
-			body.customSkin = cgs.media.larmourTorsoSkin;
-		}
-		else
-		{
-			body.customSkin = ci->bodySkin;
-		}
+		body.customSkin = ci->bodySkin;
 
 		if ( !body.hModel )
 		{
@@ -3358,13 +3357,6 @@ void CG_Player( centity_t *cent )
 		// transform relative bones to absolute ones required for vertex skinning and tag attachments
 		CG_TransformSkeleton( &body.skeleton, ci->modelScale );
 
-		VectorCopy( mins, body.skeleton.bounds[ 0 ]);
-		VectorCopy( maxs, body.skeleton.bounds[ 1 ]);
-
-		//skeleton bounds start at z = 0
-		body.skeleton.bounds[ 0 ][ 2 ] = 0;
-		body.skeleton.bounds[ 1 ][ 2 ] -= mins[ 2 ];
-
 		// add the gun / barrel / flash
 		if ( es->weapon != WP_NONE )
 		{
@@ -3467,15 +3459,7 @@ void CG_Player( centity_t *cent )
 	if ( !ci->nonsegmented )
 	{
 		legs.hModel = ci->legsModel;
-
-		if ( held & ( 1 << UP_LIGHTARMOUR ) )
-		{
-			legs.customSkin = cgs.media.larmourLegsSkin;
-		}
-		else
-		{
-			legs.customSkin = ci->legsSkin;
-		}
+		legs.customSkin = ci->legsSkin;
 	}
 	else
 	{
@@ -3585,15 +3569,7 @@ void CG_Player( centity_t *cent )
 		// add the head
 		//
 		head.hModel = ci->headModel;
-
-		if ( held & ( 1 << UP_HELMET ) )
-		{
-			head.customSkin = cgs.media.larmourHeadSkin;
-		}
-		else
-		{
-			head.customSkin = ci->headSkin;
-		}
+		head.customSkin = ci->headSkin;
 
 		if ( !head.hModel )
 		{
@@ -3789,12 +3765,6 @@ void CG_Corpse( centity_t *cent )
 		legs.customSkin = ci->bodySkin;
 		legs.skeleton = legsSkeleton;
 		CG_TransformSkeleton( &legs.skeleton, ci->modelScale );
-		VectorCopy( deadZ, legs.skeleton.bounds[ 0 ]);
-		VectorCopy( deadMax, legs.skeleton.bounds[ 1 ]);
-
-		//skeleton bounds start at z = 0
-		legs.skeleton.bounds[ 0 ][ 2 ] = 0;
-		legs.skeleton.bounds[ 1 ][ 2 ] -= deadZ[ 2 ];
 	}
 	else if ( !ci->nonsegmented )
 	{
@@ -3998,4 +3968,26 @@ centity_t *CG_GetPlayerLocation( void )
 	}
 
 	return best;
+}
+
+void CG_InitClasses( void )
+{
+	int i;
+
+	Com_Memset( cg_classes, 0, sizeof( cg_classes ) );
+
+	for ( i = PCL_NONE + 1; i < PCL_NUM_CLASSES; i++ )
+	{
+		const char *icon = BG_Class( i )->icon;
+
+		if ( icon )
+		{
+			cg_classes[ i ].classIcon = trap_R_RegisterShader( icon, RSF_DEFAULT );
+
+			if ( !cg_classes[ i ].classIcon )
+			{
+				Com_Printf( S_ERROR "Failed to load class icon file %s\n", icon );
+			}
+		}
+	}
 }

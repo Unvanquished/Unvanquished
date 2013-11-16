@@ -94,7 +94,7 @@ static void CG_ParseTeamInfo( void )
 		client = atoi( CG_Argv( i ) );
 
 		// wrong team? skip to the next one
-		if ( cgs.clientinfo[ client ].team != cg.snap->ps.stats[ STAT_TEAM ] )
+		if ( cgs.clientinfo[ client ].team != cg.snap->ps.persistant[ PERS_TEAM ] )
 		{
 			return;
 		}
@@ -110,7 +110,7 @@ static void CG_ParseTeamInfo( void )
 		cgs.clientinfo[ client ].curWeaponClass = atoi( CG_Argv( ++i ) );
 		cgs.clientinfo[ client ].credit         = atoi( CG_Argv( ++i ) );
 
-		if( cg.snap->ps.stats[ STAT_TEAM ] != TEAM_ALIENS )
+		if( cg.snap->ps.persistant[ PERS_TEAM ] != TEAM_ALIENS )
 		{
 			cgs.clientinfo[ client ].upgrade = atoi( CG_Argv( ++i ) );
 		}
@@ -132,12 +132,20 @@ void CG_ParseServerinfo( void )
 	const char *info;
 
 	info = CG_ConfigString( CS_SERVERINFO );
-	cgs.timelimit = atoi( Info_ValueForKey( info, "timelimit" ) );
-	cgs.maxclients = atoi( Info_ValueForKey( info, "sv_maxclients" ) );
-	cgs.markDeconstruct = atoi( Info_ValueForKey( info, "g_markDeconstruct" ) );
-	cgs.powerReactorRange = atoi( Info_ValueForKey( info, "g_powerReactorRange" ) );
+
+	cgs.timelimit          = atoi( Info_ValueForKey( info, "timelimit" ) );
+	cgs.maxclients         = atoi( Info_ValueForKey( info, "sv_maxclients" ) );
+	cgs.markDeconstruct    = atoi( Info_ValueForKey( info, "g_markDeconstruct" ) );
+	cgs.powerReactorRange  = atoi( Info_ValueForKey( info, "g_powerReactorRange" ) );
 	cgs.powerRepeaterRange = atoi( Info_ValueForKey( info, "g_powerRepeaterRange" ) );
+	cgs.confidenceHalfLife = atof( Info_ValueForKey( info, "g_confidenceHalfLife" ) );
+	cgs.unlockableMinTime  = atof( Info_ValueForKey( info, "g_unlockableMinTime" ) );
+
 	Q_strncpyz( cgs.mapname, Info_ValueForKey( info, "mapname" ), sizeof(cgs.mapname) );
+
+	// pass some of these to UI
+	trap_Cvar_Set( "ui_confidenceHalfLife", va( "%f", cgs.confidenceHalfLife ) );
+	trap_Cvar_Set( "ui_unlockableMinTime",  va( "%f", cgs.unlockableMinTime ) );
 }
 
 /*
@@ -165,27 +173,6 @@ Called on load to set the initial values from configure strings
 */
 void CG_SetConfigValues( void )
 {
-	const char *alienStage = CG_ConfigString( CS_ALIEN_STAGE );
-	const char *humanStage = CG_ConfigString( CS_HUMAN_STAGE );
-
-	if ( alienStage[ 0 ] )
-	{
-		sscanf( alienStage, "%d", &cgs.alienStage );
-	}
-	else
-	{
-		cgs.alienStage = -1;
-	}
-
-	if ( humanStage[ 0 ] )
-	{
-		sscanf( humanStage, "%d", &cgs.humanStage );
-	}
-	else
-	{
-		cgs.humanStage = -1;
-	}
-
 	cgs.levelStartTime = atoi( CG_ConfigString( CS_LEVEL_START_TIME ) );
 	cg.warmupTime = atoi( CG_ConfigString( CS_WARMUP ) );
 }
@@ -246,60 +233,6 @@ void CG_ShaderStateChanged( void )
 
 /*
 ================
-CG_AnnounceAlienStageTransition
-================
-*/
-static void CG_AnnounceAlienStageTransition( stage_t from, stage_t to )
-{
-	Q_UNUSED(from);
-	Q_UNUSED(to);
-
-	if ( cg.predictedPlayerState.stats[ STAT_TEAM ] != TEAM_ALIENS )
-	{
-		return;
-	}
-
-	if ( to > from )
-	{
-		trap_S_StartLocalSound( cgs.media.alienStageTransition, CHAN_ANNOUNCER );
-		CG_CenterPrint( _("We have evolved!"), 200, GIANTCHAR_WIDTH * 4 );
-	}
-	else if ( to < from )
-	{
-		trap_S_StartLocalSound( cgs.media.alienStageTransition, CHAN_ANNOUNCER ); // TODO: Add alien stage down sound
-		CG_CenterPrint( _("^1We have devolved!"), 200, GIANTCHAR_WIDTH * 4 );
-	}
-}
-
-/*
-================
-CG_AnnounceHumanStageTransition
-================
-*/
-static void CG_AnnounceHumanStageTransition( stage_t from, stage_t to )
-{
-	Q_UNUSED(from);
-	Q_UNUSED(to);
-
-	if ( cg.predictedPlayerState.stats[ STAT_TEAM ] != TEAM_HUMANS )
-	{
-		return;
-	}
-
-	if ( to > from )
-	{
-		trap_S_StartLocalSound( cgs.media.humanStageTransition, CHAN_ANNOUNCER );
-		CG_CenterPrint( _("Reinforcements have arrived!"), 200, GIANTCHAR_WIDTH * 4 );
-	}
-	else if ( to < from )
-	{
-		trap_S_StartLocalSound( cgs.media.humanStageTransition, CHAN_ANNOUNCER ); // TODO: Add human stage down sound
-		CG_CenterPrint( _("^1Reinforcements are lost!"), 200, GIANTCHAR_WIDTH * 4 );
-	}
-}
-
-/*
-================
 CG_ConfigStringModified
 
 ================
@@ -332,42 +265,6 @@ static void CG_ConfigStringModified( void )
 	else if ( num == CS_WARMUP )
 	{
 		CG_ParseWarmup();
-	}
-	else if ( num == CS_ALIEN_STAGE )
-	{
-		stage_t oldAlienStage = cgs.alienStage;
-
-		if ( str[ 0 ] )
-		{
-			sscanf( str, "%d", &cgs.alienStage );
-
-			if ( cgs.alienStage != oldAlienStage )
-			{
-				CG_AnnounceAlienStageTransition( oldAlienStage, cgs.alienStage );
-			}
-		}
-		else
-		{
-			cgs.alienStage = -1;
-		}
-	}
-	else if ( num == CS_HUMAN_STAGE )
-	{
-		stage_t oldHumanStage = cgs.humanStage;
-
-		if ( str[ 0 ] )
-		{
-			sscanf( str, "%d", &cgs.humanStage );
-
-			if ( cgs.humanStage != oldHumanStage )
-			{
-				CG_AnnounceHumanStageTransition( oldHumanStage, cgs.humanStage );
-			}
-		}
-		else
-		{
-			cgs.humanStage = 0;
-		}
 	}
 	else if ( num == CS_LEVEL_START_TIME )
 	{
@@ -505,7 +402,7 @@ void CG_Menu( int menu, int arg )
 	const char   *dialog;
 	dialogType_t type = 0; // controls which cg_disable var will switch it off
 
-	switch ( cg.snap->ps.stats[ STAT_TEAM ] )
+	switch ( cg.snap->ps.persistant[ PERS_TEAM ] )
 	{
 		case TEAM_ALIENS:
 			dialog = "menu tremulous_alien_dialog\n";
@@ -749,13 +646,6 @@ void CG_Menu( int menu, int arg )
 			type = DT_BUILD;
 			break;
 
-		case MN_H_DRILLPOWERSOURCE:
-			longMsg = _("Drills require a close power source since they transmit resources"
-			            " via the power gird. Build it near a reactor or repeater.");
-			shortMsg = _("The drill requires a close power source");
-			type = DT_BUILD;
-			break;
-
 		// unused - DCC isn't required to build anything
 		case MN_H_NODCC:
 			longMsg = _("There is no Defense Computer. A Defense Computer is needed to "
@@ -799,17 +689,9 @@ void CG_Menu( int menu, int arg )
 			type = DT_ARMOURYEVOLVE;
 			break;
 
-		case MN_H_NOROOMBSUITON:
-			longMsg = _("There is not enough room here to put on a Battle Suit. "
-			          "Make sure you have enough head room to climb in.");
-			shortMsg = _("Not enough room here to put on a Battle Suit");
-			type = DT_ARMOURYEVOLVE;
-			break;
-
-		case MN_H_NOROOMBSUITOFF:
-			longMsg = _("There is not enough room here to take off your Battle Suit. "
-			          "Make sure you have enough head room to climb out.");
-			shortMsg = _("Not enough room here to take off your Battle Suit");
+		case MN_H_NOROOMARMOURCHANGE:
+			longMsg = _("There is not enough room here to change armour.");
+			shortMsg = _("Not enough room here to change armour.");
 			type = DT_ARMOURYEVOLVE;
 			break;
 
@@ -925,10 +807,9 @@ void CG_Menu( int menu, int arg )
 			type = DT_ARMOURYEVOLVE;
 			break;
 
-		case MN_A_CLASSNOTATSTAGE:
-			shortMsg = va( _("The %s is not allowed at Stage %d"),
-			               _( BG_ClassModelConfig( arg )->humanName ),
-			               cgs.alienStage + 1 );
+		case MN_A_CLASSLOCKED:
+			shortMsg = va( _("The %s has not been unlocked yet"),
+			               _( BG_ClassModelConfig( arg )->humanName ) );
 			type = DT_ARMOURYEVOLVE;
 			break;
 
@@ -1136,7 +1017,7 @@ static void CG_Say( const char *name, int clientNum, saymode_t mode, const char 
 
 			if ( !ignore[ 0 ] )
 			{
-				CG_CenterPrint( va( "^%cPrivate message from: " S_COLOR_WHITE "%s",
+				CG_CenterPrint( va( _("^%cPrivate message from: ^7%s"),
 				                    color, name ), 200, GIANTCHAR_WIDTH * 4 );
 
 				if ( clientNum < 0 || clientNum >= MAX_CLIENTS )
@@ -1358,6 +1239,12 @@ static void CG_ParseVoice( void )
 	}
 }
 
+#define TRANSLATE_FUNC        _
+#define PLURAL_TRANSLATE_FUNC P_
+#define Cmd_Argv CG_Argv
+#define Cmd_Argc trap_Argc
+#include "../../engine/qcommon/print_translated.h"
+
 /*
 =================
 CG_CenterPrint_f
@@ -1383,6 +1270,29 @@ void CG_CenterPrint_Delay_f( void )
 
 /*
 =================
+CG_CenterPrintTR_f
+=================
+*/
+void CG_CenterPrintTR_f( void )
+{
+	CG_CenterPrint( TranslateText_Internal( qfalse, 1 ), SCREEN_HEIGHT * 0.30, BIGCHAR_WIDTH );
+}
+
+/*
+=================
+CG_CenterPrintTR_Delay_f
+=================
+*/
+void CG_CenterPrintTR_Delay_f( void )
+{
+	char cmd[ MAX_STRING_CHARS ];
+
+	Com_sprintf( cmd, sizeof( cmd ), "delay %s lcp %s", Quote( CG_Argv( 1 ) ), Quote( TranslateText_Internal( qfalse, 2 ) ) );
+	trap_SendConsoleCommand( cmd );
+}
+
+/*
+=================
 CG_Print_f
 =================
 */
@@ -1396,20 +1306,14 @@ static void CG_Print_f( void )
 CG_PrintTR_f
 =================
 */
-#define TRANSLATE_FUNC        _
-#define PLURAL_TRANSLATE_FUNC P_
-#define Cmd_Argv CG_Argv
-#define Cmd_Argc trap_Argc
-#include "../../engine/qcommon/print_translated.h"
-
 static void CG_PrintTR_f( void )
 {
-	PrintTranslatedText_Internal( qfalse );
+	Com_Printf( "%s", TranslateText_Internal( qfalse, 1 ) );
 }
 
 static void CG_PrintTR_plural_f( void )
 {
-	PrintTranslatedText_Internal( qtrue );
+	Com_Printf("%s", TranslateText_Internal( qtrue, 1 ) );
 }
 
 /*
@@ -1542,12 +1446,14 @@ static void CG_GameCmds_f( void )
 }
 
 static const consoleCommand_t svcommands[] =
-{
+{	// sorting: use 'sort -f'
 	{ "achat",            CG_AdminChat_f          },
 	{ "chat",             CG_Chat_f               },
 	{ "cmds",             CG_GameCmds_f           },
 	{ "cp",               CG_CenterPrint_f        },
 	{ "cpd",              CG_CenterPrint_Delay_f  },
+	{ "cpd_tr",           CG_CenterPrintTR_Delay_f},
+	{ "cp_tr",            CG_CenterPrintTR_f      },
 	{ "cs",               CG_ConfigStringModified },
 	{ "map_restart",      CG_MapRestart           },
 	{ "poisoncloud",      CG_PoisonCloud_f        },

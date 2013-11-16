@@ -562,8 +562,7 @@ int MiniMapBSPMain(int argc, char **argv)
 	/* arg checking */
 	if(argc < 2)
 	{
-		Sys_Printf
-			("Usage: owmap [-v] -minimap [-size n] [-sharpen f] [-samples n | -random n] [-o filename.png] [-minmax Xmin Ymin Zmin Xmax Ymax Zmax] <mapname>\n");
+		Sys_Printf("Usage: daemonmap [-v] -minimap [-size N] [-sharpen F] [-samples N | -random N] [-border N] [-keepaspect | -nokeepaspect] [-o FILENAME] [-minmax XMIN YMIN ZMIN XMAX YMAX ZMAX] [-black | -white] [-boost] MAPNAME\n");
 		return 0;
 	}
 
@@ -828,7 +827,7 @@ int FixAAS(int argc, char **argv)
 	/* arg checking */
 	if(argc < 2)
 	{
-		Sys_Printf("Usage: owmap -fixaas [-v] <mapname>\n");
+		Sys_Printf("Usage: daemonmap -fixaas [-v] MAPNAME\n");
 		return 0;
 	}
 
@@ -939,7 +938,7 @@ int AnalyzeBSP(int argc, char **argv)
 	/* arg checking */
 	if(argc < 1)
 	{
-		Sys_Printf("Usage: owmap -analyze [-lumpswap] [-v] <mapname>\n");
+		Sys_Printf("Usage: daemonmap -analyze [-lumpswap] [-v] MAPNAME\n");
 		return 0;
 	}
 
@@ -1204,7 +1203,7 @@ int ScaleBSPMain(int argc, char **argv)
 	/* arg checking */
 	if(argc < 3)
 	{
-		Sys_Printf("Usage: owmap [-v] -scale [-tex] <value> <mapname>\n");
+		Sys_Printf("Usage: daemonmap [-v] -scale [-tex] XSCALE [YSCALE [ZSCALE]] MAPNAME\n");
 		return 0;
 	}
 
@@ -1221,7 +1220,6 @@ int ScaleBSPMain(int argc, char **argv)
 
 	if(scale[0] == 0.0f || scale[1] == 0.0f || scale[2] == 0.0f)
 	{
-		Sys_Printf("Usage: owmap [-v] -scale [-tex] <value> <mapname>\n");
 		Sys_Printf("Non-zero scale value required.\n");
 		return 0;
 	}
@@ -1439,7 +1437,7 @@ int ConvertBSPMain(int argc, char **argv)
 	/* arg checking */
 	if(argc < 1)
 	{
-		Sys_Printf("Usage: owmap -scale <value> [-v] <mapname>\n");
+		Sys_Printf("Usage: daemonmap -convert [-format ase|map] [-ne NORMAL] [-de DISTANCE] [-v] MAPNAME\n");
 		return 0;
 	}
 
@@ -1721,6 +1719,11 @@ int ConvertMapMain(int argc, char **argv)
 	//int             (*convertFunc) (char *);
 	//game_t         *convertGame;
 
+	if(argc == 0)
+	{
+		Sys_Printf("Usage: daemonmap -map2map [-v] [-format quake3|quake4] MAP\n");
+		return 0;
+	}
 
 	// set default
 	convertType = CONVERT_QUAKE3;
@@ -1768,16 +1771,7 @@ int ConvertMapMain(int argc, char **argv)
 	}
 
 	if(i != argc - 1)
-	{
-		Error("usage: owmap [general options] -map2map [-<switch> [-<switch> ...]] <mapname.map>\n"
-			  "\n"
-			  "Switches:\n"
-			  " -v                     = verbose output\n"
-			  //"   quake1       = convert from QuakeWorld to XreaL\n"
-			  //"   quake2       = convert from Quake2 to XreaL\n"
-			  " -format quake3         = convert from Quake3 or ET to Doom 3\n"
-			  " -format quake4         = convert from Quake4 to Doom 3\n");
-	}
+		Error("Usage: daemonmap -map2map [-v] [-format quake3|quake4] MAP\n");
 
 	/* clean up map name */
 	strcpy(source, ExpandArg(argv[i]));
@@ -1820,9 +1814,9 @@ q3map mojo...
 
 int main(int argc, char **argv)
 {
-	int             i, r;
+	int             i, r = 0;
 	double          start, end;
-
+	int             help = 0;
 
 	/* we want consistent 'randomness' */
 	srand(0);
@@ -1830,156 +1824,212 @@ int main(int argc, char **argv)
 	/* start timer */
 	start = I_FloatTime();
 
-	/* this was changed to emit version number over the network */
-	printf(Q3MAP_VERSION "\n");
-
-	/* set exit call */
-	atexit(ExitQ3Map);
-
-	/* read general options first */
-	for(i = 1; i < argc; i++)
+	if(!strcmp(argv[1], "-?") || !strcmp(argv[1], "-h") || !strcmp(argv[1], "--help"))
 	{
-		/* -connect */
-		if(!strcmp(argv[i], "-connect"))
-		{
-			argv[i] = NULL;
-			i++;
-			Broadcast_Setup(argv[i]);
-			argv[i] = NULL;
-		}
+		if (argc == 2)
+			Sys_Printf("\
+Usage: %s [OPTIONS] [COMMAND [COMMAND_OPTIONS]] MAPFILE\n\
+Options:\n\
+  -connect ADDRESS\n\
+  -v\n\
+  -force\n\
+  -subdivisions COUNT\n\
+  -threads COUNT\n\
+Commands:\n\
+  -analyze      -\n\
+  -info         -\n\
+  -vis          -\n\
+  -light        -\n\
+  -export       -\n\
+  -import       -\n\
+  -scale        -\n\
+  -convert      -\n\
+  -map2map      -\n\
+  -minimap      - create a minimap image\n\
+  -nav          - create a nav mesh\n\
+  [-bsp]        - create a BSP from a map file\n\
+To show help, %s --help COMMAND\n\
+", argv[0], argv[0]);
+		argv[1] = NULL;
+		help = 1;
+		r = 0;
+	}
 
-		/* verbose */
-		else if(!strcmp(argv[i], "-v"))
+	if (help)
+	{
+		int j;
+		for (i = 1; i < argc; ++i)
+			if (argv[i])
+				break;
+		for (j = 1; i < argc; ++i, ++j)
+			argv[j] = argv[i];
+		argc = j;
+	}
+	else
+	{
+		/* this was changed to emit version number over the network */
+		printf(Q3MAP_VERSION "\n");
+
+		/* set exit call */
+		atexit(ExitQ3Map);
+
+		/* read general options first */
+		for(i = 1; i < argc; i++)
 		{
-			if(!verbose)
+			/* -connect */
+			if(!strcmp(argv[i], "-connect"))
 			{
-				verbose = qtrue;
+				argv[i] = NULL;
+				i++;
+				if (!help)
+					Broadcast_Setup(argv[i]);
+				argv[i] = NULL;
+			}
+
+			/* verbose */
+			else if(!strcmp(argv[i], "-v"))
+			{
+				if(!verbose)
+				{
+					verbose = qtrue;
+					argv[i] = NULL;
+				}
+			}
+
+			/* force */
+			else if(!strcmp(argv[i], "-force"))
+			{
+				force = qtrue;
+				argv[i] = NULL;
+			}
+
+			/* patch subdivisions */
+			else if(!strcmp(argv[i], "-subdivisions"))
+			{
+				argv[i] = NULL;
+				i++;
+				patchSubdivisions = atoi(argv[i]);
+				argv[i] = NULL;
+				if(patchSubdivisions <= 0)
+					patchSubdivisions = 1;
+			}
+
+			/* threads */
+			else if(!strcmp(argv[i], "-threads"))
+			{
+				argv[i] = NULL;
+				i++;
+				numthreads = atoi(argv[i]);
 				argv[i] = NULL;
 			}
 		}
 
-		/* force */
-		else if(!strcmp(argv[i], "-force"))
+		/* init model library */
+		PicoInit();
+		PicoSetMallocFunc(safe_malloc);
+		PicoSetFreeFunc(free);
+		PicoSetPrintFunc(PicoPrintFunc);
+		PicoSetLoadFileFunc(PicoLoadFileFunc);
+		PicoSetFreeFileFunc(free);
+
+		/* set number of threads */
+		ThreadSetDefault();
+
+		/* generate sinusoid jitter table */
+		for(i = 0; i < MAX_JITTERS; i++)
 		{
-			force = qtrue;
-			argv[i] = NULL;
+			jitters[i] = sin(i * 139.54152147);
+			//% Sys_Printf( "Jitter %4d: %f\n", i, jitters[ i ] );
 		}
 
-		/* patch subdivisions */
-		else if(!strcmp(argv[i], "-subdivisions"))
-		{
-			argv[i] = NULL;
-			i++;
-			patchSubdivisions = atoi(argv[i]);
-			argv[i] = NULL;
-			if(patchSubdivisions <= 0)
-				patchSubdivisions = 1;
-		}
+		/* we print out two versions, q3map's main version (since it evolves a bit out of GtkRadiant)
+		   and we put the GtkRadiant version to make it easy to track with what version of Radiant it was built with */
 
-		/* threads */
-		else if(!strcmp(argv[i], "-threads"))
-		{
-			argv[i] = NULL;
-			i++;
-			numthreads = atoi(argv[i]);
-			argv[i] = NULL;
-		}
-	}
-
-	/* init model library */
-	PicoInit();
-	PicoSetMallocFunc(safe_malloc);
-	PicoSetFreeFunc(free);
-	PicoSetPrintFunc(PicoPrintFunc);
-	PicoSetLoadFileFunc(PicoLoadFileFunc);
-	PicoSetFreeFileFunc(free);
-
-	/* set number of threads */
-	ThreadSetDefault();
-
-	/* generate sinusoid jitter table */
-	for(i = 0; i < MAX_JITTERS; i++)
-	{
-		jitters[i] = sin(i * 139.54152147);
-		//% Sys_Printf( "Jitter %4d: %f\n", i, jitters[ i ] );
-	}
-
-	/* we print out two versions, q3map's main version (since it evolves a bit out of GtkRadiant)
-	   and we put the GtkRadiant version to make it easy to track with what version of Radiant it was built with */
-
-	Sys_Printf("q3map              - v1.0r (c) 1999-2006 Id Software Inc.\n");
-	Sys_Printf("q3map2 (ydnar)     - v2.5.16\n");
+		Sys_Printf("q3map              - v1.0r (c) 1999-2006 Id Software Inc.\n");
+		Sys_Printf("q3map2 (ydnar)     - v2.5.16\n");
 //  Sys_Printf("GtkRadiant         - v" RADIANT_VERSION " " __DATE__ " " __TIME__ "\n");
 
-	/* ydnar: new path initialization */
-	InitPaths(&argc, argv);
+		/* ydnar: new path initialization */
+		InitPaths(&argc, argv);
 
-	/* set game options */
-	if(!patchSubdivisions)
-		patchSubdivisions = game->patchSubdivisions;
+		/* set game options */
+		if(!patchSubdivisions)
+			patchSubdivisions = game->patchSubdivisions;
+	}
 
 	/* check if we have enough options left to attempt something */
-	if(argc < 2)
-		Error("Usage: %s [general options] [options] mapfile", argv[0]);
+	if(argc < 2 && !help)
+		Error("Usage: %s [OPTIONS] [COMMAND [OPTIONS]] MAPFILE", argv[0]);
 
+	if(help && argv[1] == NULL)
+		/* nothing doing */; 
 	/* analyze */
-	if(!strcmp(argv[1], "-analyze"))
-		r = AnalyzeBSP(argc - 1, argv + 1);
+	else if(!strcmp(argv[1], "-analyze"))
+		r = help ? AnalyzeBSP(0, NULL) : AnalyzeBSP(argc - 1, argv + 1);
 
 	/* info */
 	else if(!strcmp(argv[1], "-info"))
-		r = BSPInfo(argc - 2, argv + 2);
+		r = help ? BSPInfo(0, NULL) : BSPInfo(argc - 2, argv + 2);
 
 	/* vis */
 	else if(!strcmp(argv[1], "-vis"))
-		r = VisMain(argc - 1, argv + 1);
+		r = help ? VisMain(0, NULL) : VisMain(argc - 1, argv + 1);
 
 	/* light */
 	else if(!strcmp(argv[1], "-light"))
-		r = LightMain(argc - 1, argv + 1);
+		r = help ? LightMain(0, NULL) : LightMain(argc - 1, argv + 1);
 
 	/* vlight */
 	else if(!strcmp(argv[1], "-vlight"))
 	{
 		Sys_Printf("WARNING: VLight is no longer supported, defaulting to -light -fast instead\n\n");
 		argv[1] = "-fast";		/* eek a hack */
-		r = LightMain(argc, argv);
+		r = help ? LightMain(0, NULL) : LightMain(argc, argv);
 	}
 
 	/* ydnar: lightmap export */
 	else if(!strcmp(argv[1], "-export"))
-		r = ExportLightmapsMain(argc - 1, argv + 1);
+		r = help ? ExportLightmapsMain(0, NULL) : ExportLightmapsMain(argc - 1, argv + 1);
 
 	/* ydnar: lightmap import */
 	else if(!strcmp(argv[1], "-import"))
-		r = ImportLightmapsMain(argc - 1, argv + 1);
+		r = help ? ImportLightmapsMain(0, NULL) : ImportLightmapsMain(argc - 1, argv + 1);
 
 	/* ydnar: bsp scaling */
 	else if(!strcmp(argv[1], "-scale"))
-		r = ScaleBSPMain(argc - 1, argv + 1);
+		r = help ? ScaleBSPMain(0, NULL) : ScaleBSPMain(argc - 1, argv + 1);
 
 	/* ydnar: bsp conversion */
 	else if(!strcmp(argv[1], "-convert"))
-		r = ConvertBSPMain(argc - 1, argv + 1);
+		r = help ? ConvertBSPMain(0, NULL) : ConvertBSPMain(argc - 1, argv + 1);
 
 	/* Tr3B: map conversion */
 	else if(!strcmp(argv[1], "-map2map"))
-		r = ConvertMapMain(argc - 1, argv + 1);
+		r = help ? ConvertMapMain(0, NULL) : ConvertMapMain(argc - 1, argv + 1);
 
 	/* div0: minimap */
 	else if(!strcmp(argv[1], "-minimap"))
-		r = MiniMapBSPMain(argc - 1, argv + 1);
+		r = help ? MiniMapBSPMain(0, NULL) : MiniMapBSPMain(argc - 1, argv + 1);
+
+	/* Navigation Mesh generation */
+	else if(!strcmp(argv[1], "-nav"))
+		r = help ? NavMain(0, NULL) : NavMain(argc - 1, argv + 1);
 
 	/* ydnar: otherwise create a bsp */
+	else if(!strcmp(argv[1], "-bsp"))
+		r = help ? BSPMain(0, NULL) : BSPMain(argc - 1, argv + 1);
 	else
-		r = BSPMain(argc, argv);
+		r = help ? 0 : BSPMain(argc, argv);
 
-	/* emit time */
-	end = I_FloatTime();
-	Sys_Printf("%9.0f seconds elapsed\n", end - start);
+	if (!help)
+	{
+		/* emit time */
+		end = I_FloatTime();
+		Sys_Printf("%9.0f seconds elapsed\n", end - start);
 
-	/* shut down connection */
-	Broadcast_Shutdown();
+		/* shut down connection */
+		Broadcast_Shutdown();
+	}
 
 	/* return any error code */
 	return r;
