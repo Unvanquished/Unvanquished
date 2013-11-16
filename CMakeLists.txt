@@ -596,7 +596,6 @@ set( CLIENTLIST
   ${ENGINE_DIR}/client/cl_ui.c
   ${ENGINE_DIR}/client/cl_logs.c
   ${ENGINE_DIR}/client/dl_main.c
-  ${ENGINE_DIR}/audio/snd_adpcm.c
   ${ENGINE_DIR}/audio/snd_codec.c
   ${ENGINE_DIR}/audio/snd_codec.h
   ${ENGINE_DIR}/audio/snd_local.h
@@ -604,12 +603,8 @@ set( CLIENTLIST
   ${ENGINE_DIR}/audio/snd_codec_ogg.c
   ${ENGINE_DIR}/audio/snd_codec_opus.c
   ${ENGINE_DIR}/audio/snd_codec_wav.c
-  ${ENGINE_DIR}/audio/snd_dma.c
   ${ENGINE_DIR}/audio/snd_openal.c
   ${ENGINE_DIR}/audio/snd_main.c
-  ${ENGINE_DIR}/audio/snd_mem.c
-  ${ENGINE_DIR}/audio/snd_mix.c
-  ${ENGINE_DIR}/audio/snd_wavelet.c
   ${ENGINE_DIR}/audio/qal.c
   ${ENGINE_DIR}/audio/qal.h
 )
@@ -623,7 +618,6 @@ endif()
 
 set( SDLLIST
   ${ENGINE_DIR}/sys/sdl_input.c
-  ${ENGINE_DIR}/sys/sdl_snd.c
   ${ENGINE_DIR}/sys/sdl2_compat.c
   ${ENGINE_DIR}/sys/sys_local.h
 )

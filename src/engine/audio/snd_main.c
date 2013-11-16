@@ -579,12 +579,6 @@ void S_Init( void )
 			Cvar_Set( "s_backend", "OpenAL" );
 		}
 
-		if ( !started )
-		{
-			started = S_Base_Init( &si );
-			Cvar_Set( "s_backend", "base" );
-		}
-
 		if ( started )
 		{
 			if ( !S_ValidSoundInterface( &si ) )
