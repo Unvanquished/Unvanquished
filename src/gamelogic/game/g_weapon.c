@@ -1312,10 +1312,6 @@ void G_CheckGrabAttack( gentity_t *self )
 	{
 		VectorMA( muzzle, LEVEL1_GRAB_RANGE, forward, end );
 	}
-	else if ( self->client->ps.weapon == WP_ALEVEL1_UPG )
-	{
-		VectorMA( muzzle, LEVEL1_GRAB_U_RANGE, forward, end );
-	}
 
 	trap_Trace( &tr, muzzle, NULL, NULL, end, self->s.number, MASK_SHOT );
 
@@ -1357,14 +1353,6 @@ void G_CheckGrabAttack( gentity_t *self )
 		if ( self->client->ps.weapon == WP_ALEVEL1 )
 		{
 			traceEnt->client->grabExpiryTime = level.time + LEVEL1_GRAB_TIME;
-
-			// Update the last combat time.
-			self->client->lastCombatTime = level.time + LEVEL1_GRAB_TIME;
-			traceEnt->client->lastCombatTime = level.time + LEVEL1_GRAB_TIME;
-		}
-		else if ( self->client->ps.weapon == WP_ALEVEL1_UPG )
-		{
-			traceEnt->client->grabExpiryTime = level.time + LEVEL1_GRAB_U_TIME;
 
 			// Update the last combat time.
 			self->client->lastCombatTime = level.time + LEVEL1_GRAB_TIME;
@@ -1822,9 +1810,8 @@ void G_ImpactAttack( gentity_t *self, gentity_t *victim )
 	}
 
 	// allow the granger airlifting ritual
-	if ( victim->client && victim->client->ps.stats[ STAT_STATE2 ] & SS2_JETPACK_ACTIVE &&
-	     ( self->client->pers.classSelection == PCL_ALIEN_BUILDER0 ||
-	       self->client->pers.classSelection == PCL_ALIEN_BUILDER0_UPG ) )
+	if ( victim->client && ( victim->client->ps.stats[ STAT_STATE2 ] & SS2_JETPACK_ACTIVE ) &&
+	     self->client->pers.classSelection == PCL_ALIEN_BUILDER0 )
 	{
 		return;
 	}
@@ -1932,25 +1919,28 @@ void G_FireWeapon3( gentity_t *self )
 	{
 		AngleVectors( self->client->ps.viewangles, forward, right, up );
 		G_CalcMuzzlePoint( self, forward, right, up, muzzle );
+
+		switch ( self->s.weapon )
+		{
+			case WP_ALEVEL3:
+				if ( self->client->ps.stats[ STAT_PERKS ] & PERK_SPIKES )
+				{
+					FireBounceball( self );
+				}
+				break;
+
+			case WP_ABUILD:
+				FireSlowblob( self );
+				break;
+
+			default:
+				break;
+		}
 	}
 	else
 	{
 		AngleVectors( self->s.angles2, forward, right, up );
 		VectorCopy( self->s.pos.trBase, muzzle );
-	}
-
-	switch ( self->s.weapon )
-	{
-		case WP_ALEVEL3_UPG:
-			FireBounceball( self );
-			break;
-
-		case WP_ABUILD2:
-			FireSlowblob( self );
-			break;
-
-		default:
-			break;
 	}
 }
 
@@ -1960,35 +1950,40 @@ void G_FireWeapon2( gentity_t *self )
 	{
 		AngleVectors( self->client->ps.viewangles, forward, right, up );
 		G_CalcMuzzlePoint( self, forward, right, up, muzzle );
+
+		switch ( self->s.weapon )
+		{
+			case WP_ALEVEL1:
+				if ( self->client->ps.stats[ STAT_PERKS ] & PERK_POISON )
+				{
+					FirePoisonCloud( self );
+				}
+				break;
+
+			case WP_LUCIFER_CANNON:
+				FireLcannon( self, qtrue );
+				break;
+
+			case WP_ALEVEL2:
+				if ( self->client->ps.stats[ STAT_PERKS ] & PERK_POISON )
+				{
+					FireAreaZap( self );
+				}
+				break;
+
+			case WP_ABUILD:
+			case WP_HBUILD:
+				CancelBuild( self );
+				break;
+
+			default:
+				break;
+		}
 	}
 	else
 	{
 		AngleVectors( self->s.angles2, forward, right, up );
 		VectorCopy( self->s.pos.trBase, muzzle );
-	}
-
-	switch ( self->s.weapon )
-	{
-		case WP_ALEVEL1_UPG:
-			FirePoisonCloud( self );
-			break;
-
-		case WP_LUCIFER_CANNON:
-			FireLcannon( self, qtrue );
-			break;
-
-		case WP_ALEVEL2_UPG:
-			FireAreaZap( self );
-			break;
-
-		case WP_ABUILD:
-		case WP_ABUILD2:
-		case WP_HBUILD:
-			CancelBuild( self );
-			break;
-
-		default:
-			break;
 	}
 }
 
@@ -2012,28 +2007,13 @@ void G_FireWeapon( gentity_t *self )
 			           LEVEL1_CLAW_DMG, MOD_LEVEL1_CLAW );
 			break;
 
-		case WP_ALEVEL1_UPG:
-			FireMelee( self, LEVEL1_CLAW_U_RANGE, LEVEL1_CLAW_WIDTH, LEVEL1_CLAW_WIDTH,
-			           LEVEL1_CLAW_DMG, MOD_LEVEL1_CLAW );
-			break;
-
 		case WP_ALEVEL3:
 			FireMelee( self, LEVEL3_CLAW_RANGE, LEVEL3_CLAW_WIDTH, LEVEL3_CLAW_WIDTH,
 			           LEVEL3_CLAW_DMG, MOD_LEVEL3_CLAW );
 			break;
 
-		case WP_ALEVEL3_UPG:
-			FireMelee( self, LEVEL3_CLAW_UPG_RANGE, LEVEL3_CLAW_WIDTH, LEVEL3_CLAW_WIDTH,
-			           LEVEL3_CLAW_DMG, MOD_LEVEL3_CLAW );
-			break;
-
 		case WP_ALEVEL2:
 			FireMelee( self, LEVEL2_CLAW_RANGE, LEVEL2_CLAW_WIDTH, LEVEL2_CLAW_WIDTH,
-			           LEVEL2_CLAW_DMG, MOD_LEVEL2_CLAW );
-			break;
-
-		case WP_ALEVEL2_UPG:
-			FireMelee( self, LEVEL2_CLAW_U_RANGE, LEVEL2_CLAW_WIDTH, LEVEL2_CLAW_WIDTH,
 			           LEVEL2_CLAW_DMG, MOD_LEVEL2_CLAW );
 			break;
 
@@ -2099,7 +2079,6 @@ void G_FireWeapon( gentity_t *self )
 			break;
 
 		case WP_ABUILD:
-		case WP_ABUILD2:
 			FireBuild( self, MN_A_BUILD );
 			break;
 

@@ -2468,7 +2468,6 @@ static qboolean Cmd_Class_internal( gentity_t *ent, const char *s, qboolean repo
 		if ( team == TEAM_ALIENS )
 		{
 			if ( newClass != PCL_ALIEN_BUILDER0 &&
-			     newClass != PCL_ALIEN_BUILDER0_UPG &&
 			     newClass != PCL_ALIEN_LEVEL0 )
 			{
 				if ( report )
@@ -2607,8 +2606,7 @@ static qboolean Cmd_Class_internal( gentity_t *ent, const char *s, qboolean repo
 			}
 
 			if ( ent->client->sess.spectatorState == SPECTATOR_NOT &&
-			     ( currentClass == PCL_ALIEN_BUILDER0 ||
-			       currentClass == PCL_ALIEN_BUILDER0_UPG ) &&
+			     currentClass == PCL_ALIEN_BUILDER0 &&
 			     ent->client->ps.stats[ STAT_MISC ] > 0 )
 			{
 				if ( report )

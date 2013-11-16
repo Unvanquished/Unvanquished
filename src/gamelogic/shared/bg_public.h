@@ -244,8 +244,8 @@ typedef enum
   STAT_FALLDIST,   // distance the player fell
   STAT_VIEWLOCK,   // direction to lock the view in
   STAT_PREDICTION, // predictions for current player action
-  STAT_FUEL        // humans: jetpack fuel
-  // netcode has space for 1 more
+  STAT_FUEL,       // humans: jetpack fuel
+  STAT_PERKS       // player class perk mask
 } statIndex_t;
 
 #define SCA_WALLCLIMBER     0x00000001
@@ -388,13 +388,9 @@ typedef enum
   WP_NONE,
 
   WP_ALEVEL0,
-  WP_ALEVEL0_UPG,
   WP_ALEVEL1,
-  WP_ALEVEL1_UPG,
   WP_ALEVEL2,
-  WP_ALEVEL2_UPG,
   WP_ALEVEL3,
-  WP_ALEVEL3_UPG,
   WP_ALEVEL4,
 
   // there is some ugly code that assumes WP_BLASTER is the first human weapon
@@ -913,22 +909,17 @@ typedef enum
 {
   PCL_NONE,
 
-  //builder classes
+  // builder classes
   PCL_ALIEN_BUILDER0,
-  PCL_ALIEN_BUILDER0_UPG,
 
-  //offensive classes
+  // offensive classes
   PCL_ALIEN_LEVEL0,
-  PCL_ALIEN_LEVEL0_UPG,
   PCL_ALIEN_LEVEL1,
-  PCL_ALIEN_LEVEL1_UPG,
   PCL_ALIEN_LEVEL2,
-  PCL_ALIEN_LEVEL2_UPG,
   PCL_ALIEN_LEVEL3,
-  PCL_ALIEN_LEVEL3_UPG,
   PCL_ALIEN_LEVEL4,
 
-  //human class
+  // human class
   PCL_HUMAN_NAKED,
   PCL_HUMAN_LIGHT,
   PCL_HUMAN_MEDIUM,
@@ -940,6 +931,13 @@ typedef enum
 #define PCL_ALIEN_CLASSES ( ( 1 << PCL_HUMAN_NAKED ) - ( 1 << PCL_ALIEN_BUILDER0 ) )
 #define PCL_HUMAN_CLASSES ( ( 1 << PCL_NUM_CLASSES ) - ( 1 << PCL_HUMAN_NAKED ) )
 #define PCL_ALL_CLASSES   ( PCL_ALIEN_CLASSES | PCL_HUMAN_CLASSES )
+
+// alien class perks
+#define PERK_STRENGTH    BIT(0) // more health, greater jumps
+#define PERK_AGILITY     BIT(1) // optional movement skills
+#define PERK_ELECTRICITY BIT(2) // short range with AoE, anti buildable
+#define PERK_POISON      BIT(3) // short range with AoE, anti human
+#define PERK_SPIKES      BIT(4) // long range without AoE
 
 // spectator state
 typedef enum

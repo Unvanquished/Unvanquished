@@ -531,7 +531,7 @@ needbasi
 	"voice/alien/needbasi.ogg"
 	{
 		team aliens
-		class aliens -Basilisk -"Advanced Basilisk"
+		class aliens -Basilisk
 		text "Need friend basi!"
 		enthusiasm 0
 	}

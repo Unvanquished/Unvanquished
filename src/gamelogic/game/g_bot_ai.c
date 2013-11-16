@@ -1002,23 +1002,9 @@ AINodeStatus_t BotActionEvolve ( gentity_t *self, AIGenericNode_t *node )
 			status = STATUS_SUCCESS;
 		}
 	}
-	else if ( BotCanEvolveToClass( self, PCL_ALIEN_LEVEL3_UPG ) && g_bot_level3upg.integer )
-	{
-		if ( BotEvolveToClass( self, PCL_ALIEN_LEVEL3_UPG ) )
-		{
-			status = STATUS_SUCCESS;
-		}
-	}
-	else if ( BotCanEvolveToClass( self, PCL_ALIEN_LEVEL3 ) && ( !BG_ClassUnlocked( PCL_ALIEN_LEVEL3_UPG ) || !g_bot_level2upg.integer || !g_bot_level3upg.integer ) && g_bot_level3.integer )
+	else if ( BotCanEvolveToClass( self, PCL_ALIEN_LEVEL3 ) && g_bot_level3.integer )
 	{
 		if ( BotEvolveToClass( self, PCL_ALIEN_LEVEL3 ) )
-		{
-			status = STATUS_SUCCESS;
-		}
-	}
-	else if ( BotCanEvolveToClass( self, PCL_ALIEN_LEVEL2_UPG ) && g_bot_level2upg.integer )
-	{
-		if ( BotEvolveToClass( self, PCL_ALIEN_LEVEL2_UPG ) )
 		{
 			status = STATUS_SUCCESS;
 		}
@@ -1026,13 +1012,6 @@ AINodeStatus_t BotActionEvolve ( gentity_t *self, AIGenericNode_t *node )
 	else if ( BotCanEvolveToClass( self, PCL_ALIEN_LEVEL2 ) && g_bot_level2.integer )
 	{
 		if ( BotEvolveToClass( self, PCL_ALIEN_LEVEL2 ) )
-		{
-			status = STATUS_SUCCESS;
-		}
-	}
-	else if ( BotCanEvolveToClass( self, PCL_ALIEN_LEVEL1_UPG ) && g_bot_level1upg.integer )
-	{
-		if ( BotEvolveToClass( self, PCL_ALIEN_LEVEL1_UPG ) )
 		{
 			status = STATUS_SUCCESS;
 		}

@@ -251,12 +251,12 @@ static void CG_AlienBuilderText( char *text, playerState_t *ps )
 		              CG_KeyNameForCommand( "+attack2" ) ) );
 	}
 
-	if ( ps->stats[ STAT_CLASS ] == PCL_ALIEN_BUILDER0_UPG )
-	{
-		Q_strcat( text, MAX_TUTORIAL_TEXT,
-		          va( _( "Press %s to launch a projectile\n" ),
-		              CG_KeyNameForCommand( "+useitem" ) ) );
+	Q_strcat( text, MAX_TUTORIAL_TEXT,
+	          va( _( "Press %s to launch a projectile\n" ),
+	              CG_KeyNameForCommand( "+useitem" ) ) );
 
+	if ( ps->stats[ STAT_PERKS ] & PERK_AGILITY )
+	{
 		Q_strcat( text, MAX_TUTORIAL_TEXT,
 		          va( _( "Press %s to walk on walls\n" ),
 		              CG_KeyNameForCommand( "+movedown" ) ) );
@@ -280,7 +280,7 @@ static void CG_AlienLevel0Text( char *text, playerState_t *ps )
 	          va( _( "Press %s to walk on walls\n" ),
 	              CG_KeyNameForCommand( "+movedown" ) ) );
 
-	if ( ps->stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL0_UPG )
+	if ( ps->stats[ STAT_PERKS ] & PERK_AGILITY )
 	{
 		Q_strcat( text, MAX_TUTORIAL_TEXT,
 		          va( _( "Press %s to pounce\n" ),
@@ -303,7 +303,7 @@ static void CG_AlienLevel1Text( char *text, playerState_t *ps )
 	          va( _( "Press %s to swipe\n" ),
 	              CG_KeyNameForCommand( "+attack" ) ) );
 
-	if ( ps->stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL1_UPG )
+	if ( ps->stats[ STAT_PERKS ] & PERK_POISON )
 	{
 		Q_strcat( text, MAX_TUTORIAL_TEXT,
 		          va( _( "Press %s to spray disorienting gas\n" ),
@@ -326,7 +326,7 @@ static void CG_AlienLevel2Text( char *text, playerState_t *ps )
 	          va( _( "Press %s to bite\n" ),
 	              CG_KeyNameForCommand( "+attack" ) ) );
 
-	if ( ps->stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL2_UPG )
+	if ( ps->stats[ STAT_PERKS ] & PERK_ELECTRICITY )
 	{
 		Q_strcat( text, MAX_TUTORIAL_TEXT,
 		          va( _( "Press %s to invoke an electrical attack\n" ),
@@ -349,7 +349,7 @@ static void CG_AlienLevel3Text( char *text, playerState_t *ps )
 	          va( _( "Press %s to bite\n" ),
 	              CG_KeyNameForCommand( "+attack" ) ) );
 
-	if ( ps->stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL3_UPG )
+	if ( ps->stats[ STAT_PERKS ] & PERK_SPIKES )
 	{
 		Q_strcat( text, MAX_TUTORIAL_TEXT,
 		          va( _( "Press %s to launch a projectile\n" ),
@@ -645,27 +645,22 @@ const char *CG_TutorialText( void )
 			switch ( ps->stats[ STAT_CLASS ] )
 			{
 				case PCL_ALIEN_BUILDER0:
-				case PCL_ALIEN_BUILDER0_UPG:
 					CG_AlienBuilderText( text, ps );
 					break;
 
 				case PCL_ALIEN_LEVEL0:
-				case PCL_ALIEN_LEVEL0_UPG:
 					CG_AlienLevel0Text( text, ps );
 					break;
 
 				case PCL_ALIEN_LEVEL1:
-				case PCL_ALIEN_LEVEL1_UPG:
 					CG_AlienLevel1Text( text, ps );
 					break;
 
 				case PCL_ALIEN_LEVEL2:
-				case PCL_ALIEN_LEVEL2_UPG:
 					CG_AlienLevel2Text( text, ps );
 					break;
 
 				case PCL_ALIEN_LEVEL3:
-				case PCL_ALIEN_LEVEL3_UPG:
 					CG_AlienLevel3Text( text, ps );
 					break;
 

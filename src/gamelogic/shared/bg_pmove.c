@@ -512,7 +512,7 @@ static float PM_CmdScale( usercmd_t *cmd, qboolean zFlight )
 	}
 
 	// Slow down when charging up for a pounce
-	if ( ( pm->ps->weapon == WP_ALEVEL3 || pm->ps->weapon == WP_ALEVEL3_UPG ) &&
+	if ( ( pm->ps->weapon == WP_ALEVEL3 ) &&
 	     usercmdButtonPressed( cmd->buttons, BUTTON_ATTACK2 ) )
 	{
 		modifier *= LEVEL3_POUNCE_SPEED_MOD;
@@ -659,11 +659,15 @@ PM_CheckWaterPounce
 static void PM_CheckWaterPounce( void )
 {
 	// Check for valid class
-	switch ( pm->ps->weapon )
+	switch ( pm->ps->stats[ STAT_CLASS ] )
 	{
-		case WP_ALEVEL0_UPG:
-		case WP_ALEVEL3:
-		case WP_ALEVEL3_UPG:
+		case PCL_ALIEN_LEVEL0:
+			if ( pm->ps->stats[ STAT_PERKS ] & PERK_AGILITY )
+			{
+				break;
+			}
+
+		case PCL_ALIEN_LEVEL3:
 			break;
 
 		default:
@@ -675,10 +679,9 @@ static void PM_CheckWaterPounce( void )
 	{
 		pm->ps->pm_flags &= ~PMF_CHARGE;
 
-		switch ( pm->ps->weapon )
+		switch ( pm->ps->stats[ STAT_CLASS ] )
 		{
-			case WP_ALEVEL3:
-			case WP_ALEVEL3_UPG:
+			case PCL_ALIEN_LEVEL3:
 				pm->ps->weaponTime += LEVEL3_POUNCE_REPEAT;
 				break;
 		}
@@ -843,11 +846,15 @@ static qboolean PM_CheckPounce( void )
 	float    pitch;
 
 	// Check for valid class
-	switch ( pm->ps->weapon )
+	switch ( pm->ps->stats[ STAT_CLASS ] )
 	{
-		case WP_ALEVEL0_UPG:
-		case WP_ALEVEL3:
-		case WP_ALEVEL3_UPG:
+		case PCL_ALIEN_LEVEL0:
+			if ( pm->ps->stats[ STAT_PERKS ] & PERK_AGILITY )
+			{
+				break;
+			}
+
+		case PCL_ALIEN_LEVEL3:
 			break;
 
 		default:
@@ -861,10 +868,9 @@ static qboolean PM_CheckPounce( void )
 		pm->ps->pm_flags &= ~PMF_CHARGE;
 
 		// goon pounce delays bite attacks
-		switch ( pm->ps->weapon )
+		switch ( pm->ps->stats[ STAT_CLASS ] )
 		{
-			case WP_ALEVEL3:
-			case WP_ALEVEL3_UPG:
+			case PCL_ALIEN_LEVEL3:
 				pm->ps->weaponTime += LEVEL3_POUNCE_REPEAT;
 				break;
 		}
@@ -873,9 +879,9 @@ static qboolean PM_CheckPounce( void )
 	}
 
 	// Check class-specific conditions for starting a pounce
-	switch ( pm->ps->weapon )
+	switch ( pm->ps->stats[ STAT_CLASS ] )
 	{
-		case WP_ALEVEL0_UPG:
+		case PCL_ALIEN_LEVEL0:
 			// Check if player wants to pounce
 			if ( !usercmdButtonPressed( pm->cmd.buttons, BUTTON_ATTACK2 ) )
 			{
@@ -889,8 +895,7 @@ static qboolean PM_CheckPounce( void )
 			}
 			break;
 
-		case WP_ALEVEL3:
-		case WP_ALEVEL3_UPG:
+		case PCL_ALIEN_LEVEL3:
 			// Don't pounce while still charging
 			if ( usercmdButtonPressed( pm->cmd.buttons, BUTTON_ATTACK2 ) )
 			{
@@ -920,9 +925,9 @@ static qboolean PM_CheckPounce( void )
 	}
 
 	// Calculate jump parameters
-	switch ( pm->ps->weapon )
+	switch ( pm->ps->stats[ STAT_CLASS ] )
 	{
-		case WP_ALEVEL0_UPG:
+		case PCL_ALIEN_LEVEL0:
 			// wallwalking
 			if ( pm->ps->groundEntityNum == ENTITYNUM_WORLD && pml.groundTrace.plane.normal[ 2 ] <= 0.1f )
 			{
@@ -1090,17 +1095,17 @@ static qboolean PM_CheckPounce( void )
 
 			break;
 
-		case WP_ALEVEL3:
-		case WP_ALEVEL3_UPG:
-			if ( pm->ps->weapon == WP_ALEVEL3 )
+		case PCL_ALIEN_LEVEL3:
+			if ( pm->ps->stats[ STAT_PERKS ] & PERK_STRENGTH )
 			{
 				jumpMagnitude = pm->ps->stats[ STAT_MISC ]
-				              * LEVEL3_POUNCE_JUMP_MAG / LEVEL3_POUNCE_TIME;
+				              * LEVEL3_POUNCE_JUMP_MAG_UPG / LEVEL3_POUNCE_TIME_UPG;
+
 			}
 			else
 			{
 				jumpMagnitude = pm->ps->stats[ STAT_MISC ]
-				              * LEVEL3_POUNCE_JUMP_MAG_UPG / LEVEL3_POUNCE_TIME_UPG;
+				              * LEVEL3_POUNCE_JUMP_MAG / LEVEL3_POUNCE_TIME;
 			}
 
 			VectorCopy( pml.forward, jumpDirection );
@@ -1522,16 +1527,15 @@ static qboolean PM_CheckJump( void )
 		return qfalse;
 	}
 
-	//can't jump and pounce at the same time
-	if ( ( pm->ps->weapon == WP_ALEVEL3 ||
-	       pm->ps->weapon == WP_ALEVEL3_UPG ) &&
+	// can't jump and pounce at the same time
+	if ( pm->ps->weapon == WP_ALEVEL3  &&
 	     pm->ps->stats[ STAT_MISC ] > 0 )
 	{
 		return qfalse;
 	}
 
-	//can't jump and charge at the same time
-	if ( ( pm->ps->weapon == WP_ALEVEL4 ) &&
+	// can't jump and charge at the same time
+	if ( pm->ps->weapon == WP_ALEVEL4 &&
 	     pm->ps->stats[ STAT_MISC ] > 0 )
 	{
 		return qfalse;
@@ -3867,8 +3871,9 @@ static void PM_Weapon( void )
 		return;
 	}
 
-	// Pounce cooldown (advanced dretch)
-	if ( pm->ps->weapon == WP_ALEVEL0_UPG )
+	// Pounce cooldown (dretch+agility)
+	if ( pm->ps->stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL0 &&
+	     pm->ps->stats[ STAT_PERKS ] & PERK_AGILITY )
 	{
 		pm->ps->stats[ STAT_MISC ] -= pml.msec;
 
@@ -3879,11 +3884,11 @@ static void PM_Weapon( void )
 	}
 
 	// Charging for a pounce or canceling a pounce (dragoon)
-	if ( pm->ps->weapon == WP_ALEVEL3 || pm->ps->weapon == WP_ALEVEL3_UPG )
+	if ( pm->ps->stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL3 )
 	{
 		int max;
 
-		max = pm->ps->weapon == WP_ALEVEL3 ? LEVEL3_POUNCE_TIME : LEVEL3_POUNCE_TIME_UPG;
+		max = ( pm->ps->stats[ STAT_PERKS ] & PERK_STRENGTH ) ? LEVEL3_POUNCE_TIME_UPG : LEVEL3_POUNCE_TIME;
 
 		if ( usercmdButtonPressed( pm->cmd.buttons, BUTTON_ATTACK2 ) )
 		{
@@ -3905,7 +3910,7 @@ static void PM_Weapon( void )
 	}
 
 	// Trample charge mechanics
-	if ( pm->ps->weapon == WP_ALEVEL4 )
+	if ( pm->ps->stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL4 )
 	{
 		// Charging up
 		if ( !( pm->ps->stats[ STAT_STATE ] & SS_CHARGING ) )
@@ -4025,8 +4030,8 @@ static void PM_Weapon( void )
 		return;
 	}
 
-	// no bite during pounce
-	if ( ( pm->ps->weapon == WP_ALEVEL3 || pm->ps->weapon == WP_ALEVEL3_UPG )
+	// dragoon: no bite during pounce
+	if ( pm->ps->stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL3
 	     && usercmdButtonPressed( pm->cmd.buttons, BUTTON_ATTACK )
 	     && ( pm->ps->pm_flags & PMF_CHARGE ) )
 	{
@@ -4203,13 +4208,10 @@ static void PM_Weapon( void )
 	switch ( pm->ps->weapon )
 	{
 		case WP_ALEVEL0:
-		case WP_ALEVEL0_UPG:
 			//venom is only autohit
 			return;
 
 		case WP_ALEVEL3:
-		case WP_ALEVEL3_UPG:
-
 			//pouncing has primary secondary AND autohit procedures
 			// pounce is autohit
 			if ( !attack1 && !attack2 && !attack3 )
@@ -4308,7 +4310,7 @@ static void PM_Weapon( void )
 		if ( BG_Weapon( pm->ps->weapon )->hasThirdMode )
 		{
 			//hacky special case for slowblob
-			if ( pm->ps->weapon == WP_ALEVEL3_UPG && !pm->ps->ammo )
+			if ( pm->ps->weapon == WP_ALEVEL3 && pm->ps->stats[ STAT_PERKS ] & PERK_SPIKES && !pm->ps->ammo )
 			{
 				pm->ps->weaponTime += 200;
 				return;
@@ -4355,14 +4357,12 @@ static void PM_Weapon( void )
 		switch ( pm->ps->weapon )
 		{
 			case WP_ALEVEL0:
-			case WP_ALEVEL0_UPG:
 				pm->ps->generic1 = WPM_PRIMARY;
 				PM_AddEvent( EV_FIRE_WEAPON );
 				addTime = BG_Weapon( pm->ps->weapon )->repeatRate1;
 				break;
 
 			case WP_ALEVEL3:
-			case WP_ALEVEL3_UPG:
 				pm->ps->generic1 = WPM_SECONDARY;
 				PM_AddEvent( EV_FIRE_WEAPON2 );
 				addTime = BG_Weapon( pm->ps->weapon )->repeatRate2;
@@ -4420,7 +4420,6 @@ static void PM_Weapon( void )
 		//       weapon.cfg
 		switch ( pm->ps->weapon )
 		{
-			case WP_ALEVEL1_UPG:
 			case WP_ALEVEL1:
 				if ( attack1 )
 				{
@@ -4431,13 +4430,6 @@ static void PM_Weapon( void )
 
 				break;
 
-			case WP_ALEVEL2_UPG:
-				if ( attack2 )
-				{
-					PM_ForceLegsAnim( NSPA_ATTACK2 );
-					PM_StartWeaponAnim( WANIM_ATTACK7 );
-				}
-
 			case WP_ALEVEL2:
 				if ( attack1 )
 				{
@@ -4445,6 +4437,14 @@ static void PM_Weapon( void )
 					PM_ForceLegsAnim( NSPA_ATTACK1 + num );
 					num = rand() / ( RAND_MAX / 6 + 1 );
 					PM_StartWeaponAnim( WANIM_ATTACK1 + num );
+				}
+				else if ( attack2 )
+				{
+					if ( pm->ps->stats[ STAT_PERKS ] & PERK_ELECTRICITY )
+					{
+						PM_ForceLegsAnim( NSPA_ATTACK2 );
+						PM_StartWeaponAnim( WANIM_ATTACK7 );
+					}
 				}
 
 				break;
@@ -4486,7 +4486,7 @@ static void PM_Weapon( void )
 
 	// take an ammo away if not infinite
 	if ( !BG_Weapon( pm->ps->weapon )->infiniteAmmo ||
-	     ( pm->ps->weapon == WP_ALEVEL3_UPG && attack3 ) )
+	     ( pm->ps->weapon == WP_ALEVEL3 && pm->ps->stats[ STAT_PERKS ] & PERK_SPIKES && attack3 ) )
 	{
 		// Special case for lcannon
 		if ( pm->ps->weapon == WP_LUCIFER_CANNON && attack1 && !attack2 )

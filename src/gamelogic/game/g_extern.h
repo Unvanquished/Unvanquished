@@ -111,8 +111,6 @@ extern  vmCvar_t g_powerRepeaterSupply;
 extern  vmCvar_t g_powerRepeaterRange;
 extern  vmCvar_t g_powerLevel1Interference;
 extern  vmCvar_t g_powerLevel1Range;
-extern  vmCvar_t g_powerLevel1UpgInterference;
-extern  vmCvar_t g_powerLevel1UpgRange;
 
 extern  vmCvar_t g_alienOffCreepRegenHalfLife;
 

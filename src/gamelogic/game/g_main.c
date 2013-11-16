@@ -126,8 +126,6 @@ vmCvar_t           g_powerRepeaterSupply;
 vmCvar_t           g_powerRepeaterRange;
 vmCvar_t           g_powerLevel1Interference;
 vmCvar_t           g_powerLevel1Range;
-vmCvar_t           g_powerLevel1UpgInterference;
-vmCvar_t           g_powerLevel1UpgRange;
 
 vmCvar_t           g_alienOffCreepRegenHalfLife;
 
@@ -347,8 +345,6 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_powerRepeaterRange,          "g_powerRepeaterRange",          "400",                              CVAR_SERVERINFO | CVAR_ARCHIVE,                  0, qfalse           },
 	{ &g_powerLevel1Interference,     "g_powerLevel1Interference",     "13",                               CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_powerLevel1Range,            "g_powerLevel1Range",            "250",                              CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_powerLevel1UpgInterference,  "g_powerLevel1UpgInterference",  "16",                               CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_powerLevel1UpgRange,         "g_powerLevel1UpgRange",         "300",                              CVAR_ARCHIVE,                                    0, qfalse           },
 
 	{ &g_alienOffCreepRegenHalfLife,  "g_alienOffCreepRegenHalfLife",  "0",                                CVAR_ARCHIVE,                                    0, qfalse           },
 

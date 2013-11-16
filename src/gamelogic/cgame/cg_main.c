@@ -539,40 +539,20 @@ static void CG_SetPVars( void )
 			trap_Cvar_Set( "p_classname", "Builder" );
 			break;
 
-		case PCL_ALIEN_BUILDER0_UPG:
-			trap_Cvar_Set( "p_classname", "Advanced Builder" );
-			break;
-
 		case PCL_ALIEN_LEVEL0:
 			trap_Cvar_Set( "p_classname", "Dretch" );
-			break;
-
-		case PCL_ALIEN_LEVEL0_UPG:
-			trap_Cvar_Set( "p_classname", "Advanced Dretch" );
 			break;
 
 		case PCL_ALIEN_LEVEL1:
 			trap_Cvar_Set( "p_classname", "Basilisk" );
 			break;
 
-		case PCL_ALIEN_LEVEL1_UPG:
-			trap_Cvar_Set( "p_classname", "Advanced Basilisk" );
-			break;
-
 		case PCL_ALIEN_LEVEL2:
 			trap_Cvar_Set( "p_classname", "Marauder" );
 			break;
 
-		case PCL_ALIEN_LEVEL2_UPG:
-			trap_Cvar_Set( "p_classname", "Advanced Marauder" );
-			break;
-
 		case PCL_ALIEN_LEVEL3:
 			trap_Cvar_Set( "p_classname", "Dragoon" );
-			break;
-
-		case PCL_ALIEN_LEVEL3_UPG:
-			trap_Cvar_Set( "p_classname", "Advanced Dragoon" );
 			break;
 
 		case PCL_ALIEN_LEVEL4:
@@ -653,18 +633,13 @@ static void CG_SetPVars( void )
 			break;
 
 		case WP_ALEVEL0:
-		case WP_ALEVEL0_UPG:
 			trap_Cvar_Set( "p_weaponname", "Teeth" );
 			break;
 
 		case WP_ABUILD:
-		case WP_ABUILD2:
 		case WP_ALEVEL1:
-		case WP_ALEVEL1_UPG:
 		case WP_ALEVEL2:
-		case WP_ALEVEL2_UPG:
 		case WP_ALEVEL3:
-		case WP_ALEVEL3_UPG:
 		case WP_ALEVEL4:
 			trap_Cvar_Set( "p_weaponname", "Claws" );
 			break;
@@ -2355,21 +2330,6 @@ static const char *CG_FeederItemText( int feederID, int index, int column, qhand
 					if ( sp->team == TEAM_HUMANS && sp->upgrade != UP_NONE )
 					{
 						*handle = cg_upgrades[ sp->upgrade ].upgradeIcon;
-					}
-					else if ( sp->team == TEAM_ALIENS )
-					{
-						switch ( sp->weapon )
-						{
-							case WP_ABUILD2:
-							case WP_ALEVEL1_UPG:
-							case WP_ALEVEL2_UPG:
-							case WP_ALEVEL3_UPG:
-								*handle = cgs.media.upgradeClassIconShader;
-								break;
-
-							default:
-								break;
-						}
 					}
 				}
 

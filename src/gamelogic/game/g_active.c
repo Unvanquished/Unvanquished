@@ -1058,19 +1058,16 @@ void ClientTimerActions( gentity_t *ent, int msec )
 			{
 				G_AddCreditsToScore( ent, LEVEL1_REGEN_SCOREINC );
 			}
-			else if ( client->ps.weapon == WP_ALEVEL1_UPG )
-			{
-				G_AddCreditsToScore( ent, LEVEL1_UPG_REGEN_SCOREINC );
-			}
 
 			ent->client->pers.hasHealed = qfalse;
 		}
 	}
 
-	// Regenerate Adv. Dragoon barbs
-	if ( client->ps.weapon == WP_ALEVEL3_UPG )
+	// Regenerate dragoon barbs
+	if ( client->ps.weapon == WP_ALEVEL3 && client->ps.stats[ STAT_PERKS ] & PERK_SPIKES )
 	{
-		if ( client->ps.ammo < BG_Weapon( WP_ALEVEL3_UPG )->maxAmmo )
+		// TODO: Use another kind of configuration files for alien class/perk combination
+		if ( client->ps.ammo < BG_Weapon( WP_ALEVEL3 )->maxAmmo )
 		{
 			if ( ent->timestamp + LEVEL3_BOUNCEBALL_REGEN < level.time )
 			{
@@ -1653,11 +1650,14 @@ static int G_FindHealth( gentity_t *self )
 		{
 			if ( boost->client->ps.stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL1 )
 			{
-				ret |= SS_HEALING_2X;
-			}
-			else if ( boost->client->ps.stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL1_UPG )
-			{
-				ret |= SS_HEALING_3X;
+				if ( boost->client->ps.stats[ STAT_PERKS ] & PERK_POISON )
+				{
+					ret |= SS_HEALING_3X;
+				}
+				else
+				{
+					ret |= SS_HEALING_2X;
+				}
 			}
 		}
 		else if ( boost->s.eType == ET_BUILDABLE && boost->spawned && boost->health > 0 &&
@@ -2110,7 +2110,6 @@ void ClientThink_real( gentity_t *ent )
 	switch ( client->ps.weapon )
 	{
 		case WP_ALEVEL0:
-		case WP_ALEVEL0_UPG:
 			if ( !G_CheckVenomAttack( ent ) )
 			{
 				client->ps.weaponstate = WEAPON_READY;
@@ -2124,12 +2123,10 @@ void ClientThink_real( gentity_t *ent )
 			break;
 
 		case WP_ALEVEL1:
-		case WP_ALEVEL1_UPG:
 			G_CheckGrabAttack( ent );
 			break;
 
 		case WP_ALEVEL3:
-		case WP_ALEVEL3_UPG:
 			if ( !G_CheckPounceAttack( ent ) )
 			{
 				client->ps.weaponstate = WEAPON_READY;

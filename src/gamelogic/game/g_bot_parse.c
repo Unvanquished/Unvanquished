@@ -1296,15 +1296,10 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	// add player classes
 	D( PCL_NONE );
 	D( PCL_ALIEN_BUILDER0 );
-	D( PCL_ALIEN_BUILDER0_UPG );
 	D( PCL_ALIEN_LEVEL0 );
-	D( PCL_ALIEN_LEVEL0_UPG );
 	D( PCL_ALIEN_LEVEL1 );
-	D( PCL_ALIEN_LEVEL1_UPG );
 	D( PCL_ALIEN_LEVEL2 );
-	D( PCL_ALIEN_LEVEL2_UPG );
 	D( PCL_ALIEN_LEVEL3 );
-	D( PCL_ALIEN_LEVEL3_UPG );
 	D( PCL_ALIEN_LEVEL4 );
 	D( PCL_HUMAN_NAKED );
 	D( PCL_HUMAN_LIGHT );

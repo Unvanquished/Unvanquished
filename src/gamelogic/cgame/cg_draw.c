@@ -1127,22 +1127,26 @@ float CG_ChargeProgress( void )
 	float progress;
 	int   min = 0, max = 0;
 
-	if ( cg.snap->ps.weapon == WP_ALEVEL0_UPG )
+	if ( cg.snap->ps.stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL0 &&
+	     cg.snap->ps.stats[ STAT_PERKS ] & PERK_AGILITY )
 	{
 		min = 0;
 		max = MAX( LEVEL0_POUNCE_COOLDOWN, LEVEL0_SIDEPOUNCE_COOLDOWN );
 	}
-	else if ( cg.snap->ps.weapon == WP_ALEVEL3 )
+	else if ( cg.snap->ps.stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL3 )
 	{
-		min = LEVEL3_POUNCE_TIME_MIN;
-		max = LEVEL3_POUNCE_TIME;
+		if ( cg.snap->ps.stats[ STAT_PERKS ] & PERK_STRENGTH )
+		{
+			min = LEVEL3_POUNCE_TIME_MIN;
+			max = LEVEL3_POUNCE_TIME_UPG;
+		}
+		else
+		{
+			min = LEVEL3_POUNCE_TIME_MIN;
+			max = LEVEL3_POUNCE_TIME;
+		}
 	}
-	else if ( cg.snap->ps.weapon == WP_ALEVEL3_UPG )
-	{
-		min = LEVEL3_POUNCE_TIME_MIN;
-		max = LEVEL3_POUNCE_TIME_UPG;
-	}
-	else if ( cg.snap->ps.weapon == WP_ALEVEL4 )
+	else if ( cg.snap->ps.stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL4 )
 	{
 		if ( cg.predictedPlayerState.stats[ STAT_STATE ] & SS_CHARGING )
 		{
@@ -2579,9 +2583,7 @@ static int QDECL SortWeaponClass( const void *a, const void *b )
 	// We want grangers on top. ckits are already on top without the special case.
 	if ( ca->team == TEAM_ALIENS )
 	{
-		if ( ca->curWeaponClass == PCL_ALIEN_BUILDER0_UPG ||
-		     cb->curWeaponClass == PCL_ALIEN_BUILDER0_UPG ||
-		     ca->curWeaponClass == PCL_ALIEN_BUILDER0 ||
+		if ( ca->curWeaponClass == PCL_ALIEN_BUILDER0 ||
 		     cb->curWeaponClass == PCL_ALIEN_BUILDER0 )
 		{
 			out = -out;
@@ -2656,9 +2658,6 @@ static void CG_DrawTeamOverlay( rectDef_t *rect, float scale, vec4_t color )
 				else
 				{
 					if ( ci->curWeaponClass == PCL_ALIEN_BUILDER0 ||
-					     ci->curWeaponClass == PCL_ALIEN_BUILDER0_UPG ||
-					     ci->curWeaponClass == PCL_ALIEN_LEVEL1 ||
-					     ci->curWeaponClass == PCL_ALIEN_LEVEL1_UPG ||
 					     ci->curWeaponClass == WP_HBUILD )
 					{
 						displayClients[ maxDisplayCount++ ] = i;
@@ -2764,16 +2763,6 @@ static void CG_DrawTeamOverlay( rectDef_t *rect, float scale, vec4_t color )
 				{
 					CG_DrawPic( x + iconSize + leftMargin, y, iconSize,
 					            iconSize, cg_upgrades[ ci->upgrade ].upgradeIcon );
-				}
-			}
-			else
-			{
-				if ( curWeapon == WP_ABUILD2 || curWeapon == WP_ALEVEL0_UPG ||
-				     curWeapon == WP_ALEVEL1_UPG || curWeapon == WP_ALEVEL2_UPG ||
-				     curWeapon == WP_ALEVEL3_UPG )
-				{
-					CG_DrawPic( x + iconSize + leftMargin, y, iconSize,
-					            iconSize, cgs.media.upgradeClassIconShader );
 				}
 			}
 

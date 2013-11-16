@@ -1201,9 +1201,7 @@ void AOvermind_Think( gentity_t *self )
 			{
 				builder = &g_entities[ level.sortedClients[ i ] ];
 
-				if ( builder->health > 0 &&
-				     ( builder->client->pers.classSelection == PCL_ALIEN_BUILDER0 ||
-				       builder->client->pers.classSelection == PCL_ALIEN_BUILDER0_UPG ) )
+				if ( builder->health > 0 && builder->client->pers.classSelection == PCL_ALIEN_BUILDER0 )
 				{
 					haveBuilder = qtrue;
 					break;
@@ -1965,7 +1963,6 @@ static int PowerRelevantRange()
 	relevantRange = MAX( relevantRange, g_powerReactorRange.integer );
 	relevantRange = MAX( relevantRange, g_powerRepeaterRange.integer );
 	relevantRange = MAX( relevantRange, g_powerCompetitionRange.integer );
-	relevantRange = MAX( relevantRange, g_powerLevel1UpgRange.integer );
 	relevantRange = MAX( relevantRange, g_powerLevel1Range.integer );
 
 	return relevantRange;
@@ -2083,11 +2080,6 @@ static float IncomingInterference( buildable_t buildable, gentity_t *neighbor,
 			case PCL_ALIEN_LEVEL1:
 				power = -g_powerLevel1Interference.integer;
 				range = g_powerLevel1Range.integer;
-				break;
-
-			case PCL_ALIEN_LEVEL1_UPG:
-				power = -g_powerLevel1UpgInterference.integer;
-				range = g_powerLevel1UpgRange.integer;
 				break;
 
 			default:

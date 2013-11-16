@@ -229,19 +229,9 @@ static classData_t bg_classData[] =
 		WP_ABUILD //weapon_t  startWeapon;
 	},
 	{
-		PCL_ALIEN_BUILDER0_UPG, //int     number;
-		"builderupg", //char    *name;
-		WP_ABUILD2 //weapon_t  startWeapon;
-	},
-	{
 		PCL_ALIEN_LEVEL0, //int     number;
 		"level0", //char    *name;
 		WP_ALEVEL0 //weapon_t  startWeapon;
-	},
-    {
-		PCL_ALIEN_LEVEL0_UPG, //int     number;
-		"level0upg", //char    *name;
-		WP_ALEVEL0_UPG //weapon_t  startWeapon;
 	},
 	{
 		PCL_ALIEN_LEVEL1, //int     number;
@@ -249,29 +239,14 @@ static classData_t bg_classData[] =
 		WP_ALEVEL1 //weapon_t  startWeapon;
 	},
 	{
-		PCL_ALIEN_LEVEL1_UPG, //int     number;
-		"level1upg", //char    *name;
-		WP_ALEVEL1_UPG //weapon_t  startWeapon;
-	},
-	{
 		PCL_ALIEN_LEVEL2, //int     number;
 		"level2", //char    *name;
 		WP_ALEVEL2 //weapon_t  startWeapon;
 	},
 	{
-		PCL_ALIEN_LEVEL2_UPG, //int     number;
-		"level2upg", //char    *name;
-		WP_ALEVEL2_UPG //weapon_t  startWeapon;
-	},
-	{
 		PCL_ALIEN_LEVEL3, //int     number;
 		"level3", //char    *name;
 		WP_ALEVEL3 //weapon_t  startWeapon;
-	},
-	{
-		PCL_ALIEN_LEVEL3_UPG, //int     number;
-		"level3upg", //char    *name;
-		WP_ALEVEL3_UPG //weapon_t  startWeapon;
 	},
 	{
 		PCL_ALIEN_LEVEL4, //int     number;
@@ -463,9 +438,8 @@ int BG_ClassCanEvolveFromTo( class_t from, class_t to, int credits )
 	// classes w/o a cost are for spawning only
 	if ( toCost == 0 )
 	{
-		// (adv.) granger may evolve into adv. granger or dretch at no cost
-		if ( ( from == PCL_ALIEN_BUILDER0 || from == PCL_ALIEN_BUILDER0_UPG ) &&
-		     ( to == PCL_ALIEN_BUILDER0_UPG || to == PCL_ALIEN_LEVEL0 ) )
+		// granger may evolve into granger or dretch at no cost
+		if ( from == PCL_ALIEN_BUILDER0 && to == PCL_ALIEN_LEVEL0 )
 		{
 			return 0;
 		}
@@ -565,13 +539,9 @@ typedef struct
 static const weaponData_t bg_weaponsData[] =
 {
 	{ WP_ALEVEL0,           "level0"    },
-    { WP_ALEVEL0_UPG,       "level0upg" },
 	{ WP_ALEVEL1,           "level1"    },
-	{ WP_ALEVEL1_UPG,       "level1upg" },
 	{ WP_ALEVEL2,           "level2"    },
-	{ WP_ALEVEL2_UPG,       "level2upg" },
 	{ WP_ALEVEL3,           "level3"    },
-	{ WP_ALEVEL3_UPG,       "level3upg" },
 	{ WP_ALEVEL4,           "level4"    },
 	{ WP_BLASTER,           "blaster"   },
 	{ WP_MACHINEGUN,        "rifle"     },

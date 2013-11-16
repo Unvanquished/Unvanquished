@@ -91,18 +91,12 @@ float BotGetBaseRushScore( gentity_t *ent )
 			return 0.0f;
 		case WP_ALEVEL0:
 			return 0.0f;
-		case WP_ALEVEL0_UPG:
-			return 0.0f;
 		case WP_ALEVEL1:
 			return 0.2f;
 		case WP_ALEVEL2:
 			return 0.5f;
-		case WP_ALEVEL2_UPG:
-			return 0.7f;
 		case WP_ALEVEL3:
 			return 0.8f;
-		case WP_ALEVEL3_UPG:
-			return 0.9f;
 		case WP_ALEVEL4:
 			return 1.0f;
 		default:
@@ -160,24 +154,14 @@ float BotGetEnemyPriority( gentity_t *self, gentity_t *ent )
 			case WP_ALEVEL0:
 				enemyScore = 0.1;
 				break;
-			case WP_ALEVEL0_UPG:
-				enemyScore = 0.2;
-				break;
 			case WP_ALEVEL1:
-			case WP_ALEVEL1_UPG:
 				enemyScore = 0.3;
 				break;
 			case WP_ALEVEL2:
 				enemyScore = 0.4;
 				break;
-			case WP_ALEVEL2_UPG:
-				enemyScore = 0.7;
-				break;
 			case WP_ALEVEL3:
 				enemyScore = 0.7;
-				break;
-			case WP_ALEVEL3_UPG:
-				enemyScore = 0.8;
 				break;
 			case WP_ALEVEL4:
 				enemyScore = 1.0;
@@ -1044,7 +1028,6 @@ qboolean BotTargetInAttackRange( gentity_t *self, botTarget_t target )
 			width = height = ABUILDER_CLAW_WIDTH;
 			break;
 		case WP_ALEVEL0:
-		case WP_ALEVEL0_UPG:
 			range = LEVEL0_BITE_RANGE;
 			secondaryRange = 0;
 			break;
@@ -1053,32 +1036,17 @@ qboolean BotTargetInAttackRange( gentity_t *self, botTarget_t target )
 			secondaryRange = 0;
 			width = height = LEVEL1_CLAW_WIDTH;
 			break;
-		case WP_ALEVEL1_UPG:
-			range = LEVEL1_CLAW_RANGE;
-			secondaryRange = LEVEL1_PCLOUD_RANGE;
-			width = height = LEVEL1_CLAW_WIDTH;
-			break;
 		case WP_ALEVEL2:
 			range = LEVEL2_CLAW_RANGE;
-			secondaryRange = 0;
-			width = height = LEVEL2_CLAW_WIDTH;
-			break;
-		case WP_ALEVEL2_UPG:
-			range = LEVEL2_CLAW_U_RANGE;
-			secondaryRange = LEVEL2_AREAZAP_RANGE;
+			secondaryRange = self->client->ps.stats[ STAT_PERKS ] & PERK_ELECTRICITY ? LEVEL2_AREAZAP_RANGE : 0;
 			width = height = LEVEL2_CLAW_WIDTH;
 			break;
 		case WP_ALEVEL3:
 			range = LEVEL3_CLAW_RANGE;
 			//need to check if we can pounce to the target
-			secondaryRange = LEVEL3_POUNCE_JUMP_MAG; //An arbitrary value for pounce, has nothing to do with actual range
-			width = height = LEVEL3_CLAW_WIDTH;
-			break;
-		case WP_ALEVEL3_UPG:
-			range = LEVEL3_CLAW_RANGE;
-			//we can pounce, or we have barbs
-			secondaryRange = LEVEL3_POUNCE_JUMP_MAG_UPG; //An arbitrary value for pounce and barbs, has nothing to do with actual range
-			if ( self->client->ps.ammo > 0 )
+			//An arbitrary value for pounce, has nothing to do with actual range
+			secondaryRange = self->client->ps.stats[ STAT_PERKS ] & PERK_STRENGTH ? LEVEL3_POUNCE_JUMP_MAG_UPG : LEVEL3_POUNCE_JUMP_MAG;
+			if ( self->client->ps.stats[ STAT_PERKS ] & PERK_SPIKES && self->client->ps.ammo > 0 )
 			{
 				secondaryRange = 900;
 			}
@@ -1517,11 +1485,9 @@ void BotClassMovement( gentity_t *self, qboolean inAttackRange )
 	switch ( self->client->ps.stats[STAT_CLASS] )
 	{
 		case PCL_ALIEN_LEVEL0:
-		case PCL_ALIEN_LEVEL0_UPG:
 			BotStrafeDodge( self );
 			break;
 		case PCL_ALIEN_LEVEL1:
-		case PCL_ALIEN_LEVEL1_UPG:
 			if ( BotTargetIsPlayer( self->botMind->goal ) && ( self->botMind->goal.ent->client->ps.stats[STAT_STATE] & SS_GRABBED ) && inAttackRange )
 			{
 				if ( self->botMind->botSkill.level == 10 )
@@ -1540,7 +1506,6 @@ void BotClassMovement( gentity_t *self, qboolean inAttackRange )
 			}
 			break;
 		case PCL_ALIEN_LEVEL2:
-		case PCL_ALIEN_LEVEL2_UPG:
 			if ( self->botMind->nav.directPathToGoal )
 			{
 				if ( self->client->time1000 % 300 == 0 )
@@ -1551,13 +1516,14 @@ void BotClassMovement( gentity_t *self, qboolean inAttackRange )
 			}
 			break;
 		case PCL_ALIEN_LEVEL3:
-			break;
-		case PCL_ALIEN_LEVEL3_UPG:
-			if ( BotGetTargetType( self->botMind->goal ) == ET_BUILDABLE && self->client->ps.ammo > 0
-				&& inAttackRange )
+			if ( self->client->ps.stats[ STAT_PERKS ] & PERK_SPIKES )
 			{
-				//dont move when sniping buildings
-				BotStandStill( self );
+				if ( BotGetTargetType( self->botMind->goal ) == ET_BUILDABLE && self->client->ps.ammo > 0
+					&& inAttackRange )
+				{
+					//dont move when sniping buildings
+					BotStandStill( self );
+				}
 			}
 			break;
 		case PCL_ALIEN_LEVEL4:
@@ -1679,26 +1645,12 @@ void BotFireWeaponAI( gentity_t *self )
 			}
 			break;
 		case WP_ALEVEL0:
-		case WP_ALEVEL0_UPG:
 			break; //auto hit
 		case WP_ALEVEL1:
 			BotFireWeapon( WPM_PRIMARY, botCmdBuffer ); //basi swipe
 			break;
-		case WP_ALEVEL1_UPG:
-			if ( distance <= LEVEL1_CLAW_U_RANGE )
-			{
-				BotFireWeapon( WPM_PRIMARY, botCmdBuffer );    //basi swipe
-			}
-			/*
-			 *		else
-			 *		BotFireWeapn(WPM_SECONDARY,botCmdBuffer); //basi poisen
-			 */
-			break;
 		case WP_ALEVEL2:
-			BotFireWeapon( WPM_PRIMARY, botCmdBuffer ); //mara swipe
-			break;
-		case WP_ALEVEL2_UPG:
-			if ( distance <= LEVEL2_CLAW_U_RANGE )
+			if ( distance <= LEVEL2_CLAW_U_RANGE || !(self->client->ps.stats[ STAT_PERKS ] & PERK_ELECTRICITY) )
 			{
 				BotFireWeapon( WPM_PRIMARY, botCmdBuffer );    //mara swipe
 			}
@@ -1708,23 +1660,12 @@ void BotFireWeaponAI( gentity_t *self )
 			}
 			break;
 		case WP_ALEVEL3:
-			if ( distance > LEVEL3_CLAW_RANGE && self->client->ps.stats[ STAT_MISC ] < LEVEL3_POUNCE_TIME )
-			{
-				botCmdBuffer->angles[PITCH] = ANGLE2SHORT( -CalcPounceAimPitch( self, self->botMind->goal ) ); //compute and apply correct aim pitch to hit target
-				BotFireWeapon( WPM_SECONDARY, botCmdBuffer ); //goon pounce
-			}
-			else
-			{
-				BotFireWeapon( WPM_PRIMARY, botCmdBuffer );    //goon chomp
-			}
-			break;
-		case WP_ALEVEL3_UPG:
-			if ( self->client->ps.ammo > 0 && distance > LEVEL3_CLAW_UPG_RANGE )
+			if ( self->client->ps.stats[ STAT_PERKS ] & PERK_SPIKES && self->client->ps.ammo > 0 && distance > LEVEL3_CLAW_UPG_RANGE )
 			{
 				botCmdBuffer->angles[PITCH] = ANGLE2SHORT( -CalcBarbAimPitch( self, self->botMind->goal ) ); //compute and apply correct aim pitch to hit target
 				BotFireWeapon( WPM_TERTIARY, botCmdBuffer ); //goon barb
 			}
-			else if ( distance > LEVEL3_CLAW_UPG_RANGE && self->client->ps.stats[ STAT_MISC ] < LEVEL3_POUNCE_TIME_UPG )
+			else if ( distance > LEVEL3_CLAW_UPG_RANGE && self->client->ps.stats[ STAT_MISC ] < LEVEL3_POUNCE_TIME )
 			{
 				botCmdBuffer->angles[PITCH] = ANGLE2SHORT( -CalcPounceAimPitch( self, self->botMind->goal ) ); //compute and apply correct aim pitch to hit target
 				BotFireWeapon( WPM_SECONDARY, botCmdBuffer ); //goon pounce
