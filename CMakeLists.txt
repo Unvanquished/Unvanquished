@@ -71,17 +71,23 @@ endif()
 ################################################################################
 
 # When adding a new architecture, look at all the places ARCH is used
+
+# Detect architecture
 if( CMAKE_SYSTEM_PROCESSOR MATCHES "i.86" OR CMAKE_SYSTEM_PROCESSOR STREQUAL "x86" )
   # Sometimes CMAKE_SYSTEM_PROCESSOR returns x86 on x86_64
   if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
-    set( ARCH "x86_64" )
+    set( DETECT_ARCH "x86_64" )
   else()
-    set( ARCH "x86" )
+    set( DETECT_ARCH "x86" )
   endif()
 elseif( CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64" OR CMAKE_SYSTEM_PROCESSOR STREQUAL "amd64" )
- set( ARCH "x86_64" )
-else()
-  message( FATAL_ERROR "Architecture not supported" )
+ set( DETECT_ARCH "x86_64" )
+endif()
+
+# Allow the user to set the target architecture
+set( ARCH ${DETECT_ARCH} CACHE STRING "Target architecture to compile for" )
+if( NOT ARCH STREQUAL "x86" AND NOT ARCH STREQUAL "x86_64" )
+  message( FATAL_ERROR "Architecture ${ARCH} not supported" )
 endif()
 
 ################################################################################
@@ -117,12 +123,6 @@ macro( set_linker_flag FLAG )
 endmacro()
 
 # Try flag and set if it works, optional argument specifies build type
-macro( try_c_flag PROP FLAG )
-  check_C_compiler_flag( ${FLAG} FLAG_${PROP} )
-  if( FLAG_${PROP} )
-    set_c_flag( ${FLAG} ${ARGN} )
-  endif()
-endmacro()
 macro( try_cxx_flag PROP FLAG )
   check_CXX_compiler_flag( ${FLAG} FLAG_${PROP} )
   if( FLAG_${PROP} )
@@ -130,10 +130,10 @@ macro( try_cxx_flag PROP FLAG )
   endif()
 endmacro()
 macro( try_c_cxx_flag PROP FLAG )
-  # Only try the flag once on the C compiler
-  try_c_flag( ${PROP} ${FLAG} ${ARGV2} )
+  # Only try the flag once on the C++ compiler
+  try_cxx_flag( ${PROP} ${FLAG} ${ARGV2} )
   if( FLAG_${PROP} )
-    set_cxx_flag( ${FLAG} ${ARGV2} )
+    set_c_flag( ${FLAG} ${ARGV2} )
   endif()
 endmacro()
 macro( try_linker_flag PROP FLAG )
@@ -171,7 +171,11 @@ else()
   elseif( ARCH STREQUAL "x86_64" )
     set_c_cxx_flag( "-m64" )
     set_c_cxx_flag( "-mtune=generic" )
+
+    # Clang prints a warning when if it doesn't support -mcx16
+    set( CMAKE_REQUIRED_FLAGS "-Werror" )
     try_c_cxx_flag( MCX16 "-mcx16" )
+    set( CMAKE_REQUIRED_FLAGS "" )
   endif()
 
   # Use hidden symbol visibility if possible
@@ -260,6 +264,17 @@ if( MSVC )
   add_definitions( -D_CRT_SECURE_NO_WARNINGS )
 endif()
 
+# Mac-specific definitions
+if( APPLE )
+  add_definitions( -DMACOS_X )
+  if( ARCH STREQUAL "x86_64" )
+    set( CMAKE_OSX_ARCHITECTURES x86_64 )
+  else()
+    set( CMAKE_OSX_ARCHITECTURES i386 )
+  endif()
+  mark_as_advanced( CMAKE_OSX_ARCHITECTURES )
+endif()
+
 # QVM compatibility
 if( ENABLE_QVM_COMPAT )
   add_definitions( -DQVM_COMPAT )
@@ -283,6 +298,7 @@ set( GAMELOGIC_DIR ${MOUNT_DIR}/gamelogic )
 set( TOOLS_DIR ${MOUNT_DIR}/tools )
 set( LCC_DIR ${TOOLS_DIR}/lcc )
 set( LIB_DIR ${MOUNT_DIR}/libs )
+set( DEPS_DIR ${CMAKE_SOURCE_DIR}/external_deps )
 if( CMAKE_HOST_WIN32 )
   set( PNACL_TOOLCHAIN ${NACL_SDK_PATH}/toolchain/win_x86_pnacl/newlib/bin )
   set( PNACL_BIN_EXT ".bat" )
@@ -918,6 +934,27 @@ set_source_files_properties( ${EVERYTHING_C} PROPERTIES LANGUAGE CXX )
 ################################################################################
 # Libraries
 ################################################################################
+
+# Set up paths for external dependencies
+if( WIN32 AND NOT MSVC )
+  if( ARCH STREQUAL "x86_64" )
+    set( CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} ${DEPS_DIR}/mingw64 ${DEPS_DIR}/mingw64/include )
+    set( CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} ${DEPS_DIR}/mingw64/lib )
+  else()
+    set( CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} ${DEPS_DIR}/mingw32 ${DEPS_DIR}/mingw32/include )
+    set( CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} ${DEPS_DIR}/mingw32/lib )
+  endif()
+elseif( APPLE )
+  if( ARCH STREQUAL "x86_64" )
+    set( CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} ${DEPS_DIR}/macosx10.8_64 ${DEPS_DIR}/macosx10.8_64/include )
+    set( CMAKE_FRAMEWORK_PATH ${CMAKE_FRAMEWORK_PATH} ${DEPS_DIR}/macosx10.8_64 )
+    set( CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} ${DEPS_DIR}/macosx10.8_64/lib )
+  else()
+    set( CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} ${DEPS_DIR}/macosx10.7_32 ${DEPS_DIR}/macosx10.7_32/include )
+    set( CMAKE_FRAMEWORK_PATH ${CMAKE_FRAMEWORK_PATH} ${DEPS_DIR}/macosx10.7_32 )
+    set( CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} ${DEPS_DIR}/macosx10.7_32/lib )
+  endif()
+endif()
 
 # These variables are defined
 # LIBS_BASE, LIBSRC_BASE

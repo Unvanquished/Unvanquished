@@ -34,7 +34,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #define PLATFORM_STRING "Windows"
 #elif defined(__APPLE__)
 #define DLL_PREFIX "lib"
-#define DLL_EXT ".dylib"
+#define DLL_EXT ".so"
 #define EXE_EXT ""
 #define PATH_SEP '/'
 #define PLATFORM_STRING "Mac OS X"

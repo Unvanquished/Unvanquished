@@ -131,5 +131,7 @@ dialogResult_t Sys_Dialog( dialogType_t type, const char *message, const char *t
 	[alert release];
 
 	return result;
+#else
+	return DR_OK;
 #endif
 }
