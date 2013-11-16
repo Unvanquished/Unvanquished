@@ -52,87 +52,60 @@ void G_ForceWeaponChange( gentity_t *ent, weapon_t weapon )
 
 /**
  * @brief Refills spare ammo clips.
- * @return qtrue if clips were modified
  */
-static qboolean GiveMaxClips( gentity_t *self )
+static void GiveMaxClips( gentity_t *self )
 {
 	playerState_t *ps;
 	const weaponAttributes_t *wa;
 
 	if ( !self || !self->client )
 	{
-		return qfalse;
+		return;
 	}
 
 	ps = &self->client->ps;
 	wa = BG_Weapon( ps->stats[ STAT_WEAPON ] );
 
-	if ( !wa || wa->infiniteAmmo )
+	if ( wa->infiniteAmmo )
 	{
-		ps->clips = 0;
-
-		return qfalse;
+		return;
 	}
 
-	if ( ps->clips != wa->maxClips )
-	{
-		ps->clips = wa->maxClips;
-
-		return qtrue;
-	}
-	else
-	{
-		return qfalse;
-	}
+	ps->clips = wa->maxClips;
 }
 
 /**
- * @brief Refills current ammo clip.
- * @return qtrue if ammo was modified
+ * @brief Refills current ammo clip/charge.
  */
-static qboolean GiveFullClip( gentity_t *self )
+static void GiveFullClip( gentity_t *self )
 {
 	playerState_t *ps;
 	const weaponAttributes_t *wa;
-	int   maxAmmo;
 
 	if ( !self || !self->client )
 	{
-		return qfalse;
+		return;
 	}
 
 	ps = &self->client->ps;
 	wa = BG_Weapon( ps->stats[ STAT_WEAPON ] );
 
-	if ( !wa || wa->infiniteAmmo )
+	if ( wa->infiniteAmmo )
 	{
-		ps->ammo = 0;
-
-		return qfalse;
+		return;
 	}
 
-	maxAmmo = wa->maxAmmo;
+	ps->ammo = wa->maxAmmo;
 
 	// apply battery pack modifier
 	if ( wa->usesEnergy && BG_InventoryContainsUpgrade( UP_BATTPACK, ps->stats ) )
 	{
-		maxAmmo *= BATTPACK_MODIFIER;
-	}
-
-	if ( ps->ammo != maxAmmo )
-	{
-		ps->ammo = maxAmmo;
-
-		return qtrue;
-	}
-	else
-	{
-		return qfalse;
+		ps->ammo *= BATTPACK_MODIFIER;
 	}
 }
 
 /**
- * @brief Sets both clips and ammo to full state.
+ * @brief Refills both spare clips and current clip/charge.
  */
 void G_GiveMaxAmmo( gentity_t *self )
 {
@@ -141,61 +114,93 @@ void G_GiveMaxAmmo( gentity_t *self )
 }
 
 /**
- * @brief Refills clips on clip based weapons, refills ammo on other weapons.
- * @param self
- * @param triggerEvent If qtrue, trigger an event when relvant resource was modified.
- * @return qtrue if relevant resource was modified.
+ * @brief Checks the condition for G_RefillAmmo.
  */
-qboolean G_RefillAmmo( gentity_t *self, qboolean triggerEvent )
+static qboolean CanUseAmmoRefill( gentity_t *self )
 {
-	qboolean modifiedClips = qfalse,
-	         modifiedAmmo  = qfalse;
 	const weaponAttributes_t *wa;
+	playerState_t *ps;
+	int           maxAmmo;
 
 	if ( !self || !self->client )
 	{
 		return qfalse;
 	}
 
-	wa = BG_Weapon( self->client->ps.stats[ STAT_WEAPON ] );
+	ps = &self->client->ps;
+	wa = BG_Weapon( ps->stats[ STAT_WEAPON ] );
 
-	if ( wa->maxClips > 0 )
+	if ( wa->infiniteAmmo )
 	{
-		modifiedClips = GiveMaxClips( self );
+		return qfalse;
+	}
+
+	if ( wa->maxClips == 0 )
+	{
+		maxAmmo = wa->maxAmmo;
+
+		// apply battery pack modifier
+		if ( wa->usesEnergy && BG_InventoryContainsUpgrade( UP_BATTPACK, ps->stats ) )
+		{
+			maxAmmo *= BATTPACK_MODIFIER;
+		}
+
+		// clipless weapons can be refilled whenever they lack ammo
+		return ( ps->ammo != maxAmmo );
+	}
+	else if ( ps->clips != wa->maxClips )
+	{
+		// clip weapons have to miss a clip to be refillable
+		return qtrue;
 	}
 	else
 	{
-		//self->client->ps.clips = 0;
-		modifiedAmmo = GiveFullClip( self );
+		return qfalse;
+	}
+}
+
+/**
+ * @brief Refills clips on clip based weapons, refills charge on other weapons.
+ * @param self
+ * @param triggerEvent Trigger an event when relvant resource was modified.
+ * @return Whether relevant resource was modified.
+ */
+qboolean G_RefillAmmo( gentity_t *self, qboolean triggerEvent )
+{
+	if ( !CanUseAmmoRefill( self ) )
+	{
+		return qfalse;
 	}
 
-	if ( modifiedAmmo || modifiedClips )
+	self->client->lastAmmoRefillTime = level.time;
+
+	if ( BG_Weapon( self->client->ps.stats[ STAT_WEAPON ] )->maxClips > 0 )
 	{
-		self->client->lastAmmoRefillTime = level.time;
+		GiveMaxClips( self );
 
 		if ( triggerEvent )
 		{
-			if ( modifiedAmmo )
-			{
-				G_AddEvent( self, EV_AMMO_REFILL, 0 );
-			}
-			else // assume modified clips
-			{
-				G_AddEvent( self, EV_CLIPS_REFILL, 0 );
-			}
+			G_AddEvent( self, EV_CLIPS_REFILL, 0 );
 		}
+	}
+	else
+	{
+		GiveFullClip( self );
 
-		return qtrue;
+		if ( triggerEvent )
+		{
+			G_AddEvent( self, EV_AMMO_REFILL, 0 );
+		}
 	}
 
-	return qfalse;
+	return qtrue;
 }
 
 /**
  * @brief Refills jetpack fuel.
  * @param self
- * @param triggerEvent If qtrue, trigger an event when fuel was modified.
- * @return qtrue if fuel was modified.
+ * @param triggerEvent Trigger an event when fuel was modified.
+ * @return Whether fuel was modified.
  */
 qboolean G_RefillFuel( gentity_t *self, qboolean triggerEvent )
 {
@@ -231,22 +236,19 @@ qboolean G_RefillFuel( gentity_t *self, qboolean triggerEvent )
 }
 
 /**
- * @brief Attempts to refill ammo/clips from a close source.
- * @param refillClipLess If qtrue, refill weapons without clips, too.
- * @return qtrue if ammo was refilled.
+ * @brief Attempts to refill ammo from a close source.
+ * @return Whether ammo was refilled.
  */
 qboolean G_FindAmmo( gentity_t *self )
 {
 	gentity_t *neighbor = NULL;
 	qboolean  foundSource = qfalse;
-	const weaponAttributes_t *wa;
 
-	if ( !self || !self->client )
+	// don't search for a source if refilling isn't possible
+	if ( !CanUseAmmoRefill( self ) )
 	{
 		return qfalse;
 	}
-
-	wa = BG_Weapon( self->client->ps.stats[ STAT_WEAPON ] );
 
 	// search for ammo source
 	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, self->s.origin, ENTITY_BUY_RANGE ) ) )
@@ -268,7 +270,7 @@ qboolean G_FindAmmo( gentity_t *self )
 
 			case BA_H_REACTOR:
 			case BA_H_REPEATER:
-				if ( wa->usesEnergy )
+				if ( BG_Weapon( self->client->ps.stats[ STAT_WEAPON ] )->usesEnergy )
 				{
 					foundSource = qtrue;
 				}
