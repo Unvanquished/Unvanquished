@@ -57,7 +57,6 @@ theora:
 #include <theora/theora.h>
 
 #include "client.h"
-#include "../audio/snd_local.h"
 
 #define OGG_BUFFER_SIZE 8 * 1024 //4096
 

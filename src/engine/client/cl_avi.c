@@ -21,7 +21,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "client.h"
-#include "../audio/snd_local.h"
 
 #define INDEX_FILE_EXTENSION ".index.dat"
 
@@ -388,11 +387,14 @@ qboolean CL_OpenAVIForWriting( const char *fileName )
 	// raw avi files have pixel lines start on 4-byte boundaries
 	afd.eBuffer = (byte*) Z_Malloc( PAD( afd.width * 3, AVI_LINE_PADDING ) * afd.height );
 
+	/*
+ 	 * TODO
 	afd.a.rate = dma.speed;
 	afd.a.format = WAV_FORMAT_PCM;
 	afd.a.channels = dma.channels;
 	afd.a.bits = dma.samplebits;
 	afd.a.sampleSize = ( afd.a.bits / 8 ) * afd.a.channels;
+	*/
 
 	if ( afd.a.rate % afd.frameRate )
 	{

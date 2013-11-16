@@ -46,7 +46,6 @@ Maryland 20850 USA.
 // if some more coding needs to be done.
 
 #include "client.h"
-#include "../audio/snd_local.h"
 
 #include "../framework/CommandSystem.h"
 
@@ -1396,7 +1395,8 @@ redump:
 				if ( cinTable[ currentHandle ].numQuads == -1 )
 				{
 					S_Update();
-					s_rawend[0] = s_soundtime;
+					//TODO
+					//s_rawend[0] = s_soundtime;
 				}
 
 				ssize = RllDecodeStereoToStereo( framedata, sbuf, cinTable[ currentHandle ].RoQFrameSize, 0, ( unsigned short ) cinTable[ currentHandle ].roq_flags );
@@ -1922,7 +1922,8 @@ int CIN_PlayCinematic( const char *arg, int x, int y, int w, int h, int systemBi
 
 		Con_Close();
 
-		s_rawend[0] = s_soundtime;
+		//TODO
+		//s_rawend[0] = s_soundtime;
 
 		return currentHandle;
 	}
