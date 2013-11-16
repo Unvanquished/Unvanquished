@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef BUILD_TTY_CLIENT
 
 // includes for the Q3 sound system
-#include "client.h"
+#include "../client/client.h"
 #include "snd_codec.h"
 
 // includes for the Ogg Opus codec

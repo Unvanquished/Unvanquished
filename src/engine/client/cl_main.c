@@ -40,7 +40,7 @@ Maryland 20850 USA.
 
 #include "../framework/CommandSystem.h"
 
-#include "snd_local.h" // fretn
+#include "../audio/snd_local.h" // fretn
 
 #include "../sys/sys_loadlib.h"
 #include "../sys/sys_local.h"

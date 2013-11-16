@@ -46,7 +46,7 @@ Maryland 20850 USA.
 // if some more coding needs to be done.
 
 #include "client.h"
-#include "snd_local.h"
+#include "../audio/snd_local.h"
 
 #include "../framework/CommandSystem.h"
 

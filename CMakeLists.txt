@@ -596,22 +596,22 @@ set( CLIENTLIST
   ${ENGINE_DIR}/client/cl_ui.c
   ${ENGINE_DIR}/client/cl_logs.c
   ${ENGINE_DIR}/client/dl_main.c
-  ${ENGINE_DIR}/client/snd_adpcm.c
-  ${ENGINE_DIR}/client/snd_codec.c
-  ${ENGINE_DIR}/client/snd_codec.h
-  ${ENGINE_DIR}/client/snd_local.h
-  ${ENGINE_DIR}/client/snd_public.h
-  ${ENGINE_DIR}/client/snd_codec_ogg.c
-  ${ENGINE_DIR}/client/snd_codec_opus.c
-  ${ENGINE_DIR}/client/snd_codec_wav.c
-  ${ENGINE_DIR}/client/snd_dma.c
-  ${ENGINE_DIR}/client/snd_openal.c
-  ${ENGINE_DIR}/client/snd_main.c
-  ${ENGINE_DIR}/client/snd_mem.c
-  ${ENGINE_DIR}/client/snd_mix.c
-  ${ENGINE_DIR}/client/snd_wavelet.c
-  ${ENGINE_DIR}/client/qal.c
-  ${ENGINE_DIR}/client/qal.h
+  ${ENGINE_DIR}/audio/snd_adpcm.c
+  ${ENGINE_DIR}/audio/snd_codec.c
+  ${ENGINE_DIR}/audio/snd_codec.h
+  ${ENGINE_DIR}/audio/snd_local.h
+  ${ENGINE_DIR}/audio/snd_public.h
+  ${ENGINE_DIR}/audio/snd_codec_ogg.c
+  ${ENGINE_DIR}/audio/snd_codec_opus.c
+  ${ENGINE_DIR}/audio/snd_codec_wav.c
+  ${ENGINE_DIR}/audio/snd_dma.c
+  ${ENGINE_DIR}/audio/snd_openal.c
+  ${ENGINE_DIR}/audio/snd_main.c
+  ${ENGINE_DIR}/audio/snd_mem.c
+  ${ENGINE_DIR}/audio/snd_mix.c
+  ${ENGINE_DIR}/audio/snd_wavelet.c
+  ${ENGINE_DIR}/audio/qal.c
+  ${ENGINE_DIR}/audio/qal.h
 )
 
 if( USE_MUMBLE )
