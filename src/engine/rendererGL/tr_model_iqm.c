@@ -256,7 +256,7 @@ static qboolean LoadIQMFile( void *buffer, int filesize, const char *mod_name,
 		LL( triangle->vertex[0] );
 		LL( triangle->vertex[1] );
 		LL( triangle->vertex[2] );
-		
+
 		if( triangle->vertex[0] < 0 || triangle->vertex[0] > header->num_vertexes ||
 		    triangle->vertex[1] < 0 || triangle->vertex[1] > header->num_vertexes ||
 		    triangle->vertex[2] < 0 || triangle->vertex[2] > header->num_vertexes ) {
@@ -280,7 +280,7 @@ static qboolean LoadIQMFile( void *buffer, int filesize, const char *mod_name,
 		LL( mesh->num_vertexes );
 		LL( mesh->first_triangle );
 		LL( mesh->num_triangles );
-		
+
 		if( mesh->first_vertex >= header->num_vertexes ||
 		    mesh->first_vertex + mesh->num_vertexes > header->num_vertexes ||
 		    mesh->first_triangle >= header->num_triangles ||
@@ -978,12 +978,7 @@ void R_AddIQMSurfaces( trRefEntity_t *ent ) {
 			skin = R_GetSkinByHandle(ent->e.customSkin);
 			shader = tr.defaultShader;
 
-			if( !surface->name ) {
-				if ( i >= 0 && i < skin->numSurfaces && skin->surfaces[ i ] )
-				{
-					shader = skin->surfaces[ i ]->shader;
-				}
-			} else {
+			if (*surface->name) {
 				for(j = 0; j < skin->numSurfaces; j++)
 				{
 					if (!strcmp(skin->surfaces[j]->name, surface->name))
@@ -992,6 +987,11 @@ void R_AddIQMSurfaces( trRefEntity_t *ent ) {
 						break;
 					}
 				}
+			}
+
+			if ( shader == tr.defaultShader && i >= 0 && i < skin->numSurfaces && skin->surfaces[ i ] )
+			{
+				shader = skin->surfaces[ i ]->shader;
 			}
 		} else {
 			shader = surface->shader;
