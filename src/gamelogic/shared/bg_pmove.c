@@ -3756,12 +3756,6 @@ static void PM_BeginWeaponChange( int weapon )
 	if ( pm->ps->weaponstate == WEAPON_RELOADING )
 	{
 		pm->ps->weaponTime = 0;
-
-		// return the clip to the ammo pouch
-		if ( pm->ps->clips < BG_Weapon( pm->ps->weapon )->maxClips )
-		{
-			pm->ps->clips++;
-		}
 	}
 
 	//special case to prevent storing a charged up lcannon
@@ -4172,6 +4166,7 @@ static void PM_Weapon( void )
 	//done reloading so give em some ammo
 	if ( pm->ps->weaponstate == WEAPON_RELOADING )
 	{
+		pm->ps->clips--;
 		pm->ps->ammo = BG_Weapon( pm->ps->weapon )->maxAmmo;
 
 		if ( BG_Weapon( pm->ps->weapon )->usesEnergy &&
@@ -4194,8 +4189,6 @@ static void PM_Weapon( void )
 	{
 		pm->ps->pm_flags &= ~PMF_WEAPON_RELOAD;
 		pm->ps->weaponstate = WEAPON_RELOADING;
-
-		pm->ps->clips--;
 
 		//drop the weapon
 		PM_StartTorsoAnim( TORSO_DROP );

@@ -4212,7 +4212,7 @@ static void CG_DrawPlayerClipsStack( rectDef_t *rect,
 		if ( maxwt != 0 )
 		{
 			frac = ps->weaponTime / ( float ) maxwt;
-			val += frac * frac; // speed is proportional to distance from target
+			val -= 1 - frac * frac; // speed is proportional to distance from target
 		}
 	}
 
