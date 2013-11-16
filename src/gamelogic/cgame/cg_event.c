@@ -1162,16 +1162,15 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			break;
 
 		case EV_BUILD_CONSTRUCT:
-			//do something useful here
 			break;
 
 		case EV_BUILD_DESTROY:
-			//do something useful here
 			break;
 
 		case EV_AMMO_REFILL:
 		case EV_CLIPS_REFILL:
 		case EV_FUEL_REFILL:
+			// TODO: Add different sounds for EV_AMMO_REFILL, EV_CLIPS_REFILL, EV_FUEL_REFILL
 			trap_S_StartSound( NULL, es->number, CHAN_AUTO, cgs.media.repeaterUseSound );
 			break;
 
@@ -1184,7 +1183,6 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			{
 				trap_S_StartSound( NULL, es->number, CHAN_AUTO, cgs.media.hardBounceSound2 );
 			}
-
 			break;
 
 		case EV_WEAPON_HIT_ENTITY:

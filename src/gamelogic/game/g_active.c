@@ -971,10 +971,11 @@ void ClientTimerActions( gentity_t *ent, int msec )
 		// replenish human health
 		G_ReplenishHumanHealth( ent );
 
-		// refill spare clips for weapons that use them
-		if ( client->lastAmmoReloadTime + wa->reloadTime < level.time )
+		// refill weapon ammo
+		if ( ent->client->lastAmmoRefillTime + HUMAN_AMMO_REFILL_PERIOD < level.time &&
+		     ps->weaponTime == 0 )
 		{
-			G_FindAmmo( ent, qtrue );
+			G_FindAmmo( ent );
 		}
 
 		// refill jetpack fuel

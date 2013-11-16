@@ -568,7 +568,6 @@ struct gclient_s
 	int        medKitIncrementTime;
 	int        lastCreepSlowTime; // time until creep can be removed
 	int        lastCombatTime; // time of last damage received/dealt or held by basilisk
-	int        lastAmmoReloadTime;
 	int        lastAmmoRefillTime;
 	int        lastFuelRefillTime;
 

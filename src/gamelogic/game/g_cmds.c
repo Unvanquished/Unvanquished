@@ -3693,17 +3693,6 @@ void Cmd_Reload_f( gentity_t *ent )
 		return;
 	}
 
-	// for clipless weapons, try getting ammo from an external source
-	if ( wa->maxClips == 0 )
-	{
-		if ( ent->client->lastAmmoRefillTime + 1000 < level.time )
-		{
-			G_FindAmmo( ent, qfalse );
-		}
-
-		return;
-	}
-
 	// can't reload if there is no clip
 	if ( ps->clips <= 0 )
 	{
@@ -3730,8 +3719,6 @@ void Cmd_Reload_f( gentity_t *ent )
 	{
 		ent->client->ps.pm_flags |= PMF_WEAPON_RELOAD;
 	}
-
-	ent->client->lastAmmoReloadTime = level.time;
 }
 
 /*

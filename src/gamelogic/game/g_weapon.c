@@ -184,9 +184,11 @@ qboolean G_RefillAmmo( gentity_t *self, qboolean triggerEvent )
 				G_AddEvent( self, EV_CLIPS_REFILL, 0 );
 			}
 		}
+
+		return qtrue;
 	}
 
-	return modifiedClips;
+	return qfalse;
 }
 
 /**
@@ -233,7 +235,7 @@ qboolean G_RefillFuel( gentity_t *self, qboolean triggerEvent )
  * @param refillClipLess If qtrue, refill weapons without clips, too.
  * @return qtrue if ammo was refilled.
  */
-qboolean G_FindAmmo( gentity_t *self, qboolean clipsOnly )
+qboolean G_FindAmmo( gentity_t *self )
 {
 	gentity_t *neighbor = NULL;
 	qboolean  foundSource = qfalse;
@@ -276,10 +278,7 @@ qboolean G_FindAmmo( gentity_t *self, qboolean clipsOnly )
 
 	if ( foundSource )
 	{
-		if ( !clipsOnly || wa->maxClips > 0 )
-		{
-			return G_RefillAmmo( self, qtrue );
-		}
+		return G_RefillAmmo( self, qtrue );
 	}
 
 	return qfalse;

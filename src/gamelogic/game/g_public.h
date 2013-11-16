@@ -269,7 +269,7 @@ void              G_ForceWeaponChange( gentity_t *ent, weapon_t weapon );
 void              G_GiveMaxAmmo( gentity_t *self );
 qboolean          G_RefillAmmo( gentity_t *self, qboolean triggerEvent );
 qboolean          G_RefillFuel( gentity_t *self, qboolean triggerEvent );
-qboolean          G_FindAmmo( gentity_t *self, qboolean clipsOnly );
+qboolean          G_FindAmmo( gentity_t *self );
 qboolean          G_FindFuel( gentity_t *self );
 void              G_CalcMuzzlePoint( gentity_t *self, vec3_t forward, vec3_t right, vec3_t up, vec3_t muzzlePoint );
 void              G_SnapVectorTowards( vec3_t v, vec3_t to );
