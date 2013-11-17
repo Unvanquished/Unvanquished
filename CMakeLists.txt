@@ -1501,16 +1501,3 @@ if( BUILD_NEW_RENDERER )
     set_property( TARGET rendererGL APPEND PROPERTY COMPILE_DEFINITIONS SMP )
   endif()
 endif()
-
-################################################################################
-# download-pk3.sh
-################################################################################
-
-if( NOT CMAKE_HOST_WIN32 )
-  execute_process( COMMAND sed -e "/^#define PRODUCT_VERSION/! d; s/.*\"\\(.*\\)\\.[^.]\"/\\1/" ${CMAKE_SOURCE_DIR}/src/engine/qcommon/q_shared.h
-                   OUTPUT_VARIABLE PRODUCT_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE )
-  add_custom_target( download-pk3.sh ALL
-    sed -e 's/VERSION=/&${PRODUCT_VERSION}/' ${CMAKE_SOURCE_DIR}/download-pk3.sh.in >${CMAKE_BINARY_DIR}/download-pk3.sh\; chmod +x ${CMAKE_BINARY_DIR}/download-pk3.sh
-    DEPENDS ${CMAKE_SOURCE_DIR}/src/engine/qcommon/q_shared.h ${CMAKE_SOURCE_DIR}/download-pk3.sh.in
-  )
-endif()

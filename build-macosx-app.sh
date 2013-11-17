@@ -11,7 +11,7 @@ GLEW_VERSION=1.10.0
 
 # Usage
 if [ "${#}" -ne "2" ]; then
-	echo "usage: $0 <32-bit build> <64-bit build>"
+	echo "usage: ${0} <32-bit build> <64-bit build>"
 	echo "Script to build a universal .app for Mac OS X"
 	exit 1
 fi

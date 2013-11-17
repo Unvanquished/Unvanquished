@@ -9,7 +9,6 @@ CMakeFiles
 Makefile
 cmake_install.cmake
 daemon*
-download-pk3.sh
 rendererGL*
 main/cgame.*
 main/game.*
