@@ -632,11 +632,11 @@ void            trap_Rocket_DSAddRow( const char *name, const char *table, const
 void            trap_Rocket_DSChangeRow( const char *name, const char *table, int row, const char *data );
 void            trap_Rocket_DSRemoveRow( const char *name, const char *table, int row );
 void            trap_Rocket_DSClearTable( const char *name, const char *table );
-void            trap_Rocket_SetInnerRML( const char *name, const char *id, const char *RML, qboolean parseQuake );
-void            trap_Rocket_GetAttribute( const char *name, const char *id, const char *attribute, char *out, int length );
-void            trap_Rocket_SetAttribute( const char *name, const char *id, const char *attribute, const char *value );
+void            trap_Rocket_SetInnerRML( const char *RML, qboolean parseQuake );
+void            trap_Rocket_GetAttribute( const char *attribute, char *out, int length );
+void            trap_Rocket_SetAttribute( const char *attribute, const char *value );
 void            trap_Rocket_GetProperty( const char *name, void *out, int len, rocketVarType_t type );
-void            trap_Rocket_SetPropertyById( const char *id, const char *property, const char *value );
+void            trap_Rocket_SetProperty( const char *property, const char *value );
 void            trap_Rocket_GetEventParameters( char *params, int length );
 void            trap_Rocket_RegisterDataFormatter( const char *name );
 void            trap_Rocket_DataFormatterRawData( int handle, char *name, int nameLength, char *data, int dataLength );

@@ -552,7 +552,6 @@ void CG_Rocket_Frame( void )
 				}
 				else
 				{
-					trap_Rocket_SetInnerRML( "serverbrowser", "status", "Updated", qfalse );
 					rocketInfo.rocketState = IDLE;
 				}
 
@@ -592,11 +591,11 @@ const char *CG_Rocket_GetTag()
 	return tag;
 }
 
-const char *CG_Rocket_GetAttribute( const char *name, const char *id, const char *attribute )
+const char *CG_Rocket_GetAttribute( const char *attribute )
 {
 	static char buffer[ 1000 ];
 
-	trap_Rocket_GetAttribute( name, id, attribute, buffer, sizeof( buffer ) );
+	trap_Rocket_GetAttribute( attribute, buffer, sizeof( buffer ) );
 
 	return buffer;
 }

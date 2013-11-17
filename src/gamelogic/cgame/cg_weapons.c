@@ -2062,7 +2062,7 @@ void CG_DrawItemSelect( void )
 	}
 	Q_strcat( RML, sizeof( RML ), "</div>" );
 
-	trap_Rocket_SetInnerRML( "", "", RML, qfalse );
+	trap_Rocket_SetInnerRML( RML, qfalse );
 
 }
 
@@ -2080,7 +2080,7 @@ void CG_DrawItemSelectText( void )
 
 	if ( !alpha )
 	{
-		trap_Rocket_SetInnerRML( "", "", "&nbsp;", qfalse );
+		trap_Rocket_SetInnerRML( "&nbsp;", qfalse );
 		return;
 	}
 
@@ -2094,7 +2094,7 @@ void CG_DrawItemSelectText( void )
 		{
 			if ( ( name = cg_weapons[ cg.weaponSelect ].humanName ) )
 			{
-				trap_Rocket_SetInnerRML( "", "", name, qfalse );
+				trap_Rocket_SetInnerRML( name, qfalse );
 			}
 		}
 	}
@@ -2105,12 +2105,12 @@ void CG_DrawItemSelectText( void )
 		{
 			if ( ( name = cg_upgrades[ cg.weaponSelect - 32 ].humanName ) )
 			{
-				trap_Rocket_SetInnerRML( "", "", name, qfalse );
+				trap_Rocket_SetInnerRML( name, qfalse );
 			}
 		}
 	}
 
-	trap_Rocket_SetPropertyById( "", "opacity", va( "%f", alpha ) );
+	trap_Rocket_SetProperty( "opacity", va( "%f", alpha ) );
 }
 
 /*

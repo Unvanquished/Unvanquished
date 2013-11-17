@@ -1400,19 +1400,19 @@ void trap_Rocket_DSClearTable( const char *name, const char *table )
 	syscall( CG_ROCKET_DSCLEARTABLE, name, table );
 }
 
-void trap_Rocket_SetInnerRML( const char *name, const char *id, const char *RML, qboolean parseQuake )
+void trap_Rocket_SetInnerRML( const char *RML, qboolean parseQuake )
 {
-	syscall( CG_ROCKET_SETINNERRML, name, id, RML, parseQuake );
+	syscall( CG_ROCKET_SETINNERRML, RML, parseQuake );
 }
 
-void trap_Rocket_GetAttribute( const char *name, const char *id, const char *attribute, char *out, int length )
+void trap_Rocket_GetAttribute( const char *attribute, char *out, int length )
 {
-	syscall( CG_ROCKET_GETATTRIBUTE, name, id, attribute, out, length );
+	syscall( CG_ROCKET_GETATTRIBUTE, attribute, out, length );
 }
 
-void trap_Rocket_SetAttribute( const char *name, const char *id, const char *attribute, const char *value )
+void trap_Rocket_SetAttribute( const char *attribute, const char *value )
 {
-	syscall( CG_ROCKET_SETATTRIBUTE, name, id, attribute, value );
+	syscall( CG_ROCKET_SETATTRIBUTE, attribute, value );
 }
 
 void trap_Rocket_GetProperty( const char *name, void *out, int len, rocketVarType_t type )
@@ -1420,9 +1420,9 @@ void trap_Rocket_GetProperty( const char *name, void *out, int len, rocketVarTyp
 	syscall( CG_ROCKET_GETPROPERTY, name, out, len, type );
 }
 
-void trap_Rocket_SetPropertyById( const char *id, const char *property, const char *value )
+void trap_Rocket_SetProperty( const char *property, const char *value )
 {
-	syscall( CG_ROCKET_SETPROPERYBYID, id, property, value );
+	syscall( CG_ROCKET_SETPROPERYBYID, property, value );
 }
 void trap_Rocket_GetEventParameters( char *params, int length )
 {

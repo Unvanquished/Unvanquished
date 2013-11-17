@@ -161,25 +161,14 @@ static void CG_Rocket_SetDS( void )
 	CG_Rocket_SetDataSourceIndex( datasrc, datatbl, atoi( CG_Argv( 3 ) ) );
 }
 
-static void CG_Rocket_SetProperty( void )
-{
-	char id[ 100 ], property[ 100 ], value[ MAX_STRING_CHARS ];
-	Q_strncpyz( id, CG_Argv( 1 ), sizeof( id ) );
-	Q_strncpyz( property, CG_Argv( 2 ), sizeof( property ) );
-	Q_strncpyz( value, CG_Argv( 3 ), sizeof( value ) );
-
-	trap_Rocket_SetPropertyById( id, property, value );
-}
-
 static void CG_Rocket_SetAttribute( void )
 {
-	char id[ 100 ], attribute[ 100 ], value[ MAX_STRING_CHARS ];
+	char attribute[ 100 ], value[ MAX_STRING_CHARS ];
 
-	Q_strncpyz( id, CG_Argv( 1 ), sizeof( id ) );
-	Q_strncpyz( attribute, CG_Argv( 2 ), sizeof( attribute ) );
-	Q_strncpyz( value, CG_Argv( 3 ), sizeof( value ) );
+	Q_strncpyz( attribute, CG_Argv( 1 ), sizeof( attribute ) );
+	Q_strncpyz( value, CG_Argv( 2 ), sizeof( value ) );
 
-	trap_Rocket_SetAttribute( "", id, attribute, value );
+	trap_Rocket_SetAttribute( attribute, value );
 
 }
 
@@ -189,7 +178,7 @@ static void CG_Rocket_FilterDS( void )
 	char tbl[ 100 ];
 	char params[ MAX_STRING_CHARS ];
 
-	trap_Rocket_GetAttribute( "", "", "value", params, sizeof( params ) );
+	trap_Rocket_GetAttribute( "value", params, sizeof( params ) );
 
 	Q_strncpyz( src, CG_Argv( 1 ), sizeof ( src ) );
 	Q_strncpyz( tbl, CG_Argv( 2 ), sizeof( tbl ) );
@@ -217,7 +206,7 @@ static void CG_Rocket_SetChatCommand( void )
 
 	if ( cmd )
 	{
-		trap_Rocket_SetAttribute( "", "", "exec", cmd );
+		trap_Rocket_SetAttribute( "exec", cmd );
 	}
 }
 
@@ -243,7 +232,6 @@ static const eventCmd_t eventCmdList[] =
 	{ "setAttribute", &CG_Rocket_SetAttribute },
 	{ "setChatCommand", &CG_Rocket_SetChatCommand },
 	{ "setDS", &CG_Rocket_SetDS },
-	{ "setProperty", &CG_Rocket_SetProperty },
 	{ "show", &CG_Rocket_EventShow },
 	{ "sortDS", &CG_Rocket_SortDS }
 };
