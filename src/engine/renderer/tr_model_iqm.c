@@ -326,9 +326,9 @@ static qboolean LoadIQMFile( void *buffer, int filesize, const char *mod_name,
 				  mod_name );
 			return qfalse;
 		}
-		if( joint->scale[0] != joint->scale[1] ||
-		    joint->scale[0] != joint->scale[2] ||
-		    joint->scale[0] <= 0 ) {
+		if( joint->scale[0] < 0.0f ||
+			(int)( joint->scale[0] - joint->scale[1] ) ||
+			(int)( joint->scale[1] - joint->scale[2] ) ) {
 			ri.Printf(PRINT_WARNING, "R_LoadIQM: file %s contains an invalid scale.\n",
 				  mod_name );
 			return qfalse;
@@ -620,8 +620,8 @@ qboolean R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 				scale[2] += *framedata++ * pose->channelscale[9];
 
 			if( scale[0] < 0.0f ||
-			    scale[0] != scale[1] ||
-			    scale[1] != scale[2] ) {
+				(int)( scale[0] - scale[1] ) ||
+				(int)( scale[1] - scale[2] ) ) {
 				ri.Printf(PRINT_WARNING, "R_LoadIQM: file %s contains an invalid scale.\n",
 					  mod_name );
 				return qfalse;
