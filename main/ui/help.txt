@@ -82,6 +82,16 @@
     "The [advgranger] advanced granger's spit attack can be used to put out "
     "fires."
   }
+  "[lcannon] Under attack"
+  {
+    "Destroying buildings will trigger ‘under attack’ warnings for the owning "
+    "team if the buildings are in range of (for humans) the [reactor] reactor "
+    "or a [repeater] repeater or (for aliens) the [overmind] Overmind. "
+    "The name of the location of the repeater will be given if available.\n"
+    "\n"
+    "The reactor and the Overmind will issue warnings to the team when at "
+    "^375% health^7, at ^125% health^7 and when ^1destroyed^7."
+  }
   "[dretch] Advanced dretch"
   {
     "The [dretch] advanced dretch has a pounce ability. A pounce can be "
