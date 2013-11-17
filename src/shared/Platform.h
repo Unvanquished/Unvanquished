@@ -27,19 +27,16 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
 // Platform-specific configuration
 #ifdef _WIN32
-#define DLL_PREFIX ""
 #define DLL_EXT ".dll"
 #define EXE_EXT ".exe"
 #define PATH_SEP '\\'
 #define PLATFORM_STRING "Windows"
 #elif defined(__APPLE__)
-#define DLL_PREFIX "lib"
 #define DLL_EXT ".so"
 #define EXE_EXT ""
 #define PATH_SEP '/'
 #define PLATFORM_STRING "Mac OS X"
 #elif defined(__linux__)
-#define DLL_PREFIX "lib"
 #define DLL_EXT ".so"
 #define EXE_EXT ""
 #define PATH_SEP '/'

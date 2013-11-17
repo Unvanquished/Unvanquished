@@ -9,6 +9,11 @@ if( POLICY CMP0017 )
   cmake_policy( SET CMP0017 NEW )
 endif()
 
+# Need 2.8.12 for RPATH support
+if( APPLE )
+  cmake_minimum_required( VERSION 2.8.12 )
+endif()
+
 include( CMakeDependentOption )
 
 # This line has to appear before 'PROJECT' in order to be able to disable incremental linking
@@ -42,7 +47,7 @@ cmake_dependent_option( BUILD_NEW_RENDERER "Build new renderer library" 1 BUILD_
 
 cmake_dependent_option( USE_MUMBLE "Compile with support for Mumble" 1 BUILD_CLIENT 0 )
 cmake_dependent_option( USE_VOIP "Compile with VOIP support" 1 "BUILD_CLIENT OR BUILD_SERVER OR BUILD_TTY_CLIENT" 0 )
-cmake_dependent_option( USE_CURSES "Use the curses console" 1 "BUILD_CLIENT OR BUILD_SERVER OR BUILD_TTY_CLIENT" 0 )
+cmake_dependent_option( USE_CURSES "Use the curses console" 1 "NOT APPLE AND (BUILD_CLIENT OR BUILD_SERVER OR BUILD_TTY_CLIENT)" 0 )
 cmake_dependent_option( USE_OPENAL_DLOPEN "Use dlopen to load OpenAL" 1 BUILD_CLIENT 0 )
 cmake_dependent_option( USE_SMP "Compile with support for running the renderer in a separate thread" 1 BUILD_CLIENT 0 )
 cmake_dependent_option( USE_GEOIP "Use libgeoip" 1 "BUILD_SERVER OR BUILD_CLIENT OR BUILD_TTY_CLIENT" 0 )
@@ -140,10 +145,10 @@ macro( try_linker_flag PROP FLAG )
   # Check it with the C compiler
   set( CMAKE_REQUIRED_FLAGS ${FLAG} )
   check_C_compiler_flag( ${FLAG} FLAG_${PROP} )
+  set( CMAKE_REQUIRED_FLAGS "" )
   if( FLAG_${PROP} )
     set_linker_flag( ${FLAG} ${ARGN} )
   endif()
-  set( CMAKE_REQUIRED_FLAGS "" )
 endmacro()
 
 if( MSVC )
@@ -167,7 +172,11 @@ else()
     set_c_cxx_flag( "-m32" )
     set_c_cxx_flag( "-msse2" )
     set_c_cxx_flag( "-mtune=generic" )
+
+    # Clang prints a warning when if it doesn't support -mfpmath=sse
+    set( CMAKE_REQUIRED_FLAGS "-Werror" )
     set_c_cxx_flag( "-mfpmath=sse" )
+    set( CMAKE_REQUIRED_FLAGS "" )
   elseif( ARCH STREQUAL "x86_64" )
     set_c_cxx_flag( "-m64" )
     set_c_cxx_flag( "-mtune=generic" )
@@ -273,6 +282,8 @@ if( APPLE )
     set( CMAKE_OSX_ARCHITECTURES i386 )
   endif()
   mark_as_advanced( CMAKE_OSX_ARCHITECTURES )
+  set( CMAKE_INSTALL_RPATH "@executable_path/" )
+  set( CMAKE_BUILD_WITH_INSTALL_RPATH ON )
 endif()
 
 # QVM compatibility
@@ -321,7 +332,7 @@ endif()
 if( EXISTS "${CMAKE_SOURCE_DIR}/.git" )
   find_package( Git )
   if( GIT_FOUND )
-    execute_process( COMMAND git describe --tags --long --match v* --dirty=+dirty OUTPUT_VARIABLE GIT_DESCRIBE_REPORT OUTPUT_STRIP_TRAILING_WHITESPACE )
+    execute_process( COMMAND ${GIT_EXECUTABLE} describe --tags --long --match v* --dirty=+dirty OUTPUT_VARIABLE GIT_DESCRIBE_REPORT OUTPUT_STRIP_TRAILING_WHITESPACE )
     message( STATUS "git reported ${GIT_DESCRIBE_REPORT}" )
     # this may fail with annotated non-release tags
     if( GIT_DESCRIBE_REPORT MATCHES "-0-g.......$" )
@@ -948,10 +959,10 @@ if( WIN32 AND NOT MSVC )
   endif()
 elseif( APPLE )
   if( ARCH STREQUAL "x86_64" )
-    set( CMAKE_FIND_ROOT_PATH ${DEPS_DIR}/macosx10.8_64 ${CMAKE_FIND_ROOT_PATH} )
-    set( CMAKE_INCLUDE_PATH ${DEPS_DIR}/macosx10.8_64 ${DEPS_DIR}/macosx10.8_64/include ${CMAKE_INCLUDE_PATH} )
-    set( CMAKE_FRAMEWORK_PATH ${DEPS_DIR}/macosx10.8_64 ${CMAKE_FRAMEWORK_PATH} )
-    set( CMAKE_LIBRARY_PATH ${DEPS_DIR}/macosx10.8_64/lib ${CMAKE_LIBRARY_PATH} )
+    set( CMAKE_FIND_ROOT_PATH ${DEPS_DIR}/macosx10.7_64 ${CMAKE_FIND_ROOT_PATH} )
+    set( CMAKE_INCLUDE_PATH ${DEPS_DIR}/macosx10.7_64 ${DEPS_DIR}/macosx10.7_64/include ${CMAKE_INCLUDE_PATH} )
+    set( CMAKE_FRAMEWORK_PATH ${DEPS_DIR}/macosx10.7_64 ${CMAKE_FRAMEWORK_PATH} )
+    set( CMAKE_LIBRARY_PATH ${DEPS_DIR}/macosx10.7_64/lib ${CMAKE_LIBRARY_PATH} )
   else()
     set( CMAKE_FIND_ROOT_PATH ${DEPS_DIR}/macosx10.7_32 ${CMAKE_FIND_ROOT_PATH} )
     set( CMAKE_INCLUDE_PATH ${DEPS_DIR}/macosx10.7_32 ${DEPS_DIR}/macosx10.7_32/include ${CMAKE_INCLUDE_PATH} )
@@ -1206,25 +1217,6 @@ if( USE_CURSES )
 endif()
 
 ################################################################################
-# Installer
-################################################################################
-
-# Setup CPack
-set( CPACK_PACKAGE_FILE_NAME "Unvanquished" )
-set( CPACK_PACKAGE_ICON "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cpack/OS_X/Unvanquished.icns" )
-set( CPACK_PACKAGE_DESCRIPTION_SUMMARY "Daemon Unvanquished client" )
-set( CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.md" )
-set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/GPL.txt" )
-# Mac OS X Bundle specific settings
-set( CPACK_BUNDLE_NAME ${CPACK_PACKAGE_FILE_NAME} )
-set( CPACK_BUNDLE_ICON ${CPACK_PACKAGE_ICON} )
-set( CPACK_BUNDLE_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cpack/OS_X/Info.plist" )
-
-# Don't worry about installing targets individually just copy entire folder over
-# This allows maps/.pk3s to be easily added to the installer
-install( DIRECTORY ${CMAKE_BINARY_DIR}/main DESTINATION "Unvanquished" )
-
-################################################################################
 # Game logic
 ################################################################################
 
@@ -1459,56 +1451,35 @@ endif()
 ################################################################################
 
 if( BUILD_CLIENT )
-  # Setup target client
   add_executable( client WIN32 ${SERVERLIST} ${CLIENTLIST} ${SDLLIST} ${ENGINELIST} ${SHAREDLIST}
     ${LIBSRC_BASE} ${LIBSRC_ENGINE} ${LIBSRC_CLIENTBASE} ${LIBSRC_CLIENT} ${WIN_RC} )
   target_link_libraries( client ${LIBS_CLIENT} ${LIBS_CLIENTBASE} ${LIBS_ENGINE} ${LIBS_BASE} )
   if( USE_VOIP )
-    # Set it here so the tty client doesn't try to handle voip
+    # Set it here so the tty client doesn't need to depend on speex
     set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_VOIP )
   endif()
-  set_target_properties( client PROPERTIES OUTPUT_NAME "daemon" PREFIX "" ENABLE_EXPORTS ON )
+  set_target_properties( client PROPERTIES OUTPUT_NAME "daemon" PREFIX "" )
   if( USE_SMP )
     set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS SMP )
   endif()
-
-  # Setup CPack for target client
-  install( TARGETS client DESTINATION "Unvanquished" )
-  get_target_property( LOCATION client LOCATION )
-  get_filename_component( OUTPUT_NAME ${LOCATION} NAME )
-  set( APPS ${APPS} Unvanquished/${OUTPUT_NAME} )
 endif()
 
 if( BUILD_SERVER )
-  # Setup the target Server
   add_executable( server WIN32 ${SERVERLIST} ${ENGINELIST} ${SHAREDLIST} ${LIBSRC_BASE} ${LIBSRC_ENGINE}
     ${ENGINE_DIR}/null/null_client.c  ${ENGINE_DIR}/null/null_input.c
     ${ENGINE_DIR}/null/null_snddma.c ${WIN_RC} )
   target_link_libraries( server ${LIBS_ENGINE} ${LIBS_BASE} )
   set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS DEDICATED )
   set_target_properties( server PROPERTIES OUTPUT_NAME "daemonded" PREFIX "" )
-
-  # Setup CPack for target server
-  install( TARGETS server DESTINATION "Unvanquished" )
-  get_target_property( LOCATION server LOCATION )
-  get_filename_component( OUTPUT_NAME ${LOCATION} NAME )
-  set( APPS ${APPS} Unvanquished/${OUTPUT_NAME} )
 endif()
 
 if( BUILD_TTY_CLIENT )
-  # Setup the target ttyclient
   add_executable( ttyclient WIN32 ${SERVERLIST} ${CLIENTLIST} ${ENGINELIST} ${SHAREDLIST}
     ${LIBSRC_BASE} ${LIBSRC_ENGINE} ${LIBSRC_CLIENTBASE} ${WIN_RC}
     ${ENGINE_DIR}/null/null_input.c ${ENGINE_DIR}/null/null_snddma.c ${ENGINE_DIR}/null/null_renderer.c )
   target_link_libraries( ttyclient ${LIBS_CLIENTBASE} ${LIBS_ENGINE} ${LIBS_BASE} )
   set_property( TARGET ttyclient APPEND PROPERTY COMPILE_DEFINITIONS BUILD_TTY_CLIENT REF_HARD_LINKED )
   set_target_properties( ttyclient PROPERTIES OUTPUT_NAME "daemon-tty" PREFIX "" )
-
-  # Setup CPack for target ttyclient
-  install( TARGETS ttyclient DESTINATION "Unvanquished" )
-  get_target_property( LOCATION ttyclient LOCATION )
-  get_filename_component( OUTPUT_NAME ${LOCATION} NAME )
-  set( APPS ${APPS} Unvanquished/${OUTPUT_NAME} )
 endif()
 
 ################################################################################
@@ -1516,46 +1487,26 @@ endif()
 ################################################################################
 
 if( BUILD_OLD_RENDERER )
-  # Setup target renderer
   add_library( renderer MODULE ${RENDERERLIST} ${SHAREDLIST} ${LIBSRC_BASE} ${LIBSRC_RENDERER} )
   target_link_libraries( renderer ${LIBS_RENDERER} ${LIBS_BASE} )
-  set_target_properties( renderer PROPERTIES OUTPUT_NAME "rendererGL" )
-  if( WIN32 )
-    set_target_properties( renderer PROPERTIES PREFIX "" )
-  endif()
-
-  # Setup CPack for target renderer
-  install( TARGETS renderer DESTINATION "Unvanquished" )
-  get_target_property( LOCATION renderer LOCATION )
-  get_filename_component( OUTPUT_NAME ${LOCATION} NAME )
-  set( PLUGINS ${PLUGINS} "\${CMAKE_INSTALL_PREFIX}/Unvanquished/${OUTPUT_NAME}" )
+  set_target_properties( renderer PROPERTIES OUTPUT_NAME "rendererGL" PREFIX "" )
 endif()
 
 if( BUILD_NEW_RENDERER )
-  # Setup target rendererGL
   add_library( rendererGL MODULE ${RENDERERGLLIST} ${SHAREDLIST} ${LIBSRC_BASE} ${LIBSRC_RENDERER} )
   set_property( TARGET rendererGL APPEND PROPERTY COMPILE_DEFINITIONS USE_XREAL_RENDERER )
   target_link_libraries( rendererGL ${LIBS_RENDERER} ${LIBS_BASE} )
   set_target_properties( rendererGL PROPERTIES OUTPUT_NAME "rendererGL3" )
-  if( WIN32 )
-    set_target_properties( rendererGL PROPERTIES PREFIX "" )
-  endif()
   if( USE_SMP )
     set_property( TARGET rendererGL APPEND PROPERTY COMPILE_DEFINITIONS SMP )
   endif()
-
-  # Setup CPack for target rendererGL
-  install( TARGETS rendererGL DESTINATION "Unvanquished" )
-  get_target_property( LOCATION rendererGL LOCATION )
-  get_filename_component( OUTPUT_NAME ${LOCATION} NAME )
-  set( PLUGINS ${PLUGINS} "\${CMAKE_INSTALL_PREFIX}/Unvanquished/${OUTPUT_NAME}" )
 endif()
 
 ################################################################################
-# Installer
+# download-pk3.sh
 ################################################################################
 
-if( NOT MSVC )
+if( NOT CMAKE_HOST_WIN32 )
   execute_process( COMMAND sed -e "/^#define PRODUCT_VERSION/! d; s/.*\"\\(.*\\)\\.[^.]\"/\\1/" ${CMAKE_SOURCE_DIR}/src/engine/qcommon/q_shared.h
                    OUTPUT_VARIABLE PRODUCT_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE )
   add_custom_target( download-pk3.sh ALL
@@ -1563,20 +1514,3 @@ if( NOT MSVC )
     DEPENDS ${CMAKE_SOURCE_DIR}/src/engine/qcommon/q_shared.h ${CMAKE_SOURCE_DIR}/download-pk3.sh.in
   )
 endif()
-
-# This section requires a lot of escaping as these values are parsed then passed
-# to CPack. Be very very careful when modifying values
-
-if( ENABLE_BUNDLING )
-  # Automatically copy over any dependencies
-  foreach( APP ${APPS} )
-    install( CODE "
-       include( BundleUtilities )
-       message( \"\${CMAKE_INSTALL_PREFIX}/${APP}\" )
-       fixup_bundle( \"\${CMAKE_INSTALL_PREFIX}/${APP}\" \"${PLUGINS}\" \"${CMAKE_LIBRARY_PATH}\" )
-       " )
-  endforeach()
-endif()
-
-# include( CPack ) must be at the end of CMakeLists.txt
-include( CPack )

@@ -33,7 +33,7 @@ Maryland 20850 USA.
 */
 
 #if !defined( MACOS_X ) && !defined( __APPLE__ )
-#error This file is for Mac OS X only. You probably should not compile it.
+#error "This file is for Mac OS X only. You probably should not compile it."
 #endif
 
 // Please note that this file is just some Mac-specific bits. Most of the

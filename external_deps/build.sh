@@ -8,9 +8,9 @@ set -u
 # Package versions
 PKGCONFIG_VERSION=0.28
 NASM_VERSION=2.10.09
+ZLIB_VERSION=1.2.8
 GMP_VERSION=5.1.3
 NETTLE_VERSION=2.7.1
-ZLIB_VERSION=1.2.8
 GEOIP_VERSION=1.6.0
 CURL_VERSION=7.33.0
 SDL2_VERSION=2.0.1
@@ -81,6 +81,24 @@ build_nasm() {
 	esac
 }
 
+# Build zlib
+build_zlib() {
+	download "zlib-${ZLIB_VERSION}.tar.xz" "http://zlib.net/zlib-${ZLIB_VERSION}.tar.xz"
+	cd "zlib-${ZLIB_VERSION}"
+	case "${PLATFORM}" in
+	mingw*)
+		make -f win32/Makefile.gcc clean
+		make -f win32/Makefile.gcc PREFIX="${HOST}-"
+		make -f win32/Makefile.gcc install BINARY_PATH="${PREFIX}/bin" LIBRARY_PATH="${PREFIX}/lib" INCLUDE_PATH="${PREFIX}/include" SHARED_MODE=1
+		;;
+	*)
+		echo "Unsupported platform for zlib"
+		exit 1
+		;;
+	esac
+	cd ..
+}
+
 # Build GMP
 build_gmp() {
 	download "gmp-${GMP_VERSION}.tar.xz" "ftp://ftp.gmplib.org/pub/gmp/gmp-${GMP_VERSION}.tar.xz"
@@ -102,24 +120,6 @@ build_nettle() {
 	make clean
 	make
 	make install
-	cd ..
-}
-
-# Build zlib
-build_zlib() {
-	download "zlib-${ZLIB_VERSION}.tar.xz" "http://zlib.net/zlib-${ZLIB_VERSION}.tar.xz"
-	cd "zlib-${ZLIB_VERSION}"
-	case "${PLATFORM}" in
-	mingw*)
-		make -f win32/Makefile.gcc clean
-		make -f win32/Makefile.gcc PREFIX="${HOST}-"
-		make -f win32/Makefile.gcc install BINARY_PATH="${PREFIX}/bin" LIBRARY_PATH="${PREFIX}/lib" INCLUDE_PATH="${PREFIX}/include" SHARED_MODE=1
-		;;
-	*)
-		echo "Unsupported platform for zlib"
-		exit 1
-		;;
-	esac
 	cd ..
 }
 
@@ -379,40 +379,40 @@ setup_macosx10.7_32() {
 	export MACOSX_DEPLOYMENT_TARGET=10.7
 	export CC=clang
 	export CXX=clang++
-	export CFLAGS=-m32
-	export CXXFLAGS=-m32
-	export LDFLAGS=-m32
+	export CFLAGS="-arch i386"
+	export CXXFLAGS="-arch i386"
+	export LDFLAGS="-arch i386"
 	common_setup
 }
 
-# Set up environment for Mac OS X 10.8 64-bit
-setup_macosx10.8_64() {
-	HOST=x86_64-apple-darwin12
-	export MACOSX_DEPLOYMENT_TARGET=10.8
-	export NASM="${PREFIX}/bin/nasm" # A newer version of nasm is require for 64-bit
+# Set up environment for Mac OS X 10.7 64-bit
+setup_macosx10.7_64() {
+	HOST=x86_64-apple-darwin11
+	export MACOSX_DEPLOYMENT_TARGET=10.7
+	export NASM="${PREFIX}/bin/nasm" # A newer version of nasm is required for 64-bit
 	export CC=clang
 	export CXX=clang++
-	export CFLAGS=-m64
-	export CXXFLAGS=-m64
-	export LDFLAGS=-m64
+	export CFLAGS="-arch x86_64"
+	export CXXFLAGS="-arch x86_64"
+	export LDFLAGS="-arch x86_64"
 	common_setup
 }
 
 # Usage
 if [ "${#}" -lt "2" ]; then
-	echo "usage: $0 <platform> <package[s]...>"
+	echo "usage: ${0} <platform> <package[s]...>"
 	echo "Script to build dependencies for platforms which do not provide them"
-	echo "Platforms: mingw32 mingw64 macosx10.7_32 macosx10.8_64"
-	echo "Packages: pkgconfig nasm gmp nettle zlib geoip curl sdl2 glew png jpeg webp freetype openal ogg vorbis speex theora opus opusfile"
+	echo "Platforms: mingw32 mingw64 macosx10.7_32 macosx10.7_64"
+	echo "Packages: pkgconfig nasm zlib gmp nettle geoip curl sdl2 glew png jpeg webp freetype openal ogg vorbis speex theora opus opusfile"
 	echo
-	echo "Linux to Windows cross-compile: gmp nettle zlib geoip curl sdl2 glew png jpeg webp freetype openal ogg vorbis speex theora opus opusfile"
-	echo "Native MinGW-w64 compile: pkg-config nasm gmp nettle zlib geoip curl sdl2 glew png jpeg webp freetype openal ogg vorbis speex theora opus opusfile"
+	echo "Linux to Windows cross-compile: zlib gmp nettle geoip curl sdl2 glew png jpeg webp freetype openal ogg vorbis speex theora opus opusfile"
+	echo "Native MinGW-w64 compile: pkgconfig nasm zlib gmp nettle geoip curl sdl2 glew png jpeg webp freetype openal ogg vorbis speex theora opus opusfile"
 	echo "Native Mac OS X compile: pkgconfig nasm gmp nettle geoip sdl2 glew png jpeg webp freetype ogg vorbis speex theora opus opusfile"
 	exit 1
 fi
 
 # Enable parallel build
-export MAKEFLAGS=-j`nproc 2> /dev/null || sysctl -n hw.ncpu 2> /dev/null || echo 1`
+export MAKEFLAGS="-j`nproc 2> /dev/null || sysctl -n hw.ncpu 2> /dev/null || echo 1`"
 
 # Setup platform
 PLATFORM="${1}"
