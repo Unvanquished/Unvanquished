@@ -4,5 +4,5 @@ set( CMAKE_SYSTEM_PROCESSOR x86 )
 
 # Only look for libraries in lib32
 set( CMAKE_SYSTEM_LIBRARY_PATH /lib32 /usr/lib32 /usr/local/lib32 )
-set( FIND_LIBRARY_USE_LIB64_PATHS OFF )
+set_property( GLOBAL PROPERTY FIND_LIBRARY_USE_LIB64_PATHS OFF )
 set( CMAKE_IGNORE_PATH /lib /usr/lib /usr/local/lib )
