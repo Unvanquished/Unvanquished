@@ -560,7 +560,7 @@ static int ParseClipmask( char *token )
 	}
 }
 
-static trType_t ParseTrajectoryType( char *token )
+static trType_t ParseTrajectoryType( const char *token )
 {
 	if      ( !Q_stricmp( token, "TR_STATIONARY" ) )
 	{
@@ -595,6 +595,45 @@ static trType_t ParseTrajectoryType( char *token )
 		Com_Printf( S_ERROR "unknown trajectory value '%s'\n", token );
 		return TR_STATIONARY;
 	}
+}
+
+static perk_t ParsePerkList( char **text )
+{
+	perk_t perk;
+	int    count, perks = 0;
+	char   *token;
+
+	token = COM_Parse( text );
+
+	if ( !*token )
+	{
+		return perks;
+	}
+
+	count = atoi( token );
+
+	while ( count --> 0 )
+	{
+		token = COM_Parse( text );
+
+		if ( !*token )
+		{
+			return perks;
+		}
+
+		perk = BG_PerkByName( token );
+
+		if ( !perk )
+		{
+		     Com_Printf( S_ERROR "unknown perk value '%s'\n", token );
+		}
+		else
+		{
+			perks |= perk;
+		}
+	}
+
+	return perks;
 }
 
 int configVarComparator(const void* a, const void* b)
@@ -1150,7 +1189,8 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
 		STAMINASPRINTCOST  = 1 << 21,
 		STAMINAJOGRESTORE  = 1 << 22,
 		STAMINAWALKRESTORE = 1 << 23,
-		STAMINASTOPRESTORE = 1 << 24
+		STAMINASTOPRESTORE = 1 << 24,
+		PERKS              = 1 << 25
 	};
 
 	if( !BG_ReadWholeFile( filename, text_buffer, sizeof(text_buffer) ) )
@@ -1252,6 +1292,11 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
 		else if ( !Q_stricmp( token, "wallJumper" ) )
 		{
 			ca->abilities |= SCA_WALLJUMPER;
+		}
+		else if ( !Q_stricmp( token, "perks" ) )
+		{
+			ca->perks = ParsePerkList( &text );
+			defined |= PERKS;
 		}
 		else if ( !Q_stricmp( token, "buildDistance" ) )
 		{
@@ -1427,6 +1472,18 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
 		if ( token )
 		{
 			Com_Printf( S_ERROR "%s (mandatory for human team) not defined in %s\n",
+			            token, filename );
+		}
+	}
+
+	// check for missing mandatory fields for the alien team
+	else if ( ca->team == TEAM_ALIENS )
+	{
+		if      ( !( defined & PERKS ) )              { token = "perks"; }
+
+		if ( token )
+		{
+			Com_Printf( S_ERROR "%s (mandatory for alien team) not defined in %s\n",
 			            token, filename );
 		}
 	}

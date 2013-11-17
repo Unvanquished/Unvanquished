@@ -2702,11 +2702,71 @@ void Cmd_Class_f( gentity_t *ent )
 	}
 }
 
-/*
-=================
-Cmd_Destroy_f
-=================
-*/
+// TODO: Remove debug prints
+static qboolean Cmd_Perk_internal( gentity_t *self, const char *name )
+{
+	perk_t perk;
+
+	if ( !self || !self->client )
+	{
+		return qfalse;
+	}
+
+	if ( self->client->ps.stats[ STAT_HEALTH ] <= 0 )
+	{
+		Com_Printf("[Cmd_Perk_internal] You are dead.\n");
+		return qfalse;
+	}
+
+	if ( self->client->ps.persistant[ PERS_TEAM ] != TEAM_ALIENS )
+	{
+		Com_Printf("[Cmd_Perk_internal] Not an alien.\n");
+		return qfalse;
+	}
+
+	perk = BG_PerkByName( name );
+
+	if ( !perk )
+	{
+		Com_Printf("[Cmd_Perk_internal] Unknown perk »%s«.\n", name);
+		return qfalse;
+	}
+
+	if ( !( BG_Class( self->client->ps.stats[ STAT_CLASS ] )->perks & perk ) )
+	{
+		Com_Printf("[Cmd_Perk_internal] %s not available for your class.\n", name);
+		return qfalse;
+	}
+
+	if ( self->client->ps.stats[ STAT_PERKS ] & perk )
+	{
+		Com_Printf("[Cmd_Perk_internal] Already learned %s.\n", name);
+		return qfalse;
+	}
+
+	Com_Printf("[Cmd_Perk_internal] %s added.\n", name);
+	self->client->ps.stats[ STAT_PERKS ] |= perk;
+	return qtrue;
+}
+
+void Cmd_Perk_f( gentity_t *self )
+{
+	char arg[ MAX_TOKEN_CHARS ];
+	int  argNum, numArgs;
+
+	numArgs = trap_Argc();
+
+	for ( argNum = 1; argNum < numArgs; argNum++ )
+	{
+		trap_Argv( argNum, arg, sizeof( arg ) );
+
+		if ( Cmd_Perk_internal( self, arg ) )
+		{
+			break;
+		}
+	}
+}
+
 void Cmd_Destroy_f( gentity_t *ent )
 {
 	vec3_t    viewOrigin, forward, end;
@@ -4598,6 +4658,7 @@ static const commands_t cmds[] =
 	{ "mt",              CMD_MESSAGE | CMD_INTERMISSION,      Cmd_PrivateMessage_f   },
 	{ "noclip",          CMD_CHEAT_TEAM,                      Cmd_Noclip_f           },
 	{ "notarget",        CMD_CHEAT | CMD_TEAM | CMD_ALIVE,    Cmd_Notarget_f         },
+	{ "perk",            CMD_TEAM,                            Cmd_Perk_f             },
 	{ "pubkey_identify", CMD_INTERMISSION,                    Cmd_Pubkey_Identify_f  },
 	{ "reload",          CMD_HUMAN | CMD_ALIVE,               Cmd_Reload_f           },
 	{ "say",             CMD_MESSAGE | CMD_INTERMISSION,      Cmd_Say_f              },

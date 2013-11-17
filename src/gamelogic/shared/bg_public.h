@@ -927,12 +927,15 @@ typedef enum
 
   PCL_NUM_CLASSES
 } class_t;
+
 // convenience bitmasks
 #define PCL_ALIEN_CLASSES ( ( 1 << PCL_HUMAN_NAKED ) - ( 1 << PCL_ALIEN_BUILDER0 ) )
 #define PCL_HUMAN_CLASSES ( ( 1 << PCL_NUM_CLASSES ) - ( 1 << PCL_HUMAN_NAKED ) )
 #define PCL_ALL_CLASSES   ( PCL_ALIEN_CLASSES | PCL_HUMAN_CLASSES )
 
 // alien class perks
+typedef int perk_t;
+
 #define PERK_STRENGTH    BIT(0) // more health, greater jumps
 #define PERK_AGILITY     BIT(1) // optional movement skills
 #define PERK_ELECTRICITY BIT(2) // short range with AoE, anti buildable
@@ -1050,6 +1053,7 @@ typedef struct
 	float    regenRate;
 
 	int      abilities;
+	int      perks;
 
 	weapon_t startWeapon;
 
@@ -1314,6 +1318,8 @@ const buildableAttributes_t *BG_Buildable( buildable_t buildable );
 
 buildableModelConfig_t      *BG_BuildableModelConfig( buildable_t buildable );
 void                        BG_BuildableBoundingBox( buildable_t buildable, vec3_t mins, vec3_t maxs );
+
+perk_t                      BG_PerkByName( const char *name );
 
 const classAttributes_t     *BG_ClassByName( const char *name );
 

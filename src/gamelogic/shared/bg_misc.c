@@ -208,7 +208,41 @@ void BG_InitBuildableModelConfigs( void )
 	}
 }
 
-////////////////////////////////////////////////////////////////////////////////
+typedef struct
+{
+	perk_t     perk;
+	const char *name;
+} perkData_t;
+
+static perkData_t bg_perkData[] =
+{
+	{ PERK_AGILITY,     "agility"     },
+	{ PERK_ELECTRICITY, "electricity" },
+	{ PERK_POISON,      "poison"      },
+	{ PERK_SPIKES,      "spikes"      },
+	{ PERK_STRENGTH,    "strength"    },
+};
+
+static const size_t bg_numPerks = ARRAY_LEN( bg_perkData );
+
+perk_t BG_PerkByName( const char *name )
+{
+	int perkNum;
+
+	if ( name )
+	{
+		for ( perkNum = 0; perkNum < bg_numPerks; perkNum++ )
+		{
+			if ( !Q_stricmp( bg_perkData[ perkNum ].name, name ) )
+			{
+				return bg_perkData[ perkNum ].perk;
+			}
+		}
+	}
+
+	return 0;
+}
+
 typedef struct
 {
 	class_t number;
