@@ -66,11 +66,6 @@ static void GiveMaxClips( gentity_t *self )
 	ps = &self->client->ps;
 	wa = BG_Weapon( ps->stats[ STAT_WEAPON ] );
 
-	if ( wa->infiniteAmmo )
-	{
-		return;
-	}
-
 	ps->clips = wa->maxClips;
 }
 
@@ -89,11 +84,6 @@ static void GiveFullClip( gentity_t *self )
 
 	ps = &self->client->ps;
 	wa = BG_Weapon( ps->stats[ STAT_WEAPON ] );
-
-	if ( wa->infiniteAmmo )
-	{
-		return;
-	}
 
 	ps->ammo = wa->maxAmmo;
 
