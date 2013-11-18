@@ -1387,12 +1387,7 @@ function( GAMEMODULE )
       endif()
     endforeach()
 
-    # Ensure qvms end up in the correct folder for VS or Xcode projects
-    if( XCODE_VERSION OR MSVC )
-      set( QVM_OUTPUT ${CMAKE_BINARY_DIR}/$<CONFIGURATION>/${GAMEMODULE_OUTPUT_DIR}/vm/${GAMEMODULE_NAME}.qvm )
-    else()
-      set( QVM_OUTPUT ${CMAKE_BINARY_DIR}/${GAMEMODULE_OUTPUT_DIR}/vm/${GAMEMODULE_NAME}.qvm )
-    endif()
+    set( QVM_OUTPUT ${CMAKE_BINARY_DIR}/${GAMEMODULE_OUTPUT_DIR}/vm/${GAMEMODULE_NAME}.qvm )
 
     # Link *.asm into a qvm
     add_custom_command( OUTPUT ${QVM_OUTPUT}
