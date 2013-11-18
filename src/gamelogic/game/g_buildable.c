@@ -1983,7 +1983,7 @@ static gentity_t *NearestPowerSourceInRange( gentity_t *self )
 {
 	gentity_t *neighbor = G_Reactor();
 	gentity_t *best = NULL;
-	float bestDistance = 3e38f;
+	float bestDistance = FLT_MAX;
 
 	if ( neighbor && Distance( self->s.origin, neighbor->s.origin ) <= g_powerReactorRange.integer )
 	{
@@ -2273,7 +2273,7 @@ void G_SetHumanBuildablePowerState()
 
 	// first pass: predict spare power for all buildables,
 	//             power up buildables that have enough power
-	while ( ent = G_IterateEntities( ent, NULL, qtrue, 0, NULL ) )
+	while ( ent = G_IterateEntities( ent, NULL, qfalse, 0, NULL ) )
 	{
 		// discard irrelevant entities
 		if ( ent->s.eType != ET_BUILDABLE || ent->buildableTeam != TEAM_HUMANS )
@@ -2295,7 +2295,7 @@ void G_SetHumanBuildablePowerState()
 		lowestSparePower = MAX_QINT;
 
 		// find buildable with highest power deficit
-		while ( ent = G_IterateEntities( ent, NULL, qtrue, 0, NULL ) )
+		while ( ent = G_IterateEntities( ent, NULL, qfalse, 0, NULL ) )
 		{
 			// discard irrelevant entities
 			if ( ent->s.eType != ET_BUILDABLE || ent->buildableTeam != TEAM_HUMANS )
