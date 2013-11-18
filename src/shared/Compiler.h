@@ -157,9 +157,13 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #endif
 #else // Q3_VM
 #define Q3_VM_INSTANTIATE
-#define STATIC_INLINE static inline
 #define QDECL
+#if defined(_MSC_VER) && !defined(__cplusplus)
+#define INLINE __inline
+#else
 #define INLINE inline
+#endif
+#define STATIC_INLINE static INLINE
 #define Q_EXPORT DLLEXPORT
 #define IFDECLARE
 #endif // Q3_VM

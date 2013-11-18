@@ -182,7 +182,7 @@ namespace Cvar {
                 return;
             }
 
-            if (rom and warnRom and not cvar->flags & (CVAR_ROM | CVAR_INIT)) {
+            if (rom and warnRom and not (cvar->flags & (CVAR_ROM | CVAR_INIT))) {
                 Com_Printf("SetValueROM called on non-ROM cvar '%s'\n", cvarName.c_str());
             }
 

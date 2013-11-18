@@ -69,7 +69,7 @@ namespace Console {
 
         //Add slash prefix and get command text up to cursor
         if (GetText().empty() || (GetText()[0] != '/' && GetText()[0] != '\\')) {
-            GetText().insert(0, U"/");
+            GetText().insert(GetText().begin(), '/');
             SetCursor(GetCursorPos() + 1);
         }
         std::string commandText = Str::UTF32To8(GetText().substr(1, GetCursorPos() - 1));

@@ -972,9 +972,11 @@ static GLenum debugTypes[] =
 };
 
 #ifdef _WIN32
-__stdcall
+#define DEBUG_CALLBACK_CALL APIENTRY
+#else
+#define DEBUG_CALLBACK_CALL
 #endif
-static void GLimp_DebugCallback( GLenum source, GLenum type, GLuint id,
+static void DEBUG_CALLBACK_CALL GLimp_DebugCallback( GLenum source, GLenum type, GLuint id,
                                        GLenum severity, GLsizei length, const GLchar *message, void *userParam )
 {
 	const char *debugTypeName;

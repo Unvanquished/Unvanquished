@@ -60,7 +60,7 @@ build_pkgconfig() {
 	download "pkg-config-${PKGCONFIG_VERSION}.tar.gz" "http://pkgconfig.freedesktop.org/releases/pkg-config-${PKGCONFIG_VERSION}.tar.gz"
 	cd "pkg-config-${PKGCONFIG_VERSION}"
 	make distclean || true
-	./configure --host="${HOST}" --prefix="${PREFIX}" --enable-static --disable-shared --with-internal-glib
+	./configure --host="${HOST}" --prefix="${PREFIX}" --with-internal-glib
 	make clean
 	make
 	make install
@@ -72,7 +72,13 @@ build_nasm() {
 	case "${PLATFORM}" in
 	macosx*)
 		download "nasm-${NASM_VERSION}-macosx.zip" "http://www.nasm.us/pub/nasm/releasebuilds/${NASM_VERSION}/macosx/nasm-${NASM_VERSION}-macosx.zip"
-		cp "nasm-${NASM_VERSION}/nasm" "${PREFIX}/bin"
+		mv "nasm-${NASM_VERSION}" "nasm-${NASM_VERSION}-macosx"
+		cp "nasm-${NASM_VERSION}-macosx/nasm" "${PREFIX}/bin"
+		;;
+	mingw*|msvc*)
+		download "nasm-${NASM_VERSION}-win32.zip" "http://www.nasm.us/pub/nasm/releasebuilds/${NASM_VERSION}/win32/nasm-${NASM_VERSION}-win32.zip"
+		mv "nasm-${NASM_VERSION}" "nasm-${NASM_VERSION}-win32"
+		cp "nasm-${NASM_VERSION}-win32/nasm.exe" "${PREFIX}/bin"
 		;;
 	*)
 		echo "Unsupported platform for NASM"
@@ -86,7 +92,7 @@ build_zlib() {
 	download "zlib-${ZLIB_VERSION}.tar.xz" "http://zlib.net/zlib-${ZLIB_VERSION}.tar.xz"
 	cd "zlib-${ZLIB_VERSION}"
 	case "${PLATFORM}" in
-	mingw*)
+	mingw*|msvc*)
 		make -f win32/Makefile.gcc clean
 		make -f win32/Makefile.gcc PREFIX="${HOST}-"
 		make -f win32/Makefile.gcc install BINARY_PATH="${PREFIX}/bin" LIBRARY_PATH="${PREFIX}/lib" INCLUDE_PATH="${PREFIX}/include" SHARED_MODE=1
@@ -104,7 +110,7 @@ build_gmp() {
 	download "gmp-${GMP_VERSION}.tar.xz" "ftp://ftp.gmplib.org/pub/gmp/gmp-${GMP_VERSION}.tar.xz"
 	cd "gmp-${GMP_VERSION}"
 	make distclean || true
-	./configure --host="${HOST}" --prefix="${PREFIX}" --enable-static --disable-shared
+	./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED}
 	make clean
 	make
 	make install
@@ -116,7 +122,7 @@ build_nettle() {
 	download "nettle-${NETTLE_VERSION}.tar.gz" "http://www.lysator.liu.se/\~nisse/archive/nettle-${NETTLE_VERSION}.tar.gz"
 	cd "nettle-${NETTLE_VERSION}"
 	make distclean || true
-	./configure --host="${HOST}" --prefix="${PREFIX}" --enable-static --disable-shared
+	./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED}
 	make clean
 	make
 	make install
@@ -133,11 +139,11 @@ build_geoip() {
 	# GeoIP needs -lws2_32 in LDFLAGS
 	local TEMP_LDFLAGS="${LDFLAGS}"
 	case "${PLATFORM}" in
-	mingw*)
+	mingw*|msvc*)
 		TEMP_LDFLAGS="${LDFLAGS} -lws2_32"
 		;;
 	esac
-	LDFLAGS="${TEMP_LDFLAGS}" ./configure --host="${HOST}" --prefix="${PREFIX}" --enable-static --disable-shared
+	LDFLAGS="${TEMP_LDFLAGS}" ./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED}
 	make clean
 	make
 	make install
@@ -149,7 +155,7 @@ build_curl() {
 	download "curl-${CURL_VERSION}.tar.bz2" "http://curl.haxx.se/download/curl-${CURL_VERSION}.tar.bz2"
 	cd "curl-${CURL_VERSION}"
 	make distclean || true
-	./configure --host="${HOST}" --prefix="${PREFIX}" --disable-static --enable-shared
+	./configure --host="${HOST}" --prefix="${PREFIX}" --enable-shared
 	make clean
 	make
 	make install
@@ -159,11 +165,22 @@ build_curl() {
 # Build SDL2
 build_sdl2() {
 	case "${PLATFORM}" in
-	mingw*)
+	mingw*|msvc*)
 		# Use precompiled binaries to avoid depending on the DirectX SDK
-		download "SDL2-devel-${SDL2_VERSION}-mingw.tar.gz" "http://www.libsdl.org/release/SDL2-devel-${SDL2_VERSION}-mingw.tar.gz"
+		download "SDL2-devel-${SDL2_VERSION}-VC.zip" "http://www.libsdl.org/release/SDL2-devel-${SDL2_VERSION}-VC.zip"
 		cd "SDL2-${SDL2_VERSION}"
-		make install-package arch="${HOST}" prefix="${PREFIX}"
+		mkdir -p "${PREFIX}/include/SDL2"
+		cp include/* "${PREFIX}/include/SDL2"
+		case "${PLATFORM}" in
+		*32)
+			cp lib/x86/*.lib "${PREFIX}/lib"
+			cp lib/x86/*.dll "${PREFIX}/bin"
+			;;
+		*64)
+			cp lib/x64/*.lib "${PREFIX}/lib"
+			cp lib/x64/*.dll "${PREFIX}/bin"
+			;;
+		esac
 		cd ..
 		;;
 	macosx*)
@@ -186,9 +203,9 @@ build_glew() {
 	cd "glew-${GLEW_VERSION}"
 	make distclean
 	case "${PLATFORM}" in
-	mingw*)
-		make SYSTEM=mingw GLEW_DEST="${PREFIX}" CC="${HOST}-cc" AR="${HOST}-ar" RANLIB="${HOST}-ranlib" STRIP="${HOST}-strip" LD="${HOST}-cc"
-		make install SYSTEM=mingw GLEW_DEST="${PREFIX}" CC="${HOST}-cc" AR="${HOST}-ar" RANLIB="${HOST}-ranlib" STRIP="${HOST}-strip" LD="${HOST}-cc"
+	mingw*|msvc*)
+		make SYSTEM=mingw GLEW_DEST="${PREFIX}" CC="${HOST}-gcc" AR="${HOST}-ar" RANLIB="${HOST}-ranlib" STRIP="${HOST}-strip" LD="${HOST}-gcc"
+		make install SYSTEM=mingw GLEW_DEST="${PREFIX}" CC="${HOST}-gcc" AR="${HOST}-ar" RANLIB="${HOST}-ranlib" STRIP="${HOST}-strip" LD="${HOST}-gcc"
 		;;
 	macosx*)
 		make SYSTEM=darwin GLEW_DEST="${PREFIX}" CC="clang" LD="clang" CFLAGS.EXTRA="${CFLAGS:-} -dynamic -fno-common" LDFLAGS.EXTRA="${LDFLAGS:-}"
@@ -208,7 +225,7 @@ build_png() {
 	download "libpng-${PNG_VERSION}.tar.xz" "http://download.sourceforge.net/libpng/libpng-${PNG_VERSION}.tar.xz"
 	cd "libpng-${PNG_VERSION}"
 	make distclean || true
-	./configure --host="${HOST}" --prefix="${PREFIX}" --enable-static --disable-shared
+	./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED}
 	make clean
 	make
 	make install
@@ -221,7 +238,7 @@ build_jpeg() {
 	cd "libjpeg-turbo-${JPEG_VERSION}"
 	make distclean || true
 	# JPEG doesn't set -O3 if CFLAGS is defined
-	CFLAGS="${CFLAGS:-} -O3" ./configure --host="${HOST}" --prefix="${PREFIX}" --enable-static --disable-shared --with-jpeg8
+	CFLAGS="${CFLAGS:-} -O3" ./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED} --with-jpeg8
 	make clean
 	make
 	make install
@@ -233,7 +250,7 @@ build_webp() {
 	download "libwebp-${WEBP_VERSION}.tar.gz" "https://webp.googlecode.com/files/libwebp-${WEBP_VERSION}.tar.gz"
 	cd "libwebp-${WEBP_VERSION}"
 	make distclean || true
-	./configure --host="${HOST}" --prefix="${PREFIX}" --enable-static --disable-shared
+	./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED}
 	make clean
 	make
 	make install
@@ -245,29 +262,34 @@ build_freetype() {
 	download "freetype-${FREETYPE_VERSION}.tar.bz2" "http://download.savannah.gnu.org/releases/freetype/freetype-${FREETYPE_VERSION}.tar.bz2"
 	cd "freetype-${FREETYPE_VERSION}"
 	make distclean || true
-	./configure --host="${HOST}" --prefix="${PREFIX}" --enable-static --disable-shared --without-bzip2
+	./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED} --without-bzip2
 	make clean
 	make
 	make install
+	case "${PLATFORM}" in
+	mingw*|msvc*)
+		cp "include/freetype/config/ftconfig.h" "${PREFIX}/include/freetype2/freetype/config/"
+		;;
+	esac
 	cd ..
 }
 
 # Build OpenAL
 build_openal() {
 	case "${PLATFORM}" in
-	mingw*)
+	mingw*|msvc*)
 		# Use precompiled binaries to link to OpenAL32.dll
 		download "openal-soft-${OPENAL_VERSION}-bin.zip" "http://kcat.strangesoft.net/openal-soft-${OPENAL_VERSION}-bin.zip"
 		cd "openal-soft-${OPENAL_VERSION}-bin"
 		cp -r "include/AL" "${PREFIX}/include"
 		case "${PLATFORM}" in
-		mingw32)
+		*32)
 			cp "lib/Win32/libOpenAL32.dll.a" "${PREFIX}/lib"
 			cp "Win32/soft_oal.dll" "${PREFIX}/bin"
 			;;
-		mingw64)
+		*64)
 			cp "lib/Win64/libOpenAL32.dll.a" "${PREFIX}/lib"
-			cp"Win64/soft_oal.dll" "${PREFIX}/bin"
+			cp "Win64/soft_oal.dll" "${PREFIX}/bin"
 			;;
 		esac
 		cd ..
@@ -284,7 +306,7 @@ build_ogg() {
 	download "libogg-${OGG_VERSION}.tar.xz" "http://downloads.xiph.org/releases/ogg/libogg-${OGG_VERSION}.tar.xz"
 	cd "libogg-${OGG_VERSION}"
 	make distclean || true
-	./configure --host="${HOST}" --prefix="${PREFIX}" --enable-static --disable-shared
+	./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED}
 	make clean
 	make
 	make install
@@ -296,7 +318,7 @@ build_vorbis() {
 	download "libvorbis-${VORBIS_VERSION}.tar.xz" "http://downloads.xiph.org/releases/vorbis/libvorbis-${VORBIS_VERSION}.tar.xz"
 	cd "libvorbis-${VORBIS_VERSION}"
 	make distclean || true
-	./configure --host="${HOST}" --prefix="${PREFIX}" --enable-static --disable-shared --disable-examples
+	./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED} --disable-examples
 	make clean
 	make
 	make install
@@ -308,7 +330,7 @@ build_speex() {
 	download "speex-${SPEEX_VERSION}.tar.gz" "http://downloads.xiph.org/releases/speex/speex-${SPEEX_VERSION}.tar.gz"
 	cd "speex-${SPEEX_VERSION}"
 	make distclean || true
-	./configure --host="${HOST}" --prefix="${PREFIX}" --enable-static --disable-shared
+	./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED}
 	make clean
 	make
 	make install
@@ -320,7 +342,13 @@ build_theora() {
 	download "libtheora-${THEORA_VERSION}.tar.bz2" "http://downloads.xiph.org/releases/theora/libtheora-${THEORA_VERSION}.tar.bz2"
 	cd "libtheora-${THEORA_VERSION}"
 	make distclean || true
-	./configure --host="${HOST}" --prefix="${PREFIX}" --enable-static --disable-shared --disable-examples --disable-encode
+	case "${PLATFORM}" in
+	mingw*|msvc*)
+		sed -i "s,EXPORTS,," "win32/xmingw32/libtheoradec-all.def"
+		sed -i "s,EXPORTS,," "win32/xmingw32/libtheoraenc-all.def"
+		;;
+	esac
+	./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED} --disable-examples --disable-encode
 	make clean
 	make
 	make install
@@ -332,7 +360,7 @@ build_opus() {
 	download "opus-${OPUS_VERSION}.tar.gz" "http://downloads.xiph.org/releases/opus/opus-${OPUS_VERSION}.tar.gz"
 	cd "opus-${OPUS_VERSION}"
 	make distclean || true
-	./configure --host="${HOST}" --prefix="${PREFIX}" --enable-static --disable-shared
+	./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED}
 	make clean
 	make
 	make install
@@ -344,7 +372,7 @@ build_opusfile() {
 	download "opusfile-${OPUSFILE_VERSION}.tar.gz" "http://downloads.xiph.org/releases/opus/opusfile-${OPUSFILE_VERSION}.tar.gz"
 	cd "opusfile-${OPUSFILE_VERSION}"
 	make distclean || true
-	./configure --host="${HOST}" --prefix="${PREFIX}" --enable-static --disable-shared --disable-http
+	./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED} --disable-http
 	make clean
 	make
 	make install
@@ -361,21 +389,38 @@ common_setup() {
 	mkdir -p "${PREFIX}"
 }
 
-# Set up environment for 32-bit Windows
-setup_mingw32() {
+# Set up environment for 32-bit Windows for Visual Studio (compile all as .dll)
+setup_msvc32() {
 	HOST=i686-w64-mingw32
+	MSVC_SHARED=(--enable-shared)
 	common_setup
 }
 
-# Set up environment for 64-bit Windows
+# Set up environment for 64-bit Windows for Visual Studio (compile all as .dll)
+setup_msvc64() {
+	HOST=x86_64-w64-mingw32
+	MSVC_SHARED=(--enable-shared)
+	common_setup
+}
+
+# Set up environment for 32-bit Windows for MinGW (compile all as .a)
+setup_mingw32() {
+	HOST=i686-w64-mingw32
+	MSVC_SHARED=(--disable-shared --enable-static)
+	common_setup
+}
+
+# Set up environment for 64-bit Windows for MinGW (compile all as .a)
 setup_mingw64() {
 	HOST=x86_64-w64-mingw32
+	MSVC_SHARED=(--disable-shared --enable-static)
 	common_setup
 }
 
 # Set up environment for Mac OS X 10.7 32-bit
 setup_macosx10.7_32() {
 	HOST=i686-apple-darwin11
+	MSVC_SHARED=(--disable-shared --enable-static)
 	export MACOSX_DEPLOYMENT_TARGET=10.7
 	export CC=clang
 	export CXX=clang++
@@ -388,6 +433,7 @@ setup_macosx10.7_32() {
 # Set up environment for Mac OS X 10.7 64-bit
 setup_macosx10.7_64() {
 	HOST=x86_64-apple-darwin11
+	MSVC_SHARED="--disable-shared --enable-static"
 	export MACOSX_DEPLOYMENT_TARGET=10.7
 	export NASM="${PREFIX}/bin/nasm" # A newer version of nasm is required for 64-bit
 	export CC=clang
@@ -402,11 +448,12 @@ setup_macosx10.7_64() {
 if [ "${#}" -lt "2" ]; then
 	echo "usage: ${0} <platform> <package[s]...>"
 	echo "Script to build dependencies for platforms which do not provide them"
-	echo "Platforms: mingw32 mingw64 macosx10.7_32 macosx10.7_64"
+	echo "Platforms: msvc32 msvc64 mingw32 mingw64 macosx10.7_32 macosx10.7_64"
 	echo "Packages: pkgconfig nasm zlib gmp nettle geoip curl sdl2 glew png jpeg webp freetype openal ogg vorbis speex theora opus opusfile"
 	echo
+	echo "Packages requires for each platform:"
 	echo "Linux to Windows cross-compile: zlib gmp nettle geoip curl sdl2 glew png jpeg webp freetype openal ogg vorbis speex theora opus opusfile"
-	echo "Native MinGW-w64 compile: pkgconfig nasm zlib gmp nettle geoip curl sdl2 glew png jpeg webp freetype openal ogg vorbis speex theora opus opusfile"
+	echo "Native Windows compile: pkgconfig nasm zlib gmp nettle geoip curl sdl2 glew png jpeg webp freetype openal ogg vorbis speex theora opus opusfile"
 	echo "Native Mac OS X compile: pkgconfig nasm gmp nettle geoip sdl2 glew png jpeg webp freetype ogg vorbis speex theora opus opusfile"
 	exit 1
 fi

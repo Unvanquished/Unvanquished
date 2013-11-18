@@ -52,7 +52,7 @@ Maryland 20850 USA.
 #include <omp.h>
 #endif
 
-#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
+#if defined(_WIN32) || (!defined(DEDICATED) && !defined(BUILD_TTY_CLIENT))
 #include <SDL.h>
 #include "sdl2_compat.h"
 #endif

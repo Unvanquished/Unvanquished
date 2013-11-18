@@ -1805,7 +1805,7 @@ void CL_FirstSnapshot( void )
 		speex_bits_init( &clc.speexEncoderBits );
 		speex_bits_reset( &clc.speexEncoderBits );
 
-		clc.speexEncoder = speex_encoder_init( &speex_nb_mode );
+		clc.speexEncoder = speex_encoder_init( speex_lib_get_mode( SPEEX_MODEID_NB ) );
 
 		speex_encoder_ctl( clc.speexEncoder, SPEEX_GET_FRAME_SIZE,
 		                   &clc.speexFrameSize );
@@ -1827,7 +1827,7 @@ void CL_FirstSnapshot( void )
 		{
 			speex_bits_init( &clc.speexDecoderBits[ i ] );
 			speex_bits_reset( &clc.speexDecoderBits[ i ] );
-			clc.speexDecoder[ i ] = speex_decoder_init( &speex_nb_mode );
+			clc.speexDecoder[ i ] = speex_decoder_init( speex_lib_get_mode( SPEEX_MODEID_NB ) );
 			clc.voipIgnore[ i ] = qfalse;
 			clc.voipGain[ i ] = 1.0f;
 		}
