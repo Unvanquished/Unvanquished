@@ -614,7 +614,7 @@ static void initinputs(void) {
 }
 
 /* interrupt - catch interrupt signals */
-static NORETURN void interrupt(int n) {
+static void interrupt(int n) {
 	rm(rmlist);
 	exit(n = 100);
 }

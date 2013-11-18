@@ -88,8 +88,6 @@ static  int  compiledOfs = 0;
 static  byte *code = NULL;
 static  int  pc = 0;
 
-#define FTOL_PTR
-
 static  int instruction, pass;
 static  int lastConst = 0;
 static  int oc0, oc1, pop0, pop1;
@@ -1217,22 +1215,6 @@ qboolean ConstOptimize( vm_t *vm, int callProcOfsSyscall )
 #  define EDI "%%edi"
 #endif
 
-int myvmftol(void)
-{
-  int retval;
-
-  __asm__ volatile
-  (
-    "movss (" EDI ", " EBX ", 4), %%xmm0\n"
-    "cvttss2si %%xmm0, %0\n"
-    : "=r" (retval)
-    :
-    : "%xmm0"
-  );
-
-  return retval;
-}
-
 /*
 =================
 VM_Compile
@@ -1820,17 +1802,9 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 					break;
 
 				case OP_CVFI:
-#ifndef FTOL_PTR // WHENHELLISFROZENOVER
-					// not IEEE compliant, but simple and fast
-						EmitString( "D9 04 9F" );  // fld dword ptr [edi + ebx * 4]
-					EmitString( "DB 1C 9F" );  // fistp dword ptr [edi + ebx * 4]
-#else // FTOL_PTR
-						// call the library conversion function
-					EmitString( REX_W(48,40) "BA" );  // mov edx, myvmftol
-					EmitPtr( (void*) myvmftol );
-					EmitString( REX64(48) "FF D2" );  // call edx
+					EmitString( "F3 0F 10 04 9F" );  // movss xmm0, [edi + ebx * 4]
+					EmitString( "F3 0F 2C C0" );  // cvttss2si eax, xmm0
 					EmitCommand( LAST_COMMAND_MOV_STACK_EAX );  // mov dword ptr [edi + ebx * 4], eax
-#endif
 					break;
 
 				case OP_SEX8:
@@ -1958,6 +1932,10 @@ void VM_Destroy_Compiled( vm_t *self )
 	free( self->codeBase );
 #endif
 }
+
+#if defined(_MSC_VER) && idx64 || idx64_32
+extern "C" int qvmcall64( void*, void*, void*, void* );
+#endif
 
 /*
 ==============

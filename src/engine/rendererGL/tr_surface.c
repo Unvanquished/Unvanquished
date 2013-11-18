@@ -1307,7 +1307,7 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 
 		for ( j = 0, v = srf->verts; j < numVertexes; j++, v++ )
 		{
-#if id386_sse || defined( __x86_64__ )
+#if id386_sse
 			__m128 a, b, c;
 			BoneMatrixMulSSE( &a, &b, &c, v->boneWeights[ 0 ], boneMatrices[ v->boneIndexes[ 0 ] ] );
 
@@ -1356,7 +1356,7 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 
 		for ( j = 0, v = srf->verts; j < numVertexes; j++, v++ )
 		{
-#if id386_sse || defined( __x86_64__ )
+#if id386_sse
 			__m128 a, b, c;
 
 			BoneMatrixMulSSE( &a, &b, &c, v->boneWeights[ 0 ], boneMatrices[ v->boneIndexes[ 0 ] ] );

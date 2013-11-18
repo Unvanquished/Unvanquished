@@ -110,7 +110,7 @@ build_gmp() {
 	download "gmp-${GMP_VERSION}.tar.xz" "ftp://ftp.gmplib.org/pub/gmp/gmp-${GMP_VERSION}.tar.xz"
 	cd "gmp-${GMP_VERSION}"
 	make distclean || true
-	./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED}
+	./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED[@]}
 	make clean
 	make
 	make install
@@ -122,7 +122,7 @@ build_nettle() {
 	download "nettle-${NETTLE_VERSION}.tar.gz" "http://www.lysator.liu.se/\~nisse/archive/nettle-${NETTLE_VERSION}.tar.gz"
 	cd "nettle-${NETTLE_VERSION}"
 	make distclean || true
-	./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED}
+	./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED[@]} --enable-static
 	make clean
 	make
 	make install
@@ -143,7 +143,7 @@ build_geoip() {
 		TEMP_LDFLAGS="${LDFLAGS} -lws2_32"
 		;;
 	esac
-	LDFLAGS="${TEMP_LDFLAGS}" ./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED}
+	LDFLAGS="${TEMP_LDFLAGS}" ./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED[@]}
 	make clean
 	make
 	make install
@@ -225,7 +225,7 @@ build_png() {
 	download "libpng-${PNG_VERSION}.tar.xz" "http://download.sourceforge.net/libpng/libpng-${PNG_VERSION}.tar.xz"
 	cd "libpng-${PNG_VERSION}"
 	make distclean || true
-	./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED}
+	./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED[@]}
 	make clean
 	make
 	make install
@@ -238,7 +238,7 @@ build_jpeg() {
 	cd "libjpeg-turbo-${JPEG_VERSION}"
 	make distclean || true
 	# JPEG doesn't set -O3 if CFLAGS is defined
-	CFLAGS="${CFLAGS:-} -O3" ./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED} --with-jpeg8
+	CFLAGS="${CFLAGS:-} -O3" ./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED[@]} --with-jpeg8
 	make clean
 	make
 	make install
@@ -250,7 +250,7 @@ build_webp() {
 	download "libwebp-${WEBP_VERSION}.tar.gz" "https://webp.googlecode.com/files/libwebp-${WEBP_VERSION}.tar.gz"
 	cd "libwebp-${WEBP_VERSION}"
 	make distclean || true
-	./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED}
+	./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED[@]}
 	make clean
 	make
 	make install
@@ -262,7 +262,7 @@ build_freetype() {
 	download "freetype-${FREETYPE_VERSION}.tar.bz2" "http://download.savannah.gnu.org/releases/freetype/freetype-${FREETYPE_VERSION}.tar.bz2"
 	cd "freetype-${FREETYPE_VERSION}"
 	make distclean || true
-	./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED} --without-bzip2
+	./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED[@]} --without-bzip2
 	make clean
 	make
 	make install
@@ -306,7 +306,7 @@ build_ogg() {
 	download "libogg-${OGG_VERSION}.tar.xz" "http://downloads.xiph.org/releases/ogg/libogg-${OGG_VERSION}.tar.xz"
 	cd "libogg-${OGG_VERSION}"
 	make distclean || true
-	./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED}
+	./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED[@]}
 	make clean
 	make
 	make install
@@ -318,7 +318,7 @@ build_vorbis() {
 	download "libvorbis-${VORBIS_VERSION}.tar.xz" "http://downloads.xiph.org/releases/vorbis/libvorbis-${VORBIS_VERSION}.tar.xz"
 	cd "libvorbis-${VORBIS_VERSION}"
 	make distclean || true
-	./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED} --disable-examples
+	./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED[@]} --disable-examples
 	make clean
 	make
 	make install
@@ -330,7 +330,8 @@ build_speex() {
 	download "speex-${SPEEX_VERSION}.tar.gz" "http://downloads.xiph.org/releases/speex/speex-${SPEEX_VERSION}.tar.gz"
 	cd "speex-${SPEEX_VERSION}"
 	make distclean || true
-	./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED}
+	./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED[@]}
+	sed -i "s/deplibs_check_method=.*/deplibs_check_method=pass_all/g" libtool
 	make clean
 	make
 	make install
@@ -348,7 +349,7 @@ build_theora() {
 		sed -i "s,EXPORTS,," "win32/xmingw32/libtheoraenc-all.def"
 		;;
 	esac
-	./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED} --disable-examples --disable-encode
+	./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED[@]} --disable-examples --disable-encode
 	make clean
 	make
 	make install
@@ -360,7 +361,7 @@ build_opus() {
 	download "opus-${OPUS_VERSION}.tar.gz" "http://downloads.xiph.org/releases/opus/opus-${OPUS_VERSION}.tar.gz"
 	cd "opus-${OPUS_VERSION}"
 	make distclean || true
-	./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED}
+	./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED[@]}
 	make clean
 	make
 	make install
@@ -372,7 +373,7 @@ build_opusfile() {
 	download "opusfile-${OPUSFILE_VERSION}.tar.gz" "http://downloads.xiph.org/releases/opus/opusfile-${OPUSFILE_VERSION}.tar.gz"
 	cd "opusfile-${OPUSFILE_VERSION}"
 	make distclean || true
-	./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED} --disable-http
+	./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED[@]} --disable-http
 	make clean
 	make
 	make install
@@ -392,14 +393,14 @@ common_setup() {
 # Set up environment for 32-bit Windows for Visual Studio (compile all as .dll)
 setup_msvc32() {
 	HOST=i686-w64-mingw32
-	MSVC_SHARED=(--enable-shared)
+	MSVC_SHARED=(--enable-shared --disable-static)
 	common_setup
 }
 
 # Set up environment for 64-bit Windows for Visual Studio (compile all as .dll)
 setup_msvc64() {
 	HOST=x86_64-w64-mingw32
-	MSVC_SHARED=(--enable-shared)
+	MSVC_SHARED=(--enable-shared --disable-static)
 	common_setup
 }
 
@@ -433,7 +434,7 @@ setup_macosx10.7_32() {
 # Set up environment for Mac OS X 10.7 64-bit
 setup_macosx10.7_64() {
 	HOST=x86_64-apple-darwin11
-	MSVC_SHARED="--disable-shared --enable-static"
+	MSVC_SHARED=(--disable-shared --enable-static)
 	export MACOSX_DEPLOYMENT_TARGET=10.7
 	export NASM="${PREFIX}/bin/nasm" # A newer version of nasm is required for 64-bit
 	export CC=clang

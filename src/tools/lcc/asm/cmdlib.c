@@ -143,7 +143,7 @@ Error
 For abnormal program terminations in console apps
 =================
 */
-void NORETURN Error( const char *error, ...)
+void Error( const char *error, ...)
 {
 	va_list argptr;
 

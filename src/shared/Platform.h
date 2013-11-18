@@ -67,7 +67,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #endif
 
 // SSE support
-#if _M_IX86_FP >= 1 || defined(__SSE__)
+#if defined(__x86_64__) || defined(__SSE__) || _M_IX86_FP >= 1
 #include <xmmintrin.h>
 #define id386_sse 1
 #endif

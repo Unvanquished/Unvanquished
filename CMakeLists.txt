@@ -31,8 +31,7 @@ project( Daemon C CXX )
 ################################################################################
 
 option( ENABLE_LTO "Use link-time optimization for release builds" 0 )
-option( ENABLE_BUNDLING "When packaging automatically include all non-system libraries in package" 0 )
-option( ENABLE_HARDENING "Use stack protection" 0 )
+option( ENABLE_HARDENING "Use stack protection and other hardening flags" 0 )
 option( ENABLE_QVM_COMPAT "Configure the engine to use QVMs instead of NaCl" 1 )
 
 option( BUILD_CLIENT "Build Daemon client" 1 )
@@ -575,6 +574,10 @@ if( ENABLE_QVM_COMPAT )
   )
   if( ARCH STREQUAL "x86" OR ARCH STREQUAL "x86_64" )
     set( ENGINELIST ${ENGINELIST} ${ENGINE_DIR}/qcommon/vm_x86.c )
+    if( MSVC AND CMAKE_CL_64 )
+      add_custom_command( OUTPUT vm_x86_64.obj COMMAND ml64 ARGS /c "${ENGINE_DIR}/qcommon/vm_x86_64.asm" MAIN_DEPENDENCY ${ENGINE_DIR}/qcommon/vm_x86_64.asm )
+      set( ENGINELIST ${ENGINELIST} vm_x86_64.obj )
+    endif()
   endif()
 else()
   set( ENGINELIST ${ENGINELIST}

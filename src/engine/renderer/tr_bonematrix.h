@@ -201,7 +201,7 @@ static INLINE void BoneMatrixTransformNormal( const boneMatrix_t m, const vec3_t
 	out[ 2 ] = m[ 8 ] * p[ 0 ] + m[ 9 ] * p[ 1 ] + m[ 10 ] * p[ 2 ];
 }
 
-#if id386_sse || defined( __x86_64__ )
+#if id386_sse
 #define assert_16_byte_aligned( x ) assert( ( (intptr_t)x & 15 ) == 0 )
 
 static INLINE void BoneMatrixMulSSE( __m128 *oa, __m128 *ob, __m128 *oc, float s, const boneMatrix_t m )
