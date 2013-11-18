@@ -227,7 +227,9 @@ typedef enum cgameImport_s
   CG_R_SCISSOR_ENABLE,
   CG_R_SCISSOR_SET,
   CG_PREPAREKEYUP,
-  CG_R_SETALTSHADERTOKENS
+  CG_R_SETALTSHADERTOKENS,
+  CG_S_UPDATEENTITYVELOCITY,
+  CG_S_UPDATEENTITYOCCLUSION
 } cgameImport_t;
 
 typedef enum
@@ -479,3 +481,6 @@ void            trap_R_ScissorSet( int x, int y, int w, int h );
 void            trap_PrepareKeyUp( void );
 
 void            trap_R_SetAltShaderTokens( const char * );
+
+void            trap_S_UpdateEntityVelocity( int entityNum, const vec3_t velocity );
+void            trap_S_UpdateEntityOcclusion( int entityNum, qboolean occluded, float ratio );

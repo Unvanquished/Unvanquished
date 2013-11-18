@@ -1384,6 +1384,16 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			re.SetAltShaderTokens( ( const char * )VMA(1) );
 			return 0;
 
+		case CG_S_UPDATEENTITYVELOCITY:
+			cls.nCgameSoundSyscalls ++;
+			S_UpdateEntityVelocity( args[ 1 ], (float*) VMA( 2 ) );
+			return 0;
+
+		case CG_S_UPDATEENTITYOCCLUSION:
+			cls.nCgameSoundSyscalls ++;
+			S_UpdateEntityOcclusion( args[ 1 ], args[2], VMF( 3 ) );
+			return 0;
+
 		default:
 			Com_Error( ERR_DROP, "Bad cgame system trap: %ld", ( long int ) args[ 0 ] );
 			exit(1); // silence warning, and make sure this behaves as expected, if Com_Error's behavior changes

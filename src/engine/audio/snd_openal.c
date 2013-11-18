@@ -1189,6 +1189,37 @@ void S_AL_UpdateEntityPosition( int entityNum, const vec3_t origin )
 
 /*
 =================
+S_AL_UpdateEntityVelocity
+=================
+*/
+static
+void S_AL_UpdateEntityVelocity( int entityNum, const vec3_t velocity )
+{
+	vec3_t sanVelocity;
+
+	VectorCopy( velocity, sanVelocity );
+	S_AL_SanitiseVector( sanVelocity );
+
+	if ( entityNum < 0 || entityNum >= MAX_GENTITIES )
+		Com_Error( ERR_DROP, "S_UpdateEntityVelocity: bad entitynum %i", entityNum );
+
+	//VectorCopy( sanOrigin, entityList[entityNum].origin );
+}
+
+/*
+=================
+S_AL_UpdateEntityOcclusion
+=================
+*/
+static
+void S_AL_UpdateEntityOcclusion( int entityNum, qboolean occluded, float ratio )
+{
+	if ( entityNum < 0 || entityNum >= MAX_GENTITIES )
+		Com_Error( ERR_DROP, "S_UpdateEntityOcclusion: bad entitynum %i", entityNum );
+}
+
+/*
+=================
 S_AL_CheckInput
 Check whether input values from mods are out of range.
 Necessary for i.g. Western Quake3 mod which is buggy.
@@ -2747,6 +2778,8 @@ qboolean S_AL_Init( soundInterface_t *si )
 	si->StopLoopingSound = S_AL_StopLoopingSound;
 	si->Respatialize = S_AL_Respatialize;
 	si->UpdateEntityPosition = S_AL_UpdateEntityPosition;
+	si->UpdateEntityVelocity = S_AL_UpdateEntityVelocity;
+	si->UpdateEntityOcclusion = S_AL_UpdateEntityOcclusion;
 	si->Update = S_AL_Update;
 	si->DisableSounds = S_AL_DisableSounds;
 	si->BeginRegistration = S_AL_BeginRegistration;

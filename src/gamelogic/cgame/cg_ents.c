@@ -270,6 +270,7 @@ void CG_SetEntitySoundPosition( centity_t *cent )
 	else
 	{
 		trap_S_UpdateEntityPosition( cent->currentState.number, cent->lerpOrigin );
+		trap_S_UpdateEntityVelocity( cent->currentState.number, cent->currentState.pos.trDelta );
 	}
 }
 

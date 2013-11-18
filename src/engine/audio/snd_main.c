@@ -69,6 +69,10 @@ static qboolean S_ValidSoundInterface( soundInterface_t *si )
 
 	if ( !si->UpdateEntityPosition ) return qfalse;
 
+	if ( !si->UpdateEntityVelocity ) return qfalse;
+
+	if ( !si->UpdateEntityOcclusion ) return qfalse;
+
 	if ( !si->Update ) return qfalse;
 
 	if ( !si->DisableSounds ) return qfalse;
@@ -255,6 +259,32 @@ void S_UpdateEntityPosition( int entityNum, const vec3_t origin )
 	if ( si.UpdateEntityPosition )
 	{
 		si.UpdateEntityPosition( entityNum, origin );
+	}
+}
+
+/*
+=================
+S_UpdateEntityVelocity
+=================
+*/
+void S_UpdateEntityVelocity( int entityNum, const vec3_t velocity )
+{
+	if ( si.UpdateEntityVelocity )
+	{
+		si.UpdateEntityVelocity( entityNum, velocity );
+	}
+}
+
+/*
+=================
+S_UpdateEntityPosition
+=================
+*/
+void S_UpdateEntityOcclusion( int entityNum, qboolean occluded, float ratio )
+{
+	if ( si.UpdateEntityOcclusion )
+	{
+		si.UpdateEntityOcclusion( entityNum, occluded, ratio );
 	}
 }
 
