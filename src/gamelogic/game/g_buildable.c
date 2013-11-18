@@ -1983,7 +1983,7 @@ static gentity_t *NearestPowerSourceInRange( gentity_t *self )
 {
 	gentity_t *neighbor = G_Reactor();
 	gentity_t *best = NULL;
-	float bestDistance = FLT_MAX;
+	float bestDistance = HUGE_QFLT;
 
 	if ( neighbor && Distance( self->s.origin, neighbor->s.origin ) <= g_powerReactorRange.integer )
 	{

@@ -286,6 +286,8 @@ extern int memcmp( void *, void *, size_t );
 #define MAX_QINT 0x7fffffff
 #define MIN_QINT ( -MAX_QINT - 1 )
 
+#define HUGE_QFLT 3e38f // TODO: Replace HUGE_QFLT with MAX_QFLT
+
 #ifndef BIT
 #define BIT(x) ( 1 << ( x ) )
 #endif
