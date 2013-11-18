@@ -76,8 +76,6 @@ endif()
 ################################################################################
 
 # When adding a new architecture, look at all the places ARCH is used
-
-# Detect architecture
 if( CMAKE_SYSTEM_PROCESSOR MATCHES "i.86" OR CMAKE_SYSTEM_PROCESSOR STREQUAL "x86" )
   # Sometimes CMAKE_SYSTEM_PROCESSOR returns x86 on x86_64
   if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
@@ -87,12 +85,8 @@ if( CMAKE_SYSTEM_PROCESSOR MATCHES "i.86" OR CMAKE_SYSTEM_PROCESSOR STREQUAL "x8
   endif()
 elseif( CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64" OR CMAKE_SYSTEM_PROCESSOR STREQUAL "amd64" )
  set( DETECT_ARCH "x86_64" )
-endif()
-
-# Allow the user to set the target architecture
-set( ARCH ${DETECT_ARCH} CACHE STRING "Target architecture to compile for" )
-if( NOT ARCH STREQUAL "x86" AND NOT ARCH STREQUAL "x86_64" )
-  message( FATAL_ERROR "Architecture ${ARCH} not supported" )
+else()
+  message( FATAL_ERROR "Architecture not supported" )
 endif()
 
 ################################################################################
