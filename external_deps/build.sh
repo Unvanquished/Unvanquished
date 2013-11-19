@@ -471,3 +471,12 @@ shift
 for pkg in "${@}"; do
 	"build_${pkg}"
 done
+
+# Clean output directory
+rm -rf "${PREFIX}/man"
+rm -rf "${PREFIX}/share"
+rm -rf "${PREFIX}/lib/pkgconfig"
+find "${PREFIX}/bin" -not -type d -not -name '*.dll' -execdir rm -f -- {} \;
+rmdir "${PREFIX}/bin" 2> /dev/null || true
+find "${PREFIX}/lib" -name '*.la' -execdir rm -f -- {} \;
+find "${PREFIX}/lib" -name '*.dll.a' -execdir bash -c 'rm -f -- "`basename "{}" .dll.a`.a"' \;
