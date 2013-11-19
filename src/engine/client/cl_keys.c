@@ -1470,6 +1470,225 @@ static void Key_CompleteEditbind( char *args, int argNum )
 }
 
 /*
+===============
+Helper functions for Cmd_If_f & Cmd_ModCase_f
+===============
+*/
+static const char modifierList[] = N_("shift, ctrl, alt, command/cmd, mode, super; ! negates; e.g. shift,!alt");
+
+static const struct
+{
+	char name[ 8 ];
+	unsigned short count;
+	unsigned short bit;
+	unsigned int index;
+} modifierKeys[] =
+{
+	{ "shift", 5, 1, K_SHIFT },
+	{ "ctrl", 4, 2, K_CTRL },
+	{ "alt", 3, 4, K_ALT },
+	{ "command", 7, 8, K_COMMAND },
+	{ "cmd", 3, 8, K_COMMAND },
+	{ "mode", 4, 16, K_MODE },
+	{ "super", 5, 32, K_SUPER },
+	{ "", 0, 0, 0 }
+};
+// Following is no. of bits required for modifiers in the above list
+#define NUM_RECOGNISED_MODIFIERS 6
+
+typedef struct
+{
+	uint16_t down, up;
+	int bits;
+} modifierMask_t;
+
+static modifierMask_t getModifierMask( const char *mods )
+{
+	int i;
+	modifierMask_t mask;
+	const char *ptr;
+	static const modifierMask_t none = {0, 0, 0};
+
+	mask = none;
+
+	--mods;
+
+	while ( *++mods == ' ' ) { /* skip leading spaces */; }
+
+	ptr = mods;
+
+	while ( *ptr )
+	{
+		int invert = ( *ptr == '!' );
+
+		if ( invert )
+		{
+			++ptr;
+		}
+
+		for ( i = 0; modifierKeys[ i ].bit; ++i )
+		{
+			// is it this modifier?
+			if ( !Q_strnicmp( ptr, modifierKeys[ i ].name, modifierKeys[ i ].count )
+					&& ( ptr[ modifierKeys[ i ].count ] == ' ' ||
+						ptr[ modifierKeys[ i ].count ] == ',' ||
+						ptr[ modifierKeys[ i ].count ] == 0 ) )
+			{
+				if ( invert )
+				{
+					mask.up |= modifierKeys[ i ].bit;
+				}
+				else
+				{
+					mask.down |= modifierKeys[ i ].bit;
+				}
+
+				if ( ( mask.down & mask.up ) & modifierKeys[ i ].bit )
+				{
+					Com_Printf(_( "can't have %s both pressed and not pressed\n"), modifierKeys[ i ].name );
+					return none;
+				}
+
+				// right, parsed a word - skip it, maybe a comma, and any spaces
+				ptr += modifierKeys[ i ].count - 1;
+
+				while ( *++ptr == ' ' ) { /**/; }
+
+				if ( *ptr == ',' )
+				{
+					while ( *++ptr == ' ' ) { /**/; }
+				}
+
+				// ready to parse the next one
+				break;
+			}
+		}
+
+		if ( !modifierKeys[ i ].bit )
+		{
+			Com_Printf(_( "unknown modifier key name in \"%s\"\n"), mods );
+			return none;
+		}
+	}
+
+	for ( i = 0; i < NUM_RECOGNISED_MODIFIERS; ++i )
+	{
+		if ( mask.up & ( 1 << i ) )
+		{
+			++mask.bits;
+		}
+
+		if ( mask.down & ( 1 << i ) )
+		{
+			++mask.bits;
+		}
+	}
+
+	return mask;
+}
+
+static int checkKeysDown( modifierMask_t mask )
+{
+	int i;
+
+	for ( i = 0; modifierKeys[ i ].bit; ++i )
+	{
+		if ( ( mask.down & modifierKeys[ i ].bit ) && keys[ modifierKeys[ i ].index ].down == 0 )
+		{
+			return 0; // should be pressed, isn't pressed
+		}
+
+		if ( ( mask.up & modifierKeys[ i ].bit ) && keys[ modifierKeys[ i ].index ].down )
+		{
+			return 0; // should not be pressed, is pressed
+		}
+	}
+
+	return 1; // all (not) pressed as requested
+}
+
+/*
+===============
+Key_ModCase_f
+
+Takes a sequence of modifier/command pairs
+Executes the command for the first matching modifier set
+
+===============
+*/
+void Key_ModCase_f( void )
+{
+	int argc = Cmd_Argc();
+	int index = 0;
+	int max = 0;
+	int count = ( argc - 1 ) / 2; // round down :-)
+	char *v;
+
+	int mods[ 1 << NUM_RECOGNISED_MODIFIERS ];
+	// want 'modifierMask_t mods[argc / 2 - 1];' (variable array, C99)
+	// but MSVC apparently doesn't like that
+
+	if ( argc < 3 )
+	{
+		Cmd_PrintUsage(_( "<modifiers> <command> [<modifiers> <command>] … [<command>]"), NULL );
+		return;
+	}
+
+	while ( index < count )
+	{
+		modifierMask_t mask = getModifierMask( Cmd_Argv( 2 * index + 1 ) );
+
+		if ( mask.bits == 0 )
+		{
+			return; // parse failure (reported) - abort
+		}
+
+		mods[ index ] = checkKeysDown( mask ) ? mask.bits : 0;
+
+		if ( max < mods[ index ] )
+		{
+			max = mods[ index ];
+		}
+
+		++index;
+	}
+
+	// If we have a tail command, use it as default
+	v = ( argc & 1 ) ? NULL : Cmd_Argv( argc - 1 );
+
+	// Search for a suitable command to execute.
+	// Search is done as if the commands are sorted by modifier count
+	// (descending) then parameter index no. (ascending).
+	for ( ; max > 0; --max )
+	{
+		int i;
+
+		for ( i = 0; i < index; ++i )
+		{
+			if ( mods[ i ] == max )
+			{
+				v = Cmd_Argv( 2 * i + 2 );
+				goto found;
+			}
+		}
+	}
+
+found:
+
+	if ( v && *v )
+	{
+		if ( *v == '/' || *v == '\\' )
+		{
+			Cmd::BufferCommandTextAfter(va("%s\n", v + 1));
+		}
+		else
+		{
+			Cmd::BufferCommandTextAfter(va("vstr %s\n", v));
+		}
+	}
+}
+
+/*
 ===================
 CL_InitKeyCommands
 ===================
@@ -1486,6 +1705,7 @@ void CL_InitKeyCommands( void )
 	Cmd_AddCommand( "unbindall", Key_Unbindall_f );
 	Cmd_AddCommand( "bindlist", Key_Bindlist_f );
 	Cmd_AddCommand( "editbind", Key_EditBind_f );
+	Cmd_AddCommand( "modcase", Key_ModCase_f );
 	Cmd_SetCommandCompletionFunc( "editbind", Key_CompleteEditbind );
 	Cmd_AddCommand( "setkeydata", Key_SetKeyData_f );
 }
