@@ -97,14 +97,14 @@ include(CheckCXXCompilerFlag)
 
 # Set flag without checking, optional argument specifies build type
 macro( set_c_flag FLAG )
-  if( ${ARGC} GREATER 1 )
+  if( ARGC GREATER 1 )
     set( CMAKE_C_FLAGS_${ARGV1} "${CMAKE_C_FLAGS_${ARGV1}} ${FLAG}" )
   else()
     set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${FLAG}" )
   endif()
 endmacro()
 macro( set_cxx_flag FLAG )
-  if( ${ARGC} GREATER 1 )
+  if( ARGC GREATER 1 )
     set( CMAKE_CXX_FLAGS_${ARGV1} "${CMAKE_CXX_FLAGS_${ARGV1}} ${FLAG}" )
   else()
     set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${FLAG}" )
@@ -299,7 +299,7 @@ endif()
 
 set( CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake )
 set( MOUNT_DIR ${CMAKE_SOURCE_DIR}/src )
-set( OBJ_DIR ${CMAKE_BINARY_DIR}/CMakeFiles )
+set( OBJ_DIR ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY} )
 set( ENGINE_DIR ${MOUNT_DIR}/engine )
 set( SHARED_DIR ${MOUNT_DIR}/shared )
 set( GAMELOGIC_DIR ${MOUNT_DIR}/gamelogic )
@@ -957,8 +957,8 @@ set( NACLLIST_MODULE
   ${LIB_DIR}/nacl/native_client/src/untrusted/nacl/imc_socketpair.c
 )
 
-#HACK: Force the compilation of EVERYTHING in C++
-file(GLOB_RECURSE EVERYTHING_C "src/engine/*.c")
+# HACK: Force the compilation of EVERYTHING in C++
+file( GLOB_RECURSE EVERYTHING_C "src/engine/*.c" )
 set_source_files_properties( ${EVERYTHING_C} PROPERTIES LANGUAGE CXX )
 
 ################################################################################
@@ -1227,6 +1227,11 @@ function( GAMEMODULE )
   set( oneValueArgs NAME OUTPUT_DIR )
   set( multiValueArgs COMPILE_DEF FILES NACL_FILES NATIVE_FILES QVM_FILES QVM_ASM )
   cmake_parse_arguments( GAMEMODULE "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
+  if( CMAKE_CFG_INTDIR STREQUAL "." )
+    set( GAMEMODULE_FULL_OUTPUT_DIR ${CMAKE_BINARY_DIR}/${GAMEMODULE_OUTPUT_DIR} )
+  else()
+    set( GAMEMODULE_FULL_OUTPUT_DIR ${CMAKE_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${GAMEMODULE_OUTPUT_DIR} )
+  endif()
 
   if( BUILD_GAME_NACL_NATIVE )
     # HACK: Compile shared files as C
@@ -1237,6 +1242,10 @@ function( GAMEMODULE )
       RUNTIME_OUTPUT_DIRECTORY ${GAMEMODULE_OUTPUT_DIR}
       COMPILE_DEFINITIONS ${GAMEMODULE_COMPILE_DEF}
     )
+    foreach( OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES} )
+      string( TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG_UP )
+      set_target_properties( ${GAMEMODULE_NAME}-native PROPERTIES RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG_UP} ${OUTPUTCONFIG}/${GAMEMODULE_OUTPUT_DIR} )
+    endforeach()
   endif()
 
   if( BUILD_GAME_NATIVE )
@@ -1249,9 +1258,19 @@ function( GAMEMODULE )
       LIBRARY_OUTPUT_DIRECTORY ${GAMEMODULE_OUTPUT_DIR}
       COMPILE_DEFINITIONS ${GAMEMODULE_COMPILE_DEF}
     )
+    foreach( OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES} )
+      string( TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG_UP )
+      set_target_properties( ${GAMEMODULE_NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY_${OUTPUTCONFIG_UP} ${OUTPUTCONFIG}/${GAMEMODULE_OUTPUT_DIR} )
+    endforeach()
   endif()
 
   if( BUILD_GAME_NACL )
+    if( CMAKE_CFG_INTDIR STREQUAL "." )
+      set( NACL_DIR ${OBJ_DIR}/${GAMEMODULE_NAME}-nacl.dir )
+    else()
+      set( NACL_DIR ${OBJ_DIR}/${GAMEMODULE_NAME}-nacl.dir/${CMAKE_CFG_INTDIR} )
+    endif()
+
     # Determine compiler and translator options
     set( NACL_COMPILE_OPTIONS
       -I${LIB_DIR}/nacl
@@ -1295,9 +1314,9 @@ function( GAMEMODULE )
       get_filename_component( FILENAME ${FILE} NAME_WE )
       get_filename_component( FILEDIR ${FILE} PATH )
       get_filename_component( EXT ${FILE} EXT )
-      set( OBJ ${OBJ_DIR}/${GAMEMODULE_NAME}-nacl.dir/${FILENAME}.o )
+      set( OBJ ${NACL_DIR}/${FILENAME}.o )
 
-      if( EXT STREQUAL .c )
+      if( EXT STREQUAL ".c" )
         add_custom_command( OUTPUT ${OBJ}
           COMMAND ${PNACL_TOOLCHAIN}/pnacl-clang${PNACL_BIN_EXT}
             ${NACL_COMPILE_OPTIONS}
@@ -1308,7 +1327,7 @@ function( GAMEMODULE )
           IMPLICIT_DEPENDS C ${FILE}
         )
         set( OBJECTS ${OBJECTS} ${OBJ} )
-      elseif( EXT STREQUAL .cpp OR EXT STREQUAL .cc )
+      elseif( EXT STREQUAL ".cpp" OR EXT STREQUAL ".cc" )
         add_custom_command( OUTPUT ${OBJ}
           COMMAND ${PNACL_TOOLCHAIN}/pnacl-clang++${PNACL_BIN_EXT}
             -std=gnu++11
@@ -1325,45 +1344,48 @@ function( GAMEMODULE )
 
     # Generate PNaCL platform-independant executable
     add_custom_command(
-      OUTPUT ${CMAKE_BINARY_DIR}/${GAMEMODULE_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
+      OUTPUT ${GAMEMODULE_FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
       COMMAND ${PNACL_TOOLCHAIN}/pnacl-clang++${PNACL_BIN_EXT}
         ${NACL_COMPILE_OPTIONS}
-        -o ${CMAKE_BINARY_DIR}/${GAMEMODULE_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
+        -o ${GAMEMODULE_FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
         ${OBJECTS}
       DEPENDS ${OBJECTS}
     )
 
     # Generate NaCl executables for x86 and x86_64
     add_custom_command(
-      OUTPUT ${CMAKE_BINARY_DIR}/${GAMEMODULE_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86.nexe
+      OUTPUT ${GAMEMODULE_FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86.nexe
       COMMAND ${PNACL_TOOLCHAIN}/pnacl-translate${PNACL_BIN_EXT}
         ${NACL_TRANSLATE_OPTIONS}
         -arch i686
-        -o ${CMAKE_BINARY_DIR}/${GAMEMODULE_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86.nexe
-        ${CMAKE_BINARY_DIR}/${GAMEMODULE_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
-      DEPENDS ${CMAKE_BINARY_DIR}/${GAMEMODULE_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
+        -o ${GAMEMODULE_FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86.nexe
+        ${GAMEMODULE_FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
+      DEPENDS ${GAMEMODULE_FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
     )
     add_custom_command(
-      OUTPUT ${CMAKE_BINARY_DIR}/${GAMEMODULE_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86_64.nexe
+      OUTPUT ${GAMEMODULE_FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86_64.nexe
       COMMAND ${PNACL_TOOLCHAIN}/pnacl-translate${PNACL_BIN_EXT}
         ${NACL_TRANSLATE_OPTIONS}
         -arch x86-64
-        -o ${CMAKE_BINARY_DIR}/${GAMEMODULE_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86_64.nexe
-        ${CMAKE_BINARY_DIR}/${GAMEMODULE_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
-      DEPENDS ${CMAKE_BINARY_DIR}/${GAMEMODULE_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
+        -o ${GAMEMODULE_FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86_64.nexe
+        ${GAMEMODULE_FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
+      DEPENDS ${GAMEMODULE_FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
     )
 
     # Dummy target to get CMake to execute the commands
     add_custom_target( ${GAMEMODULE_NAME}-nacl ALL
-      DEPENDS ${CMAKE_BINARY_DIR}/${GAMEMODULE_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
-        ${CMAKE_BINARY_DIR}/${GAMEMODULE_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86.nexe
-        ${CMAKE_BINARY_DIR}/${GAMEMODULE_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86_64.nexe
+      DEPENDS ${GAMEMODULE_FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
+        ${GAMEMODULE_FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86.nexe
+        ${GAMEMODULE_FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86_64.nexe
     )
   endif()
 
   if( BUILD_GAME_QVM )
-    set( QVM_DIR ${OBJ_DIR}/${GAMEMODULE_NAME}-qvm.dir )
-    file(MAKE_DIRECTORY ${QVM_DIR})
+    if( CMAKE_CFG_INTDIR STREQUAL "." )
+      set( QVM_DIR ${OBJ_DIR}/${GAMEMODULE_NAME}-qvm.dir )
+    else()
+      set( QVM_DIR ${OBJ_DIR}/${GAMEMODULE_NAME}-qvm.dir/${CMAKE_CFG_INTDIR} )
+    endif()
 
     set( QVM_COMPILE_OPTIONS -I${MOUNT_DIR}/gamelogic/game -I${MOUNT_DIR}/engine/qcommon -DQ3_VM -DQVM_COMPAT )
     foreach( DEF ${GAMEMODULE_COMPILE_DEF} )
@@ -1378,7 +1400,7 @@ function( GAMEMODULE )
       get_filename_component( QVM_FILEEXT ${QVM_FILE} EXT )
       set( ASM_FILE ${QVM_DIR}/${QVM_FILENAME}.asm )
 
-      if( QVM_FILEEXT STREQUAL .c )
+      if( QVM_FILEEXT STREQUAL ".c" )
         add_custom_command( OUTPUT ${ASM_FILE}
           COMMAND lcc -target bytecode ${QVM_COMPILE_OPTIONS} ${QVM_FILE} -o ${ASM_FILE}
           DEPENDS lcc rcc cpp ${QVM_FILE}
@@ -1390,17 +1412,15 @@ function( GAMEMODULE )
       endif()
     endforeach()
 
-    set( QVM_OUTPUT ${CMAKE_BINARY_DIR}/${GAMEMODULE_OUTPUT_DIR}/vm/${GAMEMODULE_NAME}.qvm )
-
     # Link *.asm into a qvm
-    add_custom_command( OUTPUT ${QVM_OUTPUT}
-      COMMAND asm -o ${QVM_OUTPUT} ${OBJECTS} ${GAMEMODULE_QVM_ASM}
+    add_custom_command( OUTPUT ${GAMEMODULE_FULL_OUTPUT_DIR}/vm/${GAMEMODULE_NAME}.qvm
+      COMMAND asm -o ${GAMEMODULE_FULL_OUTPUT_DIR}/vm/${GAMEMODULE_NAME}.qvm ${OBJECTS} ${GAMEMODULE_QVM_ASM}
       DEPENDS asm ${OBJECTS} ${GAMEMODULE_QVM_ASM}
     )
 
     # Dummy target to get CMake to execute the commands
     add_custom_target( ${GAMEMODULE_NAME}-qvm ALL
-      DEPENDS ${QVM_OUTPUT}
+      DEPENDS ${GAMEMODULE_FULL_OUTPUT_DIR}/vm/${GAMEMODULE_NAME}.qvm
     )
   endif()
 endfunction()
