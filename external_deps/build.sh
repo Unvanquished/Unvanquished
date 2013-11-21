@@ -331,7 +331,9 @@ build_speex() {
 	cd "speex-${SPEEX_VERSION}"
 	make distclean || true
 	./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED[@]}
-	sed -i "s/deplibs_check_method=.*/deplibs_check_method=pass_all/g" libtool
+	local TMP_FILE="`mktemp /tmp/config.XXXXXXXXXX`"
+	sed "s/deplibs_check_method=.*/deplibs_check_method=pass_all/g" libtool > "$TMP_FILE"
+	mv "$TMP_FILE" libtool
 	make clean
 	make
 	make install
@@ -345,8 +347,12 @@ build_theora() {
 	make distclean || true
 	case "${PLATFORM}" in
 	mingw*|msvc*)
-		sed -i "s,EXPORTS,," "win32/xmingw32/libtheoradec-all.def"
-		sed -i "s,EXPORTS,," "win32/xmingw32/libtheoraenc-all.def"
+		local TMP_FILE="`mktemp /tmp/config.XXXXXXXXXX`"
+		sed "s,EXPORTS,," "win32/xmingw32/libtheoradec-all.def" > "$TMP_FILE"
+		mv "$TMP_FILE" "win32/xmingw32/libtheoradec-all.def"
+		local TMP_FILE="`mktemp /tmp/config.XXXXXXXXXX`"
+		sed "s,EXPORTS,," "win32/xmingw32/libtheoraenc-all.def" > "$TMP_FILE"
+		mv "$TMP_FILE" "win32/xmingw32/libtheoraenc-all.def"
 		;;
 	esac
 	./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED[@]} --disable-examples --disable-encode
