@@ -379,7 +379,9 @@ extern "C" {
 			}
 
 			// handle GLSL brokenness here...
-			if ( !strcmp( glConfig.vendor_string, "Intel Open Source Technology Center" ) && strcmp( glConfig.version_string, "3" ) < 0 )
+			if ( strcmp( glConfig.version_string, "3" ) < 0 &&
+			     ( !strcmp( glConfig.vendor_string, "Intel Open Source Technology Center" ) ||
+			       !strcmp( glConfig.vendor_string, "X.Org" ) ) )
 			{
 				glBroken.FXAA = qtrue;
 			}
