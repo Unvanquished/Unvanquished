@@ -963,11 +963,39 @@ set_source_files_properties( ${EVERYTHING_C} PROPERTIES LANGUAGE CXX )
 # Libraries
 ################################################################################
 
-# Add paths for external dependencies
-set( CMAKE_FIND_ROOT_PATH ${DEPS_DIR} ${CMAKE_FIND_ROOT_PATH} )
-set( CMAKE_INCLUDE_PATH ${DEPS_DIR} ${DEPS_DIR}/include ${CMAKE_INCLUDE_PATH} )
-set( CMAKE_FRAMEWORK_PATH ${DEPS_DIR} ${CMAKE_FRAMEWORK_PATH} )
-set( CMAKE_LIBRARY_PATH ${DEPS_DIR}/lib ${CMAKE_LIBRARY_PATH} )
+# Import external dependencies
+if( DEPS_DIR )
+  # Download them if they not available
+  if( NOT EXISTS ${DEPS_DIR} )
+    get_filename_component( BASENAME ${DEPS_DIR} NAME )
+    set( REMOTE "http://vanquished.zapto.org/~amanieu/unvanquished_deps/${BASENAME}.zip" )
+    message( STATUS "Downloading dependencies from '${REMOTE}'" )
+    file( DOWNLOAD ${REMOTE} ${OBJ_DIR}/${BASENAME}.zip SHOW_PROGRESS
+      STATUS DOWNLOAD_RESULT LOG DOWNLOAD_LOG )
+    list( GET DOWNLOAD_RESULT 0 DOWNLOAD_STATUS )
+    list( GET DOWNLOAD_RESULT 1 DOWNLOAD_STRING )
+    if( NOT DOWNLOAD_STATUS EQUAL 0 )
+      message( FATAL_ERROR "Error downloading '${REMOTE}':
+        Status code: ${DOWNLOAD_STATUS}
+        Error string: ${DOWNLOAD_STRING}
+        Download log: ${DOWNLOAD_LOG}" )
+    endif()
+    message( STATUS "Download completed successfully" )
+
+    # Extract the downloaded archive
+    execute_process( COMMAND ${CMAKE_COMMAND} -E tar xzf ${OBJ_DIR}/${BASENAME}.zip
+      WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/external_deps RESULT_VARIABLE EXTRACT_RESULT )
+    if( NOT EXTRACT_RESULT EQUAL 0 )
+      message( FATAL_ERROR "Could not extract ${BASENAME}.zip" )
+    endif()
+  endif()
+
+  # Add to paths
+  set( CMAKE_FIND_ROOT_PATH ${DEPS_DIR} ${CMAKE_FIND_ROOT_PATH} )
+  set( CMAKE_INCLUDE_PATH ${DEPS_DIR} ${DEPS_DIR}/include ${CMAKE_INCLUDE_PATH} )
+  set( CMAKE_FRAMEWORK_PATH ${DEPS_DIR} ${CMAKE_FRAMEWORK_PATH} )
+  set( CMAKE_LIBRARY_PATH ${DEPS_DIR}/lib ${CMAKE_LIBRARY_PATH} )
+endif()
 
 # These variables are defined
 # LIBS_BASE, LIBSRC_BASE
