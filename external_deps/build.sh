@@ -424,11 +424,11 @@ setup_mingw64() {
 	common_setup
 }
 
-# Set up environment for Mac OS X 10.7 32-bit
-setup_macosx10.7_32() {
+# Set up environment for Mac OS X 32-bit
+setup_macosx32() {
 	HOST=i686-apple-darwin11
 	MSVC_SHARED=(--disable-shared --enable-static)
-	export MACOSX_DEPLOYMENT_TARGET=10.7
+	export MACOSX_DEPLOYMENT_TARGET=10.6
 	export CC=clang
 	export CXX=clang++
 	export CFLAGS="-arch i386"
@@ -437,12 +437,12 @@ setup_macosx10.7_32() {
 	common_setup
 }
 
-# Set up environment for Mac OS X 10.7 64-bit
-setup_macosx10.7_64() {
+# Set up environment for Mac OS X 64-bit
+setup_macosx64() {
 	HOST=x86_64-apple-darwin11
 	MSVC_SHARED=(--disable-shared --enable-static)
-	export MACOSX_DEPLOYMENT_TARGET=10.7
-	export NASM="${PREFIX}/bin/nasm" # A newer version of nasm is required for 64-bit
+	export MACOSX_DEPLOYMENT_TARGET=10.6
+	export NASM="${PWD}/macosx64/bin/nasm" # A newer version of nasm is required for 64-bit
 	export CC=clang
 	export CXX=clang++
 	export CFLAGS="-arch x86_64"
@@ -455,7 +455,7 @@ setup_macosx10.7_64() {
 if [ "${#}" -lt "2" ]; then
 	echo "usage: ${0} <platform> <package[s]...>"
 	echo "Script to build dependencies for platforms which do not provide them"
-	echo "Platforms: msvc32 msvc64 mingw32 mingw64 macosx10.7_32 macosx10.7_64"
+	echo "Platforms: msvc32 msvc64 mingw32 mingw64 macosx32 macosx64"
 	echo "Packages: pkgconfig nasm zlib gmp nettle geoip curl sdl2 glew png jpeg webp freetype openal ogg vorbis speex theora opus opusfile"
 	echo
 	echo "Packages requires for each platform:"
@@ -486,3 +486,4 @@ find "${PREFIX}/bin" -not -type d -not -name '*.dll' -execdir rm -f -- {} \;
 rmdir "${PREFIX}/bin" 2> /dev/null || true
 find "${PREFIX}/lib" -name '*.la' -execdir rm -f -- {} \;
 find "${PREFIX}/lib" -name '*.dll.a' -execdir bash -c 'rm -f -- "`basename "{}" .dll.a`.a"' \;
+find "${PREFIX}/lib" -name '*.dylib' -execdir bash -c 'rm -f -- "`basename "{}" .dylib`.a"' \;
