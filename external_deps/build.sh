@@ -72,12 +72,12 @@ build_nasm() {
 	case "${PLATFORM}" in
 	macosx*)
 		download "nasm-${NASM_VERSION}-macosx.zip" "http://www.nasm.us/pub/nasm/releasebuilds/${NASM_VERSION}/macosx/nasm-${NASM_VERSION}-macosx.zip"
-		mv "nasm-${NASM_VERSION}" "nasm-${NASM_VERSION}-macosx"
+		[ -d "nasm-${NASM_VERSION}-macosx" ] || mv "nasm-${NASM_VERSION}" "nasm-${NASM_VERSION}-macosx"
 		cp "nasm-${NASM_VERSION}-macosx/nasm" "${PREFIX}/bin"
 		;;
 	mingw*|msvc*)
 		download "nasm-${NASM_VERSION}-win32.zip" "http://www.nasm.us/pub/nasm/releasebuilds/${NASM_VERSION}/win32/nasm-${NASM_VERSION}-win32.zip"
-		mv "nasm-${NASM_VERSION}" "nasm-${NASM_VERSION}-win32"
+		[ -d "nasm-${NASM_VERSION}-win32" ] || mv "nasm-${NASM_VERSION}" "nasm-${NASM_VERSION}-win32"
 		cp "nasm-${NASM_VERSION}-win32/nasm.exe" "${PREFIX}/bin"
 		;;
 	*)
@@ -110,10 +110,26 @@ build_gmp() {
 	download "gmp-${GMP_VERSION}.tar.xz" "ftp://ftp.gmplib.org/pub/gmp/gmp-${GMP_VERSION}.tar.xz"
 	cd "gmp-${GMP_VERSION}"
 	make distclean || true
+	case "${PLATFORM}" in
+	msvc*)
+		# Configure script gets confused if we overide the compiler. Shouldn't
+		# matter since gmp doesn't use anything from libgcc.
+		local CC_BACKUP="${CC}"
+		local CXX_BACKUP="${CXX}"
+		unset CC
+		unset CXX
+		;;
+	esac
 	./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED[@]}
 	make clean
 	make
 	make install
+	case "${PLATFORM}" in
+	msvc*)
+		export CC="${CC_BACKUP}"
+		export CXX="${CXX_BACKUP}"
+		;;
+	esac
 	cd ..
 }
 
@@ -165,18 +181,25 @@ build_curl() {
 # Build SDL2
 build_sdl2() {
 	case "${PLATFORM}" in
-	mingw*|msvc*)
-		# Use precompiled binaries to avoid depending on the DirectX SDK
+	mingw*)
+		download "SDL2-devel-${SDL2_VERSION}-mingw.tar.gz" "http://www.libsdl.org/release/SDL2-devel-${SDL2_VERSION}-mingw.tar.gz"
+		[ -d "SDL2-${SDL2_VERSION}-mingw" ] || mv "SDL2-${SDL2_VERSION}" "SDL2-${SDL2_VERSION}-mingw"
+		cd "SDL2-${SDL2_VERSION}-mingw"
+		make install-package arch="${HOST}" prefix="${PREFIX}"
+		cd ..
+		;;
+	msvc*)
 		download "SDL2-devel-${SDL2_VERSION}-VC.zip" "http://www.libsdl.org/release/SDL2-devel-${SDL2_VERSION}-VC.zip"
-		cd "SDL2-${SDL2_VERSION}"
+		[ -d "SDL2-${SDL2_VERSION}-msvc" ] || mv "SDL2-${SDL2_VERSION}" "SDL2-${SDL2_VERSION}-msvc"
+		cd "SDL2-${SDL2_VERSION}-msvc"
 		mkdir -p "${PREFIX}/include/SDL2"
 		cp include/* "${PREFIX}/include/SDL2"
 		case "${PLATFORM}" in
-		*32)
+		msvc32)
 			cp lib/x86/*.lib "${PREFIX}/lib"
 			cp lib/x86/*.dll "${PREFIX}/bin"
 			;;
-		*64)
+		msvc64)
 			cp lib/x64/*.lib "${PREFIX}/lib"
 			cp lib/x64/*.dll "${PREFIX}/bin"
 			;;
@@ -278,18 +301,17 @@ build_freetype() {
 build_openal() {
 	case "${PLATFORM}" in
 	mingw*|msvc*)
-		# Use precompiled binaries to link to OpenAL32.dll
 		download "openal-soft-${OPENAL_VERSION}-bin.zip" "http://kcat.strangesoft.net/openal-soft-${OPENAL_VERSION}-bin.zip"
 		cd "openal-soft-${OPENAL_VERSION}-bin"
 		cp -r "include/AL" "${PREFIX}/include"
 		case "${PLATFORM}" in
 		*32)
 			cp "lib/Win32/libOpenAL32.dll.a" "${PREFIX}/lib"
-			cp "Win32/soft_oal.dll" "${PREFIX}/bin"
+			cp "Win32/soft_oal.dll" "${PREFIX}/bin/OpenAL32.dll"
 			;;
 		*64)
 			cp "lib/Win64/libOpenAL32.dll.a" "${PREFIX}/lib"
-			cp "Win64/soft_oal.dll" "${PREFIX}/bin"
+			cp "Win64/soft_oal.dll" "${PREFIX}/bin/OpenAL32.dll"
 			;;
 		esac
 		cd ..
@@ -394,12 +416,21 @@ common_setup() {
 	export CPPFLAGS="${CPPFLAGS:-} -I${PREFIX}/include"
 	export LDFLAGS="${LDFLAGS:-} -L${PREFIX}/lib"
 	mkdir -p "${PREFIX}"
+	mkdir -p "${PREFIX}/bin"
+	mkdir -p "${PREFIX}/include"
+	mkdir -p "${PREFIX}/lib"
 }
 
 # Set up environment for 32-bit Windows for Visual Studio (compile all as .dll)
 setup_msvc32() {
 	HOST=i686-w64-mingw32
 	MSVC_SHARED=(--enable-shared --disable-static)
+	# Libtool bug prevents -static-libgcc from being set in LDFLAGS
+	export CC="i686-w64-mingw32-gcc -static-libgcc"
+	export CXX="i686-w64-mingw32-g++ -static-libgcc"
+	export CFLAGS="-m32"
+	export CXXFLAGS="-m32"
+	export LDFLAGS="-m32"
 	common_setup
 }
 
@@ -407,6 +438,12 @@ setup_msvc32() {
 setup_msvc64() {
 	HOST=x86_64-w64-mingw32
 	MSVC_SHARED=(--enable-shared --disable-static)
+	# Libtool bug prevents -static-libgcc from being set in LDFLAGS
+	export CC="x86_64-w64-mingw32-gcc -static-libgcc"
+	export CXX="x86_64-w64-mingw32-g++ -static-libgcc"
+	export CFLAGS="-m64"
+	export CXXFLAGS="-m64"
+	export LDFLAGS="-m64"
 	common_setup
 }
 
@@ -414,6 +451,9 @@ setup_msvc64() {
 setup_mingw32() {
 	HOST=i686-w64-mingw32
 	MSVC_SHARED=(--disable-shared --enable-static)
+	export CFLAGS="-m32"
+	export CXXFLAGS="-m32"
+	export LDFLAGS="-m32"
 	common_setup
 }
 
@@ -421,6 +461,9 @@ setup_mingw32() {
 setup_mingw64() {
 	HOST=x86_64-w64-mingw32
 	MSVC_SHARED=(--disable-shared --enable-static)
+	export CFLAGS="-m64"
+	export CXXFLAGS="-m64"
+	export LDFLAGS="-m64"
 	common_setup
 }
 
@@ -487,3 +530,34 @@ rmdir "${PREFIX}/bin" 2> /dev/null || true
 find "${PREFIX}/lib" -name '*.la' -execdir rm -f -- {} \;
 find "${PREFIX}/lib" -name '*.dll.a' -execdir bash -c 'rm -f -- "`basename "{}" .dll.a`.a"' \;
 find "${PREFIX}/lib" -name '*.dylib' -execdir bash -c 'rm -f -- "`basename "{}" .dylib`.a"' \;
+
+# Strip libraries
+case "${PLATFORM}" in
+mingw*)
+	find "${PREFIX}/bin" -name '*.dll' -execdir "${HOST}-strip" --strip-unneeded -- {} \;
+	find "${PREFIX}/lib" -name '*.a' -execdir "${HOST}-strip" --strip-unneeded -- {} \;
+	;;
+msvc*)
+	find "${PREFIX}/bin" -name '*.dll' -execdir "${HOST}-strip" --strip-unneeded -- {} \;
+	;;
+esac
+
+# For MSVC, we need to use the Microsoft LIB tool to generate import libraries,
+# the import libraries generated by MinGW seem to have issues. Instead we
+# generate a .bat file to be run using the Visual Studio tools command shell.
+case "${PLATFORM}" in
+msvc*)
+	mkdir -p "${PREFIX}/def"
+	cd "${PREFIX}/def"
+	echo 'cd "%~dp0"' > "${PREFIX}/genlib.bat"
+	for DLL_A in "${PREFIX}"/lib/*.dll.a; do
+		DLL=`${HOST}-dlltool -I "${DLL_A}"`
+		DEF=`basename ${DLL} .dll`.def
+		LIB=`basename ${DLL_A} .dll.a`.lib
+		MACHINE=`[ "${PLATFORM}" = msvc32 ] && echo x86 || echo x64`
+		gendef "${PREFIX}/bin/${DLL}" # Requires mingw-w64-tools
+		echo "lib /def:def\\${DEF} /machine:${MACHINE} /out:lib\\${LIB}" >> "${PREFIX}/genlib.bat"
+	done
+	cd ../..
+	;;
+esac
