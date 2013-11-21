@@ -1142,16 +1142,14 @@ void PDC_set_resize_limits( const int new_min_lines, const int new_max_lines,
       /* one on each side.  Vertically,  we need two frame heights,  plus room */
       /* for the application title and the menu.  */
 
-static void compute_window_margins( int *xpixels, int *ypixels,
+static void adjust_window_size( int *xpixels, int *ypixels, int window_style,
                const int menu_shown)
 {
    const int is_resizable = (min_lines != max_lines || min_cols != max_cols);
-
-   *xpixels = 2 * GetSystemMetrics( is_resizable ? SM_CXFRAME : SM_CXFIXEDFRAME);
-   *ypixels = 2 * GetSystemMetrics( is_resizable ? SM_CYFRAME : SM_CYFIXEDFRAME)
-                + GetSystemMetrics( SM_CYCAPTION);
-   if( menu_shown)
-       *ypixels += GetSystemMetrics( SM_CYMENU);
+   RECT rect = {0, 0, *xpixels, *ypixels};
+   AdjustWindowRect( &rect, window_style, menu_shown);
+   *xpixels = rect.right - rect.left;
+   *ypixels = rect.bottom - rect.top;
 }
 
 static int keep_size_within_bounds( int *lines, int *cols)
@@ -1307,14 +1305,14 @@ static void HandleSize( const WPARAM wParam, const LPARAM lParam)
     if( wParam == SIZE_RESTORED &&
         ( n_xpixels % PDC_cxChar || n_ypixels % PDC_cyChar))
     {
-        int new_xpixels, new_ypixels;
+        int new_xpixels = PDC_cxChar * PDC_n_cols;
+        int new_ypixels = PDC_cyChar * PDC_n_rows;
 
-        compute_window_margins( &new_xpixels, &new_ypixels,
-                                menu_shown);
+        adjust_window_size( &new_xpixels, &new_ypixels,
+                            GetWindowLong( PDC_hWnd, GWL_STYLE), menu_shown);
         debug_printf( "Irregular size\n");
         SetWindowPos( PDC_hWnd, 0, 0, 0,
-                      new_xpixels + PDC_cxChar * PDC_n_cols,
-                      new_ypixels + PDC_cyChar * PDC_n_rows,
+                      new_xpixels, new_ypixels,
                       SWP_NOMOVE | SWP_NOZORDER | SWP_SHOWWINDOW);
 
     }
@@ -2053,20 +2051,21 @@ static void set_up_window( void)
                n_default_columns, n_default_rows, xloc, yloc, menu_shown);
     get_character_sizes( NULL, &PDC_cxChar, &PDC_cyChar);
 
-    if( n_default_columns == -1)
-        xsize = ysize = CW_USEDEFAULT;
-    else
-    {
-        keep_size_within_bounds( &n_default_rows, &n_default_columns);
-        compute_window_margins( &xsize, &ysize, menu_shown);
-        xsize += PDC_cxChar * n_default_columns;
-        ysize += PDC_cyChar * n_default_rows;
-    }
     if( min_lines != max_lines || min_cols != max_cols)
         window_style = ((n_default_columns == -1) ?
                     WS_MAXIMIZE | WS_OVERLAPPEDWINDOW : WS_OVERLAPPEDWINDOW);
     else  /* fixed-size window:  looks "normal",  but w/o a maximize box */
         window_style = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
+
+    if( n_default_columns == -1)
+        xsize = ysize = CW_USEDEFAULT;
+    else
+    {
+        keep_size_within_bounds( &n_default_rows, &n_default_columns);
+        xsize = PDC_cxChar * n_default_columns;
+        ysize = PDC_cyChar * n_default_rows;
+        adjust_window_size( &xsize, &ysize, window_style, menu_shown);
+    }
 
     PDC_hWnd = CreateWindow( AppName, WindowTitle, window_style,
                     xloc, yloc,
