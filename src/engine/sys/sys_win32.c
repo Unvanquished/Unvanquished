@@ -104,7 +104,7 @@ Sys_DefaultHomePath
 char *Sys_DefaultHomePath( void )
 {
 	TCHAR   szPath[ MAX_PATH ];
-	HRESULT (*qSHGetFolderPath)(
+	HRESULT (WINAPI *qSHGetFolderPath)(
 	  _In_   HWND hwndOwner,
 	  _In_   int nFolder,
 	  _In_   HANDLE hToken,
