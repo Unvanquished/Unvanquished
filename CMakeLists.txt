@@ -590,7 +590,7 @@ if( WIN32 )
   set( ENGINELIST ${ENGINELIST}
     ${ENGINE_DIR}/sys/sys_win32.c
     ${ENGINE_DIR}/sys/sys_win32.h
-    ${ENGINE_DIR}/sys/con_win32.c
+    ${ENGINE_DIR}/sys/con_passive.c
   )
 else()
   set( ENGINELIST ${ENGINELIST}
