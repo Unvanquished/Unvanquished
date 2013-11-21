@@ -75,17 +75,10 @@ endif()
 ################################################################################
 
 # When adding a new architecture, look at all the places ARCH is used
-if( CMAKE_SYSTEM_PROCESSOR MATCHES "i.86" OR CMAKE_SYSTEM_PROCESSOR STREQUAL "x86" )
-  # Sometimes CMAKE_SYSTEM_PROCESSOR returns x86 on x86_64
-  if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
-    set( ARCH "x86_64" )
-  else()
-    set( ARCH "x86" )
-  endif()
-elseif( CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64" OR CMAKE_SYSTEM_PROCESSOR STREQUAL "amd64" )
- set( ARCH "x86_64" )
+if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
+  set( ARCH "x86_64" )
 else()
-  message( FATAL_ERROR "Architecture not supported" )
+  set( ARCH "x86" )
 endif()
 
 ################################################################################
@@ -270,13 +263,7 @@ endif()
 # Mac-specific definitions
 if( APPLE )
   add_definitions( -DMACOS_X )
-  if( ARCH STREQUAL "x86_64" )
-    set( CMAKE_OSX_ARCHITECTURES x86_64 )
-  else()
-    set( CMAKE_OSX_ARCHITECTURES i386 )
-  endif()
   set_linker_flag( "-Wl,-no_pie" )
-  mark_as_advanced( CMAKE_OSX_ARCHITECTURES )
   set( CMAKE_INSTALL_RPATH "@executable_path/" )
   set( CMAKE_BUILD_WITH_INSTALL_RPATH ON )
 endif()
