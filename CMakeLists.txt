@@ -57,6 +57,8 @@ option( USE_PEDANTIC "Tell the compiler to be pedantic" 0 )
 set( NACL_SDK_PATH "" CACHE PATH "Path to native client SDK" )
 if( BUILD_GAME_NACL AND NOT NACL_SDK_PATH )
   message( SEND_ERROR "You need to set the path to the native client SDK" )
+else()
+  mark_as_advanced( NACL_SDK_PATH )
 endif()
 
 ################################################################################
