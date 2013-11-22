@@ -39,7 +39,7 @@ Maryland 20850 USA.
 
 #include "../framework/CommandSystem.h"
 #include "../framework/CvarSystem.h"
-#include "../../shared/String.h"
+#include "../../common/String.h"
 
 #include <unordered_map>
 

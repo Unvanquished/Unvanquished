@@ -24,7 +24,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "ConsoleField.h"
 #include "CommandSystem.h"
-#include "../../shared/String.h"
+#include "../../common/String.h"
 #include "../qcommon/q_shared.h"
 #include <locale>
 #include <algorithm>

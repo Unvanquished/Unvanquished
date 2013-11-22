@@ -27,8 +27,8 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #include <string>
 #include <vector>
 
-#ifndef SHARED_COMMAND_H_
-#define SHARED_COMMAND_H_
+#ifndef COMMON_COMMAND_H_
+#define COMMON_COMMAND_H_
 
 namespace Cmd {
 
@@ -170,4 +170,4 @@ namespace Cmd {
 
 }
 
-#endif // SHARED_COMMAND_H_
+#endif // COMMON_COMMAND_H_

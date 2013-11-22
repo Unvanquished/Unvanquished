@@ -22,7 +22,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
-#include "../../shared/Command.h"
+#include "../../common/Command.h"
 
 #ifndef FRAMEWORK_COMMAND_SYSTEM_H_
 #define FRAMEWORK_COMMAND_SYSTEM_H_
@@ -44,8 +44,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
  *
  * This file contains
  *
- * TODO: shared might be moved
- * See also shared/Command.h for the interface used to define commands.
+ * See also common/Command.h for the interface used to define commands.
  *
  * CommandSystem is responsible of managing, buffering and executing
  * commands.

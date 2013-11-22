@@ -24,8 +24,8 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "CommandSystem.h"
 
-#include "../../shared/Log.h"
-#include "../../shared/String.h"
+#include "../../common/Log.h"
+#include "../../common/String.h"
 
 #include <unordered_map>
 #include "../qcommon/q_shared.h"

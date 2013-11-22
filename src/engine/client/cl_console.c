@@ -42,7 +42,7 @@ Maryland 20850 USA.
 #include <string>
 #include <mutex>
 #include "../framework/LogSystem.h"
-#include "../../shared/Command.h"
+#include "../../common/Command.h"
 
 int g_console_field_width = 78;
 

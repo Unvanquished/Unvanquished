@@ -36,7 +36,7 @@ Maryland 20850 USA.
 #include "../qcommon/q_unicode.h"
 #include "../framework/CommandSystem.h"
 
-#include "../../shared/String.h"
+#include "../../common/String.h"
 
 /*
 

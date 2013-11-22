@@ -30,8 +30,8 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "CommandSystem.h"
 #include "CvarSystem.h"
-#include "../../shared/Command.h"
-#include "../../shared/String.h"
+#include "../../common/Command.h"
+#include "../../common/String.h"
 
 /**
  * Definition of most of the commands that provide scripting capabilities to the console

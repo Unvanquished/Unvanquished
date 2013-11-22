@@ -38,7 +38,7 @@ Maryland 20850 USA.
 #ifndef QVM_COMPAT
 
 #include "../../libs/nacl/nacl.h"
-#include "../../shared/RPC.h"
+#include "../../common/RPC.h"
 
 namespace VM {
 

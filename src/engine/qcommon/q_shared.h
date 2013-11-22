@@ -158,9 +158,9 @@ typedef int intptr_t;
 
 //=============================================================
 
-#include "../../shared/Compiler.h"
-#include "../../shared/Platform.h"
-#include "../../shared/Endian.h"
+#include "../../common/Compiler.h"
+#include "../../common/Platform.h"
+#include "../../common/Endian.h"
 
 typedef int qhandle_t;
 typedef int sfxHandle_t;

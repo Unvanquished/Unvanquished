@@ -288,7 +288,7 @@ set( CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake )
 set( MOUNT_DIR ${CMAKE_SOURCE_DIR}/src )
 set( OBJ_DIR ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY} )
 set( ENGINE_DIR ${MOUNT_DIR}/engine )
-set( SHARED_DIR ${MOUNT_DIR}/shared )
+set( COMMON_DIR ${MOUNT_DIR}/common )
 set( GAMELOGIC_DIR ${MOUNT_DIR}/gamelogic )
 set( TOOLS_DIR ${MOUNT_DIR}/tools )
 set( LCC_DIR ${TOOLS_DIR}/lcc )
@@ -494,16 +494,16 @@ set( SERVERLIST
 )
 
 set( ENGINELIST
-  ${SHARED_DIR}/Command.cpp
-  ${SHARED_DIR}/Command.h
-  ${SHARED_DIR}/Cvar.cpp
-  ${SHARED_DIR}/Cvar.h
-  ${SHARED_DIR}/LineEditData.cpp
-  ${SHARED_DIR}/LineEditData.h
-  ${SHARED_DIR}/Log.cpp
-  ${SHARED_DIR}/Log.h
-  ${SHARED_DIR}/String.cpp
-  ${SHARED_DIR}/String.h
+  ${COMMON_DIR}/Command.cpp
+  ${COMMON_DIR}/Command.h
+  ${COMMON_DIR}/Cvar.cpp
+  ${COMMON_DIR}/Cvar.h
+  ${COMMON_DIR}/LineEditData.cpp
+  ${COMMON_DIR}/LineEditData.h
+  ${COMMON_DIR}/Log.cpp
+  ${COMMON_DIR}/Log.h
+  ${COMMON_DIR}/String.cpp
+  ${COMMON_DIR}/String.h
   ${ENGINE_DIR}/framework/BaseCommands.cpp
   ${ENGINE_DIR}/framework/BaseCommands.h
   ${ENGINE_DIR}/framework/CommandSystem.cpp

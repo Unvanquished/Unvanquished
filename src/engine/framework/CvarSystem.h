@@ -22,8 +22,8 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
-#include "../../shared/Cvar.h"
-#include "../../shared/Command.h"
+#include "../../common/Cvar.h"
+#include "../../common/Command.h"
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
 
@@ -42,9 +42,8 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
  * is bad practice.
  *
  * Cvars should be declared statically using the Cvar::Cvar class, see
- * shared/Cvar for more details. (TODO: shared might be renamed) Facilites
- * are also provided to do more "static checking" of cvars with types,
- * bounds, ...
+ * common/Cvar for more details. Facilites are also provided to do more
+ * "static checking" of cvars with types, bounds, ...
  *
  * There are two ways for the code to access cvars:
  *  - Through a Cvar::Cvar<Type> using .Get() and .Set() you then get

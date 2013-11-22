@@ -24,8 +24,8 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "CvarSystem.h"
 #include "CommandSystem.h"
-#include "../../shared/String.h"
-#include "../../shared/Command.h"
+#include "../../common/String.h"
+#include "../../common/Command.h"
 
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"

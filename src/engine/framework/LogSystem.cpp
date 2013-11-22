@@ -23,7 +23,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "LogSystem.h"
-#include "../../shared/String.h"
+#include "../../common/String.h"
 
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"

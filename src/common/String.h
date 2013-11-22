@@ -26,8 +26,8 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #include <algorithm>
 #include "../libs/tinyformat/tinyformat.h"
 
-#ifndef SHARED_STRING_H_
-#define SHARED_STRING_H_
+#ifndef COMMON_STRING_H_
+#define COMMON_STRING_H_
 
 namespace Str {
 
@@ -188,4 +188,4 @@ namespace Str {
     }
 }
 
-#endif //SHARED_STRING_H_
+#endif //COMMON_STRING_H_

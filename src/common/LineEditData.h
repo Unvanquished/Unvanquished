@@ -24,8 +24,8 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <string>
 
-#ifndef SHARED_LINE_EDIT_DATA_H_
-#define SHARED_LINE_EDIT_DATA_H_
+#ifndef COMMON_LINE_EDIT_DATA_H_
+#define COMMON_LINE_EDIT_DATA_H_
 
 //FIXME: the namespace and the class name aren't very explicit
 namespace Util {
@@ -72,4 +72,4 @@ namespace Util {
 
 }
 
-#endif // SHARED_LINE_EDIT_DATA_H_
+#endif // COMMON_LINE_EDIT_DATA_H_

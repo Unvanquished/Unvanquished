@@ -22,7 +22,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
-#include "../../shared/LineEditData.h"
+#include "../../common/LineEditData.h"
 #include "ConsoleHistory.h"
 
 #ifndef FRAMEWORK_CONSOLE_FIELD_H_

@@ -44,8 +44,8 @@ Maryland 20850 USA.
 #include "../framework/CommandSystem.h"
 #include "../framework/ConsoleHistory.h"
 #include "../framework/LogSystem.h"
-#include "../../shared/Cvar.h"
-#include "../../shared/Log.h"
+#include "../../common/Cvar.h"
+#include "../../common/Log.h"
 
 // htons
 #if defined __linux__ || defined __FreeBSD__ || defined( MACOS_X ) || defined( __APPLE__ )

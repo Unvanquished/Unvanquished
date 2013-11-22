@@ -24,8 +24,8 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
 // Endian detection from boost/detail/endian.hpp
 
-#ifndef SHARED_ENDIAN_H_
-#define SHARED_ENDIAN_H_
+#ifndef COMMON_ENDIAN_H_
+#define COMMON_ENDIAN_H_
 
 //
 // Special cases come first:
@@ -206,4 +206,4 @@ STATIC_INLINE float SwapFloat(float x) IFDECLARE
 
 #endif
 
-#endif // SHARED_ENDIAN_H_
+#endif // COMMON_ENDIAN_H_

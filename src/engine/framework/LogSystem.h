@@ -22,7 +22,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
-#include "../../shared/Log.h"
+#include "../../common/Log.h"
 #include <vector>
 
 #ifndef FRAMEWORK_LOG_SYSTEM_H_
@@ -35,7 +35,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
  * the TTY and graphical console and the HUD.
  *
  * A full list of the targets and "printing" facilities can be found in
- * shared/Log (TODO the directory might change)
+ * common/Log
  */
 
 namespace Log {

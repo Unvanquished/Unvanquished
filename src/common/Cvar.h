@@ -26,8 +26,8 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #include <string>
 #include <functional>
 
-#ifndef SHARED_CVAR_H_
-#define SHARED_CVAR_H_
+#ifndef COMMON_CVAR_H_
+#define COMMON_CVAR_H_
 
 namespace Cvar {
 
@@ -193,4 +193,4 @@ namespace Cvar {
     }
 }
 
-#endif // SHARED_CVAR_H_
+#endif // COMMON_CVAR_H_

@@ -34,8 +34,8 @@ Maryland 20850 USA.
 
 #include "server.h"
 
-#include "../../shared/Command.h"
-#include "../../shared/String.h"
+#include "../../common/Command.h"
+#include "../../common/String.h"
 
 /*
 ===============================================================================

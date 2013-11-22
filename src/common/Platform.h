@@ -22,8 +22,8 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
-#ifndef SHARED_PLATFORM_H_
-#define SHARED_PLATFORM_H_
+#ifndef COMMON_PLATFORM_H_
+#define COMMON_PLATFORM_H_
 
 // Platform-specific configuration
 #ifdef _WIN32
@@ -72,4 +72,4 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #define id386_sse 1
 #endif
 
-#endif // SHARED_PLATFORM_H_
+#endif // COMMON_PLATFORM_H_

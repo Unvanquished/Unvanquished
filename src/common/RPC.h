@@ -32,8 +32,8 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#ifndef RPC_H_
-#define RPC_H_
+#ifndef COMMON_RPC_H_
+#define COMMON_RPC_H_
 
 #include "../libs/nacl/nacl.h"
 #include <vector>
@@ -209,4 +209,4 @@ template<typename Func> Reader DoRPC(const NaCl::RootSocket& socket, Writer& wri
 
 } // namespace RPC
 
-#endif // RPC_H_
+#endif // COMMON_RPC_H_

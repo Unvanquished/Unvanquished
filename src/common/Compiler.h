@@ -24,8 +24,8 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
 // Abstract away compiler-specific stuff
 
-#ifndef SHARED_COMPILER_H_
-#define SHARED_COMPILER_H_
+#ifndef COMMON_COMPILER_H_
+#define COMMON_COMPILER_H_
 
 // GCC and Clang
 #ifdef __GNUC__
@@ -168,4 +168,4 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #define IFDECLARE
 #endif // Q3_VM
 
-#endif // SHARED_COMPILER_H_
+#endif // COMMON_COMPILER_H_

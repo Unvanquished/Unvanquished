@@ -27,8 +27,8 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #include "Cvar.h"
 #include "String.h"
 
-#ifndef SHARED_LOG_H_
-#define SHARED_LOG_H_
+#ifndef COMMON_LOG_H_
+#define COMMON_LOG_H_
 
 namespace Log {
 
@@ -195,4 +195,4 @@ namespace Log {
     }
 }
 
-#endif //SHARED_LOG_H_
+#endif //COMMON_LOG_H_
