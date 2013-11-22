@@ -1354,21 +1354,10 @@ void Hunk_ClearTempMemory( void )
 /*
 ===================================================================
 
-EVENTS AND JOURNALING
+EVENTS
 
-In addition to these events, .cfg files are also copied to the
-journaled file
 ===================================================================
 */
-
-// bk001129 - here we go again: upped from 64
-#define MAX_PUSHED_EVENTS 256
-// bk001129 - init, also static
-static int        com_pushedEventsHead = 0;
-static int        com_pushedEventsTail = 0;
-
-// bk001129 - static
-static sysEvent_t com_pushedEvents[ MAX_PUSHED_EVENTS ];
 
 /*
 ========================================================================
@@ -1429,11 +1418,10 @@ void Com_QueueEvent( int time, sysEventType_t type, int value, int value2, int p
 
 /*
 ================
-Com_GetSystemEvent
-
+Com_GetEvent
 ================
 */
-sysEvent_t Com_GetSystemEvent( void )
+sysEvent_t Com_GetEvent( void )
 {
 	sysEvent_t ev;
 	char       *s;
@@ -1490,76 +1478,6 @@ sysEvent_t Com_GetSystemEvent( void )
 	ev.evTime = Sys_Milliseconds();
 
 	return ev;
-}
-
-/*
-=================
-Com_InitPushEvent
-=================
-*/
-// bk001129 - added
-void Com_InitPushEvent( void )
-{
-	// clear the static buffer array
-	// this requires SE_NONE to be accepted as a valid but NOP event
-	memset( com_pushedEvents, 0, sizeof( com_pushedEvents ) );
-	// reset counters while we are at it
-	// beware: GetEvent might still return an SE_NONE from the buffer
-	com_pushedEventsHead = 0;
-	com_pushedEventsTail = 0;
-}
-
-/*
-=================
-Com_PushEvent
-=================
-*/
-void Com_PushEvent( sysEvent_t *event )
-{
-	sysEvent_t *ev;
-	static int printedWarning = 0; // bk001129 - init, bk001204 - explicit int
-
-	ev = &com_pushedEvents[ com_pushedEventsHead & ( MAX_PUSHED_EVENTS - 1 ) ];
-
-	if ( com_pushedEventsHead - com_pushedEventsTail >= MAX_PUSHED_EVENTS )
-	{
-		// don't print the warning constantly, or it can give time for more...
-		if ( !printedWarning )
-		{
-			printedWarning = qtrue;
-			Com_Printf( "WARNING: Com_PushEvent overflow\n" );
-		}
-
-		if ( ev->evPtr )
-		{
-			Z_Free( ev->evPtr );
-		}
-
-		com_pushedEventsTail++;
-	}
-	else
-	{
-		printedWarning = qfalse;
-	}
-
-	*ev = *event;
-	com_pushedEventsHead++;
-}
-
-/*
-=================
-Com_GetEvent
-=================
-*/
-sysEvent_t Com_GetEvent( void )
-{
-	if ( com_pushedEventsHead > com_pushedEventsTail )
-	{
-		com_pushedEventsTail++;
-		return com_pushedEvents[( com_pushedEventsTail - 1 ) & ( MAX_PUSHED_EVENTS - 1 ) ];
-	}
-
-	return Com_GetSystemEvent();
 }
 
 /*
@@ -1760,21 +1678,7 @@ Can be used for profiling, but will be journaled accurately
 */
 int Com_Milliseconds( void )
 {
-	sysEvent_t ev;
-
-	// get events and push them until we get a null event with the current time
-	do
-	{
-		ev = Com_GetSystemEvent();
-
-		if ( ev.evType != SE_NONE )
-		{
-			Com_PushEvent( &ev );
-		}
-	}
-	while ( ev.evType != SE_NONE );
-
-	return ev.evTime;
+    return Sys_Milliseconds();
 }
 
 //============================================================================
@@ -2015,9 +1919,6 @@ void Com_Init( char *commandLine )
 	{
 		Sys_Error( "Error during initialization" );
 	}
-
-	// bk001129 - do this before anything else decides to push events
-	Com_InitPushEvent();
 
 	// prepare enough of the subsystems to handle
 	// cvar and command buffer management

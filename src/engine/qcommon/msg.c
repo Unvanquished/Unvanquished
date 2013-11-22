@@ -57,8 +57,6 @@ void MSG_Init( msg_t *buf, byte *data, int length )
 	}
 
 	Com_Memset( buf, 0, sizeof( *buf ) );
-//bani - optimization
-//  memset (data, 0, length);
 	buf->data = data;
 	buf->maxsize = length;
 }
@@ -71,8 +69,6 @@ void MSG_InitOOB( msg_t *buf, byte *data, int length )
 	}
 
 	Com_Memset( buf, 0, sizeof( *buf ) );
-//bani - optimization
-//  memset (data, 0, length);
 	buf->data = data;
 	buf->maxsize = length;
 	buf->oob = qtrue;
@@ -143,8 +139,6 @@ void MSG_WriteBits( msg_t *msg, int value, int bits )
 {
 	int i;
 
-//  FILE*   fp;
-
 	msg->uncompsize += bits; // NERVE - SMF - net debugging
 
 	// this isn't an exact overflow check, but close enough
@@ -195,7 +189,6 @@ void MSG_WriteBits( msg_t *msg, int value, int bits )
 	}
 	else
 	{
-//      fp = fopen("c:\\netchan.bin", "a");
 		value &= ( 0xffffffff >> ( 32 - bits ) );
 
 		if ( bits & 7 )
@@ -217,14 +210,12 @@ void MSG_WriteBits( msg_t *msg, int value, int bits )
 		{
 			for ( i = 0; i < bits; i += 8 )
 			{
-//              fwrite(bp, 1, 1, fp);
 				Huff_offsetTransmit( &msgHuff.compressor, ( value & 0xff ), msg->data, &msg->bit );
 				value = ( value >> 8 );
 			}
 		}
 
 		msg->cursize = ( msg->bit >> 3 ) + 1;
-//      fclose(fp);
 	}
 }
 
@@ -234,8 +225,6 @@ int MSG_ReadBits( msg_t *msg, int bits )
 	int      get;
 	qboolean sgn;
 	int      i, nbits;
-
-//  FILE*   fp;
 
 	value = 0;
 
@@ -296,15 +285,11 @@ int MSG_ReadBits( msg_t *msg, int bits )
 
 		if ( bits )
 		{
-//          fp = fopen("c:\\netchan.bin", "a");
 			for ( i = 0; i < bits; i += 8 )
 			{
 				Huff_offsetReceive( msgHuff.decompressor.tree, &get, msg->data, &msg->bit );
-//              fwrite(&get, 1, 1, fp);
 				value |= ( get << ( i + nbits ) );
 			}
-
-//          fclose(fp);
 		}
 
 		msg->readcount = ( msg->bit >> 3 ) + 1;

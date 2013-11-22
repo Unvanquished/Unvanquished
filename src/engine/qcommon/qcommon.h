@@ -820,8 +820,7 @@ void QDECL Com_Log( log_level_t level, const char* message );
 
 // *INDENT-ON*
 void NORETURN Com_Quit_f( void );
-int        Com_EventLoop( void );
-int        Com_Milliseconds( void );  // will be journaled properly
+int        Com_Milliseconds( void );
 unsigned   Com_BlockChecksum( const void *buffer, int length );
 char       *Com_MD5File( const char *filename, int length );
 void       Com_MD5Buffer( const char *pubkey, int size, char *buffer, int bufsize );
@@ -863,7 +862,6 @@ extern cvar_t       *com_version;
 
 extern cvar_t       *com_consoleCommand;
 
-extern cvar_t       *com_journal;
 extern cvar_t       *com_ansiColor;
 
 extern cvar_t       *com_unfocused;
@@ -887,9 +885,6 @@ extern int          com_expectedhunkusage;
 extern int          com_hunkusedvalue;
 
 extern qboolean     com_errorEntered;
-
-extern fileHandle_t com_journalFile;
-extern fileHandle_t com_journalDataFile;
 
 typedef enum
 {
@@ -1102,7 +1097,6 @@ typedef struct
 
 void       Com_QueueEvent( int time, sysEventType_t type, int value, int value2, int ptrLength, void *ptr );
 int        Com_EventLoop( void );
-sysEvent_t Com_GetSystemEvent( void );
 
 void       Sys_Init( void );
 qboolean   Sys_IsNumLockDown( void );
@@ -1193,10 +1187,6 @@ typedef enum
 dialogResult_t Sys_Dialog( dialogType_t type, const char *message, const char *title );
 
 void           Sys_QueEvent( int time, sysEventType_t type, int value, int value2, int ptrLength, void *ptr );
-
-void       Hist_Add( const char *field );
-const char *Hist_Next( void );
-const char *Hist_Prev( void );
 
 /* This is based on the Adaptive Huffman algorithm described in Sayood's Data
  * Compression book.  The ranks are not actually stored, but implicitly defined
