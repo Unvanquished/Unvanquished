@@ -75,8 +75,6 @@ jmp_buf             abortframe; // an ERR_DROP has occurred, exit the entire fra
 FILE                *debuglogfile;
 static fileHandle_t logfile;
 static fileHandle_t pipefile;
-fileHandle_t        com_journalFile; // events are written here
-fileHandle_t        com_journalDataFile; // config files are written here
 
 cvar_t              *com_crashed = NULL; // ydnar: set in case of a crash, prevents CVAR_UNSAFE variables from being set from a cfg
 
@@ -88,7 +86,6 @@ cvar_t *com_developer;
 cvar_t *com_dedicated;
 cvar_t *com_timescale;
 cvar_t *com_dropsim; // 0.0 to 1.0, simulated packet drops
-cvar_t *com_journal;
 cvar_t *com_timedemo;
 cvar_t *com_sv_running;
 cvar_t *com_cl_running;
@@ -1374,69 +1371,6 @@ static int        com_pushedEventsTail = 0;
 static sysEvent_t com_pushedEvents[ MAX_PUSHED_EVENTS ];
 
 /*
-=================
-Com_InitJournaling
-=================
-*/
-void Com_InitJournaling( void )
-{
-	int i;
-
-	Com_StartupVariable( "journal" );
-	com_journal = Cvar_Get( "journal", "0", CVAR_INIT );
-
-	if ( !com_journal->integer )
-	{
-		if ( com_journal->string && com_journal->string[ 0 ] == '_' )
-		{
-			Com_Printf( "Replaying journaled events\n" );
-			FS_FOpenFileRead( va( "journal%s.dat", com_journal->string ), &com_journalFile, qtrue );
-			FS_FOpenFileRead( va( "journal_data%s.dat", com_journal->string ), &com_journalDataFile, qtrue );
-			com_journal->integer = 2;
-		}
-		else
-		{
-			return;
-		}
-	}
-	else
-	{
-		for ( i = 0; i <= 9999; i++ )
-		{
-			char f[ MAX_OSPATH ];
-			Com_sprintf( f, sizeof( f ), "journal_%04d.dat", i );
-
-			if ( !FS_FileExists( f ) )
-			{
-				break;
-			}
-		}
-
-		if ( com_journal->integer == 1 )
-		{
-			Com_Printf( "Journaling events\n" );
-			com_journalFile = FS_FOpenFileWrite( va( "journal_%04d.dat", i ) );
-			com_journalDataFile = FS_FOpenFileWrite( va( "journal_data_%04d.dat", i ) );
-		}
-		else if ( com_journal->integer == 2 )
-		{
-			i--;
-			Com_Printf( "Replaying journaled events\n" );
-			FS_FOpenFileRead( va( "journal_%04d.dat", i ), &com_journalFile, qtrue );
-			FS_FOpenFileRead( va( "journal_data_%04d.dat", i ), &com_journalDataFile, qtrue );
-		}
-	}
-
-	if ( !com_journalFile || !com_journalDataFile )
-	{
-		Cvar_Set( "journal", "0" );
-		com_journalFile = 0;
-		com_journalDataFile = 0;
-		Com_Printf( "Couldn't open journal files\n" );
-	}
-}
-
-/*
 ========================================================================
 EVENT LOOP
 ========================================================================
@@ -1560,70 +1494,6 @@ sysEvent_t Com_GetSystemEvent( void )
 
 /*
 =================
-Com_GetRealEvent
-=================
-*/
-sysEvent_t      Com_GetRealEvent( void )
-{
-	int        r;
-	sysEvent_t ev;
-
-	// either get an event from the system or the journal file
-	if ( com_journal->integer == 2 )
-	{
-		r = FS_Read( &ev, sizeof( ev ), com_journalFile );
-
-		if ( r != sizeof( ev ) )
-		{
-			//Com_Error( ERR_FATAL, "Error reading from journal file" );
-			com_journal->integer = 0;
-			ev.evType = SE_NONE;
-		}
-
-		if ( ev.evPtrLength )
-		{
-			ev.evPtr = Z_Malloc( ev.evPtrLength );
-			r = FS_Read( ev.evPtr, ev.evPtrLength, com_journalFile );
-
-			if ( r != ev.evPtrLength )
-			{
-				//Com_Error( ERR_FATAL, "Error reading from journal file" );
-				com_journal->integer = 0;
-				ev.evType = SE_NONE;
-			}
-		}
-	}
-	else
-	{
-		ev = Com_GetSystemEvent();
-
-		// write the journal value out if needed
-		if ( com_journal->integer == 1 )
-		{
-			r = FS_Write( &ev, sizeof( ev ), com_journalFile );
-
-			if ( r != sizeof( ev ) )
-			{
-				Com_Error( ERR_FATAL, "Error writing to journal file" );
-			}
-
-			if ( ev.evPtrLength )
-			{
-				r = FS_Write( ev.evPtr, ev.evPtrLength, com_journalFile );
-
-				if ( r != ev.evPtrLength )
-				{
-					Com_Error( ERR_FATAL, "Error writing to journal file" );
-				}
-			}
-		}
-	}
-
-	return ev;
-}
-
-/*
-=================
 Com_InitPushEvent
 =================
 */
@@ -1689,7 +1559,7 @@ sysEvent_t Com_GetEvent( void )
 		return com_pushedEvents[( com_pushedEventsTail - 1 ) & ( MAX_PUSHED_EVENTS - 1 ) ];
 	}
 
-	return Com_GetRealEvent();
+	return Com_GetSystemEvent();
 }
 
 /*
@@ -1895,7 +1765,7 @@ int Com_Milliseconds( void )
 	// get events and push them until we get a null event with the current time
 	do
 	{
-		ev = Com_GetRealEvent();
+		ev = Com_GetSystemEvent();
 
 		if ( ev.evType != SE_NONE )
 		{
@@ -2172,7 +2042,6 @@ void Com_Init( char *commandLine )
 	CL_InitKeyCommands();
 
 	FS_InitFilesystem();
-	Com_InitJournaling();
 
 	Trans_Init();
 
@@ -2919,12 +2788,6 @@ void Com_Shutdown( qboolean badProfile )
 		logfile = 0;
 	}
 
-	if ( com_journalFile )
-	{
-		FS_FCloseFile( com_journalFile );
-		com_journalFile = 0;
-	}
-
 	if ( pipefile )
 	{
 		FS_FCloseFile( pipefile );
@@ -2942,29 +2805,6 @@ command line completion
 
 /*
 ==================
-Field_Clear
-==================
-*/
-void Field_Clear( field_t *edit )
-{
-	memset( edit->buffer, 0, MAX_EDIT_LINE );
-	edit->cursor = 0;
-	edit->scroll = 0;
-}
-
-/*
-==================
-Field_SetCursor
-==================
-*/
-void Field_SetCursor( field_t *edit, int cursor )
-{
-	edit->cursor = cursor;
-	edit->scroll = ( cursor >= edit->widthInChars ) ? ( cursor - edit->widthInChars + 1 ) : 0;
-}
-
-/*
-==================
 Field_CursorToOffset
 ==================
 */
@@ -2973,23 +2813,6 @@ int Field_CursorToOffset( field_t *edit )
 	int i = -1, j = 0;
 
 	while ( ++i < edit->cursor )
-	{
-		j += Q_UTF8_Width( edit->buffer + j );
-	}
-
-	return j;
-}
-
-/*
-==================
-Field_ScrollToOffset
-==================
-*/
-int Field_ScrollToOffset( field_t *edit )
-{
-	int i = -1, j = 0;
-
-	while ( ++i < edit->scroll )
 	{
 		j += Q_UTF8_Width( edit->buffer + j );
 	}
@@ -3015,22 +2838,6 @@ static void FindMatches( const char *s )
 {
     Cmd_OnCompleteMatch(s);
 }
-
-/*
-===============
-PrintCmdMatches
-===============
-*/
-#if 0
-static void PrintCmdMatches( const char *s )
-{
-	if ( !Q_strnicmp( s, shortestMatch, strlen( shortestMatch ) ) )
-	{
-		Com_Printf( " %s\n", s );
-	}
-}
-
-#endif
 
 /*
 ===============
@@ -3220,27 +3027,3 @@ qboolean Com_IsVoipTarget( uint8_t *voipTargets, int voipTargetsSize, int client
 	return qfalse;
 }
 
-/*
-==================
-Hist_Add
-==================
-*/
-void Hist_Add( const char *field ) {}
-
-/*
-==================
-Hist_Prev
-==================
-*/
-const char *Hist_Prev( void ) {
-    return " ";
-}
-
-/*
-==================
-Hist_Next
-==================
-*/
-const char *Hist_Next( void ) {
-    return " ";
-}
