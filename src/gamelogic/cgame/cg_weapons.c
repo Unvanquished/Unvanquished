@@ -728,12 +728,12 @@ static qboolean CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo
 
 			COM_StripExtension( token, token2 );
 
-			if ( cg_highPolyWeaponModels.integer && ( wi->weaponModel = trap_R_RegisterModel( va( "%s_view.md5mesh", token2 ) ) ) )
+			if ( cg_highPolyWeaponModels.integer && ( wi->weaponModel = trap_R_RegisterModel( va( "%s_view.iqm", token2 ) ) ) )
 			{
 				wi->md5 = qtrue;
 
 				if ( !CG_RegisterWeaponAnimation( &wi->animations[ WANIM_IDLE ],
-				                                  va( "%s_view_idle.md5anim", token2 ), qtrue, qfalse, qfalse ) )
+				                                  va( "%s_view.iqm:idle", token2 ), qtrue, qfalse, qfalse ) )
 				{
 					//CG_Error( "could not find '%s'", path );
 				}
@@ -757,31 +757,31 @@ static qboolean CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo
 					case WP_PULSE_RIFLE:
 
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_RAISE ],
-													va( "%s_view_raise.md5anim", token2 ), qfalse, qfalse, qfalse );
+													va( "%s_view.iqm:raise", token2 ), qfalse, qfalse, qfalse );
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_DROP ],
-													va( "%s_view_lower.md5anim", token2 ), qfalse, qfalse, qfalse );
+													va( "%s_view.iqm:lower", token2 ), qfalse, qfalse, qfalse );
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_RELOAD ],
-													va( "%s_view_reload.md5anim", token2 ), qfalse, qfalse, qfalse );
+													va( "%s_view.iqm:reload", token2 ), qfalse, qfalse, qfalse );
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK1 ],
-													va( "%s_view_fire.md5anim", token2 ), qfalse, qfalse, qfalse );
+													va( "%s_view.iqm:fire", token2 ), qfalse, qfalse, qfalse );
 						break;
 
 					case WP_LUCIFER_CANNON:
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK2 ],
-													va( "%s_view_fire2.md5anim", token2 ), qfalse, qfalse, qfalse );
+													va( "%s_view.iqm:fire2", token2 ), qfalse, qfalse, qfalse );
 					case WP_BLASTER:
 					case WP_PAIN_SAW:
 					case WP_LAS_GUN:
 					case WP_CHAINGUN:
 					case WP_FLAMER:
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_RAISE ],
-													va( "%s_view_raise.md5anim", token2 ), qfalse, qfalse, qfalse );
+													va( "%s_view.iqm:raise", token2 ), qfalse, qfalse, qfalse );
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_DROP ],
-													va( "%s_view_lower.md5anim", token2 ), qfalse, qfalse, qfalse );
+													va( "%s_view.iqm:lower", token2 ), qfalse, qfalse, qfalse );
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_RELOAD ],
-													va( "%s_view_reload.md5anim", token2 ), qfalse, qfalse, qfalse );
+													va( "%s_view.iqm:reload", token2 ), qfalse, qfalse, qfalse );
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK1 ],
-													va( "%s_view_fire.md5anim", token2 ), qfalse, qfalse, qfalse );
+													va( "%s_view.iqm:fire", token2 ), qfalse, qfalse, qfalse );
 						break;
 
 					case WP_ALEVEL1:
@@ -789,34 +789,125 @@ static qboolean CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo
 					case WP_ALEVEL2:
 					case WP_ALEVEL4:
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK1 ],
-													va( "%s_view_fire.md5anim", token2 ), qfalse, qfalse, qfalse );
+													va( "%s_view.iqm:fire", token2 ), qfalse, qfalse, qfalse );
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK2 ],
-													va( "%s_view_fire2.md5anim", token2 ), qfalse, qfalse, qfalse );
+													va( "%s_view.iqm:fire2", token2 ), qfalse, qfalse, qfalse );
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK3 ],
-													va( "%s_view_fire3.md5anim", token2 ), qfalse, qfalse, qfalse );
+													va( "%s_view.iqm:fire3", token2 ), qfalse, qfalse, qfalse );
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK4 ],
-													va( "%s_view_fire4.md5anim", token2 ), qfalse, qfalse, qfalse );
+													va( "%s_view.iqm:fire4", token2 ), qfalse, qfalse, qfalse );
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK5 ],
-													va( "%s_view_fire5.md5anim", token2 ), qfalse, qfalse, qfalse );
+													va( "%s_view.iqm:fire5", token2 ), qfalse, qfalse, qfalse );
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK6 ],
-													va( "%s_view_fire6.md5anim", token2 ), qfalse, qfalse, qfalse );
+													va( "%s_view.iqm:fire6", token2 ), qfalse, qfalse, qfalse );
 						break;
 
 					case WP_ALEVEL2_UPG:
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK1 ],
-													va( "%s_view_fire.md5anim", token2 ), qfalse, qfalse, qfalse );
+													va( "%s_view.iqm:fire", token2 ), qfalse, qfalse, qfalse );
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK2 ],
-													va( "%s_view_fire2.md5anim", token2 ), qfalse, qfalse, qfalse );
+													va( "%s_view.iqm:fire2", token2 ), qfalse, qfalse, qfalse );
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK3 ],
-													va( "%s_view_fire3.md5anim", token2 ), qfalse, qfalse, qfalse );
+													va( "%s_view.iqm:fire3", token2 ), qfalse, qfalse, qfalse );
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK4 ],
-													va( "%s_view_fire4.md5anim", token2 ), qfalse, qfalse, qfalse );
+													va( "%s_view.iqm:fire4", token2 ), qfalse, qfalse, qfalse );
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK5 ],
-													va( "%s_view_fire5.md5anim", token2 ), qfalse, qfalse, qfalse );
+													va( "%s_view.iqm:fire5", token2 ), qfalse, qfalse, qfalse );
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK6 ],
-													va( "%s_view_fire6.md5anim", token2 ), qfalse, qfalse, qfalse );
+													va( "%s_view.iqm:fire6", token2 ), qfalse, qfalse, qfalse );
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK7 ],
-													va( "%s_view_fire7.md5anim", token2 ), qfalse, qfalse, qfalse );
+													va( "%s_view.iqm:fire7", token2 ), qfalse, qfalse, qfalse );
+				}
+			}
+			else if ( cg_highPolyWeaponModels.integer && ( wi->weaponModel = trap_R_RegisterModel( va( "%s_view.md5mesh", token2 ) ) ) )
+			{
+				wi->md5 = qtrue;
+
+				if ( !CG_RegisterWeaponAnimation( &wi->animations[ WANIM_IDLE ],
+					va( "%s_view_idle.md5anim", token2 ), qtrue, qfalse, qfalse ) )
+				{
+					//CG_Error( "could not find '%s'", path );
+				}
+
+				// default all weapon animations to the idle animation
+				for ( i = 0; i < MAX_WEAPON_ANIMATIONS; i++ )
+				{
+					if ( i == WANIM_IDLE )
+					{
+						continue;
+					}
+
+					wi->animations[ i ] = wi->animations[ WANIM_IDLE ];
+				}
+
+				switch( weapon )
+				{
+					case WP_MACHINEGUN:
+					case WP_SHOTGUN:
+					case WP_MASS_DRIVER:
+					case WP_PULSE_RIFLE:
+
+						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_RAISE ],
+									    va( "%s_view_raise.md5anim", token2 ), qfalse, qfalse, qfalse );
+						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_DROP ],
+									    va( "%s_view_lower.md5anim", token2 ), qfalse, qfalse, qfalse );
+						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_RELOAD ],
+									    va( "%s_view_reload.md5anim", token2 ), qfalse, qfalse, qfalse );
+						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK1 ],
+									    va( "%s_view_fire.md5anim", token2 ), qfalse, qfalse, qfalse );
+						break;
+
+					case WP_LUCIFER_CANNON:
+						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK2 ],
+									    va( "%s_view_fire2.md5anim", token2 ), qfalse, qfalse, qfalse );
+					case WP_BLASTER:
+					case WP_PAIN_SAW:
+					case WP_LAS_GUN:
+					case WP_CHAINGUN:
+					case WP_FLAMER:
+						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_RAISE ],
+									    va( "%s_view_raise.md5anim", token2 ), qfalse, qfalse, qfalse );
+						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_DROP ],
+									    va( "%s_view_lower.md5anim", token2 ), qfalse, qfalse, qfalse );
+						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_RELOAD ],
+									    va( "%s_view_reload.md5anim", token2 ), qfalse, qfalse, qfalse );
+						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK1 ],
+									    va( "%s_view_fire.md5anim", token2 ), qfalse, qfalse, qfalse );
+						break;
+
+					case WP_ALEVEL1:
+					case WP_ALEVEL1_UPG:
+					case WP_ALEVEL2:
+					case WP_ALEVEL4:
+						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK1 ],
+									    va( "%s_view_fire.md5anim", token2 ), qfalse, qfalse, qfalse );
+						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK2 ],
+									    va( "%s_view_fire2.md5anim", token2 ), qfalse, qfalse, qfalse );
+						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK3 ],
+									    va( "%s_view_fire3.md5anim", token2 ), qfalse, qfalse, qfalse );
+						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK4 ],
+									    va( "%s_view_fire4.md5anim", token2 ), qfalse, qfalse, qfalse );
+						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK5 ],
+									    va( "%s_view_fire5.md5anim", token2 ), qfalse, qfalse, qfalse );
+						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK6 ],
+									    va( "%s_view_fire6.md5anim", token2 ), qfalse, qfalse, qfalse );
+						break;
+
+					case WP_ALEVEL2_UPG:
+						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK1 ],
+									    va( "%s_view_fire.md5anim", token2 ), qfalse, qfalse, qfalse );
+						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK2 ],
+									    va( "%s_view_fire2.md5anim", token2 ), qfalse, qfalse, qfalse );
+						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK3 ],
+									    va( "%s_view_fire3.md5anim", token2 ), qfalse, qfalse, qfalse );
+						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK4 ],
+									    va( "%s_view_fire4.md5anim", token2 ), qfalse, qfalse, qfalse );
+						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK5 ],
+									    va( "%s_view_fire5.md5anim", token2 ), qfalse, qfalse, qfalse );
+						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK6 ],
+									    va( "%s_view_fire6.md5anim", token2 ), qfalse, qfalse, qfalse );
+						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK7 ],
+									    va( "%s_view_fire7.md5anim", token2 ), qfalse, qfalse, qfalse );
 				}
 			}
 			else

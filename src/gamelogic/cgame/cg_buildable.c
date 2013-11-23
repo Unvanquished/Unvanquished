@@ -482,13 +482,22 @@ static qboolean CG_ParseBuildableSoundFile( const char *filename, buildable_t bu
 }
 
 static qboolean CG_RegisterBuildableAnimation( buildableInfo_t *ci, const char *modelName, int anim, const char *animName,
-    qboolean loop, qboolean reversed, qboolean clearOrigin )
+    qboolean loop, qboolean reversed, qboolean clearOrigin, qboolean iqm )
 {
 	char filename[ MAX_QPATH ];
 	int  frameRate;
 
-	Com_sprintf( filename, sizeof( filename ), "models/buildables/%s/%s.md5anim", modelName, animName );
-	ci->animations[ anim ].handle = trap_R_RegisterAnimation( filename );
+	if ( iqm )
+	{
+		Com_sprintf( filename, sizeof( filename ), "models/buildables/%s/%s.iqm:%s", modelName, modelName, animName );
+		ci->animations[ anim ].handle = trap_R_RegisterAnimation( filename );
+	}
+
+	else
+	{
+		Com_sprintf( filename, sizeof( filename ), "models/buildables/%s/%s.md5anim", modelName, animName );
+		ci->animations[ anim ].handle = trap_R_RegisterAnimation( filename );
+	}
 
 	if ( !ci->animations[ anim ].handle )
 	{
@@ -560,13 +569,21 @@ void CG_InitBuildables( void )
 	for ( i = BA_NONE + 1; i < BA_NUM_BUILDABLES; i++ )
 	{
 		buildableInfo_t *bi = &cg_buildables[ i ];
+		qboolean         iqm = qfalse;
+
 		buildableName = BG_Buildable( i )->name;
 		//Load models
 		//Prefer md5 models over md3
 
-		if ( cg_highPolyBuildableModels.integer && ( bi->models[ 0 ] = trap_R_RegisterModel( va( "models/buildables/%s/%s.md5mesh", buildableName, buildableName ) ) ) )
+		if ( cg_highPolyBuildableModels.integer && ( bi->models[ 0 ] = trap_R_RegisterModel( va( "models/buildables/%s/%s.iqm", buildableName, buildableName ) ) ) )
 		{
 			bi->md5 = qtrue;
+			iqm = qtrue;
+		}
+		else if ( cg_highPolyBuildableModels.integer && ( bi->models[ 0 ] = trap_R_RegisterModel( va( "models/buildables/%s/%s.md5mesh", buildableName, buildableName ) ) ) )
+		{
+			bi->md5 = qtrue;
+			iqm = qtrue;
 		}
 		else
 		{
@@ -590,7 +607,7 @@ void CG_InitBuildables( void )
 			{
 				if ( animLoading[ i ] & ( 1 << n ) )
 				{
-					if ( !CG_RegisterBuildableAnimation( bi, buildableName, n, animTypes[ n ].name, animTypes[ n ].loop, animTypes[ n ].reversed, animTypes[ n ].clearOrigin ) )
+					if ( !CG_RegisterBuildableAnimation( bi, buildableName, n, animTypes[ n ].name, animTypes[ n ].loop, animTypes[ n ].reversed, animTypes[ n ].clearOrigin, qtrue ) )
 					{
 						int o = (int) animTypes[ n ].fallback;
 
