@@ -415,9 +415,7 @@ static void *Sys_TryLibraryLoad( const char *base, const char *gamedir, const ch
 Sys_LoadDll
 
 Used to load a DLL instead of a virtual machine
-#1 look in fs_homepath
-#2 look in fs_basepath
-#4 look in fs_libpath (if not "")
+look in fs_libpath
 =================
 */
 void *QDECL Sys_LoadDll( const char *name,
@@ -436,24 +434,10 @@ void *QDECL Sys_LoadDll( const char *name,
 
 	Com_sprintf( fname, sizeof( fname ), "%s%s", name, DLL_EXT );
 
-	// TODO: use fs_searchpaths from files.c
-	basepath = Cvar_VariableString( "fs_basepath" );
-	homepath = Cvar_VariableString( "fs_homepath" );
 	gamedir = Cvar_VariableString( "fs_game" );
 	libpath = Cvar_VariableString( "fs_libpath" );
 
-	libHandle = NULL;
-
-	if ( libpath[0] )
-	{
-		libHandle = Sys_TryLibraryLoad( libpath, gamedir, fname );
-	}
-
-
-	if ( !libHandle && basepath )
-	{
-		libHandle = Sys_TryLibraryLoad( basepath, gamedir, fname );
-	}
+	libHandle = Sys_TryLibraryLoad( libpath, gamedir, fname );
 
 	if ( !libHandle )
 	{

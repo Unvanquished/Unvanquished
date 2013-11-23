@@ -4356,29 +4356,16 @@ qboolean CL_InitRef( const char *renderer )
 #if !defined( REF_HARD_LINKED )
 	GetRefAPI_t GetRefAPI;
 	char        dllName[ MAX_OSPATH ];
-	const char  varName[][16] = { "fs_libpath", "fs_basepath" };
-	int         i;
-#endif
 
-#if !defined( REF_HARD_LINKED )
-	for ( i = 0; i < ARRAY_LEN( varName ); ++i )
-	{
-		Com_sprintf( dllName, sizeof( dllName ), "%s/renderer%s" DLL_EXT, Cvar_VariableString( varName[ i ] ), renderer );
+	Com_sprintf( dllName, sizeof( dllName ), "%s/renderer%s" DLL_EXT, Cvar_VariableString( "fs_libpath" ), renderer );
 
-		Com_Printf( "Loading \"%s\"…", dllName );
+	Com_Printf( "Loading \"%s\"...", dllName );
 
-		lib = Sys_LoadLibrary( dllName );
-
-		if ( lib )
-		{
-			break;
-		}
-
-		Com_Printf( "failed:\n\"%s\"\n", Sys_LibraryError() );
-	}
+	lib = Sys_LoadLibrary( dllName );
 
 	if ( !lib )
 	{
+		Com_Printf( "failed:\n\"%s\"\n", Sys_LibraryError() );
 		return qfalse;
 	}
 
