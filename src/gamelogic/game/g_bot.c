@@ -462,9 +462,9 @@ void G_BotSpectatorThink( gentity_t *self )
 
 		if ( teamnum == TEAM_HUMANS )
 		{
-			self->client->pers.classSelection = PCL_HUMAN;
-			self->client->ps.stats[STAT_CLASS] = PCL_HUMAN;
-			BotSetNavmesh( self, PCL_HUMAN );
+			self->client->pers.classSelection = PCL_HUMAN_NAKED;
+			self->client->ps.stats[STAT_CLASS] = PCL_HUMAN_NAKED;
+			BotSetNavmesh( self, PCL_HUMAN_NAKED );
 			//we want to spawn with rifle unless it is disabled or we need to build
 			if ( g_bot_rifle.integer )
 			{

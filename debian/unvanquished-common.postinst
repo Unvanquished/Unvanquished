@@ -5,6 +5,9 @@ set -e
 #DEBHELPER#
 
 if test "$1" = "configure"; then
+  . /usr/share/debconf/confmodule
+  db_version 2.0
+
   if dpkg --compare-versions "$2" '<' 0.4.0-0; then
     # move data files from the old (< 0.4.0) location
     if test -f /var/lib/games/unvanquished/md5sums; then
@@ -17,9 +20,24 @@ if test "$1" = "configure"; then
     # move data files from the old (<= 0.3.0-1) location
     ls | grep -ve md5sums -e main | while read FN; do mv -f "$FN" main; done
   fi
-  unvanquished-download-paks || {
-    echo 'You can retry this by running unvanquished-download-paks (as root).'
-    echo 'You may not be able to play Unvanquished until you do so.'
-    echo '(However, any previously-downloaded files not replaced remain available.)'
-  }
+
+  db_get unvanquished-common/download-pk3
+  if test "$RET" = true; then
+    db_get unvanquished-common/mirror
+
+    FAILED=
+    if test -n "$RET"; then
+      unvanquished-download-paks --source "$RET" || FAILED=1
+    else
+      unvanquished-download-paks || FAILED=1
+    fi
+
+    if test "$FAILED" = 1; then
+      echo 'Unvanquished was unable to download all of its base .pk3 files.
+You can retry the download by running, as root, this command:
+  dpkg-reconfigure unvanquished-common
+You may not be able to play Unvanquished until you do so. (However, any
+previously-downloaded files not replaced remain available.)'
+    fi
+  fi
 fi

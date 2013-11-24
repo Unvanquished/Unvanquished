@@ -114,7 +114,7 @@ centity_t       cg_entities[ MAX_GENTITIES ];
 
 weaponInfo_t    cg_weapons[ 32 ];
 upgradeInfo_t   cg_upgrades[ 32 ];
-
+classInfo_t     cg_classes[ PCL_NUM_CLASSES ];
 buildableInfo_t cg_buildables[ BA_NUM_BUILDABLES ];
 
 vmCvar_t        cg_teslaTrailTime;
@@ -132,7 +132,8 @@ vmCvar_t        cg_drawDemoState;
 vmCvar_t        cg_drawSnapshot;
 vmCvar_t        cg_drawChargeBar;
 vmCvar_t        cg_drawCrosshair;
-vmCvar_t        cg_drawCrosshairIndicator;
+vmCvar_t        cg_drawCrosshairHit;
+vmCvar_t        cg_drawCrosshairFriendFoe;
 vmCvar_t        cg_drawCrosshairNames;
 vmCvar_t        cg_drawBuildableHealth;
 vmCvar_t        cg_drawMinimap;
@@ -302,7 +303,8 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_drawSnapshot,                "cg_drawSnapshot",                "0",            CVAR_ARCHIVE                 },
 	{ &cg_drawChargeBar,               "cg_drawChargeBar",               "1",            CVAR_ARCHIVE                 },
 	{ &cg_drawCrosshair,               "cg_drawCrosshair",               "2",            CVAR_ARCHIVE                 },
-	{ &cg_drawCrosshairIndicator,      "cg_drawCrosshairIndicator",      "2",            CVAR_ARCHIVE                 },
+	{ &cg_drawCrosshairHit,            "cg_drawCrosshairHit",            "1",            CVAR_ARCHIVE                 },
+	{ &cg_drawCrosshairFriendFoe,      "cg_drawCrosshairFriendFoe",      "0",            CVAR_ARCHIVE                 },
 	{ &cg_drawCrosshairNames,          "cg_drawCrosshairNames",          "1",            CVAR_ARCHIVE                 },
 	{ &cg_drawBuildableHealth,         "cg_drawBuildableHealth",         "1",            CVAR_ARCHIVE                 },
 	{ &cg_drawMinimap,                 "cg_drawMinimap",                 "1",            CVAR_ARCHIVE                 },
@@ -577,8 +579,16 @@ static void CG_SetPVars( void )
 			trap_Cvar_Set( "p_classname", "Tyrant" );
 			break;
 
-		case PCL_HUMAN:
-			trap_Cvar_Set( "p_classname", "Human" );
+		case PCL_HUMAN_NAKED:
+			trap_Cvar_Set( "p_classname", "Naked Human" );
+			break;
+
+		case PCL_HUMAN_LIGHT:
+			trap_Cvar_Set( "p_classname", "Light Human" );
+			break;
+
+		case PCL_HUMAN_MEDIUM:
+			trap_Cvar_Set( "p_classname", "Medium Human" );
 			break;
 
 		case PCL_HUMAN_BSUIT:
@@ -1169,6 +1179,7 @@ enum {
 	LOAD_CONFIGS,
 	LOAD_WEAPONS,
 	LOAD_UPGRADES,
+	LOAD_CLASSES,
 	LOAD_BUILDINGS,
 	LOAD_REMAINING,
 	LOAD_DONE
@@ -1217,7 +1228,7 @@ static void CG_UpdateLoadingStep( cgLoadingStep_t step )
 			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.60f, choose("Hello World!", "Making a scene.", NULL) );
 			break;
 		case LOAD_ASSETS:
-			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.66f, choose("Taking pictures of the world", "Using your laptop's camera", "Adding texture to concrete", "Drawing smiley faces", NULL) );
+			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.63f, choose("Taking pictures of the world", "Using your laptop's camera", "Adding texture to concrete", "Drawing smiley faces", NULL) );
 			break;
 		case LOAD_CONFIGS:
 			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.80f, choose("Reading the manual", "Looking at blueprints", NULL) );
@@ -1226,6 +1237,7 @@ static void CG_UpdateLoadingStep( cgLoadingStep_t step )
 			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.90f, choose("Setting up the armoury", "Sharpening the aliens' claws", "Overloading lucifer cannons", NULL) );
 			break;
 		case LOAD_UPGRADES:
+		case LOAD_CLASSES:
 			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.95f, choose("Charging battery packs", "Replicating alien DNA", "Packing tents for jetcampers", NULL) );
 			break;
 		case LOAD_BUILDINGS:
@@ -1564,6 +1576,11 @@ static void CG_RegisterGraphics( void )
 	// register the inline models
 	cgs.numInlineModels = trap_CM_NumInlineModels();
 
+	if ( cgs.numInlineModels > MAX_SUBMODELS )
+	{
+		CG_Error( "MAX_SUBMODELS (%d) exceeded by %d", MAX_SUBMODELS, cgs.numInlineModels - MAX_SUBMODELS );
+	}
+
 	for ( i = 1; i < cgs.numInlineModels; i++ )
 	{
 		char   name[ 10 ];
@@ -1596,7 +1613,7 @@ static void CG_RegisterGraphics( void )
 		cgs.gameModels[ i ] = trap_R_RegisterModel( modelName );
 	}
 
-	CG_UpdateMediaFraction( 0.8f );
+	CG_UpdateMediaFraction( 0.75f );
 
 	// register all the server specified shaders
 	for ( i = 1; i < MAX_GAME_SHADERS; i++ )
@@ -1614,7 +1631,7 @@ static void CG_RegisterGraphics( void )
 							     RSF_DEFAULT);
 	}
 
-	CG_UpdateMediaFraction( 0.85f );
+	CG_UpdateMediaFraction( 0.77f );
 
 	// register all the server specified grading textures
 	// starting with the world wide one
@@ -1623,7 +1640,7 @@ static void CG_RegisterGraphics( void )
 		CG_RegisterGrading( i, CG_ConfigString( CS_GRADING_TEXTURES + i ) );
 	}
 
-	CG_UpdateMediaFraction( 0.9f );
+	CG_UpdateMediaFraction( 0.79f );
 
 	// register all the server specified particle systems
 	for ( i = 1; i < MAX_GAME_PARTICLE_SYSTEMS; i++ )
@@ -2708,6 +2725,9 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 
 	CG_UpdateLoadingStep( LOAD_UPGRADES );
 	CG_InitUpgrades();
+
+	CG_UpdateLoadingStep( LOAD_CLASSES );
+	CG_InitClasses();
 
 	CG_UpdateLoadingStep( LOAD_BUILDINGS );
 	CG_InitBuildables();

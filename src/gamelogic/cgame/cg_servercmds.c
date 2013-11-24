@@ -646,13 +646,6 @@ void CG_Menu( int menu, int arg )
 			type = DT_BUILD;
 			break;
 
-		case MN_H_DRILLPOWERSOURCE:
-			longMsg = _("Drills require a close power source since they transmit resources"
-			            " via the power gird. Build it near a reactor or repeater.");
-			shortMsg = _("The drill requires a close power source");
-			type = DT_BUILD;
-			break;
-
 		// unused - DCC isn't required to build anything
 		case MN_H_NODCC:
 			longMsg = _("There is no Defense Computer. A Defense Computer is needed to "
@@ -696,17 +689,9 @@ void CG_Menu( int menu, int arg )
 			type = DT_ARMOURYEVOLVE;
 			break;
 
-		case MN_H_NOROOMBSUITON:
-			longMsg = _("There is not enough room here to put on a Battle Suit. "
-			          "Make sure you have enough head room to climb in.");
-			shortMsg = _("Not enough room here to put on a Battle Suit");
-			type = DT_ARMOURYEVOLVE;
-			break;
-
-		case MN_H_NOROOMBSUITOFF:
-			longMsg = _("There is not enough room here to take off your Battle Suit. "
-			          "Make sure you have enough head room to climb out.");
-			shortMsg = _("Not enough room here to take off your Battle Suit");
+		case MN_H_NOROOMARMOURCHANGE:
+			longMsg = _("There is not enough room here to change armour.");
+			shortMsg = _("Not enough room here to change armour.");
 			type = DT_ARMOURYEVOLVE;
 			break;
 
@@ -1032,7 +1017,7 @@ static void CG_Say( const char *name, int clientNum, saymode_t mode, const char 
 
 			if ( !ignore[ 0 ] )
 			{
-				CG_CenterPrint( va( "^%cPrivate message from: " S_COLOR_WHITE "%s",
+				CG_CenterPrint( va( _("^%cPrivate message from: ^7%s"),
 				                    color, name ), 200, GIANTCHAR_WIDTH * 4 );
 
 				if ( clientNum < 0 || clientNum >= MAX_CLIENTS )
@@ -1254,6 +1239,12 @@ static void CG_ParseVoice( void )
 	}
 }
 
+#define TRANSLATE_FUNC        _
+#define PLURAL_TRANSLATE_FUNC P_
+#define Cmd_Argv CG_Argv
+#define Cmd_Argc trap_Argc
+#include "../../engine/qcommon/print_translated.h"
+
 /*
 =================
 CG_CenterPrint_f
@@ -1279,6 +1270,29 @@ void CG_CenterPrint_Delay_f( void )
 
 /*
 =================
+CG_CenterPrintTR_f
+=================
+*/
+void CG_CenterPrintTR_f( void )
+{
+	CG_CenterPrint( TranslateText_Internal( qfalse, 1 ), SCREEN_HEIGHT * 0.30, BIGCHAR_WIDTH );
+}
+
+/*
+=================
+CG_CenterPrintTR_Delay_f
+=================
+*/
+void CG_CenterPrintTR_Delay_f( void )
+{
+	char cmd[ MAX_STRING_CHARS ];
+
+	Com_sprintf( cmd, sizeof( cmd ), "delay %s lcp %s", Quote( CG_Argv( 1 ) ), Quote( TranslateText_Internal( qfalse, 2 ) ) );
+	trap_SendConsoleCommand( cmd );
+}
+
+/*
+=================
 CG_Print_f
 =================
 */
@@ -1292,20 +1306,14 @@ static void CG_Print_f( void )
 CG_PrintTR_f
 =================
 */
-#define TRANSLATE_FUNC        _
-#define PLURAL_TRANSLATE_FUNC P_
-#define Cmd_Argv CG_Argv
-#define Cmd_Argc trap_Argc
-#include "../../engine/qcommon/print_translated.h"
-
 static void CG_PrintTR_f( void )
 {
-	PrintTranslatedText_Internal( qfalse );
+	Com_Printf( "%s", TranslateText_Internal( qfalse, 1 ) );
 }
 
 static void CG_PrintTR_plural_f( void )
 {
-	PrintTranslatedText_Internal( qtrue );
+	Com_Printf("%s", TranslateText_Internal( qtrue, 1 ) );
 }
 
 /*
@@ -1438,12 +1446,14 @@ static void CG_GameCmds_f( void )
 }
 
 static const consoleCommand_t svcommands[] =
-{
+{	// sorting: use 'sort -f'
 	{ "achat",            CG_AdminChat_f          },
 	{ "chat",             CG_Chat_f               },
 	{ "cmds",             CG_GameCmds_f           },
 	{ "cp",               CG_CenterPrint_f        },
 	{ "cpd",              CG_CenterPrint_Delay_f  },
+	{ "cpd_tr",           CG_CenterPrintTR_Delay_f},
+	{ "cp_tr",            CG_CenterPrintTR_f      },
 	{ "cs",               CG_ConfigStringModified },
 	{ "map_restart",      CG_MapRestart           },
 	{ "poisoncloud",      CG_PoisonCloud_f        },

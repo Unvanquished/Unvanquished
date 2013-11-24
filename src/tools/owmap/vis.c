@@ -1076,6 +1076,11 @@ int VisMain(int argc, char **argv)
 	char            portalfile[1024];
 	int             i;
 
+	if (argv == NULL)
+	{
+		Sys_Printf("Usage: daemonmap -vis [-fast] [-merge] [-mergeportals] [-nopassage] [-passageOnly] [-nosort] [-v] [-tmpin] [-timpout] [-hint] MAP\n");
+		return 0;
+	}
 
 	/* note it */
 	Sys_Printf("--- Vis ---\n");
@@ -1143,8 +1148,7 @@ int VisMain(int argc, char **argv)
 	}
 
 	if(i != argc - 1)
-		Error("usage: vis [-threads #] [-level 0-4] [-fast] [-v] bspfile");
-
+		Error("Usage: daemonmap -vis [-fast] [-merge] [-mergeportals] [-nopassage] [-passageOnly] [-nosort] [-v] [-tmpin] [-timpout] [-hint] MAP\n");
 
 	/* load the bsp */
 	sprintf(source, "%s%s", inbase, ExpandArg(argv[i]));

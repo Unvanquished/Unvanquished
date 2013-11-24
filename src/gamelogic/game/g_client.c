@@ -1514,7 +1514,7 @@ void ClientBegin( int clientNum )
 ClientSpawn
 
 Called every time a client is placed fresh in the world:
-after the first ClientBegin, and after each respawn
+after the first ClientBegin, and after each respawn and evolve
 Initializes all non-persistent parts of playerState
 ============
 */
@@ -1537,6 +1537,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	vec3_t             up = { 0.0f, 0.0f, 1.0f };
 	int                maxAmmo, maxClips;
 	weapon_t           weapon;
+	int                basicIncome;
 
 	index = ent - g_entities;
 	client = ent->client;
@@ -1677,7 +1678,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 		ent->r.contents = CONTENTS_BODY;
 	}
 	ent->clipmask = MASK_PLAYERSOLID;
-	ent->die = player_die;
+	ent->die = G_PlayerDie;
 	ent->waterlevel = 0;
 	ent->watertype = 0;
 	ent->flags &= FL_GODMODE | FL_NOTARGET;
@@ -1703,7 +1704,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	}
 
 	// clear entity values
-	if ( ent->client->pers.classSelection == PCL_HUMAN )
+	if ( ent->client->pers.classSelection == PCL_HUMAN_NAKED )
 	{
 		BG_AddUpgradeToInventory( UP_MEDKIT, client->ps.stats );
 		weapon = client->pers.humanItemSelection;
@@ -1747,7 +1748,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	//clear the credits array
 	for ( i = 0; i < MAX_CLIENTS; i++ )
 	{
-		ent->credits[ i ] = 0;
+		ent->credits[ i ] = 0.0f;
 	}
 
 	client->ps.stats[ STAT_STAMINA ] = STAMINA_MAX;
@@ -1822,6 +1823,17 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 
 	client->inactivityTime = level.time + g_inactivity.integer * 1000;
 	usercmdClearButtons( client->latched_buttons );
+
+	// give basic income if mine rate above minimum
+	if ( ent != spawn && level.team[ client->pers.team ].mineEfficiency > g_minimumMineRate.integer )
+	{
+		basicIncome = ( int )( BASIC_INCOME_MOD * level.team[ client->pers.team ].mineEfficiency ) - client->pers.credit;
+
+		if ( basicIncome > 0 )
+		{
+			G_AddCreditToClient( client, ( short )basicIncome, qtrue );
+		}
+	}
 
 	// set default animations
 	client->ps.torsoAnim = TORSO_STAND;

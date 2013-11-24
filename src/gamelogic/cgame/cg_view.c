@@ -842,27 +842,13 @@ void CG_OffsetFirstPersonView( void )
 		angles[ PITCH ] += pitchFraction * PCLOUD_ROLL_AMPLITUDE / 2.0f;
 	}
 
-	// this *feels* more realisitic for humans
+	// this *feels* more realisitic for humans <- this comment feels very descriptive
 	if ( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_HUMANS &&
 	     ( cg.predictedPlayerState.pm_type == PM_NORMAL ||
 	       cg.predictedPlayerState.pm_type == PM_JETPACK ) )
 	{
 		angles[ PITCH ] += cg.bobfracsin * bob2 * 0.5;
-
-		// heavy breathing effects //FIXME: sound
-		if ( cg.predictedPlayerState.stats[ STAT_STAMINA ] < STAMINA_BREATHING_LEVEL )
-		{
-			float deltaBreath = ( cg.predictedPlayerState.stats[ STAT_STAMINA ] -
-			                      STAMINA_BREATHING_LEVEL ) / -250.0;
-			float deltaAngle = cos( ( float ) cg.time / 150.0 ) * deltaBreath;
-
-			deltaAngle += ( deltaAngle < 0 ? -deltaAngle : deltaAngle ) * 0.5;
-
-			angles[ PITCH ] -= deltaAngle;
-		}
 	}
-
-//===================================
 
 	// add view height
 	VectorMA( origin, ps->viewheight, normal, origin );

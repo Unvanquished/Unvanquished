@@ -23,6 +23,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "g_local.h"
 
+#define MAX_ALIEN_BBOX 25
+
 /*
 ================
 G_SetBuildableAnim
@@ -89,7 +91,7 @@ gentity_t *G_CheckSpawnPoint( int spawnNum, const vec3_t origin,
 	}
 	else if ( spawn == BA_H_SPAWN )
 	{
-		BG_ClassBoundingBox( PCL_HUMAN, cmins, cmaxs, NULL, NULL, NULL );
+		BG_ClassBoundingBox( PCL_HUMAN_NAKED, cmins, cmaxs, NULL, NULL, NULL );
 
 		VectorCopy( origin, localOrigin );
 		localOrigin[ 2 ] += maxs[ 2 ] + fabs( cmins[ 2 ] ) + 1.0f;
@@ -489,7 +491,7 @@ qboolean G_FindCreep( gentity_t *self )
 
 			if ( ( ent->s.modelindex == BA_A_SPAWN ||
 			       ent->s.modelindex == BA_A_OVERMIND ) &&
-			     ent->spawned && ent->health > 0 )
+			       ent->health > 0 )
 			{
 				VectorSubtract( self->s.origin, ent->s.origin, temp_v );
 				distance = VectorLength( temp_v );
@@ -907,11 +909,9 @@ void AGeneric_CreepCheck( gentity_t *self )
 {
 	gentity_t *spawn;
 
-	switch( self->s.modelindex )
+	if ( !BG_Buildable( self->s.modelindex )->creepTest )
 	{
-		case BA_A_OVERMIND:
-		case BA_A_SPAWN:
-			return;
+		return;
 	}
 
 	if ( !G_FindCreep( self ) )
@@ -2223,11 +2223,6 @@ void G_SetHumanBuildablePowerState()
 			{
 				ent->powered = qtrue;
 			}
-
-			if ( ent->s.modelindex == BA_H_DRILL && !PowerSourceInRange( ent->s.origin ) )
-			{
-				ent->powered = qfalse;
-			}
 		}
 
 		// power down buildables that lack power, highest deficit first
@@ -2824,19 +2819,11 @@ void HMedistat_Think( gentity_t *self )
 		// restore health
 		if ( player->health < client->ps.stats[ STAT_MAX_HEALTH ] )
 		{
-			player->health++;
+			self->buildableStatsTotal += G_Heal( player, 1 );
 
-			self->buildableStatsTotal++;
-
-			// fully healed
+			// check if fully healed
 			if ( player->health == client->ps.stats[ STAT_MAX_HEALTH ] )
 			{
-				// clear rewards array
-				for ( playerNum = 0; playerNum < level.maxclients; playerNum++ )
-				{
-					player->credits[ playerNum ] = 0;
-				}
-
 				// give medikit
 				if ( !BG_InventoryContainsUpgrade( UP_MEDKIT, client->ps.stats ) )
 				{
@@ -3304,46 +3291,6 @@ void HDrill_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	G_RGSInformNeighbors( self );
 }
 
-//==================================================================================
-
-/*
-============
-G_QueueValue
-============
-*/
-
-static int QueueValue( gentity_t *self )
-{
-	int    i;
-	int    damageTotal = 0;
-	int    queuePoints;
-	float  queueFraction = 0;
-
-	for ( i = 0; i < level.maxclients; i++ )
-	{
-		gentity_t *player = g_entities + i;
-
-		damageTotal += self->credits[ i ];
-
-		if ( self->buildableTeam != player->client->pers.team )
-		{
-			queueFraction += self->credits[ i ];
-		}
-	}
-
-	if ( damageTotal > 0 )
-	{
-		queueFraction = queueFraction / damageTotal;
-	}
-	else // all damage was done by nonclients, so queue everything
-	{
-		queueFraction = 1.0;
-	}
-
-	queuePoints = ( int )( queueFraction * BG_Buildable( self->s.modelindex )->buildPoints );
-	return queuePoints;
-}
-
 /*
 ============
 G_BuildableTouchTriggers
@@ -3459,6 +3406,7 @@ void G_BuildableThink( gentity_t *ent, int msec )
 
 		if ( !ent->spawned && ent->health > 0 )
 		{
+			// don't use G_Heal so the rewards array isn't scaled/cleared
 			ent->health += ( int )( ceil( ( float ) maxHealth / ( float )( buildTime * 0.001f ) ) );
 		}
 		else if ( ent->health > 0 && ent->health < maxHealth )
@@ -3466,23 +3414,12 @@ void G_BuildableThink( gentity_t *ent, int msec )
 			if ( ent->buildableTeam == TEAM_ALIENS && regenRate &&
 			     ( ent->lastDamageTime + ALIEN_REGEN_DAMAGE_TIME ) < level.time )
 			{
-				ent->health += regenRate;
+				G_Heal( ent, regenRate );
 			}
 			else if ( ent->buildableTeam == TEAM_HUMANS && ent->dcc &&
 			          ( ent->lastDamageTime + HUMAN_REGEN_DAMAGE_TIME ) < level.time )
 			{
-				ent->health += DC_HEALRATE * ent->dcc;
-			}
-		}
-
-		if ( ent->health >= maxHealth )
-		{
-			int i;
-			ent->health = maxHealth;
-
-			for ( i = 0; i < MAX_CLIENTS; i++ )
-			{
-				ent->credits[ i ] = 0;
+				G_Heal( ent, DC_HEALRATE * ent->dcc );
 			}
 		}
 	}
@@ -4403,9 +4340,23 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 	if ( ( tempReason = PrepareBuildableReplacement( buildable, origin ) ) != IBE_NONE )
 	{
 		reason = tempReason;
-	}
 
-	if ( ent->client->pers.team == TEAM_ALIENS )
+		if ( reason == IBE_NOPOWERHERE || reason == IBE_DRILLPOWERSOURCE )
+		{
+			if ( !G_Reactor() )
+			{
+				reason = IBE_NOREACTOR;
+			}
+		}
+		else if ( reason == IBE_NOCREEP )
+		{
+			if ( !G_Overmind() )
+			{
+				reason = IBE_NOOVERMIND;
+			}
+		}
+	}
+	else if ( ent->client->pers.team == TEAM_ALIENS )
 	{
 		// Check for Overmind
 		if ( buildable != BA_A_OVERMIND )
@@ -4426,7 +4377,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 		}
 
 		// Check surface permissions
-		if ( (tr1.surfaceFlags & SURF_NOALIENBUILD) || (contents & CONTENTS_NOALIENBUILD) )
+		if ( (tr1.surfaceFlags & (SURF_NOALIENBUILD | SURF_NOBUILD)) || (contents & (CONTENTS_NOALIENBUILD | CONTENTS_NOBUILD)) )
 		{
 			reason = IBE_SURFACE;
 		}
@@ -4448,12 +4399,6 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 			}
 		}
 
-		// Drills need a close power source to work
-		if ( buildable == BA_H_DRILL && !PowerSourceInRange( origin ) )
-		{
-			reason = IBE_DRILLPOWERSOURCE;
-		}
-
 		// Check if buildable requires a DCC
 		if ( BG_Buildable( buildable )->dccTest && !G_IsDCCBuilt() )
 		{
@@ -4461,23 +4406,16 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 		}
 
 		// Check permissions
-		if ( (tr1.surfaceFlags & SURF_NOHUMANBUILD) || (contents & CONTENTS_NOHUMANBUILD) )
+		if ( (tr1.surfaceFlags & (SURF_NOHUMANBUILD | SURF_NOBUILD)) || (contents & (CONTENTS_NOHUMANBUILD | CONTENTS_NOBUILD)) )
 		{
 			reason = IBE_SURFACE;
 		}
-
 
 		// Check level permissions
 		if ( !g_humanAllowBuilding.integer )
 		{
 			reason = IBE_DISABLED;
 		}
-	}
-
-	// Check permission to build here
-	if ( (tr1.surfaceFlags & SURF_NOBUILD) || (contents & CONTENTS_NOBUILD) )
-	{
-		reason = IBE_SURFACE;
 	}
 
 	// Can we only have one of these?
@@ -4521,7 +4459,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 	}
 
 	//this item does not fit here
-	if ( reason == IBE_NONE && ( tr2.fraction < 1.0f || tr3.fraction < 1.0f ) )
+	if ( tr2.fraction < 1.0f || tr3.fraction < 1.0f )
 	{
 		reason = IBE_NOROOM;
 	}
@@ -4895,10 +4833,6 @@ qboolean G_BuildIfValid( gentity_t *ent, buildable_t buildable )
 
 		case IBE_NOPOWERHERE:
 			G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOPOWERHERE );
-			return qfalse;
-
-		case IBE_DRILLPOWERSOURCE:
-			G_TriggerMenu( ent->client->ps.clientNum, MN_H_DRILLPOWERSOURCE );
 			return qfalse;
 
 		case IBE_NOREACTOR:
@@ -5474,8 +5408,6 @@ void G_BuildLogSet( buildLog_t *log, gentity_t *ent )
 	VectorCopy( ent->s.angles, log->angles );
 	VectorCopy( ent->s.origin2, log->origin2 );
 	VectorCopy( ent->s.angles2, log->angles2 );
-	log->powerSource = ent->powerSource ? ent->powerSource->s.modelindex : BA_NONE;
-	log->powerValue = QueueValue( ent );
 }
 
 void G_BuildLogAuto( gentity_t *actor, gentity_t *buildable, buildFate_t fate )

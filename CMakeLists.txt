@@ -35,6 +35,7 @@ if( NOT DEFINED SUBSEQUENT_RUN )
 
   if( MSVC )
     set( CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /arch:SSE /fp:fast /Oy" CACHE STRING "Flags used by the compiler during release builds" FORCE )
+	set( CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO} /arch:SSE /fp:fast /d2Zi+" CACHE STRING "Flags used by the compiler during release builds with debug info" FORCE )
   else()
     if(NOT MINIMAL_FLAGS)
       # "gcc -msse2" fails on non-x86
@@ -764,14 +765,14 @@ set( GAME_VM_COMMON
 # Any .def files must come at the end of the file list otherwise they will be ignored
 set( CGAMEGPP_BASE
   ${GPP_DIR}/cgame/cg_main.c
-  ${GPP_DIR}/game/bg_misc.c
-  ${GPP_DIR}/game/bg_parse.c
-  ${GPP_DIR}/game/bg_pmove.c
-  ${GPP_DIR}/game/bg_slidemove.c
-  ${GPP_DIR}/game/bg_lib.c
-  ${GPP_DIR}/game/bg_alloc.c
-  ${GPP_DIR}/game/bg_voice.c
-  ${GPP_DIR}/game/bg_teamprogress.c
+  ${GPP_DIR}/shared/bg_misc.c
+  ${GPP_DIR}/shared/bg_parse.c
+  ${GPP_DIR}/shared/bg_pmove.c
+  ${GPP_DIR}/shared/bg_slidemove.c
+  ${GPP_DIR}/shared/bg_lib.c
+  ${GPP_DIR}/shared/bg_alloc.c
+  ${GPP_DIR}/shared/bg_voice.c
+  ${GPP_DIR}/shared/bg_teamprogress.c
   ${GPP_DIR}/cgame/cg_consolecmds.c
   ${GPP_DIR}/cgame/cg_buildable.c
   ${GPP_DIR}/cgame/cg_animation.c
@@ -815,14 +816,14 @@ set( CGAMEGPP_QVM
 
 set( GAMEGPP_BASE
   ${GPP_DIR}/game/g_main.c
-  ${GPP_DIR}/game/bg_misc.c
-  ${GPP_DIR}/game/bg_parse.c
-  ${GPP_DIR}/game/bg_pmove.c
-  ${GPP_DIR}/game/bg_slidemove.c
-  ${GPP_DIR}/game/bg_lib.c
-  ${GPP_DIR}/game/bg_alloc.c
-  ${GPP_DIR}/game/bg_voice.c
-  ${GPP_DIR}/game/bg_teamprogress.c
+  ${GPP_DIR}/shared/bg_misc.c
+  ${GPP_DIR}/shared/bg_parse.c
+  ${GPP_DIR}/shared/bg_pmove.c
+  ${GPP_DIR}/shared/bg_slidemove.c
+  ${GPP_DIR}/shared/bg_lib.c
+  ${GPP_DIR}/shared/bg_alloc.c
+  ${GPP_DIR}/shared/bg_voice.c
+  ${GPP_DIR}/shared/bg_teamprogress.c
   ${GPP_DIR}/game/g_active.c
   ${GPP_DIR}/game/g_client.c
   ${GPP_DIR}/game/g_cmds.c
@@ -876,11 +877,11 @@ set( UIGPP_BASE
   ${GPP_DIR}/ui/ui_atoms.c
   ${GPP_DIR}/ui/ui_shared.c
   ${GPP_DIR}/ui/ui_gameinfo.c
-  ${GPP_DIR}/game/bg_misc.c
-  ${GPP_DIR}/game/bg_parse.c
-  ${GPP_DIR}/game/bg_lib.c
-  ${GPP_DIR}/game/bg_alloc.c
-  ${GPP_DIR}/game/bg_teamprogress.c
+  ${GPP_DIR}/shared/bg_misc.c
+  ${GPP_DIR}/shared/bg_parse.c
+  ${GPP_DIR}/shared/bg_lib.c
+  ${GPP_DIR}/shared/bg_alloc.c
+  ${GPP_DIR}/shared/bg_teamprogress.c
   ${GPP_DIR}/ui/ui_utf8.c
   ${SHAREDLIST_C}
 )

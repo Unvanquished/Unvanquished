@@ -1244,12 +1244,13 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	// add preprocessor defines for use in the behavior tree
 	// add upgrades
 	D( UP_LIGHTARMOUR );
-	D( UP_HELMET );
-	D( UP_MEDKIT );
+	D( UP_MEDIUMARMOUR );
+	D( UP_BATTLESUIT );
+	D( UP_RADAR );
 	D( UP_BATTPACK );
 	D( UP_JETPACK );
-	D( UP_BATTLESUIT );
 	D( UP_GRENADE );
+	D( UP_MEDKIT );
 
 	// add weapons
 	D( WP_MACHINEGUN );
@@ -1305,7 +1306,9 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	D( PCL_ALIEN_LEVEL3 );
 	D( PCL_ALIEN_LEVEL3_UPG );
 	D( PCL_ALIEN_LEVEL4 );
-	D( PCL_HUMAN );
+	D( PCL_HUMAN_NAKED );
+	D( PCL_HUMAN_LIGHT );
+	D( PCL_HUMAN_MEDIUM );
 	D( PCL_HUMAN_BSUIT );
 	
 	D( MOVE_FORWARD );
