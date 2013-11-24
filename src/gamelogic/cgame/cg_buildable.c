@@ -583,7 +583,6 @@ void CG_InitBuildables( void )
 		else if ( cg_highPolyBuildableModels.integer && ( bi->models[ 0 ] = trap_R_RegisterModel( va( "models/buildables/%s/%s.md5mesh", buildableName, buildableName ) ) ) )
 		{
 			bi->md5 = qtrue;
-			iqm = qtrue;
 		}
 		else
 		{
@@ -607,7 +606,7 @@ void CG_InitBuildables( void )
 			{
 				if ( animLoading[ i ] & ( 1 << n ) )
 				{
-					if ( !CG_RegisterBuildableAnimation( bi, buildableName, n, animTypes[ n ].name, animTypes[ n ].loop, animTypes[ n ].reversed, animTypes[ n ].clearOrigin, qtrue ) )
+					if ( !CG_RegisterBuildableAnimation( bi, buildableName, n, animTypes[ n ].name, animTypes[ n ].loop, animTypes[ n ].reversed, animTypes[ n ].clearOrigin, iqm ) )
 					{
 						int o = (int) animTypes[ n ].fallback;
 
