@@ -978,7 +978,7 @@ void R_AddIQMSurfaces( trRefEntity_t *ent ) {
 			skin = R_GetSkinByHandle(ent->e.customSkin);
 			shader = tr.defaultShader;
 
-			if (*surface->name) {
+			if (surface->name && *surface->name) {
 				for(j = 0; j < skin->numSurfaces; j++)
 				{
 					if (!strcmp(skin->surfaces[j]->name, surface->name))
