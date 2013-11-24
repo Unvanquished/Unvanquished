@@ -3451,16 +3451,11 @@ void FS_AddGameDirectory( const char *path, const char *dir )
 		// The next .pk3 file is before the next .pk3dir
 		pakfile = FS_BuildOSPath( path, dir, pakfiles[ pakfilesi ] );
 
-		if ( !com_fullyInitialized )
-		{
-			Com_Printf( "    pk3: %s", pakfile );
-		}
-
 		if ( !( pak = FS_LoadZipFile( pakfile, pakfiles[ pakfilesi ] ) ) )
 		{
 			if ( !com_fullyInitialized )
 			{
-				Com_Printf( " ( ^1INVALID PK3 )\n" );
+				Com_Printf( "    pk3: %s ( ^1INVALID PK3 )\n", pakfile );
 			}
 			pakfilesi++;
 			continue;
@@ -3474,7 +3469,7 @@ void FS_AddGameDirectory( const char *path, const char *dir )
 
 		if ( !com_fullyInitialized )
 		{
-			Com_Printf( " ( %d files )\n", pak->numfiles );
+			Com_Printf( "    pk3: %s ( %d files )\n", pakfile, pak->numfiles );
 		}
 
 		search = ( searchpath_t * ) Z_Malloc( sizeof( searchpath_t ) );
