@@ -584,7 +584,14 @@ class ProxyCmd: public Cmd::CmdBase {
 
 		void Run(const Cmd::Args& args) const override {
 			proxyInfo_t proxy = proxies[args.Argv(0)];
-			proxy.cmd();
+			if (proxy.cmd != 0) {
+				proxy.cmd();
+			} else if (com_cl_running && com_cl_running->integer){
+				CL_GameCommand();
+				//The only case where we add commands without a function pointer is for cgame so that it can still have a completion handler.
+				return;
+			}
+
 		}
 
 		Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, const std::string& prefix) const override {
@@ -597,7 +604,14 @@ class ProxyCmd: public Cmd::CmdBase {
 			completedPrefix = prefix;
 			completeMatches.clear();
 			Q_strncpyz(buffer, args.ConcatArgs(0).c_str(), 4096);
+
+			//Some completion handlers expect tokenized arguments
+			Cmd::Args savedArgs = Cmd::GetCurrentArgs();
+			Cmd::SetCurrentArgs(args);
+
 			proxy.complete(buffer, argNum + 1);
+
+			Cmd::SetCurrentArgs(savedArgs);
 
 			return completeMatches;
 		}
@@ -617,12 +631,12 @@ Cmd_AddCommand
 */
 void Cmd_AddCommand( const char *cmd_name, xcommand_t function )
 {
-	if (function == 0) {
-		return; //It does happen.
-	}
-
 	proxies[cmd_name] = proxyInfo_t{function, NULL};
-	Cmd::AddCommand(cmd_name, myProxyCmd, "Calls some ugly C code to do something");
+
+	//VMs do not properly clean up commands so we avoid creating a command if there is already one
+	if (not Cmd::CommandExists(cmd_name)) {
+		Cmd::AddCommand(cmd_name, myProxyCmd, "Calls some ugly C code to do something");
+	}
 }
 
 /*
