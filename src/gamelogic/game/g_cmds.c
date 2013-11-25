@@ -595,7 +595,7 @@ void Cmd_Give_f( gentity_t *ent )
 	}
 
 	// give momentum
-	if ( Q_strnicmp( name, "momentum", 8 ) == 0 )
+	if ( Q_strnicmp( name, "momentum", strlen("momentum") ) == 0 )
 	{
 		if ( give_all || trap_Argc() < 3 )
 		{
@@ -603,7 +603,7 @@ void Cmd_Give_f( gentity_t *ent )
 		}
 		else
 		{
-			amount = atof( name + 11 );
+			amount = atof( name + strlen("momentum") + 1 );
 		}
 
 		G_AddMomentumGeneric( ent->client->pers.team, amount );
