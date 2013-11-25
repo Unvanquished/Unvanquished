@@ -54,19 +54,22 @@ static std::string libPath;
 static std::string homePath;
 
 // Clean up platform compatibility issues
-static FILE* my_fopen(Str::StringRef path, char modeChar)
+enum FileOpenMode {
+	MODE_READ,
+	MODE_WRITE,
+	MODE_APPEND
+};
+static FILE* my_fopen(Str::StringRef path, FileOpenMode mode)
 {
 #ifdef _WIN32
-	wchar_t mode[3] = L"xb";
-	mode[0] = modeChar;
-	return _wfopen(Str::UTF8To16(path).c_str(), mode);
+	const wchar_t* modes[] = {L"rb", L"wb", L"ab"};
+	return _wfopen(Str::UTF8To16(path).c_str(), modes[mode]);
 #else
-	char mode[3] = "xb";
-	mode[0] = modeChar;
+	const char* modes[] = {"rb", "wb", "ab"};
 #if defined(__APPLE__)
-	FILE* fd = fopen(path.c_str(), mode);
+	FILE* fd = fopen(path.c_str(), modes[mode]);
 #elif defined(__linux__)
-	FILE* fd = fopen64(path.c_str(), mode);
+	FILE* fd = fopen64(path.c_str(), modes[mode]);
 #endif
 
 	// Only allow opening regular files
@@ -202,7 +205,7 @@ static void SetErrorCodeZlib(std::error_code& err, int num)
 		SetErrorCode(err, num, minizip_category());
 }
 
-// Determine path to the executable
+// Determine path to the executable, default to current directory
 static std::string DefaultBasePath()
 {
 #ifdef _WIN32
@@ -275,7 +278,7 @@ static bool TestWritePermission(Str::StringRef path)
 {
 	// Create a temporary file in the path and then delete it
 	std::string fname = Path::Build(path, ".test_write_permission");
-	FILE *file = my_fopen(fname, 'w');
+	FILE *file = my_fopen(fname, MODE_WRITE);
 	if (!file)
 		return false;
 	fclose(file);
@@ -345,8 +348,9 @@ bool Path::IsValid(Str::StringRef path, bool allowDir)
 std::string Path::Build(Str::StringRef base, Str::StringRef path)
 {
 	if (base.empty())
-		return path.str();
-	std::string out = base.str();
+		return path;
+
+	std::string out = base;
 #ifdef _WIN32
 	if (out.back() != '/' && out.back() != '\\')
 #else
@@ -354,6 +358,36 @@ std::string Path::Build(Str::StringRef base, Str::StringRef path)
 #endif
 		out.push_back('/');
 	out.append(path.data(), path.size());
+	return out;
+}
+
+std::string Path::DirName(Str::StringRef path)
+{
+	std::string out = path;
+	if (path.empty())
+		return out;
+
+	// Trim to last slash, excluding any trailing slash
+	size_t lastSlash = out.rfind('/', out.back() == '/');
+	if (lastSlash == std::string::npos)
+		out.clear();
+	else
+		out.resize(lastSlash);
+
+	return out;
+}
+
+std::string Path::BaseName(Str::StringRef path)
+{
+	std::string out = path;
+	if (path.empty())
+		return out;
+
+	// Trim from last slash, excluding any trailing slash
+	size_t lastSlash = out.rfind('/', out.back() == '/');
+	if (lastSlash != std::string::npos)
+		out.erase(0, lastSlash + 1);
+
 	return out;
 }
 
@@ -539,7 +573,7 @@ public:
 		};
 
 		// Open the file
-		FILE* fd = my_fopen(path, 'r');
+		FILE* fd = my_fopen(path, MODE_READ);
 		if (!fd) {
 			SetErrorCodeSystem(err);
 			return ZipArchive();
@@ -593,12 +627,22 @@ public:
 	// Read from the currently open file
 	size_t ReadFile(void* buffer, size_t length, std::error_code& err) const
 	{
-		int result = unzReadCurrentFile(zipFile, buffer, length);
-		if (result < 0)
-			SetErrorCodeZlib(err, result);
-		else
-			ClearErrorCode(err);
-		return result;
+		// zlib read returns an int, which means that we can only read 2G at once
+		size_t read = 0;
+		while (read != length) {
+			size_t currentRead = std::max<size_t>(length - read, INT_MAX);
+			int result = unzReadCurrentFile(zipFile, buffer, currentRead);
+			if (result < 0) {
+				SetErrorCodeZlib(err, result);
+				return read;
+			}
+			if (result == 0)
+				break;
+			buffer = static_cast<char*>(buffer) + result;
+			read += result;
+		}
+		ClearErrorCode(err);
+		return read;
 	}
 
 	// Close the currently open file and check for CRC errors
@@ -814,12 +858,49 @@ PakNamespace::RecursiveDirectoryRange PakNamespace::ListFilesRecursive(Str::Stri
 
 namespace RawPath {
 
-static File OpenMode(Str::StringRef path, char mode, std::error_code& err)
+// Create all directories leading to a filename
+static void CreatePath(Str::StringRef path, std::error_code& err)
+{
+	std::string buffer = path;
+
+	for (char& c: buffer) {
+#ifdef _WIN32
+		if (c != '/' && c != '\\')
+			continue
+#else
+		if (c != '/')
+			continue;
+#endif
+		c = '\0';
+#ifdef _WIN32
+		if (_wmkdir(Str::UTF8To16(buffer.data()).c_str()) != 0 && errno != EEXIST) {
+			SetErrorCodeSystem(err);
+			return;
+		}
+		c = '\\';
+#else
+		if (mkdir(buffer.data(), 0777) != 0 && errno != EEXIST) {
+			SetErrorCodeSystem(err);
+			return;
+		}
+		c = '/';
+#endif
+	}
+}
+
+static File OpenMode(Str::StringRef path, FileOpenMode mode, std::error_code& err)
 {
 	FILE* fd = my_fopen(path, mode);
+	if (!fd && mode != MODE_READ && errno == ENOENT) {
+		// Create the directories and try again
+		CreatePath(path, err);
+		if (err)
+			return {};
+		fd = my_fopen(path, mode);
+	}
 	if (!fd) {
 		SetErrorCodeSystem(err);
-		return nullptr;
+		return {};
 	} else {
 		ClearErrorCode(err);
 		return File(fd);
@@ -827,15 +908,15 @@ static File OpenMode(Str::StringRef path, char mode, std::error_code& err)
 }
 File OpenRead(Str::StringRef path, std::error_code& err)
 {
-	return OpenMode(path, 'r', err);
+	return OpenMode(path, MODE_READ, err);
 }
 File OpenWrite(Str::StringRef path, std::error_code& err)
 {
-	return OpenMode(path, 'w', err);
+	return OpenMode(path, MODE_WRITE, err);
 }
 File OpenAppend(Str::StringRef path, std::error_code& err)
 {
-	return OpenMode(path, 'a', err);
+	return OpenMode(path, MODE_APPEND, err);
 }
 
 bool FileExists(Str::StringRef path)
@@ -865,22 +946,39 @@ void MoveFile(Str::StringRef dest, Str::StringRef src, std::error_code& err)
 	else
 		ClearErrorCode(err);
 #else
-	if (rename(src.c_str(), dest.c_str()) != 0)
-		SetErrorCodeSystem(err);
-	else
+	if (rename(src.c_str(), dest.c_str()) != 0) {
+		// Copy the file if the destination is on a different filesystem
+		File srcFile = OpenRead(src, err);
+		if (HaveError(err))
+			return;
+		File destFile = OpenWrite(src, err);
+		if (HaveError(err))
+			return;
+		srcFile.CopyTo(destFile, err);
+		if (HaveError(err))
+			return;
+		destFile.Close(err);
+		if (HaveError(err))
+			return;
+		DeleteFile(src, err);
+	} else
 		ClearErrorCode(err);
 #endif
 }
+
 void DeleteFile(Str::StringRef path, std::error_code& err)
 {
 #ifdef _WIN32
-	if (_wunlink(Str::UTF8To16(path).c_str()) != 0)
+	if (!DeleteFileW(Str::UTF8To16(path).c_str()))
+		SetErrorCode(err, GetLastError(), std::system_category());
+	else
+		ClearErrorCode(err);
 #else
 	if (unlink(path.c_str()) != 0)
-#endif
 		SetErrorCodeSystem(err);
 	else
 		ClearErrorCode(err);
+#endif
 }
 
 bool DirectoryRange::Advance(std::error_code& err)
@@ -917,7 +1015,7 @@ bool DirectoryRange::Advance(std::error_code& err)
 		}
 	} while (!Path::IsValid(dirent->d_name, false) || my_stat(Path::Build(path, dirent->d_name), &st) != 0);
 	current = dirent->d_name;
-	if (S_ISDIR(st.st_mode))
+	if (!S_ISREG(st.st_mode))
 		current.push_back('/');
 	ClearErrorCode(err);
 	return true;
@@ -1027,17 +1125,23 @@ RecursiveDirectoryRange ListFilesRecursive(Str::StringRef path, std::error_code&
 
 namespace HomePath {
 
+static File OpenMode(Str::StringRef path, FileOpenMode mode, std::error_code& err)
+{
+	if (!Path::IsValid(path, false))
+		return {};
+	return RawPath::OpenMode(Path::Build(homePath, path), mode, err);
+}
 File OpenRead(Str::StringRef path, std::error_code& err)
 {
-	return RawPath::OpenMode(Path::Build(homePath, path), 'r', err);
+	return OpenMode(path, MODE_READ, err);
 }
 File OpenWrite(Str::StringRef path, std::error_code& err)
 {
-	return RawPath::OpenMode(Path::Build(homePath, path), 'w', err);
+	return OpenMode(path, MODE_WRITE, err);
 }
 File OpenAppend(Str::StringRef path, std::error_code& err)
 {
-	return RawPath::OpenMode(Path::Build(homePath, path), 'a', err);
+	return OpenMode(path, MODE_APPEND, err);
 }
 
 bool FileExists(Str::StringRef path)

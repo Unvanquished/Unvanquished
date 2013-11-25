@@ -31,7 +31,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #include <string>
 #include <memory>
 #include <unordered_map>
-#include "../../shared/String.h"
+#include "../../common/String.h"
 
 namespace FS {
 
@@ -52,7 +52,7 @@ class File {
 public:
 	File()
 		: fd(nullptr) {}
-	File(FILE* fd)
+	explicit File(FILE* fd)
 		: fd(fd) {}
 
 	// Files are noncopyable but movable
@@ -123,10 +123,25 @@ namespace Path {
 	// - A path element may not contain two successive -_. characters
 	// Note that paths are validated in all filesystem functions, so manual
 	// validation is usually not required.
+	// Implicitly disallows the following:
+	// - Special files . and ..
+	// - Absolute paths starting with /
 	bool IsValid(Str::StringRef path, bool allowDir);
 
 	// Build a path from components
 	std::string Build(Str::StringRef base, Str::StringRef path);
+
+	// Get the directory portion of a path:
+	// a/b/c => a/b/
+	// a/b/ => a/
+	// a => ""
+	std::string DirName(Str::StringRef path);
+
+	// Get the filename portion of a path
+	// a/b/c => c
+	// a/b/ => b/
+	// a => a
+	std::string BaseName(Str::StringRef path);
 
 } // namespace Path
 
