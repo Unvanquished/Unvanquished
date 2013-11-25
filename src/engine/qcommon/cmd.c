@@ -575,6 +575,8 @@ char* completeArgs = NULL;
 int completeArgNum = 0;
 
 Cmd::CompletionResult completeMatches;
+std::string completedPrefix;
+
 //Is registered in the new command system for all the commands registered through the C interface.
 class ProxyCmd: public Cmd::CmdBase {
 	public:
@@ -592,8 +594,8 @@ class ProxyCmd: public Cmd::CmdBase {
 			if (!proxy.complete) {
 				return {};
 			}
+			completedPrefix = prefix;
 			completeMatches.clear();
-			//Amanieu: This is broken...
 			Q_strncpyz(buffer, args.ConcatArgs(0).c_str(), 4096);
 			proxy.complete(buffer, argNum + 1);
 
@@ -604,7 +606,9 @@ class ProxyCmd: public Cmd::CmdBase {
 ProxyCmd myProxyCmd;
 
 void Cmd_OnCompleteMatch(const char* s) {
-    completeMatches.push_back({s, ""});
+    if (Str::IsIPrefix(completedPrefix, s)) {
+        completeMatches.push_back({s, ""});
+    }
 }
 /*
 ============

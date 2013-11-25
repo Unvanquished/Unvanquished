@@ -161,12 +161,9 @@ namespace Cmd {
     void ExecuteCommand(Str::StringRef command, bool parseCvars, Environment* env) {
         CommandMap& commands = GetCommandMap();
 
+        commandLog.Debug("Execing command '%s'", command);
         if (not env) {
-            commandLog.Debug("Execing command '%s'", command);
             env = &defaultEnv;
-        } else {
-            commandLog.Debug("Execing command '%s'", command);
-            //commandLog.Debug("Execing, in environment %s, command '%s'", env->GetName(), command);
         }
 
         std::string parsedString;
@@ -214,6 +211,8 @@ namespace Cmd {
 
     CompletionResult CompleteArgument(const Args& args, int argNum) {
         CommandMap& commands = GetCommandMap();
+
+        commandLog.Debug("Completing argument %i of '%s'", argNum, args.ConcatArgs(0));
 
         if (args.Argc() == 0) {
             return {};
