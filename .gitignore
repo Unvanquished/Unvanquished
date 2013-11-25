@@ -33,6 +33,10 @@ Debug
 .cproject
 .settings
 
+#ignore external deps
+external_deps/*
+!external_deps/build.sh
+
 #never ignore these in subdirectories by accident
 !.gitattributes
 !.gitignore
