@@ -95,16 +95,19 @@ static qboolean Disabled( unlockable_t *unlockable )
 	return qfalse;
 }
 
+#ifdef CGAME
 static void InformUnlockableStatusChange( unlockable_t *unlockable, qboolean unlocked )
 {
 }
+#endif // CGAME
 
+#ifdef CGAME
 static void InformUnlockableStatusChanges( int *statusChanges, int count )
 {
 	char         text[ MAX_STRING_CHARS ];
 	char         *textptr = text;
 	int          unlockableNum;
-	qboolean     firstPass = qtrue;
+	qboolean     firstPass = qtrue, unlocked = qtrue;
 	unlockable_t *unlockable;
 
 	for ( unlockableNum = 0; unlockableNum < NUM_UNLOCKABLES; unlockableNum++ )
@@ -125,6 +128,7 @@ static void InformUnlockableStatusChanges( int *statusChanges, int count )
 			}
 			else
 			{
+				unlocked = qfalse;
 				Com_sprintf( text, sizeof( text ),
 				             S_COLOR_RED   "ITEM%s LOCKED: "   S_COLOR_WHITE, ( count > 1 ) ? "S" : "" );
 			}
@@ -142,9 +146,28 @@ static void InformUnlockableStatusChanges( int *statusChanges, int count )
 		textptr += strlen( textptr );
 	}
 
-	Com_Printf( "%s\n", text );
-}
+	// TODO: Add sound for items being locked for each team
+	switch ( cg.snap->ps.persistant[ PERS_TEAM ] )
+	{
+		case TEAM_ALIENS:
+			if ( unlocked )
+			{
+				trap_S_StartLocalSound( cgs.media.weHaveEvolved, CHAN_ANNOUNCER );
+			}
+			break;
 
+		case TEAM_HUMANS:
+		default:
+			if ( unlocked )
+			{
+				trap_S_StartLocalSound( cgs.media.reinforcement, CHAN_ANNOUNCER );
+			}
+			break;
+	}
+
+	CG_CenterPrint( text, SCREEN_HEIGHT * 0.3, GIANTCHAR_WIDTH * 2 );
+}
+#endif // CGAME
 
 static INLINE qboolean Unlocked( unlockableType_t type, int itemNum )
 {
@@ -325,7 +348,7 @@ void BG_ImportUnlockablesFromMask( team_t team, int mask )
 			newStatus = mask & ( 1 << teamUnlockableNum );
 
 #ifdef CGAME
-			// inform client on status change
+			// notify client about single status change
 			if ( unlockablesTeamKnowledge == team && unlockable->statusKnown &&
 			     unlockable->unlocked != newStatus )
 			{
@@ -351,7 +374,7 @@ void BG_ImportUnlockablesFromMask( team_t team, int mask )
 	}
 
 #ifdef CGAME
-	// notify client about status changes
+	// notify client about all status changes
 	if ( statusChangeCount )
 	{
 		InformUnlockableStatusChanges( statusChanges, statusChangeCount );
