@@ -4376,8 +4376,8 @@ void CG_OwnerDraw( rectDef_t *rect, float text_x,
 			CG_DrawKiller( rect, scale, foreColor, textStyle );
 			break;
 
-		case CG_PLAYER_SELECT:
-			CG_DrawItemSelect( rect, foreColor );
+		case CG_PLAYER_HUMAN_INVENTORY:
+			CG_DrawHumanInventory( rect, backColor, foreColor );
 			break;
 
 		case CG_PLAYER_WEAPONICON:

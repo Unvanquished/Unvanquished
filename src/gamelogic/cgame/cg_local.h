@@ -1834,7 +1834,7 @@ void CG_HandleMissileHitWall( entityState_t *es, vec3_t origin );
 
 void CG_AddViewWeapon( playerState_t *ps );
 void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent );
-void CG_DrawItemSelect( rectDef_t *rect, vec4_t color );
+void CG_DrawHumanInventory(rectDef_t *rect, vec4_t backColor, vec4_t foreColor );
 void CG_DrawItemSelectText( rectDef_t *rect, float scale, int textStyle );
 
 //

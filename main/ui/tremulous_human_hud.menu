@@ -308,25 +308,14 @@ menuDef
 
 	itemDef
 	{
-		name "selected"
-		rect 0 209 20 20
-		aspectBias ALIGN_LEFT
-		visible MENU_TRUE
-		decoration
-		forecolor .15 .44 .49 .7
-		style WINDOW_STYLE_SHADER
-		background "ui/assets/human/buildstat/health.tga"
-	}
-
-	itemDef
-	{
 		name "inventory"
 		rect 0 62.5 25 275
 		aspectBias ALIGN_LEFT
 		visible MENU_TRUE
 		decoration
 		forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 1
-		ownerdraw CG_PLAYER_SELECT
+		backColor 0.15 0.44 0.49 0.55
+		ownerdraw CG_PLAYER_HUMAN_INVENTORY
 	}
 
 	itemDef
