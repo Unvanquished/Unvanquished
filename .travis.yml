@@ -14,7 +14,7 @@ install:
 script:
   - mkdir build
   - cd build
-  - cmake -DCMAKE_BUILD_TYPE=Debug ..
+  - cmake -DCMAKE_BUILD_TYPE=Debug -DUSE_SDL2=OFF ..
   - cmake --build .
 
 notifications:
