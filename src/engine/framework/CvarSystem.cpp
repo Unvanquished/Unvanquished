@@ -171,7 +171,7 @@ namespace Cvar {
         if (it == cvars.end()) {
             //The user creates a new cvar through a command.
             cvars[cvarName] = new cvarRecord_t{value, value, flags | CVAR_USER_CREATED, "user created", nullptr, {}};
-            Cmd::AddCommand(cvarName, cvarCommand, "user created");
+            Cmd::AddCommand(cvarName, cvarCommand, "cvar - user created");
             GetCCvar(cvarName, *cvars[cvarName]);
 
         } else {
@@ -239,7 +239,7 @@ namespace Cvar {
             cvars[name] = new cvarRecord_t{defaultValue, defaultValue, flags, description, proxy, {}};
 
             GetCCvar(name, *cvars[name]);
-            Cmd::AddCommand(name, cvarCommand, std::move(description));
+            Cmd::AddCommand(name, cvarCommand, "cvar - " + std::move(description));
 
         } else {
             cvarRecord_t* cvar = it->second;

@@ -641,7 +641,7 @@ void Cmd_AddCommand( const char *cmd_name, xcommand_t function )
 
 	//VMs do not properly clean up commands so we avoid creating a command if there is already one
 	if (not Cmd::CommandExists(cmd_name)) {
-		Cmd::AddCommand(cmd_name, myProxyCmd, "Calls some ugly C code to do something");
+		Cmd::AddCommand(cmd_name, myProxyCmd, "--");
 	}
 }
 
