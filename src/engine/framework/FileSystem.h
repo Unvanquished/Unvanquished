@@ -201,22 +201,17 @@ enum pakType_t {
 	PAK_DIR // Directory
 };
 
-// Name, version and checksum used to describe a pak file
-struct PakDesc {
+// Information about a package
+struct PakInfo {
 	// Base name of the pak, may include directories
 	std::string name;
 
 	// Version of the pak
 	std::string version;
 
-	// Checksum of the pak
-	std::string checksum;
-};
-
-// Information about a loaded pak
-struct LoadedPak {
-	// Pak information
-	PakDesc pak;
+	// CRC32 checksum of the pak
+	bool hasChecksum;
+	uint32_t checksum;
 
 	// Type of pak
 	pakType_t type;
@@ -228,7 +223,7 @@ struct LoadedPak {
 // A namespace is a set of pak files which contain files
 class PakNamespace {
 	struct pakFileInfo_t {
-		LoadedPak* pak; // Points to an element in the pakList vector
+		PakInfo* pak; // Points to an element in the pakList vector
 		offset_t offset;
 	};
 	typedef std::unordered_map<std::string, pakFileInfo_t> fileMap_t;
@@ -256,17 +251,17 @@ class PakNamespace {
 		std::string prefix;
 		fileMap_t::const_iterator iter, iter_end;
 	};
-	std::vector<LoadedPak> pakList;
+	std::vector<PakInfo> pakList;
 	fileMap_t fileMap;
 
 public:
 	// Load a pak into the namespace with all its dependencies
 	bool LoadPak(Str::StringRef name);
 	bool LoadPak(Str::StringRef name, Str::StringRef version);
-	bool LoadPak(Str::StringRef name, Str::StringRef version, Str::StringRef checksum);
+	bool LoadPak(Str::StringRef name, Str::StringRef version, uint32_t checksum);
 
 	// Get a list of all the loaded paks
-	const std::vector<LoadedPak>& GetLoadedPaks() const
+	const std::vector<PakInfo>& GetLoadedPaks() const
 	{
 		return pakList;
 	}
@@ -281,7 +276,7 @@ public:
 	bool FileExists(Str::StringRef path) const;
 
 	// Get the pak a file is in
-	const LoadedPak* LocateFile(Str::StringRef path, std::error_code& err = throws()) const;
+	const PakInfo* LocateFile(Str::StringRef path, std::error_code& err = throws()) const;
 
 	// Get the timestamp of a file
 	time_t FileTimestamp(Str::StringRef path, std::error_code& err = throws()) const;
@@ -396,6 +391,9 @@ namespace HomePath {
 
 // Initialize the filesystem and the main paths
 void Initialize();
+
+// Refresh the list of available paks
+void RefreshPaks();
 
 // Get the home path
 const std::string& GetHomePath();

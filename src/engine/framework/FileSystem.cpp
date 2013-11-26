@@ -53,13 +53,16 @@ static std::string libPath;
 // Home path
 static std::string homePath;
 
+// List of available paks
+static std::vector<PakInfo> pakList;
+
 // Clean up platform compatibility issues
-enum FileOpenMode {
+enum openMode_t {
 	MODE_READ,
 	MODE_WRITE,
 	MODE_APPEND
 };
-static FILE* my_fopen(Str::StringRef path, FileOpenMode mode)
+static FILE* my_fopen(Str::StringRef path, openMode_t mode)
 {
 #ifdef _WIN32
 	const wchar_t* modes[] = {L"rb", L"wb", L"ab"};
@@ -273,6 +276,16 @@ static std::string DefaultHomePath()
 #endif
 }
 
+// Determine whether a character is a OS-dependent path separator
+inline bool isdirsep(char c)
+{
+#ifdef _WIN32
+	return c == '/' || c == '\\';
+#else
+	return c == '/';
+#endif
+}
+
 // Test a directory for write permission
 static bool TestWritePermission(Str::StringRef path)
 {
@@ -309,6 +322,136 @@ void Initialize()
 		pakPaths.push_back(basePath);
 	if (extraPath[0] && extraPath != basePath && extraPath != homePath)
 		pakPaths.push_back(extraPath);
+}
+
+// Add a pak to the list of available paks
+static void AddPak(pakType_t type, Str::StringRef filename, Str::StringRef path)
+{
+	// The pak name doesn't need to be checked because this is done by ListFiles.
+	// Just split the path at the first _ to get the name and version
+	size_t underscore = filename.find('_');
+	std::string name, version;
+	if (underscore != std::string::npos) {
+		version = filename.substr(underscore + 1);
+		name = filename.substr(0, underscore);
+	} else {
+		name = filename;
+		version = "";
+	}
+	pakList.push_back({name, version, false, 0, type, Path::Build(path, filename)});
+}
+
+// Find all paks in the given path
+static void FindPaks(Str::StringRef path)
+{
+	try {
+		for (auto& subPath: RawPath::ListFiles(path)) {
+			if (Str::IsSuffix(".pk3", subPath)) {
+				AddPak(PAK_ZIP, subPath, path);
+			} else if (Str::IsSuffix(".pk3dir/", subPath)) {
+				AddPak(PAK_DIR, subPath, path);
+			} else if (Str::IsSuffix("/", subPath))
+				FindPaks(Path::Build(path, subPath));
+		}
+	} catch (...) {
+		// If there was an error reading a directory, just ignore it and go to
+		// the next one.
+	}
+}
+
+// Locale-independent versions of ctype
+inline bool cisdigit(char c)
+{
+	return c >= '0' && c <= '9';
+}
+inline bool cisupper(char c)
+{
+	return c >= 'A' && c <= 'Z';
+}
+inline bool cislower(char c)
+{
+	return c >= 'a' && c <= 'z';
+}
+inline bool cisalpha(char c)
+{
+	return cisupper(c) || cislower(c);
+}
+
+// Comparaison function for version numbers
+// Implementation is based on dpkg's version comparison code (verrevcmp() and order())
+// http://anonscm.debian.org/gitweb/?p=dpkg/dpkg.git;a=blob;f=lib/dpkg/version.c;hb=74946af470550a3295e00cf57eca1747215b9311
+static int VersionCmp(Str::StringRef aStr, Str::StringRef bStr)
+{
+	// Character weight
+	auto order = [](char c) -> int {
+		if (cisdigit(c))
+			return 0;
+		else if (cisalpha(c))
+			return c;
+		else if (c)
+			return c + 256;
+		else
+			return 0;
+	};
+
+	const char* a = aStr.c_str();
+	const char* b = bStr.c_str();
+
+	while (*a || *b) {
+		int firstDiff = 0;
+
+		while ((*a && !cisdigit(*a)) || (*b && !cisdigit(*b))) {
+			int ac = order(*a);
+			int bc = order(*b);
+
+			if (ac != bc)
+				return ac - bc;
+
+			a++;
+			b++;
+		}
+
+		while (*a == '0')
+			a++;
+		while (*b == '0')
+			b++;
+
+		while (cisdigit(*a) && cisdigit(*b)) {
+			if (firstDiff == 0)
+				firstDiff = *a - *b;
+			a++;
+			b++;
+		}
+
+		if (cisdigit(*a))
+			return 1;
+		if (cisdigit(*b))
+			return -1;
+		if (firstDiff)
+			return firstDiff;
+	}
+
+	return false;
+}
+
+void RefreshPaks()
+{
+	pakList.clear();
+	for (auto& path: pakPaths)
+		FindPaks(Path::Build(path, "pkg"));
+	std::sort(pakList.begin(), pakList.end(), [](const PakInfo& a, const PakInfo& b) {
+		int result = a.name.compare(b.name);
+		if (result != 0)
+			return result < 0;
+		result = VersionCmp(a.version, b.version);
+		if (result != 0)
+			return result < 0;
+		if (!a.hasChecksum)
+			return true;
+		if (!b.hasChecksum)
+			return false;
+		return a.checksum < b.checksum;
+	});
 }
 
 const std::string& GetHomePath()
@@ -762,7 +905,7 @@ bool PakNamespace::FileExists(Str::StringRef path) const
 	return fileMap.find(path) != fileMap.end();
 }
 
-const LoadedPak* PakNamespace::LocateFile(Str::StringRef path, std::error_code& err) const
+const PakInfo* PakNamespace::LocateFile(Str::StringRef path, std::error_code& err) const
 {
 	auto it = fileMap.find(path);
 	if (it == fileMap.end()) {
@@ -888,7 +1031,7 @@ static void CreatePath(Str::StringRef path, std::error_code& err)
 	}
 }
 
-static File OpenMode(Str::StringRef path, FileOpenMode mode, std::error_code& err)
+static File OpenMode(Str::StringRef path, openMode_t mode, std::error_code& err)
 {
 	FILE* fd = my_fopen(path, mode);
 	if (!fd && mode != MODE_READ && errno == ENOENT) {
@@ -1125,7 +1268,7 @@ RecursiveDirectoryRange ListFilesRecursive(Str::StringRef path, std::error_code&
 
 namespace HomePath {
 
-static File OpenMode(Str::StringRef path, FileOpenMode mode, std::error_code& err)
+static File OpenMode(Str::StringRef path, openMode_t mode, std::error_code& err)
 {
 	if (!Path::IsValid(path, false))
 		return {};

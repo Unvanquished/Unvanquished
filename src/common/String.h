@@ -33,6 +33,8 @@ namespace Str {
 
     template<typename T> class BasicStringRef {
     public:
+        static const size_t npos = -1;
+
         BasicStringRef(const std::basic_string<T>& other)
         {
             ptr = other.c_str();
@@ -91,6 +93,32 @@ namespace Str {
             return len;
         }
 
+        std::basic_string<T> substr(size_t pos = 0, size_t count = npos)
+        {
+            if (count == npos)
+                count = std::max<size_t>(len - pos, 0);
+            return std::basic_string<T>(ptr + pos, count);
+        }
+
+        size_t find(BasicStringRef str, size_t pos = 0)
+        {
+            if (pos > len)
+                return npos;
+            const T* result = std::search(ptr + pos, ptr + len, str.ptr, str.ptr + str.len);
+            if (result == ptr + len)
+                return npos;
+            return result - ptr;
+        }
+        size_t find(T chr, size_t pos = 0)
+        {
+            if (pos >= len)
+                return npos;
+            const T* result = std::char_traits<T>::find(ptr + pos, len - pos, chr);
+            if (result == nullptr)
+                return npos;
+            return result - ptr;
+        }
+
         int compare(BasicStringRef other) const
         {
             int result = std::char_traits<T>::compare(ptr, other.ptr, std::min(len, other.len));
@@ -127,6 +155,19 @@ namespace Str {
         {
             return stream << str.c_str();
         }
+        friend std::basic_string<T> operator+(BasicStringRef a, BasicStringRef b)
+        {
+            std::basic_string<T> out;
+            out.reserve(a.size() + b.size());
+            out.append(a.data(), a.size());
+            out.append(b.data(), b.size());
+            return out;
+        }
+        friend std::basic_string<T> operator+(std::basic_string<T>&& a, BasicStringRef b)
+        {
+            a.append(b.data(), b.size());
+            return std::move(a);
+        }
 
     private:
         const T* ptr;
@@ -140,6 +181,7 @@ namespace Str {
     std::string Lower(Str::StringRef text);
 
     bool IsPrefix(Str::StringRef prefix, Str::StringRef text);
+    bool IsSuffix(Str::StringRef suffix, Str::StringRef text);
     int LongestPrefixSize(Str::StringRef text1, Str::StringRef text2);
 
     // Case Insensitive versions
