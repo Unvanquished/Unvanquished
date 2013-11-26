@@ -2535,9 +2535,9 @@ void Com_PushEvent( sysEvent_t *event )
 	if ( com_pushedEventsHead - com_pushedEventsTail >= MAX_PUSHED_EVENTS )
 	{
 		// don't print the warning constantly, or it can give time for more...
-		if ( !printedWarning )
+		if ( !printedWarning || !--printedWarning )
 		{
-			printedWarning = qtrue;
+			printedWarning = 64;
 			Com_Printf( "WARNING: Com_PushEvent overflow\n" );
 		}
 
@@ -2550,7 +2550,7 @@ void Com_PushEvent( sysEvent_t *event )
 	}
 	else
 	{
-		printedWarning = qfalse;
+		printedWarning && --printedWarning;
 	}
 
 	*ev = *event;
