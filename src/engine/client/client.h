@@ -862,7 +862,7 @@ void     CL_CGameStats( void );
 void     CL_InitCGame( void );
 void     CL_InitCGameCVars( void );
 void     CL_ShutdownCGame( void );
-qboolean CL_GameCommand( void );
+void     CL_GameCommandHandler( void );
 qboolean CL_GameConsoleText( void );
 void     CL_CGameRendering( stereoFrame_t stereo );
 void     CL_SetCGameTime( void );
@@ -879,6 +879,7 @@ void CL_InitUI( void );
 void CL_ShutdownUI( void );
 int  Key_GetCatcher( void );
 void Key_SetCatcher( int catcher );
+void UI_GameCommandHandler( void );
 void LAN_LoadCachedServers( void );
 void LAN_SaveServersToCache( void );
 

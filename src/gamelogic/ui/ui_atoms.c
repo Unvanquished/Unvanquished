@@ -265,6 +265,15 @@ qboolean UI_ConsoleCommand( int realTime )
 	return qfalse;
 }
 
+void UI_RegisterCommands()
+{
+	unsigned i;
+	for ( i = 0; i < ARRAY_LEN( commands ); i++ )
+	{
+		trap_AddCommand( commands[ i ].cmd );
+	}
+}
+
 void UI_DrawNamedPic( float x, float y, float width, float height, const char *picname )
 {
 	qhandle_t hShader;

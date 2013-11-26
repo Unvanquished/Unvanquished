@@ -1474,23 +1474,6 @@ void CL_InitUI( void )
 
 /*
 ====================
-UI_GameCommand
-
-See if the current console command is claimed by the ui
-====================
-*/
-qboolean UI_GameCommand( void )
-{
-	if ( !uivm )
-	{
-		return qfalse;
-	}
-
-	return VM_Call( uivm, UI_CONSOLE_COMMAND, cls.realtime );
-}
-
-/*
-====================
 UI_GameCommandHandler
 ====================
 */

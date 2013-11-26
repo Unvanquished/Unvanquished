@@ -5129,6 +5129,7 @@ void UI_Init( void )
 	BG_InitAllowedGameElements();
 
 	UI_RegisterCvars();
+	UI_RegisterCommands();
 
 	// cache redundant calulations
 	trap_GetGlconfig( &uiInfo.uiDC.glconfig );

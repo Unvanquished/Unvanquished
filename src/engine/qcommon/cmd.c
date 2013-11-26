@@ -235,6 +235,19 @@ char *Cmd_ArgsFrom( int arg )
 
 /*
 ============
+Cmd_LiteralArgsBuffer
+============
+*/
+
+void Cmd_LiteralArgsBuffer( char* buffer, int bufferLength )
+{
+	const Cmd::Args& args = Cmd::GetCurrentArgs();
+	const std::string& res = args.ConcatArgs(0);
+	Q_strncpyz( buffer, res.c_str(), bufferLength );
+}
+
+/*
+============
 Cmd_Args
 
 Returns a single string containing argv(1) to argv(argc()-1)
@@ -584,14 +597,7 @@ class ProxyCmd: public Cmd::CmdBase {
 
 		void Run(const Cmd::Args& args) const override {
 			proxyInfo_t proxy = proxies[args.Argv(0)];
-			if (proxy.cmd != 0) {
-				proxy.cmd();
-			} else if (com_cl_running && com_cl_running->integer){
-				CL_GameCommand();
-				//The only case where we add commands without a function pointer is for cgame so that it can still have a completion handler.
-				return;
-			}
-
+			proxy.cmd();
 		}
 
 		Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, const std::string& prefix) const override {
