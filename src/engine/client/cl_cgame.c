@@ -269,7 +269,7 @@ CL_AddCgameCommand
 */
 void CL_AddCgameCommand( const char *cmdName )
 {
-	Cmd_AddCommand( cmdName, NULL );
+	Cmd_AddCommand( cmdName, CL_GameCommandHandler );
 	Cmd_SetCommandCompletionFunc( cmdName, CL_CompleteCgameCommand );
 }
 
@@ -609,6 +609,7 @@ void CL_ShutdownCGame( void )
 	VM_Call( cgvm, CG_SHUTDOWN );
 	VM_Free( cgvm );
 	cgvm = NULL;
+	Cmd_RemoveCommandsByFunc( CL_GameCommandHandler );
 }
 
 static int FloatAsInt( float f )
@@ -1618,6 +1619,22 @@ qboolean CL_GameCommand( void )
 	}
 
 	return VM_Call( cgvm, CG_CONSOLE_COMMAND );
+}
+
+/*
+====================
+CL_GameCommandHandler
+====================
+*/
+void CL_GameCommandHandler( void )
+{
+	//When the commands is registered for cgame and not actually implemented in cgame
+	//it means it is just to allow autocompletion of remote commands. cf CG_InitConsoleCommands.
+	//This is a terrible hack that forwards the command to the server
+	//TODO: change the gamelogic to fix this hack
+	if( !VM_Call( cgvm, CG_CONSOLE_COMMAND ) ) {
+		CL_ForwardCommandToServer(Cmd_ArgsFrom(0));
+	}
 }
 
 /*

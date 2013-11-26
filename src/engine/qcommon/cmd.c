@@ -662,6 +662,22 @@ void Cmd_RemoveCommand( const char *cmd_name )
 
 /*
 ============
+Cmd_RemoveCommandByFunc
+============
+*/
+void Cmd_RemoveCommandsByFunc( xcommand_t function ) {
+    for (auto it = proxies.cbegin(); it != proxies.cend();) {
+        if (it->second.cmd == function) {
+            Com_Printf("removing %s", it->first.c_str());
+            proxies.erase(it ++);
+        } else {
+            ++ it;
+        }
+    }
+}
+
+/*
+============
 Cmd_CommandCompletion
 ============
 */

@@ -189,6 +189,11 @@ namespace Cmd {
         }
 
         //TODO: remove that and add default command handlers or something
+        // check client game commands
+        if (com_cl_running && com_cl_running->integer && CL_GameCommand()) {
+            return;
+        }
+
         // check server game commands
         if (com_sv_running && com_sv_running->integer && SV_GameCommand()) {
             return;
