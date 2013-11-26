@@ -1038,15 +1038,35 @@ static void G_IssueMapChange( int index, int rotation )
 {
 	mrNode_t *node = mapRotations.rotations[ rotation ].nodes[ index ];
 	mrMapDescription_t  *map = &node->u.map;
+	char currentMapName[ MAX_STRING_CHARS ];
 
-	// allow a manually defined g_layouts setting to override the maprotation
-	if ( !g_layouts.string[ 0 ] && map->layouts[ 0 ] )
+	trap_Cvar_VariableStringBuffer( "mapname", currentMapName, sizeof( currentMapName ) );
+
+	// Restart if map is the same
+	if ( !Q_stricmp( currentMapName, map->name ) )
 	{
-		trap_SendConsoleCommand( EXEC_APPEND, va( "map %s %s\n", Quote( map->name ), Quote( map->layouts ) ) );
+		// Set layout if it exists
+		if ( !g_layouts.string[ 0 ] && map->layouts[ 0 ] )
+		{
+			trap_Cvar_Set( "g_layouts", map->layouts );
+		}
+
+		trap_SendConsoleCommand( EXEC_APPEND, "map_restart" );
+
+
 	}
+	// Load new map if different
 	else
 	{
-		trap_SendConsoleCommand( EXEC_APPEND, va( "map %s\n", Quote( map->name ) ) );
+		// allow a manually defined g_layouts setting to override the maprotation
+		if ( !g_layouts.string[ 0 ] && map->layouts[ 0 ] )
+		{
+			trap_SendConsoleCommand( EXEC_APPEND, va( "map %s %s\n", Quote( map->name ), Quote( map->layouts ) ) );
+		}
+		else
+		{
+			trap_SendConsoleCommand( EXEC_APPEND, va( "map %s\n", Quote( map->name ) ) );
+		}
 	}
 
 	// Load up map defaults if g_mapConfigs is set
