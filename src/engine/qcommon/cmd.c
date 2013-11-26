@@ -603,7 +603,13 @@ class ProxyCmd: public Cmd::CmdBase {
 			}
 			completedPrefix = prefix;
 			completeMatches.clear();
-			Q_strncpyz(buffer, args.ConcatArgs(0).c_str(), 4096);
+
+			//Completing an empty arg, we add a space to mimic the old autocompletion behavior
+			if (args.Argc() == argNum) {
+				Q_strncpyz(buffer, (args.ConcatArgs(0) + " ").c_str(), 4096);
+			} else {
+				Q_strncpyz(buffer, args.ConcatArgs(0).c_str(), 4096);
+			}
 
 			//Some completion handlers expect tokenized arguments
 			Cmd::Args savedArgs = Cmd::GetCurrentArgs();
