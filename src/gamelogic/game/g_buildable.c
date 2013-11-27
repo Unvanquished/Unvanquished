@@ -5479,7 +5479,7 @@ void G_BuildLogRevert( int id )
 {
 	buildLog_t *log;
 	gentity_t  *ent;
-	team_t     team;
+	int        team;
 	vec3_t     dist;
 	gentity_t  *builder;
 	float      confidenceChange[ NUM_TEAMS ] = { 0 };
@@ -5633,7 +5633,7 @@ void G_GetBuildableResourceValue( int *teamValue )
 {
 	int       entityNum;
 	gentity_t *ent;
-	team_t    team;
+	int       team;
 	const buildableAttributes_t *attr;
 
 	for ( team = TEAM_NONE + 1; team < NUM_TEAMS; team++ )

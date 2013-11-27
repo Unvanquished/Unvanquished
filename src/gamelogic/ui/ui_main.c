@@ -2503,15 +2503,15 @@ UI_AddClass
 ===============
 */
 
-static void UI_AddClass( class_t class )
+static void UI_AddClass( class_t class_ )
 {
 	uiInfo.alienClassList[ uiInfo.alienClassCount ].text =
-	  BG_ClassModelConfig( class )->humanName;
+	  BG_ClassModelConfig( class_ )->humanName;
 	uiInfo.alienClassList[ uiInfo.alienClassCount ].cmd =
-	  String_Alloc( va( "cmd class %s\n", BG_Class( class )->name ) );
+	  String_Alloc( va( "cmd class %s\n", BG_Class( class_ )->name ) );
 	uiInfo.alienClassList[ uiInfo.alienClassCount ].type = INFOTYPE_CLASS;
 
-	uiInfo.alienClassList[ uiInfo.alienClassCount ].v.pclass = class;
+	uiInfo.alienClassList[ uiInfo.alienClassCount ].v.pclass = class_;
 
 	uiInfo.alienClassCount++;
 }
@@ -2789,7 +2789,7 @@ static void UI_LoadAlienUpgrades( void )
 {
 	int     i, j = 0;
 
-	int     class, credits;
+	int     class_, credits;
 	char    ui_currentClass[ MAX_STRING_CHARS ];
 
 	// BG_ClassCanEvolveFromTo will call BG_ClassUnlocked, so update unlockables
@@ -2797,13 +2797,13 @@ static void UI_LoadAlienUpgrades( void )
 
 	trap_Cvar_VariableStringBuffer( "ui_currentClass", ui_currentClass, MAX_STRING_CHARS );
 
-	sscanf( ui_currentClass, "%d %d", &class, &credits );
+	sscanf( ui_currentClass, "%d %d", &class_, &credits );
 
 	uiInfo.alienUpgradeCount = 0;
 
 	for ( i = PCL_NONE + 1; i < PCL_NUM_CLASSES; i++ )
 	{
-		if ( BG_ClassCanEvolveFromTo( class, i, credits ) >= 0 )
+		if ( BG_ClassCanEvolveFromTo( class_, i, credits ) >= 0 )
 		{
 			uiInfo.alienUpgradeList[ j ].text = BG_ClassModelConfig( i )->humanName;
 			uiInfo.alienUpgradeList[ j ].cmd =
@@ -3677,12 +3677,13 @@ static void UI_RunMenuScript( char **args )
 		}
 		else if ( Q_strnicmp( name, "vote", 4 ) == 0 )
 		{
+			enum {
+				V_NONE, V_MAP, V_PLAYER, V_TEAMMATE
+			};
 			static const struct {
 				const char vote[16];
 				const char call[16];
-				enum {
-					V_NONE, V_MAP, V_PLAYER, V_TEAMMATE
-				}          type;
+				int        type;
 				qboolean   reason;
 			} voteInfo[] = {
 				{ "Draw",           "draw",       V_NONE,     qtrue  },

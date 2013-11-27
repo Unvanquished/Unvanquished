@@ -1592,27 +1592,30 @@ void Cmd_Where_f( gentity_t *ent )
 
 // Basic vote information
 // Entries must be in the same order as for voteType_t
+enum {
+	V_TEAM, V_PUBLIC, V_ANY
+};
+enum {
+	T_NONE, T_PLAYER, T_OTHER
+};
+enum {
+	VOTE_ALWAYS, // default
+	VOTE_BEFORE, // within the first N minutes
+	VOTE_AFTER,  // not within the first N minutes
+	VOTE_REMAIN, // within N/2 minutes before SD
+	VOTE_NO_AUTO,// don't automatically vote 'yes'
+	VOTE_ENABLE, // for special-purpose enable flags
+};
 static const struct {
 	const char     *name;
 	qboolean        stopOnIntermission;
-	enum {
-		V_TEAM, V_PUBLIC, V_ANY
-	}               type;
-	enum {
-		T_NONE, T_PLAYER, T_OTHER
-	}               target;
+	int             type;
+	int             target;
 	qboolean        adminImmune; // from needing a reason and from being the target
 	qboolean        quorum;
 	qtrinary        reasonNeeded;
 	const vmCvar_t *percentage;
-	enum {
-		VOTE_ALWAYS, // default
-		VOTE_BEFORE, // within the first N minutes
-		VOTE_AFTER,  // not within the first N minutes
-		VOTE_REMAIN, // within N/2 minutes before SD
-		VOTE_NO_AUTO,// don't automatically vote 'yes'
-		VOTE_ENABLE, // for special-purpose enable flags
-	}               special;
+	int             special;
 	const vmCvar_t *specialCvar;
 	const vmCvar_t *reasonFlag; // where a reason requirement is configurable (reasonNeeded must be qtrue)
 } voteInfo[] = {

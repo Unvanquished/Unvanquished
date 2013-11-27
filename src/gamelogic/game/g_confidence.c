@@ -285,7 +285,7 @@ static float AddConfidence( confidence_t type, team_t team, float amount,
  */
 void G_DecreaseConfidence( void )
 {
-	team_t       team;
+	int          team;
 	float        amount;
 
 	static float decreaseFactor = 1.0f, lastConfidenceHalfLife = 0.0f;

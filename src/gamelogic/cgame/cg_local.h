@@ -340,7 +340,7 @@ typedef struct baseParticleSystem_s
 //RUN TIME STRUCTURES
 typedef struct particleSystem_s
 {
-	baseParticleSystem_t  *class;
+	baseParticleSystem_t  *class_;
 
 	attachment_t attachment;
 
@@ -359,7 +359,7 @@ typedef struct particleSystem_s
 
 typedef struct particleEjector_s
 {
-	baseParticleEjector_t *class;
+	baseParticleEjector_t *class_;
 	particleSystem_t *parent;
 
 	pLerpValues_t    ejectPeriod;
@@ -375,7 +375,7 @@ typedef struct particleEjector_s
 //used for actual particle evaluation
 typedef struct particle_s
 {
-	baseParticle_t    *class;
+	baseParticle_t    *class_;
 	particleEjector_t *parent;
 
 	particleSystem_t  *childParticleSystem;
@@ -495,7 +495,7 @@ typedef struct baseTrailSystem_s
 
 typedef struct trailSystem_s
 {
-	baseTrailSystem_t   *class;
+	baseTrailSystem_t   *class_;
 
 	attachment_t frontAttachment;
 	attachment_t backAttachment;
@@ -528,7 +528,7 @@ typedef struct trailBeamNode_s
 
 typedef struct trailBeam_s
 {
-	baseTrailBeam_t   *class;
+	baseTrailBeam_t   *class_;
 	trailSystem_t   *parent;
 
 	trailBeamNode_t nodePool[ MAX_TRAIL_BEAM_NODES ];
@@ -1745,7 +1745,7 @@ void        CG_Corpse( centity_t *cent );
 void        CG_ResetPlayerEntity( centity_t *cent );
 void        CG_NewClientInfo( int clientNum );
 
-void        CG_PrecacheClientInfo( class_t class, const char *model, const char *skin );
+void        CG_PrecacheClientInfo( class_t class_, const char *model, const char *skin );
 sfxHandle_t CG_CustomSound( int clientNum, const char *soundName );
 void        CG_PlayerDisconnect( vec3_t org );
 centity_t   *CG_GetPlayerLocation( void );

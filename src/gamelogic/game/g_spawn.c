@@ -275,8 +275,8 @@ typedef struct
 	const entityChainType_t chainType;
 
 	//optional spawn-time data
-	const int	versionState;
-	const char  *replacement;
+	int	versionState;
+	char  *replacement;
 } entityClassDescriptor_t;
 
 

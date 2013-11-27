@@ -491,7 +491,7 @@ BG_AlienCanEvolve
 */
 qboolean BG_AlienCanEvolve( class_t from, int credits )
 {
-	class_t to;
+	int to;
 
 	for ( to = PCL_NONE + 1; to < PCL_NUM_CLASSES; to++ )
 	{

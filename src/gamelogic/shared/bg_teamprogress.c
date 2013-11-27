@@ -243,7 +243,7 @@ void BG_ImportUnlockablesFromMask( team_t team, int mask )
 {
 	int              unlockableNum, teamUnlockableNum = 0, itemNum = 0, unlockThreshold;
 	unlockable_t     *unlockable;
-	unlockableType_t unlockableType = 0;
+	int unlockableType = 0;
 	team_t           currentTeam;
 	qboolean         newStatus;
 	int              statusChanges[ NUM_UNLOCKABLES ];
@@ -480,7 +480,7 @@ confidenceThresholdIterator_t BG_IterateConfidenceThresholds( confidenceThreshol
 static void UpdateUnlockablesMask( void )
 {
 	int    unlockable, unlockableNum[ NUM_TEAMS ];
-	team_t team;
+	int    team;
 
 	for ( team = TEAM_NONE + 1; team < NUM_TEAMS; team++ )
 	{
@@ -521,7 +521,7 @@ void G_UpdateUnlockables( void )
 	int              itemNum = 0, unlockableNum, unlockThreshold;
 	float            confidence;
 	unlockable_t     *unlockable;
-	unlockableType_t unlockableType = 0;
+	int              unlockableType = 0;
 	team_t           team;
 
 	for ( unlockableNum = 0; unlockableNum < NUM_UNLOCKABLES; unlockableNum++ )

@@ -238,6 +238,7 @@ else()
 
   # Warning options
   set_c_cxx_flag( "-Wall" )
+  set_c_cxx_flag( "-fpermissive" )
   if( USE_WEXTRA )
     set_c_cxx_flag( "-Wextra" )
   else()
@@ -370,13 +371,6 @@ set( SHAREDLIST
   ${ENGINE_DIR}/qcommon/q_unicode.h
   ${ENGINE_DIR}/qcommon/unicode_data.h
   ${ENGINE_DIR}/qcommon/logging.h
-)
-
-# Hack to allow compiling shared files as C
-set( SHAREDLIST_HACK
-  ${ENGINE_DIR}/qcommon/./q_shared.c
-  ${ENGINE_DIR}/qcommon/./q_unicode.c
-  ${ENGINE_DIR}/qcommon/./q_math.c
 )
 
 set( RENDERERLIST
@@ -945,7 +939,7 @@ set( NACLLIST_MODULE
 )
 
 # HACK: Force the compilation of EVERYTHING in C++
-file( GLOB_RECURSE EVERYTHING_C "src/engine/*.c" )
+file( GLOB_RECURSE EVERYTHING_C "src/engine/*.c" "src/gamelogic/*.c" )
 set_source_files_properties( ${EVERYTHING_C} PROPERTIES LANGUAGE CXX )
 
 ################################################################################
@@ -1249,8 +1243,7 @@ function( GAMEMODULE )
   endif()
 
   if( BUILD_GAME_NACL_NATIVE )
-    # HACK: Compile shared files as C
-    add_executable( ${GAMEMODULE_NAME}-native ${GAMEMODULE_FILES} ${SHAREDLIST_HACK} ${GAMEMODULE_NACL_FILES} ${NACLLIST_NATIVE} )
+    add_executable( ${GAMEMODULE_NAME}-native ${GAMEMODULE_FILES} ${SHAREDLIST} ${GAMEMODULE_NACL_FILES} ${NACLLIST_NATIVE} )
     target_link_libraries( ${GAMEMODULE_NAME}-native ${LIBS_BASE} )
     set_target_properties( ${GAMEMODULE_NAME}-native PROPERTIES
       OUTPUT_NAME ${GAMEMODULE_NAME}
@@ -1264,9 +1257,7 @@ function( GAMEMODULE )
   endif()
 
   if( BUILD_GAME_NATIVE )
-    # HACK: Compile shared files as C
-    set_source_files_properties( ${SHAREDLIST_HACK} PROPERTIES LANGUAGE C )
-    add_library( ${GAMEMODULE_NAME} MODULE ${GAMEMODULE_FILES} ${SHAREDLIST_HACK} ${GAMEMODULE_NATIVE_FILES} )
+    add_library( ${GAMEMODULE_NAME} MODULE ${GAMEMODULE_FILES} ${SHAREDLIST} ${GAMEMODULE_NATIVE_FILES} )
     target_link_libraries( ${GAMEMODULE_NAME} ${LIBS_BASE} )
     set_target_properties( ${GAMEMODULE_NAME} PROPERTIES
       PREFIX ""

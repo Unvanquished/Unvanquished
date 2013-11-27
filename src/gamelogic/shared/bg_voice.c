@@ -698,7 +698,7 @@ BG_VoiceTrackFind
 ============
 */
 voiceTrack_t *BG_VoiceTrackFind( voiceTrack_t *head, team_t team,
-                                 class_t class, weapon_t weapon,
+                                 class_t class_, weapon_t weapon,
                                  int enthusiasm, int *trackNum )
 {
 	voiceTrack_t *vt = head;
@@ -712,7 +712,7 @@ voiceTrack_t *BG_VoiceTrackFind( voiceTrack_t *head, team_t team,
 	while ( vt )
 	{
 		if ( ( vt->team >= 0 && !( vt->team  & ( 1 << team ) ) ) ||
-		     ( vt->pClass >= 0 && !( vt->pClass & ( 1 << class ) ) ) ||
+		     ( vt->pClass >= 0 && !( vt->pClass & ( 1 << class_ ) ) ) ||
 		     vt->enthusiasm > enthusiasm )
 		{
 			vt = vt->next;
@@ -749,7 +749,7 @@ voiceTrack_t *BG_VoiceTrackFind( voiceTrack_t *head, team_t team,
 		j++;
 
 		if ( ( vt->team >= 0 && !( vt->team  & ( 1 << team ) ) ) ||
-		     ( vt->pClass >= 0 && !( vt->pClass & ( 1 << class ) ) ) ||
+		     ( vt->pClass >= 0 && !( vt->pClass & ( 1 << class_ ) ) ) ||
 		     vt->enthusiasm != highestMatch )
 		{
 			vt = vt->next;

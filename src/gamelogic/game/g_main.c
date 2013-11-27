@@ -40,7 +40,7 @@ typedef struct
 	   persist, so keep track of non-worldspawn changes and restore that on map
 	   end. unfortunately, if the server crashes, the value set in worldspawn may
 	   persist */
-	char      *explicit;
+	char      *explicit_;
 } cvarTable_t;
 
 #ifdef QVM_COMPAT
@@ -684,9 +684,9 @@ void G_RegisterCvars( void )
 			cvarTable->modificationCount = cvarTable->vmCvar->modificationCount;
 		}
 
-		if ( cvarTable->explicit )
+		if ( cvarTable->explicit_ )
 		{
-			strcpy( cvarTable->explicit, cvarTable->vmCvar->string );
+			strcpy( cvarTable->explicit_, cvarTable->vmCvar->string );
 		}
 	}
 }
@@ -717,9 +717,9 @@ void G_UpdateCvars( void )
 					                                Quote( cv->cvarName ), Quote( cv->vmCvar->string ) ) );
 				}
 
-				if ( !level.spawning && cv->explicit )
+				if ( !level.spawning && cv->explicit_ )
 				{
-					strcpy( cv->explicit, cv->vmCvar->string );
+					strcpy( cv->explicit_, cv->vmCvar->string );
 				}
 			}
 		}
@@ -738,9 +738,9 @@ void G_RestoreCvars( void )
 
 	for ( i = 0, cv = gameCvarTable; i < gameCvarTableSize; i++, cv++ )
 	{
-		if ( cv->vmCvar && cv->explicit )
+		if ( cv->vmCvar && cv->explicit_ )
 		{
-			trap_Cvar_Set( cv->cvarName, cv->explicit );
+			trap_Cvar_Set( cv->cvarName, cv->explicit_ );
 		}
 	}
 }
@@ -1583,7 +1583,7 @@ Resets completely if all players leave a team.
 */
 void G_CalculateAvgPlayers( void )
 {
-	team_t     team;
+	int        team;
 	int        *samples, currentPlayers;
 	float      *avgPlayers;
 
@@ -1634,7 +1634,7 @@ and team change.
 void CalculateRanks( void )
 {
 	int  i;
-	team_t team;
+	int  team;
 	char P[ MAX_CLIENTS + 1 ] = "", B[ MAX_CLIENTS + 1 ] = "";
 
 	level.numConnectedClients = 0;
@@ -2017,7 +2017,7 @@ static void GetAverageDistanceToBase( int teamDistance[] )
 	int       playerNum;
 	gentity_t *playerEnt;
 	gclient_t *client;
-	team_t    team;
+	int       team;
 
 	for ( team = TEAM_ALIENS ; team < NUM_TEAMS ; ++team)
 	{
@@ -2057,7 +2057,7 @@ static void GetAverageCredits( int teamCredits[], int teamValue[] )
 	int       playerNum;
 	gentity_t *playerEnt;
 	gclient_t *client;
-	team_t    team;
+	int       team;
 
 	for ( team = TEAM_ALIENS ; team < NUM_TEAMS ; ++team)
 	{
@@ -2156,7 +2156,7 @@ static void G_LogGameplayStats( int state )
 		{
 			int    time;
 			float  LMR;
-			team_t team;
+			int    team;
 			int    num[ NUM_TEAMS ];
 			int    Con[ NUM_TEAMS ];
 			int    ME [ NUM_TEAMS ];
