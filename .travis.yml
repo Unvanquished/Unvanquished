@@ -25,3 +25,4 @@ notifications:
 branches:
   except:
     - debian
+    - /^engine-upgrade\/.*$/
