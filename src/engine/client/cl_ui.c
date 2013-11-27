@@ -1042,7 +1042,7 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 			return 0;
 
 		case UI_ADDCOMMAND:
-			Cmd_AddCommand( (char*) VMA( 1 ), NULL );
+			Cmd_AddCommand( (char*) VMA( 1 ), UI_GameCommandHandler );
 			return 0;
 
 		case UI_FS_FOPENFILE:
@@ -1437,6 +1437,7 @@ void CL_ShutdownUI( void )
 	VM_Call( uivm, UI_SHUTDOWN );
 	VM_Free( uivm );
 	uivm = NULL;
+	Cmd_RemoveCommandsByFunc( UI_GameCommandHandler );
 }
 
 /*
@@ -1486,4 +1487,14 @@ qboolean UI_GameCommand( void )
 	}
 
 	return VM_Call( uivm, UI_CONSOLE_COMMAND, cls.realtime );
+}
+
+/*
+====================
+UI_GameCommandHandler
+====================
+*/
+void UI_GameCommandHandler( void )
+{
+	VM_Call( uivm, UI_CONSOLE_COMMAND, cls.realtime );
 }

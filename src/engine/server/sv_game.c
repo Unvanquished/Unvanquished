@@ -681,7 +681,7 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 			return 0;
 
 		case G_ADDCOMMAND:
-			Cmd_AddCommand( ( const char * ) VMA( 1 ), NULL );
+			Cmd_AddCommand( ( const char * ) VMA( 1 ), SV_GameCommandHandler );
 			return 0;
 
 		case G_REMOVECOMMAND:
@@ -811,6 +811,8 @@ void SV_ShutdownGameProgs( void )
 		FS_Rename( sv_newGameShlib->string, "game" DLL_EXT );
 		Cvar_Set( "sv_newGameShlib", "" );
 	}
+
+	Cmd_RemoveCommandsByFunc( SV_GameCommandHandler );
 }
 
 /*
@@ -856,6 +858,7 @@ void SV_RestartGameProgs( void )
 	gvm.GameShutdown( qtrue );
 
 	gvm.Free();
+	Cmd_RemoveCommandsByFunc( SV_GameCommandHandler );
 
 	// Check ABI version
 #ifdef QVM_COMPAT
@@ -909,6 +912,16 @@ qboolean SV_GameCommand( void )
 	}
 
 	return gvm.GameConsoleCommand();
+}
+
+/*
+====================
+SV_GameCommandHandler
+====================
+*/
+void SV_GameCommandHandler( void )
+{
+	gvm.GameConsoleCommand();
 }
 
 /*
@@ -1492,7 +1505,7 @@ void GameVM::Syscall(int index, RPC::Reader& inputs, RPC::Writer& outputs)
 		break;
 
 	case G_ADDCOMMAND:
-		Cmd_AddCommand(inputs.ReadString(), NULL );
+		Cmd_AddCommand(inputs.ReadString(), SV_GameCommandHandler );
 		break;
 
 	case G_REMOVECOMMAND:

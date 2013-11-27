@@ -478,6 +478,7 @@ void     Cmd_AddCommand( const char *cmd_name, xcommand_t function );
 // as a clc_clientCommand instead of executed locally
 
 void Cmd_RemoveCommand( const char *cmd_name );
+void Cmd_RemoveCommandsByFunc( xcommand_t function );
 
 void Cmd_CommandCompletion( void ( *callback )( const char *s ) );
 
@@ -984,6 +985,7 @@ void     CL_Disconnect( qboolean showMainMenu );
 void     CL_Shutdown( void );
 void     CL_Frame( int msec );
 qboolean CL_GameCommand( void );
+void     CL_GameCommandHandler( void );
 void     CL_KeyEvent( int key, qboolean down, unsigned time );
 
 void     CL_CharEvent( int c );
@@ -1048,12 +1050,14 @@ void     SV_Shutdown( const char *finalmsg );
 void     SV_Frame( int msec );
 void     SV_PacketEvent( netadr_t from, msg_t *msg );
 qboolean SV_GameCommand( void );
+void     SV_GameCommandHandler( void );
 int      SV_FrameMsec( void );
 
 //
 // UI interface
 //
 qboolean UI_GameCommand( void );
+void     UI_GameCommandHandler( void );
 
 /*
 ==============================================================

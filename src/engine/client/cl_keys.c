@@ -1377,6 +1377,59 @@ unsigned int Key_GetKeyTime(void)
 }
 
 /*
+===============
+FindMatches
+
+===============
+*/
+//TODO (kangz) rework the bind commands and their completion
+static void FindMatches( const char *s )
+{
+    Cmd_OnCompleteMatch(s);
+}
+
+static void Field_TeamnameCompletion( void ( *callback )( const char *s ), int flags )
+{
+	if ( flags & FIELD_TEAM_SPECTATORS )
+	{
+		callback( "spectators" );
+	}
+
+	if ( flags & FIELD_TEAM_DEFAULT )
+	{
+		callback( "default" );
+	}
+
+	callback( "humans" );
+	callback( "aliens" );
+}
+
+/*
+===============
+Field_CompleteKeyname
+===============
+*/
+void Field_CompleteKeyname( int flags )
+{
+	if ( flags & FIELD_TEAM )
+	{
+		Field_TeamnameCompletion( FindMatches, flags );
+	}
+
+	Key_KeynameCompletion( FindMatches );
+}
+
+/*
+===============
+Field_CompleteTeamname
+===============
+*/
+void Field_CompleteTeamname( int flags )
+{
+	Field_TeamnameCompletion( FindMatches, flags );
+}
+
+/*
 ============
 Key_KeynameCompletion
 ============
@@ -1433,13 +1486,11 @@ static void Key_CompleteBind_Internal( char *args, int argNum, int nameArg )
 	}
 	else if ( argNum > nameArg )
 	{
-		// Skip "bind <key> "
-		p = Com_SkipTokens( args, nameArg, " " );
-
-		if ( p > args )
+		Cmd::Args arg(args);
+		Cmd::CompletionResult res = Cmd::CompleteArgument(Cmd::Args(arg.EscapedArgs(nameArg)), argNum - nameArg - 1);
+		for (auto candidate : res)
 		{
-		    //kangz: TODO
-			//Field_CompleteCommand( p, qtrue, qtrue );
+			FindMatches(candidate.first.c_str());
 		}
 	}
 }

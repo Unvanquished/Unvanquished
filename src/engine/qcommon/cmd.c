@@ -575,6 +575,8 @@ char* completeArgs = NULL;
 int completeArgNum = 0;
 
 Cmd::CompletionResult completeMatches;
+std::string completedPrefix;
+
 //Is registered in the new command system for all the commands registered through the C interface.
 class ProxyCmd: public Cmd::CmdBase {
 	public:
@@ -582,7 +584,14 @@ class ProxyCmd: public Cmd::CmdBase {
 
 		void Run(const Cmd::Args& args) const override {
 			proxyInfo_t proxy = proxies[args.Argv(0)];
-			proxy.cmd();
+			if (proxy.cmd != 0) {
+				proxy.cmd();
+			} else if (com_cl_running && com_cl_running->integer){
+				CL_GameCommand();
+				//The only case where we add commands without a function pointer is for cgame so that it can still have a completion handler.
+				return;
+			}
+
 		}
 
 		Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, const std::string& prefix) const override {
@@ -592,10 +601,23 @@ class ProxyCmd: public Cmd::CmdBase {
 			if (!proxy.complete) {
 				return {};
 			}
+			completedPrefix = prefix;
 			completeMatches.clear();
-			//Amanieu: This is broken...
-			Q_strncpyz(buffer, args.ConcatArgs(0).c_str(), 4096);
+
+			//Completing an empty arg, we add a space to mimic the old autocompletion behavior
+			if (args.Argc() == argNum) {
+				Q_strncpyz(buffer, (args.ConcatArgs(0) + " ").c_str(), 4096);
+			} else {
+				Q_strncpyz(buffer, args.ConcatArgs(0).c_str(), 4096);
+			}
+
+			//Some completion handlers expect tokenized arguments
+			Cmd::Args savedArgs = Cmd::GetCurrentArgs();
+			Cmd::SetCurrentArgs(args);
+
 			proxy.complete(buffer, argNum + 1);
+
+			Cmd::SetCurrentArgs(savedArgs);
 
 			return completeMatches;
 		}
@@ -604,7 +626,9 @@ class ProxyCmd: public Cmd::CmdBase {
 ProxyCmd myProxyCmd;
 
 void Cmd_OnCompleteMatch(const char* s) {
-    completeMatches.push_back({s, ""});
+    if (Str::IsIPrefix(completedPrefix, s)) {
+        completeMatches.push_back({s, ""});
+    }
 }
 /*
 ============
@@ -613,12 +637,12 @@ Cmd_AddCommand
 */
 void Cmd_AddCommand( const char *cmd_name, xcommand_t function )
 {
-	if (function == 0) {
-		return; //It does happen.
-	}
-
 	proxies[cmd_name] = proxyInfo_t{function, NULL};
-	Cmd::AddCommand(cmd_name, myProxyCmd, "Calls some ugly C code to do something");
+
+	//VMs do not properly clean up commands so we avoid creating a command if there is already one
+	if (not Cmd::CommandExists(cmd_name)) {
+		Cmd::AddCommand(cmd_name, myProxyCmd, "--");
+	}
 }
 
 /*
@@ -640,6 +664,21 @@ void Cmd_RemoveCommand( const char *cmd_name )
 {
 	proxies.erase(cmd_name);
 	Cmd::RemoveCommand(cmd_name);
+}
+
+/*
+============
+Cmd_RemoveCommandByFunc
+============
+*/
+void Cmd_RemoveCommandsByFunc( xcommand_t function ) {
+    for (auto it = proxies.cbegin(); it != proxies.cend();) {
+        if (it->second.cmd == function) {
+            proxies.erase(it ++);
+        } else {
+            ++ it;
+        }
+    }
 }
 
 /*
