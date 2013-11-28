@@ -739,7 +739,7 @@ char *CON_Input( void )
 
 			case 4: // Ctrl-D
 			case KEY_DC:
-				input_field.Clear();
+				input_field.DeleteNext();
 				continue;
 
 			case 20: // Ctrl-T
