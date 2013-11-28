@@ -595,12 +595,12 @@ class ProxyCmd: public Cmd::CmdBase {
 	public:
 		ProxyCmd(): Cmd::CmdBase(Cmd::PROXY_FOR_OLD) {}
 
-		void Run(const Cmd::Args& args) const override {
+		void Run(const Cmd::Args& args) const OVERRIDE {
 			proxyInfo_t proxy = proxies[args.Argv(0)];
 			proxy.cmd();
 		}
 
-		Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, const std::string& prefix) const override {
+		Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, const std::string& prefix) const OVERRIDE {
 			static char buffer[4096];
 			proxyInfo_t proxy = proxies[args.Argv(0)];
 
@@ -609,7 +609,13 @@ class ProxyCmd: public Cmd::CmdBase {
 			}
 			completedPrefix = prefix;
 			completeMatches.clear();
-			Q_strncpyz(buffer, args.ConcatArgs(0).c_str(), 4096);
+
+			//Completing an empty arg, we add a space to mimic the old autocompletion behavior
+			if (args.Argc() == argNum) {
+				Q_strncpyz(buffer, (args.ConcatArgs(0) + " ").c_str(), 4096);
+			} else {
+				Q_strncpyz(buffer, args.ConcatArgs(0).c_str(), 4096);
+			}
 
 			//Some completion handlers expect tokenized arguments
 			Cmd::Args savedArgs = Cmd::GetCurrentArgs();
@@ -641,7 +647,7 @@ void Cmd_AddCommand( const char *cmd_name, xcommand_t function )
 
 	//VMs do not properly clean up commands so we avoid creating a command if there is already one
 	if (not Cmd::CommandExists(cmd_name)) {
-		Cmd::AddCommand(cmd_name, myProxyCmd, "Calls some ugly C code to do something");
+		Cmd::AddCommand(cmd_name, myProxyCmd, "--");
 	}
 }
 

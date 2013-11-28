@@ -1387,7 +1387,7 @@ class GraphicalTarget : public Log::Target {
 			this->Register(Log::GRAPHICAL_CONSOLE);
 		}
 
-		virtual bool Process(std::vector<Log::Event>& events) override {
+		virtual bool Process(std::vector<Log::Event>& events) OVERRIDE {
 			// for some demos we don't want to ever show anything on the console
 			// flush the buffer
 			if ( cl_noprint && cl_noprint->integer )

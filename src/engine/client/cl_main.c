@@ -1357,7 +1357,7 @@ class DemoCmd: public Cmd::StaticCmd {
         DemoCmd(): Cmd::StaticCmd("demo", Cmd::SYSTEM, "starts playing a demo file") {
         }
 
-        void Run(const Cmd::Args& args) const override {
+        void Run(const Cmd::Args& args) const OVERRIDE {
             if (args.Argc() != 2) {
                 PrintUsage(args, _("<demoname>"), _("starts playing a demo file"));
                 return;
@@ -1420,7 +1420,7 @@ class DemoCmd: public Cmd::StaticCmd {
             //  }
         }
 
-        Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, const std::string& prefix) const override{
+        Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, const std::string& prefix) const OVERRIDE {
             if (argNum == 1) {
                 return FS::CompleteFilenameInDir(prefix, "demos", ".dm_" + std::to_string(PROTOCOL_VERSION));
             }

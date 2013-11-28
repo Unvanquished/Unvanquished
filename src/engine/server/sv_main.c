@@ -816,7 +816,7 @@ class RconEnvironment: public Cmd::DefaultEnvironment {
     public:
         RconEnvironment(netadr_t from, int bufferSize): from(from), bufferSize(bufferSize) {};
 
-        virtual void Print(Str::StringRef text) override {
+        virtual void Print(Str::StringRef text) OVERRIDE {
             if (text.size() + buffer.size() > bufferSize - 1) {
                 Flush();
             }

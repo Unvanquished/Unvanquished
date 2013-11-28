@@ -1,8 +1,8 @@
 language:
-  - c
-  - c++
+  - cpp
 
 compiler:
+  - gcc
   - clang
 
 install:
@@ -14,7 +14,7 @@ install:
 script:
   - mkdir build
   - cd build
-  - cmake -DCMAKE_BUILD_TYPE=Debug -DUSE_SDL2=OFF ..
+  - CXXFLAGS="-D__extern_always_inline=inline" cmake -DCMAKE_BUILD_TYPE=Debug -DUSE_SDL2=OFF ..
   - cmake --build .
 
 notifications:

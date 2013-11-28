@@ -400,6 +400,8 @@ namespace VM {
 
 class VMBase {
 public:
+  VMBase()
+    : vm(nullptr) {}
   void Create(const char* name, intptr_t (*systemCalls)(intptr_t *), vmInterpret_t type)
   {
     vm = VM_Create(name, systemCalls, type);
@@ -415,7 +417,7 @@ public:
   }
 
 protected:
-  vm_t* vm = nullptr;
+  vm_t* vm;
 };
 
 } // namespace VM

@@ -34,13 +34,15 @@ namespace Cmd {
     std::string Escape(Str::StringRef text) {
         std::string res = "\"";
 
-        for (size_t i = 0; i < text.size(); i ++) {
-            if (text[i] == '\\') {
+        for (char c: text) {
+            if (c == '\\') {
                 res.append("\\\\");
-            } else if (text[i] == '\"') {
+            } else if (c == '\"') {
                 res.append("\\\"");
+            } else if (c == '$') {
+                res.append("\\$");
             } else {
-                res.push_back(text[i]);
+                res.push_back(c);
             }
         }
 
@@ -117,8 +119,8 @@ namespace Cmd {
                 continue;
             }
 
-            //Escaped quote
-            if (inQuote && start + 1 != end && start[0] == '\\') {
+            //Escaped character
+            if (start + 1 != end && start[0] == '\\') {
                 start += 2;
                 continue;
             }
@@ -147,52 +149,94 @@ namespace Cmd {
         return end;
     }
 
+    // Special escape function for cvar values
+    static void EscapeCvarValue(std::string& text, bool inQuote) {
+        for (auto it = text.begin(); it != text.end(); ++it) {
+            if (*it == '\\')
+                it = text.insert(it, '\\') + 1;
+            else if (*it == '\"')
+                it = text.insert(it, '\\') + 1;
+            else if (*it == '$')
+                it = text.insert(it, '\\') + 1;
+            else if (!inQuote && *it == '/')
+                it = text.insert(it, '\\') + 1;
+            else if (!inQuote && *it == ';')
+                it = text.insert(it, '\\') + 1;
+        }
+    }
+
     std::string SubstituteCvars(Str::StringRef text) {
-        const char* raw_text = text.data();
-        std::string result;
+        std::string out = text;
+        auto in = out.begin();
+        auto end = out.end();
+        bool inQuote = false;
+        bool inInlineComment = false;
 
-        bool isEscaped = false;
-        bool inCvarName = false;
-        int lastBlockStart = 0;
-
-        //Cvar are delimited by $ so we parse a bloc at a time
-        for(size_t i = 0; i < text.size(); i++){
-
-            // a \ escapes the next letter so we don't use it for block delimitation
-            if (isEscaped) {
-                isEscaped = false;
+        while (in != end) {
+            //End of comment
+            if (inInlineComment && in + 1 != end && in[0] == '*' && in[1] == '/') {
+                inInlineComment = false;
+                in += 2;
                 continue;
             }
 
-            if (text[i] == '\\') {
-                isEscaped = true;
+            //Ignore everything else in an inline comment
+            if (inInlineComment) {
+                in++;
+                continue;
+            }
 
-            } else if (text[i] == '$') {
-                //Found a block, every second block is a cvar name block
-                std::string block(raw_text + lastBlockStart, i - lastBlockStart);
+            //Start of comment
+            if (not inQuote && in + 1 != end && in[0] == '/' && in[1] == '*') {
+                inInlineComment = true;
+                in += 2;
+                continue;
+            }
 
-                if (inCvarName) {
-                    result += Escape(Cvar::GetValue(block));
-                    inCvarName = false;
+            //Escaped character
+            if (in + 1 != end && in[0] == '\\') {
+                in += 2;
+                continue;
+            }
 
-                } else {
-                    result += block;
-                    inCvarName = true;
+            //Quote
+            if (in[0] == '"') {
+                inQuote = !inQuote;
+                in++;
+                continue;
+            }
+
+            // Start of cvar substitution block
+            if (in[0] == '$') {
+                // Find the end of the block, only allow valid cvar name characters
+                auto cvarStart = ++in;
+                while (in[0] == '_' || in[0] == '.' ||
+                       (in[0] >= 'a' && in[0] <= 'z') ||
+                       (in[0] >= 'A' && in[0] <= 'Z') ||
+                       (in[0] >= '0' && in[0] <= '9')) {
+                    in++;
                 }
 
-                lastBlockStart = i + 1;
+                // If the block is not terminated properly, ignore it
+                if (in[0] == '$') {
+                    std::string cvarName(cvarStart, in);
+                    std::string cvarValue = Cvar::GetValue(cvarName);
+                    EscapeCvarValue(cvarValue, inQuote);
+
+                    // Iterators get invalidated by replace
+                    size_t stringPos = cvarStart - 1 - out.begin() + cvarValue.size();
+                    out.replace(cvarStart - 1, in + 1, cvarValue);
+                    in = out.begin() + stringPos;
+                    end = out.end();
+                }
+                continue;
             }
+
+            //Normal character
+            in++;
         }
 
-        //Handle the last block
-        if (inCvarName) {
-            Com_Printf("Warning: last CVar substitution block not closed in %s\n", raw_text);
-        } else {
-            std::string block(raw_text + lastBlockStart, text.size() - lastBlockStart);
-            result += block;
-        }
-
-        return result;
+        return out;
     }
 
     /*
@@ -248,9 +292,13 @@ namespace Cmd {
                     }
                 }
             } else {
-                //Handle normal character
-                currentToken.push_back(in[0]);
-                in++;
+                if (in + 1 !=  cmd.end() && in[0] == '\\') {
+                    currentToken.push_back(in[1]);
+                    in += 2;
+                } else {
+                    currentToken.push_back(in[0]);
+                    in++;
+                }
             }
         }
     }

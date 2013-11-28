@@ -44,7 +44,7 @@ namespace Cmd {
             VstrCmd(): StaticCmd("vstr", BASE, N_("executes a variable command")) {
             }
 
-            void Run(const Cmd::Args& args) const override {
+            void Run(const Cmd::Args& args) const OVERRIDE {
                 if (args.Argc() != 2) {
                     PrintUsage(args, _("<variablename>"), _("executes a variable command"));
                     return;
@@ -54,7 +54,7 @@ namespace Cmd {
                 ExecuteAfter(command, true);
             }
 
-            Cmd::CompletionResult Complete(int argNum, const Args& args, const std::string& prefix) const override{
+            Cmd::CompletionResult Complete(int argNum, const Args& args, const std::string& prefix) const OVERRIDE {
                 Q_UNUSED(args);
 
                 if (argNum == 1) {
@@ -71,7 +71,7 @@ namespace Cmd {
             ExecCmd(const std::string& name, bool silent): StaticCmd(name, BASE, N_("executes a command file")), silent(silent) {
             }
 
-            void Run(const Cmd::Args& args) const override {
+            void Run(const Cmd::Args& args) const OVERRIDE {
                 bool executeSilent = silent;
                 bool failSilent = false;
                 bool hasOptions = args.Argc() >= 3 and args.Argv(1).size() >= 2 and args.Argv(1)[0] == '-';
@@ -173,7 +173,7 @@ namespace Cmd {
             EchoCmd(): StaticCmd("echo", BASE, N_("prints to the console")) {
             }
 
-            void Run(const Cmd::Args& args) const override {
+            void Run(const Cmd::Args& args) const OVERRIDE {
                 std::string res = "";
 
                 for (int i = 1; i < args.Argc(); i++) {
@@ -189,7 +189,7 @@ namespace Cmd {
             RandomCmd(): StaticCmd("random", BASE, N_("sets a variable to a random integer")) {
             }
 
-            void Run(const Cmd::Args& args) const override {
+            void Run(const Cmd::Args& args) const OVERRIDE {
                 if (args.Argc() != 4) {
                     PrintUsage(args, _("<variableToSet> <minNumber> <maxNumber>"), _("sets a variable to a random integer between minNumber and maxNumber"));
                     return;
@@ -203,7 +203,7 @@ namespace Cmd {
                 Cvar::SetValue(cvar, std::to_string(number));
             }
 
-            Cmd::CompletionResult Complete(int argNum, const Args& args, const std::string& prefix) const override{
+            Cmd::CompletionResult Complete(int argNum, const Args& args, const std::string& prefix) const OVERRIDE {
                 Q_UNUSED(args);
 
                 if (argNum == 1) {
@@ -220,7 +220,7 @@ namespace Cmd {
             ConcatCmd(): StaticCmd("concat", BASE, N_("concatenatas variables")) {
             }
 
-            void Run(const Cmd::Args& args) const override {
+            void Run(const Cmd::Args& args) const OVERRIDE {
                 if (args.Argc() < 3) {
                     PrintUsage(args, _("<variableToSet> <variable1> … <variableN>"), _("concatenates variable1 to variableN and sets the result to variableToSet"));
                     return;
@@ -233,7 +233,7 @@ namespace Cmd {
                 Cvar::SetValue(args.Argv(1), res);
             }
 
-            Cmd::CompletionResult Complete(int argNum, const Args& args, const std::string& prefix) const override{
+            Cmd::CompletionResult Complete(int argNum, const Args& args, const std::string& prefix) const OVERRIDE {
                 Q_UNUSED(args);
 
                 if (argNum >= 1) {
@@ -250,7 +250,7 @@ namespace Cmd {
             MathCmd(): StaticCmd("math", BASE, N_("does math and sets the result to a variable")) {
             }
 
-            void Run(const Cmd::Args& args) const override {
+            void Run(const Cmd::Args& args) const OVERRIDE {
                 if  (args.Argc() < 2) {
                     Usage(args);
                     return;
@@ -333,7 +333,7 @@ namespace Cmd {
                 Print(_("valid operators: + - × * ÷ /"));
             }
 
-            Cmd::CompletionResult Complete(int argNum, const Args& args, const std::string& prefix) const override{
+            Cmd::CompletionResult Complete(int argNum, const Args& args, const std::string& prefix) const OVERRIDE {
                 Q_UNUSED(args);
 
                 if (argNum == 1) {
@@ -350,7 +350,7 @@ namespace Cmd {
             IfCmd(): StaticCmd("if", BASE, N_("conditionnaly execute commands")) {
             }
 
-            void Run(const Cmd::Args& args) const override {
+            void Run(const Cmd::Args& args) const OVERRIDE {
                 if (args.Argc() != 5 and args.Argc() != 6) {
                     Usage(args);
                     return;
@@ -418,7 +418,7 @@ namespace Cmd {
                 Print(_("-- commands are cvar names unless prefixed with / or \\"));
             }
 
-            Cmd::CompletionResult Complete(int argNum, const Args& args, const std::string& prefix) const override{
+            Cmd::CompletionResult Complete(int argNum, const Args& args, const std::string& prefix) const OVERRIDE {
                 Q_UNUSED(args);
 
                 if (argNum == 4 or argNum == 5) {
@@ -435,7 +435,7 @@ namespace Cmd {
             ToggleCmd(): Cmd::StaticCmd("toggle", Cmd::BASE, N_("toggles a cvar between different values")) {
             }
 
-            void Run(const Cmd::Args& args) const override {
+            void Run(const Cmd::Args& args) const OVERRIDE {
                 if (args.Argc() < 2) {
                     Usage(args);
                     return;
@@ -483,7 +483,7 @@ namespace Cmd {
                 Cvar::SetValue(name, args.Argv(listStart));
             }
 
-            Cmd::CompletionResult Complete(int argNum, const Args& args, const std::string& prefix) const override{
+            Cmd::CompletionResult Complete(int argNum, const Args& args, const std::string& prefix) const OVERRIDE {
                 Q_UNUSED(args);
 
                 if (argNum == 1 or argNum == 2) {
@@ -504,7 +504,7 @@ namespace Cmd {
             CycleCmd(): Cmd::StaticCmd("cycle", Cmd::BASE, N_("cycles a cvar through numbers")) {
             }
 
-            void Run(const Cmd::Args& args) const override {
+            void Run(const Cmd::Args& args) const OVERRIDE {
                 if (args.Argc() < 4 || args.Argc() > 5) {
                     PrintUsage(args, _("<variable> <start> <end> [<step>]"), "");
                     return;
@@ -541,7 +541,7 @@ namespace Cmd {
                 Cvar::SetValue(args.Argv(1), va("%i", newValue));
             }
 
-            Cmd::CompletionResult Complete(int argNum, const Args& args, const std::string& prefix) const override{
+            Cmd::CompletionResult Complete(int argNum, const Args& args, const std::string& prefix) const OVERRIDE {
                 Q_UNUSED(args);
 
                 if (argNum == 1) {
@@ -609,19 +609,20 @@ namespace Cmd {
             DelayCmd(): StaticCmd("delay", BASE, N_("executes a command after a delay")) {
             }
 
-            void Run(const Cmd::Args& args) const override {
+            void Run(const Cmd::Args& args) const OVERRIDE {
                 int argc = args.Argc();
 
-                if (argc < 3 or argc > 4) {
+                if (argc < 3) {
 		            PrintUsage(args, _( "delay (name) <delay in milliseconds> <command>\n  delay <delay in frames>f <command>"), _("executes <command> after the delay" ));
 		            return;
                 }
 
                 //Get all the parameters!
-                const std::string& command = args.Argv(argc - 1);
-                std::string delay = args.Argv(argc - 2);
+                bool isNamed = !isdigit(args.Argv(1)[0]);
+                const std::string& name = isNamed ? args.Argv(1) : "";
+                const std::string& command = args.EscapedArgs(2 + isNamed);
+                std::string delay = args.Argv(1 + isNamed);
                 int target = Str::ToInt(delay);
-                const std::string& name = (argc == 4) ? args.Argv(1) : "";
                 delayType_t type;
 
                 if (target < 1) {
@@ -640,7 +641,7 @@ namespace Cmd {
                 delays.emplace_back(delayRecord_t{name, command, target, type});
             }
 
-            Cmd::CompletionResult Complete(int argNum, const Args& args, const std::string& prefix) const override{
+            Cmd::CompletionResult Complete(int argNum, const Args& args, const std::string& prefix) const OVERRIDE {
                 Q_UNUSED(args);
 
                 if (argNum == 1) {
@@ -656,14 +657,14 @@ namespace Cmd {
             UndelayCmd(): StaticCmd("undelay", BASE, N_("removes named /delay commands")) {
             }
 
-            void Run(const Cmd::Args& args) const override {
+            void Run(const Cmd::Args& args) const OVERRIDE {
                 if (args.Argc() < 2) {
                     PrintUsage(args, _("<name> (command)"), _( "removes all commands with <name> in them.\nif (command) is specified, the removal will be limited only to delays whose commands contain (command)."));
                     return;
                 }
 
                 const std::string& name = args.Argv(1);
-                const std::string& command = (args.Argc() >= 3) ? args.Argv(2) : "";
+                const std::string& command = (args.Argc() >= 3) ? args.EscapedArgs(2) : "";
 
                 for (auto it = delays.begin(); it != delays.end();) {
                     const delayRecord_t& delay = *it;
@@ -676,7 +677,7 @@ namespace Cmd {
                 }
             }
 
-            Cmd::CompletionResult Complete(int argNum, const Args& args, const std::string& prefix) const override{
+            Cmd::CompletionResult Complete(int argNum, const Args& args, const std::string& prefix) const OVERRIDE {
                 Q_UNUSED(args);
 
                 if (argNum == 1) {
@@ -692,7 +693,7 @@ namespace Cmd {
             UndelayAllCmd(): StaticCmd("undelayAll", BASE, N_("removes all the pending /delay commands")) {
             }
 
-            void Run(const Cmd::Args& args) const override {
+            void Run(const Cmd::Args& args) const OVERRIDE {
                 Q_UNUSED(args); //TODO
                 delays.clear();
             }
@@ -746,7 +747,7 @@ namespace Cmd {
             AliasProxy(): CmdBase(0) {
             }
 
-            void Run(const Cmd::Args& args) const override{
+            void Run(const Cmd::Args& args) const OVERRIDE {
                 const std::string& name = args.Argv(0);
                 const std::string& parameters = args.EscapedArgs(1);
 
@@ -782,7 +783,7 @@ namespace Cmd {
             AliasCmd(): StaticCmd("alias", BASE, N_("creates or view an alias")) {
             }
 
-            void Run(const Cmd::Args& args) const override{
+            void Run(const Cmd::Args& args) const OVERRIDE {
                 if (args.Argc() < 2) {
                     PrintUsage(args, _("<name>"), _("show an alias"));
                     PrintUsage(args, _("<name> <exec>"), _("create an alias"));
@@ -821,7 +822,7 @@ namespace Cmd {
                 cvar_modifiedFlags |= CVAR_ARCHIVE;
             }
 
-            Cmd::CompletionResult Complete(int argNum, const Args& args, const std::string& prefix) const override{
+            Cmd::CompletionResult Complete(int argNum, const Args& args, const std::string& prefix) const OVERRIDE {
                 if (argNum == 1) {
                     return CompleteAliasName(prefix);
                 } else if (argNum > 1) {
@@ -838,7 +839,7 @@ namespace Cmd {
             UnaliasCmd(): StaticCmd("unalias", BASE, N_("deletes an alias")) {
             }
 
-            void Run(const Cmd::Args& args) const override{
+            void Run(const Cmd::Args& args) const OVERRIDE {
                 if (args.Argc() != 2) {
                     PrintUsage(args, _("<name>"), _("delete an alias"));
                     return;
@@ -852,7 +853,7 @@ namespace Cmd {
                 }
             }
 
-            Cmd::CompletionResult Complete(int argNum, const Args& args, const std::string& prefix) const override{
+            Cmd::CompletionResult Complete(int argNum, const Args& args, const std::string& prefix) const OVERRIDE {
                 Q_UNUSED(args);
 
                 if (argNum == 1) {
@@ -869,7 +870,7 @@ namespace Cmd {
             ClearAliasesCmd(): StaticCmd("clearAliases", BASE, N_("deletes all the aliases")) {
             }
 
-            void Run(const Cmd::Args& args) const override{
+            void Run(const Cmd::Args& args) const OVERRIDE {
                 Q_UNUSED(args); //TODO
                 RemoveFlaggedCommands(ALIAS);
                 aliases.clear();
@@ -882,7 +883,7 @@ namespace Cmd {
             ListAliasesCmd(): StaticCmd("listAliases", BASE, N_("lists aliases")) {
             }
 
-            void Run(const Cmd::Args& args) const override{
+            void Run(const Cmd::Args& args) const OVERRIDE {
                 Q_UNUSED(args); //TODO
                 std::string name;
 
