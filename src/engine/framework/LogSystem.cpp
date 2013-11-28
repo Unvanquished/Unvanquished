@@ -81,7 +81,7 @@ namespace Log {
                 this->Register(TTY_CONSOLE);
             }
 
-            virtual bool Process(std::vector<Log::Event>& events) override {
+            virtual bool Process(std::vector<Log::Event>& events) OVERRIDE {
                 for (Log::Event event : events)  {
                     Sys_Print(event.text.c_str());
                     Sys_Print("\n");
@@ -101,11 +101,11 @@ namespace Log {
     Cvar::Cvar<bool> forceFlush("logs.logFile.forceFlush", "bool - are all the logs flushed immediately (more accurate but slower)", Cvar::ARCHIVE, false);
     class LogFileTarget :public Target {
         public:
-            LogFileTarget() {
+            LogFileTarget() : logFile(0), recursing(false) {
                 this->Register(LOGFILE);
             }
 
-            virtual bool Process(std::vector<Log::Event>& events) override {
+            virtual bool Process(std::vector<Log::Event>& events) OVERRIDE {
                 //If we have no log file drop the events
                 if (not useLogFile.Get()) {
                     return true;
@@ -144,9 +144,9 @@ namespace Log {
             }
 
         private:
-            fileHandle_t logFile = 0;
+            fileHandle_t logFile;
             //TODO atomic boolean
-            bool recursing = false;
+            bool recursing;
             std::recursive_mutex lock;
     };
 
@@ -159,7 +159,7 @@ namespace Log {
                 this->Register(id);
             }
 
-            virtual bool Process(std::vector<Log::Event>& events) override {
+            virtual bool Process(std::vector<Log::Event>& events) OVERRIDE {
                 Q_UNUSED(events);
 
                 return true;

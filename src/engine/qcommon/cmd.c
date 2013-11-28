@@ -582,7 +582,7 @@ class ProxyCmd: public Cmd::CmdBase {
 	public:
 		ProxyCmd(): Cmd::CmdBase(Cmd::PROXY_FOR_OLD) {}
 
-		void Run(const Cmd::Args& args) const override {
+		void Run(const Cmd::Args& args) const OVERRIDE {
 			proxyInfo_t proxy = proxies[args.Argv(0)];
 			if (proxy.cmd != 0) {
 				proxy.cmd();
@@ -594,7 +594,7 @@ class ProxyCmd: public Cmd::CmdBase {
 
 		}
 
-		Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, const std::string& prefix) const override {
+		Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, const std::string& prefix) const OVERRIDE {
 			static char buffer[4096];
 			proxyInfo_t proxy = proxies[args.Argv(0)];
 

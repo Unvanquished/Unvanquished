@@ -52,7 +52,7 @@ class MapCmd: public Cmd::StaticCmd {
             Cmd::StaticCmd(name, Cmd::SYSTEM, description), cheat(cheat) {
         }
 
-        void Run(const Cmd::Args& args) const override {
+        void Run(const Cmd::Args& args) const OVERRIDE {
             if (args.Argc() < 2) {
                 PrintUsage(args, _("<mapname> (layoutname)"), _("loads a new map"));
                 return;
@@ -77,7 +77,7 @@ class MapCmd: public Cmd::StaticCmd {
             Cvar_Set("sv_cheats", cheat ? "1" : "0");
         }
 
-        Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, const std::string& prefix) const override{
+        Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, const std::string& prefix) const OVERRIDE {
             if (argNum == 1) {
                 return FS::CompleteFilenameInDir(prefix, "maps", "bsp");
             } else if (argNum > 1) {

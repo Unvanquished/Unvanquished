@@ -1,8 +1,8 @@
 language:
   - cpp
 
-# GCC version on travis is too old
 compiler:
+  - gcc
   - clang
 
 install:

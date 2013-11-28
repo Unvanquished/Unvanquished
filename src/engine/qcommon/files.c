@@ -2942,7 +2942,7 @@ class DirCmd: public Cmd::StaticCmd {
         DirCmd(): Cmd::StaticCmd("dir", Cmd::SYSTEM, N_("lists the files in a directory")) {
         }
 
-        void Run(const Cmd::Args& args) const override {
+        void Run(const Cmd::Args& args) const OVERRIDE {
             if (args.Argc() < 2 or args.Argc() > 3) {
                 PrintUsage(args, _("<directory> [<extension>]"), "");
                 return;
@@ -3103,7 +3103,7 @@ class GlobCmd: public Cmd::StaticCmd {
         GlobCmd(): Cmd::StaticCmd("glob", Cmd::SYSTEM, N_("searches the matching filenames")) {
         }
 
-        void Run(const Cmd::Args& args) const override {
+        void Run(const Cmd::Args& args) const OVERRIDE {
             if (args.Argc() < 2){
                 PrintUsage(args, _("<filter>"), "");
                 Print(_( "example: fdir *q3dm*.bsp\n"));
@@ -3184,7 +3184,7 @@ class PathCmd: public Cmd::StaticCmd {
         PathCmd(): Cmd::StaticCmd("path", Cmd::SYSTEM, N_("lists the file search paths")) {
         }
 
-        void Run(const Cmd::Args& args) const override {
+        void Run(const Cmd::Args& args) const OVERRIDE {
             //TODO forward the print env
             FS_PrintPath();
         }
@@ -3201,7 +3201,7 @@ class WhichCmd: public Cmd::StaticCmd {
         WhichCmd(): Cmd::StaticCmd("which", Cmd::SYSTEM, N_("tells from which source a file was loaded")) {
         }
 
-        void Run(const Cmd::Args& args) const override {
+        void Run(const Cmd::Args& args) const OVERRIDE {
             if (args.Argc() < 2) {
                 PrintUsage(args, _("<file>"), "");
                 return;

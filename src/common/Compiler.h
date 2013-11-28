@@ -62,6 +62,15 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #define DLLIMPORT __attribute__((__visibility__("default")))
 #endif
 
+// override and final keywords
+#if __clang__ || (__GNUC__ * 100 + __GNUC_MINOR__) >= 407
+#define OVERRIDE override
+#define FINAL final
+#else
+#define OVERRIDE
+#define FINAL
+#endif
+
 // Microsoft Visual C++
 #elif defined( _MSC_VER )
 
