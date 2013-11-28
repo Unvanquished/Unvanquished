@@ -122,6 +122,11 @@ namespace Cmd {
     void AddCommand(std::string name, const CmdBase& cmd, std::string description) {
         CommandMap& commands = GetCommandMap();
 
+        if (!IsValidCmdName(name)) {
+			commandLog.Warn(_("Cmd::AddCommand: Invalid command name '%s'"), name);
+			return;
+        }
+
         if (commands.count(name)) {
 			commandLog.Warn(_("Cmd::AddCommand: %s already defined"), name);
 			return;

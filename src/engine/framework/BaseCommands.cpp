@@ -815,6 +815,11 @@ namespace Cmd {
                     return;
                 }
 
+                if (!IsValidCmdName(name)) {
+                    Print(_("Invalid alias name '%s'"), name);
+                    return;
+                }
+
                 aliases[name] = aliasRecord_t{command, aliasRun};
                 AddCommand(name, aliasProxy, N_("a user-defined alias command"));
 

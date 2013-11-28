@@ -169,6 +169,11 @@ namespace Cvar {
         auto it = cvars.find(cvarName);
         //TODO: rom means the cvar should have been created before?
         if (it == cvars.end()) {
+            if (!Cmd::IsValidCmdName(cvarName)) {
+                Com_Printf(_("Invalid cvar name '%s'"), cvarName.c_str());
+                return;
+            }
+
             //The user creates a new cvar through a command.
             cvarRecord_t cvar{value, value, flags | CVAR_USER_CREATED, "user created", nullptr, {}};
             cvars[cvarName] = new cvarRecord_t(cvar);
@@ -236,6 +241,11 @@ namespace Cvar {
 
         auto it = cvars.find(name);
         if (it == cvars.end()) {
+            if (!Cmd::IsValidCmdName(name)) {
+                Com_Printf(_("Invalid cvar name '%s'"), name.c_str());
+                return;
+            }
+
             //Create the cvar and parse its default value
             cvarRecord_t cvar{defaultValue, defaultValue, flags, description, proxy, {}};
             cvars[name] = new cvarRecord_t(cvar);

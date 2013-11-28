@@ -239,6 +239,22 @@ namespace Cmd {
         return out;
     }
 
+    bool IsValidCmdName(Str::StringRef text)
+    {
+        for (char c: text) {
+            if (c >= 'a' && c <= 'z')
+                continue;
+            if (c >= 'A' && c <= 'Z')
+                continue;
+            if (c >= '0' && c <= '9')
+                continue;
+            if (c == '_' || c == '.')
+                continue;
+            return false;
+        }
+        return true;
+    }
+
     /*
     ===============================================================================
 
