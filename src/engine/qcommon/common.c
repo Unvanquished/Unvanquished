@@ -2246,7 +2246,7 @@ journaled file
 */
 
 // bk001129 - here we go again: upped from 64
-#define MAX_PUSHED_EVENTS 256
+#define MAX_PUSHED_EVENTS 512
 // bk001129 - init, also static
 static int        com_pushedEventsHead = 0;
 static int        com_pushedEventsTail = 0;
