@@ -28,10 +28,10 @@ along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 // -----------
 
 // This also sets a minimum frequency for G_UpdateUnlockables
-#define DECREASE_CONFIDENCE_PERIOD  500
+#define DECREASE_MOMENTUM_PERIOD  500
 
 // Used for legacy stage sensors
-#define CONFIDENCE_PER_LEGACY_STAGE 100
+#define MOMENTUM_PER_LEGACY_STAGE 100
 
 typedef enum
 {
@@ -42,13 +42,13 @@ typedef enum
 	CONF_KILLING,
 
 	NUM_CONF
-} confidence_t;
+} momentum_t;
 
 // -------------
 // local methods
 // -------------
 
-const char *ConfidenceTypeToReason( confidence_t type )
+const char *MomentumTypeToReason( momentum_t type )
 {
 	switch ( type )
 	{
@@ -57,14 +57,14 @@ const char *ConfidenceTypeToReason( confidence_t type )
 		case CONF_DECONSTRUCTING: return "deconstructing a structure";
 		case CONF_DESTROYING:     return "destryoing a structure";
 		case CONF_KILLING:        return "killing a player";
-		default:                  return "(unknown confidence type)";
+		default:                  return "(unknown momentum type)";
 	}
 }
 
 /**
- * Has to be called whenever the confidence of a team has been modified.
+ * Has to be called whenever the momentum of a team has been modified.
  */
-void ConfidenceChanged( void )
+void MomentumChanged( void )
 {
 	int       playerNum;
 	gentity_t *player;
@@ -86,8 +86,8 @@ void ConfidenceChanged( void )
 
 		if ( team > TEAM_NONE && team < NUM_TEAMS )
 		{
-			client->ps.persistant[ PERS_CONFIDENCE ] = ( short )
-				( level.team[ team ].confidence * 10.0f + 0.5f );
+			client->ps.persistant[ PERS_MOMENTUM ] = ( short )
+				( level.team[ team ].momentum * 10.0f + 0.5f );
 		}
 	}
 
@@ -96,21 +96,21 @@ void ConfidenceChanged( void )
 }
 
 /**
- * Notifies legacy stage sensors by assuming a certain amount of confidence is a stage.
+ * Notifies legacy stage sensors by assuming a certain amount of momentum is a stage.
  *
- * To be called after the team's confidence has been modified.
+ * To be called after the team's momentum has been modified.
  */
 void NotifyLegacyStageSensors( team_t team, float amount )
 {
 	int   stage;
-	float confidence;
+	float momentum;
 
 	for ( stage = 1; stage < 3; stage++ )
 	{
-		confidence = stage * ( float )CONFIDENCE_PER_LEGACY_STAGE;
+		momentum = stage * ( float )MOMENTUM_PER_LEGACY_STAGE;
 
-		if ( ( level.team[ team ].confidence - amount < confidence ) ==
-		     ( level.team[ team ].confidence          > confidence ) )
+		if ( ( level.team[ team ].momentum - amount < momentum ) ==
+		     ( level.team[ team ].momentum          > momentum ) )
 		{
 			if      ( amount > 0.0f )
 			{
@@ -124,23 +124,23 @@ void NotifyLegacyStageSensors( team_t team, float amount )
 	}
 }
 
-static INLINE float ConfidenceTimeMod( void )
+static INLINE float MomentumTimeMod( void )
 {
-	if ( g_confidenceRewardDoubleTime.value <= 0.0f )
+	if ( g_momentumRewardDoubleTime.value <= 0.0f )
 	{
 		return 1.0f;
 	}
 	else
 	{
 		// ln(2) ~= 0.6931472
-		return exp( 0.6931472f * ( ( level.matchTime / 60000.0f ) / g_confidenceRewardDoubleTime.value ) );
+		return exp( 0.6931472f * ( ( level.matchTime / 60000.0f ) / g_momentumRewardDoubleTime.value ) );
 	}
 }
 
 /**
- * Modifies a confidence reward based on type, player count and match time.
+ * Modifies a momentum reward based on type, player count and match time.
  */
-static float ConfidenceMod( confidence_t type )
+static float MomentumMod( momentum_t type )
 {
 	float baseMod, typeMod, timeMod, playerCountMod, mod;
 
@@ -148,31 +148,31 @@ static float ConfidenceMod( confidence_t type )
 	switch ( type )
 	{
 		case CONF_KILLING:
-			baseMod        = g_confidenceBaseMod.value;
-			typeMod        = g_confidenceKillMod.value;
-			timeMod        = ConfidenceTimeMod();
+			baseMod        = g_momentumBaseMod.value;
+			typeMod        = g_momentumKillMod.value;
+			timeMod        = MomentumTimeMod();
 			playerCountMod = 1.0f;
 			break;
 
 		case CONF_BUILDING:
-			baseMod        = g_confidenceBaseMod.value;
-			typeMod        = g_confidenceBuildMod.value;
-			timeMod        = ConfidenceTimeMod();
+			baseMod        = g_momentumBaseMod.value;
+			typeMod        = g_momentumBuildMod.value;
+			timeMod        = MomentumTimeMod();
 			playerCountMod = 1.0f;
 			break;
 
 		case CONF_DECONSTRUCTING:
 			// always used on top of build mod, so neutral baseMod/timeMod/playerCountMod
 			baseMod        = 1.0f;
-			typeMod        = g_confidenceDeconMod.value;
+			typeMod        = g_momentumDeconMod.value;
 			timeMod        = 1.0f;
 			playerCountMod = 1.0f;
 			break;
 
 		case CONF_DESTROYING:
-			baseMod        = g_confidenceBaseMod.value;
-			typeMod        = g_confidenceDestroyMod.value;
-			timeMod        = ConfidenceTimeMod();
+			baseMod        = g_momentumBaseMod.value;
+			typeMod        = g_momentumDestroyMod.value;
+			timeMod        = MomentumTimeMod();
 			playerCountMod = 1.0f;
 			break;
 
@@ -186,21 +186,21 @@ static float ConfidenceMod( confidence_t type )
 
 	mod = baseMod * typeMod * timeMod * playerCountMod;
 
-	if ( g_debugConfidence.integer > 1 )
+	if ( g_debugMomentum.integer > 1 )
 	{
-		Com_Printf( "Confidence mod for %s: Base %.2f, Type %.2f, Time %.2f, Playercount %.2f → %.2f\n",
-		            ConfidenceTypeToReason( type ), baseMod, typeMod, timeMod, playerCountMod, mod );
+		Com_Printf( "Momentum mod for %s: Base %.2f, Type %.2f, Time %.2f, Playercount %.2f → %.2f\n",
+		            MomentumTypeToReason( type ), baseMod, typeMod, timeMod, playerCountMod, mod );
 	}
 
 	return mod;
 }
 
 /**
- * Awards confidence to a team.
+ * Awards momentum to a team.
  *
  * Will notify the client hwo earned it if given, otherwise the whole team, with an event.
  */
-static float AddConfidence( confidence_t type, team_t team, float amount,
+static float AddMomentum( momentum_t type, team_t team, float amount,
                             gentity_t *source, qboolean skipChangeHook )
 {
 	gentity_t *event = NULL;
@@ -213,17 +213,17 @@ static float AddConfidence( confidence_t type, team_t team, float amount,
 	}
 
 	// apply modifier
-	amount *= ConfidenceMod( type );
+	amount *= MomentumMod( type );
 
 	if ( amount != 0.0f )
 	{
-		// add confidence to team
-		level.team[ team ].confidence += amount;
+		// add momentum to team
+		level.team[ team ].momentum += amount;
 
 		// run change hook if requested
 		if ( !skipChangeHook )
 		{
-			ConfidenceChanged();
+			MomentumChanged();
 		}
 
 		// notify source
@@ -233,20 +233,20 @@ static float AddConfidence( confidence_t type, team_t team, float amount,
 
 			if ( client && client->pers.team == team )
 			{
-				event = G_NewTempEntity( client->ps.origin, EV_CONFIDENCE );
+				event = G_NewTempEntity( client->ps.origin, EV_MOMENTUM );
 				event->r.svFlags = SVF_SINGLECLIENT;
 				event->r.singleClient = client->ps.clientNum;
 			}
 		}
 		else
 		{
-			event = G_NewTempEntity( vec3_origin, EV_CONFIDENCE );
+			event = G_NewTempEntity( vec3_origin, EV_MOMENTUM );
 			event->r.svFlags = ( SVF_BROADCAST | SVF_CLIENTMASK );
 			G_TeamToClientmask( team, &( event->r.loMask ), &( event->r.hiMask ) );
 		}
 		if ( event )
 		{
-			// TODO: Use more bits for confidence value
+			// TODO: Use more bits for momentum value
 			event->s.eventParm = 0;
 			event->s.otherEntityNum = 0;
 			event->s.otherEntityNum2 = ( int )( fabs( amount ) * 10.0f + 0.5f );
@@ -257,7 +257,7 @@ static float AddConfidence( confidence_t type, team_t team, float amount,
 		NotifyLegacyStageSensors( team, amount );
 	}
 
-	if ( g_debugConfidence.integer > 0 )
+	if ( g_debugMomentum.integer > 0 )
 	{
 		if ( source && source->client )
 		{
@@ -268,9 +268,9 @@ static float AddConfidence( confidence_t type, team_t team, float amount,
 			clientName = "no source";
 		}
 
-		Com_Printf( "Confidence: %.2f to %s (%s by %s for %s)\n",
+		Com_Printf( "Momentum: %.2f to %s (%s by %s for %s)\n",
 		            amount, BG_TeamNamePlural( team ), amount < 0.0f ? "lost" : "earned",
-		            clientName, ConfidenceTypeToReason( type ) );
+		            clientName, MomentumTypeToReason( type ) );
 	}
 
 	return amount;
@@ -281,14 +281,14 @@ static float AddConfidence( confidence_t type, team_t team, float amount,
 // ------------
 
 /**
- * Exponentially decreases confidence.
+ * Exponentially decreases momentum.
  */
-void G_DecreaseConfidence( void )
+void G_DecreaseMomentum( void )
 {
 	team_t       team;
 	float        amount;
 
-	static float decreaseFactor = 1.0f, lastConfidenceHalfLife = 0.0f;
+	static float decreaseFactor = 1.0f, lastMomentumHalfLife = 0.0f;
 	static int   nextCalculation = 0;
 
 	if ( level.time < nextCalculation )
@@ -296,81 +296,81 @@ void G_DecreaseConfidence( void )
 		return;
 	}
 
-	if ( g_confidenceHalfLife.value <= 0.0f )
+	if ( g_momentumHalfLife.value <= 0.0f )
 	{
 		return;
 	}
 
 	// only calculate decreaseFactor if the server configuration changed
-	if ( lastConfidenceHalfLife != g_confidenceHalfLife.value )
+	if ( lastMomentumHalfLife != g_momentumHalfLife.value )
 	{
 		// ln(2) ~= 0.6931472
-		decreaseFactor = exp( ( -0.6931472f / ( ( 60000.0f / DECREASE_CONFIDENCE_PERIOD ) *
-		                                        g_confidenceHalfLife.value ) ) );
+		decreaseFactor = exp( ( -0.6931472f / ( ( 60000.0f / DECREASE_MOMENTUM_PERIOD ) *
+		                                        g_momentumHalfLife.value ) ) );
 
-		lastConfidenceHalfLife = g_confidenceHalfLife.value;
+		lastMomentumHalfLife = g_momentumHalfLife.value;
 	}
 
-	// decrease confidence
+	// decrease momentum
 	for ( team = TEAM_NONE + 1; team < NUM_TEAMS; team++ )
 	{
-		amount = level.team[ team ].confidence * ( decreaseFactor - 1.0f );
+		amount = level.team[ team ].momentum * ( decreaseFactor - 1.0f );
 
-		level.team[ team ].confidence += amount;
+		level.team[ team ].momentum += amount;
 
 		// notify legacy stage sensors
 		NotifyLegacyStageSensors( team, amount );
 	}
 
-	ConfidenceChanged();
+	MomentumChanged();
 
-	nextCalculation = level.time + DECREASE_CONFIDENCE_PERIOD;
+	nextCalculation = level.time + DECREASE_MOMENTUM_PERIOD;
 }
 
 /**
- * Adds confidence.
+ * Adds momentum.
  */
-float G_AddConfidenceGeneric( team_t team, float amount )
+float G_AddMomentumGeneric( team_t team, float amount )
 {
-	AddConfidence( CONF_GENERIC, team, amount, NULL, qfalse );
+	AddMomentum( CONF_GENERIC, team, amount, NULL, qfalse );
 
 	return amount;
 }
 
 /**
- * Adds confidence.
+ * Adds momentum.
  *
- * G_AddConfidenceEnd has to be called after all G_AddConfidence*Step steps are done.
+ * G_AddMomentumEnd has to be called after all G_AddMomentum*Step steps are done.
  */
-float G_AddConfidenceGenericStep( team_t team, float amount )
+float G_AddMomentumGenericStep( team_t team, float amount )
 {
-	AddConfidence( CONF_GENERIC, team, amount, NULL, qtrue );
+	AddMomentum( CONF_GENERIC, team, amount, NULL, qtrue );
 
 	return amount;
 }
 
 /**
- * Predicts the confidence reward for building a buildable.
+ * Predicts the momentum reward for building a buildable.
  *
  * Is used for the buildlog entry, which is written before the actual reward happens.
  * Also used to calculate the deconstruction penalty for preplaced buildables.
  */
-float G_PredictConfidenceForBuilding( gentity_t *buildable )
+float G_PredictMomentumForBuilding( gentity_t *buildable )
 {
 	if ( !buildable || !buildable->s.eType == ET_BUILDABLE )
 	{
 		return 0.0f;
 	}
 
-	return BG_Buildable( buildable->s.modelindex )->value * ConfidenceMod( CONF_BUILDING );
+	return BG_Buildable( buildable->s.modelindex )->value * MomentumMod( CONF_BUILDING );
 }
 
 /**
- * Adds confidence for building a buildable.
+ * Adds momentum for building a buildable.
  *
  * Will save the reward with the buildable.
  */
-float G_AddConfidenceForBuilding( gentity_t *buildable )
+float G_AddMomentumForBuilding( gentity_t *buildable )
 {
 	float     value, reward;
 	team_t    team;
@@ -385,18 +385,18 @@ float G_AddConfidenceForBuilding( gentity_t *buildable )
 	team    = BG_Buildable( buildable->s.modelindex )->team;
 	builder = &g_entities[ buildable->builtBy->slot ];
 
-	reward = AddConfidence( CONF_BUILDING, team, value, builder, qfalse );
+	reward = AddMomentum( CONF_BUILDING, team, value, builder, qfalse );
 
 	// Save reward with buildable so it can be reverted
-	buildable->confidenceEarned = reward;
+	buildable->momentumEarned = reward;
 
 	return reward;
 }
 
 /**
- * Removes confidence for deconstructing a buildable.
+ * Removes momentum for deconstructing a buildable.
  */
-float G_RemoveConfidenceForDecon( gentity_t *buildable, gentity_t *deconner )
+float G_RemoveMomentumForDecon( gentity_t *buildable, gentity_t *deconner )
 {
 	float     healthFraction, value;
 	team_t    team;
@@ -410,27 +410,27 @@ float G_RemoveConfidenceForDecon( gentity_t *buildable, gentity_t *deconner )
 	healthFraction = buildable->health / ( float )BG_Buildable( buildable->s.modelindex )->health;
 	team           = BG_Buildable( buildable->s.modelindex )->team;
 
-	if ( buildable->confidenceEarned )
+	if ( buildable->momentumEarned )
 	{
-		value = buildable->confidenceEarned;
+		value = buildable->momentumEarned;
 	}
 	else
 	{
 		// assume the buildable has just been built
-		value = G_PredictConfidenceForBuilding( buildable );
+		value = G_PredictMomentumForBuilding( buildable );
 	}
 
 	value *= healthFraction;
 
-	return AddConfidence( CONF_DECONSTRUCTING, team, -value, deconner, qfalse );
+	return AddMomentum( CONF_DECONSTRUCTING, team, -value, deconner, qfalse );
 }
 
 /**
- * Adds confidence for destroying a buildable.
+ * Adds momentum for destroying a buildable.
  *
- * G_AddConfidenceEnd has to be called after all G_AddConfidence*Step steps are done.
+ * G_AddMomentumEnd has to be called after all G_AddMomentum*Step steps are done.
  */
-float G_AddConfidenceForDestroyingStep( gentity_t *buildable, gentity_t *attacker, float share )
+float G_AddMomentumForDestroyingStep( gentity_t *buildable, gentity_t *attacker, float share )
 {
 	float  value;
 	team_t team;
@@ -450,15 +450,15 @@ float G_AddConfidenceForDestroyingStep( gentity_t *buildable, gentity_t *attacke
 	value = BG_Buildable( buildable->s.modelindex )->value * share;
 	team  = attacker->client->pers.team;
 
-	return AddConfidence( CONF_DESTROYING, team, value, attacker, qtrue );
+	return AddMomentum( CONF_DESTROYING, team, value, attacker, qtrue );
 }
 
 /**
- * Adds confidence for killing a player.
+ * Adds momentum for killing a player.
  *
- * G_AddConfidenceEnd has to be called after all G_AddConfidence*Step steps are done.
+ * G_AddMomentumEnd has to be called after all G_AddMomentum*Step steps are done.
  */
-float G_AddConfidenceForKillingStep( gentity_t *victim, gentity_t *attacker, float share )
+float G_AddMomentumForKillingStep( gentity_t *victim, gentity_t *attacker, float share )
 {
 	float     value;
 	team_t    team;
@@ -475,16 +475,16 @@ float G_AddConfidenceForKillingStep( gentity_t *victim, gentity_t *attacker, flo
 		return 0.0f;
 	}
 
-	value = BG_GetValueOfPlayer( &victim->client->ps ) * CONFIDENCE_PER_CREDIT * share;
+	value = BG_GetValueOfPlayer( &victim->client->ps ) * MOMENTUM_PER_CREDIT * share;
 	team  = attacker->client->pers.team;
 
-	return AddConfidence( CONF_KILLING, team, value, attacker, qtrue );
+	return AddMomentum( CONF_KILLING, team, value, attacker, qtrue );
 }
 
 /**
- * Has to be called after the last G_AddConfidence*Step step.
+ * Has to be called after the last G_AddMomentum*Step step.
  */
-void G_AddConfidenceEnd( void )
+void G_AddMomentumEnd( void )
 {
-	ConfidenceChanged();
+	MomentumChanged();
 }

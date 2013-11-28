@@ -2210,13 +2210,19 @@ static void UI_OwnerDraw( rectDef_t *rect,
 			break;
 
 		case UI_HBUYINFOPANE:
-			UI_DrawInfoPane( &uiInfo.humanArmouryBuyList[ uiInfo.humanArmouryBuyIndex ],
-			                 rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
+		        if ( uiInfo.humanArmouryBuyList[ uiInfo.humanArmouryBuyIndex ].v.weapon != WP_NONE )
+		        {
+				UI_DrawInfoPane( &uiInfo.humanArmouryBuyList[ uiInfo.humanArmouryBuyIndex ],
+				                 rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
+                        }
 			break;
 
 		case UI_HSELLINFOPANE:
-			UI_DrawInfoPane( &uiInfo.humanArmourySellList[ uiInfo.humanArmourySellIndex ],
-			                 rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
+		        if ( uiInfo.humanArmourySellList[ uiInfo.humanArmourySellIndex ].v.weapon != WP_NONE )
+		        {
+				UI_DrawInfoPane( &uiInfo.humanArmourySellList[ uiInfo.humanArmourySellIndex ],
+				                 rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
+                        }
 			break;
 
 		case UI_ABUILDINFOPANE:
@@ -2531,17 +2537,16 @@ static void UI_LoadAlienClasses( void )
 	{
 		UI_AddClass( PCL_ALIEN_LEVEL0 );
 	}
-
-	if ( !BG_ClassDisabled( PCL_ALIEN_BUILDER0 ) )
-	{
-		UI_AddClass( PCL_ALIEN_BUILDER0 );
-	}
-
 	if ( !BG_ClassDisabled( PCL_ALIEN_BUILDER0_UPG ) &&
 	     BG_ClassUnlocked( PCL_ALIEN_BUILDER0_UPG ) )
 	{
 		UI_AddClass( PCL_ALIEN_BUILDER0_UPG );
 	}
+	else if ( !BG_ClassDisabled( PCL_ALIEN_BUILDER0 ) )
+	{
+		UI_AddClass( PCL_ALIEN_BUILDER0 );
+	}
+
 }
 
 /*

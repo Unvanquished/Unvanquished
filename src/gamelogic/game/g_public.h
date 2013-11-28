@@ -52,7 +52,7 @@ qboolean          G_FindCreep( gentity_t *self );
 gentity_t         *G_Build( gentity_t *builder, buildable_t buildable, const vec3_t origin, const vec3_t normal, const vec3_t angles, int groundEntityNum );
 int               G_RGSPredictEfficiency( vec3_t origin );
 void              G_BuildableThink( gentity_t *ent, int msec );
-qboolean          G_BuildableRange( vec3_t origin, float r, buildable_t buildable );
+qboolean          G_BuildableInRange( vec3_t origin, float radius, buildable_t buildable );
 void              G_IgniteBuildable( gentity_t *self, gentity_t *fireStarter );
 void              G_ClearDeconMarks( void );
 void              G_Deconstruct( gentity_t *self, gentity_t *deconner, meansOfDeath_t deconType );
@@ -139,23 +139,23 @@ qboolean          G_RadiusDamage( vec3_t origin, gentity_t *attacker, float dama
 qboolean          G_SelectiveRadiusDamage( vec3_t origin, gentity_t *attacker, float damage, float radius, gentity_t *ignore, int mod, int ignoreTeam );
 void              G_RewardAttackers( gentity_t *self );
 void              G_AddCreditsToScore( gentity_t *self, int credits );
-void              G_AddConfidenceToScore( gentity_t *self, float confidence );
+void              G_AddMomentumToScore( gentity_t *self, float momentum );
 void              G_LogDestruction( gentity_t *self, gentity_t *actor, int mod );
 float             G_GetNonLocDamageMod( class_t pcl );
 float             G_GetPointDamageMod( gentity_t *target, class_t pcl, float angle, float height );
 void              G_InitDamageLocations( void );
 void              G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod );
 
-// g_confidence.c
-void              G_DecreaseConfidence( void );
-float             G_AddConfidenceGeneric( team_t team, float amount );
-float             G_AddConfidenceGenericStep( team_t team, float amount );
-float             G_PredictConfidenceForBuilding( gentity_t *buildable );
-float             G_AddConfidenceForBuilding( gentity_t *buildable );
-float             G_RemoveConfidenceForDecon( gentity_t *buildable, gentity_t *deconner );
-float             G_AddConfidenceForKillingStep( gentity_t *victim, gentity_t *attacker, float share );
-float             G_AddConfidenceForDestroyingStep( gentity_t *buildable, gentity_t *attacker, float share );
-void              G_AddConfidenceEnd( void );
+// g_momentum.c
+void              G_DecreaseMomentum( void );
+float             G_AddMomentumGeneric( team_t team, float amount );
+float             G_AddMomentumGenericStep( team_t team, float amount );
+float             G_PredictMomentumForBuilding( gentity_t *buildable );
+float             G_AddMomentumForBuilding( gentity_t *buildable );
+float             G_RemoveMomentumForDecon( gentity_t *buildable, gentity_t *deconner );
+float             G_AddMomentumForKillingStep( gentity_t *victim, gentity_t *attacker, float share );
+float             G_AddMomentumForDestroyingStep( gentity_t *buildable, gentity_t *attacker, float share );
+void              G_AddMomentumEnd( void );
 
 // g_main.c
 void              G_InitSpawnQueue( spawnQueue_t *sq );
@@ -254,7 +254,7 @@ char              *G_CopyString( const char *str );
 char              *vtos( const vec3_t v );
 void              G_AddPredictableEvent( gentity_t *ent, int event, int eventParm );
 void              G_AddEvent( gentity_t *ent, int event, int eventParm );
-void              G_BroadcastEvent( int event, int eventParm );
+void              G_BroadcastEvent( int event, int eventParm, team_t team );
 void              G_SetShaderRemap( const char *oldShader, const char *newShader, float timeOffset );
 const char        *BuildShaderStateConfig( void );
 qboolean          G_ClientIsLagging( gclient_t *client );
@@ -269,7 +269,11 @@ int               G_Heal( gentity_t *self, int amount );
 
 // g_weapon.c
 void              G_ForceWeaponChange( gentity_t *ent, weapon_t weapon );
-void              G_GiveClientMaxAmmo( gentity_t *ent, qboolean buyingEnergyAmmo );
+void              G_GiveMaxAmmo( gentity_t *self );
+qboolean          G_RefillAmmo( gentity_t *self, qboolean triggerEvent );
+qboolean          G_RefillFuel( gentity_t *self, qboolean triggerEvent );
+qboolean          G_FindAmmo( gentity_t *self );
+qboolean          G_FindFuel( gentity_t *self );
 void              G_CalcMuzzlePoint( gentity_t *self, vec3_t forward, vec3_t right, vec3_t up, vec3_t muzzlePoint );
 void              G_SnapVectorTowards( vec3_t v, vec3_t to );
 qboolean          G_CheckVenomAttack( gentity_t *self );
