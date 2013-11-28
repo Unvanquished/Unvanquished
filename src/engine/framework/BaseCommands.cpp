@@ -612,16 +612,17 @@ namespace Cmd {
             void Run(const Cmd::Args& args) const OVERRIDE {
                 int argc = args.Argc();
 
-                if (argc < 3 or argc > 4) {
+                if (argc < 3) {
 		            PrintUsage(args, _( "delay (name) <delay in milliseconds> <command>\n  delay <delay in frames>f <command>"), _("executes <command> after the delay" ));
 		            return;
                 }
 
                 //Get all the parameters!
-                const std::string& command = args.Argv(argc - 1);
-                std::string delay = args.Argv(argc - 2);
+                bool isNamed = !isdigit(args.Argv(1)[0]);
+                const std::string& name = isNamed ? args.Argv(1) : "";
+                const std::string& command = args.EscapedArgs(2 + isNamed);
+                std::string delay = args.Argv(1 + isNamed);
                 int target = Str::ToInt(delay);
-                const std::string& name = (argc == 4) ? args.Argv(1) : "";
                 delayType_t type;
 
                 if (target < 1) {
@@ -663,7 +664,7 @@ namespace Cmd {
                 }
 
                 const std::string& name = args.Argv(1);
-                const std::string& command = (args.Argc() >= 3) ? args.Argv(2) : "";
+                const std::string& command = (args.Argc() >= 3) ? args.EscapedArgs(2) : "";
 
                 for (auto it = delays.begin(); it != delays.end();) {
                     const delayRecord_t& delay = *it;
