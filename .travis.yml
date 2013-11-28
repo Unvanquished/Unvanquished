@@ -1,7 +1,7 @@
 language:
-  - c
-  - c++
+  - cpp
 
+# GCC version on travis is too old
 compiler:
   - clang
 
