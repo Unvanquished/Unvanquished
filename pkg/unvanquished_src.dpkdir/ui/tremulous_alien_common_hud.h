@@ -4,7 +4,6 @@
 
 #include "ui/tremulous_common_hud.h"
 
-//BACKGROUND
 itemDef
 {
 	name "background"
@@ -53,10 +52,9 @@ itemDef
 	background "ui/assets/alien/poisonbg.tga"
 }
 
-//WALLCLIMB
 itemDef
 {
-	name "leftsmall"
+	name "leftsmall" // wallclimb
 	rect -16 358 251 85
 	aspectBias ALIGN_LEFT
 	visible MENU_TRUE
@@ -67,10 +65,9 @@ itemDef
 	ownerdraw CG_PLAYER_WALLCLIMBING
 }
 
-//WALLCLIMB
 itemDef
 {
-	name "leftbig"
+	name "leftbig" // wallclimb
 	rect -20 336 255 107
 	aspectBias ALIGN_LEFT
 	visible MENU_TRUE
@@ -81,10 +78,9 @@ itemDef
 	ownerdraw CG_PLAYER_WALLCLIMBING
 }
 
-//WALLCLIMB
 itemDef
 {
-	name "rightsmall"
+	name "rightsmall" // wallclimb
 	rect 405 358 251 85
 	aspectBias ALIGN_RIGHT
 	visible MENU_TRUE
@@ -95,10 +91,9 @@ itemDef
 	ownerdraw CG_PLAYER_WALLCLIMBING
 }
 
-//WALLCLIMB
 itemDef
 {
-	name "rightbig"
+	name "rightbig" // wallclimb
 	rect 405 336 255 107
 	aspectBias ALIGN_RIGHT
 	visible MENU_TRUE
@@ -137,7 +132,7 @@ itemDef
 itemDef
 {
 	name "boosted"
-    rect 450 409 29 47
+	rect 450 409 29 47
 	aspectBias ALIGN_RIGHT
 	visible MENU_TRUE
 	decoration
@@ -154,7 +149,7 @@ itemDef
 	rect 30 431 70 20
 	aspectBias ALIGN_LEFT
 	visible MENU_TRUE
-      textalign ALIGN_RIGHT
+		textalign ALIGN_RIGHT
 	decoration
 	forecolor .94 .13 .1  1
 	ownerdraw CG_PLAYER_HEALTH
@@ -173,7 +168,6 @@ itemDef
 }
 
 /*
-//SMALL LOWER CROSS
 itemDef
 {
 	name "cross2"
@@ -187,7 +181,6 @@ itemDef
 	style WINDOW_STYLE_SHADER
 }
 
-//SMALL UPPER CROSS
 itemDef
 {
 	name "cross3"
@@ -202,7 +195,6 @@ itemDef
 }
 */
 
-//ALIEN CLASS ICON
 itemDef
 {
 	name "alien-icon"
@@ -214,7 +206,6 @@ itemDef
 	ownerdraw CG_PLAYER_WEAPONICON
 }
 
-//ORGANS
 itemDef
 {
 	name "organs"
@@ -243,7 +234,6 @@ itemDef
 	decoration
 }
 
-//ALIENSENSE
 itemDef
 {
 	name "aliensense"
@@ -253,7 +243,6 @@ itemDef
 	ownerdraw CG_PLAYER_ALIEN_SENSE
 }
 
-//CHARGE BAR
 itemDef
 {
 	name "charge"
@@ -266,7 +255,6 @@ itemDef
 	background "ui/assets/human/buildstat/health.tga"
 }
 
-//CHARGE BAR BG
 /*
 temDef
 {
@@ -281,7 +269,6 @@ temDef
 }
 */
 
-//TEAM OVERLAY
 itemDef
 {
 	name "teamoverlay"
@@ -294,34 +281,30 @@ itemDef
 	ownerdraw CG_TEAMOVERLAY
 }
 
-//CONFIDENCE BAR
 itemDef
 {
-	name "confidencebar"
+	name "momentumbar"
 	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B .25
 	backcolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B .2
-	//rect 0 140 8 200 // left
-	rect 154 448 332 12 // bottom
+	rect 154 464 332 12
 	aspectBias ALIGN_CENTER
 	decoration
 	visible MENU_TRUE
-	ownerdraw CG_CONFIDENCE_BAR
+	ownerdraw CG_MOMENTUM_BAR
 }
 
-//UNLOCKED ITEMS
 itemDef
 {
 	name "unlocked"
 	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 1 // enabled item
 	backcolor ( COMMON_HUD_R / 2 + 0.25 ) ( COMMON_HUD_G / 2 + 0.25 ) ( COMMON_HUD_B / 2 + 0.25 ) 0.5 // disabled item
-	rect 154 460 332 20 // bottom
+	rect 154 440 332 20 // bottom
 	aspectBias ALIGN_CENTER
 	decoration
 	visible MENU_TRUE
 	ownerdraw CG_UNLOCKED_ITEMS
 }
 
-//CROSSHAIR HEALTH METER
 itemDef
 {
 	name "crosshairhealth"
@@ -335,4 +318,3 @@ itemDef
 	background "ui/assets/neutral/crescent_bottom.tga"
 	ownerdraw CG_PLAYER_HEALTH_METER
 }
-
