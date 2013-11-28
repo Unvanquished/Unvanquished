@@ -403,12 +403,20 @@ static qboolean CG_RegisterPlayerAnimation( clientInfo_t *ci, const char *modelN
 	return qtrue;
 }
 
-static qboolean CG_DeriveAnimationDelta( const char *modelName, weapon_t weapon, clientInfo_t *ci )
+static qboolean CG_DeriveAnimationDelta( const char *modelName, weapon_t weapon, clientInfo_t *ci, qboolean iqm )
 {
 	int handle, i;
 	refSkeleton_t base, delta;
 
-	handle = trap_R_RegisterAnimation( va( "models/players/%s/%s_delta.md5anim", modelName, BG_Weapon( weapon )->name ) );
+	if ( iqm )
+	{
+		handle = trap_R_RegisterAnimation( va( "models/players/%s/%s.iqm:%s_delta", modelName, modelName, BG_Weapon( weapon )->name ) );
+
+	}
+	else
+	{
+		handle = trap_R_RegisterAnimation( va( "models/players/%s/%s_delta.md5anim", modelName, BG_Weapon( weapon )->name ) );
+	}
 
 	if ( !handle )
 	{
@@ -1071,7 +1079,7 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 			for ( i = WP_BLASTER; i < WP_NUM_WEAPONS; i++ )
 			{
 				if ( BG_Weapon( i )->team != TEAM_HUMANS || !BG_Weapon( i )->purchasable ) { continue; }
-				CG_DeriveAnimationDelta( modelName, i, ci );
+				CG_DeriveAnimationDelta( modelName, i, ci, iqm );
 			}
 
 		}
