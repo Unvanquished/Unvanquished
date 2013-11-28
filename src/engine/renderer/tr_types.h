@@ -178,6 +178,7 @@ typedef struct
 
 	vec3_t            bounds[ 2 ]; // bounds of all applied animations
 	vec_t             scale;
+	int               padding[ 3 ]; // pad to multiple of 16 bytes for QVM code
 } refSkeleton_t;
 #endif
 
