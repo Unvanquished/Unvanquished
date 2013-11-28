@@ -847,7 +847,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 	{
 		G_Printf( "Not logging to disk\n" );
 	}
-	
+
 	// gameplay statistics logging
 	if ( g_logGameplayStatsFrequency.integer > 0 )
 	{
@@ -1879,8 +1879,17 @@ void ExitLevel( void )
 {
 	int       i;
 	gclient_t *cl;
+	char currentMapName[ MAX_STRING_CHARS ];
 
-	if ( G_MapExists( g_nextMap.string ) )
+	trap_Cvar_VariableStringBuffer( "mapname", currentMapName, sizeof( currentMapName ) );
+
+	// Restart if map is the same
+	if ( !Q_stricmp( currentMapName, g_nextMap.string ) )
+	{
+		trap_Cvar_Set( "g_layouts", g_nextMapLayouts.string );
+		trap_SendConsoleCommand( EXEC_APPEND, "map_restart" );
+	}
+	else if ( G_MapExists( g_nextMap.string ) )
 	{
 		trap_SendConsoleCommand( EXEC_APPEND, va( "map %s %s\n", Quote( g_nextMap.string ), Quote( g_nextMapLayouts.string ) ) );
 	}
