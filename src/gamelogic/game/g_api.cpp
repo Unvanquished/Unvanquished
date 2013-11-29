@@ -24,7 +24,7 @@ extern "C" {
 #include "g_local.h"
 }
 #include "../../libs/nacl/nacl.h"
-#include "../../shared/RPC.h"
+#include "../../common/RPC.h"
 
 static NaCl::RootSocket rootSocket;
 static NaCl::IPCHandle shmRegion;
@@ -725,8 +725,8 @@ int trap_Parse_SourceFileAndLine(int handle, char *filename, int *line)
 	input.WriteInt(handle);
 	RPC::Reader output = DoRPC(input);
 	int ret = output.ReadInt();
-	*line = output.ReadInt();
 	Q_strncpyz(filename, output.ReadString(), 128);
+	*line = output.ReadInt();
 	return ret;
 }
 

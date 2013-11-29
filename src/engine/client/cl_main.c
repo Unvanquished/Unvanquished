@@ -4513,7 +4513,7 @@ void CL_Init( void )
 	//
 	// register our variables
 	//
-	cvar_t* gettext_supported = Cvar_Get( "\\IS_GETTEXT_SUPPORTED", "1", CVAR_ROM );
+	cvar_t* gettext_supported = Cvar_Get( "IS_GETTEXT_SUPPORTED", "1", CVAR_ROM );
 
 	cl_renderer = Cvar_Get( "cl_renderer", "GL3,GL", CVAR_ARCHIVE | CVAR_LATCH );
 
