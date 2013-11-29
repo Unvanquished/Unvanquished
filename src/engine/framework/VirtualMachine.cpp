@@ -84,7 +84,7 @@ int VMBase::Create(const char* name, Type type)
 	// If this fails, we assume the remote process failed to start
 	std::vector<char> buffer;
 	if (!module.GetRootSocket().RecvMsg(buffer) || buffer.size() != sizeof(int))
-		Com_Error(ERR_DROP, "Couldn't load VM %s", name);
+		Com_Error(ERR_DROP, "The '%s' VM did not start.", name);
 	return *reinterpret_cast<int*>(buffer.data());
 }
 
