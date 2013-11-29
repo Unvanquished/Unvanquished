@@ -4891,10 +4891,7 @@ static void R_CreateWorldVBO( void )
 	int            numSurfaces;
 	bspSurface_t  *surface;
 	bspSurface_t  **surfaces;
-	int            numUnmergedSurfaces;
-	int            numMergedSurfaces;
 	bspSurface_t  *mergedSurf;
-	int           oldViewCount;
 	int           startTime, endTime;
 
 	startTime = ri.Milliseconds();
@@ -5189,9 +5186,10 @@ static void R_CreateWorldVBO( void )
 	if ( r_mergeLeafSurfaces->integer )
 	{
 		// count merged/unmerged surfaces
-		numMergedSurfaces = 0;
-		numUnmergedSurfaces = 0;
-		oldViewCount = -2;
+		int numUnmergedSurfaces = 0;
+		int numMergedSurfaces = 0;
+		int oldViewCount = -2;
+
 		for ( i = 0; i < numSurfaces; i++ )
 		{
 			surface = surfaces[ i ];
@@ -5329,14 +5327,12 @@ static void R_CreateWorldVBO( void )
 
 			mergedSurf++;
 		}
-	}
-	endTime = ri.Milliseconds();
-	ri.Printf( PRINT_DEVELOPER, "world VBO calculation time = %5.2f seconds\n", ( endTime - startTime ) / 1000.0 );
-	
-	if ( r_mergeLeafSurfaces->integer )
-	{
+
 		ri.Printf( PRINT_DEVELOPER, "Processed %d surfaces into %d merged, %d unmerged\n", numSurfaces, numMergedSurfaces, numUnmergedSurfaces );
 	}
+
+	endTime = ri.Milliseconds();
+	ri.Printf( PRINT_DEVELOPER, "world VBO calculation time = %5.2f seconds\n", ( endTime - startTime ) / 1000.0 );
 
 	// point triangle surfaces to world VBO
 	for ( k = 0; k < numSurfaces; k++ )

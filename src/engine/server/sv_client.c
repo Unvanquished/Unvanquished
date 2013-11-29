@@ -130,7 +130,7 @@ void SV_DirectConnect( netadr_t from )
 	int                 count;
 	const char          *ip;
 #ifdef HAVE_GEOIP
-	const char          *country;
+	const char          *country = NULL;
 #endif
 
 	Com_DPrintf( "SVC_DirectConnect ()\n" );

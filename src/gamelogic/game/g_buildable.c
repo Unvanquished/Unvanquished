@@ -2292,6 +2292,7 @@ void G_SetHumanBuildablePowerState()
 	// power down buildables that lack power, highest deficit first
 	do
 	{
+		lowestSparePowerEnt = NULL;
 		lowestSparePower = MAX_QINT;
 
 		// find buildable with highest power deficit
@@ -4042,8 +4043,7 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 			}
 		}
 	}
-
-	if ( buildable == BA_A_OVERMIND )
+	else if ( buildable == BA_A_OVERMIND )
 	{
 		ent = G_Overmind();
 
@@ -4167,7 +4167,7 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 				}
 
 				// apply general replacement rules
-				if ( BuildableReplacementChecks( ent->s.modelindex, buildable ) != IBE_NONE )
+				if ( BuildableReplacementChecks( neighbor->s.modelindex, buildable ) != IBE_NONE )
 				{
 					continue;
 				}

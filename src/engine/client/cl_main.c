@@ -430,7 +430,7 @@ void CL_VoipParseTargets( void )
 {
 	const char *target = cl_voipSendTarget->string;
 	char       *end;
-	int        val;
+	int        val = -1;
 
 	Com_Memset( clc.voipTargets, 0, sizeof( clc.voipTargets ) );
 	clc.voipFlags &= ~VOIP_SPATIAL;

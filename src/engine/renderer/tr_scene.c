@@ -753,6 +753,11 @@ qhandle_t RE_RegisterVisTest( void )
 	int hTest;
 	visTest_t *test;
 
+	if ( tr.numVisTests == 0 )
+	{
+		return 0;
+	}
+
 	for( hTest = 0; hTest < tr.numVisTests; hTest++ ) {
 		test = tr.visTests[ hTest ];
 		if( !test->registered )

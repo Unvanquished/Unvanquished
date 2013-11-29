@@ -1625,8 +1625,8 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 {
 	entityState_t *es = &cent->currentState;
 	vec3_t        origin;
-	float         healthScale, relativeSparePowerScale, mineEfficiencyScale;
-	int           health, relativeSparePower, mineEfficiency;
+	float         healthScale, relativeSparePowerScale = 0, mineEfficiencyScale = 0;
+	int           health, relativeSparePower = 0, mineEfficiency = 0;
 	float         x, y;
 	vec4_t        color;
 	qboolean      powered, marked, showMineEfficiency, showPower;

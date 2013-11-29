@@ -3953,6 +3953,7 @@ static void CG_DrawStack( rectDef_t *rect, vec4_t color, float fill,
 		switch ( lalign )
 		{
 			case LALIGN_TOPLEFT:
+			default:
 				loff = 0;
 				break;
 

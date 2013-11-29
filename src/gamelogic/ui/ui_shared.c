@@ -6116,7 +6116,7 @@ static void Controls_GetKeyAssignment( const char *command, int *twokeys )
 		}
 		else
 		{
-			DC->getBindingBuf( j, team, b, sizeof( b ) );
+			DC->getBindingBuf( j, TEAM_NONE /*team*/, b, sizeof( b ) );
 
 			if ( *b && !Q_stricmp( b, command ) )
 			{

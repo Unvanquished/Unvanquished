@@ -1462,20 +1462,13 @@ void G_CountSpawns( void )
 		}
 
 		//TODO create a function to check if a building is a spawn
-		if( ent->s.modelindex == BA_A_SPAWN || ent->s.modelindex == BA_H_SPAWN )
+		if( ent->s.modelindex == BA_A_SPAWN )
 		{
-			team_t team;
-			//TODO create a function to guess the team which own a building depending on it's modelindex
-			switch(ent->s.modelindex)
-			{
-				case BA_A_SPAWN:
-					team = TEAM_ALIENS;
-					break;
-				case BA_H_SPAWN:
-					team = TEAM_HUMANS;
-					break;
-			}
-			level.team[ team ].numSpawns++;
+			level.team[ TEAM_ALIENS ].numSpawns++;
+		}
+		else if ( ent->s.modelindex == BA_H_SPAWN )
+		{
+			level.team[ TEAM_HUMANS ].numSpawns++;
 		}
 	}
 }
