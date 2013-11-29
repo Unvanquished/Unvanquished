@@ -229,8 +229,9 @@ namespace Cvar {
         CvarMap& cvars = GetCvarMap();
         std::string result = "";
 
-        if (cvars.count(cvarName)) {
-            result = cvars[cvarName]->value;
+        auto iter = cvars.find(cvarName);
+        if (iter != cvars.end()) {
+            result = iter->second->value;
         }
 
         return result;
@@ -356,8 +357,9 @@ namespace Cvar {
     cvar_t* FindCCvar(const std::string& cvarName) {
         CvarMap& cvars = GetCvarMap();
 
-        if (cvars.count(cvarName)) {
-            return &cvars[cvarName]->ccvar;
+        auto iter = cvars.find(cvarName);
+        if (iter != cvars.end()) {
+            return &iter->second->ccvar;
         }
 
         return nullptr;
@@ -468,8 +470,9 @@ namespace Cvar {
                 const std::string& name = args.Argv(1);
                 CvarMap& cvars = GetCvarMap();
 
-                if (cvars.count(name)) {
-                    cvarRecord_t* cvar = cvars[name];
+                auto iter = cvars.find(name);
+                if (iter != cvars.end()) {
+                    cvarRecord_t* cvar = iter->second;
                     ::Cvar::SetValue(name, cvar->resetValue);
                 } else {
                     Print(_("Cvar '%s' doesn't exist"), name.c_str());

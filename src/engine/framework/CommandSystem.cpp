@@ -123,16 +123,13 @@ namespace Cmd {
         CommandMap& commands = GetCommandMap();
 
         if (!IsValidCmdName(name)) {
-			commandLog.Warn(_("Cmd::AddCommand: Invalid command name '%s'"), name);
-			return;
+            commandLog.Warn(_("Cmd::AddCommand: Invalid command name '%s'"), name);
+            return;
         }
 
-        if (commands.count(name)) {
-			commandLog.Warn(_("Cmd::AddCommand: %s already defined"), name);
-			return;
+        if (!commands.insert({std::move(name), commandRecord_t{std::move(description), &cmd}}).second) {
+            commandLog.Warn(_("Cmd::AddCommand: %s already defined"), name);
         }
-
-        commands[std::move(name)] = commandRecord_t{std::move(description), &cmd};
     }
 
     void RemoveCommand(const std::string& name) {
@@ -158,7 +155,7 @@ namespace Cmd {
     bool CommandExists(const std::string& name) {
         CommandMap& commands = GetCommandMap();
 
-        return commands.count(name);
+        return commands.find(name) != commands.end();
     }
 
     DefaultEnvironment defaultEnv;
@@ -282,13 +279,13 @@ namespace Cmd {
     ===============================================================================
     */
 
-	void DefaultEnvironment::Print(Str::StringRef text) {
-		Log::CodeSourceNotice(text);
-	}
+    void DefaultEnvironment::Print(Str::StringRef text) {
+        Log::CodeSourceNotice(text);
+    }
 
-	void DefaultEnvironment::ExecuteAfter(Str::StringRef text, bool parseCvars) {
-		BufferCommandTextAfter(text, parseCvars, this);
-	}
+    void DefaultEnvironment::ExecuteAfter(Str::StringRef text, bool parseCvars) {
+        BufferCommandTextAfter(text, parseCvars, this);
+    }
 
     /*
     ===============================================================================
