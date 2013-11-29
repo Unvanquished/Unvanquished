@@ -24,7 +24,7 @@ extern "C" {
 #include "g_local.h"
 }
 #include "../../libs/nacl/nacl.h"
-#include "../../shared/RPC.h"
+#include "../../common/RPC.h"
 
 static NaCl::RootSocket rootSocket;
 static NaCl::IPCHandle shmRegion;
