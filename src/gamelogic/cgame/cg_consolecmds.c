@@ -500,15 +500,11 @@ qboolean CG_ConsoleCommand( void )
 			ARRAY_LEN( commands ), sizeof( commands[ 0 ] ),
 			cmdcmp );
 
-	if ( !cmd )
-	{
-		return qfalse;
-	}
-
-	if ( !cmd->function )
+	if ( !cmd || !cmd->function )
 	{
 		//This command was added to provide completion of server-side commands
 		//forward it to the server
+		// (see also CG_ServerCommands)
 		trap_LiteralArgs( buffer, sizeof ( buffer ) );
 		trap_SendClientCommand( buffer );
 	}
