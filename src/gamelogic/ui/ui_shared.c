@@ -9704,7 +9704,7 @@ void UI_R_GlyphChar( fontHandle_t font, int ch, glyphInfo_t *glyph )
 
     engineState |= 0x01;
 
-    trap_Cvar_VariableStringBuffer( "\\IS_GETTEXT_SUPPORTED", t, 2 );
+    trap_Cvar_VariableStringBuffer( "IS_GETTEXT_SUPPORTED", t, 2 );
 
     if( t[0] == '1' )
       engineState |= 0x02;
@@ -9724,7 +9724,7 @@ void UI_R_Glyph( fontHandle_t font, const char *str, glyphInfo_t *glyph )
 
     engineState |= 0x01;
 
-    trap_Cvar_VariableStringBuffer( "\\IS_GETTEXT_SUPPORTED", t, 2 );
+    trap_Cvar_VariableStringBuffer( "IS_GETTEXT_SUPPORTED", t, 2 );
 
     if( t[0] == '1' )
       engineState |= 0x02;
@@ -9744,7 +9744,7 @@ void UI_R_UnregisterFont( fontHandle_t font )
 
     engineState |= 0x01;
 
-    trap_Cvar_VariableStringBuffer( "\\IS_GETTEXT_SUPPORTED", t, 2 );
+    trap_Cvar_VariableStringBuffer( "IS_GETTEXT_SUPPORTED", t, 2 );
 
     if( t[0] == '1' )
       engineState |= 0x02;
