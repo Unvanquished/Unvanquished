@@ -132,14 +132,12 @@ typedef enum uiImport_s
   UI_R_REMAP_SHADER,
   UI_GETHUNKDATA,
   UI_QUOTESTRING,
-//#if defined( USE_REFENTITY_ANIMATIONSYSTEM )
   UI_R_REGISTERANIMATION,
   UI_R_BUILDSKELETON,
   UI_R_BLENDSKELETON,
   UI_R_BONEINDEX,
   UI_R_ANIMNUMFRAMES,
   UI_R_ANIMFRAMERATE,
-//#endif
   UI_GETTEXT,
   UI_R_GLYPH,
   UI_R_GLYPHCHAR,
@@ -238,7 +236,7 @@ typedef enum
 } uiExport_t;
 
 void        trap_Cvar_CopyValue_i( const char *in_var, const char *out_var );
-void        trap_Error( const char *string ) NORETURN;
+void NORETURN trap_Error( const char *string );
 void        trap_Print( const char *string );
 int         trap_Milliseconds( void );
 void        trap_Cvar_Register( vmCvar_t *cvar, const char *var_name, const char *value, int flags );

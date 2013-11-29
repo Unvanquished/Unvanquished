@@ -493,7 +493,7 @@ VBO_t *R_CreateDynamicVBO( const char *name, int numVertexes, uint32_t stateBits
 	// make sure the render thread is stopped
 	R_SyncRenderThread();
 
-	vbo = ( VBO_t * ) ri.Hunk_Alloc( sizeof( *vbo ), h_low );
+	vbo = (VBO_t*) ri.Hunk_Alloc( sizeof( *vbo ), h_low );
 	memset( vbo, 0, sizeof( *vbo ) );
 
 	Com_AddToGrowList( &tr.vbos, vbo );
@@ -537,7 +537,7 @@ VBO_t *R_CreateStaticVBO( const char *name, vboData_t data, vboLayout_t layout )
 	// make sure the render thread is stopped
 	R_SyncRenderThread();
 
-	vbo = ( VBO_t * ) ri.Hunk_Alloc( sizeof( *vbo ), h_low );
+	vbo = (VBO_t*) ri.Hunk_Alloc( sizeof( *vbo ), h_low );
 	memset( vbo, 0, sizeof( *vbo ) );
 
 	Com_AddToGrowList( &tr.vbos, vbo );
@@ -764,7 +764,7 @@ IBO_t *R_CreateDynamicIBO( const char *name, int numIndexes )
 	// make sure the render thread is stopped
 	R_SyncRenderThread();
 
-	ibo = ( IBO_t * ) ri.Hunk_Alloc( sizeof( *ibo ), h_low );
+	ibo = (IBO_t*) ri.Hunk_Alloc( sizeof( *ibo ), h_low );
 	Com_AddToGrowList( &tr.ibos, ibo );
 
 	Q_strncpyz( ibo->name, name, sizeof( ibo->name ) );

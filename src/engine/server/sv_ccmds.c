@@ -34,62 +34,64 @@ Maryland 20850 USA.
 
 #include "server.h"
 
+#include "../../common/Command.h"
+#include "../../common/String.h"
+
 /*
-==================
-SV_Map_f
+===============================================================================
 
-Restart the server on a different map
-==================
+OPERATOR CONSOLE ONLY COMMANDS
+
+These commands can only be entered from stdin or by a remote operator datagram
+===============================================================================
 */
-static void SV_Map_f( void )
-{
-	char     *map;
-	const char *layouts;
-	char     mapname[ MAX_QPATH ];
-	qboolean cheat;
-	char     expanded[ MAX_QPATH ];
 
-	map = Cmd_Argv( 1 );
+class MapCmd: public Cmd::StaticCmd {
+    public:
+        MapCmd(const std::string& name, const std::string& description, bool cheat):
+            Cmd::StaticCmd(name, Cmd::SYSTEM, description), cheat(cheat) {
+        }
 
-	if ( !map )
-	{
-		return;
-	}
+        void Run(const Cmd::Args& args) const OVERRIDE {
+            if (args.Argc() < 2) {
+                PrintUsage(args, _("<mapname> (layoutname)"), _("loads a new map"));
+                return;
+            }
 
-	// make sure the level exists before trying to change, so that
-	// a typo at the server console won't end the game
-	Com_sprintf( expanded, sizeof( expanded ), "maps/%s.bsp", map );
+            const std::string& mapName = args.Argv(1);
+            std::string mapFilename = "maps/" + mapName + ".bsp";
 
-	if ( FS_ReadFile( expanded, NULL ) == -1 )
-	{
-		Com_Printf(_( "Can't find map %s\n"), expanded );
+            //Make sure the map exists to avoid typos that would kill the game
+            if (FS_ReadFile(mapFilename.c_str(), nullptr) == -1) {
+                Print(_("Can't find map %s\n"), mapFilename.c_str());
+                return;
+            }
 
-		return;
-	}
+            //Gets the layout list from the command but do not override if there is nothing
+            std::string layouts = args.ConcatArgs(2);
+            if (not layouts.empty()) {
+                Cvar_Set("g_layouts", layouts.c_str());
+            }
 
-	// layout(s) - note that ArgsFrom adds quoting which we don't want here
-	// Also, if empty, don't override
-	layouts = Cmd_UnquoteString( Cmd_ArgsFrom( 2 ) );
-	if ( *layouts )
-	{
-		Cvar_Set( "g_layouts", layouts );
-	}
+            SV_SpawnServer(mapName.c_str());
+            Cvar_Set("sv_cheats", cheat ? "1" : "0");
+        }
 
-	cheat = !Q_stricmp( Cmd_Argv( 0 ), "devmap" );
+        Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, const std::string& prefix) const OVERRIDE {
+            if (argNum == 1) {
+                return FS::CompleteFilenameInDir(prefix, "maps", "bsp");
+            } else if (argNum > 1) {
+                return FS::CompleteFilenameInDir(prefix, "layouts/" + args.Argv(1), "dat");
+            }
 
-	// save the map name here cause on a map restart we reload the q3config.cfg
-	// and thus nuke the arguments of the map command
-	Q_strncpyz( mapname, map, sizeof( mapname ) );
+            return {};
+        }
 
-	// start up the map
-	SV_SpawnServer( mapname );
-
-	// set the cheat value
-	// if the level was started with "map <levelname>", then
-	// cheats will not be allowed.  If started with "devmap <levelname>"
-	// then cheats will be allowed
-	Cvar_Set( "sv_cheats", cheat ? "1" : "0" );
-}
+    private:
+        bool cheat;
+};
+static MapCmd MapCmdRegistration("map", N_("starts a new map"), false);
+static MapCmd DevmapCmdRegistration("devmap", N_("starts a new map with cheats enabled"), true);
 
 void MSG_PrioritiseEntitystateFields( void );
 void MSG_PrioritisePlayerStateFields( void );
@@ -112,7 +114,8 @@ static void SV_MapRestart_f( void )
 {
 	int         i;
 	client_t    *client;
-	char        *denied;
+	qboolean    denied;
+	char        reason[ MAX_STRING_CHARS ];
 	qboolean    isBot;
 	int         delay = 0;
 
@@ -175,7 +178,7 @@ static void SV_MapRestart_f( void )
 	// run a few frames to allow everything to settle
 	for ( i = 0; i < GAME_INIT_FRAMES; i++ )
 	{
-		VM_Call( gvm, GAME_RUN_FRAME, svs.time );
+		gvm.GameRunFrame( svs.time );
 		svs.time += FRAMETIME;
 	}
 
@@ -210,13 +213,13 @@ static void SV_MapRestart_f( void )
 		SV_AddServerCommand( client, "map_restart\n" );
 
 		// connect the client again, without the firstTime flag
-		denied = VM_ExplicitArgPtr( gvm, VM_Call( gvm, GAME_CLIENT_CONNECT, i, qfalse, isBot ) );
+		denied = gvm.GameClientConnect( reason, sizeof( reason ), i, qfalse, isBot );
 
 		if ( denied )
 		{
 			// this generally shouldn't happen, because the client
 			// was connected before the level change
-			SV_DropClient( client, denied );
+			SV_DropClient( client, reason );
 
 			if ( !isBot )
 			{
@@ -232,7 +235,7 @@ static void SV_MapRestart_f( void )
 	}
 
 	// run another frame to allow things to look at all the players
-	VM_Call( gvm, GAME_RUN_FRAME, svs.time );
+	gvm.GameRunFrame( svs.time );
 	svs.time += FRAMETIME;
 
 	Cvar_Set( "sv_serverRestarting", "0" );
@@ -358,7 +361,7 @@ static void SV_Serverinfo_f( void )
 	}
 
 	Com_Printf(_( "Server info settings:\n" ));
-	Info_Print( Cvar_InfoString( CVAR_SERVERINFO | CVAR_SERVERINFO_NOUPDATE, qfalse ) );
+	Info_Print( Cvar_InfoString( CVAR_SERVERINFO, qfalse ) );
 }
 
 /*
@@ -378,7 +381,7 @@ static void SV_Systeminfo_f( void )
 	}
 
 	Com_Printf(_( "System info settings:\n" ));
-	Info_Print( Cvar_InfoString( CVAR_SYSTEMINFO | CVAR_SERVERINFO_NOUPDATE, qfalse ) );
+	Info_Print( Cvar_InfoString( CVAR_SYSTEMINFO, qfalse ) );
 }
 
 /*
@@ -391,25 +394,6 @@ static void SV_KillServer_f( void )
 	SV_Shutdown( "killserver" );
 }
 
-//===========================================================
-
-/*
-==================
-SV_CompleteMapName
-==================
-*/
-static void SV_CompleteMapName( char *args, int argNum )
-{
-	if ( argNum == 2 )
-	{
-		Field_CompleteFilename( "maps", "bsp", qtrue );
-	}
-	else if ( argNum >= 3 )
-	{
-		Field_CompleteFilename( va( "layouts/%s", Cmd_Argv( 1 ) ), "dat", qtrue );
-	}
-}
-
 /*
 ==================
 SV_AddOperatorCommands
@@ -417,19 +401,6 @@ SV_AddOperatorCommands
 */
 void SV_AddOperatorCommands( void )
 {
-	static qboolean initialized;
-
-	if ( !initialized )
-	{
-		// These commands should always be available.
-		Cmd_AddCommand( "map", SV_Map_f );
-		Cmd_SetCommandCompletionFunc( "map", SV_CompleteMapName );
-		Cmd_AddCommand( "devmap", SV_Map_f );
-		Cmd_SetCommandCompletionFunc( "devmap", SV_CompleteMapName );
-	}
-
-	initialized = qtrue;
-
 	if ( com_sv_running->integer )
 	{
 		// These commands should only be available while the server is running.

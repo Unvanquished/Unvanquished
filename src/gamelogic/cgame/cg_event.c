@@ -841,25 +841,21 @@ static void CG_Level2Zap( entityState_t *es )
 
 /*
 ==============
-CG_Confidence
+CG_Momentum
 
-Notify player of generated confidence
+Notify player of generated momentum
 ==============
 */
-void CG_Confidence( entityState_t *es )
+void CG_Momentum( entityState_t *es )
 {
-	float                  confidence;
+	float                  momentum;
 	qboolean               negative;
-	//confidence_reason_t    reason;
-	//confidence_qualifier_t qualifier;
 
 	negative   = es->groundEntityNum;
-	confidence = ( negative ? -es->otherEntityNum2 : es->otherEntityNum2 ) / 10.0f;
-	//reason     = es->eventParm;
-	//qualifier  = es->otherEntityNum;
+	momentum = ( negative ? -es->otherEntityNum2 : es->otherEntityNum2 ) / 10.0f;
 
-	cg.confidenceGained     = confidence;
-	cg.confidenceGainedTime = cg.time;
+	cg.momentumGained     = momentum;
+	cg.momentumGainedTime = cg.time;
 }
 
 /*
@@ -1157,6 +1153,22 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			trap_S_StartSound( NULL, es->number, CHAN_AUTO, CG_CustomSound( es->number, "*gasp.wav" ) );
 			break;
 
+		case EV_JETPACK_ENABLE:
+			// TODO: Trigger jetpack enable animation
+			break;
+
+		case EV_JETPACK_DISABLE:
+			// TODO: Trigger jetpack disable animation
+			break;
+
+		case EV_JETPACK_START:
+			// TODO: Start jetpack gfx/sfx
+			break;
+
+		case EV_JETPACK_STOP:
+			// TODO: Stop jetpack gfx/sfx
+			break;
+
 		case EV_NOAMMO:
 			trap_S_StartSound( NULL, es->number, CHAN_WEAPON, cgs.media.weaponEmptyClick );
 			break;
@@ -1193,14 +1205,15 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			break;
 
 		case EV_BUILD_CONSTRUCT:
-			//do something useful here
 			break;
 
 		case EV_BUILD_DESTROY:
-			//do something useful here
 			break;
 
-		case EV_RPTUSE_SOUND:
+		case EV_AMMO_REFILL:
+		case EV_CLIPS_REFILL:
+		case EV_FUEL_REFILL:
+			// TODO: Add different sounds for EV_AMMO_REFILL, EV_CLIPS_REFILL, EV_FUEL_REFILL
 			trap_S_StartSound( NULL, es->number, CHAN_AUTO, cgs.media.repeaterUseSound );
 			break;
 
@@ -1213,7 +1226,6 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			{
 				trap_S_StartSound( NULL, es->number, CHAN_AUTO, cgs.media.hardBounceSound2 );
 			}
-
 			break;
 
 		case EV_WEAPON_HIT_ENTITY:
@@ -1304,7 +1316,6 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			break;
 
 		case EV_PAIN:
-
 			// local player sounds are triggered in CG_CheckLocalSounds,
 			// so ignore events on the player
 			if ( cent->currentState.number != cg.snap->ps.clientNum )
@@ -1355,11 +1366,12 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			trap_S_StartSound( NULL, es->number, CHAN_AUTO, cgs.media.buildableRepairedSound );
 			break;
 
-		case EV_OVERMIND_ATTACK:
+		case EV_OVERMIND_ATTACK_1:
+		case EV_OVERMIND_ATTACK_2:
 			if ( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_ALIENS )
 			{
 				trap_S_StartLocalSound( cgs.media.alienOvermindAttack, CHAN_ANNOUNCER );
-				CG_CenterPrint( "The Overmind is under attack!", 200, GIANTCHAR_WIDTH * 4 );
+				CG_CenterPrint( va( "^%c%s", "31"[ event - EV_OVERMIND_ATTACK_1 ], _( "The Overmind is under attack!" ) ), 200, GIANTCHAR_WIDTH * 4 );
 			}
 
 			break;
@@ -1368,16 +1380,59 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			if ( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_ALIENS )
 			{
 				trap_S_StartLocalSound( cgs.media.alienOvermindDying, CHAN_ANNOUNCER );
-				CG_CenterPrint( "The Overmind is dying!", 200, GIANTCHAR_WIDTH * 4 );
+				CG_CenterPrint( _( "^1The Overmind is dying!" ), 200, GIANTCHAR_WIDTH * 4 );
 			}
 
 			break;
 
-		case EV_DCC_ATTACK:
+		case EV_REACTOR_ATTACK_1:
+		case EV_REACTOR_ATTACK_2:
 			if ( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_HUMANS )
 			{
-				//trap_S_StartLocalSound( cgs.media.humanDCCAttack, CHAN_ANNOUNCER );
-				CG_CenterPrint( "Our base is under attack!", 200, GIANTCHAR_WIDTH * 4 );
+				CG_CenterPrint( va( "^%c%s", "31"[ event - EV_REACTOR_ATTACK_1 ], _( "The reactor is under attack!" ) ), 200, GIANTCHAR_WIDTH * 4 );
+			}
+
+			break;
+
+		case EV_REACTOR_DYING:
+			if ( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_HUMANS )
+			{
+				CG_CenterPrint( _( "^1The reactor is about to explode!" ), 200, GIANTCHAR_WIDTH * 4 );
+			}
+
+			break;
+
+		case EV_WARN_ATTACK:
+			// if eventParm is non-zero, this is for humans and there's a nearby reactor or repeater, otherwise it's for aliens
+			if ( es->eventParm >= MAX_CLIENTS && es->eventParm < MAX_GENTITIES )
+			{
+				const char *location;
+				qboolean    base = cg_entities[ es->eventParm ].currentState.modelindex == BA_H_REACTOR;
+				centity_t  *locent = CG_GetLocation( cg_entities[ es->eventParm ].currentState.origin );
+
+				CG_CenterPrint( base ? _( "Our base is under attack!" ) : _( "A forward base is under attack!" ), 200, GIANTCHAR_WIDTH * 4 );
+
+				if ( locent )
+				{
+					location = CG_ConfigString( CS_LOCATIONS + locent->currentState.generic1 );
+				}
+				else
+				{
+					location = CG_ConfigString( CS_LOCATIONS );
+				}
+
+				if ( location && *location )
+				{
+					Com_Printf( _( "%s Under attack – %s\n" ), base ? "[reactor]" : "[repeater]", location );
+				}
+				else
+				{
+					Com_Printf( _( "%s Under attack\n" ), base ? "[reactor]" : "[repeater]" );
+				}
+			}
+			else // this is for aliens, and the overmind is in range
+			{
+				CG_CenterPrint( _( "Our base is under attack!" ), 200, GIANTCHAR_WIDTH * 4 );
 			}
 
 			break;
@@ -1459,8 +1514,8 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			cg.hitTime = cg.time;
 			break;
 
-		case EV_CONFIDENCE:
-			CG_Confidence( es );
+		case EV_MOMENTUM:
+			CG_Momentum( es );
 			break;
 
 		default:

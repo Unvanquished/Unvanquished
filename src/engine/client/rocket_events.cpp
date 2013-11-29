@@ -37,11 +37,8 @@ Maryland 20850 USA.
 #include <queue>
 #include <Rocket/Core.h>
 #include <Rocket/Core/StringUtilities.h>
-
-extern "C"
-{
 #include "client.h"
-}
+#include "rocket.h"
 
 std::queue< RocketEvent_t* > eventQueue;
 extern Rocket::Core::Element *activeElement;

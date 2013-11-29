@@ -38,10 +38,8 @@ Maryland 20850 USA.
 #include <Rocket/Core/ElementInstancer.h>
 #include <Rocket/Core/ElementInstancerGeneric.h>
 #include "rocketConsoleTextElement.h"
-extern "C"
-{
 #include "client.h"
-}
+#include "rocket.h"
 
 extern Rocket::Core::Element *activeElement;
 

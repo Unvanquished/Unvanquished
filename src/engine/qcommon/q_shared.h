@@ -35,17 +35,13 @@ Maryland 20850 USA.
 #ifndef Q_SHARED_H_
 #define Q_SHARED_H_
 
-#if defined( __cplusplus )
-extern "C" {
-#endif
-
 // q_shared.h -- included first by ALL program modules.
 // A user mod should never modify this file
 
 #define PRODUCT_NAME            "Unvanquished"
 #define PRODUCT_NAME_UPPER      "UNVANQUISHED" // Case, No spaces
 #define PRODUCT_NAME_LOWER      "unvanquished" // No case, No spaces
-#define PRODUCT_VERSION         "0.21.0"
+#define PRODUCT_VERSION         "0.22.0"
 
 #define ENGINE_NAME             "Daemon Engine"
 #define ENGINE_VERSION          PRODUCT_VERSION
@@ -88,90 +84,15 @@ extern "C" {
 
 #define UNNAMED_PLAYER "UnnamedPlayer"
 
-#if defined _WIN32 && !defined __GNUC__
-
-#pragma warning(disable : 4018) // signed/unsigned mismatch
-#pragma warning(disable : 4032)
-#pragma warning(disable : 4051)
-#pragma warning(disable : 4057) // slightly different base types
-#pragma warning(disable : 4100) // unreferenced formal parameter
-#pragma warning(disable : 4115)
-#pragma warning(disable : 4125) // decimal digit terminates octal escape sequence
-#pragma warning(disable : 4127) // conditional expression is constant
-#pragma warning(disable : 4136)
-#pragma warning(disable : 4152) // nonstandard extension, function/data pointer conversion in expression
-#pragma warning(disable : 4201)
-#pragma warning(disable : 4214)
-#pragma warning(disable : 4244)
-//#pragma warning(disable : 4142)   // benign redefinition
-#pragma warning(disable : 4305) // truncation from const double to float
-//#pragma warning(disable : 4310)   // cast truncates constant value
-//#pragma warning(disable : 4505)   // unreferenced local function has been removed
-#pragma warning(disable : 4514)
-#pragma warning(disable : 4702) // unreachable code
-#pragma warning(disable : 4711) // selected for automatic inline expansion
-#pragma warning(disable : 4220) // varargs matches remaining parameters
-#pragma warning(disable : 4706) // assignment within conditional expression // cs: probably should correct all of these at some point
-#pragma warning(disable : 4005) // macro redefinition
-#pragma warning(disable : 4996) // This function or variable may be unsafe. Consider using 'function_s' instead
-#pragma warning(disable : 4075) // initializers put in unrecognized initialization area
-#pragma warning(disable : 4355) // 'this': used in member initializer list
-#pragma warning(disable : 4305) // signed unsigned mismatch
-#pragma warning(disable : 4554) // qualifier applied to reference type; ignored
-#pragma warning(disable : 4800) // forcing bool variable to one or zero, possible performance loss
-#pragma warning(disable : 4090) // 'function' : different 'const' qualifiers
-#pragma warning(disable : 4267) // 'initializing' : conversion from 'size_t' to 'int', possible loss of data
-#pragma warning(disable : 4146) // unary minus operator applied to unsigned type, result still unsigned
-#pragma warning(disable : 4133) // 'function' : incompatible types - from 'unsigned long *' to 'const time_t *'
-#pragma warning(disable : 4127) // conditional expression is constant
-#pragma warning(disable : 4389) // '==' : signed/unsigned mismatch
-#endif
-
-
-
-#if defined( ppc ) || defined( __ppc ) || defined( __ppc__ ) || defined( __POWERPC__ )
-#define idppc 1
-#endif
-
-#define Q_UNUSED(x) (void)(sizeof((x), 0))
-
-	/**********************************************************************
-	  VM Considerations
-
-	  The VM can not use the standard system headers because we aren't really
-	  using the compiler they were meant for.  We use bg_lib.h which contains
-	  prototypes for the functions we define for our own use in bg_lib.c.
-
-	  When writing mods, please add needed headers HERE, do not start including
-	  stuff like <stdio.h> in the various .c files that make up each of the VMs
-	  since you will be including system headers files can will have issues.
-
-	  Remember, if you use a C library function that is not defined in bg_lib.c,
-	  you will have to add your own version for support in the VM.
-
-	 **********************************************************************/
+#define Q_UNUSED(x) (void)(x)
 
 #ifdef Q3_VM
 
 #include "../../gamelogic/shared/bg_lib.h"
+typedef int intptr_t;
+#define roundf( f ) ( floor( f + 0.5 ) )
 
-	typedef int intptr_t;
-
-#include "../../engine/qcommon/q_platform.h"
-
-#define STATIC_INLINE
-
-#ifdef Q3_VM_INSTANTIATE
-#define IFDECLARE
-#else
-#define IFDECLARE ;
-#endif
-
-#ifdef USE_LLVM
-extern int memcmp( void *, void *, size_t );
-#endif
-
-#else
+#else //Q3_VM
 
 // for visibility of some functions in system headers
 #undef _GNU_SOURCE
@@ -199,6 +120,8 @@ extern int memcmp( void *, void *, size_t );
 #include <limits.h>
 #include <sys/stat.h> // rain
 #include <float.h>
+#include <stdint.h>
+#include <iso646.h>
 
 // vsnprintf is ISO/IEC 9899:1999
 // abstracting this to make it portable
@@ -215,48 +138,15 @@ extern int memcmp( void *, void *, size_t );
 #define roundf( f ) ( floor( f + 0.5 ) )
 #endif
 
-#ifdef _MSC_VER
-#include <io.h>
+#endif //Q3_VM
 
-	typedef signed __int64   int64_t;
-	typedef signed __int32   int32_t;
-	typedef signed __int16   int16_t;
-	typedef signed __int8    int8_t;
-	typedef unsigned __int64 uint64_t;
-	typedef unsigned __int32 uint32_t;
-	typedef unsigned __int16 uint16_t;
-	typedef unsigned __int8  uint8_t;
-#else
-#include <stdint.h>
-#endif
-
-#include "q_platform.h"
-
-// not VM - we can have static inline
-#define STATIC_INLINE static ALWAYS_INLINE
-#define IFDECLARE
-#define Q3_VM_INSTANTIATE
-#endif
-
-#include "../../include/global.h"
-
-//bani
-//======================= GNUC DEFINES ==================================
-#if ( defined _MSC_VER )
-#define Q_EXPORT __declspec(dllexport)
-#elif ( defined __SUNPRO_C )
-#define Q_EXPORT __global
-#elif (( __GNUC__ >= 3 ) && ( !__EMX__ ) && ( !sun ))
-#define Q_EXPORT __attribute__((__visibility__("default")))
-#else
-#define Q_EXPORT
-#endif
 //=============================================================
 
 	typedef unsigned char        byte;
 	typedef unsigned int         uint;
 
-	typedef enum {qfalse, qtrue} qboolean;
+	enum {qfalse, qtrue};
+	typedef int qboolean;
 	typedef enum {qno, qyes, qmaybe} qtrinary;
 
 	typedef union
@@ -266,10 +156,16 @@ extern int memcmp( void *, void *, size_t );
 		unsigned int ui;
 	} floatint_t;
 
-	typedef int qhandle_t;
-	typedef int sfxHandle_t;
-	typedef int fileHandle_t;
-	typedef int clipHandle_t;
+//=============================================================
+
+#include "../../common/Compiler.h"
+#include "../../common/Platform.h"
+#include "../../common/Endian.h"
+
+typedef int qhandle_t;
+typedef int sfxHandle_t;
+typedef int fileHandle_t;
+typedef int clipHandle_t;
 
 #define PAD(x,y)                ((( x ) + ( y ) - 1 ) & ~(( y ) - 1 ))
 #define PADLEN(base, alignment) ( PAD(( base ), ( alignment )) - ( base ))
@@ -285,6 +181,8 @@ extern int memcmp( void *, void *, size_t );
 
 #define MAX_QINT 0x7fffffff
 #define MIN_QINT ( -MAX_QINT - 1 )
+
+#define HUGE_QFLT 3e38f // TODO: Replace HUGE_QFLT with MAX_QFLT
 
 #ifndef BIT
 #define BIT(x) ( 1 << ( x ) )
@@ -540,7 +438,6 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 }
 #endif
 
-
 #define INDENT_MARKER    '\v'
 
 	extern vec4_t g_color_table[ 32 ];
@@ -564,139 +461,50 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 #define Q_clamp( a, b, c )            ( ( b ) >= ( c ) ? ( a ) = ( b ) : ( a ) < ( b ) ? ( a ) = ( b ) : ( a ) > ( c ) ? ( a ) = ( c ) : ( a ) )
 #define Q_lerp( from, to, frac )      ( ( from ) + ( frac ) * ( ( to ) - ( from ) ) )
 
-	struct cplane_s;
+struct cplane_s;
 
-	extern vec3_t   vec3_origin;
-	extern vec3_t   axisDefault[ 3 ];
-	extern matrix_t matrixIdentity;
-	extern quat_t   quatIdentity;
+extern vec3_t   vec3_origin;
+extern vec3_t   axisDefault[ 3 ];
+extern matrix_t matrixIdentity;
+extern quat_t   quatIdentity;
 
 #define nanmask ( 255 << 23 )
 
 #define IS_NAN( x ) ( ( ( *(int *)&( x ) ) & nanmask ) == nanmask )
 
-#if idx64 || idx64_32
-	extern long qftolsse( float f );
-	extern int  qvmftolsse( void );
-	extern void qsnapvectorsse( vec3_t vec );
+#define Q_ftol(x) ((long)(x))
 
-#define Q_ftol       qftolsse
-#define Q_SnapVector qsnapvectorsse
-
-	extern int ( *Q_VMftol )( void );
-#elif id386
-	extern long QDECL qftolx87( float f );
-	extern long QDECL qftolsse( float f );
-	extern int QDECL  qvmftolx87( void );
-	extern int QDECL  qvmftolsse( void );
-	extern void QDECL qsnapvectorx87( vec3_t vec );
-	extern void QDECL qsnapvectorsse( vec3_t vec );
-
-	extern long( QDECL *Q_ftol )( float f );
-	extern int ( QDECL *Q_VMftol )( void );
-	extern void ( QDECL *Q_SnapVector )( vec3_t vec );
-#else
-#define Q_ftol lrintf
-#define Q_SnapVector(vec) \
-        do \
-  { \
-    vec3_t *temp = ( vec ); \
-                \
-    ( *temp )[ 0 ] = round(( *temp )[ 0 ]); \
-    ( *temp )[ 1 ] = round(( *temp )[ 1 ]); \
-    ( *temp )[ 2 ] = round(( *temp )[ 2 ]); \
-  } while(0)
-#endif
-
-	/*
-	// if your system does not have lrintf() and round() you can try this block. Please also open a bug report at bugzilla.icculus.org
-	// or write a mail to the ioq3 mailing list.
-#else
-#	define Q_ftol(v) ((long) (v))
-#	define Q_round(v) do { if((v) < 0) (v) -= 0.5f; else (v) += 0.5f; (v) = Q_ftol((v)); } while(0)
-#	define Q_SnapVector(vec) \
-	        do\
-	        {\
-	                vec3_t *temp = (vec);\
-	                \
-	                Q_round((*temp)[0]);\
-	                Q_round((*temp)[1]);\
-	                Q_round((*temp)[2]);\
-	        } while(0)
-#endif
-	*/
-
-	STATIC_INLINE long XreaL_Q_ftol( float f ) IFDECLARE
+STATIC_INLINE float Q_rsqrt( float number ) IFDECLARE
 #ifdef Q3_VM_INSTANTIATE
-	{
-		return ( long ) f;
-	}
+{
+	return 1.0f / sqrtf( number );
+}
 #endif
 
-	STATIC_INLINE float Q_rsqrt( float number ) IFDECLARE
+STATIC_INLINE float Q_fabs( float x ) IFDECLARE
 #ifdef Q3_VM_INSTANTIATE
-	{
-		float y;
-#if id386_sse || defined( __x86_64__ )
-		_mm_store_ss( &y, _mm_rsqrt_ss( _mm_load_ss( &number ) ) );
-#elif idppc
-		float x = 0.5f * number;
-
-#ifdef __GNUC__
-		asm( "frsqrte %0, %1" : "=f"( y ) : "f"( number ) );
+{
+#ifndef Q3_VM
+	return fabsf( x );
 #else
-		y = __frsqrte( number );
+	floatint_t tmp;
+
+	tmp.f = x;
+	tmp.i &= 0x7FFFFFFF;
+	return tmp.f;
 #endif
-		return y * ( 1.5f - ( x * y * y ) );
-#else
-		union
-		{
-			float f;
-			int   i;
-		} t;
-
-		float       x2;
-		const float threehalfs = 1.5F;
-
-		x2 = number * 0.5F;
-		t.f = number;
-		t.i = 0x5f3759df - ( t.i >> 1 ); // what the fuck?
-		y = t.f;
-		y = y * ( threehalfs - ( x2 * y * y ) ); // 1st iteration
+}
 #endif
-		return y;
-	}
-#endif
-
-	STATIC_INLINE float Q_fabs( float x ) IFDECLARE
-#ifdef Q3_VM_INSTANTIATE
-	{
-#if idppc && defined __GNUC__
-		float abs_x;
-
-		asm( "fabs %0, %1" : "=f"( abs_x ) : "f"( x ) );
-		return abs_x;
-#else
-		floatint_t tmp;
-
-		tmp.f = x;
-		tmp.i &= 0x7FFFFFFF;
-		return tmp.f;
-#endif
-	}
-#endif
-
-#define SQRTFAST( x ) ( 1.0f / Q_rsqrt( x ) )
 
 #define Q_recip(x) ( 1.0f / (x) )
 
-	byte         ClampByte( int i );
-	signed char  ClampChar( int i );
-	signed short ClampShort( int i );
+byte         ClampByte( int i );
+signed char  ClampChar( int i );
+signed short ClampShort( int i );
 
 // this isn't a real cheap function to call!
-	int          DirToByte( vec3_t dir );
-	void         ByteToDir( int b, vec3_t dir );
+int          DirToByte( vec3_t dir );
+void         ByteToDir( int b, vec3_t dir );
 
 #if 1
 
@@ -719,18 +527,6 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 #define VectorScale( v, s, o )  _VectorScale( v,s,o )
 #define VectorMA( v, s, b, o )  _VectorMA( v,s,b,o )
 
-#endif
-
-#ifdef Q3_VM
-#ifdef VectorCopy
-#undef VectorCopy
-// this is a little hack to get more efficient copies in our interpreter
-	typedef struct
-	{
-		float v[ 3 ];
-	} vec3struct_t;
-#define VectorCopy( a,b ) ( *(vec3struct_t *)( b ) = *(vec3struct_t *)( a ) )
-#endif
 #endif
 
 #define VectorClear( a )             ( ( a )[ 0 ] = ( a )[ 1 ] = ( a )[ 2 ] = 0 )
@@ -1032,7 +828,8 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 #endif
 
 	/*
-	STATIC_INLINE int QuatCompare(const quat_t a, const quat_t b)
+	STATIC_INLINE int QuatCompare(const quat_t a, const quat_t b) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 	        if(a[0] != b[0] || a[1] != b[1] || a[2] != b[2] || a[3] != b[3])
 	        {
@@ -1040,6 +837,7 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 	        }
 	        return 1;
 	}
+#endif
 	*/
 
 	STATIC_INLINE void QuatCalcW( quat_t q ) IFDECLARE
@@ -1312,10 +1110,6 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 	char       *Q_strrchr( const char *string, int c );
 	const char *Q_stristr( const char *s, const char *find );
 
-#if defined(_WIN32) && !defined(__MINGW32__)
-double rint( double x );
-#endif
-
 // buffer size safe library replacements
 // NOTE : had problem with loading QVM modules
 #ifdef NDEBUG
@@ -1323,7 +1117,7 @@ double rint( double x );
 
 #else
 #define         Q_strncpyz(string1,string2,length) Q_strncpyzDebug( string1, string2, length, __FILE__, __LINE__ )
-	void     Q_strncpyzDebug( char *dest, const char *src, int destsize, const char *file, int line ) __attribute__((__nonnull__));
+	void     Q_strncpyzDebug( char *dest, const char *src, int destsize, const char *file, int line );
 
 #endif
 	void     Q_strcat( char *dest, int destsize, const char *src );
@@ -1456,11 +1250,7 @@ double rint( double x );
 	==============================================================
 	*/
 
-#ifdef Q3_VM
-#include "../../engine/qcommon/surfaceflags.h"
-#else
 #include "surfaceflags.h" // shared with the q3map utility
-#endif
 
 // plane types are used to speed some tests
 // 0-2 are axial planes
@@ -1480,7 +1270,8 @@ double rint( double x );
 #define PlaneTypeForNormal( x ) ( x[ 0 ] == 1.0 ? PLANE_X : ( x[ 1 ] == 1.0 ? PLANE_Y : ( x[ 2 ] == 1.0 ? PLANE_Z : ( x[ 0 ] == 0.f && x[ 1 ] == 0.f && x[ 2 ] == 0.f ? PLANE_NON_PLANAR : PLANE_NON_AXIAL ) ) ) )
 
 	/*
-	STATIC_INLINE int PlaneTypeForNormal(vec3_t normal)
+	STATIC_INLINE int PlaneTypeForNormal(vec3_t normal) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 	        if(normal[0] == 1.0)
 	                return PLANE_X;
@@ -1493,6 +1284,7 @@ double rint( double x );
 
 	        return PLANE_NON_AXIAL;
 	}
+#endif
 	*/
 
 // plane_t structure
@@ -2035,8 +1827,6 @@ typedef struct
 
 typedef int fontHandle_t;
 
-#ifndef Q3_VM
-
 typedef glyphInfo_t glyphBlock_t[256];
 
 typedef struct
@@ -2048,8 +1838,6 @@ typedef struct
 	float         glyphScale;
 	char          name[ MAX_QPATH ];
 } fontInfo_t;
-
-#endif
 
 typedef struct
 {
@@ -2149,9 +1937,5 @@ typedef struct
 #define RSA_PUBLIC_EXPONENT 65537
 #define RSA_KEY_LENGTH      2048
 #define RSA_STRING_LENGTH   ( RSA_KEY_LENGTH / 4 + 1 )
-
-#if defined( __cplusplus )
-}
-#endif
 
 #endif /* Q_SHARED_H_ */

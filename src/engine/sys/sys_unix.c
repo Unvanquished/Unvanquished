@@ -161,7 +161,7 @@ qboolean Sys_RandomBytes( byte *string, int len )
 Sys_GetCurrentUser
 ==================
 */
-char *Sys_GetCurrentUser( void )
+const char *Sys_GetCurrentUser( void )
 {
 	struct passwd *p;
 
@@ -206,7 +206,7 @@ char *Sys_GetClipboardData( clipboard_t clip )
 		SDL_SysWMinfo info;
 
 		SDL_VERSION( &info.version );
-		if ( SDL_GetWindowWMInfo( IN_GetWindow(), &info ) != 1 || info.subsystem != SDL_SYSWM_X11 )
+		if ( SDL_GetWindowWMInfo( (SDL_Window*) IN_GetWindow(), &info ) != 1 || info.subsystem != SDL_SYSWM_X11 )
 		{
 			Com_Printf("Not on X11? (%d)\n",info.subsystem);
 			return NULL;
@@ -294,7 +294,7 @@ char *Sys_GetClipboardData( clipboard_t clip )
 
 		if ( selectionType == x11.utf8 )
 		{
-			dest = Z_Malloc( nbytes + 1 );
+			dest = (char*) Z_Malloc( nbytes + 1 );
 			memcpy( dest, src, nbytes );
 			dest[ nbytes ] = 0;
 		}
@@ -476,7 +476,7 @@ DIRECTORY SCANNING
 Sys_ListFilteredFiles
 ==================
 */
-void Sys_ListFilteredFiles( const char *basedir, char *subdirs, char *filter, char **list, int *numfiles )
+void Sys_ListFilteredFiles( const char *basedir, const char *subdirs, const char *filter, char **list, int *numfiles )
 {
 	char          search[ MAX_OSPATH ], newsubdirs[ MAX_OSPATH ];
 	char          filename[ MAX_OSPATH ];
@@ -554,7 +554,7 @@ void Sys_ListFilteredFiles( const char *basedir, char *subdirs, char *filter, ch
 Sys_ListFiles
 ==================
 */
-char **Sys_ListFiles( const char *directory, const char *extension, char *filter, int *numfiles, qboolean wantsubs )
+char **Sys_ListFiles( const char *directory, const char *extension, const char *filter, int *numfiles, qboolean wantsubs )
 {
 	struct dirent *d;
 
@@ -582,7 +582,7 @@ char **Sys_ListFiles( const char *directory, const char *extension, char *filter
 			return NULL;
 		}
 
-		listCopy = Z_Malloc( ( nfiles + 1 ) * sizeof( *listCopy ) );
+		listCopy = ( char ** ) Z_Malloc( ( nfiles + 1 ) * sizeof( *listCopy ) );
 
 		for ( i = 0; i < nfiles; i++ )
 		{
@@ -663,7 +663,7 @@ char **Sys_ListFiles( const char *directory, const char *extension, char *filter
 		return NULL;
 	}
 
-	listCopy = Z_Malloc( ( nfiles + 1 ) * sizeof( *listCopy ) );
+	listCopy = ( char ** ) Z_Malloc( ( nfiles + 1 ) * sizeof( *listCopy ) );
 
 	for ( i = 0; i < nfiles; i++ )
 	{
@@ -767,7 +767,7 @@ void Sys_ErrorDialog( const char *error )
 	// We may have grabbed input devices. Need to release.
 	if ( SDL_WasInit( SDL_INIT_VIDEO ) )
 	{
-		SDL_SetWindowGrab( IN_GetWindow(), qfalse );
+		SDL_SetWindowGrab( (SDL_Window*) IN_GetWindow(), SDL_FALSE );
 	}
 
 	Sys_Dialog( DT_ERROR, va( "%s. See \"%s\" for details.", error, ospathfile ), "Error" );
@@ -813,10 +813,10 @@ Sys_System
 Avoid all that ugliness with shell quoting
 =============
 */
-static int Sys_System( char *cmd, ... )
+static int Sys_System( const char *cmd, ... )
 {
 	va_list ap;
-	char    *argv[ 16 ] = { NULL };
+	const char    *argv[ 16 ] = { NULL };
 	pid_t   pid;
 	int     r;
 
@@ -838,7 +838,7 @@ static int Sys_System( char *cmd, ... )
 	{
 	case 0: // child
 		// give me an exec() which takes a va_list...
-		execvp( cmd, argv );
+		execvp( cmd, ( char ** ) argv );
 		exit( 2 );
 
 	case -1: // error

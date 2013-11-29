@@ -117,7 +117,7 @@ void SV_DirectConnect( netadr_t from )
 	char                userinfo[ MAX_INFO_STRING ];
 	int                 i;
 	client_t            *cl, *newcl;
-	MAC_STATIC client_t temp;
+	client_t            temp;
 	sharedEntity_t      *ent;
 	int                 clientNum;
 	int                 version;
@@ -125,9 +125,10 @@ void SV_DirectConnect( netadr_t from )
 	int                 challenge;
 	char                *password;
 	int                 startIndex;
-	char                *denied;
+	qboolean            denied;
+	char                reason[ MAX_STRING_CHARS ];
 	int                 count;
-	char                *ip;
+	const char          *ip;
 #ifdef HAVE_GEOIP
 	const char          *country;
 #endif
@@ -178,7 +179,7 @@ void SV_DirectConnect( netadr_t from )
 	}
 	else
 	{
-		ip = ( char * ) NET_AdrToString( from );
+		ip = NET_AdrToString( from );
 	}
 
 	if ( ( strlen( ip ) + strlen( userinfo ) + 4 ) >= MAX_INFO_STRING )
@@ -402,15 +403,12 @@ gotnewcl:
 	Q_strncpyz( newcl->userinfo, userinfo, sizeof( newcl->userinfo ) );
 
 	// get the game a chance to reject this connection or modify the userinfo
-	denied = ( char * ) VM_Call( gvm, GAME_CLIENT_CONNECT, clientNum, qtrue, qfalse );  // firstTime = qtrue
+	denied = gvm.GameClientConnect( reason, sizeof( reason ), clientNum, qtrue, qfalse );  // firstTime = qtrue
 
 	if ( denied )
 	{
-		// we can't just use VM_ArgPtr, because that is only valid inside a VM_Call
-		denied = VM_ExplicitArgPtr( gvm, ( intptr_t ) denied );
-
-		NET_OutOfBandPrint( NS_SERVER, from, "print\n[err_dialog]%s", denied );
-		Com_DPrintf( "Game rejected a connection: %s.\n", denied );
+		NET_OutOfBandPrint( NS_SERVER, from, "print\n[err_dialog]%s", reason );
+		Com_DPrintf( "Game rejected a connection: %s.\n", reason );
 		return;
 	}
 
@@ -550,7 +548,7 @@ void SV_DropClient( client_t *drop, const char *reason )
 
 	// call the prog function for removing a client
 	// this will remove the body, among other things
-	VM_Call( gvm, GAME_CLIENT_DISCONNECT, drop - svs.clients );
+	gvm.GameClientDisconnect( drop - svs.clients );
 
 	// add the disconnect command
 	SV_SendServerCommand( drop, "disconnect %s\n", Cmd_QuoteString( reason ) );
@@ -691,7 +689,7 @@ void SV_ClientEnterWorld( client_t *client, usercmd_t *cmd )
 	client->lastUsercmd = *cmd;
 
 	// call the game begin function
-	VM_Call( gvm, GAME_CLIENT_BEGIN, client - svs.clients );
+	gvm.GameClientBegin( client - svs.clients );
 }
 
 /*
@@ -1115,7 +1113,7 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 
 		if ( !cl->downloadBlocks[ curindex ] )
 		{
-			cl->downloadBlocks[ curindex ] = Z_Malloc( MAX_DOWNLOAD_BLKSIZE );
+			cl->downloadBlocks[ curindex ] = ( byte* ) Z_Malloc( MAX_DOWNLOAD_BLKSIZE );
 		}
 
 		cl->downloadBlockSize[ curindex ] = FS_Read( cl->downloadBlocks[ curindex ], MAX_DOWNLOAD_BLKSIZE, cl->download );
@@ -1601,7 +1599,7 @@ static void SV_UpdateUserinfo_f( client_t *cl )
 
 	SV_UserinfoChanged( cl );
 	// call prog code to allow overrides
-	VM_Call( gvm, GAME_CLIENT_USERINFO_CHANGED, cl - svs.clients );
+	gvm.GameClientUserInfoChanged( cl - svs.clients );
 }
 
 #ifdef USE_VOIP
@@ -1650,7 +1648,7 @@ static void SV_Voip_f( client_t *cl )
 
 typedef struct
 {
-	char     *name;
+	const char *name;
 	void ( *func )( client_t *cl );
 	qboolean allowedpostmapchange;
 } ucmd_t;
@@ -1743,7 +1741,7 @@ void SV_ExecuteClientCommand( client_t *cl, const char *s, qboolean clientOK, qb
 		// pass unknown strings to the game
 		if ( !u->name && sv.state == SS_GAME )
 		{
-			VM_Call( gvm, GAME_CLIENT_COMMAND, cl - svs.clients );
+			gvm.GameClientCommand( cl - svs.clients );
 		}
 	}
 	else if ( !bProcessed )
@@ -1838,7 +1836,7 @@ void SV_ClientThink( client_t *cl, usercmd_t *cmd )
 		return; // may have been kicked during the last usercmd
 	}
 
-	VM_Call( gvm, GAME_CLIENT_THINK, cl - svs.clients );
+	gvm.GameClientThink( cl - svs.clients );
 }
 
 /*
@@ -2115,7 +2113,7 @@ void SV_UserVoip( client_t *cl, msg_t *msg )
 			continue; // no room for another packet right now.
 		}
 
-		packet = Z_Malloc( sizeof( *packet ) );
+		packet = ( voipServerPacket_t* ) Z_Malloc( sizeof( *packet ) );
 		packet->sender = sender;
 		packet->frames = frames;
 		packet->len = packetsize;

@@ -31,11 +31,8 @@ Maryland 20850 USA.
 
 ===========================================================================
 */
-extern "C"
-{
-	#include "../server/server.h"
-}
 
+#include "../server/server.h"
 #include "bot_local.h"
 
 Bot_t agents[ MAX_CLIENTS ];
@@ -105,17 +102,17 @@ void BotSetPolyFlags( qVec origin, qVec mins, qVec maxs, unsigned short flags )
 	}
 }
 
-extern "C" void BotDisableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs )
+void BotDisableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs )
 {
 	BotSetPolyFlags( origin, mins, maxs, POLYFLAGS_DISABLED );
 }
 
-extern "C" void BotEnableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs )
+void BotEnableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs )
 {
 	BotSetPolyFlags( origin, mins, maxs, POLYFLAGS_WALK );
 }
 
-extern "C" void BotSetNavMesh( int botClientNum, qhandle_t nav )
+void BotSetNavMesh( int botClientNum, qhandle_t nav )
 {
 	if ( nav < 0 || nav >= numNavData )
 	{
@@ -139,7 +136,7 @@ void GetEntPosition( int num, qVec &pos )
 	pos = SV_GentityNum( num )->s.origin;
 }
 
-extern "C" qboolean BotFindRouteExt( int botClientNum, const botRouteTarget_t *target, qboolean allowPartial )
+qboolean BotFindRouteExt( int botClientNum, const botRouteTarget_t *target, qboolean allowPartial )
 {
 	rVec start;
 	Bot_t *bot = &agents[ botClientNum ];
@@ -195,7 +192,7 @@ void UpdatePathCorridor( Bot_t *bot, rVec spos, botRouteTargetInternal target )
 	FindWaypoints( bot, bot->cornerVerts, bot->cornerFlags, bot->cornerPolys, &bot->numCorners, MAX_CORNERS );
 }
 
-extern "C" void BotUpdateCorridor( int botClientNum, const botRouteTarget_t *target, botNavCmd_t *cmd )
+void BotUpdateCorridor( int botClientNum, const botRouteTarget_t *target, botNavCmd_t *cmd )
 {
 	rVec spos;
 	rVec epos;
@@ -331,7 +328,7 @@ float frand()
 	return ( float ) rand() / ( float ) RAND_MAX;
 }
 
-extern "C" void BotFindRandomPoint( int botClientNum, vec3_t point )
+void BotFindRandomPoint( int botClientNum, vec3_t point )
 {
 	qVec origin = SV_GentityNum( botClientNum )->s.origin;
 
@@ -341,7 +338,7 @@ extern "C" void BotFindRandomPoint( int botClientNum, vec3_t point )
 	}
 }
 
-extern "C" qboolean BotFindRandomPointInRadius( int botClientNum, const vec3_t origin, vec3_t point, float radius )
+qboolean BotFindRandomPointInRadius( int botClientNum, const vec3_t origin, vec3_t point, float radius )
 {
 	rVec rorigin = qVec( origin );
 	rVec nearPoint;
@@ -369,7 +366,7 @@ extern "C" qboolean BotFindRandomPointInRadius( int botClientNum, const vec3_t o
 	return qtrue;
 }
 
-extern "C" qboolean BotNavTrace( int botClientNum, botTrace_t *trace, const vec3_t start, const vec3_t end )
+qboolean BotNavTrace( int botClientNum, botTrace_t *trace, const vec3_t start, const vec3_t end )
 {
 	dtPolyRef startRef;
 	dtStatus status;
@@ -403,7 +400,7 @@ extern "C" qboolean BotNavTrace( int botClientNum, botTrace_t *trace, const vec3
 	return qtrue;
 }
 
-extern "C" void BotAddObstacle( const vec3_t mins, const vec3_t maxs, qhandle_t *obstacleHandle )
+void BotAddObstacle( const vec3_t mins, const vec3_t maxs, qhandle_t *obstacleHandle )
 {
 	qVec min = mins;
 	qVec max = maxs;
@@ -434,7 +431,7 @@ extern "C" void BotAddObstacle( const vec3_t mins, const vec3_t maxs, qhandle_t 
 	}
 }
 
-extern "C" void BotRemoveObstacle( qhandle_t obstacleHandle )
+void BotRemoveObstacle( qhandle_t obstacleHandle )
 {
 	for ( int i = 0; i < numNavData; i++ )
 	{
@@ -447,7 +444,7 @@ extern "C" void BotRemoveObstacle( qhandle_t obstacleHandle )
 	}
 }
 
-extern "C" void BotUpdateObstacles()
+void BotUpdateObstacles()
 {
 	for ( int i = 0; i < numNavData; i++ )
 	{

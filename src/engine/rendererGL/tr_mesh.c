@@ -188,7 +188,7 @@ int R_ComputeLOD( trRefEntity_t *ent )
 		}
 
 		flod *= tr.currentModel->numLods;
-		lod = XreaL_Q_ftol( flod );
+		lod = Q_ftol( flod );
 
 		if ( lod < 0 )
 		{
@@ -344,7 +344,7 @@ void R_AddMDVSurfaces( trRefEntity_t *ent )
 			// don't add third_person objects if not viewing through a portal
 			if ( !personalModel )
 			{
-				R_AddDrawSurf( ( void * ) vboSurface, shader, -1, fogNum );
+				R_AddDrawSurf( ( surfaceType_t * ) vboSurface, shader, -1, fogNum );
 			}
 		}
 	}
@@ -359,7 +359,7 @@ void R_AddMDVSurfaces( trRefEntity_t *ent )
 			// don't add third_person objects if not viewing through a portal
 			if ( !personalModel )
 			{
-				R_AddDrawSurf( ( void * ) mdvSurface, shader, -1, fogNum );
+				R_AddDrawSurf( ( surfaceType_t * ) mdvSurface, shader, -1, fogNum );
 			}
 		}
 	}
@@ -384,7 +384,7 @@ void R_AddMDVInteractions( trRefEntity_t *ent, trRefLight_t *light, interactionT
 	// is outside the view frustum and we don't care about proper shadowing
 	if ( ent->cull == CULL_OUT )
 	{
-		iaType &= ~IA_LIGHT;
+		iaType = (interactionType_t) (iaType & ~IA_LIGHT);
 	}
 
 	if ( !iaType )
@@ -466,7 +466,7 @@ void R_AddMDVInteractions( trRefEntity_t *ent, trRefLight_t *light, interactionT
 			// don't add third_person objects if not viewing through a portal
 			if ( !personalModel )
 			{
-				R_AddLightInteraction( light, ( void * ) vboSurface, shader, cubeSideBits, iaType );
+				R_AddLightInteraction( light, ( surfaceType_t * ) vboSurface, shader, cubeSideBits, iaType );
 				tr.pc.c_dlightSurfaces++;
 			}
 		}
@@ -488,7 +488,7 @@ void R_AddMDVInteractions( trRefEntity_t *ent, trRefLight_t *light, interactionT
 			// don't add third_person objects if not viewing through a portal
 			if ( !personalModel )
 			{
-				R_AddLightInteraction( light, ( void * ) mdvSurface, shader, cubeSideBits, iaType );
+				R_AddLightInteraction( light, ( surfaceType_t * ) mdvSurface, shader, cubeSideBits, iaType );
 				tr.pc.c_dlightSurfaces++;
 			}
 		}

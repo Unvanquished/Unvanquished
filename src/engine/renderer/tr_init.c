@@ -1371,13 +1371,13 @@ void R_Init( void )
 	}
 
 //  backEndData[0] = ri.Hunk_Alloc( sizeof( *backEndData[0] ), h_low );
-	backEndData[ 0 ] =
+	backEndData[ 0 ] = (backEndData_t*)
 	  ri.Hunk_Alloc( sizeof( *backEndData[ 0 ] ) + sizeof( srfPoly_t ) * max_polys + sizeof( polyVert_t ) * max_polyverts, h_low );
 
 	if ( r_smp->integer )
 	{
 //      backEndData[1] = ri.Hunk_Alloc( sizeof( *backEndData[1] ), h_low );
-		backEndData[ 1 ] =
+		backEndData[ 1 ] = (backEndData_t*)
 		  ri.Hunk_Alloc( sizeof( *backEndData[ 1 ] ) + sizeof( srfPoly_t ) * max_polys + sizeof( polyVert_t ) * max_polyverts, h_low );
 	}
 	else
@@ -1397,9 +1397,7 @@ void R_Init( void )
 
 	R_ModelInit();
 
-#if defined( USE_REFENTITY_ANIMATIONSYSTEM )
 	R_InitAnimations();
-#endif
 
 	R_InitFreeType();
 
@@ -1513,10 +1511,10 @@ void R_DebugPolygon( int color, int numPoints, float *points );
 GetRefAPI
 =====================
 */
-#if defined( __cplusplus )
-extern "C" {
+#ifdef  __cplusplus
+extern "C"
 #endif
-	refexport_t    *GetRefAPI( int apiVersion, refimport_t *rimp )
+	Q_EXPORT refexport_t *GetRefAPI( int apiVersion, refimport_t *rimp )
 	{
 		static refexport_t re;
 
@@ -1617,12 +1615,9 @@ extern "C" {
 		re.Finish = RE_Finish;
 
 		re.TakeVideoFrame = RE_TakeVideoFrame;
-#if defined( USE_REFLIGHT )
 		re.AddRefLightToScene = NULL;
-#endif
 
 		// RB: alternative skeletal animation system
-#if defined( USE_REFENTITY_ANIMATIONSYSTEM )
 		re.RegisterAnimation = RE_RegisterAnimation;
 		re.CheckSkeleton = RE_CheckSkeleton;
 		re.BuildSkeleton = RE_BuildSkeleton;
@@ -1630,7 +1625,6 @@ extern "C" {
 		re.BoneIndex = RE_BoneIndex;
 		re.AnimNumFrames = RE_AnimNumFrames;
 		re.AnimFrameRate = RE_AnimFrameRate;
-#endif
 
 		re.GetTextureSize = R_GetTextureSize;
 
@@ -1646,10 +1640,6 @@ extern "C" {
 
 		return &re;
 	}
-
-#if defined( __cplusplus )
-} // extern "C"
-#endif
 
 #ifndef REF_HARD_LINKED
 // this is only here so the functions in q_shared.c and bg_*.c can link

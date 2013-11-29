@@ -26,7 +26,8 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "../client/client.h"
+#include "../qcommon/q_shared.h"
+#include "../qcommon/qcommon.h"
 
 cvar_t *cl_shownet;
 
@@ -87,7 +88,7 @@ void CL_ForwardCommandToServer( const char *cmd )
 	Com_Printf(_( "Unknown command \"%s\"\n"), cmd );
 }
 
-void CL_ConsolePrint( char *txt )
+void CL_ConsolePrint( std::string text )
 {
 }
 

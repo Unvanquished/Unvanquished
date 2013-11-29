@@ -32,9 +32,7 @@ Maryland 20850 USA.
 ===========================================================================
 */
 #define BOTS 1
-extern "C" {
 #include "../client/client.h"
-}
 #include "../../libs/detour/DetourDebugDraw.h"
 #include "../../libs/detour/DebugDraw.h"
 #include "bot_navdraw.h"
@@ -121,7 +119,7 @@ void DrawPath( Bot_t *bot, DebugDrawQuake &dd )
 	dd.depthMask(true);
 }
 
-extern "C" void BotDebugDrawMesh( BotDebugInterface_t *in )
+void BotDebugDrawMesh( BotDebugInterface_t *in )
 {
 	static DebugDrawQuake dd;
 

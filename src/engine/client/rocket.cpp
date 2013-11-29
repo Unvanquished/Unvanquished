@@ -55,14 +55,15 @@ Maryland 20850 USA.
 #include "rocketKeyBinder.h"
 #include "rocketElementDocument.h"
 #include "rocketChatField.h"
+#include "client.h"
+#include "rocket.h"
+#include <Rocket/Debugger.h>
 
 extern "C"
 {
 	#include <SDL.h>
-	#include "client.h"
 }
 
-#include <Rocket/Debugger.h>
 
 class DaemonFileInterface : public Rocket::Core::FileInterface
 {

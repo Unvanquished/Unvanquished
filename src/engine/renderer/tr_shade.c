@@ -264,7 +264,7 @@ static void R_BindAnimatedImage( textureBundle_t *bundle )
 
 	// it is necessary to do this messy calc to make sure animations line up
 	// exactly with waveforms of the same frequency
-	index = ri.ftol( tess.shaderTime * bundle->imageAnimationSpeed * FUNCTABLE_SIZE );
+	index = Q_ftol( tess.shaderTime * bundle->imageAnimationSpeed * FUNCTABLE_SIZE );
 	index >>= FUNCTABLE_SIZE2;
 
 	if ( index < 0 )
@@ -700,11 +700,11 @@ static void DynamicLightSinglePass( void )
 			}
 
 			// add to color
-			color = colors[ 0 ] + ri.ftol( floatColor[ 0 ] * modulate );
+			color = colors[ 0 ] + Q_ftol( floatColor[ 0 ] * modulate );
 			colors[ 0 ] = color > 255 ? 255 : color;
-			color = colors[ 1 ] + ri.ftol( floatColor[ 1 ] * modulate );
+			color = colors[ 1 ] + Q_ftol( floatColor[ 1 ] * modulate );
 			colors[ 1 ] = color > 255 ? 255 : color;
-			color = colors[ 2 ] + ri.ftol( floatColor[ 2 ] * modulate );
+			color = colors[ 2 ] + Q_ftol( floatColor[ 2 ] * modulate );
 			colors[ 2 ] = color > 255 ? 255 : color;
 		}
 	}
@@ -864,11 +864,11 @@ static void DynamicLightPass( void )
 			}
 
 			// set color
-			color = ri.ftol( floatColor[ 0 ] * modulate );
+			color = Q_ftol( floatColor[ 0 ] * modulate );
 			colors[ 0 ] = color > 255 ? 255 : color;
-			color = ri.ftol( floatColor[ 1 ] * modulate );
+			color = Q_ftol( floatColor[ 1 ] * modulate );
 			colors[ 1 ] = color > 255 ? 255 : color;
-			color = ri.ftol( floatColor[ 2 ] * modulate );
+			color = Q_ftol( floatColor[ 2 ] * modulate );
 			colors[ 2 ] = color > 255 ? 255 : color;
 		}
 

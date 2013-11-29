@@ -89,7 +89,7 @@ void BindAnimatedImage( textureBundle_t *bundle )
 
 	// it is necessary to do this messy calc to make sure animations line up
 	// exactly with waveforms of the same frequency
-	index = XreaL_Q_ftol( backEnd.refdef.floatTime * bundle->imageAnimationSpeed * FUNCTABLE_SIZE );
+	index = Q_ftol( backEnd.refdef.floatTime * bundle->imageAnimationSpeed * FUNCTABLE_SIZE );
 	index >>= FUNCTABLE_SIZE2;
 
 	if ( index < 0 )
@@ -5820,8 +5820,6 @@ static void RB_RenderDebugUtils()
 		GL_LoadModelViewMatrix( backEnd.viewParms.world.modelViewMatrix );
 	}
 
-#if defined( USE_REFENTITY_ANIMATIONSYSTEM )
-
 	if ( r_showSkeleton->integer )
 	{
 		int                  i, j, k, parentIndex;
@@ -6042,8 +6040,6 @@ static void RB_RenderDebugUtils()
 			tess.numIndexes = 0;
 		}
 	}
-
-#endif
 
 	if ( r_showLightScissors->integer )
 	{
@@ -6769,7 +6765,7 @@ static debugDrawMode_t currentDebugDrawMode;
 static int maxDebugVerts;
 static float currentDebugSize;
 
-extern "C" void DebugDrawBegin( debugDrawMode_t mode, float size ) {
+void DebugDrawBegin( debugDrawMode_t mode, float size ) {
 
 	if ( tess.numVertexes )
 	{
@@ -6830,13 +6826,18 @@ extern "C" void DebugDrawBegin( debugDrawMode_t mode, float size ) {
 	GL_CheckErrors();
 }
 
-extern "C" void DebugDrawDepthMask(qboolean state)
+void DebugDrawDepthMask(qboolean state)
 {
 	GL_DepthMask( state ? GL_TRUE : GL_FALSE );
 }
 
-extern "C" void DebugDrawVertex(const vec3_t pos, unsigned int color, const vec2_t uv) {
-	vec4_t colors = {color & 0xFF, (color >> 8) & 0xFF, (color >> 16) & 0xFF, (color >> 24) & 0xFF};
+void DebugDrawVertex(const vec3_t pos, unsigned int color, const vec2_t uv) {
+	vec4_t colors = {
+		static_cast<vec_t>(color & 0xFF),
+		static_cast<vec_t>((color >> 8) & 0xFF),
+		static_cast<vec_t>((color >> 16) & 0xFF),
+		static_cast<vec_t>((color >> 24) & 0xFF)
+	};
 	Vector4Scale(colors, 1.0f/255.0f, colors);
 
 	//we have reached the maximum number of verts we can batch
@@ -6863,7 +6864,7 @@ extern "C" void DebugDrawVertex(const vec3_t pos, unsigned int color, const vec2
 	tess.numIndexes++;
 }
 
-extern "C" void DebugDrawEnd( void ) {
+void DebugDrawEnd( void ) {
 
 	Tess_UpdateVBOs( ATTR_POSITION | ATTR_TEXCOORD | ATTR_COLOR );
 

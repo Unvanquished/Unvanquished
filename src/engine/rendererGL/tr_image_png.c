@@ -34,7 +34,7 @@ PNG LOADING
 */
 static void png_read_data( png_structp png, png_bytep data, png_size_t length )
 {
-	byte *io_ptr = png_get_io_ptr( png );
+	byte *io_ptr = (byte*) png_get_io_ptr( png );
 	Com_Memcpy( data, io_ptr, length );
 	png_init_io( png, ( png_FILE_p )( io_ptr + length ) );
 }
@@ -209,7 +209,7 @@ static int png_compressed_size;
 
 static void png_write_data( png_structp png, png_bytep data, png_size_t length )
 {
-	byte *io_ptr = png_get_io_ptr( png );
+	byte *io_ptr = (byte*) png_get_io_ptr( png );
 	Com_Memcpy( io_ptr, data, length );
 	png_init_io( png, ( png_FILE_p )( io_ptr + length ) );
 	png_compressed_size += length;
@@ -246,7 +246,7 @@ void SavePNG( const char *name, const byte *pic, int width, int height, int numB
 	}
 
 	png_compressed_size = 0;
-	buffer = ri.Hunk_AllocateTempMemory( width * height * numBytes );
+	buffer = (byte*) ri.Hunk_AllocateTempMemory( width * height * numBytes );
 
 	// set error handling
 	if ( setjmp( png_jmpbuf( png ) ) )
@@ -281,7 +281,7 @@ void SavePNG( const char *name, const byte *pic, int width, int height, int numB
 	// write the file header information
 	png_write_info( png, info );
 
-	row_pointers = ri.Hunk_AllocateTempMemory( height * sizeof( png_bytep ) );
+	row_pointers = (png_bytep*) ri.Hunk_AllocateTempMemory( height * sizeof( png_bytep ) );
 
 	if ( setjmp( png_jmpbuf( png ) ) )
 	{

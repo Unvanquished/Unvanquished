@@ -38,11 +38,8 @@ Maryland 20850 USA.
 #include <Rocket/Core.h>
 #include <Rocket/Core/Element.h>
 #include <Rocket/Core/FontFaceHandle.h>
-
-extern "C"
-{
 #include "client.h"
-}
+#include "rocket.h"
 
 struct ConsoleLine
 {

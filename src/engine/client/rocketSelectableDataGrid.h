@@ -34,10 +34,8 @@ Maryland 20850 USA.
 */
 #ifndef ROCKETSELECTABLEDATAGRID_H
 #define ROCKETSELECTABLEDATAGRID_H
-extern "C"
-{
 #include "client.h"
-}
+#include "rocket.h"
 #include <Rocket/Core.h>
 #include <Rocket/Controls.h>
 

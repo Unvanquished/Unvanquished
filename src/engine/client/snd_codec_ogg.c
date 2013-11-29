@@ -22,8 +22,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
-// OGG support is enabled by this define
-#ifdef USE_CODEC_VORBIS
+// Don't add ogg dependencies to tty client
+#ifndef BUILD_TTY_CLIENT
 
 // includes for the Q3 sound system
 #include "client.h"
@@ -254,7 +254,7 @@ snd_stream_t *S_OGG_CodecOpenStream( const char *filename )
 	}
 
 	// alloctate the OggVorbis_File
-	vf = Z_Malloc( sizeof( OggVorbis_File ) );
+	vf = (OggVorbis_File*) Z_Malloc( sizeof( OggVorbis_File ) );
 
 	if ( !vf )
 	{
@@ -388,7 +388,7 @@ int S_OGG_CodecReadStream( snd_stream_t *stream, int bytes, void *buffer )
 
 	bytesRead = 0;
 	bytesLeft = bytes;
-	bufPtr = buffer;
+	bufPtr = (char*) buffer;
 
 	// cycle until we have the requested or all available bytes read
 	while ( -1 )
@@ -454,7 +454,7 @@ void *S_OGG_CodecLoad( const char *filename, snd_info_t *info )
 
 	// allocate a buffer
 	// this buffer must be free-ed by the caller of this function
-	buffer = Hunk_AllocateTempMemory( info->size );
+	buffer = (byte*) Hunk_AllocateTempMemory( info->size );
 
 	if ( !buffer )
 	{
@@ -480,4 +480,4 @@ void *S_OGG_CodecLoad( const char *filename, snd_info_t *info )
 	return buffer;
 }
 
-#endif // USE_CODEC_VORBIS
+#endif // !BUILD_TTY_CLIENT

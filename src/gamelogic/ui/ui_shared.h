@@ -431,7 +431,7 @@ typedef struct
 	void ( *getBindingBuf )( int keynum, int team, char *buf, int buflen );
 	void ( *setBinding )( int keynum, int team, const char *binding );
 	void ( *executeText )( int exec_when, const char *text );
-	void ( *Error )( int level, const char *error, ... ) PRINTF_LIKE(2) NORETURN;
+	void ( *Error )( int level, const char *error, ... ) PRINTF_LIKE(2);
 	void ( *Print )( const char *msg, ... ) PRINTF_LIKE(1);
 	void ( *Pause )( qboolean b );
 	int ( *ownerDrawWidth )( int ownerDraw, float scale );
@@ -572,7 +572,7 @@ void       UI_R_UnregisterFont( fontHandle_t );
 
 int ui_CursorToOffset( const char *buf, int cursor );
 int ui_OffsetToCursor( const char *buf, int offset );
-const char *Gettext( const char *msgid ) __attribute__((__format_arg__(1)));
-const char *Pgettext( const char *ctxt, const char *msgid ) __attribute__((__format_arg__(2)));
-const char *GettextPlural( const char *msgid, const char *msgid2, int number ) __attribute__((__format_arg__(1))) __attribute__((__format_arg__(2)));
+const char *Gettext( const char *msgid ) PRINTF_TRANSLATE_ARG(1);
+const char *Pgettext( const char *ctxt, const char *msgid ) PRINTF_TRANSLATE_ARG(2);
+const char *GettextPlural( const char *msgid, const char *msgid2, int number ) PRINTF_TRANSLATE_ARG(1) PRINTF_TRANSLATE_ARG(2);
 #endif

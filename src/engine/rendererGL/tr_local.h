@@ -24,15 +24,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef TR_LOCAL_H
 #define TR_LOCAL_H
 
-#if defined( __cplusplus )
-extern "C" {
-#endif
-
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qfiles.h"
 #include "../qcommon/qcommon.h"
-#include "../renderer/tr_public.h"
+
 #include "../renderer/tr_bonematrix.h"
+
+#include "../renderer/tr_public.h"
 
 #include <GL/glew.h>
 
@@ -2631,10 +2629,8 @@ extern "C" {
 		image_t *cubemap;
 	} cubemapProbe_t;
 
-#if defined( __cplusplus )
 	class GLShader;
 	class GLShader_vertexLighting_DBS_entity;
-#endif
 
 	typedef struct
 	{
@@ -2869,9 +2865,8 @@ extern "C" {
 		scissorState_t scissor;
 	} trGlobals_t;
 
-	typedef struct {
-		qboolean FXAA;
-	} glBroken_t;
+//	typedef struct {
+//	} glBroken_t;
 
 	extern const matrix_t quakeToOpenGLMatrix;
 	extern const matrix_t openGLToQuakeMatrix;
@@ -2885,7 +2880,7 @@ extern "C" {
 	extern glconfig_t     glConfig; // outside of TR since it shouldn't be cleared during ref re-init
 	extern glconfig2_t    glConfig2;
 
-	extern glBroken_t     glBroken;
+//	extern glBroken_t     glBroken;
 
 	extern glstate_t      glState; // outside of TR since it shouldn't be cleared during ref re-init
 
@@ -3427,10 +3422,6 @@ extern "C" {
 
 	void     GLimp_LogComment( const char *comment );
 
-// NOTE TTimo linux works with float gamma value, not the gamma table
-//   the params won't be used, getting the r_gamma cvar directly
-	void GLimp_SetGamma( unsigned char red[ 256 ], unsigned char green[ 256 ], unsigned char blue[ 256 ] );
-
 	/*
 	====================================================================
 
@@ -3805,10 +3796,7 @@ extern "C" {
 
 	void      R_InitAnimations( void );
 
-#if defined( USE_REFENTITY_ANIMATIONSYSTEM )
 	qhandle_t RE_RegisterAnimation( const char *name );
-
-#endif
 
 	skelAnimation_t *R_GetAnimationByHandle( qhandle_t hAnim );
 	void            R_AnimationList_f( void );
@@ -3816,15 +3804,12 @@ extern "C" {
 	void            R_AddMD5Surfaces( trRefEntity_t *ent );
 	void            R_AddMD5Interactions( trRefEntity_t *ent, trRefLight_t *light, interactionType_t iaType );
 
-#if defined( USE_REFENTITY_ANIMATIONSYSTEM )
 	int             RE_CheckSkeleton( refSkeleton_t *skel, qhandle_t hModel, qhandle_t hAnim );
 	int             RE_BuildSkeleton( refSkeleton_t *skel, qhandle_t anim, int startFrame, int endFrame, float frac,
 	                                  qboolean clearOrigin );
 	int             RE_BlendSkeleton( refSkeleton_t *skel, const refSkeleton_t *blend, float frac );
 	int             RE_AnimNumFrames( qhandle_t hAnim );
 	int             RE_AnimFrameRate( qhandle_t hAnim );
-
-#endif
 
 	/*
 	=============================================================
@@ -4154,8 +4139,8 @@ extern "C" {
 
 	void       R_SetAltShaderTokens( const char * );
 
-#if defined( __cplusplus )
-}
-#endif
+// NOTE TTimo linux works with float gamma value, not the gamma table
+//   the params won't be used, getting the r_gamma cvar directly
+	void GLimp_SetGamma( unsigned char red[ 256 ], unsigned char green[ 256 ], unsigned char blue[ 256 ] );
 
 #endif // TR_LOCAL_H

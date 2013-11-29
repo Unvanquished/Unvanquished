@@ -270,11 +270,11 @@ static void CM_SurfaceCollideFromTriangleSoup( cTriangleSoup_t *triSoup, cSurfac
 
 	// copy the results out
 	sc->numPlanes = numPlanes;
-	sc->planes = Hunk_Alloc( numPlanes * sizeof( *sc->planes ), h_high );
+	sc->planes = ( cPlane_t * ) Hunk_Alloc( numPlanes * sizeof( *sc->planes ), h_high );
 	Com_Memcpy( sc->planes, planes, numPlanes * sizeof( *sc->planes ) );
 
 	sc->numFacets = numFacets;
-	sc->facets = Hunk_Alloc( numFacets * sizeof( *sc->facets ), h_high );
+	sc->facets = ( cFacet_t * ) Hunk_Alloc( numFacets * sizeof( *sc->facets ), h_high );
 	Com_Memcpy( sc->facets, facets, numFacets * sizeof( *sc->facets ) );
 }
 
@@ -321,7 +321,7 @@ cSurfaceCollide_t *CM_GenerateTriangleSoupCollide( int numVertexes, vec3_t *vert
 
 	//for(i = 0; i < triSoup.num
 
-	sc = Hunk_Alloc( sizeof( *sc ), h_high );
+	sc = ( cSurfaceCollide_t * ) Hunk_Alloc( sizeof( *sc ), h_high );
 	ClearBounds( sc->bounds[ 0 ], sc->bounds[ 1 ] );
 
 	for ( i = 0; i < triSoup.numTriangles; i++ )

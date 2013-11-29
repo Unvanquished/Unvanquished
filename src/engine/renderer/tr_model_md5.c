@@ -63,7 +63,7 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 
 	mod->type = MOD_MD5;
 	mod->dataSize += sizeof( md5Model_t );
-	md5 = mod->model.md5 = ri.Hunk_Alloc( sizeof( md5Model_t ), h_low );
+	md5 = mod->model.md5 = (md5Model_t*) ri.Hunk_Alloc( sizeof( md5Model_t ), h_low );
 
 	// skip commandline <arguments string>
 	token = COM_ParseExt2( &buf_p, qtrue );
@@ -110,7 +110,7 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 	//ri.Printf(PRINT_ALL, "R_LoadMD5: '%s' has %i bones\n", modName, md5->numBones);
 
 	// parse all the bones
-	md5->bones = ri.Hunk_Alloc( sizeof( *bone ) * md5->numBones, h_low );
+	md5->bones = (md5Bone_t*) ri.Hunk_Alloc( sizeof( *bone ) * md5->numBones, h_low );
 
 	// parse joints {
 	token = COM_ParseExt2( &buf_p, qtrue );
@@ -223,7 +223,7 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 
 	//ri.Printf(PRINT_ALL, "R_LoadMD5: '%s' has %i surfaces\n", modName, md5->numSurfaces);
 
-	md5->surfaces = ri.Hunk_Alloc( sizeof( *surf ) * md5->numSurfaces, h_low );
+	md5->surfaces = (md5Surface_t*) ri.Hunk_Alloc( sizeof( *surf ) * md5->numSurfaces, h_low );
 
 	for ( i = 0, surf = md5->surfaces; i < md5->numSurfaces; i++, surf++ )
 	{
@@ -301,7 +301,7 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 			          modName, SHADER_MAX_VERTEXES, surf->numVerts );
 		}
 
-		surf->verts = ri.Hunk_Alloc( sizeof( *v ) * surf->numVerts, h_low );
+		surf->verts = (md5Vertex_t*) ri.Hunk_Alloc( sizeof( *v ) * surf->numVerts, h_low );
 
 		for ( j = 0, v = surf->verts; j < surf->numVerts; j++, v++ )
 		{
@@ -371,7 +371,7 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 			          modName, SHADER_MAX_TRIANGLES, surf->numTriangles );
 		}
 
-		surf->triangles = ri.Hunk_Alloc( sizeof( *tri ) * surf->numTriangles, h_low );
+		surf->triangles = (md5Triangle_t*) ri.Hunk_Alloc( sizeof( *tri ) * surf->numTriangles, h_low );
 
 		for ( j = 0, tri = surf->triangles; j < surf->numTriangles; j++, tri++ )
 		{
@@ -405,7 +405,7 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 		token = COM_ParseExt2( &buf_p, qfalse );
 		surf->numWeights = atoi( token );
 
-		surf->weights = ri.Hunk_Alloc( sizeof( *weight ) * surf->numWeights, h_low );
+		surf->weights = (md5Weight_t*) ri.Hunk_Alloc( sizeof( *weight ) * surf->numWeights, h_low );
 
 		for ( j = 0, weight = surf->weights; j < surf->numWeights; j++, weight++ )
 		{

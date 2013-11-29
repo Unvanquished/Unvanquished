@@ -82,10 +82,8 @@ typedef enum
 
 typedef enum
 {
-  JPS_OFF,
-  JPS_DESCENDING,
-  JPS_HOVERING,
-  JPS_ASCENDING
+  JPS_INACTIVE,
+  JPS_ACTIVE
 } jetPackState_t;
 
 //======================================================================
@@ -1167,9 +1165,9 @@ typedef struct
 	cgBinaryShaderSetting_t binaryShaderSettings[ NUM_BINARY_SHADERS ];
 	char                    sayTextType[ MAX_STRING_CHARS ];
 
-	// confidence
-	float                   confidenceGained;
-	int                     confidenceGainedTime;
+	// momentum
+	float                   momentumGained;
+	int                     momentumGainedTime;
 } cg_t;
 
 typedef enum
@@ -1401,13 +1399,9 @@ typedef struct
 	sfxHandle_t watrOutSound;
 	sfxHandle_t watrUnSound;
 
-	sfxHandle_t jetpackDescendSound;
-	sfxHandle_t jetpackIdleSound;
-	sfxHandle_t jetpackAscendSound;
+	sfxHandle_t jetpackThrustLoopSound;
 
-	qhandle_t   jetPackDescendPS;
-	qhandle_t   jetPackHoverPS;
-	qhandle_t   jetPackAscendPS;
+	qhandle_t   jetPackThrustPS;
 
 	sfxHandle_t medkitUseSound;
 
@@ -1535,8 +1529,8 @@ typedef struct
 	qboolean markDeconstruct; // Whether or not buildables are marked
 	int      powerReactorRange;
 	int      powerRepeaterRange;
-	float    confidenceHalfLife; // used for confidence bar (un)lock markers
-	float    unlockableMinTime;  // used for confidence bar (un)lock markers
+	float    momentumHalfLife; // used for momentum bar (un)lock markers
+	float    unlockableMinTime;  // used for momentum bar (un)lock markers
 
 	int      voteTime[ NUM_TEAMS ];
 	int      voteYes[ NUM_TEAMS ];
@@ -1811,7 +1805,7 @@ const char *CG_Argv( int arg );
 const char *CG_Args( void );
 
 void QDECL CG_Printf( const char *msg, ... ) PRINTF_LIKE(1);
-void QDECL CG_Error( const char *msg, ... ) PRINTF_LIKE(1) NORETURN;
+void QDECL NORETURN CG_Error( const char *msg, ... ) PRINTF_LIKE(1);
 
 void       CG_StartMusic( void );
 
@@ -1916,6 +1910,7 @@ void        CG_NewClientInfo( int clientNum );
 void        CG_PrecacheClientInfo( class_t class, const char *model, const char *skin );
 sfxHandle_t CG_CustomSound( int clientNum, const char *soundName );
 void        CG_PlayerDisconnect( vec3_t org );
+centity_t   *CG_GetLocation( vec3_t );
 centity_t   *CG_GetPlayerLocation( void );
 
 void        CG_InitClasses( void );
@@ -2009,7 +2004,7 @@ void CG_HandleMissileHitWall( entityState_t *es, vec3_t origin );
 
 void CG_AddViewWeapon( playerState_t *ps );
 void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent );
-void CG_DrawItemSelect( void );
+void CG_DrawHumanInventory( void );
 void CG_DrawItemSelectText( void );
 float CG_ChargeProgress( void );
 

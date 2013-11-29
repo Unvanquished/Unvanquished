@@ -26,21 +26,20 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #define G_TRAPCALLS_H_
 
 void             trap_Print( const char *string );
-void             trap_Error( const char *string ) NORETURN;
+void NORETURN    trap_Error( const char *string );
 int              trap_Milliseconds( void );
 void             trap_Cvar_Register( vmCvar_t *cvar, const char *var_name, const char *value, int flags );
 void             trap_Cvar_Set( const char *var_name, const char *value );
 void             trap_Cvar_Update( vmCvar_t *cvar );
 int              trap_Cvar_VariableIntegerValue( const char *var_name );
 void             trap_Cvar_VariableStringBuffer( const char *var_name, char *buffer, int bufsize );
-void             trap_Cvar_LatchedVariableStringBuffer( const char *var_name, char *buffer, int bufsize );
 int              trap_Argc( void );
 void             trap_Argv( int n, char *buffer, int bufferLength );
 void             trap_SendConsoleCommand( int exec_when, const char *text );
 int              trap_FS_FOpenFile( const char *qpath, fileHandle_t *f, fsMode_t mode );
 void             trap_FS_Read( void *buffer, int len, fileHandle_t f );
 int              trap_FS_Write( const void *buffer, int len, fileHandle_t f );
-int              trap_FS_Rename( const char *from, const char *to );
+void             trap_FS_Rename( const char *from, const char *to );
 void             trap_FS_FCloseFile( fileHandle_t f );
 int              trap_FS_GetFileList( const char *path, const char *extension, char *listbuf, int bufsize );
 void             trap_LocateGameData( gentity_t *gEnts, int numGEntities, int sizeofGEntity_t, playerState_t *clients, int sizeofGClient );
@@ -92,12 +91,10 @@ int              trap_PC_ReadToken( int handle, pc_token_t *pc_token );
 int              trap_PC_SourceFileAndLine( int handle, char *filename, int *line );
 int              trap_PC_UnReadToken( int handle );
 int              trap_BotGetServerCommand( int clientNum, char *message, int size );
-void             trap_AddPhysicsEntity( gentity_t *ent );
-void             trap_AddPhysicsStatic( gentity_t *ent );
 void             trap_SendMessage( int clientNum, char *buf, int buflen );
 messageStatus_t  trap_MessageStatus( int clientNum );
 
-int              trap_RSA_GenerateMessage( const char *public_key, const char *cleartext, char *encrypted );
+int              trap_RSA_GenerateMessage( const char *public_key, char *cleartext, char *encrypted );
 
 void             trap_QuoteString( const char *str, char *buf, int size );
 

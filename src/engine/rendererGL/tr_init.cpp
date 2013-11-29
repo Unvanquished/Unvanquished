@@ -23,10 +23,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // tr_init.c -- functions that are not called every frame
 #include "tr_local.h"
 
-#if defined( __cplusplus )
-extern "C" {
-#endif
-
 	glconfig_t  glConfig;
 	glconfig2_t glConfig2;
 
@@ -306,7 +302,7 @@ extern "C" {
 
 	cvar_t      *r_fontScale;
 
-	glBroken_t  glBroken = {};
+//	glBroken_t  glBroken = {};
 
 	static void AssertCvarRange( cvar_t *cv, float minVal, float maxVal, qboolean shouldBeIntegral )
 	{
@@ -378,13 +374,8 @@ extern "C" {
 				glConfig.maxTextureSize = 0;
 			}
 
-			// handle GLSL brokenness here...
-			if ( strcmp( glConfig.version_string, "3" ) < 0 &&
-			     ( !strcmp( glConfig.vendor_string, "Intel Open Source Technology Center" ) ||
-			       !strcmp( glConfig.vendor_string, "X.Org" ) ) )
-			{
-				glBroken.FXAA = qtrue;
-			}
+			// handle any OpenGL/GLSL brokenness here...
+			// nothing at present
 
 #if defined( GLSL_COMPILE_STARTUP_ONLY )
 			GLSL_InitGPUShaders();
@@ -1326,11 +1317,6 @@ extern "C" {
 			}
 		}
 
-		if ( glBroken.FXAA )
-		{
-			ri.Printf( PRINT_DEVELOPER, "^3Not using FXAA: shader is not compilable on Intel/Mesa OpenGL 2.1\n" );
-		}
-
 		if ( glConfig.hardwareType == GLHW_NV_DX10 )
 		{
 			ri.Printf( PRINT_DEVELOPER, "Using NVIDIA DirectX 10 hardware features\n" );
@@ -1708,11 +1694,7 @@ extern "C" {
 		ri.Cmd_AddCommand( "skinlist", R_SkinList_f );
 		ri.Cmd_AddCommand( "modellist", R_Modellist_f );
 		ri.Cmd_AddCommand( "modelist", R_ModeList_f );
-
-#if defined( USE_REFENTITY_ANIMATIONSYSTEM )
 		ri.Cmd_AddCommand( "animationlist", R_AnimationList_f );
-#endif
-
 		ri.Cmd_AddCommand( "fbolist", R_FBOList_f );
 		ri.Cmd_AddCommand( "vbolist", R_VBOList_f );
 		ri.Cmd_AddCommand( "screenshot", R_ScreenShot_f );
@@ -1827,9 +1809,7 @@ extern "C" {
 
 		R_ModelInit();
 
-#if defined( USE_REFENTITY_ANIMATIONSYSTEM )
 		R_InitAnimations();
-#endif
 
 		R_InitFreeType();
 
@@ -1986,10 +1966,10 @@ extern "C" {
 	GetRefAPI
 	=====================
 	*/
-//#if defined(__cplusplus)
-//extern "C" {
-//#endif
-	refexport_t *GetRefAPI( int apiVersion, refimport_t *rimp )
+#ifdef  __cplusplus
+extern "C"
+#endif
+	Q_EXPORT refexport_t *GetRefAPI( int apiVersion, refimport_t *rimp )
 	{
 		static refexport_t re;
 
@@ -2111,11 +2091,8 @@ extern "C" {
 		re.TakeScreenshotPNG = RB_TakeScreenshotPNG;
 #endif
 
-#if defined( USE_REFLIGHT )
 		re.AddRefLightToScene = RE_AddRefLightToScene;
-#endif
 
-#if defined( USE_REFENTITY_ANIMATIONSYSTEM )
 		re.RegisterAnimation = RE_RegisterAnimation;
 		re.CheckSkeleton = RE_CheckSkeleton;
 		re.BuildSkeleton = RE_BuildSkeleton;
@@ -2123,7 +2100,6 @@ extern "C" {
 		re.BoneIndex = RE_BoneIndex;
 		re.AnimNumFrames = RE_AnimNumFrames;
 		re.AnimFrameRate = RE_AnimFrameRate;
-#endif
 
 		re.GetTextureSize = RE_GetTextureSize;
 		re.Add2dPolysIndexed = RE_2DPolyiesIndexed;
@@ -2147,9 +2123,6 @@ extern "C" {
 
 // this is only here so the functions in q_shared.c and q_math.c can link
 
-#if defined( __cplusplus )
-	extern "C" {
-#endif
 		void QDECL PRINTF_LIKE(1) Com_Printf( const char *msg, ... )
 		{
 			va_list argptr;
@@ -2186,12 +2159,5 @@ extern "C" {
 			ri.Error( level, "%s", text );
 		}
 
-#if defined( __cplusplus )
-	}
 #endif
 
-#endif
-
-#if defined( __cplusplus )
-}
-#endif

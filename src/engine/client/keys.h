@@ -34,6 +34,8 @@ Maryland 20850 USA.
 
 #include "keycodes.h"
 
+#include "../framework/ConsoleField.h"
+
 #define MAX_TEAMS 4
 #define DEFAULT_BINDING 0
 
@@ -50,13 +52,12 @@ extern int      bindTeam;
 
 // NOTE TTimo the declaration of field_t and Field_Clear is now in qcommon/qcommon.h
 
-void            Field_KeyDownEvent( field_t *edit, int key );
-void            Field_CharEvent( field_t *edit, const char *ch );
-void            Field_Draw( field_t *edit, int x, int y, qboolean showCursor, qboolean noColorEscape, float alpha );
-void            Field_BigDraw( field_t *edit, int x, int y, qboolean showCursor, qboolean noColorEscape );
+void            Field_KeyDownEvent(Util::LineEditData& edit, int key );
+void            Field_CharEvent(Util::LineEditData& edit, int c );
+void            Field_Draw(const Util::LineEditData& edit, int x, int y, qboolean showCursor, qboolean noColorEscape, float alpha );
+void            Field_BigDraw(Util::LineEditData& edit, int x, int y, qboolean showCursor, qboolean noColorEscape );
 
-extern field_t  g_consoleField;
-extern field_t  chatField;
+extern Console::Field  g_consoleField;
 extern int      anykeydown;
 extern qboolean chat_irc;
 

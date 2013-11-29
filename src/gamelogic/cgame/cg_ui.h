@@ -42,6 +42,10 @@ typedef rectDef_t Rectangle;
 #define G_( text )             Pgettext( Trans_GenderContext( gender ), text )
 #define P_( one, many, count ) GettextPlural( (one), (many), (count) )
 
+#ifdef Q3_VM
+#define __attribute__(X)
+#endif
+
 
 const char *Gettext( const char *msgid ) __attribute__((__format_arg__(1)));
 const char *Pgettext( const char *ctxt, const char *msgid ) __attribute__((__format_arg__(2)));

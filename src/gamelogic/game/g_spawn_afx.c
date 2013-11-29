@@ -277,8 +277,6 @@ trigger_heal
 
 void env_afx_heal_touch( gentity_t *self, gentity_t *other, trace_t *trace )
 {
-	int max;
-
 	if ( !other->client )
 	{
 		return;

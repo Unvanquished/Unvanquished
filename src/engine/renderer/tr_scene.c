@@ -173,7 +173,7 @@ void R_AddPolygonSurfaces( void )
 	{
 		sh = R_GetShaderByHandle( poly->hShader );
 
-		R_AddDrawSurf( ( void * ) poly, sh, poly->fogIndex, 0, 0 );
+		R_AddDrawSurf( ( surfaceType_t * ) poly, sh, poly->fogIndex, 0, 0 );
 	}
 }
 
@@ -371,7 +371,7 @@ void R_AddPolygonBufferSurfaces( void )
 	{
 		sh = R_GetShaderByHandle( polybuffer->pPolyBuffer->shader );
 
-		R_AddDrawSurf( ( void * ) polybuffer, sh, polybuffer->fogIndex, 0, 0 );
+		R_AddDrawSurf( ( surfaceType_t * ) polybuffer, sh, polybuffer->fogIndex, 0, 0 );
 	}
 }
 

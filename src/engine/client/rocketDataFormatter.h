@@ -34,11 +34,8 @@ Maryland 20850 USA.
 
 #ifndef ROCKETDATAFORMATTER_H
 #define ROCKETDATAFORMATTER_H
-
-extern "C"
-{
 #include "client.h"
-}
+#include "rocket.h"
 
 #include <Rocket/Controls/DataFormatter.h>
 

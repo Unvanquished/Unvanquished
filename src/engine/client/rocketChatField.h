@@ -39,11 +39,9 @@ Maryland 20850 USA.
 #include <Rocket/Core/Element.h>
 #include <Rocket/Core/ElementUtilities.h>
 #include <Rocket/Core/GeometryUtilities.h>
-
-extern "C"
-{
 #include "client.h"
-}
+#include "rocket.h"
+#include "../framework/CommandSystem.h"
 
 class RocketChatField : public Rocket::Core::Element, Rocket::Core::EventListener
 {
@@ -145,15 +143,16 @@ public:
 
 					case Rocket::Core::Input::KI_RETURN:
 					case Rocket::Core::Input::KI_NUMPADENTER:
+					{
 						Rocket::Core::String cmd = GetAttribute<Rocket::Core::String>( "exec", "" );
 
 						if ( !cmd.Empty() )
 						{
-							Cbuf_AddText( va( "%s %s\n", cmd.CString(), text.CString() ) );
+							Cmd::BufferCommandText( va( "%s %s\n", cmd.CString(), text.CString() ) );
 							text.Clear();
 							DispatchEvent( "exec", Rocket::Core::Dictionary() );
 						}
-
+					}
 						break;
 				}
 			}
@@ -400,8 +399,6 @@ private:
 	bool focus;
 	int cursor_character_index;
 	Rocket::Core::Element *text_element;
-
-	static const float CURSOR_BLINK_TIME = 0.7f;
 
 	Rocket::Core::Geometry cursor_geometry;
 	Rocket::Core::Vector2f cursor_size;

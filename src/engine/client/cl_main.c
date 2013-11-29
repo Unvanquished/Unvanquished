@@ -38,6 +38,8 @@ Maryland 20850 USA.
 #include "../qcommon/q_unicode.h"
 #include <limits.h>
 
+#include "../framework/CommandSystem.h"
+
 #include "snd_local.h" // fretn
 
 #include "../sys/sys_loadlib.h"
@@ -173,6 +175,8 @@ cvar_t             *cl_aviMotionJpeg;
 cvar_t             *cl_allowPaste;
 
 cvar_t             *cl_rate;
+
+cvar_t             *cl_cgameSyscallStats;
 
 clientActive_t     cl;
 clientConnection_t clc;
@@ -464,13 +468,13 @@ void CL_VoipParseTargets( void )
 			}
 			else if ( !Q_strnicmp( target, "team", 4 ) )
 			{
-				const char *players = VM_ExplicitArgPtr( cgvm, VM_Call( cgvm, CG_VOIP_STRING, 0 ) );
+				const char *players = (char*) VM_ExplicitArgPtr( cgvm, VM_Call( cgvm, CG_VOIP_STRING, 0 ) );
 				const char *head;
 				char *p;
 
 				head = players;
 
-				while ( ( p = strchr( head, ',' ) ) )
+				while ( ( p = (char*) strchr( head, ',' ) ) )
 				{
 					int val;
 
@@ -1348,101 +1352,83 @@ void CL_WriteWaveClose( void )
 	clc.wavefile = 0;
 }
 
-/*
-====================
-CL_CompleteDemoName
-====================
-*/
-static void CL_CompleteDemoName( char *args, int argNum )
-{
-	if ( argNum == 2 )
-	{
-		char demoExt[ 16 ];
+class DemoCmd: public Cmd::StaticCmd {
+    public:
+        DemoCmd(): Cmd::StaticCmd("demo", Cmd::SYSTEM, "starts playing a demo file") {
+        }
 
-		Com_sprintf( demoExt, sizeof( demoExt ), ".dm_%d", PROTOCOL_VERSION );
-		Field_CompleteFilename( "demos", demoExt, qtrue );
-	}
-}
+        void Run(const Cmd::Args& args) const OVERRIDE {
+            if (args.Argc() != 2) {
+                PrintUsage(args, _("<demoname>"), _("starts playing a demo file"));
+                return;
+            }
 
-/*
-====================
-CL_PlayDemo_f
+            // make sure a local server is killed
+            Cvar_Set( "sv_killserver", "1" );
+            CL_Disconnect( qtrue );
 
-demo <demoname>
+            //  CL_FlushMemory();   //----(SA)  MEM NOTE: in missionpack, this is moved to CL_DownloadsComplete
 
-====================
-*/
-void CL_PlayDemo_f( void )
-{
-	char name[ MAX_OSPATH ], extension[ 32 ];
-	char *arg;
-	int  prot_ver;
+            // open the demo file
+            const std::string& fileName = args.Argv(1);
 
-	if ( Cmd_Argc() != 2 )
-	{
-		Cmd_PrintUsage("<name>", NULL);
-		return;
-	}
+            const char* arg = fileName.c_str();
+            int prot_ver = PROTOCOL_VERSION - 1;
 
-	// make sure a local server is killed
-	Cvar_Set( "sv_killserver", "1" );
+            char extension[32];
+            char name[ MAX_OSPATH ];
+            while (prot_ver <= PROTOCOL_VERSION && !clc.demofile) {
+                Com_sprintf(extension, sizeof(extension), ".dm_%d", prot_ver );
 
-	CL_Disconnect( qtrue );
+                if (!Q_stricmp(arg + strlen(arg) - strlen(extension), extension)) {
+                    Com_sprintf(name, sizeof(name), "demos/%s", arg);
 
-//  CL_FlushMemory();   //----(SA)  MEM NOTE: in missionpack, this is moved to CL_DownloadsComplete
+                } else {
+                    Com_sprintf(name, sizeof(name), "demos/%s.dm_%d", arg, prot_ver);
+                }
 
-	// open the demo file
-	arg = Cmd_Argv( 1 );
-	prot_ver = PROTOCOL_VERSION - 1;
+                FS_FOpenFileRead_Impure(name, &clc.demofile, qtrue);
+                prot_ver++;
+            }
 
-	while ( prot_ver <= PROTOCOL_VERSION && !clc.demofile )
-	{
-		Com_sprintf( extension, sizeof( extension ), ".dm_%d", prot_ver );
+            if (!clc.demofile) {
+                Com_Error(ERR_DROP, "couldn't open %s", name);
+            }
 
-		if ( !Q_stricmp( arg + strlen( arg ) - strlen( extension ), extension ) )
-		{
-			Com_sprintf( name, sizeof( name ), "demos/%s", arg );
-		}
-		else
-		{
-			Com_sprintf( name, sizeof( name ), "demos/%s.dm_%d", arg, prot_ver );
-		}
+            Q_strncpyz(clc.demoName, arg, sizeof(clc.demoName));
 
-		FS_FOpenFileRead_Impure( name, &clc.demofile, qtrue );
-		prot_ver++;
-	}
+            Con_Close();
 
-	if ( !clc.demofile )
-	{
-		Com_Error( ERR_DROP, "couldn't open %s", name );
-	}
+            cls.state = CA_CONNECTED;
+            clc.demoplaying = qtrue;
 
-	Q_strncpyz( clc.demoName, arg, sizeof( clc.demoName ) );
+            if (Cvar_VariableValue( "cl_wavefilerecord")) {
+                CL_WriteWaveOpen();
+            }
 
-	Con_Close();
+            // read demo messages until connected
+            while (cls.state >= CA_CONNECTED && cls.state < CA_PRIMED) {
+                CL_ReadDemoMessage();
+            }
 
-	cls.state = CA_CONNECTED;
-	clc.demoplaying = qtrue;
+            // don't get the first snapshot this frame, to prevent the long
+            // time from the gamestate load from messing causing a time skip
+            clc.firstDemoFrameSkipped = qfalse;
+            //  if (clc.waverecording) {
+            //      CL_WriteWaveClose();
+            //      clc.waverecording = qfalse;
+            //  }
+        }
 
-	if ( Cvar_VariableValue( "cl_wavefilerecord" ) )
-	{
-		CL_WriteWaveOpen();
-	}
+        Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, const std::string& prefix) const OVERRIDE {
+            if (argNum == 1) {
+                return FS::CompleteFilenameInDir(prefix, "demos", ".dm_" + std::to_string(PROTOCOL_VERSION));
+            }
 
-	// read demo messages until connected
-	while ( cls.state >= CA_CONNECTED && cls.state < CA_PRIMED )
-	{
-		CL_ReadDemoMessage();
-	}
-
-	// don't get the first snapshot this frame, to prevent the long
-	// time from the gamestate load from messing causing a time skip
-	clc.firstDemoFrameSkipped = qfalse;
-//  if (clc.waverecording) {
-//      CL_WriteWaveClose();
-//      clc.waverecording = qfalse;
-//  }
-}
+            return {};
+        }
+};
+static DemoCmd DemoCmdRegistration;
 
 /*
 ====================
@@ -1454,7 +1440,7 @@ Closing the main menu will restart the demo loop
 void CL_StartDemoLoop( void )
 {
 	// start the demo loop again
-	Cbuf_AddText( "d1\n" );
+	Cmd::BufferCommandText("d1");
 	Key_SetCatcher( 0 );
 }
 
@@ -1522,9 +1508,8 @@ void CL_NextDemo( void )
 	}
 
 	Cvar_Set( "nextdemo", "" );
-	Cbuf_AddText( v );
-	Cbuf_AddText( "\n" );
-	Cbuf_Execute();
+	Cmd::BufferCommandTextAfter(v, true);
+	Cmd::ExecuteCommandBuffer();
 }
 
 /*
@@ -1992,7 +1977,7 @@ void CL_Reconnect_f( void )
 	}
 	else
 	{
-		Cbuf_AddText( cls.reconnectCmd );
+		Cmd::BufferCommandTextAfter(cls.reconnectCmd, true);
 	}
 }
 
@@ -2058,6 +2043,10 @@ void CL_Connect_f( void )
 		*offset = 0;
 	}
 
+	//Copy the arguments before they can be overwritten, afater that server is invalid
+	Q_strncpyz( cls.servername, server, sizeof( cls.servername ) );
+	Q_strncpyz( cls.reconnectCmd, Cmd::GetCurrentArgs().EscapedArgs(0).c_str(), sizeof( cls.reconnectCmd ) );
+
 	S_StopAllSounds(); // NERVE - SMF
 
 	Cvar_Set( "ui_connecting", "1" );
@@ -2080,9 +2069,6 @@ void CL_Connect_f( void )
 
 	CL_Disconnect( qtrue );
 	Con_Close();
-
-	Q_strncpyz( cls.servername, server, sizeof( cls.servername ) );
-	Q_strncpyz( cls.reconnectCmd, Cmd_Cmd(), sizeof( cls.reconnectCmd ) );
 
 	if ( !NET_StringToAdr( cls.servername, &clc.serverAddress, family ) )
 	{
@@ -2164,7 +2150,7 @@ void CL_Rcon_f( void )
 	Q_strcat( message, MAX_RCON_MESSAGE, " " );
 
 	// ATVI Wolfenstein Misc #284
-	Q_strcat( message, MAX_RCON_MESSAGE, Cmd_Cmd() + 5 );
+	Q_strcat( message, MAX_RCON_MESSAGE, Cmd::GetCurrentArgs().EscapedArgs(1).c_str() );
 
 	if ( cls.state >= CA_CONNECTED )
 	{
@@ -2235,7 +2221,6 @@ static void CL_GetRSAKeysFileName( char *buffer, size_t size )
 static void CL_GenerateRSAKeys( const char *fileName )
 {
 	struct nettle_buffer key_buffer;
-	int                  key_buffer_len = 0;
 	fileHandle_t         f;
 
 	mpz_set_ui( public_key.e, RSA_PUBLIC_EXPONENT );
@@ -2245,7 +2230,7 @@ static void CL_GenerateRSAKeys( const char *fileName )
 		Com_Error( ERR_FATAL, "Error generating RSA keypair" );
 	}
 
-	qnettle_buffer_init( &key_buffer, &key_buffer_len );
+	nettle_buffer_init( &key_buffer );
 
 	if ( !rsa_keypair_to_sexp( &key_buffer, NULL, &public_key, &private_key ) )
 	{
@@ -2301,7 +2286,7 @@ static void CL_LoadRSAKeys( void )
 		return;
 	}
 
-	buf = Z_TagMalloc( len, TAG_CRYPTO );
+	buf = (uint8_t*) Z_TagMalloc( len, TAG_CRYPTO );
 	FS_Read( buf, len, f );
 	FS_FCloseFile( f );
 
@@ -3199,9 +3184,7 @@ CL_ServerLinksResponsePacket
 */
 void CL_ServerLinksResponsePacket( const netadr_t *from, msg_t *msg )
 {
-	int      i, count, total;
-	netadr_t addresses[ MAX_SERVERSPERPACKET ];
-	int      numservers, port;
+	int      port;
 	byte      *buffptr;
 	byte      *buffend;
 
@@ -3977,6 +3960,8 @@ void CL_Frame( int msec )
 
 	Con_RunConsole();
 
+	CL_CGameStats();
+
 	cls.framecount++;
 }
 
@@ -4217,7 +4202,7 @@ qboolean CL_InitRenderer( void )
 	cls.consoleShader = re.RegisterShader( "console", RSF_DEFAULT );
 
 	g_console_field_width = cls.glconfig.vidWidth / SMALLCHAR_WIDTH - 2;
-	g_consoleField.widthInChars = g_console_field_width;
+	g_consoleField.SetWidth(g_console_field_width);
 
 	return qtrue;
 }
@@ -4324,19 +4309,10 @@ void CL_StartHunkUsers( void )
 CL_RefMalloc
 ============
 */
-#ifdef ZONE_DEBUG
-void           *CL_RefMallocDebug( int size, const char *label, const char *file, int line )
-{
-	return Z_TagMallocDebug( size, TAG_RENDERER, label, file, line );
-}
-
-#else
 void           *CL_RefMalloc( int size )
 {
 	return Z_TagMalloc( size, TAG_RENDERER );
 }
-
-#endif
 
 /*
 ============
@@ -4345,7 +4321,6 @@ CL_RefTagFree
 */
 void CL_RefTagFree( void )
 {
-	Z_FreeTags( TAG_RENDERER );
 }
 
 int CL_ScaledMilliseconds( void )
@@ -4374,39 +4349,26 @@ qboolean CL_InitRef( const char *renderer )
 #if !defined( REF_HARD_LINKED )
 	GetRefAPI_t GetRefAPI;
 	char        dllName[ MAX_OSPATH ];
-	const char  varName[][16] = { "fs_libpath", "fs_basepath" };
-	int         i;
-#endif
 
-#if !defined( REF_HARD_LINKED )
-	for ( i = 0; i < ARRAY_LEN( varName ); ++i )
-	{
-		Com_sprintf( dllName, sizeof( dllName ), "%s/" DLL_PREFIX "renderer%s" DLL_EXT, Cvar_VariableString( varName[ i ] ), renderer );
+	Com_sprintf( dllName, sizeof( dllName ), "%s/renderer%s" DLL_EXT, Cvar_VariableString( "fs_libpath" ), renderer );
 
-		Com_Printf( "Loading \"%s\"…", dllName );
+	Com_Printf( "Loading \"%s\"...", dllName );
 
-		lib = Sys_LoadLibrary( dllName );
-
-		if ( lib )
-		{
-			break;
-		}
-
-		Com_Printf( "failed:\n\"%s\"\n", Sys_LibraryError() );
-	}
+	lib = Sys_LoadLibrary( dllName );
 
 	if ( !lib )
 	{
+		Com_Printf( "failed:\n\"%s\"\n", Sys_LibraryError() );
 		return qfalse;
 	}
 
 	Com_Printf( "done\n" );
 
-	GetRefAPI = Sys_LoadFunction( lib, "GetRefAPI" );
+	GetRefAPI = (GetRefAPI_t) Sys_LoadFunction( lib, "GetRefAPI" );
 
 	if ( !GetRefAPI )
 	{
-		Com_Printf( "Can't load symbol GetRefAPI: '%s'",  Sys_LibraryError() );
+		Com_Printf( "Can't load symbol GetRefAPI: '%s'\n",  Sys_LibraryError() );
 		Sys_UnloadDll( lib );
 		return qfalse;
 	}
@@ -4425,11 +4387,7 @@ qboolean CL_InitRef( const char *renderer )
 	ri.Milliseconds = CL_ScaledMilliseconds;
 	ri.RealTime = Com_RealTime;
 
-#ifdef ZONE_DEBUG
-	ri.Z_MallocDebug = CL_RefMallocDebug;
-#else
 	ri.Z_Malloc = CL_RefMalloc;
-#endif
 	ri.Free = Z_Free;
 	ri.Tag_Free = CL_RefTagFree;
 	ri.Hunk_Clear = Hunk_ClearToMark;
@@ -4459,7 +4417,6 @@ qboolean CL_InitRef( const char *renderer )
 
 	ri.Cvar_Get = Cvar_Get;
 	ri.Cvar_Set = Cvar_Set;
-	ri.Cvar_CheckRange = Cvar_CheckRange;
 
 	ri.Cvar_VariableIntegerValue = Cvar_VariableIntegerValue;
 
@@ -4479,8 +4436,6 @@ qboolean CL_InitRef( const char *renderer )
 	ri.IN_Init = IN_Init;
 	ri.IN_Shutdown = IN_Shutdown;
 	ri.IN_Restart = IN_Restart;
-
-	ri.ftol = Q_ftol;
 
 	ri.Bot_DrawDebugMesh = BotDebugDrawMesh;
 
@@ -4551,7 +4506,7 @@ void CL_Init( void )
 	//
 	// register our variables
 	//
-	Cvar_SetIFlag( "\\IS_GETTEXT_SUPPORTED" );
+	cvar_t* gettext_supported = Cvar_Get( "\\IS_GETTEXT_SUPPORTED", "1", CVAR_ROM );
 
 	cl_renderer = Cvar_Get( "cl_renderer", "GL3,GL", CVAR_ARCHIVE | CVAR_LATCH );
 
@@ -4692,7 +4647,6 @@ void CL_Init( void )
 
 	// This is a protocol version number.
 	cl_voip = Cvar_Get( "cl_voip", "1", CVAR_USERINFO | CVAR_ARCHIVE );
-	Cvar_CheckRange( cl_voip, 0, 1, qtrue );
 
 
 #endif
@@ -4701,6 +4655,8 @@ void CL_Init( void )
 	Cvar_Get( "cg_viewsize", "100", CVAR_ARCHIVE );
 
 	cl_allowPaste = Cvar_Get( "cl_allowPaste", "1", 0 );
+
+	cl_cgameSyscallStats = Cvar_Get( "cl_cgameSyscallStats", "0", CVAR_ARCHIVE );
 
 	//
 	// register our commands
@@ -4714,8 +4670,6 @@ void CL_Init( void )
 	Cmd_AddCommand( "ui_restart", CL_UI_Restart_f );  // NERVE - SMF
 	Cmd_AddCommand( "disconnect", CL_Disconnect_f );
 	Cmd_AddCommand( "record", CL_Record_f );
-	Cmd_AddCommand( "demo", CL_PlayDemo_f );
-	Cmd_SetCommandCompletionFunc( "demo", CL_CompleteDemoName );
 	Cmd_AddCommand( "cinematic", CL_PlayCinematic_f );
 	Cmd_AddCommand( "stoprecord", CL_StopRecord_f );
 	Cmd_AddCommand( "connect", CL_Connect_f );
@@ -4757,7 +4711,7 @@ void CL_Init( void )
 
 	SCR_Init();
 
-	Cbuf_Execute();
+	Cmd::ExecuteCommandBuffer();
 
 	Cvar_Set( "cl_running", "1" );
 
@@ -4813,8 +4767,6 @@ void CL_Shutdown( void )
 
 	CL_IRCInitiateShutdown();
 
-	Crypto_Shutdown();
-
 	Cmd_RemoveCommand( "cmd" );
 	Cmd_RemoveCommand( "configstrings" );
 	Cmd_RemoveCommand( "userinfo" );
@@ -4823,7 +4775,6 @@ void CL_Shutdown( void )
 	Cmd_RemoveCommand( "vid_restart" );
 	Cmd_RemoveCommand( "disconnect" );
 	Cmd_RemoveCommand( "record" );
-	Cmd_RemoveCommand( "demo" );
 	Cmd_RemoveCommand( "cinematic" );
 	Cmd_RemoveCommand( "stoprecord" );
 	Cmd_RemoveCommand( "connect" );

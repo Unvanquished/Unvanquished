@@ -25,6 +25,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../qcommon/qcommon.h"
 #include "sys_local.h"
 
+#include "../framework/ConsoleField.h"
+#include "../../common/String.h"
 
 // curses.h defines COLOR_*, which are already defined in q_shared.h
 #undef COLOR_BLACK
@@ -36,11 +38,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #undef COLOR_CYAN
 #undef COLOR_WHITE
 
+#ifndef _WIN32
 #include <fcntl.h>
 #include <signal.h>
 #include <unistd.h>
 #include <locale.h>
-#ifndef _WIN32
 #include <sys/ioctl.h>
 #endif
 
@@ -68,7 +70,7 @@ void            CON_Print_tty( const char *message );
 void            CON_Clear_tty( void );
 
 static qboolean curses_on = qfalse;
-static field_t  input_field;
+static Console::Field input_field(INT_MAX);
 static WINDOW   *borderwin;
 static WINDOW   *logwin;
 static WINDOW   *inputwin;
@@ -161,68 +163,28 @@ Update the cursor position
 #ifdef USE_CURSES_W
 static INLINE int CON_wcwidth( const char *s )
 {
+#ifdef _WIN32
+	return 1;
+#else
 	int w = wcwidth( Q_UTF8_CodePoint( s ) );
 	return w < 0 ? 0 : w;
-}
-
-static int CON_CursorPosFromScroll( void )
-{
-	// if we have wide char support, we have ncurses, and probably wcwidth too.
-	int i, p = Field_ScrollToOffset( &input_field ), c = 0;
-
-	for ( i = input_field.scroll; i < input_field.cursor; ++i )
-	{
-		c += CON_wcwidth( input_field.buffer + p );
-		p += Q_UTF8_Width( input_field.buffer + p );
-	}
-
-	return c;
+#endif
 }
 #endif
+
 
 static INLINE void CON_UpdateCursor( void )
 {
 // pdcurses uses a different mechanism to move the cursor than ncurses
 #ifdef _WIN32
-	move( LINES - 1, Q_PrintStrlen( PROMPT ) + 8 + input_field.cursor - input_field.scroll );
+	move( LINES - 1, Q_PrintStrlen( PROMPT ) + 8 + input_field.GetViewCursorPos() );
 	wnoutrefresh( stdscr );
 #elif defined USE_CURSES_W
-	wmove( inputwin, 0, CON_CursorPosFromScroll() );
+	wmove( inputwin, 0, input_field.GetViewCursorPos());
 	wnoutrefresh( inputwin );
 #else
-	wmove( inputwin, 0, input_field.cursor - input_field.scroll );
+	wmove( inputwin, 0, input_field.GetViewCursorPos() );
 	wnoutrefresh( inputwin );
-#endif
-}
-
-static INLINE void CON_CheckScroll( void )
-{
-	if ( input_field.cursor < input_field.scroll )
-	{
-		input_field.scroll = input_field.cursor;
-	}
-#ifdef USE_CURSES_W
-	else
-	{
-		int c = CON_CursorPosFromScroll();
-
-		while ( c >= input_field.widthInChars )
-		{
-			c -= CON_wcwidth( input_field.buffer + input_field.scroll++ );
-		}
-
-		c = Field_OffsetToCursor( &input_field, c );
-
-		if ( c < input_field.scroll )
-		{
-			input_field.scroll = c;
-		}
-	}
-#else
-	else if ( input_field.cursor >= input_field.scroll + input_field.widthInChars )
-	{
-		input_field.scroll = input_field.cursor - input_field.widthInChars + 1;
-	}
 #endif
 }
 
@@ -488,7 +450,6 @@ void CON_Init( void )
 	// then SIGTTIN or SIGTTOU is emitted; if not caught, turns into a SIGSTP
 	signal( SIGTTIN, SIG_IGN );
 	signal( SIGTTOU, SIG_IGN );
-#endif
 
 	// Make sure we're on a tty
 	if ( !isatty( STDIN_FILENO ) || !isatty( STDOUT_FILENO ) )
@@ -496,10 +457,12 @@ void CON_Init( void )
 		CON_Init_tty();
 		return;
 	}
+#endif
 
 	// Initialize curses and set up the root window
 	if ( !curses_on )
 	{
+#ifndef _WIN32
 		SCREEN *test = newterm( NULL, stdout, stdin );
 
 		if ( !test )
@@ -512,6 +475,7 @@ void CON_Init( void )
 		endwin();
 		delscreen( test );
 		setlocale(LC_CTYPE, "");
+#endif
 		initscr();
 		cbreak();
 		noecho();
@@ -593,12 +557,11 @@ void CON_Init( void )
 
 	// Create the input field
 	inputwin = newwin( 1, COLS - Q_PrintStrlen( PROMPT ) - 8, LINES - 1, Q_PrintStrlen( PROMPT ) + 8 );
-	input_field.widthInChars = COLS - Q_PrintStrlen( PROMPT ) - 9;
+	input_field.SetWidth(COLS - Q_PrintStrlen( PROMPT ) - 9);
 
 	if ( curses_on )
 	{
-		CON_CheckScroll();
-		CON_ColorPrint( inputwin, input_field.buffer + Field_ScrollToOffset( &input_field ), qfalse );
+		CON_ColorPrint( inputwin, Str::UTF32To8(input_field.GetViewText()).c_str(), qfalse );
 	}
 
 	CON_UpdateCursor();
@@ -618,7 +581,7 @@ void CON_Init( void )
 
 #ifdef SIGWINCH
 	// Catch window resizes
-	signal( SIGWINCH, ( void * ) CON_Resize );
+	signal( SIGWINCH, ( sig_t ) CON_Resize );
 #endif
 
 	curses_on = qtrue;
@@ -632,7 +595,6 @@ CON_Input
 char *CON_Input( void )
 {
 	int         chr, num_chars = 0;
-	static char text[ MAX_EDIT_LINE ];
 	static int  lasttime = -1;
 	static enum {
 		MODE_UNKNOWN,
@@ -671,9 +633,7 @@ char *CON_Input( void )
 				{
 					werase( inputwin );
 
-					CON_CheckScroll(); // ( INPUT_SCROLL );
-
-					CON_ColorPrint( inputwin, input_field.buffer + Field_ScrollToOffset( &input_field ), qfalse );
+					CON_ColorPrint( inputwin, Str::UTF32To8(input_field.GetViewText()).c_str(), qfalse );
 #ifdef _WIN32
 					wrefresh( inputwin );  // If this is not done the cursor moves strangely
 #else
@@ -688,45 +648,25 @@ char *CON_Input( void )
 			case '\n':
 			case '\r':
 			case KEY_ENTER:
-				if ( !input_field.buffer[ 0 ] )
-				{
-					continue;
-				}
-
-				if(!com_consoleCommand->string[0])
-				{
-					Q_snprintf( text, sizeof( text ), "\\%s",
-							input_field.buffer + ( input_field.buffer[ 0 ] == '\\' || input_field.buffer[ 0 ] == '/' ) );
-				}
-				else
-				{
-					Q_strncpyz( text, input_field.buffer, sizeof ( text ) );
-				}
-
-				Hist_Add( text );
-				Field_Clear( &input_field );
+				Com_Printf( PROMPT S_COLOR_WHITE "%s\n", Str::UTF32To8(input_field.GetText()).c_str() );
+				input_field.RunCommand();
 				werase( inputwin );
 				wnoutrefresh( inputwin );
-				CON_UpdateCursor();
-				//doupdate();
-				Com_Printf( PROMPT S_COLOR_WHITE "%s\n", text );
-				return text;
+				continue;
 
 			case 21: // Ctrl-U
-				Field_Clear( &input_field );
+				input_field.Clear();
 				werase( inputwin );
 				wnoutrefresh( inputwin );
-				CON_UpdateCursor();
 				continue;
 
 			case 11: // Ctrl-K
-				input_field.buffer[ Field_CursorToOffset( &input_field ) ] = '\0';
+				//input_field.buffer[ Field_CursorToOffset( &input_field ) ] = '\0';
 				continue;
 
 			case '\t':
 			case KEY_STAB:
-				Field_AutoComplete( &input_field, PROMPT );
-				input_field.cursor = Q_UTF8_Strlen( input_field.buffer );
+				input_field.AutoComplete();
 				continue;
 
 			case '\f':
@@ -734,62 +674,29 @@ char *CON_Input( void )
 				continue;
 
 			case KEY_LEFT:
-				if ( input_field.cursor > 0 )
-				{
-					input_field.cursor--;
-				}
-
+				input_field.CursorLeft();
 				continue;
 
 			case KEY_RIGHT:
-				if ( input_field.cursor < Q_UTF8_Strlen( input_field.buffer ) )
-				{
-					input_field.cursor++;
-				}
-
+				input_field.CursorRight();
 				continue;
 
 			case KEY_UP:
-				{
-					const char *field = Hist_Prev();
-
-					if ( field )
-					{
-						strcpy( input_field.buffer, field );
-						goto key_end;
-					}
-
-					continue;
-				}
+				input_field.HistoryPrev();
+				continue;
 
 			case KEY_DOWN:
-				{
-					const char *field = Hist_Next();
-
-					if ( field )
-					{
-						strcpy( input_field.buffer, field );
-						goto key_end;
-					}
-					else
-					{
-						Field_Clear( &input_field );
-					}
-
-					continue;
-				}
+				input_field.HistoryNext();
+				continue;
 
 			case 1: // Ctrl-A
 			case KEY_HOME:
-				input_field.cursor = 0;
-				input_field.scroll = 0;
+				input_field.CursorStart();
 				continue;
 
 			case 5: // Ctrl-E
 			case KEY_END:
-				key_end:
-				input_field.cursor = Q_UTF8_Strlen( input_field.buffer );
-				CON_CheckScroll();
+				input_field.CursorEnd();
 				continue;
 
 			case KEY_NPAGE:
@@ -827,28 +734,16 @@ char *CON_Input( void )
 			case '\b':
 			case 127:
 			case KEY_BACKSPACE:
-				if ( input_field.cursor <= 0 )
-				{
-					continue;
-				}
+				input_field.DeletePrev();
+				continue;
 
-				input_field.cursor--;
-
-				// Fall through
 			case 4: // Ctrl-D
 			case KEY_DC:
-				if ( input_field.cursor < Q_UTF8_Strlen( input_field.buffer ) )
-				{
-					int offset = Field_CursorToOffset( &input_field );
-					int width = Q_UTF8_Width( input_field.buffer + offset );
-					memmove( input_field.buffer + offset,
-					         input_field.buffer + offset + width,
-					         strlen( input_field.buffer + offset + width ) + 1 );
-				}
-
+				input_field.DeleteNext();
 				continue;
 
 			case 20: // Ctrl-T
+				/*
 				if ( input_field.cursor )
 				{
 					char *p, *s, tmp[4];
@@ -868,7 +763,7 @@ char *CON_Input( void )
 					memcpy( p + width, tmp, s - p );
 					input_field.cursor += 2;
 				}
-
+				*/
 				continue;
 		}
 
@@ -876,7 +771,7 @@ char *CON_Input( void )
 		if ( chr >= ' ' )
 		{
 			int width = 1;//Q_UTF8_WidthCP( chr );
-			int count, offset;
+			int count;
 			char buf[20];
 
 			if ( chr >= 0x100 )
@@ -944,6 +839,7 @@ char *CON_Input( void )
 				}
 			}
 
+			std::u32string u32text;
 			switch ( mode )
 			{
 			case MODE_UNKNOWN:
@@ -957,33 +853,26 @@ char *CON_Input( void )
 					strcat( buf, Q_UTF8_Encode( ( chr >> ( ( width - count ) * 8 ) ) & 0xFF ) );
 				}
 
-				count = strlen( buf );
-				offset = Field_CursorToOffset( &input_field );
+				u32text = Str::UTF8To32(buf);
 
-				memmove( input_field.buffer + offset + count,
-				         input_field.buffer + offset,
-				         strlen( input_field.buffer + offset ) + 1 );
-				memcpy( input_field.buffer + offset, buf, count );
-
-				input_field.cursor += width;
+				for (char32_t u32char : u32text) {
+					input_field.AddChar(u32char);
+				}
 				break;
 
 			case MODE_UTF8:
 				// UTF-8, but packed
-				if ( width > 0 && strlen( input_field.buffer ) + width < sizeof( input_field.buffer ) )
+				if ( width > 0 )
 				{
-					offset = Field_CursorToOffset( &input_field );
-
-					memmove( input_field.buffer + offset + width,
-							 input_field.buffer + offset,
-							 strlen( input_field.buffer + offset ) + 1 );
-
-					input_field.cursor += ( mode == MODE_UTF8 ) ? 1 : width;
-					--width;
-
+					char buffer[4];
 					for ( count = 0; count <= width; ++count )
 					{
-						input_field.buffer[ offset + count ] = ( chr >> ( ( width - count ) * 8 ) ) & 0xFF;
+						buffer[ count ] = ( chr >> ( ( width - count ) * 8 ) ) & 0xFF;
+					}
+					u32text = Str::UTF8To32(buffer);
+
+					for (char32_t u32char : u32text) {
+						input_field.AddChar(u32char);
 					}
 				}
 				break;

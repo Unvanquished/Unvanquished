@@ -359,6 +359,7 @@ extern uiInfo_t uiInfo;
 extern const char *const chatMenus[CHAT_TYPE_LAST];
 
 qboolean        UI_ConsoleCommand( int realTime );
+void            UI_RegisterCommands();
 char            *UI_Cvar_VariableString( const char *var_name );
 void            UI_SetColor( const float *rgba );
 void            UI_AdjustFrom640( float *x, float *y, float *w, float *h );

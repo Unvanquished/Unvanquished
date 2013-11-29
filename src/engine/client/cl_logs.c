@@ -86,7 +86,7 @@ void CL_CloseClientLog( void )
 CL_WriteClientLog
 ==================
 */
-void CL_WriteClientLog( char *text ) 
+void CL_WriteClientLog( const char *text )
 {
 	if ( cl_logs && cl_logs->integer ) 
 	{
@@ -113,7 +113,7 @@ void CL_WriteClientLog( char *text )
 CL_WriteClientChatLog
 ==================
 */
-void CL_WriteClientChatLog( char *text ) 
+void CL_WriteClientChatLog( const char *text )
 {
 	if ( cl_logs && cl_logs->integer ) 
 	{

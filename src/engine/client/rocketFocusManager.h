@@ -35,11 +35,8 @@ Maryland 20850 USA.
 #ifndef ROCKETFOCUSMANAGER_H
 #define ROCKETFOCUSMANAGER_H
 
-extern "C"
-{
 #include "client.h"
-}
-
+#include "rocket.h"
 #include <Rocket/Core/Core.h>
 
 class RocketFocusManager : public Rocket::Core::EventListener

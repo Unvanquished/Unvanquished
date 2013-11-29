@@ -260,7 +260,7 @@ void RE_SetFog( int fogvar, int var1, int var2, float r, float g, float b, float
 		return;
 	}
 
-	tr.glfogNum = var1;
+	tr.glfogNum = (glfogType_t) var1;
 
 	// transitioning to new fog, store the current values as the 'from'
 

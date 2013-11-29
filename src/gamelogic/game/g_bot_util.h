@@ -27,8 +27,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "g_bot.h"
 
 //g_bot.c
-void     BotError( const char* fmt, ... ) __attribute__( ( format( printf, 1, 2 ) ) );
-void     BotDPrintf( const char* fmt, ... ) __attribute__( ( format( printf, 1, 2 ) ) );
+void     BotError( const char* fmt, ... ) PRINTF_LIKE(1);
+void     BotDPrintf( const char* fmt, ... ) PRINTF_LIKE(1);
 qboolean PlayersBehindBotInSpawnQueue( gentity_t *self );
 void     BotSetSkillLevel( gentity_t *self, int skill );
 

@@ -3279,7 +3279,7 @@ int PRINTF_LIKE(3) Q_snprintf( char *str, size_t length, const char *fmt, ... )
 }
 
 /* this is really crappy */
-int __attribute__((__format__(__scanf__, 2, 3))) sscanf( const char *buffer, const char *fmt, ... )
+int /*__attribute__((__format__(__scanf__, 2, 3)))*/ sscanf( const char *buffer, const char *fmt, ... )
 {
 	int     cmd;
 	va_list ap;

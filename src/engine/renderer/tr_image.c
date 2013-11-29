@@ -542,7 +542,7 @@ static void R_MipMap2( unsigned *in, int inWidth, int inHeight )
 
 	outWidth = inWidth >> 1;
 	outHeight = inHeight >> 1;
-	temp = ri.Hunk_AllocateTempMemory( outWidth * outHeight * 4 );
+	temp = (unsigned int*) ri.Hunk_AllocateTempMemory( outWidth * outHeight * 4 );
 
 	inWidthMask = inWidth - 1;
 	inHeightMask = inHeight - 1;
@@ -815,7 +815,7 @@ static void Upload32( unsigned *data,
 	if ( scaled_width != width || scaled_height != height )
 	{
 		//resampledBuffer = ri.Hunk_AllocateTempMemory( scaled_width * scaled_height * 4 );
-		resampledBuffer = R_GetImageBuffer( scaled_width * scaled_height * 4, BUFFER_RESAMPLED );
+		resampledBuffer = (unsigned int*) R_GetImageBuffer( scaled_width * scaled_height * 4, BUFFER_RESAMPLED );
 		ResampleTexture( data, width, height, resampledBuffer, scaled_width, scaled_height );
 		data = resampledBuffer;
 		width = scaled_width;
@@ -856,7 +856,7 @@ static void Upload32( unsigned *data,
 	}
 
 	//scaledBuffer = ri.Hunk_AllocateTempMemory( sizeof( unsigned ) * scaled_width * scaled_height );
-	scaledBuffer = R_GetImageBuffer( sizeof( unsigned ) * scaled_width * scaled_height, BUFFER_SCALED );
+	scaledBuffer = (unsigned int*) R_GetImageBuffer( sizeof( unsigned ) * scaled_width * scaled_height, BUFFER_SCALED );
 
 	//
 	// scan the texture for each channel's max value
@@ -1106,7 +1106,7 @@ image_t        *R_CreateImage( const char *name, const byte *pic, int width, int
 	}
 
 	// Ridah
-	image = tr.images[ tr.numImages ] = R_CacheImageAlloc( sizeof( image_t ) );
+	image = tr.images[ tr.numImages ] = (image_t*) R_CacheImageAlloc( sizeof( image_t ) );
 
 	// ydnar: not exactly sure why this mechanism is here at all, but it's generating
 	// bad texture names (not that the rest of the code is a saint, but hey...)
@@ -1203,7 +1203,7 @@ image_t *R_CreateGlyph( const char *name, const byte *pic, int width, int height
 		ri.Error( ERR_DROP, "R_CreateImage: MAX_DRAWIMAGES hit" );
 	}
 
-	image = tr.images[ tr.numImages ] = R_CacheImageAlloc( sizeof( image_t ) );
+	image = tr.images[ tr.numImages ] = (image_t*) R_CacheImageAlloc( sizeof( image_t ) );
 
 	glGenTextures( 1, &image->texnum );
 
@@ -1415,7 +1415,7 @@ static void LoadBMP( const char *name, byte **pic, int *width, int *height )
 		*height = rows;
 	}
 
-	bmpRGBA = R_GetImageBuffer( numPixels * 4, BUFFER_IMAGE );
+	bmpRGBA = (byte*) R_GetImageBuffer( numPixels * 4, BUFFER_IMAGE );
 
 	*pic = bmpRGBA;
 
@@ -1534,7 +1534,7 @@ static void LoadPCX( const char *filename, byte **pic, byte **palette, int *widt
 		return;
 	}
 
-	out = R_GetImageBuffer( ( ymax + 1 ) * ( xmax + 1 ), BUFFER_IMAGE );
+	out = (byte*) R_GetImageBuffer( ( ymax + 1 ) * ( xmax + 1 ), BUFFER_IMAGE );
 
 	*pic = out;
 
@@ -1542,7 +1542,7 @@ static void LoadPCX( const char *filename, byte **pic, byte **palette, int *widt
 
 	if ( palette )
 	{
-		*palette = ri.Z_Malloc( 768 );
+		*palette = (byte*) ri.Z_Malloc( 768 );
 		memcpy( *palette, ( byte * ) pcx + len - 768, 768 );
 	}
 
@@ -1640,7 +1640,7 @@ static void LoadPCX32( const char *filename, byte **pic, int *width, int *height
 	}
 
 	c = ( *width ) * ( *height );
-	pic32 = *pic = R_GetImageBuffer( 4 * c, BUFFER_IMAGE );
+	pic32 = *pic = (byte*) R_GetImageBuffer( 4 * c, BUFFER_IMAGE );
 
 	for ( i = 0; i < c; i++ )
 	{
@@ -1745,7 +1745,7 @@ void LoadTGA( const char *name, byte **pic, int *width, int *height )
 		*height = rows;
 	}
 
-	targa_rgba = R_GetImageBuffer( numPixels * 4, BUFFER_IMAGE );
+	targa_rgba = (byte*) R_GetImageBuffer( numPixels * 4, BUFFER_IMAGE );
 	*pic = targa_rgba;
 
 	if ( targa_header.id_length != 0 )
@@ -2091,7 +2091,7 @@ void LoadJPG( const char *filename, unsigned char **pic, int *width, int *height
 	memcount = pixelcount * 4;
 	row_stride = cinfo.output_width * cinfo.output_components;
 
-	out = R_GetImageBuffer( memcount, BUFFER_IMAGE );
+	out = (byte*) R_GetImageBuffer( memcount, BUFFER_IMAGE );
 
 	*width = cinfo.output_width;
 	*height = cinfo.output_height;
@@ -2346,7 +2346,7 @@ void SaveJPG( char *filename, int quality, int image_width, int image_height, by
 	size_t bufSize;
 
 	bufSize = image_width * image_height * 3;
-	out = ri.Hunk_AllocateTempMemory( bufSize );
+	out = (byte*) ri.Hunk_AllocateTempMemory( bufSize );
 
 	bufSize = SaveJPGToBuffer( out, bufSize, quality, image_width, image_height, image_buffer );
 	ri.FS_WriteFile( filename, out, bufSize );
@@ -2728,7 +2728,7 @@ static void R_CreateFogImage( void )
 	float borderColor[ 4 ];
 
 	// allocate table for image
-	data = ri.Hunk_AllocateTempMemory( FOG_S * FOG_T * 4 );
+	data = (byte*) ri.Hunk_AllocateTempMemory( FOG_S * FOG_T * 4 );
 
 	// ydnar: old fog texture generating algo
 
@@ -3083,7 +3083,7 @@ void SaveTGA( char *name, byte **pic, int width, int height )
 	byte *inpixel, *outpixel;
 	byte *outbuf, *b;
 
-	outbuf = ri.Hunk_AllocateTempMemory( width * height * 4 + 18 );
+	outbuf = (byte*) ri.Hunk_AllocateTempMemory( width * height * 4 + 18 );
 	b = outbuf;
 
 	memset( b, 0, 18 );
@@ -3136,7 +3136,7 @@ void SaveTGAAlpha( char *name, byte **pic, int width, int height )
 	byte *inpixel, *outpixel;
 	byte *outbuf, *b;
 
-	outbuf = ri.Hunk_AllocateTempMemory( width * height * 4 + 18 );
+	outbuf = (byte*) ri.Hunk_AllocateTempMemory( width * height * 4 + 18 );
 	b = outbuf;
 
 	memset( b, 0, 18 );
@@ -3207,7 +3207,7 @@ static void LoadWEBP( const char *name, byte **pic, int *width, int *height )
 	stride = *width * sizeof( color4ub_t );
 	size = *height * stride;
 
-	out = R_GetImageBuffer( size, BUFFER_IMAGE );
+	out = (byte*) R_GetImageBuffer( size, BUFFER_IMAGE );
 
 	if ( !WebPDecodeRGBAInto( fbuffer.b, len, out, size, stride ) )
 	{
@@ -3227,7 +3227,7 @@ PNG LOADING
 */
 static void png_read_data( png_structp png, png_bytep data, png_size_t length )
 {
-	byte *io_ptr = png_get_io_ptr( png );
+	byte *io_ptr = (byte*) png_get_io_ptr( png );
 	Com_Memcpy( data, io_ptr, length );
 	png_init_io( png, ( png_FILE_p )( io_ptr + length ) );
 }
@@ -3402,7 +3402,7 @@ static int png_compressed_size;
 
 static void png_write_data( png_structp png, png_bytep data, png_size_t length )
 {
-	byte *io_ptr = png_get_io_ptr( png );
+	byte *io_ptr = (byte*) png_get_io_ptr( png );
 	Com_Memcpy( io_ptr, data, length );
 	png_init_io( png, ( png_FILE_p )( io_ptr + length ) );
 	png_compressed_size += length;
@@ -3439,7 +3439,7 @@ void SavePNG( const char *name, const byte *pic, int width, int height, int numB
 	}
 
 	png_compressed_size = 0;
-	buffer = ri.Hunk_AllocateTempMemory( width * height * numBytes );
+	buffer = (byte*) ri.Hunk_AllocateTempMemory( width * height * numBytes );
 
 	// set error handling
 	if ( setjmp( png_jmpbuf( png ) ) )
@@ -3474,7 +3474,7 @@ void SavePNG( const char *name, const byte *pic, int width, int height, int numB
 	// write the file header information
 	png_write_info( png, info );
 
-	row_pointers = ri.Hunk_AllocateTempMemory( height * sizeof( png_bytep ) );
+	row_pointers = (png_bytep*) ri.Hunk_AllocateTempMemory( height * sizeof( png_bytep ) );
 
 	if ( setjmp( png_jmpbuf( png ) ) )
 	{
@@ -4151,7 +4151,7 @@ static int DDSDecompressDXT1( ddsBuffer_t *dds, int width, int height, unsigned 
 	for ( y = 0; y < yBlocks; y++ )
 	{
 		/* 8 bytes per block */
-		block = ( ddsColorBlock_t * )( ( unsigned long ) dds->data + y * xBlocks * 8 );
+		block = ( ddsColorBlock_t * )( dds->data + y * xBlocks * 8 );
 
 		/* walk x */
 		for ( x = 0; x < xBlocks; x++, block++ )
@@ -4194,7 +4194,7 @@ static int DDSDecompressDXT3( ddsBuffer_t *dds, int width, int height, unsigned 
 	for ( y = 0; y < yBlocks; y++ )
 	{
 		/* 8 bytes per block, 1 block for alpha, 1 block for color */
-		block = ( ddsColorBlock_t * )( ( unsigned long ) dds->data + y * xBlocks * 16 );
+		block = ( ddsColorBlock_t * )( dds->data + y * xBlocks * 16 );
 
 		/* walk x */
 		for ( x = 0; x < xBlocks; x++, block++ )
@@ -4247,7 +4247,7 @@ static int DDSDecompressDXT5( ddsBuffer_t *dds, int width, int height, unsigned 
 	for ( y = 0; y < yBlocks; y++ )
 	{
 		/* 8 bytes per block, 1 block for alpha, 1 block for color */
-		block = ( ddsColorBlock_t * )( ( unsigned long ) dds->data + y * xBlocks * 16 );
+		block = ( ddsColorBlock_t * )( dds->data + y * xBlocks * 16 );
 
 		/* walk x */
 		for ( x = 0; x < xBlocks; x++, block++ )
@@ -4437,7 +4437,7 @@ static void LoadDDS( const char *name, byte **pic, int *width, int *height )
 	// create image pixel buffer
 	*width = w;
 	*height = h;
-	*pic = R_GetImageBuffer( w * h * 4, BUFFER_IMAGE );
+	*pic = (byte*) R_GetImageBuffer( w * h * 4, BUFFER_IMAGE );
 
 	// decompress the dds texture
 	DDSDecompress( ( ddsBuffer_t * ) buffer, *pic );
@@ -4883,7 +4883,7 @@ void R_LoadCacheImages( void )
 	}
 
 	ri.FS_ReadFile( "image.cache", &buf );
-	pString = buf;
+	pString = (char*) buf;
 
 	while ( ( token = COM_ParseExt( &pString, qtrue ) ) && token[ 0 ] )
 	{

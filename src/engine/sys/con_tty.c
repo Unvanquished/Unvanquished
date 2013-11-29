@@ -42,13 +42,15 @@ Maryland 20850 USA.
 #include <fcntl.h>
 #include <sys/time.h>
 
+#include "../../common/String.h"
+#include "../framework/ConsoleField.h"
+
 /* fallbacks for con_curses.c */
 #ifdef USE_CURSES
 #define CON_Init     CON_Init_tty
 #define CON_Shutdown CON_Shutdown_tty
 #define CON_Print    CON_Print_tty
 #define CON_Input    CON_Input_tty
-#define CON_Clear_f  Field_Clear( &TTY_con )
 #endif
 
 /*
@@ -73,13 +75,7 @@ static int            TTY_eof;
 
 static struct termios TTY_tc;
 
-static field_t        TTY_con;
-
-// This is somewhat of aduplicate of the graphical console history
-// but it's safer more modular to have our own here
-#define CON_HISTORY 32
-//static field_t ttyEditLines[ CON_HISTORY ];
-//static int hist_current = -1, hist_count = 0;
+static Console::Field TTY_field(INT_MAX);
 
 /*
 ==================
@@ -132,20 +128,14 @@ static void CON_Hide( void )
 {
 	if ( ttycon_on )
 	{
-		int i;
-
 		if ( ttycon_hide )
 		{
 			ttycon_hide++;
 			return;
 		}
 
-		if ( TTY_con.cursor > 0 )
-		{
-			for ( i = 0; i < TTY_con.cursor; i++ )
-			{
-				CON_Back();
-			}
+		for (int i = TTY_field.GetText().size(); i-->0;) {
+			CON_Back();
 		}
 
 		CON_Back(); // Delete "]"
@@ -172,16 +162,10 @@ static void CON_Show( void )
 
 		if ( ttycon_hide == 0 )
 		{
-//			size_t size;
 			write( STDOUT_FILENO, "]", 1 );
 
-			if ( TTY_con.cursor )
-			{
-				for ( i = 0; i < TTY_con.cursor; i++ )
-				{
-					write( STDOUT_FILENO, TTY_con.buffer + i, 1 );
-				}
-			}
+			std::string text = Str::UTF32To8(TTY_field.GetText());
+			write( STDOUT_FILENO, text.c_str(), text.size());
 		}
 	}
 }
@@ -250,7 +234,6 @@ void CON_Init( void )
 		return;
 	}
 
-	Field_Clear( &TTY_con );
 	tcgetattr( STDIN_FILENO, &TTY_tc );
 	TTY_erase = TTY_tc.c_cc[ VERASE ];
 	TTY_eof = TTY_tc.c_cc[ VEOF ];
@@ -302,13 +285,10 @@ char *CON_Input( void )
 			// NOTE TTimo testing a lot of values .. seems it's the only way to get it to work everywhere
 			if ( ( key == TTY_erase ) || ( key == 127 ) || ( key == 8 ) )
 			{
-				if ( TTY_con.cursor > 0 )
-				{
-					TTY_con.cursor--;
-					TTY_con.buffer[ TTY_con.cursor ] = '\0';
-					CON_Back();
-				}
-
+				CON_Hide();
+				TTY_field.DeletePrev();
+				CON_Show();
+				CON_FlushIn();
 				return NULL;
 			}
 
@@ -317,33 +297,15 @@ char *CON_Input( void )
 			{
 				if ( key == '\n' )
 				{
-					if(!com_consoleCommand->string[0])
-					{
-						Q_snprintf( text, sizeof( text ), "\\%s",
-								TTY_con.buffer + ( TTY_con.buffer[ 0 ] == '\\' || TTY_con.buffer[ 0 ] == '/' ) );
-					}
-					else
-					{
-						Q_strncpyz( text, TTY_con.buffer, sizeof ( text ) );
-					}
-
-					// push it in history
-					Hist_Add( text );
-					Q_strncpyz( text, TTY_con.buffer, sizeof( text ) );
-					Field_Clear( &TTY_con );
-					key = '\n';
-					write( STDOUT_FILENO, &key, 1 );
-					write( STDOUT_FILENO, "]", 1 );
-					return text;
+					TTY_field.RunCommand();
+					write( STDOUT_FILENO, "\n]", 2 );
+					return NULL;
 				}
 
 				if ( key == '\t' )
 				{
-					field_t *edit;
 					CON_Hide();
-					edit = &TTY_con;
-					Cmd_TokenizeString( edit->buffer );
-					Field_AutoComplete( edit, "]" );
+					TTY_field.AutoComplete();
 					CON_Show();
 					return NULL;
 				}
@@ -363,27 +325,14 @@ char *CON_Input( void )
 							{
 								case 'A':
 									CON_Hide();
-									Q_strncpyz( TTY_con.buffer, Hist_Prev(), sizeof( TTY_con.buffer ) );
-									TTY_con.cursor = strlen( TTY_con.buffer );
+									TTY_field.HistoryPrev();
 									CON_Show();
 									CON_FlushIn();
 									return NULL;
 
 								case 'B':
-									history = Hist_Next();
 									CON_Hide();
-
-									if ( history )
-									{
-										Q_strncpyz( TTY_con.buffer, history, sizeof( TTY_con.buffer ) );
-										TTY_con.cursor = strlen( TTY_con.buffer );
-									}
-									else if ( TTY_con.buffer[ 0 ] )
-									{
-										Hist_Add( TTY_con.buffer );
-										Field_Clear( &TTY_con );
-									}
-
+									TTY_field.HistoryNext();
 									CON_Show();
 									CON_FlushIn();
 									return NULL;
@@ -403,16 +352,9 @@ char *CON_Input( void )
 				return NULL;
 			}
 
-			if ( TTY_con.cursor >= sizeof( text ) - 1 )
-			{
-				return NULL;
-			}
-
-			// push regular character
-			TTY_con.buffer[ TTY_con.cursor ] = key;
-			TTY_con.cursor++;
-			// print the current line (this is differential)
-			write( STDOUT_FILENO, &key, 1 );
+			CON_Hide();
+			TTY_field.AddChar(key);
+			CON_Show();
 		}
 
 		return NULL;

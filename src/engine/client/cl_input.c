@@ -35,6 +35,7 @@ Maryland 20850 USA.
 // cl.input.c  -- builds an intended movement command to send to the server
 
 #include "client.h"
+#include "../framework/CommandSystem.h"
 
 unsigned frame_msec;
 int      old_com_frameTime;
@@ -1250,11 +1251,11 @@ void IN_KeysUp_f( void )
 		{
 			if ( first )
 			{
-				Cmd_ExecuteString( va( "setkeydata %d %d %u\n", check, key + 1, time ) );
+				Cmd::ExecuteCommand(va("setkeydata %d %d %u\n", check, key + 1, time));
 				first = qfalse;
 			}
 
-			Cmd_ExecuteString( va( "-%s\n", registeredButtonCommands[ i ] + 1 ) ); // command name includes '+'
+			Cmd::ExecuteCommand(va("-%s\n", registeredButtonCommands[ i ] + 1)); // command name includes '+'
 		}
 	}
 
@@ -1264,24 +1265,24 @@ void IN_KeysUp_f( void )
 		{
 			if ( first )
 			{
-				Cmd_ExecuteString( va( "setkeydata %d %d %u\n", check, key + 1, time ) );
+				Cmd::ExecuteCommand(va("setkeydata %d %d %u\n", check, key + 1, time));
 				first = qfalse;
 			}
 
-			Cmd_ExecuteString( va( "-%s\n", builtinButtonCommands[i].name ) ); // command name doesn't include '+'
+			Cmd::ExecuteCommand(va("-%s\n", builtinButtonCommands[i].name)); // command name doesn't include '+'
 		}
 	}
 
 	if ( !first )
 	{
-		Cmd_ExecuteString( va( "setkeydata %d\n", check ) );
+		Cmd::ExecuteCommand(va("setkeydata %d\n", check));
 	}
 
 	// Pseudo-button commands handled here
 	// After the setkeydata so that they can't go adding more commands
 	if ( keyup[ key ] )
 	{
-		Cmd_ExecuteString( keyup[ key ] );
+		Cmd::ExecuteCommand( keyup[ key ] );
 		Z_Free( keyup[ key ] );
 		keyup[ key ] = NULL;
 	}
@@ -1321,14 +1322,14 @@ void IN_PrepareKeyUp( void )
 	// Add the command to what's already marked for this command
 	if ( keyup[ key ] )
 	{
-		char *newcmd = Z_Malloc( strlen( keyup[ key ] ) + strlen( cmd ) + 3 );
+		char *newcmd = ( char* )Z_Malloc( strlen( keyup[ key ] ) + strlen( cmd ) + 3 );
 		sprintf( newcmd, "%s-%s\n", keyup[ key ], cmd );
 		Z_Free( keyup[ key ] );
 		keyup[ key ] = newcmd;
 	}
 	else
 	{
-		keyup[ key ] = Z_Malloc( strlen( cmd ) + 3 );
+		keyup[ key ] = ( char* )Z_Malloc( strlen( cmd ) + 3 );
 		sprintf( keyup[ key ], "-%s\n", cmd );
 	}
 }
@@ -1360,7 +1361,7 @@ void CL_RegisterButtonCommands( const char *cmd_names )
 
 	for ( i = 0; cmd_names && i < USERCMD_BUTTONS; ++i )
 	{
-		char *term;
+		const char *term;
 
 		if ( *cmd_names == ',' )
 		{

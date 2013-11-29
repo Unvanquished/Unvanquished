@@ -37,11 +37,8 @@ Maryland 20850 USA.
 
 #include <Rocket/Core.h>
 #include <Rocket/Core/Element.h>
-
-extern "C"
-{
 #include "client.h"
-}
+#include "rocket.h"
 
 class RocketKeyBinder : public Rocket::Core::Element, public Rocket::Core::EventListener
 {

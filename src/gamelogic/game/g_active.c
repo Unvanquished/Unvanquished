@@ -631,6 +631,7 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 
 		client->ps.speed = client->pers.flySpeed;
 		client->ps.stats[ STAT_STAMINA ] = 0;
+		client->ps.stats[ STAT_FUEL ] = 0;
 		client->ps.stats[ STAT_MISC ] = 0;
 		client->ps.stats[ STAT_BUILDABLE ] = BA_NONE;
 		client->ps.stats[ STAT_CLASS ] = PCL_NONE;
@@ -729,7 +730,7 @@ qboolean ClientInactivityTimer( gentity_t *ent, qboolean active )
 static void G_ReplenishHumanHealth( gentity_t *self )
 {
 	gclient_t *client;
-	int       remainingStartupTime, clientNum;
+	int       remainingStartupTime;
 
 	if ( !self )
 	{
@@ -795,21 +796,36 @@ Actions that happen once a second
 */
 void ClientTimerActions( gentity_t *ent, int msec )
 {
-	gclient_t   *client;
-	usercmd_t   *ucmd;
-	int         aForward, aRight;
-	qboolean    walking = qfalse, stopped = qfalse,
-	            crouched = qfalse, jumping = qfalse,
-	            strafing = qfalse;
-	int         i;
-	buildable_t buildable;
+	playerState_t *ps;
+	gclient_t     *client;
+	usercmd_t     *ucmd;
+	int           i, aForward, aRight;
+	qboolean      walking = qfalse,
+	              stopped = qfalse,
+	              crouched = qfalse,
+	              jumping = qfalse,
+	              strafing = qfalse;
+	buildable_t   buildable;
 	const classAttributes_t *ca;
+	const weaponAttributes_t *wa;
 
-	ucmd = &ent->client->pers.cmd;
-	ca   = BG_Class( ent->client->ps.stats[ STAT_CLASS ] );
+	if ( !ent || !ent->client )
+	{
+		return;
+	}
+
+	client = ent->client;
+	ps     = &client->ps;
+	ucmd   = &client->pers.cmd;
+	ca     = BG_Class( ps->stats[ STAT_CLASS ] );
+	wa     = BG_Weapon( ps->stats[ STAT_WEAPON ] );
 
 	aForward = abs( ucmd->forwardmove );
 	aRight   = abs( ucmd->rightmove );
+
+	client->time100 += msec;
+	client->time1000 += msec;
+	client->time10000 += msec;
 
 	if ( aForward == 0 && aRight == 0 )
 	{
@@ -834,13 +850,10 @@ void ClientTimerActions( gentity_t *ent, int msec )
 		crouched = qtrue;
 	}
 
-	client = ent->client;
-	client->time100 += msec;
-	client->time1000 += msec;
-	client->time10000 += msec;
-
 	if( ent->r.svFlags & SVF_BOT )
+	{
 		G_BotThink( ent );
+	}
 
 	while ( client->time100 >= 100 )
 	{
@@ -848,8 +861,12 @@ void ClientTimerActions( gentity_t *ent, int msec )
 
 		client->time100 -= 100;
 
-		// Restore or subtract stamina
-		if ( stopped || client->ps.pm_type == PM_JETPACK )
+		// Use/Restore stamina (TODO: Move this to pmove to get rid of prediction errors!)
+		if ( client->ps.stats[ STAT_STATE2 ] & SS2_JETPACK_WARM )
+		{
+			client->ps.stats[ STAT_STAMINA ] += ca->staminaJogRestore;
+		}
+		else if ( stopped )
 		{
 			client->ps.stats[ STAT_STAMINA ] += ca->staminaStopRestore;
 		}
@@ -878,10 +895,10 @@ void ClientTimerActions( gentity_t *ent, int msec )
 			client->ps.stats[ STAT_STAMINA ] = 0;
 		}
 
+		// Update build timer
 		if ( weapon == WP_ABUILD || weapon == WP_ABUILD2 ||
 		     BG_InventoryContainsWeapon( WP_HBUILD, client->ps.stats ) )
 		{
-			// Update build timer
 			if ( client->ps.stats[ STAT_MISC ] > 0 )
 			{
 				client->ps.stats[ STAT_MISC ] -= 100;
@@ -893,6 +910,7 @@ void ClientTimerActions( gentity_t *ent, int msec )
 			}
 		}
 
+		// Building related
 		switch ( weapon )
 		{
 			case WP_ABUILD:
@@ -952,6 +970,19 @@ void ClientTimerActions( gentity_t *ent, int msec )
 
 		// replenish human health
 		G_ReplenishHumanHealth( ent );
+
+		// refill weapon ammo
+		if ( ent->client->lastAmmoRefillTime + HUMAN_AMMO_REFILL_PERIOD < level.time &&
+		     ps->weaponTime == 0 )
+		{
+			G_FindAmmo( ent );
+		}
+
+		// refill jetpack fuel
+		if ( !( ps->stats[ STAT_STATE2 ] & SS2_JETPACK_ENABLED ) )
+		{
+			G_FindFuel( ent );
+		}
 	}
 
 	while ( client->time1000 >= 1000 )
@@ -1655,7 +1686,7 @@ static void G_ReplenishAlienHealth( gentity_t *self )
 {
 	gclient_t *client;
 	float     regenBaseRate, modifier;
-	int       foundHealthSource, count, interval, clientNum;
+	int       foundHealthSource, count, interval;
 
 	client = self->client;
 
@@ -1680,7 +1711,22 @@ static void G_ReplenishAlienHealth( gentity_t *self )
 		// Clear healing state, then set it accordingly
 		client->ps.stats[ STAT_STATE ] &= ~( SS_HEALING_ACTIVE | SS_HEALING_2X | SS_HEALING_3X );
 
-		if ( !foundHealthSource )
+		if ( foundHealthSource & SS_HEALING_3X )
+		{
+			modifier = 3.0f;
+			client->ps.stats[ STAT_STATE ] |= ( SS_HEALING_ACTIVE | SS_HEALING_3X );
+		}
+		else if ( foundHealthSource & SS_HEALING_2X )
+		{
+			modifier = 2.0f;
+			client->ps.stats[ STAT_STATE ] |= ( SS_HEALING_ACTIVE | SS_HEALING_2X );
+		}
+		else if ( foundHealthSource & SS_HEALING_ACTIVE )
+		{
+			modifier = 1.0f;
+			client->ps.stats[ STAT_STATE ] |= SS_HEALING_ACTIVE;
+		}
+		else
 		{
 			if ( g_alienOffCreepRegenHalfLife.value < 1 )
 			{
@@ -1697,21 +1743,6 @@ static void G_ReplenishAlienHealth( gentity_t *self )
 					modifier = 0.1f;
 				}
 			}
-		}
-		else if ( foundHealthSource & SS_HEALING_3X )
-		{
-			modifier = 3.0f;
-			client->ps.stats[ STAT_STATE ] |= ( SS_HEALING_ACTIVE | SS_HEALING_3X );
-		}
-		else if ( foundHealthSource & SS_HEALING_2X )
-		{
-			modifier = 2.0f;
-			client->ps.stats[ STAT_STATE ] |= ( SS_HEALING_ACTIVE | SS_HEALING_2X );
-		}
-		else if ( foundHealthSource & SS_HEALING_ACTIVE )
-		{
-			modifier = 1.0f;
-			client->ps.stats[ STAT_STATE ] |= SS_HEALING_ACTIVE;
 		}
 
 		interval = ( int )( 1000.0f / ( regenBaseRate * modifier ) );
@@ -1863,10 +1894,6 @@ void ClientThink_real( gentity_t *ent )
 	{
 		client->ps.pm_type = PM_GRABBED;
 	}
-	else if ( BG_InventoryContainsUpgrade( UP_JETPACK, client->ps.stats ) && BG_UpgradeIsActive( UP_JETPACK, client->ps.stats ) )
-	{
-		client->ps.pm_type = PM_JETPACK;
-	}
 	else
 	{
 		client->ps.pm_type = PM_NORMAL;
@@ -1937,8 +1964,10 @@ void ClientThink_real( gentity_t *ent )
 		client->ps.stats[ STAT_STATE ] &= ~SS_POISONED;
 	}
 
+	// copy global gravity to playerstate
 	client->ps.gravity = g_gravity.value;
 
+	// handle medkit (TODO: move into helper function)
 	if ( BG_InventoryContainsUpgrade( UP_MEDKIT, client->ps.stats ) &&
 	     BG_UpgradeIsActive( UP_MEDKIT, client->ps.stats ) )
 	{
@@ -2005,28 +2034,16 @@ void ClientThink_real( gentity_t *ent )
 		                   BG_Class( client->ps.stats[ STAT_CLASS ] )->speed;
 	}
 
+	// unset creepslowed flag if it's time
 	if ( client->lastCreepSlowTime + CREEP_TIMEOUT < level.time )
 	{
 		client->ps.stats[ STAT_STATE ] &= ~SS_CREEPSLOWED;
 	}
 
-	//randomly disable the jet pack if damaged
-	if ( BG_InventoryContainsUpgrade( UP_JETPACK, client->ps.stats ) &&
-	     BG_UpgradeIsActive( UP_JETPACK, client->ps.stats ) )
+	// unset jetpack damaged flag if it's time
+	if ( client->lastCombatTime + JETPACK_DMG_DISABLE_TIME < level.time )
 	{
-		if ( ent->lastDamageTime + JETPACK_DISABLE_TIME > level.time )
-		{
-			if ( random() > JETPACK_DISABLE_CHANCE )
-			{
-				client->ps.pm_type = PM_NORMAL;
-			}
-		}
-
-		//switch jetpack off if no reactor
-		if ( !G_Reactor() )
-		{
-			BG_DeactivateUpgrade( UP_JETPACK, client->ps.stats );
-		}
+		client->ps.stats[ STAT_STATE2 ] &= ~SS2_JETPACK_DAMAGED;
 	}
 
 	// set up for pmove
@@ -2188,23 +2205,22 @@ void ClientThink_real( gentity_t *ent )
 	usercmdCopyButtons( client->buttons, ucmd->buttons );
 	usercmdLatchButtons( client->latched_buttons, client->buttons, client->oldbuttons );
 
-	if ( usercmdButtonPressed( client->buttons, BUTTON_ACTIVATE ) && !usercmdButtonPressed( client->oldbuttons, BUTTON_ACTIVATE ) &&
+	if ( usercmdButtonPressed( client->buttons, BUTTON_ACTIVATE ) &&
+	     !usercmdButtonPressed( client->oldbuttons, BUTTON_ACTIVATE ) &&
 	     client->ps.stats[ STAT_HEALTH ] > 0 )
 	{
 		trace_t   trace;
 		vec3_t    view, point;
 		gentity_t *traceEnt;
 
-#define USE_OBJECT_RANGE 64
-
 		int    entityList[ MAX_GENTITIES ];
-		vec3_t range = { USE_OBJECT_RANGE, USE_OBJECT_RANGE, USE_OBJECT_RANGE };
+		vec3_t range = { ENTITY_USE_RANGE, ENTITY_USE_RANGE, ENTITY_USE_RANGE };
 		vec3_t mins, maxs;
 		int    i, num;
 
 		// look for object infront of player
 		AngleVectors( client->ps.viewangles, view, NULL, NULL );
-		VectorMA( client->ps.origin, USE_OBJECT_RANGE, view, point );
+		VectorMA( client->ps.origin, ENTITY_USE_RANGE, view, point );
 		trap_Trace( &trace, client->ps.origin, NULL, NULL, point, ent->s.number, MASK_SHOT );
 
 		traceEnt = &g_entities[ trace.entityNum ];

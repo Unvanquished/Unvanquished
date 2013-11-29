@@ -34,13 +34,15 @@ Maryland 20850 USA.
 
 #include "server.h"
 
+#include "../framework/CommandSystem.h"
+
 #ifdef USE_VOIP
 cvar_t         *sv_voip;
 #endif
 
 serverStatic_t svs; // persistent server info
 server_t       sv; // local server
-vm_t           *gvm = NULL; // game virtual machine // bk001212 init
+GameVM         gvm; // game virtual machine
 
 cvar_t         *sv_fps; // time rate for running non-clients
 cvar_t         *sv_timeout; // seconds without any message
@@ -82,11 +84,12 @@ cvar_t *sv_wwwDlDisconnected;
 cvar_t *sv_wwwFallbackURL; // URL to send to if an http/ftp fails or is refused client side
 
 //bani
-cvar_t *sv_cheats;
 cvar_t *sv_packetdelay;
 
 // fretn
 cvar_t *sv_fullmsg;
+
+cvar_t *vm_game;
 
 #define LL( x ) x = LittleLong( x )
 
@@ -524,7 +527,7 @@ void SVC_Status( netadr_t from )
 		return;
 	}
 
-	strcpy( infostring, Cvar_InfoString( CVAR_SERVERINFO | CVAR_SERVERINFO_NOUPDATE, qfalse ) );
+	strcpy( infostring, Cvar_InfoString( CVAR_SERVERINFO, qfalse ) );
 
 	// echo back the parameter to status. so master servers can use it as a challenge
 	// to prevent timed spoofed reply packets that add ghost servers
@@ -689,17 +692,6 @@ void SVC_Info( netadr_t from )
 }
 
 /*
-==============
-SV_FlushRedirect
-
-==============
-*/
-void SV_FlushRedirect( char *outputbuf )
-{
-	NET_OutOfBandPrint( NS_SERVER, svs.redirectAddress, "print\n%s", outputbuf );
-}
-
-/*
 =================
 SV_CheckDRDoS
 
@@ -819,11 +811,34 @@ Shift down the remaining args
 Redirect all printfs
 ===============
 */
+
+class RconEnvironment: public Cmd::DefaultEnvironment {
+    public:
+        RconEnvironment(netadr_t from, int bufferSize): from(from), bufferSize(bufferSize) {};
+
+        virtual void Print(Str::StringRef text) OVERRIDE {
+            if (text.size() + buffer.size() > bufferSize - 1) {
+                Flush();
+            }
+
+            buffer += text;
+        }
+
+        void Flush() {
+            NET_OutOfBandPrint(NS_SERVER, from, "print\n%s", buffer.c_str());
+            buffer = "";
+        }
+
+    private:
+        netadr_t from;
+        int bufferSize;
+        std::string buffer;
+};
+
 void SVC_RemoteCommand( netadr_t from, msg_t *msg )
 {
 	qboolean     valid;
 	unsigned int time;
-	char         remaining[ 1024 ];
 
 	// show_bug.cgi?id=376
 	// if we send an OOB print message this size, 1.31 clients die in a Com_Printf buffer overflow
@@ -831,10 +846,7 @@ void SVC_RemoteCommand( netadr_t from, msg_t *msg )
 	// but we want a server side fix
 	// we must NEVER send an OOB message that will be > 1.31 MAXPRINTMSG (4096)
 #define SV_OUTPUTBUF_LENGTH ( 256 - 16 )
-	char                sv_outputbuf[ SV_OUTPUTBUF_LENGTH ];
 	static unsigned int lasttime = 0;
-	const char          *cmd_aux;
-
 	// TTimo - show_bug.cgi?id=534
 	time = Com_Milliseconds();
 
@@ -857,55 +869,28 @@ void SVC_RemoteCommand( netadr_t from, msg_t *msg )
 	}
 
 	// start redirecting all print outputs to the packet
-	svs.redirectAddress = from;
 	// FIXME TTimo our rcon redirection could be improved
 	//   big rcon commands such as status lead to sending
 	//   out of band packets on every single call to Com_Printf
 	//   which leads to client overflows
 	//   see show_bug.cgi?id=51
 	//     (also a Q3 issue)
-	Com_BeginRedirect( sv_outputbuf, SV_OUTPUTBUF_LENGTH, SV_FlushRedirect );
+	auto env = RconEnvironment(from, SV_OUTPUTBUF_LENGTH);
 
 	if ( !strlen( sv_rconPassword->string ) )
 	{
-		Com_Printf(_( "No rconpassword set on the server.\n" ));
+		env.Print(_( "No rconpassword set on the server.\n" ));
 	}
 	else if ( !valid )
 	{
-		Com_Printf(_( "Bad rconpassword.\n" ));
+		env.Print(_( "Bad rconpassword.\n" ));
 	}
 	else
 	{
-		remaining[ 0 ] = 0;
-
-		// ATVI Wolfenstein Misc #284
-		// get the command directly, "rcon <pass> <command>" to avoid quoting issues
-		// extract the command by walking
-		// since the cmd formatting can fuckup (amount of spaces), using a dumb step by step parsing
-		cmd_aux = Cmd_Cmd();
-		cmd_aux += 4;
-
-		while ( cmd_aux[ 0 ] == ' ' )
-		{
-			cmd_aux++;
-		}
-
-		while ( cmd_aux[ 0 ] && cmd_aux[ 0 ] != ' ' ) // password
-		{
-			cmd_aux++;
-		}
-
-		while ( cmd_aux[ 0 ] == ' ' )
-		{
-			cmd_aux++;
-		}
-
-		Q_strcat( remaining, sizeof( remaining ), cmd_aux );
-
-		Cmd_ExecuteString( remaining );
+		Cmd::ExecuteCommand(Cmd::GetCurrentArgs().EscapedArgs(2), true, &env);
 	}
 
-	Com_EndRedirect();
+	env.Flush();
 }
 
 /*
@@ -1334,7 +1319,7 @@ void SV_Frame( int msec )
 		// there won't be a map_restart if you have shut down the server
 		// since it doesn't restart a non-running server
 		// instead, re-run the current map
-		Cbuf_AddText( va( "map %s\n", mapname ) );
+		Cmd::BufferCommandText(va("map %s", mapname));
 		return;
 	}
 
@@ -1344,28 +1329,22 @@ void SV_Frame( int msec )
 		Q_strncpyz( mapname, sv_mapname->string, MAX_QPATH );
 		SV_Shutdown( "Restarting server due to numSnapshotEntities wrapping" );
 		// TTimo see above
-		Cbuf_AddText( va( "map %s\n", mapname ) );
+		Cmd::BufferCommandText(va("map %s", mapname));
 		return;
 	}
 
 	if ( sv.restartTime && svs.time >= sv.restartTime )
 	{
 		sv.restartTime = 0;
-		Cbuf_AddText( "map_restart 0\n" );
+		Cmd::BufferCommandText("map_restart 0");
 		return;
 	}
 
 	// update infostrings if anything has been changed
 	if ( cvar_modifiedFlags & CVAR_SERVERINFO )
 	{
-		SV_SetConfigstring( CS_SERVERINFO, Cvar_InfoString( CVAR_SERVERINFO | CVAR_SERVERINFO_NOUPDATE, qfalse ) );
+		SV_SetConfigstring( CS_SERVERINFO, Cvar_InfoString( CVAR_SERVERINFO, qfalse ) );
 		cvar_modifiedFlags &= ~CVAR_SERVERINFO;
-	}
-
-	if ( cvar_modifiedFlags & CVAR_SERVERINFO_NOUPDATE )
-	{
-		SV_SetConfigstringNoUpdate( CS_SERVERINFO, Cvar_InfoString( CVAR_SERVERINFO | CVAR_SERVERINFO_NOUPDATE, qfalse ) );
-		cvar_modifiedFlags &= ~CVAR_SERVERINFO_NOUPDATE;
 	}
 
 	if ( cvar_modifiedFlags & CVAR_SYSTEMINFO )
@@ -1398,11 +1377,7 @@ void SV_Frame( int msec )
 		svs.time += frameMsec;
 
 		// let everything in the world think and move
-		VM_Call( gvm, GAME_RUN_FRAME, svs.time );
-
-#ifdef USE_PHYSICS
-		CMod_PhysicsUpdate();
-#endif
+		gvm.GameRunFrame( svs.time );
 	}
 
 	if ( com_speeds->integer )

@@ -1145,10 +1145,10 @@ static void CG_Rocket_DrawCrosshairNames( void )
 	trap_Rocket_SetInnerRML( va( "%s", name ), qtrue );
 }
 
-static void CG_Rocket_DrawConfidence( void )
+static void CG_Rocket_DrawMomentum( void )
 {
 	char  s[ MAX_TOKEN_CHARS ];
-	float confidence;
+	float momentum;
 	team_t team;
 
 	if ( cg.intermissionStarted )
@@ -1162,9 +1162,9 @@ static void CG_Rocket_DrawConfidence( void )
 		return;
 	}
 
-	confidence = cg.predictedPlayerState.persistant[ PERS_CONFIDENCE ] / 10.0f;
+	momentum = cg.predictedPlayerState.persistant[ PERS_MOMENTUM ] / 10.0f;
 
-	Com_sprintf( s, MAX_TOKEN_CHARS, _("%.1f confidence"), confidence );
+	Com_sprintf( s, MAX_TOKEN_CHARS, _("%.1f momentum"), momentum );
 
 	trap_Rocket_SetInnerRML( va( "%s", s ), qfalse );
 
@@ -1400,6 +1400,7 @@ static void CG_DrawStack( rectDef_t *rect, vec4_t color, float fill,
 		switch ( align )
 		{
 			case LALIGN_TOPLEFT:
+			default:
 				loff = 0;
 				break;
 
@@ -1837,18 +1838,18 @@ void CG_Rocket_DrawChatType( void )
 #define CONFIDENCE_BAR_MARKWIDTH 0.5f
 #define CONFIDENCE_BAR_GLOWTIME  2000
 
-static void CG_Rocket_DrawPlayerConfidenceBar( void )
+static void CG_Rocket_DrawPlayerMomentumBar( void )
 {
 	// data
 	rectDef_t     rect;
 	vec4_t        foreColor, backColor;
 	playerState_t *ps;
-	float         confidence, rawFraction, fraction, glowFraction, glowOffset, borderSize;
+	float         momentum, rawFraction, fraction, glowFraction, glowOffset, borderSize;
 	int           threshold;
 	team_t        team;
 	qboolean      unlocked;
 
-	confidenceThresholdIterator_t unlockableIter = { -1 };
+	momentumThresholdIterator_t unlockableIter = { -1 };
 
 	// display
 	vec4_t        color;
@@ -1864,7 +1865,7 @@ static void CG_Rocket_DrawPlayerConfidenceBar( void )
 	ps = &cg.predictedPlayerState;
 
 	team       = ps->persistant[ PERS_TEAM ];
-	confidence = ps->persistant[ PERS_CONFIDENCE ] / 10.0f;
+	momentum = ps->persistant[ PERS_MOMENTUM ] / 10.0f;
 
 	x = rect.x;
 	y = rect.y;
@@ -1888,8 +1889,8 @@ static void CG_Rocket_DrawPlayerConfidenceBar( void )
 	color[ 3 ] *= 0.5f;
 	CG_FillRect( x, y, w, h, color );
 
-	// draw confidence bar
-	fraction = rawFraction = confidence / CONFIDENCE_BAR_MAX;
+	// draw momentum bar
+	fraction = rawFraction = momentum / CONFIDENCE_BAR_MAX;
 
 	if ( fraction < 0.0f )
 	{
@@ -1909,14 +1910,14 @@ static void CG_Rocket_DrawPlayerConfidenceBar( void )
 		CG_FillRect( x, y, w * fraction, h, foreColor );
 	}
 
-	// draw glow on confidence event
-	if ( cg.confidenceGainedTime + CONFIDENCE_BAR_GLOWTIME > cg.time )
+	// draw glow on momentum event
+	if ( cg.momentumGainedTime + CONFIDENCE_BAR_GLOWTIME > cg.time )
 	{
-		glowFraction = fabs( cg.confidenceGained / CONFIDENCE_BAR_MAX );
-		glowStrength = ( CONFIDENCE_BAR_GLOWTIME - ( cg.time - cg.confidenceGainedTime ) ) /
+		glowFraction = fabs( cg.momentumGained / CONFIDENCE_BAR_MAX );
+		glowStrength = ( CONFIDENCE_BAR_GLOWTIME - ( cg.time - cg.momentumGainedTime ) ) /
 		( float )CONFIDENCE_BAR_GLOWTIME;
 
-		if ( cg.confidenceGained > 0.0f )
+		if ( cg.momentumGained > 0.0f )
 		{
 			glowOffset = vertical ? 0 : glowFraction;
 		}
@@ -1945,7 +1946,7 @@ static void CG_Rocket_DrawPlayerConfidenceBar( void )
 	}
 
 	// draw threshold markers
-	while ( ( unlockableIter = BG_IterateConfidenceThresholds( unlockableIter, team, &threshold, &unlocked ) ),
+	while ( ( unlockableIter = BG_IterateMomentumThresholds( unlockableIter, team, &threshold, &unlocked ) ),
 		( unlockableIter.num >= 0 ) )
 	{
 		fraction = threshold / CONFIDENCE_BAR_MAX;
@@ -2027,7 +2028,7 @@ static void CG_Rocket_DrawPlayerUnlockedItems( void )
 {
 	rectDef_t     rect;
 	vec4_t        foreColour, backColour;
-	confidenceThresholdIterator_t unlockableIter = { -1, 1 }, previousIter;
+	momentumThresholdIterator_t unlockableIter = { -1, 1 }, previousIter;
 
 	// data
 	team_t    team;
@@ -2070,7 +2071,7 @@ static void CG_Rocket_DrawPlayerUnlockedItems( void )
 		qboolean  unlocked;
 
 		previousIter = unlockableIter;
-		unlockableIter = BG_IterateConfidenceThresholds( unlockableIter, team, &threshold, &unlocked );
+		unlockableIter = BG_IterateMomentumThresholds( unlockableIter, team, &threshold, &unlocked );
 
 		if ( previousIter.threshold != unlockableIter.threshold && icons )
 		{
@@ -2168,8 +2169,8 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "clips", &CG_Rocket_DrawClips, ELEMENT_HUMANS },
 	{ "clip_stack", &CG_DrawPlayerClipsStack, ELEMENT_HUMANS },
 	{ "clock", &CG_Rocket_DrawClock, ELEMENT_ALL },
-	{ "confidence", &CG_Rocket_DrawConfidence, ELEMENT_BOTH },
-	{ "confidence_bar", &CG_Rocket_DrawPlayerConfidenceBar, ELEMENT_BOTH },
+	{ "momentum", &CG_Rocket_DrawMomentum, ELEMENT_BOTH },
+	{ "momentum_bar", &CG_Rocket_DrawPlayerMomentumBar, ELEMENT_BOTH },
 	{ "connecting", &CG_Rocket_DrawConnectText, ELEMENT_ALL },
 	{ "credits", &CG_Rocket_DrawCreditsValue, ELEMENT_HUMANS },
 	{ "crosshair", &CG_Rocket_DrawCrosshair, ELEMENT_BOTH },
@@ -2180,7 +2181,7 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "fps", &CG_Rocket_DrawFPS, ELEMENT_ALL },
 	{ "health", &CG_Rocket_DrawPlayerHealth, ELEMENT_BOTH },
 	{ "health_cross", &CG_Rocket_DrawPlayerHealthCross, ELEMENT_BOTH },
-	{ "itemselect", &CG_DrawItemSelect, ELEMENT_HUMANS },
+	{ "inventory", &CG_DrawHumanInventory, ELEMENT_HUMANS },
 	{ "itemselect_text", &CG_DrawItemSelectText, ELEMENT_HUMANS },
 	{ "lagometer", &CG_Rocket_DrawLagometer, ELEMENT_GAME },
 	{ "levelshot", &CG_Rocket_DrawLevelshot, ELEMENT_ALL },

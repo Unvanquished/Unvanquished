@@ -182,9 +182,9 @@ struct gentity_s
 	float        expectedSparePower;
 
 	/**
-	 * The amount of confidence this building generated on construction
+	 * The amount of momentum this building generated on construction
 	 */
-	float        confidenceEarned;
+	float        momentumEarned;
 
 	/**
 	 * Alien buildables can burn, which is a lot of fun if they are close.
@@ -361,7 +361,8 @@ struct gentity_s
 
 	qboolean    deconstruct; // deconstruct if no BP left
 	int         deconstructTime; // time at which structure marked
-	int         overmindAttackTimer;
+	int         attackTimer, attackLastEvent; // self being attacked
+	int         warnTimer; // nearby building(s) being attacked
 	int         overmindDyingTimer;
 	int         overmindSpawnsTimer;
 	int         nextPhysicsTime; // buildables don't need to check what they're sitting on
@@ -567,6 +568,8 @@ struct gclient_s
 	int        medKitIncrementTime;
 	int        lastCreepSlowTime; // time until creep can be removed
 	int        lastCombatTime; // time of last damage received/dealt or held by basilisk
+	int        lastAmmoRefillTime;
+	int        lastFuelRefillTime;
 
 	unlagged_t unlaggedHist[ MAX_UNLAGGED_MARKERS ];
 	unlagged_t unlaggedBackup;
@@ -612,7 +615,7 @@ struct buildLog_s
 	namelog_t   *builtBy;
 	team_t      buildableTeam;
 	buildable_t modelindex;
-	float       confidenceEarned;
+	float       momentumEarned;
 	qboolean    deconstruct;
 	int         deconstructTime;
 	vec3_t      origin;
@@ -687,6 +690,7 @@ struct level_locals_s
 	vec3_t           intermission_angle;
 
 	gentity_t        *locationHead; // head of the location list
+	gentity_t        *fakeLocation; // fake location for anything which might need one
 
 	float            mineRate;
 
@@ -752,7 +756,7 @@ struct level_locals_s
 		int              kills;
 		spawnQueue_t     spawnQueue;
 		qboolean         locked;
-		float            confidence;
+		float            momentum;
 	} team[ NUM_TEAMS ];
 };
 

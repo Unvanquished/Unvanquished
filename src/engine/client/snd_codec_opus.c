@@ -22,8 +22,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
-// Ogg Opus support is enabled by this define
-#ifdef USE_CODEC_OPUS
+// Don't add ogg dependencies to tty client
+#ifndef BUILD_TTY_CLIENT
 
 // includes for the Q3 sound system
 #include "client.h"
@@ -358,7 +358,7 @@ int S_OggOpus_CodecReadStream( snd_stream_t *stream, int bytes, void *buffer )
 
 	samplesRead = 0;
 	samplesLeft = bytes / stream->info.channels / stream->info.width;
-	bufPtr = buffer;
+	bufPtr = (opus_int16*) buffer;
 
 	if ( samplesLeft <= 0 )
 	{
@@ -428,7 +428,7 @@ void *S_OggOpus_CodecLoad( const char *filename, snd_info_t *info )
 
 	// allocate a buffer
 	// this buffer must be free-ed by the caller of this function
-	buffer = Hunk_AllocateTempMemory( info->size );
+	buffer = (byte*) Hunk_AllocateTempMemory( info->size );
 
 	if ( !buffer )
 	{
@@ -454,4 +454,4 @@ void *S_OggOpus_CodecLoad( const char *filename, snd_info_t *info )
 	return buffer;
 }
 
-#endif // USE_CODEC_OPUS
+#endif // !BUILD_TTY_CLIENT

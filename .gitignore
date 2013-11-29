@@ -2,19 +2,14 @@
 # which already committed files are matched against these rules
 
 *~
-build/*
-lcc/*
+lcc
 *.DS_Store
 CMakeCache.txt
-CMakeLists.txt.user
 CMakeFiles
-CPackConfig.cmake
-CPackSourceConfig.cmake
 Makefile
 cmake_install.cmake
 daemon*
-download-pk3.sh
-librendererGL*
+rendererGL*
 main/cgame.*
 main/game.*
 main/ui.*
@@ -26,6 +21,9 @@ libmesa.a
 libROCKET_LIB.a
 build-32/*
 build-64/*
+Release
+Debug
+
 *.vcxproj.user
 *.kdev4
 
@@ -40,7 +38,11 @@ build-64/*
 #ignore eclipse cdt project files
 .project
 .cproject
-.settings/
+.settings
+
+#ignore external deps
+external_deps/*
+!external_deps/build.sh
 
 #never ignore these in subdirectories by accident
 !.gitattributes

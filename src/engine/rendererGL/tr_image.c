@@ -144,7 +144,7 @@ void GL_TextureMode( const char *string )
 	// change all the existing mipmap texture objects
 	for ( i = 0; i < tr.images.currentElements; i++ )
 	{
-		image = Com_GrowListElement( &tr.images, i );
+		image = (image_t*) Com_GrowListElement( &tr.images, i );
 
 		if ( image->filterType == FT_DEFAULT )
 		{
@@ -178,7 +178,7 @@ int R_SumOfUsedImages( void )
 
 	for ( i = 0; i < tr.images.currentElements; i++ )
 	{
-		image = Com_GrowListElement( &tr.images, i );
+		image = (image_t*) Com_GrowListElement( &tr.images, i );
 
 		if ( image->frameUsed == tr.frameCount )
 		{
@@ -213,7 +213,7 @@ void R_ImageList_f( void )
 
 	for ( i = 0; i < tr.images.currentElements; i++ )
 	{
-		image = Com_GrowListElement( &tr.images, i );
+		image = (image_t*) Com_GrowListElement( &tr.images, i );
 
 		ri.Printf( PRINT_ALL, "%4i: %4i %4i  %s   ",
 		           i, image->uploadWidth, image->uploadHeight, yesno[ image->filterType == FT_DEFAULT ] );
@@ -608,7 +608,7 @@ static void R_MipMap2( unsigned *in, int inWidth, int inHeight )
 
 	outWidth = inWidth >> 1;
 	outHeight = inHeight >> 1;
-	temp = ri.Hunk_AllocateTempMemory( outWidth * outHeight * 4 );
+	temp = (unsigned int*) ri.Hunk_AllocateTempMemory( outWidth * outHeight * 4 );
 	outpix = (byte *) temp;
 
 	inWidthMask = ( inWidth << 2 ) - 1; // applied to row indices
@@ -634,9 +634,9 @@ static void R_MipMap2( unsigned *in, int inWidth, int inHeight )
 				const int kp2 = ( k + 8 ) & inWidthMask;
 
 				*outpix++ = ( 1 * row[ 0 ][ km1 ] + 2 * row[ 0 ][ k   ] + 2 * row[ 0 ][ kp1 ] + 1 * row[ 0 ][ kp2 ] +
-				              2 * row[ 1 ][ km1 ] + 4 * row[ 1 ][ k   ] + 4 * row[ 1 ][ kp1 ] + 2 * row[ 1 ][ kp2 ] +
-				              2 * row[ 2 ][ km1 ] + 4 * row[ 2 ][ k   ] + 4 * row[ 2 ][ kp1 ] + 2 * row[ 2 ][ kp2 ] +
-				              1 * row[ 3 ][ km1 ] + 2 * row[ 3 ][ k   ] + 2 * row[ 3 ][ kp1 ] + 1 * row[ 3 ][ kp2 ] ) / 36;
+						2 * row[ 1 ][ km1 ] + 4 * row[ 1 ][ k   ] + 4 * row[ 1 ][ kp1 ] + 2 * row[ 1 ][ kp2 ] +
+						2 * row[ 2 ][ km1 ] + 4 * row[ 2 ][ k   ] + 4 * row[ 2 ][ kp1 ] + 2 * row[ 2 ][ kp2 ] +
+						1 * row[ 3 ][ km1 ] + 2 * row[ 3 ][ k   ] + 2 * row[ 3 ][ kp1 ] + 1 * row[ 3 ][ kp2 ] ) / 36;
 			}
 		}
 	}
@@ -1281,7 +1281,7 @@ void R_UploadImage( const byte **dataArray, int numData, image_t *image )
 	}
 
 	if( data )
-		scaledBuffer = ri.Hunk_AllocateTempMemory( sizeof( byte ) * scaledWidth * scaledHeight * 4 );
+		scaledBuffer = (byte*) ri.Hunk_AllocateTempMemory( sizeof( byte ) * scaledWidth * scaledHeight * 4 );
 	else
 		scaledBuffer = NULL;
 
@@ -1514,7 +1514,7 @@ image_t        *R_AllocImage( const char *name, qboolean linkIntoHashTable )
 		return NULL;
 	}
 
-	image = ri.Hunk_Alloc( sizeof( image_t ), h_low );
+	image = (image_t*) ri.Hunk_Alloc( sizeof( image_t ), h_low );
 	Com_Memset( image, 0, sizeof( image_t ) );
 
 	glGenTextures( 1, &image->texnum );
@@ -1677,7 +1677,7 @@ image_t        *R_Create3DImage( const char *name,
 	image->width = width;
 	image->height = height;
 
-	pics = ri.Hunk_AllocateTempMemory( depth * sizeof(const byte *) );
+	pics = (const byte**) ri.Hunk_AllocateTempMemory( depth * sizeof(const byte *) );
 	for( i = 0; i < depth; i++ ) {
 		pics[i] = pic + i * width * height * sizeof(color4ub_t);
 	}
@@ -2482,7 +2482,7 @@ static void R_Rotate( byte *in, int width, int height, int degrees )
 	int  x, y, x2, y2;
 	byte *out, *tmp;
 
-	tmp = ri.Hunk_AllocateTempMemory( width * height * 4 );
+	tmp = (byte*) ri.Hunk_AllocateTempMemory( width * height * 4 );
 
 	// rotate into tmp buffer
 	for ( y = 0; y < height; y++ )
@@ -2864,7 +2864,7 @@ static void R_CreateFogImage( void )
 	float d;
 	float borderColor[ 4 ];
 
-	ptr = data = ri.Hunk_AllocateTempMemory( FOG_S * FOG_T * 4 );
+	ptr = data = (byte*) ri.Hunk_AllocateTempMemory( FOG_S * FOG_T * 4 );
 
 	//g = 2.0;
 
@@ -3311,7 +3311,8 @@ static void R_CreateShadowMapFBOImage( void )
 	int  i;
 	int  width, height;
 	int numShadowMaps = ( r_softShadowsPP->integer && r_shadows->integer >= SHADOWING_VSM16 ) ? MAX_SHADOWMAPS * 2 : MAX_SHADOWMAPS;
-	int format, filter;
+	int format;
+	filterType_t filter;
 
 	if ( !glConfig2.textureFloatAvailable || r_shadows->integer < SHADOWING_ESM16 )
 	{
@@ -3384,7 +3385,8 @@ static void R_CreateShadowCubeFBOImage( void )
 	int  i, j;
 	int  width, height;
 	byte *data[ 6 ];
-	int format, filter;
+	int format;
+	filterType_t filter;
 
 	if ( !glConfig2.textureFloatAvailable || r_shadows->integer < SHADOWING_ESM16 )
 	{
@@ -3459,7 +3461,7 @@ static void R_CreateBlackCubeImage( void )
 
 	for ( i = 0; i < 6; i++ )
 	{
-		data[ i ] = ri.Hunk_AllocateTempMemory( width * height * 4 );
+		data[ i ] = (byte*) ri.Hunk_AllocateTempMemory( width * height * 4 );
 		Com_Memset( data[ i ], 0, width * height * 4 );
 	}
 
@@ -3486,7 +3488,7 @@ static void R_CreateWhiteCubeImage( void )
 
 	for ( i = 0; i < 6; i++ )
 	{
-		data[ i ] = ri.Hunk_AllocateTempMemory( width * height * 4 );
+		data[ i ] = (byte*) ri.Hunk_AllocateTempMemory( width * height * 4 );
 		Com_Memset( data[ i ], 0xFF, width * height * 4 );
 	}
 
@@ -3505,7 +3507,7 @@ static void R_CreateColorGradeImage( void )
 	byte *data, *ptr;
 	int i, r, g, b;
 
-	data = ri.Hunk_AllocateTempMemory( 4 * REF_COLORGRADEMAP_STORE_SIZE * sizeof(color4ub_t) );
+	data = (byte*) ri.Hunk_AllocateTempMemory( 4 * REF_COLORGRADEMAP_STORE_SIZE * sizeof(color4ub_t) );
 
 	// 255 is 15 * 17, so the colors range from 0 to 255
 	for( ptr = data, i = 0; i < 4; i++ ) {
@@ -3610,7 +3612,7 @@ void R_CreateBuiltinImages( void )
 
 			value = 1.0f - ( s * 2.0f ) + ( s * s );
 
-			intensity = ClampByte( XreaL_Q_ftol( value * 255.0f ) );
+			intensity = ClampByte( Q_ftol( value * 255.0f ) );
 
 			out[ 0 ] = intensity;
 			out[ 1 ] = intensity;
@@ -3813,7 +3815,7 @@ void R_ShutdownImages( void )
 
 	for ( i = 0; i < tr.images.currentElements; i++ )
 	{
-		image = Com_GrowListElement( &tr.images, i );
+		image = (image_t*) Com_GrowListElement( &tr.images, i );
 
 		glDeleteTextures( 1, &image->texnum );
 	}

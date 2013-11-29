@@ -42,11 +42,8 @@ Maryland 20850 USA.
 #include <Rocket/Core/Texture.h>
 
 #include <queue>
-
-extern "C"
-{
 #include "client.h"
-}
+#include "rocket.h"
 
 Rocket::Core::Element *activeElement = NULL;
 

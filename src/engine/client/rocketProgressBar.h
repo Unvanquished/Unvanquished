@@ -39,11 +39,8 @@
 #include <Rocket/Core/Element.h>
 #include <Rocket/Core/ContainerWrapper.h>
 #include <Rocket/Core/GeometryUtilities.h>
-
-extern "C"
-{
 #include "client.h"
-}
+#include "rocket.h"
 
 enum
 {

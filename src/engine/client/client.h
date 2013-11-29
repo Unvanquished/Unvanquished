@@ -45,8 +45,6 @@ Maryland 20850 USA.
 
 #include "../client/cg_api.h"
 
-#include "rocket.h"
-
 #if defined(USE_VOIP) && !defined(DEDICATED)
 #include <speex/speex.h>
 #include <speex/speex_preprocess.h>
@@ -366,6 +364,12 @@ typedef struct
 	int      voipTime;
 	int      voipSender;
 
+	int      nCgameSyscalls;
+	int      nCgameRenderSyscalls;
+	int      nCgamePhysicsSyscalls;
+	int      nCgameUselessSyscalls;
+	int      nCgameSoundSyscalls;
+
 	// master server sequence information
 	int          numMasterPackets;
 	unsigned int receivedMasterPackets; // bitfield
@@ -510,6 +514,8 @@ extern cvar_t *cl_consoleFontKerning;
 extern cvar_t *cl_consoleCommand;
 
 extern cvar_t *cl_logs;
+
+extern cvar_t *cl_cgameSyscallStats;
 
 /**
  * Independently of the gamelogic, we can assume the game to have "teams" with an id,
@@ -854,10 +860,11 @@ void          Cin_OGM_Shutdown( void );
 //
 // cl_cgame.c
 //
+void     CL_CGameStats( void );
 void     CL_InitCGame( void );
 void     CL_InitCGameCVars( void );
 void     CL_ShutdownCGame( void );
-qboolean CL_GameCommand( void );
+void     CL_GameCommandHandler( void );
 qboolean CL_GameConsoleText( void );
 void     CL_CGameRendering( stereoFrame_t stereo );
 void     CL_SetCGameTime( void );
@@ -874,6 +881,7 @@ void CL_InitUI( void );
 void CL_ShutdownUI( void );
 int  Key_GetCatcher( void );
 void Key_SetCatcher( int catcher );
+void UI_GameCommandHandler( void );
 void LAN_LoadCachedServers( void );
 void LAN_SaveServersToCache( void );
 
@@ -910,6 +918,54 @@ void CL_GetClipboardData( char *, int, clipboard_t );
 //
 void CL_OpenClientLog(void);
 void CL_CloseClientLog(void);
-void CL_WriteClientLog( char *text );
-void CL_WriteClientChatLog( char *text );
+
+void CL_WriteClientLog( const char *text );
+void CL_WriteClientChatLog( const char *text );
+
+//
+// Rocket Functions
+//
+void Rocket_Init( void );
+void Rocket_Shutdown( void );
+void Rocket_Render( void );
+void Rocket_Update( void );
+void Rocket_InjectMouseMotion( int x, int y );
+void Rocket_LoadDocument( const char *path );
+void Rocket_LoadCursor( const char *path );
+void Rocket_DocumentAction( const char *name, const char *action );
+qboolean Rocket_GetEvent( void );
+void Rocket_DeleteEvent( void );
+void Rocket_RegisterDataSource( const char *name );
+void Rocket_DSAddRow( const char *name, const char *table, const char *data );
+void Rocket_DSChangeRow( const char *name, const char *table, const int row, const char *data );
+void Rocket_DSRemoveRow( const char *name, const char *table, const int row );
+void Rocket_DSClearTable( const char *name, const char *table );
+void Rocket_SetInnerRML( const char *name, const char *id, const char *RML, qboolean parseQuake );
+void Rocket_QuakeToRML( const char *in, char *out, int length );
+void Rocket_GetEventParameters( char *params, int length );
+void Rocket_RegisterDataFormatter( const char *name );
+void Rocket_DataFormatterRawData( int handle, char *name, int nameLength, char *data, int dataLength );
+void Rocket_DataFormatterFormattedData( int handle, const char *data, qboolean parseQuake );
+void Rocket_GetElementTag( char *tag, int length );
+void Rocket_SetElementDimensions( float x, float y );
+void Rocket_RegisterElement( const char *tag );
+void Rocket_SetAttribute( const char *name, const char *id, const char *attribute, const char *value );
+void Rocket_GetAttribute( const char *name, const char *id, const char *attribute, char *out, int length );
+void Rocket_GetProperty( const char *name, void *out, int len, rocketVarType_t type );
+void Rocket_GetElementAbsoluteOffset( float *x, float *y );
+void Rocket_SetClass( const char *in, qboolean activate );
+void Rocket_SetPropertyById( const char *id, const char *property, const char *value );
+void Rocket_SetActiveContext( int catcher );
+void Rocket_AddConsoleText( void );
+void Rocket_InitializeHuds( int size );
+void Rocket_LoadUnit( const char *path );
+void Rocket_AddUnitToHud( int weapon, const char *id );
+void Rocket_ShowHud( int weapon );
+void Rocket_ClearHud( int weapon );
+void Rocket_InitKeys( void );
+keyNum_t Rocket_ToQuake( int key );
+void Rocket_ProcessKeyInput( int key, qboolean down );
+void Rocket_ProcessTextInput( int key );
+void Rocket_MouseMove( int x, int y );
+
 #endif
