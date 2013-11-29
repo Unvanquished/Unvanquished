@@ -169,7 +169,7 @@ namespace Cvar {
         auto it = cvars.find(cvarName);
         //TODO: rom means the cvar should have been created before?
         if (it == cvars.end()) {
-            if (!Cmd::IsValidCmdName(cvarName)) {
+            if (!Cmd::IsValidCvarName(cvarName)) {
                 Com_Printf(_("Invalid cvar name '%s'"), cvarName.c_str());
                 return;
             }
@@ -242,7 +242,7 @@ namespace Cvar {
 
         auto it = cvars.find(name);
         if (it == cvars.end()) {
-            if (!Cmd::IsValidCmdName(name)) {
+            if (!Cmd::IsValidCvarName(name)) {
                 Com_Printf(_("Invalid cvar name '%s'"), name.c_str());
                 return;
             }
