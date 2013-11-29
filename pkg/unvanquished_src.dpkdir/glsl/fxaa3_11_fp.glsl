@@ -26,6 +26,9 @@ kangz: This code has been set in the public domain by TIMOTHY LOTTES
 #define FXAA_PC 1
 #if __VERSION__ == 120
     #define FXAA_GLSL_120 1
+    #ifdef GL_EXT_gpu_shader4
+        #extension GL_EXT_gpu_shader4 : enable
+    #endif
 #else
     #define FXAA_GLSL_130 1
 #endif
@@ -666,11 +669,16 @@ NOTE the other tuning knobs are now in the shader function inputs!
     // And at least,
     //  #extension GL_EXT_gpu_shader4 : enable
     //  (or set FXAA_FAST_PIXEL_OFFSET 1 to work like DX9)
-    #define FxaaTexTop(t, p) texture2DLod(t, p, 0.0)
-    #if (FXAA_FAST_PIXEL_OFFSET == 1)
-        #define FxaaTexOff(t, p, o, r) texture2DLodOffset(t, p, 0.0, o)
+    #ifdef GL_EXT_gpu_shader4
+        #define FxaaTexTop(t, p) texture2DLod(t, p, 0.0)
+        #if (FXAA_FAST_PIXEL_OFFSET == 1)
+            #define FxaaTexOff(t, p, o, r) texture2DLodOffset(t, p, 0.0, o)
+        #else
+            #define FxaaTexOff(t, p, o, r) texture2DLod(t, p + (o * r), 0.0)
+        #endif
     #else
-        #define FxaaTexOff(t, p, o, r) texture2DLod(t, p + (o * r), 0.0)
+        #define FxaaTexTop(t, p) texture2D(t, p)
+        #define FxaaTexOff(t, p, o, r) texture2D(t, p + (o * r))
     #endif
     #if (FXAA_GATHER4_ALPHA == 1)
         // use #extension GL_ARB_gpu_shader5 : enable
