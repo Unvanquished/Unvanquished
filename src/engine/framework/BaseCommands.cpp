@@ -751,12 +751,13 @@ namespace Cmd {
                 const std::string& name = args.Argv(0);
                 const std::string& parameters = args.EscapedArgs(1);
 
-                if (aliases.count(name) == 0) {
+                auto iter = aliases.find(name);
+                if (iter == aliases.end()) {
                     Print("alias %s doesn't exist", name.c_str());
                     return;
                 }
 
-                aliasRecord_t& alias = aliases[name];
+                aliasRecord_t& alias = iter->second;
 
                 bool startsRun = not inAliasRun;
                 if (startsRun) {
@@ -794,8 +795,9 @@ namespace Cmd {
 
                 //Show an alias
                 if (args.Argc() == 2) {
-                    if (aliases.count(name)) {
-                        Print("%s ⇒ %s", name.c_str(), aliases[name].command.c_str());
+                    auto iter = aliases.find(name);
+                    if (iter != aliases.end()) {
+                        Print("%s ⇒ %s", name.c_str(), iter->second.command.c_str());
                     } else {
                         Print(_("Alias %s does not exist"), name.c_str());
                     }
@@ -805,13 +807,19 @@ namespace Cmd {
                 //Modify or create an alias
                 const std::string& command = args.EscapedArgs(2);
 
-                if (aliases.count(name)) {
-                    aliases[name].command = command;
+                auto iter = aliases.find(name);
+                if (iter != aliases.end()) {
+                    iter->second.command = command;
                     return;
                 }
 
                 if (CommandExists(name)) {
                     Print(_("Can't override a builtin function with an alias"));
+                    return;
+                }
+
+                if (!IsValidCmdName(name)) {
+                    Print(_("Invalid alias name '%s'"), name);
                     return;
                 }
 
@@ -847,8 +855,9 @@ namespace Cmd {
 
                 const std::string& name = args.Argv(1);
 
-                if (aliases.count(name)) {
-                    aliases.erase(name);
+                auto iter = aliases.find(name);
+                if (iter != aliases.end()) {
+                    aliases.erase(iter);
                     RemoveCommand(name);
                 }
             }

@@ -169,6 +169,11 @@ namespace Cvar {
         auto it = cvars.find(cvarName);
         //TODO: rom means the cvar should have been created before?
         if (it == cvars.end()) {
+            if (!Cmd::IsValidCvarName(cvarName)) {
+                Com_Printf(_("Invalid cvar name '%s'"), cvarName.c_str());
+                return;
+            }
+
             //The user creates a new cvar through a command.
             cvarRecord_t cvar{value, value, flags | CVAR_USER_CREATED, "user created", nullptr, {}};
             cvars[cvarName] = new cvarRecord_t(cvar);
@@ -224,8 +229,9 @@ namespace Cvar {
         CvarMap& cvars = GetCvarMap();
         std::string result = "";
 
-        if (cvars.count(cvarName)) {
-            result = cvars[cvarName]->value;
+        auto iter = cvars.find(cvarName);
+        if (iter != cvars.end()) {
+            result = iter->second->value;
         }
 
         return result;
@@ -236,6 +242,11 @@ namespace Cvar {
 
         auto it = cvars.find(name);
         if (it == cvars.end()) {
+            if (!Cmd::IsValidCvarName(name)) {
+                Com_Printf(_("Invalid cvar name '%s'"), name.c_str());
+                return;
+            }
+
             //Create the cvar and parse its default value
             cvarRecord_t cvar{defaultValue, defaultValue, flags, description, proxy, {}};
             cvars[name] = new cvarRecord_t(cvar);
@@ -346,8 +357,9 @@ namespace Cvar {
     cvar_t* FindCCvar(const std::string& cvarName) {
         CvarMap& cvars = GetCvarMap();
 
-        if (cvars.count(cvarName)) {
-            return &cvars[cvarName]->ccvar;
+        auto iter = cvars.find(cvarName);
+        if (iter != cvars.end()) {
+            return &iter->second->ccvar;
         }
 
         return nullptr;
@@ -458,8 +470,9 @@ namespace Cvar {
                 const std::string& name = args.Argv(1);
                 CvarMap& cvars = GetCvarMap();
 
-                if (cvars.count(name)) {
-                    cvarRecord_t* cvar = cvars[name];
+                auto iter = cvars.find(name);
+                if (iter != cvars.end()) {
+                    cvarRecord_t* cvar = iter->second;
                     ::Cvar::SetValue(name, cvar->resetValue);
                 } else {
                     Print(_("Cvar '%s' doesn't exist"), name.c_str());
