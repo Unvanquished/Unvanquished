@@ -15,25 +15,23 @@ menuDef
 
 #include "ui/tremulous_alien_common_hud.h"
 
-	//BUILD TIMER
 	itemDef
 	{
 		name "buildtimer"
 		rect 305 225 30 30
 		aspectBias ALIGN_CENTER
-		visible MENU_TRUE
+		visible    MENU_TRUE
 		decoration
 		forecolor 1.0 0.0 0.0 .2
 		ownerdraw CG_PLAYER_BUILD_TIMER
 	}
 
-	//BUILD POINTS
 	itemDef
 	{
-		name "build-points"
-		rect 0 460 60 15
+		name "buildpoints"
+		rect 15 460 40 15
 		aspectBias ALIGN_LEFT
-		textalign ALIGN_RIGHT
+		textAlign  ALIGN_LEFT
 		visible MENU_TRUE
 		textScale 0.4
 		decoration
@@ -48,20 +46,19 @@ menuDef
 		text "build points"
 		style WINDOW_STYLE_EMPTY
 		aspectBias ALIGN_LEFT
+		textAlign  ALIGN_LEFT
 		textstyle ITEM_TEXTSTYLE_PLAIN
-		rect 65 463 45 11.25
+		rect 60 460 50 15
 		textscale .35
-		textalign ALIGN_LEFT
 		forecolor .51 .51 .51 1
 		visible MENU_TRUE
 		decoration
 	}
 
-	//MINE RATE
 	itemDef
 	{
 		name "minerate"
-		rect 240 424 0 20
+		rect 240 415 0 20
 		aspectBias ALIGN_CENTER
 		textstyle ITEM_TEXTSTYLE_PLAIN
 		textscale 0.35
