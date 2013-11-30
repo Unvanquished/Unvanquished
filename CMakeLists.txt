@@ -20,9 +20,7 @@ include( CMakeDependentOption )
 set( MSVC_INCREMENTAL_DEFAULT ON )
 
 # Default to Release builds. To use system CFLAGS only (for distro builds), set CMAKE_BUILD_TYPE to None
-if( NOT CMAKE_BUILD_TYPE )
-  set( CMAKE_BUILD_TYPE "Release" )
-endif()
+set( CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel." )
 
 project( Daemon C CXX )
 
