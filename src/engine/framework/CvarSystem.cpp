@@ -192,7 +192,7 @@ namespace Cvar {
                 Com_Printf("SetValueROM called on non-ROM cvar '%s'\n", cvarName.c_str());
             }
 
-            if (*cvar_cheats && cvar->flags & CHEAT) {
+            if (not *cvar_cheats && cvar->flags & CHEAT) {
                 Com_Printf(_("%s is cheat-protected.\n"), cvarName.c_str());
                 return;
             }
