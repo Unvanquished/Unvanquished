@@ -838,14 +838,15 @@ R_CullIQM
 static int R_CullIQM( trRefEntity_t *ent ) {
 	vec3_t     localBounds[ 2 ];
 
-	if ( ent->e.skeleton.type == SK_INVALID )
+	if ( ent->e.skeleton.type == SK_INVALID ||
+	     VectorCompareEpsilon( ent->e.skeleton.bounds[0], vec3_origin, 0.001f) )
 	{
 		// no properly set skeleton so use the bounding box by the model instead by the animations
 		IQModel_t *model = tr.currentModel->iqm;
 		IQAnim_t  *anim = model->anims;
 
-		VectorCopy( anim->bounds, localBounds[ 0 ] );
-		VectorCopy( anim->bounds + 3, localBounds[ 1 ] );
+		VectorScale( anim->bounds, ent->e.skeleton.scale, localBounds[ 0 ] );
+		VectorScale( anim->bounds + 3, ent->e.skeleton.scale, localBounds[ 1 ] );
 	}
 	else
 	{
