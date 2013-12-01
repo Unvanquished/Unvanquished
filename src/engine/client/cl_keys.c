@@ -367,7 +367,7 @@ void Field_VariableSizeDraw(const Util::LineEditData& edit, int x, int y, int si
     int len = edit.GetText().size();
     int lineStart = edit.GetViewStartPos();
     int cursorPos = edit.GetViewCursorPos();
-    int drawWidth = std::min<size_t>(edit.GetWidth() - 1, len - cursorPos);
+    int drawWidth = std::min<size_t>(edit.GetWidth() - 1, len - lineStart);
     std::string text = Str::UTF32To8(std::u32string(edit.GetViewText(), drawWidth));
 
     // draw the text
