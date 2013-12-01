@@ -32,7 +32,7 @@ int                  gl_filter_max = GL_LINEAR;
 image_t              *r_imageHashTable[ IMAGE_FILE_HASH_SIZE ];
 
 #define Tex_ByteToFloat(v) ( ( (int)(v) - 128 ) / 127.0f )
-#define Tex_FloatToByte(v) ( 128 + (byte) ( (v) * 127.0f + 0.5 ) )
+#define Tex_FloatToByte(v) ( 128 + (int) ( (v) * 127.0f + 0.5 ) )
 //#define Tex_ByteToFloat(v) ( ( (float)(v) / 127.5f ) - 1.0f )
 //#define Tex_FloatToByte(v) (byte)( roundf( ( (v) + 1.0f ) * 127.5f ) )
 

@@ -924,7 +924,7 @@ temp file loading
 static inline void* Z_TagMalloc(size_t size, int tag)
 {
   Q_UNUSED(tag);
-  return malloc(size);
+  return calloc(size, 1);
 }
 static inline void* Z_Malloc(size_t size)
 {

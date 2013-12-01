@@ -364,10 +364,10 @@ void Field_VariableSizeDraw(const Util::LineEditData& edit, int x, int y, int si
 {
     //TODO support UTF-8 once LineEditData does
     //Extract the text we want to draw
-    int drawWidth = edit.GetWidth() - 1;
     int len = edit.GetText().size();
     int lineStart = edit.GetViewStartPos();
     int cursorPos = edit.GetViewCursorPos();
+    int drawWidth = std::min<size_t>(edit.GetWidth() - 1, len - cursorPos);
     std::string text = Str::UTF32To8(std::u32string(edit.GetViewText(), drawWidth));
 
     // draw the text
