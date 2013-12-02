@@ -221,7 +221,7 @@ static void UI_Me_f( void )
 	strcpy( buf, "/me " );
 	UI_ConcatArgs( 1, buf + 4, sizeof( buf ) - 4 );
 
-	trap_Cmd_ExecuteText( EXEC_APPEND, va( "say %s", Quote( buf ) ) );
+	trap_Cmd_ExecuteText( EXEC_APPEND, va( "say %s\n", Quote( buf ) ) );
 }
 
 static const struct uicmd

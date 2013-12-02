@@ -3402,7 +3402,7 @@ static void UI_RunMenuScript( char **args )
 			trap_Cmd_ExecuteText( EXEC_APPEND, va( "exec ui/%s/install.cfg;", uiInfo.huds[ uiInfo.hudIndex ].name ) );
 			if ( cstate.connState == CA_ACTIVE )
 			{
-				trap_Cmd_ExecuteText( EXEC_APPEND, "reloadhud" );
+				trap_Cmd_ExecuteText( EXEC_APPEND, "reloadhud;" );
 			}
 		}
 		else if ( Q_stricmp( name, "JoinTeam" ) == 0 )
