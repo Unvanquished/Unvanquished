@@ -2071,7 +2071,7 @@ public:
 
 					deformParms[ deformOfs++ ] = ds->bulgeWidth;
 					deformParms[ deformOfs++ ] = ds->bulgeHeight;
-					deformParms[ deformOfs++ ] = ds->bulgeSpeed;
+					deformParms[ deformOfs++ ] = ds->bulgeSpeed * 0.001f;
 					break;
 
 				case DEFORM_MOVE:
@@ -2083,9 +2083,9 @@ public:
 					deformParms[ deformOfs++ ] = ds->deformationWave.phase;
 					deformParms[ deformOfs++ ] = ds->deformationWave.frequency;
 
-					deformParms[ deformOfs++ ] = ds->bulgeWidth;
-					deformParms[ deformOfs++ ] = ds->bulgeHeight;
-					deformParms[ deformOfs++ ] = ds->bulgeSpeed;
+					deformParms[ deformOfs++ ] = ds->moveVector[ 0 ];
+					deformParms[ deformOfs++ ] = ds->moveVector[ 1 ];
+					deformParms[ deformOfs++ ] = ds->moveVector[ 2 ];
 					break;
 
 				default:
