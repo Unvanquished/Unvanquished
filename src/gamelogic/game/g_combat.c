@@ -23,6 +23,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "g_local.h"
 
+#define MAX_DAMAGE_REGION_TEXT 8192
+#define MAX_DAMAGE_REGIONS     16
+
 // damage region data
 damageRegion_t g_damageRegions[ PCL_NUM_CLASSES ][ MAX_DAMAGE_REGIONS ];
 int            g_numDamageRegions[ PCL_NUM_CLASSES ];
@@ -102,7 +105,7 @@ void DoCheckAutoStrip( gentity_t *self )
 	float AS_min_kill_ratio;
 	int   AS_debug;
 	int   AS_min_kills;
-	float AS_kills_per_stage;
+//	float AS_kills_per_stage;
 	int   AS_better_team;
 	int   AS_better_enemy;
 	int   AS_killingSpreeLvl;
@@ -121,13 +124,13 @@ void DoCheckAutoStrip( gentity_t *self )
 	int   my_team_bots = 0;
 	float my_team_kills = 0.0f;
 	float my_team_avg = 0.0f;
-	float my_team_confidence;
+	float my_team_momentum;
 
 	int   enemy_team_players = 0;
 	int   enemy_team_bots = 0;
 	float enemy_team_kills = 0.0f;
 	float enemy_team_avg = 0.0f;
-	float enemy_team_confidence;
+	float enemy_team_momentum;
 
 	float fGameMinutes = (float)( level.time - level.startTime ) / (float)(1000 * 60);
 					 // if i am not mistaken,
@@ -176,13 +179,13 @@ void DoCheckAutoStrip( gentity_t *self )
 
 	if ( my_team == TEAM_HUMANS )
 	{
-		my_team_confidence    = level.team[ TEAM_HUMANS ].confidence;
-		enemy_team_confidence = level.team[ TEAM_ALIENS ].confidence;
+		my_team_momentum    = level.team[ TEAM_HUMANS ].momentum;
+		enemy_team_momentum = level.team[ TEAM_ALIENS ].momentum;
 	}
 	else
 	{
-		my_team_confidence    = level.team[ TEAM_ALIENS ].confidence;
-		enemy_team_confidence = level.team[ TEAM_HUMANS ].confidence;
+		my_team_momentum    = level.team[ TEAM_ALIENS ].momentum;
+		enemy_team_momentum = level.team[ TEAM_HUMANS ].momentum;
 	}
 
 	// get current team sizes & kills (ignoring bots)
@@ -259,11 +262,11 @@ void DoCheckAutoStrip( gentity_t *self )
 		if ( my_killingSpree > 0 )
 		{
 			// allow more killing with higher stages
-			AS_killingSpreeLvl += (int)( (float)g_AutoStrip_KillingSpreePerStage.integer * my_team_confidence / 100.0f );
+			AS_killingSpreeLvl += (int)( (float)g_AutoStrip_KillingSpreePerStage.integer * my_team_momentum / 100.0f );
 
 			// if enemy is at even lower stage than our team, some extra killing is natural,
 			// while facing higher stage enemy makes killing harder (thus shorter killing spree allowed)
-			AS_killingSpreeLvl += (int)( (float)g_AutoStrip_KillingSpreeStageDif.integer * (my_team_confidence - enemy_team_confidence) / 100.0f );
+			AS_killingSpreeLvl += (int)( (float)g_AutoStrip_KillingSpreeStageDif.integer * (my_team_momentum - enemy_team_momentum) / 100.0f );
 
 			// ok, last check - if after stage difference modification we didn't end too low
 			if (AS_killingSpreeLvl < AS_min_kills )
@@ -316,14 +319,15 @@ void DoCheckAutoStrip( gentity_t *self )
 		G_AdminMessage( NULL, va( "::debug info (auto-strip) | my_team_players = %d, enemy_team_players = %d",
 									            my_team_players, enemy_team_players ) );
 
-	if ( my_kills < ( AS_kills_per_stage * (my_team_confidence + 100.0f) / 100.0f ) )
+/*
+	if ( my_kills < ( AS_kills_per_stage * (my_team_momentum + 100.0f) / 100.0f ) )
 	{
 		if ( AS_debug > 0 )
 			G_AdminMessage( NULL, va( "::debug info (auto-strip) | my_kills < AS_kills_per_stage * stage (%f < %f)",
-			                          my_kills, (AS_kills_per_stage * (my_team_confidence + 100.0f) / 100.0f ) ) );
+			                          my_kills, (AS_kills_per_stage * (my_team_momentum + 100.0f) / 100.0f ) ) );
 		return; // minimal "stage kill count" condition - not met
 	}
-
+*/
 	if (AS_better_team>0)
 	{
 		if (my_team_players > 0)
@@ -372,7 +376,7 @@ void DoCheckAutoStrip( gentity_t *self )
 }
 
 /**
- * @brief Helper function for G_AddCreditsToScore and G_AddConfidenceToScore.
+ * @brief Helper function for G_AddCreditsToScore and G_AddMomentumToScore.
  * @param self
  * @param score
  */
@@ -399,13 +403,13 @@ void G_AddCreditsToScore( gentity_t *self, int credits )
 }
 
 /**
- * @brief Adds score to the client, input represents a confidence value.
+ * @brief Adds score to the client, input represents a momentum value.
  * @param self
- * @param confidence
+ * @param momentum
  */
-void G_AddConfidenceToScore( gentity_t *self, float confidence )
+void G_AddMomentumToScore( gentity_t *self, float momentum )
 {
-	AddScoreHelper( self, confidence * SCORE_PER_CONFIDENCE );
+	AddScoreHelper( self, momentum * SCORE_PER_MOMENTUM );
 }
 
 void LookAtKiller( gentity_t *self, gentity_t *inflictor, gentity_t *attacker )
@@ -430,8 +434,8 @@ void LookAtKiller( gentity_t *self, gentity_t *inflictor, gentity_t *attacker )
  */
 void G_RewardAttackers( gentity_t *self )
 {
-	float     value, share, reward;
-	int       playerNum, enemyDamage, maxHealth, damageShare;
+	float     value, share, reward, enemyDamage, damageShare;
+	int       playerNum, maxHealth;
 	gentity_t *player;
 	team_t    ownTeam, playerTeam;
 
@@ -461,7 +465,7 @@ void G_RewardAttackers( gentity_t *self )
 	}
 
 	// Sum up damage dealt by enemies
-	enemyDamage = 0;
+	enemyDamage = 0.0f;
 
 	for ( playerNum = 0; playerNum < level.maxclients; playerNum++ )
 	{
@@ -490,7 +494,7 @@ void G_RewardAttackers( gentity_t *self )
 		damageShare = self->credits[ playerNum ];
 
 		// Clear reward array
-		self->credits[ playerNum ] = 0;
+		self->credits[ playerNum ] = 0.0f;
 
 		// Player must be on the other team
 		if ( playerTeam == ownTeam || playerTeam <= TEAM_NONE || playerTeam >= NUM_TEAMS )
@@ -499,7 +503,7 @@ void G_RewardAttackers( gentity_t *self )
 		}
 
 		// Player must have dealt damage
-		if ( damageShare <= 0 )
+		if ( damageShare <= 0.0f )
 		{
 			continue;
 		}
@@ -515,10 +519,10 @@ void G_RewardAttackers( gentity_t *self )
 		if ( self->s.eType == ET_BUILDABLE )
 		{
 			// Add score
-			G_AddConfidenceToScore( player, reward );
+			G_AddMomentumToScore( player, reward );
 
-			// Add confidence
-			G_AddConfidenceForDestroyingStep( self, player, share );
+			// Add momentum
+			G_AddMomentumForDestroyingStep( self, player, share );
 		}
 		else
 		{
@@ -534,13 +538,13 @@ void G_RewardAttackers( gentity_t *self )
 			// Add credits
 			G_AddCreditToClient( player->client, ( short )reward, qtrue );
 
-			// Add confidence
-			G_AddConfidenceForKillingStep( self, player, share );
+			// Add momentum
+			G_AddMomentumForKillingStep( self, player, share );
 		}
 	}
 
-	// Complete confidence modification
-	G_AddConfidenceEnd();
+	// Complete momentum modification
+	G_AddMomentumEnd();
 }
 
 void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int meansOfDeath )
@@ -1200,7 +1204,7 @@ void G_KnockbackByDir( gentity_t *target, const vec3_t direction, float strength
                               qboolean ignoreMass )
 {
 	vec3_t dir, vel;
-	int    time, mass;
+	int    mass;
 	float  massMod;
 	const classAttributes_t *ca;
 
@@ -1267,8 +1271,8 @@ void G_KnockbackByDir( gentity_t *target, const vec3_t direction, float strength
 	// print debug info
 	if ( g_debugKnockback.integer )
 	{
-		G_Printf( "%i: Knockback: client: %i, strength: %.1f (massMod: %.1f), time: %i\n",
-		          level.time, target->s.number, strength, massMod, time );
+		G_Printf( "%i: Knockback: client: %i, strength: %.1f (massMod: %.1f)\n",
+		          level.time, target->s.number, strength, massMod );
 	}
 }
 
@@ -1454,22 +1458,17 @@ void G_Damage( gentity_t *target, gentity_t *inflictor, gentity_t *attacker,
 			{
 				return;
 			}
-
-			// issue base attack warning
-			if ( target->buildableTeam == TEAM_HUMANS && G_FindDCC( target ) &&
-			     level.time > level.humanBaseAttackTimer )
-			{
-				level.humanBaseAttackTimer = level.time + DC_ATTACK_PERIOD;
-				G_BroadcastEvent( EV_DCC_ATTACK, 0 );
-			}
 		}
 	}
 
 	// update combat timers
-	if ( target->client && attacker->client )
+	if ( target->client && attacker->client && target != attacker )
 	{
-		target->client->lastCombatTime     = level.time;
+		target->client->lastCombatTime   = level.time;
 		attacker->client->lastCombatTime = level.time;
+
+		// stop jetpack for a short time
+		client->ps.stats[ STAT_STATE2 ] |= SS2_JETPACK_DAMAGED;
 	}
 
 	if ( client )
@@ -1509,7 +1508,7 @@ void G_Damage( gentity_t *target, gentity_t *inflictor, gentity_t *attacker,
 
 				default:
 					target->client->ps.stats[ STAT_STATE ] |= SS_POISONED;
-					target->client->lastPoisonTime = level.time;
+					target->client->lastPoisonTime   = level.time;
 					target->client->lastPoisonClient = attacker;
 			}
 		}
@@ -1557,8 +1556,8 @@ void G_Damage( gentity_t *target, gentity_t *inflictor, gentity_t *attacker,
 
 		if ( attacker->client )
 		{
-			// add to the attackers account on the target
-			target->credits[ attacker->client->ps.clientNum ] += loss;
+			// add to the attacker's account on the target
+			target->credits[ attacker->client->ps.clientNum ] += ( float )loss;
 
 			// notify the attacker of a hit
 			NotifyClientOfHit( attacker );

@@ -362,6 +362,12 @@ typedef struct
 	int      voipTime;
 	int      voipSender;
 
+	int      nCgameSyscalls;
+	int      nCgameRenderSyscalls;
+	int      nCgamePhysicsSyscalls;
+	int      nCgameUselessSyscalls;
+	int      nCgameSoundSyscalls;
+
 	// master server sequence information
 	int          numMasterPackets;
 	unsigned int receivedMasterPackets; // bitfield
@@ -506,6 +512,8 @@ extern cvar_t *cl_consoleFontKerning;
 extern cvar_t *cl_consoleCommand;
 
 extern cvar_t *cl_logs;
+
+extern cvar_t *cl_cgameSyscallStats;
 
 /**
  * Independently of the gamelogic, we can assume the game to have "teams" with an id,
@@ -850,10 +858,11 @@ void          Cin_OGM_Shutdown( void );
 //
 // cl_cgame.c
 //
+void     CL_CGameStats( void );
 void     CL_InitCGame( void );
 void     CL_InitCGameCVars( void );
 void     CL_ShutdownCGame( void );
-qboolean CL_GameCommand( void );
+void     CL_GameCommandHandler( void );
 qboolean CL_GameConsoleText( void );
 void     CL_CGameRendering( stereoFrame_t stereo );
 void     CL_SetCGameTime( void );
@@ -870,6 +879,7 @@ void CL_InitUI( void );
 void CL_ShutdownUI( void );
 int  Key_GetCatcher( void );
 void Key_SetCatcher( int catcher );
+void UI_GameCommandHandler( void );
 void LAN_LoadCachedServers( void );
 void LAN_SaveServersToCache( void );
 
@@ -906,5 +916,5 @@ void CL_GetClipboardData( char *, int, clipboard_t );
 //
 void CL_OpenClientLog(void);
 void CL_CloseClientLog(void);
-void CL_WriteClientLog( char *text );
-void CL_WriteClientChatLog( char *text );
+void CL_WriteClientLog( const char *text );
+void CL_WriteClientChatLog( const char *text );

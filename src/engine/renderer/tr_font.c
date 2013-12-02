@@ -142,14 +142,14 @@ FT_Bitmap      *R_RenderGlyph( FT_GlyphSlot glyph, glyphInfo_t *glyphOut )
 	{
 		size = pitch * height;
 
-		bit2 = ri.Z_Malloc( sizeof( FT_Bitmap ) );
+		bit2 = (FT_Bitmap*) ri.Z_Malloc( sizeof( FT_Bitmap ) );
 
 		bit2->width = width;
 		bit2->rows = height;
 		bit2->pitch = pitch;
 		bit2->pixel_mode = ft_pixel_mode_grays;
 		//bit2->pixel_mode = ft_pixel_mode_mono;
-		bit2->buffer = ri.Z_Malloc( pitch * height );
+		bit2->buffer = (unsigned char*) ri.Z_Malloc( pitch * height );
 		bit2->num_grays = 256;
 
 		Com_Memset( bit2->buffer, 0, size );
@@ -343,7 +343,7 @@ float readFloat( void )
 {
 	poor me;
 
-#if idppc
+#ifdef Q3_BIG_ENDIAN
 	me.fred[ 0 ] = fdFile[ fdOffset + 3 ];
 	me.fred[ 1 ] = fdFile[ fdOffset + 2 ];
 	me.fred[ 2 ] = fdFile[ fdOffset + 1 ];
@@ -498,7 +498,7 @@ void RE_RenderChunk( fontInfo_t *font, const int chunk )
 		return;
 	}
 
-	out = ri.Z_Malloc( FONT_SIZE * FONT_SIZE );
+	out = (unsigned char*) ri.Z_Malloc( FONT_SIZE * FONT_SIZE );
 
 	if ( out == NULL )
 	{
@@ -514,7 +514,7 @@ void RE_RenderChunk( fontInfo_t *font, const int chunk )
 
 	for ( i = 0; i < 256; i++ )
 	{
-		rendered |= !!RE_ConstructGlyphInfo( out, &xOut, &yOut, &maxHeight, font->face, font->fallback, ( i + startGlyph ) ? ( i + startGlyph ) : 0xFFFD, qtrue );
+		rendered |= !!RE_ConstructGlyphInfo( out, &xOut, &yOut, &maxHeight, (FT_Face) font->face, (FT_Face) font->fallback, ( i + startGlyph ) ? ( i + startGlyph ) : 0xFFFD, qtrue );
 	}
 
 	// no glyphs? just return
@@ -527,7 +527,7 @@ void RE_RenderChunk( fontInfo_t *font, const int chunk )
 
 	//ri.Printf(PRINT_WARNING, "RE_RenderChunk: max glyph height for font %s is %i\n", strippedName, maxHeight);
 
-	glyphs = font->glyphBlock[ chunk ] = ri.Z_Malloc( sizeof( glyphBlock_t ) );
+	glyphs = font->glyphBlock[ chunk ] = (glyphInfo_t*) ri.Z_Malloc( sizeof( glyphBlock_t ) );
 	memset( glyphs, 0, sizeof( glyphBlock_t ) );
 
 	xOut = yOut = 0;
@@ -536,7 +536,7 @@ void RE_RenderChunk( fontInfo_t *font, const int chunk )
 
 	while ( i < 256 )
 	{
-		glyphInfo_t *glyph = RE_ConstructGlyphInfo( out, &xOut, &yOut, &maxHeight, font->face, font->fallback, ( i + startGlyph ) ? ( i + startGlyph ) : 0xFFFD, qfalse );
+		glyphInfo_t *glyph = RE_ConstructGlyphInfo( out, &xOut, &yOut, &maxHeight, (FT_Face) font->face, (FT_Face) font->fallback, ( i + startGlyph ) ? ( i + startGlyph ) : 0xFFFD, qfalse );
 
 		if ( glyph )
 		{
@@ -718,9 +718,9 @@ static fontHandle_t RE_RegisterFont_Internal( const char *fontName, const char *
 
 		ri.FS_ReadFile( fileName, &faceData );
 		fdOffset = 0;
-		fdFile = faceData;
+		fdFile = (byte*) faceData;
 
-		glyphs = font->glyphBlock[0] = ri.Z_Malloc( sizeof( glyphBlock_t ) );
+		glyphs = font->glyphBlock[0] = (glyphInfo_t*) ri.Z_Malloc( sizeof( glyphBlock_t ) );
 		memset( glyphs, 0, sizeof( glyphBlock_t ) );
 
 		for ( i = 0; i < GLYPHS_PER_FONT; i++ )
@@ -786,7 +786,7 @@ static fontHandle_t RE_RegisterFont_Internal( const char *fontName, const char *
 	}
 
 	// allocate on the stack first in case we fail
-	if ( FT_New_Memory_Face( ftLibrary, faceData, len, 0, &face ) )
+	if ( FT_New_Memory_Face( ftLibrary, (FT_Byte*) faceData, len, 0, &face ) )
 	{
 		ri.Printf( PRINT_WARNING, "RE_RegisterFont: FreeType2, unable to allocate new face.\n" );
 		RE_FreeFontFile( faceData );
@@ -820,7 +820,7 @@ static fontHandle_t RE_RegisterFont_Internal( const char *fontName, const char *
 		}
 
 		// allocate on the stack first in case we fail
-		if ( FT_New_Memory_Face( ftLibrary, fallbackData, len, 0, &fallback ) )
+		if ( FT_New_Memory_Face( ftLibrary, (FT_Byte*) fallbackData, len, 0, &fallback ) )
 		{
 			ri.Printf( PRINT_WARNING, "RE_RegisterFont: FreeType2, unable to allocate new face.\n" );
 			RE_FreeFontFile( fallbackData );
@@ -901,13 +901,13 @@ void RE_UnregisterFont_Internal( fontHandle_t handle )
 
 	if ( registeredFont[ handle ].face )
 	{
-		FT_Done_Face( registeredFont[ handle ].face );
+		FT_Done_Face( (FT_Face) registeredFont[ handle ].face );
 		RE_FreeFontFile( registeredFont[ handle ].faceData );
 	}
 
 	if ( registeredFont[ handle ].fallback )
 	{
-		FT_Done_Face( registeredFont[ handle ].fallback );
+		FT_Done_Face( (FT_Face) registeredFont[ handle ].fallback );
 		RE_FreeFontFile( registeredFont[ handle ].fallbackData );
 	}
 

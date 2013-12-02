@@ -35,8 +35,10 @@ Maryland 20850 USA.
 #ifndef __VM_TRAPS_H
 #define __VM_TRAPS_H
 
+#if defined(QVM_COMPAT) || defined(Q3_VM)
+
 // Major: API breakage
-#define SYSCALL_ABI_VERSION_MAJOR 10
+#define SYSCALL_ABI_VERSION_MAJOR 11
 // Minor: API extension
 #define SYSCALL_ABI_VERSION_MINOR 0
 
@@ -71,5 +73,9 @@ typedef enum sharedImport_s
 } sharedTraps_t;
 
 void trap_SyscallABIVersion( int, int );
+
+#else
+#define FIRST_VM_SYSCALL 256
+#endif
 
 #endif

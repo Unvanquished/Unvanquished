@@ -1567,7 +1567,7 @@ const void     *RB_RunVisTests( const void *data )
 		w = windowX2 - windowX1 + 1;
 		h = windowY2 - windowY1 + 1;
 
-		depth = ri.Hunk_AllocateTempMemory( w * h * sizeof( float ) );
+		depth = (float*) ri.Hunk_AllocateTempMemory( w * h * sizeof( float ) );
 
 		glReadPixels( windowX1, windowY1, w, h, 
 			      GL_DEPTH_COMPONENT, GL_FLOAT, depth );
@@ -1755,7 +1755,7 @@ const void     *RB_SwapBuffers( const void *data )
 		long          sum = 0;
 		unsigned char *stencilReadback;
 
-		stencilReadback = ri.Hunk_AllocateTempMemory( glConfig.vidWidth * glConfig.vidHeight );
+		stencilReadback = (unsigned char*) ri.Hunk_AllocateTempMemory( glConfig.vidWidth * glConfig.vidHeight );
 		glReadPixels( 0, 0, glConfig.vidWidth, glConfig.vidHeight, GL_STENCIL_INDEX, GL_UNSIGNED_BYTE, stencilReadback );
 
 		for ( i = 0; i < glConfig.vidWidth * glConfig.vidHeight; i++ )

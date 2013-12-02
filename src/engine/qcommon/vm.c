@@ -46,11 +46,7 @@ and one exported function: Perform
 
 */
 
-#ifdef _MSC_VER
-#include "../../libs/msinttypes/inttypes.h"
-#else
-#include <inttypes.h>
-#endif
+#include "../framework/CommandSystem.h"
 
 #include "vm_local.h"
 #include "vm_traps.h"
@@ -98,7 +94,6 @@ void VM_Init( void )
 	// vm_* 1 means virtual machines (.qvm, etc.) are used through an interpreter
 	// vm_* 2 means virtual machines are used with JIT compiling
 	Cvar_Get( "vm_cgame", "0", CVAR_ARCHIVE );
-	Cvar_Get( "vm_game", "0", CVAR_ARCHIVE );
 	Cvar_Get( "vm_ui", "0", CVAR_ARCHIVE );
 
 	Cmd_AddCommand( "vmprofile", VM_VmProfile_f );
@@ -345,7 +340,7 @@ void VM_LoadSymbols( vm_t *vm )
 		}
 
 		chars = strlen( token );
-		sym = Hunk_Alloc( sizeof( *sym ) + chars, h_high );
+		sym = (vmSymbol_t*) Hunk_Alloc( sizeof( *sym ) + chars, h_high );
 		*prev = sym;
 		prev = &sym->next;
 		sym->next = NULL;
@@ -478,7 +473,7 @@ Dlls will call this directly
 intptr_t QDECL VM_DllSyscall( intptr_t arg, ... )
 {
 	intptr_t ret;
-#if !id386 || defined __clang__
+#if 1
 	// rcg010206 - see commentary above
 	intptr_t args[ 16 ];
 	int      i;
@@ -557,7 +552,7 @@ vmHeader_t *VM_LoadQVM( vm_t *vm, qboolean alloc )
 	// show where the QVM was loaded from
 	if ( com_developer->integer )
 	{
-		Cmd_ExecuteString( va( "which %s\n", filename ) );
+		Cmd::ExecuteCommand(va("which %s", filename));
 	}
 
 	if ( LittleLong( header.h->vmMagic ) == VM_MAGIC_VER2 )
@@ -621,7 +616,7 @@ vmHeader_t *VM_LoadQVM( vm_t *vm, qboolean alloc )
 	if ( alloc )
 	{
 		// allocate zero filled space for initialized and uninitialized data
-		vm->dataBase = Hunk_Alloc( dataLength + VM_DATA_PADDING, h_high );
+		vm->dataBase = (byte*) Hunk_Alloc( dataLength + VM_DATA_PADDING, h_high );
 		vm->dataMask = dataLength - 1;
 	}
 	else
@@ -661,7 +656,7 @@ vmHeader_t *VM_LoadQVM( vm_t *vm, qboolean alloc )
 
 		if ( alloc )
 		{
-			vm->jumpTableTargets = Hunk_Alloc( header.h->jtrgLength, h_high );
+			vm->jumpTableTargets = (byte*) Hunk_Alloc( header.h->jtrgLength, h_high );
 		}
 		else
 		{
@@ -838,7 +833,7 @@ vm_t *VM_Create( const char *module, intptr_t ( *systemCalls )( intptr_t * ),
 
 	// allocate space for the jump targets, which will be filled in by the compile/prep functions
 	vm->instructionCount = header->instructionCount;
-	vm->instructionPointers = Hunk_Alloc( vm->instructionCount * sizeof( *vm->instructionPointers ), h_high );
+	vm->instructionPointers = (intptr_t*) Hunk_Alloc( vm->instructionCount * sizeof( *vm->instructionPointers ), h_high );
 
 	// copy or compile the instructions
 	vm->codeLength = header->codeLength;
@@ -1067,7 +1062,7 @@ intptr_t        QDECL VM_Call( vm_t *vm, int callnum, ... )
 	}
 	else
 	{
-#if ( id386 || idsparc ) && !defined __clang__ // calling convention doesn't need conversion in some cases
+#if 0 // calling convention doesn't need conversion in some cases
 #ifndef NO_VM_COMPILED
 
 		if ( vm->compiled )
@@ -1166,7 +1161,7 @@ void VM_VmProfile_f( void )
 		return;
 	}
 
-	sorted = Z_Malloc( vm->numSymbols * sizeof( *sorted ) );
+	sorted = (vmSymbol_t**) Z_Malloc( vm->numSymbols * sizeof( *sorted ) );
 	sorted[ 0 ] = vm->symbols;
 	total = sorted[ 0 ]->profileCount;
 
@@ -1347,8 +1342,8 @@ intptr_t VM_SystemCall( intptr_t *args )
 			return memcmp( VMA( 1 ), VMA( 2 ), args[ 3 ] );
 
 		case TRAP_STRNCPY:
-			VM_CheckBlockPair( args[ 1 ], args[ 2 ], args[ 3 ], strlen( VMA( 2 ) ) + 1, "STRNCPY" );
-			return ( intptr_t ) strncpy( VMA( 1 ), VMA( 2 ), args[ 3 ] );
+			VM_CheckBlockPair( args[ 1 ], args[ 2 ], args[ 3 ], strlen( (char*) VMA( 2 ) ) + 1, "STRNCPY" );
+			return ( intptr_t ) strncpy( (char*) VMA( 1 ), (char*) VMA( 2 ), args[ 3 ] );
 
 		case TRAP_SIN:
 			return FloatAsInt( sin( VMF( 1 ) ) );
@@ -1384,15 +1379,15 @@ intptr_t VM_SystemCall( intptr_t *args )
 			return FloatAsInt( exp( VMF( 1 ) ) );
 
 		case TRAP_MATRIXMULTIPLY:
-			AxisMultiply( VMA( 1 ), VMA( 2 ), VMA( 3 ) );
+			AxisMultiply( (float(*)[3]) VMA( 1 ), (float(*)[3]) VMA( 2 ), (float(*)[3]) VMA( 3 ) );
 			return 0;
 
 		case TRAP_ANGLEVECTORS:
-			AngleVectors( VMA( 1 ), VMA( 2 ), VMA( 3 ), VMA( 4 ) );
+			AngleVectors( (float*) VMA( 1 ), (float*) VMA( 2 ), (float*) VMA( 3 ), (float*) VMA( 4 ) );
 			return 0;
 
 		case TRAP_PERPENDICULARVECTOR:
-			PerpendicularVector( VMA( 1 ), VMA( 2 ) );
+			PerpendicularVector( (float*) VMA( 1 ), (float*) VMA( 2 ) );
 			return 0;
 
 		case TRAP_VERSION:

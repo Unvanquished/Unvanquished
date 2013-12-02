@@ -110,7 +110,7 @@ void LoadTGA( const char *name, byte **pic, int *width, int *height, byte alphaB
 		ri.Error( ERR_DROP, "LoadTGA: %s has an invalid image size", name );
 	}
 
-	targa_rgba = ri.Z_Malloc( numPixels );
+	targa_rgba = (byte*) ri.Z_Malloc( numPixels );
 
 	*pic = targa_rgba;
 

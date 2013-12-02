@@ -59,16 +59,13 @@ typedef struct cvar_s
 	float value; // atof( string )
 	int integer; // atoi( string )
 
+    int index; //for vmCvar_t
+
 	/**
 	 * indicate whether the cvar won't be archived, even if it's an ARCHIVE flagged cvar.
 	 * this allows us to keep ARCHIVE cvars unwritten to autogen until a user changes them
 	 */
 	qboolean transient;
-
-	qboolean validate;
-	qboolean integral;
-	float min;
-	float max;
 
 	struct cvar_s *next;
 
@@ -100,20 +97,9 @@ void Cvar_Update(vmCvar_t *vmCvar);
 void Cvar_Set(const char *var_name, const char *value);
 
 /**
- * sets the cvar by the name that begins with a backslash to "1"
- */
-void Cvar_SetIFlag(const char *var_name);
-
-/**
- * don't set the cvar immediately
- */
-void Cvar_SetLatched(const char *var_name, const char *value);
-
-/**
  * expands value to a string and calls Cvar_Set
  */
 void Cvar_SetValue(const char *var_name, float value);
-void Cvar_SetValueLatched(const char *var_name, float value);
 
 // returns 0 if not defined or non numeric
 float Cvar_VariableValue(const char *var_name);
@@ -131,32 +117,14 @@ void Cvar_VariableStringBuffer(const char *var_name, char *buffer, int bufsize);
 void Cvar_LatchedVariableStringBuffer(const char *var_name, char *buffer,
 		int bufsize);
 
-int Cvar_Flags(const char *var_name);
-
-// callback with each valid string
-void Cvar_CommandCompletion(void (*callback)(const char *s));
-
-
 // reset all testing vars to a safe value
 void Cvar_Reset(const char *var_name);
-
-void Cvar_SetCheatState(void);
-
-/**
- * called by Cmd_ExecuteString when Cmd_Argv(0) doesn't match a known
- * command.  Returns true if the command was a variable reference that
- * was handled. (print or change)
- */
-qboolean Cvar_Command(void);
 
 /**
  * writes lines containing "set variable value" for all variables
  * with the archive flag set to true.
  */
 void Cvar_WriteVariables(fileHandle_t f);
-
-void Cvar_CompleteCvarName(char *args, int argNum);
-void Cvar_Init(void);
 
 /**
  * returns an info string containing all the cvars that have the given bit set
@@ -165,12 +133,6 @@ void Cvar_Init(void);
 char *Cvar_InfoString(int bit, qboolean big);
 
 void Cvar_InfoStringBuffer(int bit, char *buff, int buffsize);
-
-void Cvar_CheckRange(cvar_t *cv, float minVal, float maxVal, qboolean shouldBeIntegral);
-
-void Cvar_Restart_f(void);
-void Cvar_Clean_f(void);
-
 
 /**
  *  whenever a cvar is modified, its flags will be OR'd into this, so
@@ -182,6 +144,5 @@ extern int cvar_modifiedFlags;
 #ifndef DEDICATED
 extern qboolean bindingsModified;
 #endif
-
 
 #endif /* CVAR_H_ */

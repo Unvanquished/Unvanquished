@@ -2052,7 +2052,7 @@ Parse_OperatorPriority
 */
 typedef struct operator_s
 {
-	int               operator;
+	int               op;
 	int               priority;
 	int               parentheses;
 	struct operator_s *prev, *next;
@@ -2428,7 +2428,7 @@ static int Parse_EvaluateTokens( source_t *source, token_t *tokens, signed long 
 					{
 						//o = (operator_t *) Z_Malloc(sizeof(operator_t));
 						AllocOperator( o );
-						o->operator = t->subtype;
+						o->op = t->subtype;
 						o->priority = Parse_OperatorPriority( t->subtype );
 						o->parentheses = parentheses;
 						o->next = NULL;
@@ -2494,8 +2494,8 @@ static int Parse_EvaluateTokens( source_t *source, token_t *tokens, signed long 
 			}
 
 			//if the arity of the operator isn't equal to 1
-			if ( o->operator != P_LOGIC_NOT
-			     && o->operator != P_BIN_NOT ) { v = v->next; }
+			if ( o->op != P_LOGIC_NOT
+			     && o->op != P_BIN_NOT ) { v = v->next; }
 
 			//if there's no value or no next value
 			if ( !v )
@@ -2511,7 +2511,7 @@ static int Parse_EvaluateTokens( source_t *source, token_t *tokens, signed long 
 		v1 = v;
 		v2 = v->next;
 
-		switch ( o->operator )
+		switch ( o->op )
 		{
 			case P_LOGIC_NOT:
 				v1->intvalue = !v1->intvalue;
@@ -2662,11 +2662,11 @@ static int Parse_EvaluateTokens( source_t *source, token_t *tokens, signed long 
 
 //    lastoperatortype = o->operator;
 		//if not an operator with arity 1
-		if ( o->operator != P_LOGIC_NOT
-		     && o->operator != P_BIN_NOT )
+		if ( o->op != P_LOGIC_NOT
+		     && o->op != P_BIN_NOT )
 		{
 			//remove the second value if not question mark operator
-			if ( o->operator != P_QUESTIONMARK ) { v = v->next; }
+			if ( o->op != P_QUESTIONMARK ) { v = v->next; }
 
 			//
 			if ( v->prev ) { v->prev->next = v->next; }
@@ -3974,7 +3974,7 @@ static define_t *Parse_DefineFromString( const char *string )
 	Com_Memset( &src, 0, sizeof( source_t ) );
 	strncpy( src.filename, "*extern", MAX_QPATH );
 	src.scriptstack = script;
-	src.definehash = Z_Malloc( DEFINEHASHSIZE * sizeof( define_t * ) );
+	src.definehash = (define_t**) Z_Malloc( DEFINEHASHSIZE * sizeof( define_t * ) );
 	Com_Memset( src.definehash, 0, DEFINEHASHSIZE * sizeof( define_t * ) );
 	//create a define from the source
 	res = Parse_Directive_define( &src );
@@ -4169,7 +4169,7 @@ static source_t *Parse_LoadSourceFile( const char *filename )
 	source->indentstack = NULL;
 	source->skip = 0;
 
-	source->definehash = Z_Malloc( DEFINEHASHSIZE * sizeof( define_t * ) );
+	source->definehash = (define_t**) Z_Malloc( DEFINEHASHSIZE * sizeof( define_t * ) );
 	Com_Memset( source->definehash, 0, DEFINEHASHSIZE * sizeof( define_t * ) );
 	Parse_AddGlobalDefinesToSource( source );
 	return source;

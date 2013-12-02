@@ -23,10 +23,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "g_local.h"
 //#include "../../../src/engine/server/g_api.h"
+#include "../../engine/qcommon/vm_traps.h"
 
 static intptr_t ( QDECL *syscall )( intptr_t arg, ... ) = ( intptr_t ( QDECL * )( intptr_t, ... ) ) - 1;
 
-void dllEntry( intptr_t ( QDECL *syscallptr )( intptr_t arg, ... ) )
+Q_EXPORT void dllEntry( intptr_t ( QDECL *syscallptr )( intptr_t arg, ... ) )
 {
 	syscall = syscallptr;
 }
@@ -105,13 +106,6 @@ void trap_Cvar_VariableStringBuffer( const char *var_name, char *buffer, int buf
 	syscall( G_CVAR_VARIABLE_STRING_BUFFER, var_name, buffer, bufsize );
 }
 
-//08.
-//Cvar_LatchedVariableStringBuffer(VMA(1), VMA(2), args[3]);
-void trap_Cvar_LatchedVariableStringBuffer( const char *var_name, char *buffer, int bufsize )
-{
-	syscall( G_CVAR_LATCHEDVARIABLESTRINGBUFFER, var_name, buffer, bufsize );
-}
-
 //09.
 //return Cmd_Argc();
 int trap_Argc( void )
@@ -156,9 +150,9 @@ int trap_FS_Write( const void *buffer, int len, fileHandle_t f )
 
 //15.
 //FS_Rename(VMA(1), VMA(2));
-int trap_FS_Rename( const char *from, const char *to )
+void trap_FS_Rename( const char *from, const char *to )
 {
-	return syscall( G_FS_RENAME, from, to );
+	syscall( G_FS_RENAME, from, to );
 }
 
 //16.
@@ -473,24 +467,6 @@ int trap_BotGetServerCommand( int clientNum, char *message, int size )
 	return syscall( BOT_GET_CONSOLE_MESSAGE, clientNum, message, size );
 }
 
-//60.
-//CMod_PhysicsAddEntity(VMA(1));
-void trap_AddPhysicsEntity( gentity_t *ent )
-{
-#if defined ( USE_PHYSICS )
-	syscall( G_ADD_PHYSICS_ENTITY, ent );
-#endif
-}
-
-//61
-//CMod_PhysicsAddStatic(VMA(1));
-void trap_AddPhysicsStatic( gentity_t *ent )
-{
-#if defined ( USE_PHYSICS )
-	syscall( G_ADD_PHYSICS_STATIC, ent );
-#endif
-}
-
 //62.
 //memset(VMA(1), args[2], args[3]);
 
@@ -543,7 +519,7 @@ messageStatus_t trap_MessageStatus( int clientNum )
 
 //86.
 //return SV_RSAGenMsg( VMA(1), VMA(2), VMA(3) );
-int trap_RSA_GenerateMessage( const char *public_key, const char *cleartext, char *encrypted )
+int trap_RSA_GenerateMessage( const char *public_key, char *cleartext, char *encrypted )
 {
 	return syscall( G_RSA_GENMSG, public_key, cleartext, encrypted );
 }

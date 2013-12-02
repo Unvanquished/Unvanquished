@@ -31,7 +31,7 @@
 #include <sys/time.h>
 #endif
 
-#include <inttypes.h>
+#include <stdint.h>
 #include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>

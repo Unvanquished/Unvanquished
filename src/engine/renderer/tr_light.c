@@ -51,17 +51,17 @@ Used by both the front end (for DlightBmodel) and
 the back end (before doing the lighting calculation)
 ===============
 */
-void R_TransformDlights( int count, dlight_t *dl, orientationr_t * or )
+void R_TransformDlights( int count, dlight_t *dl, orientationr_t * orientation )
 {
 	int    i;
 	vec3_t temp;
 
 	for ( i = 0; i < count; i++, dl++ )
 	{
-		VectorSubtract( dl->origin, or ->origin, temp );
-		dl->transformed[ 0 ] = DotProduct( temp, or ->axis[ 0 ] );
-		dl->transformed[ 1 ] = DotProduct( temp, or ->axis[ 1 ] );
-		dl->transformed[ 2 ] = DotProduct( temp, or ->axis[ 2 ] );
+		VectorSubtract( dl->origin, orientation ->origin, temp );
+		dl->transformed[ 0 ] = DotProduct( temp, orientation ->axis[ 0 ] );
+		dl->transformed[ 1 ] = DotProduct( temp, orientation ->axis[ 1 ] );
+		dl->transformed[ 2 ] = DotProduct( temp, orientation ->axis[ 2 ] );
 	}
 }
 
@@ -543,9 +543,9 @@ void R_SetupEntityLighting( const trRefdef_t *refdef, trRefEntity_t *ent )
 	//% VectorClear( ent->ambientLight );
 
 	// save out the byte packet version
-	( ( byte * ) &ent->ambientLightInt ) [ 0 ] = ri.ftol( ent->ambientLight[ 0 ] );
-	( ( byte * ) &ent->ambientLightInt ) [ 1 ] = ri.ftol( ent->ambientLight[ 1 ] );
-	( ( byte * ) &ent->ambientLightInt ) [ 2 ] = ri.ftol( ent->ambientLight[ 2 ] );
+	( ( byte * ) &ent->ambientLightInt ) [ 0 ] = Q_ftol( ent->ambientLight[ 0 ] );
+	( ( byte * ) &ent->ambientLightInt ) [ 1 ] = Q_ftol( ent->ambientLight[ 1 ] );
+	( ( byte * ) &ent->ambientLightInt ) [ 2 ] = Q_ftol( ent->ambientLight[ 2 ] );
 	( ( byte * ) &ent->ambientLightInt ) [ 3 ] = 0xff;
 
 	// ydnar: save out the light table
@@ -556,9 +556,9 @@ void R_SetupEntityLighting( const trRefdef_t *refdef, trRefEntity_t *ent )
 	for ( i = 0; i < ENTITY_LIGHT_STEPS; i++ )
 	{
 		VectorMA( ent->ambientLight, d, ent->directedLight, lightValue );
-		entityLight[ 0 ] = lightValue[ 0 ] > 255.0f ? 255 : ri.ftol( lightValue[ 0 ] );
-		entityLight[ 1 ] = lightValue[ 1 ] > 255.0f ? 255 : ri.ftol( lightValue[ 1 ] );
-		entityLight[ 2 ] = lightValue[ 2 ] > 255.0f ? 255 : ri.ftol( lightValue[ 2 ] );
+		entityLight[ 0 ] = lightValue[ 0 ] > 255.0f ? 255 : Q_ftol( lightValue[ 0 ] );
+		entityLight[ 1 ] = lightValue[ 1 ] > 255.0f ? 255 : Q_ftol( lightValue[ 1 ] );
+		entityLight[ 2 ] = lightValue[ 2 ] > 255.0f ? 255 : Q_ftol( lightValue[ 2 ] );
 		entityLight[ 3 ] = 0xFF;
 
 		d += modulate;

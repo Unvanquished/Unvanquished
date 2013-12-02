@@ -2,7 +2,7 @@ Source: unvanquished
 Section: contrib/games
 Priority: extra
 Maintainer: Darren Salt <devspam@moreofthesa.me.uk>
-Build-Depends: debhelper (>= 8.0.0), po-debconf, cmake,
+Build-Depends: debhelper (>= 8.0.0), g++ (>= 4.7) | g++-4.7, po-debconf, cmake,
 	libcurl4-gnutls-dev,
 	libfreetype6-dev,
 	libglew-dev | libglew1.6-dev | libglew1.5-dev,
@@ -16,7 +16,7 @@ Build-Depends: debhelper (>= 8.0.0), po-debconf, cmake,
 	libspeexdsp-dev,
 	libtheora-dev,
 	libvorbis-dev,
-	libopusfile-dev | cmake (<< 2.8.11),
+	libopusfile-dev,
 	libwebp-dev (>> 0.2),
 	libxvidcore-dev | cmake (<< 2.8.5),
 	libgeoip-dev,
@@ -48,18 +48,6 @@ Description: Team-based FPS game, aliens v. humans - dedicated server
  weapons or more advanced aliens, try to wipe them out.
  .
  This package contains the dedicated server for Unvanquished.
-
-Package: unvanquished-dev
-Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},
-	unvanquished-common (= ${binary:Version})
-Suggests: unvanquished, unvanquished-server
-Description: Team-based FPS game, aliens v. humans - dev tools
- Build a base, defend it against the other team, gain credits for better
- weapons or more advanced aliens, try to wipe them out.
- .
- This package contains unvanquishedmap, a tool for creating bot navigation
- meshes, map overviews and BSP trees.
 
 Package: unvanquished-common
 Architecture: any

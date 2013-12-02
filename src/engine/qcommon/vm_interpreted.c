@@ -203,7 +203,7 @@ void VM_PrepareInterpreter( vm_t *vm, vmHeader_t *header )
 	int  instruction;
 	int  *codeBase;
 
-	vm->codeBase = Hunk_Alloc( vm->codeLength * 4, h_high );  // we're now int aligned
+	vm->codeBase = (byte*) Hunk_Alloc( vm->codeLength * 4, h_high );  // we're now int aligned
 //	memcpy( vm->codeBase, (byte *)header + header->codeOffset, vm->codeLength );
 
 	// we don't need to translate the instructions, but we still need
@@ -409,7 +409,7 @@ int     VM_CallInterpreted( vm_t *vm, int *args )
 	// leave a free spot at start of stack so
 	// that as long as opStack is valid, opStack-1 will
 	// not corrupt anything
-	opStack = PADP( stack, 16 );
+	opStack = (int*) PADP( stack, 16 );
 	*opStack = 0xDEADBEEF;
 	opStackOfs = 0;
 

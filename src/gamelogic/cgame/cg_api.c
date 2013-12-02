@@ -24,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 static intptr_t ( QDECL *syscall )( intptr_t arg, ... ) = ( intptr_t ( QDECL * )( intptr_t, ... ) ) - 1;
 
-void dllEntry( intptr_t ( QDECL *syscallptr )( intptr_t arg, ... ) )
+Q_EXPORT void dllEntry( intptr_t ( QDECL *syscallptr )( intptr_t arg, ... ) )
 {
 	syscall = syscallptr;
 }
@@ -536,13 +536,10 @@ void trap_R_AddRefEntityToScene( const refEntity_t *re )
 
 //70.
 //re.AddRefLightToScene(VMA(1));
-#if defined( USE_REFLIGHT )
 void trap_R_AddRefLightToScene( const refLight_t *light )
 {
 	syscall( CG_R_ADDREFLIGHTSTOSCENE, light );
 }
-
-#endif
 
 //71.
 //re.AddPolyToScene(args[1], args[2], VMA(3));
@@ -1080,7 +1077,6 @@ int trap_R_LightForPoint( vec3_t point, vec3_t ambientLight, vec3_t directedLigh
 }
 
 //165.
-#if defined( USE_REFENTITY_ANIMATIONSYSTEM )
 qhandle_t trap_R_RegisterAnimation( const char *name )
 {
 	return syscall( CG_R_REGISTERANIMATION, name );
@@ -1121,8 +1117,6 @@ int trap_R_AnimFrameRate( qhandle_t hAnim )
 {
 	return syscall( CG_R_ANIMFRAMERATE, hAnim );
 }
-
-#endif
 
 //172.
 void trap_CompleteCallback( const char *complete )

@@ -330,7 +330,7 @@ static void CG_CompleteGive( void )
 	unsigned               i = 0;
 	static const char give[][ 12 ] =
 	{
-		"all", "health", "funds", "stamina", "poison", "gas", "ammo", "confidence", "bp"
+		"all", "health", "funds", "stamina", "poison", "gas", "ammo", "momentum", "bp"
 	};
 
 	for( i = 0; i < ARRAY_LEN( give ); i++ )
@@ -415,50 +415,72 @@ static const struct
 	void ( *completer )( void );
 } commands[] =
 {
-	{ "+scores",       CG_ScoresDown_f,         0                },
-	{ "-scores",       CG_ScoresUp_f,           0                },
-	{ "build",         0,                       CG_CompleteBuild },
-	{ "buy",           0,                       CG_CompleteBuy   },
-	{ "class",         0,                       CG_CompleteClass },
-	{ "cgame_memory",  BG_MemoryInfo,           0                },
-	{ "clientlist",    CG_ClientList_f,         0                },
-	{ "callvote",      0,                       CG_CompleteVote  },
-	{ "callteamvote",  0,                       CG_CompleteTeamVote },
-	{ "destroyTestPS", CG_DestroyTestPS_f,      0                },
-	{ "destroyTestTS", CG_DestroyTestTS_f,      0                },
-	{ "follow",        0,                       CG_CompleteName  },
-	{ "give",          0,                       CG_CompleteGive  },
-	{ "ignore",        0,                       CG_CompleteName  },
-	{ "itemact",       0,                       CG_CompleteItem  },
-	{ "itemdeact",     0,                       CG_CompleteItem  },
-	{ "itemtoggle",    0,                       CG_CompleteItem  },
-	{ "lcp",           CG_CenterPrint_f,        0                },
-	{ "m",             0,                       CG_CompleteName  },
-	{ "mt",            0,                       CG_CompleteName  },
-	{ "nextframe",     CG_TestModelNextFrame_f, 0                },
-	{ "nextskin",      CG_TestModelNextSkin_f,  0                },
-	{ "prevframe",     CG_TestModelPrevFrame_f, 0                },
-	{ "prevskin",      CG_TestModelPrevSkin_f,  0                },
-	{ "reloadhud",     CG_ReloadHUD_f,          0                },
-	{ "scoresDown",    CG_scrollScoresDown_f,   0                },
-	{ "scoresUp",      CG_scrollScoresUp_f,     0                },
-	{ "sell",          0,                       CG_CompleteSell  },
-	{ "sizedown",      CG_SizeDown_f,           0                },
-	{ "sizeup",        CG_SizeUp_f,             0                },
-	{ "testcgrade",    CG_TestCGrade_f,         0                },
-	{ "testgun",       CG_TestGun_f,            0                },
-	{ "testmodel",     CG_TestModel_f,          0                },
-	{ "testPS",        CG_TestPS_f,             0                },
-	{ "testTS",        CG_TestTS_f,             0                },
-	{ "ui_menu",       CG_UIMenu_f,             0                },
-	{ "unignore",      0,                       CG_CompleteName  },
-	{ "viewpos",       CG_Viewpos_f,            0                },
-	{ "vsay",          0,                       CG_CompleteVsay  },
-	{ "vsay_local",    0,                       CG_CompleteVsay  },
-	{ "vsay_team",     0,                       CG_CompleteVsay  },
-	{ "weapnext",      CG_NextWeapon_f,         0                },
-	{ "weapon",        CG_Weapon_f,             0                },
-	{ "weapprev",      CG_PrevWeapon_f,         0                }
+	{ "+scores",          CG_ScoresDown_f,         0                },
+	{ "-scores",          CG_ScoresUp_f,           0                },
+	{ "build",            0,                       CG_CompleteBuild },
+	{ "buy",              0,                       CG_CompleteBuy   },
+	{ "callteamvote",     0,                       CG_CompleteTeamVote },
+	{ "callvote",         0,                       CG_CompleteVote  },
+	{ "cgame_memory",     BG_MemoryInfo,           0                },
+	{ "class",            0,                       CG_CompleteClass },
+	{ "clientlist",       CG_ClientList_f,         0                },
+	{ "deconstruct",      0,                       0                },
+	{ "destroy",          0,                       0                },
+	{ "destroyTestPS",    CG_DestroyTestPS_f,      0                },
+	{ "destroyTestTS",    CG_DestroyTestTS_f,      0                },
+	{ "follow",           0,                       CG_CompleteName  },
+	{ "follownext",       0,                       0                },
+	{ "followprev",       0,                       0                },
+	{ "give",             0,                       CG_CompleteGive  },
+	{ "god",              0,                       0                },
+	{ "ignite",           0,                       0                },
+	{ "ignore",           0,                       CG_CompleteName  },
+	{ "itemact",          0,                       CG_CompleteItem  },
+	{ "itemdeact",        0,                       CG_CompleteItem  },
+	{ "itemtoggle",       0,                       CG_CompleteItem  },
+	{ "kill",             0,                       0                },
+	{ "lcp",              CG_CenterPrint_f,        0                },
+	{ "m",                0,                       CG_CompleteName  },
+	{ "mt",               0,                       CG_CompleteName  },
+	{ "nextframe",        CG_TestModelNextFrame_f, 0                },
+	{ "nextskin",         CG_TestModelNextSkin_f,  0                },
+	{ "noclip",           0,                       0                },
+	{ "notarget",         0,                       0                },
+	{ "prevframe",        CG_TestModelPrevFrame_f, 0                },
+	{ "prevskin",         CG_TestModelPrevSkin_f,  0                },
+	{ "reload",           0,                       0                },
+	{ "reloadhud",        CG_ReloadHUD_f,          0                },
+	{ "say",              0,                       0                },
+	{ "say_team",         0,                       0                },
+	{ "scoresDown",       CG_scrollScoresDown_f,   0                },
+	{ "scoresUp",         CG_scrollScoresUp_f,     0                },
+	{ "sell",             0,                       CG_CompleteSell  },
+	{ "setviewpos",       0,                       0                },
+	{ "sizedown",         CG_SizeDown_f,           0                },
+	{ "sizeup",           CG_SizeUp_f,             0                },
+	{ "team",             0,                       0                },
+	{ "teamvote",         0,                       0                },
+	{ "testPS",           CG_TestPS_f,             0                },
+	{ "testTS",           CG_TestTS_f,             0                },
+	{ "testcgrade",       CG_TestCGrade_f,         0                },
+	{ "testgun",          CG_TestGun_f,            0                },
+	{ "testmodel",        CG_TestModel_f,          0                },
+	{ "ui_menu",          CG_UIMenu_f,             0                },
+	{ "ui_messagemode",   0,                       0                },
+	{ "ui_messagemode2",  0,                       0                },
+	{ "ui_messagemode3",  0,                       0                },
+	{ "ui_messagemode4",  0,                       0                },
+	{ "ui_messagemodeec", 0,                       0                },
+	{ "unignore",         0,                       CG_CompleteName  },
+	{ "viewpos",          CG_Viewpos_f,            0                },
+	{ "vote",             0,                       0                },
+	{ "vsay",             0,                       CG_CompleteVsay  },
+	{ "vsay_local",       0,                       CG_CompleteVsay  },
+	{ "vsay_team",        0,                       CG_CompleteVsay  },
+	{ "weapnext",         CG_NextWeapon_f,         0                },
+	{ "weapon",           CG_Weapon_f,             0                },
+	{ "weapprev",         CG_PrevWeapon_f,         0                },
+	{ "where",            0,                       0                }
 };
 
 /*
@@ -471,18 +493,25 @@ Cmd_Argc() / Cmd_Argv()
 */
 qboolean CG_ConsoleCommand( void )
 {
+	char buffer[BIG_INFO_STRING];
 	consoleCommand_t *cmd;
 
 	cmd = bsearch( CG_Argv( 0 ), commands,
-	               ARRAY_LEN( commands ), sizeof( commands[ 0 ] ),
-	               cmdcmp );
+			ARRAY_LEN( commands ), sizeof( commands[ 0 ] ),
+			cmdcmp );
 
 	if ( !cmd || !cmd->function )
 	{
-		return qfalse;
+		//This command was added to provide completion of server-side commands
+		//forward it to the server
+		// (see also CG_ServerCommands)
+		trap_LiteralArgs( buffer, sizeof ( buffer ) );
+		trap_SendClientCommand( buffer );
 	}
-
-	cmd->function();
+	else
+	{
+		cmd->function();
+	}
 	return qtrue;
 }
 
@@ -500,35 +529,13 @@ void CG_InitConsoleCommands( void )
 
 	for ( i = 0; i < ARRAY_LEN( commands ); i++ )
 	{
+		//Check that the commands are in increasing order so that it can be used by bsearch
+		if ( i != 0 && strcmp(commands[i-1].cmd, commands[i].cmd) > 0 )
+		{
+			CG_Printf( "CGame command list is in the wrong order for %s and %s\n", commands[i - 1].cmd, commands[i].cmd );
+		}
 		trap_AddCommand( commands[ i ].cmd );
 	}
-
-	//
-	// the game server will interpret these commands, which will be automatically
-	// forwarded to the server after they are not recognized locally
-	//
-	trap_AddCommand( "kill" );
-	trap_AddCommand( "ui_messagemode" );
-	trap_AddCommand( "ui_messagemode2" );
-	trap_AddCommand( "ui_messagemode3" );
-	trap_AddCommand( "ui_messagemode4" );
-	trap_AddCommand( "ui_messagemodec" );
-	trap_AddCommand( "say" );
-	trap_AddCommand( "say_team" );
-	trap_AddCommand( "god" );
-	trap_AddCommand( "notarget" );
-	trap_AddCommand( "noclip" );
-	trap_AddCommand( "where" );
-	trap_AddCommand( "team" );
-	trap_AddCommand( "follownext" );
-	trap_AddCommand( "followprev" );
-	trap_AddCommand( "setviewpos" );
-	trap_AddCommand( "vote" );
-	trap_AddCommand( "teamvote" );
-	trap_AddCommand( "reload" );
-	trap_AddCommand( "destroy" );
-	trap_AddCommand( "deconstruct" );
-	trap_AddCommand( "ignite" );
 
 	trap_RegisterButtonCommands(
 	    // 0      12       3     45      6        78       9ABCDEF      <- bit nos.

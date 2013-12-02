@@ -23,8 +23,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
 
-#ifdef USE_OPENAL
-
 #define ALC_ALL_DEVICES_SPECIFIER 0x1013
 
 #ifndef USE_OPENAL_DLOPEN
@@ -139,16 +137,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define AL_NO_PROTOTYPES
 #define ALC_NO_PROTOTYPES
 
-#if _WIN32
-#	include <al.h>
-#	include <alc.h>
-#elif MACOS_X
-#	include <OpenAl/al.h>
-#	include <OpenAl/alc.h>
-#else
-#	include <AL/al.h>
-#	include <AL/alc.h>
-#endif
+#include <al.h>
+#include <alc.h>
 
 extern LPALENABLE               qalEnable;
 extern LPALDISABLE              qalDisable;
@@ -250,5 +240,4 @@ extern LPALCCAPTURESAMPLES      qalcCaptureSamples;
 qboolean                        QAL_Init( const char *libname );
 void                            QAL_Shutdown( void );
 
-#endif
 #endif // __QAL_H__

@@ -22,7 +22,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "cg_local.h"
-#include "../game/bg_public.h"
 
 static const char *const cg_buildableSoundNames[ MAX_BUILDABLE_ANIMATIONS ] =
 {
@@ -1141,7 +1140,9 @@ void CG_GhostBuildable( int buildableInfo )
 	if ( buildable == BA_H_DRILL || buildable == BA_A_LEECH )
 	{
 		// TODO: Add fancy display for predicted RGS efficiency
-		CG_CenterPrint(va("%d%%", ps->stats[ STAT_PREDICTION ]), 200, GIANTCHAR_WIDTH * 4 );
+		// Colours: < 33⅓% dark red, <50% red, <66⅔% orange, <83⅓% yellow, else green
+	        static const char colours[] = "??18322";
+		CG_CenterPrint(va("^%c%d%%", colours[ (int)( (float) ps->stats[ STAT_PREDICTION ] / ( 100.0f / 6.0f ) ) ], ps->stats[ STAT_PREDICTION ]), 200, GIANTCHAR_WIDTH * 4 );
 	}
 
 	//rescale the model
@@ -1237,7 +1238,6 @@ static void CG_GhostBuildableStatus( int buildableInfo )
 				break;
 
 			case IBE_NOPOWERHERE:
-			case IBE_DRILLPOWERSOURCE:
 				text = "[repeater]";
 				break;
 
@@ -1247,10 +1247,6 @@ static void CG_GhostBuildableStatus( int buildableInfo )
 
 			case IBE_DISABLED:
 				text = "⨂";
-				break;
-
-			case IBE_NODCC:
-				text = "[defcomp]";
 				break;
 
 			case IBE_NORMAL:
@@ -1629,8 +1625,8 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 {
 	entityState_t *es = &cent->currentState;
 	vec3_t        origin;
-	float         healthScale, relativeSparePowerScale, mineEfficiencyScale;
-	int           health, relativeSparePower, mineEfficiency;
+	float         healthScale, relativeSparePowerScale = 0, mineEfficiencyScale = 0;
+	int           health, relativeSparePower = 0, mineEfficiency = 0;
 	float         x, y;
 	vec4_t        color;
 	qboolean      powered, marked, showMineEfficiency, showPower;

@@ -80,8 +80,9 @@ rm $PACKAGE/tarball.sh
 find $PACKAGE \( -name '.*' -o -name '*~' -o -name '*.orig' -o -name '*.rej' \) -delete
 
 # purge all but *required* libraries
-test "$STRIP_SOURCES" = '' ||
-  rm -rf $(ls -1d $PACKAGE/src/libs/* | grep -v '/\(cpuinfo\|openexr\|picomodel\|fastlz\|findlocale\|recast\|detour\|tinygettext\|zlib\|opus\)')
+# nothing to do here at present
+#test "$STRIP_SOURCES" = '' ||
+#  rm -rf $(ls -1d $PACKAGE/src/libs/* | grep -v '/\(...\)')
 
 # purge binaries
 test "$STRIP_BINARIES" = '' || {

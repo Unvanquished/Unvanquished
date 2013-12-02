@@ -26,9 +26,10 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "../client/client.h"
+#include "../qcommon/q_shared.h"
+#include "../qcommon/qcommon.h"
 
-void IN_Init( void )
+void IN_Init( void* windowData )
 {
 }
 

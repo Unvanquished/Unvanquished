@@ -22,8 +22,17 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "g_local.h"
-#include "bg_public.h"
 #include "../../engine/qcommon/q_unicode.h"
+
+#define CMD_CHEAT        0x0001
+#define CMD_CHEAT_TEAM   0x0002 // is a cheat when used on a team
+#define CMD_MESSAGE      0x0004 // sends message to others (skip when muted)
+#define CMD_TEAM         0x0008 // must be on a team
+#define CMD_SPEC         0x0010 // must be a spectator
+#define CMD_ALIEN        0x0020
+#define CMD_HUMAN        0x0040
+#define CMD_ALIVE        0x0080
+#define CMD_INTERMISSION 0x0100 // valid during intermission
 
 /*
 ==================
@@ -533,7 +542,7 @@ void Cmd_Give_f( gentity_t *ent )
 	{
 		ADMP( QQ( N_( "usage: give [what]\n" ) ) );
 		ADMP( QQ( N_( "usage: valid choices are: all, health, funds [amount], "
-		              "bp [amount], confidence [amount], stamina, "
+		              "bp [amount], momentum [amount], stamina, "
 		              "poison, gas, ammo\n" ) ) );
 		return;
 	}
@@ -585,8 +594,8 @@ void Cmd_Give_f( gentity_t *ent )
 		G_ModifyBuildPoints( ent->client->pers.team, amount );
 	}
 
-	// give confidence
-	if ( Q_strnicmp( name, "confidence", 10 ) == 0 )
+	// give momentum
+	if ( Q_strnicmp( name, "momentum", strlen("momentum") ) == 0 )
 	{
 		if ( give_all || trap_Argc() < 3 )
 		{
@@ -594,10 +603,10 @@ void Cmd_Give_f( gentity_t *ent )
 		}
 		else
 		{
-			amount = atof( name + 11 );
+			amount = atof( name + strlen("momentum") + 1 );
 		}
 
-		G_AddConfidenceGeneric( ent->client->pers.team, amount );
+		G_AddMomentumGeneric( ent->client->pers.team, amount );
 	}
 
 	if ( ent->client->ps.stats[ STAT_HEALTH ] <= 0 ||
@@ -619,6 +628,11 @@ void Cmd_Give_f( gentity_t *ent )
 	if ( give_all || Q_stricmp( name, "stamina" ) == 0 )
 	{
 		ent->client->ps.stats[ STAT_STAMINA ] = STAMINA_MAX;
+	}
+
+	if ( give_all || Q_stricmp( name, "fuel" ) == 0 )
+	{
+		ent->client->ps.stats[ STAT_FUEL ] = JETPACK_FUEL_MAX;
 	}
 
 	if ( Q_stricmp( name, "poison" ) == 0 )
@@ -646,22 +660,8 @@ void Cmd_Give_f( gentity_t *ent )
 
 	if ( give_all || Q_stricmp( name, "ammo" ) == 0 )
 	{
-		gclient_t *client = ent->client;
-
-		if ( client->ps.weapon != WP_ALEVEL3_UPG &&
-		     BG_Weapon( client->ps.weapon )->infiniteAmmo )
-		{
-			return;
-		}
-
-		client->ps.ammo = BG_Weapon( client->ps.weapon )->maxAmmo;
-		client->ps.clips = BG_Weapon( client->ps.weapon )->maxClips;
-
-		if ( BG_Weapon( client->ps.weapon )->usesEnergy &&
-		     BG_InventoryContainsUpgrade( UP_BATTPACK, client->ps.stats ) )
-		{
-			client->ps.ammo = ( int )( ( float ) client->ps.ammo * BATTPACK_MODIFIER );
-		}
+		G_RefillAmmo( ent, qfalse );
+		G_RefillFuel( ent, qfalse );
 	}
 }
 
@@ -2362,8 +2362,7 @@ void Cmd_SetViewpos_f( gentity_t *ent )
 
 #define AS_OVER_RT3 (( ALIENSENSE_RANGE * 0.5f ) / M_ROOT3 )
 
-qboolean G_RoomForClassChange( gentity_t *ent, class_t class,
-                                      vec3_t newOrigin )
+qboolean G_RoomForClassChange( gentity_t *ent, class_t pcl, vec3_t newOrigin )
 {
 	vec3_t  fromMins, fromMaxs;
 	vec3_t  toMins, toMaxs;
@@ -2374,7 +2373,7 @@ qboolean G_RoomForClassChange( gentity_t *ent, class_t class,
 	class_t oldClass = ent->client->ps.stats[ STAT_CLASS ];
 
 	BG_ClassBoundingBox( oldClass, fromMins, fromMaxs, NULL, NULL, NULL );
-	BG_ClassBoundingBox( class, toMins, toMaxs, NULL, NULL, NULL );
+	BG_ClassBoundingBox( pcl, toMins, toMaxs, NULL, NULL, NULL );
 
 	VectorCopy( ent->client->ps.origin, newOrigin );
 
@@ -3126,7 +3125,7 @@ static qboolean Cmd_Sell_upgradeItem( gentity_t *ent, upgrade_t item )
 
 	if ( item == UP_BATTPACK )
 	{
-		G_GiveClientMaxAmmo( ent, qtrue );
+		G_RefillAmmo( ent, qfalse );
 	}
 
 	// add to funds
@@ -3162,7 +3161,7 @@ static qboolean Cmd_Sell_internal( gentity_t *ent, const char *s )
 	upgrade_t upgrade;
 
 	//no armoury nearby
-	if ( !G_BuildableRange( ent->client->ps.origin, 100, BA_H_ARMOURY ) )
+	if ( !G_BuildableInRange( ent->client->ps.origin, ENTITY_BUY_RANGE, BA_H_ARMOURY ) )
 	{
 		G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOARMOURYHERE );
 		return qfalse;
@@ -3310,35 +3309,15 @@ static qboolean Cmd_Buy_internal( gentity_t *ent, const char *s, qboolean sellCo
 #define Maybe_TriggerMenu(num, reason) do { if ( !quiet ) G_TriggerMenu( (num), (reason) ); } while ( 0 )
 	weapon_t  weapon;
 	upgrade_t upgrade;
-	qboolean  energyOnly;
 	vec3_t    newOrigin;
 
 	weapon = BG_WeaponByName( s )->number;
 	upgrade = BG_UpgradeByName( s )->number;
 
-	// Only give energy from reactors or repeaters
-	if ( G_BuildableRange( ent->client->ps.origin, 100, BA_H_ARMOURY ) )
+	// check if armoury is in reach
+	if ( !G_BuildableInRange( ent->client->ps.origin, ENTITY_BUY_RANGE, BA_H_ARMOURY ) )
 	{
-		energyOnly = qfalse;
-	}
-	else if ( upgrade == UP_AMMO &&
-	          BG_Weapon( ent->client->ps.stats[ STAT_WEAPON ] )->usesEnergy &&
-	          ( G_BuildableRange( ent->client->ps.origin, 100, BA_H_REACTOR ) ||
-	            G_BuildableRange( ent->client->ps.origin, 100, BA_H_REPEATER ) ) )
-	{
-		energyOnly = qtrue;
-	}
-	else
-	{
-		if ( upgrade == UP_AMMO &&
-		     BG_Weapon( ent->client->ps.weapon )->usesEnergy )
-		{
-			G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOENERGYAMMOHERE );
-		}
-		else
-		{
-			G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOARMOURYHERE );
-		}
+		G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOARMOURYHERE );
 
 		return qfalse;
 	}
@@ -3418,15 +3397,7 @@ static qboolean Cmd_Buy_internal( gentity_t *ent, const char *s, qboolean sellCo
 		}
 
 		ent->client->ps.stats[ STAT_WEAPON ] = weapon;
-		ent->client->ps.ammo = BG_Weapon( weapon )->maxAmmo;
-		ent->client->ps.clips = BG_Weapon( weapon )->maxClips;
-
-		if ( BG_Weapon( weapon )->usesEnergy &&
-		     BG_InventoryContainsUpgrade( UP_BATTPACK, ent->client->ps.stats ) )
-		{
-			ent->client->ps.ammo *= BATTPACK_MODIFIER;
-		}
-
+		G_GiveMaxAmmo( ent );
 		G_ForceWeaponChange( ent, weapon );
 
 		//set build delay/pounce etc to 0
@@ -3505,60 +3476,52 @@ static qboolean Cmd_Buy_internal( gentity_t *ent, const char *s, qboolean sellCo
 			break; // okay, can buy this
 		}
 
-		if ( upgrade == UP_AMMO )
+		if ( upgrade == UP_LIGHTARMOUR )
 		{
-			G_GiveClientMaxAmmo( ent, energyOnly );
-			return qtrue;
+			if ( !G_RoomForClassChange( ent, PCL_HUMAN_LIGHT, newOrigin ) )
+			{
+				G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOROOMARMOURCHANGE );
+				return qfalse;
+			}
+
+			VectorCopy( newOrigin, ent->client->ps.origin );
+			ent->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN_LIGHT;
+			ent->client->pers.classSelection = PCL_HUMAN_LIGHT;
+			ent->client->ps.eFlags ^= EF_TELEPORT_BIT;
 		}
-		else
+		else if ( upgrade == UP_MEDIUMARMOUR )
 		{
-			if ( upgrade == UP_LIGHTARMOUR )
+			if ( !G_RoomForClassChange( ent, PCL_HUMAN_MEDIUM, newOrigin ) )
 			{
-				if ( !G_RoomForClassChange( ent, PCL_HUMAN_LIGHT, newOrigin ) )
-				{
-					G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOROOMARMOURCHANGE );
-					return qfalse;
-				}
-
-				VectorCopy( newOrigin, ent->client->ps.origin );
-				ent->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN_LIGHT;
-				ent->client->pers.classSelection = PCL_HUMAN_LIGHT;
-				ent->client->ps.eFlags ^= EF_TELEPORT_BIT;
-			}
-			else if ( upgrade == UP_MEDIUMARMOUR )
-			{
-				if ( !G_RoomForClassChange( ent, PCL_HUMAN_MEDIUM, newOrigin ) )
-				{
-					G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOROOMARMOURCHANGE );
-					return qfalse;
-				}
-
-				VectorCopy( newOrigin, ent->client->ps.origin );
-				ent->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN_MEDIUM;
-				ent->client->pers.classSelection = PCL_HUMAN_MEDIUM;
-				ent->client->ps.eFlags ^= EF_TELEPORT_BIT;
-			}
-			else if ( upgrade == UP_BATTLESUIT )
-			{
-				if ( !G_RoomForClassChange( ent, PCL_HUMAN_BSUIT, newOrigin ) )
-				{
-					G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOROOMARMOURCHANGE );
-					return qfalse;
-				}
-
-				VectorCopy( newOrigin, ent->client->ps.origin );
-				ent->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN_BSUIT;
-				ent->client->pers.classSelection = PCL_HUMAN_BSUIT;
-				ent->client->ps.eFlags ^= EF_TELEPORT_BIT;
+				G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOROOMARMOURCHANGE );
+				return qfalse;
 			}
 
-			//add to inventory
-			BG_AddUpgradeToInventory( upgrade, ent->client->ps.stats );
+			VectorCopy( newOrigin, ent->client->ps.origin );
+			ent->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN_MEDIUM;
+			ent->client->pers.classSelection = PCL_HUMAN_MEDIUM;
+			ent->client->ps.eFlags ^= EF_TELEPORT_BIT;
 		}
+		else if ( upgrade == UP_BATTLESUIT )
+		{
+			if ( !G_RoomForClassChange( ent, PCL_HUMAN_BSUIT, newOrigin ) )
+			{
+				G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOROOMARMOURCHANGE );
+				return qfalse;
+			}
+
+			VectorCopy( newOrigin, ent->client->ps.origin );
+			ent->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN_BSUIT;
+			ent->client->pers.classSelection = PCL_HUMAN_BSUIT;
+			ent->client->ps.eFlags ^= EF_TELEPORT_BIT;
+		}
+
+		//add to inventory
+		BG_AddUpgradeToInventory( upgrade, ent->client->ps.stats );
 
 		if ( upgrade == UP_BATTPACK )
 		{
-			G_GiveClientMaxAmmo( ent, qtrue );
+			G_RefillAmmo( ent, qtrue );
 		}
 
 		//subtract from funds
@@ -3692,7 +3655,6 @@ void Cmd_Build_f( gentity_t *ent )
 			case IBE_NOREACTOR:
 			case IBE_NOCREEP:
 			case IBE_NOPOWERHERE:
-			case IBE_DRILLPOWERSOURCE:
 				err = MN_NONE;
 				break;
 
@@ -3711,10 +3673,6 @@ void Cmd_Build_f( gentity_t *ent )
 
 			case IBE_ONEREACTOR:
 				err = MN_H_ONEREACTOR;
-				break;
-
-			case IBE_NODCC:
-				err = MN_H_NODCC;
 				break;
 
 			case IBE_LASTSPAWN:
@@ -3745,35 +3703,39 @@ void Cmd_Build_f( gentity_t *ent )
 	}
 }
 
-/*
-=================
-Cmd_Reload_f
-=================
-*/
 void Cmd_Reload_f( gentity_t *ent )
 {
-	playerState_t *ps = &ent->client->ps;
+	playerState_t *ps;
 	int           ammo;
+	const weaponAttributes_t *wa;
 
-	// weapon doesn't ever need reloading
+	if ( !ent->client )
+	{
+		return;
+	}
+
+	ps = &ent->client->ps;
+	wa = BG_Weapon( ps->weapon );
+
+	// don't reload if the currently held weapon doesn't use ammo
 	if ( BG_Weapon( ps->weapon )->infiniteAmmo )
 	{
 		return;
 	}
 
+	// can't reload if there is no clip
 	if ( ps->clips <= 0 )
 	{
 		return;
 	}
 
+	ammo = wa->maxAmmo;
+
+	// apply battery pack modifier
 	if ( BG_Weapon( ps->weapon )->usesEnergy &&
 	     BG_InventoryContainsUpgrade( UP_BATTPACK, ps->stats ) )
 	{
-		ammo = BG_Weapon( ps->weapon )->maxAmmo * BATTPACK_MODIFIER;
-	}
-	else
-	{
-		ammo = BG_Weapon( ps->weapon )->maxAmmo;
+		ammo *= BATTPACK_MODIFIER;
 	}
 
 	// don't reload when full
@@ -3782,7 +3744,7 @@ void Cmd_Reload_f( gentity_t *ent )
 		return;
 	}
 
-	// the animation, ammo refilling etc. is handled by PM_Weapon
+	// the actual reload process is handled synchronously in PM
 	if ( ent->client->ps.weaponstate != WEAPON_RELOADING )
 	{
 		ent->client->ps.pm_flags |= PMF_WEAPON_RELOAD;
@@ -4581,14 +4543,7 @@ void Cmd_Share_f( gentity_t *ent )
 	if( creds <= 0 )
 	{
 		// default credit count
-		if( team == TEAM_HUMANS )
-		{
-			creds = FREEKILL_HUMAN;
-		}
-		else if( team == TEAM_ALIENS )
-		{
-			creds = FREEKILL_ALIEN;
-		}
+		creds = PLAYER_BASE_VALUE;
 	}
 	else if ( team == TEAM_ALIENS )
 	{
@@ -4791,14 +4746,7 @@ void Cmd_Donate_f( gentity_t *ent )
 	if( creds <= 0 || !arg1[0] || !arg2[0] )
 	{
 		// default credit count
-		if( team == TEAM_HUMANS )
-		{
-			creds = FREEKILL_HUMAN;
-		}
-		else if( team == TEAM_ALIENS )
-		{
-			creds = FREEKILL_ALIEN;
-		}
+		creds = PLAYER_BASE_VALUE;
 	}
 	else if ( team == TEAM_ALIENS )
 	{

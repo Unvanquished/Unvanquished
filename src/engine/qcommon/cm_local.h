@@ -36,13 +36,9 @@ Maryland 20850 USA.
 #include "qcommon.h"
 #include "cm_polylib.h"
 
-//  (SA) DM needs more than 256 since this includes func_static and func_explosives
-//#define   MAX_SUBMODELS       256
-//#define   BOX_MODEL_HANDLE    255
-
-#define MAX_SUBMODELS        512
-#define BOX_MODEL_HANDLE     511
-#define CAPSULE_MODEL_HANDLE 510
+// fake submodel handles
+#define CAPSULE_MODEL_HANDLE ( MAX_SUBMODELS )
+#define BOX_MODEL_HANDLE     ( MAX_SUBMODELS + 1)
 
 typedef struct cbrushedge_s
 {

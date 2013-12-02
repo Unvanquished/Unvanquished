@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
-#include "../../../engine/qcommon/q_platform.h"
+#include "../include/q_platform.h"
 #include "cmdlib.h"
 #include "mathlib.h"
 #include "../../../engine/qcommon/qfiles.h"

@@ -1,3 +1,4 @@
+
 /*
 ===========================================================================
 
@@ -603,7 +604,7 @@ void SV_ClipToEntity( trace_t *trace, const vec3_t start, const vec3_t mins, con
 }
 
 // FIXME: Copied from cm_local.h
-#define BOX_MODEL_HANDLE 511
+#define BOX_MODEL_HANDLE ( MAX_SUBMODELS + 1 )
 
 /*
 ====================
@@ -734,6 +735,9 @@ void SV_Trace( trace_t *results, const vec3_t start, vec3_t mins, vec3_t maxs, c
 	{
 		maxs = vec3_origin;
 	}
+
+	if ( passEntityNum == -1 )
+		passEntityNum = ENTITYNUM_NONE;
 
 	memset( &clip, 0, sizeof( moveclip_t ) );
 

@@ -46,7 +46,8 @@ models/players/human_light/body
 
 models/players/human_light/head
 {
-
+	surfaceparm nodraw
+	diffuseMap models/players/human_naked/head_d
 }
 
 models/players/human_light/armor
@@ -84,7 +85,8 @@ models/players/human_medium/body
 
 models/players/human_medium/head
 {
-
+	surfaceparm nodraw
+	diffuseMap models/players/human_naked/head_d
 }
 
 models/players/human_medium/armor

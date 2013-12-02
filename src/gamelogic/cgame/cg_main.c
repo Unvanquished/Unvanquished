@@ -246,7 +246,7 @@ vmCvar_t        ui_voteActive;
 vmCvar_t        ui_alienTeamVoteActive;
 vmCvar_t        ui_humanTeamVoteActive;
 vmCvar_t        ui_unlockables;
-vmCvar_t        ui_confidenceHalfLife;
+vmCvar_t        ui_momentumHalfLife;
 vmCvar_t        ui_unlockablesMinTime;
 
 vmCvar_t        cg_debugRandom;
@@ -413,7 +413,7 @@ static const cvarTable_t cvarTable[] =
 	{ &ui_humanTeamVoteActive,         "ui_humanTeamVoteActive",         "0",            CVAR_ROM                     },
 	{ &ui_alienTeamVoteActive,         "ui_alienTeamVoteActive",         "0",            CVAR_ROM                     },
 	{ &ui_unlockables,                 "ui_unlockables",                 "0 0",          CVAR_ROM                     },
-	{ &ui_confidenceHalfLife,          "ui_confidenceHalfLife",          "0",            CVAR_ROM                     },
+	{ &ui_momentumHalfLife,          "ui_momentumHalfLife",          "0",            CVAR_ROM                     },
 	{ &ui_unlockablesMinTime,          "ui_unlockablesMinTime",          "0",            CVAR_ROM                     },
 
 	{ &cg_debugRandom,                 "cg_debugRandom",                 "0",            0                            },
@@ -1082,7 +1082,7 @@ const char *CG_Argv( int arg )
 
 //========================================================================
 
-static SENTINEL const char *choose( const char *first, ... )
+static const char *choose( const char *first, ... )
 {
 	va_list    ap;
 	int        count = 1;
@@ -1329,9 +1329,7 @@ static void CG_RegisterSounds( void )
 		cgs.gameSounds[ i ] = trap_S_RegisterSound( soundName, qfalse );
 	}
 
-	cgs.media.jetpackDescendSound = trap_S_RegisterSound( "sound/upgrades/jetpack/low.wav", qfalse );
-	cgs.media.jetpackIdleSound = trap_S_RegisterSound( "sound/upgrades/jetpack/idle.wav", qfalse );
-	cgs.media.jetpackAscendSound = trap_S_RegisterSound( "sound/upgrades/jetpack/hi.wav", qfalse );
+	cgs.media.jetpackThrustLoopSound = trap_S_RegisterSound( "sound/upgrades/jetpack/hi.wav", qfalse );
 
 	cgs.media.medkitUseSound = trap_S_RegisterSound( "sound/upgrades/medkit/medkit.wav", qfalse );
 
@@ -1526,9 +1524,7 @@ static void CG_RegisterGraphics( void )
 	cgs.media.alienEvolvePS = CG_RegisterParticleSystem( "alienEvolvePS" );
 	cgs.media.alienAcidTubePS = CG_RegisterParticleSystem( "alienAcidTubePS" );
 
-	cgs.media.jetPackDescendPS = CG_RegisterParticleSystem( "jetPackDescendPS" );
-	cgs.media.jetPackHoverPS = CG_RegisterParticleSystem( "jetPackHoverPS" );
-	cgs.media.jetPackAscendPS = CG_RegisterParticleSystem( "jetPackAscendPS" );
+	cgs.media.jetPackThrustPS = CG_RegisterParticleSystem( "jetPackAscendPS" );
 
 	cgs.media.humanBuildableDamagedPS = CG_RegisterParticleSystem( "humanBuildableDamagedPS" );
 	cgs.media.alienBuildableDamagedPS = CG_RegisterParticleSystem( "alienBuildableDamagedPS" );
@@ -1575,6 +1571,11 @@ static void CG_RegisterGraphics( void )
 
 	// register the inline models
 	cgs.numInlineModels = trap_CM_NumInlineModels();
+
+	if ( cgs.numInlineModels > MAX_SUBMODELS )
+	{
+		CG_Error( "MAX_SUBMODELS (%d) exceeded by %d", MAX_SUBMODELS, cgs.numInlineModels - MAX_SUBMODELS );
+	}
 
 	for ( i = 1; i < cgs.numInlineModels; i++ )
 	{

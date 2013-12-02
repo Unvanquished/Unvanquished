@@ -147,6 +147,9 @@ void AIDestroyValue( AIValue_t v )
 		case VALUE_STRING:
 			BG_Free( v.l.stringValue );
 			break;
+
+		default:
+			break;
 	}
 }
 
@@ -1312,26 +1315,7 @@ AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node )
 	{
 		botEntityAndDistance_t *ngoal;
 
-		if ( numUpgrades && upgrades[0] == UP_AMMO && BG_Weapon( (weapon_t)self->client->ps.stats[ STAT_WEAPON ] )->usesEnergy )
-		{
-			// find the closest suitable goal for refueling ammo of an energy weapon
-			ngoal = &self->botMind->closestBuildings[ BA_H_ARMOURY ];
-
-			if ( self->botMind->closestBuildings[ BA_H_REPEATER ].distance < ngoal->distance )
-			{
-				ngoal = &self->botMind->closestBuildings[ BA_H_REPEATER ];
-			}
-
-			if ( self->botMind->closestBuildings[ BA_H_REACTOR ].distance < ngoal->distance )
-			{
-				ngoal = &self->botMind->closestBuildings[ BA_H_REACTOR ];
-			}
-		}
-		else
-		{
-			// can only buy things from an armoury
-			ngoal = &self->botMind->closestBuildings[ BA_H_ARMOURY ];
-		}
+		ngoal = &self->botMind->closestBuildings[ BA_H_ARMOURY ];
 
 		if ( !ngoal->ent )
 		{
@@ -1360,9 +1344,9 @@ AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node )
 		return STATUS_FAILURE;
 	}
 
-	if ( GoalInRange( self, 100 ) )
+	if ( GoalInRange( self, ENTITY_BUY_RANGE ) )
 	{
-		if ( numUpgrades && upgrades[0] != UP_AMMO )
+		if ( numUpgrades )
 		{
 			BotSellAll( self );
 		}

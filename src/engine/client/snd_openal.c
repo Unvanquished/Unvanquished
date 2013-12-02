@@ -25,8 +25,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "snd_codec.h"
 #include "client.h"
 
-#ifdef USE_OPENAL
-
+#ifndef BUILD_TTY_CLIENT
 #include "qal.h"
 
 // Console variables specific to OpenAL
@@ -635,10 +634,7 @@ Adapt the gain if necessary to get a quicker fadeout when the source is too far 
 
 static void S_AL_ScaleGain( src_t *chksrc, vec3_t origin )
 {
-	float distance;
-
-	if ( !chksrc->local )
-		distance = Distance( origin, lastListenerOrigin );
+	float distance = chksrc->local ? 0 : Distance( origin, lastListenerOrigin );
 
 	// If we exceed a certain distance, scale the gain linearly until the sound
 	// vanishes into nothingness.
@@ -660,7 +656,6 @@ static void S_AL_ScaleGain( src_t *chksrc, vec3_t origin )
 			S_AL_Gain( chksrc->alSource, chksrc->scaleGain );
 		}
 	}
-
 	else if ( chksrc->scaleGain != chksrc->curGain )
 	{
 		chksrc->scaleGain = chksrc->curGain;
@@ -1010,7 +1005,7 @@ static void S_AL_SrcKill( srcHandle_t src )
 
 	curSource->sfx = 0;
 	curSource->lastUsedTime = 0;
-	curSource->priority = 0;
+	curSource->priority = (alSrcPriority_t) 0;
 	curSource->entity = -1;
 	curSource->channel = -1;
 
@@ -2419,6 +2414,7 @@ void S_AL_MasterGain( float gain )
 {
 	qalListenerf( AL_GAIN, gain );
 }
+
 #endif
 
 
@@ -2455,7 +2451,6 @@ static void S_AL_SoundInfo( void )
 
 #endif
 }
-
 
 
 /*
@@ -2500,7 +2495,6 @@ void S_AL_Shutdown( void )
 
 	QAL_Shutdown();
 }
-
 #endif
 
 /*
@@ -2510,9 +2504,9 @@ S_AL_Init
 */
 qboolean S_AL_Init( soundInterface_t *si )
 {
-#ifdef USE_OPENAL
-	const char *device = NULL;
-	const char *inputdevice = NULL;
+#ifndef BUILD_TTY_CLIENT
+	const char* device = NULL;
+	const char* inputdevice = NULL;
 	int i;
 
 	if ( !si )

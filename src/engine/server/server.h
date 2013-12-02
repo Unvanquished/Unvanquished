@@ -39,6 +39,7 @@ Maryland 20850 USA.
 #include "../qcommon/qcommon.h"
 #include "../server/g_api.h"
 #include "../botlib/bot_api.h"
+#include "../framework/VirtualMachine.h"
 
 //=============================================================================
 
@@ -312,7 +313,6 @@ typedef struct
 	int           nextHeartbeatTime;
 	challenge_t   challenges[ MAX_CHALLENGES ]; // to prevent invalid IP addresses from connecting
 	receipt_t     infoReceipts[ MAX_INFO_RECEIPTS ];
-	netadr_t      redirectAddress; // for rcon return messages
 
 	int       sampleTimes[ SERVER_PERFORMANCECOUNTER_SAMPLES ];
 	int       currentSampleIndex;
@@ -324,9 +324,35 @@ typedef struct
 
 //=============================================================================
 
+class GameVM: public VM::VMBase {
+public:
+	void GameInit(int levelTime, int randomSeed, qboolean restart);
+	void GameShutdown(qboolean restart);
+	qboolean GameClientConnect(char* reason, size_t size, int clientNum, qboolean firstTime, qboolean isBot);
+	void GameClientBegin(int clientNum);
+	void GameClientUserInfoChanged(int clientNum);
+	void GameClientDisconnect(int clientNum);
+	void GameClientCommand(int clientNum);
+	void GameClientThink(int clientNum);
+	void GameRunFrame(int levelTime);
+	qboolean GameConsoleCommand();
+	qboolean GameSnapshotCallback(int entityNum, int clientNum);
+	void BotAIStartFrame(int levelTime);
+	void GameMessageRecieved(int clientNum, const char *buffer, int bufferSize, int commandTime);
+
+#ifndef QVM_COMPAT
+private:
+	void Syscall(int index, RPC::Reader& input, RPC::Writer& outputs);
+
+	NaCl::SharedMemoryPtr shmRegion;
+#endif
+};
+
+//=============================================================================
+
 extern serverStatic_t svs; // persistent server info across maps
 extern server_t       sv; // cleared each map
-extern vm_t           *gvm; // game virtual machine
+extern GameVM         gvm; // game virtual machine
 
 extern cvar_t         *sv_fps;
 extern cvar_t         *sv_timeout;
@@ -371,7 +397,6 @@ extern cvar_t *sv_wwwDlDisconnected;
 extern cvar_t *sv_wwwFallbackURL;
 
 //bani
-extern cvar_t *sv_cheats;
 extern cvar_t *sv_packetdelay;
 
 //fretn
@@ -380,6 +405,8 @@ extern cvar_t *sv_fullmsg;
 #ifdef USE_VOIP
 extern cvar_t *sv_voip;
 #endif
+
+extern cvar_t *vm_game;
 
 //===========================================================
 
@@ -417,7 +444,7 @@ void SV_GetPlayerPubkey( int clientNum, char *pubkey, int size );
 void SV_CreateBaseline( void );
 
 void SV_ChangeMaxClients( void );
-void SV_SpawnServer( char *server );
+void SV_SpawnServer( const char *server );
 
 //
 // sv_client.c
@@ -480,6 +507,7 @@ qboolean       SV_inPVS( const vec3_t p1, const vec3_t p2 );
 qboolean       SV_GetTag( int clientNum, int tagFileNumber, const char *tagname, orientation_t *ort );
 int            SV_LoadTag( const char *mod_name );
 void           SV_GameBinaryMessageReceived( int cno, const char *buf, int buflen, int commandTime );
+void           SV_GameCommandHandler( void );
 
 //
 // sv_bot.c

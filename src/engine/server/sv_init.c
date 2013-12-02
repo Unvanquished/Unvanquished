@@ -132,7 +132,7 @@ void SV_UpdateConfigStrings( void )
 				{
 					int  sent = 0;
 					int  remaining = len;
-					char *cmd;
+					const char *cmd;
 					char buf[ MAX_STRING_CHARS ];
 
 					while ( remaining > 0 )
@@ -336,7 +336,7 @@ void SV_Startup( void )
 	SV_BoundMaxClients( 1 );
 
 	// RF, avoid trying to allocate large chunk on a fragmented zone
-	svs.clients = calloc( sizeof( client_t ) * sv_maxclients->integer, 1 );
+	svs.clients = ( client_t * ) calloc( sizeof( client_t ) * sv_maxclients->integer, 1 );
 
 	if ( !svs.clients )
 	{
@@ -402,7 +402,7 @@ void SV_ChangeMaxClients( void )
 		return;
 	}
 
-	oldClients = Hunk_AllocateTempMemory( count * sizeof( client_t ) );
+	oldClients = ( client_t * ) Hunk_AllocateTempMemory( count * sizeof( client_t ) );
 
 	// copy the clients to hunk memory
 	for ( i = 0; i < count; i++ )
@@ -423,7 +423,7 @@ void SV_ChangeMaxClients( void )
 
 	// allocate new clients
 	// RF, avoid trying to allocate large chunk on a fragmented zone
-	svs.clients = calloc( sizeof( client_t ) * sv_maxclients->integer, 1 );
+	svs.clients = ( client_t * ) calloc( sizeof( client_t ) * sv_maxclients->integer, 1 );
 
 	if ( !svs.clients )
 	{
@@ -466,7 +466,7 @@ SV_SetExpectedHunkUsage
 void SV_SetExpectedHunkUsage( char *mapname )
 {
 	int  handle;
-	char *memlistfile = "hunkusage.dat";
+	const char *memlistfile = "hunkusage.dat";
 	char *buf;
 	char *buftrav;
 	char *token;
@@ -566,7 +566,7 @@ clients along with it.
 This is NOT called for map_restart
 ================
 */
-void SV_SpawnServer( char *server )
+void SV_SpawnServer( const char *server )
 {
 	int        i;
 	int        checksum;
@@ -595,10 +595,6 @@ void SV_SpawnServer( char *server )
 	// wipe the entire per-level structure
 	SV_ClearServer();
 
-	// MrE: main zone should be pretty much emtpy at this point
-	// except for file system data and cached renderer data
-	Z_LogHeap();
-
 	// allocate empty config strings
 	for ( i = 0; i < MAX_CONFIGSTRINGS; i++ )
 	{
@@ -624,7 +620,7 @@ void SV_SpawnServer( char *server )
 	FS_ClearPakReferences( 0 );
 
 	// allocate the snapshot entities on the hunk
-	svs.snapshotEntities = Hunk_Alloc( sizeof( entityState_t ) * svs.numSnapshotEntities, h_high );
+	svs.snapshotEntities = ( entityState_t * ) Hunk_Alloc( sizeof( entityState_t ) * svs.numSnapshotEntities, h_high );
 	svs.nextSnapshotEntities = 0;
 
 	// toggle the server bit so clients can detect that a
@@ -690,7 +686,7 @@ void SV_SpawnServer( char *server )
 	// run a few frames to allow everything to settle
 	for ( i = 0; i < GAME_INIT_FRAMES; i++ )
 	{
-		VM_Call( gvm, GAME_RUN_FRAME, svs.time );
+		gvm.GameRunFrame( svs.time );
 		SV_BotFrame( svs.time );
 		svs.time += FRAMETIME;
 	}
@@ -703,7 +699,8 @@ void SV_SpawnServer( char *server )
 		// send the new gamestate to all connected clients
 		if ( svs.clients[ i ].state >= CS_CONNECTED )
 		{
-			char *denied;
+			qboolean denied;
+			char reason[ MAX_STRING_CHARS ];
 
 			if ( svs.clients[ i ].netchan.remoteAddress.type == NA_BOT )
 			{
@@ -716,13 +713,13 @@ void SV_SpawnServer( char *server )
 			}
 
 			// connect the client again
-			denied = VM_ExplicitArgPtr( gvm, VM_Call( gvm, GAME_CLIENT_CONNECT, i, qfalse, isBot ) );   // firstTime = qfalse
+			denied = gvm.GameClientConnect( reason, sizeof( reason ), i, qfalse, isBot );   // firstTime = qfalse
 
 			if ( denied )
 			{
 				// this generally shouldn't happen, because the client
 				// was connected before the level change
-				SV_DropClient( &svs.clients[ i ], denied );
+				SV_DropClient( &svs.clients[ i ], reason );
 			}
 			else
 			{
@@ -746,14 +743,14 @@ void SV_SpawnServer( char *server )
 					client->deltaMessage = -1;
 					client->nextSnapshotTime = svs.time; // generate a snapshot immediately
 
-					VM_Call( gvm, GAME_CLIENT_BEGIN, i );
+					gvm.GameClientBegin( i );
 				}
 			}
 		}
 	}
 
 	// run another frame to allow things to look at all the players
-	VM_Call( gvm, GAME_RUN_FRAME, svs.time );
+	gvm.GameRunFrame( svs.time );
 	SV_BotFrame( svs.time );
 	svs.time += FRAMETIME;
 
@@ -798,7 +795,7 @@ void SV_SpawnServer( char *server )
 	cvar_modifiedFlags &= ~CVAR_SYSTEMINFO;
 	SV_SetConfigstring( CS_SYSTEMINFO, Cvar_InfoString( CVAR_SYSTEMINFO, qtrue ) );
 
-	SV_SetConfigstring( CS_SERVERINFO, Cvar_InfoString( CVAR_SERVERINFO | CVAR_SERVERINFO_NOUPDATE, qfalse ) );
+	SV_SetConfigstring( CS_SERVERINFO, Cvar_InfoString( CVAR_SERVERINFO, qfalse ) );
 	cvar_modifiedFlags &= ~CVAR_SERVERINFO;
 
 	// any media configstring setting now should issue a warning
@@ -848,8 +845,6 @@ void SV_Init( void )
 	sv_statsURL = Cvar_Get( "sv_statsURL", "", CVAR_SERVERINFO | CVAR_ARCHIVE );
 
 	// systeminfo
-	//bani - added cvar_t for sv_cheats so server engine can reference it
-	sv_cheats = Cvar_Get( "sv_cheats", "1", CVAR_SYSTEMINFO | CVAR_ROM );
 	sv_serverid = Cvar_Get( "sv_serverid", "0", CVAR_SYSTEMINFO | CVAR_ROM );
 #ifdef DEDICATED
 	sv_pure = Cvar_Get( "sv_pure", "1", CVAR_SYSTEMINFO );
@@ -860,7 +855,6 @@ void SV_Init( void )
 #endif
 #ifdef USE_VOIP
 	sv_voip = Cvar_Get( "sv_voip", "1", CVAR_SYSTEMINFO | CVAR_LATCH );
-	Cvar_CheckRange( sv_voip, 0, 1, qtrue );
 #endif
 	Cvar_Get( "sv_paks", "", CVAR_SYSTEMINFO | CVAR_ROM );
 	Cvar_Get( "sv_pakNames", "", CVAR_SYSTEMINFO | CVAR_ROM );
@@ -904,6 +898,8 @@ void SV_Init( void )
 	// fretn - note: redirecting of clients to other servers relies on this,
 	// ET://someserver.com
 	sv_fullmsg = Cvar_Get( "sv_fullmsg", "Server is full.", CVAR_ARCHIVE );
+
+	vm_game = Cvar_Get( "vm_game", "0", CVAR_ARCHIVE );
 
 	svs.serverLoad = -1;
 }
@@ -959,7 +955,7 @@ Called when each game quits,
 before Sys_Quit or Sys_Error
 ================
 */
-void SV_Shutdown( char *finalmsg )
+void SV_Shutdown( const char *finalmsg )
 {
 	if ( !com_sv_running || !com_sv_running->integer )
 	{
@@ -1008,6 +1004,4 @@ void SV_Shutdown( char *finalmsg )
 
 	// disconnect any local clients
 	CL_Disconnect( qfalse );
-
-	Crypto_Shutdown();
 }
