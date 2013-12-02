@@ -122,7 +122,8 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #define ALIGNED(a,x) __declspec(align(a)) x
 #define DLLEXPORT __declspec(dllexport)
 #define DLLIMPORT __declspec(dllimport)
-
+#define OVERRIDE override
+#define FINAL final
 // Work around lack of C99 support
 #define __func__ __FUNCTION__
 
