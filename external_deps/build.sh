@@ -135,7 +135,7 @@ build_gmp() {
 
 # Build Nettle
 build_nettle() {
-	download "nettle-${NETTLE_VERSION}.tar.gz" "http://www.lysator.liu.se/\~nisse/archive/nettle-${NETTLE_VERSION}.tar.gz"
+	download "nettle-${NETTLE_VERSION}.tar.gz" "http://www.lysator.liu.se/~nisse/archive/nettle-${NETTLE_VERSION}.tar.gz"
 	cd "nettle-${NETTLE_VERSION}"
 	make distclean || true
 	./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED[@]} --enable-static
