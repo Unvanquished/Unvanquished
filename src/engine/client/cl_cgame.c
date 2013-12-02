@@ -433,7 +433,7 @@ rescan:
 			Com_Error( ERR_DROP, "bcs exceeded BIG_INFO_STRING" );
 		}
 
-		strcat( bigConfigString, s );
+		Q_strcat( bigConfigString, sizeof( bigConfigString ), s );
 		return qfalse;
 	}
 
@@ -446,8 +446,8 @@ rescan:
 			Com_Error( ERR_DROP, "bcs exceeded BIG_INFO_STRING" );
 		}
 
-		strcat( bigConfigString, s );
-		strcat( bigConfigString, "\"" );
+		Q_strcat( bigConfigString, sizeof( bigConfigString ), s );
+		Q_strcat( bigConfigString, sizeof( bigConfigString ), "\"" );
 		s = bigConfigString;
 		goto rescan;
 	}

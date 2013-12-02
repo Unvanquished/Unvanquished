@@ -136,6 +136,7 @@ macro( try_linker_flag PROP FLAG )
 endmacro()
 
 if( MSVC )
+  set_c_cxx_flag( "/MP" )
   set_c_cxx_flag( "/fp:fast" )
   set_c_cxx_flag( "/d2Zi+" RELWITHDEBINFO )
   if( ARCH STREQUAL "x86" )

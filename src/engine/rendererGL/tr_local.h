@@ -1615,11 +1615,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	typedef struct drawSurf_s
 	{
 		trRefEntity_t *entity;
+		surfaceType_t *surface; // any of surface*_t
 		uint32_t      shaderNum;
 		int16_t       lightmapNum;
 		int16_t       fogNum;
-
-		surfaceType_t *surface; // any of surface*_t
+		uint32_t      addedIndex; // index of the drawSurf in the array before sorting
 	} drawSurf_t;
 
 	typedef enum
