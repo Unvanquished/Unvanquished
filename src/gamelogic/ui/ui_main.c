@@ -3302,7 +3302,7 @@ static void UI_RunMenuScript( char **args )
 		if ( Q_stricmp( name, "StartServer" ) == 0 )
 		{
 			trap_Cvar_SetValue( "dedicated", Com_Clamp( 0, 2, ui_dedicated.integer ) );
-			trap_Cmd_ExecuteText( EXEC_APPEND, va( "wait ; wait ; map %s\n",
+			trap_Cmd_ExecuteText( EXEC_APPEND, va( "delay 2f map %s\n",
 			                                       Quote( uiInfo.mapList[ ui_selectedMap.integer ].mapLoadName ) ) );
 		}
 		else if ( Q_stricmp( name, "resetDefaults" ) == 0 )
@@ -3402,7 +3402,7 @@ static void UI_RunMenuScript( char **args )
 			trap_Cmd_ExecuteText( EXEC_APPEND, va( "exec ui/%s/install.cfg;", uiInfo.huds[ uiInfo.hudIndex ].name ) );
 			if ( cstate.connState == CA_ACTIVE )
 			{
-				trap_Cmd_ExecuteText( EXEC_APPEND, "reloadhud" );
+				trap_Cmd_ExecuteText( EXEC_APPEND, "reloadhud;" );
 			}
 		}
 		else if ( Q_stricmp( name, "JoinTeam" ) == 0 )

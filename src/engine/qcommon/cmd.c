@@ -65,38 +65,6 @@ static cmdContext_t cmd;
 
 /*
 ============
-Cbuf_AddText
-
-Adds command text at the end of the buffer, does NOT add a final \n
-============
-*/
-void Cbuf_AddText( const char *text )
-{
-	static int cursize = 0;
-	static char data[MAX_CMD_BUFFER];
-	int l;
-
-	l = strlen( text );
-
-	if ( cursize + l + 1 >= MAX_CMD_BUFFER )
-	{
-		Com_Printf(_( "Cbuf_AddText: overflow\n" ));
-		return;
-	}
-
-	Com_Memcpy( &data[ cursize ], text, l );
-	cursize += l;
-	data[cursize] = '\0';
-
-	if (strchr( data, '\n') != NULL)
-	{
-		Cmd::BufferCommandText((char*) data, true);
-		cursize = 0;
-	}
-}
-
-/*
-============
 Cbuf_ExecuteText
 ============
 */
@@ -107,18 +75,20 @@ void Cbuf_ExecuteText( int exec_when, const char *text )
 		case EXEC_NOW:
 			if ( text && strlen( text ) > 0 )
 			{
-				Cmd::BufferCommandTextAfter(text, true);
+				Cmd::ExecuteCommand(text, true);
 			}
-			Cmd::ExecuteCommandBuffer();
-
+			else
+			{
+				Cmd::ExecuteCommandBuffer();
+			}
 			break;
 
 		case EXEC_INSERT:
-            Cmd::BufferCommandTextAfter(text, true);
+			Cmd::BufferCommandTextAfter(text, true);
 			break;
 
 		case EXEC_APPEND:
-			Cbuf_AddText( text );
+			Cmd::BufferCommandText(text, true);
 			break;
 
 		default:

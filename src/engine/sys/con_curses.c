@@ -846,34 +846,22 @@ char *CON_Input( void )
 			case MODE_PLAIN:
 				// convert non-ASCII to UTF-8, then insert
 				// FIXME: assumes Latin-1
-				buf[0] = '\0';
-
-				for ( count = 0; count <= width; ++count )
+				for ( count = 0; count < width; ++count )
 				{
-					strcat( buf, Q_UTF8_Encode( ( chr >> ( ( width - count ) * 8 ) ) & 0xFF ) );
-				}
-
-				u32text = Str::UTF8To32(buf);
-
-				for (char32_t u32char : u32text) {
-					input_field.AddChar(u32char);
+					input_field.AddChar( ( chr >> ( ( width - count - 1 ) * 8 ) ) & 0xFF );
 				}
 				break;
 
 			case MODE_UTF8:
 				// UTF-8, but packed
+
 				if ( width > 0 )
 				{
-					char buffer[4];
-					for ( count = 0; count <= width; ++count )
+					for ( count = 0; count < width; ++count )
 					{
-						buffer[ count ] = ( chr >> ( ( width - count ) * 8 ) ) & 0xFF;
+						buf[ count ] = ( chr >> ( ( width - count - 1 ) * 8 ) ) & 0xFF;
 					}
-					u32text = Str::UTF8To32(buffer);
-
-					for (char32_t u32char : u32text) {
-						input_field.AddChar(u32char);
-					}
+					input_field.AddChar( Q_UTF8_CodePoint( buf ) );
 				}
 				break;
 			}
