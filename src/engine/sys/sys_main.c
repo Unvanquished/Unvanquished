@@ -557,7 +557,12 @@ void Sys_HelpText( const char *binaryName )
 	        , binaryName );
 }
 
-int main( int argc, char **argv )
+#if defined(_WIN32) && defined(__GNUC__)
+#define ALIGN_STACK __attribute__((force_align_arg_pointer))
+#else
+#define ALIGN_STACK
+#endif
+int ALIGN_STACK main( int argc, char **argv )
 {
 	int  i;
 	char commandLine[ MAX_STRING_CHARS ] = { 0 };

@@ -1145,7 +1145,6 @@ void PDC_set_resize_limits( const int new_min_lines, const int new_max_lines,
 static void adjust_window_size( int *xpixels, int *ypixels, int window_style,
                const int menu_shown)
 {
-   const int is_resizable = (min_lines != max_lines || min_cols != max_cols);
    RECT rect = {0, 0, *xpixels, *ypixels};
    AdjustWindowRect( &rect, window_style, menu_shown);
    *xpixels = rect.right - rect.left;
@@ -1641,7 +1640,12 @@ Note,  though,  that in Win9x,  detection of the Shift keys is hardware
 dependent;  if you've an unusual keyboard,  both Shift keys may be
 detected as right, or both as left. */
 
-static LRESULT CALLBACK WndProc (const HWND hwnd,
+#ifdef __GNUC__
+#define ALIGN_STACK __attribute__((force_align_arg_pointer))
+#else
+#define ALIGN_STACK
+#endif
+static LRESULT CALLBACK ALIGN_STACK WndProc (const HWND hwnd,
                           const UINT message,
                           const WPARAM wParam,
                           const LPARAM lParam)
