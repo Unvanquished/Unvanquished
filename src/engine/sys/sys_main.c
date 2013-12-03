@@ -557,6 +557,8 @@ void Sys_HelpText( const char *binaryName )
 	        , binaryName );
 }
 
+// GCC expects a 16-byte aligned stack but Windows only guarantees 4-byte alignment.
+// The MinGW startup code should be handling this but for some reason it isn't.
 #if defined(_WIN32) && defined(__GNUC__)
 #define ALIGN_STACK __attribute__((force_align_arg_pointer))
 #else

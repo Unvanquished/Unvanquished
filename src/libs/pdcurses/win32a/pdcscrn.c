@@ -1640,6 +1640,7 @@ Note,  though,  that in Win9x,  detection of the Shift keys is hardware
 dependent;  if you've an unusual keyboard,  both Shift keys may be
 detected as right, or both as left. */
 
+// GCC expects a 16-byte aligned stack but Windows only guarantees 4-byte alignment
 #ifdef __GNUC__
 #define ALIGN_STACK __attribute__((force_align_arg_pointer))
 #else
