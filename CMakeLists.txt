@@ -235,7 +235,6 @@ else()
 
   # Warning options
   set_c_cxx_flag( "-Wall" )
-  set_cxx_flag( "-fpermissive" )
   if( USE_WEXTRA )
     set_c_cxx_flag( "-Wextra" )
   else()
