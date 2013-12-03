@@ -206,11 +206,8 @@ basically a slightly modified Cvar_Get for the interpreted modules
 static std::unordered_map<int, std::string> vmCvarsIndices;
 
 void Cvar_Register(vmCvar_t *vmCvar, const char *varName, const char *defaultValue, int flags) {
-	cvar_t* cv = Cvar_FindVar(varName);
-
-	if (not cv) {
-		cv = Cvar_Get( varName, defaultValue, flags );
-	}
+	// if the cvar was created by a script, it won't have the correct flags
+	cvar_t* cv = Cvar_Get(varName, defaultValue, flags);
 
 	vmCvarsIndices[cv->index] = cv->name;
 
