@@ -109,7 +109,7 @@ protected:
 	{
 	}
 
-	~GLShader()
+	virtual ~GLShader()
 	{
 		for ( std::size_t i = 0; i < _shaderPrograms.size(); i++ )
 		{
