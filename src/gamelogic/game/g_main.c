@@ -110,15 +110,15 @@ vmCvar_t           g_initialMineRate;
 vmCvar_t           g_mineRateHalfLife;
 vmCvar_t           g_minimumMineRate;
 
-vmCvar_t           g_debugConfidence;
-vmCvar_t           g_confidenceHalfLife;
-vmCvar_t           g_confidenceRewardDoubleTime;
+vmCvar_t           g_debugMomentum;
+vmCvar_t           g_momentumHalfLife;
+vmCvar_t           g_momentumRewardDoubleTime;
 vmCvar_t           g_unlockableMinTime;
-vmCvar_t           g_confidenceBaseMod;
-vmCvar_t           g_confidenceKillMod;
-vmCvar_t           g_confidenceBuildMod;
-vmCvar_t           g_confidenceDeconMod;
-vmCvar_t           g_confidenceDestroyMod;
+vmCvar_t           g_momentumBaseMod;
+vmCvar_t           g_momentumKillMod;
+vmCvar_t           g_momentumBuildMod;
+vmCvar_t           g_momentumDeconMod;
+vmCvar_t           g_momentumDestroyMod;
 
 vmCvar_t           g_humanAllowBuilding;
 vmCvar_t           g_alienAllowBuilding;
@@ -331,15 +331,15 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_mineRateHalfLife,            "g_mineRateHalfLife",            DEFAULT_MINE_RATE_HALF_LIFE,        CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_minimumMineRate,             "g_minimumMineRate",             DEFAULT_MINIMUM_MINE_RATE,          CVAR_ARCHIVE,                                    0, qfalse           },
 
-	{ &g_debugConfidence,             "g_debugConfidence",             "0",                                0,                                               0, qfalse           },
-	{ &g_confidenceHalfLife,          "g_confidenceHalfLife",          DEFAULT_CONFIDENCE_HALF_LIFE,       CVAR_SERVERINFO | CVAR_ARCHIVE,                  0, qfalse           },
-	{ &g_confidenceRewardDoubleTime,  "g_confidenceRewardDoubleTime",  DEFAULT_CONF_REWARD_DOUBLE_TIME,    CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_debugMomentum,             "g_debugMomentum",             "0",                                0,                                               0, qfalse           },
+	{ &g_momentumHalfLife,          "g_momentumHalfLife",          DEFAULT_MOMENTUM_HALF_LIFE,       CVAR_SERVERINFO | CVAR_ARCHIVE,                  0, qfalse           },
+	{ &g_momentumRewardDoubleTime,  "g_momentumRewardDoubleTime",  DEFAULT_CONF_REWARD_DOUBLE_TIME,    CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_unlockableMinTime,           "g_unlockableMinTime",           DEFAULT_UNLOCKABLE_MIN_TIME,        CVAR_SERVERINFO | CVAR_ARCHIVE,                  0, qfalse           },
-	{ &g_confidenceBaseMod,           "g_confidenceBaseMod",           DEFAULT_CONFIDENCE_BASE_MOD,        CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_confidenceKillMod,           "g_confidenceKillMod",           DEFAULT_CONFIDENCE_KILL_MOD,        CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_confidenceBuildMod,          "g_confidenceBuildMod",          DEFAULT_CONFIDENCE_BUILD_MOD,       CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_confidenceDeconMod,          "g_confidenceDeconMod",          DEFAULT_CONFIDENCE_DECON_MOD,       CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_confidenceDestroyMod,        "g_confidenceDestroyMod",        DEFAULT_CONFIDENCE_DESTROY_MOD,     CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_momentumBaseMod,           "g_momentumBaseMod",           DEFAULT_MOMENTUM_BASE_MOD,        CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_momentumKillMod,           "g_momentumKillMod",           DEFAULT_MOMENTUM_KILL_MOD,        CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_momentumBuildMod,          "g_momentumBuildMod",          DEFAULT_MOMENTUM_BUILD_MOD,       CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_momentumDeconMod,          "g_momentumDeconMod",          DEFAULT_MOMENTUM_DECON_MOD,       CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_momentumDestroyMod,        "g_momentumDestroyMod",        DEFAULT_MOMENTUM_DESTROY_MOD,     CVAR_ARCHIVE,                                    0, qfalse           },
 
 	{ &g_humanAllowBuilding,          "g_humanAllowBuilding",          "1",                                0,                                               0, qfalse           },
 	{ &g_alienAllowBuilding,          "g_alienAllowBuilding",          "1",                                0,                                               0, qfalse           },
@@ -853,7 +853,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 	{
 		G_Printf( "Not logging to disk\n" );
 	}
-	
+
 	// gameplay statistics logging
 	if ( g_logGameplayStatsFrequency.integer > 0 )
 	{
@@ -944,6 +944,8 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 	level.spawning = qtrue;
 	// parse the key/value pairs and spawn gentities
 	G_SpawnEntitiesFromString();
+	// add any fake entities
+	G_SpawnFakeEntities();
 
 	// load up a custom building layout if there is one
 	G_LayoutLoad();
@@ -1460,20 +1462,13 @@ void G_CountSpawns( void )
 		}
 
 		//TODO create a function to check if a building is a spawn
-		if( ent->s.modelindex == BA_A_SPAWN || ent->s.modelindex == BA_H_SPAWN )
+		if( ent->s.modelindex == BA_A_SPAWN )
 		{
-			team_t team;
-			//TODO create a function to guess the team which own a building depending on it's modelindex
-			switch(ent->s.modelindex)
-			{
-				case BA_A_SPAWN:
-					team = TEAM_ALIENS;
-					break;
-				case BA_H_SPAWN:
-					team = TEAM_HUMANS;
-					break;
-			}
-			level.team[ team ].numSpawns++;
+			level.team[ TEAM_ALIENS ].numSpawns++;
+		}
+		else if ( ent->s.modelindex == BA_H_SPAWN )
+		{
+			level.team[ TEAM_HUMANS ].numSpawns++;
 		}
 	}
 }
@@ -1883,8 +1878,17 @@ void ExitLevel( void )
 {
 	int       i;
 	gclient_t *cl;
+	char currentMapName[ MAX_STRING_CHARS ];
 
-	if ( G_MapExists( g_nextMap.string ) )
+	trap_Cvar_VariableStringBuffer( "mapname", currentMapName, sizeof( currentMapName ) );
+
+	// Restart if map is the same
+	if ( !Q_stricmp( currentMapName, g_nextMap.string ) )
+	{
+		trap_Cvar_Set( "g_layouts", g_nextMapLayouts.string );
+		trap_SendConsoleCommand( EXEC_APPEND, "map_restart" );
+	}
+	else if ( G_MapExists( g_nextMap.string ) )
 	{
 		trap_SendConsoleCommand( EXEC_APPEND, va( "map %s %s\n", Quote( g_nextMap.string ), Quote( g_nextMapLayouts.string ) ) );
 	}
@@ -2133,7 +2137,7 @@ static void G_LogGameplayStats( int state )
 				     "# Time:    %02i:%02i:%02i\n"
 				     "# Format:  %i\n"
 				     "#\n"
-				     "# g_confidenceHalfLife:      %4i\n"
+				     "# g_momentumHalfLife:      %4i\n"
 				     "# g_initialBuildPoints:      %4i\n"
 				     "# g_initialMineRate:         %4i\n"
 				     "# g_mineRateHalfLife:        %4i\n"
@@ -2146,7 +2150,7 @@ static void G_LogGameplayStats( int state )
 				     t.tm_year + 1900, t.tm_mon + 1, t.tm_mday,
 				     t.tm_hour, t.tm_min, t.tm_sec,
 				     LOG_GAMEPLAY_STATS_VERSION,
-				     g_confidenceHalfLife.integer,
+				     g_momentumHalfLife.integer,
 				     g_initialBuildPoints.integer,
 				     g_initialMineRate.integer,
 				     g_mineRateHalfLife.integer );
@@ -2172,7 +2176,7 @@ static void G_LogGameplayStats( int state )
 			for( team = TEAM_NONE + 1; team < NUM_TEAMS; team++ )
 			{
 				num[ team ] = level.team[ team ].numClients;
-				Con[ team ] = ( int )level.team[ team ].confidence;
+				Con[ team ] = ( int )level.team[ team ].momentum;
 				ME [ team ] = level.team[ team ].mineEfficiency;
 				BP [ team ] = level.team[ team ].buildPoints;
 			}
@@ -3124,7 +3128,7 @@ void G_RunFrame( int levelTime )
 	G_CountSpawns();
 	G_SetHumanBuildablePowerState();
 	G_CalculateMineRate();
-	G_DecreaseConfidence();
+	G_DecreaseMomentum();
 	G_CalculateAvgPlayers();
 	G_SpawnClients( TEAM_ALIENS );
 	G_SpawnClients( TEAM_HUMANS );

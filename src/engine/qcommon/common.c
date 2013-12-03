@@ -160,7 +160,9 @@ int QDECL VPRINTF_LIKE(1) Com_VPrintf( const char *fmt, va_list argptr )
 
 	//Build the message
 	char msg[MAXPRINTMSG];
+	memset( msg, 0, sizeof( msg ) );
 	Q_vsnprintf(msg, sizeof(msg), fmt, argptr);
+	msg[ MAXPRINTMSG - 1 ] = '\0';
 
 	//Remove a trailing newline, this is handled by Log::*
 	int len = strlen(msg);

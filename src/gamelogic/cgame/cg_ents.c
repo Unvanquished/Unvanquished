@@ -1098,7 +1098,7 @@ static void CG_CEntityPVSEnter( centity_t *cent )
 	cent->muzzlePS = NULL;
 	cent->muzzlePsTrigger = qfalse;
 	cent->jetPackPS = NULL;
-	cent->jetPackState = JPS_OFF;
+	cent->jetPackState = JPS_INACTIVE;
 	cent->buildablePS = NULL;
 	cent->buildableStatusPS = NULL;
 	cent->entityPS = NULL;

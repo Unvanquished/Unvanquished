@@ -1117,3 +1117,21 @@ void G_SpawnEntitiesFromString( void )
 		G_SpawnGEntityFromSpawnVars();
 	}
 }
+
+void G_SpawnFakeEntities( void )
+{
+	level.fakeLocation = G_NewEntity();
+	level.fakeLocation->s.origin[ 0 ] =
+	level.fakeLocation->s.origin[ 1 ] =
+	level.fakeLocation->s.origin[ 2 ] = 1.7e19f; // well out of range
+	level.fakeLocation->message = NULL;
+
+	level.fakeLocation->s.eType = ET_LOCATION;
+	level.fakeLocation->r.svFlags = SVF_BROADCAST;
+
+	level.fakeLocation->nextPathSegment = level.locationHead;
+	level.fakeLocation->s.generic1 = G_LocationIndex( "" );
+	level.locationHead = level.fakeLocation;
+
+	G_SetOrigin( level.fakeLocation, level.fakeLocation->s.origin );
+}

@@ -54,6 +54,8 @@ namespace Cmd {
     std::string Escape(Str::StringRef text);
     const char* SplitCommand(const char* start, const char* end);
     std::string SubstituteCvars(Str::StringRef text);
+    bool IsValidCmdName(Str::StringRef text);
+    bool IsValidCvarName(Str::StringRef text);
 
     /**
      * Cmd::Args represents the arguments given to an invoked command.

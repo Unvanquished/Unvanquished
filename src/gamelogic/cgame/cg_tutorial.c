@@ -44,7 +44,7 @@ static bind_t bindings[] =
 	{ "buy ammo",       N_( "Buy Ammo" ),                              { -1, -1 } },
 	{ "itemact medkit", N_( "Use Medkit" ),                            { -1, -1 } },
 	{ "+activate",      N_( "Use Structure/Evolve" ),                  { -1, -1 } },
-	{ "if alt \"/deconstruct marked\" /deconstruct",
+	{ "modcase alt \"/deconstruct marked\" /deconstruct",
                             N_( "Deconstruct Structure" ),                 { -1, -1 } },
 	{ "weapprev",       N_( "Previous Upgrade" ),                      { -1, -1 } },
 	{ "weapnext",       N_( "Next Upgrade" ),                          { -1, -1 } },
@@ -212,7 +212,7 @@ static void CG_BuilderText( char *text, playerState_t *ps )
 
 	if ( ( es = CG_BuildableInRange( ps, NULL ) ) )
 	{
-	        const char *key = CG_KeyNameForCommand( "if alt \"/deconstruct marked\" /deconstruct" );
+	        const char *key = CG_KeyNameForCommand( "modcase alt \"/deconstruct marked\" /deconstruct" );
 
 		if ( cgs.markDeconstruct )
 		{

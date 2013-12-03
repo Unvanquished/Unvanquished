@@ -1615,11 +1615,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	typedef struct drawSurf_s
 	{
 		trRefEntity_t *entity;
+		surfaceType_t *surface; // any of surface*_t
 		uint32_t      shaderNum;
 		int16_t       lightmapNum;
 		int16_t       fogNum;
-
-		surfaceType_t *surface; // any of surface*_t
+		uint32_t      addedIndex; // index of the drawSurf in the array before sorting
 	} drawSurf_t;
 
 	typedef enum
@@ -2865,9 +2865,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		scissorState_t scissor;
 	} trGlobals_t;
 
-	typedef struct {
-		qboolean FXAA;
-	} glBroken_t;
+//	typedef struct {
+//	} glBroken_t;
 
 	extern const matrix_t quakeToOpenGLMatrix;
 	extern const matrix_t openGLToQuakeMatrix;
@@ -2881,7 +2880,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	extern glconfig_t     glConfig; // outside of TR since it shouldn't be cleared during ref re-init
 	extern glconfig2_t    glConfig2;
 
-	extern glBroken_t     glBroken;
+//	extern glBroken_t     glBroken;
 
 	extern glstate_t      glState; // outside of TR since it shouldn't be cleared during ref re-init
 

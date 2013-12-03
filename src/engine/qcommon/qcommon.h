@@ -400,6 +400,8 @@ namespace VM {
 
 class VMBase {
 public:
+  VMBase()
+    : vm(nullptr) {}
   void Create(const char* name, intptr_t (*systemCalls)(intptr_t *), vmInterpret_t type)
   {
     vm = VM_Create(name, systemCalls, type);
@@ -415,7 +417,7 @@ public:
   }
 
 protected:
-  vm_t* vm = nullptr;
+  vm_t* vm;
 };
 
 } // namespace VM
@@ -502,6 +504,7 @@ char *Cmd_Argv( int arg );
 void Cmd_ArgvBuffer( int arg, char *buffer, int bufferLength );
 char *Cmd_Args( void );
 char *Cmd_ArgsFrom( int arg );
+void Cmd_LiteralArgsBuffer( char* buffer, int bufferLength );
 void Cmd_ArgsBuffer( char *buffer, int bufferLength );
 const char *Cmd_Cmd( void );
 const char *Cmd_Cmd_FromNth( int );
@@ -921,7 +924,7 @@ temp file loading
 static inline void* Z_TagMalloc(size_t size, int tag)
 {
   Q_UNUSED(tag);
-  return malloc(size);
+  return calloc(size, 1);
 }
 static inline void* Z_Malloc(size_t size)
 {
@@ -984,8 +987,6 @@ void     CL_ClearStaticDownload( void );
 void     CL_Disconnect( qboolean showMainMenu );
 void     CL_Shutdown( void );
 void     CL_Frame( int msec );
-qboolean CL_GameCommand( void );
-void     CL_GameCommandHandler( void );
 void     CL_KeyEvent( int key, qboolean down, unsigned time );
 
 void     CL_CharEvent( int c );
@@ -1049,15 +1050,7 @@ void     SV_Init( void );
 void     SV_Shutdown( const char *finalmsg );
 void     SV_Frame( int msec );
 void     SV_PacketEvent( netadr_t from, msg_t *msg );
-qboolean SV_GameCommand( void );
-void     SV_GameCommandHandler( void );
 int      SV_FrameMsec( void );
-
-//
-// UI interface
-//
-qboolean UI_GameCommand( void );
-void     UI_GameCommandHandler( void );
 
 /*
 ==============================================================

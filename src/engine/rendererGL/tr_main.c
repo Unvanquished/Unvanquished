@@ -2339,6 +2339,7 @@ void R_AddDrawSurf( surfaceType_t *surface, shader_t *shader, int lightmapNum, i
 	drawSurf->shaderNum = shader->sortedIndex;
 	drawSurf->lightmapNum = lightmapNum;
 	drawSurf->fogNum = fogNum;
+	drawSurf->addedIndex = index;
 
 	tr.refdef.numDrawSurfs++;
 }
@@ -2349,17 +2350,19 @@ DrawSurfCompare
 compare function for qsort()
 =================
 */
-static int DrawSurfCompare( const void *a, const void *b )
+static int DrawSurfCompare( const void *ai, const void *bi )
 {
+	drawSurf_t *a = ( drawSurf_t * ) ai;
+	drawSurf_t *b = ( drawSurf_t * ) bi;
 #if 1
 
 	// by shader
-	if ( ( ( drawSurf_t * ) a )->shaderNum < ( ( drawSurf_t * ) b )->shaderNum )
+	if ( a->shaderNum < b->shaderNum )
 	{
 		return -1;
 	}
 
-	else if ( ( ( drawSurf_t * ) a )->shaderNum > ( ( drawSurf_t * ) b )->shaderNum )
+	else if ( a->shaderNum > b->shaderNum )
 	{
 		return 1;
 	}
@@ -2369,12 +2372,12 @@ static int DrawSurfCompare( const void *a, const void *b )
 #if 1
 
 	// by lightmap
-	if ( ( ( drawSurf_t * ) a )->lightmapNum < ( ( drawSurf_t * ) b )->lightmapNum )
+	if ( a->lightmapNum < b->lightmapNum )
 	{
 		return -1;
 	}
 
-	else if ( ( ( drawSurf_t * ) a )->lightmapNum > ( ( drawSurf_t * ) b )->lightmapNum )
+	else if ( a->lightmapNum > b->lightmapNum )
 	{
 		return 1;
 	}
@@ -2384,22 +2387,22 @@ static int DrawSurfCompare( const void *a, const void *b )
 #if 1
 
 	// by entity
-	if ( ( ( drawSurf_t * ) a )->entity == &tr.worldEntity && ( ( drawSurf_t * ) b )->entity != &tr.worldEntity )
+	if ( a->entity == &tr.worldEntity && b->entity != &tr.worldEntity )
 	{
 		return -1;
 	}
 
-	else if ( ( ( drawSurf_t * ) a )->entity != &tr.worldEntity && ( ( drawSurf_t * ) b )->entity == &tr.worldEntity )
+	else if ( a->entity != &tr.worldEntity && b->entity == &tr.worldEntity )
 	{
 		return 1;
 	}
 
-	else if ( ( ( drawSurf_t * ) a )->entity < ( ( drawSurf_t * ) b )->entity )
+	else if ( a->entity < b->entity )
 	{
 		return -1;
 	}
 
-	else if ( ( ( drawSurf_t * ) a )->entity > ( ( drawSurf_t * ) b )->entity )
+	else if ( a->entity > b->entity )
 	{
 		return 1;
 	}
@@ -2409,17 +2412,28 @@ static int DrawSurfCompare( const void *a, const void *b )
 #if 1
 
 	// by fog
-	if ( ( ( drawSurf_t * ) a )->fogNum < ( ( drawSurf_t * ) b )->fogNum )
+	if ( a->fogNum < b->fogNum )
 	{
 		return -1;
 	}
 
-	else if ( ( ( drawSurf_t * ) a )->fogNum > ( ( drawSurf_t * ) b )->fogNum )
+	else if ( a->fogNum > b->fogNum )
 	{
 		return 1;
 	}
 
 #endif
+
+	// emulate a stable sort algorithm by comparing
+	// the original position of the drawSurfs in the array
+	if ( a->addedIndex < b->addedIndex )
+	{
+		return -1;
+	}
+	else if ( a->addedIndex > b->addedIndex )
+	{
+		return 1;
+	}
 
 	return 0;
 }
@@ -2466,7 +2480,6 @@ static void R_SortDrawSurfs( void )
 	}
 
 	// sort the drawsurfs by sort type, then orientation, then shader
-//  qsortFast(drawSurfs, numDrawSurfs, sizeof(drawSurf_t));
 	qsort( tr.viewParms.drawSurfs, tr.viewParms.numDrawSurfs, sizeof( drawSurf_t ), DrawSurfCompare );
 
 	// check for any pass through drawing, which

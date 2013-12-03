@@ -433,7 +433,7 @@ rescan:
 			Com_Error( ERR_DROP, "bcs exceeded BIG_INFO_STRING" );
 		}
 
-		strcat( bigConfigString, s );
+		Q_strcat( bigConfigString, sizeof( bigConfigString ), s );
 		return qfalse;
 	}
 
@@ -446,8 +446,8 @@ rescan:
 			Com_Error( ERR_DROP, "bcs exceeded BIG_INFO_STRING" );
 		}
 
-		strcat( bigConfigString, s );
-		strcat( bigConfigString, "\"" );
+		Q_strcat( bigConfigString, sizeof( bigConfigString ), s );
+		Q_strcat( bigConfigString, sizeof( bigConfigString ), "\"" );
 		s = bigConfigString;
 		goto rescan;
 	}
@@ -696,9 +696,8 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 
 		case CG_LITERAL_ARGS:
 			cls.nCgameUselessSyscalls ++;
-			// This is only used by CG_CONSOLE_TEXT, so we hack it to put the value in argv[0]
 			VM_CheckBlock( args[1], args[2], "LARGS" );
-			Cmd_ArgvBuffer( 0, (char*) VMA( 1 ), args[ 2 ] );
+			Cmd_LiteralArgsBuffer((char*) VMA( 1 ), args[ 2 ] );
 			return 0;
 
 		case CG_GETDEMOSTATE:
@@ -1606,35 +1605,12 @@ void CL_InitCGameCVars( void )
 
 /*
 ====================
-CL_GameCommand
-
-See if the current console command is claimed by the cgame
-====================
-*/
-qboolean CL_GameCommand( void )
-{
-	if ( !cgvm )
-	{
-		return qfalse;
-	}
-
-	return VM_Call( cgvm, CG_CONSOLE_COMMAND );
-}
-
-/*
-====================
 CL_GameCommandHandler
 ====================
 */
 void CL_GameCommandHandler( void )
 {
-	//When the commands is registered for cgame and not actually implemented in cgame
-	//it means it is just to allow autocompletion of remote commands. cf CG_InitConsoleCommands.
-	//This is a terrible hack that forwards the command to the server
-	//TODO: change the gamelogic to fix this hack
-	if( !VM_Call( cgvm, CG_CONSOLE_COMMAND ) ) {
-		CL_ForwardCommandToServer(Cmd_ArgsFrom(0));
-	}
+	VM_Call( cgvm, CG_CONSOLE_COMMAND );
 }
 
 /*

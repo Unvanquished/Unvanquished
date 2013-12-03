@@ -62,7 +62,7 @@
       rect (W/3) 0 (W/3) BAR_H
       decoration
       visible MENU_TRUE
-      ownerdraw CG_CONFIDENCE_TEXT
+      ownerdraw CG_MOMENTUM_TEXT
     }
 
     itemDef

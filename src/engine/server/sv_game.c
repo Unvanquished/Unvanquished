@@ -899,23 +899,6 @@ void SV_InitGameProgs( void )
 
 /*
 ====================
-SV_GameCommand
-
-See if the current console command is claimed by the game
-====================
-*/
-qboolean SV_GameCommand( void )
-{
-	if ( sv.state != SS_GAME )
-	{
-		return qfalse;
-	}
-
-	return gvm.GameConsoleCommand();
-}
-
-/*
-====================
 SV_GameCommandHandler
 ====================
 */

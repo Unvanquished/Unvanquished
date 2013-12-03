@@ -142,11 +142,6 @@ float RADAR_RANGE;
 
 float BATTPACK_MODIFIER;
 
-float JETPACK_FLOAT_SPEED;
-float JETPACK_SINK_SPEED;
-int   JETPACK_DISABLE_TIME;
-float JETPACK_DISABLE_CHANCE;
-
 int   MEDKIT_POISON_IMMUNITY_TIME;
 int   MEDKIT_STARTUP_TIME;
 int   MEDKIT_STARTUP_SPEED;
@@ -264,11 +259,6 @@ static configVar_t bg_configVars[] =
 	{"b_tesla_zapAttackRepeat", INTEGER, qfalse, &TESLAGEN_REPEAT},
 
 	{"u_battpack_ammoCapacityModifier", FLOAT, qfalse, &BATTPACK_MODIFIER},
-
-    {"u_jetpack_disableChance", FLOAT, qfalse, &JETPACK_DISABLE_CHANCE},
-	{"u_jetpack_disableTime", INTEGER, qfalse, &JETPACK_DISABLE_TIME},
-	{"u_jetpack_riseSpeed", FLOAT, qfalse, &JETPACK_FLOAT_SPEED},
-	{"u_jetpack_sinkSpeed", FLOAT, qfalse, &JETPACK_SINK_SPEED},
 
 	{"u_medkit_poisonImmunityTime", INTEGER, qfalse, &MEDKIT_POISON_IMMUNITY_TIME},
 	{"u_medkit_startupSpeed", INTEGER, qfalse, &MEDKIT_STARTUP_SPEED},

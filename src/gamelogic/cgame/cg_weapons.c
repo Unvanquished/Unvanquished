@@ -1910,7 +1910,7 @@ static qboolean CG_UpgradeSelectable( upgrade_t upgrade )
 CG_DrawItemSelect
 ===================
 */
-void CG_DrawItemSelect( rectDef_t *rect, vec4_t color )
+void CG_DrawHumanInventory( rectDef_t *rect, vec4_t backColor, vec4_t foreColor )
 {
 	int           i;
 	float         x = rect->x;
@@ -2069,21 +2069,26 @@ void CG_DrawItemSelect( rectDef_t *rect, vec4_t color )
 					break;
 
 				default:
-					VectorCopy( color, localColor );
+					VectorCopy( foreColor, localColor );
 					break;
+			}
+
+			if ( item == selectedItem )
+			{
+				trap_R_SetColor( backColor );
+
+				CG_DrawPic( x, y, iconWidth, iconHeight, cgs.media.whiteShader );
 			}
 
 			trap_R_SetColor( localColor );
 
 			if ( items[ item ] < 32 )
 			{
-				CG_DrawPic( x, y, iconWidth, iconHeight,
-				            cg_weapons[ items[ item ] ].weaponIcon );
+				CG_DrawPic( x, y, iconWidth, iconHeight, cg_weapons[ items[ item ] ].weaponIcon );
 			}
 			else
 			{
-				CG_DrawPic( x, y, iconWidth, iconHeight,
-				            cg_upgrades[ items[ item ] - 32 ].upgradeIcon );
+				CG_DrawPic( x, y, iconWidth, iconHeight, cg_upgrades[ items[ item ] - 32 ].upgradeIcon );
 			}
 		}
 

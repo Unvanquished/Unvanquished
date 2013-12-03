@@ -6037,7 +6037,7 @@ static const char *const g_bind_commands[] =
 	"+useitem",
 	"+voiprecord",
 	"centerview",
-	"if alt \"/deconstruct marked\" /deconstruct",
+	"modcase alt \"/deconstruct marked\" /deconstruct",
 	"menu voip",
 	"messagemode",
 	"messagemode2",
@@ -6046,7 +6046,7 @@ static const char *const g_bind_commands[] =
 	"messagemodec",
 	"scoresDown",
 	"scoresUp",
-	"if shift /screenshotJPEG /screenshotPNG",
+	"modcase shift /screenshotJPEG /screenshotPNG",
 	"teamvote no",
 	"teamvote yes",
 	"vote no",
@@ -6116,7 +6116,7 @@ static void Controls_GetKeyAssignment( const char *command, int *twokeys )
 		}
 		else
 		{
-			DC->getBindingBuf( j, team, b, sizeof( b ) );
+			DC->getBindingBuf( j, TEAM_NONE /*team*/, b, sizeof( b ) );
 
 			if ( *b && !Q_stricmp( b, command ) )
 			{
@@ -9696,62 +9696,17 @@ int UI_GetChatColour( int which, int team )
 
 void UI_R_GlyphChar( fontHandle_t font, int ch, glyphInfo_t *glyph )
 {
-  static int engineState = 0;
-
-  if( !( engineState & 0x01 ) )
-  {
-    char t[2];
-
-    engineState |= 0x01;
-
-    trap_Cvar_VariableStringBuffer( "\\IS_GETTEXT_SUPPORTED", t, 2 );
-
-    if( t[0] == '1' )
-      engineState |= 0x02;
-  }
-
-  if( engineState & 0x02 )
-    trap_R_GlyphChar( font, ch, glyph );
+  trap_R_GlyphChar( font, ch, glyph );
 }
 
 void UI_R_Glyph( fontHandle_t font, const char *str, glyphInfo_t *glyph )
 {
-  static int engineState = 0;
-
-  if( !( engineState & 0x01 ) )
-  {
-    char t[2];
-
-    engineState |= 0x01;
-
-    trap_Cvar_VariableStringBuffer( "\\IS_GETTEXT_SUPPORTED", t, 2 );
-
-    if( t[0] == '1' )
-      engineState |= 0x02;
-  }
-
-  if( engineState & 0x02 )
-    trap_R_Glyph( font, str, glyph );
+  trap_R_Glyph( font, str, glyph );
 }
 
 void UI_R_UnregisterFont( fontHandle_t font )
 {
-  static int engineState = 0;
-
-  if( !( engineState & 0x01 ) )
-  {
-    char t[2];
-
-    engineState |= 0x01;
-
-    trap_Cvar_VariableStringBuffer( "\\IS_GETTEXT_SUPPORTED", t, 2 );
-
-    if( t[0] == '1' )
-      engineState |= 0x02;
-  }
-
-  if( engineState & 0x02 )
-    trap_R_UnregisterFont( font );
+  trap_R_UnregisterFont( font );
 }
 
 const char *Gettext( const char *msgid )

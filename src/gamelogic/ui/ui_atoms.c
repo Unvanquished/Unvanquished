@@ -221,7 +221,7 @@ static void UI_Me_f( void )
 	strcpy( buf, "/me " );
 	UI_ConcatArgs( 1, buf + 4, sizeof( buf ) - 4 );
 
-	trap_Cmd_ExecuteText( EXEC_APPEND, va( "say %s", Quote( buf ) ) );
+	trap_Cmd_ExecuteText( EXEC_APPEND, va( "say %s\n", Quote( buf ) ) );
 }
 
 static const struct uicmd
@@ -263,6 +263,15 @@ qboolean UI_ConsoleCommand( int realTime )
 	}
 
 	return qfalse;
+}
+
+void UI_RegisterCommands()
+{
+	unsigned i;
+	for ( i = 0; i < ARRAY_LEN( commands ); i++ )
+	{
+		trap_AddCommand( commands[ i ].cmd );
+	}
 }
 
 void UI_DrawNamedPic( float x, float y, float width, float height, const char *picname )

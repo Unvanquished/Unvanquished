@@ -65,38 +65,6 @@ static cmdContext_t cmd;
 
 /*
 ============
-Cbuf_AddText
-
-Adds command text at the end of the buffer, does NOT add a final \n
-============
-*/
-void Cbuf_AddText( const char *text )
-{
-	static int cursize = 0;
-	static char data[MAX_CMD_BUFFER];
-	int l;
-
-	l = strlen( text );
-
-	if ( cursize + l + 1 >= MAX_CMD_BUFFER )
-	{
-		Com_Printf(_( "Cbuf_AddText: overflow\n" ));
-		return;
-	}
-
-	Com_Memcpy( &data[ cursize ], text, l );
-	cursize += l;
-	data[cursize] = '\0';
-
-	if (strchr( data, '\n') != NULL)
-	{
-		Cmd::BufferCommandText((char*) data, true);
-		cursize = 0;
-	}
-}
-
-/*
-============
 Cbuf_ExecuteText
 ============
 */
@@ -107,18 +75,20 @@ void Cbuf_ExecuteText( int exec_when, const char *text )
 		case EXEC_NOW:
 			if ( text && strlen( text ) > 0 )
 			{
-				Cmd::BufferCommandTextAfter(text, true);
+				Cmd::ExecuteCommand(text, true);
 			}
-			Cmd::ExecuteCommandBuffer();
-
+			else
+			{
+				Cmd::ExecuteCommandBuffer();
+			}
 			break;
 
 		case EXEC_INSERT:
-            Cmd::BufferCommandTextAfter(text, true);
+			Cmd::BufferCommandTextAfter(text, true);
 			break;
 
 		case EXEC_APPEND:
-			Cbuf_AddText( text );
+			Cmd::BufferCommandText(text, true);
 			break;
 
 		default:
@@ -231,6 +201,19 @@ char *Cmd_ArgsFrom( int arg )
 	strcpy(cmd_args, res.c_str());
 
 	return cmd_args;
+}
+
+/*
+============
+Cmd_LiteralArgsBuffer
+============
+*/
+
+void Cmd_LiteralArgsBuffer( char* buffer, int bufferLength )
+{
+	const Cmd::Args& args = Cmd::GetCurrentArgs();
+	const std::string& res = args.ConcatArgs(0);
+	Q_strncpyz( buffer, res.c_str(), bufferLength );
 }
 
 /*
@@ -582,19 +565,12 @@ class ProxyCmd: public Cmd::CmdBase {
 	public:
 		ProxyCmd(): Cmd::CmdBase(Cmd::PROXY_FOR_OLD) {}
 
-		void Run(const Cmd::Args& args) const override {
+		void Run(const Cmd::Args& args) const OVERRIDE {
 			proxyInfo_t proxy = proxies[args.Argv(0)];
-			if (proxy.cmd != 0) {
-				proxy.cmd();
-			} else if (com_cl_running && com_cl_running->integer){
-				CL_GameCommand();
-				//The only case where we add commands without a function pointer is for cgame so that it can still have a completion handler.
-				return;
-			}
-
+			proxy.cmd();
 		}
 
-		Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, const std::string& prefix) const override {
+		Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, const std::string& prefix) const OVERRIDE {
 			static char buffer[4096];
 			proxyInfo_t proxy = proxies[args.Argv(0)];
 

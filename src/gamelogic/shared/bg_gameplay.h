@@ -164,8 +164,6 @@ extern int   LEVEL4_CRUSH_REPEAT;
 #define LOCKBLOB_LOCKTIME       5000
 #define LOCKBLOB_DOT            0.85f // max angle = acos( LOCKBLOB_DOT )
 
-#define OVERMIND_HEALTH         750
-
 /*
  * ALIEN misc
  */
@@ -259,11 +257,6 @@ extern float RADAR_RANGE;
 
 extern float BATTPACK_MODIFIER;
 
-extern float JETPACK_FLOAT_SPEED;
-extern float JETPACK_SINK_SPEED;
-extern int   JETPACK_DISABLE_TIME;
-extern float JETPACK_DISABLE_CHANCE;
-
 extern int   MEDKIT_POISON_IMMUNITY_TIME;
 extern int   MEDKIT_STARTUP_TIME;
 extern int   MEDKIT_STARTUP_SPEED;
@@ -316,9 +309,24 @@ extern int   REACTOR_ATTACK_DCC_DAMAGE;
 #define HUMAN_MAX_CREDITS             2000
 #define HUMAN_TK_SUICIDE_PENALTY      150
 
+#define HUMAN_AMMO_REFILL_PERIOD      2000 // don't refill ammo more frequently than this
+
+#define JETPACK_TARGETSPEED           350.0f
+#define JETPACK_ACCELERATION          3.0f
+#define JETPACK_JUMPMAG_REDUCTION     0.25f
+#define JETPACK_DMG_DISABLE_TIME      600   // in ms
+#define JETPACK_FUEL_MAX              30000 // needs to be < 2^15
+#define JETPACK_FUEL_USAGE            6     // in 1/ms
+#define JETPACK_FUEL_RESTORE          3     // in 1/ms
+#define JETPACK_FUEL_LOW              JETPACK_FUEL_MAX / 5       // jetpack doesn't start from a jump below this
+#define JETPACK_FUEL_STOP             JETPACK_FUEL_RESTORE * 150 // jetpack doesn't activate below this
+
 /*
  * Misc
  */
+
+#define ENTITY_USE_RANGE                   64.0f
+#define ENTITY_BUY_RANGE                   128.0f
 
 // fire
 #define FIRE_MIN_DISTANCE                  20.0f
@@ -342,7 +350,7 @@ extern int   REACTOR_ATTACK_DCC_DAMAGE;
 
 // score
 #define SCORE_PER_CREDIT                   0.02f // used to convert credit rewards to score points
-#define SCORE_PER_CONFIDENCE               1.0f  // used to convert confidence rewards to score points
+#define SCORE_PER_MOMENTUM               1.0f  // used to convert momentum rewards to score points
 #define HUMAN_BUILDER_SCOREINC             50    // in credits/10s
 #define ALIEN_BUILDER_SCOREINC             50    // in credits/10s
 
@@ -361,16 +369,16 @@ extern int   REACTOR_ATTACK_DCC_DAMAGE;
 #define DEFAULT_MINIMUM_MINE_RATE          "50"
 #define BASIC_INCOME_MOD                   1.0f
 
-// confidence
-#define CONFIDENCE_PER_CREDIT              0.01f // used to award confidence based on credit rewards
-#define DEFAULT_CONFIDENCE_HALF_LIFE       "5"   // in min
+// momentum
+#define MOMENTUM_PER_CREDIT              0.01f // used to award momentum based on credit rewards
+#define DEFAULT_MOMENTUM_HALF_LIFE       "5"   // in min
 #define DEFAULT_CONF_REWARD_DOUBLE_TIME    "30"  // in min
 #define DEFAULT_UNLOCKABLE_MIN_TIME        "60"  // in s
-#define DEFAULT_CONFIDENCE_BASE_MOD        "0.8"
-#define DEFAULT_CONFIDENCE_KILL_MOD        "1.0"
-#define DEFAULT_CONFIDENCE_BUILD_MOD       "0.6"
-#define DEFAULT_CONFIDENCE_DECON_MOD       "1.0" // used on top of build mod
-#define DEFAULT_CONFIDENCE_DESTROY_MOD     "0.8"
+#define DEFAULT_MOMENTUM_BASE_MOD        "0.8"
+#define DEFAULT_MOMENTUM_KILL_MOD        "1.0"
+#define DEFAULT_MOMENTUM_BUILD_MOD       "0.6"
+#define DEFAULT_MOMENTUM_DECON_MOD       "1.0" // used on top of build mod
+#define DEFAULT_MOMENTUM_DESTROY_MOD     "0.8"
 
 #define MAXIMUM_BUILD_TIME                 20000 // used for pie timer
 

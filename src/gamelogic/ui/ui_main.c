@@ -2210,13 +2210,19 @@ static void UI_OwnerDraw( rectDef_t *rect,
 			break;
 
 		case UI_HBUYINFOPANE:
-			UI_DrawInfoPane( &uiInfo.humanArmouryBuyList[ uiInfo.humanArmouryBuyIndex ],
-			                 rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
+		        if ( uiInfo.humanArmouryBuyList[ uiInfo.humanArmouryBuyIndex ].v.weapon != WP_NONE )
+		        {
+				UI_DrawInfoPane( &uiInfo.humanArmouryBuyList[ uiInfo.humanArmouryBuyIndex ],
+				                 rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
+                        }
 			break;
 
 		case UI_HSELLINFOPANE:
-			UI_DrawInfoPane( &uiInfo.humanArmourySellList[ uiInfo.humanArmourySellIndex ],
-			                 rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
+		        if ( uiInfo.humanArmourySellList[ uiInfo.humanArmourySellIndex ].v.weapon != WP_NONE )
+		        {
+				UI_DrawInfoPane( &uiInfo.humanArmourySellList[ uiInfo.humanArmourySellIndex ],
+				                 rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
+                        }
 			break;
 
 		case UI_ABUILDINFOPANE:
@@ -2531,17 +2537,16 @@ static void UI_LoadAlienClasses( void )
 	{
 		UI_AddClass( PCL_ALIEN_LEVEL0 );
 	}
-
-	if ( !BG_ClassDisabled( PCL_ALIEN_BUILDER0 ) )
-	{
-		UI_AddClass( PCL_ALIEN_BUILDER0 );
-	}
-
 	if ( !BG_ClassDisabled( PCL_ALIEN_BUILDER0_UPG ) &&
 	     BG_ClassUnlocked( PCL_ALIEN_BUILDER0_UPG ) )
 	{
 		UI_AddClass( PCL_ALIEN_BUILDER0_UPG );
 	}
+	else if ( !BG_ClassDisabled( PCL_ALIEN_BUILDER0 ) )
+	{
+		UI_AddClass( PCL_ALIEN_BUILDER0 );
+	}
+
 }
 
 /*
@@ -3297,7 +3302,7 @@ static void UI_RunMenuScript( char **args )
 		if ( Q_stricmp( name, "StartServer" ) == 0 )
 		{
 			trap_Cvar_SetValue( "dedicated", Com_Clamp( 0, 2, ui_dedicated.integer ) );
-			trap_Cmd_ExecuteText( EXEC_APPEND, va( "wait ; wait ; map %s\n",
+			trap_Cmd_ExecuteText( EXEC_APPEND, va( "delay 2f map %s\n",
 			                                       Quote( uiInfo.mapList[ ui_selectedMap.integer ].mapLoadName ) ) );
 		}
 		else if ( Q_stricmp( name, "resetDefaults" ) == 0 )
@@ -3397,7 +3402,7 @@ static void UI_RunMenuScript( char **args )
 			trap_Cmd_ExecuteText( EXEC_APPEND, va( "exec ui/%s/install.cfg;", uiInfo.huds[ uiInfo.hudIndex ].name ) );
 			if ( cstate.connState == CA_ACTIVE )
 			{
-				trap_Cmd_ExecuteText( EXEC_APPEND, "reloadhud" );
+				trap_Cmd_ExecuteText( EXEC_APPEND, "reloadhud;" );
 			}
 		}
 		else if ( Q_stricmp( name, "JoinTeam" ) == 0 )
@@ -5130,6 +5135,7 @@ void UI_Init( void )
 	BG_InitAllowedGameElements();
 
 	UI_RegisterCvars();
+	UI_RegisterCommands();
 
 	// cache redundant calulations
 	trap_GetGlconfig( &uiInfo.uiDC.glconfig );

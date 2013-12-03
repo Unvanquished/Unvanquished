@@ -682,8 +682,7 @@ static const upgradeData_t bg_upgradesData[] =
 	{ UP_GRENADE,     "gren"     },
 	{ UP_FIREBOMB,    "firebomb" },
 
-	{ UP_MEDKIT,      "medkit"   },
-	{ UP_AMMO,        "ammo"     }
+	{ UP_MEDKIT,      "medkit"   }
 };
 
 static const size_t bg_numUpgrades = ARRAY_LEN( bg_upgradesData );
@@ -1241,11 +1240,17 @@ static const char *const eventnames[] =
 	"EV_STOPLOOPINGSOUND",
 	"EV_TAUNT",
 
-	"EV_OVERMIND_ATTACK", // overmind under attack
-	"EV_OVERMIND_DYING", // overmind close to death
+	"EV_OVERMIND_ATTACK_1", // overmind under attack
+	"EV_OVERMIND_ATTACK_2", // overmind under attack
+	"EV_OVERMIND_DYING", // overmind dead
 	"EV_OVERMIND_SPAWNS", // overmind needs spawns
 
+	"EV_REACTOR_ATTACK_1", // reactor under attack
+	"EV_REACTOR_ATTACK_2", // reactor under attack
+	"EV_REACTOR_DYING", // reactor destroyed
 	"EV_DCC_ATTACK", // dcc under attack
+
+	"EV_WARN_ATTACK",
 
 	"EV_MGTURRET_SPINUP", // trigger a sound
 
@@ -1399,21 +1404,37 @@ void BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s, qboolean 
 	s->weapon = ps->weapon;
 	s->groundEntityNum = ps->groundEntityNum;
 
-	//store items held and active items in modelindex and modelindex2
+	// HACK: store held items in modelindex
 	s->modelindex = 0;
-	s->modelindex2 = 0;
 
 	for ( i = UP_NONE + 1; i < UP_NUM_UPGRADES; i++ )
 	{
 		if ( BG_InventoryContainsUpgrade( i, ps->stats ) )
 		{
 			s->modelindex |= 1 << i;
-
-			if ( BG_UpgradeIsActive( i, ps->stats ) )
-			{
-				s->modelindex2 |= 1 << i;
-			}
 		}
+	}
+
+	// set "public state" flags
+	s->modelindex2 = 0;
+
+	// copy jetpack state
+	if ( ps->stats[ STAT_STATE2 ] & SS2_JETPACK_ENABLED )
+	{
+		s->modelindex2 |= PF_JETPACK_ENABLED;
+	}
+	else
+	{
+		s->modelindex2 &= ~PF_JETPACK_ENABLED;
+	}
+
+	if ( ps->stats[ STAT_STATE2 ] & SS2_JETPACK_ACTIVE )
+	{
+		s->modelindex2 |= PF_JETPACK_ACTIVE;
+	}
+	else
+	{
+		s->modelindex2 &= ~PF_JETPACK_ACTIVE;
 	}
 
 	// use misc field to store team/class info:
@@ -1532,21 +1553,37 @@ void BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_t *s
 	s->weapon = ps->weapon;
 	s->groundEntityNum = ps->groundEntityNum;
 
-	//store items held and active items in modelindex and modelindex2
+	// HACK: store held items in modelindex
 	s->modelindex = 0;
-	s->modelindex2 = 0;
 
 	for ( i = UP_NONE + 1; i < UP_NUM_UPGRADES; i++ )
 	{
 		if ( BG_InventoryContainsUpgrade( i, ps->stats ) )
 		{
 			s->modelindex |= 1 << i;
-
-			if ( BG_UpgradeIsActive( i, ps->stats ) )
-			{
-				s->modelindex2 |= 1 << i;
-			}
 		}
+	}
+
+	// set "public state" flags
+	s->modelindex2 = 0;
+
+	// copy jetpack state
+	if ( ps->stats[ STAT_STATE2 ] & SS2_JETPACK_ENABLED )
+	{
+		s->modelindex2 |= PF_JETPACK_ENABLED;
+	}
+	else
+	{
+		s->modelindex2 &= ~PF_JETPACK_ENABLED;
+	}
+
+	if ( ps->stats[ STAT_STATE2 ] & SS2_JETPACK_ACTIVE )
+	{
+		s->modelindex2 |= PF_JETPACK_ACTIVE;
+	}
+	else
+	{
+		s->modelindex2 &= ~PF_JETPACK_ACTIVE;
 	}
 
 	// use misc field to store team/class info:

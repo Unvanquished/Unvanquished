@@ -109,16 +109,9 @@ Bot Navigation Querys
 */
 float RadiusFromBounds2D( vec3_t mins, vec3_t maxs )
 {
-	float rad1 = sqrt( Square( mins[0] ) + Square( mins[1] ) );
-	float rad2 = sqrt( Square( maxs[0] ) + Square( maxs[1] ) );
-	if ( rad1 > rad2 )
-	{
-		return rad1;
-	}
-	else
-	{
-		return rad2;
-	}
+	float rad1s = Square( mins[0] ) + Square( mins[1] );
+	float rad2s = Square( maxs[0] ) + Square( maxs[1] );
+	return sqrt( MAX( rad1s, rad2s ) );
 }
 
 float BotGetGoalRadius( gentity_t *self )
@@ -143,29 +136,15 @@ float BotGetGoalRadius( gentity_t *self )
 
 qboolean GoalInRange( gentity_t *self, float r )
 {
-	int       entityList[ MAX_GENTITIES ];
-	vec3_t    range;
-	vec3_t    mins, maxs;
-	int       i, num;
-	gentity_t *ent;
-
-	VectorSet( range, r, r, r );
-	VectorAdd( self->s.origin, range, maxs );
-	VectorSubtract( self->s.origin, range, mins );
+	gentity_t *ent = NULL;
 
 	if ( !BotTargetIsEntity( self->botMind->goal ) )
 	{
-		VectorAdd( maxs, self->r.maxs, maxs );
-		VectorAdd( mins, self->r.mins, mins );
-		return BoundsIntersectPoint( mins, maxs, self->botMind->nav.tpos );
+		return ( Distance( self->s.origin, self->botMind->nav.tpos ) < r );
 	}
 
-	num = trap_EntitiesInBox( mins, maxs, entityList, MAX_GENTITIES );
-
-	for ( i = 0; i < num; i++ )
+	while ( ( ent = G_IterateEntitiesWithinRadius( ent, self->s.origin, r ) ) )
 	{
-		ent = &g_entities[ entityList[ i ] ];
-
 		if ( ent == self->botMind->goal.ent )
 		{
 			return qtrue;

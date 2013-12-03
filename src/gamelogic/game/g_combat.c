@@ -92,7 +92,7 @@ static const char *const modNames[] =
 };
 
 /**
- * @brief Helper function for G_AddCreditsToScore and G_AddConfidenceToScore.
+ * @brief Helper function for G_AddCreditsToScore and G_AddMomentumToScore.
  * @param self
  * @param score
  */
@@ -119,13 +119,13 @@ void G_AddCreditsToScore( gentity_t *self, int credits )
 }
 
 /**
- * @brief Adds score to the client, input represents a confidence value.
+ * @brief Adds score to the client, input represents a momentum value.
  * @param self
- * @param confidence
+ * @param momentum
  */
-void G_AddConfidenceToScore( gentity_t *self, float confidence )
+void G_AddMomentumToScore( gentity_t *self, float momentum )
 {
-	AddScoreHelper( self, confidence * SCORE_PER_CONFIDENCE );
+	AddScoreHelper( self, momentum * SCORE_PER_MOMENTUM );
 }
 
 void LookAtKiller( gentity_t *self, gentity_t *inflictor, gentity_t *attacker )
@@ -230,10 +230,10 @@ void G_RewardAttackers( gentity_t *self )
 		if ( self->s.eType == ET_BUILDABLE )
 		{
 			// Add score
-			G_AddConfidenceToScore( player, reward );
+			G_AddMomentumToScore( player, reward );
 
-			// Add confidence
-			G_AddConfidenceForDestroyingStep( self, player, share );
+			// Add momentum
+			G_AddMomentumForDestroyingStep( self, player, share );
 		}
 		else
 		{
@@ -243,13 +243,13 @@ void G_RewardAttackers( gentity_t *self )
 			// Add credits
 			G_AddCreditToClient( player->client, ( short )reward, qtrue );
 
-			// Add confidence
-			G_AddConfidenceForKillingStep( self, player, share );
+			// Add momentum
+			G_AddMomentumForKillingStep( self, player, share );
 		}
 	}
 
-	// Complete confidence modification
-	G_AddConfidenceEnd();
+	// Complete momentum modification
+	G_AddMomentumEnd();
 }
 
 void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int meansOfDeath )
@@ -887,7 +887,7 @@ void G_KnockbackByDir( gentity_t *target, const vec3_t direction, float strength
                               qboolean ignoreMass )
 {
 	vec3_t dir, vel;
-	int    time, mass;
+	int    mass;
 	float  massMod;
 	const classAttributes_t *ca;
 
@@ -954,8 +954,8 @@ void G_KnockbackByDir( gentity_t *target, const vec3_t direction, float strength
 	// print debug info
 	if ( g_debugKnockback.integer )
 	{
-		G_Printf( "%i: Knockback: client: %i, strength: %.1f (massMod: %.1f), time: %i\n",
-		          level.time, target->s.number, strength, massMod, time );
+		G_Printf( "%i: Knockback: client: %i, strength: %.1f (massMod: %.1f)\n",
+		          level.time, target->s.number, strength, massMod );
 	}
 }
 
@@ -1111,22 +1111,17 @@ void G_Damage( gentity_t *target, gentity_t *inflictor, gentity_t *attacker,
 			{
 				return;
 			}
-
-			// issue base attack warning
-			if ( target->buildableTeam == TEAM_HUMANS && G_FindDCC( target ) &&
-			     level.time > level.humanBaseAttackTimer )
-			{
-				level.humanBaseAttackTimer = level.time + DC_ATTACK_PERIOD;
-				G_BroadcastEvent( EV_DCC_ATTACK, 0 );
-			}
 		}
 	}
 
 	// update combat timers
-	if ( target->client && attacker->client )
+	if ( target->client && attacker->client && target != attacker )
 	{
-		target->client->lastCombatTime     = level.time;
+		target->client->lastCombatTime   = level.time;
 		attacker->client->lastCombatTime = level.time;
+
+		// stop jetpack for a short time
+		client->ps.stats[ STAT_STATE2 ] |= SS2_JETPACK_DAMAGED;
 	}
 
 	if ( client )
@@ -1166,7 +1161,7 @@ void G_Damage( gentity_t *target, gentity_t *inflictor, gentity_t *attacker,
 
 				default:
 					target->client->ps.stats[ STAT_STATE ] |= SS_POISONED;
-					target->client->lastPoisonTime = level.time;
+					target->client->lastPoisonTime   = level.time;
 					target->client->lastPoisonClient = attacker;
 			}
 		}

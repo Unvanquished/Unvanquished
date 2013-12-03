@@ -634,10 +634,7 @@ Adapt the gain if necessary to get a quicker fadeout when the source is too far 
 
 static void S_AL_ScaleGain( src_t *chksrc, vec3_t origin )
 {
-	float distance;
-
-	if ( !chksrc->local )
-		distance = Distance( origin, lastListenerOrigin );
+	float distance = chksrc->local ? 0 : Distance( origin, lastListenerOrigin );
 
 	// If we exceed a certain distance, scale the gain linearly until the sound
 	// vanishes into nothingness.
@@ -659,7 +656,6 @@ static void S_AL_ScaleGain( src_t *chksrc, vec3_t origin )
 			S_AL_Gain( chksrc->alSource, chksrc->scaleGain );
 		}
 	}
-
 	else if ( chksrc->scaleGain != chksrc->curGain )
 	{
 		chksrc->scaleGain = chksrc->curGain;

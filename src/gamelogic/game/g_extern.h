@@ -95,15 +95,15 @@ extern  vmCvar_t g_initialBuildPoints;
 extern  vmCvar_t g_mineRateHalfLife;
 extern  vmCvar_t g_minimumMineRate;
 
-extern  vmCvar_t g_debugConfidence;
-extern  vmCvar_t g_confidenceHalfLife;
-extern  vmCvar_t g_confidenceRewardDoubleTime;
+extern  vmCvar_t g_debugMomentum;
+extern  vmCvar_t g_momentumHalfLife;
+extern  vmCvar_t g_momentumRewardDoubleTime;
 extern  vmCvar_t g_unlockableMinTime;
-extern  vmCvar_t g_confidenceBaseMod;
-extern  vmCvar_t g_confidenceKillMod;
-extern  vmCvar_t g_confidenceBuildMod;
-extern  vmCvar_t g_confidenceDeconMod;
-extern  vmCvar_t g_confidenceDestroyMod;
+extern  vmCvar_t g_momentumBaseMod;
+extern  vmCvar_t g_momentumKillMod;
+extern  vmCvar_t g_momentumBuildMod;
+extern  vmCvar_t g_momentumDeconMod;
+extern  vmCvar_t g_momentumDestroyMod;
 
 extern  vmCvar_t g_humanAllowBuilding;
 extern  vmCvar_t g_alienAllowBuilding;
