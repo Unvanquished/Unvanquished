@@ -28,6 +28,7 @@ mv "$TMP_FILE" "${SOURCE_PATH}/src/engine/qcommon/q_shared.h"
 TMP_FILE="`mktemp /tmp/config.XXXXXXXXXX`"
 sed "s|VERSION=.*|VERSION=${VERSION_SHORT}|" "${SOURCE_PATH}/download-pk3.sh" > "$TMP_FILE"
 mv "$TMP_FILE" "${SOURCE_PATH}/download-pk3.sh"
+chmod +x "${SOURCE_PATH}/download-pk3.sh"
 
 # Update Info.plist
 TMP_FILE="`mktemp /tmp/config.XXXXXXXXXX`"
