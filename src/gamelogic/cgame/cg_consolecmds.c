@@ -400,8 +400,7 @@ static void CG_CompleteItem( void )
 static void CG_TestCGrade_f( void )
 {
 	qhandle_t shader = trap_R_RegisterShader(CG_Argv(1),
-						 RSF_NOMIP |
-						 RSF_NOLIGHTSCALE);
+						 (RegisterShaderFlags_t) ( RSF_NOMIP | RSF_NOLIGHTSCALE ) );
 
 	// override shader 0
 	cgs.gameGradingTextures[ 0 ] = shader;
@@ -473,7 +472,7 @@ qboolean CG_ConsoleCommand( void )
 {
 	consoleCommand_t *cmd;
 
-	cmd = bsearch( CG_Argv( 0 ), commands,
+	cmd = (consoleCommand_t*) bsearch( CG_Argv( 0 ), commands,
 	               ARRAY_LEN( commands ), sizeof( commands[ 0 ] ),
 	               cmdcmp );
 

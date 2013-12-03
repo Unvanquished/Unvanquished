@@ -378,12 +378,12 @@ static voiceTrack_t *BG_VoiceParseCommand( int handle )
 
 		if ( top == NULL )
 		{
-			voiceTracks = BG_Alloc( sizeof( voiceTrack_t ) );
+			voiceTracks = (voiceTrack_t*) BG_Alloc( sizeof( voiceTrack_t ) );
 			top = voiceTracks;
 		}
 		else
 		{
-			voiceTracks->next = BG_Alloc( sizeof( voiceCmd_t ) );
+			voiceTracks->next = (voiceTrack_t*) BG_Alloc( sizeof( voiceCmd_t ) );
 			voiceTracks = voiceTracks->next;
 		}
 
@@ -471,12 +471,12 @@ static voiceCmd_t *BG_VoiceParse( const char *name )
 
 		if ( top == NULL )
 		{
-			voiceCmds = BG_Alloc( sizeof( voiceCmd_t ) );
+			voiceCmds = (voiceCmd_t*) BG_Alloc( sizeof( voiceCmd_t ) );
 			top = voiceCmds;
 		}
 		else
 		{
-			voiceCmds->next = BG_Alloc( sizeof( voiceCmd_t ) );
+			voiceCmds->next = (voiceCmd_t*) BG_Alloc( sizeof( voiceCmd_t ) );
 			voiceCmds = voiceCmds->next;
 		}
 
@@ -697,8 +697,8 @@ voiceTrack_t *BG_VoiceTrackByNum( voiceTrack_t *head, int num )
 BG_VoiceTrackFind
 ============
 */
-voiceTrack_t *BG_VoiceTrackFind( voiceTrack_t *head, team_t team,
-                                 class_t class_, weapon_t weapon,
+voiceTrack_t *BG_VoiceTrackFind( voiceTrack_t *head, int team,
+                                 int class_, int weapon,
                                  int enthusiasm, int *trackNum )
 {
 	voiceTrack_t *vt = head;

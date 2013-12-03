@@ -1379,7 +1379,7 @@ static void CG_DrawPlayerConfidenceBar( rectDef_t *rect, vec4_t foreColor, vec4_
 
 	ps = &cg.predictedPlayerState;
 
-	team       = ps->persistant[ PERS_TEAM ];
+	team       = (team_t) ps->persistant[ PERS_TEAM ];
 	confidence = ps->persistant[ PERS_CONFIDENCE ] / 10.0f;
 
 	x = rect->x;
@@ -1531,7 +1531,7 @@ static void CG_DrawPlayerUnlockedItems( rectDef_t *rect, vec4_t foreColour, vec4
 		qboolean  unlocked;
 	} icon[ NUM_UNLOCKABLES ]; // more than enough(!)
 
-	team = cg.predictedPlayerState.persistant[ PERS_TEAM ];
+	team = (team_t) cg.predictedPlayerState.persistant[ PERS_TEAM ];
 
 	w = rect->w - 2 * borderSize;
 	h = rect->h - 2 * borderSize;
@@ -2285,7 +2285,7 @@ static void CG_DrawConfidence( rectDef_t *rect, float text_x, float text_y,
 		return;
 	}
 
-	team = cg.snap->ps.persistant[ PERS_TEAM ];
+	team = (team_t) cg.snap->ps.persistant[ PERS_TEAM ];
 
 	if ( team <= TEAM_NONE || team >= NUM_TEAMS )
 	{
@@ -2545,8 +2545,8 @@ static void CG_DrawTeamOverlay( rectDef_t *rect, float scale, vec4_t color )
 	float             maxX = rect->x + rect->w;
 	float             maxXCp = maxX;
 	weapon_t          curWeapon = WP_NONE;
-	teamOverlayMode_t mode = cg_drawTeamOverlay.integer;
-	teamOverlaySort_t sort = cg_teamOverlaySortMode.integer;
+	teamOverlayMode_t mode = (teamOverlayMode_t) cg_drawTeamOverlay.integer;
+	teamOverlaySort_t sort = (teamOverlaySort_t) cg_teamOverlaySortMode.integer;
 	int               displayClients[ MAX_CLIENTS ];
 
 	if ( cg.predictedPlayerState.pm_type == PM_SPECTATOR )
@@ -2679,7 +2679,7 @@ static void CG_DrawTeamOverlay( rectDef_t *rect, float scale, vec4_t color )
 		{
 			if ( ci->team == TEAM_HUMANS )
 			{
-				curWeapon = ci->curWeaponClass;
+				curWeapon = (weapon_t) ci->curWeaponClass;
 			}
 			else if ( ci->team == TEAM_ALIENS )
 			{
@@ -3621,7 +3621,7 @@ static void CG_ScanForCrosshairEntity( void )
 		return;
 	}
 
-	ownTeam = cg.snap->ps.persistant[ PERS_TEAM ];
+	ownTeam = (team_t) cg.snap->ps.persistant[ PERS_TEAM ];
 	targetState = &cg_entities[ trace.entityNum ].currentState;
 
 	if ( trace.entityNum >= MAX_CLIENTS )
@@ -4937,7 +4937,7 @@ static void CG_Draw2D( void )
 	if ( cg.snap->ps.pm_type == PM_INTERMISSION )
 	{
 		CG_DrawVote( TEAM_NONE );
-		CG_DrawVote( cg.predictedPlayerState.persistant[ PERS_TEAM ] );
+		CG_DrawVote( (team_t) cg.predictedPlayerState.persistant[ PERS_TEAM ] );
 		CG_DrawIntermission();
 		return;
 	}
@@ -4977,7 +4977,7 @@ static void CG_Draw2D( void )
 	}
 
 	CG_DrawVote( TEAM_NONE );
-	CG_DrawVote( cg.predictedPlayerState.persistant[ PERS_TEAM ] );
+	CG_DrawVote( (team_t) cg.predictedPlayerState.persistant[ PERS_TEAM ] );
 	CG_DrawWarmup();
 	CG_DrawQueue();
 

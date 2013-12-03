@@ -514,7 +514,7 @@ void trap_SendMessage( int clientNum, char *buf, int buflen )
 //return SV_BinaryMessageStatus(args[1]);
 messageStatus_t trap_MessageStatus( int clientNum )
 {
-	return syscall( G_MESSAGESTATUS, clientNum );
+	return (messageStatus_t) syscall( G_MESSAGESTATUS, clientNum );
 }
 
 //86.

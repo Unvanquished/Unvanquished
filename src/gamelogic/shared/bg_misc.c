@@ -68,7 +68,7 @@ static const size_t bg_numBuildables = ARRAY_LEN( bg_buildableNameList );
 
 static buildableAttributes_t bg_buildableList[ ARRAY_LEN( bg_buildableNameList ) ];
 
-static const buildableAttributes_t nullBuildable = { 0 };
+static const buildableAttributes_t nullBuildable = { (buildable_t) 0, 0, 0 };
 
 /*
 ==============
@@ -115,7 +115,7 @@ const buildableAttributes_t *BG_BuildableByEntityName( const char *name )
 BG_Buildable
 ==============
 */
-const buildableAttributes_t *BG_Buildable( buildable_t buildable )
+const buildableAttributes_t *BG_Buildable( int buildable )
 {
 	return ( buildable > BA_NONE && buildable < BA_NUM_BUILDABLES ) ?
 	       &bg_buildableList[ buildable - 1 ] : &nullBuildable;
@@ -162,7 +162,7 @@ static buildableModelConfig_t bg_buildableModelConfigList[ BA_NUM_BUILDABLES ];
 BG_BuildableModelConfig
 ==============
 */
-buildableModelConfig_t *BG_BuildableModelConfig( buildable_t buildable )
+buildableModelConfig_t *BG_BuildableModelConfig( int buildable )
 {
 	return &bg_buildableModelConfigList[ buildable ];
 }
@@ -172,7 +172,7 @@ buildableModelConfig_t *BG_BuildableModelConfig( buildable_t buildable )
 BG_BuildableBoundingBox
 ==============
 */
-void BG_BuildableBoundingBox( buildable_t buildable,
+void BG_BuildableBoundingBox( int buildable,
                               vec3_t mins, vec3_t maxs )
 {
 	buildableModelConfig_t *buildableModelConfig = BG_BuildableModelConfig( buildable );
@@ -304,7 +304,7 @@ static const size_t bg_numClasses = ARRAY_LEN( bg_classData );
 
 static classAttributes_t bg_classList[ ARRAY_LEN( bg_classData ) ];
 
-static const classAttributes_t nullClass = { 0 };
+static const classAttributes_t nullClass = { (class_t) 0, 0, 0 };
 static /*const*/ classModelConfig_t nullClassModelConfig = { "" };
 
 /*
@@ -335,7 +335,7 @@ const classAttributes_t *BG_ClassByName( const char *name )
 BG_Class
 ==============
 */
-const classAttributes_t *BG_Class( class_t pClass )
+const classAttributes_t *BG_Class( int pClass )
 {
 	return ( pClass >= PCL_NONE && pClass < PCL_NUM_CLASSES ) ?
 	       &bg_classList[ pClass ] : &nullClass;
@@ -371,7 +371,7 @@ classModelConfig_t *BG_ClassModelConfigByName( const char *name )
 BG_ClassModelConfig
 ==============
 */
-classModelConfig_t *BG_ClassModelConfig( class_t pClass )
+classModelConfig_t *BG_ClassModelConfig( int pClass )
 {
 	return &bg_classModelConfigList[ pClass ];
 }
@@ -381,7 +381,7 @@ classModelConfig_t *BG_ClassModelConfig( class_t pClass )
 BG_ClassBoundingBox
 ==============
 */
-void BG_ClassBoundingBox( class_t pClass,
+void BG_ClassBoundingBox( int pClass,
                           vec3_t mins, vec3_t maxs,
                           vec3_t cmaxs, vec3_t dmins, vec3_t dmaxs )
 {
@@ -413,7 +413,7 @@ void BG_ClassBoundingBox( class_t pClass,
 	}
 }
 
-team_t BG_ClassTeam( class_t pClass )
+team_t BG_ClassTeam( int pClass )
 {
 	return BG_Class( pClass )->team;
 }
@@ -423,7 +423,7 @@ team_t BG_ClassTeam( class_t pClass )
 BG_ClassHasAbility
 ==============
 */
-qboolean BG_ClassHasAbility( class_t pClass, int ability )
+qboolean BG_ClassHasAbility( int pClass, int ability )
 {
 	int abilities = BG_Class( pClass )->abilities;
 
@@ -435,7 +435,7 @@ qboolean BG_ClassHasAbility( class_t pClass, int ability )
 BG_ClassCanEvolveFromTo
 ==============
 */
-int BG_ClassCanEvolveFromTo( class_t from, class_t to, int credits )
+int BG_ClassCanEvolveFromTo( int from, int to, int credits )
 {
 	int fromCost, toCost, evolveCost;
 
@@ -489,7 +489,7 @@ int BG_ClassCanEvolveFromTo( class_t from, class_t to, int credits )
 BG_AlienCanEvolve
 ==============
 */
-qboolean BG_AlienCanEvolve( class_t from, int credits )
+qboolean BG_AlienCanEvolve( int from, int credits )
 {
 	int to;
 
@@ -558,7 +558,7 @@ void BG_InitClassModelConfigs( void )
 
 typedef struct
 {
-	int number;
+	weapon_t number;
 	const char* name;
 } weaponData_t;
 
@@ -596,7 +596,7 @@ static const size_t bg_numWeapons = ARRAY_LEN( bg_weaponsData );
 
 static weaponAttributes_t bg_weapons[ ARRAY_LEN( bg_weaponsData ) ];
 
-static const weaponAttributes_t nullWeapon = { 0 };
+static const weaponAttributes_t nullWeapon = { (weapon_t) 0, 0 };
 
 /*
 ==============
@@ -623,7 +623,7 @@ const weaponAttributes_t *BG_WeaponByName( const char *name )
 BG_Weapon
 ==============
 */
-const weaponAttributes_t *BG_Weapon( weapon_t weapon )
+const weaponAttributes_t *BG_Weapon( int weapon )
 {
 	return ( weapon > WP_NONE && weapon < WP_NUM_WEAPONS ) ?
 	       &bg_weapons[ weapon - 1 ] : &nullWeapon;
@@ -663,7 +663,7 @@ void BG_InitWeaponAttributes( void )
 
 typedef struct
 {
-	int number;
+	upgrade_t number;
 	const char* name;
 } upgradeData_t;
 
@@ -690,7 +690,7 @@ static const size_t bg_numUpgrades = ARRAY_LEN( bg_upgradesData );
 
 static upgradeAttributes_t bg_upgrades[ ARRAY_LEN( bg_upgradesData ) ];
 
-static const upgradeAttributes_t nullUpgrade = { 0 };
+static const upgradeAttributes_t nullUpgrade = { (upgrade_t) 0, 0 };
 
 /*
 ==============
@@ -717,7 +717,7 @@ const upgradeAttributes_t *BG_UpgradeByName( const char *name )
 BG_Upgrade
 ==============
 */
-const upgradeAttributes_t *BG_Upgrade( upgrade_t upgrade )
+const upgradeAttributes_t *BG_Upgrade( int upgrade )
 {
 	return ( upgrade > UP_NONE && upgrade < UP_NUM_UPGRADES ) ?
 	       &bg_upgrades[ upgrade - 1 ] : &nullUpgrade;
@@ -753,7 +753,7 @@ void BG_InitUpgradeAttributes( void )
 
 typedef struct
 {
-	int         number;
+	missile_t   number;
 	const char* name;
 } missileData_t;
 
@@ -775,7 +775,7 @@ static const missileData_t bg_missilesData[] =
 
 static const size_t              bg_numMissiles = ARRAY_LEN( bg_missilesData );
 static missileAttributes_t       bg_missiles[ ARRAY_LEN( bg_missilesData ) ];
-static const missileAttributes_t nullMissile = { 0 };
+static const missileAttributes_t nullMissile = { (missile_t) 0, 0 };
 
 /*
 ==============
@@ -802,7 +802,7 @@ const missileAttributes_t *BG_MissileByName( const char *name )
 BG_Missile
 ==============
 */
-const missileAttributes_t *BG_Missile( missile_t missile )
+const missileAttributes_t *BG_Missile( int missile )
 {
 	return ( missile > MIS_NONE && missile < MIS_NUM_MISSILES ) ?
 	       &bg_missiles[ missile - 1 ] : &nullMissile;
@@ -1573,7 +1573,7 @@ BG_WeaponIsFull
 Check if a weapon has full ammo
 ========================
 */
-qboolean BG_WeaponIsFull( weapon_t weapon, int stats[], int ammo, int clips )
+qboolean BG_WeaponIsFull( int weapon, int stats[], int ammo, int clips )
 {
 	int maxAmmo, maxClips;
 
@@ -1958,10 +1958,10 @@ weapon_t BG_GetPlayerWeapon( playerState_t *ps )
 {
 	if ( ps->persistant[ PERS_NEWWEAPON ] )
 	{
-		return ps->persistant[ PERS_NEWWEAPON ];
+		return (weapon_t) ps->persistant[ PERS_NEWWEAPON ];
 	}
 
-	return ps->weapon;
+	return (weapon_t) ps->weapon;
 }
 
 /*
@@ -2430,7 +2430,7 @@ void BG_InitAllowedGameElements( void )
 BG_WeaponIsAllowed
 ============
 */
-qboolean BG_WeaponDisabled( weapon_t weapon )
+qboolean BG_WeaponDisabled( int weapon )
 {
 	int i;
 
@@ -2451,7 +2451,7 @@ qboolean BG_WeaponDisabled( weapon_t weapon )
 BG_UpgradeIsAllowed
 ============
 */
-qboolean BG_UpgradeDisabled( upgrade_t upgrade )
+qboolean BG_UpgradeDisabled( int upgrade )
 {
 	int i;
 
@@ -2472,7 +2472,7 @@ qboolean BG_UpgradeDisabled( upgrade_t upgrade )
 BG_ClassDisabled
 ============
 */
-qboolean BG_ClassDisabled( class_t class_ )
+qboolean BG_ClassDisabled( int class_ )
 {
 	int i;
 
@@ -2493,7 +2493,7 @@ qboolean BG_ClassDisabled( class_t class_ )
 BG_BuildableIsAllowed
 ============
 */
-qboolean BG_BuildableDisabled( buildable_t buildable )
+qboolean BG_BuildableDisabled( int buildable )
 {
 	int i;
 
@@ -2527,7 +2527,7 @@ weapon_t BG_PrimaryWeapon( int stats[] )
 
 		if ( BG_InventoryContainsWeapon( i, stats ) )
 		{
-			return i;
+			return (weapon_t) i;
 		}
 	}
 
@@ -2608,7 +2608,7 @@ int BG_LoadEmoticons( emoticon_t *emoticons, int num )
 BG_TeamName
 ============
 */
-const char *BG_TeamName( team_t team )
+const char *BG_TeamName( int team )
 {
 	if ( team == TEAM_NONE )
 	{
@@ -2628,7 +2628,7 @@ const char *BG_TeamName( team_t team )
 	return "<team>";
 }
 
-const char *BG_TeamNamePlural( team_t team )
+const char *BG_TeamNamePlural( int team )
 {
 	if ( team == TEAM_NONE )
 	{

@@ -304,7 +304,7 @@ const char *String_Alloc( const char *p )
 			str = str->next;
 		}
 
-		str = UI_Alloc( sizeof( stringDef_t ) );
+		str = (stringDef_t*) UI_Alloc( sizeof( stringDef_t ) );
 		str->next = NULL;
 		str->str = &strPool[ ph ];
 
@@ -1325,7 +1325,7 @@ void Item_UpdatePosition( itemDef_t *item )
 		return;
 	}
 
-	menu = item->parent;
+	menu = (menuDef_t*) item->parent;
 
 	x = menu->window.rect.x;
 	y = menu->window.rect.y;
@@ -2885,7 +2885,7 @@ void Item_RunScript( itemDef_t *item, const char *s )
 				continue;
 			}
 
-			cmd = bsearch( command, commandList, scriptCommandCount,
+			cmd = (commandDef_t*) bsearch( command, commandList, scriptCommandCount,
 			               sizeof( commandDef_t ), commandComp );
 
 			if ( cmd )
@@ -7966,12 +7966,12 @@ qboolean ItemParse_type( itemDef_t *item, int handle )
 	{
 		case ITEM_TYPE_LISTBOX:
 		case ITEM_TYPE_COMBOBOX:
-			item->typeData.list = UI_Alloc( sizeof( listBoxDef_t ) );
+			item->typeData.list = (listBoxDef_t*) UI_Alloc( sizeof( listBoxDef_t ) );
 			memset( item->typeData.list, 0, sizeof( listBoxDef_t ) );
 			break;
 
 		case ITEM_TYPE_CYCLE:
-			item->typeData.cycle = UI_Alloc( sizeof( cycleDef_t ) );
+			item->typeData.cycle = (cycleDef_t*) UI_Alloc( sizeof( cycleDef_t ) );
 			memset( item->typeData.cycle, 0, sizeof( cycleDef_t ) );
 			break;
 
@@ -7982,7 +7982,7 @@ qboolean ItemParse_type( itemDef_t *item, int handle )
 		case ITEM_TYPE_BIND:
 		case ITEM_TYPE_SLIDER:
 		case ITEM_TYPE_TEXT:
-			item->typeData.edit = UI_Alloc( sizeof( editFieldDef_t ) );
+			item->typeData.edit = (editFieldDef_t*) UI_Alloc( sizeof( editFieldDef_t ) );
 			memset( item->typeData.edit, 0, sizeof( editFieldDef_t ) );
 
 			if ( item->type == ITEM_TYPE_EDITFIELD || item->type == ITEM_TYPE_SAYFIELD )
@@ -7993,12 +7993,12 @@ qboolean ItemParse_type( itemDef_t *item, int handle )
 			break;
 
 		case ITEM_TYPE_MULTI:
-			item->typeData.multi = UI_Alloc( sizeof( multiDef_t ) );
+			item->typeData.multi = (multiDef_t*) UI_Alloc( sizeof( multiDef_t ) );
 			memset( item->typeData.multi, 0, sizeof( multiDef_t ) );
 			break;
 
 		case ITEM_TYPE_MODEL:
-			item->typeData.model = UI_Alloc( sizeof( modelDef_t ) );
+			item->typeData.model = (modelDef_t*) UI_Alloc( sizeof( modelDef_t ) );
 			memset( item->typeData.model, 0, sizeof( modelDef_t ) );
 			break;
 
@@ -9262,7 +9262,7 @@ qboolean MenuParse_itemDef( itemDef_t *item, int handle )
 
 	if ( menu->itemCount < MAX_MENUITEMS )
 	{
-		menu->items[ menu->itemCount ] = UI_Alloc( sizeof( itemDef_t ) );
+		menu->items[ menu->itemCount ] = (itemDef_t*) UI_Alloc( sizeof( itemDef_t ) );
 		Item_Init( menu->items[ menu->itemCount ] );
 
 		if ( !Item_Parse( handle, menu->items[ menu->itemCount ] ) )
@@ -9492,7 +9492,7 @@ void *Display_CaptureItem( int x, int y )
 qboolean Display_MouseMove( void *p, float x, float y )
 {
 	int       i;
-	menuDef_t *menu = p;
+	menuDef_t *menu = (menuDef_t*) p;
 
 	if ( menu == NULL )
 	{
@@ -9544,7 +9544,7 @@ int Display_CursorType( int x, int y )
 
 void Display_HandleKey( int key, int chr, qboolean down, int x, int y )
 {
-	menuDef_t *menu = Display_CaptureItem( x, y );
+	menuDef_t *menu = (menuDef_t*) Display_CaptureItem( x, y );
 
 	if ( menu == NULL )
 	{

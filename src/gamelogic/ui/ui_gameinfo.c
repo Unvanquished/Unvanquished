@@ -102,7 +102,7 @@ int UI_ParseInfos( char *buf, int max, char *infos[] )
 		}
 
 		//NOTE: extra space for arena number
-		infos[ count ] = UI_Alloc( strlen( info ) + strlen( "\\num\\" ) + strlen( va( "%d", MAX_ARENAS ) ) + 1 );
+		infos[ count ] = (char*) UI_Alloc( strlen( info ) + strlen( "\\num\\" ) + strlen( va( "%d", MAX_ARENAS ) ) + 1 );
 
 		if ( infos[ count ] )
 		{

@@ -177,7 +177,7 @@ gentity_t *G_NewTempEntity( const vec3_t origin, int event )
 	vec3_t    snapped;
 
 	newEntity = G_NewEntity();
-	newEntity->s.eType = ET_EVENTS + event;
+	newEntity->s.eType = (entityType_t) ( ET_EVENTS + event );
 
 	newEntity->classname = "tempEntity";
 	newEntity->eventTime = level.time;
@@ -509,7 +509,7 @@ gentityCallEvent_t G_GetCallEventTypeFor( const char* event )
 	if(!event)
 		return ON_DEFAULT;
 
-	foundDescription = bsearch(event, gentityEventDescriptions, ARRAY_LEN( gentityEventDescriptions ),
+	foundDescription = (entityCallEventDescription_t*) bsearch(event, gentityEventDescriptions, ARRAY_LEN( gentityEventDescriptions ),
 		             sizeof( entityCallEventDescription_t ), cmdcmp );
 
 	if(foundDescription && foundDescription->key)
@@ -544,7 +544,7 @@ gentityCallActionType_t G_GetCallActionTypeFor( const char* action )
 	if(!action)
 		return ECA_DEFAULT;
 
-	foundDescription = bsearch(action, actionDescriptions, ARRAY_LEN( actionDescriptions ),
+	foundDescription = (entityActionDescription_t*) bsearch(action, actionDescriptions, ARRAY_LEN( actionDescriptions ),
 		             sizeof( entityActionDescription_t ), cmdcmp );
 
 	if(foundDescription && foundDescription->alias)

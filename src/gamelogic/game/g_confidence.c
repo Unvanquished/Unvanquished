@@ -82,7 +82,7 @@ void ConfidenceChanged( void )
 			continue;
 		}
 
-		team = client->pers.team;
+		team = (team_t) client->pers.team;
 
 		if ( team > TEAM_NONE && team < NUM_TEAMS )
 		{
@@ -319,7 +319,7 @@ void G_DecreaseConfidence( void )
 		level.team[ team ].confidence += amount;
 
 		// notify legacy stage sensors
-		NotifyLegacyStageSensors( team, amount );
+		NotifyLegacyStageSensors( (team_t) team, amount );
 	}
 
 	ConfidenceChanged();
@@ -448,7 +448,7 @@ float G_AddConfidenceForDestroyingStep( gentity_t *buildable, gentity_t *attacke
 	}
 
 	value = BG_Buildable( buildable->s.modelindex )->value * share;
-	team  = attacker->client->pers.team;
+	team  = (team_t) attacker->client->pers.team;
 
 	return AddConfidence( CONF_DESTROYING, team, value, attacker, qtrue );
 }
@@ -476,7 +476,7 @@ float G_AddConfidenceForKillingStep( gentity_t *victim, gentity_t *attacker, flo
 	}
 
 	value = BG_GetValueOfPlayer( &victim->client->ps ) * CONFIDENCE_PER_CREDIT * share;
-	team  = attacker->client->pers.team;
+	team  = (team_t) attacker->client->pers.team;
 
 	return AddConfidence( CONF_KILLING, team, value, attacker, qtrue );
 }

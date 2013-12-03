@@ -99,7 +99,7 @@ void G_GiveClientMaxAmmo( gentity_t *ent, qboolean buyingEnergyAmmo )
 
 	if ( restoredAmmo )
 	{
-		G_ForceWeaponChange( ent, ent->client->ps.weapon );
+		G_ForceWeaponChange( ent, (weapon_t) ent->client->ps.weapon );
 	}
 
 	if ( restoredEnergy )
@@ -974,7 +974,7 @@ static void CancelBuild( gentity_t *self )
 
 static void FireBuild( gentity_t *self, dynMenu_t menu )
 {
-	buildable_t buildable = ( self->client->ps.stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK );
+	buildable_t buildable = (buildable_t) ( self->client->ps.stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK );
 
 	if ( buildable > BA_NONE )
 	{

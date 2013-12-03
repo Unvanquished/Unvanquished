@@ -206,7 +206,7 @@ Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3,
 			return UI_IsFullscreen();
 
 		case UI_SET_ACTIVE_MENU:
-			UI_SetActiveMenu( arg0 );
+			UI_SetActiveMenu( (uiMenuCommand_t) arg0 );
 			return 0;
 
 		case UI_CONSOLE_COMMAND:
@@ -2268,7 +2268,7 @@ static qboolean UI_OwnerDrawVisible( int flags )
 
 	trap_GetClientState( &cs );
 	trap_GetConfigString( CS_PLAYERS + cs.clientNum, info, MAX_INFO_STRING );
-	team = atoi( Info_ValueForKey( info, "t" ) );
+	team = (team_t) atoi( Info_ValueForKey( info, "t" ) );
 
 	while ( flags )
 	{
@@ -2685,7 +2685,7 @@ static void UI_LoadHumanArmouryBuys( void )
 			uiInfo.humanArmouryBuyList[ j ].cmd =
 			  String_Alloc( va( "cmd buy %s\n", BG_Weapon( i )->name ) );
 			uiInfo.humanArmouryBuyList[ j ].type = INFOTYPE_WEAPON;
-			uiInfo.humanArmouryBuyList[ j ].v.weapon = i;
+			uiInfo.humanArmouryBuyList[ j ].v.weapon = (weapon_t) i;
 
 			j++;
 
@@ -2706,7 +2706,7 @@ static void UI_LoadHumanArmouryBuys( void )
 			uiInfo.humanArmouryBuyList[ j ].cmd =
 			  String_Alloc( va( "cmd buy %s\n", BG_Upgrade( i )->name ) );
 			uiInfo.humanArmouryBuyList[ j ].type = INFOTYPE_UPGRADE;
-			uiInfo.humanArmouryBuyList[ j ].v.upgrade = i;
+			uiInfo.humanArmouryBuyList[ j ].v.upgrade = (upgrade_t) i;
 
 			j++;
 
@@ -2735,7 +2735,7 @@ static void UI_LoadHumanArmourySells( void )
 			uiInfo.humanArmourySellList[ j ].cmd =
 			  String_Alloc( va( "cmd sell %s\n", BG_Weapon( i )->name ) );
 			uiInfo.humanArmourySellList[ j ].type = INFOTYPE_WEAPON;
-			uiInfo.humanArmourySellList[ j ].v.weapon = i;
+			uiInfo.humanArmourySellList[ j ].v.weapon = (weapon_t) i;
 
 			j++;
 
@@ -2751,7 +2751,7 @@ static void UI_LoadHumanArmourySells( void )
 			uiInfo.humanArmourySellList[ j ].cmd =
 			  String_Alloc( va( "cmd sell %s\n", BG_Upgrade( i )->name ) );
 			uiInfo.humanArmourySellList[ j ].type = INFOTYPE_UPGRADE;
-			uiInfo.humanArmourySellList[ j ].v.upgrade = i;
+			uiInfo.humanArmourySellList[ j ].v.upgrade = (upgrade_t) i;
 
 			j++;
 
@@ -2809,7 +2809,7 @@ static void UI_LoadAlienUpgrades( void )
 			uiInfo.alienUpgradeList[ j ].cmd =
 			  String_Alloc( va( "cmd class %s\n", BG_Class( i )->name ) );
 			uiInfo.alienUpgradeList[ j ].type = INFOTYPE_CLASS;
-			uiInfo.alienUpgradeList[ j ].v.pclass = i;
+			uiInfo.alienUpgradeList[ j ].v.pclass = (class_t) i;
 
 			j++;
 
@@ -2843,7 +2843,7 @@ static void UI_LoadAlienBuilds( void )
 			uiInfo.alienBuildList[ j ].cmd =
 			  String_Alloc( va( "cmd build %s\n", BG_Buildable( i )->name ) );
 			uiInfo.alienBuildList[ j ].type = INFOTYPE_BUILDABLE;
-			uiInfo.alienBuildList[ j ].v.buildable = i;
+			uiInfo.alienBuildList[ j ].v.buildable = (buildable_t) i;
 
 			j++;
 
@@ -2877,7 +2877,7 @@ static void UI_LoadHumanBuilds( void )
 			uiInfo.humanBuildList[ j ].cmd =
 			  String_Alloc( va( "cmd build %s\n", BG_Buildable( i )->name ) );
 			uiInfo.humanBuildList[ j ].type = INFOTYPE_BUILDABLE;
-			uiInfo.humanBuildList[ j ].v.buildable = i;
+			uiInfo.humanBuildList[ j ].v.buildable = (buildable_t) i;
 
 			j++;
 

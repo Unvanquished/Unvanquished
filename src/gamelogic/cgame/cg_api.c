@@ -897,14 +897,14 @@ int trap_CIN_PlayCinematic( const char *arg0, int xpos, int ypos, int width, int
 //return CIN_StopCinematic(args[1]);
 e_status trap_CIN_StopCinematic( int handle )
 {
-	return syscall( CG_CIN_STOPCINEMATIC, handle );
+	return (e_status) syscall( CG_CIN_STOPCINEMATIC, handle );
 }
 
 //128.
 //return CIN_RunCinematic(args[1]);
 e_status trap_CIN_RunCinematic( int handle )
 {
-	return syscall( CG_CIN_RUNCINEMATIC, handle );
+	return (e_status) syscall( CG_CIN_RUNCINEMATIC, handle );
 }
 
 //129.

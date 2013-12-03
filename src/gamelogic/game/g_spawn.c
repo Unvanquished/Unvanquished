@@ -319,7 +319,7 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 	{ "func_door_model",          SP_func_door_model,        CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
 	{ "func_door_rotating",       SP_func_door_rotating,     CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
 	{ "func_dynamic",             SP_func_dynamic,           CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
-	{ "func_group",               SP_RemoveSelf,             0 },
+	{ "func_group",               SP_RemoveSelf,             (entityChainType_t) 0 },
 	{ "func_pendulum",            SP_func_pendulum,          CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
 	{ "func_plat",                SP_func_plat,              CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
 	{ "func_rotating",            SP_func_rotating,          CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
@@ -370,14 +370,14 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 	{ "info_alien_intermission",  SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_POS_ALIEN_INTERMISSION  },
 	{ "info_human_intermission",  SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_POS_HUMAN_INTERMISSION  },
 	{ "info_notnull",             SP_pos_target,             CHAIN_TARGET,     ENT_V_RENAMED, S_POS_TARGET },
-	{ "info_null",                SP_RemoveSelf,             0 },
+	{ "info_null",                SP_RemoveSelf,             (entityChainType_t) 0 },
 	{ "info_player_deathmatch",   SP_pos_player_spawn,       CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_POS_PLAYER_SPAWN },
 	{ "info_player_intermission", SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_POS_PLAYER_INTERMISSION },
 	{ "info_player_start",        SP_pos_player_spawn,       CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_POS_PLAYER_SPAWN },
-	{ "light",                    SP_RemoveSelf,             0 },
+	{ "light",                    SP_RemoveSelf,             (entityChainType_t) 0 },
 	{ "misc_anim_model",          SP_gfx_animated_model,     CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_gfx_animated_model },
 	{ "misc_light_flare",         SP_gfx_light_flare,        CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_gfx_light_flare },
-	{ "misc_model",               SP_RemoveSelf,             0 },
+	{ "misc_model",               SP_RemoveSelf,             (entityChainType_t) 0 },
 	{ "misc_particle_system",     SP_gfx_particle_system,    CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_gfx_particle_system},
 	{ "misc_portal_camera",       SP_gfx_portal_camera,      CHAIN_TARGET,     ENT_V_TMPNAME, S_gfx_portal_camera },
 	{ "misc_portal_surface",      SP_gfx_portal_surface,     CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_gfx_portal_surface },
@@ -566,7 +566,7 @@ qboolean G_CallSpawnFunction( gentity_t *spawnedEntity )
 	}
 
 	// check the spawn functions for other classes
-	spawnedClass = bsearch( spawnedEntity->classname, entityClassDescriptions, ARRAY_LEN( entityClassDescriptions ),
+	spawnedClass = (entityClassDescriptor_t*) bsearch( spawnedEntity->classname, entityClassDescriptions, ARRAY_LEN( entityClassDescriptions ),
 	             sizeof( entityClassDescriptor_t ), cmdcmp );
 
 	if ( spawnedClass )
@@ -627,7 +627,7 @@ char *G_NewString( const char *string )
 
 	l = strlen( string ) + 1;
 
-	newb = BG_Alloc( l );
+	newb =(char*) BG_Alloc( l );
 
 	new_p = newb;
 
@@ -671,7 +671,7 @@ gentityCallDefinition_t G_NewCallDefinition( char *eventKey, const char *string 
 	if(stringLength == 1)
 		return newCallDefinition;
 
-	stringPointer = BG_Alloc( stringLength );
+	stringPointer = (char*) BG_Alloc( stringLength );
 	newCallDefinition.name = stringPointer;
 
 	for ( i = 0; i < stringLength; i++ )
@@ -706,7 +706,7 @@ void G_ParseField( const char *key, const char *rawString, gentity_t *entity )
 	vec4_t  tmpFloatData;
 	variatingTime_t varTime = {0, 0};
 
-	fieldDescriptor = bsearch( key, fields, ARRAY_LEN( fields ), sizeof( fieldDescriptor_t ), cmdcmp );
+	fieldDescriptor = (fieldDescriptor_t*) bsearch( key, fields, ARRAY_LEN( fields ), sizeof( fieldDescriptor_t ), cmdcmp );
 
 	if ( !fieldDescriptor )
 	{

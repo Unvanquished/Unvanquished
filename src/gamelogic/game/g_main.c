@@ -1010,7 +1010,7 @@ static void G_ClearVotes( qboolean all )
 
 	for ( i = 0; i < NUM_TEAMS; i++ )
 	{
-		if ( all || G_CheckStopVote( i ) )
+		if ( all || G_CheckStopVote( (team_t) i ) )
 		{
 			level.team[ i ].voteTime = 0;
 			trap_SetConfigstring( CS_VOTE_TIME + i, "" );
@@ -1556,7 +1556,7 @@ void G_CalculateMineRate( void )
 			continue;
 		}
 
-		team = client->pers.team;
+		team = (team_t) client->pers.team;
 
 		client->ps.persistant[ PERS_MINERATE ] = ( short )( level.mineRate * 10.0f );
 
@@ -3142,7 +3142,7 @@ void G_RunFrame( int levelTime )
 	// cancel vote if timed out
 	for ( i = 0; i < NUM_TEAMS; i++ )
 	{
-		G_CheckVote( i );
+		G_CheckVote( (team_t) i );
 	}
 
 	trap_BotUpdateObstacles();

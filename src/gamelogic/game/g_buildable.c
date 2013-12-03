@@ -370,7 +370,7 @@ static gentity_t* GetMainBuilding( gentity_t *self, qboolean ownBase )
 
 	if ( self->client )
 	{
-		team = self->client->pers.team;
+		team = (team_t) self->client->pers.team;
 	}
 	else if ( self->s.eType == ET_BUILDABLE )
 	{
@@ -564,7 +564,7 @@ static void AGeneric_CreepSlow( gentity_t *self )
 	vec3_t      mins, maxs;
 	int         i, num;
 	gentity_t   *enemy;
-	buildable_t buildable = self->s.modelindex;
+	buildable_t buildable = (buildable_t) self->s.modelindex;
 	float       creepSize = ( float ) BG_Buildable( buildable )->creepSize;
 
 	VectorSet( range, creepSize, creepSize, creepSize );
@@ -1278,7 +1278,7 @@ void ABarricade_Shrink( gentity_t *self, qboolean shrink )
 		if ( self->spawned && self->health > 0 &&
 		     anim != BANIM_CONSTRUCT1 && anim != BANIM_CONSTRUCT2 )
 		{
-			G_SetIdleBuildableAnim( self, BG_Buildable( BA_A_BARRICADE )->idleAnim );
+			G_SetIdleBuildableAnim( self, (buildableAnimNumber_t) BG_Buildable( BA_A_BARRICADE )->idleAnim );
 			G_SetBuildableAnim( self, BANIM_ATTACK2, qtrue );
 		}
 	}
@@ -1864,7 +1864,7 @@ static void IdlePowerState( gentity_t *self )
 	{
 		if ( self->s.torsoAnim == BANIM_IDLE_UNPOWERED )
 		{
-			G_SetIdleBuildableAnim( self, BG_Buildable( self->s.modelindex )->idleAnim );
+			G_SetIdleBuildableAnim( self, (buildableAnimNumber_t) BG_Buildable( self->s.modelindex )->idleAnim );
 		}
 	}
 	else
@@ -2143,11 +2143,11 @@ static void CalculateSparePower( gentity_t *self )
 
 		distance = Distance( self->s.origin, neighbor->s.origin );
 
-		self->expectedSparePower += IncomingInterference( self->s.modelindex, neighbor, distance, qtrue );
+		self->expectedSparePower += IncomingInterference( (buildable_t) self->s.modelindex, neighbor, distance, qtrue );
 
 		if ( self->spawned )
 		{
-			self->currentSparePower += IncomingInterference( self->s.modelindex, neighbor, distance, qfalse );
+			self->currentSparePower += IncomingInterference( (buildable_t) self->s.modelindex, neighbor, distance, qfalse );
 		}
 	}
 
@@ -2337,7 +2337,7 @@ void HGeneric_Blast( gentity_t *self )
 	G_RewardAttackers( self );
 
 	// turn into an explosion
-	self->s.eType = ET_EVENTS + EV_HUMAN_BUILDABLE_EXPLOSION;
+	self->s.eType = (entityType_t) ( ET_EVENTS + EV_HUMAN_BUILDABLE_EXPLOSION );
 	self->freeAfterEvent = qtrue;
 	G_AddEvent( self, EV_HUMAN_BUILDABLE_EXPLOSION, DirToByte( dir ) );
 }
@@ -3610,9 +3610,9 @@ static int CompareBuildablesForRemoval( const void *a, const void *b )
 
 	// Prefer the one that collides with the thing we're building
 	aMatches = BuildablesIntersect( cmpBuildable, cmpOrigin,
-	                                buildableA->s.modelindex, buildableA->s.origin );
+	                                (buildable_t) buildableA->s.modelindex, buildableA->s.origin );
 	bMatches = BuildablesIntersect( cmpBuildable, cmpOrigin,
-	                                buildableB->s.modelindex, buildableB->s.origin );
+	                                (buildable_t) buildableB->s.modelindex, buildableB->s.origin );
 
 	if ( aMatches && !bMatches )
 	{
@@ -3941,7 +3941,7 @@ static qboolean PredictBuildablePower( buildable_t buildable, vec3_t origin )
 				if ( IsSetForDeconstruction( buddy ) )
 				{
 					distance = Distance( neighbor->s.origin, buddy->s.origin );
-					neighborPrediction -= IncomingInterference( neighbor->s.modelindex, buddy, distance, qtrue );
+					neighborPrediction -= IncomingInterference( (buildable_t) neighbor->s.modelindex, buddy, distance, qtrue );
 				}
 			}
 
@@ -4034,7 +4034,7 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 			continue;
 		}
 
-		if ( BuildablesIntersect( buildable, origin, ent->s.modelindex, ent->s.origin ) )
+		if ( BuildablesIntersect( buildable, origin, (buildable_t) ent->s.modelindex, ent->s.origin ) )
 		{
 			if ( ent->buildableTeam == attr->team && ent->deconstruct )
 			{
@@ -4043,7 +4043,7 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 				     && !( buildable == BA_A_OVERMIND && ent->s.modelindex == BA_A_OVERMIND ) )
 				{
 					// apply general replacement rules
-					if ( ( reason = BuildableReplacementChecks( ent->s.modelindex, buildable ) ) != IBE_NONE )
+					if ( ( reason = BuildableReplacementChecks( (buildable_t) ent->s.modelindex, buildable ) ) != IBE_NONE )
 					{
 						return reason;
 					}
@@ -4128,7 +4128,7 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 				}
 
 				// apply general replacement rules
-				if ( BuildableReplacementChecks( ent->s.modelindex, buildable ) != IBE_NONE )
+				if ( BuildableReplacementChecks( (buildable_t) ent->s.modelindex, buildable ) != IBE_NONE )
 				{
 					continue;
 				}
@@ -4191,7 +4191,7 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 		}
 
 		// apply general replacement rules
-		if ( BuildableReplacementChecks( ent->s.modelindex, buildable ) != IBE_NONE )
+		if ( BuildableReplacementChecks( (buildable_t) ent->s.modelindex, buildable ) != IBE_NONE )
 		{
 			continue;
 		}
@@ -4506,7 +4506,8 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 	built->killedBy = ENTITYNUM_NONE;
 	built->classname = BG_Buildable( buildable )->entityName;
 	built->s.modelindex = buildable;
-	built->buildableTeam = built->s.modelindex2 = BG_Buildable( buildable )->team;
+	built->s.modelindex2 = BG_Buildable( buildable )->team;
+	built->buildableTeam = (team_t) built->s.modelindex2;
 	BG_BuildableBoundingBox( buildable, built->r.mins, built->r.maxs );
 
 	built->health = 1;
@@ -4733,7 +4734,7 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 
 	G_AddEvent( built, EV_BUILD_CONSTRUCT, 0 );
 
-	G_SetIdleBuildableAnim( built, BG_Buildable( buildable )->idleAnim );
+	G_SetIdleBuildableAnim( built, (buildableAnimNumber_t) BG_Buildable( buildable )->idleAnim );
 
 	if ( built->builtBy )
 	{
@@ -4745,7 +4746,7 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 	if ( builder && builder->client )
 	{
 	        // readable and the model name shouldn't need quoting
-		G_TeamCommand( builder->client->pers.team,
+		G_TeamCommand( (team_t) builder->client->pers.team,
 		               va( "print_tr %s %s %s %s", ( readable[ 0 ] ) ?
 						QQ( N_("$1$ ^2built^7 by $2$^7, ^3replacing^7 $3$\n") ) :
 						QQ( N_("$1$ ^2built^7 by $2$$3$\n") ),
@@ -4875,7 +4876,7 @@ static gentity_t *FinishSpawningBuildable( gentity_t *ent, qboolean force )
 	trace_t     tr;
 	vec3_t      normal, dest;
 	gentity_t   *built;
-	buildable_t buildable = ent->s.modelindex;
+	buildable_t buildable = (buildable_t) ent->s.modelindex;
 
 	if ( ent->s.origin2[ 0 ] || ent->s.origin2[ 1 ] || ent->s.origin2[ 2 ] )
 	{
@@ -5243,7 +5244,7 @@ void G_LayoutLoad( void )
 		return;
 	}
 
-	layoutHead = layout = BG_Alloc( len + 1 );
+	layoutHead = layout = (char*) BG_Alloc( len + 1 );
 	trap_FS_Read( layout, len, f );
 	layout[ len ] = '\0';
 	trap_FS_FCloseFile( f );
@@ -5279,7 +5280,7 @@ void G_LayoutLoad( void )
 			}
 			else
 			{
-				LayoutBuildItem( buildable, origin, angles, origin2, angles2 );
+				LayoutBuildItem( (buildable_t) buildable, origin, angles, origin2, angles2 );
 			}
 		}
 
@@ -5399,7 +5400,7 @@ buildLog_t *G_BuildLogNew( gentity_t *actor, buildFate_t fate )
 void G_BuildLogSet( buildLog_t *log, gentity_t *ent )
 {
 	log->buildableTeam = ent->buildableTeam;
-	log->modelindex = ent->s.modelindex;
+	log->modelindex = (buildable_t) ent->s.modelindex;
 	log->deconstruct = ent->deconstruct;
 	log->deconstructTime = ent->deconstructTime;
 	log->builtBy = ent->builtBy;
@@ -5552,7 +5553,7 @@ void G_BuildLogRevert( int id )
 
 	for ( team = TEAM_NONE + 1; team < NUM_TEAMS; ++team )
 	{
-		G_AddConfidenceGenericStep( team, confidenceChange[ team ] );
+		G_AddConfidenceGenericStep( (team_t) team, confidenceChange[ team ] );
 	}
 
 	G_AddConfidenceEnd();

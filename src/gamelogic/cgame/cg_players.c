@@ -1058,7 +1058,7 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 			for ( i = WP_BLASTER; i < WP_NUM_WEAPONS; i++ )
 			{
 				if ( BG_Weapon( i )->team != TEAM_HUMANS || !BG_Weapon( i )->purchasable ) { continue; }
-				CG_DeriveAnimationDelta( modelName, i, ci );
+				CG_DeriveAnimationDelta( modelName, (weapon_t) i, ci );
 			}
 
 		}
@@ -1596,7 +1596,7 @@ void CG_NewClientInfo( int clientNum )
 
 	// team
 	v = Info_ValueForKey( configstring, "t" );
-	newInfo.team = atoi( v );
+	newInfo.team = (team_t) atoi( v );
 
 	// model
 	v = Info_ValueForKey( configstring, "model" );
@@ -3058,7 +3058,7 @@ void CG_Player( centity_t *cent )
 	qboolean      shadow = qfalse;
 	float         shadowPlane = 0.0f;
 	entityState_t *es = &cent->currentState;
-	class_t       class_ = ( es->misc >> 8 ) & 0xFF;
+	class_t       class_ = (class_t) ( ( es->misc >> 8 ) & 0xFF );
 	float         scale;
 	vec3_t        tempAxis[ 3 ], tempAxis2[ 3 ];
 	vec3_t        angles;
@@ -3656,7 +3656,7 @@ void CG_Corpse( centity_t *cent )
 	vec3_t        origin, liveZ, deadZ, deadMax;
 	float         scale;
 
-	corpseNum = CG_GetCorpseNum( es->clientNum );
+	corpseNum = CG_GetCorpseNum( (class_t) es->clientNum );
 
 	if ( corpseNum < 0 || corpseNum >= MAX_CLIENTS )
 	{
@@ -3746,7 +3746,7 @@ void CG_Corpse( centity_t *cent )
 	}
 
 	// add the shadow
-	shadow = CG_PlayerShadow( cent, &shadowPlane, es->clientNum );
+	shadow = CG_PlayerShadow( cent, &shadowPlane, (class_t) es->clientNum );
 
 	// get the player model information
 	renderfx = RF_LIGHTING_ORIGIN; // use the same origin for all

@@ -270,6 +270,8 @@ typedef enum
   TYPE_MODEL
 } itemDataType_t;
 
+typedef struct menuDef_s menuDef_t;
+
 typedef struct itemDef_s
 {
 	Window          window; // common positional, border, style, layout info
@@ -283,7 +285,7 @@ typedef struct itemDef_s
 	float           textscale; // scale percentage from 72pts
 	int             textStyle; // ( optional ) style, plain and shadowed are it for now
 	const char      *text; // display text
-	void            *parent; // menu owner
+	menuDef_t       *parent; // menu owner
 	qhandle_t       asset; // handle to asset
 	const char      *mouseEnterText; // mouse enter script
 	const char      *mouseExitText; // mouse exit script
@@ -316,7 +318,7 @@ typedef struct itemDef_s
 
 itemDef_t;
 
-typedef struct
+struct menuDef_s
 {
 	Window     window;
 	const char *font; // font
@@ -335,9 +337,7 @@ typedef struct
 	vec4_t     focusColor; // focus color for items
 	vec4_t     disableColor; // focus color for items
 	itemDef_t  *items[ MAX_MENUITEMS ]; // items this menu contains
-}
-
-menuDef_t;
+};
 
 typedef struct
 {

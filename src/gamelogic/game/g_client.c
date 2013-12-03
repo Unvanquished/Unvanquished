@@ -1942,8 +1942,8 @@ void ClientDisconnect( int clientNum )
 	ent->inuse = qfalse;
 	ent->classname = "disconnected";
 	ent->client->pers.connected = CON_DISCONNECTED;
-	ent->client->sess.spectatorState =
-	  ent->client->ps.persistant[ PERS_SPECSTATE ] = SPECTATOR_NOT;
+	ent->client->sess.spectatorState = SPECTATOR_NOT;
+	ent->client->ps.persistant[ PERS_SPECSTATE ] = SPECTATOR_NOT;
 
 	trap_SetConfigstring( CS_PLAYERS + clientNum, "" );
 

@@ -239,7 +239,7 @@ void BG_InitUnlockackables( void )
 #endif
 }
 
-void BG_ImportUnlockablesFromMask( team_t team, int mask )
+void BG_ImportUnlockablesFromMask( int team, int mask )
 {
 	int              unlockableNum, teamUnlockableNum = 0, itemNum = 0, unlockThreshold;
 	unlockable_t     *unlockable;
@@ -263,7 +263,7 @@ void BG_ImportUnlockablesFromMask( team_t team, int mask )
 
 	// cache input
 	lastMask = mask;
-	lastTeam = team;
+	lastTeam = (team_t) team;
 
 	// no status change yet
 	memset( statusChanges, 0, sizeof( statusChanges ) );
@@ -363,13 +363,13 @@ void BG_ImportUnlockablesFromMask( team_t team, int mask )
 
 	// we only know the state for one team
 	unlockablesDataAvailable = qtrue;
-	unlockablesTeamKnowledge = team;
+	unlockablesTeamKnowledge = (team_t) team;
 
 	// save mask for later use
 	unlockablesMask[ team ] = mask;
 }
 
-int BG_UnlockablesMask( team_t team )
+int BG_UnlockablesMask( int team )
 {
 	if ( unlockablesTeamKnowledge != team && unlockablesTeamKnowledge != TEAM_ALL )
 	{
@@ -381,7 +381,7 @@ int BG_UnlockablesMask( team_t team )
 
 unlockableType_t BG_UnlockableType( int num )
 {
-	return ( (unsigned) num < NUM_UNLOCKABLES ) ? unlockables[ num ].type : UNLT_NUM_UNLOCKABLETYPES;
+	return (unlockableType_t) ( ( (unsigned) num < NUM_UNLOCKABLES ) ? unlockables[ num ].type : UNLT_NUM_UNLOCKABLETYPES );
 }
 
 int BG_UnlockableTypeIndex( int num )
@@ -389,28 +389,28 @@ int BG_UnlockableTypeIndex( int num )
 	return ( (unsigned) num < NUM_UNLOCKABLES ) ? unlockables[ num ].num : 0;
 }
 
-qboolean BG_WeaponUnlocked( weapon_t weapon )
+qboolean BG_WeaponUnlocked( int weapon )
 {
 	CheckStatusKnowledge( UNLT_WEAPON, ( int )weapon );
 
 	return Unlocked( UNLT_WEAPON, ( int )weapon );
 }
 
-qboolean BG_UpgradeUnlocked( upgrade_t upgrade )
+qboolean BG_UpgradeUnlocked( int upgrade )
 {
 	CheckStatusKnowledge( UNLT_UPGRADE, ( int )upgrade );
 
 	return Unlocked( UNLT_UPGRADE, ( int )upgrade );
 }
 
-qboolean BG_BuildableUnlocked( buildable_t buildable )
+qboolean BG_BuildableUnlocked( int buildable )
 {
 	CheckStatusKnowledge( UNLT_BUILDABLE, ( int )buildable );
 
 	return Unlocked( UNLT_BUILDABLE, ( int )buildable );
 }
 
-qboolean BG_ClassUnlocked( class_t class_ )
+qboolean BG_ClassUnlocked( int class_ )
 {
 	CheckStatusKnowledge( UNLT_CLASS, ( int )class_ );
 

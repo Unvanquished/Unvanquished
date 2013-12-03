@@ -548,7 +548,7 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 		}
 	}
 
-	team = client->pers.team;
+	team = (team_t) client->pers.team;
 
 	// Check to see if we are in the spawn queue
 	// Also, do some other checks and updates which players need while spectating
@@ -729,7 +729,7 @@ qboolean ClientInactivityTimer( gentity_t *ent, qboolean active )
 static void G_ReplenishHumanHealth( gentity_t *self )
 {
 	gclient_t *client;
-	int       remainingStartupTime, clientNum;
+	int       remainingStartupTime;
 
 	if ( !self )
 	{
@@ -898,7 +898,7 @@ void ClientTimerActions( gentity_t *ent, int msec )
 			case WP_ABUILD:
 			case WP_ABUILD2:
 			case WP_HBUILD:
-				buildable = client->ps.stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK;
+				buildable = (buildable_t) ( client->ps.stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK );
 
 				// Set validity bit on buildable
 				if ( buildable > BA_NONE )
@@ -1099,7 +1099,7 @@ void ClientEvents( gentity_t *ent, int oldEventSequence )
 	class_t   pcl;
 
 	client = ent->client;
-	pcl = client->ps.stats[ STAT_CLASS ];
+	pcl = (class_t) client->ps.stats[ STAT_CLASS ];
 
 	if ( oldEventSequence < client->ps.eventSequence - MAX_EVENTS )
 	{
@@ -1190,7 +1190,7 @@ void SendPendingPredictableEvents( playerState_t *ps )
 		number = t->s.number;
 		BG_PlayerStateToEntityState( ps, &t->s, qtrue );
 		t->s.number = number;
-		t->s.eType = ET_EVENTS + event;
+		t->s.eType = (entityType_t) ( ET_EVENTS + event );
 		t->s.eFlags |= EF_PLAYER_EVENT;
 		t->s.otherEntityNum = ps->clientNum;
 		// send to everyone except the client who generated the event
@@ -1655,7 +1655,7 @@ static void G_ReplenishAlienHealth( gentity_t *self )
 {
 	gclient_t *client;
 	float     regenBaseRate, modifier;
-	int       foundHealthSource, count, interval, clientNum;
+	int       foundHealthSource, count, interval;
 
 	client = self->client;
 
@@ -1708,7 +1708,7 @@ static void G_ReplenishAlienHealth( gentity_t *self )
 			modifier = 2.0f;
 			client->ps.stats[ STAT_STATE ] |= ( SS_HEALING_ACTIVE | SS_HEALING_2X );
 		}
-		else if ( foundHealthSource & SS_HEALING_ACTIVE )
+		else /*if ( foundHealthSource & SS_HEALING_ACTIVE )*/
 		{
 			modifier = 1.0f;
 			client->ps.stats[ STAT_STATE ] |= SS_HEALING_ACTIVE;
@@ -2257,8 +2257,8 @@ void ClientThink_real( gentity_t *ent )
 		}
 	}
 
-	client->ps.persistant[ PERS_BP ] = G_GetBuildPointsInt( client->pers.team );
-	client->ps.persistant[ PERS_MARKEDBP ] = G_GetMarkedBuildPointsInt( client->pers.team );
+	client->ps.persistant[ PERS_BP ] = G_GetBuildPointsInt( (team_t) client->pers.team );
+	client->ps.persistant[ PERS_MARKEDBP ] = G_GetMarkedBuildPointsInt( (team_t) client->pers.team );
 
 	if ( client->ps.persistant[ PERS_BP ] < 0 )
 	{

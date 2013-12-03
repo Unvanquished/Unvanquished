@@ -576,7 +576,7 @@ static AIValueFunc_t *newValueFunc( pc_token_list **list )
 
 	memset( &v, 0, sizeof( v ) );
 
-	f = bsearch( current->token.string, conditionFuncs, ARRAY_LEN( conditionFuncs ), sizeof( *conditionFuncs ), cmdcmp );
+	f = (struct AIConditionMap_s*) bsearch( current->token.string, conditionFuncs, ARRAY_LEN( conditionFuncs ), sizeof( *conditionFuncs ), cmdcmp );
 
 	if ( !f )
 	{
@@ -844,7 +844,7 @@ AIGenericNode_t *ReadDecoratorNode( pc_token_list **list )
 		return NULL;
 	}
 
-	dec = bsearch( current->token.string, AIDecorators, ARRAY_LEN( AIDecorators ), sizeof( *AIDecorators ), cmdcmp );
+	dec = (struct AIDecoratorMap_s*) bsearch( current->token.string, AIDecorators, ARRAY_LEN( AIDecorators ), sizeof( *AIDecorators ), cmdcmp );
 
 	if ( !dec )
 	{
@@ -970,7 +970,7 @@ AIGenericNode_t *ReadActionNode( pc_token_list **tokenlist )
 		return NULL;
 	}
 
-	action = bsearch( current->token.string, AIActions, ARRAY_LEN( AIActions ), sizeof( *AIActions ), cmdcmp );
+	action = (struct AIActionMap_s*) bsearch( current->token.string, AIActions, ARRAY_LEN( AIActions ), sizeof( *AIActions ), cmdcmp );
 
 	if ( !action )
 	{
