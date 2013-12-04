@@ -34,7 +34,7 @@ namespace Maths {
 		return std::max(min, std::min(max, value));
 	}
 
-	static inline float clampFrac(float value)
+	static inline float clampFraction(float value)
 	{
 		return clamp(value, 0.0f, 1.0f);
 	}
