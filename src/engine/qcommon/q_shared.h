@@ -88,11 +88,14 @@ Maryland 20850 USA.
 
 #ifdef Q3_VM
 
+#define EXTERN_C
 #include "../../gamelogic/shared/bg_lib.h"
 typedef int intptr_t;
 #define roundf( f ) ( floor( f + 0.5 ) )
 
 #else //Q3_VM
+
+#define EXTERN_C extern "C"
 
 // for visibility of some functions in system headers
 #undef _GNU_SOURCE
