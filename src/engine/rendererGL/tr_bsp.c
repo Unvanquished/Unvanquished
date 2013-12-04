@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // tr_bsp.c
 #include "tr_local.h"
+#include "../../common/Maths.h"
 
 /*
 ========================================================
@@ -1562,7 +1563,7 @@ static void ParseFace( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf, in
 
 		for ( j = 0; j < 4; j++ )
 		{
-			cv->verts[ i ].paintColor[ j ] = Q_bound( 0, LittleFloat( verts[ i ].paintColor[ j ] ), 1 );
+			cv->verts[ i ].paintColor[ j ] = Maths::clampFraction( LittleFloat( verts[ i ].paintColor[ j ] ) );
 			cv->verts[ i ].lightColor[ j ] = LittleFloat( verts[ i ].lightColor[ j ] );
 		}
 
@@ -1776,7 +1777,7 @@ static void ParseMesh( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf )
 
 		for ( j = 0; j < 4; j++ )
 		{
-			points[ i ].paintColor[ j ] = Q_bound( 0, LittleFloat( verts[ i ].paintColor[ j ] ), 1 );
+			points[ i ].paintColor[ j ] = Maths::clampFraction( LittleFloat( verts[ i ].paintColor[ j ] ) );
 			points[ i ].lightColor[ j ] = LittleFloat( verts[ i ].lightColor[ j ] );
 		}
 
@@ -1916,7 +1917,7 @@ static void ParseTriSurf( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf,
 
 		for ( j = 0; j < 4; j++ )
 		{
-			cv->verts[ i ].paintColor[ j ] = Q_bound( 0, LittleFloat( verts[ i ].paintColor[ j ] ), 1 );
+			cv->verts[ i ].paintColor[ j ] = Maths::clampFraction( LittleFloat( verts[ i ].paintColor[ j ] ) );
 			cv->verts[ i ].lightColor[ j ] = LittleFloat( verts[ i ].lightColor[ j ] );
 		}
 
@@ -6810,7 +6811,7 @@ void R_LoadEntities( lump_t *l )
 		// check for mapOverBrightBits override
 		else if ( !Q_stricmp( keyname, "mapOverBrightBits" ) )
 		{
-			tr.mapOverBrightBits = Q_bound( 0.0, atof( value ), 3.0 );
+			tr.mapOverBrightBits = Maths::clamp( atof( value ), 0.0, 3.0 );
 		}
 
 		// check for deluxe mapping provided by NetRadiant's q3map2

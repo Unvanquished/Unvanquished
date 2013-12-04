@@ -1186,7 +1186,7 @@ static void GLimp_XreaLInitExtensions( void )
 		        // restrict to number of vertex uniforms to 512 because of:
 		        // xreal.x86_64: nv50_program.c:4181: nv50_program_validate_data: Assertion `p->param_nr <= 512' failed
 
-		        glConfig2.maxVertexUniforms = Q_bound(0, glConfig2.maxVertexUniforms, 512);
+		        glConfig2.maxVertexUniforms = Maths::clamp(glConfig2.maxVertexUniforms, 0, 512);
 		}
 		*/
 
