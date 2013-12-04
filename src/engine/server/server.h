@@ -324,35 +324,78 @@ typedef struct
 
 //=============================================================================
 
-class GameVM: public VM::VMBase {
+class GameVM {
 public:
-	void GameInit(int levelTime, int randomSeed, qboolean restart);
-	void GameShutdown(qboolean restart);
-	qboolean GameClientConnect(char* reason, size_t size, int clientNum, qboolean firstTime, qboolean isBot);
-	void GameClientBegin(int clientNum);
-	void GameClientUserInfoChanged(int clientNum);
-	void GameClientDisconnect(int clientNum);
-	void GameClientCommand(int clientNum);
-	void GameClientThink(int clientNum);
-	void GameRunFrame(int levelTime);
-	qboolean GameConsoleCommand();
-	qboolean GameSnapshotCallback(int entityNum, int clientNum);
-	void BotAIStartFrame(int levelTime);
-	void GameMessageRecieved(int clientNum, const char *buffer, int bufferSize, int commandTime);
+    virtual ~GameVM();
 
-#ifndef QVM_COMPAT
+	virtual void GameInit(int levelTime, int randomSeed, qboolean restart) = 0;
+	virtual void GameShutdown(qboolean restart) = 0;
+	virtual qboolean GameClientConnect(char* reason, size_t size, int clientNum, qboolean firstTime, qboolean isBot) = 0;
+	virtual void GameClientBegin(int clientNum) = 0;
+	virtual void GameClientUserInfoChanged(int clientNum) = 0;
+	virtual void GameClientDisconnect(int clientNum) = 0;
+	virtual void GameClientCommand(int clientNum) = 0;
+	virtual void GameClientThink(int clientNum) = 0;
+	virtual void GameRunFrame(int levelTime) = 0;
+	virtual qboolean GameConsoleCommand() = 0;
+	virtual qboolean GameSnapshotCallback(int entityNum, int clientNum) = 0;
+	virtual void BotAIStartFrame(int levelTime) = 0;
+	virtual void GameMessageRecieved(int clientNum, const char *buffer, int bufferSize, int commandTime) = 0;
+};
+
+class NaClGameVM: public GameVM, public VM::VMBase {
+public:
+	NaClGameVM();
+    virtual ~NaClGameVM();
+	bool Start();
+
+	virtual void GameInit(int levelTime, int randomSeed, qboolean restart) override;
+	virtual void GameShutdown(qboolean restart) override;
+	virtual qboolean GameClientConnect(char* reason, size_t size, int clientNum, qboolean firstTime, qboolean isBot) override;
+	virtual void GameClientBegin(int clientNum) override;
+	virtual void GameClientUserInfoChanged(int clientNum) override;
+	virtual void GameClientDisconnect(int clientNum) override;
+	virtual void GameClientCommand(int clientNum) override;
+	virtual void GameClientThink(int clientNum) override;
+	virtual void GameRunFrame(int levelTime) override;
+	virtual qboolean GameConsoleCommand() override;
+	virtual qboolean GameSnapshotCallback(int entityNum, int clientNum) override;
+	virtual void BotAIStartFrame(int levelTime) override;
+	virtual void GameMessageRecieved(int clientNum, const char *buffer, int bufferSize, int commandTime) override;
+
 private:
 	void Syscall(int index, RPC::Reader& input, RPC::Writer& outputs);
 
 	NaCl::SharedMemoryPtr shmRegion;
-#endif
 };
 
+class QVMGameVM: public GameVM {
+public:
+    QVMGameVM(vm_t* vm);
+    virtual ~QVMGameVM();
+
+	virtual void GameInit(int levelTime, int randomSeed, qboolean restart) override;
+	virtual void GameShutdown(qboolean restart) override;
+	virtual qboolean GameClientConnect(char* reason, size_t size, int clientNum, qboolean firstTime, qboolean isBot) override;
+	virtual void GameClientBegin(int clientNum) override;
+	virtual void GameClientUserInfoChanged(int clientNum) override;
+	virtual void GameClientDisconnect(int clientNum) override;
+	virtual void GameClientCommand(int clientNum) override;
+	virtual void GameClientThink(int clientNum) override;
+	virtual void GameRunFrame(int levelTime) override;
+	virtual qboolean GameConsoleCommand() override;
+	virtual qboolean GameSnapshotCallback(int entityNum, int clientNum) override;
+	virtual void BotAIStartFrame(int levelTime) override;
+	virtual void GameMessageRecieved(int clientNum, const char *buffer, int bufferSize, int commandTime) override;
+
+private:
+    vm_t* vm;
+};
 //=============================================================================
 
 extern serverStatic_t svs; // persistent server info across maps
 extern server_t       sv; // cleared each map
-extern GameVM         gvm; // game virtual machine
+extern GameVM         *gvm; // game virtual machine
 
 extern cvar_t         *sv_fps;
 extern cvar_t         *sv_timeout;
@@ -500,6 +543,7 @@ playerState_t  *SV_GameClientNum( int num );
 
 svEntity_t     *SV_SvEntityForGentity( sharedEntity_t *gEnt );
 sharedEntity_t *SV_GEntityForSvEntity( svEntity_t *svEnt );
+GameVM         *SV_CreateGameVM( void );
 void           SV_InitGameProgs( void );
 void           SV_ShutdownGameProgs( void );
 void           SV_RestartGameProgs( void );

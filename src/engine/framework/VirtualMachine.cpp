@@ -38,10 +38,13 @@ Maryland 20850 USA.
 
 namespace VM {
 
+//TODO: error handling?
 int VMBase::Create(const char* name, Type type)
 {
-	if (module)
-		Com_Error(ERR_FATAL, "Attempting to re-create an already-loaded VM");
+	if (module) {
+		Com_Printf(S_ERROR "Attempting to re-create an already-loaded VM");
+		return -1;
+	}
 
 	// TODO: Proper interaction with FS code
 	const char* gameDir = Cvar_VariableString("fs_game");
@@ -71,11 +74,15 @@ int VMBase::Create(const char* name, Type type)
 		const char* path = FS_BuildOSPath(libPath, gameDir, nexe);
 		Com_Printf("Trying to load NaCl module %s\n", path);
 		module = NaCl::LoadModule(path, &params, debug);
-	} else
-		Com_Error(ERR_DROP, "Invalid VM type");
+	} else {
+		Com_Printf(S_ERROR "Invalid VM type");
+		return -1;
+	}
 
-	if (!module)
-		Com_Error(ERR_DROP, "Couldn't load VM %s", name);
+	if (!module) {
+		Com_Printf(S_ERROR "Couldn't load VM %s", name);
+		return -1;
+	}
 
 	if (debug)
 		Com_Printf("Waiting for GDB connection on localhost:4014\n");
@@ -83,8 +90,11 @@ int VMBase::Create(const char* name, Type type)
 	// Read the ABI version from the root socket.
 	// If this fails, we assume the remote process failed to start
 	std::vector<char> buffer;
-	if (!module.GetRootSocket().RecvMsg(buffer) || buffer.size() != sizeof(int))
-		Com_Error(ERR_DROP, "The '%s' VM did not start.", name);
+	if (!module.GetRootSocket().RecvMsg(buffer) || buffer.size() != sizeof(int)) {
+		Com_Printf(S_ERROR "The '%s' VM did not start.", name);
+		return -1;
+	}
+	Com_Printf("Loaded module with the NaCl ABI");
 	return *reinterpret_cast<int*>(buffer.data());
 }
 
