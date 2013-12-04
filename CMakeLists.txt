@@ -1304,21 +1304,10 @@ function( GAMEMODULE )
       get_filename_component( EXT ${FILE} EXT )
       set( OBJ ${NACL_DIR}/${FILENAME}.o )
 
-      if( EXT STREQUAL ".c" )
-        add_custom_command( OUTPUT ${OBJ}
-          COMMAND ${PNACL_TOOLCHAIN}/pnacl-clang${PNACL_BIN_EXT}
-            ${NACL_COMPILE_OPTIONS}
-            -c
-            -o ${OBJ}
-            ${FILE}
-          DEPENDS ${FILE}
-          IMPLICIT_DEPENDS C ${FILE}
-        )
-        set( OBJECTS ${OBJECTS} ${OBJ} )
-      elseif( EXT STREQUAL ".cpp" OR EXT STREQUAL ".cc" )
+      if( EXT STREQUAL ".c" OR EXT STREQUAL ".cpp" OR EXT STREQUAL ".cc" )
         add_custom_command( OUTPUT ${OBJ}
           COMMAND ${PNACL_TOOLCHAIN}/pnacl-clang++${PNACL_BIN_EXT}
-            -std=gnu++11
+            -x c++ -std=gnu++11
             ${NACL_COMPILE_OPTIONS}
             -c
             -o ${OBJ}
@@ -1375,7 +1364,7 @@ function( GAMEMODULE )
       set( QVM_DIR ${OBJ_DIR}/${GAMEMODULE_NAME}-qvm.dir/${CMAKE_CFG_INTDIR} )
     endif()
 
-    set( QVM_COMPILE_OPTIONS -I${MOUNT_DIR}/gamelogic/game -I${MOUNT_DIR}/engine/qcommon -DQ3_VM )
+    set( QVM_COMPILE_OPTIONS -I${MOUNT_DIR}/gamelogic/game -I${MOUNT_DIR}/engine/qcommon -DQ3_VM -DQVM)
 	foreach( DEF ${GAMEMODULE_COMPILE_DEF} )
       set( QVM_COMPILE_OPTIONS ${QVM_COMPILE_OPTIONS} -D${DEF} )
     endforeach()
@@ -1390,7 +1379,7 @@ function( GAMEMODULE )
 
       if( QVM_FILEEXT STREQUAL ".c" )
         add_custom_command( OUTPUT ${ASM_FILE}
-		  COMMAND lcc -target bytecode ${QVM_COMPILE_OPTIONS} -DQVM ${QVM_FILE} -o ${ASM_FILE}
+			COMMAND lcc -target bytecode ${QVM_COMPILE_OPTIONS} ${QVM_FILE} -o ${ASM_FILE}
           DEPENDS lcc rcc cpp ${QVM_FILE}
           IMPLICIT_DEPENDS C ${QVM_FILE}
           WORKING_DIRECTORY ${QVM_DIR}
