@@ -548,9 +548,6 @@ void SV_TouchCGame( void )
 		FS_FCloseFile( f );
 	}
 
-	// LLVM - even if the server doesn't use llvm itself, it should still add the references.
-	FS_FOpenFileRead( "cgamellvm.bc", &f, qfalse );
-
 	if ( f )
 	{
 		FS_FCloseFile( f );
