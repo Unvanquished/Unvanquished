@@ -2035,7 +2035,7 @@ void CL_Connect_f( void )
 	// Set and skip the password.
 	if ( ( offset = strchr( server, '@' ) ) != NULL )
 	{
-		Q_strncpyz( password, server, MIN( sizeof( password ), ( offset - server + 1 ) ) );
+		Q_strncpyz( password, server, std::min( sizeof( password ), (size_t)( offset - server + 1 ) ) );
 		Cvar_Set( "password", password );
 		server = offset + 1;
 	}

@@ -2814,14 +2814,7 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 					glow = RB_EvalWaveForm( wf ) * tr.identityLight;
 				}
 
-				if ( glow < 0 )
-				{
-					glow = 0;
-				}
-				else if ( glow > 1 )
-				{
-					glow = 1;
-				}
+				glow = Com_Clamp( 0, 1, glow );
 
 				tess.svars.color[ 0 ] = glow;
 				tess.svars.color[ 1 ] = glow;

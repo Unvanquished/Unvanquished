@@ -2728,7 +2728,7 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 		if ( count == cursorPos )
 		{
 			cursorX = x - gapAdjust * DC->aspectScale * useScale / 2;
-			cursorW = MAX( EDIT_CURSOR_WIDTH / 2, glyph->xSkip + gapAdjust ) * DC->xscale * DC->aspectScale * useScale;
+			cursorW = MAX( EDIT_CURSOR_WIDTH / 2.0f, glyph->xSkip + gapAdjust ) * DC->xscale * DC->aspectScale * useScale;
 		}
 
 		x += ( glyph->xSkip * DC->aspectScale * useScale ) + gapAdjust;
@@ -5366,7 +5366,7 @@ const char *Item_Text_Wrap( const char *text, float scale, float width )
 		// blocks of text
 
 		// Copy text into the buffer, but don't overflow it
-		strncpy( out + paint, p, MIN( eol - p, sizeof( out ) - paint ) );
+		strncpy( out + paint, p, MIN( (size_t)(eol - p), sizeof( out ) - paint ) );
 		paint += ( eol - p );
 
 		if ( paint >= sizeof( out ) )
@@ -5400,7 +5400,7 @@ const char *Item_Text_Wrap( const char *text, float scale, float width )
 				int  indentMarkerTextLength = strlen( indentMarkerText );
 
 				// copy the marker into the buffer, but don't overflow it
-				strncpy( out + paint, indentMarkerText, MIN( indentMarkerTextLength, sizeof( out ) - paint ) );
+				strncpy( out + paint, indentMarkerText, MIN( (size_t)indentMarkerTextLength, sizeof( out ) - paint ) );
 				paint += indentMarkerTextLength;
 
 				if ( paint >= sizeof ( out ) )

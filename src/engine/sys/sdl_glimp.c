@@ -1190,7 +1190,7 @@ static void GLimp_XreaLInitExtensions( void )
 		}
 		*/
 
-		glConfig2.maxVertexSkinningBones = MIN( MAX( 0, glConfig2.maxVertexUniforms - reservedComponents ) / 16, MAX_BONES );
+		glConfig2.maxVertexSkinningBones = std::min( std::max( 0, glConfig2.maxVertexUniforms - reservedComponents ) / 16, MAX_BONES );
 		glConfig2.vboVertexSkinningAvailable = r_vboVertexSkinning->integer && ( ( glConfig2.maxVertexSkinningBones >= 12 ) ? qtrue : qfalse );
 
 		ri.Printf( PRINT_ALL, "...using GL_ARB_vertex_shader\n" );

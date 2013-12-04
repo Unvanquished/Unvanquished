@@ -933,7 +933,7 @@ float SCR_ConsoleFontCharVPadding( void )
 {
 	return cls.useLegacyConsoleFont
 	       ? 0
-	       : MAX( 0, -cls.consoleFont.glyphBlock[0]['g'].bottom >> 6);
+	       : std::max( 0, -cls.consoleFont.glyphBlock[0]['g'].bottom >> 6);
 }
 
 float SCR_ConsoleFontStringWidth( const char* s, int len )
