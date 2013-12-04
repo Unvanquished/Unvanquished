@@ -556,7 +556,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	};
 
 	// must match order of ATTR_INDEX enums
-	static const char *attributeNames[] =
+	static const char *const attributeNames[] =
 	{
 		"attr_Position",
 		"attr_TexCoord0",
