@@ -35,8 +35,6 @@ Maryland 20850 USA.
 #ifndef VIRTUALMACHINE_H_
 #define VIRTUALMACHINE_H_
 
-#ifndef QVM_COMPAT
-
 #include "../../libs/nacl/nacl.h"
 #include "../../common/RPC.h"
 
@@ -78,7 +76,5 @@ private:
 };
 
 } // namespace VM
-
-#endif // QVM_COMPAT
 
 #endif // VIRTUALMACHINE_H_
