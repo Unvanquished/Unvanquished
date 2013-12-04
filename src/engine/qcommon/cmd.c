@@ -582,9 +582,9 @@ class ProxyCmd: public Cmd::CmdBase {
 
 			//Completing an empty arg, we add a space to mimic the old autocompletion behavior
 			if (args.Argc() == argNum) {
-				Q_strncpyz(buffer, (args.ConcatArgs(0) + " ").c_str(), 4096);
+				Q_strncpyz(buffer, (args.ConcatArgs(0) + " ").c_str(), sizeof(buffer));
 			} else {
-				Q_strncpyz(buffer, args.ConcatArgs(0).c_str(), 4096);
+				Q_strncpyz(buffer, args.ConcatArgs(0).c_str(), sizeof(buffer));
 			}
 
 			//Some completion handlers expect tokenized arguments
