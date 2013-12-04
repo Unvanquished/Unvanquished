@@ -362,7 +362,7 @@ void VM_Init( void );
 
 vm_t *VM_Create( const char *module, intptr_t ( *systemCalls )( intptr_t * ), vmInterpret_t interpret );
 
-// module should be bare: "cgame", not "cgame.dll", "vm/cgame.qvm" or "cgamellvm.bc"
+// module should be bare: "cgame", not "cgame.dll", "vm/cgame.qvm"
 
 void           VM_Free( vm_t *vm );
 void           VM_Clear( void );
