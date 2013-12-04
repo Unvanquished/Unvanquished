@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "tr_local.h"
 #include "gl_shader.h"
+#include "../../common/Maths.h"
 
 backEndData_t  *backEndData[ SMP_FRAMES ];
 backEndState_t backEnd;
@@ -4064,11 +4065,11 @@ static void RB_CalculateAdaptation()
 
 	//if(r_hdrMaxLuminance->value)
 	{
-		Q_clamp( backEnd.hdrAverageLuminance, r_hdrMinLuminance->value, r_hdrMaxLuminance->value );
-		Q_clamp( avgLuminance, r_hdrMinLuminance->value, r_hdrMaxLuminance->value );
+		backEnd.hdrAverageLuminance = Maths::clamp( backEnd.hdrAverageLuminance, r_hdrMinLuminance->value, r_hdrMaxLuminance->value );
+		avgLuminance = Maths::clamp( avgLuminance, r_hdrMinLuminance->value, r_hdrMaxLuminance->value );
 
-		Q_clamp( backEnd.hdrMaxLuminance, r_hdrMinLuminance->value, r_hdrMaxLuminance->value );
-		Q_clamp( maxLuminance, r_hdrMinLuminance->value, r_hdrMaxLuminance->value );
+		backEnd.hdrMaxLuminance = Maths::clamp( backEnd.hdrMaxLuminance, r_hdrMinLuminance->value, r_hdrMaxLuminance->value );
+		maxLuminance = Maths::clamp( maxLuminance, r_hdrMinLuminance->value, r_hdrMaxLuminance->value );
 	}
 
 	newAdaptation = backEnd.hdrAverageLuminance + ( avgLuminance - backEnd.hdrAverageLuminance ) * ( 1.0f - powf( 0.98f, 30.0f * deltaTime ) );

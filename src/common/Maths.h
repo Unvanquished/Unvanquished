@@ -31,7 +31,8 @@ namespace Maths {
 
 	template<typename T> static inline T clamp(T value, T min, T max)
 	{
-		return std::max(min, std::min(max, value));
+		// if min > max, use min instead of max
+		return std::max(min, std::min(std::max(min, max), value));
 	}
 
 	static inline float clampFraction(float value)
