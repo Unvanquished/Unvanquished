@@ -1523,6 +1523,12 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 		return (__m128)_mm_set_epi32( 0x80000000, 0x80000000, 0x80000000, 0x80000000 );
 	}
 
+	STATIC_INLINE __m128 sseDot4( __m128 a, __m128 b ) {
+		__m128 prod = _mm_mul_ps( a, b );
+		__m128 sum1 = _mm_add_ps( prod, sseSwizzle( prod, YXWZ ) );
+		__m128 sum2 = _mm_add_ps( sum1, sseSwizzle( sum1, ZWXY ) );
+		return sum2;
+	}
 	STATIC_INLINE __m128 sseCrossProduct( __m128 a, __m128 b ) {
 		__m128 a_yzx = sseSwizzle( a, YZXW );
 		__m128 b_yzx = sseSwizzle( b, YZXW );
@@ -1722,10 +1728,12 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 	STATIC_INLINE void TransAddWeight( float weight, const transform_t *a,
 					   transform_t *out ) {
 		__m128 w = _mm_set1_ps( weight );
-		out->sseRot = _mm_add_ps( out->sseRot,
-					  _mm_mul_ps( w, a->sseRot ) );
+		__m128 d = sseDot4( a->sseRot, out->sseRot );
 		out->sseTransScale = _mm_add_ps( out->sseTransScale,
 						 _mm_mul_ps( w, a->sseTransScale ) );
+		w = _mm_xor_ps( w, _mm_and_ps( d, sign_XYZW() ) );
+		out->sseRot = _mm_add_ps( out->sseRot,
+					  _mm_mul_ps( w, a->sseRot ) );
 }
 	STATIC_INLINE void TransEndLerp( transform_t *t ) {
 		t->sseRot = sseQuatNormalize( t->sseRot );

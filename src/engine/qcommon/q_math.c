@@ -3757,7 +3757,11 @@ void TransStartLerp( transform_t *t ) {
 	t->scale = 0.0f;
 }
 void TransAddWeight( float weight, const transform_t *a, transform_t *out ) {
-	QuatMA( out->rot, weight, a->rot, out->rot );
+	if( DotProduct4( out->rot, a->rot ) < 0 ) {
+		QuatMA( out->rot, -weight, a->rot, out->rot );
+	} else {
+		QuatMA( out->rot, weight, a->rot, out->rot );
+	}
 	VectorMA( out->trans, weight, a->trans, out->trans );
 	out->scale      += a->scale      * weight;
 }
