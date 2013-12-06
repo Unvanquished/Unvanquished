@@ -43,7 +43,7 @@ typedef struct
 	char      *explicit_;
 } cvarTable_t;
 
-#ifdef QVM
+#ifdef Q3_VM
 gentity_t          g_entities[ MAX_GENTITIES ];
 gclient_t          g_clients[ MAX_GENTITIES ];
 #else
@@ -474,7 +474,7 @@ enum
 	LOG_GAMEPLAY_STATS_FOOTER
 };
 
-#ifdef QVM
+#ifdef QVM_ABI
 /*
 ================
 vmMain
@@ -490,6 +490,7 @@ intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3, int arg4,
 	switch ( command )
 	{
 		case GAME_INIT:
+			trap_SyscallABIVersion( SYSCALL_ABI_VERSION_MAJOR, SYSCALL_ABI_VERSION_MINOR );
 			G_InitGame( arg0, arg1, arg2 );
 			return 0;
 
@@ -796,10 +797,6 @@ G_InitGame
 void G_InitGame( int levelTime, int randomSeed, int restart )
 {
 	int i;
-
-#ifdef QVM
-	trap_SyscallABIVersion( SYSCALL_ABI_VERSION_MAJOR, SYSCALL_ABI_VERSION_MINOR );
-#endif
 
 	srand( randomSeed );
 

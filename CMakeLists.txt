@@ -1238,7 +1238,7 @@ function( GAMEMODULE )
   endif()
 
   if( BUILD_GAME_QVM_NATIVE )
-	set( QVM_NATIVE_COMPILE_DEF ${GAMEMODULE_COMPILE_DEF} QVM)
+    set( QVM_NATIVE_COMPILE_DEF ${GAMEMODULE_COMPILE_DEF} QVM_ABI)
     add_library( ${GAMEMODULE_NAME}-qvm-native MODULE ${GAMEMODULE_FILES} ${SHAREDLIST} ${GAMEMODULE_NATIVE_FILES} )
     target_link_libraries( ${GAMEMODULE_NAME}-qvm-native ${LIBS_BASE} )
     set_target_properties( ${GAMEMODULE_NAME}-qvm-native PROPERTIES
@@ -1364,8 +1364,8 @@ function( GAMEMODULE )
       set( QVM_DIR ${OBJ_DIR}/${GAMEMODULE_NAME}-qvm.dir/${CMAKE_CFG_INTDIR} )
     endif()
 
-    set( QVM_COMPILE_OPTIONS -I${MOUNT_DIR}/gamelogic/game -I${MOUNT_DIR}/engine/qcommon -DQ3_VM -DQVM)
-	foreach( DEF ${GAMEMODULE_COMPILE_DEF} )
+    set( QVM_COMPILE_OPTIONS -I${MOUNT_DIR}/gamelogic/game -I${MOUNT_DIR}/engine/qcommon -DQ3_VM -DQVM_ABI)
+    foreach( DEF ${GAMEMODULE_COMPILE_DEF} )
       set( QVM_COMPILE_OPTIONS ${QVM_COMPILE_OPTIONS} -D${DEF} )
     endforeach()
 
