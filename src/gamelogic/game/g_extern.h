@@ -30,7 +30,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 // -----
 
 extern  level_locals_t level;
-#ifdef QVM
+#ifdef Q3_VM
 extern  gentity_t      g_entities[ MAX_GENTITIES ];
 #else
 extern gentity_t *g_entities;
