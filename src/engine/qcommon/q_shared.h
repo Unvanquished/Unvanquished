@@ -244,7 +244,7 @@ typedef int clipHandle_t;
 #define BLINK_DIVISOR         200
 #define PULSE_DIVISOR         75
 
-#if !defined( NDEBUG ) && !defined( BSPC )
+#if !defined( NDEBUG )
 #define HUNK_DEBUG
 #endif
 

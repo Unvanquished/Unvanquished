@@ -1667,15 +1667,6 @@ void CM_TraceThroughSphere( traceWork_t *tw, vec3_t origin, float radius, vec3_t
 			VectorSubtract( end, start, dir );
 			VectorMA( start, fraction, dir, intersection );
 			VectorSubtract( intersection, origin, dir );
-#ifdef CAPSULE_DEBUG
-			l2 = VectorLength( dir );
-
-			if ( l2 < radius )
-			{
-				int bah = 1;
-			}
-
-#endif
 			scale = 1 / ( radius + RADIUS_EPSILON );
 			VectorScale( dir, scale, dir );
 			VectorCopy( dir, tw->trace.plane.normal );
@@ -1794,15 +1785,6 @@ void CM_TraceThroughVerticalCylinder( traceWork_t *tw, vec3_t origin, float radi
 				tw->trace.fraction = fraction;
 				VectorSubtract( intersection, origin, dir );
 				dir[ 2 ] = 0;
-#ifdef CAPSULE_DEBUG
-				l2 = VectorLength( dir );
-
-				if ( l2 <= radius )
-				{
-					int bah = 1;
-				}
-
-#endif
 				scale = 1 / ( radius + RADIUS_EPSILON );
 				VectorScale( dir, scale, dir );
 				VectorCopy( dir, tw->trace.plane.normal );
