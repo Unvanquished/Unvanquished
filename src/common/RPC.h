@@ -195,13 +195,15 @@ template<typename Func> Reader DoRPC(const NaCl::RootSocket& socket, Writer& wri
 		if (!socket.RecvMsg(reader.GetDataBuffer(), reader.GetHandlesBuffer()))
 			Com_Error(ERR_DROP, "Error recieving RPC message");
 
-		int syscall = reader.ReadInt();
-		if (syscall == -1)
+		int syscallMajor = reader.ReadInt();
+		if (syscallMajor == -1)
 			return reader;
+
+		int syscallMinor = reader.ReadInt();
 
 		writer.Reset();
 		writer.WriteInt(-1);
-		syscallHandler(syscall, reader, writer);
+		syscallHandler(syscallMajor, syscallMinor, reader, writer);
 		if (!socket.SendMsg(writer.GetData(), writer.GetSize(), writer.GetHandles(), writer.GetNumHandles()))
 			Com_Error(ERR_DROP, "Error sending RPC message");
 	}

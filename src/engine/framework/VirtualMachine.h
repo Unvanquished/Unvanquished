@@ -69,7 +69,7 @@ protected:
   RPC::Reader DoRPC(RPC::Writer& input, bool ignoreErrors = false);
 
   // System call handler
-  virtual void Syscall(int index, RPC::Reader& input, RPC::Writer& output) = 0;
+  virtual void Syscall(int major, int minor, RPC::Reader& input, RPC::Writer& output) = 0;
 
 private:
   NaCl::Module module;

@@ -364,7 +364,8 @@ public:
 	virtual void GameMessageRecieved(int clientNum, const char *buffer, int bufferSize, int commandTime) override;
 
 private:
-	void Syscall(int index, RPC::Reader& input, RPC::Writer& outputs);
+	void Syscall(int major, int minor, RPC::Reader& input, RPC::Writer& outputs);
+	void QVMSyscall(int index, RPC::Reader& input, RPC::Writer& outputs);
 
 	NaCl::SharedMemoryPtr shmRegion;
 };

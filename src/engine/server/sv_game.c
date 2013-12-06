@@ -1073,6 +1073,7 @@ NaClGameVM::~NaClGameVM()
 void NaClGameVM::GameInit(int levelTime, int randomSeed, qboolean restart)
 {
 	RPC::Writer input;
+	input.WriteInt(GS_QVM_SYSCALL);
 	input.WriteInt(GAME_INIT);
 	input.WriteInt(levelTime);
 	input.WriteInt(randomSeed);
@@ -1083,6 +1084,7 @@ void NaClGameVM::GameInit(int levelTime, int randomSeed, qboolean restart)
 void NaClGameVM::GameShutdown(qboolean restart)
 {
 	RPC::Writer input;
+	input.WriteInt(GS_QVM_SYSCALL);
 	input.WriteInt(GAME_SHUTDOWN);
 	input.WriteInt(restart);
 
@@ -1097,6 +1099,7 @@ void NaClGameVM::GameShutdown(qboolean restart)
 qboolean NaClGameVM::GameClientConnect(char* reason, size_t size, int clientNum, qboolean firstTime, qboolean isBot)
 {
 	RPC::Writer input;
+	input.WriteInt(GS_QVM_SYSCALL);
 	input.WriteInt(GAME_CLIENT_CONNECT);
 	input.WriteInt(clientNum);
 	input.WriteInt(firstTime);
@@ -1111,6 +1114,7 @@ qboolean NaClGameVM::GameClientConnect(char* reason, size_t size, int clientNum,
 void NaClGameVM::GameClientBegin(int clientNum)
 {
 	RPC::Writer input;
+	input.WriteInt(GS_QVM_SYSCALL);
 	input.WriteInt(GAME_CLIENT_BEGIN);
 	input.WriteInt(clientNum);
 	DoRPC(input);
@@ -1119,6 +1123,7 @@ void NaClGameVM::GameClientBegin(int clientNum)
 void NaClGameVM::GameClientUserInfoChanged(int clientNum)
 {
 	RPC::Writer input;
+	input.WriteInt(GS_QVM_SYSCALL);
 	input.WriteInt(GAME_CLIENT_USERINFO_CHANGED);
 	input.WriteInt(clientNum);
 	DoRPC(input);
@@ -1127,6 +1132,7 @@ void NaClGameVM::GameClientUserInfoChanged(int clientNum)
 void NaClGameVM::GameClientDisconnect(int clientNum)
 {
 	RPC::Writer input;
+	input.WriteInt(GS_QVM_SYSCALL);
 	input.WriteInt(GAME_CLIENT_DISCONNECT);
 	input.WriteInt(clientNum);
 	DoRPC(input);
@@ -1135,6 +1141,7 @@ void NaClGameVM::GameClientDisconnect(int clientNum)
 void NaClGameVM::GameClientCommand(int clientNum)
 {
 	RPC::Writer input;
+	input.WriteInt(GS_QVM_SYSCALL);
 	input.WriteInt(GAME_CLIENT_COMMAND);
 	input.WriteInt(clientNum);
 	DoRPC(input);
@@ -1143,6 +1150,7 @@ void NaClGameVM::GameClientCommand(int clientNum)
 void NaClGameVM::GameClientThink(int clientNum)
 {
 	RPC::Writer input;
+	input.WriteInt(GS_QVM_SYSCALL);
 	input.WriteInt(GAME_CLIENT_THINK);
 	input.WriteInt(clientNum);
 	DoRPC(input);
@@ -1151,6 +1159,7 @@ void NaClGameVM::GameClientThink(int clientNum)
 void NaClGameVM::GameRunFrame(int levelTime)
 {
 	RPC::Writer input;
+	input.WriteInt(GS_QVM_SYSCALL);
 	input.WriteInt(GAME_RUN_FRAME);
 	input.WriteInt(levelTime);
 	DoRPC(input);
@@ -1159,6 +1168,7 @@ void NaClGameVM::GameRunFrame(int levelTime)
 qboolean NaClGameVM::GameConsoleCommand()
 {
 	RPC::Writer input;
+	input.WriteInt(GS_QVM_SYSCALL);
 	input.WriteInt(GAME_CONSOLE_COMMAND);
 	RPC::Reader output = DoRPC(input);
 	return output.ReadInt();
@@ -1179,7 +1189,22 @@ void NaClGameVM::GameMessageRecieved(int clientNum, const char *buffer, int buff
 	//Com_Error(ERR_DROP, "GameVM::GameMessageRecieved not implemented");
 }
 
-void NaClGameVM::Syscall(int index, RPC::Reader& inputs, RPC::Writer& outputs)
+void NaClGameVM::Syscall(int major, int minor, RPC::Reader& inputs, RPC::Writer& outputs)
+{
+	switch (major) {
+	case GS_QVM_SYSCALL:
+		this->QVMSyscall(minor, inputs, outputs);
+		break;
+
+	case GS_CVAR:
+		break;
+
+	default:
+		Com_Error(ERR_DROP, "Bad major game syscall number: %d", major);
+	}
+}
+
+void NaClGameVM::QVMSyscall(int index, RPC::Reader& inputs, RPC::Writer& outputs)
 {
 	switch (index) {
 	case G_PRINT:

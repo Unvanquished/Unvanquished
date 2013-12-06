@@ -100,8 +100,8 @@ int VMBase::Create(const char* name, Type type)
 
 RPC::Reader VMBase::DoRPC(RPC::Writer& writer, bool ignoreErrors)
 {
-	return RPC::DoRPC(module.GetRootSocket(), writer, ignoreErrors, [this](int index, RPC::Reader& inputs, RPC::Writer& outputs) {
-		this->Syscall(index, inputs, outputs);
+	return RPC::DoRPC(module.GetRootSocket(), writer, ignoreErrors, [this](int major, int minor, RPC::Reader& inputs, RPC::Writer& outputs) {
+		this->Syscall(major, minor, inputs, outputs);
 	});
 }
 

@@ -224,3 +224,9 @@ typedef enum
 
   GAME_MESSAGERECEIVED, // void ()( int clientNum, const char *buffer, int bufferSize, int commandTime );
 } gameExport_t;
+
+typedef enum
+{
+  GS_QVM_SYSCALL,
+  GS_CVAR
+} gameServices_t;
