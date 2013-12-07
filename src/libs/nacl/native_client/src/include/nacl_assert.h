@@ -52,8 +52,8 @@
               " is FALSE\n",                                              \
               __LINE__, __FILE__, slhs, srhs);                            \
       fprintf(stderr,                                                     \
-              "got 0x%08"NACL_PRIxPTR" (%"NACL_PRIdPTR"); "               \
-              "comparison value 0x%08"NACL_PRIxPTR" (%"NACL_PRIdPTR")\n", \
+              "got 0x%08" NACL_PRIxPTR " (%" NACL_PRIdPTR "); "           \
+              "comparison value 0x%08" NACL_PRIxPTR " (%" NACL_PRIdPTR" )\n", \
               (uintptr_t) (lhs), (uintptr_t) (lhs),                       \
               (uintptr_t) (rhs), (uintptr_t) (rhs));                      \
       thunk;                                                              \

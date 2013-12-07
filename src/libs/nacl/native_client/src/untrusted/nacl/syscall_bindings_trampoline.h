@@ -76,6 +76,12 @@ typedef int (*TYPE_nacl_lseek) (int desc,
 
 typedef int (*TYPE_nacl_stat) (const char *file, struct stat *st);
 
+typedef int (*TYPE_nacl_pread) (int fd, void *buf, size_t count, off_t *offset);
+
+typedef int (*TYPE_nacl_pwrite) (int fd,
+                                 const void *buf, size_t count,
+                                 off_t *offset);
+
 /* ============================================================ */
 /* imc */
 /* ============================================================ */
@@ -181,6 +187,16 @@ typedef int (*TYPE_nacl_clock_getres) (clockid_t clk_id,
 typedef int (*TYPE_nacl_clock_gettime) (clockid_t clk_id,
                                         struct timespec *tp);
 
+typedef int (*TYPE_nacl_mkdir) (const char *path, int mode);
+
+typedef int (*TYPE_nacl_rmdir) (const char *path);
+
+typedef int (*TYPE_nacl_chdir) (const char *path);
+
+typedef int (*TYPE_nacl_getcwd) (char *path, int len);
+
+typedef int (*TYPE_nacl_unlink) (const char *path);
+
 #ifdef __GNUC__
 typedef void (*TYPE_nacl_exit) (int status) __attribute__((noreturn));
 #else
@@ -216,6 +232,11 @@ typedef int (*TYPE_nacl_exception_clear_flag) (void);
 typedef int (*TYPE_nacl_test_infoleak) (void);
 
 typedef int (*TYPE_nacl_test_crash) (int crash_type);
+
+typedef int (*TYPE_nacl_futex_wait_abs) (volatile int *addr, int value,
+                                         const struct timespec *abstime);
+
+typedef int (*TYPE_nacl_futex_wake) (volatile int *addr, int nwake);
 
 #if defined(__cplusplus)
 }
