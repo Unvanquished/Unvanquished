@@ -349,19 +349,19 @@ public:
     virtual ~NaClGameVM();
 	bool Start();
 
-	virtual void GameInit(int levelTime, int randomSeed, qboolean restart) override;
-	virtual void GameShutdown(qboolean restart) override;
-	virtual qboolean GameClientConnect(char* reason, size_t size, int clientNum, qboolean firstTime, qboolean isBot) override;
-	virtual void GameClientBegin(int clientNum) override;
-	virtual void GameClientUserInfoChanged(int clientNum) override;
-	virtual void GameClientDisconnect(int clientNum) override;
-	virtual void GameClientCommand(int clientNum) override;
-	virtual void GameClientThink(int clientNum) override;
-	virtual void GameRunFrame(int levelTime) override;
-	virtual qboolean GameConsoleCommand() override;
-	virtual qboolean GameSnapshotCallback(int entityNum, int clientNum) override;
-	virtual void BotAIStartFrame(int levelTime) override;
-	virtual void GameMessageRecieved(int clientNum, const char *buffer, int bufferSize, int commandTime) override;
+	virtual void GameInit(int levelTime, int randomSeed, qboolean restart) OVERRIDE;
+	virtual void GameShutdown(qboolean restart) OVERRIDE;
+	virtual qboolean GameClientConnect(char* reason, size_t size, int clientNum, qboolean firstTime, qboolean isBot) OVERRIDE;
+	virtual void GameClientBegin(int clientNum) OVERRIDE;
+	virtual void GameClientUserInfoChanged(int clientNum) OVERRIDE;
+	virtual void GameClientDisconnect(int clientNum) OVERRIDE;
+	virtual void GameClientCommand(int clientNum) OVERRIDE;
+	virtual void GameClientThink(int clientNum) OVERRIDE;
+	virtual void GameRunFrame(int levelTime) OVERRIDE;
+	virtual qboolean GameConsoleCommand() OVERRIDE;
+	virtual qboolean GameSnapshotCallback(int entityNum, int clientNum) OVERRIDE;
+	virtual void BotAIStartFrame(int levelTime) OVERRIDE;
+	virtual void GameMessageRecieved(int clientNum, const char *buffer, int bufferSize, int commandTime) OVERRIDE;
 
 private:
 	void Syscall(int index, RPC::Reader& input, RPC::Writer& outputs);
@@ -374,19 +374,19 @@ public:
     QVMGameVM(vm_t* vm);
     virtual ~QVMGameVM();
 
-	virtual void GameInit(int levelTime, int randomSeed, qboolean restart) override;
-	virtual void GameShutdown(qboolean restart) override;
-	virtual qboolean GameClientConnect(char* reason, size_t size, int clientNum, qboolean firstTime, qboolean isBot) override;
-	virtual void GameClientBegin(int clientNum) override;
-	virtual void GameClientUserInfoChanged(int clientNum) override;
-	virtual void GameClientDisconnect(int clientNum) override;
-	virtual void GameClientCommand(int clientNum) override;
-	virtual void GameClientThink(int clientNum) override;
-	virtual void GameRunFrame(int levelTime) override;
-	virtual qboolean GameConsoleCommand() override;
-	virtual qboolean GameSnapshotCallback(int entityNum, int clientNum) override;
-	virtual void BotAIStartFrame(int levelTime) override;
-	virtual void GameMessageRecieved(int clientNum, const char *buffer, int bufferSize, int commandTime) override;
+	virtual void GameInit(int levelTime, int randomSeed, qboolean restart) OVERRIDE;
+	virtual void GameShutdown(qboolean restart) OVERRIDE;
+	virtual qboolean GameClientConnect(char* reason, size_t size, int clientNum, qboolean firstTime, qboolean isBot) OVERRIDE;
+	virtual void GameClientBegin(int clientNum) OVERRIDE;
+	virtual void GameClientUserInfoChanged(int clientNum) OVERRIDE;
+	virtual void GameClientDisconnect(int clientNum) OVERRIDE;
+	virtual void GameClientCommand(int clientNum) OVERRIDE;
+	virtual void GameClientThink(int clientNum) OVERRIDE;
+	virtual void GameRunFrame(int levelTime) OVERRIDE;
+	virtual qboolean GameConsoleCommand() OVERRIDE;
+	virtual qboolean GameSnapshotCallback(int entityNum, int clientNum) OVERRIDE;
+	virtual void BotAIStartFrame(int levelTime) OVERRIDE;
+	virtual void GameMessageRecieved(int clientNum, const char *buffer, int bufferSize, int commandTime) OVERRIDE;
 
 private:
     vm_t* vm;
