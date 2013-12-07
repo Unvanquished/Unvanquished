@@ -41,8 +41,8 @@ Maryland 20850 USA.
 namespace VM {
 
 enum Type {
-  TYPE_NACL,
-  TYPE_NATIVE
+  TYPE_NATIVE,
+  TYPE_NACL
 };
 
 // Base class for a virtual machine instance
