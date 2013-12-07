@@ -43,7 +43,7 @@ typedef struct
 	char      *explicit_;
 } cvarTable_t;
 
-#ifdef Q3_VM
+#ifdef QVM_ABI
 gentity_t          g_entities[ MAX_GENTITIES ];
 gclient_t          g_clients[ MAX_GENTITIES ];
 #else
