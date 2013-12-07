@@ -35,6 +35,7 @@ Maryland 20850 USA.
 // sv_game.c -- interface to the game module
 
 #include "server.h"
+#include "../../common/Cvar.h"
 #include "../qcommon/crypto.h"
 
 // these functions must be used instead of pointer arithmetic, because
@@ -845,21 +846,25 @@ SV_CreateGameVM
 Load a QVM vm or fails and try to load a NaCl vm
 ===================
 */
+static Cvar::Cvar<bool> naclGame("server.vm.useNaCl", "bool - what VM ABI should be used for the game VM (0 = QVM, 1 = NaCl)", Cvar::NONE, false);
 GameVM* SV_CreateGameVM( void )
 {
-	NaClGameVM* nacl = new NaClGameVM();
-
-	if (nacl->Start()) {
-		return nacl;
-	}
-
-	delete nacl;
-
-	vm_t* vm = VM_Create( "game", SV_GameSystemCalls, ( vmInterpret_t ) vm_game->integer );
-
-	if ( vm )
+	if ( naclGame.Get() )
 	{
-		return new QVMGameVM(vm);
+		NaClGameVM* nacl = new NaClGameVM();
+
+		if (nacl->Start()) {
+			return nacl;
+		}
+
+		delete nacl;
+	} else {
+		vm_t* vm = VM_Create( "game", SV_GameSystemCalls, ( vmInterpret_t ) vm_game->integer );
+
+		if ( vm )
+		{
+			return new QVMGameVM(vm);
+		}
 	}
 
 	Com_Error(ERR_DROP, "Couldn't load the game VM");
