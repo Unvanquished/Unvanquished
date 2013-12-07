@@ -585,7 +585,7 @@ CMod_CreateBrushSideWindings
 static void CMod_CreateBrushSideWindings( void )
 {
 	int          i, j, k;
-	winding_t    *w;
+	winding_t    w;
 	cbrushside_t *side, *chopSide;
 	cplane_t     *plane;
 	cbrush_t     *brush;
@@ -610,7 +610,7 @@ static void CMod_CreateBrushSideWindings( void )
 			w = BaseWindingForPlane( plane->normal, plane->dist );
 
 			// walk the list of brush sides
-			for ( k = 0; k < brush->numsides && w != NULL; k++ )
+			for ( k = 0; k < brush->numsides && w.numpoints > 0; k++ )
 			{
 				chopSide = &brush->sides[ k ];
 
@@ -628,10 +628,7 @@ static void CMod_CreateBrushSideWindings( void )
 				ChopWindingInPlace( &w, plane->normal, plane->dist, 0 );
 			}
 
-			if ( w )
-			{
-				numEdges += w->numpoints;
-			}
+			numEdges += w.numpoints;
 
 			// set side winding
 			side->winding = w;
@@ -646,20 +643,19 @@ static void CMod_CreateBrushSideWindings( void )
 		{
 			side = &brush->sides[ j ];
 
-			if ( side->winding )
+			if ( side->winding.numpoints > 0 )
 			{
-				for ( k = 0; k < side->winding->numpoints - 1; k++ )
+				for ( k = 0; k < side->winding.numpoints - 1; k++ )
 				{
 					if ( brush->numEdges == numEdges )
 					{
 						Com_Error( ERR_FATAL, "Insufficient memory allocated for collision map edges" );
 					}
 
-					CMod_AddEdgeToBrush( side->winding->p[ k ], side->winding->p[ k + 1 ], tempEdges, &brush->numEdges );
+					CMod_AddEdgeToBrush( side->winding.p[ k ], side->winding.p[ k + 1 ], tempEdges, &brush->numEdges );
 				}
 
-				FreeWinding( side->winding );
-				side->winding = NULL;
+				side->winding.numpoints = 0;
 			}
 		}
 

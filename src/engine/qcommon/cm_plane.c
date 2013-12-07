@@ -357,7 +357,7 @@ qboolean CM_ValidateFacet( cFacet_t *facet )
 {
 	float     plane[ 4 ];
 	int       j;
-	winding_t *w;
+	winding_t w;
 	vec3_t    bounds[ 2 ];
 
 	if ( facet->surfacePlane == -1 )
@@ -368,11 +368,10 @@ qboolean CM_ValidateFacet( cFacet_t *facet )
 	Vector4Copy( planes[ facet->surfacePlane ].plane, plane );
 	w = BaseWindingForPlane( plane, plane[ 3 ] );
 
-	for ( j = 0; j < facet->numBorders && w; j++ )
+	for ( j = 0; j < facet->numBorders && w.numpoints; j++ )
 	{
 		if ( facet->borderPlanes[ j ] == -1 )
 		{
-			FreeWinding( w );
 			return qfalse;
 		}
 
@@ -387,14 +386,13 @@ qboolean CM_ValidateFacet( cFacet_t *facet )
 		ChopWindingInPlace( &w, plane, plane[ 3 ], 0.1f );
 	}
 
-	if ( !w )
+	if ( w.numpoints == 0 )
 	{
 		return qfalse; // winding was completely chopped away
 	}
 
 	// see if the facet is unreasonably large
-	WindingBounds( w, bounds[ 0 ], bounds[ 1 ] );
-	FreeWinding( w );
+	WindingBounds( &w, bounds[ 0 ], bounds[ 1 ] );
 
 	for ( j = 0; j < 3; j++ )
 	{
@@ -428,14 +426,14 @@ void CM_AddFacetBevels( cFacet_t *facet )
 	int       axis, dir, order;
 	qboolean  flipped;
 	float     plane[ 4 ], d, newplane[ 4 ];
-	winding_t *w, *w2;
+	winding_t w, w2;
 	vec3_t    mins, maxs, vec, vec2;
 
 	Vector4Copy( planes[ facet->surfacePlane ].plane, plane );
 
 	w = BaseWindingForPlane( plane, plane[ 3 ] );
 
-	for ( j = 0; j < facet->numBorders && w; j++ )
+	for ( j = 0; j < facet->numBorders && w.numpoints; j++ )
 	{
 		if ( facet->borderPlanes[ j ] == facet->surfacePlane )
 		{
@@ -453,12 +451,12 @@ void CM_AddFacetBevels( cFacet_t *facet )
 		ChopWindingInPlace( &w, plane, plane[ 3 ], 0.1f );
 	}
 
-	if ( !w )
+	if ( w.numpoints == 0 )
 	{
 		return;
 	}
 
-	WindingBounds( w, mins, maxs );
+	WindingBounds( &w, mins, maxs );
 
 	// add the axial planes
 	order = 0;
@@ -513,10 +511,10 @@ void CM_AddFacetBevels( cFacet_t *facet )
 	// add the edge bevels
 	//
 	// test the non-axial plane edges
-	for ( j = 0; j < w->numpoints; j++ )
+	for ( j = 0; j < w.numpoints; j++ )
 	{
-		k = ( j + 1 ) % w->numpoints;
-		VectorSubtract( w->p[ j ], w->p[ k ], vec );
+		k = ( j + 1 ) % w.numpoints;
+		VectorSubtract( w.p[ j ], w.p[ k ], vec );
 
 		//if it's a degenerate edge
 		if ( VectorNormalize( vec ) < 0.5 )
@@ -554,13 +552,13 @@ void CM_AddFacetBevels( cFacet_t *facet )
 					continue;
 				}
 
-				plane[ 3 ] = DotProduct( w->p[ j ], plane );
+				plane[ 3 ] = DotProduct( w.p[ j ], plane );
 
 				// if all the points of the facet winding are
 				// behind this plane, it is a proper edge bevel
-				for ( l = 0; l < w->numpoints; l++ )
+				for ( l = 0; l < w.numpoints; l++ )
 				{
-					d = DotProduct( w->p[ l ], plane ) - plane[ 3 ];
+					d = DotProduct( w.p[ l ], plane ) - plane[ 3 ];
 
 					if ( d > 0.1 )
 					{
@@ -568,7 +566,7 @@ void CM_AddFacetBevels( cFacet_t *facet )
 					}
 				}
 
-				if ( l < w->numpoints )
+				if ( l < w.numpoints )
 				{
 					continue;
 				}
@@ -608,7 +606,7 @@ void CM_AddFacetBevels( cFacet_t *facet )
 					facet->borderNoAdjust[ facet->numBorders ] = qfalse;
 					facet->borderInward[ facet->numBorders ] = flipped;
 					//
-					w2 = CopyWinding( w );
+					w2 = w;
 					Vector4Copy( planes[ facet->borderPlanes[ facet->numBorders ] ].plane, newplane );
 
 					if ( !facet->borderInward[ facet->numBorders ] )
@@ -619,14 +617,14 @@ void CM_AddFacetBevels( cFacet_t *facet )
 
 					ChopWindingInPlace( &w2, newplane, newplane[ 3 ], 0.1f );
 
-					if ( !w2 )
+					if ( w2.numpoints )
 					{
 						Com_DPrintf( "WARNING: CM_AddFacetBevels... invalid bevel\n" );
 						continue;
 					}
 					else
 					{
-						FreeWinding( w2 );
+						w2.numpoints = 0;
 					}
 
 					//
@@ -637,8 +635,6 @@ void CM_AddFacetBevels( cFacet_t *facet )
 			}
 		}
 	}
-
-	FreeWinding( w );
 
 	// add opposite plane
 	facet->borderPlanes[ facet->numBorders ] = facet->surfacePlane;

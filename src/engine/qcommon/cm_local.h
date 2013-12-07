@@ -51,7 +51,7 @@ typedef struct
 	cplane_t  *plane;
 	int       planeNum;
 	int       children[ 2 ]; // negative numbers are leafs
-	winding_t *winding;
+	winding_t winding;
 } cNode_t;
 
 typedef struct
@@ -77,7 +77,7 @@ typedef struct
 	cplane_t  *plane;
 	int       planeNum;
 	int       surfaceFlags;
-	winding_t *winding;
+	winding_t winding;
 } cbrushside_t;
 
 typedef struct
