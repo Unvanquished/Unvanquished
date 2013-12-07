@@ -2073,7 +2073,7 @@ vote_is_disabled:
 		if ( atoi( arg ) < 1 || atoi( arg ) > 100 )
 		{
 			trap_SendServerCommand( ent - g_entities,
-			                        va( "print_tr %s %s", QQ( N_("$1$: Argument must be anumber between 1 and 100\n") ),
+			                        va( "print_tr %s %s", QQ( N_("$1$: Argument must be a number between 1 and 100\n") ),
 			                            cmd ) );
 			return;
 		}

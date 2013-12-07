@@ -110,6 +110,8 @@ namespace Log {
      */
 
     struct Event {
+        Event(int timestamp, std::string text)
+            : timestamp(timestamp), text(std::move(text)) {}
         int timestamp;
         std::string text;
     };
