@@ -1947,9 +1947,12 @@ void Com_Init( char *commandLine )
 
 	Trans_Init();
 
+#ifndef DEDICATED
 	Cmd::BufferCommandText("exec default.cfg");
+#endif
 
 #if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
+
 	// skip the q3config.cfg if "safe" is on the command line
 	if ( !Com_SafeMode() )
 	{
