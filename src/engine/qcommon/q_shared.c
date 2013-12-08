@@ -2075,11 +2075,6 @@ int Q_strncmp( const char *s1, const char *s2, int n )
 	return 0; // strings are equal
 }
 
-int Q_strcmp( const char *s1, const char *s2 )
-{
-	return Q_strncmp( s1, s2, 99999 );
-}
-
 int Q_stricmp( const char *s1, const char *s2 )
 {
 	return Q_strnicmp( s1, s2, 99999 );

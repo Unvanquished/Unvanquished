@@ -1106,7 +1106,6 @@ void         ByteToDir( int b, vec3_t dir );
 
 // portable case insensitive compare
 	int        Q_stricmp( const char *s1, const char *s2 );
-	int        Q_strcmp( const char *s1, const char *s2 );
 	int        Q_strncmp( const char *s1, const char *s2, int n );
 	int        Q_strnicmp( const char *s1, const char *s2, int n );
 	char       *Q_strlwr( char *s1 );

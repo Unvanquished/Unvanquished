@@ -939,7 +939,7 @@ char *ClientUserinfoChanged( int clientNum, qboolean forceName )
 	s = Info_ValueForKey( userinfo, "name" );
 	G_ClientCleanName( s, newname, sizeof( newname ), client );
 
-	if ( Q_strcmp( oldname, newname ) )
+	if ( strcmp( oldname, newname ) )
 	{
 		if ( !forceName && client->pers.namelog->nameChangeTime &&
 		     level.time - client->pers.namelog->nameChangeTime <=
@@ -1406,7 +1406,7 @@ void ClientAdminChallenge( int clientNum )
 	if ( !client->pers.pubkey_authenticated && admin && admin->pubkey[ 0 ] && ( level.time - client->pers.pubkey_challengedAt ) >= 6000 )
 	{
 		trap_SendServerCommand( clientNum, va( "pubkey_decrypt %s", admin->msg2 ) );
-		client->pers.pubkey_challengedAt = level.time ^ ( 5 * clientNum ); // a small amount of jitter
+		client->pers.pubkey_challengedAt = level.time ^ ( 5 * clientNum ); // a small amount of jitter 
 
 		// copy the decrypted message because generating a new message will overwrite it
 		G_admin_writeconfig();
