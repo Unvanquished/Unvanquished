@@ -5246,7 +5246,7 @@ void Item_TextColor( itemDef_t *item, vec4_t *newColor )
 		lowLight[ 1 ] = 0.8 * item->window.foreColor[ 1 ];
 		lowLight[ 2 ] = 0.8 * item->window.foreColor[ 2 ];
 		lowLight[ 3 ] = 0.8 * item->window.foreColor[ 3 ];
-		LerpColor( item->window.foreColor, lowLight, *newColor, 0.5 + 0.5 * sin( DC->realTime / PULSE_DIVISOR ) );
+		LerpColor( item->window.foreColor, lowLight, *newColor, 0.5 + 0.5 * sin( ( float )DC->realTime / PULSE_DIVISOR ) );
 	}
 	else
 	{
@@ -6337,7 +6337,7 @@ void Item_Bind_Paint( itemDef_t *item )
 			lowLight[ 3 ] = 0.8f * parent->focusColor[ 3 ];
 
 			LerpColor( parent->focusColor, lowLight, newColor,
-			           0.5 + 0.5 * sin( DC->realTime / PULSE_DIVISOR ) );
+			           0.5 + 0.5 * sin( ( float )DC->realTime / PULSE_DIVISOR ) );
 		}
 		else
 		{
@@ -6785,7 +6785,7 @@ qboolean ItemIntersectsActiveComboBox( itemDef_t *item )
 	}
 
 	cast = Item_ComboBox_MaybeCastToListBox( g_comboBoxItem );
-		
+
 	mins[ 0 ] = g_comboBoxItem->window.rect.x;
 	mins[ 1 ] = g_comboBoxItem->window.rect.y;
 	maxs[ 0 ] = mins[ 0 ] + g_comboBoxItem->window.rect.w;
@@ -6902,7 +6902,7 @@ void Item_OwnerDraw_Paint( itemDef_t *item )
 			lowLight[ 1 ] = 0.8 * item->window.foreColor[ 1 ];
 			lowLight[ 2 ] = 0.8 * item->window.foreColor[ 2 ];
 			lowLight[ 3 ] = 0.8 * item->window.foreColor[ 3 ];
-			LerpColor( item->window.foreColor, lowLight, color, 0.5 + 0.5 * sin( DC->realTime / PULSE_DIVISOR ) );
+			LerpColor( item->window.foreColor, lowLight, color, 0.5 + 0.5 * sin( ( float )DC->realTime / PULSE_DIVISOR ) );
 		}
 
 		if ( item->cvarFlags & ( CVAR_ENABLE | CVAR_DISABLE ) && !Item_EnableShowViaCvar( item, CVAR_ENABLE ) )
