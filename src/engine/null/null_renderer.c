@@ -298,6 +298,9 @@ refexport_t    *GetRefAPI( int apiVersion, refimport_t *rimp )
     re.SetColorGrading = RE_SetColorGrading;
     re.SetAltShaderTokens = R_SetAltShaderTokens;
 
+    re.ScissorEnable = RE_ScissorEnable;
+    re.ScissorSet = RE_ScissorSet;
+
     return &re;
 }
 
