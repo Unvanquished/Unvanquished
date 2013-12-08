@@ -103,9 +103,6 @@ namespace Cmd {
 
     typedef std::unordered_map<std::string, commandRecord_t, Str::IHash, Str::IEqual> CommandMap;
 
-    // Command execution is sequential so we make their environment a global variable.
-    Environment* storedEnvironment = nullptr;
-
     // The order in which static global variables are initialized is undefined and commands
     // can be registered before main. The first time this function is called the command map
     // is initialized so we are sure it is initialized as soon as we need it.
@@ -159,6 +156,11 @@ namespace Cmd {
     }
 
     DefaultEnvironment defaultEnv;
+
+    // Command execution is sequential so we make their environment a global variable.
+    Environment* storedEnvironment = &defaultEnv;
+
+
 
     void ExecuteCommand(Str::StringRef command, bool parseCvars, Environment* env) {
         CommandMap& commands = GetCommandMap();

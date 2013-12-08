@@ -171,10 +171,7 @@ int QDECL VPRINTF_LIKE(1) Com_VPrintf( const char *fmt, va_list argptr )
 		msg[len - 1] = '\0';
 	}
 
-	static const int logTargets = (1 << Log::GRAPHICAL_CONSOLE) | (1 << Log::TTY_CONSOLE) | (1 << Log::CRASHLOG) | (1 << Log::HUD) | (1 << Log::LOGFILE);
-	//TODO: add information about the time
-	//TODO: re-implement rcon feedback
-	Log::Dispatch({0, msg}, logTargets);
+	Cmd::GetEnv()->Print( msg );
 
 #ifdef SMP
 	SDL_UnlockMutex( lock );
