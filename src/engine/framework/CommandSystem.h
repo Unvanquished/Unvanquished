@@ -97,6 +97,7 @@ namespace Cmd {
 
     //Environment related private functions
     Environment* GetEnv();
+    void         ResetEnv();
 
     class DefaultEnvironment: public Environment {
         public:

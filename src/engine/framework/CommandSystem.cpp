@@ -258,6 +258,10 @@ namespace Cmd {
         return storedEnvironment;
     }
 
+    void ResetEnv() {
+	storedEnvironment = &defaultEnv;
+    }
+
     /*
     ===============================================================================
 
