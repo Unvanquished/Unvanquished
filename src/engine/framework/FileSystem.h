@@ -30,6 +30,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #include <vector>
 #include <string>
 #include <memory>
+#include <chrono>
 #include <unordered_map>
 #include "../../common/String.h"
 
@@ -88,7 +89,7 @@ public:
 	offset_t Length(std::error_code& err = throws()) const;
 
 	// Get the timestamp (time of last modification) of the file
-	time_t Timestamp(std::error_code& err = throws()) const;
+	std::chrono::system_clock::time_point Timestamp(std::error_code& err = throws()) const;
 
 	// File position manipulation
 	void SeekCur(offset_t off, std::error_code& err = throws()) const;
@@ -210,7 +211,9 @@ struct PakInfo {
 	std::string version;
 
 	// CRC32 checksum of the pak, optional. This will always be set in a loaded
-	// pak, but not necessarily for available paks.
+	// pak, but not necessarily for available paks. Also it might be inaccurate
+	// for available paks if the checksum in the filename doesn't match the
+	// actual checksum.
 	bool hasChecksum;
 	uint32_t checksum;
 
@@ -257,7 +260,7 @@ public:
 	const PakInfo* LocateFile(Str::StringRef path, std::error_code& err = throws()) const;
 
 	// Get the timestamp of a file
-	time_t FileTimestamp(Str::StringRef path, std::error_code& err = throws()) const;
+	std::chrono::system_clock::time_point FileTimestamp(Str::StringRef path, std::error_code& err = throws()) const;
 
 	// List all files in the given subdirectory, optionally recursing into subdirectories
 	// Directory names are returned with a trailing slash to differentiate them from files
@@ -304,7 +307,7 @@ namespace RawPath {
 	bool FileExists(Str::StringRef path);
 
 	// Get the timestamp of a file
-	time_t FileTimestamp(Str::StringRef path, std::error_code& err = throws());
+	std::chrono::system_clock::time_point FileTimestamp(Str::StringRef path, std::error_code& err = throws());
 
 	// Move/delete a file
 	void MoveFile(Str::StringRef dest, Str::StringRef src, std::error_code& err = throws());
@@ -379,7 +382,7 @@ namespace HomePath {
 	bool FileExists(Str::StringRef path);
 
 	// Get the timestamp of a file
-	time_t FileTimestamp(Str::StringRef path, std::error_code& err = throws());
+	std::chrono::system_clock::time_point FileTimestamp(Str::StringRef path, std::error_code& err = throws());
 
 	// Move/delete a file
 	void MoveFile(Str::StringRef dest, Str::StringRef src, std::error_code& err = throws());

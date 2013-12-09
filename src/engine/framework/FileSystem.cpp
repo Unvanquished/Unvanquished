@@ -77,15 +77,25 @@ static FILE* my_fopen(Str::StringRef path, openMode_t mode)
 #endif
 
 	// Only allow opening regular files
-	if (fd) {
+	if (mode == MODE_READ && fd) {
 		struct stat st;
-		fstat(fileno(fd), &st);
+		if (fstat(fileno(fd), &st) == -1) {
+			fclose(fd);
+			return NULL;
+		}
 		if (!S_ISREG(st.st_mode)) {
 			fclose(fd);
-			errno = ENOENT;
+			errno = EISDIR;
 			return NULL;
 		}
 	}
+
+	// Set the close-on-exec flag
+	if (fcntl(fileno(fd), F_SETFD, FD_CLOEXEC) == -1) {
+		fclose(fd);
+		return NULL;
+	}
+
 	return fd;
 #endif
 }
@@ -323,6 +333,8 @@ void Initialize()
 		pakPaths.push_back(basePath);
 	if (extraPath[0] && extraPath != basePath && extraPath != homePath)
 		pakPaths.push_back(extraPath);
+
+	RefreshPaks();
 }
 
 // Add a pak to the list of available paks
@@ -465,10 +477,17 @@ bool Path::IsValid(Str::StringRef path, bool allowDir)
 {
 	bool nonAlphaNum = true;
 	for (char c: path) {
-		if (Str::cisalnum(c))
+		// Always allow alphanumeric characters
+		if (Str::cisalnum(c)) {
+			nonAlphaNum = false;
 			continue;
+		}
+
+		// Don't allow 2 consecutive punctuation characters
 		if (nonAlphaNum)
 			return false;
+
+		// Only allow the following punctuation characters
 		if (c != '/' && c != '-' && c != '_' && c != '.')
 			return false;
 		nonAlphaNum = true;
@@ -485,6 +504,8 @@ std::string Path::Build(Str::StringRef base, Str::StringRef path)
 {
 	if (base.empty())
 		return path;
+	if (path.empty())
+		return base;
 
 	std::string out = base;
 	if (!isdirsep(out.back()))
@@ -546,15 +567,15 @@ offset_t File::Length(std::error_code& err) const
 		return st.st_size;
 	}
 }
-time_t File::Timestamp(std::error_code& err) const
+std::chrono::system_clock::time_point File::Timestamp(std::error_code& err) const
 {
 	my_stat_t st;
 	if (my_fstat(fileno(fd), &st) != 0) {
 		SetErrorCodeSystem(err);
-		return 0;
+		return {};
 	} else {
 		ClearErrorCode(err);
-		return std::max(st.st_ctime, st.st_mtime);
+		return std::chrono::system_clock::from_time_t(std::max(st.st_ctime, st.st_mtime));
 	}
 }
 void File::SeekCur(offset_t off, std::error_code& err) const
@@ -835,7 +856,7 @@ private:
 void PakNamespace::InternalLoadPak(const PakInfo& pak, bool verifyChecksum, uint32_t expectedChecksum, std::error_code& err)
 {
 	std::vector<std::pair<std::string, pakFileInfo_t>> fileList;
-	uint32_t checksum = 0;
+	uint32_t checksum;
 
 	// Gather the list of files
 	if (pak.type == PAK_DIR) {
@@ -870,6 +891,12 @@ void PakNamespace::InternalLoadPak(const PakInfo& pak, bool verifyChecksum, uint
 
 	// Once we are sure no more errors can occur, update our data structures
 	loadedPaks.push_back(pak);
+	if (pak.type == PAK_DIR) {
+		loadedPaks.back().hasChecksum = false;
+	} else {
+		loadedPaks.back().hasChecksum = true;
+		loadedPaks.back().checksum = checksum;
+	}
 	for (auto& entry: fileList)
 		fileMap.insert(std::move(entry));
 }
@@ -886,7 +913,7 @@ void PakNamespace::LoadPak(Str::StringRef name, std::error_code& err)
 		return;
 	}
 
-	InternalLoadPak(*iter, false, 0, err);
+	InternalLoadPak(*(iter - 1), false, 0, err);
 }
 
 void PakNamespace::LoadPak(Str::StringRef name, Str::StringRef version, std::error_code& err)
@@ -904,7 +931,7 @@ void PakNamespace::LoadPak(Str::StringRef name, Str::StringRef version, std::err
 		return;
 	}
 
-	InternalLoadPak(*iter, false, 0, err);
+	InternalLoadPak(*(iter - 1), false, 0, err);
 }
 
 void PakNamespace::LoadPak(Str::StringRef name, Str::StringRef version, uint32_t checksum, std::error_code& err)
@@ -941,7 +968,7 @@ void PakNamespace::LoadPak(Str::StringRef name, Str::StringRef version, uint32_t
 		}
 	}
 
-	InternalLoadPak(*iter, true, checksum, err);
+	InternalLoadPak(*(iter - 1), true, checksum, err);
 }
 
 std::string PakNamespace::ReadFile(Str::StringRef path, std::error_code& err) const
@@ -1061,12 +1088,12 @@ const PakInfo* PakNamespace::LocateFile(Str::StringRef path, std::error_code& er
 	}
 }
 
-time_t PakNamespace::FileTimestamp(Str::StringRef path, std::error_code& err) const
+std::chrono::system_clock::time_point PakNamespace::FileTimestamp(Str::StringRef path, std::error_code& err) const
 {
 	auto it = fileMap.find(path);
 	if (it == fileMap.end()) {
 		SetErrorCodeFileNotFound(err);
-		return 0;
+		return {};
 	}
 
 	my_stat_t st;
@@ -1078,10 +1105,10 @@ time_t PakNamespace::FileTimestamp(Str::StringRef path, std::error_code& err) co
 		result = my_stat(pak.path, &st);
 	if (result != 0) {
 		SetErrorCodeSystem(err);
-		return 0;
+		return {};
 	} else {
 		ClearErrorCode(err);
-		return std::max(st.st_ctime, st.st_mtime);
+		return std::chrono::system_clock::from_time_t(std::max(st.st_ctime, st.st_mtime));
 	}
 }
 
@@ -1179,7 +1206,7 @@ static File OpenMode(Str::StringRef path, openMode_t mode, std::error_code& err)
 	if (!fd && mode != MODE_READ && errno == ENOENT) {
 		// Create the directories and try again
 		CreatePath(path, err);
-		if (err)
+		if (HaveError(err))
 			return {};
 		fd = my_fopen(path, mode);
 	}
@@ -1210,15 +1237,15 @@ bool FileExists(Str::StringRef path)
 	return my_stat(path, &st) == 0;
 }
 
-time_t FileTimestamp(Str::StringRef path, std::error_code& err)
+std::chrono::system_clock::time_point FileTimestamp(Str::StringRef path, std::error_code& err)
 {
 	my_stat_t st;
 	if (my_stat(path, &st) != 0) {
 		SetErrorCodeSystem(err);
-		return 0;
+		return {};
 	} else {
 		ClearErrorCode(err);
-		return std::max(st.st_ctime, st.st_mtime);
+		return std::chrono::system_clock::from_time_t(std::max(st.st_ctime, st.st_mtime));
 	}
 }
 
@@ -1277,6 +1304,7 @@ bool DirectoryRange::Advance(std::error_code& err)
 				ClearErrorCode(err);
 			else
 				SetErrorCode(err, ec, std::system_category());
+			handle = nullptr;
 			return false;
 		}
 		current = Str::UTF16To8(findData.cFileName);
@@ -1296,6 +1324,7 @@ bool DirectoryRange::Advance(std::error_code& err)
 				SetErrorCodeSystem(err);
 			else
 				ClearErrorCode(err);
+			handle = nullptr;
 			return false;
 		}
 	} while (!Path::IsValid(dirent->d_name, false) || my_stat(Path::Build(path, dirent->d_name), &st) != 0);
@@ -1436,11 +1465,11 @@ bool FileExists(Str::StringRef path)
 	return RawPath::FileExists(Path::Build(homePath, path));
 }
 
-time_t FileTimestamp(Str::StringRef path, std::error_code& err)
+std::chrono::system_clock::time_point FileTimestamp(Str::StringRef path, std::error_code& err)
 {
 	if (!Path::IsValid(path, false)) {
 		SetErrorCodeFileNotFound(err);
-		return 0;
+		return {};
 	}
 	return RawPath::FileTimestamp(Path::Build(homePath, path), err);
 }
