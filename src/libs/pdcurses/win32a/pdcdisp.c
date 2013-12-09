@@ -346,6 +346,24 @@ static COLORREF intensified_color( COLORREF ival)
     return( oval);
 }
 
+   /* For use in adjusting colors for A_DIMmed characters.  Just */
+   /* knocks down the intensity of R, G, and B by 1/3.           */
+
+static COLORREF dimmed_color( COLORREF ival)
+{
+    unsigned i;
+    COLORREF oval = 0;
+
+    for( i = 0; i < 3; i++, ival >>= 8)
+    {
+        unsigned rgb = (unsigned)( ival & 0xff);
+
+        rgb -= (rgb / 3);
+        oval |= ((COLORREF)rgb << (i * 8));
+    }
+    return( oval);
+}
+
 #ifdef CHTYPE_LONG
     #if(CHTYPE_LONG >= 2)       /* "non-standard" 64-bit chtypes     */
             /* PDCurses stores RGBs in fifteen bits,  five bits each */
@@ -445,13 +463,26 @@ void PDC_transform_line_given_hdc( const HDC hdc, const int lineno,
         RECT clip_rect;
         wchar_t buff[BUFFSIZE];
         int lpDx[BUFFSIZE + 1];
+        int olen = 0;
+//      int funny_chars = 0;
 
-        for( i = 0; i < len && i < BUFFSIZE &&
+        for( i = 0; i < len && olen < BUFFSIZE - 1 &&
                     attrib == (attr_t)( srcp[i] >> PDC_REAL_ATTR_SHIFT); i++)
         {
             chtype ch = (srcp[i] & A_CHARTEXT);
 
 #ifdef CHTYPE_LONG
+            if( ch > 0xffff)    /* use Unicode surrogates to fit */
+                {               /* >64K values into 16-bit wchar_t: */
+//              printf( "Got char %x: ", (unsigned)ch);
+                ch -= 0x10000;
+                buff[olen] = (wchar_t)( 0xd800 | (ch >> 10));
+                lpDx[olen] = PDC_cxChar;          /* ^ upper 10 bits */
+                olen++;
+                ch = (wchar_t)( 0xdc00 | (ch & 0x3ff));  /* lower 10 bits */
+//              funny_chars = 1;
+//              printf( "Stored as %x, %x\n", buff[olen-1], (unsigned)ch);
+                }
             if( (srcp[i] & A_ALTCHARSET) && ch < 0x80)
                 ch = acs_map[ch & 0x7f];
             else if( ch < 32)
@@ -467,10 +498,11 @@ void PDC_transform_line_given_hdc( const HDC hdc, const int lineno,
                }
 #endif
 #endif
-            buff[i] = (wchar_t)( ch & A_CHARTEXT);
-            lpDx[i] = PDC_cxChar;
+            buff[olen] = (wchar_t)( ch & A_CHARTEXT);
+            lpDx[olen] = PDC_cxChar;
+            olen++;
         }
-        lpDx[i] = PDC_cxChar;
+        lpDx[olen] = PDC_cxChar;
         if( color != curr_color || ((prev_ch ^ *srcp) & (A_REVERSE | A_BLINK)))
         {
             extern int PDC_really_blinking;          /* see 'pdcsetsc.c' */
@@ -518,10 +550,14 @@ void PDC_transform_line_given_hdc( const HDC hdc, const int lineno,
 
             if( *srcp & A_BOLD)
                 foreground_rgb = intensified_color( foreground_rgb);
+            if( *srcp & A_DIM)
+                foreground_rgb = dimmed_color( foreground_rgb);
             SetTextColor( hdc, foreground_rgb);
 
             if( intensify_backgnd)
                 background_rgb = intensified_color( background_rgb);
+            if( *srcp & A_DIM)
+                background_rgb = dimmed_color( background_rgb);
             SetBkColor( hdc, background_rgb);
         }
         if( new_font_attrib != font_attrib)
@@ -545,9 +581,17 @@ void PDC_transform_line_given_hdc( const HDC hdc, const int lineno,
         clip_rect.top = lineno * PDC_cyChar;
         clip_rect.right = clip_rect.left + i * PDC_cxChar;
         clip_rect.bottom = clip_rect.top + PDC_cyChar;
+//      if( funny_chars)
+//      {
+//          int j;
+//
+//          printf( "%d out:\n", olen);
+//          for( j = 0; j < olen; j++)
+//             printf( "%x ", buff[j]);
+//      }
         ExtTextOutW( hdc, clip_rect.left, clip_rect.top,
                            ETO_CLIPPED | ETO_OPAQUE, &clip_rect,
-                           buff, i, (i > 1 ? lpDx : NULL));
+                           buff, olen, (olen > 1 ? lpDx : NULL));
 #ifdef A_OVERLINE
         if( *srcp & (A_UNDERLINE | A_RIGHTLINE | A_LEFTLINE | A_OVERLINE | A_STRIKEOUT))
 #else
