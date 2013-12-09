@@ -88,14 +88,13 @@ namespace Cvar {
         }
     }
 
-    static int registrationCount = 0;
     void GetCCvar(const std::string& name, cvarRecord_t& cvar) {
         cvar_t& var = cvar.ccvar;
         bool modified = false;
 
         if (not var.name) {
             var.name = CopyString(name.c_str());
-            var.index = registrationCount ++;
+            var.index = -1;
             var.modificationCount = -1;
         }
 
