@@ -231,7 +231,7 @@ updates an interpreted modules' version of a cvar
 =====================
 */
 void Cvar_Update(vmCvar_t *vmCvar) {
-    if (vmCvar->handle >= vmCvarTable.size()) {
+    if ((unsigned) vmCvar->handle >= vmCvarTable.size()) {
 		Com_Error( ERR_DROP, "Cvar_Update: handle %d out of range", (unsigned) vmCvar->handle );
     }
 
