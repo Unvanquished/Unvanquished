@@ -124,7 +124,6 @@ typedef enum
   PM_NORMAL, // can accelerate and turn
   PM_NOCLIP, // noclip movement
   PM_SPECTATOR, // still run into walls
-  PM_JETPACK, // jetpack physics
   PM_GRABBED, // like dead, but for when the player is still alive
   PM_DEAD, // no acceleration or turning, but free falling
   PM_FREEZE, // stuck in place with no control
@@ -132,10 +131,8 @@ typedef enum
 } pmtype_t;
 
 // pmtype_t categories
-#define PM_Paralyzed( x ) ( ( x ) == PM_DEAD || ( x ) == PM_FREEZE || \
-                            ( x ) == PM_INTERMISSION )
-#define PM_Live( x )      ( ( x ) == PM_NORMAL || ( x ) == PM_JETPACK || \
-                            ( x ) == PM_GRABBED )
+#define PM_Paralyzed( x ) ( ( x ) == PM_DEAD || ( x ) == PM_FREEZE || ( x ) == PM_INTERMISSION )
+#define PM_Live( x )      ( ( x ) == PM_NORMAL || ( x ) == PM_GRABBED )
 
 typedef enum
 {
@@ -153,7 +150,7 @@ typedef enum
 #define PMF_CROUCH_HELD    0x000004
 #define PMF_BACKWARDS_JUMP 0x000008 // go into backwards land
 #define PMF_BACKWARDS_RUN  0x000010 // coast down to backwards run
-#define PMF_TIME_LAND      0x000020 // pm_time is time before rejump
+#define PMF_JUMPED         0x000020 // whether we entered the air with a jump
 #define PMF_TIME_KNOCKBACK 0x000040 // pm_time is an air-accelerate only time
 #define PMF_TIME_WATERJUMP 0x000080 // pm_time is waterjump
 #define PMF_RESPAWNED      0x000100 // clear after attack and jump buttons come up
@@ -166,7 +163,7 @@ typedef enum
 #define PMF_WEAPON_SWITCH  0x008000 // force a weapon switch
 #define PMF_SPRINTHELD     0x010000
 
-#define PMF_ALL_TIMES      ( PMF_TIME_WATERJUMP | PMF_TIME_LAND | PMF_TIME_KNOCKBACK | PMF_TIME_WALLJUMP )
+#define PMF_ALL_TIMES      ( PMF_TIME_WATERJUMP | PMF_TIME_KNOCKBACK | PMF_TIME_WALLJUMP )
 
 typedef struct
 {
@@ -229,18 +226,19 @@ typedef enum
   STAT_HEALTH,
   STAT_ITEMS,
   STAT_ACTIVEITEMS,
-  STAT_WEAPON, // current primary weapon
-  STAT_MAX_HEALTH, // health / armor limit
-  STAT_CLASS, // player class (for aliens AND humans)
-  STAT_UNUSED_1, // UNUSED
-  STAT_STAMINA, // stamina (human only)
-  STAT_STATE, // client states e.g. wall climbing
-  STAT_MISC, // for uh...misc stuff (pounce, trample, lcannon)
-  STAT_BUILDABLE, // which ghost model to display for building
-  STAT_FALLDIST, // the distance the player fell
-  STAT_VIEWLOCK, // direction to lock the view in
-  STAT_PREDICTION // predictions for current player action (RGS efficiency)
-  // netcode has space for 2 more
+  STAT_WEAPON,     // current primary weapon
+  STAT_MAX_HEALTH, // health limit
+  STAT_CLASS,      // player class
+  STAT_STATE2,     // more client states
+  STAT_STAMINA,    // humans: stamina
+  STAT_STATE,      // client states
+  STAT_MISC,       // aliens: pounce, trample; humans: lcannon
+  STAT_BUILDABLE,  // ghost model to display for building
+  STAT_FALLDIST,   // distance the player fell
+  STAT_VIEWLOCK,   // direction to lock the view in
+  STAT_PREDICTION, // predictions for current player action
+  STAT_FUEL        // humans: jetpack fuel
+  // netcode has space for 1 more
 } statIndex_t;
 
 #define SCA_WALLCLIMBER     0x00000001
@@ -251,6 +249,7 @@ typedef enum
 #define SCA_CANUSELADDERS   0x00000020
 #define SCA_WALLJUMPER      0x00000040
 
+// STAT_STATE fields. 16 bit available
 #define SS_WALLCLIMBING     BIT(0)
 #define SS_CREEPSLOWED      BIT(1)
 #define SS_SPEEDBOOST       BIT(2)
@@ -265,6 +264,12 @@ typedef enum
 #define SS_HEALING_ACTIVE   BIT(11) // medistat for humans, creep for aliens
 #define SS_HEALING_2X       BIT(12) // medkit or double healing rate
 #define SS_HEALING_3X       BIT(13) // triple healing rate
+
+// STAT_STATE2 fields. 16 bit available
+#define SS2_JETPACK_ENABLED BIT(0)  // whether jets/wings are extended
+#define SS2_JETPACK_WARM    BIT(1)  // whether we can start a thrust
+#define SS2_JETPACK_ACTIVE  BIT(2)  // whether we are thrusting
+#define SS2_JETPACK_DAMAGED BIT(3)  // whether we were damaged recently
 
 // has to fit into 16 bits
 #define SB_BUILDABLE_MASK        0x00FF
@@ -285,9 +290,7 @@ typedef enum
   IBE_NOREACTOR,        // no reactor present
   IBE_ONEREACTOR,       // may not build two reactors
   IBE_NOHUMANBP,        // not enough build points (humans)
-  IBE_DRILLPOWERSOURCE, // needs a close power source
   IBE_NOPOWERHERE,      // not enough power in this area
-  IBE_NODCC,            // needs a defense computer
 
   IBE_NORMAL,           // surface is too steep
   IBE_NOROOM,           // no room
@@ -304,7 +307,7 @@ typedef enum
 typedef enum
 {
   PERS_SCORE,          // !!! MUST NOT CHANGE, SERVER AND GAME BOTH REFERENCE !!!
-  PERS_CONFIDENCE,     // the total confidence of a team
+  PERS_MOMENTUM,     // the total momentum of a team
   PERS_SPAWNQUEUE,     // number of spawns and position in spawn queue
   PERS_SPECSTATE,
   PERS_SPAWN_COUNT,    // incremented every respawn
@@ -355,6 +358,10 @@ typedef enum
 #define EF_POISONCLOUDED    0x2000 // player hit with basilisk gas
 #define EF_CONNECTION       0x4000 // draw a connection trouble sprite
 #define EF_BLOBLOCKED       0x8000 // caught by a trapper
+
+// entityState_t->modelIndex2 "public flags" when used for client entities
+#define PF_JETPACK_ENABLED  BIT(0)
+#define PF_JETPACK_ACTIVE   BIT(1)
 
 typedef enum
 {
@@ -424,7 +431,6 @@ typedef enum
   UP_FIREBOMB,
 
   UP_MEDKIT,
-  UP_AMMO,
 
   UP_NUM_UPGRADES
 } upgrade_t;
@@ -534,10 +540,16 @@ typedef enum
   EV_FALLING,
 
   EV_JUMP,
+
   EV_WATER_TOUCH, // foot touches
   EV_WATER_LEAVE, // foot leaves
   EV_WATER_UNDER, // head touches
   EV_WATER_CLEAR, // head leaves
+
+  EV_JETPACK_ENABLE,  // enable jets
+  EV_JETPACK_DISABLE, // disable jets
+  EV_JETPACK_START,   // start thrusting
+  EV_JETPACK_STOP,    // stop thrusting
 
   EV_NOAMMO,
   EV_CHANGE_WEAPON,
@@ -598,20 +610,29 @@ typedef enum
   EV_STOPLOOPINGSOUND,
   EV_TAUNT,
 
-  EV_OVERMIND_ATTACK, // overmind under attack
+  EV_OVERMIND_ATTACK_1, // overmind under attack
+  EV_OVERMIND_ATTACK_2, // overmind under attack
   EV_OVERMIND_DYING, // overmind close to death
   EV_OVERMIND_SPAWNS, // overmind needs spawns
 
+  EV_REACTOR_ATTACK_1, // reactor under attack
+  EV_REACTOR_ATTACK_2, // reactor under attack
+  EV_REACTOR_DYING, // reactor destroyed
   EV_DCC_ATTACK, // dcc under attack
+
+  EV_WARN_ATTACK, // a building has been destroyed and the destruction noticed by a nearby om/rc/rrep
 
   EV_MGTURRET_SPINUP, // turret spinup sound should play
 
-  EV_RPTUSE_SOUND, // trigger a sound
+  EV_AMMO_REFILL,     // ammo for clipless weapon has been refilled
+  EV_CLIPS_REFILL,    // weapon clips have been refilled
+  EV_FUEL_REFILL,     // jetpack fuel has been refilled
+
   EV_LEV2_ZAP,
 
   EV_HIT, // notify client of a hit
 
-  EV_CONFIDENCE // notify client of generated confidence
+  EV_MOMENTUM // notify client of generated momentum
 } entity_event_t;
 
 typedef enum
@@ -681,12 +702,11 @@ typedef enum
   MN_H_DEADTOCLASS,
   MN_H_UNKNOWNSPAWNITEM,
 
-  //human build
+  //human buildables
   MN_H_NOPOWERHERE,
   MN_H_NOREACTOR,
   MN_H_NOBP,
   MN_H_NOTPOWERED,
-  MN_H_NODCC,
   MN_H_ONEREACTOR
 } dynMenu_t;
 
@@ -1258,7 +1278,7 @@ typedef struct
 	sfxHandle_t    impactFleshSound[ 4 ];
 } missileAttributes_t;
 
-qboolean BG_WeaponIsFull( weapon_t weapon, int stats[], int ammo, int clips );
+qboolean BG_WeaponIsFull( int weapon, int stats[], int ammo, int clips );
 qboolean BG_InventoryContainsWeapon( int weapon, int stats[] );
 int      BG_SlotsForInventory( int stats[] );
 void     BG_AddUpgradeToInventory( int item, int stats[] );
@@ -1285,35 +1305,35 @@ int                         BG_UnpackEntityNumbers( entityState_t *es, int *enti
 
 const buildableAttributes_t *BG_BuildableByName( const char *name );
 const buildableAttributes_t *BG_BuildableByEntityName( const char *name );
-const buildableAttributes_t *BG_Buildable( buildable_t buildable );
+const buildableAttributes_t *BG_Buildable( int buildable );
 
-buildableModelConfig_t      *BG_BuildableModelConfig( buildable_t buildable );
-void                        BG_BuildableBoundingBox( buildable_t buildable, vec3_t mins, vec3_t maxs );
+buildableModelConfig_t      *BG_BuildableModelConfig( int buildable );
+void                        BG_BuildableBoundingBox( int buildable, vec3_t mins, vec3_t maxs );
 
 const classAttributes_t     *BG_ClassByName( const char *name );
 
-const classAttributes_t     *BG_Class( class_t pClass );
+const classAttributes_t     *BG_Class( int pClass );
 
 classModelConfig_t          *BG_ClassModelConfigByName( const char * );
 
-classModelConfig_t          *BG_ClassModelConfig( class_t pClass );
+classModelConfig_t          *BG_ClassModelConfig( int pClass );
 
-void                        BG_ClassBoundingBox( class_t pClass, vec3_t mins, vec3_t maxs, vec3_t cmaxs,
+void                        BG_ClassBoundingBox( int pClass, vec3_t mins, vec3_t maxs, vec3_t cmaxs,
                                                  vec3_t dmins, vec3_t dmaxs );
-team_t                      BG_ClassTeam( class_t pClass );
-qboolean                    BG_ClassHasAbility( class_t pClass, int ability );
+team_t                      BG_ClassTeam( int pClass );
+qboolean                    BG_ClassHasAbility( int pClass, int ability );
 
-int                         BG_ClassCanEvolveFromTo(class_t from, class_t to, int credits);
-qboolean                    BG_AlienCanEvolve(class_t from, int credits);
+int                         BG_ClassCanEvolveFromTo(int from, int to, int credits);
+qboolean                    BG_AlienCanEvolve(int from, int credits);
 
 const weaponAttributes_t  *BG_WeaponByName( const char *name );
-const weaponAttributes_t  *BG_Weapon( weapon_t weapon );
+const weaponAttributes_t  *BG_Weapon( int weapon );
 
 const upgradeAttributes_t *BG_UpgradeByName( const char *name );
-const upgradeAttributes_t *BG_Upgrade( upgrade_t upgrade );
+const upgradeAttributes_t *BG_Upgrade( int upgrade );
 
 const missileAttributes_t *BG_MissileByName( const char *name );
-const missileAttributes_t *BG_Missile( missile_t missile );
+const missileAttributes_t *BG_Missile( int missile );
 
 meansOfDeath_t            BG_MeansOfDeathByName( const char *name );
 
@@ -1348,19 +1368,19 @@ typedef enum
 typedef struct {
 	int num;
 	int threshold;
-} confidenceThresholdIterator_t;
+} momentumThresholdIterator_t;
 
 void     BG_InitUnlockackables( void );
-void     BG_ImportUnlockablesFromMask( team_t team, int mask );
-int      BG_UnlockablesMask( team_t team );
-qboolean BG_WeaponUnlocked( weapon_t weapon );
-qboolean BG_UpgradeUnlocked( upgrade_t upgrade );
-qboolean BG_BuildableUnlocked( buildable_t buildable );
-qboolean BG_ClassUnlocked( class_t class_ );
+void     BG_ImportUnlockablesFromMask( int team, int mask );
+int      BG_UnlockablesMask( int team );
+qboolean BG_WeaponUnlocked( int weapon );
+qboolean BG_UpgradeUnlocked( int upgrade );
+qboolean BG_BuildableUnlocked( int buildable );
+qboolean BG_ClassUnlocked( int class_ );
 
 unlockableType_t              BG_UnlockableType( int num );
 int                           BG_UnlockableTypeIndex( int num );
-confidenceThresholdIterator_t BG_IterateConfidenceThresholds( confidenceThresholdIterator_t unlockableIter, team_t team, int *threshold, qboolean *unlocked );
+momentumThresholdIterator_t BG_IterateMomentumThresholds( momentumThresholdIterator_t unlockableIter, team_t team, int *threshold, qboolean *unlocked );
 #ifdef GAME
 void     G_UpdateUnlockables( void );
 #endif
@@ -1408,11 +1428,11 @@ void     BG_ParseCSVEquipmentList( const char *string, weapon_t *weapons, int we
 void     BG_ParseCSVClassList( const char *string, class_t *classes, int classesSize );
 void     BG_ParseCSVBuildableList( const char *string, buildable_t *buildables, int buildablesSize );
 void     BG_InitAllowedGameElements( void );
-qboolean BG_WeaponDisabled( weapon_t weapon );
-qboolean BG_UpgradeDisabled( upgrade_t upgrade );
+qboolean BG_WeaponDisabled( int weapon );
+qboolean BG_UpgradeDisabled( int upgrade );
 
-qboolean BG_ClassDisabled( class_t class_ );
-qboolean BG_BuildableDisabled( buildable_t buildable );
+qboolean BG_ClassDisabled( int class_ );
+qboolean BG_BuildableDisabled( int buildable );
 
 weapon_t BG_PrimaryWeapon( int stats[] );
 
@@ -1472,14 +1492,14 @@ voiceCmd_t   *BG_VoiceCmdFind( voiceCmd_t *head, const char *name, int *cmdNum )
 voiceCmd_t   *BG_VoiceCmdByNum( voiceCmd_t *head, int num );
 voiceTrack_t *BG_VoiceTrackByNum( voiceTrack_t *head, int num );
 
-voiceTrack_t *BG_VoiceTrackFind( voiceTrack_t *head, team_t team,
-                                 class_t pClass, weapon_t weapon,
+voiceTrack_t *BG_VoiceTrackFind( voiceTrack_t *head, int team,
+                                 int pClass, int weapon,
                                  int enthusiasm, int *trackNum );
 
 int  BG_LoadEmoticons( emoticon_t *emoticons, int num );
 
-const char *BG_TeamName( team_t team );
-const char *BG_TeamNamePlural( team_t team );
+const char *BG_TeamName( int team );
+const char *BG_TeamNamePlural( int team );
 
 typedef struct
 {

@@ -130,7 +130,7 @@ void SV_DirectConnect( netadr_t from )
 	int                 count;
 	const char          *ip;
 #ifdef HAVE_GEOIP
-	const char          *country;
+	const char          *country = NULL;
 #endif
 
 	Com_DPrintf( "SVC_DirectConnect ()\n" );
@@ -403,7 +403,7 @@ gotnewcl:
 	Q_strncpyz( newcl->userinfo, userinfo, sizeof( newcl->userinfo ) );
 
 	// get the game a chance to reject this connection or modify the userinfo
-	denied = gvm.GameClientConnect( reason, sizeof( reason ), clientNum, qtrue, qfalse );  // firstTime = qtrue
+	denied = gvm->GameClientConnect( reason, sizeof( reason ), clientNum, qtrue, qfalse );  // firstTime = qtrue
 
 	if ( denied )
 	{
@@ -548,7 +548,7 @@ void SV_DropClient( client_t *drop, const char *reason )
 
 	// call the prog function for removing a client
 	// this will remove the body, among other things
-	gvm.GameClientDisconnect( drop - svs.clients );
+	gvm->GameClientDisconnect( drop - svs.clients );
 
 	// add the disconnect command
 	SV_SendServerCommand( drop, "disconnect %s\n", Cmd_QuoteString( reason ) );
@@ -689,7 +689,7 @@ void SV_ClientEnterWorld( client_t *client, usercmd_t *cmd )
 	client->lastUsercmd = *cmd;
 
 	// call the game begin function
-	gvm.GameClientBegin( client - svs.clients );
+	gvm->GameClientBegin( client - svs.clients );
 }
 
 /*
@@ -1599,7 +1599,7 @@ static void SV_UpdateUserinfo_f( client_t *cl )
 
 	SV_UserinfoChanged( cl );
 	// call prog code to allow overrides
-	gvm.GameClientUserInfoChanged( cl - svs.clients );
+	gvm->GameClientUserInfoChanged( cl - svs.clients );
 }
 
 #ifdef USE_VOIP
@@ -1741,7 +1741,7 @@ void SV_ExecuteClientCommand( client_t *cl, const char *s, qboolean clientOK, qb
 		// pass unknown strings to the game
 		if ( !u->name && sv.state == SS_GAME )
 		{
-			gvm.GameClientCommand( cl - svs.clients );
+			gvm->GameClientCommand( cl - svs.clients );
 		}
 	}
 	else if ( !bProcessed )
@@ -1836,7 +1836,7 @@ void SV_ClientThink( client_t *cl, usercmd_t *cmd )
 		return; // may have been kicked during the last usercmd
 	}
 
-	gvm.GameClientThink( cl - svs.clients );
+	gvm->GameClientThink( cl - svs.clients );
 }
 
 /*

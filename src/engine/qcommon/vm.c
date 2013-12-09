@@ -51,10 +51,6 @@ and one exported function: Perform
 #include "vm_local.h"
 #include "vm_traps.h"
 
-#ifdef USE_LLVM
-#include "vm_llvm.h"
-#endif
-
 vm_t       *currentVM = NULL;
 vm_t       *lastVM = NULL;
 int        vm_debugLevel;
@@ -699,11 +695,7 @@ vm_t *VM_Restart( vm_t *vm )
 	vmHeader_t *header;
 
 	// DLLs can't be restarted in place
-	if ( vm->dllHandle
-#if USE_LLVM
-	     || vm->llvmModuleProvider
-#endif
-	   )
+	if ( vm->dllHandle )
 	{
 		char     name[ MAX_QPATH ];
 		intptr_t ( *systemCall )( intptr_t * parms );
@@ -793,7 +785,7 @@ vm_t *VM_Create( const char *module, intptr_t ( *systemCalls )( intptr_t * ),
 	if ( interpret == VMI_NATIVE && !onlyQVM )
 	{
 		// try to load as a system dll
-		vm->dllHandle = Sys_LoadDll( module, &vm->entryPoint, VM_DllSyscall );
+		vm->dllHandle = Sys_LoadDll( va( "%s-qvm-native", module ), &vm->entryPoint, VM_DllSyscall );
 
 		if ( vm->dllHandle )
 		{
@@ -802,26 +794,7 @@ vm_t *VM_Create( const char *module, intptr_t ( *systemCalls )( intptr_t * ),
 		}
 
 		Com_DPrintf( "Failed loading dll, trying next\n" );
-#if USE_LLVM
-		interpret = VMI_BYTECODE;
-#endif
 	}
-
-#if USE_LLVM
-	if ( !onlyQVM )
-	{
-		// try to load the LLVM
-		Com_DPrintf( "Loading llvm file %s.\n", vm->name );
-		vm->llvmModuleProvider = VM_LoadLLVM( vm, VM_DllSyscall );
-
-		if ( vm->llvmModuleProvider )
-		{
-			return vm;
-		}
-
-		Com_DPrintf( "Failed to load llvm, looking for qvm.\n" );
-	}
-#endif // USE_LLVM
 
 	// load the image
 	interpret = VMI_COMPILED;
@@ -894,34 +867,6 @@ void VM_Free( vm_t *vm )
 		Com_Memset( vm, 0, sizeof( *vm ) );
 	}
 
-#if USE_LLVM
-
-	if ( vm->llvmModuleProvider )
-	{
-		VM_UnloadLLVM( vm->llvmModuleProvider );
-		Com_Memset( vm, 0, sizeof( *vm ) );
-	}
-
-#endif
-
-#if 0 // now automatically freed by hunk
-
-	if ( vm->codeBase )
-	{
-		Z_Free( vm->codeBase );
-	}
-
-	if ( vm->dataBase )
-	{
-		Z_Free( vm->dataBase );
-	}
-
-	if ( vm->instructionPointers )
-	{
-		Z_Free( vm->instructionPointers );
-	}
-
-#endif
 	Com_Memset( vm, 0, sizeof( *vm ) );
 
 	currentVM = NULL;
@@ -1218,16 +1163,6 @@ void VM_VmInfo_f( void )
 			Com_Printf( "native\n" );
 			continue;
 		}
-
-#if USE_LLVM
-
-		if ( vm->llvmModuleProvider )
-		{
-			Com_Printf( "llvm\n" );
-			continue;
-		}
-
-#endif // USE_LLVM
 
 		if ( vm->compiled )
 		{

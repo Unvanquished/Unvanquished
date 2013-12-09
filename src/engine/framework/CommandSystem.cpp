@@ -103,9 +103,6 @@ namespace Cmd {
 
     typedef std::unordered_map<std::string, commandRecord_t, Str::IHash, Str::IEqual> CommandMap;
 
-    // Command execution is sequential so we make their environment a global variable.
-    Environment* storedEnvironment = nullptr;
-
     // The order in which static global variables are initialized is undefined and commands
     // can be registered before main. The first time this function is called the command map
     // is initialized so we are sure it is initialized as soon as we need it.
@@ -122,12 +119,14 @@ namespace Cmd {
     void AddCommand(std::string name, const CmdBase& cmd, std::string description) {
         CommandMap& commands = GetCommandMap();
 
-        if (commands.count(name)) {
-			commandLog.Warn(_("Cmd::AddCommand: %s already defined"), name);
-			return;
+        if (!IsValidCmdName(name)) {
+            commandLog.Warn(_("Cmd::AddCommand: Invalid command name '%s'"), name);
+            return;
         }
 
-        commands[std::move(name)] = commandRecord_t{std::move(description), &cmd};
+        if (!commands.insert({std::move(name), commandRecord_t{std::move(description), &cmd}}).second) {
+            commandLog.Warn(_("Cmd::AddCommand: %s already defined"), name);
+        }
     }
 
     void RemoveCommand(const std::string& name) {
@@ -153,10 +152,15 @@ namespace Cmd {
     bool CommandExists(const std::string& name) {
         CommandMap& commands = GetCommandMap();
 
-        return commands.count(name);
+        return commands.find(name) != commands.end();
     }
 
     DefaultEnvironment defaultEnv;
+
+    // Command execution is sequential so we make their environment a global variable.
+    Environment* storedEnvironment = &defaultEnv;
+
+
 
     void ExecuteCommand(Str::StringRef command, bool parseCvars, Environment* env) {
         CommandMap& commands = GetCommandMap();
@@ -189,21 +193,6 @@ namespace Cmd {
         }
 
         //TODO: remove that and add default command handlers or something
-        // check client game commands
-        if (com_cl_running && com_cl_running->integer && CL_GameCommand()) {
-            return;
-        }
-
-        // check server game commands
-        if (com_sv_running && com_sv_running->integer && SV_GameCommand()) {
-            return;
-        }
-
-        // check ui commands
-        if (com_cl_running && com_cl_running->integer && UI_GameCommand()) {
-            return;
-        }
-
         // send it as a server command if we are connected
         // (cvars are expanded locally)
         CL_ForwardCommandToServer(args.EscapedArgs(0).c_str());
@@ -269,6 +258,10 @@ namespace Cmd {
         return storedEnvironment;
     }
 
+    void ResetEnv() {
+	storedEnvironment = &defaultEnv;
+    }
+
     /*
     ===============================================================================
 
@@ -277,13 +270,13 @@ namespace Cmd {
     ===============================================================================
     */
 
-	void DefaultEnvironment::Print(Str::StringRef text) {
-		Log::CodeSourceNotice(text);
-	}
+    void DefaultEnvironment::Print(Str::StringRef text) {
+        Log::CodeSourceNotice(text);
+    }
 
-	void DefaultEnvironment::ExecuteAfter(Str::StringRef text, bool parseCvars) {
-		BufferCommandTextAfter(text, parseCvars, this);
-	}
+    void DefaultEnvironment::ExecuteAfter(Str::StringRef text, bool parseCvars) {
+        BufferCommandTextAfter(text, parseCvars, this);
+    }
 
     /*
     ===============================================================================
@@ -300,7 +293,7 @@ namespace Cmd {
             :StaticCmd(std::move(name), cmdFlags, std::move(description)), showCmdFlags(showCmdFlags) {
             }
 
-            void Run(const Cmd::Args& args) const override {
+            void Run(const Cmd::Args& args) const OVERRIDE {
                 CommandMap& commands = GetCommandMap();
 
                 std::vector<const commandRecord_t*> matches;
@@ -332,7 +325,7 @@ namespace Cmd {
                 Print("%zu commands", matches.size());
             }
 
-            Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, const std::string& prefix) const override {
+            Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, const std::string& prefix) const OVERRIDE {
                 Q_UNUSED(args);
 
                 if (argNum == 1) {

@@ -430,7 +430,7 @@ void CL_VoipParseTargets( void )
 {
 	const char *target = cl_voipSendTarget->string;
 	char       *end;
-	int        val;
+	int        val = -1;
 
 	Com_Memset( clc.voipTargets, 0, sizeof( clc.voipTargets ) );
 	clc.voipFlags &= ~VOIP_SPATIAL;
@@ -1357,7 +1357,7 @@ class DemoCmd: public Cmd::StaticCmd {
         DemoCmd(): Cmd::StaticCmd("demo", Cmd::SYSTEM, "starts playing a demo file") {
         }
 
-        void Run(const Cmd::Args& args) const override {
+        void Run(const Cmd::Args& args) const OVERRIDE {
             if (args.Argc() != 2) {
                 PrintUsage(args, _("<demoname>"), _("starts playing a demo file"));
                 return;
@@ -1420,7 +1420,7 @@ class DemoCmd: public Cmd::StaticCmd {
             //  }
         }
 
-        Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, const std::string& prefix) const override{
+        Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, const std::string& prefix) const OVERRIDE {
             if (argNum == 1) {
                 return FS::CompleteFilenameInDir(prefix, "demos", ".dm_" + std::to_string(PROTOCOL_VERSION));
             }
@@ -4513,8 +4513,6 @@ void CL_Init( void )
 	//
 	// register our variables
 	//
-	cvar_t* gettext_supported = Cvar_Get( "\\IS_GETTEXT_SUPPORTED", "1", CVAR_ROM );
-
 	cl_renderer = Cvar_Get( "cl_renderer", "GL3,GL", CVAR_ARCHIVE | CVAR_LATCH );
 
 	cl_noprint = Cvar_Get( "cl_noprint", "0", 0 );

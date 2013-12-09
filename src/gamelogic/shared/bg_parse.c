@@ -142,11 +142,6 @@ float RADAR_RANGE;
 
 float BATTPACK_MODIFIER;
 
-float JETPACK_FLOAT_SPEED;
-float JETPACK_SINK_SPEED;
-int   JETPACK_DISABLE_TIME;
-float JETPACK_DISABLE_CHANCE;
-
 int   MEDKIT_POISON_IMMUNITY_TIME;
 int   MEDKIT_STARTUP_TIME;
 int   MEDKIT_STARTUP_SPEED;
@@ -264,11 +259,6 @@ static configVar_t bg_configVars[] =
 	{"b_tesla_zapAttackRepeat", INTEGER, qfalse, &TESLAGEN_REPEAT},
 
 	{"u_battpack_ammoCapacityModifier", FLOAT, qfalse, &BATTPACK_MODIFIER},
-
-    {"u_jetpack_disableChance", FLOAT, qfalse, &JETPACK_DISABLE_CHANCE},
-	{"u_jetpack_disableTime", INTEGER, qfalse, &JETPACK_DISABLE_TIME},
-	{"u_jetpack_riseSpeed", FLOAT, qfalse, &JETPACK_FLOAT_SPEED},
-	{"u_jetpack_sinkSpeed", FLOAT, qfalse, &JETPACK_SINK_SPEED},
 
 	{"u_medkit_poisonImmunityTime", INTEGER, qfalse, &MEDKIT_POISON_IMMUNITY_TIME},
 	{"u_medkit_startupSpeed", INTEGER, qfalse, &MEDKIT_STARTUP_SPEED},
@@ -447,7 +437,7 @@ qboolean BG_ReadWholeFile( const char *filename, char *buffer, int size)
 	return qtrue;
 }
 
-static int ParseTeam(char* token)
+static team_t ParseTeam(char* token)
 {
 	if ( !Q_strnicmp( token, "alien", 5 ) ) // alien(s)
 	{
@@ -616,7 +606,7 @@ int configVarComparator(const void* a, const void* b)
 
 configVar_t* BG_FindConfigVar(const char *varName)
 {
-	return bsearch(&varName, bg_configVars, bg_numConfigVars, sizeof(configVar_t), configVarComparator);
+	return (configVar_t*) bsearch(&varName, bg_configVars, bg_numConfigVars, sizeof(configVar_t), configVarComparator);
 }
 
 qboolean BG_ParseConfigVar(configVar_t *var, char **text, const char *filename)
@@ -812,15 +802,15 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
 
 			if ( !Q_stricmp( token, "allAlien" ) )
 			{
-				ba->buildWeapon = ( 1 << WP_ABUILD ) | ( 1 << WP_ABUILD2 );
+				ba->buildWeapon = (weapon_t) ( ( 1 << WP_ABUILD ) | ( 1 << WP_ABUILD2 ) );
 			}
 			else if ( !Q_stricmp( token, "advAlien" ) )
 			{
-				ba->buildWeapon = ( 1 << WP_ABUILD2 );
+				ba->buildWeapon = (weapon_t) ( 1 << WP_ABUILD2 );
 			}
 			else if ( !Q_stricmp( token, "human" ) )
 			{
-				ba->buildWeapon = ( 1 << WP_HBUILD );
+				ba->buildWeapon = (weapon_t) ( 1 << WP_HBUILD );
 			}
 			else
 			{
@@ -1727,7 +1717,7 @@ void BG_ParseClassModelFile( const char *filename, classModelConfig_t *cc )
 
 			if ( model && *model->modelName )
 			{
-				cc->navMeshClass = model - BG_ClassModelConfig( PCL_NONE );
+				cc->navMeshClass = (class_t) ( model - BG_ClassModelConfig( PCL_NONE ) );
 			}
 			else
 			{

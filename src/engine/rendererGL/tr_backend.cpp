@@ -6856,8 +6856,6 @@ void DebugDrawVertex(const vec3_t pos, unsigned int color, const vec2_t uv) {
 	if( uv ) {
 		tess.texCoords[ tess.numVertexes ][ 0 ] = uv[ 0 ];
 		tess.texCoords[ tess.numVertexes ][ 1 ] = uv[ 1 ];
-		tess.texCoords[ tess.numVertexes ][ 2 ] = 0;
-		tess.texCoords[ tess.numVertexes ][ 3 ] = 1;
 	}
 	tess.indexes[ tess.numIndexes ] = tess.numVertexes;
 	tess.numVertexes++;

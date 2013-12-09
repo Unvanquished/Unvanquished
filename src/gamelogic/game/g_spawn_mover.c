@@ -643,7 +643,7 @@ void MatchGroup( gentity_t *groupLeader, int moverState, int time )
 
 	for ( slave = groupLeader; slave; slave = slave->groupChain )
 	{
-		SetMoverState( slave, moverState, time );
+		SetMoverState( slave, (moverState_t) moverState, time );
 	}
 }
 

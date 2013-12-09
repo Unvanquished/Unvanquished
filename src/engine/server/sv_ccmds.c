@@ -52,7 +52,7 @@ class MapCmd: public Cmd::StaticCmd {
             Cmd::StaticCmd(name, Cmd::SYSTEM, description), cheat(cheat) {
         }
 
-        void Run(const Cmd::Args& args) const override {
+        void Run(const Cmd::Args& args) const OVERRIDE {
             if (args.Argc() < 2) {
                 PrintUsage(args, _("<mapname> (layoutname)"), _("loads a new map"));
                 return;
@@ -77,7 +77,7 @@ class MapCmd: public Cmd::StaticCmd {
             Cvar_Set("sv_cheats", cheat ? "1" : "0");
         }
 
-        Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, const std::string& prefix) const override{
+        Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, const std::string& prefix) const OVERRIDE {
             if (argNum == 1) {
                 return FS::CompleteFilenameInDir(prefix, "maps", "bsp");
             } else if (argNum > 1) {
@@ -178,7 +178,7 @@ static void SV_MapRestart_f( void )
 	// run a few frames to allow everything to settle
 	for ( i = 0; i < GAME_INIT_FRAMES; i++ )
 	{
-		gvm.GameRunFrame( svs.time );
+		gvm->GameRunFrame( svs.time );
 		svs.time += FRAMETIME;
 	}
 
@@ -213,7 +213,7 @@ static void SV_MapRestart_f( void )
 		SV_AddServerCommand( client, "map_restart\n" );
 
 		// connect the client again, without the firstTime flag
-		denied = gvm.GameClientConnect( reason, sizeof( reason ), i, qfalse, isBot );
+		denied = gvm->GameClientConnect( reason, sizeof( reason ), i, qfalse, isBot );
 
 		if ( denied )
 		{
@@ -235,7 +235,7 @@ static void SV_MapRestart_f( void )
 	}
 
 	// run another frame to allow things to look at all the players
-	gvm.GameRunFrame( svs.time );
+	gvm->GameRunFrame( svs.time );
 	svs.time += FRAMETIME;
 
 	Cvar_Set( "sv_serverRestarting", "0" );

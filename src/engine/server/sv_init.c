@@ -548,9 +548,6 @@ void SV_TouchCGame( void )
 		FS_FCloseFile( f );
 	}
 
-	// LLVM - even if the server doesn't use llvm itself, it should still add the references.
-	FS_FOpenFileRead( "cgamellvm.bc", &f, qfalse );
-
 	if ( f )
 	{
 		FS_FCloseFile( f );
@@ -686,7 +683,7 @@ void SV_SpawnServer( const char *server )
 	// run a few frames to allow everything to settle
 	for ( i = 0; i < GAME_INIT_FRAMES; i++ )
 	{
-		gvm.GameRunFrame( svs.time );
+		gvm->GameRunFrame( svs.time );
 		SV_BotFrame( svs.time );
 		svs.time += FRAMETIME;
 	}
@@ -713,7 +710,7 @@ void SV_SpawnServer( const char *server )
 			}
 
 			// connect the client again
-			denied = gvm.GameClientConnect( reason, sizeof( reason ), i, qfalse, isBot );   // firstTime = qfalse
+			denied = gvm->GameClientConnect( reason, sizeof( reason ), i, qfalse, isBot );   // firstTime = qfalse
 
 			if ( denied )
 			{
@@ -743,14 +740,14 @@ void SV_SpawnServer( const char *server )
 					client->deltaMessage = -1;
 					client->nextSnapshotTime = svs.time; // generate a snapshot immediately
 
-					gvm.GameClientBegin( i );
+					gvm->GameClientBegin( i );
 				}
 			}
 		}
 	}
 
 	// run another frame to allow things to look at all the players
-	gvm.GameRunFrame( svs.time );
+	gvm->GameRunFrame( svs.time );
 	SV_BotFrame( svs.time );
 	svs.time += FRAMETIME;
 
@@ -834,6 +831,7 @@ void SV_Init( void )
 	Cvar_Get( "protocol", va( "%i", PROTOCOL_VERSION ), CVAR_SERVERINFO | CVAR_ARCHIVE );
 	sv_mapname = Cvar_Get( "mapname", "nomap", CVAR_SERVERINFO | CVAR_ROM );
 	Cvar_Get( "layout", "", CVAR_SERVERINFO | CVAR_ROM );
+	Cvar_Get( "g_layouts", "", 0 ); // FIXME
 	sv_privateClients = Cvar_Get( "sv_privateClients", "0", CVAR_SERVERINFO );
 	sv_hostname = Cvar_Get( "sv_hostname", "Unnamed Unvanquished Server", CVAR_SERVERINFO | CVAR_ARCHIVE );
 	sv_maxclients = Cvar_Get( "sv_maxclients", "20", CVAR_SERVERINFO | CVAR_LATCH );  // NERVE - SMF - changed to 20 from 8

@@ -148,7 +148,7 @@ namespace Cvar {
             CvarCommand() : Cmd::CmdBase(Cmd::CVAR) {
             }
 
-            void Run(const Cmd::Args& args) const override{
+            void Run(const Cmd::Args& args) const OVERRIDE {
                 CvarMap& cvars = GetCvarMap();
                 const std::string& name = args.Argv(0);
                 cvarRecord_t* var = cvars[name];
@@ -169,8 +169,14 @@ namespace Cvar {
         auto it = cvars.find(cvarName);
         //TODO: rom means the cvar should have been created before?
         if (it == cvars.end()) {
+            if (!Cmd::IsValidCvarName(cvarName)) {
+                Com_Printf(_("Invalid cvar name '%s'"), cvarName.c_str());
+                return;
+            }
+
             //The user creates a new cvar through a command.
-            cvars[cvarName] = new cvarRecord_t{value, value, flags | CVAR_USER_CREATED, "user created", nullptr, {}};
+            cvarRecord_t cvar{value, value, flags | CVAR_USER_CREATED, "user created", nullptr, {}};
+            cvars[cvarName] = new cvarRecord_t(cvar);
             Cmd::AddCommand(cvarName, cvarCommand, "cvar - user created");
             GetCCvar(cvarName, *cvars[cvarName]);
 
@@ -186,7 +192,7 @@ namespace Cvar {
                 Com_Printf("SetValueROM called on non-ROM cvar '%s'\n", cvarName.c_str());
             }
 
-            if (*cvar_cheats && cvar->flags & CHEAT) {
+            if (not *cvar_cheats && cvar->flags & CHEAT) {
                 Com_Printf(_("%s is cheat-protected.\n"), cvarName.c_str());
                 return;
             }
@@ -223,8 +229,9 @@ namespace Cvar {
         CvarMap& cvars = GetCvarMap();
         std::string result = "";
 
-        if (cvars.count(cvarName)) {
-            result = cvars[cvarName]->value;
+        auto iter = cvars.find(cvarName);
+        if (iter != cvars.end()) {
+            result = iter->second->value;
         }
 
         return result;
@@ -235,8 +242,14 @@ namespace Cvar {
 
         auto it = cvars.find(name);
         if (it == cvars.end()) {
+            if (!Cmd::IsValidCvarName(name)) {
+                Com_Printf(_("Invalid cvar name '%s'"), name.c_str());
+                return;
+            }
+
             //Create the cvar and parse its default value
-            cvars[name] = new cvarRecord_t{defaultValue, defaultValue, flags, description, proxy, {}};
+            cvarRecord_t cvar{defaultValue, defaultValue, flags, description, proxy, {}};
+            cvars[name] = new cvarRecord_t(cvar);
 
             GetCCvar(name, *cvars[name]);
             Cmd::AddCommand(name, cvarCommand, "cvar - " + std::move(description));
@@ -344,8 +357,9 @@ namespace Cvar {
     cvar_t* FindCCvar(const std::string& cvarName) {
         CvarMap& cvars = GetCvarMap();
 
-        if (cvars.count(cvarName)) {
-            return &cvars[cvarName]->ccvar;
+        auto iter = cvars.find(cvarName);
+        if (iter != cvars.end()) {
+            return &iter->second->ccvar;
         }
 
         return nullptr;
@@ -397,7 +411,7 @@ namespace Cvar {
             SetCmd(const std::string& name, int flags): Cmd::StaticCmd(name, Cmd::BASE, N_("sets the value of a cvar")), flags(flags) {
             }
 
-            void Run(const Cmd::Args& args) const override{
+            void Run(const Cmd::Args& args) const OVERRIDE {
                 int argc = args.Argc();
                 int nameIndex = 1;
                 bool unsafe = false;
@@ -426,7 +440,7 @@ namespace Cvar {
                 ::Cvar::AddFlags(name, flags);
             }
 
-            Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, const std::string& prefix) const override{
+            Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, const std::string& prefix) const OVERRIDE {
                 if (argNum == 1 or (argNum == 2 and args.Argv(1) == "-unsafe")) {
                     return ::Cvar::Complete(prefix);
                 }
@@ -447,7 +461,7 @@ namespace Cvar {
             ResetCmd(): Cmd::StaticCmd("reset", Cmd::BASE, N_("resets a variable")) {
             }
 
-            void Run(const Cmd::Args& args) const override {
+            void Run(const Cmd::Args& args) const OVERRIDE {
                 if (args.Argc() != 2) {
                     PrintUsage(args, _("<variable>"), "");
                     return;
@@ -456,15 +470,16 @@ namespace Cvar {
                 const std::string& name = args.Argv(1);
                 CvarMap& cvars = GetCvarMap();
 
-                if (cvars.count(name)) {
-                    cvarRecord_t* cvar = cvars[name];
+                auto iter = cvars.find(name);
+                if (iter != cvars.end()) {
+                    cvarRecord_t* cvar = iter->second;
                     ::Cvar::SetValue(name, cvar->resetValue);
                 } else {
                     Print(_("Cvar '%s' doesn't exist"), name.c_str());
                 }
             }
 
-            Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, const std::string& prefix) const override{
+            Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, const std::string& prefix) const OVERRIDE {
                 Q_UNUSED(args);
 
                 if (argNum == 1) {
@@ -481,7 +496,7 @@ namespace Cvar {
             ListCvars(): Cmd::StaticCmd("listCvars", Cmd::BASE, N_("lists variables")) {
             }
 
-            void Run(const Cmd::Args& args) const override {
+            void Run(const Cmd::Args& args) const OVERRIDE {
                 CvarMap& cvars = GetCvarMap();
 
                 bool raw;
@@ -552,7 +567,7 @@ namespace Cvar {
                 Print("%zu cvars", matches.size());
             }
 
-            Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, const std::string& prefix) const override{
+            Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, const std::string& prefix) const OVERRIDE {
                 Q_UNUSED(args);
 
                 //TODO handle -raw?

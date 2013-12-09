@@ -97,11 +97,12 @@ namespace Cmd {
 
     //Environment related private functions
     Environment* GetEnv();
+    void         ResetEnv();
 
     class DefaultEnvironment: public Environment {
         public:
-            virtual void Print(Str::StringRef text) override;
-            virtual void ExecuteAfter(Str::StringRef text, bool parseCvars) override;
+            virtual void Print(Str::StringRef text) OVERRIDE;
+            virtual void ExecuteAfter(Str::StringRef text, bool parseCvars) OVERRIDE;
     };
 }
 

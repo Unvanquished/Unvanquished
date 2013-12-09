@@ -35,6 +35,7 @@ Maryland 20850 USA.
 // sv_game.c -- interface to the game module
 
 #include "server.h"
+#include "../../common/Cvar.h"
 #include "../qcommon/crypto.h"
 
 // these functions must be used instead of pointer arithmetic, because
@@ -334,8 +335,7 @@ SV_LocateGameData
 
 ===============
 */
-#ifdef QVM_COMPAT
-void SV_LocateGameData( sharedEntity_t *gEnts, int numGEntities, int sizeofGEntity_t,
+void SV_LocateGameDataQVM( sharedEntity_t *gEnts, int numGEntities, int sizeofGEntity_t,
                         playerState_t *clients, int sizeofGameClient )
 {
 	sv.gentities = gEnts;
@@ -345,16 +345,16 @@ void SV_LocateGameData( sharedEntity_t *gEnts, int numGEntities, int sizeofGEnti
 	sv.gameClients = clients;
 	sv.gameClientSize = sizeofGameClient;
 }
-#else
-void SV_LocateGameData( const NaCl::SharedMemoryPtr& shmRegion, int numGEntities, int sizeofGEntity_t,
+
+void SV_LocateGameDataNaCl( const NaCl::SharedMemoryPtr& shmRegion, int numGEntities, int sizeofGEntity_t,
                         int sizeofGameClient )
 {
 	if ( !shmRegion )
-		Com_Error( ERR_DROP, "SV_LocateGameData: Failed to map shared memory region" );
+		Com_Error( ERR_DROP, "SV_LocateGameDataNaCl: Failed to map shared memory region" );
 	if ( numGEntities < 0 || sizeofGEntity_t < 0 || sizeofGameClient < 0 )
-		Com_Error( ERR_DROP, "SV_LocateGameData: Invalid game data parameters" );
+		Com_Error( ERR_DROP, "SV_LocateGameDataNaCl: Invalid game data parameters" );
 	if ( shmRegion.GetSize() < numGEntities * sizeofGEntity_t + sv_maxclients->integer * sizeofGameClient )
-		Com_Error( ERR_DROP, "SV_LocateGameData: Shared memory region too small" );
+		Com_Error( ERR_DROP, "SV_LocateGameDataNaCl: Shared memory region too small" );
 
 	char* base = static_cast<char*>(shmRegion.Get());
 	sv.gentities = reinterpret_cast<sharedEntity_t*>(base);
@@ -364,7 +364,6 @@ void SV_LocateGameData( const NaCl::SharedMemoryPtr& shmRegion, int numGEntities
 	sv.gameClients = reinterpret_cast<playerState_t*>(base + MAX_GENTITIES * sizeofGEntity_t);
 	sv.gameClientSize = sizeofGameClient;
 }
-#endif
 
 /*
 ===============
@@ -435,7 +434,7 @@ SV_GameBinaryMessageReceived
 */
 void SV_GameBinaryMessageReceived( int cno, const char *buf, int buflen, int commandTime )
 {
-	gvm.GameMessageRecieved( cno, buf, buflen, commandTime );
+	gvm->GameMessageRecieved( cno, buf, buflen, commandTime );
 }
 
 //==============================================
@@ -474,7 +473,6 @@ static void SV_GetTimeString( char *buffer, int length, const char *format, cons
 	}
 }
 
-#ifdef QVM_COMPAT
 intptr_t SV_GameSystemCalls( intptr_t *args )
 {
 	switch ( args[ 0 ] )
@@ -551,7 +549,7 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 			return FS_GetFileList( ( const char * ) VMA( 1 ), ( const char * ) VMA( 2 ), ( char * ) VMA( 3 ), args[ 4 ] );
 
 		case G_LOCATE_GAME_DATA:
-			SV_LocateGameData( ( sharedEntity_t* ) VMA( 1 ), args[ 2 ], args[ 3 ], ( playerState_t* ) VMA( 4 ), args[ 5 ] );
+			SV_LocateGameDataQVM( ( sharedEntity_t* ) VMA( 1 ), args[ 2 ], args[ 3 ], ( playerState_t* ) VMA( 4 ), args[ 5 ] );
 			return 0;
 
 		case G_DROP_CLIENT:
@@ -787,7 +785,6 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 			exit(1); // silence warning, and make sure this behaves as expected, if Com_Error's behavior changes
 	}
 }
-#endif
 
 /*
 ===============
@@ -798,13 +795,14 @@ Called every time a map changes
 */
 void SV_ShutdownGameProgs( void )
 {
-	if ( !gvm.IsActive() )
+	if ( !gvm )
 	{
 		return;
 	}
 
-	gvm.GameShutdown( qfalse );
-	gvm.Free();
+	gvm->GameShutdown( qfalse );
+	delete gvm;
+    gvm = nullptr;
 
 	if ( sv_newGameShlib->string[ 0 ] )
 	{
@@ -838,7 +836,40 @@ static void SV_InitGameVM( qboolean restart )
 
 	// use the current msec count for a random seed
 	// init for this gamestate
-	gvm.GameInit( svs.time, Com_Milliseconds(), restart );
+	gvm->GameInit( svs.time, Com_Milliseconds(), restart );
+}
+
+/*
+===================
+SV_CreateGameVM
+
+Load a QVM vm or fails and try to load a NaCl vm
+===================
+*/
+static Cvar::Cvar<bool> naclGame("server.vm.useNaCl", "bool - what VM ABI should be used for the game VM (0 = QVM, 1 = NaCl)", Cvar::NONE, false);
+GameVM* SV_CreateGameVM( void )
+{
+	if ( naclGame.Get() )
+	{
+		NaClGameVM* nacl = new NaClGameVM();
+
+		if (nacl->Start()) {
+			return nacl;
+		}
+
+		delete nacl;
+	} else {
+		vm_t* vm = VM_Create( "game", SV_GameSystemCalls, ( vmInterpret_t ) vm_game->integer );
+
+		if ( vm )
+		{
+			return new QVMGameVM(vm);
+		}
+	}
+
+	Com_Error(ERR_DROP, "Couldn't load the game VM");
+
+	return nullptr;
 }
 
 /*
@@ -850,24 +881,18 @@ Called on a map_restart, but not on a map change
 */
 void SV_RestartGameProgs( void )
 {
-	if ( !gvm.IsActive() )
+	if ( !gvm )
 	{
 		return;
 	}
 
-	gvm.GameShutdown( qtrue );
+	gvm->GameShutdown( qtrue );
 
-	gvm.Free();
+	delete gvm;
+	gvm = nullptr;
 	Cmd_RemoveCommandsByFunc( SV_GameCommandHandler );
 
-	// Check ABI version
-#ifdef QVM_COMPAT
-	gvm.Create( "game", SV_GameSystemCalls, ( vmInterpret_t ) vm_game->integer );
-#else
-	int version = gvm.Create( "game", ( VM::Type ) vm_game->integer );
-	if ( version != GAME_API_VERSION )
-		Com_Error( ERR_DROP, "Game ABI mismatch, expected %d, got %d", GAME_API_VERSION, version );
-#endif
+	gvm = SV_CreateGameVM();
 
 	SV_InitGameVM( qtrue );
 }
@@ -885,33 +910,9 @@ void SV_InitGameProgs( void )
 	sv.num_tags = 0;
 
 	// load the game module
-	// Check ABI version
-#ifdef QVM_COMPAT
-	gvm.Create( "game", SV_GameSystemCalls, ( vmInterpret_t ) vm_game->integer );
-#else
-	int version = gvm.Create( "game", ( VM::Type ) vm_game->integer );
-	if ( version != GAME_API_VERSION )
-		Com_Error( ERR_DROP, "Game ABI mismatch, expected %d, got %d", GAME_API_VERSION, version );
-#endif
+	gvm = SV_CreateGameVM();
 
 	SV_InitGameVM( qfalse );
-}
-
-/*
-====================
-SV_GameCommand
-
-See if the current console command is claimed by the game
-====================
-*/
-qboolean SV_GameCommand( void )
-{
-	if ( sv.state != SS_GAME )
-	{
-		return qfalse;
-	}
-
-	return gvm.GameConsoleCommand();
 }
 
 /*
@@ -921,7 +922,7 @@ SV_GameCommandHandler
 */
 void SV_GameCommandHandler( void )
 {
-	gvm.GameConsoleCommand();
+	gvm->GameConsoleCommand();
 }
 
 /*
@@ -968,25 +969,124 @@ qboolean SV_GetTag( int clientNum, int tagFileNumber, const char *tagname, orien
 #endif
 }
 
-void GameVM::GameInit(int levelTime, int randomSeed, qboolean restart)
+GameVM::~GameVM()
 {
-#ifdef QVM_COMPAT
+}
+
+QVMGameVM::QVMGameVM(vm_t* vm): vm(vm)
+{
+}
+
+QVMGameVM::~QVMGameVM()
+{
+    VM_Free(vm);
+}
+
+void QVMGameVM::GameInit(int levelTime, int randomSeed, qboolean restart)
+{
 	VM_Call( vm, GAME_INIT, levelTime, randomSeed, restart );
-#else
+}
+
+void QVMGameVM::GameShutdown(qboolean restart)
+{
+	VM_Call( vm, GAME_SHUTDOWN, qfalse );
+}
+
+qboolean QVMGameVM::GameClientConnect(char* reason, size_t size, int clientNum, qboolean firstTime, qboolean isBot)
+{
+	const char* denied = reinterpret_cast<const char*>( VM_Call( vm, GAME_CLIENT_CONNECT, clientNum, firstTime, isBot ) );
+	if ( denied )
+		Q_strncpyz( reason, denied, size );
+	return denied != NULL;
+}
+
+void QVMGameVM::GameClientBegin(int clientNum)
+{
+	VM_Call( vm, GAME_CLIENT_BEGIN, clientNum );
+}
+
+void QVMGameVM::GameClientUserInfoChanged(int clientNum)
+{
+	VM_Call( vm, GAME_CLIENT_USERINFO_CHANGED, clientNum );
+}
+
+void QVMGameVM::GameClientDisconnect(int clientNum)
+{
+	VM_Call( vm, GAME_CLIENT_DISCONNECT, clientNum );
+}
+
+void QVMGameVM::GameClientCommand(int clientNum)
+{
+	VM_Call( vm, GAME_CLIENT_COMMAND, clientNum );
+}
+
+void QVMGameVM::GameClientThink(int clientNum)
+{
+	VM_Call( vm, GAME_CLIENT_THINK, clientNum );
+}
+
+void QVMGameVM::GameRunFrame(int levelTime)
+{
+	VM_Call( vm, GAME_RUN_FRAME, levelTime );
+}
+
+qboolean QVMGameVM::GameConsoleCommand()
+{
+	return VM_Call( vm, GAME_CONSOLE_COMMAND );
+}
+
+qboolean QVMGameVM::GameSnapshotCallback(int entityNum, int clientNum)
+{
+	Com_Error(ERR_DROP, "GameVM::GameSnapshotCallback not implemented");
+}
+
+void QVMGameVM::BotAIStartFrame(int levelTime)
+{
+	Com_Error(ERR_DROP, "GameVM::BotAIStartFrame not implemented");
+}
+
+void QVMGameVM::GameMessageRecieved(int clientNum, const char *buffer, int bufferSize, int commandTime)
+{
+	//Com_Error(ERR_DROP, "GameVM::GameMessageRecieved not implemented");
+}
+
+NaClGameVM::NaClGameVM()
+{
+}
+
+bool NaClGameVM::Start()
+{
+    int version = this->Create( "game", ( VM::Type ) vm_game->integer );
+
+    if (version < 0)
+    {
+        return false;
+    }
+
+	if ( version != GAME_API_VERSION ) {
+		Com_Error( ERR_DROP, "Game ABI mismatch, expected %d, got %d", GAME_API_VERSION, version );
+    }
+
+    return true;
+}
+
+NaClGameVM::~NaClGameVM()
+{
+    this->Free();
+}
+
+void NaClGameVM::GameInit(int levelTime, int randomSeed, qboolean restart)
+{
 	RPC::Writer input;
 	input.WriteInt(GAME_INIT);
 	input.WriteInt(levelTime);
 	input.WriteInt(randomSeed);
 	input.WriteInt(restart);
 	DoRPC(input);
-#endif
 }
 
-void GameVM::GameShutdown(qboolean restart)
+void NaClGameVM::GameShutdown(qboolean restart)
 {
-#ifdef QVM_COMPAT
-	VM_Call( vm, GAME_SHUTDOWN, qfalse );
-#else
 	RPC::Writer input;
 	input.WriteInt(GAME_SHUTDOWN);
 	input.WriteInt(restart);
@@ -996,18 +1096,11 @@ void GameVM::GameShutdown(qboolean restart)
 	DoRPC(input, true);
 
 	// Release the shared memory region
-	shmRegion.Close();
-#endif
+	this->shmRegion.Close();
 }
 
-qboolean GameVM::GameClientConnect(char* reason, size_t size, int clientNum, qboolean firstTime, qboolean isBot)
+qboolean NaClGameVM::GameClientConnect(char* reason, size_t size, int clientNum, qboolean firstTime, qboolean isBot)
 {
-#ifdef QVM_COMPAT
-	const char* denied = reinterpret_cast<const char*>( VM_Call( vm, GAME_CLIENT_CONNECT, clientNum, firstTime, isBot ) );
-	if ( denied )
-		Q_strncpyz( reason, denied, size );
-	return denied != NULL;
-#else
 	RPC::Writer input;
 	input.WriteInt(GAME_CLIENT_CONNECT);
 	input.WriteInt(clientNum);
@@ -1018,110 +1111,80 @@ qboolean GameVM::GameClientConnect(char* reason, size_t size, int clientNum, qbo
 	if (denied)
 		Q_strncpyz(reason, output.ReadString(), size);
 	return denied;
-#endif
 }
 
-void GameVM::GameClientBegin(int clientNum)
+void NaClGameVM::GameClientBegin(int clientNum)
 {
-#ifdef QVM_COMPAT
-	VM_Call( vm, GAME_CLIENT_BEGIN, clientNum );
-#else
 	RPC::Writer input;
 	input.WriteInt(GAME_CLIENT_BEGIN);
 	input.WriteInt(clientNum);
 	DoRPC(input);
-#endif
 }
 
-void GameVM::GameClientUserInfoChanged(int clientNum)
+void NaClGameVM::GameClientUserInfoChanged(int clientNum)
 {
-#ifdef QVM_COMPAT
-	VM_Call( vm, GAME_CLIENT_USERINFO_CHANGED, clientNum );
-#else
 	RPC::Writer input;
 	input.WriteInt(GAME_CLIENT_USERINFO_CHANGED);
 	input.WriteInt(clientNum);
 	DoRPC(input);
-#endif
 }
 
-void GameVM::GameClientDisconnect(int clientNum)
+void NaClGameVM::GameClientDisconnect(int clientNum)
 {
-#ifdef QVM_COMPAT
-	VM_Call( vm, GAME_CLIENT_DISCONNECT, clientNum );
-#else
 	RPC::Writer input;
 	input.WriteInt(GAME_CLIENT_DISCONNECT);
 	input.WriteInt(clientNum);
 	DoRPC(input);
-#endif
 }
 
-void GameVM::GameClientCommand(int clientNum)
+void NaClGameVM::GameClientCommand(int clientNum)
 {
-#ifdef QVM_COMPAT
-	VM_Call( vm, GAME_CLIENT_COMMAND, clientNum );
-#else
 	RPC::Writer input;
 	input.WriteInt(GAME_CLIENT_COMMAND);
 	input.WriteInt(clientNum);
 	DoRPC(input);
-#endif
 }
 
-void GameVM::GameClientThink(int clientNum)
+void NaClGameVM::GameClientThink(int clientNum)
 {
-#ifdef QVM_COMPAT
-	VM_Call( vm, GAME_CLIENT_THINK, clientNum );
-#else
 	RPC::Writer input;
 	input.WriteInt(GAME_CLIENT_THINK);
 	input.WriteInt(clientNum);
 	DoRPC(input);
-#endif
 }
 
-void GameVM::GameRunFrame(int levelTime)
+void NaClGameVM::GameRunFrame(int levelTime)
 {
-#ifdef QVM_COMPAT
-	VM_Call( vm, GAME_RUN_FRAME, levelTime );
-#else
 	RPC::Writer input;
 	input.WriteInt(GAME_RUN_FRAME);
 	input.WriteInt(levelTime);
 	DoRPC(input);
-#endif
 }
 
-qboolean GameVM::GameConsoleCommand()
+qboolean NaClGameVM::GameConsoleCommand()
 {
-#ifdef QVM_COMPAT
-	return VM_Call( vm, GAME_CONSOLE_COMMAND );
-#else
 	RPC::Writer input;
 	input.WriteInt(GAME_CONSOLE_COMMAND);
 	RPC::Reader output = DoRPC(input);
 	return output.ReadInt();
-#endif
 }
 
-qboolean GameVM::GameSnapshotCallback(int entityNum, int clientNum)
+qboolean NaClGameVM::GameSnapshotCallback(int entityNum, int clientNum)
 {
 	Com_Error(ERR_DROP, "GameVM::GameSnapshotCallback not implemented");
 }
 
-void GameVM::BotAIStartFrame(int levelTime)
+void NaClGameVM::BotAIStartFrame(int levelTime)
 {
 	Com_Error(ERR_DROP, "GameVM::BotAIStartFrame not implemented");
 }
 
-void GameVM::GameMessageRecieved(int clientNum, const char *buffer, int bufferSize, int commandTime)
+void NaClGameVM::GameMessageRecieved(int clientNum, const char *buffer, int bufferSize, int commandTime)
 {
 	//Com_Error(ERR_DROP, "GameVM::GameMessageRecieved not implemented");
 }
 
-#ifndef QVM_COMPAT
-void GameVM::Syscall(int index, RPC::Reader& inputs, RPC::Writer& outputs)
+void NaClGameVM::Syscall(int index, RPC::Reader& inputs, RPC::Writer& outputs)
 {
 	switch (index) {
 	case G_PRINT:
@@ -1253,7 +1316,7 @@ void GameVM::Syscall(int index, RPC::Reader& inputs, RPC::Writer& outputs)
 		int numEntities = inputs.ReadInt();
 		int entitySize = inputs.ReadInt();
 		int playerSize = inputs.ReadInt();
-		SV_LocateGameData(shmRegion, numEntities, entitySize, playerSize);
+		SV_LocateGameDataNaCl(shmRegion, numEntities, entitySize, playerSize);
 		break;
 	}
 
@@ -1752,4 +1815,3 @@ void GameVM::Syscall(int index, RPC::Reader& inputs, RPC::Writer& outputs)
 		Com_Error(ERR_DROP, "Bad game system trap: %d", index);
 	}
 }
-#endif

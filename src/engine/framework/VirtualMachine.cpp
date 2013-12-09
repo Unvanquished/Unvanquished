@@ -38,51 +38,13 @@ Maryland 20850 USA.
 
 namespace VM {
 
-static NaCl::Module TryLoad(const char* name, const char* path, const char* game, Type type, int& abiVersion)
-{
-	bool debug = Cvar_Get("vm_debug", "0", CVAR_INIT)->integer;
-	NaCl::Module out;
-	if (type == TYPE_NATIVE) {
-		char exe[MAX_QPATH];
-		Com_sprintf(exe, sizeof(exe), "%s%s", name, EXE_EXT);
-		out = NaCl::LoadModule(FS_BuildOSPath(path, game, exe), nullptr, debug);
-	} else if (type == TYPE_NACL) {
-		char nexe[MAX_QPATH];
-		char sel_ldr[MAX_QPATH];
-		char irt[MAX_QPATH];
-#ifdef __linux__
-		char bootstrap[MAX_QPATH];
-#else
-		const char* bootstrap = nullptr;
-#endif
-		Com_sprintf(nexe, sizeof(nexe), "%s-%s.nexe", name, ARCH_STRING);
-		Com_sprintf(sel_ldr, sizeof(sel_ldr), "%s/sel_ldr%s", path, EXE_EXT);
-		Com_sprintf(irt, sizeof(irt), "%s/irt_core-%s.nexe", path, ARCH_STRING);
-#ifdef __linux__
-		Com_sprintf(bootstrap, sizeof(bootstrap), "%s/nacl_helper_bootstrap%s", path, EXE_EXT);
-#endif
-		NaCl::LoaderParams params = {sel_ldr, irt, bootstrap};
-		out = NaCl::LoadModule(FS_BuildOSPath(path, game, nexe), &params, debug);
-	} else
-		Com_Error(ERR_DROP, "Invalid VM type");
-
-	if (debug && out)
-		Com_Printf("Waiting for GDB connection on localhost:4014\n");
-
-	// Read the ABI version from the root socket.
-	// If this fails, we assume the remote process failed to start
-	std::vector<char> buffer;
-	if (!out.GetRootSocket().RecvMsg(buffer) || buffer.size() != sizeof(int))
-		return NaCl::Module();
-	abiVersion = *reinterpret_cast<int*>(buffer.data());
-
-	return out;
-}
-
+//TODO: error handling?
 int VMBase::Create(const char* name, Type type)
 {
-	if (module)
-		Com_Error(ERR_FATAL, "Attempting to re-create an already-loaded VM");
+	if (module) {
+		Com_Printf(S_ERROR "Attempting to re-create an already-loaded VM");
+		return -1;
+	}
 
 	// TODO: Proper interaction with FS code
 	const char* gameDir = Cvar_VariableString("fs_game");
@@ -92,7 +54,9 @@ int VMBase::Create(const char* name, Type type)
 	if (type == TYPE_NATIVE) {
 		char exe[MAX_QPATH];
 		Com_sprintf(exe, sizeof(exe), "%s%s", name, EXE_EXT);
-		module = NaCl::LoadModule(FS_BuildOSPath(libPath, gameDir, exe), nullptr, debug);
+		const char* path = FS_BuildOSPath(libPath, gameDir, exe);
+		Com_Printf("Trying to load native module %s\n", path);
+		module = NaCl::LoadModule(path, nullptr, debug);
 	} else if (type == TYPE_NACL) {
 		char nexe[MAX_QPATH];
 		char sel_ldr[MAX_QPATH];
@@ -107,12 +71,18 @@ int VMBase::Create(const char* name, Type type)
 		Com_sprintf(sel_ldr, sizeof(sel_ldr), "%s/sel_ldr%s", libPath, EXE_EXT);
 		Com_sprintf(irt, sizeof(irt), "%s/irt_core-%s.nexe", libPath, ARCH_STRING);
 		NaCl::LoaderParams params = {sel_ldr, irt, bootstrap};
-		module = NaCl::LoadModule(FS_BuildOSPath(libPath, gameDir, nexe), &params, debug);
-	} else
-		Com_Error(ERR_DROP, "Invalid VM type");
+		const char* path = FS_BuildOSPath(libPath, gameDir, nexe);
+		Com_Printf("Trying to load NaCl module %s\n", path);
+		module = NaCl::LoadModule(path, &params, debug);
+	} else {
+		Com_Printf(S_ERROR "Invalid VM type");
+		return -1;
+	}
 
-	if (!module)
-		Com_Error(ERR_DROP, "Couldn't load VM %s", name);
+	if (!module) {
+		Com_Printf(S_ERROR "Couldn't load VM %s", name);
+		return -1;
+	}
 
 	if (debug)
 		Com_Printf("Waiting for GDB connection on localhost:4014\n");
@@ -120,8 +90,11 @@ int VMBase::Create(const char* name, Type type)
 	// Read the ABI version from the root socket.
 	// If this fails, we assume the remote process failed to start
 	std::vector<char> buffer;
-	if (!module.GetRootSocket().RecvMsg(buffer) || buffer.size() != sizeof(int))
-		Com_Error(ERR_DROP, "Couldn't load VM %s", name);
+	if (!module.GetRootSocket().RecvMsg(buffer) || buffer.size() != sizeof(int)) {
+		Com_Printf(S_ERROR "The '%s' VM did not start.", name);
+		return -1;
+	}
+	Com_Printf("Loaded module with the NaCl ABI");
 	return *reinterpret_cast<int*>(buffer.data());
 }
 

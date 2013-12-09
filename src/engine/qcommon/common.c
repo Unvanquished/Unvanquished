@@ -160,7 +160,9 @@ int QDECL VPRINTF_LIKE(1) Com_VPrintf( const char *fmt, va_list argptr )
 
 	//Build the message
 	char msg[MAXPRINTMSG];
+	memset( msg, 0, sizeof( msg ) );
 	Q_vsnprintf(msg, sizeof(msg), fmt, argptr);
+	msg[ MAXPRINTMSG - 1 ] = '\0';
 
 	//Remove a trailing newline, this is handled by Log::*
 	int len = strlen(msg);
@@ -169,11 +171,7 @@ int QDECL VPRINTF_LIKE(1) Com_VPrintf( const char *fmt, va_list argptr )
 		msg[len - 1] = '\0';
 	}
 
-	static const int logTargets = (1 << Log::GRAPHICAL_CONSOLE) | (1 << Log::TTY_CONSOLE) | (1 << Log::CRASHLOG) | (1 << Log::HUD) | (1 << Log::LOGFILE);
-	//TODO: add information about the time
-	//TODO: re-implement rcon feedback
-	Log::Event event{0, msg};
-	Log::Dispatch(event, logTargets);
+	Cmd::GetEnv()->Print( msg );
 
 #ifdef SMP
 	SDL_UnlockMutex( lock );
@@ -1946,9 +1944,12 @@ void Com_Init( char *commandLine )
 
 	Trans_Init();
 
+#ifndef DEDICATED
 	Cmd::BufferCommandText("exec default.cfg");
+#endif
 
 #if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
+
 	// skip the q3config.cfg if "safe" is on the command line
 	if ( !Com_SafeMode() )
 	{
@@ -2101,11 +2102,10 @@ void Com_Init( char *commandLine )
 	Com_RandomBytes( ( byte * )&qport, sizeof( int ) );
 	Netchan_Init( qport & 0xffff );
 
-#ifdef QVM_COMPAT
 	VM_Init();
 	// Ignore any errors
 	VM_Forced_Unload_Start();
-#endif
+
 	SV_Init();
 	Console::LoadHistory();
 

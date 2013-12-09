@@ -20,9 +20,7 @@ include( CMakeDependentOption )
 set( MSVC_INCREMENTAL_DEFAULT ON )
 
 # Default to Release builds. To use system CFLAGS only (for distro builds), set CMAKE_BUILD_TYPE to None
-if( NOT CMAKE_BUILD_TYPE )
-  set( CMAKE_BUILD_TYPE "Release" )
-endif()
+set( CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel." )
 
 project( Daemon C CXX )
 
@@ -32,14 +30,13 @@ project( Daemon C CXX )
 
 option( ENABLE_LTO "Use link-time optimization for release builds" 0 )
 option( ENABLE_HARDENING "Use stack protection and other hardening flags" 0 )
-option( ENABLE_QVM_COMPAT "Configure the engine to use QVMs instead of NaCl" 1 )
 
 option( BUILD_CLIENT "Build Daemon client" 1 )
 option( BUILD_SERVER "Build Daemonded server" 1 )
-cmake_dependent_option( BUILD_GAME_NACL_NATIVE "Build native NaCl game logic " 1 "NOT ENABLE_QVM_COMPAT" 0 )
-cmake_dependent_option( BUILD_GAME_NACL "Build NaCl game logic" 1 "NOT ENABLE_QVM_COMPAT" 0 )
-cmake_dependent_option( BUILD_GAME_NATIVE "Build native game logic " 1 ENABLE_QVM_COMPAT 0 )
-cmake_dependent_option( BUILD_GAME_QVM "Build QVM game logic" 1 ENABLE_QVM_COMPAT 0 )
+option( BUILD_GAME_NACL_NATIVE "Build native NaCl game logic" 0)
+option( BUILD_GAME_NACL "Build NaCl game logic" 0)
+option( BUILD_GAME_QVM_NATIVE "Build native game logic " 1)
+option( BUILD_GAME_QVM "Build QVM game logic" 1)
 option( BUILD_TTY_CLIENT "Build Daemon headless client" 1 )
 cmake_dependent_option( BUILD_OLD_RENDERER "Build old renderer library" 1 BUILD_CLIENT 0 )
 cmake_dependent_option( BUILD_NEW_RENDERER "Build new renderer library" 1 BUILD_CLIENT 0 )
@@ -57,8 +54,6 @@ option( USE_PEDANTIC "Tell the compiler to be pedantic" 0 )
 set( NACL_SDK_PATH "" CACHE PATH "Path to native client SDK" )
 if( BUILD_GAME_NACL AND NOT NACL_SDK_PATH )
   message( SEND_ERROR "You need to set the path to the native client SDK" )
-else()
-  mark_as_advanced( NACL_SDK_PATH )
 endif()
 
 ################################################################################
@@ -92,14 +87,14 @@ include(CheckCXXCompilerFlag)
 
 # Set flag without checking, optional argument specifies build type
 macro( set_c_flag FLAG )
-  if( ARGC GREATER 1 )
+  if( ${ARGC} GREATER 1 )
     set( CMAKE_C_FLAGS_${ARGV1} "${CMAKE_C_FLAGS_${ARGV1}} ${FLAG}" )
   else()
     set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${FLAG}" )
   endif()
 endmacro()
 macro( set_cxx_flag FLAG )
-  if( ARGC GREATER 1 )
+  if( ${ARGC} GREATER 1 )
     set( CMAKE_CXX_FLAGS_${ARGV1} "${CMAKE_CXX_FLAGS_${ARGV1}} ${FLAG}" )
   else()
     set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${FLAG}" )
@@ -140,6 +135,7 @@ macro( try_linker_flag PROP FLAG )
 endmacro()
 
 if( MSVC )
+  set_c_cxx_flag( "/MP" )
   set_c_cxx_flag( "/fp:fast" )
   set_c_cxx_flag( "/d2Zi+" RELWITHDEBINFO )
   if( ARCH STREQUAL "x86" )
@@ -270,11 +266,6 @@ if( APPLE )
   set( CMAKE_BUILD_WITH_INSTALL_RPATH ON )
 endif()
 
-# QVM compatibility
-if( ENABLE_QVM_COMPAT )
-  add_definitions( -DQVM_COMPAT )
-endif()
-
 # Mumble link support
 if( USE_MUMBLE )
   add_definitions( -DUSE_MUMBLE )
@@ -294,16 +285,16 @@ set( TOOLS_DIR ${MOUNT_DIR}/tools )
 set( LCC_DIR ${TOOLS_DIR}/lcc )
 set( LIB_DIR ${MOUNT_DIR}/libs )
 if( CMAKE_HOST_WIN32 )
-  set( PNACL_TOOLCHAIN ${NACL_SDK_PATH}/toolchain/win_x86_pnacl/newlib/bin )
+  set( PNACL_TOOLCHAIN ${NACL_SDK_PATH}/toolchain/win_pnacl/bin )
   set( PNACL_BIN_EXT ".bat" )
 elseif( CMAKE_HOST_APPLE )
-  set( PNACL_TOOLCHAIN ${NACL_SDK_PATH}/toolchain/mac_x86_pnacl/newlib/bin )
+  set( PNACL_TOOLCHAIN ${NACL_SDK_PATH}/toolchain/mac_pnacl/bin )
   set( PNACL_BIN_EXT "" )
 elseif( CMAKE_HOST_SYSTEM_NAME MATCHES "Linux" )
   if( CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "x86_64" OR CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "amd64" )
-    set( PNACL_TOOLCHAIN ${NACL_SDK_PATH}/toolchain/linux_x86_pnacl/newlib/bin64 )
+    set( PNACL_TOOLCHAIN ${NACL_SDK_PATH}/toolchain/linux_pnacl/bin64 )
   else()
-    set( PNACL_TOOLCHAIN ${NACL_SDK_PATH}/toolchain/linux_x86_pnacl/newlib/bin )
+    set( PNACL_TOOLCHAIN ${NACL_SDK_PATH}/toolchain/linux_pnacl/bin )
   endif()
   set( PNACL_BIN_EXT "" )
 endif()
@@ -370,13 +361,6 @@ set( SHAREDLIST
   ${ENGINE_DIR}/qcommon/q_unicode.h
   ${ENGINE_DIR}/qcommon/unicode_data.h
   ${ENGINE_DIR}/qcommon/logging.h
-)
-
-# Hack to allow compiling shared files as C
-set( SHAREDLIST_HACK
-  ${ENGINE_DIR}/qcommon/./q_shared.c
-  ${ENGINE_DIR}/qcommon/./q_unicode.c
-  ${ENGINE_DIR}/qcommon/./q_math.c
 )
 
 set( RENDERERLIST
@@ -516,6 +500,8 @@ set( ENGINELIST
   ${ENGINE_DIR}/framework/ConsoleHistory.h
   ${ENGINE_DIR}/framework/LogSystem.cpp
   ${ENGINE_DIR}/framework/LogSystem.h
+  ${ENGINE_DIR}/framework/VirtualMachine.cpp
+  ${ENGINE_DIR}/framework/VirtualMachine.h
   ${ENGINE_DIR}/qcommon/cm_load.c
   ${ENGINE_DIR}/qcommon/cm_trisoup.c
   ${ENGINE_DIR}/qcommon/cm_patch.c
@@ -546,31 +532,22 @@ set( ENGINELIST
   ${ENGINE_DIR}/qcommon/net_ip.c
   ${ENGINE_DIR}/qcommon/parse.c
   ${ENGINE_DIR}/qcommon/translation.cpp
+  ${ENGINE_DIR}/qcommon/vm.c
+  ${ENGINE_DIR}/qcommon/vm_interpreted.c
+  ${ENGINE_DIR}/qcommon/vm_local.h
+  ${ENGINE_DIR}/qcommon/vm_traps.h
   ${ENGINE_DIR}/sys/sys_main.c
   ${ENGINE_DIR}/sys/con_log.c
   ${ENGINE_DIR}/qcommon/qcommon.h
   ${ENGINE_DIR}/qcommon/surfaceflags.h
 )
 
-if( ENABLE_QVM_COMPAT )
-  set( ENGINELIST ${ENGINELIST}
-    ${ENGINE_DIR}/qcommon/vm.c
-    ${ENGINE_DIR}/qcommon/vm_interpreted.c
-    ${ENGINE_DIR}/qcommon/vm_local.h
-    ${ENGINE_DIR}/qcommon/vm_traps.h
-  )
-  if( ARCH STREQUAL "x86" OR ARCH STREQUAL "x86_64" )
-    set( ENGINELIST ${ENGINELIST} ${ENGINE_DIR}/qcommon/vm_x86.c )
-    if( MSVC AND CMAKE_CL_64 )
-      add_custom_command( OUTPUT vm_x86_64.obj COMMAND ml64 ARGS /c "${ENGINE_DIR}/qcommon/vm_x86_64.asm" MAIN_DEPENDENCY ${ENGINE_DIR}/qcommon/vm_x86_64.asm )
-      set( ENGINELIST ${ENGINELIST} vm_x86_64.obj )
-    endif()
+if( ARCH STREQUAL "x86" OR ARCH STREQUAL "x86_64" )
+  set( ENGINELIST ${ENGINELIST} ${ENGINE_DIR}/qcommon/vm_x86.c )
+  if( MSVC AND CMAKE_CL_64 )
+    add_custom_command( OUTPUT vm_x86_64.obj COMMAND ml64 ARGS /c "${ENGINE_DIR}/qcommon/vm_x86_64.asm" MAIN_DEPENDENCY ${ENGINE_DIR}/qcommon/vm_x86_64.asm )
+    set( ENGINELIST ${ENGINELIST} vm_x86_64.obj )
   endif()
-else()
-  set( ENGINELIST ${ENGINELIST}
-    ${ENGINE_DIR}/framework/VirtualMachine.cpp
-    ${ENGINE_DIR}/framework/VirtualMachine.h
-  )
 endif()
 
 if( WIN32 )
@@ -945,7 +922,7 @@ set( NACLLIST_MODULE
 )
 
 # HACK: Force the compilation of EVERYTHING in C++
-file( GLOB_RECURSE EVERYTHING_C "src/engine/*.c" )
+file( GLOB_RECURSE EVERYTHING_C "src/engine/*.c" "src/gamelogic/*.c" )
 set_source_files_properties( ${EVERYTHING_C} PROPERTIES LANGUAGE CXX )
 
 ################################################################################
@@ -1054,9 +1031,7 @@ else()
   add_definitions( -DNACL_BUILD_SUBARCH=32 )
 endif()
 include_directories( ${LIB_DIR}/nacl )
-if( NOT ENABLE_QVM_COMPAT )
-  set( LIBSRC_ENGINE ${LIBSRC_ENGINE} ${NACLLIST_NATIVE} )
-endif()
+set( LIBSRC_ENGINE ${LIBSRC_ENGINE} ${NACLLIST_NATIVE} )
 
 # SDL, required for all targets on win32 because of iconv
 if( BUILD_CLIENT OR BUILD_NEW_RENDERER OR BUILD_OLD_RENDERER OR ( WIN32 AND (BUILD_TTY_CLIENT OR BUILD_SERVER ) ) )
@@ -1239,7 +1214,7 @@ endif()
 include( CMakeParseArguments )
 function( GAMEMODULE )
   # ParseArguments setup
-  set( oneValueArgs NAME OUTPUT_DIR )
+  set( oneValueArgs NAME OUTPUT_DIR HAS_NACL )
   set( multiValueArgs COMPILE_DEF FILES NACL_FILES NATIVE_FILES QVM_FILES QVM_ASM )
   cmake_parse_arguments( GAMEMODULE "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
   if( CMAKE_CFG_INTDIR STREQUAL "." )
@@ -1248,38 +1223,36 @@ function( GAMEMODULE )
     set( GAMEMODULE_FULL_OUTPUT_DIR ${CMAKE_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${GAMEMODULE_OUTPUT_DIR} )
   endif()
 
-  if( BUILD_GAME_NACL_NATIVE )
-    # HACK: Compile shared files as C
-    add_executable( ${GAMEMODULE_NAME}-native ${GAMEMODULE_FILES} ${SHAREDLIST_HACK} ${GAMEMODULE_NACL_FILES} ${NACLLIST_NATIVE} )
-    target_link_libraries( ${GAMEMODULE_NAME}-native ${LIBS_BASE} )
-    set_target_properties( ${GAMEMODULE_NAME}-native PROPERTIES
+  if( GAMEMODULE_HAS_NACL AND BUILD_GAME_NACL_NATIVE )
+    add_executable( ${GAMEMODULE_NAME}-nacl-native ${GAMEMODULE_FILES} ${SHAREDLIST} ${GAMEMODULE_NACL_FILES} ${NACLLIST_NATIVE} )
+    target_link_libraries( ${GAMEMODULE_NAME}-nacl-native ${LIBS_BASE} )
+    set_target_properties( ${GAMEMODULE_NAME}-nacl-native PROPERTIES
       OUTPUT_NAME ${GAMEMODULE_NAME}
       RUNTIME_OUTPUT_DIRECTORY ${GAMEMODULE_OUTPUT_DIR}
       COMPILE_DEFINITIONS ${GAMEMODULE_COMPILE_DEF}
     )
     foreach( OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES} )
       string( TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG_UP )
-      set_target_properties( ${GAMEMODULE_NAME}-native PROPERTIES RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG_UP} ${OUTPUTCONFIG}/${GAMEMODULE_OUTPUT_DIR} )
+      set_target_properties( ${GAMEMODULE_NAME}-nacl-native PROPERTIES RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG_UP} ${OUTPUTCONFIG}/${GAMEMODULE_OUTPUT_DIR} )
     endforeach()
   endif()
 
-  if( BUILD_GAME_NATIVE )
-    # HACK: Compile shared files as C
-    set_source_files_properties( ${SHAREDLIST_HACK} PROPERTIES LANGUAGE C )
-    add_library( ${GAMEMODULE_NAME} MODULE ${GAMEMODULE_FILES} ${SHAREDLIST_HACK} ${GAMEMODULE_NATIVE_FILES} )
-    target_link_libraries( ${GAMEMODULE_NAME} ${LIBS_BASE} )
-    set_target_properties( ${GAMEMODULE_NAME} PROPERTIES
+  if( BUILD_GAME_QVM_NATIVE )
+    set( QVM_NATIVE_COMPILE_DEF ${GAMEMODULE_COMPILE_DEF} QVM_ABI)
+    add_library( ${GAMEMODULE_NAME}-qvm-native MODULE ${GAMEMODULE_FILES} ${SHAREDLIST} ${GAMEMODULE_NATIVE_FILES} )
+    target_link_libraries( ${GAMEMODULE_NAME}-qvm-native ${LIBS_BASE} )
+    set_target_properties( ${GAMEMODULE_NAME}-qvm-native PROPERTIES
       PREFIX ""
       LIBRARY_OUTPUT_DIRECTORY ${GAMEMODULE_OUTPUT_DIR}
-      COMPILE_DEFINITIONS ${GAMEMODULE_COMPILE_DEF}
+	  COMPILE_DEFINITIONS "${QVM_NATIVE_COMPILE_DEF}"
     )
     foreach( OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES} )
       string( TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG_UP )
-      set_target_properties( ${GAMEMODULE_NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY_${OUTPUTCONFIG_UP} ${OUTPUTCONFIG}/${GAMEMODULE_OUTPUT_DIR} )
+      set_target_properties( ${GAMEMODULE_NAME}-qvm-native PROPERTIES LIBRARY_OUTPUT_DIRECTORY_${OUTPUTCONFIG_UP} ${OUTPUTCONFIG}/${GAMEMODULE_OUTPUT_DIR} )
     endforeach()
   endif()
 
-  if( BUILD_GAME_NACL )
+  if( GAMEMODULE_HAS_NACL AND BUILD_GAME_NACL )
     if( CMAKE_CFG_INTDIR STREQUAL "." )
       set( NACL_DIR ${OBJ_DIR}/${GAMEMODULE_NAME}-nacl.dir )
     else()
@@ -1331,21 +1304,10 @@ function( GAMEMODULE )
       get_filename_component( EXT ${FILE} EXT )
       set( OBJ ${NACL_DIR}/${FILENAME}.o )
 
-      if( EXT STREQUAL ".c" )
-        add_custom_command( OUTPUT ${OBJ}
-          COMMAND ${PNACL_TOOLCHAIN}/pnacl-clang${PNACL_BIN_EXT}
-            ${NACL_COMPILE_OPTIONS}
-            -c
-            -o ${OBJ}
-            ${FILE}
-          DEPENDS ${FILE}
-          IMPLICIT_DEPENDS C ${FILE}
-        )
-        set( OBJECTS ${OBJECTS} ${OBJ} )
-      elseif( EXT STREQUAL ".cpp" OR EXT STREQUAL ".cc" )
+      if( EXT STREQUAL ".c" OR EXT STREQUAL ".cpp" OR EXT STREQUAL ".cc" )
         add_custom_command( OUTPUT ${OBJ}
           COMMAND ${PNACL_TOOLCHAIN}/pnacl-clang++${PNACL_BIN_EXT}
-            -std=gnu++11
+            -x c++ -std=gnu++11
             ${NACL_COMPILE_OPTIONS}
             -c
             -o ${OBJ}
@@ -1402,7 +1364,7 @@ function( GAMEMODULE )
       set( QVM_DIR ${OBJ_DIR}/${GAMEMODULE_NAME}-qvm.dir/${CMAKE_CFG_INTDIR} )
     endif()
 
-    set( QVM_COMPILE_OPTIONS -I${MOUNT_DIR}/gamelogic/game -I${MOUNT_DIR}/engine/qcommon -DQ3_VM -DQVM_COMPAT )
+    set( QVM_COMPILE_OPTIONS -I${MOUNT_DIR}/gamelogic/game -I${MOUNT_DIR}/engine/qcommon -DQ3_VM -DQVM_ABI)
     foreach( DEF ${GAMEMODULE_COMPILE_DEF} )
       set( QVM_COMPILE_OPTIONS ${QVM_COMPILE_OPTIONS} -D${DEF} )
     endforeach()
@@ -1417,7 +1379,7 @@ function( GAMEMODULE )
 
       if( QVM_FILEEXT STREQUAL ".c" )
         add_custom_command( OUTPUT ${ASM_FILE}
-          COMMAND lcc -target bytecode ${QVM_COMPILE_OPTIONS} ${QVM_FILE} -o ${ASM_FILE}
+			COMMAND lcc -target bytecode ${QVM_COMPILE_OPTIONS} ${QVM_FILE} -o ${ASM_FILE}
           DEPENDS lcc rcc cpp ${QVM_FILE}
           IMPLICIT_DEPENDS C ${QVM_FILE}
           WORKING_DIRECTORY ${QVM_DIR}
@@ -1447,6 +1409,7 @@ endif()
 GAMEMODULE( NAME game
   OUTPUT_DIR main
   COMPILE_DEF GAME
+  HAS_NACL 1
   FILES ${GAMELIST}
   NACL_FILES ${GAMENACLLIST}
   NATIVE_FILES ${GAMENATIVELIST}
@@ -1454,27 +1417,27 @@ GAMEMODULE( NAME game
   QVM_ASM ${GAMEASMLIST}
 )
 
-if( ENABLE_QVM_COMPAT )
-  GAMEMODULE( NAME cgame
-    OUTPUT_DIR main
-    COMPILE_DEF CGAME
-    FILES ${CGAMELIST}
-    NACL_FILES ${CGAMENACLLIST}
-    NATIVE_FILES ${CGAMENATIVELIST}
-    QVM_FILES ${CGAMEQVMLIST}
-    QVM_ASM ${CGAMEASMLIST}
-  )
+GAMEMODULE( NAME cgame
+  OUTPUT_DIR main
+  COMPILE_DEF CGAME
+  HAS_NACL 0
+  FILES ${CGAMELIST}
+  NACL_FILES ${CGAMENACLLIST}
+  NATIVE_FILES ${CGAMENATIVELIST}
+  QVM_FILES ${CGAMEQVMLIST}
+  QVM_ASM ${CGAMEASMLIST}
+)
 
-  GAMEMODULE( NAME ui
-    OUTPUT_DIR main
-    COMPILE_DEF UI
-    FILES ${UILIST}
-    NACL_FILES ${UINACLLIST}
-    NATIVE_FILES ${UINATIVELIST}
-    QVM_FILES ${UIQVMLIST}
-    QVM_ASM ${UIASMLIST}
-  )
-endif()
+GAMEMODULE( NAME ui
+  OUTPUT_DIR main
+  COMPILE_DEF UI
+  FILES ${UILIST}
+  HAS_NACL 0
+  NACL_FILES ${UINACLLIST}
+  NATIVE_FILES ${UINATIVELIST}
+  QVM_FILES ${UIQVMLIST}
+  QVM_ASM ${UIASMLIST}
+)
 
 ################################################################################
 # Engine

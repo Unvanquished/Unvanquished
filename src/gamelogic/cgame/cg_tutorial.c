@@ -28,7 +28,7 @@ typedef struct
 {
 	const char *command;
 	const char *humanName;
-	keyNum_t keys[ 2 ];
+	int keys[ 2 ];
 } bind_t;
 
 static bind_t bindings[] =
@@ -44,7 +44,7 @@ static bind_t bindings[] =
 	{ "buy ammo",       N_( "Buy Ammo" ),                              { -1, -1 } },
 	{ "itemact medkit", N_( "Use Medkit" ),                            { -1, -1 } },
 	{ "+activate",      N_( "Use Structure/Evolve" ),                  { -1, -1 } },
-	{ "if alt \"/deconstruct marked\" /deconstruct",
+	{ "modcase alt \"/deconstruct marked\" /deconstruct",
                             N_( "Deconstruct Structure" ),                 { -1, -1 } },
 	{ "weapprev",       N_( "Previous Upgrade" ),                      { -1, -1 } },
 	{ "weapnext",       N_( "Next Upgrade" ),                          { -1, -1 } },
@@ -190,7 +190,7 @@ CG_BuilderText
 */
 static void CG_BuilderText( char *text, playerState_t *ps )
 {
-	buildable_t   buildable = ps->stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK;
+	buildable_t   buildable = (buildable_t) ( ps->stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK );
 	entityState_t *es;
 
 	if ( buildable > BA_NONE )
@@ -212,7 +212,7 @@ static void CG_BuilderText( char *text, playerState_t *ps )
 
 	if ( ( es = CG_BuildableInRange( ps, NULL ) ) )
 	{
-	        const char *key = CG_KeyNameForCommand( "if alt \"/deconstruct marked\" /deconstruct" );
+	        const char *key = CG_KeyNameForCommand( "modcase alt \"/deconstruct marked\" /deconstruct" );
 
 		if ( cgs.markDeconstruct )
 		{
@@ -406,7 +406,7 @@ static void CG_HumanText( char *text, playerState_t *ps )
 	else
 	{
 		name = cg_upgrades[ cg.weaponSelect - 32 ].humanName;
-		upgrade = cg.weaponSelect - 32;
+		upgrade = (upgrade_t) ( cg.weaponSelect - 32 );
 	}
 
 	if ( !ps->ammo && !ps->clips && !BG_Weapon( ps->weapon )->infiniteAmmo )
@@ -628,7 +628,7 @@ const char *CG_TutorialText( void )
 
 	if ( refreshBindings == 0 )
 	{
-		CG_GetBindings( ps->persistant[ PERS_TEAM ] );
+		CG_GetBindings( (team_t) ps->persistant[ PERS_TEAM ] );
 	}
 
 	refreshBindings = ( refreshBindings + 1 ) % BINDING_REFRESH_INTERVAL;

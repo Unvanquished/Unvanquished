@@ -84,18 +84,6 @@ IN_PrintKey
 */
 static void IN_PrintKey( const SDL_Keysym *keysym, keyNum_t key, qboolean down )
 {
-	if ( down )
-	{
-		Com_Printf( "+ " );
-	}
-	else
-	{
-		Com_Printf( "  " );
-	}
-
-	Com_Printf( "0x%02x \"%s\"", keysym->scancode,
-	            SDL_GetKeyName( keysym->sym ) );
-
 	if ( keysym->mod & KMOD_LSHIFT ) { Com_Printf( " KMOD_LSHIFT" ); }
 
 	if ( keysym->mod & KMOD_RSHIFT ) { Com_Printf( " KMOD_RSHIFT" ); }
@@ -120,9 +108,8 @@ static void IN_PrintKey( const SDL_Keysym *keysym, keyNum_t key, qboolean down )
 
 	if ( keysym->mod & KMOD_RESERVED ) { Com_Printf( " KMOD_RESERVED" ); }
 
-	Com_Printf( " Q:0x%02x(%s)\n", key, Key_KeynumToString( key ) );
-
-	Com_Printf( "\n" );
+	Com_Printf( "%c 0x%02x \"%s\" Q:0x%02x(%s)\n", down ? '+' : ' ', keysym->scancode,
+		    SDL_GetKeyName( keysym->sym ), key, Key_KeynumToString( key ) );
 }
 
 #define MAX_CONSOLE_KEYS 16

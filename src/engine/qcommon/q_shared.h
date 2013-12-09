@@ -41,7 +41,7 @@ Maryland 20850 USA.
 #define PRODUCT_NAME            "Unvanquished"
 #define PRODUCT_NAME_UPPER      "UNVANQUISHED" // Case, No spaces
 #define PRODUCT_NAME_LOWER      "unvanquished" // No case, No spaces
-#define PRODUCT_VERSION         "0.21"
+#define PRODUCT_VERSION         "0.22.1"
 
 #define ENGINE_NAME             "Daemon Engine"
 #define ENGINE_VERSION          PRODUCT_VERSION
@@ -88,11 +88,14 @@ Maryland 20850 USA.
 
 #ifdef Q3_VM
 
+#define EXTERN_C
 #include "../../gamelogic/shared/bg_lib.h"
 typedef int intptr_t;
 #define roundf( f ) ( floor( f + 0.5 ) )
 
 #else //Q3_VM
+
+#define EXTERN_C extern "C"
 
 // for visibility of some functions in system headers
 #undef _GNU_SOURCE
@@ -182,6 +185,8 @@ typedef int clipHandle_t;
 #define MAX_QINT 0x7fffffff
 #define MIN_QINT ( -MAX_QINT - 1 )
 
+#define HUGE_QFLT 3e38f // TODO: Replace HUGE_QFLT with MAX_QFLT
+
 #ifndef BIT
 #define BIT(x) ( 1 << ( x ) )
 #endif
@@ -239,7 +244,7 @@ typedef int clipHandle_t;
 #define BLINK_DIVISOR         200
 #define PULSE_DIVISOR         75
 
-#if !defined( NDEBUG ) && !defined( BSPC )
+#if !defined( NDEBUG )
 #define HUNK_DEBUG
 #endif
 

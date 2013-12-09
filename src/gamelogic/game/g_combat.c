@@ -92,7 +92,7 @@ static const char *const modNames[] =
 };
 
 /**
- * @brief Helper function for G_AddCreditsToScore and G_AddConfidenceToScore.
+ * @brief Helper function for G_AddCreditsToScore and G_AddMomentumToScore.
  * @param self
  * @param score
  */
@@ -119,13 +119,13 @@ void G_AddCreditsToScore( gentity_t *self, int credits )
 }
 
 /**
- * @brief Adds score to the client, input represents a confidence value.
+ * @brief Adds score to the client, input represents a momentum value.
  * @param self
- * @param confidence
+ * @param momentum
  */
-void G_AddConfidenceToScore( gentity_t *self, float confidence )
+void G_AddMomentumToScore( gentity_t *self, float momentum )
 {
-	AddScoreHelper( self, confidence * SCORE_PER_CONFIDENCE );
+	AddScoreHelper( self, momentum * SCORE_PER_MOMENTUM );
 }
 
 void LookAtKiller( gentity_t *self, gentity_t *inflictor, gentity_t *attacker )
@@ -158,13 +158,13 @@ void G_RewardAttackers( gentity_t *self )
 	// Only reward killing players and buildables
 	if ( self->client )
 	{
-		ownTeam   = self->client->pers.team;
+		ownTeam   = (team_t) self->client->pers.team;
 		maxHealth = self->client->ps.stats[ STAT_MAX_HEALTH ];
 		value     = BG_GetValueOfPlayer( &self->client->ps );
 	}
 	else if ( self->s.eType == ET_BUILDABLE )
 	{
-		ownTeam   = self->buildableTeam;
+		ownTeam   = (team_t) self->buildableTeam;
 		maxHealth = BG_Buildable( self->s.modelindex )->health;
 		value     = BG_Buildable( self->s.modelindex )->value;
 
@@ -186,7 +186,7 @@ void G_RewardAttackers( gentity_t *self )
 	for ( playerNum = 0; playerNum < level.maxclients; playerNum++ )
 	{
 		player     = &g_entities[ playerNum ];
-		playerTeam = player->client->pers.team;
+		playerTeam = (team_t) player->client->pers.team;
 
 		// Player must be on the other team
 		if ( playerTeam == ownTeam || playerTeam <= TEAM_NONE || playerTeam >= NUM_TEAMS )
@@ -206,7 +206,7 @@ void G_RewardAttackers( gentity_t *self )
 	for ( playerNum = 0; playerNum < level.maxclients; playerNum++ )
 	{
 		player      = &g_entities[ playerNum ];
-		playerTeam  = player->client->pers.team;
+		playerTeam  = (team_t) player->client->pers.team;
 		damageShare = self->credits[ playerNum ];
 
 		// Clear reward array
@@ -230,10 +230,10 @@ void G_RewardAttackers( gentity_t *self )
 		if ( self->s.eType == ET_BUILDABLE )
 		{
 			// Add score
-			G_AddConfidenceToScore( player, reward );
+			G_AddMomentumToScore( player, reward );
 
-			// Add confidence
-			G_AddConfidenceForDestroyingStep( self, player, share );
+			// Add momentum
+			G_AddMomentumForDestroyingStep( self, player, share );
 		}
 		else
 		{
@@ -243,13 +243,13 @@ void G_RewardAttackers( gentity_t *self )
 			// Add credits
 			G_AddCreditToClient( player->client, ( short )reward, qtrue );
 
-			// Add confidence
-			G_AddConfidenceForKillingStep( self, player, share );
+			// Add momentum
+			G_AddMomentumForKillingStep( self, player, share );
 		}
 	}
 
-	// Complete confidence modification
-	G_AddConfidenceEnd();
+	// Complete momentum modification
+	G_AddMomentumEnd();
 }
 
 void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int meansOfDeath )
@@ -887,7 +887,7 @@ void G_KnockbackByDir( gentity_t *target, const vec3_t direction, float strength
                               qboolean ignoreMass )
 {
 	vec3_t dir, vel;
-	int    time, mass;
+	int    mass;
 	float  massMod;
 	const classAttributes_t *ca;
 
@@ -954,8 +954,8 @@ void G_KnockbackByDir( gentity_t *target, const vec3_t direction, float strength
 	// print debug info
 	if ( g_debugKnockback.integer )
 	{
-		G_Printf( "%i: Knockback: client: %i, strength: %.1f (massMod: %.1f), time: %i\n",
-		          level.time, target->s.number, strength, massMod, time );
+		G_Printf( "%i: Knockback: client: %i, strength: %.1f (massMod: %.1f)\n",
+		          level.time, target->s.number, strength, massMod );
 	}
 }
 
@@ -1111,22 +1111,17 @@ void G_Damage( gentity_t *target, gentity_t *inflictor, gentity_t *attacker,
 			{
 				return;
 			}
-
-			// issue base attack warning
-			if ( target->buildableTeam == TEAM_HUMANS && G_FindDCC( target ) &&
-			     level.time > level.humanBaseAttackTimer )
-			{
-				level.humanBaseAttackTimer = level.time + DC_ATTACK_PERIOD;
-				G_BroadcastEvent( EV_DCC_ATTACK, 0 );
-			}
 		}
 	}
 
 	// update combat timers
-	if ( target->client && attacker->client )
+	if ( target->client && attacker->client && target != attacker )
 	{
-		target->client->lastCombatTime     = level.time;
+		target->client->lastCombatTime   = level.time;
 		attacker->client->lastCombatTime = level.time;
+
+		// stop jetpack for a short time
+		client->ps.stats[ STAT_STATE2 ] |= SS2_JETPACK_DAMAGED;
 	}
 
 	if ( client )
@@ -1148,7 +1143,7 @@ void G_Damage( gentity_t *target, gentity_t *inflictor, gentity_t *attacker,
 		}
 
 		// apply damage modifier
-		modifier = CalcDamageModifier( point, target, client->ps.stats[ STAT_CLASS ], damageFlags );
+		modifier = CalcDamageModifier( point, target, (class_t) client->ps.stats[ STAT_CLASS ], damageFlags );
 		take = ( int )( ( float )damage * modifier + 0.5f );
 
 		// if boosted poison every attack
@@ -1166,7 +1161,7 @@ void G_Damage( gentity_t *target, gentity_t *inflictor, gentity_t *attacker,
 
 				default:
 					target->client->ps.stats[ STAT_STATE ] |= SS_POISONED;
-					target->client->lastPoisonTime = level.time;
+					target->client->lastPoisonTime   = level.time;
 					target->client->lastPoisonClient = attacker;
 			}
 		}
@@ -1579,7 +1574,7 @@ void G_LogDestruction( gentity_t *self, gentity_t *actor, int mod )
 	if ( actor->client && actor->client->pers.team ==
 	     BG_Buildable( self->s.modelindex )->team )
 	{
-		G_TeamCommand( actor->client->pers.team,
+		G_TeamCommand( (team_t) actor->client->pers.team,
 		               va( "print_tr %s %s %s", mod == MOD_DECONSTRUCT ? QQ( N_("$1$ ^3DECONSTRUCTED^7 by $2$\n") ) :
 						   QQ( N_("$1$ ^3DESTROYED^7 by $2$\n") ),
 		                   Quote( BG_Buildable( self->s.modelindex )->humanName ),
