@@ -209,7 +209,8 @@ struct PakInfo {
 	// Version of the pak
 	std::string version;
 
-	// CRC32 checksum of the pak
+	// CRC32 checksum of the pak, optional. This will always be set in a loaded
+	// pak, but not necessarily for available paks.
 	bool hasChecksum;
 	uint32_t checksum;
 
@@ -223,47 +224,24 @@ struct PakInfo {
 // A namespace is a set of pak files which contain files
 class PakNamespace {
 	struct pakFileInfo_t {
-		PakInfo* pak; // Points to an element in the pakList vector
+		size_t pakIndex;
 		offset_t offset;
 	};
 	typedef std::unordered_map<std::string, pakFileInfo_t> fileMap_t;
-	template<bool recursive> class BasicDirectoryRange {
-	public:
-		DirectoryIterator<BasicDirectoryRange> begin()
-		{
-			return DirectoryIterator<BasicDirectoryRange>(empty() ? nullptr : this);
-		}
-		DirectoryIterator<BasicDirectoryRange> end()
-		{
-			return DirectoryIterator<BasicDirectoryRange>();
-		}
-		bool empty() const
-		{
-			return iter == iter_end;
-		}
-
-	private:
-		friend class DirectoryIterator<BasicDirectoryRange>;
-		friend class PakNamespace;
-		bool Advance(std::error_code& err);
-		bool InternalAdvance();
-		std::string current;
-		std::string prefix;
-		fileMap_t::const_iterator iter, iter_end;
-	};
-	std::vector<PakInfo> pakList;
+	std::vector<PakInfo> loadedPaks;
 	fileMap_t fileMap;
+	void InternalLoadPak(const PakInfo& pak, bool verifyChecksum, uint32_t expectedChecksum, std::error_code& err);
 
 public:
 	// Load a pak into the namespace with all its dependencies
-	bool LoadPak(Str::StringRef name);
-	bool LoadPak(Str::StringRef name, Str::StringRef version);
-	bool LoadPak(Str::StringRef name, Str::StringRef version, uint32_t checksum);
+	void LoadPak(Str::StringRef name, std::error_code& err = throws());
+	void LoadPak(Str::StringRef name, Str::StringRef version, std::error_code& err = throws());
+	void LoadPak(Str::StringRef name, Str::StringRef version, uint32_t checksum, std::error_code& err = throws());
 
 	// Get a list of all the loaded paks
 	const std::vector<PakInfo>& GetLoadedPaks() const
 	{
-		return pakList;
+		return loadedPaks;
 	}
 
 	// Read an entire file into a string
@@ -283,15 +261,40 @@ public:
 
 	// List all files in the given subdirectory, optionally recursing into subdirectories
 	// Directory names are returned with a trailing slash to differentiate them from files
-	typedef BasicDirectoryRange<false> DirectoryRange;
-	typedef BasicDirectoryRange<true> RecursiveDirectoryRange;
+	class DirectoryRange;
 	DirectoryRange ListFiles(Str::StringRef path, std::error_code& err = throws()) const;
-	RecursiveDirectoryRange ListFilesRecursive(Str::StringRef path, std::error_code& err = throws()) const;
+	DirectoryRange ListFilesRecursive(Str::StringRef path, std::error_code& err = throws()) const;
+
+	// DirectoryRange implementation
+	class DirectoryRange {
+	public:
+		DirectoryIterator<DirectoryRange> begin()
+		{
+			return DirectoryIterator<DirectoryRange>(empty() ? nullptr : this);
+		}
+		DirectoryIterator<DirectoryRange> end()
+		{
+			return DirectoryIterator<DirectoryRange>();
+		}
+		bool empty() const
+		{
+			return iter == iter_end;
+		}
+
+	private:
+		friend class DirectoryIterator<DirectoryRange>;
+		friend class PakNamespace;
+		bool Advance(std::error_code& err);
+		bool InternalAdvance();
+		std::string current;
+		std::string prefix;
+		fileMap_t::const_iterator iter, iter_end;
+		bool recursive;
+	};
 };
 
 // Operations which work on raw OS paths. Note that no validation on file names is performed
 namespace RawPath {
-
 	// Open a file for reading/writing/appending/editing
 	File OpenRead(Str::StringRef path, std::error_code& err = throws());
 	File OpenWrite(Str::StringRef path, std::error_code& err = throws());
@@ -309,6 +312,12 @@ namespace RawPath {
 
 	// List all files in the given subdirectory, optionally recursing into subdirectories
 	// Directory names are returned with a trailing slash to differentiate them from files
+	class DirectoryRange;
+	class RecursiveDirectoryRange;
+	DirectoryRange ListFiles(Str::StringRef path, std::error_code& err = throws());
+	RecursiveDirectoryRange ListFilesRecursive(Str::StringRef path, std::error_code& err = throws());
+
+	// DirectoryRange implementations
 	class DirectoryRange {
 	public:
 		DirectoryIterator<DirectoryRange> begin()
@@ -357,14 +366,10 @@ namespace RawPath {
 		std::string path;
 		std::vector<DirectoryRange> dirs;
 	};
-	DirectoryRange ListFiles(Str::StringRef path, std::error_code& err = throws());
-	RecursiveDirectoryRange ListFilesRecursive(Str::StringRef path, std::error_code& err = throws());
-
 } // namespace RawPath
 
 // Operations which work on the home path
 namespace HomePath {
-
 	// Open a file for reading/writing/appending/editing
 	File OpenRead(Str::StringRef path, std::error_code& err = throws());
 	File OpenWrite(Str::StringRef path, std::error_code& err = throws());
@@ -386,7 +391,6 @@ namespace HomePath {
 	typedef RawPath::RecursiveDirectoryRange RecursiveDirectoryRange;
 	DirectoryRange ListFiles(Str::StringRef path, std::error_code& err = throws());
 	RecursiveDirectoryRange ListFilesRecursive(Str::StringRef path, std::error_code& err = throws());
-
 } // namespace HomePath
 
 // Initialize the filesystem and the main paths
@@ -394,6 +398,9 @@ void Initialize();
 
 // Refresh the list of available paks
 void RefreshPaks();
+
+// Get the list of available paks
+const std::vector<PakInfo>& GetAvailablePaks();
 
 // Get the home path
 const std::string& GetHomePath();

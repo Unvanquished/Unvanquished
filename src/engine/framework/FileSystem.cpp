@@ -26,6 +26,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #include "../qcommon/qcommon.h"
 #include "FileSystem.h"
 #include "../../libs/minizip/unzip.h"
+#include <zlib.h>
 #include <vector>
 #include <algorithm>
 
@@ -54,7 +55,7 @@ static std::string libPath;
 static std::string homePath;
 
 // List of available paks
-static std::vector<PakInfo> pakList;
+static std::vector<PakInfo> availablePaks;
 
 // Clean up platform compatibility issues
 enum openMode_t {
@@ -325,10 +326,11 @@ void Initialize()
 }
 
 // Add a pak to the list of available paks
-static void AddPak(pakType_t type, Str::StringRef filename, Str::StringRef path)
+static void AddPak(pakType_t type, Str::StringRef filename, Str::StringRef basePath)
 {
 	// The pak name doesn't need to be checked because this is done by ListFiles.
 	// Just split the path at the first _ to get the name and version
+	// FIXME: proper name parsing
 	size_t underscore = filename.find('_');
 	std::string name, version;
 	if (underscore != std::string::npos) {
@@ -338,43 +340,27 @@ static void AddPak(pakType_t type, Str::StringRef filename, Str::StringRef path)
 		name = filename;
 		version = "";
 	}
-	pakList.push_back({name, version, false, 0, type, Path::Build(path, filename)});
+	availablePaks.push_back({std::move(name), std::move(version), false, 0, type, Path::Build(basePath, filename)});
 }
 
 // Find all paks in the given path
-static void FindPaks(Str::StringRef path)
+static void FindPaks(Str::StringRef basePath, Str::StringRef subPath)
 {
+	std::string fullPath = Path::Build(basePath, subPath);
 	try {
-		for (auto& subPath: RawPath::ListFiles(path)) {
-			if (Str::IsSuffix(".pk3", subPath)) {
-				AddPak(PAK_ZIP, subPath, path);
-			} else if (Str::IsSuffix(".pk3dir/", subPath)) {
-				AddPak(PAK_DIR, subPath, path);
-			} else if (Str::IsSuffix("/", subPath))
-				FindPaks(Path::Build(path, subPath));
+		for (auto& filename: RawPath::ListFiles(fullPath)) {
+			if (Str::IsSuffix(".pk3", filename)) {
+				AddPak(PAK_ZIP, Path::Build(subPath, filename), basePath);
+			} else if (Str::IsSuffix(".pk3dir/", filename)) {
+				AddPak(PAK_DIR, Path::Build(subPath, filename), basePath);
+			} else if (Str::IsSuffix("/", filename))
+				FindPaks(basePath, Path::Build(subPath, filename));
 		}
-	} catch (...) {
+	} catch (std::system_error& err) {
 		// If there was an error reading a directory, just ignore it and go to
 		// the next one.
+		Com_Printf("Error reading directory %s: %s\n", fullPath.c_str(), err.what());
 	}
-}
-
-// Locale-independent versions of ctype
-inline bool cisdigit(char c)
-{
-	return c >= '0' && c <= '9';
-}
-inline bool cisupper(char c)
-{
-	return c >= 'A' && c <= 'Z';
-}
-inline bool cislower(char c)
-{
-	return c >= 'a' && c <= 'z';
-}
-inline bool cisalpha(char c)
-{
-	return cisupper(c) || cislower(c);
 }
 
 // Comparaison function for version numbers
@@ -384,9 +370,9 @@ static int VersionCmp(Str::StringRef aStr, Str::StringRef bStr)
 {
 	// Character weight
 	auto order = [](char c) -> int {
-		if (cisdigit(c))
+		if (Str::cisdigit(c))
 			return 0;
-		else if (cisalpha(c))
+		else if (Str::cisalpha(c))
 			return c;
 		else if (c)
 			return c + 256;
@@ -400,7 +386,7 @@ static int VersionCmp(Str::StringRef aStr, Str::StringRef bStr)
 	while (*a || *b) {
 		int firstDiff = 0;
 
-		while ((*a && !cisdigit(*a)) || (*b && !cisdigit(*b))) {
+		while ((*a && !Str::cisdigit(*a)) || (*b && !Str::cisdigit(*b))) {
 			int ac = order(*a);
 			int bc = order(*b);
 
@@ -416,16 +402,16 @@ static int VersionCmp(Str::StringRef aStr, Str::StringRef bStr)
 		while (*b == '0')
 			b++;
 
-		while (cisdigit(*a) && cisdigit(*b)) {
+		while (Str::cisdigit(*a) && Str::cisdigit(*b)) {
 			if (firstDiff == 0)
 				firstDiff = *a - *b;
 			a++;
 			b++;
 		}
 
-		if (cisdigit(*a))
+		if (Str::cisdigit(*a))
 			return 1;
-		if (cisdigit(*b))
+		if (Str::cisdigit(*b))
 			return -1;
 		if (firstDiff)
 			return firstDiff;
@@ -436,22 +422,33 @@ static int VersionCmp(Str::StringRef aStr, Str::StringRef bStr)
 
 void RefreshPaks()
 {
-	pakList.clear();
+	availablePaks.clear();
 	for (auto& path: pakPaths)
-		FindPaks(Path::Build(path, "pkg"));
-	std::sort(pakList.begin(), pakList.end(), [](const PakInfo& a, const PakInfo& b) {
+		FindPaks(Path::Build(path, "pkg"), "");
+
+	// Sort the pak list for easy binary searching:
+	// First sort by name, then by version.
+	// For checksums, place files without checksums in front, so they are selected
+	// before any pak with an explicit checksum.
+	std::sort(availablePaks.begin(), availablePaks.end(), [](const PakInfo& a, const PakInfo& b) {
 		int result = a.name.compare(b.name);
 		if (result != 0)
 			return result < 0;
 		result = VersionCmp(a.version, b.version);
 		if (result != 0)
 			return result < 0;
+		// Put packages without checksums at the end
 		if (!a.hasChecksum)
-			return true;
-		if (!b.hasChecksum)
 			return false;
+		if (!b.hasChecksum)
+			return true;
 		return a.checksum < b.checksum;
 	});
+}
+
+const std::vector<PakInfo>& GetAvailablePaks()
+{
+	return availablePaks;
 }
 
 const std::string& GetHomePath()
@@ -468,11 +465,7 @@ bool Path::IsValid(Str::StringRef path, bool allowDir)
 {
 	bool nonAlphaNum = true;
 	for (char c: path) {
-		if (c >= 'a' && c <= 'z')
-			continue;
-		if (c >= 'A' && c <= 'Z')
-			continue;
-		if (c >= '0' && c <= '9')
+		if (Str::cisalnum(c))
 			continue;
 		if (nonAlphaNum)
 			return false;
@@ -494,11 +487,7 @@ std::string Path::Build(Str::StringRef base, Str::StringRef path)
 		return path;
 
 	std::string out = base;
-#ifdef _WIN32
-	if (out.back() != '/' && out.back() != '\\')
-#else
-	if (out.back() != '/')
-#endif
+	if (!isdirsep(out.back()))
 		out.push_back('/');
 	out.append(path.data(), path.size());
 	return out;
@@ -736,6 +725,47 @@ public:
 		return out;
 	}
 
+	// Iterate through all the files in the archive and invoke the callback.
+	// Callback signature: void(Str::StringRef filename, offset_t offset, uint32_t crc)
+	template<typename Func> void ForEachFile(Func&& func, std::error_code& err)
+	{
+		unz_global_info64 globalInfo;
+		int result = unzGetGlobalInfo64(zipFile, &globalInfo);
+		if (result != UNZ_OK) {
+			SetErrorCodeZlib(err, result);
+			return;
+		}
+
+		result = unzGoToFirstFile(zipFile);
+		if (result != UNZ_OK) {
+			SetErrorCodeZlib(err, result);
+			return;
+		}
+
+		for (ZPOS64_T i = 0; i != globalInfo.number_entry; i++) {
+			unz_file_info64 fileInfo;
+			char filename[65537]; // The zip format has a maximum filename size of 64K
+			result = unzGetCurrentFileInfo64(zipFile, &fileInfo, filename, sizeof(filename), NULL, 0, NULL, 0);
+			if (result != UNZ_OK) {
+				SetErrorCodeZlib(err, result);
+				return;
+			}
+			offset_t offset = unzGetOffset64(zipFile);
+			uint32_t crc = fileInfo.crc;
+			func(filename, offset, crc);
+
+			if (i + 1 != globalInfo.number_entry) {
+				result = unzGoToNextFile(zipFile);
+				if (result != UNZ_OK) {
+					SetErrorCodeZlib(err, result);
+					return;
+				}
+			}
+		}
+
+		ClearErrorCode(err);
+	}
+
 	// Open a file in the archive
 	void OpenFile(offset_t offset, std::error_code& err) const
 	{
@@ -802,6 +832,118 @@ private:
 	unzFile zipFile;
 };
 
+void PakNamespace::InternalLoadPak(const PakInfo& pak, bool verifyChecksum, uint32_t expectedChecksum, std::error_code& err)
+{
+	std::vector<std::pair<std::string, pakFileInfo_t>> fileList;
+	uint32_t checksum = 0;
+
+	// Gather the list of files
+	if (pak.type == PAK_DIR) {
+		try {
+			for (auto& filename: RawPath::ListFilesRecursive(pak.path))
+				fileList.push_back({filename, {loadedPaks.size(), 0}});
+		} catch (std::system_error& sysErr) {
+			SetErrorCode(err, sysErr.code().value(), sysErr.code().category());
+			return;
+		}
+	} else {
+		// Open zip
+		ZipArchive zipFile = ZipArchive::Open(pak.path, err);
+		if (HaveError(err))
+			return;
+
+		// Get the file list and calculate the checksum of the package
+		checksum = crc32(0, Z_NULL, 0);
+		zipFile.ForEachFile([this, &checksum, &fileList](Str::StringRef filename, offset_t offset, uint32_t crc) {
+			checksum = crc32(checksum, reinterpret_cast<const Bytef*>(&crc), sizeof(crc));
+			fileList.push_back({filename, {loadedPaks.size(), offset}});
+		}, err);
+		if (HaveError(err))
+			return;
+	}
+
+	// If an explicit checksum was requested, verify that the pak we loaded is the one we are expecting
+	if (verifyChecksum && checksum != expectedChecksum) {
+		SetErrorCodeZlib(err, UNZ_CRCERROR);
+		return;
+	}
+
+	// Once we are sure no more errors can occur, update our data structures
+	loadedPaks.push_back(pak);
+	for (auto& entry: fileList)
+		fileMap.insert(std::move(entry));
+}
+
+void PakNamespace::LoadPak(Str::StringRef name, std::error_code& err)
+{
+	// Find the latest version with the matching name
+	auto iter = std::upper_bound(availablePaks.begin(), availablePaks.end(), name, [](Str::StringRef name, const PakInfo& pakInfo) {
+		return name < pakInfo.name;
+	});
+
+	if (iter == availablePaks.begin() || (iter - 1)->name != name) {
+		SetErrorCodeFileNotFound(err);
+		return;
+	}
+
+	InternalLoadPak(*iter, false, 0, err);
+}
+
+void PakNamespace::LoadPak(Str::StringRef name, Str::StringRef version, std::error_code& err)
+{
+	// Find a matching name and version, but prefer the last matching element since that is usually the one with no checksum
+	auto iter = std::upper_bound(availablePaks.begin(), availablePaks.end(), name, [version](Str::StringRef name, const PakInfo& pakInfo) {
+		int result = name.compare(pakInfo.name);
+		if (result != 0)
+			return result < 0;
+		return VersionCmp(version, pakInfo.version) < 0;
+	});
+
+	if (iter == availablePaks.begin() || (iter - 1)->name != name || (iter - 1)->version != version) {
+		SetErrorCodeFileNotFound(err);
+		return;
+	}
+
+	InternalLoadPak(*iter, false, 0, err);
+}
+
+void PakNamespace::LoadPak(Str::StringRef name, Str::StringRef version, uint32_t checksum, std::error_code& err)
+{
+	// Try to find an exact match
+	auto iter = std::upper_bound(availablePaks.begin(), availablePaks.end(), name, [version, checksum](Str::StringRef name, const PakInfo& pakInfo) {
+		int result = name.compare(pakInfo.name);
+		if (result != 0)
+			return result < 0;
+		result = VersionCmp(version, pakInfo.version);
+		if (result != 0)
+			return result < 0;
+		if (!pakInfo.hasChecksum)
+			return true;
+		return checksum < pakInfo.checksum;
+	});
+
+	if (iter == availablePaks.begin() || (iter - 1)->name != name || (iter - 1)->version != version || !(iter - 1)->hasChecksum || (iter - 1)->checksum != checksum) {
+		// Try again, but this time look for the pak without a checksum. We will verify the checksum later.
+		iter = std::upper_bound(availablePaks.begin(), availablePaks.end(), name, [version](Str::StringRef name, const PakInfo& pakInfo) {
+			int result = name.compare(pakInfo.name);
+			if (result != 0)
+				return result < 0;
+			result = VersionCmp(version, pakInfo.version);
+			if (result != 0)
+				return result < 0;
+			return false;
+		});
+
+		// Only allow zip packages because directories don't have a checksum
+		if (iter == availablePaks.begin() || (iter - 1)->type == PAK_DIR || (iter - 1)->name != name || (iter - 1)->version != version || (iter - 1)->hasChecksum) {
+			SetErrorCodeFileNotFound(err);
+			return;
+		}
+	}
+
+	InternalLoadPak(*iter, true, checksum, err);
+}
+
 std::string PakNamespace::ReadFile(Str::StringRef path, std::error_code& err) const
 {
 	auto it = fileMap.find(path);
@@ -810,9 +952,10 @@ std::string PakNamespace::ReadFile(Str::StringRef path, std::error_code& err) co
 		return nullptr;
 	}
 
-	if (it->second.pak->type == PAK_DIR) {
+	const PakInfo& pak = loadedPaks[it->second.pakIndex];
+	if (pak.type == PAK_DIR) {
 		// Open file
-		File file = RawPath::OpenRead(Path::Build(it->second.pak->path, path), err);
+		File file = RawPath::OpenRead(Path::Build(pak.path, path), err);
 		if (HaveError(err))
 			return "";
 
@@ -828,7 +971,7 @@ std::string PakNamespace::ReadFile(Str::StringRef path, std::error_code& err) co
 		return out;
 	} else {
 		// Open zip
-		ZipArchive zipFile = ZipArchive::Open(it->second.pak->path, err);
+		ZipArchive zipFile = ZipArchive::Open(pak.path, err);
 		if (HaveError(err))
 			return "";
 
@@ -866,14 +1009,15 @@ void PakNamespace::CopyFile(Str::StringRef path, const File& dest, std::error_co
 		return;
 	}
 
-	if (it->second.pak->type == PAK_DIR) {
-		File file = RawPath::OpenRead(Path::Build(it->second.pak->path, path), err);
+	const PakInfo& pak = loadedPaks[it->second.pakIndex];
+	if (pak.type == PAK_DIR) {
+		File file = RawPath::OpenRead(Path::Build(pak.path, path), err);
 		if (HaveError(err))
 			return;
 		file.CopyTo(dest, err);
 	} else {
 		// Open zip
-		ZipArchive zipFile = ZipArchive::Open(it->second.pak->path, err);
+		ZipArchive zipFile = ZipArchive::Open(pak.path, err);
 		if (HaveError(err))
 			return;
 
@@ -913,7 +1057,7 @@ const PakInfo* PakNamespace::LocateFile(Str::StringRef path, std::error_code& er
 		return nullptr;
 	} else {
 		ClearErrorCode(err);
-		return it->second.pak;
+		return &loadedPaks[it->second.pakIndex];
 	}
 }
 
@@ -927,10 +1071,11 @@ time_t PakNamespace::FileTimestamp(Str::StringRef path, std::error_code& err) co
 
 	my_stat_t st;
 	int result;
-	if (it->second.pak->type == PAK_DIR)
-		result = my_stat(Path::Build(it->second.pak->path, path), &st);
+	const PakInfo& pak = loadedPaks[it->second.pakIndex];
+	if (pak.type == PAK_DIR)
+		result = my_stat(Path::Build(pak.path, path), &st);
 	else
-		result = my_stat(it->second.pak->path, &st);
+		result = my_stat(pak.path, &st);
 	if (result != 0) {
 		SetErrorCodeSystem(err);
 		return 0;
@@ -940,7 +1085,7 @@ time_t PakNamespace::FileTimestamp(Str::StringRef path, std::error_code& err) co
 	}
 }
 
-template<bool recursive> bool PakNamespace::BasicDirectoryRange<recursive>::InternalAdvance()
+bool PakNamespace::DirectoryRange::InternalAdvance()
 {
 	for (; iter != iter_end; ++iter) {
 		// Filter out any paths not in the specified directory
@@ -962,7 +1107,7 @@ template<bool recursive> bool PakNamespace::BasicDirectoryRange<recursive>::Inte
 	return false;
 }
 
-template<bool recursive> bool PakNamespace::BasicDirectoryRange<recursive>::Advance(std::error_code& err)
+bool PakNamespace::DirectoryRange::Advance(std::error_code& err)
 {
 	++iter;
 	ClearErrorCode(err);
@@ -972,6 +1117,7 @@ template<bool recursive> bool PakNamespace::BasicDirectoryRange<recursive>::Adva
 PakNamespace::DirectoryRange PakNamespace::ListFiles(Str::StringRef path, std::error_code& err) const
 {
 	DirectoryRange state;
+	state.recursive = false;
 	state.prefix = path;
 	if (!state.prefix.empty() && state.prefix.back() != '/')
 		state.prefix.push_back('/');
@@ -984,9 +1130,10 @@ PakNamespace::DirectoryRange PakNamespace::ListFiles(Str::StringRef path, std::e
 	return state;
 }
 
-PakNamespace::RecursiveDirectoryRange PakNamespace::ListFilesRecursive(Str::StringRef path, std::error_code& err) const
+PakNamespace::DirectoryRange PakNamespace::ListFilesRecursive(Str::StringRef path, std::error_code& err) const
 {
-	RecursiveDirectoryRange state;
+	DirectoryRange state;
+	state.recursive = true;
 	state.prefix = path;
 	if (!state.prefix.empty() && state.prefix.back() != '/')
 		state.prefix.push_back('/');
@@ -1007,13 +1154,8 @@ static void CreatePath(Str::StringRef path, std::error_code& err)
 	std::string buffer = path;
 
 	for (char& c: buffer) {
-#ifdef _WIN32
-		if (c != '/' && c != '\\')
-			continue
-#else
-		if (c != '/')
+		if (!isdirsep(c))
 			continue;
-#endif
 		c = '\0';
 #ifdef _WIN32
 		if (_wmkdir(Str::UTF8To16(buffer.data()).c_str()) != 0 && errno != EEXIST) {

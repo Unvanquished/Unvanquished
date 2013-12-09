@@ -178,6 +178,36 @@ namespace Str {
     int ToInt(Str::StringRef text);
     bool ToInt(Str::StringRef text, int& result);
 
+    // Locale-independent versions of ctype
+    inline bool cisdigit(char c)
+    {
+        return c >= '0' && c <= '9';
+    }
+    inline bool cisupper(char c)
+    {
+        return c >= 'A' && c <= 'Z';
+    }
+    inline bool cislower(char c)
+    {
+        return c >= 'a' && c <= 'z';
+    }
+    inline bool cisalpha(char c)
+    {
+        return cisupper(c) || cislower(c);
+    }
+    inline bool cisalnum(char c)
+    {
+        return cisalpha(c) || cisdigit(c);
+    }
+    inline bool cisspace(char c)
+    {
+        return c == ' ' || c == '\t' || c == '\n' || c == '\r';
+    }
+    inline bool cisxdigit(char c)
+    {
+        return cisdigit(c) || (c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f');
+    }
+
     std::string Lower(Str::StringRef text);
 
     bool IsPrefix(Str::StringRef prefix, Str::StringRef text);
