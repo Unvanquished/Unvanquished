@@ -553,7 +553,7 @@ void FS_CopyFile( char *fromOSPath, char *toOSPath )
 	int  len;
 	byte *buf;
 
-	Com_Printf( "copy %s to %s\n", fromOSPath, toOSPath );
+	Com_DPrintf( "copy %s to %s\n", fromOSPath, toOSPath );
 
 	if ( strstr( fromOSPath, "journal.dat" ) || strstr( fromOSPath, "journaldata.dat" ) )
 	{
