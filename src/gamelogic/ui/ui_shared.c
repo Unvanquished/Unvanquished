@@ -3648,13 +3648,16 @@ qboolean Item_ComboBox_HandleKey( itemDef_t *item, int key, qboolean down, qbool
 
 qboolean Item_YesNo_HandleKey( itemDef_t *item, int key )
 {
+	char buff[1024];
+
 	if ( item->cvar &&
 	     ( ( item->window.flags & WINDOW_HASFOCUS ) ||
 	       Rect_ContainsPoint( &item->window.rect, DC->cursorx, DC->cursory ) ) )
 	{
 		if ( key == K_MOUSE1 || key == K_ENTER || key == K_MOUSE2 || key == K_MOUSE3 )
 		{
-			DC->setCVar( item->cvar, va( "%i", !DC->getCVarValue( item->cvar ) ) );
+			DC->getCVarLatchedString( item->cvar, buff, sizeof( buff ) );
+			DC->setCVar( item->cvar, va( "%i", !atoi( buff ) ) );
 			return qtrue;
 		}
 	}
@@ -3683,7 +3686,7 @@ int Item_Multi_FindCvarByValue( itemDef_t *item )
 	{
 		if ( multiPtr->strDef )
 		{
-			DC->getCVarString( item->cvar, buff, sizeof( buff ) );
+			DC->getCVarLatchedString( item->cvar, buff, sizeof( buff ) );
 		}
 		else
 		{
@@ -3723,7 +3726,7 @@ const char *Item_Multi_Setting( itemDef_t *item )
 	{
 		if ( multiPtr->strDef )
 		{
-			DC->getCVarString( item->cvar, buff, sizeof( buff ) );
+			DC->getCVarLatchedString( item->cvar, buff, sizeof( buff ) );
 		}
 		else
 		{
@@ -5911,8 +5914,10 @@ void Item_YesNo_Paint( itemDef_t *item )
 	float     value;
 	int       offset;
 	menuDef_t *parent = ( menuDef_t * ) item->parent;
+	char buff[1024];
 
-	value = ( item->cvar ) ? DC->getCVarValue( item->cvar ) : 0;
+	DC->getCVarLatchedString( item->cvar, buff, sizeof( buff ) );
+	value = ( item->cvar ) ? atoi( buff ) : 0;
 
 	if ( item->window.flags & WINDOW_HASFOCUS )
 	{
