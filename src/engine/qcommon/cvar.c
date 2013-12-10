@@ -138,7 +138,11 @@ Cvar_Set
 ============
 */
 void Cvar_Set(const char* name, const char* value) {
-    Cvar::SetValueCProxy(name, value);
+    if (value == nullptr) {
+        Cvar_Reset(name);
+    } else {
+        Cvar::SetValueCProxy(name, value);
+    }
 }
 
 /*
@@ -161,7 +165,9 @@ Cvar_Reset
 */
 void Cvar_Reset(const char* name) {
     cvar_t* var = Cvar::FindCCvar(name);
-    Cvar_Set(name, var->resetString);
+    if (var != nullptr) {
+        Cvar_Set(name, var->resetString);
+    }
 }
 
 /*
