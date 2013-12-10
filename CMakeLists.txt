@@ -961,6 +961,12 @@ if( DEPS_DIR )
   set( CMAKE_INCLUDE_PATH ${DEPS_DIR} ${DEPS_DIR}/include ${CMAKE_INCLUDE_PATH} )
   set( CMAKE_FRAMEWORK_PATH ${DEPS_DIR} ${CMAKE_FRAMEWORK_PATH} )
   set( CMAKE_LIBRARY_PATH ${DEPS_DIR}/lib ${CMAKE_LIBRARY_PATH} )
+
+  # Force OpenAL Soft on Mac, otherwise the system framework will be selected
+  if( APPLE )
+    set( OPENAL_INCLUDE_DIR ${DEPS_DIR}/include/AL )
+    set( OPENAL_LIBRARY ${DEPS_DIR}/lib/libopenal.dylib )
+  endif()
 endif()
 
 # These variables are defined
