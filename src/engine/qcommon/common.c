@@ -1775,7 +1775,7 @@ void Com_SetRecommended( void )
 // bani - checks if profile.pid is valid
 // return qtrue if it is
 // return qfalse if it isn't(!)
-static Cvar::Cvar<bool> ignoreCrash("common.ignoreCrash", "bool - ignores the value of common.crashed", Cvar::NONE, false);
+static Cvar::Cvar<bool> ignoreCrash("common.ignoreCrash", "ignores the value of common.crashed", Cvar::NONE, false);
 qboolean Com_CheckProfile( char *profile_path )
 {
 	fileHandle_t f;
@@ -1902,7 +1902,7 @@ Com_Init
 	const std::string defaultPipeFilename = "";
 #endif
 //TODO LATCH
-static Cvar::Cvar<std::string> pipeFilename("common.pipefile", "filename - the name of the pipe you can send console commands to", Cvar::ARCHIVE, defaultPipeFilename);
+static Cvar::Cvar<std::string> pipeFilename("common.pipefile", "the name of the pipe you can send console commands to", Cvar::ARCHIVE, defaultPipeFilename);
 
 void Com_Init( char *commandLine )
 {
@@ -2338,7 +2338,7 @@ void Com_WriteBindings_f( void )
 Com_ModifyMsec
 ================
 */
-static Cvar::Cvar<int> fixedtime("common.framerate.fixed", "int - in milliseconds, forces the frame time, 0 for no effect", Cvar::CHEAT, 0);
+static Cvar::Cvar<int> fixedtime("common.framerate.fixed", "in milliseconds, forces the frame time, 0 for no effect", Cvar::CHEAT, 0);
 
 int Com_ModifyMsec( int msec )
 {
@@ -2403,14 +2403,14 @@ Com_Frame
 */
 
 //TODO 0 for the same value as common.maxFPS
-static Cvar::Cvar<int> maxfps("common.framerate.max", "int - the max framerate, 0 for unlimited", Cvar::ARCHIVE, 125);
-static Cvar::Cvar<int> maxfpsUnfocused("common.framerate.maxUnfocused", "int - the max framerate when the game is unfocused, 0 for unlimited", Cvar::ARCHIVE, 0);
-static Cvar::Cvar<int> maxfpsMinimized("common.framerate.maxMinimized", "int - the max framerate when the game is minimized, 0 for unlimited", Cvar::ARCHIVE, 0);
+static Cvar::Cvar<int> maxfps("common.framerate.max", "the max framerate, 0 for unlimited", Cvar::ARCHIVE, 125);
+static Cvar::Cvar<int> maxfpsUnfocused("common.framerate.maxUnfocused", "the max framerate when the game is unfocused, 0 for unlimited", Cvar::ARCHIVE, 0);
+static Cvar::Cvar<int> maxfpsMinimized("common.framerate.maxMinimized", "the max framerate when the game is minimized, 0 for unlimited", Cvar::ARCHIVE, 0);
 
-static Cvar::Cvar<int> watchdogThreshold("common.watchdogTime", "int - seconds of server running without a map after which common.watchdogCmd is executed", Cvar::ARCHIVE, 60);
-static Cvar::Cvar<std::string> watchdogCmd("common.watchdogCmd", "string - the command triggered by the watchdog, empty for /quit", Cvar::ARCHIVE, "");
+static Cvar::Cvar<int> watchdogThreshold("common.watchdogTime", "seconds of server running without a map after which common.watchdogCmd is executed", Cvar::ARCHIVE, 60);
+static Cvar::Cvar<std::string> watchdogCmd("common.watchdogCmd", "the command triggered by the watchdog, empty for /quit", Cvar::ARCHIVE, "");
 
-static Cvar::Cvar<bool> showTraceStats("common.showTraceStats", "bool - are physics traces stats printed each frame", Cvar::CHEAT, false);
+static Cvar::Cvar<bool> showTraceStats("common.showTraceStats", "are physics traces stats printed each frame", Cvar::CHEAT, false);
 
 void Com_Frame( void )
 {

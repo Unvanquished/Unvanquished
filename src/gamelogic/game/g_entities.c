@@ -470,7 +470,7 @@ gentity chain handling
 #ifdef Q3_VM
 const gentityCall_t WORLD_CALL = { NULL, &g_entities[ ENTITYNUM_WORLD ], &g_entities[ ENTITYNUM_WORLD ] };
 #else
-#define WORLD_CALL (gentityCall_t){ NULL, &g_entities[ ENTITYNUM_WORLD ], &g_entities[ ENTITYNUM_WORLD ] }
+#define WORLD_CALL gentityCall_t{ NULL, &g_entities[ ENTITYNUM_WORLD ], &g_entities[ ENTITYNUM_WORLD ] }
 #endif
 /**
  * a non made call
@@ -478,7 +478,7 @@ const gentityCall_t WORLD_CALL = { NULL, &g_entities[ ENTITYNUM_WORLD ], &g_enti
 #ifdef Q3_VM
 const gentityCall_t NULL_CALL = { NULL, &g_entities[ ENTITYNUM_NONE ], &g_entities[ ENTITYNUM_NONE ] };
 #else
-#define NULL_CALL (gentityCall_t){ NULL, &g_entities[ ENTITYNUM_NONE ], &g_entities[ ENTITYNUM_NONE ] }
+#define NULL_CALL gentityCall_t{ NULL, &g_entities[ ENTITYNUM_NONE ], &g_entities[ ENTITYNUM_NONE ] }
 #endif
 
 typedef struct

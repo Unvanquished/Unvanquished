@@ -129,6 +129,15 @@ namespace Cmd {
         }
     }
 
+    void ChangeDescription(std::string name, std::string description) {
+        CommandMap& commands = GetCommandMap();
+
+        auto it = commands.find(name);
+        if (it != commands.end()) {
+            it->second.description = std::move(description);
+        }
+    }
+
     void RemoveCommand(const std::string& name) {
         CommandMap& commands = GetCommandMap();
 

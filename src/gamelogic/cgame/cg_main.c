@@ -2528,6 +2528,7 @@ void CG_LoadHudMenu( void )
 	cgDC.runScript = &CG_RunMenuScript;
 	cgDC.setCVar = trap_Cvar_Set;
 	cgDC.getCVarString = trap_Cvar_VariableStringBuffer;
+	cgDC.getCVarLatchedString = trap_Cvar_LatchedVariableStringBuffer;
 	cgDC.getCVarValue = CG_Cvar_Get;
 	cgDC.setOverstrikeMode = &trap_Key_SetOverstrikeMode;
 	cgDC.getOverstrikeMode = &trap_Key_GetOverstrikeMode;

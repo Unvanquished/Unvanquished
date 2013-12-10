@@ -39,7 +39,7 @@ namespace Cvar {
 
     //The server gives the sv_cheats cvar to the client, on 'off' it prevents the user from changing Cvar::CHEAT cvars
     void SetCheatMode(bool cheats);
-    Callback<Cvar<bool>> cvar_cheats("sv_cheats", "bool - can cheats be used in the current game", SYSTEMINFO | ROM, true, SetCheatMode);
+    Callback<Cvar<bool>> cvar_cheats("sv_cheats", "can cheats be used in the current game", SYSTEMINFO | ROM, true, SetCheatMode);
 
     // A cvar is some info alongside a potential proxy for the cvar
     struct cvarRecord_t {
@@ -202,11 +202,15 @@ namespace Cvar {
 
             if (cvar->proxy) {
                 //Tell the cvar proxy about the new value
-                bool valueCorrect = cvar->proxy->OnValueChanged(cvar->value);
+                OnValueChangedResult result = cvar->proxy->OnValueChanged(cvar->value);
 
-                if (not valueCorrect) {
+                if (result.success) {
+                    Cmd::ChangeDescription(cvarName, result.description);
+                    cvar->description = std::move(result.description);
+                } else {
                     //The proxy could not parse the value, rollback
-                    Com_Printf("Value '%s' is not valid for cvar %s\n", cvar->value.c_str(), cvarName.c_str());
+                    Com_Printf("Value '%s' is not valid for cvar %s: %s\n",
+                            cvar->value.c_str(), cvarName.c_str(), result.description.c_str());
                     cvar->value = std::move(oldValue);
                 }
             }
@@ -238,6 +242,7 @@ namespace Cvar {
 
     void Register(CvarProxy* proxy, const std::string& name, std::string description, int flags, const std::string& defaultValue) {
         CvarMap& cvars = GetCvarMap();
+        cvarRecord_t* cvar;
 
         auto it = cvars.find(name);
         if (it == cvars.end()) {
@@ -247,14 +252,13 @@ namespace Cvar {
             }
 
             //Create the cvar and parse its default value
-            cvarRecord_t cvar{defaultValue, defaultValue, flags, description, proxy, {}};
-            cvars[name] = new cvarRecord_t(cvar);
+            cvar = new cvarRecord_t{defaultValue, defaultValue, flags, "", proxy, {}};
+            cvars[name] = cvar;
 
-            GetCCvar(name, *cvars[name]);
-            Cmd::AddCommand(name, cvarCommand, "cvar - " + std::move(description));
+            Cmd::AddCommand(name, cvarCommand, "cvar - " + description);
 
         } else {
-            cvarRecord_t* cvar = it->second;
+            cvar = it->second;
 
             if (cvar->proxy) {
                 Com_Printf(_("Cvar %s cannot be registered twice\n"), name.c_str());
@@ -265,7 +269,7 @@ namespace Cvar {
             cvar->flags |= flags;
 
             cvar->resetValue = std::move(defaultValue);
-            cvar->description = std::move(description);
+            cvar->description = "";
 
             /*
             if (cvar->flags & CVAR_ROM) {
@@ -274,16 +278,23 @@ namespace Cvar {
             */
 
             if (proxy) { //TODO replace me with an assert once we do not need to support the C API
-                bool valueCorrect = proxy->OnValueChanged(cvar->value);
-                if(not valueCorrect) {
-                    bool defaultValueCorrect = proxy->OnValueChanged(defaultValue);
-                    if(not defaultValueCorrect) {
-                        Com_Printf(_("Default value '%s' is not correct for cvar '%s'\n"), defaultValue.c_str(), name.c_str());
+                OnValueChangedResult result = proxy->OnValueChanged(cvar->value);
+                if (result.success) {
+                    Cmd::ChangeDescription(name, result.description);
+                    cvar->description = std::move(result.description);
+                } else {
+                    OnValueChangedResult defaultValueResult = proxy->OnValueChanged(defaultValue);
+                    if (defaultValueResult.success) {
+                        Cmd::ChangeDescription(name, result.description);
+                        cvar->description = std::move(result.description);
+                    } else {
+                        Com_Printf(_("Default value '%s' is not correct for cvar '%s': %s\n"),
+                                defaultValue.c_str(), name.c_str(), defaultValueResult.description.c_str());
                     }
                 }
             }
-            GetCCvar(name, *cvars[name]);
         }
+        GetCCvar(name, *cvar);
     }
 
     void Unregister(const std::string& cvarName) {
@@ -342,9 +353,13 @@ namespace Cvar {
                 SetCCvar(*cvar);
 
                 if (cvar->proxy) {
-                    bool valueCorrect = cvar->proxy->OnValueChanged(cvar->resetValue);
-                    if(not valueCorrect) {
-                        Com_Printf(_("Default value '%s' is not correct for cvar '%s'\n"), cvar->resetValue.c_str(), it.first.c_str());
+                    OnValueChangedResult result = cvar->proxy->OnValueChanged(cvar->resetValue);
+                    if(result.success) {
+                        Cmd::ChangeDescription(it.first, result.description);
+                        cvar->description = std::move(result.description);
+                    } else {
+                        Com_Printf(_("Default value '%s' is not correct for cvar '%s': %s\n"),
+                                cvar->resetValue.c_str(), it.first.c_str(), result.description.c_str());
                     }
                 }
             }

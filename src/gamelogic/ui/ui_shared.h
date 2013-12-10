@@ -415,6 +415,7 @@ typedef struct
 	qboolean( *ownerDrawVisible )( int flags );
 	void ( *runScript )( char **p );
 	void ( *getCVarString )( const char *cvar, char *buffer, int bufsize );
+	void ( *getCVarLatchedString )( const char *cvar, char *buffer, int bufsize );
 	float( *getCVarValue )( const char *cvar );
 	void ( *setCVar )( const char *cvar, const char *value );
 	void ( *drawTextWithCursor )( float x, float y, float scale, vec4_t color, const char *text, int cursorPos, char cursor, int clipped, int style );
