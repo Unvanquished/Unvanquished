@@ -4814,13 +4814,19 @@ static void UI_FeederSelection( int feederID, int index )
 	}
 	else if ( feederID == FEEDER_VOIPINPUT )
 	{
-		trap_Cvar_Set( "s_alInputDevice", uiInfo.voipInput[ index ] );
-		uiInfo.voipInputIndex = index;
+		if ( uiInfo.voipInputCount > 0 )
+		{
+			trap_Cvar_Set( "s_alInputDevice", uiInfo.voipInput[ index ] );
+			uiInfo.voipInputIndex = index;
+		}
 	}
 	else if ( feederID == FEEDER_ALOUTPUT )
 	{
-		trap_Cvar_Set( "s_alDevice", uiInfo.alOutput[ index ] );
-		uiInfo.alOutputIndex = index;
+		if ( uiInfo.alOutputCount > 0 )
+		{
+			trap_Cvar_Set( "s_alDevice", uiInfo.alOutput[ index ] );
+			uiInfo.alOutputIndex = index;
+		}
 	}
 	else if ( feederID == FEEDER_PROFILES )
 	{
