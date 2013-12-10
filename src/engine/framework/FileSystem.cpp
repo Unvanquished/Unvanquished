@@ -26,7 +26,6 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #include "../qcommon/qcommon.h"
 #include "FileSystem.h"
 #include "../../libs/minizip/unzip.h"
-#include <zlib.h>
 #include <vector>
 #include <algorithm>
 
@@ -36,6 +35,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #else
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <fcntl.h>
 #include <dirent.h>
 #include <unistd.h>
 #endif
@@ -340,19 +340,55 @@ void Initialize()
 // Add a pak to the list of available paks
 static void AddPak(pakType_t type, Str::StringRef filename, Str::StringRef basePath)
 {
-	// The pak name doesn't need to be checked because this is done by ListFiles.
-	// Just split the path at the first _ to get the name and version
-	// FIXME: proper name parsing
-	size_t underscore = filename.find('_');
-	std::string name, version;
-	if (underscore != std::string::npos) {
-		version = filename.substr(underscore + 1);
-		name = filename.substr(0, underscore);
-	} else {
-		name = filename;
-		version = "";
+	std::string fullPath = Path::Build(basePath, filename);
+
+	size_t suffixLen = type == PAK_DIR ? strlen(".pk3dir/") : strlen(".pk3");
+	size_t nameStart = filename.rfind('/', suffixLen);
+	if (nameStart == Str::StringRef::npos)
+		nameStart = 0;
+	else
+		nameStart++;
+
+	// Get the name of the package
+	size_t underscore1 = filename.find('_', nameStart);
+	if (underscore1 == Str::StringRef::npos) {
+		Com_Printf("Invalid pak name (no version): %s\n", fullPath.c_str());
+		return;
 	}
-	availablePaks.push_back({std::move(name), std::move(version), false, 0, type, Path::Build(basePath, filename)});
+	std::string name = filename.substr(0, underscore1);
+
+	// Get the version of the package
+	size_t underscore2 = filename.find('_', underscore1 + 1);
+	std::string version;
+	uint32_t checksum = 0;
+	bool hasChecksum;
+	if (underscore2 == Str::StringRef::npos) {
+		version = filename.substr(underscore1 + 1, filename.size() - suffixLen - underscore1 - 1);
+		hasChecksum = false;
+	} else {
+		// Get the optional checksum of the package
+		version = filename.substr(underscore1 + 1, underscore2 - underscore1 - 1);
+		hasChecksum = true;
+		if (type == PAK_DIR) {
+			Com_Printf("Invalid pak name (checksum not allowed on pk3dir): %s\n", fullPath.c_str());
+			return;
+		}
+		if (underscore2 + 9 != filename.size() - suffixLen) {
+			Com_Printf("Invalid pak name (bad checksum): %s\n", fullPath.c_str());
+			return;
+		}
+		for (int i = 0; i < 8; i++) {
+			char c = filename[underscore2 + 1 + i];
+			if (!Str::cisxdigit(c)) {
+				Com_Printf("Invalid pak name (bad checksum): %s\n", fullPath.c_str());
+				return;
+			}
+			uint32_t hexValue = Str::cisdigit(c) ? c - '0' : Str::ctolower(c) - 'a' + 10;
+			checksum = (checksum << 4) | hexValue;
+		}
+	}
+
+	availablePaks.push_back({std::move(name), std::move(version), hasChecksum, checksum, type, std::move(fullPath)});
 }
 
 // Find all paks in the given path
@@ -516,30 +552,28 @@ std::string Path::Build(Str::StringRef base, Str::StringRef path)
 
 std::string Path::DirName(Str::StringRef path)
 {
-	std::string out = path;
+	std::string out;
 	if (path.empty())
 		return out;
 
 	// Trim to last slash, excluding any trailing slash
-	size_t lastSlash = out.rfind('/', out.back() == '/');
-	if (lastSlash == std::string::npos)
-		out.clear();
-	else
-		out.resize(lastSlash);
+	size_t lastSlash = path.rfind('/', path.back() == '/');
+	if (lastSlash != Str::StringRef::npos)
+		out = path.substr(0, lastSlash);
 
 	return out;
 }
 
 std::string Path::BaseName(Str::StringRef path)
 {
-	std::string out = path;
+	std::string out;
 	if (path.empty())
 		return out;
 
 	// Trim from last slash, excluding any trailing slash
-	size_t lastSlash = out.rfind('/', out.back() == '/');
-	if (lastSlash != std::string::npos)
-		out.erase(0, lastSlash + 1);
+	size_t lastSlash = path.rfind('/', path.back() == '/');
+	if (lastSlash != Str::StringRef::npos)
+		out = path.substr(lastSlash + 1);
 
 	return out;
 }

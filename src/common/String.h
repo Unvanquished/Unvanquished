@@ -118,6 +118,23 @@ namespace Str {
                 return npos;
             return result - ptr;
         }
+        size_t rfind(BasicStringRef str, size_t pos = npos)
+        {
+            pos = std::min(pos + str.len, len);
+            const T* result = std::find_end(ptr, ptr + pos, str.ptr, str.ptr + str.len);
+            if (str.len != 0 && result == ptr + pos)
+                return npos;
+            return result - ptr;
+        }
+        size_t rfind(T chr, size_t pos = npos)
+        {
+            pos = std::min(pos + 1, len);
+            for (const T* p = ptr + pos; p != ptr;) {
+                if (*--p == chr)
+                    return p - ptr;
+            }
+            return npos;
+        }
 
         int compare(BasicStringRef other) const
         {
@@ -206,6 +223,20 @@ namespace Str {
     inline bool cisxdigit(char c)
     {
         return cisdigit(c) || (c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f');
+    }
+    inline char ctolower(char c)
+    {
+        if (cisupper(c))
+            return c - 'A' + 'a';
+        else
+            return c;
+    }
+    inline char ctoupper(char c)
+    {
+        if (cislower(c))
+            return c - 'a' + 'A';
+        else
+            return c;
     }
 
     std::string Lower(Str::StringRef text);
