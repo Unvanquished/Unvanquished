@@ -846,7 +846,7 @@ SV_CreateGameVM
 Load a QVM vm or fails and try to load a NaCl vm
 ===================
 */
-static Cvar::Cvar<bool> naclGame("server.vm.useNaCl", "bool - what VM ABI should be used for the game VM (0 = QVM, 1 = NaCl)", Cvar::NONE, false);
+static Cvar::Cvar<bool> naclGame("server.vm.useNaCl", "what VM ABI should be used for the game VM (0 = QVM, 1 = NaCl)", Cvar::NONE, false);
 GameVM* SV_CreateGameVM( void )
 {
 	if ( naclGame.Get() )
