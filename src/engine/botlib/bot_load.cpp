@@ -319,7 +319,7 @@ inline void dtFreeCustom( void *ptr )
 	Z_Free( ptr );
 }
 
-extern "C" void BotShutdownNav( void )
+void BotShutdownNav( void )
 {
 	for ( int i = 0; i < numNavData; i++ )
 	{
@@ -353,7 +353,7 @@ extern "C" void BotShutdownNav( void )
 	numNavData = 0;
 }
 
-extern "C" qboolean BotSetupNav( const botClass_t *botClass, qhandle_t *navHandle )
+qboolean BotSetupNav( const botClass_t *botClass, qhandle_t *navHandle )
 {
 	cvar_t *maxNavNodes = Cvar_Get( "bot_maxNavNodes", "4096", CVAR_ARCHIVE | CVAR_LATCH );
 

@@ -37,7 +37,10 @@ Maryland 20850 USA.
 #define QCOMMON_H_
 
 #include "../qcommon/cm_public.h"
-#include "../../include/global.h"
+
+//kangz need these for the command completion handlers
+#include <vector>
+#include <string>
 #include "cvar.h"
 
 //============================================================================
@@ -359,7 +362,7 @@ void VM_Init( void );
 
 vm_t *VM_Create( const char *module, intptr_t ( *systemCalls )( intptr_t * ), vmInterpret_t interpret );
 
-// module should be bare: "cgame", not "cgame.dll", "vm/cgame.qvm" or "cgamellvm.bc"
+// module should be bare: "cgame", not "cgame.dll", "vm/cgame.qvm"
 
 void           VM_Free( vm_t *vm );
 void           VM_Clear( void );
@@ -408,28 +411,9 @@ files can be execed.
 
 */
 
-void Cbuf_Init( void );
-
-// allocates an initial text buffer that will grow as needed
-
-void Cbuf_AddText( const char *text );
-
-// Adds command text at the end of the buffer, does NOT add a final \n
-
 void Cbuf_ExecuteText( int exec_when, const char *text );
 
 // this can be used in place of either Cbuf_AddText or Cbuf_InsertText
-
-void Cbuf_Execute( void );
-
-// Pulls off \n terminated lines of text from the command buffer and sends
-// them through Cmd_ExecuteString.  Stops when the buffer is empty.
-// Called on a per-frame basis, but may also be explicitly invoked.
-// Do not call inside a command function, or current args will be destroyed.
-
-void Cdelay_Frame (void);
-//Checks if a delayed command has to be executed and decreases the remaining
-//delay time for all of them
 
 //===========================================================================
 
@@ -443,8 +427,6 @@ then searches for a command or variable that matches the first token.
 typedef void ( *xcommand_t )( void );
 typedef void ( *xcommand_arg_t )( int );
 
-void Cmd_Init( void );
-
 void     Cmd_AddCommand( const char *cmd_name, xcommand_t function );
 
 // called by the init functions of other parts of the program to
@@ -454,11 +436,13 @@ void     Cmd_AddCommand( const char *cmd_name, xcommand_t function );
 // as a clc_clientCommand instead of executed locally
 
 void Cmd_RemoveCommand( const char *cmd_name );
+void Cmd_RemoveCommandsByFunc( xcommand_t function );
 
 void Cmd_CommandCompletion( void ( *callback )( const char *s ) );
 
 typedef void ( *completionFunc_t )( char *args, int argNum );
 
+void Cmd_OnCompleteMatch(const char* s);
 void Cmd_CommandCompletion( void ( *callback )( const char *s ) );
 void Cmd_AliasCompletion( void ( *callback )( const char *s ) );
 void Cmd_DelayCompletion( void ( *callback )( const char *s ) );
@@ -476,15 +460,14 @@ char *Cmd_Argv( int arg );
 void Cmd_ArgvBuffer( int arg, char *buffer, int bufferLength );
 char *Cmd_Args( void );
 char *Cmd_ArgsFrom( int arg );
+void Cmd_LiteralArgsBuffer( char* buffer, int bufferLength );
 void Cmd_ArgsBuffer( char *buffer, int bufferLength );
 const char *Cmd_Cmd( void );
 const char *Cmd_Cmd_FromNth( int );
 
 // these all share an output buffer
-const char *Cmd_EscapeString( const char *in );
 const char *Cmd_QuoteString( const char *in );
 const char *Cmd_UnquoteString( const char *in );
-const char *Cmd_DequoteString( const char *in ); // FIXME QUOTING INFO
 
 void Cmd_QuoteStringBuffer( const char *in, char *buffer, int size );
 
@@ -493,18 +476,9 @@ void Cmd_QuoteStringBuffer( const char *in, char *buffer, int size );
 // if arg >= argc, so string operations are always safe.
 
 void Cmd_TokenizeString( const char *text );
-void Cmd_TokenizeStringIgnoreQuotes( const char *text_in );
 void Cmd_LiteralArgsBuffer( char *buffer, int bufferLength );
 void Cmd_SaveCmdContext( void );
 void Cmd_RestoreCmdContext( void );
-
-// Takes a null terminated string.  Does not need to be /n terminated.
-// breaks the string up into arg tokens.
-
-void Cmd_ExecuteString( const char *text );
-
-// Parses a single line of text into arguments and tries to execute it
-// as if it was typed at the console
 
 /*
 ==============================================================
@@ -717,6 +691,11 @@ void       FS_FilenameCompletion( const char *dir, const char *ext,
 
 qboolean   FS_Which( const char *filename, void *searchPath );
 
+namespace FS {
+    std::vector<std::pair<std::string, std::string>> CompleteFilenameInDir(const std::string& prefix, const std::string& dir,
+                                                   const std::string& extension, bool stripExtension = true);
+}
+
 /*
 ==============================================================
 
@@ -749,22 +728,10 @@ typedef struct
 #define FIELD_TEAM_SPECTATORS 2
 #define FIELD_TEAM_DEFAULT    4
 
-void Field_Clear( field_t *edit );
-void Field_Set( field_t *edit, const char *text );
-void Field_WordDelete( field_t *edit );
-void Field_AutoComplete( field_t *edit, const char *prompt );
 void Field_CompleteKeyname( int flags );
 void Field_CompleteTeamname( int flags );
-void Field_CompleteCgame( int argNum );
-void Field_CompleteFilename( const char *dir,
-                             const char *ext, qboolean stripExt );
-void Field_CompleteAlias( void );
-void Field_CompleteDelay( void );
-void Field_CompleteCommand( char *cmd,
-                            qboolean doCommands, qboolean doCvars );
 
 // code point count <-> UTF-8 byte count
-int Field_OffsetToCursor( field_t *edit, int offset );
 int Field_CursorToOffset( field_t *edit );
 int Field_ScrollToOffset( field_t *edit );
 
@@ -800,11 +767,7 @@ typedef enum
 // centralized and cleaned, that's the max string you can send to a Com_Printf / Com_DPrintf (above gets truncated)
 #define MAXPRINTMSG 4096
 
-char       *CopyString( const char *in );
 void       Info_Print( const char *s );
-
-void       Com_BeginRedirect( char *buffer, int buffersize, void ( *flush )( char * ) );
-void       Com_EndRedirect( void );
 
 // *INDENT-OFF*
 int QDECL  Com_VPrintf( const char *fmt, va_list argptr ) VPRINTF_LIKE(1);    // conforms to vprintf prototype for print callback passing
@@ -816,13 +779,12 @@ void QDECL Com_Log( log_level_t level, const char* message );
 #define    PrintBanner(text) Com_Printf("----- %s -----\n", text );
 
 // *INDENT-ON*
-void       Com_Quit_f( void ) NORETURN;
-int        Com_EventLoop( void );
-int        Com_Milliseconds( void );  // will be journaled properly
+void NORETURN Com_Quit_f( void );
+int        Com_Milliseconds( void );
 unsigned   Com_BlockChecksum( const void *buffer, int length );
 char       *Com_MD5File( const char *filename, int length );
 void       Com_MD5Buffer( const char *pubkey, int size, char *buffer, int bufsize );
-int        Com_FilterPath( char *filter, char *name, int casesensitive );
+int        Com_FilterPath( const char *filter, char *name, int casesensitive );
 int        Com_RealTime( qtime_t *qtime );
 int        Com_GMTime( qtime_t *qtime );
 // Com_Time: client gets local time, server gets GMT
@@ -849,10 +811,6 @@ qboolean            Com_WriteProfile( char *profile_path );
 
 extern cvar_t       *com_crashed;
 
-extern cvar_t       *com_ignorecrash; //bani
-
-extern cvar_t       *com_pid; //bani
-
 extern cvar_t       *com_developer;
 extern cvar_t       *com_dedicated;
 extern cvar_t       *com_speeds;
@@ -864,18 +822,10 @@ extern cvar_t       *com_version;
 
 extern cvar_t       *com_consoleCommand;
 
-extern cvar_t       *com_journal;
 extern cvar_t       *com_ansiColor;
-extern cvar_t       *com_logosPlaying;
 
 extern cvar_t       *com_unfocused;
-extern cvar_t       *com_maxfpsUnfocused;
 extern cvar_t       *com_minimized;
-extern cvar_t       *com_maxfpsMinimized;
-
-// watchdog
-extern cvar_t       *com_watchdog;
-extern cvar_t       *com_watchdog_cmd;
 
 // both client and server must agree to pause
 extern cvar_t       *cl_paused;
@@ -895,9 +845,6 @@ extern int          com_expectedhunkusage;
 extern int          com_hunkusedvalue;
 
 extern qboolean     com_errorEntered;
-
-extern fileHandle_t com_journalFile;
-extern fileHandle_t com_journalDataFile;
 
 typedef enum
 {
@@ -929,27 +876,28 @@ temp file loading
 
 */
 
-#if !defined( NDEBUG ) && !defined( BSPC )
-#define ZONE_DEBUG
-#endif
-
-#ifdef ZONE_DEBUG
-#define Z_TagMalloc( size, tag ) Z_TagMallocDebug( size, tag, # size, __FILE__, __LINE__ )
-#define Z_Malloc( size )         Z_MallocDebug( size, # size, __FILE__, __LINE__ )
-#define S_Malloc( size )         S_MallocDebug( size, # size, __FILE__, __LINE__ )
-void     *Z_TagMallocDebug( int size, int tag, const char *label, const char *file, int line );  // NOT 0 filled memory
-void     *Z_MallocDebug( int size, const char *label, const char *file, int line );  // returns 0 filled memory
-void     *S_MallocDebug( int size, const char *label, const char *file, int line );  // NOT 0 filled memory
-
-#else
-void     *Z_TagMalloc( int size, int tag );  // NOT 0 filled memory
-void     *Z_Malloc( int size );  // returns 0 filled memory
-void     *S_Malloc( int size );  // NOT 0 filled memory only for small allocations
-
-#endif
-void     Z_Free( void *ptr );
-void     Z_FreeTags( int tag );
-void     Z_LogHeap( void );
+// Use malloc instead of the zone allocator
+static inline void* Z_TagMalloc(size_t size, int tag)
+{
+  Q_UNUSED(tag);
+  return calloc(size, 1);
+}
+static inline void* Z_Malloc(size_t size)
+{
+  return calloc(size, 1);
+}
+static inline void* S_Malloc(size_t size)
+{
+  return malloc(size);
+}
+static inline char* CopyString(const char* str)
+{
+  return strdup(str);
+}
+static inline void Z_Free(void* ptr)
+{
+  free(ptr);
+}
 
 void     Hunk_Clear( void );
 void     Hunk_ClearToMark( void );
@@ -995,7 +943,6 @@ void     CL_ClearStaticDownload( void );
 void     CL_Disconnect( qboolean showMainMenu );
 void     CL_Shutdown( void );
 void     CL_Frame( int msec );
-qboolean CL_GameCommand( void );
 void     CL_KeyEvent( int key, qboolean down, unsigned time );
 
 void     CL_CharEvent( int c );
@@ -1008,7 +955,7 @@ void CL_JoystickEvent( int axis, int value, int time );
 
 void CL_PacketEvent( netadr_t from, msg_t *msg );
 
-void CL_ConsolePrint( char *text );
+void CL_ConsolePrint( std::string text );
 
 void CL_MapLoading( void );
 
@@ -1039,10 +986,6 @@ void Key_KeynameCompletion( void ( *callback )( const char *s ) );
 
 // for keyname autocompletion
 
-void CL_CgameCompletion( void ( *callback )( const char *s ), int argNum );
-
-// for cgame command autocompletion
-
 void Key_WriteBindings( fileHandle_t f );
 
 // for writing the config files
@@ -1060,16 +1003,10 @@ void SCR_DebugGraph( float value, int color );  // FIXME: move logging to common
 // server interface
 //
 void     SV_Init( void );
-void     SV_Shutdown( char *finalmsg );
+void     SV_Shutdown( const char *finalmsg );
 void     SV_Frame( int msec );
 void     SV_PacketEvent( netadr_t from, msg_t *msg );
-qboolean SV_GameCommand( void );
 int      SV_FrameMsec( void );
-
-//
-// UI interface
-//
-qboolean UI_GameCommand( void );
 
 /*
 ==============================================================
@@ -1113,7 +1050,6 @@ typedef struct
 
 void       Com_QueueEvent( int time, sysEventType_t type, int value, int value2, int ptrLength, void *ptr );
 int        Com_EventLoop( void );
-sysEvent_t Com_GetSystemEvent( void );
 
 void       Sys_Init( void );
 qboolean   Sys_IsNumLockDown( void );
@@ -1125,11 +1061,11 @@ void                  Sys_UnloadDll( void *dllHandle );
 
 void                  *Sys_LoadFunction( void *dllHandle, const char *functionName );
 
-char                  *Sys_GetCurrentUser( void );
+const char            *Sys_GetCurrentUser( void );
 int                   Sys_GetPID( void );
 
-void QDECL            Sys_Error( const char *error, ... ) PRINTF_LIKE(1) NORETURN;
-void                  Sys_Quit( void ) NORETURN;
+void QDECL NORETURN   Sys_Error( const char *error, ... ) PRINTF_LIKE(1);
+void NORETURN         Sys_Quit( void );
 char                  *Sys_GetClipboardData( clipboard_t clip );  // note that this isn't journaled...
 
 void                  Sys_Print( const char *msg );
@@ -1177,7 +1113,7 @@ char         *Sys_Dirname( char *path );
 char         *Sys_Basename( char *path );
 char         *Sys_ConsoleInput( void );
 
-char         **Sys_ListFiles( const char *directory, const char *extension, char *filter, int *numfiles, qboolean wantsubs );
+char         **Sys_ListFiles( const char *directory, const char *extension, const char *filter, int *numfiles, qboolean wantsubs );
 void         Sys_FreeFileList( char **list );
 
 void         Sys_Sleep( int msec );
@@ -1204,11 +1140,6 @@ typedef enum
 dialogResult_t Sys_Dialog( dialogType_t type, const char *message, const char *title );
 
 void           Sys_QueEvent( int time, sysEventType_t type, int value, int value2, int ptrLength, void *ptr );
-
-void       Hist_Load( void );
-void       Hist_Add( const char *field );
-const char *Hist_Next( void );
-const char *Hist_Prev( void );
 
 /* This is based on the Adaptive Huffman algorithm described in Sayood's Data
  * Compression book.  The ranks are not actually stored, but implicitly defined
@@ -1290,13 +1221,10 @@ void Com_RandomBytes( byte *string, int len );
 
 void Trans_Init( void );
 void Trans_LoadDefaultLanguage( void );
-const char* Trans_Gettext( const char *msgid ) __attribute__((__format_arg__(1)));
-const char* Trans_Pgettext( const char *ctxt, const char *msgid ) __attribute__((__format_arg__(2)));
-const char* Trans_GettextPlural( const char *msgid, const char *msgid_plural, int num ) __attribute__((__format_arg__(1))) __attribute__((__format_arg__(2)));
-const char* Trans_GettextGame( const char *msgid ) __attribute__((__format_arg__(1)));
-const char* Trans_PgettextGame( const char *ctxt, const char *msgid ) __attribute__((__format_arg__(2)));
-const char* Trans_GettextGamePlural( const char *msgid, const char *msgid_plural, int num ) __attribute__((__format_arg__(1))) __attribute__((__format_arg__(2)));
-
-void     Crypto_Init( void );
-void     Crypto_Shutdown( void );
+const char* Trans_Gettext( const char *msgid ) PRINTF_TRANSLATE_ARG(1);
+const char* Trans_Pgettext( const char *ctxt, const char *msgid ) PRINTF_TRANSLATE_ARG(2);
+const char* Trans_GettextPlural( const char *msgid, const char *msgid_plural, int num ) PRINTF_TRANSLATE_ARG(1) PRINTF_TRANSLATE_ARG(2);
+const char* Trans_GettextGame( const char *msgid ) PRINTF_TRANSLATE_ARG(1);
+const char* Trans_PgettextGame( const char *ctxt, const char *msgid ) PRINTF_TRANSLATE_ARG(2);
+const char* Trans_GettextGamePlural( const char *msgid, const char *msgid_plural, int num ) PRINTF_TRANSLATE_ARG(1) PRINTF_TRANSLATE_ARG(2);
 #endif // QCOMMON_H_

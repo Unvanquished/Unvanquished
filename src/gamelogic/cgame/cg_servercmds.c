@@ -61,8 +61,8 @@ static void CG_ParseScores( void )
 		cg.scores[ i ].score = atoi( CG_Argv( i * 6 + 4 ) );
 		cg.scores[ i ].ping = atoi( CG_Argv( i * 6 + 5 ) );
 		cg.scores[ i ].time = atoi( CG_Argv( i * 6 + 6 ) );
-		cg.scores[ i ].weapon = atoi( CG_Argv( i * 6 + 7 ) );
-		cg.scores[ i ].upgrade = atoi( CG_Argv( i * 6 + 8 ) );
+		cg.scores[ i ].weapon = (weapon_t) atoi( CG_Argv( i * 6 + 7 ) );
+		cg.scores[ i ].upgrade = (upgrade_t) atoi( CG_Argv( i * 6 + 8 ) );
 
 		if ( cg.scores[ i ].client < 0 || cg.scores[ i ].client >= MAX_CLIENTS )
 		{
@@ -138,13 +138,13 @@ void CG_ParseServerinfo( void )
 	cgs.markDeconstruct    = atoi( Info_ValueForKey( info, "g_markDeconstruct" ) );
 	cgs.powerReactorRange  = atoi( Info_ValueForKey( info, "g_powerReactorRange" ) );
 	cgs.powerRepeaterRange = atoi( Info_ValueForKey( info, "g_powerRepeaterRange" ) );
-	cgs.confidenceHalfLife = atof( Info_ValueForKey( info, "g_confidenceHalfLife" ) );
+	cgs.momentumHalfLife = atof( Info_ValueForKey( info, "g_momentumHalfLife" ) );
 	cgs.unlockableMinTime  = atof( Info_ValueForKey( info, "g_unlockableMinTime" ) );
 
 	Q_strncpyz( cgs.mapname, Info_ValueForKey( info, "mapname" ), sizeof(cgs.mapname) );
 
 	// pass some of these to UI
-	trap_Cvar_Set( "ui_confidenceHalfLife", va( "%f", cgs.confidenceHalfLife ) );
+	trap_Cvar_Set( "ui_momentumHalfLife", va( "%f", cgs.momentumHalfLife ) );
 	trap_Cvar_Set( "ui_unlockableMinTime",  va( "%f", cgs.unlockableMinTime ) );
 }
 
@@ -188,7 +188,7 @@ void CG_ShaderStateChanged( void )
 	char       newShader[ MAX_QPATH ];
 	char       timeOffset[ 16 ];
 	const char *o;
-	char       *n, *t;
+	const char *n, *t;
 
 	o = CG_ConfigString( CS_SHADERSTATE );
 
@@ -400,7 +400,7 @@ void CG_Menu( int menu, int arg )
 	const char   *longMsg = NULL; // command parameter
 	const char   *shortMsg = NULL; // non-modal version of message
 	const char   *dialog;
-	dialogType_t type = 0; // controls which cg_disable var will switch it off
+	dialogType_t type = (dialogType_t) 0; // controls which cg_disable var will switch it off
 
 	switch ( cg.snap->ps.persistant[ PERS_TEAM ] )
 	{
@@ -601,8 +601,6 @@ void CG_Menu( int menu, int arg )
 			type = DT_MISC_CP;
 			break;
 
-			//===============================
-
 		case MN_H_NOBP:
 			if ( cgs.markDeconstruct )
 			{
@@ -626,19 +624,6 @@ void CG_Menu( int menu, int arg )
 			type = DT_BUILD;
 			break;
 
-		case MN_H_NOREACTOR:
-			longMsg = _("Buildables cannot materialize without a reactor.");
-			shortMsg = _("There is no reactor");
-			type = DT_BUILD;
-			break;
-
-		case MN_H_ONEREACTOR:
-			longMsg = _("There can only be one Reactor. Deconstruct the existing one if you "
-			          "wish to move it.");
-			shortMsg = _("There can only be one Reactor");
-			type = DT_BUILD;
-			break;
-
 		case MN_H_NOPOWERHERE:
 			longMsg = _("There is not enough power in this area. Keep a distance to other "
 			            "buildables or build a repeater to increase the local capacity.");
@@ -646,11 +631,17 @@ void CG_Menu( int menu, int arg )
 			type = DT_BUILD;
 			break;
 
-		// unused - DCC isn't required to build anything
-		case MN_H_NODCC:
-			longMsg = _("There is no Defense Computer. A Defense Computer is needed to "
-			          "build this.");
-			shortMsg = _("There is no Defense Computer");
+		case MN_H_NOREACTOR:
+			longMsg = _("There is no reactor and the local power supply is insufficient. "
+			            "Build the reactor or a repeater to increase the local capacity.");
+			shortMsg = _("There is no reactor and the local power supply is insufficient");
+			type = DT_BUILD;
+			break;
+
+		case MN_H_ONEREACTOR:
+			longMsg = _("There can only be one Reactor. Mark the existing one if you "
+			            "wish to move it.");
+			shortMsg = _("There can only be one Reactor");
 			type = DT_BUILD;
 			break;
 
@@ -1136,7 +1127,7 @@ static void CG_ParseVoice( void )
 		return;
 	}
 
-	vChan = atoi( CG_Argv( 2 ) );
+	vChan = (voiceChannel_t) atoi( CG_Argv( 2 ) );
 
 	if ( ( unsigned ) vChan >= VOICE_CHAN_NUM_CHANS )
 	{
@@ -1329,7 +1320,7 @@ static void CG_Chat_f( void )
 	trap_Argv( 1, id, sizeof( id ) );
 	trap_Argv( 2, mode, sizeof( mode ) );
 
-	CG_Say( NULL, atoi( id ), atoi( mode ), CG_Argv( 3 ) );
+	CG_Say( NULL, atoi( id ), (saymode_t) atoi( mode ), CG_Argv( 3 ) );
 }
 
 /*
@@ -1345,7 +1336,7 @@ static void CG_AdminChat_f( void )
 	trap_Argv( 1, name, sizeof( name ) );
 	trap_Argv( 2, mode, sizeof( mode ) );
 
-	CG_Say( name, -1, atoi( mode ), CG_Argv( 3 ) );
+	CG_Say( name, -1, (saymode_t) atoi( mode ), CG_Argv( 3 ) );
 }
 
 /*
@@ -1488,7 +1479,7 @@ static void CG_ServerCommand( void )
 		return;
 	}
 
-	command = bsearch( cmd, svcommands, ARRAY_LEN( svcommands ),
+	command = (consoleCommand_t*) bsearch( cmd, svcommands, ARRAY_LEN( svcommands ),
 	                   sizeof( svcommands[ 0 ] ), cmdcmp );
 
 	if ( command )

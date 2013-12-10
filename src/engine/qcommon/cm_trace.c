@@ -164,31 +164,6 @@ float CM_VectorDistanceSquared( vec3_t p1, vec3_t p2 )
 }
 
 /*
-================
-SquareRootFloat
-================
-*/
-float SquareRootFloat( float number )
-{
-	union
-	{
-		float f;
-		int   i;
-	} t;
-
-	float       x, y;
-	const float f = 1.5F;
-
-	x = number * 0.5F;
-	t.f = number;
-	t.i = 0x5f3759df - ( t.i >> 1 );
-	y = t.f;
-	y = y * ( f - ( x * y * y ) );
-	y = y * ( f - ( x * y * y ) );
-	return number * y;
-}
-
-/*
 ===============================================================================
 
 POSITION TESTING
@@ -1672,7 +1647,7 @@ void CM_TraceThroughSphere( traceWork_t *tw, vec3_t origin, float radius, vec3_t
 
 	if ( d > 0 )
 	{
-		sqrtd = SquareRootFloat( d );
+		sqrtd = sqrtf( d );
 		// = (- b + sqrtd) * 0.5f; // / (2.0f * a);
 		fraction = ( -b - sqrtd ) * 0.5f; // / (2.0f * a);
 
@@ -1692,15 +1667,6 @@ void CM_TraceThroughSphere( traceWork_t *tw, vec3_t origin, float radius, vec3_t
 			VectorSubtract( end, start, dir );
 			VectorMA( start, fraction, dir, intersection );
 			VectorSubtract( intersection, origin, dir );
-#ifdef CAPSULE_DEBUG
-			l2 = VectorLength( dir );
-
-			if ( l2 < radius )
-			{
-				int bah = 1;
-			}
-
-#endif
 			scale = 1 / ( radius + RADIUS_EPSILON );
 			VectorScale( dir, scale, dir );
 			VectorCopy( dir, tw->trace.plane.normal );
@@ -1793,7 +1759,7 @@ void CM_TraceThroughVerticalCylinder( traceWork_t *tw, vec3_t origin, float radi
 
 	if ( d > 0 )
 	{
-		sqrtd = SquareRootFloat( d );
+		sqrtd = sqrtf( d );
 		// = (- b + sqrtd) * 0.5f;// / (2.0f * a);
 		fraction = ( -b - sqrtd ) * 0.5f; // / (2.0f * a);
 
@@ -1819,15 +1785,6 @@ void CM_TraceThroughVerticalCylinder( traceWork_t *tw, vec3_t origin, float radi
 				tw->trace.fraction = fraction;
 				VectorSubtract( intersection, origin, dir );
 				dir[ 2 ] = 0;
-#ifdef CAPSULE_DEBUG
-				l2 = VectorLength( dir );
-
-				if ( l2 <= radius )
-				{
-					int bah = 1;
-				}
-
-#endif
 				scale = 1 / ( radius + RADIUS_EPSILON );
 				VectorScale( dir, scale, dir );
 				VectorCopy( dir, tw->trace.plane.normal );

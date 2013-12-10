@@ -304,7 +304,7 @@ const char *String_Alloc( const char *p )
 			str = str->next;
 		}
 
-		str = UI_Alloc( sizeof( stringDef_t ) );
+		str = (stringDef_t*) UI_Alloc( sizeof( stringDef_t ) );
 		str->next = NULL;
 		str->str = &strPool[ ph ];
 
@@ -1325,7 +1325,7 @@ void Item_UpdatePosition( itemDef_t *item )
 		return;
 	}
 
-	menu = item->parent;
+	menu = (menuDef_t*) item->parent;
 
 	x = menu->window.rect.x;
 	y = menu->window.rect.y;
@@ -2258,7 +2258,7 @@ static float UI_Parse_Indent( const char **text )
 	const char *p = *text;
 	int        numDigits;
 	float      pixels;
-#if defined(__GNUC__) || defined(__clang__) || defined( Q3_VM ) // stop crashes on Visual-C++-compiled DLLs with Unicode characters
+#ifndef _MSC_VER // stop crashes on Visual-C++-compiled DLLs with Unicode characters
 	while ( isdigit( *p ) || *p == '.' )
 #else
 	while ( iswdigit( *p ) || *p == '.' )
@@ -2885,7 +2885,7 @@ void Item_RunScript( itemDef_t *item, const char *s )
 				continue;
 			}
 
-			cmd = bsearch( command, commandList, scriptCommandCount,
+			cmd = (commandDef_t*) bsearch( command, commandList, scriptCommandCount,
 			               sizeof( commandDef_t ), commandComp );
 
 			if ( cmd )
@@ -5246,7 +5246,7 @@ void Item_TextColor( itemDef_t *item, vec4_t *newColor )
 		lowLight[ 1 ] = 0.8 * item->window.foreColor[ 1 ];
 		lowLight[ 2 ] = 0.8 * item->window.foreColor[ 2 ];
 		lowLight[ 3 ] = 0.8 * item->window.foreColor[ 3 ];
-		LerpColor( item->window.foreColor, lowLight, *newColor, 0.5 + 0.5 * sin( DC->realTime / PULSE_DIVISOR ) );
+		LerpColor( item->window.foreColor, lowLight, *newColor, 0.5 + 0.5 * sin( ( float )DC->realTime / PULSE_DIVISOR ) );
 	}
 	else
 	{
@@ -6037,7 +6037,7 @@ static const char *const g_bind_commands[] =
 	"+useitem",
 	"+voiprecord",
 	"centerview",
-	"if alt \"/deconstruct marked\" /deconstruct",
+	"modcase alt \"/deconstruct marked\" /deconstruct",
 	"menu voip",
 	"messagemode",
 	"messagemode2",
@@ -6046,7 +6046,7 @@ static const char *const g_bind_commands[] =
 	"messagemodec",
 	"scoresDown",
 	"scoresUp",
-	"if shift /screenshotJPEG /screenshotPNG",
+	"modcase shift /screenshotJPEG /screenshotPNG",
 	"teamvote no",
 	"teamvote yes",
 	"vote no",
@@ -6116,7 +6116,7 @@ static void Controls_GetKeyAssignment( const char *command, int *twokeys )
 		}
 		else
 		{
-			DC->getBindingBuf( j, team, b, sizeof( b ) );
+			DC->getBindingBuf( j, TEAM_NONE /*team*/, b, sizeof( b ) );
 
 			if ( *b && !Q_stricmp( b, command ) )
 			{
@@ -6337,7 +6337,7 @@ void Item_Bind_Paint( itemDef_t *item )
 			lowLight[ 3 ] = 0.8f * parent->focusColor[ 3 ];
 
 			LerpColor( parent->focusColor, lowLight, newColor,
-			           0.5 + 0.5 * sin( DC->realTime / PULSE_DIVISOR ) );
+			           0.5 + 0.5 * sin( ( float )DC->realTime / PULSE_DIVISOR ) );
 		}
 		else
 		{
@@ -6785,7 +6785,7 @@ qboolean ItemIntersectsActiveComboBox( itemDef_t *item )
 	}
 
 	cast = Item_ComboBox_MaybeCastToListBox( g_comboBoxItem );
-		
+
 	mins[ 0 ] = g_comboBoxItem->window.rect.x;
 	mins[ 1 ] = g_comboBoxItem->window.rect.y;
 	maxs[ 0 ] = mins[ 0 ] + g_comboBoxItem->window.rect.w;
@@ -6902,7 +6902,7 @@ void Item_OwnerDraw_Paint( itemDef_t *item )
 			lowLight[ 1 ] = 0.8 * item->window.foreColor[ 1 ];
 			lowLight[ 2 ] = 0.8 * item->window.foreColor[ 2 ];
 			lowLight[ 3 ] = 0.8 * item->window.foreColor[ 3 ];
-			LerpColor( item->window.foreColor, lowLight, color, 0.5 + 0.5 * sin( DC->realTime / PULSE_DIVISOR ) );
+			LerpColor( item->window.foreColor, lowLight, color, 0.5 + 0.5 * sin( ( float )DC->realTime / PULSE_DIVISOR ) );
 		}
 
 		if ( item->cvarFlags & ( CVAR_ENABLE | CVAR_DISABLE ) && !Item_EnableShowViaCvar( item, CVAR_ENABLE ) )
@@ -7966,12 +7966,12 @@ qboolean ItemParse_type( itemDef_t *item, int handle )
 	{
 		case ITEM_TYPE_LISTBOX:
 		case ITEM_TYPE_COMBOBOX:
-			item->typeData.list = UI_Alloc( sizeof( listBoxDef_t ) );
+			item->typeData.list = (listBoxDef_t*) UI_Alloc( sizeof( listBoxDef_t ) );
 			memset( item->typeData.list, 0, sizeof( listBoxDef_t ) );
 			break;
 
 		case ITEM_TYPE_CYCLE:
-			item->typeData.cycle = UI_Alloc( sizeof( cycleDef_t ) );
+			item->typeData.cycle = (cycleDef_t*) UI_Alloc( sizeof( cycleDef_t ) );
 			memset( item->typeData.cycle, 0, sizeof( cycleDef_t ) );
 			break;
 
@@ -7982,7 +7982,7 @@ qboolean ItemParse_type( itemDef_t *item, int handle )
 		case ITEM_TYPE_BIND:
 		case ITEM_TYPE_SLIDER:
 		case ITEM_TYPE_TEXT:
-			item->typeData.edit = UI_Alloc( sizeof( editFieldDef_t ) );
+			item->typeData.edit = (editFieldDef_t*) UI_Alloc( sizeof( editFieldDef_t ) );
 			memset( item->typeData.edit, 0, sizeof( editFieldDef_t ) );
 
 			if ( item->type == ITEM_TYPE_EDITFIELD || item->type == ITEM_TYPE_SAYFIELD )
@@ -7993,12 +7993,12 @@ qboolean ItemParse_type( itemDef_t *item, int handle )
 			break;
 
 		case ITEM_TYPE_MULTI:
-			item->typeData.multi = UI_Alloc( sizeof( multiDef_t ) );
+			item->typeData.multi = (multiDef_t*) UI_Alloc( sizeof( multiDef_t ) );
 			memset( item->typeData.multi, 0, sizeof( multiDef_t ) );
 			break;
 
 		case ITEM_TYPE_MODEL:
-			item->typeData.model = UI_Alloc( sizeof( modelDef_t ) );
+			item->typeData.model = (modelDef_t*) UI_Alloc( sizeof( modelDef_t ) );
 			memset( item->typeData.model, 0, sizeof( modelDef_t ) );
 			break;
 
@@ -9262,7 +9262,7 @@ qboolean MenuParse_itemDef( itemDef_t *item, int handle )
 
 	if ( menu->itemCount < MAX_MENUITEMS )
 	{
-		menu->items[ menu->itemCount ] = UI_Alloc( sizeof( itemDef_t ) );
+		menu->items[ menu->itemCount ] = (itemDef_t*) UI_Alloc( sizeof( itemDef_t ) );
 		Item_Init( menu->items[ menu->itemCount ] );
 
 		if ( !Item_Parse( handle, menu->items[ menu->itemCount ] ) )
@@ -9492,7 +9492,7 @@ void *Display_CaptureItem( int x, int y )
 qboolean Display_MouseMove( void *p, float x, float y )
 {
 	int       i;
-	menuDef_t *menu = p;
+	menuDef_t *menu = (menuDef_t*) p;
 
 	if ( menu == NULL )
 	{
@@ -9544,7 +9544,7 @@ int Display_CursorType( int x, int y )
 
 void Display_HandleKey( int key, int chr, qboolean down, int x, int y )
 {
-	menuDef_t *menu = Display_CaptureItem( x, y );
+	menuDef_t *menu = (menuDef_t*) Display_CaptureItem( x, y );
 
 	if ( menu == NULL )
 	{
@@ -9696,62 +9696,17 @@ int UI_GetChatColour( int which, int team )
 
 void UI_R_GlyphChar( fontHandle_t font, int ch, glyphInfo_t *glyph )
 {
-  static int engineState = 0;
-
-  if( !( engineState & 0x01 ) )
-  {
-    char t[2];
-
-    engineState |= 0x01;
-
-    trap_Cvar_VariableStringBuffer( "\\IS_GETTEXT_SUPPORTED", t, 2 );
-
-    if( t[0] == '1' )
-      engineState |= 0x02;
-  }
-
-  if( engineState & 0x02 )
-    trap_R_GlyphChar( font, ch, glyph );
+  trap_R_GlyphChar( font, ch, glyph );
 }
 
 void UI_R_Glyph( fontHandle_t font, const char *str, glyphInfo_t *glyph )
 {
-  static int engineState = 0;
-
-  if( !( engineState & 0x01 ) )
-  {
-    char t[2];
-
-    engineState |= 0x01;
-
-    trap_Cvar_VariableStringBuffer( "\\IS_GETTEXT_SUPPORTED", t, 2 );
-
-    if( t[0] == '1' )
-      engineState |= 0x02;
-  }
-
-  if( engineState & 0x02 )
-    trap_R_Glyph( font, str, glyph );
+  trap_R_Glyph( font, str, glyph );
 }
 
 void UI_R_UnregisterFont( fontHandle_t font )
 {
-  static int engineState = 0;
-
-  if( !( engineState & 0x01 ) )
-  {
-    char t[2];
-
-    engineState |= 0x01;
-
-    trap_Cvar_VariableStringBuffer( "\\IS_GETTEXT_SUPPORTED", t, 2 );
-
-    if( t[0] == '1' )
-      engineState |= 0x02;
-  }
-
-  if( engineState & 0x02 )
-    trap_R_UnregisterFont( font );
+  trap_R_UnregisterFont( font );
 }
 
 const char *Gettext( const char *msgid )

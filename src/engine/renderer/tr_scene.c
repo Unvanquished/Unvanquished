@@ -171,7 +171,7 @@ void R_AddPolygonSurfaces( void )
 	{
 		sh = R_GetShaderByHandle( poly->hShader );
 
-		R_AddDrawSurf( ( void * ) poly, sh, poly->fogIndex, 0, 0 );
+		R_AddDrawSurf( ( surfaceType_t * ) poly, sh, poly->fogIndex, 0, 0 );
 	}
 }
 
@@ -369,7 +369,7 @@ void R_AddPolygonBufferSurfaces( void )
 	{
 		sh = R_GetShaderByHandle( polybuffer->pPolyBuffer->shader );
 
-		R_AddDrawSurf( ( void * ) polybuffer, sh, polybuffer->fogIndex, 0, 0 );
+		R_AddDrawSurf( ( surfaceType_t * ) polybuffer, sh, polybuffer->fogIndex, 0, 0 );
 	}
 }
 
@@ -752,6 +752,11 @@ qhandle_t RE_RegisterVisTest( void )
 {
 	int hTest;
 	visTest_t *test;
+
+	if ( tr.numVisTests == 0 )
+	{
+		return 0;
+	}
 
 	for( hTest = 0; hTest < tr.numVisTests; hTest++ ) {
 		test = tr.visTests[ hTest ];

@@ -190,129 +190,117 @@ qboolean RE_BeginRegistration( glconfig_t *config, glconfig2_t *glconfig2 )
 	return qtrue;
 }
 
-#if defined( __cplusplus )
-extern "C" {
-#endif
 refexport_t    *GetRefAPI( int apiVersion, refimport_t *rimp )
 {
-	static refexport_t re;
+    static refexport_t re;
 
-	memset( &re, 0, sizeof( re ) );
+    memset( &re, 0, sizeof( re ) );
 
-	re.Shutdown = RE_Shutdown;
+    re.Shutdown = RE_Shutdown;
 
-	re.BeginRegistration = RE_BeginRegistration;
-	re.RegisterModel = RE_RegisterModel;
-	re.RegisterSkin = RE_RegisterSkin;
-	re.RegisterShader = RE_RegisterShader;
-#if defined( USE_REFLIGHT )
-#endif
-	re.RegisterFont = RE_RegisterFont;
-	re.Glyph = RE_Glyph;
-	re.GlyphChar = RE_GlyphChar;
-	re.UnregisterFont = RE_UnregisterFont;
-	re.RegisterFontVM = RE_RegisterFontVM;
-	re.GlyphVM = RE_GlyphVM;
-	re.GlyphCharVM = RE_GlyphCharVM;
-	re.UnregisterFontVM = RE_UnregisterFontVM;
-	re.LoadWorld = RE_LoadWorldMap;
-	//----(SA) added
-	re.GetSkinModel = RE_GetSkinModel;
-	re.GetShaderFromModel = RE_GetShaderFromModel;
-	//----(SA) end
-	re.SetWorldVisData = RE_SetWorldVisData;
-	re.EndRegistration = RE_EndRegistration;
+    re.BeginRegistration = RE_BeginRegistration;
+    re.RegisterModel = RE_RegisterModel;
+    re.RegisterSkin = RE_RegisterSkin;
+    re.RegisterShader = RE_RegisterShader;
+    re.RegisterShader = RE_RegisterShader;
+    re.RegisterFont = RE_RegisterFont;
+    re.Glyph = RE_Glyph;
+    re.GlyphChar = RE_GlyphChar;
+    re.UnregisterFont = RE_UnregisterFont;
+    re.RegisterFontVM = RE_RegisterFontVM;
+    re.GlyphVM = RE_GlyphVM;
+    re.GlyphCharVM = RE_GlyphCharVM;
+    re.UnregisterFontVM = RE_UnregisterFontVM;
+    re.LoadWorld = RE_LoadWorldMap;
+    //----(SA) added
+    re.GetSkinModel = RE_GetSkinModel;
+    re.GetShaderFromModel = RE_GetShaderFromModel;
+    //----(SA) end
+    re.SetWorldVisData = RE_SetWorldVisData;
+    re.EndRegistration = RE_EndRegistration;
 
-	re.ClearScene = RE_ClearScene;
-	re.AddRefEntityToScene = RE_AddRefEntityToScene;
-	re.LightForPoint = R_LightForPoint;
+    re.ClearScene = RE_ClearScene;
+    re.AddRefEntityToScene = RE_AddRefEntityToScene;
+    re.LightForPoint = R_LightForPoint;
 
-	re.AddPolyToScene = RE_AddPolyToScene;
-	// Ridah
-	re.AddPolysToScene = RE_AddPolysToScene;
-	// done.
-	re.AddLightToScene = RE_AddLightToScene;
-	re.AddAdditiveLightToScene = RE_AddLightToSceneQ3A;
-	//----(SA)
-	re.AddCoronaToScene = RE_AddCoronaToScene;
-	re.SetFog = R_SetFog;
-	//----(SA)
+    re.AddPolyToScene = RE_AddPolyToScene;
+    // Ridah
+    re.AddPolysToScene = RE_AddPolysToScene;
+    // done.
+    re.AddLightToScene = RE_AddLightToScene;
+    re.AddAdditiveLightToScene = RE_AddLightToSceneQ3A;
+    //----(SA)
+    re.AddCoronaToScene = RE_AddCoronaToScene;
+    re.SetFog = R_SetFog;
+    //----(SA)
 
-	re.RenderScene = RE_RenderScene;
-	re.SaveViewParms = RE_SaveViewParms;
-	re.RestoreViewParms = RE_RestoreViewParms;
+    re.RenderScene = RE_RenderScene;
+    re.SaveViewParms = RE_SaveViewParms;
+    re.RestoreViewParms = RE_RestoreViewParms;
 
-	re.SetColor = RE_SetColor;
-	re.SetClipRegion = RE_SetClipRegion;
-	re.DrawStretchPic = RE_StretchPic;
-	re.DrawRotatedPic = RE_RotatedPic; // NERVE - SMF
-	re.DrawStretchPicGradient = RE_StretchPicGradient;
-	re.Add2dPolys = RE_2DPolyies;
-	re.DrawStretchRaw = RE_StretchRaw;
-	re.UploadCinematic = RE_UploadCinematic;
-	re.BeginFrame = RE_BeginFrame;
-	re.EndFrame = RE_EndFrame;
+    re.SetColor = RE_SetColor;
+    re.SetClipRegion = RE_SetClipRegion;
+    re.DrawStretchPic = RE_StretchPic;
+    re.DrawRotatedPic = RE_RotatedPic; // NERVE - SMF
+    re.DrawStretchPicGradient = RE_StretchPicGradient;
+    re.Add2dPolys = RE_2DPolyies;
+    re.DrawStretchRaw = RE_StretchRaw;
+    re.UploadCinematic = RE_UploadCinematic;
+    re.BeginFrame = RE_BeginFrame;
+    re.EndFrame = RE_EndFrame;
 
-	re.MarkFragments = R_MarkFragments;
-	re.ProjectDecal = RE_ProjectDecal;
-	re.ClearDecals = RE_ClearDecals;
+    re.MarkFragments = R_MarkFragments;
+    re.ProjectDecal = RE_ProjectDecal;
+    re.ClearDecals = RE_ClearDecals;
 
-	re.LerpTag = R_LerpTag;
-	re.ModelBounds = R_ModelBounds;
+    re.LerpTag = R_LerpTag;
+    re.ModelBounds = R_ModelBounds;
 
-	re.RemapShader = R_RemapShader;
-	re.DrawDebugPolygon = R_DebugPolygon;
-	re.DrawDebugText = R_DebugText;
-	re.GetEntityToken = R_GetEntityToken;
+    re.RemapShader = R_RemapShader;
+    re.DrawDebugPolygon = R_DebugPolygon;
+    re.DrawDebugText = R_DebugText;
+    re.GetEntityToken = R_GetEntityToken;
 
-	re.AddPolyBufferToScene = RE_AddPolyBufferToScene;
+    re.AddPolyBufferToScene = RE_AddPolyBufferToScene;
 
-	re.SetGlobalFog = RE_SetGlobalFog;
+    re.SetGlobalFog = RE_SetGlobalFog;
 
-	re.inPVS = R_inPVS;
-	re.inPVVS = R_inPVVS;
+    re.inPVS = R_inPVS;
+    re.inPVVS = R_inPVVS;
 
-	re.purgeCache = R_PurgeCache;
+    re.purgeCache = R_PurgeCache;
 
-	//bani
-	re.LoadDynamicShader = RE_LoadDynamicShader;
-	// fretn
-	re.RenderToTexture = RE_RenderToTexture;
-	re.GetTextureId = R_GetTextureId;
-	//bani
-	re.Finish = RE_Finish;
+    //bani
+    re.LoadDynamicShader = RE_LoadDynamicShader;
+    // fretn
+    re.RenderToTexture = RE_RenderToTexture;
+    re.GetTextureId = R_GetTextureId;
+    //bani
+    re.Finish = RE_Finish;
 
-	re.TakeVideoFrame = RE_TakeVideoFrame;
-#if defined( USE_REFLIGHT )
-	re.AddRefLightToScene = RE_AddRefLightToScene;
-#endif
+    re.TakeVideoFrame = RE_TakeVideoFrame;
+    re.AddRefLightToScene = RE_AddRefLightToScene;
 
-	// RB: alternative skeletal animation system
-#if defined( USE_REFENTITY_ANIMATIONSYSTEM )
-	re.RegisterAnimation = RE_RegisterAnimation;
-	re.CheckSkeleton = RE_CheckSkeleton;
-	re.BuildSkeleton = RE_BuildSkeleton;
-	re.BlendSkeleton = RE_BlendSkeleton;
-	re.BoneIndex = RE_BoneIndex;
-	re.AnimNumFrames = RE_AnimNumFrames;
-	re.AnimFrameRate = RE_AnimFrameRate;
-#endif
+    // RB: alternative skeletal animation system
+    re.RegisterAnimation = RE_RegisterAnimation;
+    re.CheckSkeleton = RE_CheckSkeleton;
+    re.BuildSkeleton = RE_BuildSkeleton;
+    re.BlendSkeleton = RE_BlendSkeleton;
+    re.BoneIndex = RE_BoneIndex;
+    re.AnimNumFrames = RE_AnimNumFrames;
+    re.AnimFrameRate = RE_AnimFrameRate;
 
-	re.RegisterVisTest = RE_RegisterVisTest;
-	re.AddVisTestToScene = RE_AddVisTestToScene;
-	re.CheckVisibility = RE_CheckVisibility;
-	re.UnregisterVisTest = RE_UnregisterVisTest;
+    re.RegisterVisTest = RE_RegisterVisTest;
+    re.AddVisTestToScene = RE_AddVisTestToScene;
+    re.CheckVisibility = RE_CheckVisibility;
+    re.UnregisterVisTest = RE_UnregisterVisTest;
 
-	re.ScissorEnable = RE_ScissorEnable;
-	re.ScissorSet = RE_ScissorSet;
-	re.SetColorGrading = RE_SetColorGrading;
-	re.SetAltShaderTokens = R_SetAltShaderTokens;
+    re.SetColorGrading = RE_SetColorGrading;
+    re.SetAltShaderTokens = R_SetAltShaderTokens;
 
+    re.ScissorEnable = RE_ScissorEnable;
+    re.ScissorSet = RE_ScissorSet;
 
-	return &re;
+    return &re;
 }
-
-#if defined( __cplusplus )
-} // extern "C"
-#endif
 

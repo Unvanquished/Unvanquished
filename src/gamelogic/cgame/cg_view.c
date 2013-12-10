@@ -844,8 +844,7 @@ void CG_OffsetFirstPersonView( void )
 
 	// this *feels* more realisitic for humans <- this comment feels very descriptive
 	if ( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_HUMANS &&
-	     ( cg.predictedPlayerState.pm_type == PM_NORMAL ||
-	       cg.predictedPlayerState.pm_type == PM_JETPACK ) )
+	     cg.predictedPlayerState.pm_type == PM_NORMAL )
 	{
 		angles[ PITCH ] += cg.bobfracsin * bob2 * 0.5;
 	}
@@ -1436,7 +1435,7 @@ static void CG_ChooseCgradingEffectAndFade( const playerState_t* ps, qhandle_t* 
 {
 	int health = ps->stats[ STAT_HEALTH ];
 	int team = ps->persistant[ PERS_TEAM ];
-	int class = ps->stats[ STAT_CLASS ];
+	int class_ = ps->stats[ STAT_CLASS ];
 	qboolean playing = team == TEAM_HUMANS || team == TEAM_ALIENS;
 	float chargeProgress = CG_ChargeProgress();
 
@@ -1460,7 +1459,7 @@ static void CG_ChooseCgradingEffectAndFade( const playerState_t* ps, qhandle_t* 
 	{
 		//health effect
 		float ratio = 0.0f;
-		float maxHealth = BG_Class( class )->health;
+		float maxHealth = BG_Class( class_ )->health;
 		if ( team == TEAM_HUMANS )
 		{
 			*effect = cgs.media.redCgrade;

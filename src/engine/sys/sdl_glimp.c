@@ -935,7 +935,7 @@ static qboolean GLimp_StartDriverAndSetMode( int mode, qboolean fullscreen, qboo
 		fullscreen = qfalse;
 	}
 
-	err = GLimp_SetMode( mode, fullscreen, noborder );
+	err = (rserr_t) GLimp_SetMode( mode, fullscreen, noborder );
 
 	switch ( err )
 	{
@@ -971,7 +971,12 @@ static GLenum debugTypes[] =
 	GL_DEBUG_TYPE_OTHER_ARB
 };
 
-static void QCALL GLimp_DebugCallback( GLenum source, GLenum type, GLuint id,
+#ifdef _WIN32
+#define DEBUG_CALLBACK_CALL APIENTRY
+#else
+#define DEBUG_CALLBACK_CALL
+#endif
+static void DEBUG_CALLBACK_CALL GLimp_DebugCallback( GLenum source, GLenum type, GLuint id,
                                        GLenum severity, GLsizei length, const GLchar *message, void *userParam )
 {
 	const char *debugTypeName;

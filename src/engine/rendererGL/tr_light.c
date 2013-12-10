@@ -42,7 +42,7 @@ void R_AddBrushModelInteractions( trRefEntity_t *ent, trRefLight_t *light, inter
 	// and we don't care about proper shadowing
 	if ( ent->cull == CULL_OUT )
 	{
-		iaType &= ~IA_LIGHT;
+		iaType = (interactionType_t) (iaType & ~IA_LIGHT);
 	}
 
 	if ( !iaType )
@@ -109,7 +109,7 @@ void R_AddBrushModelInteractions( trRefEntity_t *ent, trRefLight_t *light, inter
 				continue;
 			}
 
-			R_AddLightInteraction( light, ( void * ) vboSurface, shader, cubeSideBits, iaType );
+			R_AddLightInteraction( light, ( surfaceType_t * ) vboSurface, shader, cubeSideBits, iaType );
 			tr.pc.c_dlightSurfaces++;
 		}
 	}
@@ -1777,7 +1777,7 @@ void R_SetupLightLOD( trRefLight_t *light )
 	}
 
 	flod *= numLods;
-	lod = XreaL_Q_ftol( flod );
+	lod = Q_ftol( flod );
 
 	if ( lod < 0 )
 	{

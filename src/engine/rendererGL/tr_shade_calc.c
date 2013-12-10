@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // tr_shade_calc.c
 #include "tr_local.h"
 
-#define WAVEVALUE( table, base, amplitude, phase, freq ) (( base ) + table[ XreaL_Q_ftol( ( ( ( phase ) + backEnd.refdef.floatTime * ( freq ) ) * FUNCTABLE_SIZE ) ) & FUNCTABLE_MASK ] * ( amplitude ))
+#define WAVEVALUE( table, base, amplitude, phase, freq ) (( base ) + table[ Q_ftol( ( ( ( phase ) + backEnd.refdef.floatTime * ( freq ) ) * FUNCTABLE_SIZE ) ) & FUNCTABLE_MASK ] * ( amplitude ))
 
 static float   *TableForFunc( genFunc_t func )
 {
@@ -226,6 +226,8 @@ static float GetOpValue( const expOperation_t *op )
 	return value;
 }
 
+const char* GetOpName(opcode_t type);
+
 float RB_EvalExpression( const expression_t *exp, float defaultValue )
 {
 #if 1
@@ -236,7 +238,6 @@ float RB_EvalExpression( const expression_t *exp, float defaultValue )
 	float                   value;
 	float                   value1;
 	float                   value2;
-	extern const opstring_t opStrings[];
 
 	numOps = 0;
 	value = 0;
@@ -375,7 +376,7 @@ float RB_EvalExpression( const expression_t *exp, float defaultValue )
 					if ( numOps < 2 )
 					{
 						ri.Printf( PRINT_ALL, "WARNING: shader %s has numOps < 2 for binary operator %s\n", tess.surfaceShader->name,
-						           opStrings[ op.type ].s );
+						           GetOpName( op.type ) );
 						return defaultValue;
 					}
 
@@ -453,7 +454,7 @@ float RB_EvalExpression( const expression_t *exp, float defaultValue )
 							break;
 					}
 
-					//ri.Printf(PRINT_ALL, "%s: %f %f %f\n", opStrings[op.type].s, value, value1, value2);
+					//ri.Printf(PRINT_ALL, "%s: %f %f %f\n", GetOpName(op.type), value, value1, value2);
 
 					// push result
 					op.type = OP_NUM;

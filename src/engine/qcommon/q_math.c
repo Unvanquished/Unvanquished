@@ -33,9 +33,6 @@ Maryland 20850 USA.
 */
 
 // q_math.c -- stateless support routines that are included in each code module
-// Some of the vector functions are static inline in q_shared.h. q3asm
-// doesn't understand static functions though, so we only want them in
-// one file. That's what this is about.
 
 #include "q_shared.h"
 
@@ -728,6 +725,8 @@ void VectorRotate( vec3_t in, vec3_t matrix[ 3 ], vec3_t out )
 	out[ 1 ] = DotProduct( in, matrix[ 1 ] );
 	out[ 2 ] = DotProduct( in, matrix[ 2 ] );
 }
+
+//============================================================
 
 /*
 ===============
@@ -2181,7 +2180,8 @@ void MatrixSetupShear( matrix_t m, vec_t x, vec_t y )
 
 void MatrixMultiply( const matrix_t a, const matrix_t b, matrix_t out )
 {
-#if idx86_sse
+#if id386_sse
+//#error MatrixMultiply
 	int    i;
 	__m128 _t0, _t1, _t2, _t3, _t4, _t5, _t6, _t7;
 

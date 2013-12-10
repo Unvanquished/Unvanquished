@@ -415,8 +415,8 @@ static void Svcmd_AdmitDefeat_f( void )
 		return;
 	}
 
-	level.surrenderTeam = team;
-	G_BaseSelfDestruct( team );
+	level.surrenderTeam = (team_t) team;
+	G_BaseSelfDestruct( (team_t) team );
 }
 
 static void Svcmd_TeamWin_f( void )
@@ -761,7 +761,7 @@ qboolean  ConsoleCommand( void )
 
 	trap_Argv( 0, cmd, sizeof( cmd ) );
 
-	command = bsearch( cmd, svcmds, ARRAY_LEN( svcmds ),
+	command = (struct svcmd*) bsearch( cmd, svcmds, ARRAY_LEN( svcmds ),
 	                   sizeof( struct svcmd ), cmdcmp );
 
 	if ( !command )

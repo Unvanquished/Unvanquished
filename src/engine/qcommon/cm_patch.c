@@ -790,9 +790,9 @@ static void CM_SurfaceCollideFromGrid( cGrid_t *grid, cSurfaceCollide_t *sc )
 	// copy the results out
 	sc->numPlanes = numPlanes;
 	sc->numFacets = numFacets;
-	sc->facets = Hunk_Alloc( numFacets * sizeof( *sc->facets ), h_high );
+	sc->facets = ( cFacet_t * ) Hunk_Alloc( numFacets * sizeof( *sc->facets ), h_high );
 	Com_Memcpy( sc->facets, facets, numFacets * sizeof( *sc->facets ) );
-	sc->planes = Hunk_Alloc( numPlanes * sizeof( *sc->planes ), h_high );
+	sc->planes = ( cPlane_t * ) Hunk_Alloc( numPlanes * sizeof( *sc->planes ), h_high );
 	Com_Memcpy( sc->planes, planes, numPlanes * sizeof( *sc->planes ) );
 }
 
@@ -855,7 +855,7 @@ cSurfaceCollide_t *CM_GeneratePatchCollide( int width, int height, vec3_t *point
 	// we now have a grid of points exactly on the curve
 	// the approximate surface defined by these points will be
 	// collided against
-	sc = Hunk_Alloc( sizeof( *sc ), h_high );
+	sc = ( cSurfaceCollide_t * ) Hunk_Alloc( sizeof( *sc ), h_high );
 	ClearBounds( sc->bounds[ 0 ], sc->bounds[ 1 ] );
 
 	for ( i = 0; i < grid.width; i++ )

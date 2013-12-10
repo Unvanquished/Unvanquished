@@ -13,6 +13,8 @@ DEB_HOST_GNU_TYPE := $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
 DEB_HOST_ARCH_CPU := $(shell dpkg-architecture -qDEB_HOST_ARCH_CPU)
 DEB_HOST_GNU_CPU := $(shell dpkg-architecture -qDEB_HOST_GNU_CPU | sed -e 's/i.86/i386/')
 
+SDL2 := $(shell test -d /usr/include/SDL2 && echo ON || echo OFF)
+
 %:
 	dh $@ --parallel
 
@@ -24,7 +26,7 @@ override_dh_auto_configure:
 		 -DCMAKE_SKIP_RPATH=ON \
 		 -DGAME_QVM=OFF \
 		 -DUSE_OPENAL_DLOPEN=OFF \
-		 -DBUILD_DAEMONMAP=ON \
+		 -DUSE_SDL2=${SDL2} \
 		 $(shell test ! -f /usr/include/opus/opus.h || echo -DUSE_INTERNAL_OPUS=OFF) \
 		 $(shell test -f /usr/include/xvid.h || echo -DUSE_CIN_XVID=OFF) \
 		 $(shell test -d /usr/include/webp || echo -DUSE_WEBP=OFF)

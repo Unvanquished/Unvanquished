@@ -291,7 +291,7 @@ void R_SetFog( int fogvar, int var1, int var2, float r, float g, float b, float 
 		return;
 	}
 
-	glfogNum = var1;
+	glfogNum = (glfogType_t) var1;
 
 	// transitioning to new fog, store the current values as the 'from'
 
@@ -567,7 +567,7 @@ Does NOT produce any GL calls
 Called by both the front end and the back end
 =================
 */
-void R_RotateForEntity( const trRefEntity_t *ent, const viewParms_t *viewParms, orientationr_t * or )
+void R_RotateForEntity( const trRefEntity_t *ent, const viewParms_t *viewParms, orientationr_t * orientation )
 {
 	float  glMatrix[ 16 ];
 	vec3_t delta;
@@ -575,41 +575,41 @@ void R_RotateForEntity( const trRefEntity_t *ent, const viewParms_t *viewParms, 
 
 	if ( ent->e.reType != RT_MODEL )
 	{
-		* or = viewParms->world;
+		* orientation = viewParms->world;
 		return;
 	}
 
-	VectorCopy( ent->e.origin, or ->origin );
+	VectorCopy( ent->e.origin, orientation ->origin );
 
-	VectorCopy( ent->e.axis[ 0 ], or ->axis[ 0 ] );
-	VectorCopy( ent->e.axis[ 1 ], or ->axis[ 1 ] );
-	VectorCopy( ent->e.axis[ 2 ], or ->axis[ 2 ] );
+	VectorCopy( ent->e.axis[ 0 ], orientation ->axis[ 0 ] );
+	VectorCopy( ent->e.axis[ 1 ], orientation ->axis[ 1 ] );
+	VectorCopy( ent->e.axis[ 2 ], orientation ->axis[ 2 ] );
 
-	glMatrix[ 0 ] = or ->axis[ 0 ][ 0 ];
-	glMatrix[ 4 ] = or ->axis[ 1 ][ 0 ];
-	glMatrix[ 8 ] = or ->axis[ 2 ][ 0 ];
-	glMatrix[ 12 ] = or ->origin[ 0 ];
+	glMatrix[ 0 ] = orientation ->axis[ 0 ][ 0 ];
+	glMatrix[ 4 ] = orientation ->axis[ 1 ][ 0 ];
+	glMatrix[ 8 ] = orientation ->axis[ 2 ][ 0 ];
+	glMatrix[ 12 ] = orientation ->origin[ 0 ];
 
-	glMatrix[ 1 ] = or ->axis[ 0 ][ 1 ];
-	glMatrix[ 5 ] = or ->axis[ 1 ][ 1 ];
-	glMatrix[ 9 ] = or ->axis[ 2 ][ 1 ];
-	glMatrix[ 13 ] = or ->origin[ 1 ];
+	glMatrix[ 1 ] = orientation ->axis[ 0 ][ 1 ];
+	glMatrix[ 5 ] = orientation ->axis[ 1 ][ 1 ];
+	glMatrix[ 9 ] = orientation ->axis[ 2 ][ 1 ];
+	glMatrix[ 13 ] = orientation ->origin[ 1 ];
 
-	glMatrix[ 2 ] = or ->axis[ 0 ][ 2 ];
-	glMatrix[ 6 ] = or ->axis[ 1 ][ 2 ];
-	glMatrix[ 10 ] = or ->axis[ 2 ][ 2 ];
-	glMatrix[ 14 ] = or ->origin[ 2 ];
+	glMatrix[ 2 ] = orientation ->axis[ 0 ][ 2 ];
+	glMatrix[ 6 ] = orientation ->axis[ 1 ][ 2 ];
+	glMatrix[ 10 ] = orientation ->axis[ 2 ][ 2 ];
+	glMatrix[ 14 ] = orientation ->origin[ 2 ];
 
 	glMatrix[ 3 ] = 0;
 	glMatrix[ 7 ] = 0;
 	glMatrix[ 11 ] = 0;
 	glMatrix[ 15 ] = 1;
 
-	myGlMultMatrix( glMatrix, viewParms->world.modelMatrix, or ->modelMatrix );
+	myGlMultMatrix( glMatrix, viewParms->world.modelMatrix, orientation ->modelMatrix );
 
 	// calculate the viewer origin in the model's space
 	// needed for fog, specular, and environment mapping
-	VectorSubtract( viewParms->orientation.origin, or ->origin, delta );
+	VectorSubtract( viewParms->orientation.origin, orientation ->origin, delta );
 
 	// compensate for scale in the axes if necessary
 	if ( ent->e.nonNormalizedAxes )
@@ -630,9 +630,9 @@ void R_RotateForEntity( const trRefEntity_t *ent, const viewParms_t *viewParms, 
 		axisLength = 1.0f;
 	}
 
-	or ->viewOrigin[ 0 ] = DotProduct( delta, or ->axis[ 0 ] ) * axisLength;
-	or ->viewOrigin[ 1 ] = DotProduct( delta, or ->axis[ 1 ] ) * axisLength;
-	or ->viewOrigin[ 2 ] = DotProduct( delta, or ->axis[ 2 ] ) * axisLength;
+	orientation ->viewOrigin[ 0 ] = DotProduct( delta, orientation ->axis[ 0 ] ) * axisLength;
+	orientation ->viewOrigin[ 1 ] = DotProduct( delta, orientation ->axis[ 1 ] ) * axisLength;
+	orientation ->viewOrigin[ 2 ] = DotProduct( delta, orientation ->axis[ 2 ] ) * axisLength;
 }
 
 /*

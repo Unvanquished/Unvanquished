@@ -925,30 +925,30 @@ Does NOT produce any GL calls
 Called by both the front end and the back end
 =================
 */
-void R_RotateEntityForViewParms( const trRefEntity_t *ent, const viewParms_t *viewParms, orientationr_t * or )
+void R_RotateEntityForViewParms( const trRefEntity_t *ent, const viewParms_t *viewParms, orientationr_t * orientation )
 {
 	vec3_t delta;
 	float  axisLength;
 
 	if ( ent->e.reType != RT_MODEL )
 	{
-		* or = viewParms->world;
+		* orientation = viewParms->world;
 		return;
 	}
 
-	VectorCopy( ent->e.origin, or ->origin );
+	VectorCopy( ent->e.origin, orientation ->origin );
 
-	VectorCopy( ent->e.axis[ 0 ], or ->axis[ 0 ] );
-	VectorCopy( ent->e.axis[ 1 ], or ->axis[ 1 ] );
-	VectorCopy( ent->e.axis[ 2 ], or ->axis[ 2 ] );
+	VectorCopy( ent->e.axis[ 0 ], orientation ->axis[ 0 ] );
+	VectorCopy( ent->e.axis[ 1 ], orientation ->axis[ 1 ] );
+	VectorCopy( ent->e.axis[ 2 ], orientation ->axis[ 2 ] );
 
-	MatrixSetupTransformFromVectorsFLU( or ->transformMatrix, or ->axis[ 0 ], or ->axis[ 1 ], or ->axis[ 2 ], or ->origin );
-	MatrixAffineInverse( or ->transformMatrix, or ->viewMatrix );
-	MatrixMultiply( viewParms->world.viewMatrix, or ->transformMatrix, or ->modelViewMatrix );
+	MatrixSetupTransformFromVectorsFLU( orientation ->transformMatrix, orientation ->axis[ 0 ], orientation ->axis[ 1 ], orientation ->axis[ 2 ], orientation ->origin );
+	MatrixAffineInverse( orientation ->transformMatrix, orientation ->viewMatrix );
+	MatrixMultiply( viewParms->world.viewMatrix, orientation ->transformMatrix, orientation ->modelViewMatrix );
 
 	// calculate the viewer origin in the model's space
 	// needed for fog, specular, and environment mapping
-	VectorSubtract( viewParms->orientation.origin, or ->origin, delta );
+	VectorSubtract( viewParms->orientation.origin, orientation ->origin, delta );
 
 	// compensate for scale in the axes if necessary
 	if ( ent->e.nonNormalizedAxes )
@@ -969,9 +969,9 @@ void R_RotateEntityForViewParms( const trRefEntity_t *ent, const viewParms_t *vi
 		axisLength = 1.0f;
 	}
 
-	or ->viewOrigin[ 0 ] = DotProduct( delta, or ->axis[ 0 ] ) * axisLength;
-	or ->viewOrigin[ 1 ] = DotProduct( delta, or ->axis[ 1 ] ) * axisLength;
-	or ->viewOrigin[ 2 ] = DotProduct( delta, or ->axis[ 2 ] ) * axisLength;
+	orientation ->viewOrigin[ 0 ] = DotProduct( delta, orientation ->axis[ 0 ] ) * axisLength;
+	orientation ->viewOrigin[ 1 ] = DotProduct( delta, orientation ->axis[ 1 ] ) * axisLength;
+	orientation ->viewOrigin[ 2 ] = DotProduct( delta, orientation ->axis[ 2 ] ) * axisLength;
 }
 
 /*
@@ -983,42 +983,42 @@ Does NOT produce any GL calls
 Called by both the front end and the back end
 =================
 */
-void R_RotateEntityForLight( const trRefEntity_t *ent, const trRefLight_t *light, orientationr_t * or )
+void R_RotateEntityForLight( const trRefEntity_t *ent, const trRefLight_t *light, orientationr_t * orientation )
 {
 	vec3_t delta;
 	float  axisLength;
 
 	if ( ent->e.reType != RT_MODEL )
 	{
-		Com_Memset( or , 0, sizeof( * or ) );
+		Com_Memset( orientation , 0, sizeof( * orientation ) );
 
-		or ->axis[ 0 ][ 0 ] = 1;
-		or ->axis[ 1 ][ 1 ] = 1;
-		or ->axis[ 2 ][ 2 ] = 1;
+		orientation ->axis[ 0 ][ 0 ] = 1;
+		orientation ->axis[ 1 ][ 1 ] = 1;
+		orientation ->axis[ 2 ][ 2 ] = 1;
 
-		VectorCopy( light->l.origin, or ->viewOrigin );
+		VectorCopy( light->l.origin, orientation ->viewOrigin );
 
-		MatrixIdentity( or ->transformMatrix );
-		//MatrixAffineInverse(or->transformMatrix, or->viewMatrix);
-		MatrixMultiply( light->viewMatrix, or ->transformMatrix, or ->viewMatrix );
-		MatrixCopy( or ->viewMatrix, or ->modelViewMatrix );
+		MatrixIdentity( orientation ->transformMatrix );
+		//MatrixAffineInverse(or->transformMatrix, orientation->viewMatrix);
+		MatrixMultiply( light->viewMatrix, orientation ->transformMatrix, orientation ->viewMatrix );
+		MatrixCopy( orientation ->viewMatrix, orientation ->modelViewMatrix );
 		return;
 	}
 
-	VectorCopy( ent->e.origin, or ->origin );
+	VectorCopy( ent->e.origin, orientation ->origin );
 
-	VectorCopy( ent->e.axis[ 0 ], or ->axis[ 0 ] );
-	VectorCopy( ent->e.axis[ 1 ], or ->axis[ 1 ] );
-	VectorCopy( ent->e.axis[ 2 ], or ->axis[ 2 ] );
+	VectorCopy( ent->e.axis[ 0 ], orientation ->axis[ 0 ] );
+	VectorCopy( ent->e.axis[ 1 ], orientation ->axis[ 1 ] );
+	VectorCopy( ent->e.axis[ 2 ], orientation ->axis[ 2 ] );
 
-	MatrixSetupTransformFromVectorsFLU( or ->transformMatrix, or ->axis[ 0 ], or ->axis[ 1 ], or ->axis[ 2 ], or ->origin );
-	MatrixAffineInverse( or ->transformMatrix, or ->viewMatrix );
+	MatrixSetupTransformFromVectorsFLU( orientation ->transformMatrix, orientation ->axis[ 0 ], orientation ->axis[ 1 ], orientation ->axis[ 2 ], orientation ->origin );
+	MatrixAffineInverse( orientation ->transformMatrix, orientation ->viewMatrix );
 
-	MatrixMultiply( light->viewMatrix, or ->transformMatrix, or ->modelViewMatrix );
+	MatrixMultiply( light->viewMatrix, orientation ->transformMatrix, orientation ->modelViewMatrix );
 
 	// calculate the viewer origin in the model's space
 	// needed for fog, specular, and environment mapping
-	VectorSubtract( light->l.origin, or ->origin, delta );
+	VectorSubtract( light->l.origin, orientation ->origin, delta );
 
 	// compensate for scale in the axes if necessary
 	if ( ent->e.nonNormalizedAxes )
@@ -1039,9 +1039,9 @@ void R_RotateEntityForLight( const trRefEntity_t *ent, const trRefLight_t *light
 		axisLength = 1.0f;
 	}
 
-	or ->viewOrigin[ 0 ] = DotProduct( delta, or ->axis[ 0 ] ) * axisLength;
-	or ->viewOrigin[ 1 ] = DotProduct( delta, or ->axis[ 1 ] ) * axisLength;
-	or ->viewOrigin[ 2 ] = DotProduct( delta, or ->axis[ 2 ] ) * axisLength;
+	orientation ->viewOrigin[ 0 ] = DotProduct( delta, orientation ->axis[ 0 ] ) * axisLength;
+	orientation ->viewOrigin[ 1 ] = DotProduct( delta, orientation ->axis[ 1 ] ) * axisLength;
+	orientation ->viewOrigin[ 2 ] = DotProduct( delta, orientation ->axis[ 2 ] ) * axisLength;
 }
 
 /*
@@ -1049,25 +1049,25 @@ void R_RotateEntityForLight( const trRefEntity_t *ent, const trRefLight_t *light
 R_RotateLightForViewParms
 =================
 */
-void R_RotateLightForViewParms( const trRefLight_t *light, const viewParms_t *viewParms, orientationr_t * or )
+void R_RotateLightForViewParms( const trRefLight_t *light, const viewParms_t *viewParms, orientationr_t * orientation )
 {
 	vec3_t delta;
 
-	VectorCopy( light->l.origin, or ->origin );
+	VectorCopy( light->l.origin, orientation ->origin );
 
-	QuatToAxis( light->l.rotation, or ->axis );
+	QuatToAxis( light->l.rotation, orientation ->axis );
 
-	MatrixSetupTransformFromVectorsFLU( or ->transformMatrix, or ->axis[ 0 ], or ->axis[ 1 ], or ->axis[ 2 ], or ->origin );
-	MatrixAffineInverse( or ->transformMatrix, or ->viewMatrix );
-	MatrixMultiply( viewParms->world.viewMatrix, or ->transformMatrix, or ->modelViewMatrix );
+	MatrixSetupTransformFromVectorsFLU( orientation ->transformMatrix, orientation ->axis[ 0 ], orientation ->axis[ 1 ], orientation ->axis[ 2 ], orientation ->origin );
+	MatrixAffineInverse( orientation ->transformMatrix, orientation ->viewMatrix );
+	MatrixMultiply( viewParms->world.viewMatrix, orientation ->transformMatrix, orientation ->modelViewMatrix );
 
 	// calculate the viewer origin in the light's space
 	// needed for fog, specular, and environment mapping
-	VectorSubtract( viewParms->orientation.origin, or ->origin, delta );
+	VectorSubtract( viewParms->orientation.origin, orientation ->origin, delta );
 
-	or ->viewOrigin[ 0 ] = DotProduct( delta, or ->axis[ 0 ] );
-	or ->viewOrigin[ 1 ] = DotProduct( delta, or ->axis[ 1 ] );
-	or ->viewOrigin[ 2 ] = DotProduct( delta, or ->axis[ 2 ] );
+	orientation ->viewOrigin[ 0 ] = DotProduct( delta, orientation ->axis[ 0 ] );
+	orientation ->viewOrigin[ 1 ] = DotProduct( delta, orientation ->axis[ 1 ] );
+	orientation ->viewOrigin[ 2 ] = DotProduct( delta, orientation ->axis[ 2 ] );
 }
 
 /*
@@ -2339,6 +2339,7 @@ void R_AddDrawSurf( surfaceType_t *surface, shader_t *shader, int lightmapNum, i
 	drawSurf->shaderNum = shader->sortedIndex;
 	drawSurf->lightmapNum = lightmapNum;
 	drawSurf->fogNum = fogNum;
+	drawSurf->addedIndex = index;
 
 	tr.refdef.numDrawSurfs++;
 }
@@ -2349,17 +2350,19 @@ DrawSurfCompare
 compare function for qsort()
 =================
 */
-static int DrawSurfCompare( const void *a, const void *b )
+static int DrawSurfCompare( const void *ai, const void *bi )
 {
+	drawSurf_t *a = ( drawSurf_t * ) ai;
+	drawSurf_t *b = ( drawSurf_t * ) bi;
 #if 1
 
 	// by shader
-	if ( ( ( drawSurf_t * ) a )->shaderNum < ( ( drawSurf_t * ) b )->shaderNum )
+	if ( a->shaderNum < b->shaderNum )
 	{
 		return -1;
 	}
 
-	else if ( ( ( drawSurf_t * ) a )->shaderNum > ( ( drawSurf_t * ) b )->shaderNum )
+	else if ( a->shaderNum > b->shaderNum )
 	{
 		return 1;
 	}
@@ -2369,12 +2372,12 @@ static int DrawSurfCompare( const void *a, const void *b )
 #if 1
 
 	// by lightmap
-	if ( ( ( drawSurf_t * ) a )->lightmapNum < ( ( drawSurf_t * ) b )->lightmapNum )
+	if ( a->lightmapNum < b->lightmapNum )
 	{
 		return -1;
 	}
 
-	else if ( ( ( drawSurf_t * ) a )->lightmapNum > ( ( drawSurf_t * ) b )->lightmapNum )
+	else if ( a->lightmapNum > b->lightmapNum )
 	{
 		return 1;
 	}
@@ -2384,22 +2387,22 @@ static int DrawSurfCompare( const void *a, const void *b )
 #if 1
 
 	// by entity
-	if ( ( ( drawSurf_t * ) a )->entity == &tr.worldEntity && ( ( drawSurf_t * ) b )->entity != &tr.worldEntity )
+	if ( a->entity == &tr.worldEntity && b->entity != &tr.worldEntity )
 	{
 		return -1;
 	}
 
-	else if ( ( ( drawSurf_t * ) a )->entity != &tr.worldEntity && ( ( drawSurf_t * ) b )->entity == &tr.worldEntity )
+	else if ( a->entity != &tr.worldEntity && b->entity == &tr.worldEntity )
 	{
 		return 1;
 	}
 
-	else if ( ( ( drawSurf_t * ) a )->entity < ( ( drawSurf_t * ) b )->entity )
+	else if ( a->entity < b->entity )
 	{
 		return -1;
 	}
 
-	else if ( ( ( drawSurf_t * ) a )->entity > ( ( drawSurf_t * ) b )->entity )
+	else if ( a->entity > b->entity )
 	{
 		return 1;
 	}
@@ -2409,17 +2412,28 @@ static int DrawSurfCompare( const void *a, const void *b )
 #if 1
 
 	// by fog
-	if ( ( ( drawSurf_t * ) a )->fogNum < ( ( drawSurf_t * ) b )->fogNum )
+	if ( a->fogNum < b->fogNum )
 	{
 		return -1;
 	}
 
-	else if ( ( ( drawSurf_t * ) a )->fogNum > ( ( drawSurf_t * ) b )->fogNum )
+	else if ( a->fogNum > b->fogNum )
 	{
 		return 1;
 	}
 
 #endif
+
+	// emulate a stable sort algorithm by comparing
+	// the original position of the drawSurfs in the array
+	if ( a->addedIndex < b->addedIndex )
+	{
+		return -1;
+	}
+	else if ( a->addedIndex > b->addedIndex )
+	{
+		return 1;
+	}
 
 	return 0;
 }
@@ -2466,7 +2480,6 @@ static void R_SortDrawSurfs( void )
 	}
 
 	// sort the drawsurfs by sort type, then orientation, then shader
-//  qsortFast(drawSurfs, numDrawSurfs, sizeof(drawSurf_t));
 	qsort( tr.viewParms.drawSurfs, tr.viewParms.numDrawSurfs, sizeof( drawSurf_t ), DrawSurfCompare );
 
 	// check for any pass through drawing, which
@@ -2585,8 +2598,6 @@ void R_AddEntitySurfaces( void )
 							R_AddMDVSurfaces( ent );
 							break;
 
-#if defined( USE_REFENTITY_ANIMATIONSYSTEM )
-
 						case MOD_MD5:
 							R_AddMD5Surfaces( ent );
 							break;
@@ -2594,7 +2605,6 @@ void R_AddEntitySurfaces( void )
 						case MOD_IQM:
 							R_AddIQMSurfaces( ent );
 							break;
-#endif
 
 						case MOD_BSP:
 							R_AddBSPModelSurfaces( ent );
@@ -2649,19 +2659,19 @@ void R_AddEntityInteractions( trRefLight_t *light )
 
 		if ( r_shadows->integer <= SHADOWING_BLOB ||
 		     light->l.noShadows ) {
-			iaType &= ~IA_SHADOW;
+			iaType = (interactionType_t) (iaType & (~IA_SHADOW));
 		}
 		if ( light->restrictInteractionFirst >= 0 &&
 		     ( i < light->restrictInteractionFirst ||
 		       i > light->restrictInteractionLast ) ) {
-			iaType &= ~IA_SHADOW;
+			iaType = (interactionType_t) (iaType & (~IA_SHADOW));
 		}
 
 		if ( light->restrictInteractionFirst >= 0 &&
-		     i >= light->restrictInteractionFirst && 
+		     i >= light->restrictInteractionFirst &&
 		     i <= light->restrictInteractionLast )
 		{
-			iaType &= ~IA_LIGHT;
+			iaType = (interactionType_t) (iaType & ~IA_LIGHT);
 		}
 
 		ent = tr.currentEntity = &tr.refdef.entities[ i ];
@@ -2701,8 +2711,6 @@ void R_AddEntityInteractions( trRefLight_t *light )
 							R_AddMDVInteractions( ent, light, iaType );
 							break;
 
-#if defined( USE_REFENTITY_ANIMATIONSYSTEM )
-
 						case MOD_MD5:
 							R_AddMD5Interactions( ent, light, iaType );
 							break;
@@ -2710,7 +2718,6 @@ void R_AddEntityInteractions( trRefLight_t *light )
 						case MOD_IQM:
 							R_AddIQMInteractions( ent, light, iaType );
 							break;
-#endif
 
 						case MOD_BSP:
 							R_AddBrushModelInteractions( ent, light, iaType );
@@ -2774,7 +2781,7 @@ void R_AddPolygonInteractions( trRefLight_t *light )
 			continue;
 		}
 
-		R_AddLightInteraction( light, ( void * ) poly, shader, CUBESIDE_CLIPALL, IA_LIGHT );
+		R_AddLightInteraction( light, ( surfaceType_t * ) poly, shader, CUBESIDE_CLIPALL, IA_LIGHT );
 	}
 }
 

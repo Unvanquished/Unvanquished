@@ -793,9 +793,9 @@ static void LerpMeshVertexes( md3Surface_t *surf, float backlerp )
 			outNormal[ 1 ] = uncompressedOldNormal[ 1 ] * oldNormalScale + uncompressedNewNormal[ 1 ] * newNormalScale;
 			outNormal[ 2 ] = uncompressedOldNormal[ 2 ] * oldNormalScale + uncompressedNewNormal[ 2 ] * newNormalScale;
 #else
-			lat = ri.ftol( ( ( ( oldNormals[ 0 ] >> 8 ) & 0xFF ) * ( FUNCTABLE_SIZE / 256 ) * newNormalScale ) +
+			lat = Q_ftol( ( ( ( oldNormals[ 0 ] >> 8 ) & 0xFF ) * ( FUNCTABLE_SIZE / 256 ) * newNormalScale ) +
 			               ( ( ( oldNormals[ 0 ] >> 8 ) & 0xFF ) * ( FUNCTABLE_SIZE / 256 ) * oldNormalScale ) );
-			lng = ri.ftol( ( ( oldNormals[ 0 ] & 0xFF ) * ( FUNCTABLE_SIZE / 256 ) * newNormalScale ) +
+			lng = Q_ftol( ( ( oldNormals[ 0 ] & 0xFF ) * ( FUNCTABLE_SIZE / 256 ) * newNormalScale ) +
 			               ( ( oldNormals[ 0 ] & 0xFF ) * ( FUNCTABLE_SIZE / 256 ) * oldNormalScale ) );
 
 			outNormal[ 0 ] = tr.sinTable[( lat + ( FUNCTABLE_SIZE / 4 ) ) & FUNCTABLE_MASK ] * tr.sinTable[ lng ];
@@ -1433,9 +1433,6 @@ static void RB_SurfaceMD5( md5Surface_t *srf )
 	// convert bones back to matrices
 	for ( i = 0; i < model->numBones; i++ )
 	{
-
-#if defined( USE_REFENTITY_ANIMATIONSYSTEM )
-
 		if ( backEnd.currentEntity->e.skeleton.type == SK_ABSOLUTE )
 		{
 			refBone_t *bone = &backEnd.currentEntity->e.skeleton.bones[ i ];
@@ -1447,7 +1444,6 @@ static void RB_SurfaceMD5( md5Surface_t *srf )
 			TransAddScale( backEnd.currentEntity->e.skeleton.scale, &bones[ i ] );
 		}
 		else
-#endif
 		{
 			TransInitRotationQuat( model->bones[ i ].rotation, &bones[i] );
 			TransAddTranslation( model->bones[ i ].origin, &bones[ i ] );

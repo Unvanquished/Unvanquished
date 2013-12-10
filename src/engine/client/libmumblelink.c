@@ -31,7 +31,7 @@
 #include <sys/time.h>
 #endif
 
-#include <inttypes.h>
+#include <stdint.h>
 #include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
@@ -131,7 +131,7 @@ int mumble_link( const char *name )
 	close( shmfd );
 #endif
 	memset( lm, 0, sizeof( LinkedMem ) );
-	mbstowcs( lm->name, name, sizeof( lm->name ) );
+	mbstowcs( lm->name, name, sizeof( lm->name ) / sizeof( wchar_t ) );
 
 	return 0;
 }

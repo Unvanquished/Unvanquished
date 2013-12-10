@@ -52,7 +52,7 @@ Maryland 20850 USA.
 #include <omp.h>
 #endif
 
-#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
+#if defined(_WIN32) || (!defined(DEDICATED) && !defined(BUILD_TTY_CLIENT))
 #include <SDL.h>
 #include "sdl2_compat.h"
 #endif
@@ -217,7 +217,7 @@ Sys_Init
 void Sys_Init( void )
 {
 	Cmd_AddCommand( "in_restart", Sys_In_Restart_f );
-	Cvar_Set( "arch", OS_STRING " " ARCH_STRING );
+	Cvar_Set( "arch", PLATFORM_STRING );
 	Cvar_Set( "username", Sys_GetCurrentUser() );
 }
 
@@ -415,9 +415,7 @@ static void *Sys_TryLibraryLoad( const char *base, const char *gamedir, const ch
 Sys_LoadDll
 
 Used to load a DLL instead of a virtual machine
-#1 look in fs_homepath
-#2 look in fs_basepath
-#4 look in fs_libpath (if not "")
+look in fs_libpath
 =================
 */
 void *QDECL Sys_LoadDll( const char *name,
@@ -436,24 +434,10 @@ void *QDECL Sys_LoadDll( const char *name,
 
 	Com_sprintf( fname, sizeof( fname ), "%s%s", name, DLL_EXT );
 
-	// TODO: use fs_searchpaths from files.c
-	basepath = Cvar_VariableString( "fs_basepath" );
-	homepath = Cvar_VariableString( "fs_homepath" );
 	gamedir = Cvar_VariableString( "fs_game" );
 	libpath = Cvar_VariableString( "fs_libpath" );
 
-	libHandle = NULL;
-
-	if ( libpath[0] )
-	{
-		libHandle = Sys_TryLibraryLoad( libpath, gamedir, fname );
-	}
-
-
-	if ( !libHandle && basepath )
-	{
-		libHandle = Sys_TryLibraryLoad( basepath, gamedir, fname );
-	}
+	libHandle = Sys_TryLibraryLoad( libpath, gamedir, fname );
 
 	if ( !libHandle )
 	{
@@ -462,8 +446,8 @@ void *QDECL Sys_LoadDll( const char *name,
 	}
 
 	// Try to load the dllEntry and vmMain function.
-	dllEntry = Sys_LoadFunction( libHandle, "dllEntry" );
-	*entryPoint = Sys_LoadFunction( libHandle, "vmMain" );
+	dllEntry = ( void ( QDECL * )( intptr_t ( QDECL * )( intptr_t, ... ) ) ) Sys_LoadFunction( libHandle, "dllEntry" );
+	*entryPoint = ( intptr_t ( QDECL  * )( int, ... ) ) Sys_LoadFunction( libHandle, "vmMain" );
 
 	if ( !*entryPoint || !dllEntry )
 	{
@@ -538,12 +522,10 @@ void NORETURN Sys_SigHandler( int signal )
 	else
 	{
 		signalcaught = qtrue;
-		VM_Forced_Unload_Start();
 #if !defined(DEDICATED)
 		CL_Shutdown();
 #endif
 		SV_Shutdown( va( "Received signal %d", signal ) );
-		VM_Forced_Unload_Done();
 	}
 
 	if ( signal == SIGTERM || signal == SIGINT )
@@ -575,7 +557,14 @@ void Sys_HelpText( const char *binaryName )
 	        , binaryName );
 }
 
-int main( int argc, char **argv )
+// GCC expects a 16-byte aligned stack but Windows only guarantees 4-byte alignment.
+// The MinGW startup code should be handling this but for some reason it isn't.
+#if defined(_WIN32) && defined(__GNUC__)
+#define ALIGN_STACK __attribute__((force_align_arg_pointer))
+#else
+#define ALIGN_STACK
+#endif
+int ALIGN_STACK main( int argc, char **argv )
 {
 	int  i;
 	char commandLine[ MAX_STRING_CHARS ] = { 0 };
@@ -628,11 +617,6 @@ int main( int argc, char **argv )
 		Sys_Exit( 1 );
 	}
 
-#endif
-
-#if 0 // looks like broken on !Windows; remove?
-	Sys_PrintCpuInfo();
-	Sys_PrintMemoryInfo();
 #endif
 
 #ifdef OPENMP

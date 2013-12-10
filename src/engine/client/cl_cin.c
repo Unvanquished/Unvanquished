@@ -47,6 +47,9 @@ Maryland 20850 USA.
 
 #include "client.h"
 #include "snd_local.h"
+
+#include "../framework/CommandSystem.h"
+
 #define MAXSIZE            8
 #define MINSIZE            4
 
@@ -115,8 +118,8 @@ typedef struct
 	qboolean     looping, holdAtEnd, dirty, alterGameState, silent, shader;
 	fileHandle_t iFile;
 	e_status     status;
-	unsigned int startTime;
-	unsigned int lastTime;
+	int          startTime;
+	int          lastTime;
 	long         tfps;
 	long         RoQPlayed;
 	long         ROQSize;
@@ -1476,7 +1479,7 @@ redump:
 		return;
 	}
 
-	if ( cinTable[ currentHandle ].inMemory && ( cinTable[ currentHandle ].status != FMV_EOF ) ) { cinTable[ currentHandle ].inMemory--; framedata += 8; goto redump; }
+	if ( cinTable[ currentHandle ].inMemory && ( cinTable[ currentHandle ].status != FMV_EOF ) ) { cinTable[ currentHandle ].inMemory = qfalse; framedata += 8; goto redump; }
 
 //
 // one more frame hits the dust
@@ -1562,7 +1565,7 @@ static void RoQShutdown( void )
 
 		if ( s[ 0 ] )
 		{
-			Cbuf_ExecuteText( EXEC_APPEND, va( "%s\n", s ) );
+			Cmd::BufferCommandText(s);
 			Cvar_Set( "sv_nextmap", "" );
 		}
 
@@ -1986,7 +1989,7 @@ void CIN_DrawCinematic( int handle )
 		}
 
 		buf3 = ( int * ) buf;
-		buf2 = Hunk_AllocateTempMemory( 256 * 256 * 4 );
+		buf2 = (int*) Hunk_AllocateTempMemory( 256 * 256 * 4 );
 
 		if ( xm == 2 && ym == 2 )
 		{

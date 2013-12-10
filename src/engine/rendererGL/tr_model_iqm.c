@@ -156,7 +156,7 @@ static qboolean LoadIQMFile( void *buffer, int filesize, const char *mod_name,
 			    mod_name, "vertexarray" ) ) {
 		return qfalse;
 	}
-	vertexarray = IQMPtr( header, header->ofs_vertexarrays );
+	vertexarray = ( iqmVertexArray_t* )IQMPtr( header, header->ofs_vertexarrays );
 	for( i = 0; i < header->num_vertexarrays; i++, vertexarray++ ) {
 		int	j, n, *intPtr;
 
@@ -186,7 +186,7 @@ static qboolean LoadIQMFile( void *buffer, int filesize, const char *mod_name,
 					    sizeof(float), mod_name, "vertexarray" ) ) {
 				return qfalse;
 			}
-			intPtr = IQMPtr( header, vertexarray->offset );
+			intPtr = ( int* )IQMPtr( header, vertexarray->offset );
 			for( j = 0; j < n; j++, intPtr++ ) {
 				LL( *intPtr );
 			}
@@ -251,7 +251,7 @@ static qboolean LoadIQMFile( void *buffer, int filesize, const char *mod_name,
 			    mod_name, "triangle" ) ) {
 		return qfalse;
 	}
-	triangle = IQMPtr( header, header->ofs_triangles );
+	triangle = ( iqmTriangle_t* )IQMPtr( header, header->ofs_triangles );
 	for( i = 0; i < header->num_triangles; i++, triangle++ ) {
 		LL( triangle->vertex[0] );
 		LL( triangle->vertex[1] );
@@ -272,7 +272,7 @@ static qboolean LoadIQMFile( void *buffer, int filesize, const char *mod_name,
 			    mod_name, "mesh" ) ) {
 		return qfalse;
 	}
-	mesh = IQMPtr( header, header->ofs_meshes );
+	mesh = ( iqmMesh_t* )IQMPtr( header, header->ofs_meshes );
 	for( i = 0; i < header->num_meshes; i++, mesh++) {
 		LL( mesh->name );
 		LL( mesh->material );
@@ -293,7 +293,7 @@ static qboolean LoadIQMFile( void *buffer, int filesize, const char *mod_name,
 				  mod_name );
 			return qfalse;
 		}
-		*len_names += strlen( IQMPtr( header, header->ofs_text
+		*len_names += strlen( ( char* )IQMPtr( header, header->ofs_text
 					      + mesh->name ) ) + 1;
 	}
 
@@ -303,7 +303,7 @@ static qboolean LoadIQMFile( void *buffer, int filesize, const char *mod_name,
 			    mod_name, "joint" ) ) {
 		return qfalse;
 	}
-	joint = IQMPtr( header, header->ofs_joints );
+	joint = ( iqmJoint_t* )IQMPtr( header, header->ofs_joints );
 	for( i = 0; i < header->num_joints; i++, joint++ ) {
 		LL( joint->name );
 		LL( joint->parent );
@@ -333,7 +333,7 @@ static qboolean LoadIQMFile( void *buffer, int filesize, const char *mod_name,
 				  mod_name, joint->scale[0], joint->scale[1], joint->scale[2] );
 			return qfalse;
 		}
-		*len_names += strlen( IQMPtr( header, header->ofs_text
+		*len_names += strlen( ( char* )IQMPtr( header, header->ofs_text
 					      + joint->name ) ) + 1;
 	}
 
@@ -343,7 +343,7 @@ static qboolean LoadIQMFile( void *buffer, int filesize, const char *mod_name,
 			    mod_name, "pose" ) ) {
 		return qfalse;
 	}
-	pose = IQMPtr( header, header->ofs_poses );
+	pose = ( iqmPose_t* )IQMPtr( header, header->ofs_poses );
 	for( i = 0; i < header->num_poses; i++, pose++ ) {
 		LL( pose->parent );
 		LL( pose->mask );
@@ -378,7 +378,7 @@ static qboolean LoadIQMFile( void *buffer, int filesize, const char *mod_name,
 		{
 			return qfalse;
 		}
-		bounds = IQMPtr( header, header->ofs_bounds );
+		bounds = ( iqmBounds_t* )IQMPtr( header, header->ofs_bounds );
 		for(i = 0; i < header->num_poses; i++)
 		{
 			LL(bounds->bbmin[0]);
@@ -398,7 +398,7 @@ static qboolean LoadIQMFile( void *buffer, int filesize, const char *mod_name,
 			    mod_name, "animation" ) ) {
 		return qfalse;
 	}
-	anim = IQMPtr( header, header->ofs_anims );
+	anim = ( iqmAnim_t* )IQMPtr( header, header->ofs_anims );
 	for( i = 0; i < header->num_anims; i++, anim++ ) {
 		LL( anim->name );
 		LL( anim->first_frame );
@@ -406,7 +406,7 @@ static qboolean LoadIQMFile( void *buffer, int filesize, const char *mod_name,
 		LL( anim->framerate );
 		LL( anim->flags );
 
-		*len_names += strlen( IQMPtr( header, header->ofs_text
+		*len_names += strlen( ( char* )IQMPtr( header, header->ofs_text
 					      + anim->name ) ) + 1;
 	}
 
@@ -533,9 +533,9 @@ qboolean R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 	IQModel->jointNames   = str;
 
 	// copy joint names
-	joint = IQMPtr( header, header->ofs_joints );
+	joint = ( iqmJoint_t* )IQMPtr( header, header->ofs_joints );
 	for( i = 0; i < header->num_joints; i++, joint++ ) {
-		name = IQMPtr( header, header->ofs_text + joint->name );
+		name = ( char* )IQMPtr( header, header->ofs_text + joint->name );
 		len = strlen( name ) + 1;
 		Com_Memcpy( str, name, len );
 		str += len;
@@ -543,7 +543,7 @@ qboolean R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 
 	// setup animations
 	IQAnim = IQModel->anims;
-	anim = IQMPtr( header, header->ofs_anims );
+	anim = ( iqmAnim_t* )IQMPtr( header, header->ofs_anims );
 	for( i = 0; i < IQModel->num_anims; i++, IQAnim++, anim++ ) {
 		IQAnim->num_frames   = anim->num_frames;
 		IQAnim->framerate    = anim->framerate;
@@ -555,7 +555,7 @@ qboolean R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 		IQAnim->name         = str;
 		IQAnim->jointNames   = IQModel->jointNames;
 
-		name = IQMPtr( header, header->ofs_text + anim->name );
+		name = ( char* )IQMPtr( header, header->ofs_text + anim->name );
 		len = strlen( name ) + 1;
 		Com_Memcpy( str, name, len );
 		str += len;
@@ -563,7 +563,7 @@ qboolean R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 
 	// calculate joint transforms
 	trans = IQModel->joints;
-	joint = IQMPtr( header, header->ofs_joints );
+	joint = ( iqmJoint_t* )IQMPtr( header, header->ofs_joints );
 	for( i = 0; i < header->num_joints; i++, joint++, trans++ ) {
 		if( joint->parent >= i ) {
 			ri.Printf(PRINT_WARNING, "R_LoadIQModel: file %s contains an invalid parent joint number.\n",
@@ -584,10 +584,10 @@ qboolean R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 	}
 
 	// calculate pose transforms
-	framedata = IQMPtr( header, header->ofs_frames );
+	framedata = ( short unsigned int* )IQMPtr( header, header->ofs_frames );
 	trans = poses;
 	for( i = 0; i < header->num_frames; i++ ) {
-		pose = IQMPtr( header, header->ofs_poses );
+		pose = ( iqmPose_t* )IQMPtr( header, header->ofs_poses );
 		for( j = 0; j < header->num_poses; j++, pose++, trans++ ) {
 			vec3_t	translate;
 			quat_t	rotate;
@@ -640,7 +640,7 @@ qboolean R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 	}
 
 	// copy vertexarrays and indexes
-	vertexarray = IQMPtr( header, header->ofs_vertexarrays );
+	vertexarray = ( iqmVertexArray_t* )IQMPtr( header, header->ofs_vertexarrays );
 	for( i = 0; i < header->num_vertexarrays; i++, vertexarray++ ) {
 		int	n;
 
@@ -660,7 +660,7 @@ qboolean R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 			break;
 		case IQM_TANGENT:
 			BuildTangents( header->num_vertexes,
-				       IQMPtr( header, vertexarray->offset ),
+				       ( float* )IQMPtr( header, vertexarray->offset ),
 				       IQModel->normals, IQModel->tangents,
 				       IQModel->bitangents );
 			break;
@@ -688,7 +688,7 @@ qboolean R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 	}
 
 	// copy triangles
-	triangle = IQMPtr( header, header->ofs_triangles );
+	triangle = ( iqmTriangle_t* )IQMPtr( header, header->ofs_triangles );
 	for( i = 0; i < header->num_triangles; i++, triangle++ ) {
 		IQModel->triangles[3*i+0] = triangle->vertex[0];
 		IQModel->triangles[3*i+1] = triangle->vertex[1];
@@ -762,7 +762,7 @@ qboolean R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 		}
 
 		// create IBO
-		ibo = R_CreateStaticIBO( "IQM surface IBO", IQModel->triangles, IQModel->num_triangles * 3 );
+		ibo = R_CreateStaticIBO( "IQM surface IBO", ( glIndex_t* )IQModel->triangles, IQModel->num_triangles * 3 );
 	} else {
 		vbo = NULL;
 		ibo = NULL;
@@ -770,14 +770,14 @@ qboolean R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 
 	// register shaders
 	// overwrite the material offset with the shader index
-	mesh = IQMPtr( header, header->ofs_meshes );
+	mesh = ( iqmMesh_t* )IQMPtr( header, header->ofs_meshes );
 	surface = IQModel->surfaces;
 	for( i = 0; i < header->num_meshes; i++, mesh++, surface++ ) {
 		surface->surfaceType = SF_IQM;
 
 		if( mesh->name ) {
 			surface->name = str;
-			name = IQMPtr( header, header->ofs_text + mesh->name );
+			name = ( char* )IQMPtr( header, header->ofs_text + mesh->name );
 			len = strlen( name ) + 1;
 			Com_Memcpy( str, name, len );
 			str += len;
@@ -785,7 +785,7 @@ qboolean R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 			surface->name = NULL;
 		}
 
-		surface->shader = R_FindShader( IQMPtr(header, header->ofs_text + mesh->material),
+		surface->shader = R_FindShader( ( char* )IQMPtr(header, header->ofs_text + mesh->material),
 						SHADER_3D_DYNAMIC, RSF_DEFAULT );
 		if( surface->shader->defaultShader )
 			surface->shader = tr.defaultShader;
@@ -801,7 +801,7 @@ qboolean R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 	// copy model bounds
 	if(header->ofs_bounds)
 	{
-		iqmBounds_t *ptr = IQMPtr( header, header->ofs_bounds );
+		iqmBounds_t *ptr = ( iqmBounds_t* )IQMPtr( header, header->ofs_bounds );
 		for(i = 0; i < header->num_frames; i++)
 		{
 			VectorCopy( ptr->bbmin, bounds );
@@ -1001,7 +1001,7 @@ void R_AddIQMSurfaces( trRefEntity_t *ent ) {
 		// we will add shadows even if the main object isn't visible in the view
 
 		if( !personalModel ) {
-			R_AddDrawSurf( (void *)surface, shader, -1, fogNum );
+			R_AddDrawSurf( ( surfaceType_t *)surface, shader, -1, fogNum );
 		}
 
 		surface++;

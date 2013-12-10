@@ -43,11 +43,11 @@ Maryland 20850 USA.
 
 #include "../qcommon/crypto.h"
 
+#include "../framework/CommandSystem.h"
+
 #define __(x) Trans_GettextGame(x)
 #define C__(x, y) Trans_PgettextGame(x, y)
 #define P__(x, y, c) Trans_GettextGamePlural(x, y, c)
-
-static void ( *completer )( const char *s ) = NULL;
 
 // NERVE - SMF
 void                   Key_GetBindingBuf( int keynum, int team, char *buf, int buflen );
@@ -233,25 +233,33 @@ void CL_SetClientLerpOrigin( float x, float y, float z )
 }
 
 /*
+==================
+CL_CGameStats
+==================
+*/
+void CL_CGameStats( void )
+{
+	int nFrames = cl_cgameSyscallStats->integer;
+
+	if (nFrames > 0 && cls.framecount % nFrames == 0 && cls.nCgameSyscalls != 0) {
+		Com_Printf("Average over %i frames: %f syscalls (R: %f CM: %f U: %f S: %f)\n", nFrames,
+				float(cls.nCgameSyscalls) / nFrames,
+				float(cls.nCgameRenderSyscalls) / nFrames,
+				float(cls.nCgamePhysicsSyscalls) / nFrames,
+				float(cls.nCgameUselessSyscalls) / nFrames,
+				float(cls.nCgameSoundSyscalls) / nFrames
+			);
+		cls.nCgameSyscalls = cls.nCgameRenderSyscalls = cls.nCgamePhysicsSyscalls = cls.nCgameUselessSyscalls = cls.nCgameSoundSyscalls = 0;
+	}
+}
+/*
 =====================
 CL_CompleteCgameCommand
 =====================
 */
 void CL_CompleteCgameCommand( char *args, int argNum )
 {
-	Field_CompleteCgame( argNum );
-}
-
-/*
-=====================
-CL_CgameCompletion
-=====================
-*/
-void CL_CgameCompletion( void ( *callback )( const char *s ), int argNum )
-{
-	completer = callback;
 	VM_Call( cgvm, CG_COMPLETE_COMMAND, argNum );
-	completer = NULL;
 }
 
 /*
@@ -261,7 +269,7 @@ CL_AddCgameCommand
 */
 void CL_AddCgameCommand( const char *cmdName )
 {
-	Cmd_AddCommand( cmdName, NULL );
+	Cmd_AddCommand( cmdName, CL_GameCommandHandler );
 	Cmd_SetCommandCompletionFunc( cmdName, CL_CompleteCgameCommand );
 }
 
@@ -270,7 +278,7 @@ void CL_AddCgameCommand( const char *cmdName )
 CL_ConfigstringModified
 =====================
 */
-void CL_ConfigstringModified( void )
+void CL_ConfigstringModified( Cmd::Args& csCmd )
 {
 	const char  *old, *s;
 	int         i, index;
@@ -278,7 +286,11 @@ void CL_ConfigstringModified( void )
 	gameState_t oldGs;
 	int         len;
 
-	index = atoi( Cmd_Argv( 1 ) );
+	if (csCmd.Argc() < 3) {
+		Com_Error( ERR_DROP, "CL_ConfigstringModified: wrong command received" );
+	}
+
+	index = atoi( csCmd.Argv(1).c_str() );
 
 	if ( index < 0 || index >= MAX_CONFIGSTRINGS )
 	{
@@ -288,7 +300,7 @@ void CL_ConfigstringModified( void )
 //  s = Cmd_Argv(2);
 	// get everything after "cs <num>"
 	//s = Cmd_ArgsFrom( 2 );
-	s = Cmd_Argv( 2 );
+	s = csCmd.Argv(2).c_str();
 
 	old = cl.gameState.stringData + cl.gameState.stringOffsets[ index ];
 
@@ -351,7 +363,7 @@ Set up argc/argv for the given command
 qboolean CL_GetServerCommand( int serverCommandNumber )
 {
 	const char  *s;
-	char        *cmd;
+	const char  *cmd;
 	static char bigConfigString[ BIG_INFO_STRING ];
 	int         argc;
 
@@ -384,15 +396,21 @@ qboolean CL_GetServerCommand( int serverCommandNumber )
 
 rescan:
 	Cmd_TokenizeString( s );
-	cmd = Cmd_Argv( 0 );
-	argc = Cmd_Argc();
+	Cmd::Args args(s);
+
+	if (args.Argc() == 0) {
+		return qfalse;
+	}
+
+	cmd = args[0].c_str();
+	argc = args.size();
 
 	if ( !strcmp( cmd, "disconnect" ) )
 	{
 		// NERVE - SMF - allow server to indicate why they were disconnected
 		if ( argc >= 2 )
 		{
-			Com_Error( ERR_SERVERDISCONNECT, "Server disconnected: %s", Cmd_Argv( 1 ) );
+			Com_Error( ERR_SERVERDISCONNECT, "Server disconnected: %s", args[1].c_str() );
 		}
 		else
 		{
@@ -402,42 +420,41 @@ rescan:
 
 	if ( !strcmp( cmd, "bcs0" ) )
 	{
-		Com_sprintf( bigConfigString, BIG_INFO_STRING, "cs %s %s", Cmd_Argv( 1 ), Cmd_QuoteString( Cmd_Argv( 2 ) ) );
+		Com_sprintf( bigConfigString, BIG_INFO_STRING, "cs %s %s", args[1].c_str(), Cmd_QuoteString( args[2].c_str() ) );
 		return qfalse;
 	}
 
 	if ( !strcmp( cmd, "bcs1" ) )
 	{
-		s = Cmd_QuoteString( Cmd_Argv( 2 ) );
+		s = Cmd_QuoteString( args[2].c_str() );
 
 		if ( strlen( bigConfigString ) + strlen( s ) >= BIG_INFO_STRING )
 		{
 			Com_Error( ERR_DROP, "bcs exceeded BIG_INFO_STRING" );
 		}
 
-		strcat( bigConfigString, s );
+		Q_strcat( bigConfigString, sizeof( bigConfigString ), s );
 		return qfalse;
 	}
 
 	if ( !strcmp( cmd, "bcs2" ) )
 	{
-		s = Cmd_QuoteString( Cmd_Argv( 2 ) );
+		s = Cmd_QuoteString( args[2].c_str() );
 
 		if ( strlen( bigConfigString ) + strlen( s ) + 1 >= BIG_INFO_STRING )
 		{
 			Com_Error( ERR_DROP, "bcs exceeded BIG_INFO_STRING" );
 		}
 
-		strcat( bigConfigString, s );
-		strcat( bigConfigString, "\"" );
+		Q_strcat( bigConfigString, sizeof( bigConfigString ), s );
+		Q_strcat( bigConfigString, sizeof( bigConfigString ), "\"" );
 		s = bigConfigString;
 		goto rescan;
 	}
 
 	if ( !strcmp( cmd, "cs" ) )
 	{
-		CL_ConfigstringModified();
-		// reparse the string, because CL_ConfigstringModified may have done another Cmd_TokenizeString()
+		CL_ConfigstringModified(args);
 		Cmd_TokenizeString( s );
 		return qtrue;
 	}
@@ -473,7 +490,7 @@ rescan:
 			return qfalse;
 		}
 
-		mpz_init_set_str( message, Cmd_Argv( 1 ), 16 );
+		mpz_init_set_str( message, args[1].c_str(), 16 );
 
 		if ( rsa_decrypt( &private_key, &msg_len, ( unsigned char * ) buffer + 16, message ) )
 		{
@@ -592,6 +609,7 @@ void CL_ShutdownCGame( void )
 	VM_Call( cgvm, CG_SHUTDOWN );
 	VM_Free( cgvm );
 	cgvm = NULL;
+	Cmd_RemoveCommandsByFunc( CL_GameCommandHandler );
 }
 
 static int FloatAsInt( float f )
@@ -613,6 +631,8 @@ The cgame module is making a system call
 */
 intptr_t CL_CgameSystemCalls( intptr_t *args )
 {
+	cls.nCgameSyscalls ++;
+
 	switch ( args[ 0 ] )
 	{
 		case CG_PRINT:
@@ -624,55 +644,60 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0; //silence warning and have a fallback behavior if Com_Error behavior changes
 
 		case CG_LOG:
-			Com_LogEvent( VMA( 1 ), NULL );
+			Com_LogEvent( (log_event_t*) VMA( 1 ), NULL );
 			return 0;
 
 		case CG_MILLISECONDS:
 			return Sys_Milliseconds();
 
 		case CG_CVAR_REGISTER:
-			Cvar_Register( VMA( 1 ), VMA( 2 ), VMA( 3 ), args[ 4 ] );
+			Cvar_Register( (vmCvar_t*) VMA( 1 ), (char*) VMA( 2 ), (char*) VMA( 3 ), args[ 4 ] );
 			return 0;
 
 		case CG_CVAR_UPDATE:
-			Cvar_Update( VMA( 1 ) );
+			Cvar_Update( (vmCvar_t*) VMA( 1 ) );
 			return 0;
 
 		case CG_CVAR_SET:
-			Cvar_Set( VMA( 1 ), VMA( 2 ) );
+			Cvar_Set( (char*) VMA( 1 ), (char*) VMA( 2 ) );
 			return 0;
 
 		case CG_CVAR_VARIABLESTRINGBUFFER:
+			cls.nCgameUselessSyscalls ++;
 			VM_CheckBlock( args[2], args[3], "CVARVSB" );
-			Cvar_VariableStringBuffer( VMA( 1 ), VMA( 2 ), args[ 3 ] );
+			Cvar_VariableStringBuffer( (char*) VMA( 1 ), (char*) VMA( 2 ), args[ 3 ] );
 			return 0;
 
 		case CG_CVAR_LATCHEDVARIABLESTRINGBUFFER:
+			cls.nCgameUselessSyscalls ++;
 			VM_CheckBlock( args[2], args[3], "CVARLVSB" );
-			Cvar_LatchedVariableStringBuffer( VMA( 1 ), VMA( 2 ), args[ 3 ] );
+			Cvar_LatchedVariableStringBuffer( (char*) VMA( 1 ), (char*) VMA( 2 ), args[ 3 ] );
 			return 0;
 
 		case CG_CVAR_VARIABLEINTEGERVALUE:
-			return Cvar_VariableIntegerValue( VMA( 1 ) );
+			cls.nCgameUselessSyscalls ++;
+			return Cvar_VariableIntegerValue( (char*) VMA( 1 ) );
 
 		case CG_ARGC:
+			cls.nCgameUselessSyscalls ++;
 			return Cmd_Argc();
 
 		case CG_ARGV:
+			cls.nCgameUselessSyscalls ++;
 			VM_CheckBlock( args[2], args[3], "ARGV" );
-			Cmd_ArgvBuffer( args[ 1 ], VMA( 2 ), args[ 3 ] );
+			Cmd_ArgvBuffer( args[ 1 ], (char*) VMA( 2 ), args[ 3 ] );
 			return 0;
 
 		case CG_ARGS:
+			cls.nCgameUselessSyscalls ++;
 			VM_CheckBlock( args[1], args[2], "ARGS" );
-			Cmd_ArgsBuffer( VMA( 1 ), args[ 2 ] );
+			Cmd_ArgsBuffer( (char*) VMA( 1 ), args[ 2 ] );
 			return 0;
 
 		case CG_LITERAL_ARGS:
-			// FIXME
+			cls.nCgameUselessSyscalls ++;
 			VM_CheckBlock( args[1], args[2], "LARGS" );
-			Cmd_LiteralArgsBuffer( VMA( 1 ), args[ 2 ] );
-//                      Cmd_ArgsBuffer(VMA(1), args[2]);
+			Cmd_LiteralArgsBuffer((char*) VMA( 1 ), args[ 2 ] );
 			return 0;
 
 		case CG_GETDEMOSTATE:
@@ -682,7 +707,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return CL_DemoPos();
 
 		case CG_FS_FOPENFILE:
-			return FS_FOpenFileByMode( VMA( 1 ), VMA( 2 ), args[ 3 ] );
+			return FS_FOpenFileByMode( (char*) VMA( 1 ), (fileHandle_t*) VMA( 2 ), (fsMode_t) args[ 3 ] );
 
 		case CG_FS_READ:
 			VM_CheckBlock( args[1], args[2], "FSREAD" );
@@ -699,33 +724,29 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 
 		case CG_FS_GETFILELIST:
 			VM_CheckBlock( args[3], args[4], "FSGFL" );
-			return FS_GetFileList( VMA( 1 ), VMA( 2 ), VMA( 3 ), args[ 4 ] );
+			return FS_GetFileList( (char*) VMA( 1 ), (char*) VMA( 2 ), (char*) VMA( 3 ), args[ 4 ] );
 
 		case CG_FS_DELETEFILE:
-			return FS_Delete( VMA( 1 ) );
+			return FS_Delete( (char*) VMA( 1 ) );
 
 		case CG_SENDCONSOLECOMMAND:
-			Cbuf_AddText( VMA( 1 ) );
+			Cmd::BufferCommandText( (char*) VMA( 1 ) );
 			return 0;
 
 		case CG_ADDCOMMAND:
-			CL_AddCgameCommand( VMA( 1 ) );
+			CL_AddCgameCommand( (char*) VMA( 1 ) );
 			return 0;
 
 		case CG_REMOVECOMMAND:
-			Cmd_RemoveCommand( VMA( 1 ) );
+			Cmd_RemoveCommand( (char*) VMA( 1 ) );
 			return 0;
 
 		case CG_COMPLETE_CALLBACK:
-			if ( completer )
-			{
-				completer( VMA( 1 ) );
-			}
-
+			Cmd_OnCompleteMatch((char*) VMA(1));
 			return 0;
 
 		case CG_SENDCLIENTCOMMAND:
-			CL_AddReliableCommand( VMA( 1 ) );
+			CL_AddReliableCommand( (char*) VMA( 1 ) );
 			return 0;
 
 		case CG_UPDATESCREEN:
@@ -733,75 +754,95 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0;
 
 		case CG_CM_LOADMAP:
-			CL_CM_LoadMap( VMA( 1 ) );
+			cls.nCgamePhysicsSyscalls ++;
+			CL_CM_LoadMap( (char*) VMA( 1 ) );
 			return 0;
 
 		case CG_CM_NUMINLINEMODELS:
+			cls.nCgamePhysicsSyscalls ++;
 			return CM_NumInlineModels();
 
 		case CG_CM_INLINEMODEL:
+			cls.nCgamePhysicsSyscalls ++;
 			return CM_InlineModel( args[ 1 ] );
 
 		case CG_CM_TEMPBOXMODEL:
-			return CM_TempBoxModel( VMA( 1 ), VMA( 2 ), qfalse );
+			cls.nCgamePhysicsSyscalls ++;
+			return CM_TempBoxModel( (float*) VMA( 1 ), (float*) VMA( 2 ), qfalse );
 
 		case CG_CM_TEMPCAPSULEMODEL:
-			return CM_TempBoxModel( VMA( 1 ), VMA( 2 ), qtrue );
+			cls.nCgamePhysicsSyscalls ++;
+			return CM_TempBoxModel( (float*) VMA( 1 ), (float*) VMA( 2 ), qtrue );
 
 		case CG_CM_POINTCONTENTS:
-			return CM_PointContents( VMA( 1 ), args[ 2 ] );
+			cls.nCgamePhysicsSyscalls ++;
+			return CM_PointContents( (float*) VMA( 1 ), args[ 2 ] );
 
 		case CG_CM_TRANSFORMEDPOINTCONTENTS:
-			return CM_TransformedPointContents( VMA( 1 ), args[ 2 ], VMA( 3 ), VMA( 4 ) );
+			cls.nCgamePhysicsSyscalls ++;
+			return CM_TransformedPointContents( (float*) VMA( 1 ), args[ 2 ], (float*) VMA( 3 ), (float*) VMA( 4 ) );
 
 		case CG_CM_BOXTRACE:
-			CM_BoxTrace( VMA( 1 ), VMA( 2 ), VMA( 3 ), VMA( 4 ), VMA( 5 ), args[ 6 ], args[ 7 ], TT_AABB );
+			cls.nCgamePhysicsSyscalls ++;
+			CM_BoxTrace( (trace_t*) VMA( 1 ), (float*) VMA( 2 ), (float*) VMA( 3 ), (float*) VMA( 4 ), (float*) VMA( 5 ), args[ 6 ], args[ 7 ], TT_AABB );
 			return 0;
 
 		case CG_CM_TRANSFORMEDBOXTRACE:
-			CM_TransformedBoxTrace( VMA( 1 ), VMA( 2 ), VMA( 3 ), VMA( 4 ), VMA( 5 ), args[ 6 ], args[ 7 ], VMA( 8 ), VMA( 9 ), TT_AABB );
+			cls.nCgamePhysicsSyscalls ++;
+			CM_TransformedBoxTrace( (trace_t*) VMA( 1 ), (float*) VMA( 2 ), (float*) VMA( 3 ), (float*) VMA( 4 ), (float*) VMA( 5 ), args[ 6 ], args[ 7 ], (float*) VMA( 8 ), (float*) VMA( 9 ), TT_AABB );
 			return 0;
 
 		case CG_CM_CAPSULETRACE:
-			CM_BoxTrace( VMA( 1 ), VMA( 2 ), VMA( 3 ), VMA( 4 ), VMA( 5 ), args[ 6 ], args[ 7 ], TT_CAPSULE );
+			cls.nCgamePhysicsSyscalls ++;
+			CM_BoxTrace( (trace_t*) VMA( 1 ), (float*) VMA( 2 ), (float*) VMA( 3 ), (float*) VMA( 4 ), (float*) VMA( 5 ), args[ 6 ], args[ 7 ], TT_CAPSULE );
 			return 0;
 
 		case CG_CM_TRANSFORMEDCAPSULETRACE:
-			CM_TransformedBoxTrace( VMA( 1 ), VMA( 2 ), VMA( 3 ), VMA( 4 ), VMA( 5 ), args[ 6 ], args[ 7 ], VMA( 8 ), VMA( 9 ), TT_CAPSULE );
+			cls.nCgamePhysicsSyscalls ++;
+			CM_TransformedBoxTrace( (trace_t*) VMA( 1 ), (float*) VMA( 2 ), (float*) VMA( 3 ), (float*) VMA( 4 ), (float*) VMA( 5 ), args[ 6 ], args[ 7 ], (float*) VMA( 8 ), (float*) VMA( 9 ), TT_CAPSULE );
 			return 0;
 
 		case CG_CM_BISPHERETRACE:
-			CM_BiSphereTrace( VMA( 1 ), VMA( 2 ), VMA( 3 ), VMF( 4 ), VMF( 5 ), args[ 6 ], args[ 7 ] );
+			cls.nCgamePhysicsSyscalls ++;
+			CM_BiSphereTrace( (trace_t*) VMA( 1 ), (float*) VMA( 2 ), (float*) VMA( 3 ), VMF( 4 ), VMF( 5 ), args[ 6 ], args[ 7 ] );
 			return 0;
 
 		case CG_CM_TRANSFORMEDBISPHERETRACE:
-			CM_TransformedBiSphereTrace( VMA( 1 ), VMA( 2 ), VMA( 3 ), VMF( 4 ), VMF( 5 ), args[ 6 ], args[ 7 ], VMA( 8 ) );
+			cls.nCgamePhysicsSyscalls ++;
+			CM_TransformedBiSphereTrace( (trace_t*) VMA( 1 ), (float*) VMA( 2 ), (float*) VMA( 3 ), VMF( 4 ), VMF( 5 ), args[ 6 ], args[ 7 ], (float*) VMA( 8 ) );
 			return 0;
 
 		case CG_CM_MARKFRAGMENTS:
-			return re.MarkFragments( args[ 1 ], VMA( 2 ), VMA( 3 ), args[ 4 ], VMA( 5 ), args[ 6 ], VMA( 7 ) );
+			cls.nCgamePhysicsSyscalls ++;
+			return re.MarkFragments( args[ 1 ], (vec3_t*) VMA( 2 ), (float*) VMA( 3 ), args[ 4 ], (float*) VMA( 5 ), args[ 6 ], (markFragment_t*) VMA( 7 ) );
 
 		case CG_R_PROJECTDECAL:
-			re.ProjectDecal( args[ 1 ], args[ 2 ], VMA( 3 ), VMA( 4 ), VMA( 5 ), args[ 6 ], args[ 7 ] );
+			cls.nCgameRenderSyscalls ++;
+			re.ProjectDecal( args[ 1 ], args[ 2 ], (vec3_t*) VMA( 3 ), (float*) VMA( 4 ), (float*) VMA( 5 ), args[ 6 ], args[ 7 ] );
 			return 0;
 
 		case CG_R_CLEARDECALS:
+			cls.nCgameRenderSyscalls ++;
 			re.ClearDecals();
 			return 0;
 
 		case CG_S_STARTSOUND:
-			S_StartSound( VMA( 1 ), args[ 2 ], args[ 3 ], args[ 4 ] );
+			cls.nCgameSoundSyscalls ++;
+			S_StartSound( (float*) VMA( 1 ), args[ 2 ], args[ 3 ], args[ 4 ] );
 			return 0;
 
 		case CG_S_STARTLOCALSOUND:
+			cls.nCgameSoundSyscalls ++;
 			S_StartLocalSound( args[ 1 ], args[ 2 ] );
 			return 0;
 
 		case CG_S_CLEARLOOPINGSOUNDS:
+			cls.nCgameSoundSyscalls ++;
 			S_ClearLoopingSounds( args[ 1 ] );
 			return 0;
 
 		case CG_S_CLEARSOUNDS:
+			cls.nCgameSoundSyscalls ++;
 
 			/*if(args[1] == 0)
 			{
@@ -814,185 +855,222 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0;
 
 		case CG_S_ADDLOOPINGSOUND:
-			S_AddLoopingSound( args[ 1 ], VMA( 2 ), VMA( 3 ), args[ 4 ] );
+			cls.nCgameSoundSyscalls ++;
+			S_AddLoopingSound( args[ 1 ], (float*) VMA( 2 ), (float*) VMA( 3 ), args[ 4 ] );
 			return 0;
 
 		case CG_S_ADDREALLOOPINGSOUND:
-			S_AddRealLoopingSound( args[ 1 ], VMA( 2 ), VMA( 3 ), args[ 4 ] );
+			cls.nCgameSoundSyscalls ++;
+			S_AddRealLoopingSound( args[ 1 ], (float*) VMA( 2 ), (float*) VMA( 3 ), args[ 4 ] );
 			return 0;
 
 		case CG_S_STOPLOOPINGSOUND:
+			cls.nCgameSoundSyscalls ++;
 			S_StopLoopingSound( args[ 1 ] );
 			return 0;
 
 		case CG_S_STOPSTREAMINGSOUND:
+			cls.nCgameSoundSyscalls ++;
 			// FIXME
 			//S_StopEntStreamingSound(args[1]);
 			return 0;
 
 		case CG_S_UPDATEENTITYPOSITION:
-			S_UpdateEntityPosition( args[ 1 ], VMA( 2 ) );
+			cls.nCgameSoundSyscalls ++;
+			S_UpdateEntityPosition( args[ 1 ], (float*) VMA( 2 ) );
 			return 0;
 
 		case CG_S_RESPATIALIZE:
-			S_Respatialize( args[ 1 ], VMA( 2 ), VMA( 3 ), args[ 4 ] );
+			cls.nCgameSoundSyscalls ++;
+			S_Respatialize( args[ 1 ], (float*) VMA( 2 ), (vec3_t*) VMA( 3 ), args[ 4 ] );
 			return 0;
 
 		case CG_S_REGISTERSOUND:
+			cls.nCgameSoundSyscalls ++;
 #ifdef DOOMSOUND ///// (SA) DOOMSOUND
-			return S_RegisterSound( VMA( 1 ) );
+			return S_RegisterSound( (char*) VMA( 1 ) );
 #else
-			return S_RegisterSound( VMA( 1 ), args[ 2 ] );
+			return S_RegisterSound( (char*) VMA( 1 ), args[ 2 ] );
 #endif ///// (SA) DOOMSOUND
 
 		case CG_S_STARTBACKGROUNDTRACK:
+			cls.nCgameSoundSyscalls ++;
 			//S_StartBackgroundTrack(VMA(1), VMA(2), args[3]);  //----(SA)  added fadeup time
-			S_StartBackgroundTrack( VMA( 1 ), VMA( 2 ) );
+			S_StartBackgroundTrack( (char*) VMA( 1 ), (char*) VMA( 2 ) );
 			return 0;
 
 		case CG_S_FADESTREAMINGSOUND:
+			cls.nCgameSoundSyscalls ++;
 			// FIXME
 			//S_FadeStreamingSound(VMF(1), args[2], args[3]); //----(SA)  added music/all-streaming options
 			return 0;
 
 		case CG_S_STARTSTREAMINGSOUND:
+			cls.nCgameSoundSyscalls ++;
 			// FIXME
 			//return S_StartStreamingSound(VMA(1), VMA(2), args[3], args[4], args[5]);
 			return 0;
 
 		case CG_R_LOADWORLDMAP:
+			cls.nCgameRenderSyscalls ++;
 			re.SetWorldVisData( CM_ClusterPVS( -1 ) );
-			re.LoadWorld( VMA( 1 ) );
+			re.LoadWorld( (char*) VMA( 1 ) );
 			return 0;
 
 		case CG_R_REGISTERMODEL:
-			return re.RegisterModel( VMA( 1 ) );
+			cls.nCgameRenderSyscalls ++;
+			return re.RegisterModel( (char*) VMA( 1 ) );
 
 		case CG_R_REGISTERSKIN:
-			return re.RegisterSkin( VMA( 1 ) );
+			cls.nCgameRenderSyscalls ++;
+			return re.RegisterSkin( (char*) VMA( 1 ) );
 
 			//----(SA)  added
 		case CG_R_GETSKINMODEL:
-			return re.GetSkinModel( args[ 1 ], VMA( 2 ), VMA( 3 ) );
+			cls.nCgameRenderSyscalls ++;
+			return re.GetSkinModel( args[ 1 ], (char*) VMA( 2 ), (char*) VMA( 3 ) );
 
 		case CG_R_GETMODELSHADER:
+			cls.nCgameRenderSyscalls ++;
 			return re.GetShaderFromModel( args[ 1 ], args[ 2 ], args[ 3 ] );
 			//----(SA)  end
 
 		case CG_R_REGISTERSHADER:
-			return re.RegisterShader( VMA( 1 ), args[ 2 ] );
+			cls.nCgameRenderSyscalls ++;
+			return re.RegisterShader( (char*) VMA( 1 ), (RegisterShaderFlags_t) args[ 2 ] );
 
 		case CG_R_REGISTERFONT:
-			re.RegisterFontVM( VMA( 1 ), VMA( 2 ), args[ 3 ], VMA( 4 ) );
+			cls.nCgameRenderSyscalls ++;
+			re.RegisterFontVM( (char*) VMA( 1 ), (char*) VMA( 2 ), args[ 3 ], (fontMetrics_t*) VMA( 4 ) );
 			return 0;
 
 		case CG_R_CLEARSCENE:
+			cls.nCgameRenderSyscalls ++;
 			re.ClearScene();
 			return 0;
 
 		case CG_R_ADDREFENTITYTOSCENE:
-			re.AddRefEntityToScene( VMA( 1 ) );
+			cls.nCgameRenderSyscalls ++;
+			re.AddRefEntityToScene( (refEntity_t*) VMA( 1 ) );
 			return 0;
 
-#if defined( USE_REFLIGHT )
 		case CG_R_ADDREFLIGHTSTOSCENE:
-			re.AddRefLightToScene( VMA( 1 ) );
+			cls.nCgameRenderSyscalls ++;
+			re.AddRefLightToScene( (refLight_t*) VMA( 1 ) );
 			return 0;
-#endif
 
 		case CG_R_ADDPOLYTOSCENE:
-			re.AddPolyToScene( args[ 1 ], args[ 2 ], VMA( 3 ) );
+			cls.nCgameRenderSyscalls ++;
+			re.AddPolyToScene( args[ 1 ], args[ 2 ], (polyVert_t*) VMA( 3 ) );
 			return 0;
 
 		case CG_R_ADDPOLYSTOSCENE:
-			re.AddPolysToScene( args[ 1 ], args[ 2 ], VMA( 3 ), args[ 4 ] );
+			cls.nCgameRenderSyscalls ++;
+			re.AddPolysToScene( args[ 1 ], args[ 2 ], (polyVert_t*) VMA( 3 ), args[ 4 ] );
 			return 0;
 
 		case CG_R_ADDPOLYBUFFERTOSCENE:
-			re.AddPolyBufferToScene( VMA( 1 ) );
+			cls.nCgameRenderSyscalls ++;
+			re.AddPolyBufferToScene( (polyBuffer_t*) VMA( 1 ) );
 			return 0;
 
 		case CG_R_ADDLIGHTTOSCENE:
-			re.AddLightToScene( VMA( 1 ), VMF( 2 ), VMF( 3 ), VMF( 4 ), VMF( 5 ), VMF( 6 ), args[ 7 ], args[ 8 ] );
+			cls.nCgameRenderSyscalls ++;
+			re.AddLightToScene( (float*) VMA( 1 ), VMF( 2 ), VMF( 3 ), VMF( 4 ), VMF( 5 ), VMF( 6 ), args[ 7 ], args[ 8 ] );
 			return 0;
 
 		case CG_R_ADDADDITIVELIGHTTOSCENE:
-			re.AddAdditiveLightToScene( VMA( 1 ), VMF( 2 ), VMF( 3 ), VMF( 4 ), VMF( 5 ) );
+			cls.nCgameRenderSyscalls ++;
+			re.AddAdditiveLightToScene( (float*) VMA( 1 ), VMF( 2 ), VMF( 3 ), VMF( 4 ), VMF( 5 ) );
 			return 0;
 
 		case CG_FS_SEEK:
 			return FS_Seek( args[ 1 ], args[ 2 ], args[ 3 ] );
 
 		case CG_R_ADDCORONATOSCENE:
-			re.AddCoronaToScene( VMA( 1 ), VMF( 2 ), VMF( 3 ), VMF( 4 ), VMF( 5 ), args[ 6 ], args[ 7 ] );
+			cls.nCgameRenderSyscalls ++;
+			re.AddCoronaToScene( (float*) VMA( 1 ), VMF( 2 ), VMF( 3 ), VMF( 4 ), VMF( 5 ), args[ 6 ], args[ 7 ] );
 			return 0;
 
 		case CG_R_SETFOG:
+			cls.nCgameRenderSyscalls ++;
 			re.SetFog( args[ 1 ], args[ 2 ], args[ 3 ], VMF( 4 ), VMF( 5 ), VMF( 6 ), VMF( 7 ) );
 			return 0;
 
 		case CG_R_SETGLOBALFOG:
+			cls.nCgameRenderSyscalls ++;
 			re.SetGlobalFog( args[ 1 ], args[ 2 ], VMF( 3 ), VMF( 4 ), VMF( 5 ), VMF( 6 ) );
 			return 0;
 
 		case CG_R_RENDERSCENE:
-			re.RenderScene( VMA( 1 ) );
+			cls.nCgameRenderSyscalls ++;
+			re.RenderScene( (refdef_t*) VMA( 1 ) );
 			return 0;
 
 		case CG_R_SAVEVIEWPARMS:
+			cls.nCgameRenderSyscalls ++;
 			re.SaveViewParms();
 			return 0;
 
 		case CG_R_RESTOREVIEWPARMS:
+			cls.nCgameRenderSyscalls ++;
 			re.RestoreViewParms();
 			return 0;
 
 		case CG_R_SETCOLOR:
-			re.SetColor( VMA( 1 ) );
+			cls.nCgameRenderSyscalls ++;
+			re.SetColor( (float*) VMA( 1 ) );
 			return 0;
 
 			// Tremulous
 		case CG_R_SETCLIPREGION:
-			re.SetClipRegion( VMA( 1 ) );
+			cls.nCgameRenderSyscalls ++;
+			re.SetClipRegion( (float*) VMA( 1 ) );
 			return 0;
 
 		case CG_R_DRAWSTRETCHPIC:
+			cls.nCgameRenderSyscalls ++;
 			re.DrawStretchPic( VMF( 1 ), VMF( 2 ), VMF( 3 ), VMF( 4 ), VMF( 5 ), VMF( 6 ), VMF( 7 ), VMF( 8 ), args[ 9 ] );
 			return 0;
 
 		case CG_R_DRAWROTATEDPIC:
+			cls.nCgameRenderSyscalls ++;
 			re.DrawRotatedPic( VMF( 1 ), VMF( 2 ), VMF( 3 ), VMF( 4 ), VMF( 5 ), VMF( 6 ), VMF( 7 ), VMF( 8 ), args[ 9 ], VMF( 10 ) );
 			return 0;
 
 		case CG_R_DRAWSTRETCHPIC_GRADIENT:
-			re.DrawStretchPicGradient( VMF( 1 ), VMF( 2 ), VMF( 3 ), VMF( 4 ), VMF( 5 ), VMF( 6 ), VMF( 7 ), VMF( 8 ), args[ 9 ], VMA( 10 ), args[ 11 ] );
+			cls.nCgameRenderSyscalls ++;
+			re.DrawStretchPicGradient( VMF( 1 ), VMF( 2 ), VMF( 3 ), VMF( 4 ), VMF( 5 ), VMF( 6 ), VMF( 7 ), VMF( 8 ), args[ 9 ], (float*) VMA( 10 ), args[ 11 ] );
 			return 0;
 
 		case CG_R_DRAW2DPOLYS:
-			re.Add2dPolys( VMA( 1 ), args[ 2 ], args[ 3 ] );
+			cls.nCgameRenderSyscalls ++;
+			re.Add2dPolys( (polyVert_t*) VMA( 1 ), args[ 2 ], args[ 3 ] );
 			return 0;
 
 		case CG_R_MODELBOUNDS:
-			re.ModelBounds( args[ 1 ], VMA( 2 ), VMA( 3 ) );
+			cls.nCgameRenderSyscalls ++;
+			re.ModelBounds( args[ 1 ], (float*) VMA( 2 ), (float*) VMA( 3 ) );
 			return 0;
 
 		case CG_R_LERPTAG:
-			return re.LerpTag( VMA( 1 ), VMA( 2 ), VMA( 3 ), args[ 4 ] );
+			cls.nCgameRenderSyscalls ++;
+			return re.LerpTag( (orientation_t*) VMA( 1 ), (refEntity_t*) VMA( 2 ), (char*) VMA( 3 ), args[ 4 ] );
 
 		case CG_GETGLCONFIG:
-			CL_GetGlconfig( VMA( 1 ) );
+			CL_GetGlconfig( (glconfig_t*) VMA( 1 ) );
 			return 0;
 
 		case CG_GETGAMESTATE:
-			CL_GetGameState( VMA( 1 ) );
+			CL_GetGameState( (gameState_t*) VMA( 1 ) );
 			return 0;
 
 		case CG_GETCURRENTSNAPSHOTNUMBER:
-			CL_GetCurrentSnapshotNumber( VMA( 1 ), VMA( 2 ) );
+			CL_GetCurrentSnapshotNumber( (int*) VMA( 1 ), (int*) VMA( 2 ) );
 			return 0;
 
 		case CG_GETSNAPSHOT:
-			return CL_GetSnapshot( args[ 1 ], VMA( 2 ) );
+			return CL_GetSnapshot( args[ 1 ], (snapshot_t*) VMA( 2 ) );
 
 		case CG_GETSERVERCOMMAND:
 			return CL_GetServerCommand( args[ 1 ] );
@@ -1001,7 +1079,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return CL_GetCurrentCmdNumber();
 
 		case CG_GETUSERCMD:
-			return CL_GetUserCmd( args[ 1 ], VMA( 2 ) );
+			return CL_GetUserCmd( args[ 1 ], (usercmd_t*) VMA( 2 ) );
 
 		case CG_SETUSERCMDVALUE:
 			CL_SetUserCmdValue( args[ 1 ], args[ 2 ], VMF( 3 ), args[ 4 ] );
@@ -1012,6 +1090,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0;
 
 		case CG_MEMORY_REMAINING:
+			cls.nCgameUselessSyscalls ++;
 			return Hunk_MemoryRemaining();
 
 		case CG_KEY_ISDOWN:
@@ -1025,7 +1104,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0;
 
 		case CG_KEY_GETKEY:
-			return Key_GetKey( VMA( 1 ), 0 ); // FIXME BIND
+			return Key_GetKey( (char*) VMA( 1 ), 0 ); // FIXME BIND
 
 		case CG_KEY_GETOVERSTRIKEMODE:
 			return Key_GetOverstrikeMode();
@@ -1035,18 +1114,20 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0;
 
 		case CG_S_STOPBACKGROUNDTRACK:
+			cls.nCgameSoundSyscalls ++;
 			S_StopBackgroundTrack();
 			return 0;
 
 		case CG_REAL_TIME:
-			return Com_RealTime( VMA( 1 ) );
+			return Com_RealTime( (qtime_t*) VMA( 1 ) );
 
 		case CG_SNAPVECTOR:
-			Q_SnapVector( VMA( 1 ) );
+			cls.nCgameUselessSyscalls ++;
+			SnapVector( (float*) VMA( 1 ) );
 			return 0;
 
 		case CG_CIN_PLAYCINEMATIC:
-			return CIN_PlayCinematic( VMA( 1 ), args[ 2 ], args[ 3 ], args[ 4 ], args[ 5 ], args[ 6 ] );
+			return CIN_PlayCinematic( (char*) VMA( 1 ), args[ 2 ], args[ 3 ], args[ 4 ], args[ 5 ], args[ 6 ] );
 
 		case CG_CIN_STOPCINEMATIC:
 			return CIN_StopCinematic( args[ 1 ] );
@@ -1063,12 +1144,13 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0;
 
 		case CG_R_REMAP_SHADER:
-			re.RemapShader( VMA( 1 ), VMA( 2 ), VMA( 3 ) );
+			cls.nCgameRenderSyscalls ++;
+			re.RemapShader( (char*) VMA( 1 ), (char*) VMA( 2 ), (char*) VMA( 3 ) );
 			return 0;
 
 		case CG_GET_ENTITY_TOKEN:
 			VM_CheckBlock( args[1], args[2], "GETET" );
-			return re.GetEntityToken( VMA( 1 ), args[ 2 ] );
+			return re.GetEntityToken( (char*) VMA( 1 ), args[ 2 ] );
 
 		case CG_INGAME_POPUP:
 			if ( cls.state == CA_ACTIVE && !clc.demoplaying )
@@ -1087,99 +1169,119 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 
 		case CG_KEY_GETBINDINGBUF:
 			VM_CheckBlock( args[3], args[4], "KEYGBB" );
-			Key_GetBindingBuf( args[ 1 ], args[ 2 ], VMA( 3 ), args[ 4 ] );
+			Key_GetBindingBuf( args[ 1 ], args[ 2 ], (char*) VMA( 3 ), args[ 4 ] );
 			return 0;
 
 		case CG_KEY_SETBINDING:
-			Key_SetBinding( args[ 1 ], args[ 2 ], VMA( 3 ) ); // FIXME BIND
+			Key_SetBinding( args[ 1 ], args[ 2 ], (char*) VMA( 3 ) ); // FIXME BIND
 			return 0;
 
 		case CG_PARSE_ADD_GLOBAL_DEFINE:
-			return Parse_AddGlobalDefine( VMA( 1 ) );
+			cls.nCgameUselessSyscalls ++;
+			return Parse_AddGlobalDefine( (char*) VMA( 1 ) );
 
 		case CG_PARSE_LOAD_SOURCE:
-			return Parse_LoadSourceHandle( VMA( 1 ) );
+			cls.nCgameUselessSyscalls ++;
+			return Parse_LoadSourceHandle( (char*) VMA( 1 ) );
 
 		case CG_PARSE_FREE_SOURCE:
+			cls.nCgameUselessSyscalls ++;
 			return Parse_FreeSourceHandle( args[ 1 ] );
 
 		case CG_PARSE_READ_TOKEN:
-			return Parse_ReadTokenHandle( args[ 1 ], VMA( 2 ) );
+			cls.nCgameUselessSyscalls ++;
+			return Parse_ReadTokenHandle( args[ 1 ], (pc_token_t*) VMA( 2 ) );
 
 		case CG_PARSE_SOURCE_FILE_AND_LINE:
-			return Parse_SourceFileAndLine( args[ 1 ], VMA( 2 ), VMA( 3 ) );
+			cls.nCgameUselessSyscalls ++;
+			return Parse_SourceFileAndLine( args[ 1 ], (char*) VMA( 2 ), (int*) VMA( 3 ) );
 
 		case CG_KEY_KEYNUMTOSTRINGBUF:
+			cls.nCgameUselessSyscalls ++;
 			VM_CheckBlock( args[2], args[3], "KEYNTSB" );
-			Key_KeynumToStringBuf( args[ 1 ], VMA( 2 ), args[ 3 ] );
+			Key_KeynumToStringBuf( args[ 1 ], (char*) VMA( 2 ), args[ 3 ] );
 			return 0;
 
 		case CG_S_FADEALLSOUNDS:
+			cls.nCgameSoundSyscalls ++;
 			// FIXME
 			//S_FadeAllSounds(VMF(1), args[2], args[3]);
 			return 0;
 
 		case CG_R_INPVS:
-			return re.inPVS( VMA( 1 ), VMA( 2 ) );
+			cls.nCgameRenderSyscalls ++;
+			return re.inPVS( (float*) VMA( 1 ), (float*) VMA( 2 ) );
 
 		case CG_R_INPVVS:
-			return re.inPVVS( VMA( 1 ), VMA( 2 ) );
+			cls.nCgameRenderSyscalls ++;
+			return re.inPVVS( (float*) VMA( 1 ), (float*) VMA( 2 ) );
 
 		case CG_GETHUNKDATA:
-			Com_GetHunkInfo( VMA( 1 ), VMA( 2 ) );
+			cls.nCgameUselessSyscalls ++;
+			Com_GetHunkInfo( (int*) VMA( 1 ), (int*) VMA( 2 ) );
 			return 0;
 
 			//bani - dynamic shaders
 		case CG_R_LOADDYNAMICSHADER:
-			return re.LoadDynamicShader( VMA( 1 ), VMA( 2 ) );
+			cls.nCgameRenderSyscalls ++;
+			return re.LoadDynamicShader( (char*) VMA( 1 ), (char*) VMA( 2 ) );
 
 			// fretn - render to texture
 		case CG_R_RENDERTOTEXTURE:
+			cls.nCgameRenderSyscalls ++;
 			re.RenderToTexture( args[ 1 ], args[ 2 ], args[ 3 ], args[ 4 ], args[ 5 ] );
 			return 0;
 
 			//bani
 		case CG_R_GETTEXTUREID:
-			return re.GetTextureId( VMA( 1 ) );
+			cls.nCgameRenderSyscalls ++;
+			return re.GetTextureId( (char*) VMA( 1 ) );
 
 			//bani - flush gl rendering buffers
 		case CG_R_FINISH:
+			cls.nCgameRenderSyscalls ++;
 			re.Finish();
 			return 0;
 
 		case CG_GETDEMONAME:
 			VM_CheckBlock( args[1], args[2], "GETDM" );
-			CL_DemoName( VMA( 1 ), args[ 2 ] );
+			CL_DemoName( (char*) VMA( 1 ), args[ 2 ] );
 			return 0;
 
 		case CG_R_LIGHTFORPOINT:
-			return re.LightForPoint( VMA( 1 ), VMA( 2 ), VMA( 3 ), VMA( 4 ) );
+			cls.nCgameRenderSyscalls ++;
+			return re.LightForPoint( (float*) VMA( 1 ), (float*) VMA( 2 ), (float*) VMA( 3 ), (float*) VMA( 4 ) );
 
-#if defined( USE_REFENTITY_ANIMATIONSYSTEM )
 		case CG_R_REGISTERANIMATION:
-			return re.RegisterAnimation( VMA( 1 ) );
+			cls.nCgameRenderSyscalls ++;
+			return re.RegisterAnimation( (char*) VMA( 1 ) );
 
 		case CG_R_CHECKSKELETON:
-			return re.CheckSkeleton( VMA( 1 ), args[ 2 ], args[ 3 ] );
+			cls.nCgameRenderSyscalls ++;
+			return re.CheckSkeleton( (refSkeleton_t*) VMA( 1 ), args[ 2 ], args[ 3 ] );
 
 		case CG_R_BUILDSKELETON:
-			return re.BuildSkeleton( VMA( 1 ), args[ 2 ], args[ 3 ], args[ 4 ], VMF( 5 ), args[ 6 ] );
+			cls.nCgameRenderSyscalls ++;
+			return re.BuildSkeleton( (refSkeleton_t*) VMA( 1 ), args[ 2 ], args[ 3 ], args[ 4 ], VMF( 5 ), args[ 6 ] );
 
 		case CG_R_BLENDSKELETON:
-			return re.BlendSkeleton( VMA( 1 ), VMA( 2 ), VMF( 3 ) );
+			cls.nCgameRenderSyscalls ++;
+			return re.BlendSkeleton( (refSkeleton_t*) VMA( 1 ), (refSkeleton_t*) VMA( 2 ), VMF( 3 ) );
 
 		case CG_R_BONEINDEX:
-			return re.BoneIndex( args[ 1 ], VMA( 2 ) );
+			cls.nCgameRenderSyscalls ++;
+			return re.BoneIndex( args[ 1 ], (char*) VMA( 2 ) );
 
 		case CG_R_ANIMNUMFRAMES:
+			cls.nCgameRenderSyscalls ++;
 			return re.AnimNumFrames( args[ 1 ] );
 
 		case CG_R_ANIMFRAMERATE:
+			cls.nCgameRenderSyscalls ++;
 			return re.AnimFrameRate( args[ 1 ] );
-#endif
 
 		case CG_REGISTER_BUTTON_COMMANDS:
-			CL_RegisterButtonCommands( VMA( 1 ) );
+			CL_RegisterButtonCommands( (char*) VMA( 1 ) );
 			return 0;
 
 		case CG_GETCLIPBOARDDATA:
@@ -1187,7 +1289,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 
 			if ( cl_allowPaste->integer )
 			{
-				CL_GetClipboardData( VMA(1), args[2], args[3] );
+				CL_GetClipboardData( (char*) VMA(1), args[2], (clipboard_t) args[3] );
 			}
 			else
 			{
@@ -1196,34 +1298,41 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0;
 
 		case CG_QUOTESTRING:
+			cls.nCgameUselessSyscalls ++;
 			VM_CheckBlock( args[ 2 ], args[ 3 ], "QUOTE" );
-			Cmd_QuoteStringBuffer( VMA( 1 ), VMA( 2 ), args[ 3 ] );
+			Cmd_QuoteStringBuffer( (char*) VMA( 1 ), (char*) VMA( 2 ), args[ 3 ] );
 			return 0;
 
 		case CG_GETTEXT:
+			cls.nCgameUselessSyscalls ++;
 			VM_CheckBlock( args[ 1 ], args[ 3 ], "CGGETTEXT" );
-			Q_strncpyz( VMA(1), __( VMA( 2 ) ), args[3] );
+			Q_strncpyz( (char*) VMA(1), __( (char*) VMA( 2 ) ), args[3] );
 			return 0;
 
 		case CG_PGETTEXT:
+			cls.nCgameUselessSyscalls ++;
 			VM_CheckBlock( args[ 1 ], args[ 4 ], "CGPGETTEXT" );
-			Q_strncpyz( VMA( 1 ), C__( VMA( 2 ), VMA( 3 ) ), args[ 4 ] );
+			Q_strncpyz( (char*) VMA( 1 ), C__( (char*) VMA( 2 ), (char*) VMA( 3 ) ), args[ 4 ] );
 			return 0;
 
 		case CG_GETTEXT_PLURAL:
+			cls.nCgameUselessSyscalls ++;
 			VM_CheckBlock( args[ 1 ], args[ 5 ], "CGGETTEXTP" );
-			Q_strncpyz( VMA( 1 ), P__( VMA( 2 ), VMA( 3 ), args[ 4 ] ), args[ 5 ] );
+			Q_strncpyz( (char*) VMA( 1 ), P__( (char*) VMA( 2 ), (char*) VMA( 3 ), args[ 4 ] ), args[ 5 ] );
 			return 0;
 
 		case CG_R_GLYPH:
-			re.GlyphVM( args[1], VMA(2), VMA(3) );
+			cls.nCgameRenderSyscalls ++;
+			re.GlyphVM( args[1], (char*) VMA(2), (glyphInfo_t*) VMA(3) );
 			return 0;
 
 		case CG_R_GLYPHCHAR:
-			re.GlyphCharVM( args[1], args[2], VMA(3) );
+			cls.nCgameRenderSyscalls ++;
+			re.GlyphCharVM( args[1], args[2], (glyphInfo_t*) VMA(3) );
 			return 0;
 
 		case CG_R_UREGISTERFONT:
+			cls.nCgameRenderSyscalls ++;
 			re.UnregisterFontVM( args[1] );
 			return 0;
 
@@ -1235,28 +1344,34 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return re.RegisterVisTest();
 
 		case CG_ADDVISTESTTOSCENE:
-			re.AddVisTestToScene( args[1], VMA(2), VMF(3), VMF(4) );
+			re.AddVisTestToScene( args[1], (float*) VMA(2), VMF(3), VMF(4) );
 			return 0;
 
 		case CG_CHECKVISIBILITY:
+			cls.nCgameRenderSyscalls ++;
 			return FloatAsInt( re.CheckVisibility( args[1] ) );
 
 		case CG_UNREGISTERVISTEST:
+			cls.nCgameRenderSyscalls ++;
 			re.UnregisterVisTest( args[1] );
 			return 0;
 
 		case CG_SETCOLORGRADING:
+			cls.nCgameRenderSyscalls ++;
 			re.SetColorGrading( args[1], args[2] );
 			return 0;
 
 		case CG_CM_DISTANCETOMODEL:
-			return FloatAsInt( CM_DistanceToModel( VMA(1), args[2] ) );
+			cls.nCgamePhysicsSyscalls ++;
+			return FloatAsInt( CM_DistanceToModel( (float*) VMA(1), args[2] ) );
 
 		case CG_R_SCISSOR_ENABLE:
+			cls.nCgameRenderSyscalls ++;
 			re.ScissorEnable( args[1] );
 			return 0;
 
 		case CG_R_SCISSOR_SET:
+			cls.nCgameRenderSyscalls ++;
 			re.ScissorSet( args[1], args[2], args[3], args[4] );
 			return 0;
 
@@ -1265,7 +1380,8 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0;
 
 		case CG_R_SETALTSHADERTOKENS:
-			re.SetAltShaderTokens( VMA(1) );
+			cls.nCgameRenderSyscalls ++;
+			re.SetAltShaderTokens( ( const char * )VMA(1) );
 			return 0;
 
 		default:
@@ -1425,7 +1541,7 @@ void CL_InitCGame( void )
 	mapname = Info_ValueForKey( info, "mapname" );
 	Com_sprintf( cl.mapname, sizeof( cl.mapname ), "maps/%s.bsp", mapname );
 
-	cgvm = VM_Create( "cgame", CL_CgameSystemCalls, Cvar_VariableValue( "vm_cgame" ) );
+	cgvm = VM_Create( "cgame", CL_CgameSystemCalls, (vmInterpret_t) Cvar_VariableIntegerValue( "vm_cgame" ) );
 
 	if ( !cgvm )
 	{
@@ -1475,7 +1591,7 @@ void CL_InitCGame( void )
 
 void CL_InitCGameCVars( void )
 {
-	vm_t *cgv_vm = VM_Create( "cgame", CL_CgameSystemCalls, Cvar_VariableValue( "vm_cgame" ) );
+	vm_t *cgv_vm = VM_Create( "cgame", CL_CgameSystemCalls, (vmInterpret_t) Cvar_VariableIntegerValue( "vm_cgame" ) );
 
 	if ( !cgv_vm )
 	{
@@ -1489,19 +1605,12 @@ void CL_InitCGameCVars( void )
 
 /*
 ====================
-CL_GameCommand
-
-See if the current console command is claimed by the cgame
+CL_GameCommandHandler
 ====================
 */
-qboolean CL_GameCommand( void )
+void CL_GameCommandHandler( void )
 {
-	if ( !cgvm )
-	{
-		return qfalse;
-	}
-
-	return VM_Call( cgvm, CG_CONSOLE_COMMAND );
+	VM_Call( cgvm, CG_CONSOLE_COMMAND );
 }
 
 /*
@@ -1667,8 +1776,7 @@ void CL_FirstSnapshot( void )
 	// after loading
 	if ( cl_activeAction->string[ 0 ] )
 	{
-		Cbuf_AddText( cl_activeAction->string );
-		Cbuf_AddText( "\n" );
+		Cmd::BufferCommandText(cl_activeAction->string);
 		Cvar_Set( "activeAction", "" );
 	}
 
@@ -1690,7 +1798,7 @@ void CL_FirstSnapshot( void )
 		speex_bits_init( &clc.speexEncoderBits );
 		speex_bits_reset( &clc.speexEncoderBits );
 
-		clc.speexEncoder = speex_encoder_init( &speex_nb_mode );
+		clc.speexEncoder = speex_encoder_init( speex_lib_get_mode( SPEEX_MODEID_NB ) );
 
 		speex_encoder_ctl( clc.speexEncoder, SPEEX_GET_FRAME_SIZE,
 		                   &clc.speexFrameSize );
@@ -1712,7 +1820,7 @@ void CL_FirstSnapshot( void )
 		{
 			speex_bits_init( &clc.speexDecoderBits[ i ] );
 			speex_bits_reset( &clc.speexDecoderBits[ i ] );
-			clc.speexDecoder[ i ] = speex_decoder_init( &speex_nb_mode );
+			clc.speexDecoder[ i ] = speex_decoder_init( speex_lib_get_mode( SPEEX_MODEID_NB ) );
 			clc.voipIgnore[ i ] = qfalse;
 			clc.voipGain[ i ] = 1.0f;
 		}
@@ -1887,7 +1995,7 @@ void CL_SetCGameTime( void )
 CL_GetTag
 ====================
 */
-qboolean CL_GetTag( int clientNum, const char *tagname, orientation_t * or )
+qboolean CL_GetTag( int clientNum, const char *tagname, orientation_t * orientation )
 {
 	if ( !cgvm )
 	{
@@ -1925,5 +2033,5 @@ void  CL_OnTeamChanged( int newTeam )
 	 *
 	 * compared to render settings, that are client/workstation specifc, teamconfigs will always be player and with that profile dependend
 	 */
-	Cbuf_AddText( va( "exec -f profiles/%s/" TEAMCONFIG_NAME "\n", cl_profile->string ) );
+	Cmd::BufferCommandText( va( "exec -f profiles/%s/" TEAMCONFIG_NAME, cl_profile->string ) );
 }

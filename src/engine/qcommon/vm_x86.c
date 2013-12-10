@@ -39,6 +39,10 @@ Maryland 20850 USA.
 #include "vm_local.h"
 #include "vm_traps.h"
 
+#ifdef __x86_64__
+#define idx64 1
+#endif
+
 #ifndef NO_VM_COMPILED
 
 #ifdef _WIN32
@@ -83,8 +87,6 @@ static  int  jusedSize = 0;
 static  int  compiledOfs = 0;
 static  byte *code = NULL;
 static  int  pc = 0;
-
-#define FTOL_PTR
 
 static  int instruction, pass;
 static  int lastConst = 0;
@@ -482,7 +484,7 @@ static void DoSyscall( void )
 
 		if ( data[ 0 ] < FIRST_VM_SYSCALL )
 		{
-			vmInfo.opStackBase[ vmInfo.opStackOfs + 1 ] = VM_SystemCall( data ); // Common
+			vmInfo.opStackBase[ vmInfo.opStackOfs + 1 ] = VM_SystemCall( (intptr_t *) data ); // Common
 		}
 		else
 		{
@@ -570,7 +572,7 @@ int EmitCallDoSyscall( vm_t *vm )
 {
 	// use edx register to store DoSyscall address
 	EmitString( REX_W(48,40) "BA" );  // mov edx, DoSyscall
-	EmitPtr( DoSyscall );
+	EmitPtr( (void*) DoSyscall );
 
 	// Push important registers to stack as we can't really make
 	// any assumptions about calling conventions.
@@ -1201,6 +1203,18 @@ qboolean ConstOptimize( vm_t *vm, int callProcOfsSyscall )
 	return qfalse;
 }
 
+#if idx64 || idx64_32
+#  define EAX "%%rax"
+#  define EBX "%%rbx"
+#  define ESP "%%rsp"
+#  define EDI "%%rdi"
+#else
+#  define EAX "%%eax"
+#  define EBX "%%ebx"
+#  define ESP "%%esp"
+#  define EDI "%%edi"
+#endif
+
 /*
 =================
 VM_Compile
@@ -1218,9 +1232,9 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 
 	// allocate a very large temp buffer, we will shrink it later
 	maxLength = header->codeLength * 8 + 64;
-	buf = Z_Malloc( maxLength );
-	jused = Z_Malloc( jusedSize );
-	code = Z_Malloc( header->codeLength + 32 );
+	buf = (byte*) Z_Malloc( maxLength );
+	jused = (byte*) Z_Malloc( jusedSize );
+	code = (byte*) Z_Malloc( header->codeLength + 32 );
 
 	Com_Memset( jused, 0, jusedSize );
 	Com_Memset( buf, 0, maxLength );
@@ -1788,17 +1802,9 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 					break;
 
 				case OP_CVFI:
-#ifndef FTOL_PTR // WHENHELLISFROZENOVER
-					// not IEEE compliant, but simple and fast
-						EmitString( "D9 04 9F" );  // fld dword ptr [edi + ebx * 4]
-					EmitString( "DB 1C 9F" );  // fistp dword ptr [edi + ebx * 4]
-#else // FTOL_PTR
-						// call the library conversion function
-					EmitString( REX_W(48,40) "BA" );  // mov edx, Q_VMftol
-					EmitPtr( Q_VMftol );
-					EmitString( REX64(48) "FF D2" );  // call edx
+					EmitString( "F3 0F 10 04 9F" );  // movss xmm0, [edi + ebx * 4]
+					EmitString( "F3 0F 2C C0" );  // cvttss2si eax, xmm0
 					EmitCommand( LAST_COMMAND_MOV_STACK_EAX );  // mov dword ptr [edi + ebx * 4], eax
-#endif
 					break;
 
 				case OP_SEX8:
@@ -1855,7 +1861,7 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 	// copy to an exact sized buffer with the appropriate permission bits
 	vm->codeLength = compiledOfs;
 #ifdef VM_X86_MMAP
-	vm->codeBase = mmap( NULL, compiledOfs, PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0 );
+	vm->codeBase = (byte*) mmap( NULL, compiledOfs, PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0 );
 
 	if ( vm->codeBase == MAP_FAILED )
 	{
@@ -1864,7 +1870,7 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 
 #elif _WIN32
 	// allocate memory with EXECUTE permissions under windows.
-	vm->codeBase = VirtualAlloc( NULL, compiledOfs, MEM_COMMIT, PAGE_EXECUTE_READWRITE );
+	vm->codeBase = ( byte * ) VirtualAlloc( NULL, compiledOfs, MEM_COMMIT, PAGE_EXECUTE_READWRITE );
 
 	if ( !vm->codeBase )
 	{
@@ -1927,6 +1933,10 @@ void VM_Destroy_Compiled( vm_t *self )
 #endif
 }
 
+#if defined(_MSC_VER) && idx64 || idx64_32
+extern "C" int qvmcall64( void*, void*, void*, void* );
+#endif
+
 /*
 ==============
 VM_CallCompiled
@@ -1972,7 +1982,7 @@ int VM_CallCompiled( vm_t *vm, int *args )
 
 	// off we go into generated code...
 	entryPoint = vm->codeBase + vm->entryOfs;
-	opStack = PADP( stack, 16 );
+	opStack = (int*) PADP( stack, 16 );
 	*opStack = 0xDEADBEEF;
 	opStackOfs = 0;
 

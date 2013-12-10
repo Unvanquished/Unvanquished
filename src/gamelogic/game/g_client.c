@@ -974,7 +974,7 @@ char *ClientUserinfoChanged( int clientNum, qboolean forceName )
 		{
 			Q_strncpyz( client->pers.netname, *oldname ? oldname : G_UnnamedClientName( client ),
 			            sizeof( client->pers.netname ) );
-			Info_SetValueForKey( userinfo, "name", oldname, qfalse );
+			Info_SetValueForKey( userinfo, "name", client->pers.netname, qfalse );
 			trap_SetUserinfo( clientNum, userinfo );
 		}
 		else
@@ -1729,11 +1729,15 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 
 	client->ps.persistant[ PERS_TEAM ] = client->pers.team;
 
-	ent->client->ps.stats[ STAT_CLASS ] = ent->client->pers.classSelection;
-	ent->client->ps.stats[ STAT_BUILDABLE ] = BA_NONE;
-	ent->client->ps.stats[ STAT_PREDICTION ] = 0;
-	ent->client->ps.stats[ STAT_STATE ] = 0;
-	VectorSet( ent->client->ps.grapplePoint, 0.0f, 0.0f, 1.0f );
+	// TODO: Check whether stats can be cleared at once instead of per field
+	client->ps.stats[ STAT_STAMINA ] = STAMINA_MAX;
+	client->ps.stats[ STAT_FUEL ]    = JETPACK_FUEL_MAX;
+	client->ps.stats[ STAT_CLASS ] = ent->client->pers.classSelection;
+	client->ps.stats[ STAT_BUILDABLE ] = BA_NONE;
+	client->ps.stats[ STAT_PREDICTION ] = 0;
+	client->ps.stats[ STAT_STATE ] = 0;
+
+	VectorSet( client->ps.grapplePoint, 0.0f, 0.0f, 1.0f );
 
 	// health will count down towards max_health
 	ent->health = client->ps.stats[ STAT_HEALTH ] = client->ps.stats[ STAT_MAX_HEALTH ]; //* 1.25;
@@ -1750,8 +1754,6 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	{
 		ent->credits[ i ] = 0.0f;
 	}
-
-	client->ps.stats[ STAT_STAMINA ] = STAMINA_MAX;
 
 	G_SetOrigin( ent, spawn_origin );
 	VectorCopy( spawn_origin, client->ps.origin );
@@ -1942,8 +1944,8 @@ void ClientDisconnect( int clientNum )
 	ent->inuse = qfalse;
 	ent->classname = "disconnected";
 	ent->client->pers.connected = CON_DISCONNECTED;
-	ent->client->sess.spectatorState =
-	  ent->client->ps.persistant[ PERS_SPECSTATE ] = SPECTATOR_NOT;
+	ent->client->sess.spectatorState = SPECTATOR_NOT;
+	ent->client->ps.persistant[ PERS_SPECSTATE ] = SPECTATOR_NOT;
 
 	trap_SetConfigstring( CS_PLAYERS + clientNum, "" );
 

@@ -155,7 +155,7 @@ void BG_Free( void *ptr )
 		return;
 	}
 
-	freeptr = ptr;
+	freeptr = (int*) ptr;
 	freeptr--;
 
 	freeMem += *freeptr;

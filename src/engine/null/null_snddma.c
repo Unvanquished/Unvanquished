@@ -29,7 +29,8 @@ If you have questions concerning this license or the applicable additional terms
 // snddma_null.c
 // all other sound mixing is portable
 
-#include "../client/client.h"
+#include "../qcommon/q_shared.h"
+#include "../qcommon/qcommon.h"
 
 qboolean SNDDMA_Init( void )
 {
@@ -74,7 +75,7 @@ void SNDDMA_Activate( void )
 }
 
 // show_bug.cgi?id=574
-int NORETURN S_GetSoundLength( sfxHandle_t sfxHandle )
+int S_GetSoundLength( sfxHandle_t sfxHandle )
 {
 	Com_Error( ERR_DROP, "null_snddma.c: S_GetSoundLength" );
 }

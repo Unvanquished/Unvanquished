@@ -160,21 +160,6 @@ void CM_StoreBrushes( leafList_t *ll, int nodenum )
 
 		( ( cbrush_t ** ) ll->list ) [ ll->count++ ] = b;
 	}
-
-#if 0
-
-	// store patches?
-	for ( k = 0; k < leaf->numLeafSurfaces; k++ )
-	{
-		patch = cm.surfaces[ cm.leafsurfaces[ leaf->firstleafsurface + k ] ];
-
-		if ( !patch )
-		{
-			continue;
-		}
-	}
-
-#endif
 }
 
 /*
@@ -260,7 +245,7 @@ int CM_BoxBrushes( const vec3_t mins, const vec3_t maxs, cbrush_t **list, int li
 	VectorCopy( maxs, ll.bounds[ 1 ] );
 	ll.count = 0;
 	ll.maxcount = listsize;
-	ll.list = ( void * ) list;
+	ll.list = ( int * ) list;
 	ll.storeLeafs = CM_StoreBrushes;
 	ll.lastLeaf = 0;
 	ll.overflowed = qfalse;
@@ -517,14 +502,10 @@ CM_AreasConnected
 */
 qboolean CM_AreasConnected( int area1, int area2 )
 {
-#ifndef BSPC
-
 	if ( cm_noAreas->integer )
 	{
 		return qtrue;
 	}
-
-#endif
 
 	if ( area1 < 0 || area2 < 0 )
 	{
@@ -566,12 +547,7 @@ int CM_WriteAreaBits( byte *buffer, int area )
 
 	bytes = ( cm.numAreas + 7 ) >> 3;
 
-#ifndef BSPC
-
 	if ( cm_noAreas->integer || area == -1 )
-#else
-	if ( area == -1 )
-#endif
 	{
 		// for debugging, send everything
 		memset( buffer, 255, bytes );

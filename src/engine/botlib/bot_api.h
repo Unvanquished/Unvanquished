@@ -33,10 +33,7 @@ Maryland 20850 USA.
 */
 
 #include "bot_types.h"
-#ifdef __cplusplus
-extern "C"
-{
-#endif
+
 qboolean     BotSetupNav( const botClass_t *botClass, qhandle_t *navHandle );
 void         BotShutdownNav( void );
 
@@ -51,6 +48,3 @@ qboolean     BotNavTrace( int botClientNum, botTrace_t *trace, const vec3_t star
 void         BotAddObstacle( const vec3_t mins, const vec3_t maxs, qhandle_t *obstacleHandle );
 void         BotRemoveObstacle( qhandle_t obstacleHandle );
 void         BotUpdateObstacles();
-#ifdef __cplusplus
-}
-#endif

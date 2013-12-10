@@ -27,6 +27,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * Dynamically loads OpenAL
  */
 
+#ifndef BUILD_TTY_CLIENT
+
 #include "qal.h"
 
 #ifdef USE_OPENAL_DLOPEN
@@ -142,7 +144,7 @@ static void *GPA( char *str )
 {
 	void *rv;
 
-	rv = SYMLOAD( OpenALLib, str );
+	rv = ( void* )SYMLOAD( OpenALLib, str );
 
 	if ( !rv )
 	{
@@ -190,81 +192,81 @@ qboolean QAL_Init( const char *libname )
 
 	alinit_fail = qfalse;
 
-	qalEnable = GPA( "alEnable" );
-	qalDisable = GPA( "alDisable" );
-	qalIsEnabled = GPA( "alIsEnabled" );
-	qalGetString = GPA( "alGetString" );
-	qalGetBooleanv = GPA( "alGetBooleanv" );
-	qalGetIntegerv = GPA( "alGetIntegerv" );
-	qalGetFloatv = GPA( "alGetFloatv" );
-	qalGetDoublev = GPA( "alGetDoublev" );
-	qalGetBoolean = GPA( "alGetBoolean" );
-	qalGetInteger = GPA( "alGetInteger" );
-	qalGetFloat = GPA( "alGetFloat" );
-	qalGetDouble = GPA( "alGetDouble" );
-	qalGetError = GPA( "alGetError" );
-	qalIsExtensionPresent = GPA( "alIsExtensionPresent" );
-	qalGetProcAddress = GPA( "alGetProcAddress" );
-	qalGetEnumValue = GPA( "alGetEnumValue" );
-	qalListenerf = GPA( "alListenerf" );
-	qalListener3f = GPA( "alListener3f" );
-	qalListenerfv = GPA( "alListenerfv" );
-	qalListeneri = GPA( "alListeneri" );
-	qalGetListenerf = GPA( "alGetListenerf" );
-	qalGetListener3f = GPA( "alGetListener3f" );
-	qalGetListenerfv = GPA( "alGetListenerfv" );
-	qalGetListeneri = GPA( "alGetListeneri" );
-	qalGenSources = GPA( "alGenSources" );
-	qalDeleteSources = GPA( "alDeleteSources" );
-	qalIsSource = GPA( "alIsSource" );
-	qalSourcef = GPA( "alSourcef" );
-	qalSource3f = GPA( "alSource3f" );
-	qalSourcefv = GPA( "alSourcefv" );
-	qalSourcei = GPA( "alSourcei" );
-	qalGetSourcef = GPA( "alGetSourcef" );
-	qalGetSource3f = GPA( "alGetSource3f" );
-	qalGetSourcefv = GPA( "alGetSourcefv" );
-	qalGetSourcei = GPA( "alGetSourcei" );
-	qalSourcePlayv = GPA( "alSourcePlayv" );
-	qalSourceStopv = GPA( "alSourceStopv" );
-	qalSourceRewindv = GPA( "alSourceRewindv" );
-	qalSourcePausev = GPA( "alSourcePausev" );
-	qalSourcePlay = GPA( "alSourcePlay" );
-	qalSourceStop = GPA( "alSourceStop" );
-	qalSourceRewind = GPA( "alSourceRewind" );
-	qalSourcePause = GPA( "alSourcePause" );
-	qalSourceQueueBuffers = GPA( "alSourceQueueBuffers" );
-	qalSourceUnqueueBuffers = GPA( "alSourceUnqueueBuffers" );
-	qalGenBuffers = GPA( "alGenBuffers" );
-	qalDeleteBuffers = GPA( "alDeleteBuffers" );
-	qalIsBuffer = GPA( "alIsBuffer" );
-	qalBufferData = GPA( "alBufferData" );
-	qalGetBufferf = GPA( "alGetBufferf" );
-	qalGetBufferi = GPA( "alGetBufferi" );
-	qalDopplerFactor = GPA( "alDopplerFactor" );
-	qalDopplerVelocity = GPA( "alDopplerVelocity" );
-	qalDistanceModel = GPA( "alDistanceModel" );
+	qalEnable = (LPALENABLE) GPA( "alEnable" );
+	qalDisable = (LPALDISABLE) GPA( "alDisable" );
+	qalIsEnabled = (LPALISENABLED) GPA( "alIsEnabled" );
+	qalGetString = (LPALGETSTRING) GPA( "alGetString" );
+	qalGetBooleanv = (LPALGETBOOLEANV) GPA( "alGetBooleanv" );
+	qalGetIntegerv = (LPALGETINTEGERV) GPA( "alGetIntegerv" );
+	qalGetFloatv = (LPALGETFLOATV) GPA( "alGetFloatv" );
+	qalGetDoublev = (LPALGETDOUBLEV) GPA( "alGetDoublev" );
+	qalGetBoolean = (LPALGETBOOLEAN) GPA( "alGetBoolean" );
+	qalGetInteger = (LPALGETINTEGER) GPA( "alGetInteger" );
+	qalGetFloat = (LPALGETFLOAT) GPA( "alGetFloat" );
+	qalGetDouble = (LPALGETDOUBLE) GPA( "alGetDouble" );
+	qalGetError = (LPALGETERROR) GPA( "alGetError" );
+	qalIsExtensionPresent = (LPALISEXTENSIONPRESENT) GPA( "alIsExtensionPresent" );
+	qalGetProcAddress = (LPALGETPROCADDRESS) GPA( "alGetProcAddress" );
+	qalGetEnumValue = (LPALGETENUMVALUE) GPA( "alGetEnumValue" );
+	qalListenerf = (LPALLISTENERF) GPA( "alListenerf" );
+	qalListener3f = (LPALLISTENER3F) GPA( "alListener3f" );
+	qalListenerfv = (LPALLISTENERFV) GPA( "alListenerfv" );
+	qalListeneri = (LPALLISTENERI) GPA( "alListeneri" );
+	qalGetListenerf = (LPALGETLISTENERF) GPA( "alGetListenerf" );
+	qalGetListener3f = (LPALGETLISTENER3F) GPA( "alGetListener3f" );
+	qalGetListenerfv = (LPALGETLISTENERFV) GPA( "alGetListenerfv" );
+	qalGetListeneri = (LPALGETLISTENERI) GPA( "alGetListeneri" );
+	qalGenSources = (LPALGENSOURCES) GPA( "alGenSources" );
+	qalDeleteSources = (LPALDELETESOURCES) GPA( "alDeleteSources" );
+	qalIsSource = (LPALISSOURCE) GPA( "alIsSource" );
+	qalSourcef = (LPALSOURCEF) GPA( "alSourcef" );
+	qalSource3f = (LPALSOURCE3F) GPA( "alSource3f" );
+	qalSourcefv = (LPALSOURCEFV) GPA( "alSourcefv" );
+	qalSourcei = (LPALSOURCEI) GPA( "alSourcei" );
+	qalGetSourcef = (LPALGETSOURCEF) GPA( "alGetSourcef" );
+	qalGetSource3f = (LPALGETSOURCE3F) GPA( "alGetSource3f" );
+	qalGetSourcefv = (LPALGETSOURCEFV) GPA( "alGetSourcefv" );
+	qalGetSourcei = (LPALGETSOURCEI) GPA( "alGetSourcei" );
+	qalSourcePlayv = (LPALSOURCEPLAYV) GPA( "alSourcePlayv" );
+	qalSourceStopv = (LPALSOURCESTOPV) GPA( "alSourceStopv" );
+	qalSourceRewindv = (LPALSOURCEREWINDV) GPA( "alSourceRewindv" );
+	qalSourcePausev = (LPALSOURCEPAUSEV) GPA( "alSourcePausev" );
+	qalSourcePlay = (LPALSOURCEPLAY) GPA( "alSourcePlay" );
+	qalSourceStop = (LPALSOURCESTOP) GPA( "alSourceStop" );
+	qalSourceRewind = (LPALSOURCEREWIND) GPA( "alSourceRewind" );
+	qalSourcePause = (LPALSOURCEPAUSE) GPA( "alSourcePause" );
+	qalSourceQueueBuffers = (LPALSOURCEQUEUEBUFFERS) GPA( "alSourceQueueBuffers" );
+	qalSourceUnqueueBuffers = (LPALSOURCEUNQUEUEBUFFERS) GPA( "alSourceUnqueueBuffers" );
+	qalGenBuffers = (LPALGENBUFFERS) GPA( "alGenBuffers" );
+	qalDeleteBuffers = (LPALDELETEBUFFERS) GPA( "alDeleteBuffers" );
+	qalIsBuffer = (LPALISBUFFER) GPA( "alIsBuffer" );
+	qalBufferData = (LPALBUFFERDATA) GPA( "alBufferData" );
+	qalGetBufferf = (LPALGETBUFFERF) GPA( "alGetBufferf" );
+	qalGetBufferi = (LPALGETBUFFERI) GPA( "alGetBufferi" );
+	qalDopplerFactor = (LPALDOPPLERFACTOR) GPA( "alDopplerFactor" );
+	qalDopplerVelocity = (LPALDOPPLERVELOCITY) GPA( "alDopplerVelocity" );
+	qalDistanceModel = (LPALDISTANCEMODEL) GPA( "alDistanceModel" );
 
-	qalcCreateContext = GPA( "alcCreateContext" );
-	qalcMakeContextCurrent = GPA( "alcMakeContextCurrent" );
-	qalcProcessContext = GPA( "alcProcessContext" );
-	qalcSuspendContext = GPA( "alcSuspendContext" );
-	qalcDestroyContext = GPA( "alcDestroyContext" );
-	qalcGetCurrentContext = GPA( "alcGetCurrentContext" );
-	qalcGetContextsDevice = GPA( "alcGetContextsDevice" );
-	qalcOpenDevice = GPA( "alcOpenDevice" );
-	qalcCloseDevice = GPA( "alcCloseDevice" );
-	qalcGetError = GPA( "alcGetError" );
-	qalcIsExtensionPresent = GPA( "alcIsExtensionPresent" );
-	qalcGetProcAddress = GPA( "alcGetProcAddress" );
-	qalcGetEnumValue = GPA( "alcGetEnumValue" );
-	qalcGetString = GPA( "alcGetString" );
-	qalcGetIntegerv = GPA( "alcGetIntegerv" );
-	qalcCaptureOpenDevice = GPA( "alcCaptureOpenDevice" );
-	qalcCaptureCloseDevice = GPA( "alcCaptureCloseDevice" );
-	qalcCaptureStart = GPA( "alcCaptureStart" );
-	qalcCaptureStop = GPA( "alcCaptureStop" );
-	qalcCaptureSamples = GPA( "alcCaptureSamples" );
+	qalcCreateContext = (LPALCCREATECONTEXT) GPA( "alcCreateContext" );
+	qalcMakeContextCurrent = (LPALCMAKECONTEXTCURRENT) GPA( "alcMakeContextCurrent" );
+	qalcProcessContext = (LPALCPROCESSCONTEXT) GPA( "alcProcessContext" );
+	qalcSuspendContext = (LPALCSUSPENDCONTEXT) GPA( "alcSuspendContext" );
+	qalcDestroyContext = (LPALCDESTROYCONTEXT) GPA( "alcDestroyContext" );
+	qalcGetCurrentContext = (LPALCGETCURRENTCONTEXT) GPA( "alcGetCurrentContext" );
+	qalcGetContextsDevice = (LPALCGETCONTEXTSDEVICE) GPA( "alcGetContextsDevice" );
+	qalcOpenDevice = (LPALCOPENDEVICE) GPA( "alcOpenDevice" );
+	qalcCloseDevice = (LPALCCLOSEDEVICE) GPA( "alcCloseDevice" );
+	qalcGetError = (LPALCGETERROR) GPA( "alcGetError" );
+	qalcIsExtensionPresent = (LPALCISEXTENSIONPRESENT) GPA( "alcIsExtensionPresent" );
+	qalcGetProcAddress = (LPALCGETPROCADDRESS) GPA( "alcGetProcAddress" );
+	qalcGetEnumValue = (LPALCGETENUMVALUE) GPA( "alcGetEnumValue" );
+	qalcGetString = (LPALCGETSTRING) GPA( "alcGetString" );
+	qalcGetIntegerv = (LPALCGETINTEGERV) GPA( "alcGetIntegerv" );
+	qalcCaptureOpenDevice = (LPALCCAPTUREOPENDEVICE) GPA( "alcCaptureOpenDevice" );
+	qalcCaptureCloseDevice = (LPALCCAPTURECLOSEDEVICE) GPA( "alcCaptureCloseDevice" );
+	qalcCaptureStart = (LPALCCAPTURESTART) GPA( "alcCaptureStart" );
+	qalcCaptureStop = (LPALCCAPTURESTOP) GPA( "alcCaptureStop" );
+	qalcCaptureSamples = (LPALCCAPTURESAMPLES) GPA( "alcCaptureSamples" );
 
 	if ( alinit_fail )
 	{
@@ -374,3 +376,5 @@ void QAL_Shutdown( void )
 }
 
 #endif // !USE_OPENAL_DLOPEN
+
+#endif // !BUILD_TTY_CLIENT

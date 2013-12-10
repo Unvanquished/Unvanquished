@@ -34,8 +34,6 @@ frame.
 ===========================================================================
 */
 
-#if defined( USE_REFENTITY_ANIMATIONSYSTEM )
-
 static skelAnimation_t *R_AllocAnimation( void )
 {
 	skelAnimation_t *anim;
@@ -45,7 +43,7 @@ static skelAnimation_t *R_AllocAnimation( void )
 		return NULL;
 	}
 
-	anim = ri.Hunk_Alloc( sizeof( *anim ), h_low );
+	anim = (skelAnimation_t*) ri.Hunk_Alloc( sizeof( *anim ), h_low );
 	anim->index = tr.numAnimations;
 	tr.animations[ tr.numAnimations ] = anim;
 	tr.numAnimations++;
@@ -80,10 +78,10 @@ static qboolean R_LoadMD5Anim( skelAnimation_t *skelAnim, void *buffer, int buff
 	int            version;
 	char           *buf_p;
 
-	buf_p = buffer;
+	buf_p = (char*) buffer;
 
 	skelAnim->type = AT_MD5;
-	skelAnim->md5 = anim = ri.Hunk_Alloc( sizeof( *anim ), h_low );
+	skelAnim->md5 = anim = (md5Animation_t*) ri.Hunk_Alloc( sizeof( *anim ), h_low );
 
 	// skip MD5Version indent string
 	COM_ParseExt2( &buf_p, qfalse );
@@ -169,7 +167,7 @@ static qboolean R_LoadMD5Anim( skelAnimation_t *skelAnim, void *buffer, int buff
 	}
 
 	// parse all the channels
-	anim->channels = ri.Hunk_Alloc( sizeof( md5Channel_t ) * anim->numChannels, h_low );
+	anim->channels = (md5Channel_t*) ri.Hunk_Alloc( sizeof( md5Channel_t ) * anim->numChannels, h_low );
 
 	for ( i = 0, channel = anim->channels; i < anim->numChannels; i++, channel++ )
 	{
@@ -220,7 +218,7 @@ static qboolean R_LoadMD5Anim( skelAnimation_t *skelAnim, void *buffer, int buff
 		return qfalse;
 	}
 
-	anim->frames = ri.Hunk_Alloc( sizeof( md5Frame_t ) * anim->numFrames, h_low );
+	anim->frames = (md5Frame_t*) ri.Hunk_Alloc( sizeof( md5Frame_t ) * anim->numFrames, h_low );
 
 	for ( i = 0, frame = anim->frames; i < anim->numFrames; i++, frame++ )
 	{
@@ -388,7 +386,7 @@ static qboolean R_LoadMD5Anim( skelAnimation_t *skelAnim, void *buffer, int buff
 			return qfalse;
 		}
 
-		frame->components = ri.Hunk_Alloc( sizeof( float ) * anim->numAnimatedComponents, h_low );
+		frame->components = (float*) ri.Hunk_Alloc( sizeof( float ) * anim->numAnimatedComponents, h_low );
 
 		for ( j = 0; j < anim->numAnimatedComponents; j++ )
 		{
@@ -707,7 +705,7 @@ void R_AddMD5Surfaces( trRefEntity_t *ent )
 		// don't add third_person objects if not viewing through a portal
 		if ( !personalModel )
 		{
-			R_AddDrawSurf( ( void * ) surface, shader, fogNum, 0, 0 );
+			R_AddDrawSurf( ( surfaceType_t * ) surface, shader, fogNum, 0, 0 );
 		}
 	}
 }
@@ -1165,5 +1163,3 @@ int RE_AnimFrameRate( qhandle_t hAnim )
 
 	return 0;
 }
-
-#endif

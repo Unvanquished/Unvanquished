@@ -5,55 +5,68 @@ Daemon Engine
 Dependencies
 ============
 
-  * Freetype
-  * libpng
-  * libjpeg (DO NOT USE VERSION 6)
-  * libcurl
-  * libsdl
-  * OpenAL (optional)
-  * libwebp ( >= 0.2.0 )
-  * libxvid (optional)
-  * Newton (provided)
+  * zlib
   * libgmp
+  * libnettle
+  * libGeoIP
+  * libcurl
+  * SDL2
   * GLEW
-  * theora
-  * speex
-  * speexdsp
-  * nettle
+  * libpng
+  * libjpeg (version 8 or above)
+  * libwebp
+  * Freetype
+  * OpenAL
+  * libogg
+  * libvorbis
+  * libspeex
+  * libtheora
+  * libopus
+  * libopusfile
 
 
 
 Build Instructions
 ==================
 
+(CMake is required to build.)
+
 Visual Studio
 -------------
 
-(CMake is required to build.)
-
-  1. Execute either `Visual_Studio32.bat` or `Visual_Studio64.bat`
-  2. Navigate to `Unvanquished/build-32` or `Unvanquished/build-64`
-  3. Open `Daemon.sln`
+  1. Run CMake
+  2. Choose your compiler
+  3. Open `Daemon.sln` and compile
 
 
-Linux
------
+Linux, Mac OS X, MSYS
+---------------------
 
-(CMake is required to build.)
-
-  1. `mkdir build && cd build` (from Unvanquished root directory)
-  2. `ccmake ..`
-  3. Press 'c'
-  4. Fill in the blanks for any libraries that you cannot find.
-  5. Press 'c' and then 'g'
-  6. `make` (use `make -jN` where `N` is your number of CPU cores to speed up compilation)
+  1. Create a build directory and go into it: `mkdir build && cd build`
+  2. `cmake ..`
+  3. `make -jN` (where `N` is your number of CPU cores to speed up compilation)
 
 
-MINGW + MSYS
-------------
-  1. `mkdir build && cd build` (from Unvanquished root directory)
-  2. `cmake -G "MSYS Makefiles" -DCMAKE_PREFIX_PATH="C:\MINGW"  ..`
-  3. `make`
+Linux cross-compile to Windows
+------------------------------
+
+  1. Create a build directory and go into it: `mkdir build && cd build`
+  2. `cmake -DCMAKE_TOOLCHAIN_FILE=cmake/cross-toolchain-mingw32.cmake ..` (use cross-toolchain-mingw64.cmake for a Win64 build)
+  3. `make -jN` (where `N` is your number of CPU cores to speed up compilation)
+
+
+Mac OS X universal app
+----------------------
+
+  1. `mkdir build32 && cd build32`
+  2. `cmake -DCMAKE_OSX_ARCHITECTURES=i386 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.7 ..`
+  3. `make -jN` (where `N` is your number of CPU cores to speed up compilation)
+  4. `cd ..`
+  5. `mkdir build64 && cd build64`
+  6. `cmake -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.7 ..`
+  7. `make -jN` (where `N` is your number of CPU cores to speed up compilation)
+  8. `cd ..`
+  9. `./make-macosx-app.sh build32 build64`
 
 
 

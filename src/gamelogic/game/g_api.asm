@@ -79,8 +79,6 @@ equ trap_Parse_FreeSource                 -312
 equ trap_Parse_ReadToken                  -313
 equ trap_Parse_SourceFileAndLine          -314
 equ trap_BotGetServerCommand              -315
-equ trap_AddPhysicsEntity                 -316
-equ trap_AddPhysicsStatic                 -317
 equ trap_SendMessage                      -318
 equ trap_MessageStatus                    -319
 equ trap_RSA_GenerateMessage              -320

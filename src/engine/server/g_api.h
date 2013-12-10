@@ -22,7 +22,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "../qcommon/q_shared.h"
 #include "../qcommon/vm_traps.h"
-#include "../qcommon/vm_traps.h"
 
 #define GAME_API_VERSION          10
 
@@ -108,7 +107,7 @@ typedef enum gameImport_s
   G_CVAR_SET,
   G_CVAR_VARIABLE_INTEGER_VALUE,
   G_CVAR_VARIABLE_STRING_BUFFER,
-  G_CVAR_LATCHEDVARIABLESTRINGBUFFER,
+  G_STUB__CVAR_LATCHEDVARIABLESTRINGBUFFER,
   G_ARGC,
   G_ARGV,
   G_SEND_CONSOLE_COMMAND,
@@ -158,8 +157,8 @@ typedef enum gameImport_s
   G_PARSE_READ_TOKEN,
   G_PARSE_SOURCE_FILE_AND_LINE,
   BOT_GET_CONSOLE_MESSAGE,
-  G_ADD_PHYSICS_ENTITY,
-  G_ADD_PHYSICS_STATIC,
+  G_STUB__ADD_PHYSICS_ENTITY,
+  G_STUB__ADD_PHYSICS_STATIC,
   G_SENDMESSAGE,
   G_MESSAGESTATUS,
   G_RSA_GENMSG, // ( const char *public_key, char *cleartext, char *encrypted )

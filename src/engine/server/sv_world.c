@@ -736,6 +736,9 @@ void SV_Trace( trace_t *results, const vec3_t start, vec3_t mins, vec3_t maxs, c
 		maxs = vec3_origin;
 	}
 
+	if ( passEntityNum == -1 )
+		passEntityNum = ENTITYNUM_NONE;
+
 	memset( &clip, 0, sizeof( moveclip_t ) );
 
 	// clip to world

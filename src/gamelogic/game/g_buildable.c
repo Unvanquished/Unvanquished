@@ -25,6 +25,59 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define MAX_ALIEN_BBOX 25
 
+#define PRIMARY_ATTACK_PERIOD 7500
+#define NEARBY_ATTACK_PERIOD  15000
+
+/*
+================
+G_WarnPrimaryUnderAttack
+
+Warns when the team's primary building is under attack.
+Called from overmind and reactor thinkers.
+================
+*/
+
+static void G_WarnPrimaryUnderAttack( gentity_t *self )
+{
+	const buildableAttributes_t *attr = BG_Buildable( self->s.modelindex );
+	float fracHealth, fracLastHealth;
+	int event = 0;
+
+	fracHealth = (float) self->health / (float) attr->health;
+	fracLastHealth = (float) self->lastHealth / (float) attr->health;
+
+	if ( fracHealth < 0.25f && fracLastHealth >= 0.25f )
+	{
+		event = attr->team == TEAM_ALIENS ? EV_OVERMIND_ATTACK_2 : EV_REACTOR_ATTACK_2;
+	}
+	else if ( fracHealth < 0.75f && fracLastHealth >= 0.75f )
+	{
+		event = attr->team == TEAM_ALIENS ? EV_OVERMIND_ATTACK_1 : EV_REACTOR_ATTACK_1;
+	}
+
+	if ( event && ( event != self->attackLastEvent || level.time > self->attackTimer ) )
+	{
+		self->attackTimer = level.time + PRIMARY_ATTACK_PERIOD; // don't spam
+		self->attackLastEvent = event;
+		G_BroadcastEvent( event, 0, attr->team );
+	}
+
+	self->lastHealth = self->health;
+}
+
+/*
+================
+IsWarnableMOD
+
+True if the means of death allows an under-attack warning.
+================
+*/
+
+static qboolean IsWarnableMOD( int mod )
+{
+	return mod != MOD_UNKNOWN && mod != MOD_TRIGGER_HURT && mod != MOD_DECONSTRUCT && mod != MOD_REPLACE && mod != MOD_NOCREEP;
+}
+
 /*
 ================
 G_SetBuildableAnim
@@ -370,7 +423,7 @@ static gentity_t* GetMainBuilding( gentity_t *self, qboolean ownBase )
 
 	if ( self->client )
 	{
-		team = self->client->pers.team;
+		team = (team_t) self->client->pers.team;
 	}
 	else if ( self->s.eType == ET_BUILDABLE )
 	{
@@ -440,7 +493,6 @@ G_InsideBase
 
 qboolean G_InsideBase( gentity_t *self, qboolean ownBase )
 {
-	qboolean  inRange, inVis;
 	gentity_t *mainBuilding;
 
 	mainBuilding = GetMainBuilding( self, ownBase );
@@ -450,10 +502,12 @@ qboolean G_InsideBase( gentity_t *self, qboolean ownBase )
 		return qfalse;
 	}
 
-	inRange = ( Distance( self->s.origin, mainBuilding->s.origin ) < INSIDE_BASE_MAX_DISTANCE );
-	inVis = trap_InPVSIgnorePortals( self->s.origin, mainBuilding->s.origin );
+	if ( Distance( self->s.origin, mainBuilding->s.origin ) >= INSIDE_BASE_MAX_DISTANCE )
+	{
+		return qfalse;
+	}
 
-	return ( inRange && inVis );
+	return trap_InPVSIgnorePortals( self->s.origin, mainBuilding->s.origin );
 }
 
 /*
@@ -564,7 +618,7 @@ static void AGeneric_CreepSlow( gentity_t *self )
 	vec3_t      mins, maxs;
 	int         i, num;
 	gentity_t   *enemy;
-	buildable_t buildable = self->s.modelindex;
+	buildable_t buildable = (buildable_t) self->s.modelindex;
 	float       creepSize = ( float ) BG_Buildable( buildable )->creepSize;
 
 	VectorSet( range, creepSize, creepSize, creepSize );
@@ -872,6 +926,8 @@ exploding.
 */
 void AGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
 {
+	gentity_t *om;
+
 	G_SetBuildableAnim( self, self->powered ? BANIM_DESTROY1 : BANIM_DESTROY_UNPOWERED, qtrue );
 	G_SetIdleBuildableAnim( self, BANIM_DESTROYED );
 
@@ -880,6 +936,13 @@ void AGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, i
 	self->think = AGeneric_Blast;
 	self->s.eFlags &= ~EF_FIRING; //prevent any firing effects
 	self->powered = qfalse;
+
+	// warn if in main base and there's an overmind
+	if ( ( om = G_Overmind() ) && om != self && level.time > om->warnTimer && G_InsideBase( self, qtrue ) && IsWarnableMOD( mod ) )
+	{
+		om->warnTimer = level.time + NEARBY_ATTACK_PERIOD; // don't spam
+		G_BroadcastEvent( EV_WARN_ATTACK, 0, TEAM_ALIENS );
+	}
 
 	// fully grown and not blasted to smithereens
 	if ( self->spawned && -self->health < BG_Buildable( self->s.modelindex )->health )
@@ -1086,7 +1149,6 @@ void ASpawn_Think( gentity_t *self )
 
 //==================================================================================
 
-#define OVERMIND_ATTACK_PERIOD 10000
 #define OVERMIND_DYING_PERIOD  5000
 #define OVERMIND_SPAWNS_PERIOD 30000
 
@@ -1133,7 +1195,7 @@ void AOvermind_Think( gentity_t *self )
 			gentity_t *builder;
 
 			self->overmindSpawnsTimer = level.time + OVERMIND_SPAWNS_PERIOD;
-			G_BroadcastEvent( EV_OVERMIND_SPAWNS, 0 );
+			G_BroadcastEvent( EV_OVERMIND_SPAWNS, 0, TEAM_ALIENS );
 
 			for ( i = 0; i < level.numConnectedClients; i++ )
 			{
@@ -1155,25 +1217,27 @@ void AOvermind_Think( gentity_t *self )
 			}
 		}
 
-		//overmind dying
-		if ( self->health < ( OVERMIND_HEALTH / 10.0f ) && level.time > self->overmindDyingTimer )
-		{
-			self->overmindDyingTimer = level.time + OVERMIND_DYING_PERIOD;
-			G_BroadcastEvent( EV_OVERMIND_DYING, 0 );
-		}
-
-		//overmind under attack
-		if ( self->health < self->lastHealth && level.time > self->overmindAttackTimer )
-		{
-			self->overmindAttackTimer = level.time + OVERMIND_ATTACK_PERIOD;
-			G_BroadcastEvent( EV_OVERMIND_ATTACK, 0 );
-		}
-
-		self->lastHealth = self->health;
+		G_WarnPrimaryUnderAttack( self );
 	}
 	else
 	{
 		self->overmindSpawnsTimer = level.time + OVERMIND_SPAWNS_PERIOD;
+	}
+}
+
+/*
+================
+AOvermind_Die
+
+Called when the overmind dies
+================
+*/
+void AOvermind_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
+{
+	AGeneric_Die( self, inflictor, attacker, mod );
+	if ( IsWarnableMOD( mod ) )
+	{
+		G_BroadcastEvent( EV_OVERMIND_DYING, 0, TEAM_ALIENS );
 	}
 }
 
@@ -1278,7 +1342,7 @@ void ABarricade_Shrink( gentity_t *self, qboolean shrink )
 		if ( self->spawned && self->health > 0 &&
 		     anim != BANIM_CONSTRUCT1 && anim != BANIM_CONSTRUCT2 )
 		{
-			G_SetIdleBuildableAnim( self, BG_Buildable( BA_A_BARRICADE )->idleAnim );
+			G_SetIdleBuildableAnim( self, (buildableAnimNumber_t) BG_Buildable( BA_A_BARRICADE )->idleAnim );
 			G_SetBuildableAnim( self, BANIM_ATTACK2, qtrue );
 		}
 	}
@@ -1864,7 +1928,7 @@ static void IdlePowerState( gentity_t *self )
 	{
 		if ( self->s.torsoAnim == BANIM_IDLE_UNPOWERED )
 		{
-			G_SetIdleBuildableAnim( self, BG_Buildable( self->s.modelindex )->idleAnim );
+			G_SetIdleBuildableAnim( self, (buildableAnimNumber_t) BG_Buildable( self->s.modelindex )->idleAnim );
 		}
 	}
 	else
@@ -1909,41 +1973,44 @@ static int PowerRelevantRange()
 
 /*
 ================
-PowerSourceInRange
+NearestPowerSourceInRange
 
 Check if origin is affected by reactor or repeater power.
+If it is, return whichever is nearest (preferring reactor).
 ================
 */
-static qboolean PowerSourceInRange( vec3_t origin )
+static gentity_t *NearestPowerSourceInRange( gentity_t *self )
 {
-	gentity_t *neighbor = NULL;
+	gentity_t *neighbor = G_Reactor();
+	gentity_t *best = NULL;
+	float bestDistance = HUGE_QFLT;
 
-	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, origin, PowerRelevantRange() ) ) )
+	if ( neighbor && Distance( self->s.origin, neighbor->s.origin ) <= g_powerReactorRange.integer )
+	{
+		return neighbor;
+	}
+
+	neighbor = NULL;
+
+	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, self->s.origin, PowerRelevantRange() ) ) )
 	{
 		if ( neighbor->s.eType != ET_BUILDABLE )
 		{
 			continue;
 		}
 
-		switch ( neighbor->s.modelindex )
+		if ( neighbor->s.modelindex == BA_H_REPEATER )
 		{
-			case BA_H_REACTOR:
-				if ( Distance( origin, neighbor->s.origin ) < g_powerReactorRange.integer )
-				{
-					return qtrue;
-				}
-				break;
-
-			case BA_H_REPEATER:
-				if ( Distance( origin, neighbor->s.origin ) < g_powerRepeaterRange.integer )
-				{
-					return qtrue;
-				}
-				break;
+			float distance = Distance( self->s.origin, neighbor->s.origin );
+			if ( distance < bestDistance )
+			{
+				bestDistance = distance;
+				best = neighbor;
+			}
 		}
 	}
 
-	return qfalse;
+	return ( bestDistance <= g_powerRepeaterRange.integer ) ? best : NULL;
 }
 
 /*
@@ -2108,7 +2175,7 @@ static void CalculateSparePower( gentity_t *self )
 {
 	gentity_t *neighbor;
 	float     distance;
-	int       relativeSparePower;
+	int       baseSupply, relativeSparePower;
 
 	if ( self->s.eType != ET_BUILDABLE || self->buildableTeam != TEAM_HUMANS )
 	{
@@ -2122,7 +2189,10 @@ static void CalculateSparePower( gentity_t *self )
 			return;
 	}
 
-	self->expectedSparePower = g_powerBaseSupply.integer - BG_Buildable( self->s.modelindex )->powerConsumption;
+	// reactor enables base supply everywhere on the map
+	baseSupply = G_Reactor() ? g_powerBaseSupply.integer : 0;
+
+	self->expectedSparePower = baseSupply - BG_Buildable( self->s.modelindex )->powerConsumption;
 
 	if ( self->spawned )
 	{
@@ -2143,11 +2213,11 @@ static void CalculateSparePower( gentity_t *self )
 
 		distance = Distance( self->s.origin, neighbor->s.origin );
 
-		self->expectedSparePower += IncomingInterference( self->s.modelindex, neighbor, distance, qtrue );
+		self->expectedSparePower += IncomingInterference( (buildable_t) self->s.modelindex, neighbor, distance, qtrue );
 
 		if ( self->spawned )
 		{
-			self->currentSparePower += IncomingInterference( self->s.modelindex, neighbor, distance, qfalse );
+			self->currentSparePower += IncomingInterference( (buildable_t) self->s.modelindex, neighbor, distance, qfalse );
 		}
 	}
 
@@ -2191,9 +2261,8 @@ TODO: Assemble a list of relevant entities first.
 void G_SetHumanBuildablePowerState()
 {
 	qboolean  done;
-	int       entityNum;
 	float     lowestSparePower;
-	gentity_t *ent, *lowestSparePowerEnt;
+	gentity_t *ent = NULL, *lowestSparePowerEnt;
 
 	static int nextCalculation = 0;
 
@@ -2202,100 +2271,71 @@ void G_SetHumanBuildablePowerState()
 		return;
 	}
 
-	if ( G_Reactor() )
+	// first pass: predict spare power for all buildables,
+	//             power up buildables that have enough power
+	while ( ent = G_IterateEntities( ent, NULL, qfalse, 0, NULL ) )
 	{
-		// first pass: predict spare power for all buildables,
-		//             power up buildables that have enough power,
-		//             power down drills that don't have a close power source
-		for ( entityNum = MAX_CLIENTS; entityNum < level.num_entities; entityNum++ )
+		// discard irrelevant entities
+		if ( ent->s.eType != ET_BUILDABLE || ent->buildableTeam != TEAM_HUMANS )
 		{
-			ent = &g_entities[ entityNum ];
+			continue;
+		}
 
+		CalculateSparePower( ent );
+
+		if ( ent->currentSparePower >= 0.0f )
+		{
+			ent->powered = qtrue;
+		}
+	}
+
+	// power down buildables that lack power, highest deficit first
+	do
+	{
+		lowestSparePowerEnt = NULL;
+		lowestSparePower = MAX_QINT;
+
+		// find buildable with highest power deficit
+		while ( ent = G_IterateEntities( ent, NULL, qfalse, 0, NULL ) )
+		{
 			// discard irrelevant entities
 			if ( ent->s.eType != ET_BUILDABLE || ent->buildableTeam != TEAM_HUMANS )
 			{
 				continue;
 			}
 
-			CalculateSparePower( ent );
-
-			if ( ent->currentSparePower >= 0.0f )
-			{
-				ent->powered = qtrue;
-			}
-		}
-
-		// power down buildables that lack power, highest deficit first
-		do
-		{
-			lowestSparePower = MAX_QINT;
-
-			// find buildable with highest power deficit
-			for ( entityNum = MAX_CLIENTS; entityNum < level.num_entities; entityNum++ )
-			{
-				ent = &g_entities[ entityNum ];
-
-				// discard irrelevant entities
-				if ( ent->s.eType != ET_BUILDABLE || ent->buildableTeam != TEAM_HUMANS )
-				{
-					continue;
-				}
-
-				// ignore buildables that haven't yet spawned or are already powered down
-				if ( !ent->spawned || !ent->powered )
-				{
-					continue;
-				}
-
-				CalculateSparePower( ent );
-
-				// never shut down the telenode
-				if ( ent->s.modelindex == BA_H_SPAWN )
-				{
-					continue;
-				}
-
-				if ( ent->currentSparePower < lowestSparePower )
-				{
-					lowestSparePower = ent->currentSparePower;
-					lowestSparePowerEnt = ent;
-				}
-			}
-
-			if ( lowestSparePower < 0.0f )
-			{
-				lowestSparePowerEnt->powered = qfalse;
-				done = qfalse;
-			}
-			else
-			{
-				done = qtrue;
-			}
-		}
-		while ( !done );
-	}
-	else // !G_Reactor()
-	{
-		// power down all buildables
-		for ( entityNum = MAX_CLIENTS; entityNum < level.num_entities; entityNum++ )
-		{
-			ent = &g_entities[ entityNum ];
-
-			if ( ent->s.eType != ET_BUILDABLE || ent->buildableTeam != TEAM_HUMANS )
+			// ignore buildables that haven't yet spawned or are already powered down
+			if ( !ent->spawned || !ent->powered )
 			{
 				continue;
 			}
 
-			// HACK: store relative spare power in entityState_t.clientNum
-			ent->s.clientNum = 0;
+			CalculateSparePower( ent );
 
 			// never shut down the telenode
-			if ( ent->s.modelindex != BA_H_SPAWN )
+			if ( ent->s.modelindex == BA_H_SPAWN )
 			{
-				ent->powered = qfalse;
+				continue;
+			}
+
+			if ( ent->currentSparePower < lowestSparePower )
+			{
+				lowestSparePower = ent->currentSparePower;
+				lowestSparePowerEnt = ent;
 			}
 		}
+
+		if ( lowestSparePower < 0.0f )
+		{
+			lowestSparePowerEnt->powered = qfalse;
+			done = qfalse;
+		}
+		else
+		{
+			done = qtrue;
+		}
 	}
+	while ( !done );
 
 	nextCalculation = level.time + 500;
 }
@@ -2337,7 +2377,7 @@ void HGeneric_Blast( gentity_t *self )
 	G_RewardAttackers( self );
 
 	// turn into an explosion
-	self->s.eType = ET_EVENTS + EV_HUMAN_BUILDABLE_EXPLOSION;
+	self->s.eType = (entityType_t) ( ET_EVENTS + EV_HUMAN_BUILDABLE_EXPLOSION );
 	self->freeAfterEvent = qtrue;
 	G_AddEvent( self, EV_HUMAN_BUILDABLE_EXPLOSION, DirToByte( dir ) );
 }
@@ -2399,6 +2439,32 @@ void HGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, i
 		// disappear immediately
 		self->think = HGeneric_Disappear;
 		self->nextthink = level.time;
+	}
+
+	// warn if this building was powered, there's a watcher nearby and it's powered too
+	if ( self->s.modelindex != BA_H_REACTOR && self->powered && G_Reactor() && IsWarnableMOD( mod ) )
+	{
+		qboolean inBase = G_InsideBase( self, qtrue );
+		gentity_t *watcher = inBase ? G_Reactor()
+		                            : ( self->s.modelindex == BA_H_REPEATER ) ? self : NearestPowerSourceInRange( self );
+		gentity_t *location = NULL;
+
+		// found reactor or repeater? get location entity
+		if ( watcher )
+		{
+			location = Team_GetLocation( watcher );
+			if ( !location )
+			{
+				location = level.fakeLocation; // fall back on the fake location
+			}
+		}
+
+		// check that the location/repeater/reactor hasn't warned recently
+		if ( location && level.time > location->warnTimer )
+		{
+			location->warnTimer = level.time + NEARBY_ATTACK_PERIOD; // don't spam
+			G_BroadcastEvent( EV_WARN_ATTACK, inBase ? 0 : ( watcher - level.gentities ), TEAM_HUMANS );
+		}
 	}
 
 	G_LogDestruction( self, attacker, mod );
@@ -2468,26 +2534,6 @@ void HRepeater_Think( gentity_t *self )
 	HGeneric_Think( self );
 
 	IdlePowerState( self );
-}
-
-/*
-================
-HRepeater_Use
-
-Use for human power repeater
-================
-*/
-void HRepeater_Use( gentity_t *self, gentity_t *other, gentity_t *activator )
-{
-	if ( self->health <= 0 || !self->spawned )
-	{
-		return;
-	}
-
-	if ( other && other->client )
-	{
-		G_GiveClientMaxAmmo( other, qtrue );
-	}
 }
 
 /*
@@ -2568,6 +2614,8 @@ void HReactor_Think( gentity_t *self )
 				                         MOD_REACTOR, TEAM_HUMANS );
 			}
 		}
+
+		G_WarnPrimaryUnderAttack( self );
 	}
 
 	if ( self->dcc )
@@ -2580,35 +2628,41 @@ void HReactor_Think( gentity_t *self )
 	}
 }
 
-//==================================================================================
-
 /*
 ================
-HArmoury_Activate
+HReactorDie
 
-Called when a human activates an Armoury
+Called when the reactor is destroyed
 ================
 */
-void HArmoury_Activate( gentity_t *self, gentity_t *other, gentity_t *activator )
+void HReactor_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
 {
-	if ( self->spawned )
+	HGeneric_Die( self, inflictor, attacker, mod );
+	if ( IsWarnableMOD( mod ) )
 	{
-		//only humans can activate this
-		if ( activator->client->pers.team != TEAM_HUMANS )
-		{
-			return;
-		}
-
-		//if this is powered then call the armoury menu
-		if ( self->powered )
-		{
-			G_TriggerMenu( activator->client->ps.clientNum, MN_H_ARMOURY );
-		}
-		else
-		{
-			G_TriggerMenu( activator->client->ps.clientNum, MN_H_NOTPOWERED );
-		}
+		G_BroadcastEvent( EV_REACTOR_DYING, 0, TEAM_HUMANS );
 	}
+}
+
+void HArmoury_Use( gentity_t *self, gentity_t *other, gentity_t *activator )
+{
+	if ( !self->spawned )
+	{
+		return;
+	}
+
+	if ( activator->client->pers.team != TEAM_HUMANS )
+	{
+		return;
+	}
+
+	if ( !self->powered )
+	{
+		G_TriggerMenu( activator->client->ps.clientNum, MN_H_NOTPOWERED );
+		return;
+	}
+
+	G_TriggerMenu( activator->client->ps.clientNum, MN_H_ARMOURY );
 }
 
 /*
@@ -3392,8 +3446,8 @@ void G_BuildableThink( gentity_t *ent, int msec )
 				G_TeamCommand( TEAM_ALIENS, "cp \"The Overmind has awakened!\"" );
 			}
 
-			// Award confidence
-			G_AddConfidenceForBuilding( ent );
+			// Award momentum
+			G_AddMomentumForBuilding( ent );
 		}
 	}
 
@@ -3477,35 +3531,19 @@ G_BuildableRange
 Check whether a point is within some range of a type of buildable
 ===============
 */
-qboolean G_BuildableRange( vec3_t origin, float r, buildable_t buildable )
+qboolean G_BuildableInRange( vec3_t origin, float radius, buildable_t buildable )
 {
-	int       entityList[ MAX_GENTITIES ];
-	vec3_t    range;
-	vec3_t    mins, maxs;
-	int       i, num;
-	gentity_t *ent;
+	gentity_t *neighbor = NULL;
 
-	VectorSet( range, r, r, r );
-	VectorAdd( origin, range, maxs );
-	VectorSubtract( origin, range, mins );
-
-	num = trap_EntitiesInBox( mins, maxs, entityList, MAX_GENTITIES );
-
-	for ( i = 0; i < num; i++ )
+	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, origin, radius ) ) )
 	{
-		ent = &g_entities[ entityList[ i ] ];
-
-		if ( ent->s.eType != ET_BUILDABLE )
+		if ( neighbor->s.eType != ET_BUILDABLE || !neighbor->spawned || neighbor->health <= 0 ||
+		     ( neighbor->buildableTeam == TEAM_HUMANS && !neighbor->powered ) )
 		{
 			continue;
 		}
 
-		if ( ent->buildableTeam == TEAM_HUMANS && !ent->powered )
-		{
-			continue;
-		}
-
-		if ( ent->s.modelindex == buildable && ent->spawned )
+		if ( neighbor->s.modelindex == buildable )
 		{
 			return qtrue;
 		}
@@ -3610,9 +3648,9 @@ static int CompareBuildablesForRemoval( const void *a, const void *b )
 
 	// Prefer the one that collides with the thing we're building
 	aMatches = BuildablesIntersect( cmpBuildable, cmpOrigin,
-	                                buildableA->s.modelindex, buildableA->s.origin );
+	                                (buildable_t) buildableA->s.modelindex, buildableA->s.origin );
 	bMatches = BuildablesIntersect( cmpBuildable, cmpOrigin,
-	                                buildableB->s.modelindex, buildableB->s.origin );
+	                                (buildable_t) buildableB->s.modelindex, buildableB->s.origin );
 
 	if ( aMatches && !bMatches )
 	{
@@ -3748,8 +3786,8 @@ void G_Deconstruct( gentity_t *self, gentity_t *deconner, meansOfDeath_t deconTy
 	refund = attr->buildPoints * ( self->health / ( float )attr->health );
 	G_ModifyBuildPoints( self->buildableTeam, refund );
 
-	// remove confidence
-	G_RemoveConfidenceForDecon( self, deconner );
+	// remove momentum
+	G_RemoveMomentumForDecon( self, deconner );
 
 	// deconstruct
 	G_Damage( self, NULL, deconner, NULL, NULL, self->health, 0, deconType );
@@ -3904,13 +3942,15 @@ static qboolean PredictBuildablePower( buildable_t buildable, vec3_t origin )
 {
 	gentity_t       *neighbor, *buddy;
 	float           distance, ownPrediction, neighborPrediction;
+	int             baseSupply;
 
 	if ( buildable == BA_H_REPEATER || buildable == BA_H_REACTOR )
 	{
 		return qtrue;
 	}
 
-	ownPrediction = g_powerBaseSupply.integer - BG_Buildable( buildable )->powerConsumption;
+	baseSupply = G_Reactor() ? g_powerBaseSupply.integer : 0;
+	ownPrediction = baseSupply - BG_Buildable( buildable )->powerConsumption;
 
 	neighbor = NULL;
 	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, origin, PowerRelevantRange() ) ) )
@@ -3941,7 +3981,7 @@ static qboolean PredictBuildablePower( buildable_t buildable, vec3_t origin )
 				if ( IsSetForDeconstruction( buddy ) )
 				{
 					distance = Distance( neighbor->s.origin, buddy->s.origin );
-					neighborPrediction -= IncomingInterference( neighbor->s.modelindex, buddy, distance, qtrue );
+					neighborPrediction -= IncomingInterference( (buildable_t) neighbor->s.modelindex, buddy, distance, qtrue );
 				}
 			}
 
@@ -4003,8 +4043,7 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 			}
 		}
 	}
-
-	if ( buildable == BA_A_OVERMIND )
+	else if ( buildable == BA_A_OVERMIND )
 	{
 		ent = G_Overmind();
 
@@ -4034,7 +4073,7 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 			continue;
 		}
 
-		if ( BuildablesIntersect( buildable, origin, ent->s.modelindex, ent->s.origin ) )
+		if ( BuildablesIntersect( buildable, origin, (buildable_t) ent->s.modelindex, ent->s.origin ) )
 		{
 			if ( ent->buildableTeam == attr->team && ent->deconstruct )
 			{
@@ -4043,7 +4082,7 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 				     && !( buildable == BA_A_OVERMIND && ent->s.modelindex == BA_A_OVERMIND ) )
 				{
 					// apply general replacement rules
-					if ( ( reason = BuildableReplacementChecks( ent->s.modelindex, buildable ) ) != IBE_NONE )
+					if ( ( reason = BuildableReplacementChecks( (buildable_t) ent->s.modelindex, buildable ) ) != IBE_NONE )
 					{
 						return reason;
 					}
@@ -4128,7 +4167,7 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 				}
 
 				// apply general replacement rules
-				if ( BuildableReplacementChecks( ent->s.modelindex, buildable ) != IBE_NONE )
+				if ( BuildableReplacementChecks( (buildable_t) neighbor->s.modelindex, buildable ) != IBE_NONE )
 				{
 					continue;
 				}
@@ -4191,7 +4230,7 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 		}
 
 		// apply general replacement rules
-		if ( BuildableReplacementChecks( ent->s.modelindex, buildable ) != IBE_NONE )
+		if ( BuildableReplacementChecks( (buildable_t) ent->s.modelindex, buildable ) != IBE_NONE )
 		{
 			continue;
 		}
@@ -4341,19 +4380,13 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 	{
 		reason = tempReason;
 
-		if ( reason == IBE_NOPOWERHERE || reason == IBE_DRILLPOWERSOURCE )
+		if ( reason == IBE_NOPOWERHERE && !G_Reactor() )
 		{
-			if ( !G_Reactor() )
-			{
-				reason = IBE_NOREACTOR;
-			}
+			reason = IBE_NOREACTOR;
 		}
-		else if ( reason == IBE_NOCREEP )
+		else if ( reason == IBE_NOCREEP && !G_Overmind() )
 		{
-			if ( !G_Overmind() )
-			{
-				reason = IBE_NOOVERMIND;
-			}
+			reason = IBE_NOOVERMIND;
 		}
 	}
 	else if ( ent->client->pers.team == TEAM_ALIENS )
@@ -4390,21 +4423,6 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 	}
 	else if ( ent->client->pers.team == TEAM_HUMANS )
 	{
-		// Check for Reactor
-		if ( buildable != BA_H_REACTOR )
-		{
-			if ( !G_Reactor() )
-			{
-				reason = IBE_NOREACTOR;
-			}
-		}
-
-		// Check if buildable requires a DCC
-		if ( BG_Buildable( buildable )->dccTest && !G_IsDCCBuilt() )
-		{
-			reason = IBE_NODCC;
-		}
-
 		// Check permissions
 		if ( (tr1.surfaceFlags & (SURF_NOHUMANBUILD | SURF_NOBUILD)) || (contents & (CONTENTS_NOHUMANBUILD | CONTENTS_NOBUILD)) )
 		{
@@ -4506,7 +4524,8 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 	built->killedBy = ENTITYNUM_NONE;
 	built->classname = BG_Buildable( buildable )->entityName;
 	built->s.modelindex = buildable;
-	built->buildableTeam = built->s.modelindex2 = BG_Buildable( buildable )->team;
+	built->s.modelindex2 = BG_Buildable( buildable )->team;
+	built->buildableTeam = (team_t) built->s.modelindex2;
 	BG_BuildableBoundingBox( buildable, built->r.mins, built->r.maxs );
 
 	built->health = 1;
@@ -4579,7 +4598,7 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 			break;
 
 		case BA_A_OVERMIND:
-			built->die = AGeneric_Die;
+			built->die = AOvermind_Die;
 			built->think = AOvermind_Think;
 			built->pain = AGeneric_Pain;
 			{
@@ -4620,7 +4639,7 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 		case BA_H_ARMOURY:
 			built->think = HArmoury_Think;
 			built->die = HGeneric_Die;
-			built->use = HArmoury_Activate;
+			built->use = HArmoury_Use;
 						{
 				vec3_t mins;
 				vec3_t maxs;
@@ -4658,8 +4677,7 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 
 		case BA_H_REACTOR:
 			built->think = HReactor_Think;
-			built->die = HGeneric_Die;
-			built->use = HRepeater_Use;
+			built->die = HReactor_Die;
 			built->powered = built->active = qtrue;
 			{
 				vec3_t mins;
@@ -4675,7 +4693,6 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 		case BA_H_REPEATER:
 			built->think = HRepeater_Think;
 			built->die = HGeneric_Die;
-			built->use = HRepeater_Use;
 			built->customNumber = -1;
 			break;
 
@@ -4733,7 +4750,7 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 
 	G_AddEvent( built, EV_BUILD_CONSTRUCT, 0 );
 
-	G_SetIdleBuildableAnim( built, BG_Buildable( buildable )->idleAnim );
+	G_SetIdleBuildableAnim( built, (buildableAnimNumber_t) BG_Buildable( buildable )->idleAnim );
 
 	if ( built->builtBy )
 	{
@@ -4745,7 +4762,7 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 	if ( builder && builder->client )
 	{
 	        // readable and the model name shouldn't need quoting
-		G_TeamCommand( builder->client->pers.team,
+		G_TeamCommand( (team_t) builder->client->pers.team,
 		               va( "print_tr %s %s %s %s", ( readable[ 0 ] ) ?
 						QQ( N_("$1$ ^2built^7 by $2$^7, ^3replacing^7 $3$\n") ) :
 						QQ( N_("$1$ ^2built^7 by $2$$3$\n") ),
@@ -4767,7 +4784,7 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 	if ( log )
 	{
 		// HACK: Assume the buildable got build in full
-		built->confidenceEarned = G_PredictConfidenceForBuilding( built );
+		built->momentumEarned = G_PredictMomentumForBuilding( built );
 		G_BuildLogSet( log, built );
 	}
 
@@ -4847,10 +4864,6 @@ qboolean G_BuildIfValid( gentity_t *ent, buildable_t buildable )
 			G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOBP );
 			return qfalse;
 
-		case IBE_NODCC:
-			G_TriggerMenu( ent->client->ps.clientNum, MN_H_NODCC );
-			return qfalse;
-
 		case IBE_LASTSPAWN:
 			G_TriggerMenu( ent->client->ps.clientNum, MN_B_LASTSPAWN );
 			return qfalse;
@@ -4875,7 +4888,7 @@ static gentity_t *FinishSpawningBuildable( gentity_t *ent, qboolean force )
 	trace_t     tr;
 	vec3_t      normal, dest;
 	gentity_t   *built;
-	buildable_t buildable = ent->s.modelindex;
+	buildable_t buildable = (buildable_t) ent->s.modelindex;
 
 	if ( ent->s.origin2[ 0 ] || ent->s.origin2[ 1 ] || ent->s.origin2[ 2 ] )
 	{
@@ -5243,7 +5256,7 @@ void G_LayoutLoad( void )
 		return;
 	}
 
-	layoutHead = layout = BG_Alloc( len + 1 );
+	layoutHead = layout = (char*) BG_Alloc( len + 1 );
 	trap_FS_Read( layout, len, f );
 	layout[ len ] = '\0';
 	trap_FS_FCloseFile( f );
@@ -5279,7 +5292,7 @@ void G_LayoutLoad( void )
 			}
 			else
 			{
-				LayoutBuildItem( buildable, origin, angles, origin2, angles2 );
+				LayoutBuildItem( (buildable_t) buildable, origin, angles, origin2, angles2 );
 			}
 		}
 
@@ -5399,11 +5412,11 @@ buildLog_t *G_BuildLogNew( gentity_t *actor, buildFate_t fate )
 void G_BuildLogSet( buildLog_t *log, gentity_t *ent )
 {
 	log->buildableTeam = ent->buildableTeam;
-	log->modelindex = ent->s.modelindex;
+	log->modelindex = (buildable_t) ent->s.modelindex;
 	log->deconstruct = ent->deconstruct;
 	log->deconstructTime = ent->deconstructTime;
 	log->builtBy = ent->builtBy;
-	log->confidenceEarned = ent->confidenceEarned;
+	log->momentumEarned = ent->momentumEarned;
 	VectorCopy( ent->s.pos.trBase, log->origin );
 	VectorCopy( ent->s.angles, log->angles );
 	VectorCopy( ent->s.origin2, log->origin2 );
@@ -5466,7 +5479,7 @@ void G_BuildLogRevertThink( gentity_t *ent )
 	}
 
 	built->creationTime = built->s.time = 0;
-	built->confidenceEarned = ent->confidenceEarned;
+	built->momentumEarned = ent->momentumEarned;
 	G_KillBox( built );
 
 	G_LogPrintf( "revert: restore %d %s\n",
@@ -5479,10 +5492,10 @@ void G_BuildLogRevert( int id )
 {
 	buildLog_t *log;
 	gentity_t  *ent;
-	team_t     team;
+	int        team;
 	vec3_t     dist;
-	gentity_t  *builder;
-	float      confidenceChange[ NUM_TEAMS ] = { 0 };
+	gentity_t  *buildable;
+	float      momentumChange[ NUM_TEAMS ] = { 0 };
 
 	level.numBuildablesForRemoval = 0;
 
@@ -5492,17 +5505,16 @@ void G_BuildLogRevert( int id )
 	{
 		log = &level.buildLog[ --level.buildId % MAX_BUILDLOG ];
 
-		switch ( log->fate ) {
+		switch ( log->fate )
+		{
 		case BF_CONSTRUCT:
 			for ( team = MAX_CLIENTS; team < level.num_entities; team++ )
 			{
 				ent = &g_entities[ team ];
 
-				if ( ( ( ent->s.eType == ET_BUILDABLE &&
-				         ent->health > 0 ) ||
-				       ( ent->s.eType == ET_GENERAL &&
-				         ent->think == G_BuildLogRevertThink ) ) &&
-				     ent->s.modelindex == log->modelindex )
+				if ( ( ( ent->s.eType == ET_BUILDABLE && ent->health > 0 ) ||
+					   ( ent->s.eType == ET_GENERAL && ent->think == G_BuildLogRevertThink ) ) &&
+					 ent->s.modelindex == log->modelindex )
 				{
 					VectorSubtract( ent->s.pos.trBase, log->origin, dist );
 
@@ -5511,13 +5523,16 @@ void G_BuildLogRevert( int id )
 						if ( ent->s.eType == ET_BUILDABLE )
 						{
 							G_LogPrintf( "revert: remove %d %s\n",
-							             ( int )( ent - g_entities ), BG_Buildable( ent->s.modelindex )->name );
+										 ( int )( ent - g_entities ), BG_Buildable( ent->s.modelindex )->name );
 						}
 
-						// Give back resources
+						// Revert resources
 						G_ModifyBuildPoints( ent->buildableTeam, BG_Buildable( ent->s.modelindex )->buildPoints );
-						confidenceChange[ log->buildableTeam ] -= log->confidenceEarned;
+						momentumChange[ log->buildableTeam ] -= log->momentumEarned;
+
+						// Free buildable
 						G_FreeEntity( ent );
+
 						break;
 					}
 				}
@@ -5526,36 +5541,36 @@ void G_BuildLogRevert( int id )
 
 		case BF_DECONSTRUCT:
 		case BF_REPLACE:
-			confidenceChange[ log->buildableTeam ] += log->confidenceEarned;
-			// fall through to default
+				// Revert resources
+				G_ModifyBuildPoints( log->buildableTeam, -BG_Buildable( log->modelindex )->buildPoints );
+				momentumChange[ log->buildableTeam ] += log->momentumEarned;
+
+				// Fall through to default
 
 		default:
-			builder = G_NewEntity();
-
-			VectorCopy( log->origin, builder->s.pos.trBase );
-			VectorCopy( log->angles, builder->s.angles );
-			VectorCopy( log->origin2, builder->s.origin2 );
-			VectorCopy( log->angles2, builder->s.angles2 );
-			builder->s.modelindex = log->modelindex;
-			builder->deconstruct = log->deconstruct;
-			builder->deconstructTime = log->deconstructTime;
-			builder->builtBy = log->builtBy;
-			builder->confidenceEarned = log->confidenceEarned;
-			builder->think = G_BuildLogRevertThink;
-			builder->nextthink = level.time + FRAMETIME;
-
-			// Number of thinks before giving up and killing players in the way
-			builder->suicideTime = 30;
-			break;
+			// Spawn buildable
+			buildable = G_NewEntity();
+			VectorCopy( log->origin, buildable->s.pos.trBase );
+			VectorCopy( log->angles, buildable->s.angles );
+			VectorCopy( log->origin2, buildable->s.origin2 );
+			VectorCopy( log->angles2, buildable->s.angles2 );
+			buildable->s.modelindex = log->modelindex;
+			buildable->deconstruct = log->deconstruct;
+			buildable->deconstructTime = log->deconstructTime;
+			buildable->builtBy = log->builtBy;
+			buildable->momentumEarned = log->momentumEarned;
+			buildable->think = G_BuildLogRevertThink;
+			buildable->nextthink = level.time + FRAMETIME;
+			buildable->suicideTime = 30; // number of thinks before killing players in the way
 		}
 	}
 
 	for ( team = TEAM_NONE + 1; team < NUM_TEAMS; ++team )
 	{
-		G_AddConfidenceGenericStep( team, confidenceChange[ team ] );
+		G_AddMomentumGenericStep( (team_t) team, momentumChange[ team ] );
 	}
 
-	G_AddConfidenceEnd();
+	G_AddMomentumEnd();
 }
 
 /*
@@ -5633,7 +5648,7 @@ void G_GetBuildableResourceValue( int *teamValue )
 {
 	int       entityNum;
 	gentity_t *ent;
-	team_t    team;
+	int       team;
 	const buildableAttributes_t *attr;
 
 	for ( team = TEAM_NONE + 1; team < NUM_TEAMS; team++ )

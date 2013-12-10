@@ -79,10 +79,8 @@ typedef enum
 
 typedef enum
 {
-  JPS_OFF,
-  JPS_DESCENDING,
-  JPS_HOVERING,
-  JPS_ASCENDING
+  JPS_INACTIVE,
+  JPS_ACTIVE
 } jetPackState_t;
 
 //======================================================================
@@ -340,7 +338,7 @@ typedef struct baseParticleSystem_s
 //RUN TIME STRUCTURES
 typedef struct particleSystem_s
 {
-	baseParticleSystem_t  *class;
+	baseParticleSystem_t  *class_;
 
 	attachment_t attachment;
 
@@ -359,7 +357,7 @@ typedef struct particleSystem_s
 
 typedef struct particleEjector_s
 {
-	baseParticleEjector_t *class;
+	baseParticleEjector_t *class_;
 	particleSystem_t *parent;
 
 	pLerpValues_t    ejectPeriod;
@@ -375,7 +373,7 @@ typedef struct particleEjector_s
 //used for actual particle evaluation
 typedef struct particle_s
 {
-	baseParticle_t    *class;
+	baseParticle_t    *class_;
 	particleEjector_t *parent;
 
 	particleSystem_t  *childParticleSystem;
@@ -495,7 +493,7 @@ typedef struct baseTrailSystem_s
 
 typedef struct trailSystem_s
 {
-	baseTrailSystem_t   *class;
+	baseTrailSystem_t   *class_;
 
 	attachment_t frontAttachment;
 	attachment_t backAttachment;
@@ -528,7 +526,7 @@ typedef struct trailBeamNode_s
 
 typedef struct trailBeam_s
 {
-	baseTrailBeam_t   *class;
+	baseTrailBeam_t   *class_;
 	trailSystem_t   *parent;
 
 	trailBeamNode_t nodePool[ MAX_TRAIL_BEAM_NODES ];
@@ -1163,9 +1161,9 @@ typedef struct
 	int                     numBinaryShadersUsed;
 	cgBinaryShaderSetting_t binaryShaderSettings[ NUM_BINARY_SHADERS ];
 
-	// confidence
-	float                   confidenceGained;
-	int                     confidenceGainedTime;
+	// momentum
+	float                   momentumGained;
+	int                     momentumGainedTime;
 } cg_t;
 
 // all of the model, shader, and sound references that are
@@ -1249,13 +1247,9 @@ typedef struct
 	sfxHandle_t watrOutSound;
 	sfxHandle_t watrUnSound;
 
-	sfxHandle_t jetpackDescendSound;
-	sfxHandle_t jetpackIdleSound;
-	sfxHandle_t jetpackAscendSound;
+	sfxHandle_t jetpackThrustLoopSound;
 
-	qhandle_t   jetPackDescendPS;
-	qhandle_t   jetPackHoverPS;
-	qhandle_t   jetPackAscendPS;
+	qhandle_t   jetPackThrustPS;
 
 	sfxHandle_t medkitUseSound;
 
@@ -1382,8 +1376,8 @@ typedef struct
 	qboolean markDeconstruct; // Whether or not buildables are marked
 	int      powerReactorRange;
 	int      powerRepeaterRange;
-	float    confidenceHalfLife; // used for confidence bar (un)lock markers
-	float    unlockableMinTime;  // used for confidence bar (un)lock markers
+	float    momentumHalfLife; // used for momentum bar (un)lock markers
+	float    unlockableMinTime;  // used for momentum bar (un)lock markers
 
 	int      voteTime[ NUM_TEAMS ];
 	int      voteYes[ NUM_TEAMS ];
@@ -1642,7 +1636,7 @@ const char *CG_ConfigString( int index );
 const char *CG_Argv( int arg );
 
 void QDECL CG_Printf( const char *msg, ... ) PRINTF_LIKE(1);
-void QDECL CG_Error( const char *msg, ... ) PRINTF_LIKE(1) NORETURN;
+void QDECL NORETURN CG_Error( const char *msg, ... ) PRINTF_LIKE(1);
 
 void       CG_StartMusic( void );
 
@@ -1745,9 +1739,10 @@ void        CG_Corpse( centity_t *cent );
 void        CG_ResetPlayerEntity( centity_t *cent );
 void        CG_NewClientInfo( int clientNum );
 
-void        CG_PrecacheClientInfo( class_t class, const char *model, const char *skin );
+void        CG_PrecacheClientInfo( class_t class_, const char *model, const char *skin );
 sfxHandle_t CG_CustomSound( int clientNum, const char *soundName );
 void        CG_PlayerDisconnect( vec3_t org );
+centity_t   *CG_GetLocation( vec3_t );
 centity_t   *CG_GetPlayerLocation( void );
 
 void        CG_InitClasses( void );
@@ -1839,7 +1834,7 @@ void CG_HandleMissileHitWall( entityState_t *es, vec3_t origin );
 
 void CG_AddViewWeapon( playerState_t *ps );
 void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent );
-void CG_DrawItemSelect( rectDef_t *rect, vec4_t color );
+void CG_DrawHumanInventory(rectDef_t *rect, vec4_t backColor, vec4_t foreColor );
 void CG_DrawItemSelectText( rectDef_t *rect, float scale, int textStyle );
 
 //

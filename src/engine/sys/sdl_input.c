@@ -41,6 +41,7 @@ Maryland 20850 USA.
 #include "../client/client.h"
 #include "../qcommon/q_unicode.h"
 #include "../sys/sys_local.h"
+#include "../framework/CommandSystem.h"
 
 static cvar_t       *in_keyboardDebug = NULL;
 
@@ -83,18 +84,6 @@ IN_PrintKey
 */
 static void IN_PrintKey( const SDL_Keysym *keysym, keyNum_t key, qboolean down )
 {
-	if ( down )
-	{
-		Com_Printf( "+ " );
-	}
-	else
-	{
-		Com_Printf( "  " );
-	}
-
-	Com_Printf( "0x%02x \"%s\"", keysym->scancode,
-	            SDL_GetKeyName( keysym->sym ) );
-
 	if ( keysym->mod & KMOD_LSHIFT ) { Com_Printf( " KMOD_LSHIFT" ); }
 
 	if ( keysym->mod & KMOD_RSHIFT ) { Com_Printf( " KMOD_RSHIFT" ); }
@@ -119,9 +108,8 @@ static void IN_PrintKey( const SDL_Keysym *keysym, keyNum_t key, qboolean down )
 
 	if ( keysym->mod & KMOD_RESERVED ) { Com_Printf( " KMOD_RESERVED" ); }
 
-	Com_Printf( " Q:0x%02x(%s)\n", key, Key_KeynumToString( key ) );
-
-	Com_Printf( "\n" );
+	Com_Printf( "%c 0x%02x \"%s\" Q:0x%02x(%s)\n", down ? '+' : ' ', keysym->scancode,
+		    SDL_GetKeyName( keysym->sym ), key, Key_KeynumToString( key ) );
 }
 
 #define MAX_CONSOLE_KEYS 16
@@ -215,13 +203,13 @@ static qboolean IN_IsConsoleKey( keyNum_t key, const unsigned char character )
 
 			if ( charCode > 0 )
 			{
-				c->type = CHARACTER;
+				c->type = consoleKey_t::CHARACTER;
 				c->u.character = charCode;
 			}
 			else
 			{
-				c->type = KEY;
-				c->u.key = Key_StringToKeynum( token );
+				c->type = consoleKey_t::KEY;
+				c->u.key = (keyNum_t) Key_StringToKeynum( token );
 
 				// 0 isn't a key
 				if ( c->u.key <= 0 )
@@ -272,7 +260,7 @@ static qboolean IN_IsConsoleKey( keyNum_t key, const unsigned char character )
 	// If the character is the same as the key, prefer the character
 	if ( key == character )
 	{
-		key = 0;
+		key = (keyNum_t) 0;
 	}
 
 	for ( i = 0; i < numConsoleKeys; i++ )
@@ -281,7 +269,7 @@ static qboolean IN_IsConsoleKey( keyNum_t key, const unsigned char character )
 
 		switch ( c->type )
 		{
-			case KEY:
+            case consoleKey_t::KEY:
 				if ( key && c->u.key == key )
 				{
 					return qtrue;
@@ -289,7 +277,7 @@ static qboolean IN_IsConsoleKey( keyNum_t key, const unsigned char character )
 
 				break;
 
-			case CHARACTER:
+            case consoleKey_t::CHARACTER:
 				if ( c->u.character == character )
 				{
 					return qtrue;
@@ -309,16 +297,16 @@ IN_TranslateSDLToQ3Key
 */
 static keyNum_t IN_TranslateSDLToQ3Key( SDL_Keysym *keysym, qboolean down )
 {
-	keyNum_t key = 0;
+	keyNum_t key = (keyNum_t) 0;
 
 #if !SDL_VERSION_ATLEAST( 2, 0, 0 )
-	key = keysym->unicode;
+	key = (keyNum_t) keysym->unicode;
 #endif
 
 	if ( keysym->sym >= SDLK_SPACE && keysym->sym < SDLK_DELETE )
 	{
 		// These happen to match the ASCII chars
-		key = ( int ) keysym->sym;
+		key = ( keyNum_t ) keysym->sym;
 	}
 	else
 	{
@@ -573,7 +561,6 @@ static keyNum_t IN_TranslateSDLToQ3Key( SDL_Keysym *keysym, qboolean down )
 				break;
 
 			default:
-
 				break;
 		}
 	}
@@ -1413,8 +1400,8 @@ IN_ProcessEvents
 static void IN_ProcessEvents( qboolean dropInput )
 {
 	SDL_Event  e;
-	keyNum_t   key = 0;
-	static keyNum_t lastKeyDown = 0;
+	keyNum_t   key = (keyNum_t) 0;
+	static keyNum_t lastKeyDown = (keyNum_t) 0;
 
 	if ( !SDL_WasInit( SDL_INIT_VIDEO ) )
 	{
@@ -1473,7 +1460,7 @@ static void IN_ProcessEvents( qboolean dropInput )
 						Com_QueueEvent( 0, SE_KEY, key, qfalse, 0, NULL );
 					}
 
-					lastKeyDown = 0;
+					lastKeyDown = (keyNum_t) 0;
 				}
 
 				break;
@@ -1626,7 +1613,7 @@ static void IN_ProcessEvents( qboolean dropInput )
 				break;
 #endif
 			case SDL_QUIT:
-				Cbuf_ExecuteText( EXEC_NOW, "quit Closed window\n" );
+				Cmd::ExecuteCommand("quit Closed window");
 				break;
 			default:
 				break;
@@ -1706,7 +1693,7 @@ void IN_Init( void *windowData )
 		Com_Error( ERR_FATAL, "IN_Init called before SDL_Init( SDL_INIT_VIDEO )" );
 	}
 
-	window = windowData;
+	window = (SDL_Window*) windowData;
 
 	Com_DPrintf( "\n------- Input Initialization -------\n" );
 

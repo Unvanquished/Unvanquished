@@ -33,20 +33,10 @@ void G_ForceWeaponChange( gentity_t *ent, weapon_t weapon )
 {
 	playerState_t *ps = &ent->client->ps;
 
-	// stop a reload in progress
-	if ( ps->weaponstate == WEAPON_RELOADING )
-	{
-		ps->torsoAnim = ( ( ps->torsoAnim & ANIM_TOGGLEBIT ) ^ ANIM_TOGGLEBIT ) | TORSO_RAISE;
-		ps->weaponTime = 250;
-		ps->weaponstate = WEAPON_READY;
-	}
-
-	if ( weapon == WP_NONE ||
-	     !BG_InventoryContainsWeapon( weapon, ps->stats ) )
+	if ( weapon == WP_NONE || !BG_InventoryContainsWeapon( weapon, ps->stats ) )
 	{
 		// switch to the first non blaster weapon
-		ps->persistant[ PERS_NEWWEAPON ] =
-		  BG_PrimaryWeapon( ent->client->ps.stats );
+		ps->persistant[ PERS_NEWWEAPON ] = BG_PrimaryWeapon( ent->client->ps.stats );
 	}
 	else
 	{
@@ -60,65 +50,272 @@ void G_ForceWeaponChange( gentity_t *ent, weapon_t weapon )
 	ps->pm_flags |= PMF_WEAPON_SWITCH;
 }
 
-void G_GiveClientMaxAmmo( gentity_t *ent, qboolean buyingEnergyAmmo )
+/**
+ * @brief Refills spare ammo clips.
+ */
+static void GiveMaxClips( gentity_t *self )
 {
-	int      i, maxAmmo, maxClips;
-	qboolean restoredAmmo = qfalse, restoredEnergy = qfalse;
+	playerState_t *ps;
+	const weaponAttributes_t *wa;
 
-	for ( i = WP_NONE + 1; i < WP_NUM_WEAPONS; i++ )
+	if ( !self || !self->client )
 	{
-		qboolean energyWeapon;
+		return;
+	}
 
-		energyWeapon = BG_Weapon( i )->usesEnergy;
+	ps = &self->client->ps;
+	wa = BG_Weapon( ps->stats[ STAT_WEAPON ] );
 
-		if ( !BG_InventoryContainsWeapon( i, ent->client->ps.stats ) ||
-		     BG_Weapon( i )->infiniteAmmo ||
-		     BG_WeaponIsFull( i, ent->client->ps.stats,
-		                      ent->client->ps.ammo, ent->client->ps.clips ) ||
-		     ( buyingEnergyAmmo && !energyWeapon ) )
+	ps->clips = wa->maxClips;
+}
+
+/**
+ * @brief Refills current ammo clip/charge.
+ */
+static void GiveFullClip( gentity_t *self )
+{
+	playerState_t *ps;
+	const weaponAttributes_t *wa;
+
+	if ( !self || !self->client )
+	{
+		return;
+	}
+
+	ps = &self->client->ps;
+	wa = BG_Weapon( ps->stats[ STAT_WEAPON ] );
+
+	ps->ammo = wa->maxAmmo;
+
+	// apply battery pack modifier
+	if ( wa->usesEnergy && BG_InventoryContainsUpgrade( UP_BATTPACK, ps->stats ) )
+	{
+		ps->ammo *= BATTPACK_MODIFIER;
+	}
+}
+
+/**
+ * @brief Refills both spare clips and current clip/charge.
+ */
+void G_GiveMaxAmmo( gentity_t *self )
+{
+	GiveMaxClips( self );
+	GiveFullClip( self );
+}
+
+/**
+ * @brief Checks the condition for G_RefillAmmo.
+ */
+static qboolean CanUseAmmoRefill( gentity_t *self )
+{
+	const weaponAttributes_t *wa;
+	playerState_t *ps;
+	int           maxAmmo;
+
+	if ( !self || !self->client )
+	{
+		return qfalse;
+	}
+
+	ps = &self->client->ps;
+	wa = BG_Weapon( ps->stats[ STAT_WEAPON ] );
+
+	if ( wa->infiniteAmmo )
+	{
+		return qfalse;
+	}
+
+	if ( wa->maxClips == 0 )
+	{
+		maxAmmo = wa->maxAmmo;
+
+		// apply battery pack modifier
+		if ( wa->usesEnergy && BG_InventoryContainsUpgrade( UP_BATTPACK, ps->stats ) )
+		{
+			maxAmmo *= BATTPACK_MODIFIER;
+		}
+
+		// clipless weapons can be refilled whenever they lack ammo
+		return ( ps->ammo != maxAmmo );
+	}
+	else if ( ps->clips != wa->maxClips )
+	{
+		// clip weapons have to miss a clip to be refillable
+		return qtrue;
+	}
+	else
+	{
+		return qfalse;
+	}
+}
+
+/**
+ * @brief Refills clips on clip based weapons, refills charge on other weapons.
+ * @param self
+ * @param triggerEvent Trigger an event when relvant resource was modified.
+ * @return Whether relevant resource was modified.
+ */
+qboolean G_RefillAmmo( gentity_t *self, qboolean triggerEvent )
+{
+	if ( !CanUseAmmoRefill( self ) )
+	{
+		return qfalse;
+	}
+
+	self->client->lastAmmoRefillTime = level.time;
+
+	if ( BG_Weapon( self->client->ps.stats[ STAT_WEAPON ] )->maxClips > 0 )
+	{
+		GiveMaxClips( self );
+
+		if ( triggerEvent )
+		{
+			G_AddEvent( self, EV_CLIPS_REFILL, 0 );
+		}
+	}
+	else
+	{
+		GiveFullClip( self );
+
+		if ( triggerEvent )
+		{
+			G_AddEvent( self, EV_AMMO_REFILL, 0 );
+		}
+	}
+
+	return qtrue;
+}
+
+/**
+ * @brief Refills jetpack fuel.
+ * @param self
+ * @param triggerEvent Trigger an event when fuel was modified.
+ * @return Whether fuel was modified.
+ */
+qboolean G_RefillFuel( gentity_t *self, qboolean triggerEvent )
+{
+	if ( !self || !self->client )
+	{
+		return qfalse;
+	}
+
+	// needs a human with jetpack
+	if ( self->client->ps.persistant[ PERS_TEAM ] != TEAM_HUMANS ||
+	     !BG_InventoryContainsUpgrade( UP_JETPACK, self->client->ps.stats ) )
+	{
+		return qfalse;
+	}
+
+	if ( self->client->ps.stats[ STAT_FUEL ] != JETPACK_FUEL_MAX )
+	{
+		self->client->ps.stats[ STAT_FUEL ] = JETPACK_FUEL_MAX;
+
+		self->client->lastFuelRefillTime = level.time;
+
+		if ( triggerEvent )
+		{
+			G_AddEvent( self, EV_FUEL_REFILL, 0 );
+		}
+
+		return qtrue;
+	}
+	else
+	{
+		return qfalse;
+	}
+}
+
+/**
+ * @brief Attempts to refill ammo from a close source.
+ * @return Whether ammo was refilled.
+ */
+qboolean G_FindAmmo( gentity_t *self )
+{
+	gentity_t *neighbor = NULL;
+	qboolean  foundSource = qfalse;
+
+	// don't search for a source if refilling isn't possible
+	if ( !CanUseAmmoRefill( self ) )
+	{
+		return qfalse;
+	}
+
+	// search for ammo source
+	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, self->s.origin, ENTITY_BUY_RANGE ) ) )
+	{
+		// only friendly living buildables provide ammo
+		if ( neighbor->s.eType != ET_BUILDABLE ||
+		     !G_OnSameTeam( self, neighbor ) ||
+		     !neighbor->spawned ||
+		     neighbor->health <= 0 )
 		{
 			continue;
 		}
 
-		maxAmmo = BG_Weapon( i )->maxAmmo;
-		maxClips = BG_Weapon( i )->maxClips;
-
-		// Apply battery pack modifier
-		if ( energyWeapon &&
-		     BG_InventoryContainsUpgrade( UP_BATTPACK, ent->client->ps.stats ) )
+		switch ( neighbor->s.modelindex )
 		{
-			maxAmmo *= BATTPACK_MODIFIER;
-			restoredEnergy = qtrue;
+			case BA_H_ARMOURY:
+				foundSource = qtrue;
+				break;
+
+			case BA_H_REACTOR:
+			case BA_H_REPEATER:
+				if ( BG_Weapon( self->client->ps.stats[ STAT_WEAPON ] )->usesEnergy )
+				{
+					foundSource = qtrue;
+				}
+				break;
 		}
-
-		ent->client->ps.ammo = maxAmmo;
-		ent->client->ps.clips = maxClips;
-
-		restoredAmmo = qtrue;
 	}
 
-	if ( restoredAmmo )
+	if ( foundSource )
 	{
-		G_ForceWeaponChange( ent, ent->client->ps.weapon );
+		return G_RefillAmmo( self, qtrue );
 	}
 
-	if ( restoredEnergy )
-	{
-		G_AddEvent( ent, EV_RPTUSE_SOUND, 0 );
-	}
+	return qfalse;
 }
 
-void G_BounceProjectile( vec3_t start, vec3_t impact, vec3_t dir, vec3_t endout )
+/**
+ * @brief Attempts to refill jetpack fuel from a close source.
+ * @return qtrue if fuel was refilled.
+ */
+qboolean G_FindFuel( gentity_t *self )
 {
-	vec3_t v, newv;
-	float  dot;
+	gentity_t *neighbor = NULL;
+	qboolean  foundSource = qfalse;
 
-	VectorSubtract( impact, start, v );
-	dot = DotProduct( v, dir );
-	VectorMA( v, -2 * dot, dir, newv );
+	if ( !self || !self->client )
+	{
+		return qfalse;
+	}
 
-	VectorNormalize( newv );
-	VectorMA( impact, 8192, newv, endout );
+	// search for fuel source
+	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, self->s.origin, ENTITY_BUY_RANGE ) ) )
+	{
+		// only friendly living buildables provide fuel
+		if ( neighbor->s.eType != ET_BUILDABLE ||
+		     !G_OnSameTeam( self, neighbor ) ||
+		     !neighbor->spawned ||
+		     neighbor->health <= 0 )
+		{
+			continue;
+		}
+
+		switch ( neighbor->s.modelindex )
+		{
+			case BA_H_ARMOURY:
+				foundSource = qtrue;
+				break;
+		}
+	}
+
+	if ( foundSource )
+	{
+		return G_RefillFuel( self, qtrue );
+	}
+
+	return qfalse;
 }
 
 /*
@@ -974,7 +1171,7 @@ static void CancelBuild( gentity_t *self )
 
 static void FireBuild( gentity_t *self, dynMenu_t menu )
 {
-	buildable_t buildable = ( self->client->ps.stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK );
+	buildable_t buildable = (buildable_t) ( self->client->ps.stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK );
 
 	if ( buildable > BA_NONE )
 	{
@@ -1615,7 +1812,7 @@ void G_ImpactAttack( gentity_t *self, gentity_t *victim )
 	}
 
 	// allow the granger airlifting ritual
-	if ( victim->client && BG_UpgradeIsActive( UP_JETPACK, victim->client->ps.stats ) &&
+	if ( victim->client && victim->client->ps.stats[ STAT_STATE2 ] & SS2_JETPACK_ACTIVE &&
 	     ( self->client->pers.classSelection == PCL_ALIEN_BUILDER0 ||
 	       self->client->pers.classSelection == PCL_ALIEN_BUILDER0_UPG ) )
 	{

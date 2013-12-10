@@ -1075,7 +1075,7 @@ static void CG_CEntityPVSEnter( centity_t *cent )
 	cent->muzzlePS = NULL;
 	cent->muzzlePsTrigger = qfalse;
 	cent->jetPackPS = NULL;
-	cent->jetPackState = JPS_OFF;
+	cent->jetPackState = JPS_INACTIVE;
 	cent->buildablePS = NULL;
 	cent->buildableStatusPS = NULL;
 	cent->entityPS = NULL;
@@ -1083,8 +1083,9 @@ static void CG_CEntityPVSEnter( centity_t *cent )
 
 	//make sure that the buildable animations are in a consistent state
 	//when a buildable enters the PVS
-	cent->buildableAnim = cent->lerpFrame.animationNumber = BANIM_NONE;
-	cent->oldBuildableAnim = es->legsAnim;
+	cent->buildableAnim = BANIM_NONE;
+	cent->lerpFrame.animationNumber = BANIM_NONE;
+	cent->oldBuildableAnim = (buildableAnimNumber_t) es->legsAnim;
 	cent->radarVisibility = 0.0f;
 }
 
