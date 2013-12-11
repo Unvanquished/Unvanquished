@@ -1250,7 +1250,7 @@ function( GAMEMODULE )
     set_target_properties( ${GAMEMODULE_NAME}-qvm-native PROPERTIES
       PREFIX ""
       LIBRARY_OUTPUT_DIRECTORY ${GAMEMODULE_OUTPUT_DIR}
-	  COMPILE_DEFINITIONS "${QVM_NATIVE_COMPILE_DEF}"
+      COMPILE_DEFINITIONS "${QVM_NATIVE_COMPILE_DEF}"
     )
     foreach( OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES} )
       string( TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG_UP )
@@ -1385,7 +1385,7 @@ function( GAMEMODULE )
 
       if( QVM_FILEEXT STREQUAL ".c" )
         add_custom_command( OUTPUT ${ASM_FILE}
-			COMMAND lcc -target bytecode ${QVM_COMPILE_OPTIONS} ${QVM_FILE} -o ${ASM_FILE}
+          COMMAND lcc -target bytecode ${QVM_COMPILE_OPTIONS} ${QVM_FILE} -o ${ASM_FILE}
           DEPENDS lcc rcc cpp ${QVM_FILE}
           IMPLICIT_DEPENDS C ${QVM_FILE}
           WORKING_DIRECTORY ${QVM_DIR}
