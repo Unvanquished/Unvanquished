@@ -36,6 +36,7 @@ Maryland 20850 USA.
 #include "../qcommon/q_unicode.h"
 #include "../framework/CommandSystem.h"
 
+#include "../../common/Maths.h"
 #include "../../common/String.h"
 
 /*
@@ -44,7 +45,7 @@ key up events are sent even if in console mode
 
 */
 
-#define CLIP(t) std::max( 0, std::min( MAX_TEAMS - 1, (t) ) )
+#define CLIP(t) Maths::clamp( (t), 0, MAX_TEAMS - 1 )
 
 Console::Field g_consoleField(INT_MAX);
 qboolean chat_irc;
