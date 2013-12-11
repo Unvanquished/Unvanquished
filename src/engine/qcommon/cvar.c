@@ -138,7 +138,11 @@ Cvar_Set
 ============
 */
 void Cvar_Set(const char* name, const char* value) {
-    Cvar::SetValueCProxy(name, value);
+    if (value == nullptr) {
+        Cvar_Reset(name);
+    } else {
+        Cvar::SetValueCProxy(name, value);
+    }
 }
 
 /*
@@ -161,7 +165,9 @@ Cvar_Reset
 */
 void Cvar_Reset(const char* name) {
     cvar_t* var = Cvar::FindCCvar(name);
-    Cvar_Set(name, var->resetString);
+    if (var != nullptr) {
+        Cvar_Set(name, var->resetString);
+    }
 }
 
 /*
@@ -203,16 +209,19 @@ basically a slightly modified Cvar_Get for the interpreted modules
 =====================
 */
 
-static std::unordered_map<int, std::string> vmCvarsIndices;
+static std::vector<cvar_t*> vmCvarTable;
 
 void Cvar_Register(vmCvar_t *vmCvar, const char *varName, const char *defaultValue, int flags) {
 	// if the cvar was created by a script, it won't have the correct flags
 	cvar_t* cv = Cvar_Get(varName, defaultValue, flags);
 
-	vmCvarsIndices[cv->index] = cv->name;
-
 	if (!vmCvar) {
 		return;
+	}
+
+	if (cv->index == -1) {
+		cv->index = vmCvarTable.size();
+		vmCvarTable.push_back(cv);
 	}
 
 	vmCvar->handle = cv->index;
@@ -228,11 +237,11 @@ updates an interpreted modules' version of a cvar
 =====================
 */
 void Cvar_Update(vmCvar_t *vmCvar) {
-    if (not vmCvarsIndices.count(vmCvar->handle)) {
+    if ((unsigned) vmCvar->handle >= vmCvarTable.size()) {
 		Com_Error( ERR_DROP, "Cvar_Update: handle %d out of range", (unsigned) vmCvar->handle );
     }
 
-	cvar_t* cv = Cvar::FindCCvar(vmCvarsIndices[vmCvar->handle]);
+	cvar_t* cv = vmCvarTable[vmCvar->handle];
 
 	if (cv->modificationCount == vmCvar->modificationCount) {
 		return;

@@ -197,4 +197,9 @@ namespace Log {
     }
 }
 
+namespace Cvar {
+    template<>
+    std::string GetCvarTypeName<Log::Level>();
+}
+
 #endif //COMMON_LOG_H_

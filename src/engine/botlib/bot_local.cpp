@@ -50,7 +50,7 @@ make sure the vectors use the same coordinate system
 void BotCalcSteerDir( Bot_t *bot, rVec &dir )
 {
 	const int ip0 = 0;
-	const int ip1 = MIN( 1, bot->numCorners - 1 );
+	const int ip1 = std::min( 1, bot->numCorners - 1 );
 	const float* p0 = &bot->cornerVerts[ ip0 * 3 ];
 	const float* p1 = &bot->cornerVerts[ ip1 * 3 ];
 	rVec dir0, dir1;
@@ -100,7 +100,7 @@ bool PointInPolyExtents( Bot_t *bot, dtPolyRef ref, rVec point, rVec extents )
 	}
 
 	// use the bot's bbox as an epsilon because the navmesh is always at least that far from a boundry
-	float maxRad = MAX( extents[ 0 ], extents[ 1 ] ) + 1;
+	float maxRad = std::max( extents[ 0 ], extents[ 1 ] ) + 1;
 
 	if ( fabsf( point[ 0 ] - closest[ 0 ] ) > maxRad )
 	{

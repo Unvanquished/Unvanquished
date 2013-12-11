@@ -93,3 +93,10 @@ namespace Log {
         Log::Dispatch({/*Com_Milliseconds()*/0, "^5Debug: " + message}, debugTargets);
     }
 }
+
+namespace Cvar {
+    template<>
+    std::string GetCvarTypeName<Log::Level>() {
+        return "log level";
+    }
+}

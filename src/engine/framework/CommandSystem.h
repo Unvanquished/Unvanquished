@@ -75,6 +75,8 @@ namespace Cmd {
     //TODO make it thread safe
     // Registers a command
     void AddCommand(std::string name, const CmdBase& cmd, std::string description);
+    // Changes the description of a command
+    void ChangeDescription(std::string name, std::string description);
     // Removes a command
     void RemoveCommand(const std::string& name);
     // Removes all the commands with the given flag

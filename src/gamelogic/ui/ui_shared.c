@@ -2728,7 +2728,7 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 		if ( count == cursorPos )
 		{
 			cursorX = x - gapAdjust * DC->aspectScale * useScale / 2;
-			cursorW = MAX( EDIT_CURSOR_WIDTH / 2, glyph->xSkip + gapAdjust ) * DC->xscale * DC->aspectScale * useScale;
+			cursorW = MAX( EDIT_CURSOR_WIDTH / 2.0f, glyph->xSkip + gapAdjust ) * DC->xscale * DC->aspectScale * useScale;
 		}
 
 		x += ( glyph->xSkip * DC->aspectScale * useScale ) + gapAdjust;
@@ -3648,13 +3648,16 @@ qboolean Item_ComboBox_HandleKey( itemDef_t *item, int key, qboolean down, qbool
 
 qboolean Item_YesNo_HandleKey( itemDef_t *item, int key )
 {
+	char buff[1024];
+
 	if ( item->cvar &&
 	     ( ( item->window.flags & WINDOW_HASFOCUS ) ||
 	       Rect_ContainsPoint( &item->window.rect, DC->cursorx, DC->cursory ) ) )
 	{
 		if ( key == K_MOUSE1 || key == K_ENTER || key == K_MOUSE2 || key == K_MOUSE3 )
 		{
-			DC->setCVar( item->cvar, va( "%i", !DC->getCVarValue( item->cvar ) ) );
+			DC->getCVarLatchedString( item->cvar, buff, sizeof( buff ) );
+			DC->setCVar( item->cvar, va( "%i", !atoi( buff ) ) );
 			return qtrue;
 		}
 	}
@@ -3683,7 +3686,7 @@ int Item_Multi_FindCvarByValue( itemDef_t *item )
 	{
 		if ( multiPtr->strDef )
 		{
-			DC->getCVarString( item->cvar, buff, sizeof( buff ) );
+			DC->getCVarLatchedString( item->cvar, buff, sizeof( buff ) );
 		}
 		else
 		{
@@ -3723,7 +3726,7 @@ const char *Item_Multi_Setting( itemDef_t *item )
 	{
 		if ( multiPtr->strDef )
 		{
-			DC->getCVarString( item->cvar, buff, sizeof( buff ) );
+			DC->getCVarLatchedString( item->cvar, buff, sizeof( buff ) );
 		}
 		else
 		{
@@ -5366,7 +5369,7 @@ const char *Item_Text_Wrap( const char *text, float scale, float width )
 		// blocks of text
 
 		// Copy text into the buffer, but don't overflow it
-		strncpy( out + paint, p, MIN( eol - p, sizeof( out ) - paint ) );
+		strncpy( out + paint, p, MIN( (size_t)(eol - p), sizeof( out ) - paint ) );
 		paint += ( eol - p );
 
 		if ( paint >= sizeof( out ) )
@@ -5400,7 +5403,7 @@ const char *Item_Text_Wrap( const char *text, float scale, float width )
 				int  indentMarkerTextLength = strlen( indentMarkerText );
 
 				// copy the marker into the buffer, but don't overflow it
-				strncpy( out + paint, indentMarkerText, MIN( indentMarkerTextLength, sizeof( out ) - paint ) );
+				strncpy( out + paint, indentMarkerText, MIN( (size_t)indentMarkerTextLength, sizeof( out ) - paint ) );
 				paint += indentMarkerTextLength;
 
 				if ( paint >= sizeof ( out ) )
@@ -5911,8 +5914,10 @@ void Item_YesNo_Paint( itemDef_t *item )
 	float     value;
 	int       offset;
 	menuDef_t *parent = ( menuDef_t * ) item->parent;
+	char buff[1024];
 
-	value = ( item->cvar ) ? DC->getCVarValue( item->cvar ) : 0;
+	DC->getCVarLatchedString( item->cvar, buff, sizeof( buff ) );
+	value = ( item->cvar ) ? atoi( buff ) : 0;
 
 	if ( item->window.flags & WINDOW_HASFOCUS )
 	{

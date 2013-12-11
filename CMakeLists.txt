@@ -961,6 +961,12 @@ if( DEPS_DIR )
   set( CMAKE_INCLUDE_PATH ${DEPS_DIR} ${DEPS_DIR}/include ${CMAKE_INCLUDE_PATH} )
   set( CMAKE_FRAMEWORK_PATH ${DEPS_DIR} ${CMAKE_FRAMEWORK_PATH} )
   set( CMAKE_LIBRARY_PATH ${DEPS_DIR}/lib ${CMAKE_LIBRARY_PATH} )
+
+  # Force OpenAL Soft on Mac, otherwise the system framework will be selected
+  if( APPLE )
+    set( OPENAL_INCLUDE_DIR ${DEPS_DIR}/include/AL )
+    set( OPENAL_LIBRARY ${DEPS_DIR}/lib/libopenal.dylib )
+  endif()
 endif()
 
 # These variables are defined
@@ -1244,7 +1250,7 @@ function( GAMEMODULE )
     set_target_properties( ${GAMEMODULE_NAME}-qvm-native PROPERTIES
       PREFIX ""
       LIBRARY_OUTPUT_DIRECTORY ${GAMEMODULE_OUTPUT_DIR}
-	  COMPILE_DEFINITIONS "${QVM_NATIVE_COMPILE_DEF}"
+      COMPILE_DEFINITIONS "${QVM_NATIVE_COMPILE_DEF}"
     )
     foreach( OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES} )
       string( TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG_UP )
@@ -1379,7 +1385,7 @@ function( GAMEMODULE )
 
       if( QVM_FILEEXT STREQUAL ".c" )
         add_custom_command( OUTPUT ${ASM_FILE}
-			COMMAND lcc -target bytecode ${QVM_COMPILE_OPTIONS} ${QVM_FILE} -o ${ASM_FILE}
+          COMMAND lcc -target bytecode ${QVM_COMPILE_OPTIONS} ${QVM_FILE} -o ${ASM_FILE}
           DEPENDS lcc rcc cpp ${QVM_FILE}
           IMPLICIT_DEPENDS C ${QVM_FILE}
           WORKING_DIRECTORY ${QVM_DIR}
