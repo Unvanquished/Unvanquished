@@ -239,13 +239,13 @@ namespace Str {
             return c;
     }
 
-    std::string Lower(Str::StringRef text);
+    std::string ToLower(Str::StringRef text);
 
     bool IsPrefix(Str::StringRef prefix, Str::StringRef text);
     bool IsSuffix(Str::StringRef suffix, Str::StringRef text);
     int LongestPrefixSize(Str::StringRef text1, Str::StringRef text2);
 
-    // Case Insensitive versions
+    // Case insensitive versions
     bool IsIPrefix(Str::StringRef prefix, Str::StringRef text);
     int LongestIPrefixSize(Str::StringRef text1, Str::StringRef text2);
 
@@ -253,10 +253,7 @@ namespace Str {
     struct IHash {
         size_t operator()(Str::StringRef str) const
         {
-            std::string temp;
-            temp.reserve(str.size());
-            std::transform(str.begin(), str.end(), std::back_inserter(temp), tolower);
-            return std::hash<std::string>()(temp);
+            return std::hash<std::string>()(ToLower(str));
         }
     };
     struct IEqual {
