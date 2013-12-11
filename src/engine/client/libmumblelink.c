@@ -37,11 +37,11 @@
 #include <string.h>
 #include <stdio.h>
 
+#include <algorithm>
+
 #include "libmumblelink.h"
 
-#ifndef MIN
-#define MIN(a, b) (( a ) < ( b ) ? ( a ) : ( b ))
-#endif
+#define ARRAY_LEN(x) ( sizeof( x ) / sizeof( *( x ) ) )
 
 typedef struct
 {
@@ -131,7 +131,7 @@ int mumble_link( const char *name )
 	close( shmfd );
 #endif
 	memset( lm, 0, sizeof( LinkedMem ) );
-	mbstowcs( lm->name, name, sizeof( lm->name ) / sizeof( wchar_t ) );
+	mbstowcs( lm->name, name, ARRAY_LEN( lm->name ) );
 
 	return 0;
 }
@@ -168,7 +168,7 @@ void mumble_set_identity( const char *identity )
 		return;
 	}
 
-	len = MIN( sizeof( lm->identity ), strlen( identity ) + 1 );
+	len = std::min( ARRAY_LEN( lm->identity ), strlen( identity ) + 1 );
 	mbstowcs( lm->identity, identity, len );
 }
 
@@ -179,7 +179,7 @@ void mumble_set_context( const unsigned char *context, size_t len )
 		return;
 	}
 
-	len = MIN( sizeof( lm->context ), len );
+	len = std::min( sizeof( lm->context ), len );
 	lm->context_len = len;
 	memcpy( lm->context, context, len );
 }
@@ -193,7 +193,7 @@ void mumble_set_description( const char *description )
 		return;
 	}
 
-	len = MIN( sizeof( lm->description ), strlen( description ) + 1 );
+	len = std::min( ARRAY_LEN( lm->description ), strlen( description ) + 1 );
 	mbstowcs( lm->description, description, len );
 }
 
