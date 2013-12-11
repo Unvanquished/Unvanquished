@@ -460,8 +460,11 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 #define DEG2RAD( a )                  ( ( ( a ) * M_PI ) / 180.0F )
 #define RAD2DEG( a )                  ( ( ( a ) * 180.0f ) / M_PI )
 
-#define Q_bound( a, b, c )            ( MAX( ( a ), MIN( ( b ), ( c ) ) ) )
-#define Q_clamp( a, b, c )            ( ( b ) >= ( c ) ? ( a ) = ( b ) : ( a ) < ( b ) ? ( a ) = ( b ) : ( a ) > ( c ) ? ( a ) = ( c ) : ( a ) )
+#ifdef Q3_VM
+#define Q_clamp( a, b, c )            ( ( b ) >= ( c ) ? ( b ) : ( a ) < ( b ) ? ( b ) : ( a ) > ( c ) ? ( c ) : ( a ) )
+#else
+#define Q_clamp( a, b, c )            Maths::clamp( (a), (b), (c) )
+#endif
 #define Q_lerp( from, to, frac )      ( ( from ) + ( frac ) * ( ( to ) - ( from ) ) )
 
 struct cplane_s;
@@ -982,6 +985,7 @@ void         ByteToDir( int b, vec3_t dir );
 
 //=============================================
 
+#ifdef Q3_VM
 #ifndef MAX
 #define MAX(x,y) (( x ) > ( y ) ? ( x ) : ( y ))
 #endif
@@ -989,10 +993,22 @@ void         ByteToDir( int b, vec3_t dir );
 #ifndef MIN
 #define MIN(x,y) (( x ) < ( y ) ? ( x ) : ( y ))
 #endif
+#else
+#include <algorithm>
+#ifndef MAX
+#define MAX(x,y) std::max((x), (y))
+#endif
+
+#ifndef MIN
+#define MIN(x,y) std::min((x), (y))
+#endif
+#endif
 
 //=============================================
 
+//#ifdef Q3_VM
 	float      Com_Clamp( float min, float max, float value );
+//#endif
 
 	char       *COM_SkipPath( char *pathname );
 	char       *Com_SkipTokens( char *s, int numTokens, char *sep );

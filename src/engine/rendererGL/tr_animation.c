@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // tr_animation.c
 #include "tr_local.h"
+#include "../../common/Maths.h"
 
 /*
 ===========================================================================
@@ -1406,8 +1407,8 @@ int RE_BuildSkeleton( refSkeleton_t *skel, qhandle_t hAnim, int startFrame, int 
 		   }
 		 */
 
-		Q_clamp( startFrame, 0, anim->numFrames - 1 );
-		Q_clamp( endFrame, 0, anim->numFrames - 1 );
+		startFrame = Maths::clamp( startFrame, 0, anim->numFrames - 1 );
+		endFrame = Maths::clamp( endFrame, 0, anim->numFrames - 1 );
 
 		// compute frame pointers
 		oldFrame = &anim->frames[ startFrame ];
@@ -1530,8 +1531,8 @@ int RE_BuildSkeleton( refSkeleton_t *skel, qhandle_t hAnim, int startFrame, int 
 
 		anim = skelAnim->psa;
 
-		Q_clamp( startFrame, 0, anim->info.numRawFrames - 1 );
-		Q_clamp( endFrame, 0, anim->info.numRawFrames - 1 );
+		startFrame = Maths::clamp( startFrame, 0, anim->info.numRawFrames - 1 );
+		endFrame = Maths::clamp( endFrame, 0, anim->info.numRawFrames - 1 );
 
 		ClearBounds( skel->bounds[ 0 ], skel->bounds[ 1 ] );
 

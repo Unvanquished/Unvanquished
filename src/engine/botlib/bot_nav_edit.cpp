@@ -287,7 +287,7 @@ void Cmd_AddConnection( void )
 
 			if ( argc == 4 )
 			{
-				cmd.pc.radius = MAX( atoi( Cmd_Argv( 3 ) ), 10 );
+				cmd.pc.radius = std::max( atoi( Cmd_Argv( 3 ) ), 10 );
 			}
 			else
 			{
@@ -347,13 +347,13 @@ static void adjustConnectionSize( int dir )
 	if ( argc > 1 )
 	{
 		adjust = atoi( Cmd_Argv( 1 ) );
-		adjust = MIN( adjust, 20 );
-		adjust = MAX( adjust, 1 );
+		adjust = std::min( adjust, 20 );
+		adjust = std::max( adjust, 1 );
 	}
 
 	newConnectionSize = connectionSize + dir * adjust;
-	newConnectionSize = MIN( newConnectionSize, 100 );
-	newConnectionSize = MAX( newConnectionSize, 20 );
+	newConnectionSize = std::min( newConnectionSize, 100 );
+	newConnectionSize = std::max( newConnectionSize, 20 );
 
 	if ( newConnectionSize != connectionSize )
 	{

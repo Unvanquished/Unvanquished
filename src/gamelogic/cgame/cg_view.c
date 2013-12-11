@@ -26,6 +26,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "cg_local.h"
 
+#ifndef Q3_VM
+#include "../../common/Maths.h"
+#endif
+
 /*
 =============================================================================
 
@@ -1369,7 +1373,7 @@ static void CG_CalcColorGradingForPoint( vec3_t loc )
 
 		dist = trap_CM_DistanceToModel( loc, cgs.gameGradingModels[i] );
 		weight = 1.0f - dist / cgs.gameGradingDistances[i];
-		weight = Q_clamp( weight, 0.0f, 1.0f );
+		weight = Q_clamp( weight, 0.0f, 1.0f ); // Maths::clampFraction( weight )
 
 		// search 3 greatest weights
 		if( weight <= selectedWeight[2] )

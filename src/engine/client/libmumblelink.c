@@ -37,11 +37,9 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "libmumblelink.h"
+#include <algorithm>
 
-#ifndef MIN
-#define MIN(a, b) (( a ) < ( b ) ? ( a ) : ( b ))
-#endif
+#include "libmumblelink.h"
 
 typedef struct
 {
@@ -168,7 +166,7 @@ void mumble_set_identity( const char *identity )
 		return;
 	}
 
-	len = MIN( sizeof( lm->identity ), strlen( identity ) + 1 );
+	len = std::min( sizeof( lm->identity ), strlen( identity ) + 1 );
 	mbstowcs( lm->identity, identity, len );
 }
 
@@ -179,7 +177,7 @@ void mumble_set_context( const unsigned char *context, size_t len )
 		return;
 	}
 
-	len = MIN( sizeof( lm->context ), len );
+	len = std::min( sizeof( lm->context ), len );
 	lm->context_len = len;
 	memcpy( lm->context, context, len );
 }
@@ -193,7 +191,7 @@ void mumble_set_description( const char *description )
 		return;
 	}
 
-	len = MIN( sizeof( lm->description ), strlen( description ) + 1 );
+	len = std::min( sizeof( lm->description ), strlen( description ) + 1 );
 	mbstowcs( lm->description, description, len );
 }
 
