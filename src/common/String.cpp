@@ -59,6 +59,12 @@ namespace Str {
         return res.first == prefix.end();
     }
 
+    bool IsSuffix(Str::StringRef suffix, Str::StringRef text) {
+        if (text.size() < suffix.size())
+            return false;
+        return std::equal(text.begin() + text.size() - suffix.size(), text.end(), suffix.begin());
+    }
+
     int LongestPrefixSize(Str::StringRef text1, Str::StringRef text2) {
         auto res = std::mismatch(text1.begin(), text1.end(), text2.begin());
 
