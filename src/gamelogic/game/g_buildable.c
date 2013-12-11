@@ -584,13 +584,9 @@ qboolean G_FindCreep( gentity_t *self )
 	return qtrue;
 }
 
-/*
-================
-G_IsCreepHere
-
-simple wrapper to G_FindCreep to check if a location has creep
-================
-*/
+/**
+ * @brief Simple wrapper to G_FindCreep to check if a location has creep.
+ */
 static qboolean IsCreepHere( vec3_t origin )
 {
 	gentity_t dummy;
@@ -604,13 +600,9 @@ static qboolean IsCreepHere( vec3_t origin )
 	return G_FindCreep( &dummy );
 }
 
-/*
-================
-G_CreepSlow
-
-Set any nearby humans' SS_CREEPSLOWED flag
-================
-*/
+/**
+ * @brief Set any nearby humans' SS_CREEPSLOWED flag.
+ */
 static void AGeneric_CreepSlow( gentity_t *self )
 {
 	int         entityList[ MAX_GENTITIES ];
@@ -647,19 +639,36 @@ static void AGeneric_CreepSlow( gentity_t *self )
 	}
 }
 
-/*
-================
-G_RGSAdjustRate
+/**
+ * @brief Calculates modifier for the efficiency of one RGS when another one interfers at given distance.
+ */
+static float RGSInterferenceMod( float distance )
+{
+	float dr, q;
 
-Adjust the rate of a RGS
-================
-*/
+	if ( RGS_RANGE <= 0.0f )
+	{
+		return 1.0f;
+	}
+
+	// q is the ratio of the part of a sphere with radius RGS_RANGE that intersects
+	// with another sphere of equal size and given distance
+	dr = distance / RGS_RANGE;
+	q = ((dr * dr * dr) - 12.0f * dr + 16.0f) / 16.0f;
+
+	// Two RGS together should mine at a rate proportional to the volume of the
+	// union of their areas of effect. If more RGS intersect, this is just an
+	// approximation that tends to punish cluttering of RGS.
+	return ( (1.0f - q) + 0.5f * q );
+}
+
+/**
+ * @brief Adjust the rate of a RGS.
+ */
 void G_RGSCalculateRate( gentity_t *self )
 {
-	int             neighbor, numNeighbors, neighbors[ MAX_GENTITIES ];
-	vec3_t          range, mins, maxs;
 	gentity_t       *rgs;
-	float           rate, d, dr, q;
+	float           rate;
 
 	if ( self->s.modelindex != BA_A_LEECH && self->s.modelindex != BA_H_DRILL )
 	{
@@ -668,51 +677,34 @@ void G_RGSCalculateRate( gentity_t *self )
 
 	if ( !self->spawned || !self->powered )
 	{
+		self->mineRate       = 0.0f;
+		self->mineEfficiency = 0.0f;
+
 		// HACK: Save rate and efficiency entityState.weapon and entityState.weaponAnim
-		self->s.weapon = 0;
+		self->s.weapon     = 0;
 		self->s.weaponAnim = 0;
 	}
 	else
 	{
 		rate = level.mineRate;
 
-		range[ 0 ] = range[ 1 ] = range[ 2 ] = RGS_RANGE * 2.0f; // own range plus neighbor range
-		VectorAdd( self->s.origin, range, maxs );
-		VectorSubtract( self->s.origin, range, mins );
-		numNeighbors = trap_EntitiesInBox( mins, maxs, neighbors, MAX_GENTITIES );
-
-		for ( neighbor = 0; neighbor < numNeighbors; neighbor++ )
+		for ( rgs = NULL; ( rgs = G_IterateEntitiesWithinRadius( rgs, self->s.origin, RGS_RANGE * 2.0f ) ); )
 		{
-			rgs = &g_entities[ neighbors[ neighbor ] ];
-
 			if ( rgs->s.eType == ET_BUILDABLE && ( rgs->s.modelindex == BA_H_DRILL || rgs->s.modelindex == BA_A_LEECH )
 				 && rgs != self && rgs->spawned && rgs->powered && rgs->health > 0 )
 			{
-				d = Distance( self->s.origin, rgs->s.origin );
-
-				// Discard RGS not in range and prevent divisin by zero on RGS_RANGE = 0
-				if ( range[ 0 ] - d < 0 )
-				{
-					continue;
-				}
-
-				// q is the ratio of the part of a sphere with radius r that intersects with
-				// another sphere of equal size and distance d
-				dr = d / RGS_RANGE;
-				q = ((dr * dr * dr) - 12.0f * dr + 16.0f) / 16.0f;
-
-				// Two rgs together should mine at a rate proportional to the volume of the
-				// union of their areas of effect. If more RGS intersect, this is just an
-				// approximation that tends to punish cluttering of RGS.
-				rate = rate * (1.0f - q) + 0.5f * rate * q;
+				rate *= RGSInterferenceMod( Distance( self->s.origin, rgs->s.origin ) );
 			}
 		}
 
-		// HACK: Save rate and efficiency entityState.weapon and entityState.weaponAnim
-		self->s.weapon = ( int )( rate * 1000.0f );
-		self->s.weaponAnim = ( int )( (rate / level.mineRate) * 100.0f );
+		self->mineRate       = rate;
+		self->mineEfficiency = rate / level.mineRate;
 
-		// The rate must be positive to indicate that the RGS is active
+		// HACK: Save rate and efficiency in entityState.weapon and entityState.weaponAnim
+		self->s.weapon     = ( int )( self->mineRate * 1000.0f );
+		self->s.weaponAnim = ( int )( self->mineEfficiency * 100.0f );
+
+		// The transmitted rate must be positive to indicate that the RGS is active
 		if ( self->s.weapon < 1 )
 		{
 			self->s.weapon = 1;
@@ -720,77 +712,81 @@ void G_RGSCalculateRate( gentity_t *self )
 	}
 }
 
-/*
-================
-G_RGSInformNeighbors
-
-Adjust the rate of all RGS in range
-================
-*/
+/**
+ * @brief Adjust the rate of all RGS in range.
+ */
 void G_RGSInformNeighbors( gentity_t *self )
 {
-	int             neighbor, numNeighbors, neighbors[ MAX_GENTITIES ];
-	vec3_t          range, mins, maxs;
 	gentity_t       *rgs;
-	float           d;
 
-	if ( self->s.modelindex != BA_A_LEECH && self->s.modelindex != BA_H_DRILL )
+	for ( rgs = NULL; ( rgs = G_IterateEntitiesWithinRadius( rgs, self->s.origin, RGS_RANGE * 2.0f ) ); )
 	{
-		return;
-	}
-
-	range[ 0 ] = range[ 1 ] = range[ 2 ] = RGS_RANGE * 2.0f; // own range plus neighbor range
-	VectorAdd( self->s.origin, range, maxs );
-	VectorSubtract( self->s.origin, range, mins );
-	numNeighbors = trap_EntitiesInBox( mins, maxs, neighbors, MAX_GENTITIES );
-
-	for ( neighbor = 0; neighbor < numNeighbors; neighbor++ )
-	{
-		rgs = &g_entities[ neighbors[ neighbor ] ];
-
 		if ( rgs->s.eType == ET_BUILDABLE && ( rgs->s.modelindex == BA_H_DRILL || rgs->s.modelindex == BA_A_LEECH )
 			 && rgs != self && rgs->spawned && rgs->powered && rgs->health > 0 )
 		{
-			d = Distance( self->s.origin, rgs->s.origin );
-
-			// Discard RGS not in range
-			if ( range[ 0 ] - d < 0 )
-			{
-				continue;
-			}
-
 			G_RGSCalculateRate( rgs );
 		}
 	}
 }
 
-/*
-================
-G_RGSPredictEfficiency
+/**
+ * @brief Predict the efficiecy loss of a RGS if another one is constructed at given origin.
+ * @return Efficiency loss as negative value
+ */
+static float RGSPredictInterferenceLoss( gentity_t *self, vec3_t origin )
+{
+	float currentRate, predictedRate, rateLoss;
 
-Predict the efficiency of a RGS constructed at the given point
-================
-*/
-int G_RGSPredictEfficiency( vec3_t origin )
+	currentRate   = self->mineRate;
+	predictedRate = currentRate * RGSInterferenceMod( Distance( self->s.origin, origin ) );
+	rateLoss      = predictedRate - currentRate;
+
+	return ( rateLoss / level.mineRate );
+}
+
+/**
+ * @brief Predict the efficiency of a RGS constructed at the given point.
+ * @return Predicted efficiency in percent points
+ */
+float G_RGSPredictEfficiency( vec3_t origin )
 {
 	gentity_t dummy;
 
 	memset( &dummy, 0, sizeof( gentity_t ) );
 	VectorCopy( origin, dummy.s.origin );
+	dummy.s.eType = ET_BUILDABLE;
 	dummy.s.modelindex = BA_A_LEECH;
 	dummy.spawned = qtrue;
 	dummy.powered = qtrue;
 
 	G_RGSCalculateRate( &dummy );
 
-	return dummy.s.weaponAnim;
+	return dummy.mineEfficiency;
 }
 
-//==================================================================================
-//
-// LOCAL HELPERS
-//
-//==================================================================================
+/**
+ * @brief Predict the total efficiency gain for a team when a RGS is constructed at the given point.
+ * @return Predicted efficiency delta in percent points
+ * @todo Consider RGS set for deconstruction
+ */
+float G_RGSPredictEfficiencyDelta( vec3_t origin, team_t team )
+{
+	gentity_t *rgs;
+	float     delta;
+
+	delta = G_RGSPredictEfficiency( origin );
+
+	for ( rgs = NULL; ( rgs = G_IterateEntitiesWithinRadius( rgs, origin, RGS_RANGE * 2.0f ) ); )
+	{
+		if ( rgs->s.eType == ET_BUILDABLE && ( rgs->s.modelindex == BA_H_DRILL || rgs->s.modelindex == BA_A_LEECH )
+		     && rgs->spawned && rgs->powered && rgs->health > 0 && rgs->buildableTeam == team )
+		{
+			delta += RGSPredictInterferenceLoss( rgs, origin );
+		}
+	}
+
+	return delta;
+}
 
 /*
 ================
@@ -2273,7 +2269,7 @@ void G_SetHumanBuildablePowerState()
 
 	// first pass: predict spare power for all buildables,
 	//             power up buildables that have enough power
-	while ( ent = G_IterateEntities( ent, NULL, qfalse, 0, NULL ) )
+	while ( ( ent = G_IterateEntities( ent, NULL, qfalse, 0, NULL ) ) )
 	{
 		// discard irrelevant entities
 		if ( ent->s.eType != ET_BUILDABLE || ent->buildableTeam != TEAM_HUMANS )
@@ -2296,7 +2292,7 @@ void G_SetHumanBuildablePowerState()
 		lowestSparePower = MAX_QINT;
 
 		// find buildable with highest power deficit
-		while ( ent = G_IterateEntities( ent, NULL, qfalse, 0, NULL ) )
+		while ( ( ent = G_IterateEntities( ent, NULL, qfalse, 0, NULL ) ) )
 		{
 			// discard irrelevant entities
 			if ( ent->s.eType != ET_BUILDABLE || ent->buildableTeam != TEAM_HUMANS )
@@ -3887,11 +3883,6 @@ int G_FreeMarkedBuildables( gentity_t *deconner, char *readable, int rsize,
 	return numRemoved;
 }
 
-/*
-===============
-IsSetForDeconstruction
-===============
-*/
 static qboolean IsSetForDeconstruction( gentity_t *ent )
 {
 	int markedNum;

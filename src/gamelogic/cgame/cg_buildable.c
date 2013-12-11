@@ -1137,12 +1137,30 @@ void CG_GhostBuildable( int buildableInfo )
 	                     : cgs.media.redBuildShader;
 
 	// Draw predicted RGS efficiency
+	// TODO: Add fancy display for predicted RGS efficiency
 	if ( buildable == BA_H_DRILL || buildable == BA_A_LEECH )
 	{
-		// TODO: Add fancy display for predicted RGS efficiency
-		// Colours: < 33⅓% dark red, <50% red, <66⅔% orange, <83⅓% yellow, else green
-	        static const char colours[] = "??18322";
-		CG_CenterPrint(va("^%c%d%%", colours[ (int)( (float) ps->stats[ STAT_PREDICTION ] / ( 100.0f / 6.0f ) ) ], ps->stats[ STAT_PREDICTION ]), 200, GIANTCHAR_WIDTH * 4 );
+		char color;
+		int  delta = ps->stats[ STAT_PREDICTION ];
+
+		if ( delta < 0 )
+		{
+			color = COLOR_RED;
+		}
+		else if ( delta < 10 )
+		{
+			color = COLOR_ORANGE;
+		}
+		else if ( delta < 50 )
+		{
+			color = COLOR_YELLOW;
+		}
+		else
+		{
+			color = COLOR_GREEN;
+		}
+
+		CG_CenterPrint(va("^%c%+d%%", color, delta), 200, GIANTCHAR_WIDTH * 4 );
 	}
 
 	//rescale the model

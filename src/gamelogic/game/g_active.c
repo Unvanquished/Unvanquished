@@ -938,7 +938,8 @@ void ClientTimerActions( gentity_t *ent, int msec )
 
 					if ( buildable == BA_H_DRILL || buildable == BA_A_LEECH )
 					{
-						client->ps.stats[ STAT_PREDICTION ] = G_RGSPredictEfficiency( dummy );
+						client->ps.stats[ STAT_PREDICTION ] =
+							( int )( G_RGSPredictEfficiencyDelta( dummy, ( team_t )ps->persistant[ PERS_TEAM ] ) * 100.0f );
 					}
 
 					// Let the client know which buildables will be removed by building

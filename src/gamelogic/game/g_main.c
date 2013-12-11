@@ -1470,15 +1470,11 @@ void G_CountSpawns( void )
 	}
 }
 
-/*
-============
-G_CalculateMineRate
-
-Recalculate the mine rate and the teams mine efficiencies
-============
-*/
 #define CALCULATE_MINE_RATE_PERIOD 1000
 
+/**
+ * @brief Recalculate the mine rate and the teams mine efficiencies.
+ */
 void G_CalculateMineRate( void )
 {
 	int              i, playerNum;
@@ -1493,8 +1489,8 @@ void G_CalculateMineRate( void )
 		return;
 	}
 
-	level.team[ TEAM_HUMANS ].mineEfficiency = 0;
-	level.team[ TEAM_ALIENS ].mineEfficiency = 0;
+	level.team[ TEAM_HUMANS ].mineEfficiency = 0.0f;
+	level.team[ TEAM_ALIENS ].mineEfficiency = 0.0f;
 
 	// sum up mine rates of RGS
 	for ( i = MAX_CLIENTS, ent = g_entities + i; i < level.num_entities; i++, ent++ )
@@ -1507,23 +1503,24 @@ void G_CalculateMineRate( void )
 		switch ( ent->s.modelindex )
 		{
 			case BA_H_DRILL:
-				level.team[ TEAM_HUMANS ].mineEfficiency += ent->s.weaponAnim;
+				level.team[ TEAM_HUMANS ].mineEfficiency += ent->mineEfficiency;
 				break;
 
 			case BA_A_LEECH:
-				level.team[ TEAM_ALIENS ].mineEfficiency += ent->s.weaponAnim;
+				level.team[ TEAM_ALIENS ].mineEfficiency += ent->mineEfficiency;
 				break;
 		}
 	}
 
 	// minimum mine rate
-	if ( G_Reactor()  && level.team[ TEAM_HUMANS ].mineEfficiency < g_minimumMineRate.integer )
+	// g_minimumMineRate is really a minimum mine efficiency in percent points
+	if ( G_Reactor()  && level.team[ TEAM_HUMANS ].mineEfficiency < ( g_minimumMineRate.value / 100.0f ) )
 	{
-		level.team[ TEAM_HUMANS ].mineEfficiency = g_minimumMineRate.integer;
+		level.team[ TEAM_HUMANS ].mineEfficiency = ( g_minimumMineRate.value / 100.0f );
 	}
-	if ( G_Overmind() && level.team[ TEAM_ALIENS ].mineEfficiency < g_minimumMineRate.integer )
+	if ( G_Overmind() && level.team[ TEAM_ALIENS ].mineEfficiency < ( g_minimumMineRate.value / 100.0f ) )
 	{
-		level.team[ TEAM_ALIENS ].mineEfficiency = g_minimumMineRate.integer;
+		level.team[ TEAM_ALIENS ].mineEfficiency = ( g_minimumMineRate.value / 100.0f );
 	}
 
 	// calculate level wide mine rate. ln(2) ~= 0.6931472
@@ -1531,7 +1528,7 @@ void G_CalculateMineRate( void )
 	                 exp( ( -0.6931472f * level.matchTime ) / ( 60000.0f * g_mineRateHalfLife.value ) );
 
 	// add build points
-	tmp = ( level.mineRate / 60.0f ) * ( CALCULATE_MINE_RATE_PERIOD / 1000.0f ) / 100.0f;
+	tmp = ( level.mineRate / 60.0f ) * ( CALCULATE_MINE_RATE_PERIOD / 1000.0f );
 	G_ModifyBuildPoints( TEAM_HUMANS, tmp * level.team[ TEAM_HUMANS ].mineEfficiency );
 	G_ModifyBuildPoints( TEAM_ALIENS, tmp * level.team[ TEAM_ALIENS ].mineEfficiency );
 
@@ -1554,7 +1551,7 @@ void G_CalculateMineRate( void )
 
 		if ( team > TEAM_NONE && team < NUM_TEAMS )
 		{
-			client->ps.persistant[ PERS_RGS_EFFICIENCY ] = ( short )level.team[ team ].mineEfficiency;
+			client->ps.persistant[ PERS_RGS_EFFICIENCY ] = ( short )( level.team[ team ].mineEfficiency * 100.0f );
 		}
 		else
 		{

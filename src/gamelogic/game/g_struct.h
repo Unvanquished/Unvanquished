@@ -187,6 +187,12 @@ struct gentity_s
 	float        momentumEarned;
 
 	/**
+	 * Mining structures
+	 */
+	float        mineRate;
+	float        mineEfficiency;
+
+	/**
 	 * Alien buildables can burn, which is a lot of fun if they are close.
 	 */
 	qboolean     onFire;
@@ -752,7 +758,7 @@ struct level_locals_s
 		int              numSamples;
 		int              numLiveClients;
 		float            buildPoints;
-		int              mineEfficiency;
+		float            mineEfficiency;
 		int              kills;
 		spawnQueue_t     spawnQueue;
 		qboolean         locked;
