@@ -47,12 +47,6 @@ cvar_t *s_alInputDevice;
 cvar_t *s_alAvailableDevices;
 cvar_t *s_alAvailableInputDevices;
 
-static qboolean enumeration_ext = qfalse;
-static qboolean enumeration_all_ext = qfalse;
-#ifdef USE_VOIP
-static qboolean capture_ext = qfalse;
-#endif
-
 /*
 =================
 S_AL_Format
@@ -569,11 +563,7 @@ typedef struct src_s
 	qboolean	local;			// Is this local (relative to the cam)
 } src_t;
 
-#ifdef MACOS_X
-#define MAX_SRC 64
-#else
 #define MAX_SRC 128
-#endif
 static src_t srcList[MAX_SRC];
 static int srcCount = 0;
 static int srcActiveCnt = 0;
@@ -2236,21 +2226,6 @@ void S_AL_MusicUpdate( void )
 static ALCdevice *alDevice;
 static ALCcontext *alContext;
 
-#ifdef USE_VOIP
-static ALCdevice *alCaptureDevice;
-static cvar_t *s_alCapture;
-#endif
-
-#ifdef _WIN32
-#define ALDRIVER_DEFAULT "OpenAL32.dll"
-#elif defined(MACOS_X)
-#define ALDRIVER_DEFAULT "/System/Library/Frameworks/OpenAL.framework/OpenAL"
-#elif defined(__OpenBSD__)
-#define ALDRIVER_DEFAULT "libopenal.so"
-#else
-#define ALDRIVER_DEFAULT "libopenal.so.1"
-#endif
-
 /*
 =================
 S_AL_StopAllSounds
@@ -2408,50 +2383,6 @@ void S_AL_SoundList( void )
 {
 }
 
-#ifdef USE_VOIP
-static
-void S_AL_StartCapture( void )
-{
-	if ( alCaptureDevice != NULL )
-		alcCaptureStart( alCaptureDevice );
-}
-
-static
-int S_AL_AvailableCaptureSamples( void )
-{
-	int retval = 0;
-
-	if ( alCaptureDevice != NULL )
-	{
-		ALint samples = 0;
-		alcGetIntegerv( alCaptureDevice, ALC_CAPTURE_SAMPLES, sizeof( samples ), &samples );
-		retval = ( int ) samples;
-	}
-
-	return retval;
-}
-
-static
-void S_AL_Capture( int samples, byte *data )
-{
-	if ( alCaptureDevice != NULL )
-		alcCaptureSamples( alCaptureDevice, data, samples );
-}
-
-void S_AL_StopCapture( void )
-{
-	if ( alCaptureDevice != NULL )
-		alcCaptureStop( alCaptureDevice );
-}
-
-void S_AL_MasterGain( float gain )
-{
-	alListenerf( AL_GAIN, gain );
-}
-
-#endif
-
-
 /*
 =================
 S_AL_SoundInfo
@@ -2465,25 +2396,8 @@ static void S_AL_SoundInfo( void )
 	Com_Printf( "  Renderer:       %s\n", alGetString( AL_RENDERER ) );
 	Com_Printf( "  AL Extensions:  %s\n", alGetString( AL_EXTENSIONS ) );
 	Com_Printf( "  ALC Extensions: %s\n", alcGetString( alDevice, ALC_EXTENSIONS ) );
-
-	if ( enumeration_all_ext )
-		Com_Printf( "  Device:         %s\n", alcGetString( alDevice, ALC_ALL_DEVICES_SPECIFIER ) );
-
-	else if ( enumeration_ext )
-		Com_Printf( "  Device:         %s\n", alcGetString( alDevice, ALC_DEVICE_SPECIFIER ) );
-
-	if ( enumeration_all_ext || enumeration_ext )
-		Com_Printf( "  Available Devices:\n%s", s_alAvailableDevices->string );
-
-#ifdef USE_VOIP
-
-	if ( capture_ext )
-	{
-		Com_Printf( "  Input Device:   %s\n", alcGetString( alCaptureDevice, ALC_CAPTURE_DEVICE_SPECIFIER ) );
-		Com_Printf( "  Available Input Devices:\n%s", s_alAvailableInputDevices->string );
-	}
-
-#endif
+	Com_Printf( "  Device:         %s\n", alcGetString( alDevice, ALC_ALL_DEVICES_SPECIFIER ) );
+	Com_Printf( "  Available Devices:\n%s", s_alAvailableDevices->string );
 }
 
 
@@ -2507,18 +2421,6 @@ void S_AL_Shutdown( void )
 
 	alcDestroyContext( alContext );
 	alcCloseDevice( alDevice );
-
-#ifdef USE_VOIP
-
-	if ( alCaptureDevice != NULL )
-	{
-		alcCaptureStop( alCaptureDevice );
-		alcCaptureCloseDevice( alCaptureDevice );
-		alCaptureDevice = NULL;
-		Com_Printf( "OpenAL capture device closed.\n" );
-	}
-
-#endif
 
 	for ( i = 0; i < MAX_RAW_STREAMS; i++ )
 	{
@@ -2580,63 +2482,27 @@ qboolean S_AL_Init( soundInterface_t *si )
 
 
 	// Device enumeration support
-	enumeration_all_ext = alcIsExtensionPresent( NULL, "ALC_ENUMERATE_ALL_EXT" );
-	enumeration_ext = alcIsExtensionPresent( NULL, "ALC_ENUMERATION_EXT" );
+	char devicenames[16384] = "";
+	const char *devicelist;
+	int curlen;
 
-	if ( enumeration_ext || enumeration_all_ext )
+	// get all available devices + the default device name.
+	devicelist = alcGetString( NULL, ALC_ALL_DEVICES_SPECIFIER );
+
+	// dump a list of available devices to a cvar for the user to see.
+
+	if ( devicelist )
 	{
-		char devicenames[16384] = "";
-		const char *devicelist;
-#ifdef _WIN32
-		const char *defaultdevice;
-#endif
-		int curlen;
-
-		// get all available devices + the default device name.
-		if ( enumeration_all_ext )
+		while ( ( curlen = strlen( devicelist ) ) )
 		{
-			devicelist = alcGetString( NULL, ALC_ALL_DEVICES_SPECIFIER );
-#ifdef _WIN32
-			defaultdevice = alcGetString( NULL, ALC_DEFAULT_ALL_DEVICES_SPECIFIER );
-#endif
+			Q_strcat( devicenames, sizeof( devicenames ), devicelist );
+			Q_strcat( devicenames, sizeof( devicenames ), "\n" );
+
+			devicelist += curlen + 1;
 		}
-
-		else
-		{
-			// We don't have ALC_ENUMERATE_ALL_EXT but normal enumeration.
-			devicelist = alcGetString( NULL, ALC_DEVICE_SPECIFIER );
-#ifdef _WIN32
-			defaultdevice = alcGetString( NULL, ALC_DEFAULT_DEVICE_SPECIFIER );
-#endif
-			enumeration_ext = qtrue;
-		}
-
-#ifdef _WIN32
-
-		// check whether the default device is generic hardware. If it is, change to
-		// Generic Software as that one works more reliably with various sound systems.
-		// If it's not, use OpenAL's default selection as we don't want to ignore
-		// native hardware acceleration.
-		if ( !device && defaultdevice && !strcmp( defaultdevice, "Generic Hardware" ) )
-			device = "Generic Software";
-
-#endif
-
-		// dump a list of available devices to a cvar for the user to see.
-
-		if ( devicelist )
-		{
-			while ( ( curlen = strlen( devicelist ) ) )
-			{
-				Q_strcat( devicenames, sizeof( devicenames ), devicelist );
-				Q_strcat( devicenames, sizeof( devicenames ), "\n" );
-
-				devicelist += curlen + 1;
-			}
-		}
-
-		s_alAvailableDevices = Cvar_Get( "s_alAvailableDevices", devicenames, CVAR_ROM | CVAR_NORESTART );
 	}
+
+	s_alAvailableDevices = Cvar_Get( "s_alAvailableDevices", devicenames, CVAR_ROM | CVAR_NORESTART );
 
 	alDevice = alcOpenDevice( device );
 
@@ -2673,89 +2539,6 @@ qboolean S_AL_Init( soundInterface_t *si )
 	alDopplerFactor( s_alDopplerFactor->value );
 	alDopplerVelocity( s_alDopplerSpeed->value );
 
-#ifdef USE_VOIP
-	// !!! FIXME: some of these alcCaptureOpenDevice() values should be cvars.
-	// !!! FIXME: add support for capture device enumeration.
-	// !!! FIXME: add some better error reporting.
-	s_alCapture = Cvar_Get( "s_alCapture", "1", CVAR_ARCHIVE | CVAR_LATCH );
-
-	if ( !s_alCapture->integer )
-	{
-		Com_Printf( "OpenAL capture support disabled by user ('+set s_alCapture 1' to enable)\n" );
-	}
-
-#if USE_MUMBLE
-
-	else if ( cl_useMumble->integer )
-	{
-		Com_Printf( "OpenAL capture support disabled for Mumble support\n" );
-	}
-
-#endif
-
-	else
-	{
-#ifdef MACOS_X
-
-		// !!! FIXME: Apple has a 1.1-compliant OpenAL, which includes
-		// !!! FIXME:  capture support, but they don't list it in the
-		// !!! FIXME:  extension string. We need to check the version string,
-		// !!! FIXME:  then the extension string, but that's too much trouble,
-		// !!! FIXME:  so we'll just check the function pointer for now.
-		if ( alcCaptureOpenDevice == NULL )
-#else
-		if ( !alcIsExtensionPresent( NULL, "ALC_EXT_capture" ) )
-#endif
-		{
-			Com_Printf( "No ALC_EXT_capture support, can't record audio.\n" );
-		}
-
-		else
-		{
-			char inputdevicenames[16384] = "";
-			const char *inputdevicelist;
-			const char *defaultinputdevice;
-			int curlen;
-
-			capture_ext = qtrue;
-
-			// get all available input devices + the default input device name.
-			inputdevicelist = alcGetString( NULL, ALC_CAPTURE_DEVICE_SPECIFIER );
-			defaultinputdevice = alcGetString( NULL, ALC_CAPTURE_DEFAULT_DEVICE_SPECIFIER );
-
-			// dump a list of available devices to a cvar for the user to see.
-			if ( inputdevicelist )
-			{
-				while ( ( curlen = strlen( inputdevicelist ) ) )
-				{
-					Q_strcat( inputdevicenames, sizeof( inputdevicenames ), inputdevicelist );
-					Q_strcat( inputdevicenames, sizeof( inputdevicenames ), "\n" );
-					inputdevicelist += curlen + 1;
-				}
-			}
-
-			s_alAvailableInputDevices = Cvar_Get( "s_alAvailableInputDevices", inputdevicenames, CVAR_ROM | CVAR_NORESTART );
-
-			// !!! FIXME: 8000Hz is what Speex narrowband mode needs, but we
-			// !!! FIXME:  should probably open the capture device after
-			// !!! FIXME:  initializing Speex so we can change to wideband
-			// !!! FIXME:  if we like.
-			Com_Printf( "OpenAL default capture device is '%s'\n", defaultinputdevice ? defaultinputdevice : "none" );
-			alCaptureDevice = alcCaptureOpenDevice( inputdevice, 8000, AL_FORMAT_MONO16, 4096 );
-
-			if ( !alCaptureDevice && inputdevice )
-			{
-				Com_Printf( "Failed to open OpenAL Input device '%s', trying default.\n", inputdevice );
-				alCaptureDevice = alcCaptureOpenDevice( NULL, 8000, AL_FORMAT_MONO16, 4096 );
-			}
-
-			Com_Printf( "OpenAL capture device %s.\n",
-			            ( alCaptureDevice == NULL ) ? "failed to open" : "opened" );
-		}
-	}
-
-#endif
-
 	si->Shutdown = S_AL_Shutdown;
 	si->StartSound = S_AL_StartSound;
 	si->StartLocalSound = S_AL_StartLocalSound;
@@ -2778,14 +2561,6 @@ qboolean S_AL_Init( soundInterface_t *si )
 	si->ClearSoundBuffer = S_AL_ClearSoundBuffer;
 	si->SoundInfo = S_AL_SoundInfo;
 	si->SoundList = S_AL_SoundList;
-
-#ifdef USE_VOIP
-	si->StartCapture = S_AL_StartCapture;
-	si->AvailableCaptureSamples = S_AL_AvailableCaptureSamples;
-	si->Capture = S_AL_Capture;
-	si->StopCapture = S_AL_StopCapture;
-	si->MasterGain = S_AL_MasterGain;
-#endif
 
 	return qtrue;
 #else
