@@ -1510,8 +1510,6 @@ void RB_SurfaceIQM( srfIQModel_t *surf ) {
 	for ( i = 0; i < model->num_joints; i++ )
 	{
 
-#if defined( USE_REFENTITY_ANIMATIONSYSTEM )
-
 		if ( backEnd.currentEntity->e.skeleton.type == SK_ABSOLUTE )
 		{
 			refBone_t *bone = &backEnd.currentEntity->e.skeleton.bones[ i ];
@@ -1520,7 +1518,6 @@ void RB_SurfaceIQM( srfIQModel_t *surf ) {
 			TransCombine( &bones[ i ], &bone->t, &bones[ i ] );
 		}
 		else
-#endif
 		{
 			TransInit( &bones[ i ] );
 		}
