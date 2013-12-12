@@ -1243,11 +1243,11 @@ void trap_R_SetAltShaderTokens( const char *str )
 
 void trap_S_UpdateEntityVelocity( int entityNum, const vec3_t velocity )
 {
-	syscall( CG_S_UPDATEENTITYVELOCITY, entityNum, velocity );
+	syscallVM( CG_S_UPDATEENTITYVELOCITY, entityNum, velocity );
 }
 
 void trap_S_UpdateEntityOcclusion( int entityNum, qboolean occluded, float ratio )
 {
-	syscall( CG_S_UPDATEENTITYOCCLUSION, entityNum, occluded, ratio );
+	syscallVM( CG_S_UPDATEENTITYOCCLUSION, entityNum, occluded, ratio );
 }
 
