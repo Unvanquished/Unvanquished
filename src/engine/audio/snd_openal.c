@@ -29,16 +29,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define ALC_ALL_DEVICES_SPECIFIER 0x1013
 
-#if _WIN32
-#	include <al.h>
-#	include <alc.h>
-#elif MACOS_X
-#	include <OpenAl/al.h>
-#	include <OpenAl/alc.h>
-#else
-#	include <AL/al.h>
-#	include <AL/alc.h>
-#endif
+#include <al.h>
+#include <alc.h>
 
 // Console variables specific to OpenAL
 cvar_t *s_alPrecache;
