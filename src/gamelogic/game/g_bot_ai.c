@@ -900,7 +900,7 @@ AINodeStatus_t BotActionMoveTo( gentity_t *self, AIGenericNode_t *node )
 	
 	if ( moveTo->nparams > 1 )
 	{
-		radius = MAX( AIUnBoxFloat( moveTo->params[ 1 ] ), 0 );
+		radius = MAX( AIUnBoxFloat( moveTo->params[ 1 ] ), 0.0f );
 	}
 
 	if ( node != self->botMind->currentNode )

@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // tr_bsp.c
 #include "tr_local.h"
+#include "../../common/Maths.h"
 
 /*
 ========================================================
@@ -211,7 +212,7 @@ static void R_HDRTonemapLightingColors( const vec4_t in, vec4_t out, qboolean ap
 #endif
 
 	VectorScale( sample, finalLuminance, sample );
-	sample[ 3 ] = MIN( 1.0f, sample[ 3 ] );
+	sample[ 3 ] = std::min( 1.0f, sample[ 3 ] );
 
 	if ( !r_hdrRendering->integer || !r_hdrLightmap->integer || !glConfig2.framebufferObjectAvailable ||
 	     !glConfig2.textureFloatAvailable || !glConfig2.framebufferBlitAvailable )
@@ -220,7 +221,7 @@ static void R_HDRTonemapLightingColors( const vec4_t in, vec4_t out, qboolean ap
 
 		// clamp with color normalization
 		NormalizeColor( sample, out );
-		out[ 3 ] = MIN( 1.0f, sample[ 3 ] );
+		out[ 3 ] = std::min( 1.0f, sample[ 3 ] );
 	}
 	else
 	{
@@ -256,7 +257,7 @@ static void R_HDRTonemapLightingColors( const vec4_t in, vec4_t out, qboolean ap
 
 		VectorScale( out, ( 1.0f / 255.0f ), out );
 
-		out[ 3 ] = MIN( 1.0f, sample[ 3 ] );
+		out[ 3 ] = std::min( 1.0f, sample[ 3 ] );
 	}
 	else
 	{
@@ -285,7 +286,7 @@ static void R_HDRTonemapLightingColors( const vec4_t in, vec4_t out, qboolean ap
 		VectorCopy( sample, out );
 #endif
 
-		out[ 3 ] = MIN( 1.0f, sample[ 3 ] );
+		out[ 3 ] = std::min( 1.0f, sample[ 3 ] );
 	}
 
 #endif
@@ -1562,7 +1563,7 @@ static void ParseFace( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf, in
 
 		for ( j = 0; j < 4; j++ )
 		{
-			cv->verts[ i ].paintColor[ j ] = Q_bound( 0, LittleFloat( verts[ i ].paintColor[ j ] ), 1 );
+			cv->verts[ i ].paintColor[ j ] = Maths::clampFraction( LittleFloat( verts[ i ].paintColor[ j ] ) );
 			cv->verts[ i ].lightColor[ j ] = LittleFloat( verts[ i ].lightColor[ j ] );
 		}
 
@@ -1776,7 +1777,7 @@ static void ParseMesh( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf )
 
 		for ( j = 0; j < 4; j++ )
 		{
-			points[ i ].paintColor[ j ] = Q_bound( 0, LittleFloat( verts[ i ].paintColor[ j ] ), 1 );
+			points[ i ].paintColor[ j ] = Maths::clampFraction( LittleFloat( verts[ i ].paintColor[ j ] ) );
 			points[ i ].lightColor[ j ] = LittleFloat( verts[ i ].lightColor[ j ] );
 		}
 
@@ -1916,7 +1917,7 @@ static void ParseTriSurf( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf,
 
 		for ( j = 0; j < 4; j++ )
 		{
-			cv->verts[ i ].paintColor[ j ] = Q_bound( 0, LittleFloat( verts[ i ].paintColor[ j ] ), 1 );
+			cv->verts[ i ].paintColor[ j ] = Maths::clampFraction( LittleFloat( verts[ i ].paintColor[ j ] ) );
 			cv->verts[ i ].lightColor[ j ] = LittleFloat( verts[ i ].lightColor[ j ] );
 		}
 
@@ -6810,7 +6811,7 @@ void R_LoadEntities( lump_t *l )
 		// check for mapOverBrightBits override
 		else if ( !Q_stricmp( keyname, "mapOverBrightBits" ) )
 		{
-			tr.mapOverBrightBits = Q_bound( 0, atof( value ), 3 );
+			tr.mapOverBrightBits = Maths::clamp( atof( value ), 0.0, 3.0 );
 		}
 
 		// check for deluxe mapping provided by NetRadiant's q3map2

@@ -175,7 +175,7 @@ namespace Cvar {
 
             //The user creates a new cvar through a command.
             cvarRecord_t cvar{value, value, flags | CVAR_USER_CREATED, "user created", nullptr, {}};
-            cvars[cvarName] = new cvarRecord_t(cvar);
+            cvars[cvarName] = new cvarRecord_t(std::move(cvar));
             Cmd::AddCommand(cvarName, cvarCommand, "cvar - user created");
             GetCCvar(cvarName, *cvars[cvarName]);
 
@@ -252,7 +252,8 @@ namespace Cvar {
             }
 
             //Create the cvar and parse its default value
-            cvar = new cvarRecord_t{defaultValue, defaultValue, flags, "", proxy, {}};
+            cvarRecord_t temp{defaultValue, defaultValue, flags, "", proxy, {}};
+            cvar = new cvarRecord_t(std::move(temp));
             cvars[name] = cvar;
 
             Cmd::AddCommand(name, cvarCommand, "cvar - " + description);

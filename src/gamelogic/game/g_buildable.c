@@ -3108,7 +3108,7 @@ static qboolean HMGTurret_State( gentity_t *self, int state )
 			}
 
 			self->s.angles2[ PITCH ] =
-			  MIN( MGTURRET_VERTICALCAP, angle + self->speed );
+			  MIN( (float)MGTURRET_VERTICALCAP, angle + self->speed );
 			return qtrue;
 		}
 		else

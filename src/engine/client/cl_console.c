@@ -888,14 +888,14 @@ void Con_DrawConsoleScrollbar( void )
 	const float scrollBarWidth = consoleState.border.sides * 2;
 
 	const float scrollHandleLength = consoleState.usedScrollbackLengthInLines
-	                                 ? scrollBarLength * MIN( 1.0f, (float) consoleState.visibleAmountOfLines / consoleState.usedScrollbackLengthInLines )
+	                                 ? scrollBarLength * std::min( 1.0f, (float) consoleState.visibleAmountOfLines / consoleState.usedScrollbackLengthInLines )
 	                                 : 0;
 
 	const float scrollBarLengthPerLine = ( scrollBarLength - scrollHandleLength ) / ( consoleState.usedScrollbackLengthInLines - consoleState.visibleAmountOfLines );
 	// that may result in -NaN
 
 	const float relativeScrollLineIndex = consoleState.currentLine - consoleState.usedScrollbackLengthInLines
-				+ MIN(consoleState.visibleAmountOfLines, consoleState.usedScrollbackLengthInLines);
+				+ std::min(consoleState.visibleAmountOfLines, consoleState.usedScrollbackLengthInLines);
 
 	const float scrollHandlePostition = ( scrollBarLengthPerLine == scrollBarLengthPerLine )
 	                                  ? scrollBarLengthPerLine * ( consoleState.bottomDisplayedLine - relativeScrollLineIndex )
@@ -1153,7 +1153,7 @@ void Con_UpdateConsoleState( void )
 	 * different widths for horizontal and vertical borders due to different resolution-ratios
 	 * since that isn't as nice looking as with areas
 	 */
-	consoleState.border.bottom = MAX( 0, con_borderWidth->integer );
+	consoleState.border.bottom = std::max( 0, con_borderWidth->integer );
 
 	if(con_margin->value > 0) {
 		horizontalMargin = con_margin->value;
@@ -1177,7 +1177,7 @@ void Con_UpdateConsoleState( void )
 	 * calculate padding
 	 */
 	consoleState.padding.top = floor( verticalMargin * 0.3f );
-	consoleState.padding.bottom = MAX( 3, consoleState.padding.top );
+	consoleState.padding.bottom = std::max( 3, consoleState.padding.top );
 
 	// on wide screens, this will lead to somewhat of a centering of the text
 	if(con_horizontalPadding->integer)
@@ -1210,7 +1210,7 @@ void Con_UpdateConsoleState( void )
 	// clip to a multiple of the character height, plus padding
 	consoleState.height -= ( consoleState.height - totalVerticalPadding - charPadding ) % charHeight;
 	// ... and ensure that at least three lines are visible
-	consoleState.height = MAX( 3 * charHeight + totalVerticalPadding, consoleState.height );
+	consoleState.height = std::max( 3 * charHeight + totalVerticalPadding, consoleState.height );
 
 
 	//animate via scroll animation if the type is set
@@ -1338,7 +1338,7 @@ void Con_RunConsole( void )
 
 	if(consoleState.currentAnimationFraction > 0)
 	{
-		const float scrollDifference = MAX( 0.5f, fabs( consoleState.bottomDisplayedLine - consoleState.scrollLineIndex ) );
+		const float scrollDifference = std::max( 0.5, fabs( consoleState.bottomDisplayedLine - consoleState.scrollLineIndex ) );
 		if( consoleState.bottomDisplayedLine < consoleState.scrollLineIndex )
 		{
 			consoleState.bottomDisplayedLine += con_animationSpeed->value * cls.realFrametime * 0.005 * scrollDifference;
@@ -1434,7 +1434,7 @@ void Con_ScrollUp( int lines )
 	consoleState.scrollLineIndex -= lines;
 
 	if ( consoleState.scrollLineIndex < consoleState.currentLine - consoleState.usedScrollbackLengthInLines
-			+ MIN(consoleState.visibleAmountOfLines, consoleState.usedScrollbackLengthInLines) )
+			+ std::min(consoleState.visibleAmountOfLines, consoleState.usedScrollbackLengthInLines) )
 	{
 		Con_ScrollToTop( );
 	}
@@ -1452,8 +1452,8 @@ void Con_ScrollDown( int lines )
 
 void Con_ScrollToMarkerLine( void )
 {
-	consoleState.scrollLineIndex = MAX(consoleState.lastReadLineIndex, consoleState.currentLine - consoleState.usedScrollbackLengthInLines)
-			+ MIN(consoleState.visibleAmountOfLines, consoleState.usedScrollbackLengthInLines);
+	consoleState.scrollLineIndex = std::max(consoleState.lastReadLineIndex, consoleState.currentLine - consoleState.usedScrollbackLengthInLines)
+			+ std::min(consoleState.visibleAmountOfLines, consoleState.usedScrollbackLengthInLines);
 	//consoleState.bottomDisplayedLine = consoleState.scrollLineIndex;
 }
 
@@ -1461,7 +1461,7 @@ void Con_ScrollToTop( void )
 {
 	consoleState.scrollLineIndex = consoleState.currentLine
 			- consoleState.usedScrollbackLengthInLines
-			+ MIN(consoleState.visibleAmountOfLines, consoleState.usedScrollbackLengthInLines);
+			+ std::min(consoleState.visibleAmountOfLines, consoleState.usedScrollbackLengthInLines);
 	//consoleState.bottomDisplayedLine = consoleState.scrollLineIndex;
 }
 
@@ -1474,7 +1474,7 @@ void Con_ScrollToBottom( void )
 void Con_JumpUp( void )
 {
 	if ( consoleState.lastReadLineIndex &&
-		 consoleState.scrollLineIndex > consoleState.lastReadLineIndex + MIN(consoleState.visibleAmountOfLines, consoleState.usedScrollbackLengthInLines)
+		 consoleState.scrollLineIndex > consoleState.lastReadLineIndex + std::min(consoleState.visibleAmountOfLines, consoleState.usedScrollbackLengthInLines)
 	   //&& consoleState.currentLine - consoleState.lastReadLineIndex > consoleState.visibleAmountOfLines
 	   )
 	{

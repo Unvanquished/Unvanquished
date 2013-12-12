@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // tr_shade_calc.c
 #include "tr_local.h"
+#include "../../common/Maths.h"
 
 #define WAVEVALUE( table, base, amplitude, phase, freq ) (( base ) + table[ Q_ftol( ( ( ( phase ) + backEnd.refdef.floatTime * ( freq ) ) * FUNCTABLE_SIZE ) ) & FUNCTABLE_MASK ] * ( amplitude ))
 
@@ -341,8 +342,8 @@ float RB_EvalExpression( const expression_t *exp, float defaultValue )
 					if ( table->clamp )
 					{
 						// clamp indices to table-range
-						Q_clamp( oldIndex, 0, numValues - 1 );
-						Q_clamp( newIndex, 0, numValues - 1 );
+						oldIndex = Maths::clamp( oldIndex, 0, numValues - 1 );
+						newIndex = Maths::clamp( newIndex, 0, numValues - 1 );
 					}
 					else
 					{
