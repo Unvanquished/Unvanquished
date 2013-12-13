@@ -147,12 +147,12 @@ template<typename T>
 struct SerializeTraits<T, typename std::enable_if<std::is_pod<T>::value>::type> {
 	static void Write(Writer& stream, const T& value)
 	{
-		stream.Write(&value, sizeof(value));
+		stream.Write(std::addressof(value), sizeof(value));
 	}
 	static T Read(Reader& stream)
 	{
 		T value;
-		stream.Read(&value, sizeof(value));
+		stream.Read(std::addressof(value), sizeof(value));
 		return value;
 	}
 };
