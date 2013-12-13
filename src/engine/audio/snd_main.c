@@ -87,20 +87,6 @@ static qboolean S_ValidSoundInterface( soundInterface_t *si )
 
 	if ( !si->SoundList ) return qfalse;
 
-#ifdef USE_VOIP
-
-	if ( !si->StartCapture ) return qfalse;
-
-	if ( !si->AvailableCaptureSamples ) return qfalse;
-
-	if ( !si->Capture ) return qfalse;
-
-	if ( !si->StopCapture ) return qfalse;
-
-	if ( !si->MasterGain ) return qfalse;
-
-#endif
-
 	return qtrue;
 }
 

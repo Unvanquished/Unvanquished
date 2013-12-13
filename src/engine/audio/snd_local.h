@@ -22,6 +22,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // snd_local.h -- private sound definations
 
 
+#ifndef SND_LOCAL_H_
+#define SND_LOCAL_H_
+
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
 #include "snd_public.h"
@@ -53,13 +56,6 @@ typedef struct
 	void ( *ClearSoundBuffer )( void );
 	void ( *SoundInfo )( void );
 	void ( *SoundList )( void );
-#ifdef USE_VOIP
-	void ( *StartCapture )( void );
-	int ( *AvailableCaptureSamples )( void );
-	void ( *Capture )( int samples, byte *data );
-	void ( *StopCapture )( void );
-	void ( *MasterGain )( float gain );
-#endif
 } soundInterface_t;
 
 //====================================================================
@@ -84,3 +80,5 @@ typedef enum
 typedef int srcHandle_t;
 
 qboolean S_AL_Init( soundInterface_t *si );
+
+#endif //SND_LOCAL_H_

@@ -24,6 +24,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "snd_local.h"
 #include "snd_codec.h"
 #include "../client/client.h"
+#include "ALObjects.h"
+#include "Sample.h"
+
+using namespace Audio;
 
 #ifndef BUILD_TTY_CLIENT
 
@@ -134,412 +138,10 @@ static void S_AL_ClearError( qboolean quiet )
 //===========================================================================
 
 
-typedef struct alSfx_s
-{
-	char			filename[MAX_QPATH];
-	ALuint		buffer;					// OpenAL buffer
-	snd_info_t	info;					// information for this sound like rate, sample count..
-
-	qboolean	isDefault;				// Couldn't be loaded - use default FX
-	qboolean	isDefaultChecked;		// Sound has been check if it isDefault
-	qboolean	inMemory;				// Sound is stored in memory
-	qboolean	isLocked;				// Sound is locked (can not be unloaded)
-	int				lastUsedTime;		// Time last used
-
-	int				loopCnt;		// number of loops using this sfx
-	int				loopActiveCnt;		// number of playing loops using this sfx
-	int				masterLoopSrc;		// All other sources looping this buffer are synced to this master src
-} alSfx_t;
-
-static qboolean alBuffersInitialised = qfalse;
-
-// Sound effect storage, data structures
-#define MAX_SFX 4096
-static alSfx_t knownSfx[MAX_SFX];
-static sfxHandle_t numSfx = 0;
-
-static sfxHandle_t default_sfx;
-
-/*
-=================
-S_AL_BufferFindFree
-
-Find a free handle
-=================
-*/
-static sfxHandle_t S_AL_BufferFindFree( void )
-{
-	int i;
-
-	for ( i = 0; i < MAX_SFX; i++ )
-	{
-		// Got one
-		if ( knownSfx[i].filename[0] == '\0' )
-		{
-			if ( i >= numSfx )
-				numSfx = i + 1;
-
-			return i;
-		}
-	}
-
-	// Shit...
-	Com_Error( ERR_FATAL, "S_AL_BufferFindFree: No free sound handles" );
-	return -1;
-}
-
-/*
-=================
-S_AL_BufferFind
-
-Find a sound effect if loaded, set up a handle otherwise
-=================
-*/
-static sfxHandle_t S_AL_BufferFind( const char *filename )
-{
-	// Look it up in the table
-	sfxHandle_t sfx = -1;
-	int i;
-
-	if ( !filename )
-	{
-		Com_Error( ERR_FATAL, "Sound name is NULL" );
-	}
-
-	if ( !filename[0] )
-	{
-		Com_Printf( S_COLOR_YELLOW "WARNING: Sound name is empty\n" );
-		return 0;
-	}
-
-	if ( strlen( filename ) >= MAX_QPATH )
-	{
-		Com_Printf( S_COLOR_YELLOW "WARNING: Sound name is too long: %s\n", filename );
-		return 0;
-	}
-
-	for ( i = 0; i < numSfx; i++ )
-	{
-		if ( !Q_stricmp( knownSfx[i].filename, filename ) )
-		{
-			sfx = i;
-			break;
-		}
-	}
-
-	// Not found in table?
-	if ( sfx == -1 )
-	{
-		alSfx_t *ptr;
-
-		sfx = S_AL_BufferFindFree();
-
-		// Clear and copy the filename over
-		ptr = &knownSfx[sfx];
-		memset( ptr, 0, sizeof( *ptr ) );
-		ptr->masterLoopSrc = -1;
-		strcpy( ptr->filename, filename );
-	}
-
-	// Return the handle
-	return sfx;
-}
-
-/*
-=================
-S_AL_BufferUseDefault
-=================
-*/
-static void S_AL_BufferUseDefault( sfxHandle_t sfx )
-{
-	if ( sfx == default_sfx )
-		Com_Error( ERR_FATAL, "Can't load default sound effect %s", knownSfx[sfx].filename );
-
-	Com_Printf( S_COLOR_YELLOW "WARNING: Using default sound for %s\n", knownSfx[sfx].filename );
-	knownSfx[sfx].isDefault = qtrue;
-	knownSfx[sfx].buffer = knownSfx[default_sfx].buffer;
-}
-
-/*
-=================
-S_AL_BufferUnload
-=================
-*/
-static void S_AL_BufferUnload( sfxHandle_t sfx )
-{
-	if ( knownSfx[sfx].filename[0] == '\0' )
-		return;
-
-	if ( !knownSfx[sfx].inMemory )
-		return;
-
-	// Delete it
-	S_AL_ClearError( qfalse );
-	alDeleteBuffers( 1, &knownSfx[sfx].buffer );
-
-	if ( alGetError() != AL_NO_ERROR )
-		Com_Printf( S_COLOR_RED "ERROR: Can't delete sound buffer for %s\n",
-		            knownSfx[sfx].filename );
-
-	knownSfx[sfx].inMemory = qfalse;
-}
-
-/*
-=================
-S_AL_BufferEvict
-=================
-*/
-static qboolean S_AL_BufferEvict( void )
-{
-	int	i, oldestBuffer = -1;
-	int	oldestTime = Sys_Milliseconds( );
-
-	for ( i = 0; i < numSfx; i++ )
-	{
-		if ( !knownSfx[ i ].filename[ 0 ] )
-			continue;
-
-		if ( !knownSfx[ i ].inMemory )
-			continue;
-
-		if ( knownSfx[ i ].lastUsedTime < oldestTime )
-		{
-			oldestTime = knownSfx[ i ].lastUsedTime;
-			oldestBuffer = i;
-		}
-	}
-
-	if ( oldestBuffer >= 0 )
-	{
-		S_AL_BufferUnload( oldestBuffer );
-		return qtrue;
-	}
-
-	else
-		return qfalse;
-}
-
-/*
-=================
-S_AL_BufferLoad
-=================
-*/
-static void S_AL_BufferLoad( sfxHandle_t sfx, qboolean cache )
-{
-	ALenum error;
-	ALuint format;
-
-	void *data;
-	snd_info_t info;
-	alSfx_t *curSfx = &knownSfx[sfx];
-
-	// Nothing?
-	if ( curSfx->filename[0] == '\0' )
-		return;
-
-	// Player SFX
-	if ( curSfx->filename[0] == '*' )
-		return;
-
-	// Already done?
-	if ( ( curSfx->inMemory ) || ( curSfx->isDefault ) || ( !cache && curSfx->isDefaultChecked ) )
-		return;
-
-	// Try to load
-	data = S_CodecLoad( curSfx->filename, &info );
-
-	if ( !data )
-	{
-		S_AL_BufferUseDefault( sfx );
-		return;
-	}
-
-	curSfx->isDefaultChecked = qtrue;
-
-	if ( !cache )
-	{
-		// Don't create AL cache
-		Hunk_FreeTempMemory( data );
-		return;
-	}
-
-	format = S_AL_Format( info.width, info.channels );
-
-	// Create a buffer
-	S_AL_ClearError( qfalse );
-	alGenBuffers( 1, &curSfx->buffer );
-
-	if ( ( error = alGetError() ) != AL_NO_ERROR )
-	{
-		S_AL_BufferUseDefault( sfx );
-		Hunk_FreeTempMemory( data );
-		Com_Printf( S_COLOR_RED "ERROR: Can't create a sound buffer for %s - %s\n",
-		            curSfx->filename, S_AL_ErrorMsg( error ) );
-		return;
-	}
-
-	// Fill the buffer
-	if ( info.size == 0 )
-	{
-		// We have no data to buffer, so buffer silence
-		byte dummyData[ 2 ] = { 0 };
-
-		alBufferData( curSfx->buffer, AL_FORMAT_MONO16, ( void * )dummyData, 2, 22050 );
-	}
-
-	else
-		alBufferData( curSfx->buffer, format, data, info.size, info.rate );
-
-	error = alGetError();
-
-	// If we ran out of memory, start evicting the least recently used sounds
-	while ( error == AL_OUT_OF_MEMORY )
-	{
-		if ( !S_AL_BufferEvict( ) )
-		{
-			S_AL_BufferUseDefault( sfx );
-			Hunk_FreeTempMemory( data );
-			Com_Printf( S_COLOR_RED "ERROR: Out of memory loading %s\n", curSfx->filename );
-			return;
-		}
-
-		// Try load it again
-		alBufferData( curSfx->buffer, format, data, info.size, info.rate );
-		error = alGetError();
-	}
-
-	// Some other error condition
-	if ( error != AL_NO_ERROR )
-	{
-		S_AL_BufferUseDefault( sfx );
-		Hunk_FreeTempMemory( data );
-		Com_Printf( S_COLOR_RED "ERROR: Can't fill sound buffer for %s - %s\n",
-		            curSfx->filename, S_AL_ErrorMsg( error ) );
-		return;
-	}
-
-	curSfx->info = info;
-
-	// Free the memory
-	Hunk_FreeTempMemory( data );
-
-	// Woo!
-	curSfx->inMemory = qtrue;
-}
-
-/*
-=================
-S_AL_BufferUse
-=================
-*/
-static
-void S_AL_BufferUse( sfxHandle_t sfx )
-{
-	if ( knownSfx[sfx].filename[0] == '\0' )
-		return;
-
-	if ( ( !knownSfx[sfx].inMemory ) && ( !knownSfx[sfx].isDefault ) )
-		S_AL_BufferLoad( sfx, qtrue );
-
-	knownSfx[sfx].lastUsedTime = Sys_Milliseconds();
-}
-
-/*
-=================
-S_AL_BufferInit
-=================
-*/
-static
-qboolean S_AL_BufferInit( void )
-{
-	if ( alBuffersInitialised )
-		return qtrue;
-
-	// Clear the hash table, and SFX table
-	memset( knownSfx, 0, sizeof( knownSfx ) );
-	numSfx = 0;
-
-	// Load the default sound, and lock it
-	default_sfx = S_AL_BufferFind( "sound/feedback/hit.wav" );
-	S_AL_BufferUse( default_sfx );
-	knownSfx[default_sfx].isLocked = qtrue;
-
-	// All done
-	alBuffersInitialised = qtrue;
-	return qtrue;
-}
-
-/*
-=================
-S_AL_BufferShutdown
-=================
-*/
-static
-void S_AL_BufferShutdown( void )
-{
-	int i;
-
-	if ( !alBuffersInitialised )
-		return;
-
-	// Unlock the default sound effect
-	knownSfx[default_sfx].isLocked = qfalse;
-
-	// Free all used effects
-	for ( i = 0; i < numSfx; i++ )
-		S_AL_BufferUnload( i );
-
-	// Clear the tables
-	numSfx = 0;
-
-	// All undone
-	alBuffersInitialised = qfalse;
-}
-
-/*
-=================
-S_AL_RegisterSound
-=================
-*/
-static
-sfxHandle_t S_AL_RegisterSound( const char *sample, qboolean compressed )
-{
-	sfxHandle_t sfx = S_AL_BufferFind( sample );
-
-	if ( ( !knownSfx[sfx].inMemory ) && ( !knownSfx[sfx].isDefault ) )
-		S_AL_BufferLoad( sfx, s_alPrecache->integer );
-
-	knownSfx[sfx].lastUsedTime = Com_Milliseconds();
-
-	if ( knownSfx[sfx].isDefault )
-	{
-		return 0;
-	}
-
-	return sfx;
-}
-
-/*
-=================
-S_AL_BufferGet
-
-Return's a sfx's buffer
-=================
-*/
-static
-ALuint S_AL_BufferGet( sfxHandle_t sfx )
-{
-	return knownSfx[sfx].buffer;
-}
-
-
-//===========================================================================
-
-
 typedef struct src_s
 {
 	ALuint		alSource;		// OpenAL source object
-	sfxHandle_t	sfx;			// Sound effect in use
+	Sample*	sfx;			// Sound effect in use
 
 	int		lastUsedTime;		// Last time used
 	alSrcPriority_t	priority;		// Priority
@@ -580,11 +182,15 @@ typedef struct sentity_s
 
 	qboolean				loopAddedThisFrame;
 	alSrcPriority_t	loopPriority;
-	sfxHandle_t			loopSfx;
+	Sample*			loopSfx;
 	qboolean				startLoopingSound;
 } sentity_t;
 
 static sentity_t entityList[MAX_GENTITIES];
+
+sfxHandle_t S_AL_RegisterSound(const char* sample, qboolean) {
+    return RegisterSample(sample)->GetHandle();
+}
 
 /*
 =================
@@ -782,7 +388,7 @@ static void S_AL_SrcSetup( srcHandle_t src, sfxHandle_t sfx, alSrcPriority_t pri
 	curSource = &srcList[src];
 
 	curSource->lastUsedTime = Sys_Milliseconds();
-	curSource->sfx = sfx;
+	curSource->sfx = Sample::FromHandle(sfx);
 	curSource->priority = priority;
 	curSource->entity = entity;
 	curSource->channel = channel;
@@ -799,8 +405,8 @@ static void S_AL_SrcSetup( srcHandle_t src, sfxHandle_t sfx, alSrcPriority_t pri
 	if ( sfx >= 0 )
 	{
 		// Mark the SFX as used, and grab the raw AL buffer
-		S_AL_BufferUse( sfx );
-		alSourcei( curSource->alSource, AL_BUFFER, S_AL_BufferGet( sfx ) );
+        curSource->sfx->Use();
+		alSourcei( curSource->alSource, AL_BUFFER, curSource->sfx->GetBuffer() );
 	}
 
 	alSourcef( curSource->alSource, AL_PITCH, 1.0f );
@@ -823,36 +429,11 @@ static void S_AL_SrcSetup( srcHandle_t src, sfxHandle_t sfx, alSrcPriority_t pri
 	}
 }
 
-/*
-=================
-S_AL_NewLoopMaster
-Remove given source as loop master if it is the master and hand off master status to another source in this case.
-=================
-*/
-
 static void S_AL_SaveLoopPos( src_t *dest, ALuint alSource )
 {
-	int error;
-
-	S_AL_ClearError( qfalse );
-
 	alGetSourcef( alSource, AL_SEC_OFFSET, &dest->lastTimePos );
 
-	if ( ( error = alGetError() ) != AL_NO_ERROR )
-	{
-		// Old OpenAL implementations don't support AL_SEC_OFFSET
-
-		if ( error != AL_INVALID_ENUM )
-		{
-			Com_Printf( S_COLOR_YELLOW "WARNING: Could not get time offset for alSource %d: %s\n",
-			            alSource, S_AL_ErrorMsg( error ) );
-		}
-
-		dest->lastTimePos = -1;
-	}
-
-	else
-		dest->lastSampleTime = Sys_Milliseconds();
+	dest->lastSampleTime = Sys_Milliseconds();
 }
 
 /*
@@ -864,95 +445,6 @@ Remove given source as loop master if it is the master and hand off master statu
 
 static void S_AL_NewLoopMaster( src_t *rmSource, qboolean iskilled )
 {
-	int index;
-	src_t *curSource = NULL;
-	alSfx_t *curSfx;
-
-	curSfx = &knownSfx[rmSource->sfx];
-
-	if ( rmSource->isPlaying )
-		curSfx->loopActiveCnt--;
-
-	if ( iskilled )
-		curSfx->loopCnt--;
-
-	if ( curSfx->loopCnt )
-	{
-		if ( rmSource->priority == SRCPRI_ENTITY )
-		{
-			if ( !iskilled && rmSource->isPlaying )
-			{
-				// only sync ambient loops...
-				// It makes more sense to have sounds for weapons/projectiles unsynced
-				S_AL_SaveLoopPos( rmSource, rmSource->alSource );
-			}
-		}
-
-		else if ( rmSource == &srcList[curSfx->masterLoopSrc] )
-		{
-			int firstInactive = -1;
-
-			// Only if rmSource was the master and if there are still playing loops for
-			// this sound will we need to find a new master.
-
-			if ( iskilled || curSfx->loopActiveCnt )
-			{
-				for ( index = 0; index < srcCount; index++ )
-				{
-					curSource = &srcList[index];
-
-					if ( curSource->sfx == rmSource->sfx && curSource != rmSource &&
-					        curSource->isActive && curSource->isLooping && curSource->priority == SRCPRI_AMBIENT )
-					{
-						if ( curSource->isPlaying )
-						{
-							curSfx->masterLoopSrc = index;
-							break;
-						}
-
-						else if ( firstInactive < 0 )
-							firstInactive = index;
-					}
-				}
-			}
-
-			if ( !curSfx->loopActiveCnt )
-			{
-				if ( firstInactive < 0 )
-				{
-					if ( iskilled )
-					{
-						curSfx->masterLoopSrc = -1;
-						return;
-					}
-
-					else
-						curSource = rmSource;
-				}
-
-				else
-					curSource = &srcList[firstInactive];
-
-				if ( rmSource->isPlaying )
-				{
-					// this was the last not stopped source, save last sample position + time
-					S_AL_SaveLoopPos( curSource, rmSource->alSource );
-				}
-
-				else
-				{
-					// second case: all loops using this sound have stopped due to listener being of of range,
-					// and now the inactive master gets deleted. Just move over the soundpos settings to the
-					// new master.
-					curSource->lastTimePos = rmSource->lastTimePos;
-					curSource->lastSampleTime = rmSource->lastSampleTime;
-				}
-			}
-		}
-	}
-
-	else
-		curSfx->masterLoopSrc = -1;
 }
 
 /*
@@ -1067,7 +559,7 @@ srcHandle_t S_AL_SrcAlloc( alSrcPriority_t priority, int entnum, int channel )
 			weakest_isplaying = qfalse;
 
 			if ( weakest < 0 ||
-			        knownSfx[curSource->sfx].loopCnt > weakest_numloops ||
+			        /*knownSfx[curSource->sfx].loopCnt > weakest_numloops ||*/
 			        curSource->priority < weakest_pri ||
 			        curSource->lastUsedTime < weakest_time )
 			{
@@ -1075,7 +567,7 @@ srcHandle_t S_AL_SrcAlloc( alSrcPriority_t priority, int entnum, int channel )
 				// also try to always keep at least one loop master for every loop sound
 				weakest_pri = curSource->priority;
 				weakest_time = curSource->lastUsedTime;
-				weakest_numloops = knownSfx[curSource->sfx].loopCnt;
+				/*weakest_numloops = knownSfx[curSource->sfx].loopCnt;*/
 				weakest = i;
 			}
 		}
@@ -1223,7 +715,7 @@ static qboolean S_AL_CheckInput( int entityNum, sfxHandle_t sfx )
 	if ( entityNum < 0 || entityNum >= MAX_GENTITIES )
 		Com_Error( ERR_DROP, "ERROR: S_AL_CheckInput: bad entitynum %i", entityNum );
 
-	if ( sfx < 0 || sfx >= numSfx )
+	if ( not Sample::IsValidHandle(sfx) )
 	{
 		Com_Printf( S_COLOR_RED "ERROR: S_AL_CheckInput: handle %i out of range\n", sfx );
 		return qtrue;
@@ -1391,7 +883,7 @@ static void S_AL_SrcLoop( alSrcPriority_t priority, sfxHandle_t sfx,
 	sent->srcIndex = src;
 
 	sent->loopPriority = priority;
-	sent->loopSfx = sfx;
+	sent->loopSfx = Sample::FromHandle(sfx);
 
 	// If this is not set then the looping sound is stopped.
 	sent->loopAddedThisFrame = qtrue;
@@ -1516,7 +1008,7 @@ void S_AL_SrcUpdate( void )
 			// If a looping effect hasn't been touched this frame, pause or kill it
 			if ( sent->loopAddedThisFrame )
 			{
-				alSfx_t *curSfx;
+				Sample *curSfx;
 
 				// The sound has changed without an intervening removal
 				if ( curSource->isActive && !sent->startLoopingSound &&
@@ -1533,15 +1025,15 @@ void S_AL_SrcUpdate( void )
 				// The sound hasn't been started yet
 				if ( sent->startLoopingSound )
 				{
-					S_AL_SrcSetup( i, sent->loopSfx, sent->loopPriority,
+					S_AL_SrcSetup( i, sent->loopSfx->GetHandle(), sent->loopPriority,
 					               entityNum, -1, curSource->local );
 					curSource->isLooping = qtrue;
 
-					knownSfx[curSource->sfx].loopCnt++;
+					curSource->sfx->Retain();
 					sent->startLoopingSound = qfalse;
 				}
 
-				curSfx = &knownSfx[curSource->sfx];
+				curSfx = curSource->sfx;
 
 				S_AL_ScaleGain( curSource, curSource->loopSpeakerPos );
 
@@ -1555,65 +1047,12 @@ void S_AL_SrcUpdate( void )
 						curSource->isPlaying = qfalse;
 					}
 
-					else if ( !curSfx->loopActiveCnt && curSfx->masterLoopSrc < 0 )
-						curSfx->masterLoopSrc = i;
-
 					continue;
 				}
 
 				if ( !curSource->isPlaying )
 				{
-					if ( curSource->priority == SRCPRI_AMBIENT )
-					{
-						// If there are other ambient looping sources with the same sound,
-						// make sure the sound of these sources are in sync.
-
-						if ( curSfx->loopActiveCnt )
-						{
-							int offset, error;
-
-							// we already have a master loop playing, get buffer position.
-							S_AL_ClearError( qfalse );
-							alGetSourcei( srcList[curSfx->masterLoopSrc].alSource, AL_SAMPLE_OFFSET, &offset );
-
-							if ( ( error = alGetError() ) != AL_NO_ERROR )
-							{
-								if ( error != AL_INVALID_ENUM )
-								{
-									Com_Printf( S_COLOR_YELLOW "WARNING: Cannot get sample offset from source %d: "
-									            "%s\n", i, S_AL_ErrorMsg( error ) );
-								}
-							}
-
-							else
-								alSourcei( curSource->alSource, AL_SAMPLE_OFFSET, offset );
-						}
-
-						else if ( curSfx->loopCnt && curSfx->masterLoopSrc >= 0 )
-						{
-							float secofs;
-
-							src_t *master = &srcList[curSfx->masterLoopSrc];
-							// This loop sound used to be played, but all sources are stopped. Use last sample position/time
-							// to calculate offset so the player thinks the sources continued playing while they were inaudible.
-
-							if ( master->lastTimePos >= 0 )
-							{
-								secofs = master->lastTimePos + ( Sys_Milliseconds() - master->lastSampleTime ) / 1000.0f;
-								secofs = fmodf( secofs, ( float ) curSfx->info.samples / curSfx->info.rate );
-
-								alSourcef( curSource->alSource, AL_SEC_OFFSET, secofs );
-							}
-
-							// I be the master now
-							curSfx->masterLoopSrc = i;
-						}
-
-						else
-							curSfx->masterLoopSrc = i;
-					}
-
-					else if ( curSource->lastTimePos >= 0 )
+/*
 					{
 						float secofs;
 
@@ -1623,9 +1062,7 @@ void S_AL_SrcUpdate( void )
 						secofs = fmodf( secofs, ( float ) curSfx->info.samples / curSfx->info.rate );
 						alSourcef( curSource->alSource, AL_SEC_OFFSET, secofs );
 					}
-
-					curSfx->loopActiveCnt++;
-
+*/
 					alSourcei( curSource->alSource, AL_LOOPING, AL_TRUE );
 					curSource->isPlaying = qtrue;
 					alSourcePlay( curSource->alSource );
@@ -1725,7 +1162,7 @@ S_AL_AllocateStreamChannel
 =================
 */
 static void S_AL_AllocateStreamChannel( int stream, int entityNum )
-{
+{/*
 	srcHandle_t cursrc;
 	ALuint alsrc;
 
@@ -1778,7 +1215,7 @@ static void S_AL_AllocateStreamChannel( int stream, int entityNum )
 
 	streamSourceHandles[stream] = cursrc;
 	streamSources[stream] = alsrc;
-}
+*/}
 
 /*
 =================
@@ -1786,7 +1223,7 @@ S_AL_FreeStreamChannel
 =================
 */
 static void S_AL_FreeStreamChannel( int stream )
-{
+{/*
 	if ( ( stream < 0 ) || ( stream >= MAX_RAW_STREAMS ) )
 		return;
 
@@ -1795,7 +1232,7 @@ static void S_AL_FreeStreamChannel( int stream )
 	S_AL_SrcKill( streamSourceHandles[stream] );
 	streamSources[stream] = 0;
 	streamSourceHandles[stream] = -1;
-}
+*/}
 
 /*
 =================
@@ -1804,7 +1241,7 @@ S_AL_RawSamples
 */
 static
 void S_AL_RawSamples( int stream, int samples, int rate, int width, int channels, const byte *data, float volume, int entityNum )
-{
+{/*
 	ALuint buffer;
 	ALuint format;
 
@@ -1838,7 +1275,7 @@ void S_AL_RawSamples( int stream, int samples, int rate, int width, int channels
 		// Volume
 		S_AL_Gain( streamSources[stream], volume * s_volume->value * s_alGain->value );
 	}
-}
+*/}
 
 /*
 =================
@@ -1847,7 +1284,7 @@ S_AL_StreamUpdate
 */
 static
 void S_AL_StreamUpdate( int stream )
-{
+{/*
 	int		numBuffers;
 	ALint	state;
 
@@ -1886,7 +1323,7 @@ void S_AL_StreamUpdate( int stream )
 		alSourcePlay( streamSources[stream] );
 		streamPlaying[stream] = qtrue;
 	}
-}
+*/}
 
 /*
 =================
@@ -1895,7 +1332,7 @@ S_AL_StreamDie
 */
 static
 void S_AL_StreamDie( int stream )
-{
+{/*
 	int		numBuffers;
 
 	if ( ( stream < 0 ) || ( stream >= MAX_RAW_STREAMS ) )
@@ -1918,7 +1355,7 @@ void S_AL_StreamDie( int stream )
 	}
 
 	S_AL_FreeStreamChannel( stream );
-}
+*/}
 
 
 //===========================================================================
@@ -2359,8 +1796,9 @@ S_AL_BeginRegistration
 static
 void S_AL_BeginRegistration( void )
 {
-	if ( !numSfx )
-		S_AL_BufferInit();
+	//if ( !numSfx )
+	//	S_AL_BufferInit();
+    InitSamples();
 }
 
 /*
@@ -2417,7 +1855,7 @@ void S_AL_Shutdown( void )
 
 	S_AL_StopBackgroundTrack( );
 	S_AL_SrcShutdown( );
-	S_AL_BufferShutdown( );
+    ShutdownSamples();
 
 	alcDestroyContext( alContext );
 	alcCloseDevice( alDevice );
@@ -2531,7 +1969,7 @@ qboolean S_AL_Init( soundInterface_t *si )
 	alcMakeContextCurrent( alContext );
 
 	// Initialize sources, buffers, music
-	S_AL_BufferInit( );
+    InitSamples();
 	S_AL_SrcInit( );
 
 	// Set up OpenAL parameters (doppler, etc)
