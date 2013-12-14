@@ -33,6 +33,8 @@ namespace Str {
 
     template<typename T> class BasicStringRef {
     public:
+        static const size_t npos = -1;
+
         BasicStringRef(const std::basic_string<T>& other)
         {
             ptr = other.c_str();
@@ -91,6 +93,49 @@ namespace Str {
             return len;
         }
 
+        std::basic_string<T> substr(size_t pos = 0, size_t count = npos)
+        {
+            if (count == npos)
+                count = std::max<size_t>(len - pos, 0);
+            return std::basic_string<T>(ptr + pos, count);
+        }
+
+        size_t find(BasicStringRef str, size_t pos = 0)
+        {
+            if (pos > len)
+                return npos;
+            const T* result = std::search(ptr + pos, ptr + len, str.ptr, str.ptr + str.len);
+            if (result == ptr + len)
+                return npos;
+            return result - ptr;
+        }
+        size_t find(T chr, size_t pos = 0)
+        {
+            if (pos >= len)
+                return npos;
+            const T* result = std::char_traits<T>::find(ptr + pos, len - pos, chr);
+            if (result == nullptr)
+                return npos;
+            return result - ptr;
+        }
+        size_t rfind(BasicStringRef str, size_t pos = npos)
+        {
+            pos = std::min(pos + str.len, len);
+            const T* result = std::find_end(ptr, ptr + pos, str.ptr, str.ptr + str.len);
+            if (str.len != 0 && result == ptr + pos)
+                return npos;
+            return result - ptr;
+        }
+        size_t rfind(T chr, size_t pos = npos)
+        {
+            pos = std::min(pos + 1, len);
+            for (const T* p = ptr + pos; p != ptr;) {
+                if (*--p == chr)
+                    return p - ptr;
+            }
+            return npos;
+        }
+
         int compare(BasicStringRef other) const
         {
             int result = std::char_traits<T>::compare(ptr, other.ptr, std::min(len, other.len));
@@ -127,6 +172,19 @@ namespace Str {
         {
             return stream << str.c_str();
         }
+        friend std::basic_string<T> operator+(BasicStringRef a, BasicStringRef b)
+        {
+            std::basic_string<T> out;
+            out.reserve(a.size() + b.size());
+            out.append(a.data(), a.size());
+            out.append(b.data(), b.size());
+            return out;
+        }
+        friend std::basic_string<T> operator+(std::basic_string<T>&& a, BasicStringRef b)
+        {
+            a.append(b.data(), b.size());
+            return std::move(a);
+        }
 
     private:
         const T* ptr;
@@ -137,12 +195,57 @@ namespace Str {
     int ToInt(Str::StringRef text);
     bool ToInt(Str::StringRef text, int& result);
 
-    std::string Lower(Str::StringRef text);
+    // Locale-independent versions of ctype
+    inline bool cisdigit(char c)
+    {
+        return c >= '0' && c <= '9';
+    }
+    inline bool cisupper(char c)
+    {
+        return c >= 'A' && c <= 'Z';
+    }
+    inline bool cislower(char c)
+    {
+        return c >= 'a' && c <= 'z';
+    }
+    inline bool cisalpha(char c)
+    {
+        return cisupper(c) || cislower(c);
+    }
+    inline bool cisalnum(char c)
+    {
+        return cisalpha(c) || cisdigit(c);
+    }
+    inline bool cisspace(char c)
+    {
+        return c == ' ' || c == '\t' || c == '\n' || c == '\r';
+    }
+    inline bool cisxdigit(char c)
+    {
+        return cisdigit(c) || (c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f');
+    }
+    inline char ctolower(char c)
+    {
+        if (cisupper(c))
+            return c - 'A' + 'a';
+        else
+            return c;
+    }
+    inline char ctoupper(char c)
+    {
+        if (cislower(c))
+            return c - 'a' + 'A';
+        else
+            return c;
+    }
+
+    std::string ToLower(Str::StringRef text);
 
     bool IsPrefix(Str::StringRef prefix, Str::StringRef text);
+    bool IsSuffix(Str::StringRef suffix, Str::StringRef text);
     int LongestPrefixSize(Str::StringRef text1, Str::StringRef text2);
 
-    // Case Insensitive versions
+    // Case insensitive versions
     bool IsIPrefix(Str::StringRef prefix, Str::StringRef text);
     int LongestIPrefixSize(Str::StringRef text1, Str::StringRef text2);
 
@@ -150,10 +253,7 @@ namespace Str {
     struct IHash {
         size_t operator()(Str::StringRef str) const
         {
-            std::string temp;
-            temp.reserve(str.size());
-            std::transform(str.begin(), str.end(), std::back_inserter(temp), tolower);
-            return std::hash<std::string>()(temp);
+            return std::hash<std::string>()(ToLower(str));
         }
     };
     struct IEqual {

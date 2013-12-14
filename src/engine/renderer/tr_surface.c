@@ -68,12 +68,12 @@ void RB_CheckOverflow( int verts, int indexes )
 
 	if ( verts >= tess.maxShaderVerts )
 	{
-		ri.Error( ERR_DROP, "RB_CheckOverflow: verts > MAX (%d > %d)", verts, tess.maxShaderVerts );
+		ri.Error( ERR_DROP, "RB_CheckOverflow: verts > std::max (%d > %d)", verts, tess.maxShaderVerts );
 	}
 
 	if ( indexes >= tess.maxShaderIndicies )
 	{
-		ri.Error( ERR_DROP, "RB_CheckOverflow: indices > MAX (%d > %d)", indexes, tess.maxShaderIndicies );
+		ri.Error( ERR_DROP, "RB_CheckOverflow: indices > std::max (%d > %d)", indexes, tess.maxShaderIndicies );
 	}
 
 	RB_BeginSurface( tess.shader, tess.fogNum );

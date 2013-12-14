@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // tr_models.c -- model loading and caching
 #include "tr_local.h"
+#include "../../common/Maths.h"
 
 #define LL(x) x = LittleLong(x)
 #define LF(x) x = LittleFloat(x)
@@ -550,7 +551,7 @@ static int R_GetTag( mdvModel_t *model, int frame, const char *_tagName, int sta
 	mdvTagName_t *tagName;
 
 	// it is possible to have a bad frame while changing models, so don't error
-	frame = Q_bound( 0, frame, model->numFrames - 1 );
+	frame = Maths::clamp( frame, 0, model->numFrames - 1 );
 
 	if ( startTagIndex > model->numTags )
 	{

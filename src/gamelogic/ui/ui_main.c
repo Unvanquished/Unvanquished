@@ -3959,7 +3959,7 @@ static void UI_RunMenuScript( char **args )
 
 							while ( len > 0 )
 							{
-								int count = MIN( sizeof( b ), len );
+								int count = MIN( sizeof( b ), (size_t) len );
 
 								trap_FS_Read( &b, count, f2 );
 								trap_FS_Write( &b, count, f );

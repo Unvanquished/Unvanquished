@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // tr_light.c
 #include "tr_local.h"
+#include "../../common/Maths.h"
 
 /*
 =============
@@ -1555,11 +1556,11 @@ void R_SetupLightScissor( trRefLight_t *light )
 			break;
 	}
 
-	Q_clamp( light->scissor.coords[ 0 ], tr.viewParms.viewportX, tr.viewParms.viewportX + tr.viewParms.viewportWidth );
-	Q_clamp( light->scissor.coords[ 2 ], tr.viewParms.viewportX, tr.viewParms.viewportX + tr.viewParms.viewportWidth );
+	light->scissor.coords[ 0 ] = Maths::clamp( light->scissor.coords[ 0 ], tr.viewParms.viewportX, tr.viewParms.viewportX + tr.viewParms.viewportWidth );
+	light->scissor.coords[ 2 ] = Maths::clamp( light->scissor.coords[ 2 ], tr.viewParms.viewportX, tr.viewParms.viewportX + tr.viewParms.viewportWidth );
 
-	Q_clamp( light->scissor.coords[ 1 ], tr.viewParms.viewportY, tr.viewParms.viewportY + tr.viewParms.viewportHeight );
-	Q_clamp( light->scissor.coords[ 3 ], tr.viewParms.viewportY, tr.viewParms.viewportY + tr.viewParms.viewportHeight );
+	light->scissor.coords[ 1 ] = Maths::clamp( light->scissor.coords[ 1 ], tr.viewParms.viewportY, tr.viewParms.viewportY + tr.viewParms.viewportHeight );
+	light->scissor.coords[ 3 ] = Maths::clamp( light->scissor.coords[ 3 ], tr.viewParms.viewportY, tr.viewParms.viewportY + tr.viewParms.viewportHeight );
 }
 
 /*

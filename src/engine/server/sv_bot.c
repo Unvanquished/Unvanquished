@@ -46,7 +46,7 @@ SV_BotAllocateClient
 int SV_BotAllocateClient( int clientNum )
 {
 	int      i;
-	int      firstSlot = MAX( 1, sv_privateClients->integer );
+	int      firstSlot = std::max( 1, sv_privateClients->integer );
 	client_t *cl;
 
 	// Arnout: added possibility to request a clientnum

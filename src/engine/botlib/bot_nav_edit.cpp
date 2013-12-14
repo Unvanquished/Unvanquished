@@ -37,6 +37,7 @@ Maryland 20850 USA.
 #include "../../libs/detour/DebugDraw.h"
 #include "bot_navdraw.h"
 #include "nav.h"
+#include "../../common/Maths.h"
 
 #define DEFAULT_CONNECTION_SIZE 50
 static int connectionSize = DEFAULT_CONNECTION_SIZE;
@@ -287,7 +288,7 @@ void Cmd_AddConnection( void )
 
 			if ( argc == 4 )
 			{
-				cmd.pc.radius = MAX( atoi( Cmd_Argv( 3 ) ), 10 );
+				cmd.pc.radius = std::max( atoi( Cmd_Argv( 3 ) ), 10 );
 			}
 			else
 			{
@@ -346,14 +347,10 @@ static void adjustConnectionSize( int dir )
 
 	if ( argc > 1 )
 	{
-		adjust = atoi( Cmd_Argv( 1 ) );
-		adjust = MIN( adjust, 20 );
-		adjust = MAX( adjust, 1 );
+		adjust = Maths::clamp( atoi( Cmd_Argv( 1 ) ), 1, 20 );
 	}
 
-	newConnectionSize = connectionSize + dir * adjust;
-	newConnectionSize = MIN( newConnectionSize, 100 );
-	newConnectionSize = MAX( newConnectionSize, 20 );
+	newConnectionSize = Maths::clamp( connectionSize + dir * adjust, 20, 100 );
 
 	if ( newConnectionSize != connectionSize )
 	{

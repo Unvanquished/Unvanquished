@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // tr_image.c
 #include "tr_local.h"
+#include "../../common/Maths.h"
 
 static byte          s_intensitytable[ 256 ];
 static unsigned char s_gammatable[ 256 ];
@@ -841,7 +842,7 @@ static void R_HeightMapToNormalMap( byte *img, int width, int height, float scal
 			*img++ = Tex_FloatToByte( n[ 2 ] );
 
 			// put in no height as displacement map by default
-			*img++ = ( byte ) 0; //(Q_bound(0, c * 255.0 / 3.0, 255));
+			*img++ = ( byte ) 0; //Maths::clamp(c * 255.0 / 3.0, 0.0f, 255.0f));
 		}
 	}
 }
@@ -900,7 +901,7 @@ static void R_AddNormals( byte *img, byte *in2, int width, int height )
 		img[ 0 ] = Tex_FloatToByte( n[ 0 ] );
 		img[ 1 ] = Tex_FloatToByte( n[ 1 ] );
 		img[ 2 ] = Tex_FloatToByte( n[ 2 ] );
-		img[ 3 ] = ( byte )( Q_bound( 0, a + a2, 255 ) );
+		img[ 3 ] = ( byte )( Maths::clamp( a + a2, 0, 255 ) );
 
 		img += 4;
 		in2 += 4;

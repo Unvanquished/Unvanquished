@@ -1438,7 +1438,7 @@ static void R_SetupProjection( qboolean infiniteFarClip )
 
 	if ( r_zfar->value )
 	{
-		zFar = tr.viewParms.zFar = MAX( tr.viewParms.zFar, r_zfar->value );
+		zFar = tr.viewParms.zFar = std::max( tr.viewParms.zFar, r_zfar->value );
 	}
 	else if ( infiniteFarClip )
 	{

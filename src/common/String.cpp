@@ -45,11 +45,11 @@ namespace Str {
         return true;
     }
 
-    std::string Lower(Str::StringRef text) {
+    std::string ToLower(Str::StringRef text) {
         std::string res;
-        res.resize(text.size());
+        res.reserve(text.size());
 
-        std::transform(text.begin(), text.end(), res.begin(), tolower);
+        std::transform(text.begin(), text.end(), std::back_inserter(res), ctolower);
 
         return res;
     }
@@ -59,6 +59,12 @@ namespace Str {
         return res.first == prefix.end();
     }
 
+    bool IsSuffix(Str::StringRef suffix, Str::StringRef text) {
+        if (text.size() < suffix.size())
+            return false;
+        return std::equal(text.begin() + text.size() - suffix.size(), text.end(), suffix.begin());
+    }
+
     int LongestPrefixSize(Str::StringRef text1, Str::StringRef text2) {
         auto res = std::mismatch(text1.begin(), text1.end(), text2.begin());
 
@@ -66,11 +72,11 @@ namespace Str {
     }
 
     bool IsIPrefix(Str::StringRef prefix, Str::StringRef text) {
-        return IsPrefix(Lower(prefix), Lower(text));
+        return IsPrefix(ToLower(prefix), ToLower(text));
     }
 
     int LongestIPrefixSize(Str::StringRef text1, Str::StringRef text2) {
-        return LongestPrefixSize(Lower(text1), Lower(text2));
+        return LongestPrefixSize(ToLower(text1), ToLower(text2));
     }
 
     // Unicode encoder/decoder based on http://utfcpp.sourceforge.net/

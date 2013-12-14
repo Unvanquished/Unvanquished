@@ -99,12 +99,12 @@ void Tess_CheckOverflow( int verts, int indexes )
 
 	if ( verts >= SHADER_MAX_VERTEXES )
 	{
-		ri.Error( ERR_DROP, "Tess_CheckOverflow: verts > MAX (%d > %d)", verts, SHADER_MAX_VERTEXES );
+		ri.Error( ERR_DROP, "Tess_CheckOverflow: verts > std::max (%d > %d)", verts, SHADER_MAX_VERTEXES );
 	}
 
 	if ( indexes >= SHADER_MAX_INDEXES )
 	{
-		ri.Error( ERR_DROP, "Tess_CheckOverflow: indexes > MAX (%d > %d)", indexes, SHADER_MAX_INDEXES );
+		ri.Error( ERR_DROP, "Tess_CheckOverflow: indexes > std::max (%d > %d)", indexes, SHADER_MAX_INDEXES );
 	}
 
 	Tess_Begin( tess.stageIteratorFunc, tess.stageIteratorFunc2, tess.surfaceShader, tess.lightShader, tess.skipTangentSpaces, tess.skipVBO,
@@ -900,7 +900,7 @@ void Tess_SurfacePolybuffer( srfPolyBuffer_t *surf )
 
 	Tess_CheckOverflow( surf->pPolyBuffer->numVerts, surf->pPolyBuffer->numIndicies );
 
-	numIndexes = MIN( surf->pPolyBuffer->numIndicies, MAX_PB_INDICIES );
+	numIndexes = std::min( surf->pPolyBuffer->numIndicies, MAX_PB_INDICIES );
 	indices = surf->pPolyBuffer->indicies;
 
 	for ( i = 0; i < numIndexes; i++ )
@@ -910,7 +910,7 @@ void Tess_SurfacePolybuffer( srfPolyBuffer_t *surf )
 
 	tess.numIndexes += numIndexes;
 
-	numVertexes = MIN( surf->pPolyBuffer->numVerts, MAX_PB_VERTS );
+	numVertexes = std::min( surf->pPolyBuffer->numVerts, MAX_PB_VERTS );
 	xyzw = &surf->pPolyBuffer->xyz[ 0 ][ 0 ];
 	st = &surf->pPolyBuffer->st[ 0 ][ 0 ];
 	color = &surf->pPolyBuffer->color[ 0 ][ 0 ];
