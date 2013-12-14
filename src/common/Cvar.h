@@ -125,7 +125,7 @@ namespace Cvar {
             typedef typename Base::value_type value_type;
 
             template <typename ... Args>
-            Callback(std::string name, std::string description, int flags, value_type, std::function<void(value_type)> callback, Args ... args);
+            Callback(std::string name, std::string description, int flags, value_type, std::function<void(value_type)> callback, Args&& ... args);
 
             virtual OnValueChangedResult OnValueChanged(Str::StringRef newValue);
 
@@ -206,7 +206,7 @@ namespace Cvar {
 
     template <typename Base>
     template <typename ... Args>
-    Callback<Base>::Callback(std::string name, std::string description, int flags, value_type defaultValue, std::function<void(value_type)> callback, Args ... args)
+    Callback<Base>::Callback(std::string name, std::string description, int flags, value_type defaultValue, std::function<void(value_type)> callback, Args&& ... args)
     : Base(std::move(name), std::move(description), flags, std::move(defaultValue), std::forward<Args>(args) ...),
     callback(callback) {
     }

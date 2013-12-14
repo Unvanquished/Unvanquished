@@ -281,8 +281,8 @@ namespace Str {
         return format;
     }
     template<typename ... Args>
-    std::string Format(Str::StringRef format, const Args& ... args) {
-        return tinyformat::format(format.c_str(), args ...);
+    std::string Format(Str::StringRef format, Args&& ... args) {
+        return tinyformat::format(format.c_str(), std::forward<Args>(args) ...);
     }
 }
 

@@ -125,7 +125,7 @@ namespace Cmd {
             // Shortcuts for this->GetEnv().*
             // Commands should use these functions when possible.
             template <typename ... Args>
-            void Print(Str::StringRef text, Args ... args) const;
+            void Print(Str::StringRef text, Args&& ... args) const;
             void ExecuteAfter(Str::StringRef text, bool parseCvars = false) const;
 
         private:
@@ -166,8 +166,8 @@ namespace Cmd {
     // Implementation of templates.
 
     template <typename ... Args>
-    void CmdBase::Print(Str::StringRef text, Args ... args) const {
-        GetEnv().Print(Str::Format(text, args ...));
+    void CmdBase::Print(Str::StringRef text, Args&& ... args) const {
+        GetEnv().Print(Str::Format(text, std::forward<Args>(args) ...));
     }
 
 }
