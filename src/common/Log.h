@@ -72,7 +72,7 @@ namespace Log {
             void Error(Str::StringRef format, Args&& ... args);
 
             template<typename ... Args>
-            void Warn(Str::StringRefformat, Args&& ... args);
+            void Warn(Str::StringRef format, Args&& ... args);
 
             template<typename ... Args>
             void Notice(Str::StringRef format, Args&& ... args);
@@ -93,16 +93,16 @@ namespace Log {
      */
 
     template<typename ... Args>
-    void Error(Str::StringRef foramt, Args&& ... args);
+    void Error(Str::StringRef format, Args&& ... args);
 
     template<typename ... Args>
-    void Warn(Str::StringRef foramt, Args&& ... args);
+    void Warn(Str::StringRef format, Args&& ... args);
 
     template<typename ... Args>
-    void Notice(Str::StringRef foramt, Args&& ... args);
+    void Notice(Str::StringRef format, Args&& ... args);
 
     template<typename ... Args>
-    void Debug(Str::StringRef foramt, Args&& ... args);
+    void Debug(Str::StringRef format, Args&& ... args);
 
     /*
      * A log Event, sent to the log system along a list of targets to output

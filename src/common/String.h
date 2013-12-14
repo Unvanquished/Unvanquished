@@ -180,11 +180,6 @@ namespace Str {
             out.append(b.data(), b.size());
             return out;
         }
-        friend std::basic_string<T> operator+(std::basic_string<T>&& a, BasicStringRef b)
-        {
-            a.append(b.data(), b.size());
-            return std::move(a);
-        }
 
     private:
         const T* ptr;
@@ -277,7 +272,7 @@ namespace Str {
     std::string UTF16To8(Str::BasicStringRef<wchar_t> str);
 #endif
 
-    inline std::string Format(std::string format) {
+    inline std::string Format(Str::StringRef format) {
         return format;
     }
     template<typename ... Args>

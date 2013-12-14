@@ -4887,7 +4887,7 @@ void    FS_FilenameCompletion( const char *dir, const char *ext,
 }
 
 namespace FS {
-    Cmd::CompletionResult CompleteFilenameInDir(Str::StringRef prefix, Str::StringRefdir,
+    Cmd::CompletionResult CompleteFilenameInDir(Str::StringRef prefix, Str::StringRef dir,
                                                 Str::StringRef extension, bool stripExtension) {
         int nfiles;
         char** filenames = FS_ListFilteredFiles(dir.c_str(), extension.c_str(), nullptr, &nfiles);

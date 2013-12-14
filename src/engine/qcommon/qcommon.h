@@ -41,6 +41,7 @@ Maryland 20850 USA.
 //kangz need these for the command completion handlers
 #include <vector>
 #include <string>
+#include "../../common/String.h"
 #include "cvar.h"
 
 //============================================================================
