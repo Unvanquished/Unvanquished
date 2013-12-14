@@ -33,16 +33,15 @@ namespace Audio {
 
     void InitEmitters();
     void ShutdownEmitters();
-
-    void UpdateEverything();
+    void UpdateEmitters();
 
     Emitter* GetEmitterForEntity(int entityNum);
     Emitter* GetEmitterForPosition(const vec3_t position);
     Emitter* GetLocalEmitter();
 
-    void UpdateEntityPosition(int entityNum, const vec3_t position);
-    void UpdateEntityVelocity(int entityNum, const vec3_t velocity);
-    void UpdateEntityOcclusion(int entityNum, float ratio);
+    void UpdateRegisteredEntityPosition(int entityNum, const vec3_t position);
+    void UpdateRegisteredEntityVelocity(int entityNum, const vec3_t velocity);
+    void UpdateRegisteredEntityOcclusion(int entityNum, float ratio);
 
     class Sound;
 
@@ -55,9 +54,11 @@ namespace Audio {
             Emitter();
             virtual ~Emitter();
 
-            void Update();
-            virtual void UpdateSource(AL::Source& source) = 0;
+            void UpdateSounds();
             void SetupSource(AL::Source& source);
+
+            void virtual Update() = 0;
+            virtual void UpdateSource(AL::Source& source) = 0;
             virtual void InternalSetupSource(AL::Source& source) = 0;
 
             void AddSound(Sound* sound);
@@ -77,6 +78,7 @@ namespace Audio {
             EntityEmitter(int entityNum);
             virtual ~EntityEmitter();
 
+            void virtual Update() OVERRIDE;
             virtual void UpdateSource(AL::Source& source) OVERRIDE;
             virtual void InternalSetupSource(AL::Source& source) OVERRIDE;
 
@@ -89,6 +91,7 @@ namespace Audio {
             PositionEmitter(const vec3_t position);
             virtual ~PositionEmitter();
 
+            void virtual Update() OVERRIDE;
             virtual void UpdateSource(AL::Source& source) OVERRIDE;
             virtual void InternalSetupSource(AL::Source& source) OVERRIDE;
 
@@ -103,6 +106,7 @@ namespace Audio {
             LocalEmitter();
             virtual ~LocalEmitter();
 
+            void virtual Update() OVERRIDE;
             virtual void UpdateSource(AL::Source& source) OVERRIDE;
             virtual void InternalSetupSource(AL::Source& source) OVERRIDE;
     };

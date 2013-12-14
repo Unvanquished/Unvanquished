@@ -30,8 +30,16 @@ along with daemon source code.  if not, see <http://www.gnu.org/licenses/>.
 
 namespace Audio {
 
-    struct sourceRecord_t;
     class Emitter;
+    class Sound;
+
+    void InitSounds();
+    void ShutdownSounds();
+    void UpdateSounds();
+
+    void AddSound(Emitter* emitter, Sound* sound, int priority);
+
+    struct sourceRecord_t;
     class Sample;
 
     namespace AL {
@@ -85,20 +93,6 @@ namespace Audio {
     // StreamSound
     // MusicSound?
 
-    void InitSounds();
-    void ShutdownSounds();
-
-    // Exposed interface
-
-    // One shot sounds
-    void StartSound(int entityNum, const vec3_t origin, Sample* sample);
-    void StartLocalSound(Sample* sample);
-
-    // Looping sounds //TODO these are called each frame so we need to track them
-    void AddAmbientLoopingSound(int entityNum, const vec3_t origin, Sample* sample);
-    void AddEntityLoopingSound(int entityNum, const vec3_t origin, Sample* sample);
-    void ClearAllLoopingSounds();
-    void ClearLoopingSoundsForEntity(int entityNum);
 }
 
 #endif //AUDIO_SOUND_H_

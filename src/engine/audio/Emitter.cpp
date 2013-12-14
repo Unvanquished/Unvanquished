@@ -78,7 +78,7 @@ namespace Audio {
         initialized = false;
     }
 
-    void UpdateEverything() {
+    void UpdateEmitters() {
         localEmitter->Update();
 
         for (int i = 0; i < MAX_GENTITIES; i++) {
@@ -132,19 +132,19 @@ namespace Audio {
         return entityNum >= 0 and entityNum < MAX_GENTITIES;
     }
 
-    void UpdateEntityPosition(int entityNum, const vec3_t position) {
+    void UpdateRegisteredEntityPosition(int entityNum, const vec3_t position) {
         if (IsValidEntity(entityNum)) {
             VectorCopy(position, entities[entityNum].position);
         }
     }
 
-    void UpdateEntityVelocity(int entityNum, const vec3_t velocity) {
+    void UpdateRegisteredEntityVelocity(int entityNum, const vec3_t velocity) {
         if (IsValidEntity(entityNum)) {
             VectorCopy(velocity, entities[entityNum].velocity);
         }
     }
 
-    void UpdateEntityOcclusion(int entityNum, float ratio) {
+    void UpdateRegisteredEntityOcclusion(int entityNum, float ratio) {
         if (IsValidEntity(entityNum)) {
             entities[entityNum].occlusion = ratio;
         }
@@ -163,13 +163,12 @@ namespace Audio {
     }
 
     void Emitter::Update() {
+    }
+
+    void Emitter::UpdateSounds() {
         std::vector<Sound*> soundsBackup = this->sounds;
         for (Sound* sound: soundsBackup) {
             sound->Update();
-        }
-
-        for (Sound* sound : sounds) {
-            UpdateSource(sound->GetSource());
         }
     }
 
@@ -204,6 +203,14 @@ namespace Audio {
     EntityEmitter::~EntityEmitter(){
     }
 
+    void EntityEmitter::Update() {
+        UpdateSounds();
+
+        for (Sound* sound : sounds) {
+            UpdateSource(sound->GetSource());
+        }
+    }
+
     void EntityEmitter::UpdateSource(AL::Source& source) {
         if (entityNum == listenerEntity) {
             source.SetRelative(true);
@@ -230,6 +237,14 @@ namespace Audio {
     PositionEmitter::~PositionEmitter() {
     }
 
+    void PositionEmitter::Update() {
+        UpdateSounds();
+
+        for (Sound* sound : sounds) {
+            UpdateSource(sound->GetSource());
+        }
+    }
+
     void PositionEmitter::UpdateSource(AL::Source& source) {
     }
 
@@ -249,6 +264,10 @@ namespace Audio {
     }
 
     LocalEmitter::~LocalEmitter() {
+    }
+
+    void LocalEmitter::Update() {
+        UpdateSounds();
     }
 
     void LocalEmitter::UpdateSource(AL::Source& source) {

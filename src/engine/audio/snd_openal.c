@@ -24,12 +24,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "snd_local.h"
 #include "snd_codec.h"
 #include "../client/client.h"
-#include "ALObjects.h"
-#include "Emitter.h"
-#include "Sample.h"
-#include "Sound.h"
-
-using namespace Audio;
+#include "API.h"
 
 #ifndef BUILD_TTY_CLIENT
 
@@ -143,7 +138,6 @@ static void S_AL_ClearError( qboolean quiet )
 typedef struct src_s
 {
 	ALuint		alSource;		// OpenAL source object
-	Sample*	sfx;			// Sound effect in use
 
 	int		lastUsedTime;		// Last time used
 	alSrcPriority_t	priority;		// Priority
@@ -184,14 +178,13 @@ typedef struct sentity_s
 
 	qboolean				loopAddedThisFrame;
 	alSrcPriority_t	loopPriority;
-	Sample*			loopSfx;
 	qboolean				startLoopingSound;
 } sentity_t;
 
 static sentity_t entityList[MAX_GENTITIES];
 
 sfxHandle_t S_AL_RegisterSound(const char* sample, qboolean) {
-    return RegisterSample(sample)->GetHandle();
+    return Audio::RegisterSFX(sample);
 }
 
 /*
@@ -316,7 +309,7 @@ void S_AL_UpdateEntityPosition( int entityNum, const vec3_t origin )
 
 	VectorCopy( sanOrigin, entityList[entityNum].origin );
 
-    UpdateEntityPosition(entityNum, origin);
+    Audio::UpdateEntityPosition(entityNum, origin);
 }
 
 /*
@@ -335,7 +328,7 @@ void S_AL_UpdateEntityVelocity( int entityNum, const vec3_t velocity )
 	if ( entityNum < 0 || entityNum >= MAX_GENTITIES )
 		Com_Error( ERR_DROP, "S_UpdateEntityVelocity: bad entitynum %i", entityNum );
 
-    UpdateEntityVelocity(entityNum, velocity);
+    Audio::UpdateEntityVelocity(entityNum, velocity);
 	//VectorCopy( sanOrigin, entityList[entityNum].origin );
 }
 
@@ -363,7 +356,7 @@ static qboolean S_AL_CheckInput( int entityNum, sfxHandle_t sfx )
 	if ( entityNum < 0 || entityNum >= MAX_GENTITIES )
 		Com_Error( ERR_DROP, "ERROR: S_AL_CheckInput: bad entitynum %i", entityNum );
 
-	if ( not Sample::IsValidHandle(sfx) )
+	if ( false )
 	{
 		Com_Printf( S_COLOR_RED "ERROR: S_AL_CheckInput: handle %i out of range\n", sfx );
 		return qtrue;
@@ -385,7 +378,7 @@ void S_AL_StartLocalSound( sfxHandle_t sfx, int channel )
 	if ( S_AL_CheckInput( 0, sfx ) )
 		return;
 
-    StartLocalSound(Sample::FromHandle(sfx));
+    Audio::StartLocalSound(sfx);
 }
 
 /*
@@ -400,7 +393,7 @@ static void S_AL_StartSound( vec3_t origin, int entnum, int entchannel, sfxHandl
 	if ( S_AL_CheckInput( entnum, sfx ) )
 		return;
 
-    StartSound(entnum, origin, Sample::FromHandle(sfx));
+    Audio::StartSound(entnum, origin, sfx);
 }
 
 /*
@@ -1036,7 +1029,7 @@ void S_AL_Update( void )
 		s_muted->modified = qfalse;
 	}
 
-    UpdateEverything();
+    Audio::Update();
 	// Update SFX channels
 	//S_AL_SrcUpdate();
 
@@ -1100,7 +1093,6 @@ void S_AL_BeginRegistration( void )
 {
 	//if ( !numSfx )
 	//	S_AL_BufferInit();
-    InitSamples();
 }
 
 /*
@@ -1157,7 +1149,7 @@ void S_AL_Shutdown( void )
 
 	S_AL_StopBackgroundTrack( );
 	//S_AL_SrcShutdown( );
-    ShutdownSamples();
+    Audio::Shutdown();
 
 	alcDestroyContext( alContext );
 	alcCloseDevice( alDevice );
@@ -1271,9 +1263,7 @@ qboolean S_AL_Init( soundInterface_t *si )
 	alcMakeContextCurrent( alContext );
 
 	// Initialize sources, buffers, music
-    InitSamples();
-    InitEmitters();
-    InitSounds();
+    Audio::Init();
 	//S_AL_SrcInit( );
 
 	// Set up OpenAL parameters (doppler, etc)

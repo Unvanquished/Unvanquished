@@ -42,6 +42,8 @@ namespace Audio {
     static sourceRecord_t* sources = nullptr;
     static constexpr int nSources = 128; //TODO see what's the limit for OpenAL soft
 
+    sourceRecord_t* GetSource(int priority);
+
     static bool initialized = false;
 
     void InitSounds() {
@@ -67,6 +69,27 @@ namespace Audio {
         sources = nullptr;
 
         initialized = false;
+    }
+
+    void UpdateSounds() {
+
+    }
+
+    void AddSound(Emitter* emitter, Sound* sound, int priority) {
+        sourceRecord_t* source = GetSource(priority);
+
+        if (source) {
+            emitter->AddSound(sound);
+
+            sound->AcquireSource(source);
+            source->usingSound = sound;
+            source->priority = priority;
+            source->active = true;
+
+            sound->Play();
+        } else {
+            delete sound;
+        }
     }
 
     sourceRecord_t* GetSource(int priority) {
@@ -175,69 +198,5 @@ namespace Audio {
         source.SetBuffer(sample->GetBuffer());
     }
 */
-    // Exposed interface implementation
 
-    void AddSound(Emitter* emitter, Sound* sound, int priority) {
-        sourceRecord_t* source = GetSource(priority);
-
-        if (source) {
-            emitter->AddSound(sound);
-
-            sound->AcquireSource(source);
-            source->usingSound = sound;
-            source->priority = priority;
-            source->active = true;
-
-            sound->Play();
-        } else {
-            delete sound;
-        }
-    }
-
-    void AddSoundHelper(int entityNum, const vec3_t origin, Sound* sound, int priority) {
-        Emitter* emitter;
-
-        // Apparently no origin means it is attached to an entity
-        if (not origin) {
-            emitter = GetEmitterForEntity(entityNum);
-
-        } else {
-            emitter = GetEmitterForPosition(origin);
-        }
-
-        AddSound(emitter, sound, priority);
-    }
-
-    void StartSound(int entityNum, const vec3_t origin, Sample* sample) {
-        Log::Debug("Adding sound %s for entity %i", sample->GetName(), entityNum);
-        AddSoundHelper(entityNum, origin, new OneShotSound(sample), 1);
-    }
-
-    void StartLocalSound(Sample* sample) {
-        Log::Debug("Adding sound %s", sample->GetName());
-        AddSound(GetLocalEmitter(), new OneShotSound(sample), 1);
-    }
-
-    void AddAmbientLoopingSound(int entityNum, const vec3_t origin, Sample* sample) {
-        //AddSoundHelper(entityNum, origin, new LoopingSound(sample), 1);
-    }
-    void AddEntityLoopingSound(int entityNum, const vec3_t origin, Sample* sample) {
-        //AddSoundHelper(entityNum, origin, new LoopingSound(sample), 1);
-    }
-
-    void ClearEmitterLoopingSounds(Emitter* emitter) {
-        std::vector<Sound*> sounds = emitter->GetSounds();
-
-        for (Sound* sound : sounds) {
-            //TODO
-        }
-    }
-
-    void ClearAllLoopingSounds() {
-        //TODO
-    }
-
-    void ClearLoopingSoundsForEntity(int entityNum) {
-        ClearEmitterLoopingSounds(GetEmitterForEntity(entityNum));
-    }
 }
