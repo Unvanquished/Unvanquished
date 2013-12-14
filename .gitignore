@@ -10,9 +10,9 @@ Makefile
 cmake_install.cmake
 daemon*
 rendererGL*
-main/cgame.*
-main/game.*
-main/ui.*
+main/cgame-qvm-native.*
+main/game-qvm-native.*
+main/ui-qvm-native.*
 main/vm
 main/*.pk3
 Release

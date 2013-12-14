@@ -180,11 +180,6 @@ namespace Str {
             out.append(b.data(), b.size());
             return out;
         }
-        friend std::basic_string<T> operator+(std::basic_string<T>&& a, BasicStringRef b)
-        {
-            a.append(b.data(), b.size());
-            return std::move(a);
-        }
 
     private:
         const T* ptr;
@@ -239,13 +234,13 @@ namespace Str {
             return c;
     }
 
-    std::string Lower(Str::StringRef text);
+    std::string ToLower(Str::StringRef text);
 
     bool IsPrefix(Str::StringRef prefix, Str::StringRef text);
     bool IsSuffix(Str::StringRef suffix, Str::StringRef text);
     int LongestPrefixSize(Str::StringRef text1, Str::StringRef text2);
 
-    // Case Insensitive versions
+    // Case insensitive versions
     bool IsIPrefix(Str::StringRef prefix, Str::StringRef text);
     int LongestIPrefixSize(Str::StringRef text1, Str::StringRef text2);
 
@@ -253,10 +248,7 @@ namespace Str {
     struct IHash {
         size_t operator()(Str::StringRef str) const
         {
-            std::string temp;
-            temp.reserve(str.size());
-            std::transform(str.begin(), str.end(), std::back_inserter(temp), tolower);
-            return std::hash<std::string>()(temp);
+            return std::hash<std::string>()(ToLower(str));
         }
     };
     struct IEqual {
@@ -280,14 +272,12 @@ namespace Str {
     std::string UTF16To8(Str::BasicStringRef<wchar_t> str);
 #endif
 
-    std::string Format(const std::string& format);
-
+    inline std::string Format(Str::StringRef format) {
+        return format;
+    }
     template<typename ... Args>
-    std::string Format(const std::string& format, const Args& ... args);
-
-    template<typename ... Args>
-    std::string Format(const std::string& format, const Args& ... args) {
-        return tinyformat::format(format.c_str(), args ...);
+    std::string Format(Str::StringRef format, Args&& ... args) {
+        return tinyformat::format(format.c_str(), std::forward<Args>(args) ...);
     }
 }
 
