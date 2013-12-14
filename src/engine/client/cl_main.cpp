@@ -36,7 +36,6 @@ Maryland 20850 USA.
 
 #include "client.h"
 #include "../qcommon/q_unicode.h"
-#include <limits.h>
 
 #include "../framework/CommandSystem.h"
 

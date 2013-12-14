@@ -22,13 +22,9 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
-#include "ConsoleHistory.h"
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
-
-#include <vector>
-#include <memory>
-#include <algorithm>
+#include "ConsoleHistory.h"
 
 //TODO: make it thread safe.
 namespace Console {

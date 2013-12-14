@@ -39,9 +39,6 @@ Maryland 20850 USA.
 
 #include "../framework/CommandSystem.h"
 #include "../framework/CvarSystem.h"
-#include "../../common/String.h"
-
-#include <unordered_map>
 
 cvar_t        *cvar_vars;
 int           cvar_modifiedFlags;

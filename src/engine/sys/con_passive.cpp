@@ -32,7 +32,8 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#include <stdio.h>
+#include "../qcommon/q_shared.h"
+#include "../qcommon/qcommon.h"
 
 /* fallbacks for con_curses.c */
 #ifdef USE_CURSES
