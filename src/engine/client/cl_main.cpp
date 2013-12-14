@@ -4513,7 +4513,7 @@ void CL_Init( void )
 	//
 	// register our variables
 	//
-	cl_renderer = Cvar_Get( "cl_renderer", "GL3,GL", CVAR_ARCHIVE | CVAR_LATCH );
+	cl_renderer = Cvar_Get( "cl_renderer", "GL3,GL", CVAR_ARCHIVE );
 
 	cl_noprint = Cvar_Get( "cl_noprint", "0", 0 );
 	cl_motd = Cvar_Get( "cl_motd", "1", 0 );
