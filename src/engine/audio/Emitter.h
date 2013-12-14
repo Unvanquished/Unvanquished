@@ -22,14 +22,15 @@ along with daemon source code.  if not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
-#include "ALObjects.h"
-#include "Sound.h"
 #include "../../common/String.h"
 
 #ifndef AUDIO_EMITTER_H_
 #define AUDIO_EMITTER_H_
 
 namespace Audio {
+
+    class Sound;
+    class Emitter;
 
     void InitEmitters();
     void ShutdownEmitters();
@@ -54,20 +55,18 @@ namespace Audio {
             Emitter();
             virtual ~Emitter();
 
-            void UpdateSounds();
-            void SetupSource(AL::Source& source);
+            void SetupSound(Sound* sound);
 
             void virtual Update() = 0;
-            virtual void UpdateSource(AL::Source& source) = 0;
-            virtual void InternalSetupSource(AL::Source& source) = 0;
+            virtual void UpdateSound(Sound* sound) = 0;
+            virtual void InternalSetupSound(Sound* sound) = 0;
 
-            void AddSound(Sound* sound);
-            void RemoveSound(Sound* sound);
-            bool HasSounds() const;
-            const std::vector<Sound*>& GetSounds();
+            void Retain();
+            void Release();
+            int GetRefCount();
 
         protected:
-            std::vector<Sound*> sounds;
+            int refCount;
 
             float targetGain;
             float currentGain;
@@ -79,8 +78,8 @@ namespace Audio {
             virtual ~EntityEmitter();
 
             void virtual Update() OVERRIDE;
-            virtual void UpdateSource(AL::Source& source) OVERRIDE;
-            virtual void InternalSetupSource(AL::Source& source) OVERRIDE;
+            virtual void UpdateSound(Sound* sound) OVERRIDE;
+            virtual void InternalSetupSound(Sound* sound) OVERRIDE;
 
         private:
             int entityNum;
@@ -92,8 +91,8 @@ namespace Audio {
             virtual ~PositionEmitter();
 
             void virtual Update() OVERRIDE;
-            virtual void UpdateSource(AL::Source& source) OVERRIDE;
-            virtual void InternalSetupSource(AL::Source& source) OVERRIDE;
+            virtual void UpdateSound(Sound* sound) OVERRIDE;
+            virtual void InternalSetupSound(Sound* sound) OVERRIDE;
 
             const vec3_t& GetPosition() const;
 
@@ -107,8 +106,8 @@ namespace Audio {
             virtual ~LocalEmitter();
 
             void virtual Update() OVERRIDE;
-            virtual void UpdateSource(AL::Source& source) OVERRIDE;
-            virtual void InternalSetupSource(AL::Source& source) OVERRIDE;
+            virtual void UpdateSound(Sound* sound) OVERRIDE;
+            virtual void InternalSetupSound(Sound* sound) OVERRIDE;
     };
 
 }

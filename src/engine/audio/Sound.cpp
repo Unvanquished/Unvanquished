@@ -36,7 +36,6 @@ namespace Audio {
         Sound* usingSound;
         bool active;
         int priority;
-        int lastUsedTime;
     };
 
     static sourceRecord_t* sources = nullptr;
@@ -72,16 +71,33 @@ namespace Audio {
     }
 
     void UpdateSounds() {
+        for (int i = 0; i < nSources; i++) {
+            if (sources[i].active) {
+                Sound* sound = sources[i].usingSound;
 
+                if (not sound->IsStopped()) {
+                    sound->Update();
+                }
+
+                if (not sound->IsStopped()) {
+                    sound->GetEmitter()->UpdateSound(sound);
+                }
+
+                if (sound->IsStopped()) {
+                    sources[i].active = false;
+                    sources[i].usingSound = nullptr;
+                    delete sound;
+                }
+            }
+        }
     }
 
     void AddSound(Emitter* emitter, Sound* sound, int priority) {
         sourceRecord_t* source = GetSource(priority);
 
         if (source) {
-            emitter->AddSound(sound);
-
-            sound->AcquireSource(source);
+            sound->SetEmitter(emitter);
+            sound->AcquireSource(source->source);
             source->usingSound = sound;
             source->priority = priority;
             source->active = true;
@@ -115,11 +131,6 @@ namespace Audio {
                 bestPriority = source.priority;
                 continue;
             }
-
-            if (source.lastUsedTime < sources[best].lastUsedTime) {
-                best = i;
-                continue;
-            }
         }
 
         if (best >= 0) {
@@ -138,33 +149,43 @@ namespace Audio {
     }
 
     Sound::~Sound() {
-        source->active = false;
-        source->usingSound = nullptr;
-        source->source.Stop();
-
-        emitter->RemoveSound(this);
+        emitter->Release();
     }
 
     void Sound::Play() {
-        source->source.Play();
+        source->Play();
+        playing = true;
     }
 
-    void Sound::AcquireSource(sourceRecord_t* source) {
-        this->source = source;
-
-        AL::Source& alSource = source->source;
-        alSource.SetLooping(false);
-
-        SetupSource(source->source);
-        emitter->SetupSource(source->source);
+    void Sound::Stop() {
+        source->Stop();
+        playing = false;
     }
 
-    AL::Source& Sound::GetSource() {
-        return source->source;
+    bool Sound::IsStopped() {
+        return not playing;
     }
 
     void Sound::SetEmitter(Emitter* emitter) {
         this->emitter = emitter;
+        emitter->Retain();
+    }
+
+    Emitter* Sound::GetEmitter() {
+        return emitter;
+    }
+
+    void Sound::AcquireSource(AL::Source& source) {
+        this->source = &source;
+
+        source.SetLooping(false);
+
+        SetupSource(source);
+        emitter->SetupSound(this);
+    }
+
+    AL::Source& Sound::GetSource() {
+        return *source;
     }
 
     // Implementation of OneShotSound
@@ -181,7 +202,7 @@ namespace Audio {
 
     void OneShotSound::Update() {
         if (GetSource().IsStopped()) {
-            delete this;
+            Stop();
         }
     }
 

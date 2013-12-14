@@ -39,7 +39,6 @@ namespace Audio {
 
     void AddSound(Emitter* emitter, Sound* sound, int priority);
 
-    struct sourceRecord_t;
     class Sample;
 
     namespace AL {
@@ -53,17 +52,22 @@ namespace Audio {
             virtual ~Sound();
 
             void Play();
+            void Stop();
+            bool IsStopped();
 
-            void AcquireSource(sourceRecord_t* source);
-            AL::Source& GetSource();
             void SetEmitter(Emitter* emitter);
+            Emitter* GetEmitter();
+
+            void AcquireSource(AL::Source& source);
+            AL::Source& GetSource();
 
             virtual void SetupSource(AL::Source& source) = 0;
             virtual void Update() = 0;
 
         private:
+            bool playing;
             Emitter* emitter;
-            sourceRecord_t* source;
+            AL::Source* source;
     };
 
     class OneShotSound : public Sound {

@@ -84,11 +84,7 @@ namespace Audio {
     }
 
     void ClearEmitterLoopingSounds(Emitter* emitter) {
-        std::vector<Sound*> sounds = emitter->GetSounds();
-
-        for (Sound* sound : sounds) {
-            //TODO
-        }
+        //TODO
     }
 
     void ClearAllLoopingSounds() {

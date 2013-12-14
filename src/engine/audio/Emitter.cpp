@@ -22,7 +22,9 @@ along with daemon source code.  if not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
+#include "ALObjects.h"
 #include "Emitter.h"
+#include "Sound.h"
 
 #include "../../common/Log.h"
 
@@ -89,7 +91,7 @@ namespace Audio {
             }
 
             emitter->Update();
-            if (not emitter->HasSounds()) {
+            if (emitter->GetRefCount() == 0) {
                 delete emitter;
                 entityEmitters[i] = nullptr;
             }
@@ -97,9 +99,10 @@ namespace Audio {
 
         for (auto it = posEmitters.begin(); it != posEmitters.end();){
             (*it)->Update();
-            if ((*it)->HasSounds()) {
+            if ((*it)->GetRefCount() != 0) {
                 it ++;
             } else {
+                delete (*it);
                 it = posEmitters.erase(it);
             }
         }
@@ -128,71 +131,42 @@ namespace Audio {
         return localEmitter;
     }
 
-    bool IsValidEntity(int entityNum) {
-        return entityNum >= 0 and entityNum < MAX_GENTITIES;
-    }
-
     void UpdateRegisteredEntityPosition(int entityNum, const vec3_t position) {
-        if (IsValidEntity(entityNum)) {
-            VectorCopy(position, entities[entityNum].position);
-        }
+        VectorCopy(position, entities[entityNum].position);
     }
 
     void UpdateRegisteredEntityVelocity(int entityNum, const vec3_t velocity) {
-        if (IsValidEntity(entityNum)) {
-            VectorCopy(velocity, entities[entityNum].velocity);
-        }
+        VectorCopy(velocity, entities[entityNum].velocity);
     }
 
     void UpdateRegisteredEntityOcclusion(int entityNum, float ratio) {
-        if (IsValidEntity(entityNum)) {
-            entities[entityNum].occlusion = ratio;
-        }
+        entities[entityNum].occlusion = ratio;
     }
 
     // Implementation for Emitter
 
-    Emitter::Emitter() {
+    Emitter::Emitter() : refCount(0) {
     }
 
     Emitter::~Emitter() {
-        std::vector<Sound*> soundsBackup = this->sounds;
-        for (Sound* sound: soundsBackup) {
-            delete sound;
-        }
     }
 
-    void Emitter::Update() {
+    void Emitter::SetupSound(Sound* sound) {
+        sound->GetSource().SetReferenceDistance(120.0f);
+        InternalSetupSound(sound);
+        UpdateSound(sound);
     }
 
-    void Emitter::UpdateSounds() {
-        std::vector<Sound*> soundsBackup = this->sounds;
-        for (Sound* sound: soundsBackup) {
-            sound->Update();
-        }
+    void Emitter::Retain() {
+        refCount ++;
     }
 
-    void Emitter::SetupSource(AL::Source& source) {
-        source.SetReferenceDistance(120.0f);
-        InternalSetupSource(source);
-        UpdateSource(source);
+    void Emitter::Release() {
+        refCount --;
     }
 
-    void Emitter::AddSound(Sound* sound) {
-        sounds.push_back(sound);
-        sound->SetEmitter(this);
-    }
-
-    void Emitter::RemoveSound(Sound* sound) {
-        sounds.erase(std::remove(sounds.begin(), sounds.end(), sound), sounds.end());
-    }
-
-    bool Emitter::HasSounds() const {
-        return not sounds.empty();
-    }
-
-    const std::vector<Sound*>& Emitter::GetSounds() {
-        return sounds;
+    int Emitter::GetRefCount() {
+        return refCount;
     }
 
     // Implementation of EntityEmitter
@@ -204,14 +178,12 @@ namespace Audio {
     }
 
     void EntityEmitter::Update() {
-        UpdateSounds();
-
-        for (Sound* sound : sounds) {
-            UpdateSource(sound->GetSource());
-        }
+        // TODO
     }
 
-    void EntityEmitter::UpdateSource(AL::Source& source) {
+    void EntityEmitter::UpdateSound(Sound* sound) {
+        AL::Source& source = sound->GetSource();
+
         if (entityNum == listenerEntity) {
             source.SetRelative(true);
             source.SetPosition(origin);
@@ -225,7 +197,7 @@ namespace Audio {
         }
     }
 
-    void EntityEmitter::InternalSetupSource(AL::Source& source) {
+    void EntityEmitter::InternalSetupSound(Sound* sound) {
     }
 
     // Implementation of PositionEmitter
@@ -238,17 +210,15 @@ namespace Audio {
     }
 
     void PositionEmitter::Update() {
-        UpdateSounds();
-
-        for (Sound* sound : sounds) {
-            UpdateSource(sound->GetSource());
-        }
+        //TODO
     }
 
-    void PositionEmitter::UpdateSource(AL::Source& source) {
+    void PositionEmitter::UpdateSound(Sound* sound) {
     }
 
-    void PositionEmitter::InternalSetupSource(AL::Source& source) {
+    void PositionEmitter::InternalSetupSound(Sound* sound) {
+        AL::Source& source = sound->GetSource();
+
         source.SetRelative(false);
         source.SetPosition(position);
         source.SetVelocity(origin);
@@ -267,13 +237,14 @@ namespace Audio {
     }
 
     void LocalEmitter::Update() {
-        UpdateSounds();
     }
 
-    void LocalEmitter::UpdateSource(AL::Source& source) {
+    void LocalEmitter::UpdateSound(Sound* sound) {
     }
 
-    void LocalEmitter::InternalSetupSource(AL::Source& source) {
+    void LocalEmitter::InternalSetupSound(Sound* sound) {
+        AL::Source& source = sound->GetSource();
+
         source.SetRelative(true);
         source.SetPosition(origin);
         source.SetVelocity(origin);
