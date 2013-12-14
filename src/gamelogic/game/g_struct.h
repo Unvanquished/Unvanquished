@@ -574,7 +574,6 @@ struct gclient_s
 	int        medKitIncrementTime;
 	int        lastCreepSlowTime; // time until creep can be removed
 	int        lastCombatTime; // time of last damage received/dealt or held by basilisk
-	int        jetpackDisabledUntil; // when the jetpack damage disable flag will be cleared
 	int        lastAmmoRefillTime;
 	int        lastFuelRefillTime;
 

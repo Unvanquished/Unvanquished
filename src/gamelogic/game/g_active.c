@@ -2041,12 +2041,6 @@ void ClientThink_real( gentity_t *ent )
 		client->ps.stats[ STAT_STATE ] &= ~SS_CREEPSLOWED;
 	}
 
-	// unset jetpack damaged flag if it's time
-	if ( client->jetpackDisabledUntil < level.time )
-	{
-		client->ps.stats[ STAT_STATE2 ] &= ~SS2_JETPACK_DAMAGED;
-	}
-
 	// set up for pmove
 	oldEventSequence = client->ps.eventSequence;
 

@@ -269,7 +269,6 @@ typedef enum
 #define SS2_JETPACK_ENABLED BIT(0)  // whether jets/wings are extended
 #define SS2_JETPACK_WARM    BIT(1)  // whether we can start a thrust
 #define SS2_JETPACK_ACTIVE  BIT(2)  // whether we are thrusting
-#define SS2_JETPACK_DAMAGED BIT(3)  // whether we were damaged recently
 
 // has to fit into 16 bits
 #define SB_BUILDABLE_MASK        0x00FF

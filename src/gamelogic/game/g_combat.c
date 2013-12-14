@@ -1139,11 +1139,12 @@ void G_Damage( gentity_t *target, gentity_t *inflictor, gentity_t *attacker,
 			client->damage_fromWorld = qtrue;
 		}
 
-		// stop jetpack for a short time
-		client->jetpackDisabledUntil = MAX(client->jetpackDisabledUntil, level.time);
-		client->jetpackDisabledUntil += damage * JETPACK_DISABLE_PER_DMG;
-		client->jetpackDisabledUntil = MIN(client->jetpackDisabledUntil, level.time + JETPACK_DISABLE_MAX_TIME);
-		client->ps.stats[ STAT_STATE2 ] |= SS2_JETPACK_DAMAGED;
+		// drain jetpack fuel
+		client->ps.stats[ STAT_FUEL ] -= damage * JETPACK_FUEL_PER_DMG;
+		if ( client->ps.stats[ STAT_FUEL ] < 0 )
+		{
+			client->ps.stats[ STAT_FUEL ] = 0;
+		}
 
 		// apply damage modifier
 		modifier = CalcDamageModifier( point, target, (class_t) client->ps.stats[ STAT_CLASS ], damageFlags );

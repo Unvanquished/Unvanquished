@@ -1908,10 +1908,9 @@ static void CG_DrawPlayerFuelIcon( rectDef_t *rect, vec4_t backColor,
 
 	fuel     = cg.snap->ps.stats[ STAT_FUEL ];
 	pmNormal = ( cg.snap->ps.pm_type == PM_NORMAL );
-	damaged  = ( cg.snap->ps.stats[ STAT_STATE2 ] & SS2_JETPACK_DAMAGED );
 	active   = ( cg.snap->ps.stats[ STAT_STATE2 ] & SS2_JETPACK_ACTIVE );
 
-	if ( fuel < JETPACK_FUEL_LOW || !pmNormal || damaged )
+	if ( fuel < JETPACK_FUEL_LOW || !pmNormal )
 	{
 		Vector4Copy( backColor, color );
 	}
