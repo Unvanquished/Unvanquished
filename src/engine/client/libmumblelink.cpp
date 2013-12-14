@@ -41,6 +41,8 @@
 
 #include "libmumblelink.h"
 
+#define ARRAY_LEN(x) ( sizeof( x ) / sizeof( *( x ) ) )
+
 typedef struct
 {
 	uint32_t      uiVersion;
@@ -129,7 +131,7 @@ int mumble_link( const char *name )
 	close( shmfd );
 #endif
 	memset( lm, 0, sizeof( LinkedMem ) );
-	mbstowcs( lm->name, name, sizeof( lm->name ) / sizeof( wchar_t ) );
+	mbstowcs( lm->name, name, ARRAY_LEN( lm->name ) );
 
 	return 0;
 }
@@ -166,7 +168,7 @@ void mumble_set_identity( const char *identity )
 		return;
 	}
 
-	len = std::min( sizeof( lm->identity ), strlen( identity ) + 1 );
+	len = std::min( ARRAY_LEN( lm->identity ), strlen( identity ) + 1 );
 	mbstowcs( lm->identity, identity, len );
 }
 
@@ -191,7 +193,7 @@ void mumble_set_description( const char *description )
 		return;
 	}
 
-	len = std::min( sizeof( lm->description ), strlen( description ) + 1 );
+	len = std::min( ARRAY_LEN( lm->description ), strlen( description ) + 1 );
 	mbstowcs( lm->description, description, len );
 }
 

@@ -251,7 +251,8 @@ endif()
 if( WIN32 )
   # Minimum Windows version: XP
   # Define WIN32 for compatibility (compiler defines _WIN32)
-  add_definitions( -DWINVER=0x501 -DWIN32 )
+  # Define NOMINMAX to prevent conflics between std::min/max and the min/max macros in WinDef.h
+  add_definitions( -DWINVER=0x501 -DWIN32 -DNOMINMAX )
   set( CMAKE_FIND_LIBRARY_PREFIXES ${CMAKE_FIND_LIBRARY_PREFIXES} "" "lib" )
 endif()
 if( MSVC )
@@ -353,50 +354,61 @@ include_directories( "${OBJ_DIR}" )
 # File lists
 ################################################################################
 
-set( SHAREDLIST
-  ${ENGINE_DIR}/qcommon/q_shared.c
-  ${ENGINE_DIR}/qcommon/q_unicode.c
-  ${ENGINE_DIR}/qcommon/q_math.c
+set( SHAREDLIST_H
   ${ENGINE_DIR}/qcommon/q_shared.h
   ${ENGINE_DIR}/qcommon/q_unicode.h
   ${ENGINE_DIR}/qcommon/unicode_data.h
   ${ENGINE_DIR}/qcommon/logging.h
 )
 
+set( SHAREDLIST_C
+  ${ENGINE_DIR}/qcommon/q_shared.c
+  ${ENGINE_DIR}/qcommon/q_unicode.c
+  ${ENGINE_DIR}/qcommon/q_math.c
+  ${SHAREDLIST_H}
+)
+
+set( SHAREDLIST
+  ${ENGINE_DIR}/qcommon/q_shared.cpp
+  ${ENGINE_DIR}/qcommon/q_unicode.cpp
+  ${ENGINE_DIR}/qcommon/q_math.cpp
+  ${SHAREDLIST_H}
+)
+
 set( RENDERERLIST
-  ${ENGINE_DIR}/sys/sdl2_compat.c
-  ${ENGINE_DIR}/sys/sdl_glimp.c
-  ${ENGINE_DIR}/sys/sdl_gamma.c
-  ${ENGINE_DIR}/renderer/tr_animation.c
-  ${ENGINE_DIR}/renderer/tr_animation_mds.c
-  ${ENGINE_DIR}/renderer/tr_backend.c
-  ${ENGINE_DIR}/renderer/tr_bonematrix.c
+  ${ENGINE_DIR}/sys/sdl2_compat.cpp
+  ${ENGINE_DIR}/sys/sdl_glimp.cpp
+  ${ENGINE_DIR}/sys/sdl_gamma.cpp
+  ${ENGINE_DIR}/renderer/tr_animation.cpp
+  ${ENGINE_DIR}/renderer/tr_animation_mds.cpp
+  ${ENGINE_DIR}/renderer/tr_backend.cpp
+  ${ENGINE_DIR}/renderer/tr_bonematrix.cpp
   ${ENGINE_DIR}/renderer/tr_bonematrix.h
-  ${ENGINE_DIR}/renderer/tr_bsp.c
-  ${ENGINE_DIR}/renderer/tr_cmds.c
-  ${ENGINE_DIR}/renderer/tr_cmesh.c
-  ${ENGINE_DIR}/renderer/tr_curve.c
-  ${ENGINE_DIR}/renderer/tr_decals.c
-  ${ENGINE_DIR}/renderer/tr_flares.c
-  ${ENGINE_DIR}/renderer/tr_font.c
-  ${ENGINE_DIR}/renderer/tr_image.c
-  ${ENGINE_DIR}/renderer/tr_init.c
-  ${ENGINE_DIR}/renderer/tr_light.c
-  ${ENGINE_DIR}/renderer/tr_main.c
-  ${ENGINE_DIR}/renderer/tr_marks.c
-  ${ENGINE_DIR}/renderer/tr_mesh.c
-  ${ENGINE_DIR}/renderer/tr_model.c
-  ${ENGINE_DIR}/renderer/tr_model_md5.c
-  ${ENGINE_DIR}/renderer/tr_noise.c
-  ${ENGINE_DIR}/renderer/tr_scene.c
-  ${ENGINE_DIR}/renderer/tr_shade.c
-  ${ENGINE_DIR}/renderer/tr_shade_calc.c
-  ${ENGINE_DIR}/renderer/tr_shader.c
-  ${ENGINE_DIR}/renderer/tr_shadows.c
-  ${ENGINE_DIR}/renderer/tr_skin.c
-  ${ENGINE_DIR}/renderer/tr_sky.c
-  ${ENGINE_DIR}/renderer/tr_surface.c
-  ${ENGINE_DIR}/renderer/tr_world.c
+  ${ENGINE_DIR}/renderer/tr_bsp.cpp
+  ${ENGINE_DIR}/renderer/tr_cmds.cpp
+  ${ENGINE_DIR}/renderer/tr_cmesh.cpp
+  ${ENGINE_DIR}/renderer/tr_curve.cpp
+  ${ENGINE_DIR}/renderer/tr_decals.cpp
+  ${ENGINE_DIR}/renderer/tr_flares.cpp
+  ${ENGINE_DIR}/renderer/tr_font.cpp
+  ${ENGINE_DIR}/renderer/tr_image.cpp
+  ${ENGINE_DIR}/renderer/tr_init.cpp
+  ${ENGINE_DIR}/renderer/tr_light.cpp
+  ${ENGINE_DIR}/renderer/tr_main.cpp
+  ${ENGINE_DIR}/renderer/tr_marks.cpp
+  ${ENGINE_DIR}/renderer/tr_mesh.cpp
+  ${ENGINE_DIR}/renderer/tr_model.cpp
+  ${ENGINE_DIR}/renderer/tr_model_md5.cpp
+  ${ENGINE_DIR}/renderer/tr_noise.cpp
+  ${ENGINE_DIR}/renderer/tr_scene.cpp
+  ${ENGINE_DIR}/renderer/tr_shade.cpp
+  ${ENGINE_DIR}/renderer/tr_shade_calc.cpp
+  ${ENGINE_DIR}/renderer/tr_shader.cpp
+  ${ENGINE_DIR}/renderer/tr_shadows.cpp
+  ${ENGINE_DIR}/renderer/tr_skin.cpp
+  ${ENGINE_DIR}/renderer/tr_sky.cpp
+  ${ENGINE_DIR}/renderer/tr_surface.cpp
+  ${ENGINE_DIR}/renderer/tr_world.cpp
   ${ENGINE_DIR}/renderer/tr_local.h
   ${ENGINE_DIR}/renderer/tr_types.h
   ${ENGINE_DIR}/renderer/tr_public.h
@@ -404,52 +416,52 @@ set( RENDERERLIST
 )
 
 set( RENDERERGLLIST
-  ${ENGINE_DIR}/sys/sdl2_compat.c
-  ${ENGINE_DIR}/sys/sdl_glimp.c
-  ${ENGINE_DIR}/sys/sdl_gamma.c
+  ${ENGINE_DIR}/sys/sdl2_compat.cpp
+  ${ENGINE_DIR}/sys/sdl_glimp.cpp
+  ${ENGINE_DIR}/sys/sdl_gamma.cpp
   ${ENGINE_DIR}/rendererGL/gl_shader.cpp
-  ${ENGINE_DIR}/rendererGL/tr_animation.c
+  ${ENGINE_DIR}/rendererGL/tr_animation.cpp
   ${ENGINE_DIR}/rendererGL/tr_backend.cpp
-  ${ENGINE_DIR}/renderer/tr_bonematrix.c
+  ${ENGINE_DIR}/renderer/tr_bonematrix.cpp
   ${ENGINE_DIR}/renderer/tr_bonematrix.h
-  ${ENGINE_DIR}/rendererGL/tr_bsp.c
-  ${ENGINE_DIR}/rendererGL/tr_cmds.c
-  ${ENGINE_DIR}/rendererGL/tr_curve.c
-  ${ENGINE_DIR}/rendererGL/tr_decals.c
-  ${ENGINE_DIR}/rendererGL/tr_fbo.c
-  ${ENGINE_DIR}/rendererGL/tr_flares.c
-  ${ENGINE_DIR}/rendererGL/tr_fog.c
-  ${ENGINE_DIR}/renderer/tr_font.c
-  ${ENGINE_DIR}/rendererGL/tr_image.c
-  ${ENGINE_DIR}/rendererGL/tr_image_dds.c
+  ${ENGINE_DIR}/rendererGL/tr_bsp.cpp
+  ${ENGINE_DIR}/rendererGL/tr_cmds.cpp
+  ${ENGINE_DIR}/rendererGL/tr_curve.cpp
+  ${ENGINE_DIR}/rendererGL/tr_decals.cpp
+  ${ENGINE_DIR}/rendererGL/tr_fbo.cpp
+  ${ENGINE_DIR}/rendererGL/tr_flares.cpp
+  ${ENGINE_DIR}/rendererGL/tr_fog.cpp
+  ${ENGINE_DIR}/renderer/tr_font.cpp
+  ${ENGINE_DIR}/rendererGL/tr_image.cpp
+  ${ENGINE_DIR}/rendererGL/tr_image_dds.cpp
   ${ENGINE_DIR}/rendererGL/tr_image_exr.cpp
-  ${ENGINE_DIR}/rendererGL/tr_image_jpg.c
-  ${ENGINE_DIR}/rendererGL/tr_image_png.c
-  ${ENGINE_DIR}/rendererGL/tr_image_tga.c
-  ${ENGINE_DIR}/rendererGL/tr_image_webp.c
+  ${ENGINE_DIR}/rendererGL/tr_image_jpg.cpp
+  ${ENGINE_DIR}/rendererGL/tr_image_png.cpp
+  ${ENGINE_DIR}/rendererGL/tr_image_tga.cpp
+  ${ENGINE_DIR}/rendererGL/tr_image_webp.cpp
   ${ENGINE_DIR}/rendererGL/tr_init.cpp
-  ${ENGINE_DIR}/rendererGL/tr_light.c
-  ${ENGINE_DIR}/rendererGL/tr_main.c
-  ${ENGINE_DIR}/rendererGL/tr_marks.c
-  ${ENGINE_DIR}/rendererGL/tr_mesh.c
-  ${ENGINE_DIR}/rendererGL/tr_model.c
-  ${ENGINE_DIR}/rendererGL/tr_model_md3.c
-  ${ENGINE_DIR}/rendererGL/tr_model_md5.c
-  ${ENGINE_DIR}/rendererGL/tr_model_mdc.c
-  ${ENGINE_DIR}/rendererGL/tr_model_psk.c
-  ${ENGINE_DIR}/rendererGL/tr_model_skel.c
-  ${ENGINE_DIR}/rendererGL/tr_noise.c
-  ${ENGINE_DIR}/rendererGL/tr_scene.c
+  ${ENGINE_DIR}/rendererGL/tr_light.cpp
+  ${ENGINE_DIR}/rendererGL/tr_main.cpp
+  ${ENGINE_DIR}/rendererGL/tr_marks.cpp
+  ${ENGINE_DIR}/rendererGL/tr_mesh.cpp
+  ${ENGINE_DIR}/rendererGL/tr_model.cpp
+  ${ENGINE_DIR}/rendererGL/tr_model_md3.cpp
+  ${ENGINE_DIR}/rendererGL/tr_model_md5.cpp
+  ${ENGINE_DIR}/rendererGL/tr_model_mdc.cpp
+  ${ENGINE_DIR}/rendererGL/tr_model_psk.cpp
+  ${ENGINE_DIR}/rendererGL/tr_model_skel.cpp
+  ${ENGINE_DIR}/rendererGL/tr_noise.cpp
+  ${ENGINE_DIR}/rendererGL/tr_scene.cpp
   ${ENGINE_DIR}/rendererGL/tr_shade.cpp
-  ${ENGINE_DIR}/rendererGL/tr_shade_calc.c
-  ${ENGINE_DIR}/rendererGL/tr_shader.c
-  ${ENGINE_DIR}/rendererGL/tr_shadows.c
-  ${ENGINE_DIR}/rendererGL/tr_skin.c
+  ${ENGINE_DIR}/rendererGL/tr_shade_calc.cpp
+  ${ENGINE_DIR}/rendererGL/tr_shader.cpp
+  ${ENGINE_DIR}/rendererGL/tr_shadows.cpp
+  ${ENGINE_DIR}/rendererGL/tr_skin.cpp
   ${ENGINE_DIR}/rendererGL/tr_sky.cpp
-  ${ENGINE_DIR}/rendererGL/tr_surface.c
-  ${ENGINE_DIR}/rendererGL/tr_vbo.c
+  ${ENGINE_DIR}/rendererGL/tr_surface.cpp
+  ${ENGINE_DIR}/rendererGL/tr_vbo.cpp
   ${ENGINE_DIR}/rendererGL/tr_world.cpp
-  ${ENGINE_DIR}/qcommon/md4.c
+  ${ENGINE_DIR}/qcommon/md4.cpp
   ${LIB_DIR}/openexr/half.cpp
   ${ENGINE_DIR}/rendererGL/tr_local.h
   ${ENGINE_DIR}/renderer/tr_public.h
@@ -463,15 +475,15 @@ set( SERVERLIST
   ${ENGINE_DIR}/botlib/bot_local.cpp
   ${ENGINE_DIR}/botlib/bot_nav.cpp
   ${ENGINE_DIR}/botlib/bot_load.cpp
-  ${ENGINE_DIR}/server/sv_bot.c
-  ${ENGINE_DIR}/server/sv_ccmds.c
-  ${ENGINE_DIR}/server/sv_client.c
-  ${ENGINE_DIR}/server/sv_game.c
-  ${ENGINE_DIR}/server/sv_init.c
-  ${ENGINE_DIR}/server/sv_main.c
-  ${ENGINE_DIR}/server/sv_net_chan.c
-  ${ENGINE_DIR}/server/sv_snapshot.c
-  ${ENGINE_DIR}/server/sv_world.c
+  ${ENGINE_DIR}/server/sv_bot.cpp
+  ${ENGINE_DIR}/server/sv_ccmds.cpp
+  ${ENGINE_DIR}/server/sv_client.cpp
+  ${ENGINE_DIR}/server/sv_game.cpp
+  ${ENGINE_DIR}/server/sv_init.cpp
+  ${ENGINE_DIR}/server/sv_main.cpp
+  ${ENGINE_DIR}/server/sv_net_chan.cpp
+  ${ENGINE_DIR}/server/sv_snapshot.cpp
+  ${ENGINE_DIR}/server/sv_world.cpp
   ${ENGINE_DIR}/server/server.h
   ${ENGINE_DIR}/server/g_api.h
   ${ENGINE_DIR}/qcommon/print_translated.h
@@ -502,48 +514,48 @@ set( ENGINELIST
   ${ENGINE_DIR}/framework/LogSystem.h
   ${ENGINE_DIR}/framework/VirtualMachine.cpp
   ${ENGINE_DIR}/framework/VirtualMachine.h
-  ${ENGINE_DIR}/qcommon/cm_load.c
-  ${ENGINE_DIR}/qcommon/cm_trisoup.c
-  ${ENGINE_DIR}/qcommon/cm_patch.c
-  ${ENGINE_DIR}/qcommon/cm_plane.c
-  ${ENGINE_DIR}/qcommon/cm_polylib.c
-  ${ENGINE_DIR}/qcommon/cm_test.c
-  ${ENGINE_DIR}/qcommon/cm_trace.c
+  ${ENGINE_DIR}/qcommon/cm_load.cpp
+  ${ENGINE_DIR}/qcommon/cm_trisoup.cpp
+  ${ENGINE_DIR}/qcommon/cm_patch.cpp
+  ${ENGINE_DIR}/qcommon/cm_plane.cpp
+  ${ENGINE_DIR}/qcommon/cm_polylib.cpp
+  ${ENGINE_DIR}/qcommon/cm_test.cpp
+  ${ENGINE_DIR}/qcommon/cm_trace.cpp
   ${ENGINE_DIR}/qcommon/cm_local.h
   ${ENGINE_DIR}/qcommon/cm_patch.h
   ${ENGINE_DIR}/qcommon/cm_polylib.h
   ${ENGINE_DIR}/qcommon/cm_public.h
-  ${ENGINE_DIR}/qcommon/cmd.c
-  ${ENGINE_DIR}/qcommon/common.c
-  ${ENGINE_DIR}/qcommon/crypto.c
+  ${ENGINE_DIR}/qcommon/cmd.cpp
+  ${ENGINE_DIR}/qcommon/common.cpp
+  ${ENGINE_DIR}/qcommon/crypto.cpp
   ${ENGINE_DIR}/qcommon/crypto.h
-  ${ENGINE_DIR}/qcommon/cvar.c
+  ${ENGINE_DIR}/qcommon/cvar.cpp
   ${ENGINE_DIR}/qcommon/cvar.h
-  ${ENGINE_DIR}/qcommon/files.c
+  ${ENGINE_DIR}/qcommon/files.cpp
   ${ENGINE_DIR}/qcommon/qfiles.h
-  ${ENGINE_DIR}/qcommon/htable.c
+  ${ENGINE_DIR}/qcommon/htable.cpp
   ${ENGINE_DIR}/qcommon/htable.h
-  ${ENGINE_DIR}/qcommon/huffman.c
-  ${ENGINE_DIR}/qcommon/md4.c
+  ${ENGINE_DIR}/qcommon/huffman.cpp
+  ${ENGINE_DIR}/qcommon/md4.cpp
   ${ENGINE_DIR}/qcommon/md4.h
-  ${ENGINE_DIR}/qcommon/md5.c
-  ${ENGINE_DIR}/qcommon/msg.c
-  ${ENGINE_DIR}/qcommon/net_chan.c
-  ${ENGINE_DIR}/qcommon/net_ip.c
-  ${ENGINE_DIR}/qcommon/parse.c
+  ${ENGINE_DIR}/qcommon/md5.cpp
+  ${ENGINE_DIR}/qcommon/msg.cpp
+  ${ENGINE_DIR}/qcommon/net_chan.cpp
+  ${ENGINE_DIR}/qcommon/net_ip.cpp
+  ${ENGINE_DIR}/qcommon/parse.cpp
   ${ENGINE_DIR}/qcommon/translation.cpp
-  ${ENGINE_DIR}/qcommon/vm.c
-  ${ENGINE_DIR}/qcommon/vm_interpreted.c
+  ${ENGINE_DIR}/qcommon/vm.cpp
+  ${ENGINE_DIR}/qcommon/vm_interpreted.cpp
   ${ENGINE_DIR}/qcommon/vm_local.h
   ${ENGINE_DIR}/qcommon/vm_traps.h
-  ${ENGINE_DIR}/sys/sys_main.c
-  ${ENGINE_DIR}/sys/con_log.c
+  ${ENGINE_DIR}/sys/sys_main.cpp
+  ${ENGINE_DIR}/sys/con_log.cpp
   ${ENGINE_DIR}/qcommon/qcommon.h
   ${ENGINE_DIR}/qcommon/surfaceflags.h
 )
 
 if( ARCH STREQUAL "x86" OR ARCH STREQUAL "x86_64" )
-  set( ENGINELIST ${ENGINELIST} ${ENGINE_DIR}/qcommon/vm_x86.c )
+  set( ENGINELIST ${ENGINELIST} ${ENGINE_DIR}/qcommon/vm_x86.cpp )
   if( MSVC AND CMAKE_CL_64 )
     add_custom_command( OUTPUT vm_x86_64.obj COMMAND ml64 ARGS /c "${ENGINE_DIR}/qcommon/vm_x86_64.asm" MAIN_DEPENDENCY ${ENGINE_DIR}/qcommon/vm_x86_64.asm )
     set( ENGINELIST ${ENGINELIST} vm_x86_64.obj )
@@ -552,14 +564,14 @@ endif()
 
 if( WIN32 )
   set( ENGINELIST ${ENGINELIST}
-    ${ENGINE_DIR}/sys/sys_win32.c
+    ${ENGINE_DIR}/sys/sys_win32.cpp
     ${ENGINE_DIR}/sys/sys_win32.h
-    ${ENGINE_DIR}/sys/con_passive.c
+    ${ENGINE_DIR}/sys/con_passive.cpp
   )
 else()
   set( ENGINELIST ${ENGINELIST}
-    ${ENGINE_DIR}/sys/sys_unix.c
-    ${ENGINE_DIR}/sys/con_tty.c
+    ${ENGINE_DIR}/sys/sys_unix.cpp
+    ${ENGINE_DIR}/sys/con_tty.cpp
   )
 endif()
 
@@ -570,7 +582,7 @@ if( APPLE )
 endif()
 
 if( USE_CURSES )
-  set( ENGINELIST ${ENGINELIST} ${ENGINE_DIR}/sys/con_curses.c )
+  set( ENGINELIST ${ENGINELIST} ${ENGINE_DIR}/sys/con_curses.cpp )
 endif()
 
 set( CLIENTLIST
@@ -579,52 +591,52 @@ set( CLIENTLIST
   ${ENGINE_DIR}/client/cg_api.h
   ${ENGINE_DIR}/client/ui_api.h
   ${ENGINE_DIR}/client/client.h
-  ${ENGINE_DIR}/client/cin_ogm.c
-  ${ENGINE_DIR}/client/cl_avi.c
-  ${ENGINE_DIR}/client/cl_cgame.c
-  ${ENGINE_DIR}/client/cl_cin.c
-  ${ENGINE_DIR}/client/cl_console.c
-  ${ENGINE_DIR}/client/cl_input.c
-  ${ENGINE_DIR}/client/cl_irc.c
-  ${ENGINE_DIR}/client/cl_keys.c
+  ${ENGINE_DIR}/client/cin_ogm.cpp
+  ${ENGINE_DIR}/client/cl_avi.cpp
+  ${ENGINE_DIR}/client/cl_cgame.cpp
+  ${ENGINE_DIR}/client/cl_cin.cpp
+  ${ENGINE_DIR}/client/cl_console.cpp
+  ${ENGINE_DIR}/client/cl_input.cpp
+  ${ENGINE_DIR}/client/cl_irc.cpp
+  ${ENGINE_DIR}/client/cl_keys.cpp
   ${ENGINE_DIR}/client/keycodes.h
   ${ENGINE_DIR}/client/keys.h
-  ${ENGINE_DIR}/client/cl_main.c
-  ${ENGINE_DIR}/client/cl_net_chan.c
-  ${ENGINE_DIR}/client/cl_parse.c
-  ${ENGINE_DIR}/client/cl_scrn.c
-  ${ENGINE_DIR}/client/cl_ui.c
-  ${ENGINE_DIR}/client/cl_logs.c
-  ${ENGINE_DIR}/client/dl_main.c
-  ${ENGINE_DIR}/client/snd_adpcm.c
-  ${ENGINE_DIR}/client/snd_codec.c
+  ${ENGINE_DIR}/client/cl_main.cpp
+  ${ENGINE_DIR}/client/cl_net_chan.cpp
+  ${ENGINE_DIR}/client/cl_parse.cpp
+  ${ENGINE_DIR}/client/cl_scrn.cpp
+  ${ENGINE_DIR}/client/cl_ui.cpp
+  ${ENGINE_DIR}/client/cl_logs.cpp
+  ${ENGINE_DIR}/client/dl_main.cpp
+  ${ENGINE_DIR}/client/snd_adpcm.cpp
+  ${ENGINE_DIR}/client/snd_codec.cpp
   ${ENGINE_DIR}/client/snd_codec.h
   ${ENGINE_DIR}/client/snd_local.h
   ${ENGINE_DIR}/client/snd_public.h
-  ${ENGINE_DIR}/client/snd_codec_ogg.c
-  ${ENGINE_DIR}/client/snd_codec_opus.c
-  ${ENGINE_DIR}/client/snd_codec_wav.c
-  ${ENGINE_DIR}/client/snd_dma.c
-  ${ENGINE_DIR}/client/snd_openal.c
-  ${ENGINE_DIR}/client/snd_main.c
-  ${ENGINE_DIR}/client/snd_mem.c
-  ${ENGINE_DIR}/client/snd_mix.c
-  ${ENGINE_DIR}/client/snd_wavelet.c
-  ${ENGINE_DIR}/client/qal.c
+  ${ENGINE_DIR}/client/snd_codec_ogg.cpp
+  ${ENGINE_DIR}/client/snd_codec_opus.cpp
+  ${ENGINE_DIR}/client/snd_codec_wav.cpp
+  ${ENGINE_DIR}/client/snd_dma.cpp
+  ${ENGINE_DIR}/client/snd_openal.cpp
+  ${ENGINE_DIR}/client/snd_main.cpp
+  ${ENGINE_DIR}/client/snd_mem.cpp
+  ${ENGINE_DIR}/client/snd_mix.cpp
+  ${ENGINE_DIR}/client/snd_wavelet.cpp
+  ${ENGINE_DIR}/client/qal.cpp
   ${ENGINE_DIR}/client/qal.h
 )
 
 if( USE_MUMBLE )
   set( CLIENTLIST ${CLIENTLIST}
-    ${ENGINE_DIR}/client/libmumblelink.c
+    ${ENGINE_DIR}/client/libmumblelink.cpp
     ${ENGINE_DIR}/client/libmumblelink.h
   )
 endif()
 
 set( SDLLIST
-  ${ENGINE_DIR}/sys/sdl_input.c
-  ${ENGINE_DIR}/sys/sdl_snd.c
-  ${ENGINE_DIR}/sys/sdl2_compat.c
+  ${ENGINE_DIR}/sys/sdl_input.cpp
+  ${ENGINE_DIR}/sys/sdl_snd.cpp
+  ${ENGINE_DIR}/sys/sdl2_compat.cpp
   ${ENGINE_DIR}/sys/sys_local.h
 )
 
@@ -673,7 +685,7 @@ set( CGAMENATIVELIST
 set( CGAMEQVMLIST
   ${GAMELOGIC_DIR}/shared/bg_lib.c
   ${ENGINE_DIR}/qcommon/q_static.c
-  ${SHAREDLIST}
+  ${SHAREDLIST_C}
 )
 
 set( CGAMEASMLIST
@@ -736,7 +748,7 @@ set( GAMENATIVELIST
 set( GAMEQVMLIST
   ${GAMELOGIC_DIR}/shared/bg_lib.c
   ${ENGINE_DIR}/qcommon/q_static.c
-  ${SHAREDLIST}
+  ${SHAREDLIST_C}
 )
 
 set( GAMEASMLIST
@@ -763,7 +775,7 @@ set( UINATIVELIST
 set( UIQVMLIST
   ${GAMELOGIC_DIR}/shared/bg_lib.c
   ${ENGINE_DIR}/qcommon/q_static.c
-  ${SHAREDLIST}
+  ${SHAREDLIST_C}
 )
 
 set( UIASMLIST
@@ -1465,8 +1477,8 @@ endif()
 
 if( BUILD_SERVER )
   add_executable( server WIN32 ${SERVERLIST} ${ENGINELIST} ${SHAREDLIST} ${LIBSRC_BASE} ${LIBSRC_ENGINE}
-    ${ENGINE_DIR}/null/null_client.c  ${ENGINE_DIR}/null/null_input.c
-    ${ENGINE_DIR}/null/null_snddma.c ${WIN_RC} )
+    ${ENGINE_DIR}/null/null_client.cpp ${ENGINE_DIR}/null/null_input.cpp
+    ${ENGINE_DIR}/null/null_snddma.cpp ${WIN_RC} )
   target_link_libraries( server ${LIBS_ENGINE} ${LIBS_BASE} )
   set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS DEDICATED )
   set_target_properties( server PROPERTIES OUTPUT_NAME "daemonded" PREFIX "" )
@@ -1475,7 +1487,8 @@ endif()
 if( BUILD_TTY_CLIENT )
   add_executable( ttyclient WIN32 ${SERVERLIST} ${CLIENTLIST} ${ENGINELIST} ${SHAREDLIST}
     ${LIBSRC_BASE} ${LIBSRC_ENGINE} ${LIBSRC_CLIENTBASE} ${WIN_RC}
-    ${ENGINE_DIR}/null/null_input.c ${ENGINE_DIR}/null/null_snddma.c ${ENGINE_DIR}/null/null_renderer.c )
+    ${ENGINE_DIR}/null/null_input.cpp ${ENGINE_DIR}/null/null_snddma.cpp
+    ${ENGINE_DIR}/null/null_renderer.cpp )
   target_link_libraries( ttyclient ${LIBS_CLIENTBASE} ${LIBS_ENGINE} ${LIBS_BASE} )
   set_property( TARGET ttyclient APPEND PROPERTY COMPILE_DEFINITIONS BUILD_TTY_CLIENT REF_HARD_LINKED )
   set_target_properties( ttyclient PROPERTIES OUTPUT_NAME "daemon-tty" PREFIX "" )

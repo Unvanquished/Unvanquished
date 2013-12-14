@@ -310,7 +310,7 @@ namespace Cvar {
         } //TODO else what?
     }
 
-    Cmd::CompletionResult Complete(const std::string& prefix) {
+    Cmd::CompletionResult Complete(Str::StringRef prefix) {
         CvarMap& cvars = GetCvarMap();
 
         Cmd::CompletionResult res;
@@ -455,7 +455,7 @@ namespace Cvar {
                 ::Cvar::AddFlags(name, flags);
             }
 
-            Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, const std::string& prefix) const OVERRIDE {
+            Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, Str::StringRef prefix) const OVERRIDE {
                 if (argNum == 1 or (argNum == 2 and args.Argv(1) == "-unsafe")) {
                     return ::Cvar::Complete(prefix);
                 }
@@ -494,7 +494,7 @@ namespace Cvar {
                 }
             }
 
-            Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, const std::string& prefix) const OVERRIDE {
+            Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, Str::StringRef prefix) const OVERRIDE {
                 Q_UNUSED(args);
 
                 if (argNum == 1) {
@@ -582,7 +582,7 @@ namespace Cvar {
                 Print("%zu cvars", matches.size());
             }
 
-            Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, const std::string& prefix) const OVERRIDE {
+            Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, Str::StringRef prefix) const OVERRIDE {
                 Q_UNUSED(args);
 
                 //TODO handle -raw?

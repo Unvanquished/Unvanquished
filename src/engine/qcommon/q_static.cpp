@@ -2,7 +2,7 @@
 ===========================================================================
 
 Daemon GPL Source Code
-Copyright (C) 2013 Unvanquished Developers
+Copyright (C) 2012 Unvanquished Developers
 
 This file is part of the Daemon GPL Source Code (Daemon Source Code).
 
@@ -19,32 +19,22 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
+In addition, the Daemon Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following the
+terms and conditions of the GNU General Public License which accompanied the Daemon
+Source Code.  If not, please request a copy in writing from id Software at the address
+below.
+
+If you have questions concerning this license or the applicable additional terms, you
+may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville,
+Maryland 20850 USA.
+
 ===========================================================================
 */
 
-#include "../../common/LineEditData.h"
-#include "../../common/String.h"
-#include "ConsoleHistory.h"
+#ifndef Q3_VM
+#error What? I am part of the QVM code! Go away!
+#endif
 
-#ifndef FRAMEWORK_CONSOLE_FIELD_H_
-#define FRAMEWORK_CONSOLE_FIELD_H_
-
-namespace Console {
-
-    class Field : public Util::LineEditData {
-        public:
-            Field(int size);
-
-            void HistoryPrev();
-            void HistoryNext();
-
-            void RunCommand(Str::StringRef defaultCommand = "");
-            void AutoComplete();
-
-        private:
-            HistoryHandle hist;
-    };
-
-}
-
-#endif // FRAMEWORK_CONSOLE_FIELD_H_
+#define Q3_VM_INSTANTIATE
+#include "q_shared.h"

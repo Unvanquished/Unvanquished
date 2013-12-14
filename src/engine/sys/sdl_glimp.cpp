@@ -45,6 +45,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "SDL_syswm.h"
 #include "sdl2_compat.h"
 
+#include "../../common/Maths.h"
+
 SDL_Window         *window = NULL;
 static SDL_GLContext glContext = NULL;
 
@@ -1190,7 +1192,7 @@ static void GLimp_XreaLInitExtensions( void )
 		}
 		*/
 
-		glConfig2.maxVertexSkinningBones = std::min( std::max( 0, glConfig2.maxVertexUniforms - reservedComponents ) / 16, MAX_BONES );
+		glConfig2.maxVertexSkinningBones = Maths::clamp( ( glConfig2.maxVertexUniforms - reservedComponents ) / 16, 0, MAX_BONES );
 		glConfig2.vboVertexSkinningAvailable = r_vboVertexSkinning->integer && ( ( glConfig2.maxVertexSkinningBones >= 12 ) ? qtrue : qfalse );
 
 		ri.Printf( PRINT_ALL, "...using GL_ARB_vertex_shader\n" );

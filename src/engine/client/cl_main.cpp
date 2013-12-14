@@ -1420,7 +1420,7 @@ class DemoCmd: public Cmd::StaticCmd {
             //  }
         }
 
-        Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, const std::string& prefix) const OVERRIDE {
+        Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, Str::StringRef prefix) const OVERRIDE {
             if (argNum == 1) {
                 return FS::CompleteFilenameInDir(prefix, "demos", ".dm_" + std::to_string(PROTOCOL_VERSION));
             }
@@ -4513,7 +4513,7 @@ void CL_Init( void )
 	//
 	// register our variables
 	//
-	cl_renderer = Cvar_Get( "cl_renderer", "GL3,GL", CVAR_ARCHIVE | CVAR_LATCH );
+	cl_renderer = Cvar_Get( "cl_renderer", "GL3,GL", CVAR_ARCHIVE );
 
 	cl_noprint = Cvar_Get( "cl_noprint", "0", 0 );
 	cl_motd = Cvar_Get( "cl_motd", "1", 0 );

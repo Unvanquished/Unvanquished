@@ -48,7 +48,7 @@ These commands can only be entered from stdin or by a remote operator datagram
 
 class MapCmd: public Cmd::StaticCmd {
     public:
-        MapCmd(const std::string& name, const std::string& description, bool cheat):
+        MapCmd(Str::StringRef name, Str::StringRef description, bool cheat):
             Cmd::StaticCmd(name, Cmd::SYSTEM, description), cheat(cheat) {
         }
 
@@ -77,7 +77,7 @@ class MapCmd: public Cmd::StaticCmd {
             Cvar_Set("sv_cheats", cheat ? "1" : "0");
         }
 
-        Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, const std::string& prefix) const OVERRIDE {
+        Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, Str::StringRef prefix) const OVERRIDE {
             if (argNum == 1) {
                 return FS::CompleteFilenameInDir(prefix, "maps", "bsp");
             } else if (argNum > 1) {
