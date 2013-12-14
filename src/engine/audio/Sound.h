@@ -22,10 +22,6 @@ along with daemon source code.  if not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
-#include "snd_local.h"
-#include "snd_codec.h"
-#include <memory>
-
 #ifndef AUDIO_SOUND_H_
 #define AUDIO_SOUND_H_
 

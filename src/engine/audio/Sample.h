@@ -22,11 +22,10 @@ along with daemon source code.  if not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
-#include "ALObjects.h"
-#include "../../common/String.h"
-
 #ifndef AUDIO_SAMPLE_H_
 #define AUDIO_SAMPLE_H_
+
+#include "AudioPrivate.h"
 
 namespace Audio {
 

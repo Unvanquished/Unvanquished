@@ -22,32 +22,27 @@ along with daemon source code.  if not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
+#ifndef AUDIO_AUDIO_PRIVATE_H_
+#define AUDIO_AUDIO_PRIVATE_H_
+
+#include <unordered_map>
+#include <memory>
+
+#include "../../common/Log.h"
+
 #include "snd_local.h"
 #include "snd_codec.h"
 
-#include "../../common/String.h"
-
-#ifndef AUDIO_API_H_
-#define AUDIO_API_H_
+#include "ALObjects.h"
+#include "Audio.h"
+#include "Emitter.h"
+#include "Sample.h"
+#include "Sound.h"
 
 namespace Audio {
 
-    void Init();
-    void Shutdown();
-    void Update();
 
-    sfxHandle_t RegisterSFX(Str::StringRef filename);
 
-    void StartSound(int entityNum, const vec3_t origin, sfxHandle_t sfx);
-    void StartLocalSound(int entityNum);
-
-    void AddEntityLoopingSound(int entityNum, sfxHandle_t sfx);
-    void ClearAllLoopingSounds();
-    void ClearLoopingSoundsForEntity(int entityNum);
-
-    void UpdateEntityPosition(int entityNum, const vec3_t position);
-    void UpdateEntityVelocity(int entityNum, const vec3_t velocity);
-    void UpdateEntityOcclusion(int entityNum, float ratio);
 }
 
-#endif //AUDIO_SOUND_H_
+#endif //AUDIO_AUDIO_PRIVATE_H_

@@ -22,10 +22,7 @@ along with daemon source code.  if not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
-#include "Sample.h"
-
-#include <unordered_map>
-#include "../../common/Log.h"
+#include "AudioPrivate.h"
 
 namespace Audio {
 

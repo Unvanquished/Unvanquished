@@ -22,8 +22,6 @@ along with daemon source code.  if not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
-#include "../../common/String.h"
-
 #ifndef AUDIO_EMITTER_H_
 #define AUDIO_EMITTER_H_
 

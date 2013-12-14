@@ -21,11 +21,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
-#include "snd_local.h"
-#include "snd_codec.h"
-#include "../../common/Log.h"
-#include "../client/client.h"
-#include "API.h"
+#include "AudioPrivate.h"
 
 #ifndef BUILD_TTY_CLIENT
 
@@ -419,7 +415,6 @@ qboolean S_AL_Init( soundInterface_t *si )
 
 	// Initialize sources, buffers, music
     Audio::Init();
-	//S_AL_SrcInit( );
 
 	// Set up OpenAL parameters (doppler, etc)
 	alDistanceModel( AL_INVERSE_DISTANCE_CLAMPED );

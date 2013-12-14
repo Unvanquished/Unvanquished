@@ -22,13 +22,7 @@ along with daemon source code.  if not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
-#include "API.h"
-
-#include "Emitter.h"
-#include "Sample.h"
-#include "Sound.h"
-
-#include "../../common/Log.h"
+#include "AudioPrivate.h"
 
 //TODO check all inputs for validity
 namespace Audio {
