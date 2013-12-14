@@ -235,8 +235,4 @@ namespace Str {
         return out;
     }
 #endif
-
-    std::string Format(const std::string& format) {
-        return format;
-    }
 }

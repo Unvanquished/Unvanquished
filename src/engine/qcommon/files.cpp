@@ -4887,8 +4887,8 @@ void    FS_FilenameCompletion( const char *dir, const char *ext,
 }
 
 namespace FS {
-    Cmd::CompletionResult CompleteFilenameInDir(const std::string& prefix, const std::string& dir,
-                                                   const std::string& extension, bool stripExtension) {
+    Cmd::CompletionResult CompleteFilenameInDir(Str::StringRef prefix, Str::StringRefdir,
+                                                Str::StringRef extension, bool stripExtension) {
         int nfiles;
         char** filenames = FS_ListFilteredFiles(dir.c_str(), extension.c_str(), nullptr, &nfiles);
         FS_SortFileList(filenames, nfiles);

@@ -66,19 +66,19 @@ namespace Log {
 
     class Logger {
         public:
-            Logger(const std::string& name, Level level = DEFAULT_FILTER_LEVEL);
+            Logger(Str::StringRef name, Level level = DEFAULT_FILTER_LEVEL);
 
             template<typename ... Args>
-            void Error(const std::string& format, Args ... args);
+            void Error(Str::StringRef format, Args ... args);
 
             template<typename ... Args>
-            void Warn(const std::string& format, Args ... args);
+            void Warn(Str::StringRefformat, Args ... args);
 
             template<typename ... Args>
-            void Notice(const std::string& format, Args ... args);
+            void Notice(Str::StringRef format, Args ... args);
 
             template<typename ... Args>
-            void Debug(const std::string& format, Args ... args);
+            void Debug(Str::StringRef format, Args ... args);
 
         private:
             // the cvar logs.logLevel.<name>
@@ -93,16 +93,16 @@ namespace Log {
      */
 
     template<typename ... Args>
-    void Error(const std::string& foramt, Args ... args);
+    void Error(Str::StringRef foramt, Args ... args);
 
     template<typename ... Args>
-    void Warn(const std::string& foramt, Args ... args);
+    void Warn(Str::StringRef foramt, Args ... args);
 
     template<typename ... Args>
-    void Notice(const std::string& foramt, Args ... args);
+    void Notice(Str::StringRef foramt, Args ... args);
 
     template<typename ... Args>
-    void Debug(const std::string& foramt, Args ... args);
+    void Debug(Str::StringRef foramt, Args ... args);
 
     /*
      * A log Event, sent to the log system along a list of targets to output
@@ -149,26 +149,26 @@ namespace Log {
     // Logger
 
     template<typename ... Args>
-    void Logger::Error(const std::string& format, Args ... args) {
+    void Logger::Error(Str::StringRef format, Args ... args) {
         CodeSourceError(Str::Format(format, args ...));
     }
 
     template<typename ... Args>
-    void Logger::Warn(const std::string& format, Args ... args) {
+    void Logger::Warn(Str::StringRef format, Args ... args) {
         if (filterLevel.Get() <= WARNING) {
             CodeSourceWarn(Str::Format(format, args ...));
         }
     }
 
     template<typename ... Args>
-    void Logger::Notice(const std::string& format, Args ... args) {
+    void Logger::Notice(Str::StringRef format, Args ... args) {
         if (filterLevel.Get() <= NOTICE) {
             CodeSourceNotice(Str::Format(format, args ...));
         }
     }
 
     template<typename ... Args>
-    void Logger::Debug(const std::string& format, Args ... args) {
+    void Logger::Debug(Str::StringRef format, Args ... args) {
         if (filterLevel.Get() <= DEBUG) {
             CodeSourceDebug(Str::Format(format, args ...));
         }
@@ -177,22 +177,22 @@ namespace Log {
     // Quick Logs
 
     template<typename ... Args>
-    void Error(const std::string& format, Args ... args) {
+    void Error(Str::StringRef format, Args ... args) {
         CodeSourceError(Str::Format(format, args ...));
     }
 
     template<typename ... Args>
-    void Warn(const std::string& format, Args ... args) {
+    void Warn(Str::StringRef format, Args ... args) {
         CodeSourceWarn(Str::Format(format, args ...));
     }
 
     template<typename ... Args>
-    void Notice(const std::string& format, Args ... args) {
+    void Notice(Str::StringRef format, Args ... args) {
         CodeSourceNotice(Str::Format(format, args ...));
     }
 
     template<typename ... Args>
-    void Debug(const std::string& format, Args ... args) {
+    void Debug(Str::StringRef format, Args ... args) {
         CodeSourceDebug(Str::Format(format, args ...));
     }
 }

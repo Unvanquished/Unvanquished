@@ -54,7 +54,7 @@ namespace Cmd {
                 ExecuteAfter(command, true);
             }
 
-            Cmd::CompletionResult Complete(int argNum, const Args& args, const std::string& prefix) const OVERRIDE {
+            Cmd::CompletionResult Complete(int argNum, const Args& args, Str::StringRef prefix) const OVERRIDE {
                 Q_UNUSED(args);
 
                 if (argNum == 1) {
@@ -68,7 +68,7 @@ namespace Cmd {
 
     class ExecCmd: public StaticCmd {
         public:
-            ExecCmd(const std::string& name, bool silent): StaticCmd(name, BASE, N_("executes a command file")), silent(silent) {
+            ExecCmd(Str::StringRef name, bool silent): StaticCmd(name, BASE, N_("executes a command file")), silent(silent) {
             }
 
             void Run(const Cmd::Args& args) const OVERRIDE {
@@ -138,7 +138,7 @@ namespace Cmd {
                 }
             }
 
-            bool ExecFile(const std::string& filename) const {
+            bool ExecFile(Str::StringRef filename) const {
                 bool success = false;
                 fileHandle_t h;
                 int len = FS_SV_FOpenFileRead(filename.c_str(), &h);
@@ -203,7 +203,7 @@ namespace Cmd {
                 Cvar::SetValue(cvar, std::to_string(number));
             }
 
-            Cmd::CompletionResult Complete(int argNum, const Args& args, const std::string& prefix) const OVERRIDE {
+            Cmd::CompletionResult Complete(int argNum, const Args& args, Str::StringRef prefix) const OVERRIDE {
                 Q_UNUSED(args);
 
                 if (argNum == 1) {
@@ -233,7 +233,7 @@ namespace Cmd {
                 Cvar::SetValue(args.Argv(1), res);
             }
 
-            Cmd::CompletionResult Complete(int argNum, const Args& args, const std::string& prefix) const OVERRIDE {
+            Cmd::CompletionResult Complete(int argNum, const Args& args, Str::StringRef prefix) const OVERRIDE {
                 Q_UNUSED(args);
 
                 if (argNum >= 1) {
@@ -333,7 +333,7 @@ namespace Cmd {
                 Print(_("valid operators: + - × * ÷ /"));
             }
 
-            Cmd::CompletionResult Complete(int argNum, const Args& args, const std::string& prefix) const OVERRIDE {
+            Cmd::CompletionResult Complete(int argNum, const Args& args, Str::StringRef prefix) const OVERRIDE {
                 Q_UNUSED(args);
 
                 if (argNum == 1) {
@@ -418,7 +418,7 @@ namespace Cmd {
                 Print(_("-- commands are cvar names unless prefixed with / or \\"));
             }
 
-            Cmd::CompletionResult Complete(int argNum, const Args& args, const std::string& prefix) const OVERRIDE {
+            Cmd::CompletionResult Complete(int argNum, const Args& args, Str::StringRef prefix) const OVERRIDE {
                 Q_UNUSED(args);
 
                 if (argNum == 4 or argNum == 5) {
@@ -483,7 +483,7 @@ namespace Cmd {
                 Cvar::SetValue(name, args.Argv(listStart));
             }
 
-            Cmd::CompletionResult Complete(int argNum, const Args& args, const std::string& prefix) const OVERRIDE {
+            Cmd::CompletionResult Complete(int argNum, const Args& args, Str::StringRef prefix) const OVERRIDE {
                 Q_UNUSED(args);
 
                 if (argNum == 1 or argNum == 2) {
@@ -541,7 +541,7 @@ namespace Cmd {
                 Cvar::SetValue(args.Argv(1), va("%i", newValue));
             }
 
-            Cmd::CompletionResult Complete(int argNum, const Args& args, const std::string& prefix) const OVERRIDE {
+            Cmd::CompletionResult Complete(int argNum, const Args& args, Str::StringRef prefix) const OVERRIDE {
                 Q_UNUSED(args);
 
                 if (argNum == 1) {
@@ -592,7 +592,7 @@ namespace Cmd {
         }
     }
 
-    Cmd::CompletionResult CompleteDelayName(const std::string& prefix) {
+    Cmd::CompletionResult CompleteDelayName(Str::StringRef prefix) {
         Cmd::CompletionResult res;
 
         for (auto& delay: delays) {
@@ -641,7 +641,7 @@ namespace Cmd {
                 delays.emplace_back(delayRecord_t{name, command, target, type});
             }
 
-            Cmd::CompletionResult Complete(int argNum, const Args& args, const std::string& prefix) const OVERRIDE {
+            Cmd::CompletionResult Complete(int argNum, const Args& args, Str::StringRef prefix) const OVERRIDE {
                 Q_UNUSED(args);
 
                 if (argNum == 1) {
@@ -677,7 +677,7 @@ namespace Cmd {
                 }
             }
 
-            Cmd::CompletionResult Complete(int argNum, const Args& args, const std::string& prefix) const OVERRIDE {
+            Cmd::CompletionResult Complete(int argNum, const Args& args, Str::StringRef prefix) const OVERRIDE {
                 Q_UNUSED(args);
 
                 if (argNum == 1) {
@@ -730,7 +730,7 @@ namespace Cmd {
         }
     }
 
-    Cmd::CompletionResult CompleteAliasName(const std::string& prefix) {
+    Cmd::CompletionResult CompleteAliasName(Str::StringRef prefix) {
         Cmd::CompletionResult res;
 
         for (auto it: aliases) {
@@ -830,7 +830,7 @@ namespace Cmd {
                 cvar_modifiedFlags |= CVAR_ARCHIVE;
             }
 
-            Cmd::CompletionResult Complete(int argNum, const Args& args, const std::string& prefix) const OVERRIDE {
+            Cmd::CompletionResult Complete(int argNum, const Args& args, Str::StringRef prefix) const OVERRIDE {
                 if (argNum == 1) {
                     return CompleteAliasName(prefix);
                 } else if (argNum > 1) {
@@ -862,7 +862,7 @@ namespace Cmd {
                 }
             }
 
-            Cmd::CompletionResult Complete(int argNum, const Args& args, const std::string& prefix) const OVERRIDE {
+            Cmd::CompletionResult Complete(int argNum, const Args& args, Str::StringRef prefix) const OVERRIDE {
                 Q_UNUSED(args);
 
                 if (argNum == 1) {

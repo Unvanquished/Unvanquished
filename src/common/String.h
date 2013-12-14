@@ -277,13 +277,11 @@ namespace Str {
     std::string UTF16To8(Str::BasicStringRef<wchar_t> str);
 #endif
 
-    std::string Format(const std::string& format);
-
+    inline std::string Format(std::string format) {
+        return format;
+    }
     template<typename ... Args>
-    std::string Format(const std::string& format, const Args& ... args);
-
-    template<typename ... Args>
-    std::string Format(const std::string& format, const Args& ... args) {
+    std::string Format(Str::StringRef format, const Args& ... args) {
         return tinyformat::format(format.c_str(), args ...);
     }
 }

@@ -67,7 +67,7 @@ namespace Cvar {
             // description of the cvar. If false is returned, the cvar wil keep its old
             // value. And the description will be the description of the problem printed to
             // the user.
-            virtual OnValueChangedResult OnValueChanged(const std::string& newValue) = 0;
+            virtual OnValueChangedResult OnValueChanged(Str::StringRef newValue) = 0;
 
         protected:
             std::string name;
@@ -99,7 +99,7 @@ namespace Cvar {
             void Set(T newValue);
 
             //Called by the cvar system when the value is changed
-            virtual OnValueChangedResult OnValueChanged(const std::string& text);
+            virtual OnValueChangedResult OnValueChanged(Str::StringRef text);
 
         protected:
             // Used by classes that extend Cvar<T>
@@ -127,7 +127,7 @@ namespace Cvar {
             template <typename ... Args>
             Callback(std::string name, std::string description, int flags, value_type, std::function<void(value_type)> callback, Args ... args);
 
-            virtual OnValueChangedResult OnValueChanged(const std::string& newValue);
+            virtual OnValueChangedResult OnValueChanged(Str::StringRef newValue);
 
         private:
             std::function<void(value_type)> callback;
@@ -178,7 +178,7 @@ namespace Cvar {
     }
 
     template<typename T>
-    OnValueChangedResult Cvar<T>::OnValueChanged(const std::string& text) {
+    OnValueChangedResult Cvar<T>::OnValueChanged(Str::StringRef text) {
         if (Parse(text, value)) {
             return {true, GetDescription(text, description)};
         } else {
@@ -212,7 +212,7 @@ namespace Cvar {
     }
 
     template <typename Base>
-    OnValueChangedResult Callback<Base>::OnValueChanged(const std::string& newValue) {
+    OnValueChangedResult Callback<Base>::OnValueChanged(Str::StringRef newValue) {
         OnValueChangedResult rec = Base::OnValueChanged(newValue);
 
         if (rec.success) {
