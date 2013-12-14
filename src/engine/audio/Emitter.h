@@ -55,11 +55,11 @@ namespace Audio {
             Emitter();
             virtual ~Emitter();
 
-            void SetupSound(Sound* sound);
+            void SetupSound(Sound& sound);
 
             void virtual Update() = 0;
-            virtual void UpdateSound(Sound* sound) = 0;
-            virtual void InternalSetupSound(Sound* sound) = 0;
+            virtual void UpdateSound(Sound& sound) = 0;
+            virtual void InternalSetupSound(Sound& sound) = 0;
 
             void Retain();
             void Release();
@@ -78,8 +78,8 @@ namespace Audio {
             virtual ~EntityEmitter();
 
             void virtual Update() OVERRIDE;
-            virtual void UpdateSound(Sound* sound) OVERRIDE;
-            virtual void InternalSetupSound(Sound* sound) OVERRIDE;
+            virtual void UpdateSound(Sound& sound) OVERRIDE;
+            virtual void InternalSetupSound(Sound& sound) OVERRIDE;
 
         private:
             int entityNum;
@@ -91,8 +91,8 @@ namespace Audio {
             virtual ~PositionEmitter();
 
             void virtual Update() OVERRIDE;
-            virtual void UpdateSound(Sound* sound) OVERRIDE;
-            virtual void InternalSetupSound(Sound* sound) OVERRIDE;
+            virtual void UpdateSound(Sound& sound) OVERRIDE;
+            virtual void InternalSetupSound(Sound& sound) OVERRIDE;
 
             const vec3_t& GetPosition() const;
 
@@ -106,8 +106,8 @@ namespace Audio {
             virtual ~LocalEmitter();
 
             void virtual Update() OVERRIDE;
-            virtual void UpdateSound(Sound* sound) OVERRIDE;
-            virtual void InternalSetupSound(Sound* sound) OVERRIDE;
+            virtual void UpdateSound(Sound& sound) OVERRIDE;
+            virtual void InternalSetupSound(Sound& sound) OVERRIDE;
     };
 
 }

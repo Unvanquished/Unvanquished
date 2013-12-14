@@ -39,7 +39,7 @@ namespace Audio {
             };
 
             static bool IsValidHandle(int handle) {
-                return handle >= 0 and handle < handles.size() and handles[handle].active;
+                return handle >= 0 and (unsigned)handle < handles.size() and handles[handle].active;
             }
             static T* FromHandle(int handle) {
                 if (not IsValidHandle(handle)) {

@@ -24,6 +24,9 @@ along with daemon source code.  if not, see <http://www.gnu.org/licenses/>.
 
 #include "Sound.h"
 
+//TODO remove me
+#include "API.h"
+
 #include "ALObjects.h"
 #include "Emitter.h"
 #include "Sample.h"
@@ -33,7 +36,7 @@ namespace Audio {
 
     struct sourceRecord_t {
         AL::Source source;
-        Sound* usingSound;
+        std::shared_ptr<Sound> usingSound;
         bool active;
         int priority;
     };
@@ -73,26 +76,25 @@ namespace Audio {
     void UpdateSounds() {
         for (int i = 0; i < nSources; i++) {
             if (sources[i].active) {
-                Sound* sound = sources[i].usingSound;
+                auto sound = sources[i].usingSound;
 
                 if (not sound->IsStopped()) {
                     sound->Update();
                 }
 
                 if (not sound->IsStopped()) {
-                    sound->GetEmitter()->UpdateSound(sound);
+                    sound->GetEmitter()->UpdateSound(*sound);
                 }
 
                 if (sound->IsStopped()) {
                     sources[i].active = false;
                     sources[i].usingSound = nullptr;
-                    delete sound;
                 }
             }
         }
     }
 
-    void AddSound(Emitter* emitter, Sound* sound, int priority) {
+    void AddSound(Emitter* emitter, std::shared_ptr<Sound> sound, int priority) {
         sourceRecord_t* source = GetSource(priority);
 
         if (source) {
@@ -103,8 +105,6 @@ namespace Audio {
             source->active = true;
 
             sound->Play();
-        } else {
-            delete sound;
         }
     }
 
@@ -136,7 +136,7 @@ namespace Audio {
         if (best >= 0) {
             sourceRecord_t& source = sources[best];
 
-            delete source.usingSound;
+            source.usingSound = nullptr;
             return &source;
         } else {
             return nullptr;
@@ -181,7 +181,7 @@ namespace Audio {
         source.SetLooping(false);
 
         SetupSource(source);
-        emitter->SetupSound(this);
+        emitter->SetupSound(*this);
     }
 
     AL::Source& Sound::GetSource() {
@@ -207,7 +207,7 @@ namespace Audio {
     }
 
     // Implementation of LoopingSound
-/*
+
     LoopingSound::LoopingSound(Sample* sample): sample(sample) {
     }
 
@@ -218,6 +218,8 @@ namespace Audio {
         source.SetLooping(true);
         source.SetBuffer(sample->GetBuffer());
     }
-*/
+
+    void LoopingSound::Update() {
+    }
 
 }

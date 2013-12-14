@@ -151,8 +151,8 @@ namespace Audio {
     Emitter::~Emitter() {
     }
 
-    void Emitter::SetupSound(Sound* sound) {
-        sound->GetSource().SetReferenceDistance(120.0f);
+    void Emitter::SetupSound(Sound& sound) {
+        sound.GetSource().SetReferenceDistance(60.0f);
         InternalSetupSound(sound);
         UpdateSound(sound);
     }
@@ -181,8 +181,8 @@ namespace Audio {
         // TODO
     }
 
-    void EntityEmitter::UpdateSound(Sound* sound) {
-        AL::Source& source = sound->GetSource();
+    void EntityEmitter::UpdateSound(Sound& sound) {
+        AL::Source& source = sound.GetSource();
 
         if (entityNum == listenerEntity) {
             source.SetRelative(true);
@@ -197,7 +197,7 @@ namespace Audio {
         }
     }
 
-    void EntityEmitter::InternalSetupSound(Sound* sound) {
+    void EntityEmitter::InternalSetupSound(Sound& sound) {
     }
 
     // Implementation of PositionEmitter
@@ -213,11 +213,11 @@ namespace Audio {
         //TODO
     }
 
-    void PositionEmitter::UpdateSound(Sound* sound) {
+    void PositionEmitter::UpdateSound(Sound& sound) {
     }
 
-    void PositionEmitter::InternalSetupSound(Sound* sound) {
-        AL::Source& source = sound->GetSource();
+    void PositionEmitter::InternalSetupSound(Sound& sound) {
+        AL::Source& source = sound.GetSource();
 
         source.SetRelative(false);
         source.SetPosition(position);
@@ -239,11 +239,11 @@ namespace Audio {
     void LocalEmitter::Update() {
     }
 
-    void LocalEmitter::UpdateSound(Sound* sound) {
+    void LocalEmitter::UpdateSound(Sound& sound) {
     }
 
-    void LocalEmitter::InternalSetupSound(Sound* sound) {
-        AL::Source& source = sound->GetSource();
+    void LocalEmitter::InternalSetupSound(Sound& sound) {
+        AL::Source& source = sound.GetSource();
 
         source.SetRelative(true);
         source.SetPosition(origin);

@@ -33,28 +33,59 @@ along with daemon source code.  if not, see <http://www.gnu.org/licenses/>.
 //TODO check all inputs for validity
 namespace Audio {
 
+    struct entityLoop_t {
+        bool addedThisFrame;
+        std::shared_ptr<Sound> sound;
+    };
+    entityLoop_t entityLoops[MAX_GENTITIES];
+
     void Init() {
         InitSamples();
         InitSounds();
         InitEmitters();
+
+        for (int i = 0; i < MAX_GENTITIES; i++) {
+            entityLoops[i] = {false, nullptr};
+        }
     }
 
     void Shutdown() {
+        for (int i = 0; i < MAX_GENTITIES; i++) {
+            if (entityLoops[i].sound) {
+                entityLoops[i].sound->Stop();
+            }
+            entityLoops[i] = {false, nullptr};
+        }
+
         ShutdownEmitters();
         ShutdownSounds();
         ShutdownSamples();
     }
 
     void Update() {
+        for (int i = 0; i < MAX_GENTITIES; i++) {
+            if (entityLoops[i].sound and not entityLoops[i].addedThisFrame) {
+                entityLoops[i].sound->Stop();
+                entityLoops[i] = {false, nullptr};
+            }
+        }
+
         UpdateEmitters();
         UpdateSounds();
+
+        for (int i = 0; i < MAX_GENTITIES; i++) {
+            entityLoops[i].addedThisFrame = false;
+            if (entityLoops[i].sound.unique()) {
+                entityLoops[i].sound = nullptr;
+            }
+        }
     }
 
     sfxHandle_t RegisterSFX(Str::StringRef filename) {
         return RegisterSample(filename)->GetHandle();
     }
 
-    void AddSoundHelper(int entityNum, const vec3_t origin, Sound* sound, int priority) {
+    void StartSound(int entityNum, const vec3_t origin, sfxHandle_t sfx) {
         Emitter* emitter;
 
         // Apparently no origin means it is attached to an entity
@@ -65,34 +96,34 @@ namespace Audio {
             emitter = GetEmitterForPosition(origin);
         }
 
-        AddSound(emitter, sound, priority);
-    }
-
-    void StartSound(int entityNum, const vec3_t origin, sfxHandle_t sfx) {
-        AddSoundHelper(entityNum, origin, new OneShotSound(Sample::FromHandle(sfx)), 1);
+        AddSound(emitter, std::make_shared<OneShotSound>(Sample::FromHandle(sfx)), 1);
     }
 
     void StartLocalSound(sfxHandle_t sfx) {
-        AddSound(GetLocalEmitter(), new OneShotSound(Sample::FromHandle(sfx)), 1);
+        AddSound(GetLocalEmitter(), std::make_shared<OneShotSound>(Sample::FromHandle(sfx)), 1);
     }
 
-    void AddAmbientLoopingSound(int entityNum, const vec3_t origin, Sample* sample) {
-        //AddSoundHelper(entityNum, origin, new LoopingSound(sample), 1);
-    }
-    void AddEntityLoopingSound(int entityNum, const vec3_t origin, Sample* sample) {
-        //AddSoundHelper(entityNum, origin, new LoopingSound(sample), 1);
-    }
+    void AddEntityLoopingSound(int entityNum, sfxHandle_t sfx) {
+        entityLoop_t& loop = entityLoops[entityNum];
 
-    void ClearEmitterLoopingSounds(Emitter* emitter) {
-        //TODO
+        loop.addedThisFrame = true;
+
+        if (not loop.sound) {
+            loop.sound = std::make_shared<LoopingSound>(Sample::FromHandle(sfx));
+            AddSound(GetEmitterForEntity(entityNum), loop.sound, 1);
+        }
     }
 
     void ClearAllLoopingSounds() {
-        //TODO
+        for (int i = 0; i < MAX_GENTITIES; i++) {
+            ClearLoopingSoundsForEntity(i);
+        }
     }
 
     void ClearLoopingSoundsForEntity(int entityNum) {
-        ClearEmitterLoopingSounds(GetEmitterForEntity(entityNum));
+        if (entityLoops[entityNum].sound) {
+            entityLoops[entityNum].addedThisFrame = false;
+        }
     }
 
     void UpdateEntityPosition(int entityNum, const vec3_t position) {
@@ -104,7 +135,7 @@ namespace Audio {
     }
 
     void UpdateEntityOcclusion(int entityNum, float ratio) {
-        //UpdateRegisteredEntityOcclusion(entityNum, ratio);
+        UpdateRegisteredEntityOcclusion(entityNum, ratio);
     }
 
 }

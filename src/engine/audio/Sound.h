@@ -24,6 +24,7 @@ along with daemon source code.  if not, see <http://www.gnu.org/licenses/>.
 
 #include "snd_local.h"
 #include "snd_codec.h"
+#include <memory>
 
 #ifndef AUDIO_SOUND_H_
 #define AUDIO_SOUND_H_
@@ -37,7 +38,7 @@ namespace Audio {
     void ShutdownSounds();
     void UpdateSounds();
 
-    void AddSound(Emitter* emitter, Sound* sound, int priority);
+    void AddSound(Emitter* emitter, std::shared_ptr<Sound> sound, int priority);
 
     class Sample;
 
@@ -82,18 +83,19 @@ namespace Audio {
             Sample* sample;
     };
 
-/*
+
     class LoopingSound : public Sound {
         public:
             LoopingSound(Sample* sample);
             virtual ~LoopingSound();
 
             virtual void SetupSource(AL::Source& source) OVERRIDE;
+            virtual void Update() OVERRIDE;
 
         private:
             Sample* sample;
     };
-*/
+
     // StreamSound
     // MusicSound?
 
