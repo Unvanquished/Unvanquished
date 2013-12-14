@@ -37,7 +37,7 @@ option( BUILD_GAME_NACL_NATIVE "Build native NaCl game logic" 0)
 option( BUILD_GAME_NACL "Build NaCl game logic" 0)
 option( BUILD_GAME_QVM_NATIVE "Build native game logic " 1)
 option( BUILD_GAME_QVM "Build QVM game logic" 1)
-option( BUILD_TTY_CLIENT "Build Daemon headless client" 1 )
+option( BUILD_TTY_CLIENT "Build Daemon headless client" 0 )
 cmake_dependent_option( BUILD_OLD_RENDERER "Build old renderer library" 1 BUILD_CLIENT 0 )
 cmake_dependent_option( BUILD_NEW_RENDERER "Build new renderer library" 1 BUILD_CLIENT 0 )
 
