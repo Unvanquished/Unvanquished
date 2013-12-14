@@ -353,14 +353,25 @@ include_directories( "${OBJ_DIR}" )
 # File lists
 ################################################################################
 
-set( SHAREDLIST
-  ${ENGINE_DIR}/qcommon/q_shared.c 
-  ${ENGINE_DIR}/qcommon/q_unicode.c
-  ${ENGINE_DIR}/qcommon/q_math.c
+set( SHAREDLIST_H
   ${ENGINE_DIR}/qcommon/q_shared.h
   ${ENGINE_DIR}/qcommon/q_unicode.h
   ${ENGINE_DIR}/qcommon/unicode_data.h
   ${ENGINE_DIR}/qcommon/logging.h
+)
+
+set( SHAREDLIST_C
+  ${ENGINE_DIR}/qcommon/q_shared.c
+  ${ENGINE_DIR}/qcommon/q_unicode.c
+  ${ENGINE_DIR}/qcommon/q_math.c
+  ${SHAREDLIST_H}
+)
+
+set( SHAREDLIST
+  ${ENGINE_DIR}/qcommon/q_shared.cpp
+  ${ENGINE_DIR}/qcommon/q_unicode.cpp
+  ${ENGINE_DIR}/qcommon/q_math.cpp
+  ${SHAREDLIST_H}
 )
 
 set( RENDERERLIST
@@ -673,7 +684,7 @@ set( CGAMENATIVELIST
 set( CGAMEQVMLIST
   ${GAMELOGIC_DIR}/shared/bg_lib.c
   ${ENGINE_DIR}/qcommon/q_static.c
-  ${SHAREDLIST}
+  ${SHAREDLIST_C}
 )
 
 set( CGAMEASMLIST
@@ -736,7 +747,7 @@ set( GAMENATIVELIST
 set( GAMEQVMLIST
   ${GAMELOGIC_DIR}/shared/bg_lib.c
   ${ENGINE_DIR}/qcommon/q_static.c
-  ${SHAREDLIST}
+  ${SHAREDLIST_C}
 )
 
 set( GAMEASMLIST
@@ -763,7 +774,7 @@ set( UINATIVELIST
 set( UIQVMLIST
   ${GAMELOGIC_DIR}/shared/bg_lib.c
   ${ENGINE_DIR}/qcommon/q_static.c
-  ${SHAREDLIST}
+  ${SHAREDLIST_C}
 )
 
 set( UIASMLIST
