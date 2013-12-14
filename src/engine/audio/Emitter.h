@@ -34,9 +34,9 @@ namespace Audio {
     void ShutdownEmitters();
     void UpdateEmitters();
 
-    Emitter* GetEmitterForEntity(int entityNum);
-    Emitter* GetEmitterForPosition(const vec3_t position);
-    Emitter* GetLocalEmitter();
+    std::shared_ptr<Emitter> GetEmitterForEntity(int entityNum);
+    std::shared_ptr<Emitter> GetEmitterForPosition(const vec3_t position);
+    std::shared_ptr<Emitter> GetLocalEmitter();
 
     void UpdateRegisteredEntityPosition(int entityNum, const vec3_t position);
     void UpdateRegisteredEntityVelocity(int entityNum, const vec3_t velocity);
@@ -58,10 +58,6 @@ namespace Audio {
             void virtual Update() = 0;
             virtual void UpdateSound(Sound& sound) = 0;
             virtual void InternalSetupSound(Sound& sound) = 0;
-
-            void Retain();
-            void Release();
-            int GetRefCount();
 
         protected:
             int refCount;

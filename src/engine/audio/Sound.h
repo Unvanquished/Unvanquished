@@ -34,7 +34,7 @@ namespace Audio {
     void ShutdownSounds();
     void UpdateSounds();
 
-    void AddSound(Emitter* emitter, std::shared_ptr<Sound> sound, int priority);
+    void AddSound(std::shared_ptr<Emitter> emitter, std::shared_ptr<Sound> sound, int priority);
 
     class Sample;
 
@@ -52,8 +52,8 @@ namespace Audio {
             void Stop();
             bool IsStopped();
 
-            void SetEmitter(Emitter* emitter);
-            Emitter* GetEmitter();
+            void SetEmitter(std::shared_ptr<Emitter> emitter);
+            std::shared_ptr<Emitter> GetEmitter();
 
             void AcquireSource(AL::Source& source);
             AL::Source& GetSource();
@@ -63,7 +63,7 @@ namespace Audio {
 
         private:
             bool playing;
-            Emitter* emitter;
+            std::shared_ptr<Emitter> emitter;
             AL::Source* source;
     };
 

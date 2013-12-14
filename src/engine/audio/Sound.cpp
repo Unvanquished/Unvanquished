@@ -86,7 +86,7 @@ namespace Audio {
         }
     }
 
-    void AddSound(Emitter* emitter, std::shared_ptr<Sound> sound, int priority) {
+    void AddSound(std::shared_ptr<Emitter> emitter, std::shared_ptr<Sound> sound, int priority) {
         sourceRecord_t* source = GetSource(priority);
 
         if (source) {
@@ -141,7 +141,6 @@ namespace Audio {
     }
 
     Sound::~Sound() {
-        emitter->Release();
     }
 
     void Sound::Play() {
@@ -158,12 +157,11 @@ namespace Audio {
         return not playing;
     }
 
-    void Sound::SetEmitter(Emitter* emitter) {
+    void Sound::SetEmitter(std::shared_ptr<Emitter> emitter) {
         this->emitter = emitter;
-        emitter->Retain();
     }
 
-    Emitter* Sound::GetEmitter() {
+    std::shared_ptr<Emitter> Sound::GetEmitter() {
         return emitter;
     }
 

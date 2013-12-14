@@ -36,9 +36,9 @@ namespace Audio {
 
     static entityData_t entities[MAX_GENTITIES];
 
-    static Emitter* entityEmitters[MAX_GENTITIES];
-    static std::vector<PositionEmitter*> posEmitters;
-    static Emitter* localEmitter;
+    static std::shared_ptr<Emitter> entityEmitters[MAX_GENTITIES];
+    static std::vector<std::shared_ptr<PositionEmitter>> posEmitters;
+    static std::shared_ptr<Emitter> localEmitter;
 
     static const vec3_t origin = {0.0f, 0.0f, 0.0f};
 
@@ -49,7 +49,7 @@ namespace Audio {
             return;
         }
 
-        localEmitter = new LocalEmitter();
+        localEmitter = std::make_shared<LocalEmitter>();
 
         initialized = true;
     }
@@ -59,18 +59,14 @@ namespace Audio {
             return;
         }
 
-        delete localEmitter;
+        localEmitter = nullptr;
 
         for (int i = 0; i < MAX_GENTITIES; i++) {
             if (entityEmitters[i]) {
-                delete entityEmitters[i];
                 entityEmitters[i] = nullptr;
             }
         }
 
-        for (Emitter* emitter : posEmitters) {
-            delete emitter;
-        }
         posEmitters.clear();
 
         initialized = false;
@@ -80,50 +76,48 @@ namespace Audio {
         localEmitter->Update();
 
         for (int i = 0; i < MAX_GENTITIES; i++) {
-            Emitter* emitter = entityEmitters[i];
+            auto emitter = entityEmitters[i];
 
             if (not emitter) {
                 continue;
             }
 
             emitter->Update();
-            if (emitter->GetRefCount() == 0) {
-                delete emitter;
+            if (emitter.unique()) {
                 entityEmitters[i] = nullptr;
             }
         }
 
         for (auto it = posEmitters.begin(); it != posEmitters.end();){
             (*it)->Update();
-            if ((*it)->GetRefCount() != 0) {
-                it ++;
-            } else {
-                delete (*it);
+            if ((*it).unique()) {
                 it = posEmitters.erase(it);
+            } else {
+                it ++;
             }
         }
     }
 
-    Emitter* GetEmitterForEntity(int entityNum) {
+    std::shared_ptr<Emitter> GetEmitterForEntity(int entityNum) {
         if (not entityEmitters[entityNum]) {
-            entityEmitters[entityNum] = new EntityEmitter(entityNum);
+            entityEmitters[entityNum] = std::make_shared<EntityEmitter>(entityNum);
         }
 
         return entityEmitters[entityNum];
     }
 
-    Emitter* GetEmitterForPosition(const vec3_t position) {
-        for (PositionEmitter* emitter : posEmitters) {
+    std::shared_ptr<Emitter> GetEmitterForPosition(const vec3_t position) {
+        for (auto emitter : posEmitters) {
             if (Distance(emitter->GetPosition(), position) <= 1.0f) {
                 return emitter;
             }
         }
-        PositionEmitter* emitter = new PositionEmitter(position);
+        auto emitter = std::make_shared<PositionEmitter>(position);
         posEmitters.push_back(emitter);
         return emitter;
     }
 
-    Emitter* GetLocalEmitter() {
+    std::shared_ptr<Emitter> GetLocalEmitter() {
         return localEmitter;
     }
 
@@ -151,18 +145,6 @@ namespace Audio {
         sound.GetSource().SetReferenceDistance(60.0f);
         InternalSetupSound(sound);
         UpdateSound(sound);
-    }
-
-    void Emitter::Retain() {
-        refCount ++;
-    }
-
-    void Emitter::Release() {
-        refCount --;
-    }
-
-    int Emitter::GetRefCount() {
-        return refCount;
     }
 
     // Implementation of EntityEmitter

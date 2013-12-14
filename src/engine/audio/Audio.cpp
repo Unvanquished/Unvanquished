@@ -80,7 +80,7 @@ namespace Audio {
     }
 
     void StartSound(int entityNum, const vec3_t origin, sfxHandle_t sfx) {
-        Emitter* emitter;
+        std::shared_ptr<Emitter> emitter;
 
         // Apparently no origin means it is attached to an entity
         if (not origin) {
