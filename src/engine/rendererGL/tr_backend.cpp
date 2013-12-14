@@ -24,7 +24,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "tr_local.h"
 #include "gl_shader.h"
-#include "../../common/Maths.h"
 
 backEndData_t  *backEndData[ SMP_FRAMES ];
 backEndState_t backEnd;

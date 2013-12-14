@@ -22,12 +22,10 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
-#include <string>
-#include <algorithm>
-#include "../libs/tinyformat/tinyformat.h"
-
 #ifndef COMMON_STRING_H_
 #define COMMON_STRING_H_
+
+#include "../libs/tinyformat/tinyformat.h"
 
 namespace Str {
 

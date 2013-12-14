@@ -36,9 +36,6 @@ Maryland 20850 USA.
 #include "../qcommon/q_unicode.h"
 #include "../framework/CommandSystem.h"
 
-#include "../../common/Maths.h"
-#include "../../common/String.h"
-
 /*
 
 key up events are sent even if in console mode

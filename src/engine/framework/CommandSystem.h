@@ -22,8 +22,6 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
-#include "../../common/Command.h"
-
 #ifndef FRAMEWORK_COMMAND_SYSTEM_H_
 #define FRAMEWORK_COMMAND_SYSTEM_H_
 

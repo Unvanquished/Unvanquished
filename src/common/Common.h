@@ -22,27 +22,19 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
-#include "ConsoleHistory.h"
+#ifndef COMMON_COMMON_H_
+#define COMMON_COMMON_H_
 
-#ifndef FRAMEWORK_CONSOLE_FIELD_H_
-#define FRAMEWORK_CONSOLE_FIELD_H_
+// Compiler.h, Platform.h and Endian.h are included by q_shared.h
+#include "../engine/qcommon/q_shared.h"
 
-namespace Console {
+// Common headers
+#include "String.h"
+#include "Command.h"
+#include "Cvar.h"
+#include "Log.h"
+#include "LineEditData.h"
+#include "Maths.h"
+#include "RPC.h"
 
-    class Field : public Util::LineEditData {
-        public:
-            Field(int size);
-
-            void HistoryPrev();
-            void HistoryNext();
-
-            void RunCommand(Str::StringRef defaultCommand = "");
-            void AutoComplete();
-
-        private:
-            HistoryHandle hist;
-    };
-
-}
-
-#endif // FRAMEWORK_CONSOLE_FIELD_H_
+#endif // COMMON_COMMON_H_

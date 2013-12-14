@@ -22,10 +22,9 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
-#include "Command.h"
-#include "Log.h"
+#include "Common.h"
 
-#include "../engine/qcommon/qcommon.h"
+// FIXME: Code in common shouldn't depend on framework
 #include "../engine/framework/CommandSystem.h"
 #include "../engine/framework/CvarSystem.h"
 

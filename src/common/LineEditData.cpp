@@ -22,10 +22,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
-#include "LineEditData.h"
-
-#include <string.h>
-#include <algorithm>
+#include "Common.h"
 
 //TODO: use a std::string instead of a fixed size char* ?
 //TODO: support MAJ-selection ?

@@ -22,10 +22,10 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
-#include "Log.h"
+#include "Common.h"
 
+// FIXME: Code in common shouldn't depend on framework
 #include "../engine/framework/LogSystem.h"
-#include "../engine/qcommon/qcommon.h"
 
 namespace Log {
 

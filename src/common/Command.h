@@ -22,11 +22,6 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
-#include "../engine/qcommon/q_shared.h"
-#include "String.h"
-#include <string>
-#include <vector>
-
 #ifndef COMMON_COMMAND_H_
 #define COMMON_COMMAND_H_
 
@@ -44,9 +39,9 @@ namespace Cmd {
         SYSTEM           = BIT(3),
         RENDERER         = BIT(4),
         SOUND            = BIT(5),
-        GAME             = BIT(6),
-        CGAME            = BIT(7),
-        UI               = BIT(8),
+        GAME_VM          = BIT(6),
+        CGAME_VM         = BIT(7),
+        UI_VM            = BIT(8),
         PROXY_FOR_OLD    = BIT(31) // OLD: The command has been registered through the proxy function in cmd.c
     };
 

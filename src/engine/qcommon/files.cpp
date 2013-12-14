@@ -45,12 +45,12 @@ Maryland 20850 USA.
 #include "../../libs/minizip/unzip.h"
 
 #include "../framework/CommandSystem.h"
-#include "../../common/String.h"
 
 #ifdef _WIN32
 #include <direct.h>
 #else
 #include <unistd.h>
+#include <sys/stat.h>
 #endif
 
 /*

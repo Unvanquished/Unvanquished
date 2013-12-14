@@ -26,10 +26,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "cg_local.h"
 
-#ifndef Q3_VM
-#include "../../common/Maths.h"
-#endif
-
 /*
 =============================================================================
 

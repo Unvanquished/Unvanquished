@@ -22,8 +22,6 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
-#include <string>
-
 #ifndef COMMON_LINE_EDIT_DATA_H_
 #define COMMON_LINE_EDIT_DATA_H_
 
