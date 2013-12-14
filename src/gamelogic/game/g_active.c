@@ -2042,7 +2042,7 @@ void ClientThink_real( gentity_t *ent )
 	}
 
 	// unset jetpack damaged flag if it's time
-	if ( client->lastCombatTime + JETPACK_DMG_DISABLE_TIME < level.time )
+	if ( client->jetpackDisabledUntil < level.time )
 	{
 		client->ps.stats[ STAT_STATE2 ] &= ~SS2_JETPACK_DAMAGED;
 	}
