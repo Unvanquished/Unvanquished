@@ -31,7 +31,7 @@ namespace Audio {
 
     // Implementation of Sample
 
-    Sample::Sample(): HandledResource<Sample>(this), refCount(0) {
+    Sample::Sample(std::string name): HandledResource<Sample>(this), refCount(0), name(std::move(name)) {
     }
 
     Sample::~Sample() {
@@ -54,6 +54,10 @@ namespace Audio {
 
     int Sample::GetRefCount() {
         return refCount;
+    }
+
+    const std::string& Sample::GetName() {
+        return name;
     }
 
     // Implementation of the sample storage
@@ -97,7 +101,7 @@ namespace Audio {
             return errorSample;
         }
 
-        Sample* sample = new Sample;
+        Sample* sample = new Sample(std::move(filename));
         samples[filename] = sample;
 
         //TODO handle errors, especially out of memeory errors

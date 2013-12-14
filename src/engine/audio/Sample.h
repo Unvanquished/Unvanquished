@@ -86,7 +86,7 @@ namespace Audio {
     //TODO handle memory pressure: load and unload buffers automatically
     class Sample: public HandledResource<Sample> {
         public:
-            Sample();
+            Sample(std::string name);
             ~Sample();
 
             void Use();
@@ -97,9 +97,12 @@ namespace Audio {
             void Release();
             int GetRefCount();
 
+            const std::string& GetName();
+
         private:
             AL::Buffer buffer;
             int refCount;
+            std::string name;
     };
 
     void InitSamples();

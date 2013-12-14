@@ -606,8 +606,12 @@ set( CLIENTLIST
   ${ENGINE_DIR}/audio/snd_main.c
   ${ENGINE_DIR}/audio/ALObjects.cpp
   ${ENGINE_DIR}/audio/ALObjects.h
+  ${ENGINE_DIR}/audio/Emitter.cpp
+  ${ENGINE_DIR}/audio/Emitter.h
   ${ENGINE_DIR}/audio/Sample.cpp
   ${ENGINE_DIR}/audio/Sample.h
+  ${ENGINE_DIR}/audio/Sound.cpp
+  ${ENGINE_DIR}/audio/Sound.h
 )
 
 if( USE_MUMBLE )

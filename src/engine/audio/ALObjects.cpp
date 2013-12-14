@@ -108,6 +108,12 @@ namespace AL {
         alHandle = 0;
     }
 
+    bool Source::IsStopped() {
+        ALint state;
+        alGetSourcei(alHandle, AL_SOURCE_STATE, &state);
+        return state == AL_STOPPED;
+    }
+
     void Source::Play() {
         alSourcePlay(alHandle);
     }
@@ -124,11 +130,11 @@ namespace AL {
         alSourcef(alHandle, AL_GAIN, gain);
     }
 
-    void Source::SetPosition(vec3_t position) {
+    void Source::SetPosition(const vec3_t position) {
         alSourcefv(alHandle, AL_POSITION, position);
     }
 
-    void Source::SetVelocity(vec3_t velocity) {
+    void Source::SetVelocity(const vec3_t velocity) {
         alSourcefv(alHandle, AL_VELOCITY, velocity);
     }
 
@@ -142,6 +148,10 @@ namespace AL {
 
     void Source::SetRolloff(float factor) {
         alSourcef(alHandle, AL_ROLLOFF_FACTOR, factor);
+    }
+
+    void Source::SetReferenceDistance(float distance) {
+        alSourcef(alHandle, AL_REFERENCE_DISTANCE, distance);
     }
 
     void Source::SetRelative(bool relative) {

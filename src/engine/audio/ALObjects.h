@@ -67,12 +67,15 @@ namespace AL {
             void Pause();
             void Stop();
 
+            bool IsStopped();
+
             void SetGain(float gain);
-            void SetPosition(vec3_t position);
-            void SetVelocity(vec3_t velocity);
+            void SetPosition(const vec3_t position);
+            void SetVelocity(const vec3_t velocity);
             void SetBuffer(Buffer& buffer);
             void SetLooping(bool loop);
             void SetRolloff(float factor);
+            void SetReferenceDistance(float distance);
             void SetRelative(bool relative);
 
             operator ALuint() const;
