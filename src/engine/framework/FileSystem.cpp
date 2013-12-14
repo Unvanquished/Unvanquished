@@ -288,7 +288,7 @@ static std::string DefaultHomePath()
 }
 
 // Determine whether a character is a OS-dependent path separator
-inline bool isdirsep(char c)
+inline bool isdirsep(unsigned int c)
 {
 #ifdef _WIN32
 	return c == '/' || c == '\\';
@@ -302,16 +302,10 @@ static bool TestWritePermission(Str::StringRef path)
 {
 	// Create a temporary file in the path and then delete it
 	std::string fname = Path::Build(path, ".test_write_permission");
-	FILE *file = my_fopen(fname, MODE_WRITE);
-	if (!file)
-		return false;
-	fclose(file);
-#ifdef _WIN32
-	DeleteFileW(Str::UTF8To16(fname).c_str());
-#else
-	unlink(fname.c_str());
-#endif
-	return true;
+	std::error_code err;
+	RawPath::OpenWrite(fname, err);
+	RawPath::DeleteFile(fname, err);
+	return err;
 }
 
 void Initialize()
@@ -1212,26 +1206,31 @@ namespace RawPath {
 // Create all directories leading to a filename
 static void CreatePath(Str::StringRef path, std::error_code& err)
 {
-	std::string buffer = path;
-
-	for (char& c: buffer) {
+#ifdef _WIN32
+	std::wstring buffer = Str::UTF8To16(path);
+	for (wchar_t& c: buffer) {
 		if (!isdirsep(c))
 			continue;
 		c = '\0';
-#ifdef _WIN32
-		if (_wmkdir(Str::UTF8To16(buffer.data()).c_str()) != 0 && errno != EEXIST) {
+		if (_wmkdir(buffer.data() != 0 && errno != EEXIST) {
 			SetErrorCodeSystem(err);
 			return;
 		}
 		c = '\\';
+	}
 #else
+	std::string buffer = path;
+	for (char& c: buffer) {
+		if (!isdirsep(c))
+			continue;
+		c = '\0';
 		if (mkdir(buffer.data(), 0777) != 0 && errno != EEXIST) {
 			SetErrorCodeSystem(err);
 			return;
 		}
 		c = '/';
-#endif
 	}
+#endif
 }
 
 static File OpenMode(Str::StringRef path, openMode_t mode, std::error_code& err)
