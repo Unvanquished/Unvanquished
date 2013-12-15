@@ -195,6 +195,9 @@ namespace Str {
     int ToInt(Str::StringRef text);
     bool ToInt(Str::StringRef text, int& result);
 
+    float ToFloat(Str::StringRef text);
+    bool ToFloat(Str::StringRef text, float& result);
+
     // Locale-independent versions of ctype
     inline bool cisdigit(char c)
     {
