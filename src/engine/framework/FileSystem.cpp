@@ -47,6 +47,13 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace FS {
 
+// Pak zip and directory extensions
+#define PAK_ZIP_EXT ".pk3"
+#define PAK_DIR_EXT ".pk3dir/"
+
+// Dependencies file in packages
+#define PAK_DEPS_FILE "DEPS"
+
 // Pak search paths
 static std::vector<std::string> pakPaths;
 
@@ -179,6 +186,42 @@ static const minizip_category_impl& minizip_category()
 	return instance;
 }
 
+// Filesystem-specific error codes
+enum filesystem_error {
+	pak_not_found,
+	invalid_filename,
+	no_such_file,
+	no_such_directory
+};
+class filesystem_category_impl: public std::error_category
+{
+public:
+	virtual const char* name() const noexcept override final
+	{
+		return "filesystem";
+	}
+	virtual std::string message(int ev) const override final
+	{
+		switch (ev) {
+		case filesystem_error::pak_not_found:
+			return "Pak file not found";
+		case filesystem_error::invalid_filename:
+			return "Filename contains invalid characters";
+		case filesystem_error::no_such_file:
+			return "No such file";
+		case filesystem_error::no_such_directory:
+			return "No such directory";
+		default:
+			return "Unknown error";
+		}
+	}
+};
+static const filesystem_category_impl& filesystem_category()
+{
+	static filesystem_category_impl instance;
+	return instance;
+}
+
 // Support code for error handling
 static void SetErrorCode(std::error_code& err, int ec, const std::error_category& ecat)
 {
@@ -205,13 +248,9 @@ static void SetErrorCodeSystem(std::error_code& err)
 	SetErrorCode(err, errno, std::generic_category());
 #endif
 }
-static void SetErrorCodeFileNotFound(std::error_code& err)
+static void SetErrorCodeFilesystem(filesystem_error ec, std::error_code& err)
 {
-#ifdef _WIN32
-	SetErrorCode(err, ERROR_FILE_NOT_FOUND, std::system_category());
-#else
-	SetErrorCode(err, ENOENT, std::generic_category());
-#endif
+	SetErrorCode(err, ec, filesystem_category());
 }
 static void SetErrorCodeZlib(std::error_code& err, int num)
 {
@@ -306,13 +345,13 @@ static bool TestWritePermission(Str::StringRef path)
 	std::string fname = Path::Build(path, ".test_write_permission");
 	std::error_code err;
 	File f = RawPath::OpenWrite(fname, err);
-	if (err)
+	if (HaveError(err))
 		return false;
 	f.Close(err);
-	if (err)
+	if (HaveError(err))
 		return false;
 	RawPath::DeleteFile(fname, err);
-	if (err)
+	if (HaveError(err))
 		return false;
 	return true;
 }
@@ -345,7 +384,7 @@ static void AddPak(pakType_t type, Str::StringRef filename, Str::StringRef baseP
 {
 	std::string fullPath = Path::Build(basePath, filename);
 
-	size_t suffixLen = type == PAK_DIR ? strlen(".pk3dir/") : strlen(".pk3");
+	size_t suffixLen = type == PAK_DIR ? strlen(PAK_DIR_EXT) : strlen(PAK_ZIP_EXT);
 	size_t nameStart = filename.rfind('/', suffixLen);
 	if (nameStart == Str::StringRef::npos)
 		nameStart = 0;
@@ -400,9 +439,9 @@ static void FindPaks(Str::StringRef basePath, Str::StringRef subPath)
 	std::string fullPath = Path::Build(basePath, subPath);
 	try {
 		for (auto& filename: RawPath::ListFiles(fullPath)) {
-			if (Str::IsSuffix(".pk3", filename)) {
+			if (Str::IsSuffix(PAK_ZIP_EXT, filename)) {
 				AddPak(PAK_ZIP, Path::Build(subPath, filename), basePath);
-			} else if (Str::IsSuffix(".pk3dir/", filename)) {
+			} else if (Str::IsSuffix(PAK_DIR_EXT, filename)) {
 				AddPak(PAK_DIR, Path::Build(subPath, filename), basePath);
 			} else if (Str::IsSuffix("/", filename))
 				FindPaks(basePath, Path::Build(subPath, filename));
@@ -546,7 +585,9 @@ std::string Path::Build(Str::StringRef base, Str::StringRef path)
 	if (path.empty())
 		return base;
 
-	std::string out = base;
+	std::string out;
+	out.reserve(base.size() + 1 + path.size());
+	out.assign(base.data(), base.size());
 	if (!isdirsep(out.back()))
 		out.push_back('/');
 	out.append(path.data(), path.size());
@@ -890,31 +931,107 @@ private:
 	unzFile zipFile;
 };
 
+// Parse the dependencies file of a package
+// Each line of the dependencies file is a name followed by an optional version
+static void ParseDeps(PakNamespace& ns, const PakInfo& parent, Str::StringRef depsData, std::error_code& err)
+{
+	auto lineStart = depsData.begin();
+	int line = 0;
+	while (lineStart != depsData.end()) {
+		// Get the end of the line or the end of the file
+		line++;
+		auto lineEnd = std::find(lineStart, depsData.end(), '\n');
+
+		// Skip spaces
+		while (lineStart != lineEnd && Str::cisspace(*lineStart))
+			lineStart++;
+		if (lineStart == lineEnd) {
+			lineStart = lineEnd == depsData.end() ? lineEnd : lineEnd + 1;
+			continue;
+		}
+
+		// Read the package name
+		std::string name;
+		while (lineStart != lineEnd && !Str::cisspace(*lineStart))
+			name.push_back(*lineStart++);
+
+		// Skip spaces
+		while (lineStart != lineEnd && Str::cisspace(*lineStart))
+			lineStart++;
+
+		// If this is the end of the line, load a package by name
+		if (lineStart == lineEnd) {
+			ns.LoadPak(name, err);
+			lineStart = lineEnd == depsData.end() ? lineEnd : lineEnd + 1;
+			continue;
+		}
+
+		// Read the package version
+		std::string version;
+		while (lineStart != lineEnd && !Str::cisspace(*lineStart))
+			version.push_back(*lineStart++);
+
+		// Skip spaces
+		while (lineStart != lineEnd && Str::cisspace(*lineStart))
+			lineStart++;
+
+		// If this is the end of the line, load a package with an explicit version
+		if (lineStart == lineEnd) {
+			ns.LoadPak(name, version, err);
+			lineStart = lineEnd == depsData.end() ? lineEnd : lineEnd + 1;
+			continue;
+		}
+
+		// If there is still stuff at the end of the line, print a warning and ignore it
+		Com_Printf("Invalid dependency specification on line %d in %s\n", line, Path::Build(parent.path, PAK_DEPS_FILE).c_str());
+		lineStart = lineEnd == depsData.end() ? lineEnd : lineEnd + 1;
+	}
+}
+
 void PakNamespace::InternalLoadPak(const PakInfo& pak, bool verifyChecksum, uint32_t expectedChecksum, std::error_code& err)
 {
-	std::vector<std::pair<std::string, pakFileInfo_t>> fileList;
 	uint32_t checksum;
+	bool hasDeps = false;
+	offset_t depsOffset;
+	ZipArchive zipFile;
 
-	// Gather the list of files
+	// Add the pak to the list of loaded paks
+	loadedPaks.push_back(pak);
 	if (pak.type == PAK_DIR) {
-		try {
-			for (auto& filename: RawPath::ListFilesRecursive(pak.path))
-				fileList.push_back({filename, {loadedPaks.size(), 0}});
-		} catch (std::system_error& sysErr) {
-			SetErrorCode(err, sysErr.code().value(), sysErr.code().category());
+		loadedPaks.back().hasChecksum = false;
+	} else {
+		loadedPaks.back().hasChecksum = true;
+		loadedPaks.back().checksum = checksum;
+	}
+
+	// Update the list of files, but don't overwrite existing files to preserve sort order
+	if (pak.type == PAK_DIR) {
+		auto dirRange = RawPath::ListFilesRecursive(pak.path, err);
+		if (HaveError(err))
 			return;
+		for (auto it = dirRange.begin(); it != dirRange.end();) {
+			fileMap.emplace(*it, pakFileInfo_t{loadedPaks.size() - 1, 0});
+			if (*it == PAK_DEPS_FILE)
+				hasDeps = true;
+			it.increment(err);
+			if (HaveError(err))
+				return;
 		}
 	} else {
 		// Open zip
-		ZipArchive zipFile = ZipArchive::Open(pak.path, err);
+		zipFile = ZipArchive::Open(pak.path, err);
 		if (HaveError(err))
 			return;
 
-		// Get the file list and calculate the checksum of the package
+		// Get the file list and calculate the checksum of the package (checksum of all file checksums)
 		checksum = crc32(0, Z_NULL, 0);
-		zipFile.ForEachFile([this, &checksum, &fileList](Str::StringRef filename, offset_t offset, uint32_t crc) {
+		zipFile.ForEachFile([this, &checksum, &hasDeps, &depsOffset](Str::StringRef filename, offset_t offset, uint32_t crc) {
 			checksum = crc32(checksum, reinterpret_cast<const Bytef*>(&crc), sizeof(crc));
-			fileList.push_back({filename, {loadedPaks.size(), offset}});
+			fileMap.emplace(filename, pakFileInfo_t{loadedPaks.size() - 1, offset});
+			if (filename == PAK_DEPS_FILE) {
+				hasDeps = true;
+				depsOffset = offset;
+			}
 		}, err);
 		if (HaveError(err))
 			return;
@@ -930,16 +1047,30 @@ void PakNamespace::InternalLoadPak(const PakInfo& pak, bool verifyChecksum, uint
 	if (pak.hasChecksum && pak.checksum != checksum)
 		Com_Printf("Pak checksum doesn't match filename: %s\n", pak.path.c_str());
 
-	// Once we are sure no more errors can occur, update our data structures
-	loadedPaks.push_back(pak);
-	if (pak.type == PAK_DIR) {
-		loadedPaks.back().hasChecksum = false;
-	} else {
-		loadedPaks.back().hasChecksum = true;
-		loadedPaks.back().checksum = checksum;
+	// Load dependencies
+	if (hasDeps) {
+		std::string depsData;
+		if (pak.type == PAK_DIR) {
+			File depsFile = RawPath::OpenRead(Path::Build(pak.path, PAK_DEPS_FILE), err);
+			if (HaveError(err))
+				return;
+			depsData = depsFile.ReadAll(err);
+			if (HaveError(err))
+				return;
+		} else {
+			zipFile.OpenFile(depsOffset, err);
+			if (HaveError(err))
+				return;
+			offset_t length = zipFile.FileLength(err);
+			if (HaveError(err))
+				return;
+			depsData.resize(length);
+			zipFile.ReadFile(&depsData[0], length, err);
+			if (HaveError(err))
+				return;
+		}
+		ParseDeps(*this, pak, depsData, err);
 	}
-	for (auto& entry: fileList)
-		fileMap.insert(std::move(entry));
 }
 
 void PakNamespace::LoadPak(Str::StringRef name, std::error_code& err)
@@ -950,7 +1081,7 @@ void PakNamespace::LoadPak(Str::StringRef name, std::error_code& err)
 	});
 
 	if (iter == availablePaks.begin() || (iter - 1)->name != name) {
-		SetErrorCodeFileNotFound(err);
+		SetErrorCodeFilesystem(filesystem_error::pak_not_found, err);
 		return;
 	}
 
@@ -968,7 +1099,7 @@ void PakNamespace::LoadPak(Str::StringRef name, Str::StringRef version, std::err
 	});
 
 	if (iter == availablePaks.begin() || (iter - 1)->name != name || (iter - 1)->version != version) {
-		SetErrorCodeFileNotFound(err);
+		SetErrorCodeFilesystem(filesystem_error::pak_not_found, err);
 		return;
 	}
 
@@ -1004,7 +1135,7 @@ void PakNamespace::LoadPak(Str::StringRef name, Str::StringRef version, uint32_t
 
 		// Only allow zip packages because directories don't have a checksum
 		if (iter == availablePaks.begin() || (iter - 1)->type == PAK_DIR || (iter - 1)->name != name || (iter - 1)->version != version || (iter - 1)->hasChecksum) {
-			SetErrorCodeFileNotFound(err);
+			SetErrorCodeFilesystem(filesystem_error::pak_not_found, err);
 			return;
 		}
 	}
@@ -1016,7 +1147,7 @@ std::string PakNamespace::ReadFile(Str::StringRef path, std::error_code& err) co
 {
 	auto it = fileMap.find(path);
 	if (it == fileMap.end()) {
-		SetErrorCodeFileNotFound(err);
+		SetErrorCodeFilesystem(filesystem_error::no_such_file, err);
 		return nullptr;
 	}
 
@@ -1073,7 +1204,7 @@ void PakNamespace::CopyFile(Str::StringRef path, const File& dest, std::error_co
 {
 	auto it = fileMap.find(path);
 	if (it == fileMap.end()) {
-		SetErrorCodeFileNotFound(err);
+		SetErrorCodeFilesystem(filesystem_error::no_such_file, err);
 		return;
 	}
 
@@ -1121,7 +1252,7 @@ const PakInfo* PakNamespace::LocateFile(Str::StringRef path, std::error_code& er
 {
 	auto it = fileMap.find(path);
 	if (it == fileMap.end()) {
-		SetErrorCodeFileNotFound(err);
+		SetErrorCodeFilesystem(filesystem_error::no_such_file, err);
 		return nullptr;
 	} else {
 		ClearErrorCode(err);
@@ -1133,7 +1264,7 @@ std::chrono::system_clock::time_point PakNamespace::FileTimestamp(Str::StringRef
 {
 	auto it = fileMap.find(path);
 	if (it == fileMap.end()) {
-		SetErrorCodeFileNotFound(err);
+		SetErrorCodeFilesystem(filesystem_error::no_such_file, err);
 		return {};
 	}
 
@@ -1192,7 +1323,7 @@ PakNamespace::DirectoryRange PakNamespace::ListFiles(Str::StringRef path, std::e
 	state.iter = fileMap.cbegin();
 	state.iter_end = fileMap.cend();
 	if (!state.InternalAdvance())
-		SetErrorCodeFileNotFound(err);
+		SetErrorCodeFilesystem(filesystem_error::no_such_directory, err);
 	else
 		ClearErrorCode(err);
 	return state;
@@ -1208,7 +1339,7 @@ PakNamespace::DirectoryRange PakNamespace::ListFilesRecursive(Str::StringRef pat
 	state.iter = fileMap.cbegin();
 	state.iter_end = fileMap.cend();
 	if (!state.InternalAdvance())
-		SetErrorCodeFileNotFound(err);
+		SetErrorCodeFilesystem(filesystem_error::no_such_directory, err);
 	else
 		ClearErrorCode(err);
 	return state;
@@ -1487,8 +1618,10 @@ namespace HomePath {
 
 static File OpenMode(Str::StringRef path, openMode_t mode, std::error_code& err)
 {
-	if (!Path::IsValid(path, false))
+	if (!Path::IsValid(path, false)) {
+		SetErrorCodeFilesystem(filesystem_error::invalid_filename, err);
 		return {};
+	}
 	return RawPath::OpenMode(Path::Build(homePath, path), mode, err);
 }
 File OpenRead(Str::StringRef path, std::error_code& err)
@@ -1514,7 +1647,7 @@ bool FileExists(Str::StringRef path)
 std::chrono::system_clock::time_point FileTimestamp(Str::StringRef path, std::error_code& err)
 {
 	if (!Path::IsValid(path, false)) {
-		SetErrorCodeFileNotFound(err);
+		SetErrorCodeFilesystem(filesystem_error::invalid_filename, err);
 		return {};
 	}
 	return RawPath::FileTimestamp(Path::Build(homePath, path), err);
@@ -1523,7 +1656,7 @@ std::chrono::system_clock::time_point FileTimestamp(Str::StringRef path, std::er
 void MoveFile(Str::StringRef dest, Str::StringRef src, std::error_code& err)
 {
 	if (!Path::IsValid(dest, false) || !Path::IsValid(src, false)) {
-		SetErrorCodeFileNotFound(err);
+		SetErrorCodeFilesystem(filesystem_error::invalid_filename, err);
 		return;
 	}
 	RawPath::MoveFile(Path::Build(homePath, dest), Path::Build(homePath, src), err);
@@ -1531,7 +1664,7 @@ void MoveFile(Str::StringRef dest, Str::StringRef src, std::error_code& err)
 void DeleteFile(Str::StringRef path, std::error_code& err)
 {
 	if (!Path::IsValid(path, false)) {
-		SetErrorCodeFileNotFound(err);
+		SetErrorCodeFilesystem(filesystem_error::invalid_filename, err);
 		return;
 	}
 	RawPath::DeleteFile(Path::Build(homePath, path), err);
@@ -1540,7 +1673,7 @@ void DeleteFile(Str::StringRef path, std::error_code& err)
 DirectoryRange ListFiles(Str::StringRef path, std::error_code& err)
 {
 	if (!Path::IsValid(path, true)) {
-		SetErrorCodeFileNotFound(err);
+		SetErrorCodeFilesystem(filesystem_error::invalid_filename, err);
 		return {};
 	}
 	return RawPath::ListFiles(Path::Build(homePath, path), err);
@@ -1549,7 +1682,7 @@ DirectoryRange ListFiles(Str::StringRef path, std::error_code& err)
 RecursiveDirectoryRange ListFilesRecursive(Str::StringRef path, std::error_code& err)
 {
 	if (!Path::IsValid(path, true)) {
-		SetErrorCodeFileNotFound(err);
+		SetErrorCodeFilesystem(filesystem_error::invalid_filename, err);
 		return {};
 	}
 	return RawPath::ListFilesRecursive(Path::Build(homePath, path), err);
