@@ -26,6 +26,10 @@ along with daemon source code.  if not, see <http://www.gnu.org/licenses/>.
 
 namespace Audio {
 
+    //TODO nice usecase for Cvar::Range
+    static Cvar::Cvar<float> volume("sound.volume.global", "the global sound volume", Cvar::ARCHIVE, 0.8f);
+    static Cvar::Cvar<float> musicVolume("sound.volume.music", "the volume of the music", Cvar::ARCHIVE, 0.8f);
+
     struct sourceRecord_t {
         AL::Source source;
         std::shared_ptr<Sound> usingSound;
@@ -96,6 +100,7 @@ namespace Audio {
             source->priority = priority;
             source->active = true;
 
+            sound->FinishSetup();
             sound->Play();
         }
     }
@@ -137,7 +142,7 @@ namespace Audio {
 
     // Implementation of Sound
 
-    Sound::Sound() {
+    Sound::Sound(): positionalGain(1.0f), soundGain(1.0f), currentGain(1.0f) {
     }
 
     Sound::~Sound() {
@@ -155,6 +160,18 @@ namespace Audio {
 
     bool Sound::IsStopped() {
         return not playing;
+    }
+
+    void Sound::SetPositionalGain(float gain) {
+        positionalGain = gain;
+    }
+
+    void Sound::SetSoundGain(float gain) {
+        soundGain = gain;
+    }
+
+    float Sound::GetCurrentGain() {
+        return currentGain;
     }
 
     void Sound::SetEmitter(std::shared_ptr<Emitter> emitter) {
@@ -178,6 +195,25 @@ namespace Audio {
         return *source;
     }
 
+    void Sound::FinishSetup() {
+        currentGain = positionalGain * soundGain * volume.Get();
+        source->SetGain(currentGain);
+    }
+
+    void Sound::Update() {
+        float targetGain = positionalGain * soundGain * volume.Get();
+
+        //TODO make it framerate dependant and fade out in about 1/8 seconds ?
+        if (currentGain > targetGain) {
+            currentGain = std::max(currentGain * 1.05f, targetGain);
+        } else if (currentGain < targetGain) {
+            currentGain = std::min(currentGain / 1.05f - 0.01f, targetGain);
+        }
+
+        source->SetGain(currentGain);
+
+        InternalUpdate();
+    }
     // Implementation of OneShotSound
 
     OneShotSound::OneShotSound(Sample* sample): sample(sample) {
@@ -190,7 +226,7 @@ namespace Audio {
         source.SetBuffer(sample->GetBuffer());
     }
 
-    void OneShotSound::Update() {
+    void OneShotSound::InternalUpdate() {
         if (GetSource().IsStopped()) {
             Stop();
         }
@@ -198,10 +234,16 @@ namespace Audio {
 
     // Implementation of LoopingSound
 
-    LoopingSound::LoopingSound(Sample* sample): sample(sample) {
+    LoopingSound::LoopingSound(Sample* sample): sample(sample), fadingOut(false) {
     }
 
     LoopingSound::~LoopingSound() {
+    }
+
+    void LoopingSound::FadeOutAndDie() {
+        Log::Debug("Fading out and dying");
+        fadingOut = true;
+        SetSoundGain(0.0f);
     }
 
     void LoopingSound::SetupSource(AL::Source& source) {
@@ -209,7 +251,11 @@ namespace Audio {
         source.SetBuffer(sample->GetBuffer());
     }
 
-    void LoopingSound::Update() {
+    void LoopingSound::InternalUpdate() {
+        if (fadingOut and GetCurrentGain() == 0.0f) {
+        Log::Debug("Faded out and died");
+            Stop();
+        }
     }
 
 }

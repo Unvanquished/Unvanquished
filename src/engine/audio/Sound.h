@@ -52,6 +52,10 @@ namespace Audio {
             void Stop();
             bool IsStopped();
 
+            void SetPositionalGain(float gain);
+            void SetSoundGain(float gain);
+            float GetCurrentGain();
+
             void SetEmitter(std::shared_ptr<Emitter> emitter);
             std::shared_ptr<Emitter> GetEmitter();
 
@@ -59,9 +63,16 @@ namespace Audio {
             AL::Source& GetSource();
 
             virtual void SetupSource(AL::Source& source) = 0;
-            virtual void Update() = 0;
+            void FinishSetup();
+
+            void Update();
+            virtual void InternalUpdate() = 0;
 
         private:
+            float positionalGain;
+            float soundGain;
+            float currentGain;
+
             bool playing;
             std::shared_ptr<Emitter> emitter;
             AL::Source* source;
@@ -73,7 +84,7 @@ namespace Audio {
             virtual ~OneShotSound();
 
             virtual void SetupSource(AL::Source& source) OVERRIDE;
-            virtual void Update() OVERRIDE;
+            virtual void InternalUpdate() OVERRIDE;
 
         private:
             Sample* sample;
@@ -85,11 +96,14 @@ namespace Audio {
             LoopingSound(Sample* sample);
             virtual ~LoopingSound();
 
+            void FadeOutAndDie();
+
             virtual void SetupSource(AL::Source& source) OVERRIDE;
-            virtual void Update() OVERRIDE;
+            virtual void InternalUpdate() OVERRIDE;
 
         private:
             Sample* sample;
+            bool fadingOut;
     };
 
     // StreamSound

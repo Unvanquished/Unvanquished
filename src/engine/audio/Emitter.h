@@ -61,9 +61,6 @@ namespace Audio {
 
         protected:
             int refCount;
-
-            float targetGain;
-            float currentGain;
     };
 
     class EntityEmitter : public Emitter {

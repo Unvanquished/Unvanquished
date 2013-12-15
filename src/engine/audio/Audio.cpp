@@ -29,7 +29,7 @@ namespace Audio {
 
     struct entityLoop_t {
         bool addedThisFrame;
-        std::shared_ptr<Sound> sound;
+        std::shared_ptr<LoopingSound> sound;
     };
     entityLoop_t entityLoops[MAX_GENTITIES];
 
@@ -59,7 +59,7 @@ namespace Audio {
     void Update() {
         for (int i = 0; i < MAX_GENTITIES; i++) {
             if (entityLoops[i].sound and not entityLoops[i].addedThisFrame) {
-                entityLoops[i].sound->Stop();
+                entityLoops[i].sound->FadeOutAndDie();
                 entityLoops[i] = {false, nullptr};
             }
         }
@@ -70,7 +70,7 @@ namespace Audio {
         for (int i = 0; i < MAX_GENTITIES; i++) {
             entityLoops[i].addedThisFrame = false;
             if (entityLoops[i].sound.unique()) {
-                entityLoops[i].sound = nullptr;
+                entityLoops[i] = {false, nullptr};
             }
         }
     }
