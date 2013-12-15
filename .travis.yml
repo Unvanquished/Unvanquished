@@ -3,7 +3,6 @@ language:
 
 compiler:
   - gcc
-  - clang
 
 install:
   - sudo sh -c 'echo deb http://debs.unvanquished.net precise main >>/etc/apt/sources.list'

@@ -66,7 +66,7 @@ namespace Cvar {
     std::string GetValue(const std::string& cvarName);
 
     //Returns a list of cvars matching the prefix as well as their description
-    Cmd::CompletionResult Complete(const std::string& prefix);
+    Cmd::CompletionResult Complete(Str::StringRef prefix);
 
     void AddFlags(const std::string& cvarName, int flags);
 

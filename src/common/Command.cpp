@@ -407,7 +407,7 @@ namespace Cmd {
     CmdBase::CmdBase(const int flags): flags(flags) {
     }
 
-    CompletionResult CmdBase::Complete(int argNum, const Args& args, const std::string& prefix) const {
+    CompletionResult CmdBase::Complete(int argNum, const Args& args, Str::StringRef prefix) const {
         Q_UNUSED(argNum);
         Q_UNUSED(args);
         Q_UNUSED(prefix);
