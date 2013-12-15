@@ -3235,7 +3235,7 @@ void CG_Player( centity_t *cent )
 
 			VectorMA( cent->lerpOrigin, -TRACE_DEPTH, surfNormal, end );
 			VectorMA( cent->lerpOrigin, 1.0f, surfNormal, start );
-			CG_CapTrace( &tr, start, mins, maxs, end, es->number, MASK_PLAYERSOLID );
+			CG_CapTrace( &tr, start, NULL, NULL, end, es->number, MASK_PLAYERSOLID );
 
 			// if the trace misses completely then just use body.origin
 			// apparently capsule traces are "smaller" than box traces
@@ -3244,7 +3244,7 @@ void CG_Player( centity_t *cent )
 				VectorCopy( tr.endpos, playerOrigin );
 
 				// MD5 player models have their model origin at (0 0 0)
-				VectorMA( playerOrigin, ci->headOffset[ 2 ], surfNormal, body.origin );
+				VectorMA( playerOrigin, 0, surfNormal, body.origin );
 			}
 			else
 			{
