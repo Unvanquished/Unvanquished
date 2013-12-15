@@ -1440,13 +1440,17 @@ static void FinishGenericSurface( dsurface_t *ds, srfGeneric_t *gen, vec3_t pt )
 	// set bounding sphere
 	SphereFromBounds( gen->bounds[ 0 ], gen->bounds[ 1 ], gen->origin, &gen->radius );
 
-	// take the plane normal from the lightmap vector and classify it
-	gen->plane.normal[ 0 ] = LittleFloat( ds->lightmapVecs[ 2 ][ 0 ] );
-	gen->plane.normal[ 1 ] = LittleFloat( ds->lightmapVecs[ 2 ][ 1 ] );
-	gen->plane.normal[ 2 ] = LittleFloat( ds->lightmapVecs[ 2 ][ 2 ] );
-	gen->plane.dist = DotProduct( pt, gen->plane.normal );
-	SetPlaneSignbits( &gen->plane );
-	gen->plane.type = PlaneTypeForNormal( gen->plane.normal );
+	if ( gen->surfaceType == SF_FACE )
+	{
+		srfSurfaceFace_t *srf = ( srfSurfaceFace_t * )gen;
+		// take the plane normal from the lightmap vector and classify it
+		srf->plane.normal[ 0 ] = LittleFloat( ds->lightmapVecs[ 2 ][ 0 ] );
+		srf->plane.normal[ 1 ] = LittleFloat( ds->lightmapVecs[ 2 ][ 1 ] );
+		srf->plane.normal[ 2 ] = LittleFloat( ds->lightmapVecs[ 2 ][ 2 ] );
+		srf->plane.dist = DotProduct( pt, srf->plane.normal );
+		SetPlaneSignbits( &srf->plane );
+		srf->plane.type = PlaneTypeForNormal( srf->plane.normal );
+	}
 }
 
 /*
@@ -1606,54 +1610,6 @@ static void ParseFace( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf, in
 
 	surf->data = ( surfaceType_t * ) cv;
 
-	// Tr3B - calc tangent spaces
-#if 0
-	{
-		float       *v;
-		const float *v0, *v1, *v2;
-		const float *t0, *t1, *t2;
-		vec3_t      tangent;
-		vec3_t      binormal;
-		vec3_t      normal;
-
-		for ( i = 0; i < numVerts; i++ )
-		{
-			VectorClear( cv->verts[ i ].tangent );
-			VectorClear( cv->verts[ i ].binormal );
-			VectorClear( cv->verts[ i ].normal );
-		}
-
-		for ( i = 0, tri = cv->triangles; i < numTriangles; i++, tri++ )
-		{
-			v0 = cv->verts[ tri->indexes[ 0 ] ].xyz;
-			v1 = cv->verts[ tri->indexes[ 1 ] ].xyz;
-			v2 = cv->verts[ tri->indexes[ 2 ] ].xyz;
-
-			t0 = cv->verts[ tri->indexes[ 0 ] ].st;
-			t1 = cv->verts[ tri->indexes[ 1 ] ].st;
-			t2 = cv->verts[ tri->indexes[ 2 ] ].st;
-
-			R_CalcTangentSpace( tangent, binormal, normal, v0, v1, v2, t0, t1, t2 );
-
-			for ( j = 0; j < 3; j++ )
-			{
-				v = cv->verts[ tri->indexes[ j ] ].tangent;
-				VectorAdd( v, tangent, v );
-				v = cv->verts[ tri->indexes[ j ] ].binormal;
-				VectorAdd( v, binormal, v );
-				v = cv->verts[ tri->indexes[ j ] ].normal;
-				VectorAdd( v, normal, v );
-			}
-		}
-
-		for ( i = 0; i < numVerts; i++ )
-		{
-			VectorNormalize( cv->verts[ i ].tangent );
-			VectorNormalize( cv->verts[ i ].binormal );
-			VectorNormalize( cv->verts[ i ].normal );
-		}
-	}
-#else
 	{
 		srfVert_t *dv[ 3 ];
 
@@ -1666,7 +1622,6 @@ static void ParseFace( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf, in
 			R_CalcTangentVectors( dv );
 		}
 	}
-#endif
 
 	// finish surface
 	FinishGenericSurface( ds, ( srfGeneric_t * ) cv, cv->verts[ 0 ].xyz );
@@ -1960,69 +1915,6 @@ static void ParseTriSurf( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf,
 	}
 
 	// Tr3B - calc tangent spaces
-#if 0
-	{
-		float       *v;
-		const float *v0, *v1, *v2;
-		const float *t0, *t1, *t2;
-		vec3_t      tangent;
-		vec3_t      binormal;
-		vec3_t      normal;
-
-		for ( i = 0; i < numVerts; i++ )
-		{
-			VectorClear( cv->verts[ i ].tangent );
-			VectorClear( cv->verts[ i ].binormal );
-			VectorClear( cv->verts[ i ].normal );
-		}
-
-		for ( i = 0, tri = cv->triangles; i < numTriangles; i++, tri++ )
-		{
-			v0 = cv->verts[ tri->indexes[ 0 ] ].xyz;
-			v1 = cv->verts[ tri->indexes[ 1 ] ].xyz;
-			v2 = cv->verts[ tri->indexes[ 2 ] ].xyz;
-
-			t0 = cv->verts[ tri->indexes[ 0 ] ].st;
-			t1 = cv->verts[ tri->indexes[ 1 ] ].st;
-			t2 = cv->verts[ tri->indexes[ 2 ] ].st;
-
-#if 1
-			R_CalcTangentSpace( tangent, binormal, normal, v0, v1, v2, t0, t1, t2 );
-#else
-			R_CalcNormalForTriangle( normal, v0, v1, v2 );
-			R_CalcTangentsForTriangle2( tangent, binormal, v0, v1, v2, t0, t1, t2 );
-#endif
-
-			for ( j = 0; j < 3; j++ )
-			{
-				v = cv->verts[ tri->indexes[ j ] ].tangent;
-				VectorAdd( v, tangent, v );
-				v = cv->verts[ tri->indexes[ j ] ].binormal;
-				VectorAdd( v, binormal, v );
-				v = cv->verts[ tri->indexes[ j ] ].normal;
-				VectorAdd( v, normal, v );
-			}
-		}
-
-		for ( i = 0; i < numVerts; i++ )
-		{
-			float dot;
-
-			//VectorNormalize(cv->verts[i].tangent);
-			VectorNormalize( cv->verts[ i ].binormal );
-			VectorNormalize( cv->verts[ i ].normal );
-
-			// Gram-Schmidt orthogonalize
-			dot = DotProduct( cv->verts[ i ].normal, cv->verts[ i ].tangent );
-			VectorMA( cv->verts[ i ].tangent, -dot, cv->verts[ i ].normal, cv->verts[ i ].tangent );
-			VectorNormalize( cv->verts[ i ].tangent );
-
-			//dot = DotProduct(cv->verts[i].normal, cv->verts[i].tangent);
-			//VectorMA(cv->verts[i].tangent, -dot, cv->verts[i].normal, cv->verts[i].tangent);
-			//VectorNormalize(cv->verts[i].tangent);
-		}
-	}
-#else
 	{
 		srfVert_t *dv[ 3 ];
 
@@ -2035,7 +1927,6 @@ static void ParseTriSurf( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf,
 			R_CalcTangentVectors( dv );
 		}
 	}
-#endif
 
 #if 0
 
@@ -4563,7 +4454,7 @@ static void R_CreateVBOWorldSurfaces( void )
                                 }
 
                                 vboSurf->vbo = R_CreateVBO2(va("staticWorldMesh_vertices %i", vboSurfaces.currentElements), numVerts, optimizedVerts,
-                                                                           ATTR_POSITION | ATTR_TEXCOORD | ATTR_LIGHTCOORD | ATTR_TANGENT | ATTR_BINORMAL | ATTR_NORMAL
+                                                                           ATTR_POSITION | ATTR_TEXCOORD | ATTR_LIGHTCOORD | ATTR_TANGENT | ATTR_NORMAL
                                                                            | ATTR_COLOR);
 
                                 vboSurf->ibo = R_CreateIBO2(va("staticWorldMesh_indices %i", vboSurfaces.currentElements), numTriangles, triangles);
@@ -5170,7 +5061,7 @@ static void R_CreateWorldVBO( void )
 	}
 
 	s_worldData.vbo = R_CreateVBO2( va( "bspModelMesh_vertices %i", 0 ), numVerts, optimizedVerts,
-	                                ATTR_POSITION | ATTR_TEXCOORD | ATTR_LIGHTCOORD | ATTR_TANGENT | ATTR_BINORMAL |
+	                                ATTR_POSITION | ATTR_TEXCOORD | ATTR_LIGHTCOORD | ATTR_TANGENT |
 	                                ATTR_NORMAL | ATTR_COLOR | GLCS_LIGHTCOLOR | ATTR_LIGHTDIRECTION );
 #else
 	s_worldData.vbo = R_CreateStaticVBO2( va( "staticBspModel0_VBO %i", 0 ), numVerts, verts,
@@ -5757,7 +5648,7 @@ static void R_CreateSubModelVBOs( void )
 
 				vboSurf->vbo =
 				  R_CreateVBO2( va( "staticBspModel%i_VBO %i", m, vboSurfaces.currentElements ), numVerts, optimizedVerts,
-				                ATTR_POSITION | ATTR_TEXCOORD | ATTR_LIGHTCOORD | ATTR_TANGENT | ATTR_BINORMAL | ATTR_NORMAL
+				                ATTR_POSITION | ATTR_TEXCOORD | ATTR_LIGHTCOORD | ATTR_TANGENT | ATTR_NORMAL
 				                | ATTR_COLOR | GLCS_LIGHTCOLOR | ATTR_LIGHTDIRECTION, VBO_USAGE_STATIC );
 #else
 				vboSurf->vbo = R_CreateStaticVBO2( va( "staticBspModel%i_VBO %i", m, vboSurfaces.currentElements ), numVerts, verts,
@@ -8238,7 +8129,7 @@ static void R_CreateVBOLightMeshes( trRefLight_t *light )
 			   }
 
 			   vboSurf->vbo = R_CreateVBO2(va("staticLightMesh_vertices %i", c_vboLightSurfaces), numVerts, optimizedVerts,
-			   ATTR_POSITION | ATTR_TEXCOORD | ATTR_TANGENT | ATTR_BINORMAL | ATTR_NORMAL |
+			   ATTR_POSITION | ATTR_TEXCOORD | ATTR_TANGENT | ATTR_NORMAL |
 			   ATTR_COLOR, VBO_USAGE_STATIC);
 			 */
 
@@ -8670,7 +8561,7 @@ static void R_CreateVBOShadowMeshes( trRefLight_t *light )
 			   }
 
 			   vboSurf->vbo = R_CreateVBO2(va("staticLightMesh_vertices %i", c_vboLightSurfaces), numVerts, optimizedVerts,
-			   ATTR_POSITION | ATTR_TEXCOORD | ATTR_TANGENT | ATTR_BINORMAL | ATTR_NORMAL |
+			   ATTR_POSITION | ATTR_TEXCOORD | ATTR_TANGENT | ATTR_NORMAL |
 			   ATTR_COLOR, VBO_USAGE_STATIC);
 			 */
 
