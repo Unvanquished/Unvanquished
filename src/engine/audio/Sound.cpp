@@ -44,15 +44,22 @@ namespace Audio {
 
     static bool initialized = false;
 
+    static AL::Effect* globalEffect = nullptr;
+
     void InitSounds() {
         if (initialized) {
             return;
         }
 
         sources = new sourceRecord_t[nSources];
+        AL::ReverbEffectPreset preset(EFX_REVERB_PRESET_HANGAR);
+        globalEffect = new AL::Effect();
+        globalEffect->ApplyReverbPreset(preset);
 
         for (int i = 0; i < nSources; i++) {
             sources[i].active = false;
+            sources[i].source.EnableSlot(0);
+            sources[i].source.SetSlotEffect(0, *globalEffect);
         }
 
         initialized = true;
@@ -65,6 +72,8 @@ namespace Audio {
 
         delete[] sources;
         sources = nullptr;
+        delete globalEffect;
+        globalEffect = nullptr;
 
         initialized = false;
     }
@@ -205,9 +214,11 @@ namespace Audio {
 
         //TODO make it framerate dependant and fade out in about 1/8 seconds ?
         if (currentGain > targetGain) {
-            currentGain = std::max(currentGain * 1.05f, targetGain);
+            currentGain = std::max(currentGain - 0.02f, targetGain);
+            //currentGain = std::max(currentGain * 1.05f, targetGain);
         } else if (currentGain < targetGain) {
-            currentGain = std::min(currentGain / 1.05f - 0.01f, targetGain);
+            currentGain = std::min(currentGain + 0.02f, targetGain);
+            //currentGain = std::min(currentGain / 1.05f - 0.01f, targetGain);
         }
 
         source->SetGain(currentGain);
