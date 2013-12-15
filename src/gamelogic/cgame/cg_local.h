@@ -768,7 +768,7 @@ typedef struct
 
 	sfxHandle_t sounds[ MAX_CUSTOM_SOUNDS ];
 
-	vec3_t      modelScale;
+	vec_t       modelScale;
 
 	int         torsoControlBone;
 	int         leftShoulderBone;
@@ -845,7 +845,7 @@ typedef struct weaponInfo_s
 	vec3_t           rotation;
 	vec3_t           posOffs;
 	char             rotationBone[ 50 ];
-	vec3_t           scale;
+	vec_t            scale;
 
 	weaponInfoMode_t wim[ WPM_NUM_WEAPONMODES ];
 } weaponInfo_t;
@@ -1810,7 +1810,7 @@ void CG_PositionEntityOnTag( refEntity_t *entity, const refEntity_t *parent,
                              qhandle_t parentModel, const char *tagName );
 void CG_PositionRotatedEntityOnTag( refEntity_t *entity, const refEntity_t *parent,
                                     qhandle_t parentModel, const char *tagName );
-void CG_TransformSkeleton( refSkeleton_t *skel, const vec3_t scale );
+void CG_TransformSkeleton( refSkeleton_t *skel, const vec_t scale );
 
 //
 // cg_weapons.c

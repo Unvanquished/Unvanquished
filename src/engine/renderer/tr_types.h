@@ -155,8 +155,7 @@ typedef struct
 	char   name[ 64 ];
 #endif
 	short  parentIndex; // parent index (-1 if root)
-	vec3_t origin;
-	quat_t rotation;
+	transform_t t;
 } refBone_t;
 
 typedef enum
@@ -174,7 +173,8 @@ typedef struct
 	refBone_t         bones[ MAX_BONES ];
 
 	vec3_t            bounds[ 2 ]; // bounds of all applied animations
-	vec3_t            scale;
+	vec_t             scale;
+	int               padding[ 3 ]; // pad to multiple of 16 bytes for QVM code
 } refSkeleton_t;
 
 // XreaL END

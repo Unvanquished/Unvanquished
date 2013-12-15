@@ -1948,18 +1948,18 @@ public:
 	}
 };
 
-class u_BoneMatrix :
-	GLUniformMatrix34fv
+class u_Bones :
+	GLUniform4fv
 {
 public:
-	u_BoneMatrix( GLShader *shader ) :
-		GLUniformMatrix34fv( shader, "u_BoneMatrix" )
+	u_Bones( GLShader *shader ) :
+		GLUniform4fv( shader, "u_Bones" )
 	{
 	}
 
-	void SetUniform_BoneMatrix( int numBones, const boneMatrix_t boneMatrices[ MAX_BONES ] )
+	void SetUniform_Bones( int numBones, transform_t bones[ MAX_BONES ] )
 	{
-		this->SetValue( numBones, GL_FALSE, &boneMatrices[ 0 ][ 0 ] );
+		this->SetValue( 2 * numBones, &bones[ 0 ].rot );
 	}
 };
 
@@ -2345,7 +2345,7 @@ class GLShader_generic :
 	public u_ModelViewProjectionMatrix,
 	public u_ColorModulate,
 	public u_Color,
-	public u_BoneMatrix,
+	public u_Bones,
 	public u_VertexInterpolation,
 	public GLDeformStage,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
@@ -2403,7 +2403,7 @@ class GLShader_vertexLighting_DBS_entity :
 	public u_LightColor,
 	public u_ModelMatrix,
 	public u_ModelViewProjectionMatrix,
-	public u_BoneMatrix,
+	public u_Bones,
 	public u_VertexInterpolation,
 	public u_DepthScale,
 	public u_EnvironmentInterpolation,
@@ -2476,7 +2476,7 @@ class GLShader_forwardLighting_omniXYZ :
 	public u_ShadowBlur,
 	public u_ModelMatrix,
 	public u_ModelViewProjectionMatrix,
-	public u_BoneMatrix,
+	public u_Bones,
 	public u_VertexInterpolation,
 	public u_DepthScale,
 	public GLDeformStage,
@@ -2517,7 +2517,7 @@ class GLShader_forwardLighting_projXYZ :
 	public u_ShadowMatrix,
 	public u_ModelMatrix,
 	public u_ModelViewProjectionMatrix,
-	public u_BoneMatrix,
+	public u_Bones,
 	public u_VertexInterpolation,
 	public u_DepthScale,
 	public GLDeformStage,
@@ -2560,7 +2560,7 @@ class GLShader_forwardLighting_directionalSun :
 	public u_ModelMatrix,
 	public u_ViewMatrix,
 	public u_ModelViewProjectionMatrix,
-	public u_BoneMatrix,
+	public u_Bones,
 	public u_VertexInterpolation,
 	public u_DepthScale,
 	public GLDeformStage,
@@ -2590,7 +2590,7 @@ class GLShader_shadowFill :
 	public u_ModelMatrix,
 	public u_ModelViewProjectionMatrix,
 	public u_Color,
-	public u_BoneMatrix,
+	public u_Bones,
 	public u_VertexInterpolation,
 	public GLDeformStage,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
@@ -2610,7 +2610,7 @@ class GLShader_reflection :
 	public u_ViewOrigin,
 	public u_ModelMatrix,
 	public u_ModelViewProjectionMatrix,
-	public u_BoneMatrix,
+	public u_Bones,
 	public u_VertexInterpolation,
 	public GLDeformStage,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
@@ -2631,7 +2631,7 @@ class GLShader_skybox :
 	public u_ViewOrigin,
 	public u_ModelMatrix,
 	public u_ModelViewProjectionMatrix,
-	public u_BoneMatrix,
+	public u_Bones,
 	public u_VertexInterpolation,
 	public GLDeformStage
 {
@@ -2645,7 +2645,7 @@ class GLShader_fogQuake3 :
 	public u_ModelMatrix,
 	public u_ModelViewProjectionMatrix,
 	public u_Color,
-	public u_BoneMatrix,
+	public u_Bones,
 	public u_VertexInterpolation,
 	public u_FogDistanceVector,
 	public u_FogDepthVector,
@@ -2688,7 +2688,7 @@ class GLShader_heatHaze :
 	public u_ProjectionMatrixTranspose,
 	public u_ColorModulate,
 	public u_Color,
-	public u_BoneMatrix,
+	public u_Bones,
 	public u_VertexInterpolation,
 	public GLDeformStage,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
@@ -2789,7 +2789,7 @@ public:
 class GLShader_depthToColor :
 	public GLShader,
 	public u_ModelViewProjectionMatrix,
-	public u_BoneMatrix,
+	public u_Bones,
 	public GLCompileMacro_USE_VERTEX_SKINNING
 {
 public:

@@ -33,6 +33,7 @@ qboolean        R_LoadMDC( model_t *mod, int lod, void *buffer, int bufferSize, 
 #endif
 
 qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *name );
+qboolean R_LoadIQModel( model_t *mod, void *buffer, int bufferSize, const char *name );
 qboolean R_LoadPSK( model_t *mod, void *buffer, int bufferSize, const char *name );
 
 model_t  *loadmodel;
@@ -148,9 +149,11 @@ qhandle_t RE_RegisterModel( const char *name )
 
 #if defined( COMPAT_ET )
 
-	if ( strstr( name, ".mds" ) || strstr( name, ".md5mesh" ) || strstr( name, ".psk" ) )
+	if ( strstr( name, ".mds" ) || strstr( name, ".md5mesh" ) ||
+	     strstr( name, ".iqm" ) || strstr( name, ".psk" ) )
 #else
-	if ( strstr( name, ".md5mesh" ) || strstr( name, ".psk" ) )
+	if ( strstr( name, ".md5mesh" ) || strstr( name, ".iqm" ) ||
+	     strstr( name, ".psk" ) )
 #endif
 	{
 		// try loading skeletal file
@@ -177,6 +180,9 @@ qhandle_t RE_RegisterModel( const char *name )
 			if ( !Q_strnicmp( ( const char * ) buffer, "MD5Version", 10 ) )
 			{
 				loaded = R_LoadMD5( mod, buffer, bufferLen, name );
+			}
+			else if ( !Q_strnicmp( ( const char * ) buffer, "INTERQUAKEMODEL", 15 ) ) {
+				loaded = R_LoadIQModel( mod, buffer, bufferLen, name );
 			}
 			else if ( !Q_strnicmp( ( const char * ) buffer, PSK_IDENTSTRING, PSK_IDENTLEN ) )
 			{
@@ -701,8 +707,8 @@ int RE_LerpTagET( orientation_t *tag, const refEntity_t *refent, const char *tag
 			return -1;
 		}
 
-		VectorCopy( refent->skeleton.bones[ retval ].origin, tag->origin );
-		QuatToAxis( refent->skeleton.bones[ retval ].rotation, tag->axis );
+		VectorCopy( refent->skeleton.bones[ retval ].t.trans, tag->origin );
+		QuatToAxis( refent->skeleton.bones[ retval ].t.rot, tag->axis );
 		VectorCopy( tag->axis[ 2 ], tmp );
 		VectorCopy( tag->axis[ 1 ], tag->axis[ 2 ] );
 		VectorCopy( tag->axis[ 0 ], tag->axis[ 1 ] );

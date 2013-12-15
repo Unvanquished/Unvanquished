@@ -383,8 +383,6 @@ set( RENDERERLIST
   ${ENGINE_DIR}/renderer/tr_animation.cpp
   ${ENGINE_DIR}/renderer/tr_animation_mds.cpp
   ${ENGINE_DIR}/renderer/tr_backend.cpp
-  ${ENGINE_DIR}/renderer/tr_bonematrix.cpp
-  ${ENGINE_DIR}/renderer/tr_bonematrix.h
   ${ENGINE_DIR}/renderer/tr_bsp.cpp
   ${ENGINE_DIR}/renderer/tr_cmds.cpp
   ${ENGINE_DIR}/renderer/tr_cmesh.cpp
@@ -400,6 +398,7 @@ set( RENDERERLIST
   ${ENGINE_DIR}/renderer/tr_mesh.cpp
   ${ENGINE_DIR}/renderer/tr_model.cpp
   ${ENGINE_DIR}/renderer/tr_model_md5.cpp
+  ${ENGINE_DIR}/renderer/tr_model_iqm.cpp
   ${ENGINE_DIR}/renderer/tr_noise.cpp
   ${ENGINE_DIR}/renderer/tr_scene.cpp
   ${ENGINE_DIR}/renderer/tr_shade.cpp
@@ -423,8 +422,6 @@ set( RENDERERGLLIST
   ${ENGINE_DIR}/rendererGL/gl_shader.cpp
   ${ENGINE_DIR}/rendererGL/tr_animation.cpp
   ${ENGINE_DIR}/rendererGL/tr_backend.cpp
-  ${ENGINE_DIR}/renderer/tr_bonematrix.cpp
-  ${ENGINE_DIR}/renderer/tr_bonematrix.h
   ${ENGINE_DIR}/rendererGL/tr_bsp.cpp
   ${ENGINE_DIR}/rendererGL/tr_cmds.cpp
   ${ENGINE_DIR}/rendererGL/tr_curve.cpp
@@ -448,6 +445,7 @@ set( RENDERERGLLIST
   ${ENGINE_DIR}/rendererGL/tr_model.cpp
   ${ENGINE_DIR}/rendererGL/tr_model_md3.cpp
   ${ENGINE_DIR}/rendererGL/tr_model_md5.cpp
+  ${ENGINE_DIR}/rendererGL/tr_model_iqm.cpp
   ${ENGINE_DIR}/rendererGL/tr_model_mdc.cpp
   ${ENGINE_DIR}/rendererGL/tr_model_psk.cpp
   ${ENGINE_DIR}/rendererGL/tr_model_skel.cpp

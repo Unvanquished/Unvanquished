@@ -50,6 +50,7 @@ use the shader system.
 */
 
 //============================================================================
+static ALIGNED( 16, transform_t bones[ MAX_BONES ] );
 
 /*
 ==============
@@ -1413,8 +1414,6 @@ static void RB_SurfaceMD5( md5Surface_t *srf )
 	md5Model_t      *model;
 	md5Vertex_t     *v;
 	md5Triangle_t   *tri;
-	static ALIGNED( 16, boneMatrix_t boneMatrices[ MAX_BONES ] );
-	boneMatrix_t    tmpMat;
 
 	GLimp_LogComment( "--- Tess_SurfaceMD5 ---\n" );
 
@@ -1436,14 +1435,18 @@ static void RB_SurfaceMD5( md5Surface_t *srf )
 	{
 		if ( backEnd.currentEntity->e.skeleton.type == SK_ABSOLUTE )
 		{
-			BoneMatrixSetupTransformWithScale( tmpMat, backEnd.currentEntity->e.skeleton.bones[ i ].rotation,
-			                              backEnd.currentEntity->e.skeleton.bones[ i ].origin,
-			                              backEnd.currentEntity->e.skeleton.scale );
-			BoneMatrixMultiply( tmpMat, model->bones[ i ].inverseTransform, boneMatrices[ i ] );
+			refBone_t *bone = &backEnd.currentEntity->e.skeleton.bones[ i ];
+
+			TransInitRotationQuat( model->bones[ i ].rotation, &bones[ i ] );
+			TransAddTranslation( model->bones[ i ].origin, &bones[ i ] );
+			TransInverse( &bones[ i ], &bones[ i ] );
+			TransCombine( &bones[ i ], &bone->t, &bones[ i ] );
+			TransAddScale( backEnd.currentEntity->e.skeleton.scale, &bones[ i ] );
 		}
 		else
 		{
-			BoneMatrixIdentity( boneMatrices[ i ] );
+			TransInitRotationQuat( model->bones[ i ].rotation, &bones[i] );
+			TransAddTranslation( model->bones[ i ].origin, &bones[ i ] );
 		}
 	}
 
@@ -1452,32 +1455,23 @@ static void RB_SurfaceMD5( md5Surface_t *srf )
 
 	for ( j = 0, v = srf->verts; j < numVertexes; j++, v++ )
 	{
-#if id386_sse
-		__m128 a, b, c;
+		vec3_t tmp;
 
-		BoneMatrixMulSSE( &a, &b, &c, v->boneWeights[ 0 ], boneMatrices[ v->boneIndexes[ 0 ] ] );
-
-		for ( k = 1; k < v->numWeights; k++ )
-		{
-			BoneMatrixMadSSE( &a, &b, &c, v->boneWeights[ k ], boneMatrices[ v->boneIndexes[ k ] ] );
+		VectorClear( tess.xyz[ tess.numVertexes + j ].v );
+		VectorClear( tess.normal[ tess.numVertexes + j ].v );
+		for ( k = 0; k < v->numWeights; k++ ) {
+			TransformPoint( &bones[ v->boneIndexes[ k ] ],
+					v->position, tmp );
+			VectorMA( tess.xyz[ tess.numVertexes + j ].v,
+				  v->boneWeights[ k ], tmp,
+				  tess.xyz[ tess.numVertexes + j ].v );
+			TransformNormalVector( &bones[ v->boneIndexes[ k ] ],
+					       v->normal, tmp );
+			VectorMA( tess.normal[ tess.numVertexes + j ].v,
+				  v->boneWeights[ k ], tmp,
+				  tess.normal[ tess.numVertexes + j ].v );
 		}
-
-		BoneMatrixTransformPointSSE( a, b, c, v->position, tess.xyz[ tess.numVertexes + j ].v );
-		BoneMatrixTransformNormalNSSE( a, b, c, v->normal, tess.normal[ tess.numVertexes + j ].v );
-#else
-		BoneMatrixMul( tmpMat, v->boneWeights[ 0 ], boneMatrices[ v->boneIndexes[ 0 ] ] );
-
-		for ( k = 1; k < v->numWeights; k++ )
-		{
-			BoneMatrixMad( tmpMat, v->boneWeights[ k ], boneMatrices[ v->boneIndexes[ k ] ] );
-		}
-
-		BoneMatrixTransformPoint( tmpMat, v->position, tess.xyz[ tess.numVertexes + j ].v );
-		tess.xyz[ tess.numVertexes + j ].v[ 3 ] = 1;
-
-		BoneMatrixTransformNormal( tmpMat, v->normal, tess.normal[ tess.numVertexes + j ].v );
-		VectorNormalizeFast( tess.normal[ tess.numVertexes + j ].v );
-#endif
+		VectorNormalize( tess.normal[ tess.numVertexes + j ].v );
 
 		tess.texCoords0[ tess.numVertexes + j ].v[ 0 ] = v->texCoords[ 0 ];
 		tess.texCoords0[ tess.numVertexes + j ].v[ 1 ] = v->texCoords[ 1 ];
@@ -1485,6 +1479,82 @@ static void RB_SurfaceMD5( md5Surface_t *srf )
 
 	tess.numIndexes += numIndexes;
 	tess.numVertexes += numVertexes;
+}
+
+/*
+=================
+RB_SurfaceIQM
+
+Compute vertices for this model surface
+=================
+*/
+void RB_SurfaceIQM( srfIQModel_t *surf ) {
+	IQModel_t	*model = surf->data;
+	int		i, j;
+	int             offset = tess.numVertexes - surf->first_vertex;
+	vec4hack_t      *xyz, *normal;
+	vec2hack_t      *texCoord;
+
+	GLimp_LogComment( "--- RB_SurfaceIQM ---\n" );
+
+	RB_CHECKOVERFLOW( surf->num_vertexes, surf->num_triangles * 3 );
+
+	for ( i = 0; i < surf->num_triangles; i++ )
+	{
+		tess.indexes[ tess.numIndexes + i * 3 + 0 ] = offset + model->triangles[ 3 * ( surf->first_triangle + i ) + 0 ];
+		tess.indexes[ tess.numIndexes + i * 3 + 1 ] = offset + model->triangles[ 3 * ( surf->first_triangle + i ) + 1 ];
+		tess.indexes[ tess.numIndexes + i * 3 + 2 ] = offset + model->triangles[ 3 * ( surf->first_triangle + i ) + 2 ];
+	}
+
+	// compute bones
+	for ( i = 0; i < model->num_joints; i++ )
+	{
+
+		if ( backEnd.currentEntity->e.skeleton.type == SK_ABSOLUTE )
+		{
+			refBone_t *bone = &backEnd.currentEntity->e.skeleton.bones[ i ];
+
+			TransInverse( &model->joints[ i ], &bones[ i ] );
+			TransCombine( &bones[ i ], &bone->t, &bones[ i ] );
+		}
+		else
+		{
+			TransInit( &bones[ i ] );
+		}
+		TransAddScale( backEnd.currentEntity->e.skeleton.scale, &bones[ i ] );
+	}
+
+	// deform the vertices by the lerped bones
+	xyz = &tess.xyz[ tess.numVertexes ];
+	normal = &tess.normal[ tess.numVertexes ];
+	texCoord = &tess.texCoords0[ tess.numVertexes ];
+	for ( i = 0; i < surf->num_vertexes; i++, xyz++, normal++, texCoord++ )
+	{
+		int    idx = surf->first_vertex + i;
+		const float weightFactor = 1.0f / 255.0f;
+		vec3_t tmp;
+
+		VectorClear( xyz->v );
+		VectorClear( normal->v );
+		for ( j = 0; j < 4; j++ ) {
+			int bone = model->blendIndexes[ 4 * idx + j ];
+			float weight = weightFactor * model->blendWeights[ 4 * idx + j ];
+
+			TransformPoint( &bones[ bone ],
+					&model->positions[ 3 * idx ], tmp );
+			VectorMA( xyz->v, weight, tmp, xyz->v );
+			TransformNormalVector( &bones[ bone ],
+					       &model->normals[ 3 * idx ], tmp );
+			VectorMA( normal->v, weight, tmp, normal->v );
+		}
+		VectorNormalize( normal->v );
+
+		texCoord->v[ 0 ] = model->texcoords[ 2 * idx + 0 ];
+		texCoord->v[ 1 ] = model->texcoords[ 2 * idx + 1 ];
+	}
+
+	tess.numIndexes  += 3 * surf->num_triangles;
+	tess.numVertexes += surf->num_vertexes;
 }
 
 /*
@@ -1721,6 +1791,7 @@ void ( *rb_surfaceTable[ SF_NUM_SURFACE_TYPES ] )( void * ) =
 	( void ( * )( void * ) ) RB_SurfaceCMesh,  // SF_MDC,
 	( void ( * )( void * ) ) RB_SurfaceAnim,  // SF_MDS,
 	( void ( * )( void * ) ) RB_SurfaceMD5,  // SF_MD5,
+	( void ( * )( void * ) ) RB_SurfaceIQM,  // SF_IQM,
 	( void ( * )( void * ) ) RB_SurfaceFlare,  // SF_FLARE,
 	( void ( * )( void * ) ) RB_SurfaceEntity,  // SF_ENTITY
 	( void ( * )( void * ) ) RB_SurfaceDisplayList,  // SF_DISPLAY_LIST
