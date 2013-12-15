@@ -2372,7 +2372,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0;
 
 		case CG_ROCKET_SETINNERRML:
-			Rocket_SetInnerRML( (const char *) VMA(1), (const char *) VMA(2), (const char *) VMA(3), args[4] );
+			Rocket_SetInnerRML( "", "", (const char *) VMA(1), args[2] );
 			return 0;
 
 		case CG_ROCKET_GETEVENTPARAMETERS:
