@@ -303,9 +303,16 @@ static bool TestWritePermission(Str::StringRef path)
 	// Create a temporary file in the path and then delete it
 	std::string fname = Path::Build(path, ".test_write_permission");
 	std::error_code err;
-	RawPath::OpenWrite(fname, err);
+	File f = RawPath::OpenWrite(fname, err);
+	if (err)
+		return false;
+	f.Close(err);
+	if (err)
+		return false;
 	RawPath::DeleteFile(fname, err);
-	return err;
+	if (err)
+		return false;
+	return true;
 }
 
 void Initialize()
@@ -916,6 +923,10 @@ void PakNamespace::InternalLoadPak(const PakInfo& pak, bool verifyChecksum, uint
 		SetErrorCodeZlib(err, UNZ_CRCERROR);
 		return;
 	}
+
+	// Print a warning if the checksum doesn't match the one in the filename
+	if (pak.hasChecksum && pak.checksum != checksum)
+		Com_Printf("Pak checksum doesn't match filename: %s\n", pak.path.c_str());
 
 	// Once we are sure no more errors can occur, update our data structures
 	loadedPaks.push_back(pak);
