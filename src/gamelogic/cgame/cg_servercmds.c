@@ -61,8 +61,8 @@ static void CG_ParseScores( void )
 		cg.scores[ i ].score = atoi( CG_Argv( i * 6 + 4 ) );
 		cg.scores[ i ].ping = atoi( CG_Argv( i * 6 + 5 ) );
 		cg.scores[ i ].time = atoi( CG_Argv( i * 6 + 6 ) );
-		cg.scores[ i ].weapon = atoi( CG_Argv( i * 6 + 7 ) );
-		cg.scores[ i ].upgrade = atoi( CG_Argv( i * 6 + 8 ) );
+		cg.scores[ i ].weapon = (weapon_t) atoi( CG_Argv( i * 6 + 7 ) );
+		cg.scores[ i ].upgrade = (upgrade_t) atoi( CG_Argv( i * 6 + 8 ) );
 
 		if ( cg.scores[ i ].client < 0 || cg.scores[ i ].client >= MAX_CLIENTS )
 		{
@@ -188,7 +188,7 @@ void CG_ShaderStateChanged( void )
 	char       newShader[ MAX_QPATH ];
 	char       timeOffset[ 16 ];
 	const char *o;
-	char       *n, *t;
+	const char *n, *t;
 
 	o = CG_ConfigString( CS_SHADERSTATE );
 
@@ -400,7 +400,7 @@ void CG_Menu( int menuType, int arg )
 	const char   *longMsg = NULL; // command parameter
 	const char   *shortMsg = NULL; // non-modal version of message
 	const char   *dialog;
-	dialogType_t type = 0; // controls which cg_disable var will switch it off
+	dialogType_t type = (dialogType_t) 0; // controls which cg_disable var will switch it off
 
 	switch ( cg.snap->ps.persistant[ PERS_TEAM ] )
 	{
@@ -1084,7 +1084,7 @@ static void CG_ParseVoice( void )
 		return;
 	}
 
-	vChan = atoi( CG_Argv( 2 ) );
+	vChan = (voiceChannel_t) atoi( CG_Argv( 2 ) );
 
 	if ( ( unsigned ) vChan >= VOICE_CHAN_NUM_CHANS )
 	{
@@ -1277,7 +1277,7 @@ static void CG_Chat_f( void )
 	trap_Argv( 1, id, sizeof( id ) );
 	trap_Argv( 2, mode, sizeof( mode ) );
 
-	CG_Say( NULL, atoi( id ), atoi( mode ), CG_Argv( 3 ) );
+	CG_Say( NULL, atoi( id ), (saymode_t) atoi( mode ), CG_Argv( 3 ) );
 }
 
 /*
@@ -1293,7 +1293,7 @@ static void CG_AdminChat_f( void )
 	trap_Argv( 1, name, sizeof( name ) );
 	trap_Argv( 2, mode, sizeof( mode ) );
 
-	CG_Say( name, -1, atoi( mode ), CG_Argv( 3 ) );
+	CG_Say( name, -1, (saymode_t) atoi( mode ), CG_Argv( 3 ) );
 }
 
 /*
@@ -1436,7 +1436,7 @@ static void CG_ServerCommand( void )
 		return;
 	}
 
-	command = bsearch( cmd, svcommands, ARRAY_LEN( svcommands ),
+	command = (consoleCommand_t*) bsearch( cmd, svcommands, ARRAY_LEN( svcommands ),
 	                   sizeof( svcommands[ 0 ] ), cmdcmp );
 
 	if ( command )

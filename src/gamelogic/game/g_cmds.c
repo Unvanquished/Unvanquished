@@ -378,7 +378,7 @@ void ScoreboardMessage( gentity_t *ent )
 		     ( ent->client->pers.team == TEAM_NONE ||
 		       cl->pers.team == ent->client->pers.team ) )
 		{
-			weapon = cl->ps.weapon;
+			weapon = (weapon_t) cl->ps.weapon;
 
 			if ( BG_InventoryContainsUpgrade( UP_BATTLESUIT, cl->ps.stats ) )
 			{
@@ -591,7 +591,7 @@ void Cmd_Give_f( gentity_t *ent )
 			amount = atof( name + 3 );
 		}
 
-		G_ModifyBuildPoints( ent->client->pers.team, amount );
+		G_ModifyBuildPoints( (team_t) ent->client->pers.team, amount );
 	}
 
 	// give momentum
@@ -606,7 +606,7 @@ void Cmd_Give_f( gentity_t *ent )
 			amount = atof( name + strlen("momentum") + 1 );
 		}
 
-		G_AddMomentumGeneric( ent->client->pers.team, amount );
+		G_AddMomentumGeneric( (team_t) ent->client->pers.team, amount );
 	}
 
 	if ( ent->client->ps.stats[ STAT_HEALTH ] <= 0 ||
@@ -787,7 +787,7 @@ Cmd_Team_f
 void Cmd_Team_f( gentity_t *ent )
 {
 	team_t   team;
-	team_t   oldteam = ent->client->pers.team;
+	team_t   oldteam = (team_t) ent->client->pers.team;
 	char     s[ MAX_TOKEN_CHARS ];
 	qboolean force = G_admin_permission( ent, ADMF_FORCETEAMCHANGE );
 	int      players[ NUM_TEAMS ];
@@ -859,7 +859,7 @@ void Cmd_Team_f( gentity_t *ent )
 		}
 		else
 		{
-			team = TEAM_ALIENS + rand() / ( RAND_MAX / 2 + 1 );
+			team = (team_t) ( TEAM_ALIENS + rand() / ( RAND_MAX / 2 + 1 ) );
 		}
 	}
 	else
@@ -1546,7 +1546,7 @@ void Cmd_VSay_f( gentity_t *ent )
 			break;
 
 		case VOICE_CHAN_TEAM:
-			G_TeamCommand( ent->client->pers.team, va(
+			G_TeamCommand( (team_t) ent->client->pers.team, va(
 			                 "voice %ld %d %d %d %s\n",
 			                 ( long )( ent - g_entities ), vchan, cmdNum, trackNum, Quote( text ) ) );
 			break;
@@ -1583,27 +1583,30 @@ void Cmd_Where_f( gentity_t *ent )
 
 // Basic vote information
 // Entries must be in the same order as for voteType_t
+enum {
+	V_TEAM, V_PUBLIC, V_ANY
+};
+enum {
+	T_NONE, T_PLAYER, T_OTHER
+};
+enum {
+	VOTE_ALWAYS, // default
+	VOTE_BEFORE, // within the first N minutes
+	VOTE_AFTER,  // not within the first N minutes
+	VOTE_REMAIN, // within N/2 minutes before SD
+	VOTE_NO_AUTO,// don't automatically vote 'yes'
+	VOTE_ENABLE, // for special-purpose enable flags
+};
 static const struct {
 	const char     *name;
 	qboolean        stopOnIntermission;
-	enum {
-		V_TEAM, V_PUBLIC, V_ANY
-	}               type;
-	enum {
-		T_NONE, T_PLAYER, T_OTHER
-	}               target;
+	int             type;
+	int             target;
 	qboolean        adminImmune; // from needing a reason and from being the target
 	qboolean        quorum;
 	qtrinary        reasonNeeded;
 	const vmCvar_t *percentage;
-	enum {
-		VOTE_ALWAYS, // default
-		VOTE_BEFORE, // within the first N minutes
-		VOTE_AFTER,  // not within the first N minutes
-		VOTE_REMAIN, // within N/2 minutes before SD
-		VOTE_NO_AUTO,// don't automatically vote 'yes'
-		VOTE_ENABLE, // for special-purpose enable flags
-	}               special;
+	int             special;
 	const vmCvar_t *specialCvar;
 	const vmCvar_t *reasonFlag; // where a reason requirement is configurable (reasonNeeded must be qtrue)
 } voteInfo[] = {
@@ -1659,7 +1662,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 	int    i;
 
 	trap_Argv( 0, cmd, sizeof( cmd ) );
-	team = ( !Q_stricmp( cmd, "callteamvote" ) ) ? ent->client->pers.team : TEAM_NONE;
+	team = (team_t) ( ( !Q_stricmp( cmd, "callteamvote" ) ) ? ent->client->pers.team : TEAM_NONE );
 
 	if ( !g_allowVote.integer )
 	{
@@ -1703,7 +1706,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 	{
 		qboolean added = qfalse;
 
-		trap_SendServerCommand( ent - g_entities, "print_tr \""N_("Invalid vote string\n") "\"" );
+		trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("Invalid vote string\n") "\"" );
 		trap_SendServerCommand( ent - g_entities, va( "print_tr %s", team == TEAM_NONE ? QQ( N_("Valid vote commands are: ") ) :
 			QQ( N_("Valid team-vote commands are: ") ) ) );
 		cmd[0] = '\0';
@@ -1778,7 +1781,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 		return;
 	}
 
-	level.team[ team ].voteType = voteId;
+	level.team[ team ].voteType = (voteType_t) voteId;
 
 	// Vote time, percentage for pass, quorum
 	level.team[ team ].voteDelay = 0;
@@ -2070,7 +2073,7 @@ vote_is_disabled:
 		if ( atoi( arg ) < 1 || atoi( arg ) > 100 )
 		{
 			trap_SendServerCommand( ent - g_entities,
-			                        va( "print_tr %s %s", QQ( N_("$1$: Argument must be anumber between 1 and 100\n") ),
+			                        va( "print_tr %s %s", QQ( N_("$1$: Argument must be a number between 1 and 100\n") ),
 			                            cmd ) );
 			return;
 		}
@@ -2254,7 +2257,7 @@ Cmd_Vote_f
 void Cmd_Vote_f( gentity_t *ent )
 {
 	char   cmd[ MAX_TOKEN_CHARS ], vote[ MAX_TOKEN_CHARS ];
-	team_t team = ent->client->pers.team;
+	team_t team = (team_t) ent->client->pers.team;
 
 	trap_Argv( 0, cmd, sizeof( cmd ) );
 
@@ -2370,7 +2373,7 @@ qboolean G_RoomForClassChange( gentity_t *ent, class_t pcl, vec3_t newOrigin )
 	trace_t tr;
 	float   nudgeHeight;
 	float   maxHorizGrowth;
-	class_t oldClass = ent->client->ps.stats[ STAT_CLASS ];
+	class_t oldClass = (class_t) ent->client->ps.stats[ STAT_CLASS ];
 
 	BG_ClassBoundingBox( oldClass, fromMins, fromMaxs, NULL, NULL, NULL );
 	BG_ClassBoundingBox( pcl, toMins, toMaxs, NULL, NULL, NULL );
@@ -2464,7 +2467,7 @@ static qboolean Cmd_Class_internal( gentity_t *ent, const char *s, qboolean repo
 			G_StopFollowing( ent );
 		}
 
-		team = ent->client->pers.team;
+		team = (team_t) ent->client->pers.team;
 		if ( team == TEAM_ALIENS )
 		{
 			if ( newClass != PCL_ALIEN_BUILDER0 &&
@@ -2775,7 +2778,7 @@ void Cmd_Destroy_f( gentity_t *ent )
 		}
 
 		// Prevent destruction of the last spawn
-		team = ent->client->pers.team;
+		team = (team_t) ent->client->pers.team;
 		if ( traceEnt->s.modelindex == BA_A_SPAWN ||
 			traceEnt->s.modelindex == BA_H_SPAWN )
 		{
@@ -2948,7 +2951,7 @@ void Cmd_ActivateItem_f( gentity_t *ent )
 		if ( ent->client->ps.weapon != weapon &&
 		     BG_PlayerCanChangeWeapon( &ent->client->ps ) )
 		{
-			G_ForceWeaponChange( ent, weapon );
+			G_ForceWeaponChange( ent, (weapon_t) weapon );
 		}
 	}
 	else
@@ -3131,7 +3134,7 @@ static qboolean Cmd_Sell_upgrades( gentity_t *ent )
 
 	for ( i = UP_NONE + 1; i < UP_NUM_UPGRADES; i++ )
 	{
-		sold |= Cmd_Sell_upgradeItem( ent, i );
+		sold |= Cmd_Sell_upgradeItem( ent, (upgrade_t) i );
 	}
 
 	return sold;
@@ -3159,7 +3162,7 @@ static qboolean Cmd_Sell_internal( gentity_t *ent, const char *s )
 
 	if ( !Q_strnicmp( s, "weapon", 6 ) )
 	{
-		weapon = ent->client->ps.stats[ STAT_WEAPON ];
+		weapon = (weapon_t) ent->client->ps.stats[ STAT_WEAPON ];
 	}
 	else
 	{
@@ -3285,7 +3288,7 @@ static qboolean Cmd_Sell_conflictingUpgrades( gentity_t *ent, upgrade_t upgrade 
 
 			if ( slots & slot )
 			{
-				sold |= Cmd_Sell_upgradeItem( ent, i );
+				sold |= Cmd_Sell_upgradeItem( ent, (upgrade_t) i );
 			}
 		}
 	}
@@ -3585,7 +3588,7 @@ void Cmd_Build_f( gentity_t *ent )
 
 	buildable = BG_BuildableByName( s )->number;
 
-	team = ent->client->pers.team;
+	team = (team_t) ent->client->pers.team;
 
 	if ( buildable != BA_NONE &&
 	     ( ( 1 << ent->client->ps.weapon ) & BG_Buildable( buildable )->buildWeapon ) &&
@@ -3654,7 +3657,7 @@ void Cmd_Build_f( gentity_t *ent )
 				break;
 
 			default:
-				err = -1; // stop uninitialised warning
+				err = (dynMenu_t) -1; // stop uninitialised warning
 				break;
 		}
 
@@ -3760,15 +3763,15 @@ void G_StopFollowing( gentity_t *ent )
 
 	if ( ent->client->pers.team == TEAM_NONE )
 	{
-		ent->client->sess.spectatorState =
-		  ent->client->ps.persistant[ PERS_SPECSTATE ] = SPECTATOR_FREE;
+		ent->client->sess.spectatorState = SPECTATOR_FREE;
+		ent->client->ps.persistant[ PERS_SPECSTATE ] = SPECTATOR_FREE;
 	}
 	else
 	{
 		vec3_t spawn_origin, spawn_angles;
 
-		ent->client->sess.spectatorState =
-		  ent->client->ps.persistant[ PERS_SPECSTATE ] = SPECTATOR_LOCKED;
+		ent->client->sess.spectatorState = SPECTATOR_LOCKED;
+		ent->client->ps.persistant[ PERS_SPECSTATE ] = SPECTATOR_LOCKED;
 
 		if ( ent->client->pers.team == TEAM_ALIENS )
 		{
@@ -3820,8 +3823,8 @@ void G_FollowLockView( gentity_t *ent )
 	int    clientNum;
 
 	clientNum = ent->client->sess.spectatorClient;
-	ent->client->sess.spectatorState =
-	  ent->client->ps.persistant[ PERS_SPECSTATE ] = SPECTATOR_FOLLOW;
+	ent->client->sess.spectatorState = SPECTATOR_FOLLOW;
+	ent->client->ps.persistant[ PERS_SPECSTATE ] = SPECTATOR_FOLLOW;
 	ent->client->ps.clientNum = clientNum;
 	ent->client->ps.pm_flags &= ~PMF_FOLLOW;
 	ent->client->ps.persistant[ PERS_TEAM ] = ent->client->pers.team;
@@ -4641,7 +4644,7 @@ void ClientCommand( int clientNum )
 
 	trap_Argv( 0, cmd, sizeof( cmd ) );
 
-	command = bsearch( cmd, cmds, numCmds, sizeof( cmds[ 0 ] ), cmdcmp );
+	command = (commands_t*) bsearch( cmd, cmds, numCmds, sizeof( cmds[ 0 ] ), cmdcmp );
 
 	if ( !command )
 	{

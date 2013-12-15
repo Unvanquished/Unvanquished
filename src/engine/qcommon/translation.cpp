@@ -183,9 +183,9 @@ public:
 		return ret;
 	}
 
-	std::auto_ptr<std::istream> open_file( const std::string& filename )
+	std::unique_ptr<std::istream> open_file( const std::string& filename )
 	{
-		return std::auto_ptr<std::istream>( new DaemonIstream( filename ) );
+		return std::unique_ptr<std::istream>( new DaemonIstream( filename ) );
 	}
 };
 
@@ -295,8 +295,8 @@ void Trans_Init( void )
 	Log::set_log_warning_callback( &Trans_Warning );
 	Log::set_log_info_callback( &Trans_Info );
 
-	trans_manager.set_filesystem( std::auto_ptr<FileSystem>( new DaemonFileSystem ) );
-	trans_managergame.set_filesystem( std::auto_ptr<FileSystem>( new DaemonFileSystem ) );
+	trans_manager.set_filesystem( std::unique_ptr<FileSystem>( new DaemonFileSystem ) );
+	trans_managergame.set_filesystem( std::unique_ptr<FileSystem>( new DaemonFileSystem ) );
 
 	trans_manager.add_directory( "translation/client" );
 	trans_managergame.add_directory( "translation/game" );

@@ -1456,14 +1456,14 @@ static void PM_LandJetpack( qboolean force )
 		force = qtrue;
 	}
 
+	sideVelocity = sqrt( pml.previous_velocity[ 0 ] * pml.previous_velocity[ 0 ] +
+	                     pml.previous_velocity[ 1 ] * pml.previous_velocity[ 1 ] );
+
+	angle = atan2( -pml.previous_velocity[ 2 ], sideVelocity );
+
 	// allow the player to jump instead of land for some impacts
 	if ( !force )
 	{
-		sideVelocity = sqrt( pml.previous_velocity[ 0 ] * pml.previous_velocity[ 0 ] +
-							 pml.previous_velocity[ 1 ] * pml.previous_velocity[ 1 ] );
-
-		angle = atan2( -pml.previous_velocity[ 2 ], sideVelocity );
-
 		if ( angle > 0.0f && angle < M_PI / 4.0f ) // 45°
 		{
 			if ( pm->debugLevel > 0 )

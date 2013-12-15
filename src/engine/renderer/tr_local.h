@@ -39,7 +39,7 @@ Maryland 20850 USA.
 #include "../qcommon/qfiles.h"
 #include "../qcommon/qcommon.h"
 #include "tr_public.h"
-#include "tr_bonematrix.h"
+#include "iqm.h"
 
 #include <GL/glew.h>
 
@@ -792,6 +792,7 @@ typedef enum
   SF_MDC,
   SF_MDS,
   SF_MD5,
+  SF_IQM,
   SF_FLARE,
   SF_ENTITY, // beams, rails, lightning, etc that can be determined by entity
   SF_DISPLAY_LIST,
@@ -1229,7 +1230,6 @@ typedef struct
 	int8_t   parentIndex; // parent index (-1 if root)
 	vec3_t   origin;
 	quat_t   rotation;
-	boneMatrix_t inverseTransform; // full inverse for tangent space transformation
 } md5Bone_t;
 
 typedef struct md5Model_s
@@ -1246,7 +1246,8 @@ typedef struct md5Model_s
 typedef enum
 {
   AT_BAD,
-  AT_MD5
+  AT_MD5,
+  AT_IQM
 } animType_t;
 
 enum
@@ -1290,18 +1291,88 @@ typedef struct md5Animation_s
 	uint32_t     numAnimatedComponents;
 } md5Animation_t;
 
+void R_AddMD5Surfaces( trRefEntity_t *ent );
+
+//======================================================================
+// inter-quake-model format
+//======================================================================
+typedef struct iqmheader      iqmHeader_t;
+typedef struct iqmmesh        iqmMesh_t;
+typedef struct iqmtriangle    iqmTriangle_t;
+typedef struct iqmadjacency   iqmAdjacency_t;
+typedef struct iqmjoint       iqmJoint_t;
+typedef struct iqmpose        iqmPose_t;
+typedef struct iqmanim        iqmAnim_t;
+typedef struct iqmvertexarray iqmVertexArray_t;
+typedef struct iqmbounds      iqmBounds_t;
+
+typedef struct {
+	int		num_vertexes;
+	int		num_triangles;
+	int		num_frames;
+	int		num_surfaces;
+	int		num_joints;
+	int		num_anims;
+
+	struct srfIQModel_s	*surfaces;
+	struct IQAnim_s		*anims;
+
+	// vertex data
+	float		*positions;
+	float		*texcoords;
+	float		*normals;
+	float		*tangents;
+	float           *bitangents;
+	byte		*blendIndexes;
+	byte		*blendWeights;
+	byte		*colors;
+	int		*triangles;
+
+	// skeleton data
+	int		*jointParents;
+	transform_t     *joints;
+	char		*jointNames;
+} IQModel_t;
+
+typedef struct IQAnim_s {
+	int		num_frames;
+	int		num_joints;
+	int             framerate;
+	int		flags;
+
+	// skeleton data
+	int		*jointParents;
+	transform_t	*poses;
+	float		*bounds;
+	char            *name;
+	char            *jointNames;
+} IQAnim_t;
+
+// inter-quake-model surface
+typedef struct srfIQModel_s {
+	surfaceType_t	surfaceType;
+	char		*name;
+	shader_t	*shader;
+	IQModel_t	*data;
+	int		first_vertex, num_vertexes;
+	int		first_triangle, num_triangles;
+} srfIQModel_t;
+
+void R_AddIQMSurfaces( trRefEntity_t *ent );
+
+//======================================================================
+
 typedef struct
 {
 	char           name[ MAX_QPATH ]; // game path, including extension
 	animType_t     type;
 	int            index; // anim = tr.animations[anim->index]
 
-	md5Animation_t *md5;
+	union {
+		md5Animation_t *md5;
+		IQAnim_t       *iqm;
+	};
 } skelAnimation_t;
-
-void R_AddMD5Surfaces( trRefEntity_t *ent );
-
-//======================================================================
 
 typedef enum
 {
@@ -1310,7 +1381,8 @@ typedef enum
   MOD_MESH,
   MOD_MDS,
   MOD_MDC,
-  MOD_MD5
+  MOD_MD5,
+  MOD_IQM
 } modtype_t;
 
 typedef union
@@ -1320,6 +1392,7 @@ typedef union
 	mdsHeader_t *mds; // only if type == MOD_MDS
 	mdcHeader_t *mdc[ MD3_MAX_LODS ]; // only if type == MOD_MDC
 	md5Model_t  *md5; // only if type == MOD_MD5
+	IQModel_t   *iqm; // only if type == MOD_IQM
 } model_u;
 
 typedef struct model_s
@@ -2520,6 +2593,7 @@ const void *RB_TakeVideoFrameCmd( const void *data );
 void       RE_TakeVideoFrame( int width, int height, byte *captureBuffer, byte *encodeBuffer, qboolean motionJpeg );
 
 qhandle_t  RE_RegisterAnimation( const char *name );
+qhandle_t  RE_RegisterAnimationIQM( const char *name, IQAnim_t *data );
 int        RE_CheckSkeleton( refSkeleton_t *skel, qhandle_t hModel, qhandle_t hAnim );
 int        RE_BuildSkeleton( refSkeleton_t *skel, qhandle_t hAnim, int startFrame, int endFrame, float frac, qboolean clearOrigin );
 int        RE_BlendSkeleton( refSkeleton_t *skel, const refSkeleton_t *blend, float frac );

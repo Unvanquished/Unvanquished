@@ -252,7 +252,7 @@ void CG_Rocket_ProcessEvents( void )
 	while ( trap_Rocket_GetEvent() )
 	{
 
-		cmd = bsearch( CG_Argv( 0 ), eventCmdList, eventCmdListCount, sizeof( eventCmd_t ), eventCmdCmp );
+		cmd = (eventCmd_t*) bsearch( CG_Argv( 0 ), eventCmdList, eventCmdListCount, sizeof( eventCmd_t ), eventCmdCmp );
 
 		if ( cmd )
 		{

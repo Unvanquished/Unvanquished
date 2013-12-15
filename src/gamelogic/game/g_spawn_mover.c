@@ -643,7 +643,7 @@ void MatchGroup( gentity_t *groupLeader, int moverState, int time )
 
 	for ( slave = groupLeader; slave; slave = slave->groupChain )
 	{
-		SetMoverState( slave, moverState, time );
+		SetMoverState( slave, (moverState_t) moverState, time );
 	}
 }
 
@@ -866,7 +866,7 @@ void BinaryMover_reached( gentity_t *ent )
 
 		// return to pos1 after a delay
 		master->think = ReturnToPos1orApos1;
-		master->nextthink = MAX( master->nextthink, level.time + ent->config.wait.time );
+		master->nextthink = MAX( master->nextthink, level.time + (int) ent->config.wait.time );
 
 		// fire targets
 		if ( !ent->activator )
@@ -906,7 +906,7 @@ void BinaryMover_reached( gentity_t *ent )
 
 		// return to apos1 after a delay
 		master->think = ReturnToPos1orApos1;
-		master->nextthink = MAX( master->nextthink, level.time + ent->config.wait.time );
+		master->nextthink = MAX( master->nextthink, level.time + (int) ent->config.wait.time );
 
 		// fire targets
 		if ( !ent->activator )
@@ -998,7 +998,7 @@ void BinaryMover_act( gentity_t *ent, gentity_t *other, gentity_t *activator )
 	{
 		// if all the way up, just delay before coming down
 		master->think = ReturnToPos1orApos1;
-		master->nextthink = MAX( master->nextthink, level.time + ent->config.wait.time );
+		master->nextthink = MAX( master->nextthink, level.time + (int) ent->config.wait.time );
 	}
 	else if ( ent->moverState == MOVER_POS2 &&
 	          ( groupState == MOVER_1TO2 || other == master ) )
@@ -1080,7 +1080,7 @@ void BinaryMover_act( gentity_t *ent, gentity_t *other, gentity_t *activator )
 	{
 		// if all the way up, just delay before coming down
 		master->think = ReturnToPos1orApos1;
-		master->nextthink = MAX( master->nextthink, level.time + ent->config.wait.time );
+		master->nextthink = MAX( master->nextthink, level.time + (int) ent->config.wait.time );
 	}
 	else if ( ent->moverState == ROTATOR_POS2 &&
 	          ( groupState == MOVER_1TO2 || other == master ) )

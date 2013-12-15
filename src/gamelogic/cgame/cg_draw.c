@@ -323,7 +323,7 @@ static void CG_Draw2D( void )
 	if ( cg.snap->ps.pm_type == PM_INTERMISSION )
 	{
 		CG_DrawVote( TEAM_NONE );
-		CG_DrawVote( cg.predictedPlayerState.persistant[ PERS_TEAM ] );
+		CG_DrawVote( (team_t) cg.predictedPlayerState.persistant[ PERS_TEAM ] );
 		CG_DrawIntermission();
 		return;
 	}
@@ -349,7 +349,7 @@ static void CG_Draw2D( void )
 	}
 
 	CG_DrawVote( TEAM_NONE );
-	CG_DrawVote( cg.predictedPlayerState.persistant[ PERS_TEAM ] );
+	CG_DrawVote( (team_t) cg.predictedPlayerState.persistant[ PERS_TEAM ] );
 	CG_DrawWarmup();
 	CG_DrawQueue();
 

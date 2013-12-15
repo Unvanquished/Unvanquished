@@ -1029,7 +1029,7 @@ static void CG_ScanForCrosshairEntity( void )
 		return;
 	}
 
-	ownTeam = cg.snap->ps.persistant[ PERS_TEAM ];
+	ownTeam = (team_t) cg.snap->ps.persistant[ PERS_TEAM ];
 	targetState = &cg_entities[ trace.entityNum ].currentState;
 
 	if ( trace.entityNum >= MAX_CLIENTS )
@@ -1155,7 +1155,7 @@ static void CG_Rocket_DrawMomentum( void )
 	{
 		return;
 	}
-	team = cg.snap->ps.persistant[ PERS_TEAM ];
+	team = (team_t) cg.snap->ps.persistant[ PERS_TEAM ];
 
 	if ( team <= TEAM_NONE || team >= NUM_TEAMS )
 	{
@@ -1864,7 +1864,7 @@ static void CG_Rocket_DrawPlayerMomentumBar( void )
 
 	ps = &cg.predictedPlayerState;
 
-	team       = ps->persistant[ PERS_TEAM ];
+	team = (team_t) ps->persistant[ PERS_TEAM ];
 	momentum = ps->persistant[ PERS_MOMENTUM ] / 10.0f;
 
 	x = rect.x;
@@ -2049,7 +2049,7 @@ static void CG_Rocket_DrawPlayerUnlockedItems( void )
 	CG_GetRocketElementColor( foreColour );
 	trap_Rocket_GetProperty( "border-width", &borderSize, sizeof( borderSize ), ROCKET_FLOAT );
 
-	team = cg.predictedPlayerState.persistant[ PERS_TEAM ];
+	team = (team_t) cg.predictedPlayerState.persistant[ PERS_TEAM ];
 
 	w = rect.w - 2 * borderSize;
 	h = rect.h - 2 * borderSize;
@@ -2212,7 +2212,7 @@ void CG_Rocket_RenderElement( void )
 	const char *tag = CG_Rocket_GetTag();
 	elementRenderCmd_t *cmd;
 
-	cmd = bsearch( tag, elementRenderCmdList, elementRenderCmdListCount, sizeof( elementRenderCmd_t ), elementRenderCmdCmp );
+	cmd = (elementRenderCmd_t*) bsearch( tag, elementRenderCmdList, elementRenderCmdListCount, sizeof( elementRenderCmd_t ), elementRenderCmdCmp );
 
 	if ( cmd && CG_Rocket_IsCommandAllowed( cmd->type ) )
 	{

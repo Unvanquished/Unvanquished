@@ -106,11 +106,11 @@ Destroy an individual particle
 static void CG_DestroyParticle( particle_t *p, vec3_t impactNormal )
 {
 	//this particle has an onDeath particle system attached
-	if ( p->class->onDeathSystemName[ 0 ] != '\0' )
+	if ( p->class_->onDeathSystemName[ 0 ] != '\0' )
 	{
 		particleSystem_t *ps;
 
-		ps = CG_SpawnNewParticleSystem( p->class->onDeathSystemHandle );
+		ps = CG_SpawnNewParticleSystem( p->class_->onDeathSystemHandle );
 
 		if ( CG_IsParticleSystemValid( &ps ) )
 		{
@@ -157,7 +157,7 @@ static particle_t *CG_SpawnNewParticle( baseParticle_t *bp, particleEjector_t *p
 			memset( p, 0, sizeof( particle_t ) );
 
 			//found a free slot
-			p->class = bp;
+			p->class_ = bp;
 			p->parent = pe;
 
 			p->birthTime = cg.time;
@@ -393,7 +393,7 @@ static void CG_SpawnNewParticles( void )
 				continue;
 			}
 
-			bpe = particleEjectors[ i ].class;
+			bpe = particleEjectors[ i ].class_;
 
 			//if this system is scheduled for removal don't make any new particles
 			if ( !ps->lazyRemove )
@@ -468,7 +468,7 @@ static particleEjector_t *CG_SpawnNewParticleEjector( baseParticleEjector_t *bpe
 			memset( pe, 0, sizeof( particleEjector_t ) );
 
 			//found a free slot
-			pe->class = bpe;
+			pe->class_ = bpe;
 			pe->parent = ps;
 
 			pe->ejectPeriod.initial = bpe->eject.initial;
@@ -484,7 +484,7 @@ static particleEjector_t *CG_SpawnNewParticleEjector( baseParticleEjector_t *bpe
 
 			if ( cg_debugParticles.integer >= 1 )
 			{
-				CG_Printf( "PE %s created\n", ps->class->name );
+				CG_Printf( "PE %s created\n", ps->class_->name );
 			}
 
 			break;
@@ -522,7 +522,7 @@ particleSystem_t *CG_SpawnNewParticleSystem( qhandle_t psHandle )
 			memset( ps, 0, sizeof( particleSystem_t ) );
 
 			//found a free slot
-			ps->class = bps;
+			ps->class_ = bps;
 
 			ps->valid = qtrue;
 			ps->lazyRemove = qfalse;
@@ -2138,7 +2138,7 @@ static void CG_GarbageCollectParticleSystems( void )
 
 		if ( cg_debugParticles.integer >= 1 && !ps->valid )
 		{
-			CG_Printf( "PS %s garbage collected\n", ps->class->name );
+			CG_Printf( "PS %s garbage collected\n", ps->class_->name );
 		}
 	}
 }
@@ -2178,7 +2178,7 @@ Compute the physics on a specific particle
 static void CG_EvaluateParticlePhysics( particle_t *p )
 {
 	particleSystem_t *ps = p->parent->parent;
-	baseParticle_t   *bp = p->class;
+	baseParticle_t   *bp = p->class_;
 	vec3_t           acceleration, newOrigin;
 	vec3_t           mins, maxs;
 	float            deltaTime, bounce, radius, dot;
@@ -2531,9 +2531,9 @@ static void CG_RenderParticle( particle_t *p )
 	refEntity_t          re;
 	float                timeFrac, scale;
 	int                  index;
-	baseParticle_t       *bp = p->class;
+	baseParticle_t       *bp = p->class_;
 	particleSystem_t     *ps = p->parent->parent;
-	baseParticleSystem_t *bps = ps->class;
+	baseParticleSystem_t *bps = ps->class_;
 	vec3_t               alight, dlight, lightdir;
 	int                  i;
 	vec3_t               up = { 0.0f, 0.0f, 1.0f };

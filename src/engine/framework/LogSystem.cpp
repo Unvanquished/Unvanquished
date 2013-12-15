@@ -95,10 +95,10 @@ namespace Log {
     //TODO for now these change nothing because the file is opened before the cvars are read.
     //TODO add a Callback on these that will make the logFile open a new file or something
     //Or maybe have Com_Init start it ?
-    Cvar::Cvar<bool> useLogFile("logs.logFile.active", "bool - are the logs sent in the logfile", Cvar::ARCHIVE, true);
-    Cvar::Cvar<std::string> logFileName("logs.logFile.filename", "string - the name of the logfile", Cvar::ARCHIVE, "daemon.log");
-    Cvar::Cvar<bool> overwrite("logs.logFile.overwrite", "bool - if true the logfile is deleted at each run else the logs are just appended", Cvar::ARCHIVE, true);
-    Cvar::Cvar<bool> forceFlush("logs.logFile.forceFlush", "bool - are all the logs flushed immediately (more accurate but slower)", Cvar::ARCHIVE, false);
+    Cvar::Cvar<bool> useLogFile("logs.logFile.active", "are the logs sent in the logfile", Cvar::ARCHIVE, true);
+    Cvar::Cvar<std::string> logFileName("logs.logFile.filename", "the name of the logfile", Cvar::ARCHIVE, "daemon.log");
+    Cvar::Cvar<bool> overwrite("logs.logFile.overwrite", "if true the logfile is deleted at each run else the logs are just appended", Cvar::ARCHIVE, true);
+    Cvar::Cvar<bool> forceFlush("logs.logFile.forceFlush", "are all the logs flushed immediately (more accurate but slower)", Cvar::ARCHIVE, false);
     class LogFileTarget :public Target {
         public:
             LogFileTarget() : logFile(0), recursing(false) {

@@ -163,9 +163,9 @@ void     UI_DrawCursor( void );
 qboolean UI_IsFullscreen( void );
 void     UI_SetActiveMenu( uiMenuCommand_t menu );
 
-Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3,
-                          int arg4, int arg5, int arg6, int arg7,
-                          int arg8, int arg9, int arg10, int arg11 )
+EXTERN_C Q_EXPORT
+intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3, int arg4,
+                 int arg5, int arg6, int arg7, int arg8, int arg9, int arg10, int arg11 )
 {
 	switch ( command )
 	{
@@ -206,7 +206,7 @@ Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3,
 			return UI_IsFullscreen();
 
 		case UI_SET_ACTIVE_MENU:
-			UI_SetActiveMenu( arg0 );
+			UI_SetActiveMenu( (uiMenuCommand_t) arg0 );
 			return 0;
 
 		case UI_CONSOLE_COMMAND:
@@ -2274,7 +2274,7 @@ static qboolean UI_OwnerDrawVisible( int flags )
 
 	trap_GetClientState( &cs );
 	trap_GetConfigString( CS_PLAYERS + cs.clientNum, info, MAX_INFO_STRING );
-	team = atoi( Info_ValueForKey( info, "t" ) );
+	team = (team_t) atoi( Info_ValueForKey( info, "t" ) );
 
 	while ( flags )
 	{
@@ -2509,15 +2509,15 @@ UI_AddClass
 ===============
 */
 
-static void UI_AddClass( class_t class )
+static void UI_AddClass( class_t class_ )
 {
 	uiInfo.alienClassList[ uiInfo.alienClassCount ].text =
-	  BG_ClassModelConfig( class )->humanName;
+	  BG_ClassModelConfig( class_ )->humanName;
 	uiInfo.alienClassList[ uiInfo.alienClassCount ].cmd =
-	  String_Alloc( va( "cmd class %s\n", BG_Class( class )->name ) );
+	  String_Alloc( va( "cmd class %s\n", BG_Class( class_ )->name ) );
 	uiInfo.alienClassList[ uiInfo.alienClassCount ].type = INFOTYPE_CLASS;
 
-	uiInfo.alienClassList[ uiInfo.alienClassCount ].v.pclass = class;
+	uiInfo.alienClassList[ uiInfo.alienClassCount ].v.pclass = class_;
 
 	uiInfo.alienClassCount++;
 }
@@ -2690,7 +2690,7 @@ static void UI_LoadHumanArmouryBuys( void )
 			uiInfo.humanArmouryBuyList[ j ].cmd =
 			  String_Alloc( va( "cmd buy %s\n", BG_Weapon( i )->name ) );
 			uiInfo.humanArmouryBuyList[ j ].type = INFOTYPE_WEAPON;
-			uiInfo.humanArmouryBuyList[ j ].v.weapon = i;
+			uiInfo.humanArmouryBuyList[ j ].v.weapon = (weapon_t) i;
 
 			j++;
 
@@ -2711,7 +2711,7 @@ static void UI_LoadHumanArmouryBuys( void )
 			uiInfo.humanArmouryBuyList[ j ].cmd =
 			  String_Alloc( va( "cmd buy %s\n", BG_Upgrade( i )->name ) );
 			uiInfo.humanArmouryBuyList[ j ].type = INFOTYPE_UPGRADE;
-			uiInfo.humanArmouryBuyList[ j ].v.upgrade = i;
+			uiInfo.humanArmouryBuyList[ j ].v.upgrade = (upgrade_t) i;
 
 			j++;
 
@@ -2740,7 +2740,7 @@ static void UI_LoadHumanArmourySells( void )
 			uiInfo.humanArmourySellList[ j ].cmd =
 			  String_Alloc( va( "cmd sell %s\n", BG_Weapon( i )->name ) );
 			uiInfo.humanArmourySellList[ j ].type = INFOTYPE_WEAPON;
-			uiInfo.humanArmourySellList[ j ].v.weapon = i;
+			uiInfo.humanArmourySellList[ j ].v.weapon = (weapon_t) i;
 
 			j++;
 
@@ -2756,7 +2756,7 @@ static void UI_LoadHumanArmourySells( void )
 			uiInfo.humanArmourySellList[ j ].cmd =
 			  String_Alloc( va( "cmd sell %s\n", BG_Upgrade( i )->name ) );
 			uiInfo.humanArmourySellList[ j ].type = INFOTYPE_UPGRADE;
-			uiInfo.humanArmourySellList[ j ].v.upgrade = i;
+			uiInfo.humanArmourySellList[ j ].v.upgrade = (upgrade_t) i;
 
 			j++;
 
@@ -2794,7 +2794,7 @@ static void UI_LoadAlienUpgrades( void )
 {
 	int     i, j = 0;
 
-	int     class, credits;
+	int     class_, credits;
 	char    ui_currentClass[ MAX_STRING_CHARS ];
 
 	// BG_ClassCanEvolveFromTo will call BG_ClassUnlocked, so update unlockables
@@ -2802,19 +2802,19 @@ static void UI_LoadAlienUpgrades( void )
 
 	trap_Cvar_VariableStringBuffer( "ui_currentClass", ui_currentClass, MAX_STRING_CHARS );
 
-	sscanf( ui_currentClass, "%d %d", &class, &credits );
+	sscanf( ui_currentClass, "%d %d", &class_, &credits );
 
 	uiInfo.alienUpgradeCount = 0;
 
 	for ( i = PCL_NONE + 1; i < PCL_NUM_CLASSES; i++ )
 	{
-		if ( BG_ClassCanEvolveFromTo( class, i, credits ) >= 0 )
+		if ( BG_ClassCanEvolveFromTo( class_, i, credits ) >= 0 )
 		{
 			uiInfo.alienUpgradeList[ j ].text = BG_ClassModelConfig( i )->humanName;
 			uiInfo.alienUpgradeList[ j ].cmd =
 			  String_Alloc( va( "cmd class %s\n", BG_Class( i )->name ) );
 			uiInfo.alienUpgradeList[ j ].type = INFOTYPE_CLASS;
-			uiInfo.alienUpgradeList[ j ].v.pclass = i;
+			uiInfo.alienUpgradeList[ j ].v.pclass = (class_t) i;
 
 			j++;
 
@@ -2848,7 +2848,7 @@ static void UI_LoadAlienBuilds( void )
 			uiInfo.alienBuildList[ j ].cmd =
 			  String_Alloc( va( "cmd build %s\n", BG_Buildable( i )->name ) );
 			uiInfo.alienBuildList[ j ].type = INFOTYPE_BUILDABLE;
-			uiInfo.alienBuildList[ j ].v.buildable = i;
+			uiInfo.alienBuildList[ j ].v.buildable = (buildable_t) i;
 
 			j++;
 
@@ -2882,7 +2882,7 @@ static void UI_LoadHumanBuilds( void )
 			uiInfo.humanBuildList[ j ].cmd =
 			  String_Alloc( va( "cmd build %s\n", BG_Buildable( i )->name ) );
 			uiInfo.humanBuildList[ j ].type = INFOTYPE_BUILDABLE;
-			uiInfo.humanBuildList[ j ].v.buildable = i;
+			uiInfo.humanBuildList[ j ].v.buildable = (buildable_t) i;
 
 			j++;
 
@@ -3302,7 +3302,7 @@ static void UI_RunMenuScript( char **args )
 		if ( Q_stricmp( name, "StartServer" ) == 0 )
 		{
 			trap_Cvar_SetValue( "dedicated", Com_Clamp( 0, 2, ui_dedicated.integer ) );
-			trap_Cmd_ExecuteText( EXEC_APPEND, va( "wait ; wait ; map %s\n",
+			trap_Cmd_ExecuteText( EXEC_APPEND, va( "delay 2f map %s\n",
 			                                       Quote( uiInfo.mapList[ ui_selectedMap.integer ].mapLoadName ) ) );
 		}
 		else if ( Q_stricmp( name, "resetDefaults" ) == 0 )
@@ -3402,7 +3402,7 @@ static void UI_RunMenuScript( char **args )
 			trap_Cmd_ExecuteText( EXEC_APPEND, va( "exec ui/%s/install.cfg;", uiInfo.huds[ uiInfo.hudIndex ].name ) );
 			if ( cstate.connState == CA_ACTIVE )
 			{
-				trap_Cmd_ExecuteText( EXEC_APPEND, "reloadhud" );
+				trap_Cmd_ExecuteText( EXEC_APPEND, "reloadhud;" );
 			}
 		}
 		else if ( Q_stricmp( name, "JoinTeam" ) == 0 )
@@ -3682,12 +3682,13 @@ static void UI_RunMenuScript( char **args )
 		}
 		else if ( Q_strnicmp( name, "vote", 4 ) == 0 )
 		{
+			enum {
+				V_NONE, V_MAP, V_PLAYER, V_TEAMMATE
+			};
 			static const struct {
 				const char vote[16];
 				const char call[16];
-				enum {
-					V_NONE, V_MAP, V_PLAYER, V_TEAMMATE
-				}          type;
+				int        type;
 				qboolean   reason;
 			} voteInfo[] = {
 				{ "Draw",           "draw",       V_NONE,     qtrue  },
@@ -3958,7 +3959,7 @@ static void UI_RunMenuScript( char **args )
 
 							while ( len > 0 )
 							{
-								int count = MIN( sizeof( b ), len );
+								int count = MIN( sizeof( b ), (size_t) len );
 
 								trap_FS_Read( &b, count, f2 );
 								trap_FS_Write( &b, count, f );
@@ -4813,13 +4814,19 @@ static void UI_FeederSelection( int feederID, int index )
 	}
 	else if ( feederID == FEEDER_VOIPINPUT )
 	{
-		trap_Cvar_Set( "s_alInputDevice", uiInfo.voipInput[ index ] );
-		uiInfo.voipInputIndex = index;
+		if ( uiInfo.voipInputCount > 0 )
+		{
+			trap_Cvar_Set( "s_alInputDevice", uiInfo.voipInput[ index ] );
+			uiInfo.voipInputIndex = index;
+		}
 	}
 	else if ( feederID == FEEDER_ALOUTPUT )
 	{
-		trap_Cvar_Set( "s_alDevice", uiInfo.alOutput[ index ] );
-		uiInfo.alOutputIndex = index;
+		if ( uiInfo.alOutputCount > 0 )
+		{
+			trap_Cvar_Set( "s_alDevice", uiInfo.alOutput[ index ] );
+			uiInfo.alOutputIndex = index;
+		}
 	}
 	else if ( feederID == FEEDER_PROFILES )
 	{
@@ -5174,6 +5181,7 @@ void UI_Init( void )
 	uiInfo.uiDC.runScript = &UI_RunMenuScript;
 	uiInfo.uiDC.setCVar = trap_Cvar_Set;
 	uiInfo.uiDC.getCVarString = trap_Cvar_VariableStringBuffer;
+	uiInfo.uiDC.getCVarLatchedString = trap_Cvar_LatchedVariableStringBuffer;
 	uiInfo.uiDC.getCVarValue = trap_Cvar_VariableValue;
 	uiInfo.uiDC.setOverstrikeMode = &trap_Key_SetOverstrikeMode;
 	uiInfo.uiDC.getOverstrikeMode = &trap_Key_GetOverstrikeMode;

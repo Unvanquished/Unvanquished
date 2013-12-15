@@ -1171,7 +1171,7 @@ static void CancelBuild( gentity_t *self )
 
 static void FireBuild( gentity_t *self, dynMenu_t menu )
 {
-	buildable_t buildable = ( self->client->ps.stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK );
+	buildable_t buildable = (buildable_t) ( self->client->ps.stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK );
 
 	if ( buildable > BA_NONE )
 	{

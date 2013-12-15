@@ -20,9 +20,7 @@ include( CMakeDependentOption )
 set( MSVC_INCREMENTAL_DEFAULT ON )
 
 # Default to Release builds. To use system CFLAGS only (for distro builds), set CMAKE_BUILD_TYPE to None
-if( NOT CMAKE_BUILD_TYPE )
-  set( CMAKE_BUILD_TYPE "Release" )
-endif()
+set( CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel." )
 
 project( Daemon C CXX )
 
@@ -32,14 +30,13 @@ project( Daemon C CXX )
 
 option( ENABLE_LTO "Use link-time optimization for release builds" 0 )
 option( ENABLE_HARDENING "Use stack protection and other hardening flags" 0 )
-option( ENABLE_QVM_COMPAT "Configure the engine to use QVMs instead of NaCl" 1 )
 
 option( BUILD_CLIENT "Build Daemon client" 1 )
 option( BUILD_SERVER "Build Daemonded server" 1 )
-cmake_dependent_option( BUILD_GAME_NACL_NATIVE "Build native NaCl game logic " 1 "NOT ENABLE_QVM_COMPAT" 0 )
-cmake_dependent_option( BUILD_GAME_NACL "Build NaCl game logic" 1 "NOT ENABLE_QVM_COMPAT" 0 )
-cmake_dependent_option( BUILD_GAME_NATIVE "Build native game logic " 1 ENABLE_QVM_COMPAT 0 )
-cmake_dependent_option( BUILD_GAME_QVM "Build QVM game logic" 1 ENABLE_QVM_COMPAT 0 )
+option( BUILD_GAME_NACL_NATIVE "Build native NaCl game logic" 0)
+option( BUILD_GAME_NACL "Build NaCl game logic" 0)
+option( BUILD_GAME_QVM_NATIVE "Build native game logic " 1)
+option( BUILD_GAME_QVM "Build QVM game logic" 1)
 option( BUILD_TTY_CLIENT "Build Daemon headless client" 0 )
 cmake_dependent_option( BUILD_OLD_RENDERER "Build old renderer library" 1 BUILD_CLIENT 0 )
 cmake_dependent_option( BUILD_NEW_RENDERER "Build new renderer library" 1 BUILD_CLIENT 0 )
@@ -57,8 +54,6 @@ option( USE_PEDANTIC "Tell the compiler to be pedantic" 0 )
 set( NACL_SDK_PATH "" CACHE PATH "Path to native client SDK" )
 if( BUILD_GAME_NACL AND NOT NACL_SDK_PATH )
   message( SEND_ERROR "You need to set the path to the native client SDK" )
-else()
-  mark_as_advanced( NACL_SDK_PATH )
 endif()
 
 ################################################################################
@@ -140,6 +135,7 @@ macro( try_linker_flag PROP FLAG )
 endmacro()
 
 if( MSVC )
+  set_c_cxx_flag( "/MP" )
   set_c_cxx_flag( "/fp:fast" )
   set_c_cxx_flag( "/d2Zi+" RELWITHDEBINFO )
   if( ARCH STREQUAL "x86" )
@@ -255,7 +251,8 @@ endif()
 if( WIN32 )
   # Minimum Windows version: XP
   # Define WIN32 for compatibility (compiler defines _WIN32)
-  add_definitions( -DWINVER=0x501 -DWIN32 )
+  # Define NOMINMAX to prevent conflics between std::min/max and the min/max macros in WinDef.h
+  add_definitions( -DWINVER=0x501 -DWIN32 -DNOMINMAX )
   set( CMAKE_FIND_LIBRARY_PREFIXES ${CMAKE_FIND_LIBRARY_PREFIXES} "" "lib" )
 endif()
 if( MSVC )
@@ -268,11 +265,6 @@ if( APPLE )
   set_linker_flag( "-Wl,-no_pie" )
   set( CMAKE_INSTALL_RPATH "@executable_path/" )
   set( CMAKE_BUILD_WITH_INSTALL_RPATH ON )
-endif()
-
-# QVM compatibility
-if( ENABLE_QVM_COMPAT )
-  add_definitions( -DQVM_COMPAT )
 endif()
 
 # Mumble link support
@@ -295,16 +287,16 @@ set( LCC_DIR ${TOOLS_DIR}/lcc )
 set( LIB_DIR ${MOUNT_DIR}/libs )
 set( ROCKET_DIR ${LIB_DIR}/libRocket )
 if( CMAKE_HOST_WIN32 )
-  set( PNACL_TOOLCHAIN ${NACL_SDK_PATH}/toolchain/win_x86_pnacl/newlib/bin )
+  set( PNACL_TOOLCHAIN ${NACL_SDK_PATH}/toolchain/win_pnacl/bin )
   set( PNACL_BIN_EXT ".bat" )
 elseif( CMAKE_HOST_APPLE )
-  set( PNACL_TOOLCHAIN ${NACL_SDK_PATH}/toolchain/mac_x86_pnacl/newlib/bin )
+  set( PNACL_TOOLCHAIN ${NACL_SDK_PATH}/toolchain/mac_pnacl/bin )
   set( PNACL_BIN_EXT "" )
 elseif( CMAKE_HOST_SYSTEM_NAME MATCHES "Linux" )
   if( CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "x86_64" OR CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "amd64" )
-    set( PNACL_TOOLCHAIN ${NACL_SDK_PATH}/toolchain/linux_x86_pnacl/newlib/bin64 )
+    set( PNACL_TOOLCHAIN ${NACL_SDK_PATH}/toolchain/linux_pnacl/bin64 )
   else()
-    set( PNACL_TOOLCHAIN ${NACL_SDK_PATH}/toolchain/linux_x86_pnacl/newlib/bin )
+    set( PNACL_TOOLCHAIN ${NACL_SDK_PATH}/toolchain/linux_pnacl/bin )
   endif()
   set( PNACL_BIN_EXT "" )
 endif()
@@ -363,57 +355,60 @@ include_directories( "${OBJ_DIR}" )
 # File lists
 ################################################################################
 
-set( SHAREDLIST
-  ${ENGINE_DIR}/qcommon/q_shared.c
-  ${ENGINE_DIR}/qcommon/q_unicode.c
-  ${ENGINE_DIR}/qcommon/q_math.c
+set( SHAREDLIST_H
   ${ENGINE_DIR}/qcommon/q_shared.h
   ${ENGINE_DIR}/qcommon/q_unicode.h
   ${ENGINE_DIR}/qcommon/unicode_data.h
   ${ENGINE_DIR}/qcommon/logging.h
 )
 
-# Hack to allow compiling shared files as C
-set( SHAREDLIST_HACK
-  ${ENGINE_DIR}/qcommon/./q_shared.c
-  ${ENGINE_DIR}/qcommon/./q_unicode.c
-  ${ENGINE_DIR}/qcommon/./q_math.c
+set( SHAREDLIST_C
+  ${ENGINE_DIR}/qcommon/q_shared.c
+  ${ENGINE_DIR}/qcommon/q_unicode.c
+  ${ENGINE_DIR}/qcommon/q_math.c
+  ${SHAREDLIST_H}
+)
+
+set( SHAREDLIST
+  ${ENGINE_DIR}/qcommon/q_shared.cpp
+  ${ENGINE_DIR}/qcommon/q_unicode.cpp
+  ${ENGINE_DIR}/qcommon/q_math.cpp
+  ${SHAREDLIST_H}
 )
 
 set( RENDERERLIST
-  ${ENGINE_DIR}/sys/sdl2_compat.c
-  ${ENGINE_DIR}/sys/sdl_glimp.c
-  ${ENGINE_DIR}/sys/sdl_gamma.c
-  ${ENGINE_DIR}/renderer/tr_animation.c
-  ${ENGINE_DIR}/renderer/tr_animation_mds.c
-  ${ENGINE_DIR}/renderer/tr_backend.c
-  ${ENGINE_DIR}/renderer/tr_bonematrix.c
-  ${ENGINE_DIR}/renderer/tr_bonematrix.h
-  ${ENGINE_DIR}/renderer/tr_bsp.c
-  ${ENGINE_DIR}/renderer/tr_cmds.c
-  ${ENGINE_DIR}/renderer/tr_cmesh.c
-  ${ENGINE_DIR}/renderer/tr_curve.c
-  ${ENGINE_DIR}/renderer/tr_decals.c
-  ${ENGINE_DIR}/renderer/tr_flares.c
-  ${ENGINE_DIR}/renderer/tr_font.c
-  ${ENGINE_DIR}/renderer/tr_image.c
-  ${ENGINE_DIR}/renderer/tr_init.c
-  ${ENGINE_DIR}/renderer/tr_light.c
-  ${ENGINE_DIR}/renderer/tr_main.c
-  ${ENGINE_DIR}/renderer/tr_marks.c
-  ${ENGINE_DIR}/renderer/tr_mesh.c
-  ${ENGINE_DIR}/renderer/tr_model.c
-  ${ENGINE_DIR}/renderer/tr_model_md5.c
-  ${ENGINE_DIR}/renderer/tr_noise.c
-  ${ENGINE_DIR}/renderer/tr_scene.c
-  ${ENGINE_DIR}/renderer/tr_shade.c
-  ${ENGINE_DIR}/renderer/tr_shade_calc.c
-  ${ENGINE_DIR}/renderer/tr_shader.c
-  ${ENGINE_DIR}/renderer/tr_shadows.c
-  ${ENGINE_DIR}/renderer/tr_skin.c
-  ${ENGINE_DIR}/renderer/tr_sky.c
-  ${ENGINE_DIR}/renderer/tr_surface.c
-  ${ENGINE_DIR}/renderer/tr_world.c
+  ${ENGINE_DIR}/sys/sdl2_compat.cpp
+  ${ENGINE_DIR}/sys/sdl_glimp.cpp
+  ${ENGINE_DIR}/sys/sdl_gamma.cpp
+  ${ENGINE_DIR}/renderer/tr_animation.cpp
+  ${ENGINE_DIR}/renderer/tr_animation_mds.cpp
+  ${ENGINE_DIR}/renderer/tr_backend.cpp
+  ${ENGINE_DIR}/renderer/tr_bsp.cpp
+  ${ENGINE_DIR}/renderer/tr_cmds.cpp
+  ${ENGINE_DIR}/renderer/tr_cmesh.cpp
+  ${ENGINE_DIR}/renderer/tr_curve.cpp
+  ${ENGINE_DIR}/renderer/tr_decals.cpp
+  ${ENGINE_DIR}/renderer/tr_flares.cpp
+  ${ENGINE_DIR}/renderer/tr_font.cpp
+  ${ENGINE_DIR}/renderer/tr_image.cpp
+  ${ENGINE_DIR}/renderer/tr_init.cpp
+  ${ENGINE_DIR}/renderer/tr_light.cpp
+  ${ENGINE_DIR}/renderer/tr_main.cpp
+  ${ENGINE_DIR}/renderer/tr_marks.cpp
+  ${ENGINE_DIR}/renderer/tr_mesh.cpp
+  ${ENGINE_DIR}/renderer/tr_model.cpp
+  ${ENGINE_DIR}/renderer/tr_model_md5.cpp
+  ${ENGINE_DIR}/renderer/tr_model_iqm.cpp
+  ${ENGINE_DIR}/renderer/tr_noise.cpp
+  ${ENGINE_DIR}/renderer/tr_scene.cpp
+  ${ENGINE_DIR}/renderer/tr_shade.cpp
+  ${ENGINE_DIR}/renderer/tr_shade_calc.cpp
+  ${ENGINE_DIR}/renderer/tr_shader.cpp
+  ${ENGINE_DIR}/renderer/tr_shadows.cpp
+  ${ENGINE_DIR}/renderer/tr_skin.cpp
+  ${ENGINE_DIR}/renderer/tr_sky.cpp
+  ${ENGINE_DIR}/renderer/tr_surface.cpp
+  ${ENGINE_DIR}/renderer/tr_world.cpp
   ${ENGINE_DIR}/renderer/tr_local.h
   ${ENGINE_DIR}/renderer/tr_types.h
   ${ENGINE_DIR}/renderer/tr_public.h
@@ -421,52 +416,51 @@ set( RENDERERLIST
 )
 
 set( RENDERERGLLIST
-  ${ENGINE_DIR}/sys/sdl2_compat.c
-  ${ENGINE_DIR}/sys/sdl_glimp.c
-  ${ENGINE_DIR}/sys/sdl_gamma.c
+  ${ENGINE_DIR}/sys/sdl2_compat.cpp
+  ${ENGINE_DIR}/sys/sdl_glimp.cpp
+  ${ENGINE_DIR}/sys/sdl_gamma.cpp
   ${ENGINE_DIR}/rendererGL/gl_shader.cpp
-  ${ENGINE_DIR}/rendererGL/tr_animation.c
+  ${ENGINE_DIR}/rendererGL/tr_animation.cpp
   ${ENGINE_DIR}/rendererGL/tr_backend.cpp
-  ${ENGINE_DIR}/renderer/tr_bonematrix.c
-  ${ENGINE_DIR}/renderer/tr_bonematrix.h
-  ${ENGINE_DIR}/rendererGL/tr_bsp.c
-  ${ENGINE_DIR}/rendererGL/tr_cmds.c
-  ${ENGINE_DIR}/rendererGL/tr_curve.c
-  ${ENGINE_DIR}/rendererGL/tr_decals.c
-  ${ENGINE_DIR}/rendererGL/tr_fbo.c
-  ${ENGINE_DIR}/rendererGL/tr_flares.c
-  ${ENGINE_DIR}/rendererGL/tr_fog.c
-  ${ENGINE_DIR}/renderer/tr_font.c
-  ${ENGINE_DIR}/rendererGL/tr_image.c
-  ${ENGINE_DIR}/rendererGL/tr_image_dds.c
+  ${ENGINE_DIR}/rendererGL/tr_bsp.cpp
+  ${ENGINE_DIR}/rendererGL/tr_cmds.cpp
+  ${ENGINE_DIR}/rendererGL/tr_curve.cpp
+  ${ENGINE_DIR}/rendererGL/tr_decals.cpp
+  ${ENGINE_DIR}/rendererGL/tr_fbo.cpp
+  ${ENGINE_DIR}/rendererGL/tr_flares.cpp
+  ${ENGINE_DIR}/rendererGL/tr_fog.cpp
+  ${ENGINE_DIR}/renderer/tr_font.cpp
+  ${ENGINE_DIR}/rendererGL/tr_image.cpp
+  ${ENGINE_DIR}/rendererGL/tr_image_dds.cpp
   ${ENGINE_DIR}/rendererGL/tr_image_exr.cpp
-  ${ENGINE_DIR}/rendererGL/tr_image_jpg.c
-  ${ENGINE_DIR}/rendererGL/tr_image_png.c
-  ${ENGINE_DIR}/rendererGL/tr_image_tga.c
-  ${ENGINE_DIR}/rendererGL/tr_image_webp.c
+  ${ENGINE_DIR}/rendererGL/tr_image_jpg.cpp
+  ${ENGINE_DIR}/rendererGL/tr_image_png.cpp
+  ${ENGINE_DIR}/rendererGL/tr_image_tga.cpp
+  ${ENGINE_DIR}/rendererGL/tr_image_webp.cpp
   ${ENGINE_DIR}/rendererGL/tr_init.cpp
-  ${ENGINE_DIR}/rendererGL/tr_light.c
-  ${ENGINE_DIR}/rendererGL/tr_main.c
-  ${ENGINE_DIR}/rendererGL/tr_marks.c
-  ${ENGINE_DIR}/rendererGL/tr_mesh.c
-  ${ENGINE_DIR}/rendererGL/tr_model.c
-  ${ENGINE_DIR}/rendererGL/tr_model_md3.c
-  ${ENGINE_DIR}/rendererGL/tr_model_md5.c
-  ${ENGINE_DIR}/rendererGL/tr_model_mdc.c
-  ${ENGINE_DIR}/rendererGL/tr_model_psk.c
-  ${ENGINE_DIR}/rendererGL/tr_model_skel.c
-  ${ENGINE_DIR}/rendererGL/tr_noise.c
-  ${ENGINE_DIR}/rendererGL/tr_scene.c
+  ${ENGINE_DIR}/rendererGL/tr_light.cpp
+  ${ENGINE_DIR}/rendererGL/tr_main.cpp
+  ${ENGINE_DIR}/rendererGL/tr_marks.cpp
+  ${ENGINE_DIR}/rendererGL/tr_mesh.cpp
+  ${ENGINE_DIR}/rendererGL/tr_model.cpp
+  ${ENGINE_DIR}/rendererGL/tr_model_md3.cpp
+  ${ENGINE_DIR}/rendererGL/tr_model_md5.cpp
+  ${ENGINE_DIR}/rendererGL/tr_model_iqm.cpp
+  ${ENGINE_DIR}/rendererGL/tr_model_mdc.cpp
+  ${ENGINE_DIR}/rendererGL/tr_model_psk.cpp
+  ${ENGINE_DIR}/rendererGL/tr_model_skel.cpp
+  ${ENGINE_DIR}/rendererGL/tr_noise.cpp
+  ${ENGINE_DIR}/rendererGL/tr_scene.cpp
   ${ENGINE_DIR}/rendererGL/tr_shade.cpp
-  ${ENGINE_DIR}/rendererGL/tr_shade_calc.c
-  ${ENGINE_DIR}/rendererGL/tr_shader.c
-  ${ENGINE_DIR}/rendererGL/tr_shadows.c
-  ${ENGINE_DIR}/rendererGL/tr_skin.c
+  ${ENGINE_DIR}/rendererGL/tr_shade_calc.cpp
+  ${ENGINE_DIR}/rendererGL/tr_shader.cpp
+  ${ENGINE_DIR}/rendererGL/tr_shadows.cpp
+  ${ENGINE_DIR}/rendererGL/tr_skin.cpp
   ${ENGINE_DIR}/rendererGL/tr_sky.cpp
-  ${ENGINE_DIR}/rendererGL/tr_surface.c
-  ${ENGINE_DIR}/rendererGL/tr_vbo.c
+  ${ENGINE_DIR}/rendererGL/tr_surface.cpp
+  ${ENGINE_DIR}/rendererGL/tr_vbo.cpp
   ${ENGINE_DIR}/rendererGL/tr_world.cpp
-  ${ENGINE_DIR}/qcommon/md4.c
+  ${ENGINE_DIR}/qcommon/md4.cpp
   ${LIB_DIR}/openexr/half.cpp
   ${ENGINE_DIR}/rendererGL/tr_local.h
   ${ENGINE_DIR}/renderer/tr_public.h
@@ -480,15 +474,15 @@ set( SERVERLIST
   ${ENGINE_DIR}/botlib/bot_local.cpp
   ${ENGINE_DIR}/botlib/bot_nav.cpp
   ${ENGINE_DIR}/botlib/bot_load.cpp
-  ${ENGINE_DIR}/server/sv_bot.c
-  ${ENGINE_DIR}/server/sv_ccmds.c
-  ${ENGINE_DIR}/server/sv_client.c
-  ${ENGINE_DIR}/server/sv_game.c
-  ${ENGINE_DIR}/server/sv_init.c
-  ${ENGINE_DIR}/server/sv_main.c
-  ${ENGINE_DIR}/server/sv_net_chan.c
-  ${ENGINE_DIR}/server/sv_snapshot.c
-  ${ENGINE_DIR}/server/sv_world.c
+  ${ENGINE_DIR}/server/sv_bot.cpp
+  ${ENGINE_DIR}/server/sv_ccmds.cpp
+  ${ENGINE_DIR}/server/sv_client.cpp
+  ${ENGINE_DIR}/server/sv_game.cpp
+  ${ENGINE_DIR}/server/sv_init.cpp
+  ${ENGINE_DIR}/server/sv_main.cpp
+  ${ENGINE_DIR}/server/sv_net_chan.cpp
+  ${ENGINE_DIR}/server/sv_snapshot.cpp
+  ${ENGINE_DIR}/server/sv_world.cpp
   ${ENGINE_DIR}/server/server.h
   ${ENGINE_DIR}/server/g_api.h
   ${ENGINE_DIR}/qcommon/print_translated.h
@@ -517,73 +511,66 @@ set( ENGINELIST
   ${ENGINE_DIR}/framework/ConsoleHistory.h
   ${ENGINE_DIR}/framework/LogSystem.cpp
   ${ENGINE_DIR}/framework/LogSystem.h
-  ${ENGINE_DIR}/qcommon/cm_load.c
-  ${ENGINE_DIR}/qcommon/cm_trisoup.c
-  ${ENGINE_DIR}/qcommon/cm_patch.c
-  ${ENGINE_DIR}/qcommon/cm_plane.c
-  ${ENGINE_DIR}/qcommon/cm_polylib.c
-  ${ENGINE_DIR}/qcommon/cm_test.c
-  ${ENGINE_DIR}/qcommon/cm_trace.c
+  ${ENGINE_DIR}/framework/VirtualMachine.cpp
+  ${ENGINE_DIR}/framework/VirtualMachine.h
+  ${ENGINE_DIR}/qcommon/cm_load.cpp
+  ${ENGINE_DIR}/qcommon/cm_trisoup.cpp
+  ${ENGINE_DIR}/qcommon/cm_patch.cpp
+  ${ENGINE_DIR}/qcommon/cm_plane.cpp
+  ${ENGINE_DIR}/qcommon/cm_polylib.cpp
+  ${ENGINE_DIR}/qcommon/cm_test.cpp
+  ${ENGINE_DIR}/qcommon/cm_trace.cpp
   ${ENGINE_DIR}/qcommon/cm_local.h
   ${ENGINE_DIR}/qcommon/cm_patch.h
   ${ENGINE_DIR}/qcommon/cm_polylib.h
   ${ENGINE_DIR}/qcommon/cm_public.h
-  ${ENGINE_DIR}/qcommon/cmd.c
-  ${ENGINE_DIR}/qcommon/common.c
-  ${ENGINE_DIR}/qcommon/crypto.c
+  ${ENGINE_DIR}/qcommon/cmd.cpp
+  ${ENGINE_DIR}/qcommon/common.cpp
+  ${ENGINE_DIR}/qcommon/crypto.cpp
   ${ENGINE_DIR}/qcommon/crypto.h
-  ${ENGINE_DIR}/qcommon/cvar.c
+  ${ENGINE_DIR}/qcommon/cvar.cpp
   ${ENGINE_DIR}/qcommon/cvar.h
-  ${ENGINE_DIR}/qcommon/files.c
+  ${ENGINE_DIR}/qcommon/files.cpp
   ${ENGINE_DIR}/qcommon/qfiles.h
-  ${ENGINE_DIR}/qcommon/htable.c
+  ${ENGINE_DIR}/qcommon/htable.cpp
   ${ENGINE_DIR}/qcommon/htable.h
-  ${ENGINE_DIR}/qcommon/huffman.c
-  ${ENGINE_DIR}/qcommon/md4.c
+  ${ENGINE_DIR}/qcommon/huffman.cpp
+  ${ENGINE_DIR}/qcommon/md4.cpp
   ${ENGINE_DIR}/qcommon/md4.h
-  ${ENGINE_DIR}/qcommon/md5.c
-  ${ENGINE_DIR}/qcommon/msg.c
-  ${ENGINE_DIR}/qcommon/net_chan.c
-  ${ENGINE_DIR}/qcommon/net_ip.c
-  ${ENGINE_DIR}/qcommon/parse.c
+  ${ENGINE_DIR}/qcommon/md5.cpp
+  ${ENGINE_DIR}/qcommon/msg.cpp
+  ${ENGINE_DIR}/qcommon/net_chan.cpp
+  ${ENGINE_DIR}/qcommon/net_ip.cpp
+  ${ENGINE_DIR}/qcommon/parse.cpp
   ${ENGINE_DIR}/qcommon/translation.cpp
-  ${ENGINE_DIR}/sys/sys_main.c
-  ${ENGINE_DIR}/sys/con_log.c
+  ${ENGINE_DIR}/qcommon/vm.cpp
+  ${ENGINE_DIR}/qcommon/vm_interpreted.cpp
+  ${ENGINE_DIR}/qcommon/vm_local.h
+  ${ENGINE_DIR}/qcommon/vm_traps.h
+  ${ENGINE_DIR}/sys/sys_main.cpp
+  ${ENGINE_DIR}/sys/con_log.cpp
   ${ENGINE_DIR}/qcommon/qcommon.h
   ${ENGINE_DIR}/qcommon/surfaceflags.h
 )
 
-if( ENABLE_QVM_COMPAT )
-  set( ENGINELIST ${ENGINELIST}
-    ${ENGINE_DIR}/qcommon/vm.c
-    ${ENGINE_DIR}/qcommon/vm_interpreted.c
-    ${ENGINE_DIR}/qcommon/vm_local.h
-    ${ENGINE_DIR}/qcommon/vm_traps.h
-  )
-  if( ARCH STREQUAL "x86" OR ARCH STREQUAL "x86_64" )
-    set( ENGINELIST ${ENGINELIST} ${ENGINE_DIR}/qcommon/vm_x86.c )
-    if( MSVC AND CMAKE_CL_64 )
-      add_custom_command( OUTPUT vm_x86_64.obj COMMAND ml64 ARGS /c "${ENGINE_DIR}/qcommon/vm_x86_64.asm" MAIN_DEPENDENCY ${ENGINE_DIR}/qcommon/vm_x86_64.asm )
-      set( ENGINELIST ${ENGINELIST} vm_x86_64.obj )
-    endif()
+if( ARCH STREQUAL "x86" OR ARCH STREQUAL "x86_64" )
+  set( ENGINELIST ${ENGINELIST} ${ENGINE_DIR}/qcommon/vm_x86.cpp )
+  if( MSVC AND CMAKE_CL_64 )
+    add_custom_command( OUTPUT vm_x86_64.obj COMMAND ml64 ARGS /c "${ENGINE_DIR}/qcommon/vm_x86_64.asm" MAIN_DEPENDENCY ${ENGINE_DIR}/qcommon/vm_x86_64.asm )
+    set( ENGINELIST ${ENGINELIST} vm_x86_64.obj )
   endif()
-else()
-  set( ENGINELIST ${ENGINELIST}
-    ${ENGINE_DIR}/framework/VirtualMachine.cpp
-    ${ENGINE_DIR}/framework/VirtualMachine.h
-  )
 endif()
 
 if( WIN32 )
   set( ENGINELIST ${ENGINELIST}
-    ${ENGINE_DIR}/sys/sys_win32.c
+    ${ENGINE_DIR}/sys/sys_win32.cpp
     ${ENGINE_DIR}/sys/sys_win32.h
-    ${ENGINE_DIR}/sys/con_passive.c
+    ${ENGINE_DIR}/sys/con_passive.cpp
   )
 else()
   set( ENGINELIST ${ENGINELIST}
-    ${ENGINE_DIR}/sys/sys_unix.c
-    ${ENGINE_DIR}/sys/con_tty.c
+    ${ENGINE_DIR}/sys/sys_unix.cpp
+    ${ENGINE_DIR}/sys/con_tty.cpp
   )
 endif()
 
@@ -594,7 +581,7 @@ if( APPLE )
 endif()
 
 if( USE_CURSES )
-  set( ENGINELIST ${ENGINELIST} ${ENGINE_DIR}/sys/con_curses.c )
+  set( ENGINELIST ${ENGINELIST} ${ENGINE_DIR}/sys/con_curses.cpp )
 endif()
 
 set( CLIENTLIST
@@ -603,37 +590,37 @@ set( CLIENTLIST
   ${ENGINE_DIR}/client/cg_api.h
   ${ENGINE_DIR}/client/ui_api.h
   ${ENGINE_DIR}/client/client.h
-  ${ENGINE_DIR}/client/cin_ogm.c
-  ${ENGINE_DIR}/client/cl_avi.c
-  ${ENGINE_DIR}/client/cl_cgame.c
-  ${ENGINE_DIR}/client/cl_cin.c
-  ${ENGINE_DIR}/client/cl_console.c
-  ${ENGINE_DIR}/client/cl_input.c
-  ${ENGINE_DIR}/client/cl_irc.c
-  ${ENGINE_DIR}/client/cl_keys.c
+  ${ENGINE_DIR}/client/cin_ogm.cpp
+  ${ENGINE_DIR}/client/cl_avi.cpp
+  ${ENGINE_DIR}/client/cl_cgame.cpp
+  ${ENGINE_DIR}/client/cl_cin.cpp
+  ${ENGINE_DIR}/client/cl_console.cpp
+  ${ENGINE_DIR}/client/cl_input.cpp
+  ${ENGINE_DIR}/client/cl_irc.cpp
+  ${ENGINE_DIR}/client/cl_keys.cpp
   ${ENGINE_DIR}/client/keycodes.h
   ${ENGINE_DIR}/client/keys.h
-  ${ENGINE_DIR}/client/cl_main.c
-  ${ENGINE_DIR}/client/cl_net_chan.c
-  ${ENGINE_DIR}/client/cl_parse.c
-  ${ENGINE_DIR}/client/cl_scrn.c
-  ${ENGINE_DIR}/client/cl_logs.c
-  ${ENGINE_DIR}/client/dl_main.c
-  ${ENGINE_DIR}/client/snd_adpcm.c
-  ${ENGINE_DIR}/client/snd_codec.c
+  ${ENGINE_DIR}/client/cl_main.cpp
+  ${ENGINE_DIR}/client/cl_net_chan.cpp
+  ${ENGINE_DIR}/client/cl_parse.cpp
+  ${ENGINE_DIR}/client/cl_scrn.cpp
+  ${ENGINE_DIR}/client/cl_logs.cpp
+  ${ENGINE_DIR}/client/dl_main.cpp
+  ${ENGINE_DIR}/client/snd_adpcm.cpp
+  ${ENGINE_DIR}/client/snd_codec.cpp
   ${ENGINE_DIR}/client/snd_codec.h
   ${ENGINE_DIR}/client/snd_local.h
   ${ENGINE_DIR}/client/snd_public.h
-  ${ENGINE_DIR}/client/snd_codec_ogg.c
-  ${ENGINE_DIR}/client/snd_codec_opus.c
-  ${ENGINE_DIR}/client/snd_codec_wav.c
-  ${ENGINE_DIR}/client/snd_dma.c
-  ${ENGINE_DIR}/client/snd_openal.c
-  ${ENGINE_DIR}/client/snd_main.c
-  ${ENGINE_DIR}/client/snd_mem.c
-  ${ENGINE_DIR}/client/snd_mix.c
-  ${ENGINE_DIR}/client/snd_wavelet.c
-  ${ENGINE_DIR}/client/qal.c
+  ${ENGINE_DIR}/client/snd_codec_ogg.cpp
+  ${ENGINE_DIR}/client/snd_codec_opus.cpp
+  ${ENGINE_DIR}/client/snd_codec_wav.cpp
+  ${ENGINE_DIR}/client/snd_dma.cpp
+  ${ENGINE_DIR}/client/snd_openal.cpp
+  ${ENGINE_DIR}/client/snd_main.cpp
+  ${ENGINE_DIR}/client/snd_mem.cpp
+  ${ENGINE_DIR}/client/snd_mix.cpp
+  ${ENGINE_DIR}/client/snd_wavelet.cpp
+  ${ENGINE_DIR}/client/qal.cpp
   ${ENGINE_DIR}/client/qal.h
 )
 
@@ -650,15 +637,15 @@ set( ROCKET_CLIENTLIST
 
 if( USE_MUMBLE )
   set( CLIENTLIST ${CLIENTLIST}
-    ${ENGINE_DIR}/client/libmumblelink.c
+    ${ENGINE_DIR}/client/libmumblelink.cpp
     ${ENGINE_DIR}/client/libmumblelink.h
   )
 endif()
 
 set( SDLLIST
-  ${ENGINE_DIR}/sys/sdl_input.c
-  ${ENGINE_DIR}/sys/sdl_snd.c
-  ${ENGINE_DIR}/sys/sdl2_compat.c
+  ${ENGINE_DIR}/sys/sdl_input.cpp
+  ${ENGINE_DIR}/sys/sdl_snd.cpp
+  ${ENGINE_DIR}/sys/sdl2_compat.cpp
   ${ENGINE_DIR}/sys/sys_local.h
 )
 
@@ -713,7 +700,7 @@ set( CGAMENATIVELIST
 set( CGAMEQVMLIST
   ${GAMELOGIC_DIR}/shared/bg_lib.c
   ${ENGINE_DIR}/qcommon/q_static.c
-  ${SHAREDLIST}
+  ${SHAREDLIST_C}
 )
 
 set( CGAMEASMLIST
@@ -776,7 +763,7 @@ set( GAMENATIVELIST
 set( GAMEQVMLIST
   ${GAMELOGIC_DIR}/shared/bg_lib.c
   ${ENGINE_DIR}/qcommon/q_static.c
-  ${SHAREDLIST}
+  ${SHAREDLIST_C}
 )
 
 set( GAMEASMLIST
@@ -803,7 +790,7 @@ set( UINATIVELIST
 set( UIQVMLIST
   ${GAMELOGIC_DIR}/shared/bg_lib.c
   ${ENGINE_DIR}/qcommon/q_static.c
-  ${SHAREDLIST}
+  ${SHAREDLIST_C}
 )
 
 set( UIASMLIST
@@ -962,7 +949,7 @@ set( NACLLIST_MODULE
 )
 
 # HACK: Force the compilation of EVERYTHING in C++
-file( GLOB_RECURSE EVERYTHING_C "src/engine/*.c" )
+file( GLOB_RECURSE EVERYTHING_C "src/engine/*.c" "src/gamelogic/*.c" )
 set_source_files_properties( ${EVERYTHING_C} PROPERTIES LANGUAGE CXX )
 
 ################################################################################
@@ -1001,6 +988,12 @@ if( DEPS_DIR )
   set( CMAKE_INCLUDE_PATH ${DEPS_DIR} ${DEPS_DIR}/include ${CMAKE_INCLUDE_PATH} )
   set( CMAKE_FRAMEWORK_PATH ${DEPS_DIR} ${CMAKE_FRAMEWORK_PATH} )
   set( CMAKE_LIBRARY_PATH ${DEPS_DIR}/lib ${CMAKE_LIBRARY_PATH} )
+
+  # Force OpenAL Soft on Mac, otherwise the system framework will be selected
+  if( APPLE )
+    set( OPENAL_INCLUDE_DIR ${DEPS_DIR}/include/AL )
+    set( OPENAL_LIBRARY ${DEPS_DIR}/lib/libopenal.dylib )
+  endif()
 endif()
 
 # These variables are defined
@@ -1071,9 +1064,7 @@ else()
   add_definitions( -DNACL_BUILD_SUBARCH=32 )
 endif()
 include_directories( ${LIB_DIR}/nacl )
-if( NOT ENABLE_QVM_COMPAT )
-  set( LIBSRC_ENGINE ${LIBSRC_ENGINE} ${NACLLIST_NATIVE} )
-endif()
+set( LIBSRC_ENGINE ${LIBSRC_ENGINE} ${NACLLIST_NATIVE} )
 
 # SDL, required for all targets on win32 because of iconv
 if( BUILD_CLIENT OR BUILD_NEW_RENDERER OR BUILD_OLD_RENDERER OR ( WIN32 AND (BUILD_TTY_CLIENT OR BUILD_SERVER ) ) )
@@ -1262,7 +1253,7 @@ add_subdirectory( ${ROCKET_DIR} )
 include( CMakeParseArguments )
 function( GAMEMODULE )
   # ParseArguments setup
-  set( oneValueArgs NAME OUTPUT_DIR )
+  set( oneValueArgs NAME OUTPUT_DIR HAS_NACL )
   set( multiValueArgs COMPILE_DEF FILES NACL_FILES NATIVE_FILES QVM_FILES QVM_ASM )
   cmake_parse_arguments( GAMEMODULE "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
   if( CMAKE_CFG_INTDIR STREQUAL "." )
@@ -1271,38 +1262,36 @@ function( GAMEMODULE )
     set( GAMEMODULE_FULL_OUTPUT_DIR ${CMAKE_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${GAMEMODULE_OUTPUT_DIR} )
   endif()
 
-  if( BUILD_GAME_NACL_NATIVE )
-    # HACK: Compile shared files as C
-    add_executable( ${GAMEMODULE_NAME}-native ${GAMEMODULE_FILES} ${SHAREDLIST_HACK} ${GAMEMODULE_NACL_FILES} ${NACLLIST_NATIVE} )
-    target_link_libraries( ${GAMEMODULE_NAME}-native ${LIBS_BASE} )
-    set_target_properties( ${GAMEMODULE_NAME}-native PROPERTIES
+  if( GAMEMODULE_HAS_NACL AND BUILD_GAME_NACL_NATIVE )
+    add_executable( ${GAMEMODULE_NAME}-nacl-native ${GAMEMODULE_FILES} ${SHAREDLIST} ${GAMEMODULE_NACL_FILES} ${NACLLIST_NATIVE} )
+    target_link_libraries( ${GAMEMODULE_NAME}-nacl-native ${LIBS_BASE} )
+    set_target_properties( ${GAMEMODULE_NAME}-nacl-native PROPERTIES
       OUTPUT_NAME ${GAMEMODULE_NAME}
       RUNTIME_OUTPUT_DIRECTORY ${GAMEMODULE_OUTPUT_DIR}
       COMPILE_DEFINITIONS ${GAMEMODULE_COMPILE_DEF}
     )
     foreach( OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES} )
       string( TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG_UP )
-      set_target_properties( ${GAMEMODULE_NAME}-native PROPERTIES RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG_UP} ${OUTPUTCONFIG}/${GAMEMODULE_OUTPUT_DIR} )
+      set_target_properties( ${GAMEMODULE_NAME}-nacl-native PROPERTIES RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG_UP} ${OUTPUTCONFIG}/${GAMEMODULE_OUTPUT_DIR} )
     endforeach()
   endif()
 
-  if( BUILD_GAME_NATIVE )
-    # HACK: Compile shared files as C
-    set_source_files_properties( ${SHAREDLIST_HACK} PROPERTIES LANGUAGE C )
-    add_library( ${GAMEMODULE_NAME} MODULE ${GAMEMODULE_FILES} ${SHAREDLIST_HACK} ${GAMEMODULE_NATIVE_FILES} )
-    target_link_libraries( ${GAMEMODULE_NAME} ${LIBS_BASE} )
-    set_target_properties( ${GAMEMODULE_NAME} PROPERTIES
+  if( BUILD_GAME_QVM_NATIVE )
+    set( QVM_NATIVE_COMPILE_DEF ${GAMEMODULE_COMPILE_DEF} QVM_ABI)
+    add_library( ${GAMEMODULE_NAME}-qvm-native MODULE ${GAMEMODULE_FILES} ${SHAREDLIST} ${GAMEMODULE_NATIVE_FILES} )
+    target_link_libraries( ${GAMEMODULE_NAME}-qvm-native ${LIBS_BASE} )
+    set_target_properties( ${GAMEMODULE_NAME}-qvm-native PROPERTIES
       PREFIX ""
       LIBRARY_OUTPUT_DIRECTORY ${GAMEMODULE_OUTPUT_DIR}
-      COMPILE_DEFINITIONS ${GAMEMODULE_COMPILE_DEF}
+      COMPILE_DEFINITIONS "${QVM_NATIVE_COMPILE_DEF}"
     )
     foreach( OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES} )
       string( TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG_UP )
-      set_target_properties( ${GAMEMODULE_NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY_${OUTPUTCONFIG_UP} ${OUTPUTCONFIG}/${GAMEMODULE_OUTPUT_DIR} )
+      set_target_properties( ${GAMEMODULE_NAME}-qvm-native PROPERTIES LIBRARY_OUTPUT_DIRECTORY_${OUTPUTCONFIG_UP} ${OUTPUTCONFIG}/${GAMEMODULE_OUTPUT_DIR} )
     endforeach()
   endif()
 
-  if( BUILD_GAME_NACL )
+  if( GAMEMODULE_HAS_NACL AND BUILD_GAME_NACL )
     if( CMAKE_CFG_INTDIR STREQUAL "." )
       set( NACL_DIR ${OBJ_DIR}/${GAMEMODULE_NAME}-nacl.dir )
     else()
@@ -1354,21 +1343,10 @@ function( GAMEMODULE )
       get_filename_component( EXT ${FILE} EXT )
       set( OBJ ${NACL_DIR}/${FILENAME}.o )
 
-      if( EXT STREQUAL ".c" )
-        add_custom_command( OUTPUT ${OBJ}
-          COMMAND ${PNACL_TOOLCHAIN}/pnacl-clang${PNACL_BIN_EXT}
-            ${NACL_COMPILE_OPTIONS}
-            -c
-            -o ${OBJ}
-            ${FILE}
-          DEPENDS ${FILE}
-          IMPLICIT_DEPENDS C ${FILE}
-        )
-        set( OBJECTS ${OBJECTS} ${OBJ} )
-      elseif( EXT STREQUAL ".cpp" OR EXT STREQUAL ".cc" )
+      if( EXT STREQUAL ".c" OR EXT STREQUAL ".cpp" OR EXT STREQUAL ".cc" )
         add_custom_command( OUTPUT ${OBJ}
           COMMAND ${PNACL_TOOLCHAIN}/pnacl-clang++${PNACL_BIN_EXT}
-            -std=gnu++11
+            -x c++ -std=gnu++11
             ${NACL_COMPILE_OPTIONS}
             -c
             -o ${OBJ}
@@ -1425,7 +1403,7 @@ function( GAMEMODULE )
       set( QVM_DIR ${OBJ_DIR}/${GAMEMODULE_NAME}-qvm.dir/${CMAKE_CFG_INTDIR} )
     endif()
 
-    set( QVM_COMPILE_OPTIONS -I${MOUNT_DIR}/gamelogic/game -I${MOUNT_DIR}/engine/qcommon -DQ3_VM -DQVM_COMPAT )
+    set( QVM_COMPILE_OPTIONS -I${MOUNT_DIR}/gamelogic/game -I${MOUNT_DIR}/engine/qcommon -DQ3_VM -DQVM_ABI)
     foreach( DEF ${GAMEMODULE_COMPILE_DEF} )
       set( QVM_COMPILE_OPTIONS ${QVM_COMPILE_OPTIONS} -D${DEF} )
     endforeach()
@@ -1473,6 +1451,7 @@ endif()
 GAMEMODULE( NAME game
   OUTPUT_DIR main
   COMPILE_DEF GAME
+  HAS_NACL 1
   FILES ${GAMELIST}
   NACL_FILES ${GAMENACLLIST}
   NATIVE_FILES ${GAMENATIVELIST}
@@ -1480,27 +1459,27 @@ GAMEMODULE( NAME game
   QVM_ASM ${GAMEASMLIST}
 )
 
-if( ENABLE_QVM_COMPAT )
-  GAMEMODULE( NAME cgame
-    OUTPUT_DIR main
-    COMPILE_DEF CGAME
-    FILES ${CGAMELIST}
-    NACL_FILES ${CGAMENACLLIST}
-    NATIVE_FILES ${CGAMENATIVELIST}
-    QVM_FILES ${CGAMEQVMLIST}
-    QVM_ASM ${CGAMEASMLIST}
-  )
+GAMEMODULE( NAME cgame
+  OUTPUT_DIR main
+  COMPILE_DEF CGAME
+  HAS_NACL 0
+  FILES ${CGAMELIST}
+  NACL_FILES ${CGAMENACLLIST}
+  NATIVE_FILES ${CGAMENATIVELIST}
+  QVM_FILES ${CGAMEQVMLIST}
+  QVM_ASM ${CGAMEASMLIST}
+)
 
-  GAMEMODULE( NAME ui
-    OUTPUT_DIR main
-    COMPILE_DEF UI
-    FILES ${UILIST}
-    NACL_FILES ${UINACLLIST}
-    NATIVE_FILES ${UINATIVELIST}
-    QVM_FILES ${UIQVMLIST}
-    QVM_ASM ${UIASMLIST}
-  )
-endif()
+GAMEMODULE( NAME ui
+  OUTPUT_DIR main
+  COMPILE_DEF UI
+  FILES ${UILIST}
+  HAS_NACL 0
+  NACL_FILES ${UINACLLIST}
+  NATIVE_FILES ${UINATIVELIST}
+  QVM_FILES ${UIQVMLIST}
+  QVM_ASM ${UIASMLIST}
+)
 
 ################################################################################
 # Engine
@@ -1523,8 +1502,8 @@ endif()
 
 if( BUILD_SERVER )
   add_executable( server WIN32 ${SERVERLIST} ${ENGINELIST} ${SHAREDLIST} ${LIBSRC_BASE} ${LIBSRC_ENGINE}
-    ${ENGINE_DIR}/null/null_client.c  ${ENGINE_DIR}/null/null_input.c
-    ${ENGINE_DIR}/null/null_snddma.c ${WIN_RC} )
+    ${ENGINE_DIR}/null/null_client.cpp ${ENGINE_DIR}/null/null_input.cpp
+    ${ENGINE_DIR}/null/null_snddma.cpp ${WIN_RC} )
   target_link_libraries( server ${LIBS_ENGINE} ${LIBS_BASE} )
   set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS DEDICATED )
   set_target_properties( server PROPERTIES OUTPUT_NAME "daemonded" PREFIX "" )
@@ -1533,7 +1512,7 @@ endif()
 if( BUILD_TTY_CLIENT )
   add_executable( ttyclient WIN32 ${SERVERLIST} ${CLIENTLIST} ${ENGINELIST} ${SHAREDLIST} ${ROCKET_CLIENTLIST}
     ${LIBSRC_BASE} ${LIBSRC_ENGINE} ${LIBSRC_CLIENTBASE} ${WIN_RC}
-    ${ENGINE_DIR}/null/null_input.c ${ENGINE_DIR}/null/null_snddma.c ${ENGINE_DIR}/null/null_renderer.c ${ENGINE_DIR}/null/null_rocket.c )
+    ${ENGINE_DIR}/null/null_input.cpp ${ENGINE_DIR}/null/null_snddma.cpp ${ENGINE_DIR}/null/null_renderer.cpp ${ENGINE_DIR}/null/null_rocket.cpp )
   target_link_libraries( ttyclient ${LIBS_CLIENTBASE} ${LIBS_ENGINE} ${LIBS_BASE} )
   set_property( TARGET ttyclient APPEND PROPERTY COMPILE_DEFINITIONS BUILD_TTY_CLIENT REF_HARD_LINKED )
   set_target_properties( ttyclient PROPERTIES OUTPUT_NAME "daemon-tty" PREFIX "" )

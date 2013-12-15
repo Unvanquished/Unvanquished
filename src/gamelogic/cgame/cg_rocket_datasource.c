@@ -1433,7 +1433,7 @@ void CG_Rocket_SetAlienEvolveList( const char *table, int index )
 
 void CG_Rocket_ExecAlienEvolveList( const char *table )
 {
-	class_t evo = rocketInfo.data.alienEvolveList[ rocketInfo.data.selectedAlienEvolve ];
+	class_t evo = (class_t) rocketInfo.data.alienEvolveList[ rocketInfo.data.selectedAlienEvolve ];
 
 	if ( BG_Class( evo ) && BG_ClassCanEvolveFromTo( cg.predictedPlayerState.stats[ STAT_CLASS ], evo, cg.predictedPlayerState.persistant[ PERS_CREDIT ] ) >= 0 )
 	{
@@ -1487,7 +1487,7 @@ void CG_Rocket_SetHumanBuildList( const char *table, int index )
 
 void CG_Rocket_ExecHumanBuildList( const char *table )
 {
-	buildable_t build = rocketInfo.data.humanBuildList[ rocketInfo.data.selectedHumanBuild ];
+	buildable_t build = (buildable_t) rocketInfo.data.humanBuildList[ rocketInfo.data.selectedHumanBuild ];
 
 	if ( BG_Buildable( build ) )
 	{
@@ -1541,7 +1541,7 @@ void CG_Rocket_SetAlienBuildList( const char *table, int index )
 
 void CG_Rocket_ExecAlienBuildList( const char *table )
 {
-	buildable_t build = rocketInfo.data.alienBuildList[ rocketInfo.data.selectedAlienBuild ];
+	buildable_t build = (buildable_t) rocketInfo.data.alienBuildList[ rocketInfo.data.selectedAlienBuild ];
 
 	if ( BG_Buildable( build ) )
 	{
@@ -1674,7 +1674,7 @@ void CG_Rocket_BuildDataSource( const char *dataSrc, const char *table )
 
 	}
 
-	cmd = bsearch( dataSrc, dataSourceCmdList, dataSourceCmdListCount, sizeof( dataSourceCmd_t ), dataSourceCmdCmp );
+	cmd = (dataSourceCmd_t*) bsearch( dataSrc, dataSourceCmdList, dataSourceCmdListCount, sizeof( dataSourceCmd_t ), dataSourceCmdCmp );
 
 	if ( cmd )
 	{
@@ -1687,7 +1687,7 @@ void CG_Rocket_SortDataSource( const char *dataSource, const char *name, const c
 {
 	dataSourceCmd_t *cmd;
 
-	cmd = bsearch( dataSource, dataSourceCmdList, dataSourceCmdListCount, sizeof( dataSourceCmd_t ), dataSourceCmdCmp );
+	cmd = (dataSourceCmd_t*) bsearch( dataSource, dataSourceCmdList, dataSourceCmdListCount, sizeof( dataSourceCmd_t ), dataSourceCmdCmp );
 
 	if ( cmd && cmd->sort )
 	{
@@ -1699,7 +1699,7 @@ void CG_Rocket_SetDataSourceIndex( const char *dataSource, const char *table, in
 {
 	dataSourceCmd_t *cmd;
 
-	cmd = bsearch( dataSource, dataSourceCmdList, dataSourceCmdListCount, sizeof( dataSourceCmd_t ), dataSourceCmdCmp );
+	cmd = (dataSourceCmd_t*) bsearch( dataSource, dataSourceCmdList, dataSourceCmdListCount, sizeof( dataSourceCmd_t ), dataSourceCmdCmp );
 
 	if ( cmd && cmd->set )
 	{
@@ -1711,7 +1711,7 @@ void CG_Rocket_FilterDataSource( const char *dataSource, const char *table, cons
 {
 	dataSourceCmd_t *cmd;
 
-	cmd = bsearch( dataSource, dataSourceCmdList, dataSourceCmdListCount, sizeof( dataSourceCmd_t ), dataSourceCmdCmp );
+	cmd = (dataSourceCmd_t*) bsearch( dataSource, dataSourceCmdList, dataSourceCmdListCount, sizeof( dataSourceCmd_t ), dataSourceCmdCmp );
 
 	if ( cmd && cmd->filter )
 	{
@@ -1723,7 +1723,7 @@ void CG_Rocket_ExecDataSource( const char *dataSource, const char *table )
 {
 	dataSourceCmd_t *cmd;
 
-	cmd = bsearch( dataSource, dataSourceCmdList, dataSourceCmdListCount, sizeof( dataSourceCmd_t ), dataSourceCmdCmp );
+	cmd = (dataSourceCmd_t*) bsearch( dataSource, dataSourceCmdList, dataSourceCmdListCount, sizeof( dataSourceCmd_t ), dataSourceCmdCmp );
 
 	if ( cmd && cmd->exec )
 	{

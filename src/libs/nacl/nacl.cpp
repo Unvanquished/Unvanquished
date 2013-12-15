@@ -583,14 +583,14 @@ Module LoadModule(const char* module, const LoaderParams* nacl_params, bool use_
 	if (nacl_params)
 		snprintf(root_sock_handle, sizeof(root_sock_handle), "NACLENV_ROOT_SOCKET=%d", ROOT_SOCKET_FD);
 	else
-		snprintf(root_sock_handle, sizeof(root_sock_handle), "ROOT_SOCKET=%d", (int)pair[1]);
+		snprintf(root_sock_handle, sizeof(root_sock_handle), "ROOT_SOCKET=%d", (int)(intptr_t)pair[1]);
 	const char* env[] = {root_sock_handle, NULL};
 
 	// Generate command line
 	std::vector<const char*> args;
 	char root_sock_redir[32];
 	if (nacl_params) {
-		snprintf(root_sock_redir, sizeof(root_sock_redir), "%d:%d", ROOT_SOCKET_FD, (int)pair[1]);
+		snprintf(root_sock_redir, sizeof(root_sock_redir), "%d:%d", ROOT_SOCKET_FD, (int)(intptr_t)pair[1]);
 
 		if (nacl_params->bootstrap) {
 			args.push_back(nacl_params->bootstrap);

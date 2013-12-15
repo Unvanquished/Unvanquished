@@ -239,6 +239,45 @@ namespace Cmd {
         return out;
     }
 
+    bool IsValidCvarName(Str::StringRef text)
+    {
+        for (char c: text) {
+            if (c >= 'a' && c <= 'z')
+                continue;
+            if (c >= 'A' && c <= 'Z')
+                continue;
+            if (c >= '0' && c <= '9')
+                continue;
+            if (c == '_' || c == '.')
+                continue;
+            return false;
+        }
+        return true;
+    }
+
+    bool IsValidCmdName(Str::StringRef text)
+    {
+        bool firstChar = true;
+        for (char c: text) {
+            // Allow command names starting with +/-
+            if (firstChar && (c == '+' || c == '-')) {
+                firstChar = false;
+                continue;
+            }
+            firstChar = false;
+            if (c >= 'a' && c <= 'z')
+                continue;
+            if (c >= 'A' && c <= 'Z')
+                continue;
+            if (c >= '0' && c <= '9')
+                continue;
+            if (c == '_' || c == '.')
+                continue;
+            return false;
+        }
+        return true;
+    }
+
     /*
     ===============================================================================
 
@@ -368,7 +407,7 @@ namespace Cmd {
     CmdBase::CmdBase(const int flags): flags(flags) {
     }
 
-    CompletionResult CmdBase::Complete(int argNum, const Args& args, const std::string& prefix) const {
+    CompletionResult CmdBase::Complete(int argNum, const Args& args, Str::StringRef prefix) const {
         Q_UNUSED(argNum);
         Q_UNUSED(args);
         Q_UNUSED(prefix);

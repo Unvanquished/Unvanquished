@@ -23,6 +23,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "../engine/qcommon/q_shared.h"
+#include "String.h"
 #include <string>
 #include <functional>
 
@@ -46,6 +47,12 @@ namespace Cvar {
         CHEAT      = BIT(9)  // The cvar is a cheat and should stay at its default value on pure servers.
     };
 
+    // Internal to the Cvar system
+    struct OnValueChangedResult {
+        bool success;
+        std::string description;
+    };
+
     /*
      * All cvars created by the code inherit from this class although most of the time you'll
      * want to use Cvar::Cvar. It is basically a callback for hen the value of the cvar changes.
@@ -55,10 +62,12 @@ namespace Cvar {
         public:
             CvarProxy(std::string name, std::string description, int flags, std::string defaultValue);
 
-            // Called when the value of the cvar changes, returns true if the new value
-            // is valid, false otherwise. If false is returned, the cvar wil keep its old
-            // value.
-            virtual bool OnValueChanged(const std::string& newValue) = 0;
+            // Called when the value of the cvar changes, returns success=true if the new value
+            // is valid, false otherwise. If true is returned, the description will be the new
+            // description of the cvar. If false is returned, the cvar wil keep its old
+            // value. And the description will be the description of the problem printed to
+            // the user.
+            virtual OnValueChangedResult OnValueChanged(Str::StringRef newValue) = 0;
 
         protected:
             std::string name;
@@ -73,8 +82,8 @@ namespace Cvar {
      * It is also automatically registered when created so you can write:
      *   static Cvar<bool> my_bool_cvar("my_bool_cvar", "bool - a cvar", Cvar::Archive, false);
      *
-     * The functions bool ParseCvarValue(string, T& res) and string SerializeCvarValue(T)
-     * must be implemented for Cvar<T> to work.
+     * The functions bool ParseCvarValue(string, T& res), string SerializeCvarValue(T)
+     * and string GetCvarTypeName<T>() must be implemented for Cvar<T> to work.
      */
     template<typename T> class Cvar : public CvarProxy{
         public:
@@ -90,14 +99,16 @@ namespace Cvar {
             void Set(T newValue);
 
             //Called by the cvar system when the value is changed
-            virtual bool OnValueChanged(const std::string& text);
+            virtual OnValueChangedResult OnValueChanged(Str::StringRef text);
 
         protected:
             // Used by classes that extend Cvar<T>
             bool Parse(std::string text, T& value);
-            virtual bool Validate(const T& value);
+            virtual OnValueChangedResult Validate(const T& value);
+            virtual std::string GetDescription(Str::StringRef value, Str::StringRef originalDescription);
 
             T value;
+            std::string description;
     };
 
     /*
@@ -114,21 +125,30 @@ namespace Cvar {
             typedef typename Base::value_type value_type;
 
             template <typename ... Args>
-            Callback(std::string name, std::string description, int flags, value_type, std::function<void(value_type)> callback, Args ... args);
+            Callback(std::string name, std::string description, int flags, value_type, std::function<void(value_type)> callback, Args&& ... args);
 
-            virtual bool OnValueChanged(const std::string& newValue);
+            virtual OnValueChangedResult OnValueChanged(Str::StringRef newValue);
 
         private:
             std::function<void(value_type)> callback;
     };
 
     // Implement Cvar<T> for T = bool, int, string
+    template<typename T>
+    std::string GetCvarTypeName();
+
     bool ParseCvarValue(std::string value, bool& result);
     std::string SerializeCvarValue(bool value);
+    template<>
+    std::string GetCvarTypeName<bool>();
     bool ParseCvarValue(std::string value, int& result);
     std::string SerializeCvarValue(int value);
+    template<>
+    std::string GetCvarTypeName<int>();
     bool ParseCvarValue(std::string value, std::string& result);
     std::string SerializeCvarValue(std::string value);
+    template<>
+    std::string GetCvarTypeName<std::string>();
 
     // Implementation of templates
 
@@ -136,7 +156,7 @@ namespace Cvar {
 
     template<typename T>
     Cvar<T>::Cvar(std::string name, std::string description, int flags, value_type defaultValue)
-    : CvarProxy(std::move(name), std::move(description), flags, SerializeCvarValue(defaultValue)) {
+    : CvarProxy(std::move(name), GetDescription(SerializeCvarValue(defaultValue), description), flags, SerializeCvarValue(defaultValue)), description(std::move(description)) {
         value = std::move(defaultValue);
     }
 
@@ -158,8 +178,12 @@ namespace Cvar {
     }
 
     template<typename T>
-    bool Cvar<T>::OnValueChanged(const std::string& text) {
-        return Parse(text, value);
+    OnValueChangedResult Cvar<T>::OnValueChanged(Str::StringRef text) {
+        if (Parse(text, value)) {
+            return {true, GetDescription(text, description)};
+        } else {
+            return {false, Str::Format("value \"%s\" is not of type '%s' as expected", text, GetCvarTypeName<T>())};
+        }
     }
 
     template<typename T>
@@ -168,28 +192,33 @@ namespace Cvar {
     }
 
     template<typename T>
-    bool Cvar<T>::Validate(const T& value) {
-        Q_UNUSED(value);
-        return true;
+    OnValueChangedResult Cvar<T>::Validate(const T&) {
+        return {true, ""};
     }
+
+    template<typename T>
+    std::string Cvar<T>::GetDescription(Str::StringRef value, Str::StringRef originalDescription) {
+        return Str::Format("\"%s\" - %s - %s", value, GetCvarTypeName<T>(), originalDescription);
+    }
+
 
     // Callback<Base>
 
     template <typename Base>
     template <typename ... Args>
-    Callback<Base>::Callback(std::string name, std::string description, int flags, value_type defaultValue, std::function<void(value_type)> callback, Args ... args)
+    Callback<Base>::Callback(std::string name, std::string description, int flags, value_type defaultValue, std::function<void(value_type)> callback, Args&& ... args)
     : Base(std::move(name), std::move(description), flags, std::move(defaultValue), std::forward<Args>(args) ...),
     callback(callback) {
     }
 
     template <typename Base>
-    bool Callback<Base>::OnValueChanged(const std::string& newValue) {
-        if (Base::OnValueChanged(newValue)) {
+    OnValueChangedResult Callback<Base>::OnValueChanged(Str::StringRef newValue) {
+        OnValueChangedResult rec = Base::OnValueChanged(newValue);
+
+        if (rec.success) {
             callback(this->Get());
-            return true;
-        } else {
-            return false;
         }
+        return std::move(rec);
     }
 }
 

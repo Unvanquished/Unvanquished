@@ -129,7 +129,7 @@ static void CG_UIMenu_f( void )
 static void CG_ReloadHud_f( void )
 {
 	CG_Rocket_LoadHuds();
-	CG_OnPlayerWeaponChange( cg.snap->ps.weapon );
+	CG_OnPlayerWeaponChange( (weapon_t) cg.snap->ps.weapon );
 }
 
 static void CG_CompleteClass( void )
@@ -342,8 +342,7 @@ static void CG_CompleteItem( void )
 static void CG_TestCGrade_f( void )
 {
 	qhandle_t shader = trap_R_RegisterShader(CG_Argv(1),
-						 RSF_NOMIP |
-						 RSF_NOLIGHTSCALE);
+						 (RegisterShaderFlags_t) ( RSF_NOMIP | RSF_NOLIGHTSCALE ) );
 
 	// override shader 0
 	cgs.gameGradingTextures[ 0 ] = shader;
@@ -451,19 +450,15 @@ qboolean CG_ConsoleCommand( void )
 	char buffer[BIG_INFO_STRING];
 	consoleCommand_t *cmd;
 
-	cmd = bsearch( CG_Argv( 0 ), commands,
-			ARRAY_LEN( commands ), sizeof( commands[ 0 ] ),
-			cmdcmp );
+	cmd = (consoleCommand_t*) bsearch( CG_Argv( 0 ), commands,
+	               ARRAY_LEN( commands ), sizeof( commands[ 0 ] ),
+	               cmdcmp );
 
-	if ( !cmd )
-	{
-		return qfalse;
-	}
-
-	if ( !cmd->function )
+	if ( !cmd || !cmd->function )
 	{
 		//This command was added to provide completion of server-side commands
 		//forward it to the server
+		// (see also CG_ServerCommands)
 		trap_LiteralArgs( buffer, sizeof ( buffer ) );
 		trap_SendClientCommand( buffer );
 	}

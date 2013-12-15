@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "tr_local.h"
 #include "gl_shader.h"
+#include "../../common/Maths.h"
 
 backEndData_t  *backEndData[ SMP_FRAMES ];
 backEndState_t backEnd;
@@ -1260,7 +1261,7 @@ static void Render_lightVolume( interaction_t *ia )
 		case RL_PROJ:
 			{
 				MatrixSetupTranslation( light->attenuationMatrix, 0.5, 0.5, 0.0 );  // bias
-				MatrixMultiplyScale( light->attenuationMatrix, 0.5f, 0.5f, 1.0f / MIN( light->falloffLength, 1.0f ) );   // scale
+				MatrixMultiplyScale( light->attenuationMatrix, 0.5f, 0.5f, 1.0f / std::min( light->falloffLength, 1.0f ) );   // scale
 				break;
 			}
 
@@ -1660,7 +1661,7 @@ static void RB_SetupLightAttenuationForEntity( trRefLight_t *light, const trRefE
 		case RL_PROJ:
 			{
 				MatrixSetupTranslation( light->attenuationMatrix, 0.5, 0.5, 0.0 );  // bias
-				MatrixMultiplyScale( light->attenuationMatrix, 0.5f, 0.5f, 1.0f / MIN( light->falloffLength, 1.0f ) );   // scale
+				MatrixMultiplyScale( light->attenuationMatrix, 0.5f, 0.5f, 1.0f / std::min( light->falloffLength, 1.0f ) );   // scale
 				MatrixMultiply2( light->attenuationMatrix, light->projectionMatrix );
 				MatrixMultiply2( light->attenuationMatrix, modelToLight );
 
@@ -2319,16 +2320,16 @@ static void RB_SetupLightForShadowing( trRefLight_t *light, int index,
 					}
 
 					// scene-dependent bounding volume
-					cropBounds[ 0 ][ 0 ] = MAX( MAX( casterBounds[ 0 ][ 0 ], receiverBounds[ 0 ][ 0 ] ), splitFrustumClipBounds[ 0 ][ 0 ] );
-					cropBounds[ 0 ][ 1 ] = MAX( MAX( casterBounds[ 0 ][ 1 ], receiverBounds[ 0 ][ 1 ] ), splitFrustumClipBounds[ 0 ][ 1 ] );
+					cropBounds[ 0 ][ 0 ] = std::max( std::max( casterBounds[ 0 ][ 0 ], receiverBounds[ 0 ][ 0 ] ), splitFrustumClipBounds[ 0 ][ 0 ] );
+					cropBounds[ 0 ][ 1 ] = std::max( std::max( casterBounds[ 0 ][ 1 ], receiverBounds[ 0 ][ 1 ] ), splitFrustumClipBounds[ 0 ][ 1 ] );
 
-					cropBounds[ 1 ][ 0 ] = MIN( MIN( casterBounds[ 1 ][ 0 ], receiverBounds[ 1 ][ 0 ] ), splitFrustumClipBounds[ 1 ][ 0 ] );
-					cropBounds[ 1 ][ 1 ] = MIN( MIN( casterBounds[ 1 ][ 1 ], receiverBounds[ 1 ][ 1 ] ), splitFrustumClipBounds[ 1 ][ 1 ] );
+					cropBounds[ 1 ][ 0 ] = std::min( std::min( casterBounds[ 1 ][ 0 ], receiverBounds[ 1 ][ 0 ] ), splitFrustumClipBounds[ 1 ][ 0 ] );
+					cropBounds[ 1 ][ 1 ] = std::min( std::min( casterBounds[ 1 ][ 1 ], receiverBounds[ 1 ][ 1 ] ), splitFrustumClipBounds[ 1 ][ 1 ] );
 
-					cropBounds[ 0 ][ 2 ] = MIN( casterBounds[ 0 ][ 2 ], splitFrustumClipBounds[ 0 ][ 2 ] );
+					cropBounds[ 0 ][ 2 ] = std::min( casterBounds[ 0 ][ 2 ], splitFrustumClipBounds[ 0 ][ 2 ] );
 					//cropBounds[0][2] = casterBounds[0][2];
 					//cropBounds[0][2] = splitFrustumClipBounds[0][2];
-					cropBounds[ 1 ][ 2 ] = MIN( receiverBounds[ 1 ][ 2 ], splitFrustumClipBounds[ 1 ][ 2 ] );
+					cropBounds[ 1 ][ 2 ] = std::min( receiverBounds[ 1 ][ 2 ], splitFrustumClipBounds[ 1 ][ 2 ] );
 					//cropBounds[1][2] = splitFrustumClipBounds[1][2];
 
 					if ( numCasters == 0 )
@@ -2757,7 +2758,7 @@ static void RB_RenderInteractionsShadowMapped()
 				numMaps = 6;
 				break;
 			case RL_DIRECTIONAL:
-				numMaps = MAX( r_parallelShadowSplits->integer + 1, 1 );
+				numMaps = std::max( r_parallelShadowSplits->integer + 1, 1 );
 				break;
 			default:
 				numMaps = 1;
@@ -4064,11 +4065,11 @@ static void RB_CalculateAdaptation()
 
 	//if(r_hdrMaxLuminance->value)
 	{
-		Q_clamp( backEnd.hdrAverageLuminance, r_hdrMinLuminance->value, r_hdrMaxLuminance->value );
-		Q_clamp( avgLuminance, r_hdrMinLuminance->value, r_hdrMaxLuminance->value );
+		backEnd.hdrAverageLuminance = Maths::clamp( backEnd.hdrAverageLuminance, r_hdrMinLuminance->value, r_hdrMaxLuminance->value );
+		avgLuminance = Maths::clamp( avgLuminance, r_hdrMinLuminance->value, r_hdrMaxLuminance->value );
 
-		Q_clamp( backEnd.hdrMaxLuminance, r_hdrMinLuminance->value, r_hdrMaxLuminance->value );
-		Q_clamp( maxLuminance, r_hdrMinLuminance->value, r_hdrMaxLuminance->value );
+		backEnd.hdrMaxLuminance = Maths::clamp( backEnd.hdrMaxLuminance, r_hdrMinLuminance->value, r_hdrMaxLuminance->value );
+		maxLuminance = Maths::clamp( maxLuminance, r_hdrMinLuminance->value, r_hdrMaxLuminance->value );
 	}
 
 	newAdaptation = backEnd.hdrAverageLuminance + ( avgLuminance - backEnd.hdrAverageLuminance ) * ( 1.0f - powf( 0.98f, 30.0f * deltaTime ) );
@@ -5897,8 +5898,8 @@ static void RB_RenderDebugUtils()
 #endif
 
 									bone->parentIndex = model->md5->bones[ j ].parentIndex;
-									VectorCopy( model->md5->bones[ j ].origin, bone->origin );
-									VectorCopy( model->md5->bones[ j ].rotation, bone->rotation );
+									TransInitRotationQuat( model->md5->bones[ j ].rotation, &bone->t );
+									TransAddTranslation( model->md5->bones[ j ].origin, &bone->t );
 								}
 
 								skel = &skeleton;
@@ -5927,11 +5928,11 @@ static void RB_RenderDebugUtils()
 					}
 					else
 					{
-						VectorCopy( skel->bones[ parentIndex ].origin, origin );
+						VectorCopy( skel->bones[ parentIndex ].t.trans, origin );
 					}
 
-					VectorCopy( skel->bones[ j ].origin, offset );
-					QuatToVectorsFRU( skel->bones[ j ].rotation, forward, right, up );
+					VectorCopy( skel->bones[ j ].t.trans, offset );
+					QuatToVectorsFRU( skel->bones[ j ].t.rot, forward, right, up );
 
 					VectorSubtract( offset, origin, diff );
 
@@ -5960,7 +5961,7 @@ static void RB_RenderDebugUtils()
 						Tess_AddTetrahedron( tetraVerts, g_color_table[ ColorIndex( j ) ] );
 					}
 
-					MatrixTransformPoint( backEnd.orientation.transformMatrix, skel->bones[ j ].origin, worldOrigins[ j ] );
+					MatrixTransformPoint( backEnd.orientation.transformMatrix, skel->bones[ j ].t.trans, worldOrigins[ j ] );
 				}
 
 				Tess_UpdateVBOs( ATTR_POSITION | ATTR_TEXCOORD | ATTR_COLOR );
@@ -6856,8 +6857,6 @@ void DebugDrawVertex(const vec3_t pos, unsigned int color, const vec2_t uv) {
 	if( uv ) {
 		tess.texCoords[ tess.numVertexes ][ 0 ] = uv[ 0 ];
 		tess.texCoords[ tess.numVertexes ][ 1 ] = uv[ 1 ];
-		tess.texCoords[ tess.numVertexes ][ 2 ] = 0;
-		tess.texCoords[ tess.numVertexes ][ 3 ] = 1;
 	}
 	tess.indexes[ tess.numIndexes ] = tess.numVertexes;
 	tess.numVertexes++;

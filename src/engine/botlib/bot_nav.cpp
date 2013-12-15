@@ -67,7 +67,7 @@ void BotSetPolyFlags( qVec origin, qVec mins, qVec maxs, unsigned short flags )
 	// find extents
 	for ( int j = 0; j < 3; j++ )
 	{
-		qExtents[ j ] = MAX( fabsf( realMin[ j ] ), fabsf( realMax[ j ] ) );
+		qExtents[ j ] = std::max( fabsf( realMin[ j ] ), fabsf( realMax[ j ] ) );
 	}
 
 	// convert to recast coordinates

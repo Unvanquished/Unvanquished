@@ -60,6 +60,12 @@ namespace Cvar {
         return Str::ToInt(std::move(value), result);
     }
 
+    template<>
+    std::string GetCvarTypeName<bool>() {
+        return "bool";
+    }
+
+
     std::string SerializeCvarValue(int value) {
         return std::to_string(value);
     }
@@ -69,7 +75,18 @@ namespace Cvar {
 		return true;
     }
 
+    template<>
+    std::string GetCvarTypeName<int>() {
+        return "int";
+    }
+
+
     std::string SerializeCvarValue(std::string value) {
 		return std::move(value);
+    }
+
+    template<>
+    std::string GetCvarTypeName<std::string>() {
+        return "text";
     }
 }

@@ -466,8 +466,8 @@ WINDOW *resize_window(WINDOW *win, int nlines, int ncols)
             return (WINDOW *)NULL;
     }
 
-    save_curx = min(win->_curx, new->_maxx);
-    save_cury = min(win->_cury, new->_maxy);
+    save_curx = min(win->_curx, new->_maxx - 1);
+    save_cury = min(win->_cury, new->_maxy - 1);
 
     if (!(win->_flags & (_SUBPAD|_SUBWIN)))
     {

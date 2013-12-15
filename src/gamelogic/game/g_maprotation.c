@@ -51,7 +51,7 @@ typedef struct condition_s
 	struct rotationNode_s       *target;
 
 	conditionVariable_t lhs;
-	conditionOperator_t operator;
+	conditionOperator_t operator_;
 
 	int                 numClients;
 	team_t              lastWin;
@@ -187,7 +187,7 @@ Allocate memory for a mrNode_t
 */
 static mrNode_t *G_AllocateNode( void )
 {
-	mrNode_t *node = BG_Alloc( sizeof( mrNode_t ) );
+	mrNode_t *node = (mrNode_t*) BG_Alloc( sizeof( mrNode_t ) );
 
 	return node;
 }
@@ -297,15 +297,15 @@ static qboolean G_ParseNode( mrNode_t **node, char *token, char **text_p, qboole
 
 			if ( !Q_stricmp( token, "<" ) )
 			{
-				condition->operator = CO_LT;
+				condition->operator_ = CO_LT;
 			}
 			else if ( !Q_stricmp( token, ">" ) )
 			{
-				condition->operator = CO_GT;
+				condition->operator_ = CO_GT;
 			}
 			else if ( !Q_stricmp( token, "=" ) )
 			{
-				condition->operator = CO_EQ;
+				condition->operator_ = CO_EQ;
 			}
 			else
 			{
@@ -675,7 +675,7 @@ static const char *G_RotationNode_ToString( const mrNode_t *node )
 
 				case CV_NUMCLIENTS:
 					return va( MAP_CONTROL "condition: numClients %c %i",
-					           CONDITION_OPERATOR( node->u.condition.operator ),
+					           CONDITION_OPERATOR( node->u.condition.operator_ ),
 					           node->u.condition.numClients );
 
 				case CV_LASTWIN:
@@ -1146,7 +1146,7 @@ static qboolean G_EvaluateMapCondition( mrCondition_t **condition )
 			break;
 
 		case CV_NUMCLIENTS:
-			switch ( localCondition->operator )
+			switch ( localCondition->operator_ )
 			{
 				case CO_LT:
 					result = level.numConnectedClients < localCondition->numClients;

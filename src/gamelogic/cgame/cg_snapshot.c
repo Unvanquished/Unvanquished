@@ -122,7 +122,7 @@ void CG_SetInitialSnapshot( snapshot_t *snap )
 	}
 
 	CG_OnPlayerUpgradeChange();
-	CG_OnPlayerWeaponChange( cg.snap->ps.weapon );
+	CG_OnPlayerWeaponChange( (weapon_t) cg.snap->ps.weapon );
 }
 
 /*
@@ -201,7 +201,7 @@ static void CG_TransitionSnapshot( void )
 		// Callbacks for changes in playerState like weapon/class/team
 		if ( ops->weapon != ps->weapon )
 		{
-			CG_OnPlayerWeaponChange( ops->weapon );
+			CG_OnPlayerWeaponChange( (weapon_t) ops->weapon );
 		}
 
 		if ( ops->stats[ STAT_ITEMS ] != ps->stats[ STAT_ITEMS ] )

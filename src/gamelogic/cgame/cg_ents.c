@@ -186,7 +186,7 @@ CG_TransformSkeleton
 transform relative bones to absolute ones required for vertex skinning
 =================
 */
-void CG_TransformSkeleton( refSkeleton_t *skel, const vec3_t scale )
+void CG_TransformSkeleton( refSkeleton_t *skel, const vec_t scale )
 {
 	int       i;
 	refBone_t *bone;
@@ -206,39 +206,16 @@ void CG_TransformSkeleton( refSkeleton_t *skel, const vec3_t scale )
 	{
 		if ( bone->parentIndex >= 0 )
 		{
-			vec3_t    rotated;
-			quat_t    quat;
-
 			refBone_t *parent;
 
 			parent = &skel->bones[ bone->parentIndex ];
 
-			QuatTransformVector( parent->rotation, bone->origin, rotated );
-
-			if ( scale )
-			{
-				rotated[ 0 ] *= scale[ 0 ];
-				rotated[ 1 ] *= scale[ 1 ];
-				rotated[ 2 ] *= scale[ 2 ];
-			}
-
-			VectorAdd( parent->origin, rotated, bone->origin );
-
-			QuatMultiply1( parent->rotation, bone->rotation, quat );
-			QuatCopy( quat, bone->rotation );
+			TransCombine( &bone->t, &parent->t, &bone->t );
 		}
 	}
 
 	skel->type = SK_ABSOLUTE;
-
-	if ( scale )
-	{
-		VectorCopy( scale, skel->scale );
-	}
-	else
-	{
-		VectorSet( skel->scale, 1, 1, 1 );
-	}
+	skel->scale = scale;
 }
 
 /*
@@ -1106,8 +1083,9 @@ static void CG_CEntityPVSEnter( centity_t *cent )
 
 	//make sure that the buildable animations are in a consistent state
 	//when a buildable enters the PVS
-	cent->buildableAnim = cent->lerpFrame.animationNumber = BANIM_NONE;
-	cent->oldBuildableAnim = es->legsAnim;
+	cent->buildableAnim = BANIM_NONE;
+	cent->lerpFrame.animationNumber = BANIM_NONE;
+	cent->oldBuildableAnim = (buildableAnimNumber_t) es->legsAnim;
 	cent->radarVisibility = 0.0f;
 }
 

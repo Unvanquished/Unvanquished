@@ -177,7 +177,7 @@ gentity_t *G_NewTempEntity( const vec3_t origin, int event )
 	vec3_t    snapped;
 
 	newEntity = G_NewEntity();
-	newEntity->s.eType = ET_EVENTS + event;
+	newEntity->s.eType = (entityType_t) ( ET_EVENTS + event );
 
 	newEntity->classname = "tempEntity";
 	newEntity->eventTime = level.time;
@@ -467,18 +467,18 @@ gentity chain handling
 /**
  * a call made by the world, mostly by hard coded calls due to world-events
  */
-#ifdef QVM_COMPAT
+#ifdef Q3_VM
 const gentityCall_t WORLD_CALL = { NULL, &g_entities[ ENTITYNUM_WORLD ], &g_entities[ ENTITYNUM_WORLD ] };
 #else
-#define WORLD_CALL (gentityCall_t){ NULL, &g_entities[ ENTITYNUM_WORLD ], &g_entities[ ENTITYNUM_WORLD ] }
+#define WORLD_CALL gentityCall_t{ NULL, &g_entities[ ENTITYNUM_WORLD ], &g_entities[ ENTITYNUM_WORLD ] }
 #endif
 /**
  * a non made call
  */
-#ifdef QVM_COMPAT
+#ifdef Q3_VM
 const gentityCall_t NULL_CALL = { NULL, &g_entities[ ENTITYNUM_NONE ], &g_entities[ ENTITYNUM_NONE ] };
 #else
-#define NULL_CALL (gentityCall_t){ NULL, &g_entities[ ENTITYNUM_NONE ], &g_entities[ ENTITYNUM_NONE ] }
+#define NULL_CALL gentityCall_t{ NULL, &g_entities[ ENTITYNUM_NONE ], &g_entities[ ENTITYNUM_NONE ] }
 #endif
 
 typedef struct
@@ -509,7 +509,7 @@ gentityCallEvent_t G_GetCallEventTypeFor( const char* event )
 	if(!event)
 		return ON_DEFAULT;
 
-	foundDescription = bsearch(event, gentityEventDescriptions, ARRAY_LEN( gentityEventDescriptions ),
+	foundDescription = (entityCallEventDescription_t*) bsearch(event, gentityEventDescriptions, ARRAY_LEN( gentityEventDescriptions ),
 		             sizeof( entityCallEventDescription_t ), cmdcmp );
 
 	if(foundDescription && foundDescription->key)
@@ -544,7 +544,7 @@ gentityCallActionType_t G_GetCallActionTypeFor( const char* action )
 	if(!action)
 		return ECA_DEFAULT;
 
-	foundDescription = bsearch(action, actionDescriptions, ARRAY_LEN( actionDescriptions ),
+	foundDescription = (entityActionDescription_t*) bsearch(action, actionDescriptions, ARRAY_LEN( actionDescriptions ),
 		             sizeof( entityActionDescription_t ), cmdcmp );
 
 	if(foundDescription && foundDescription->alias)

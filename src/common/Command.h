@@ -54,6 +54,8 @@ namespace Cmd {
     std::string Escape(Str::StringRef text);
     const char* SplitCommand(const char* start, const char* end);
     std::string SubstituteCvars(Str::StringRef text);
+    bool IsValidCmdName(Str::StringRef text);
+    bool IsValidCvarName(Str::StringRef text);
 
     /**
      * Cmd::Args represents the arguments given to an invoked command.
@@ -108,7 +110,7 @@ namespace Cmd {
             // Called when the command is run with the command line args
             virtual void Run(const Args& args) const = 0;
             // Called when the user wants to autocomplete a call to this command.
-            virtual Cmd::CompletionResult Complete(int argNum, const Args& args, const std::string& prefix) const;
+            virtual Cmd::CompletionResult Complete(int argNum, const Args& args, Str::StringRef prefix) const;
 
             // Prints the usage of this command with a standard formatting
             void PrintUsage(const Args& args, Str::StringRef syntax, Str::StringRef description = "") const;
@@ -123,7 +125,7 @@ namespace Cmd {
             // Shortcuts for this->GetEnv().*
             // Commands should use these functions when possible.
             template <typename ... Args>
-            void Print(Str::StringRef text, Args ... args) const;
+            void Print(Str::StringRef text, Args&& ... args) const;
             void ExecuteAfter(Str::StringRef text, bool parseCvars = false) const;
 
         private:
@@ -164,8 +166,8 @@ namespace Cmd {
     // Implementation of templates.
 
     template <typename ... Args>
-    void CmdBase::Print(Str::StringRef text, Args ... args) const {
-        GetEnv().Print(Str::Format(text, args ...));
+    void CmdBase::Print(Str::StringRef text, Args&& ... args) const {
+        GetEnv().Print(Str::Format(text, std::forward<Args>(args) ...));
     }
 
 }

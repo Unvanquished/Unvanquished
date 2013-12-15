@@ -437,7 +437,7 @@ qboolean BG_ReadWholeFile( const char *filename, char *buffer, int size)
 	return qtrue;
 }
 
-static int ParseTeam(char* token)
+static team_t ParseTeam(char* token)
 {
 	if ( !Q_strnicmp( token, "alien", 5 ) ) // alien(s)
 	{
@@ -606,7 +606,7 @@ int configVarComparator(const void* a, const void* b)
 
 configVar_t* BG_FindConfigVar(const char *varName)
 {
-	return bsearch(&varName, bg_configVars, bg_numConfigVars, sizeof(configVar_t), configVarComparator);
+	return (configVar_t*) bsearch(&varName, bg_configVars, bg_numConfigVars, sizeof(configVar_t), configVarComparator);
 }
 
 qboolean BG_ParseConfigVar(configVar_t *var, char **text, const char *filename)
@@ -802,15 +802,15 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
 
 			if ( !Q_stricmp( token, "allAlien" ) )
 			{
-				ba->buildWeapon = ( 1 << WP_ABUILD ) | ( 1 << WP_ABUILD2 );
+				ba->buildWeapon = (weapon_t) ( ( 1 << WP_ABUILD ) | ( 1 << WP_ABUILD2 ) );
 			}
 			else if ( !Q_stricmp( token, "advAlien" ) )
 			{
-				ba->buildWeapon = ( 1 << WP_ABUILD2 );
+				ba->buildWeapon = (weapon_t) ( 1 << WP_ABUILD2 );
 			}
 			else if ( !Q_stricmp( token, "human" ) )
 			{
-				ba->buildWeapon = ( 1 << WP_HBUILD );
+				ba->buildWeapon = (weapon_t) ( 1 << WP_HBUILD );
 			}
 			else
 			{
@@ -1717,7 +1717,7 @@ void BG_ParseClassModelFile( const char *filename, classModelConfig_t *cc )
 
 			if ( model && *model->modelName )
 			{
-				cc->navMeshClass = model - BG_ClassModelConfig( PCL_NONE );
+				cc->navMeshClass = (class_t) ( model - BG_ClassModelConfig( PCL_NONE ) );
 			}
 			else
 			{

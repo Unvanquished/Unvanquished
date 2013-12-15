@@ -135,7 +135,7 @@ build_gmp() {
 
 # Build Nettle
 build_nettle() {
-	download "nettle-${NETTLE_VERSION}.tar.gz" "http://www.lysator.liu.se/\~nisse/archive/nettle-${NETTLE_VERSION}.tar.gz"
+	download "nettle-${NETTLE_VERSION}.tar.gz" "http://www.lysator.liu.se/~nisse/archive/nettle-${NETTLE_VERSION}.tar.gz"
 	cd "nettle-${NETTLE_VERSION}"
 	make distclean || true
 	./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED[@]} --enable-static
@@ -314,6 +314,24 @@ build_openal() {
 			cp "Win64/soft_oal.dll" "${PREFIX}/bin/OpenAL32.dll"
 			;;
 		esac
+		cd ..
+		;;
+	macosx*)
+		download "openal-soft-${OPENAL_VERSION}.tar.bz2" "http://kcat.strangesoft.net/openal-soft-${OPENAL_VERSION}.tar.bz2"
+		cd "openal-soft-${OPENAL_VERSION}"
+		rm -rf CMakeCache.txt CMakeFiles
+		case "${PLATFORM}" in
+		macosx32)
+			cmake -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DCMAKE_OSX_ARCHITECTURES=i386 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.6 -DCMAKE_BUILD_TYPE=Release
+			;;
+		macosx64)
+			cmake -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.6 -DCMAKE_BUILD_TYPE=Release
+			;;
+		esac
+		make clean
+		make
+		make install
+		install_name_tool -id "@rpath/libopenal.${OPENAL_VERSION}.dylib" "${PREFIX}/lib/libopenal.${OPENAL_VERSION}.dylib"
 		cd ..
 		;;
 	*)

@@ -158,13 +158,13 @@ void G_RewardAttackers( gentity_t *self )
 	// Only reward killing players and buildables
 	if ( self->client )
 	{
-		ownTeam   = self->client->pers.team;
+		ownTeam   = (team_t) self->client->pers.team;
 		maxHealth = self->client->ps.stats[ STAT_MAX_HEALTH ];
 		value     = BG_GetValueOfPlayer( &self->client->ps );
 	}
 	else if ( self->s.eType == ET_BUILDABLE )
 	{
-		ownTeam   = self->buildableTeam;
+		ownTeam   = (team_t) self->buildableTeam;
 		maxHealth = BG_Buildable( self->s.modelindex )->health;
 		value     = BG_Buildable( self->s.modelindex )->value;
 
@@ -186,7 +186,7 @@ void G_RewardAttackers( gentity_t *self )
 	for ( playerNum = 0; playerNum < level.maxclients; playerNum++ )
 	{
 		player     = &g_entities[ playerNum ];
-		playerTeam = player->client->pers.team;
+		playerTeam = (team_t) player->client->pers.team;
 
 		// Player must be on the other team
 		if ( playerTeam == ownTeam || playerTeam <= TEAM_NONE || playerTeam >= NUM_TEAMS )
@@ -206,7 +206,7 @@ void G_RewardAttackers( gentity_t *self )
 	for ( playerNum = 0; playerNum < level.maxclients; playerNum++ )
 	{
 		player      = &g_entities[ playerNum ];
-		playerTeam  = player->client->pers.team;
+		playerTeam  = (team_t) player->client->pers.team;
 		damageShare = self->credits[ playerNum ];
 
 		// Clear reward array
@@ -1143,7 +1143,7 @@ void G_Damage( gentity_t *target, gentity_t *inflictor, gentity_t *attacker,
 		}
 
 		// apply damage modifier
-		modifier = CalcDamageModifier( point, target, client->ps.stats[ STAT_CLASS ], damageFlags );
+		modifier = CalcDamageModifier( point, target, (class_t) client->ps.stats[ STAT_CLASS ], damageFlags );
 		take = ( int )( ( float )damage * modifier + 0.5f );
 
 		// if boosted poison every attack
@@ -1574,7 +1574,7 @@ void G_LogDestruction( gentity_t *self, gentity_t *actor, int mod )
 	if ( actor->client && actor->client->pers.team ==
 	     BG_Buildable( self->s.modelindex )->team )
 	{
-		G_TeamCommand( actor->client->pers.team,
+		G_TeamCommand( (team_t) actor->client->pers.team,
 		               va( "print_tr %s %s %s", mod == MOD_DECONSTRUCT ? QQ( N_("$1$ ^3DECONSTRUCTED^7 by $2$\n") ) :
 						   QQ( N_("$1$ ^3DESTROYED^7 by $2$\n") ),
 		                   Quote( BG_Buildable( self->s.modelindex )->humanName ),

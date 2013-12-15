@@ -98,7 +98,7 @@ int CG_ParseInfos( char *buf, int max, char *infos[] )
 		}
 
 		//NOTE: extra space for arena number
-		infos[ count ] = BG_Alloc( strlen( info ) + strlen( "\\num\\" ) + strlen( va( "%d", MAX_ARENAS ) ) + 1 );
+		infos[ count ] = (char*) BG_Alloc( strlen( info ) + strlen( "\\num\\" ) + strlen( va( "%d", MAX_ARENAS ) ) + 1 );
 
 		if ( infos[ count ] )
 		{

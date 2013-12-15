@@ -115,14 +115,14 @@ static void CG_Rocket_DFServerLabel( int handle, const char *data )
 
 static void CG_Rocket_DFCMArmouryBuyWeapon( int handle, const char *data )
 {
-	weapon_t weapon = atoi( Info_ValueForKey( data, "1" ) );
+	weapon_t weapon = (weapon_t) atoi( Info_ValueForKey( data, "1" ) );
 
 	trap_Rocket_DataFormatterFormattedData( handle, va( "<button class='armourybuy' onClick='setDS armouryBuyList weapons %s; execDS armouryBuyList weapons'><img src='/%s'/></button>", Info_ValueForKey( data, "2" ), CG_GetShaderNameFromHandle( cg_weapons[ weapon ].ammoIcon ) ), qfalse );
 }
 
 static void CG_Rocket_DFCMArmouryBuyUpgrade( int handle, const char *data )
 {
-	upgrade_t upgrade = atoi( Info_ValueForKey( data, "1" ) );
+	upgrade_t upgrade = (upgrade_t) atoi( Info_ValueForKey( data, "1" ) );
 
 	trap_Rocket_DataFormatterFormattedData( handle, va( "<button class='armourybuy' onClick='setDS armouryBuyList upgrades %s; execDS armouryBuyList upgrades'><img src='/%s'/></button>", Info_ValueForKey( data, "2" ), CG_GetShaderNameFromHandle( cg_upgrades[ upgrade ].upgradeIcon ) ), qfalse );
 }
@@ -161,7 +161,7 @@ void CG_Rocket_FormatData( int handle )
 
 	trap_Rocket_DataFormatterRawData( handle, name, sizeof( name ), data, sizeof( data ) );
 
-	cmd = bsearch( name, dataFormatterCmdList, dataFormatterCmdListCount, sizeof( dataFormatterCmd_t ), dataFormatterCmdCmp );
+	cmd = (dataFormatterCmd_t*) bsearch( name, dataFormatterCmdList, dataFormatterCmdListCount, sizeof( dataFormatterCmd_t ), dataFormatterCmdCmp );
 
 	if ( cmd )
 	{

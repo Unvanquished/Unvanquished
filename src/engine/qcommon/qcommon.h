@@ -41,6 +41,7 @@ Maryland 20850 USA.
 //kangz need these for the command completion handlers
 #include <vector>
 #include <string>
+#include "../../common/String.h"
 #include "cvar.h"
 
 //============================================================================
@@ -347,8 +348,6 @@ VIRTUAL MACHINE
 ==============================================================
 */
 
-#ifdef QVM_COMPAT
-
 // See also vm_traps.h for syscalls common to all VMs
 
 typedef struct vm_s vm_t;
@@ -364,7 +363,7 @@ void VM_Init( void );
 
 vm_t *VM_Create( const char *module, intptr_t ( *systemCalls )( intptr_t * ), vmInterpret_t interpret );
 
-// module should be bare: "cgame", not "cgame.dll", "vm/cgame.qvm" or "cgamellvm.bc"
+// module should be bare: "cgame", not "cgame.dll", "vm/cgame.qvm"
 
 void           VM_Free( vm_t *vm );
 void           VM_Clear( void );
@@ -394,48 +393,6 @@ static INLINE float _vmf( intptr_t x )
 }
 
 #define VMF(x) _vmf(args[ x ])
-
-// Transitional VMBase class
-namespace VM {
-
-class VMBase {
-public:
-  VMBase()
-    : vm(nullptr) {}
-  void Create(const char* name, intptr_t (*systemCalls)(intptr_t *), vmInterpret_t type)
-  {
-    vm = VM_Create(name, systemCalls, type);
-  }
-  void Free()
-  {
-    VM_Free(vm);
-    vm = nullptr;
-  }
-  bool IsActive() const
-  {
-    return vm;
-  }
-
-protected:
-  vm_t* vm;
-};
-
-} // namespace VM
-
-#else // QVM_COMPAT
-
-// HACK: Temporary to make client compile until syscalls are ported
-#define vm_t int
-#define VM_Call(...) 0
-#define VM_Free(...) 0
-#define VM_Create(...) NULL
-#define VMA(...) ((void*)1)
-#define VM_ExplicitArgPtr(...) ((void*)1)
-#define VMF(...) 0.0f
-#define VM_CheckBlock(...) 0
-#define VM_Debug(...) 0
-
-#endif // QVM_COMPAT
 
 /*
 ==============================================================
@@ -736,8 +693,8 @@ void       FS_FilenameCompletion( const char *dir, const char *ext,
 qboolean   FS_Which( const char *filename, void *searchPath );
 
 namespace FS {
-    std::vector<std::pair<std::string, std::string>> CompleteFilenameInDir(const std::string& prefix, const std::string& dir,
-                                                   const std::string& extension, bool stripExtension = true);
+    std::vector<std::pair<std::string, std::string>> CompleteFilenameInDir(Str::StringRef prefix, Str::StringRef dir,
+                                                                           Str::StringRef extension, bool stripExtension = true);
 }
 
 /*
@@ -924,7 +881,7 @@ temp file loading
 static inline void* Z_TagMalloc(size_t size, int tag)
 {
   Q_UNUSED(tag);
-  return malloc(size);
+  return calloc(size, 1);
 }
 static inline void* Z_Malloc(size_t size)
 {

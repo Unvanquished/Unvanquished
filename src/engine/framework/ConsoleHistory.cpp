@@ -32,9 +32,11 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
 //TODO: make it thread safe.
 namespace Console {
-
+#ifndef DEDICATED
     static const char* HISTORY_FILE = "conhistory";
-
+#else
+    static const char* HISTORY_FILE = "conhistory_server";
+#endif
     static const int SAVED_HISTORY_LINES = 512;
 
     static std::vector<std::string> lines;

@@ -1151,7 +1151,7 @@ qboolean BotTargetInAttackRange( gentity_t *self, botTarget_t target )
 				{
 					range -= 150;
 				}
-				range = MAX( range, 100 );
+				range = MAX( range, 100.0f );
 				secondaryRange = 0;
 				width = height = FLAMER_SIZE;
 			}
