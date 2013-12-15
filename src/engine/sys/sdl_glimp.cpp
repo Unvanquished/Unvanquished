@@ -964,7 +964,7 @@ static qboolean GLimp_StartDriverAndSetMode( int mode, qboolean fullscreen, qboo
 
 static GLenum debugTypes[] =
 {
-	0, 
+	0,
 	GL_DEBUG_TYPE_ERROR_ARB,
 	GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR_ARB,
 	GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR_ARB,

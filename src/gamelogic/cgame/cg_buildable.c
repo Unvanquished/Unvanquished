@@ -482,13 +482,22 @@ static qboolean CG_ParseBuildableSoundFile( const char *filename, buildable_t bu
 }
 
 static qboolean CG_RegisterBuildableAnimation( buildableInfo_t *ci, const char *modelName, int anim, const char *animName,
-    qboolean loop, qboolean reversed, qboolean clearOrigin )
+    qboolean loop, qboolean reversed, qboolean clearOrigin, qboolean iqm )
 {
 	char filename[ MAX_QPATH ];
 	int  frameRate;
 
-	Com_sprintf( filename, sizeof( filename ), "models/buildables/%s/%s.md5anim", modelName, animName );
-	ci->animations[ anim ].handle = trap_R_RegisterAnimation( filename );
+	if ( iqm )
+	{
+		Com_sprintf( filename, sizeof( filename ), "models/buildables/%s/%s.iqm:%s", modelName, modelName, animName );
+		ci->animations[ anim ].handle = trap_R_RegisterAnimation( filename );
+	}
+
+	else
+	{
+		Com_sprintf( filename, sizeof( filename ), "models/buildables/%s/%s.md5anim", modelName, animName );
+		ci->animations[ anim ].handle = trap_R_RegisterAnimation( filename );
+	}
 
 	if ( !ci->animations[ anim ].handle )
 	{
@@ -560,11 +569,18 @@ void CG_InitBuildables( void )
 	for ( i = BA_NONE + 1; i < BA_NUM_BUILDABLES; i++ )
 	{
 		buildableInfo_t *bi = &cg_buildables[ i ];
+		qboolean         iqm = qfalse;
+
 		buildableName = BG_Buildable( i )->name;
 		//Load models
 		//Prefer md5 models over md3
 
-		if ( cg_highPolyBuildableModels.integer && ( bi->models[ 0 ] = trap_R_RegisterModel( va( "models/buildables/%s/%s.md5mesh", buildableName, buildableName ) ) ) )
+		if ( cg_highPolyBuildableModels.integer && ( bi->models[ 0 ] = trap_R_RegisterModel( va( "models/buildables/%s/%s.iqm", buildableName, buildableName ) ) ) )
+		{
+			bi->md5 = qtrue;
+			iqm = qtrue;
+		}
+		else if ( cg_highPolyBuildableModels.integer && ( bi->models[ 0 ] = trap_R_RegisterModel( va( "models/buildables/%s/%s.md5mesh", buildableName, buildableName ) ) ) )
 		{
 			bi->md5 = qtrue;
 		}
@@ -590,7 +606,7 @@ void CG_InitBuildables( void )
 			{
 				if ( animLoading[ i ] & ( 1 << n ) )
 				{
-					if ( !CG_RegisterBuildableAnimation( bi, buildableName, n, animTypes[ n ].name, animTypes[ n ].loop, animTypes[ n ].reversed, animTypes[ n ].clearOrigin ) )
+					if ( !CG_RegisterBuildableAnimation( bi, buildableName, n, animTypes[ n ].name, animTypes[ n ].loop, animTypes[ n ].reversed, animTypes[ n ].clearOrigin, iqm ) )
 					{
 						int o = (int) animTypes[ n ].fallback;
 
@@ -1150,10 +1166,8 @@ void CG_GhostBuildable( int buildableInfo )
 
 	if ( cg_buildables[ buildable ].md5 )
 	{
-		vec3_t Scale;
-		Scale[0] = Scale[1] = Scale[2] = scale;
 		trap_R_BuildSkeleton( &ent.skeleton, cg_buildables[ buildable ].animations[ BANIM_IDLE1 ].handle, 0, 0, 0, qfalse );
-		CG_TransformSkeleton( &ent.skeleton, Scale );
+		CG_TransformSkeleton( &ent.skeleton, scale );
 	}
 
 	if ( scale != 1.0f )
@@ -1231,7 +1245,7 @@ static void CG_GhostBuildableStatus( int buildableInfo )
 
 			case IBE_NOHUMANBP:
 				text = "[drill]";
-				break; 
+				break;
 
 			case IBE_NOCREEP:
 				text = "[egg]";
@@ -2381,11 +2395,10 @@ void CG_Buildable( centity_t *cent )
 
 	if ( cg_buildables[ es->modelindex ].md5 )
 	{
-		vec3_t    Scale;
 		qboolean  spawned = ( es->eFlags & EF_B_SPAWNED ) || ( team == TEAM_HUMANS ); // If buildable has spawned or is a human buildable, don't alter the size
 
-		Scale[0] = Scale[1] = Scale[2] = spawned ? scale :
-		       scale * (float) sin ( 0.5f * (cg.time - es->time) / buildable->buildTime * M_PI );
+		float realScale = spawned ? scale :
+			scale * (float) sin ( 0.5f * (cg.time - es->time) / buildable->buildTime * M_PI );
 		ent.skeleton = bSkeleton;
 
 		if( es->modelindex == BA_H_MGTURRET )
@@ -2399,10 +2412,10 @@ void CG_Buildable( centity_t *cent )
 			// .cfg so we can change it should the rig change.
 
 			QuatFromAngles( rotation, es->angles2[ YAW ] - es->angles[ YAW ], 0, 0 );
-			QuatMultiply0( ent.skeleton.bones[ 1 ].rotation, rotation );
+			QuatMultiply0( ent.skeleton.bones[ 1 ].t.rot, rotation );
 
 			QuatFromAngles( rotation, es->angles2[ PITCH ], 0, 0 );
-			QuatMultiply0( ent.skeleton.bones[ 6 ].rotation, rotation );
+			QuatMultiply0( ent.skeleton.bones[ 6 ].t.rot, rotation );
 
 			// transform bounds so they more accurately reflect the turret's new trasnformation
 			MatrixFromAngles( mat, es->angles2[ PITCH ], es->angles2[ YAW ] - es->angles[ YAW ], 0 );
@@ -2417,7 +2430,7 @@ void CG_Buildable( centity_t *cent )
 			BoundsAdd( ent.skeleton.bounds[ 0 ], ent.skeleton.bounds[ 1 ], nBounds[ 0 ], nBounds[ 1 ] );
 		}
 
-		CG_TransformSkeleton( &ent.skeleton, Scale );
+		CG_TransformSkeleton( &ent.skeleton, realScale );
 	}
 
 	if ( es->generic1 <= 0 )

@@ -1,36 +1,36 @@
 /*
-===========================================================================
-
-Daemon GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
-
-This file is part of the Daemon GPL Source Code (Daemon Source Code).
-
-Daemon Source Code is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Daemon Source Code is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
-
-In addition, the Daemon Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following the
-terms and conditions of the GNU General Public License which accompanied the Daemon
-Source Code.  If not, please request a copy in writing from id Software at the address
-below.
-
-If you have questions concerning this license or the applicable additional terms, you
-may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville,
-Maryland 20850 USA.
-
-===========================================================================
-*/
+ * ===========================================================================
+ *
+ * Daemon GPL Source Code
+ * Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+ *
+ * This file is part of the Daemon GPL Source Code (Daemon Source Code).
+ *
+ * Daemon Source Code is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Daemon Source Code is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * In addition, the Daemon Source Code is also subject to certain additional terms.
+ * You should have received a copy of these additional terms immediately following the
+ * terms and conditions of the GNU General Public License which accompanied the Daemon
+ * Source Code.  If not, please request a copy in writing from id Software at the address
+ * below.
+ *
+ * If you have questions concerning this license or the applicable additional terms, you
+ * may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville,
+ * Maryland 20850 USA.
+ *
+ * ===========================================================================
+ */
 
 // q_math.c -- stateless support routines that are included in each code module
 
@@ -350,6 +350,7 @@ float NormalizeColor( const vec3_t in, vec3_t out )
 	{
 		VectorClear( out );
 	}
+
 	else
 	{
 		out[ 0 ] = in[ 0 ] / max;
@@ -380,33 +381,33 @@ void ClampColor( vec4_t color )
 
 vec_t PlaneNormalize( vec4_t plane )
 {
-	vec_t length, ilength;
+	vec_t length2, ilength;
 
-	length = sqrt( plane[ 0 ] * plane[ 0 ] + plane[ 1 ] * plane[ 1 ] + plane[ 2 ] * plane[ 2 ] );
+	length2 = DotProduct( plane, plane );
 
-	if ( length == 0 )
+	if ( length2 == 0.0f )
 	{
 		VectorClear( plane );
-		return 0;
+		return 0.0f;
 	}
 
-	ilength = 1.0 / length;
+	ilength = Q_rsqrt( length2 );
 	plane[ 0 ] = plane[ 0 ] * ilength;
 	plane[ 1 ] = plane[ 1 ] * ilength;
 	plane[ 2 ] = plane[ 2 ] * ilength;
 	plane[ 3 ] = plane[ 3 ] * ilength;
 
-	return length;
+	return length2 * ilength;
 }
 
 /*
-=====================
-PlaneFromPoints
-
-Returns false if the triangle is degenerate.
-The normal will point out of the clock for clockwise ordered points
-=====================
-*/
+ * =====================
+ * PlaneFromPoints
+ *
+ * Returns false if the triangle is degenerate.
+ * The normal will point out of the clock for clockwise ordered points
+ * =====================
+ */
 qboolean PlaneFromPoints( vec4_t plane, const vec3_t a, const vec3_t b, const vec3_t c )
 {
 	vec3_t d1, d2;
@@ -425,12 +426,12 @@ qboolean PlaneFromPoints( vec4_t plane, const vec3_t a, const vec3_t b, const ve
 }
 
 /*
-=====================
-PlaneFromPoints
-
-Returns false if the triangle is degenerate.
-=====================
-*/
+ * =====================
+ * PlaneFromPoints
+ *
+ * Returns false if the triangle is degenerate.
+ * =====================
+ */
 qboolean PlaneFromPointsOrder( vec4_t plane, const vec3_t a, const vec3_t b, const vec3_t c, qboolean cw )
 {
 	vec3_t d1, d2;
@@ -442,6 +443,7 @@ qboolean PlaneFromPointsOrder( vec4_t plane, const vec3_t a, const vec3_t b, con
 	{
 		CrossProduct( d2, d1, plane );
 	}
+
 	else
 	{
 		CrossProduct( d1, d2, plane );
@@ -506,10 +508,10 @@ void PlaneIntersectRay( const vec3_t rayPos, const vec3_t rayDir, const vec4_t p
 }
 
 /*
-===============
-RotatePointAroundVector
-===============
-*/
+ * ===============
+ * RotatePointAroundVector
+ * ===============
+ */
 void RotatePointAroundVector( vec3_t dst, const vec3_t dir, const vec3_t point, float degrees )
 {
 	float sind, cosd, expr;
@@ -527,12 +529,12 @@ void RotatePointAroundVector( vec3_t dst, const vec3_t dir, const vec3_t point, 
 }
 
 /*
-===============
-RotatePointAroundVertex
-
-Rotate a point around a vertex
-===============
-*/
+ * ===============
+ * RotatePointAroundVertex
+ *
+ * Rotate a point around a vertex
+ * ===============
+ */
 void RotatePointAroundVertex( vec3_t pnt, float rot_x, float rot_y, float rot_z, const vec3_t origin )
 {
 	float tmp[ 11 ];
@@ -540,8 +542,8 @@ void RotatePointAroundVertex( vec3_t pnt, float rot_x, float rot_y, float rot_z,
 	//float rad_x, rad_y, rad_z;
 
 	/*rad_x = DEG2RAD( rot_x );
-	   rad_y = DEG2RAD( rot_y );
-	   rad_z = DEG2RAD( rot_z ); */
+	 *	   rad_y = DEG2RAD( rot_y );
+	 *	   rad_z = DEG2RAD( rot_z ); */
 
 	// move pnt to rel{0,0,0}
 	VectorSubtract( pnt, origin, pnt );
@@ -569,10 +571,10 @@ void RotatePointAroundVertex( vec3_t pnt, float rot_x, float rot_y, float rot_z,
 }
 
 /*
-===============
-RotateAroundDirection
-===============
-*/
+ * ===============
+ * RotateAroundDirection
+ * ===============
+ */
 void RotateAroundDirection( vec3_t axis[ 3 ], float yaw )
 {
 	// create an arbitrary axis[1]
@@ -592,25 +594,15 @@ void RotateAroundDirection( vec3_t axis[ 3 ], float yaw )
 }
 
 /*
-================
-Q_isnan
-
-Don't pass doubles to this
-================
-*/
+ * ================
+ * Q_isnan
+ *
+ * Don't pass doubles to this
+ * ================
+ */
 int Q_isnan( float x )
 {
-	union
-	{
-		float        f;
-		unsigned int i;
-	} t;
-
-	t.f = x;
-	t.i &= 0x7FFFFFFF;
-	t.i = 0x7F800000 - t.i;
-
-	return ( int )( ( unsigned int ) t.i >> 31 );
+	return ( Q_floatBitsToUint( x ) & 0x7fffffff ) > 0x7f800000;
 }
 
 void vectoangles( const vec3_t value1, vec3_t angles )
@@ -626,21 +618,25 @@ void vectoangles( const vec3_t value1, vec3_t angles )
 		{
 			pitch = 90;
 		}
+
 		else
 		{
 			pitch = 270;
 		}
 	}
+
 	else
 	{
 		if ( value1[ 0 ] )
 		{
 			yaw = ( atan2( value1[ 1 ], value1[ 0 ] ) * 180 / M_PI );
 		}
+
 		else if ( value1[ 1 ] > 0 )
 		{
 			yaw = 90;
 		}
+
 		else
 		{
 			yaw = 270;
@@ -666,10 +662,10 @@ void vectoangles( const vec3_t value1, vec3_t angles )
 }
 
 /*
-=================
-AnglesToAxis
-=================
-*/
+ * =================
+ * AnglesToAxis
+ * =================
+ */
 void AnglesToAxis( const vec3_t angles, vec3_t axis[ 3 ] )
 {
 	vec3_t right;
@@ -706,13 +702,13 @@ void ProjectPointOnPlane( vec3_t dst, const vec3_t point, const vec3_t normal )
 }
 
 /*
-================
-MakeNormalVectors
-
-Given a normalized forward vector, create two
-other perpendicular vectors
-================
-*/
+ * ================
+ * MakeNormalVectors
+ *
+ * Given a normalized forward vector, create two
+ * other perpendicular vectors
+ * ================
+ */
 void MakeNormalVectors( const vec3_t forward, vec3_t right, vec3_t up )
 {
 	float d;
@@ -739,11 +735,11 @@ void VectorRotate( vec3_t in, vec3_t matrix[ 3 ], vec3_t out )
 //============================================================
 
 /*
-===============
-LerpAngle
-
-===============
-*/
+ * ===============
+ * LerpAngle
+ *
+ * ===============
+ */
 float LerpAngle( float from, float to, float frac )
 {
 	if ( to - from > 180 )
@@ -760,11 +756,11 @@ float LerpAngle( float from, float to, float frac )
 }
 
 /*
-=================
-LerpPosition
-
-=================
-*/
+ * =================
+ * LerpPosition
+ *
+ * =================
+ */
 
 void LerpPosition( vec3_t start, vec3_t end, float frac, vec3_t out )
 {
@@ -775,12 +771,12 @@ void LerpPosition( vec3_t start, vec3_t end, float frac, vec3_t out )
 }
 
 /*
-=================
-AngleSubtract
-
-Always returns a value from -180 to 180
-=================
-*/
+ * =================
+ * AngleSubtract
+ *
+ * Always returns a value from -180 to 180
+ * =================
+ */
 float AngleSubtract( float a1, float a2 )
 {
 	float a = a1 - a2;
@@ -802,36 +798,36 @@ float AngleMod( float a )
 }
 
 /*
-=================
-AngleNormalize2Pi
-
-returns angle normalized to the range [0 <= angle < 2*M_PI]
-=================
-*/
+ * =================
+ * AngleNormalize2Pi
+ *
+ * returns angle normalized to the range [0 <= angle < 2*M_PI]
+ * =================
+ */
 float AngleNormalize2Pi( float angle )
 {
 	return DEG2RAD( AngleNormalize360( RAD2DEG( angle ) ) );
 }
 
 /*
-=================
-AngleNormalize360
-
-returns angle normalized to the range [0 <= angle < 360]
-=================
-*/
+ * =================
+ * AngleNormalize360
+ *
+ * returns angle normalized to the range [0 <= angle < 360]
+ * =================
+ */
 float AngleNormalize360( float angle )
 {
 	return ( 360.0 / 65536 ) * ( ( int )( angle * ( 65536 / 360.0 ) ) & 65535 );
 }
 
 /*
-=================
-AngleNormalize180
-
-returns angle normalized to the range [-180 < angle <= 180]
-=================
-*/
+ * =================
+ * AngleNormalize180
+ *
+ * returns angle normalized to the range [-180 < angle <= 180]
+ * =================
+ */
 float AngleNormalize180( float angle )
 {
 	angle = AngleNormalize360( angle );
@@ -845,24 +841,24 @@ float AngleNormalize180( float angle )
 }
 
 /*
-=================
-AngleDelta
-
-returns the normalized delta from angle1 to angle2
-=================
-*/
+ * =================
+ * AngleDelta
+ *
+ * returns the normalized delta from angle1 to angle2
+ * =================
+ */
 float AngleDelta( float angle1, float angle2 )
 {
 	return AngleNormalize180( angle1 - angle2 );
 }
 
 /*
-=================
-AngleBetweenVectors
-
-returns the angle between two vectors normalized to the range [0 <= angle <= 180]
-=================
-*/
+ * =================
+ * AngleBetweenVectors
+ *
+ * returns the angle between two vectors normalized to the range [0 <= angle <= 180]
+ * =================
+ */
 float AngleBetweenVectors( const vec3_t a, const vec3_t b )
 {
 	vec_t alen, blen;
@@ -885,10 +881,10 @@ float AngleBetweenVectors( const vec3_t a, const vec3_t b )
 //============================================================
 
 /*
-=================
-SetPlaneSignbits
-=================
-*/
+ * =================
+ * SetPlaneSignbits
+ * =================
+ */
 void SetPlaneSignbits( cplane_t *out )
 {
 	int bits, j;
@@ -908,12 +904,12 @@ void SetPlaneSignbits( cplane_t *out )
 }
 
 /*
-==================
-BoxOnPlaneSide
-
-Returns 1, 2, or 1 + 2
-==================
-*/
+ * ==================
+ * BoxOnPlaneSide
+ *
+ * Returns 1, 2, or 1 + 2
+ * ==================
+ */
 
 int BoxOnPlaneSide( vec3_t emins, vec3_t emaxs, struct cplane_s *p )
 {
@@ -938,6 +934,7 @@ int BoxOnPlaneSide( vec3_t emins, vec3_t emaxs, struct cplane_s *p )
 
 	// general case
 	dist[ 0 ] = dist[ 1 ] = 0;
+
 	if ( p->signbits < 8 ) // >= 8: default case is original code (dist[0]=dist[1]=0)
 	{
 		for ( i = 0; i < 3; i++ )
@@ -964,10 +961,10 @@ int BoxOnPlaneSide( vec3_t emins, vec3_t emaxs, struct cplane_s *p )
 }
 
 /*
-=================
-RadiusFromBounds
-=================
-*/
+ * =================
+ * RadiusFromBounds
+ * =================
+ */
 float RadiusFromBounds( const vec3_t mins, const vec3_t maxs )
 {
 	int    i;
@@ -1100,7 +1097,7 @@ void BoundsAdd( vec3_t mins, vec3_t maxs, const vec3_t mins2, const vec3_t maxs2
 qboolean BoundsIntersect( const vec3_t mins, const vec3_t maxs, const vec3_t mins2, const vec3_t maxs2 )
 {
 	if ( maxs[ 0 ] < mins2[ 0 ] ||
-	     maxs[ 1 ] < mins2[ 1 ] || maxs[ 2 ] < mins2[ 2 ] || mins[ 0 ] > maxs2[ 0 ] || mins[ 1 ] > maxs2[ 1 ] || mins[ 2 ] > maxs2[ 2 ] )
+	        maxs[ 1 ] < mins2[ 1 ] || maxs[ 2 ] < mins2[ 2 ] || mins[ 0 ] > maxs2[ 0 ] || mins[ 1 ] > maxs2[ 1 ] || mins[ 2 ] > maxs2[ 2 ] )
 	{
 		return qfalse;
 	}
@@ -1111,9 +1108,9 @@ qboolean BoundsIntersect( const vec3_t mins, const vec3_t maxs, const vec3_t min
 qboolean BoundsIntersectSphere( const vec3_t mins, const vec3_t maxs, const vec3_t origin, vec_t radius )
 {
 	if ( origin[ 0 ] - radius > maxs[ 0 ] ||
-	     origin[ 0 ] + radius < mins[ 0 ] ||
-	     origin[ 1 ] - radius > maxs[ 1 ] ||
-	     origin[ 1 ] + radius < mins[ 1 ] || origin[ 2 ] - radius > maxs[ 2 ] || origin[ 2 ] + radius < mins[ 2 ] )
+	        origin[ 0 ] + radius < mins[ 0 ] ||
+	        origin[ 1 ] - radius > maxs[ 1 ] ||
+	        origin[ 1 ] + radius < mins[ 1 ] || origin[ 2 ] - radius > maxs[ 2 ] || origin[ 2 ] + radius < mins[ 2 ] )
 	{
 		return qfalse;
 	}
@@ -1124,7 +1121,7 @@ qboolean BoundsIntersectSphere( const vec3_t mins, const vec3_t maxs, const vec3
 qboolean BoundsIntersectPoint( const vec3_t mins, const vec3_t maxs, const vec3_t origin )
 {
 	if ( origin[ 0 ] > maxs[ 0 ] ||
-	     origin[ 0 ] < mins[ 0 ] || origin[ 1 ] > maxs[ 1 ] || origin[ 1 ] < mins[ 1 ] || origin[ 2 ] > maxs[ 2 ] || origin[ 2 ] < mins[ 2 ] )
+	        origin[ 0 ] < mins[ 0 ] || origin[ 1 ] > maxs[ 1 ] || origin[ 1 ] < mins[ 1 ] || origin[ 2 ] > maxs[ 2 ] || origin[ 2 ] < mins[ 2 ] )
 	{
 		return qfalse;
 	}
@@ -1146,22 +1143,14 @@ vec_t VectorNormalize( vec3_t v )
 {
 	float length, ilength;
 
-	length = v[ 0 ] * v[ 0 ] + v[ 1 ] * v[ 1 ] + v[ 2 ] * v[ 2 ];
+	length = DotProduct( v, v );
 
-	if ( length )
+	if ( length != 0.0f )
 	{
-		/* writing it this way allows gcc to recognize that rsqrt can be used */
-	 	ilength = 1/(float)sqrt (length);
-
-		// ilength == NaN has been observed here with length == 0 + ε
-		if ( ilength * 2 != ilength )
-		{
-			/* sqrt(length) = length * (1 / sqrt(length)) */
-			length *= ilength;
-			v[ 0 ] *= ilength;
-			v[ 1 ] *= ilength;
-			v[ 2 ] *= ilength;
-		}
+		ilength = Q_rsqrt( length );
+		/* sqrt(length) = length * (1 / sqrt(length)) */
+		length *= ilength;
+		VectorScale( v, ilength, v );
 	}
 
 	return length;
@@ -1177,9 +1166,7 @@ void VectorNormalizeFast( vec3_t v )
 
 	ilength = Q_rsqrt( DotProduct( v, v ) );
 
-	v[ 0 ] *= ilength;
-	v[ 1 ] *= ilength;
-	v[ 2 ] *= ilength;
+	VectorScale( v, ilength, v );
 }
 
 vec_t VectorNormalize2( const vec3_t v, vec3_t out )
@@ -1190,14 +1177,12 @@ vec_t VectorNormalize2( const vec3_t v, vec3_t out )
 
 	if ( length )
 	{
-		/* writing it this way allows gcc to recognize that rsqrt can be used */
-	 	ilength = 1/(float)sqrt (length);
+		ilength = Q_rsqrt( length );
 		/* sqrt(length) = length * (1 / sqrt(length)) */
 		length *= ilength;
-		out[ 0 ] = v[ 0 ] * ilength;
-		out[ 1 ] = v[ 1 ] * ilength;
-		out[ 2 ] = v[ 2 ] * ilength;
+		VectorScale( v, ilength, out );
 	}
+
 	else
 	{
 		VectorClear( out );
@@ -1321,29 +1306,29 @@ int Q_log2( int val )
 }
 
 /*
-=================
-PlaneTypeForNormal
-=================
-*/
+ * =================
+ * PlaneTypeForNormal
+ * =================
+ */
 
 /*
-int PlaneTypeForNormal (vec3_t normal) {
-        if ( normal[0] == 1.0 )
-                return PLANE_X;
-        if ( normal[1] == 1.0 )
-                return PLANE_Y;
-        if ( normal[2] == 1.0 )
-                return PLANE_Z;
-
-        return PLANE_NON_AXIAL;
-}
-*/
+ * int PlaneTypeForNormal (vec3_t normal) {
+ *        if ( normal[0] == 1.0 )
+ *                return PLANE_X;
+ *        if ( normal[1] == 1.0 )
+ *                return PLANE_Y;
+ *        if ( normal[2] == 1.0 )
+ *                return PLANE_Z;
+ *
+ *        return PLANE_NON_AXIAL;
+ * }
+ */
 
 /*
-================
-AxisMultiply
-================
-*/
+ * ================
+ * AxisMultiply
+ * ================
+ */
 void AxisMultiply( float in1[ 3 ][ 3 ], float in2[ 3 ][ 3 ], float out[ 3 ][ 3 ] )
 {
 	out[ 0 ][ 0 ] = in1[ 0 ][ 0 ] * in2[ 0 ][ 0 ] + in1[ 0 ][ 1 ] * in2[ 1 ][ 0 ] + in1[ 0 ][ 2 ] * in2[ 2 ][ 0 ];
@@ -1399,12 +1384,12 @@ void AngleVectors( const vec3_t angles, vec3_t forward, vec3_t right, vec3_t up 
 }
 
 /*
-=================
-PerpendicularVector
-
-assumes "src" is normalized
-=================
-*/
+ * =================
+ * PerpendicularVector
+ *
+ * assumes "src" is normalized
+ * =================
+ */
 void PerpendicularVector( vec3_t dst, const vec3_t src )
 {
 	int    pos;
@@ -1413,7 +1398,7 @@ void PerpendicularVector( vec3_t dst, const vec3_t src )
 	vec3_t tempvec;
 
 	/*
-	 ** find the smallest magnitude axially aligned vector
+	 * * find the smallest magnitude axially aligned vector
 	 */
 	for ( pos = 0, i = 0; i < 3; i++ )
 	{
@@ -1428,12 +1413,12 @@ void PerpendicularVector( vec3_t dst, const vec3_t src )
 	tempvec[ pos ] = 1.0F;
 
 	/*
-	 ** project the point onto the plane defined by src
+	 * * project the point onto the plane defined by src
 	 */
 	ProjectPointOnPlane( dst, tempvec, src );
 
 	/*
-	 ** normalize the result
+	 * * normalize the result
 	 */
 	VectorNormalize( dst );
 }
@@ -1441,12 +1426,12 @@ void PerpendicularVector( vec3_t dst, const vec3_t src )
 // Ridah
 
 /*
-=================
-GetPerpendicularViewVector
-
-  Used to find an "up" vector for drawing a sprite so that it always faces the view as best as possible
-=================
-*/
+ * =================
+ * GetPerpendicularViewVector
+ *
+ *  Used to find an "up" vector for drawing a sprite so that it always faces the view as best as possible
+ * =================
+ */
 void GetPerpendicularViewVector( const vec3_t point, const vec3_t p1, const vec3_t p2, vec3_t up )
 {
 	vec3_t v1, v2;
@@ -1462,10 +1447,10 @@ void GetPerpendicularViewVector( const vec3_t point, const vec3_t p1, const vec3
 }
 
 /*
-================
-ProjectPointOntoVector
-================
-*/
+ * ================
+ * ProjectPointOntoVector
+ * ================
+ */
 void ProjectPointOntoVector( vec3_t point, vec3_t vStart, vec3_t vEnd, vec3_t vProj )
 {
 	vec3_t pVec, vec;
@@ -1480,14 +1465,14 @@ void ProjectPointOntoVector( vec3_t point, vec3_t vStart, vec3_t vEnd, vec3_t vP
 #define LINE_DISTANCE_EPSILON 1e-05f
 
 /*
-================
-DistanceBetweenLineSegmentsSquared
-Return the smallest distance between two line segments, squared
-================
-*/
+ * ================
+ * DistanceBetweenLineSegmentsSquared
+ * Return the smallest distance between two line segments, squared
+ * ================
+ */
 
 vec_t DistanceBetweenLineSegmentsSquared( const vec3_t sP0, const vec3_t sP1,
-    const vec3_t tP0, const vec3_t tP1, float *s, float *t )
+        const vec3_t tP0, const vec3_t tP1, float *s, float *t )
 {
 	vec3_t sMag, tMag, diff;
 	float  a, b, c, d, e;
@@ -1514,6 +1499,7 @@ vec_t DistanceBetweenLineSegmentsSquared( const vec3_t sP0, const vec3_t sP1,
 		tN = e;
 		tD = c;
 	}
+
 	else
 	{
 		// get the closest points on the infinite  lines
@@ -1527,6 +1513,7 @@ vec_t DistanceBetweenLineSegmentsSquared( const vec3_t sP0, const vec3_t sP1,
 			tN = e;
 			tD = c;
 		}
+
 		else if ( sN > sD )
 		{
 			// sN > sD => the s=1 edge is visible
@@ -1546,16 +1533,19 @@ vec_t DistanceBetweenLineSegmentsSquared( const vec3_t sP0, const vec3_t sP1,
 		{
 			sN = 0.0;
 		}
+
 		else if ( -d > a )
 		{
 			sN = sD;
 		}
+
 		else
 		{
 			sN = -d;
 			sD = a;
 		}
 	}
+
 	else if ( tN > tD )
 	{
 		// tN > tD => the t=1 edge is visible
@@ -1566,10 +1556,12 @@ vec_t DistanceBetweenLineSegmentsSquared( const vec3_t sP0, const vec3_t sP1,
 		{
 			sN = 0;
 		}
+
 		else if ( ( -d + b ) > a )
 		{
 			sN = sD;
 		}
+
 		else
 		{
 			sN = ( -d + b );
@@ -1591,12 +1583,12 @@ vec_t DistanceBetweenLineSegmentsSquared( const vec3_t sP0, const vec3_t sP1,
 }
 
 /*
-================
-DistanceBetweenLineSegments
-
-Return the smallest distance between two line segments
-================
-*/
+ * ================
+ * DistanceBetweenLineSegments
+ *
+ * Return the smallest distance between two line segments
+ * ================
+ */
 
 vec_t DistanceBetweenLineSegments( const vec3_t sP0, const vec3_t sP1, const vec3_t tP0, const vec3_t tP1, float *s, float *t )
 {
@@ -1604,10 +1596,10 @@ vec_t DistanceBetweenLineSegments( const vec3_t sP0, const vec3_t sP1, const vec
 }
 
 /*
-================
-ProjectPointOntoVectorBounded
-================
-*/
+ * ================
+ * ProjectPointOntoVectorBounded
+ * ================
+ */
 void ProjectPointOntoVectorBounded( vec3_t point, vec3_t vStart, vec3_t vEnd, vec3_t vProj )
 {
 	vec3_t pVec, vec;
@@ -1634,6 +1626,7 @@ void ProjectPointOntoVectorBounded( vec3_t point, vec3_t vStart, vec3_t vEnd, ve
 		{
 			VectorCopy( vStart, vProj );
 		}
+
 		else
 		{
 			VectorCopy( vEnd, vProj );
@@ -1642,10 +1635,10 @@ void ProjectPointOntoVectorBounded( vec3_t point, vec3_t vStart, vec3_t vEnd, ve
 }
 
 /*
-================
-DistanceFromLineSquared
-================
-*/
+ * ================
+ * DistanceFromLineSquared
+ * ================
+ */
 float DistanceFromLineSquared( vec3_t p, vec3_t lp1, vec3_t lp2 )
 {
 	vec3_t proj, t;
@@ -1667,6 +1660,7 @@ float DistanceFromLineSquared( vec3_t p, vec3_t lp1, vec3_t lp2 )
 		{
 			VectorSubtract( p, lp1, t );
 		}
+
 		else
 		{
 			VectorSubtract( p, lp2, t );
@@ -1680,10 +1674,10 @@ float DistanceFromLineSquared( vec3_t p, vec3_t lp1, vec3_t lp2 )
 }
 
 /*
-================
-DistanceFromVectorSquared
-================
-*/
+ * ================
+ * DistanceFromVectorSquared
+ * ================
+ */
 float DistanceFromVectorSquared( vec3_t p, vec3_t lp1, vec3_t lp2 )
 {
 	vec3_t proj, t;
@@ -1701,16 +1695,19 @@ float vectoyaw( const vec3_t vec )
 	{
 		yaw = 0;
 	}
+
 	else
 	{
 		if ( vec[ PITCH ] )
 		{
 			yaw = ( atan2( vec[ YAW ], vec[ PITCH ] ) * 180 / M_PI );
 		}
+
 		else if ( vec[ YAW ] > 0 )
 		{
 			yaw = 90;
 		}
+
 		else
 		{
 			yaw = 270;
@@ -1726,15 +1723,15 @@ float vectoyaw( const vec3_t vec )
 }
 
 /*
-=================
-AxisToAngles
-
-  Used to convert the MD3 tag axis to MDC tag angles, which are much smaller
-
-  This doesn't have to be fast, since it's only used for conversion in utils, try to avoid
-  using this during gameplay
-=================
-*/
+ * =================
+ * AxisToAngles
+ *
+ *  Used to convert the MD3 tag axis to MDC tag angles, which are much smaller
+ *
+ *  This doesn't have to be fast, since it's only used for conversion in utils, try to avoid
+ *  using this during gameplay
+ * =================
+ */
 void AxisToAngles( /*const*/ vec3_t axis[ 3 ], vec3_t angles )
 {
 	float length1;
@@ -1748,21 +1745,25 @@ void AxisToAngles( /*const*/ vec3_t axis[ 3 ], vec3_t angles )
 		{
 			pitch = 90;
 		}
+
 		else
 		{
 			pitch = 270;
 		}
 	}
+
 	else
 	{
 		if ( axis[ 0 ][ 0 ] )
 		{
 			yaw = ( atan2( axis[ 0 ][ 1 ], axis[ 0 ][ 0 ] ) * 180 / M_PI );
 		}
+
 		else if ( axis[ 0 ][ 1 ] > 0 )
 		{
 			yaw = 90;
 		}
+
 		else
 		{
 			yaw = 270;
@@ -1813,12 +1814,12 @@ float VectorDistanceSquared( vec3_t v1, vec3_t v2 )
 // done.
 
 /*
-================
-VectorMaxComponent
-
-Return the biggest component of some vector
-================
-*/
+ * ================
+ * VectorMaxComponent
+ *
+ * Return the biggest component of some vector
+ * ================
+ */
 float VectorMaxComponent( vec3_t v )
 {
 	float biggest = v[ 0 ];
@@ -1837,12 +1838,12 @@ float VectorMaxComponent( vec3_t v )
 }
 
 /*
-================
-VectorMinComponent
-
-Return the smallest component of some vector
-================
-*/
+ * ================
+ * VectorMinComponent
+ *
+ * Return the smallest component of some vector
+ * ================
+ */
 float VectorMinComponent( vec3_t v )
 {
 	float smallest = v[ 0 ];
@@ -1966,29 +1967,29 @@ static float m3_det( matrix3x3_t mat )
 }
 
 /*static int m3_inverse( matrix3x3_t mr, matrix3x3_t ma )
-{
-  float det = m3_det( ma );
-
-  if (det == 0 )
-  {
-    return 1;
-  }
-
-
-  mr[0] =    ma[4]*ma[8] - ma[5]*ma[7]   / det;
-  mr[1] = -( ma[1]*ma[8] - ma[7]*ma[2] ) / det;
-  mr[2] =    ma[1]*ma[5] - ma[4]*ma[2]   / det;
-
-  mr[3] = -( ma[3]*ma[8] - ma[5]*ma[6] ) / det;
-  mr[4] =    ma[0]*ma[8] - ma[6]*ma[2]   / det;
-  mr[5] = -( ma[0]*ma[5] - ma[3]*ma[2] ) / det;
-
-  mr[6] =    ma[3]*ma[7] - ma[6]*ma[4]   / det;
-  mr[7] = -( ma[0]*ma[7] - ma[6]*ma[1] ) / det;
-  mr[8] =    ma[0]*ma[4] - ma[1]*ma[3]   / det;
-
-  return 0;
-}*/
+ * {
+ *  float det = m3_det( ma );
+ *
+ *  if (det == 0 )
+ *  {
+ *    return 1;
+ *  }
+ *
+ *
+ *  mr[0] =    ma[4]*ma[8] - ma[5]*ma[7]   / det;
+ *  mr[1] = -( ma[1]*ma[8] - ma[7]*ma[2] ) / det;
+ *  mr[2] =    ma[1]*ma[5] - ma[4]*ma[2]   / det;
+ *
+ *  mr[3] = -( ma[3]*ma[8] - ma[5]*ma[6] ) / det;
+ *  mr[4] =    ma[0]*ma[8] - ma[6]*ma[2]   / det;
+ *  mr[5] = -( ma[0]*ma[5] - ma[3]*ma[2] ) / det;
+ *
+ *  mr[6] =    ma[3]*ma[7] - ma[6]*ma[4]   / det;
+ *  mr[7] = -( ma[0]*ma[7] - ma[6]*ma[1] ) / det;
+ *  mr[8] =    ma[0]*ma[4] - ma[1]*ma[3]   / det;
+ *
+ *  return 0;
+ * }*/
 
 static void m4_submat( matrix_t mr, matrix3x3_t mb, int i, int j )
 {
@@ -2000,6 +2001,7 @@ static void m4_submat( matrix_t mr, matrix3x3_t mb, int i, int j )
 		{
 			idst = ti;
 		}
+
 		else if ( ti > i )
 		{
 			idst = ti - 1;
@@ -2011,6 +2013,7 @@ static void m4_submat( matrix_t mr, matrix3x3_t mb, int i, int j )
 			{
 				jdst = tj;
 			}
+
 			else if ( tj > j )
 			{
 				jdst = tj - 1;
@@ -2204,7 +2207,7 @@ void MatrixSetupShear( matrix_t m, vec_t x, vec_t y )
 void MatrixMultiply( const matrix_t a, const matrix_t b, matrix_t out )
 {
 #if id386_sse
-//#error MatrixMultiply
+	//#error MatrixMultiply
 	int    i;
 	__m128 _t0, _t1, _t2, _t3, _t4, _t5, _t6, _t7;
 
@@ -2350,6 +2353,7 @@ void MatrixToAngles( const matrix_t m, vec3_t angles )
 	{
 		sp = 1.0;
 	}
+
 	else if ( sp < -1.0 )
 	{
 		sp = -1.0;
@@ -2364,6 +2368,7 @@ void MatrixToAngles( const matrix_t m, vec3_t angles )
 		angles[ YAW ] = RAD2DEG( atan2( m[ 1 ], m[ 0 ] ) );
 		angles[ ROLL ] = RAD2DEG( atan2( m[ 6 ], m[ 10 ] ) );
 	}
+
 	else
 	{
 		angles[ PITCH ] = RAD2DEG( theta );
@@ -2384,6 +2389,7 @@ void MatrixToAngles( const matrix_t m, vec3_t angles )
 		angles[ YAW ] = RAD2DEG( a );
 		angles[ ROLL ] = RAD2DEG( atan2( m[ 1 ] / ca, m[ 0 ] / ca ) );
 	}
+
 	else
 	{
 		// Gimbal lock has occurred
@@ -2472,12 +2478,12 @@ void MatrixFromQuat( matrix_t m, const quat_t q )
 #if 1
 
 	/*
-	From Quaternion to Matrix and Back
-	February 27th 2005
-	J.M.P. van Waveren
-
-	http://www.intel.com/cd/ids/developer/asmo-na/eng/293748.htm
-	*/
+	 *	From Quaternion to Matrix and Back
+	 *	February 27th 2005
+	 *	J.M.P. van Waveren
+	 *
+	 *	http://www.intel.com/cd/ids/developer/asmo-na/eng/293748.htm
+	 */
 	float x2, y2, z2 /*, w2*/;
 	float yy2, xy2;
 	float xz2, yz2, zz2;
@@ -2518,27 +2524,27 @@ void MatrixFromQuat( matrix_t m, const quat_t q )
 #else
 
 	/*
-	http://www.gamedev.net/reference/articles/article1691.asp#Q54
-	Q54. How do I convert a quaternion to a rotation matrix?
-
-	Assuming that a quaternion has been created in the form:
-
-	Q = |X Y Z W|
-
-	Then the quaternion can then be converted into a 4x4 rotation
-	matrix using the following expression (Warning: you might have to
-	transpose this matrix if you (do not) follow the OpenGL order!):
-
-	 ?        2     2                                      ?
-	 ? 1 - (2Y  + 2Z )   2XY - 2ZW         2XZ + 2YW       ?
-	 ?                                                     ?
-	 ?                          2     2                    ?
-	M = ? 2XY + 2ZW         1 - (2X  + 2Z )   2YZ - 2XW       ?
-	 ?                                                     ?
-	 ?                                            2     2  ?
-	 ? 2XZ - 2YW         2YZ + 2XW         1 - (2X  + 2Y ) ?
-	 ?                                                     ?
-	*/
+	 *	http://www.gamedev.net/reference/articles/article1691.asp#Q54
+	 *	Q54. How do I convert a quaternion to a rotation matrix?
+	 *
+	 *	Assuming that a quaternion has been created in the form:
+	 *
+	 *	Q = |X Y Z W|
+	 *
+	 *	Then the quaternion can then be converted into a 4x4 rotation
+	 *	matrix using the following expression (Warning: you might have to
+	 *	transpose this matrix if you (do not) follow the OpenGL order!):
+	 *
+	 *	 ?        2     2                                      ?
+	 *	 ? 1 - (2Y  + 2Z )   2XY - 2ZW         2XZ + 2YW       ?
+	 *	 ?                                                     ?
+	 *	 ?                          2     2                    ?
+	 *	M = ? 2XY + 2ZW         1 - (2X  + 2Z )   2YZ - 2XW       ?
+	 *	 ?                                                     ?
+	 *	 ?                                            2     2  ?
+	 *	 ? 2XZ - 2YW         2YZ + 2XW         1 - (2X  + 2Y ) ?
+	 *	 ?                                                     ?
+	 */
 
 	// http://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToMatrix/index.htm
 
@@ -2826,9 +2832,9 @@ void MatrixTransformPlane2( const matrix_t m, vec4_t inout )
 }
 
 /*
-replacement for glFrustum
-see glspec30.pdf chapter 2.12 Coordinate Transformations
-*/
+ * replacement for glFrustum
+ * see glspec30.pdf chapter 2.12 Coordinate Transformations
+ */
 void MatrixPerspectiveProjection( matrix_t m, vec_t left, vec_t right, vec_t bottom, vec_t top, vec_t near, vec_t far )
 {
 	m[ 0 ] = ( 2 * near ) / ( right - left );
@@ -2850,10 +2856,10 @@ void MatrixPerspectiveProjection( matrix_t m, vec_t left, vec_t right, vec_t bot
 }
 
 /*
-same as D3DXMatrixPerspectiveOffCenterLH
-
-http://msdn.microsoft.com/en-us/library/bb205353(VS.85).aspx
-*/
+ * same as D3DXMatrixPerspectiveOffCenterLH
+ *
+ * http://msdn.microsoft.com/en-us/library/bb205353(VS.85).aspx
+ */
 void MatrixPerspectiveProjectionLH( matrix_t m, vec_t left, vec_t right, vec_t bottom, vec_t top, vec_t near, vec_t far )
 {
 	m[ 0 ] = ( 2 * near ) / ( right - left );
@@ -2875,10 +2881,10 @@ void MatrixPerspectiveProjectionLH( matrix_t m, vec_t left, vec_t right, vec_t b
 }
 
 /*
-same as D3DXMatrixPerspectiveOffCenterRH
-
-http://msdn.microsoft.com/en-us/library/bb205354(VS.85).aspx
-*/
+ * same as D3DXMatrixPerspectiveOffCenterRH
+ *
+ * http://msdn.microsoft.com/en-us/library/bb205354(VS.85).aspx
+ */
 void MatrixPerspectiveProjectionRH( matrix_t m, vec_t left, vec_t right, vec_t bottom, vec_t top, vec_t near, vec_t far )
 {
 	m[ 0 ] = ( 2 * near ) / ( right - left );
@@ -2900,10 +2906,10 @@ void MatrixPerspectiveProjectionRH( matrix_t m, vec_t left, vec_t right, vec_t b
 }
 
 /*
-same as D3DXMatrixPerspectiveFovLH
-
-http://msdn.microsoft.com/en-us/library/bb205350(VS.85).aspx
-*/
+ * same as D3DXMatrixPerspectiveFovLH
+ *
+ * http://msdn.microsoft.com/en-us/library/bb205350(VS.85).aspx
+ */
 void MatrixPerspectiveProjectionFovYAspectLH( matrix_t m, vec_t fov, vec_t aspect, vec_t near, vec_t far )
 {
 	vec_t width, height;
@@ -3006,9 +3012,9 @@ void MatrixPerspectiveProjectionFovXYInfiniteRH( matrix_t m, vec_t fovX, vec_t f
 }
 
 /*
-replacement for glOrtho
-see glspec30.pdf chapter 2.12 Coordinate Transformations
-*/
+ * replacement for glOrtho
+ * see glspec30.pdf chapter 2.12 Coordinate Transformations
+ */
 void MatrixOrthogonalProjection( matrix_t m, vec_t left, vec_t right, vec_t bottom, vec_t top, vec_t near, vec_t far )
 {
 	m[ 0 ] = 2 / ( right - left );
@@ -3030,10 +3036,10 @@ void MatrixOrthogonalProjection( matrix_t m, vec_t left, vec_t right, vec_t bott
 }
 
 /*
-same as D3DXMatrixOrthoOffCenterLH
-
-http://msdn.microsoft.com/en-us/library/bb205347(VS.85).aspx
-*/
+ * same as D3DXMatrixOrthoOffCenterLH
+ *
+ * http://msdn.microsoft.com/en-us/library/bb205347(VS.85).aspx
+ */
 void MatrixOrthogonalProjectionLH( matrix_t m, vec_t left, vec_t right, vec_t bottom, vec_t top, vec_t near, vec_t far )
 {
 	m[ 0 ] = 2 / ( right - left );
@@ -3055,10 +3061,10 @@ void MatrixOrthogonalProjectionLH( matrix_t m, vec_t left, vec_t right, vec_t bo
 }
 
 /*
-same as D3DXMatrixOrthoOffCenterRH
-
-http://msdn.microsoft.com/en-us/library/bb205348(VS.85).aspx
-*/
+ * same as D3DXMatrixOrthoOffCenterRH
+ *
+ * http://msdn.microsoft.com/en-us/library/bb205348(VS.85).aspx
+ */
 void MatrixOrthogonalProjectionRH( matrix_t m, vec_t left, vec_t right, vec_t bottom, vec_t top, vec_t near, vec_t far )
 {
 	m[ 0 ] = 2 / ( right - left );
@@ -3080,10 +3086,10 @@ void MatrixOrthogonalProjectionRH( matrix_t m, vec_t left, vec_t right, vec_t bo
 }
 
 /*
-same as D3DXMatrixReflect
-
-http://msdn.microsoft.com/en-us/library/bb205356%28v=VS.85%29.aspx
-*/
+ * same as D3DXMatrixReflect
+ *
+ * http://msdn.microsoft.com/en-us/library/bb205356%28v=VS.85%29.aspx
+ */
 void MatrixPlaneReflection( matrix_t m, const vec4_t plane )
 {
 	vec4_t P;
@@ -3092,10 +3098,10 @@ void MatrixPlaneReflection( matrix_t m, const vec4_t plane )
 	PlaneNormalize( P );
 
 	/*
-	-2 * P.a * P.a + 1  -2 * P.b * P.a      -2 * P.c * P.a        0
-	-2 * P.a * P.b      -2 * P.b * P.b + 1  -2 * P.c * P.b        0
-	-2 * P.a * P.c      -2 * P.b * P.c      -2 * P.c * P.c + 1    0
-	-2 * P.a * P.d      -2 * P.b * P.d      -2 * P.c * P.d        1
+	 *	-2 * P.a * P.a + 1  -2 * P.b * P.a      -2 * P.c * P.a        0
+	 *	-2 * P.a * P.b      -2 * P.b * P.b + 1  -2 * P.c * P.b        0
+	 *	-2 * P.a * P.c      -2 * P.b * P.c      -2 * P.c * P.c + 1    0
+	 *	-2 * P.a * P.d      -2 * P.b * P.d      -2 * P.c * P.d        1
 	 */
 
 	// Quake uses a different plane equation
@@ -3260,12 +3266,12 @@ vec_t QuatNormalize( quat_t q )
 {
 	float length, ilength;
 
-	length = q[ 0 ] * q[ 0 ] + q[ 1 ] * q[ 1 ] + q[ 2 ] * q[ 2 ] + q[ 3 ] * q[ 3 ];
-	length = sqrt( length );
+	length = DotProduct4( q, q );
 
 	if ( length )
 	{
-		ilength = 1 / length;
+		ilength = Q_rsqrt( length );
+		length *= ilength;
 		q[ 0 ] *= ilength;
 		q[ 1 ] *= ilength;
 		q[ 2 ] *= ilength;
@@ -3307,11 +3313,11 @@ void QuatFromMatrix( quat_t q, const matrix_t m )
 #if 1
 
 	/*
-	   From Quaternion to Matrix and Back
-	   February 27th 2005
-	   J.M.P. van Waveren
-
-	   http://www.intel.com/cd/ids/developer/asmo-na/eng/293748.htm
+	 *	   From Quaternion to Matrix and Back
+	 *	   February 27th 2005
+	 *	   J.M.P. van Waveren
+	 *
+	 *	   http://www.intel.com/cd/ids/developer/asmo-na/eng/293748.htm
 	 */
 	float t, s;
 
@@ -3325,6 +3331,7 @@ void QuatFromMatrix( quat_t q, const matrix_t m )
 		q[ 1 ] = ( m[ 8 ] - m[ 2 ] ) * s;
 		q[ 0 ] = ( m[ 6 ] - m[ 9 ] ) * s;
 	}
+
 	else if ( m[ 0 ] > m[ 5 ] && m[ 0 ] > m[ 10 ] )
 	{
 		t = m[ 0 ] - m[ 5 ] - m[ 10 ] + 1.0f;
@@ -3335,6 +3342,7 @@ void QuatFromMatrix( quat_t q, const matrix_t m )
 		q[ 2 ] = ( m[ 8 ] + m[ 2 ] ) * s;
 		q[ 3 ] = ( m[ 6 ] - m[ 9 ] ) * s;
 	}
+
 	else if ( m[ 5 ] > m[ 10 ] )
 	{
 		t = -m[ 0 ] + m[ 5 ] - m[ 10 ] + 1.0f;
@@ -3345,6 +3353,7 @@ void QuatFromMatrix( quat_t q, const matrix_t m )
 		q[ 3 ] = ( m[ 8 ] - m[ 2 ] ) * s;
 		q[ 2 ] = ( m[ 6 ] + m[ 9 ] ) * s;
 	}
+
 	else
 	{
 		t = -m[ 0 ] - m[ 5 ] + m[ 10 ] + 1.0f;
@@ -3372,6 +3381,7 @@ void QuatFromMatrix( quat_t q, const matrix_t m )
 		q[ 2 ] = ( m[ 1 ] - m[ 4 ] ) * s;
 		q[ 3 ] = 0.25f / s;
 	}
+
 	else
 	{
 		if ( m[ 0 ] > m[ 5 ] && m[ 0 ] > m[ 10 ] )
@@ -3384,6 +3394,7 @@ void QuatFromMatrix( quat_t q, const matrix_t m )
 			q[ 2 ] = ( m[ 8 ] + m[ 2 ] ) / s;
 			q[ 3 ] = ( m[ 9 ] - m[ 6 ] ) / s;
 		}
+
 		else if ( m[ 5 ] > m[ 10 ] )
 		{
 			// column 1
@@ -3394,6 +3405,7 @@ void QuatFromMatrix( quat_t q, const matrix_t m )
 			q[ 2 ] = ( m[ 9 ] + m[ 6 ] ) / s;
 			q[ 3 ] = ( m[ 8 ] - m[ 2 ] ) / s;
 		}
+
 		else
 		{
 			// column 2
@@ -3459,12 +3471,12 @@ void QuatMultiply0( quat_t qa, const quat_t qb )
 void QuatMultiply1( const quat_t qa, const quat_t qb, quat_t qc )
 {
 	/*
-	   from matrix and quaternion faq
-	   x = w1x2 + x1w2 + y1z2 - z1y2
-	   y = w1y2 + y1w2 + z1x2 - x1z2
-	   z = w1z2 + z1w2 + x1y2 - y1x2
-
-	   w = w1w2 - x1x2 - y1y2 - z1z2
+	 *	   from matrix and quaternion faq
+	 *	   x = w1x2 + x1w2 + y1z2 - z1y2
+	 *	   y = w1y2 + y1w2 + z1x2 - x1z2
+	 *	   z = w1z2 + z1w2 + x1y2 - y1x2
+	 *
+	 *	   w = w1w2 - x1x2 - y1y2 - z1z2
 	 */
 
 	qc[ 0 ] = qa[ 3 ] * qb[ 0 ] + qa[ 0 ] * qb[ 3 ] + qa[ 1 ] * qb[ 2 ] - qa[ 2 ] * qb[ 1 ];
@@ -3512,6 +3524,7 @@ void QuatSlerp( const quat_t from, const quat_t to, float frac, quat_t out )
 		QuatCopy( to, to1 );
 		QuatAntipodal( to1 );
 	}
+
 	else
 	{
 		QuatCopy( to, to1 );
@@ -3524,6 +3537,7 @@ void QuatSlerp( const quat_t from, const quat_t to, float frac, quat_t out )
 		scale0 = sin( ( 1.0 - frac ) * omega ) / sinom;
 		scale1 = sin( frac * omega ) / sinom;
 	}
+
 	else
 	{
 		scale0 = 1.0 - frac;
@@ -3537,11 +3551,11 @@ void QuatSlerp( const quat_t from, const quat_t to, float frac, quat_t out )
 #else
 
 	/*
-	   Slerping Clock Cycles
-	   February 27th 2005
-	   J.M.P. van Waveren
-
-	   http://www.intel.com/cd/ids/developer/asmo-na/eng/293747.htm
+	 *	   Slerping Clock Cycles
+	 *	   February 27th 2005
+	 *	   J.M.P. van Waveren
+	 *
+	 *	   http://www.intel.com/cd/ids/developer/asmo-na/eng/293747.htm
 	 */
 	float cosom, absCosom, sinom, sinSqr, omega, scale0, scale1;
 
@@ -3575,6 +3589,7 @@ void QuatSlerp( const quat_t from, const quat_t to, float frac, quat_t out )
 		scale0 = sin( ( 1.0f - frac ) * omega ) * sinom;
 		scale1 = sin( frac * omega ) * sinom;
 	}
+
 	else
 	{
 		scale0 = 1.0f - frac;
@@ -3592,8 +3607,239 @@ void QuatSlerp( const quat_t from, const quat_t to, float frac, quat_t out )
 
 void QuatTransformVector( const quat_t q, const vec3_t in, vec3_t out )
 {
+#if 0
 	matrix_t m;
 
 	MatrixFromQuat( m, q );
 	MatrixTransformNormal( m, in, out );
+#else
+	vec3_t tmp, tmp2;
+
+	CrossProduct( q, in, tmp );
+	VectorScale( tmp, 2.0f, tmp );
+	CrossProduct( q, tmp, tmp2 );
+	VectorMA( in, q[3], tmp, out );
+	VectorAdd( out, tmp2, out );
+#endif
 }
+
+void QuatTransformVectorInverse( const quat_t q, const vec3_t in, vec3_t out )
+{
+	vec3_t tmp, tmp2;
+
+	// The inverse rotation is obtained by negating the vector
+	// component of q, but that is mathematically the same as
+	// swapping the arguments of the cross product.
+	CrossProduct( in, q, tmp );
+	VectorScale( tmp, 2.0f, tmp );
+	CrossProduct( tmp, q, tmp2 );
+	VectorMA( in, q[3], tmp, out );
+	VectorAdd( out, tmp2, out );
+}
+
+#if !idx86_sse
+// create an identity transform
+void TransInit( transform_t *t )
+{
+	QuatClear( t->rot );
+	VectorClear( t->trans );
+	t->scale = 1.0f;
+}
+
+// copy a transform
+void TransCopy( const transform_t *in, transform_t *out )
+{
+	Com_Memcpy( out, in, sizeof( transform_t ) );
+}
+
+// apply a transform to a point
+void TransformPoint( const transform_t *t, const vec3_t in, vec3_t out )
+{
+	QuatTransformVector( t->rot, in, out );
+	VectorScale( out, t->scale, out );
+	VectorAdd( out, t->trans, out );
+}
+
+// apply the inverse of a transform to a point
+void TransformPointInverse( const transform_t *t, const vec3_t in, vec3_t out )
+{
+	VectorSubtract( in, t->trans, out );
+	VectorScale( out, 1.0f / t->scale, out );
+	QuatTransformVectorInverse( t->rot, out, out );
+}
+
+// apply a transform to a normal vector (ignore scale and translation)
+void TransformNormalVector( const transform_t *t, const vec3_t in, vec3_t out )
+{
+	QuatTransformVector( t->rot, in, out );
+}
+
+// apply the inverse of a transform to a normal vector (ignore scale
+// and translation)
+void TransformNormalVectorInverse( const transform_t *t, const vec3_t in,
+                                   vec3_t out )
+{
+	QuatTransformVectorInverse( t->rot, in, out );
+}
+
+// initialize a transform with a pure rotation
+void TransInitRotationQuat( const quat_t quat, transform_t *t )
+{
+	QuatCopy( quat, t->rot );
+	VectorClear( t->trans );
+	t->scale = 1.0f;
+}
+void TransInitRotation( const vec3_t axis, float angle, transform_t *t )
+{
+	float sa = sin( 0.5f * angle );
+	float ca = cos( 0.5f * angle );
+	quat_t q;
+
+	VectorScale( axis, sa, q );
+	q[3] = ca;
+	TransInitRotationQuat( q, t );
+}
+
+// initialize a transform with a pure translation
+void TransInitTranslation( const vec3_t vec, transform_t *t )
+{
+	QuatClear( t->rot );
+	VectorCopy( vec, t->trans );
+	t->scale = 1.0f;
+}
+
+// initialize a transform with a pure scale
+void TransInitScale( float factor, transform_t *t )
+{
+	QuatClear( t->rot );
+	VectorClear( t->trans );
+	t->scale = factor;
+}
+
+// add a rotation to the start of an existing transform
+void TransInsRotationQuat( const quat_t quat, transform_t *t )
+{
+	QuatMultiply0( t->rot, quat );
+}
+void TransInsRotation( const vec3_t axis, float angle, transform_t *t )
+{
+	float sa = sin( 0.5f * angle );
+	float ca = cos( 0.5f * angle );
+	quat_t q;
+
+	VectorScale( axis, sa, q );
+	q[3] = ca;
+	TransInsRotationQuat( q, t );
+}
+
+// add a rotation to the end of an existing transform
+void TransAddRotationQuat( const quat_t quat, transform_t *t )
+{
+	quat_t tmp;
+
+	QuatTransformVector( quat, t->trans, t->trans );
+	QuatCopy( quat, tmp );
+	QuatMultiply0( tmp, t->rot );
+	QuatCopy( tmp, t->rot );
+}
+
+void TransAddRotation( const vec3_t axis, float angle, transform_t *t )
+{
+	float sa = sin( 0.5f * angle );
+	float ca = cos( 0.5f * angle );
+	quat_t q;
+
+	VectorScale( axis, sa, q );
+	q[3] = ca;
+	TransAddRotationQuat( q, t );
+}
+
+// add a scale to the start of an existing transform
+void TransInsScale( float factor, transform_t *t )
+{
+	t->scale *= factor;
+}
+
+// add a scale to the end of an existing transform
+void TransAddScale( float factor, transform_t *t )
+{
+	VectorScale( t->trans, factor, t->trans );
+	t->scale *= factor;
+}
+
+// add a translation at the start of an existing transformation
+void TransInsTranslation( const vec3_t vec, transform_t *t )
+{
+	vec3_t tmp;
+
+	TransformPoint( t, vec, tmp );
+	VectorAdd( t->trans, tmp, t->trans );
+}
+
+// add a translation at the end of an existing transformation
+void TransAddTranslation( const vec3_t vec, transform_t *t )
+{
+	VectorAdd( t->trans, vec, t->trans );
+}
+
+// combine transform a and transform b into transform c
+void TransCombine( const transform_t *a, const transform_t *b,
+                   transform_t *out )
+{
+	TransCopy( a, out );
+
+	TransAddRotationQuat( b->rot, out );
+	TransAddScale( b->scale, out );
+	TransAddTranslation( b->trans, out );
+}
+
+// compute the inverse transform
+void TransInverse( const transform_t *in, transform_t *out )
+{
+	quat_t inverse;
+	transform_t tmp;
+
+	TransInit( &tmp );
+	VectorNegate( in->trans, tmp.trans );
+	TransAddScale( 1.0f / in->scale, &tmp );
+	QuatCopy( in->rot, inverse );
+	QuatInverse( inverse );
+	TransAddRotationQuat( inverse, &tmp );
+	TransCopy( &tmp, out );
+}
+
+// lerp between transforms
+void TransStartLerp( transform_t *t )
+{
+	QuatZero( t->rot );
+	VectorClear( t->trans );
+	t->scale = 0.0f;
+}
+void TransAddWeight( float weight, const transform_t *a, transform_t *out )
+{
+	if ( DotProduct4( out->rot, a->rot ) < 0 )
+	{
+		QuatMA( out->rot, -weight, a->rot, out->rot );
+	}
+
+	else
+	{
+		QuatMA( out->rot, weight, a->rot, out->rot );
+	}
+
+	VectorMA( out->trans, weight, a->trans, out->trans );
+	out->scale      += a->scale      * weight;
+}
+void TransEndLerp( transform_t *t )
+{
+	QuatNormalize( t->rot );
+}
+#endif
+
+#if defined(_WIN32) && !defined(__MINGW32__)
+double rint( double x )
+{
+	return floor( x + 0.5 );
+}
+#endif
+

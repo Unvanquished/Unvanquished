@@ -372,7 +372,7 @@ static void DrawTris()
 
 	if ( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning )
 	{
-		gl_genericShader->SetUniform_BoneMatrix( tess.numBoneMatrices, tess.boneMatrices );
+		gl_genericShader->SetUniform_Bones( tess.numBones, tess.bones );
 	}
 
 	// u_DeformGen
@@ -550,10 +550,10 @@ static void Render_generic( int stage )
 	gl_genericShader->SetUniform_ModelMatrix( backEnd.orientation.transformMatrix );
 	gl_genericShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
-	// u_BoneMatrix
+	// u_Bones
 	if ( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning )
 	{
-		gl_genericShader->SetUniform_BoneMatrix( tess.numBoneMatrices, tess.boneMatrices );
+		gl_genericShader->SetUniform_Bones( tess.numBones, tess.bones );
 	}
 
 	// u_VertexInterpolation
@@ -622,7 +622,7 @@ static void Render_vertexLighting_DBS_entity( int stage )
 
 	if ( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning )
 	{
-		gl_vertexLightingShader_DBS_entity->SetUniform_BoneMatrix( tess.numBoneMatrices, tess.boneMatrices );
+		gl_vertexLightingShader_DBS_entity->SetUniform_Bones( tess.numBones, tess.bones );
 	}
 
 	// set uniforms
@@ -1184,7 +1184,7 @@ static void Render_depthFill( int stage )
 
 	if ( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning )
 	{
-		gl_genericShader->SetUniform_BoneMatrix( tess.numBoneMatrices, tess.boneMatrices );
+		gl_genericShader->SetUniform_Bones( tess.numBones, tess.bones );
 	}
 
 	// u_DeformGen
@@ -1259,10 +1259,10 @@ static void Render_shadowFill( int stage )
 	gl_shadowFillShader->SetUniform_ModelMatrix( backEnd.orientation.transformMatrix );
 	gl_shadowFillShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
-	// u_BoneMatrix
+	// u_Bones
 	if ( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning )
 	{
-		gl_shadowFillShader->SetUniform_BoneMatrix( tess.numBoneMatrices, tess.boneMatrices );
+		gl_shadowFillShader->SetUniform_Bones( tess.numBones, tess.bones );
 	}
 
 	// u_VertexInterpolation
@@ -1406,10 +1406,10 @@ static void Render_forwardLighting_DBS_omni( shaderStage_t *diffuseStage,
 	gl_forwardLightingShader_omniXYZ->SetUniform_ModelMatrix( backEnd.orientation.transformMatrix );
 	gl_forwardLightingShader_omniXYZ->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
-	// u_BoneMatrix
+	// u_Bones
 	if ( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning )
 	{
-		gl_forwardLightingShader_omniXYZ->SetUniform_BoneMatrix( tess.numBoneMatrices, tess.boneMatrices );
+		gl_forwardLightingShader_omniXYZ->SetUniform_Bones( tess.numBones, tess.bones );
 	}
 
 	// u_VertexInterpolation
@@ -1604,10 +1604,10 @@ static void Render_forwardLighting_DBS_proj( shaderStage_t *diffuseStage,
 	gl_forwardLightingShader_projXYZ->SetUniform_ModelMatrix( backEnd.orientation.transformMatrix );
 	gl_forwardLightingShader_projXYZ->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
-	// u_BoneMatrix
+	// u_Bones
 	if ( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning )
 	{
-		gl_forwardLightingShader_projXYZ->SetUniform_BoneMatrix( tess.numBoneMatrices, tess.boneMatrices );
+		gl_forwardLightingShader_projXYZ->SetUniform_Bones( tess.numBones, tess.bones );
 	}
 
 	// u_VertexInterpolation
@@ -1811,10 +1811,10 @@ static void Render_forwardLighting_DBS_directional( shaderStage_t *diffuseStage,
 	gl_forwardLightingShader_directionalSun->SetUniform_ViewMatrix( backEnd.viewParms.world.viewMatrix );
 	gl_forwardLightingShader_directionalSun->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
-	// u_BoneMatrix
+	// u_Bones
 	if ( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning )
 	{
-		gl_forwardLightingShader_directionalSun->SetUniform_BoneMatrix( tess.numBoneMatrices, tess.boneMatrices );
+		gl_forwardLightingShader_directionalSun->SetUniform_Bones( tess.numBones, tess.bones );
 	}
 
 	// u_VertexInterpolation
@@ -1939,10 +1939,10 @@ static void Render_reflection_CB( int stage )
 	gl_reflectionShader->SetUniform_ModelMatrix( backEnd.orientation.transformMatrix );
 	gl_reflectionShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
-	// u_BoneMatrix
+	// u_Bones
 	if ( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning )
 	{
-		gl_reflectionShader->SetUniform_BoneMatrix( tess.numBoneMatrices, tess.boneMatrices );
+		gl_reflectionShader->SetUniform_Bones( tess.numBones, tess.bones );
 	}
 
 	// u_VertexInterpolation
@@ -2018,7 +2018,7 @@ static void Render_dispersion_C( int stage )
 
 		if ( tess.vboVertexSkinning )
 		{
-			glUniformMatrix4fv( tr.dispersionShader_C.u_BoneMatrix, MAX_BONES, GL_FALSE, &tess.boneMatrices[ 0 ][ 0 ] );
+			glUniformMatrix4fv( tr.dispersionShader_C.u_Bones, 2 * MAX_BONES, GL_FALSE, &tess.bones[ 0 ][ 0 ] );
 		}
 	}
 
@@ -2219,10 +2219,10 @@ static void Render_heatHaze( int stage )
 		gl_genericShader->SetUniform_ModelMatrix( backEnd.orientation.transformMatrix );
 		gl_genericShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
-		// u_BoneMatrix
+		// u_Bones
 		if ( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning )
 		{
-			gl_genericShader->SetUniform_BoneMatrix( tess.numBoneMatrices, tess.boneMatrices );
+			gl_genericShader->SetUniform_Bones( tess.numBones, tess.bones );
 		}
 
 		// u_VertexInterpolation
@@ -2279,10 +2279,10 @@ static void Render_heatHaze( int stage )
 	gl_heatHazeShader->SetUniform_ProjectionMatrixTranspose( glState.projectionMatrix[ glState.stackIndex ] );
 	gl_heatHazeShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
-	// u_BoneMatrix
+	// u_Bones
 	if ( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning )
 	{
-		gl_heatHazeShader->SetUniform_BoneMatrix( tess.numBoneMatrices, tess.boneMatrices );
+		gl_heatHazeShader->SetUniform_Bones( tess.numBones, tess.bones );
 	}
 
 	// u_VertexInterpolation
@@ -2536,10 +2536,10 @@ static void Render_fog()
 	gl_fogQuake3Shader->SetUniform_ModelMatrix( backEnd.orientation.transformMatrix );
 	gl_fogQuake3Shader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
-	// u_BoneMatrix
+	// u_Bones
 	if ( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning )
 	{
-		gl_fogQuake3Shader->SetUniform_BoneMatrix( tess.numBoneMatrices, tess.boneMatrices );
+		gl_fogQuake3Shader->SetUniform_Bones( tess.numBones, tess.bones );
 	}
 
 	// u_VertexInterpolation
@@ -2613,7 +2613,7 @@ static void Render_volumetricFog()
 
 			if ( tess.vboVertexSkinning )
 			{
-				gl_depthToColorShader->SetUniform_BoneMatrix( tess.numBoneMatrices, tess.boneMatrices );
+				gl_depthToColorShader->SetUniform_Bones( tess.numBones, tess.bones );
 			}
 		}
 		gl_depthToColorShader->SetRequiredVertexPointers();

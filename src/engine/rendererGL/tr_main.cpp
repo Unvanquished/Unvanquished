@@ -2602,6 +2602,10 @@ void R_AddEntitySurfaces( void )
 							R_AddMD5Surfaces( ent );
 							break;
 
+						case MOD_IQM:
+							R_AddIQMSurfaces( ent );
+							break;
+
 						case MOD_BSP:
 							R_AddBSPModelSurfaces( ent );
 							break;
@@ -2664,7 +2668,7 @@ void R_AddEntityInteractions( trRefLight_t *light )
 		}
 
 		if ( light->restrictInteractionFirst >= 0 &&
-		     i >= light->restrictInteractionFirst && 
+		     i >= light->restrictInteractionFirst &&
 		     i <= light->restrictInteractionLast )
 		{
 			iaType = (interactionType_t) (iaType & ~IA_LIGHT);
@@ -2709,6 +2713,10 @@ void R_AddEntityInteractions( trRefLight_t *light )
 
 						case MOD_MD5:
 							R_AddMD5Interactions( ent, light, iaType );
+							break;
+
+						case MOD_IQM:
+							R_AddIQMInteractions( ent, light, iaType );
 							break;
 
 						case MOD_BSP:

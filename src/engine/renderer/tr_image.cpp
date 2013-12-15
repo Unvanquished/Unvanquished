@@ -49,6 +49,8 @@ Maryland 20850 USA.
  * You may also wish to include "jerror.h".
  */
 
+// Work around bug in old versions of libpng
+#define PNG_SKIP_SETJMP_CHECK
 #include <jpeglib.h>
 #include <png.h>
 #include <webp/decode.h>

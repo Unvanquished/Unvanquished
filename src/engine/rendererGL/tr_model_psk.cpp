@@ -585,9 +585,6 @@ qboolean R_LoadPSK( model_t *mod, void *buffer, int bufferSize, const char *modN
 			QuatCopy( quat, md5Bone->rotation );
 		}
 
-		BoneMatrixSetupTransform( md5Bone->inverseTransform, md5Bone->rotation, md5Bone->origin );
-		BoneMatrixInvert( md5Bone->inverseTransform );
-
 #if 0
 		ri.Printf( PRINT_ALL, "R_LoadPSK: md5Bone_t(%i):\n"
 		           "md5Bone_t::name: '%s'\n"
