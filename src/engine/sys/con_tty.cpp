@@ -42,6 +42,7 @@ Maryland 20850 USA.
 #include <fcntl.h>
 #include <sys/time.h>
 
+#include "../../common/String.h"
 #include "../framework/ConsoleField.h"
 
 /* fallbacks for con_curses.c */

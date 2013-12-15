@@ -29,6 +29,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #endif
 #endif
 
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
 #if defined( USE_XREAL_RENDERER )
 #       include "../rendererGL/tr_local.h"
 #else
@@ -39,6 +44,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "sdl_icon.h"
 #include "SDL_syswm.h"
 #include "sdl2_compat.h"
+
+#include "../../common/Maths.h"
 
 SDL_Window         *window = NULL;
 static SDL_GLContext glContext = NULL;

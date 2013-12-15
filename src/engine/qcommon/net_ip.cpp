@@ -75,6 +75,7 @@ static qboolean winsockInitialized = qfalse;
 #       endif
 
 #       include <arpa/inet.h>
+#       include <errno.h>
 #       include <netdb.h>
 #       include <netinet/in.h>
 #       include <sys/socket.h>

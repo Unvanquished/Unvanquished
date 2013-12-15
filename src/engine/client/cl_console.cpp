@@ -34,10 +34,15 @@ Maryland 20850 USA.
 
 // console.c
 
+#include <time.h>
 #include "revision.h"
 #include "client.h"
 #include "../qcommon/q_unicode.h"
+#include <vector>
+#include <string>
+#include <mutex>
 #include "../framework/LogSystem.h"
+#include "../../common/Command.h"
 
 int g_console_field_width = 78;
 

@@ -25,8 +25,13 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #include "../qcommon/q_shared.h"
 #include "BaseCommands.h"
 
+#include <vector>
+#include <unordered_map>
+
 #include "CommandSystem.h"
 #include "CvarSystem.h"
+#include "../../common/Command.h"
+#include "../../common/String.h"
 
 /**
  * Definition of most of the commands that provide scripting capabilities to the console

@@ -43,6 +43,9 @@ extern "C" {
 #include "../../libs/tinygettext/tinygettext.hpp"
 #include "../../libs/tinygettext/file_system.hpp"
 
+#include <sstream>
+#include <iostream>
+
 using namespace tinygettext;
 
 // Ugly char buffer
@@ -288,9 +291,9 @@ void Trans_Init( void )
 	trans_encodings = Cvar_Get( "trans_encodings", "", CVAR_ROM );
 
 	// set tinygettext log callbacks
-	tinygettext::Log::set_log_error_callback( &Trans_Error );
-	tinygettext::Log::set_log_warning_callback( &Trans_Warning );
-	tinygettext::Log::set_log_info_callback( &Trans_Info );
+	Log::set_log_error_callback( &Trans_Error );
+	Log::set_log_warning_callback( &Trans_Warning );
+	Log::set_log_info_callback( &Trans_Info );
 
 	trans_manager.set_filesystem( std::unique_ptr<FileSystem>( new DaemonFileSystem ) );
 	trans_managergame.set_filesystem( std::unique_ptr<FileSystem>( new DaemonFileSystem ) );

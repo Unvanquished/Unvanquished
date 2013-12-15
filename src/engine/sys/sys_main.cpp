@@ -34,8 +34,17 @@ Maryland 20850 USA.
 
 #include "revision.h"
 
+#include <signal.h>
+#include <stdlib.h>
+#include <limits.h>
+#include <locale.h>
 #include <sys/types.h>
+#include <stdarg.h>
+#include <stdio.h>
 #include <sys/stat.h>
+#include <string.h>
+#include <ctype.h>
+#include <errno.h>
 #ifdef _WIN32
 #include <windows.h>
 #endif

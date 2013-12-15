@@ -46,10 +46,10 @@ and one exported function: Perform
 
 */
 
+#include "../framework/CommandSystem.h"
+
 #include "vm_local.h"
 #include "vm_traps.h"
-
-#include "../framework/CommandSystem.h"
 
 vm_t       *currentVM = NULL;
 vm_t       *lastVM = NULL;

@@ -38,7 +38,10 @@ Maryland 20850 USA.
 #include "qcommon.h"
 #include "../client/keys.h"
 
+#include "../../common/Command.h"
 #include "../framework/CommandSystem.h"
+
+#include <unordered_map>
 
 #define MAX_CMD_BUFFER 131072
 

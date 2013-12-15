@@ -22,6 +22,9 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
+#include "../../common/Log.h"
+#include <vector>
+
 #ifndef FRAMEWORK_LOG_SYSTEM_H_
 #define FRAMEWORK_LOG_SYSTEM_H_
 

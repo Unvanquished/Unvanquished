@@ -35,6 +35,7 @@ Maryland 20850 USA.
 // sv_game.c -- interface to the game module
 
 #include "server.h"
+#include "../../common/Cvar.h"
 #include "../qcommon/crypto.h"
 
 // these functions must be used instead of pointer arithmetic, because

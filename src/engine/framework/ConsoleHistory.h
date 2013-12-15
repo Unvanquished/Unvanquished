@@ -22,6 +22,8 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
+#include <string>
+
 #ifndef FRAMEWORK_CONSOLE_HISTORY_H_
 #define FRAMEWORK_CONSOLE_HISTORY_H_
 

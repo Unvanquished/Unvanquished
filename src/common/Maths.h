@@ -22,6 +22,8 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
+#include <algorithm>
+
 #ifndef COMMON_MATHS_H_
 #define COMMON_MATHS_H_
 

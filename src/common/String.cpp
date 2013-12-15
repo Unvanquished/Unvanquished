@@ -22,7 +22,11 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
-#include "Common.h"
+#include "String.h"
+#include "../engine/qcommon/q_shared.h"
+#include <limits>
+#include <algorithm>
+#include <string.h>
 
 namespace Str {
 

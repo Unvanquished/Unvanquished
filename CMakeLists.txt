@@ -252,8 +252,7 @@ if( WIN32 )
   # Minimum Windows version: XP
   # Define WIN32 for compatibility (compiler defines _WIN32)
   # Define NOMINMAX to prevent conflics between std::min/max and the min/max macros in WinDef.h
-  # Enable STRICT type checking for windows.h
-  add_definitions( -DWINVER=0x501 -DWIN32 -DNOMINMAX -DSTRICT )
+  add_definitions( -DWINVER=0x501 -DWIN32 -DNOMINMAX )
   set( CMAKE_FIND_LIBRARY_PREFIXES ${CMAKE_FIND_LIBRARY_PREFIXES} "" "lib" )
 endif()
 if( MSVC )

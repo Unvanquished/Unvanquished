@@ -38,11 +38,14 @@ Maryland 20850 USA.
 #include "../qcommon/q_shared.h"
 #include "q_unicode.h"
 #include "qcommon.h"
+#include <setjmp.h>
 
 #include "../framework/BaseCommands.h"
 #include "../framework/CommandSystem.h"
 #include "../framework/ConsoleHistory.h"
 #include "../framework/LogSystem.h"
+#include "../../common/Cvar.h"
+#include "../../common/Log.h"
 
 // htons
 #if defined __linux__ || defined __FreeBSD__ || defined( MACOS_X ) || defined( __APPLE__ )

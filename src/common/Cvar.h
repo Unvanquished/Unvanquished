@@ -22,6 +22,11 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
+#include "../engine/qcommon/q_shared.h"
+#include "String.h"
+#include <string>
+#include <functional>
+
 #ifndef COMMON_CVAR_H_
 #define COMMON_CVAR_H_
 

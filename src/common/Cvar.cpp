@@ -22,10 +22,12 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
-#include "Common.h"
-
-// FIXME: Code in common shouldn't depend on framework
+#include "Cvar.h"
 #include "../engine/framework/CvarSystem.h"
+
+#include "../engine/qcommon/q_shared.h"
+#include "../engine/qcommon/qcommon.h"
+#include "./String.h"
 
 namespace Cvar {
 

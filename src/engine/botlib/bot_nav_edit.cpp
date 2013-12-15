@@ -37,6 +37,7 @@ Maryland 20850 USA.
 #include "../../libs/detour/DebugDraw.h"
 #include "bot_navdraw.h"
 #include "nav.h"
+#include "../../common/Maths.h"
 
 #define DEFAULT_CONNECTION_SIZE 50
 static int connectionSize = DEFAULT_CONNECTION_SIZE;

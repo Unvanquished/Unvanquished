@@ -22,6 +22,11 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
+#include <string>
+
+#include "Cvar.h"
+#include "String.h"
+
 #ifndef COMMON_LOG_H_
 #define COMMON_LOG_H_
 
