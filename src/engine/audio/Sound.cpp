@@ -252,7 +252,6 @@ namespace Audio {
     }
 
     void LoopingSound::FadeOutAndDie() {
-        Log::Debug("Fading out and dying");
         fadingOut = true;
         SetSoundGain(0.0f);
     }
@@ -264,7 +263,6 @@ namespace Audio {
 
     void LoopingSound::InternalUpdate() {
         if (fadingOut and GetCurrentGain() == 0.0f) {
-        Log::Debug("Faded out and died");
             Stop();
         }
     }

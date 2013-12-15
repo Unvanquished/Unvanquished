@@ -180,7 +180,7 @@ namespace Audio {
 
     // Implementation of PositionEmitter
 
-    PositionEmitter::PositionEmitter(const vec3_t positon){
+    PositionEmitter::PositionEmitter(const vec3_t position){
         VectorCopy(position, this->position);
     }
 
