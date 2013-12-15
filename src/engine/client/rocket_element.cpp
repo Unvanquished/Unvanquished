@@ -223,7 +223,7 @@ void Rocket_GetProperty( const char *name, void *out, int len, rocketVarType_t t
 					float base_size = 0;
 					Rocket::Core::Element *parent = activeElement;
 
-					while ( parent = parent->GetParentNode() )
+					while ( ( parent = parent->GetParentNode() ) )
 					{
 						if ( ( base_size = parent->GetOffsetWidth() ) != 0 )
 						{
@@ -238,7 +238,7 @@ void Rocket_GetProperty( const char *name, void *out, int len, rocketVarType_t t
 					float base_size = 0;
 					Rocket::Core::Element *parent = activeElement;
 
-					while ( parent = parent->GetParentNode() )
+					while ( ( parent = parent->GetParentNode() ) )
 					{
 						if ( ( base_size = parent->GetOffsetHeight() ) != 0 )
 						{

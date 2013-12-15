@@ -75,7 +75,7 @@ public:
 			float base_size = 0;
 			Rocket::Core::Element *parent = this;
 
-			while ( parent = parent->GetParentNode() )
+			while ( ( parent = parent->GetParentNode() ) )
 			{
 				if ( ( base_size = parent->GetOffsetWidth() ) != 0 )
 				{
@@ -95,7 +95,7 @@ public:
 			float base_size = 0;
 			Rocket::Core::Element *parent = this;
 
-			while ( parent = parent->GetParentNode() )
+			while ( ( parent = parent->GetParentNode() ) )
 			{
 				if ( ( base_size = parent->GetOffsetHeight() ) != 0 )
 				{

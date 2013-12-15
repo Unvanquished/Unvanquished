@@ -112,7 +112,7 @@ public:
 			{
 				Rocket::Core::Element *element;
 
-				if ( element = document->GetElementById( GetAttribute<Rocket::Core::String>( "targetid", "" ) ) )
+				if ( ( element = document->GetElementById( GetAttribute<Rocket::Core::String>( "targetid", "" ) ) ) )
 				{
 					if ( element != targetElement )
 					{
@@ -170,9 +170,9 @@ public:
 
 
 private:
-	int selection;
 	Rocket::Controls::DataFormatter *formatter;
 	Rocket::Controls::DataSource *data_source;
+	int selection;
 	Rocket::Core::String data_table;
 	Rocket::Core::String csvFields;
 	Rocket::Core::StringList fields;

@@ -89,7 +89,7 @@ public:
 			}
 
 			// Each line gets its own span element
-			for ( size_t i = line; line >= 0; --line, numLines++ )
+			for (; line >= 0; --line, numLines++ )
 			{
 				Rocket::Core::Element *child = Rocket::Core::Factory::InstanceElement( this, "#text", "span", Rocket::Core::XMLAttributes() );
 				q2rml( lines[ line ].text.CString(), child );

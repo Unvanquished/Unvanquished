@@ -114,7 +114,6 @@ public:
 			else if ( event == "keydown" )
 			{
 				Rocket::Core::Input::KeyIdentifier key_identifier = ( Rocket::Core::Input::KeyIdentifier ) event.GetParameter<int>( "key_identifier", 0 );
-				bool numlock = event.GetParameter< int >( "num_lock_key", 0 );
 
 				switch ( key_identifier )
 				{
@@ -153,6 +152,9 @@ public:
 							DispatchEvent( "exec", Rocket::Core::Dictionary() );
 						}
 					}
+						break;
+
+					default:
 						break;
 				}
 			}
@@ -211,7 +213,7 @@ public:
 			float base_size = 0;
 			Rocket::Core::Element *parent = this;
 
-			while ( parent = parent->GetParentNode() )
+			while ( ( parent = parent->GetParentNode() ) )
 			{
 				if ( ( base_size = parent->GetOffsetWidth() ) != 0 )
 				{
