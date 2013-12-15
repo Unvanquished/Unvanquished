@@ -425,8 +425,6 @@ void *QDECL Sys_LoadDll( const char *name,
 	void *libHandle = NULL;
 	void ( QDECL * dllEntry )( intptr_t ( QDECL * syscallptr )( intptr_t, ... ) );
 	char fname[ MAX_QPATH ];
-	char *basepath;
-	char *homepath;
 	char *gamedir;
 	char *libpath;
 
