@@ -2013,9 +2013,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		uint32_t     numSurfaces;
 		bspSurface_t *firstSurface;
 
-		uint32_t     numVBOSurfaces;
-		srfVBOMesh_t **vboSurfaces;
-
 		// ydnar: decals
 		decal_t *decals;
 	} bspModel_t;
@@ -2073,8 +2070,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 //  int             numAreaPortals;
 //  bspAreaPortal_t *areaPortals;
-
-		int                numWorldSurfaces;
 
 		int                numSurfaces;
 		bspSurface_t       *surfaces;
