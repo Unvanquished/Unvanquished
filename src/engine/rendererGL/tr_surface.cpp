@@ -1413,14 +1413,13 @@ void Tess_SurfaceIQM( srfIQModel_t *surf ) {
 	int             i, j;
 	int             offset = tess.numVertexes - surf->first_vertex;
 
-	GLimp_LogComment( "--- RB_SurfaceIQM ---\n" );
+	GLimp_LogComment( "--- Tess_SurfaceIQM ---\n" );
 
 	Tess_CheckOverflow( surf->num_vertexes, surf->num_triangles * 3 );
 
 	// compute bones
 	for ( i = 0; i < model->num_joints; i++ )
 	{
-
 		if ( backEnd.currentEntity->e.skeleton.type == SK_ABSOLUTE )
 		{
 			refBone_t *bone = &backEnd.currentEntity->e.skeleton.bones[ i ];
@@ -1436,15 +1435,18 @@ void Tess_SurfaceIQM( srfIQModel_t *surf ) {
 	}
 
 	if( surf->vbo && surf->ibo ) {
+		Tess_EndBegin();
+
 		Com_Memcpy( tess.bones, bones, model->num_joints * sizeof(transform_t) );
+
 		tess.numBones = model->num_joints;
+
 		R_BindVBO( surf->vbo );
 		R_BindIBO( surf->ibo );
-		tess.vboVertexSkinning = qtrue;
 
-		tess.multiDrawIndexes[ tess.multiDrawPrimitives ] = ((glIndex_t *)NULL) + surf->first_triangle * 3;
-		tess.multiDrawCounts[ tess.multiDrawPrimitives ] = surf->num_triangles * 3;
-		tess.multiDrawPrimitives++;
+		tess.vboVertexSkinning = qtrue;
+		tess.numVertexes = surf->num_vertexes;
+		tess.numIndexes = surf->num_triangles * 3;
 
 		Tess_End();
 		return;
@@ -1500,7 +1502,7 @@ void Tess_SurfaceIQM( srfIQModel_t *surf ) {
 		tess.texCoords[ idxOut ][ 0 ] = model->texcoords[ 2 * idxIn + 0 ];
 		tess.texCoords[ idxOut ][ 1 ] = model->texcoords[ 2 * idxIn + 1 ];
 	}
-
+	
 	tess.numIndexes  += 3 * surf->num_triangles;
 	tess.numVertexes += surf->num_vertexes;
 }
