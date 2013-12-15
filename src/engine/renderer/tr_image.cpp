@@ -39,6 +39,8 @@ Maryland 20850 USA.
  *
 */
 
+#include "tr_local.h"
+
 /*
  * Include file for users of JPEG library.
  * You will need to have included system headers that define at least
@@ -47,11 +49,11 @@ Maryland 20850 USA.
  * You may also wish to include "jerror.h".
  */
 
+// Work around bug in old versions of libpng
+#define PNG_SKIP_SETJMP_CHECK
 #include <jpeglib.h>
 #include <png.h>
 #include <webp/decode.h>
-
-#include "tr_local.h"
 
 static void          LoadWEBP( const char *name, byte **pic, int *width, int *height );
 static void          LoadBMP( const char *name, byte **pic, int *width, int *height );
