@@ -208,9 +208,10 @@ itemDef
 
 itemDef
 {
-	name "organs"
-	rect 511 460 15 15
+	name "credits"
+	rect 510 460 40 15
 	aspectBias ALIGN_RIGHT
+	textAlign  ALIGN_LEFT
 	visible MENU_TRUE
 	textScale 0.4
 	decoration
@@ -222,13 +223,13 @@ itemDef
 {
 	name "creditstext"
 	type ITEM_TYPE_TEXT
-	text "evolution points"
+	text "morph points"
 	style WINDOW_STYLE_EMPTY
 	aspectBias ALIGN_RIGHT
+	textAlign  ALIGN_RIGHT
 	textstyle ITEM_TEXTSTYLE_PLAIN
-	rect 536 460 101 15
+	rect 580 460 50 15
 	textscale .35
-	textalign ALIGN_LEFT
 	forecolor .51 .51 .51 1
 	visible MENU_TRUE
 	decoration
