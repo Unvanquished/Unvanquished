@@ -98,6 +98,23 @@ namespace Audio {
         }
     }
 
+    void UpdateListenerEntity(int entityNum, vec3_t axis[3]) {
+        float alOrientation[6] = {
+            axis[0][0],
+            axis[0][1],
+            axis[0][2],
+            axis[2][0],
+            axis[2][1],
+            axis[2][2]
+        };
+
+        listenerEntity = entityNum;
+        //TODO move in alObjects
+        alListenerfv(AL_POSITION, entities[listenerEntity].position);
+        alListenerfv(AL_VELOCITY, entities[listenerEntity].velocity);
+        alListenerfv(AL_ORIENTATION, alOrientation);
+    }
+
     std::shared_ptr<Emitter> GetEmitterForEntity(int entityNum) {
         if (not entityEmitters[entityNum]) {
             entityEmitters[entityNum] = std::make_shared<EntityEmitter>(entityNum);

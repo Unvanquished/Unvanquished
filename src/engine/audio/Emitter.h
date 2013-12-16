@@ -38,6 +38,7 @@ namespace Audio {
     std::shared_ptr<Emitter> GetEmitterForPosition(const vec3_t position);
     std::shared_ptr<Emitter> GetLocalEmitter();
 
+    void UpdateListenerEntity(int entityNum, vec3_t axis[3]);
     void UpdateRegisteredEntityPosition(int entityNum, const vec3_t position);
     void UpdateRegisteredEntityVelocity(int entityNum, const vec3_t velocity);
     void UpdateRegisteredEntityOcclusion(int entityNum, float ratio);

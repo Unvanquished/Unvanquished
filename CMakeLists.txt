@@ -597,7 +597,6 @@ set( CLIENTLIST
   ${ENGINE_DIR}/client/dl_main.c
   ${ENGINE_DIR}/audio/snd_codec.c
   ${ENGINE_DIR}/audio/snd_codec.h
-  ${ENGINE_DIR}/audio/snd_local.h
   ${ENGINE_DIR}/audio/snd_public.h
   ${ENGINE_DIR}/audio/snd_codec_ogg.c
   ${ENGINE_DIR}/audio/snd_codec_opus.c

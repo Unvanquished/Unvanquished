@@ -22,16 +22,15 @@ along with daemon source code.  if not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
+#ifndef AUDIO_AL_OBJECTS_H_
+#define AUDIO_AL_OBJECTS_H_
+
+#include "snd_codec.h"
 #include <al.h>
 #include <alc.h>
 #define AL_ALEXT_PROTOTYPES
 #include <efx.h>
 #include <efx-presets.h>
-#include "snd_local.h"
-#include "snd_codec.h"
-
-#ifndef AUDIO_AL_OBJECTS_H_
-#define AUDIO_AL_OBJECTS_H_
 
 namespace Audio {
 namespace AL {

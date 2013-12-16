@@ -42,6 +42,7 @@ namespace Audio {
     void ClearAllLoopingSounds();
     void ClearLoopingSoundsForEntity(int entityNum);
 
+    void UpdateListener(int entityNum, vec3_t axis[3]);
     void UpdateEntityPosition(int entityNum, const vec3_t position);
     void UpdateEntityVelocity(int entityNum, const vec3_t velocity);
     void UpdateEntityOcclusion(int entityNum, float ratio);

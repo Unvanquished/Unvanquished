@@ -120,6 +120,10 @@ namespace Audio {
         }
     }
 
+    void UpdateListener(int entityNum, vec3_t axis[3]) {
+        UpdateListenerEntity(entityNum, axis);
+    }
+
     void UpdateEntityPosition(int entityNum, const vec3_t position) {
         UpdateRegisteredEntityPosition(entityNum, position);
     }
