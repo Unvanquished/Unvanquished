@@ -1325,63 +1325,33 @@ void         ByteToDir( int b, vec3_t dir );
 	STATIC_INLINE __m128 unitQuat() {
 		return _mm_set_ps( 1.0f, 0.0f, 0.0f, 0.0f ); // order is reversed
 	}
+	STATIC_INLINE __m128 sseLoadInts( const int vec[4] ) {
+		return *(__m128 *)vec;
+	}
 	STATIC_INLINE __m128 mask_0000() {
-		return (__m128)_mm_set_epi32(  0,  0,  0,  0 );
+		static const ALIGNED(16, int vec[4]) = {  0,  0,  0,  0 };
+		return sseLoadInts( vec );
 	}
 	STATIC_INLINE __m128 mask_000W() {
-		return (__m128)_mm_set_epi32( -1,  0,  0,  0 );
-	}
-	STATIC_INLINE __m128 mask_00Z0() {
-		return (__m128)_mm_set_epi32(  0, -1,  0,  0 );
-	}
-	STATIC_INLINE __m128 mask_00ZW() {
-		return (__m128)_mm_set_epi32( -1, -1,  0,  0 );
-	}
-	STATIC_INLINE __m128 mask_0Y00() {
-		return (__m128)_mm_set_epi32(  0,  0, -1,  0 );
-	}
-	STATIC_INLINE __m128 mask_0Y0W() {
-		return (__m128)_mm_set_epi32( -1,  0, -1,  0 );
-	}
-	STATIC_INLINE __m128 mask_0YZ0() {
-		return (__m128)_mm_set_epi32(  0, -1, -1,  0 );
-	}
-	STATIC_INLINE __m128 mask_0YZW() {
-		return (__m128)_mm_set_epi32( -1, -1, -1,  0 );
-	}
-	STATIC_INLINE __m128 mask_X000() {
-		return (__m128)_mm_set_epi32(  0,  0,  0, -1 );
-	}
-	STATIC_INLINE __m128 mask_X00W() {
-		return (__m128)_mm_set_epi32( -1,  0,  0, -1 );
-	}
-	STATIC_INLINE __m128 mask_X0Z0() {
-		return (__m128)_mm_set_epi32(  0, -1,  0, -1 );
-	}
-	STATIC_INLINE __m128 mask_X0ZW() {
-		return (__m128)_mm_set_epi32( -1, -1,  0, -1 );
-	}
-	STATIC_INLINE __m128 mask_XY00() {
-		return (__m128)_mm_set_epi32(  0,  0, -1, -1 );
-	}
-	STATIC_INLINE __m128 mask_XY0W() {
-		return (__m128)_mm_set_epi32( -1,  0, -1, -1 );
+		static const ALIGNED(16, int vec[4]) = {  0,  0,  0, -1 };
+		return sseLoadInts( vec );
 	}
 	STATIC_INLINE __m128 mask_XYZ0() {
-		return (__m128)_mm_set_epi32(  0, -1, -1, -1 );
-	}
-	STATIC_INLINE __m128 mask_XYZW() {
-		return (__m128)_mm_set_epi32( -1, -1, -1, -1 );
+		static const ALIGNED(16, int vec[4]) = { -1, -1, -1,  0 };
+		return sseLoadInts( vec );
 	}
 
 	STATIC_INLINE __m128 sign_000W() {
-		return (__m128)_mm_set_epi32( 0x80000000, 0, 0, 0 );
+		static const ALIGNED(16, int vec[4]) = { 0, 0, 0, 1<<31 };
+		return sseLoadInts( vec );
 	}
 	STATIC_INLINE __m128 sign_XYZ0() {
-		return (__m128)_mm_set_epi32( 0, 0x80000000, 0x80000000, 0x80000000 );
+		static const ALIGNED(16, int vec[4]) = { 1<<31, 1<<31, 1<<31,  0 };
+		return sseLoadInts( vec );
 	}
 	STATIC_INLINE __m128 sign_XYZW() {
-		return (__m128)_mm_set_epi32( 0x80000000, 0x80000000, 0x80000000, 0x80000000 );
+		static const ALIGNED(16, int vec[4]) = { 1<<31, 1<<31, 1<<31, 1<<31 };
+		return sseLoadInts( vec );
 	}
 
 	STATIC_INLINE __m128 sseDot4( __m128 a, __m128 b ) {
