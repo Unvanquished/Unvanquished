@@ -35,6 +35,7 @@ Maryland 20850 USA.
 #ifndef COMMON_OPTIONAL_H_
 #define COMMON_OPTIONAL_H_
 
+#include "../engine/qcommon/q_shared.h"
 #include <type_traits>
 #include <initializer_list>
 #include <memory>
@@ -77,7 +78,7 @@ public:
 		if (other)
 			init(*other);
 	}
-	optional(optional&& other)
+	optional(optional&& other) NOEXCEPT_IF(std::is_nothrow_move_constructible<T>::value)
 		: engaged(other.engaged)
 	{
 		if (other)
@@ -134,7 +135,7 @@ public:
 		}
 		return *this;
 	}
-	optional& operator=(optional&& other)
+	optional& operator=(optional&& other) NOEXCEPT_IF(std::is_nothrow_move_assignable<T>::value && std::is_nothrow_move_constructible<T>::value)
 	{
 		if (engaged == other.engaged) {
 			if (engaged)
@@ -179,11 +180,12 @@ public:
 		engaged = true;
 	}
 
-	void swap(optional& other)
+	void swap(optional& other) NOEXCEPT_IF(std::is_nothrow_move_constructible<T>::value && NOEXCEPT_EXPR(swap(std::declval<T&>(), std::declval<T&>())))
 	{
+		using std::swap;
 		if (engaged == other.engaged) {
 			if (engaged)
-				std::swap(get_value(), *other);
+				swap(get_value(), *other);
 		} else {
 			if (engaged) {
 				other.init(std::move(get_value()));
@@ -192,7 +194,7 @@ public:
 				init(std::move(*other));
 				other.destroy();
 			}
-			std::swap(engaged, other.engaged);
+			swap(engaged, other.engaged);
 		}
 	}
 
@@ -267,7 +269,7 @@ private:
 	}
 };
 
-template<typename T> void swap(optional<T>& a, optional<T>& b)
+template<typename T> void swap(optional<T>& a, optional<T>& b) NOEXCEPT_IF(NOEXCEPT_EXPR(a.swap(b)))
 {
 	a.swap(b);
 }

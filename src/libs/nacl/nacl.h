@@ -18,6 +18,13 @@ typedef int OSHandleType;
 static const OSHandleType INVALID_HANDLE = -1;
 #endif
 
+// noexcept keyword support
+#ifdef __GNUC__
+#define NACL_NOEXCEPT noexcept
+#else
+#define NACL_NOEXCEPT
+#endif
+
 // Maximum number of bytes that can be sent in a message
 static const size_t MSG_MAX_BYTES = 128 << 10;
 
@@ -38,12 +45,12 @@ class SharedMemoryPtr {
 public:
 	SharedMemoryPtr()
 		: addr(nullptr) {}
-	SharedMemoryPtr(SharedMemoryPtr&& other)
+	SharedMemoryPtr(SharedMemoryPtr&& other) NACL_NOEXCEPT
 		: addr(other.addr), size(other.size)
 	{
 		other.addr = nullptr;
 	}
-	SharedMemoryPtr& operator=(SharedMemoryPtr&& other)
+	SharedMemoryPtr& operator=(SharedMemoryPtr&& other) NACL_NOEXCEPT
 	{
 		std::swap(addr, other.addr);
 		std::swap(size, other.size);
@@ -91,7 +98,7 @@ public:
 	{
 		Close();
 	}
-	IPCHandle(IPCHandle&& other)
+	IPCHandle(IPCHandle&& other) NACL_NOEXCEPT
 	{
 		handle = other.handle;
 		other.handle = INVALID_HANDLE;
@@ -100,7 +107,7 @@ public:
 		size = other.size;
 #endif
 	}
-	IPCHandle& operator=(IPCHandle&& other)
+	IPCHandle& operator=(IPCHandle&& other) NACL_NOEXCEPT
 	{
 		std::swap(handle, other.handle);
 #ifndef __native_client__
@@ -189,9 +196,9 @@ public:
 	// allow the socket to be re-created at any time using GetRootSocket.
 	RootSocket()
 		: handle(INVALID_HANDLE) {}
-	RootSocket(RootSocket&& other)
+	RootSocket(RootSocket&& other) NACL_NOEXCEPT
 		: handle(other.handle) {}
-	RootSocket& operator=(RootSocket&& other)
+	RootSocket& operator=(RootSocket&& other) NACL_NOEXCEPT
 	{
 		handle = other.handle;
 		return *this;
@@ -242,13 +249,13 @@ public:
 	{
 		Close();
 	}
-	Module(Module&& other)
+	Module(Module&& other) NACL_NOEXCEPT
 	{
 		process_handle = other.process_handle;
 		root_socket = other.root_socket;
 		other.process_handle = INVALID_HANDLE;
 	}
-	Module& operator=(Module&& other)
+	Module& operator=(Module&& other) NACL_NOEXCEPT
 	{
 		std::swap(process_handle, other.process_handle);
 		std::swap(root_socket, other.root_socket);
