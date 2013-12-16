@@ -4910,6 +4910,7 @@ namespace FS {
             }
         }
 
+        FS_FreeFileList( filenames );
         return res;
     }
 }
