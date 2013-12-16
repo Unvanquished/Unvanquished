@@ -537,18 +537,7 @@ namespace Cvar {
             void Run(const Cmd::Args& args) const OVERRIDE {
                 CvarMap& cvars = GetCvarMap();
 
-                bool raw;
-                std::string match = "";
-
-                //Read parameters
-                if (args.Argc() > 1) {
-                    match = args.Argv(1);
-                    if (match == "-raw") {
-                        raw = true;
-                        match = (args.Argc() > 2) ? args.Argv(2) : "";
-                    }
-                }
-
+                std::string match = args.Argv(1);
                 std::vector<cvarRecord_t*> matches;
 
                 std::vector<std::string> matchesNames;
