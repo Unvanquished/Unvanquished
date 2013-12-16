@@ -78,6 +78,11 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #define NOEXCEPT_IF(x) noexcept(x)
 #define NOEXCEPT_EXPR(x) noexcept(x)
 
+// GCC 4.6 has incomplete support for C++11
+#if __GNUC__ * 100 + __GNUC_MINOR__ <= 407
+#define GCC_BROKEN_CXX11
+#endif
+
 // Microsoft Visual C++
 #elif defined( _MSC_VER )
 
