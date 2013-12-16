@@ -71,6 +71,12 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #define FINAL
 #endif
 
+// noexcept keyword, this should be used on all move constructors and move
+// assignments so that containers move objects instead of copying them.
+#define NOEXCEPT noexcept
+#define NOEXCEPT_IF(x) noexcept(x)
+#define NOEXCEPT_EXPR(x) noexcept(x)
+
 // Microsoft Visual C++
 #elif defined( _MSC_VER )
 
@@ -124,6 +130,9 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #define DLLIMPORT __declspec(dllimport)
 #define OVERRIDE override
 #define FINAL final
+#define NOEXCEPT
+#define NOEXCEPT_IF(x)
+#define NOEXCEPT_EXPR(x) false
 // Work around lack of C99 support
 #define __func__ __FUNCTION__
 

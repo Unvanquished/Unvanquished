@@ -1777,7 +1777,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		vec3_t   bounds[ 2 ];
 		vec3_t   origin;
 		float    radius;
-		cplane_t plane;
 
 		// dynamic lighting information
 //	int             dlightBits[SMP_FRAMES];
@@ -1785,18 +1784,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 	srfGeneric_t;
 
-	typedef struct srfGridMesh_s
+	typedef struct srfGridMesh_s : srfGeneric_s
 	{
-		// srfGeneric_t BEGIN
-		surfaceType_t surfaceType;
-
-		vec3_t        bounds[ 2 ];
-		vec3_t        origin;
-		float         radius;
-		cplane_t      plane;
-
-		// srfGeneric_t END
-
 		// lod information, which may be different
 		// than the culling information to allow for
 		// groups of curves that LOD as a unit
@@ -1825,17 +1814,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		IBO_t *ibo;
 	} srfGridMesh_t;
 
-	typedef struct
+	typedef struct srfSurfaceFace_s : srfGeneric_s
 	{
-		// srfGeneric_t BEGIN
-		surfaceType_t surfaceType;
-
-		vec3_t        bounds[ 2 ];
-		vec3_t        origin;
-		float         radius;
-		cplane_t      plane;
-
-		// srfGeneric_t END
+		cplane_t     plane;
 
 		// triangle definitions
 		int           numTriangles;
@@ -1854,18 +1835,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	} srfSurfaceFace_t;
 
 // misc_models in maps are turned into direct geometry by xmap
-	typedef struct
+	typedef struct srfTriangles_s : srfGeneric_s
 	{
-		// srfGeneric_t BEGIN
-		surfaceType_t surfaceType;
-
-		vec3_t        bounds[ 2 ];
-		vec3_t        origin;
-		float         radius;
-		cplane_t      plane;
-
-		// srfGeneric_t END
-
 		// triangle definitions
 		int           numTriangles;
 		srfTriangle_t *triangles;
@@ -1882,14 +1853,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		IBO_t *ibo;
 	} srfTriangles_t;
 
-	typedef struct srfVBOMesh_s
+	typedef struct srfVBOMesh_s : srfGeneric_s
 	{
-		surfaceType_t   surfaceType;
-
-		vec3_t          bounds[ 2 ];
-		vec3_t          origin;
-		float           radius;
-
 		struct shader_s *shader; // FIXME move this to somewhere else
 
 		int             lightmapNum; // FIXME get rid of this by merging all lightmaps at level load
@@ -2048,9 +2013,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		uint32_t     numSurfaces;
 		bspSurface_t *firstSurface;
 
-		uint32_t     numVBOSurfaces;
-		srfVBOMesh_t **vboSurfaces;
-
 		// ydnar: decals
 		decal_t *decals;
 	} bspModel_t;
@@ -2108,8 +2070,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 //  int             numAreaPortals;
 //  bspAreaPortal_t *areaPortals;
-
-		int                numWorldSurfaces;
 
 		int                numSurfaces;
 		bspSurface_t       *surfaces;
