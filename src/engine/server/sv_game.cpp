@@ -1524,6 +1524,7 @@ void NaClGameVM::Syscall(int index, RPC::Reader& inputs, RPC::Writer& outputs)
 		std::unique_ptr<char[]> buffer(new char[len]);
 		outputs.WriteInt(SV_BotGetConsoleMessage(client, buffer.get(), len));
 		outputs.WriteString(buffer.get());
+		break;
 	}
 
 	case G_GET_USERCMD:

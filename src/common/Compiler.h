@@ -39,6 +39,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
 // Indicates that a function does not return
 #define NORETURN __attribute__((__noreturn__))
+#define NORETURN_PTR __attribute__((__noreturn__))
 
 // Expect printf-style arguments for a function: a is the index of the format
 // string, and b is the index of the first variable argument
@@ -121,6 +122,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #define DEPRECATED __declspec(deprecated)
 #define COLD
 #define NORETURN __declspec(noreturn)
+#define NORETURN_PTR __declspec(noreturn)
 #define PRINTF_LIKE(n)
 #define VPRINTF_LIKE(n)
 #define PRINTF_TRANSLATE_ARG(a)
