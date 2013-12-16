@@ -53,7 +53,7 @@ struct nullopt_t {
 const nullopt_t nullopt{0};
 
 struct inplace_t {};
-const inplace_t inplace;
+const inplace_t inplace{};
 
 class bad_optional_access: public std::logic_error
 {
@@ -63,6 +63,34 @@ public:
 	explicit bad_optional_access(const char* __arg)
 		: logic_error(__arg) {}
 };
+
+// Missing type traits
+namespace detail {
+
+// GCC 4.6 is missing some type traits
+#ifdef GCC_BROKEN_CXX11
+typedef char one[1];
+typedef char two[2];
+template<typename T, typename Arg, typename = decltype(std::declval<T>() = std::declval<Arg>())>
+two& is_assignable_helper(int);
+template<typename T, typename Arg>
+one& is_assignable_helper(...);
+
+template<typename T, typename Arg> struct is_assignable: public std::integral_constant<bool, sizeof(is_assignable_helper<T, Arg>(0)) - 1> {};
+
+template<typename T> struct is_nothrow_move_assignable: public std::integral_constant<bool, NOEXCEPT_EXPR(std::declval<T&>() = std::declval<T>())> {};
+template<typename T> struct is_nothrow_move_constructible: public std::integral_constant<bool, NOEXCEPT_EXPR(T(std::declval<T>()))> {};
+
+#else
+using std::is_assignable;
+using std::is_nothrow_move_assignable;
+using std::is_nothrow_move_constructible;
+#endif
+
+using std::swap;
+template<typename T> struct is_nothrow_swappable: public std::integral_constant<bool, NOEXCEPT_EXPR(swap(std::declval<T&>(), std::declval<T&>()))> {};
+
+} // namespace detail
 
 template<typename T> class optional {
 public:
@@ -78,7 +106,7 @@ public:
 		if (other)
 			init(*other);
 	}
-	optional(optional&& other) NOEXCEPT_IF(NOEXCEPT_EXPR(T(std::declval<T>())))
+	optional(optional&& other) NOEXCEPT_IF(detail::is_nothrow_move_constructible<value_type>::value)
 		: engaged(other.engaged)
 	{
 		if (other)
@@ -135,7 +163,7 @@ public:
 		}
 		return *this;
 	}
-	optional& operator=(optional&& other) NOEXCEPT_IF(NOEXCEPT_EXPR(std::declval<T&>() = std::declval<T>()) && NOEXCEPT_EXPR(T(std::declval<T>())))
+	optional& operator=(optional&& other) NOEXCEPT_IF(detail::is_nothrow_move_assignable<value_type>::value && detail::is_nothrow_move_constructible<value_type>::value)
 	{
 		if (engaged == other.engaged) {
 			if (engaged)
@@ -151,7 +179,7 @@ public:
 	}
 	template<typename U, typename = typename std::enable_if<std::is_same<typename std::decay<U>::type, value_type>::value &&
 	                                                        std::is_constructible<value_type, U>::value &&
-	                                                        std::is_assignable<value_type&, U>::value>::type>
+	                                                        detail::is_assignable<value_type&, U>::value>::type>
 	optional& operator=(U&& value)
 	{
 		if (engaged) {
@@ -180,7 +208,7 @@ public:
 		engaged = true;
 	}
 
-	void swap(optional& other) NOEXCEPT_IF(NOEXCEPT_EXPR(T(std::declval<T>())) && NOEXCEPT_EXPR(swap(std::declval<T&>(), std::declval<T&>())))
+	void swap(optional& other) NOEXCEPT_IF(detail::is_nothrow_move_constructible<value_type>::value && detail::is_nothrow_swappable<value_type>::value)
 	{
 		using std::swap;
 		if (engaged == other.engaged) {

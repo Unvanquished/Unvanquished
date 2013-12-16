@@ -155,11 +155,11 @@ static int my_stat(Str::StringRef path, my_stat_t* st)
 class minizip_category_impl: public std::error_category
 {
 public:
-	virtual const char* name() const noexcept override final
+	virtual const char* name() const NOEXCEPT OVERRIDE FINAL
 	{
 		return "unzip";
 	}
-	virtual std::string message(int ev) const override final
+	virtual std::string message(int ev) const OVERRIDE FINAL
 	{
 		switch (ev) {
 		case UNZ_OK:
@@ -197,11 +197,11 @@ enum filesystem_error {
 class filesystem_category_impl: public std::error_category
 {
 public:
-	virtual const char* name() const noexcept override final
+	virtual const char* name() const NOEXCEPT OVERRIDE FINAL
 	{
 		return "filesystem";
 	}
-	virtual std::string message(int ev) const override final
+	virtual std::string message(int ev) const OVERRIDE FINAL
 	{
 		switch (ev) {
 		case filesystem_error::pak_not_found:
@@ -519,7 +519,7 @@ void RefreshPaks()
 	// First sort by name, then by version.
 	// For checksums, place files without checksums in front, so they are selected
 	// before any pak with an explicit checksum.
-	std::sort(availablePaks.begin(), availablePaks.end(), [](const PakInfo& a, const PakInfo& b) {
+	std::sort(availablePaks.begin(), availablePaks.end(), [](const PakInfo& a, const PakInfo& b) -> bool {
 		int result = a.name.compare(b.name);
 		if (result != 0)
 			return result < 0;
@@ -996,7 +996,11 @@ void PakNamespace::InternalLoadPak(const PakInfo& pak, Opt::optional<uint32_t> e
 		if (HaveError(err))
 			return;
 		for (auto it = dirRange.begin(); it != dirRange.end();) {
+#ifdef GCC_BROKEN_CXX11
+			fileMap.insert({*it, pakFileInfo_t{loadedPaks.size() - 1, 0}});
+#else
 			fileMap.emplace(*it, pakFileInfo_t{loadedPaks.size() - 1, 0});
+#endif
 			if (*it == PAK_DEPS_FILE)
 				hasDeps = true;
 			it.increment(err);
@@ -1013,7 +1017,11 @@ void PakNamespace::InternalLoadPak(const PakInfo& pak, Opt::optional<uint32_t> e
 		checksum = crc32(0, Z_NULL, 0);
 		zipFile.ForEachFile([this, &checksum, &hasDeps, &depsOffset](Str::StringRef filename, offset_t offset, uint32_t crc) {
 			checksum = crc32(checksum, reinterpret_cast<const Bytef*>(&crc), sizeof(crc));
+#ifdef GCC_BROKEN_CXX11
+			fileMap.insert({filename, pakFileInfo_t{loadedPaks.size() - 1, offset}});
+#else
 			fileMap.emplace(filename, pakFileInfo_t{loadedPaks.size() - 1, offset});
+#endif
 			if (filename == PAK_DEPS_FILE) {
 				hasDeps = true;
 				depsOffset = offset;
@@ -1069,7 +1077,7 @@ void PakNamespace::InternalLoadPak(const PakInfo& pak, Opt::optional<uint32_t> e
 void PakNamespace::LoadPak(Str::StringRef name, std::error_code& err)
 {
 	// Find the latest version with the matching name
-	auto iter = std::upper_bound(availablePaks.begin(), availablePaks.end(), name, [](Str::StringRef name, const PakInfo& pakInfo) {
+	auto iter = std::upper_bound(availablePaks.begin(), availablePaks.end(), name, [](Str::StringRef name, const PakInfo& pakInfo) -> bool {
 		return name < pakInfo.name;
 	});
 
@@ -1084,7 +1092,7 @@ void PakNamespace::LoadPak(Str::StringRef name, std::error_code& err)
 void PakNamespace::LoadPak(Str::StringRef name, Str::StringRef version, std::error_code& err)
 {
 	// Find a matching name and version, but prefer the last matching element since that is usually the one with no checksum
-	auto iter = std::upper_bound(availablePaks.begin(), availablePaks.end(), name, [version](Str::StringRef name, const PakInfo& pakInfo) {
+	auto iter = std::upper_bound(availablePaks.begin(), availablePaks.end(), name, [version](Str::StringRef name, const PakInfo& pakInfo) -> bool {
 		int result = name.compare(pakInfo.name);
 		if (result != 0)
 			return result < 0;
@@ -1102,7 +1110,7 @@ void PakNamespace::LoadPak(Str::StringRef name, Str::StringRef version, std::err
 void PakNamespace::LoadPakExplicit(Str::StringRef name, Str::StringRef version, uint32_t checksum, std::error_code& err)
 {
 	// Try to find an exact match
-	auto iter = std::upper_bound(availablePaks.begin(), availablePaks.end(), name, [version, checksum](Str::StringRef name, const PakInfo& pakInfo) {
+	auto iter = std::upper_bound(availablePaks.begin(), availablePaks.end(), name, [version, checksum](Str::StringRef name, const PakInfo& pakInfo) -> bool {
 		int result = name.compare(pakInfo.name);
 		if (result != 0)
 			return result < 0;
@@ -1114,7 +1122,7 @@ void PakNamespace::LoadPakExplicit(Str::StringRef name, Str::StringRef version, 
 
 	if (iter == availablePaks.begin() || (iter - 1)->name != name || (iter - 1)->version != version || !(iter - 1)->checksum || *(iter - 1)->checksum != checksum) {
 		// Try again, but this time look for the pak without a checksum. We will verify the checksum later.
-		iter = std::upper_bound(availablePaks.begin(), availablePaks.end(), name, [version](Str::StringRef name, const PakInfo& pakInfo) {
+		iter = std::upper_bound(availablePaks.begin(), availablePaks.end(), name, [version](Str::StringRef name, const PakInfo& pakInfo) -> bool {
 			int result = name.compare(pakInfo.name);
 			if (result != 0)
 				return result < 0;
@@ -1508,7 +1516,11 @@ DirectoryRange ListFiles(Str::StringRef path, std::error_code& err)
 {
 	std::string dirPath = path;
 	if (dirPath.back() == '/')
+#ifdef GCC_BROKEN_CXX11
+		dirPath.resize(dirPath.size() - 1);
+#else
 		dirPath.pop_back();
+#endif
 
 #ifdef _WIN32
 	WIN32_FIND_DATAW findData;
@@ -1567,7 +1579,11 @@ bool RecursiveDirectoryRange::Advance(std::error_code& err)
 				current.append(*x.begin());
 			return true;
 		} else
+#ifdef GCC_BROKEN_CXX11
+			current.resize(current.size() - 1);
+#else
 			current.pop_back();
+#endif
 	}
 
 	while (!dirs.empty()) {
