@@ -33,6 +33,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #include <chrono>
 #include <unordered_map>
 #include "../../common/String.h"
+#include "../../common/Optional.h"
 
 namespace FS {
 
@@ -214,8 +215,7 @@ struct PakInfo {
 	// pak, but not necessarily for available paks. Also it might be inaccurate
 	// for available paks if the checksum in the filename doesn't match the
 	// actual checksum.
-	bool hasChecksum;
-	uint32_t checksum;
+	Opt::optional<uint32_t> checksum;
 
 	// Type of pak
 	pakType_t type;
@@ -233,7 +233,7 @@ class PakNamespace {
 	typedef std::unordered_map<std::string, pakFileInfo_t> fileMap_t;
 	std::vector<PakInfo> loadedPaks;
 	fileMap_t fileMap;
-	void InternalLoadPak(const PakInfo& pak, bool verifyChecksum, uint32_t expectedChecksum, std::error_code& err);
+	void InternalLoadPak(const PakInfo& pak, Opt::optional<uint32_t> expectedChecksum, std::error_code& err);
 
 public:
 	// Load a pak into the namespace with all its dependencies

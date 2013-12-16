@@ -402,15 +402,12 @@ static void AddPak(pakType_t type, Str::StringRef filename, Str::StringRef baseP
 	// Get the version of the package
 	size_t underscore2 = filename.find('_', underscore1 + 1);
 	std::string version;
-	uint32_t checksum = 0;
-	bool hasChecksum;
-	if (underscore2 == Str::StringRef::npos) {
+	Opt::optional<uint32_t> checksum;
+	if (underscore2 == Str::StringRef::npos)
 		version = filename.substr(underscore1 + 1, filename.size() - suffixLen - underscore1 - 1);
-		hasChecksum = false;
-	} else {
+	else {
 		// Get the optional checksum of the package
 		version = filename.substr(underscore1 + 1, underscore2 - underscore1 - 1);
-		hasChecksum = true;
 		if (type == PAK_DIR) {
 			Com_Printf("Invalid pak name (checksum not allowed on pk3dir): %s\n", fullPath.c_str());
 			return;
@@ -419,6 +416,7 @@ static void AddPak(pakType_t type, Str::StringRef filename, Str::StringRef baseP
 			Com_Printf("Invalid pak name (bad checksum): %s\n", fullPath.c_str());
 			return;
 		}
+		checksum = 0;
 		for (int i = 0; i < 8; i++) {
 			char c = filename[underscore2 + 1 + i];
 			if (!Str::cisxdigit(c)) {
@@ -426,11 +424,11 @@ static void AddPak(pakType_t type, Str::StringRef filename, Str::StringRef baseP
 				return;
 			}
 			uint32_t hexValue = Str::cisdigit(c) ? c - '0' : Str::ctolower(c) - 'a' + 10;
-			checksum = (checksum << 4) | hexValue;
+			checksum = (*checksum << 4) | hexValue;
 		}
 	}
 
-	availablePaks.push_back({std::move(name), std::move(version), hasChecksum, checksum, type, std::move(fullPath)});
+	availablePaks.push_back({std::move(name), std::move(version), checksum, type, std::move(fullPath)});
 }
 
 // Find all paks in the given path
@@ -528,11 +526,7 @@ void RefreshPaks()
 		if (result != 0)
 			return result < 0;
 		// Put packages without checksums at the end
-		if (!a.hasChecksum)
-			return false;
-		if (!b.hasChecksum)
-			return true;
-		return a.checksum < b.checksum;
+		return a.checksum > b.checksum;
 	});
 }
 
@@ -988,21 +982,12 @@ static void ParseDeps(PakNamespace& ns, const PakInfo& parent, Str::StringRef de
 	}
 }
 
-void PakNamespace::InternalLoadPak(const PakInfo& pak, bool verifyChecksum, uint32_t expectedChecksum, std::error_code& err)
+void PakNamespace::InternalLoadPak(const PakInfo& pak, Opt::optional<uint32_t> expectedChecksum, std::error_code& err)
 {
 	uint32_t checksum;
 	bool hasDeps = false;
 	offset_t depsOffset;
 	ZipArchive zipFile;
-
-	// Add the pak to the list of loaded paks
-	loadedPaks.push_back(pak);
-	if (pak.type == PAK_DIR) {
-		loadedPaks.back().hasChecksum = false;
-	} else {
-		loadedPaks.back().hasChecksum = true;
-		loadedPaks.back().checksum = checksum;
-	}
 
 	// Update the list of files, but don't overwrite existing files to preserve sort order
 	if (pak.type == PAK_DIR) {
@@ -1037,14 +1022,21 @@ void PakNamespace::InternalLoadPak(const PakInfo& pak, bool verifyChecksum, uint
 			return;
 	}
 
+	// Add the pak to the list of loaded paks
+	loadedPaks.push_back(pak);
+	if (pak.type == PAK_DIR)
+		loadedPaks.back().checksum = Opt::nullopt;
+	else
+		loadedPaks.back().checksum = checksum;
+
 	// If an explicit checksum was requested, verify that the pak we loaded is the one we are expecting
-	if (verifyChecksum && checksum != expectedChecksum) {
+	if (expectedChecksum && checksum != *expectedChecksum) {
 		SetErrorCodeZlib(err, UNZ_CRCERROR);
 		return;
 	}
 
 	// Print a warning if the checksum doesn't match the one in the filename
-	if (pak.hasChecksum && pak.checksum != checksum)
+	if (pak.checksum && *pak.checksum != checksum)
 		Com_Printf("Pak checksum doesn't match filename: %s\n", pak.path.c_str());
 
 	// Load dependencies
@@ -1085,7 +1077,7 @@ void PakNamespace::LoadPak(Str::StringRef name, std::error_code& err)
 		return;
 	}
 
-	InternalLoadPak(*(iter - 1), false, 0, err);
+	InternalLoadPak(*(iter - 1), Opt::nullopt, err);
 }
 
 void PakNamespace::LoadPak(Str::StringRef name, Str::StringRef version, std::error_code& err)
@@ -1103,7 +1095,7 @@ void PakNamespace::LoadPak(Str::StringRef name, Str::StringRef version, std::err
 		return;
 	}
 
-	InternalLoadPak(*(iter - 1), false, 0, err);
+	InternalLoadPak(*(iter - 1), Opt::nullopt, err);
 }
 
 void PakNamespace::LoadPak(Str::StringRef name, Str::StringRef version, uint32_t checksum, std::error_code& err)
@@ -1116,12 +1108,10 @@ void PakNamespace::LoadPak(Str::StringRef name, Str::StringRef version, uint32_t
 		result = VersionCmp(version, pakInfo.version);
 		if (result != 0)
 			return result < 0;
-		if (!pakInfo.hasChecksum)
-			return true;
-		return checksum < pakInfo.checksum;
+		return checksum > pakInfo.checksum;
 	});
 
-	if (iter == availablePaks.begin() || (iter - 1)->name != name || (iter - 1)->version != version || !(iter - 1)->hasChecksum || (iter - 1)->checksum != checksum) {
+	if (iter == availablePaks.begin() || (iter - 1)->name != name || (iter - 1)->version != version || !(iter - 1)->checksum || *(iter - 1)->checksum != checksum) {
 		// Try again, but this time look for the pak without a checksum. We will verify the checksum later.
 		iter = std::upper_bound(availablePaks.begin(), availablePaks.end(), name, [version](Str::StringRef name, const PakInfo& pakInfo) {
 			int result = name.compare(pakInfo.name);
@@ -1130,17 +1120,17 @@ void PakNamespace::LoadPak(Str::StringRef name, Str::StringRef version, uint32_t
 			result = VersionCmp(version, pakInfo.version);
 			if (result != 0)
 				return result < 0;
-			return false;
+			return Opt::nullopt > pakInfo.checksum;
 		});
 
 		// Only allow zip packages because directories don't have a checksum
-		if (iter == availablePaks.begin() || (iter - 1)->type == PAK_DIR || (iter - 1)->name != name || (iter - 1)->version != version || (iter - 1)->hasChecksum) {
+		if (iter == availablePaks.begin() || (iter - 1)->type == PAK_DIR || (iter - 1)->name != name || (iter - 1)->version != version || (iter - 1)->checksum) {
 			SetErrorCodeFilesystem(filesystem_error::pak_not_found, err);
 			return;
 		}
 	}
 
-	InternalLoadPak(*(iter - 1), true, checksum, err);
+	InternalLoadPak(*(iter - 1), checksum, err);
 }
 
 std::string PakNamespace::ReadFile(Str::StringRef path, std::error_code& err) const
