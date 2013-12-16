@@ -122,7 +122,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #define DEPRECATED __declspec(deprecated)
 #define COLD
 #define NORETURN __declspec(noreturn)
-#define NORETURN_PTR __declspec(noreturn)
+#define NORETURN_PTR
 #define PRINTF_LIKE(n)
 #define VPRINTF_LIKE(n)
 #define PRINTF_TRANSLATE_ARG(a)
