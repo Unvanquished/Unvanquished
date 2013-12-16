@@ -176,8 +176,8 @@ namespace Cvar {
 
     template<typename T>
     void Cvar<T>::Set(T newValue) {
-        if (Validate(newValue)) {
-            SetValue(SerializeCvarValue(value));
+        if (Validate(newValue).success) {
+            SetValue(SerializeCvarValue(newValue));
         }
     }
 
