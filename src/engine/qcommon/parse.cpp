@@ -2889,11 +2889,24 @@ static int Parse_DollarEvaluate( source_t *source, signed long int *intvalue,
 
 				if ( !define )
 				{
+					for ( t = firsttoken; t; t = nexttoken )
+					{
+						nexttoken = t->next;
+						Parse_FreeToken( t );
+					}
 					Parse_SourceError( source, "can't evaluate %s, not defined", token.string );
 					return qfalse;
 				}
 
-				if ( !Parse_ExpandDefineIntoSource( source, &token, define ) ) { return qfalse; }
+				if ( !Parse_ExpandDefineIntoSource( source, &token, define ) ) 
+				{
+					for ( t = firsttoken; t; t = nexttoken )
+					{
+						nexttoken = t->next;
+						Parse_FreeToken( t );
+					}
+					return qfalse;
+				}
 			}
 		}
 		//if the token is a number or a punctuation

@@ -78,7 +78,7 @@ public:
 		if (other)
 			init(*other);
 	}
-	optional(optional&& other) NOEXCEPT_IF(std::is_nothrow_move_constructible<T>::value)
+	optional(optional&& other) NOEXCEPT_IF(NOEXCEPT_EXPR(T(std::declval<T>())))
 		: engaged(other.engaged)
 	{
 		if (other)
@@ -135,7 +135,7 @@ public:
 		}
 		return *this;
 	}
-	optional& operator=(optional&& other) NOEXCEPT_IF(std::is_nothrow_move_assignable<T>::value && std::is_nothrow_move_constructible<T>::value)
+	optional& operator=(optional&& other) NOEXCEPT_IF(NOEXCEPT_EXPR(std::declval<T&>() = std::declval<T>()) && NOEXCEPT_EXPR(T(std::declval<T>())))
 	{
 		if (engaged == other.engaged) {
 			if (engaged)
@@ -180,7 +180,7 @@ public:
 		engaged = true;
 	}
 
-	void swap(optional& other) NOEXCEPT_IF(std::is_nothrow_move_constructible<T>::value && NOEXCEPT_EXPR(swap(std::declval<T&>(), std::declval<T&>())))
+	void swap(optional& other) NOEXCEPT_IF(NOEXCEPT_EXPR(T(std::declval<T>())) && NOEXCEPT_EXPR(swap(std::declval<T&>(), std::declval<T&>())))
 	{
 		using std::swap;
 		if (engaged == other.engaged) {
