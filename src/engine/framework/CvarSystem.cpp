@@ -529,6 +529,19 @@ namespace Cvar {
     };
     static ResetCmd ResetCmdRegistration;
 
+    std::string Raw(const std::string& src) {
+        std::string out;
+        size_t length = src.length();
+
+        for (size_t i = 0; i < length; ++i)
+        {
+            if (src[i] == '^')
+                out += '^';
+            out += src[i];
+        }
+        return out;
+    }
+
     class ListCvars: public Cmd::StaticCmd {
         public:
             ListCvars(): Cmd::StaticCmd("listCvars", Cmd::BASE, N_("lists variables")) {
@@ -537,7 +550,18 @@ namespace Cvar {
             void Run(const Cmd::Args& args) const OVERRIDE {
                 CvarMap& cvars = GetCvarMap();
 
-                std::string match = args.Argv(1);
+                bool raw = false;
+                std::string match = "";
+
+                //Read parameters
+                if (args.Argc() > 1) {
+                    match = args.Argv(1);
+                    if (match == "-raw") {
+                        raw = true;
+                        match = (args.Argc() > 2) ? args.Argv(2) : "";
+                    }
+                }
+
                 std::vector<cvarRecord_t*> matches;
 
                 std::vector<std::string> matchesNames;
@@ -588,7 +612,13 @@ namespace Cvar {
                         filler2 = std::string(maxValueLength - value.length(), ' ');
                     }
 
-                    Print("  %s%s %s %s", name, filler1, flags, var->description);
+                    // this is going to 'break' (wrong output) if the description contains any ^s other than in the variable value(s)
+                    if (raw) {
+                        Print("  %s%s %s %s", name, filler1, flags, Raw(var->description));
+                    }
+                    else {
+                        Print("  %s%s %s %s", name, filler1, flags, var->description);
+                    }
                 }
 
                 Print("%zu cvars", matches.size());
