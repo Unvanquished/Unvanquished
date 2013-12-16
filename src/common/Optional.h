@@ -70,7 +70,7 @@ public:
 
 	optional()
 		: engaged(false) {}
-	explicit optional(nullopt_t)
+	optional(nullopt_t)
 		: engaged(false) {}
 	optional(const optional& other)
 		: engaged(other.engaged)
@@ -328,7 +328,7 @@ template<typename T> bool operator!=(nullopt_t, const optional<T>& b)
 {
 	return !(nullopt == b);
 }
-template<typename T> bool operator<(const optional<T>& a, nullopt_t)
+template<typename T> bool operator<(const optional<T>&, nullopt_t)
 {
 	return false;
 }
