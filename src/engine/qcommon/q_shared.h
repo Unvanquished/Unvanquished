@@ -559,6 +559,8 @@ extern quat_t   quatIdentity;
 		float x = 0.5f * number;
 		float y;
 
+		Q_UNUSED(x);
+
 		// compute approximate inverse square root
 #if defined( idx86_sse )
 		_mm_store_ss( &y, _mm_rsqrt_ss( _mm_load_ss( &number ) ) );
@@ -573,7 +575,9 @@ extern quat_t   quatIdentity;
 		y = Q_uintBitsToFloat( 0x5f3759df - (Q_floatBitsToUint( number ) >> 1) );
 		y *= ( 1.5f - ( x * y * y ) ); // initial iteration
 #endif
-		//y *= ( 1.5f - ( x * y * y ) ); // second iteration for higher precision
+#ifdef RSQRT_PRECISE
+		y *= ( 1.5f - ( x * y * y ) ); // second iteration for higher precision
+#endif
 		return y;
 	}
 #endif

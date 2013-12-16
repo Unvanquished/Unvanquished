@@ -69,7 +69,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 // SSE support
 #if defined(__x86_64__) || defined(__SSE__) || _M_IX86_FP >= 1
 #include <xmmintrin.h>
-#define id386_sse 1
+#define idx86_sse 1
 #endif
 
 #endif // COMMON_PLATFORM_H_
