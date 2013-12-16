@@ -27,7 +27,7 @@ along with daemon source code.  if not, see <http://www.gnu.org/licenses/>.
 namespace Audio {
 
     //TODO nice usecase for Cvar::Range
-    static Cvar::Cvar<float> volume("sound.volume.global", "the global sound volume", Cvar::ARCHIVE, 0.8f);
+    static Cvar::Cvar<float> effectsVolume("sound.volume.effects", "the volume of the effects", Cvar::ARCHIVE, 0.8f);
     static Cvar::Cvar<float> musicVolume("sound.volume.music", "the volume of the music", Cvar::ARCHIVE, 0.8f);
 
     struct sourceRecord_t {
@@ -52,9 +52,8 @@ namespace Audio {
         }
 
         sources = new sourceRecord_t[nSources];
-        AL::ReverbEffectPreset preset(EFX_REVERB_PRESET_HANGAR);
         globalEffect = new AL::Effect();
-        globalEffect->ApplyReverbPreset(preset);
+        globalEffect->ApplyReverbPreset(AL::GetHangarEffectPreset());
 
         for (int i = 0; i < nSources; i++) {
             sources[i].active = false;
@@ -205,12 +204,12 @@ namespace Audio {
     }
 
     void Sound::FinishSetup() {
-        currentGain = positionalGain * soundGain * volume.Get();
+        currentGain = positionalGain * soundGain * effectsVolume.Get();
         source->SetGain(currentGain);
     }
 
     void Sound::Update() {
-        float targetGain = positionalGain * soundGain * volume.Get();
+        float targetGain = positionalGain * soundGain * effectsVolume.Get();
 
         //TODO make it framerate dependant and fade out in about 1/8 seconds ?
         if (currentGain > targetGain) {

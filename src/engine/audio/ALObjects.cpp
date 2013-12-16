@@ -22,8 +22,13 @@ along with daemon source code.  if not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
-#include "ALObjects.h"
-#include "../../common/Log.h"
+#include "AudioPrivate.h"
+
+#define AL_ALEXT_PROTOTYPES
+#include <al.h>
+#include <alc.h>
+#include <efx.h>
+#include <efx-presets.h>
 
 namespace Audio {
 namespace AL {
@@ -77,7 +82,7 @@ namespace AL {
         alHandle = 0;
     }
 
-    ALuint Buffer::Feed(snd_info_t info, void* data) {
+    unsigned Buffer::Feed(snd_info_t info, void* data) {
         ALuint format = Format(info.width, info.channels);
 
         ClearError();
@@ -86,11 +91,36 @@ namespace AL {
         return alGetError();
     }
 
-    Buffer::operator ALuint() const {
+    Buffer::operator unsigned() const {
         return alHandle;
     }
 
     // ReverbEffectPreset implementation
+
+    struct ReverbEffectPreset {
+        ReverbEffectPreset(EFXEAXREVERBPROPERTIES builtinPreset);
+
+        float density;
+        float diffusion;
+        float gain;
+        float gainHF;
+        float gainLF;
+        float decayTime;
+        float decayHFRatio;
+        float decayLFRatio;
+        float reflectionsGain;
+        float reflectionsDelay;
+        float lateReverbGain;
+        float lateReverbDelay;
+        float echoTime;
+        float echoDepth;
+        float modulationTime;
+        float modulationDepth;
+        float airAbsorptionGainHF;
+        float HFReference;
+        float LFReference;
+        bool decayHFLimit;
+    };
 
     ReverbEffectPreset::ReverbEffectPreset(EFXEAXREVERBPROPERTIES builtinPreset):
         density(builtinPreset.flDensity),
@@ -113,6 +143,11 @@ namespace AL {
         HFReference(builtinPreset.flHFReference),
         LFReference(builtinPreset.flLFReference),
         decayHFLimit(builtinPreset.iDecayHFLimit) {
+    }
+
+    ReverbEffectPreset& GetHangarEffectPreset() {
+        static ReverbEffectPreset preset(EFX_REVERB_PRESET_HANGAR);
+        return preset;
     }
 
     // Effect implementation
@@ -241,7 +276,7 @@ namespace AL {
         SetReverbDelayHFLimit(preset.decayHFLimit);
     }
 
-    Effect::operator ALuint() const {
+    Effect::operator unsigned() const {
         return alHandle;
     }
 
@@ -271,8 +306,35 @@ namespace AL {
         alAuxiliaryEffectSloti(alHandle, AL_EFFECTSLOT_EFFECT, effect);
     }
 
-    EffectSlot::operator ALuint() const {
+    EffectSlot::operator unsigned() const {
         return alHandle;
+    }
+
+    // Listener function implementations
+
+    void SetListenerGain(float gain) {
+        alListenerf(AL_GAIN, gain);
+    }
+
+    void SetListenerPosition(const vec3_t position) {
+        alListenerfv(AL_POSITION, position);
+    }
+
+    void SetListenerVelocity(const vec3_t velocity) {
+        alListenerfv(AL_VELOCITY, velocity);
+    }
+
+    void SetListenerOrientation(const vec3_t orientation[3]) {
+        float alOrientation[6] = {
+            orientation[0][0],
+            orientation[0][1],
+            orientation[0][2],
+            orientation[2][0],
+            orientation[2][1],
+            orientation[2][2]
+        };
+
+        alListenerfv(AL_ORIENTATION, alOrientation);
     }
 
     // Source implementation
@@ -355,9 +417,97 @@ namespace AL {
         alSource3i(alHandle, AL_AUXILIARY_SEND_FILTER, AL_EFFECTSLOT_NULL, slot, AL_FILTER_NULL);
     }
 
-    Source::operator ALuint() const {
+    Source::operator unsigned() const {
         return alHandle;
     }
 
+    // Implementation of Device
+
+    Device* Device::FromName(Str::StringRef name) {
+        ALCdevice* alHandle = alcOpenDevice(name.c_str());
+        if (alHandle) {
+            return new Device(alHandle);
+        } else {
+            return nullptr;
+        }
+    }
+
+    Device* Device::GetDefaultDevice() {
+        ALCdevice* alHandle = alcOpenDevice(nullptr);
+        if (alHandle) {
+            return new Device(alHandle);
+        } else {
+            return nullptr;
+        }
+    }
+
+    Device::Device(Device&& other) {
+        alHandle = other.alHandle;
+        other.alHandle = nullptr;
+    }
+
+    Device::~Device() {
+        if (alHandle) {
+            alcCloseDevice((ALCdevice*)alHandle);
+        }
+        alHandle = nullptr;
+    }
+
+    Device::operator void*() {
+        return alHandle;
+    }
+
+    std::vector<std::string> Device::ListByName() {
+        const char* list = alcGetString(NULL, ALC_ALL_DEVICES_SPECIFIER);
+
+        if (!list) {
+            return {};
+        }
+
+        std::vector<std::string> res;
+        while (*list) {
+            res.push_back(list);
+            list += res.back().size() + 1;
+        }
+
+        return res;
+    }
+
+    Device::Device(void* alHandle): alHandle(alHandle) {
+    }
+
+    // Implementation of Context
+
+    Context* Context::GetDefaultContext(Device& device) {
+        ALCcontext* alHandle = alcCreateContext((ALCdevice*)(void*)device, nullptr);
+        if (alHandle) {
+            return new Context(alHandle);
+        } else {
+            return nullptr;
+        }
+    }
+
+    Context::Context(Context&& other) {
+        alHandle = other.alHandle;
+        other.alHandle = nullptr;
+    }
+
+    Context::~Context() {
+        if (alHandle) {
+            alcDestroyContext((ALCcontext*)alHandle);
+        }
+        alHandle = nullptr;
+    }
+
+    void Context::MakeCurrent() {
+        alcMakeContextCurrent((ALCcontext*)alHandle);
+    }
+
+    Context::operator void*() {
+        return alHandle;
+    }
+
+    Context::Context(void* alHandle): alHandle(alHandle) {
+    }
 }
 }

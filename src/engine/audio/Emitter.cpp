@@ -32,7 +32,7 @@ namespace Audio {
         float occlusion;
     };
 
-    static int listenerEntity = -1; //TODO
+    static int listenerEntity = -1;
 
     static entityData_t entities[MAX_GENTITIES];
 
@@ -98,21 +98,12 @@ namespace Audio {
         }
     }
 
-    void UpdateListenerEntity(int entityNum, vec3_t axis[3]) {
-        float alOrientation[6] = {
-            axis[0][0],
-            axis[0][1],
-            axis[0][2],
-            axis[2][0],
-            axis[2][1],
-            axis[2][2]
-        };
-
+    void UpdateListenerEntity(int entityNum, vec3_t orientation[3]) {
         listenerEntity = entityNum;
-        //TODO move in alObjects
-        alListenerfv(AL_POSITION, entities[listenerEntity].position);
-        alListenerfv(AL_VELOCITY, entities[listenerEntity].velocity);
-        alListenerfv(AL_ORIENTATION, alOrientation);
+
+        AL::SetListenerPosition(entities[listenerEntity].position);
+        AL::SetListenerVelocity(entities[listenerEntity].velocity);
+        AL::SetListenerOrientation(orientation);
     }
 
     std::shared_ptr<Emitter> GetEmitterForEntity(int entityNum) {

@@ -25,12 +25,8 @@ along with daemon source code.  if not, see <http://www.gnu.org/licenses/>.
 #ifndef AUDIO_AL_OBJECTS_H_
 #define AUDIO_AL_OBJECTS_H_
 
+#include "../../common/String.h"
 #include "snd_codec.h"
-#include <al.h>
-#include <alc.h>
-#define AL_ALEXT_PROTOTYPES
-#include <efx.h>
-#include <efx-presets.h>
 
 namespace Audio {
 namespace AL {
@@ -41,50 +37,26 @@ namespace AL {
 
     void ClearError();
 
-    //TODO remove the need for this somehow
-    ALuint Format(int width, int channels);
-
     class Buffer {
         public:
             Buffer();
             Buffer(Buffer&& other);
             ~Buffer();
 
-            ALuint Feed(snd_info_t info, void* data);
+            unsigned Feed(snd_info_t info, void* data);
 
-            operator ALuint() const;
+            operator unsigned() const;
 
         private:
             Buffer(const Buffer& other);
             Buffer& operator=(const Buffer& other);
 
-            ALuint alHandle;
+            unsigned alHandle;
     };
 
-    struct ReverbEffectPreset {
-        ReverbEffectPreset(EFXEAXREVERBPROPERTIES builtinPreset);
 
-        float density;
-        float diffusion;
-        float gain;
-        float gainHF;
-        float gainLF;
-        float decayTime;
-        float decayHFRatio;
-        float decayLFRatio;
-        float reflectionsGain;
-        float reflectionsDelay;
-        float lateReverbGain;
-        float lateReverbDelay;
-        float echoTime;
-        float echoDepth;
-        float modulationTime;
-        float modulationDepth;
-        float airAbsorptionGainHF;
-        float HFReference;
-        float LFReference;
-        bool decayHFLimit;
-    };
+    struct ReverbEffectPreset;
+    ReverbEffectPreset& GetHangarEffectPreset();
 
     class Effect {
         public:
@@ -117,13 +89,13 @@ namespace AL {
 
             void ApplyReverbPreset(ReverbEffectPreset& preset);
 
-            operator ALuint() const;
+            operator unsigned() const;
 
         private:
             Effect(const Effect& other);
             Effect& operator=(const Effect& other);
 
-            ALuint alHandle;
+            unsigned alHandle;
     };
 
     class EffectSlot {
@@ -135,14 +107,19 @@ namespace AL {
             void SetGain(float gain);
             void SetEffect(Effect& effect);
 
-            operator ALuint() const;
+            operator unsigned() const;
 
         private:
             EffectSlot(const EffectSlot& other);
             EffectSlot& operator=(const EffectSlot& other);
 
-            ALuint alHandle;
+            unsigned alHandle;
     };
+
+    void SetListenerGain(float gain);
+    void SetListenerPosition(const vec3_t position);
+    void SetListenerVelocity(const vec3_t velocity);
+    void SetListenerOrientation(const vec3_t orientation[3]);
 
     class Source {
         public:
@@ -169,15 +146,51 @@ namespace AL {
             void EnableSlot(int slot);
             void DisableSlot(int slot);
 
-            operator ALuint() const;
+            operator unsigned() const;
 
         private:
             Source(const Source& other);
             Source& operator=(const Source& other);
 
-            ALuint alHandle;
+            unsigned alHandle;
             EffectSlot slots[N_EFFECT_SLOTS];
     };
+
+    class Device {
+        public:
+            static Device* FromName(Str::StringRef name);
+            static Device* GetDefaultDevice();
+            Device(Device&& other);
+            ~Device();
+
+            operator void*();
+
+            static std::vector<std::string> ListByName();
+
+        private:
+            Device(void* alHandle);
+            Device(const Device& other);
+            Device& operator=(const Device& other);
+            void* alHandle;
+    };
+
+    class Context {
+        public:
+            static Context* GetDefaultContext(Device& device);
+            Context(Context&& other);
+            ~Context();
+
+            void MakeCurrent();
+
+            operator void*();
+
+        private:
+            Context(void* alHandle);
+            Context(const Context& other);
+            Context& operator=(const Context& other);
+            void* alHandle;
+    };
+
 
 }
 }

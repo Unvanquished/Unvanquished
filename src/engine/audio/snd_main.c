@@ -356,7 +356,7 @@ void S_Init( void )
 		S_CodecInit( );
 
         //OpenAL
-        started = S_AL_Init();
+        started = Audio::Init();
 
 		if ( started )
 		{
@@ -366,6 +366,7 @@ void S_Init( void )
 
 		else
 		{
+            //TODO should be an error?
 			Com_Printf( "Sound initialization failed.\n" );
 		}
 	}
@@ -380,7 +381,7 @@ S_Shutdown
 */
 void S_Shutdown( void )
 {
-	S_AL_Shutdown( );
+    Audio::Shutdown();
 	S_CodecShutdown( );
 }
 

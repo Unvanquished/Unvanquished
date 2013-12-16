@@ -25,7 +25,6 @@ along with daemon source code.  if not, see <http://www.gnu.org/licenses/>.
 #ifndef AUDIO_SAMPLE_H_
 #define AUDIO_SAMPLE_H_
 
-#include "AudioPrivate.h"
 #include "ALObjects.h"
 
 namespace Audio {

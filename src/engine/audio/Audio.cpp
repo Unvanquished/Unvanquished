@@ -27,13 +27,67 @@ along with daemon source code.  if not, see <http://www.gnu.org/licenses/>.
 //TODO check all inputs for validity
 namespace Audio {
 
+    static Cvar::Cvar<float> masterVolume("sound.volume.master", "the global audio volume", Cvar::ARCHIVE, 0.8f);
+
+    //TODO make them the equivalent of LATCH and ROM for available*
+    static Cvar::Cvar<std::string> deviceString("s_alDevice", "the OpenAL device to use", Cvar::ARCHIVE, "");
+    static Cvar::Cvar<std::string> availableDevices("s_alAvailableDevices", "the available OpenAL devices", 0, "");
+
+    static Cvar::Cvar<std::string> inputDeviceString("s_alInputDevice", "the OpenAL input device to use", Cvar::ARCHIVE, "");
+    static Cvar::Cvar<std::string> availableInputDevices("s_alAvailableInputDevices", "the available input OpenAL devices", 0, "");
+
     struct entityLoop_t {
         bool addedThisFrame;
         std::shared_ptr<LoopingSound> sound;
     };
-    entityLoop_t entityLoops[MAX_GENTITIES];
+    static entityLoop_t entityLoops[MAX_GENTITIES];
 
-    void Init() {
+    static bool initialized = false;
+    static AL::Device* device;
+    static AL::Context* context;
+
+    bool Init() {
+        if (initialized) {
+            return true;
+        }
+
+        std::string deviceToTry = deviceString.Get();
+        if (not deviceToTry.empty()) {
+            device = AL::Device::FromName(deviceToTry);
+
+            if (not device) {
+                Log::Warn("Could not open OpenAL device '%s', trying the default device.", deviceToTry);
+                device = AL::Device::GetDefaultDevice();
+            }
+        } else {
+            device = AL::Device::GetDefaultDevice();
+        }
+
+        if (not device) {
+            Log::Warn("Could not open an OpenAL device.");
+            return false;
+        }
+
+        context = AL::Context::GetDefaultContext(*device);
+
+        if (not context) {
+            delete device;
+            device = nullptr;
+            Log::Warn("Could not create an OpenAL context.");
+            return false;
+        }
+
+        std::stringstream deviceList;
+        for (auto deviceName : AL::Device::ListByName()) {
+            deviceList << deviceName << "\n";
+        }
+        availableDevices.Set(deviceList.str());
+        Log::Debug(deviceList.str());
+
+        context->MakeCurrent();
+
+        initialized = true;
+
         InitSamples();
         InitSounds();
         InitEmitters();
@@ -41,9 +95,16 @@ namespace Audio {
         for (int i = 0; i < MAX_GENTITIES; i++) {
             entityLoops[i] = {false, nullptr};
         }
+
+        return true;
     }
 
     void Shutdown() {
+        if (not initialized) {
+            return;
+        }
+        initialized = false;
+
         for (int i = 0; i < MAX_GENTITIES; i++) {
             if (entityLoops[i].sound) {
                 entityLoops[i].sound->Stop();
@@ -54,6 +115,12 @@ namespace Audio {
         ShutdownEmitters();
         ShutdownSounds();
         ShutdownSamples();
+
+        delete context;
+        delete device;
+
+        context = nullptr;
+        device = nullptr;
     }
 
     void Update() {
@@ -63,6 +130,8 @@ namespace Audio {
                 entityLoops[i] = {false, nullptr};
             }
         }
+
+        AL::SetListenerGain(masterVolume.Get());
 
         UpdateEmitters();
         UpdateSounds();
@@ -120,8 +189,8 @@ namespace Audio {
         }
     }
 
-    void UpdateListener(int entityNum, vec3_t axis[3]) {
-        UpdateListenerEntity(entityNum, axis);
+    void UpdateListener(int entityNum, vec3_t orientation[3]) {
+        UpdateListenerEntity(entityNum, orientation);
     }
 
     void UpdateEntityPosition(int entityNum, const vec3_t position) {

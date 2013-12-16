@@ -601,7 +601,6 @@ set( CLIENTLIST
   ${ENGINE_DIR}/audio/snd_codec_ogg.c
   ${ENGINE_DIR}/audio/snd_codec_opus.c
   ${ENGINE_DIR}/audio/snd_codec_wav.c
-  ${ENGINE_DIR}/audio/snd_openal.c
   ${ENGINE_DIR}/audio/snd_main.c
   ${ENGINE_DIR}/audio/ALObjects.cpp
   ${ENGINE_DIR}/audio/ALObjects.h
