@@ -508,6 +508,8 @@ set( ENGINELIST
   ${ENGINE_DIR}/framework/ConsoleField.h
   ${ENGINE_DIR}/framework/ConsoleHistory.cpp
   ${ENGINE_DIR}/framework/ConsoleHistory.h
+  ${ENGINE_DIR}/framework/FileSystem.cpp
+  ${ENGINE_DIR}/framework/FileSystem.h
   ${ENGINE_DIR}/framework/LogSystem.cpp
   ${ENGINE_DIR}/framework/LogSystem.h
   ${ENGINE_DIR}/framework/VirtualMachine.cpp

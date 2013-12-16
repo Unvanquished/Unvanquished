@@ -25,6 +25,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
 #include "FileSystem.h"
+#include "../../common/Log.h"
 #include "../../libs/minizip/unzip.h"
 #include <vector>
 #include <algorithm>
@@ -394,7 +395,7 @@ static void AddPak(pakType_t type, Str::StringRef filename, Str::StringRef baseP
 	// Get the name of the package
 	size_t underscore1 = filename.find('_', nameStart);
 	if (underscore1 == Str::StringRef::npos) {
-		Com_Printf("Invalid pak name (no version): %s\n", fullPath.c_str());
+		Log::Warn("Invalid pak name (no version): %s\n", fullPath);
 		return;
 	}
 	std::string name = filename.substr(0, underscore1);
@@ -409,18 +410,18 @@ static void AddPak(pakType_t type, Str::StringRef filename, Str::StringRef baseP
 		// Get the optional checksum of the package
 		version = filename.substr(underscore1 + 1, underscore2 - underscore1 - 1);
 		if (type == PAK_DIR) {
-			Com_Printf("Invalid pak name (checksum not allowed on pk3dir): %s\n", fullPath.c_str());
+			Log::Warn("Invalid pak name (checksum not allowed on pk3dir): %s\n", fullPath);
 			return;
 		}
 		if (underscore2 + 9 != filename.size() - suffixLen) {
-			Com_Printf("Invalid pak name (bad checksum): %s\n", fullPath.c_str());
+			Log::Warn("Invalid pak name (bad checksum): %s\n", fullPath);
 			return;
 		}
 		checksum = 0;
 		for (int i = 0; i < 8; i++) {
 			char c = filename[underscore2 + 1 + i];
 			if (!Str::cisxdigit(c)) {
-				Com_Printf("Invalid pak name (bad checksum): %s\n", fullPath.c_str());
+				Log::Warn("Invalid pak name (bad checksum): %s\n", fullPath);
 				return;
 			}
 			uint32_t hexValue = Str::cisdigit(c) ? c - '0' : Str::ctolower(c) - 'a' + 10;
@@ -447,7 +448,7 @@ static void FindPaks(Str::StringRef basePath, Str::StringRef subPath)
 	} catch (std::system_error& err) {
 		// If there was an error reading a directory, just ignore it and go to
 		// the next one.
-		Com_Printf("Error reading directory %s: %s\n", fullPath.c_str(), err.what());
+		Log::Warn("Error reading directory %s: %s\n", fullPath, err.what());
 	}
 }
 
@@ -1037,10 +1038,10 @@ void PakNamespace::InternalLoadPak(const PakInfo& pak, Opt::optional<uint32_t> e
 
 	// Print a warning if the checksum doesn't match the one in the filename
 	if (pak.checksum && *pak.checksum != checksum)
-		Com_Printf("Pak checksum doesn't match filename: %s\n", pak.path.c_str());
+		Log::Warn("Pak checksum doesn't match filename: %s\n", pak.path);
 
-	// Load dependencies
-	if (hasDeps) {
+	// Load dependencies, but not if a checksum was specified
+	if (hasDeps && !expectedChecksum) {
 		std::string depsData;
 		if (pak.type == PAK_DIR) {
 			File depsFile = RawPath::OpenRead(Path::Build(pak.path, PAK_DEPS_FILE), err);
@@ -1098,7 +1099,7 @@ void PakNamespace::LoadPak(Str::StringRef name, Str::StringRef version, std::err
 	InternalLoadPak(*(iter - 1), Opt::nullopt, err);
 }
 
-void PakNamespace::LoadPak(Str::StringRef name, Str::StringRef version, uint32_t checksum, std::error_code& err)
+void PakNamespace::LoadPakExplicit(Str::StringRef name, Str::StringRef version, uint32_t checksum, std::error_code& err)
 {
 	// Try to find an exact match
 	auto iter = std::upper_bound(availablePaks.begin(), availablePaks.end(), name, [version, checksum](Str::StringRef name, const PakInfo& pakInfo) {

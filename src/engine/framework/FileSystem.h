@@ -239,7 +239,9 @@ public:
 	// Load a pak into the namespace with all its dependencies
 	void LoadPak(Str::StringRef name, std::error_code& err = throws());
 	void LoadPak(Str::StringRef name, Str::StringRef version, std::error_code& err = throws());
-	void LoadPak(Str::StringRef name, Str::StringRef version, uint32_t checksum, std::error_code& err = throws());
+
+	// Load a specific pak into the namespace but *don't* load its dependencies
+	void LoadPakExplicit(Str::StringRef name, Str::StringRef version, uint32_t checksum, std::error_code& err = throws());
 
 	// Get a list of all the loaded paks
 	const std::vector<PakInfo>& GetLoadedPaks() const
