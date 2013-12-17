@@ -137,11 +137,11 @@ namespace Cvar {
     template<typename T>
     std::string GetCvarTypeName();
 
-    bool ParseCvarValue(std::string value, bool& result);
+    bool ParseCvarValue(Str::StringRef value, bool& result);
     std::string SerializeCvarValue(bool value);
     template<>
     std::string GetCvarTypeName<bool>();
-    bool ParseCvarValue(std::string value, int& result);
+    bool ParseCvarValue(Str::StringRef value, int& result);
     std::string SerializeCvarValue(int value);
     template<>
     std::string GetCvarTypeName<int>();

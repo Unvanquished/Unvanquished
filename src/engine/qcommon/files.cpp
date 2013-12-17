@@ -4471,7 +4471,7 @@ void FS_PureServerSetLoadedPaks( const char *pakSums, const char *pakNames )
 
 	for ( i = 0; i < c; i++ )
 	{
-		fs_serverPaks[ i ] = Str::ToInt(sums[i]);
+		fs_serverPaks[ i ] = atoi(sums[i].c_str());
 	}
 
 	if ( fs_numServerPaks )
@@ -4544,7 +4544,7 @@ void FS_PureServerSetReferencedPaks( const char *pakSums, const char *pakNames )
 
 	for ( i = 0; i < c; i++ )
 	{
-		fs_serverReferencedPaks[ i ] = Str::ToInt(sums[i]);
+		fs_serverReferencedPaks[ i ] = atoi(sums[i].c_str());
 	}
 
 	for ( i = 0; i < c; i++ )
