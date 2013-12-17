@@ -1976,7 +1976,8 @@ int R_LerpTag( orientation_t *tag, const refEntity_t *refent, const char *tagNam
 			return -1;
 		}
 
-		VectorCopy( refent->skeleton.bones[ retval ].t.trans, tag->origin );
+		VectorScale( refent->skeleton.bones[ retval ].t.trans,
+			     refent->skeleton.scale, tag->origin );
 		QuatToAxis( refent->skeleton.bones[ retval ].t.rot, tag->axis );
 		VectorCopy( tag->axis[ 2 ], tmp );
 		VectorCopy( tag->axis[ 1 ], tag->axis[ 2 ] );
