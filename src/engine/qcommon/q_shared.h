@@ -323,6 +323,9 @@ typedef int clipHandle_t;
 		vec3_t trans;
 		vec_t  scale;
 	} transform_t;
+#ifdef Q3_VM
+#pragma align transform_t 16
+#endif
 #endif
 
 	typedef int    fixed4_t;

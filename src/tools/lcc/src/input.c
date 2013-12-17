@@ -77,17 +77,39 @@ void input_init(int argc, char *argv[]) {
 
 /* pragma - handle #pragma ref id... */
 static void pragma(void) {
-	if ((t = gettok()) == ID && strcmp(token, "ref") == 0)
-		for (;;) {
+	if ((t = gettok()) == ID ) {
+		if( strcmp(token, "ref") == 0 ) {
+			for (;;) {
+				while (*cp == ' ' || *cp == '\t')
+					cp++;
+				if (*cp == '\n' || *cp == 0)
+					break;
+				if ((t = gettok()) == ID && tsym) {
+					tsym->ref++;
+					use(tsym, src);
+				}
+			}
+		} else if( strcmp(token, "align") == 0 ) {
+			Type ty1 = NULL;
+
 			while (*cp == ' ' || *cp == '\t')
 				cp++;
 			if (*cp == '\n' || *cp == 0)
-				break;
-			if ((t = gettok()) == ID && tsym) {
-				tsym->ref++;
-				use(tsym, src);
+				return;
+			if ((t = gettok()) != ID)
+				return;
+			
+			if( istypename(t, tsym) )
+				ty1 = tsym->type;
+
+			if ((t = gettok()) != ICON || !tsym)
+				return;
+
+			if( ty1 ) {
+				ty1->align = tsym->u.value;
 			}
 		}
+	}
 }
 
 /* resynch - set line number/file name in # n [ "file" ] and #pragma ... */
