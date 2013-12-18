@@ -35,16 +35,24 @@ along with daemon source code.  if not, see <http://www.gnu.org/licenses/>.
 #include "snd_codec.h"
 #include "snd_public.h"
 
+namespace Audio {
+
+    constexpr int N_EFFECT_SLOTS = 1;
+    constexpr int POSITIONAL_EFFECT_SLOT = 0;
+
+    // Somewhere on the Internet we can see "quake3 is like the old wolfenstein, 64 units = 8 feet"
+    // it is consistent with our models and Carmack's being american.
+    constexpr float QUNIT_IN_METER = 0.0384;
+
+    // The speed of sound in qu/s
+    constexpr float SPEED_OF_SOUND = 343.3 / QUNIT_IN_METER;
+}
+
 #include "ALObjects.h"
 #include "Audio.h"
 #include "Emitter.h"
 #include "Sample.h"
 #include "Sound.h"
 
-namespace Audio {
-
-
-
-}
 
 #endif //AUDIO_AUDIO_PRIVATE_H_

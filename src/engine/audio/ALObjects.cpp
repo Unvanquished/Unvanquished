@@ -337,6 +337,16 @@ namespace AL {
         alListenerfv(AL_ORIENTATION, alOrientation);
     }
 
+    // OpenAL state functions
+
+    void SetSpeedOfSound(float speed) {
+        alSpeedOfSound(speed);
+    }
+
+    void SetDopplerExaggerationFactor(float factor) {
+        alDopplerFactor(factor);
+    }
+
     // Source implementation
 
     Source::Source() {

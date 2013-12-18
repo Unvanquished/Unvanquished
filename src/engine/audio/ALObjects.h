@@ -31,8 +31,6 @@ along with daemon source code.  if not, see <http://www.gnu.org/licenses/>.
 namespace Audio {
 namespace AL {
 
-    constexpr int N_EFFECT_SLOTS = 1;
-
     //TODO enum classes for the different ALuint types?
 
     void ClearError();
@@ -120,6 +118,9 @@ namespace AL {
     void SetListenerPosition(const vec3_t position);
     void SetListenerVelocity(const vec3_t velocity);
     void SetListenerOrientation(const vec3_t orientation[3]);
+
+    void SetSpeedOfSound(float speed);
+    void SetDopplerExaggerationFactor(float factor);
 
     class Source {
         public:

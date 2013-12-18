@@ -44,21 +44,15 @@ namespace Audio {
 
     static bool initialized = false;
 
-    static AL::Effect* globalEffect = nullptr;
-
     void InitSounds() {
         if (initialized) {
             return;
         }
 
         sources = new sourceRecord_t[nSources];
-        globalEffect = new AL::Effect();
-        globalEffect->ApplyReverbPreset(AL::GetHangarEffectPreset());
 
         for (int i = 0; i < nSources; i++) {
             sources[i].active = false;
-            sources[i].source.EnableSlot(0);
-            sources[i].source.SetSlotEffect(0, *globalEffect);
         }
 
         initialized = true;
@@ -71,8 +65,6 @@ namespace Audio {
 
         delete[] sources;
         sources = nullptr;
-        delete globalEffect;
-        globalEffect = nullptr;
 
         initialized = false;
     }

@@ -42,6 +42,8 @@ namespace Audio {
 
     static const vec3_t origin = {0.0f, 0.0f, 0.0f};
 
+    static AL::Effect* globalEffect = nullptr;
+
     static bool initialized = false;
 
     void InitEmitters() {
@@ -49,7 +51,13 @@ namespace Audio {
             return;
         }
 
+        globalEffect = new AL::Effect();
+        globalEffect->ApplyReverbPreset(AL::GetHangarEffectPreset());
+
         localEmitter = std::make_shared<LocalEmitter>();
+
+        AL::SetSpeedOfSound(SPEED_OF_SOUND);
+        AL::SetDopplerExaggerationFactor(20); // woo
 
         initialized = true;
     }
@@ -68,6 +76,9 @@ namespace Audio {
         }
 
         posEmitters.clear();
+
+        delete globalEffect;
+        globalEffect = nullptr;
 
         initialized = false;
     }
@@ -141,6 +152,25 @@ namespace Audio {
         entities[entityNum].occlusion = ratio;
     }
 
+    // Utility functions for emitters (TODO lazily update all of these)
+
+    void MakeLocal(AL::Source& source) {
+        source.SetRelative(true);
+        source.SetPosition(origin);
+        source.SetVelocity(origin);
+
+        source.DisableSlot(POSITIONAL_EFFECT_SLOT);
+    }
+
+    void Make3D(AL::Source& source, const vec3_t position, const vec3_t velocity) {
+        source.SetRelative(false);
+        source.SetPosition(position);
+        source.SetVelocity(velocity);
+
+        source.EnableSlot(POSITIONAL_EFFECT_SLOT);
+        source.SetSlotEffect(0, *globalEffect);
+    }
+
     // Implementation for Emitter
 
     Emitter::Emitter() : refCount(0) {
@@ -171,15 +201,9 @@ namespace Audio {
         AL::Source& source = sound.GetSource();
 
         if (entityNum == listenerEntity) {
-            source.SetRelative(true);
-            source.SetPosition(origin);
-            source.SetVelocity(origin);
-
+            MakeLocal(source);
         } else {
-            source.SetRelative(false);
-            source.SetPosition(entities[entityNum].position);
-            source.SetVelocity(entities[entityNum].velocity);
-
+            Make3D(source, entities[entityNum].position, entities[entityNum].velocity);
         }
     }
 
@@ -205,9 +229,7 @@ namespace Audio {
     void PositionEmitter::InternalSetupSound(Sound& sound) {
         AL::Source& source = sound.GetSource();
 
-        source.SetRelative(false);
-        source.SetPosition(position);
-        source.SetVelocity(origin);
+        Make3D(source, position, origin);
     }
 
     const vec3_t& PositionEmitter::GetPosition() const {
@@ -231,9 +253,7 @@ namespace Audio {
     void LocalEmitter::InternalSetupSound(Sound& sound) {
         AL::Source& source = sound.GetSource();
 
-        source.SetRelative(true);
-        source.SetPosition(origin);
-        source.SetVelocity(origin);
+        MakeLocal(source);
     }
 
 }

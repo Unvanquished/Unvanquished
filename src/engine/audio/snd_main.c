@@ -292,6 +292,7 @@ S_AvailableCaptureSamples
 */
 int S_AvailableCaptureSamples( void )
 {
+    return 0;
 }
 
 /*
