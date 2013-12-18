@@ -5948,15 +5948,15 @@ static void RB_RenderDebugUtils()
 						{
 							RotatePointAroundVector( tmp3, diff, tmp2, k * 120 );
 							VectorAdd( tmp3, origin, tmp3 );
-							VectorCopy( tmp3, tetraVerts[ k ] );
+							VectorScale( tmp3, skel->scale, tetraVerts[ k ] );
 							tetraVerts[ k ][ 3 ] = 1;
 						}
 
-						VectorCopy( origin, tetraVerts[ 3 ] );
+						VectorScale( origin, skel->scale, tetraVerts[ 3 ] );
 						tetraVerts[ 3 ][ 3 ] = 1;
 						Tess_AddTetrahedron( tetraVerts, g_color_table[ ColorIndex( j ) ] );
 
-						VectorCopy( offset, tetraVerts[ 3 ] );
+						VectorScale( offset, skel->scale, tetraVerts[ 3 ] );
 						tetraVerts[ 3 ][ 3 ] = 1;
 						Tess_AddTetrahedron( tetraVerts, g_color_table[ ColorIndex( j ) ] );
 					}
