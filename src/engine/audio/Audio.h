@@ -42,6 +42,9 @@ namespace Audio {
     void ClearAllLoopingSounds();
     void ClearLoopingSoundsForEntity(int entityNum);
 
+    void StartMusic(Str::StringRef leadingSound, Str::StringRef loopSound);
+    void StopMusic();
+
     void UpdateListener(int entityNum, vec3_t orientation[3]);
     void UpdateEntityPosition(int entityNum, const vec3_t position);
     void UpdateEntityVelocity(int entityNum, const vec3_t velocity);

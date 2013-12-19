@@ -46,6 +46,8 @@ namespace Audio {
     static AL::Device* device;
     static AL::Context* context;
 
+    std::shared_ptr<MusicSound> music;
+
     bool Init() {
         if (initialized) {
             return true;
@@ -111,6 +113,8 @@ namespace Audio {
             }
             entityLoops[i] = {false, nullptr};
         }
+
+        music = nullptr;
 
         ShutdownEmitters();
         ShutdownSounds();
@@ -187,6 +191,19 @@ namespace Audio {
         if (entityLoops[entityNum].sound) {
             entityLoops[entityNum].addedThisFrame = false;
         }
+    }
+
+    void StartMusic(Str::StringRef leadingSound, Str::StringRef loopSound) {
+        StopMusic();
+        music = std::make_shared<MusicSound>(leadingSound, loopSound);
+        AddSound(GetLocalEmitter(), music, 1);
+    }
+
+    void StopMusic() {
+        if (music) {
+            music->Stop();
+        }
+        music = nullptr;
     }
 
     void UpdateListener(int entityNum, vec3_t orientation[3]) {

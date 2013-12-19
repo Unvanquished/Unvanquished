@@ -43,6 +43,9 @@ namespace AL {
 
             unsigned Feed(snd_info_t info, void* data);
 
+            Buffer(unsigned handle);
+            unsigned Acquire();
+
             operator unsigned() const;
 
         private:
@@ -131,13 +134,18 @@ namespace AL {
             void Play();
             void Pause();
             void Stop();
-
             bool IsStopped();
+
+            void SetBuffer(Buffer& buffer);
+            void QueueBuffer(Buffer buffer);
+            int GetNumProcessedBuffers();
+            int GetNumQueuedBuffers();
+            Buffer PopBuffer();
+            void RemoveAllQueuedBuffers();
 
             void SetGain(float gain);
             void SetPosition(const vec3_t position);
             void SetVelocity(const vec3_t velocity);
-            void SetBuffer(Buffer& buffer);
             void SetLooping(bool loop);
             void SetRolloff(float factor);
             void SetReferenceDistance(float distance);
@@ -191,7 +199,6 @@ namespace AL {
             Context& operator=(const Context& other);
             void* alHandle;
     };
-
 
 }
 }

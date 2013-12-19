@@ -91,6 +91,15 @@ namespace AL {
         return alGetError();
     }
 
+    Buffer::Buffer(unsigned handle): alHandle(handle) {
+    }
+
+    unsigned Buffer::Acquire() {
+        unsigned temp = alHandle;
+        alHandle = 0;
+        return temp;
+    }
+
     Buffer::operator unsigned() const {
         return alHandle;
     }
@@ -359,16 +368,11 @@ namespace AL {
     }
 
     Source::~Source() {
+        RemoveAllQueuedBuffers();
         if (alHandle != 0) {
             alDeleteSources(1, &alHandle);
         }
         alHandle = 0;
-    }
-
-    bool Source::IsStopped() {
-        ALint state;
-        alGetSourcei(alHandle, AL_SOURCE_STATE, &state);
-        return state == AL_STOPPED;
     }
 
     void Source::Play() {
@@ -383,6 +387,46 @@ namespace AL {
         alSourceStop(alHandle);
     }
 
+    bool Source::IsStopped() {
+        ALint state;
+        alGetSourcei(alHandle, AL_SOURCE_STATE, &state);
+        return state == AL_STOPPED;
+    }
+
+    void Source::SetBuffer(Buffer& buffer) {
+        alSourcei(alHandle, AL_BUFFER, buffer);
+    }
+
+    void Source::QueueBuffer(Buffer buffer) {
+        ALuint bufHandle = buffer.Acquire();
+        alSourceQueueBuffers(alHandle, 1, &bufHandle);
+    }
+
+    int Source::GetNumProcessedBuffers() {
+        int res;
+        alGetSourcei(alHandle, AL_BUFFERS_PROCESSED, &res);
+        return res;
+    }
+
+    int Source::GetNumQueuedBuffers() {
+        int res;
+        alGetSourcei(alHandle, AL_BUFFERS_QUEUED, &res);
+        return res;
+    }
+
+    Buffer Source::PopBuffer() {
+        unsigned bufferHandle;
+        alSourceUnqueueBuffers(alHandle, 1, &bufferHandle);
+        return {bufferHandle};
+    }
+
+    void Source::RemoveAllQueuedBuffers() {
+        int toBeRemoved = GetNumQueuedBuffers();
+        while (toBeRemoved --> 0) {
+            PopBuffer();
+        }
+    }
+
     void Source::SetGain(float gain) {
         alSourcef(alHandle, AL_GAIN, gain);
     }
@@ -393,10 +437,6 @@ namespace AL {
 
     void Source::SetVelocity(const vec3_t velocity) {
         alSourcefv(alHandle, AL_VELOCITY, velocity);
-    }
-
-    void Source::SetBuffer(Buffer& buffer) {
-        alSourcei(alHandle, AL_BUFFER, buffer);
     }
 
     void Source::SetLooping(bool loop) {

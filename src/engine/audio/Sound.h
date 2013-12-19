@@ -106,9 +106,34 @@ namespace Audio {
             bool fadingOut;
     };
 
-    // StreamSound
-    // MusicSound?
+    class MusicSound : public Sound {
+        public:
+            MusicSound(Str::StringRef leadingStreamName, Str::StringRef loopStreamName);
+            virtual ~MusicSound();
 
+            virtual void SetupSource(AL::Source& source) OVERRIDE;
+            virtual void InternalUpdate() OVERRIDE;
+
+        private:
+            void AppendBuffer(AL::Source& source, AL::Buffer buffer);
+
+            snd_stream_t* leadingStream;
+
+            std::string loopStreamName;
+            snd_stream_t* loopStream;
+
+            bool playingLeadingSound;
+
+            // We only need three buffers in order to we have at all time a full buffer queued
+            // the problematic case is when we have a buffer buffering the last few samples of
+            // the leading sound or of the end of the loop.
+            static constexpr int NUM_BUFFERS = 4;
+
+            // Buffer about a tenth of a second in each chunk (with 16 bit stereo at 44kHz)
+            static constexpr int CHUNK_SIZE = 16384;
+    };
+
+    // StreamSound
 }
 
 #endif //AUDIO_SOUND_H_

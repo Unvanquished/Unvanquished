@@ -133,6 +133,9 @@ namespace Audio {
         if (best >= 0) {
             sourceRecord_t& source = sources[best];
 
+            source.source.Stop();
+            source.source.RemoveAllQueuedBuffers();
+
             source.usingSound = nullptr;
             return &source;
         } else {
@@ -258,4 +261,66 @@ namespace Audio {
         }
     }
 
+    // Implementation of MusicSound
+
+    MusicSound::MusicSound(Str::StringRef leadingStreamName, Str::StringRef loopStreamName)
+        : leadingStream(S_CodecOpenStream(leadingStreamName.c_str())),
+          loopStreamName(loopStreamName), playingLeadingSound(true) {
+    }
+
+    MusicSound::~MusicSound() {
+        if (leadingStream) {
+            S_CodecCloseStream(leadingStream);
+        }
+        if (loopStream) {
+            S_CodecCloseStream(loopStream);
+        }
+    }
+
+    void MusicSound::SetupSource(AL::Source& source) {
+        for (int i = 0; i < NUM_BUFFERS; i++) {
+            AppendBuffer(source, std::move(AL::Buffer()));
+        }
+    }
+
+    void MusicSound::InternalUpdate() {
+        AL::Source& source = GetSource();
+
+        while (source.GetNumProcessedBuffers() > 0) {
+            AppendBuffer(source, std::move(source.PopBuffer()));
+        }
+
+        // If we don't have any more buffers queued it means we have to stop the music
+        if (source.GetNumQueuedBuffers() == 0) {
+            Stop();
+        } else if (source.IsStopped()) {
+            Play();
+        }
+    }
+
+    void MusicSound::AppendBuffer(AL::Source& source, AL::Buffer buffer) {
+        snd_stream_t* streamToRead;
+        if (playingLeadingSound and leadingStream) {
+            streamToRead = leadingStream;
+        } else if (loopStream) {
+            streamToRead = loopStream;
+        } else {
+            return;
+        }
+
+        static char tempBuffer[CHUNK_SIZE];
+        int lengthRead = S_CodecReadStream(streamToRead, CHUNK_SIZE, tempBuffer);
+
+        if (lengthRead == 0) {
+            loopStream = S_CodecOpenStream(loopStreamName.c_str());
+            AppendBuffer(source, std::move(buffer)); // TODO make sure that it doesn't loop forever (see CodecOpenStream)
+            return;
+        }
+
+        snd_info_t streamInfo = streamToRead->info;
+        streamInfo.size = lengthRead;
+        buffer.Feed(streamInfo, tempBuffer);
+
+        source.QueueBuffer(std::move(buffer));
+    }
 }

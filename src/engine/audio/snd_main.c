@@ -60,6 +60,7 @@ S_StartBackgroundTrack
 */
 void S_StartBackgroundTrack( const char *intro, const char *loop )
 {
+    Audio::StartMusic(intro, loop);
 }
 
 /*
@@ -69,6 +70,7 @@ S_StopBackgroundTrack
 */
 void S_StopBackgroundTrack( void )
 {
+    Audio::StopMusic();
 }
 
 /*
@@ -88,6 +90,7 @@ S_StopAllSounds
 */
 void S_StopAllSounds( void )
 {
+    Audio::StopMusic();
 }
 
 /*
