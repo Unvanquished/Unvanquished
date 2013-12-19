@@ -46,6 +46,8 @@ Maryland 20850 USA.
 #define ENGINE_NAME             "Daemon Engine"
 #define ENGINE_VERSION          PRODUCT_VERSION
 
+#define RSQRT_PRECISE 1
+
 #ifdef REVISION
 # define Q3_VERSION             PRODUCT_NAME " " PRODUCT_VERSION " " REVISION
 #else
@@ -1386,12 +1388,19 @@ void         ByteToDir( int b, vec3_t dir );
 	}
 	STATIC_INLINE __m128 sseQuatNormalize( __m128 q ) {
 		__m128 p = _mm_mul_ps( q, q );
+		__m128 t, h;
 		p = _mm_add_ps( sseSwizzle( p, XXZZ ),
 				sseSwizzle( p, YYWW ) );
 		p = _mm_add_ps( sseSwizzle( p, XXXX ),
 				sseSwizzle( p, ZZZZ ) );
-		p = _mm_rsqrt_ps( p );
-		return _mm_mul_ps( q, p );
+		t = _mm_rsqrt_ps( p );
+#ifdef RSQRT_PRECISE
+		h = _mm_mul_ps( _mm_set1_ps( 0.5f ), t );
+		t = _mm_mul_ps( _mm_mul_ps( t, t ), p );
+		t = _mm_sub_ps( _mm_set1_ps( 3.0f ), t );
+		t = _mm_mul_ps( h, t );
+#endif
+		return _mm_mul_ps( q, t );
 	}
 	STATIC_INLINE __m128 sseQuatTransform( __m128 q, __m128 vec ) {
 		__m128 t, t2;
