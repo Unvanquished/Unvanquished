@@ -39,7 +39,7 @@ class FontEffectInstancer;
 	@author Peter Curry
  */
 
-class ROCKETCORE_API FontEffect : public ReferenceCountable
+class FontEffect : public ReferenceCountable
 {
 public:
 	FontEffect();
@@ -120,8 +120,8 @@ private:
 	friend class Factory;
 };
 
-typedef Container::vector< FontEffect* >::Type FontEffectList;
-typedef Container::map< String, FontEffect* >::Type FontEffectMap;
+typedef std::vector< FontEffect* > FontEffectList;
+typedef std::map< String, FontEffect* > FontEffectMap;
 
 }
 }

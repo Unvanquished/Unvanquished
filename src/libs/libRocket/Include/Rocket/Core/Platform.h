@@ -28,8 +28,6 @@
 #ifndef ROCKETCOREPLATFORM_H
 #define ROCKETCOREPLATFORM_H
 
-#include "Config.h"
-
 #if defined __WIN32__ || defined _WIN32
 	#define ROCKET_PLATFORM_WIN32
 	#define ROCKET_PLATFORM_NAME "win32"
@@ -51,9 +49,9 @@
 #endif
 
 #if defined __x86_64__ || defined _M_X64 || defined __powerpc64__ || defined __alpha__ || defined __ia64__ || defined __s390__ || defined __s390x__
-	#define ROCKET_ARCH_64
+    #define ROCKET_ARCH_64
 #else
-	#define ROCKET_ARCH_32
+    #define ROCKET_ARCH_32
 #endif
 
 
@@ -69,8 +67,6 @@
 
 	// <function> was declared deprecated
 	#pragma warning(disable : 4996)
-
-	#pragma warning(disable : 4275)
 
 	#if !defined _CRT_SECURE_NO_DEPRECATE
 		#define _CRT_SECURE_NO_DEPRECATE

@@ -14,7 +14,7 @@
  *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -32,7 +32,8 @@
 #include "PluginRegistry.h"
 #include "StreamFile.h"
 #include <Rocket/Core/StreamMemory.h>
-#include <Rocket/Core/ContainerWrapper.h>
+#include <algorithm>
+#include <iterator>
 
 namespace Rocket {
 namespace Core {
@@ -52,7 +53,7 @@ Context::Context(const String& name) : name(name), mouse_position(0, 0), dimensi
 	root->SetProperty(Z_INDEX, "0");
 
 	Element* element = Factory::InstanceElement(NULL, "body", "body", XMLAttributes());
-	cursor_proxy = rocket_dynamic_cast< ElementDocument* >(element);
+	cursor_proxy = dynamic_cast< ElementDocument* >(element);
 	if (cursor_proxy == NULL)
 	{
 		if (element != NULL)
@@ -120,7 +121,7 @@ void Context::SetDimensions(const Vector2i& _dimensions)
 				document->UpdatePosition();
 			}
 		}
-
+		
 		clip_dimensions = dimensions;
 	}
 }
@@ -155,12 +156,11 @@ bool Context::Render()
 		root->GetChild(i)->UpdateLayout();
 
 	render_interface->context = this;
-
-	render_interface->PreRender();
 	ElementUtilities::ApplyActiveClipRegion(this, render_interface);
+
 	root->Render();
+
 	ElementUtilities::SetClippingRegion(NULL, this);
-	render_interface->PostRender();
 
 	// Render the cursor proxy so any elements attached the cursor will be rendered below the cursor.
 	if (cursor_proxy != NULL)
@@ -198,7 +198,7 @@ ElementDocument* Context::CreateDocument(const String& tag)
 		return NULL;
 	}
 
-	ElementDocument* document = rocket_dynamic_cast< ElementDocument* >(element);
+	ElementDocument* document = dynamic_cast< ElementDocument* >(element);
 	if (document == NULL)
 	{
 		Log::Message(Log::LT_ERROR, "Failed to instance document on tag '%s', Found type '%s', was expecting derivative of ElementDocument.", tag.CString(), typeid(element).name());
@@ -217,7 +217,7 @@ ElementDocument* Context::CreateDocument(const String& tag)
 
 // Load a document into the context.
 ElementDocument* Context::LoadDocument(const String& document_path)
-{
+{	
 	// Open the stream based on the file path
 	StreamFile* stream = new StreamFile();
 	if (!stream->Open(document_path))
@@ -298,7 +298,7 @@ void Context::UnloadDocument(ElementDocument* _document)
 	}
 
 	// Remove the item from the focus history.
-	ElementList::iterator itr = Container::find(document_focus_history.begin(), document_focus_history.end(), document);
+	ElementList::iterator itr = std::find(document_focus_history.begin(), document_focus_history.end(), document);
 	if (itr != document_focus_history.end())
 		document_focus_history.erase(itr);
 
@@ -625,18 +625,18 @@ void Context::ProcessMouseMove(int x, int y, int key_modifier_state)
 		}
 	}
 }
-
+	
 static Element* FindFocusElement(Element* element)
 {
 	ElementDocument* owner_document = element->GetOwnerDocument();
 	if (!owner_document || owner_document->GetProperty< int >(FOCUS) == FOCUS_NONE)
 		return NULL;
-
+	
 	while (element && element->GetProperty< int >(FOCUS) == FOCUS_NONE)
 	{
 		element = element->GetParentNode();
 	}
-
+	
 	return element;
 }
 
@@ -650,7 +650,7 @@ void Context::ProcessMouseButtonDown(int button_index, int key_modifier_state)
 	if (button_index == 0)
 	{
 		Element* new_focus = *hover;
-
+		
 		// Set the currently hovered element to focus if it isn't already the focus.
 		if (hover)
 		{
@@ -666,7 +666,7 @@ void Context::ProcessMouseButtonDown(int button_index, int key_modifier_state)
 		active = new_focus;
 
 		bool propogate = true;
-
+		
 		// Call 'onmousedown' on every item in the hover chain, and copy the hover chain to the active chain.
 		if (hover)
 			propogate = hover->DispatchEvent(MOUSEDOWN, parameters, true);
@@ -689,7 +689,7 @@ void Context::ProcessMouseButtonDown(int button_index, int key_modifier_state)
 			{
 				last_click_element = *active;
 				last_click_time = click_time;
-
+			
 			}
 		}
 
@@ -746,7 +746,7 @@ void Context::ProcessMouseButtonUp(int button_index, int key_modifier_state)
 
 		// Unset the 'active' pseudo-class on all the elements in the active chain; because they may not necessarily
 		// have had 'onmouseup' called on them, we can't guarantee this has happened already.
-		Container::for_each(active_chain.begin(), active_chain.end(), PseudoClassFunctor("active", false));
+		std::for_each(active_chain.begin(), active_chain.end(), PseudoClassFunctor("active", false));
 		active_chain.clear();
 
 		if (drag)
@@ -805,19 +805,19 @@ RenderInterface* Context::GetRenderInterface() const
 {
 	return render_interface;
 }
-
+	
 // Gets the current clipping region for the render traversal
 bool Context::GetActiveClipRegion(Vector2i& origin, Vector2i& dimensions) const
 {
 	if (clip_dimensions.x < 0 || clip_dimensions.y < 0)
 		return false;
-
+	
 	origin = clip_origin;
 	dimensions = clip_dimensions;
-
+	
 	return true;
 }
-
+	
 // Sets the current clipping region for the render traversal
 void Context::SetActiveClipRegion(const Vector2i& origin, const Vector2i& dimensions)
 {
@@ -830,7 +830,7 @@ void Context::SetInstancer(ContextInstancer* _instancer)
 {
 	ROCKET_ASSERT(instancer == NULL);
 	instancer = _instancer;
-	instancer->AddReference();
+	instancer->AddReference();	
 }
 
 // Internal callback for when an element is removed from the hierarchy.
@@ -923,7 +923,7 @@ bool Context::OnFocusChange(Element* new_focus)
 	if (old_document != new_document)
 	{
 		// If documents have changed, add the new document to the end of the history
-		ElementList::iterator itr = Container::find(document_focus_history.begin(), document_focus_history.end(), new_document);
+		ElementList::iterator itr = std::find(document_focus_history.begin(), document_focus_history.end(), new_document);
 		if (itr != document_focus_history.end())
 			document_focus_history.erase(itr);
 
@@ -1189,7 +1189,7 @@ void Context::GenerateKeyModifierEventParameters(Dictionary& parameters, int key
 
 // Builds the parameters for a drag event.
 void Context::GenerateDragEventParameters(Dictionary& parameters)
-{
+{	
 	parameters.Set("drag_element", (void*) *drag);
 }
 
@@ -1212,8 +1212,8 @@ void Context::ReleaseUnloadedDocuments()
 void Context::SendEvents(const ElementSet& old_items, const ElementSet& new_items, const String& event, const Dictionary& parameters, bool interruptible)
 {
 	ElementList elements;
-	Container::set_difference(old_items.begin(), old_items.end(), new_items.begin(), new_items.end(), Container::back_inserter(elements));
-	Container::for_each(elements.begin(), elements.end(), RKTEventFunctor(event, parameters, interruptible));
+	std::set_difference(old_items.begin(), old_items.end(), new_items.begin(), new_items.end(), std::back_inserter(elements));
+	std::for_each(elements.begin(), elements.end(), RKTEventFunctor(event, parameters, interruptible));
 }
 
 void Context::OnReferenceDeactivate()

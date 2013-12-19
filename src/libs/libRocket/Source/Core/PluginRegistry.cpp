@@ -32,7 +32,7 @@
 namespace Rocket {
 namespace Core {
 
-typedef Container::vector< Plugin* >::Type PluginList;
+typedef std::vector< Plugin* > PluginList;
 static PluginList basic_plugins;
 static PluginList document_plugins;
 static PluginList element_plugins;

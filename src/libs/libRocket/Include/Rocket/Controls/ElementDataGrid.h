@@ -47,8 +47,6 @@ class ElementDataGridRow;
 class ROCKETCONTROLS_API ElementDataGrid : public Core::Element, public DataSourceListener
 {
 public:
-	ROCKET_RTTI_DefineWithParent(Core::Element)
-
 	ElementDataGrid(const Rocket::Core::String& tag);
 	virtual ~ElementDataGrid();
 
@@ -129,8 +127,8 @@ protected:
 	virtual void GetInnerRML(Rocket::Core::String& content) const;
 
 private:
-	typedef Rocket::Core::Container::vector< Column >::Type ColumnList;
-	typedef Rocket::Core::Container::vector< ElementDataGridRow* >::Type RowList;
+	typedef std::vector< Column > ColumnList;
+	typedef std::vector< ElementDataGridRow* > RowList;
 
 	ColumnList columns;
 	Rocket::Core::String column_fields;

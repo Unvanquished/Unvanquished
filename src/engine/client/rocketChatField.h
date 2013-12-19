@@ -237,10 +237,10 @@ protected:
 		// Generates the cursor.
 		cursor_geometry.Release();
 
-		Rocket::Core::Container::vector< Rocket::Core::Vertex >::Type &vertices = cursor_geometry.GetVertices();
+		std::vector< Rocket::Core::Vertex > &vertices = cursor_geometry.GetVertices();
 		vertices.resize( 4 );
 
-		Rocket::Core::Container::vector< int >::Type &indices = cursor_geometry.GetIndices();
+		std::vector< int > &indices = cursor_geometry.GetIndices();
 		indices.resize( 6 );
 
 		cursor_size.x = 1;
@@ -269,9 +269,10 @@ protected:
 
 	void UpdateText( void )
 	{
-		if ( text_element->GetNumChildren() )
+		while ( text_element->HasChildNodes() )
 		{
-			text_element->RemoveAllChildren();
+
+			text_element->RemoveChild( text_element->GetFirstChild() );
 		}
 
 		q2rml( text.CString(), text_element );
@@ -323,7 +324,7 @@ protected:
 					child->SetProperty( "color", "#FFFFFF" );
 				}
 
-				rocket_dynamic_cast<Rocket::Core::ElementText *>( child )->SetText( out );
+				static_cast<Rocket::Core::ElementText *>( child )->SetText( out );
 				parent->AppendChild( child );
 				parent->AppendChild( Rocket::Core::Factory::InstanceElement( parent, "*", "br", Rocket::Core::XMLAttributes() ) );
 				out.Clear();
@@ -346,7 +347,7 @@ protected:
 				if ( span )
 				{
 					span = false;
-					rocket_dynamic_cast<Rocket::Core::ElementText *>( child )->SetText( out );
+					static_cast<Rocket::Core::ElementText *>( child )->SetText( out );
 					parent->AppendChild( child );
 					out.Clear();
 				}
@@ -357,7 +358,7 @@ protected:
 					Rocket::Core::XMLAttributes xml;
 					child = Rocket::Core::Factory::InstanceElement( parent, "#text", "span", xml );
 					child->SetProperty( "color", "#FFFFFF" );
-					rocket_dynamic_cast<Rocket::Core::ElementText *>( child )->SetText( out );
+					static_cast<Rocket::Core::ElementText *>( child )->SetText( out );
 					parent->AppendChild( child );
 					out.Clear();
 				}
@@ -380,7 +381,7 @@ protected:
 
 		if ( span && child && !out.Empty() )
 		{
-			rocket_dynamic_cast<Rocket::Core::ElementText *>( child )->SetText( out );
+			static_cast<Rocket::Core::ElementText *>( child )->SetText( out );
 			parent->AppendChild( child );
 			span = false;
 		}
@@ -388,7 +389,7 @@ protected:
 		else if ( !span && !child && !out.Empty() )
 		{
 			child = Rocket::Core::Factory::InstanceElement( parent, "#text", "span", Rocket::Core::XMLAttributes() );
-			rocket_dynamic_cast<Rocket::Core::ElementText *>( child )->SetText( out );
+			static_cast<Rocket::Core::ElementText *>( child )->SetText( out );
 			parent->AppendChild( child );
 		}
 	}

@@ -37,8 +37,6 @@
 namespace Rocket {
 namespace Controls {
 
-ROCKET_RTTI_Implement( ElementFormControlInput )
-
 // Constructs a new ElementFormControlInput.
 ElementFormControlInput::ElementFormControlInput(const Rocket::Core::String& tag) : ElementFormControl(tag)
 {

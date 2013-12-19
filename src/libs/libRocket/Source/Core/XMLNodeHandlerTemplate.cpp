@@ -45,8 +45,9 @@ XMLNodeHandlerTemplate::~XMLNodeHandlerTemplate()
 
 Element* XMLNodeHandlerTemplate::ElementStart(XMLParser* parser, const String& name, const XMLAttributes& attributes)
 {
-	(void)name;
+	name;
 	ROCKET_ASSERT(name == "template");
+	(name);
 
 	String template_name = attributes.Get<String>("src", "");
 

@@ -34,7 +34,7 @@
 namespace Rocket {
 namespace Core {
 
-typedef Container::map< String, Property >::Type PropertyMap;
+typedef std::map< String, Property > PropertyMap;
 
 /**
 	A dictionary to property names to values.

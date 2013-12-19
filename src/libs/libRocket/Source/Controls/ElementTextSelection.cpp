@@ -31,8 +31,6 @@
 namespace Rocket {
 namespace Controls {
 
-ROCKET_RTTI_Implement( ElementTextSelection )
-
 ElementTextSelection::ElementTextSelection(const Rocket::Core::String& tag) : Rocket::Core::Element(tag)
 {
 	widget = NULL;

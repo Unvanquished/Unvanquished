@@ -119,12 +119,6 @@ public:
 	/// Called when this render interface is released.
 	virtual void Release();
 
-	/// Called when context rendering starts.
-	virtual void PreRender();
-
-	/// Called when context rendering ends.
-	virtual void PostRender();
-
 	/// Get the context currently being rendered. This is only valid during RenderGeometry,
 	/// CompileGeometry, RenderCompiledGeometry, EnableScissorRegion and SetScissorRegion.
 	Context* GetContext() const;

@@ -1,5 +1,0 @@
-/* #undef ROCKET_SUPPORT_RTTI */
-
-#ifndef ROCKET_SUPPORT_RTTI
-	#define ROCKET_SUPPORT_RTTI 0
-#endif

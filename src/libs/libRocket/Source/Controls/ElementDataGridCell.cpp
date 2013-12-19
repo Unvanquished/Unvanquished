@@ -33,8 +33,6 @@
 namespace Rocket {
 namespace Controls {
 
-ROCKET_RTTI_Implement( ElementDataGridCell )
-
 ElementDataGridCell::ElementDataGridCell(const Rocket::Core::String& tag) : Core::Element(tag)
 {
 }

@@ -27,7 +27,7 @@
 
 #include "precompiled.h"
 #include "StyleSheetNode.h"
-#include <Rocket/Core/ContainerWrapper.h>
+#include <algorithm>
 #include <Rocket/Core/Element.h>
 #include "StyleSheetFactory.h"
 #include "StyleSheetNodeSelector.h"
@@ -308,7 +308,7 @@ bool StyleSheetNode::IsApplicable(const Element* element) const
 	String ancestor_id;
 	StringList ancestor_classes;
 	StringList ancestor_pseudo_classes;
-	Container::vector< const StyleSheetNode* >::Type ancestor_structural_pseudo_classes;
+	std::vector< const StyleSheetNode* > ancestor_structural_pseudo_classes;
 
 	while (parent_node != NULL && parent_node->type != TAG)
 	{
@@ -392,7 +392,7 @@ bool StyleSheetNode::IsApplicable(const Element* element) const
 }
 
 // Appends all applicable non-tag descendants of this node into the given element list.
-void StyleSheetNode::GetApplicableDescendants(Container::vector< const StyleSheetNode* >::Type& applicable_nodes, const Element* element) const
+void StyleSheetNode::GetApplicableDescendants(std::vector< const StyleSheetNode* >& applicable_nodes, const Element* element) const
 {
 	// Check if this node matches this element.
 	switch (type)
@@ -434,9 +434,6 @@ void StyleSheetNode::GetApplicableDescendants(Container::vector< const StyleShee
 				return;
 		}
 		break;
-
-		default:
-		break;
 	}
 
 	if (properties.GetNumProperties() > 0 ||
@@ -446,12 +443,10 @@ void StyleSheetNode::GetApplicableDescendants(Container::vector< const StyleShee
 	for (int i = CLASS; i < NUM_NODE_TYPES; i++)
 	{
 		// Don't recurse into pseudo-classes; they can't be built into the root definition.
-		if (i == PSEUDO_CLASS||children[i].empty())
+		if (i == PSEUDO_CLASS)
 			continue;
 
-		NodeMap::const_iterator end = children[i].end();
-
-		for (NodeMap::const_iterator j = children[i].begin(); j != end; ++j)
+		for (NodeMap::const_iterator j = children[i].begin(); j != children[i].end(); ++j)
 			(*j).second->GetApplicableDescendants(applicable_nodes, element);
 	}
 }
@@ -469,12 +464,10 @@ bool StyleSheetNode::IsStructurallyVolatile(bool check_ancestors) const
 	// Check our children for structural pseudo-classes.
 	for (int i = 0; i < NUM_NODE_TYPES; ++i)
 	{
-		if (i == STRUCTURAL_PSEUDO_CLASS || children[i].empty())
+		if (i == STRUCTURAL_PSEUDO_CLASS)
 			continue;
 
-		NodeMap::const_iterator end = children[i].end();
-
-		for (NodeMap::const_iterator j = children[i].begin(); j != end; ++j)
+		for (NodeMap::const_iterator j = children[i].begin(); j != children[i].end(); ++j)
 		{
 			if ((*j).second->IsStructurallyVolatile(false))
 				return true;

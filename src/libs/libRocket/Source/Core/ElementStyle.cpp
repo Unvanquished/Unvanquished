@@ -29,7 +29,6 @@
 #include "ElementStyle.h"
 #include "ElementStyleCache.h"
 #include <algorithm>
-#include <Rocket/Core/ContainerWrapper.h>
 #include <Rocket/Core/ElementDocument.h>
 #include <Rocket/Core/ElementUtilities.h>
 #include <Rocket/Core/Log.h>
@@ -41,7 +40,7 @@
 #include "ElementBorder.h"
 #include "ElementDecoration.h"
 #include "ElementDefinition.h"
-#include <Rocket/Core/FontFaceHandle.h>
+#include "FontFaceHandle.h"
 
 namespace Rocket {
 namespace Core {
@@ -191,7 +190,7 @@ const PseudoClassList& ElementStyle::GetActivePseudoClasses() const
 // Sets or removes a class on the element.
 void ElementStyle::SetClass(const String& class_name, bool activate)
 {
-	StringList::iterator class_location = Container::find(classes.begin(), classes.end(), class_name);
+	StringList::iterator class_location = std::find(classes.begin(), classes.end(), class_name);
 
 	if (activate)
 	{
@@ -209,6 +208,12 @@ void ElementStyle::SetClass(const String& class_name, bool activate)
 			DirtyDefinition();
 		}
 	}
+}
+
+// Checks if a class is set on the element.
+bool ElementStyle::IsClassSet(const String& class_name) const
+{
+	return std::find(classes.begin(), classes.end(), class_name) != classes.end();
 }
 
 // Specifies the entire list of classes for this element. This will replace any others specified.

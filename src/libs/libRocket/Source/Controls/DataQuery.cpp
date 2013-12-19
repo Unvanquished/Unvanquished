@@ -27,7 +27,7 @@
 
 #include <Rocket/Controls/DataQuery.h>
 #include <Rocket/Controls/DataSource.h>
-#include <Rocket/Core/ContainerWrapper.h>
+#include <algorithm>
 
 namespace Rocket {
 namespace Controls {
@@ -109,7 +109,7 @@ void DataQuery::ExecuteQuery(DataSource* _data_source, const Rocket::Core::Strin
 		// Now sort the rows, based on the ordering requirements.
 		Rocket::Core::StringList order_parameters;
 		Rocket::Core::StringUtilities::ExpandString(order_parameters, order);
-		Rocket::Core::Container::sort(rows.begin(), rows.end(), DataQuerySort(order_parameters));
+		sort(rows.begin(), rows.end(), DataQuerySort(order_parameters));
 	}
 }
 

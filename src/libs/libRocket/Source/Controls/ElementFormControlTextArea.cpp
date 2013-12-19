@@ -34,8 +34,6 @@
 namespace Rocket {
 namespace Controls {
 
-ROCKET_RTTI_Implement( ElementFormControlTextArea )
-
 // Constructs a new ElementFormControlTextArea.
 ElementFormControlTextArea::ElementFormControlTextArea(const Rocket::Core::String& tag) : ElementFormControl(tag)
 {

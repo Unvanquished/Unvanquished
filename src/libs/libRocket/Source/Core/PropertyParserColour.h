@@ -29,7 +29,7 @@
 #define ROCKETCOREPROPERTYPARSERCOLOUR_H
 
 #include <Rocket/Core/PropertyParser.h>
-#include <Rocket/Core/ContainerWrapper.h>
+#include <map>
 
 namespace Rocket {
 namespace Core {
@@ -57,7 +57,7 @@ public:
 	virtual void Release();
 
 private:
-	typedef Container::map< String, Colourb, StringUtilities::StringComparei >::Type ColourMap;
+	typedef std::map< String, Colourb, StringUtilities::StringComparei > ColourMap;
 	ColourMap html_colours;
 };
 

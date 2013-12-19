@@ -184,7 +184,12 @@ public:
 		{
 			dirty_query = false;
 
-			RemoveAllChildren();
+			while ( HasChildNodes() )
+			{
+
+				RemoveChild( GetFirstChild() );
+			}
+
 			AddCancelbutton();
 
 			Rocket::Controls::DataQuery query( data_source, data_table, csvFields, 0, -1 );

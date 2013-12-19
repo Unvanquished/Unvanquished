@@ -128,9 +128,9 @@ void ElementFormControlSelect::OnUpdate()
 	ElementFormControl::OnUpdate();
 
 	// Move any child elements into the widget (except for the three functional elements).
-	for(int child_index = 0;child_index<GetNumChildren();++child_index)
+	while (HasChildNodes())
 	{
-		Core::Element* child = GetChild(child_index);
+		Core::Element* child = GetFirstChild();
 
 		// Check for a value attribute.
 		Rocket::Core::String attribute_value = child->GetAttribute<Rocket::Core::String>("value", "");
@@ -139,9 +139,9 @@ void ElementFormControlSelect::OnUpdate()
 		Rocket::Core::String rml;
 		child->GetInnerRML(rml);
 		widget->AddOption(rml, attribute_value, -1, child->GetAttribute("selected") != NULL, child->GetAttribute("unselectable") == NULL);
+
+		RemoveChild(child);
 	}
-	
-	RemoveAllChildren();
 }
 
 // Updates the layout of the widget's elements.

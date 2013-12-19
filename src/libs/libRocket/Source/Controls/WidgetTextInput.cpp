@@ -55,8 +55,8 @@ WidgetTextInput::WidgetTextInput(ElementFormControl* _parent) : internal_dimensi
 	parent->AddEventListener("mousedown", this, true);
 	parent->AddEventListener("drag", this, true);
 
-	text_element = rocket_dynamic_cast< Core::ElementText* >(Core::Factory::InstanceElement(parent, "#text", "#text", Rocket::Core::XMLAttributes()));
-	selected_text_element = rocket_dynamic_cast< Core::ElementText* >(Core::Factory::InstanceElement(parent, "#text", "#text", Rocket::Core::XMLAttributes()));
+	text_element = dynamic_cast< Core::ElementText* >(Core::Factory::InstanceElement(parent, "#text", "#text", Rocket::Core::XMLAttributes()));
+	selected_text_element = dynamic_cast< Core::ElementText* >(Core::Factory::InstanceElement(parent, "#text", "#text", Rocket::Core::XMLAttributes()));
 	if (text_element != NULL)
 	{
 		text_element->SuppressAutoLayout();
@@ -70,7 +70,7 @@ WidgetTextInput::WidgetTextInput(ElementFormControl* _parent) : internal_dimensi
 
 	// Create the dummy selection element.
 	selection_element = Core::Factory::InstanceElement(parent, "#selection", "selection", Rocket::Core::XMLAttributes());
-	ElementTextSelection* text_selection_element = rocket_dynamic_cast< ElementTextSelection* >(selection_element);
+	ElementTextSelection* text_selection_element = dynamic_cast< ElementTextSelection* >(selection_element);
 	if (text_selection_element != NULL)
 	{
 		text_selection_element->SetWidget(this);
@@ -735,8 +735,8 @@ Rocket::Core::Vector2f WidgetTextInput::FormatText()
 	// Clear the selection background geometry, and get the vertices and indices so the new geo can
 	// be generated.
 	selection_geometry.Release(true);
-	Rocket::Core::Container::vector< Core::Vertex >::Type& selection_vertices = selection_geometry.GetVertices();
-	Rocket::Core::Container::vector< int >::Type& selection_indices = selection_geometry.GetIndices();
+	std::vector< Core::Vertex >& selection_vertices = selection_geometry.GetVertices();
+	std::vector< int >& selection_indices = selection_geometry.GetIndices();
 
 	// Determine the line-height of the text element.
 	int line_height = Rocket::Core::ElementUtilities::GetLineHeight(parent);
@@ -867,10 +867,10 @@ void WidgetTextInput::GenerateCursor()
 	// Generates the cursor.
 	cursor_geometry.Release();
 
-	Rocket::Core::Container::vector< Core::Vertex >::Type& vertices = cursor_geometry.GetVertices();
+	std::vector< Core::Vertex >& vertices = cursor_geometry.GetVertices();
 	vertices.resize(4);
 
-	Rocket::Core::Container::vector< int >::Type& indices = cursor_geometry.GetIndices();
+	std::vector< int >& indices = cursor_geometry.GetIndices();
 	indices.resize(6);
 
 	cursor_size.x = 1;

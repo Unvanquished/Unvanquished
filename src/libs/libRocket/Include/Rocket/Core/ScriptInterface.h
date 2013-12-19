@@ -43,8 +43,6 @@ namespace Core {
 class ROCKETCORE_API ScriptInterface : public ReferenceCountable
 {
 	public:
-		ROCKET_RTTI_Define()
-
 		virtual ~ScriptInterface()
 		{
 		}

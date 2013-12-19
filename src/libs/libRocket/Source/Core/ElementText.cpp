@@ -31,8 +31,6 @@
 namespace Rocket {
 namespace Core {
 
-ROCKET_RTTI_Implement( ElementText )
-
 ElementText::ElementText(const String& tag) : Element(tag)
 {
 }

@@ -32,8 +32,6 @@
 namespace Rocket {
 namespace Controls {
 
-ROCKET_RTTI_Implement( ElementTabSet )
-
 ElementTabSet::ElementTabSet(const Rocket::Core::String& tag) : Core::Element(tag)
 {
 	active_tab = 0;

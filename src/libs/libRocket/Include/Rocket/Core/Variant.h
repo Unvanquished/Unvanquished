@@ -31,6 +31,7 @@
 #include <Rocket/Core/Header.h>
 #include <Rocket/Core/Types.h>
 #include <Rocket/Core/TypeConverter.h>
+#include <list>
 
 namespace Rocket {
 namespace Core {
@@ -138,10 +139,6 @@ public:
 	/// Assigns another variant's internal data to this variant.
 	/// @param[in] copy Variant to share data.
 	Variant& operator=(const Variant& copy);
-
-	/// Compare two variant
-	bool operator==(const Variant&other) const;
-	bool operator!=(const Variant&other) const{ return !operator==(other); }
 
 private:
 	

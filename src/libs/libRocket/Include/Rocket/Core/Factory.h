@@ -30,6 +30,7 @@
 
 #include <Rocket/Core/XMLParser.h>
 #include <Rocket/Core/Header.h>
+#include <map>
 
 namespace Rocket {
 namespace Core {

@@ -39,15 +39,11 @@ T Element::GetProperty(const String& name)
 template< typename T >
 void Element::SetAttribute(const String& name, const T& value)
 {
-	Variant * current_value;
-	if((current_value=attributes.Get(name)) == 0 || *current_value != value)
-	{
-		attributes.Set(name, value);
-		AttributeNameList changed_attributes;
-		changed_attributes.insert(name);
+	attributes.Set(name, value);
+	AttributeNameList changed_attributes;
+	changed_attributes.insert(name);
 
-		OnAttributeChange(changed_attributes);
-	}
+	OnAttributeChange(changed_attributes);
 }
 
 // Gets the specified attribute, with default value.

@@ -26,7 +26,7 @@
  */
 
 #include "precompiled.h"
-#include <Rocket/Core/UnicodeRange.h>
+#include "UnicodeRange.h"
 
 namespace Rocket {
 namespace Core {

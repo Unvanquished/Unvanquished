@@ -30,7 +30,7 @@
 
 #include <Rocket/Core/Dictionary.h>
 #include <Rocket/Core/ReferenceCountable.h>
-#include <Rocket/Core/ContainerWrapper.h>
+#include <set>
 #include <Rocket/Core/PropertyDictionary.h>
 
 namespace Rocket {
@@ -47,11 +47,11 @@ class StyleSheetNode;
 	@author Lloyd Weehuizen
  */
 
-class StyleSheet : public ReferenceCountable
+class ROCKETCORE_API StyleSheet : public ReferenceCountable
 {
 public:
-	typedef Container::set< StyleSheetNode* >::Type NodeList;
-	typedef Container::map< String, NodeList >::Type NodeIndex;
+	typedef std::set< StyleSheetNode* > NodeList;
+	typedef std::map< String, NodeList > NodeIndex;
 
 	StyleSheet();
 	virtual ~StyleSheet();
@@ -88,7 +88,7 @@ private:
 	// Map of every node, even empty, un-styled, nodes.
 	NodeIndex complete_node_index;
 
-	typedef Container::map< String, ElementDefinition* >::Type ElementDefinitionCache;
+	typedef std::map< String, ElementDefinition* > ElementDefinitionCache;
 	// Index of element addresses to element definitions.
 	mutable ElementDefinitionCache address_cache;
 	// Index of node sets to element definitions.

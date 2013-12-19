@@ -57,7 +57,7 @@ bool StyleSheetNodeSelectorOnlyChild::IsApplicable(const Element* element, int R
 			continue;
 
 		// Skip the child if it is trivial.
-		if (rocket_dynamic_cast< const ElementText* >(element) != NULL ||
+		if (dynamic_cast< const ElementText* >(element) != NULL ||
 			child->GetDisplay() == DISPLAY_NONE)
 			continue;
 

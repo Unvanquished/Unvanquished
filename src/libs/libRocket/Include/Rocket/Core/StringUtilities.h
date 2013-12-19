@@ -67,13 +67,13 @@ public:
 	/// @param[in] input Input string in UTF-8 encoding.
 	/// @param[out] output Output vector of UCS-2 characters.
 	/// @return True if the conversion went successfully, false if any characters had to be skipped (this will occur if they can't fit into UCS-2).
-	static bool UTF8toUCS2(const String& input, Container::vector< word >::Type& output);
+	static bool UTF8toUCS2(const String& input, std::vector< word >& output);
 	/// Converts a vector of words in UCS-2 encoding into a character array in UTF-8 encoding. This
 	/// function assumes the endianness of the input words to be the same as the host processor.
 	/// @param[in] input Input vector in UCS-2 encoding.
 	/// @param[out] output Output string in UTF-8 encoding.
 	/// @return True if the conversion went successfully, false if not.
-	static bool UCS2toUTF8(const Container::vector< word >::Type& input, String& output);
+	static bool UCS2toUTF8(const std::vector< word >& input, String& output);
 	/// Converts an array of words in UCS-2 encoding into a character array in UTF-8 encoding. This
 	/// function assumes the endianness of the input words to be the same as the host processor.
 	/// @param[in] input Input array of words in UCS-2 encoding.
@@ -89,14 +89,6 @@ public:
 	static bool IsWhitespace(CharacterType x)
 	{
 		return (x == '\r' || x == '\n' || x == ' ' || x == '\t');
-	}
-
-	/// Checks if a given value is a zero width whitespace character.
-	/// @param[in] x The character to evaluate.
-	/// @return True if the character is zero width whitespace, false otherwise.
-	static bool IsZeroWidthSpace(unsigned short x)
-	{
-		return (x == L'\x200C');
 	}
 
 	/// Strip whitespace characters from the beginning and end of a string.

@@ -28,7 +28,7 @@
 #ifndef ROCKETCORETEMPLATECACHE_H
 #define ROCKETCORETEMPLATECACHE_H
 
-#include <Rocket/Core/ContainerWrapper.h>
+#include <map>
 
 namespace Rocket {
 namespace Core {
@@ -57,7 +57,7 @@ private:
 	TemplateCache();
 	~TemplateCache();
 
-	typedef Container::map<String, Template*>::Type Templates;
+	typedef std::map<String, Template*> Templates;
 	Templates templates;
 	Templates template_ids;
 };

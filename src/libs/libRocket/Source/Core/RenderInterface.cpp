@@ -44,7 +44,7 @@ RenderInterface::~RenderInterface()
 // Called by Rocket when it wants to compile geometry it believes will be static for the forseeable future.
 CompiledGeometryHandle RenderInterface::CompileGeometry(Vertex* ROCKET_UNUSED(vertices), int ROCKET_UNUSED(num_vertices), int* ROCKET_UNUSED(indices), int ROCKET_UNUSED(num_indices), TextureHandle ROCKET_UNUSED(texture))
 {
-	return NULL;
+	return 0;
 }
 
 // Called by Rocket when it wants to render application-compiled geometry.
@@ -94,16 +94,6 @@ float RenderInterface::GetPixelsPerInch()
 
 // Called when this render interface is released.
 void RenderInterface::Release()
-{
-}
-
-// Called when context rendering starts.
-void RenderInterface::PreRender()
-{
-}
-
-// Called when context rendering ends.
-void RenderInterface::PostRender()
 {
 }
 

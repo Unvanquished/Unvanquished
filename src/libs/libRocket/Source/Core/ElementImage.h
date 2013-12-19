@@ -66,9 +66,6 @@ class TextureResource;
 class ROCKETCORE_API ElementImage : public Element
 {
 public:
-
-	ROCKET_RTTI_DefineWithParent(Element)
-
 	/// Constructs a new ElementImage. This should not be called directly; use the Factory instead.
 	/// @param[in] tag The tag the element was declared as in RML.
 	ElementImage(const String& tag);
@@ -86,9 +83,6 @@ protected:
 	/// Checks for changes to the image's source or dimensions.
 	/// @param[in] changed_attributes A list of attributes changed on the element.
 	virtual void OnAttributeChange(const AttributeNameList& changed_attributes);
-	/// Called when properties on the element are changed.
-	/// @param[in] changed_properties The properties changed on the element.
-	virtual void OnPropertyChange(const PropertyNameList& changed_properties);
 
 	/// Regenerates the element's geometry on a resize event.
 	/// @param[in] event The event to process.

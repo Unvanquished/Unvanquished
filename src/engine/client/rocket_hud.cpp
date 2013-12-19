@@ -48,9 +48,9 @@ struct HudUnit
 	bool load; // Whether to load or not
 };
 
-typedef Rocket::Core::Container::list<HudUnit>::Type RocketHud;
+typedef std::list<HudUnit> RocketHud;
 RocketHud *activeHud = NULL;
-Rocket::Core::Container::vector<RocketHud>::Type huds;
+std::vector<RocketHud> huds;
 
 
 // Initialized to WP_NUM_WEAPONS, which may be different based on different mods

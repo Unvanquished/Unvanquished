@@ -32,7 +32,7 @@
 #include <Rocket/Controls/DataSourceListener.h>
 #include <Rocket/Controls/DataQuery.h>
 #include <Rocket/Core/Element.h>
-#include <Rocket/Core/ContainerWrapper.h>
+#include <queue>
 
 namespace Rocket {
 namespace Controls {
@@ -50,9 +50,6 @@ class ROCKETCONTROLS_API ElementDataGridRow : public Core::Element, public DataS
 friend class ElementDataGrid;
 
 public:
-
-	ROCKET_RTTI_DefineWithParent(Core::Element)
-
 	ElementDataGridRow(const Rocket::Core::String& tag);
 	virtual ~ElementDataGridRow();
 
@@ -99,8 +96,8 @@ protected:
 	virtual void OnRowChange(DataSource* data_source, const Rocket::Core::String& table);
 
 private:
-	typedef Rocket::Core::Container::queue< ElementDataGridRow* >::Type RowQueue;
-	typedef Rocket::Core::Container::vector< ElementDataGridRow* >::Type RowList;
+	typedef std::queue< ElementDataGridRow* > RowQueue;
+	typedef std::vector< ElementDataGridRow* > RowList;
 
 	// Called when a row change (addition or removal) occurs in one of our
 	// children. Causes the table row index to be dirtied on all following

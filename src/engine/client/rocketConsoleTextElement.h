@@ -37,7 +37,6 @@ Maryland 20850 USA.
 
 #include <Rocket/Core.h>
 #include <Rocket/Core/Element.h>
-#include <Rocket/Core/FontFaceHandle.h>
 #include "client.h"
 #include "rocket.h"
 
@@ -104,7 +103,7 @@ public:
 			const Rocket::Core::FontFaceHandle *font = GetFirstChild()->GetFontFaceHandle();
 			if ( font )
 			{
-				maxLines = floor( GetProperty( "height" )->value.Get<float>() / ( font->GetBaseline() + font->GetLineHeight() ) );
+				maxLines = floor( GetProperty( "height" )->value.Get<float>() / ( 10.0f ) );
 
 				if ( maxLines <= 0 )
 				{
@@ -177,7 +176,7 @@ public:
 					child = Rocket::Core::Factory::InstanceElement( parent, "#text", "span", xml );
 					child->SetProperty( "color", "#FFFFFF" );
 				}
-				rocket_dynamic_cast<Rocket::Core::ElementText *>( child )->SetText( out );
+				static_cast<Rocket::Core::ElementText *>( child )->SetText( out );
 				parent->AppendChild( child );
 				parent->AppendChild( Rocket::Core::Factory::InstanceElement( parent, "*", "br", Rocket::Core::XMLAttributes() ) );
 				out.Clear();
@@ -197,7 +196,7 @@ public:
 				if ( span )
 				{
 					span = qfalse;
-					rocket_dynamic_cast<Rocket::Core::ElementText *>( child )->SetText( out );
+					static_cast<Rocket::Core::ElementText *>( child )->SetText( out );
 					parent->AppendChild( child );
 					out.Clear();
 				}
@@ -207,7 +206,7 @@ public:
 					Rocket::Core::XMLAttributes xml;
 					child = Rocket::Core::Factory::InstanceElement( parent, "#text", "span", xml );
 					child->SetProperty( "color", "#FFFFFF" );
-					rocket_dynamic_cast<Rocket::Core::ElementText *>( child )->SetText( out );
+					static_cast<Rocket::Core::ElementText *>( child )->SetText( out );
 					parent->AppendChild( child );
 					out.Clear();
 				}
@@ -230,13 +229,13 @@ public:
 
 		if ( span && child && !out.Empty() )
 		{
-			rocket_dynamic_cast<Rocket::Core::ElementText *>( child )->SetText( out );
+			static_cast<Rocket::Core::ElementText *>( child )->SetText( out );
 			parent->AppendChild( child );
 			span = qfalse;
 		}
 	}
 
-	static Rocket::Core::Container::deque<ConsoleLine>::Type lines;
+	static std::deque<ConsoleLine> lines;
 private:
 	int numLines;
 	int maxLines;

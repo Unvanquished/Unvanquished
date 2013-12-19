@@ -42,8 +42,6 @@
 namespace Rocket {
 namespace Core {
 
-ROCKET_RTTI_Implement( ElementDocument )
-
 ElementDocument::ElementDocument(const String& tag) : Element(tag)
 {
 	style_sheet = NULL;
@@ -268,7 +266,7 @@ ElementText* ElementDocument::CreateTextNode(const String& text)
 	}
 
 	// Cast up
-	ElementText* element_text = rocket_dynamic_cast< ElementText* >(element);
+	ElementText* element_text = dynamic_cast< ElementText* >(element);
 	if (!element_text)
 	{
 		Log::Message(Log::LT_ERROR, "Failed to create text element, instancer didn't return a derivative of ElementText.");

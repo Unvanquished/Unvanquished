@@ -71,9 +71,6 @@ class StyleSheet;
 class ROCKETCORE_API Element : public ScriptInterface
 {
 public:
-
-	ROCKET_RTTI_DefineWithParent(ScriptInterface)
-
 	/// Constructs a new libRocket element. This should not be called directly; use the Factory
 	/// instead.
 	/// @param[in] tag The tag the element was declared as in RML.
@@ -522,8 +519,6 @@ public:
 	/// @param[in] The element to remove.
 	/// @returns True if the element was found and removed.
 	bool RemoveChild(Element* element);
-	/// Remove all children elements from this element.
-	void RemoveAllChildren();
 	/// Returns whether or not this element has any DOM children.
 	/// @return True if the element has at least one DOM child, false otherwise.
 	bool HasChildNodes() const;
@@ -553,7 +548,7 @@ public:
 	/// @return The element's background.
 	ElementBackground* GetElementBackground() const;
 	/// Access the element border.
-	/// @return The element's border.
+	/// @return The element's boder.
 	ElementBorder* GetElementBorder() const;
 	/// Access the element decorators.
 	/// @return The element decoration.
@@ -687,7 +682,7 @@ private:
 	Vector2f scroll_offset;
 
 	// The size of the element.
-	typedef Container::vector< Box >::Type BoxList;
+	typedef std::vector< Box > BoxList;
 	BoxList boxes;
 	// And of the element's internal content.
 	Vector2f content_offset;

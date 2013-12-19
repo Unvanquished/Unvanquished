@@ -14,7 +14,7 @@
  *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -33,8 +33,6 @@
 
 namespace Rocket {
 namespace Core {
-
-ROCKET_RTTI_Implement( ElementImage )
 
 // Constructs a new ElementImage.
 ElementImage::ElementImage(const String& tag) : Element(tag), dimensions(-1, -1), geometry(this)
@@ -158,24 +156,6 @@ void ElementImage::OnAttributeChange(const Rocket::Core::AttributeNameList& chan
 		DirtyLayout();
 }
 
-// Called when properties on the element are changed.
-void ElementImage::OnPropertyChange(const PropertyNameList& changed_properties)
-{
-	Rocket::Core::Element::OnPropertyChange(changed_properties);
-
-	// Check if color property has been changed.
-	if (changed_properties.find(COLOR) != changed_properties.end() )
-	{
-		geometry_dirty = true;
-	}
-
-	// Check if opacity has been changed
-	if (changed_properties.find(OPACITY) != changed_properties.end() )
-	{
-		geometry_dirty = true;
-	}
-}
-
 // Regenerates the element's geometry.
 void ElementImage::ProcessEvent(Rocket::Core::Event& event)
 {
@@ -193,16 +173,11 @@ void ElementImage::GenerateGeometry()
 	// Release the old geometry before specifying the new vertices.
 	geometry.Release(true);
 
-	Container::vector< Rocket::Core::Vertex >::Type& vertices = geometry.GetVertices();
-	Container::vector< int >::Type& indices = geometry.GetIndices();
+	std::vector< Rocket::Core::Vertex >& vertices = geometry.GetVertices();
+	std::vector< int >& indices = geometry.GetIndices();
 
 	vertices.resize(4);
 	indices.resize(6);
-
-	Colourb color = GetProperty(COLOR)->value.Get< Colourb >();
-
-	float alpha = GetProperty(OPACITY)->value.Get< float >();
-	color.alpha *= alpha;
 
 	// Generate the texture coordinates.
 	Vector2f texcoords[2];
@@ -228,9 +203,9 @@ void ElementImage::GenerateGeometry()
 
 	Rocket::Core::GeometryUtilities::GenerateQuad(&vertices[0],									// vertices to write to
 												  &indices[0],									// indices to write to
-												  Vector2f(0, 0),								// origin of the quad
+												  Vector2f(0, 0),					// origin of the quad
 												  GetBox().GetSize(Rocket::Core::Box::CONTENT),	// size of the quad
-												  color,										// colour of the vertices
+												  Colourb(255, 255, 255, 255),		// colour of the vertices
 												  texcoords[0],									// top-left texture coordinate
 												  texcoords[1]);								// top-right texture coordinate
 

@@ -14,7 +14,7 @@
  *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -25,11 +25,9 @@
  *
  */
 
-
 #include "Plugin.h"
 #include <Rocket/Core/Types.h>
 #include <Rocket/Core.h>
-#include <Rocket/Core/FontDatabase.h>
 #include "ElementContextHook.h"
 #include "ElementInfo.h"
 #include "ElementLog.h"
@@ -37,7 +35,7 @@
 #include "Geometry.h"
 #include "MenuSource.h"
 #include "SystemInterface.h"
-#include <Rocket/Core/ContainerWrapper.h>
+#include <stack>
 
 namespace Rocket {
 namespace Debugger {
@@ -108,7 +106,7 @@ bool Plugin::SetContext(Core::Context* context)
 		if (element == NULL)
 			return false;
 
-		hook_element = rocket_dynamic_cast< ElementContextHook* >(element);
+		hook_element = dynamic_cast< ElementContextHook* >(element);
 		if (hook_element == NULL)
 		{
 			element->RemoveReference();
@@ -169,22 +167,24 @@ void Plugin::Render()
 			if (document->GetId().Find("rkt-debug-") == 0)
 				continue;
 
-			Rocket::Core::Container::stack< Core::Element* >::Type element_stack;
+			std::stack< Core::Element* > element_stack;
 			element_stack.push(document);
 
 			while (!element_stack.empty())
 			{
 				Core::Element* element = element_stack.top();
 				element_stack.pop();
-
-				for (int j = 0; j < element->GetNumBoxes(); ++j)
+				if (element->IsVisible())
 				{
-					const Core::Box& box = element->GetBox(j);
-					Geometry::RenderOutline(element->GetAbsoluteOffset(Core::Box::BORDER) + box.GetPosition(Core::Box::BORDER), box.GetSize(Core::Box::BORDER), Core::Colourb(255, 0, 0, 128), 1);
-				}
+					for (int j = 0; j < element->GetNumBoxes(); ++j)
+					{
+						const Core::Box& box = element->GetBox(j);
+						Geometry::RenderOutline(element->GetAbsoluteOffset(Core::Box::BORDER) + box.GetPosition(Core::Box::BORDER), box.GetSize(Core::Box::BORDER), Core::Colourb(255, 0, 0, 128), 1);
+					}
 
-				for (int j = 0; j < element->GetNumChildren(); ++j)
-					element_stack.push(element->GetChild(j));
+					for (int j = 0; j < element->GetNumChildren(); ++j)
+						element_stack.push(element->GetChild(j));
+				}
 			}
 		}
 	}
@@ -286,10 +286,8 @@ Plugin* Plugin::GetInstance()
 
 bool Plugin::LoadFont()
 {
-	return (Core::FontDatabase::LoadFontFace(Core::FontDatabase::FREETYPE_FONT, lacuna_regular_freetype, sizeof(lacuna_regular_freetype) / sizeof(unsigned char), "Lacuna", Core::Font::STYLE_NORMAL, Core::Font::WEIGHT_NORMAL) &&
-			Core::FontDatabase::LoadFontFace(Core::FontDatabase::FREETYPE_FONT, lacuna_italic_freetype, sizeof(lacuna_italic_freetype) / sizeof(unsigned char), "Lacuna", Core::Font::STYLE_ITALIC, Core::Font::WEIGHT_NORMAL))
-		|| (Core::FontDatabase::LoadFontFace(Core::FontDatabase::BITMAP_FONT, lacuna_regular_bitmap_font, sizeof(lacuna_regular_bitmap_font) / sizeof(unsigned char), "../../assets/BitmapFont/lacuna", Core::Font::STYLE_NORMAL, Core::Font::WEIGHT_NORMAL) &&
-			Core::FontDatabase::LoadFontFace(Core::FontDatabase::BITMAP_FONT, lacuna_italic_bitmap_font, sizeof(lacuna_italic_bitmap_font) / sizeof(unsigned char), "../../assets/BitmapFont/lacuna", Core::Font::STYLE_ITALIC, Core::Font::WEIGHT_NORMAL));
+	return (Core::FontDatabase::LoadFontFace(lacuna_regular, sizeof(lacuna_regular) / sizeof(unsigned char), "Lacuna", Core::Font::STYLE_NORMAL, Core::Font::WEIGHT_NORMAL) &&
+			Core::FontDatabase::LoadFontFace(lacuna_italic, sizeof(lacuna_italic) / sizeof(unsigned char), "Lacuna", Core::Font::STYLE_ITALIC, Core::Font::WEIGHT_NORMAL));
 }
 
 bool Plugin::LoadMenuElement()
@@ -337,7 +335,7 @@ bool Plugin::LoadMenuElement()
 bool Plugin::LoadInfoElement()
 {
 	Core::Factory::RegisterElementInstancer("debug-info", new Core::ElementInstancerGeneric< ElementInfo >())->RemoveReference();
-	info_element = rocket_dynamic_cast< ElementInfo* >(host_context->CreateDocument("debug-info"));
+	info_element = dynamic_cast< ElementInfo* >(host_context->CreateDocument("debug-info"));
 	if (info_element == NULL)
 		return false;
 
@@ -358,7 +356,7 @@ bool Plugin::LoadInfoElement()
 bool Plugin::LoadLogElement()
 {
 	Core::Factory::RegisterElementInstancer("debug-log", new Core::ElementInstancerGeneric< ElementLog >())->RemoveReference();
-	log_element = rocket_dynamic_cast< ElementLog* >(host_context->CreateDocument("debug-log"));
+	log_element = dynamic_cast< ElementLog* >(host_context->CreateDocument("debug-log"));
 	if (log_element == NULL)
 		return false;
 
@@ -375,7 +373,7 @@ bool Plugin::LoadLogElement()
 
 	// Make the system interface; this will trap the log messages for us.
 	log_hook = new SystemInterface(log_element);
-	
+
 	return true;
 }
 

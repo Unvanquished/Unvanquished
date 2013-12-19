@@ -14,7 +14,7 @@
  *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -55,15 +55,15 @@ namespace Rocket {
 namespace Core {
 
 // Element instancers.
-typedef Container::map< String, ElementInstancer* >::Type ElementInstancerMap;
+typedef std::map< String, ElementInstancer* > ElementInstancerMap;
 static ElementInstancerMap element_instancers;
 
 // Decorator instancers.
-typedef Container::map< String, DecoratorInstancer* >::Type DecoratorInstancerMap;
+typedef std::map< String, DecoratorInstancer* > DecoratorInstancerMap;
 static DecoratorInstancerMap decorator_instancers;
 
 // Font effect instancers.
-typedef Container::map< String, FontEffectInstancer* >::Type FontEffectInstancerMap;
+typedef std::map< String, FontEffectInstancer* > FontEffectInstancerMap;
 static FontEffectInstancerMap font_effect_instancers;
 
 // The context instancer.
@@ -211,7 +211,7 @@ Element* Factory::InstanceElement(Element* parent, const String& instancer_name,
 
 	if (instancer)
 	{
-		Element* element = instancer->InstanceElement(parent, tag, attributes);
+		Element* element = instancer->InstanceElement(parent, tag, attributes);		
 
 		// Process the generic attributes and bind any events
 		if (element)
@@ -276,7 +276,7 @@ bool Factory::InstanceElementText(Element* parent, const String& text)
 		}
 
 		// Assign the element its text value.
-		ElementText* text_element = rocket_dynamic_cast< ElementText* >(element);
+		ElementText* text_element = dynamic_cast< ElementText* >(element);
 		if (text_element == NULL)
 		{
 			Log::Message(Log::LT_ERROR, "Failed to instance text element '%s'. Found type '%s', was expecting a derivative of ElementText.", translated_data.CString(), typeid(element).name());
@@ -312,7 +312,7 @@ ElementDocument* Factory::InstanceDocumentStream(Rocket::Core::Context* context,
 		return NULL;
 	}
 
-	ElementDocument* document = rocket_dynamic_cast< ElementDocument* >(element);
+	ElementDocument* document = dynamic_cast< ElementDocument* >(element);
 	if (!document)
 	{
 		Log::Message(Log::LT_ERROR, "Failed to instance document element. Found type '%s', was expecting derivative of ElementDocument.", typeid(element).name());
@@ -451,7 +451,7 @@ FontEffect* Factory::InstanceFontEffect(const String& name, const PropertyDictio
 
 	// Compile an ordered list of the values of the properties used to generate the effect's
 	// textures and geometry.
-	typedef Container::list< Container::pair< String, String >::Type >::Type GenerationPropertyList;
+	typedef std::list< std::pair< String, String > > GenerationPropertyList;
 	GenerationPropertyList generation_properties;
 	for (PropertyMap::const_iterator i = parsed_properties.GetProperties().begin(); i != parsed_properties.GetProperties().end(); ++i)
 	{

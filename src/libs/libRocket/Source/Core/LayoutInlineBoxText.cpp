@@ -27,7 +27,7 @@
 
 #include "precompiled.h"
 #include "LayoutInlineBoxText.h"
-#include <Rocket/Core/FontFaceHandle.h>
+#include "FontFaceHandle.h"
 #include "LayoutEngine.h"
 #include "LayoutLineBox.h"
 #include <Rocket/Core/ElementText.h>
@@ -139,7 +139,7 @@ void LayoutInlineBoxText::operator delete(void* chunk)
 // Returns the box's element as a text element.
 ElementText* LayoutInlineBoxText::GetTextElement()
 {
-	return rocket_dynamic_cast< ElementText* >(element);
+	return dynamic_cast< ElementText* >(element);
 }
 
 // Builds a box for the first word of the element.

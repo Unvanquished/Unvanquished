@@ -55,9 +55,6 @@ class StyleSheet;
 class ROCKETCORE_API ElementDocument : public Element
 {
 public:
-
-	ROCKET_RTTI_DefineWithParent( Element )
-
 	ElementDocument(const String& tag);
 	virtual ~ElementDocument();
 

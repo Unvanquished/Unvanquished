@@ -30,7 +30,8 @@
 
 #include <Rocket/Controls/Header.h>
 #include <Rocket/Core/String.h>
-#include <Rocket/Core/ContainerWrapper.h>
+#include <list>
+#include <map>
 
 namespace Rocket {
 namespace Controls {
@@ -95,13 +96,13 @@ class ROCKETCONTROLS_API DataSource
 		void NotifyRowChange(const Rocket::Core::String& table);
 
 		/// Helper function for building a result set.
-		typedef Rocket::Core::Container::map< Rocket::Core::String, Rocket::Core::String >::Type RowMap;
+		typedef std::map< Rocket::Core::String, Rocket::Core::String > RowMap;
 		void BuildRowEntries(Rocket::Core::StringList& row, const RowMap& row_map, const Rocket::Core::StringList& columns);
 
 	private:
 		Core::String name;
 
-		typedef Rocket::Core::Container::list< DataSourceListener* >::Type ListenerList;
+		typedef std::list< DataSourceListener* > ListenerList;
 		ListenerList listeners;
 };
 

@@ -310,7 +310,7 @@ void Rocket_SetPropertyById( const char *id, const char *property, const char *v
 		activeElement->SetProperty( property, value );
 	}
 }
-Rocket::Core::Container::deque<ConsoleLine>::Type RocketConsoleTextElement::lines = Rocket::Core::Container::deque<ConsoleLine>::Type();
+std::deque<ConsoleLine> RocketConsoleTextElement::lines;
 void Rocket_AddConsoleText( void )
 {
 	static char buffer[ MAX_STRING_CHARS ];

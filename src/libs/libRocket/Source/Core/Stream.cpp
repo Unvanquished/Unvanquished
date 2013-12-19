@@ -27,7 +27,7 @@
 
 #include "precompiled.h"
 #include <Rocket/Core/Stream.h>
-#include <Rocket/Core/ContainerWrapper.h>
+#include <algorithm>
 #include <stdio.h>
 
 namespace Rocket {

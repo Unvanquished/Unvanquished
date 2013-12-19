@@ -33,8 +33,6 @@
 namespace Rocket {
 namespace Controls {
 
-ROCKET_RTTI_Implement( ElementForm )
-
 // Constructs a new ElementForm. This should not be called directly; use the Factory instead.
 ElementForm::ElementForm(const Rocket::Core::String& tag) : Core::Element(tag)
 {
@@ -61,7 +59,7 @@ void ElementForm::Submit(const Rocket::Core::String& name, const Rocket::Core::S
 
 	for (size_t i = 0; i < form_controls.size(); i++)
 	{
-		ElementFormControl* control = rocket_dynamic_cast< ElementFormControl* >(form_controls[i]);
+		ElementFormControl* control = dynamic_cast< ElementFormControl* >(form_controls[i]);
 		if (!control)
 			continue;
 

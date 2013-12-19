@@ -63,8 +63,6 @@ public:
 	inline size_type Length() const;
 	/// Get the hash value of this string
 	inline unsigned int Hash() const;
-	// Get the hash value of the C string
-	inline static unsigned int Hash(const T * value, const int length);
 	/// Access the string as a standard C string
 	inline const T* CString() const;
 	
@@ -161,8 +159,8 @@ public:
 	/// Create a lowercase version of the string
 	/// @returns The lower case representation of the string
 	StringBase<T> ToLower() const;
-	/// Create a uppercase version of the string
-	/// @returns The upper case representation of the string
+	/// Create a lowercase version of the string
+	/// @returns The lower case representation of the string
 	StringBase<T> ToUpper() const;
 
 	inline bool operator==(const T* compare) const;

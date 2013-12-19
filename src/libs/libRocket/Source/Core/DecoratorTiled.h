@@ -97,7 +97,7 @@ public:
 		/// @param[in] surface_origin The starting point of the first tile to generate.
 		/// @param[in] surface_dimensions The dimensions of the surface to be tiled.
 		/// @param[in] tile_dimensions The dimensions to render this tile at.
-		void GenerateGeometry(Container::vector< Vertex >::Type& vertices, Container::vector< int >::Type& indices, Element* element, const Vector2f& surface_origin, const Vector2f& surface_dimensions, const Vector2f& tile_dimensions, const Colourb& color_multiplier = Colourb(255, 255, 255)) const;
+		void GenerateGeometry(std::vector< Vertex >& vertices, std::vector< int >& indices, Element* element, const Vector2f& surface_origin, const Vector2f& surface_dimensions, const Vector2f& tile_dimensions) const;
 
 		struct TileData
 		{
@@ -105,7 +105,7 @@ public:
 			Vector2f texcoords[2];
 		};
 
-		typedef Container::map< RenderInterface*, TileData >::Type TileDataMap;
+		typedef std::map< RenderInterface*, TileData > TileDataMap;
 
 		int texture_index;
 		Vector2f texcoords[2];
@@ -117,19 +117,12 @@ public:
 		TileOrientation orientation;
 	};
 
-	Colourb & GetColorMultiplier()
-	{
-		return color_multiplier;
-	}
-
 protected:
 	/// Scales a tile dimensions by a fixed value along one axis.
 	/// @param tile_dimensions[in, out] The tile dimensions to scale.
 	/// @param axis_value[in] The fixed value to scale against.
 	/// @param axis[in] The axis to scale against; either 0 (for x) or 1 (for y).
 	void ScaleTileDimensions(Vector2f& tile_dimensions, float axis_value, int axis);
-
-	Colourb color_multiplier;
 };
 
 }

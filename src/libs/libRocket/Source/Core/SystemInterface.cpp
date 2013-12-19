@@ -61,7 +61,7 @@ bool SystemInterface::LogMessage(Log::Type logtype, const String& message)
 		OutputDebugStringA("\r\n");
 	}
 #else
-	(void)(logtype);
+	(logtype);
 	fprintf(stderr,"%s\n", message.CString());
 #endif	
 	return true;
@@ -106,7 +106,7 @@ void SystemInterface::JoinPath(String& translated_path, const String& document_p
 	URL url(translated_path.Replace(":", "|") + path.Replace("\\", "/"));
 	translated_path = url.GetPathedFileName().Replace("|", ":");
 }
-
+	
 // Activate keyboard (for touchscreen devices)
 void SystemInterface::ActivateKeyboard() 
 {

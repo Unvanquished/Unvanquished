@@ -30,7 +30,7 @@
 namespace Rocket {
 namespace Controls {
 
-typedef Core::Container::map< Rocket::Core::String, DataFormatter* >::Type DataFormatterMap;
+typedef std::map< Rocket::Core::String, DataFormatter* > DataFormatterMap;
 static DataFormatterMap data_formatters;
 
 DataFormatter::DataFormatter(const Rocket::Core::String& _name)

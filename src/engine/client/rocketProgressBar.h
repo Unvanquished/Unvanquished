@@ -37,7 +37,6 @@
 
 #include <Rocket/Core.h>
 #include <Rocket/Core/Element.h>
-#include <Rocket/Core/ContainerWrapper.h>
 #include <Rocket/Core/GeometryUtilities.h>
 #include "client.h"
 #include "rocket.h"

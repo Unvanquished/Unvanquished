@@ -66,7 +66,7 @@ public:
 	byte* AllocateTexture();
 
 private:
-	typedef Container::vector< TextureLayoutRow >::Type RowList;
+	typedef std::vector< TextureLayoutRow > RowList;
 
 	Vector2i dimensions;
 	RowList rows;

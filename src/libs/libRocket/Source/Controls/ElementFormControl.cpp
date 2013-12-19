@@ -30,8 +30,6 @@
 namespace Rocket {
 namespace Controls {
 
-ROCKET_RTTI_Implement( ElementFormControl )
-
 ElementFormControl::ElementFormControl(const Rocket::Core::String& tag) : Core::Element(tag)
 {
 	SetProperty("tab-index", "auto");

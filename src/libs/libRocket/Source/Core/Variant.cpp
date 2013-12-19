@@ -182,24 +182,5 @@ Variant& Variant::operator=(const Variant& copy)
 	return *this;
 }
 
-bool Variant::operator==(const Variant& other) const
-{
-	if(type!=other.type) return false;
-
-	switch (type)
-	{
-		case STRING:
-		{
-			// Create the string
-			return (*(String*)data) == (*(String*)other.data);
-		}
-		break;
-
-		default:
-			return memcmp(data, other.data, LOCAL_DATA_SIZE) == 0;
-		break;
-	}
-}
-
 }
 }

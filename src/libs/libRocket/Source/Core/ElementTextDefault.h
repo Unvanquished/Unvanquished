@@ -14,7 +14,7 @@
  *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -42,9 +42,6 @@ namespace Core {
 class ROCKETCORE_API ElementTextDefault : public ElementText
 {
 public:
-
-	ROCKET_RTTI_DefineWithParent(ElementText)
-
 	ElementTextDefault(const String& tag);
 	virtual ~ElementTextDefault();
 
@@ -116,7 +113,7 @@ private:
 
 	WString text;
 
-	typedef Container::vector< Line >::Type LineList;
+	typedef std::vector< Line > LineList;
 	LineList lines;
 
 	bool dirty_layout_on_change;
@@ -125,7 +122,6 @@ private:
 	bool geometry_dirty;
 
 	Colourb colour;
-	Colourb real_colour;
 
 	// The decoration geometry we've generated for this string.
 	Geometry decoration;

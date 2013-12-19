@@ -37,8 +37,6 @@ namespace Controls {
 
 const float MAX_UPDATE_TIME = 0.01f;
 
-ROCKET_RTTI_Implement( ElementDataGridRow )
-
 ElementDataGridRow::ElementDataGridRow(const Rocket::Core::String& tag) : Core::Element(tag)
 {
 	parent_grid = NULL;
@@ -83,7 +81,7 @@ void ElementDataGridRow::Initialise(ElementDataGrid* _parent_grid, ElementDataGr
 	Rocket::Core::XMLAttributes cell_attributes;
 	for (int i = 0; i < num_columns; i++)
 	{
-		ElementDataGridCell* cell = rocket_dynamic_cast< ElementDataGridCell* >(Core::Factory::InstanceElement(this, "#rktctl_datagridcell", "datagridcell", cell_attributes));
+		ElementDataGridCell* cell = dynamic_cast< ElementDataGridCell* >(Core::Factory::InstanceElement(this, "#rktctl_datagridcell", "datagridcell", cell_attributes));
 		cell->Initialise(i, header_row->GetChild(i));
 		cell->SetProperty("display", Rocket::Core::Property(Rocket::Core::DISPLAY_INLINE_BLOCK, Rocket::Core::Property::KEYWORD));
 		AppendChild(cell);

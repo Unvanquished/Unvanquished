@@ -27,7 +27,7 @@
 
 #include "precompiled.h"
 #include <Rocket/Core/StyleSheet.h>
-#include <Rocket/Core/ContainerWrapper.h>
+#include <algorithm>
 #include "ElementDefinition.h"
 #include "StyleSheetFactory.h"
 #include "StyleSheetNode.h"
@@ -115,21 +115,19 @@ ElementDefinition* StyleSheet::GetElementDefinition(const Element* element) cons
 	}*/
 
 	// See if there are any styles defined for this element.
-	Container::vector< const StyleSheetNode* >::Type applicable_nodes;
+	std::vector< const StyleSheetNode* > applicable_nodes;
 
 	String tags[] = {element->GetTagName(), ""};
 	for (int i = 0; i < 2; i++)
 	{
 		NodeIndex::const_iterator iterator = styled_node_index.find(tags[i]);
-		if (iterator != styled_node_index.end() && (*iterator).second.size())
+		if (iterator != styled_node_index.end())
 		{
 			const NodeList& nodes = (*iterator).second;
 
-			NodeList::const_iterator end = nodes.end();
-
 			// There are! Now see if we satisfy all of their parenting requirements. What this involves is traversing the style
 			// nodes backwards, trying to match nodes in the element's hierarchy to nodes in the style hierarchy.
-			for (NodeList::const_iterator iterator = nodes.begin(); iterator != end; iterator++)
+			for (NodeList::const_iterator iterator = nodes.begin(); iterator != nodes.end(); iterator++)
 			{
 				if ((*iterator)->IsApplicable(element))
 				{
@@ -140,7 +138,7 @@ ElementDefinition* StyleSheet::GetElementDefinition(const Element* element) cons
 		}
 	}
 
-	Container::sort(applicable_nodes.begin(), applicable_nodes.end(), StyleSheetNodeSort);
+	std::sort(applicable_nodes.begin(), applicable_nodes.end(), StyleSheetNodeSort);
 
 	// Compile the list of volatile pseudo-classes for this element definition.
 	PseudoClassList volatile_pseudo_classes;
@@ -149,19 +147,18 @@ ElementDefinition* StyleSheet::GetElementDefinition(const Element* element) cons
 	for (int i = 0; i < 2; ++i)
 	{
 		NodeIndex::const_iterator iterator = complete_node_index.find(tags[i]);
-		if (iterator != complete_node_index.end() && (*iterator).second.size())
+		if (iterator != complete_node_index.end())
 		{
 			const NodeList& nodes = (*iterator).second;
-			NodeList::const_iterator end = nodes.end();
 
 			// See if we satisfy all of the parenting requirements for each of these nodes (as in the previous loop).
-			for (NodeList::const_iterator iterator = nodes.begin(); iterator != end; iterator++)
+			for (NodeList::const_iterator iterator = nodes.begin(); iterator != nodes.end(); iterator++)
 			{
 				structurally_volatile |= (*iterator)->IsStructurallyVolatile();
 
 				if ((*iterator)->IsApplicable(element))
 				{
-					Container::vector< const StyleSheetNode* >::Type volatile_nodes;
+					std::vector< const StyleSheetNode* > volatile_nodes;
 					(*iterator)->GetApplicableDescendants(volatile_nodes, element);
 
 					for (size_t i = 0; i < volatile_nodes.size(); ++i)

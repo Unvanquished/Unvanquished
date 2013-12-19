@@ -44,9 +44,6 @@ namespace Controls {
 class ROCKETCONTROLS_API ElementDataGridCell : public Core::Element, public Core::EventListener
 {
 public:
-
-	ROCKET_RTTI_DefineWithParent(Core::Element)
-
 	ElementDataGridCell(const Rocket::Core::String& tag);
 	virtual ~ElementDataGridCell();
 

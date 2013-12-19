@@ -14,7 +14,7 @@
  *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -83,7 +83,6 @@ const String FONT_CHARSET = "font-charset";
 const String FONT_STYLE = "font-style";
 const String FONT_WEIGHT = "font-weight";
 const String FONT_SIZE = "font-size";
-const String FONT_DEFAULT_CHARACTER = "font-default-character";
 const String FONT = "font";
 const String TEXT_ALIGN = "text-align";
 const String TEXT_DECORATION = "text-decoration";
@@ -93,8 +92,6 @@ const String CURSOR = "cursor";
 const String DRAG = "drag";
 const String TAB_INDEX = "tab-index";
 const String SCROLLBAR_MARGIN = "scrollbar-margin";
-const String SCROLL_DEFAULT_STEP_SIZE = "scroll-default-step-size";
-const String OPACITY = "opacity";
 
 const String MOUSEDOWN = "mousedown";
 const String MOUSESCROLL = "mousescroll";

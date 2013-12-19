@@ -45,9 +45,6 @@ namespace Core {
 class ROCKETCORE_API ElementHandle : public Element
 {
 public:
-
-	ROCKET_RTTI_DefineWithParent(Element)
-
 	ElementHandle(const String& tag);
 	virtual ~ElementHandle();
 

@@ -62,10 +62,10 @@ public:
 
 	/// Returns the geometry's vertices. If these are written to, Release() should be called to force a recompile.
 	/// @return The geometry's vertex array.
-	Container::vector< Vertex >::Type& GetVertices();
+	std::vector< Vertex >& GetVertices();
 	/// Returns the geometry's indices. If these are written to, Release() should be called to force a recompile.
 	/// @return The geometry's index array.
-	Container::vector< int >::Type& GetIndices();
+	std::vector< int >& GetIndices();
 
 	/// Gets the geometry's texture.
 	/// @return The geometry's texture.
@@ -84,8 +84,8 @@ private:
 	Context* host_context;
 	Element* host_element;
 
-	Container::vector< Vertex >::Type vertices;
-	Container::vector< int >::Type indices;
+	std::vector< Vertex > vertices;
+	std::vector< int > indices;
 	const Texture* texture;
 
 	CompiledGeometryHandle compiled_geometry;
@@ -93,7 +93,7 @@ private:
 	bool fixed_texcoords;
 };
 
-typedef Container::vector< Geometry >::Type GeometryList;
+typedef std::vector< Geometry > GeometryList;
 
 }
 }
