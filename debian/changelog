@@ -1,3 +1,16 @@
+unvanquished (0.22.1-2) unstable; urgency=low
+
+  * Fix some possible mumble overflows.
+  * Fix a possible NULL dereference in translation code.
+  * Don't execute default.cfg on a dedicated server.
+  * Fix menu crash when not using OpenAL.
+  * Work around a menu bug regarding latched variables.
+  * Handle null strings when setting variables.
+  * Only set read-only startup variables once.
+  * Fix some r_picmip rendering bugs.
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Fri, 20 Dec 2013 21:44:24 +0000
+
 unvanquished (0.22.1-1) unstable; urgency=low
 
   * Alpha 22 point release. Bug fixes.
