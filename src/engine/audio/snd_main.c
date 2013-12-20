@@ -30,9 +30,6 @@ cvar_t *s_backend;
 cvar_t *s_muteWhenMinimized;
 cvar_t *s_muteWhenUnfocused;
 
-qboolean S_AL_Init();
-void S_AL_Shutdown();
-
 /*
 =================
 S_StartSound
@@ -229,6 +226,7 @@ S_DisableSounds
 */
 void S_DisableSounds( void )
 {
+    S_StopAllSounds();
 }
 
 /*

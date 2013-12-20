@@ -90,10 +90,19 @@ namespace Audio {
         }
     }
 
+    void UnlinkEffects() {
+        for (int i = 0; i < nSources; i++) {
+            auto& source = sources[i].source;
+
+            source.DisableEffect(POSITIONAL_EFFECT_SLOT);
+        }
+    }
+
     void AddSound(std::shared_ptr<Emitter> emitter, std::shared_ptr<Sound> sound, int priority) {
         sourceRecord_t* source = GetSource(priority);
 
         if (source) {
+            source->source.ResetBuffer();
             sound->SetEmitter(emitter);
             sound->AcquireSource(source->source);
             source->usingSound = sound;

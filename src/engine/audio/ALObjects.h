@@ -140,6 +140,7 @@ namespace AL {
             int GetNumQueuedBuffers();
             Buffer PopBuffer();
             void RemoveAllQueuedBuffers();
+            void ResetBuffer();
 
             void SetGain(float gain);
             void SetPosition(const vec3_t position);
@@ -157,6 +158,8 @@ namespace AL {
         private:
             Source(const Source& other);
             Source& operator=(const Source& other);
+
+            int GetType();
 
             unsigned alHandle;
     };

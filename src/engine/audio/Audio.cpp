@@ -105,7 +105,7 @@ namespace Audio {
         if (not initialized) {
             return;
         }
-        initialized = false;
+        Log::Debug("Shutdown");
 
         for (int i = 0; i < MAX_GENTITIES; i++) {
             if (entityLoops[i].sound) {
@@ -114,8 +114,8 @@ namespace Audio {
             entityLoops[i] = {false, nullptr};
         }
 
-        music = nullptr;
-
+        StopMusic();
+        UnlinkEffects();
         ShutdownEmitters();
         ShutdownSounds();
         ShutdownSamples();

@@ -498,10 +498,20 @@ namespace AL {
     }
 
     void Source::RemoveAllQueuedBuffers() {
+        if (GetType() != AL_STREAMING) {
+            return;
+        }
+        Stop();
+        ResetBuffer();
         int toBeRemoved = GetNumQueuedBuffers();
         while (toBeRemoved --> 0) {
             PopBuffer();
         }
+    }
+
+    void Source::ResetBuffer() {
+        alSourcei(alHandle, AL_BUFFER, 0);
+        CHECK_ERROR();
     }
 
     void Source::SetGain(float gain) {
@@ -551,6 +561,13 @@ namespace AL {
 
     Source::operator unsigned() const {
         return alHandle;
+    }
+
+    int Source::GetType() {
+        ALint type;
+        alGetSourcei(alHandle, AL_SOURCE_TYPE, &type);
+        CHECK_ERROR();
+        return type;
     }
 
     // Implementation of Device
