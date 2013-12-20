@@ -1924,6 +1924,7 @@ static void IdlePowerState( gentity_t *self )
 	{
 		if ( self->s.torsoAnim == BANIM_IDLE_UNPOWERED )
 		{
+			// TODO: Play power up anim here?
 			G_SetIdleBuildableAnim( self, (buildableAnimNumber_t) BG_Buildable( self->s.modelindex )->idleAnim );
 		}
 	}
@@ -2894,15 +2895,7 @@ void HMedistat_Think( gentity_t *self )
 	}
 }
 
-//==================================================================================
-
 /*
-================
-HMGTurret_CheckTarget
-
-Used by HMGTurret_Think to check enemies for validity
-================
-*/
 qboolean HMGTurret_CheckTarget( gentity_t *self, gentity_t *target,
                                 qboolean los_check )
 {
@@ -2934,13 +2927,6 @@ qboolean HMGTurret_CheckTarget( gentity_t *self, gentity_t *target,
 	return tr.entityNum == target - g_entities;
 }
 
-/*
-================
-HMGTurret_TrackEnemy
-
-Used by HMGTurret_Think to track enemy location
-================
-*/
 qboolean HMGTurret_TrackEnemy( gentity_t *self )
 {
 	vec3_t dirToTarget, dttAdjusted, angleToTarget, angularDiff, xNormal;
@@ -3012,13 +2998,6 @@ qboolean HMGTurret_TrackEnemy( gentity_t *self )
 	         MGTURRET_ACCURACY_TO_FIRE );
 }
 
-/*
-================
-HMGTurret_FindEnemy
-
-Used by HMGTurret_Think to locate enemy gentities
-================
-*/
 void HMGTurret_FindEnemy( gentity_t *self )
 {
 	int       entityList[ MAX_GENTITIES ];
@@ -3063,13 +3042,6 @@ void HMGTurret_FindEnemy( gentity_t *self )
 	}
 }
 
-/*
-================
-HMGTurret_State
-
-Raise or lower MG turret towards desired state
-================
-*/
 enum
 {
   MGT_STATE_INACTIVE,
@@ -3129,13 +3101,6 @@ static qboolean HMGTurret_State( gentity_t *self, int state )
 	return qfalse;
 }
 
-/*
-================
-HMGTurret_Think
-
-Think function for MG turret
-================
-*/
 void HMGTurret_Think( gentity_t *self )
 {
 	HGeneric_Think( self );
@@ -3214,8 +3179,347 @@ void HMGTurret_Think( gentity_t *self )
 	G_AddEvent( self, EV_FIRE_WEAPON, 0 );
 	G_SetBuildableAnim( self, BANIM_ATTACK1, qfalse );
 }
+*/
 
-//==================================================================================
+static int HTurret_DistanceToZone( float distance )
+{
+	const float zoneWidth = ( float )TURRET_RANGE / ( float )TURRET_ZONES;
+
+	int zone = ( int )( distance / zoneWidth );
+
+	if ( zone >= TURRET_ZONES )
+	{
+		return TURRET_ZONES - 1;
+	}
+	else
+	{
+		return zone;
+	}
+}
+
+static gentity_t *cmpTurret = NULL;
+
+static int HTurret_CompareTargets( const void *first, const void *second )
+{
+	gentity_t *a, *b;
+
+	if ( !cmpTurret )
+	{
+		return 0;
+	}
+
+	a = ( gentity_t * )first;
+	b = ( gentity_t * )second;
+
+	// Always prefer target that isn't yet targeted.
+	// This makes group attacks more and dretch spam during rushes less efficient.
+	{
+		if ( a->numTrackedBy == 0 && b->numTrackedBy > 0 )
+		{
+			return -1;
+		}
+		else if ( a->numTrackedBy > 0 && b->numTrackedBy == 0 )
+		{
+			return 1;
+		}
+	}
+
+	// Prefer smaller distance. Use zones so close targets with different hit ranges are treated equally.
+	// Note that one target can't hide the other, since the other wouldn't be valid.
+	{
+		int ad = HTurret_DistanceToZone( Distance( cmpTurret->s.origin, a->s.origin ) );
+		int bd = HTurret_DistanceToZone( Distance( cmpTurret->s.origin, b->s.origin ) );
+
+		if ( ad < bd )
+		{
+			return -1;
+		}
+		else if ( bd < ad )
+		{
+			return 1;
+		}
+	}
+
+	// Tie breaker is random decision, so clients on lower slots don't get shot at more often.
+	{
+		if ( rand() < ( RAND_MAX / 2 ) )
+		{
+			return -1;
+		}
+		else
+		{
+			return 1;
+		}
+	}
+}
+
+static qboolean HTurret_TargetValid( gentity_t *self, gentity_t *target, qboolean newTarget )
+{
+	trace_t tr;
+	vec3_t  dir, end;
+
+	if (    !target
+	     || !target->client
+	     || target->health <= 0
+	     || G_OnSameTeam( self, target )
+	     || target->flags & FL_NOTARGET
+	     || Distance( self->s.origin, target->s.origin ) > MGTURRET_RANGE )
+	{
+		if ( g_debugTurrets.integer > 0 && self->target )
+		{
+			Com_Printf( "Turret %d: Target %d eliminated or out of sight.\n",
+			            self->s.number, self->target->s.number );
+		}
+
+		return qfalse;
+	}
+
+	if ( newTarget )
+	{
+		// check if target could be hit with a precise shot
+		VectorSubtract( target->s.pos.trBase, self->s.pos.trBase, dir );
+		VectorNormalize( dir );
+		VectorMA( self->s.pos.trBase, MGTURRET_RANGE, dir, end );
+		trap_Trace( &tr, self->s.pos.trBase, NULL, NULL, end, self->s.number, MASK_SHOT );
+
+		if ( tr.entityNum != ( target - g_entities ) )
+		{
+			return qfalse;
+		}
+	}
+	else
+	{
+		// give up on target if we couldn't shoot at it for a while
+		if ( self->turretLastShot && self->turretLastShot + TURRET_GIVEUP_TARGET < level.time )
+		{
+			if ( g_debugTurrets.integer > 0 && self->target )
+			{
+				Com_Printf( "Turret %d: No line of sight to target %d for %d ms, giving up.\n",
+				            self->s.number, self->target->s.number, TURRET_GIVEUP_TARGET );
+			}
+
+			return qfalse;
+		}
+	}
+
+	return qtrue;
+}
+
+static qboolean HTurret_FindTarget( gentity_t *self )
+{
+	gentity_t *neighbour = NULL;
+	gentity_t *validTargets[ MAX_GENTITIES ];
+	int       validTargetNum = 0;
+
+	// delete old target
+	if ( self->target )
+	{
+		self->target->numTrackedBy--;
+	}
+
+	self->target = NULL;
+	self->turretLastShot = 0;
+
+	// find all potential targets
+	for ( neighbour = NULL; ( neighbour = G_IterateEntitiesWithinRadius( neighbour, self->s.origin, TURRET_RANGE )); )
+	{
+		if ( HTurret_TargetValid( self, neighbour, qtrue ) )
+		{
+		     validTargets[ validTargetNum++ ] = neighbour;
+		}
+	}
+
+	if ( validTargetNum > 0 )
+	{
+		// search best target
+		cmpTurret = self;
+		qsort( validTargets, validTargetNum, sizeof( gentity_t* ), HTurret_CompareTargets );
+
+		self->target = validTargets[ 0 ];
+		self->target->numTrackedBy++;
+
+		return qtrue;
+	}
+	else
+	{
+		return qfalse;
+	}
+}
+
+static void HTurret_TrackTarget( gentity_t *self )
+{
+	const static vec3_t refNormal = { 0.0f, 0.0f, 1.0f };
+	vec3_t dirToTarget, dttAdjusted, angleToTarget, angularDiff, xNormal;
+	float  temp, rotAngle;
+
+	// get direction towards target
+	VectorSubtract( self->target->s.pos.trBase, self->s.pos.trBase, dirToTarget );
+	VectorNormalize( dirToTarget );
+
+	// get angles towards target
+	CrossProduct( self->s.origin2, refNormal, xNormal );
+	VectorNormalize( xNormal );
+	rotAngle = RAD2DEG( acos( DotProduct( self->s.origin2, refNormal ) ) );
+	RotatePointAroundVector( dttAdjusted, xNormal, dirToTarget, rotAngle );
+	vectoangles( dttAdjusted, angleToTarget );
+
+	// get angle difference
+	angularDiff[ PITCH ] = AngleSubtract( self->s.angles2[ PITCH ], angleToTarget[ PITCH ] );
+	angularDiff[ YAW ]   = AngleSubtract( self->s.angles2[ YAW ],   angleToTarget[ YAW ]   );
+
+	// adjust pitch
+	if      ( angularDiff[ PITCH ] < 0 && angularDiff[ PITCH ] < -TURRET_PITCH_SPEED )
+	{
+		self->s.angles2[ PITCH ] += TURRET_PITCH_SPEED;
+	}
+	else if ( angularDiff[ PITCH ] > 0 && angularDiff[ PITCH ] >  TURRET_PITCH_SPEED )
+	{
+		self->s.angles2[ PITCH ] -= TURRET_PITCH_SPEED;
+	}
+	else
+	{
+		self->s.angles2[ PITCH ] = angleToTarget[ PITCH ];
+	}
+
+	// limit pitch
+	temp = fabs( self->s.angles2[ PITCH ] );
+
+	if ( temp > 180 )
+	{
+		temp -= 360;
+	}
+
+	if ( temp < -TURRET_PITCH_CAP )
+	{
+		self->s.angles2[ PITCH ] = TURRET_PITCH_CAP - 360.0f;
+	}
+
+	// adjust yaw
+	if      ( angularDiff[ YAW ] < 0 && angularDiff[ YAW ] < -TURRET_YAW_SPEED )
+	{
+		self->s.angles2[ YAW ] += TURRET_YAW_SPEED;
+	}
+	else if ( angularDiff[ YAW ] > 0 && angularDiff[ YAW ] >  TURRET_YAW_SPEED )
+	{
+		self->s.angles2[ YAW ] -= TURRET_YAW_SPEED;
+	}
+	else
+	{
+		self->s.angles2[ YAW ] = angleToTarget[ YAW ];
+	}
+
+	// update muzzle angles
+	AngleVectors( self->s.angles2, dttAdjusted, NULL, NULL );
+	RotatePointAroundVector( dirToTarget, xNormal, dttAdjusted, -rotAngle );
+	vectoangles( dirToTarget, self->turretAim );
+}
+
+
+static void HTurret_ResetPitch( gentity_t *self )
+{
+	// TODO: Implement HTurret_ResetPitch
+	return;
+}
+
+static qboolean HTurret_TargetInReach( gentity_t *self )
+{
+	trace_t tr;
+	vec3_t  forward, end;
+
+	// check if a precise shot would hit the target
+	AngleVectors( self->turretAim, forward, NULL, NULL );
+	VectorMA( self->s.pos.trBase, TURRET_RANGE, forward, end );
+	trap_Trace( &tr, self->s.pos.trBase, NULL, NULL, end, self->s.number, MASK_SHOT );
+
+	return ( tr.entityNum == ( self->target - g_entities ) );
+}
+
+static void HTurret_Shoot( gentity_t *self )
+{
+	const int zoneDamage[] = TURRET_ZONE_DAMAGE;
+
+	int zone = HTurret_DistanceToZone( Distance( self->s.pos.trBase, self->target->s.pos.trBase ) );
+
+	self->turretDamage = zoneDamage[ zone ];
+
+	if ( g_debugTurrets.integer > 1 )
+	{
+		const static char color[] = {'1', '8', '3', '2'};
+		Com_Printf( "Turret %d: Shooting at %d: ^%cZone %d/%d → %d damage\n",
+		            self->s.number, self->target->s.number, color[zone], zone + 1,
+		            TURRET_ZONES, self->turretDamage );
+	}
+
+	self->turretLastShot = level.time;
+	self->turretNextShot = level.time + TURRET_ATTACK_PERIOD;
+
+	self->s.eFlags |= EF_FIRING; // TODO: Fix this hack, it doesn't even work locally
+	G_AddEvent( self, EV_FIRE_WEAPON, 0 );
+	G_SetBuildableAnim( self, BANIM_ATTACK1, qfalse );
+	G_FireWeapon( self );
+}
+
+void HTurret_Think( gentity_t *self )
+{
+	qboolean gotValidTarget;
+
+	//HGeneric_Think( self );
+	self->nextthink = level.time + TURRET_THINK_PERIOD;
+
+	IdlePowerState( self );
+
+	// end muzzle flash
+	self->s.eFlags &= ~EF_FIRING;
+
+	if ( !self->spawned )
+	{
+		return;
+	}
+
+	if ( !self->powered )
+	{
+		self->nextthink = level.time + POWER_REFRESH_TIME;
+		return;
+	}
+
+	if ( HTurret_TargetValid( self, self->target, qfalse ) )
+	{
+		gotValidTarget = qtrue;
+	}
+	else
+	{
+		gotValidTarget = HTurret_FindTarget( self );
+
+		if ( gotValidTarget && g_debugTurrets.integer > 0 )
+		{
+			Com_Printf( "Turret %d: New target %d.\n", self->s.number, self->target->s.number );
+		}
+	}
+
+	if ( gotValidTarget )
+	{
+		HTurret_TrackTarget( self );
+
+		if ( HTurret_TargetInReach( self ) && self->turretNextShot < level.time )
+		{
+			HTurret_Shoot( self );
+		}
+	}
+	else
+	{
+		HTurret_ResetPitch( self );
+	}
+}
+
+void HTurret_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
+{
+	if ( self->target )
+	{
+		self->target->numTrackedBy--;
+	}
+
+	HGeneric_Die( self, inflictor, attacker, mod );
+}
 
 /*
 ================
@@ -4609,8 +4913,8 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 			break;
 
 		case BA_H_MGTURRET:
-			built->die = HGeneric_Die;
-			built->think = HMGTurret_Think;
+			built->die = HTurret_Die;
+			built->think = HTurret_Think;
 			break;
 
 		case BA_H_TESLAGEN:

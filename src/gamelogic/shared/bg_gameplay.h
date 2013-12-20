@@ -276,6 +276,17 @@ extern int   MGTURRET_SPREAD;
 extern int   MGTURRET_DMG;
 extern int   MGTURRET_SPINUP_TIME;
 
+#define TURRET_THINK_PERIOD   25
+#define TURRET_ATTACK_PERIOD  125
+#define TURRET_RANGE          400
+#define TURRET_SPREAD         200
+#define TURRET_ZONES          4
+#define TURRET_ZONE_DAMAGE    { 5, 4, 3, 2 }
+#define TURRET_PITCH_SPEED    4   // in degrees per think
+#define TURRET_PITCH_CAP      30  // in degrees
+#define TURRET_YAW_SPEED      3   // in degrees per think
+#define TURRET_GIVEUP_TARGET  500 // in ms, time until turret stops tracking target after losing los
+
 extern float TESLAGEN_RANGE;
 extern int   TESLAGEN_REPEAT;
 extern int   TESLAGEN_DMG;

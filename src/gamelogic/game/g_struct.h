@@ -210,6 +210,7 @@ struct gentity_s
 	char         *targets[ MAX_ENTITY_TARGETS + 1 ];
 	gentity_t    *target;  /*< the currently selected target to aim at/for, is the reverse to "tracker" */
 	gentity_t    *tracker; /*< entity that currently targets, aims for or tracks this entity, is the reverse to "target" */
+	int          numTrackedBy;
 	/* path chaining, not unlike the target/tracker relationship */
 	gentity_t    *nextPathSegment;
 	gentity_t    *prevPathSegment;
@@ -380,6 +381,9 @@ struct gentity_s
 	int         killedBy; // clientNum of killer
 
 	vec3_t      turretAim; // aim vector for turrets
+	int         turretNextShot;
+	int         turretLastShot;
+	int         turretDamage;
 
 	vec4_t      animation; // animated map objects
 
