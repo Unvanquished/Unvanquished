@@ -312,6 +312,8 @@ namespace Audio {
         int lengthRead = S_CodecReadStream(streamToRead, CHUNK_SIZE, tempBuffer);
 
         if (lengthRead == 0) {
+            S_CodecCloseStream(streamToRead);
+            playingLeadingSound = false;
             loopStream = S_CodecOpenStream(loopStreamName.c_str());
             AppendBuffer(source, std::move(buffer)); // TODO make sure that it doesn't loop forever (see CodecOpenStream)
             return;

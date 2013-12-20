@@ -42,7 +42,7 @@ namespace Audio {
 
     static const vec3_t origin = {0.0f, 0.0f, 0.0f};
 
-    static AL::Effect* globalEffect = nullptr;
+    static AL::EffectSlot* globalEffect = nullptr;
 
     static bool initialized = false;
 
@@ -51,8 +51,11 @@ namespace Audio {
             return;
         }
 
-        globalEffect = new AL::Effect();
-        globalEffect->ApplyReverbPreset(AL::GetHangarEffectPreset());
+        AL::Effect effectParams;
+        effectParams.ApplyReverbPreset(AL::GetHangarEffectPreset());
+
+        globalEffect = new AL::EffectSlot();
+        globalEffect->SetEffect(effectParams);
 
         localEmitter = std::make_shared<LocalEmitter>();
 
@@ -159,7 +162,7 @@ namespace Audio {
         source.SetPosition(origin);
         source.SetVelocity(origin);
 
-        source.DisableSlot(POSITIONAL_EFFECT_SLOT);
+        source.DisableEffect(POSITIONAL_EFFECT_SLOT);
     }
 
     void Make3D(AL::Source& source, const vec3_t position, const vec3_t velocity) {
@@ -167,8 +170,7 @@ namespace Audio {
         source.SetPosition(position);
         source.SetVelocity(velocity);
 
-        source.EnableSlot(POSITIONAL_EFFECT_SLOT);
-        source.SetSlotEffect(0, *globalEffect);
+        source.EnableEffect(POSITIONAL_EFFECT_SLOT, *globalEffect);
     }
 
     // Implementation for Emitter

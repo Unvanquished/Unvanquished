@@ -33,14 +33,45 @@ along with daemon source code.  if not, see <http://www.gnu.org/licenses/>.
 namespace Audio {
 namespace AL {
 
-    // Common functions
+    #define CHECK_ERROR() ClearError(__LINE__)
 
-    void ClearError() {
+    std::string ErrorToString(int error) {
+        switch (error) {
+            case AL_NO_ERROR:
+                return "No Error";
+
+            case AL_INVALID_NAME:
+                return "Invalid name";
+
+            case AL_INVALID_ENUM:
+                return "Invalid enum";
+
+            case AL_INVALID_VALUE:
+                return "Invalid value";
+
+            case AL_INVALID_OPERATION:
+                return "Invalid operation";
+
+            case AL_OUT_OF_MEMORY:
+                return "Out of memory";
+
+            default:
+                return "Unknown OpenAL error";
+        }
+    }
+
+    int  ClearError(int line = -1) {
         int error = alGetError();
 
         if (error != AL_NO_ERROR) {
-            Log::Warn("Unhandled OpenAL error: %i"); //TODO string error
+            if (line < 0) {
+                Log::Warn("Unhandled OpenAL error: %s", ErrorToString(error));
+            } else {
+                Log::Warn("Unhandled OpenAL error on line %i: %s", line, ErrorToString(error));
+            }
         }
+
+        return error;
     }
 
     ALuint Format(int width, int channels) {
@@ -68,6 +99,7 @@ namespace AL {
 
     Buffer::Buffer() {
         alGenBuffers(1, &alHandle);
+        CHECK_ERROR();
     }
 
     Buffer::Buffer(Buffer&& other) {
@@ -78,6 +110,7 @@ namespace AL {
     Buffer::~Buffer() {
         if (alHandle != 0) {
             alDeleteBuffers(1, &alHandle);
+            CHECK_ERROR();
         }
         alHandle = 0;
     }
@@ -85,10 +118,10 @@ namespace AL {
     unsigned Buffer::Feed(snd_info_t info, void* data) {
         ALuint format = Format(info.width, info.channels);
 
-        ClearError();
+        CHECK_ERROR();
 		alBufferData(alHandle, format, data, info.size, info.rate);
 
-        return alGetError();
+        return CHECK_ERROR();
     }
 
     Buffer::Buffer(unsigned handle): alHandle(handle) {
@@ -163,6 +196,7 @@ namespace AL {
 
     Effect::Effect() {
         alGenEffects(1, &alHandle);
+        CHECK_ERROR();
     }
 
     Effect::Effect(Effect&& other) {
@@ -173,92 +207,114 @@ namespace AL {
     Effect::~Effect() {
         if (alHandle != 0) {
             alDeleteEffects(1, &alHandle);
+            CHECK_ERROR();
         }
         alHandle = 0;
     }
 
     void Effect::MakeReverb() {
         alEffecti(alHandle, AL_EFFECT_TYPE, AL_EFFECT_EAXREVERB);
+        CHECK_ERROR();
     }
 
     void Effect::SetReverbDensity(float density){
         alEffectf(alHandle, AL_EAXREVERB_DENSITY, density);
+        CHECK_ERROR();
     }
 
     void Effect::SetReverbDiffusion(float diffusion) {
         alEffectf(alHandle, AL_EAXREVERB_DIFFUSION, diffusion);
+        CHECK_ERROR();
     }
 
     void Effect::SetReverbGain(float gain) {
         alEffectf(alHandle, AL_EAXREVERB_GAIN, gain);
+        CHECK_ERROR();
     }
 
     void Effect::SetReverbGainHF(float gain) {
         alEffectf(alHandle, AL_EAXREVERB_GAINHF, gain);
+        CHECK_ERROR();
     }
 
     void Effect::SetReverbGainLF(float gain) {
         alEffectf(alHandle, AL_EAXREVERB_GAINLF, gain);
+        CHECK_ERROR();
     }
 
     void Effect::SetReverbDecayTime(float time) {
         alEffectf(alHandle, AL_EAXREVERB_DECAY_TIME, time);
+        CHECK_ERROR();
     }
 
     void Effect::SetReverbDecayHFRatio(float ratio) {
         alEffectf(alHandle, AL_EAXREVERB_DECAY_HFRATIO, ratio);
+        CHECK_ERROR();
     }
 
     void Effect::SetReverbDecayLFRatio(float ratio) {
         alEffectf(alHandle, AL_EAXREVERB_DECAY_LFRATIO, ratio);
+        CHECK_ERROR();
     }
 
     void Effect::SetReverbReflectionsGain(float gain) {
         alEffectf(alHandle, AL_EAXREVERB_REFLECTIONS_GAIN, gain);
+        CHECK_ERROR();
     }
 
     void Effect::SetReverbReflectionsDelay(float delay) {
         alEffectf(alHandle, AL_EAXREVERB_REFLECTIONS_DELAY, delay);
+        CHECK_ERROR();
     }
 
     void Effect::SetReverbLateReverbGain(float gain) {
         alEffectf(alHandle, AL_EAXREVERB_LATE_REVERB_GAIN, gain);
+        CHECK_ERROR();
     }
 
     void Effect::SetReverbLateReverbDelay(float delay) {
         alEffectf(alHandle, AL_EAXREVERB_LATE_REVERB_DELAY, delay);
+        CHECK_ERROR();
     }
 
     void Effect::SetReverbEchoTime(float time) {
         alEffectf(alHandle, AL_EAXREVERB_ECHO_TIME, time);
+        CHECK_ERROR();
     }
 
     void Effect::SetReverbEchoDepth(float depth) {
         alEffectf(alHandle, AL_EAXREVERB_ECHO_DEPTH, depth);
+        CHECK_ERROR();
     }
 
     void Effect::SetReverbModulationTime(float time) {
         alEffectf(alHandle, AL_EAXREVERB_MODULATION_TIME, time);
+        CHECK_ERROR();
     }
 
     void Effect::SetReverbModulationDepth(float depth) {
         alEffectf(alHandle, AL_EAXREVERB_MODULATION_DEPTH, depth);
+        CHECK_ERROR();
     }
 
     void Effect::SetReverbAirAbsorptionGainHF(float gain) {
         alEffectf(alHandle, AL_EAXREVERB_AIR_ABSORPTION_GAINHF, gain);
+        CHECK_ERROR();
     }
 
     void Effect::SetReverbHFReference(float reference) {
         alEffectf(alHandle, AL_EAXREVERB_HFREFERENCE, reference);
+        CHECK_ERROR();
     }
 
     void Effect::SetReverbLFReference(float reference) {
         alEffectf(alHandle, AL_EAXREVERB_LFREFERENCE, reference);
+        CHECK_ERROR();
     }
 
     void Effect::SetReverbDelayHFLimit(bool delay) {
         alEffecti(alHandle, AL_EAXREVERB_DECAY_HFLIMIT, delay);
+        CHECK_ERROR();
     }
 
     void Effect::ApplyReverbPreset(ReverbEffectPreset& preset) {
@@ -293,6 +349,7 @@ namespace AL {
 
     EffectSlot::EffectSlot() {
         alGenAuxiliaryEffectSlots(1, &alHandle);
+        CHECK_ERROR();
     }
 
     EffectSlot::EffectSlot(EffectSlot&& other) {
@@ -303,16 +360,19 @@ namespace AL {
     EffectSlot::~EffectSlot() {
         if (alHandle != 0) {
             alDeleteAuxiliaryEffectSlots(1, &alHandle);
+            CHECK_ERROR();
         }
         alHandle = 0;
     }
 
     void EffectSlot::SetGain(float gain) {
         alAuxiliaryEffectSlotf(alHandle, AL_EFFECTSLOT_GAIN, gain);
+        CHECK_ERROR();
     }
 
     void EffectSlot::SetEffect(Effect& effect) {
         alAuxiliaryEffectSloti(alHandle, AL_EFFECTSLOT_EFFECT, effect);
+        CHECK_ERROR();
     }
 
     EffectSlot::operator unsigned() const {
@@ -323,14 +383,17 @@ namespace AL {
 
     void SetListenerGain(float gain) {
         alListenerf(AL_GAIN, gain);
+        CHECK_ERROR();
     }
 
     void SetListenerPosition(const vec3_t position) {
         alListenerfv(AL_POSITION, position);
+        CHECK_ERROR();
     }
 
     void SetListenerVelocity(const vec3_t velocity) {
         alListenerfv(AL_VELOCITY, velocity);
+        CHECK_ERROR();
     }
 
     void SetListenerOrientation(const vec3_t orientation[3]) {
@@ -344,22 +407,26 @@ namespace AL {
         };
 
         alListenerfv(AL_ORIENTATION, alOrientation);
+        CHECK_ERROR();
     }
 
     // OpenAL state functions
 
     void SetSpeedOfSound(float speed) {
         alSpeedOfSound(speed);
+        CHECK_ERROR();
     }
 
     void SetDopplerExaggerationFactor(float factor) {
         alDopplerFactor(factor);
+        CHECK_ERROR();
     }
 
     // Source implementation
 
     Source::Source() {
         alGenSources(1, &alHandle);
+        CHECK_ERROR();
     }
 
     Source::Source(Source&& other) {
@@ -371,52 +438,62 @@ namespace AL {
         RemoveAllQueuedBuffers();
         if (alHandle != 0) {
             alDeleteSources(1, &alHandle);
+            CHECK_ERROR();
         }
         alHandle = 0;
     }
 
     void Source::Play() {
         alSourcePlay(alHandle);
+        CHECK_ERROR();
     }
 
     void Source::Pause() {
         alSourcePause(alHandle);
+        CHECK_ERROR();
     }
 
     void Source::Stop() {
         alSourceStop(alHandle);
+        CHECK_ERROR();
     }
 
     bool Source::IsStopped() {
         ALint state;
         alGetSourcei(alHandle, AL_SOURCE_STATE, &state);
+        CHECK_ERROR();
         return state == AL_STOPPED;
     }
 
     void Source::SetBuffer(Buffer& buffer) {
         alSourcei(alHandle, AL_BUFFER, buffer);
+        CHECK_ERROR();
     }
 
     void Source::QueueBuffer(Buffer buffer) {
         ALuint bufHandle = buffer.Acquire();
         alSourceQueueBuffers(alHandle, 1, &bufHandle);
+        CHECK_ERROR();
     }
 
     int Source::GetNumProcessedBuffers() {
         int res;
         alGetSourcei(alHandle, AL_BUFFERS_PROCESSED, &res);
+        CHECK_ERROR();
         return res;
     }
 
     int Source::GetNumQueuedBuffers() {
         int res;
         alGetSourcei(alHandle, AL_BUFFERS_QUEUED, &res);
+        CHECK_ERROR();
         return res;
     }
 
     Buffer Source::PopBuffer() {
         unsigned bufferHandle;
         alSourceUnqueueBuffers(alHandle, 1, &bufferHandle);
+        CHECK_ERROR();
         return {bufferHandle};
     }
 
@@ -429,42 +506,47 @@ namespace AL {
 
     void Source::SetGain(float gain) {
         alSourcef(alHandle, AL_GAIN, gain);
+        CHECK_ERROR();
     }
 
     void Source::SetPosition(const vec3_t position) {
         alSourcefv(alHandle, AL_POSITION, position);
+        CHECK_ERROR();
     }
 
     void Source::SetVelocity(const vec3_t velocity) {
         alSourcefv(alHandle, AL_VELOCITY, velocity);
+        CHECK_ERROR();
     }
 
     void Source::SetLooping(bool loop) {
         alSourcei(alHandle, AL_LOOPING, loop);
+        CHECK_ERROR();
     }
 
     void Source::SetRolloff(float factor) {
         alSourcef(alHandle, AL_ROLLOFF_FACTOR, factor);
+        CHECK_ERROR();
     }
 
     void Source::SetReferenceDistance(float distance) {
         alSourcef(alHandle, AL_REFERENCE_DISTANCE, distance);
+        CHECK_ERROR();
     }
 
     void Source::SetRelative(bool relative) {
         alSourcei(alHandle, AL_SOURCE_RELATIVE, relative);
+        CHECK_ERROR();
     }
 
-    void Source::SetSlotEffect(int slot, Effect& effect) {
-        slots[slot].SetEffect(effect);
+    void Source::EnableEffect(int slot, EffectSlot& effect) {
+        alSource3i(alHandle, AL_AUXILIARY_SEND_FILTER, effect, slot, AL_FILTER_NULL);
+        CHECK_ERROR();
     }
 
-    void Source::EnableSlot(int slot) {
-        alSource3i(alHandle, AL_AUXILIARY_SEND_FILTER, slots[slot], slot, AL_FILTER_NULL);
-    }
-
-    void Source::DisableSlot(int slot) {
+    void Source::DisableEffect(int slot) {
         alSource3i(alHandle, AL_AUXILIARY_SEND_FILTER, AL_EFFECTSLOT_NULL, slot, AL_FILTER_NULL);
+        CHECK_ERROR();
     }
 
     Source::operator unsigned() const {

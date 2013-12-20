@@ -33,8 +33,6 @@ namespace AL {
 
     //TODO enum classes for the different ALuint types?
 
-    void ClearError();
-
     class Buffer {
         public:
             Buffer();
@@ -151,9 +149,8 @@ namespace AL {
             void SetReferenceDistance(float distance);
             void SetRelative(bool relative);
 
-            void SetSlotEffect(int slot, Effect& effect);
-            void EnableSlot(int slot);
-            void DisableSlot(int slot);
+            void EnableEffect(int slot, EffectSlot& effect);
+            void DisableEffect(int slot);
 
             operator unsigned() const;
 
@@ -162,7 +159,6 @@ namespace AL {
             Source& operator=(const Source& other);
 
             unsigned alHandle;
-            EffectSlot slots[N_EFFECT_SLOTS];
     };
 
     class Device {
