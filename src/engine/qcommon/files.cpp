@@ -1474,7 +1474,7 @@ int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueF
 			// the only files we will allow to come from the directory are .cfg, .menu, etc. files
 			l = strlen( filename );
 
-			if ( fs_numServerPaks && !allowImpure )
+			if ( fs_numServerPaks )
 			{
 				if ( Q_stricmp( filename + l - 4, ".cfg" )  // for config files
 				     && Q_stricmp( filename + l - 4, ".ttf" )
