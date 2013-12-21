@@ -1572,7 +1572,7 @@ static qboolean AHive_CheckTarget( gentity_t *self, gentity_t *enemy )
 
 	VectorSubtract( enemy->s.pos.trBase, self->s.pos.trBase, dirToTarget );
 	VectorNormalize( dirToTarget );
-	vectoangles( dirToTarget, self->turretAim );
+	vectoangles( dirToTarget, self->buildableAim );
 
 	// Fire at target
 	G_FireWeapon( self );
@@ -1744,7 +1744,7 @@ void ATrapper_FireOnEnemy( gentity_t *self, int firespeed, float range )
 	}
 
 	VectorNormalize( dirToTarget );
-	vectoangles( dirToTarget, self->turretAim );
+	vectoangles( dirToTarget, self->buildableAim );
 
 	//fire at target
 	G_FireWeapon( self );
@@ -3290,7 +3290,7 @@ static qboolean HTurret_TargetValid( gentity_t *self, gentity_t *target, qboolea
 	else
 	{
 		// give up on target if we couldn't shoot at it for a while
-		if ( self->turretLastShot && self->turretLastShot + TURRET_GIVEUP_TARGET < level.time )
+		if ( self->turretLastShotAtTarget && self->turretLastShotAtTarget + TURRET_GIVEUP_TARGET < level.time )
 		{
 			if ( g_debugTurrets.integer > 0 && self->target )
 			{
@@ -3318,7 +3318,7 @@ static qboolean HTurret_FindTarget( gentity_t *self )
 	}
 
 	self->target = NULL;
-	self->turretLastShot = 0;
+	self->turretLastShotAtTarget = 0;
 
 	// find all potential targets
 	for ( neighbour = NULL; ( neighbour = G_IterateEntitiesWithinRadius( neighbour, self->s.origin, TURRET_RANGE )); )
@@ -3411,7 +3411,7 @@ static void HTurret_TrackTarget( gentity_t *self )
 	// update muzzle angles
 	AngleVectors( self->s.angles2, dttAdjusted, NULL, NULL );
 	RotatePointAroundVector( dirToTarget, xNormal, dttAdjusted, -rotAngle );
-	vectoangles( dirToTarget, self->turretAim );
+	vectoangles( dirToTarget, self->buildableAim );
 }
 
 
@@ -3427,7 +3427,7 @@ static qboolean HTurret_TargetInReach( gentity_t *self )
 	vec3_t  forward, end;
 
 	// check if a precise shot would hit the target
-	AngleVectors( self->turretAim, forward, NULL, NULL );
+	AngleVectors( self->buildableAim, forward, NULL, NULL );
 	VectorMA( self->s.pos.trBase, TURRET_RANGE, forward, end );
 	trap_Trace( &tr, self->s.pos.trBase, NULL, NULL, end, self->s.number, MASK_SHOT );
 
@@ -3450,7 +3450,7 @@ static void HTurret_Shoot( gentity_t *self )
 		            TURRET_ZONES, self->turretDamage );
 	}
 
-	self->turretLastShot = level.time;
+	self->turretLastShotAtTarget = level.time;
 	self->turretNextShot = level.time + TURRET_ATTACK_PERIOD;
 
 	self->s.eFlags |= EF_FIRING; // TODO: Fix this hack, it doesn't even work locally

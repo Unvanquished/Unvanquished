@@ -380,9 +380,11 @@ struct gentity_s
 	float       credits[ MAX_CLIENTS ];
 	int         killedBy; // clientNum of killer
 
-	vec3_t      turretAim; // aim vector for turrets
+	vec3_t      buildableAim; // aim vector for buildables
+
+	// turret
 	int         turretNextShot;
-	int         turretLastShot;
+	int         turretLastShotAtTarget;
 	int         turretDamage;
 
 	vec4_t      animation; // animated map objects

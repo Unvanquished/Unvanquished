@@ -1991,7 +1991,7 @@ void G_FireWeapon( gentity_t *self )
 	}
 	else
 	{
-		AngleVectors( self->turretAim, forward, right, up );
+		AngleVectors( self->buildableAim, forward, right, up );
 		VectorCopy( self->s.pos.trBase, muzzle );
 	}
 
