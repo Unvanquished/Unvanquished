@@ -60,6 +60,7 @@ namespace AL {
         }
     }
 
+    //TODO add a cvar or a DEBUG flag to avoid making too many checks?
     int  ClearError(int line = -1) {
         int error = alGetError();
 
@@ -74,6 +75,7 @@ namespace AL {
         return error;
     }
 
+    // Converts an snd_codec_t format to an OpenAL format
     ALuint Format(int width, int channels) {
         if (width == 1) {
 
@@ -498,13 +500,14 @@ namespace AL {
     }
 
     void Source::RemoveAllQueuedBuffers() {
+        // OpenAL gives an error if the source isn't stopped or if it is an AL_STATIC source.
         if (GetType() != AL_STREAMING) {
             return;
         }
         Stop();
-        ResetBuffer();
         int toBeRemoved = GetNumQueuedBuffers();
         while (toBeRemoved --> 0) {
+            // The buffer will be copied and destroyed immediately as well as it's OpenAL buffer
             PopBuffer();
         }
     }
@@ -613,6 +616,7 @@ namespace AL {
             return {};
         }
 
+        // OpenAL gives the concatenation of null-terminated strings, followed by a '\0' (it ends with a double '\0')
         std::vector<std::string> res;
         while (*list) {
             res.push_back(list);

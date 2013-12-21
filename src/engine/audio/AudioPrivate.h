@@ -37,7 +37,16 @@ along with daemon source code.  if not, see <http://www.gnu.org/licenses/>.
 
 namespace Audio {
 
-    constexpr int N_EFFECT_SLOTS = 1;
+    /**
+     * The audio system is split in several parts:
+     * - Codecs, one for each supported format that allow to load a entire file or stream it from the disk.
+     * - ALObjects that provide OO wrappers around OpenAL (OpenAL headers are only included in ALObjects.cpp)
+     * - Audio the external interface, mostly using Sound and Emitter to create new sounds.
+     * - Emitters that control the positional effects for the sound sources
+     * - Sample that gives handles to loaded sound effects for use by the VM
+     * - Sound that controls the raw sound shape emitted by a sound emitter (e.g. a looping sound, ...)
+     */
+
     constexpr int POSITIONAL_EFFECT_SLOT = 0;
 
     // Somewhere on the Internet we can see "quake3 is like the old wolfenstein, 64 units = 8 feet"

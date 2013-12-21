@@ -90,14 +90,6 @@ namespace Audio {
         }
     }
 
-    void UnlinkEffects() {
-        for (int i = 0; i < nSources; i++) {
-            auto& source = sources[i].source;
-
-            source.DisableEffect(POSITIONAL_EFFECT_SLOT);
-        }
-    }
-
     void AddSound(std::shared_ptr<Emitter> emitter, std::shared_ptr<Sound> sound, int priority) {
         sourceRecord_t* source = GetSource(priority);
 
@@ -324,7 +316,7 @@ namespace Audio {
             S_CodecCloseStream(streamToRead);
             playingLeadingSound = false;
             loopStream = S_CodecOpenStream(loopStreamName.c_str());
-            AppendBuffer(source, std::move(buffer)); // TODO make sure that it doesn't loop forever (see CodecOpenStream)
+            AppendBuffer(source, std::move(buffer));
             return;
         }
 

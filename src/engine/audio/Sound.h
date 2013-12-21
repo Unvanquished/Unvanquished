@@ -33,7 +33,6 @@ namespace Audio {
     void InitSounds();
     void ShutdownSounds();
     void UpdateSounds();
-    void UnlinkEffects();
 
     void AddSound(std::shared_ptr<Emitter> emitter, std::shared_ptr<Sound> sound, int priority);
 

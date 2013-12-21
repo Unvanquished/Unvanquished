@@ -79,7 +79,10 @@ namespace Audio {
             return;
         }
 
-        //TODO
+        for (auto it: samples) {
+            delete it.second;
+        }
+        samples.clear();
 
         initialized = false;
     }

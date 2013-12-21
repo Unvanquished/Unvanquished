@@ -31,16 +31,31 @@ along with daemon source code.  if not, see <http://www.gnu.org/licenses/>.
 namespace Audio {
 namespace AL {
 
+    /**
+     * Provides wrappers around OpenAL objects. Good resources to understand OpenAL are:
+     * - The original OpenAL programmer's guide
+     * - The OpenAL Effects Extension Guide
+     * - The OpenAL Soft source code when in doubt
+     * - This source code?
+     *
+     * The classes defined here are non-copyable but movable, consider them as
+     * unique_ptr's to the OpenAL object.
+     */
+
     //TODO enum classes for the different ALuint types?
 
+    // Contains raw data to be played by an OpenAL source
     class Buffer {
         public:
             Buffer();
             Buffer(Buffer&& other);
             ~Buffer();
 
+            // TODO
+            // Fills the buffer with data (width/rate/size should be given by info)
             unsigned Feed(snd_info_t info, void* data);
 
+            // Both these methods are use by Source to Queue/Unqueue buffers
             Buffer(unsigned handle);
             unsigned Acquire();
 
@@ -53,10 +68,21 @@ namespace AL {
             unsigned alHandle;
     };
 
-
+    //TODO allow to list the EFX presets and load them at the start of the program?
     struct ReverbEffectPreset;
     ReverbEffectPreset& GetHangarEffectPreset();
 
+    /**
+     * OpenAL's EFX extension adds support for effects (notably reverb). Each OpenAL
+     * source can send to the main "mixer" as well as to a limited number of global effect mixers
+     * (4 in total in most OpenAL implementations) that are called Auxiliary Effect Slots
+     * (EffectSlots here). The output from these mixers is then mixed in the main "mixer".
+     * The Effects OpenAL object is merely a place to build parameters for an EffectSlot.
+     * In addition the outputs of a source to the main "mixer" and the EffectSlots can be applied
+     * independantly to a simple Filter (LF/BandF/HF).
+     */
+
+    // The parameters of an effect.
     class Effect {
         public:
             Effect();
@@ -86,6 +112,7 @@ namespace AL {
             void SetReverbLFReference(float reference);
             void SetReverbDelayHFLimit(bool delay);
 
+            //Avoid much typing and parameter-guessing by loading a preset.
             void ApplyReverbPreset(ReverbEffectPreset& preset);
 
             operator unsigned() const;
@@ -97,6 +124,7 @@ namespace AL {
             unsigned alHandle;
     };
 
+    // A mixer that receives signal from multiple sources and applis an effect.
     class EffectSlot {
         public:
             EffectSlot();
@@ -115,6 +143,7 @@ namespace AL {
             unsigned alHandle;
     };
 
+    // The Listener Gain is the global OpenAL Gain
     void SetListenerGain(float gain);
     void SetListenerPosition(const vec3_t position);
     void SetListenerVelocity(const vec3_t velocity);
@@ -123,6 +152,7 @@ namespace AL {
     void SetSpeedOfSound(float speed);
     void SetDopplerExaggerationFactor(float factor);
 
+    // Plays a sound with a lot of parameters (including spatialization)
     class Source {
         public:
             Source();
@@ -134,12 +164,21 @@ namespace AL {
             void Stop();
             bool IsStopped();
 
+            // Use this buffer and only this buffer to get the sound data. Sets the source state as STATIC.
+            // Does not consume the buffer.
             void SetBuffer(Buffer& buffer);
+
+            // Appends the buffer to the list of sounds to be queued. Consumes the buffer.
             void QueueBuffer(Buffer buffer);
+            // The number of buffers that can be asked back using PopBuffer
             int GetNumProcessedBuffers();
             int GetNumQueuedBuffers();
+            // Returns one of the buffers that was queued in the source and that is not used anymore.
             Buffer PopBuffer();
+            // Destroys all the buffers queued in the source, effectively stopping the source.
             void RemoveAllQueuedBuffers();
+
+            // Reset the STATIC or STREAMING state (causes OpenAL errors for example when queueing on a STREAMING source)
             void ResetBuffer();
 
             void SetGain(float gain);
@@ -150,6 +189,7 @@ namespace AL {
             void SetReferenceDistance(float distance);
             void SetRelative(bool relative);
 
+            // Binds <effect> to the exit wire number <slot> of the source. This is called an Auxiliary Send in OpenAL
             void EnableEffect(int slot, EffectSlot& effect);
             void DisableEffect(int slot);
 
@@ -164,6 +204,7 @@ namespace AL {
             unsigned alHandle;
     };
 
+    // The hardware that will play our sounds.
     class Device {
         public:
             static Device* FromName(Str::StringRef name);
@@ -182,12 +223,14 @@ namespace AL {
             void* alHandle;
     };
 
+    // Tne OpenAL context.
     class Context {
         public:
             static Context* GetDefaultContext(Device& device);
             Context(Context&& other);
             ~Context();
 
+            // Sets the current OpenAL thread.
             void MakeCurrent();
 
             operator void*();

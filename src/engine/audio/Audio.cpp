@@ -36,6 +36,9 @@ namespace Audio {
     static Cvar::Cvar<std::string> inputDeviceString("s_alInputDevice", "the OpenAL input device to use", Cvar::ARCHIVE, "");
     static Cvar::Cvar<std::string> availableInputDevices("s_alAvailableInputDevices", "the available input OpenAL devices", 0, "");
 
+    // We mimic the behavior of the previous sound system by allowing only one looping ousnd per entity.
+    // (and only one entities) CGame will add at each frame all the loops: if a loop hasn't been given
+    // in a frame, it means it sould be destroyed.
     struct entityLoop_t {
         bool addedThisFrame;
         std::shared_ptr<LoopingSound> sound;
@@ -43,9 +46,11 @@ namespace Audio {
     static entityLoop_t entityLoops[MAX_GENTITIES];
 
     static bool initialized = false;
+
     static AL::Device* device;
     static AL::Context* context;
 
+    // Like in the previous sound system, we only have a single music
     std::shared_ptr<MusicSound> music;
 
     bool Init() {
@@ -53,6 +58,7 @@ namespace Audio {
             return true;
         }
 
+        // Initializes a device
         std::string deviceToTry = deviceString.Get();
         if (not deviceToTry.empty()) {
             device = AL::Device::FromName(deviceToTry);
@@ -70,6 +76,7 @@ namespace Audio {
             return false;
         }
 
+        // Initializes a context
         context = AL::Context::GetDefaultContext(*device);
 
         if (not context) {
@@ -84,12 +91,12 @@ namespace Audio {
             deviceList << deviceName << "\n";
         }
         availableDevices.Set(deviceList.str());
-        Log::Debug(deviceList.str());
 
         context->MakeCurrent();
 
         initialized = true;
 
+        // Initializes the rest of the audio system
         InitSamples();
         InitSounds();
         InitEmitters();
@@ -105,8 +112,8 @@ namespace Audio {
         if (not initialized) {
             return;
         }
-        Log::Debug("Shutdown");
 
+        // Shuts down the wrapper
         for (int i = 0; i < MAX_GENTITIES; i++) {
             if (entityLoops[i].sound) {
                 entityLoops[i].sound->Stop();
@@ -115,11 +122,15 @@ namespace Audio {
         }
 
         StopMusic();
-        UnlinkEffects();
-        ShutdownEmitters();
+
+        // Shuts down the rest of the system
+        // Shutdown sounds before emitters because they are using a effects defined in emitters
+        // and that OpenAL checks the refcount before deleting the object.
         ShutdownSounds();
+        ShutdownEmitters();
         ShutdownSamples();
 
+        // Free OpenAL resources
         delete context;
         delete device;
 
@@ -130,6 +141,7 @@ namespace Audio {
     void Update() {
         for (int i = 0; i < MAX_GENTITIES; i++) {
             if (entityLoops[i].sound and not entityLoops[i].addedThisFrame) {
+                // The loop wasn't added this frame, that means it has to be removed.
                 entityLoops[i].sound->FadeOutAndDie();
                 entityLoops[i] = {false, nullptr};
             }
@@ -137,11 +149,13 @@ namespace Audio {
 
         AL::SetListenerGain(masterVolume.Get());
 
+        // Update the rest of the system
         UpdateEmitters();
         UpdateSounds();
 
         for (int i = 0; i < MAX_GENTITIES; i++) {
             entityLoops[i].addedThisFrame = false;
+            // if we are the unique owner of a loop pointer, then it means it was stopped, free it.
             if (entityLoops[i].sound.unique()) {
                 entityLoops[i] = {false, nullptr};
             }
