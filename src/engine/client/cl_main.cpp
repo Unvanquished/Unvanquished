@@ -1387,7 +1387,7 @@ class DemoCmd: public Cmd::StaticCmd {
                     Com_sprintf(name, sizeof(name), "demos/%s.dm_%d", arg, prot_ver);
                 }
 
-                FS_FOpenFileRead_Impure(name, &clc.demofile, qtrue);
+                FS_FOpenFileRead(name, &clc.demofile, qtrue);
                 prot_ver++;
             }
 

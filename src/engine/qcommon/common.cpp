@@ -973,15 +973,6 @@ void Com_InitHunkMemory( void )
 
 	isDedicated = (com_dedicated && com_dedicated->integer);
 
-	// make sure the file system has allocated and "not" freed any temp blocks
-	// this allows the config and product id files ( journal files too ) to be loaded
-	// by the file system without redundant routines in the file system utilizing different
-	// memory systems
-	if ( FS_LoadStack() != 0 )
-	{
-		Com_Error( ERR_FATAL, "Hunk initialization failed. File system load stack not zero" );
-	}
-
 	// allocate the stack based hunk allocator
 	cv = Cvar_Get( "com_hunkMegs", DEF_COMHUNKMEGS_S, CVAR_LATCH | CVAR_ARCHIVE );
 

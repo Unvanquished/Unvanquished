@@ -401,6 +401,9 @@ namespace HomePath {
 // Initialize the filesystem and the main paths
 void Initialize();
 
+// Check if the filesystem paths have been initialized
+bool IsInitialized();
+
 // Refresh the list of available paks
 void RefreshPaks();
 

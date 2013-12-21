@@ -55,6 +55,10 @@ namespace FS {
 // Dependencies file in packages
 #define PAK_DEPS_FILE "DEPS"
 
+// Whether the search paths have been initialized yet. This can be used to delay
+// writing log files until the filesystem is initialized.
+static bool isInitialized = false;
+
 // Pak search paths
 static std::vector<std::string> pakPaths;
 
@@ -376,8 +380,14 @@ void Initialize()
 		pakPaths.push_back(Path::Build(basePath, "pkg"));
 	if (extraPath[0] && extraPath != basePath && extraPath != homePath)
 		pakPaths.push_back(Path::Build(extraPath, "pkg"));
+	isInitialized = true;
 
 	RefreshPaks();
+}
+
+bool IsInitialized()
+{
+	return isInitialized;
 }
 
 // Add a pak to the list of available paks

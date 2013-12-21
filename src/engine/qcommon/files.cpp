@@ -188,6 +188,14 @@ or configs will never get loaded from disk!
 #define MAX_SEARCH_PATHS  4096
 #define MAX_FILEHASH_SIZE 1024
 
+#ifdef WIN32
+#define Q_rmdir          _rmdir
+#else
+#define Q_rmdir          rmdir
+#endif
+
+#define MAX_FILE_HANDLES 64
+
 typedef struct fileInPack_s
 {
 	char                *name; // name of the file
@@ -331,17 +339,6 @@ qboolean FS_PakIsPure( pack_t *pack )
 	}
 
 	return qtrue;
-}
-
-/*
-=================
-FS_LoadStack
-return load stack
-=================
-*/
-int FS_LoadStack( void )
-{
-	return fs_loadStack;
 }
 
 /*
@@ -692,20 +689,6 @@ qboolean FS_SV_FileExists( const char *file )
 	testpath[ strlen( testpath ) - 1 ] = '\0';
 
 	f = Sys_FOpen( testpath, "rb" );
-
-	if ( f )
-	{
-		fclose( f );
-		return qtrue;
-	}
-
-	return qfalse;
-}
-
-qboolean FS_OS_FileExists( const char *file )
-{
-	FILE *f;
-	f = Sys_FOpen( file, "rb" );
 
 	if ( f )
 	{
@@ -1200,7 +1183,7 @@ FS_FilenameCompare
 Ignore case and separator char distinctions
 ===========
 */
-qboolean FS_FilenameCompare( const char *s1, const char *s2 )
+static qboolean FS_FilenameCompare( const char *s1, const char *s2 )
 {
 	int c1, c2;
 
@@ -1240,28 +1223,6 @@ qboolean FS_FilenameCompare( const char *s1, const char *s2 )
 }
 
 /*
-==========
-FS_ShiftStr
-perform simple string shifting to avoid scanning from the exe
-==========
-*/
-char *FS_ShiftStr( const char *string, int shift )
-{
-	static char buf[ MAX_STRING_CHARS ];
-	int         i, l;
-
-	l = strlen( string );
-
-	for ( i = 0; i < l; i++ )
-	{
-		buf[ i ] = string[ i ] + shift;
-	}
-
-	buf[ i ] = '\0';
-	return buf;
-}
-
-/*
 ===========
 FS_FOpenFileRead
 
@@ -1291,7 +1252,7 @@ static qboolean FS_CheckUIImageFile( const char *filename )
 }
 
 
-static int FS_FOpenFileRead_Internal( const char *filename, fileHandle_t *file, qboolean uniqueFILE, qboolean allowImpure, qboolean fs_filter_flag )
+int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueFILE )
 {
 	searchpath_t *search;
 	char         *netpath;
@@ -1327,11 +1288,6 @@ static int FS_FOpenFileRead_Internal( const char *filename, fileHandle_t *file, 
 			// is the element a pak file?
 			if ( search->pack && search->pack->hashTable[ hash ] )
 			{
-				if ( fs_filter_flag & FS_EXCLUDE_PK3 )
-				{
-					continue;
-				}
-
 				// look through all the pak file elements
 				pak = search->pack;
 				pakFile = pak->hashTable[ hash ];
@@ -1351,11 +1307,6 @@ static int FS_FOpenFileRead_Internal( const char *filename, fileHandle_t *file, 
 			}
 			else if ( search->dir )
 			{
-				if ( fs_filter_flag & FS_EXCLUDE_DIR )
-				{
-					continue;
-				}
-
 				dir = search->dir;
 
 				netpath = FS_BuildOSPath( dir->path, dir->gamedir, filename );
@@ -1421,11 +1372,6 @@ static int FS_FOpenFileRead_Internal( const char *filename, fileHandle_t *file, 
 		// is the element a pak file?
 		if ( search->pack && search->pack->hashTable[ hash ] )
 		{
-			if ( fs_filter_flag & FS_EXCLUDE_PK3 )
-			{
-				continue;
-			}
-
 			// disregard if it doesn't match one of the allowed pure pak files
 			if ( !FS_PakIsPure( search->pack ) )
 			{
@@ -1522,11 +1468,6 @@ static int FS_FOpenFileRead_Internal( const char *filename, fileHandle_t *file, 
 		}
 		else if ( search->dir )
 		{
-			if ( fs_filter_flag & FS_EXCLUDE_DIR )
-			{
-				continue;
-			}
-
 			// check a file in the directory tree
 
 			// if the filesystem is configured for pure (fs_numServerPaks != 0), then
@@ -1540,7 +1481,7 @@ static int FS_FOpenFileRead_Internal( const char *filename, fileHandle_t *file, 
 				     && Q_stricmp( filename + l - 4, ".otf" )
 				     && Q_stricmp( filename + l - 5, ".menu" )  // menu files
 				     && Q_stricmp( filename + l - 5, ".game" )  // menu files
-				     //&& Q_stricmp( filename + l - strlen( demoExt ), demoExt )   // menu files
+				     && Q_strnicmp( filename + l - 6, ".dm_", 4 )   // menu files
 				     && Q_stricmp( filename + l - 4, ".dat" )  // for journal files
 				     && Q_stricmp( filename + l - 8, "bots.txt" )
 				     && Q_stricmp( filename + l - 8, ".botents" )
@@ -1568,7 +1509,7 @@ static int FS_FOpenFileRead_Internal( const char *filename, fileHandle_t *file, 
 			     && Q_stricmp( filename + l - 4, ".otf" ) != 0
 			     && Q_stricmp( filename + l - 5, ".menu" )  // menu files
 			     && Q_stricmp( filename + l - 5, ".game" )  // menu files
-			     //&& Q_stricmp( filename + l - strlen( demoExt ), demoExt )   // menu files
+			     && Q_strnicmp( filename + l - 6, ".dm_", 4 )   // menu files
 			     && Q_stricmp( filename + l - 4, ".dat" )
 			     && Q_stricmp( filename + l - 8, ".botents" )
 			     && Q_stricmp( filename + l - 3, ".po" )
@@ -1597,21 +1538,6 @@ static int FS_FOpenFileRead_Internal( const char *filename, fileHandle_t *file, 
 
 	*file = 0;
 	return -1;
-}
-
-int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueFILE )
-{
-        return FS_FOpenFileRead_Internal( filename, file, uniqueFILE, qfalse, qfalse );
-}
-
-int FS_FOpenFileRead_Impure( const char *filename, fileHandle_t *file, qboolean uniqueFILE )
-{
-        return FS_FOpenFileRead_Internal( filename, file, uniqueFILE, qtrue, qfalse );
-}
-
-int FS_FOpenFileRead_Filtered( const char *qpath, fileHandle_t *file, qboolean uniqueFILE, int filter_flag )
-{
-	return FS_FOpenFileRead_Internal( qpath, file, uniqueFILE, qfalse, filter_flag );
 }
 
 /*
@@ -4493,11 +4419,6 @@ qboolean FS_VerifyPak( const char *pak )
 	}
 
 	return qfalse;
-}
-
-qboolean FS_IsPure( void )
-{
-	return fs_numServerPaks != 0;
 }
 
 void    FS_FilenameCompletion( const char *dir, const char *ext,

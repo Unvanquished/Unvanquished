@@ -500,14 +500,6 @@ issues.
 #define FS_UI_REF        0x02
 #define FS_CGAME_REF     0x04
 
-#define MAX_FILE_HANDLES 64
-
-#ifdef WIN32
-#define Q_rmdir          _rmdir
-#else
-#define Q_rmdir          rmdir
-#endif
-
 qboolean FS_Initialized( void );
 
 void     FS_InitFilesystem( void );
@@ -527,9 +519,6 @@ char **FS_ListFiles( const char *directory, const char *extension, int *numfiles
 void         FS_FreeFileList( char **list );
 
 qboolean     FS_FileExists( const char *file );
-qboolean     FS_OS_FileExists( const char *file );  // TTimo - test file existence given OS path
-
-int          FS_LoadStack( void );
 
 int          FS_GetFileList( const char *path, const char *extension, char *listbuf, int bufsize );
 int          FS_GetModList( char *listbuf, int bufsize );
@@ -547,7 +536,6 @@ fileHandle_t FS_SV_FOpenFileWrite( const char *filename );
 int          FS_SV_FOpenFileRead( const char *filename, fileHandle_t *fp );
 void         FS_SV_Rename( const char *from, const char *to );
 int          FS_FOpenFileRead( const char *qpath, fileHandle_t *file, qboolean uniqueFILE );
-int          FS_FOpenFileRead_Impure( const char *filename, fileHandle_t *file, qboolean uniqueFILE );
 
 /*
 if uniqueFILE is true, then a new FILE will be fopened even if the file
@@ -556,16 +544,6 @@ FS_FCloseFile instead of fclose, otherwise the pak FILE would be improperly clos
 It is generally safe to always set uniqueFILE to true, because the majority of
 file IO goes through FS_ReadFile, which Does The Right Thing already.
 */
-
-/* TTimo
-show_bug.cgi?id=506
-added exclude flag to filter out regular dirs or pack files on demand
-would rather have used FS_FOpenFileRead(..., int filter_flag = 0)
-but that's a C++ construct ..
-*/
-#define FS_EXCLUDE_DIR 0x1
-#define FS_EXCLUDE_PK3 0x2
-int FS_FOpenFileRead_Filtered( const char *qpath, fileHandle_t *file, qboolean uniqueFILE, int filter_flag );
 
 int FS_FileIsInPAK( const char *filename, int *pChecksum );
 
@@ -628,8 +606,6 @@ int FS_Seek( fileHandle_t f, long offset, int origin );
 
 // seek on a file (doesn't work for zip files!!!!!!!!)
 
-qboolean   FS_FilenameCompare( const char *s1, const char *s2 );
-
 const char *FS_LoadedPakNames( void );
 const char *FS_LoadedPakChecksums( void );
 const char *FS_LoadedPakPureChecksums( void );
@@ -663,17 +639,11 @@ void       FS_Rename( const char *from, const char *to );
 
 char       *FS_BuildOSPath( const char *base, const char *game, const char *qpath );
 
-char         *FS_ShiftStr( const char *string, int shift );
-
 void         FS_CopyFile( char *fromOSPath, char *toOSPath );
-
-char         *FS_FindDll( const char *filename );
 
 qboolean     FS_CreatePath( const char *OSPath );
 
 qboolean     FS_VerifyPak( const char *pak );
-
-qboolean     FS_IsPure( void );
 
 void         FS_Remove( const char *ospath );
 
