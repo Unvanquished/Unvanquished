@@ -3346,33 +3346,34 @@ static qboolean HTurret_FindTarget( gentity_t *self )
 	}
 }
 
-static void HTurret_TrackTarget( gentity_t *self )
+// TODO: Make pitch/yaw turn amount based on last time this function was called for smoother movement
+static void HTurret_MoveHeadToTarget( gentity_t *self )
 {
-	const static vec3_t refNormal = { 0.0f, 0.0f, 1.0f };
-	vec3_t dirToTarget, dttAdjusted, angleToTarget, angularDiff, xNormal;
-	float  temp, rotAngle;
+	const static vec3_t upwards = { 0.0f, 0.0f, 1.0f };
 
-	// get direction towards target
-	VectorSubtract( self->target->s.pos.trBase, self->s.pos.trBase, dirToTarget );
-	VectorNormalize( dirToTarget );
+	vec3_t rotationAxis, angleToTarget, relativeDirToTarget, deltaAngles, relativeNewDir, newDir;
+	float  rotationAngle, relativePitch;
 
-	// get angles towards target
-	CrossProduct( self->s.origin2, refNormal, xNormal );
-	VectorNormalize( xNormal );
-	rotAngle = RAD2DEG( acos( DotProduct( self->s.origin2, refNormal ) ) );
-	RotatePointAroundVector( dttAdjusted, xNormal, dirToTarget, rotAngle );
-	vectoangles( dttAdjusted, angleToTarget );
+	// make sure direction to target is normalized
+	VectorNormalize( self->turretDirToTarget );
 
-	// get angle difference
-	angularDiff[ PITCH ] = AngleSubtract( self->s.angles2[ PITCH ], angleToTarget[ PITCH ] );
-	angularDiff[ YAW ]   = AngleSubtract( self->s.angles2[ YAW ],   angleToTarget[ YAW ]   );
+	// get angle from current orientation towards target as defined in self->turretDirToTarget
+	CrossProduct( self->s.origin2, upwards, rotationAxis );
+	VectorNormalize( rotationAxis );
+	rotationAngle = RAD2DEG( acos( DotProduct( self->s.origin2, upwards ) ) );
+	RotatePointAroundVector( relativeDirToTarget, rotationAxis, self->turretDirToTarget, rotationAngle );
+	vectoangles( relativeDirToTarget, angleToTarget );
+
+	// get angle delta from current orientation towards trarget angle
+	deltaAngles[ PITCH ] = AngleSubtract( self->s.angles2[ PITCH ], angleToTarget[ PITCH ] );
+	deltaAngles[ YAW ]   = AngleSubtract( self->s.angles2[ YAW ],   angleToTarget[ YAW ]   );
 
 	// adjust pitch
-	if      ( angularDiff[ PITCH ] < 0 && angularDiff[ PITCH ] < -TURRET_PITCH_SPEED )
+	if ( deltaAngles[ PITCH ] < 0 && deltaAngles[ PITCH ] < -TURRET_PITCH_SPEED )
 	{
 		self->s.angles2[ PITCH ] += TURRET_PITCH_SPEED;
 	}
-	else if ( angularDiff[ PITCH ] > 0 && angularDiff[ PITCH ] >  TURRET_PITCH_SPEED )
+	else if ( deltaAngles[ PITCH ] > 0 && deltaAngles[ PITCH ] >  TURRET_PITCH_SPEED )
 	{
 		self->s.angles2[ PITCH ] -= TURRET_PITCH_SPEED;
 	}
@@ -3382,24 +3383,24 @@ static void HTurret_TrackTarget( gentity_t *self )
 	}
 
 	// limit pitch
-	temp = fabs( self->s.angles2[ PITCH ] );
+	relativePitch = fabs( self->s.angles2[ PITCH ] );
 
-	if ( temp > 180 )
+	if ( relativePitch > 180 )
 	{
-		temp -= 360;
+		relativePitch -= 360;
 	}
 
-	if ( temp < -TURRET_PITCH_CAP )
+	if ( relativePitch < -TURRET_PITCH_CAP )
 	{
 		self->s.angles2[ PITCH ] = TURRET_PITCH_CAP - 360.0f;
 	}
 
 	// adjust yaw
-	if      ( angularDiff[ YAW ] < 0 && angularDiff[ YAW ] < -TURRET_YAW_SPEED )
+	if ( deltaAngles[ YAW ] < 0 && deltaAngles[ YAW ] < -TURRET_YAW_SPEED )
 	{
 		self->s.angles2[ YAW ] += TURRET_YAW_SPEED;
 	}
-	else if ( angularDiff[ YAW ] > 0 && angularDiff[ YAW ] >  TURRET_YAW_SPEED )
+	else if ( deltaAngles[ YAW ] > 0 && deltaAngles[ YAW ] >  TURRET_YAW_SPEED )
 	{
 		self->s.angles2[ YAW ] -= TURRET_YAW_SPEED;
 	}
@@ -3408,17 +3409,39 @@ static void HTurret_TrackTarget( gentity_t *self )
 		self->s.angles2[ YAW ] = angleToTarget[ YAW ];
 	}
 
-	// update muzzle angles
-	AngleVectors( self->s.angles2, dttAdjusted, NULL, NULL );
-	RotatePointAroundVector( dirToTarget, xNormal, dttAdjusted, -rotAngle );
-	vectoangles( dirToTarget, self->buildableAim );
+	// update muzzle angle
+	AngleVectors( self->s.angles2, relativeNewDir, NULL, NULL ); //
+	RotatePointAroundVector( newDir, rotationAxis, relativeNewDir, -rotationAngle );
+	vectoangles( newDir, self->buildableAim );
+}
+
+static void HTurret_TrackTarget( gentity_t *self )
+{
+	if ( !self->target )
+	{
+		return;
+	}
+
+	// set target direction
+	VectorSubtract( self->target->s.pos.trBase, self->s.pos.trBase, self->turretDirToTarget );
+	VectorNormalize( self->turretDirToTarget );
 }
 
 
-static void HTurret_ResetPitch( gentity_t *self )
+static void HTurret_ResetYaw( gentity_t *self )
 {
-	// TODO: Implement HTurret_ResetPitch
-	return;
+	// set target direction to base pitch and no yaw displacement
+	AngleVectors( self->s.angles2, self->turretDirToTarget, NULL, NULL );
+
+	self->turretDirToTarget[ 2 ] = 0.0f;
+
+	if ( self->turretDirToTarget[ 0 ] == 0.0f && self->turretDirToTarget[ 1 ] == 0.0f )
+	{
+		// make sure we have a valid direction after normalization
+		self->turretDirToTarget[ 0 ] = 1.0f;
+	}
+
+	VectorNormalize( self->turretDirToTarget );
 }
 
 static qboolean HTurret_TargetInReach( gentity_t *self )
@@ -3499,6 +3522,7 @@ void HTurret_Think( gentity_t *self )
 	if ( gotValidTarget )
 	{
 		HTurret_TrackTarget( self );
+		HTurret_MoveHeadToTarget( self );
 
 		if ( HTurret_TargetInReach( self ) && self->turretNextShot < level.time )
 		{
@@ -3507,7 +3531,8 @@ void HTurret_Think( gentity_t *self )
 	}
 	else
 	{
-		HTurret_ResetPitch( self );
+		HTurret_ResetYaw( self );
+		HTurret_MoveHeadToTarget( self );
 	}
 }
 
