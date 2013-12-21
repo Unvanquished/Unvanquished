@@ -385,8 +385,10 @@ struct gentity_s
 	// turret
 	int         turretNextShot;
 	int         turretLastShotAtTarget;
-	int         turretDamage;
+	int         turretLastSeenATarget;
+	int         turretCurrentDamage;
 	vec3_t      turretDirToTarget;
+	vec3_t      turretBaseDir;
 
 	vec4_t      animation; // animated map objects
 

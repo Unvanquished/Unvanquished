@@ -2086,7 +2086,7 @@ void G_FireWeapon( gentity_t *self )
 
 		case WP_MGTURRET:
 			//FireBullet( self, MGTURRET_SPREAD, MGTURRET_DMG, MOD_MGTURRET );
-			FireBullet( self, TURRET_SPREAD, self->turretDamage, MOD_MGTURRET );
+			FireBullet( self, TURRET_SPREAD, self->turretCurrentDamage, MOD_MGTURRET );
 			break;
 
 		case WP_ABUILD:

@@ -3302,6 +3302,8 @@ static qboolean HTurret_TargetValid( gentity_t *self, gentity_t *target, qboolea
 		}
 	}
 
+	self->turretLastSeenATarget = level.time;
+
 	return qtrue;
 }
 
@@ -3427,8 +3429,41 @@ static void HTurret_TrackTarget( gentity_t *self )
 	VectorNormalize( self->turretDirToTarget );
 }
 
+static void HTurret_SetBaseDir( gentity_t *self )
+{
+	trace_t tr;
+	vec3_t  dir, end;
 
-static void HTurret_ResetYaw( gentity_t *self )
+	// check if we already have a base direction
+	if ( VectorLength( self->turretBaseDir ) > 0.5f )
+	{
+		return;
+	}
+
+	// prefer buildable orientation
+	AngleVectors( self->s.angles, dir, NULL, NULL );
+	VectorNormalize( dir );
+
+	// invert base direction if it reaches into a wall within the first damage zone
+	VectorMA( self->s.origin, ( float )TURRET_RANGE / ( float )TURRET_ZONES, dir, end );
+	trap_Trace( &tr, self->s.pos.trBase, NULL, NULL, end, self->s.number, MASK_SOLID );
+
+	if ( tr.fraction < 1.0f )
+	{
+		VectorNegate( dir, self->turretBaseDir );
+	}
+	else
+	{
+		VectorCopy( dir, self->turretBaseDir );
+	}
+}
+
+static void HTurret_ResetDirection( gentity_t *self )
+{
+	VectorCopy( self->turretBaseDir, self->turretDirToTarget );
+}
+
+/*static void HTurret_ResetYaw( gentity_t *self )
 {
 	// set target direction to base pitch and no yaw displacement
 	AngleVectors( self->s.angles2, self->turretDirToTarget, NULL, NULL );
@@ -3442,12 +3477,17 @@ static void HTurret_ResetYaw( gentity_t *self )
 	}
 
 	VectorNormalize( self->turretDirToTarget );
-}
+}*/
 
 static qboolean HTurret_TargetInReach( gentity_t *self )
 {
 	trace_t tr;
 	vec3_t  forward, end;
+
+	if ( !self->target )
+	{
+		return qfalse;
+	}
 
 	// check if a precise shot would hit the target
 	AngleVectors( self->buildableAim, forward, NULL, NULL );
@@ -3463,14 +3503,14 @@ static void HTurret_Shoot( gentity_t *self )
 
 	int zone = HTurret_DistanceToZone( Distance( self->s.pos.trBase, self->target->s.pos.trBase ) );
 
-	self->turretDamage = zoneDamage[ zone ];
+	self->turretCurrentDamage = zoneDamage[ zone ];
 
 	if ( g_debugTurrets.integer > 1 )
 	{
 		const static char color[] = {'1', '8', '3', '2'};
 		Com_Printf( "Turret %d: Shooting at %d: ^%cZone %d/%d → %d damage\n",
 		            self->s.number, self->target->s.number, color[zone], zone + 1,
-		            TURRET_ZONES, self->turretDamage );
+		            TURRET_ZONES, self->turretCurrentDamage );
 	}
 
 	self->turretLastShotAtTarget = level.time;
@@ -3505,6 +3545,10 @@ void HTurret_Think( gentity_t *self )
 		return;
 	}
 
+	// set turret base direction
+	HTurret_SetBaseDir( self );
+
+	// check for valid target
 	if ( HTurret_TargetValid( self, self->target, qfalse ) )
 	{
 		gotValidTarget = qtrue;
@@ -3519,20 +3563,23 @@ void HTurret_Think( gentity_t *self )
 		}
 	}
 
+	// adjust target direction
 	if ( gotValidTarget )
 	{
 		HTurret_TrackTarget( self );
-		HTurret_MoveHeadToTarget( self );
-
-		if ( HTurret_TargetInReach( self ) && self->turretNextShot < level.time )
-		{
-			HTurret_Shoot( self );
-		}
 	}
-	else
+	else if ( !self->turretLastSeenATarget )
 	{
-		HTurret_ResetYaw( self );
-		HTurret_MoveHeadToTarget( self );
+		HTurret_ResetDirection( self );
+	}
+
+	// move head according to target direction
+	HTurret_MoveHeadToTarget( self );
+
+	// shoot if possible
+	if ( HTurret_TargetInReach( self ) && self->turretNextShot < level.time )
+	{
+		HTurret_Shoot( self );
 	}
 }
 
