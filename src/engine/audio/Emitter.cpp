@@ -60,7 +60,7 @@ namespace Audio {
         localEmitter = std::make_shared<LocalEmitter>();
 
         AL::SetSpeedOfSound(SPEED_OF_SOUND);
-        AL::SetDopplerExaggerationFactor(20); // woo
+        AL::SetDopplerExaggerationFactor(3); //keep it small else we get a deadlock in OpenAL's mixer
 
         initialized = true;
     }

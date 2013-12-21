@@ -27,6 +27,7 @@ along with daemon source code.  if not, see <http://www.gnu.org/licenses/>.
 namespace Audio {
 
     //TODO nice usecase for Cvar::Range
+    //TODO lazily check for the values
     static Cvar::Cvar<float> effectsVolume("sound.volume.effects", "the volume of the effects", Cvar::ARCHIVE, 0.8f);
     static Cvar::Cvar<float> musicVolume("sound.volume.music", "the volume of the music", Cvar::ARCHIVE, 0.8f);
 
@@ -207,7 +208,7 @@ namespace Audio {
     void Sound::Update() {
         float targetGain = positionalGain * soundGain * effectsVolume.Get();
 
-        //TODO make it framerate dependant and fade out in about 1/8 seconds ?
+        //TODO make it framerate independant and fade out in about 1/8 seconds ?
         if (currentGain > targetGain) {
             currentGain = std::max(currentGain - 0.02f, targetGain);
             //currentGain = std::max(currentGain * 1.05f, targetGain);
@@ -230,12 +231,15 @@ namespace Audio {
 
     void OneShotSound::SetupSource(AL::Source& source) {
         source.SetBuffer(sample->GetBuffer());
+        SetSoundGain(effectsVolume.Get());
     }
 
     void OneShotSound::InternalUpdate() {
         if (GetSource().IsStopped()) {
             Stop();
+            return;
         }
+        SetSoundGain(effectsVolume.Get());
     }
 
     // Implementation of LoopingSound
@@ -254,11 +258,16 @@ namespace Audio {
     void LoopingSound::SetupSource(AL::Source& source) {
         source.SetLooping(true);
         source.SetBuffer(sample->GetBuffer());
+        SetSoundGain(effectsVolume.Get());
     }
 
     void LoopingSound::InternalUpdate() {
         if (fadingOut and GetCurrentGain() == 0.0f) {
             Stop();
+        }
+
+        if (not fadingOut) {
+            SetSoundGain(effectsVolume.Get());
         }
     }
 
@@ -282,6 +291,7 @@ namespace Audio {
         for (int i = 0; i < NUM_BUFFERS; i++) {
             AppendBuffer(source, std::move(AL::Buffer()));
         }
+        SetSoundGain(musicVolume.Get());
     }
 
     void MusicSound::InternalUpdate() {
@@ -297,6 +307,8 @@ namespace Audio {
         } else if (source.IsStopped()) {
             Play();
         }
+
+        SetSoundGain(musicVolume.Get());
     }
 
     void MusicSound::AppendBuffer(AL::Source& source, AL::Buffer buffer) {
