@@ -371,11 +371,11 @@ void Initialize()
 	const char* basePath = Cvar_Get("fs_basepath", defaultBasePath.c_str(), CVAR_INIT)->string;
 	const char* extraPath = Cvar_Get("fs_extrapath", "", CVAR_INIT)->string;
 
-	pakPaths.push_back(homePath);
+	pakPaths.push_back(Path::Build(homePath, "pkg"));
 	if (basePath != homePath)
-		pakPaths.push_back(basePath);
+		pakPaths.push_back(Path::Build(basePath, "pkg"));
 	if (extraPath[0] && extraPath != basePath && extraPath != homePath)
-		pakPaths.push_back(extraPath);
+		pakPaths.push_back(Path::Build(extraPath, "pkg"));
 
 	RefreshPaks();
 }
@@ -513,7 +513,7 @@ void RefreshPaks()
 {
 	availablePaks.clear();
 	for (auto& path: pakPaths)
-		FindPaks(Path::Build(path, "pkg"), "");
+		FindPaks(path, "");
 
 	// Sort the pak list for easy binary searching:
 	// First sort by name, then by version.
@@ -1147,7 +1147,7 @@ std::string PakNamespace::ReadFile(Str::StringRef path, std::error_code& err) co
 	auto it = fileMap.find(path);
 	if (it == fileMap.end()) {
 		SetErrorCodeFilesystem(filesystem_error::no_such_file, err);
-		return nullptr;
+		return "";
 	}
 
 	const PakInfo& pak = loadedPaks[it->second.pakIndex];
