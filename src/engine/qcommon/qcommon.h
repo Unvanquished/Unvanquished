@@ -663,11 +663,6 @@ void       FS_Rename( const char *from, const char *to );
 
 char       *FS_BuildOSPath( const char *base, const char *game, const char *qpath );
 
-#if defined( DO_LIGHT_DEDICATED )
-int FS_RandChecksumFeed( void );
-
-#endif
-
 char         *FS_ShiftStr( const char *string, int shift );
 
 void         FS_CopyFile( char *fromOSPath, char *toOSPath );
