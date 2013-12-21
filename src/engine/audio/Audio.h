@@ -29,6 +29,8 @@ along with daemon source code.  if not, see <http://www.gnu.org/licenses/>.
 
 namespace Audio {
 
+    // An interface to the sound system that mimics the previous sound system's behavior
+
     bool Init();
     void Shutdown();
     void Update();
@@ -49,6 +51,11 @@ namespace Audio {
     void UpdateEntityPosition(int entityNum, const vec3_t position);
     void UpdateEntityVelocity(int entityNum, const vec3_t velocity);
     void UpdateEntityOcclusion(int entityNum, float ratio);
+
+    void StartCapture(int rate);
+    int AvailableCaptureSamples();
+    void GetCapturedData(int numSamples, void* buffer);
+    void StopCapture();
 }
 
 #endif //AUDIO_AUDIO_H_

@@ -94,6 +94,14 @@ namespace Audio {
 
         context->MakeCurrent();
 
+        // Initializes the list of input devices
+
+        std::stringstream inputDeviceList;
+        for (auto inputDeviceName : AL::CaptureDevice::ListByName()) {
+            inputDeviceList << inputDeviceName << "\n";
+        }
+        availableInputDevices.Set(inputDeviceList.str());
+
         initialized = true;
 
         // Initializes the rest of the audio system
@@ -236,4 +244,28 @@ namespace Audio {
         UpdateRegisteredEntityOcclusion(entityNum, ratio);
     }
 
+    static AL::CaptureDevice* capture = nullptr;
+
+    void StartCapture(int rate) {
+        if (capture) {
+            return;
+        }
+
+        capture = AL::CaptureDevice::GetDefaultDevice(rate);
+        capture->Start();
+    }
+
+    int AvailableCaptureSamples() {
+        return capture->GetNumCapturedSamples();
+    }
+
+    void GetCapturedData(int numSamples, void* buffer) {
+        capture->Capture(numSamples, buffer);
+    }
+
+    void StopCapture() {
+        capture->Stop();
+        delete capture;
+        capture = nullptr;
+    }
 }

@@ -40,6 +40,10 @@ namespace AL {
      *
      * The classes defined here are non-copyable but movable, consider them as
      * unique_ptr's to the OpenAL object.
+     *
+     * To Debug OpenAL errors, you can set ALSOFT_TRAP_ERROR=1 in the environment and
+     * OpenAL will break in the debugger on any error. Alternatively you can set
+     * ALSOFT_LOGFILE and ALSOFT_LOGLEVEL(0 to 3) to get more info.
      */
 
     //TODO enum classes for the different ALuint types?
@@ -239,6 +243,30 @@ namespace AL {
             Context(void* alHandle);
             Context(const Context& other);
             Context& operator=(const Context& other);
+            void* alHandle;
+    };
+
+    class CaptureDevice {
+        public:
+            static CaptureDevice* FromName(Str::StringRef name, int rate);
+            static CaptureDevice* GetDefaultDevice(int rate);
+            CaptureDevice(CaptureDevice&& other);
+            ~CaptureDevice();
+
+            void Start();
+            void Stop();
+            int GetNumCapturedSamples();
+            void Capture(int numSamples, void* buffer);
+
+            operator void*();
+
+            static std::string DefaultDeviceName();
+            static std::vector<std::string> ListByName();
+
+        private:
+            CaptureDevice(void* alHandle);
+            CaptureDevice(const Device& other);
+            CaptureDevice& operator=(const CaptureDevice& other);
             void* alHandle;
     };
 

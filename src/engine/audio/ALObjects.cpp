@@ -662,5 +662,84 @@ namespace AL {
 
     Context::Context(void* alHandle): alHandle(alHandle) {
     }
+
+    // Implementation of CaptureDevice
+
+    CaptureDevice* CaptureDevice::FromName(Str::StringRef name, int rate) {
+        ALCdevice* alHandle = alcCaptureOpenDevice(name.c_str(), rate, AL_FORMAT_MONO16, 2 * rate / 16);
+        if (alHandle) {
+            return new CaptureDevice(alHandle);
+        } else {
+            return nullptr;
+        }
+    }
+
+    CaptureDevice* CaptureDevice::GetDefaultDevice(int rate) {
+        ALCdevice* alHandle = alcCaptureOpenDevice(DefaultDeviceName().c_str(), rate, AL_FORMAT_MONO16, 2 * rate / 16);
+        if (alHandle) {
+            return new CaptureDevice(alHandle);
+        } else {
+            return nullptr;
+        }
+    }
+
+    CaptureDevice::CaptureDevice(CaptureDevice&& other) {
+        alHandle = other.alHandle;
+        other.alHandle = nullptr;
+    }
+
+    CaptureDevice::~CaptureDevice() {
+        if (alHandle) {
+            alcCaptureCloseDevice((ALCdevice*)alHandle);
+        }
+        alHandle = nullptr;
+    }
+
+    void CaptureDevice::Start() {
+        alcCaptureStart((ALCdevice*)alHandle);
+    }
+
+    void CaptureDevice::Stop() {
+        alcCaptureStop((ALCdevice*)alHandle);
+    }
+
+    int CaptureDevice::GetNumCapturedSamples() {
+        int numSamples = 0;
+        alcGetIntegerv((ALCdevice*)alHandle, ALC_CAPTURE_SAMPLES, sizeof(numSamples), &numSamples);
+        return numSamples;
+    }
+
+    void CaptureDevice::Capture(int numSamples, void* buffer) {
+        alcCaptureSamples((ALCdevice*)alHandle, buffer, numSamples);
+    }
+
+    CaptureDevice::operator void*() {
+        return alHandle;
+    }
+
+    std::string CaptureDevice::DefaultDeviceName() {
+        return alcGetString(NULL, ALC_CAPTURE_DEFAULT_DEVICE_SPECIFIER);
+    }
+
+    std::vector<std::string> CaptureDevice::ListByName() {
+        const char* list = alcGetString(NULL, ALC_CAPTURE_DEVICE_SPECIFIER);
+
+        if (!list) {
+            return {};
+        }
+
+        // OpenAL gives the concatenation of null-terminated strings, followed by a '\0' (it ends with a double '\0')
+        std::vector<std::string> res;
+        while (*list) {
+            res.push_back(list);
+            list += res.back().size() + 1;
+        }
+
+        return res;
+    }
+
+    CaptureDevice::CaptureDevice(void* alHandle): alHandle(alHandle) {
+    }
+
 }
 }

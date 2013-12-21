@@ -284,6 +284,7 @@ S_StartCapture
 */
 void S_StartCapture( void )
 {
+    Audio::StartCapture();
 }
 
 /*
@@ -293,7 +294,7 @@ S_AvailableCaptureSamples
 */
 int S_AvailableCaptureSamples( void )
 {
-    return 0;
+    return Audio::AvailableCaptureSamples();
 }
 
 /*
@@ -303,6 +304,7 @@ S_Capture
 */
 void S_Capture( int samples, byte *data )
 {
+    Audio::GetCapturedDate(samples, data);
 }
 
 /*
@@ -312,6 +314,7 @@ S_StopCapture
 */
 void S_StopCapture( void )
 {
+    Audio::StopCapture();
 }
 
 /*
