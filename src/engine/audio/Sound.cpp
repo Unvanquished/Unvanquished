@@ -31,6 +31,7 @@ namespace Audio {
     static Cvar::Cvar<float> effectsVolume("sound.volume.effects", "the volume of the effects", Cvar::ARCHIVE, 0.8f);
     static Cvar::Cvar<float> musicVolume("sound.volume.music", "the volume of the music", Cvar::ARCHIVE, 0.8f);
 
+    // We have a big, fixed number of source to avoid rendering too many sounds and slowing down the rest of the engine.
     struct sourceRecord_t {
         AL::Source source;
         std::shared_ptr<Sound> usingSound;
@@ -75,6 +76,7 @@ namespace Audio {
             if (sources[i].active) {
                 auto sound = sources[i].usingSound;
 
+                // Update and Emitter::UpdateSound can call Sound::Stop
                 if (not sound->IsStopped()) {
                     sound->Update();
                 }
@@ -95,6 +97,7 @@ namespace Audio {
         sourceRecord_t* source = GetSource(priority);
 
         if (source) {
+            // Make the source forget if it was a "static" or a "streaming" source.
             source->source.ResetBuffer();
             sound->SetEmitter(emitter);
             sound->AcquireSource(source->source);
@@ -107,11 +110,13 @@ namespace Audio {
         }
     }
 
+    // Finds a inactive or low-priority source to play a new sound.
     sourceRecord_t* GetSource(int priority) {
         //TODO make a better heuristic? (take into account the distance / the volume /... ?)
         int best = -1;
         int bestPriority = priority;
 
+        // Gets the minimum sound by comparing activity first then priority
         for (int i = 0; i < nSources; i++) {
             sourceRecord_t& source = sources[i];
 
@@ -200,12 +205,14 @@ namespace Audio {
         return *source;
     }
 
+    // Set the gain before the source is started to avoid having a few milliseconds of very lound sound
     void Sound::FinishSetup() {
         currentGain = positionalGain * soundGain * effectsVolume.Get();
         source->SetGain(currentGain);
     }
 
     void Sound::Update() {
+        // Fade the Gain update to avoid "ticking" sounds when there is a gain discontinuity
         float targetGain = positionalGain * soundGain * effectsVolume.Get();
 
         //TODO make it framerate independant and fade out in about 1/8 seconds ?
@@ -297,6 +304,7 @@ namespace Audio {
     void MusicSound::InternalUpdate() {
         AL::Source& source = GetSource();
 
+        // Fill processed buffers and queue them back in the source
         while (source.GetNumProcessedBuffers() > 0) {
             AppendBuffer(source, std::move(source.PopBuffer()));
         }
@@ -304,6 +312,8 @@ namespace Audio {
         // If we don't have any more buffers queued it means we have to stop the music
         if (source.GetNumQueuedBuffers() == 0) {
             Stop();
+
+        // If the source stopped because of a lack of buffer but we still have data to play we start the source again
         } else if (source.IsStopped()) {
             Play();
         }
@@ -324,6 +334,7 @@ namespace Audio {
         static char tempBuffer[CHUNK_SIZE];
         int lengthRead = S_CodecReadStream(streamToRead, CHUNK_SIZE, tempBuffer);
 
+        // if a stream is finished, we start playing the loop again, if possible
         if (lengthRead == 0) {
             S_CodecCloseStream(streamToRead);
             playingLeadingSound = false;
@@ -333,9 +344,41 @@ namespace Audio {
         }
 
         snd_info_t streamInfo = streamToRead->info;
-        streamInfo.size = lengthRead;
+        streamInfo.size = lengthRead; // this isn't set by Codec
         buffer.Feed(streamInfo, tempBuffer);
 
         source.QueueBuffer(std::move(buffer));
+    }
+
+    // Implementation of StreamingSound
+
+    //TODO
+    StreamingSound::StreamingSound() {
+    }
+
+    StreamingSound::~StreamingSound() {
+    }
+
+    void StreamingSound::SetupSource(AL::Source&) {
+    }
+
+    void StreamingSound::InternalUpdate() {
+        AL::Source& source = GetSource();
+
+        while (source.GetNumProcessedBuffers() > 0) {
+            source.PopBuffer();
+        }
+
+        if (source.GetNumQueuedBuffers() == 0) {
+            Stop();
+        }
+    }
+
+    void StreamingSound::AppendBuffer(AL::Buffer buffer) {
+        if (IsStopped()) {
+            return;
+        }
+
+        GetSource().QueueBuffer(std::move(buffer));
     }
 }

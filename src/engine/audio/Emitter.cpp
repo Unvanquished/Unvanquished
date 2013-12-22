@@ -26,18 +26,22 @@ along with daemon source code.  if not, see <http://www.gnu.org/licenses/>.
 
 namespace Audio {
 
+    // Structures to keep the state of entities we were given
     struct entityData_t {
         vec3_t position;
         vec3_t velocity;
         float occlusion;
     };
-
+    static entityData_t entities[MAX_GENTITIES];
     static int listenerEntity = -1;
 
-    static entityData_t entities[MAX_GENTITIES];
-
+    // Keep Entitymitters in an array because there is at most one per entity.
     static std::shared_ptr<Emitter> entityEmitters[MAX_GENTITIES];
+    // Position Emitters can be reused so we keep the list of all of them
+    // this is not very efficient but we cannot have more position emitters
+    // than sounds, that is about 128
     static std::vector<std::shared_ptr<PositionEmitter>> posEmitters;
+    // There is a single LocalEmitter
     static std::shared_ptr<Emitter> localEmitter;
 
     static const vec3_t origin = {0.0f, 0.0f, 0.0f};
@@ -51,16 +55,17 @@ namespace Audio {
             return;
         }
 
+        // This is a temporrary effect to test reverb
         AL::Effect effectParams;
         effectParams.ApplyReverbPreset(AL::GetHangarEffectPreset());
 
         globalEffect = new AL::EffectSlot();
         globalEffect->SetEffect(effectParams);
 
-        localEmitter = std::make_shared<LocalEmitter>();
-
         AL::SetSpeedOfSound(SPEED_OF_SOUND);
         AL::SetDopplerExaggerationFactor(3); //keep it small else we get a deadlock in OpenAL's mixer
+
+        localEmitter = std::make_shared<LocalEmitter>();
 
         initialized = true;
     }
@@ -89,6 +94,9 @@ namespace Audio {
     void UpdateEmitters() {
         localEmitter->Update();
 
+        // Both PositionEmitters and EntityEmitters are ref-counted.
+        // If we hold the only reference to them then no sound is still using
+        // the Emitter that can be destroyed.
         for (int i = 0; i < MAX_GENTITIES; i++) {
             auto emitter = entityEmitters[i];
 
@@ -97,6 +105,8 @@ namespace Audio {
             }
 
             emitter->Update();
+
+            // No sound is using this emitter, destroy it
             if (emitter.unique()) {
                 entityEmitters[i] = nullptr;
             }
@@ -104,6 +114,8 @@ namespace Audio {
 
         for (auto it = posEmitters.begin(); it != posEmitters.end();){
             (*it)->Update();
+
+            // No sound is using this emitter, destroy it
             if ((*it).unique()) {
                 it = posEmitters.erase(it);
             } else {
@@ -175,7 +187,7 @@ namespace Audio {
 
     // Implementation for Emitter
 
-    Emitter::Emitter() : refCount(0) {
+    Emitter::Emitter() {
     }
 
     Emitter::~Emitter() {

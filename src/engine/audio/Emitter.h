@@ -56,14 +56,15 @@ namespace Audio {
 
             void SetupSound(Sound& sound);
 
+            // Called each frame before any UpdateSound is called, used to factor computations
             void virtual Update() = 0;
+            // Update the Sound's source's spatialization
             virtual void UpdateSound(Sound& sound) = 0;
+            // Setup a source for the spatialization of this Emitter
             virtual void InternalSetupSound(Sound& sound) = 0;
-
-        protected:
-            int refCount;
     };
 
+    // An Emitter that will follow an entity
     class EntityEmitter : public Emitter {
         public:
             EntityEmitter(int entityNum);
@@ -77,6 +78,7 @@ namespace Audio {
             int entityNum;
     };
 
+    // An Emitter at a fixed position in space
     class PositionEmitter : public Emitter {
         public:
             PositionEmitter(const vec3_t position);
@@ -92,6 +94,7 @@ namespace Audio {
             vec3_t position;
     };
 
+    // An Emitter for things that aren't spatialized (like menus, annoucements, ...)
     class LocalEmitter: public Emitter {
         public:
             LocalEmitter();

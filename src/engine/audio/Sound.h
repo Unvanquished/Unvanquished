@@ -34,6 +34,8 @@ namespace Audio {
     void ShutdownSounds();
     void UpdateSounds();
 
+    // The only way to add a sound, attaches the sound to the emitter, a higher priority means
+    // the sound will be less likely to be recycled to spawn a new sound.
     void AddSound(std::shared_ptr<Emitter> emitter, std::shared_ptr<Sound> sound, int priority);
 
     class Sample;
@@ -49,9 +51,12 @@ namespace Audio {
             virtual ~Sound();
 
             void Play();
+            // Stop the source and marks the sound for deletion.
             void Stop();
             bool IsStopped();
 
+            // The is attenuated because of its inherent porperties and because of its position.
+            // Each attenuation can be set separately.
             void SetPositionalGain(float gain);
             void SetSoundGain(float gain);
             float GetCurrentGain();
@@ -62,10 +67,12 @@ namespace Audio {
             void AcquireSource(AL::Source& source);
             AL::Source& GetSource();
 
+            // Used to setup a source for a specific kind of sound and to start the sound.
             virtual void SetupSource(AL::Source& source) = 0;
             void FinishSetup();
 
             void Update();
+            // Called each frame, after emitters have been updated.
             virtual void InternalUpdate() = 0;
 
         private:
@@ -78,6 +85,7 @@ namespace Audio {
             AL::Source* source;
     };
 
+    // A sound that is played once.
     class OneShotSound : public Sound {
         public:
             OneShotSound(Sample* sample);
@@ -90,7 +98,7 @@ namespace Audio {
             Sample* sample;
     };
 
-
+    // A looping sound
     class LoopingSound : public Sound {
         public:
             LoopingSound(Sample* sample);
@@ -106,8 +114,10 @@ namespace Audio {
             bool fadingOut;
     };
 
+    // A sound that is too big to be loaded al at once in the memory: it is instead streamed from the disc.
     class MusicSound : public Sound {
         public:
+            // Both names are optional
             MusicSound(Str::StringRef leadingStreamName, Str::StringRef loopStreamName);
             virtual ~MusicSound();
 
@@ -133,7 +143,18 @@ namespace Audio {
             static constexpr int CHUNK_SIZE = 16384;
     };
 
-    // StreamSound
+    // Any sound that receives its data over time (such as VoIP)
+    class StreamingSound : public Sound {
+        public:
+            StreamingSound();
+            virtual ~StreamingSound();
+
+            virtual void SetupSource(AL::Source& source) OVERRIDE;
+            virtual void InternalUpdate() OVERRIDE;
+
+            void AppendBuffer(AL::Buffer buffer);
+    };
+
 }
 
 #endif //AUDIO_SOUND_H_

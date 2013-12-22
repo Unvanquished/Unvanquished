@@ -45,6 +45,10 @@ namespace Audio {
      * - Emitters that control the positional effects for the sound sources
      * - Sample that gives handles to loaded sound effects for use by the VM
      * - Sound that controls the raw sound shape emitted by a sound emitter (e.g. a looping sound, ...)
+     *
+     * In term of ownership, Samples are owned by the hashmap filename <-> Samples, OpenAL sources
+     * are allocated in an array in Sound and each source can have at most one sound. Each sound has one
+     * Emitter (they are ref counted).
      */
 
     constexpr int POSITIONAL_EFFECT_SLOT = 0;
