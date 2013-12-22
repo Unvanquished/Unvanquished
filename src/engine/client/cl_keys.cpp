@@ -1219,9 +1219,7 @@ Key_EditBind_f
 */
 void Key_EditBind_f( void )
 {
-	char           *buf;
-	const char     *key, *binding;
-	const char     *bindq;
+	std::u32string buf;
 	int            b;
 	int            team = -1;
 
@@ -1243,7 +1241,7 @@ void Key_EditBind_f( void )
 		}
 	}
 
-	key = Cmd_Argv( b - 1 );
+	const char *key = Cmd_Argv( b - 1 );
 	b = Key_StringToKeynum( key );
 
 	if ( b == -1 )
@@ -1252,27 +1250,28 @@ void Key_EditBind_f( void )
 		return;
 	}
 
-	binding = Key_GetBinding( b, -team );
-
-	bindq = binding ? Cmd_QuoteString( binding ) : "";  // <- static buffer
-	buf = (char*) malloc( 32 + strlen( key ) + strlen( bindq ) );
-
 	if ( team >= 0 )
 	{
-		sprintf( buf, "/teambind %s %s %s", teamName[ team ], Key_KeynumToString( b ), bindq );
+		buf = U"/teambind ";
+		buf += Str::UTF8To32( teamName[ team ] );
 	}
 	else
 	{
-		sprintf( buf, "/bind %s %s", Key_KeynumToString( b ), bindq );
+		buf = U"/bind ";
 	}
 
-	/*
-	//kangz: what is EditBind used for anyway???
-	Con_OpenConsole_f();
+	buf += Str::UTF8To32( Key_KeynumToString( b ) );
+	buf += U' ';
 
-	Field_Set( &g_consoleField, buf );
-	free( buf );
-	*/
+	const char *binding = Key_GetBinding( b, -team );
+	if ( binding )
+	{
+		buf += Str::UTF8To32( Cmd::Escape( std::string( binding ) ) );
+	}
+
+	// FIXME: use text console if that's where the editbind command was entered
+	Con_OpenConsole_f();
+	g_consoleField.SetText( buf );
 }
 
 /*
