@@ -276,16 +276,16 @@ extern int   MGTURRET_SPREAD;
 extern int   MGTURRET_DMG;
 extern int   MGTURRET_SPINUP_TIME;
 
-#define TURRET_THINK_PERIOD   25
+#define TURRET_THINK_PERIOD   25  // doesn't affect damage or turn speed directly, just their precision
 #define TURRET_ATTACK_PERIOD  125
 #define TURRET_RANGE          400
 #define TURRET_SPREAD         200
-#define TURRET_ZONES          4
-#define TURRET_ZONE_DAMAGE    { 5, 4, 3, 2 }
-#define TURRET_PITCH_SPEED    4   // in degrees per think
+#define TURRET_ZONES          4   // range is divided into this amount of zones (disks) with equal width
+#define TURRET_ZONE_DAMAGE    { 5, 4, 3, 2 } // damage for each of the TURRET_ZONES zones
 #define TURRET_PITCH_CAP      30  // in degrees
-#define TURRET_YAW_SPEED      3   // in degrees per think
-#define TURRET_GIVEUP_TARGET  500 // in ms, time until turret stops tracking target after losing los
+#define TURRET_PITCH_SPEED    160 // in degrees per second
+#define TURRET_YAW_SPEED      120 // in degrees per second
+#define TURRET_GIVEUP_TARGET  500 // in ms, time until turret stops tracking a target after losing los
 
 extern float TESLAGEN_RANGE;
 extern int   TESLAGEN_REPEAT;

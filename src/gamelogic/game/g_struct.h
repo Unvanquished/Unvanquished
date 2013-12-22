@@ -386,6 +386,7 @@ struct gentity_s
 	int         turretNextShot;
 	int         turretLastShotAtTarget;
 	int         turretLastSeenATarget;
+	int         turretLastHeadMove;
 	int         turretCurrentDamage;
 	vec3_t      turretDirToTarget;
 	vec3_t      turretBaseDir;
