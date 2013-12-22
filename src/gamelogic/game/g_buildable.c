@@ -3463,21 +3463,31 @@ static void HTurret_ResetDirection( gentity_t *self )
 	VectorCopy( self->turretBaseDir, self->turretDirToTarget );
 }
 
-/*static void HTurret_ResetYaw( gentity_t *self )
+static void HTurret_ResetPitch( gentity_t *self )
 {
-	// set target direction to base pitch and no yaw displacement
-	AngleVectors( self->s.angles2, self->turretDirToTarget, NULL, NULL );
+	vec3_t angles;
 
-	self->turretDirToTarget[ 2 ] = 0.0f;
+	VectorCopy( self->s.angles2, angles );
 
-	if ( self->turretDirToTarget[ 0 ] == 0.0f && self->turretDirToTarget[ 1 ] == 0.0f )
-	{
-		// make sure we have a valid direction after normalization
-		self->turretDirToTarget[ 0 ] = 1.0f;
-	}
+	angles[ PITCH ] = 0.0f;
+
+	AngleVectors( angles, self->turretDirToTarget, NULL, NULL );
 
 	VectorNormalize( self->turretDirToTarget );
-}*/
+}
+
+static void HTurret_LowerPitch( gentity_t *self )
+{
+	vec3_t angles;
+
+	VectorCopy( self->s.angles2, angles );
+
+	angles[ PITCH ] = TURRET_PITCH_CAP;
+
+	AngleVectors( angles, self->turretDirToTarget, NULL, NULL );
+
+	VectorNormalize( self->turretDirToTarget );
+}
 
 static qboolean HTurret_TargetInReach( gentity_t *self )
 {
@@ -3539,10 +3549,24 @@ void HTurret_Think( gentity_t *self )
 		return;
 	}
 
+	// adjust yaw according to power state
 	if ( !self->powered )
 	{
-		self->nextthink = level.time + POWER_REFRESH_TIME;
+		self->turretDisabled = qtrue;
+
+		HTurret_LowerPitch( self );
+		HTurret_MoveHeadToTarget( self );
+
 		return;
+	}
+	else
+	{
+		if ( self->turretDisabled )
+		{
+			HTurret_ResetPitch( self );
+		}
+
+		self->turretDisabled = qfalse;
 	}
 
 	// set turret base direction

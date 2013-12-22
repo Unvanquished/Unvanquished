@@ -389,6 +389,7 @@ struct gentity_s
 	int         turretCurrentDamage;
 	vec3_t      turretDirToTarget;
 	vec3_t      turretBaseDir;
+	qboolean    turretDisabled;
 
 	vec4_t      animation; // animated map objects
 
