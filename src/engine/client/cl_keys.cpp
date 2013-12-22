@@ -1525,7 +1525,7 @@ static void Key_CompleteEditbind( char *args, int argNum )
 Helper functions for Cmd_If_f & Cmd_ModCase_f
 ===============
 */
-static const char modifierList[] = N_("shift, ctrl, alt, command/cmd, mode, super; ! negates; e.g. shift,!alt");
+static const char modifierList[] = N_("shift, ctrl, alt, command/cmd, mode, super, compose, menu; ! negates; e.g. shift,!alt");
 
 static const struct
 {
@@ -1542,10 +1542,13 @@ static const struct
 	{ "cmd", 3, 8, K_COMMAND },
 	{ "mode", 4, 16, K_MODE },
 	{ "super", 5, 32, K_SUPER },
+	{ "compose", 6, 64, K_COMPOSE },
+	{ "menu", 7, 128, K_MENU },
 	{ "", 0, 0, 0 }
 };
 // Following is no. of bits required for modifiers in the above list
-#define NUM_RECOGNISED_MODIFIERS 6
+// (it doesn't reflect the array length)
+#define NUM_RECOGNISED_MODIFIERS 8
 
 typedef struct
 {
