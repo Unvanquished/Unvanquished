@@ -42,8 +42,6 @@ const char        *G_quoted_admin_name( gentity_t *ent );
 
 // g_buildable.c
 gentity_t         *G_CheckSpawnPoint( int spawnNum, const vec3_t origin, const vec3_t normal, buildable_t spawn, vec3_t spawnOrigin );
-qboolean          G_IsDCCBuilt( void );
-int               G_FindDCC( gentity_t *self );
 gentity_t         *G_Reactor( void );
 gentity_t         *G_Overmind( void );
 float             G_DistanceToBase( gentity_t *self, qboolean ownBase );

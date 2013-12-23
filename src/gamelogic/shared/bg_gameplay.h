@@ -293,16 +293,9 @@ extern float TESLAGEN_RANGE;
 extern int   TESLAGEN_REPEAT;
 extern int   TESLAGEN_DMG;
 
-extern int   DC_ATTACK_PERIOD;
-extern int   DC_HEALRATE;
-extern int   DC_RANGE;
-
 extern float REACTOR_ATTACK_RANGE;
 extern int   REACTOR_ATTACK_REPEAT;
 extern int   REACTOR_ATTACK_DAMAGE;
-extern float REACTOR_ATTACK_DCC_RANGE;
-extern int   REACTOR_ATTACK_DCC_REPEAT;
-extern int   REACTOR_ATTACK_DCC_DAMAGE;
 
 /*
  * HUMAN misc

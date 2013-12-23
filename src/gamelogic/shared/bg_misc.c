@@ -57,7 +57,6 @@ static const buildableName_t bg_buildableNameList[] =
 	{ BA_H_MGTURRET,  "mgturret",  "team_human_mgturret"  },
 	{ BA_H_TESLAGEN,  "tesla",     "team_human_tesla"     },
 	{ BA_H_ARMOURY,   "arm",       "team_human_armoury"   },
-	{ BA_H_DCC,       "dcc",       "team_human_dcc"       },
 	{ BA_H_MEDISTAT,  "medistat",  "team_human_medistat"  },
  	{ BA_H_DRILL,     "drill",     "team_human_drill"     },
 	{ BA_H_REACTOR,   "reactor",   "team_human_reactor"   },
@@ -1248,7 +1247,6 @@ static const char *const eventnames[] =
 	"EV_REACTOR_ATTACK_1", // reactor under attack
 	"EV_REACTOR_ATTACK_2", // reactor under attack
 	"EV_REACTOR_DYING", // reactor destroyed
-	"EV_DCC_ATTACK", // dcc under attack
 
 	"EV_WARN_ATTACK",
 

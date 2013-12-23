@@ -356,7 +356,6 @@ struct gentity_s
 
 	team_t      buildableTeam; // buildable item team
 	struct namelog_s *builtBy; // clientNum of person that built this
-	int         dcc; // number of controlling dccs
 
 	int         pain_debounce_time;
 	int         last_move_time;

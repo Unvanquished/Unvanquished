@@ -485,7 +485,6 @@ typedef enum
   BA_H_TESLAGEN,
 
   BA_H_ARMOURY,
-  BA_H_DCC,
   BA_H_MEDISTAT,
   BA_H_DRILL,
 
@@ -617,7 +616,6 @@ typedef enum
   EV_REACTOR_ATTACK_1, // reactor under attack
   EV_REACTOR_ATTACK_2, // reactor under attack
   EV_REACTOR_DYING, // reactor destroyed
-  EV_DCC_ATTACK, // dcc under attack
 
   EV_WARN_ATTACK, // a building has been destroyed and the destruction noticed by a nearby om/rc/rrep
 
@@ -1147,7 +1145,6 @@ typedef struct
 	qboolean    creepTest;
 	int         creepSize;
 
-	qboolean    dccTest;
 	qboolean    transparentTest;
 	qboolean    uniqueTest;
 

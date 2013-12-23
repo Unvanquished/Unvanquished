@@ -297,90 +297,6 @@ int G_GetMarkedBuildPointsInt( team_t team )
 
 /*
 ================
-G_FindDCC
-
-attempt to find a controlling DCC for self, return number found
-================
-*/
-int G_FindDCC( gentity_t *self )
-{
-	int       i;
-	gentity_t *ent;
-	int       distance = 0;
-	vec3_t    temp_v;
-	int       foundDCC = 0;
-
-	if ( self->buildableTeam != TEAM_HUMANS )
-	{
-		return 0;
-	}
-
-	//iterate through entities
-	for ( i = MAX_CLIENTS, ent = g_entities + i; i < level.num_entities; i++, ent++ )
-	{
-		if ( ent->s.eType != ET_BUILDABLE )
-		{
-			continue;
-		}
-
-		//if entity is a dcc calculate the distance to it
-		if ( ent->s.modelindex == BA_H_DCC && ent->spawned )
-		{
-			VectorSubtract( self->s.origin, ent->s.origin, temp_v );
-			distance = VectorLength( temp_v );
-
-			if ( distance < DC_RANGE && ent->powered )
-			{
-				foundDCC++;
-			}
-		}
-	}
-
-	return foundDCC;
-}
-
-/*
-================
-G_IsDCCBuilt
-
-See if any powered DCC exists
-================
-*/
-qboolean G_IsDCCBuilt( void )
-{
-	int       i;
-	gentity_t *ent;
-
-	for ( i = MAX_CLIENTS, ent = g_entities + i; i < level.num_entities; i++, ent++ )
-	{
-		if ( ent->s.eType != ET_BUILDABLE )
-		{
-			continue;
-		}
-
-		if ( ent->s.modelindex != BA_H_DCC )
-		{
-			continue;
-		}
-
-		if ( !ent->spawned )
-		{
-			continue;
-		}
-
-		if ( ent->health <= 0 )
-		{
-			continue;
-		}
-
-		return qtrue;
-	}
-
-	return qfalse;
-}
-
-/*
-================
 G_Reactor
 G_Overmind
 
@@ -2619,11 +2535,6 @@ void HArmoury_Think( gentity_t *self )
 	HGeneric_Think( self );
 }
 
-void HDCC_Think( gentity_t *self )
-{
-	HGeneric_Think( self );
-}
-
 void HMedistat_Die( gentity_t *self, gentity_t *inflictor,
                     gentity_t *attacker, int mod )
 {
@@ -3510,9 +3421,6 @@ void G_BuildableThink( gentity_t *ent, int msec )
 		ent->clientSpawnTime = 0;
 	}
 
-	// Find DCC for human structures
-	ent->dcc = ( ent->buildableTeam != TEAM_HUMANS ) ? 0 : G_FindDCC( ent );
-
 	// Set health
 	ent->s.generic1 = MAX( ent->health, 0 );
 
@@ -3652,7 +3560,6 @@ static int CompareBuildablesForRemoval( const void *a, const void *b )
 
 		BA_H_MGTURRET,
 		BA_H_TESLAGEN,
-		BA_H_DCC,
 		BA_H_MEDISTAT,
 		BA_H_ARMOURY,
 		BA_H_SPAWN,
@@ -4663,20 +4570,6 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 			}
 			break;
 
-		case BA_H_DCC:
-			built->think = HDCC_Think;
-			built->die = HGeneric_Die;
-						{
-				vec3_t mins;
-				vec3_t maxs;
-				VectorCopy( built->r.mins, mins );
-				VectorCopy( built->r.maxs, maxs );
-				VectorAdd( mins, origin, mins );
-				VectorAdd( maxs, origin, maxs );
-				trap_BotAddObstacle( mins, maxs, &built->obstacleHandle );
-			}
-			break;
-
 		case BA_H_MEDISTAT:
 			built->think = HMedistat_Think;
 			built->die = HMedistat_Die;
@@ -5350,7 +5243,7 @@ void G_Armageddon( float strength )
 			continue;
 		}
 
-		// check for defensive building (includes DCC)
+		// check for defensive building
 		switch ( ent->s.modelindex )
 		{
 			case BA_A_ACIDTUBE:
@@ -5359,7 +5252,6 @@ void G_Armageddon( float strength )
 			case BA_A_BARRICADE:
 			case BA_H_MGTURRET:
 			case BA_H_TESLAGEN:
-			case BA_H_DCC:
 				break;
 
 			default:

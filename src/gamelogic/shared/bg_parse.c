@@ -167,10 +167,6 @@ float TESLAGEN_RANGE;
 int   TESLAGEN_REPEAT;
 int   TESLAGEN_DMG;
 
-int   DC_ATTACK_PERIOD;
-int   DC_HEALRATE;
-int   DC_RANGE;
-
 // Human Weapons
 
 int   BLASTER_SPREAD;
@@ -229,10 +225,6 @@ int   LCANNON_CHARGE_AMMO;
 // MUST BE ALPHABETICALLY SORTED!
 static configVar_t bg_configVars[] =
 {
-	{"b_dcc_healRange", INTEGER, qfalse, &DC_RANGE},
-	{"b_dcc_healRate", INTEGER, qfalse, &DC_HEALRATE},
-	{"b_dcc_warningPeriod", INTEGER, qfalse, &DC_ATTACK_PERIOD},
-
 	{"b_mgturret_accuracyToFire", INTEGER, qfalse, &MGTURRET_ACCURACY_TO_FIRE},
 	{"b_mgturret_angularSpeed", INTEGER, qfalse, &MGTURRET_ANGULARSPEED},
 	{"b_mgturret_attackDamage", INTEGER, qfalse, &MGTURRET_DMG},
@@ -893,10 +885,6 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
 			PARSE(text, token);
 
 			ba->creepSize = atoi(token);
-		}
-		else if ( !Q_stricmp( token, "dccTest" ) )
-		{
-			ba->dccTest = qtrue;
 		}
 		else if ( !Q_stricmp( token, "transparentTest" ) )
 		{
