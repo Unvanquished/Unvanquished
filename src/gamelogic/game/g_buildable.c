@@ -1511,124 +1511,207 @@ void ALeech_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	G_RGSInformNeighbors( self );
 }
 
-/*
-================
-AHive_CheckTarget
+static gentity_t *cmpHive = NULL;
 
-Returns true and fires the hive missile if the target is valid
-================
-*/
-static qboolean AHive_CheckTarget( gentity_t *self, gentity_t *enemy )
+static int AHive_CompareTargets( const void *first, const void *second )
+{
+	gentity_t *a, *b;
+
+	if ( !cmpHive )
+	{
+		return 0;
+	}
+
+	a = ( gentity_t * )first;
+	b = ( gentity_t * )second;
+
+	// Always prefer target that isn't yet targeted.
+	{
+		if ( a->numTrackedBy == 0 && b->numTrackedBy > 0 )
+		{
+			return -1;
+		}
+		else if ( a->numTrackedBy > 0 && b->numTrackedBy == 0 )
+		{
+			return 1;
+		}
+	}
+
+	// Prefer smaller distance.
+	{
+		int ad = Distance( cmpHive->s.origin, a->s.origin );
+		int bd = Distance( cmpHive->s.origin, b->s.origin );
+
+		if ( ad < bd )
+		{
+			return -1;
+		}
+		else if ( bd < ad )
+		{
+			return 1;
+		}
+	}
+
+	// Tie breaker is random decision, so clients on lower slots don't get shot at more often.
+	{
+		if ( rand() < ( RAND_MAX / 2 ) )
+		{
+			return -1;
+		}
+		else
+		{
+			return 1;
+		}
+	}
+}
+
+static qboolean AHive_TargetValid( gentity_t *self, gentity_t *target, qboolean ignoreDistance )
 {
 	trace_t trace;
-	vec3_t  tip_origin, dirToTarget;
+	vec3_t  tipOrigin;
 
-	// Check if this is a valid target
-	if ( enemy->health <= 0 || !enemy->client ||
-	     enemy->client->pers.team != TEAM_HUMANS )
+	if (    !target
+	     || !target->client
+	     || target->client->pers.team != TEAM_HUMANS
+	     || target->health <= 0
+	     || ( target->flags & FL_NOTARGET ) )
 	{
 		return qfalse;
 	}
 
-	if ( enemy->flags & FL_NOTARGET )
+	// use tip instead of origin for distance and line of sight checks
+	// TODO: Evaluate
+	VectorMA( self->s.pos.trBase, self->r.maxs[ 2 ], self->s.origin2, tipOrigin );
+
+	// check if enemy in sense range
+	if ( !ignoreDistance && Distance( tipOrigin, target->s.origin ) > HIVE_SENSE_RANGE )
 	{
 		return qfalse;
 	}
 
-	// Check if the tip of the hive can see the target
-	VectorMA( self->s.pos.trBase, self->r.maxs[ 2 ], self->s.origin2,
-	          tip_origin );
+	// check for clear line of sight
+	trap_Trace( &trace, tipOrigin, NULL, NULL, target->s.pos.trBase, self->s.number, MASK_SHOT );
 
-	if ( Distance( tip_origin, enemy->s.origin ) > HIVE_SENSE_RANGE )
+	if ( trace.fraction == 1.0f || trace.entityNum != target->s.number )
 	{
 		return qfalse;
 	}
 
-	trap_Trace( &trace, tip_origin, NULL, NULL, enemy->s.pos.trBase,
-	            self->s.number, MASK_SHOT );
-
-	if ( trace.fraction < 1.0f && trace.entityNum != enemy->s.number )
-	{
-		return qfalse;
-	}
-
-	self->active = qtrue;
-	self->target = enemy;
-	self->timestamp = level.time + HIVE_REPEAT;
-
-	VectorSubtract( enemy->s.pos.trBase, self->s.pos.trBase, dirToTarget );
-	VectorNormalize( dirToTarget );
-	vectoangles( dirToTarget, self->buildableAim );
-
-	// Fire at target
-	G_FireWeapon( self );
-	G_SetBuildableAnim( self, BANIM_ATTACK1, qfalse );
 	return qtrue;
 }
 
-/*
-================
-AHive_Think
+/**
+ * @brief Forget about old target and attempt to find a new valid one.
+ * @return Whether a valid target was found.
+ */
+static qboolean AHive_FindTarget( gentity_t *self )
+{
+	gentity_t *ent = NULL;
+	gentity_t *validTargets[ MAX_GENTITIES ];
+	int       validTargetNum = 0;
 
-Think function for Alien Hive
-================
-*/
+	// delete old target
+	if ( self->target )
+	{
+		self->target->numTrackedBy--;
+	}
+
+	self->target = NULL;
+
+	// find all potential targets
+	for ( ent = NULL; ( ent = G_IterateEntitiesWithinRadius( ent, self->s.origin, HIVE_SENSE_RANGE )); )
+	{
+		if ( AHive_TargetValid( self, ent, qfalse ) )
+		{
+		     validTargets[ validTargetNum++ ] = ent;
+		}
+	}
+
+	if ( validTargetNum > 0 )
+	{
+		// search best target
+		cmpHive = self;
+		qsort( validTargets, validTargetNum, sizeof( gentity_t* ), AHive_CompareTargets );
+
+		self->target = validTargets[ 0 ];
+		self->target->numTrackedBy++;
+
+		return qtrue;
+	}
+	else
+	{
+		return qfalse;
+	}
+}
+
+/**
+ * @brief Fires a hive missile on the target, which is assumed to be valid.
+ */
+static void AHive_Fire( gentity_t *self )
+{
+	vec3_t dirToTarget;
+
+	if ( !self->target )
+	{
+		return;
+	}
+
+	// set self active, this will be reset after the missile dies or a timeout
+	self->active = qtrue;
+	self->timestamp = level.time + HIVE_REPEAT;
+
+	// set aim angles
+	VectorSubtract( self->target->s.pos.trBase, self->s.pos.trBase, dirToTarget );
+	VectorNormalize( dirToTarget );
+	vectoangles( dirToTarget, self->buildableAim );
+
+	// fire
+	G_FireWeapon( self );
+	G_SetBuildableAnim( self, BANIM_ATTACK1, qfalse );
+}
+
 void AHive_Think( gentity_t *self )
 {
-	int start;
-
 	AGeneric_Think( self );
 
-	// Hive missile hasn't returned in HIVE_REPEAT seconds, forget about it
+	if ( !self->spawned || self->health <= 0 )
+	{
+		return;
+	}
+
+	// last missile hasn't returned in time, forget about it
 	if ( self->timestamp < level.time )
 	{
 		self->active = qfalse;
 	}
 
-	// Find a target to attack
-	if ( self->spawned && !self->active && self->powered )
+	if ( self->active )
 	{
-		int    i, num, entityList[ MAX_GENTITIES ];
-		vec3_t mins, maxs,
-		       range = { HIVE_SENSE_RANGE, HIVE_SENSE_RANGE, HIVE_SENSE_RANGE };
+		return;
+	}
 
-		VectorAdd( self->s.origin, range, maxs );
-		VectorSubtract( self->s.origin, range, mins );
-
-		num = trap_EntitiesInBox( mins, maxs, entityList, MAX_GENTITIES );
-
-		if ( num == 0 )
-		{
-			return;
-		}
-
-		start = rand() / ( RAND_MAX / num + 1 );
-
-		for ( i = start; i < num + start; i++ )
-		{
-			if ( AHive_CheckTarget( self, g_entities + entityList[ i % num ] ) )
-			{
-				return;
-			}
-		}
+	// attempt to find a new target and fire once at it if successful
+	if ( AHive_FindTarget( self ) )
+	{
+		AHive_Fire( self );
 	}
 }
 
-/*
-================
-AHive_Pain
-
-pain function for Alien Hive
-================
-*/
 void AHive_Pain( gentity_t *self, gentity_t *attacker, int damage )
 {
-	if ( self->spawned && self->powered && !self->active )
-	{
-		AHive_CheckTarget( self, attacker );
-	}
+	AGeneric_Pain( self, attacker, damage );
 
-	G_SetBuildableAnim( self, BANIM_PAIN1, qfalse );
+	// if inactive, fire on attacker even if it's out of sense range
+	if ( self->spawned && self->health > 0 && !self->active )
+	{
+		if ( AHive_TargetValid( self, attacker, qtrue ) )
+		{
+			self->target = attacker;
+			attacker->numTrackedBy++;
+
+			AHive_Fire( self );
+		}
+	}
 }
 
 /*
