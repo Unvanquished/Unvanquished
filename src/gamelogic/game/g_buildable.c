@@ -23,6 +23,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "g_local.h"
 
+// this is wrong in so many ways
+// 1. the maximum alien bbox is > 25³
+// 2. the maximum alien spawning class bbox is still > 25³
+// 3. why is this even hardcoded?
 #define MAX_ALIEN_BBOX 25
 
 #define PRIMARY_ATTACK_PERIOD 7500
@@ -75,7 +79,18 @@ True if the means of death allows an under-attack warning.
 
 static qboolean IsWarnableMOD( int mod )
 {
-	return mod != MOD_UNKNOWN && mod != MOD_TRIGGER_HURT && mod != MOD_DECONSTRUCT && mod != MOD_REPLACE && mod != MOD_NOCREEP;
+	switch ( mod )
+	{
+		//case MOD_UNKNOWN:
+		case MOD_TRIGGER_HURT:
+		case MOD_DECONSTRUCT:
+		case MOD_REPLACE:
+		case MOD_NOCREEP:
+			return qfalse;
+
+		default:
+			return qtrue;
+	}
 }
 
 /*
@@ -795,9 +810,7 @@ nullDieFunction
 hack to prevent compilers complaining about function pointer -> NULL conversion
 ================
 */
-static void nullDieFunction( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
-{
-}
+static void NullDieFunction( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod ) {}
 
 /*
 ================
@@ -835,12 +848,6 @@ static int    CompareEntityDistance( const void *a, const void *b )
 		return 0;
 	}
 }
-
-//==================================================================================
-//
-// ALIEN BUILDABLES
-//
-//==================================================================================
 
 /*
 ================
@@ -927,14 +934,15 @@ void AGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, i
 	G_SetBuildableAnim( self, self->powered ? BANIM_DESTROY1 : BANIM_DESTROY_UNPOWERED, qtrue );
 	G_SetIdleBuildableAnim( self, BANIM_DESTROYED );
 
-	self->die = nullDieFunction;
+	self->die = NullDieFunction;
 	self->killedBy = attacker - g_entities;
 	self->think = AGeneric_Blast;
 	self->s.eFlags &= ~EF_FIRING; //prevent any firing effects
 	self->powered = qfalse;
 
 	// warn if in main base and there's an overmind
-	if ( ( om = G_Overmind() ) && om != self && level.time > om->warnTimer && G_InsideBase( self, qtrue ) && IsWarnableMOD( mod ) )
+	if ( ( om = G_Overmind() ) && om != self && level.time > om->warnTimer
+	     && G_InsideBase( self, qtrue ) && IsWarnableMOD( mod ) )
 	{
 		om->warnTimer = level.time + NEARBY_ATTACK_PERIOD; // don't spam
 		G_BroadcastEvent( EV_WARN_ATTACK, 0, TEAM_ALIENS );
@@ -1143,8 +1151,6 @@ void ASpawn_Think( gentity_t *self )
 	}
 }
 
-//==================================================================================
-
 #define OVERMIND_DYING_PERIOD  5000
 #define OVERMIND_SPAWNS_PERIOD 30000
 
@@ -1236,8 +1242,6 @@ void AOvermind_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, 
 		G_BroadcastEvent( EV_OVERMIND_DYING, 0, TEAM_ALIENS );
 	}
 }
-
-//==================================================================================
 
 /*
 ================
@@ -1471,15 +1475,6 @@ void AAcidTube_Think( gentity_t *self )
 	}
 }
 
-//==================================================================================
-
-/*
-================
-ALeech_Think
-
-Think function for the Alien Leech.
-================
-*/
 void ALeech_Think( gentity_t *self )
 {
 	qboolean active, lastThinkActive;
@@ -1505,13 +1500,6 @@ void ALeech_Think( gentity_t *self )
 	}
 }
 
-/*
-================
-ALeech_Die
-
-Called when a Alien Leech dies
-================
-*/
 void ALeech_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
 {
 	AGeneric_Die( self, inflictor, attacker, mod );
@@ -1522,8 +1510,6 @@ void ALeech_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	// Assume our state has changed and inform closeby RGS
 	G_RGSInformNeighbors( self );
 }
-
-//==================================================================================
 
 /*
 ================
@@ -1645,8 +1631,6 @@ void AHive_Pain( gentity_t *self, gentity_t *attacker, int damage )
 	G_SetBuildableAnim( self, BANIM_PAIN1, qfalse );
 }
 
-//==================================================================================
-
 /*
 ================
 ABooster_Touch
@@ -1687,8 +1671,6 @@ void ABooster_Touch( gentity_t *self, gentity_t *other, trace_t *trace )
 	client->ps.stats[ STAT_STATE ] |= SS_BOOSTEDNEW;
 	client->boostedTime = level.time;
 }
-
-//==================================================================================
 
 #define MISSILE_PRESTEP_TIME 50 // from g_missile.h
 #define TRAPPER_ACCURACY 10 // lower is better
@@ -1904,12 +1886,6 @@ void ATrapper_Think( gentity_t *self )
 		}
 	}
 }
-
-//==================================================================================
-//
-// HUMAN BUILDABLES
-//
-//==================================================================================
 
 /*
 ================
@@ -2406,7 +2382,7 @@ void HGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, i
 	G_SetBuildableAnim( self, self->powered ? BANIM_DESTROY1 : BANIM_DESTROY_UNPOWERED, qtrue );
 	G_SetIdleBuildableAnim( self, BANIM_DESTROYED );
 
-	self->die = nullDieFunction;
+	self->die = NullDieFunction;
 	self->killedBy = attacker - g_entities;
 	//self->powered = qfalse;
 	self->s.eFlags &= ~EF_FIRING; // prevent any firing effects
@@ -2674,8 +2650,6 @@ void HArmoury_Think( gentity_t *self )
 	HGeneric_Think( self );
 }
 
-//==================================================================================
-
 /*
 ================
 HDCC_Think
@@ -2687,8 +2661,6 @@ void HDCC_Think( gentity_t *self )
 {
 	HGeneric_Think( self );
 }
-
-//==================================================================================
 
 /*
 ================
@@ -3418,8 +3390,6 @@ void HTeslaGen_Think( gentity_t *self )
 	}
 }
 
-//==================================================================================
-
 /*
 ================
 HDrill_Think
@@ -3892,11 +3862,6 @@ void G_ClearDeconMarks( void )
 	}
 }
 
-/*
-===============
-G_Deconstruct
-===============
-*/
 void G_Deconstruct( gentity_t *self, gentity_t *deconner, meansOfDeath_t deconType )
 {
 	int   refund;
@@ -4913,11 +4878,6 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 	return built;
 }
 
-/*
-=================
-G_BuildIfValid
-=================
-*/
 qboolean G_BuildIfValid( gentity_t *ent, buildable_t buildable )
 {
 	float  dist;
@@ -5093,11 +5053,6 @@ void G_SpawnBuildable( gentity_t *ent, buildable_t buildable )
 	ent->think = SpawnBuildableThink;
 }
 
-/*
-============
-G_LayoutSave
-============
-*/
 void G_LayoutSave( const char *name )
 {
 	char         map[ MAX_QPATH ];
@@ -5157,11 +5112,6 @@ void G_LayoutSave( const char *name )
 	trap_FS_FCloseFile( f );
 }
 
-/*
-============
-G_LayoutList
-============
-*/
 int G_LayoutList( const char *map, char *list, int len )
 {
 	// up to 128 single character layout names could fit in layouts
@@ -5322,11 +5272,6 @@ void G_LayoutSelect( void )
 	trap_Cvar_Set( "layout", level.layout );
 }
 
-/*
-============
-G_LayoutBuildItem
-============
-*/
 static void LayoutBuildItem( buildable_t buildable, vec3_t origin,
                              vec3_t angles, vec3_t origin2, vec3_t angles2 )
 {
@@ -5424,11 +5369,6 @@ void G_LayoutLoad( void )
 	BG_Free( layoutHead );
 }
 
-/*
-============
-G_BaseSelfDestruct
-============
-*/
 void G_BaseSelfDestruct( team_t team )
 {
 	int       i;
@@ -5511,11 +5451,6 @@ void G_Armageddon( float strength )
 	}
 }
 
-/*
-============
-build log
-============
-*/
 buildLog_t *G_BuildLogNew( gentity_t *actor, buildFate_t fate )
 {
 	buildLog_t *log = &level.buildLog[ level.buildId++ % MAX_BUILDLOG ];
