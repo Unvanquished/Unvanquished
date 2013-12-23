@@ -2545,22 +2545,9 @@ void HRepeater_Think( gentity_t *self )
 void HReactor_Think( gentity_t *self )
 {
 	gentity_t *ent, *trail;
-	float     zapRange;
-	int       zapDamage;
 	qboolean  fire = qfalse;
 
-	if ( self->dcc )
-	{
-		self->nextthink = level.time + REACTOR_ATTACK_DCC_REPEAT;
-		zapRange        = REACTOR_ATTACK_DCC_RANGE;
-		zapDamage       = REACTOR_ATTACK_DCC_DAMAGE;
-	}
-	else
-	{
-		self->nextthink = level.time + REACTOR_ATTACK_REPEAT;
-		zapRange        = REACTOR_ATTACK_RANGE;
-		zapDamage       = REACTOR_ATTACK_DAMAGE;
-	}
+	self->nextthink = level.time + REACTOR_ATTACK_REPEAT;
 
 	if ( !self->spawned || self->health <= 0 )
 	{
@@ -2568,7 +2555,7 @@ void HReactor_Think( gentity_t *self )
 	}
 
 	// create a tesla trail for every target
-	for ( ent = NULL; ( ent = G_IterateEntitiesWithinRadius( ent, self->s.pos.trBase, zapRange ) ); )
+	for ( ent = NULL; ( ent = G_IterateEntitiesWithinRadius( ent, self->s.pos.trBase, REACTOR_ATTACK_RANGE ) ); )
 	{
 		if ( !ent->client ||
 			 ent->client->pers.team != TEAM_ALIENS ||
@@ -2590,8 +2577,8 @@ void HReactor_Think( gentity_t *self )
 	{
 		self->timestamp = level.time;
 
-		G_SelectiveRadiusDamage( self->s.pos.trBase, self, zapDamage, zapRange, self,
-								 MOD_REACTOR, TEAM_HUMANS );
+		G_SelectiveRadiusDamage( self->s.pos.trBase, self, REACTOR_ATTACK_DAMAGE,
+		                         REACTOR_ATTACK_RANGE, self, MOD_REACTOR, TEAM_HUMANS );
 	}
 
 	G_WarnPrimaryUnderAttack( self );

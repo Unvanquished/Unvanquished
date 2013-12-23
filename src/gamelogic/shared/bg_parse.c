@@ -152,9 +152,6 @@ float REACTOR_BASESIZE;
 float REACTOR_ATTACK_RANGE;
 int   REACTOR_ATTACK_REPEAT;
 int   REACTOR_ATTACK_DAMAGE;
-float REACTOR_ATTACK_DCC_RANGE;
-int   REACTOR_ATTACK_DCC_REPEAT;
-int   REACTOR_ATTACK_DCC_DAMAGE;
 
 float REPEATER_BASESIZE;
 
@@ -246,11 +243,8 @@ static configVar_t bg_configVars[] =
 
 	{"b_reactor_powerRadius", FLOAT, qfalse, &REACTOR_BASESIZE},
 	{"b_reactor_zapAttackDamage", INTEGER, qfalse, &REACTOR_ATTACK_DAMAGE},
-	{"b_reactor_zapAttackDamageDCC", INTEGER, qfalse, &REACTOR_ATTACK_DCC_DAMAGE},
 	{"b_reactor_zapAttackRange", FLOAT, qfalse, &REACTOR_ATTACK_RANGE},
-	{"b_reactor_zapAttackRangeDCC", FLOAT, qfalse, &REACTOR_ATTACK_DCC_RANGE},
 	{"b_reactor_zapAttackRepeat", INTEGER, qfalse, &REACTOR_ATTACK_REPEAT},
-	{"b_reactor_zapAttackRepeatDCC", INTEGER, qfalse, &REACTOR_ATTACK_DCC_REPEAT},
 
 	{"b_repeater_powerRadius", FLOAT, qfalse, &REPEATER_BASESIZE},
 
