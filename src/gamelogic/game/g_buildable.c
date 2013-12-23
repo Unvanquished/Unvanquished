@@ -620,37 +620,22 @@ static qboolean IsCreepHere( vec3_t origin )
  */
 static void AGeneric_CreepSlow( gentity_t *self )
 {
-	int         entityList[ MAX_GENTITIES ];
-	vec3_t      range;
-	vec3_t      mins, maxs;
-	int         i, num;
-	gentity_t   *enemy;
-	buildable_t buildable = (buildable_t) self->s.modelindex;
-	float       creepSize = ( float ) BG_Buildable( buildable )->creepSize;
+	buildable_t buildable = ( buildable_t )self->s.modelindex;
+	float       creepSize = ( float )BG_Buildable( buildable )->creepSize;
+	gentity_t   *ent;
 
-	VectorSet( range, creepSize, creepSize, creepSize );
-
-	VectorAdd( self->s.origin, range, maxs );
-	VectorSubtract( self->s.origin, range, mins );
-
-	//find humans
-	num = trap_EntitiesInBox( mins, maxs, entityList, MAX_GENTITIES );
-
-	for ( i = 0; i < num; i++ )
+	for ( ent = NULL; ( ent = G_IterateEntitiesWithinRadius( ent, self->s.origin, creepSize ) ); )
 	{
-		enemy = &g_entities[ entityList[ i ] ];
-
-		if ( enemy->flags & FL_NOTARGET )
+		if (    !ent->client
+		     || ent->client->pers.team != TEAM_HUMANS
+		     || ent->client->ps.groundEntityNum == ENTITYNUM_NONE
+		     || ent->flags & FL_NOTARGET )
 		{
 			continue;
 		}
 
-		if ( enemy->client && enemy->client->pers.team == TEAM_HUMANS &&
-		     enemy->client->ps.groundEntityNum != ENTITYNUM_NONE )
-		{
-			enemy->client->ps.stats[ STAT_STATE ] |= SS_CREEPSLOWED;
-			enemy->client->lastCreepSlowTime = level.time;
-		}
+		ent->client->ps.stats[ STAT_STATE ] |= SS_CREEPSLOWED;
+		ent->client->lastCreepSlowTime = level.time;
 	}
 }
 
@@ -1426,52 +1411,45 @@ Think function for Alien Acid Tube
 */
 void AAcidTube_Think( gentity_t *self )
 {
-	int       entityList[ MAX_GENTITIES ];
-	vec3_t    range = { ACIDTUBE_RANGE, ACIDTUBE_RANGE, ACIDTUBE_RANGE };
-	vec3_t    mins, maxs;
-	int       i, num;
-	gentity_t *enemy;
+	gentity_t *ent;
 
 	AGeneric_Think( self );
 
-	VectorAdd( self->s.origin, range, maxs );
-	VectorSubtract( self->s.origin, range, mins );
-
-	// attack nearby humans
-	if ( self->spawned && self->health > 0 && self->powered )
+	if ( !self->spawned || self->health <= 0 )
 	{
-		num = trap_EntitiesInBox( mins, maxs, entityList, MAX_GENTITIES );
+		return;
+	}
 
-		for ( i = 0; i < num; i++ )
+	// check for close humans
+	for ( ent = NULL; ( ent = G_IterateEntitiesWithinRadius( ent, self->s.origin, ACIDTUBE_RANGE ) ); )
+	{
+		if (    ( ent->flags & FL_NOTARGET )
+		     || !ent->client
+		     || ent->client->pers.team != TEAM_HUMANS )
 		{
-			enemy = &g_entities[ entityList[ i ] ];
-
-			// fast checks first: not a target, or not human
-			if ( ( enemy->flags & FL_NOTARGET ) || !enemy->client || enemy->client->pers.team != TEAM_HUMANS )
-			{
-				continue;
-			}
-
-			if ( !G_IsVisible( self, enemy, CONTENTS_SOLID ) )
-			{
-				continue;
-			}
-
-			{
-				// start the attack animation
-				if ( level.time >= self->timestamp + ACIDTUBE_REPEAT_ANIM )
-				{
-					self->timestamp = level.time;
-					G_SetBuildableAnim( self, BANIM_ATTACK1, qfalse );
-					G_AddEvent( self, EV_ALIEN_ACIDTUBE, DirToByte( self->s.origin2 ) );
-				}
-
-				G_SelectiveRadiusDamage( self->s.pos.trBase, self, ACIDTUBE_DAMAGE,
-				                         ACIDTUBE_RANGE, self, MOD_ATUBE, TEAM_ALIENS );
-				self->nextthink = level.time + ACIDTUBE_REPEAT;
-				return;
-			}
+			continue;
 		}
+
+		// this is potentially expensive, so check this last
+		if ( !G_IsVisible( self, ent, CONTENTS_SOLID ) )
+		{
+			continue;
+		}
+
+		if ( level.time >= self->timestamp + ACIDTUBE_REPEAT_ANIM )
+		{
+			self->timestamp = level.time;
+			G_SetBuildableAnim( self, BANIM_ATTACK1, qfalse );
+			G_AddEvent( self, EV_ALIEN_ACIDTUBE, DirToByte( self->s.origin2 ) );
+		}
+
+		// TODO: Make this independent of think timer
+		G_SelectiveRadiusDamage( self->s.pos.trBase, self, ACIDTUBE_DAMAGE,
+								 ACIDTUBE_RANGE, self, MOD_ATUBE, TEAM_ALIENS );
+
+		self->nextthink = level.time + ACIDTUBE_REPEAT;
+
+		return;
 	}
 }
 
@@ -2566,89 +2544,58 @@ void HRepeater_Think( gentity_t *self )
 
 void HReactor_Think( gentity_t *self )
 {
-	int       entityList[ MAX_GENTITIES ];
-	vec3_t    range, dccrange;
-	vec3_t    mins, maxs;
-	int       i, num;
-	gentity_t *enemy, *tent;
-
-    VectorSet( range, REACTOR_ATTACK_RANGE, REACTOR_ATTACK_RANGE, REACTOR_ATTACK_RANGE );
-    VectorSet( dccrange, REACTOR_ATTACK_DCC_RANGE, REACTOR_ATTACK_DCC_RANGE, REACTOR_ATTACK_DCC_RANGE );
-
-	if ( self->dcc )
-	{
-		VectorAdd( self->s.origin, dccrange, maxs );
-		VectorSubtract( self->s.origin, dccrange, mins );
-	}
-	else
-	{
-		VectorAdd( self->s.origin, range, maxs );
-		VectorSubtract( self->s.origin, range, mins );
-	}
-
-	if ( self->spawned && ( self->health > 0 ) )
-	{
-		qboolean fired = qfalse;
-
-		// Creates a tesla trail for every target
-		num = trap_EntitiesInBox( mins, maxs, entityList, MAX_GENTITIES );
-
-		for ( i = 0; i < num; i++ )
-		{
-			enemy = &g_entities[ entityList[ i ] ];
-
-			if ( !enemy->client ||
-			     enemy->client->pers.team != TEAM_ALIENS )
-			{
-				continue;
-			}
-
-			if ( enemy->flags & FL_NOTARGET )
-			{
-				continue;
-			}
-
-			tent = G_NewTempEntity( enemy->s.pos.trBase, EV_TESLATRAIL );
-			tent->s.generic1 = self->s.number; //src
-			tent->s.clientNum = enemy->s.number; //dest
-			VectorCopy( self->s.pos.trBase, tent->s.origin2 );
-			fired = qtrue;
-		}
-
-		// Actual damage is done by radius
-		if ( fired )
-		{
-			self->timestamp = level.time;
-
-			if ( self->dcc )
-			{
-				G_SelectiveRadiusDamage( self->s.pos.trBase, self,
-				                         REACTOR_ATTACK_DCC_DAMAGE,
-				                         REACTOR_ATTACK_DCC_RANGE, self,
-				                         MOD_REACTOR, TEAM_HUMANS );
-			}
-			else
-			{
-				G_SelectiveRadiusDamage( self->s.pos.trBase, self,
-				                         REACTOR_ATTACK_DAMAGE,
-				                         REACTOR_ATTACK_RANGE, self,
-				                         MOD_REACTOR, TEAM_HUMANS );
-			}
-		}
-
-		G_WarnPrimaryUnderAttack( self );
-	}
+	gentity_t *ent, *trail;
+	float     zapRange;
+	int       zapDamage;
+	qboolean  fire = qfalse;
 
 	if ( self->dcc )
 	{
 		self->nextthink = level.time + REACTOR_ATTACK_DCC_REPEAT;
+		zapRange        = REACTOR_ATTACK_DCC_RANGE;
+		zapDamage       = REACTOR_ATTACK_DCC_DAMAGE;
 	}
 	else
 	{
 		self->nextthink = level.time + REACTOR_ATTACK_REPEAT;
+		zapRange        = REACTOR_ATTACK_RANGE;
+		zapDamage       = REACTOR_ATTACK_DAMAGE;
 	}
-}
 
+	if ( !self->spawned || self->health <= 0 )
+	{
+		return;
+	}
+
+	// create a tesla trail for every target
+	for ( ent = NULL; ( ent = G_IterateEntitiesWithinRadius( ent, self->s.pos.trBase, zapRange ) ); )
+	{
+		if ( !ent->client ||
+			 ent->client->pers.team != TEAM_ALIENS ||
+			 ent->flags & FL_NOTARGET )
+		{
+			continue;
+		}
+
+		trail = G_NewTempEntity( ent->s.pos.trBase, EV_TESLATRAIL );
+		trail->s.generic1 = self->s.number; // source
+		trail->s.clientNum = ent->s.number; // destination
+		VectorCopy( self->s.pos.trBase, trail->s.origin2 );
+
+		fire = qtrue;
+	}
+
+	// actual damage is done by radius
+	if ( fire )
+	{
+		self->timestamp = level.time;
+
+		G_SelectiveRadiusDamage( self->s.pos.trBase, self, zapDamage, zapRange, self,
+								 MOD_REACTOR, TEAM_HUMANS );
+	}
+
+	G_WarnPrimaryUnderAttack( self );
+}
 
 void HReactor_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
 {
@@ -3336,60 +3283,55 @@ void HTurret_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 
 void HTeslaGen_Think( gentity_t *self )
 {
+	gentity_t *ent;
+
 	HGeneric_Think( self );
 
 	IdlePowerState( self );
 
-	//if not powered don't do anything and check again for power next think
+	if ( !self->spawned )
+	{
+		return;
+	}
+
 	if ( !self->powered )
 	{
 		self->s.eFlags &= ~EF_FIRING;
 		self->nextthink = level.time + POWER_REFRESH_TIME;
+
 		return;
 	}
 
-	if ( self->spawned && self->timestamp < level.time )
+	if ( self->timestamp < level.time )
 	{
-		vec3_t origin, range, mins, maxs;
-		int    entityList[ MAX_GENTITIES ], i, num;
+		vec3_t muzzle;
 
-		// Communicates firing state to client
+		// Stop firing effect for now
 		self->s.eFlags &= ~EF_FIRING;
 
 		// Move the muzzle from the entity origin up a bit to fire over turrets
-		VectorMA( self->s.origin, self->r.maxs[ 2 ], self->s.origin2, origin );
-
-		VectorSet( range, TESLAGEN_RANGE, TESLAGEN_RANGE, TESLAGEN_RANGE );
-		VectorAdd( origin, range, maxs );
-		VectorSubtract( origin, range, mins );
+		VectorMA( self->s.origin, self->r.maxs[ 2 ], self->s.origin2, muzzle );
 
 		// Attack nearby Aliens
-		num = trap_EntitiesInBox( mins, maxs, entityList, MAX_GENTITIES );
-
-		for ( i = 0; i < num; i++ )
+		for ( ent = NULL; ( ent = G_IterateEntitiesWithinRadius( ent, muzzle, TESLAGEN_RANGE ) ); )
 		{
-			self->target = &g_entities[ entityList[ i ] ];
-
-			if ( self->target->flags & FL_NOTARGET )
+			// TODO: Replace this with IsAliveEnemy helper
+			if ( !ent->client ||
+			     ent->client->pers.team != TEAM_ALIENS ||
+			     !ent->health > 0 ||
+			     ent->flags & FL_NOTARGET )
 			{
 				continue;
 			}
 
-			if ( self->target->client && self->target->health > 0 &&
-			     self->target->client->pers.team == TEAM_ALIENS &&
-			     Distance( origin, self->target->s.pos.trBase ) <= TESLAGEN_RANGE )
-			{
-				G_FireWeapon( self );
-			}
+			self->target = ent;
+			G_FireWeapon( self );
+			self->target = NULL;
 		}
-
-		self->target = NULL;
 
 		if ( self->s.eFlags & EF_FIRING )
 		{
 			G_AddEvent( self, EV_FIRE_WEAPON, 0 );
-
-			//doesn't really need an anim
 			//G_SetBuildableAnim( self, BANIM_ATTACK1, qfalse );
 
 			self->timestamp = level.time + TESLAGEN_REPEAT;
