@@ -3484,15 +3484,18 @@ void G_BuildableThink( gentity_t *ent, int msec )
 		}
 		else if ( ent->health > 0 && ent->health < maxHealth )
 		{
-			if ( ent->buildableTeam == TEAM_ALIENS && regenRate &&
-			     ( ent->lastDamageTime + ALIEN_REGEN_DAMAGE_TIME ) < level.time )
+			int regenWait;
+
+			switch ( ent->buildableTeam )
+			{
+				case TEAM_ALIENS: regenWait = ALIEN_BUILDABLE_REGEN_WAIT; break;
+				case TEAM_HUMANS: regenWait = HUMAN_BUILDABLE_REGEN_WAIT; break;
+				default:          regenWait = 0;                          break;
+			}
+
+			if ( regenRate && ( ent->lastDamageTime + regenWait ) < level.time )
 			{
 				G_Heal( ent, regenRate );
-			}
-			else if ( ent->buildableTeam == TEAM_HUMANS && ent->dcc &&
-			          ( ent->lastDamageTime + HUMAN_REGEN_DAMAGE_TIME ) < level.time )
-			{
-				G_Heal( ent, DC_HEALRATE * ent->dcc );
 			}
 		}
 	}

@@ -177,8 +177,10 @@ extern int   LEVEL4_CRUSH_REPEAT;
 
 #define ALIEN_SPAWN_REPEAT_TIME  10000
 
-#define ALIEN_REGEN_DAMAGE_TIME  2000 //msec since damage that regen starts again
-#define ALIEN_REGEN_NOCREEP_MOD  ( 1.0f / 3.0f ) //regen off creep
+#define ALIEN_CLIENT_REGEN_WAIT    2000 // in ms
+#define ALIEN_BUILDABLE_REGEN_WAIT 2000 // in ms
+
+#define ALIEN_REGEN_NOCREEP_MOD  ( 1.0f / 3.0f ) // regen off creep
 
 #define ALIEN_MAX_CREDITS        2000 // CREDITS_PER_EVO converts this to evos for display
 #define ALIEN_TK_SUICIDE_PENALTY 150
@@ -315,7 +317,8 @@ extern int   REACTOR_ATTACK_DCC_DAMAGE;
 #define STAMINA_MEDISTAT_RESTORE      30   // 1/(100 ms). stacks.
 
 #define HUMAN_SPAWN_REPEAT_TIME       10000
-#define HUMAN_REGEN_DAMAGE_TIME       2000 //msec since damage before dcc repairs
+
+#define HUMAN_BUILDABLE_REGEN_WAIT    5000
 
 #define HUMAN_MAX_CREDITS             2000
 #define HUMAN_TK_SUICIDE_PENALTY      150

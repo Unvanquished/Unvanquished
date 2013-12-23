@@ -1197,7 +1197,10 @@ void G_Damage( gentity_t *target, gentity_t *inflictor, gentity_t *attacker,
 	}
 
 	target->lastDamageTime = level.time;
-	target->nextRegenTime  = level.time + ALIEN_REGEN_DAMAGE_TIME;
+
+	// TODO: gentity_t->nextRegenTime only affects alien clients, remove it and use lastDamageTime
+	// Optionally (if needed for some reason), move into client struct and add "Alien" to name
+	target->nextRegenTime = level.time + ALIEN_CLIENT_REGEN_WAIT;
 
 	// handle non-self damage
 	if ( attacker != target )
