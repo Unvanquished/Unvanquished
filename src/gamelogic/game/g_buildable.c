@@ -2396,13 +2396,6 @@ void G_SetHumanBuildablePowerState()
 	nextCalculation = level.time + 500;
 }
 
-/*
-================
-HGeneric_Think
-
-A generic think function for human buildables.
-================
-*/
 void HGeneric_Think( gentity_t *self )
 {
 	self->nextthink = level.time + BG_Buildable( self->s.modelindex )->nextthink;
@@ -2453,13 +2446,6 @@ void HGeneric_Disappear( gentity_t *self )
 	G_FreeEntity( self );
 }
 
-/*
-================
-HGeneric_Die
-
-Called when a human buildable dies.
-================
-*/
 void HGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
 {
 	G_SetBuildableAnim( self, self->powered ? BANIM_DESTROY1 : BANIM_DESTROY_UNPOWERED, qtrue );
@@ -2526,13 +2512,6 @@ void HGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, i
 	G_LogDestruction( self, attacker, mod );
 }
 
-/*
-================
-HSpawn_Think
-
-Think for human spawn
-================
-*/
 void HSpawn_Think( gentity_t *self )
 {
 	gentity_t *ent;
@@ -2578,13 +2557,6 @@ void HSpawn_Think( gentity_t *self )
 	}
 }
 
-/*
-================
-HRepeater_Think
-
-Think for human power repeater
-================
-*/
 void HRepeater_Think( gentity_t *self )
 {
 	HGeneric_Think( self );
@@ -2592,13 +2564,6 @@ void HRepeater_Think( gentity_t *self )
 	IdlePowerState( self );
 }
 
-/*
-================
-HReactor_Think
-
-Think function for Human Reactor
-================
-*/
 void HReactor_Think( gentity_t *self )
 {
 	int       entityList[ MAX_GENTITIES ];
@@ -2684,13 +2649,7 @@ void HReactor_Think( gentity_t *self )
 	}
 }
 
-/*
-================
-HReactorDie
 
-Called when the reactor is destroyed
-================
-*/
 void HReactor_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
 {
 	HGeneric_Die( self, inflictor, attacker, mod );
@@ -2721,41 +2680,20 @@ void HArmoury_Use( gentity_t *self, gentity_t *other, gentity_t *activator )
 	G_TriggerMenu( activator->client->ps.clientNum, MN_H_ARMOURY );
 }
 
-/*
-================
-HArmoury_Think
-
-Think for armoury
-================
-*/
 void HArmoury_Think( gentity_t *self )
 {
 	HGeneric_Think( self );
 }
 
-/*
-================
-HDCC_Think
-
-Think for dcc
-================
-*/
 void HDCC_Think( gentity_t *self )
 {
 	HGeneric_Think( self );
 }
 
-/*
-================
-HMedistat_Die
-
-Die function for Human Medistation
-================
-*/
 void HMedistat_Die( gentity_t *self, gentity_t *inflictor,
                     gentity_t *attacker, int mod )
 {
-	//clear target's healing flag
+	// clear target's healing flag
 	if ( self->target && self->target->client )
 	{
 		self->target->client->ps.stats[ STAT_STATE ] &= ~SS_HEALING_ACTIVE;
@@ -2764,13 +2702,6 @@ void HMedistat_Die( gentity_t *self, gentity_t *inflictor,
 	HGeneric_Die( self, inflictor, attacker, mod );
 }
 
-/*
-================
-HMedistat_Think
-
-think function for Human Medistation
-================
-*/
 void HMedistat_Think( gentity_t *self )
 {
 	int       entityList[ MAX_GENTITIES ];
@@ -3403,13 +3334,6 @@ void HTurret_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 	HGeneric_Die( self, inflictor, attacker, mod );
 }
 
-/*
-================
-HTeslaGen_Think
-
-Think function for Tesla Generator
-================
-*/
 void HTeslaGen_Think( gentity_t *self )
 {
 	HGeneric_Think( self );
@@ -3473,13 +3397,6 @@ void HTeslaGen_Think( gentity_t *self )
 	}
 }
 
-/*
-================
-HDrill_Think
-
-Think function for the Human Drill.
-================
-*/
 void HDrill_Think( gentity_t *self )
 {
 	qboolean active, lastThinkActive;
@@ -3507,13 +3424,6 @@ void HDrill_Think( gentity_t *self )
 	IdlePowerState( self );
 }
 
-/*
-================
-HDrill_Die
-
-Called when a Human Drill dies
-================
-*/
 void HDrill_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
 {
 	HGeneric_Die( self, inflictor, attacker, mod );
