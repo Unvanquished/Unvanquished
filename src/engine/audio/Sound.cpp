@@ -378,7 +378,12 @@ namespace Audio {
             return;
         }
 
-        GetSource().QueueBuffer(std::move(buffer));
+        AL::Source& source = GetSource();
+        source.QueueBuffer(std::move(buffer));
+
+        if (source.IsStopped()) {
+            source.Play();
+        }
     }
 
     void StreamingSound::SetGain(float gain) {

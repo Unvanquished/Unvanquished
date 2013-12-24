@@ -137,6 +137,7 @@ namespace Audio {
         }
 
         StopMusic();
+        StopCapture();
 
         // Shuts down the rest of the system
         // Shutdown sounds before emitters because they are using a effects defined in emitters
@@ -151,6 +152,8 @@ namespace Audio {
 
         context = nullptr;
         device = nullptr;
+
+        initialized = false;
     }
 
     void Update() {
@@ -233,6 +236,10 @@ namespace Audio {
     }
 
     void StartMusic(Str::StringRef leadingSound, Str::StringRef loopSound) {
+        if (not initialized) {
+            return;
+        }
+
         StopMusic();
         music = std::make_shared<MusicSound>(leadingSound, loopSound);
         AddSound(GetLocalEmitter(), music, 1);
@@ -257,7 +264,7 @@ namespace Audio {
 
         streams[streamNum]->SetGain(volume);
 
-        snd_info_t dataInfo = {rate, width, 1, numSamples, (rate * width * numSamples), 0};
+        snd_info_t dataInfo = {rate, width, 1, numSamples, (width * numSamples), 0};
         AL::Buffer buffer;
 
         int feedError = buffer.Feed(dataInfo, data);
@@ -267,7 +274,7 @@ namespace Audio {
         }
     }
 
-    void UpdateListener(int entityNum, vec3_t orientation[3]) {
+    void UpdateListener(int entityNum, const vec3_t orientation[3]) {
         UpdateListenerEntity(entityNum, orientation);
     }
 

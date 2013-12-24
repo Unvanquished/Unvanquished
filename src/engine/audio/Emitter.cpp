@@ -149,7 +149,7 @@ namespace Audio {
         UseDoppler(useDoppler.Get());
     }
 
-    void UpdateListenerEntity(int entityNum, vec3_t orientation[3]) {
+    void UpdateListenerEntity(int entityNum, const vec3_t orientation[3]) {
         listenerEntity = entityNum;
 
         AL::SetListenerPosition(entities[listenerEntity].position);

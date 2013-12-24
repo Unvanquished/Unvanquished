@@ -49,7 +49,7 @@ namespace Audio {
 
     void StreamData(int streamNum, const void* data, int numSamples, int rate, int width, float volume, int entityNum);
 
-    void UpdateListener(int entityNum, vec3_t orientation[3]);
+    void UpdateListener(int entityNum, const vec3_t orientation[3]);
     void UpdateEntityPosition(int entityNum, const vec3_t position);
     void UpdateEntityVelocity(int entityNum, const vec3_t velocity);
     void UpdateEntityOcclusion(int entityNum, float ratio);
