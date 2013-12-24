@@ -153,6 +153,7 @@ namespace AL {
     void SetListenerVelocity(const vec3_t velocity);
     void SetListenerOrientation(const vec3_t orientation[3]);
 
+    void SetInverseDistanceModel();
     void SetSpeedOfSound(float speed);
     void SetDopplerExaggerationFactor(float factor);
 

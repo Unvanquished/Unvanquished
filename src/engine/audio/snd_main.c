@@ -157,7 +157,9 @@ S_Respatialize
 void S_Respatialize( int entityNum, const vec3_t origin,
                      vec3_t axis[3], int inwater )
 {
-    Audio::UpdateEntityPosition(entityNum, origin);
+    if (entityNum >= 0 and entityNum < MAX_GENTITIES) {
+        Audio::UpdateEntityPosition(entityNum, origin);
+    }
 	Audio::UpdateListener(entityNum, axis);
 }
 

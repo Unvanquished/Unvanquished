@@ -421,6 +421,11 @@ namespace AL {
 
     // OpenAL state functions
 
+    void SetInverseDistanceModel() {
+        alDistanceModel(AL_INVERSE_DISTANCE_CLAMPED);
+        CHECK_AL_ERROR();
+    }
+
     void SetSpeedOfSound(float speed) {
         alSpeedOfSound(speed);
         CHECK_AL_ERROR();

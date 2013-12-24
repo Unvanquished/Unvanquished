@@ -75,6 +75,7 @@ namespace Audio {
         globalEffect = new AL::EffectSlot();
         globalEffect->SetEffect(effectParams);
 
+        AL::SetInverseDistanceModel();
         AL::SetSpeedOfSound(SPEED_OF_SOUND);
         UseDoppler(useDoppler.Get());
 
