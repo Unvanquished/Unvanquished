@@ -445,4 +445,16 @@ namespace Audio {
     };
     static ListSamplesCmd listSamplesRegistration;
 
+    class StopSoundsCmd : public Cmd::StaticCmd {
+        public:
+            StopSoundsCmd(): StaticCmd("stopSounds", Cmd::AUDIO, N_("Stops the music and the looping sounds")) {
+            }
+
+            virtual void Run(const Cmd::Args&) const OVERRIDE {
+                ClearAllLoopingSounds();
+                StopMusic();
+            }
+    };
+    static StopSoundsCmd stopSoundsRegistration;
+
 }
