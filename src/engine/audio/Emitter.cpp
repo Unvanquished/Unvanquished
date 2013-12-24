@@ -226,7 +226,7 @@ namespace Audio {
     }
 
     void Emitter::SetupSound(Sound& sound) {
-        sound.GetSource().SetReferenceDistance(60.0f);
+        sound.GetSource().SetReferenceDistance(120.0f);
         InternalSetupSound(sound);
         UpdateSound(sound);
     }

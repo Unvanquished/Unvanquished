@@ -24,7 +24,6 @@ along with daemon source code.  if not, see <http://www.gnu.org/licenses/>.
 
 #include "AudioPrivate.h"
 
-//TODO check all inputs for validity
 namespace Audio {
 
     Log::Logger audioLogs("audio");
@@ -61,6 +60,14 @@ namespace Audio {
 
     // Like in the previous sound system, we only have a single music
     std::shared_ptr<MusicSound> music;
+
+    bool IsValidEntity(int entityNum) {
+        return entityNum >= 0 and entityNum < MAX_GENTITIES;
+    }
+
+    bool IsValidVector(const vec3_t v) {
+        return not std::isnan(v[0]) and not std::isnan(v[1]) and not std::isnan(v[2]);
+    }
 
     bool Init() {
         if (initialized) {
@@ -159,6 +166,10 @@ namespace Audio {
     }
 
     void Update() {
+        if (not initialized) {
+            return;
+        }
+
         for (int i = 0; i < MAX_GENTITIES; i++) {
             auto& loop = entityLoops[i];
             if (loop.sound and not loop.addedThisFrame) {
@@ -204,28 +215,44 @@ namespace Audio {
     }
 
     sfxHandle_t RegisterSFX(Str::StringRef filename) {
+        // TODO: what should we do if we aren't initialized?
         return RegisterSample(filename)->GetHandle();
     }
 
     void StartSound(int entityNum, const vec3_t origin, sfxHandle_t sfx) {
+        if (not initialized or not Sample::IsValidHandle(sfx)) {
+            return;
+        }
+
         std::shared_ptr<Emitter> emitter;
 
         // Apparently no origin means it is attached to an entity
-        if (not origin) {
+        if (not origin and IsValidEntity(entityNum)) {
             emitter = GetEmitterForEntity(entityNum);
 
-        } else {
+        } else if(origin and IsValidVector(origin)){
             emitter = GetEmitterForPosition(origin);
+
+        } else {
+            return;
         }
 
         AddSound(emitter, std::make_shared<OneShotSound>(Sample::FromHandle(sfx)), 1);
     }
 
     void StartLocalSound(sfxHandle_t sfx) {
+        if (not initialized or not Sample::IsValidHandle(sfx)) {
+            return;
+        }
+
         AddSound(GetLocalEmitter(), std::make_shared<OneShotSound>(Sample::FromHandle(sfx)), 1);
     }
 
     void AddEntityLoopingSound(int entityNum, sfxHandle_t sfx) {
+        if (not initialized or not Sample::IsValidHandle(sfx) or not IsValidEntity(entityNum)) {
+            return;
+        }
+
         entityLoop_t& loop = entityLoops[entityNum];
 
         // If we have no sound we can play the loop directly
@@ -241,12 +268,20 @@ namespace Audio {
     }
 
     void ClearAllLoopingSounds() {
+        if (not initialized) {
+            return;
+        }
+
         for (int i = 0; i < MAX_GENTITIES; i++) {
             ClearLoopingSoundsForEntity(i);
         }
     }
 
     void ClearLoopingSoundsForEntity(int entityNum) {
+        if (not initialized or not IsValidEntity(entityNum)) {
+            return;
+        }
+
         if (entityLoops[entityNum].sound) {
             entityLoops[entityNum].addedThisFrame = false;
         }
@@ -263,6 +298,10 @@ namespace Audio {
     }
 
     void StopMusic() {
+        if (not initialized) {
+            return;
+        }
+
         if (music) {
             music->Stop();
         }
@@ -270,9 +309,13 @@ namespace Audio {
     }
 
     void StreamData(int streamNum, const void* data, int numSamples, int rate, int width, float volume, int entityNum) {
+        if (not initialized or (streamNum < 0 or streamNum >= N_STREAMS)) {
+            return;
+        }
+
         if (not streams[streamNum]) {
             streams[streamNum] = std::make_shared<StreamingSound>();
-            if (entityNum < 0 or entityNum > MAX_GENTITIES) {
+            if (IsValidEntity(entityNum)) {
                 AddSound(GetLocalEmitter(), streams[streamNum], 1);
             } else {
                 AddSound(GetEmitterForEntity(entityNum), streams[streamNum], 1);
@@ -292,25 +335,43 @@ namespace Audio {
     }
 
     void UpdateListener(int entityNum, const vec3_t orientation[3]) {
+        if (not initialized) {
+            return;
+        }
+
         UpdateListenerEntity(entityNum, orientation);
     }
 
     void UpdateEntityPosition(int entityNum, const vec3_t position) {
+        if (not initialized) {
+            return;
+        }
+
         UpdateRegisteredEntityPosition(entityNum, position);
     }
 
     void UpdateEntityVelocity(int entityNum, const vec3_t velocity) {
+        if (not initialized) {
+            return;
+        }
+
         UpdateRegisteredEntityVelocity(entityNum, velocity);
     }
 
     void UpdateEntityOcclusion(int entityNum, float ratio) {
+        if (not initialized) {
+            return;
+        }
+
         UpdateRegisteredEntityOcclusion(entityNum, ratio);
     }
+
+    // Capture functions
 
     static AL::CaptureDevice* capture = nullptr;
 
     void StartCapture(int rate) {
-        if (capture) {
+        if (capture or not initialized) {
             return;
         }
 
@@ -319,14 +380,26 @@ namespace Audio {
     }
 
     int AvailableCaptureSamples() {
+        if (not capture) {
+            return 0;
+        }
+
         return capture->GetNumCapturedSamples();
     }
 
     void GetCapturedData(int numSamples, void* buffer) {
+        if (not capture) {
+            return;
+        }
+
         capture->Capture(numSamples, buffer);
     }
 
     void StopCapture() {
+        if (not initialized) {
+            return;
+        }
+
         if (capture) {
             capture->Stop();
         }
