@@ -97,7 +97,7 @@ namespace Audio {
         void* data = S_CodecLoad(filename.c_str(), &info);
 
         if (data == nullptr) {
-            Log::Warn("Couldn't load sound %s", filename);
+            audioLogs.Warn("Couldn't load sound %s", filename);
             return errorSample;
         }
 
@@ -108,7 +108,7 @@ namespace Audio {
         sample->GetBuffer().Feed(info, data);
 
         if (info.size == 0) {
-            Log::Warn("info.size = 0 in RegisterSample, what?");
+            audioLogs.Warn("info.size = 0 in RegisterSample, what?");
         }
 
         Hunk_FreeTempMemory(data);
