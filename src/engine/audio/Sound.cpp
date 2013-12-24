@@ -338,6 +338,9 @@ namespace Audio {
         if (lengthRead == 0) {
             S_CodecCloseStream(streamToRead);
             playingLeadingSound = false;
+            // either the stream was the leadin stream and we null it
+            leadingStream = nullptr;
+            // either it is the loop stream and we overwrite it
             loopStream = S_CodecOpenStream(loopStreamName.c_str());
             AppendBuffer(source, std::move(buffer));
             return;
