@@ -249,7 +249,7 @@ extern int   LCANNON_CHARGE_TIME_MIN;
 extern int   LCANNON_CHARGE_TIME_WARN;
 extern int   LCANNON_CHARGE_AMMO;
 
-#define HBUILD_HEALRATE          18
+#define HBUILD_HEALRATE          10
 
 /*
  * HUMAN upgrades
