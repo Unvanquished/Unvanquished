@@ -352,7 +352,7 @@ namespace Cmd {
     static ListCmdsCmd listBaseCmdsRegistration("listBaseCmds", BASE, "lists all the base commands", BASE);
     static ListCmdsCmd listSystemCmdsRegistration("listSystemCmds", BASE | SYSTEM, "lists all the system commands", SYSTEM);
     static ListCmdsCmd listRendererCmdsRegistration("listRendererCmds", BASE | RENDERER, "lists all the renderer commands", RENDERER);
-    static ListCmdsCmd listSoundCmdsRegistration("listSoundCmds", BASE | SOUND, "lists all the sound commands", SOUND);
+    static ListCmdsCmd listAudioCmdsRegistration("listAudioCmds", BASE | AUDIO, "lists all the audio commands", AUDIO);
     static ListCmdsCmd listCGameCmdsRegistration("listCGameCmds", BASE | CGAME, "lists all the client-side game commands", CGAME);
     static ListCmdsCmd listGameCmdsRegistration("listGameCmds", BASE | GAME, "lists all the server-side game commands", GAME);
     static ListCmdsCmd listUICmdsRegistration("listUICmds", BASE | UI, "lists all the UI commands", UI);

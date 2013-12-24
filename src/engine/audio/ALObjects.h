@@ -219,6 +219,7 @@ namespace AL {
 
             operator void*();
 
+            static std::string DefaultDeviceName();
             static std::vector<std::string> ListByName();
 
         private:
@@ -270,6 +271,8 @@ namespace AL {
             CaptureDevice& operator=(const CaptureDevice& other);
             void* alHandle;
     };
+
+    std::string GetSystemInfo(Device* device, CaptureDevice* capture);
 
 }
 }

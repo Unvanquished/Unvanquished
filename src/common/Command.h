@@ -43,7 +43,7 @@ namespace Cmd {
         ALIAS            = BIT(2),
         SYSTEM           = BIT(3),
         RENDERER         = BIT(4),
-        SOUND            = BIT(5),
+        AUDIO            = BIT(5),
         GAME             = BIT(6),
         CGAME            = BIT(7),
         UI               = BIT(8),

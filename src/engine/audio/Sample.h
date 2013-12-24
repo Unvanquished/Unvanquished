@@ -107,6 +107,8 @@ namespace Audio {
     void InitSamples();
     void ShutdownSamples();
 
+	std::vector<std::string> ListSamples();
+
     Sample* RegisterSample(Str::StringRef filename);
 }
 

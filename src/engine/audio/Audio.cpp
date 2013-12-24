@@ -118,6 +118,8 @@ namespace Audio {
         }
         availableInputDevices.Set(inputDeviceList.str());
 
+        audioLogs.Notice(AL::GetSystemInfo(device, nullptr));
+
         initialized = true;
 
         // Initializes the rest of the audio system
@@ -335,7 +337,12 @@ namespace Audio {
     }
 
     void UpdateListener(int entityNum, const vec3_t orientation[3]) {
-        if (not initialized) {
+        if (not initialized or
+            not IsValidEntity(entityNum) or
+            not orientation or
+            not IsValidVector(orientation[0]) or
+            not IsValidVector(orientation[1]) or
+            not IsValidVector(orientation[2])) {
             return;
         }
 
@@ -343,7 +350,7 @@ namespace Audio {
     }
 
     void UpdateEntityPosition(int entityNum, const vec3_t position) {
-        if (not initialized) {
+        if (not initialized or not IsValidEntity(entityNum) or not IsValidVector(position)) {
             return;
         }
 
@@ -351,7 +358,7 @@ namespace Audio {
     }
 
     void UpdateEntityVelocity(int entityNum, const vec3_t velocity) {
-        if (not initialized) {
+        if (not initialized or not IsValidEntity(entityNum) or not IsValidVector(velocity)) {
             return;
         }
 
@@ -359,7 +366,7 @@ namespace Audio {
     }
 
     void UpdateEntityOcclusion(int entityNum, float ratio) {
-        if (not initialized) {
+        if (not initialized or not IsValidEntity(entityNum) or std::isnan(ratio)) {
             return;
         }
 
@@ -406,4 +413,36 @@ namespace Audio {
         delete capture;
         capture = nullptr;
     }
+
+    // Console commands
+
+    class ALInfoCmd : public Cmd::StaticCmd {
+        public:
+            ALInfoCmd(): StaticCmd("printALInfo", Cmd::AUDIO, N_("Prints information about OpenAL")) {
+            }
+
+            virtual void Run(const Cmd::Args&) const OVERRIDE {
+                Print(AL::GetSystemInfo(device, capture));
+            }
+    };
+    static ALInfoCmd alInfoRegistration;
+
+    class ListSamplesCmd : public Cmd::StaticCmd {
+        public:
+            ListSamplesCmd(): StaticCmd("listAudioSamples", Cmd::AUDIO, N_("Lists all the loaded sound samples")) {
+            }
+
+            virtual void Run(const Cmd::Args&) const OVERRIDE {
+                std::vector<std::string> samples = ListSamples();
+
+                std::sort(samples.begin(), samples.end());
+
+                for (auto& sample: samples) {
+                    Print(sample);
+                }
+                Print("%i samples", samples.size());
+            }
+    };
+    static ListSamplesCmd listSamplesRegistration;
+
 }

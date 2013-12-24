@@ -87,6 +87,20 @@ namespace Audio {
         initialized = false;
     }
 
+	std::vector<std::string> ListSamples() {
+		if (not initialized) {
+			return {};
+		}
+
+		std::vector<std::string> res;
+
+		for (auto& it : samples) {
+			res.push_back(it.first);
+		}
+
+		return res;
+	}
+
     Sample* RegisterSample(Str::StringRef filename) {
         auto it = samples.find(filename);
         if (it != samples.end()) {

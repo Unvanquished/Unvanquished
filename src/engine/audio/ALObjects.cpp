@@ -621,6 +621,10 @@ namespace AL {
         return alHandle;
     }
 
+    std::string Device::DefaultDeviceName() {
+        return alcGetString(NULL, ALC_DEFAULT_DEVICE_SPECIFIER);
+    }
+
     std::vector<std::string> Device::ListByName() {
         const char* list = alcGetString(NULL, ALC_ALL_DEVICES_SPECIFIER);
 
@@ -753,5 +757,40 @@ namespace AL {
     CaptureDevice::CaptureDevice(void* alHandle): alHandle(alHandle) {
     }
 
+    std::string GetSystemInfo(Device* device, CaptureDevice* capture) {
+        std::ostringstream o;
+        {
+            o << "OpenAL System Info:" << std::endl;
+            o << " - Vendor: " << alGetString(AL_VENDOR) << std::endl;
+            o << " - Version: " << alGetString(AL_VERSION) << std::endl;
+            o << " - Renderer: " << alGetString(AL_RENDERER) << std::endl;
+            o << " - AL Extensions: " << alGetString(AL_EXTENSIONS) << std::endl;
+        }
+        if (device) {
+            o << " - ALC Extensions: " << alcGetString((ALCdevice*)(void*)*device, ALC_EXTENSIONS) << std::endl;
+            o << " - Using Device: " << alcGetString((ALCdevice*)(void*)*device, ALC_ALL_DEVICES_SPECIFIER) << std::endl;
+        }
+        if (capture) {
+            o << " - Using Capture Device: " << alcGetString((ALCdevice*)(void*)*capture, ALC_ALL_DEVICES_SPECIFIER) << std::endl;
+        }
+        {
+            o << " - Available Devices: " << std::endl;
+        }
+        for (std::string& name : Device::ListByName()) {
+            o << "   - " << name << std::endl;
+        }
+        {
+            o << " - Default Device: " << Device::DefaultDeviceName() << std::endl;
+            o << " - Available Capture Devices: " << std::endl;
+        }
+        for (std::string& name : CaptureDevice::ListByName()) {
+            o << "   - " << name << std::endl;
+        }
+        {
+            o << " - Default Capture Device: " << CaptureDevice::DefaultDeviceName() << std::endl;
+        }
+
+        return o.str();
+    }
 }
 }

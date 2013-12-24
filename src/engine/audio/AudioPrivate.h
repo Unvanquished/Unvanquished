@@ -28,6 +28,7 @@ along with daemon source code.  if not, see <http://www.gnu.org/licenses/>.
 #include <unordered_map>
 #include <memory>
 
+#include "../../common/Command.h"
 #include "../../common/Log.h"
 
 #include "../qcommon/q_shared.h"
