@@ -28,8 +28,8 @@ namespace Audio {
 
     //TODO nice usecase for Cvar::Range
     //TODO lazily check for the values
-    static Cvar::Cvar<float> effectsVolume("sound.volume.effects", "the volume of the effects", Cvar::ARCHIVE, 0.8f);
-    static Cvar::Cvar<float> musicVolume("sound.volume.music", "the volume of the music", Cvar::ARCHIVE, 0.8f);
+    static Cvar::Cvar<float> effectsVolume("audio.volume.effects", "the volume of the effects", Cvar::ARCHIVE, 0.8f);
+    static Cvar::Cvar<float> musicVolume("audio.volume.music", "the volume of the music", Cvar::ARCHIVE, 0.8f);
 
     // We have a big, fixed number of source to avoid rendering too many sounds and slowing down the rest of the engine.
     struct sourceRecord_t {
@@ -373,6 +373,7 @@ namespace Audio {
         }
     }
 
+	//TODO somehow try to catch back when data is coming faster than we consume (e.g. capture data)
     void StreamingSound::AppendBuffer(AL::Buffer buffer) {
         if (IsStopped()) {
             return;

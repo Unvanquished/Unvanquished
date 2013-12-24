@@ -28,17 +28,17 @@ namespace Audio {
 
     Log::Logger audioLogs("audio");
 
-    static Cvar::Cvar<float> masterVolume("sound.volume.master", "the global audio volume", Cvar::ARCHIVE, 0.8f);
+    static Cvar::Cvar<float> masterVolume("audio.volume.master", "the global audio volume", Cvar::ARCHIVE, 0.8f);
 
-    static Cvar::Cvar<bool> muteWhenMinimized("sound.muteWhenMinimized", "should the game be muted when minimized", Cvar::ARCHIVE, false);
-    static Cvar::Cvar<bool> muteWhenUnfocused("sound.muteWhenUnfocused", "should the game be muted when not focused", Cvar::ARCHIVE, false);
+    static Cvar::Cvar<bool> muteWhenMinimized("audio.muteWhenMinimized", "should the game be muted when minimized", Cvar::ARCHIVE, false);
+    static Cvar::Cvar<bool> muteWhenUnfocused("audio.muteWhenUnfocused", "should the game be muted when not focused", Cvar::ARCHIVE, false);
 
     //TODO make them the equivalent of LATCH and ROM for available*
-    static Cvar::Cvar<std::string> deviceString("s_alDevice", "the OpenAL device to use", Cvar::ARCHIVE, "");
-    static Cvar::Cvar<std::string> availableDevices("s_alAvailableDevices", "the available OpenAL devices", 0, "");
+    static Cvar::Cvar<std::string> deviceString("audio.al.device", "the OpenAL device to use", Cvar::ARCHIVE, "");
+    static Cvar::Cvar<std::string> availableDevices("audio.al.availableDevices", "the available OpenAL devices", 0, "");
 
-    static Cvar::Cvar<std::string> inputDeviceString("s_alInputDevice", "the OpenAL input device to use", Cvar::ARCHIVE, "");
-    static Cvar::Cvar<std::string> availableInputDevices("s_alAvailableInputDevices", "the available input OpenAL devices", 0, "");
+    static Cvar::Cvar<std::string> captureDeviceString("audio.al.captureDevice", "the OpenAL capture device to use", Cvar::ARCHIVE, "");
+    static Cvar::Cvar<std::string> availableCaptureDevices("audio.al.availableCaptureDevices", "the available capture OpenAL devices", 0, "");
 
     // We mimic the behavior of the previous sound system by allowing only one looping ousnd per entity.
     // (and only one entities) CGame will add at each frame all the loops: if a loop hasn't been given
@@ -57,6 +57,9 @@ namespace Audio {
 
     static AL::Device* device;
     static AL::Context* context;
+
+    void CaptureTestStop();
+    void CaptureTestUpdate();
 
     // Like in the previous sound system, we only have a single music
     std::shared_ptr<MusicSound> music;
@@ -112,11 +115,11 @@ namespace Audio {
 
         // Initializes the list of input devices
 
-        std::stringstream inputDeviceList;
-        for (auto inputDeviceName : AL::CaptureDevice::ListByName()) {
-            inputDeviceList << inputDeviceName << "\n";
+        std::stringstream captureDeviceList;
+        for (auto captureDeviceName : AL::CaptureDevice::ListByName()) {
+            captureDeviceList << captureDeviceName << "\n";
         }
-        availableInputDevices.Set(inputDeviceList.str());
+        availableCaptureDevices.Set(captureDeviceList.str());
 
         audioLogs.Notice(AL::GetSystemInfo(device, nullptr));
 
@@ -148,6 +151,7 @@ namespace Audio {
         }
 
         StopMusic();
+        CaptureTestStop();
         StopCapture();
 
         // Shuts down the rest of the system
@@ -198,6 +202,7 @@ namespace Audio {
         }
 
         // Update the rest of the system
+        CaptureTestUpdate();
         UpdateEmitters();
         UpdateSounds();
 
@@ -382,6 +387,7 @@ namespace Audio {
             return;
         }
 
+        audioLogs.Notice("Started the OpenAL capture with rate %i", rate);
         capture = AL::CaptureDevice::GetDefaultDevice(rate);
         capture->Start();
     }
@@ -408,10 +414,48 @@ namespace Audio {
         }
 
         if (capture) {
+            audioLogs.Notice("Stopped the OpenAL capture");
             capture->Stop();
         }
         delete capture;
         capture = nullptr;
+    }
+
+    bool doingCaptureTest = false;
+
+    void CaptureTestStart() {
+        if (not initialized or capture or doingCaptureTest) {
+            return;
+        }
+
+        audioLogs.Notice("Starting the sound capture test");
+        StartCapture(16000);
+        doingCaptureTest = true;
+    }
+
+    void CaptureTestUpdate() {
+        if (not doingCaptureTest) {
+            return;
+        }
+
+        int numSamples = AvailableCaptureSamples();
+
+        if (numSamples > 0) {
+            uint16_t* buffer = new uint16_t[numSamples];
+            GetCapturedData(numSamples, buffer);
+            StreamData(N_STREAMS - 1, buffer, numSamples, 16000, 2, 1.0, -1);
+            delete[] buffer;
+        }
+    }
+
+    void CaptureTestStop() {
+        if (not doingCaptureTest) {
+            return;
+        }
+
+        audioLogs.Notice("Stopping the sound capture test");
+        StopCapture();
+        doingCaptureTest = false;
     }
 
     // Console commands
@@ -457,4 +501,25 @@ namespace Audio {
     };
     static StopSoundsCmd stopSoundsRegistration;
 
+    class StartCaptureTestCmd : public Cmd::StaticCmd {
+        public:
+            StartCaptureTestCmd(): StaticCmd("startSoundCaptureTest", Cmd::AUDIO, N_("Starts testing the sound capture")) {
+            }
+
+            virtual void Run(const Cmd::Args&) const OVERRIDE {
+                CaptureTestStart();
+            }
+    };
+    static StartCaptureTestCmd startCaptureTestRegistration;
+
+    class StopCaptureTestCmd : public Cmd::StaticCmd {
+        public:
+            StopCaptureTestCmd(): StaticCmd("stopSoundCaptureTest", Cmd::AUDIO, N_("Stops the testing of the sound capture")) {
+            }
+
+            virtual void Run(const Cmd::Args&) const OVERRIDE {
+                CaptureTestStop();
+            }
+    };
+    static StopCaptureTestCmd stopCaptureTestRegistration;
 }

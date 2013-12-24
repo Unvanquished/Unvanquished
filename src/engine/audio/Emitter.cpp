@@ -48,8 +48,8 @@ namespace Audio {
 
     static const vec3_t origin = {0.0f, 0.0f, 0.0f};
 
-    static Cvar::Cvar<bool> useDoppler("sound.doppler", "should the doppler effect be used", Cvar::ARCHIVE, true);
-    static Cvar::Modified<Cvar::Cvar<bool>> useReverb("sound.reverb", "should reverb effects be used", Cvar::ARCHIVE, true);
+    static Cvar::Cvar<bool> useDoppler("audio.doppler", "should the doppler effect be used", Cvar::ARCHIVE, true);
+    static Cvar::Modified<Cvar::Cvar<bool>> useReverb("audio.reverb", "should reverb effects be used", Cvar::ARCHIVE, true);
     //TODO use optional once we have it
     static bool removeReverb = false;
     static bool addReverb = false;
