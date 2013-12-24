@@ -4816,7 +4816,7 @@ static void UI_FeederSelection( int feederID, int index )
 	{
 		if ( uiInfo.voipInputCount > 0 )
 		{
-			trap_Cvar_Set( "s_alInputDevice", uiInfo.voipInput[ index ] );
+			trap_Cvar_Set( "audio.al.captureDevice", uiInfo.voipInput[ index ] );
 			uiInfo.voipInputIndex = index;
 		}
 	}
@@ -4824,7 +4824,7 @@ static void UI_FeederSelection( int feederID, int index )
 	{
 		if ( uiInfo.alOutputCount > 0 )
 		{
-			trap_Cvar_Set( "s_alDevice", uiInfo.alOutput[ index ] );
+			trap_Cvar_Set( "audio.al.device", uiInfo.alOutput[ index ] );
 			uiInfo.alOutputIndex = index;
 		}
 	}
@@ -4902,7 +4902,7 @@ static int UI_FeederInitialise( int feederID )
 		int i;
 		char input[ 256 ];
 
-		trap_Cvar_VariableStringBuffer( "s_alInputDevice", input, sizeof( input ) );
+		trap_Cvar_VariableStringBuffer( "audio.al.captureDevice", input, sizeof( input ) );
 
 		for ( i = 0; i < uiInfo.voipInputCount; i++ )
 		{
@@ -4918,7 +4918,7 @@ static int UI_FeederInitialise( int feederID )
 		int i;
 		char output[ 256 ];
 
-		trap_Cvar_VariableStringBuffer( "s_alDevice", output, sizeof( output ) );
+		trap_Cvar_VariableStringBuffer( "audio.al.device", output, sizeof( output ) );
 
 		for ( i = 0; i < uiInfo.alOutputCount; i++ )
 		{
@@ -5093,7 +5093,7 @@ void UI_ParseVoipInputs( void )
 	char *p, *head;
 	int inputs = 0;
 
-	trap_Cvar_VariableStringBuffer( "s_alAvailableInputDevices", buf, sizeof( buf ) );
+	trap_Cvar_VariableStringBuffer( "audio.al.availableCaptureDevices", buf, sizeof( buf ) );
 	head = buf;
 	while ( ( p = strchr( head, '\n' ) ) )
 	{
@@ -5111,7 +5111,7 @@ void UI_ParseAlOutputs( void )
 	char *p, *head;
 	int outputs = 0;
 
-	trap_Cvar_VariableStringBuffer( "s_alAvailableDevices", buf, sizeof( buf ) );
+	trap_Cvar_VariableStringBuffer( "audio.al.availableDevices", buf, sizeof( buf ) );
 	head = buf;
 	while ( ( p = strchr( head, '\n' ) ) )
 	{
