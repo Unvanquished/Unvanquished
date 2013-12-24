@@ -352,7 +352,6 @@ namespace Audio {
 
     // Implementation of StreamingSound
 
-    //TODO
     StreamingSound::StreamingSound() {
     }
 
@@ -380,5 +379,9 @@ namespace Audio {
         }
 
         GetSource().QueueBuffer(std::move(buffer));
+    }
+
+    void StreamingSound::SetGain(float gain) {
+        SetSoundGain(gain);
     }
 }

@@ -50,6 +50,8 @@ namespace Audio {
     };
     static entityLoop_t entityLoops[MAX_GENTITIES];
 
+    static std::shared_ptr<StreamingSound> streams[N_STREAMS];
+
     static bool initialized = false;
 
     static AL::Device* device;
@@ -177,6 +179,12 @@ namespace Audio {
                 entityLoops[i] = {false, nullptr};
             }
         }
+
+        for (int i = 0; i < N_STREAMS; i++) {
+            if (streams[i] and streams[i].unique()) {
+                streams[i] = nullptr;
+            }
+        }
     }
 
     sfxHandle_t RegisterSFX(Str::StringRef filename) {
@@ -235,6 +243,28 @@ namespace Audio {
             music->Stop();
         }
         music = nullptr;
+    }
+
+    void StreamData(int streamNum, const void* data, int numSamples, int rate, int width, float volume, int entityNum) {
+        if (not streams[streamNum]) {
+            streams[streamNum] = std::make_shared<StreamingSound>();
+            if (entityNum < 0 or entityNum > MAX_GENTITIES) {
+                AddSound(GetLocalEmitter(), streams[streamNum], 1);
+            } else {
+                AddSound(GetEmitterForEntity(entityNum), streams[streamNum], 1);
+            }
+        }
+
+        streams[streamNum]->SetGain(volume);
+
+        snd_info_t dataInfo = {rate, width, 1, numSamples, (rate * width * numSamples), 0};
+        AL::Buffer buffer;
+
+        int feedError = buffer.Feed(dataInfo, data);
+
+        if (not feedError) {
+            streams[streamNum]->AppendBuffer(std::move(buffer));
+        }
     }
 
     void UpdateListener(int entityNum, vec3_t orientation[3]) {

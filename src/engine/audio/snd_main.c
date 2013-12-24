@@ -78,6 +78,7 @@ S_RawSamples
 void S_RawSamples( int stream, int samples, int rate, int width, int channels,
                    const byte *data, float volume, int entityNum )
 {
+    Audio::StreamData(stream, data, samples, rate, width, volume, entityNum);
 }
 
 /*

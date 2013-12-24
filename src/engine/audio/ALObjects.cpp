@@ -124,7 +124,7 @@ namespace AL {
         alHandle = 0;
     }
 
-    unsigned Buffer::Feed(snd_info_t info, void* data) {
+    unsigned Buffer::Feed(snd_info_t info, const void* data) {
         ALuint format = Format(info.width, info.channels);
 
         CHECK_AL_ERROR();

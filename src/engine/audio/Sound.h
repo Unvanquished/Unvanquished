@@ -153,6 +153,7 @@ namespace Audio {
             virtual void InternalUpdate() OVERRIDE;
 
             void AppendBuffer(AL::Buffer buffer);
+            void SetGain(float gain);
     };
 
 }

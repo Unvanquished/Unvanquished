@@ -60,6 +60,9 @@ namespace Audio {
     // The speed of sound in qu/s
     constexpr float SPEED_OF_SOUND = 343.3 / QUNIT_IN_METER;
 
+    // Same number of raw streams as in the previous sound system
+    constexpr int N_STREAMS = MAX_CLIENTS * 2 + 1;
+
     extern Log::Logger audioLogs;
 }
 
