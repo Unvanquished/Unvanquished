@@ -66,6 +66,10 @@
       play "sound/misc/menu1.wav";
       close options
     }
+	onClose
+	{
+		exec "stopSoundCaptureTest"
+	}
 
     itemDef
     {
