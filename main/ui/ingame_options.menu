@@ -56,6 +56,10 @@
       setitemcolor controlsBtn         forecolor 0.14 0.8 0.8 1.0;
       setitemcolor systemBtn           forecolor 0.14 0.8 0.8 1.0
     }
+	onClose
+	{
+		exec "stopSoundCaptureTest"
+	}
 
     itemDef
     {
