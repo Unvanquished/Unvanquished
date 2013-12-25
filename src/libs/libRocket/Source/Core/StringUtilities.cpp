@@ -14,7 +14,7 @@
  *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -35,7 +35,7 @@ namespace Core {
 
 // Expands character-delimited list of values in a single string to a whitespace-trimmed list of values.
 void StringUtilities::ExpandString(StringList& string_list, const String& string, const char delimiter)
-{	
+{
 	char quote = 0;
 	bool last_char_delimiter = true;
 	const char* ptr = string.CString();
@@ -47,7 +47,7 @@ void StringUtilities::ExpandString(StringList& string_list, const String& string
 		// Switch into quote mode if the last char was a delimeter ( excluding whitespace )
 		// and we're not already in quote mode
 		if (last_char_delimiter && !quote && (*ptr == '"' || *ptr == '\''))
-		{			
+		{
 			quote = *ptr;
 		}
 		// Switch out of quote mode if we encounter a quote that hasn't been escaped
@@ -92,7 +92,7 @@ void StringUtilities::JoinString(String& string, const StringList& string_list, 
 			string.Append(delimiter);
 	}
 }
-	
+
 // Hashes a string of data to an integer value using the FNV algorithm.
 Hash StringUtilities::FNVHash(const char *string, int length)
 {
@@ -100,25 +100,25 @@ Hash StringUtilities::FNVHash(const char *string, int length)
 	Hash hval = 0;
 	unsigned char* bp = (unsigned char *)string;	// start of buffer
 	unsigned char* be = (unsigned char *)string + length;
-	
+
 	// FNV-1 hash each octet in the buffer
-	while (*bp || (length >= 0 && bp < be)) 
+	while (*bp || (length >= 0 && bp < be))
 	{
 		// xor the bottom with the current octet
 		hval ^= *bp++;
-		
+
 		/* multiply by the 32 bit FNV magic prime mod 2^32 */
-#if !defined(__GNUC__)		
+#if !defined(__GNUC__)
 		const unsigned int FNV_32_PRIME = ((unsigned int)16777619);
 		hval *= FNV_32_PRIME;
 #else
 		hval += (hval<<1) + (hval<<4) + (hval<<7) + (hval<<8) + (hval<<24);
 #endif
 	}
-			 
+
 	return hval;
 }
-	
+
 	// Defines, helper functions for the UTF8 / UCS2 conversion functions.
 #define _NXT	0x80
 #define _SEQ2	0xc0
@@ -126,15 +126,15 @@ Hash StringUtilities::FNVHash(const char *string, int length)
 #define _SEQ4	0xf0
 #define _SEQ5	0xf8
 #define _SEQ6	0xfc
-	
+
 #define _BOM	0xfeff
-	
+
 static int __wchar_forbidden(unsigned int sym)
 {
 	// Surrogate pairs
 	if (sym >= 0xd800 && sym <= 0xdfff)
 		return -1;
-	
+
 	return 0;
 }
 
@@ -147,7 +147,7 @@ static int __utf8_forbidden(unsigned char octet)
 		case 0xf5:
 		case 0xff:
 			return -1;
-			
+
 		default:
 			return 0;
 	}
@@ -160,24 +160,24 @@ bool StringUtilities::UTF8toUCS2(const String& input, std::vector< word >& outpu
 {
 	if (input.Empty())
 		return true;
-	
+
 	unsigned char* p = (unsigned char*) input.CString();
 	unsigned char* lim = p + input.Length();
-	
+
 	// Skip the UTF-8 byte order marker if it exists.
 	if (input.Substring(0, 3) == "\xEF\xBB\xBF")
 		p += 3;
-	
+
 	int num_bytes;
 	for (; p < lim; p += num_bytes)
 	{
 		if (__utf8_forbidden(*p) != 0)
 			return false;
-		
+
 		// Get number of bytes for one wide character.
 		word high;
 		num_bytes = 1;
-		
+
 		if ((*p & 0x80) == 0)
 		{
 			high = (wchar_t)*p;
@@ -211,13 +211,13 @@ bool StringUtilities::UTF8toUCS2(const String& input, std::vector< word >& outpu
 		{
 			return false;
 		}
-		
+
 		// Does the sequence header tell us the truth about length?
 		if (lim - p <= num_bytes - 1)
 		{
 			return false;
 		}
-		
+
 		// Validate the sequence. All symbols must have higher bits set to 10xxxxxx.
 		if (num_bytes > 1)
 		{
@@ -227,13 +227,13 @@ bool StringUtilities::UTF8toUCS2(const String& input, std::vector< word >& outpu
 				if ((p[i] & 0xc0) != _NXT)
 					break;
 			}
-			
+
 			if (i != num_bytes)
 			{
 				return false;
 			}
 		}
-		
+
 		// Make up a single UCS-4 (32-bit) character from the required number of UTF-8 tokens. The first byte has
 		// been determined earlier, the second and subsequent bytes contribute the first six of their bits into the
 		// final character code.
@@ -245,19 +245,19 @@ bool StringUtilities::UTF8toUCS2(const String& input, std::vector< word >& outpu
 			num_bits += 6;
 		}
 		ucs4_char |= high << num_bits;
-		
+
 		// Check for surrogate pairs.
 		if (__wchar_forbidden(ucs4_char) != 0)
 		{
 			return false;
 		}
-		
+
 		// Only add the character to the output if it exists in the Basic Multilingual Plane (ie, fits in a single
 		// word).
 		if (ucs4_char <= 0xffff)
 			output.push_back((word) ucs4_char);
 	}
-	
+
 	output.push_back(0);
 	return true;
 }
@@ -273,19 +273,19 @@ bool StringUtilities::UCS2toUTF8(const word* input, size_t input_size, String& o
 {
 	unsigned char *oc;
 	size_t n;
-	
+
 	word* w = (word*) input;
 	word* wlim = w + input_size;
-	
+
 	//Log::Message(LC_CORE, Log::LT_ALWAYS, "UCS2TOUTF8 size: %d", input_size);
 	for (; w < wlim; w++)
 	{
 		if (__wchar_forbidden(*w) != 0)
 			return false;
-		
+
 		if (*w == _BOM)
 			continue;
-		
+
 		//if (*w < 0)
 		//	return false;
 		if (*w <= 0x007f)
@@ -300,43 +300,43 @@ bool StringUtilities::UCS2toUTF8(const word* input, size_t input_size, String& o
 		 n = 5;
 		 else // if (*w <= 0x7fffffff)
 		 n = 6;*/
-		
+
 		// Convert to little endian.
 		word ch = (*w >> 8) & 0x00FF;
 		ch |= (*w << 8) & 0xFF00;
 		//		word ch = EMPConvertEndian(*w, ROCKET_ENDIAN_BIG);
-		
+
 		oc = (unsigned char *)&ch;
 		switch (n)
 		{
 			case 1:
 				output += oc[1];
 				break;
-				
+
 			case 2:
 				output += (_SEQ2 | (oc[1] >> 6) | ((oc[0] & 0x07) << 2));
 				output += (_NXT | (oc[1] & 0x3f));
 				break;
-				
+
 			case 3:
 				output += (_SEQ3 | ((oc[0] & 0xf0) >> 4));
 				output += (_NXT | (oc[1] >> 6) | ((oc[0] & 0x0f) << 2));
 				output += (_NXT | (oc[1] & 0x3f));
 				break;
-				
+
 			case 4:
 				break;
-				
+
 			case 5:
 				break;
-				
+
 			case 6:
 				break;
 		}
-		
+
 		//Log::Message(LC_CORE, Log::LT_ALWAYS, "Converting...%c(%d) %d -> %d", *w, *w, w - input, output.Length());
 	}
-	
+
 	return true;
 }
 
@@ -345,16 +345,16 @@ String StringUtilities::StripWhitespace(const String& string)
 {
 	const char* start = string.CString();
 	const char* end = start + string.Length();
-	
+
 	while (start < end && IsWhitespace(*start))
 		start++;
-	
+
 	while (end > start && IsWhitespace(*(end - 1)))
 		end--;
-	
+
 	if (start < end)
 		return String(start, end);
-	
+
 	return String();
 }
 

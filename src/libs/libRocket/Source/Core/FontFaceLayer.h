@@ -14,7 +14,7 @@
  *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -34,6 +34,7 @@
 #include <Rocket/Core/String.h>
 #include <Rocket/Core/Texture.h>
 #include "TextureLayout.h"
+#include <memory>
 
 namespace Rocket {
 namespace Core {
@@ -67,7 +68,7 @@ public:
 	/// @param[out] texture_dimensions The dimensions of the texture.
 	/// @param[in] glyphs The glyphs required by the font face handle.
 	/// @param[in] texture_id The index of the texture within the layer to generate.
-	bool GenerateTexture(const byte*& texture_data, Vector2i& texture_dimensions, int texture_id);
+	bool GenerateTexture( const Rocket::Core::byte *&texture_data, Rocket::Core::Vector2i &texture_dimensions, int layout_id, int texture_id );
 	/// Generates the geometry required to render a single character.
 	/// @param[out] geometry An array of geometries this layer will write to. It must be at least as big as the number of textures in this layer.
 	/// @param[in] character_code The character to generate geometry for.
@@ -75,12 +76,11 @@ public:
 	/// @param[in] colour The colour of the string.
 	inline void GenerateGeometry(Geometry* geometry, const word character_code, const Vector2f& position, const Colourb& colour) const
 	{
-		if (character_code >= characters.size())
+		CharacterMap::const_iterator iterator = characters.find(character_code);
+		if (iterator == characters.end())
 			return;
 
-		const Character& character = characters[character_code];
-		if (character.texture_index < 0)
-			return;
+		const Character& character = (*iterator).second;
 
 		// Generate the geometry for the character.
 		std::vector< Vertex >& character_vertices = geometry[character.texture_index].GetVertices();
@@ -106,12 +106,11 @@ public:
 	/// Returns the layer's colour.
 	/// @return The layer's colour.
 	const Colourb& GetColour() const;
+	bool AddNewGlyphs();
 
 private:
 	struct Character
 	{
-		Character() : texture_index(-1) { }
-
 		// The offset, in pixels, of the baseline from the start of this character's geometry.
 		Vector2f origin;
 		// The width and height, in pixels, of this character's geometry.
@@ -123,15 +122,15 @@ private:
 		int texture_index;
 	};
 
-	typedef std::vector< Character > CharacterList;
-	typedef std::vector< Texture > TextureList;
+	typedef std::unordered_map< word, Character > CharacterMap;
+	typedef std::vector< std::shared_ptr<Texture> > TextureList;
 
 	const FontFaceHandle* handle;
 	FontEffect* effect;
 
-	TextureLayout texture_layout;
+	std::vector< std::unique_ptr<TextureLayout> > texture_layouts;
 
-	CharacterList characters;
+	CharacterMap characters;
 	TextureList textures;
 	Colourb colour;
 };

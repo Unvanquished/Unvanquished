@@ -14,7 +14,7 @@
  *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -28,7 +28,8 @@
 #ifndef ROCKETCOREFONTGLYPH_H
 #define ROCKETCOREFONTGLYPH_H
 
-#include <vector>
+#include <map>
+#include <unordered_map>
 
 namespace Rocket {
 namespace Core {
@@ -42,11 +43,6 @@ namespace Core {
 class FontGlyph
 {
 public:
-	FontGlyph() : character(0), dimensions(0,0), bearing(0,0), advance(0), bitmap_data(NULL),
-		bitmap_dimensions(0,0)
-	{
-	}
-
 	/// The unicode code point for this glyph.
 	word character;
 
@@ -66,7 +62,7 @@ public:
 	Vector2i bitmap_dimensions;
 };
 
-typedef std::vector< FontGlyph > FontGlyphList;
+typedef std::unordered_map< word, FontGlyph > FontGlyphMap;
 
 }
 }
