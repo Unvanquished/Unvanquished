@@ -258,8 +258,8 @@ public:
 	// Check if a file exists
 	bool FileExists(Str::StringRef path) const;
 
-	// Get the pak a file is in
-	const PakInfo* LocateFile(Str::StringRef path, std::error_code& err = throws()) const;
+	// Get the pak a file is in, or null if the file does not exist
+	const PakInfo* LocateFile(Str::StringRef path) const;
 
 	// Get the timestamp of a file
 	std::chrono::system_clock::time_point FileTimestamp(Str::StringRef path, std::error_code& err = throws()) const;

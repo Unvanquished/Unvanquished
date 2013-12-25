@@ -694,11 +694,6 @@ void CL_ParseDownload( msg_t *msg )
 				return;
 			}
 
-			// make downloadTempName an OS path
-			Q_strncpyz( cls.downloadTempName, FS_BuildOSPath( Cvar_VariableString( "fs_homepath" ), cls.downloadTempName, "" ),
-			            sizeof( cls.downloadTempName ) );
-			cls.downloadTempName[ strlen( cls.downloadTempName ) - 1 ] = '\0';
-
 			if ( !DL_BeginDownload( cls.downloadTempName, cls.downloadName, com_developer->integer ) )
 			{
 				// setting bWWWDl to false after sending the wwwdl fail doesn't work

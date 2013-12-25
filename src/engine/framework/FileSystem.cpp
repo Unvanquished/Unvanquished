@@ -95,19 +95,19 @@ static FILE* my_fopen(Str::StringRef path, openMode_t mode)
 		struct stat st;
 		if (fstat(fileno(fd), &st) == -1) {
 			fclose(fd);
-			return NULL;
+			return nullptr;
 		}
 		if (!S_ISREG(st.st_mode)) {
 			fclose(fd);
 			errno = EISDIR;
-			return NULL;
+			return nullptr;
 		}
 	}
 
 	// Set the close-on-exec flag
 	if (fcntl(fileno(fd), F_SETFD, FD_CLOEXEC) == -1) {
 		fclose(fd);
-		return NULL;
+		return nullptr;
 	}
 
 	return fd;
@@ -270,7 +270,7 @@ static std::string DefaultBasePath()
 {
 #ifdef _WIN32
 	wchar_t buffer[MAX_PATH];
-	DWORD len = GetModuleFileNameW(NULL, buffer, MAX_PATH);
+	DWORD len = GetModuleFileNameW(nullptr, buffer, MAX_PATH);
 	if (len == 0 || len >= MAX_PATH)
 		return "";
 
@@ -299,7 +299,7 @@ static std::string DefaultBasePath()
 	return out.get();
 #elif defined(__APPLE__)
 	uint32_t bufsize = 0;
-	_NSGetExecutablePath(NULL, &bufsize);
+	_NSGetExecutablePath(nullptr, &bufsize);
 
 	std::unique_ptr<char[]> out(new char[bufsize]);
 	_NSGetExecutablePath(out.get(), &bufsize);
@@ -318,11 +318,11 @@ static std::string DefaultHomePath()
 {
 #ifdef _WIN32
 	wchar_t buffer[MAX_PATH];
-	if (!SUCCEEDED(SHGetFolderPathW(NULL, CSIDL_PERSONAL, NULL, SHGFP_TYPE_CURRENT, buffer)))
+	if (!SUCCEEDED(SHGetFolderPathW(nullptr, CSIDL_PERSONAL, nullptr, SHGFP_TYPE_CURRENT, buffer)))
 		return "";
 	return Str::UTF16To8(buffer) + "\\My Games\\Unvanquished";
 #else
-	const char *home = getenv("HOME");
+	const char* home = getenv("HOME");
 	if (!home)
 		return "";
 #ifdef __APPLE__
@@ -849,7 +849,7 @@ public:
 		for (ZPOS64_T i = 0; i != globalInfo.number_entry; i++) {
 			unz_file_info64 fileInfo;
 			char filename[65537]; // The zip format has a maximum filename size of 64K
-			result = unzGetCurrentFileInfo64(zipFile, &fileInfo, filename, sizeof(filename), NULL, 0, NULL, 0);
+			result = unzGetCurrentFileInfo64(zipFile, &fileInfo, filename, sizeof(filename), nullptr, 0, nullptr, 0);
 			if (result != UNZ_OK) {
 				SetErrorCodeZlib(err, result);
 				return;
@@ -892,7 +892,7 @@ public:
 	offset_t FileLength(std::error_code& err) const
 	{
 		unz_file_info64 fileInfo;
-		int result = unzGetCurrentFileInfo64(zipFile, &fileInfo, NULL, 0, NULL, 0, NULL, 0);
+		int result = unzGetCurrentFileInfo64(zipFile, &fileInfo, nullptr, 0, nullptr, 0, nullptr, 0);
 		if (result != UNZ_OK) {
 			SetErrorCodeZlib(err, result);
 			return 0;
@@ -1257,16 +1257,13 @@ bool PakNamespace::FileExists(Str::StringRef path) const
 	return fileMap.find(path) != fileMap.end();
 }
 
-const PakInfo* PakNamespace::LocateFile(Str::StringRef path, std::error_code& err) const
+const PakInfo* PakNamespace::LocateFile(Str::StringRef path) const
 {
 	auto it = fileMap.find(path);
-	if (it == fileMap.end()) {
-		SetErrorCodeFilesystem(filesystem_error::no_such_file, err);
+	if (it == fileMap.end())
 		return nullptr;
-	} else {
-		ClearErrorCode(err);
+	else
 		return &loadedPaks[it->second.pakIndex];
-	}
 }
 
 std::chrono::system_clock::time_point PakNamespace::FileTimestamp(Str::StringRef path, std::error_code& err) const
@@ -1708,3 +1705,550 @@ RecursiveDirectoryRange ListFilesRecursive(Str::StringRef path, std::error_code&
 } // namespace HomePath
 
 } // namespace FS
+
+// Compatibility wrapper
+
+struct handleData_t {
+	bool isOpen;
+	bool isPakFile;
+
+	// Normal file info
+	bool forceFlush;
+	FS::File file;
+
+	// Pak file info
+	std::string fileData;
+	size_t filePos;
+};
+
+#define MAX_FILE_HANDLES 64
+static handleData_t handleTable[MAX_FILE_HANDLES];
+static FS::PakNamespace mainNamespace;
+
+// Pak lists from the server we are connected to
+static std::vector<std::tuple<std::string, std::string, uint32_t>> fs_serverPaks;
+static bool fs_pureServer;
+
+// Base value used to calculate pure checksums
+static int fs_checksumFeed;
+
+static fileHandle_t FS_AllocHandle()
+{
+	for (int i = 0; i < MAX_FILE_HANDLES; i++) {
+		if (!handleTable[i].isOpen)
+			return i;
+	}
+	Com_Error(ERR_DROP, "FS_AllocHandle: none free");
+}
+
+static void FS_CheckHandle(fileHandle_t handle, bool write)
+{
+	if (handle < 0 || handle > MAX_FILE_HANDLES)
+		Com_Error(ERR_DROP, "FS_CheckHandle: invalid handle");
+	if (!handleTable[handle].isOpen)
+		Com_Error(ERR_DROP, "FS_CheckHandle: closed handle");
+	if (write && handleTable[handle].isPakFile)
+		Com_Error(ERR_DROP, "FS_CheckHandle: writing to file in pak");
+}
+
+qboolean FS_FileExists(const char* path)
+{
+	return mainNamespace.FileExists(path) || FS::HomePath::FileExists(path);
+}
+
+int FS_FOpenFileRead(const char* path, fileHandle_t* handle, qboolean)
+{
+	if (!handle)
+		return FS_FileExists(path);
+
+	*handle = FS_AllocHandle();
+	int length;
+	try {
+		if (mainNamespace.FileExists(path)) {
+			handleTable[*handle].filePos = 0;
+			handleTable[*handle].fileData = mainNamespace.ReadFile(path);
+			handleTable[*handle].isPakFile = true;
+			handleTable[*handle].isOpen = true;
+			length = handleTable[*handle].fileData.size();
+		} else {
+			handleTable[*handle].file = FS::HomePath::OpenRead(path);
+			length = handleTable[*handle].file.Length();
+			handleTable[*handle].isPakFile = false;
+			handleTable[*handle].isOpen = true;
+		}
+	} catch (std::system_error& err) {
+		Com_Printf("Failed to open '%s' for reading: %s\n", path, err.what());
+		*handle = -1;
+		return -1;
+	}
+
+	return length;
+}
+
+fileHandle_t FS_FOpenFileWrite(const char* path)
+{
+	fileHandle_t handle = FS_AllocHandle();
+	try {
+		handleTable[handle].file = FS::HomePath::OpenWrite(path);
+	} catch (std::system_error& err) {
+		Com_Printf("Failed to open '%s' for writing: %s\n", path, err.what());
+		return -1;
+	}
+	handleTable[handle].forceFlush = false;
+	handleTable[handle].isPakFile = false;
+	handleTable[handle].isOpen = true;
+	return handle;
+}
+
+fileHandle_t FS_FOpenFileAppend(const char* path)
+{
+	fileHandle_t handle = FS_AllocHandle();
+	try {
+		handleTable[handle].file = FS::HomePath::OpenAppend(path);
+	} catch (std::system_error& err) {
+		Com_Printf("Failed to open '%s' for appending: %s\n", path, err.what());
+		return -1;
+	}
+	handleTable[handle].forceFlush = false;
+	handleTable[handle].isPakFile = false;
+	handleTable[handle].isOpen = true;
+	return handle;
+}
+
+fileHandle_t FS_SV_FOpenFileWrite(const char* path)
+{
+	return FS_FOpenFileWrite(path);
+}
+
+int FS_SV_FOpenFileRead(const char* path, fileHandle_t* handle)
+{
+	*handle = FS_AllocHandle();
+	int length;
+	try {
+		handleTable[*handle].file = FS::HomePath::OpenRead(path);
+		length = handleTable[*handle].file.Length();
+	} catch (std::system_error& err) {
+		Com_Printf("Failed to open '%s' for reading: %s\n", path, err.what());
+		*handle = -1;
+		return -1;
+	}
+	handleTable[*handle].isPakFile = false;
+	handleTable[*handle].isOpen = true;
+	return length;
+}
+
+int FS_FOpenFileByMode(const char* path, fileHandle_t* handle, int mode)
+{
+	switch (mode) {
+	case FS_READ:
+		return FS_FOpenFileRead(path, handle, qfalse);
+
+	case FS_WRITE:
+		*handle = FS_FOpenFileWrite(path);
+		return *handle == -1 ? -1 : 0;
+
+	case FS_APPEND:
+	case FS_APPEND_SYNC:
+		*handle = FS_FOpenFileAppend(path);
+		handleTable[*handle].forceFlush = mode == FS_APPEND_SYNC;
+		return *handle == -1 ? -1 : 0;
+
+	default:
+		Com_Error(ERR_DROP, "FS_FOpenFileByMode: bad mode %d", mode);
+	}
+}
+
+int FS_FCloseFile(fileHandle_t handle)
+{
+	FS_CheckHandle(handle, false);
+	handleTable[handle].isOpen = false;
+	if (handleTable[handle].isPakFile) {
+		handleTable[handle].fileData.clear();
+		return 0;
+	} else {
+		try {
+			handleTable[handle].file.Close();
+			return 0;
+		} catch (std::system_error& err) {
+			Com_Printf("Failed to close file: %s\n", err.what());
+			return -1;
+		}
+	}
+}
+
+int FS_filelength(fileHandle_t handle)
+{
+	FS_CheckHandle(handle, false);
+	if (handleTable[handle].isPakFile)
+		return handleTable[handle].fileData.size();
+	else {
+		try {
+			return handleTable[handle].file.Length();
+		} catch (std::system_error& err) {
+			Com_Printf("Failed to get file length: %s\n", err.what());
+			return 0;
+		}
+	}
+}
+
+int FS_FTell(fileHandle_t handle)
+{
+	FS_CheckHandle(handle, false);
+	if (handleTable[handle].isPakFile)
+		return handleTable[handle].filePos;
+	else
+		return handleTable[handle].file.Tell();
+}
+
+int FS_Seek(fileHandle_t handle, long offset, int origin)
+{
+	FS_CheckHandle(handle, true);
+	try {
+		switch (origin) {
+		case FS_SEEK_CUR:
+			handleTable[handle].file.SeekCur(offset);
+			break;
+
+		case FS_SEEK_SET:
+			handleTable[handle].file.SeekSet(offset);
+			break;
+
+		case FS_SEEK_END:
+			handleTable[handle].file.SeekEnd(offset);
+			break;
+
+		default:
+			Com_Error(ERR_DROP, "Bad origin in FS_Seek");
+		}
+		return 0;
+	} catch (std::system_error& err) {
+		Com_Printf("FS_Seek failed: %s\n", err.what());
+		return -1;
+	}
+}
+
+void FS_ForceFlush(fileHandle_t handle)
+{
+	FS_CheckHandle(handle, true);
+	handleTable[handle].forceFlush = true;
+}
+
+void FS_Flush(fileHandle_t handle)
+{
+	FS_CheckHandle(handle, true);
+	try {
+		handleTable[handle].file.Flush();
+	} catch (std::system_error& err) {
+		Com_Printf("FS_Flush failed: %s\n", err.what());
+	}
+}
+
+int FS_Write(const void* buffer, int len, fileHandle_t handle)
+{
+	FS_CheckHandle(handle, true);
+	try {
+		handleTable[handle].file.Write(buffer, len);
+		if (handleTable[handle].forceFlush)
+			handleTable[handle].file.Flush();
+		return len;
+	} catch (std::system_error& err) {
+		Com_Printf("FS_Write failed: %s\n", err.what());
+		return 0;
+	}
+}
+
+int FS_Read(void* buffer, int len, fileHandle_t handle)
+{
+	FS_CheckHandle(handle, false);
+	if (handleTable[handle].isPakFile) {
+		if (len < 0)
+			Com_Error(ERR_DROP, "FS_Read: invalid length");
+		len = std::min<size_t>(handleTable[handle].filePos + len, handleTable[handle].fileData.size());
+		memcpy(buffer, handleTable[handle].fileData.data() + handleTable[handle].filePos, len);
+		return len;
+	} else {
+		try {
+			return handleTable[handle].file.Read(buffer, len);
+		} catch (std::system_error& err) {
+			Com_Printf("Failed to read file: %s\n", err.what());
+			return 0;
+		}
+	}
+}
+
+void FS_Printf(fileHandle_t handle, const char* fmt, ...)
+{
+	va_list ap;
+	char buffer[MAXPRINTMSG];
+
+	va_start(ap, fmt);
+	Q_vsnprintf(buffer, sizeof(buffer), fmt, ap);
+	va_end(ap);
+
+	FS_Write(buffer, strlen(buffer), handle);
+}
+
+void FS_HomeRemove(const char* path)
+{
+	try {
+		FS::HomePath::DeleteFile(path);
+	} catch (std::system_error& err) {
+		Com_Printf("Failed to delete file '%s': %s\n", path, err.what());
+	}
+}
+
+void FS_Rename(const char* from, const char* to)
+{
+	try {
+		FS::HomePath::MoveFile(to, from);
+	} catch (std::system_error& err) {
+		Com_Printf("Failed to move '%s' to '%s': %s\n", from, to, err.what());
+	}
+}
+
+void FS_SV_Rename(const char* from, const char* to)
+{
+	FS_Rename(from, to);
+}
+
+void FS_WriteFile(const char* path, const void* buffer, int size)
+{
+	try {
+		FS::File f = FS::HomePath::OpenWrite(path);
+		f.Write(buffer, size);
+		f.Close();
+	} catch (std::system_error& err) {
+		Com_Printf("Fail to write file '%s': %s\n", path, err.what());
+	}
+}
+
+int FS_ReadFile(const char* path, void** buffer)
+{
+	fileHandle_t handle;
+	int length = FS_FOpenFileRead(path, &handle, qtrue);
+
+	if (length < 0) {
+		if (buffer)
+			buffer = nullptr;
+		return -1;
+	}
+
+	if (buffer) {
+		char* buf = new char[length + 1];
+		*buffer = buf;
+		FS_Read(buf, length, handle);
+		buf[length] = '\0';
+	}
+
+	FS_FCloseFile(handle);
+	return length;
+}
+
+void FS_FreeFile(void* buffer)
+{
+	char* buf = static_cast<char*>(buffer);
+	delete[] buf;
+}
+
+char** FS_ListFiles(const char* directory, const char* extension, int* numFiles)
+{
+	std::vector<char*> files;
+
+	try {
+		// TODO: filter and strip trailing /, also don't use strdup
+		for (const std::string& x: mainNamespace.ListFiles(directory))
+			files.push_back(strdup(x.c_str()));
+	} catch (std::system_error& err) {
+		*numFiles = 0;
+		for (char* s: files)
+			delete[] s;
+		return nullptr;
+	}
+
+	*numFiles = files.size();
+	char** out = new char*[files.size() + 1];
+	std::copy(files.begin(), files.end(), out);
+	out[files.size()] = nullptr;
+	return out;
+}
+
+void FS_FreeFileList(char** list)
+{
+	for (char** i = list; *i; i++)
+		delete[] *i;
+	delete[] list;
+}
+
+int FS_GetFileList(const char* path, const char* extension, char* listBuf, int bufSize)
+{
+	// Mods are not yet supported in the new filesystem
+	if (!strcmp(path, "$modlist"))
+		return 0;
+
+	int numFiles;
+	char** list = FS_ListFiles(path, extension, &numFiles);
+
+	for (int i = 0; i < numFiles; i++) {
+		int length = strlen(list[i]) + 1;
+		if (bufSize < length)
+			return i;
+		memcpy(listBuf, list[i], length);
+		listBuf += length;
+		bufSize -= length;
+	}
+
+	FS_FreeFileList(list);
+	return numFiles;
+}
+
+const char* FS_LoadedPakNames()
+{
+	static char info[BIG_INFO_STRING];
+	info[0] = '\0';
+	for (const FS::PakInfo& x: mainNamespace.GetLoadedPaks()) {
+		if (x.type != FS::PAK_ZIP)
+			continue;
+		if (info[0])
+			Q_strcat(info, sizeof(info), " ");
+		Q_strcat(info, sizeof(info), x.name.c_str());
+		Q_strcat(info, sizeof(info), "_");
+		Q_strcat(info, sizeof(info), x.version.c_str());
+	}
+	return info;
+}
+const char* FS_LoadedPakChecksums()
+{
+	static char info[BIG_INFO_STRING];
+	info[0] = '\0';
+	for (const FS::PakInfo& x: mainNamespace.GetLoadedPaks()) {
+		if (x.type != FS::PAK_ZIP)
+			continue;
+		if (info[0])
+			Q_strcat(info, sizeof(info), " ");
+		Q_strcat(info, sizeof(info), va("%d", *x.checksum));
+	}
+	return info;
+}
+const char* FS_LoadedPakPureChecksums()
+{
+	return FS_LoadedPakChecksums();
+}
+int FS_FileIsInPAK(const char* path, int* pChecksum)
+{
+	const FS::PakInfo* info = mainNamespace.LocateFile(path);
+	if (!info || info->type == FS::PAK_DIR)
+		return false;
+	*pChecksum = *info->checksum;
+	return true;
+}
+
+const char* FS_ReferencedPakNames()
+{
+	return FS_LoadedPakNames();
+}
+const char* FS_ReferencedPakChecksums()
+{
+	return FS_LoadedPakChecksums();
+}
+const char* FS_ReferencedPakPureChecksums()
+{
+	static char info[BIG_INFO_STRING];
+
+	int checksum = fs_checksumFeed;
+	int cgameChecksum = 0, uiChecksum = 0;
+
+	FS_FileIsInPAK("vm/cgame.qvm", &cgameChecksum);
+	FS_FileIsInPAK("vm/ui.qvm", &uiChecksum);
+
+	Q_snprintf(info, sizeof(info), "%d %d @", cgameChecksum, uiChecksum);
+
+	int numPaks = 0;
+	for (const FS::PakInfo& x: mainNamespace.GetLoadedPaks()) {
+		if (x.type != FS::PAK_ZIP)
+			continue;
+		numPaks++;
+		checksum ^= *x.checksum;
+		Q_strcat(info, sizeof(info), va(" %d", *x.checksum));
+	}
+
+	Q_strcat(info, sizeof(info), va(" %d", checksum ^ numPaks));
+	return info;
+}
+
+void FS_ClearPakReferences(int)
+{
+	// No-op
+}
+
+// TODO
+void FS_PureServerSetReferencedPaks(const char* pakSums, const char* pakNames);
+void FS_PureServerSetLoadedPaks(const char* pakSums, const char*)
+{
+	// The pak list is the same as FS_PureServerSetReferencedPaks, just check for pure
+	fs_pureServer = pakSums[0] != '\0';
+}
+
+// TODO
+qboolean FS_ComparePaks(char* neededpaks, int len, qboolean dlstring);
+
+char* FS_BuildOSPath(const char* base, const char*, const char* path)
+{
+	// Ignore game directory because the new filesystem doesn't use it
+	static char ospath[2][MAX_OSPATH];
+	static bool toggle = false;
+	toggle = !toggle;
+	Q_strncpyz(ospath[toggle], FS::Path::Build(base, path).c_str(), sizeof(ospath[toggle]));
+	return ospath[toggle];
+}
+
+// TODO
+qboolean FS_VerifyPak(const char* pak);
+
+qboolean FS_Initialized()
+{
+	return FS::IsInitialized();
+}
+
+void FS_InitFilesystem()
+{
+	FS::Initialize();
+	FS_Restart(0);
+}
+
+void FS_Shutdown(qboolean)
+{
+	// No-op
+}
+
+void FS_Restart(int checksumFeed)
+{
+	fs_checksumFeed = checksumFeed;
+
+	FS::RefreshPaks();
+
+	if (fs_serverPaks.empty()) {
+		// If no server pk3s are specified, load all pk3s in reverse order
+		for (auto i = FS::GetAvailablePaks().rbegin(); i != FS::GetAvailablePaks().rend(); ++i) {
+			try {
+				mainNamespace.LoadPak(i->name, i->version);
+			} catch (std::system_error& err) {
+				Com_Printf("Failed to load pak '%s' version '%s': %s\n", i->name.c_str(), i->version.c_str(), err.what());
+			}
+		}
+	} else {
+		// Otherwise load the same pk3s as the server
+		for (auto& x: fs_serverPaks) {
+			try {
+				mainNamespace.LoadPakExplicit(std::get<0>(x), std::get<1>(x), std::get<2>(x));
+			} catch (std::system_error& err) {
+				Com_Printf("Failed to load pak '%s' version '%s': %s\n", std::get<0>(x).c_str(), std::get<1>(x).c_str(), err.what());
+			}
+		}
+	}
+}
+qboolean FS_ConditionalRestart(int checksumFeed)
+{
+	// Always restart
+	FS_Restart(checksumFeed);
+	return true;
+}

@@ -3746,7 +3746,6 @@ CL_WWWDownload
 */
 void CL_WWWDownload( void )
 {
-	char            *to_ospath;
 	dlStatus_t      ret;
 	static qboolean bAbort = qfalse;
 
@@ -3777,16 +3776,9 @@ void CL_WWWDownload( void )
 	if ( ret == DL_DONE )
 	{
 		// taken from CL_ParseDownload
-		// we work with OS paths
 		clc.download = 0;
-		to_ospath = FS_BuildOSPath( Cvar_VariableString( "fs_homepath" ), cls.originalDownloadName, "" );
-		to_ospath[ strlen( to_ospath ) - 1 ] = '\0';
 
-		if ( rename( cls.downloadTempName, to_ospath ) )
-		{
-			FS_CopyFile( cls.downloadTempName, to_ospath );
-			remove( cls.downloadTempName );
-		}
+		FS_SV_Rename( cls.downloadTempName, cls.originalDownloadName );
 
 		*cls.downloadTempName = *cls.downloadName = 0;
 		Cvar_Set( "cl_downloadName", "" );

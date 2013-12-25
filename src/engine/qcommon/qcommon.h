@@ -521,7 +521,6 @@ void         FS_FreeFileList( char **list );
 qboolean     FS_FileExists( const char *file );
 
 int          FS_GetFileList( const char *path, const char *extension, char *listbuf, int bufsize );
-int          FS_GetModList( char *listbuf, int bufsize );
 
 fileHandle_t FS_FOpenFileWrite( const char *qpath );
 fileHandle_t FS_FOpenFileAppend( const char *filename );
@@ -561,9 +560,7 @@ int FS_FCloseFile( fileHandle_t f ); // !0 on error (but errno isn't valid)
 
 // note: you can't just fclose from another DLL, due to MS libc issues
 
-long FS_ReadFileDir( const char *qpath, void *searchPath, void **buffer );
 int  FS_ReadFile( const char *qpath, void **buffer );
-int  FS_ReadFileCheck( const char *qpath, void **buffer );
 
 // returns the length of the file
 // a null buffer will just return the file length without loading,
@@ -639,23 +636,11 @@ void       FS_Rename( const char *from, const char *to );
 
 char       *FS_BuildOSPath( const char *base, const char *game, const char *qpath );
 
-void         FS_CopyFile( char *fromOSPath, char *toOSPath );
-
-qboolean     FS_CreatePath( const char *OSPath );
-
 qboolean     FS_VerifyPak( const char *pak );
-
-void         FS_Remove( const char *ospath );
-
 // XreaL BEGIN
 void         FS_HomeRemove( const char *homePath );
 
 // XreaL END
-
-void       FS_FilenameCompletion( const char *dir, const char *ext,
-                                  qboolean stripExt, void ( *callback )( const char *s ) );
-
-qboolean   FS_Which( const char *filename, void *searchPath );
 
 namespace FS {
     std::vector<std::pair<std::string, std::string>> CompleteFilenameInDir(Str::StringRef prefix, Str::StringRef dir,

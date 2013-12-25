@@ -509,7 +509,7 @@ FS_CreatePath
 Creates any directories needed to store the given filename
 ============
 */
-qboolean FS_CreatePath( const char *OSPath_ )
+static qboolean FS_CreatePath( const char *OSPath_ )
 {
 	// use va() to have a clean const char* prototype
 	char *OSPath = va( "%s", OSPath_ );
@@ -544,7 +544,7 @@ FS_CopyFile
 Copy a fully specified file from one place to another
 =================
 */
-void FS_CopyFile( char *fromOSPath, char *toOSPath )
+static void FS_CopyFile( char *fromOSPath, char *toOSPath )
 {
 	FILE *f;
 	int  len;
@@ -626,7 +626,7 @@ FS_Remove
 
 ===========
 */
-void FS_Remove( const char *osPath )
+static void FS_Remove( const char *osPath )
 {
 	remove( osPath );
 }
@@ -680,7 +680,7 @@ FS_SV_FileExists
 Tests if the file exists
 ================
 */
-qboolean FS_SV_FileExists( const char *file )
+static qboolean FS_SV_FileExists( const char *file )
 {
 	FILE *f;
 	char *testpath;
@@ -2050,17 +2050,16 @@ int FS_FileIsInPAK( const char *filename, int *pChecksum )
 /*
 ============
 FS_ReadFile
-FS_ReadFileCheck
 
 Filename are relative to the quake search path
 a null buffer will just return the file length without loading
 ============
 */
-static int FS_ReadFile_Internal( const char *qpath, void **buffer, qboolean check )
+int FS_ReadFile( const char *qpath, void **buffer )
 {
 	fileHandle_t h;
 	byte          *buf;
-	int          len, ret;
+	int          len;
 
 	if ( !fs_searchpaths )
 	{
@@ -2103,19 +2102,9 @@ static int FS_ReadFile_Internal( const char *qpath, void **buffer, qboolean chec
 
 	// guarantee that it will have a trailing 0 for string operations
 	buf[ len ] = 0;
-	ret = FS_FCloseFile( h );
+	FS_FCloseFile( h );
 
-	return ( check && ret ) ? -2 - len : len;
-}
-
-int FS_ReadFile( const char *qpath, void **buffer )
-{
-        return FS_ReadFile_Internal( qpath, buffer, qfalse );
-}
-
-int FS_ReadFileCheck( const char *qpath, void **buffer )
-{
-        return FS_ReadFile_Internal( qpath, buffer, qtrue );
+	return len;
 }
 
 /*
@@ -2388,7 +2377,7 @@ Returns a uniqued list of files that match the given criteria
 from all search paths
 ===============
 */
-char **FS_ListFilteredFiles( const char *path, const char *extension, const char *filter, int *numfiles )
+static char **FS_ListFilteredFiles( const char *path, const char *extension, const char *filter, int *numfiles )
 {
 	int          nfiles;
 	char         **listCopy;
@@ -2590,49 +2579,6 @@ void FS_FreeFileList( char **list )
 }
 
 /*
-================
-FS_GetFileList
-================
-*/
-int FS_GetFileList( const char *path, const char *extension, char *listbuf, int bufsize )
-{
-	int  nFiles, i, nTotal, nLen;
-	char **pFiles = NULL;
-
-	*listbuf = 0;
-	nFiles = 0;
-	nTotal = 0;
-
-	if ( Q_stricmp( path, "$modlist" ) == 0 )
-	{
-		return FS_GetModList( listbuf, bufsize );
-	}
-
-	pFiles = FS_ListFiles( path, extension, &nFiles );
-
-	for ( i = 0; i < nFiles; i++ )
-	{
-		nLen = strlen( pFiles[ i ] ) + 1;
-
-		if ( nTotal + nLen + 1 < bufsize )
-		{
-			strcpy( listbuf, pFiles[ i ] );
-			listbuf += nLen;
-			nTotal += nLen;
-		}
-		else
-		{
-			nFiles = i;
-			break;
-		}
-	}
-
-	FS_FreeFileList( pFiles );
-
-	return nFiles;
-}
-
-/*
 =======================
 Sys_ConcatenateFileLists
 
@@ -2728,7 +2674,7 @@ A mod directory is a peer to baseq3 with a pk3 in it
 The directories are searched in home path and base path
 ================
 */
-int FS_GetModList( char *listbuf, int bufsize )
+static int FS_GetModList( char *listbuf, int bufsize )
 {
 	int          nMods, i, j, nTotal, nLen, nPaks, nPotential, nDescLen;
 	char         **pFiles = NULL;
@@ -2854,6 +2800,49 @@ int FS_GetModList( char *listbuf, int bufsize )
 	Sys_FreeFileList( pFiles );
 
 	return nMods;
+}
+
+/*
+================
+FS_GetFileList
+================
+*/
+int FS_GetFileList( const char *path, const char *extension, char *listbuf, int bufsize )
+{
+	int  nFiles, i, nTotal, nLen;
+	char **pFiles = NULL;
+
+	*listbuf = 0;
+	nFiles = 0;
+	nTotal = 0;
+
+	if ( Q_stricmp( path, "$modlist" ) == 0 )
+	{
+		return FS_GetModList( listbuf, bufsize );
+	}
+
+	pFiles = FS_ListFiles( path, extension, &nFiles );
+
+	for ( i = 0; i < nFiles; i++ )
+	{
+		nLen = strlen( pFiles[ i ] ) + 1;
+
+		if ( nTotal + nLen + 1 < bufsize )
+		{
+			strcpy( listbuf, pFiles[ i ] );
+			listbuf += nLen;
+			nTotal += nLen;
+		}
+		else
+		{
+			nFiles = i;
+			break;
+		}
+	}
+
+	FS_FreeFileList( pFiles );
+
+	return nFiles;
 }
 
 //============================================================================
@@ -4419,34 +4408,6 @@ qboolean FS_VerifyPak( const char *pak )
 	}
 
 	return qfalse;
-}
-
-void    FS_FilenameCompletion( const char *dir, const char *ext,
-                               qboolean stripExt, void ( *callback )( const char *s ) )
-{
-	char **filenames;
-	int  nfiles;
-	int  i;
-	char filename[ MAX_STRING_CHARS ];
-
-	filenames = FS_ListFilteredFiles( dir, ext, NULL, &nfiles );
-
-	FS_SortFileList( filenames, nfiles );
-
-	for ( i = 0; i < nfiles; i++ )
-	{
-		FS_ConvertPath( filenames[ i ] );
-		Q_strncpyz( filename, filenames[ i ], MAX_STRING_CHARS );
-
-		if ( stripExt )
-		{
-			COM_StripExtension3( filename, filename, sizeof( filename ) );
-		}
-
-		callback( filename );
-	}
-
-	FS_FreeFileList( filenames );
 }
 
 namespace FS {

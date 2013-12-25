@@ -534,7 +534,7 @@ vmHeader_t *VM_LoadQVM( vm_t *vm, qboolean alloc )
 	Com_sprintf( filename, sizeof( filename ), "vm/%s.qvm", vm->name );
 	Com_DPrintf( "Loading vm file %s…\n", filename );
 
-	i = FS_ReadFileCheck( filename, &header.v );
+	FS_ReadFile( filename, &header.v );
 
 	if ( !header.h )
 	{
@@ -543,7 +543,7 @@ vmHeader_t *VM_LoadQVM( vm_t *vm, qboolean alloc )
 		return NULL;
 	}
 
-	vm->clean = i >= 0;
+	vm->clean = qtrue;
 
 	// show where the QVM was loaded from
 	if ( com_developer->integer )

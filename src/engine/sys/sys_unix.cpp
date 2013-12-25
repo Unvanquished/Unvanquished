@@ -413,7 +413,7 @@ FILE *Sys_Mkfifo( const char *ospath )
 
 	// if file already exists AND is a pipefile, remove it
 	if( !stat( ospath, &buf ) && S_ISFIFO( buf.st_mode ) )
-		FS_Remove( ospath );
+		remove( ospath );
 
 	result = mkfifo( ospath, 0600 );
 	if( result != 0 )
