@@ -406,7 +406,7 @@ static qboolean CG_RegisterPlayerAnimation( clientInfo_t *ci, const char *modelN
 static qboolean CG_DeriveAnimationDelta( const char *modelName, weapon_t weapon, clientInfo_t *ci, qboolean iqm )
 {
 	int handle, i;
-	refSkeleton_t base, delta;
+	static refSkeleton_t base, delta;
 
 	if ( iqm )
 	{

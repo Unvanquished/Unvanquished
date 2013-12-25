@@ -46,6 +46,8 @@ Maryland 20850 USA.
 #define ENGINE_NAME             "Daemon Engine"
 #define ENGINE_VERSION          PRODUCT_VERSION
 
+#define RSQRT_PRECISE 1
+
 #ifdef REVISION
 # define Q3_VERSION             PRODUCT_NAME " " PRODUCT_VERSION " " REVISION
 #else
@@ -323,6 +325,9 @@ typedef int clipHandle_t;
 		vec3_t trans;
 		vec_t  scale;
 	} transform_t;
+#ifdef Q3_VM
+#pragma align transform_t 16
+#endif
 #endif
 
 	typedef int    fixed4_t;
@@ -1325,63 +1330,33 @@ void         ByteToDir( int b, vec3_t dir );
 	STATIC_INLINE __m128 unitQuat() {
 		return _mm_set_ps( 1.0f, 0.0f, 0.0f, 0.0f ); // order is reversed
 	}
+	STATIC_INLINE __m128 sseLoadInts( const int vec[4] ) {
+		return *(__m128 *)vec;
+	}
 	STATIC_INLINE __m128 mask_0000() {
-		return (__m128)_mm_set_epi32(  0,  0,  0,  0 );
+		static const ALIGNED(16, int vec[4]) = {  0,  0,  0,  0 };
+		return sseLoadInts( vec );
 	}
 	STATIC_INLINE __m128 mask_000W() {
-		return (__m128)_mm_set_epi32( -1,  0,  0,  0 );
-	}
-	STATIC_INLINE __m128 mask_00Z0() {
-		return (__m128)_mm_set_epi32(  0, -1,  0,  0 );
-	}
-	STATIC_INLINE __m128 mask_00ZW() {
-		return (__m128)_mm_set_epi32( -1, -1,  0,  0 );
-	}
-	STATIC_INLINE __m128 mask_0Y00() {
-		return (__m128)_mm_set_epi32(  0,  0, -1,  0 );
-	}
-	STATIC_INLINE __m128 mask_0Y0W() {
-		return (__m128)_mm_set_epi32( -1,  0, -1,  0 );
-	}
-	STATIC_INLINE __m128 mask_0YZ0() {
-		return (__m128)_mm_set_epi32(  0, -1, -1,  0 );
-	}
-	STATIC_INLINE __m128 mask_0YZW() {
-		return (__m128)_mm_set_epi32( -1, -1, -1,  0 );
-	}
-	STATIC_INLINE __m128 mask_X000() {
-		return (__m128)_mm_set_epi32(  0,  0,  0, -1 );
-	}
-	STATIC_INLINE __m128 mask_X00W() {
-		return (__m128)_mm_set_epi32( -1,  0,  0, -1 );
-	}
-	STATIC_INLINE __m128 mask_X0Z0() {
-		return (__m128)_mm_set_epi32(  0, -1,  0, -1 );
-	}
-	STATIC_INLINE __m128 mask_X0ZW() {
-		return (__m128)_mm_set_epi32( -1, -1,  0, -1 );
-	}
-	STATIC_INLINE __m128 mask_XY00() {
-		return (__m128)_mm_set_epi32(  0,  0, -1, -1 );
-	}
-	STATIC_INLINE __m128 mask_XY0W() {
-		return (__m128)_mm_set_epi32( -1,  0, -1, -1 );
+		static const ALIGNED(16, int vec[4]) = {  0,  0,  0, -1 };
+		return sseLoadInts( vec );
 	}
 	STATIC_INLINE __m128 mask_XYZ0() {
-		return (__m128)_mm_set_epi32(  0, -1, -1, -1 );
-	}
-	STATIC_INLINE __m128 mask_XYZW() {
-		return (__m128)_mm_set_epi32( -1, -1, -1, -1 );
+		static const ALIGNED(16, int vec[4]) = { -1, -1, -1,  0 };
+		return sseLoadInts( vec );
 	}
 
 	STATIC_INLINE __m128 sign_000W() {
-		return (__m128)_mm_set_epi32( 0x80000000, 0, 0, 0 );
+		static const ALIGNED(16, int vec[4]) = { 0, 0, 0, 1<<31 };
+		return sseLoadInts( vec );
 	}
 	STATIC_INLINE __m128 sign_XYZ0() {
-		return (__m128)_mm_set_epi32( 0, 0x80000000, 0x80000000, 0x80000000 );
+		static const ALIGNED(16, int vec[4]) = { 1<<31, 1<<31, 1<<31,  0 };
+		return sseLoadInts( vec );
 	}
 	STATIC_INLINE __m128 sign_XYZW() {
-		return (__m128)_mm_set_epi32( 0x80000000, 0x80000000, 0x80000000, 0x80000000 );
+		static const ALIGNED(16, int vec[4]) = { 1<<31, 1<<31, 1<<31, 1<<31 };
+		return sseLoadInts( vec );
 	}
 
 	STATIC_INLINE __m128 sseDot4( __m128 a, __m128 b ) {
@@ -1413,12 +1388,19 @@ void         ByteToDir( int b, vec3_t dir );
 	}
 	STATIC_INLINE __m128 sseQuatNormalize( __m128 q ) {
 		__m128 p = _mm_mul_ps( q, q );
+		__m128 t, h;
 		p = _mm_add_ps( sseSwizzle( p, XXZZ ),
 				sseSwizzle( p, YYWW ) );
 		p = _mm_add_ps( sseSwizzle( p, XXXX ),
 				sseSwizzle( p, ZZZZ ) );
-		p = _mm_rsqrt_ps( p );
-		return _mm_mul_ps( q, p );
+		t = _mm_rsqrt_ps( p );
+#ifdef RSQRT_PRECISE
+		h = _mm_mul_ps( _mm_set1_ps( 0.5f ), t );
+		t = _mm_mul_ps( _mm_mul_ps( t, t ), p );
+		t = _mm_sub_ps( _mm_set1_ps( 3.0f ), t );
+		t = _mm_mul_ps( h, t );
+#endif
+		return _mm_mul_ps( q, t );
 	}
 	STATIC_INLINE __m128 sseQuatTransform( __m128 q, __m128 vec ) {
 		__m128 t, t2;
