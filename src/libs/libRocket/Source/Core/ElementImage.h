@@ -14,7 +14,7 @@
  *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -83,6 +83,7 @@ protected:
 	/// Checks for changes to the image's source or dimensions.
 	/// @param[in] changed_attributes A list of attributes changed on the element.
 	virtual void OnAttributeChange(const AttributeNameList& changed_attributes);
+	virtual void OnPropertyChange(const PropertyNameList& changed_properties);
 
 	/// Regenerates the element's geometry on a resize event.
 	/// @param[in] event The event to process.
