@@ -14,7 +14,7 @@
  *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -240,7 +240,7 @@ void StyleSheetSpecification::RegisterDefaultProperties()
 	RegisterProperty(COLOR, "white", true, false).AddParser(COLOR);
 
 	RegisterProperty(FONT_FAMILY, "", true, true).AddParser("string");
-	RegisterProperty(FONT_CHARSET, "U+0020-007E", true, false).AddParser("string");
+	RegisterProperty(FONT_CHARSET, "U+0020-0100", true, false).AddParser("string");
 	RegisterProperty(FONT_STYLE, "normal", true, true).AddParser("keyword", "normal, italic");
 	RegisterProperty(FONT_WEIGHT, "normal", true, true).AddParser("keyword", "normal, bold");
 	RegisterProperty(FONT_SIZE, "12", true, true).AddParser("number");
