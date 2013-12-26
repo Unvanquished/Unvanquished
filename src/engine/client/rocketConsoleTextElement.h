@@ -37,6 +37,7 @@ Maryland 20850 USA.
 
 #include <Rocket/Core.h>
 #include <Rocket/Core/Element.h>
+#include <Rocket/Core/FontFaceHandle.h>
 #include "client.h"
 #include "rocket.h"
 
@@ -103,7 +104,7 @@ public:
 			const Rocket::Core::FontFaceHandle *font = GetFirstChild()->GetFontFaceHandle();
 			if ( font )
 			{
-				maxLines = floor( GetProperty( "height" )->value.Get<float>() / ( 10.0f ) );
+				maxLines = floor( GetProperty( "height" )->value.Get<float>() / ( font->GetBaseline() + font->GetLineHeight() ) );
 
 				if ( maxLines <= 0 )
 				{
