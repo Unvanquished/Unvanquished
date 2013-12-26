@@ -2158,6 +2158,7 @@ typedef struct
 	rocketElementType_t type;
 } elementRenderCmd_t;
 
+// THESE MUST BE ALPHABETIZED
 static const elementRenderCmd_t elementRenderCmdList[] =
 {
 	{ "alien_sense", &CG_Rocket_DrawAlienSense, ELEMENT_ALIENS },
@@ -2169,8 +2170,6 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "clips", &CG_Rocket_DrawClips, ELEMENT_HUMANS },
 	{ "clip_stack", &CG_DrawPlayerClipsStack, ELEMENT_HUMANS },
 	{ "clock", &CG_Rocket_DrawClock, ELEMENT_ALL },
-	{ "momentum", &CG_Rocket_DrawMomentum, ELEMENT_BOTH },
-	{ "momentum_bar", &CG_Rocket_DrawPlayerMomentumBar, ELEMENT_BOTH },
 	{ "connecting", &CG_Rocket_DrawConnectText, ELEMENT_ALL },
 	{ "credits", &CG_Rocket_DrawCreditsValue, ELEMENT_HUMANS },
 	{ "crosshair", &CG_Rocket_DrawCrosshair, ELEMENT_BOTH },
@@ -2188,6 +2187,8 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "location", &CG_Rocket_DrawLocation, ELEMENT_GAME },
 	{ "mine_rate", &CG_Rocket_DrawMineRate, ELEMENT_BOTH },
 	{ "minimap", &CG_Rocket_DrawMinimap, ELEMENT_GAME },
+	{ "momentum", &CG_Rocket_DrawMomentum, ELEMENT_BOTH },
+	{ "momentum_bar", &CG_Rocket_DrawPlayerMomentumBar, ELEMENT_BOTH },
 	{ "scanner", &CG_Rocket_DrawHumanScanner, ELEMENT_HUMANS },
 	{ "speedometer", &CG_Rocket_DrawSpeedGraph, ELEMENT_GAME },
 	{ "stamina", &CG_Rocket_DrawStaminaValue, ELEMENT_HUMANS },
