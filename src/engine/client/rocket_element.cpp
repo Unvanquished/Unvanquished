@@ -313,8 +313,13 @@ void Rocket_SetPropertyById( const char *id, const char *property, const char *v
 std::deque<ConsoleLine> RocketConsoleTextElement::lines;
 void Rocket_AddConsoleText( void )
 {
+	// HACK: Ugly way to force pre-engine-upgrade behavior. TODO: Make it work without this hack
 	static char buffer[ MAX_STRING_CHARS ];
-
+	static char* newline = "\n";
 	Cmd_LiteralArgsBuffer( buffer, sizeof( buffer ) );
-	RocketConsoleTextElement::lines.push_front( ConsoleLine( buffer ) );
+	if ( !Q_stricmp(newline, buffer) )
+	{
+		return;
+	}
+	RocketConsoleTextElement::lines.push_front( ConsoleLine( Rocket::Core::String( va("%s\n", buffer) ) ) );
 }
