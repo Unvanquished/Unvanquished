@@ -120,38 +120,6 @@ void CG_CenterPrint( const char *str, int y, int charWidth )
 	cg.centerPrintTime = cg.time;
 }
 
-/*
-===================
-CG_DrawCenterString
-===================
-*/
-static void CG_DrawCenterString( void )
-{
-	char  *start;
-	int   l;
-	int   x, y, w;
-	int   h;
-	float *color;
-
-	if ( !cg.centerPrintTime )
-	{
-		return;
-	}
-
-	color = CG_FadeColor( cg.centerPrintTime, 1000 * cg_centertime.value );
-
-	if ( !color )
-	{
-		return;
-	}
-
-	trap_R_SetColor( color );
-
-	start = cg.centerPrint;
-
-	y = cg.centerPrintY - cg.centerPrintLines * BIGCHAR_HEIGHT / 2;
-}
-
 //==============================================================================
 
 //FIXME: both vote notes are hardcoded, change to ownerdrawn?
@@ -352,11 +320,6 @@ static void CG_Draw2D( void )
 	CG_DrawVote( (team_t) cg.predictedPlayerState.persistant[ PERS_TEAM ] );
 	CG_DrawWarmup();
 	CG_DrawQueue();
-
-	if ( !cg.scoreBoardShowing )
-	{
-		CG_DrawCenterString();
-	}
 }
 
 /*
