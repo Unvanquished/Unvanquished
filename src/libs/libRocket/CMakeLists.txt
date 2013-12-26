@@ -4,7 +4,7 @@ set(Core_HDR_FILES
     ${ROCKET_DIR}/Source/Core/StyleSheetNodeSelectorFirstOfType.h
     ${ROCKET_DIR}/Source/Core/DecoratorTiledBoxInstancer.h
     ${ROCKET_DIR}/Source/Core/ElementStyle.h
-	${ROCKET_DIR}/Source/Core/ElementStyleCache.h
+    ${ROCKET_DIR}/Source/Core/ElementStyleCache.h
     ${ROCKET_DIR}/Source/Core/ContextInstancerDefault.h
     ${ROCKET_DIR}/Source/Core/PropertyParserKeyword.h
     ${ROCKET_DIR}/Source/Core/ElementDefinition.h
@@ -37,7 +37,6 @@ set(Core_HDR_FILES
     ${ROCKET_DIR}/Source/Core/Pool.h
     ${ROCKET_DIR}/Source/Core/TemplateCache.h
     ${ROCKET_DIR}/Source/Core/Template.h
-    ${ROCKET_DIR}/Source/Core/UnicodeRange.h
     ${ROCKET_DIR}/Source/Core/EventIterators.h
     ${ROCKET_DIR}/Source/Core/XMLNodeHandlerBody.h
     ${ROCKET_DIR}/Source/Core/LayoutBlockBox.h
@@ -53,7 +52,6 @@ set(Core_HDR_FILES
     ${ROCKET_DIR}/Source/Core/LayoutBlockBoxSpace.h
     ${ROCKET_DIR}/Source/Core/DocumentHeader.h
     ${ROCKET_DIR}/Source/Core/precompiled.h
-    ${ROCKET_DIR}/Source/Core/FontFaceHandle.h
     ${ROCKET_DIR}/Source/Core/StyleSheetNodeSelectorNthLastChild.h
     ${ROCKET_DIR}/Source/Core/StyleSheetNodeSelectorFirstChild.h
     ${ROCKET_DIR}/Source/Core/LayoutLineBox.h
@@ -157,6 +155,8 @@ set(Core_PUB_HDR_FILES
     ${ROCKET_DIR}/Include/Rocket/Core/XMLNodeHandler.h
     ${ROCKET_DIR}/Include/Rocket/Core/PropertyParser.h
     ${ROCKET_DIR}/Include/Rocket/Core/ContextInstancer.h
+    ${ROCKET_DIR}/Include/Rocket/Core/UnicodeRange.h
+    ${ROCKET_DIR}/Include/Rocket/Core/FontFaceHandle.h
     ${ROCKET_DIR}/Include/Rocket/Core.h
 )
 
@@ -220,7 +220,7 @@ set(Core_SRC_FILES
     ${ROCKET_DIR}/Source/Core/WidgetSlider.cpp
     ${ROCKET_DIR}/Source/Core/Property.cpp
     ${ROCKET_DIR}/Source/Core/ElementStyle.cpp
-	${ROCKET_DIR}/Source/Core/ElementStyleCache.cpp
+    ${ROCKET_DIR}/Source/Core/ElementStyleCache.cpp
     ${ROCKET_DIR}/Source/Core/DecoratorNoneInstancer.cpp
     ${ROCKET_DIR}/Source/Core/Element.cpp
     ${ROCKET_DIR}/Source/Core/FontEffectOutlineInstancer.cpp
