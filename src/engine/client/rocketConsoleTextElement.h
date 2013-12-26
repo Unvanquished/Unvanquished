@@ -138,7 +138,7 @@ public:
 	{
 		const char *p;
 		Rocket::Core::String out;
-		Rocket::Core::Element *child;
+		Rocket::Core::Element *child = NULL;
 		qboolean span = qfalse;
 
 		if ( !*in )
