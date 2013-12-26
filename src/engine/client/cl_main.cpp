@@ -2181,34 +2181,6 @@ void CL_Rcon_f( void )
 	NET_SendPacket( NS_CLIENT, strlen( message ) + 1, message, to );
 }
 
-/*
-=================
-CL_SendPureChecksums
-=================
-*/
-void CL_SendPureChecksums( void )
-{
-	const char *pChecksums;
-	char       cMsg[ MAX_INFO_VALUE ];
-
-	// if we are pure we need to send back a command with our referenced pk3 checksums
-	pChecksums = FS_ReferencedPakPureChecksums();
-
-	Com_sprintf( cMsg, sizeof( cMsg ), "cp %d %s", cl.serverId, pChecksums );
-
-	CL_AddReliableCommand( cMsg );
-}
-
-/*
-=================
-CL_ResetPureClientAtServer
-=================
-*/
-void CL_ResetPureClientAtServer( void )
-{
-	CL_AddReliableCommand( "vdr" );
-}
-
 static void CL_GetRSAKeysFileName( char *buffer, size_t size )
 {
 	if ( cl_profile && cl_profile->string[ 0 ] )
@@ -2347,8 +2319,6 @@ void CL_Vid_Restart_f( void )
 	re.UnregisterFont( NULL );
 	// shutdown the renderer and clear the renderer interface
 	CL_ShutdownRef();
-	// client is no longer pure untill new checksums are sent
-	CL_ResetPureClientAtServer();
 	// clear pak references
 	FS_ClearPakReferences( FS_UI_REF | FS_CGAME_REF );
 	// reinitialize the filesystem if the game directory or checksum has changed
@@ -2391,8 +2361,6 @@ void CL_Vid_Restart_f( void )
 		cls.cgameStarted = qtrue;
 		cls.cgameCVarsRegistered = qtrue;
 		CL_InitCGame();
-		// send pure checksums
-		CL_SendPureChecksums();
 	}
 }
 
@@ -2465,26 +2433,6 @@ void CL_UpdateProfile( void )
 	{
 		cl_profile->modified = qfalse;
 	}
-}
-
-/*
-==================
-CL_PK3List_f
-==================
-*/
-void CL_OpenedPK3List_f( void )
-{
-	Com_Printf( "Opened PK3 Names: %s\n", FS_LoadedPakNames() );
-}
-
-/*
-==================
-CL_PureList_f
-==================
-*/
-void CL_ReferencedPK3List_f( void )
-{
-	Com_Printf( "Referenced PK3 Names: %s\n", FS_ReferencedPakNames() );
 }
 
 /*
@@ -2704,9 +2652,6 @@ void CL_DownloadsComplete( void )
 	cls.cgameStarted = qtrue;
 	cls.cgameCVarsRegistered = qtrue;
 	CL_InitCGame();
-
-	// set pure checksums
-	CL_SendPureChecksums();
 
 	CL_WritePacket();
 	CL_WritePacket();
@@ -4678,8 +4623,6 @@ void CL_Init( void )
 	Cmd_AddCommand( "ping", CL_Ping_f );
 	Cmd_AddCommand( "serverstatus", CL_ServerStatus_f );
 	Cmd_AddCommand( "showip", CL_ShowIP_f );
-	Cmd_AddCommand( "fs_openedList", CL_OpenedPK3List_f );
-	Cmd_AddCommand( "fs_referencedList", CL_ReferencedPK3List_f );
 
 	Cmd_AddCommand( "irc_connect", CL_InitIRC );
 	Cmd_AddCommand( "irc_quit", CL_IRCInitiateShutdown );

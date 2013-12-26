@@ -1706,6 +1706,7 @@ RecursiveDirectoryRange ListFilesRecursive(Str::StringRef path, std::error_code&
 
 } // namespace FS
 
+#if 0
 // Compatibility wrapper
 
 struct handleData_t {
@@ -2201,8 +2202,10 @@ char* FS_BuildOSPath(const char* base, const char*, const char* path)
 	return ospath[toggle];
 }
 
-// TODO
-qboolean FS_VerifyPak(const char* pak);
+qboolean FS_VerifyPak(const char*)
+{
+	return true;
+}
 
 qboolean FS_Initialized()
 {
@@ -2228,6 +2231,7 @@ void FS_Restart(int checksumFeed)
 
 	if (fs_serverPaks.empty()) {
 		// If no server pk3s are specified, load all pk3s in reverse order
+		// At some point we should probably restrict this to only load from a specific set of pk3s
 		for (auto i = FS::GetAvailablePaks().rbegin(); i != FS::GetAvailablePaks().rend(); ++i) {
 			try {
 				mainNamespace.LoadPak(i->name, i->version);
@@ -2252,3 +2256,4 @@ qboolean FS_ConditionalRestart(int checksumFeed)
 	FS_Restart(checksumFeed);
 	return true;
 }
+#endif
