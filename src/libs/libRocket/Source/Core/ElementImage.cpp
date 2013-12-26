@@ -166,6 +166,12 @@ void ElementImage::OnPropertyChange(const PropertyNameList& changed_properties)
 	{
 		geometry_dirty = true;
 	}
+
+	// Check if opacity has been changed
+	if (changed_properties.find(OPACITY) != changed_properties.end() )
+	{
+		geometry_dirty = true;
+	}
 }
 
 // Regenerates the element's geometry.
@@ -192,6 +198,9 @@ void ElementImage::GenerateGeometry()
 	indices.resize(6);
 
 	Colourb color = GetProperty(COLOR)->value.Get< Colourb >();
+
+	float alpha = GetProperty(OPACITY)->value.Get< float >();
+	color.alpha *= alpha;
 
 	// Generate the texture coordinates.
 	Vector2f texcoords[2];

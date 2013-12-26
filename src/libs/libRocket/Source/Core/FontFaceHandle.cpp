@@ -302,7 +302,10 @@ int FontFaceHandle::GenerateString(GeometryList& geometry, const WString& string
 		if (layer == base_layer)
 			layer_colour = colour;
 		else
+		{
 			layer_colour = layer->GetColour();
+			layer_colour.alpha *= colour.alpha / 255.0f;
+		}
 
 		// Resize the geometry list if required.
 		if ((int) geometry.size() < geometry_index + layer->GetNumTextures())

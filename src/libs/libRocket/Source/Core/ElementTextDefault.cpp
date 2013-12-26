@@ -43,7 +43,7 @@ namespace Core {
 static bool BuildToken(WString& token, const word*& token_begin, const word* string_end, bool first_token, bool collapse_white_space, bool break_at_endline, int text_transformation);
 static bool LastToken(const word* token_begin, const word* string_end, bool collapse_white_space, bool break_at_endline);
 
-ElementTextDefault::ElementTextDefault(const String& tag) : ElementText(tag), colour(255, 255, 255), decoration(this)
+ElementTextDefault::ElementTextDefault(const String& tag) : ElementText(tag), colour(255, 255, 255), real_colour(255, 255, 255), decoration(this)
 {
 	dirty_layout_on_change = true;
 
@@ -290,7 +290,23 @@ void ElementTextDefault::OnPropertyChange(const PropertyNameList& changed_proper
 		Colourb new_colour = GetProperty(COLOR)->value.Get< Colourb >();
 		colour_changed = colour != new_colour;
 		if (colour_changed)
+		{
 			colour = new_colour;
+			float alpha = GetProperty<float>(OPACITY);
+			real_colour = colour = new_colour;
+			colour.alpha *= alpha;
+		}
+	}
+
+	if (changed_properties.find(OPACITY) != changed_properties.end())
+	{
+		float opacity = GetProperty<float>(OPACITY);
+		colour_changed = (colour.alpha != (real_colour.alpha * opacity));
+		if (colour_changed)
+		{
+			colour = real_colour;
+			colour.alpha *= opacity;
+		}
 	}
 
 	if (changed_properties.find(FONT_FAMILY) != changed_properties.end() ||
