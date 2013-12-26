@@ -122,58 +122,6 @@ void CG_CenterPrint( const char *str, int y, int charWidth )
 
 //==============================================================================
 
-//FIXME: both vote notes are hardcoded, change to ownerdrawn?
-
-/*
-=================
-CG_DrawVote
-=================
-*/
-static void CG_DrawVote( team_t team )
-{
-	char   *s;
-	int    sec;
-	int    offset = 0;
-	vec4_t white = { 1.0f, 1.0f, 1.0f, 1.0f };
-	char   yeskey[ 32 ] = "", nokey[ 32 ] = "";
-
-	if ( !cgs.voteTime[ team ] )
-	{
-		return;
-	}
-
-	// play a talk beep whenever it is modified
-	if ( cgs.voteModified[ team ] )
-	{
-		cgs.voteModified[ team ] = qfalse;
-		trap_S_StartLocalSound( cgs.media.talkSound, CHAN_LOCAL_SOUND );
-	}
-
-	sec = ( VOTE_TIME - ( cg.time - cgs.voteTime[ team ] ) ) / 1000;
-
-	if ( sec < 0 )
-	{
-		sec = 0;
-	}
-
-	if ( cg_tutorial.integer )
-	{
-		Com_sprintf( yeskey, sizeof( yeskey ), "[%s]",
-		             CG_KeyBinding( va( "%svote yes", team == TEAM_NONE ? "" : "team" ), team ) );
-		Com_sprintf( nokey, sizeof( nokey ), "[%s]",
-		             CG_KeyBinding( va( "%svote no", team == TEAM_NONE ? "" : "team" ), team ) );
-	}
-
-	if ( team != TEAM_NONE )
-	{
-		offset = 80;
-	}
-
-	s = va( "%sVOTE(%i): %s",
-	        team == TEAM_NONE ? "" : "TEAM", sec, cgs.voteString[ team ] );
-	// TODO
-}
-
 /*
 =================
 CG_DrawIntermission
@@ -290,8 +238,6 @@ static void CG_Draw2D( void )
 
 	if ( cg.snap->ps.pm_type == PM_INTERMISSION )
 	{
-		CG_DrawVote( TEAM_NONE );
-		CG_DrawVote( (team_t) cg.predictedPlayerState.persistant[ PERS_TEAM ] );
 		CG_DrawIntermission();
 		return;
 	}
@@ -316,8 +262,6 @@ static void CG_Draw2D( void )
 		//TODO: Draw HUD
 	}
 
-	CG_DrawVote( TEAM_NONE );
-	CG_DrawVote( (team_t) cg.predictedPlayerState.persistant[ PERS_TEAM ] );
 	CG_DrawWarmup();
 	CG_DrawQueue();
 }

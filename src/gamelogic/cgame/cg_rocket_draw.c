@@ -2150,6 +2150,55 @@ static void CG_Rocket_DrawPlayerUnlockedItems( void )
 	trap_R_SetColor( NULL );
 }
 
+static void CG_Rocket_DrawVote_internal( team_t team )
+{
+	char   *s;
+	int    sec;
+	char   yeskey[ 32 ] = "", nokey[ 32 ] = "";
+
+	if ( !cgs.voteTime[ team ] )
+	{
+		return;
+	}
+
+	// play a talk beep whenever it is modified
+	if ( cgs.voteModified[ team ] )
+	{
+		cgs.voteModified[ team ] = qfalse;
+		trap_S_StartLocalSound( cgs.media.talkSound, CHAN_LOCAL_SOUND );
+	}
+
+	sec = ( VOTE_TIME - ( cg.time - cgs.voteTime[ team ] ) ) / 1000;
+
+	if ( sec < 0 )
+	{
+		sec = 0;
+	}
+
+	if ( cg_tutorial.integer )
+	{
+		Com_sprintf( yeskey, sizeof( yeskey ), "[%s]",
+			     CG_KeyBinding( va( "%svote yes", team == TEAM_NONE ? "" : "team" ), team ) );
+		Com_sprintf( nokey, sizeof( nokey ), "[%s]",
+			     CG_KeyBinding( va( "%svote no", team == TEAM_NONE ? "" : "team" ), team ) );
+	}
+
+	s = va( "%sVOTE(%i): %s",
+		team == TEAM_NONE ? "" : "TEAM", sec, cgs.voteString[ team ] );
+
+	trap_Rocket_SetInnerRML( s, qtrue );
+}
+
+static void CG_Rocket_DrawVote( void )
+{
+	CG_Rocket_DrawVote_internal( TEAM_NONE );
+}
+
+static void CG_Rocket_DrawTeamVote( void )
+{
+	CG_Rocket_DrawVote_internal( (team_t) cg.predictedPlayerState.persistant[ PERS_TEAM ] );
+}
+
 
 typedef struct
 {
@@ -2197,6 +2246,8 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "tutorial", &CG_Rocket_DrawTutorial, ELEMENT_GAME },
 	{ "unlocked_items", &CG_Rocket_DrawPlayerUnlockedItems, ELEMENT_BOTH },
 	{ "usable_buildable", &CG_Rocket_DrawUsableBuildable, ELEMENT_HUMANS },
+	{ "votes", &CG_Rocket_DrawVote, ELEMENT_GAME },
+	{ "votes_team", &CG_Rocket_DrawTeamVote, ELEMENT_BOTH },
 	{ "wallwalk", &CG_Rocket_DrawPlayerWallclimbing, ELEMENT_ALIENS },
 	{ "weapon_icon", &CG_Rocket_DrawWeaponIcon, ELEMENT_BOTH },
 };
