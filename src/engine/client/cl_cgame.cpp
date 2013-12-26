@@ -2432,7 +2432,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0;
 
 		case CG_ROCKET_SETPROPERYBYID:
-			Rocket_SetPropertyById( (const char *) VMA(1), (const char *) VMA(2), (const char *) VMA(3) );
+			Rocket_SetPropertyById( "", (const char *) VMA(1), (const char *) VMA(2) );
 			return 0;
 
 		case CG_ROCKET_INITHUDS:
