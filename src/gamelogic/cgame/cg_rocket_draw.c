@@ -2057,7 +2057,7 @@ static void CG_Rocket_DrawPlayerUnlockedItems( void )
 	vertical = ( h > w );
 
 	ih = vertical ? w : h;
-// 	iw = ih * cgDC.aspectScale;
+	iw = ih; //* cgDC.aspectScale;
 
 	x = rect.x + borderSize;
 	y = rect.y + borderSize + ( h - ih ) * vertical;
