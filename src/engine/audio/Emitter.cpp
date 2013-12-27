@@ -69,11 +69,17 @@ namespace Audio {
         }
 
         // This is a temporrary effect to test reverb
-        AL::Effect effectParams;
-        effectParams.ApplyReverbPreset(AL::GetHangarEffectPreset());
+        auto preset = AL::GetPresetByName("hangar");
 
-        globalEffect = new AL::EffectSlot();
-        globalEffect->SetEffect(effectParams);
+        if (preset) {
+            AL::Effect effectParams;
+            effectParams.ApplyReverbPreset(*AL::GetPresetByName("hangar"));
+
+            globalEffect = new AL::EffectSlot();
+            globalEffect->SetEffect(effectParams);
+        } else {
+            audioLogs.Warn("Couldn't load the default preset");
+        }
 
         AL::SetInverseDistanceModel();
         AL::SetSpeedOfSound(SPEED_OF_SOUND);
@@ -303,5 +309,48 @@ namespace Audio {
 
         MakeLocal(source);
     }
+
+    class TestReverbCmd : public Cmd::StaticCmd {
+        public:
+            TestReverbCmd(): StaticCmd("testReverb", Cmd::AUDIO, N_("Tests a reverb preset.")) {
+            }
+
+            virtual void Run(const Cmd::Args& args) const OVERRIDE {
+                if (args.Argc() != 2) {
+                    PrintUsage(args, "[preset name]", "tests the reverb preset.");
+                }
+
+                auto preset = AL::GetPresetByName(args.Argv(1));
+
+                if (not preset) {
+                    Print("Reverb preset '%s' doesn't exist.", args.Argv(1));
+                    return;
+                }
+
+                AL::Effect effectParams;
+                effectParams.ApplyReverbPreset(*preset);
+
+                globalEffect->SetEffect(effectParams);
+            }
+
+            Cmd::CompletionResult Complete(int argNum, const Cmd::Args&, const std::string& prefix) const OVERRIDE {
+                if (argNum != 1) {
+                    return {};
+                }
+                std::vector<std::string> presets = AL::ListPresetNames();
+                std::sort(presets.begin(), presets.end());
+
+                Cmd::CompletionResult res;
+
+                for (auto& name: presets) {
+                    if (Str::IsPrefix(prefix, name)) {
+                        res.push_back({std::move(name), ""});
+                    }
+                }
+
+                return res;
+            }
+    };
+    static TestReverbCmd testReverbRegistration;
 
 }

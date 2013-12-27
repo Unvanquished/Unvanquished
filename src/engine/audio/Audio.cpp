@@ -126,6 +126,7 @@ namespace Audio {
         initialized = true;
 
         // Initializes the rest of the audio system
+        AL::InitEffectPresets();
         InitSamples();
         InitSounds();
         InitEmitters();

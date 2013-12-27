@@ -72,9 +72,10 @@ namespace AL {
             unsigned alHandle;
     };
 
-    //TODO allow to list the EFX presets and load them at the start of the program?
     struct ReverbEffectPreset;
-    ReverbEffectPreset& GetHangarEffectPreset();
+    void InitEffectPresets();
+    ReverbEffectPreset* GetPresetByName(Str::StringRef name);
+    std::vector<std::string> ListPresetNames();
 
     /**
      * OpenAL's EFX extension adds support for effects (notably reverb). Each OpenAL

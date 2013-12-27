@@ -282,7 +282,7 @@ namespace Audio {
 
     MusicSound::MusicSound(Str::StringRef leadingStreamName, Str::StringRef loopStreamName)
         : leadingStream(S_CodecOpenStream(leadingStreamName.c_str())),
-          loopStreamName(loopStreamName), playingLeadingSound(true) {
+          loopStreamName(loopStreamName), loopStream(nullptr), playingLeadingSound(true){
     }
 
     MusicSound::~MusicSound() {
