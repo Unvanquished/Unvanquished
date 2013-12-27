@@ -27,6 +27,8 @@ along with daemon source code.  if not, see <http://www.gnu.org/licenses/>.
 //TODO check all inputs for validity
 namespace Audio {
 
+    Log::Logger audioLogs("audio");
+
     static Cvar::Cvar<float> masterVolume("sound.volume.master", "the global audio volume", Cvar::ARCHIVE, 0.8f);
 
     //TODO make them the equivalent of LATCH and ROM for available*

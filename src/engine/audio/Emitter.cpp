@@ -63,7 +63,7 @@ namespace Audio {
         globalEffect->SetEffect(effectParams);
 
         AL::SetSpeedOfSound(SPEED_OF_SOUND);
-        AL::SetDopplerExaggerationFactor(3); //keep it small else we get a deadlock in OpenAL's mixer
+        AL::SetDopplerExaggerationFactor(1); //keep it small else we get a deadlock in OpenAL's mixer
 
         localEmitter = std::make_shared<LocalEmitter>();
 
@@ -221,7 +221,7 @@ namespace Audio {
         }
     }
 
-    void EntityEmitter::InternalSetupSound(Sound& sound) {
+    void EntityEmitter::InternalSetupSound(Sound&) {
     }
 
     // Implementation of PositionEmitter
@@ -237,7 +237,7 @@ namespace Audio {
         //TODO
     }
 
-    void PositionEmitter::UpdateSound(Sound& sound) {
+    void PositionEmitter::UpdateSound(Sound&) {
     }
 
     void PositionEmitter::InternalSetupSound(Sound& sound) {
@@ -261,7 +261,7 @@ namespace Audio {
     void LocalEmitter::Update() {
     }
 
-    void LocalEmitter::UpdateSound(Sound& sound) {
+    void LocalEmitter::UpdateSound(Sound&) {
     }
 
     void LocalEmitter::InternalSetupSound(Sound& sound) {

@@ -59,6 +59,8 @@ namespace Audio {
 
     // The speed of sound in qu/s
     constexpr float SPEED_OF_SOUND = 343.3 / QUNIT_IN_METER;
+
+    extern Log::Logger audioLogs;
 }
 
 #include "ALObjects.h"
