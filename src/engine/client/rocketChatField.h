@@ -83,13 +83,13 @@ public:
 		if ( focus )
 		{
 			GetContext()->ProcessMouseMove( cursor_position.x, cursor_position.y, 0 );
-		}
 
-		// Make sure this element is in focus if visible
-		if ( GetContext()->GetFocusElement() != this )
-		{
-			this->Click();
-			this->Focus();
+			// Make sure this element is in focus if visible
+			if ( GetContext()->GetFocusElement() != this )
+			{
+				this->Click();
+				this->Focus();
+			}
 		}
 	}
 
@@ -99,6 +99,22 @@ public:
 		if ( focus && event == "mousemove" )
 		{
 			event.StopPropagation();
+		}
+
+		// We are in focus, let the element know
+		if ( event.GetTargetElement() == GetOwnerDocument() )
+		{
+			if ( event == "show" )
+			{
+				focus = true;
+			}
+
+			else if ( event == "blur" || event == "hide" )
+			{
+				focus =  false;
+				GetContext()->ShowMouseCursor( true );
+				text.Clear();
+			}
 		}
 
 		if ( event.GetTargetElement() == this )
@@ -180,19 +196,6 @@ public:
 					UpdateText();
 					MoveCursor( 1 );
 				}
-			}
-
-			// We are in focus, let the element know
-			else if ( event == "show" )
-			{
-				focus = true;
-			}
-
-			else if ( event == "blur" || event == "hide" )
-			{
-				focus =  false;
-				GetContext()->ShowMouseCursor( true );
-				text.Clear();
 			}
 		}
 	}
