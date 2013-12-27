@@ -43,7 +43,6 @@ typedef enum
 	E_H_MGTURRET,
 	E_H_TESLAGEN,
 	E_H_ARMOURY,
-	E_H_DCC,
 	E_H_MEDISTAT,
 	E_H_DRILL,
 	E_H_REACTOR,

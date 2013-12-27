@@ -42,15 +42,14 @@ const char        *G_quoted_admin_name( gentity_t *ent );
 
 // g_buildable.c
 gentity_t         *G_CheckSpawnPoint( int spawnNum, const vec3_t origin, const vec3_t normal, buildable_t spawn, vec3_t spawnOrigin );
-qboolean          G_IsDCCBuilt( void );
-int               G_FindDCC( gentity_t *self );
 gentity_t         *G_Reactor( void );
 gentity_t         *G_Overmind( void );
 float             G_DistanceToBase( gentity_t *self, qboolean ownBase );
 qboolean          G_InsideBase( gentity_t *self, qboolean ownBase );
 qboolean          G_FindCreep( gentity_t *self );
 gentity_t         *G_Build( gentity_t *builder, buildable_t buildable, const vec3_t origin, const vec3_t normal, const vec3_t angles, int groundEntityNum );
-int               G_RGSPredictEfficiency( vec3_t origin );
+float             G_RGSPredictEfficiency( vec3_t origin );
+float             G_RGSPredictEfficiencyDelta( vec3_t origin, team_t team );
 void              G_BuildableThink( gentity_t *ent, int msec );
 qboolean          G_BuildableInRange( vec3_t origin, float radius, buildable_t buildable );
 void              G_IgniteBuildable( gentity_t *self, gentity_t *fireStarter );
@@ -177,12 +176,15 @@ void              G_AdminMessage( gentity_t *ent, const char *string );
 void QDECL        G_LogPrintf( const char *fmt, ... ) PRINTF_LIKE(1);
 void              SendScoreboardMessageToAllClients( void );
 void QDECL        G_Printf( const char *fmt, ... ) PRINTF_LIKE(1);
-void QDECL        G_Error( const char *fmt, ... ) PRINTF_LIKE(1) NORETURN;
+void QDECL NORETURN G_Error( const char *fmt, ... ) PRINTF_LIKE(1);
 void              G_Vote( gentity_t *ent, team_t team, qboolean voting );
 void              G_ResetVote( team_t team );
 void              G_ExecuteVote( team_t team );
 void              G_CheckVote( team_t team );
 void              LogExit( const char *string );
+void              G_InitGame( int levelTime, int randomSeed, int restart );
+void              G_RunFrame( int levelTime );
+void              G_ShutdownGame( int restart );
 vmCvar_t          *G_FindCvar( const char *name );
 
 // g_maprotation.c

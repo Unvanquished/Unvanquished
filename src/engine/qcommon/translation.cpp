@@ -32,11 +32,11 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-extern "C"
-{
 #include "q_shared.h"
 #include "qcommon.h"
-#include "../../libs/findlocale/findlocale.h"
+
+extern "C" {
+    #include "../../libs/findlocale/findlocale.h"
 }
 
 #include "../../libs/tinygettext/log.hpp"
@@ -61,7 +61,7 @@ cvar_t            *trans_encodings;
 cvar_t            *trans_languages;
 
 #ifndef DEDICATED
-extern "C" cvar_t *cl_consoleKeys; // should really #include client.h
+extern cvar_t *cl_consoleKeys; // should really #include client.h
 #endif
 
 /*
@@ -183,9 +183,9 @@ public:
 		return ret;
 	}
 
-	std::auto_ptr<std::istream> open_file( const std::string& filename )
+	std::unique_ptr<std::istream> open_file( const std::string& filename )
 	{
-		return std::auto_ptr<std::istream>( new DaemonIstream( filename ) );
+		return std::unique_ptr<std::istream>( new DaemonIstream( filename ) );
 	}
 };
 
@@ -260,7 +260,7 @@ void Trans_SetLanguage( const char* lang )
 	Com_Printf( _( "Set language to %s\n" ), bestLang.get_name().c_str() );
 }
 
-extern "C" void Trans_UpdateLanguage_f( void )
+void Trans_UpdateLanguage_f( void )
 {
 	Trans_SetLanguage( language->string );
 
@@ -276,7 +276,7 @@ extern "C" void Trans_UpdateLanguage_f( void )
 Trans_Init
 ============
 */
-extern "C" void Trans_Init( void )
+void Trans_Init( void )
 {
 	char langList[ MAX_TOKEN_CHARS ] = "";
 	char encList[ MAX_TOKEN_CHARS ] = "";
@@ -295,8 +295,8 @@ extern "C" void Trans_Init( void )
 	Log::set_log_warning_callback( &Trans_Warning );
 	Log::set_log_info_callback( &Trans_Info );
 
-	trans_manager.set_filesystem( std::auto_ptr<FileSystem>( new DaemonFileSystem ) );
-	trans_managergame.set_filesystem( std::auto_ptr<FileSystem>( new DaemonFileSystem ) );
+	trans_manager.set_filesystem( std::unique_ptr<FileSystem>( new DaemonFileSystem ) );
+	trans_managergame.set_filesystem( std::unique_ptr<FileSystem>( new DaemonFileSystem ) );
 
 	trans_manager.add_directory( "translation/client" );
 	trans_managergame.add_directory( "translation/game" );
@@ -390,32 +390,32 @@ const char* Trans_GettextPlural_Internal( const char *msgid, const char *msgid_p
 	return gettextbuffer[ num ];
 }
 
-extern "C" const char* Trans_Gettext( const char *msgid )
+const char* Trans_Gettext( const char *msgid )
 {
 	return Trans_Gettext_Internal( msgid, trans_manager );
 }
 
-extern "C" const char* Trans_Pgettext( const char *ctxt, const char *msgid )
+const char* Trans_Pgettext( const char *ctxt, const char *msgid )
 {
 	return Trans_Pgettext_Internal( ctxt, msgid, trans_manager );
 }
 
-extern "C" const char* Trans_GettextPlural( const char *msgid, const char *msgid_plural, int num )
+const char* Trans_GettextPlural( const char *msgid, const char *msgid_plural, int num )
 {
 	return Trans_GettextPlural_Internal( msgid, msgid_plural, num, trans_manager );
 }
 
-extern "C" const char* Trans_GettextGame( const char *msgid )
+const char* Trans_GettextGame( const char *msgid )
 {
 	return Trans_Gettext_Internal( msgid, trans_managergame );
 }
 
-extern "C" const char* Trans_PgettextGame( const char *ctxt, const char *msgid )
+const char* Trans_PgettextGame( const char *ctxt, const char *msgid )
 {
 	return Trans_Pgettext_Internal( ctxt, msgid, trans_managergame );
 }
 
-extern "C" const char* Trans_GettextGamePlural( const char *msgid, const char *msgid_plural, int num )
+const char* Trans_GettextGamePlural( const char *msgid, const char *msgid_plural, int num )
 {
 	return Trans_GettextPlural_Internal( msgid, msgid_plural, num, trans_managergame );
 }

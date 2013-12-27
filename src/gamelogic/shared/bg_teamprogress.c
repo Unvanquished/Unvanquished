@@ -95,16 +95,19 @@ static qboolean Disabled( unlockable_t *unlockable )
 	return qfalse;
 }
 
+#ifdef CGAME
 static void InformUnlockableStatusChange( unlockable_t *unlockable, qboolean unlocked )
 {
 }
+#endif // CGAME
 
+#ifdef CGAME
 static void InformUnlockableStatusChanges( int *statusChanges, int count )
 {
 	char         text[ MAX_STRING_CHARS ];
 	char         *textptr = text;
 	int          unlockableNum;
-	qboolean     firstPass = qtrue;
+	qboolean     firstPass = qtrue, unlocked = qtrue;
 	unlockable_t *unlockable;
 
 	for ( unlockableNum = 0; unlockableNum < NUM_UNLOCKABLES; unlockableNum++ )
@@ -125,6 +128,7 @@ static void InformUnlockableStatusChanges( int *statusChanges, int count )
 			}
 			else
 			{
+				unlocked = qfalse;
 				Com_sprintf( text, sizeof( text ),
 				             S_COLOR_RED   "ITEM%s LOCKED: "   S_COLOR_WHITE, ( count > 1 ) ? "S" : "" );
 			}
@@ -142,9 +146,28 @@ static void InformUnlockableStatusChanges( int *statusChanges, int count )
 		textptr += strlen( textptr );
 	}
 
-	Com_Printf( "%s\n", text );
-}
+	// TODO: Add sound for items being locked for each team
+	switch ( cg.snap->ps.persistant[ PERS_TEAM ] )
+	{
+		case TEAM_ALIENS:
+			if ( unlocked )
+			{
+				trap_S_StartLocalSound( cgs.media.weHaveEvolved, CHAN_ANNOUNCER );
+			}
+			break;
 
+		case TEAM_HUMANS:
+		default:
+			if ( unlocked )
+			{
+				trap_S_StartLocalSound( cgs.media.reinforcement, CHAN_ANNOUNCER );
+			}
+			break;
+	}
+
+	CG_CenterPrint( text, SCREEN_HEIGHT * 0.3, GIANTCHAR_WIDTH * 2 );
+}
+#endif // CGAME
 
 static INLINE qboolean Unlocked( unlockableType_t type, int itemNum )
 {
@@ -239,11 +262,11 @@ void BG_InitUnlockackables( void )
 #endif
 }
 
-void BG_ImportUnlockablesFromMask( team_t team, int mask )
+void BG_ImportUnlockablesFromMask( int team, int mask )
 {
 	int              unlockableNum, teamUnlockableNum = 0, itemNum = 0, unlockThreshold;
 	unlockable_t     *unlockable;
-	unlockableType_t unlockableType = 0;
+	int unlockableType = 0;
 	team_t           currentTeam;
 	qboolean         newStatus;
 	int              statusChanges[ NUM_UNLOCKABLES ];
@@ -263,7 +286,7 @@ void BG_ImportUnlockablesFromMask( team_t team, int mask )
 
 	// cache input
 	lastMask = mask;
-	lastTeam = team;
+	lastTeam = (team_t) team;
 
 	// no status change yet
 	memset( statusChanges, 0, sizeof( statusChanges ) );
@@ -325,7 +348,7 @@ void BG_ImportUnlockablesFromMask( team_t team, int mask )
 			newStatus = mask & ( 1 << teamUnlockableNum );
 
 #ifdef CGAME
-			// inform client on status change
+			// notify client about single status change
 			if ( unlockablesTeamKnowledge == team && unlockable->statusKnown &&
 			     unlockable->unlocked != newStatus )
 			{
@@ -351,7 +374,7 @@ void BG_ImportUnlockablesFromMask( team_t team, int mask )
 	}
 
 #ifdef CGAME
-	// notify client about status changes
+	// notify client about all status changes
 	if ( statusChangeCount )
 	{
 		InformUnlockableStatusChanges( statusChanges, statusChangeCount );
@@ -363,13 +386,13 @@ void BG_ImportUnlockablesFromMask( team_t team, int mask )
 
 	// we only know the state for one team
 	unlockablesDataAvailable = qtrue;
-	unlockablesTeamKnowledge = team;
+	unlockablesTeamKnowledge = (team_t) team;
 
 	// save mask for later use
 	unlockablesMask[ team ] = mask;
 }
 
-int BG_UnlockablesMask( team_t team )
+int BG_UnlockablesMask( int team )
 {
 	if ( unlockablesTeamKnowledge != team && unlockablesTeamKnowledge != TEAM_ALL )
 	{
@@ -381,7 +404,7 @@ int BG_UnlockablesMask( team_t team )
 
 unlockableType_t BG_UnlockableType( int num )
 {
-	return ( (unsigned) num < NUM_UNLOCKABLES ) ? unlockables[ num ].type : UNLT_NUM_UNLOCKABLETYPES;
+	return (unlockableType_t) ( ( (unsigned) num < NUM_UNLOCKABLES ) ? unlockables[ num ].type : UNLT_NUM_UNLOCKABLETYPES );
 }
 
 int BG_UnlockableTypeIndex( int num )
@@ -389,28 +412,28 @@ int BG_UnlockableTypeIndex( int num )
 	return ( (unsigned) num < NUM_UNLOCKABLES ) ? unlockables[ num ].num : 0;
 }
 
-qboolean BG_WeaponUnlocked( weapon_t weapon )
+qboolean BG_WeaponUnlocked( int weapon )
 {
 	CheckStatusKnowledge( UNLT_WEAPON, ( int )weapon );
 
 	return Unlocked( UNLT_WEAPON, ( int )weapon );
 }
 
-qboolean BG_UpgradeUnlocked( upgrade_t upgrade )
+qboolean BG_UpgradeUnlocked( int upgrade )
 {
 	CheckStatusKnowledge( UNLT_UPGRADE, ( int )upgrade );
 
 	return Unlocked( UNLT_UPGRADE, ( int )upgrade );
 }
 
-qboolean BG_BuildableUnlocked( buildable_t buildable )
+qboolean BG_BuildableUnlocked( int buildable )
 {
 	CheckStatusKnowledge( UNLT_BUILDABLE, ( int )buildable );
 
 	return Unlocked( UNLT_BUILDABLE, ( int )buildable );
 }
 
-qboolean BG_ClassUnlocked( class_t class_ )
+qboolean BG_ClassUnlocked( int class_ )
 {
 	CheckStatusKnowledge( UNLT_CLASS, ( int )class_ );
 
@@ -480,7 +503,7 @@ momentumThresholdIterator_t BG_IterateMomentumThresholds( momentumThresholdItera
 static void UpdateUnlockablesMask( void )
 {
 	int    unlockable, unlockableNum[ NUM_TEAMS ];
-	team_t team;
+	int    team;
 
 	for ( team = TEAM_NONE + 1; team < NUM_TEAMS; team++ )
 	{
@@ -521,7 +544,7 @@ void G_UpdateUnlockables( void )
 	int              itemNum = 0, unlockableNum, unlockThreshold;
 	float            momentum;
 	unlockable_t     *unlockable;
-	unlockableType_t unlockableType = 0;
+	int              unlockableType = 0;
 	team_t           team;
 
 	for ( unlockableNum = 0; unlockableNum < NUM_UNLOCKABLES; unlockableNum++ )

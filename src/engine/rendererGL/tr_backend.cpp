@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "tr_local.h"
 #include "gl_shader.h"
+#include "../../common/Maths.h"
 
 backEndData_t  *backEndData[ SMP_FRAMES ];
 backEndState_t backEnd;
@@ -89,7 +90,7 @@ void BindAnimatedImage( textureBundle_t *bundle )
 
 	// it is necessary to do this messy calc to make sure animations line up
 	// exactly with waveforms of the same frequency
-	index = XreaL_Q_ftol( backEnd.refdef.floatTime * bundle->imageAnimationSpeed * FUNCTABLE_SIZE );
+	index = Q_ftol( backEnd.refdef.floatTime * bundle->imageAnimationSpeed * FUNCTABLE_SIZE );
 	index >>= FUNCTABLE_SIZE2;
 
 	if ( index < 0 )
@@ -1260,7 +1261,7 @@ static void Render_lightVolume( interaction_t *ia )
 		case RL_PROJ:
 			{
 				MatrixSetupTranslation( light->attenuationMatrix, 0.5, 0.5, 0.0 );  // bias
-				MatrixMultiplyScale( light->attenuationMatrix, 0.5f, 0.5f, 1.0f / MIN( light->falloffLength, 1.0f ) );   // scale
+				MatrixMultiplyScale( light->attenuationMatrix, 0.5f, 0.5f, 1.0f / std::min( light->falloffLength, 1.0f ) );   // scale
 				break;
 			}
 
@@ -1660,7 +1661,7 @@ static void RB_SetupLightAttenuationForEntity( trRefLight_t *light, const trRefE
 		case RL_PROJ:
 			{
 				MatrixSetupTranslation( light->attenuationMatrix, 0.5, 0.5, 0.0 );  // bias
-				MatrixMultiplyScale( light->attenuationMatrix, 0.5f, 0.5f, 1.0f / MIN( light->falloffLength, 1.0f ) );   // scale
+				MatrixMultiplyScale( light->attenuationMatrix, 0.5f, 0.5f, 1.0f / std::min( light->falloffLength, 1.0f ) );   // scale
 				MatrixMultiply2( light->attenuationMatrix, light->projectionMatrix );
 				MatrixMultiply2( light->attenuationMatrix, modelToLight );
 
@@ -2319,16 +2320,16 @@ static void RB_SetupLightForShadowing( trRefLight_t *light, int index,
 					}
 
 					// scene-dependent bounding volume
-					cropBounds[ 0 ][ 0 ] = MAX( MAX( casterBounds[ 0 ][ 0 ], receiverBounds[ 0 ][ 0 ] ), splitFrustumClipBounds[ 0 ][ 0 ] );
-					cropBounds[ 0 ][ 1 ] = MAX( MAX( casterBounds[ 0 ][ 1 ], receiverBounds[ 0 ][ 1 ] ), splitFrustumClipBounds[ 0 ][ 1 ] );
+					cropBounds[ 0 ][ 0 ] = std::max( std::max( casterBounds[ 0 ][ 0 ], receiverBounds[ 0 ][ 0 ] ), splitFrustumClipBounds[ 0 ][ 0 ] );
+					cropBounds[ 0 ][ 1 ] = std::max( std::max( casterBounds[ 0 ][ 1 ], receiverBounds[ 0 ][ 1 ] ), splitFrustumClipBounds[ 0 ][ 1 ] );
 
-					cropBounds[ 1 ][ 0 ] = MIN( MIN( casterBounds[ 1 ][ 0 ], receiverBounds[ 1 ][ 0 ] ), splitFrustumClipBounds[ 1 ][ 0 ] );
-					cropBounds[ 1 ][ 1 ] = MIN( MIN( casterBounds[ 1 ][ 1 ], receiverBounds[ 1 ][ 1 ] ), splitFrustumClipBounds[ 1 ][ 1 ] );
+					cropBounds[ 1 ][ 0 ] = std::min( std::min( casterBounds[ 1 ][ 0 ], receiverBounds[ 1 ][ 0 ] ), splitFrustumClipBounds[ 1 ][ 0 ] );
+					cropBounds[ 1 ][ 1 ] = std::min( std::min( casterBounds[ 1 ][ 1 ], receiverBounds[ 1 ][ 1 ] ), splitFrustumClipBounds[ 1 ][ 1 ] );
 
-					cropBounds[ 0 ][ 2 ] = MIN( casterBounds[ 0 ][ 2 ], splitFrustumClipBounds[ 0 ][ 2 ] );
+					cropBounds[ 0 ][ 2 ] = std::min( casterBounds[ 0 ][ 2 ], splitFrustumClipBounds[ 0 ][ 2 ] );
 					//cropBounds[0][2] = casterBounds[0][2];
 					//cropBounds[0][2] = splitFrustumClipBounds[0][2];
-					cropBounds[ 1 ][ 2 ] = MIN( receiverBounds[ 1 ][ 2 ], splitFrustumClipBounds[ 1 ][ 2 ] );
+					cropBounds[ 1 ][ 2 ] = std::min( receiverBounds[ 1 ][ 2 ], splitFrustumClipBounds[ 1 ][ 2 ] );
 					//cropBounds[1][2] = splitFrustumClipBounds[1][2];
 
 					if ( numCasters == 0 )
@@ -2757,7 +2758,7 @@ static void RB_RenderInteractionsShadowMapped()
 				numMaps = 6;
 				break;
 			case RL_DIRECTIONAL:
-				numMaps = MAX( r_parallelShadowSplits->integer + 1, 1 );
+				numMaps = std::max( r_parallelShadowSplits->integer + 1, 1 );
 				break;
 			default:
 				numMaps = 1;
@@ -4064,11 +4065,11 @@ static void RB_CalculateAdaptation()
 
 	//if(r_hdrMaxLuminance->value)
 	{
-		Q_clamp( backEnd.hdrAverageLuminance, r_hdrMinLuminance->value, r_hdrMaxLuminance->value );
-		Q_clamp( avgLuminance, r_hdrMinLuminance->value, r_hdrMaxLuminance->value );
+		backEnd.hdrAverageLuminance = Maths::clamp( backEnd.hdrAverageLuminance, r_hdrMinLuminance->value, r_hdrMaxLuminance->value );
+		avgLuminance = Maths::clamp( avgLuminance, r_hdrMinLuminance->value, r_hdrMaxLuminance->value );
 
-		Q_clamp( backEnd.hdrMaxLuminance, r_hdrMinLuminance->value, r_hdrMaxLuminance->value );
-		Q_clamp( maxLuminance, r_hdrMinLuminance->value, r_hdrMaxLuminance->value );
+		backEnd.hdrMaxLuminance = Maths::clamp( backEnd.hdrMaxLuminance, r_hdrMinLuminance->value, r_hdrMaxLuminance->value );
+		maxLuminance = Maths::clamp( maxLuminance, r_hdrMinLuminance->value, r_hdrMaxLuminance->value );
 	}
 
 	newAdaptation = backEnd.hdrAverageLuminance + ( avgLuminance - backEnd.hdrAverageLuminance ) * ( 1.0f - powf( 0.98f, 30.0f * deltaTime ) );
@@ -5820,8 +5821,6 @@ static void RB_RenderDebugUtils()
 		GL_LoadModelViewMatrix( backEnd.viewParms.world.modelViewMatrix );
 	}
 
-#if defined( USE_REFENTITY_ANIMATIONSYSTEM )
-
 	if ( r_showSkeleton->integer )
 	{
 		int                  i, j, k, parentIndex;
@@ -6042,8 +6041,6 @@ static void RB_RenderDebugUtils()
 			tess.numIndexes = 0;
 		}
 	}
-
-#endif
 
 	if ( r_showLightScissors->integer )
 	{
@@ -6769,7 +6766,7 @@ static debugDrawMode_t currentDebugDrawMode;
 static int maxDebugVerts;
 static float currentDebugSize;
 
-extern "C" void DebugDrawBegin( debugDrawMode_t mode, float size ) {
+void DebugDrawBegin( debugDrawMode_t mode, float size ) {
 
 	if ( tess.numVertexes )
 	{
@@ -6830,13 +6827,18 @@ extern "C" void DebugDrawBegin( debugDrawMode_t mode, float size ) {
 	GL_CheckErrors();
 }
 
-extern "C" void DebugDrawDepthMask(qboolean state)
+void DebugDrawDepthMask(qboolean state)
 {
 	GL_DepthMask( state ? GL_TRUE : GL_FALSE );
 }
 
-extern "C" void DebugDrawVertex(const vec3_t pos, unsigned int color, const vec2_t uv) {
-	vec4_t colors = {color & 0xFF, (color >> 8) & 0xFF, (color >> 16) & 0xFF, (color >> 24) & 0xFF};
+void DebugDrawVertex(const vec3_t pos, unsigned int color, const vec2_t uv) {
+	vec4_t colors = {
+		static_cast<vec_t>(color & 0xFF),
+		static_cast<vec_t>((color >> 8) & 0xFF),
+		static_cast<vec_t>((color >> 16) & 0xFF),
+		static_cast<vec_t>((color >> 24) & 0xFF)
+	};
 	Vector4Scale(colors, 1.0f/255.0f, colors);
 
 	//we have reached the maximum number of verts we can batch
@@ -6855,15 +6857,13 @@ extern "C" void DebugDrawVertex(const vec3_t pos, unsigned int color, const vec2
 	if( uv ) {
 		tess.texCoords[ tess.numVertexes ][ 0 ] = uv[ 0 ];
 		tess.texCoords[ tess.numVertexes ][ 1 ] = uv[ 1 ];
-		tess.texCoords[ tess.numVertexes ][ 2 ] = 0;
-		tess.texCoords[ tess.numVertexes ][ 3 ] = 1;
 	}
 	tess.indexes[ tess.numIndexes ] = tess.numVertexes;
 	tess.numVertexes++;
 	tess.numIndexes++;
 }
 
-extern "C" void DebugDrawEnd( void ) {
+void DebugDrawEnd( void ) {
 
 	Tess_UpdateVBOs( ATTR_POSITION | ATTR_TEXCOORD | ATTR_COLOR );
 

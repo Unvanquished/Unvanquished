@@ -26,6 +26,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "cg_local.h"
 
+#ifndef Q3_VM
+#include "../../common/Maths.h"
+#endif
+
 /*
 =============================================================================
 
@@ -1368,7 +1372,7 @@ static void CG_CalcColorGradingForPoint( vec3_t loc )
 
 		dist = trap_CM_DistanceToModel( loc, cgs.gameGradingModels[i] );
 		weight = 1.0f - dist / cgs.gameGradingDistances[i];
-		weight = Q_clamp( weight, 0.0f, 1.0f );
+		weight = Q_clamp( weight, 0.0f, 1.0f ); // Maths::clampFraction( weight )
 
 		// search 3 greatest weights
 		if( weight <= selectedWeight[2] )
@@ -1434,7 +1438,7 @@ static void CG_ChooseCgradingEffectAndFade( const playerState_t* ps, qhandle_t* 
 {
 	int health = ps->stats[ STAT_HEALTH ];
 	int team = ps->persistant[ PERS_TEAM ];
-	int class = ps->stats[ STAT_CLASS ];
+	int class_ = ps->stats[ STAT_CLASS ];
 	qboolean playing = team == TEAM_HUMANS || team == TEAM_ALIENS;
 	float chargeProgress = CG_ChargeProgress();
 
@@ -1458,7 +1462,7 @@ static void CG_ChooseCgradingEffectAndFade( const playerState_t* ps, qhandle_t* 
 	{
 		//health effect
 		float ratio = 0.0f;
-		float maxHealth = BG_Class( class )->health;
+		float maxHealth = BG_Class( class_ )->health;
 		if ( team == TEAM_HUMANS )
 		{
 			*effect = cgs.media.redCgrade;

@@ -1667,7 +1667,7 @@ static bool QueryReasonable( bspNode_t *node )
 	int v = ceil( r_chcMaxVisibleFrames->value * 0.5f * ( 1.0f + random() ) );
 	// if r_chcMaxVisibleFrames 10 then range from 5 to 10
 	//return ((tr.frameCount - node->lastQueried[tr.viewCount]) > r_chcMaxVisibleFrames->integer);
-	return tr.frameCount - node->lastQueried[ tr.viewCount ] > MAX( v, r_chcMaxVisibleFrames->integer );
+	return tr.frameCount - node->lastQueried[ tr.viewCount ] > std::max( v, r_chcMaxVisibleFrames->integer );
 }
 
 static void R_CoherentHierachicalCulling()

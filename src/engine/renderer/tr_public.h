@@ -168,12 +168,9 @@ typedef struct
 	// XreaL BEGIN
 	void ( *TakeVideoFrame )( int h, int w, byte *captureBuffer, byte *encodeBuffer, qboolean motionJpeg );
 
-#if defined( USE_REFLIGHT )
 	void ( *AddRefLightToScene )( const refLight_t *light );
-#endif
 
 	// RB: alternative skeletal animation system
-#if defined( USE_REFENTITY_ANIMATIONSYSTEM )
 	qhandle_t ( *RegisterAnimation )( const char *name );
 	int ( *CheckSkeleton )( refSkeleton_t *skel, qhandle_t model, qhandle_t anim );
 	int ( *BuildSkeleton )( refSkeleton_t *skel, qhandle_t anim, int startFrame, int endFrame, float frac,
@@ -182,7 +179,6 @@ typedef struct
 	int ( *BoneIndex )( qhandle_t hModel, const char *boneName );
 	int ( *AnimNumFrames )( qhandle_t hAnim );
 	int ( *AnimFrameRate )( qhandle_t hAnim );
-#endif
 
 	// XreaL END
 
@@ -211,7 +207,7 @@ typedef struct
 	void ( QDECL *Printf )( int printLevel, const char *fmt, ... ) PRINTF_LIKE(2);
 
 	// abort the game
-	void ( QDECL *Error )( int errorLevel, const char *fmt, ... ) PRINTF_LIKE(2) NORETURN;
+	void ( QDECL *Error )( int errorLevel, const char *fmt, ... ) PRINTF_LIKE(2);
 
 	// milliseconds should only be used for profiling, never
 	// for anything game related.  Get time from the refdef
@@ -231,17 +227,12 @@ typedef struct
 	void ( *Hunk_FreeTempMemory )( void *block );
 
 	// dynamic memory allocator for things that need to be freed
-#ifdef ZONE_DEBUG
-	void            *( *Z_MallocDebug )( int bytes, const char *label, const char *file, int line );
-#else
 	void            *( *Z_Malloc )( int bytes );
-#endif
 	void ( *Free )( void *buf );
 	void ( *Tag_Free )( void );
 
 	cvar_t          *( *Cvar_Get )( const char *name, const char *value, int flags );
 	void ( *Cvar_Set )( const char *name, const char *value );
-	void ( *Cvar_CheckRange )( cvar_t *cv, float minVal, float maxVal, qboolean shouldBeIntegral );
 
 	void ( *Cmd_AddCommand )( const char *name, void ( *cmd )( void ) );
 	void ( *Cmd_RemoveCommand )( const char *name );
@@ -277,8 +268,6 @@ typedef struct
 	void ( *CIN_UploadCinematic )( int handle );
 	int ( *CIN_PlayCinematic )( const char *arg0, int xpos, int ypos, int width, int height, int bits );
 	e_status( *CIN_RunCinematic )( int handle );
-
-	long( *ftol )( float f );
 
 	// XreaL BEGIN
 	qboolean( *CL_VideoRecording )( void );

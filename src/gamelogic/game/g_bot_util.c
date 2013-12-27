@@ -220,9 +220,6 @@ float BotGetEnemyPriority( gentity_t *self, gentity_t *ent )
 			case BA_H_MEDISTAT:
 				enemyScore = 0.6;
 				break;
-			case BA_H_DCC:
-				enemyScore = 0.5;
-				break;
 			case BA_A_ACIDTUBE:
 				enemyScore = 0.7;
 				break;
@@ -1119,7 +1116,7 @@ qboolean BotTargetInAttackRange( gentity_t *self, botTarget_t target )
 				{
 					range -= 150;
 				}
-				range = MAX( range, 100 );
+				range = MAX( range, 100.0f );
 				secondaryRange = 0;
 				width = height = FLAMER_SIZE;
 			}

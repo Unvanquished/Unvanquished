@@ -174,7 +174,7 @@ qboolean G_BotSetDefaults( int clientNum, team_t team, int skill, const char* be
 	botMind = self->botMind = &g_botMind[clientNum];
 
 	botMind->botTeam = team;
-	BotSetNavmesh( self, self->client->ps.stats[ STAT_CLASS ] );
+	BotSetNavmesh( self, (class_t) self->client->ps.stats[ STAT_CLASS ] );
 
 	memset( botMind->runningNodes, 0, sizeof( botMind->runningNodes ) );
 	botMind->numRunningNodes = 0;

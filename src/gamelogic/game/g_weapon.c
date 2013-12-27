@@ -66,11 +66,6 @@ static void GiveMaxClips( gentity_t *self )
 	ps = &self->client->ps;
 	wa = BG_Weapon( ps->stats[ STAT_WEAPON ] );
 
-	if ( wa->infiniteAmmo )
-	{
-		return;
-	}
-
 	ps->clips = wa->maxClips;
 }
 
@@ -89,11 +84,6 @@ static void GiveFullClip( gentity_t *self )
 
 	ps = &self->client->ps;
 	wa = BG_Weapon( ps->stats[ STAT_WEAPON ] );
-
-	if ( wa->infiniteAmmo )
-	{
-		return;
-	}
 
 	ps->ammo = wa->maxAmmo;
 
@@ -1181,7 +1171,7 @@ static void CancelBuild( gentity_t *self )
 
 static void FireBuild( gentity_t *self, dynMenu_t menu )
 {
-	buildable_t buildable = ( self->client->ps.stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK );
+	buildable_t buildable = (buildable_t) ( self->client->ps.stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK );
 
 	if ( buildable > BA_NONE )
 	{
@@ -1996,7 +1986,7 @@ void G_FireWeapon( gentity_t *self )
 	}
 	else
 	{
-		AngleVectors( self->turretAim, forward, right, up );
+		AngleVectors( self->buildableAim, forward, right, up );
 		VectorCopy( self->s.pos.trBase, muzzle );
 	}
 
@@ -2075,7 +2065,8 @@ void G_FireWeapon( gentity_t *self )
 			break;
 
 		case WP_MGTURRET:
-			FireBullet( self, MGTURRET_SPREAD, MGTURRET_DMG, MOD_MGTURRET );
+			//FireBullet( self, MGTURRET_SPREAD, MGTURRET_DMG, MOD_MGTURRET );
+			FireBullet( self, TURRET_SPREAD, self->turretCurrentDamage, MOD_MGTURRET );
 			break;
 
 		case WP_ABUILD:

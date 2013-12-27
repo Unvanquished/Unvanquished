@@ -177,8 +177,10 @@ extern int   LEVEL4_CRUSH_REPEAT;
 
 #define ALIEN_SPAWN_REPEAT_TIME  10000
 
-#define ALIEN_REGEN_DAMAGE_TIME  2000 //msec since damage that regen starts again
-#define ALIEN_REGEN_NOCREEP_MOD  ( 1.0f / 3.0f ) //regen off creep
+#define ALIEN_CLIENT_REGEN_WAIT    2000 // in ms
+#define ALIEN_BUILDABLE_REGEN_WAIT 2000 // in ms
+
+#define ALIEN_REGEN_NOCREEP_MOD  ( 1.0f / 3.0f ) // regen off creep
 
 #define ALIEN_MAX_CREDITS        2000 // CREDITS_PER_EVO converts this to evos for display
 #define ALIEN_TK_SUICIDE_PENALTY 150
@@ -247,7 +249,7 @@ extern int   LCANNON_CHARGE_TIME_MIN;
 extern int   LCANNON_CHARGE_TIME_WARN;
 extern int   LCANNON_CHARGE_AMMO;
 
-#define HBUILD_HEALRATE          18
+#define HBUILD_HEALRATE          10
 
 /*
  * HUMAN upgrades
@@ -268,28 +270,24 @@ extern int   MEDKIT_STARTUP_SPEED;
 extern float REACTOR_BASESIZE;
 extern float REPEATER_BASESIZE;
 
-extern float MGTURRET_RANGE;
-extern int   MGTURRET_ANGULARSPEED;
-extern int   MGTURRET_ACCURACY_TO_FIRE;
-extern int   MGTURRET_VERTICALCAP;
-extern int   MGTURRET_SPREAD;
-extern int   MGTURRET_DMG;
-extern int   MGTURRET_SPINUP_TIME;
+#define TURRET_THINK_PERIOD   25  // doesn't affect damage or turn speed directly, just their precision
+#define TURRET_ATTACK_PERIOD  125
+#define TURRET_RANGE          400
+#define TURRET_SPREAD         200
+#define TURRET_ZONES          4   // range is divided into this amount of zones (disks) with equal width
+#define TURRET_ZONE_DAMAGE    { 5, 4, 3, 2 } // damage for each of the TURRET_ZONES zones
+#define TURRET_PITCH_CAP      30  // in degrees
+#define TURRET_PITCH_SPEED    160 // in degrees per second
+#define TURRET_YAW_SPEED      120 // in degrees per second
+#define TURRET_GIVEUP_TARGET  500 // in ms, time until turret stops tracking a target after losing los
 
 extern float TESLAGEN_RANGE;
 extern int   TESLAGEN_REPEAT;
 extern int   TESLAGEN_DMG;
 
-extern int   DC_ATTACK_PERIOD;
-extern int   DC_HEALRATE;
-extern int   DC_RANGE;
-
 extern float REACTOR_ATTACK_RANGE;
 extern int   REACTOR_ATTACK_REPEAT;
 extern int   REACTOR_ATTACK_DAMAGE;
-extern float REACTOR_ATTACK_DCC_RANGE;
-extern int   REACTOR_ATTACK_DCC_REPEAT;
-extern int   REACTOR_ATTACK_DCC_DAMAGE;
 
 /*
  * HUMAN misc
@@ -304,7 +302,8 @@ extern int   REACTOR_ATTACK_DCC_DAMAGE;
 #define STAMINA_MEDISTAT_RESTORE      30   // 1/(100 ms). stacks.
 
 #define HUMAN_SPAWN_REPEAT_TIME       10000
-#define HUMAN_REGEN_DAMAGE_TIME       2000 //msec since damage before dcc repairs
+
+#define HUMAN_BUILDABLE_REGEN_WAIT    5000
 
 #define HUMAN_MAX_CREDITS             2000
 #define HUMAN_TK_SUICIDE_PENALTY      150
@@ -314,9 +313,9 @@ extern int   REACTOR_ATTACK_DCC_DAMAGE;
 #define JETPACK_TARGETSPEED           350.0f
 #define JETPACK_ACCELERATION          3.0f
 #define JETPACK_JUMPMAG_REDUCTION     0.25f
-#define JETPACK_DMG_DISABLE_TIME      600   // in ms
 #define JETPACK_FUEL_MAX              30000 // needs to be < 2^15
 #define JETPACK_FUEL_USAGE            6     // in 1/ms
+#define JETPACK_FUEL_PER_DMG          300   // per damage point received (before armor mod is applied)
 #define JETPACK_FUEL_RESTORE          3     // in 1/ms
 #define JETPACK_FUEL_LOW              JETPACK_FUEL_MAX / 5       // jetpack doesn't start from a jump below this
 #define JETPACK_FUEL_STOP             JETPACK_FUEL_RESTORE * 150 // jetpack doesn't activate below this
@@ -362,7 +361,7 @@ extern int   REACTOR_ATTACK_DCC_DAMAGE;
 #define DEFAULT_FREEKILL_PERIOD            "120" // in s
 
 // resources
-#define RGS_RANGE                          1000.0f
+#define RGS_RANGE                          1000.0f // must be > 0
 #define DEFAULT_INITIAL_BUILD_POINTS       "50"  // in BP
 #define DEFAULT_INITIAL_MINE_RATE          "8"   // in (BP/min)/RGS
 #define DEFAULT_MINE_RATE_HALF_LIFE        "20"  // in min

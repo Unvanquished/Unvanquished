@@ -1,3 +1,25 @@
+unvanquished (0.22.1-1) unstable; urgency=low
+
+  * Alpha 22 point release. Bug fixes.
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Tue, 03 Dec 2013 17:06:13 +0000
+
+unvanquished (0.22.0-1) unstable; urgency=low
+
+  * Release of alpha 22.
+  * Dropped unvanquished-dev since it only contains daemonmap and that's now
+    in a separate repository. (It will be repackaged, though.)
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Sun, 01 Dec 2013 15:24:32 +0000
+
+unvanquished (0.21.0-2) unstable; urgency=low
+
+  * Have unvanquished-common's config script require bash. The script
+    contains a bashism which was breaking install on systems where /bin/sh
+    points to dash.
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Mon, 04 Nov 2013 16:46:13 +0000
+
 unvanquished (0.21.0-1) unstable; urgency=low
 
   * Improve cleanup of /var/games/unvanquished when unvanquished-common is

@@ -57,7 +57,7 @@ static void CG_CalculateBeamNodeProperties( trailBeam_t *tb )
 	}
 
 	ts = tb->parent;
-	btb = tb->class;
+	btb = tb->class_;
 
 	if ( ts->destroyTime > 0 && btb->fadeOutTime )
 	{
@@ -69,14 +69,14 @@ static void CG_CalculateBeamNodeProperties( trailBeam_t *tb )
 		}
 	}
 
-	TCRange = tb->class->backTextureCoord -
-			          tb->class->frontTextureCoord;
-widthRange = tb->class->backWidth -
-			             tb->class->frontWidth;
-alphaRange = tb->class->backAlpha -
-			             tb->class->frontAlpha;
-	VectorSubtract( tb->class->backColor,
-	                tb->class->frontColor, colorRange );
+	TCRange = tb->class_->backTextureCoord -
+			          tb->class_->frontTextureCoord;
+widthRange = tb->class_->backWidth -
+			             tb->class_->frontWidth;
+alphaRange = tb->class_->backAlpha -
+			             tb->class_->frontAlpha;
+	VectorSubtract( tb->class_->backColor,
+	                tb->class_->frontColor, colorRange );
 
 	for ( i = tb->nodes; i && i->next; i = i->next )
 {
@@ -91,29 +91,29 @@ alphaRange = tb->class->backAlpha -
 
 	for ( j = 0, i = tb->nodes; i; i = i->next, j++ )
 	{
-		if ( tb->class->textureType == TBTT_STRETCH )
+		if ( tb->class_->textureType == TBTT_STRETCH )
 		{
-			i->textureCoord = tb->class->frontTextureCoord +
+			i->textureCoord = tb->class_->frontTextureCoord +
 					                  ( ( position / totalDistance ) * TCRange );
 		}
-		else if ( tb->class->textureType == TBTT_REPEAT )
+		else if ( tb->class_->textureType == TBTT_REPEAT )
 	{
-			if ( tb->class->clampToBack )
+			if ( tb->class_->clampToBack )
 			{
 				i->textureCoord = ( totalDistance - position ) /
-				                  tb->class->repeatLength;
+				                  tb->class_->repeatLength;
 			}
 			else
 			{
-				i->textureCoord = position / tb->class->repeatLength;
+				i->textureCoord = position / tb->class_->repeatLength;
 			}
 		}
 
-		i->halfWidth = ( tb->class->frontWidth +
+		i->halfWidth = ( tb->class_->frontWidth +
 		                 ( ( position / totalDistance ) * widthRange ) ) / 2.0f;
-		i->alpha = ( byte )( ( float ) 0xFF * ( tb->class->frontAlpha +
+		i->alpha = ( byte )( ( float ) 0xFF * ( tb->class_->frontAlpha +
 		                                        ( ( position / totalDistance ) * alphaRange ) ) * fadeAlpha );
-		VectorMA( tb->class->frontColor, ( position / totalDistance ),
+		VectorMA( tb->class_->frontColor, ( position / totalDistance ),
 		          colorRange, i->color );
 
 		position += nodeDistances[ j ];
@@ -166,9 +166,9 @@ static void CG_RenderBeam( trailBeam_t *tb )
 		return;
 	}
 
-	btb = tb->class;
+	btb = tb->class_;
 	ts = tb->parent;
-	bts = ts->class;
+	bts = ts->class_;
 
 	if ( bts->thirdPersonOnly &&
 	     ( CG_AttachmentCentNum( &ts->frontAttachment ) == cg.snap->ps.clientNum ||
@@ -281,7 +281,7 @@ static void CG_RenderBeam( trailBeam_t *tb )
 	}
 	while ( i );
 
-	trap_R_AddPolysToScene( tb->class->shader, 4, &verts[ 0 ], numVerts / 4 );
+	trap_R_AddPolysToScene( tb->class_->shader, 4, &verts[ 0 ], numVerts / 4 );
 }
 
 /*
@@ -293,7 +293,7 @@ Allocates a trailBeamNode_t from a trailBeam_t's nodePool
 */
 static trailBeamNode_t *CG_AllocateBeamNode( trailBeam_t *tb )
 {
-	baseTrailBeam_t *btb = tb->class;
+	baseTrailBeam_t *btb = tb->class_;
 	int             i;
 	trailBeamNode_t *tbn;
 
@@ -496,7 +496,7 @@ static void CG_ApplyJitters( trailBeam_t *tb )
 		return;
 	}
 
-	btb = tb->class;
+	btb = tb->class_;
 	ts = tb->parent;
 
 	for ( j = 0; j < btb->numJitters; j++ )
@@ -600,7 +600,7 @@ static void CG_UpdateBeam( trailBeam_t *tb )
 		return;
 	}
 
-	btb = tb->class;
+	btb = tb->class_;
 	ts = tb->parent;
 
 	deltaTime = cg.time - tb->lastEvalTime;
@@ -701,7 +701,7 @@ static void CG_UpdateBeam( trailBeam_t *tb )
 
 				VectorSubtract( i->refPosition, i->prev->refPosition, dir );
 				length = VectorNormalize( dir ) *
-				         ( ( float ) i->timeLeft / ( float ) tb->class->segmentTime );
+				         ( ( float ) i->timeLeft / ( float ) tb->class_->segmentTime );
 
 				VectorMA( i->prev->refPosition, length, dir, i->position );
 			}
@@ -1375,14 +1375,14 @@ static trailBeam_t *CG_SpawnNewTrailBeam( baseTrailBeam_t *btb,
 			memset( tb, 0, sizeof( trailBeam_t ) );
 
 			//found a free slot
-			tb->class = btb;
+			tb->class_ = btb;
 			tb->parent = ts;
 
 			tb->valid = qtrue;
 
 			if ( cg_debugTrails.integer >= 1 )
 			{
-				CG_Printf( "TB %s created\n", ts->class->name );
+				CG_Printf( "TB %s created\n", ts->class_->name );
 			}
 
 			return tb;
@@ -1425,7 +1425,7 @@ trailSystem_t *CG_SpawnNewTrailSystem( qhandle_t psHandle )
 			memset( ts, 0, sizeof( trailSystem_t ) );
 
 			//found a free slot
-			ts->class = bts;
+			ts->class_ = bts;
 
 			ts->valid = qtrue;
 			ts->destroyTime = -1;
@@ -1567,8 +1567,8 @@ static void CG_GarbageCollectTrailSystems( void )
 		}
 
 		// lifetime expired
-		if ( ts->destroyTime <= 0 && ts->class->lifeTime &&
-		     ts->birthTime + ts->class->lifeTime < cg.time )
+		if ( ts->destroyTime <= 0 && ts->class_->lifeTime &&
+		     ts->birthTime + ts->class_->lifeTime < cg.time )
 		{
 			trailSystem_t *tempTS = ts;
 
@@ -1577,14 +1577,14 @@ static void CG_GarbageCollectTrailSystems( void )
 			if ( cg_debugTrails.integer >= 1 )
 			{
 				CG_Printf( "TS %s expired (born %d, lives %d, now %d)\n",
-				           ts->class->name, ts->birthTime, ts->class->lifeTime,
+				           ts->class_->name, ts->birthTime, ts->class_->lifeTime,
 				           cg.time );
 			}
 		}
 
 		if ( cg_debugTrails.integer >= 1 && !ts->valid )
 		{
-			CG_Printf( "TS %s garbage collected\n", ts->class->name );
+			CG_Printf( "TS %s garbage collected\n", ts->class_->name );
 		}
 	}
 }

@@ -93,7 +93,6 @@ static const int animLoading[] = {
 	CG_ANIM( qfalse, qtrue,  qtrue,  qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_TURRET
 	CG_ANIM( qfalse, qtrue,  qtrue,  qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_TESLAGEN
 	CG_ANIM( qfalse, qtrue,  qtrue,  qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_ARMOURY
-	CG_ANIM( qfalse, qtrue,  qtrue,  qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_DCC
 	CG_ANIM( qtrue,  qtrue,  qtrue,  qtrue,  qtrue,  qtrue,   qtrue,  qfalse, qfalse, qtrue,  qtrue,  qtrue,  qtrue,  qtrue  ), // BA_H_MEDISTAT
 	CG_ANIM( qfalse, qtrue,  qtrue,  qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_DRILL
 	CG_ANIM( qfalse, qtrue,  qtrue,  qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_REACTOR
@@ -627,7 +626,7 @@ void CG_InitBuildables( void )
 			//animation.cfg
 			Com_sprintf( filename, sizeof( filename ), "models/buildables/%s/animation.cfg", buildableName );
 
-			if ( !CG_ParseBuildableAnimationFile( filename, i ) )
+			if ( !CG_ParseBuildableAnimationFile( filename, (buildable_t) i ) )
 			{
 				Com_Printf( S_WARNING "failed to load animation file %s\n", filename );
 			}
@@ -636,7 +635,7 @@ void CG_InitBuildables( void )
 		//sound.cfg
 		Com_sprintf( filename, sizeof( filename ), "sound/buildables/%s/sound.cfg", buildableName );
 
-		if ( !CG_ParseBuildableSoundFile( filename, i ) )
+		if ( !CG_ParseBuildableSoundFile( filename, (buildable_t) i ) )
 		{
 			Com_Printf( S_WARNING "failed to load sound file %s\n", filename );
 		}
@@ -731,18 +730,13 @@ qboolean CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t 
 			break;
 
 		case BA_H_MGTURRET:
-			*range = MGTURRET_RANGE;
+			*range = TURRET_RANGE;
 			shc = SHC_ORANGE;
 			break;
 
 		case BA_H_TESLAGEN:
 			*range = TESLAGEN_RANGE;
 			shc = SHC_RED;
-			break;
-
-		case BA_H_DCC:
-			*range = DC_RANGE;
-			shc = SHC_YELLOW;
 			break;
 
 		case BA_H_DRILL:
@@ -766,10 +760,12 @@ qboolean CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t 
 
 	if ( bType == BA_A_TRAPPER )
 	{
+		// HACK: Assumes certain trapper attributes
 		*rmType = RM_SPHERICAL_CONE_64;
 	}
 	else if ( bType == BA_H_MGTURRET )
 	{
+		// HACK: Assumes TURRET_PITCH_CAP == 30
 		*rmType = RM_SPHERICAL_CONE_240;
 	}
 	else
@@ -874,9 +870,9 @@ cg.time should be between oldFrameTime and frameTime after exit
 */
 static void CG_RunBuildableLerpFrame( centity_t *cent )
 {
-	buildable_t           buildable = cent->currentState.modelindex;
+	buildable_t           buildable = (buildable_t) cent->currentState.modelindex;
 	lerpFrame_t           *lf = &cent->lerpFrame;
-	buildableAnimNumber_t newAnimation = cent->buildableAnim & ~( ANIM_TOGGLEBIT | ANIM_FORCEBIT );
+	buildableAnimNumber_t newAnimation = (buildableAnimNumber_t) ( cent->buildableAnim & ~( ANIM_TOGGLEBIT | ANIM_FORCEBIT ) );
 
 	// see if the animation sequence is switching
 	if ( newAnimation != lf->animationNumber || !lf->animation )
@@ -915,7 +911,7 @@ static void CG_RunBuildableLerpFrame( centity_t *cent )
 	// animation ended
 	if ( lf->frameTime == cg.time )
 	{
-		cent->buildableAnim = cent->currentState.torsoAnim;
+		cent->buildableAnim = (buildableAnimNumber_t) cent->currentState.torsoAnim;
 		cent->buildableIdleAnim = qtrue;
 	}
 }
@@ -933,7 +929,7 @@ static void CG_BuildableAnimation( centity_t *cent, int *old, int *now, float *b
 	//if no animation is set default to idle anim
 	if ( cent->buildableAnim == BANIM_NONE )
 	{
-		cent->buildableAnim = es->torsoAnim;
+		cent->buildableAnim = (buildableAnimNumber_t) es->torsoAnim;
 		cent->buildableIdleAnim = qtrue;
 	}
 
@@ -972,19 +968,19 @@ static void CG_BuildableAnimation( centity_t *cent, int *old, int *now, float *b
 
 			if ( cent->buildableAnim == es->torsoAnim || es->legsAnim & ANIM_FORCEBIT )
 			{
-				cent->buildableAnim = cent->oldBuildableAnim = es->legsAnim;
+				cent->buildableAnim = cent->oldBuildableAnim = (buildableAnimNumber_t) es->legsAnim;
 				cent->buildableIdleAnim = qfalse;
 			}
 			else
 			{
-				cent->buildableAnim = cent->oldBuildableAnim = es->torsoAnim;
+				cent->buildableAnim = cent->oldBuildableAnim = (buildableAnimNumber_t) es->torsoAnim;
 				cent->buildableIdleAnim = qtrue;
 			}
 		}
 		else if ( cent->buildableIdleAnim == qtrue &&
 		          cent->buildableAnim != es->torsoAnim )
 		{
-			cent->buildableAnim = es->torsoAnim;
+			cent->buildableAnim = (buildableAnimNumber_t) es->torsoAnim;
 		}
 
 		CG_RunBuildableLerpFrame( cent );
@@ -1137,10 +1133,30 @@ void CG_GhostBuildable( int buildableInfo )
 	                     : cgs.media.redBuildShader;
 
 	// Draw predicted RGS efficiency
+	// TODO: Add fancy display for predicted RGS efficiency
 	if ( buildable == BA_H_DRILL || buildable == BA_A_LEECH )
 	{
-		// TODO: Add fancy display for predicted RGS efficiency
-		CG_CenterPrint(va("%d%%", ps->stats[ STAT_PREDICTION ]), 200, GIANTCHAR_WIDTH * 4 );
+		char color;
+		int  delta = ps->stats[ STAT_PREDICTION ];
+
+		if ( delta < 0 )
+		{
+			color = COLOR_RED;
+		}
+		else if ( delta < 10 )
+		{
+			color = COLOR_ORANGE;
+		}
+		else if ( delta < 50 )
+		{
+			color = COLOR_YELLOW;
+		}
+		else
+		{
+			color = COLOR_GREEN;
+		}
+
+		CG_CenterPrint(va("^%c%+d%%", color, delta), 200, GIANTCHAR_WIDTH * 4 );
 	}
 
 	//rescale the model
@@ -1177,7 +1193,7 @@ static void CG_GhostBuildableStatus( int buildableInfo )
 	vec3_t        angles, entity_origin;
 	vec3_t        mins, maxs;
 	trace_t       tr;
-	float         scale, x, y;
+	float         x, y;
 	buildable_t   buildable = (buildable_t)( buildableInfo & SB_BUILDABLE_MASK ); // assumed not BA_NONE
 
 	ps = &cg.predictedPlayerState;
@@ -1623,8 +1639,8 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 {
 	entityState_t *es = &cent->currentState;
 	vec3_t        origin;
-	float         healthScale, relativeSparePowerScale, mineEfficiencyScale;
-	int           health, relativeSparePower, mineEfficiency;
+	float         healthScale, relativeSparePowerScale = 0, mineEfficiencyScale = 0;
+	int           health, relativeSparePower = 0, mineEfficiency = 0;
 	float         x, y;
 	vec4_t        color;
 	qboolean      powered, marked, showMineEfficiency, showPower;
@@ -2215,7 +2231,7 @@ void CG_DrawBuildableStatus( void )
 		cent = &cg_entities[ cg.snap->entities[ i ].number ];
 		es = &cent->currentState;
 
-		if ( es->eType == ET_BUILDABLE && CG_PlayerIsBuilder( es->modelindex ) )
+		if ( es->eType == ET_BUILDABLE && CG_PlayerIsBuilder( (buildable_t) es->modelindex ) )
 		{
 			buildableList[ buildables++ ] = cg.snap->entities[ i ].number;
 		}
@@ -2309,7 +2325,7 @@ void CG_Buildable( centity_t *cent )
 			VectorCopy( cent->lerpOrigin, cent->buildableCache.cachedOrigin );
 			VectorCopy( cent->lerpAngles, cent->buildableCache.cachedAngles );
 			VectorCopy( surfNormal, cent->buildableCache.cachedNormal );
-			cent->buildableCache.cachedType = es->modelindex;
+			cent->buildableCache.cachedType = (buildable_t) es->modelindex;
 		}
 	}
 	else
@@ -2372,7 +2388,7 @@ void CG_Buildable( centity_t *cent )
 		CG_StartShadowCaster( ent.lightingOrigin, mins, maxs );
 	}
 
-	if ( CG_PlayerIsBuilder( es->modelindex ) && CG_BuildableRemovalPending( es->number ) )
+	if ( CG_PlayerIsBuilder( (buildable_t) es->modelindex ) && CG_BuildableRemovalPending( es->number ) )
 	{
 		ent.customShader = cgs.media.redBuildShader;
 	}
@@ -2471,7 +2487,7 @@ void CG_Buildable( centity_t *cent )
 			turretBarrel.nonNormalizedAxes = qfalse;
 		}
 
-		if ( CG_PlayerIsBuilder( es->modelindex ) && CG_BuildableRemovalPending( es->number ) )
+		if ( CG_PlayerIsBuilder( (buildable_t) es->modelindex ) && CG_BuildableRemovalPending( es->number ) )
 		{
 			turretBarrel.customShader = cgs.media.redBuildShader;
 		}
@@ -2521,7 +2537,7 @@ void CG_Buildable( centity_t *cent )
 			turretTop.nonNormalizedAxes = qfalse;
 		}
 
-		if ( CG_PlayerIsBuilder( es->modelindex ) && CG_BuildableRemovalPending( es->number ) )
+		if ( CG_PlayerIsBuilder( (buildable_t) es->modelindex ) && CG_BuildableRemovalPending( es->number ) )
 		{
 			turretTop.customShader = cgs.media.redBuildShader;
 		}

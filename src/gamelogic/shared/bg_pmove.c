@@ -1300,21 +1300,14 @@ static qboolean PM_CheckJetpack( void )
 		return qfalse;
 	}
 
-	// if jump key not held or attacked recently, stop active thrust
-	if ( pm->cmd.upmove < 10 || ( pm->ps->stats[ STAT_STATE2 ] & SS2_JETPACK_DAMAGED ) )
+	// if jump key not held stop active thrust
+	if ( pm->cmd.upmove < 10 )
 	{
 		if ( pm->ps->stats[ STAT_STATE2 ] & SS2_JETPACK_ACTIVE )
 		{
-			if ( pm->debugLevel > 0 )
+			if ( pm->debugLevel > 0 && pm->cmd.upmove < 10 )
 			{
-				if ( pm->cmd.upmove < 10 )
-				{
-					Com_Printf( "[PM_CheckJetpack] " S_COLOR_LTORANGE "Key Released: Jetpack stopped\n" );
-				}
-				else if ( pm->ps->stats[ STAT_STATE2 ] & SS2_JETPACK_DAMAGED )
-				{
-					Com_Printf( "[PM_CheckJetpack] " S_COLOR_RED "Damaged: Jetpack stopped\n" );
-				}
+				Com_Printf( "[PM_CheckJetpack] " S_COLOR_LTORANGE "Key Released: Jetpack stopped\n" );
 			}
 
 			pm->ps->stats[ STAT_STATE2 ] &= ~SS2_JETPACK_ACTIVE;
@@ -1339,12 +1332,6 @@ static qboolean PM_CheckJetpack( void )
 	// check thrust starting conditions
 	if ( !( pm->ps->stats[ STAT_STATE2 ] & SS2_JETPACK_WARM ) )
 	{
-		// don't allow a start when damaged recently
-		if ( pm->ps->stats[ STAT_STATE2 ] & SS2_JETPACK_DAMAGED )
-		{
-			return qfalse;
-		}
-
 		// we got off ground by jumping
 		if ( pm->ps->pm_flags & PMF_JUMPED )
 		{
@@ -1461,14 +1448,14 @@ static void PM_LandJetpack( qboolean force )
 		force = qtrue;
 	}
 
+	sideVelocity = sqrt( pml.previous_velocity[ 0 ] * pml.previous_velocity[ 0 ] +
+	                     pml.previous_velocity[ 1 ] * pml.previous_velocity[ 1 ] );
+
+	angle = atan2( -pml.previous_velocity[ 2 ], sideVelocity );
+
 	// allow the player to jump instead of land for some impacts
 	if ( !force )
 	{
-		sideVelocity = sqrt( pml.previous_velocity[ 0 ] * pml.previous_velocity[ 0 ] +
-							 pml.previous_velocity[ 1 ] * pml.previous_velocity[ 1 ] );
-
-		angle = atan2( -pml.previous_velocity[ 2 ], sideVelocity );
-
 		if ( angle > 0.0f && angle < M_PI / 4.0f ) // 45°
 		{
 			if ( pm->debugLevel > 0 )
@@ -4780,13 +4767,6 @@ void PM_UpdateViewAngles( playerState_t *ps, const usercmd_t *cmd )
 	}
 }
 
-#ifdef Q3_VM
-static float roundf( float v )
-{
-	return floorf( v + 0.5 );
-}
-#endif
-
 /*
 ================
 PmoveSingle
@@ -5036,9 +5016,7 @@ void PmoveSingle( pmove_t *pmove )
 	if ( !pmove->pmove_accurate )
 	{
 		// snap some parts of playerstate to save network bandwidth
-		pm->ps->velocity[0] = roundf( pm->ps->velocity[0] );
-		pm->ps->velocity[1] = roundf( pm->ps->velocity[1] );
-		pm->ps->velocity[2] = roundf( pm->ps->velocity[2] );
+		SnapVector( pm->ps->velocity );
 	}
 }
 

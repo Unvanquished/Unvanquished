@@ -35,7 +35,7 @@ Maryland 20850 USA.
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
 
-#ifndef DEDICATED
+#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 #include <SDL_version.h>
 
 // Require a minimum version of SDL
@@ -73,12 +73,9 @@ unsigned int CON_LogRead( char *out, unsigned int outSize );
 
 void     Sys_PlatformInit( void );
 void     Sys_PlatformExit( void );
-void     Sys_SigHandler( int signal ) NORETURN;
+void NORETURN Sys_SigHandler( int signal );
 void     Sys_ErrorDialog( const char *error );
 void     Sys_AnsiColorPrint( const char *msg );
-
-void     Sys_PrintCpuInfo( void );
-void     Sys_PrintMemoryInfo( void );
 
 int      Sys_GetPID( void );
 

@@ -1383,7 +1383,7 @@ static void CG_DrawPlayerMomentumBar( rectDef_t *rect, vec4_t foreColor, vec4_t 
 
 	ps = &cg.predictedPlayerState;
 
-	team       = ps->persistant[ PERS_TEAM ];
+	team       = (team_t) ps->persistant[ PERS_TEAM ];
 	momentum = ps->persistant[ PERS_MOMENTUM ] / 10.0f;
 
 	x = rect->x;
@@ -1535,7 +1535,7 @@ static void CG_DrawPlayerUnlockedItems( rectDef_t *rect, vec4_t foreColour, vec4
 		qboolean  unlocked;
 	} icon[ NUM_UNLOCKABLES ]; // more than enough(!)
 
-	team = cg.predictedPlayerState.persistant[ PERS_TEAM ];
+	team = (team_t) cg.predictedPlayerState.persistant[ PERS_TEAM ];
 
 	w = rect->w - 2 * borderSize;
 	h = rect->h - 2 * borderSize;
@@ -1912,10 +1912,9 @@ static void CG_DrawPlayerFuelIcon( rectDef_t *rect, vec4_t backColor,
 
 	fuel     = cg.snap->ps.stats[ STAT_FUEL ];
 	pmNormal = ( cg.snap->ps.pm_type == PM_NORMAL );
-	damaged  = ( cg.snap->ps.stats[ STAT_STATE2 ] & SS2_JETPACK_DAMAGED );
 	active   = ( cg.snap->ps.stats[ STAT_STATE2 ] & SS2_JETPACK_ACTIVE );
 
-	if ( fuel < JETPACK_FUEL_LOW || !pmNormal || damaged )
+	if ( fuel < JETPACK_FUEL_LOW || !pmNormal )
 	{
 		Vector4Copy( backColor, color );
 	}
@@ -2358,7 +2357,7 @@ static void CG_DrawMomentum( rectDef_t *rect, float text_x, float text_y,
 		return;
 	}
 
-	team = cg.snap->ps.persistant[ PERS_TEAM ];
+	team = (team_t) cg.snap->ps.persistant[ PERS_TEAM ];
 
 	if ( team <= TEAM_NONE || team >= NUM_TEAMS )
 	{
@@ -2616,8 +2615,8 @@ static void CG_DrawTeamOverlay( rectDef_t *rect, float scale, vec4_t color )
 	float             maxX = rect->x + rect->w;
 	float             maxXCp = maxX;
 	weapon_t          curWeapon = WP_NONE;
-	teamOverlayMode_t mode = cg_drawTeamOverlay.integer;
-	teamOverlaySort_t sort = cg_teamOverlaySortMode.integer;
+	teamOverlayMode_t mode = (teamOverlayMode_t) cg_drawTeamOverlay.integer;
+	teamOverlaySort_t sort = (teamOverlaySort_t) cg_teamOverlaySortMode.integer;
 	int               displayClients[ MAX_CLIENTS ];
 
 	if ( cg.predictedPlayerState.pm_type == PM_SPECTATOR )
@@ -2747,7 +2746,7 @@ static void CG_DrawTeamOverlay( rectDef_t *rect, float scale, vec4_t color )
 		{
 			if ( ci->team == TEAM_HUMANS )
 			{
-				curWeapon = ci->curWeaponClass;
+				curWeapon = (weapon_t) ci->curWeaponClass;
 			}
 			else if ( ci->team == TEAM_ALIENS )
 			{
@@ -3438,13 +3437,14 @@ void CG_DrawWeaponIcon( rectDef_t *rect, vec4_t color )
 
 	maxAmmo = BG_Weapon( weapon )->maxAmmo;
 
-	// don't display if dead
-	if ( cg.predictedPlayerState.stats[ STAT_HEALTH ] <= 0 )
+	// don't display if dead or no weapon
+	if ( cg.predictedPlayerState.stats[ STAT_HEALTH ] <= 0 || weapon == WP_NONE )
 	{
 		return;
 	}
 
-	if ( weapon <= WP_NONE || weapon >= WP_NUM_WEAPONS )
+
+	if ( weapon < WP_NONE || weapon >= WP_NUM_WEAPONS )
 	{
 		CG_Error( "CG_DrawWeaponIcon: weapon out of range: %d", weapon );
 	}
@@ -3678,7 +3678,7 @@ static void CG_ScanForCrosshairEntity( void )
 		return;
 	}
 
-	ownTeam = cg.snap->ps.persistant[ PERS_TEAM ];
+	ownTeam = (team_t) cg.snap->ps.persistant[ PERS_TEAM ];
 	targetState = &cg_entities[ trace.entityNum ].currentState;
 
 	if ( trace.entityNum >= MAX_CLIENTS )
@@ -3941,6 +3941,7 @@ static void CG_DrawStack( rectDef_t *rect, vec4_t color, float fill,
 		switch ( lalign )
 		{
 			case LALIGN_TOPLEFT:
+			default:
 				loff = 0;
 				break;
 
@@ -4364,8 +4365,8 @@ void CG_OwnerDraw( rectDef_t *rect, float text_x,
 			CG_DrawKiller( rect, scale, foreColor, textStyle );
 			break;
 
-		case CG_PLAYER_SELECT:
-			CG_DrawItemSelect( rect, foreColor );
+		case CG_PLAYER_HUMAN_INVENTORY:
+			CG_DrawHumanInventory( rect, backColor, foreColor );
 			break;
 
 		case CG_PLAYER_WEAPONICON:
@@ -5006,7 +5007,7 @@ static void CG_Draw2D( void )
 	if ( cg.snap->ps.pm_type == PM_INTERMISSION )
 	{
 		CG_DrawVote( TEAM_NONE );
-		CG_DrawVote( cg.predictedPlayerState.persistant[ PERS_TEAM ] );
+		CG_DrawVote( (team_t) cg.predictedPlayerState.persistant[ PERS_TEAM ] );
 		CG_DrawIntermission();
 		return;
 	}
@@ -5046,7 +5047,7 @@ static void CG_Draw2D( void )
 	}
 
 	CG_DrawVote( TEAM_NONE );
-	CG_DrawVote( cg.predictedPlayerState.persistant[ PERS_TEAM ] );
+	CG_DrawVote( (team_t) cg.predictedPlayerState.persistant[ PERS_TEAM ] );
 	CG_DrawWarmup();
 	CG_DrawQueue();
 

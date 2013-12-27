@@ -1208,12 +1208,12 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			break;
 
 		case EV_HUMAN_BUILDABLE_DYING:
-			CG_HumanBuildableDying( es->modelindex, position );
+			CG_HumanBuildableDying( (buildable_t) es->modelindex, position );
 			break;
 
 		case EV_HUMAN_BUILDABLE_EXPLOSION:
 			ByteToDir( es->eventParm, dir );
-			CG_HumanBuildableExplosion( es->modelindex, position, dir );
+			CG_HumanBuildableExplosion( (buildable_t) es->modelindex, position, dir );
 			break;
 
 		case EV_ALIEN_BUILDABLE_EXPLOSION:
@@ -1494,7 +1494,7 @@ void CG_CheckEvents( centity_t *cent )
 	// check for event-only entities
 	if ( cent->currentState.eType > ET_EVENTS )
 	{
-		event = cent->currentState.eType - ET_EVENTS;
+		event = (entity_event_t) ( cent->currentState.eType - ET_EVENTS );
 
 		if ( cent->previousEvent )
 		{
@@ -1510,7 +1510,7 @@ void CG_CheckEvents( centity_t *cent )
 		if ( cent->currentState.eFlags & EF_PLAYER_EVENT )
 		{
 			cent = &cg_entities[ cent->currentState.otherEntityNum ];
-			oldEvent = cent->currentState.event;
+			oldEvent = (entity_event_t) cent->currentState.event;
 			cent->currentState.event = event;
 		}
 	}

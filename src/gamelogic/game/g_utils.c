@@ -248,7 +248,7 @@ G_CopyString
 char *G_CopyString( const char *str )
 {
 	size_t size = strlen( str ) + 1;
-	char *cp = BG_Alloc( size );
+	char *cp = (char*) BG_Alloc( size );
 	memcpy( cp, str, size );
 	return cp;
 }

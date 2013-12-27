@@ -39,6 +39,7 @@ Maryland 20850 USA.
 #include "../qcommon/qcommon.h"
 #include "../server/g_api.h"
 #include "../botlib/bot_api.h"
+#include "../framework/VirtualMachine.h"
 
 //=============================================================================
 
@@ -312,7 +313,6 @@ typedef struct
 	int           nextHeartbeatTime;
 	challenge_t   challenges[ MAX_CHALLENGES ]; // to prevent invalid IP addresses from connecting
 	receipt_t     infoReceipts[ MAX_INFO_RECEIPTS ];
-	netadr_t      redirectAddress; // for rcon return messages
 
 	int       sampleTimes[ SERVER_PERFORMANCECOUNTER_SAMPLES ];
 	int       currentSampleIndex;
@@ -324,9 +324,78 @@ typedef struct
 
 //=============================================================================
 
+class GameVM {
+public:
+    virtual ~GameVM();
+
+	virtual void GameInit(int levelTime, int randomSeed, qboolean restart) = 0;
+	virtual void GameShutdown(qboolean restart) = 0;
+	virtual qboolean GameClientConnect(char* reason, size_t size, int clientNum, qboolean firstTime, qboolean isBot) = 0;
+	virtual void GameClientBegin(int clientNum) = 0;
+	virtual void GameClientUserInfoChanged(int clientNum) = 0;
+	virtual void GameClientDisconnect(int clientNum) = 0;
+	virtual void GameClientCommand(int clientNum) = 0;
+	virtual void GameClientThink(int clientNum) = 0;
+	virtual void GameRunFrame(int levelTime) = 0;
+	virtual qboolean GameConsoleCommand() = 0;
+	virtual qboolean GameSnapshotCallback(int entityNum, int clientNum) = 0;
+	virtual void BotAIStartFrame(int levelTime) = 0;
+	virtual void GameMessageRecieved(int clientNum, const char *buffer, int bufferSize, int commandTime) = 0;
+};
+
+class NaClGameVM: public GameVM, public VM::VMBase {
+public:
+	NaClGameVM();
+    virtual ~NaClGameVM();
+	bool Start();
+
+	virtual void GameInit(int levelTime, int randomSeed, qboolean restart) OVERRIDE;
+	virtual void GameShutdown(qboolean restart) OVERRIDE;
+	virtual qboolean GameClientConnect(char* reason, size_t size, int clientNum, qboolean firstTime, qboolean isBot) OVERRIDE;
+	virtual void GameClientBegin(int clientNum) OVERRIDE;
+	virtual void GameClientUserInfoChanged(int clientNum) OVERRIDE;
+	virtual void GameClientDisconnect(int clientNum) OVERRIDE;
+	virtual void GameClientCommand(int clientNum) OVERRIDE;
+	virtual void GameClientThink(int clientNum) OVERRIDE;
+	virtual void GameRunFrame(int levelTime) OVERRIDE;
+	virtual qboolean GameConsoleCommand() OVERRIDE;
+	virtual qboolean GameSnapshotCallback(int entityNum, int clientNum) OVERRIDE;
+	virtual void BotAIStartFrame(int levelTime) OVERRIDE;
+	virtual void GameMessageRecieved(int clientNum, const char *buffer, int bufferSize, int commandTime) OVERRIDE;
+
+private:
+	void Syscall(int index, RPC::Reader& input, RPC::Writer& outputs);
+
+	NaCl::SharedMemoryPtr shmRegion;
+};
+
+class QVMGameVM: public GameVM {
+public:
+    QVMGameVM(vm_t* vm);
+    virtual ~QVMGameVM();
+
+	virtual void GameInit(int levelTime, int randomSeed, qboolean restart) OVERRIDE;
+	virtual void GameShutdown(qboolean restart) OVERRIDE;
+	virtual qboolean GameClientConnect(char* reason, size_t size, int clientNum, qboolean firstTime, qboolean isBot) OVERRIDE;
+	virtual void GameClientBegin(int clientNum) OVERRIDE;
+	virtual void GameClientUserInfoChanged(int clientNum) OVERRIDE;
+	virtual void GameClientDisconnect(int clientNum) OVERRIDE;
+	virtual void GameClientCommand(int clientNum) OVERRIDE;
+	virtual void GameClientThink(int clientNum) OVERRIDE;
+	virtual void GameRunFrame(int levelTime) OVERRIDE;
+	virtual qboolean GameConsoleCommand() OVERRIDE;
+	virtual qboolean GameSnapshotCallback(int entityNum, int clientNum) OVERRIDE;
+	virtual void BotAIStartFrame(int levelTime) OVERRIDE;
+	virtual void GameMessageRecieved(int clientNum, const char *buffer, int bufferSize, int commandTime) OVERRIDE;
+
+private:
+    vm_t* vm;
+};
+//=============================================================================
+
 extern serverStatic_t svs; // persistent server info across maps
 extern server_t       sv; // cleared each map
-extern vm_t           *gvm; // game virtual machine
+extern GameVM         *gvm; // game virtual machine
 
 extern cvar_t         *sv_fps;
 extern cvar_t         *sv_timeout;
@@ -371,7 +440,6 @@ extern cvar_t *sv_wwwDlDisconnected;
 extern cvar_t *sv_wwwFallbackURL;
 
 //bani
-extern cvar_t *sv_cheats;
 extern cvar_t *sv_packetdelay;
 
 //fretn
@@ -380,6 +448,8 @@ extern cvar_t *sv_fullmsg;
 #ifdef USE_VOIP
 extern cvar_t *sv_voip;
 #endif
+
+extern cvar_t *vm_game;
 
 //===========================================================
 
@@ -417,7 +487,7 @@ void SV_GetPlayerPubkey( int clientNum, char *pubkey, int size );
 void SV_CreateBaseline( void );
 
 void SV_ChangeMaxClients( void );
-void SV_SpawnServer( char *server );
+void SV_SpawnServer( const char *server );
 
 //
 // sv_client.c
@@ -473,6 +543,7 @@ playerState_t  *SV_GameClientNum( int num );
 
 svEntity_t     *SV_SvEntityForGentity( sharedEntity_t *gEnt );
 sharedEntity_t *SV_GEntityForSvEntity( svEntity_t *svEnt );
+GameVM         *SV_CreateGameVM( void );
 void           SV_InitGameProgs( void );
 void           SV_ShutdownGameProgs( void );
 void           SV_RestartGameProgs( void );
@@ -480,6 +551,7 @@ qboolean       SV_inPVS( const vec3_t p1, const vec3_t p2 );
 qboolean       SV_GetTag( int clientNum, int tagFileNumber, const char *tagname, orientation_t *ort );
 int            SV_LoadTag( const char *mod_name );
 void           SV_GameBinaryMessageReceived( int cno, const char *buf, int buflen, int commandTime );
+void           SV_GameCommandHandler( void );
 
 //
 // sv_bot.c

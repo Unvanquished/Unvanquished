@@ -520,7 +520,7 @@ g_admin_cmd_t *G_admin_cmd( const char *cmd )
 		--count;
 	}
 
-	return bsearch( cmd, cmds, count, sizeof( g_admin_cmd_t ), cmdcmp );
+	return (g_admin_cmd_t*) bsearch( cmd, cmds, count, sizeof( g_admin_cmd_t ), cmdcmp );
 }
 
 g_admin_level_t *G_admin_level( const int l )
@@ -964,28 +964,28 @@ static void admin_default_levels( void )
 	g_admin_level_t *l;
 	int             level = 0;
 
-	l = g_admin_levels = BG_Alloc( sizeof( g_admin_level_t ) );
+	l = g_admin_levels = (g_admin_level_t*) BG_Alloc( sizeof( g_admin_level_t ) );
 	l->level = level++;
 	Q_strncpyz( l->name, "^4Unknown Player", sizeof( l->name ) );
 	Q_strncpyz( l->flags,
 	            "listplayers admintest adminhelp time register",
 	            sizeof( l->flags ) );
 
-	l = l->next = BG_Alloc( sizeof( g_admin_level_t ) );
+	l = l->next = (g_admin_level_t*) BG_Alloc( sizeof( g_admin_level_t ) );
 	l->level = level++;
 	Q_strncpyz( l->name, "^5Server Regular", sizeof( l->name ) );
 	Q_strncpyz( l->flags,
 	            "listplayers admintest adminhelp time register unregister",
 	            sizeof( l->flags ) );
 
-	l = l->next = BG_Alloc( sizeof( g_admin_level_t ) );
+	l = l->next = (g_admin_level_t*) BG_Alloc( sizeof( g_admin_level_t ) );
 	l->level = level++;
 	Q_strncpyz( l->name, "^6Team Manager", sizeof( l->name ) );
 	Q_strncpyz( l->flags,
 	            "listplayers admintest adminhelp time putteam spec999 register unregister",
 	            sizeof( l->flags ) );
 
-	l = l->next = BG_Alloc( sizeof( g_admin_level_t ) );
+	l = l->next = (g_admin_level_t*) BG_Alloc( sizeof( g_admin_level_t ) );
 	l->level = level++;
 	Q_strncpyz( l->name, "^2Junior Admin", sizeof( l->name ) );
 	Q_strncpyz( l->flags,
@@ -993,7 +993,7 @@ static void admin_default_levels( void )
 	            "buildlog register unregister l0 l1",
 	            sizeof( l->flags ) );
 
-	l = l->next = BG_Alloc( sizeof( g_admin_level_t ) );
+	l = l->next = (g_admin_level_t*) BG_Alloc( sizeof( g_admin_level_t ) );
 	l->level = level++;
 	Q_strncpyz( l->name, "^3Senior Admin", sizeof( l->name ) );
 	Q_strncpyz( l->flags,
@@ -1001,7 +1001,7 @@ static void admin_default_levels( void )
 	            "namelog buildlog ADMINCHAT register unregister l0 l1",
 	            sizeof( l->flags ) );
 
-	l = l->next = BG_Alloc( sizeof( g_admin_level_t ) );
+	l = l->next = (g_admin_level_t*) BG_Alloc( sizeof( g_admin_level_t ) );
 	l->level = level++;
 	Q_strncpyz( l->name, "^1Server Operator", sizeof( l->name ) );
 	Q_strncpyz( l->flags,
@@ -1839,7 +1839,7 @@ qboolean G_admin_readconfig( gentity_t *ent )
 		return qfalse;
 	}
 
-	cnf = BG_Alloc( len + 1 );
+	cnf = (char*) BG_Alloc( len + 1 );
 	cnf2 = cnf;
 	trap_FS_Read( cnf, len, f );
 	* ( cnf + len ) = '\0';
@@ -1863,11 +1863,11 @@ qboolean G_admin_readconfig( gentity_t *ent )
 		{
 			if ( l )
 			{
-				l = l->next = BG_Alloc( sizeof( g_admin_level_t ) );
+				l = l->next = (g_admin_level_t*) BG_Alloc( sizeof( g_admin_level_t ) );
 			}
 			else
 			{
-				l = g_admin_levels = BG_Alloc( sizeof( g_admin_level_t ) );
+				l = g_admin_levels = (g_admin_level_t*) BG_Alloc( sizeof( g_admin_level_t ) );
 			}
 
 			memset( l, 0, sizeof( *l ) );
@@ -1879,11 +1879,11 @@ qboolean G_admin_readconfig( gentity_t *ent )
 		{
 			if ( a )
 			{
-				a = a->next = BG_Alloc( sizeof( g_admin_admin_t ) );
+				a = a->next = (g_admin_admin_t*) BG_Alloc( sizeof( g_admin_admin_t ) );
 			}
 			else
 			{
-				a = g_admin_admins = BG_Alloc( sizeof( g_admin_admin_t ) );
+				a = g_admin_admins = (g_admin_admin_t*) BG_Alloc( sizeof( g_admin_admin_t ) );
 			}
 
 			memset( a, 0, sizeof( *a ) );
@@ -1896,12 +1896,12 @@ qboolean G_admin_readconfig( gentity_t *ent )
 			if ( b )
 			{
 				int id = b->id + 1;
-				b = b->next = BG_Alloc( sizeof( g_admin_ban_t ) );
+				b = b->next = (g_admin_ban_t*) BG_Alloc( sizeof( g_admin_ban_t ) );
 				b->id = id;
 			}
 			else
 			{
-				b = g_admin_bans = BG_Alloc( sizeof( g_admin_ban_t ) );
+				b = g_admin_bans = (g_admin_ban_t*) BG_Alloc( sizeof( g_admin_ban_t ) );
 				b->id = 1;
 			}
 
@@ -1915,11 +1915,11 @@ qboolean G_admin_readconfig( gentity_t *ent )
 		{
 			if ( c )
 			{
-				c = c->next = BG_Alloc( sizeof( g_admin_command_t ) );
+				c = c->next = (g_admin_command_t*) BG_Alloc( sizeof( g_admin_command_t ) );
 			}
 			else
 			{
-				c = g_admin_commands = BG_Alloc( sizeof( g_admin_command_t ) );
+				c = g_admin_commands = (g_admin_command_t*) BG_Alloc( sizeof( g_admin_command_t ) );
 			}
 
 			command_open = qtrue;
@@ -2192,11 +2192,11 @@ qboolean G_admin_setlevel( gentity_t *ent )
 
 		if ( a )
 		{
-			a = a->next = BG_Alloc( sizeof( g_admin_admin_t ) );
+			a = a->next = (g_admin_admin_t*) BG_Alloc( sizeof( g_admin_admin_t ) );
 		}
 		else
 		{
-			a = g_admin_admins = BG_Alloc( sizeof( g_admin_admin_t ) );
+			a = g_admin_admins = (g_admin_admin_t*) BG_Alloc( sizeof( g_admin_admin_t ) );
 		}
 
 		vic->client->pers.admin = a;
@@ -2300,11 +2300,11 @@ static g_admin_ban_t *admin_create_ban_entry( gentity_t *ent, char *netname, cha
 
 	if ( b )
 	{
-		b = b->next = BG_Alloc( sizeof( g_admin_ban_t ) );
+		b = b->next = (g_admin_ban_t*) BG_Alloc( sizeof( g_admin_ban_t ) );
 	}
 	else
 	{
-		b = g_admin_bans = BG_Alloc( sizeof( g_admin_ban_t ) );
+		b = g_admin_bans = (g_admin_ban_t*) BG_Alloc( sizeof( g_admin_ban_t ) );
 	}
 
 	b->id = id;
@@ -2336,7 +2336,7 @@ static void admin_create_ban( gentity_t *ent,
                               char *guid,
                               addr_t *ip,
                               int seconds,
-                              char *reason )
+                              const char *reason )
 {
 	int           i;
 	char          disconnect[ MAX_STRING_CHARS ];
@@ -3046,7 +3046,7 @@ qboolean G_admin_speclock( gentity_t *ent )
 
 	if ( !spec )
 	{
-		spec = BG_Alloc( sizeof( g_admin_spec_t ) );
+		spec = (g_admin_spec_t*) BG_Alloc( sizeof( g_admin_spec_t ) );
 		spec->next = g_admin_specs;
 		g_admin_specs = spec;
 	}
@@ -3844,8 +3844,8 @@ qboolean G_admin_showbans( gentity_t *ent )
 	admin_search( ent, "showbans", "bans",
 	              ipmatch ? ban_matchip : ban_matchname,
 	              ban_out, g_admin_bans,
-	              ipmatch ? ( void * ) &ip : ( void * ) name_match,
-	              ipmatch ? ( void * ) &ip : ( void * ) name_match,
+	              ipmatch ? ( const char * ) &ip : ( const char * ) name_match,
+	              ipmatch ? ( const char * ) &ip : ( const char * ) name_match,
 	              start, 1, MAX_ADMIN_SHOWBANS );
 	return qtrue;
 }
@@ -4267,7 +4267,7 @@ qboolean G_admin_restart( gentity_t *ent )
 				continue;
 			}
 
-			cl->sess.restartTeam = cl->pers.team;
+			cl->sess.restartTeam = (team_t) cl->pers.team;
 		}
 
 		trap_Cvar_Set( "g_mapRestarted", "yk" );
@@ -4456,7 +4456,7 @@ qboolean G_admin_namelog( gentity_t *ent )
 
 	admin_search( ent, "namelog", "recent players",
 	              ipmatch ? namelog_matchip : namelog_matchname, namelog_out, level.namelogs,
-	              ipmatch ? ( void * ) &ip : s2, ipmatch ? ( void * ) &ip : s2,
+	              ipmatch ? ( const char * ) &ip : s2, ipmatch ? ( const char * ) &ip : s2,
 	              start, MAX_CLIENTS, MAX_ADMIN_LISTITEMS );
 	return qtrue;
 }
@@ -4618,8 +4618,8 @@ qboolean G_admin_lock( gentity_t *ent )
 
 static int G_admin_flag_sort( const void *pa, const void *pb )
 {
-	const char *a = pa;
-	const char *b = pb;
+	const char *a = (const char*) pa;
+	const char *b = (const char*) pb;
 
 	if ( *a == '-' || *a == '+' )
 	{
@@ -5562,7 +5562,7 @@ void G_admin_cleanup( void )
 	g_admin_command_t *c;
 	void              *n;
 
-	for ( l = g_admin_levels; l; l = n )
+	for ( l = g_admin_levels; l; l = (g_admin_level_t*) n )
 	{
 		n = l->next;
 		BG_Free( l );
@@ -5570,7 +5570,7 @@ void G_admin_cleanup( void )
 
 	g_admin_levels = NULL;
 
-	for ( a = g_admin_admins; a; a = n )
+	for ( a = g_admin_admins; a; a = (g_admin_admin_t*) n )
 	{
 		n = a->next;
 		BG_Free( a );
@@ -5578,7 +5578,7 @@ void G_admin_cleanup( void )
 
 	g_admin_admins = NULL;
 
-	for ( b = g_admin_bans; b; b = n )
+	for ( b = g_admin_bans; b; b = (g_admin_ban_t*) n )
 	{
 		n = b->next;
 		BG_Free( b );
@@ -5586,7 +5586,7 @@ void G_admin_cleanup( void )
 
 	g_admin_bans = NULL;
 
-	for ( s = g_admin_specs; s; s = n )
+	for ( s = g_admin_specs; s; s = (g_admin_spec_t*) n )
 	{
 		n = s->next;
 		BG_Free( s );
@@ -5594,7 +5594,7 @@ void G_admin_cleanup( void )
 
 	g_admin_specs = NULL;
 
-	for ( c = g_admin_commands; c; c = n )
+	for ( c = g_admin_commands; c; c = (g_admin_command_t*) n )
 	{
 		n = c->next;
 		BG_Free( c );

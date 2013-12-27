@@ -40,11 +40,16 @@ typedef struct
 	   persist, so keep track of non-worldspawn changes and restore that on map
 	   end. unfortunately, if the server crashes, the value set in worldspawn may
 	   persist */
-	char      *explicit;
+	char      *explicit_;
 } cvarTable_t;
 
+#ifdef QVM_ABI
 gentity_t          g_entities[ MAX_GENTITIES ];
-gclient_t          g_clients[ MAX_CLIENTS ];
+gclient_t          g_clients[ MAX_GENTITIES ];
+#else
+gentity_t          *g_entities;
+gclient_t          *g_clients;
+#endif
 
 vmCvar_t           g_showHelpOnConnection;
 
@@ -65,6 +70,7 @@ vmCvar_t           g_inactivity;
 vmCvar_t           g_debugMove;
 vmCvar_t           g_debugDamage;
 vmCvar_t           g_debugKnockback;
+vmCvar_t           g_debugTurrets;
 vmCvar_t           g_motd;
 vmCvar_t           g_synchronousClients;
 vmCvar_t           g_warmup;
@@ -292,6 +298,7 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_debugMove,                   "g_debugMove",                   "0",                                0,                                               0, qfalse           },
 	{ &g_debugDamage,                 "g_debugDamage",                 "0",                                0,                                               0, qfalse           },
 	{ &g_debugKnockback,              "g_debugKnockback",              "0",                                0,                                               0, qfalse           },
+	{ &g_debugTurrets,                "g_debugTurrets",                "0",                                0,                                               0, qfalse           },
 	{ &g_motd,                        "g_motd",                        "",                                 0,                                               0, qfalse           },
 
 	{ &g_allowVote,                   "g_allowVote",                   "1",                                CVAR_ARCHIVE,                                    0, qfalse           },
@@ -453,9 +460,6 @@ static cvarTable_t gameCvarTable[] =
 
 static const size_t gameCvarTableSize = ARRAY_LEN( gameCvarTable );
 
-void               G_InitGame( int levelTime, int randomSeed, int restart );
-void               G_RunFrame( int levelTime );
-void               G_ShutdownGame( int restart );
 void               CheckExitRules( void );
 void               G_CountSpawns( void );
 static void        G_LogGameplayStats( int state );
@@ -468,6 +472,7 @@ enum
 	LOG_GAMEPLAY_STATS_FOOTER
 };
 
+#ifdef QVM_ABI
 /*
 ================
 vmMain
@@ -476,13 +481,14 @@ This is the only way control passes into the module.
 This must be the very first function compiled into the .q3vm file
 ================
 */
-Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3, int arg4,
-                          int arg5, int arg6, int arg7, int arg8, int arg9,
-                          int arg10, int arg11 )
+EXTERN_C Q_EXPORT
+intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3, int arg4,
+                 int arg5, int arg6, int arg7, int arg8, int arg9, int arg10, int arg11 )
 {
 	switch ( command )
 	{
 		case GAME_INIT:
+			trap_SyscallABIVersion( SYSCALL_ABI_VERSION_MAJOR, SYSCALL_ABI_VERSION_MINOR );
 			G_InitGame( arg0, arg1, arg2 );
 			return 0;
 
@@ -534,6 +540,7 @@ Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3, i
 
 	return -1;
 }
+#endif
 
 void QDECL PRINTF_LIKE(1) G_Printf( const char *fmt, ... )
 {
@@ -676,9 +683,9 @@ void G_RegisterCvars( void )
 			cvarTable->modificationCount = cvarTable->vmCvar->modificationCount;
 		}
 
-		if ( cvarTable->explicit )
+		if ( cvarTable->explicit_ )
 		{
-			strcpy( cvarTable->explicit, cvarTable->vmCvar->string );
+			strcpy( cvarTable->explicit_, cvarTable->vmCvar->string );
 		}
 	}
 }
@@ -709,9 +716,9 @@ void G_UpdateCvars( void )
 					                                Quote( cv->cvarName ), Quote( cv->vmCvar->string ) ) );
 				}
 
-				if ( !level.spawning && cv->explicit )
+				if ( !level.spawning && cv->explicit_ )
 				{
-					strcpy( cv->explicit, cv->vmCvar->string );
+					strcpy( cv->explicit_, cv->vmCvar->string );
 				}
 			}
 		}
@@ -730,9 +737,9 @@ void G_RestoreCvars( void )
 
 	for ( i = 0, cv = gameCvarTable; i < gameCvarTableSize; i++, cv++ )
 	{
-		if ( cv->vmCvar && cv->explicit )
+		if ( cv->vmCvar && cv->explicit_ )
 		{
-			trap_Cvar_Set( cv->cvarName, cv->explicit );
+			trap_Cvar_Set( cv->cvarName, cv->explicit_ );
 		}
 	}
 }
@@ -789,8 +796,6 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 {
 	int i;
 
-	trap_SyscallABIVersion( SYSCALL_ABI_VERSION_MAJOR, SYSCALL_ABI_VERSION_MINOR );
-
 	srand( randomSeed );
 
 	G_RegisterCvars();
@@ -843,7 +848,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 	{
 		G_Printf( "Not logging to disk\n" );
 	}
-	
+
 	// gameplay statistics logging
 	if ( g_logGameplayStatsFrequency.integer > 0 )
 	{
@@ -1002,7 +1007,7 @@ static void G_ClearVotes( qboolean all )
 
 	for ( i = 0; i < NUM_TEAMS; i++ )
 	{
-		if ( all || G_CheckStopVote( i ) )
+		if ( all || G_CheckStopVote( (team_t) i ) )
 		{
 			level.team[ i ].voteTime = 0;
 			trap_SetConfigstring( CS_VOTE_TIME + i, "" );
@@ -1452,33 +1457,22 @@ void G_CountSpawns( void )
 		}
 
 		//TODO create a function to check if a building is a spawn
-		if( ent->s.modelindex == BA_A_SPAWN || ent->s.modelindex == BA_H_SPAWN )
+		if( ent->s.modelindex == BA_A_SPAWN )
 		{
-			team_t team;
-			//TODO create a function to guess the team which own a building depending on it's modelindex
-			switch(ent->s.modelindex)
-			{
-				case BA_A_SPAWN:
-					team = TEAM_ALIENS;
-					break;
-				case BA_H_SPAWN:
-					team = TEAM_HUMANS;
-					break;
-			}
-			level.team[ team ].numSpawns++;
+			level.team[ TEAM_ALIENS ].numSpawns++;
+		}
+		else if ( ent->s.modelindex == BA_H_SPAWN )
+		{
+			level.team[ TEAM_HUMANS ].numSpawns++;
 		}
 	}
 }
 
-/*
-============
-G_CalculateMineRate
-
-Recalculate the mine rate and the teams mine efficiencies
-============
-*/
 #define CALCULATE_MINE_RATE_PERIOD 1000
 
+/**
+ * @brief Recalculate the mine rate and the teams mine efficiencies.
+ */
 void G_CalculateMineRate( void )
 {
 	int              i, playerNum;
@@ -1493,8 +1487,8 @@ void G_CalculateMineRate( void )
 		return;
 	}
 
-	level.team[ TEAM_HUMANS ].mineEfficiency = 0;
-	level.team[ TEAM_ALIENS ].mineEfficiency = 0;
+	level.team[ TEAM_HUMANS ].mineEfficiency = 0.0f;
+	level.team[ TEAM_ALIENS ].mineEfficiency = 0.0f;
 
 	// sum up mine rates of RGS
 	for ( i = MAX_CLIENTS, ent = g_entities + i; i < level.num_entities; i++, ent++ )
@@ -1507,23 +1501,24 @@ void G_CalculateMineRate( void )
 		switch ( ent->s.modelindex )
 		{
 			case BA_H_DRILL:
-				level.team[ TEAM_HUMANS ].mineEfficiency += ent->s.weaponAnim;
+				level.team[ TEAM_HUMANS ].mineEfficiency += ent->mineEfficiency;
 				break;
 
 			case BA_A_LEECH:
-				level.team[ TEAM_ALIENS ].mineEfficiency += ent->s.weaponAnim;
+				level.team[ TEAM_ALIENS ].mineEfficiency += ent->mineEfficiency;
 				break;
 		}
 	}
 
 	// minimum mine rate
-	if ( G_Reactor()  && level.team[ TEAM_HUMANS ].mineEfficiency < g_minimumMineRate.integer )
+	// g_minimumMineRate is really a minimum mine efficiency in percent points
+	if ( G_Reactor()  && level.team[ TEAM_HUMANS ].mineEfficiency < ( g_minimumMineRate.value / 100.0f ) )
 	{
-		level.team[ TEAM_HUMANS ].mineEfficiency = g_minimumMineRate.integer;
+		level.team[ TEAM_HUMANS ].mineEfficiency = ( g_minimumMineRate.value / 100.0f );
 	}
-	if ( G_Overmind() && level.team[ TEAM_ALIENS ].mineEfficiency < g_minimumMineRate.integer )
+	if ( G_Overmind() && level.team[ TEAM_ALIENS ].mineEfficiency < ( g_minimumMineRate.value / 100.0f ) )
 	{
-		level.team[ TEAM_ALIENS ].mineEfficiency = g_minimumMineRate.integer;
+		level.team[ TEAM_ALIENS ].mineEfficiency = ( g_minimumMineRate.value / 100.0f );
 	}
 
 	// calculate level wide mine rate. ln(2) ~= 0.6931472
@@ -1531,7 +1526,7 @@ void G_CalculateMineRate( void )
 	                 exp( ( -0.6931472f * level.matchTime ) / ( 60000.0f * g_mineRateHalfLife.value ) );
 
 	// add build points
-	tmp = ( level.mineRate / 60.0f ) * ( CALCULATE_MINE_RATE_PERIOD / 1000.0f ) / 100.0f;
+	tmp = ( level.mineRate / 60.0f ) * ( CALCULATE_MINE_RATE_PERIOD / 1000.0f );
 	G_ModifyBuildPoints( TEAM_HUMANS, tmp * level.team[ TEAM_HUMANS ].mineEfficiency );
 	G_ModifyBuildPoints( TEAM_ALIENS, tmp * level.team[ TEAM_ALIENS ].mineEfficiency );
 
@@ -1548,13 +1543,13 @@ void G_CalculateMineRate( void )
 			continue;
 		}
 
-		team = client->pers.team;
+		team = (team_t) client->pers.team;
 
 		client->ps.persistant[ PERS_MINERATE ] = ( short )( level.mineRate * 10.0f );
 
 		if ( team > TEAM_NONE && team < NUM_TEAMS )
 		{
-			client->ps.persistant[ PERS_RGS_EFFICIENCY ] = ( short )level.team[ team ].mineEfficiency;
+			client->ps.persistant[ PERS_RGS_EFFICIENCY ] = ( short )( level.team[ team ].mineEfficiency * 100.0f );
 		}
 		else
 		{
@@ -1575,7 +1570,7 @@ Resets completely if all players leave a team.
 */
 void G_CalculateAvgPlayers( void )
 {
-	team_t     team;
+	int        team;
 	int        *samples, currentPlayers;
 	float      *avgPlayers;
 
@@ -1626,7 +1621,7 @@ and team change.
 void CalculateRanks( void )
 {
 	int  i;
-	team_t team;
+	int  team;
 	char P[ MAX_CLIENTS + 1 ] = "", B[ MAX_CLIENTS + 1 ] = "";
 
 	level.numConnectedClients = 0;
@@ -1875,8 +1870,17 @@ void ExitLevel( void )
 {
 	int       i;
 	gclient_t *cl;
+	char currentMapName[ MAX_STRING_CHARS ];
 
-	if ( G_MapExists( g_nextMap.string ) )
+	trap_Cvar_VariableStringBuffer( "mapname", currentMapName, sizeof( currentMapName ) );
+
+	// Restart if map is the same
+	if ( !Q_stricmp( currentMapName, g_nextMap.string ) )
+	{
+		trap_Cvar_Set( "g_layouts", g_nextMapLayouts.string );
+		trap_SendConsoleCommand( EXEC_APPEND, "map_restart" );
+	}
+	else if ( G_MapExists( g_nextMap.string ) )
 	{
 		trap_SendConsoleCommand( EXEC_APPEND, va( "map %s %s\n", Quote( g_nextMap.string ), Quote( g_nextMapLayouts.string ) ) );
 	}
@@ -2009,7 +2013,7 @@ static void GetAverageDistanceToBase( int teamDistance[] )
 	int       playerNum;
 	gentity_t *playerEnt;
 	gclient_t *client;
-	team_t    team;
+	int       team;
 
 	for ( team = TEAM_ALIENS ; team < NUM_TEAMS ; ++team)
 	{
@@ -2049,7 +2053,7 @@ static void GetAverageCredits( int teamCredits[], int teamValue[] )
 	int       playerNum;
 	gentity_t *playerEnt;
 	gclient_t *client;
-	team_t    team;
+	int       team;
 
 	for ( team = TEAM_ALIENS ; team < NUM_TEAMS ; ++team)
 	{
@@ -2148,7 +2152,7 @@ static void G_LogGameplayStats( int state )
 		{
 			int    time;
 			float  LMR;
-			team_t team;
+			int    team;
 			int    num[ NUM_TEAMS ];
 			int    Con[ NUM_TEAMS ];
 			int    ME [ NUM_TEAMS ];
@@ -3134,7 +3138,7 @@ void G_RunFrame( int levelTime )
 	// cancel vote if timed out
 	for ( i = 0; i < NUM_TEAMS; i++ )
 	{
-		G_CheckVote( i );
+		G_CheckVote( (team_t) i );
 	}
 
 	trap_BotUpdateObstacles();
