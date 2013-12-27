@@ -1473,17 +1473,6 @@ GAMEMODULE( NAME cgame
   QVM_ASM ${CGAMEASMLIST}
 )
 
-GAMEMODULE( NAME ui
-  OUTPUT_DIR main
-  COMPILE_DEF UI
-  FILES ${UILIST}
-  HAS_NACL 0
-  NACL_FILES ${UINACLLIST}
-  NATIVE_FILES ${UINATIVELIST}
-  QVM_FILES ${UIQVMLIST}
-  QVM_ASM ${UIASMLIST}
-)
-
 ################################################################################
 # Engine
 ################################################################################
