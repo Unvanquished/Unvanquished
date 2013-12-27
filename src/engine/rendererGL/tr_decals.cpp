@@ -856,22 +856,27 @@ void R_ProjectDecalOntoSurface( decalProjector_t *dp, bspSurface_t *surf, bspMod
 	}
 
 	/* planar surface */
-	if ( gen->plane.normal[ 0 ] || gen->plane.normal[ 1 ] || gen->plane.normal[ 2 ] )
+	if ( gen->surfaceType == SF_FACE )
 	{
-		/* backface check */
-		d = DotProduct( dp->planes[ 0 ], gen->plane.normal );
+		srfSurfaceFace_t *srf = ( srfSurfaceFace_t * )surf->data;
 
-		if ( d < -0.0001 )
+		if ( srf->plane.normal[ 0 ] || srf->plane.normal[ 1 ] || srf->plane.normal[ 2 ] )
 		{
-			return;
-		}
+			/* backface check */
+			d = DotProduct( dp->planes[ 0 ], srf->plane.normal );
 
-		/* plane-sphere check */
-		d = DotProduct( dp->center, gen->plane.normal ) - gen->plane.dist;
+			if ( d < -0.0001 )
+			{
+				return;
+			}
 
-		if ( fabs( d ) >= dp->radius )
-		{
-			return;
+			/* plane-sphere check */
+			d = DotProduct( dp->center, srf->plane.normal ) - srf->plane.dist;
+
+			if ( fabs( d ) >= dp->radius )
+			{
+				return;
+			}
 		}
 	}
 

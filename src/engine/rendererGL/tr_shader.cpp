@@ -1724,11 +1724,6 @@ static qboolean LoadMap( shaderStage_t *stage, char *buffer )
 		imageBits |= IF_NOCOMPRESSION;
 	}
 
-	if ( stage->forceHighQuality )
-	{
-		imageBits |= IF_NOCOMPRESSION;
-	}
-
 	if ( stage->stateBits & ( GLS_ATEST_BITS ) )
 	{
 		imageBits |= IF_ALPHATEST;
@@ -3492,7 +3487,7 @@ static void ParseDiffuseMap( shaderStage_t *stage, char **text )
 
 	if ( !r_compressDiffuseMaps->integer )
 	{
-		stage->forceHighQuality = qtrue;
+		stage->uncompressed = qtrue;
 	}
 
 	if ( ParseMap( stage, text, buffer, sizeof( buffer ) ) )
@@ -3512,7 +3507,7 @@ static void ParseNormalMap( shaderStage_t *stage, char **text )
 
 	if ( !r_compressNormalMaps->integer )
 	{
-		stage->forceHighQuality = qtrue;
+		stage->uncompressed = qtrue;
 	}
 
 	if ( r_highQualityNormalMapping->integer )
@@ -3540,7 +3535,7 @@ static void ParseSpecularMap( shaderStage_t *stage, char **text )
 
 	if ( !r_compressSpecularMaps->integer )
 	{
-		stage->forceHighQuality = qtrue;
+		stage->uncompressed = qtrue;
 	}
 
 	if ( ParseMap( stage, text, buffer, sizeof( buffer ) ) )

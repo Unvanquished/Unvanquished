@@ -420,8 +420,6 @@ qhandle_t RE_RegisterAnimationIQM( const char *name, IQAnim_t *data )
 {
 	qhandle_t       hAnim;
 	skelAnimation_t *anim;
-	char            *buffer;
-	int             bufferLen;
 
 	if ( !name || !name[ 0 ] )
 	{
@@ -867,9 +865,6 @@ static int IQMBuildSkeleton( refSkeleton_t *skel, skelAnimation_t *skelAnim,
 	IQAnim_t       *anim;
 	transform_t    *newPose, *oldPose;
 	vec3_t         mins, maxs;
-	vec3_t         newOrigin, oldOrigin, lerpedOrigin;
-	quat_t         newQuat, oldQuat, lerpedQuat;
-	int            componentsApplied;
 
 	anim = skelAnim->iqm;
 
@@ -1085,8 +1080,6 @@ RE_BlendSkeleton
 int RE_BlendSkeleton( refSkeleton_t *skel, const refSkeleton_t *blend, float frac )
 {
 	int    i;
-	vec3_t lerpedOrigin;
-	quat_t lerpedQuat;
 	vec3_t bounds[ 2 ];
 
 	if ( skel->numBones != blend->numBones )

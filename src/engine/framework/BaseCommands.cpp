@@ -190,14 +190,13 @@ namespace Cmd {
             }
 
             void Run(const Cmd::Args& args) const OVERRIDE {
-                if (args.Argc() != 4) {
+                int min, max;
+                if (args.Argc() != 4 || !Str::ParseInt(min, args.Argv(2)) || !Str::ParseInt(max, args.Argv(3))) {
                     PrintUsage(args, _("<variableToSet> <minNumber> <maxNumber>"), _("sets a variable to a random integer between minNumber and maxNumber"));
                     return;
                 }
 
                 const std::string& cvar = args.Argv(1);
-                int min = Str::ToInt(args.Argv(2));
-                int max = Str::ToInt(args.Argv(3));
                 int number = min + (std::rand() % (max - min));
 
                 Cvar::SetValue(cvar, std::to_string(number));
@@ -360,8 +359,11 @@ namespace Cmd {
                 const std::string& value2 = args.Argv(3);
                 const std::string& relation = args.Argv(2);
 
-                int intValue1 = Str::ToInt(value1);
-                int intValue2 = Str::ToInt(value2);
+                int intValue1, intValue2;
+                if (!Str::ParseInt(intValue1, value1) || !Str::ParseInt(intValue2, value2)) {
+                    Usage(args);
+                    return;
+                }
 
                 bool result;
 
@@ -462,7 +464,10 @@ namespace Cmd {
 
                 if (args.Argc() == listStart) {
                     //There is no list, toggle between 0 and 1
-                    Cvar::SetValue(name, va("%d", !Str::ToInt(Cvar::GetValue(name)))); //TODO: use Cvar::ParseValue(bool)
+                    bool value;
+                    if (!Cvar::ParseCvarValue(Cvar::GetValue(name), value))
+                        value = false;
+                    Cvar::SetValue(name, va("%d", !value));
                     return;
                 }
 
@@ -505,19 +510,17 @@ namespace Cmd {
             }
 
             void Run(const Cmd::Args& args) const OVERRIDE {
-                if (args.Argc() < 4 || args.Argc() > 5) {
+                int oldValue, start, end;
+                if (args.Argc() < 4 || args.Argc() > 5 ||
+                    !Str::ParseInt(oldValue, Cvar::GetValue(args.Argv(1))) ||
+                    !Str::ParseInt(start, args.Argv(2)) ||
+                    !Str::ParseInt(end, args.Argv(3))) {
                     PrintUsage(args, _("<variable> <start> <end> [<step>]"), "");
                     return;
                 }
 
-                int oldValue = Str::ToInt(Cvar::GetValue(args.Argv(1)));
-                int start = Str::ToInt(args.Argv(2));
-                int end = Str::ToInt(args.Argv(3));
-
                 int step;
-                if (args.Argc() == 5) {
-                    step = Str::ToInt(args.Argv(4));
-                } else {
+                if (args.Argc() != 5 || !Str::ParseInt(step, args.Argv(4))) {
                     step = 1;
                 }
                 if (std::abs(end - start) < step) {
@@ -622,15 +625,15 @@ namespace Cmd {
                 const std::string& name = isNamed ? args.Argv(1) : "";
                 const std::string& command = args.EscapedArgs(2 + isNamed);
                 std::string delay = args.Argv(1 + isNamed);
-                int target = Str::ToInt(delay);
+                int target;
                 delayType_t type;
 
-                if (target < 1) {
+                if (!Str::ParseInt(target, delay) || target < 1) {
                     Print(_("delay: the delay must be a positive integer"));
                     return;
                 }
 
-                if (delay[delay.size() - 1] == 'f') {
+                if (delay.back() == 'f') {
                     target += delayFrame;
                     type = FRAME;
                 } else {

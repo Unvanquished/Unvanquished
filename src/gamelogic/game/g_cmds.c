@@ -4270,18 +4270,15 @@ void Cmd_ListMaps_f( gentity_t *ent )
 		ADMP_P( va( "%s %d %d", Quote( P_("^3listmaps: ^7listing $1$ of $2$ map", "^3listmaps: ^7listing $1$ of $2$ maps", count) ), shown, count ), count );
 	}
 
-	if ( pages > 1 )
+	if ( pages > 1 && page + 1 < pages )
 	{
-		ADMP( va( "%s %d %d", QQ( N_(", page $1$ of $2$") ),  page + 1, pages ) );
+		ADMP( va( "%s %d %d %s %s %d", QQ( N_("^3listmaps: ^7page $1$ of $2$; use 'listmaps $3$$4$$5$' to see more") ),
+		           page + 1, pages, Quote( search ), ( search[ 0 ] ) ? " " : "", page + 2 ) );
 	}
-
-	if ( page + 1 < pages )
+	else if ( pages > 1 )
 	{
-		ADMP( va( "%s %s %s %d", QQ( N_(", use 'listmaps $1$$2$$3$' to see more") ),
-		           Quote( search ), ( search[ 0 ] ) ? " " : "", page + 2 ) );
+		ADMP( va( "%s %d %d", QQ( N_("^3listmaps: ^7page $1$ of $2$") ),  page + 1, pages ) );
 	}
-
-	ADMP( "\".\n\"" );
 }
 
 #define MAX_MAPLOGS 5

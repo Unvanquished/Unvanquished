@@ -30,19 +30,62 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace Str {
 
-    int ToInt(Str::StringRef text) {
-        return atoi(text.c_str());
+    bool ParseInt(int& value, Str::StringRef text) {
+        if (text.empty())
+            return false;
+
+        // Parse the sign
+        const char* p = text.begin();
+        bool neg = *p == '-';
+        if (*p == '-' || *p == '+') {
+            if (++p == text.end())
+                return false;
+        }
+
+        // Parse the digits
+        value = 0;
+        do {
+            if (!cisdigit(*p))
+                return false;
+
+            // Check for overflow when multiplying
+            int min = std::numeric_limits<int>::min();
+            int max = std::numeric_limits<int>::max();
+            if (neg ? value < (min + 1) / 10 : value > max / 10)
+                return false;
+            value *= 10;
+
+            // Check for overflow when adding
+            if (neg ? value < min + *p - '0' : value > max - *p + '0')
+                return false;
+            if (neg)
+                value -= *p - '0';
+            else
+                value += *p - '0';
+        } while (++p != text.end());
+
+        return true;
     }
 
-    bool ToInt(Str::StringRef text, int& result) {
-        char* end;
-        const char* start = text.c_str();
-        result = strtol(start, &end, 10);
-        if (errno == ERANGE || result < std::numeric_limits<int>::min() || std::numeric_limits<int>::max() < result)
+    bool ParseHex32(uint32_t& value, Str::StringRef text) {
+        if (text.size() != 8)
             return false;
-        if (start == end)
-            return false;
+        value = 0;
+        for (char c: text) {
+            if (!cisxdigit(c))
+                return false;
+            value = (value << 4) | (cisdigit(c) ? c - '0' : ctolower(c) - 'a' + 10);
+        }
         return true;
+    }
+
+    std::string ToUpper(Str::StringRef text) {
+        std::string res;
+        res.reserve(text.size());
+
+        std::transform(text.begin(), text.end(), std::back_inserter(res), ctoupper);
+
+        return res;
     }
 
     std::string ToLower(Str::StringRef text) {

@@ -25,6 +25,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #include "CvarSystem.h"
 #include "CommandSystem.h"
 #include "../../common/String.h"
+#include "../../common/Log.h"
 #include "../../common/Command.h"
 
 #include "../qcommon/q_shared.h"
@@ -53,6 +54,20 @@ namespace Cvar {
     };
 
     //Functions that emulate the C API
+    void SetCStyleDescription(cvarRecord_t& cvar) {
+        if (cvar.proxy) {
+            return;
+        }
+
+        if (cvar.flags & CVAR_LATCH and cvar.ccvar.latchedString) {
+            cvar.description = Str::Format("\"%s\", latched value \"%s\"", cvar.ccvar.string, cvar.ccvar.latchedString);
+        } else {
+            cvar.description = Str::Format("\"%s\"", cvar.value);
+        }
+
+        Cmd::ChangeDescription(cvar.ccvar.name, cvar.description);
+    }
+
     void SetCCvar(cvarRecord_t& cvar) {
         cvar_t& var = cvar.ccvar;
         bool modified = false;
@@ -62,8 +77,14 @@ namespace Cvar {
                 var.string = CopyString(cvar.value.c_str());
                 modified = true;
             } else {
-                if (var.latchedString) Z_Free(var.latchedString);
-                var.latchedString = CopyString(cvar.value.c_str());
+                if (Q_stricmp(var.string, cvar.value.c_str())) {
+                    Com_Printf(_("The change will take effect after restart."));
+                    if (var.latchedString) Z_Free(var.latchedString);
+                    var.latchedString = CopyString(cvar.value.c_str());
+                } else if (var.latchedString) {
+                    Z_Free(var.latchedString);
+                    var.latchedString = nullptr;
+                }
             }
         } else {
             if (var.string) {
@@ -86,6 +107,7 @@ namespace Cvar {
         if (modified) {
             cvar_modifiedFlags |= var.flags;
         }
+        SetCStyleDescription(cvar);
     }
 
     void GetCCvar(const std::string& name, cvarRecord_t& cvar) {
@@ -103,10 +125,10 @@ namespace Cvar {
 
         var.flags = cvar.flags;
 
-        if (cvar.flags & CVAR_LATCH and var.latchedString and Q_stricmp(var.string, var.latchedString)) {
+        if (cvar.flags & CVAR_LATCH and var.latchedString) {
             if (var.string) Z_Free(var.string);
             var.string = var.latchedString;
-            var.latchedString = 0;
+            var.latchedString = nullptr;
             modified = true;
         } else {
             if (var.string) {
@@ -129,6 +151,7 @@ namespace Cvar {
         if (modified) {
             cvar_modifiedFlags |= var.flags;
         }
+        SetCStyleDescription(cvar);
     }
 
     typedef std::unordered_map<std::string, cvarRecord_t*, Str::IHash, Str::IEqual> CvarMap;
@@ -153,7 +176,7 @@ namespace Cvar {
                 cvarRecord_t* var = cvars[name];
 
                 if (args.Argc() < 2) {
-                    Print(_("\"%s\" is \"%s^7\" default: \"%s^7\" %s"), name.c_str(), var->value.c_str(), var->resetValue.c_str(), var->description.c_str());
+                    Print(_("\"%s\" - %s^7 default: \"%s^7\""), name.c_str(), var->description.c_str(), var->resetValue.c_str());
                 } else {
                     //TODO forward the print part of the environment
                     SetValue(name, args.Argv(1));
@@ -506,6 +529,19 @@ namespace Cvar {
     };
     static ResetCmd ResetCmdRegistration;
 
+    std::string Raw(const std::string& src) {
+        std::string out;
+        size_t length = src.length();
+
+        for (size_t i = 0; i < length; ++i)
+        {
+            if (src[i] == '^')
+                out += '^';
+            out += src[i];
+        }
+        return out;
+    }
+
     class ListCvars: public Cmd::StaticCmd {
         public:
             ListCvars(): Cmd::StaticCmd("listCvars", Cmd::BASE, N_("lists variables")) {
@@ -514,7 +550,7 @@ namespace Cvar {
             void Run(const Cmd::Args& args) const OVERRIDE {
                 CvarMap& cvars = GetCvarMap();
 
-                bool raw;
+                bool raw = false;
                 std::string match = "";
 
                 //Read parameters
@@ -576,7 +612,13 @@ namespace Cvar {
                         filler2 = std::string(maxValueLength - value.length(), ' ');
                     }
 
-                    Print("  %s%s %s %s%s %s", name, filler1, flags, value, filler2, var->description);
+                    // this is going to 'break' (wrong output) if the description contains any ^s other than in the variable value(s)
+                    if (raw) {
+                        Print("  %s%s %s %s", name, filler1, flags, Raw(var->description));
+                    }
+                    else {
+                        Print("  %s%s %s %s", name, filler1, flags, var->description);
+                    }
                 }
 
                 Print("%zu cvars", matches.size());

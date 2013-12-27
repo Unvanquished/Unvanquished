@@ -39,7 +39,7 @@ namespace Cvar {
         ::Cvar::SetValue(name, std::move(value));
     }
 
-    bool ParseCvarValue(std::string value, bool& result) {
+    bool ParseCvarValue(Str::StringRef value, bool& result) {
         if (value == "1" or value == "on" or value == "yes" or value == "true" or value == "enable") {
             result = true;
             return true;
@@ -55,9 +55,9 @@ namespace Cvar {
         return value ? "1" : "0";
     }
 
-    bool ParseCvarValue(std::string value, int& result) {
+    bool ParseCvarValue(Str::StringRef value, int& result) {
         //TODO: this accepts "1a" as a valid int
-        return Str::ToInt(std::move(value), result);
+        return Str::ParseInt(result, value);
     }
 
     template<>

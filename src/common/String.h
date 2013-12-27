@@ -187,8 +187,8 @@ namespace Str {
     };
     typedef BasicStringRef<char> StringRef;
 
-    int ToInt(Str::StringRef text);
-    bool ToInt(Str::StringRef text, int& result);
+    bool ParseInt(int& value, Str::StringRef text);
+    bool ParseHex32(uint32_t& value, Str::StringRef text);
 
     // Locale-independent versions of ctype
     inline bool cisdigit(char c)
@@ -234,6 +234,7 @@ namespace Str {
             return c;
     }
 
+    std::string ToUpper(Str::StringRef text);
     std::string ToLower(Str::StringRef text);
 
     bool IsPrefix(Str::StringRef prefix, Str::StringRef text);
@@ -257,7 +258,7 @@ namespace Str {
             if (a.size() != b.size())
                 return false;
             for (size_t i = 0; i < a.size(); i++) {
-                if (tolower(a[i]) != tolower(b[i]))
+                if (ctolower(a[i]) != ctolower(b[i]))
                     return false;
             }
             return true;
