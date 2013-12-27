@@ -730,7 +730,7 @@ qboolean CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t 
 			break;
 
 		case BA_H_MGTURRET:
-			*range = MGTURRET_RANGE;
+			*range = TURRET_RANGE;
 			shc = SHC_ORANGE;
 			break;
 
@@ -760,10 +760,12 @@ qboolean CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t 
 
 	if ( bType == BA_A_TRAPPER )
 	{
+		// HACK: Assumes certain trapper attributes
 		*rmType = RM_SPHERICAL_CONE_64;
 	}
 	else if ( bType == BA_H_MGTURRET )
 	{
+		// HACK: Assumes TURRET_PITCH_CAP == 30
 		*rmType = RM_SPHERICAL_CONE_240;
 	}
 	else

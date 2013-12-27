@@ -270,14 +270,6 @@ extern int   MEDKIT_STARTUP_SPEED;
 extern float REACTOR_BASESIZE;
 extern float REPEATER_BASESIZE;
 
-extern float MGTURRET_RANGE;
-extern int   MGTURRET_ANGULARSPEED;
-extern int   MGTURRET_ACCURACY_TO_FIRE;
-extern int   MGTURRET_VERTICALCAP;
-extern int   MGTURRET_SPREAD;
-extern int   MGTURRET_DMG;
-extern int   MGTURRET_SPINUP_TIME;
-
 #define TURRET_THINK_PERIOD   25  // doesn't affect damage or turn speed directly, just their precision
 #define TURRET_ATTACK_PERIOD  125
 #define TURRET_RANGE          400

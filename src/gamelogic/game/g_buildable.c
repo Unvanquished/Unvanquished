@@ -2808,7 +2808,7 @@ static qboolean HTurret_TargetValid( gentity_t *self, gentity_t *target, qboolea
 	     || target->health <= 0
 	     || G_OnSameTeam( self, target )
 	     || target->flags & FL_NOTARGET
-	     || Distance( self->s.origin, target->s.origin ) > MGTURRET_RANGE )
+	     || Distance( self->s.origin, target->s.origin ) > TURRET_RANGE )
 	{
 		if ( g_debugTurrets.integer > 0 && self->target )
 		{
@@ -2824,7 +2824,7 @@ static qboolean HTurret_TargetValid( gentity_t *self, gentity_t *target, qboolea
 		// check if target could be hit with a precise shot
 		VectorSubtract( target->s.pos.trBase, self->s.pos.trBase, dir );
 		VectorNormalize( dir );
-		VectorMA( self->s.pos.trBase, MGTURRET_RANGE, dir, end );
+		VectorMA( self->s.pos.trBase, TURRET_RANGE, dir, end );
 		trap_Trace( &tr, self->s.pos.trBase, NULL, NULL, end, self->s.number, MASK_SHOT );
 
 		if ( tr.entityNum != ( target - g_entities ) )
@@ -4632,7 +4632,7 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 	VectorCopy( angles, built->s.angles );
 	built->s.angles[ PITCH ] = 0.0f;
 	built->s.angles2[ YAW ] = angles[ YAW ];
-	built->s.angles2[ PITCH ] = MGTURRET_VERTICALCAP;
+	built->s.angles2[ PITCH ] = TURRET_PITCH_CAP;
 	built->physicsBounce = BG_Buildable( buildable )->bounce;
 
 	built->s.groundEntityNum = groundEntNum;

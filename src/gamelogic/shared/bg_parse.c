@@ -155,14 +155,6 @@ int   REACTOR_ATTACK_DAMAGE;
 
 float REPEATER_BASESIZE;
 
-float MGTURRET_RANGE;
-int   MGTURRET_ANGULARSPEED;
-int   MGTURRET_ACCURACY_TO_FIRE;
-int   MGTURRET_VERTICALCAP;
-int   MGTURRET_SPREAD;
-int   MGTURRET_DMG;
-int   MGTURRET_SPINUP_TIME;
-
 float TESLAGEN_RANGE;
 int   TESLAGEN_REPEAT;
 int   TESLAGEN_DMG;
@@ -225,14 +217,6 @@ int   LCANNON_CHARGE_AMMO;
 // MUST BE ALPHABETICALLY SORTED!
 static configVar_t bg_configVars[] =
 {
-	{"b_mgturret_accuracyToFire", INTEGER, qfalse, &MGTURRET_ACCURACY_TO_FIRE},
-	{"b_mgturret_angularSpeed", INTEGER, qfalse, &MGTURRET_ANGULARSPEED},
-	{"b_mgturret_attackDamage", INTEGER, qfalse, &MGTURRET_DMG},
-	{"b_mgturret_attackSpread", INTEGER, qfalse, &MGTURRET_SPREAD},
-	{"b_mgturret_fireRange", FLOAT, qfalse, &MGTURRET_RANGE},
-	{"b_mgturret_spinupTime", INTEGER, qfalse, &MGTURRET_SPINUP_TIME},
-	{"b_mgturret_verticalCap", INTEGER, qfalse, &MGTURRET_VERTICALCAP},
-
 	{"b_reactor_powerRadius", FLOAT, qfalse, &REACTOR_BASESIZE},
 	{"b_reactor_zapAttackDamage", INTEGER, qfalse, &REACTOR_ATTACK_DAMAGE},
 	{"b_reactor_zapAttackRange", FLOAT, qfalse, &REACTOR_ATTACK_RANGE},
