@@ -807,47 +807,6 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
 		{
 			ba->usable = qtrue;
 		}
-		else if ( !Q_stricmp( token, "attackRange" ) )
-		{
-			PARSE(text, token);
-
-			ba->turretRange = atoi(token);
-		}
-		else if ( !Q_stricmp( token, "attackSpeed" ) )
-		{
-			PARSE(text, token);
-
-			ba->turretFireSpeed = atoi(token);
-		}
-		else if ( !Q_stricmp( token, "attackType" ) )
-		{
-			PARSE(text, token);
-
-			if ( !Q_stricmp( token, "none" ) )
-			{
-				ba->turretProjType = WP_NONE;
-			}
-			else if ( !Q_stricmp( token, "lockBlob" ) )
-			{
-				ba->turretProjType = WP_LOCKBLOB_LAUNCHER;
-			}
-			else if ( !Q_stricmp( token, "hive" ) )
-			{
-				ba->turretProjType = WP_HIVE;
-			}
-			else if ( !Q_stricmp( token, "mgturret" ) )
-			{
-				ba->turretProjType = WP_MGTURRET;
-			}
-			else if ( !Q_stricmp( token, "tesla" ) )
-			{
-				ba->turretProjType = WP_TESLAGEN;
-			}
-			else
-			{
-				Com_Printf( S_ERROR "unknown attackType value '%s'\n", token );
-			}
-		}
 		else if ( !Q_stricmp( token, "minNormal" ) )
 		{
 			PARSE(text, token);

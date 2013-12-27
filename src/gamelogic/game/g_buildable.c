@@ -1664,7 +1664,7 @@ void ATrapper_FireOnEnemy( gentity_t *self, int firespeed, float range )
 	gentity_t *target = self->target;
 	vec3_t    dirToTarget;
 	vec3_t    halfAcceleration, thirdJerk;
-	float     distanceToTarget = BG_Buildable( self->s.modelindex )->turretRange;
+	float     distanceToTarget = LOCKBLOB_RANGE;
 	int       lowMsec = 0;
 	int       highMsec = ( int )( (
 	                                ( ( distanceToTarget * LOCKBLOB_SPEED ) +
@@ -1837,17 +1837,14 @@ think function for Alien Defense
 */
 void ATrapper_Think( gentity_t *self )
 {
-	int range = BG_Buildable( self->s.modelindex )->turretRange;
-	int firespeed = BG_Buildable( self->s.modelindex )->turretFireSpeed;
-
 	AGeneric_Think( self );
 
 	if ( self->spawned && self->powered )
 	{
 		//if the current target is not valid find a new one
-		if ( !ATrapper_CheckTarget( self, self->target, range ) )
+		if ( !ATrapper_CheckTarget( self, self->target, LOCKBLOB_RANGE ) )
 		{
-			ATrapper_FindEnemy( self, range );
+			ATrapper_FindEnemy( self, LOCKBLOB_RANGE );
 		}
 
 		//if a new target cannot be found don't do anything
@@ -1859,7 +1856,7 @@ void ATrapper_Think( gentity_t *self )
 		//if we are pointing at our target and we can fire shoot it
 		if ( self->customNumber < level.time )
 		{
-			ATrapper_FireOnEnemy( self, firespeed, range );
+			ATrapper_FireOnEnemy( self, LOCKBLOB_REPEAT, LOCKBLOB_RANGE );
 		}
 	}
 }
@@ -4609,7 +4606,6 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 	built->r.contents = CONTENTS_BODY;
 	built->clipmask = MASK_PLAYERSOLID;
 	built->target = NULL;
-	built->s.weapon = BG_Buildable( buildable )->turretProjType;
 
 	if ( builder->client )
 	{

@@ -2552,7 +2552,7 @@ void CG_Buildable( centity_t *cent )
 		weaponInfo_t *weapon = &cg_weapons[ es->weapon ];
 
 		if ( cg.time - cent->muzzleFlashTime > MUZZLE_FLASH_TIME ||
-		     buildable->turretProjType == WP_TESLAGEN )
+		     buildable->number == BA_H_TESLAGEN )
 		{
 			if ( weapon->wim[ WPM_PRIMARY ].flashDlightColor[ 0 ] ||
 			     weapon->wim[ WPM_PRIMARY ].flashDlightColor[ 1 ] ||
