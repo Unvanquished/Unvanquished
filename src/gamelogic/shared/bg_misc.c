@@ -146,7 +146,6 @@ void BG_InitBuildableAttributes( void )
 		ba->idleAnim = BANIM_IDLE1;
 		ba->traj = TR_GRAVITY;
 		ba->bounce = 0.0;
-		ba->nextthink = 100;
 		ba->minNormal = 0.0;
 
 		BG_ParseBuildableAttributeFile( va( "configs/buildables/%s.attr.cfg", ba->name ), ba );

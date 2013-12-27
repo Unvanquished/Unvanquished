@@ -959,8 +959,8 @@ A generic think function for Alien buildables
 */
 void AGeneric_Think( gentity_t *self )
 {
+	// set power state
 	self->powered = ( G_Overmind() != NULL );
-	self->nextthink = level.time + BG_Buildable( self->s.modelindex )->nextthink;
 
 	// check if still on creep
 	AGeneric_CreepCheck( self );
@@ -1002,6 +1002,8 @@ think function for Alien Spawn
 void ASpawn_Think( gentity_t *self )
 {
 	gentity_t *ent;
+
+	self->nextthink = level.time + 100;
 
 	AGeneric_Think( self );
 
@@ -1064,7 +1066,9 @@ Think function for Alien Overmind
 */
 void AOvermind_Think( gentity_t *self )
 {
-	int    i;
+	int clientNum;
+
+	self->nextthink = level.time + 1000;
 
 	AGeneric_Think( self );
 
@@ -1100,9 +1104,9 @@ void AOvermind_Think( gentity_t *self )
 			self->overmindSpawnsTimer = level.time + OVERMIND_SPAWNS_PERIOD;
 			G_BroadcastEvent( EV_OVERMIND_SPAWNS, 0, TEAM_ALIENS );
 
-			for ( i = 0; i < level.numConnectedClients; i++ )
+			for ( clientNum = 0; clientNum < level.numConnectedClients; clientNum++ )
 			{
-				builder = &g_entities[ level.sortedClients[ i ] ];
+				builder = &g_entities[ level.sortedClients[ clientNum ] ];
 
 				if ( builder->health > 0 &&
 				     ( builder->client->pers.classSelection == PCL_ALIEN_BUILDER0 ||
@@ -1277,6 +1281,8 @@ Think function for Alien Barricade
 */
 void ABarricade_Think( gentity_t *self )
 {
+	self->nextthink = level.time + 1000;
+
 	AGeneric_Think( self );
 
 	// Shrink if unpowered
@@ -1329,6 +1335,9 @@ void AAcidTube_Think( gentity_t *self )
 {
 	gentity_t *ent;
 
+	// TODO: Make damage independent of think timer
+	self->nextthink = level.time + ACIDTUBE_REPEAT;
+
 	AGeneric_Think( self );
 
 	if ( !self->spawned || self->health <= 0 )
@@ -1359,11 +1368,8 @@ void AAcidTube_Think( gentity_t *self )
 			G_AddEvent( self, EV_ALIEN_ACIDTUBE, DirToByte( self->s.origin2 ) );
 		}
 
-		// TODO: Make this independent of think timer
 		G_SelectiveRadiusDamage( self->s.pos.trBase, self, ACIDTUBE_DAMAGE,
 								 ACIDTUBE_RANGE, self, MOD_ATUBE, TEAM_ALIENS );
-
-		self->nextthink = level.time + ACIDTUBE_REPEAT;
 
 		return;
 	}
@@ -1373,6 +1379,8 @@ void ALeech_Think( gentity_t *self )
 {
 	qboolean active, lastThinkActive;
 	float    resources;
+
+	self->nextthink = level.time + 1000;
 
 	AGeneric_Think( self );
 
@@ -1566,6 +1574,8 @@ static void AHive_Fire( gentity_t *self )
 
 void AHive_Think( gentity_t *self )
 {
+	self->nextthink = level.time + 500;
+
 	AGeneric_Think( self );
 
 	if ( !self->spawned || self->health <= 0 )
@@ -1608,13 +1618,13 @@ void AHive_Pain( gentity_t *self, gentity_t *attacker, int damage )
 	}
 }
 
-/*
-================
-ABooster_Touch
+void ABooster_Think( gentity_t *self )
+{
+	self->nextthink = level.time + 1000;
 
-Called when an alien touches a booster
-================
-*/
+	AGeneric_Think( self );
+}
+
 void ABooster_Touch( gentity_t *self, gentity_t *other, trace_t *trace )
 {
 	gclient_t *client = other->client;
@@ -1837,6 +1847,8 @@ think function for Alien Defense
 */
 void ATrapper_Think( gentity_t *self )
 {
+	self->nextthink = level.time + 100;
+
 	AGeneric_Think( self );
 
 	if ( self->spawned && self->powered )
@@ -2287,11 +2299,6 @@ void G_SetHumanBuildablePowerState()
 	nextCalculation = level.time + 500;
 }
 
-void HGeneric_Think( gentity_t *self )
-{
-	self->nextthink = level.time + BG_Buildable( self->s.modelindex )->nextthink;
-}
-
 /*
 ================
 HGeneric_Blast
@@ -2407,7 +2414,7 @@ void HSpawn_Think( gentity_t *self )
 {
 	gentity_t *ent;
 
-	HGeneric_Think( self );
+	self->nextthink = level.time + 100;
 
 	if ( self->spawned )
 	{
@@ -2450,7 +2457,7 @@ void HSpawn_Think( gentity_t *self )
 
 void HRepeater_Think( gentity_t *self )
 {
-	HGeneric_Think( self );
+	self->nextthink = level.time + 1000;
 
 	IdlePowerState( self );
 }
@@ -2529,7 +2536,7 @@ void HArmoury_Use( gentity_t *self, gentity_t *other, gentity_t *activator )
 
 void HArmoury_Think( gentity_t *self )
 {
-	HGeneric_Think( self );
+	self->nextthink = level.time + 1000;
 }
 
 void HMedistat_Die( gentity_t *self, gentity_t *inflictor,
@@ -2553,7 +2560,7 @@ void HMedistat_Think( gentity_t *self )
 	gclient_t *client;
 	qboolean  occupied;
 
-	HGeneric_Think( self );
+	self->nextthink = level.time + 100;
 
 	if ( !self->spawned )
 	{
@@ -3180,7 +3187,7 @@ void HTeslaGen_Think( gentity_t *self )
 {
 	gentity_t *ent;
 
-	HGeneric_Think( self );
+	self->nextthink = level.time + 150;
 
 	IdlePowerState( self );
 
@@ -3239,7 +3246,7 @@ void HDrill_Think( gentity_t *self )
 	qboolean active, lastThinkActive;
 	float    resources;
 
-	HGeneric_Think( self );
+	self->nextthink = level.time + 1000;
 
 	active = self->spawned & self->powered;
 	lastThinkActive = self->s.weapon > 0;
@@ -4450,8 +4457,7 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 	built->splashRadius = BG_Buildable( buildable )->splashRadius;
 	built->splashMethodOfDeath = BG_Buildable( buildable )->meansOfDeath;
 
-	built->nextthink = BG_Buildable( buildable )->nextthink;
-
+	built->nextthink = level.time;
 	built->takedamage = qtrue;
 	built->enabled = qfalse;
 	built->spawned = qfalse;
@@ -4484,7 +4490,7 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 
 		case BA_A_BOOSTER:
 			built->die = AGeneric_Die;
-			built->think = AGeneric_Think;
+			built->think = ABooster_Think;
 			built->pain = AGeneric_Pain;
 			built->touch = ABooster_Touch;
 			break;

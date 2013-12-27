@@ -789,12 +789,6 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
 
 			defined |= BUILDWEAPON;
 		}
-		else if ( !Q_stricmp( token, "thinkPeriod" ) )
-		{
-			PARSE(text, token);
-
-			ba->nextthink = atoi(token);
-		}
 		else if ( !Q_stricmp( token, "buildTime" ) )
 		{
 			PARSE(text, token);

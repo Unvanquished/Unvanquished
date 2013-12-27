@@ -1131,7 +1131,6 @@ typedef struct
 
 	int         idleAnim;
 
-	int         nextthink;
 	int         buildTime;
 	qboolean    usable;
 
