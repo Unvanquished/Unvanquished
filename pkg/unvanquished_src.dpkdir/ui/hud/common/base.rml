@@ -53,6 +53,14 @@
 			width: 30%;
 			font-size: 12;
 		}
+		div#votes
+		{
+			position: fixed;
+			bottom: 30%;
+			text-align: left;
+			width: 30%;
+			font-size: 12;
+		}
 		div#crosshair
 		{
 			position: fixed;
@@ -75,6 +83,11 @@
 	<div id="location">
 		<location />
 	</div>
+	<div id="votes">
+		<p><votes /></p>
+		<p><votes_team /></p>
+	</div>
+
 	<div id="tutorial">
 		<tutorial />
 	</div>
