@@ -52,7 +52,6 @@ namespace Audio {
     void UpdateListener(int entityNum, const vec3_t orientation[3]);
     void UpdateEntityPosition(int entityNum, const vec3_t position);
     void UpdateEntityVelocity(int entityNum, const vec3_t velocity);
-    void UpdateEntityOcclusion(int entityNum, float ratio);
 
     void StartCapture(int rate);
     int AvailableCaptureSamples();

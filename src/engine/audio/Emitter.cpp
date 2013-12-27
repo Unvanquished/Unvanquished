@@ -189,10 +189,6 @@ namespace Audio {
         VectorCopy(velocity, entities[entityNum].velocity);
     }
 
-    void UpdateRegisteredEntityOcclusion(int entityNum, float ratio) {
-        entities[entityNum].occlusion = ratio;
-    }
-
     // Utility functions for emitters
 
     // TODO avoid more unnecessary al calls

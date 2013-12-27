@@ -111,10 +111,6 @@ void S_UpdateEntityVelocity( int entityNum, const vec3_t velocity )
     Audio::UpdateEntityVelocity(entityNum, velocity);
 }
 
-void S_UpdateEntityOcclusion( int entityNum, qboolean occluded, float ratio )
-{
-}
-
 void S_Update( void )
 {
     Audio::Update();

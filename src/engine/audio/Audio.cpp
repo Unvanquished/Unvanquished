@@ -370,14 +370,6 @@ namespace Audio {
         UpdateRegisteredEntityVelocity(entityNum, velocity);
     }
 
-    void UpdateEntityOcclusion(int entityNum, float ratio) {
-        if (not initialized or not IsValidEntity(entityNum) or std::isnan(ratio)) {
-            return;
-        }
-
-        UpdateRegisteredEntityOcclusion(entityNum, ratio);
-    }
-
     // Capture functions
 
     static AL::CaptureDevice* capture = nullptr;

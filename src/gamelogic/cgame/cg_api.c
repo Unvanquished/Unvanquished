@@ -1246,8 +1246,3 @@ void trap_S_UpdateEntityVelocity( int entityNum, const vec3_t velocity )
 	syscallVM( CG_S_UPDATEENTITYVELOCITY, entityNum, velocity );
 }
 
-void trap_S_UpdateEntityOcclusion( int entityNum, qboolean occluded, float ratio )
-{
-	syscallVM( CG_S_UPDATEENTITYOCCLUSION, entityNum, occluded, ratio );
-}
-

@@ -41,7 +41,6 @@ namespace Audio {
     void UpdateListenerEntity(int entityNum, const vec3_t orientation[3]);
     void UpdateRegisteredEntityPosition(int entityNum, const vec3_t position);
     void UpdateRegisteredEntityVelocity(int entityNum, const vec3_t velocity);
-    void UpdateRegisteredEntityOcclusion(int entityNum, float ratio);
 
     class Sound;
 
