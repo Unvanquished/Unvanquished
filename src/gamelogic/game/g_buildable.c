@@ -1560,7 +1560,7 @@ static void AHive_Fire( gentity_t *self )
 	vectoangles( dirToTarget, self->buildableAim );
 
 	// fire
-	G_FireWeapon( self );
+	G_FireWeapon( self, WP_HIVE, WPM_PRIMARY );
 	G_SetBuildableAnim( self, BANIM_ATTACK1, qfalse );
 }
 
@@ -1706,7 +1706,7 @@ void ATrapper_FireOnEnemy( gentity_t *self, int firespeed, float range )
 	vectoangles( dirToTarget, self->buildableAim );
 
 	//fire at target
-	G_FireWeapon( self );
+	G_FireWeapon( self, WP_LOCKBLOB_LAUNCHER, WPM_PRIMARY );
 	G_SetBuildableAnim( self, BANIM_ATTACK1, qfalse );
 	self->customNumber = level.time + firespeed;
 }
@@ -3091,7 +3091,7 @@ static void HTurret_Shoot( gentity_t *self )
 	self->s.eFlags |= EF_FIRING; // TODO: Fix this hack, it doesn't even work locally
 	G_AddEvent( self, EV_FIRE_WEAPON, 0 );
 	G_SetBuildableAnim( self, BANIM_ATTACK1, qfalse );
-	G_FireWeapon( self );
+	G_FireWeapon( self, WP_MGTURRET, WPM_PRIMARY );
 }
 
 void HTurret_Think( gentity_t *self )
@@ -3223,7 +3223,7 @@ void HTeslaGen_Think( gentity_t *self )
 			}
 
 			self->target = ent;
-			G_FireWeapon( self );
+			G_FireWeapon( self, WP_TESLAGEN, WPM_PRIMARY );
 			self->target = NULL;
 		}
 
