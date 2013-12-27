@@ -175,6 +175,12 @@ void CG_Rocket_RegisterDataFormatters( void )
 
 	for ( i = 0; i < dataFormatterCmdListCount; i++ )
 	{
+		// Check that the commands are in increasing order so that it can be used by bsearch
+		if ( i != 0 && Q_stricmp( dataFormatterCmdList[ i - 1 ].name, dataFormatterCmdList[ i ].name ) > 0 )
+		{
+			CG_Printf( "CGame Rocket dataFormatterCmdList is in the wrong order for %s and %s\n", dataFormatterCmdList[i - 1].name, dataFormatterCmdList[ i ].name );
+		}
+
 		trap_Rocket_RegisterDataFormatter( dataFormatterCmdList[ i ].name );
 	}
 }
