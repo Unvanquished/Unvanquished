@@ -1007,49 +1007,50 @@ void ASpawn_Think( gentity_t *self )
 
 	AGeneric_Think( self );
 
-	if ( self->spawned )
+	if ( !self->spawned )
 	{
-		//only suicide if at rest
-		if ( self->s.groundEntityNum != ENTITYNUM_NONE )
+		return;
+	}
+
+	if ( self->s.groundEntityNum != ENTITYNUM_NONE )
+	{
+		if ( ( ent = G_CheckSpawnPoint( self->s.number, self->s.origin,
+										self->s.origin2, BA_A_SPAWN, NULL ) ) != NULL )
 		{
-			if ( ( ent = G_CheckSpawnPoint( self->s.number, self->s.origin,
-			                                self->s.origin2, BA_A_SPAWN, NULL ) ) != NULL )
+			// If the thing blocking the spawn is a buildable, kill it.
+			// If it's part of the map, kill self.
+			if ( ent->s.eType == ET_BUILDABLE )
 			{
-				// If the thing blocking the spawn is a buildable, kill it.
-				// If it's part of the map, kill self.
-				if ( ent->s.eType == ET_BUILDABLE )
+				if ( ent->builtBy && ent->builtBy->slot >= 0 ) // don't queue the bp from this
 				{
-					if ( ent->builtBy && ent->builtBy->slot >= 0 ) // don't queue the bp from this
-					{
-						G_Damage( ent, NULL, g_entities + ent->builtBy->slot, NULL, NULL, 10000, 0, MOD_SUICIDE );
-					}
-					else
-					{
-						G_Damage( ent, NULL, NULL, NULL, NULL, 10000, 0, MOD_SUICIDE );
-					}
-
-					G_SetBuildableAnim( self, BANIM_SPAWN1, qtrue );
+					G_Damage( ent, NULL, g_entities + ent->builtBy->slot, NULL, NULL, 10000, 0, MOD_SUICIDE );
 				}
-				else if ( ent->s.number == ENTITYNUM_WORLD || ent->s.eType == ET_MOVER )
+				else
 				{
-					G_Damage( self, NULL, NULL, NULL, NULL, 10000, 0, MOD_SUICIDE );
-					return;
-				}
-				else if( g_antiSpawnBlock.integer &&
-				         ent->client && ent->client->pers.team == TEAM_ALIENS )
-				{
-					PuntBlocker( self, ent );
+					G_Damage( ent, NULL, NULL, NULL, NULL, 10000, 0, MOD_SUICIDE );
 				}
 
-				if ( ent->s.eType == ET_CORPSE )
-				{
-					G_FreeEntity( ent );  //quietly remove
-				}
+				G_SetBuildableAnim( self, BANIM_SPAWN1, qtrue );
 			}
-			else
+			else if ( ent->s.number == ENTITYNUM_WORLD || ent->s.eType == ET_MOVER )
 			{
-				self->spawnBlockTime = 0;
+				G_Damage( self, NULL, NULL, NULL, NULL, 10000, 0, MOD_SUICIDE );
+				return;
 			}
+			else if( g_antiSpawnBlock.integer &&
+					 ent->client && ent->client->pers.team == TEAM_ALIENS )
+			{
+				PuntBlocker( self, ent );
+			}
+
+			if ( ent->s.eType == ET_CORPSE )
+			{
+				G_FreeEntity( ent );  //quietly remove
+			}
+		}
+		else
+		{
+			self->spawnBlockTime = 0;
 		}
 	}
 }
@@ -1340,7 +1341,7 @@ void AAcidTube_Think( gentity_t *self )
 
 	AGeneric_Think( self );
 
-	if ( !self->spawned || self->health <= 0 )
+	if ( !self->spawned || !self->powered || self->health <= 0 )
 	{
 		return;
 	}
@@ -1578,7 +1579,7 @@ void AHive_Think( gentity_t *self )
 
 	AGeneric_Think( self );
 
-	if ( !self->spawned || self->health <= 0 )
+	if ( !self->spawned || !self->powered || self->health <= 0 )
 	{
 		return;
 	}
@@ -1851,25 +1852,27 @@ void ATrapper_Think( gentity_t *self )
 
 	AGeneric_Think( self );
 
-	if ( self->spawned && self->powered )
+	if ( !self->spawned || !self->powered || self->health <= 0 )
 	{
-		//if the current target is not valid find a new one
-		if ( !ATrapper_CheckTarget( self, self->target, LOCKBLOB_RANGE ) )
-		{
-			ATrapper_FindEnemy( self, LOCKBLOB_RANGE );
-		}
+		return;
+	}
 
-		//if a new target cannot be found don't do anything
-		if ( !self->target )
-		{
-			return;
-		}
+	//if the current target is not valid find a new one
+	if ( !ATrapper_CheckTarget( self, self->target, LOCKBLOB_RANGE ) )
+	{
+		ATrapper_FindEnemy( self, LOCKBLOB_RANGE );
+	}
 
-		//if we are pointing at our target and we can fire shoot it
-		if ( self->customNumber < level.time )
-		{
-			ATrapper_FireOnEnemy( self, LOCKBLOB_REPEAT, LOCKBLOB_RANGE );
-		}
+	//if a new target cannot be found don't do anything
+	if ( !self->target )
+	{
+		return;
+	}
+
+	//if we are pointing at our target and we can fire shoot it
+	if ( self->customNumber < level.time )
+	{
+		ATrapper_FireOnEnemy( self, LOCKBLOB_REPEAT, LOCKBLOB_RANGE );
 	}
 }
 
