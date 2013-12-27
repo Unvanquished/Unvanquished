@@ -31,6 +31,9 @@ namespace Audio {
 
     static Cvar::Cvar<float> masterVolume("sound.volume.master", "the global audio volume", Cvar::ARCHIVE, 0.8f);
 
+    static Cvar::Cvar<bool> muteWhenMinimized("sound.muteWhenMinimized", "should the game be muted when minimized", Cvar::ARCHIVE, false);
+    static Cvar::Cvar<bool> muteWhenUnfocused("sound.muteWhenUnfocused", "should the game be muted when not focused", Cvar::ARCHIVE, false);
+
     //TODO make them the equivalent of LATCH and ROM for available*
     static Cvar::Cvar<std::string> deviceString("s_alDevice", "the OpenAL device to use", Cvar::ARCHIVE, "");
     static Cvar::Cvar<std::string> availableDevices("s_alAvailableDevices", "the available OpenAL devices", 0, "");
@@ -157,7 +160,11 @@ namespace Audio {
             }
         }
 
-        AL::SetListenerGain(masterVolume.Get());
+        if ((muteWhenMinimized.Get() and com_minimized->integer) or (muteWhenUnfocused.Get() and com_unfocused->integer)) {
+            AL::SetListenerGain(0.0f);
+        } else {
+            AL::SetListenerGain(masterVolume.Get());
+        }
 
         // Update the rest of the system
         UpdateEmitters();
