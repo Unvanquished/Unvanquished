@@ -48,6 +48,7 @@ namespace Audio {
 
     static const vec3_t origin = {0.0f, 0.0f, 0.0f};
 
+    static Cvar::Cvar<bool> useDoppler("sound.doppler", "should the doppler effect be used", Cvar::ARCHIVE, true);
     static Cvar::Modified<Cvar::Cvar<bool>> useReverb("sound.reverb", "should reverb effects be used", Cvar::ARCHIVE, true);
     //TODO use optional once we have it
     static bool removeReverb = false;
@@ -56,6 +57,11 @@ namespace Audio {
     static AL::EffectSlot* globalEffect = nullptr;
 
     static bool initialized = false;
+
+    void UseDoppler(bool use) {
+        float factor = use ? 1.0f : 0.0f;
+        AL::SetDopplerExaggerationFactor(factor);
+    }
 
     void InitEmitters() {
         if (initialized) {
@@ -70,7 +76,7 @@ namespace Audio {
         globalEffect->SetEffect(effectParams);
 
         AL::SetSpeedOfSound(SPEED_OF_SOUND);
-        AL::SetDopplerExaggerationFactor(1); //keep it small else we get a deadlock in OpenAL's mixer
+        UseDoppler(useDoppler.Get());
 
         localEmitter = std::make_shared<LocalEmitter>();
 
@@ -139,6 +145,8 @@ namespace Audio {
                 removeReverb = true;
             }
         }
+
+        UseDoppler(useDoppler.Get());
     }
 
     void UpdateListenerEntity(int entityNum, vec3_t orientation[3]) {
