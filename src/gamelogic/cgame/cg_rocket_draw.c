@@ -2158,6 +2158,7 @@ static void CG_Rocket_DrawVote_internal( team_t team )
 
 	if ( !cgs.voteTime[ team ] )
 	{
+		trap_Rocket_SetInnerRML( "", qfalse );
 		return;
 	}
 
