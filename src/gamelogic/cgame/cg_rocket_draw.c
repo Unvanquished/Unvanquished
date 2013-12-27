@@ -2184,8 +2184,11 @@ static void CG_Rocket_DrawVote_internal( team_t team )
 			     CG_KeyBinding( va( "%svote no", team == TEAM_NONE ? "" : "team" ), team ) );
 	}
 
-	s = va( "%sVOTE(%i): %s",
-		team == TEAM_NONE ? "" : "TEAM", sec, cgs.voteString[ team ] );
+	s = va( "%sVOTE(%i): %s\n"
+	"    Called by: \"%s\"\n"
+	"    %s[check]:%i %s[cross]:%i\n",
+		team == TEAM_NONE ? "" : "TEAM", sec, cgs.voteString[ team ],
+	 cgs.voteCaller[ team ], yeskey, cgs.voteYes[ team ], nokey, cgs.voteNo[ team ] );
 
 	trap_Rocket_SetInnerRML( s, qtrue );
 }
