@@ -124,13 +124,34 @@ namespace Cvar {
         public:
             typedef typename Base::value_type value_type;
 
-            template <typename ... Args>
+            template<typename ... Args>
             Callback(std::string name, std::string description, int flags, value_type, std::function<void(value_type)> callback, Args ... args);
 
             virtual OnValueChangedResult OnValueChanged(const std::string& newValue);
 
         private:
             std::function<void(value_type)> callback;
+    };
+
+    /*
+     * Modified<CvarType> allow to query atomically if the cvar has been modified and the new value.
+     * (resets the modified flag to false)
+     */
+
+    template<typename Base> class Modified : public Base {
+        public:
+            typedef typename Base::value_type value_type;
+
+            template<typename ... Args>
+            Modified(std::string name, std::string description, int flags, value_type, Args ... args);
+
+            virtual OnValueChangedResult OnValueChanged(const std::string& newValue);
+
+            //TODO change it when we have optional
+            bool GetModifiedValue(value_type& value);
+
+        private:
+            bool modified = false;
     };
 
     // Implement Cvar<T> for T = bool, int, string
@@ -223,6 +244,32 @@ namespace Cvar {
             callback(this->Get());
         }
         return std::move(rec);
+    }
+
+    // Modified<Base>
+
+    template <typename Base>
+    template <typename ... Args>
+    Modified<Base>::Modified(std::string name, std::string description, int flags, value_type defaultValue, Args ... args)
+    : Base(std::move(name), std::move(description), flags, std::move(defaultValue), std::forward<Args>(args) ...) {
+    }
+
+    template <typename Base>
+    OnValueChangedResult Modified<Base>::OnValueChanged(const std::string& newValue) {
+        OnValueChangedResult rec = Base::OnValueChanged(newValue);
+
+        if (rec.success) {
+            modified = true;
+        }
+        return std::move(rec);
+    }
+
+    template<typename Base>
+    bool Modified<Base>::GetModifiedValue(value_type& value) {
+        value = this->Get();
+        bool res = modified;
+        modified = false;
+        return res;
     }
 }
 
