@@ -2396,7 +2396,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0;
 
 		case CG_ROCKET_SETATTRIBUTE:
-			Rocket_SetAttribute( (const char *) VMA(1), (const char *) VMA(2), (const char *) VMA(3), (const char *) VMA(4) );
+			Rocket_SetAttribute( "", "", (const char *) VMA(1), (const char *) VMA(2) );
 			return 0;
 
 		case CG_ROCKET_GETPROPERTY:
