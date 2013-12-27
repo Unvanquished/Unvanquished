@@ -1163,7 +1163,7 @@ typedef struct
 
 	int                     numBinaryShadersUsed;
 	cgBinaryShaderSetting_t binaryShaderSettings[ NUM_BINARY_SHADERS ];
-	char                    sayTextType[ MAX_STRING_CHARS ];
+	char                    *sayTextType;
 
 	// momentum
 	float                   momentumGained;

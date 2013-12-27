@@ -16,6 +16,6 @@
 	</style>
 	</head>
 	<body id="chat">
-	<chatType/> <chatfield onFocus="setChatCommand" onExec="hide chat"/>
+	<chatType/> <chatfield onFocus="setChatCommand" />
 	</body>
 </rml>

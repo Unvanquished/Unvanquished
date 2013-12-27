@@ -189,6 +189,12 @@ static void CG_Rocket_FilterDS( void )
 static void CG_Rocket_SetChatCommand( void )
 {
 	const char *cmd = NULL;
+
+	if ( !cg.sayTextType )
+	{
+		return;
+	}
+
 	switch ( *cg.sayTextType )
 	{
 		case 'A':

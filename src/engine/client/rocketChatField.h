@@ -49,11 +49,10 @@ public:
 	RocketChatField( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), cursor_timer( 0 ), last_update_time( 0 ), init( false ), focus( false ), cursor_character_index( 0 ), text_element( NULL )
 	{
 		// Spawn text container
-		text_element = Rocket::Core::Factory::InstanceElement( this, "span", "#text", Rocket::Core::XMLAttributes() );
+		text_element = Rocket::Core::Factory::InstanceElement( this, "div", "*", Rocket::Core::XMLAttributes() );
 
 		// Add it to this element
 		AppendChild( text_element );
-		AddEventListener( "exec", this );
 		init = false;
 	}
 	virtual ~RocketChatField( void )
@@ -114,11 +113,10 @@ public:
 			{
 				focus =  false;
 				GetContext()->ShowMouseCursor( true );
-				text.Clear();
 			}
 		}
 
-		if ( event.GetTargetElement() == this )
+		if ( focus )
 		{
 			if ( event == "resize" )
 			{
@@ -161,12 +159,17 @@ public:
 					case Rocket::Core::Input::KI_NUMPADENTER:
 					{
 						Rocket::Core::String cmd = GetAttribute<Rocket::Core::String>( "exec", "" );
+						if ( cmd.Empty() )
+						{
+							cmd = Cvar_VariableString( "cg_sayCommand" );
+						}
 
-						if ( !cmd.Empty() )
+						if ( !cmd.Empty() && !text.Empty() )
 						{
 							Cmd::BufferCommandText( va( "%s %s\n", cmd.CString(), text.CString() ) );
 							text.Clear();
-							DispatchEvent( "exec", Rocket::Core::Dictionary() );
+							UpdateText();
+							GetOwnerDocument()->Hide();
 						}
 					}
 						break;
@@ -273,13 +276,13 @@ protected:
 
 	void UpdateText( void )
 	{
-		while ( text_element->HasChildNodes() )
+		RemoveChild( text_element );
+		text_element = Rocket::Core::Factory::InstanceElement( this, "div", "*", Rocket::Core::XMLAttributes() );
+		AppendChild( text_element );
+		if ( !text.Empty() )
 		{
-
-			text_element->RemoveChild( text_element->GetFirstChild() );
+			q2rml( text.CString(), text_element );
 		}
-
-		q2rml( text.CString(), text_element );
 	}
 
 	// Special q -> rml conversion function that preserves carets and codes

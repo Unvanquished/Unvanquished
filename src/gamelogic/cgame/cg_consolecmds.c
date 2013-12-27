@@ -351,19 +351,19 @@ static void CG_TestCGrade_f( void )
 
 static void CG_MessageAdmin_f( void )
 {
-	Q_strncpyz( cg.sayTextType, "Admin Say: ", sizeof( cg.sayTextType ) );
+	cg.sayTextType = "Admin Say: ";
 	trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_CHAT ].id, "show" );
 }
 
 static void CG_MessageTeam_f( void )
 {
-	Q_strncpyz( cg.sayTextType, "Team Say: ", sizeof( cg.sayTextType ) );
+	cg.sayTextType = "Team Say: ";
 	trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_CHAT ].id, "show" );
 }
 
 static void CG_MessagePublic_f( void )
 {
-	Q_strncpyz( cg.sayTextType, "Public Say: ", sizeof( cg.sayTextType ) );
+	cg.sayTextType = "Public Say: ";
 	trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_CHAT ].id, "show" );
 }
 
