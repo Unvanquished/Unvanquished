@@ -37,14 +37,21 @@ namespace Audio {
 
     // Keep Entitymitters in an array because there is at most one per entity.
     static std::shared_ptr<Emitter> entityEmitters[MAX_GENTITIES];
+
     // Position Emitters can be reused so we keep the list of all of them
     // this is not very efficient but we cannot have more position emitters
     // than sounds, that is about 128
     static std::vector<std::shared_ptr<PositionEmitter>> posEmitters;
+
     // There is a single LocalEmitter
     static std::shared_ptr<Emitter> localEmitter;
 
     static const vec3_t origin = {0.0f, 0.0f, 0.0f};
+
+    static Cvar::Modified<Cvar::Cvar<bool>> useReverb("sound.reverb", "should reverb effects be used", Cvar::ARCHIVE, true);
+    //TODO use optional once we have it
+    static bool removeReverb = false;
+    static bool addReverb = false;
 
     static AL::EffectSlot* globalEffect = nullptr;
 
@@ -122,6 +129,16 @@ namespace Audio {
                 it ++;
             }
         }
+
+        addReverb = removeReverb = false;
+        bool use;
+        if (useReverb.GetModifiedValue(use)) {
+            if (use) {
+                addReverb = true;
+            } else {
+                removeReverb = true;
+            }
+        }
     }
 
     void UpdateListenerEntity(int entityNum, vec3_t orientation[3]) {
@@ -167,7 +184,9 @@ namespace Audio {
         entities[entityNum].occlusion = ratio;
     }
 
-    // Utility functions for emitters (TODO lazily update all of these)
+    // Utility functions for emitters
+
+    // TODO avoid more unnecessary al calls
 
     void MakeLocal(AL::Source& source) {
         source.SetRelative(true);
@@ -177,12 +196,16 @@ namespace Audio {
         source.DisableEffect(POSITIONAL_EFFECT_SLOT);
     }
 
-    void Make3D(AL::Source& source, const vec3_t position, const vec3_t velocity) {
+    void Make3D(AL::Source& source, const vec3_t position, const vec3_t velocity, bool forceReverb = false) {
         source.SetRelative(false);
         source.SetPosition(position);
         source.SetVelocity(velocity);
 
-        source.EnableEffect(POSITIONAL_EFFECT_SLOT, *globalEffect);
+        if ((forceReverb and useReverb.Get()) or addReverb) {
+            source.EnableEffect(POSITIONAL_EFFECT_SLOT, *globalEffect);
+        } else if ((forceReverb and not useReverb.Get()) or removeReverb) {
+            source.DisableEffect(POSITIONAL_EFFECT_SLOT);
+        }
     }
 
     // Implementation for Emitter
@@ -221,7 +244,10 @@ namespace Audio {
         }
     }
 
-    void EntityEmitter::InternalSetupSound(Sound&) {
+    void EntityEmitter::InternalSetupSound(Sound& sound) {
+        AL::Source& source = sound.GetSource();
+
+        Make3D(source, entities[entityNum].position, entities[entityNum].velocity, true);
     }
 
     // Implementation of PositionEmitter
@@ -237,13 +263,16 @@ namespace Audio {
         //TODO
     }
 
-    void PositionEmitter::UpdateSound(Sound&) {
+    void PositionEmitter::UpdateSound(Sound& sound) {
+        AL::Source& source = sound.GetSource();
+
+        Make3D(source, position, origin);
     }
 
     void PositionEmitter::InternalSetupSound(Sound& sound) {
         AL::Source& source = sound.GetSource();
 
-        Make3D(source, position, origin);
+        Make3D(source, position, origin, true);
     }
 
     const vec3_t& PositionEmitter::GetPosition() const {
