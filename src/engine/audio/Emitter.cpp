@@ -318,6 +318,7 @@ namespace Audio {
             virtual void Run(const Cmd::Args& args) const OVERRIDE {
                 if (args.Argc() != 2) {
                     PrintUsage(args, "[preset name]", "tests the reverb preset.");
+                    return;
                 }
 
                 auto preset = AL::GetPresetByName(args.Argv(1));
