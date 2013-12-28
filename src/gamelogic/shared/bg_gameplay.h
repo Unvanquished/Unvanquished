@@ -369,10 +369,11 @@ extern int   REACTOR_ATTACK_DAMAGE;
 #define BASIC_INCOME_MOD                   1.0f
 
 // momentum
+#define MOMENTUM_MAX                     300.0f
 #define MOMENTUM_PER_CREDIT              0.01f // used to award momentum based on credit rewards
 #define DEFAULT_MOMENTUM_HALF_LIFE       "5"   // in min
-#define DEFAULT_CONF_REWARD_DOUBLE_TIME    "30"  // in min
-#define DEFAULT_UNLOCKABLE_MIN_TIME        "60"  // in s
+#define DEFAULT_CONF_REWARD_DOUBLE_TIME  "30"  // in min
+#define DEFAULT_UNLOCKABLE_MIN_TIME      "60"  // in s
 #define DEFAULT_MOMENTUM_BASE_MOD        "0.8"
 #define DEFAULT_MOMENTUM_KILL_MOD        "1.0"
 #define DEFAULT_MOMENTUM_BUILD_MOD       "0.6"
