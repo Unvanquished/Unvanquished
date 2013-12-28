@@ -655,6 +655,14 @@ qboolean CG_Rocket_IsCommandAllowed( rocketElementType_t type )
 			}
 
 			return qfalse;
+
+		case ELEMENT_DEAD:
+			if ( ps->persistant[ PERS_TEAM ] != TEAM_NONE && ps->stats[ STAT_HEALTH ] == 0 && ps->weapon == WP_NONE )
+			{
+				return qtrue;
+			}
+
+			return qfalse;
 	}
 
 	return qfalse;

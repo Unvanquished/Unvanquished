@@ -1615,6 +1615,7 @@ typedef enum
 	ELEMENT_LOADING,
 	ELEMENT_HUMANS,
 	ELEMENT_ALIENS,
+	ELEMENT_DEAD,
 	ELEMENT_BOTH,
 } rocketElementType_t;
 

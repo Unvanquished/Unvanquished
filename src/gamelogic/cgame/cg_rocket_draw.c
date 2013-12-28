@@ -2203,6 +2203,78 @@ static void CG_Rocket_DrawTeamVote( void )
 	CG_Rocket_DrawVote_internal( (team_t) cg.predictedPlayerState.persistant[ PERS_TEAM ] );
 }
 
+static void CG_Rocket_DrawSpawnQueuePosition( void )
+{
+	float  w;
+	vec4_t color;
+	int    position;
+	const char *s;
+
+	if ( !( cg.snap->ps.pm_flags & PMF_QUEUED ) )
+	{
+		return;
+	}
+
+	color[ 0 ] = 1;
+	color[ 1 ] = 1;
+	color[ 2 ] = 1;
+	color[ 3 ] = 1;
+
+	position = cg.snap->ps.persistant[ PERS_SPAWNQUEUE ] >> 8;
+
+	if ( position < 1 )
+	{
+		return;
+	}
+
+	if ( position == 1 )
+	{
+		s= va( _("You are at the front of the spawn queue") );
+	}
+	else
+	{
+		s = va( _("You are at position %d in the spawn queue"), position );
+	}
+
+	trap_Rocket_SetInnerRML( s, qfalse );
+}
+
+static void CG_Rocket_DrawNumSpawns( void )
+{
+	float  w;
+	vec4_t color;
+	int    position, spawns;
+	const char *s;
+
+	if ( !( cg.snap->ps.pm_flags & PMF_QUEUED ) )
+	{
+		return;
+	}
+
+	color[ 0 ] = 1;
+	color[ 1 ] = 1;
+	color[ 2 ] = 1;
+	color[ 3 ] = 1;
+
+	spawns   = cg.snap->ps.persistant[ PERS_SPAWNQUEUE ] & 0x000000ff;
+	position = cg.snap->ps.persistant[ PERS_SPAWNQUEUE ] >> 8;
+
+	if ( position < 1 )
+	{
+		return;
+	}
+
+	if ( spawns == 0 )
+	{
+		s = va( _("There are no spawns remaining") );
+	}
+	else
+	{
+		s = va( P_( "There is 1 spawn remaining", "There are %d spawns remaining", spawns ), spawns );
+	}
+
+	trap_Rocket_SetInnerRML( s, qfalse );
+}
 
 typedef struct
 {
@@ -2242,7 +2314,9 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "minimap", &CG_Rocket_DrawMinimap, ELEMENT_GAME },
 	{ "momentum", &CG_Rocket_DrawMomentum, ELEMENT_BOTH },
 	{ "momentum_bar", &CG_Rocket_DrawPlayerMomentumBar, ELEMENT_BOTH },
+	{ "numSpawns", &CG_Rocket_DrawNumSpawns, ELEMENT_DEAD },
 	{ "scanner", &CG_Rocket_DrawHumanScanner, ELEMENT_HUMANS },
+	{ "spawnPos", &CG_Rocket_DrawSpawnQueuePosition, ELEMENT_DEAD },
 	{ "speedometer", &CG_Rocket_DrawSpeedGraph, ELEMENT_GAME },
 	{ "stamina", &CG_Rocket_DrawStaminaValue, ELEMENT_HUMANS },
 	{ "stamina_bolt", &CG_Rocket_DrawStaminaBolt, ELEMENT_HUMANS },

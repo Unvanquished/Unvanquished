@@ -132,61 +132,6 @@ static void CG_DrawIntermission( void )
 // TODO
 }
 
-/*
-=================
-CG_DrawQueue
-=================
-*/
-static qboolean CG_DrawQueue( void )
-{
-	float  w;
-	vec4_t color;
-	int    position, spawns;
-	char   buffer[ MAX_STRING_CHARS ];
-
-	if ( !( cg.snap->ps.pm_flags & PMF_QUEUED ) )
-	{
-		return qfalse;
-	}
-
-	color[ 0 ] = 1;
-	color[ 1 ] = 1;
-	color[ 2 ] = 1;
-	color[ 3 ] = 1;
-
-	spawns   = cg.snap->ps.persistant[ PERS_SPAWNQUEUE ] & 0x000000ff;
-	position = cg.snap->ps.persistant[ PERS_SPAWNQUEUE ] >> 8;
-
-	if ( position < 1 )
-	{
-		return qfalse;
-	}
-
-	if ( position == 1 )
-	{
-		Com_sprintf( buffer, MAX_STRING_CHARS, _("You are at the front of the spawn queue") );
-	}
-	else
-	{
-		Com_sprintf( buffer, MAX_STRING_CHARS, _("You are at position %d in the spawn queue"), position );
-	}
-
-// TODO
-
-	if ( spawns == 0 )
-	{
-		Com_sprintf( buffer, MAX_STRING_CHARS, _("There are no spawns remaining") );
-	}
-	else
-	{
-		Com_sprintf( buffer, MAX_STRING_CHARS,
-		             P_( "There is 1 spawn remaining", "There are %d spawns remaining", spawns ), spawns );
-	}
-
-// TODO
-
-	return qtrue;
-}
 
 /*
 =================
@@ -263,7 +208,6 @@ static void CG_Draw2D( void )
 	}
 
 	CG_DrawWarmup();
-	CG_DrawQueue();
 }
 
 /*
