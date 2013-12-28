@@ -160,6 +160,8 @@ extern int   LEVEL4_CRUSH_REPEAT;
 #define HIVE_SPEED              320.0f
 #define HIVE_DIR_CHANGE_PERIOD  500
 
+#define LOCKBLOB_REPEAT         1000
+#define LOCKBLOB_RANGE          400.0f
 #define LOCKBLOB_SPEED          500.0f
 #define LOCKBLOB_LOCKTIME       5000
 #define LOCKBLOB_DOT            0.85f // max angle = acos( LOCKBLOB_DOT )
@@ -369,10 +371,11 @@ extern int   REACTOR_ATTACK_DAMAGE;
 #define BASIC_INCOME_MOD                   1.0f
 
 // momentum
+#define MOMENTUM_MAX                     300.0f
 #define MOMENTUM_PER_CREDIT              0.01f // used to award momentum based on credit rewards
 #define DEFAULT_MOMENTUM_HALF_LIFE       "5"   // in min
-#define DEFAULT_CONF_REWARD_DOUBLE_TIME    "30"  // in min
-#define DEFAULT_UNLOCKABLE_MIN_TIME        "60"  // in s
+#define DEFAULT_CONF_REWARD_DOUBLE_TIME  "30"  // in min
+#define DEFAULT_UNLOCKABLE_MIN_TIME      "60"  // in s
 #define DEFAULT_MOMENTUM_BASE_MOD        "0.8"
 #define DEFAULT_MOMENTUM_KILL_MOD        "1.0"
 #define DEFAULT_MOMENTUM_BUILD_MOD       "0.6"

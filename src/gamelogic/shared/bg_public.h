@@ -1133,13 +1133,8 @@ typedef struct
 
 	int         idleAnim;
 
-	int         nextthink;
 	int         buildTime;
 	qboolean    usable;
-
-	int         turretRange;
-	int         turretFireSpeed;
-	weapon_t    turretProjType;
 
 	float       minNormal;
 	qboolean    invertNormal;

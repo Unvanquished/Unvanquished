@@ -401,6 +401,7 @@ rather than blindly truncating.  This prevents it from truncating
 into a wall.
 ======================
 */
+/*
 static void SnapVectorNormal( vec3_t v, vec3_t normal )
 {
 	int i;
@@ -417,6 +418,7 @@ static void SnapVectorNormal( vec3_t v, vec3_t normal )
 		}
 	}
 }
+*/
 
 static void SendRangedHitEvent( gentity_t *attacker, gentity_t *target, trace_t *tr )
 {
@@ -597,7 +599,7 @@ SHOTGUN
 
 /*
 ================
-Keep this in sync with ShotgunPattern in g_weapon.c!
+Keep this in sync with ShotgunPattern in CGAME!
 ================
 */
 static void ShotgunPattern( vec3_t origin, vec3_t origin2, int seed, gentity_t *self )
@@ -1903,82 +1905,9 @@ void G_CalcMuzzlePoint( gentity_t *self, vec3_t forward, vec3_t right, vec3_t up
 	SnapVector( muzzlePoint );
 }
 
-void G_FireWeapon3( gentity_t *self )
+void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 {
-	if ( self->client )
-	{
-		AngleVectors( self->client->ps.viewangles, forward, right, up );
-		G_CalcMuzzlePoint( self, forward, right, up, muzzle );
-
-		switch ( self->s.weapon )
-		{
-			case WP_ALEVEL3:
-				if ( self->client->ps.stats[ STAT_PERKS ] & PERK_SPIKES )
-				{
-					FireBounceball( self );
-				}
-				break;
-
-			case WP_ABUILD:
-				FireSlowblob( self );
-				break;
-
-			default:
-				break;
-		}
-	}
-	else
-	{
-		AngleVectors( self->s.angles2, forward, right, up );
-		VectorCopy( self->s.pos.trBase, muzzle );
-	}
-}
-
-void G_FireWeapon2( gentity_t *self )
-{
-	if ( self->client )
-	{
-		AngleVectors( self->client->ps.viewangles, forward, right, up );
-		G_CalcMuzzlePoint( self, forward, right, up, muzzle );
-
-		switch ( self->s.weapon )
-		{
-			case WP_ALEVEL1:
-				if ( self->client->ps.stats[ STAT_PERKS ] & PERK_POISON )
-				{
-					FirePoisonCloud( self );
-				}
-				break;
-
-			case WP_LUCIFER_CANNON:
-				FireLcannon( self, qtrue );
-				break;
-
-			case WP_ALEVEL2:
-				if ( self->client->ps.stats[ STAT_PERKS ] & PERK_POISON )
-				{
-					FireAreaZap( self );
-				}
-				break;
-
-			case WP_ABUILD:
-			case WP_HBUILD:
-				CancelBuild( self );
-				break;
-
-			default:
-				break;
-		}
-	}
-	else
-	{
-		AngleVectors( self->s.angles2, forward, right, up );
-		VectorCopy( self->s.pos.trBase, muzzle );
-	}
-}
-
-void G_FireWeapon( gentity_t *self )
-{
+	// calculate muzzle
 	if ( self->client )
 	{
 		AngleVectors( self->client->ps.viewangles, forward, right, up );
@@ -1990,96 +1919,165 @@ void G_FireWeapon( gentity_t *self )
 		VectorCopy( self->s.pos.trBase, muzzle );
 	}
 
-	switch ( self->s.weapon )
+	switch ( weaponMode )
 	{
-		case WP_ALEVEL1:
-			FireMelee( self, LEVEL1_CLAW_RANGE, LEVEL1_CLAW_WIDTH, LEVEL1_CLAW_WIDTH,
-			           LEVEL1_CLAW_DMG, MOD_LEVEL1_CLAW );
-			break;
+		case WPM_PRIMARY:
+		{
+			switch ( weapon )
+			{
+				case WP_ALEVEL1:
+					FireMelee( self, LEVEL1_CLAW_RANGE, LEVEL1_CLAW_WIDTH, LEVEL1_CLAW_WIDTH,
+					           LEVEL1_CLAW_DMG, MOD_LEVEL1_CLAW );
+					break;
 
-		case WP_ALEVEL3:
-			FireMelee( self, LEVEL3_CLAW_RANGE, LEVEL3_CLAW_WIDTH, LEVEL3_CLAW_WIDTH,
-			           LEVEL3_CLAW_DMG, MOD_LEVEL3_CLAW );
-			break;
+				//case WP_ALEVEL1_UPG:
+				//	FireMelee( self, LEVEL1_CLAW_U_RANGE, LEVEL1_CLAW_WIDTH, LEVEL1_CLAW_WIDTH,
+				//	           LEVEL1_CLAW_DMG, MOD_LEVEL1_CLAW );
+				//	break;
 
-		case WP_ALEVEL2:
-			FireMelee( self, LEVEL2_CLAW_RANGE, LEVEL2_CLAW_WIDTH, LEVEL2_CLAW_WIDTH,
-			           LEVEL2_CLAW_DMG, MOD_LEVEL2_CLAW );
-			break;
+				case WP_ALEVEL3:
+					FireMelee( self, LEVEL3_CLAW_RANGE, LEVEL3_CLAW_WIDTH, LEVEL3_CLAW_WIDTH,
+					           LEVEL3_CLAW_DMG, MOD_LEVEL3_CLAW );
+					break;
 
-		case WP_ALEVEL4:
-			FireMelee( self, LEVEL4_CLAW_RANGE, LEVEL4_CLAW_WIDTH, LEVEL4_CLAW_HEIGHT,
-			           LEVEL4_CLAW_DMG, MOD_LEVEL4_CLAW );
-			break;
+				//case WP_ALEVEL3_UPG:
+				//	FireMelee( self, LEVEL3_CLAW_UPG_RANGE, LEVEL3_CLAW_WIDTH, LEVEL3_CLAW_WIDTH,
+				//	           LEVEL3_CLAW_DMG, MOD_LEVEL3_CLAW );
+				//	break;
 
-		case WP_BLASTER:
-			FireBlaster( self );
-			break;
+				case WP_ALEVEL2:
+					FireMelee( self, LEVEL2_CLAW_RANGE, LEVEL2_CLAW_WIDTH, LEVEL2_CLAW_WIDTH,
+					           LEVEL2_CLAW_DMG, MOD_LEVEL2_CLAW );
+					break;
 
-		case WP_MACHINEGUN:
-			FireBullet( self, RIFLE_SPREAD, RIFLE_DMG, MOD_MACHINEGUN );
-			break;
+				//case WP_ALEVEL2_UPG:
+				//	FireMelee( self, LEVEL2_CLAW_U_RANGE, LEVEL2_CLAW_WIDTH, LEVEL2_CLAW_WIDTH,
+				//	           LEVEL2_CLAW_DMG, MOD_LEVEL2_CLAW );
+				//	break;
 
-		case WP_SHOTGUN:
-			FireShotgun( self );
-			break;
+				case WP_ALEVEL4:
+					FireMelee( self, LEVEL4_CLAW_RANGE, LEVEL4_CLAW_WIDTH, LEVEL4_CLAW_HEIGHT,
+					           LEVEL4_CLAW_DMG, MOD_LEVEL4_CLAW );
+					break;
 
-		case WP_CHAINGUN:
-			FireBullet( self, CHAINGUN_SPREAD, CHAINGUN_DMG, MOD_CHAINGUN );
-			break;
+				case WP_BLASTER:
+					FireBlaster( self );
+					break;
 
-		case WP_FLAMER:
-			FireFlamer( self );
-			break;
+				case WP_MACHINEGUN:
+					FireBullet( self, RIFLE_SPREAD, RIFLE_DMG, MOD_MACHINEGUN );
+					break;
 
-		case WP_PULSE_RIFLE:
-			FirePrifle( self );
-			break;
+				case WP_SHOTGUN:
+					FireShotgun( self );
+					break;
 
-		case WP_MASS_DRIVER:
-			FireMassdriver( self );
-			break;
+				case WP_CHAINGUN:
+					FireBullet( self, CHAINGUN_SPREAD, CHAINGUN_DMG, MOD_CHAINGUN );
+					break;
 
-		case WP_LUCIFER_CANNON:
-			FireLcannon( self, qfalse );
-			break;
+				case WP_FLAMER:
+					FireFlamer( self );
+					break;
 
-		case WP_LAS_GUN:
-			FireLasgun( self );
-			break;
+				case WP_PULSE_RIFLE:
+					FirePrifle( self );
+					break;
 
-		case WP_PAIN_SAW:
-			FirePainsaw( self );
-			break;
+				case WP_MASS_DRIVER:
+					FireMassdriver( self );
+					break;
 
-		case WP_LOCKBLOB_LAUNCHER:
-			FireLockblob( self );
-			break;
+				case WP_LUCIFER_CANNON:
+					FireLcannon( self, qfalse );
+					break;
 
-		case WP_HIVE:
-			FireHive( self );
-			break;
+				case WP_LAS_GUN:
+					FireLasgun( self );
+					break;
 
-		case WP_TESLAGEN:
-			FireTesla( self );
-			break;
+				case WP_PAIN_SAW:
+					FirePainsaw( self );
+					break;
 
-		case WP_MGTURRET:
-			//FireBullet( self, MGTURRET_SPREAD, MGTURRET_DMG, MOD_MGTURRET );
-			FireBullet( self, TURRET_SPREAD, self->turretCurrentDamage, MOD_MGTURRET );
-			break;
+				case WP_LOCKBLOB_LAUNCHER:
+					FireLockblob( self );
+					break;
 
-		case WP_ABUILD:
-			FireBuild( self, MN_A_BUILD );
-			break;
+				case WP_HIVE:
+					FireHive( self );
+					break;
 
-		case WP_HBUILD:
-			FireBuild( self, MN_H_BUILD );
-			break;
+				case WP_TESLAGEN:
+					FireTesla( self );
+					break;
 
+				case WP_MGTURRET:
+					FireBullet( self, TURRET_SPREAD, self->turretCurrentDamage, MOD_MGTURRET );
+					break;
+
+				case WP_ABUILD:
+					FireBuild( self, MN_A_BUILD );
+					break;
+
+				case WP_HBUILD:
+					FireBuild( self, MN_H_BUILD );
+					break;
+
+				default:
+					break;
+			}
+			break;
+		}
+		case WPM_SECONDARY:
+		{
+			switch ( weapon )
+			{
+				//case WP_ALEVEL1_UPG:
+				//	FirePoisonCloud( self );
+				//	break;
+
+				case WP_LUCIFER_CANNON:
+					FireLcannon( self, qtrue );
+					break;
+
+				//case WP_ALEVEL2_UPG:
+				//	FireAreaZap( self );
+				//	break;
+
+				case WP_ABUILD:
+				case WP_HBUILD:
+					CancelBuild( self );
+					break;
+
+				default:
+					break;
+			}
+			break;
+		}
+		case WPM_TERTIARY:
+		{
+			switch ( weapon )
+			{
+				//case WP_ALEVEL3_UPG:
+				//	FireBounceball( self );
+				//	break;
+
+				//case WP_ABUILD2:
+				//	FireSlowblob( self );
+				//	break;
+
+				default:
+					break;
+			}
+			break;
+		}
 		default:
+		{
 			break;
+		}
 	}
+
 }
 
 void G_FireUpgrade( gentity_t *self, upgrade_t upgrade )

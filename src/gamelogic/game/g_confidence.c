@@ -215,6 +215,12 @@ static float AddMomentum( momentum_t type, team_t team, float amount,
 	// apply modifier
 	amount *= MomentumMod( type );
 
+	// limit a team's total
+	if ( level.team[ team ].momentum + amount > MOMENTUM_MAX )
+	{
+		amount = MOMENTUM_MAX - level.team[ team ].momentum;
+	}
+
 	if ( amount != 0.0f )
 	{
 		// add momentum to team
