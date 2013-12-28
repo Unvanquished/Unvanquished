@@ -48,7 +48,7 @@ void CL_OpenClientLog( void )
 {
 	if ( cl_logs && cl_logs->integer )
 	{
-		if ( FS_Initialized() && LogFileOpened == qfalse ) 
+		if ( FS::IsInitialized() && LogFileOpened == qfalse ) 
 		{
 			char FileLocation[ 255 ];
 			char *nowString;
@@ -72,7 +72,7 @@ void CL_CloseClientLog( void )
 {
 	if( cl_logs && cl_logs->integer ) 
 	{
-		if( FS_Initialized() && LogFileOpened == qtrue ) 
+		if( FS::IsInitialized() && LogFileOpened == qtrue ) 
 		{
 			//close the file
 			FS_FCloseFile( LogFileHandle );
@@ -94,7 +94,7 @@ void CL_WriteClientLog( const char *text )
 		{
 			CL_OpenClientLog();
 		}
-		if ( FS_Initialized() && LogFileOpened == qtrue ) 
+		if ( FS::IsInitialized() && LogFileOpened == qtrue ) 
 		{
 			// varibles
 			char NoColorMsg[MAXPRINTMSG];
@@ -121,7 +121,7 @@ void CL_WriteClientChatLog( const char *text )
 		{
 			CL_OpenClientLog();
 		}
-		if ( FS_Initialized() && LogFileOpened == qtrue ) 
+		if ( FS::IsInitialized() && LogFileOpened == qtrue ) 
 		{
 			if( cl.serverTime > 0 )
 			{

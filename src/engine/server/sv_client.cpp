@@ -961,15 +961,6 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 		return; // The client acked and is downloading with ftp/http
 	}
 
-	// CVE-2006-2082
-	// validate the download against the list of pak files
-	if ( !FS_VerifyPak( cl->downloadName ) )
-	{
-		// will drop the client and leave it hanging on the other side. good for him
-		SV_DropClient( cl, "illegal download request" );
-		return;
-	}
-
 	if ( !cl->download )
 	{
 		// We open the file here

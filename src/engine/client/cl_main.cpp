@@ -1801,9 +1801,6 @@ void CL_Disconnect( qboolean showMainMenu )
 	// allow cheats locally
 	Cvar_Set( "sv_cheats", "1" );
 
-	// not connected to a pure server anymore
-	cl_connectedToPureServer = qfalse;
-
 #ifdef USE_VOIP
 	// not connected to voip server anymore.
 	clc.voipEnabled = qfalse;
@@ -2319,10 +2316,6 @@ void CL_Vid_Restart_f( void )
 	re.UnregisterFont( NULL );
 	// shutdown the renderer and clear the renderer interface
 	CL_ShutdownRef();
-	// clear pak references
-	FS_ClearPakReferences( FS_UI_REF | FS_CGAME_REF );
-	// reinitialize the filesystem if the game directory or checksum has changed
-	FS_ConditionalRestart( clc.checksumFeed );
 
 	S_BeginRegistration(); // all sound handles are now invalid
 
@@ -2605,7 +2598,8 @@ void CL_DownloadsComplete( void )
 	{
 		cls.downloadRestart = qfalse;
 
-		FS_Restart( clc.checksumFeed );  // We possibly downloaded a pak, restart the file system to load it
+		FS_ClearPaks();
+		FS_LoadServerPaks(Cvar_VariableString("sv_paks")); // We possibly downloaded a pak, restart the file system to load it
 
 		if ( !cls.bWWWDlDisconnected )
 		{
@@ -4351,7 +4345,6 @@ qboolean CL_InitRef( const char *renderer )
 	ri.FS_WriteFile = FS_WriteFile;
 	ri.FS_FreeFileList = FS_FreeFileList;
 	ri.FS_ListFiles = FS_ListFiles;
-	ri.FS_FileIsInPAK = FS_FileIsInPAK;
 	ri.FS_FileExists = FS_FileExists;
 	ri.FS_Seek = FS_Seek;
 	ri.FS_FTell = FS_FTell;

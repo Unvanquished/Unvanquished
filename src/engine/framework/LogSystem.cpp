@@ -116,7 +116,7 @@ namespace Log {
                 std::lock_guard<std::recursive_mutex> guard(lock);
 
                 //TODO atomic test and set on recursing
-                if (logFile == 0 and FS_Initialized() and not recursing) {
+                if (logFile == 0 and FS::IsInitialized() and not recursing) {
                     recursing = true;
 
                     if (overwrite.Get()) {

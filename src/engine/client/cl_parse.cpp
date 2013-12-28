@@ -462,8 +462,6 @@ void CL_ParseSnapshot( msg_t *msg )
 
 //=====================================================================
 
-int cl_connectedToPureServer;
-
 /*
 ==================
 CL_SystemInfoChanged
@@ -500,14 +498,9 @@ void CL_SystemInfoChanged( void )
 	clc.voipEnabled = atoi( s );
 #endif
 
-	// check pure server string
-	s = Info_ValueForKey( systemInfo, "sv_paks" );
-	t = Info_ValueForKey( systemInfo, "sv_pakNames" );
-	FS_PureServerSetLoadedPaks( s, t );
-
-	s = Info_ValueForKey( systemInfo, "sv_referencedPaks" );
-	t = Info_ValueForKey( systemInfo, "sv_referencedPakNames" );
-	FS_PureServerSetReferencedPaks( s, t );
+	// load paks sent by the server
+	FS_ClearPaks();
+	FS_LoadServerPaks( Info_ValueForKey( systemInfo, "sv_paks" ) );
 
 	// scan through all the variables in the systeminfo and locally set cvars to match
 	s = systemInfo;
@@ -522,27 +515,6 @@ void CL_SystemInfoChanged( void )
 		}
 
 		Cvar_Set( key, value );
-	}
-
-	// Arnout: big hack to clear the image cache on a pure change
-	//cl_connectedToPureServer = Cvar_VariableValue( "sv_pure" );
-	if ( Cvar_VariableValue( "sv_pure" ) )
-	{
-		if ( !cl_connectedToPureServer && cls.state <= CA_CONNECTED )
-		{
-			CL_PurgeCache();
-		}
-
-		cl_connectedToPureServer = qtrue;
-	}
-	else
-	{
-		if ( cl_connectedToPureServer && cls.state <= CA_CONNECTED )
-		{
-			CL_PurgeCache();
-		}
-
-		cl_connectedToPureServer = qfalse;
 	}
 }
 
@@ -631,9 +603,6 @@ void CL_ParseGamestate( msg_t *msg )
 
 	// parse serverId and other cvars
 	CL_SystemInfoChanged();
-
-	// reinitialize the filesystem if the game directory has changed
-	FS_ConditionalRestart( clc.checksumFeed );
 
 	// This used to call CL_StartHunkUsers, but now we enter the download state before loading the
 	// cgame

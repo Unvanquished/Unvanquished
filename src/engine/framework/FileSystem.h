@@ -401,6 +401,9 @@ namespace HomePath {
 // Initialize the filesystem and the main paths
 void Initialize();
 
+// Shut down the filesystem and flush all file buffers
+void Shutdown();
+
 // Check if the filesystem paths have been initialized
 bool IsInitialized();
 

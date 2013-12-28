@@ -385,6 +385,12 @@ void Initialize()
 	RefreshPaks();
 }
 
+void Shutdown()
+{
+	// Flush all open file buffers
+	fflush(nullptr);
+}
+
 bool IsInitialized()
 {
 	return isInitialized;
@@ -1706,7 +1712,6 @@ RecursiveDirectoryRange ListFilesRecursive(Str::StringRef path, std::error_code&
 
 } // namespace FS
 
-#if 0
 // Compatibility wrapper
 
 struct handleData_t {
@@ -1725,13 +1730,6 @@ struct handleData_t {
 #define MAX_FILE_HANDLES 64
 static handleData_t handleTable[MAX_FILE_HANDLES];
 static FS::PakNamespace mainNamespace;
-
-// Pak lists from the server we are connected to
-static std::vector<std::tuple<std::string, std::string, uint32_t>> fs_serverPaks;
-static bool fs_pureServer;
-
-// Base value used to calculate pure checksums
-static int fs_checksumFeed;
 
 static fileHandle_t FS_AllocHandle()
 {
@@ -1838,7 +1836,7 @@ int FS_SV_FOpenFileRead(const char* path, fileHandle_t* handle)
 	return length;
 }
 
-int FS_FOpenFileByMode(const char* path, fileHandle_t* handle, int mode)
+int FS_FOpenFileByMode(const char* path, fileHandle_t* handle, fsMode_t mode)
 {
 	switch (mode) {
 	case FS_READ:
@@ -2091,8 +2089,10 @@ int FS_GetFileList(const char* path, const char* extension, char* listBuf, int b
 
 	for (int i = 0; i < numFiles; i++) {
 		int length = strlen(list[i]) + 1;
-		if (bufSize < length)
+		if (bufSize < length) {
+			FS_FreeFileList(list);
 			return i;
+		}
 		memcpy(listBuf, list[i], length);
 		listBuf += length;
 		bufSize -= length;
@@ -2102,95 +2102,19 @@ int FS_GetFileList(const char* path, const char* extension, char* listBuf, int b
 	return numFiles;
 }
 
-const char* FS_LoadedPakNames()
+const char* FS_LoadedPaks()
 {
 	static char info[BIG_INFO_STRING];
 	info[0] = '\0';
 	for (const FS::PakInfo& x: mainNamespace.GetLoadedPaks()) {
-		if (x.type != FS::PAK_ZIP)
+		if (!x.checksum)
 			continue;
 		if (info[0])
 			Q_strcat(info, sizeof(info), " ");
-		Q_strcat(info, sizeof(info), x.name.c_str());
-		Q_strcat(info, sizeof(info), "_");
-		Q_strcat(info, sizeof(info), x.version.c_str());
+		Q_strcat(info, sizeof(info), va("%s_%s_%x", x.name.c_str(), x.version.c_str(), *x.checksum));
 	}
 	return info;
 }
-const char* FS_LoadedPakChecksums()
-{
-	static char info[BIG_INFO_STRING];
-	info[0] = '\0';
-	for (const FS::PakInfo& x: mainNamespace.GetLoadedPaks()) {
-		if (x.type != FS::PAK_ZIP)
-			continue;
-		if (info[0])
-			Q_strcat(info, sizeof(info), " ");
-		Q_strcat(info, sizeof(info), va("%d", *x.checksum));
-	}
-	return info;
-}
-const char* FS_LoadedPakPureChecksums()
-{
-	return FS_LoadedPakChecksums();
-}
-int FS_FileIsInPAK(const char* path, int* pChecksum)
-{
-	const FS::PakInfo* info = mainNamespace.LocateFile(path);
-	if (!info || info->type == FS::PAK_DIR)
-		return false;
-	*pChecksum = *info->checksum;
-	return true;
-}
-
-const char* FS_ReferencedPakNames()
-{
-	return FS_LoadedPakNames();
-}
-const char* FS_ReferencedPakChecksums()
-{
-	return FS_LoadedPakChecksums();
-}
-const char* FS_ReferencedPakPureChecksums()
-{
-	static char info[BIG_INFO_STRING];
-
-	int checksum = fs_checksumFeed;
-	int cgameChecksum = 0, uiChecksum = 0;
-
-	FS_FileIsInPAK("vm/cgame.qvm", &cgameChecksum);
-	FS_FileIsInPAK("vm/ui.qvm", &uiChecksum);
-
-	Q_snprintf(info, sizeof(info), "%d %d @", cgameChecksum, uiChecksum);
-
-	int numPaks = 0;
-	for (const FS::PakInfo& x: mainNamespace.GetLoadedPaks()) {
-		if (x.type != FS::PAK_ZIP)
-			continue;
-		numPaks++;
-		checksum ^= *x.checksum;
-		Q_strcat(info, sizeof(info), va(" %d", *x.checksum));
-	}
-
-	Q_strcat(info, sizeof(info), va(" %d", checksum ^ numPaks));
-	return info;
-}
-
-void FS_ClearPakReferences(int)
-{
-	// No-op
-}
-
-// TODO
-void FS_PureServerSetReferencedPaks(const char* pakSums, const char* pakNames);
-void FS_PureServerSetLoadedPaks(const char* pakSums, const char*)
-{
-	// The pak list is the same as FS_PureServerSetReferencedPaks, just check for pure
-	fs_pureServer = pakSums[0] != '\0';
-}
-
-// TODO
-qboolean FS_ComparePaks(char* neededpaks, int len, qboolean dlstring);
 
 char* FS_BuildOSPath(const char* base, const char*, const char* path)
 {
@@ -2202,58 +2126,20 @@ char* FS_BuildOSPath(const char* base, const char*, const char* path)
 	return ospath[toggle];
 }
 
-qboolean FS_VerifyPak(const char*)
+void FS_ClearPaks()
 {
-	return true;
+	mainNamespace = FS::PakNamespace();
 }
 
-qboolean FS_Initialized()
+void FS_LoadPak(const char* name)
 {
-	return FS::IsInitialized();
-}
-
-void FS_InitFilesystem()
-{
-	FS::Initialize();
-	FS_Restart(0);
-}
-
-void FS_Shutdown(qboolean)
-{
-	// No-op
-}
-
-void FS_Restart(int checksumFeed)
-{
-	fs_checksumFeed = checksumFeed;
-
-	FS::RefreshPaks();
-
-	if (fs_serverPaks.empty()) {
-		// If no server pk3s are specified, load all pk3s in reverse order
-		// At some point we should probably restrict this to only load from a specific set of pk3s
-		for (auto i = FS::GetAvailablePaks().rbegin(); i != FS::GetAvailablePaks().rend(); ++i) {
-			try {
-				mainNamespace.LoadPak(i->name, i->version);
-			} catch (std::system_error& err) {
-				Com_Printf("Failed to load pak '%s' version '%s': %s\n", i->name.c_str(), i->version.c_str(), err.what());
-			}
-		}
-	} else {
-		// Otherwise load the same pk3s as the server
-		for (auto& x: fs_serverPaks) {
-			try {
-				mainNamespace.LoadPakExplicit(std::get<0>(x), std::get<1>(x), std::get<2>(x));
-			} catch (std::system_error& err) {
-				Com_Printf("Failed to load pak '%s' version '%s': %s\n", std::get<0>(x).c_str(), std::get<1>(x).c_str(), err.what());
-			}
-		}
+	try {
+		mainNamespace.LoadPak(name);
+	} catch (std::system_error& err) {
+		Com_Printf("Failed to load pak '%s': %s\n", name, err.what());
 	}
 }
-qboolean FS_ConditionalRestart(int checksumFeed)
-{
-	// Always restart
-	FS_Restart(checksumFeed);
-	return true;
-}
-#endif
+
+// TODO
+void FS_LoadServerPaks(const char* paks);
+qboolean FS_ComparePaks(char* neededpaks, int len, qboolean dlstring);

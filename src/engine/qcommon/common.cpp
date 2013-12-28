@@ -283,7 +283,8 @@ void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int code, const char *fmt, ... )
 	int        currentTime;
 
 	// make sure we can get at our local stuff
-	FS_PureServerSetLoadedPaks( "", "" );
+	FS_ClearPaks();
+	FS_LoadPak("unvanquished");
 
 	// if we are getting a solid stream of ERR_DROP, do an ERR_FATAL
 	currentTime = Sys_Milliseconds();
@@ -382,7 +383,6 @@ void NORETURN Com_Quit_f( void )
 #endif
 		CL_Shutdown();
 		Com_Shutdown( qfalse );
-		FS_Shutdown( qtrue );
 	}
 
 	Sys_Quit();
@@ -867,7 +867,7 @@ void Hunk_Log( void )
 	char        buf[ 4096 ];
 	int         size, numBlocks;
 
-	if ( !logfile || !FS_Initialized() )
+	if ( !logfile || !FS::IsInitialized() )
 	{
 		return;
 	}
@@ -904,7 +904,7 @@ void Hunk_SmallLog( void )
 	char        buf[ 4096 ];
 	int         size, locsize, numBlocks;
 
-	if ( !logfile || !FS_Initialized() )
+	if ( !logfile || !FS::IsInitialized() )
 	{
 		return;
 	}
@@ -1810,55 +1810,12 @@ qboolean Com_CheckProfile( char *profile_path )
 	return qtrue;
 }
 
-//bani - from files.c
-extern char fs_gamedir[ MAX_OSPATH ];
-char        last_fs_gamedir[ MAX_OSPATH ];
-char        last_profile_path[ MAX_OSPATH ];
-
-//bani - track profile changes, delete old profile.pid if we change fs_game(dir)
-//hackish, we fiddle with fs_gamedir to make FS_* calls work "right"
-void Com_TrackProfile( char *profile_path )
-{
-	char temp_fs_gamedir[ MAX_OSPATH ];
-
-//  Com_Printf(_( "Com_TrackProfile: Tracking profile [%s] [%s]\n"), fs_gamedir, profile_path );
-	//have we changed fs_game(dir)?
-	if ( strcmp( last_fs_gamedir, fs_gamedir ) )
-	{
-		if ( strlen( last_fs_gamedir ) && strlen( last_profile_path ) )
-		{
-			//save current fs_gamedir
-			Q_strncpyz( temp_fs_gamedir, fs_gamedir, sizeof( temp_fs_gamedir ) );
-			//set fs_gamedir temporarily to make FS_* stuff work "right"
-			Q_strncpyz( fs_gamedir, last_fs_gamedir, sizeof( fs_gamedir ) );
-
-			if ( FS_FileExists( last_profile_path ) )
-			{
-				Com_Printf( "Com_TrackProfile: Deleting old pid file [%s] [%s]\n", fs_gamedir, last_profile_path );
-				FS_Delete( last_profile_path );
-			}
-
-			//restore current fs_gamedir
-			Q_strncpyz( fs_gamedir, temp_fs_gamedir, sizeof( fs_gamedir ) );
-		}
-
-		//and save current vars for future reference
-		Q_strncpyz( last_fs_gamedir, fs_gamedir, sizeof( last_fs_gamedir ) );
-		Q_strncpyz( last_profile_path, profile_path, sizeof( last_profile_path ) );
-	}
-}
-
 // bani - writes pid to profile
 // returns qtrue if successful
 // returns qfalse if not(!!)
 qboolean Com_WriteProfile( char *profile_path )
 {
 	fileHandle_t f;
-
-	if ( FS_FileExists( profile_path ) )
-	{
-		FS_Delete( profile_path );
-	}
 
 	f = FS_FOpenFileWrite( profile_path );
 
@@ -1871,9 +1828,6 @@ qboolean Com_WriteProfile( char *profile_path )
 	FS_Printf( f, "%d", com_pid->integer );
 
 	FS_FCloseFile( f );
-
-	//track profile changes
-	Com_TrackProfile( profile_path );
 
 	return qtrue;
 }
@@ -1933,7 +1887,8 @@ void Com_Init( char *commandLine )
 	// done early so bind command exists
 	CL_InitKeyCommands();
 
-	FS_InitFilesystem();
+	FS::Initialize();
+	FS_LoadPak("unvanquished");
 
 	Trans_Init();
 
@@ -2687,6 +2642,8 @@ void Com_Shutdown( qboolean badProfile )
 		FS_FCloseFile( pipefile );
 		FS_HomeRemove( pipeFilename.Get().c_str() );
 	}
+
+	FS::Shutdown();
 }
 
 //------------------------------------------------------------------------

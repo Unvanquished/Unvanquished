@@ -532,30 +532,6 @@ void SV_ClearServer( void )
 
 /*
 ================
-SV_TouchCGame
-
-  touch cgame so that a pure client can load it if it's in a separate pk3
-================
-*/
-void SV_TouchCGame( void )
-{
-	fileHandle_t f;
-
-	FS_FOpenFileRead( "vm/cgame.qvm", &f, qfalse );
-
-	if ( f )
-	{
-		FS_FCloseFile( f );
-	}
-
-	if ( f )
-	{
-		FS_FCloseFile( f );
-	}
-}
-
-/*
-================
 SV_SpawnServer
 
 Change the server to a new map, taking all connected
@@ -613,9 +589,6 @@ void SV_SpawnServer( const char *server )
 		}
 	}
 
-	// clear pak references
-	FS_ClearPakReferences( 0 );
-
 	// allocate the snapshot entities on the hunk
 	svs.snapshotEntities = ( entityState_t * ) Hunk_Alloc( sizeof( entityState_t ) * svs.numSnapshotEntities, h_high );
 	svs.nextSnapshotEntities = 0;
@@ -638,7 +611,9 @@ void SV_SpawnServer( const char *server )
 	srand( Sys_Milliseconds() );
 	sv.checksumFeed = ( ( ( int ) rand() << 16 ) ^ rand() ) ^ Sys_Milliseconds();
 
-	FS_Restart( sv.checksumFeed );
+	FS_ClearPaks();
+	FS_LoadPak("unvanquished");
+	FS_LoadPak(va("maps/%s", server));
 
 	CM_LoadMap( va( "maps/%s.bsp", server ), qfalse, &checksum );
 
@@ -652,7 +627,6 @@ void SV_SpawnServer( const char *server )
 	// serverid should be different each time
 	sv.serverId = com_frameTime;
 	sv.restartedServerId = sv.serverId;
-	sv.checksumFeedServerId = sv.serverId;
 	Cvar_Set( "sv_serverid", va( "%i", sv.serverId ) );
 
 	// clear physics interaction links
@@ -739,42 +713,10 @@ void SV_SpawnServer( const char *server )
 	SV_BotFrame( svs.time );
 	svs.time += FRAMETIME;
 
-	if ( sv_pure->integer )
-	{
-		// the server sends these to the clients so they will only
-		// load pk3s also loaded at the server
-		p = FS_LoadedPakChecksums();
-		Cvar_Set( "sv_paks", p );
-
-		if ( strlen( p ) == 0 )
-		{
-			Com_Log(LOG_WARN, _( "sv_pure set but no PK3 files loaded" ));
-		}
-
-		p = FS_LoadedPakNames();
-		Cvar_Set( "sv_pakNames", p );
-
-		// if a dedicated pure server we need to touch the cgame because it could be in a
-		// separate pk3 file and the client will need to load the latest cgame.qvm
-		if ( com_dedicated->integer )
-		{
-			SV_TouchCGame();
-		}
-	}
-	else
-	{
-		Cvar_Set( "sv_paks", "" );
-		Cvar_Set( "sv_pakNames", "" );
-	}
-
 	// the server sends these to the clients so they can figure
 	// out which pk3s should be auto-downloaded
-	// NOTE: we consider the referencedPaks as 'required for operation'
 
-	p = FS_ReferencedPakChecksums();
-	Cvar_Set( "sv_referencedPaks", p );
-	p = FS_ReferencedPakNames();
-	Cvar_Set( "sv_referencedPakNames", p );
+	Cvar_Set( "sv_paks", FS_LoadedPaks() );
 
 	// save systeminfo and serverinfo strings
 	cvar_modifiedFlags &= ~CVAR_SYSTEMINFO;
@@ -843,9 +785,6 @@ void SV_Init( void )
 	sv_voip = Cvar_Get( "sv_voip", "1", CVAR_SYSTEMINFO | CVAR_LATCH );
 #endif
 	Cvar_Get( "sv_paks", "", CVAR_SYSTEMINFO | CVAR_ROM );
-	Cvar_Get( "sv_pakNames", "", CVAR_SYSTEMINFO | CVAR_ROM );
-	Cvar_Get( "sv_referencedPaks", "", CVAR_SYSTEMINFO | CVAR_ROM );
-	Cvar_Get( "sv_referencedPakNames", "", CVAR_SYSTEMINFO | CVAR_ROM );
 
 	// server vars
 	sv_rconPassword = Cvar_Get( "rconPassword", "", CVAR_TEMP );

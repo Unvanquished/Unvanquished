@@ -188,6 +188,14 @@ or configs will never get loaded from disk!
 #define MAX_SEARCH_PATHS  4096
 #define MAX_FILEHASH_SIZE 1024
 
+// referenced flags
+// these are in loop specific order so don't change the order
+#define FS_GENERAL_REF   0x01
+#define FS_UI_REF        0x02
+#define FS_CGAME_REF     0x04
+
+#define BASEGAME "main"
+
 #ifdef WIN32
 #define Q_rmdir          _rmdir
 #else

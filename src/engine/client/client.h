@@ -672,8 +672,6 @@ qboolean CL_IRCIsRunning( void );
 //
 // cl_parse.c
 //
-extern int cl_connectedToPureServer;
-
 #if defined(USE_VOIP) && !defined(DEDICATED)
 void       CL_Voip_f( void );
 

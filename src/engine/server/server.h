@@ -94,9 +94,6 @@ typedef struct
 	int           serverId; // changes each server start
 	int           restartedServerId; // serverId before a map_restart
 	int           checksumFeed; // the feed key that we use to compute the pure checksum strings
-	// show_bug.cgi?id=475
-	// the serverId associated with the current checksumFeed (always <= serverId)
-	int             checksumFeedServerId;
 	int             snapshotCounter; // incremented for each snapshot built
 	int             timeResidual; // <= 1000 / sv_frame->value
 	int             nextFrameTime; // when time > nextFrameTime, process world

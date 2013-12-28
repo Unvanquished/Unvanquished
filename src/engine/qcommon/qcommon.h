@@ -492,23 +492,7 @@ issues.
 ==============================================================
 */
 
-#define BASEGAME "main"
-
-// referenced flags
-// these are in loop specific order so don't change the order
-#define FS_GENERAL_REF   0x01
-#define FS_UI_REF        0x02
-#define FS_CGAME_REF     0x04
-
-qboolean FS_Initialized( void );
-
-void     FS_InitFilesystem( void );
-void     FS_Shutdown( qboolean closemfp );
-
-qboolean FS_ConditionalRestart( int checksumFeed );
-void     FS_Restart( int checksumFeed );
-
-// shutdown and restart the filesystem so changes to fs_gamedir can take effect
+#include "../framework/FileSystem.h"
 
 char **FS_ListFiles( const char *directory, const char *extension, int *numfiles );
 
@@ -530,7 +514,6 @@ void         FS_FChmod( fileHandle_t f, int mode );
 
 // will properly create any needed paths and deal with separator character issues
 
-int          FS_filelength( fileHandle_t f );
 fileHandle_t FS_SV_FOpenFileWrite( const char *filename );
 int          FS_SV_FOpenFileRead( const char *filename, fileHandle_t *fp );
 void         FS_SV_Rename( const char *from, const char *to );
@@ -543,10 +526,6 @@ FS_FCloseFile instead of fclose, otherwise the pak FILE would be improperly clos
 It is generally safe to always set uniqueFILE to true, because the majority of
 file IO goes through FS_ReadFile, which Does The Right Thing already.
 */
-
-int FS_FileIsInPAK( const char *filename, int *pChecksum );
-
-// returns 1 if a file is in the PAK file, otherwise -1
 
 int FS_Delete( char *filename );  // only works inside the 'save' directory (for deleting savegames/images)
 
@@ -603,32 +582,15 @@ int FS_Seek( fileHandle_t f, long offset, int origin );
 
 // seek on a file (doesn't work for zip files!!!!!!!!)
 
-const char *FS_LoadedPakNames( void );
-const char *FS_LoadedPakChecksums( void );
-const char *FS_LoadedPakPureChecksums( void );
+const char* FS_LoadedPaks();
 
-// Returns a space separated string containing the checksums of all loaded pk3 files.
-// Servers with sv_pure set will get this string and pass it to clients.
+// Returns a space separated string containing all loaded pk3 files.
 
-const char *FS_ReferencedPakNames( void );
-const char *FS_ReferencedPakChecksums( void );
-const char *FS_ReferencedPakPureChecksums( void );
+void     FS_LoadPak( const char *name );
+void     FS_ClearPaks();
+void     FS_LoadServerPaks( const char* paks );
 
-// Returns a space separated string containing the checksums of all loaded
-// AND referenced pk3 files. Servers with sv_pure set will get this string
-// back from clients for pure validation
-
-void FS_ClearPakReferences( int flags );
-
-// clears referenced booleans on loaded pk3s
-
-void FS_PureServerSetReferencedPaks( const char *pakSums, const char *pakNames );
-void FS_PureServerSetLoadedPaks( const char *pakSums, const char *pakNames );
-
-// If the string is empty, all data sources will be allowed.
-// If not empty, only pk3 files that match one of the space
-// separated checksums will be checked for files, with the
-// sole exception of .cfg files.
+// shutdown and restart the filesystem so changes to fs_gamedir can take effect
 
 qboolean   FS_ComparePaks( char *neededpaks, int len, qboolean dlstring );
 
@@ -636,11 +598,7 @@ void       FS_Rename( const char *from, const char *to );
 
 char       *FS_BuildOSPath( const char *base, const char *game, const char *qpath );
 
-qboolean     FS_VerifyPak( const char *pak );
-// XreaL BEGIN
 void         FS_HomeRemove( const char *homePath );
-
-// XreaL END
 
 namespace FS {
     std::vector<std::pair<std::string, std::string>> CompleteFilenameInDir(Str::StringRef prefix, Str::StringRef dir,
@@ -756,7 +714,6 @@ void       Com_SetRecommended( void );
 // only a set with the exact name.  Only used during startup.
 
 //bani - profile functions
-void                Com_TrackProfile( char *profile_path );
 qboolean            Com_CheckProfile( char *profile_path );
 qboolean            Com_WriteProfile( char *profile_path );
 
