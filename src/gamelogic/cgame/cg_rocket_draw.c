@@ -2276,6 +2276,21 @@ static void CG_Rocket_DrawNumSpawns( void )
 	trap_Rocket_SetInnerRML( s, qfalse );
 }
 
+void CG_Rocket_DrawPredictedRGSRate( void )
+{
+	static const char colours[] = "??18322";
+	playerState_t  *ps = &cg.snap->ps;
+	buildable_t   buildable = (buildable_t)( ps->stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK );
+
+	if (  buildable != BA_H_DRILL && buildable != BA_A_LEECH )
+	{
+		trap_Rocket_SetInnerRML( "", qfalse );
+		return;
+	}
+
+	trap_Rocket_SetInnerRML( va("^%c%d%%", colours[ (int)( (float) ps->stats[ STAT_PREDICTION ] / ( 100.0f / 6.0f ) ) ], ps->stats[ STAT_PREDICTION ]), qtrue );
+}
+
 typedef struct
 {
 	const char *name;
@@ -2315,6 +2330,7 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "momentum", &CG_Rocket_DrawMomentum, ELEMENT_BOTH },
 	{ "momentum_bar", &CG_Rocket_DrawPlayerMomentumBar, ELEMENT_BOTH },
 	{ "numSpawns", &CG_Rocket_DrawNumSpawns, ELEMENT_DEAD },
+	{ "predictedMineEfficiency", &CG_Rocket_DrawPredictedRGSRate, ELEMENT_BOTH },
 	{ "scanner", &CG_Rocket_DrawHumanScanner, ELEMENT_HUMANS },
 	{ "spawnPos", &CG_Rocket_DrawSpawnQueuePosition, ELEMENT_DEAD },
 	{ "speedometer", &CG_Rocket_DrawSpeedGraph, ELEMENT_GAME },
