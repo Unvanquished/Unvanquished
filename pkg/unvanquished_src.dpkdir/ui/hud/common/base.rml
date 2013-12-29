@@ -89,6 +89,7 @@
 	</div>
 
 	<div id="tutorial">
+		<predictedMineEfficiency />
 		<tutorial />
 	</div>
 	<div id="crosshair">
