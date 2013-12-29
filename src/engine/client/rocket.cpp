@@ -34,7 +34,6 @@ Maryland 20850 USA.
 
 // The basic interfaces for libRocket
 
-// FIXME: Macro conflicts with Rocket::Core::Vector2
 #include <Rocket/Core/FileInterface.h>
 #include <Rocket/Core/SystemInterface.h>
 #include <Rocket/Core/RenderInterface.h>
