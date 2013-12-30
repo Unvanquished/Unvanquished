@@ -666,7 +666,7 @@ qboolean CL_CloseAVI( void )
 	FS_FCloseFile( afd.idxF );
 
 	// Remove temp index file
-	FS_HomeRemove( idxFileName );
+	FS_Delete( idxFileName );
 
 	// Write the real header
 	FS_Seek( afd.f, 0, FS_SEEK_SET );

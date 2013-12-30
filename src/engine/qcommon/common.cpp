@@ -74,7 +74,7 @@ jmp_buf             abortframe; // an ERR_DROP has occurred, exit the entire fra
 
 FILE                *debuglogfile;
 static fileHandle_t logfile;
-static fileHandle_t pipefile;
+static FILE         *pipefile;
 
 cvar_t              *com_crashed = NULL; // ydnar: set in case of a crash, prevents CVAR_UNSAFE variables from being set from a cfg
 
@@ -1841,15 +1841,13 @@ Com_Init
 
 #ifndef _WIN32
 # ifdef DEDICATED
-	const std::string defaultPipeFilename = "svpipe";
+	const char* defaultPipeFilename = "svpipe";
 # else
-	const std::string defaultPipeFilename = "pipe";
+	const char* defaultPipeFilename = "pipe";
 # endif
 #else
-	const std::string defaultPipeFilename = "";
+	const char* defaultPipeFilename = "";
 #endif
-//TODO LATCH
-static Cvar::Cvar<std::string> pipeFilename("common.pipefile", "the name of the pipe you can send console commands to", Cvar::ARCHIVE, defaultPipeFilename);
 
 void Com_Init( char *commandLine )
 {
@@ -2097,9 +2095,15 @@ void Com_Init( char *commandLine )
 		   } */
 	}
 
-	if (not pipeFilename.Get().empty())
+	if (defaultPipeFilename[0])
 	{
-		pipefile = FS_FCreateOpenPipeFile(pipeFilename.Get().c_str());
+		std::string ospath = FS::Path::Build(FS::GetHomePath(), defaultPipeFilename);
+		pipefile = Sys_Mkfifo(ospath.c_str());
+		if (!pipefile)
+		{
+			Com_Printf( S_WARNING "Could not create new pipefile at %s. "
+			"pipefile will not be used.\n", ospath.c_str() );
+		}
 	}
 	com_fullyInitialized = qtrue;
 	Com_Printf( "%s", "--- Common Initialization Complete ---\n" );
@@ -2123,7 +2127,7 @@ void Com_ReadFromPipe( void )
 		return;
 	}
 
-	while ( ( numNew = FS_Read( buf + numAccd, sizeof( buf ) - 1 - numAccd, pipefile ) ) > 0 )
+	while ( ( numNew = fread( buf + numAccd, 1, sizeof( buf ) - 1 - numAccd, pipefile ) ) > 0 )
 	{
 		char *brk = NULL; // will point to after the last CR/LF character, if any
 		int i;
@@ -2639,8 +2643,8 @@ void Com_Shutdown( qboolean badProfile )
 
 	if ( pipefile )
 	{
-		FS_FCloseFile( pipefile );
-		FS_HomeRemove( pipeFilename.Get().c_str() );
+		fclose( pipefile );
+		FS_Delete( defaultPipeFilename );
 	}
 
 	FS::Shutdown();

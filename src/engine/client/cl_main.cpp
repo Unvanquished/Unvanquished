@@ -2218,8 +2218,6 @@ static void CL_GenerateRSAKeys( const char *fileName )
 		Com_Error( ERR_FATAL, "Daemon could not open %s for writing the RSA keypair", RSAKEY_FILE );
 	}
 
-	FS_FChmod( f, 0600 ); // owner r/w, no other access
-
 	FS_Write( key_buffer.contents, key_buffer.size, f );
 	FS_FCloseFile( f );
 

@@ -510,8 +510,6 @@ fileHandle_t FS_FOpenFileWrite( const char *qpath );
 fileHandle_t FS_FOpenFileAppend( const char *filename );
 fileHandle_t  FS_FCreateOpenPipeFile( const char *filename );
 
-void         FS_FChmod( fileHandle_t f, int mode );
-
 // will properly create any needed paths and deal with separator character issues
 
 fileHandle_t FS_SV_FOpenFileWrite( const char *filename );
@@ -527,7 +525,7 @@ It is generally safe to always set uniqueFILE to true, because the majority of
 file IO goes through FS_ReadFile, which Does The Right Thing already.
 */
 
-int FS_Delete( char *filename );  // only works inside the 'save' directory (for deleting savegames/images)
+int FS_Delete( const char *filename );  // only works inside the 'save' directory (for deleting savegames/images)
 
 int FS_Write( const void *buffer, int len, fileHandle_t f );
 
@@ -598,7 +596,7 @@ void       FS_Rename( const char *from, const char *to );
 
 char       *FS_BuildOSPath( const char *base, const char *game, const char *qpath );
 
-void         FS_HomeRemove( const char *homePath );
+extern FS::PakNamespace fs_namespace;
 
 namespace FS {
     std::vector<std::pair<std::string, std::string>> CompleteFilenameInDir(Str::StringRef prefix, Str::StringRef dir,

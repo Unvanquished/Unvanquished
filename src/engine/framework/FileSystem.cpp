@@ -26,6 +26,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #include "../qcommon/qcommon.h"
 #include "FileSystem.h"
 #include "../../common/Log.h"
+#include "../../common/Command.h"
 #include "../../libs/minizip/unzip.h"
 #include <vector>
 #include <algorithm>
@@ -105,7 +106,7 @@ static FILE* my_fopen(Str::StringRef path, openMode_t mode)
 	}
 
 	// Set the close-on-exec flag
-	if (fcntl(fileno(fd), F_SETFD, FD_CLOEXEC) == -1) {
+	if (fd && fcntl(fileno(fd), F_SETFD, FD_CLOEXEC) == -1) {
 		fclose(fd);
 		return nullptr;
 	}
@@ -193,10 +194,11 @@ static const minizip_category_impl& minizip_category()
 
 // Filesystem-specific error codes
 enum filesystem_error {
-	pak_not_found,
 	invalid_filename,
 	no_such_file,
-	no_such_directory
+	no_such_directory,
+	wrong_pak_checksum,
+	missing_depdency
 };
 class filesystem_category_impl: public std::error_category
 {
@@ -208,14 +210,16 @@ public:
 	virtual std::string message(int ev) const OVERRIDE FINAL
 	{
 		switch (ev) {
-		case filesystem_error::pak_not_found:
-			return "Pak file not found";
 		case filesystem_error::invalid_filename:
 			return "Filename contains invalid characters";
 		case filesystem_error::no_such_file:
 			return "No such file";
 		case filesystem_error::no_such_directory:
 			return "No such directory";
+		case filesystem_error::wrong_pak_checksum:
+			return "Pak checksum incorrect";
+		case filesystem_error::missing_depdency:
+			return "Missing dependency";
 		default:
 			return "Unknown error";
 		}
@@ -402,54 +406,18 @@ static void AddPak(pakType_t type, Str::StringRef filename, Str::StringRef baseP
 	std::string fullPath = Path::Build(basePath, filename);
 
 	size_t suffixLen = type == PAK_DIR ? strlen(PAK_DIR_EXT) : strlen(PAK_ZIP_EXT);
-	size_t nameStart = filename.rfind('/', suffixLen);
-	if (nameStart == Str::StringRef::npos)
-		nameStart = 0;
-	else
-		nameStart++;
-
-	// Get the name of the package
-	size_t underscore1 = filename.find('_', nameStart);
-	if (underscore1 == Str::StringRef::npos) {
-		Log::Warn("Invalid pak name (no version): %s\n", fullPath);
-		return;
-	}
-	std::string name = filename.substr(0, underscore1);
-
-	// Get the version of the package
-	size_t underscore2 = filename.find('_', underscore1 + 1);
-	std::string version;
+	std::string name, version;
 	Opt::optional<uint32_t> checksum;
-	if (underscore2 == Str::StringRef::npos)
-		version = filename.substr(underscore1 + 1, filename.size() - suffixLen - underscore1 - 1);
-	else {
-		// Get the optional checksum of the package
-		version = filename.substr(underscore1 + 1, underscore2 - underscore1 - 1);
-		if (type == PAK_DIR) {
-			Log::Warn("Invalid pak name (checksum not allowed on pk3dir): %s\n", fullPath);
-			return;
-		}
-		if (underscore2 + 9 != filename.size() - suffixLen) {
-			Log::Warn("Invalid pak name (bad checksum): %s\n", fullPath);
-			return;
-		}
-		checksum = 0;
-		for (int i = 0; i < 8; i++) {
-			char c = filename[underscore2 + 1 + i];
-			if (!Str::cisxdigit(c)) {
-				Log::Warn("Invalid pak name (bad checksum): %s\n", fullPath);
-				return;
-			}
-			uint32_t hexValue = Str::cisdigit(c) ? c - '0' : Str::ctolower(c) - 'a' + 10;
-			checksum = (*checksum << 4) | hexValue;
-		}
+	if (!ParsePakName(filename.begin(), filename.end() - suffixLen, name, version, checksum) || (type == PAK_DIR && checksum)) {
+		Log::Warn("Invalid pak name: %s\n", fullPath);
+		return;
 	}
 
 	availablePaks.push_back({std::move(name), std::move(version), checksum, type, std::move(fullPath)});
 }
 
 // Find all paks in the given path
-static void FindPaks(Str::StringRef basePath, Str::StringRef subPath)
+static void FindPaksInPath(Str::StringRef basePath, Str::StringRef subPath)
 {
 	std::string fullPath = Path::Build(basePath, subPath);
 	try {
@@ -459,7 +427,7 @@ static void FindPaks(Str::StringRef basePath, Str::StringRef subPath)
 			} else if (Str::IsSuffix(PAK_DIR_EXT, filename)) {
 				AddPak(PAK_DIR, Path::Build(subPath, filename), basePath);
 			} else if (Str::IsSuffix("/", filename))
-				FindPaks(basePath, Path::Build(subPath, filename));
+				FindPaksInPath(basePath, Path::Build(subPath, filename));
 		}
 	} catch (std::system_error& err) {
 		// If there was an error reading a directory, just ignore it and go to
@@ -529,22 +497,127 @@ void RefreshPaks()
 {
 	availablePaks.clear();
 	for (auto& path: pakPaths)
-		FindPaks(path, "");
+		FindPaksInPath(path, "");
 
 	// Sort the pak list for easy binary searching:
 	// First sort by name, then by version.
 	// For checksums, place files without checksums in front, so they are selected
 	// before any pak with an explicit checksum.
 	std::sort(availablePaks.begin(), availablePaks.end(), [](const PakInfo& a, const PakInfo& b) -> bool {
+		// Sort by name
 		int result = a.name.compare(b.name);
 		if (result != 0)
 			return result < 0;
+
+		// Sort by version, putting latest versions last
 		result = VersionCmp(a.version, b.version);
 		if (result != 0)
 			return result < 0;
-		// Put packages without checksums at the end
-		return a.checksum > b.checksum;
+
+		// Sort by checksum, putting packages with no checksum last
+		if (a.checksum != b.checksum)
+			return a.checksum > b.checksum;
+
+		// Prefer packages in the home path over other paths when names are identical
+		return Str::IsPrefix(homePath, b.path);
 	});
+}
+
+const PakInfo* FindPak(Str::StringRef name)
+{
+	// Find the latest version with the matching name
+	auto iter = std::upper_bound(availablePaks.begin(), availablePaks.end(), name, [](Str::StringRef name, const PakInfo& pakInfo) -> bool {
+		return name < pakInfo.name;
+	});
+
+	if (iter == availablePaks.begin() || (iter - 1)->name != name)
+		return nullptr;
+	else
+		return &*(iter - 1);
+}
+
+const PakInfo* FindPak(Str::StringRef name, Str::StringRef version)
+{
+	// Find a matching name and version, but prefer the last matching element since that is usually the one with no checksum
+	auto iter = std::upper_bound(availablePaks.begin(), availablePaks.end(), name, [version](Str::StringRef name, const PakInfo& pakInfo) -> bool {
+		int result = name.compare(pakInfo.name);
+		if (result != 0)
+			return result < 0;
+		return VersionCmp(version, pakInfo.version) < 0;
+	});
+
+	if (iter == availablePaks.begin() || (iter - 1)->name != name || (iter - 1)->version != version)
+		return nullptr;
+	else
+		return &*(iter - 1);
+}
+
+const PakInfo* FindPak(Str::StringRef name, Str::StringRef version, uint32_t checksum)
+{
+	// Try to find an exact match
+	auto iter = std::upper_bound(availablePaks.begin(), availablePaks.end(), name, [version, checksum](Str::StringRef name, const PakInfo& pakInfo) -> bool {
+		int result = name.compare(pakInfo.name);
+		if (result != 0)
+			return result < 0;
+		result = VersionCmp(version, pakInfo.version);
+		if (result != 0)
+			return result < 0;
+		return checksum > pakInfo.checksum;
+	});
+
+	if (iter == availablePaks.begin() || (iter - 1)->name != name || (iter - 1)->version != version || !(iter - 1)->checksum || *(iter - 1)->checksum != checksum) {
+		// Try again, but this time look for the pak without a checksum. We will verify the checksum later.
+		iter = std::upper_bound(availablePaks.begin(), availablePaks.end(), name, [version](Str::StringRef name, const PakInfo& pakInfo) -> bool {
+			int result = name.compare(pakInfo.name);
+			if (result != 0)
+				return result < 0;
+			result = VersionCmp(version, pakInfo.version);
+			if (result != 0)
+				return result < 0;
+			return Opt::nullopt > pakInfo.checksum;
+		});
+
+		// Only allow zip packages because directories don't have a checksum
+		if (iter == availablePaks.begin() || (iter - 1)->type == PAK_DIR || (iter - 1)->name != name || (iter - 1)->version != version || (iter - 1)->checksum)
+			return nullptr;
+	}
+
+	return &*(iter - 1);
+}
+
+bool ParsePakName(const char* begin, const char* end, std::string& name, std::string& version, Opt::optional<uint32_t>& checksum)
+{
+	const char* nameStart = std::find(std::reverse_iterator<const char*>(end), std::reverse_iterator<const char*>(begin), '/').base();
+	if (nameStart != begin)
+		nameStart++;
+
+	// Get the name of the package
+	const char* underscore1 = std::find(nameStart, end, '_');
+	if (underscore1 == end)
+		return false;
+	name.assign(begin, underscore1);
+
+	// Get the version of the package
+	const char* underscore2 = std::find(underscore1 + 1, end, '_');
+	if (underscore2 == end) {
+		version.assign(underscore1 + 1, end);
+		checksum = Opt::nullopt;
+	} else {
+		// Get the optional checksum of the package
+		version.assign(underscore1 + 1, underscore2);
+		if (underscore2 + 9 != end)
+			return false;
+		checksum = 0;
+		for (int i = 0; i < 8; i++) {
+			char c = underscore2[i + 1];
+			if (!Str::cisxdigit(c))
+				return false;
+			uint32_t hexValue = Str::cisdigit(c) ? c - '0' : Str::ctolower(c) - 'a' + 10;
+			checksum = (*checksum << 4) | hexValue;
+		}
+	}
+
+	return true;
 }
 
 const std::vector<PakInfo>& GetAvailablePaks()
@@ -972,7 +1045,15 @@ static void ParseDeps(PakNamespace& ns, const PakInfo& parent, Str::StringRef de
 
 		// If this is the end of the line, load a package by name
 		if (lineStart == lineEnd) {
-			ns.LoadPak(name, err);
+			const PakInfo* pak = FS::FindPak(name);
+			if (!pak) {
+				Log::Warn("Could not find pak '%s' required by '%s'\n", name, parent.path);
+				SetErrorCodeFilesystem(filesystem_error::missing_depdency, err);
+				return;
+			}
+			ns.LoadPak(*pak, err);
+			if (HaveError(err))
+				return;
 			lineStart = lineEnd == depsData.end() ? lineEnd : lineEnd + 1;
 			continue;
 		}
@@ -988,13 +1069,21 @@ static void ParseDeps(PakNamespace& ns, const PakInfo& parent, Str::StringRef de
 
 		// If this is the end of the line, load a package with an explicit version
 		if (lineStart == lineEnd) {
-			ns.LoadPak(name, version, err);
+			const PakInfo* pak = FS::FindPak(name, version);
+			if (!pak) {
+				Log::Warn("Could not find pak '%s' with version '%s' required by '%s'\n", name, version, parent.path);
+				SetErrorCodeFilesystem(filesystem_error::missing_depdency, err);
+				return;
+			}
+			ns.LoadPak(*pak, err);
+			if (HaveError(err))
+				return;
 			lineStart = lineEnd == depsData.end() ? lineEnd : lineEnd + 1;
 			continue;
 		}
 
 		// If there is still stuff at the end of the line, print a warning and ignore it
-		Com_Printf("Invalid dependency specification on line %d in %s\n", line, Path::Build(parent.path, PAK_DEPS_FILE).c_str());
+		Log::Warn("Invalid dependency specification on line %d in %s\n", line, Path::Build(parent.path, PAK_DEPS_FILE));
 		lineStart = lineEnd == depsData.end() ? lineEnd : lineEnd + 1;
 	}
 }
@@ -1056,7 +1145,7 @@ void PakNamespace::InternalLoadPak(const PakInfo& pak, Opt::optional<uint32_t> e
 
 	// If an explicit checksum was requested, verify that the pak we loaded is the one we are expecting
 	if (expectedChecksum && checksum != *expectedChecksum) {
-		SetErrorCodeZlib(err, UNZ_CRCERROR);
+		SetErrorCodeFilesystem(filesystem_error::wrong_pak_checksum, err);
 		return;
 	}
 
@@ -1090,72 +1179,10 @@ void PakNamespace::InternalLoadPak(const PakInfo& pak, Opt::optional<uint32_t> e
 	}
 }
 
-void PakNamespace::LoadPak(Str::StringRef name, std::error_code& err)
+void PakNamespace::ClearPaks()
 {
-	// Find the latest version with the matching name
-	auto iter = std::upper_bound(availablePaks.begin(), availablePaks.end(), name, [](Str::StringRef name, const PakInfo& pakInfo) -> bool {
-		return name < pakInfo.name;
-	});
-
-	if (iter == availablePaks.begin() || (iter - 1)->name != name) {
-		SetErrorCodeFilesystem(filesystem_error::pak_not_found, err);
-		return;
-	}
-
-	InternalLoadPak(*(iter - 1), Opt::nullopt, err);
-}
-
-void PakNamespace::LoadPak(Str::StringRef name, Str::StringRef version, std::error_code& err)
-{
-	// Find a matching name and version, but prefer the last matching element since that is usually the one with no checksum
-	auto iter = std::upper_bound(availablePaks.begin(), availablePaks.end(), name, [version](Str::StringRef name, const PakInfo& pakInfo) -> bool {
-		int result = name.compare(pakInfo.name);
-		if (result != 0)
-			return result < 0;
-		return VersionCmp(version, pakInfo.version) < 0;
-	});
-
-	if (iter == availablePaks.begin() || (iter - 1)->name != name || (iter - 1)->version != version) {
-		SetErrorCodeFilesystem(filesystem_error::pak_not_found, err);
-		return;
-	}
-
-	InternalLoadPak(*(iter - 1), Opt::nullopt, err);
-}
-
-void PakNamespace::LoadPakExplicit(Str::StringRef name, Str::StringRef version, uint32_t checksum, std::error_code& err)
-{
-	// Try to find an exact match
-	auto iter = std::upper_bound(availablePaks.begin(), availablePaks.end(), name, [version, checksum](Str::StringRef name, const PakInfo& pakInfo) -> bool {
-		int result = name.compare(pakInfo.name);
-		if (result != 0)
-			return result < 0;
-		result = VersionCmp(version, pakInfo.version);
-		if (result != 0)
-			return result < 0;
-		return checksum > pakInfo.checksum;
-	});
-
-	if (iter == availablePaks.begin() || (iter - 1)->name != name || (iter - 1)->version != version || !(iter - 1)->checksum || *(iter - 1)->checksum != checksum) {
-		// Try again, but this time look for the pak without a checksum. We will verify the checksum later.
-		iter = std::upper_bound(availablePaks.begin(), availablePaks.end(), name, [version](Str::StringRef name, const PakInfo& pakInfo) -> bool {
-			int result = name.compare(pakInfo.name);
-			if (result != 0)
-				return result < 0;
-			result = VersionCmp(version, pakInfo.version);
-			if (result != 0)
-				return result < 0;
-			return Opt::nullopt > pakInfo.checksum;
-		});
-
-		// Only allow zip packages because directories don't have a checksum
-		if (iter == availablePaks.begin() || (iter - 1)->type == PAK_DIR || (iter - 1)->name != name || (iter - 1)->version != version || (iter - 1)->checksum) {
-			SetErrorCodeFilesystem(filesystem_error::pak_not_found, err);
-			return;
-		}
-	}
-
-	InternalLoadPak(*(iter - 1), checksum, err);
+	fileMap.clear();
+	loadedPaks.clear();
 }
 
 std::string PakNamespace::ReadFile(Str::StringRef path, std::error_code& err) const
@@ -1729,7 +1756,8 @@ struct handleData_t {
 
 #define MAX_FILE_HANDLES 64
 static handleData_t handleTable[MAX_FILE_HANDLES];
-static FS::PakNamespace mainNamespace;
+static std::vector<std::tuple<std::string, std::string, uint32_t>> fs_missingPaks;
+FS::PakNamespace fs_namespace;
 
 static fileHandle_t FS_AllocHandle()
 {
@@ -1752,7 +1780,7 @@ static void FS_CheckHandle(fileHandle_t handle, bool write)
 
 qboolean FS_FileExists(const char* path)
 {
-	return mainNamespace.FileExists(path) || FS::HomePath::FileExists(path);
+	return fs_namespace.FileExists(path) || FS::HomePath::FileExists(path);
 }
 
 int FS_FOpenFileRead(const char* path, fileHandle_t* handle, qboolean)
@@ -1763,9 +1791,9 @@ int FS_FOpenFileRead(const char* path, fileHandle_t* handle, qboolean)
 	*handle = FS_AllocHandle();
 	int length;
 	try {
-		if (mainNamespace.FileExists(path)) {
+		if (fs_namespace.FileExists(path)) {
 			handleTable[*handle].filePos = 0;
-			handleTable[*handle].fileData = mainNamespace.ReadFile(path);
+			handleTable[*handle].fileData = fs_namespace.ReadFile(path);
 			handleTable[*handle].isPakFile = true;
 			handleTable[*handle].isOpen = true;
 			length = handleTable[*handle].fileData.size();
@@ -1987,13 +2015,15 @@ void FS_Printf(fileHandle_t handle, const char* fmt, ...)
 	FS_Write(buffer, strlen(buffer), handle);
 }
 
-void FS_HomeRemove(const char* path)
+// TODO: This needs to handle deleting directories
+int FS_Delete(const char* path)
 {
 	try {
 		FS::HomePath::DeleteFile(path);
 	} catch (std::system_error& err) {
 		Com_Printf("Failed to delete file '%s': %s\n", path, err.what());
 	}
+	return 0;
 }
 
 void FS_Rename(const char* from, const char* to)
@@ -2055,7 +2085,7 @@ char** FS_ListFiles(const char* directory, const char* extension, int* numFiles)
 
 	try {
 		// TODO: filter and strip trailing /, also don't use strdup
-		for (const std::string& x: mainNamespace.ListFiles(directory))
+		for (const std::string& x: fs_namespace.ListFiles(directory))
 			files.push_back(strdup(x.c_str()));
 	} catch (std::system_error& err) {
 		*numFiles = 0;
@@ -2106,7 +2136,7 @@ const char* FS_LoadedPaks()
 {
 	static char info[BIG_INFO_STRING];
 	info[0] = '\0';
-	for (const FS::PakInfo& x: mainNamespace.GetLoadedPaks()) {
+	for (const FS::PakInfo& x: fs_namespace.GetLoadedPaks()) {
 		if (!x.checksum)
 			continue;
 		if (info[0])
@@ -2128,18 +2158,78 @@ char* FS_BuildOSPath(const char* base, const char*, const char* path)
 
 void FS_ClearPaks()
 {
-	mainNamespace = FS::PakNamespace();
+	fs_namespace.ClearPaks();
 }
 
 void FS_LoadPak(const char* name)
 {
+	const FS::PakInfo* pak = FS::FindPak(name);
+	if (!pak) {
+		Com_Printf("Pak '%s' not found\n", name);
+		return;
+	}
 	try {
-		mainNamespace.LoadPak(name);
+		fs_namespace.LoadPak(*pak);
 	} catch (std::system_error& err) {
 		Com_Printf("Failed to load pak '%s': %s\n", name, err.what());
 	}
 }
 
-// TODO
-void FS_LoadServerPaks(const char* paks);
-qboolean FS_ComparePaks(char* neededpaks, int len, qboolean dlstring);
+void FS_LoadServerPaks(const char* paks)
+{
+	Cmd::Args args(paks);
+	fs_missingPaks.clear();
+	for (int i = 0; i < args.Argc(); i++) {
+		std::string name, version;
+		Opt::optional<uint32_t> checksum;
+		if (!FS::ParsePakName(&*args.Argv(i).begin(), &*args.Argv(i).end(), name, version, checksum) || !checksum) {
+			Com_Printf("Invalid pak reference from server: %s\n", args.Argv(i).c_str());
+			continue;
+		}
+
+		// Keep track of all missing paks
+		const FS::PakInfo* pak = FS::FindPak(name, version, *checksum);
+		if (!pak)
+			fs_missingPaks.emplace_back(std::move(name), std::move(version), *checksum);
+		else {
+			try {
+				fs_namespace.LoadPakExplicit(*pak, *checksum);
+			} catch (std::system_error& err) {
+				fs_missingPaks.emplace_back(std::move(name), std::move(version), *checksum);
+			}
+		}
+	}
+}
+
+qboolean FS_ComparePaks(char* neededpaks, int len, qboolean dlstring)
+{
+	// TODO: Implement this
+	*neededpaks = 0;
+	return qfalse;
+}
+
+namespace FS {
+    Cmd::CompletionResult CompleteFilenameInDir(Str::StringRef prefix, Str::StringRef dir,
+                                                Str::StringRef extension, bool stripExtension) {
+        int nfiles;
+        char** filenames = FS_ListFiles(dir.c_str(), extension.c_str(), &nfiles);
+
+        Cmd::CompletionResult res;
+
+        for (int i = 0; i < nfiles; i++) {
+            char filename[MAX_STRING_CHARS];
+            Q_strncpyz(filename, filenames[i], MAX_STRING_CHARS);
+
+            if (stripExtension) {
+                COM_StripExtension3(filename, filename, sizeof(filename));
+            }
+
+            if (Str::IsIPrefix(prefix, filename)) {
+                res.push_back({filename, ""});
+            }
+        }
+
+        FS_FreeFileList( filenames );
+        return res;
+    }
+}

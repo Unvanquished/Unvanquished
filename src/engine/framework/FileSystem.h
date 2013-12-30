@@ -237,17 +237,25 @@ class PakNamespace {
 
 public:
 	// Load a pak into the namespace with all its dependencies
-	void LoadPak(Str::StringRef name, std::error_code& err = throws());
-	void LoadPak(Str::StringRef name, Str::StringRef version, std::error_code& err = throws());
+	void LoadPak(const PakInfo& pak, std::error_code& err = throws())
+	{
+		InternalLoadPak(pak, Opt::nullopt, err);
+	}
 
-	// Load a specific pak into the namespace but *don't* load its dependencies
-	void LoadPakExplicit(Str::StringRef name, Str::StringRef version, uint32_t checksum, std::error_code& err = throws());
+	// Load a pak into the namespace and verify its checksum but *don't* load its dependencies
+	void LoadPakExplicit(const PakInfo& pak, uint32_t expectedChecksum, std::error_code& err = throws())
+	{
+		InternalLoadPak(pak, expectedChecksum, err);
+	}
 
 	// Get a list of all the loaded paks
 	const std::vector<PakInfo>& GetLoadedPaks() const
 	{
 		return loadedPaks;
 	}
+
+	// Remove all loaded paks
+	void ClearPaks();
 
 	// Read an entire file into a string
 	std::string ReadFile(Str::StringRef path, std::error_code& err = throws()) const;
@@ -409,6 +417,15 @@ bool IsInitialized();
 
 // Refresh the list of available paks
 void RefreshPaks();
+
+// Find a pak by name, version or checksum. Note that the checksum may not match
+// the actual checksum since the search is only done using file names.
+const PakInfo* FindPak(Str::StringRef name);
+const PakInfo* FindPak(Str::StringRef name, Str::StringRef version);
+const PakInfo* FindPak(Str::StringRef name, Str::StringRef version, uint32_t checksum);
+
+// Extract a name, version and optional checksum from a pak filename
+bool ParsePakName(const char* begin, const char* end, std::string& name, std::string& version, Opt::optional<uint32_t>& checksum);
 
 // Get the list of available paks
 const std::vector<PakInfo>& GetAvailablePaks();
