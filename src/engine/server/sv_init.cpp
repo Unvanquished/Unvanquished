@@ -613,7 +613,7 @@ void SV_SpawnServer( const char *server )
 
 	FS_ClearPaks();
 	FS_LoadPak("unvanquished");
-	FS_LoadPak(va("maps/%s", server));
+	FS_LoadPak(va("map/%s", server));
 
 	CM_LoadMap( va( "maps/%s.bsp", server ), qfalse, &checksum );
 

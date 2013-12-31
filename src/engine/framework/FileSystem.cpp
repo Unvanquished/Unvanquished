@@ -285,22 +285,21 @@ static std::string DefaultBasePath()
 
 	return Str::UTF16To8(buffer);
 #elif defined(__linux__)
-	struct stat st;
-	if (lstat("/proc/self/exe", &st) == -1)
-		return "";
-
-	std::unique_ptr<char[]> out(new char[st.st_size + 1]);
-	int len = readlink("/proc/self/exe", out.get(), st.st_size + 1);
-	if (len != st.st_size)
-		return "";
-	out[st.st_size] = '\0';
-
-	char* p = strrchr(out.get(), '/');
-	if (!p)
-		return "";
-	*p = '\0';
-
-	return out.get();
+	ssize_t len = 64;
+	while (true) {
+		std::unique_ptr<char[]> out(new char[len]);
+		ssize_t result = readlink("/proc/self/exe", out.get(), len);
+		if (result == -1)
+			return "";
+		if (result < len) {
+			out[result] = '\0';
+			char* p = strrchr(out.get(), '/');
+			if (!p)
+				return "";
+			*p = '\0';
+			return out.get();
+		}
+	}
 #elif defined(__APPLE__)
 	uint32_t bufsize = 0;
 	_NSGetExecutablePath(nullptr, &bufsize);
@@ -365,6 +364,7 @@ static bool TestWritePermission(Str::StringRef path)
 	return true;
 }
 
+// TODO: Print paths and note errors getting homepath/basepath
 void Initialize()
 {
 	Com_StartupVariable("fs_basepath");
@@ -432,7 +432,7 @@ static void FindPaksInPath(Str::StringRef basePath, Str::StringRef subPath)
 	} catch (std::system_error& err) {
 		// If there was an error reading a directory, just ignore it and go to
 		// the next one.
-		Log::Warn("Error reading directory %s: %s\n", fullPath, err.what());
+		Log::Debug("Error reading directory %s: %s\n", fullPath, err.what());
 	}
 }
 
@@ -685,7 +685,7 @@ std::string Path::DirName(Str::StringRef path)
 		return out;
 
 	// Trim to last slash, excluding any trailing slash
-	size_t lastSlash = path.rfind('/', path.back() == '/');
+	size_t lastSlash = path.rfind('/', path.size() - 2);
 	if (lastSlash != Str::StringRef::npos)
 		out = path.substr(0, lastSlash);
 
@@ -699,7 +699,7 @@ std::string Path::BaseName(Str::StringRef path)
 		return out;
 
 	// Trim from last slash, excluding any trailing slash
-	size_t lastSlash = path.rfind('/', path.back() == '/');
+	size_t lastSlash = path.rfind('/', path.size() - 2);
 	if (lastSlash != Str::StringRef::npos)
 		out = path.substr(lastSlash + 1);
 
@@ -1095,6 +1095,13 @@ void PakNamespace::InternalLoadPak(const PakInfo& pak, Opt::optional<uint32_t> e
 	offset_t depsOffset;
 	ZipArchive zipFile;
 
+	// Add the pak to the list of loaded paks
+	loadedPaks.push_back(pak);
+	if (pak.type == PAK_DIR)
+		loadedPaks.back().checksum = Opt::nullopt;
+	else
+		loadedPaks.back().checksum = checksum;
+
 	// Update the list of files, but don't overwrite existing files to preserve sort order
 	if (pak.type == PAK_DIR) {
 		auto dirRange = RawPath::ListFilesRecursive(pak.path, err);
@@ -1135,13 +1142,6 @@ void PakNamespace::InternalLoadPak(const PakInfo& pak, Opt::optional<uint32_t> e
 		if (HaveError(err))
 			return;
 	}
-
-	// Add the pak to the list of loaded paks
-	loadedPaks.push_back(pak);
-	if (pak.type == PAK_DIR)
-		loadedPaks.back().checksum = Opt::nullopt;
-	else
-		loadedPaks.back().checksum = checksum;
 
 	// If an explicit checksum was requested, verify that the pak we loaded is the one we are expecting
 	if (expectedChecksum && checksum != *expectedChecksum) {
@@ -1609,25 +1609,18 @@ DirectoryRange ListFiles(Str::StringRef path, std::error_code& err)
 bool RecursiveDirectoryRange::Advance(std::error_code& err)
 {
 	if (current.back() == '/') {
-		auto subdir = ListFiles(path, err);
+		auto subdir = ListFiles(Path::Build(path, current), err);
 		if (HaveError(err))
 			return false;
 		if (!subdir.empty()) {
+			current.append(*subdir.begin());
 			dirs.push_back(std::move(subdir));
-			current.clear();
-			for (auto& x: dirs)
-				current.append(*x.begin());
 			return true;
-		} else
-#ifdef GCC_BROKEN_CXX11
-			current.resize(current.size() - 1);
-#else
-			current.pop_back();
-#endif
+		}
 	}
 
 	while (!dirs.empty()) {
-		size_t pos = current.rfind('/');
+		size_t pos = current.rfind('/', current.size() - 2);
 		current.resize(pos == std::string::npos ? 0 : pos + 1);
 		dirs.back().begin().increment(err);
 		if (HaveError(err))
@@ -1804,8 +1797,8 @@ int FS_FOpenFileRead(const char* path, fileHandle_t* handle, qboolean)
 			handleTable[*handle].isOpen = true;
 		}
 	} catch (std::system_error& err) {
-		Com_Printf("Failed to open '%s' for reading: %s\n", path, err.what());
-		*handle = -1;
+		Com_DPrintf("Failed to open '%s' for reading: %s\n", path, err.what());
+		*handle = 0;
 		return -1;
 	}
 
@@ -1819,7 +1812,7 @@ fileHandle_t FS_FOpenFileWrite(const char* path)
 		handleTable[handle].file = FS::HomePath::OpenWrite(path);
 	} catch (std::system_error& err) {
 		Com_Printf("Failed to open '%s' for writing: %s\n", path, err.what());
-		return -1;
+		return 0;
 	}
 	handleTable[handle].forceFlush = false;
 	handleTable[handle].isPakFile = false;
@@ -1834,7 +1827,7 @@ fileHandle_t FS_FOpenFileAppend(const char* path)
 		handleTable[handle].file = FS::HomePath::OpenAppend(path);
 	} catch (std::system_error& err) {
 		Com_Printf("Failed to open '%s' for appending: %s\n", path, err.what());
-		return -1;
+		return 0;
 	}
 	handleTable[handle].forceFlush = false;
 	handleTable[handle].isPakFile = false;
@@ -1855,8 +1848,8 @@ int FS_SV_FOpenFileRead(const char* path, fileHandle_t* handle)
 		handleTable[*handle].file = FS::HomePath::OpenRead(path);
 		length = handleTable[*handle].file.Length();
 	} catch (std::system_error& err) {
-		Com_Printf("Failed to open '%s' for reading: %s\n", path, err.what());
-		*handle = -1;
+		Com_DPrintf("Failed to open '%s' for reading: %s\n", path, err.what());
+		*handle = 0;
 		return -1;
 	}
 	handleTable[*handle].isPakFile = false;
@@ -1872,13 +1865,13 @@ int FS_FOpenFileByMode(const char* path, fileHandle_t* handle, fsMode_t mode)
 
 	case FS_WRITE:
 		*handle = FS_FOpenFileWrite(path);
-		return *handle == -1 ? -1 : 0;
+		return *handle == 0 ? -1 : 0;
 
 	case FS_APPEND:
 	case FS_APPEND_SYNC:
 		*handle = FS_FOpenFileAppend(path);
 		handleTable[*handle].forceFlush = mode == FS_APPEND_SYNC;
-		return *handle == -1 ? -1 : 0;
+		return *handle == 0 ? -1 : 0;
 
 	default:
 		Com_Error(ERR_DROP, "FS_FOpenFileByMode: bad mode %d", mode);
@@ -2103,8 +2096,10 @@ char** FS_ListFiles(const char* directory, const char* extension, int* numFiles)
 
 void FS_FreeFileList(char** list)
 {
+	if (!list)
+		return;
 	for (char** i = list; *i; i++)
-		delete[] *i;
+		free(*i);
 	delete[] list;
 }
 
