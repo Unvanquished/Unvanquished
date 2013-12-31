@@ -1983,7 +1983,7 @@ static void CG_PlayerMD5AlienAnimation( centity_t *cent )
 	clientInfo_t  *ci;
 	int           clientNum;
 	float         speedScale;
-	refSkeleton_t blend;
+	static refSkeleton_t blend;
 
 	clientNum = cent->currentState.clientNum;
 

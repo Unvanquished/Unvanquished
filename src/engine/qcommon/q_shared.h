@@ -308,7 +308,7 @@ typedef int clipHandle_t;
 	// convenient for SSE and GLSL, which operate on 4-dimensional
 	// float vectors.
 #if idx86_sse
-	typedef union transform_u {
+	typedef ALIGNED( 16, union transform_u {
 		struct {
 			quat_t rot;
 			vec3_t trans;
@@ -318,7 +318,7 @@ typedef int clipHandle_t;
 			__m128 sseRot;
 			__m128 sseTransScale;
 		};
-	} transform_t;
+	} ) transform_t;
 #else
 	typedef struct transform_s {
 		quat_t rot;
