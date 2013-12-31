@@ -1156,23 +1156,13 @@ void VM_VmInfo_f( void )
 			break;
 		}
 
-		Com_Printf( "%s : ", vm->name );
-
 		if ( vm->dllHandle )
 		{
-			Com_Printf( "native\n" );
+			Com_Printf( "%s : native", vm->name );
 			continue;
 		}
 
-		if ( vm->compiled )
-		{
-			Com_Printf( "compiled on load\n" );
-		}
-		else
-		{
-			Com_Printf( "interpreted\n" );
-		}
-
+		Com_Printf( "%s : %s", vm->name, vm->compiled ? "compiled on load" : "interpreted" );
 		Com_Printf( "    code length : %7i\n", vm->codeLength );
 		Com_Printf( "    table length: %7i\n", vm->instructionCount * 4 );
 		Com_Printf( "    data length : %7i\n", vm->dataMask + 1 );
