@@ -235,7 +235,7 @@ namespace Cmd {
         }
     }
 
-    CompletionResult CompleteCommandNames(const std::string& prefix) {
+    CompletionResult CompleteCommandNames(Str::StringRef prefix) {
         CommandMap& commands = GetCommandMap();
 
         CompletionResult res;
@@ -334,7 +334,7 @@ namespace Cmd {
                 Print("%zu commands", matches.size());
             }
 
-            Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, const std::string& prefix) const OVERRIDE {
+            Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, Str::StringRef prefix) const OVERRIDE {
                 Q_UNUSED(args);
 
                 if (argNum == 1) {

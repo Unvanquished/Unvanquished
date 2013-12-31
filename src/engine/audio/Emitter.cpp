@@ -334,7 +334,7 @@ namespace Audio {
                 globalEffect->SetEffect(effectParams);
             }
 
-            Cmd::CompletionResult Complete(int argNum, const Cmd::Args&, const std::string& prefix) const OVERRIDE {
+            Cmd::CompletionResult Complete(int argNum, const Cmd::Args&, Str::StringRef prefix) const OVERRIDE {
                 if (argNum != 1) {
                     return {};
                 }

@@ -67,7 +67,7 @@ namespace Cvar {
             // description of the cvar. If false is returned, the cvar wil keep its old
             // value. And the description will be the description of the problem printed to
             // the user.
-            virtual OnValueChangedResult OnValueChanged(const std::string& newValue) = 0;
+            virtual OnValueChangedResult OnValueChanged(Str::StringRef newValue) = 0;
 
         protected:
             std::string name;
@@ -99,7 +99,7 @@ namespace Cvar {
             void Set(T newValue);
 
             //Called by the cvar system when the value is changed
-            virtual OnValueChangedResult OnValueChanged(const std::string& text);
+            virtual OnValueChangedResult OnValueChanged(Str::StringRef text);
 
         protected:
             // Used by classes that extend Cvar<T>
@@ -124,10 +124,10 @@ namespace Cvar {
         public:
             typedef typename Base::value_type value_type;
 
-            template<typename ... Args>
-            Callback(std::string name, std::string description, int flags, value_type, std::function<void(value_type)> callback, Args ... args);
+            template <typename ... Args>
+            Callback(std::string name, std::string description, int flags, value_type, std::function<void(value_type)> callback, Args&& ... args);
 
-            virtual OnValueChangedResult OnValueChanged(const std::string& newValue);
+            virtual OnValueChangedResult OnValueChanged(Str::StringRef newValue);
 
         private:
             std::function<void(value_type)> callback;
@@ -145,7 +145,7 @@ namespace Cvar {
             template<typename ... Args>
             Modified(std::string name, std::string description, int flags, value_type, Args ... args);
 
-            virtual OnValueChangedResult OnValueChanged(const std::string& newValue);
+            virtual OnValueChangedResult OnValueChanged(Str::StringRef newValue);
 
             //TODO change it when we have optional
             bool GetModifiedValue(value_type& value);
@@ -158,15 +158,15 @@ namespace Cvar {
     template<typename T>
     std::string GetCvarTypeName();
 
-    bool ParseCvarValue(std::string value, bool& result);
+    bool ParseCvarValue(Str::StringRef value, bool& result);
     std::string SerializeCvarValue(bool value);
     template<>
     std::string GetCvarTypeName<bool>();
-    bool ParseCvarValue(std::string value, int& result);
+    bool ParseCvarValue(Str::StringRef value, int& result);
     std::string SerializeCvarValue(int value);
     template<>
     std::string GetCvarTypeName<int>();
-    bool ParseCvarValue(std::string value, float& result);
+    bool ParseCvarValue(Str::StringRef value, float& result);
     std::string SerializeCvarValue(float value);
     template<>
     std::string GetCvarTypeName<float>();
@@ -203,7 +203,7 @@ namespace Cvar {
     }
 
     template<typename T>
-    OnValueChangedResult Cvar<T>::OnValueChanged(const std::string& text) {
+    OnValueChangedResult Cvar<T>::OnValueChanged(Str::StringRef text) {
         if (Parse(text, value)) {
             return {true, GetDescription(text, description)};
         } else {
@@ -231,13 +231,13 @@ namespace Cvar {
 
     template <typename Base>
     template <typename ... Args>
-    Callback<Base>::Callback(std::string name, std::string description, int flags, value_type defaultValue, std::function<void(value_type)> callback, Args ... args)
+    Callback<Base>::Callback(std::string name, std::string description, int flags, value_type defaultValue, std::function<void(value_type)> callback, Args&& ... args)
     : Base(std::move(name), std::move(description), flags, std::move(defaultValue), std::forward<Args>(args) ...),
     callback(callback) {
     }
 
     template <typename Base>
-    OnValueChangedResult Callback<Base>::OnValueChanged(const std::string& newValue) {
+    OnValueChangedResult Callback<Base>::OnValueChanged(Str::StringRef newValue) {
         OnValueChangedResult rec = Base::OnValueChanged(newValue);
 
         if (rec.success) {
@@ -255,7 +255,7 @@ namespace Cvar {
     }
 
     template <typename Base>
-    OnValueChangedResult Modified<Base>::OnValueChanged(const std::string& newValue) {
+    OnValueChangedResult Modified<Base>::OnValueChanged(Str::StringRef newValue) {
         OnValueChangedResult rec = Base::OnValueChanged(newValue);
 
         if (rec.success) {

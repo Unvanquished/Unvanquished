@@ -180,11 +180,6 @@ namespace Str {
             out.append(b.data(), b.size());
             return out;
         }
-        friend std::basic_string<T> operator+(std::basic_string<T>&& a, BasicStringRef b)
-        {
-            a.append(b.data(), b.size());
-            return std::move(a);
-        }
 
     private:
         const T* ptr;
@@ -192,8 +187,8 @@ namespace Str {
     };
     typedef BasicStringRef<char> StringRef;
 
-    int ToInt(Str::StringRef text);
-    bool ToInt(Str::StringRef text, int& result);
+    bool ParseInt(int& value, Str::StringRef text);
+    bool ParseHex32(uint32_t& value, Str::StringRef text);
 
     float ToFloat(Str::StringRef text);
     bool ToFloat(Str::StringRef text, float& result);
@@ -242,6 +237,7 @@ namespace Str {
             return c;
     }
 
+    std::string ToUpper(Str::StringRef text);
     std::string ToLower(Str::StringRef text);
 
     bool IsPrefix(Str::StringRef prefix, Str::StringRef text);
@@ -265,7 +261,7 @@ namespace Str {
             if (a.size() != b.size())
                 return false;
             for (size_t i = 0; i < a.size(); i++) {
-                if (tolower(a[i]) != tolower(b[i]))
+                if (ctolower(a[i]) != ctolower(b[i]))
                     return false;
             }
             return true;
@@ -280,14 +276,12 @@ namespace Str {
     std::string UTF16To8(Str::BasicStringRef<wchar_t> str);
 #endif
 
-    std::string Format(const std::string& format);
-
+    inline std::string Format(Str::StringRef format) {
+        return format;
+    }
     template<typename ... Args>
-    std::string Format(const std::string& format, const Args& ... args);
-
-    template<typename ... Args>
-    std::string Format(const std::string& format, const Args& ... args) {
-        return tinyformat::format(format.c_str(), args ...);
+    std::string Format(Str::StringRef format, Args&& ... args) {
+        return tinyformat::format(format.c_str(), std::forward<Args>(args) ...);
     }
 }
 

@@ -39,6 +39,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
 // Indicates that a function does not return
 #define NORETURN __attribute__((__noreturn__))
+#define NORETURN_PTR __attribute__((__noreturn__))
 
 // Expect printf-style arguments for a function: a is the index of the format
 // string, and b is the index of the first variable argument
@@ -69,6 +70,17 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #else
 #define OVERRIDE
 #define FINAL
+#endif
+
+// noexcept keyword, this should be used on all move constructors and move
+// assignments so that containers move objects instead of copying them.
+#define NOEXCEPT noexcept
+#define NOEXCEPT_IF(x) noexcept(x)
+#define NOEXCEPT_EXPR(x) noexcept(x)
+
+// GCC 4.6 has incomplete support for C++11
+#if __GNUC__ * 100 + __GNUC_MINOR__ <= 407
+#define GCC_BROKEN_CXX11
 #endif
 
 // Microsoft Visual C++
@@ -115,6 +127,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #define DEPRECATED __declspec(deprecated)
 #define COLD
 #define NORETURN __declspec(noreturn)
+#define NORETURN_PTR
 #define PRINTF_LIKE(n)
 #define VPRINTF_LIKE(n)
 #define PRINTF_TRANSLATE_ARG(a)
@@ -124,6 +137,9 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #define DLLIMPORT __declspec(dllimport)
 #define OVERRIDE override
 #define FINAL final
+#define NOEXCEPT
+#define NOEXCEPT_IF(x)
+#define NOEXCEPT_EXPR(x) false
 // Work around lack of C99 support
 #define __func__ __FUNCTION__
 
