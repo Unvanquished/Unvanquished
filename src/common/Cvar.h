@@ -151,7 +151,7 @@ namespace Cvar {
             bool GetModifiedValue(value_type& value);
 
         private:
-            bool modified = false;
+            bool modified;
     };
 
     // Implement Cvar<T> for T = bool, int, string
@@ -251,7 +251,7 @@ namespace Cvar {
     template <typename Base>
     template <typename ... Args>
     Modified<Base>::Modified(std::string name, std::string description, int flags, value_type defaultValue, Args ... args)
-    : Base(std::move(name), std::move(description), flags, std::move(defaultValue), std::forward<Args>(args) ...) {
+    : Base(std::move(name), std::move(description), flags, std::move(defaultValue), std::forward<Args>(args) ...), modified(false) {
     }
 
     template <typename Base>
