@@ -190,6 +190,9 @@ namespace Str {
     bool ParseInt(int& value, Str::StringRef text);
     bool ParseHex32(uint32_t& value, Str::StringRef text);
 
+    float ToFloat(Str::StringRef text);
+    bool ToFloat(Str::StringRef text, float& result);
+
     // Locale-independent versions of ctype
     inline bool cisdigit(char c)
     {

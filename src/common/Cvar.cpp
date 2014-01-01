@@ -55,14 +55,14 @@ namespace Cvar {
         return value ? "1" : "0";
     }
 
-    bool ParseCvarValue(Str::StringRef value, int& result) {
-        //TODO: this accepts "1a" as a valid int
-        return Str::ParseInt(result, value);
-    }
-
     template<>
     std::string GetCvarTypeName<bool>() {
         return "bool";
+    }
+
+    bool ParseCvarValue(Str::StringRef value, int& result) {
+        //TODO: this accepts "1a" as a valid int
+        return Str::ParseInt(result, value);
     }
 
 
@@ -70,16 +70,29 @@ namespace Cvar {
         return std::to_string(value);
     }
 
-    bool ParseCvarValue(std::string value, std::string& result) {
-		result = std::move(value);
-		return true;
-    }
-
     template<>
     std::string GetCvarTypeName<int>() {
         return "int";
     }
 
+    bool ParseCvarValue(Str::StringRef value, float& result) {
+        return Str::ToFloat(std::move(value), result);
+    }
+
+
+    std::string SerializeCvarValue(float value) {
+        return std::to_string(value);
+    }
+
+    template<>
+    std::string GetCvarTypeName<float>() {
+        return "float";
+    }
+
+    bool ParseCvarValue(std::string value, std::string& result) {
+		result = std::move(value);
+		return true;
+    }
 
     std::string SerializeCvarValue(std::string value) {
 		return std::move(value);

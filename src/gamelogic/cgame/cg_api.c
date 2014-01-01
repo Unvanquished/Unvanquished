@@ -1241,3 +1241,8 @@ void trap_R_SetAltShaderTokens( const char *str )
     syscallVM( CG_R_SETALTSHADERTOKENS, str );
 }
 
+void trap_S_UpdateEntityVelocity( int entityNum, const vec3_t velocity )
+{
+	syscallVM( CG_S_UPDATEENTITYVELOCITY, entityNum, velocity );
+}
+
