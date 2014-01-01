@@ -26,6 +26,192 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "cg_local.h"
 
+/*
+==============
+CG_DrawFieldPadded
+
+Draws large numbers for status bar
+==============
+*/
+static void CG_DrawFieldPadded( int x, int y, int width, int cw, int ch, int value )
+{
+	char num[ 16 ], *ptr;
+	int  l, orgL;
+	int  frame;
+	int  charWidth, charHeight;
+
+	if ( !( charWidth = cw ) )
+	{
+		charWidth = CHAR_WIDTH;
+	}
+
+	if ( !( charHeight = ch ) )
+	{
+		charHeight = CHAR_HEIGHT;
+	}
+
+	if ( width < 1 )
+	{
+		return;
+	}
+
+	// draw number string
+	if ( width > 4 )
+	{
+		width = 4;
+	}
+
+	switch ( width )
+	{
+		case 1:
+			value = value > 9 ? 9 : value;
+			value = value < 0 ? 0 : value;
+			break;
+
+		case 2:
+			value = value > 99 ? 99 : value;
+			value = value < -9 ? -9 : value;
+			break;
+
+		case 3:
+			value = value > 999 ? 999 : value;
+			value = value < -99 ? -99 : value;
+			break;
+
+		case 4:
+			value = value > 9999 ? 9999 : value;
+			value = value < -999 ? -999 : value;
+			break;
+	}
+
+	Com_sprintf( num, sizeof( num ), "%d", value );
+	l = strlen( num );
+
+	if ( l > width )
+	{
+		l = width;
+	}
+
+	orgL = l;
+
+	x += ( 2.0f * cgs.aspectScale );
+
+	ptr = num;
+
+	while ( *ptr && l )
+	{
+		if ( width > orgL )
+		{
+			CG_DrawPic( x, y, charWidth, charHeight, cgs.media.numberShaders[ 0 ] );
+			width--;
+			x += charWidth;
+			continue;
+		}
+
+		if ( *ptr == '-' )
+		{
+			frame = STAT_MINUS;
+		}
+		else
+		{
+			frame = *ptr - '0';
+		}
+
+		CG_DrawPic( x, y, charWidth, charHeight, cgs.media.numberShaders[ frame ] );
+		x += charWidth;
+		ptr++;
+		l--;
+	}
+}
+
+/*
+==============
+CG_DrawField
+
+Draws large numbers for status bar
+==============
+*/
+void CG_DrawField( float x, float y, int width, float cw, float ch, int value )
+{
+	char  num[ 16 ], *ptr;
+	int   l;
+	int   frame;
+	float charWidth, charHeight;
+
+	if ( !( charWidth = cw ) )
+	{
+		charWidth = CHAR_WIDTH;
+	}
+
+	if ( !( charHeight = ch ) )
+	{
+		charHeight = CHAR_HEIGHT;
+	}
+
+	if ( width < 1 )
+	{
+		return;
+	}
+
+	// draw number string
+	if ( width > 4 )
+	{
+		width = 4;
+	}
+
+	switch ( width )
+	{
+		case 1:
+			value = value > 9 ? 9 : value;
+			value = value < 0 ? 0 : value;
+			break;
+
+		case 2:
+			value = value > 99 ? 99 : value;
+			value = value < -9 ? -9 : value;
+			break;
+
+		case 3:
+			value = value > 999 ? 999 : value;
+			value = value < -99 ? -99 : value;
+			break;
+
+		case 4:
+			value = value > 9999 ? 9999 : value;
+			value = value < -999 ? -999 : value;
+			break;
+	}
+
+	Com_sprintf( num, sizeof( num ), "%d", value );
+	l = strlen( num );
+
+	if ( l > width )
+	{
+		l = width;
+	}
+
+	x += ( 2.0f * cgs.aspectScale ) + charWidth * ( width - l );
+
+	ptr = num;
+
+	while ( *ptr && l )
+	{
+		if ( *ptr == '-' )
+		{
+			frame = STAT_MINUS;
+		}
+		else
+		{
+			frame = *ptr - '0';
+		}
+
+		CG_DrawPic( x, y, charWidth, charHeight, cgs.media.numberShaders[ frame ] );
+		x += charWidth;
+		ptr++;
+		l--;
+	}
+}
+
 void CG_MouseEvent( int x, int y )
 {
 	int n;

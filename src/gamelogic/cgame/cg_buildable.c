@@ -2076,6 +2076,8 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 			{
 				nX -= subH * 1.5f;
 			}
+
+			CG_DrawField( nX, subY, 4, subH, subH, healthPoints );
 		}
 
 		/*
