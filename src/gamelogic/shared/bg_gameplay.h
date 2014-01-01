@@ -160,6 +160,8 @@ extern int   LEVEL4_CRUSH_REPEAT;
 #define HIVE_SPEED              320.0f
 #define HIVE_DIR_CHANGE_PERIOD  500
 
+#define LOCKBLOB_REPEAT         1000
+#define LOCKBLOB_RANGE          400.0f
 #define LOCKBLOB_SPEED          500.0f
 #define LOCKBLOB_LOCKTIME       5000
 #define LOCKBLOB_DOT            0.85f // max angle = acos( LOCKBLOB_DOT )

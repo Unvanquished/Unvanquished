@@ -959,8 +959,8 @@ A generic think function for Alien buildables
 */
 void AGeneric_Think( gentity_t *self )
 {
+	// set power state
 	self->powered = ( G_Overmind() != NULL );
-	self->nextthink = level.time + BG_Buildable( self->s.modelindex )->nextthink;
 
 	// check if still on creep
 	AGeneric_CreepCheck( self );
@@ -1003,51 +1003,54 @@ void ASpawn_Think( gentity_t *self )
 {
 	gentity_t *ent;
 
+	self->nextthink = level.time + 100;
+
 	AGeneric_Think( self );
 
-	if ( self->spawned )
+	if ( !self->spawned )
 	{
-		//only suicide if at rest
-		if ( self->s.groundEntityNum != ENTITYNUM_NONE )
+		return;
+	}
+
+	if ( self->s.groundEntityNum != ENTITYNUM_NONE )
+	{
+		if ( ( ent = G_CheckSpawnPoint( self->s.number, self->s.origin,
+										self->s.origin2, BA_A_SPAWN, NULL ) ) != NULL )
 		{
-			if ( ( ent = G_CheckSpawnPoint( self->s.number, self->s.origin,
-			                                self->s.origin2, BA_A_SPAWN, NULL ) ) != NULL )
+			// If the thing blocking the spawn is a buildable, kill it.
+			// If it's part of the map, kill self.
+			if ( ent->s.eType == ET_BUILDABLE )
 			{
-				// If the thing blocking the spawn is a buildable, kill it.
-				// If it's part of the map, kill self.
-				if ( ent->s.eType == ET_BUILDABLE )
+				if ( ent->builtBy && ent->builtBy->slot >= 0 ) // don't queue the bp from this
 				{
-					if ( ent->builtBy && ent->builtBy->slot >= 0 ) // don't queue the bp from this
-					{
-						G_Damage( ent, NULL, g_entities + ent->builtBy->slot, NULL, NULL, 10000, 0, MOD_SUICIDE );
-					}
-					else
-					{
-						G_Damage( ent, NULL, NULL, NULL, NULL, 10000, 0, MOD_SUICIDE );
-					}
-
-					G_SetBuildableAnim( self, BANIM_SPAWN1, qtrue );
+					G_Damage( ent, NULL, g_entities + ent->builtBy->slot, NULL, NULL, 10000, 0, MOD_SUICIDE );
 				}
-				else if ( ent->s.number == ENTITYNUM_WORLD || ent->s.eType == ET_MOVER )
+				else
 				{
-					G_Damage( self, NULL, NULL, NULL, NULL, 10000, 0, MOD_SUICIDE );
-					return;
-				}
-				else if( g_antiSpawnBlock.integer &&
-				         ent->client && ent->client->pers.team == TEAM_ALIENS )
-				{
-					PuntBlocker( self, ent );
+					G_Damage( ent, NULL, NULL, NULL, NULL, 10000, 0, MOD_SUICIDE );
 				}
 
-				if ( ent->s.eType == ET_CORPSE )
-				{
-					G_FreeEntity( ent );  //quietly remove
-				}
+				G_SetBuildableAnim( self, BANIM_SPAWN1, qtrue );
 			}
-			else
+			else if ( ent->s.number == ENTITYNUM_WORLD || ent->s.eType == ET_MOVER )
 			{
-				self->spawnBlockTime = 0;
+				G_Damage( self, NULL, NULL, NULL, NULL, 10000, 0, MOD_SUICIDE );
+				return;
 			}
+			else if( g_antiSpawnBlock.integer &&
+					 ent->client && ent->client->pers.team == TEAM_ALIENS )
+			{
+				PuntBlocker( self, ent );
+			}
+
+			if ( ent->s.eType == ET_CORPSE )
+			{
+				G_FreeEntity( ent );  //quietly remove
+			}
+		}
+		else
+		{
+			self->spawnBlockTime = 0;
 		}
 	}
 }
@@ -1064,7 +1067,9 @@ Think function for Alien Overmind
 */
 void AOvermind_Think( gentity_t *self )
 {
-	int    i;
+	int clientNum;
+
+	self->nextthink = level.time + 1000;
 
 	AGeneric_Think( self );
 
@@ -1100,9 +1105,9 @@ void AOvermind_Think( gentity_t *self )
 			self->overmindSpawnsTimer = level.time + OVERMIND_SPAWNS_PERIOD;
 			G_BroadcastEvent( EV_OVERMIND_SPAWNS, 0, TEAM_ALIENS );
 
-			for ( i = 0; i < level.numConnectedClients; i++ )
+			for ( clientNum = 0; clientNum < level.numConnectedClients; clientNum++ )
 			{
-				builder = &g_entities[ level.sortedClients[ i ] ];
+				builder = &g_entities[ level.sortedClients[ clientNum ] ];
 
 				if ( builder->health > 0 &&
 				     ( builder->client->pers.classSelection == PCL_ALIEN_BUILDER0 ||
@@ -1277,6 +1282,8 @@ Think function for Alien Barricade
 */
 void ABarricade_Think( gentity_t *self )
 {
+	self->nextthink = level.time + 1000;
+
 	AGeneric_Think( self );
 
 	// Shrink if unpowered
@@ -1329,9 +1336,12 @@ void AAcidTube_Think( gentity_t *self )
 {
 	gentity_t *ent;
 
+	// TODO: Make damage independent of think timer
+	self->nextthink = level.time + ACIDTUBE_REPEAT;
+
 	AGeneric_Think( self );
 
-	if ( !self->spawned || self->health <= 0 )
+	if ( !self->spawned || !self->powered || self->health <= 0 )
 	{
 		return;
 	}
@@ -1359,11 +1369,8 @@ void AAcidTube_Think( gentity_t *self )
 			G_AddEvent( self, EV_ALIEN_ACIDTUBE, DirToByte( self->s.origin2 ) );
 		}
 
-		// TODO: Make this independent of think timer
 		G_SelectiveRadiusDamage( self->s.pos.trBase, self, ACIDTUBE_DAMAGE,
 								 ACIDTUBE_RANGE, self, MOD_ATUBE, TEAM_ALIENS );
-
-		self->nextthink = level.time + ACIDTUBE_REPEAT;
 
 		return;
 	}
@@ -1373,6 +1380,8 @@ void ALeech_Think( gentity_t *self )
 {
 	qboolean active, lastThinkActive;
 	float    resources;
+
+	self->nextthink = level.time + 1000;
 
 	AGeneric_Think( self );
 
@@ -1560,15 +1569,17 @@ static void AHive_Fire( gentity_t *self )
 	vectoangles( dirToTarget, self->buildableAim );
 
 	// fire
-	G_FireWeapon( self );
+	G_FireWeapon( self, WP_HIVE, WPM_PRIMARY );
 	G_SetBuildableAnim( self, BANIM_ATTACK1, qfalse );
 }
 
 void AHive_Think( gentity_t *self )
 {
+	self->nextthink = level.time + 500;
+
 	AGeneric_Think( self );
 
-	if ( !self->spawned || self->health <= 0 )
+	if ( !self->spawned || !self->powered || self->health <= 0 )
 	{
 		return;
 	}
@@ -1608,13 +1619,13 @@ void AHive_Pain( gentity_t *self, gentity_t *attacker, int damage )
 	}
 }
 
-/*
-================
-ABooster_Touch
+void ABooster_Think( gentity_t *self )
+{
+	self->nextthink = level.time + 1000;
 
-Called when an alien touches a booster
-================
-*/
+	AGeneric_Think( self );
+}
+
 void ABooster_Touch( gentity_t *self, gentity_t *other, trace_t *trace )
 {
 	gclient_t *client = other->client;
@@ -1664,7 +1675,7 @@ void ATrapper_FireOnEnemy( gentity_t *self, int firespeed, float range )
 	gentity_t *target = self->target;
 	vec3_t    dirToTarget;
 	vec3_t    halfAcceleration, thirdJerk;
-	float     distanceToTarget = BG_Buildable( self->s.modelindex )->turretRange;
+	float     distanceToTarget = LOCKBLOB_RANGE;
 	int       lowMsec = 0;
 	int       highMsec = ( int )( (
 	                                ( ( distanceToTarget * LOCKBLOB_SPEED ) +
@@ -1706,7 +1717,7 @@ void ATrapper_FireOnEnemy( gentity_t *self, int firespeed, float range )
 	vectoangles( dirToTarget, self->buildableAim );
 
 	//fire at target
-	G_FireWeapon( self );
+	G_FireWeapon( self, WP_LOCKBLOB_LAUNCHER, WPM_PRIMARY );
 	G_SetBuildableAnim( self, BANIM_ATTACK1, qfalse );
 	self->customNumber = level.time + firespeed;
 }
@@ -1837,30 +1848,31 @@ think function for Alien Defense
 */
 void ATrapper_Think( gentity_t *self )
 {
-	int range = BG_Buildable( self->s.modelindex )->turretRange;
-	int firespeed = BG_Buildable( self->s.modelindex )->turretFireSpeed;
+	self->nextthink = level.time + 100;
 
 	AGeneric_Think( self );
 
-	if ( self->spawned && self->powered )
+	if ( !self->spawned || !self->powered || self->health <= 0 )
 	{
-		//if the current target is not valid find a new one
-		if ( !ATrapper_CheckTarget( self, self->target, range ) )
-		{
-			ATrapper_FindEnemy( self, range );
-		}
+		return;
+	}
 
-		//if a new target cannot be found don't do anything
-		if ( !self->target )
-		{
-			return;
-		}
+	//if the current target is not valid find a new one
+	if ( !ATrapper_CheckTarget( self, self->target, LOCKBLOB_RANGE ) )
+	{
+		ATrapper_FindEnemy( self, LOCKBLOB_RANGE );
+	}
 
-		//if we are pointing at our target and we can fire shoot it
-		if ( self->customNumber < level.time )
-		{
-			ATrapper_FireOnEnemy( self, firespeed, range );
-		}
+	//if a new target cannot be found don't do anything
+	if ( !self->target )
+	{
+		return;
+	}
+
+	//if we are pointing at our target and we can fire shoot it
+	if ( self->customNumber < level.time )
+	{
+		ATrapper_FireOnEnemy( self, LOCKBLOB_REPEAT, LOCKBLOB_RANGE );
 	}
 }
 
@@ -2290,11 +2302,6 @@ void G_SetHumanBuildablePowerState()
 	nextCalculation = level.time + 500;
 }
 
-void HGeneric_Think( gentity_t *self )
-{
-	self->nextthink = level.time + BG_Buildable( self->s.modelindex )->nextthink;
-}
-
 /*
 ================
 HGeneric_Blast
@@ -2410,7 +2417,7 @@ void HSpawn_Think( gentity_t *self )
 {
 	gentity_t *ent;
 
-	HGeneric_Think( self );
+	self->nextthink = level.time + 100;
 
 	if ( self->spawned )
 	{
@@ -2453,7 +2460,7 @@ void HSpawn_Think( gentity_t *self )
 
 void HRepeater_Think( gentity_t *self )
 {
-	HGeneric_Think( self );
+	self->nextthink = level.time + 1000;
 
 	IdlePowerState( self );
 }
@@ -2532,7 +2539,7 @@ void HArmoury_Use( gentity_t *self, gentity_t *other, gentity_t *activator )
 
 void HArmoury_Think( gentity_t *self )
 {
-	HGeneric_Think( self );
+	self->nextthink = level.time + 1000;
 }
 
 void HMedistat_Die( gentity_t *self, gentity_t *inflictor,
@@ -2556,7 +2563,7 @@ void HMedistat_Think( gentity_t *self )
 	gclient_t *client;
 	qboolean  occupied;
 
-	HGeneric_Think( self );
+	self->nextthink = level.time + 100;
 
 	if ( !self->spawned )
 	{
@@ -3091,7 +3098,7 @@ static void HTurret_Shoot( gentity_t *self )
 	self->s.eFlags |= EF_FIRING; // TODO: Fix this hack, it doesn't even work locally
 	G_AddEvent( self, EV_FIRE_WEAPON, 0 );
 	G_SetBuildableAnim( self, BANIM_ATTACK1, qfalse );
-	G_FireWeapon( self );
+	G_FireWeapon( self, WP_MGTURRET, WPM_PRIMARY );
 }
 
 void HTurret_Think( gentity_t *self )
@@ -3183,7 +3190,7 @@ void HTeslaGen_Think( gentity_t *self )
 {
 	gentity_t *ent;
 
-	HGeneric_Think( self );
+	self->nextthink = level.time + 150;
 
 	IdlePowerState( self );
 
@@ -3223,7 +3230,7 @@ void HTeslaGen_Think( gentity_t *self )
 			}
 
 			self->target = ent;
-			G_FireWeapon( self );
+			G_FireWeapon( self, WP_TESLAGEN, WPM_PRIMARY );
 			self->target = NULL;
 		}
 
@@ -3242,7 +3249,7 @@ void HDrill_Think( gentity_t *self )
 	qboolean active, lastThinkActive;
 	float    resources;
 
-	HGeneric_Think( self );
+	self->nextthink = level.time + 1000;
 
 	active = self->spawned & self->powered;
 	lastThinkActive = self->s.weapon > 0;
@@ -4423,6 +4430,7 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 	char       readable[ MAX_STRING_CHARS ];
 	char       buildnums[ MAX_STRING_CHARS ];
 	buildLog_t *log;
+	const buildableAttributes_t *attr = BG_Buildable( buildable );
 
 	if ( builder->client )
 	{
@@ -4441,20 +4449,19 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 	// Spawn the buildable
 	built->s.eType = ET_BUILDABLE;
 	built->killedBy = ENTITYNUM_NONE;
-	built->classname = BG_Buildable( buildable )->entityName;
+	built->classname = attr->entityName;
 	built->s.modelindex = buildable;
-	built->s.modelindex2 = BG_Buildable( buildable )->team;
+	built->s.modelindex2 = attr->team;
 	built->buildableTeam = (team_t) built->s.modelindex2;
 	BG_BuildableBoundingBox( buildable, built->r.mins, built->r.maxs );
 
 	built->health = 1;
 
-	built->splashDamage = BG_Buildable( buildable )->splashDamage;
-	built->splashRadius = BG_Buildable( buildable )->splashRadius;
-	built->splashMethodOfDeath = BG_Buildable( buildable )->meansOfDeath;
+	built->splashDamage = attr->splashDamage;
+	built->splashRadius = attr->splashRadius;
+	built->splashMethodOfDeath = attr->meansOfDeath;
 
-	built->nextthink = BG_Buildable( buildable )->nextthink;
-
+	built->nextthink = level.time;
 	built->takedamage = qtrue;
 	built->enabled = qfalse;
 	built->spawned = qfalse;
@@ -4462,8 +4469,8 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 	// build instantly in cheat mode
 	if ( builder->client && g_cheats.integer )
 	{
-		built->health = BG_Buildable( buildable )->health;
-		built->creationTime -= BG_Buildable( buildable )->buildTime;
+		built->health = attr->health;
+		built->creationTime -= attr->buildTime;
 	}
 	built->s.time = built->creationTime;
 
@@ -4487,7 +4494,7 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 
 		case BA_A_BOOSTER:
 			built->die = AGeneric_Die;
-			built->think = AGeneric_Think;
+			built->think = ABooster_Think;
 			built->pain = AGeneric_Pain;
 			built->touch = ABooster_Touch;
 			break;
@@ -4607,9 +4614,9 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 	}
 
 	built->r.contents = CONTENTS_BODY;
-	built->clipmask = MASK_PLAYERSOLID;
-	built->target = NULL;
-	built->s.weapon = BG_Buildable( buildable )->turretProjType;
+	built->clipmask   = MASK_PLAYERSOLID;
+	built->target     = NULL;
+	built->s.weapon   = attr->weapon;
 
 	if ( builder->client )
 	{
@@ -4633,12 +4640,12 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 	built->s.angles[ PITCH ] = 0.0f;
 	built->s.angles2[ YAW ] = angles[ YAW ];
 	built->s.angles2[ PITCH ] = TURRET_PITCH_CAP;
-	built->physicsBounce = BG_Buildable( buildable )->bounce;
+	built->physicsBounce = attr->bounce;
 
 	built->s.groundEntityNum = groundEntNum;
 	if ( groundEntNum == ENTITYNUM_NONE )
 	{
-		built->s.pos.trType = BG_Buildable( buildable )->traj;
+		built->s.pos.trType = attr->traj;
 		built->s.pos.trTime = level.time;
 		// gently nudge the buildable onto the surface :)
 		VectorScale( normal, -50.0f, built->s.pos.trDelta );
@@ -4655,7 +4662,7 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 
 	G_AddEvent( built, EV_BUILD_CONSTRUCT, 0 );
 
-	G_SetIdleBuildableAnim( built, (buildableAnimNumber_t) BG_Buildable( buildable )->idleAnim );
+	G_SetIdleBuildableAnim( built, ( buildableAnimNumber_t )attr->idleAnim );
 
 	if ( built->builtBy )
 	{
