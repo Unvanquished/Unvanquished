@@ -2454,6 +2454,15 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 		case CG_ROCKET_CLEARHUD:
 			Rocket_ClearHud( args[1] );
 			return 0;
+
+		case CG_ROCKET_ADDTEXT:
+			Rocket_AddTextElement( ( const char * ) VMA(1), ( const char *) VMA(2), VMF(3), VMF(4) );
+			return 0;
+
+		case CG_ROCKET_CLEARTEXT:
+			Rocket_ClearText();
+			return 0;
+			
 		case CG_PREPAREKEYUP:
 			IN_PrepareKeyUp();
 			return 0;

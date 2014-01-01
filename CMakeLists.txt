@@ -629,6 +629,7 @@ set( CLIENTLIST
 
 set( ROCKET_CLIENTLIST
   ${MOUNT_DIR}/engine/client/rocket_dataformatter.cpp
+  ${MOUNT_DIR}/engine/client/rocket_textelements.cpp
   ${MOUNT_DIR}/engine/client/rocket_documents.cpp
   ${MOUNT_DIR}/engine/client/rocket_datagrid.cpp
   ${MOUNT_DIR}/engine/client/rocket_element.cpp

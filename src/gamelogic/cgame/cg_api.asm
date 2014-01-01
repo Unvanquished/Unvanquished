@@ -240,3 +240,5 @@ equ trap_Rocket_LoadUnit                  -476
 equ trap_Rocket_AddUnitToHud              -477
 equ trap_Rocket_ShowHud                   -478
 equ trap_Rocket_ClearHud                  -479
+equ trap_Rocket_AddTextElement            -480
+equ trap_Rocket_ClearText                 -481

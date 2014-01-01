@@ -2076,8 +2076,6 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 			{
 				nX -= subH * 1.5f;
 			}
-
-			//TODO: Draw the field
 		}
 
 		/*

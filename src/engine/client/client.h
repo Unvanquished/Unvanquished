@@ -967,5 +967,6 @@ keyNum_t Rocket_ToQuake( int key );
 void Rocket_ProcessKeyInput( int key, qboolean down );
 void Rocket_ProcessTextInput( int key );
 void Rocket_MouseMove( int x, int y );
-
+void Rocket_AddTextElement( const char *text, const char *_class, float x, float y );
+void Rocket_ClearText( void );
 #endif

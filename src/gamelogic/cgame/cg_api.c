@@ -1335,6 +1335,16 @@ void trap_R_GetShaderNameFromHandle( const qhandle_t shader, char *out, int len 
 	syscallVM( CG_R_GETSHADERNAMEFROMHANDLE, shader, out, len );
 }
 
+void trap_PrepareKeyUp( void )
+{
+	syscallVM( CG_PREPAREKEYUP );
+}
+
+void trap_R_SetAltShaderTokens( const char *str )
+{
+	syscallVM( CG_R_SETALTSHADERTOKENS, str );
+}
+
 void trap_Rocket_Init( void )
 {
 	syscallVM( CG_ROCKET_INIT );
@@ -1498,13 +1508,13 @@ void trap_Rocket_ClearHud( int weapon )
 	syscallVM( CG_ROCKET_CLEARHUD, weapon );
 }
 
-void trap_PrepareKeyUp( void )
+void trap_Rocket_AddTextElement( const char *text, const char *Class, float x, float y )
 {
-    syscallVM( CG_PREPAREKEYUP );
+	syscallVM( CG_ROCKET_ADDTEXT, text, Class, PASSFLOAT( x ), PASSFLOAT( y ) );
 }
 
-void trap_R_SetAltShaderTokens( const char *str )
+void trap_Rocket_ClearText( void )
 {
-    syscallVM( CG_R_SETALTSHADERTOKENS, str );
+	syscallVM( CG_ROCKET_CLEARTEXT );
 }
 
