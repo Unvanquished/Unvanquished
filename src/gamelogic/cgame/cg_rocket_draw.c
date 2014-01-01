@@ -278,7 +278,7 @@ static void CG_Rocket_DrawCrosshairIndicator( void )
 
 	// set size
 	w = h = wi->crossHairSize * cg_crosshairSize.value;
-// 	w *= cgDC.aspectScale;
+	w *= cgs.aspectScale;
 
 	// HACK: This ignores the width/height of the rect (does it?)
 	x = rect.x + ( rect.w / 2 ) - ( w / 2 );
@@ -330,7 +330,7 @@ static void CG_Rocket_DrawCrosshair( void )
 	wi = &cg_weapons[ weapon ];
 
 	w = h = wi->crossHairSize * cg_crosshairSize.value;
-// 	w *= cgDC.aspectScale;
+	w *= cgs.aspectScale;
 
 	//FIXME: this still ignores the width/height of the rect, but at least it's
 	//neater than cg_crosshairX/cg_crosshairY
@@ -2057,7 +2057,7 @@ static void CG_Rocket_DrawPlayerUnlockedItems( void )
 	vertical = ( h > w );
 
 	ih = vertical ? w : h;
-	iw = ih; //* cgDC.aspectScale;
+	iw = ih * cgs.aspectScale;
 
 	x = rect.x + borderSize;
 	y = rect.y + borderSize + ( h - ih ) * vertical;
