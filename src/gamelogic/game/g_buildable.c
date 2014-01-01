@@ -4430,6 +4430,7 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 	char       readable[ MAX_STRING_CHARS ];
 	char       buildnums[ MAX_STRING_CHARS ];
 	buildLog_t *log;
+	const buildableAttributes_t *attr = BG_Buildable( buildable );
 
 	if ( builder->client )
 	{
@@ -4448,17 +4449,17 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 	// Spawn the buildable
 	built->s.eType = ET_BUILDABLE;
 	built->killedBy = ENTITYNUM_NONE;
-	built->classname = BG_Buildable( buildable )->entityName;
+	built->classname = attr->entityName;
 	built->s.modelindex = buildable;
-	built->s.modelindex2 = BG_Buildable( buildable )->team;
+	built->s.modelindex2 = attr->team;
 	built->buildableTeam = (team_t) built->s.modelindex2;
 	BG_BuildableBoundingBox( buildable, built->r.mins, built->r.maxs );
 
 	built->health = 1;
 
-	built->splashDamage = BG_Buildable( buildable )->splashDamage;
-	built->splashRadius = BG_Buildable( buildable )->splashRadius;
-	built->splashMethodOfDeath = BG_Buildable( buildable )->meansOfDeath;
+	built->splashDamage = attr->splashDamage;
+	built->splashRadius = attr->splashRadius;
+	built->splashMethodOfDeath = attr->meansOfDeath;
 
 	built->nextthink = level.time;
 	built->takedamage = qtrue;
@@ -4468,8 +4469,8 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 	// build instantly in cheat mode
 	if ( builder->client && g_cheats.integer )
 	{
-		built->health = BG_Buildable( buildable )->health;
-		built->creationTime -= BG_Buildable( buildable )->buildTime;
+		built->health = attr->health;
+		built->creationTime -= attr->buildTime;
 	}
 	built->s.time = built->creationTime;
 
@@ -4613,8 +4614,9 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 	}
 
 	built->r.contents = CONTENTS_BODY;
-	built->clipmask = MASK_PLAYERSOLID;
-	built->target = NULL;
+	built->clipmask   = MASK_PLAYERSOLID;
+	built->target     = NULL;
+	built->s.weapon   = attr->weapon;
 
 	if ( builder->client )
 	{
@@ -4638,12 +4640,12 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 	built->s.angles[ PITCH ] = 0.0f;
 	built->s.angles2[ YAW ] = angles[ YAW ];
 	built->s.angles2[ PITCH ] = TURRET_PITCH_CAP;
-	built->physicsBounce = BG_Buildable( buildable )->bounce;
+	built->physicsBounce = attr->bounce;
 
 	built->s.groundEntityNum = groundEntNum;
 	if ( groundEntNum == ENTITYNUM_NONE )
 	{
-		built->s.pos.trType = BG_Buildable( buildable )->traj;
+		built->s.pos.trType = attr->traj;
 		built->s.pos.trTime = level.time;
 		// gently nudge the buildable onto the surface :)
 		VectorScale( normal, -50.0f, built->s.pos.trDelta );
@@ -4660,7 +4662,7 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 
 	G_AddEvent( built, EV_BUILD_CONSTRUCT, 0 );
 
-	G_SetIdleBuildableAnim( built, (buildableAnimNumber_t) BG_Buildable( buildable )->idleAnim );
+	G_SetIdleBuildableAnim( built, ( buildableAnimNumber_t )attr->idleAnim );
 
 	if ( built->builtBy )
 	{

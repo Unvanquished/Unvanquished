@@ -1124,6 +1124,7 @@ typedef struct
 	int         splashDamage;
 	int         splashRadius;
 
+	weapon_t    weapon; // used to look up weaponInfo_t for clientside effects
 	int         meansOfDeath;
 
 	team_t      team;
@@ -1317,6 +1318,7 @@ qboolean                    BG_ClassHasAbility( int pClass, int ability );
 int                         BG_ClassCanEvolveFromTo(int from, int to, int credits);
 qboolean                    BG_AlienCanEvolve(int from, int credits);
 
+weapon_t                  BG_WeaponNumberByName( const char *name );
 const weaponAttributes_t  *BG_WeaponByName( const char *name );
 const weaponAttributes_t  *BG_Weapon( int weapon );
 

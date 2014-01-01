@@ -595,24 +595,33 @@ static weaponAttributes_t bg_weapons[ ARRAY_LEN( bg_weaponsData ) ];
 
 static const weaponAttributes_t nullWeapon = { (weapon_t) 0, 0 };
 
-/*
-==============
-BG_WeaponByName
-==============
-*/
-const weaponAttributes_t *BG_WeaponByName( const char *name )
+weapon_t BG_WeaponNumberByName( const char *name )
 {
 	int i;
 
 	for ( i = 0; i < bg_numWeapons; i++ )
 	{
-		if ( !Q_stricmp( bg_weapons[ i ].name, name ) )
+		if ( !Q_stricmp( bg_weaponsData[ i ].name, name ) )
 		{
-			return &bg_weapons[ i ];
+			return bg_weaponsData[ i ].number;
 		}
 	}
 
-	return &nullWeapon;
+	return ( weapon_t )0;
+}
+
+const weaponAttributes_t *BG_WeaponByName( const char *name )
+{
+	weapon_t weapon = BG_WeaponNumberByName( name );
+
+	if ( weapon )
+	{
+		return &bg_weapons[ weapon ];
+	}
+	else
+	{
+		return &nullWeapon;
+	}
 }
 
 /*
@@ -2246,7 +2255,7 @@ void BG_ParseCSVEquipmentList( const char *string, weapon_t *weapons, int weapon
 
 		if ( weaponsSize )
 		{
-			weapons[ i ] = BG_WeaponByName( q )->number;
+			weapons[ i ] = BG_WeaponNumberByName( q );
 		}
 
 		if ( upgradesSize )

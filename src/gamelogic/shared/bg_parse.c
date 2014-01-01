@@ -739,6 +739,17 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
 
 			ba->splashRadius = atoi(token);
 		}
+		else if ( !Q_stricmp( token, "weapon" ) )
+		{
+			PARSE(text, token);
+
+			ba->weapon = BG_WeaponNumberByName( token );
+
+			if ( !ba->weapon )
+			{
+				Com_Printf( S_ERROR "unknown weapon name '%s'\n", token );
+			}
+		}
 		else if ( !Q_stricmp( token, "meansOfDeath" ) )
 		{
 			PARSE(text, token);
