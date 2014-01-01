@@ -33,6 +33,23 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "g_local.h"
 #include "../../engine/qcommon/q_unicode.h"
 
+static void G_admin_notIntermission( gentity_t *ent )
+{
+	char command[ MAX_ADMIN_CMD_LEN ];
+	*command = 0;
+	trap_Argv( 0, command, sizeof( command ) );
+	ADMP( va( "%s %s", QQ( N_("^3$1$: ^7this command is not valid during intermission\n") ), command ) );
+}
+
+#define RETURN_IF_INTERMISSION \
+	do { \
+		if ( level.intermissiontime ) \
+		{ \
+			G_admin_notIntermission( ent ); \
+			return qfalse; \
+		} \
+	} while ( 0 )
+
 // big ugly global buffer for use with buffered printing of long outputs
 static char       g_bfb[ 32000 ];
 
@@ -2950,6 +2967,8 @@ qboolean G_admin_putteam( gentity_t *ent )
 	gentity_t *vic;
 	team_t    teamnum = TEAM_NONE;
 
+	RETURN_IF_INTERMISSION;
+
 	trap_Argv( 1, name, sizeof( name ) );
 	trap_Argv( 2, team, sizeof( team ) );
 
@@ -3006,6 +3025,8 @@ qboolean G_admin_speclock( gentity_t *ent )
 
 	gentity_t      *vic;
 	g_admin_spec_t *spec;
+
+	RETURN_IF_INTERMISSION;
 
 	if ( trap_Argc() < 3 )
 	{
@@ -3091,6 +3112,8 @@ qboolean G_admin_specunlock( gentity_t *ent )
 	char           name[ MAX_NAME_LENGTH ], err[ MAX_STRING_CHARS ];
 	gentity_t      *vic;
 	g_admin_spec_t *spec;
+
+	RETURN_IF_INTERMISSION;
 
 	if ( trap_Argc() < 2 )
 	{
@@ -3314,6 +3337,8 @@ qboolean G_admin_denybuild( gentity_t *ent )
 	char      name[ MAX_NAME_LENGTH ];
 	char      command[ MAX_ADMIN_CMD_LEN ];
 	namelog_t *vic;
+
+	RETURN_IF_INTERMISSION;
 
 	trap_Argv( 0, command, sizeof( command ) );
 
@@ -4105,6 +4130,8 @@ qboolean G_admin_spec999( gentity_t *ent )
 	int       i;
 	gentity_t *vic;
 
+	RETURN_IF_INTERMISSION;
+
 	for ( i = 0; i < level.maxclients; i++ )
 	{
 		vic = &g_entities[ i ];
@@ -4328,6 +4355,8 @@ qboolean G_admin_restart( gentity_t *ent )
 
 qboolean G_admin_nextmap( gentity_t *ent )
 {
+	RETURN_IF_INTERMISSION;
+
 	AP( va( "print_tr %s %s", QQ( N_("^3nextmap: ^7$1$^7 decided to load the next map\n") ),
 	        G_quoted_admin_name( ent ) ) );
 	level.lastWin = TEAM_NONE;
@@ -4561,6 +4590,8 @@ qboolean G_admin_lock( gentity_t *ent )
 	char     teamName[ sizeof( "aliens" ) ];
 	team_t   team;
 	qboolean lock, fail = qfalse;
+
+	RETURN_IF_INTERMISSION;
 
 	trap_Argv( 0, command, sizeof( command ) );
 
@@ -4960,6 +4991,8 @@ qboolean G_admin_builder( gentity_t *ent )
 	int        i = 0;
 	qboolean   buildlog;
 
+	RETURN_IF_INTERMISSION;
+
 	if ( !ent )
 	{
 		ADMP( QQ( N_("^3builder: ^7console can't aim.\n") ) );
@@ -5266,6 +5299,8 @@ qboolean G_admin_revert( gentity_t *ent )
 	int        id;
 	buildLog_t *log;
 
+	RETURN_IF_INTERMISSION;
+
 	if ( trap_Argc() != 2 )
 	{
 		ADMP( QQ( N_("^3revert: ^7usage: revert [id]\n") ) );
@@ -5437,6 +5472,8 @@ qboolean G_admin_timelimit( gentity_t *ent )
 {
 	char tstr[ 12 ];
 	int  timelimit;
+
+	RETURN_IF_INTERMISSION;
 
 	switch ( trap_Argc() )
 	{
@@ -5615,6 +5652,7 @@ qboolean G_admin_bot( gentity_t *ent )
 	char behavior[MAX_QPATH];
 	int skill_int;
 	int i;
+	int clientNum;
 
 	static const char bot_usage[] = QQ( N_( "^3bot: ^7usage: bot add [^5name|*^7] [^5aliens|humans^7] (^5skill^7) (^5behavior^7)\n"
 	                                        "            bot [^5del|spec|unspec^7] [^5name|all^7]\n"
@@ -5631,6 +5669,8 @@ qboolean G_admin_bot( gentity_t *ent )
 
 	if ( !Q_stricmp( arg1, "add" ) )
 	{
+		RETURN_IF_INTERMISSION;
+
 		min_args++; //now we also need a team name
 		if ( !Q_stricmp( name, "all" ) )
 		{
@@ -5699,7 +5739,9 @@ qboolean G_admin_bot( gentity_t *ent )
 	}
 	else if ( !Q_stricmp( arg1, "del" ) )
 	{
-		int clientNum = G_ClientNumberFromString( name, err, sizeof( err ) );
+		RETURN_IF_INTERMISSION;
+
+		clientNum = G_ClientNumberFromString( name, err, sizeof( err ) );
 		if ( !Q_stricmp( name, "all" ) )
 		{
 			G_BotDelAllBots();
@@ -5716,7 +5758,9 @@ qboolean G_admin_bot( gentity_t *ent )
 	}
 	else if ( !Q_stricmp( arg1, "spec" ) )
 	{
-		int clientNum = G_ClientNumberFromString( name, err, sizeof( err ) );
+		RETURN_IF_INTERMISSION;
+
+		clientNum = G_ClientNumberFromString( name, err, sizeof( err ) );
 		if ( !Q_stricmp( name, "all" ) )
 		{
 			for ( i = 0; i < MAX_CLIENTS; i++ )
@@ -5745,7 +5789,9 @@ qboolean G_admin_bot( gentity_t *ent )
 	}
 	else if ( !Q_stricmp( arg1, "unspec" ) )
 	{
-		int clientNum = G_ClientNumberFromString( name, err, sizeof( err ) );
+		RETURN_IF_INTERMISSION;
+
+		clientNum = G_ClientNumberFromString( name, err, sizeof( err ) );
 		if ( !Q_stricmp( name, "all" ) )
 		{
 			for ( i = 0; i < MAX_CLIENTS; i++ )
