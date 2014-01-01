@@ -220,6 +220,11 @@ KeyModifier Rocket_GetKeyModifiers( void )
 
 void Rocket_ProcessMouseClick( int button, qboolean down )
 {
+	if ( !menuContext || cls.keyCatchers & KEYCATCH_CONSOLE )
+	{
+		return;
+	}
+
 	int idx = 0;
 	if ( button <= K_MOUSE5 )
 	{
@@ -243,7 +248,7 @@ void Rocket_ProcessMouseClick( int button, qboolean down )
 #define MOUSEWHEEL_DELTA 5
 void Rocket_ProcessKeyInput( int key, qboolean down )
 {
-	if ( !menuContext )
+	if ( !menuContext || cls.keyCatchers & KEYCATCH_CONSOLE )
 	{
 		return;
 	}
