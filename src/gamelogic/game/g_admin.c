@@ -64,7 +64,7 @@ static const g_admin_cmd_t     g_admin_cmds[] =
 	// (in this list, *function is re-used for the command name)
 	{ NULL, 0, qfalse, "buildlog",       "builder",       NULL },
 	{ NULL, 0, qfalse, "buildlog_admin", "buildlog",      NULL },
-	{ NULL, 0, qfalse, "gametimelimit",  "gametimelimit", NULL },
+	{ NULL, 0, qfalse, "gametimelimit",  "time",          NULL },
 	{ NULL, 0, qfalse, "setlevel",       "listplayers",   NULL },
 
 	// now the actual commands
@@ -157,12 +157,6 @@ static const g_admin_cmd_t     g_admin_cmds[] =
 		"flaglist",      G_admin_flaglist,   qfalse, "flag",
 		N_("list the flags understood by this server"),
 		""
-	},
-
-	{
-		"gametimelimit", G_admin_timelimit,  qfalse, NULL, // but setting requires "gametimelimit"
-		N_("change the time limit for the current game"),
-		N_("[^3minutes^7]")
 	},
 
 	{
@@ -336,9 +330,9 @@ static const g_admin_cmd_t     g_admin_cmds[] =
 	},
 
 	{
-		"time",         G_admin_time,        qtrue,  "time",
-		N_("show the current local server time"),
-		""
+		"time",         G_admin_time,        qtrue,  "time", // setting requires "gametimelimit"
+		N_("show the current local server time or set this game's time limit"),
+		N_("[^3minutes^7]")
 	},
 
 	{
@@ -2119,31 +2113,77 @@ qboolean G_admin_readconfig( gentity_t *ent )
 qboolean G_admin_time( gentity_t *ent )
 {
 	qtime_t qt;
-	int timelimitTime, gameMinutes, gameSeconds, remainingMinutes, remainingSeconds;
+	int timelimit, gameMinutes, gameSeconds, remainingMinutes, remainingSeconds;
+	char tstr[ 12 ];
 
-	trap_GMTime( &qt );
-
-	gameMinutes = level.matchTime/1000 / 60;
-	gameSeconds = level.matchTime/1000 % 60;
-
-	timelimitTime = level.timelimit * 60000; //timelimit is in minutes
-
-	if(level.matchTime < timelimitTime)
+	switch ( trap_Argc() )
 	{
-		remainingMinutes = (timelimitTime - level.matchTime)/1000 / 60;
-		remainingSeconds = (timelimitTime - level.matchTime)/1000 % 60 + 1;
+	case 1:
+		trap_GMTime( &qt );
 
-		ADMP( va( "%s %02i %02i %02i %02i %02i %i %02i", QQ( N_("^3time: ^7time is ^d$1$:$2$:$3$^7 UTC – game runs for ^d$4$:$5$^7 hitting Timelimit in ^d$6$:$7$^7\n") ),
-	          qt.tm_hour, qt.tm_min, qt.tm_sec, gameMinutes, gameSeconds, remainingMinutes, remainingSeconds ) );
-	}
-	else //requesting time in intermission after the timelimit hit, or timelimit wasn't set (unless pre-sd)
-	{
-		ADMP( va( "%s %02i %02i %02i %02i %02i", QQ( N_("^3time: ^7time is ^d$1$:$2$:$3$^7 UTC – game time is ^d$4$:$5$^7\n") ),
-			          qt.tm_hour, qt.tm_min, qt.tm_sec, gameMinutes, gameSeconds) );
-	}
+		gameMinutes = level.matchTime/1000 / 60;
+		gameSeconds = level.matchTime/1000 % 60;
 
-	return qtrue;
+		timelimit = level.timelimit * 60000; // timelimit is in minutes
+
+		if(level.matchTime < timelimit)
+		{
+			remainingMinutes = (timelimit - level.matchTime)/1000 / 60;
+			remainingSeconds = (timelimit - level.matchTime)/1000 % 60 + 1;
+
+			ADMP( va( "%s %02i %02i %02i %02i %02i %i %02i", QQ( N_("^3time: ^7time is ^d$1$:$2$:$3$^7 UTC; game time is ^d$4$:$5$^7, reaching time limit in ^d$6$:$7$^7\n") ),
+			  qt.tm_hour, qt.tm_min, qt.tm_sec, gameMinutes, gameSeconds, remainingMinutes, remainingSeconds ) );
+		}
+		else // requesting time in intermission after the timelimit hit, or timelimit wasn't set
+		{
+			ADMP( va( "%s %02i %02i %02i %02i %02i", QQ( N_("^3time: ^7time is ^d$1$:$2$:$3$^7 UTC; game time is ^d$4$:$5$^7\n") ),
+					  qt.tm_hour, qt.tm_min, qt.tm_sec, gameMinutes, gameSeconds) );
+		}
+		return qtrue;
+
+	case 2:
+		RETURN_IF_INTERMISSION;
+
+		if ( !G_admin_permission( ent, "gametimelimit" ) )
+		{
+			ADMP( va( "%s %s", QQ( N_("^3$1$: ^7permission denied\n") ), "time" ) );
+			return qfalse;
+		}
+
+		trap_Argv( 1, tstr, sizeof( tstr ) );
+
+		if ( isdigit( tstr[0] ) )
+		{
+			timelimit = atoi( tstr );
+
+			// clip to 0 .. 6 hours
+			timelimit = MIN( 6 * 60, MAX( 0, timelimit ) );
+			if ( timelimit != level.timelimit )
+			{
+				AP( va( "print_tr %s %d %d %s", QQ( N_("^3time: ^7time limit set to $1$m from $2$m by $3$\n") ),
+				        timelimit, level.timelimit, G_quoted_admin_name( ent ) ) );
+				level.timelimit = timelimit;
+				// reset 'time remaining' warnings
+				level.timelimitWarning = ( level.matchTime < ( level.timelimit - 5 ) * 60000 )
+				                       ? TW_NOT
+				                       : ( level.matchTime < ( level.timelimit - 1 ) * 60000 )
+				                       ? TW_IMMINENT
+				                       : TW_PASSED;
+			}
+			else
+			{
+				ADMP( QQ( N_("^3time: ^7time limit is unchanged\n") ) );
+			}
+			return qtrue;
+		}
+		// fallthrough
+
+	default:
+		ADMP( QQ( N_("^3time: ^7usage: time [minutes]\n") ) );
+		return qfalse;
+	}
 }
+
 
 // this should be in one of the headers, but it is only used here for now
 namelog_t *G_NamelogFromString( gentity_t *ent, char *s );
@@ -5466,60 +5506,6 @@ qboolean G_admin_unregister( gentity_t *ent )
 	        Quote( ent->client->pers.admin->name ) ) );
 
 	return qtrue;
-}
-
-qboolean G_admin_timelimit( gentity_t *ent )
-{
-	char tstr[ 12 ];
-	int  timelimit;
-
-	RETURN_IF_INTERMISSION;
-
-	switch ( trap_Argc() )
-	{
-	case 1:
-		ADMP( va( "%s %d", QQ( N_("^3gametimelimit: ^7time limit for this game is $1$m\n") ), level.timelimit ) );
-		return qtrue;
-
-	case 2:
-		if ( !G_admin_permission( ent, "gametimelimit" ) )
-		{
-			ADMP( va( "%s %s", QQ( N_("^3$1$: ^7permission denied\n") ), "gametimelimit" ) );
-			return qfalse;
-		}
-
-		trap_Argv( 1, tstr, sizeof( tstr ) );
-
-		if ( isdigit( tstr[0] ) )
-		{
-			timelimit = atoi( tstr );
-
-			// clip to 0 .. 6 hours
-			timelimit = MIN( 6 * 60, MAX( 0, timelimit ) );
-			if ( timelimit != level.timelimit )
-			{
-				AP( va( "print_tr %s %d %d %s", QQ( N_("^3gametimelimit: ^7time limit set to $1$m from $2$m by $3$\n") ),
-				        timelimit, level.timelimit, G_quoted_admin_name( ent ) ) );
-				level.timelimit = timelimit;
-				// reset 'time remaining' warnings
-				level.timelimitWarning = ( level.matchTime < ( level.timelimit - 5 ) * 60000 )
-				                       ? TW_NOT
-				                       : ( level.matchTime < ( level.timelimit - 1 ) * 60000 )
-				                       ? TW_IMMINENT
-				                       : TW_PASSED;
-			}
-			else
-			{
-				ADMP( QQ( N_("^3gametimelimit: ^7time limit is unchanged\n") ) );
-			}
-			return qtrue;
-		}
-		// fallthrough
-
-	default:
-		ADMP( QQ( N_("^3gametimelimit: ^7usage: gametimelimit [minutes]\n") ) );
-		return qfalse;
-	}
 }
 
 /*

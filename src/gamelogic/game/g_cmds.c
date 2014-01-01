@@ -2050,7 +2050,7 @@ vote_is_disabled:
 		level.extend_vote_count++;
 
 		Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
-		             "gametimelimit %i", level.timelimit + g_extendVotesTime.integer );
+		             "time %i", level.timelimit + g_extendVotesTime.integer );
 		Com_sprintf( level.team[ team ].voteDisplayString, sizeof( level.team[ team ].voteDisplayString ),
 		             "Extend the timelimit by %d minutes", g_extendVotesTime.integer );
 		break;
