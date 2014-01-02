@@ -2551,36 +2551,49 @@ void CG_Buildable( centity_t *cent )
 	{
 		weaponInfo_t *wi = &cg_weapons[ es->weapon ];
 
-		if ( cg.time - cent->muzzleFlashTime > MUZZLE_FLASH_TIME || ( weapon_t )es->weapon == WP_TESLAGEN )
+		if ( wi->wim[ WPM_PRIMARY ].muzzleParticleSystem )
 		{
-			if ( wi->wim[ WPM_PRIMARY ].flashDlightColor[ 0 ] ||
-			     wi->wim[ WPM_PRIMARY ].flashDlightColor[ 1 ] ||
-			     wi->wim[ WPM_PRIMARY ].flashDlightColor[ 2 ] )
+			// spawn muzzle ps if necessary
+			if ( !CG_IsParticleSystemValid( &cent->muzzlePS ) )
+			{
+				cent->muzzlePS = CG_SpawnNewParticleSystem( wi->wim[ WPM_PRIMARY ].muzzleParticleSystem );
+			}
+
+			// update muzzle ps position
+			if ( CG_IsParticleSystemValid( &cent->muzzlePS ) )
+			{
+				CG_SetAttachmentTag( &cent->muzzlePS->attachment, ent, ent.hModel, "tag_flash" );
+				CG_AttachToTag( &cent->muzzlePS->attachment );
+			}
+		}
+
+		if ( cg.time - cent->muzzleFlashTime < MUZZLE_FLASH_TIME || ( weapon_t )es->weapon == WP_TESLAGEN )
+		{
+			// add dynamic light
+			if ( wi->wim[ WPM_PRIMARY ].flashDlight )
 			{
 				trap_R_AddLightToScene( cent->lerpOrigin, wi->wim[ WPM_PRIMARY ].flashDlight,
 				                        wi->wim[ WPM_PRIMARY ].flashDlightIntensity,
 				                        wi->wim[ WPM_PRIMARY ].flashDlightColor[ 0 ],
 				                        wi->wim[ WPM_PRIMARY ].flashDlightColor[ 1 ],
 				                        wi->wim[ WPM_PRIMARY ].flashDlightColor[ 2 ], 0, 0 );
-
-				if ( wi->wim[ WPM_PRIMARY ].muzzleParticleSystem )
-				{
-					cent->muzzlePS = CG_SpawnNewParticleSystem( wi->wim[ WPM_PRIMARY ].muzzleParticleSystem );
-					CG_SetAttachmentTag( &cent->muzzlePS->attachment, ent, ent.hModel, "tag_flash" );
-					CG_AttachToTag( &cent->muzzlePS->attachment );
-				}
 			}
 		}
 
+		// spawn firing sound
 		if ( wi->wim[ WPM_PRIMARY ].firingSound )
 		{
-			trap_S_AddLoopingSound( es->number, cent->lerpOrigin, vec3_origin,
-			                        wi->wim[ WPM_PRIMARY ].firingSound );
+			trap_S_AddLoopingSound( es->number, cent->lerpOrigin, vec3_origin, wi->wim[ WPM_PRIMARY ].firingSound );
 		}
 		else if ( wi->readySound )
 		{
 			trap_S_AddLoopingSound( es->number, cent->lerpOrigin, vec3_origin, wi->readySound );
 		}
+	}
+	else if ( CG_IsParticleSystemValid( &cent->muzzlePS ) )
+	{
+		// destroy active muzzle ps
+		CG_DestroyParticleSystem( &cent->muzzlePS );
 	}
 
 	health = es->generic1;

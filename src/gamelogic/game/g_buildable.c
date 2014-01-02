@@ -3095,7 +3095,6 @@ static void HTurret_Shoot( gentity_t *self )
 	self->turretLastShotAtTarget = level.time;
 	self->turretNextShot = level.time + TURRET_ATTACK_PERIOD;
 
-	self->s.eFlags |= EF_FIRING; // TODO: Fix this hack, it doesn't even work locally
 	G_AddEvent( self, EV_FIRE_WEAPON, 0 );
 	G_SetBuildableAnim( self, BANIM_ATTACK1, qfalse );
 	G_FireWeapon( self, WP_MGTURRET, WPM_PRIMARY );
@@ -3110,7 +3109,7 @@ void HTurret_Think( gentity_t *self )
 
 	IdlePowerState( self );
 
-	// end muzzle flash
+	// disable muzzle flash for now
 	self->s.eFlags &= ~EF_FIRING;
 
 	if ( !self->spawned )
@@ -3170,9 +3169,14 @@ void HTurret_Think( gentity_t *self )
 	HTurret_MoveHeadToTarget( self );
 
 	// shoot if possible
-	if ( HTurret_TargetInReach( self ) && self->turretNextShot < level.time )
+	if ( HTurret_TargetInReach( self ) )
 	{
-		HTurret_Shoot( self );
+		self->s.eFlags |= EF_FIRING;
+
+		if ( self->turretNextShot < level.time )
+		{
+			HTurret_Shoot( self );
+		}
 	}
 }
 
