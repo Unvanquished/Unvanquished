@@ -2019,6 +2019,8 @@ int R_StitchPatches( int grid1num, int grid2num )
 		}
 	}
 
+	assert( grid2 );
+
 	for ( n = 0; n < 2; n++ )
 	{
 		//

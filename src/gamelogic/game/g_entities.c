@@ -803,7 +803,7 @@ void G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call)
 
 	targetedEntity->callIn = *call;
 
-	if(!targetedEntity->handleCall || !targetedEntity->handleCall(targetedEntity, call))
+	if(!targetedEntity->handleCall || !targetedEntity->handleCall(targetedEntity, call) && call->definition)
 	{
 		switch (call->definition->actionType)
 		{

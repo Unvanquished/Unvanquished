@@ -102,7 +102,7 @@ void target_push_act( gentity_t *self, gentity_t *other, gentity_t *activator )
 
 void SP_target_push( gentity_t *self )
 {
-	if ( !self->config.speed)
+	if ( self && !self->config.speed)
 	{
 		self->config.speed = 1000;
 	}

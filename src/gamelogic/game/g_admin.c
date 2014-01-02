@@ -2261,6 +2261,11 @@ qboolean G_admin_setlevel( gentity_t *ent )
 		trap_GMTime( &a->lastSeen ); // player is connected...
 	}
 
+	if ( !a )
+	{
+		return qfalse; // Can't Happen
+	}
+
 	a->level = l->level;
 
 	if ( vic )
