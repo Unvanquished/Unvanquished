@@ -108,7 +108,7 @@ CL_ParsePacketEntities
 
 ==================
 */
-void CL_ParsePacketEntities( msg_t *msg, clSnapshot_t *oldframe, clSnapshot_t *newframe )
+void CL_ParsePacketEntities( msg_t *msg, const clSnapshot_t *oldframe, clSnapshot_t *newframe )
 {
 	int           newnum;
 	entityState_t *oldstate;
@@ -123,6 +123,9 @@ void CL_ParsePacketEntities( msg_t *msg, clSnapshot_t *oldframe, clSnapshot_t *n
 
 	if ( !oldframe )
 	{
+		static const clSnapshot_t nullframe = { qfalse };
+
+		oldframe = &nullframe;
 		oldnum = 99999;
 	}
 	else
