@@ -2505,8 +2505,8 @@ static qboolean ParseStage( shaderStage_t *stage, char **text )
 					break;
 				}
 
-				strcat( buffer, token );
-				strcat( buffer, " " );
+				strncat( buffer, token, sizeof( buffer ) - 1 );
+				strncat( buffer, " ", sizeof( buffer ) - 1 );
 			}
 
 			ParseTexMod( buffer, stage );

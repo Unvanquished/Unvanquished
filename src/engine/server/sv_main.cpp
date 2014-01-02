@@ -527,7 +527,7 @@ void SVC_Status( netadr_t from )
 		return;
 	}
 
-	strcpy( infostring, Cvar_InfoString( CVAR_SERVERINFO, qfalse ) );
+	Q_strncpyz( infostring, Cvar_InfoString( CVAR_SERVERINFO, qfalse ), MAX_INFO_STRING );
 
 	// echo back the parameter to status. so master servers can use it as a challenge
 	// to prevent timed spoofed reply packets that add ghost servers

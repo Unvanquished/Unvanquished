@@ -6566,8 +6566,8 @@ void R_ShaderExp_f( void )
 
 	for ( i = 1; i < ri.Cmd_Argc(); i++ )
 	{
-		strcat( buffer, ri.Cmd_Argv( i ) );
-		strcat( buffer, " " );
+		strncat( buffer, ri.Cmd_Argv( i ), sizeof( buffer ) - 1 );
+		strncat( buffer, " ", sizeof( buffer ) - 1 );
 	}
 
 	len = strlen( buffer );

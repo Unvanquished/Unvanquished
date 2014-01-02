@@ -2008,7 +2008,7 @@ static qboolean IRC_AddSendItem( qboolean is_action, const char *string )
 		return qfalse;
 	}
 
-	strcpy( IRC_SendQueue[ IRC_SendQueue_Write ].string, string );
+	Q_strncpyz( IRC_SendQueue[ IRC_SendQueue_Write ].string, string, sizeof( IRC_SendQueue[ IRC_SendQueue_Write ].string ) );
 	IRC_SendQueue[ IRC_SendQueue_Write ].is_action = is_action;
 	IRC_SendQueue[ IRC_SendQueue_Write ].has_content = qtrue;
 	IRC_SendQueue_Write = ( IRC_SendQueue_Write + 1 ) % IRC_SENDQUEUE_SIZE;
@@ -2256,7 +2256,7 @@ static int IRC_AttemptConnection( void )
 	Com_Printf("…IRC: %s\n", _( "connecting to server" ));
 
 	// Force players to use a non-default name
-	strcpy( name, Cvar_VariableString( "name" ) );
+	Q_strncpyz( name, Cvar_VariableString( "name" ), sizeof( name ) );
 
 	if ( !Q_strnicmp( name, "player", 7 ) )
 	{

@@ -2532,7 +2532,7 @@ image_t        *R_FindImageFile( const char *name, qboolean mipmap, qboolean all
 		char altname[ MAX_QPATH ]; // copy the name
 		int  len; //
 
-		strcpy( altname, name );  //
+		Q_strncpyz( altname, name, MAX_QPATH );  //
 		len = strlen( altname );  //
 		altname[ len - 3 ] = toupper( altname[ len - 3 ] );  // and try upper case extension for unix systems
 		altname[ len - 2 ] = toupper( altname[ len - 2 ] );  //

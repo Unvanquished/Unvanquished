@@ -3013,7 +3013,7 @@ void CL_MotdPacket( netadr_t from, const char *info )
 	}
 
 	v = Info_ValueForKey( info, "motd" );
-	strcpy(w,v);
+	Q_strncpyz(w, v, sizeof(w));
 	ptr = w;
 
 	//replace all | with \n
@@ -4021,14 +4021,13 @@ static void CL_Cache_UsedFile_f( void )
 		Com_Error( ERR_DROP, "usedfile without enough parameters" );
 	}
 
-	strcpy( groupStr, Cmd_Argv( 1 ) );
-
-	strcpy( itemStr, Cmd_Argv( 2 ) );
+	Q_strncpyz( groupStr, Cmd_Argv( 1 ), MAX_QPATH );
+	Q_strncpyz( itemStr, Cmd_Argv( 2 ), MAX_QPATH );
 
 	for ( i = 3; i < Cmd_Argc(); i++ )
 	{
-		strcat( itemStr, " " );
-		strcat( itemStr, Cmd_Argv( i ) );
+		strncat( itemStr, " ", MAX_QPATH - 1 );
+		strncat( itemStr, Cmd_Argv( i ), MAX_QPATH - 1 );
 	}
 
 	Q_strlwr( itemStr );
