@@ -2298,6 +2298,7 @@ static int IRC_AttemptConnection( void )
 		port = 6667;
 	}
 
+	memset( &address, 0, sizeof( address ) );
 	address.sin_family = AF_INET;
 	address.sin_port = htons( port );
 	address.sin_addr.s_addr = * ( ( unsigned long * ) host->h_addr );
