@@ -451,6 +451,12 @@ int FS_filelength( fileHandle_t f )
 
 	h = FS_FileForHandle( f );
 	pos = ftell( h );
+
+	if ( pos == EOF )
+	{
+		return EOF;
+	}
+
 	fseek( h, 0, SEEK_END );
 	end = ftell( h );
 	fseek( h, pos, SEEK_SET );
@@ -571,6 +577,12 @@ void FS_CopyFile( char *fromOSPath, char *toOSPath )
 	fseek( f, 0, SEEK_END );
 	len = ftell( f );
 	fseek( f, 0, SEEK_SET );
+
+	if ( len == EOF )
+	{
+		fclose( f );
+		Com_Error( ERR_FATAL, "Bad file length in FS_CopyFile()" );
+        }
 
 	buf = ( byte * ) malloc( len );
 
