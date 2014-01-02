@@ -1534,11 +1534,8 @@ static void LoadPCX( const char *filename, byte **pic, byte **palette, int *widt
 
 	pix = out;
 
-	if ( palette )
-	{
-		*palette = (byte*) ri.Z_Malloc( 768 );
-		memcpy( *palette, ( byte * ) pcx + len - 768, 768 );
-	}
+	*palette = (byte*) ri.Z_Malloc( 768 );
+	memcpy( *palette, ( byte * ) pcx + len - 768, 768 );
 
 	if ( width )
 	{
