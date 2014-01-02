@@ -2619,9 +2619,9 @@ int BG_LoadEmoticons( emoticon_t *emoticons, int num )
 			continue;
 		}
 
-		if ( fileLen - 8 > MAX_EMOTICON_NAME_LEN )
+		if ( fileLen - 8 >= MAX_EMOTICON_NAME_LEN )
 		{
-			Com_Printf( S_COLOR_YELLOW "emoticon file name \"%s\" too long (>%d)\n",
+			Com_Printf( S_COLOR_YELLOW "emoticon file name \"%s\" too long (≥ %d)\n",
 			            filePtr, MAX_EMOTICON_NAME_LEN + 8 );
 			continue;
 		}
