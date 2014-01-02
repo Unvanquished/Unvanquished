@@ -1482,6 +1482,8 @@ static void UpdateZapEffect( zap_t *zap )
 
 	entityNums[ 0 ] = zap->creator->s.number;
 
+	assert( zap->numTargets <= LEVEL2_AREAZAP_MAX_TARGETS );
+
 	for ( i = 0; i < zap->numTargets; i++ )
 	{
 		entityNums[ i + 1 ] = zap->targets[ i ]->s.number;
