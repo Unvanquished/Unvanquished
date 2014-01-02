@@ -191,7 +191,7 @@ namespace Cmd {
 
             void Run(const Cmd::Args& args) const OVERRIDE {
                 int min, max;
-                if (args.Argc() != 4 || !Str::ParseInt(min, args.Argv(2)) || !Str::ParseInt(max, args.Argv(3))) {
+                if (args.Argc() != 4 or !Str::ParseInt(min, args.Argv(2)) or !Str::ParseInt(max, args.Argv(3)) or min >= max) {
                     PrintUsage(args, _("<variableToSet> <minNumber> <maxNumber>"), _("sets a variable to a random integer between minNumber and maxNumber"));
                     return;
                 }
