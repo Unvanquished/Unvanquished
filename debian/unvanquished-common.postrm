@@ -13,5 +13,5 @@ if test "$1" = "purge"; then
   rm -f /var/games/unvanquished/md5sums.old /var/games/unvanquished/md5sums
   # Remove the game dir unless non-empty (which should mean that the admin has added some files)
   # (dpkg may remove them; that's fine)
-  rmdir -f --ignore-fail-on-non-empty /var/games/unvanquished/main /var/games/unvanquished
+  rmdir --ignore-fail-on-non-empty /var/games/unvanquished
 fi
