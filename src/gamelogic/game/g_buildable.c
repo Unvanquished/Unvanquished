@@ -4675,7 +4675,7 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 
 	trap_LinkEntity( built );
 
-	if ( builder && builder->client )
+	if ( builder->client )
 	{
 	        // readable and the model name shouldn't need quoting
 		G_TeamCommand( (team_t) builder->client->pers.team,

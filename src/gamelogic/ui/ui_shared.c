@@ -1172,7 +1172,7 @@ static void Window_Paint( Window *w, float fadeAmount, float fadeClamp, float fa
 		DC->drawRect( w->rect.x, w->rect.y, w->rect.w, w->rect.h, 1, color );
 	}
 
-	if ( w == NULL || ( w->style == 0 && w->border == 0 ) )
+	if ( w->style == 0 && w->border == 0 )
 	{
 		return;
 	}

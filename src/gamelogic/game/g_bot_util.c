@@ -1304,7 +1304,7 @@ void BotAimAtLocation( gentity_t *self, vec3_t target )
 	int i;
 	usercmd_t *rAngles = &self->botMind->cmdBuffer;
 
-	if ( ! ( self && self->client ) )
+	if ( !self->client )
 	{
 		return;
 	}

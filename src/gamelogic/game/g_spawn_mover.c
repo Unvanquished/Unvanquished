@@ -2462,7 +2462,7 @@ void func_train_blocked( gentity_t *self, gentity_t *other )
 			G_Damage( other, self, self, NULL, NULL, 10000, 0, MOD_CRUSH );
 
 			//buildables need to be handled differently since even when
-			//dealth fatal amounts of damage they won't instantly become non-solid
+			//dealt fatal amounts of damage they won't instantly become non-solid
 			if ( other->s.eType == ET_BUILDABLE && other->spawned )
 			{
 				vec3_t    dir;
@@ -2482,11 +2482,7 @@ void func_train_blocked( gentity_t *self, gentity_t *other )
 				}
 			}
 
-			//if it's still around free it
-			if ( other )
-			{
-				G_FreeEntity( other );
-			}
+			G_FreeEntity( other );
 
 			return;
 		}
