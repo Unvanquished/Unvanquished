@@ -20,7 +20,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
-
 void S_Init( void );
 void S_Shutdown( void );
 
@@ -51,6 +50,7 @@ void S_Respatialize( int entityNum, const vec3_t origin, vec3_t axis[3], int inw
 
 // let the sound system know where an entity currently is
 void S_UpdateEntityPosition( int entityNum, const vec3_t origin );
+void S_UpdateEntityVelocity( int entityNum, const vec3_t velocity );
 
 void S_Update( void );
 
@@ -67,8 +67,6 @@ sfxHandle_t	S_RegisterSound( const char *sample, qboolean compressed );
 void S_DisplayFreeMemory( void );
 
 void S_ClearSoundBuffer( void );
-
-void SNDDMA_Activate( void );
 
 void S_UpdateBackgroundTrack( void );
 

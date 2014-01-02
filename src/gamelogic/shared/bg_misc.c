@@ -57,7 +57,6 @@ static const buildableName_t bg_buildableNameList[] =
 	{ BA_H_MGTURRET,  "mgturret",  "team_human_mgturret"  },
 	{ BA_H_TESLAGEN,  "tesla",     "team_human_tesla"     },
 	{ BA_H_ARMOURY,   "arm",       "team_human_armoury"   },
-	{ BA_H_DCC,       "dcc",       "team_human_dcc"       },
 	{ BA_H_MEDISTAT,  "medistat",  "team_human_medistat"  },
  	{ BA_H_DRILL,     "drill",     "team_human_drill"     },
 	{ BA_H_REACTOR,   "reactor",   "team_human_reactor"   },
@@ -147,8 +146,6 @@ void BG_InitBuildableAttributes( void )
 		ba->idleAnim = BANIM_IDLE1;
 		ba->traj = TR_GRAVITY;
 		ba->bounce = 0.0;
-		ba->nextthink = 100;
-		ba->turretProjType = WP_NONE;
 		ba->minNormal = 0.0;
 
 		BG_ParseBuildableAttributeFile( va( "configs/buildables/%s.attr.cfg", ba->name ), ba );
@@ -598,24 +595,33 @@ static weaponAttributes_t bg_weapons[ ARRAY_LEN( bg_weaponsData ) ];
 
 static const weaponAttributes_t nullWeapon = { (weapon_t) 0, 0 };
 
-/*
-==============
-BG_WeaponByName
-==============
-*/
-const weaponAttributes_t *BG_WeaponByName( const char *name )
+weapon_t BG_WeaponNumberByName( const char *name )
 {
 	int i;
 
 	for ( i = 0; i < bg_numWeapons; i++ )
 	{
-		if ( !Q_stricmp( bg_weapons[ i ].name, name ) )
+		if ( !Q_stricmp( bg_weaponsData[ i ].name, name ) )
 		{
-			return &bg_weapons[ i ];
+			return bg_weaponsData[ i ].number;
 		}
 	}
 
-	return &nullWeapon;
+	return ( weapon_t )0;
+}
+
+const weaponAttributes_t *BG_WeaponByName( const char *name )
+{
+	weapon_t weapon = BG_WeaponNumberByName( name );
+
+	if ( weapon )
+	{
+		return &bg_weapons[ weapon ];
+	}
+	else
+	{
+		return &nullWeapon;
+	}
 }
 
 /*
@@ -1248,7 +1254,6 @@ static const char *const eventnames[] =
 	"EV_REACTOR_ATTACK_1", // reactor under attack
 	"EV_REACTOR_ATTACK_2", // reactor under attack
 	"EV_REACTOR_DYING", // reactor destroyed
-	"EV_DCC_ATTACK", // dcc under attack
 
 	"EV_WARN_ATTACK",
 
@@ -2250,7 +2255,7 @@ void BG_ParseCSVEquipmentList( const char *string, weapon_t *weapons, int weapon
 
 		if ( weaponsSize )
 		{
-			weapons[ i ] = BG_WeaponByName( q )->number;
+			weapons[ i ] = BG_WeaponNumberByName( q );
 		}
 
 		if ( upgradesSize )

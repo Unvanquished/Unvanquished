@@ -351,11 +351,11 @@ static qboolean CG_RegisterPlayerAnimation( clientInfo_t *ci, const char *modelN
 	     !Q_stricmp( modelName, "human_light"   ) ||
 	     !Q_stricmp( modelName, "human_medium" ) )
 	{
-		strncpy( newModelName, "human_nobsuit_common", sizeof( newModelName ) );
+		Q_strncpyz( newModelName, "human_nobsuit_common", sizeof( newModelName ) );
 	}
 	else
 	{
-		strncpy( newModelName, modelName, sizeof( newModelName ) );
+		Q_strncpyz( newModelName, modelName, sizeof( newModelName ) );
 	}
 
 	if ( iqm )
@@ -1983,7 +1983,7 @@ static void CG_PlayerMD5AlienAnimation( centity_t *cent )
 	clientInfo_t  *ci;
 	int           clientNum;
 	float         speedScale;
-	refSkeleton_t blend;
+	static refSkeleton_t blend;
 
 	clientNum = cent->currentState.clientNum;
 
@@ -2605,7 +2605,7 @@ static void CG_PlayerUpgrades( centity_t *cent, refEntity_t *torso )
 			// attach ps
 			if ( CG_IsParticleSystemValid( &cent->jetPackPS ) )
 			{
-				CG_SetAttachmentTag( &cent->jetPackPS->attachment, jetpack, jetpack.hModel, "tag_flash" );
+				CG_SetAttachmentTag( &cent->jetPackPS->attachment, &jetpack, jetpack.hModel, "tag_flash" );
 				CG_SetAttachmentCent( &cent->jetPackPS->attachment, cent );
 				CG_AttachToTag( &cent->jetPackPS->attachment );
 			}
@@ -3584,7 +3584,7 @@ void CG_Player( centity_t *cent )
 			}
 
 			CG_SetAttachmentTag( &cent->poisonCloudedPS->attachment,
-			                     head, head.hModel, "tag_head" );
+			                     &head, head.hModel, "tag_head" );
 			CG_SetAttachmentCent( &cent->poisonCloudedPS->attachment, cent );
 			CG_AttachToTag( &cent->poisonCloudedPS->attachment );
 		}

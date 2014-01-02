@@ -40,8 +40,6 @@ Maryland 20850 USA.
 
 #include "../framework/CommandSystem.h"
 
-#include "snd_local.h" // fretn
-
 #include "../sys/sys_loadlib.h"
 #include "../sys/sys_local.h"
 #include "../botlib/bot_debug.h"
@@ -1248,7 +1246,8 @@ static void CL_WriteWaveHeader( void )
 	hdr.AudioFormat = 1; // 1 = linear quantization
 	hdr.NumChannels = 2; // 2 = stereo
 
-	hdr.SampleRate = dma.speed;
+	//TODO
+	//hdr.SampleRate = dma.speed;
 
 	hdr.BitsPerSample = 16; // 16bits
 

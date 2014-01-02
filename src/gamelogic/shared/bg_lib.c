@@ -428,26 +428,6 @@ void *memcpy( void *dest, const void *src, size_t count )
 	return dest;
 }
 
-char *strncpy( char *strDest, const char *strSource, size_t count )
-{
-	char *s;
-
-	s = strDest;
-
-	while ( *strSource && count )
-	{
-		*s++ = *strSource++;
-		count--;
-	}
-
-	while ( count-- )
-	{
-		*s++ = 0;
-	}
-
-	return strDest;
-}
-
 double sqrt( double x )
 {
 	float y;

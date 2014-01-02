@@ -323,6 +323,7 @@ char *NET_ErrorString( void )
 
 static void NetadrToSockadr( netadr_t *a, struct sockaddr *s )
 {
+	memset( s, 0, sizeof( struct sockaddr ) );
 	if ( a->type == NA_BROADCAST )
 	{
 		( ( struct sockaddr_in * ) s )->sin_family = AF_INET;
@@ -1087,6 +1088,7 @@ SOCKET NET_IPSocket( const char *net_interface, int port, struct sockaddr_in *bi
 
 	if ( !net_interface || !net_interface[ 0 ] )
 	{
+		memset( &address, 0, sizeof( address ) );
 		address.sin_family = AF_INET;
 		address.sin_addr.s_addr = INADDR_ANY;
 	}
@@ -1178,6 +1180,7 @@ SOCKET NET_IP6Socket( const char *net_interface, int port, struct sockaddr_in6 *
 
 	if ( !net_interface || !net_interface[ 0 ] )
 	{
+		memset( &address, 0, sizeof( address ) );
 		address.sin6_family = AF_INET6;
 		address.sin6_addr = in6addr_any;
 	}
@@ -1369,6 +1372,7 @@ void NET_OpenSocks( int port )
 		return;
 	}
 
+	memset( &address, 0, sizeof( address ) );
 	address.sin_family = AF_INET;
 	address.sin_addr.s_addr = * ( int * ) h->h_addr_list[ 0 ];
 	address.sin_port = htons( ( short ) net_socksPort->integer );
@@ -1540,6 +1544,7 @@ void NET_OpenSocks( int port )
 		return;
 	}
 
+	memset( &socksRelayAddr, 0, sizeof( socksRelayAddr ) );
 	( ( struct sockaddr_in * ) &socksRelayAddr )->sin_family = AF_INET;
 	( ( struct sockaddr_in * ) &socksRelayAddr )->sin_addr.s_addr = * ( int * ) &buf[ 4 ];
 	( ( struct sockaddr_in * ) &socksRelayAddr )->sin_port = * ( short * ) &buf[ 8 ];

@@ -41,7 +41,7 @@ Maryland 20850 USA.
 #define PRODUCT_NAME            "Unvanquished"
 #define PRODUCT_NAME_UPPER      "UNVANQUISHED" // Case, No spaces
 #define PRODUCT_NAME_LOWER      "unvanquished" // No case, No spaces
-#define PRODUCT_VERSION         "0.22.1"
+#define PRODUCT_VERSION         "0.23.0"
 
 #define ENGINE_NAME             "Daemon Engine"
 #define ENGINE_VERSION          PRODUCT_VERSION
@@ -308,7 +308,7 @@ typedef int clipHandle_t;
 	// convenient for SSE and GLSL, which operate on 4-dimensional
 	// float vectors.
 #if idx86_sse
-	typedef union transform_u {
+	typedef ALIGNED( 16, union transform_u {
 		struct {
 			quat_t rot;
 			vec3_t trans;
@@ -318,7 +318,7 @@ typedef int clipHandle_t;
 			__m128 sseRot;
 			__m128 sseTransScale;
 		};
-	} transform_t;
+	} ) transform_t;
 #else
 	typedef struct transform_s {
 		quat_t rot;
@@ -1823,7 +1823,6 @@ void         ByteToDir( int b, vec3_t dir );
 
 #endif
 	void     Q_strcat( char *dest, int destsize, const char *src );
-	void     Q_strncpyz2( char *dst, const char *src, int dstSize );
 	qboolean Q_strreplace( char *dest, int destsize, const char *find, const char *replace );
 
 	int      Com_Filter( const char *filter, const char *name, int casesensitive );

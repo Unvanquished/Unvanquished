@@ -133,6 +133,27 @@ namespace Cvar {
             std::function<void(value_type)> callback;
     };
 
+    /*
+     * Modified<CvarType> allow to query atomically if the cvar has been modified and the new value.
+     * (resets the modified flag to false)
+     */
+
+    template<typename Base> class Modified : public Base {
+        public:
+            typedef typename Base::value_type value_type;
+
+            template<typename ... Args>
+            Modified(std::string name, std::string description, int flags, value_type, Args ... args);
+
+            virtual OnValueChangedResult OnValueChanged(Str::StringRef newValue);
+
+            //TODO change it when we have optional
+            bool GetModifiedValue(value_type& value);
+
+        private:
+            bool modified;
+    };
+
     // Implement Cvar<T> for T = bool, int, string
     template<typename T>
     std::string GetCvarTypeName();
@@ -145,6 +166,10 @@ namespace Cvar {
     std::string SerializeCvarValue(int value);
     template<>
     std::string GetCvarTypeName<int>();
+    bool ParseCvarValue(Str::StringRef value, float& result);
+    std::string SerializeCvarValue(float value);
+    template<>
+    std::string GetCvarTypeName<float>();
     bool ParseCvarValue(std::string value, std::string& result);
     std::string SerializeCvarValue(std::string value);
     template<>
@@ -219,6 +244,32 @@ namespace Cvar {
             callback(this->Get());
         }
         return std::move(rec);
+    }
+
+    // Modified<Base>
+
+    template <typename Base>
+    template <typename ... Args>
+    Modified<Base>::Modified(std::string name, std::string description, int flags, value_type defaultValue, Args ... args)
+    : Base(std::move(name), std::move(description), flags, std::move(defaultValue), std::forward<Args>(args) ...), modified(false) {
+    }
+
+    template <typename Base>
+    OnValueChangedResult Modified<Base>::OnValueChanged(Str::StringRef newValue) {
+        OnValueChangedResult rec = Base::OnValueChanged(newValue);
+
+        if (rec.success) {
+            modified = true;
+        }
+        return std::move(rec);
+    }
+
+    template<typename Base>
+    bool Modified<Base>::GetModifiedValue(value_type& value) {
+        value = this->Get();
+        bool res = modified;
+        modified = false;
+        return res;
     }
 }
 

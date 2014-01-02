@@ -2050,7 +2050,7 @@ vote_is_disabled:
 		level.extend_vote_count++;
 
 		Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
-		             "gametimelimit %i", level.timelimit + g_extendVotesTime.integer );
+		             "time %i", level.timelimit + g_extendVotesTime.integer );
 		Com_sprintf( level.team[ team ].voteDisplayString, sizeof( level.team[ team ].voteDisplayString ),
 		             "Extend the timelimit by %d minutes", g_extendVotesTime.integer );
 		break;
@@ -2939,7 +2939,7 @@ void Cmd_ActivateItem_f( gentity_t *ent )
 		upgrade = BG_UpgradeByName( s )->number;
 	}
 
-	weapon = BG_WeaponByName( s )->number;
+	weapon = BG_WeaponNumberByName( s );
 
 	if ( upgrade != UP_NONE && BG_InventoryContainsUpgrade( upgrade, ent->client->ps.stats ) )
 	{
@@ -3002,8 +3002,9 @@ void Cmd_ToggleItem_f( gentity_t *ent )
 	upgrade_t upgrade;
 
 	trap_Argv( 1, s, sizeof( s ) );
+
 	upgrade = BG_UpgradeByName( s )->number;
-	weapon = BG_WeaponByName( s )->number;
+	weapon  = BG_WeaponNumberByName( s );
 
 	if ( weapon != WP_NONE )
 	{
@@ -3166,7 +3167,7 @@ static qboolean Cmd_Sell_internal( gentity_t *ent, const char *s )
 	}
 	else
 	{
-		weapon = BG_WeaponByName( s )->number;
+		weapon = BG_WeaponNumberByName( s );
 	}
 
 	upgrade = BG_UpgradeByName( s )->number;
@@ -3304,7 +3305,7 @@ static qboolean Cmd_Buy_internal( gentity_t *ent, const char *s, qboolean sellCo
 	upgrade_t upgrade;
 	vec3_t    newOrigin;
 
-	weapon = BG_WeaponByName( s )->number;
+	weapon = BG_WeaponNumberByName( s );
 	upgrade = BG_UpgradeByName( s )->number;
 
 	// check if armoury is in reach

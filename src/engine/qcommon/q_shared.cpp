@@ -462,7 +462,7 @@ void COM_StripExtension2( const char *in, char *out, int destsize )
 void COM_StripFilename( char *in, char *out )
 {
 	char *end;
-	Q_strncpyz( out, in, strlen( in ) + 1 );
+	strcpy( out, in );
 	end = COM_SkipPath( out );
 	*end = 0;
 }
@@ -1751,8 +1751,7 @@ const char *Com_UnquoteStr( const char *str )
 		length = end + 1 - str;
 		free( buf );
 		buf = (char*)Com_Allocate( length + 1 );
-		strncpy( buf, str, length );
-		buf[ length ] = 0;
+		Q_strncpyz( buf, str, length + 1 );
 		return buf;
 	}
 
@@ -2002,6 +2001,10 @@ void Q_strncpyzDebug( char *dest, const char *src, int destsize, const char *fil
 void Q_strncpyz( char *dest, const char *src, int destsize )
 #endif
 {
+	char *d;
+	const char *s;
+	size_t n;
+
 #ifndef NDEBUG
 
 	if ( !dest )
@@ -2038,8 +2041,41 @@ void Q_strncpyz( char *dest, const char *src, int destsize )
 
 #endif
 
-	strncpy( dest, src, destsize - 1 );
-	dest[ destsize - 1 ] = 0;
+	/*
+	 * Copyright (c) 1998 Todd C. Miller <Todd.Miller@courtesan.com>
+	 *
+	 * Permission to use, copy, modify, and distribute this software for any
+	 * purpose with or without fee is hereby granted, provided that the above
+	 * copyright notice and this permission notice appear in all copies.
+	 *
+	 * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+	 * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+	 * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+	 * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+	 * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+	 * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+	 * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+	 */
+
+	d = dest;
+	s = src;
+	n = destsize;
+
+	/* Copy as many bytes as will fit */
+	if (n != 0) {
+		while (--n != 0) {
+			if ((*d++ = *s++) == '\0')
+				break;
+		}
+	}
+
+	/* Not enough room in dst, add NUL and traverse rest of src */
+	if (n == 0) {
+		if (destsize != 0)
+			*d = '\0';		/* NUL-terminate dst */
+		while (*s++)
+			;
+	}
 }
 
 int Q_strncmp( const char *s1, const char *s2, int n )
@@ -2169,27 +2205,6 @@ int Q_strnicmp( const char *string1, const char *string2, int n )
 	while ( c1 );
 
 	return 0; // Strings are equal
-}
-
-void Q_strncpyz2( char *dst, const char *src, int dstSize )
-{
-	if ( !dst )
-	{
-		Com_Error( ERR_FATAL, "Q_strncpyz: NULL dst" );
-	}
-
-	if ( !src )
-	{
-		Com_Error( ERR_FATAL, "Q_strncpyz: NULL src" );
-	}
-
-	if ( dstSize < 1 )
-	{
-		Com_Error( ERR_FATAL, "Q_strncpyz: dstSize < 1" );
-	}
-
-	strncpy( dst, src, dstSize - 1 );
-	dst[ dstSize - 1 ] = 0;
 }
 
 /*
@@ -2448,13 +2463,13 @@ qboolean Q_strreplace( char *dest, int destsize, const char *find, const char *r
 	}
 	else
 	{
-		Q_strncpyz( backup, dest, lend + 1 );
+		memcpy( backup, dest, lend + 1 );
 		lstart = s - dest;
 		lfind = strlen( find );
 		lreplace = strlen( replace );
 
-		strncpy( s, replace, destsize - lstart - 1 );
-		strncpy( s + lreplace, backup + lstart + lfind, destsize - lstart - lreplace - 1 );
+		Q_strncpyz( s, replace, destsize - lstart );
+		Q_strncpyz( s + lreplace, backup + lstart + lfind, destsize - lstart - lreplace );
 
 		return qtrue;
 	}

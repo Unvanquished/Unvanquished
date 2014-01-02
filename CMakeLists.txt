@@ -37,14 +37,13 @@ option( BUILD_GAME_NACL_NATIVE "Build native NaCl game logic" 0)
 option( BUILD_GAME_NACL "Build NaCl game logic" 0)
 option( BUILD_GAME_QVM_NATIVE "Build native game logic " 1)
 option( BUILD_GAME_QVM "Build QVM game logic" 1)
-option( BUILD_TTY_CLIENT "Build Daemon headless client" 1 )
+option( BUILD_TTY_CLIENT "Build Daemon headless client" 0 )
 cmake_dependent_option( BUILD_OLD_RENDERER "Build old renderer library" 1 BUILD_CLIENT 0 )
 cmake_dependent_option( BUILD_NEW_RENDERER "Build new renderer library" 1 BUILD_CLIENT 0 )
 
 cmake_dependent_option( USE_MUMBLE "Compile with support for Mumble" 1 BUILD_CLIENT 0 )
-cmake_dependent_option( USE_VOIP "Compile with VOIP support" 1 "BUILD_CLIENT OR BUILD_SERVER OR BUILD_TTY_CLIENT" 0 )
+cmake_dependent_option( USE_VOIP "Compile with VOIP support" 0 "BUILD_CLIENT OR BUILD_SERVER OR BUILD_TTY_CLIENT" 0 )
 cmake_dependent_option( USE_CURSES "Use the curses console" 1 "BUILD_CLIENT OR BUILD_SERVER OR BUILD_TTY_CLIENT" 0 )
-cmake_dependent_option( USE_OPENAL_DLOPEN "Use dlopen to load OpenAL" 0 BUILD_CLIENT 0 )
 cmake_dependent_option( USE_SMP "Compile with support for running the renderer in a separate thread" 1 BUILD_CLIENT 0 )
 cmake_dependent_option( USE_GEOIP "Use libgeoip" 1 "BUILD_SERVER OR BUILD_CLIENT OR BUILD_TTY_CLIENT" 0 )
 option( USE_SDL2 "Enable SDL 2.0 support (incompatible with SDL 1.2)" 1 )
@@ -607,22 +606,24 @@ set( CLIENTLIST
   ${ENGINE_DIR}/client/cl_ui.cpp
   ${ENGINE_DIR}/client/cl_logs.cpp
   ${ENGINE_DIR}/client/dl_main.cpp
-  ${ENGINE_DIR}/client/snd_adpcm.cpp
-  ${ENGINE_DIR}/client/snd_codec.cpp
-  ${ENGINE_DIR}/client/snd_codec.h
-  ${ENGINE_DIR}/client/snd_local.h
-  ${ENGINE_DIR}/client/snd_public.h
-  ${ENGINE_DIR}/client/snd_codec_ogg.cpp
-  ${ENGINE_DIR}/client/snd_codec_opus.cpp
-  ${ENGINE_DIR}/client/snd_codec_wav.cpp
-  ${ENGINE_DIR}/client/snd_dma.cpp
-  ${ENGINE_DIR}/client/snd_openal.cpp
-  ${ENGINE_DIR}/client/snd_main.cpp
-  ${ENGINE_DIR}/client/snd_mem.cpp
-  ${ENGINE_DIR}/client/snd_mix.cpp
-  ${ENGINE_DIR}/client/snd_wavelet.cpp
-  ${ENGINE_DIR}/client/qal.cpp
-  ${ENGINE_DIR}/client/qal.h
+  ${ENGINE_DIR}/audio/snd_codec.c
+  ${ENGINE_DIR}/audio/snd_codec.h
+  ${ENGINE_DIR}/audio/snd_public.h
+  ${ENGINE_DIR}/audio/snd_codec_ogg.c
+  ${ENGINE_DIR}/audio/snd_codec_opus.c
+  ${ENGINE_DIR}/audio/snd_codec_wav.c
+  ${ENGINE_DIR}/audio/snd_main.c
+  ${ENGINE_DIR}/audio/ALObjects.cpp
+  ${ENGINE_DIR}/audio/ALObjects.h
+  ${ENGINE_DIR}/audio/Audio.cpp
+  ${ENGINE_DIR}/audio/Audio.h
+  ${ENGINE_DIR}/audio/AudioPrivate.h
+  ${ENGINE_DIR}/audio/Emitter.cpp
+  ${ENGINE_DIR}/audio/Emitter.h
+  ${ENGINE_DIR}/audio/Sample.cpp
+  ${ENGINE_DIR}/audio/Sample.h
+  ${ENGINE_DIR}/audio/Sound.cpp
+  ${ENGINE_DIR}/audio/Sound.h
 )
 
 if( USE_MUMBLE )
@@ -634,7 +635,6 @@ endif()
 
 set( SDLLIST
   ${ENGINE_DIR}/sys/sdl_input.cpp
-  ${ENGINE_DIR}/sys/sdl_snd.cpp
   ${ENGINE_DIR}/sys/sdl2_compat.cpp
   ${ENGINE_DIR}/sys/sys_local.h
 )
@@ -1190,14 +1190,10 @@ if( LINUX AND ( BUILD_CLIENT OR BUILD_NEW_RENDERER OR BUILD_OLD_RENDERER ) )
 endif()
 
 # OpenAL
-if( BUILD_CLIENT )
+if( BUILD_CLIENT OR BUILD_TTY_CLIENT )
   find_package( OpenAL REQUIRED )
   include_directories( ${OPENAL_INCLUDE_DIR} )
-  if( USE_OPENAL_DLOPEN )
-    add_definitions( -DUSE_OPENAL_DLOPEN )
-  else()
-    set( LIBS_CLIENT ${LIBS_CLIENT} ${OPENAL_LIBRARY} )
-  endif()
+  set( LIBS_CLIENTBASE ${LIBS_CLIENTBASE} ${OPENAL_LIBRARY} )
 endif()
 
 # CURL

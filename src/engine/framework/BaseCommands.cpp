@@ -627,13 +627,18 @@ namespace Cmd {
                 std::string delay = args.Argv(1 + isNamed);
                 int target;
                 delayType_t type;
+                bool frames = delay.back() == 'f';
+
+                if (frames) {
+                    delay.erase(--delay.end()); //FIXME-gcc-4.6 delay.pop_back()
+                }
 
                 if (!Str::ParseInt(target, delay) || target < 1) {
                     Print(_("delay: the delay must be a positive integer"));
                     return;
                 }
 
-                if (delay.back() == 'f') {
+                if (frames) {
                     target += delayFrame;
                     type = FRAME;
                 } else {

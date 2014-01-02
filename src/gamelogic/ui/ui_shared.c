@@ -2279,7 +2279,7 @@ static float UI_Parse_Indent( const char **text )
 		return 0.0f;
 	}
 
-	strncpy( indentWidth, *text, numDigits );
+	Q_strncpyz( indentWidth, *text, sizeof( indentWidth ) );
 
 	indentWidth[ numDigits ] = '\0';
 	indentWidthPtr = indentWidth;
@@ -5369,7 +5369,7 @@ const char *Item_Text_Wrap( const char *text, float scale, float width )
 		// blocks of text
 
 		// Copy text into the buffer, but don't overflow it
-		strncpy( out + paint, p, MIN( (size_t)(eol - p), sizeof( out ) - paint ) );
+		Q_strncpyz( out + paint, p, MIN( (size_t)(eol - p + 1), sizeof( out ) - paint ) );
 		paint += ( eol - p );
 
 		if ( paint >= sizeof( out ) )
@@ -5403,7 +5403,7 @@ const char *Item_Text_Wrap( const char *text, float scale, float width )
 				int  indentMarkerTextLength = strlen( indentMarkerText );
 
 				// copy the marker into the buffer, but don't overflow it
-				strncpy( out + paint, indentMarkerText, MIN( (size_t)indentMarkerTextLength, sizeof( out ) - paint ) );
+				Q_strncpyz( out + paint, indentMarkerText, MIN( (size_t)indentMarkerTextLength + 1, sizeof( out ) - paint ) );
 				paint += indentMarkerTextLength;
 
 				if ( paint >= sizeof ( out ) )
@@ -5685,8 +5685,7 @@ void Item_Text_Wrapped_Paint( itemDef_t *item )
 				qboolean lflf = textPtr[ i ] == '\n' && textPtr[ i + 1 ] == '\n';
 
 				memset( &lineItem, 0, sizeof( itemDef_t ) );
-				strncpy( buff, p, lineLength );
-				buff[ lineLength ] = '\0';
+				Q_strncpyz( buff, p, lineLength + 1 );
 				p = &textPtr[ i + 1 + lflf ];
 
 				lineItem.type = ITEM_TYPE_TEXT;

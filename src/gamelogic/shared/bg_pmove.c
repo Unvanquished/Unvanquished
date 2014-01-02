@@ -1295,21 +1295,14 @@ static qboolean PM_CheckJetpack( void )
 		return qfalse;
 	}
 
-	// if jump key not held or attacked recently, stop active thrust
-	if ( pm->cmd.upmove < 10 || ( pm->ps->stats[ STAT_STATE2 ] & SS2_JETPACK_DAMAGED ) )
+	// if jump key not held stop active thrust
+	if ( pm->cmd.upmove < 10 )
 	{
 		if ( pm->ps->stats[ STAT_STATE2 ] & SS2_JETPACK_ACTIVE )
 		{
-			if ( pm->debugLevel > 0 )
+			if ( pm->debugLevel > 0 && pm->cmd.upmove < 10 )
 			{
-				if ( pm->cmd.upmove < 10 )
-				{
-					Com_Printf( "[PM_CheckJetpack] " S_COLOR_LTORANGE "Key Released: Jetpack stopped\n" );
-				}
-				else if ( pm->ps->stats[ STAT_STATE2 ] & SS2_JETPACK_DAMAGED )
-				{
-					Com_Printf( "[PM_CheckJetpack] " S_COLOR_RED "Damaged: Jetpack stopped\n" );
-				}
+				Com_Printf( "[PM_CheckJetpack] " S_COLOR_LTORANGE "Key Released: Jetpack stopped\n" );
 			}
 
 			pm->ps->stats[ STAT_STATE2 ] &= ~SS2_JETPACK_ACTIVE;
@@ -1334,12 +1327,6 @@ static qboolean PM_CheckJetpack( void )
 	// check thrust starting conditions
 	if ( !( pm->ps->stats[ STAT_STATE2 ] & SS2_JETPACK_WARM ) )
 	{
-		// don't allow a start when damaged recently
-		if ( pm->ps->stats[ STAT_STATE2 ] & SS2_JETPACK_DAMAGED )
-		{
-			return qfalse;
-		}
-
 		// we got off ground by jumping
 		if ( pm->ps->pm_flags & PMF_JUMPED )
 		{

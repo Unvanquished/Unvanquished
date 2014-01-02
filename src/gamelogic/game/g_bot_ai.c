@@ -524,7 +524,7 @@ to the rest of the behavior tree
 
 AINodeStatus_t BotActionFireWeapon( gentity_t *self, AIGenericNode_t *node ) 
 {
-	if ( WeaponIsEmpty( BG_GetPlayerWeapon( &self->client->ps ), self->client->ps ) && self->client->pers.team == TEAM_HUMANS )
+	if ( WeaponIsEmpty( BG_GetPlayerWeapon( &self->client->ps ), &self->client->ps ) && self->client->pers.team == TEAM_HUMANS )
 	{
 		G_ForceWeaponChange( self, WP_BLASTER );
 	}
@@ -696,7 +696,7 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 		return STATUS_FAILURE;
 	}
 
-	if ( WeaponIsEmpty( BG_GetPlayerWeapon( &self->client->ps ), self->client->ps ) && myTeam == TEAM_HUMANS )
+	if ( WeaponIsEmpty( BG_GetPlayerWeapon( &self->client->ps ), &self->client->ps ) && myTeam == TEAM_HUMANS )
 	{
 		G_ForceWeaponChange( self, WP_BLASTER );
 	}

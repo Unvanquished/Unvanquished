@@ -1488,22 +1488,20 @@ static void IRC_Display( int event, const char *nick, const char *message )
 	// Format message
 	if ( has_nick && has_message )
 	{
-		sprintf( buffer, fmt_string, nick_copy, message_copy );
+		Com_sprintf( buffer, sizeof( buffer ), fmt_string, nick_copy, message_copy );
 	}
 	else if ( has_nick )
 	{
-		sprintf( buffer, fmt_string, nick_copy );
+		Com_sprintf( buffer, sizeof( buffer ), fmt_string, nick_copy );
 	}
 	else if ( has_message )
 	{
-		sprintf( buffer, fmt_string, message_copy );
+		Com_sprintf( buffer, sizeof( buffer ), fmt_string, message_copy );
 	}
 	else
 	{
-		strncpy( buffer, fmt_string, IRC_RECV_BUF_SIZE * 2 - 1 );
+		Q_strncpyz( buffer, fmt_string, sizeof( buffer ) );
 	}
-
-	buffer[ IRC_RECV_BUF_SIZE * 2 - 1 ] = 0;
 
 	Com_Printf( "^1IRC: %s", buffer );
 }
@@ -1762,7 +1760,7 @@ static int IRCH_Nick( void )
 
 	if ( !strcmp( IRC_String( pfx_nickOrServer ), IRC_User.nick ) )
 	{
-		strncpy( IRC_User.nick, IRC_String( arg_values[ 0 ] ), 15 );
+		Q_strncpyz( IRC_User.nick, IRC_String( arg_values[ 0 ] ), sizeof( IRC_User.nick ) );
 		Com_Printf("%s\n", IRC_User.nick );
 		event = IRC_MakeEvent( NICK_CHANGE, 1 );
 	}
@@ -2041,8 +2039,7 @@ void CL_IRCSay( void )
 		return;
 	}
 
-	memset( m_sendstring, 0, sizeof( m_sendstring ) );
-	strncpy( m_sendstring, Cmd_UnquoteString(Cmd_Args()), 479 );
+	Q_strncpyz( m_sendstring, Cmd_UnquoteString(Cmd_Args()), sizeof( m_sendstring ) );
 
 	if ( m_sendstring[ 0 ] == 0 )
 	{
@@ -2275,7 +2272,7 @@ static int IRC_AttemptConnection( void )
 	}
 
 	// Find server address
-	Q_strncpyz2( host_name, cl_IRC_server->string, sizeof( host_name ) );
+	Q_strncpyz( host_name, cl_IRC_server->string, sizeof( host_name ) );
 
 	if ( ( host = gethostbyname( host_name ) ) == NULL )
 	{
@@ -2301,6 +2298,7 @@ static int IRC_AttemptConnection( void )
 		port = 6667;
 	}
 
+	memset( &address, 0, sizeof( address ) );
 	address.sin_family = AF_INET;
 	address.sin_port = htons( port );
 	address.sin_addr.s_addr = * ( ( unsigned long * ) host->h_addr );

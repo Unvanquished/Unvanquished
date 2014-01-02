@@ -151,7 +151,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #define VPRINTF_LIKE(n)
 #define PRINTF_TRANSLATE_ARG(a)
 #define MALLOC_LIKE
-#define ALIGNED(a,x)
+#define ALIGNED(a,x) x
 #define DLLEXPORT
 #define DLLIMPORT
 

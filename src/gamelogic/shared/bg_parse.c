@@ -152,27 +152,12 @@ float REACTOR_BASESIZE;
 float REACTOR_ATTACK_RANGE;
 int   REACTOR_ATTACK_REPEAT;
 int   REACTOR_ATTACK_DAMAGE;
-float REACTOR_ATTACK_DCC_RANGE;
-int   REACTOR_ATTACK_DCC_REPEAT;
-int   REACTOR_ATTACK_DCC_DAMAGE;
 
 float REPEATER_BASESIZE;
-
-float MGTURRET_RANGE;
-int   MGTURRET_ANGULARSPEED;
-int   MGTURRET_ACCURACY_TO_FIRE;
-int   MGTURRET_VERTICALCAP;
-int   MGTURRET_SPREAD;
-int   MGTURRET_DMG;
-int   MGTURRET_SPINUP_TIME;
 
 float TESLAGEN_RANGE;
 int   TESLAGEN_REPEAT;
 int   TESLAGEN_DMG;
-
-int   DC_ATTACK_PERIOD;
-int   DC_HEALRATE;
-int   DC_RANGE;
 
 // Human Weapons
 
@@ -232,25 +217,10 @@ int   LCANNON_CHARGE_AMMO;
 // MUST BE ALPHABETICALLY SORTED!
 static configVar_t bg_configVars[] =
 {
-	{"b_dcc_healRange", INTEGER, qfalse, &DC_RANGE},
-	{"b_dcc_healRate", INTEGER, qfalse, &DC_HEALRATE},
-	{"b_dcc_warningPeriod", INTEGER, qfalse, &DC_ATTACK_PERIOD},
-
-	{"b_mgturret_accuracyToFire", INTEGER, qfalse, &MGTURRET_ACCURACY_TO_FIRE},
-	{"b_mgturret_angularSpeed", INTEGER, qfalse, &MGTURRET_ANGULARSPEED},
-	{"b_mgturret_attackDamage", INTEGER, qfalse, &MGTURRET_DMG},
-	{"b_mgturret_attackSpread", INTEGER, qfalse, &MGTURRET_SPREAD},
-	{"b_mgturret_fireRange", FLOAT, qfalse, &MGTURRET_RANGE},
-	{"b_mgturret_spinupTime", INTEGER, qfalse, &MGTURRET_SPINUP_TIME},
-	{"b_mgturret_verticalCap", INTEGER, qfalse, &MGTURRET_VERTICALCAP},
-
 	{"b_reactor_powerRadius", FLOAT, qfalse, &REACTOR_BASESIZE},
 	{"b_reactor_zapAttackDamage", INTEGER, qfalse, &REACTOR_ATTACK_DAMAGE},
-	{"b_reactor_zapAttackDamageDCC", INTEGER, qfalse, &REACTOR_ATTACK_DCC_DAMAGE},
 	{"b_reactor_zapAttackRange", FLOAT, qfalse, &REACTOR_ATTACK_RANGE},
-	{"b_reactor_zapAttackRangeDCC", FLOAT, qfalse, &REACTOR_ATTACK_DCC_RANGE},
 	{"b_reactor_zapAttackRepeat", INTEGER, qfalse, &REACTOR_ATTACK_REPEAT},
-	{"b_reactor_zapAttackRepeatDCC", INTEGER, qfalse, &REACTOR_ATTACK_DCC_REPEAT},
 
 	{"b_repeater_powerRadius", FLOAT, qfalse, &REPEATER_BASESIZE},
 
@@ -769,6 +739,17 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
 
 			ba->splashRadius = atoi(token);
 		}
+		else if ( !Q_stricmp( token, "weapon" ) )
+		{
+			PARSE(text, token);
+
+			ba->weapon = BG_WeaponNumberByName( token );
+
+			if ( !ba->weapon )
+			{
+				Com_Printf( S_ERROR "unknown weapon name '%s'\n", token );
+			}
+		}
 		else if ( !Q_stricmp( token, "meansOfDeath" ) )
 		{
 			PARSE(text, token);
@@ -819,12 +800,6 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
 
 			defined |= BUILDWEAPON;
 		}
-		else if ( !Q_stricmp( token, "thinkPeriod" ) )
-		{
-			PARSE(text, token);
-
-			ba->nextthink = atoi(token);
-		}
 		else if ( !Q_stricmp( token, "buildTime" ) )
 		{
 			PARSE(text, token);
@@ -836,47 +811,6 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
 		else if ( !Q_stricmp( token, "usable" ) )
 		{
 			ba->usable = qtrue;
-		}
-		else if ( !Q_stricmp( token, "attackRange" ) )
-		{
-			PARSE(text, token);
-
-			ba->turretRange = atoi(token);
-		}
-		else if ( !Q_stricmp( token, "attackSpeed" ) )
-		{
-			PARSE(text, token);
-
-			ba->turretFireSpeed = atoi(token);
-		}
-		else if ( !Q_stricmp( token, "attackType" ) )
-		{
-			PARSE(text, token);
-
-			if ( !Q_stricmp( token, "none" ) )
-			{
-				ba->turretProjType = WP_NONE;
-			}
-			else if ( !Q_stricmp( token, "lockBlob" ) )
-			{
-				ba->turretProjType = WP_LOCKBLOB_LAUNCHER;
-			}
-			else if ( !Q_stricmp( token, "hive" ) )
-			{
-				ba->turretProjType = WP_HIVE;
-			}
-			else if ( !Q_stricmp( token, "mgturret" ) )
-			{
-				ba->turretProjType = WP_MGTURRET;
-			}
-			else if ( !Q_stricmp( token, "tesla" ) )
-			{
-				ba->turretProjType = WP_TESLAGEN;
-			}
-			else
-			{
-				Com_Printf( S_ERROR "unknown attackType value '%s'\n", token );
-			}
 		}
 		else if ( !Q_stricmp( token, "minNormal" ) )
 		{
@@ -899,10 +833,6 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
 			PARSE(text, token);
 
 			ba->creepSize = atoi(token);
-		}
-		else if ( !Q_stricmp( token, "dccTest" ) )
-		{
-			ba->dccTest = qtrue;
 		}
 		else if ( !Q_stricmp( token, "transparentTest" ) )
 		{

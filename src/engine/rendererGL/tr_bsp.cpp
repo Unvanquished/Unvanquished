@@ -4222,7 +4222,7 @@ static void R_CreateVBOWorldSurfaces( void )
                 Com_InitGrowList(&vboSurfaces, 100);
 
                 // sort surfaces by shader
-                qsort(surfacesSorted, numSurfaces, sizeof(surfacesSorted), BSPSurfaceCompare);
+                qsort(surfacesSorted, numSurfaces, sizeof(*surfacesSorted), BSPSurfaceCompare);
 
                 // create a VBO for each shader
                 shader = oldShader = NULL;
@@ -7534,7 +7534,7 @@ static void R_CreateVBOLightMeshes( trRefLight_t *light )
 	}
 
 	// sort interaction caches by shader
-	qsort( iaCachesSorted, numCaches, sizeof( iaCachesSorted ), InteractionCacheCompare );
+	qsort( iaCachesSorted, numCaches, sizeof( *iaCachesSorted ), InteractionCacheCompare );
 
 	// create a VBO for each shader
 	shader = oldShader = NULL;
@@ -7919,7 +7919,7 @@ static void R_CreateVBOShadowMeshes( trRefLight_t *light )
 	}
 
 	// sort interaction caches by shader
-	qsort( iaCachesSorted, numCaches, sizeof( iaCachesSorted ), InteractionCacheCompare );
+	qsort( iaCachesSorted, numCaches, sizeof( *iaCachesSorted ), InteractionCacheCompare );
 
 	// create a VBO for each shader
 	shader = oldShader = NULL;
@@ -8342,7 +8342,7 @@ static void R_CreateVBOShadowCubeMeshes( trRefLight_t *light )
 	}
 
 	// sort interaction caches by shader
-	qsort( iaCachesSorted, numCaches, sizeof( iaCachesSorted ), InteractionCacheCompare );
+	qsort( iaCachesSorted, numCaches, sizeof( *iaCachesSorted ), InteractionCacheCompare );
 
 	// create a VBO for each shader
 	for ( cubeSide = 0; cubeSide < 6; cubeSide++ )
