@@ -3748,6 +3748,10 @@ qboolean G_admin_listplayers( gentity_t *ent )
 		{
 			Q_strncpyz( lname, l->name, sizeof( lname ) );
 		}
+		else
+		{
+			lname[ 0 ] = 0;
+		}
 
 		for ( colorlen = j = 0; lname[ j ]; j++ )
 		{
