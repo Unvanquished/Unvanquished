@@ -2057,9 +2057,9 @@ BG_PackEntityNumbers
 Pack entity numbers into an entityState_t
 ===============
 */
-void BG_PackEntityNumbers( entityState_t *es, const int *entityNums, int count )
+void BG_PackEntityNumbers( entityState_t *es, const int *entityNums, unsigned int count )
 {
-	int i;
+	unsigned int i;
 
 	if ( count > MAX_NUM_PACKED_ENTITY_NUMS )
 	{
@@ -2145,9 +2145,9 @@ BG_UnpackEntityNumbers
 Unpack entity numbers from an entityState_t
 ===============
 */
-int BG_UnpackEntityNumbers( entityState_t *es, int *entityNums, int count )
+int BG_UnpackEntityNumbers( entityState_t *es, int *entityNums, unsigned int count )
 {
-	int i;
+	unsigned int i;
 
 	if ( count > MAX_NUM_PACKED_ENTITY_NUMS )
 	{
