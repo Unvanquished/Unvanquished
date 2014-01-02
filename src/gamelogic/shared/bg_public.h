@@ -269,7 +269,6 @@ typedef enum
 #define SS2_JETPACK_ENABLED BIT(0)  // whether jets/wings are extended
 #define SS2_JETPACK_WARM    BIT(1)  // whether we can start a thrust
 #define SS2_JETPACK_ACTIVE  BIT(2)  // whether we are thrusting
-#define SS2_JETPACK_DAMAGED BIT(3)  // whether we were damaged recently
 
 // has to fit into 16 bits
 #define SB_BUILDABLE_MASK        0x00FF
@@ -486,7 +485,6 @@ typedef enum
   BA_H_TESLAGEN,
 
   BA_H_ARMOURY,
-  BA_H_DCC,
   BA_H_MEDISTAT,
   BA_H_DRILL,
 
@@ -618,7 +616,6 @@ typedef enum
   EV_REACTOR_ATTACK_1, // reactor under attack
   EV_REACTOR_ATTACK_2, // reactor under attack
   EV_REACTOR_DYING, // reactor destroyed
-  EV_DCC_ATTACK, // dcc under attack
 
   EV_WARN_ATTACK, // a building has been destroyed and the destruction noticed by a nearby om/rc/rrep
 
@@ -1127,6 +1124,7 @@ typedef struct
 	int         splashDamage;
 	int         splashRadius;
 
+	weapon_t    weapon; // used to look up weaponInfo_t for clientside effects
 	int         meansOfDeath;
 
 	team_t      team;
@@ -1134,13 +1132,8 @@ typedef struct
 
 	int         idleAnim;
 
-	int         nextthink;
 	int         buildTime;
 	qboolean    usable;
-
-	int         turretRange;
-	int         turretFireSpeed;
-	weapon_t    turretProjType;
 
 	float       minNormal;
 	qboolean    invertNormal;
@@ -1148,7 +1141,6 @@ typedef struct
 	qboolean    creepTest;
 	int         creepSize;
 
-	qboolean    dccTest;
 	qboolean    transparentTest;
 	qboolean    uniqueTest;
 
@@ -1326,6 +1318,7 @@ qboolean                    BG_ClassHasAbility( int pClass, int ability );
 int                         BG_ClassCanEvolveFromTo(int from, int to, int credits);
 qboolean                    BG_AlienCanEvolve(int from, int credits);
 
+weapon_t                  BG_WeaponNumberByName( const char *name );
 const weaponAttributes_t  *BG_WeaponByName( const char *name );
 const weaponAttributes_t  *BG_Weapon( int weapon );
 

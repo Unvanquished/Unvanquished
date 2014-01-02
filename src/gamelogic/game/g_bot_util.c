@@ -236,9 +236,6 @@ float BotGetEnemyPriority( gentity_t *self, gentity_t *ent )
 			case BA_H_MEDISTAT:
 				enemyScore = 0.6;
 				break;
-			case BA_H_DCC:
-				enemyScore = 0.5;
-				break;
 			case BA_A_ACIDTUBE:
 				enemyScore = 0.7;
 				break;

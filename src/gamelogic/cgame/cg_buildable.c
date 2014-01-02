@@ -93,7 +93,6 @@ static const int animLoading[] = {
 	CG_ANIM( qfalse, qtrue,  qtrue,  qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_TURRET
 	CG_ANIM( qfalse, qtrue,  qtrue,  qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_TESLAGEN
 	CG_ANIM( qfalse, qtrue,  qtrue,  qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_ARMOURY
-	CG_ANIM( qfalse, qtrue,  qtrue,  qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_DCC
 	CG_ANIM( qtrue,  qtrue,  qtrue,  qtrue,  qtrue,  qtrue,   qtrue,  qfalse, qfalse, qtrue,  qtrue,  qtrue,  qtrue,  qtrue  ), // BA_H_MEDISTAT
 	CG_ANIM( qfalse, qtrue,  qtrue,  qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_DRILL
 	CG_ANIM( qfalse, qtrue,  qtrue,  qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_REACTOR
@@ -747,18 +746,13 @@ qboolean CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t 
 			break;
 
 		case BA_H_MGTURRET:
-			*range = MGTURRET_RANGE;
+			*range = TURRET_RANGE;
 			shc = SHC_ORANGE;
 			break;
 
 		case BA_H_TESLAGEN:
 			*range = TESLAGEN_RANGE;
 			shc = SHC_RED;
-			break;
-
-		case BA_H_DCC:
-			*range = DC_RANGE;
-			shc = SHC_YELLOW;
 			break;
 
 		case BA_H_DRILL:
@@ -782,10 +776,12 @@ qboolean CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t 
 
 	if ( bType == BA_A_TRAPPER )
 	{
+		// HACK: Assumes certain trapper attributes
 		*rmType = RM_SPHERICAL_CONE_64;
 	}
 	else if ( bType == BA_H_MGTURRET )
 	{
+		// HACK: Assumes TURRET_PITCH_CAP == 30
 		*rmType = RM_SPHERICAL_CONE_240;
 	}
 	else
@@ -1153,12 +1149,30 @@ void CG_GhostBuildable( int buildableInfo )
 	                     : cgs.media.redBuildShader;
 
 	// Draw predicted RGS efficiency
+	// TODO: Add fancy display for predicted RGS efficiency
 	if ( buildable == BA_H_DRILL || buildable == BA_A_LEECH )
 	{
-		// TODO: Add fancy display for predicted RGS efficiency
-		// Colours: < 33⅓% dark red, <50% red, <66⅔% orange, <83⅓% yellow, else green
-	        static const char colours[] = "??18322";
-		CG_CenterPrint(va("^%c%d%%", colours[ (int)( (float) ps->stats[ STAT_PREDICTION ] / ( 100.0f / 6.0f ) ) ], ps->stats[ STAT_PREDICTION ]), 200, GIANTCHAR_WIDTH * 4 );
+		char color;
+		int  delta = ps->stats[ STAT_PREDICTION ];
+
+		if ( delta < 0 )
+		{
+			color = COLOR_RED;
+		}
+		else if ( delta < 10 )
+		{
+			color = COLOR_ORANGE;
+		}
+		else if ( delta < 50 )
+		{
+			color = COLOR_YELLOW;
+		}
+		else
+		{
+			color = COLOR_GREEN;
+		}
+
+		CG_CenterPrint(va("^%c%+d%%", color, delta), 200, GIANTCHAR_WIDTH * 4 );
 	}
 
 	//rescale the model
@@ -2548,37 +2562,37 @@ void CG_Buildable( centity_t *cent )
 	//weapon effects for turrets
 	if ( es->eFlags & EF_FIRING )
 	{
-		weaponInfo_t *weapon = &cg_weapons[ es->weapon ];
+		weaponInfo_t *wi = &cg_weapons[ es->weapon ];
 
-		if ( cg.time - cent->muzzleFlashTime > MUZZLE_FLASH_TIME ||
-		     buildable->turretProjType == WP_TESLAGEN )
+		if ( cg.time - cent->muzzleFlashTime > MUZZLE_FLASH_TIME || ( weapon_t )es->weapon == WP_TESLAGEN )
 		{
-			if ( weapon->wim[ WPM_PRIMARY ].flashDlightColor[ 0 ] ||
-			     weapon->wim[ WPM_PRIMARY ].flashDlightColor[ 1 ] ||
-			     weapon->wim[ WPM_PRIMARY ].flashDlightColor[ 2 ] )
+			if ( wi->wim[ WPM_PRIMARY ].flashDlightColor[ 0 ] ||
+			     wi->wim[ WPM_PRIMARY ].flashDlightColor[ 1 ] ||
+			     wi->wim[ WPM_PRIMARY ].flashDlightColor[ 2 ] )
 			{
-				trap_R_AddLightToScene( cent->lerpOrigin, weapon->wim[ WPM_PRIMARY ].flashDlight,
-				                        weapon->wim[ WPM_PRIMARY ].flashDlightIntensity,
-				                        weapon->wim[ WPM_PRIMARY ].flashDlightColor[ 0 ],
-				                        weapon->wim[ WPM_PRIMARY ].flashDlightColor[ 1 ],
-				                        weapon->wim[ WPM_PRIMARY ].flashDlightColor[ 2 ], 0, 0 );
-				if( weapon->wim[ WPM_PRIMARY ].muzzleParticleSystem )
+				trap_R_AddLightToScene( cent->lerpOrigin, wi->wim[ WPM_PRIMARY ].flashDlight,
+				                        wi->wim[ WPM_PRIMARY ].flashDlightIntensity,
+				                        wi->wim[ WPM_PRIMARY ].flashDlightColor[ 0 ],
+				                        wi->wim[ WPM_PRIMARY ].flashDlightColor[ 1 ],
+				                        wi->wim[ WPM_PRIMARY ].flashDlightColor[ 2 ], 0, 0 );
+
+				if ( wi->wim[ WPM_PRIMARY ].muzzleParticleSystem )
 				{
-					cent->muzzlePS = CG_SpawnNewParticleSystem( weapon->wim[ WPM_PRIMARY ].muzzleParticleSystem );
+					cent->muzzlePS = CG_SpawnNewParticleSystem( wi->wim[ WPM_PRIMARY ].muzzleParticleSystem );
 					CG_SetAttachmentTag( &cent->muzzlePS->attachment, ent, ent.hModel, "tag_flash" );
 					CG_AttachToTag( &cent->muzzlePS->attachment );
 				}
 			}
 		}
 
-		if ( weapon->wim[ WPM_PRIMARY ].firingSound )
+		if ( wi->wim[ WPM_PRIMARY ].firingSound )
 		{
 			trap_S_AddLoopingSound( es->number, cent->lerpOrigin, vec3_origin,
-			                        weapon->wim[ WPM_PRIMARY ].firingSound );
+			                        wi->wim[ WPM_PRIMARY ].firingSound );
 		}
-		else if ( weapon->readySound )
+		else if ( wi->readySound )
 		{
-			trap_S_AddLoopingSound( es->number, cent->lerpOrigin, vec3_origin, weapon->readySound );
+			trap_S_AddLoopingSound( es->number, cent->lerpOrigin, vec3_origin, wi->readySound );
 		}
 	}
 

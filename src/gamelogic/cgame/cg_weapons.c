@@ -116,7 +116,7 @@ static void CG_LoadCustomCrosshairs( void )
 			break;
 		}
 
-		if ( ( weapon = BG_WeaponByName( token )->number ) )
+		if ( ( weapon = BG_WeaponNumberByName( token ) ) )
 		{
 			token = COM_Parse( &text_p );
 
