@@ -411,7 +411,7 @@ void CG_SetAttachmentCent( attachment_t *a, centity_t *cent )
 CG_SetAttachmentTag
 ===============
 */
-void CG_SetAttachmentTag( attachment_t *a, refEntity_t parent,
+void CG_SetAttachmentTag( attachment_t *a, refEntity_t *parent,
                           qhandle_t model, const char *tagName )
 {
 	if ( !a )
@@ -419,7 +419,7 @@ void CG_SetAttachmentTag( attachment_t *a, refEntity_t parent,
 		return;
 	}
 
-	a->parent = parent;
+	a->parent = *parent;
 	a->model = model;
 	Q_strncpyz( a->tagName, tagName, MAX_STRING_CHARS );
 	a->tagValid = qtrue;

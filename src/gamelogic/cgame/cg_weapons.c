@@ -1660,11 +1660,11 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 		{
 			if ( noGunModel )
 			{
-				CG_SetAttachmentTag( &cent->muzzlePS->attachment, *parent, parent->hModel, "tag_weapon" );
+				CG_SetAttachmentTag( &cent->muzzlePS->attachment, parent, parent->hModel, "tag_weapon" );
 			}
 			else
 			{
-				CG_SetAttachmentTag( &cent->muzzlePS->attachment, gun, gun.hModel, "tag_flash" );
+				CG_SetAttachmentTag( &cent->muzzlePS->attachment, &gun, gun.hModel, "tag_flash" );
 			}
 		}
 
@@ -1733,11 +1733,11 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 			{
 				if ( noGunModel )
 				{
-					CG_SetAttachmentTag( &cent->muzzlePS->attachment, *parent, parent->hModel, "tag_weapon" );
+					CG_SetAttachmentTag( &cent->muzzlePS->attachment, parent, parent->hModel, "tag_weapon" );
 				}
 				else
 				{
-					CG_SetAttachmentTag( &cent->muzzlePS->attachment, gun, gun.hModel, "tag_flash" );
+					CG_SetAttachmentTag( &cent->muzzlePS->attachment, &gun, gun.hModel, "tag_flash" );
 				}
 
 				CG_SetAttachmentCent( &cent->muzzlePS->attachment, cent );

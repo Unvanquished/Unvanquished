@@ -2605,7 +2605,7 @@ static void CG_PlayerUpgrades( centity_t *cent, refEntity_t *torso )
 			// attach ps
 			if ( CG_IsParticleSystemValid( &cent->jetPackPS ) )
 			{
-				CG_SetAttachmentTag( &cent->jetPackPS->attachment, jetpack, jetpack.hModel, "tag_flash" );
+				CG_SetAttachmentTag( &cent->jetPackPS->attachment, &jetpack, jetpack.hModel, "tag_flash" );
 				CG_SetAttachmentCent( &cent->jetPackPS->attachment, cent );
 				CG_AttachToTag( &cent->jetPackPS->attachment );
 			}
@@ -3584,7 +3584,7 @@ void CG_Player( centity_t *cent )
 			}
 
 			CG_SetAttachmentTag( &cent->poisonCloudedPS->attachment,
-			                     head, head.hModel, "tag_head" );
+			                     &head, head.hModel, "tag_head" );
 			CG_SetAttachmentCent( &cent->poisonCloudedPS->attachment, cent );
 			CG_AttachToTag( &cent->poisonCloudedPS->attachment );
 		}

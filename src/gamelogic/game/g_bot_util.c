@@ -275,9 +275,9 @@ qboolean BotCanEvolveToClass( gentity_t *self, class_t newClass )
 	return ( BG_ClassCanEvolveFromTo( ( class_t )self->client->ps.stats[STAT_CLASS], newClass, self->client->ps.persistant[PERS_CREDIT] ) >= 0 );
 }
 
-qboolean WeaponIsEmpty( weapon_t weapon, playerState_t ps )
+qboolean WeaponIsEmpty( weapon_t weapon, playerState_t *ps )
 {
-	if ( ps.ammo <= 0 && ps.clips <= 0 && !BG_Weapon( weapon )->infiniteAmmo )
+	if ( ps->ammo <= 0 && ps->clips <= 0 && !BG_Weapon( weapon )->infiniteAmmo )
 	{
 		return qtrue;
 	}
