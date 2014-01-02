@@ -63,6 +63,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define GLSL_COMPILE_STARTUP_ONLY  1
 
+#define MAX_TEXTURE_MIPS      16
+#define MAX_TEXTURE_LAYERS    256
+
 // visibility tests: check if a 3D-point is visible
 // results may be delayed, but for visual effect like flares this
 // shouldn't matter
@@ -458,7 +461,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	  IF_RGBE = BIT( 16 ),
 	  IF_ALPHATEST = BIT( 17 ),
 	  IF_DISPLACEMAP = BIT( 18 ),
-	  IF_NOLIGHTSCALE = BIT( 19 )
+	  IF_NOLIGHTSCALE = BIT( 19 ),
+	  IF_BC1 = BIT( 20 ),
+	  IF_BC3 = BIT( 21 ),
+	  IF_BC4 = BIT( 22 ),
+	  IF_BC5 = BIT( 23 )
 	};
 
 	typedef enum
@@ -3396,17 +3403,18 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	image_t *R_FindImageFile( const char *name, int bits, filterType_t filterType, wrapType_t wrapType, const char *materialName );
 	image_t *R_FindCubeImage( const char *name, int bits, filterType_t filterType, wrapType_t wrapType, const char *materialName );
 
-	image_t *R_CreateImage( const char *name, const byte *pic, int width, int height, int bits, filterType_t filterType,
-	                        wrapType_t wrapType );
+	image_t *R_CreateImage( const char *name, const byte **pic,
+				int width, int height, int bits, int numMips,
+				filterType_t filterType, wrapType_t wrapType );
 
-	image_t *R_CreateCubeImage( const char *name,
-	                            const byte *pic[ 6 ],
-	                            int width, int height, int bits, filterType_t filterType, wrapType_t wrapType );
+	image_t *R_CreateCubeImage( const char *name, const byte *pic[ 6 ],
+	                            int width, int height, int bits,
+				    filterType_t filterType, wrapType_t wrapType );
 
 	image_t *R_CreateGlyph( const char *name, const byte *pic, int width, int height );
 
 	image_t *R_AllocImage( const char *name, qboolean linkIntoHashTable );
-	void    R_UploadImage( const byte **dataArray, int numData, image_t *image );
+	void    R_UploadImage( const byte **dataArray, int numData, int numMips, image_t *image );
 
 	int     RE_GetTextureId( const char *name );
 
@@ -4124,16 +4132,17 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	void                                RE_BeginFrame( stereoFrame_t stereoFrame );
 	void                                RE_EndFrame( int *frontEndMsec, int *backEndMsec );
 
-	void                                LoadTGA( const char *name, byte **pic, int *width, int *height, byte alphaByte );
+	void                                LoadTGA( const char *name, byte **pic, int *width, int *height, int *numMips, int *bits, byte alphaByte );
 
-	void                                LoadJPG( const char *filename, unsigned char **pic, int *width, int *height, byte alphaByte );
+	void                                LoadJPG( const char *filename, unsigned char **pic, int *width, int *height, int *numMips, int *bits, byte alphaByte );
 	void                                SaveJPG( char *filename, int quality, int image_width, int image_height, unsigned char *image_buffer );
 	int                                 SaveJPGToBuffer( byte *buffer, size_t bufferSize, int quality, int image_width, int image_height, byte *image_buffer );
 
-	void                                LoadPNG( const char *name, byte **pic, int *width, int *height, byte alphaByte );
+	void                                LoadPNG( const char *name, byte **pic, int *width, int *height, int *numMips, int *bits, byte alphaByte );
 	void                                SavePNG( const char *name, const byte *pic, int width, int height, int numBytes, qboolean flip );
 
-	void                                LoadWEBP( const char *name, byte **pic, int *width, int *height, byte alphaByte );
+	void                                LoadWEBP( const char *name, byte **pic, int *width, int *height, int *numMips, int *bits, byte alphaByte );
+	void                                LoadDDS( const char *name, byte **pic, int *width, int *height, int *numMips, int *bits, byte alphaByte);
 
 // video stuff
 	const void *RB_TakeVideoFrameCmd( const void *data );

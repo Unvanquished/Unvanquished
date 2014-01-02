@@ -52,7 +52,8 @@ static void NORETURN png_user_error_fn( png_structp png_ptr, png_const_charp err
 	longjmp( png_jmpbuf( png_ptr ), 0 );
 }
 
-void LoadPNG( const char *name, byte **pic, int *width, int *height, byte alphaByte )
+void LoadPNG( const char *name, byte **pic, int *width, int *height,
+	      int *numMips, int *bits, byte alphaByte )
 {
 	int          bit_depth;
 	int          color_type;

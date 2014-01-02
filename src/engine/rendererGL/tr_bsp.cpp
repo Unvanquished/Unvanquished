@@ -979,8 +979,8 @@ static void R_LoadLightmaps( lump_t *l, const char *bspName )
 					width = height = 0;
 					LoadRGBEToBytes( va( "%s/%s", mapName, lightmapFiles[ i ] ), &ldrImage, &width, &height );
 
-					image = R_CreateImage( va( "%s/%s", mapName, lightmapFiles[ i ] ), ( byte * ) ldrImage, width, height,
-					                       IF_NOPICMIP | IF_LIGHTMAP | IF_NOCOMPRESSION, FT_DEFAULT, WT_CLAMP );
+					image = R_CreateImage( va( "%s/%s", mapName, lightmapFiles[ i ] ), (const byte **)&ldrImage, width, height,
+					                       1, IF_NOPICMIP | IF_LIGHTMAP | IF_NOCOMPRESSION, FT_DEFAULT, WT_CLAMP );
 
 					Com_AddToGrowList( &tr.lightmaps, image );
 
@@ -1105,7 +1105,7 @@ static void R_LoadLightmaps( lump_t *l, const char *bspName )
 						data[ j * 4 + 3 ] = 255;
 					}
 
-					image = R_CreateImage( va( "_lightmap%d", i ), data, LIGHTMAP_SIZE, LIGHTMAP_SIZE, IF_LIGHTMAP | IF_NOCOMPRESSION, FT_DEFAULT, WT_CLAMP );
+					image = R_CreateImage( va( "_lightmap%d", i ), data, LIGHTMAP_SIZE, LIGHTMAP_SIZE, 1, IF_LIGHTMAP | IF_NOCOMPRESSION, FT_DEFAULT, WT_CLAMP );
 					Com_AddToGrowList( &tr.lightmaps, image );
 				}
 				else
@@ -1239,7 +1239,9 @@ static void R_LoadLightmaps( lump_t *l, const char *bspName )
 
 		//memset(fatbuffer,128,tr.fatLightmapSize*tr.fatLightmapSize*4);
 
-		tr.fatLightmap = R_CreateImage( va( "_fatlightmap%d", 0 ), fatbuffer, tr.fatLightmapSize, tr.fatLightmapSize, IF_LIGHTMAP | IF_NOCOMPRESSION, FT_DEFAULT, WT_CLAMP );
+		tr.fatLightmap = R_CreateImage( va( "_fatlightmap%d", 0 ), (const byte **)&fatbuffer,
+						tr.fatLightmapSize, tr.fatLightmapSize, 1,
+						IF_LIGHTMAP | IF_NOCOMPRESSION, FT_DEFAULT, WT_CLAMP );
 		Com_AddToGrowList( &tr.lightmaps, tr.fatLightmap );
 
 		ri.Hunk_FreeTempMemory( fatbuffer );
@@ -9598,7 +9600,7 @@ void R_BuildCubeMaps( void )
 		cubeProbe->cubemap->filterType = FT_LINEAR;
 		cubeProbe->cubemap->wrapType = WT_EDGE_CLAMP;
 
-		R_UploadImage( ( const byte ** ) tr.cubeTemp, 6, cubeProbe->cubemap );
+		R_UploadImage( ( const byte ** ) tr.cubeTemp, 6, 1, cubeProbe->cubemap );
 	}
 
 	ri.Printf( PRINT_ALL, "\n" );
