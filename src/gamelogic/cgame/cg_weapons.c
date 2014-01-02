@@ -1024,7 +1024,7 @@ static qboolean CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo
 
 			wi->crossHairIndicator = trap_R_RegisterShader( token, RSF_DEFAULT );
 
-			if ( !wi->crossHair )
+			if ( !wi->crossHairIndicator )
 			{
 				CG_Printf( S_ERROR "weapon crosshair indicator not found %s\n", token );
 			}
