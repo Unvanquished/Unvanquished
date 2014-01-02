@@ -4020,11 +4020,7 @@ qboolean G_admin_adminhelp( gentity_t *ent )
 				}
 
 				ADMP( va( "%s %s", QQ( N_(" ^3Syntax: ^7$1$\n") ), c->command ) );
-
-				if ( c->flag )
-				{
-					ADMP( va( "%s %s", QQ( N_(" ^3Flag: ^7'$1$'\n") ), c->flag ) );
-				}
+				ADMP( va( "%s %s", QQ( N_(" ^3Flag: ^7'$1$'\n") ), c->flag ) );
 
 				return qtrue;
 			}

@@ -367,13 +367,13 @@ void RE_GlyphChar( fontInfo_t *font, int ch, glyphInfo_t *glyph )
 	}
 
 	// render if needed
-	if ( font->glyphBlock && !font->glyphBlock[ ch / 256 ] )
+	if ( !font->glyphBlock[ ch / 256 ] )
 	{
 		RE_RenderChunk( font, ch / 256 );
 	}
 
 	// default if no glyph
-	if ( font->glyphBlock && !font->glyphBlock[ ch / 256 ][ ch % 256 ].glyph )
+	if ( !font->glyphBlock[ ch / 256 ][ ch % 256 ].glyph )
 	{
 		ch = 0;
 	}
