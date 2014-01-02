@@ -68,12 +68,10 @@ namespace Audio {
             return;
         }
 
-        // This is a temporrary effect to test reverb
-        auto preset = AL::GetPresetByName("hangar");
-
+        auto preset = AL::GetPresetByName("generic");
         if (preset) {
             AL::Effect effectParams;
-            effectParams.ApplyReverbPreset(*AL::GetPresetByName("hangar"));
+            effectParams.ApplyReverbPreset(*preset);
 
             globalEffect = new AL::EffectSlot();
             globalEffect->SetEffect(effectParams);
