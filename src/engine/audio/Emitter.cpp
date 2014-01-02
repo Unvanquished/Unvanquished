@@ -54,7 +54,13 @@ namespace Audio {
     static bool removeReverb = false;
     static bool addReverb = false;
 
-    static AL::EffectSlot* globalEffect = nullptr;
+    struct ReverbSlot {
+        AL::EffectSlot* effect;
+        std::string name;
+        float ratio;
+    };
+    ReverbSlot reverbSlots[N_REVERB_SLOTS];
+    bool testingReverb = false;
 
     static bool initialized = false;
 
@@ -68,15 +74,15 @@ namespace Audio {
             return;
         }
 
-        auto preset = AL::GetPresetByName("generic");
-        if (preset) {
-            AL::Effect effectParams;
-            effectParams.ApplyReverbPreset(*preset);
+        AL::Effect effectParams;
+        effectParams.ApplyReverbPreset(*AL::GetPresetByName("generic"));
 
-            globalEffect = new AL::EffectSlot();
-            globalEffect->SetEffect(effectParams);
-        } else {
-            audioLogs.Warn("Couldn't load the default preset");
+        for (int i = 0; i < N_REVERB_SLOTS; i++) {
+            reverbSlots[i].effect = new AL::EffectSlot();
+            reverbSlots[i].effect->SetEffect(effectParams);
+            reverbSlots[i].effect->SetGain(1.0f);
+            reverbSlots[i].name = "generic";
+            reverbSlots[i].ratio = 1.0f;
         }
 
         AL::SetInverseDistanceModel();
@@ -95,6 +101,11 @@ namespace Audio {
 
         localEmitter = nullptr;
 
+        for (int i = 0; i < N_REVERB_SLOTS; i++) {
+            delete reverbSlots[i].effect;
+            reverbSlots[i].effect = nullptr;
+        }
+
         for (int i = 0; i < MAX_GENTITIES; i++) {
             if (entityEmitters[i]) {
                 entityEmitters[i] = nullptr;
@@ -103,8 +114,7 @@ namespace Audio {
 
         posEmitters.clear();
 
-        delete globalEffect;
-        globalEffect = nullptr;
+        testingReverb = false;
 
         initialized = false;
     }
@@ -193,6 +203,39 @@ namespace Audio {
         VectorCopy(velocity, entities[entityNum].velocity);
     }
 
+    void UpdateReverbSlot(int slotNum, std::string name, float ratio) {
+        auto& slot = reverbSlots[slotNum];
+
+        if (not testingReverb and name == "none") {
+            ratio = 0.0f;
+            name = slot.name;
+        }
+
+        if (name != slot.name) {
+            if (not testingReverb) {
+                auto preset = AL::GetPresetByName(name);
+
+                if (not preset) {
+                    audioLogs.Warn("Reverb preset '%s' doesn't exist.", name);
+                    return;
+                }
+
+                //Log::Debug("Setting effect %i to %s", slotNum, name);
+                AL::Effect effectParams;
+                effectParams.ApplyReverbPreset(*preset);
+                slot.effect->SetEffect(effectParams);
+            }
+
+            slot.name = std::move(name);
+        }
+
+        if (not testingReverb) {
+            Log::Debug("Setting ratio %i to %f because %i", slotNum, ratio, testingReverb);
+            slot.effect->SetGain(ratio);
+        }
+        slot.ratio = ratio;
+    }
+
     // Utility functions for emitters
 
     // TODO avoid more unnecessary al calls
@@ -202,7 +245,9 @@ namespace Audio {
         source.SetPosition(origin);
         source.SetVelocity(origin);
 
-        source.DisableEffect(POSITIONAL_EFFECT_SLOT);
+        for (int i = 0; i < N_REVERB_SLOTS; i++) {
+            source.DisableEffect(i);
+        }
     }
 
     void Make3D(AL::Source& source, const vec3_t position, const vec3_t velocity, bool forceReverb = false) {
@@ -211,9 +256,13 @@ namespace Audio {
         source.SetVelocity(velocity);
 
         if ((forceReverb and useReverb.Get()) or addReverb) {
-            source.EnableEffect(POSITIONAL_EFFECT_SLOT, *globalEffect);
+            for (int i = 0; i < N_REVERB_SLOTS; i++) {
+                source.EnableEffect(i, *reverbSlots[i].effect);
+            }
         } else if ((forceReverb and not useReverb.Get()) or removeReverb) {
-            source.DisableEffect(POSITIONAL_EFFECT_SLOT);
+            for (int i = 0; i < N_REVERB_SLOTS; i++) {
+                source.DisableEffect(i);
+            }
         }
     }
 
@@ -315,21 +364,16 @@ namespace Audio {
 
             virtual void Run(const Cmd::Args& args) const OVERRIDE {
                 if (args.Argc() != 2) {
+                    PrintUsage(args, "stop", "stop the test");
                     PrintUsage(args, "[preset name]", "tests the reverb preset.");
                     return;
+                } else {
+                    if (args.Argv(1) == "stop") {
+                        StopTest();
+                    } else {
+                        StartTest(args);
+                    }
                 }
-
-                auto preset = AL::GetPresetByName(args.Argv(1));
-
-                if (not preset) {
-                    Print("Reverb preset '%s' doesn't exist.", args.Argv(1));
-                    return;
-                }
-
-                AL::Effect effectParams;
-                effectParams.ApplyReverbPreset(*preset);
-
-                globalEffect->SetEffect(effectParams);
             }
 
             Cmd::CompletionResult Complete(int argNum, const Cmd::Args&, Str::StringRef prefix) const OVERRIDE {
@@ -341,6 +385,9 @@ namespace Audio {
 
                 Cmd::CompletionResult res;
 
+                res.push_back({"stop", "stops the test"});
+                res.push_back({"none", "no effect at all"});
+
                 for (auto& name: presets) {
                     if (Str::IsPrefix(prefix, name)) {
                         res.push_back({std::move(name), ""});
@@ -348,6 +395,47 @@ namespace Audio {
                 }
 
                 return res;
+            }
+
+        private:
+            void StartTest(const Cmd::Args& args) const {
+                Str::StringRef name = args.Argv(1);
+
+                if (name == "none") {
+                    testingReverb = true;
+                    for (int i = 0; i < N_REVERB_SLOTS; i++) {
+                        reverbSlots[i].effect->SetGain(0.0f);
+                    }
+                    return;
+                }
+
+                auto preset = AL::GetPresetByName(name);
+
+                if (not preset) {
+                    Print("Reverb preset '%s' doesn't exist.", name);
+                    return;
+                }
+
+                AL::Effect effectParams;
+                effectParams.ApplyReverbPreset(*preset);
+
+                testingReverb = true;
+                for (int i = 1; i < N_REVERB_SLOTS; i++) {
+                    reverbSlots[i].effect->SetGain(0.0f);
+                }
+
+                //Log::Debug("Setting effect 0 to %s", name);
+                //Log::Debug("Setting ratio 0 to %f", 1.0f);
+                reverbSlots[0].effect->SetGain(1.0f);
+                reverbSlots[0].effect->SetEffect(effectParams);
+            }
+
+            void StopTest() const {
+                testingReverb = false;
+                for (int i = 0; i < N_REVERB_SLOTS; i++) {
+                    std::string name = std::move(reverbSlots[i].name);
+                    UpdateReverbSlot(i, std::move(name), reverbSlots[i].ratio);
+                }
             }
     };
     static TestReverbCmd testReverbRegistration;

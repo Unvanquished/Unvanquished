@@ -2530,6 +2530,8 @@ void SP_func_static( gentity_t *self )
 {
 	char *gradingTexture;
 	float gradingDistance;
+	char *reverbEffect;
+	float reverbDistance;
 
 	trap_SetBrushModel( self, self->model );
 	InitMover( self );
@@ -2544,6 +2546,15 @@ void SP_func_static( gentity_t *self )
 
 		G_GradingTextureIndex( va( "%s %f %s", self->model + 1,
 					   gradingDistance, gradingTexture ) );
+	}
+
+	// check if this func_static has a colorgrading texture
+	if( self->model[0] == '*' &&
+	    G_SpawnString( "reverbEffect", "", &reverbEffect ) ) {
+		G_SpawnFloat( "reverbDistance", "250", &reverbDistance );
+
+		G_ReverbEffectIndex( va( "%s %f %s", self->model + 1,
+					   reverbDistance, reverbEffect ) );
 	}
 }
 

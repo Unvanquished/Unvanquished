@@ -1559,6 +1559,103 @@ static void CG_AddColorGradingEffects( const playerState_t* ps )
 
 /*
 ===============
+CG_AddReverbEffects
+===============
+*/
+static void CG_AddReverbEffects( vec3_t loc )
+{
+	int   i, j;
+	float dist, weight;
+	int   selectedIdx[3] = { 0, 0, 0 };
+	float selectedWeight[3] = { 0.0f, 0.0f, 0.0f };
+	float totalWeight = 0.0f;
+	qboolean haveGlobal = qfalse;
+
+	// the first allocated reverb is special in that it may be global
+	i = 0;
+
+	if ( cgs.gameReverbEffects[0][0] && cgs.gameGradingModels[0] == -1 )
+	{
+		selectedIdx[0] = 0;
+		selectedWeight[0] = 2.0f; // won't be sorted down
+		haveGlobal = qtrue;
+		i = 1;
+	}
+
+	for(; i < MAX_REVERB_EFFECTS; i++ )
+	{
+		if( !cgs.gameReverbEffects[i][0] )
+		{
+			continue;
+		}
+
+		dist = trap_CM_DistanceToModel( loc, cgs.gameReverbModels[i] );
+		weight = 1.0f - dist / cgs.gameReverbDistances[i];
+		weight = Q_clamp( weight, 0.0f, 1.0f ); // Maths::clampFraction( weight )
+
+		// search 3 greatest weights
+		if( weight <= selectedWeight[2] )
+		{
+			continue;
+		}
+
+		for( j = 1; j >= 0; j-- )
+		{
+			if( weight <= selectedWeight[j] )
+			{
+				break;
+			}
+
+			selectedIdx[j+1] = selectedIdx[j];
+			selectedWeight[j+1] = selectedWeight[j];
+		}
+
+		selectedIdx[j+1] = i;
+		selectedWeight[j+1] = weight;
+	}
+
+	i = haveGlobal ? 1 : 0;
+
+	for(; i < 3; i++ )
+	{
+        totalWeight += selectedWeight[i];
+	}
+
+    if (haveGlobal)
+    {
+        if (totalWeight > 1.0f)
+        {
+            selectedWeight[0] = 0;
+        }
+        else
+        {
+            selectedWeight[0] = 1.0f - totalWeight;
+            totalWeight = 1.0f;
+        }
+    }
+
+    if (totalWeight == 0.0f)
+    {
+        for(i = 0; i < 3; i++)
+        {
+            selectedWeight[i] = 0.0f;
+        }
+    }
+    else
+    {
+        for(i = 0; i < 3; i++)
+        {
+            selectedWeight[i] /= totalWeight;
+        }
+    }
+
+    for (i = 0; i < 3; i++)
+    {
+        trap_S_SetReverb(i, cgs.gameReverbEffects[selectedIdx[i]], selectedWeight[i]);
+    }
+}
+/*
+===============
 CG_StartShadowCaster
 
 Helper function to add a inverse dynamic light to create shadows for the
@@ -1623,6 +1720,8 @@ static int CG_CalcViewValues( void )
 
 	CG_CalcColorGradingForPoint( ps->origin );
 	CG_AddColorGradingEffects( ps );
+
+	CG_AddReverbEffects( ps->origin );
 
 	// intermission view
 	if ( ps->pm_type == PM_INTERMISSION || ps->pm_type == PM_FREEZE ||

@@ -111,6 +111,11 @@ void S_UpdateEntityVelocity( int entityNum, const vec3_t velocity )
     Audio::UpdateEntityVelocity(entityNum, velocity);
 }
 
+void S_SetReverb( int slotNum, const char* name, float ratio )
+{
+	Audio::SetReverb(slotNum, name, ratio);
+}
+
 void S_Update( void )
 {
     Audio::Update();

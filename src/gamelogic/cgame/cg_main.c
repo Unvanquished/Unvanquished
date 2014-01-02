@@ -1389,6 +1389,30 @@ void CG_RegisterGrading( int slot, const char *str )
 
 /*
 =================
+CG_RegisterReverb
+=================
+*/
+void CG_RegisterReverb( int slot, const char *str )
+{
+	int   model;
+	float dist;
+	char  name[MAX_NAME_LENGTH];
+
+	if( !str || !*str ) {
+		Q_strncpyz(cgs.gameReverbEffects[ slot ], "none", MAX_NAME_LENGTH);
+		cgs.gameReverbModels[ slot ]        = 0;
+		cgs.gameReverbDistances[ slot ]     = 0.0f;
+		return;
+	}
+
+	sscanf(str, "%d %f %s", &model, &dist, name);
+	Q_strncpyz(cgs.gameReverbEffects[ slot ], name, MAX_NAME_LENGTH);
+	cgs.gameReverbModels[ slot ] = model;
+	cgs.gameReverbDistances[ slot ] = dist;
+}
+
+/*
+=================
 CG_RegisterGraphics
 =================
 */
@@ -1634,6 +1658,13 @@ static void CG_RegisterGraphics( void )
 	for ( i = 0; i < MAX_GRADING_TEXTURES; i++ )
 	{
 		CG_RegisterGrading( i, CG_ConfigString( CS_GRADING_TEXTURES + i ) );
+	}
+
+	// register all the server specified reverb effects
+	// starting with the world wide one
+	for ( i = 0; i < MAX_REVERB_EFFECTS; i++ )
+	{
+		CG_RegisterReverb( i, CG_ConfigString( CS_REVERB_EFFECTS + i ) );
 	}
 
 	CG_UpdateMediaFraction( 0.79f );

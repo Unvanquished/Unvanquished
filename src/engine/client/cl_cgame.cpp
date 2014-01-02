@@ -1389,6 +1389,11 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			S_UpdateEntityVelocity( args[ 1 ], (float*) VMA( 2 ) );
 			return 0;
 
+		case CG_S_SETREVERB:
+			cls.nCgameSoundSyscalls ++;
+			S_SetReverb( args[ 1 ], (const char*) VMA( 2 ), VMF( 3 ) );
+			return 0;
+
 		default:
 			Com_Error( ERR_DROP, "Bad cgame system trap: %ld", ( long int ) args[ 0 ] );
 			exit(1); // silence warning, and make sure this behaves as expected, if Com_Error's behavior changes

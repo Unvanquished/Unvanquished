@@ -1246,3 +1246,7 @@ void trap_S_UpdateEntityVelocity( int entityNum, const vec3_t velocity )
 	syscallVM( CG_S_UPDATEENTITYVELOCITY, entityNum, velocity );
 }
 
+void trap_S_SetReverb( int slotNum, const char* name, float ratio )
+{
+	syscallVM( CG_S_SETREVERB, slotNum, name, PASSFLOAT(ratio) );
+}

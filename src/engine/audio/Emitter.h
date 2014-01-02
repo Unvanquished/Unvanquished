@@ -42,6 +42,8 @@ namespace Audio {
     void UpdateRegisteredEntityPosition(int entityNum, const vec3_t position);
     void UpdateRegisteredEntityVelocity(int entityNum, const vec3_t velocity);
 
+    void UpdateReverbSlot(int slotNum, std::string name, float ratio);
+
     class Sound;
 
     namespace AL {

@@ -371,6 +371,14 @@ namespace Audio {
         UpdateRegisteredEntityVelocity(entityNum, velocity);
     }
 
+    void SetReverb(int slotNum, std::string name, float ratio) {
+        if (slotNum < 0 or slotNum > N_REVERB_SLOTS or std::isnan(ratio)) {
+            return;
+        }
+
+        UpdateReverbSlot(slotNum, std::move(name), ratio);
+    }
+
     // Capture functions
 
     static AL::CaptureDevice* capture = nullptr;

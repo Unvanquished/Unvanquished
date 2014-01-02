@@ -187,3 +187,4 @@ equ trap_R_ScissorSet                     -423
 equ trap_PrepareKeyUp                     -424
 equ trap_R_SetAltShaderTokens             -425
 equ trap_S_UpdateEntityVelocity           -426
+equ trap_S_SetReverb                      -427

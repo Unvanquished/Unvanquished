@@ -244,6 +244,7 @@ int               G_ShaderIndex( const char *name );
 int               G_ModelIndex( const char *name );
 int               G_SoundIndex( const char *name );
 int               G_GradingTextureIndex( const char *name );
+int               G_ReverbEffectIndex( const char *name );
 int               G_LocationIndex( const char *name );
 void              G_KillBox( gentity_t *ent );
 void              G_KillBrushModel( gentity_t *ent, gentity_t *activator );

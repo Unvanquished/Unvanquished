@@ -52,8 +52,6 @@ namespace Audio {
      * Emitter (they are ref counted).
      */
 
-    constexpr int POSITIONAL_EFFECT_SLOT = 0;
-
     // Somewhere on the Internet we can see "quake3 is like the old wolfenstein, 64 units = 8 feet"
     // it is consistent with our models and Carmack's being american.
     constexpr float QUNIT_IN_METER = 0.0384;
@@ -63,6 +61,9 @@ namespace Audio {
 
     // Same number of raw streams as in the previous sound system
     constexpr int N_STREAMS = MAX_CLIENTS * 2 + 1;
+
+    // There is only a small number of reverb slots because by default we can create only 4 AuxEffects
+    constexpr int N_REVERB_SLOTS = 3;
 
     extern Log::Logger audioLogs;
 }

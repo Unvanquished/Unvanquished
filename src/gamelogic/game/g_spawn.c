@@ -1057,6 +1057,9 @@ void SP_worldspawn( void )
 	if(G_SpawnString( "gradingTexture", "", &s ))
 		trap_SetConfigstring( CS_GRADING_TEXTURES, va( "%i %f %s", 0, 0.0f, s ) );
 
+	if(G_SpawnString( "reverbEffect", "", &s ))
+		trap_SetConfigstring( CS_REVERB_EFFECTS, va( "%i %f %s", -1, 0.0f, s ) );
+
 	trap_SetConfigstring( CS_MOTD, g_motd.string );  // message of the day
 
 	G_SpawnStringIntoCVarIfSet( "gravity", "g_gravity" );
