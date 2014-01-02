@@ -728,7 +728,7 @@ qboolean SV_CheckDRDoS( netadr_t from )
 	}
 	else if ( from.type == NA_IP6 )
 	{
-		memset( from.ip + 7, 0, 9 ); // mask to /56
+		memset( from.ip6 + 7, 0, 9 ); // mask to /56
 	}
 	else
 	{
