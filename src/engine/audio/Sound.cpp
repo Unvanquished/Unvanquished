@@ -152,7 +152,7 @@ namespace Audio {
 
     // Implementation of Sound
 
-    Sound::Sound(): positionalGain(1.0f), soundGain(1.0f), currentGain(1.0f) {
+    Sound::Sound(): positionalGain(1.0f), soundGain(1.0f), currentGain(1.0f), playing(false), source(nullptr) {
     }
 
     Sound::~Sound() {
