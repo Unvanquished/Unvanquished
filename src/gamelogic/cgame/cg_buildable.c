@@ -160,15 +160,13 @@ void CG_HumanBuildableExplosion( buildable_t buildable, vec3_t origin, vec3_t di
 	particleSystem_t *explosion = NULL;
 	particleSystem_t *nova = NULL;
 
-	switch ( buildable )
+	if ( buildable == BA_H_REPEATER || buildable == BA_H_REACTOR )
 	{
-		case BA_H_REPEATER:
-		case BA_H_REACTOR:
-			nova = CG_SpawnNewParticleSystem( cgs.media.humanBuildableNovaPS );
-		default:
-			trap_S_StartSound( origin, ENTITYNUM_WORLD, CHAN_AUTO, cgs.media.humanBuildableExplosion );
-			explosion = CG_SpawnNewParticleSystem( cgs.media.humanBuildableDestroyedPS );
+		nova = CG_SpawnNewParticleSystem( cgs.media.humanBuildableNovaPS );
 	}
+
+	trap_S_StartSound( origin, ENTITYNUM_WORLD, CHAN_AUTO, cgs.media.humanBuildableExplosion );
+	explosion = CG_SpawnNewParticleSystem( cgs.media.humanBuildableDestroyedPS );
 
 	if ( CG_IsParticleSystemValid( &nova ) )
 	{
