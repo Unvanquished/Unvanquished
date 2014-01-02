@@ -681,10 +681,11 @@ void G_FireEntityRandomly( gentity_t *entity, gentity_t *activator )
 		totalChoiceCount++;
 	}
 
+	if ( totalChoiceCount == 0 )
+		return;
+
 	//return a random one from among the choices
 	selectedChoice = &choices[ rand() / ( RAND_MAX / totalChoiceCount + 1 ) ];
-	if (!selectedChoice)
-		return;
 
 	call.definition = selectedChoice->callDefinition;
 	call.caller = entity;
