@@ -1265,7 +1265,7 @@ static void CL_WriteWaveHeader( void )
 	FS_Write( &hdr.ChunkID, 44, clc.wavefile );
 }
 
-static char wavName[ MAX_QPATH ]; // compiler bug workaround
+static char wavName[ MAX_OSPATH ]; // compiler bug workaround
 void CL_WriteWaveOpen( void )
 {
 	// we will just save it as a 16bit stereo 22050kz pcm file
