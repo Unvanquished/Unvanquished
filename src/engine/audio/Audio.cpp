@@ -324,9 +324,9 @@ namespace Audio {
         if (not streams[streamNum]) {
             streams[streamNum] = std::make_shared<StreamingSound>();
             if (IsValidEntity(entityNum)) {
-                AddSound(GetLocalEmitter(), streams[streamNum], 1);
-            } else {
                 AddSound(GetEmitterForEntity(entityNum), streams[streamNum], 1);
+            } else {
+                AddSound(GetLocalEmitter(), streams[streamNum], 1);
             }
         }
 
