@@ -1823,7 +1823,6 @@ void         ByteToDir( int b, vec3_t dir );
 
 #endif
 	void     Q_strcat( char *dest, int destsize, const char *src );
-	void     Q_strncpyz2( char *dst, const char *src, int dstSize );
 	qboolean Q_strreplace( char *dest, int destsize, const char *find, const char *replace );
 
 	int      Com_Filter( const char *filter, const char *name, int casesensitive );

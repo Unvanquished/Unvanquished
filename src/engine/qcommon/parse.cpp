@@ -992,7 +992,7 @@ static int Parse_ReadPunctuation( script_t *script, token_t *token )
 			//if the script contains the punctuation
 			if ( !strncmp( script->script_p, p, len ) )
 			{
-				strncpy( token->string, p, MAX_TOKEN_CHARS );
+				Q_strncpyz( token->string, p, MAX_TOKEN_CHARS );
 				script->script_p += len;
 				token->type = TT_PUNCTUATION;
 				//sub type is the number of the punctuation
@@ -3985,7 +3985,7 @@ static define_t *Parse_DefineFromString( const char *string )
 	script = Parse_LoadScriptMemory( string, strlen( string ), "*extern" );
 	//create a new source
 	Com_Memset( &src, 0, sizeof( source_t ) );
-	strncpy( src.filename, "*extern", MAX_QPATH );
+	Q_strncpyz( src.filename, "*extern", MAX_QPATH );
 	src.scriptstack = script;
 	src.definehash = (define_t**) Z_Malloc( DEFINEHASHSIZE * sizeof( define_t * ) );
 	Com_Memset( src.definehash, 0, DEFINEHASHSIZE * sizeof( define_t * ) );
@@ -4175,7 +4175,7 @@ static source_t *Parse_LoadSourceFile( const char *filename )
 	source = ( source_t * ) Z_Malloc( sizeof( source_t ) );
 	Com_Memset( source, 0, sizeof( source_t ) );
 
-	strncpy( source->filename, filename, MAX_QPATH );
+	Q_strncpyz( source->filename, filename, MAX_QPATH );
 	source->scriptstack = script;
 	source->tokens = NULL;
 	source->defines = NULL;

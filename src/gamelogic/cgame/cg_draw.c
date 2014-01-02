@@ -4987,7 +4987,7 @@ static void CG_DrawWarmup( void )
 		return;
 	}
 
-	strncpy( text, _( "Warmup Time:" ), sizeof( text ) );
+	Q_strncpyz( text, _( "Warmup Time:" ), sizeof( text ) );
 	w = UI_Text_Width( text, size );
 	h = UI_Text_Height( text, size );
 	UI_Text_Paint( 320 - w / 2, 200, size, colorWhite, text, 0, ITEM_TEXTSTYLE_SHADOWED );

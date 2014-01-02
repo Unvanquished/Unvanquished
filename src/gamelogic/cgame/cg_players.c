@@ -351,11 +351,11 @@ static qboolean CG_RegisterPlayerAnimation( clientInfo_t *ci, const char *modelN
 	     !Q_stricmp( modelName, "human_light"   ) ||
 	     !Q_stricmp( modelName, "human_medium" ) )
 	{
-		strncpy( newModelName, "human_nobsuit_common", sizeof( newModelName ) );
+		Q_strncpyz( newModelName, "human_nobsuit_common", sizeof( newModelName ) );
 	}
 	else
 	{
-		strncpy( newModelName, modelName, sizeof( newModelName ) );
+		Q_strncpyz( newModelName, modelName, sizeof( newModelName ) );
 	}
 
 	if ( iqm )
