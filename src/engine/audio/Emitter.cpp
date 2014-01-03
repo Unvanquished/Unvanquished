@@ -220,7 +220,6 @@ namespace Audio {
                     return;
                 }
 
-                //Log::Debug("Setting effect %i to %s", slotNum, name);
                 AL::Effect effectParams;
                 effectParams.ApplyReverbPreset(*preset);
                 slot.effect->SetEffect(effectParams);
@@ -230,7 +229,6 @@ namespace Audio {
         }
 
         if (not testingReverb) {
-            Log::Debug("Setting ratio %i to %f because %i", slotNum, ratio, testingReverb);
             slot.effect->SetGain(ratio);
         }
         slot.ratio = ratio;
@@ -424,8 +422,6 @@ namespace Audio {
                     reverbSlots[i].effect->SetGain(0.0f);
                 }
 
-                //Log::Debug("Setting effect 0 to %s", name);
-                //Log::Debug("Setting ratio 0 to %f", 1.0f);
                 reverbSlots[0].effect->SetGain(1.0f);
                 reverbSlots[0].effect->SetEffect(effectParams);
             }
