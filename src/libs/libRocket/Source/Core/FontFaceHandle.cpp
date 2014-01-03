@@ -56,6 +56,7 @@ FontFaceHandle::FontFaceHandle()
 	underline_thickness = 0;
 
 	ft_face = NULL;
+	backup_face = NULL;
 
 	base_layer = NULL;
 
@@ -92,6 +93,17 @@ bool FontFaceHandle::Initialise(FT_Face ft_face, const String& _charset, int _si
 	}
 
 	this->ft_face = ft_face;
+	this->backup_face = (FT_Face)FontDatabase::GetBackupFace();
+
+	if (this->backup_face)
+	{
+		FT_Error error = FT_Set_Char_Size(this->backup_face, 0, size << 6, 0, 0);
+		if (error != 0)
+		{
+			Log::Message(Log::LT_ERROR, "Unable to set the character size '%d' on the font face '%s %s'.", size, this->backup_face->family_name, this->backup_face->style_name);
+			return false;
+		}
+	}
 
 	// Construct the list of the characters specified by the charset.
 	for (size_t i = 0; i < charset.size(); ++i)
@@ -440,6 +452,30 @@ bool FontFaceHandle::BuildGlyphMap(const UnicodeRange& unicode_range)
 			FontGlyph glyph;
 			glyph.character = character_code;
 			BuildGlyph(glyph, ft_face->glyph);
+			glyphs[character_code] = glyph;
+		}
+		else if ( backup_face && ( index = FT_Get_Char_Index(backup_face, character_code) ) )
+		{
+			FT_Error error = FT_Load_Glyph(backup_face, index, 0);
+			if (error != 0)
+			{
+				Log::Message(Log::LT_WARNING, "Unable to load glyph for character '%u' on the font face '%s %s'; error code: %d.", character_code, backup_face->family_name, backup_face->style_name, error);
+				continue;
+			}
+
+			error = FT_Render_Glyph(backup_face->glyph, FT_RENDER_MODE_NORMAL);
+			if (error != 0)
+			{
+				Log::Message(Log::LT_WARNING, "Unable to render glyph for character '%u' on the font face '%s %s'; error code: %d.", character_code, backup_face->family_name, backup_face->style_name, error);
+				continue;
+			}
+
+			if (!success)
+				success = true;
+
+			FontGlyph glyph;
+			glyph.character = character_code;
+			BuildGlyph(glyph, backup_face->glyph);
 			glyphs[character_code] = glyph;
 		}
 	}

@@ -14,7 +14,7 @@
  *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -46,6 +46,7 @@ FontDatabase::FontDatabase()
 {
 	ROCKET_ASSERT(instance == NULL);
 	instance = this;
+	backup_face = NULL;
 }
 
 FontDatabase::~FontDatabase()
@@ -321,6 +322,18 @@ void* FontDatabase::LoadFace(const byte* data, int data_length, const String& so
 	}
 
 	return face;
+}
+
+// Sets backup face
+void FontDatabase::SetBackupFace(const String& path)
+{
+	instance->backup_face = instance->LoadFace(path);
+}
+
+// Gets backup face
+void* FontDatabase::GetBackupFace(void)
+{
+	return instance->backup_face;
 }
 
 }

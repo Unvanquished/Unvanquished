@@ -360,7 +360,7 @@ void Rocket_Init( void )
 	Rocket::Controls::Initialise();
 
 	// Set backup font
-// 	Rocket::Core::FreeType::FontProvider::SetBackupFace( "fonts/unifont.ttf" );
+	Rocket::Core::FontDatabase::SetBackupFace( "fonts/unifont.ttf" );
 
 	// Load all fonts in the fonts/ dir...
 	fonts = FS_ListFiles( "fonts/", ".ttf", &numFiles );

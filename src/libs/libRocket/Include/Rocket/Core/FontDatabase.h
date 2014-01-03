@@ -14,7 +14,7 @@
  *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -99,6 +99,13 @@ public:
 	/// @param[in] The effect to release.
 	static void ReleaseFontEffect(const FontEffect* effect);
 
+	/// Sets backup face for all fonts to use
+	/// @param[in] path Path of the font face to use
+	static void SetBackupFace(const String& path);
+
+	/// Gets the backup face
+	static void* GetBackupFace(void);
+
 private:
 	FontDatabase(void);
 	~FontDatabase(void);
@@ -112,6 +119,7 @@ private:
 
 	typedef std::map< String, FontFamily*, StringUtilities::StringComparei > FontFamilyMap;
 	FontFamilyMap font_families;
+	void* backup_face;
 
 	static FontDatabase* instance;
 };
