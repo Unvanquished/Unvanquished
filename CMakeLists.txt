@@ -429,6 +429,7 @@ set( RENDERERGLLIST
   ${ENGINE_DIR}/rendererGL/tr_fog.cpp
   ${ENGINE_DIR}/renderer/tr_font.cpp
   ${ENGINE_DIR}/rendererGL/tr_image.cpp
+  ${ENGINE_DIR}/rendererGL/tr_image_crn.cpp
   ${ENGINE_DIR}/rendererGL/tr_image_dds.cpp
   ${ENGINE_DIR}/rendererGL/tr_image_exr.cpp
   ${ENGINE_DIR}/rendererGL/tr_image_jpg.cpp

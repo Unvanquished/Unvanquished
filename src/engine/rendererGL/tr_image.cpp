@@ -2227,6 +2227,7 @@ static const imageExtToLoaderMap_t imageLoaders[] =
 	{ "jpg",  LoadJPG  },
 	{ "jpeg", LoadJPG  },
 	{ "dds",  LoadDDS  },
+	{ "crn",  LoadCRN  },
 //	{"hdr", LoadRGBE}  // RGBE just sucks
 };
 

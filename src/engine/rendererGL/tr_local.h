@@ -4143,6 +4143,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 	void                                LoadWEBP( const char *name, byte **pic, int *width, int *height, int *numMips, int *bits, byte alphaByte );
 	void                                LoadDDS( const char *name, byte **pic, int *width, int *height, int *numMips, int *bits, byte alphaByte);
+	void                                LoadCRN( const char *name, byte **pic, int *width, int *height, int *numMips, int *bits, byte alphaByte);
 
 // video stuff
 	const void *RB_TakeVideoFrameCmd( const void *data );
