@@ -1254,6 +1254,7 @@ void Key_EditBind_f( void )
 	{
 		buf = U"/teambind ";
 		buf += Str::UTF8To32( teamName[ team ] );
+		buf += U' ';
 	}
 	else
 	{
