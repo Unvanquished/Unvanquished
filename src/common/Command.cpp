@@ -50,7 +50,7 @@ namespace Cmd {
             }
         }
 
-        if (escaped || res.length() == 0) {
+        if (escaped || text.length() == 0) {
             res += "\"";
         } else {
             res.erase(0, 1);
