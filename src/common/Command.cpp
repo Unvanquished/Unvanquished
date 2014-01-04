@@ -32,6 +32,10 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 namespace Cmd {
 
     std::string Escape(Str::StringRef text) {
+        if (text.empty()) {
+            return "\"\"";
+        }
+
         bool escaped = false;
         std::string res = "\"";
 
@@ -43,14 +47,14 @@ namespace Cmd {
             } else if (c == '$') {
                 res.append("\\$");
             } else {
-                if (c == ' ' || c == ';') {
+                if (Str::cisspace(c) || c == ';') {
                     escaped = true;
                 }
                 res.push_back(c);
             }
         }
 
-        if (escaped || text.length() == 0) {
+        if (escaped) {
             res += "\"";
         } else {
             res.erase(0, 1);
