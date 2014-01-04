@@ -364,7 +364,6 @@ static bool TestWritePermission(Str::StringRef path)
 	return true;
 }
 
-// TODO: Print paths and note errors getting homepath/basepath
 void Initialize()
 {
 	Com_StartupVariable("fs_basepath");
@@ -385,6 +384,11 @@ void Initialize()
 	if (extraPath[0] && extraPath != basePath && extraPath != homePath)
 		pakPaths.push_back(Path::Build(extraPath, "pkg"));
 	isInitialized = true;
+
+	Com_Printf("Filesystem home path: %s\n", homePath.c_str());
+	Com_Printf("Filesystem search paths:\n");
+	for (std::string& x: pakPaths)
+		Com_Printf("- %s\n", x.c_str());
 
 	RefreshPaks();
 }
@@ -1555,7 +1559,7 @@ bool DirectoryRange::Advance(std::error_code& err)
 DirectoryRange ListFiles(Str::StringRef path, std::error_code& err)
 {
 	std::string dirPath = path;
-	if (dirPath.back() == '/')
+	if (!dirPath.empty() && dirPath.back() == '/')
 #ifdef GCC_BROKEN_CXX11
 		dirPath.resize(dirPath.size() - 1);
 #else
@@ -1754,7 +1758,8 @@ FS::PakNamespace fs_namespace;
 
 static fileHandle_t FS_AllocHandle()
 {
-	for (int i = 0; i < MAX_FILE_HANDLES; i++) {
+	// Don't use handle 0 because it is used to indicate failures
+	for (int i = 1; i < MAX_FILE_HANDLES; i++) {
 		if (!handleTable[i].isOpen)
 			return i;
 	}
@@ -1880,6 +1885,8 @@ int FS_FOpenFileByMode(const char* path, fileHandle_t* handle, fsMode_t mode)
 
 int FS_FCloseFile(fileHandle_t handle)
 {
+	if (handle == 0)
+		return 0;
 	FS_CheckHandle(handle, false);
 	handleTable[handle].isOpen = false;
 	if (handleTable[handle].isPakFile) {
@@ -1922,28 +1929,50 @@ int FS_FTell(fileHandle_t handle)
 
 int FS_Seek(fileHandle_t handle, long offset, int origin)
 {
-	FS_CheckHandle(handle, true);
-	try {
+	FS_CheckHandle(handle, false);
+	if (handleTable[handle].isPakFile) {
 		switch (origin) {
 		case FS_SEEK_CUR:
-			handleTable[handle].file.SeekCur(offset);
+			handleTable[handle].filePos += offset;
 			break;
 
 		case FS_SEEK_SET:
-			handleTable[handle].file.SeekSet(offset);
+			handleTable[handle].filePos = offset;
 			break;
 
 		case FS_SEEK_END:
-			handleTable[handle].file.SeekEnd(offset);
+			handleTable[handle].filePos = handleTable[handle].fileData.size() + offset;
 			break;
 
 		default:
 			Com_Error(ERR_DROP, "Bad origin in FS_Seek");
 		}
+		if (handleTable[handle].filePos < 0)
+			handleTable[handle].filePos = 0;
 		return 0;
-	} catch (std::system_error& err) {
-		Com_Printf("FS_Seek failed: %s\n", err.what());
-		return -1;
+	} else {
+		try {
+			switch (origin) {
+			case FS_SEEK_CUR:
+				handleTable[handle].file.SeekCur(offset);
+				break;
+
+			case FS_SEEK_SET:
+				handleTable[handle].file.SeekSet(offset);
+				break;
+
+			case FS_SEEK_END:
+				handleTable[handle].file.SeekEnd(offset);
+				break;
+
+			default:
+				Com_Error(ERR_DROP, "Bad origin in FS_Seek");
+			}
+			return 0;
+		} catch (std::system_error& err) {
+			Com_Printf("FS_Seek failed: %s\n", err.what());
+			return -1;
+		}
 	}
 }
 
@@ -1983,8 +2012,11 @@ int FS_Read(void* buffer, int len, fileHandle_t handle)
 	if (handleTable[handle].isPakFile) {
 		if (len < 0)
 			Com_Error(ERR_DROP, "FS_Read: invalid length");
-		len = std::min<size_t>(handleTable[handle].filePos + len, handleTable[handle].fileData.size());
+		if (handleTable[handle].filePos >= handleTable[handle].fileData.size())
+			return 0;
+		len = std::min<size_t>(len, handleTable[handle].fileData.size() - handleTable[handle].filePos);
 		memcpy(buffer, handleTable[handle].fileData.data() + handleTable[handle].filePos, len);
+		handleTable[handle].filePos += len;
 		return len;
 	} else {
 		try {
@@ -2040,7 +2072,7 @@ void FS_WriteFile(const char* path, const void* buffer, int size)
 		f.Write(buffer, size);
 		f.Close();
 	} catch (std::system_error& err) {
-		Com_Printf("Fail to write file '%s': %s\n", path, err.what());
+		Com_Printf("Failed to write file '%s': %s\n", path, err.what());
 	}
 }
 
@@ -2075,11 +2107,19 @@ void FS_FreeFile(void* buffer)
 char** FS_ListFiles(const char* directory, const char* extension, int* numFiles)
 {
 	std::vector<char*> files;
+	bool dirsOnly = extension && !strcmp(extension, "/");
 
 	try {
-		// TODO: filter and strip trailing /, also don't use strdup
-		for (const std::string& x: fs_namespace.ListFiles(directory))
-			files.push_back(strdup(x.c_str()));
+		for (const std::string& x: fs_namespace.ListFiles(directory)) {
+			if (extension && !Str::IsSuffix(extension, x))
+				continue;
+			if (dirsOnly != (x.back() == '/'))
+				continue;
+			char* s = new char[x.size() + 1];
+			memcpy(s, x.data(), x.size());
+			s[x.size() - (x.back() == '/')] = '\0';
+			files.push_back(s);
+		}
 	} catch (std::system_error& err) {
 		*numFiles = 0;
 		for (char* s: files)
@@ -2088,10 +2128,10 @@ char** FS_ListFiles(const char* directory, const char* extension, int* numFiles)
 	}
 
 	*numFiles = files.size();
-	char** out = new char*[files.size() + 1];
-	std::copy(files.begin(), files.end(), out);
-	out[files.size()] = nullptr;
-	return out;
+	char** list = new char*[files.size() + 1];
+	std::copy(files.begin(), files.end(), list);
+	list[files.size()] = nullptr;
+	return list;
 }
 
 void FS_FreeFileList(char** list)
@@ -2099,7 +2139,7 @@ void FS_FreeFileList(char** list)
 	if (!list)
 		return;
 	for (char** i = list; *i; i++)
-		free(*i);
+		delete[] *i;
 	delete[] list;
 }
 
@@ -2136,7 +2176,7 @@ const char* FS_LoadedPaks()
 			continue;
 		if (info[0])
 			Q_strcat(info, sizeof(info), " ");
-		Q_strcat(info, sizeof(info), va("%s_%s_%x", x.name.c_str(), x.version.c_str(), *x.checksum));
+		Q_strcat(info, sizeof(info), va("%s_%s_%08x", x.name.c_str(), x.version.c_str(), *x.checksum));
 	}
 	return info;
 }
@@ -2156,21 +2196,23 @@ void FS_ClearPaks()
 	fs_namespace.ClearPaks();
 }
 
-void FS_LoadPak(const char* name)
+// TODO: use the return value to error on missing paks
+bool FS_LoadPak(const char* name)
 {
 	const FS::PakInfo* pak = FS::FindPak(name);
-	if (!pak) {
-		Com_Printf("Pak '%s' not found\n", name);
-		return;
-	}
+	if (!pak)
+		return false;
 	try {
 		fs_namespace.LoadPak(*pak);
+		return true;
 	} catch (std::system_error& err) {
 		Com_Printf("Failed to load pak '%s': %s\n", name, err.what());
+		return false;
 	}
 }
 
-void FS_LoadServerPaks(const char* paks)
+// TODO: use the return value to detect missing paks and drop client if pure is on
+bool FS_LoadServerPaks(const char* paks)
 {
 	Cmd::Args args(paks);
 	fs_missingPaks.clear();
@@ -2178,7 +2220,7 @@ void FS_LoadServerPaks(const char* paks)
 		std::string name, version;
 		Opt::optional<uint32_t> checksum;
 		if (!FS::ParsePakName(&*args.Argv(i).begin(), &*args.Argv(i).end(), name, version, checksum) || !checksum) {
-			Com_Printf("Invalid pak reference from server: %s\n", args.Argv(i).c_str());
+			Com_Error(ERR_DROP, "Invalid pak reference from server: %s\n", args.Argv(i).c_str());
 			continue;
 		}
 
@@ -2194,13 +2236,34 @@ void FS_LoadServerPaks(const char* paks)
 			}
 		}
 	}
+	return fs_missingPaks.empty();
 }
 
+// TODO: fix the server-side and www-side code to handle the remoteName correctly
+qboolean CL_WWWBadChecksum(const char *pakname);
 qboolean FS_ComparePaks(char* neededpaks, int len, qboolean dlstring)
 {
-	// TODO: Implement this
-	*neededpaks = 0;
-	return qfalse;
+	*neededpaks = '\0';
+	for (auto& x: fs_missingPaks) {
+		if (dlstring) {
+			Q_strcat(neededpaks, len, va("@%s_%s_%08x@", std::get<0>(x).c_str(), std::get<1>(x).c_str(), std::get<2>(x)));
+			const char* pakName = va("pkg/%s_%s.pk3", std::get<0>(x).c_str(), std::get<1>(x).c_str());
+			if (FS_FileExists(pakName))
+				Q_strcat(neededpaks, len, va("pkg/%s_%s_%08x.pk3", std::get<0>(x).c_str(), std::get<1>(x).c_str(), std::get<2>(x)));
+			else
+				Q_strcat(neededpaks, len, pakName);
+		} else {
+			Q_strcat(neededpaks, len, va("%s_%s.pk3", std::get<0>(x).c_str(), std::get<1>(x).c_str()));
+			if (FS::FindPak(std::get<0>(x), std::get<1>(x))) {
+				Q_strcat(neededpaks, len, " (local file exists with wrong checksum)");
+#ifndef DEDICATED
+				if (CL_WWWBadChecksum(va("%s_%s_%08x", std::get<0>(x).c_str(), std::get<1>(x).c_str(), std::get<2>(x))))
+					FS_Delete(va("pkg/%s_%s.pk3", std::get<0>(x).c_str(), std::get<1>(x).c_str()));
+#endif
+			}
+		}
+	}
+	return !fs_missingPaks.empty();
 }
 
 namespace FS {
