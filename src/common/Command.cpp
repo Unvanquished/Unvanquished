@@ -37,6 +37,7 @@ namespace Cmd {
         }
 
         bool escaped = false;
+        bool maybeComment = false;
         std::string res = "\"";
 
         for (char c: text) {
@@ -51,6 +52,15 @@ namespace Cmd {
                     escaped = true;
                 }
                 res.push_back(c);
+            }
+
+            if (maybeComment && (c == '/' || c == '*')) {
+                escaped = true;
+                maybeComment = false;
+            } else if (c == '/') {
+                maybeComment = true;
+            } else {
+                maybeComment = false;
             }
         }
 
