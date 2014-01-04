@@ -137,9 +137,9 @@ void trap_Argv( int n, char *buffer, int bufferLength )
 
 //10.
 //Cmd_ArgsBuffer(VMA(1), args[2]);
-void trap_Args( char *buffer, int bufferLength )
+void trap_EscapedArgs( char *buffer, int bufferLength )
 {
-	syscallVM( CG_ARGS, buffer, bufferLength );
+	syscallVM( CG_ESCAPED_ARGS, buffer, bufferLength );
 }
 
 //11.

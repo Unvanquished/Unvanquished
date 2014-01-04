@@ -504,7 +504,7 @@ qboolean CG_ConsoleCommand( void )
 		//This command was added to provide completion of server-side commands
 		//forward it to the server
 		// (see also CG_ServerCommands)
-		trap_LiteralArgs( buffer, sizeof ( buffer ) );
+		trap_EscapedArgs( buffer, sizeof ( buffer ) );
 		trap_SendClientCommand( buffer );
 	}
 	else

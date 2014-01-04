@@ -205,6 +205,19 @@ char *Cmd_ArgsFrom( int arg )
 
 /*
 ============
+Cmd_EscapedArgsBuffer
+============
+*/
+
+void Cmd_EscapedArgsBuffer( char* buffer, int bufferLength )
+{
+	const Cmd::Args& args = Cmd::GetCurrentArgs();
+	const std::string& res = args.EscapedArgs(0);
+	Q_strncpyz( buffer, res.c_str(), bufferLength );
+}
+
+/*
+============
 Cmd_LiteralArgsBuffer
 ============
 */
