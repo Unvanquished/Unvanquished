@@ -32,6 +32,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 namespace Cmd {
 
     std::string Escape(Str::StringRef text) {
+        bool escaped = false;
         std::string res = "\"";
 
         for (char c: text) {
@@ -42,11 +43,19 @@ namespace Cmd {
             } else if (c == '$') {
                 res.append("\\$");
             } else {
+                if (c == ' ' || c == ';') {
+                    escaped = true;
+                }
                 res.push_back(c);
             }
         }
 
-        res += "\"";
+        if (escaped || res.length() == 0) {
+            res += "\"";
+        } else {
+            res.erase(0, 1);
+        }
+
         return res;
     }
 
