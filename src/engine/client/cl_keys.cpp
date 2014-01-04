@@ -1252,17 +1252,17 @@ void Key_EditBind_f( void )
 
 	if ( team >= 0 )
 	{
-		buf = U"/teambind ";
+		buf = Str::UTF8To32("/teambind ");
 		buf += Str::UTF8To32( teamName[ team ] );
-		buf += U' ';
+		buf += Str::UTF8To32(" ");
 	}
 	else
 	{
-		buf = U"/bind ";
+		buf = Str::UTF8To32("/bind ");
 	}
 
 	buf += Str::UTF8To32( Key_KeynumToString( b ) );
-	buf += U' ';
+	buf += Str::UTF8To32(" ");
 
 	const char *binding = Key_GetBinding( b, -team );
 	if ( binding )

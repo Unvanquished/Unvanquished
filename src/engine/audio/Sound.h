@@ -137,10 +137,10 @@ namespace Audio {
             // We only need three buffers in order to we have at all time a full buffer queued
             // the problematic case is when we have a buffer buffering the last few samples of
             // the leading sound or of the end of the loop.
-            static constexpr int NUM_BUFFERS = 4;
+            static const int NUM_BUFFERS = 4;
 
             // Buffer about a tenth of a second in each chunk (with 16 bit stereo at 44kHz)
-            static constexpr int CHUNK_SIZE = 16384;
+            static const int CHUNK_SIZE = 16384;
     };
 
     // Any sound that receives its data over time (such as VoIP)
