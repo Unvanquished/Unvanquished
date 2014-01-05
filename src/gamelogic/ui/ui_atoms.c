@@ -249,7 +249,7 @@ UI_ConsoleCommand
 */
 qboolean UI_ConsoleCommand( int realTime )
 {
-	struct uicmd *cmd = bsearch( UI_Argv( 0 ), commands,
+	struct uicmd *cmd = (struct uicmd*) bsearch( UI_Argv( 0 ), commands,
 	                             ARRAY_LEN( commands ), sizeof( commands[ 0 ] ),
 	                             cmdcmp );
 

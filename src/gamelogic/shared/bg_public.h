@@ -89,7 +89,8 @@ enum
   CS_SOUNDS = CS_MODELS + MAX_MODELS,
   CS_SHADERS = CS_SOUNDS + MAX_SOUNDS,
   CS_GRADING_TEXTURES = CS_SHADERS + MAX_GAME_SHADERS,
-  CS_PARTICLE_SYSTEMS = CS_GRADING_TEXTURES + MAX_GRADING_TEXTURES,
+  CS_REVERB_EFFECTS = CS_GRADING_TEXTURES + MAX_GRADING_TEXTURES,
+  CS_PARTICLE_SYSTEMS = CS_REVERB_EFFECTS + MAX_REVERB_EFFECTS,
 
   CS_PLAYERS = CS_PARTICLE_SYSTEMS + MAX_GAME_PARTICLE_SYSTEMS,
   CS_OBJECTIVES = CS_PLAYERS + MAX_CLIENTS,
@@ -269,7 +270,6 @@ typedef enum
 #define SS2_JETPACK_ENABLED BIT(0)  // whether jets/wings are extended
 #define SS2_JETPACK_WARM    BIT(1)  // whether we can start a thrust
 #define SS2_JETPACK_ACTIVE  BIT(2)  // whether we are thrusting
-#define SS2_JETPACK_DAMAGED BIT(3)  // whether we were damaged recently
 
 // has to fit into 16 bits
 #define SB_BUILDABLE_MASK        0x00FF
@@ -486,7 +486,6 @@ typedef enum
   BA_H_TESLAGEN,
 
   BA_H_ARMOURY,
-  BA_H_DCC,
   BA_H_MEDISTAT,
   BA_H_DRILL,
 
@@ -618,7 +617,6 @@ typedef enum
   EV_REACTOR_ATTACK_1, // reactor under attack
   EV_REACTOR_ATTACK_2, // reactor under attack
   EV_REACTOR_DYING, // reactor destroyed
-  EV_DCC_ATTACK, // dcc under attack
 
   EV_WARN_ATTACK, // a building has been destroyed and the destruction noticed by a nearby om/rc/rrep
 
@@ -1128,6 +1126,7 @@ typedef struct
 	int         splashDamage;
 	int         splashRadius;
 
+	weapon_t    weapon; // used to look up weaponInfo_t for clientside effects
 	int         meansOfDeath;
 
 	team_t      team;
@@ -1135,13 +1134,8 @@ typedef struct
 
 	int         idleAnim;
 
-	int         nextthink;
 	int         buildTime;
 	qboolean    usable;
-
-	int         turretRange;
-	int         turretFireSpeed;
-	weapon_t    turretProjType;
 
 	float       minNormal;
 	qboolean    invertNormal;
@@ -1149,7 +1143,6 @@ typedef struct
 	qboolean    creepTest;
 	int         creepSize;
 
-	qboolean    dccTest;
 	qboolean    transparentTest;
 	qboolean    uniqueTest;
 
@@ -1281,7 +1274,7 @@ typedef struct
 	sfxHandle_t    impactFleshSound[ 4 ];
 } missileAttributes_t;
 
-qboolean BG_WeaponIsFull( weapon_t weapon, int stats[], int ammo, int clips );
+qboolean BG_WeaponIsFull( int weapon, int stats[], int ammo, int clips );
 qboolean BG_InventoryContainsWeapon( int weapon, int stats[] );
 int      BG_SlotsForInventory( int stats[] );
 void     BG_AddUpgradeToInventory( int item, int stats[] );
@@ -1303,40 +1296,41 @@ qboolean                    BG_PlayerCanChangeWeapon( playerState_t *ps );
 int                         BG_PlayerPoisonCloudTime( playerState_t *ps );
 weapon_t                    BG_GetPlayerWeapon( playerState_t *ps );
 
-void                        BG_PackEntityNumbers( entityState_t *es, const int *entityNums, int count );
-int                         BG_UnpackEntityNumbers( entityState_t *es, int *entityNums, int count );
+void                        BG_PackEntityNumbers( entityState_t *es, const int *entityNums, unsigned int count );
+int                         BG_UnpackEntityNumbers( entityState_t *es, int *entityNums, unsigned int count );
 
 const buildableAttributes_t *BG_BuildableByName( const char *name );
 const buildableAttributes_t *BG_BuildableByEntityName( const char *name );
-const buildableAttributes_t *BG_Buildable( buildable_t buildable );
+const buildableAttributes_t *BG_Buildable( int buildable );
 
-buildableModelConfig_t      *BG_BuildableModelConfig( buildable_t buildable );
-void                        BG_BuildableBoundingBox( buildable_t buildable, vec3_t mins, vec3_t maxs );
+buildableModelConfig_t      *BG_BuildableModelConfig( int buildable );
+void                        BG_BuildableBoundingBox( int buildable, vec3_t mins, vec3_t maxs );
 
 const classAttributes_t     *BG_ClassByName( const char *name );
 
-const classAttributes_t     *BG_Class( class_t pClass );
+const classAttributes_t     *BG_Class( int pClass );
 
 classModelConfig_t          *BG_ClassModelConfigByName( const char * );
 
-classModelConfig_t          *BG_ClassModelConfig( class_t pClass );
+classModelConfig_t          *BG_ClassModelConfig( int pClass );
 
-void                        BG_ClassBoundingBox( class_t pClass, vec3_t mins, vec3_t maxs, vec3_t cmaxs,
+void                        BG_ClassBoundingBox( int pClass, vec3_t mins, vec3_t maxs, vec3_t cmaxs,
                                                  vec3_t dmins, vec3_t dmaxs );
-team_t                      BG_ClassTeam( class_t pClass );
-qboolean                    BG_ClassHasAbility( class_t pClass, int ability );
+team_t                      BG_ClassTeam( int pClass );
+qboolean                    BG_ClassHasAbility( int pClass, int ability );
 
-int                         BG_ClassCanEvolveFromTo(class_t from, class_t to, int credits);
-qboolean                    BG_AlienCanEvolve(class_t from, int credits);
+int                         BG_ClassCanEvolveFromTo(int from, int to, int credits);
+qboolean                    BG_AlienCanEvolve(int from, int credits);
 
+weapon_t                  BG_WeaponNumberByName( const char *name );
 const weaponAttributes_t  *BG_WeaponByName( const char *name );
-const weaponAttributes_t  *BG_Weapon( weapon_t weapon );
+const weaponAttributes_t  *BG_Weapon( int weapon );
 
 const upgradeAttributes_t *BG_UpgradeByName( const char *name );
-const upgradeAttributes_t *BG_Upgrade( upgrade_t upgrade );
+const upgradeAttributes_t *BG_Upgrade( int upgrade );
 
 const missileAttributes_t *BG_MissileByName( const char *name );
-const missileAttributes_t *BG_Missile( missile_t missile );
+const missileAttributes_t *BG_Missile( int missile );
 
 meansOfDeath_t            BG_MeansOfDeathByName( const char *name );
 
@@ -1374,12 +1368,12 @@ typedef struct {
 } momentumThresholdIterator_t;
 
 void     BG_InitUnlockackables( void );
-void     BG_ImportUnlockablesFromMask( team_t team, int mask );
-int      BG_UnlockablesMask( team_t team );
-qboolean BG_WeaponUnlocked( weapon_t weapon );
-qboolean BG_UpgradeUnlocked( upgrade_t upgrade );
-qboolean BG_BuildableUnlocked( buildable_t buildable );
-qboolean BG_ClassUnlocked( class_t class_ );
+void     BG_ImportUnlockablesFromMask( int team, int mask );
+int      BG_UnlockablesMask( int team );
+qboolean BG_WeaponUnlocked( int weapon );
+qboolean BG_UpgradeUnlocked( int upgrade );
+qboolean BG_BuildableUnlocked( int buildable );
+qboolean BG_ClassUnlocked( int class_ );
 
 unlockableType_t              BG_UnlockableType( int num );
 int                           BG_UnlockableTypeIndex( int num );
@@ -1431,11 +1425,11 @@ void     BG_ParseCSVEquipmentList( const char *string, weapon_t *weapons, int we
 void     BG_ParseCSVClassList( const char *string, class_t *classes, int classesSize );
 void     BG_ParseCSVBuildableList( const char *string, buildable_t *buildables, int buildablesSize );
 void     BG_InitAllowedGameElements( void );
-qboolean BG_WeaponDisabled( weapon_t weapon );
-qboolean BG_UpgradeDisabled( upgrade_t upgrade );
+qboolean BG_WeaponDisabled( int weapon );
+qboolean BG_UpgradeDisabled( int upgrade );
 
-qboolean BG_ClassDisabled( class_t class_ );
-qboolean BG_BuildableDisabled( buildable_t buildable );
+qboolean BG_ClassDisabled( int class_ );
+qboolean BG_BuildableDisabled( int buildable );
 
 weapon_t BG_PrimaryWeapon( int stats[] );
 
@@ -1495,14 +1489,14 @@ voiceCmd_t   *BG_VoiceCmdFind( voiceCmd_t *head, const char *name, int *cmdNum )
 voiceCmd_t   *BG_VoiceCmdByNum( voiceCmd_t *head, int num );
 voiceTrack_t *BG_VoiceTrackByNum( voiceTrack_t *head, int num );
 
-voiceTrack_t *BG_VoiceTrackFind( voiceTrack_t *head, team_t team,
-                                 class_t pClass, weapon_t weapon,
+voiceTrack_t *BG_VoiceTrackFind( voiceTrack_t *head, int team,
+                                 int pClass, int weapon,
                                  int enthusiasm, int *trackNum );
 
 int  BG_LoadEmoticons( emoticon_t *emoticons, int num );
 
-const char *BG_TeamName( team_t team );
-const char *BG_TeamNamePlural( team_t team );
+const char *BG_TeamName( int team );
+const char *BG_TeamNamePlural( int team );
 
 typedef struct
 {

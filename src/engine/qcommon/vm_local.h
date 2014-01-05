@@ -163,11 +163,6 @@ struct vm_s
 	intptr_t ( QDECL *entryPoint )( int callNum, ... );
 	void ( *destroy )( vm_t *self );
 
-#if USE_LLVM
-	// for llvm modules
-	void *llvmModuleProvider;
-#endif // USE_LLVM
-
 	// for interpreted modules
 	qboolean          currentlyInterpreting;
 

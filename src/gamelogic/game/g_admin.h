@@ -123,14 +123,15 @@ g_admin_admin_t;
 addr_ts are passed as "arg" to admin_search for IP address matching
 admin_search prints (char *)arg, so the stringified address needs to be first
 */
+enum
+{
+  IPv4,
+  IPv6
+};
 typedef struct
 {
 	char str[ 44 ];
-	enum
-	{
-	  IPv4,
-	  IPv6
-	} type;
+	int type;
 
 	byte addr[ ADDRLEN ];
 	int  mask;

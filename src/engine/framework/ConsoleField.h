@@ -23,6 +23,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "../../common/LineEditData.h"
+#include "../../common/String.h"
 #include "ConsoleHistory.h"
 
 #ifndef FRAMEWORK_CONSOLE_FIELD_H_
@@ -37,7 +38,7 @@ namespace Console {
             void HistoryPrev();
             void HistoryNext();
 
-            void RunCommand(const std::string& defaultCommand = "");
+            void RunCommand(Str::StringRef defaultCommand = "");
             void AutoComplete();
 
         private:

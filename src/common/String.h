@@ -24,6 +24,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <string>
 #include <algorithm>
+#include <stdint.h>
 #include "../libs/tinyformat/tinyformat.h"
 
 #ifndef COMMON_STRING_H_
@@ -33,6 +34,8 @@ namespace Str {
 
     template<typename T> class BasicStringRef {
     public:
+        static const size_t npos = -1;
+
         BasicStringRef(const std::basic_string<T>& other)
         {
             ptr = other.c_str();
@@ -91,6 +94,49 @@ namespace Str {
             return len;
         }
 
+        std::basic_string<T> substr(size_t pos = 0, size_t count = npos)
+        {
+            if (count == npos)
+                count = std::max<size_t>(len - pos, 0);
+            return std::basic_string<T>(ptr + pos, count);
+        }
+
+        size_t find(BasicStringRef str, size_t pos = 0)
+        {
+            if (pos > len)
+                return npos;
+            const T* result = std::search(ptr + pos, ptr + len, str.ptr, str.ptr + str.len);
+            if (result == ptr + len)
+                return npos;
+            return result - ptr;
+        }
+        size_t find(T chr, size_t pos = 0)
+        {
+            if (pos >= len)
+                return npos;
+            const T* result = std::char_traits<T>::find(ptr + pos, len - pos, chr);
+            if (result == nullptr)
+                return npos;
+            return result - ptr;
+        }
+        size_t rfind(BasicStringRef str, size_t pos = npos)
+        {
+            pos = std::min(pos + str.len, len);
+            const T* result = std::find_end(ptr, ptr + pos, str.ptr, str.ptr + str.len);
+            if (str.len != 0 && result == ptr + pos)
+                return npos;
+            return result - ptr;
+        }
+        size_t rfind(T chr, size_t pos = npos)
+        {
+            pos = std::min(pos + 1, len);
+            for (const T* p = ptr + pos; p != ptr;) {
+                if (*--p == chr)
+                    return p - ptr;
+            }
+            return npos;
+        }
+
         int compare(BasicStringRef other) const
         {
             int result = std::char_traits<T>::compare(ptr, other.ptr, std::min(len, other.len));
@@ -127,6 +173,14 @@ namespace Str {
         {
             return stream << str.c_str();
         }
+        friend std::basic_string<T> operator+(BasicStringRef a, BasicStringRef b)
+        {
+            std::basic_string<T> out;
+            out.reserve(a.size() + b.size());
+            out.append(a.data(), a.size());
+            out.append(b.data(), b.size());
+            return out;
+        }
 
     private:
         const T* ptr;
@@ -134,15 +188,64 @@ namespace Str {
     };
     typedef BasicStringRef<char> StringRef;
 
-    int ToInt(Str::StringRef text);
-    bool ToInt(Str::StringRef text, int& result);
+    bool ParseInt(int& value, Str::StringRef text);
+    bool ParseHex32(uint32_t& value, Str::StringRef text);
 
-    std::string Lower(Str::StringRef text);
+    float ToFloat(Str::StringRef text);
+    bool ToFloat(Str::StringRef text, float& result);
+
+    // Locale-independent versions of ctype
+    inline bool cisdigit(char c)
+    {
+        return c >= '0' && c <= '9';
+    }
+    inline bool cisupper(char c)
+    {
+        return c >= 'A' && c <= 'Z';
+    }
+    inline bool cislower(char c)
+    {
+        return c >= 'a' && c <= 'z';
+    }
+    inline bool cisalpha(char c)
+    {
+        return cisupper(c) || cislower(c);
+    }
+    inline bool cisalnum(char c)
+    {
+        return cisalpha(c) || cisdigit(c);
+    }
+    inline bool cisspace(char c)
+    {
+        return c == ' ' || c == '\t' || c == '\n' || c == '\r';
+    }
+    inline bool cisxdigit(char c)
+    {
+        return cisdigit(c) || (c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f');
+    }
+    inline char ctolower(char c)
+    {
+        if (cisupper(c))
+            return c - 'A' + 'a';
+        else
+            return c;
+    }
+    inline char ctoupper(char c)
+    {
+        if (cislower(c))
+            return c - 'a' + 'A';
+        else
+            return c;
+    }
+
+    std::string ToUpper(Str::StringRef text);
+    std::string ToLower(Str::StringRef text);
 
     bool IsPrefix(Str::StringRef prefix, Str::StringRef text);
+    bool IsSuffix(Str::StringRef suffix, Str::StringRef text);
     int LongestPrefixSize(Str::StringRef text1, Str::StringRef text2);
 
-    // Case Insensitive versions
+    // Case insensitive versions
     bool IsIPrefix(Str::StringRef prefix, Str::StringRef text);
     int LongestIPrefixSize(Str::StringRef text1, Str::StringRef text2);
 
@@ -150,10 +253,7 @@ namespace Str {
     struct IHash {
         size_t operator()(Str::StringRef str) const
         {
-            std::string temp;
-            temp.reserve(str.size());
-            std::transform(str.begin(), str.end(), std::back_inserter(temp), tolower);
-            return std::hash<std::string>()(temp);
+            return std::hash<std::string>()(ToLower(str));
         }
     };
     struct IEqual {
@@ -162,7 +262,7 @@ namespace Str {
             if (a.size() != b.size())
                 return false;
             for (size_t i = 0; i < a.size(); i++) {
-                if (tolower(a[i]) != tolower(b[i]))
+                if (ctolower(a[i]) != ctolower(b[i]))
                     return false;
             }
             return true;
@@ -177,14 +277,12 @@ namespace Str {
     std::string UTF16To8(Str::BasicStringRef<wchar_t> str);
 #endif
 
-    std::string Format(const std::string& format);
-
+    inline std::string Format(Str::StringRef format) {
+        return format;
+    }
     template<typename ... Args>
-    std::string Format(const std::string& format, const Args& ... args);
-
-    template<typename ... Args>
-    std::string Format(const std::string& format, const Args& ... args) {
-        return tinyformat::format(format.c_str(), args ...);
+    std::string Format(Str::StringRef format, Args&& ... args) {
+        return tinyformat::format(format.c_str(), std::forward<Args>(args) ...);
     }
 }
 

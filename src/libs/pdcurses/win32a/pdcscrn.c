@@ -1,8 +1,8 @@
 /* Public Domain Curses */
 
 #include "pdcwin.h"
-#include <time.h>
 #include <tchar.h>
+#include <stdint.h>
 
 RCSID("$Id: pdcscrn.c,v 1.92 2008/07/20 20:12:04 wmcbrine Exp $")
 
@@ -1146,6 +1146,7 @@ static void adjust_window_size( int *xpixels, int *ypixels, int window_style,
                const int menu_shown)
 {
    RECT rect = {0, 0, *xpixels, *ypixels};
+
    AdjustWindowRect( &rect, window_style, menu_shown);
    *xpixels = rect.right - rect.left;
    *ypixels = rect.bottom - rect.top;
@@ -1183,10 +1184,12 @@ static int get_default_sizes_from_registry( int *n_cols, int *n_rows,
 {
     TCHAR data[100];
     DWORD size_out = sizeof( data);
-    HKEY hKey;
+    HKEY hKey = 0;
     long rval = RegOpenKeyEx( HKEY_CURRENT_USER, _T( "SOFTWARE\\PDCurses"),
                         0, KEY_READ, &hKey);
 
+    if( !hKey)
+        return( 1);
     if( rval == ERROR_SUCCESS)
     {
         TCHAR key_name[_MAX_PATH];
@@ -1621,6 +1624,22 @@ static void HandleMenuToggle( int *ptr_ignore_resize)
     InvalidateRect( PDC_hWnd, NULL, FALSE);
 }
 
+static uint64_t milliseconds_since_1970( void)
+{
+   FILETIME ft;
+   const uint64_t jd_1601 = 2305813;  /* actually 2305813.5 */
+   const uint64_t jd_1970 = 2440587;  /* actually 2440587.5 */
+   const uint64_t ten_million = 10000000;
+   const uint64_t diff = (jd_1970 - jd_1601) * ten_million * 86400;
+   uint64_t decimicroseconds_since_1970;   /* i.e.,  time in units of 1e-7 seconds */
+
+   GetSystemTimeAsFileTime( &ft);
+   decimicroseconds_since_1970 = ((uint64_t)ft.dwLowDateTime |
+                                ((uint64_t)ft.dwHighDateTime << 32)) - diff;
+   return( decimicroseconds_since_1970 / 10000);
+}
+
+
 /* Note that there are two types of WM_TIMER timer messages.  One type
 indicates that SP->mouse_wait milliseconds have elapsed since a mouse
 button was pressed;  that's handled as described in the above notes.
@@ -1640,13 +1659,7 @@ Note,  though,  that in Win9x,  detection of the Shift keys is hardware
 dependent;  if you've an unusual keyboard,  both Shift keys may be
 detected as right, or both as left. */
 
-// GCC expects a 16-byte aligned stack but Windows only guarantees 4-byte alignment
-#ifdef __GNUC__
-#define ALIGN_STACK __attribute__((force_align_arg_pointer))
-#else
-#define ALIGN_STACK
-#endif
-static LRESULT CALLBACK ALIGN_STACK WndProc (const HWND hwnd,
+static LRESULT CALLBACK WndProc (const HWND hwnd,
                           const UINT message,
                           const WPARAM wParam,
                           const LPARAM lParam)
@@ -1654,8 +1667,8 @@ static LRESULT CALLBACK ALIGN_STACK WndProc (const HWND hwnd,
     int button_down = -1, button_up = -1;
     static int mouse_buttons_pressed = 0;
     static LONG mouse_lParam;
-    static long last_click_time[PDC_MAX_MOUSE_BUTTONS];
-                               /* in millisec since start */
+    static uint64_t last_click_time[PDC_MAX_MOUSE_BUTTONS];
+                               /* in millisec since 1970 */
     static int modified_key_to_return = 0;
     const RECT before_rect = PDC_mouse_rect;
     static int ignore_resize = 0;
@@ -1890,8 +1903,8 @@ static LRESULT CALLBACK ALIGN_STACK WndProc (const HWND hwnd,
         modified_key_to_return = 0;
         if( (mouse_buttons_pressed >> button_up) & 1)
         {
-            const long curr_click_time =   /* in millisecs since startup */
-               (long)( (double)clock( ) * 1000. / (double)(CLOCKS_PER_SEC));
+            const uint64_t curr_click_time =
+                             milliseconds_since_1970( );
             static const int double_remap_table[PDC_MAX_MOUSE_BUTTONS] =
                       { BUTTON1_DOUBLE_CLICKED, BUTTON2_DOUBLE_CLICKED,
                         BUTTON3_DOUBLE_CLICKED, BUTTON4_DOUBLE_CLICKED,

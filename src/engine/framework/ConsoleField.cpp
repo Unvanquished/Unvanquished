@@ -46,7 +46,7 @@ namespace Console {
         SetText(Str::UTF8To32(current));
     }
 
-    void Field::RunCommand(const std::string& defaultCommand) {
+    void Field::RunCommand(Str::StringRef defaultCommand) {
         if (GetText().empty()) {
             return;
         }

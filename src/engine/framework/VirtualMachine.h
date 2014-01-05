@@ -35,16 +35,14 @@ Maryland 20850 USA.
 #ifndef VIRTUALMACHINE_H_
 #define VIRTUALMACHINE_H_
 
-#ifndef QVM_COMPAT
-
 #include "../../libs/nacl/nacl.h"
 #include "../../common/RPC.h"
 
 namespace VM {
 
 enum Type {
-  TYPE_NACL,
-  TYPE_NATIVE
+  TYPE_NATIVE,
+  TYPE_NACL
 };
 
 // Base class for a virtual machine instance
@@ -78,7 +76,5 @@ private:
 };
 
 } // namespace VM
-
-#endif // QVM_COMPAT
 
 #endif // VIRTUALMACHINE_H_

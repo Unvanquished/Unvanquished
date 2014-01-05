@@ -206,7 +206,7 @@ static Node I(gen)(Node p) {
 }
 
 static void I(global)(Symbol p) {
-	print("align %d\n", p->type->align > 4 ? 4 : p->type->align);
+	print("align %d\n", p->type->align > 16 ? 16 : p->type->align);
 	print("LABELV %s\n", p->x.name);
 }
 

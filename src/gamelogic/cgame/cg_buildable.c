@@ -93,7 +93,6 @@ static const int animLoading[] = {
 	CG_ANIM( qfalse, qtrue,  qtrue,  qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_TURRET
 	CG_ANIM( qfalse, qtrue,  qtrue,  qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_TESLAGEN
 	CG_ANIM( qfalse, qtrue,  qtrue,  qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_ARMOURY
-	CG_ANIM( qfalse, qtrue,  qtrue,  qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_DCC
 	CG_ANIM( qtrue,  qtrue,  qtrue,  qtrue,  qtrue,  qtrue,   qtrue,  qfalse, qfalse, qtrue,  qtrue,  qtrue,  qtrue,  qtrue  ), // BA_H_MEDISTAT
 	CG_ANIM( qfalse, qtrue,  qtrue,  qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_DRILL
 	CG_ANIM( qfalse, qtrue,  qtrue,  qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_REACTOR
@@ -161,15 +160,13 @@ void CG_HumanBuildableExplosion( buildable_t buildable, vec3_t origin, vec3_t di
 	particleSystem_t *explosion = NULL;
 	particleSystem_t *nova = NULL;
 
-	switch ( buildable )
+	if ( buildable == BA_H_REPEATER || buildable == BA_H_REACTOR )
 	{
-		case BA_H_REPEATER:
-		case BA_H_REACTOR:
-			nova = CG_SpawnNewParticleSystem( cgs.media.humanBuildableNovaPS );
-		default:
-			trap_S_StartSound( origin, ENTITYNUM_WORLD, CHAN_AUTO, cgs.media.humanBuildableExplosion );
-			explosion = CG_SpawnNewParticleSystem( cgs.media.humanBuildableDestroyedPS );
+		nova = CG_SpawnNewParticleSystem( cgs.media.humanBuildableNovaPS );
 	}
+
+	trap_S_StartSound( origin, ENTITYNUM_WORLD, CHAN_AUTO, cgs.media.humanBuildableExplosion );
+	explosion = CG_SpawnNewParticleSystem( cgs.media.humanBuildableDestroyedPS );
 
 	if ( CG_IsParticleSystemValid( &nova ) )
 	{
@@ -482,13 +479,22 @@ static qboolean CG_ParseBuildableSoundFile( const char *filename, buildable_t bu
 }
 
 static qboolean CG_RegisterBuildableAnimation( buildableInfo_t *ci, const char *modelName, int anim, const char *animName,
-    qboolean loop, qboolean reversed, qboolean clearOrigin )
+    qboolean loop, qboolean reversed, qboolean clearOrigin, qboolean iqm )
 {
 	char filename[ MAX_QPATH ];
 	int  frameRate;
 
-	Com_sprintf( filename, sizeof( filename ), "models/buildables/%s/%s.md5anim", modelName, animName );
-	ci->animations[ anim ].handle = trap_R_RegisterAnimation( filename );
+	if ( iqm )
+	{
+		Com_sprintf( filename, sizeof( filename ), "models/buildables/%s/%s.iqm:%s", modelName, modelName, animName );
+		ci->animations[ anim ].handle = trap_R_RegisterAnimation( filename );
+	}
+
+	else
+	{
+		Com_sprintf( filename, sizeof( filename ), "models/buildables/%s/%s.md5anim", modelName, animName );
+		ci->animations[ anim ].handle = trap_R_RegisterAnimation( filename );
+	}
 
 	if ( !ci->animations[ anim ].handle )
 	{
@@ -560,11 +566,18 @@ void CG_InitBuildables( void )
 	for ( i = BA_NONE + 1; i < BA_NUM_BUILDABLES; i++ )
 	{
 		buildableInfo_t *bi = &cg_buildables[ i ];
+		qboolean         iqm = qfalse;
+
 		buildableName = BG_Buildable( i )->name;
 		//Load models
 		//Prefer md5 models over md3
 
-		if ( cg_highPolyBuildableModels.integer && ( bi->models[ 0 ] = trap_R_RegisterModel( va( "models/buildables/%s/%s.md5mesh", buildableName, buildableName ) ) ) )
+		if ( cg_highPolyBuildableModels.integer && ( bi->models[ 0 ] = trap_R_RegisterModel( va( "models/buildables/%s/%s.iqm", buildableName, buildableName ) ) ) )
+		{
+			bi->md5 = qtrue;
+			iqm = qtrue;
+		}
+		else if ( cg_highPolyBuildableModels.integer && ( bi->models[ 0 ] = trap_R_RegisterModel( va( "models/buildables/%s/%s.md5mesh", buildableName, buildableName ) ) ) )
 		{
 			bi->md5 = qtrue;
 		}
@@ -590,7 +603,7 @@ void CG_InitBuildables( void )
 			{
 				if ( animLoading[ i ] & ( 1 << n ) )
 				{
-					if ( !CG_RegisterBuildableAnimation( bi, buildableName, n, animTypes[ n ].name, animTypes[ n ].loop, animTypes[ n ].reversed, animTypes[ n ].clearOrigin ) )
+					if ( !CG_RegisterBuildableAnimation( bi, buildableName, n, animTypes[ n ].name, animTypes[ n ].loop, animTypes[ n ].reversed, animTypes[ n ].clearOrigin, iqm ) )
 					{
 						int o = (int) animTypes[ n ].fallback;
 
@@ -627,7 +640,7 @@ void CG_InitBuildables( void )
 			//animation.cfg
 			Com_sprintf( filename, sizeof( filename ), "models/buildables/%s/animation.cfg", buildableName );
 
-			if ( !CG_ParseBuildableAnimationFile( filename, i ) )
+			if ( !CG_ParseBuildableAnimationFile( filename, (buildable_t) i ) )
 			{
 				Com_Printf( S_WARNING "failed to load animation file %s\n", filename );
 			}
@@ -636,7 +649,7 @@ void CG_InitBuildables( void )
 		//sound.cfg
 		Com_sprintf( filename, sizeof( filename ), "sound/buildables/%s/sound.cfg", buildableName );
 
-		if ( !CG_ParseBuildableSoundFile( filename, i ) )
+		if ( !CG_ParseBuildableSoundFile( filename, (buildable_t) i ) )
 		{
 			Com_Printf( S_WARNING "failed to load sound file %s\n", filename );
 		}
@@ -731,18 +744,13 @@ qboolean CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t 
 			break;
 
 		case BA_H_MGTURRET:
-			*range = MGTURRET_RANGE;
+			*range = TURRET_RANGE;
 			shc = SHC_ORANGE;
 			break;
 
 		case BA_H_TESLAGEN:
 			*range = TESLAGEN_RANGE;
 			shc = SHC_RED;
-			break;
-
-		case BA_H_DCC:
-			*range = DC_RANGE;
-			shc = SHC_YELLOW;
 			break;
 
 		case BA_H_DRILL:
@@ -766,10 +774,12 @@ qboolean CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t 
 
 	if ( bType == BA_A_TRAPPER )
 	{
+		// HACK: Assumes certain trapper attributes
 		*rmType = RM_SPHERICAL_CONE_64;
 	}
 	else if ( bType == BA_H_MGTURRET )
 	{
+		// HACK: Assumes TURRET_PITCH_CAP == 30
 		*rmType = RM_SPHERICAL_CONE_240;
 	}
 	else
@@ -874,9 +884,9 @@ cg.time should be between oldFrameTime and frameTime after exit
 */
 static void CG_RunBuildableLerpFrame( centity_t *cent )
 {
-	buildable_t           buildable = cent->currentState.modelindex;
+	buildable_t           buildable = (buildable_t) cent->currentState.modelindex;
 	lerpFrame_t           *lf = &cent->lerpFrame;
-	buildableAnimNumber_t newAnimation = cent->buildableAnim & ~( ANIM_TOGGLEBIT | ANIM_FORCEBIT );
+	buildableAnimNumber_t newAnimation = (buildableAnimNumber_t) ( cent->buildableAnim & ~( ANIM_TOGGLEBIT | ANIM_FORCEBIT ) );
 
 	// see if the animation sequence is switching
 	if ( newAnimation != lf->animationNumber || !lf->animation )
@@ -915,7 +925,7 @@ static void CG_RunBuildableLerpFrame( centity_t *cent )
 	// animation ended
 	if ( lf->frameTime == cg.time )
 	{
-		cent->buildableAnim = cent->currentState.torsoAnim;
+		cent->buildableAnim = (buildableAnimNumber_t) cent->currentState.torsoAnim;
 		cent->buildableIdleAnim = qtrue;
 	}
 }
@@ -933,7 +943,7 @@ static void CG_BuildableAnimation( centity_t *cent, int *old, int *now, float *b
 	//if no animation is set default to idle anim
 	if ( cent->buildableAnim == BANIM_NONE )
 	{
-		cent->buildableAnim = es->torsoAnim;
+		cent->buildableAnim = (buildableAnimNumber_t) es->torsoAnim;
 		cent->buildableIdleAnim = qtrue;
 	}
 
@@ -972,19 +982,19 @@ static void CG_BuildableAnimation( centity_t *cent, int *old, int *now, float *b
 
 			if ( cent->buildableAnim == es->torsoAnim || es->legsAnim & ANIM_FORCEBIT )
 			{
-				cent->buildableAnim = cent->oldBuildableAnim = es->legsAnim;
+				cent->buildableAnim = cent->oldBuildableAnim = (buildableAnimNumber_t) es->legsAnim;
 				cent->buildableIdleAnim = qfalse;
 			}
 			else
 			{
-				cent->buildableAnim = cent->oldBuildableAnim = es->torsoAnim;
+				cent->buildableAnim = cent->oldBuildableAnim = (buildableAnimNumber_t) es->torsoAnim;
 				cent->buildableIdleAnim = qtrue;
 			}
 		}
 		else if ( cent->buildableIdleAnim == qtrue &&
 		          cent->buildableAnim != es->torsoAnim )
 		{
-			cent->buildableAnim = es->torsoAnim;
+			cent->buildableAnim = (buildableAnimNumber_t) es->torsoAnim;
 		}
 
 		CG_RunBuildableLerpFrame( cent );
@@ -1137,12 +1147,30 @@ void CG_GhostBuildable( int buildableInfo )
 	                     : cgs.media.redBuildShader;
 
 	// Draw predicted RGS efficiency
+	// TODO: Add fancy display for predicted RGS efficiency
 	if ( buildable == BA_H_DRILL || buildable == BA_A_LEECH )
 	{
-		// TODO: Add fancy display for predicted RGS efficiency
-		// Colours: < 33⅓% dark red, <50% red, <66⅔% orange, <83⅓% yellow, else green
-	        static const char colours[] = "??18322";
-		CG_CenterPrint(va("^%c%d%%", colours[ (int)( (float) ps->stats[ STAT_PREDICTION ] / ( 100.0f / 6.0f ) ) ], ps->stats[ STAT_PREDICTION ]), 200, GIANTCHAR_WIDTH * 4 );
+		char color;
+		int  delta = ps->stats[ STAT_PREDICTION ];
+
+		if ( delta < 0 )
+		{
+			color = COLOR_RED;
+		}
+		else if ( delta < 10 )
+		{
+			color = COLOR_ORANGE;
+		}
+		else if ( delta < 50 )
+		{
+			color = COLOR_YELLOW;
+		}
+		else
+		{
+			color = COLOR_GREEN;
+		}
+
+		CG_CenterPrint(va("^%c%+d%%", color, delta), 200, GIANTCHAR_WIDTH * 4 );
 	}
 
 	//rescale the model
@@ -1150,10 +1178,8 @@ void CG_GhostBuildable( int buildableInfo )
 
 	if ( cg_buildables[ buildable ].md5 )
 	{
-		vec3_t Scale;
-		Scale[0] = Scale[1] = Scale[2] = scale;
 		trap_R_BuildSkeleton( &ent.skeleton, cg_buildables[ buildable ].animations[ BANIM_IDLE1 ].handle, 0, 0, 0, qfalse );
-		CG_TransformSkeleton( &ent.skeleton, Scale );
+		CG_TransformSkeleton( &ent.skeleton, scale );
 	}
 
 	if ( scale != 1.0f )
@@ -1179,7 +1205,7 @@ static void CG_GhostBuildableStatus( int buildableInfo )
 	vec3_t        angles, entity_origin;
 	vec3_t        mins, maxs;
 	trace_t       tr;
-	float         scale, x, y;
+	float         x, y;
 	buildable_t   buildable = (buildable_t)( buildableInfo & SB_BUILDABLE_MASK ); // assumed not BA_NONE
 
 	ps = &cg.predictedPlayerState;
@@ -1231,7 +1257,7 @@ static void CG_GhostBuildableStatus( int buildableInfo )
 
 			case IBE_NOHUMANBP:
 				text = "[drill]";
-				break; 
+				break;
 
 			case IBE_NOCREEP:
 				text = "[egg]";
@@ -2217,7 +2243,7 @@ void CG_DrawBuildableStatus( void )
 		cent = &cg_entities[ cg.snap->entities[ i ].number ];
 		es = &cent->currentState;
 
-		if ( es->eType == ET_BUILDABLE && CG_PlayerIsBuilder( es->modelindex ) )
+		if ( es->eType == ET_BUILDABLE && CG_PlayerIsBuilder( (buildable_t) es->modelindex ) )
 		{
 			buildableList[ buildables++ ] = cg.snap->entities[ i ].number;
 		}
@@ -2311,7 +2337,7 @@ void CG_Buildable( centity_t *cent )
 			VectorCopy( cent->lerpOrigin, cent->buildableCache.cachedOrigin );
 			VectorCopy( cent->lerpAngles, cent->buildableCache.cachedAngles );
 			VectorCopy( surfNormal, cent->buildableCache.cachedNormal );
-			cent->buildableCache.cachedType = es->modelindex;
+			cent->buildableCache.cachedType = (buildable_t) es->modelindex;
 		}
 	}
 	else
@@ -2374,18 +2400,17 @@ void CG_Buildable( centity_t *cent )
 		CG_StartShadowCaster( ent.lightingOrigin, mins, maxs );
 	}
 
-	if ( CG_PlayerIsBuilder( es->modelindex ) && CG_BuildableRemovalPending( es->number ) )
+	if ( CG_PlayerIsBuilder( (buildable_t) es->modelindex ) && CG_BuildableRemovalPending( es->number ) )
 	{
 		ent.customShader = cgs.media.redBuildShader;
 	}
 
 	if ( cg_buildables[ es->modelindex ].md5 )
 	{
-		vec3_t    Scale;
 		qboolean  spawned = ( es->eFlags & EF_B_SPAWNED ) || ( team == TEAM_HUMANS ); // If buildable has spawned or is a human buildable, don't alter the size
 
-		Scale[0] = Scale[1] = Scale[2] = spawned ? scale :
-		       scale * (float) sin ( 0.5f * (cg.time - es->time) / buildable->buildTime * M_PI );
+		float realScale = spawned ? scale :
+			scale * (float) sin ( 0.5f * (cg.time - es->time) / buildable->buildTime * M_PI );
 		ent.skeleton = bSkeleton;
 
 		if( es->modelindex == BA_H_MGTURRET )
@@ -2399,10 +2424,10 @@ void CG_Buildable( centity_t *cent )
 			// .cfg so we can change it should the rig change.
 
 			QuatFromAngles( rotation, es->angles2[ YAW ] - es->angles[ YAW ], 0, 0 );
-			QuatMultiply0( ent.skeleton.bones[ 1 ].rotation, rotation );
+			QuatMultiply0( ent.skeleton.bones[ 1 ].t.rot, rotation );
 
 			QuatFromAngles( rotation, es->angles2[ PITCH ], 0, 0 );
-			QuatMultiply0( ent.skeleton.bones[ 6 ].rotation, rotation );
+			QuatMultiply0( ent.skeleton.bones[ 6 ].t.rot, rotation );
 
 			// transform bounds so they more accurately reflect the turret's new trasnformation
 			MatrixFromAngles( mat, es->angles2[ PITCH ], es->angles2[ YAW ] - es->angles[ YAW ], 0 );
@@ -2417,7 +2442,7 @@ void CG_Buildable( centity_t *cent )
 			BoundsAdd( ent.skeleton.bounds[ 0 ], ent.skeleton.bounds[ 1 ], nBounds[ 0 ], nBounds[ 1 ] );
 		}
 
-		CG_TransformSkeleton( &ent.skeleton, Scale );
+		CG_TransformSkeleton( &ent.skeleton, realScale );
 	}
 
 	if ( es->generic1 <= 0 )
@@ -2473,7 +2498,7 @@ void CG_Buildable( centity_t *cent )
 			turretBarrel.nonNormalizedAxes = qfalse;
 		}
 
-		if ( CG_PlayerIsBuilder( es->modelindex ) && CG_BuildableRemovalPending( es->number ) )
+		if ( CG_PlayerIsBuilder( (buildable_t) es->modelindex ) && CG_BuildableRemovalPending( es->number ) )
 		{
 			turretBarrel.customShader = cgs.media.redBuildShader;
 		}
@@ -2523,7 +2548,7 @@ void CG_Buildable( centity_t *cent )
 			turretTop.nonNormalizedAxes = qfalse;
 		}
 
-		if ( CG_PlayerIsBuilder( es->modelindex ) && CG_BuildableRemovalPending( es->number ) )
+		if ( CG_PlayerIsBuilder( (buildable_t) es->modelindex ) && CG_BuildableRemovalPending( es->number ) )
 		{
 			turretTop.customShader = cgs.media.redBuildShader;
 		}
@@ -2535,38 +2560,51 @@ void CG_Buildable( centity_t *cent )
 	//weapon effects for turrets
 	if ( es->eFlags & EF_FIRING )
 	{
-		weaponInfo_t *weapon = &cg_weapons[ es->weapon ];
+		weaponInfo_t *wi = &cg_weapons[ es->weapon ];
 
-		if ( cg.time - cent->muzzleFlashTime > MUZZLE_FLASH_TIME ||
-		     buildable->turretProjType == WP_TESLAGEN )
+		if ( wi->wim[ WPM_PRIMARY ].muzzleParticleSystem )
 		{
-			if ( weapon->wim[ WPM_PRIMARY ].flashDlightColor[ 0 ] ||
-			     weapon->wim[ WPM_PRIMARY ].flashDlightColor[ 1 ] ||
-			     weapon->wim[ WPM_PRIMARY ].flashDlightColor[ 2 ] )
+			// spawn muzzle ps if necessary
+			if ( !CG_IsParticleSystemValid( &cent->muzzlePS ) )
 			{
-				trap_R_AddLightToScene( cent->lerpOrigin, weapon->wim[ WPM_PRIMARY ].flashDlight,
-				                        weapon->wim[ WPM_PRIMARY ].flashDlightIntensity,
-				                        weapon->wim[ WPM_PRIMARY ].flashDlightColor[ 0 ],
-				                        weapon->wim[ WPM_PRIMARY ].flashDlightColor[ 1 ],
-				                        weapon->wim[ WPM_PRIMARY ].flashDlightColor[ 2 ], 0, 0 );
-				if( weapon->wim[ WPM_PRIMARY ].muzzleParticleSystem )
-				{
-					cent->muzzlePS = CG_SpawnNewParticleSystem( weapon->wim[ WPM_PRIMARY ].muzzleParticleSystem );
-					CG_SetAttachmentTag( &cent->muzzlePS->attachment, ent, ent.hModel, "tag_flash" );
-					CG_AttachToTag( &cent->muzzlePS->attachment );
-				}
+				cent->muzzlePS = CG_SpawnNewParticleSystem( wi->wim[ WPM_PRIMARY ].muzzleParticleSystem );
+			}
+
+			// update muzzle ps position
+			if ( CG_IsParticleSystemValid( &cent->muzzlePS ) )
+			{
+				CG_SetAttachmentTag( &cent->muzzlePS->attachment, &ent, ent.hModel, "tag_flash" );
+				CG_AttachToTag( &cent->muzzlePS->attachment );
 			}
 		}
 
-		if ( weapon->wim[ WPM_PRIMARY ].firingSound )
+		if ( cg.time - cent->muzzleFlashTime < MUZZLE_FLASH_TIME || ( weapon_t )es->weapon == WP_TESLAGEN )
 		{
-			trap_S_AddLoopingSound( es->number, cent->lerpOrigin, vec3_origin,
-			                        weapon->wim[ WPM_PRIMARY ].firingSound );
+			// add dynamic light
+			if ( wi->wim[ WPM_PRIMARY ].flashDlight )
+			{
+				trap_R_AddLightToScene( cent->lerpOrigin, wi->wim[ WPM_PRIMARY ].flashDlight,
+				                        wi->wim[ WPM_PRIMARY ].flashDlightIntensity,
+				                        wi->wim[ WPM_PRIMARY ].flashDlightColor[ 0 ],
+				                        wi->wim[ WPM_PRIMARY ].flashDlightColor[ 1 ],
+				                        wi->wim[ WPM_PRIMARY ].flashDlightColor[ 2 ], 0, 0 );
+			}
 		}
-		else if ( weapon->readySound )
+
+		// spawn firing sound
+		if ( wi->wim[ WPM_PRIMARY ].firingSound )
 		{
-			trap_S_AddLoopingSound( es->number, cent->lerpOrigin, vec3_origin, weapon->readySound );
+			trap_S_AddLoopingSound( es->number, cent->lerpOrigin, vec3_origin, wi->wim[ WPM_PRIMARY ].firingSound );
 		}
+		else if ( wi->readySound )
+		{
+			trap_S_AddLoopingSound( es->number, cent->lerpOrigin, vec3_origin, wi->readySound );
+		}
+	}
+	else if ( CG_IsParticleSystemValid( &cent->muzzlePS ) )
+	{
+		// destroy active muzzle ps
+		CG_DestroyParticleSystem( &cent->muzzlePS );
 	}
 
 	health = es->generic1;

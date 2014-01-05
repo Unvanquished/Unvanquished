@@ -11,6 +11,10 @@ install:
   - sudo apt-get -qq update
   - sudo apt-get -qq install cmake libwebp-dev libglew-dev libgmp-dev libjpeg8-dev libcurl4-gnutls-dev libfreetype6-dev libgeoip-dev libncursesw5-dev libogg-dev libopenal-dev libpng-dev libsdl1.2-dev libspeexdsp-dev libtheora-dev libvorbis-dev libopusfile-dev libxvidcore-dev nettle-dev zlib1g-dev
 
+before_script:
+  - wget http://clang.llvm.org/libstdc++4.6-clang11.patch;
+  - sudo patch /usr/include/c++/4.6/type_traits < libstdc++4.6-clang11.patch;
+
 script:
   - mkdir build
   - cd build
@@ -25,3 +29,4 @@ notifications:
 branches:
   except:
     - debian
+    - engine-upgrade/sound

@@ -1,3 +1,13 @@
+unvanquished (0.23.0-1) unstable; urgency=low
+
+  * Release of Alpha 23..
+  * Default rotation is updated.
+  * Disabled building of the tty client.
+  * Fixed unvanquished-common behaviour on purge.
+  * Tightened up passing of unv:// URIs to a running instance.
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Sun, 05 Jan 2014 15:24:57 +0000
+
 unvanquished (0.22.1-1) unstable; urgency=low
 
   * Alpha 22 point release. Bug fixes.

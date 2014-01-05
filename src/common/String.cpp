@@ -30,26 +30,84 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace Str {
 
-    int ToInt(Str::StringRef text) {
-        return atoi(text.c_str());
+    bool ParseInt(int& value, Str::StringRef text) {
+        if (text.empty())
+            return false;
+
+        // Parse the sign
+        const char* p = text.begin();
+        bool neg = *p == '-';
+        if (*p == '-' || *p == '+') {
+            if (++p == text.end())
+                return false;
+        }
+
+        // Parse the digits
+        value = 0;
+        do {
+            if (!cisdigit(*p))
+                return false;
+
+            // Check for overflow when multiplying
+            int min = std::numeric_limits<int>::min();
+            int max = std::numeric_limits<int>::max();
+            if (neg ? value < (min + 1) / 10 : value > max / 10)
+                return false;
+            value *= 10;
+
+            // Check for overflow when adding
+            if (neg ? value < min + *p - '0' : value > max - *p + '0')
+                return false;
+            if (neg)
+                value -= *p - '0';
+            else
+                value += *p - '0';
+        } while (++p != text.end());
+
+        return true;
     }
 
-    bool ToInt(Str::StringRef text, int& result) {
+    bool ParseHex32(uint32_t& value, Str::StringRef text) {
+        if (text.size() != 8)
+            return false;
+        value = 0;
+        for (char c: text) {
+            if (!cisxdigit(c))
+                return false;
+            value = (value << 4) | (cisdigit(c) ? c - '0' : ctolower(c) - 'a' + 10);
+        }
+        return true;
+    }
+
+    float ToFloat(Str::StringRef text) {
+        return atof(text.c_str());
+    }
+
+    bool ToFloat(Str::StringRef text, float& result) {
         char* end;
         const char* start = text.c_str();
-        result = strtol(start, &end, 10);
-        if (errno == ERANGE || result < std::numeric_limits<int>::min() || std::numeric_limits<int>::max() < result)
+        result = strtof(start, &end);
+        if (errno == ERANGE)
             return false;
         if (start == end)
             return false;
         return true;
     }
 
-    std::string Lower(Str::StringRef text) {
+    std::string ToUpper(Str::StringRef text) {
         std::string res;
-        res.resize(text.size());
+        res.reserve(text.size());
 
-        std::transform(text.begin(), text.end(), res.begin(), tolower);
+        std::transform(text.begin(), text.end(), std::back_inserter(res), ctoupper);
+
+        return res;
+    }
+
+    std::string ToLower(Str::StringRef text) {
+        std::string res;
+        res.reserve(text.size());
+
+        std::transform(text.begin(), text.end(), std::back_inserter(res), ctolower);
 
         return res;
     }
@@ -59,6 +117,12 @@ namespace Str {
         return res.first == prefix.end();
     }
 
+    bool IsSuffix(Str::StringRef suffix, Str::StringRef text) {
+        if (text.size() < suffix.size())
+            return false;
+        return std::equal(text.begin() + text.size() - suffix.size(), text.end(), suffix.begin());
+    }
+
     int LongestPrefixSize(Str::StringRef text1, Str::StringRef text2) {
         auto res = std::mismatch(text1.begin(), text1.end(), text2.begin());
 
@@ -66,11 +130,11 @@ namespace Str {
     }
 
     bool IsIPrefix(Str::StringRef prefix, Str::StringRef text) {
-        return IsPrefix(Lower(prefix), Lower(text));
+        return IsPrefix(ToLower(prefix), ToLower(text));
     }
 
     int LongestIPrefixSize(Str::StringRef text1, Str::StringRef text2) {
-        return LongestPrefixSize(Lower(text1), Lower(text2));
+        return LongestPrefixSize(ToLower(text1), ToLower(text2));
     }
 
     // Unicode encoder/decoder based on http://utfcpp.sourceforge.net/
@@ -229,8 +293,4 @@ namespace Str {
         return out;
     }
 #endif
-
-    std::string Format(const std::string& format) {
-        return format;
-    }
 }

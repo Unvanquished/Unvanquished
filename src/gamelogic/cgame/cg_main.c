@@ -42,9 +42,9 @@ This is the only way control passes into the module.
 This must be the very first function compiled into the .q3vm file
 ================
 */
-Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3,
-                          int arg4, int arg5, int arg6, int arg7,
-                          int arg8, int arg9, int arg10, int arg11 )
+EXTERN_C Q_EXPORT
+intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3, int arg4,
+                 int arg5, int arg6, int arg7, int arg8, int arg9, int arg10, int arg11 )
 {
 	Q_UNUSED(arg3); Q_UNUSED(arg4);  Q_UNUSED(arg5);
 	Q_UNUSED(arg6); Q_UNUSED(arg7);  Q_UNUSED(arg8);
@@ -73,7 +73,7 @@ Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3,
 			return 0;
 
 		case CG_DRAW_ACTIVE_FRAME:
-			CG_DrawActiveFrame( arg0, arg1, arg2 );
+			CG_DrawActiveFrame( arg0, (stereoFrame_t) arg1, arg2 );
 			return 0;
 
 		case CG_CROSSHAIR_PLAYER:
@@ -804,9 +804,9 @@ void CG_UpdateBuildableRangeMarkerMask( void )
 			}
 			else if ( !Q_stricmp( p, "all" ) )
 			{
-				brmMask |= ( 1 << BA_A_OVERMIND ) | ( 1 << BA_A_SPAWN ) |
-				           ( 1 << BA_A_ACIDTUBE ) | ( 1 << BA_A_TRAPPER ) | ( 1 << BA_A_HIVE ) | ( 1 << BA_A_LEECH ) | ( 1 << BA_A_BOOSTER ) |
-				           ( 1 << BA_H_REACTOR ) | ( 1 << BA_H_REPEATER ) | ( 1 << BA_H_DCC ) |
+				brmMask |= ( 1 << BA_A_OVERMIND ) | ( 1 << BA_A_SPAWN ) | ( 1 << BA_A_ACIDTUBE ) |
+				           ( 1 << BA_A_TRAPPER ) | ( 1 << BA_A_HIVE ) | ( 1 << BA_A_LEECH ) |
+				           ( 1 << BA_A_BOOSTER ) | ( 1 << BA_H_REACTOR ) | ( 1 << BA_H_REPEATER ) |
 				           ( 1 << BA_H_MGTURRET ) | ( 1 << BA_H_TESLAGEN ) | ( 1 << BA_H_DRILL );
 			}
 			else if ( !Q_stricmp( p, "none" ) )
@@ -827,7 +827,7 @@ void CG_UpdateBuildableRangeMarkerMask( void )
 				else if ( !Q_strnicmp( p, "human", 5 ) )
 				{
 					pp = p + 5;
-					only = ( 1 << BA_H_REACTOR ) | ( 1 << BA_H_REPEATER ) | ( 1 << BA_H_DCC ) |
+					only = ( 1 << BA_H_REACTOR ) | ( 1 << BA_H_REPEATER ) |
 					       ( 1 << BA_H_MGTURRET ) | ( 1 << BA_H_TESLAGEN ) | ( 1 << BA_H_DRILL );
 				}
 				else
@@ -843,7 +843,7 @@ void CG_UpdateBuildableRangeMarkerMask( void )
 				else if ( !Q_stricmp( pp, "support" ) )
 				{
 					brmMask |= only & ( ( 1 << BA_A_OVERMIND ) | ( 1 << BA_A_SPAWN ) | ( 1 << BA_A_LEECH ) | ( 1 << BA_A_BOOSTER ) |
-					                    ( 1 << BA_H_REACTOR ) | ( 1 << BA_H_REPEATER ) | ( 1 << BA_H_DCC ) | ( 1 << BA_H_DRILL ) );
+					                    ( 1 << BA_H_REACTOR ) | ( 1 << BA_H_REPEATER ) | ( 1 << BA_H_DRILL ) );
 				}
 				else if ( !Q_stricmp( pp, "offensive" ) )
 				{
@@ -1382,9 +1382,35 @@ void CG_RegisterGrading( int slot, const char *str )
 
 	sscanf(str, "%d %f %s", &model, &dist, texture);
 	cgs.gameGradingTextures[ slot ] =
-		trap_R_RegisterShader(texture, RSF_NOMIP | RSF_NOLIGHTSCALE);
+		trap_R_RegisterShader(texture, (RegisterShaderFlags_t) ( RSF_NOMIP | RSF_NOLIGHTSCALE ) );
 	cgs.gameGradingModels[ slot ] = model;
 	cgs.gameGradingDistances[ slot ] = dist;
+}
+
+/*
+=================
+CG_RegisterReverb
+=================
+*/
+void CG_RegisterReverb( int slot, const char *str )
+{
+	int   model;
+	float dist, intensity;
+	char  name[MAX_NAME_LENGTH];
+
+	if( !str || !*str ) {
+		Q_strncpyz(cgs.gameReverbEffects[ slot ], "none", MAX_NAME_LENGTH);
+		cgs.gameReverbModels[ slot ]        = 0;
+		cgs.gameReverbDistances[ slot ]     = 0.0f;
+		cgs.gameReverbIntensities[ slot ]   = 0.0f;
+		return;
+	}
+
+	sscanf(str, "%d %f %s %f", &model, &dist, name, &intensity);
+	Q_strncpyz(cgs.gameReverbEffects[ slot ], name, MAX_NAME_LENGTH);
+	cgs.gameReverbModels[ slot ] = model;
+	cgs.gameReverbDistances[ slot ] = dist;
+	cgs.gameReverbIntensities[ slot ] = intensity;
 }
 
 /*
@@ -1432,82 +1458,82 @@ static void CG_RegisterGraphics( void )
 	for ( i = 0; i < 11; i++ )
 	{
 		cgs.media.numberShaders[ i ] = trap_R_RegisterShader(sb_nums[i],
-								     RSF_DEFAULT);
+								     (RegisterShaderFlags_t) RSF_DEFAULT);
 	}
 
 	cgs.media.viewBloodShader = trap_R_RegisterShader("gfx/damage/fullscreen_painblend",
-							  RSF_DEFAULT);
+							  (RegisterShaderFlags_t) RSF_DEFAULT);
 
 	cgs.media.connectionShader = trap_R_RegisterShader("gfx/2d/net",
-							   RSF_DEFAULT);
+							   (RegisterShaderFlags_t) RSF_DEFAULT);
 
-	cgs.media.creepShader = trap_R_RegisterShader("creep", RSF_DEFAULT);
+	cgs.media.creepShader = trap_R_RegisterShader("creep", (RegisterShaderFlags_t) RSF_DEFAULT);
 
 	cgs.media.scannerBlipShader = trap_R_RegisterShader("gfx/2d/blip",
-							    RSF_DEFAULT);
+							    (RegisterShaderFlags_t) RSF_DEFAULT);
 
 	cgs.media.scannerBlipBldgShader = trap_R_RegisterShader("gfx/2d/blip_bldg",
-								RSF_DEFAULT);
+								(RegisterShaderFlags_t) RSF_DEFAULT);
 
 	cgs.media.scannerLineShader = trap_R_RegisterShader("gfx/2d/stalk",
-							    RSF_DEFAULT);
+							    (RegisterShaderFlags_t) RSF_DEFAULT);
 
 	cgs.media.teamOverlayShader = trap_R_RegisterShader("gfx/2d/teamoverlay",
-							    RSF_DEFAULT);
+							    (RegisterShaderFlags_t) RSF_DEFAULT);
 
 	cgs.media.tracerShader = trap_R_RegisterShader("gfx/misc/tracer",
-						       RSF_DEFAULT);
+						       (RegisterShaderFlags_t) RSF_DEFAULT);
 
 	cgs.media.backTileShader = trap_R_RegisterShader("console",
-							 RSF_DEFAULT);
+							 (RegisterShaderFlags_t) RSF_DEFAULT);
 
 	// building shaders
 	cgs.media.greenBuildShader = trap_R_RegisterShader("gfx/misc/greenbuild",
-							   RSF_DEFAULT);
+							   (RegisterShaderFlags_t) RSF_DEFAULT);
 	cgs.media.redBuildShader = trap_R_RegisterShader("gfx/misc/redbuild",
-							 RSF_DEFAULT);
+							 (RegisterShaderFlags_t) RSF_DEFAULT);
 	cgs.media.humanSpawningShader = trap_R_RegisterShader("models/buildables/telenode/rep_cyl",
-							      RSF_DEFAULT);
+							      (RegisterShaderFlags_t) RSF_DEFAULT);
 
 	for ( i = 0; i < 8; i++ )
 	{
 		cgs.media.buildWeaponTimerPie[ i ] = trap_R_RegisterShader(buildWeaponTimerPieShaders[i],
-									   RSF_DEFAULT);
+									   (RegisterShaderFlags_t) RSF_DEFAULT);
 	}
 
 	// player health cross shaders
 	cgs.media.healthCross = trap_R_RegisterShader("ui/assets/neutral/cross.tga",
-						      RSF_DEFAULT);
+						      (RegisterShaderFlags_t) RSF_DEFAULT);
 	cgs.media.healthCross2X = trap_R_RegisterShader("ui/assets/neutral/cross2.tga",
-							RSF_DEFAULT);
+							(RegisterShaderFlags_t) RSF_DEFAULT);
 	cgs.media.healthCross3X = trap_R_RegisterShader("ui/assets/neutral/cross3.tga",
-							RSF_DEFAULT);
+							(RegisterShaderFlags_t) RSF_DEFAULT);
 	cgs.media.healthCrossMedkit = trap_R_RegisterShader("ui/assets/neutral/cross_medkit.tga",
-							    RSF_DEFAULT);
+							    (RegisterShaderFlags_t) RSF_DEFAULT);
 	cgs.media.healthCrossPoisoned = trap_R_RegisterShader("ui/assets/neutral/cross_poison.tga",
-							      RSF_DEFAULT);
+							      (RegisterShaderFlags_t) RSF_DEFAULT);
 
 	cgs.media.upgradeClassIconShader = trap_R_RegisterShader("icons/icona_upgrade.tga",
-								 RSF_DEFAULT);
+								 (RegisterShaderFlags_t) RSF_DEFAULT);
 
 	cgs.media.desaturatedCgrade = trap_R_RegisterShader("gfx/cgrading/desaturated",
-								 RSF_NOMIP | RSF_NOLIGHTSCALE );
+								 (RegisterShaderFlags_t) ( RSF_NOMIP | RSF_NOLIGHTSCALE ) );
 
 	cgs.media.neutralCgrade = trap_R_RegisterShader("gfx/cgrading/neutral",
-								 RSF_NOMIP | RSF_NOLIGHTSCALE );
+								 (RegisterShaderFlags_t) ( RSF_NOMIP | RSF_NOLIGHTSCALE ) );
 
 	cgs.media.redCgrade = trap_R_RegisterShader("gfx/cgrading/red-only",
-								 RSF_NOMIP | RSF_NOLIGHTSCALE );
+								 (RegisterShaderFlags_t) ( RSF_NOMIP | RSF_NOLIGHTSCALE ) );
 
 	cgs.media.tealCgrade = trap_R_RegisterShader("gfx/cgrading/teal-only",
-								 RSF_NOMIP | RSF_NOLIGHTSCALE );
+								 (RegisterShaderFlags_t) ( RSF_NOMIP | RSF_NOLIGHTSCALE ) );
 
 	cgs.media.balloonShader = trap_R_RegisterShader("gfx/sprites/chatballoon",
-							RSF_DEFAULT);
+							(RegisterShaderFlags_t) RSF_DEFAULT);
 
 	cgs.media.disconnectPS = CG_RegisterParticleSystem( "disconnectPS" );
 
-	cgs.media.scopeShader = trap_R_RegisterShader( "scope", RSF_DEFAULT | RSF_NOMIP );
+	cgs.media.scopeShader = trap_R_RegisterShader( "scope", (RegisterShaderFlags_t) ( RSF_DEFAULT | RSF_NOMIP ) );
 
 	CG_UpdateMediaFraction( 0.7f );
 
@@ -1515,9 +1541,9 @@ static void CG_RegisterGraphics( void )
 	memset( cg_upgrades, 0, sizeof( cg_upgrades ) );
 
 	cgs.media.shadowMarkShader = trap_R_RegisterShader("gfx/marks/shadow",
-							   RSF_DEFAULT);
+							   (RegisterShaderFlags_t) RSF_DEFAULT);
 	cgs.media.wakeMarkShader = trap_R_RegisterShader("gfx/marks/wake",
-							 RSF_DEFAULT);
+							 (RegisterShaderFlags_t) RSF_DEFAULT);
 
 	cgs.media.poisonCloudPS = CG_RegisterParticleSystem( "firstPersonPoisonCloudPS" );
 	cgs.media.poisonCloudedPS = CG_RegisterParticleSystem( "poisonCloudedPS" );
@@ -1546,24 +1572,24 @@ static void CG_RegisterGraphics( void )
 	cgs.media.sphericalCone240Model = trap_R_RegisterModel( "models/generic/sphericalCone240.md3" );
 
 	cgs.media.plainColorShader = trap_R_RegisterShader("gfx/plainColor",
-							   RSF_DEFAULT);
+							   (RegisterShaderFlags_t) RSF_DEFAULT);
 	cgs.media.binaryAlpha1Shader = trap_R_RegisterShader("gfx/binary/alpha1",
-							     RSF_DEFAULT);
+							     (RegisterShaderFlags_t) RSF_DEFAULT);
 
 	for ( i = 0; i < NUM_BINARY_SHADERS; ++i )
 	{
 		cgs.media.binaryShaders[ i ].f1 = trap_R_RegisterShader(va("gfx/binary/%03i_F1", i),
-									RSF_DEFAULT);
+									(RegisterShaderFlags_t) RSF_DEFAULT);
 		cgs.media.binaryShaders[ i ].f2 = trap_R_RegisterShader(va("gfx/binary/%03i_F2", i),
-									RSF_DEFAULT);
+									(RegisterShaderFlags_t) RSF_DEFAULT);
 		cgs.media.binaryShaders[ i ].f3 = trap_R_RegisterShader(va("gfx/binary/%03i_F3", i),
-									RSF_DEFAULT);
+									(RegisterShaderFlags_t) RSF_DEFAULT);
 		cgs.media.binaryShaders[ i ].b1 = trap_R_RegisterShader(va("gfx/binary/%03i_B1", i),
-									RSF_DEFAULT);
+									(RegisterShaderFlags_t) RSF_DEFAULT);
 		cgs.media.binaryShaders[ i ].b2 = trap_R_RegisterShader(va("gfx/binary/%03i_B2", i),
-									RSF_DEFAULT);
+									(RegisterShaderFlags_t) RSF_DEFAULT);
 		cgs.media.binaryShaders[ i ].b3 = trap_R_RegisterShader(va("gfx/binary/%03i_B3", i),
-									RSF_DEFAULT);
+									(RegisterShaderFlags_t) RSF_DEFAULT);
 	}
 
 	CG_BuildableStatusParse( "ui/assets/human/buildstat.cfg", &cgs.humanBuildStat );
@@ -1624,7 +1650,7 @@ static void CG_RegisterGraphics( void )
 		}
 
 		cgs.gameShaders[ i ] = trap_R_RegisterShader(shaderName,
-							     RSF_DEFAULT);
+							     (RegisterShaderFlags_t) RSF_DEFAULT);
 	}
 
 	CG_UpdateMediaFraction( 0.77f );
@@ -1634,6 +1660,13 @@ static void CG_RegisterGraphics( void )
 	for ( i = 0; i < MAX_GRADING_TEXTURES; i++ )
 	{
 		CG_RegisterGrading( i, CG_ConfigString( CS_GRADING_TEXTURES + i ) );
+	}
+
+	// register all the server specified reverb effects
+	// starting with the world wide one
+	for ( i = 0; i < MAX_REVERB_EFFECTS; i++ )
+	{
+		CG_RegisterReverb( i, CG_ConfigString( CS_REVERB_EFFECTS + i ) );
 	}
 
 	CG_UpdateMediaFraction( 0.79f );
@@ -1691,7 +1724,7 @@ static void CG_RegisterClients( void )
 	//precache all the models/sounds/etc
 	for ( i = PCL_NONE + 1; i < PCL_NUM_CLASSES; i++ )
 	{
-		CG_PrecacheClientInfo( i, BG_ClassModelConfig( i )->modelName,
+		CG_PrecacheClientInfo( (class_t) i, BG_ClassModelConfig( i )->modelName,
 		                       BG_ClassModelConfig( i )->skinName );
 
 		cg.charModelFraction = ( float ) i / ( float ) PCL_NUM_CLASSES;
@@ -1898,7 +1931,7 @@ qboolean CG_Asset_Parse( int handle )
 			}
 
 			cgDC.Assets.gradientBar = trap_R_RegisterShader(tempStr,
-									RSF_NOMIP);
+									(RegisterShaderFlags_t) RSF_NOMIP);
 			continue;
 		}
 
@@ -1958,7 +1991,7 @@ qboolean CG_Asset_Parse( int handle )
 			}
 
 			cgDC.Assets.cursor = trap_R_RegisterShader(cgDC.Assets.cursorStr,
-								   RSF_NOMIP);
+								   (RegisterShaderFlags_t) RSF_NOMIP);
 			continue;
 		}
 
@@ -2528,6 +2561,7 @@ void CG_LoadHudMenu( void )
 	cgDC.runScript = &CG_RunMenuScript;
 	cgDC.setCVar = trap_Cvar_Set;
 	cgDC.getCVarString = trap_Cvar_VariableStringBuffer;
+	cgDC.getCVarLatchedString = trap_Cvar_LatchedVariableStringBuffer;
 	cgDC.getCVarValue = CG_Cvar_Get;
 	cgDC.setOverstrikeMode = &trap_Key_SetOverstrikeMode;
 	cgDC.getOverstrikeMode = &trap_Key_GetOverstrikeMode;
@@ -2574,23 +2608,23 @@ void CG_AssetCache( void )
 	int i;
 
 	cgDC.Assets.gradientBar = trap_R_RegisterShader(ASSET_GRADIENTBAR,
-							RSF_NOMIP);
+							(RegisterShaderFlags_t) RSF_NOMIP);
 	cgDC.Assets.scrollBar = trap_R_RegisterShader(ASSET_SCROLLBAR,
-						      RSF_NOMIP);
+						      (RegisterShaderFlags_t) RSF_NOMIP);
 	cgDC.Assets.scrollBarArrowDown = trap_R_RegisterShader(ASSET_SCROLLBAR_ARROWDOWN,
-							       RSF_NOMIP);
+							       (RegisterShaderFlags_t) RSF_NOMIP);
 	cgDC.Assets.scrollBarArrowUp = trap_R_RegisterShader(ASSET_SCROLLBAR_ARROWUP,
-							     RSF_NOMIP);
+							     (RegisterShaderFlags_t) RSF_NOMIP);
 	cgDC.Assets.scrollBarArrowLeft = trap_R_RegisterShader(ASSET_SCROLLBAR_ARROWLEFT,
-							       RSF_NOMIP);
+							       (RegisterShaderFlags_t) RSF_NOMIP);
 	cgDC.Assets.scrollBarArrowRight = trap_R_RegisterShader(ASSET_SCROLLBAR_ARROWRIGHT,
-								RSF_NOMIP);
+								(RegisterShaderFlags_t) RSF_NOMIP);
 	cgDC.Assets.scrollBarThumb = trap_R_RegisterShader(ASSET_SCROLL_THUMB,
-							   RSF_NOMIP);
+							   (RegisterShaderFlags_t) RSF_NOMIP);
 	cgDC.Assets.sliderBar = trap_R_RegisterShader(ASSET_SLIDER_BAR,
-						      RSF_NOMIP);
+						      (RegisterShaderFlags_t) RSF_NOMIP);
 	cgDC.Assets.sliderThumb = trap_R_RegisterShader(ASSET_SLIDER_THUMB,
-							RSF_NOMIP);
+							(RegisterShaderFlags_t) RSF_NOMIP);
 
 	if ( cg_emoticons.integer )
 	{
@@ -2605,7 +2639,7 @@ void CG_AssetCache( void )
 	for ( i = 0; i < cgDC.Assets.emoticonCount; i++ )
 	{
 		cgDC.Assets.emoticons[ i ].shader = trap_R_RegisterShader(va("emoticons/%s_%dx1.tga", cgDC.Assets.emoticons[i].name, cgDC.Assets.emoticons[i].width),
-									  RSF_NOMIP);
+									  (RegisterShaderFlags_t) RSF_NOMIP);
 	}
 }
 
@@ -2641,11 +2675,11 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 
 	// load a few needed things before we do any screen updates
 	trap_R_SetAltShaderTokens( "unpowered,destroyed" );
-	cgs.media.whiteShader = trap_R_RegisterShader("white", RSF_DEFAULT);
+	cgs.media.whiteShader = trap_R_RegisterShader("white", (RegisterShaderFlags_t) RSF_DEFAULT);
 	cgs.media.charsetShader = trap_R_RegisterShader("gfx/2d/bigchars",
-							RSF_DEFAULT);
+							(RegisterShaderFlags_t) RSF_DEFAULT);
 	cgs.media.outlineShader = trap_R_RegisterShader("outline",
-							RSF_DEFAULT);
+							(RegisterShaderFlags_t) RSF_DEFAULT);
 
 	// Dynamic memory
 	BG_InitMemory();

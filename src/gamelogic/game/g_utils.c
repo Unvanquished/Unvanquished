@@ -164,6 +164,11 @@ int G_GradingTextureIndex( const char *name )
 	return G_FindConfigstringIndex( name, CS_GRADING_TEXTURES+1, MAX_GRADING_TEXTURES-1, qtrue );
 }
 
+int G_ReverbEffectIndex( const char *name )
+{
+	return G_FindConfigstringIndex( name, CS_REVERB_EFFECTS+1, MAX_REVERB_EFFECTS-1, qtrue );
+}
+
 int G_LocationIndex( const char *name )
 {
 	return G_FindConfigstringIndex( name, CS_LOCATIONS, MAX_LOCATIONS, qtrue );
@@ -248,7 +253,7 @@ G_CopyString
 char *G_CopyString( const char *str )
 {
 	size_t size = strlen( str ) + 1;
-	char *cp = BG_Alloc( size );
+	char *cp = (char*) BG_Alloc( size );
 	memcpy( cp, str, size );
 	return cp;
 }

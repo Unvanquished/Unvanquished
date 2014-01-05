@@ -30,7 +30,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 // -----
 
 extern  level_locals_t level;
-#ifdef QVM_COMPAT
+#ifdef QVM_ABI
 extern  gentity_t      g_entities[ MAX_GENTITIES ];
 #else
 extern gentity_t *g_entities;
@@ -63,6 +63,7 @@ extern  vmCvar_t g_inactivity;
 extern  vmCvar_t g_debugMove;
 extern  vmCvar_t g_debugDamage;
 extern  vmCvar_t g_debugKnockback;
+extern  vmCvar_t g_debugTurrets;
 extern  vmCvar_t g_synchronousClients;
 extern  vmCvar_t g_motd;
 extern  vmCvar_t g_warmup;

@@ -1357,7 +1357,6 @@ static void CG_DrawPlayerChargeBar( rectDef_t *rect, vec4_t ref_color,
 	}
 }
 
-#define MOMENTUM_BAR_MAX       300.0f
 #define MOMENTUM_BAR_MARKWIDTH 0.5f
 #define MOMENTUM_BAR_GLOWTIME  2000
 
@@ -1379,7 +1378,7 @@ static void CG_DrawPlayerMomentumBar( rectDef_t *rect, vec4_t foreColor, vec4_t 
 
 	ps = &cg.predictedPlayerState;
 
-	team       = ps->persistant[ PERS_TEAM ];
+	team       = (team_t) ps->persistant[ PERS_TEAM ];
 	momentum = ps->persistant[ PERS_MOMENTUM ] / 10.0f;
 
 	x = rect->x;
@@ -1405,7 +1404,7 @@ static void CG_DrawPlayerMomentumBar( rectDef_t *rect, vec4_t foreColor, vec4_t 
 	CG_FillRect( x, y, w, h, color );
 
 	// draw momentum bar
-	fraction = rawFraction = momentum / MOMENTUM_BAR_MAX;
+	fraction = rawFraction = momentum / MOMENTUM_MAX;
 
 	if ( fraction < 0.0f )
 	{
@@ -1428,7 +1427,7 @@ static void CG_DrawPlayerMomentumBar( rectDef_t *rect, vec4_t foreColor, vec4_t 
 	// draw glow on momentum event
 	if ( cg.momentumGainedTime + MOMENTUM_BAR_GLOWTIME > cg.time )
 	{
-		glowFraction = fabs( cg.momentumGained / MOMENTUM_BAR_MAX );
+		glowFraction = fabs( cg.momentumGained / MOMENTUM_MAX );
 		glowStrength = ( MOMENTUM_BAR_GLOWTIME - ( cg.time - cg.momentumGainedTime ) ) /
 		               ( float )MOMENTUM_BAR_GLOWTIME;
 
@@ -1464,7 +1463,7 @@ static void CG_DrawPlayerMomentumBar( rectDef_t *rect, vec4_t foreColor, vec4_t 
 	while ( ( unlockableIter = BG_IterateMomentumThresholds( unlockableIter, team, &threshold, &unlocked ) ),
 	        ( unlockableIter.num >= 0 ) )
 	{
-		fraction = threshold / MOMENTUM_BAR_MAX;
+		fraction = threshold / MOMENTUM_MAX;
 
 		if ( fraction > 1.0f )
 		{
@@ -1531,7 +1530,7 @@ static void CG_DrawPlayerUnlockedItems( rectDef_t *rect, vec4_t foreColour, vec4
 		qboolean  unlocked;
 	} icon[ NUM_UNLOCKABLES ]; // more than enough(!)
 
-	team = cg.predictedPlayerState.persistant[ PERS_TEAM ];
+	team = (team_t) cg.predictedPlayerState.persistant[ PERS_TEAM ];
 
 	w = rect->w - 2 * borderSize;
 	h = rect->h - 2 * borderSize;
@@ -1908,10 +1907,9 @@ static void CG_DrawPlayerFuelIcon( rectDef_t *rect, vec4_t backColor,
 
 	fuel     = cg.snap->ps.stats[ STAT_FUEL ];
 	pmNormal = ( cg.snap->ps.pm_type == PM_NORMAL );
-	damaged  = ( cg.snap->ps.stats[ STAT_STATE2 ] & SS2_JETPACK_DAMAGED );
 	active   = ( cg.snap->ps.stats[ STAT_STATE2 ] & SS2_JETPACK_ACTIVE );
 
-	if ( fuel < JETPACK_FUEL_LOW || !pmNormal || damaged )
+	if ( fuel < JETPACK_FUEL_LOW || !pmNormal )
 	{
 		Vector4Copy( backColor, color );
 	}
@@ -2354,7 +2352,7 @@ static void CG_DrawMomentum( rectDef_t *rect, float text_x, float text_y,
 		return;
 	}
 
-	team = cg.snap->ps.persistant[ PERS_TEAM ];
+	team = (team_t) cg.snap->ps.persistant[ PERS_TEAM ];
 
 	if ( team <= TEAM_NONE || team >= NUM_TEAMS )
 	{
@@ -2614,8 +2612,8 @@ static void CG_DrawTeamOverlay( rectDef_t *rect, float scale, vec4_t color )
 	float             maxX = rect->x + rect->w;
 	float             maxXCp = maxX;
 	weapon_t          curWeapon = WP_NONE;
-	teamOverlayMode_t mode = cg_drawTeamOverlay.integer;
-	teamOverlaySort_t sort = cg_teamOverlaySortMode.integer;
+	teamOverlayMode_t mode = (teamOverlayMode_t) cg_drawTeamOverlay.integer;
+	teamOverlaySort_t sort = (teamOverlaySort_t) cg_teamOverlaySortMode.integer;
 	int               displayClients[ MAX_CLIENTS ];
 
 	if ( cg.predictedPlayerState.pm_type == PM_SPECTATOR )
@@ -2748,7 +2746,7 @@ static void CG_DrawTeamOverlay( rectDef_t *rect, float scale, vec4_t color )
 		{
 			if ( ci->team == TEAM_HUMANS )
 			{
-				curWeapon = ci->curWeaponClass;
+				curWeapon = (weapon_t) ci->curWeaponClass;
 			}
 			else if ( ci->team == TEAM_ALIENS )
 			{
@@ -3690,7 +3688,7 @@ static void CG_ScanForCrosshairEntity( void )
 		return;
 	}
 
-	ownTeam = cg.snap->ps.persistant[ PERS_TEAM ];
+	ownTeam = (team_t) cg.snap->ps.persistant[ PERS_TEAM ];
 	targetState = &cg_entities[ trace.entityNum ].currentState;
 
 	if ( trace.entityNum >= MAX_CLIENTS )
@@ -4989,7 +4987,7 @@ static void CG_DrawWarmup( void )
 		return;
 	}
 
-	strncpy( text, _( "Warmup Time:" ), sizeof( text ) );
+	Q_strncpyz( text, _( "Warmup Time:" ), sizeof( text ) );
 	w = UI_Text_Width( text, size );
 	h = UI_Text_Height( text, size );
 	UI_Text_Paint( 320 - w / 2, 200, size, colorWhite, text, 0, ITEM_TEXTSTYLE_SHADOWED );
@@ -5019,7 +5017,7 @@ static void CG_Draw2D( void )
 	if ( cg.snap->ps.pm_type == PM_INTERMISSION )
 	{
 		CG_DrawVote( TEAM_NONE );
-		CG_DrawVote( cg.predictedPlayerState.persistant[ PERS_TEAM ] );
+		CG_DrawVote( (team_t) cg.predictedPlayerState.persistant[ PERS_TEAM ] );
 		CG_DrawIntermission();
 		return;
 	}
@@ -5059,7 +5057,7 @@ static void CG_Draw2D( void )
 	}
 
 	CG_DrawVote( TEAM_NONE );
-	CG_DrawVote( cg.predictedPlayerState.persistant[ PERS_TEAM ] );
+	CG_DrawVote( (team_t) cg.predictedPlayerState.persistant[ PERS_TEAM ] );
 	CG_DrawWarmup();
 	CG_DrawQueue();
 

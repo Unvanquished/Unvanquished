@@ -20,9 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
-extern "C" {
 #include "g_local.h"
-}
 #include "../../libs/nacl/nacl.h"
 #include "../../common/RPC.h"
 

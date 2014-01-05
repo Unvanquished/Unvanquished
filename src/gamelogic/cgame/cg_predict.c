@@ -176,22 +176,27 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
 			VectorCopy( vec3_origin, origin );
 		}
 
-		if ( collisionType == TT_CAPSULE )
+		switch ( collisionType )
 		{
+		case TT_CAPSULE:
 			trap_CM_TransformedCapsuleTrace( &trace, start, end,
 			                                 mins, maxs, cmodel,  mask, origin, angles );
-		}
-		else if ( collisionType == TT_AABB )
-		{
+			break;
+
+		case TT_AABB:
 			trap_CM_TransformedBoxTrace( &trace, start, end,
 			                             mins, maxs, cmodel,  mask, origin, angles );
-		}
-		else if ( collisionType == TT_BISPHERE )
-		{
+			break;
+
+		case TT_BISPHERE:
 			assert( maxs != NULL );
 			assert( mins != NULL );
 			trap_CM_TransformedBiSphereTrace( &trace, start, end,
 			                                  mins[ 0 ], maxs[ 0 ], cmodel, mask, origin );
+			break;
+
+		default: // Shouldn't Happen
+			assert( 0 );
 		}
 
 		if ( trace.allsolid || trace.fraction < tr->fraction )

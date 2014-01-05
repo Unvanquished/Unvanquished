@@ -75,6 +75,8 @@ namespace Cmd {
     //TODO make it thread safe
     // Registers a command
     void AddCommand(std::string name, const CmdBase& cmd, std::string description);
+    // Changes the description of a command
+    void ChangeDescription(std::string name, std::string description);
     // Removes a command
     void RemoveCommand(const std::string& name);
     // Removes all the commands with the given flag
@@ -86,7 +88,7 @@ namespace Cmd {
 
     //Completion stuff, highly unstable :-)
     CompletionResult CompleteArgument(const Args& args, int argNum);
-    CompletionResult CompleteCommandNames(const std::string& prefix = "");
+    CompletionResult CompleteCommandNames(Str::StringRef prefix = "");
 
     //Function to ease the transition to C++
     bool CommandExists(const std::string& name);
@@ -97,6 +99,7 @@ namespace Cmd {
 
     //Environment related private functions
     Environment* GetEnv();
+    void         ResetEnv();
 
     class DefaultEnvironment: public Environment {
         public:

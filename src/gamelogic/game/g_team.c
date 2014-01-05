@@ -114,7 +114,7 @@ void G_AreaTeamCommand( gentity_t *ent, const char *cmd )
 	int    num, i;
 	vec3_t range = { 1000.0f, 1000.0f, 1000.0f };
 	vec3_t mins, maxs;
-	team_t team = ent->client->pers.team;
+	team_t team = (team_t) ent->client->pers.team;
 
 	for ( i = 0; i < 3; i++ )
 	{
@@ -149,7 +149,7 @@ qboolean G_OnSameTeam( gentity_t *ent1, gentity_t *ent2 )
 
 	if ( ent1->client )
 	{
-		team1 = ent1->client->pers.team;
+		team1 = (team_t) ent1->client->pers.team;
 	}
 	else if ( ent1->s.eType == ET_BUILDABLE )
 	{
@@ -162,7 +162,7 @@ qboolean G_OnSameTeam( gentity_t *ent1, gentity_t *ent2 )
 
 	if ( ent2->client )
 	{
-		team2 = ent2->client->pers.team;
+		team2 = (team_t) ent2->client->pers.team;
 	}
 	else if ( ent2->s.eType == ET_BUILDABLE )
 	{
@@ -241,7 +241,7 @@ G_LeaveTeam
 */
 void G_LeaveTeam( gentity_t *self )
 {
-	team_t    team = self->client->pers.team;
+	team_t    team = (team_t) self->client->pers.team;
 	gentity_t *ent;
 	int       i;
 
@@ -302,7 +302,7 @@ G_ChangeTeam
 */
 void G_ChangeTeam( gentity_t *ent, team_t newTeam )
 {
-	team_t oldTeam = ent->client->pers.team;
+	team_t oldTeam = (team_t) ent->client->pers.team;
 
 	if ( oldTeam == newTeam )
 	{
