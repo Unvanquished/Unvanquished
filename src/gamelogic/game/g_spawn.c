@@ -1029,7 +1029,7 @@ Every map should have exactly one.
 void SP_worldspawn( void )
 {
 	char *s;
-	float reverbIntensity;
+	float reverbIntensity = 1.0f;
 
 	G_SpawnString( "classname", "", &s );
 
@@ -1058,10 +1058,10 @@ void SP_worldspawn( void )
 	if(G_SpawnString( "gradingTexture", "", &s ))
 		trap_SetConfigstring( CS_GRADING_TEXTURES, va( "%i %f %s", 0, 0.0f, s ) );
 
-	if(G_SpawnString( "reverbIntensity", "1", &s ))
+	if(G_SpawnString( "reverbIntensity", "", &s ))
 		sscanf( s, "%f", &reverbIntensity );
 	if(G_SpawnString( "reverbEffect", "", &s ))
-		trap_SetConfigstring( CS_REVERB_EFFECTS, va( "%i %f %s %f", -1, 0.0f, s, Com_Clamp( reverbIntensity, 0.0f, 2.0f) ) );
+		trap_SetConfigstring( CS_REVERB_EFFECTS, va( "%i %f %s %f", -1, 0.0f, s, Com_Clamp( 0.0f, 2.0f, reverbIntensity ) ) );
 
 	trap_SetConfigstring( CS_MOTD, g_motd.string );  // message of the day
 
