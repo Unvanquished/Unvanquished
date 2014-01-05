@@ -48,26 +48,19 @@ namespace Audio {
 
     static const vec3_t origin = {0.0f, 0.0f, 0.0f};
 
-    static Cvar::Cvar<bool> useDoppler("audio.doppler", "should the doppler effect be used", Cvar::ARCHIVE, true);
-    static Cvar::Modified<Cvar::Cvar<bool>> useReverb("audio.reverb", "should reverb effects be used", Cvar::ARCHIVE, true);
-    //TODO use optional once we have it
-    static bool removeReverb = false;
-    static bool addReverb = false;
+    static Cvar::Range<Cvar::Cvar<float>> dopplerExaggeration("audio.dopplerExaggeration", "controls the pitch change of the doppler effect", Cvar::ARCHIVE, 0.4, 0.0, 1.0);
+    static Cvar::Range<Cvar::Cvar<float>> reverbIntensity("audio.reverbIntensity", "the intensity of the reverb effects", Cvar::ARCHIVE, 0.4, 0.0, 1.0);
 
     struct ReverbSlot {
         AL::EffectSlot* effect;
         std::string name;
         float ratio;
+        float askedRatio;
     };
     ReverbSlot reverbSlots[N_REVERB_SLOTS];
     bool testingReverb = false;
 
     static bool initialized = false;
-
-    void UseDoppler(bool use) {
-        float factor = use ? 1.0f : 0.0f;
-        AL::SetDopplerExaggerationFactor(factor);
-    }
 
     void InitEmitters() {
         if (initialized) {
@@ -83,11 +76,11 @@ namespace Audio {
             reverbSlots[i].effect->SetGain(1.0f);
             reverbSlots[i].name = "generic";
             reverbSlots[i].ratio = 1.0f;
+            reverbSlots[i].askedRatio = 1.0f;
         }
 
         AL::SetInverseDistanceModel();
         AL::SetSpeedOfSound(SPEED_OF_SOUND);
-        UseDoppler(useDoppler.Get());
 
         localEmitter = std::make_shared<LocalEmitter>();
 
@@ -151,17 +144,12 @@ namespace Audio {
             }
         }
 
-        addReverb = removeReverb = false;
-        bool use;
-        if (useReverb.GetModifiedValue(use)) {
-            if (use) {
-                addReverb = true;
-            } else {
-                removeReverb = true;
-            }
+        float reverbVolume = reverbIntensity.Get();
+        for (int i = 0; i < N_REVERB_SLOTS; i++) {
+            reverbSlots[i].effect->SetGain(reverbSlots[i].ratio * reverbVolume);
         }
 
-        UseDoppler(useDoppler.Get());
+        AL::SetDopplerExaggerationFactor(dopplerExaggeration.Get());
     }
 
     void UpdateListenerEntity(int entityNum, const vec3_t orientation[3]) {
@@ -229,9 +217,9 @@ namespace Audio {
         }
 
         if (not testingReverb) {
-            slot.effect->SetGain(ratio);
+            slot.ratio = ratio;
         }
-        slot.ratio = ratio;
+        slot.askedRatio = ratio;
     }
 
     // Utility functions for emitters
@@ -253,14 +241,8 @@ namespace Audio {
         source.SetPosition(position);
         source.SetVelocity(velocity);
 
-        if ((forceReverb and useReverb.Get()) or addReverb) {
-            for (int i = 0; i < N_REVERB_SLOTS; i++) {
-                source.EnableEffect(i, *reverbSlots[i].effect);
-            }
-        } else if ((forceReverb and not useReverb.Get()) or removeReverb) {
-            for (int i = 0; i < N_REVERB_SLOTS; i++) {
-                source.DisableEffect(i);
-            }
+        for (int i = 0; i < N_REVERB_SLOTS; i++) {
+            source.EnableEffect(i, *reverbSlots[i].effect);
         }
     }
 
@@ -422,7 +404,7 @@ namespace Audio {
                     reverbSlots[i].effect->SetGain(0.0f);
                 }
 
-                reverbSlots[0].effect->SetGain(1.0f);
+                reverbSlots[0].ratio = 1.0f;
                 reverbSlots[0].effect->SetEffect(effectParams);
             }
 
@@ -430,7 +412,7 @@ namespace Audio {
                 testingReverb = false;
                 for (int i = 0; i < N_REVERB_SLOTS; i++) {
                     std::string name = std::move(reverbSlots[i].name);
-                    UpdateReverbSlot(i, std::move(name), reverbSlots[i].ratio);
+                    UpdateReverbSlot(i, std::move(name), reverbSlots[i].askedRatio);
                 }
             }
     };

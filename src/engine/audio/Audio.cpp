@@ -28,7 +28,7 @@ namespace Audio {
 
     Log::Logger audioLogs("audio");
 
-    static Cvar::Cvar<float> masterVolume("audio.volume.master", "the global audio volume", Cvar::ARCHIVE, 0.8f);
+    static Cvar::Range<Cvar::Cvar<float>> masterVolume("audio.volume.master", "the global audio volume", Cvar::ARCHIVE, 0.8f, 0.0f, 1.0f);
 
     static Cvar::Cvar<bool> muteWhenMinimized("audio.muteWhenMinimized", "should the game be muted when minimized", Cvar::ARCHIVE, false);
     static Cvar::Cvar<bool> muteWhenUnfocused("audio.muteWhenUnfocused", "should the game be muted when not focused", Cvar::ARCHIVE, false);
