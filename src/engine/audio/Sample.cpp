@@ -61,7 +61,7 @@ namespace Audio {
 
     static std::unordered_map<std::string, Sample*> samples;
 
-    static const std::string errorSampleName = "sound/feedback/hit.wav";
+    static const char* errorSampleName = "sound/feedback/hit.wav";
     static Sample* errorSample = nullptr;
     bool initialized = false;
 
@@ -73,7 +73,7 @@ namespace Audio {
         errorSample = RegisterSample(errorSampleName);
 
         if (!errorSample) {
-            Com_Error(ERR_FATAL, "Couldn't load the error sound sample '%s'", errorSampleName.c_str());
+            Com_Error(ERR_FATAL, "Couldn't load the error sound sample '%s'", errorSampleName);
         }
 
         initialized = true;
