@@ -61,6 +61,7 @@ namespace Audio {
 
     static std::unordered_map<std::string, Sample*> samples;
 
+    static const std::string errorSampleName = "sound/feedback/hit.wav";
     static Sample* errorSample = nullptr;
     bool initialized = false;
 
@@ -68,9 +69,13 @@ namespace Audio {
         if (initialized) {
             return;
         }
-        //TODO make an error if it can't register
         //TODO use an aggressive sound instead to know we are missing something?
-        errorSample = RegisterSample("sound/feedback/hit.wav");
+        errorSample = RegisterSample(errorSampleName);
+
+        if (!errorSample) {
+            Com_Error(ERR_FATAL, "Couldn't load the error sound sample '%s'", errorSampleName.c_str());
+        }
+
         initialized = true;
     }
 
@@ -83,6 +88,8 @@ namespace Audio {
             delete it.second;
         }
         samples.clear();
+
+        errorSample = nullptr;
 
         initialized = false;
     }
