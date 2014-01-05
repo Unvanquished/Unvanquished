@@ -61,7 +61,7 @@ namespace Audio {
 
     static std::unordered_map<std::string, Sample*> samples;
 
-    static const char* errorSampleName = "sound/feedback/hit.wav";
+    static const char errorSampleName[] = "sound/feedback/hit.wav";
     static Sample* errorSample = nullptr;
     bool initialized = false;
 
