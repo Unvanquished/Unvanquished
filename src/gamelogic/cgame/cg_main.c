@@ -1395,20 +1395,22 @@ CG_RegisterReverb
 void CG_RegisterReverb( int slot, const char *str )
 {
 	int   model;
-	float dist;
+	float dist, intensity;
 	char  name[MAX_NAME_LENGTH];
 
 	if( !str || !*str ) {
 		Q_strncpyz(cgs.gameReverbEffects[ slot ], "none", MAX_NAME_LENGTH);
 		cgs.gameReverbModels[ slot ]        = 0;
 		cgs.gameReverbDistances[ slot ]     = 0.0f;
+		cgs.gameReverbIntensities[ slot ]   = 0.0f;
 		return;
 	}
 
-	sscanf(str, "%d %f %s", &model, &dist, name);
+	sscanf(str, "%d %f %s %f", &model, &dist, name, &intensity);
 	Q_strncpyz(cgs.gameReverbEffects[ slot ], name, MAX_NAME_LENGTH);
 	cgs.gameReverbModels[ slot ] = model;
 	cgs.gameReverbDistances[ slot ] = dist;
+	cgs.gameReverbIntensities[ slot ] = intensity;
 }
 
 /*

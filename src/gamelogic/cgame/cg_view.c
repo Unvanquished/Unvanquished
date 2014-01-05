@@ -1651,7 +1651,8 @@ static void CG_AddReverbEffects( vec3_t loc )
 
     for (i = 0; i < 3; i++)
     {
-        trap_S_SetReverb(i, cgs.gameReverbEffects[selectedIdx[i]], selectedWeight[i]);
+        // The mapper defined intensity is between 0 and 2 to have saner defaults (the presets are very strong)
+        trap_S_SetReverb(i, cgs.gameReverbEffects[selectedIdx[i]], selectedWeight[i] / 2.0f * cgs.gameReverbIntensities[selectedIdx[i]]);
     }
 }
 /*

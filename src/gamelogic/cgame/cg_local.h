@@ -1397,8 +1397,9 @@ typedef struct
 	qhandle_t    gameGradingModels[ MAX_GRADING_TEXTURES ];
 	float        gameGradingDistances[ MAX_GRADING_TEXTURES ];
 	char         gameReverbEffects[ MAX_REVERB_EFFECTS ][ MAX_NAME_LENGTH ];
-	qhandle_t	 gameReverbModels[ MAX_REVERB_EFFECTS ];
+	qhandle_t    gameReverbModels[ MAX_REVERB_EFFECTS ];
 	float        gameReverbDistances[ MAX_REVERB_EFFECTS ];
+	float        gameReverbIntensities[ MAX_REVERB_EFFECTS ];
 	qhandle_t    gameParticleSystems[ MAX_GAME_PARTICLE_SYSTEMS ];
 	sfxHandle_t  gameSounds[ MAX_SOUNDS ];
 

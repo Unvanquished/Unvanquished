@@ -2532,6 +2532,7 @@ void SP_func_static( gentity_t *self )
 	float gradingDistance;
 	char *reverbEffect;
 	float reverbDistance;
+	float reverbIntensity;
 
 	trap_SetBrushModel( self, self->model );
 	InitMover( self );
@@ -2552,9 +2553,11 @@ void SP_func_static( gentity_t *self )
 	if( self->model[0] == '*' &&
 	    G_SpawnString( "reverbEffect", "", &reverbEffect ) ) {
 		G_SpawnFloat( "reverbDistance", "250", &reverbDistance );
+		G_SpawnFloat( "reverbIntensity", "1", &reverbIntensity );
 
-		G_ReverbEffectIndex( va( "%s %f %s", self->model + 1,
-					   reverbDistance, reverbEffect ) );
+		reverbIntensity = Com_Clamp(reverbIntensity, 0.0f, 2.0f);
+		G_ReverbEffectIndex( va( "%s %f %s %f", self->model + 1,
+					   reverbDistance, reverbEffect, reverbIntensity ) );
 	}
 }
 
