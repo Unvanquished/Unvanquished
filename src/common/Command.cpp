@@ -78,7 +78,7 @@ namespace Cmd {
         bool foundSpace = false;
         while (in != end) {
             // Handle spaces
-            if ((in[0] & 0xff) <= ' ') {
+            if (Str::cisspace(in[0])) {
                 foundSpace = true;
                 in++;
             } else if (in + 1 != end) {
