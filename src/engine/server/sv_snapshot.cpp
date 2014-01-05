@@ -92,7 +92,7 @@ static void SV_EmitPacketEntities( const clientSnapshot_t *from, clientSnapshot_
 	{
 		if ( newindex >= to->num_entities )
 		{
-			newnum = 9999;
+			newnum = MAX_GENTITIES;
 		}
 		else
 		{
@@ -102,7 +102,7 @@ static void SV_EmitPacketEntities( const clientSnapshot_t *from, clientSnapshot_
 
 		if ( oldindex >= from_num_entities )
 		{
-			oldnum = 9999;
+			oldnum = MAX_GENTITIES;
 		}
 		else
 		{
