@@ -2218,6 +2218,12 @@ qboolean G_admin_readconfig( gentity_t *ent )
 		}
 	}
 
+	// register user-defined commands
+	for ( c = g_admin_commands; c; c = c->next )
+	{
+		trap_AddCommand(c->command);
+	}
+
 	return qtrue;
 }
 
@@ -5802,6 +5808,7 @@ void G_admin_cleanup( void )
 	for ( c = g_admin_commands; c; c = (g_admin_command_t*) n )
 	{
 		n = c->next;
+		trap_RemoveCommand(c->command);
 		BG_Free( c );
 	}
 
