@@ -1146,15 +1146,10 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 			return re.LerpTag( (orientation_t*) VMA( 1 ), (refEntity_t*) VMA( 2 ), (char*) VMA( 3 ), args[ 4 ] );
 
 		case UI_S_REGISTERSOUND:
-#ifdef DOOMSOUND ///// (SA) DOOMSOUND
-			return S_RegisterSound( (char*) VMA( 1 ) );
-#else
-			return S_RegisterSound( (char*) VMA( 1 ), args[ 2 ] );
-#endif ///// (SA) DOOMSOUND
+			return Audio::RegisterSFX( (char*) VMA( 1 ) );
 
 		case UI_S_STARTLOCALSOUND:
-			//S_StartLocalSound(args[1], args[2], args[3]);
-			S_StartLocalSound( args[ 1 ], args[ 2 ] );
+			Audio::StartLocalSound( args[ 1 ] );
 			return 0;
 
 		case UI_S_FADESTREAMINGSOUND:
@@ -1325,12 +1320,11 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 			return Parse_SourceFileAndLine( args[ 1 ], (char*) VMA( 2 ), (int*) VMA( 3 ) );
 
 		case UI_S_STOPBACKGROUNDTRACK:
-			S_StopBackgroundTrack();
+			Audio::StopMusic();
 			return 0;
 
 		case UI_S_STARTBACKGROUNDTRACK:
-			//S_StartBackgroundTrack(VMA(1), VMA(2), args[3]);  //----(SA) added fadeup time
-			S_StartBackgroundTrack( (char*) VMA( 1 ), (char*) VMA( 2 ) );
+			Audio::StartMusic( (char*) VMA( 1 ), (char*) VMA( 2 ) );
 			return 0;
 
 		case UI_REAL_TIME:

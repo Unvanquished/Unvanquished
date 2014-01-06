@@ -126,6 +126,7 @@ namespace Audio {
         initialized = true;
 
         // Initializes the rest of the audio system
+        S_CodecInit();
         AL::InitEffectPresets();
         InitSamples();
         InitSounds();
@@ -161,6 +162,7 @@ namespace Audio {
         ShutdownSounds();
         ShutdownEmitters();
         ShutdownSamples();
+        S_CodecShutdown();
 
         // Free OpenAL resources
         delete context;
@@ -316,7 +318,12 @@ namespace Audio {
         music = nullptr;
     }
 
-    void StreamData(int streamNum, const void* data, int numSamples, int rate, int width, float volume, int entityNum) {
+    void StopAllSounds() {
+        //TODO: really stop all the sounds
+        StopMusic();
+    }
+
+    void StreamData(int streamNum, const void* data, int numSamples, int rate, int width, int channels, float volume, int entityNum) {
         if (not initialized or (streamNum < 0 or streamNum >= N_STREAMS)) {
             return;
         }
@@ -332,7 +339,7 @@ namespace Audio {
 
         streams[streamNum]->SetGain(volume);
 
-        snd_info_t dataInfo = {rate, width, 1, numSamples, (width * numSamples), 0};
+        snd_info_t dataInfo = {rate, width, channels, numSamples, (width * numSamples * channels), 0};
         AL::Buffer buffer;
 
         int feedError = buffer.Feed(dataInfo, data);
@@ -444,7 +451,7 @@ namespace Audio {
         if (numSamples > 0) {
             uint16_t* buffer = new uint16_t[numSamples];
             GetCapturedData(numSamples, buffer);
-            StreamData(N_STREAMS - 1, buffer, numSamples, 16000, 2, 1.0, -1);
+            StreamData(N_STREAMS - 1, buffer, numSamples, 16000, 2, 1, 1.0, -1);
             delete[] buffer;
         }
     }

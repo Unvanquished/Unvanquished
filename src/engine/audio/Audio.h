@@ -47,7 +47,9 @@ namespace Audio {
     void StartMusic(Str::StringRef leadingSound, Str::StringRef loopSound);
     void StopMusic();
 
-    void StreamData(int streamNum, const void* data, int numSamples, int rate, int width, float volume, int entityNum);
+    void StopAllSounds();
+
+    void StreamData(int streamNum, const void* data, int numSamples, int rate, int width, int channels, float volume, int entityNum);
 
     void UpdateListener(int entityNum, const vec3_t orientation[3]);
     void UpdateEntityPosition(int entityNum, const vec3_t position);
