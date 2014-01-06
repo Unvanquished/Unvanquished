@@ -224,59 +224,40 @@ struct PakInfo {
 	std::string path;
 };
 
-// A namespace is a set of pak files which contain files
-class PakNamespace {
-	struct pakFileInfo_t {
-		size_t pakIndex;
-		offset_t offset;
-	};
-	typedef std::unordered_map<std::string, pakFileInfo_t> fileMap_t;
-	std::vector<PakInfo> loadedPaks;
-	fileMap_t fileMap;
-	void InternalLoadPak(const PakInfo& pak, Opt::optional<uint32_t> expectedChecksum, std::error_code& err);
-
-public:
+// Operations which work on files that are in packages
+namespace PakPath {
 	// Load a pak into the namespace with all its dependencies
-	void LoadPak(const PakInfo& pak, std::error_code& err = throws())
-	{
-		InternalLoadPak(pak, Opt::nullopt, err);
-	}
+	void LoadPak(const PakInfo& pak, std::error_code& err = throws());
 
 	// Load a pak into the namespace and verify its checksum but *don't* load its dependencies
-	void LoadPakExplicit(const PakInfo& pak, uint32_t expectedChecksum, std::error_code& err = throws())
-	{
-		InternalLoadPak(pak, expectedChecksum, err);
-	}
+	void LoadPakExplicit(const PakInfo& pak, uint32_t expectedChecksum, std::error_code& err = throws());
 
 	// Get a list of all the loaded paks
-	const std::vector<PakInfo>& GetLoadedPaks() const
-	{
-		return loadedPaks;
-	}
+	const std::vector<PakInfo>& GetLoadedPaks();
 
 	// Remove all loaded paks
 	void ClearPaks();
 
 	// Read an entire file into a string
-	std::string ReadFile(Str::StringRef path, std::error_code& err = throws()) const;
+	std::string ReadFile(Str::StringRef path, std::error_code& err = throws());
 
 	// Copy an entire file to another file
-	void CopyFile(Str::StringRef path, const File& dest, std::error_code& err = throws()) const;
+	void CopyFile(Str::StringRef path, const File& dest, std::error_code& err = throws());
 
 	// Check if a file exists
-	bool FileExists(Str::StringRef path) const;
+	bool FileExists(Str::StringRef path);
 
 	// Get the pak a file is in, or null if the file does not exist
-	const PakInfo* LocateFile(Str::StringRef path) const;
+	const PakInfo* LocateFile(Str::StringRef path);
 
 	// Get the timestamp of a file
-	std::chrono::system_clock::time_point FileTimestamp(Str::StringRef path, std::error_code& err = throws()) const;
+	std::chrono::system_clock::time_point FileTimestamp(Str::StringRef path, std::error_code& err = throws());
 
 	// List all files in the given subdirectory, optionally recursing into subdirectories
 	// Directory names are returned with a trailing slash to differentiate them from files
 	class DirectoryRange;
-	DirectoryRange ListFiles(Str::StringRef path, std::error_code& err = throws()) const;
-	DirectoryRange ListFilesRecursive(Str::StringRef path, std::error_code& err = throws()) const;
+	DirectoryRange ListFiles(Str::StringRef path, std::error_code& err = throws());
+	DirectoryRange ListFilesRecursive(Str::StringRef path, std::error_code& err = throws());
 
 	// DirectoryRange implementation
 	class DirectoryRange {
@@ -296,15 +277,16 @@ public:
 
 	private:
 		friend class DirectoryIterator<DirectoryRange>;
-		friend class PakNamespace;
+		friend DirectoryRange ListFiles(Str::StringRef path, std::error_code& err);
+		friend DirectoryRange ListFilesRecursive(Str::StringRef path, std::error_code& err);
 		bool Advance(std::error_code& err);
 		bool InternalAdvance();
 		std::string current;
 		std::string prefix;
-		fileMap_t::const_iterator iter, iter_end;
+		std::unordered_map<std::string, std::pair<size_t, offset_t>>::iterator iter, iter_end;
 		bool recursive;
 	};
-};
+} // namespace PakPath
 
 // Operations which work on raw OS paths. Note that no validation on file names is performed
 namespace RawPath {

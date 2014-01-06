@@ -597,8 +597,6 @@ void       FS_Rename( const char *from, const char *to );
 
 char       *FS_BuildOSPath( const char *base, const char *game, const char *qpath );
 
-extern FS::PakNamespace fs_namespace;
-
 namespace FS {
     std::vector<std::pair<std::string, std::string>> CompleteFilenameInDir(Str::StringRef prefix, Str::StringRef dir,
                                                                            Str::StringRef extension, bool stripExtension = true);

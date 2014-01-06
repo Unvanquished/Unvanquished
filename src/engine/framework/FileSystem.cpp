@@ -1019,9 +1019,18 @@ private:
 	unzFile zipFile;
 };
 
+namespace PakPath {
+
+// List of loaded pak files
+static std::vector<PakInfo> loadedPaks;
+
+// Map of filenames to pak files. The size_t is an offset into loadedPaks and
+// the offset_t is the position within the zip archive (unused for PAK_DIR).
+static std::unordered_map<std::string, std::pair<size_t, offset_t>> fileMap;
+
 // Parse the dependencies file of a package
 // Each line of the dependencies file is a name followed by an optional version
-static void ParseDeps(PakNamespace& ns, const PakInfo& parent, Str::StringRef depsData, std::error_code& err)
+static void ParseDeps(const PakInfo& parent, Str::StringRef depsData, std::error_code& err)
 {
 	auto lineStart = depsData.begin();
 	int line = 0;
@@ -1049,13 +1058,13 @@ static void ParseDeps(PakNamespace& ns, const PakInfo& parent, Str::StringRef de
 
 		// If this is the end of the line, load a package by name
 		if (lineStart == lineEnd) {
-			const PakInfo* pak = FS::FindPak(name);
+			const PakInfo* pak = FindPak(name);
 			if (!pak) {
 				Log::Warn("Could not find pak '%s' required by '%s'\n", name, parent.path);
 				SetErrorCodeFilesystem(filesystem_error::missing_depdency, err);
 				return;
 			}
-			ns.LoadPak(*pak, err);
+			LoadPak(*pak, err);
 			if (HaveError(err))
 				return;
 			lineStart = lineEnd == depsData.end() ? lineEnd : lineEnd + 1;
@@ -1073,13 +1082,13 @@ static void ParseDeps(PakNamespace& ns, const PakInfo& parent, Str::StringRef de
 
 		// If this is the end of the line, load a package with an explicit version
 		if (lineStart == lineEnd) {
-			const PakInfo* pak = FS::FindPak(name, version);
+			const PakInfo* pak = FindPak(name, version);
 			if (!pak) {
 				Log::Warn("Could not find pak '%s' with version '%s' required by '%s'\n", name, version, parent.path);
 				SetErrorCodeFilesystem(filesystem_error::missing_depdency, err);
 				return;
 			}
-			ns.LoadPak(*pak, err);
+			LoadPak(*pak, err);
 			if (HaveError(err))
 				return;
 			lineStart = lineEnd == depsData.end() ? lineEnd : lineEnd + 1;
@@ -1092,7 +1101,7 @@ static void ParseDeps(PakNamespace& ns, const PakInfo& parent, Str::StringRef de
 	}
 }
 
-void PakNamespace::InternalLoadPak(const PakInfo& pak, Opt::optional<uint32_t> expectedChecksum, std::error_code& err)
+static void InternalLoadPak(const PakInfo& pak, Opt::optional<uint32_t> expectedChecksum, std::error_code& err)
 {
 	uint32_t checksum;
 	bool hasDeps = false;
@@ -1113,9 +1122,9 @@ void PakNamespace::InternalLoadPak(const PakInfo& pak, Opt::optional<uint32_t> e
 			return;
 		for (auto it = dirRange.begin(); it != dirRange.end();) {
 #ifdef GCC_BROKEN_CXX11
-			fileMap.insert({*it, pakFileInfo_t{loadedPaks.size() - 1, 0}});
+			fileMap.insert({*it, std::pair<size_t, offset_t>(loadedPaks.size() - 1, 0)});
 #else
-			fileMap.emplace(*it, pakFileInfo_t{loadedPaks.size() - 1, 0});
+			fileMap.emplace(*it, std::pair<size_t, offset_t>(loadedPaks.size() - 1, 0));
 #endif
 			if (*it == PAK_DEPS_FILE)
 				hasDeps = true;
@@ -1131,12 +1140,12 @@ void PakNamespace::InternalLoadPak(const PakInfo& pak, Opt::optional<uint32_t> e
 
 		// Get the file list and calculate the checksum of the package (checksum of all file checksums)
 		checksum = crc32(0, Z_NULL, 0);
-		zipFile.ForEachFile([this, &checksum, &hasDeps, &depsOffset](Str::StringRef filename, offset_t offset, uint32_t crc) {
+		zipFile.ForEachFile([&checksum, &hasDeps, &depsOffset](Str::StringRef filename, offset_t offset, uint32_t crc) {
 			checksum = crc32(checksum, reinterpret_cast<const Bytef*>(&crc), sizeof(crc));
 #ifdef GCC_BROKEN_CXX11
-			fileMap.insert({filename, pakFileInfo_t{loadedPaks.size() - 1, offset}});
+			fileMap.insert({filename, std::pair<size_t, offset_t>(loadedPaks.size() - 1, offset)});
 #else
-			fileMap.emplace(filename, pakFileInfo_t{loadedPaks.size() - 1, offset});
+			fileMap.emplace(filename, std::pair<size_t, offset_t>(loadedPaks.size() - 1, offset));
 #endif
 			if (filename == PAK_DEPS_FILE) {
 				hasDeps = true;
@@ -1179,17 +1188,32 @@ void PakNamespace::InternalLoadPak(const PakInfo& pak, Opt::optional<uint32_t> e
 			if (HaveError(err))
 				return;
 		}
-		ParseDeps(*this, pak, depsData, err);
+		ParseDeps(pak, depsData, err);
 	}
 }
 
-void PakNamespace::ClearPaks()
+void LoadPak(const PakInfo& pak, std::error_code& err)
+{
+	InternalLoadPak(pak, Opt::nullopt, err);
+}
+
+void LoadPakExplicit(const PakInfo& pak, uint32_t expectedChecksum, std::error_code& err)
+{
+	InternalLoadPak(pak, expectedChecksum, err);
+}
+
+const std::vector<PakInfo>& GetLoadedPaks()
+{
+	return loadedPaks;
+}
+
+void ClearPaks()
 {
 	fileMap.clear();
 	loadedPaks.clear();
 }
 
-std::string PakNamespace::ReadFile(Str::StringRef path, std::error_code& err) const
+std::string ReadFile(Str::StringRef path, std::error_code& err)
 {
 	auto it = fileMap.find(path);
 	if (it == fileMap.end()) {
@@ -1197,7 +1221,7 @@ std::string PakNamespace::ReadFile(Str::StringRef path, std::error_code& err) co
 		return "";
 	}
 
-	const PakInfo& pak = loadedPaks[it->second.pakIndex];
+	const PakInfo& pak = loadedPaks[it->second.first];
 	if (pak.type == PAK_DIR) {
 		// Open file
 		File file = RawPath::OpenRead(Path::Build(pak.path, path), err);
@@ -1221,7 +1245,7 @@ std::string PakNamespace::ReadFile(Str::StringRef path, std::error_code& err) co
 			return "";
 
 		// Open file in zip
-		zipFile.OpenFile(it->second.offset, err);
+		zipFile.OpenFile(it->second.second, err);
 		if (HaveError(err))
 			return "";
 
@@ -1246,7 +1270,7 @@ std::string PakNamespace::ReadFile(Str::StringRef path, std::error_code& err) co
 	}
 }
 
-void PakNamespace::CopyFile(Str::StringRef path, const File& dest, std::error_code& err) const
+void CopyFile(Str::StringRef path, const File& dest, std::error_code& err)
 {
 	auto it = fileMap.find(path);
 	if (it == fileMap.end()) {
@@ -1254,7 +1278,7 @@ void PakNamespace::CopyFile(Str::StringRef path, const File& dest, std::error_co
 		return;
 	}
 
-	const PakInfo& pak = loadedPaks[it->second.pakIndex];
+	const PakInfo& pak = loadedPaks[it->second.first];
 	if (pak.type == PAK_DIR) {
 		File file = RawPath::OpenRead(Path::Build(pak.path, path), err);
 		if (HaveError(err))
@@ -1267,7 +1291,7 @@ void PakNamespace::CopyFile(Str::StringRef path, const File& dest, std::error_co
 			return;
 
 		// Open file in zip
-		zipFile.OpenFile(it->second.offset, err);
+		zipFile.OpenFile(it->second.second, err);
 		if (HaveError(err))
 			return;
 
@@ -1289,21 +1313,21 @@ void PakNamespace::CopyFile(Str::StringRef path, const File& dest, std::error_co
 	}
 }
 
-bool PakNamespace::FileExists(Str::StringRef path) const
+bool FileExists(Str::StringRef path)
 {
 	return fileMap.find(path) != fileMap.end();
 }
 
-const PakInfo* PakNamespace::LocateFile(Str::StringRef path) const
+const PakInfo* LocateFile(Str::StringRef path)
 {
 	auto it = fileMap.find(path);
 	if (it == fileMap.end())
 		return nullptr;
 	else
-		return &loadedPaks[it->second.pakIndex];
+		return &loadedPaks[it->second.first];
 }
 
-std::chrono::system_clock::time_point PakNamespace::FileTimestamp(Str::StringRef path, std::error_code& err) const
+std::chrono::system_clock::time_point FileTimestamp(Str::StringRef path, std::error_code& err)
 {
 	auto it = fileMap.find(path);
 	if (it == fileMap.end()) {
@@ -1313,7 +1337,7 @@ std::chrono::system_clock::time_point PakNamespace::FileTimestamp(Str::StringRef
 
 	my_stat_t st;
 	int result;
-	const PakInfo& pak = loadedPaks[it->second.pakIndex];
+	const PakInfo& pak = loadedPaks[it->second.first];
 	if (pak.type == PAK_DIR)
 		result = my_stat(Path::Build(pak.path, path), &st);
 	else
@@ -1327,7 +1351,7 @@ std::chrono::system_clock::time_point PakNamespace::FileTimestamp(Str::StringRef
 	}
 }
 
-bool PakNamespace::DirectoryRange::InternalAdvance()
+bool DirectoryRange::InternalAdvance()
 {
 	for (; iter != iter_end; ++iter) {
 		// Filter out any paths not in the specified directory
@@ -1349,22 +1373,22 @@ bool PakNamespace::DirectoryRange::InternalAdvance()
 	return false;
 }
 
-bool PakNamespace::DirectoryRange::Advance(std::error_code& err)
+bool DirectoryRange::Advance(std::error_code& err)
 {
 	++iter;
 	ClearErrorCode(err);
 	return InternalAdvance();
 }
 
-PakNamespace::DirectoryRange PakNamespace::ListFiles(Str::StringRef path, std::error_code& err) const
+DirectoryRange ListFiles(Str::StringRef path, std::error_code& err)
 {
 	DirectoryRange state;
 	state.recursive = false;
 	state.prefix = path;
 	if (!state.prefix.empty() && state.prefix.back() != '/')
 		state.prefix.push_back('/');
-	state.iter = fileMap.cbegin();
-	state.iter_end = fileMap.cend();
+	state.iter = fileMap.begin();
+	state.iter_end = fileMap.end();
 	if (!state.InternalAdvance())
 		SetErrorCodeFilesystem(filesystem_error::no_such_directory, err);
 	else
@@ -1372,21 +1396,23 @@ PakNamespace::DirectoryRange PakNamespace::ListFiles(Str::StringRef path, std::e
 	return state;
 }
 
-PakNamespace::DirectoryRange PakNamespace::ListFilesRecursive(Str::StringRef path, std::error_code& err) const
+DirectoryRange ListFilesRecursive(Str::StringRef path, std::error_code& err)
 {
 	DirectoryRange state;
 	state.recursive = true;
 	state.prefix = path;
 	if (!state.prefix.empty() && state.prefix.back() != '/')
 		state.prefix.push_back('/');
-	state.iter = fileMap.cbegin();
-	state.iter_end = fileMap.cend();
+	state.iter = fileMap.begin();
+	state.iter_end = fileMap.end();
 	if (!state.InternalAdvance())
 		SetErrorCodeFilesystem(filesystem_error::no_such_directory, err);
 	else
 		ClearErrorCode(err);
 	return state;
 }
+
+} // namespace PakPath
 
 namespace RawPath {
 
@@ -1754,7 +1780,6 @@ struct handleData_t {
 #define MAX_FILE_HANDLES 64
 static handleData_t handleTable[MAX_FILE_HANDLES];
 static std::vector<std::tuple<std::string, std::string, uint32_t>> fs_missingPaks;
-FS::PakNamespace fs_namespace;
 
 static fileHandle_t FS_AllocHandle()
 {
@@ -1778,7 +1803,7 @@ static void FS_CheckHandle(fileHandle_t handle, bool write)
 
 qboolean FS_FileExists(const char* path)
 {
-	return fs_namespace.FileExists(path) || FS::HomePath::FileExists(path);
+	return FS::PakPath::FileExists(path) || FS::HomePath::FileExists(path);
 }
 
 int FS_FOpenFileRead(const char* path, fileHandle_t* handle, qboolean)
@@ -1789,9 +1814,9 @@ int FS_FOpenFileRead(const char* path, fileHandle_t* handle, qboolean)
 	*handle = FS_AllocHandle();
 	int length;
 	try {
-		if (fs_namespace.FileExists(path)) {
+		if (FS::PakPath::FileExists(path)) {
 			handleTable[*handle].filePos = 0;
-			handleTable[*handle].fileData = fs_namespace.ReadFile(path);
+			handleTable[*handle].fileData = FS::PakPath::ReadFile(path);
 			handleTable[*handle].isPakFile = true;
 			handleTable[*handle].isOpen = true;
 			length = handleTable[*handle].fileData.size();
@@ -2110,7 +2135,7 @@ char** FS_ListFiles(const char* directory, const char* extension, int* numFiles)
 	bool dirsOnly = extension && !strcmp(extension, "/");
 
 	try {
-		for (const std::string& x: fs_namespace.ListFiles(directory)) {
+		for (const std::string& x: FS::PakPath::ListFiles(directory)) {
 			if (extension && !Str::IsSuffix(extension, x))
 				continue;
 			if (dirsOnly != (x.back() == '/'))
@@ -2171,7 +2196,7 @@ const char* FS_LoadedPaks()
 {
 	static char info[BIG_INFO_STRING];
 	info[0] = '\0';
-	for (const FS::PakInfo& x: fs_namespace.GetLoadedPaks()) {
+	for (const FS::PakInfo& x: FS::PakPath::GetLoadedPaks()) {
 		if (!x.checksum)
 			continue;
 		if (info[0])
@@ -2193,7 +2218,7 @@ char* FS_BuildOSPath(const char* base, const char*, const char* path)
 
 void FS_ClearPaks()
 {
-	fs_namespace.ClearPaks();
+	FS::PakPath::ClearPaks();
 }
 
 // TODO: use the return value to error on missing paks
@@ -2203,7 +2228,7 @@ bool FS_LoadPak(const char* name)
 	if (!pak)
 		return false;
 	try {
-		fs_namespace.LoadPak(*pak);
+		FS::PakPath::LoadPak(*pak);
 		return true;
 	} catch (std::system_error& err) {
 		Com_Printf("Failed to load pak '%s': %s\n", name, err.what());
@@ -2230,7 +2255,7 @@ bool FS_LoadServerPaks(const char* paks)
 			fs_missingPaks.emplace_back(std::move(name), std::move(version), *checksum);
 		else {
 			try {
-				fs_namespace.LoadPakExplicit(*pak, *checksum);
+				FS::PakPath::LoadPakExplicit(*pak, *checksum);
 			} catch (std::system_error& err) {
 				fs_missingPaks.emplace_back(std::move(name), std::move(version), *checksum);
 			}
