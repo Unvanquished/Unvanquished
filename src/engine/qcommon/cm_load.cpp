@@ -892,11 +892,6 @@ void CMod_LoadSurfaces( lump_t *surfs, lump_t *verts, lump_t *indexesLump )
 
 //==================================================================
 
-unsigned CM_LumpChecksum( lump_t *lump )
-{
-	return LittleLong( Com_BlockChecksum( cmod_base + lump->fileofs, lump->filelen ) );
-}
-
 /*
 ==================
 CM_LoadMap
