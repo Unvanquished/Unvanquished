@@ -243,19 +243,6 @@ char           *Cmd_Args( void )
 
 /*
 ============
-Cmd_ArgsBuffer
-
-The interpreted versions use this because
-they can't have pointers returned to them
-============
-*/
-void Cmd_ArgsBuffer( char *buffer, int bufferLength )
-{
-	Q_strncpyz( buffer, Cmd_Args(), bufferLength );
-}
-
-/*
-============
 Cmd_TokenizeString
 
 Parses the given string into command line tokens.
@@ -508,32 +495,6 @@ void Cmd_QuoteStringBuffer( const char *in, char *buffer, int size )
 }
 
 /*
-============
-Cmd_UnescapeString
-
-Unescape a string
-============
-*/
-const char *Cmd_UnescapeString( const char *in )
-{
-	char        *escapeBuffer = GetEscapeBuffer();
-	char        *out = escapeBuffer;
-
-	while ( *in && out < escapeBuffer + ESCAPEBUFFER_SIZE - 1)
-	{
-		if ( in[0] == '\\' )
-		{
-			++in;
-		}
-
-		*out++ = *in++;
-	}
-
-	*out = '\0';
-	return escapeBuffer;
-}
-
-/*
 ===================
 Cmd_UnquoteString
 
@@ -546,16 +507,6 @@ const char *Cmd_UnquoteString( const char *str )
 	char *escapeBuffer = GetEscapeBuffer();
 	Tokenise( str, escapeBuffer, qfalse, qfalse );
 	return escapeBuffer;
-}
-
-/*
-============
-Cmd_CommandExists
-============
-*/
-qboolean Cmd_CommandExists( const char *cmd_name )
-{
-	return Cmd::CommandExists(cmd_name);
 }
 
 struct proxyInfo_t{
@@ -668,22 +619,5 @@ void Cmd_RemoveCommandsByFunc( xcommand_t function ) {
             ++ it;
         }
     }
-}
-
-/*
-============
-Cmd_CommandCompletion
-============
-*/
-
-//TODO
-void Cmd_CommandCompletion( void ( *callback )( const char *s ) )
-{
-	auto names = Cmd::CompleteCommandNames();
-
-	for ( auto name: names )
-	{
-		callback( name.first.c_str() );
-	}
 }
 
