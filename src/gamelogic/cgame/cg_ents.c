@@ -247,6 +247,7 @@ void CG_SetEntitySoundPosition( centity_t *cent )
 	else
 	{
 		trap_S_UpdateEntityPosition( cent->currentState.number, cent->lerpOrigin );
+		trap_S_UpdateEntityVelocity( cent->currentState.number, cent->currentState.pos.trDelta );
 	}
 }
 
@@ -1089,12 +1090,11 @@ static void CG_CEntityPVSEnter( centity_t *cent )
 	cent->radarVisibility = 0.0f;
 }
 
-/*
-===============
-CG_CEntityPVSLeave
-
-===============
-*/
+/**
+ * @brief Callend when a client entity leaves the potentially visible set.
+ *        Performs cleanup operations, e.g. destroying attached particle effects.
+ * @param cent
+ */
 static void CG_CEntityPVSLeave( centity_t *cent )
 {
 	int           i;
@@ -1132,6 +1132,25 @@ static void CG_CEntityPVSLeave( centity_t *cent )
 		default:
 			break;
 	}
+
+	// some muzzle PS are infinite, destroy them here
+	if ( CG_IsParticleSystemValid( &cent->muzzlePS ) )
+	{
+		CG_DestroyParticleSystem( &cent->muzzlePS );
+	}
+
+	// destroy the jetpack PS
+	if ( CG_IsParticleSystemValid( &cent->jetPackPS ) )
+	{
+	     CG_DestroyParticleSystem( &cent->jetPackPS );
+	}
+
+	// Lazy TODO: Destroy more PS/TS here
+	// Better TODO: Make two groups cent->temporaryPS[NUM_TMPPS], cent->persistentPS[NUM_PERSPS]
+	//              and use an enumerator each for different types of mutually non-exclusive PS.
+
+	// NOTE: Don't destroy cent->entityPS here since it is supposed to survive for certain
+	//       entity types (e.g. particle entities)
 }
 
 /*

@@ -444,7 +444,6 @@ void Cmd_CommandCompletion( void ( *callback )( const char *s ) );
 typedef void ( *completionFunc_t )( char *args, int argNum );
 
 void Cmd_OnCompleteMatch(const char* s);
-void Cmd_CommandCompletion( void ( *callback )( const char *s ) );
 void Cmd_AliasCompletion( void ( *callback )( const char *s ) );
 void Cmd_DelayCompletion( void ( *callback )( const char *s ) );
 
@@ -461,8 +460,8 @@ char *Cmd_Argv( int arg );
 void Cmd_ArgvBuffer( int arg, char *buffer, int bufferLength );
 char *Cmd_Args( void );
 char *Cmd_ArgsFrom( int arg );
+void Cmd_EscapedArgsBuffer( char* buffer, int bufferLength ); // from index 0
 void Cmd_LiteralArgsBuffer( char* buffer, int bufferLength );
-void Cmd_ArgsBuffer( char *buffer, int bufferLength );
 const char *Cmd_Cmd( void );
 const char *Cmd_Cmd_FromNth( int );
 

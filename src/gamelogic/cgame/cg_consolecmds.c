@@ -417,11 +417,11 @@ static const struct
 	{ "sizeup",           CG_SizeUp_f,             0                },
 	{ "team",             0,                       0                },
 	{ "teamvote",         0,                       0                },
-	{ "testPS",           CG_TestPS_f,             0                },
-	{ "testTS",           CG_TestTS_f,             0                },
 	{ "testcgrade",       CG_TestCGrade_f,         0                },
 	{ "testgun",          CG_TestGun_f,            0                },
 	{ "testmodel",        CG_TestModel_f,          0                },
+	{ "testPS",           CG_TestPS_f,             0                },
+	{ "testTS",           CG_TestTS_f,             0                },
 	{ "unignore",         0,                       CG_CompleteName  },
 	{ "viewpos",          CG_Viewpos_f,            0                },
 	{ "vote",             0,                       0                },
@@ -456,7 +456,7 @@ qboolean CG_ConsoleCommand( void )
 		//This command was added to provide completion of server-side commands
 		//forward it to the server
 		// (see also CG_ServerCommands)
-		trap_LiteralArgs( buffer, sizeof ( buffer ) );
+		trap_EscapedArgs( buffer, sizeof ( buffer ) );
 		trap_SendClientCommand( buffer );
 	}
 	else
@@ -481,7 +481,7 @@ void CG_InitConsoleCommands( void )
 	for ( i = 0; i < ARRAY_LEN( commands ); i++ )
 	{
 		//Check that the commands are in increasing order so that it can be used by bsearch
-		if ( i != 0 && strcmp(commands[i-1].cmd, commands[i].cmd) > 0 )
+		if ( i != 0 && Q_stricmp(commands[i-1].cmd, commands[i].cmd) > 0 )
 		{
 			CG_Printf( "CGame command list is in the wrong order for %s and %s\n", commands[i - 1].cmd, commands[i].cmd );
 		}

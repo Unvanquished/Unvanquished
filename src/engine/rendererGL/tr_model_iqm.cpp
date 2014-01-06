@@ -314,8 +314,7 @@ static qboolean LoadIQMFile( void *buffer, int filesize, const char *mod_name,
 
 		if( joint->parent < -1 ||
 		    joint->parent >= (int)header->num_joints ||
-		    joint->name < 0 ||
-		    joint->name >= (int)header->num_text ) {
+		    joint->name >= header->num_text ) {
 			ri.Printf(PRINT_WARNING, "R_LoadIQM: file %s contains an invalid joint.\n",
 				  mod_name );
 			return qfalse;

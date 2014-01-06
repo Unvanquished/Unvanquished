@@ -6570,8 +6570,8 @@ void R_ShaderExp_f( void )
 
 	for ( i = 1; i < ri.Cmd_Argc(); i++ )
 	{
-		strcat( buffer, ri.Cmd_Argv( i ) );
-		strcat( buffer, " " );
+		strncat( buffer, ri.Cmd_Argv( i ), sizeof( buffer ) - 1 );
+		strncat( buffer, " ", sizeof( buffer ) - 1 );
 	}
 
 	len = strlen( buffer );
@@ -6600,7 +6600,7 @@ static void ScanAndLoadGuideFiles( void )
 	char *p;
 	int  numGuides;
 	int  i;
-	char *oldp, *token, *hashMem;
+	char *oldp, *token, **hashMem;
 	int  guideTextHashTableSizes[ MAX_GUIDETEXT_HASH ], hash, size;
 	char filename[ MAX_QPATH ];
 	long sum = 0;
@@ -6739,12 +6739,12 @@ static void ScanAndLoadGuideFiles( void )
 
 	size += MAX_GUIDETEXT_HASH;
 
-	hashMem = (char*) ri.Hunk_Alloc( size * sizeof( char * ), h_low );
+	hashMem = (char**) ri.Hunk_Alloc( size * sizeof( char * ), h_low );
 
 	for ( i = 0; i < MAX_GUIDETEXT_HASH; i++ )
 	{
-		guideTextHashTable[ i ] = ( char ** ) hashMem;
-		hashMem = ( ( char * ) hashMem ) + ( ( guideTextHashTableSizes[ i ] + 1 ) * sizeof( char * ) );
+		guideTextHashTable[ i ] = hashMem;
+		hashMem += guideTextHashTableSizes[ i ] + 1;
 	}
 
 	Com_Memset( guideTextHashTableSizes, 0, sizeof( guideTextHashTableSizes ) );

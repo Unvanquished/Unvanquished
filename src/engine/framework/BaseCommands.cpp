@@ -191,7 +191,7 @@ namespace Cmd {
 
             void Run(const Cmd::Args& args) const OVERRIDE {
                 int min, max;
-                if (args.Argc() != 4 || !Str::ParseInt(min, args.Argv(2)) || !Str::ParseInt(max, args.Argv(3))) {
+                if (args.Argc() != 4 or !Str::ParseInt(min, args.Argv(2)) or !Str::ParseInt(max, args.Argv(3)) or min >= max) {
                     PrintUsage(args, _("<variableToSet> <minNumber> <maxNumber>"), _("sets a variable to a random integer between minNumber and maxNumber"));
                     return;
                 }
@@ -627,13 +627,18 @@ namespace Cmd {
                 std::string delay = args.Argv(1 + isNamed);
                 int target;
                 delayType_t type;
+                bool frames = delay.back() == 'f';
+
+                if (frames) {
+                    delay.erase(--delay.end()); //FIXME-gcc-4.6 delay.pop_back()
+                }
 
                 if (!Str::ParseInt(target, delay) || target < 1) {
                     Print(_("delay: the delay must be a positive integer"));
                     return;
                 }
 
-                if (delay.back() == 'f') {
+                if (frames) {
                     target += delayFrame;
                     type = FRAME;
                 } else {

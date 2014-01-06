@@ -344,7 +344,7 @@ static void CG_DrawWarmup( void )
 		return;
 	}
 
-	strncpy( text, _( "Warmup Time:" ), sizeof( text ) );
+	Q_strncpyz( text, _( "Warmup Time:" ), sizeof( text ) );
 //TODO
 
 	Com_sprintf( text, sizeof( text ), "%s", sec ? va( "%d", sec ) : _("FIGHT!") );

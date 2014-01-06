@@ -1252,16 +1252,17 @@ void Key_EditBind_f( void )
 
 	if ( team >= 0 )
 	{
-		buf = U"/teambind ";
+		buf = Str::UTF8To32("/teambind ");
 		buf += Str::UTF8To32( teamName[ team ] );
+		buf += Str::UTF8To32(" ");
 	}
 	else
 	{
-		buf = U"/bind ";
+		buf = Str::UTF8To32("/bind ");
 	}
 
 	buf += Str::UTF8To32( Key_KeynumToString( b ) );
-	buf += U' ';
+	buf += Str::UTF8To32(" ");
 
 	const char *binding = Key_GetBinding( b, -team );
 	if ( binding )
@@ -1917,7 +1918,7 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 			else
 			{
 				CL_Disconnect_f();
-				S_StopAllSounds();
+				Audio::StopAllSounds();
 			}
 
 			return;

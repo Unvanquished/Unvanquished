@@ -146,6 +146,19 @@ static float CG_Rocket_GetPlayerAmmoProgress( void )
 	}
 }
 
+float CG_Rocket_FuelProgress( void )
+{
+	int   fuel;
+
+	if ( !BG_InventoryContainsUpgrade( UP_JETPACK, cg.snap->ps.stats ) )
+	{
+		return 0;
+	}
+
+	fuel     = cg.snap->ps.stats[ STAT_FUEL ];
+	return ( float )fuel / ( float )JETPACK_FUEL_MAX;
+}
+
 typedef struct progressBarCmd_s
 {
 	const char *command;
@@ -160,6 +173,7 @@ static const progressBarCmd_t progressBarCmdList[] =
 	{ "buildables", &CG_Rocket_GetBuildableLoadProgress, ELEMENT_LOADING },
 	{ "characters", &CG_Rocket_GetCharLoadProgress, ELEMENT_LOADING },
 	{ "charge", &CG_ChargeProgress, ELEMENT_BOTH },
+	{ "fuel", &CG_Rocket_FuelProgress, ELEMENT_HUMANS },
 	{ "health", &CG_Rocket_GetPlayerHealthProgress, ELEMENT_BOTH },
 	{ "media", &CG_Rocket_GetMediaLoadProgress, ELEMENT_LOADING },
 	{ "overall", &CG_Rocket_GetOverallLoadProgress, ELEMENT_LOADING },

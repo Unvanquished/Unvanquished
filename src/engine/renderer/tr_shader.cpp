@@ -1773,7 +1773,7 @@ static qboolean ParseStage( shaderStage_t *stage, char **text )
 			{
 				stage->bundle[ 0 ].isLightmap = qtrue;
 
-				if ( shader.lightmapIndex < 0 || !tr.lightmaps )
+				if ( shader.lightmapIndex < 0 )
 				{
 					stage->bundle[ 0 ].image[ 0 ] = tr.whiteImage;
 				}
@@ -2505,8 +2505,8 @@ static qboolean ParseStage( shaderStage_t *stage, char **text )
 					break;
 				}
 
-				strcat( buffer, token );
-				strcat( buffer, " " );
+				strncat( buffer, token, sizeof( buffer ) - 1 );
+				strncat( buffer, " ", sizeof( buffer ) - 1 );
 			}
 
 			ParseTexMod( buffer, stage );
@@ -4931,7 +4931,7 @@ void R_FindLightmap( int *lightmapIndex )
 	}
 
 	// bail if no world dir
-	if ( tr.worldDir == NULL )
+	if ( !tr.worldDir[0] )
 	{
 		*lightmapIndex = LIGHTMAP_BY_VERTEX;
 		return;

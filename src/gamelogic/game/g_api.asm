@@ -27,7 +27,6 @@ equ trap_Cvar_Update                      -262
 equ trap_Cvar_Set                         -263
 equ trap_Cvar_VariableIntegerValue        -264
 equ trap_Cvar_VariableStringBuffer        -265
-equ trap_Cvar_LatchedVariableStringBuffer -266
 equ trap_Argc                             -267
 equ trap_Argv                             -268
 equ trap_SendConsoleCommand               -269

@@ -556,7 +556,6 @@ void           SV_GameCommandHandler( void );
 //
 // sv_bot.c
 //
-void SV_BotFrame( int time );
 int  SV_BotAllocateClient( int clientNum );
 void SV_BotFreeClient( int clientNum );
 

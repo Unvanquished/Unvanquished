@@ -154,56 +154,34 @@ void CG_UpdateEntityPositions( void )
 		     !( cent->currentState.eFlags & EF_DEAD ) )
 		{
 			// add to list of item positions (for creep)
-			if ( cent->currentState.modelindex2 == TEAM_ALIENS )
+			if ( cent->currentState.modelindex2 == TEAM_ALIENS && entityPositions.numAlienBuildables < MAX_GENTITIES )
 			{
-				VectorCopy( cent->lerpOrigin, entityPositions.alienBuildablePos[
-				              entityPositions.numAlienBuildables ] );
-
+				VectorCopy( cent->lerpOrigin, entityPositions.alienBuildablePos[ entityPositions.numAlienBuildables ] );
 				entityPositions.alienBuildableIntensity[ entityPositions.numAlienBuildables ] = cent->radarVisibility;
-
-				if ( entityPositions.numAlienBuildables < MAX_GENTITIES )
-				{
-					entityPositions.numAlienBuildables++;
-				}
+				entityPositions.numAlienBuildables++;
 			}
-			else if ( cent->currentState.modelindex2 == TEAM_HUMANS )
+			else if ( cent->currentState.modelindex2 == TEAM_HUMANS && entityPositions.numHumanBuildables < MAX_GENTITIES )
 			{
-				VectorCopy( cent->lerpOrigin, entityPositions.humanBuildablePos[
-				              entityPositions.numHumanBuildables ] );
-
+				VectorCopy( cent->lerpOrigin, entityPositions.humanBuildablePos[ entityPositions.numHumanBuildables ] );
 				entityPositions.humanBuildableIntensity[ entityPositions.numHumanBuildables ] = cent->radarVisibility;
-
-				if ( entityPositions.numHumanBuildables < MAX_GENTITIES )
-				{
-					entityPositions.numHumanBuildables++;
-				}
+				entityPositions.numHumanBuildables++;
 			}
 		}
 		else if ( cent->currentState.eType == ET_PLAYER )
 		{
 			int team = cent->currentState.misc & 0x00FF;
 
-			if ( team == TEAM_ALIENS )
+			if ( team == TEAM_ALIENS && entityPositions.numAlienClients < MAX_CLIENTS )
 			{
-				VectorCopy( cent->lerpOrigin, entityPositions.alienClientPos[
-				              entityPositions.numAlienClients ] );
+				VectorCopy( cent->lerpOrigin, entityPositions.alienClientPos[ entityPositions.numAlienClients ] );
 				entityPositions.alienClientIntensity[ entityPositions.numAlienClients ] = cent->radarVisibility;
-
-				if ( entityPositions.numAlienClients < MAX_CLIENTS )
-				{
-					entityPositions.numAlienClients++;
-				}
+				entityPositions.numAlienClients++;
 			}
-			else if ( team == TEAM_HUMANS )
+			else if ( team == TEAM_HUMANS && entityPositions.numHumanClients < MAX_CLIENTS )
 			{
-				VectorCopy( cent->lerpOrigin, entityPositions.humanClientPos[
-				              entityPositions.numHumanClients ] );
+				VectorCopy( cent->lerpOrigin, entityPositions.humanClientPos[ entityPositions.numHumanClients ] );
 				entityPositions.humanClientIntensity[ entityPositions.numHumanClients ] = cent->radarVisibility;
-
-				if ( entityPositions.numHumanClients < MAX_CLIENTS )
-				{
-					entityPositions.numHumanClients++;
-				}
+				entityPositions.numHumanClients++;
 			}
 		}
 	}

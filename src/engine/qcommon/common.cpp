@@ -48,11 +48,10 @@ Maryland 20850 USA.
 #include "../../common/Log.h"
 
 // htons
-#if defined __linux__ || defined __FreeBSD__ || defined( MACOS_X ) || defined( __APPLE__ )
-#include <sys/types.h>
-#include <netinet/in.h>
-#else
+#ifdef _WIN32
 #include <winsock.h>
+#else
+#include <arpa/inet.h>
 #endif
 
 #ifdef SMP
@@ -1961,11 +1960,11 @@ void Com_Init( char *commandLine )
 
 			if( FS_ReadFile( "profiles/defaultprofile.dat", ( void ** ) &defaultProfile ) > 0 )
 			{
-				Q_CleanStr( defaultProfile );
-				Q_CleanDirName( defaultProfile );
-
 				if ( defaultProfile )
 				{
+					Q_CleanStr( defaultProfile );
+					Q_CleanDirName( defaultProfile );
+
 					Cvar_Set( "cl_defaultProfile", defaultProfile );
 					Cvar_Set( "cl_profile", defaultProfile );
 

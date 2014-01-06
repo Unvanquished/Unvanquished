@@ -451,6 +451,12 @@ int FS_filelength( fileHandle_t f )
 
 	h = FS_FileForHandle( f );
 	pos = ftell( h );
+
+	if ( pos == EOF )
+	{
+		return EOF;
+	}
+
 	fseek( h, 0, SEEK_END );
 	end = ftell( h );
 	fseek( h, pos, SEEK_SET );
@@ -572,10 +578,17 @@ void FS_CopyFile( char *fromOSPath, char *toOSPath )
 	len = ftell( f );
 	fseek( f, 0, SEEK_SET );
 
+	if ( len == EOF )
+	{
+		fclose( f );
+		Com_Error( ERR_FATAL, "Bad file length in FS_CopyFile()" );
+        }
+
 	buf = ( byte * ) malloc( len );
 
 	if ( fread( buf, 1, len, f ) != len )
 	{
+		fclose( f );
 		Com_Error( ERR_FATAL, "Short read in FS_CopyFile()" );
 	}
 
@@ -597,6 +610,7 @@ void FS_CopyFile( char *fromOSPath, char *toOSPath )
 
 	if ( fwrite( buf, 1, len, f ) != len )
 	{
+		fclose( f );
 		Com_Error( ERR_FATAL, "Short write in FS_CopyFile()" );
 	}
 
@@ -785,9 +799,6 @@ int FS_SV_FOpenFileRead( const char *filename, fileHandle_t *fp )
 
 	Q_strncpyz( fsh[ f ].name, filename, sizeof( fsh[ f ].name ) );
 
-	// don't let sound stutter
-	//S_ClearSoundBuffer();
-
 	// search homepath
 	ospath = FS_BuildOSPath( fs_homepath->string, filename, "" );
 	// remove trailing slash
@@ -850,9 +861,6 @@ void FS_SV_Rename( const char *from, const char *to )
 		Com_Error( ERR_FATAL, "Filesystem call made without initialization" );
 	}
 
-	// don't let sound stutter
-	//S_ClearSoundBuffer();
-
 	from_ospath = FS_BuildOSPath( fs_homepath->string, from, "" );
 	to_ospath = FS_BuildOSPath( fs_homepath->string, to, "" );
 	from_ospath[ strlen( from_ospath ) - 1 ] = '\0';
@@ -885,9 +893,6 @@ void FS_Rename( const char *from, const char *to )
 	{
 		Com_Error( ERR_FATAL, "Filesystem call made without initialization" );
 	}
-
-	// don't let sound stutter
-	//S_ClearSoundBuffer();
 
 	from_ospath = FS_BuildOSPath( fs_homepath->string, fs_gamedir, from );
 	to_ospath = FS_BuildOSPath( fs_homepath->string, fs_gamedir, to );
@@ -1030,9 +1035,6 @@ fileHandle_t FS_FOpenFileAppend( const char *filename )
 
 	Q_strncpyz( fsh[ f ].name, filename, sizeof( fsh[ f ].name ) );
 
-	// don't let sound stutter
-	//S_ClearSoundBuffer();
-
 	ospath = FS_BuildOSPath( fs_homepath->string, fs_gamedir, filename );
 
 	if ( fs_debug->integer )
@@ -1163,9 +1165,6 @@ fileHandle_t FS_FCreateOpenPipeFile( const char *filename ) {
 	fsh[f].zipFile = qfalse;
 
 	Q_strncpyz( fsh[f].name, filename, sizeof( fsh[f].name ) );
-
-	// don't let sound stutter
-	S_ClearSoundBuffer();
 
 	ospath = FS_BuildOSPath( fs_homepath->string, fs_gamedir, filename );
 

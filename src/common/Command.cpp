@@ -32,6 +32,12 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 namespace Cmd {
 
     std::string Escape(Str::StringRef text) {
+        if (text.empty()) {
+            return "\"\"";
+        }
+
+        bool escaped = false;
+        bool maybeComment = false;
         std::string res = "\"";
 
         for (char c: text) {
@@ -42,11 +48,28 @@ namespace Cmd {
             } else if (c == '$') {
                 res.append("\\$");
             } else {
+                if (Str::cisspace(c) || c == ';') {
+                    escaped = true;
+                }
                 res.push_back(c);
+            }
+
+            if (maybeComment && (c == '/' || c == '*')) {
+                escaped = true;
+                maybeComment = false;
+            } else if (c == '/') {
+                maybeComment = true;
+            } else {
+                maybeComment = false;
             }
         }
 
-        res += "\"";
+        if (escaped) {
+            res += "\"";
+        } else {
+            res.erase(0, 1);
+        }
+
         return res;
     }
 
@@ -55,7 +78,7 @@ namespace Cmd {
         bool foundSpace = false;
         while (in != end) {
             // Handle spaces
-            if ((in[0] & 0xff) <= ' ') {
+            if (Str::cisspace(in[0])) {
                 foundSpace = true;
                 in++;
             } else if (in + 1 != end) {

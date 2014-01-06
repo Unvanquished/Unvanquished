@@ -40,8 +40,6 @@ Maryland 20850 USA.
 
 #include "../framework/CommandSystem.h"
 
-#include "snd_local.h" // fretn
-
 #include "../sys/sys_loadlib.h"
 #include "../sys/sys_local.h"
 #include "../botlib/bot_debug.h"
@@ -201,7 +199,6 @@ typedef struct serverStatus_s
 serverStatus_t cl_serverStatusList[ MAX_SERVERSTATUSREQUESTS ];
 int            serverStatusCount;
 
-extern void SV_BotFrame( int time );
 void        CL_CheckForResend( void );
 void        CL_ShowIP_f( void );
 void        CL_ServerStatus_f( void );
@@ -636,15 +633,16 @@ void CL_CaptureVoip( void )
 
 	if ( initialFrame )
 	{
-		S_MasterGain( Com_Clamp( 0.0f, 1.0f, cl_voipGainDuringCapture->value ) );
-		S_StartCapture();
+		//TODO
+		//S_MasterGain( Com_Clamp( 0.0f, 1.0f, cl_voipGainDuringCapture->value ) );
+		Audio::StartCapture(8000);
 		CL_VoipNewGeneration();
 		CL_VoipParseTargets();
 	}
 
 	if ( ( cl_voipSend->integer ) || ( finalFrame ) ) // user wants to capture audio?
 	{
-		int       samples = S_AvailableCaptureSamples();
+		int       samples = Audio::AvailableCaptureSamples();
 		const int mult = ( finalFrame ) ? 1 : 4; // 4 == 80ms of audio.
 
 		// enough data buffered in audio hardware to process yet?
@@ -667,7 +665,7 @@ void CL_CaptureVoip( void )
 			// !!! FIXME:  updates faster than 4Hz?
 
 			samples -= samples % clc.speexFrameSize;
-			S_Capture( samples, ( byte * ) sampbuffer );  // grab from audio card.
+			Audio::GetCapturedData( samples, (byte*) sampbuffer ); // grab from audio card.
 
 			// this will probably generate multiple speex packets each time.
 			while ( samples > 0 )
@@ -742,8 +740,9 @@ void CL_CaptureVoip( void )
 	//  any previously-buffered data. Pause the capture device, etc.
 	if ( finalFrame )
 	{
-		S_StopCapture();
-		S_MasterGain( 1.0f );
+		Audio::StopCapture();
+		//TODO
+		//S_MasterGain( 1.0f );
 		clc.voipPower = 0.0f; // force this value so it doesn't linger.
 	}
 }
@@ -1248,7 +1247,8 @@ static void CL_WriteWaveHeader( void )
 	hdr.AudioFormat = 1; // 1 = linear quantization
 	hdr.NumChannels = 2; // 2 = stereo
 
-	hdr.SampleRate = dma.speed;
+	//TODO
+	//hdr.SampleRate = dma.speed;
 
 	hdr.BitsPerSample = 16; // 16bits
 
@@ -1266,7 +1266,7 @@ static void CL_WriteWaveHeader( void )
 	FS_Write( &hdr.ChunkID, 44, clc.wavefile );
 }
 
-static char wavName[ MAX_QPATH ]; // compiler bug workaround
+static char wavName[ MAX_OSPATH ]; // compiler bug workaround
 void CL_WriteWaveOpen( void )
 {
 	// we will just save it as a 16bit stereo 22050kz pcm file
@@ -1541,7 +1541,7 @@ CL_ShutdownAll
 void CL_ShutdownAll( void )
 {
 	// clear sounds
-	S_DisableSounds();
+	Audio::StopAllSounds();
 	// download subsystem
 	DL_Shutdown();
 	// shutdown CGame
@@ -1771,7 +1771,6 @@ void CL_Disconnect( qboolean showMainMenu )
 	}
 
 	SCR_StopCinematic();
-	S_ClearSoundBuffer(); //----(SA)    modified
 #if 1
 
 	// send a disconnect message to the server
@@ -2047,7 +2046,7 @@ void CL_Connect_f( void )
 	Q_strncpyz( cls.servername, server, sizeof( cls.servername ) );
 	Q_strncpyz( cls.reconnectCmd, Cmd::GetCurrentArgs().EscapedArgs(0).c_str(), sizeof( cls.reconnectCmd ) );
 
-	S_StopAllSounds(); // NERVE - SMF
+	Audio::StopAllSounds(); // NERVE - SMF
 
 	Cvar_Set( "ui_connecting", "1" );
 
@@ -2335,7 +2334,7 @@ void CL_Vid_Restart_f( void )
 	com_expectedhunkusage = -1;
 
 	// don't let them loop during the restart
-	S_StopAllSounds();
+	Audio::StopAllSounds();
 	// shutdown the CGame
 	CL_ShutdownCGame();
 	// clear the font cache
@@ -2348,8 +2347,6 @@ void CL_Vid_Restart_f( void )
 	FS_ClearPakReferences( FS_UI_REF | FS_CGAME_REF );
 	// reinitialize the filesystem if the game directory or checksum has changed
 	FS_ConditionalRestart( clc.checksumFeed );
-
-	S_BeginRegistration(); // all sound handles are now invalid
 
 	cls.rendererStarted = qfalse;
 	cls.uiStarted = qfalse;
@@ -2430,17 +2427,16 @@ handles will be invalid
 */
 void CL_Snd_Restart_f( void )
 {
-	S_Shutdown();
+	Audio::Shutdown();
 
 	if( !cls.cgameStarted )
 	{
-		S_Init();
-		S_BeginRegistration();
-		CL_InitUI();
+		Audio::Init();
+		//TODO S_BeginRegistration()
 	}
 	else
 	{
-		S_Init();
+		Audio::Init();
 		CL_Vid_Restart_f();
 	}
 }
@@ -3006,7 +3002,7 @@ void CL_MotdPacket( netadr_t from, const char *info )
 	}
 
 	v = Info_ValueForKey( info, "motd" );
-	strcpy(w,v);
+	Q_strncpyz(w, v, sizeof(w));
 	ptr = w;
 
 	//replace all | with \n
@@ -3945,7 +3941,7 @@ void CL_Frame( int msec )
 	SCR_UpdateScreen();
 
 	// update the sound
-	S_Update();
+	Audio::Update();
 
 #ifdef USE_VOIP
 	CL_CaptureVoip();
@@ -4014,14 +4010,13 @@ static void CL_Cache_UsedFile_f( void )
 		Com_Error( ERR_DROP, "usedfile without enough parameters" );
 	}
 
-	strcpy( groupStr, Cmd_Argv( 1 ) );
-
-	strcpy( itemStr, Cmd_Argv( 2 ) );
+	Q_strncpyz( groupStr, Cmd_Argv( 1 ), MAX_QPATH );
+	Q_strncpyz( itemStr, Cmd_Argv( 2 ), MAX_QPATH );
 
 	for ( i = 3; i < Cmd_Argc(); i++ )
 	{
-		strcat( itemStr, " " );
-		strcat( itemStr, Cmd_Argv( i ) );
+		strncat( itemStr, " ", MAX_QPATH - 1 );
+		strncat( itemStr, Cmd_Argv( i ), MAX_QPATH - 1 );
 	}
 
 	Q_strlwr( itemStr );
@@ -4281,13 +4276,14 @@ void CL_StartHunkUsers( void )
 	if ( !cls.soundStarted )
 	{
 		cls.soundStarted = qtrue;
-		S_Init();
+		Audio::Init();
 	}
 
 	if ( !cls.soundRegistered )
 	{
 		cls.soundRegistered = qtrue;
-		S_BeginRegistration();
+		//TODO
+		//S_BeginRegistration();
 	}
 
 	if ( !cls.cgameStarted && !cls.cgameCVarsRegistered )
@@ -4753,7 +4749,7 @@ void CL_Shutdown( void )
 
 	CL_ShutdownCGame();
 
-	S_Shutdown();
+	Audio::Shutdown();
 	DL_Shutdown();
 
 	if ( re.UnregisterFont )
@@ -5669,6 +5665,8 @@ qboolean CL_UpdateVisiblePings_f( int source )
 						}
 					}
 
+					// Not in the list, so find and use a free slot.
+					// If all slots are full, the server won't be pinged.
 					if ( j >= MAX_PINGREQUESTS )
 					{
 						status = qtrue;
@@ -5677,15 +5675,14 @@ qboolean CL_UpdateVisiblePings_f( int source )
 						{
 							if ( !cl_pinglist[ j ].adr.port )
 							{
+								memcpy( &cl_pinglist[ j ].adr, &server[ i ].adr, sizeof( netadr_t ) );
+								cl_pinglist[ j ].start = Sys_Milliseconds();
+								cl_pinglist[ j ].time = 0;
+								NET_OutOfBandPrint( NS_CLIENT, cl_pinglist[ j ].adr, "getinfo xxx" );
+								slots++;
 								break;
 							}
 						}
-
-						memcpy( &cl_pinglist[ j ].adr, &server[ i ].adr, sizeof( netadr_t ) );
-						cl_pinglist[ j ].start = Sys_Milliseconds();
-						cl_pinglist[ j ].time = 0;
-						NET_OutOfBandPrint( NS_CLIENT, cl_pinglist[ j ].adr, "getinfo xxx" );
-						slots++;
 					}
 				}
 				// if the server has a ping higher than cl_maxPing or

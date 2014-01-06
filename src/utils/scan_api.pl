@@ -23,7 +23,7 @@ while (defined ($line = <API>))
   {
     undef $func;
   }
-  elsif ($line =~ /[[:space:]]syscall[[:space:]]*\([[:space:]]*([[:upper:]][[:upper:][:digit:]_]+)/)
+  elsif ($line =~ /[[:space:]]syscallVM[[:space:]]*\([[:space:]]*([[:upper:]][[:upper:][:digit:]_]+)/)
   {
     push @{$syscallfuncs{$1}}, $func if defined $func;
     undef $func;
@@ -39,7 +39,7 @@ my $f;
 
 for ($f = 1; $f <= $#ARGV; ++$f)
 {
-  open ENUM, '-|', 'cpp -C -DUSE_REFENTITY_ANIMATIONSYSTEM '.$ARGV[$f] or die $!;
+  open ENUM, '-|', 'cpp -x c++ -C -DUSE_REFENTITY_ANIMATIONSYSTEM '.$ARGV[$f] or die $!;
   my $state = 0;
   my $value = 0;
   while (defined ($line = <ENUM>))

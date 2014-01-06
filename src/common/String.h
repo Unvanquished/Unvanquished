@@ -24,6 +24,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <string>
 #include <algorithm>
+#include <stdint.h>
 #include "../libs/tinyformat/tinyformat.h"
 
 #ifndef COMMON_STRING_H_
@@ -188,7 +189,9 @@ namespace Str {
     typedef BasicStringRef<char> StringRef;
 
     bool ParseInt(int& value, Str::StringRef text);
-    bool ParseHex32(uint32_t& value, Str::StringRef text);
+
+    float ToFloat(Str::StringRef text);
+    bool ToFloat(Str::StringRef text, float& result);
 
     // Locale-independent versions of ctype
     inline bool cisdigit(char c)

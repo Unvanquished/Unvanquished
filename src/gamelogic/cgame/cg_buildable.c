@@ -93,7 +93,6 @@ static const int animLoading[] = {
 	CG_ANIM( qfalse, qtrue,  qtrue,  qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_TURRET
 	CG_ANIM( qfalse, qtrue,  qtrue,  qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_TESLAGEN
 	CG_ANIM( qfalse, qtrue,  qtrue,  qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_ARMOURY
-	CG_ANIM( qfalse, qtrue,  qtrue,  qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_DCC
 	CG_ANIM( qtrue,  qtrue,  qtrue,  qtrue,  qtrue,  qtrue,   qtrue,  qfalse, qfalse, qtrue,  qtrue,  qtrue,  qtrue,  qtrue  ), // BA_H_MEDISTAT
 	CG_ANIM( qfalse, qtrue,  qtrue,  qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_DRILL
 	CG_ANIM( qfalse, qtrue,  qtrue,  qtrue,  qfalse, qtrue,   qfalse, qfalse, qfalse, qtrue,  qfalse, qtrue,  qtrue,  qtrue  ), // BA_H_REACTOR
@@ -161,15 +160,13 @@ void CG_HumanBuildableExplosion( buildable_t buildable, vec3_t origin, vec3_t di
 	particleSystem_t *explosion = NULL;
 	particleSystem_t *nova = NULL;
 
-	switch ( buildable )
+	if ( buildable == BA_H_REPEATER || buildable == BA_H_REACTOR )
 	{
-		case BA_H_REPEATER:
-		case BA_H_REACTOR:
-			nova = CG_SpawnNewParticleSystem( cgs.media.humanBuildableNovaPS );
-		default:
-			trap_S_StartSound( origin, ENTITYNUM_WORLD, CHAN_AUTO, cgs.media.humanBuildableExplosion );
-			explosion = CG_SpawnNewParticleSystem( cgs.media.humanBuildableDestroyedPS );
+		nova = CG_SpawnNewParticleSystem( cgs.media.humanBuildableNovaPS );
 	}
+
+	trap_S_StartSound( origin, ENTITYNUM_WORLD, CHAN_AUTO, cgs.media.humanBuildableExplosion );
+	explosion = CG_SpawnNewParticleSystem( cgs.media.humanBuildableDestroyedPS );
 
 	if ( CG_IsParticleSystemValid( &nova ) )
 	{
@@ -747,18 +744,13 @@ qboolean CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t 
 			break;
 
 		case BA_H_MGTURRET:
-			*range = MGTURRET_RANGE;
+			*range = TURRET_RANGE;
 			shc = SHC_ORANGE;
 			break;
 
 		case BA_H_TESLAGEN:
 			*range = TESLAGEN_RANGE;
 			shc = SHC_RED;
-			break;
-
-		case BA_H_DCC:
-			*range = DC_RANGE;
-			shc = SHC_YELLOW;
 			break;
 
 		case BA_H_DRILL:
@@ -782,10 +774,12 @@ qboolean CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t 
 
 	if ( bType == BA_A_TRAPPER )
 	{
+		// HACK: Assumes certain trapper attributes
 		*rmType = RM_SPHERICAL_CONE_64;
 	}
 	else if ( bType == BA_H_MGTURRET )
 	{
+		// HACK: Assumes TURRET_PITCH_CAP == 30
 		*rmType = RM_SPHERICAL_CONE_240;
 	}
 	else
@@ -2538,38 +2532,51 @@ void CG_Buildable( centity_t *cent )
 	//weapon effects for turrets
 	if ( es->eFlags & EF_FIRING )
 	{
-		weaponInfo_t *weapon = &cg_weapons[ es->weapon ];
+		weaponInfo_t *wi = &cg_weapons[ es->weapon ];
 
-		if ( cg.time - cent->muzzleFlashTime > MUZZLE_FLASH_TIME ||
-		     buildable->turretProjType == WP_TESLAGEN )
+		if ( wi->wim[ WPM_PRIMARY ].muzzleParticleSystem )
 		{
-			if ( weapon->wim[ WPM_PRIMARY ].flashDlightColor[ 0 ] ||
-			     weapon->wim[ WPM_PRIMARY ].flashDlightColor[ 1 ] ||
-			     weapon->wim[ WPM_PRIMARY ].flashDlightColor[ 2 ] )
+			// spawn muzzle ps if necessary
+			if ( !CG_IsParticleSystemValid( &cent->muzzlePS ) )
 			{
-				trap_R_AddLightToScene( cent->lerpOrigin, weapon->wim[ WPM_PRIMARY ].flashDlight,
-				                        weapon->wim[ WPM_PRIMARY ].flashDlightIntensity,
-				                        weapon->wim[ WPM_PRIMARY ].flashDlightColor[ 0 ],
-				                        weapon->wim[ WPM_PRIMARY ].flashDlightColor[ 1 ],
-				                        weapon->wim[ WPM_PRIMARY ].flashDlightColor[ 2 ], 0, 0 );
-				if( weapon->wim[ WPM_PRIMARY ].muzzleParticleSystem )
-				{
-					cent->muzzlePS = CG_SpawnNewParticleSystem( weapon->wim[ WPM_PRIMARY ].muzzleParticleSystem );
-					CG_SetAttachmentTag( &cent->muzzlePS->attachment, ent, ent.hModel, "tag_flash" );
-					CG_AttachToTag( &cent->muzzlePS->attachment );
-				}
+				cent->muzzlePS = CG_SpawnNewParticleSystem( wi->wim[ WPM_PRIMARY ].muzzleParticleSystem );
+			}
+
+			// update muzzle ps position
+			if ( CG_IsParticleSystemValid( &cent->muzzlePS ) )
+			{
+				CG_SetAttachmentTag( &cent->muzzlePS->attachment, &ent, ent.hModel, "tag_flash" );
+				CG_AttachToTag( &cent->muzzlePS->attachment );
 			}
 		}
 
-		if ( weapon->wim[ WPM_PRIMARY ].firingSound )
+		if ( cg.time - cent->muzzleFlashTime < MUZZLE_FLASH_TIME || ( weapon_t )es->weapon == WP_TESLAGEN )
 		{
-			trap_S_AddLoopingSound( es->number, cent->lerpOrigin, vec3_origin,
-			                        weapon->wim[ WPM_PRIMARY ].firingSound );
+			// add dynamic light
+			if ( wi->wim[ WPM_PRIMARY ].flashDlight )
+			{
+				trap_R_AddLightToScene( cent->lerpOrigin, wi->wim[ WPM_PRIMARY ].flashDlight,
+				                        wi->wim[ WPM_PRIMARY ].flashDlightIntensity,
+				                        wi->wim[ WPM_PRIMARY ].flashDlightColor[ 0 ],
+				                        wi->wim[ WPM_PRIMARY ].flashDlightColor[ 1 ],
+				                        wi->wim[ WPM_PRIMARY ].flashDlightColor[ 2 ], 0, 0 );
+			}
 		}
-		else if ( weapon->readySound )
+
+		// spawn firing sound
+		if ( wi->wim[ WPM_PRIMARY ].firingSound )
 		{
-			trap_S_AddLoopingSound( es->number, cent->lerpOrigin, vec3_origin, weapon->readySound );
+			trap_S_AddLoopingSound( es->number, cent->lerpOrigin, vec3_origin, wi->wim[ WPM_PRIMARY ].firingSound );
 		}
+		else if ( wi->readySound )
+		{
+			trap_S_AddLoopingSound( es->number, cent->lerpOrigin, vec3_origin, wi->readySound );
+		}
+	}
+	else if ( CG_IsParticleSystemValid( &cent->muzzlePS ) )
+	{
+		// destroy active muzzle ps
+		CG_DestroyParticleSystem( &cent->muzzlePS );
 	}
 
 	health = es->generic1;
