@@ -189,7 +189,6 @@ namespace Str {
     typedef BasicStringRef<char> StringRef;
 
     bool ParseInt(int& value, Str::StringRef text);
-    bool ParseHex32(uint32_t& value, Str::StringRef text);
 
     float ToFloat(Str::StringRef text);
     bool ToFloat(Str::StringRef text, float& result);
