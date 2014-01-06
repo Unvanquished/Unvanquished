@@ -92,15 +92,10 @@ namespace Audio {
 
             AL::Buffer& GetBuffer();
 
-            void Retain();
-            void Release();
-            int GetRefCount();
-
             const std::string& GetName();
 
         private:
             AL::Buffer buffer;
-            int refCount;
             std::string name;
     };
 
