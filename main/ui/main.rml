@@ -1,11 +1,13 @@
 <rml>
 	<head>
 		<style>
-			div#background
-			{
-				position: relative;
-				z-index: -1;
+			body{
+				width:100%;
+				height:100%;
+				background-decorator: image;
+				background-image:/ui/assets/mainmenu;				
 			}
+		
 			div
 			{
 				font-family: DejaVu Sans;
@@ -30,28 +32,28 @@
 			}
 			button
 			{
-				color: teal;
+				color: #83fff5;
 				display: block;
 
 				max-width: 250px;
-				width: 75%;
-				height: 45px;
-
-				margin: -50px auto 20px;
-				padding-top: 13px;
-
-				font-size: 24;
-				button-font-effect: outline;
+				width: 60%;
+				padding:5%;
+				margin-left:10%;
+				font-size: 17;
 				text-align: center;
 				tab-index: auto;
-
 				background-decorator: image;
-				background-image-src: /ui/assets/button.png;
+				background-image: /ui/assets/buttons.png 0px 222px 311px 333px ; 
 			}
 			button:hover
 			{
 				color: white;
-				background-image-src: /ui/assets/button-hover.png;
+				background-image: /ui/assets/buttons.png 0px 0px 311px 111px;
+			}
+			button:active
+			{
+				color: white;
+				background-image: /ui/assets/buttons.png 0px 111px 311px 222px; 
 			}
 			#sidebar .separator
 			{
@@ -81,14 +83,10 @@
 			<div class="separator"></div>
 			<button onClick="exec quit">Quit</button>
 		</div>
-		<div id="background-elements">
-			<img style="position: fixed; width: 50%; left: 30%; top: 46%;" src="/ui/assets/human.png"/>
-			<img style="position: fixed; width: 15%; left: 50%; top: 78%;" src="/ui/assets/dretch3.png"/>
-			<img style="position: fixed; width: 25%; left: 25%; top: 78%;" src="/ui/assets/dretch2.png"/>
-			<img style="position: fixed; width: 15%; left: 75%; top: 85%;" src="/ui/assets/dretch1.png"/>
-		</div>
-		<div id="background">
-			<img style="height: 100%; width: 100%;" src="/ui/assets/mainmenu" />
-		</div>
+		
+		<img style="position: fixed; width: 50%; left: 30%; top: 46%;" src="/ui/assets/human.png"/>
+		<img style="position: fixed; width: 15%; left: 50%; top: 78%;" src="/ui/assets/dretch3.png"/>
+		<img style="position: fixed; width: 25%; left: 25%; top: 78%;" src="/ui/assets/dretch2.png"/>
+		<img style="position: fixed; width: 15%; left: 75%; top: 85%;" src="/ui/assets/dretch1.png"/>
 	</body>
 </rml>
