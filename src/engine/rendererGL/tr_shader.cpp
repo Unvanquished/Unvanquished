@@ -6862,7 +6862,6 @@ static void ScanAndLoadShaderFiles( void )
 	if ( !shaderFiles || !numShaderFiles )
 	{
 		ri.Printf( PRINT_WARNING, "WARNING: no shader files found\n" );
-		return;
 	}
 
 	if ( numShaderFiles > MAX_SHADER_FILES )

@@ -1357,11 +1357,10 @@ bool DirectoryRange::InternalAdvance()
 		if (!Str::IsPrefix(prefix, iter->first))
 			continue;
 
-		// List immediate subdirectories only if not doing a recursive search
+		// Don't look down subdirectories when not doing a recursive search
 		if (!recursive) {
-			auto end = iter->first.back() == '/' ? iter->first.end() - 1 : iter->first.end();
-			auto p = std::find(iter->first.begin() + prefix.size(), end, '/');
-			if (p == end)
+			auto p = std::find(iter->first.begin() + prefix.size(), iter->first.end(), '/');
+			if (p != iter->first.end())
 				continue;
 		}
 
@@ -2107,7 +2106,7 @@ int FS_ReadFile(const char* path, void** buffer)
 
 	if (length < 0) {
 		if (buffer)
-			buffer = nullptr;
+			*buffer = nullptr;
 		return -1;
 	}
 
@@ -2144,12 +2143,19 @@ char** FS_ListFiles(const char* directory, const char* extension, int* numFiles)
 			s[x.size() - (x.back() == '/')] = '\0';
 			files.push_back(s);
 		}
-	} catch (std::system_error& err) {
-		*numFiles = 0;
-		for (char* s: files)
-			delete[] s;
-		return nullptr;
-	}
+	} catch (std::system_error& err) {}
+	try {
+		for (const std::string& x: FS::HomePath::ListFiles(directory)) {
+			if (extension && !Str::IsSuffix(extension, x))
+				continue;
+			if (dirsOnly != (x.back() == '/'))
+				continue;
+			char* s = new char[x.size() + 1];
+			memcpy(s, x.data(), x.size());
+			s[x.size() - (x.back() == '/')] = '\0';
+			files.push_back(s);
+		}
+	} catch (std::system_error& err) {}
 
 	*numFiles = files.size();
 	char** list = new char*[files.size() + 1];
