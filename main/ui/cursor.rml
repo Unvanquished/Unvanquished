@@ -4,11 +4,11 @@
 		<style>
 			body
 			{
-				width: 15px;
-				height: 35px;
+				width: 31px;
+				height: 41px;
 				<!-- Add a simple image decorator onto the body element. -->
 				cursor-decorator: image;
-				cursor-image: /ui/assets/3_cursor3 32px 34px 44px 61px;
+				cursor-image: /ui/assets/cursor.png 0px 0px 61px 81px;
 			}
 		</style>
 	</head>
