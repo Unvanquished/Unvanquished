@@ -72,7 +72,11 @@ void GL_Bind( image_t *image )
 
 	if ( glState.currenttextures[ glState.currenttmu ] != texnum )
 	{
-		image->frameUsed = tr.frameCount;
+		if ( image )
+		{
+			image->frameUsed = tr.frameCount;
+		}
+
 		glState.currenttextures[ glState.currenttmu ] = texnum;
 		glBindTexture( GL_TEXTURE_2D, texnum );
 	}

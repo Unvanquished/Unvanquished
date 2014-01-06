@@ -1170,7 +1170,7 @@ static script_t *Parse_LoadScriptFile( const char *filename )
 
 	script = ( script_t * ) buffer;
 	Com_Memset( script, 0, sizeof( script_t ) );
-	strcpy( script->filename, filename );
+	Q_strncpyz( script->filename, filename, sizeof( script->filename ) );
 	script->buffer = ( char * ) buffer + sizeof( script_t );
 	script->buffer[ length ] = 0;
 	script->length = length;
@@ -1210,7 +1210,7 @@ static script_t *Parse_LoadScriptMemory( const char *ptr, int length, const char
 
 	script = ( script_t * ) buffer;
 	Com_Memset( script, 0, sizeof( script_t ) );
-	strcpy( script->filename, name );
+	Q_strncpyz( script->filename, name, sizeof( script->filename ) );
 	script->buffer = ( char * ) buffer + sizeof( script_t );
 	script->buffer[ length ] = 0;
 	script->length = length;
@@ -2981,8 +2981,10 @@ static int Parse_Directive_include( source_t *source )
 
 		if ( !script )
 		{
-			strcpy( path, source->includepath );
-			strcat( path, token.string );
+			// buffer too small?
+			path[ MAX_QPATH - 1 ] = 0;
+			strncpy( path, source->includepath, MAX_QPATH - 1 );
+			strncat( path, token.string, MAX_QPATH - 1 );
 			script = Parse_LoadScriptFile( path );
 		}
 	}

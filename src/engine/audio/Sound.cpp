@@ -26,10 +26,9 @@ along with daemon source code.  if not, see <http://www.gnu.org/licenses/>.
 
 namespace Audio {
 
-    //TODO nice usecase for Cvar::Range
     //TODO lazily check for the values
-    static Cvar::Cvar<float> effectsVolume("audio.volume.effects", "the volume of the effects", Cvar::ARCHIVE, 0.8f);
-    static Cvar::Cvar<float> musicVolume("audio.volume.music", "the volume of the music", Cvar::ARCHIVE, 0.8f);
+    static Cvar::Range<Cvar::Cvar<float>> effectsVolume("audio.volume.effects", "the volume of the effects", Cvar::ARCHIVE, 0.8f, 0.0f, 1.0f);
+    static Cvar::Range<Cvar::Cvar<float>> musicVolume("audio.volume.music", "the volume of the music", Cvar::ARCHIVE, 0.8f, 0.0f, 1.0f);
 
     // We have a big, fixed number of source to avoid rendering too many sounds and slowing down the rest of the engine.
     struct sourceRecord_t {
@@ -40,7 +39,7 @@ namespace Audio {
     };
 
     static sourceRecord_t* sources = nullptr;
-    static constexpr int nSources = 128; //TODO see what's the limit for OpenAL soft
+    static const int nSources = 128; //TODO see what's the limit for OpenAL soft
 
     sourceRecord_t* GetSource(int priority);
 

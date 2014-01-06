@@ -688,10 +688,10 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			Cmd_ArgvBuffer( args[ 1 ], (char*) VMA( 2 ), args[ 3 ] );
 			return 0;
 
-		case CG_ARGS:
+		case CG_ESCAPED_ARGS:
 			cls.nCgameUselessSyscalls ++;
 			VM_CheckBlock( args[1], args[2], "ARGS" );
-			Cmd_ArgsBuffer( (char*) VMA( 1 ), args[ 2 ] );
+			Cmd_EscapedArgsBuffer( (char*) VMA( 1 ), args[ 2 ] );
 			return 0;
 
 		case CG_LITERAL_ARGS:
@@ -1387,6 +1387,11 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 		case CG_S_UPDATEENTITYVELOCITY:
 			cls.nCgameSoundSyscalls ++;
 			S_UpdateEntityVelocity( args[ 1 ], (float*) VMA( 2 ) );
+			return 0;
+
+		case CG_S_SETREVERB:
+			cls.nCgameSoundSyscalls ++;
+			S_SetReverb( args[ 1 ], (const char*) VMA( 2 ), VMF( 3 ) );
 			return 0;
 
 		default:

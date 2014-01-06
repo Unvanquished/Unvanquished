@@ -24,6 +24,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <string>
 #include <algorithm>
+#include <stdint.h>
 #include "../libs/tinyformat/tinyformat.h"
 
 #ifndef COMMON_STRING_H_

@@ -28,7 +28,7 @@ namespace Audio {
 
     Log::Logger audioLogs("audio");
 
-    static Cvar::Cvar<float> masterVolume("audio.volume.master", "the global audio volume", Cvar::ARCHIVE, 0.8f);
+    static Cvar::Range<Cvar::Cvar<float>> masterVolume("audio.volume.master", "the global audio volume", Cvar::ARCHIVE, 0.8f, 0.0f, 1.0f);
 
     static Cvar::Cvar<bool> muteWhenMinimized("audio.muteWhenMinimized", "should the game be muted when minimized", Cvar::ARCHIVE, false);
     static Cvar::Cvar<bool> muteWhenUnfocused("audio.muteWhenUnfocused", "should the game be muted when not focused", Cvar::ARCHIVE, false);
@@ -324,9 +324,9 @@ namespace Audio {
         if (not streams[streamNum]) {
             streams[streamNum] = std::make_shared<StreamingSound>();
             if (IsValidEntity(entityNum)) {
-                AddSound(GetLocalEmitter(), streams[streamNum], 1);
-            } else {
                 AddSound(GetEmitterForEntity(entityNum), streams[streamNum], 1);
+            } else {
+                AddSound(GetLocalEmitter(), streams[streamNum], 1);
             }
         }
 
@@ -369,6 +369,14 @@ namespace Audio {
         }
 
         UpdateRegisteredEntityVelocity(entityNum, velocity);
+    }
+
+    void SetReverb(int slotNum, std::string name, float ratio) {
+        if (slotNum < 0 or slotNum > N_REVERB_SLOTS or std::isnan(ratio)) {
+            return;
+        }
+
+        UpdateReverbSlot(slotNum, std::move(name), ratio);
     }
 
     // Capture functions

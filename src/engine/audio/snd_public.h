@@ -52,6 +52,8 @@ void S_Respatialize( int entityNum, const vec3_t origin, vec3_t axis[3], int inw
 void S_UpdateEntityPosition( int entityNum, const vec3_t origin );
 void S_UpdateEntityVelocity( int entityNum, const vec3_t velocity );
 
+void S_SetReverb( int slotNum, const char* name, float ratio );
+
 void S_Update( void );
 
 void S_DisableSounds( void );

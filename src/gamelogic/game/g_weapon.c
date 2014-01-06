@@ -1365,45 +1365,32 @@ void G_CheckGrabAttack( gentity_t *self )
 	}
 }
 
-static void FirePoisonCloud( gentity_t *ent )
+static void FirePoisonCloud( gentity_t *self )
 {
-	int       entityList[ MAX_GENTITIES ];
-	vec3_t    range;
-	vec3_t    mins, maxs;
-	int       i, num;
-	gentity_t *humanPlayer;
+	gentity_t *other;
 	trace_t   tr;
 
-	VectorSet(range, LEVEL1_PCLOUD_RANGE, LEVEL1_PCLOUD_RANGE, LEVEL1_PCLOUD_RANGE);
+	G_UnlaggedOn( self, self->s.origin, LEVEL1_PCLOUD_RANGE );
 
-	VectorAdd( ent->client->ps.origin, range, maxs );
-	VectorSubtract( ent->client->ps.origin, range, mins );
-
-	G_UnlaggedOn( ent, ent->client->ps.origin, LEVEL1_PCLOUD_RANGE );
-	num = trap_EntitiesInBox( mins, maxs, entityList, MAX_GENTITIES );
-
-	for ( i = 0; i < num; i++ )
+	for ( other = NULL; ( other = G_IterateEntitiesWithinRadius( other, self->s.origin, LEVEL1_PCLOUD_RANGE ) ); )
 	{
-		humanPlayer = &g_entities[ entityList[ i ] ];
-
-		if ( humanPlayer->client &&
-		     humanPlayer->client->pers.team == TEAM_HUMANS )
+		if ( !other->client || other->client->pers.team != TEAM_HUMANS )
 		{
-			trap_Trace( &tr, muzzle, NULL, NULL, humanPlayer->s.origin,
-			            humanPlayer->s.number, CONTENTS_SOLID );
-
-			//can't see target from here
-			if ( tr.entityNum == ENTITYNUM_WORLD )
-			{
-				continue;
-			}
-
-			humanPlayer->client->ps.eFlags |= EF_POISONCLOUDED;
-			humanPlayer->client->lastPoisonCloudedTime = level.time;
-
-			trap_SendServerCommand( humanPlayer->client->ps.clientNum,
-			                        "poisoncloud" );
+			continue;
 		}
+
+		// check for line of sight
+		trap_Trace( &tr, muzzle, NULL, NULL, other->s.origin, other->s.number, CONTENTS_SOLID );
+
+		if ( tr.entityNum == ENTITYNUM_WORLD )
+		{
+			continue;
+		}
+
+		other->client->ps.eFlags |= EF_POISONCLOUDED;
+		other->client->lastPoisonCloudedTime = level.time;
+
+		trap_SendServerCommand( other->client->ps.clientNum, "poisoncloud" );
 	}
 
 	G_UnlaggedOff();
@@ -1481,6 +1468,8 @@ static void UpdateZapEffect( zap_t *zap )
 	int entityNums[ LEVEL2_AREAZAP_MAX_TARGETS + 1 ];
 
 	entityNums[ 0 ] = zap->creator->s.number;
+
+	assert( zap->numTargets <= LEVEL2_AREAZAP_MAX_TARGETS );
 
 	for ( i = 0; i < zap->numTargets; i++ )
 	{

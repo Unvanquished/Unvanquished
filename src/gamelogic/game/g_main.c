@@ -685,11 +685,11 @@ void G_RegisterCvars( void )
 		if ( cvarTable->vmCvar )
 		{
 			cvarTable->modificationCount = cvarTable->vmCvar->modificationCount;
-		}
 
-		if ( cvarTable->explicit_ )
-		{
-			strcpy( cvarTable->explicit_, cvarTable->vmCvar->string );
+			if ( cvarTable->explicit_ )
+			{
+				strcpy( cvarTable->explicit_, cvarTable->vmCvar->string );
+			}
 		}
 	}
 }

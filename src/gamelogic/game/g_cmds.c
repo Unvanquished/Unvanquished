@@ -1460,7 +1460,7 @@ void Cmd_VSay_f( gentity_t *ent )
 
 	if ( !Q_stricmp( arg, "vsay" ) )
 	{
-		vchan = VOICE_CHAN_LOCAL;
+		vchan = VOICE_CHAN_ALL;
 	}
 	else if ( !Q_stricmp( arg, "vsay_team" ) )
 	{

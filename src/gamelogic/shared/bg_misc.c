@@ -2057,9 +2057,9 @@ BG_PackEntityNumbers
 Pack entity numbers into an entityState_t
 ===============
 */
-void BG_PackEntityNumbers( entityState_t *es, const int *entityNums, int count )
+void BG_PackEntityNumbers( entityState_t *es, const int *entityNums, unsigned int count )
 {
-	int i;
+	unsigned int i;
 
 	if ( count > MAX_NUM_PACKED_ENTITY_NUMS )
 	{
@@ -2145,9 +2145,9 @@ BG_UnpackEntityNumbers
 Unpack entity numbers from an entityState_t
 ===============
 */
-int BG_UnpackEntityNumbers( entityState_t *es, int *entityNums, int count )
+int BG_UnpackEntityNumbers( entityState_t *es, int *entityNums, unsigned int count )
 {
-	int i;
+	unsigned int i;
 
 	if ( count > MAX_NUM_PACKED_ENTITY_NUMS )
 	{
@@ -2619,9 +2619,9 @@ int BG_LoadEmoticons( emoticon_t *emoticons, int num )
 			continue;
 		}
 
-		if ( fileLen - 8 > MAX_EMOTICON_NAME_LEN )
+		if ( fileLen - 8 >= MAX_EMOTICON_NAME_LEN )
 		{
-			Com_Printf( S_COLOR_YELLOW "emoticon file name \"%s\" too long (>%d)\n",
+			Com_Printf( S_COLOR_YELLOW "emoticon file name \"%s\" too long (≥ %d)\n",
 			            filePtr, MAX_EMOTICON_NAME_LEN + 8 );
 			continue;
 		}

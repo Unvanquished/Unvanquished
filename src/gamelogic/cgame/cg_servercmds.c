@@ -93,15 +93,15 @@ static void CG_ParseTeamInfo( void )
 	{
 		client = atoi( CG_Argv( i ) );
 
-		// wrong team? skip to the next one
-		if ( cgs.clientinfo[ client ].team != cg.snap->ps.persistant[ PERS_TEAM ] )
-		{
-			return;
-		}
-
 		if ( client < 0 || client >= MAX_CLIENTS )
 		{
 			CG_Printf( "[skipnotify]CG_ParseTeamInfo: bad client number: %d\n", client );
+			return;
+		}
+
+		// wrong team? skip to the next one
+		if ( cgs.clientinfo[ client ].team != cg.snap->ps.persistant[ PERS_TEAM ] )
+		{
 			return;
 		}
 

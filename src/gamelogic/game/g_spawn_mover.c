@@ -2462,7 +2462,7 @@ void func_train_blocked( gentity_t *self, gentity_t *other )
 			G_Damage( other, self, self, NULL, NULL, 10000, 0, MOD_CRUSH );
 
 			//buildables need to be handled differently since even when
-			//dealth fatal amounts of damage they won't instantly become non-solid
+			//dealt fatal amounts of damage they won't instantly become non-solid
 			if ( other->s.eType == ET_BUILDABLE && other->spawned )
 			{
 				vec3_t    dir;
@@ -2482,11 +2482,7 @@ void func_train_blocked( gentity_t *self, gentity_t *other )
 				}
 			}
 
-			//if it's still around free it
-			if ( other )
-			{
-				G_FreeEntity( other );
-			}
+			G_FreeEntity( other );
 
 			return;
 		}
@@ -2534,6 +2530,9 @@ void SP_func_static( gentity_t *self )
 {
 	char *gradingTexture;
 	float gradingDistance;
+	char *reverbEffect;
+	float reverbDistance;
+	float reverbIntensity;
 
 	trap_SetBrushModel( self, self->model );
 	InitMover( self );
@@ -2548,6 +2547,17 @@ void SP_func_static( gentity_t *self )
 
 		G_GradingTextureIndex( va( "%s %f %s", self->model + 1,
 					   gradingDistance, gradingTexture ) );
+	}
+
+	// check if this func_static has a colorgrading texture
+	if( self->model[0] == '*' &&
+	    G_SpawnString( "reverbEffect", "", &reverbEffect ) ) {
+		G_SpawnFloat( "reverbDistance", "250", &reverbDistance );
+		G_SpawnFloat( "reverbIntensity", "1", &reverbIntensity );
+
+		reverbIntensity = Com_Clamp( 0.0f, 2.0f, reverbIntensity );
+		G_ReverbEffectIndex( va( "%s %f %s %f", self->model + 1,
+					   reverbDistance, reverbEffect, reverbIntensity ) );
 	}
 }
 

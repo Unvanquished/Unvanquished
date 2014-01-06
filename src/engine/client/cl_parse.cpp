@@ -108,11 +108,11 @@ CL_ParsePacketEntities
 
 ==================
 */
-void CL_ParsePacketEntities( msg_t *msg, clSnapshot_t *oldframe, clSnapshot_t *newframe )
+void CL_ParsePacketEntities( msg_t *msg, const clSnapshot_t *oldframe, clSnapshot_t *newframe )
 {
-	int           newnum;
+	unsigned int  newnum;
 	entityState_t *oldstate;
-	int           oldindex, oldnum;
+	unsigned int  oldindex, oldnum;
 
 	newframe->parseEntitiesNum = cl.parseEntitiesNum;
 	newframe->numEntities = 0;
@@ -123,13 +123,16 @@ void CL_ParsePacketEntities( msg_t *msg, clSnapshot_t *oldframe, clSnapshot_t *n
 
 	if ( !oldframe )
 	{
-		oldnum = 99999;
+		static const clSnapshot_t nullframe = { qfalse };
+
+		oldframe = &nullframe;
+		oldnum = MAX_GENTITIES; // guaranteed out of range
 	}
 	else
 	{
 		if ( oldindex >= oldframe->numEntities )
 		{
-			oldnum = 99999;
+			oldnum = MAX_GENTITIES;
 		}
 		else
 		{
@@ -144,7 +147,7 @@ void CL_ParsePacketEntities( msg_t *msg, clSnapshot_t *oldframe, clSnapshot_t *n
 		// read the entity index number
 		newnum = MSG_ReadBits( msg, GENTITYNUM_BITS );
 
-		if ( newnum == ( MAX_GENTITIES - 1 ) )
+		if ( newnum >= ( MAX_GENTITIES - 1 ) )
 		{
 			break;
 		}
@@ -168,7 +171,7 @@ void CL_ParsePacketEntities( msg_t *msg, clSnapshot_t *oldframe, clSnapshot_t *n
 
 			if ( oldindex >= oldframe->numEntities )
 			{
-				oldnum = 99999;
+				oldnum = MAX_GENTITIES;
 			}
 			else
 			{
@@ -192,7 +195,7 @@ void CL_ParsePacketEntities( msg_t *msg, clSnapshot_t *oldframe, clSnapshot_t *n
 
 			if ( oldindex >= oldframe->numEntities )
 			{
-				oldnum = 99999;
+				oldnum = MAX_GENTITIES;
 			}
 			else
 			{
@@ -218,7 +221,7 @@ void CL_ParsePacketEntities( msg_t *msg, clSnapshot_t *oldframe, clSnapshot_t *n
 	}
 
 	// any remaining entities in the old frame are copied over
-	while ( oldnum != 99999 )
+	while ( oldnum != MAX_GENTITIES )
 	{
 		// one or more entities from the old packet are unchanged
 		if ( cl_shownet->integer == 3 )
@@ -232,7 +235,7 @@ void CL_ParsePacketEntities( msg_t *msg, clSnapshot_t *oldframe, clSnapshot_t *n
 
 		if ( oldindex >= oldframe->numEntities )
 		{
-			oldnum = 99999;
+			oldnum = MAX_GENTITIES;
 		}
 		else
 		{

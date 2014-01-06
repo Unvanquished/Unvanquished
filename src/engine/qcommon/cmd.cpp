@@ -167,7 +167,7 @@ char *Cmd_Argv( int arg )
 	const std::string& res = args.Argv(arg);
 	static char buffer[100][1024];
 
-	strcpy(buffer[arg], res.c_str());
+	Q_strncpyz(buffer[arg], res.c_str(), sizeof(buffer[arg]));
 
 	return buffer[arg];
 }
@@ -198,9 +198,22 @@ char *Cmd_ArgsFrom( int arg )
 
 	const Cmd::Args& args = Cmd::GetCurrentArgs();
 	const std::string& res = args.EscapedArgs(arg);
-	strcpy(cmd_args, res.c_str());
+	Q_strncpyz(cmd_args, res.c_str(), BIG_INFO_STRING);
 
 	return cmd_args;
+}
+
+/*
+============
+Cmd_EscapedArgsBuffer
+============
+*/
+
+void Cmd_EscapedArgsBuffer( char* buffer, int bufferLength )
+{
+	const Cmd::Args& args = Cmd::GetCurrentArgs();
+	const std::string& res = args.EscapedArgs(0);
+	Q_strncpyz( buffer, res.c_str(), bufferLength );
 }
 
 /*

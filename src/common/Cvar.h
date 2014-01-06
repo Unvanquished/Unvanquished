@@ -125,7 +125,7 @@ namespace Cvar {
             typedef typename Base::value_type value_type;
 
             template <typename ... Args>
-            Callback(std::string name, std::string description, int flags, value_type, std::function<void(value_type)> callback, Args&& ... args);
+            Callback(std::string name, std::string description, int flags, value_type defaultValue, std::function<void(value_type)> callback, Args&& ... args);
 
             virtual OnValueChangedResult OnValueChanged(Str::StringRef newValue);
 
@@ -143,7 +143,7 @@ namespace Cvar {
             typedef typename Base::value_type value_type;
 
             template<typename ... Args>
-            Modified(std::string name, std::string description, int flags, value_type, Args ... args);
+            Modified(std::string name, std::string description, int flags, value_type defaultValue, Args ... args);
 
             virtual OnValueChangedResult OnValueChanged(Str::StringRef newValue);
 
@@ -152,6 +152,25 @@ namespace Cvar {
 
         private:
             bool modified;
+    };
+
+    /*
+     * Range<CvarType> forces the cvar to stay in a range of values.
+     */
+
+    template<typename Base> class Range : public Base {
+        public:
+            typedef typename Base::value_type value_type;
+
+            template<typename ... Args>
+            Range(std::string name, std::string description, int flags, value_type defaultValue, value_type min, value_type max, Args ... args);
+
+        private:
+            virtual OnValueChangedResult Validate(const value_type& value);
+            virtual std::string GetDescription(Str::StringRef value, Str::StringRef originalDescription);
+
+            value_type min;
+            value_type max;
     };
 
     // Implement Cvar<T> for T = bool, int, string
@@ -205,7 +224,12 @@ namespace Cvar {
     template<typename T>
     OnValueChangedResult Cvar<T>::OnValueChanged(Str::StringRef text) {
         if (Parse(text, value)) {
-            return {true, GetDescription(text, description)};
+            OnValueChangedResult validationResult = Validate(value);
+            if (validationResult.success) {
+                return {true, GetDescription(text, description)};
+            } else {
+                return validationResult;
+            }
         } else {
             return {false, Str::Format("value \"%s\" is not of type '%s' as expected", text, GetCvarTypeName<T>())};
         }
@@ -271,6 +295,30 @@ namespace Cvar {
         modified = false;
         return res;
     }
+
+    // Range<Base>
+
+    template <typename Base>
+    template <typename ... Args>
+    Range<Base>::Range(std::string name, std::string description, int flags, value_type defaultValue, value_type min, value_type max, Args ... args)
+    : Base(std::move(name), std::move(description), flags, std::move(defaultValue), std::forward<Args>(args) ...), min(min), max(max) {
+    }
+
+    template <typename Base>
+    OnValueChangedResult Range<Base>::Validate(const value_type& value) {
+        bool inBounds = value <= max and value >= min;
+        if (inBounds) {
+            return {true, ""};
+        } else {
+            return {false, Str::Format("%s is not between %s and %s", SerializeCvarValue(value), SerializeCvarValue(min), SerializeCvarValue(max))};
+        }
+    }
+
+    template <typename Base>
+    std::string Range<Base>::GetDescription(Str::StringRef value, Str::StringRef originalDescription) {
+        return Base::GetDescription(value, Str::Format("%s - between %s and %s", originalDescription, SerializeCvarValue(min), SerializeCvarValue(max)));
+    }
+
 }
 
 #endif // COMMON_CVAR_H_

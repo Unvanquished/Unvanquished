@@ -155,11 +155,10 @@ void AIDestroyValue( AIValue_t v )
 
 botEntityAndDistance_t AIEntityToGentity( gentity_t *self, AIEntity_t e )
 {
-	botEntityAndDistance_t nullEntity;
-	nullEntity.ent = NULL;
-	nullEntity.distance = INT_MAX;
+	static const botEntityAndDistance_t nullEntity = { NULL, HUGE_QFLT };
+	botEntityAndDistance_t              ret = nullEntity;
 
-	if ( e > BA_NONE && e < BA_NUM_BUILDABLES )
+	if ( e > E_NONE && e < E_NUM_BUILDABLES )
 	{
 		return self->botMind->closestBuildings[ e ];
 	}
@@ -173,20 +172,18 @@ botEntityAndDistance_t AIEntityToGentity( gentity_t *self, AIEntity_t e )
 	}
 	else if ( e == E_GOAL )
 	{
-		botEntityAndDistance_t ret = nullEntity;
 		ret.ent = self->botMind->goal.ent;
 		ret.distance = DistanceToGoal( self );
 		return ret;
 	}
 	else if ( e == E_SELF )
 	{
-		botEntityAndDistance_t ret;
 		ret.ent = self;
 		ret.distance = 0;
 		return ret;
 	}
 	
-	return nullEntity;
+	return ret;
 }
 
 static qboolean NodeIsRunning( gentity_t *self, AIGenericNode_t *node )

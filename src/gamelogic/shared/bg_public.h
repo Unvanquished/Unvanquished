@@ -89,7 +89,8 @@ enum
   CS_SOUNDS = CS_MODELS + MAX_MODELS,
   CS_SHADERS = CS_SOUNDS + MAX_SOUNDS,
   CS_GRADING_TEXTURES = CS_SHADERS + MAX_GAME_SHADERS,
-  CS_PARTICLE_SYSTEMS = CS_GRADING_TEXTURES + MAX_GRADING_TEXTURES,
+  CS_REVERB_EFFECTS = CS_GRADING_TEXTURES + MAX_GRADING_TEXTURES,
+  CS_PARTICLE_SYSTEMS = CS_REVERB_EFFECTS + MAX_REVERB_EFFECTS,
 
   CS_PLAYERS = CS_PARTICLE_SYSTEMS + MAX_GAME_PARTICLE_SYSTEMS,
   CS_OBJECTIVES = CS_PLAYERS + MAX_CLIENTS,
@@ -1292,8 +1293,8 @@ qboolean                    BG_PlayerCanChangeWeapon( playerState_t *ps );
 int                         BG_PlayerPoisonCloudTime( playerState_t *ps );
 weapon_t                    BG_GetPlayerWeapon( playerState_t *ps );
 
-void                        BG_PackEntityNumbers( entityState_t *es, const int *entityNums, int count );
-int                         BG_UnpackEntityNumbers( entityState_t *es, int *entityNums, int count );
+void                        BG_PackEntityNumbers( entityState_t *es, const int *entityNums, unsigned int count );
+int                         BG_UnpackEntityNumbers( entityState_t *es, int *entityNums, unsigned int count );
 
 const buildableAttributes_t *BG_BuildableByName( const char *name );
 const buildableAttributes_t *BG_BuildableByEntityName( const char *name );

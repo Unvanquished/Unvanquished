@@ -121,7 +121,7 @@ static char    *CommaParse( char **data_p )
 				return com_token;
 			}
 
-			if ( len < MAX_TOKEN_CHARS )
+			if ( len < MAX_TOKEN_CHARS - 1 )
 			{
 				com_token[ len ] = c;
 				len++;

@@ -1265,7 +1265,7 @@ static void CL_WriteWaveHeader( void )
 	FS_Write( &hdr.ChunkID, 44, clc.wavefile );
 }
 
-static char wavName[ MAX_QPATH ]; // compiler bug workaround
+static char wavName[ MAX_OSPATH ]; // compiler bug workaround
 void CL_WriteWaveOpen( void )
 {
 	// we will just save it as a 16bit stereo 22050kz pcm file
@@ -2950,7 +2950,7 @@ void CL_MotdPacket( netadr_t from, const char *info )
 	}
 
 	v = Info_ValueForKey( info, "motd" );
-	strcpy(w,v);
+	Q_strncpyz(w, v, sizeof(w));
 	ptr = w;
 
 	//replace all | with \n
@@ -3950,14 +3950,13 @@ static void CL_Cache_UsedFile_f( void )
 		Com_Error( ERR_DROP, "usedfile without enough parameters" );
 	}
 
-	strcpy( groupStr, Cmd_Argv( 1 ) );
-
-	strcpy( itemStr, Cmd_Argv( 2 ) );
+	Q_strncpyz( groupStr, Cmd_Argv( 1 ), MAX_QPATH );
+	Q_strncpyz( itemStr, Cmd_Argv( 2 ), MAX_QPATH );
 
 	for ( i = 3; i < Cmd_Argc(); i++ )
 	{
-		strcat( itemStr, " " );
-		strcat( itemStr, Cmd_Argv( i ) );
+		strncat( itemStr, " ", MAX_QPATH - 1 );
+		strncat( itemStr, Cmd_Argv( i ), MAX_QPATH - 1 );
 	}
 
 	Q_strlwr( itemStr );
@@ -5603,6 +5602,8 @@ qboolean CL_UpdateVisiblePings_f( int source )
 						}
 					}
 
+					// Not in the list, so find and use a free slot.
+					// If all slots are full, the server won't be pinged.
 					if ( j >= MAX_PINGREQUESTS )
 					{
 						status = qtrue;
@@ -5611,15 +5612,14 @@ qboolean CL_UpdateVisiblePings_f( int source )
 						{
 							if ( !cl_pinglist[ j ].adr.port )
 							{
+								memcpy( &cl_pinglist[ j ].adr, &server[ i ].adr, sizeof( netadr_t ) );
+								cl_pinglist[ j ].start = Sys_Milliseconds();
+								cl_pinglist[ j ].time = 0;
+								NET_OutOfBandPrint( NS_CLIENT, cl_pinglist[ j ].adr, "getinfo xxx" );
+								slots++;
 								break;
 							}
 						}
-
-						memcpy( &cl_pinglist[ j ].adr, &server[ i ].adr, sizeof( netadr_t ) );
-						cl_pinglist[ j ].start = Sys_Milliseconds();
-						cl_pinglist[ j ].time = 0;
-						NET_OutOfBandPrint( NS_CLIENT, cl_pinglist[ j ].adr, "getinfo xxx" );
-						slots++;
 					}
 				}
 				// if the server has a ping higher than cl_maxPing or

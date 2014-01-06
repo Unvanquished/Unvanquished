@@ -53,6 +53,8 @@ namespace Audio {
     void UpdateEntityPosition(int entityNum, const vec3_t position);
     void UpdateEntityVelocity(int entityNum, const vec3_t velocity);
 
+    void SetReverb(int slotNum, std::string name, float ratio);
+
     void StartCapture(int rate);
     int AvailableCaptureSamples();
     void GetCapturedData(int numSamples, void* buffer);

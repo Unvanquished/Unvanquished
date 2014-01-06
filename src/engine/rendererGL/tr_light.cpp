@@ -1570,7 +1570,7 @@ byte R_CalcLightCubeSideBits( trRefLight_t *light, vec3_t worldBounds[ 2 ] )
 	{
 		switch ( cubeSide )
 		{
-			case 0:
+			default: // 0
 				{
 					// view parameters
 					VectorSet( angles, 0, 0, 0 );
@@ -1604,13 +1604,6 @@ byte R_CalcLightCubeSideBits( trRefLight_t *light, vec3_t worldBounds[ 2 ] )
 			case 5:
 				{
 					VectorSet( angles, 90, 0, 0 );
-					break;
-				}
-
-			default:
-				{
-					// shut up compiler
-					VectorSet( angles, 0, 0, 0 );
 					break;
 				}
 		}

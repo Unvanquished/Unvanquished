@@ -63,7 +63,7 @@ SV_EmitPacketEntities
 Writes a delta update of an entityState_t list to the message.
 =============
 */
-static void SV_EmitPacketEntities( clientSnapshot_t *from, clientSnapshot_t *to, msg_t *msg )
+static void SV_EmitPacketEntities( const clientSnapshot_t *from, clientSnapshot_t *to, msg_t *msg )
 {
 	entityState_t *oldent, *newent;
 	int           oldindex, newindex;
@@ -73,6 +73,9 @@ static void SV_EmitPacketEntities( clientSnapshot_t *from, clientSnapshot_t *to,
 	// generate the delta update
 	if ( !from )
 	{
+		static const clientSnapshot_t nullfrom = { 0 };
+
+		from = &nullfrom;
 		from_num_entities = 0;
 	}
 	else
@@ -89,7 +92,7 @@ static void SV_EmitPacketEntities( clientSnapshot_t *from, clientSnapshot_t *to,
 	{
 		if ( newindex >= to->num_entities )
 		{
-			newnum = 9999;
+			newnum = MAX_GENTITIES;
 		}
 		else
 		{
@@ -99,7 +102,7 @@ static void SV_EmitPacketEntities( clientSnapshot_t *from, clientSnapshot_t *to,
 
 		if ( oldindex >= from_num_entities )
 		{
-			oldnum = 9999;
+			oldnum = MAX_GENTITIES;
 		}
 		else
 		{
