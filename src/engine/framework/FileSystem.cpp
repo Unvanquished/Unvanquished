@@ -507,7 +507,8 @@ void RefreshPaks()
 	// First sort by name, then by version.
 	// For checksums, place files without checksums in front, so they are selected
 	// before any pak with an explicit checksum.
-	std::sort(availablePaks.begin(), availablePaks.end(), [](const PakInfo& a, const PakInfo& b) -> bool {
+	// Use a stable sort to preserve the order of files within search paths
+	std::stable_sort(availablePaks.begin(), availablePaks.end(), [](const PakInfo& a, const PakInfo& b) -> bool {
 		// Sort by name
 		int result = a.name.compare(b.name);
 		if (result != 0)
@@ -522,8 +523,8 @@ void RefreshPaks()
 		if (a.checksum != b.checksum)
 			return a.checksum > b.checksum;
 
-		// Prefer packages in the home path over other paths when names are identical
-		return Str::IsPrefix(homePath, b.path);
+		// Prefer zip packages to directory packages
+		return b.type == PAK_ZIP;
 	});
 }
 
@@ -1110,10 +1111,6 @@ static void InternalLoadPak(const PakInfo& pak, Opt::optional<uint32_t> expected
 
 	// Add the pak to the list of loaded paks
 	loadedPaks.push_back(pak);
-	if (pak.type == PAK_DIR)
-		loadedPaks.back().checksum = Opt::nullopt;
-	else
-		loadedPaks.back().checksum = checksum;
 
 	// Update the list of files, but don't overwrite existing files to preserve sort order
 	if (pak.type == PAK_DIR) {
@@ -1132,6 +1129,7 @@ static void InternalLoadPak(const PakInfo& pak, Opt::optional<uint32_t> expected
 			if (HaveError(err))
 				return;
 		}
+		loadedPaks.back().checksum = Opt::nullopt;
 	} else {
 		// Open zip
 		zipFile = ZipArchive::Open(pak.path, err);
@@ -1154,6 +1152,7 @@ static void InternalLoadPak(const PakInfo& pak, Opt::optional<uint32_t> expected
 		}, err);
 		if (HaveError(err))
 			return;
+		loadedPaks.back().checksum = checksum;
 	}
 
 	// If an explicit checksum was requested, verify that the pak we loaded is the one we are expecting
