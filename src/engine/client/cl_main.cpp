@@ -199,7 +199,6 @@ typedef struct serverStatus_s
 serverStatus_t cl_serverStatusList[ MAX_SERVERSTATUSREQUESTS ];
 int            serverStatusCount;
 
-extern void SV_BotFrame( int time );
 void        CL_CheckForResend( void );
 void        CL_ShowIP_f( void );
 void        CL_ServerStatus_f( void );
