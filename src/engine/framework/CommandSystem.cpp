@@ -103,9 +103,6 @@ namespace Cmd {
 
     typedef std::unordered_map<std::string, commandRecord_t, Str::IHash, Str::IEqual> CommandMap;
 
-    // Command execution is sequential so we make their environment a global variable.
-    Environment* storedEnvironment = nullptr;
-
     // The order in which static global variables are initialized is undefined and commands
     // can be registered before main. The first time this function is called the command map
     // is initialized so we are sure it is initialized as soon as we need it.
@@ -129,6 +126,15 @@ namespace Cmd {
 
         if (!commands.insert({std::move(name), commandRecord_t{std::move(description), &cmd}}).second) {
             commandLog.Warn(_("Cmd::AddCommand: %s already defined"), name);
+        }
+    }
+
+    void ChangeDescription(std::string name, std::string description) {
+        CommandMap& commands = GetCommandMap();
+
+        auto it = commands.find(name);
+        if (it != commands.end()) {
+            it->second.description = std::move(description);
         }
     }
 
@@ -159,6 +165,11 @@ namespace Cmd {
     }
 
     DefaultEnvironment defaultEnv;
+
+    // Command execution is sequential so we make their environment a global variable.
+    Environment* storedEnvironment = &defaultEnv;
+
+
 
     void ExecuteCommand(Str::StringRef command, bool parseCvars, Environment* env) {
         CommandMap& commands = GetCommandMap();
@@ -224,7 +235,7 @@ namespace Cmd {
         }
     }
 
-    CompletionResult CompleteCommandNames(const std::string& prefix) {
+    CompletionResult CompleteCommandNames(Str::StringRef prefix) {
         CommandMap& commands = GetCommandMap();
 
         CompletionResult res;
@@ -254,6 +265,10 @@ namespace Cmd {
 
     Environment* GetEnv() {
         return storedEnvironment;
+    }
+
+    void ResetEnv() {
+	storedEnvironment = &defaultEnv;
     }
 
     /*
@@ -319,7 +334,7 @@ namespace Cmd {
                 Print("%zu commands", matches.size());
             }
 
-            Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, const std::string& prefix) const OVERRIDE {
+            Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, Str::StringRef prefix) const OVERRIDE {
                 Q_UNUSED(args);
 
                 if (argNum == 1) {
@@ -337,7 +352,7 @@ namespace Cmd {
     static ListCmdsCmd listBaseCmdsRegistration("listBaseCmds", BASE, "lists all the base commands", BASE);
     static ListCmdsCmd listSystemCmdsRegistration("listSystemCmds", BASE | SYSTEM, "lists all the system commands", SYSTEM);
     static ListCmdsCmd listRendererCmdsRegistration("listRendererCmds", BASE | RENDERER, "lists all the renderer commands", RENDERER);
-    static ListCmdsCmd listSoundCmdsRegistration("listSoundCmds", BASE | SOUND, "lists all the sound commands", SOUND);
+    static ListCmdsCmd listAudioCmdsRegistration("listAudioCmds", BASE | AUDIO, "lists all the audio commands", AUDIO);
     static ListCmdsCmd listCGameCmdsRegistration("listCGameCmds", BASE | CGAME, "lists all the client-side game commands", CGAME);
     static ListCmdsCmd listGameCmdsRegistration("listGameCmds", BASE | GAME, "lists all the server-side game commands", GAME);
     static ListCmdsCmd listUICmdsRegistration("listUICmds", BASE | UI, "lists all the UI commands", UI);

@@ -41,6 +41,7 @@ Maryland 20850 USA.
 //kangz need these for the command completion handlers
 #include <vector>
 #include <string>
+#include "../../common/String.h"
 #include "cvar.h"
 
 //============================================================================
@@ -460,6 +461,7 @@ char *Cmd_Argv( int arg );
 void Cmd_ArgvBuffer( int arg, char *buffer, int bufferLength );
 char *Cmd_Args( void );
 char *Cmd_ArgsFrom( int arg );
+void Cmd_EscapedArgsBuffer( char* buffer, int bufferLength ); // from index 0
 void Cmd_LiteralArgsBuffer( char* buffer, int bufferLength );
 void Cmd_ArgsBuffer( char *buffer, int bufferLength );
 const char *Cmd_Cmd( void );
@@ -692,8 +694,8 @@ void       FS_FilenameCompletion( const char *dir, const char *ext,
 qboolean   FS_Which( const char *filename, void *searchPath );
 
 namespace FS {
-    std::vector<std::pair<std::string, std::string>> CompleteFilenameInDir(const std::string& prefix, const std::string& dir,
-                                                   const std::string& extension, bool stripExtension = true);
+    std::vector<std::pair<std::string, std::string>> CompleteFilenameInDir(Str::StringRef prefix, Str::StringRef dir,
+                                                                           Str::StringRef extension, bool stripExtension = true);
 }
 
 /*

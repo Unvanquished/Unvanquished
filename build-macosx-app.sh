@@ -5,9 +5,10 @@
 set -e
 set -u
 
-# SDL and GLEW versions for inclusion in app bundle
+# Dynamic libraries for inclusion in app bundle
 SDL2_VERSION=2.0.1
 GLEW_VERSION=1.10.0
+OPENAL_VERSION=1.15.1
 
 # Usage
 if [ "${#}" -ne "2" ]; then
@@ -43,13 +44,15 @@ make_universal daemon-tty 755
 make_universal rendererGL.so 644
 make_universal rendererGL3.so 644
 install -d "${DEST_PATH}/Contents/MacOS/main"
-make_universal main/game.so 644
-make_universal main/cgame.so 644
-make_universal main/ui.so 644
+make_universal main/game-qvm-native.so 644
+make_universal main/cgame-qvm-native.so 644
+make_universal main/ui-qvm-native.so 644
 
-# Create a universal version of GLEW and add it to the bundle
+# Create a universal version of GLEW and OpenAL and add it to the bundle
 lipo -create -o "${DEST_PATH}/Contents/MacOS/libGLEW.${GLEW_VERSION}.dylib" "${DEPS32_PATH}/lib/libGLEW.${GLEW_VERSION}.dylib" "${DEPS64_PATH}/lib/libGLEW.${GLEW_VERSION}.dylib"
 chmod 644 "${DEST_PATH}/Contents/MacOS/libGLEW.${GLEW_VERSION}.dylib"
+lipo -create -o "${DEST_PATH}/Contents/MacOS/libopenal.${OPENAL_VERSION}.dylib" "${DEPS32_PATH}/lib/libopenal.${OPENAL_VERSION}.dylib" "${DEPS64_PATH}/lib/libopenal.${OPENAL_VERSION}.dylib"
+chmod 644 "${DEST_PATH}/Contents/MacOS/libopenal.${OPENAL_VERSION}.dylib"
 
 # SDL is already compiled as a universal binary, copy as is
 cp -a "${DEPS64_PATH}/SDL2.framework" "${DEST_PATH}/Contents/MacOS/"

@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // tr_shade.c
 #include "tr_local.h"
 #include "gl_shader.h"
+#include "../../common/Maths.h"
 
 /*
 =================================================================================
@@ -371,7 +372,7 @@ static void DrawTris()
 
 	if ( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning )
 	{
-		gl_genericShader->SetUniform_BoneMatrix( tess.numBoneMatrices, tess.boneMatrices );
+		gl_genericShader->SetUniform_Bones( tess.numBones, tess.bones );
 	}
 
 	// u_DeformGen
@@ -549,10 +550,10 @@ static void Render_generic( int stage )
 	gl_genericShader->SetUniform_ModelMatrix( backEnd.orientation.transformMatrix );
 	gl_genericShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
-	// u_BoneMatrix
+	// u_Bones
 	if ( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning )
 	{
-		gl_genericShader->SetUniform_BoneMatrix( tess.numBoneMatrices, tess.boneMatrices );
+		gl_genericShader->SetUniform_Bones( tess.numBones, tess.bones );
 	}
 
 	// u_VertexInterpolation
@@ -621,7 +622,7 @@ static void Render_vertexLighting_DBS_entity( int stage )
 
 	if ( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning )
 	{
-		gl_vertexLightingShader_DBS_entity->SetUniform_BoneMatrix( tess.numBoneMatrices, tess.boneMatrices );
+		gl_vertexLightingShader_DBS_entity->SetUniform_Bones( tess.numBones, tess.bones );
 	}
 
 	// set uniforms
@@ -1183,7 +1184,7 @@ static void Render_depthFill( int stage )
 
 	if ( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning )
 	{
-		gl_genericShader->SetUniform_BoneMatrix( tess.numBoneMatrices, tess.boneMatrices );
+		gl_genericShader->SetUniform_Bones( tess.numBones, tess.bones );
 	}
 
 	// u_DeformGen
@@ -1258,10 +1259,10 @@ static void Render_shadowFill( int stage )
 	gl_shadowFillShader->SetUniform_ModelMatrix( backEnd.orientation.transformMatrix );
 	gl_shadowFillShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
-	// u_BoneMatrix
+	// u_Bones
 	if ( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning )
 	{
-		gl_shadowFillShader->SetUniform_BoneMatrix( tess.numBoneMatrices, tess.boneMatrices );
+		gl_shadowFillShader->SetUniform_Bones( tess.numBones, tess.bones );
 	}
 
 	// u_VertexInterpolation
@@ -1405,10 +1406,10 @@ static void Render_forwardLighting_DBS_omni( shaderStage_t *diffuseStage,
 	gl_forwardLightingShader_omniXYZ->SetUniform_ModelMatrix( backEnd.orientation.transformMatrix );
 	gl_forwardLightingShader_omniXYZ->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
-	// u_BoneMatrix
+	// u_Bones
 	if ( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning )
 	{
-		gl_forwardLightingShader_omniXYZ->SetUniform_BoneMatrix( tess.numBoneMatrices, tess.boneMatrices );
+		gl_forwardLightingShader_omniXYZ->SetUniform_Bones( tess.numBones, tess.bones );
 	}
 
 	// u_VertexInterpolation
@@ -1603,10 +1604,10 @@ static void Render_forwardLighting_DBS_proj( shaderStage_t *diffuseStage,
 	gl_forwardLightingShader_projXYZ->SetUniform_ModelMatrix( backEnd.orientation.transformMatrix );
 	gl_forwardLightingShader_projXYZ->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
-	// u_BoneMatrix
+	// u_Bones
 	if ( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning )
 	{
-		gl_forwardLightingShader_projXYZ->SetUniform_BoneMatrix( tess.numBoneMatrices, tess.boneMatrices );
+		gl_forwardLightingShader_projXYZ->SetUniform_Bones( tess.numBones, tess.bones );
 	}
 
 	// u_VertexInterpolation
@@ -1810,10 +1811,10 @@ static void Render_forwardLighting_DBS_directional( shaderStage_t *diffuseStage,
 	gl_forwardLightingShader_directionalSun->SetUniform_ViewMatrix( backEnd.viewParms.world.viewMatrix );
 	gl_forwardLightingShader_directionalSun->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
-	// u_BoneMatrix
+	// u_Bones
 	if ( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning )
 	{
-		gl_forwardLightingShader_directionalSun->SetUniform_BoneMatrix( tess.numBoneMatrices, tess.boneMatrices );
+		gl_forwardLightingShader_directionalSun->SetUniform_Bones( tess.numBones, tess.bones );
 	}
 
 	// u_VertexInterpolation
@@ -1938,10 +1939,10 @@ static void Render_reflection_CB( int stage )
 	gl_reflectionShader->SetUniform_ModelMatrix( backEnd.orientation.transformMatrix );
 	gl_reflectionShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
-	// u_BoneMatrix
+	// u_Bones
 	if ( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning )
 	{
-		gl_reflectionShader->SetUniform_BoneMatrix( tess.numBoneMatrices, tess.boneMatrices );
+		gl_reflectionShader->SetUniform_Bones( tess.numBones, tess.bones );
 	}
 
 	// u_VertexInterpolation
@@ -2017,7 +2018,7 @@ static void Render_dispersion_C( int stage )
 
 		if ( tess.vboVertexSkinning )
 		{
-			glUniformMatrix4fv( tr.dispersionShader_C.u_BoneMatrix, MAX_BONES, GL_FALSE, &tess.boneMatrices[ 0 ][ 0 ] );
+			glUniformMatrix4fv( tr.dispersionShader_C.u_Bones, 2 * MAX_BONES, GL_FALSE, &tess.bones[ 0 ][ 0 ] );
 		}
 	}
 
@@ -2218,10 +2219,10 @@ static void Render_heatHaze( int stage )
 		gl_genericShader->SetUniform_ModelMatrix( backEnd.orientation.transformMatrix );
 		gl_genericShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
-		// u_BoneMatrix
+		// u_Bones
 		if ( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning )
 		{
-			gl_genericShader->SetUniform_BoneMatrix( tess.numBoneMatrices, tess.boneMatrices );
+			gl_genericShader->SetUniform_Bones( tess.numBones, tess.bones );
 		}
 
 		// u_VertexInterpolation
@@ -2278,10 +2279,10 @@ static void Render_heatHaze( int stage )
 	gl_heatHazeShader->SetUniform_ProjectionMatrixTranspose( glState.projectionMatrix[ glState.stackIndex ] );
 	gl_heatHazeShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
-	// u_BoneMatrix
+	// u_Bones
 	if ( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning )
 	{
-		gl_heatHazeShader->SetUniform_BoneMatrix( tess.numBoneMatrices, tess.boneMatrices );
+		gl_heatHazeShader->SetUniform_Bones( tess.numBones, tess.bones );
 	}
 
 	// u_VertexInterpolation
@@ -2535,10 +2536,10 @@ static void Render_fog()
 	gl_fogQuake3Shader->SetUniform_ModelMatrix( backEnd.orientation.transformMatrix );
 	gl_fogQuake3Shader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
-	// u_BoneMatrix
+	// u_Bones
 	if ( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning )
 	{
-		gl_fogQuake3Shader->SetUniform_BoneMatrix( tess.numBoneMatrices, tess.boneMatrices );
+		gl_fogQuake3Shader->SetUniform_Bones( tess.numBones, tess.bones );
 	}
 
 	// u_VertexInterpolation
@@ -2612,7 +2613,7 @@ static void Render_volumetricFog()
 
 			if ( tess.vboVertexSkinning )
 			{
-				gl_depthToColorShader->SetUniform_BoneMatrix( tess.numBoneMatrices, tess.boneMatrices );
+				gl_depthToColorShader->SetUniform_Bones( tess.numBones, tess.bones );
 			}
 		}
 		gl_depthToColorShader->SetRequiredVertexPointers();
@@ -2748,17 +2749,17 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 			{
 				if ( backEnd.currentLight )
 				{
-					tess.svars.color[ 0 ] = Q_bound( 0.0, backEnd.currentLight->l.color[ 0 ], 1.0 );
-					tess.svars.color[ 1 ] = Q_bound( 0.0, backEnd.currentLight->l.color[ 1 ], 1.0 );
-					tess.svars.color[ 2 ] = Q_bound( 0.0, backEnd.currentLight->l.color[ 2 ], 1.0 );
+					tess.svars.color[ 0 ] = Maths::clampFraction( backEnd.currentLight->l.color[ 0 ] );
+					tess.svars.color[ 1 ] = Maths::clampFraction( backEnd.currentLight->l.color[ 1 ] );
+					tess.svars.color[ 2 ] = Maths::clampFraction( backEnd.currentLight->l.color[ 2 ] );
 					tess.svars.color[ 3 ] = 1.0;
 				}
 				else if ( backEnd.currentEntity )
 				{
-					tess.svars.color[ 0 ] = Q_bound( 0.0, backEnd.currentEntity->e.shaderRGBA[ 0 ] * ( 1.0 / 255.0 ), 1.0 );
-					tess.svars.color[ 1 ] = Q_bound( 0.0, backEnd.currentEntity->e.shaderRGBA[ 1 ] * ( 1.0 / 255.0 ), 1.0 );
-					tess.svars.color[ 2 ] = Q_bound( 0.0, backEnd.currentEntity->e.shaderRGBA[ 2 ] * ( 1.0 / 255.0 ), 1.0 );
-					tess.svars.color[ 3 ] = Q_bound( 0.0, backEnd.currentEntity->e.shaderRGBA[ 3 ] * ( 1.0 / 255.0 ), 1.0 );
+					tess.svars.color[ 0 ] = Maths::clampFraction( backEnd.currentEntity->e.shaderRGBA[ 0 ] * ( 1.0 / 255.0 ) );
+					tess.svars.color[ 1 ] = Maths::clampFraction( backEnd.currentEntity->e.shaderRGBA[ 1 ] * ( 1.0 / 255.0 ) );
+					tess.svars.color[ 2 ] = Maths::clampFraction( backEnd.currentEntity->e.shaderRGBA[ 2 ] * ( 1.0 / 255.0 ) );
+					tess.svars.color[ 3 ] = Maths::clampFraction( backEnd.currentEntity->e.shaderRGBA[ 3 ] * ( 1.0 / 255.0 ) );
 				}
 				else
 				{
@@ -2775,17 +2776,17 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 			{
 				if ( backEnd.currentLight )
 				{
-					tess.svars.color[ 0 ] = 1.0 - Q_bound( 0.0, backEnd.currentLight->l.color[ 0 ], 1.0 );
-					tess.svars.color[ 1 ] = 1.0 - Q_bound( 0.0, backEnd.currentLight->l.color[ 1 ], 1.0 );
-					tess.svars.color[ 2 ] = 1.0 - Q_bound( 0.0, backEnd.currentLight->l.color[ 2 ], 1.0 );
+					tess.svars.color[ 0 ] = 1.0 - Maths::clampFraction( backEnd.currentLight->l.color[ 0 ] );
+					tess.svars.color[ 1 ] = 1.0 - Maths::clampFraction( backEnd.currentLight->l.color[ 1 ] );
+					tess.svars.color[ 2 ] = 1.0 - Maths::clampFraction( backEnd.currentLight->l.color[ 2 ] );
 					tess.svars.color[ 3 ] = 0.0; // FIXME
 				}
 				else if ( backEnd.currentEntity )
 				{
-					tess.svars.color[ 0 ] = 1.0 - Q_bound( 0.0, backEnd.currentEntity->e.shaderRGBA[ 0 ] * ( 1.0 / 255.0 ), 1.0 );
-					tess.svars.color[ 1 ] = 1.0 - Q_bound( 0.0, backEnd.currentEntity->e.shaderRGBA[ 1 ] * ( 1.0 / 255.0 ), 1.0 );
-					tess.svars.color[ 2 ] = 1.0 - Q_bound( 0.0, backEnd.currentEntity->e.shaderRGBA[ 2 ] * ( 1.0 / 255.0 ), 1.0 );
-					tess.svars.color[ 3 ] = 1.0 - Q_bound( 0.0, backEnd.currentEntity->e.shaderRGBA[ 3 ] * ( 1.0 / 255.0 ), 1.0 );
+					tess.svars.color[ 0 ] = 1.0 - Maths::clampFraction( backEnd.currentEntity->e.shaderRGBA[ 0 ] * ( 1.0 / 255.0 ) );
+					tess.svars.color[ 1 ] = 1.0 - Maths::clampFraction( backEnd.currentEntity->e.shaderRGBA[ 1 ] * ( 1.0 / 255.0 ) );
+					tess.svars.color[ 2 ] = 1.0 - Maths::clampFraction( backEnd.currentEntity->e.shaderRGBA[ 2 ] * ( 1.0 / 255.0 ) );
+					tess.svars.color[ 3 ] = 1.0 - Maths::clampFraction( backEnd.currentEntity->e.shaderRGBA[ 3 ] * ( 1.0 / 255.0 ) );
 				}
 				else
 				{
@@ -2814,14 +2815,7 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 					glow = RB_EvalWaveForm( wf ) * tr.identityLight;
 				}
 
-				if ( glow < 0 )
-				{
-					glow = 0;
-				}
-				else if ( glow > 1 )
-				{
-					glow = 1;
-				}
+				glow = Com_Clamp( 0, 1, glow );
 
 				tess.svars.color[ 0 ] = glow;
 				tess.svars.color[ 1 ] = glow;
@@ -2832,7 +2826,7 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 
 		case CGEN_CUSTOM_RGB:
 			{
-				rgb = Q_bound( 0.0, RB_EvalExpression( &pStage->rgbExp, 1.0 ), 1.0 );
+				rgb = Maths::clampFraction( RB_EvalExpression( &pStage->rgbExp, 1.0 ) );
 
 				tess.svars.color[ 0 ] = rgb;
 				tess.svars.color[ 1 ] = rgb;
@@ -2844,26 +2838,24 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 			{
 				if ( backEnd.currentLight )
 				{
-					red = Q_bound( 0.0, RB_EvalExpression( &pStage->redExp, backEnd.currentLight->l.color[ 0 ] ), 1.0 );
-					green = Q_bound( 0.0, RB_EvalExpression( &pStage->greenExp, backEnd.currentLight->l.color[ 1 ] ), 1.0 );
-					blue = Q_bound( 0.0, RB_EvalExpression( &pStage->blueExp, backEnd.currentLight->l.color[ 2 ] ), 1.0 );
+					red = Maths::clampFraction( RB_EvalExpression( &pStage->redExp, backEnd.currentLight->l.color[ 0 ] ) );
+					green = Maths::clampFraction( RB_EvalExpression( &pStage->greenExp, backEnd.currentLight->l.color[ 1 ] ) );
+					blue = Maths::clampFraction( RB_EvalExpression( &pStage->blueExp, backEnd.currentLight->l.color[ 2 ] ) );
 				}
 				else if ( backEnd.currentEntity )
 				{
 					red =
-					  Q_bound( 0.0, RB_EvalExpression( &pStage->redExp, backEnd.currentEntity->e.shaderRGBA[ 0 ] * ( 1.0 / 255.0 ) ), 1.0 );
+					  Maths::clampFraction( RB_EvalExpression( &pStage->redExp, backEnd.currentEntity->e.shaderRGBA[ 0 ] * ( 1.0 / 255.0 ) ) );
 					green =
-					  Q_bound( 0.0, RB_EvalExpression( &pStage->greenExp, backEnd.currentEntity->e.shaderRGBA[ 1 ] * ( 1.0 / 255.0 ) ),
-					           1.0 );
+					  Maths::clampFraction( RB_EvalExpression( &pStage->greenExp, backEnd.currentEntity->e.shaderRGBA[ 1 ] * ( 1.0 / 255.0 ) ) );
 					blue =
-					  Q_bound( 0.0, RB_EvalExpression( &pStage->blueExp, backEnd.currentEntity->e.shaderRGBA[ 2 ] * ( 1.0 / 255.0 ) ),
-					           1.0 );
+					  Maths::clampFraction( RB_EvalExpression( &pStage->blueExp, backEnd.currentEntity->e.shaderRGBA[ 2 ] * ( 1.0 / 255.0 ) ) );
 				}
 				else
 				{
-					red = Q_bound( 0.0, RB_EvalExpression( &pStage->redExp, 1.0 ), 1.0 );
-					green = Q_bound( 0.0, RB_EvalExpression( &pStage->greenExp, 1.0 ), 1.0 );
-					blue = Q_bound( 0.0, RB_EvalExpression( &pStage->blueExp, 1.0 ), 1.0 );
+					red = Maths::clampFraction( RB_EvalExpression( &pStage->redExp, 1.0 ) );
+					green = Maths::clampFraction( RB_EvalExpression( &pStage->greenExp, 1.0 ) );
+					blue = Maths::clampFraction( RB_EvalExpression( &pStage->blueExp, 1.0 ) );
 				}
 
 				tess.svars.color[ 0 ] = red;
@@ -2915,7 +2907,7 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 				}
 				else if ( backEnd.currentEntity )
 				{
-					tess.svars.color[ 3 ] = Q_bound( 0.0, backEnd.currentEntity->e.shaderRGBA[ 3 ] * ( 1.0 / 255.0 ), 1.0 );
+					tess.svars.color[ 3 ] = Maths::clampFraction( backEnd.currentEntity->e.shaderRGBA[ 3 ] * ( 1.0 / 255.0 ) );
 				}
 				else
 				{
@@ -2933,7 +2925,7 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 				}
 				else if ( backEnd.currentEntity )
 				{
-					tess.svars.color[ 3 ] = 1.0 - Q_bound( 0.0, backEnd.currentEntity->e.shaderRGBA[ 3 ] * ( 1.0 / 255.0 ), 1.0 );
+					tess.svars.color[ 3 ] = 1.0 - Maths::clampFraction( backEnd.currentEntity->e.shaderRGBA[ 3 ] * ( 1.0 / 255.0 ) );
 				}
 				else
 				{
@@ -2958,7 +2950,7 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 
 		case AGEN_CUSTOM:
 			{
-				alpha = Q_bound( 0.0, RB_EvalExpression( &pStage->alphaExp, 1.0 ), 1.0 );
+				alpha = Maths::clampFraction( RB_EvalExpression( &pStage->alphaExp, 1.0 ) );
 
 				tess.svars.color[ 3 ] = alpha;
 				break;

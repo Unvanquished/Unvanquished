@@ -974,7 +974,7 @@ char *ClientUserinfoChanged( int clientNum, qboolean forceName )
 		{
 			Q_strncpyz( client->pers.netname, *oldname ? oldname : G_UnnamedClientName( client ),
 			            sizeof( client->pers.netname ) );
-			Info_SetValueForKey( userinfo, "name", oldname, qfalse );
+			Info_SetValueForKey( userinfo, "name", client->pers.netname, qfalse );
 			trap_SetUserinfo( clientNum, userinfo );
 		}
 		else
@@ -1827,7 +1827,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	usercmdClearButtons( client->latched_buttons );
 
 	// give basic income if mine rate above minimum
-	if ( ent != spawn && level.team[ client->pers.team ].mineEfficiency > g_minimumMineRate.integer )
+	if ( ent != spawn && level.team[ client->pers.team ].mineEfficiency > g_minimumMineRate.value )
 	{
 		basicIncome = ( int )( BASIC_INCOME_MOD * level.team[ client->pers.team ].mineEfficiency ) - client->pers.credit;
 

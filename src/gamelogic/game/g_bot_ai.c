@@ -155,11 +155,10 @@ void AIDestroyValue( AIValue_t v )
 
 botEntityAndDistance_t AIEntityToGentity( gentity_t *self, AIEntity_t e )
 {
-	botEntityAndDistance_t nullEntity;
-	nullEntity.ent = NULL;
-	nullEntity.distance = INT_MAX;
+	static const botEntityAndDistance_t nullEntity = { NULL, HUGE_QFLT };
+	botEntityAndDistance_t              ret = nullEntity;
 
-	if ( e > BA_NONE && e < BA_NUM_BUILDABLES )
+	if ( e > E_NONE && e < E_NUM_BUILDABLES )
 	{
 		return self->botMind->closestBuildings[ e ];
 	}
@@ -173,20 +172,18 @@ botEntityAndDistance_t AIEntityToGentity( gentity_t *self, AIEntity_t e )
 	}
 	else if ( e == E_GOAL )
 	{
-		botEntityAndDistance_t ret = nullEntity;
 		ret.ent = self->botMind->goal.ent;
 		ret.distance = DistanceToGoal( self );
 		return ret;
 	}
 	else if ( e == E_SELF )
 	{
-		botEntityAndDistance_t ret;
 		ret.ent = self;
 		ret.distance = 0;
 		return ret;
 	}
 	
-	return nullEntity;
+	return ret;
 }
 
 static qboolean NodeIsRunning( gentity_t *self, AIGenericNode_t *node )
@@ -524,7 +521,7 @@ to the rest of the behavior tree
 
 AINodeStatus_t BotActionFireWeapon( gentity_t *self, AIGenericNode_t *node ) 
 {
-	if ( WeaponIsEmpty( BG_GetPlayerWeapon( &self->client->ps ), self->client->ps ) && self->client->pers.team == TEAM_HUMANS )
+	if ( WeaponIsEmpty( BG_GetPlayerWeapon( &self->client->ps ), &self->client->ps ) && self->client->pers.team == TEAM_HUMANS )
 	{
 		G_ForceWeaponChange( self, WP_BLASTER );
 	}
@@ -696,7 +693,7 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 		return STATUS_FAILURE;
 	}
 
-	if ( WeaponIsEmpty( BG_GetPlayerWeapon( &self->client->ps ), self->client->ps ) && myTeam == TEAM_HUMANS )
+	if ( WeaponIsEmpty( BG_GetPlayerWeapon( &self->client->ps ), &self->client->ps ) && myTeam == TEAM_HUMANS )
 	{
 		G_ForceWeaponChange( self, WP_BLASTER );
 	}
@@ -900,7 +897,7 @@ AINodeStatus_t BotActionMoveTo( gentity_t *self, AIGenericNode_t *node )
 	
 	if ( moveTo->nparams > 1 )
 	{
-		radius = MAX( AIUnBoxFloat( moveTo->params[ 1 ] ), 0 );
+		radius = MAX( AIUnBoxFloat( moveTo->params[ 1 ] ), 0.0f );
 	}
 
 	if ( node != self->botMind->currentNode )

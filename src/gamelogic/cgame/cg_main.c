@@ -804,9 +804,9 @@ void CG_UpdateBuildableRangeMarkerMask( void )
 			}
 			else if ( !Q_stricmp( p, "all" ) )
 			{
-				brmMask |= ( 1 << BA_A_OVERMIND ) | ( 1 << BA_A_SPAWN ) |
-				           ( 1 << BA_A_ACIDTUBE ) | ( 1 << BA_A_TRAPPER ) | ( 1 << BA_A_HIVE ) | ( 1 << BA_A_LEECH ) | ( 1 << BA_A_BOOSTER ) |
-				           ( 1 << BA_H_REACTOR ) | ( 1 << BA_H_REPEATER ) | ( 1 << BA_H_DCC ) |
+				brmMask |= ( 1 << BA_A_OVERMIND ) | ( 1 << BA_A_SPAWN ) | ( 1 << BA_A_ACIDTUBE ) |
+				           ( 1 << BA_A_TRAPPER ) | ( 1 << BA_A_HIVE ) | ( 1 << BA_A_LEECH ) |
+				           ( 1 << BA_A_BOOSTER ) | ( 1 << BA_H_REACTOR ) | ( 1 << BA_H_REPEATER ) |
 				           ( 1 << BA_H_MGTURRET ) | ( 1 << BA_H_TESLAGEN ) | ( 1 << BA_H_DRILL );
 			}
 			else if ( !Q_stricmp( p, "none" ) )
@@ -827,7 +827,7 @@ void CG_UpdateBuildableRangeMarkerMask( void )
 				else if ( !Q_strnicmp( p, "human", 5 ) )
 				{
 					pp = p + 5;
-					only = ( 1 << BA_H_REACTOR ) | ( 1 << BA_H_REPEATER ) | ( 1 << BA_H_DCC ) |
+					only = ( 1 << BA_H_REACTOR ) | ( 1 << BA_H_REPEATER ) |
 					       ( 1 << BA_H_MGTURRET ) | ( 1 << BA_H_TESLAGEN ) | ( 1 << BA_H_DRILL );
 				}
 				else
@@ -843,7 +843,7 @@ void CG_UpdateBuildableRangeMarkerMask( void )
 				else if ( !Q_stricmp( pp, "support" ) )
 				{
 					brmMask |= only & ( ( 1 << BA_A_OVERMIND ) | ( 1 << BA_A_SPAWN ) | ( 1 << BA_A_LEECH ) | ( 1 << BA_A_BOOSTER ) |
-					                    ( 1 << BA_H_REACTOR ) | ( 1 << BA_H_REPEATER ) | ( 1 << BA_H_DCC ) | ( 1 << BA_H_DRILL ) );
+					                    ( 1 << BA_H_REACTOR ) | ( 1 << BA_H_REPEATER ) | ( 1 << BA_H_DRILL ) );
 				}
 				else if ( !Q_stricmp( pp, "offensive" ) )
 				{
@@ -1389,6 +1389,32 @@ void CG_RegisterGrading( int slot, const char *str )
 
 /*
 =================
+CG_RegisterReverb
+=================
+*/
+void CG_RegisterReverb( int slot, const char *str )
+{
+	int   model;
+	float dist, intensity;
+	char  name[MAX_NAME_LENGTH];
+
+	if( !str || !*str ) {
+		Q_strncpyz(cgs.gameReverbEffects[ slot ], "none", MAX_NAME_LENGTH);
+		cgs.gameReverbModels[ slot ]        = 0;
+		cgs.gameReverbDistances[ slot ]     = 0.0f;
+		cgs.gameReverbIntensities[ slot ]   = 0.0f;
+		return;
+	}
+
+	sscanf(str, "%d %f %s %f", &model, &dist, name, &intensity);
+	Q_strncpyz(cgs.gameReverbEffects[ slot ], name, MAX_NAME_LENGTH);
+	cgs.gameReverbModels[ slot ] = model;
+	cgs.gameReverbDistances[ slot ] = dist;
+	cgs.gameReverbIntensities[ slot ] = intensity;
+}
+
+/*
+=================
 CG_RegisterGraphics
 =================
 */
@@ -1634,6 +1660,13 @@ static void CG_RegisterGraphics( void )
 	for ( i = 0; i < MAX_GRADING_TEXTURES; i++ )
 	{
 		CG_RegisterGrading( i, CG_ConfigString( CS_GRADING_TEXTURES + i ) );
+	}
+
+	// register all the server specified reverb effects
+	// starting with the world wide one
+	for ( i = 0; i < MAX_REVERB_EFFECTS; i++ )
+	{
+		CG_RegisterReverb( i, CG_ConfigString( CS_REVERB_EFFECTS + i ) );
 	}
 
 	CG_UpdateMediaFraction( 0.79f );
@@ -2528,6 +2561,7 @@ void CG_LoadHudMenu( void )
 	cgDC.runScript = &CG_RunMenuScript;
 	cgDC.setCVar = trap_Cvar_Set;
 	cgDC.getCVarString = trap_Cvar_VariableStringBuffer;
+	cgDC.getCVarLatchedString = trap_Cvar_LatchedVariableStringBuffer;
 	cgDC.getCVarValue = CG_Cvar_Get;
 	cgDC.setOverstrikeMode = &trap_Key_SetOverstrikeMode;
 	cgDC.getOverstrikeMode = &trap_Key_GetOverstrikeMode;

@@ -3959,7 +3959,7 @@ static void UI_RunMenuScript( char **args )
 
 							while ( len > 0 )
 							{
-								int count = MIN( sizeof( b ), len );
+								int count = MIN( sizeof( b ), (size_t) len );
 
 								trap_FS_Read( &b, count, f2 );
 								trap_FS_Write( &b, count, f );
@@ -4814,13 +4814,19 @@ static void UI_FeederSelection( int feederID, int index )
 	}
 	else if ( feederID == FEEDER_VOIPINPUT )
 	{
-		trap_Cvar_Set( "s_alInputDevice", uiInfo.voipInput[ index ] );
-		uiInfo.voipInputIndex = index;
+		if ( uiInfo.voipInputCount > 0 )
+		{
+			trap_Cvar_Set( "audio.al.captureDevice", uiInfo.voipInput[ index ] );
+			uiInfo.voipInputIndex = index;
+		}
 	}
 	else if ( feederID == FEEDER_ALOUTPUT )
 	{
-		trap_Cvar_Set( "s_alDevice", uiInfo.alOutput[ index ] );
-		uiInfo.alOutputIndex = index;
+		if ( uiInfo.alOutputCount > 0 )
+		{
+			trap_Cvar_Set( "audio.al.device", uiInfo.alOutput[ index ] );
+			uiInfo.alOutputIndex = index;
+		}
 	}
 	else if ( feederID == FEEDER_PROFILES )
 	{
@@ -4896,7 +4902,7 @@ static int UI_FeederInitialise( int feederID )
 		int i;
 		char input[ 256 ];
 
-		trap_Cvar_VariableStringBuffer( "s_alInputDevice", input, sizeof( input ) );
+		trap_Cvar_VariableStringBuffer( "audio.al.captureDevice", input, sizeof( input ) );
 
 		for ( i = 0; i < uiInfo.voipInputCount; i++ )
 		{
@@ -4912,7 +4918,7 @@ static int UI_FeederInitialise( int feederID )
 		int i;
 		char output[ 256 ];
 
-		trap_Cvar_VariableStringBuffer( "s_alDevice", output, sizeof( output ) );
+		trap_Cvar_VariableStringBuffer( "audio.al.device", output, sizeof( output ) );
 
 		for ( i = 0; i < uiInfo.alOutputCount; i++ )
 		{
@@ -5087,7 +5093,7 @@ void UI_ParseVoipInputs( void )
 	char *p, *head;
 	int inputs = 0;
 
-	trap_Cvar_VariableStringBuffer( "s_alAvailableInputDevices", buf, sizeof( buf ) );
+	trap_Cvar_VariableStringBuffer( "audio.al.availableCaptureDevices", buf, sizeof( buf ) );
 	head = buf;
 	while ( ( p = strchr( head, '\n' ) ) )
 	{
@@ -5105,7 +5111,7 @@ void UI_ParseAlOutputs( void )
 	char *p, *head;
 	int outputs = 0;
 
-	trap_Cvar_VariableStringBuffer( "s_alAvailableDevices", buf, sizeof( buf ) );
+	trap_Cvar_VariableStringBuffer( "audio.al.availableDevices", buf, sizeof( buf ) );
 	head = buf;
 	while ( ( p = strchr( head, '\n' ) ) )
 	{
@@ -5175,6 +5181,7 @@ void UI_Init( void )
 	uiInfo.uiDC.runScript = &UI_RunMenuScript;
 	uiInfo.uiDC.setCVar = trap_Cvar_Set;
 	uiInfo.uiDC.getCVarString = trap_Cvar_VariableStringBuffer;
+	uiInfo.uiDC.getCVarLatchedString = trap_Cvar_LatchedVariableStringBuffer;
 	uiInfo.uiDC.getCVarValue = trap_Cvar_VariableValue;
 	uiInfo.uiDC.setOverstrikeMode = &trap_Key_SetOverstrikeMode;
 	uiInfo.uiDC.getOverstrikeMode = &trap_Key_GetOverstrikeMode;

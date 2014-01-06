@@ -27,8 +27,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qfiles.h"
 #include "../qcommon/qcommon.h"
-
-#include "../renderer/tr_bonematrix.h"
+#include "../renderer/tr_public.h"
+#include "../renderer/iqm.h"
 
 #include "../renderer/tr_public.h"
 
@@ -1599,6 +1599,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 	  SF_MDV,
 	  SF_MD5,
+	  SF_IQM,
 
 	  SF_FLARE,
 	  SF_ENTITY, // beams, rails, lightning, etc that can be determined by entity
@@ -1775,7 +1776,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		vec3_t   bounds[ 2 ];
 		vec3_t   origin;
 		float    radius;
-		cplane_t plane;
 
 		// dynamic lighting information
 //	int             dlightBits[SMP_FRAMES];
@@ -1783,18 +1783,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 	srfGeneric_t;
 
-	typedef struct srfGridMesh_s
+	typedef struct srfGridMesh_s : srfGeneric_s
 	{
-		// srfGeneric_t BEGIN
-		surfaceType_t surfaceType;
-
-		vec3_t        bounds[ 2 ];
-		vec3_t        origin;
-		float         radius;
-		cplane_t      plane;
-
-		// srfGeneric_t END
-
 		// lod information, which may be different
 		// than the culling information to allow for
 		// groups of curves that LOD as a unit
@@ -1823,17 +1813,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		IBO_t *ibo;
 	} srfGridMesh_t;
 
-	typedef struct
+	typedef struct srfSurfaceFace_s : srfGeneric_s
 	{
-		// srfGeneric_t BEGIN
-		surfaceType_t surfaceType;
-
-		vec3_t        bounds[ 2 ];
-		vec3_t        origin;
-		float         radius;
-		cplane_t      plane;
-
-		// srfGeneric_t END
+		cplane_t     plane;
 
 		// triangle definitions
 		int           numTriangles;
@@ -1852,18 +1834,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	} srfSurfaceFace_t;
 
 // misc_models in maps are turned into direct geometry by xmap
-	typedef struct
+	typedef struct srfTriangles_s : srfGeneric_s
 	{
-		// srfGeneric_t BEGIN
-		surfaceType_t surfaceType;
-
-		vec3_t        bounds[ 2 ];
-		vec3_t        origin;
-		float         radius;
-		cplane_t      plane;
-
-		// srfGeneric_t END
-
 		// triangle definitions
 		int           numTriangles;
 		srfTriangle_t *triangles;
@@ -1880,14 +1852,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		IBO_t *ibo;
 	} srfTriangles_t;
 
-	typedef struct srfVBOMesh_s
+	typedef struct srfVBOMesh_s : srfGeneric_s
 	{
-		surfaceType_t   surfaceType;
-
-		vec3_t          bounds[ 2 ];
-		vec3_t          origin;
-		float           radius;
-
 		struct shader_s *shader; // FIXME move this to somewhere else
 
 		int             lightmapNum; // FIXME get rid of this by merging all lightmaps at level load
@@ -2046,9 +2012,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		uint32_t     numSurfaces;
 		bspSurface_t *firstSurface;
 
-		uint32_t     numVBOSurfaces;
-		srfVBOMesh_t **vboSurfaces;
-
 		// ydnar: decals
 		decal_t *decals;
 	} bspModel_t;
@@ -2106,8 +2069,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 //  int             numAreaPortals;
 //  bspAreaPortal_t *areaPortals;
-
-		int                numWorldSurfaces;
 
 		int                numSurfaces;
 		bspSurface_t       *surfaces;
@@ -2289,7 +2250,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		int8_t   parentIndex; // parent index (-1 if root)
 		vec3_t   origin;
 		quat_t   rotation;
-		boneMatrix_t inverseTransform; // full inverse for tangent space transformation
 	} md5Bone_t;
 
 	typedef struct md5Model_s
@@ -2310,6 +2270,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	{
 	  AT_BAD,
 	  AT_MD5,
+	  AT_IQM,
 	  AT_PSA
 	} animType_t;
 
@@ -2354,6 +2315,74 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		uint32_t     numAnimatedComponents;
 	} md5Animation_t;
 
+	//======================================================================
+	// inter-quake-model format
+	//======================================================================
+	typedef struct iqmheader      iqmHeader_t;
+	typedef struct iqmmesh        iqmMesh_t;
+	typedef struct iqmtriangle    iqmTriangle_t;
+	typedef struct iqmadjacency   iqmAdjacency_t;
+	typedef struct iqmjoint       iqmJoint_t;
+	typedef struct iqmpose        iqmPose_t;
+	typedef struct iqmanim        iqmAnim_t;
+	typedef struct iqmvertexarray iqmVertexArray_t;
+	typedef struct iqmbounds      iqmBounds_t;
+
+	typedef struct {
+		int             num_vertexes;
+		int             num_triangles;
+		int             num_frames;
+		int             num_surfaces;
+		int             num_joints;
+		int             num_anims;
+
+		struct srfIQModel_s     *surfaces;
+		struct IQAnim_s         *anims;
+
+		// vertex data
+		float           *positions;
+		float           *texcoords;
+		float           *normals;
+		float           *tangents;
+		float           *bitangents;
+		byte            *blendIndexes;
+		byte            *blendWeights;
+		byte            *colors;
+		int             *triangles;
+
+		// skeleton data
+		int             *jointParents;
+		transform_t     *joints;
+		char            *jointNames;
+	} IQModel_t;
+
+	typedef struct IQAnim_s {
+		int             num_frames;
+		int             num_joints;
+		int             framerate;
+		int             flags;
+
+		// skeleton data
+		int             *jointParents;
+		transform_t     *poses;
+		float           *bounds;
+		char            *name;
+		char            *jointNames;
+	} IQAnim_t;
+
+	// inter-quake-model surface
+	typedef struct srfIQModel_s {
+		surfaceType_t   surfaceType;
+		char            *name;
+		shader_t        *shader;
+		IQModel_t       *data;
+		int             first_vertex, num_vertexes;
+		int             first_triangle, num_triangles;
+
+		VBO_t *vbo;
+		IBO_t *ibo;
+	} srfIQModel_t;
+
 	typedef struct
 	{
 		axAnimationInfo_t info;
@@ -2371,8 +2400,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		animType_t     type;
 		int            index; // anim = tr.animations[anim->index]
 
-		md5Animation_t *md5;
-		psaAnimation_t *psa;
+		union {
+			md5Animation_t *md5;
+			IQAnim_t       *iqm;
+			psaAnimation_t *psa;
+		};
 	} skelAnimation_t;
 
 	typedef struct
@@ -2389,7 +2421,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	  MOD_BAD,
 	  MOD_BSP,
 	  MOD_MESH,
-	  MOD_MD5
+	  MOD_MD5,
+	  MOD_IQM
 	} modtype_t;
 
 	typedef struct model_s
@@ -2399,9 +2432,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		int         index; // model = tr.models[model->index]
 
 		int         dataSize; // just for listing purposes
-		bspModel_t  *bsp; // only if type == MOD_BSP
-		mdvModel_t  *mdv[ MD3_MAX_LODS ]; // only if type == MOD_MESH
-		md5Model_t  *md5; // only if type == MOD_MD5
+		union {
+			bspModel_t  *bsp; // only if type == MOD_BSP
+			mdvModel_t  *mdv[ MD3_MAX_LODS ]; // only if type == MOD_MESH
+			md5Model_t  *md5; // only if type == MOD_MD5
+			IQModel_t   *iqm; // only if type == MOD_IQM
+		};
 
 		int         numLods;
 	} model_t;
@@ -3479,8 +3515,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		int         multiDrawCounts[ MAX_MULTIDRAW_PRIMITIVES ];
 
 		qboolean    vboVertexSkinning;
-		int         numBoneMatrices;
-		boneMatrix_t    boneMatrices[ MAX_BONES ];
+		int         numBones;
+		transform_t bones[ MAX_BONES ];
 
 		// info extracted from current shader or backend mode
 		void ( *stageIteratorFunc )( void );
@@ -3795,12 +3831,16 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	void      R_InitAnimations( void );
 
 	qhandle_t RE_RegisterAnimation( const char *name );
+	qhandle_t RE_RegisterAnimationIQM( const char *name, IQAnim_t *data );
 
 	skelAnimation_t *R_GetAnimationByHandle( qhandle_t hAnim );
 	void            R_AnimationList_f( void );
 
 	void            R_AddMD5Surfaces( trRefEntity_t *ent );
 	void            R_AddMD5Interactions( trRefEntity_t *ent, trRefLight_t *light, interactionType_t iaType );
+
+	void		R_AddIQMSurfaces( trRefEntity_t *ent );
+	void            R_AddIQMInteractions( trRefEntity_t *ent, trRefLight_t *light, interactionType_t iaType );
 
 	int             RE_CheckSkeleton( refSkeleton_t *skel, qhandle_t hModel, qhandle_t hAnim );
 	int             RE_BuildSkeleton( refSkeleton_t *skel, qhandle_t anim, int startFrame, int endFrame, float frac,

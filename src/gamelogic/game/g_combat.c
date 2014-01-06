@@ -1119,9 +1119,6 @@ void G_Damage( gentity_t *target, gentity_t *inflictor, gentity_t *attacker,
 	{
 		target->client->lastCombatTime   = level.time;
 		attacker->client->lastCombatTime = level.time;
-
-		// stop jetpack for a short time
-		client->ps.stats[ STAT_STATE2 ] |= SS2_JETPACK_DAMAGED;
 	}
 
 	if ( client )
@@ -1140,6 +1137,13 @@ void G_Damage( gentity_t *target, gentity_t *inflictor, gentity_t *attacker,
 		{
 			VectorCopy( target->r.currentOrigin, client->damage_from );
 			client->damage_fromWorld = qtrue;
+		}
+
+		// drain jetpack fuel
+		client->ps.stats[ STAT_FUEL ] -= damage * JETPACK_FUEL_PER_DMG;
+		if ( client->ps.stats[ STAT_FUEL ] < 0 )
+		{
+			client->ps.stats[ STAT_FUEL ] = 0;
 		}
 
 		// apply damage modifier
@@ -1193,7 +1197,10 @@ void G_Damage( gentity_t *target, gentity_t *inflictor, gentity_t *attacker,
 	}
 
 	target->lastDamageTime = level.time;
-	target->nextRegenTime  = level.time + ALIEN_REGEN_DAMAGE_TIME;
+
+	// TODO: gentity_t->nextRegenTime only affects alien clients, remove it and use lastDamageTime
+	// Optionally (if needed for some reason), move into client struct and add "Alien" to name
+	target->nextRegenTime = level.time + ALIEN_CLIENT_REGEN_WAIT;
 
 	// handle non-self damage
 	if ( attacker != target )

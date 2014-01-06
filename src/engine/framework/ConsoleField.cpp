@@ -46,7 +46,7 @@ namespace Console {
         SetText(Str::UTF8To32(current));
     }
 
-    void Field::RunCommand(const std::string& defaultCommand) {
+    void Field::RunCommand(Str::StringRef defaultCommand) {
         if (GetText().empty()) {
             return;
         }
@@ -89,7 +89,7 @@ namespace Console {
         Cmd::Args args(std::string(commandStart, commandEnd));
         int argNum = args.Argc() - 1;
         std::string prefix;
-        if (!args.Argc() || GetText()[GetCursorPos() - 1] == ' ') {
+        if (!args.Argc() || Str::cisspace(GetText()[GetCursorPos() - 1])) {
             argNum++;
         } else {
             prefix = args.Argv(argNum);
@@ -112,7 +112,7 @@ namespace Console {
         std::string completedArg(candidates[0].first, 0, prefixSize);
 
         //Help the user bash the TAB key
-        if (candidates.size() == 1 && GetText()[GetCursorPos()] != ' ') {
+        if (candidates.size() == 1 && Str::cisspace(GetText()[GetCursorPos()])) {
             completedArg += " ";
         }
 

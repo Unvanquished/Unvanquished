@@ -28,7 +28,7 @@ if test -p "$UNVPIPE" && lsof "$UNVPIPE" >/dev/null 2>&1; then
     exit 2
   fi
   # Just pass on the URI; drop the rest
-  echo "connect $URI" >~/.Unvanquished/main/pipe
+  echo "connect \"$URI\"" >~/.Unvanquished/main/pipe
   exit
 fi
 

@@ -105,6 +105,10 @@ private:
 
 class Reader {
 public:
+	Reader()
+	{
+		Reset();
+	}
 	void Reset()
 	{
 		pos = 0;

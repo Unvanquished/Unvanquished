@@ -30,7 +30,7 @@ equ trap_Cvar_LatchedVariableStringBuffer -265
 equ trap_Cvar_VariableIntegerValue        -266
 equ trap_Argc                             -267
 equ trap_Argv                             -268
-equ trap_Args                             -269
+equ trap_EscapedArgs                      -269
 equ trap_LiteralArgs                      -270
 equ trap_GetDemoState                     -271
 equ trap_GetDemoPos                       -272
@@ -186,3 +186,5 @@ equ trap_R_ScissorEnable                  -422
 equ trap_R_ScissorSet                     -423
 equ trap_PrepareKeyUp                     -424
 equ trap_R_SetAltShaderTokens             -425
+equ trap_S_UpdateEntityVelocity           -426
+equ trap_S_SetReverb                      -427

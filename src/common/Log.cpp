@@ -29,7 +29,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace Log {
 
-    Logger::Logger(const std::string& name, Level defaultLevel)
+    Logger::Logger(Str::StringRef name, Level defaultLevel)
     :filterLevel("logs.logLevel." + name, "Log::Level - filters out the logs from '" + name + "' below the level specified", 0, defaultLevel) {
     }
 
@@ -91,5 +91,12 @@ namespace Log {
     static const int debugTargets = (1 << GRAPHICAL_CONSOLE) | (1 << TTY_CONSOLE);
     void CodeSourceDebug(std::string message) {
         Log::Dispatch({/*Com_Milliseconds()*/0, "^5Debug: " + message}, debugTargets);
+    }
+}
+
+namespace Cvar {
+    template<>
+    std::string GetCvarTypeName<Log::Level>() {
+        return "log level";
     }
 }

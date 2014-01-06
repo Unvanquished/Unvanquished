@@ -66,7 +66,7 @@ static void CG_Obituary( entityState_t *ent )
 	{
 		attackerInfo = CG_ConfigString( CS_PLAYERS + attacker );
 
-		if ( ci && cgs.clientinfo[ attacker ].team == ci->team )
+		if ( cgs.clientinfo[ attacker ].team == ci->team )
 		{
 			teamKill = qtrue;
 		}

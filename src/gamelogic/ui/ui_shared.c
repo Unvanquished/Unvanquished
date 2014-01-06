@@ -1172,7 +1172,7 @@ static void Window_Paint( Window *w, float fadeAmount, float fadeClamp, float fa
 		DC->drawRect( w->rect.x, w->rect.y, w->rect.w, w->rect.h, 1, color );
 	}
 
-	if ( w == NULL || ( w->style == 0 && w->border == 0 ) )
+	if ( w->style == 0 && w->border == 0 )
 	{
 		return;
 	}
@@ -2279,7 +2279,7 @@ static float UI_Parse_Indent( const char **text )
 		return 0.0f;
 	}
 
-	strncpy( indentWidth, *text, numDigits );
+	Q_strncpyz( indentWidth, *text, sizeof( indentWidth ) );
 
 	indentWidth[ numDigits ] = '\0';
 	indentWidthPtr = indentWidth;
@@ -2728,7 +2728,7 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 		if ( count == cursorPos )
 		{
 			cursorX = x - gapAdjust * DC->aspectScale * useScale / 2;
-			cursorW = MAX( EDIT_CURSOR_WIDTH / 2, glyph->xSkip + gapAdjust ) * DC->xscale * DC->aspectScale * useScale;
+			cursorW = MAX( EDIT_CURSOR_WIDTH / 2.0f, glyph->xSkip + gapAdjust ) * DC->xscale * DC->aspectScale * useScale;
 		}
 
 		x += ( glyph->xSkip * DC->aspectScale * useScale ) + gapAdjust;
@@ -3187,7 +3187,7 @@ float Item_Slider_ThumbPosition( itemDef_t *item )
 		x = item->window.rect.x;
 	}
 
-	if ( editDef == NULL && item->cvar )
+	if ( !editDef || !item->cvar )
 	{
 		return x;
 	}
@@ -3648,13 +3648,16 @@ qboolean Item_ComboBox_HandleKey( itemDef_t *item, int key, qboolean down, qbool
 
 qboolean Item_YesNo_HandleKey( itemDef_t *item, int key )
 {
+	char buff[1024];
+
 	if ( item->cvar &&
 	     ( ( item->window.flags & WINDOW_HASFOCUS ) ||
 	       Rect_ContainsPoint( &item->window.rect, DC->cursorx, DC->cursory ) ) )
 	{
 		if ( key == K_MOUSE1 || key == K_ENTER || key == K_MOUSE2 || key == K_MOUSE3 )
 		{
-			DC->setCVar( item->cvar, va( "%i", !DC->getCVarValue( item->cvar ) ) );
+			DC->getCVarLatchedString( item->cvar, buff, sizeof( buff ) );
+			DC->setCVar( item->cvar, va( "%i", !atoi( buff ) ) );
 			return qtrue;
 		}
 	}
@@ -3683,7 +3686,7 @@ int Item_Multi_FindCvarByValue( itemDef_t *item )
 	{
 		if ( multiPtr->strDef )
 		{
-			DC->getCVarString( item->cvar, buff, sizeof( buff ) );
+			DC->getCVarLatchedString( item->cvar, buff, sizeof( buff ) );
 		}
 		else
 		{
@@ -3723,7 +3726,7 @@ const char *Item_Multi_Setting( itemDef_t *item )
 	{
 		if ( multiPtr->strDef )
 		{
-			DC->getCVarString( item->cvar, buff, sizeof( buff ) );
+			DC->getCVarLatchedString( item->cvar, buff, sizeof( buff ) );
 		}
 		else
 		{
@@ -5246,7 +5249,7 @@ void Item_TextColor( itemDef_t *item, vec4_t *newColor )
 		lowLight[ 1 ] = 0.8 * item->window.foreColor[ 1 ];
 		lowLight[ 2 ] = 0.8 * item->window.foreColor[ 2 ];
 		lowLight[ 3 ] = 0.8 * item->window.foreColor[ 3 ];
-		LerpColor( item->window.foreColor, lowLight, *newColor, 0.5 + 0.5 * sin( DC->realTime / PULSE_DIVISOR ) );
+		LerpColor( item->window.foreColor, lowLight, *newColor, 0.5 + 0.5 * sin( ( float )DC->realTime / PULSE_DIVISOR ) );
 	}
 	else
 	{
@@ -5366,7 +5369,7 @@ const char *Item_Text_Wrap( const char *text, float scale, float width )
 		// blocks of text
 
 		// Copy text into the buffer, but don't overflow it
-		strncpy( out + paint, p, MIN( eol - p, sizeof( out ) - paint ) );
+		Q_strncpyz( out + paint, p, MIN( (size_t)(eol - p + 1), sizeof( out ) - paint ) );
 		paint += ( eol - p );
 
 		if ( paint >= sizeof( out ) )
@@ -5400,7 +5403,7 @@ const char *Item_Text_Wrap( const char *text, float scale, float width )
 				int  indentMarkerTextLength = strlen( indentMarkerText );
 
 				// copy the marker into the buffer, but don't overflow it
-				strncpy( out + paint, indentMarkerText, MIN( indentMarkerTextLength, sizeof( out ) - paint ) );
+				Q_strncpyz( out + paint, indentMarkerText, MIN( (size_t)indentMarkerTextLength + 1, sizeof( out ) - paint ) );
 				paint += indentMarkerTextLength;
 
 				if ( paint >= sizeof ( out ) )
@@ -5682,8 +5685,7 @@ void Item_Text_Wrapped_Paint( itemDef_t *item )
 				qboolean lflf = textPtr[ i ] == '\n' && textPtr[ i + 1 ] == '\n';
 
 				memset( &lineItem, 0, sizeof( itemDef_t ) );
-				strncpy( buff, p, lineLength );
-				buff[ lineLength ] = '\0';
+				Q_strncpyz( buff, p, lineLength + 1 );
 				p = &textPtr[ i + 1 + lflf ];
 
 				lineItem.type = ITEM_TYPE_TEXT;
@@ -5911,8 +5913,10 @@ void Item_YesNo_Paint( itemDef_t *item )
 	float     value;
 	int       offset;
 	menuDef_t *parent = ( menuDef_t * ) item->parent;
+	char buff[1024];
 
-	value = ( item->cvar ) ? DC->getCVarValue( item->cvar ) : 0;
+	DC->getCVarLatchedString( item->cvar, buff, sizeof( buff ) );
+	value = ( item->cvar ) ? atoi( buff ) : 0;
 
 	if ( item->window.flags & WINDOW_HASFOCUS )
 	{
@@ -6337,7 +6341,7 @@ void Item_Bind_Paint( itemDef_t *item )
 			lowLight[ 3 ] = 0.8f * parent->focusColor[ 3 ];
 
 			LerpColor( parent->focusColor, lowLight, newColor,
-			           0.5 + 0.5 * sin( DC->realTime / PULSE_DIVISOR ) );
+			           0.5 + 0.5 * sin( ( float )DC->realTime / PULSE_DIVISOR ) );
 		}
 		else
 		{
@@ -6785,7 +6789,7 @@ qboolean ItemIntersectsActiveComboBox( itemDef_t *item )
 	}
 
 	cast = Item_ComboBox_MaybeCastToListBox( g_comboBoxItem );
-		
+
 	mins[ 0 ] = g_comboBoxItem->window.rect.x;
 	mins[ 1 ] = g_comboBoxItem->window.rect.y;
 	maxs[ 0 ] = mins[ 0 ] + g_comboBoxItem->window.rect.w;
@@ -6902,7 +6906,7 @@ void Item_OwnerDraw_Paint( itemDef_t *item )
 			lowLight[ 1 ] = 0.8 * item->window.foreColor[ 1 ];
 			lowLight[ 2 ] = 0.8 * item->window.foreColor[ 2 ];
 			lowLight[ 3 ] = 0.8 * item->window.foreColor[ 3 ];
-			LerpColor( item->window.foreColor, lowLight, color, 0.5 + 0.5 * sin( DC->realTime / PULSE_DIVISOR ) );
+			LerpColor( item->window.foreColor, lowLight, color, 0.5 + 0.5 * sin( ( float )DC->realTime / PULSE_DIVISOR ) );
 		}
 
 		if ( item->cvarFlags & ( CVAR_ENABLE | CVAR_DISABLE ) && !Item_EnableShowViaCvar( item, CVAR_ENABLE ) )

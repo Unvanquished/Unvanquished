@@ -470,7 +470,7 @@ gentity chain handling
 #ifdef Q3_VM
 const gentityCall_t WORLD_CALL = { NULL, &g_entities[ ENTITYNUM_WORLD ], &g_entities[ ENTITYNUM_WORLD ] };
 #else
-#define WORLD_CALL (gentityCall_t){ NULL, &g_entities[ ENTITYNUM_WORLD ], &g_entities[ ENTITYNUM_WORLD ] }
+#define WORLD_CALL gentityCall_t{ NULL, &g_entities[ ENTITYNUM_WORLD ], &g_entities[ ENTITYNUM_WORLD ] }
 #endif
 /**
  * a non made call
@@ -478,7 +478,7 @@ const gentityCall_t WORLD_CALL = { NULL, &g_entities[ ENTITYNUM_WORLD ], &g_enti
 #ifdef Q3_VM
 const gentityCall_t NULL_CALL = { NULL, &g_entities[ ENTITYNUM_NONE ], &g_entities[ ENTITYNUM_NONE ] };
 #else
-#define NULL_CALL (gentityCall_t){ NULL, &g_entities[ ENTITYNUM_NONE ], &g_entities[ ENTITYNUM_NONE ] }
+#define NULL_CALL gentityCall_t{ NULL, &g_entities[ ENTITYNUM_NONE ], &g_entities[ ENTITYNUM_NONE ] }
 #endif
 
 typedef struct
@@ -681,10 +681,11 @@ void G_FireEntityRandomly( gentity_t *entity, gentity_t *activator )
 		totalChoiceCount++;
 	}
 
+	if ( totalChoiceCount == 0 )
+		return;
+
 	//return a random one from among the choices
 	selectedChoice = &choices[ rand() / ( RAND_MAX / totalChoiceCount + 1 ) ];
-	if (!selectedChoice)
-		return;
 
 	call.definition = selectedChoice->callDefinition;
 	call.caller = entity;
@@ -802,7 +803,7 @@ void G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call)
 
 	targetedEntity->callIn = *call;
 
-	if(!targetedEntity->handleCall || !targetedEntity->handleCall(targetedEntity, call))
+	if(!targetedEntity->handleCall || !targetedEntity->handleCall(targetedEntity, call) && call->definition)
 	{
 		switch (call->definition->actionType)
 		{

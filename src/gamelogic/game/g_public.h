@@ -42,15 +42,14 @@ const char        *G_quoted_admin_name( gentity_t *ent );
 
 // g_buildable.c
 gentity_t         *G_CheckSpawnPoint( int spawnNum, const vec3_t origin, const vec3_t normal, buildable_t spawn, vec3_t spawnOrigin );
-qboolean          G_IsDCCBuilt( void );
-int               G_FindDCC( gentity_t *self );
 gentity_t         *G_Reactor( void );
 gentity_t         *G_Overmind( void );
 float             G_DistanceToBase( gentity_t *self, qboolean ownBase );
 qboolean          G_InsideBase( gentity_t *self, qboolean ownBase );
 qboolean          G_FindCreep( gentity_t *self );
 gentity_t         *G_Build( gentity_t *builder, buildable_t buildable, const vec3_t origin, const vec3_t normal, const vec3_t angles, int groundEntityNum );
-int               G_RGSPredictEfficiency( vec3_t origin );
+float             G_RGSPredictEfficiency( vec3_t origin );
+float             G_RGSPredictEfficiencyDelta( vec3_t origin, team_t team );
 void              G_BuildableThink( gentity_t *ent, int msec );
 qboolean          G_BuildableInRange( vec3_t origin, float radius, buildable_t buildable );
 void              G_IgniteBuildable( gentity_t *self, gentity_t *fireStarter );
@@ -245,6 +244,7 @@ int               G_ShaderIndex( const char *name );
 int               G_ModelIndex( const char *name );
 int               G_SoundIndex( const char *name );
 int               G_GradingTextureIndex( const char *name );
+int               G_ReverbEffectIndex( const char *name );
 int               G_LocationIndex( const char *name );
 void              G_KillBox( gentity_t *ent );
 void              G_KillBrushModel( gentity_t *ent, gentity_t *activator );
@@ -285,9 +285,7 @@ void              G_ImpactAttack( gentity_t *self, gentity_t *victim );
 void              G_WeightAttack( gentity_t *self, gentity_t *victim );
 void              G_UpdateZaps( int msec );
 void              G_ClearPlayerZapEffects( gentity_t *player );
-void              G_FireWeapon( gentity_t *self );
-void              G_FireWeapon2( gentity_t *self );
-void              G_FireWeapon3( gentity_t *self );
+void              G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode );
 void              G_FireUpgrade( gentity_t *self, upgrade_t upgrade );
 
 #endif // G_PUBLIC_H_
