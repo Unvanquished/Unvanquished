@@ -79,7 +79,13 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #define NOEXCEPT_EXPR(x) noexcept(x)
 
 // To mark functions which cause issues with address sanitizer
-#if defined(__clang__) || defined (__GNUC__)
+#if __clang__
+#if __has_attribute(no_sanitize_address)
+# define ATTRIBUTE_NO_SANITIZE_ADDRESS __attribute__((no_sanitize_address))
+#else
+# define ATTRIBUTE_NO_SANITIZE_ADDRESS
+#endif
+#elif __SANITIZE_ADDRESS__
 # define ATTRIBUTE_NO_SANITIZE_ADDRESS __attribute__((no_sanitize_address))
 #else
 # define ATTRIBUTE_NO_SANITIZE_ADDRESS
