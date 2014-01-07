@@ -280,8 +280,20 @@ namespace Audio {
     // Implementation of MusicSound
 
     MusicSound::MusicSound(Str::StringRef leadingStreamName, Str::StringRef loopStreamName)
-        : leadingStream(S_CodecOpenStream(leadingStreamName.c_str())),
-          loopStreamName(loopStreamName), loopStream(nullptr), playingLeadingSound(true){
+        : leadingStream(nullptr), loopStreamName(loopStreamName), loopStream(nullptr), playingLeadingSound(true) {
+
+        //Try to open the leading sound
+        if (leadingStreamName != "") {
+            leadingStream = S_CodecOpenStream(leadingStreamName.c_str());
+        }
+
+        //Start the loop if it failed
+        if (not leadingStream) {
+            playingLeadingSound = false;
+            if (loopStreamName != "") {
+                loopStream = S_CodecOpenStream(loopStreamName.c_str());
+            }
+        }
     }
 
     MusicSound::~MusicSound() {
@@ -339,9 +351,12 @@ namespace Audio {
             playingLeadingSound = false;
             // either the stream was the leadin stream and we null it
             leadingStream = nullptr;
+
             // either it is the loop stream and we overwrite it
-            loopStream = S_CodecOpenStream(loopStreamName.c_str());
-            AppendBuffer(source, std::move(buffer));
+            if (loopStreamName != "") {
+                loopStream = S_CodecOpenStream(loopStreamName.c_str());
+                AppendBuffer(source, std::move(buffer));
+            }
             return;
         }
 
