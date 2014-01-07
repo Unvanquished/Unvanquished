@@ -630,7 +630,6 @@ void Rocket_SetActiveContext( int catcher )
 	switch ( catcher )
 	{
 		case KEYCATCH_UI:
-			menuContext = menuContext;
 			menuContext->ShowMouseCursor( true );
 			break;
 
