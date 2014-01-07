@@ -371,8 +371,8 @@ void           VM_Forced_Unload_Start( void );
 void           VM_Forced_Unload_Done( void );
 vm_t           *VM_Restart( vm_t *vm );
 
-intptr_t QDECL VM_Call( vm_t *vm, int callNum, ... );
-intptr_t QDECL VM_DllSyscall( intptr_t arg, ... );
+ATTRIBUTE_NO_SANITIZE_ADDRESS intptr_t QDECL VM_Call( vm_t *vm, int callNum, ... );
+ATTRIBUTE_NO_SANITIZE_ADDRESS intptr_t QDECL VM_DllSyscall( intptr_t arg, ... );
 
 void           VM_Debug( int level );
 
