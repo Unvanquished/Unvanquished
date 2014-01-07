@@ -3195,70 +3195,105 @@ static PathCmd PathCmdRegistration;
 FS_Which_f
 ============
 */
-class WhichCmd: public Cmd::StaticCmd {
-    public:
-        WhichCmd(): Cmd::StaticCmd("which", Cmd::SYSTEM, N_("tells from which source a file was loaded")) {
-        }
+class WhichCmd: public Cmd::StaticCmd
+{
+public:
+	WhichCmd(): Cmd::StaticCmd( "which", Cmd::SYSTEM, N_( "tells from which source a file was loaded" ) )
+	{
+	}
 
-        void Run(const Cmd::Args& args) const OVERRIDE {
-            if (args.Argc() < 2) {
-                PrintUsage(args, _("<file>"), "");
-                return;
-            }
+	void Run( const Cmd::Args &args ) const OVERRIDE
+	{
+		if ( args.Argc() < 2 )
+		{
+			PrintUsage( args, _( "<file>" ), "" );
+			return;
+		}
 
-            std::string filename = args.Argv(1);
+		std::string filename = args.Argv( 1 );
+		int level = 0;
 
-            // qpaths are not supposed to have a leading slash
-            if (filename[0] == '/' or filename[0] == '\\' ) {
-                filename = std::string(filename, 1);
-            }
+		if ( args.Argc() > 2 )
+		{
+			level = atoi( args.Argv( 2 ).c_str() );
+		}
 
-            // just wants to see if file is there
-            for (searchpath_t* search = fs_searchpaths; search; search = search->next) {
-                long hash;
-                if ( search->pack ) {
-                    hash = FS_HashFileName(filename.c_str(), search->pack->hashSize);
-                }
+		// qpaths are not supposed to have a leading slash
+		if ( filename[0] == '/' or filename[0] == '\\' )
+		{
+			filename = std::string( filename, 1 );
+		}
 
-                // is the element a pak file?
-                if (search->pack && search->pack->hashTable[hash]) {
-                    // look through all the pak file elements
-                    pack_t* pak = search->pack;
-                    fileInPack_t* pakFile = pak->hashTable[ hash ];
+		// just wants to see if file is there
+		for ( searchpath_t *search = fs_searchpaths; search; search = search->next )
+		{
+			long hash;
 
-                    do {
-                        // case and separator insensitive comparisons
-                        if (!FS_FilenameCompare( pakFile->name, filename.c_str())) {
-                            // found it!
-                            Print(_( "File \"%s\" found in \"%s\"\n"), filename.c_str(), pak->pakFilename);
-                            return;
-                        }
+			if ( search->pack )
+			{
+				hash = FS_HashFileName( filename.c_str(), search->pack->hashSize );
+			}
 
-                        pakFile = pakFile->next;
-                    } while (pakFile != NULL);
+			// is the element a pak file?
+			if ( search->pack && search->pack->hashTable[hash] )
+			{
+				// look through all the pak file elements
+				pack_t *pak = search->pack;
+				fileInPack_t *pakFile = pak->hashTable[ hash ];
 
-                } else if (search->dir) {
-                    directory_t* dir = search->dir;
+				do
+				{
+					// case and separator insensitive comparisons
+					if ( !FS_FilenameCompare( pakFile->name, filename.c_str() ) )
+					{
+						if ( !level )
+						{
+							// found it!
+							Print( _( "File \"%s\" found in \"%s\"\n" ), filename.c_str(), pak->pakFilename );
+							return;
+						}
+						else
+						{
+							level--;
+						}
+					}
 
-                    char* netpath = FS_BuildOSPath(dir->path, dir->gamedir, filename.c_str());
-                    FILE* temp = Sys_FOpen(netpath, "rb");
+					pakFile = pakFile->next;
+				}
+				while ( pakFile != NULL );
 
-                    if (!temp) {
-                        continue;
-                    }
+			}
 
-                    fclose(temp);
+			else if ( search->dir )
+			{
+				directory_t *dir = search->dir;
 
-                    char buf[ MAX_OSPATH ];
-                    Com_sprintf(buf, sizeof(buf), "%s/%s", dir->path, dir->gamedir);
-                    FS_ReplaceSeparators(buf);
-                    Print(_("File \"%s\" found at \"%s\"\n"), filename.c_str(), buf);
-                    return;
-                }
-            }
+				char *netpath = FS_BuildOSPath( dir->path, dir->gamedir, filename.c_str() );
+				FILE *temp = Sys_FOpen( netpath, "rb" );
 
-            Print(_("File not found: \"%s\"\n"), filename.c_str());
-        }
+				if ( !temp )
+				{
+					continue;
+				}
+
+				fclose( temp );
+
+				if ( level )
+				{
+					level--;
+					continue;
+				}
+
+				char buf[ MAX_OSPATH ];
+				Com_sprintf( buf, sizeof( buf ), "%s/%s", dir->path, dir->gamedir );
+				FS_ReplaceSeparators( buf );
+				Print( _( "File \"%s\" found at \"%s\"\n" ), filename.c_str(), buf );
+				return;
+			}
+		}
+
+		Print( _( "File not found: \"%s\"\n" ), filename.c_str() );
+	}
 };
 static WhichCmd WhichCmdRegistration;
 
