@@ -375,7 +375,7 @@ gotnewcl:
 	// build a new connection
 	// accept the new client
 	// this is the only place a client_t is ever initialized
-	*newcl = temp;
+	*newcl = std::move(temp);
 	clientNum = newcl - svs.clients;
 	ent = SV_GentityNum( clientNum );
 	newcl->gentity = ent;
@@ -542,8 +542,9 @@ void SV_DropClient( client_t *drop, const char *reason )
 
 	if ( drop->download )
 	{
-		FS_FCloseFile( drop->download );
-		drop->download = 0;
+		try {
+			drop->download.Close();
+		} catch (std::system_error&) {}
 	}
 
 	// call the prog function for removing a client
@@ -712,10 +713,11 @@ static void SV_CloseDownload( client_t *cl )
 	// EOF
 	if ( cl->download )
 	{
-		FS_FCloseFile( cl->download );
+		try {
+			cl->download.Close();
+		} catch (std::system_error&) {}
 	}
 
-	cl->download = 0;
 	*cl->downloadName = 0;
 
 	// Free the temporary buffer space
@@ -864,14 +866,12 @@ void SV_WWWDownload_f( client_t *cl )
 
 	if ( !Q_stricmp( subcmd, "done" ) )
 	{
-		cl->download = 0;
 		*cl->downloadName = 0;
 		cl->bWWWing = qfalse;
 		return;
 	}
 	else if ( !Q_stricmp( subcmd, "fail" ) )
 	{
-		cl->download = 0;
 		*cl->downloadName = 0;
 		cl->bWWWing = qfalse;
 		cl->bFallback = qtrue;
@@ -883,7 +883,6 @@ void SV_WWWDownload_f( client_t *cl )
 	{
 		Com_Logf(LOG_WARN, _( "client '%s' reports that the redirect download for '%s' had wrong checksum.\n\tYou should check your download redirect configuration."),
 				cl->name, cl->downloadName );
-		cl->download = 0;
 		*cl->downloadName = 0;
 		cl->bWWWing = qfalse;
 		cl->bFallback = qtrue;
@@ -1075,9 +1074,22 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 
 		// find file
 		cl->bWWWDl = qfalse;
-		cl->downloadSize = FS_SV_FOpenFileRead( cl->downloadName, &cl->download );
+		std::string name, version;
+		Opt::optional<uint32_t> checksum;
+		bool success = FS::ParsePakName(cl->downloadName, cl->downloadName + strlen(cl->downloadName), name, version, checksum);
+		if (success) {
+			const FS::PakInfo* pak = checksum ? FS::FindPak(name, version) : FS::FindPak(name, version, *checksum);
+			if (pak) {
+				try {
+					cl->download = FS::RawPath::OpenRead(pak->path);
+					cl->downloadSize = cl->download.Length();
+				} catch (std::system_error& err) {
+					success = false;
+				}
+			}
+		}
 
-		if ( cl->downloadSize <= 0 )
+		if ( !success )
 		{
 			Com_Printf(_( "clientDownload: %d : \"%s\" file not found on server\n"), ( int )( cl - svs.clients ), cl->downloadName );
 			Com_sprintf( errorMessage, sizeof( errorMessage ), "File \"%s\" not found on server for autodownloading.\n",
@@ -1105,10 +1117,9 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 			cl->downloadBlocks[ curindex ] = ( byte* ) Z_Malloc( MAX_DOWNLOAD_BLKSIZE );
 		}
 
-		cl->downloadBlockSize[ curindex ] = FS_Read( cl->downloadBlocks[ curindex ], MAX_DOWNLOAD_BLKSIZE, cl->download );
-
-		if ( cl->downloadBlockSize[ curindex ] < 0 )
-		{
+		try {
+			cl->downloadBlockSize[ curindex ] = cl->download.Read(cl->downloadBlocks[ curindex ], MAX_DOWNLOAD_BLKSIZE);
+		} catch (std::system_error&) {
 			// EOF right now
 			cl->downloadCount = cl->downloadSize;
 			break;

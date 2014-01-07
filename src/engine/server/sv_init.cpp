@@ -409,7 +409,7 @@ void SV_ChangeMaxClients( void )
 	{
 		if ( svs.clients[ i ].state >= CS_CONNECTED )
 		{
-			oldClients[ i ] = svs.clients[ i ];
+			oldClients[ i ] = std::move(svs.clients[ i ]);
 		}
 		else
 		{
@@ -437,7 +437,7 @@ void SV_ChangeMaxClients( void )
 	{
 		if ( oldClients[ i ].state >= CS_CONNECTED )
 		{
-			svs.clients[ i ] = oldClients[ i ];
+			svs.clients[ i ] = std::move(oldClients[ i ]);
 		}
 	}
 
