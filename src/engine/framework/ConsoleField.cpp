@@ -112,7 +112,7 @@ namespace Console {
         std::string completedArg(candidates[0].first, 0, prefixSize);
 
         //Help the user bash the TAB key
-        if (candidates.size() == 1 && Str::cisspace(GetText()[GetCursorPos()])) {
+        if (candidates.size() == 1 && !Str::cisspace(GetText()[GetCursorPos()])) {
             completedArg += " ";
         }
 
