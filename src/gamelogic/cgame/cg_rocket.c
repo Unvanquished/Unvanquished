@@ -299,7 +299,10 @@ void CG_Rocket_LoadHuds( void )
 		{
 			while ( 1 )
 			{
+				int toklen;
+
 				token = COM_Parse2( &text_p );
+				toklen = strlen( token );
 
 				if ( !*token )
 				{
@@ -311,8 +314,8 @@ void CG_Rocket_LoadHuds( void )
 					break;
 				}
 
-				// Skip non-RML files
-				if ( Q_stricmp( token + strlen( token ) - 4, ".rml" ) )
+				// Skip non-RML files and opening brace
+				if ( toklen < 4 || Q_stricmp( token + toklen - 4, ".rml" ) )
 				{
 					continue;
 				}
