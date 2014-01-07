@@ -43,7 +43,7 @@ Maryland 20850 USA.
 class RocketKeyBinder : public Rocket::Core::Element, public Rocket::Core::EventListener
 {
 public:
-	RocketKeyBinder( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), init( false ), dirty_key( false ), waitingForKeypress( false ), team( 0 ), key( -1 ), cmd( "" ), mouse_x( 0 ), mouse_y( 0 )
+	RocketKeyBinder( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), dirty_key( false ), waitingForKeypress( false ), team( 0 ), key( -1 ), cmd( "" ), mouse_x( 0 ), mouse_y( 0 )
 	{
 	}
 
@@ -62,14 +62,28 @@ public:
 		}
 	}
 
+	virtual void OnChildAdd( Element *child )
+	{
+		if ( child == this )
+		{
+			context = GetContext();
+			context->AddEventListener( "mousemove", this );
+			context->AddEventListener( "keydown", this );
+		}
+	}
+
+	virtual void OnChildRemove( Element *child )
+	{
+		if (  child == this )
+		{
+			context->RemoveEventListener( "mousemove", this );
+			context->RemoveEventListener( "keydown", this );
+			context = NULL;
+		}
+	}
+
 	void OnUpdate( void )
 	{
-		if ( !init )
-		{
-			init = true;
-			GetContext()->AddEventListener( "mousemove", this );
-			GetContext()->AddEventListener( "keydown", this );
-		}
 		if ( dirty_key && team >= 0 )
 		{
 			dirty_key = false;
@@ -97,6 +111,7 @@ public:
 			BindKey( newKey );
 
 			event.StopPropagation();
+			return;
 		}
 
 		else if ( waitingForKeypress && event == "mousedown" && event.GetTargetElement() == this )
@@ -107,12 +122,14 @@ public:
 			BindKey( button < 5 ? K_MOUSE1 + button : ( button - 5 ) + K_AUX1 );
 
 			event.StopPropagation();
+			return;
 		}
 
 		else if ( waitingForKeypress && event == "mousemove" )
 		{
-			GetContext()->ProcessMouseMove( mouse_x, mouse_y, 0 );
+			context->ProcessMouseMove( mouse_x, mouse_y, 0 );
 			event.StopPropagation();
+			return;
 		}
 	}
 
@@ -145,7 +162,6 @@ protected:
 	}
 
 private:
-	bool init;
 	bool dirty_key;
 	bool waitingForKeypress;
 	int team;
@@ -154,6 +170,7 @@ private:
 	Rocket::Core::String cmd;
 	int mouse_x;
 	int mouse_y;
+	Rocket::Core::Context* context;
 };
 
 

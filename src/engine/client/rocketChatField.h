@@ -46,7 +46,7 @@ Maryland 20850 USA.
 class RocketChatField : public Rocket::Core::Element, Rocket::Core::EventListener
 {
 public:
-	RocketChatField( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), cursor_timer( 0 ), last_update_time( 0 ), init( false ), focus( false ), cursor_character_index( 0 ), text_element( NULL )
+	RocketChatField( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), cursor_timer( 0 ), last_update_time( 0 ), focus( false ), cursor_character_index( 0 ), text_element( NULL )
 	{
 		// Spawn text container
 		text_element = Rocket::Core::Factory::InstanceElement( this, "div", "*", Rocket::Core::XMLAttributes() );
@@ -54,7 +54,19 @@ public:
 		// Add it to this element
 		AppendChild( text_element );
 		text_element->RemoveReference();
-		init = false;
+	}
+
+	virtual void OnChildRemove( Element *child )
+	{
+		if ( child == this && context )
+		{
+			context->GetRootElement()->RemoveEventListener( "show", this );
+			context->GetRootElement()->RemoveEventListener( "hide", this );
+			context->GetRootElement()->RemoveEventListener( "blur", this );
+			context->GetRootElement()->RemoveEventListener( "mousemove", this );
+
+			context = NULL;
+		}
 	}
 
 	void OnRender( void )
@@ -63,19 +75,22 @@ public:
 		cursor_geometry.Render( cursor_position );
 	}
 
+	virtual void OnChildAdd( Element *child )
+	{
+		if ( child == this )
+		{
+			// Cache context so we can remove the event listeners later
+			context = GetContext();
+
+			context->GetRootElement()->AddEventListener( "show", this );
+			context->GetRootElement()->AddEventListener( "hide", this );
+			context->GetRootElement()->AddEventListener( "blur", this );
+			context->GetRootElement()->AddEventListener( "mousemove", this );
+		}
+	}
+
 	void OnUpdate( void )
 	{
-		if ( !init )
-		{
-			init = true;
-
-			GetContext()->GetRootElement()->AddEventListener( "show", this );
-			GetContext()->GetRootElement()->AddEventListener( "hide", this );
-			GetContext()->GetRootElement()->AddEventListener( "blur", this );
-			GetContext()->GetRootElement()->AddEventListener( "mousemove", this );
-
-		}
-
 		// Ensure mouse follow cursor
 		if ( focus )
 		{
@@ -96,6 +111,7 @@ public:
 		if ( focus && event == "mousemove" )
 		{
 			event.StopPropagation();
+			return;
 		}
 
 		// We are in focus, let the element know
@@ -410,10 +426,10 @@ private:
 	Rocket::Core::Vector2f cursor_position;
 	float cursor_timer;
 	float last_update_time;
-	bool init;
 	bool focus;
 	int cursor_character_index;
 	Rocket::Core::Element *text_element;
+	Rocket::Core::Context *context;
 
 	Rocket::Core::Geometry cursor_geometry;
 	Rocket::Core::Vector2f cursor_size;
