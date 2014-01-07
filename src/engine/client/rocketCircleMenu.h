@@ -50,6 +50,14 @@ public:
 	{
 	}
 
+	virtual ~RocketCircleMenu( void )
+	{
+		if (data_source)
+		{
+			data_source->DetachListener(this);
+		}
+	}
+
 	void SetDataSource( const Rocket::Core::String &dsn )
 	{
 		ParseDataSource( data_source, data_table, dsn );
