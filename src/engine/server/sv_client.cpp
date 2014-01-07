@@ -1006,14 +1006,25 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 			{
 				if ( !cl->bFallback )
 				{
-					fileHandle_t handle;
-					int          downloadSize = FS_SV_FOpenFileRead( cl->downloadName, &handle );
+					std::string name, version;
+					Opt::optional<uint32_t> checksum;
+					int downloadSize = 0;
+					bool success = FS::ParsePakName(cl->downloadName, cl->downloadName + strlen(cl->downloadName), name, version, checksum);
+					if (success) {
+						const FS::PakInfo* pak = checksum ? FS::FindPak(name, version) : FS::FindPak(name, version, *checksum);
+						if (pak) {
+							try {
+								downloadSize = FS::RawPath::OpenRead(pak->path).Length();
+							} catch (std::system_error& err) {
+								success = false;
+							}
+						} else
+							success = false;
+					}
 
-					if ( downloadSize )
+					if ( success )
 					{
-						FS_FCloseFile( handle );  // don't keep open, we only care about the size
-
-						Q_strncpyz( cl->downloadURL, va( "%s/%s", sv_wwwBaseURL->string, cl->downloadName ),
+						Q_strncpyz( cl->downloadURL, checksum ? va("%s/%s_%s_%08x", sv_wwwBaseURL->string, name.c_str(), version.c_str(), *checksum) : va("%s/%s_%s", sv_wwwBaseURL->string, name.c_str(), version.c_str()),
 						            sizeof( cl->downloadURL ) );
 
 						//bani - prevent multiple download notifications
@@ -1086,7 +1097,8 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 				} catch (std::system_error& err) {
 					success = false;
 				}
-			}
+			} else
+				success = false;
 		}
 
 		if ( !success )
