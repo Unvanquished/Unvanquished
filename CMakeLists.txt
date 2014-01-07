@@ -69,6 +69,9 @@ cmake_dependent_option( USE_GEOIP "Use libgeoip" 1 "BUILD_SERVER OR BUILD_CLIENT
 option( USE_SDL2 "Enable SDL 2.0 support (incompatible with SDL 1.2)" 1 )
 option( USE_WEXTRA "Enable extra compilation warnings" 0 )
 option( USE_PEDANTIC "Tell the compiler to be pedantic" 0 )
+option( USE_DEBUG_OPTIMIZE "Try to optimize the debug build" 1 )
+option( USE_ADDRESS_SANITIZER "Try to use the address sanitizer" 0 )
+
 
 set( NACL_SDK_PATH "" CACHE PATH "Path to native client SDK" )
 if( BUILD_GAME_NACL AND NOT NACL_SDK_PATH )
@@ -196,7 +199,9 @@ else()
   # Extra debug flags
   set_c_cxx_flag( "-g3" DEBUG )
   set_c_cxx_flag( "-g3" RELWITHDEBINFO )
-  try_c_cxx_flag( OPTIMIZE_DEBUG "-Og" DEBUG )
+  if( OPTIMIZE_DEBUG )
+    try_c_cxx_flag( OPTIMIZE_DEBUG "-Og" DEBUG )
+  endif()
 
   # C++11 support
   try_cxx_flag( GNUXX11 "-std=gnu++11" )
@@ -236,7 +241,9 @@ else()
     try_linker_flag( LINKER_O1 "-Wl,-O1" )
     try_linker_flag( LINKER_SORT_COMMON "-Wl,--sort-common" )
     try_linker_flag( LINKER_AS_NEEDED "-Wl,--as-needed" )
-    try_linker_flag( LINKER_NO_UNDEFINED "-Wl,--no-undefined" )
+    if( NOT USE_ADDRESS_SANITIZER )
+      try_linker_flag( LINKER_NO_UNDEFINED "-Wl,--no-undefined" )
+    endif()
     try_linker_flag( LINKER_Z_RELRO "-Wl,-z,relro" )
     try_linker_flag( LINKER_Z_NOW "-Wl,-z,now" )
   endif()
@@ -265,6 +272,10 @@ else()
 
   if( USE_PEDANTIC )
     set_c_cxx_flag("-pedantic")
+  endif()
+
+  if( USE_ADDRESS_SANITIZER )
+    set_cxx_flag( "-fsanitize=address" )
   endif()
 
 endif()

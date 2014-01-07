@@ -87,6 +87,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // Work around lack of constexpr
 #define CONSTEXPR constexpr
 
+// To mark functions which cause issues with address sanitizer
+#if defined(__clang__) || defined (__GNUC__)
+# define ATTRIBUTE_NO_SANITIZE_ADDRESS __attribute__((no_sanitize_address))
+#else
+# define ATTRIBUTE_NO_SANITIZE_ADDRESS
+#endif
+
 // GCC 4.6 has incomplete support for C++11
 #if __GNUC__ * 100 + __GNUC_MINOR__ <= 407
 #define GCC_BROKEN_CXX11
