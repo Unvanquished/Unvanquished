@@ -53,10 +53,8 @@ public:
 
 		// Add it to this element
 		AppendChild( text_element );
+		text_element->RemoveReference();
 		init = false;
-	}
-	virtual ~RocketChatField( void )
-	{
 	}
 
 	void OnRender( void )
@@ -279,6 +277,7 @@ protected:
 		RemoveChild( text_element );
 		text_element = Rocket::Core::Factory::InstanceElement( this, "div", "*", Rocket::Core::XMLAttributes() );
 		AppendChild( text_element );
+		text_element->RemoveReference();
 		if ( !text.Empty() )
 		{
 			q2rml( text.CString(), text_element );
@@ -333,7 +332,9 @@ protected:
 
 				static_cast<Rocket::Core::ElementText *>( child )->SetText( out );
 				parent->AppendChild( child );
-				parent->AppendChild( Rocket::Core::Factory::InstanceElement( parent, "*", "br", Rocket::Core::XMLAttributes() ) );
+				child->RemoveReference();
+				parent->AppendChild( ( child = Rocket::Core::Factory::InstanceElement( parent, "*", "br", Rocket::Core::XMLAttributes() ) ) );
+				child->RemoveReference();
 				out.Clear();
 			}
 
@@ -356,6 +357,7 @@ protected:
 					span = false;
 					static_cast<Rocket::Core::ElementText *>( child )->SetText( out );
 					parent->AppendChild( child );
+					child->RemoveReference();
 					out.Clear();
 				}
 
@@ -367,6 +369,7 @@ protected:
 					child->SetProperty( "color", "#FFFFFF" );
 					static_cast<Rocket::Core::ElementText *>( child )->SetText( out );
 					parent->AppendChild( child );
+					child->RemoveReference();
 					out.Clear();
 				}
 
@@ -390,6 +393,7 @@ protected:
 		{
 			static_cast<Rocket::Core::ElementText *>( child )->SetText( out );
 			parent->AppendChild( child );
+			child->RemoveReference();
 			span = false;
 		}
 
@@ -398,6 +402,7 @@ protected:
 			child = Rocket::Core::Factory::InstanceElement( parent, "#text", "span", Rocket::Core::XMLAttributes() );
 			static_cast<Rocket::Core::ElementText *>( child )->SetText( out );
 			parent->AppendChild( child );
+			child->RemoveReference();
 		}
 	}
 

@@ -77,15 +77,6 @@ public:
 
 		for ( size_t i = 0; i < strings.size(); ++i )
 		{
-// 			Rocket::Core::ElementText* element;
-// 			element = GetOwnerDocument()->CreateTextNode( strings[ i ].text );
-// 			element->SetProperty( "position", "fixed" );
-// 			element->SetProperty( "left", va( "%.2f%%", strings[ i ].x * 100.0f ) );
-// 			element->SetProperty( "top", va( "%.2f%%", strings[ i ].y * 100.0f ) );
-// 			element->SetClassNames( strings [ i ].text_class );
-//
-// 			AppendChild( element );
-// 			element->RemoveReference();
 			Rocket::Core::Factory::InstanceElementText( this, va( "<div style='position: fixed; left: %.2f%%; top: %.2f%%;' class='%s'>%s</div>", strings[ i ].x * 100.0f, strings[ i ].y * 100.0f, strings[ i ].text_class.CString(), strings[ i ].text.CString() ) );
 		}
 	}
