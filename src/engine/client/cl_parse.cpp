@@ -502,7 +502,7 @@ void CL_SystemInfoChanged( void )
 #endif
 
 	// load paks sent by the server
-	FS_ClearPaks();
+	FS::PakPath::ClearPaks();
 	FS_LoadServerPaks( Info_ValueForKey( systemInfo, "sv_paks" ) );
 
 	// scan through all the variables in the systeminfo and locally set cvars to match

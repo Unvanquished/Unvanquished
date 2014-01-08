@@ -2211,21 +2211,6 @@ const char* FS_LoadedPaks()
 	return info;
 }
 
-char* FS_BuildOSPath(const char* base, const char*, const char* path)
-{
-	// Ignore game directory because the new filesystem doesn't use it
-	static char ospath[2][MAX_OSPATH];
-	static bool toggle = false;
-	toggle = !toggle;
-	Q_strncpyz(ospath[toggle], FS::Path::Build(base, path).c_str(), sizeof(ospath[toggle]));
-	return ospath[toggle];
-}
-
-void FS_ClearPaks()
-{
-	FS::PakPath::ClearPaks();
-}
-
 // TODO: use the return value to error on missing paks
 bool FS_LoadPak(const char* name)
 {

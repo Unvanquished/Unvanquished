@@ -586,7 +586,6 @@ const char* FS_LoadedPaks();
 // Returns a space separated string containing all loaded pk3 files.
 
 bool     FS_LoadPak( const char *name );
-void     FS_ClearPaks();
 bool     FS_LoadServerPaks( const char* paks );
 
 // shutdown and restart the filesystem so changes to fs_gamedir can take effect
@@ -594,8 +593,6 @@ bool     FS_LoadServerPaks( const char* paks );
 qboolean   FS_ComparePaks( char *neededpaks, int len, qboolean dlstring );
 
 void       FS_Rename( const char *from, const char *to );
-
-char       *FS_BuildOSPath( const char *base, const char *game, const char *qpath );
 
 namespace FS {
     std::vector<std::pair<std::string, std::string>> CompleteFilenameInDir(Str::StringRef prefix, Str::StringRef dir,

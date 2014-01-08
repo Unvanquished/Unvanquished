@@ -611,7 +611,7 @@ void SV_SpawnServer( const char *server )
 	srand( Sys_Milliseconds() );
 	sv.checksumFeed = ( ( ( int ) rand() << 16 ) ^ rand() ) ^ Sys_Milliseconds();
 
-	FS_ClearPaks();
+	FS::PakPath::ClearPaks();
 	FS_LoadPak("unvanquished");
 	FS_LoadPak(va("map/%s", server));
 

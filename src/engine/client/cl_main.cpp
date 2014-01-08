@@ -2595,7 +2595,7 @@ void CL_DownloadsComplete( void )
 	{
 		cls.downloadRestart = qfalse;
 
-		FS_ClearPaks();
+		FS::PakPath::ClearPaks();
 		FS_LoadServerPaks(Cvar_VariableString("sv_paks")); // We possibly downloaded a pak, restart the file system to load it
 
 		if ( !cls.bWWWDlDisconnected )
@@ -4284,7 +4284,7 @@ qboolean CL_InitRef( const char *renderer )
 	GetRefAPI_t GetRefAPI;
 	char        dllName[ MAX_OSPATH ];
 
-	Com_sprintf( dllName, sizeof( dllName ), "%s/renderer%s" DLL_EXT, Cvar_VariableString( "fs_libpath" ), renderer );
+	Com_sprintf( dllName, sizeof( dllName ), "%s/renderer%s" DLL_EXT, FS::GetLibPath().c_str(), renderer );
 
 	Com_Printf( "Loading \"%s\"...", dllName );
 

@@ -282,7 +282,7 @@ void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int code, const char *fmt, ... )
 	int        currentTime;
 
 	// make sure we can get at our local stuff
-	FS_ClearPaks();
+	FS::PakPath::ClearPaks();
 	FS_LoadPak("unvanquished");
 
 	// if we are getting a solid stream of ERR_DROP, do an ERR_FATAL
