@@ -666,7 +666,7 @@ void Console_Key( int key )
 		Com_Printf("]%s\n", Str::UTF32To8(g_consoleField.GetText()).c_str());
 
 		// if not in the game always treat the input as a command
-		if (cls.state != CA_ACTIVE or !cl_consoleCommand->string[0]) {
+		if (cls.state != CA_ACTIVE) {
 			g_consoleField.RunCommand();
 		} else {
 			g_consoleField.RunCommand(cl_consoleCommand->string);

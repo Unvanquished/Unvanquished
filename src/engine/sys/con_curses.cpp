@@ -649,7 +649,7 @@ char *CON_Input( void )
 			case '\r':
 			case KEY_ENTER:
 				Com_Printf( PROMPT S_COLOR_WHITE "%s\n", Str::UTF32To8(input_field.GetText()).c_str() );
-				input_field.RunCommand();
+				input_field.RunCommand(com_consoleCommand->string);
 				werase( inputwin );
 				wnoutrefresh( inputwin );
 				continue;
