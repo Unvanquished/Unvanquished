@@ -2305,3 +2305,25 @@ namespace FS {
         return res;
     }
 }
+
+class WhichCmd: public Cmd::StaticCmd {
+public:
+	WhichCmd()
+		: Cmd::StaticCmd("which", Cmd::SYSTEM, N_("shows which pak a file is in")) {}
+
+	void Run(const Cmd::Args& args) const OVERRIDE
+	{
+		if (args.Argc() != 2) {
+			PrintUsage(args, _("<file>"), "");
+			return;
+		}
+
+		const std::string& filename = args.Argv(1);
+		const FS::PakInfo* pak = FS::PakPath::LocateFile(filename);
+		if (pak)
+			Print(_( "File \"%s\" found in \"%s\"\n"), filename, pak->path);
+		else
+			Print(_("File not found: \"%s\"\n"), filename);
+	}
+};
+static WhichCmd WhichCmdRegistration;
