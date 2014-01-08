@@ -2211,7 +2211,6 @@ const char* FS_LoadedPaks()
 	return info;
 }
 
-// TODO: use the return value to error on missing paks
 bool FS_LoadPak(const char* name)
 {
 	const FS::PakInfo* pak = FS::FindPak(name);
@@ -2226,7 +2225,6 @@ bool FS_LoadPak(const char* name)
 	}
 }
 
-// TODO: use the return value to detect missing paks and drop client if pure is on
 bool FS_LoadServerPaks(const char* paks)
 {
 	Cmd::Args args(paks);

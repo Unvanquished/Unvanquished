@@ -1421,7 +1421,7 @@ class DemoCmd: public Cmd::StaticCmd {
 
         Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, Str::StringRef prefix) const OVERRIDE {
             if (argNum == 1) {
-                return FS::CompleteFilenameInDir(prefix, "demos", ".dm_" + std::to_string(PROTOCOL_VERSION));
+                return FS::CompleteFilenameInDir(prefix, "demos", ".dm_" XSTRING(PROTOCOL_VERSION));
             }
 
             return {};

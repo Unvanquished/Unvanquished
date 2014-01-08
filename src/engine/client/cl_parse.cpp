@@ -503,7 +503,8 @@ void CL_SystemInfoChanged( void )
 
 	// load paks sent by the server
 	FS::PakPath::ClearPaks();
-	FS_LoadServerPaks( Info_ValueForKey( systemInfo, "sv_paks" ) );
+	if (!FS_LoadServerPaks( Info_ValueForKey( systemInfo, "sv_paks" ) ) && !cl_allowDownload->integer)
+		Com_Error(ERR_DROP, "Client is missing paks but downloads are disabled");
 
 	// scan through all the variables in the systeminfo and locally set cvars to match
 	s = systemInfo;

@@ -612,8 +612,10 @@ void SV_SpawnServer( const char *server )
 	sv.checksumFeed = ( ( ( int ) rand() << 16 ) ^ rand() ) ^ Sys_Milliseconds();
 
 	FS::PakPath::ClearPaks();
-	FS_LoadPak("unvanquished");
-	FS_LoadPak(va("map/%s", server));
+	if (!FS_LoadPak("unvanquished"))
+		Com_Error(ERR_FATAL, "Could not load main pak\n");
+	if (!FS_LoadPak(va("map/%s", server)))
+		Com_Error(ERR_DROP, "Could not load map pak\n");
 
 	CM_LoadMap( va( "maps/%s.bsp", server ), qfalse, &checksum );
 
