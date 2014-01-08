@@ -4,6 +4,7 @@ unvanquished (0.23.0-2) unstable; urgency=low
   * Server, client: fix adding a space on tab completion.
   * Impure cgame: particle system fixes.
   * Impure/local game: register user-defined admin commands.
+  * Add a mime file so that unv:// is handled automatically.
 
  -- Darren Salt <devspam@moreofthesa.me.uk>  Wed, 08 Jan 2014 03:01:24 +0000
 
