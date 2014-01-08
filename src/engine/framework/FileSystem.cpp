@@ -2269,7 +2269,6 @@ bool FS_LoadServerPaks(const char* paks)
 	return fs_missingPaks.empty();
 }
 
-// TODO: fix the server-side and www-side code to handle the remoteName correctly
 qboolean CL_WWWBadChecksum(const char *pakname);
 qboolean FS_ComparePaks(char* neededpaks, int len, qboolean dlstring)
 {
