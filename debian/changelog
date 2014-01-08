@@ -1,6 +1,15 @@
+unvanquished (0.23.0-2) unstable; urgency=low
+
+  * Server: fix line breaks in rcon output.
+  * Server, client: fix adding a space on tab completion.
+  * Impure cgame: particle system fixes.
+  * Impure/local game: register user-defined admin commands.
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Wed, 08 Jan 2014 03:01:24 +0000
+
 unvanquished (0.23.0-1) unstable; urgency=low
 
-  * Release of Alpha 23..
+  * Release of Alpha 23.
   * Default rotation is updated.
   * Disabled building of the tty client.
   * Fixed unvanquished-common behaviour on purge.
