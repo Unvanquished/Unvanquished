@@ -2034,8 +2034,6 @@ int FS_Seek(fileHandle_t handle, long offset, int origin)
 		default:
 			Com_Error(ERR_DROP, "Bad origin in FS_Seek");
 		}
-		if (handleTable[handle].filePos < 0)
-			handleTable[handle].filePos = 0;
 		return 0;
 	} else {
 		try {
