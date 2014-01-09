@@ -2210,19 +2210,19 @@ static void UI_OwnerDraw( rectDef_t *rect,
 			break;
 
 		case UI_HBUYINFOPANE:
-		        if ( uiInfo.humanArmouryBuyList[ uiInfo.humanArmouryBuyIndex ].v.weapon != WP_NONE )
-		        {
+			if ( uiInfo.humanArmouryBuyList[ uiInfo.humanArmouryBuyIndex ].v.weapon != WP_NONE )
+			{
 				UI_DrawInfoPane( &uiInfo.humanArmouryBuyList[ uiInfo.humanArmouryBuyIndex ],
 				                 rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
-                        }
+			}
 			break;
 
 		case UI_HSELLINFOPANE:
-		        if ( uiInfo.humanArmourySellList[ uiInfo.humanArmourySellIndex ].v.weapon != WP_NONE )
-		        {
+			if ( uiInfo.humanArmourySellList[ uiInfo.humanArmourySellIndex ].v.weapon != WP_NONE )
+			{
 				UI_DrawInfoPane( &uiInfo.humanArmourySellList[ uiInfo.humanArmourySellIndex ],
 				                 rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
-                        }
+			}
 			break;
 
 		case UI_ABUILDINFOPANE:
@@ -2690,7 +2690,7 @@ static void UI_LoadHumanArmourySells( void )
 
 	if ( uiInfo.weapon != WP_NONE && uiInfo.weapon != WP_BLASTER )
 	{
-		uiInfo.humanArmourySellList[ j ].text = BG_Weapon( uiInfo.weapon )->humanName;
+		uiInfo.humanArmourySellList[ j ].text = String_Alloc( va( "^1%s", BG_Weapon( uiInfo.weapon )->humanName ) );
 		uiInfo.humanArmourySellList[ j ].cmd =
 		  String_Alloc( va( "cmd sell %s\n", BG_Weapon( uiInfo.weapon )->name ) );
 		uiInfo.humanArmourySellList[ j ].type = INFOTYPE_WEAPON;
@@ -2705,7 +2705,7 @@ static void UI_LoadHumanArmourySells( void )
 	{
 		if ( uiInfo.upgrades & ( 1 << i ) && BG_Upgrade( i )->purchasable )
 		{
-			uiInfo.humanArmourySellList[ j ].text = BG_Upgrade( i )->humanName;
+			uiInfo.humanArmourySellList[ j ].text = String_Alloc( va( "^1%s", BG_Upgrade( i )->humanName ) );
 			uiInfo.humanArmourySellList[ j ].cmd =
 			  String_Alloc( va( "cmd sell %s\n", BG_Upgrade( i )->name ) );
 			uiInfo.humanArmourySellList[ j ].type = INFOTYPE_UPGRADE;
@@ -4510,7 +4510,27 @@ static const char *UI_FeederItemText( int feederID, int index, int column, qhand
 	{
 		if ( index >= 0 && index < uiInfo.humanArmourySellCount )
 		{
-			return uiInfo.humanArmourySellList[ index ].text;
+			qboolean conflict = qfalse;
+
+			if ( uiInfo.humanArmourySellList[ index ].type == uiInfo.humanArmouryBuyList[ uiInfo.humanArmouryBuyIndex ].type )
+			{
+				switch ( uiInfo.humanArmouryBuyList[ uiInfo.humanArmouryBuyIndex ].type )
+				{
+					case INFOTYPE_WEAPON:
+						conflict = qtrue;
+						break;
+
+					case INFOTYPE_UPGRADE:
+						conflict = !!( BG_Upgrade( uiInfo.humanArmouryBuyList[ uiInfo.humanArmouryBuyIndex ].v.upgrade )->slots &
+						               BG_Upgrade( uiInfo.humanArmourySellList[ index ].v.upgrade )->slots );
+						break;
+
+					default:
+						break;
+				}
+			}
+
+			return uiInfo.humanArmourySellList[ index ].text + ( conflict ? 0 : 2 );
 		}
 	}
 	else if ( feederID == FEEDER_TREMALIENUPGRADE )
