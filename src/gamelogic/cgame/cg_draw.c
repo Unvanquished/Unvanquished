@@ -354,10 +354,6 @@ static void CG_Draw2D( void )
 		trap_R_DrawStretchPic( cgs.glconfig.vidWidth - ( ( cgs.glconfig.vidWidth / 2 ) - ( cgs.glconfig.vidHeight / 2 ) ), 0, ( cgs.glconfig.vidWidth / 2 ) - ( cgs.glconfig.vidHeight / 2 ), cgs.glconfig.vidHeight, 0, 0, 1, 1, cgs.media.whiteShader );
 		trap_R_SetColor( NULL );
 	}
-	else
-	{
-		//TODO: Draw HUD
-	}
 }
 
 /*
