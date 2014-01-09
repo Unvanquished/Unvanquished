@@ -640,7 +640,9 @@ const std::string& GetLibPath()
 	return libPath;
 }
 
-bool Path::IsValid(Str::StringRef path, bool allowDir)
+namespace Path {
+
+bool IsValid(Str::StringRef path, bool allowDir)
 {
 	bool nonAlphaNum = true;
 	for (char c: path) {
@@ -667,7 +669,7 @@ bool Path::IsValid(Str::StringRef path, bool allowDir)
 	return true;
 }
 
-std::string Path::Build(Str::StringRef base, Str::StringRef path)
+std::string Build(Str::StringRef base, Str::StringRef path)
 {
 	if (base.empty())
 		return path;
@@ -683,7 +685,7 @@ std::string Path::Build(Str::StringRef base, Str::StringRef path)
 	return out;
 }
 
-std::string Path::DirName(Str::StringRef path)
+std::string DirName(Str::StringRef path)
 {
 	std::string out;
 	if (path.empty())
@@ -697,7 +699,7 @@ std::string Path::DirName(Str::StringRef path)
 	return out;
 }
 
-std::string Path::BaseName(Str::StringRef path)
+std::string BaseName(Str::StringRef path)
 {
 	std::string out;
 	if (path.empty())
@@ -710,6 +712,60 @@ std::string Path::BaseName(Str::StringRef path)
 
 	return out;
 }
+
+std::string Extension(Str::StringRef path)
+{
+	if (path.empty())
+		return "";
+	if (path.back() == '/')
+		return "/";
+
+	// Find a dot or slash, searching from the end of the string
+	for (const char* p = path.end(); p != path.begin(); p++) {
+		if (p[-1] == '/')
+			return "";
+		if (p[-1] == '.')
+			return std::string(p - 1, path.end());
+	}
+	return "";
+}
+
+std::string StripExtension(Str::StringRef path)
+{
+	if (path.empty())
+		return "";
+	if (path.back() == '/')
+		return path.substr(path.size() - 1);
+
+	// Find a dot or slash, searching from the end of the string
+	for (const char* p = path.end(); p != path.begin(); p++) {
+		if (p[-1] == '/')
+			return path;
+		if (p[-1] == '.')
+			return std::string(path.begin(), p - 1);
+	}
+	return path;
+}
+
+std::string BaseNameStripExtension(Str::StringRef path)
+{
+	if (path.empty())
+		return "";
+
+	// Find a dot or slash, searching from the end of the string
+	const char* end = path.end();
+	if (path.back() == '/')
+		end = path.end() - 1;
+	for (const char* p = end; p != path.begin(); p++) {
+		if (p[-1] == '/')
+			return std::string(p, end);
+		if (p[-1] == '.' && end == path.end())
+			end = p - 1;
+	}
+	return std::string(path.begin(), end);
+}
+
+} // namespace Path
 
 void File::Close(std::error_code& err)
 {

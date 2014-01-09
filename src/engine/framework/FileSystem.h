@@ -145,6 +145,21 @@ namespace Path {
 	// a => a
 	std::string BaseName(Str::StringRef path);
 
+	// Get the extension of a path
+	// a.b => .b
+	// a => ""
+	// a/ => /
+	std::string Extension(Str::StringRef path);
+
+	// Get a path without its extension
+	// a.b => a
+	// a => a
+	// a/ => a
+	std::string StripExtension(Str::StringRef path);
+
+	// Equivalent to StripExtension(BaseName(path)
+	std::string BaseNameStripExtension(Str::StringRef path);
+
 } // namespace Path
 
 // Iterator which iterates over all files in a directory
