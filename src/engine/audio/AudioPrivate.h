@@ -34,7 +34,6 @@ along with daemon source code.  if not, see <http://www.gnu.org/licenses/>.
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
 #include "snd_codec.h"
-#include "snd_public.h"
 
 namespace Audio {
 

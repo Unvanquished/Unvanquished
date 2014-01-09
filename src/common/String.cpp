@@ -67,18 +67,6 @@ namespace Str {
         return true;
     }
 
-    bool ParseHex32(uint32_t& value, Str::StringRef text) {
-        if (text.size() != 8)
-            return false;
-        value = 0;
-        for (char c: text) {
-            if (!cisxdigit(c))
-                return false;
-            value = (value << 4) | (cisdigit(c) ? c - '0' : ctolower(c) - 'a' + 10);
-        }
-        return true;
-    }
-
     float ToFloat(Str::StringRef text) {
         return atof(text.c_str());
     }

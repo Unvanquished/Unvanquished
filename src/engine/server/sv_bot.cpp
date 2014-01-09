@@ -36,8 +36,6 @@ Maryland 20850 USA.
 
 #include "server.h"
 
-int                    bot_enable;
-
 /*
 ==================
 SV_BotAllocateClient
@@ -142,146 +140,12 @@ void SV_BotFreeClient( int clientNum )
 
 /*
 ==================
-BotImport_PointContents
-==================
-*/
-int BotImport_PointContents( vec3_t point )
-{
-	return SV_PointContents( point, -1 );
-}
-
-/*
-==================
-BotImport_inPVS
-==================
-*/
-int BotImport_inPVS( vec3_t p1, vec3_t p2 )
-{
-	return SV_inPVS( p1, p2 );
-}
-
-/*
-==================
-BotImport_BSPEntityData
-==================
-*/
-char           *BotImport_BSPEntityData( void )
-{
-	return CM_EntityString();
-}
-
-/*
-==================
-BotImport_BSPModelMinsMaxsOrigin
-==================
-*/
-void BotImport_BSPModelMinsMaxsOrigin( int modelnum, vec3_t angles, vec3_t outmins, vec3_t outmaxs, vec3_t origin )
-{
-	clipHandle_t h;
-	vec3_t       mins, maxs;
-	float        max;
-	int          i;
-
-	h = CM_InlineModel( modelnum );
-	CM_ModelBounds( h, mins, maxs );
-
-	//if the model is rotated
-	if ( ( angles[ 0 ] || angles[ 1 ] || angles[ 2 ] ) )
-	{
-		// expand for rotation
-
-		max = RadiusFromBounds( mins, maxs );
-
-		for ( i = 0; i < 3; i++ )
-		{
-			mins[ i ] = -max;
-			maxs[ i ] = max;
-		}
-	}
-
-	if ( outmins )
-	{
-		VectorCopy( mins, outmins );
-	}
-
-	if ( outmaxs )
-	{
-		VectorCopy( maxs, outmaxs );
-	}
-
-	if ( origin )
-	{
-		VectorClear( origin );
-	}
-}
-
-/*
-==================
-BotImport_GetMemory
-==================
-*/
-void           *BotImport_GetMemory( int size )
-{
-	void *ptr;
-
-	ptr = Z_TagMalloc( size, TAG_BOTLIB );
-	return ptr;
-}
-
-/*
-==================
-BotImport_FreeMemory
-==================
-*/
-void BotImport_FreeMemory( void *ptr )
-{
-	Z_Free( ptr );
-}
-
-/*
-=================
-BotImport_HunkAlloc
-=================
-*/
-void           *BotImport_HunkAlloc( int size )
-{
-	if ( Hunk_CheckMark() )
-	{
-		Com_Error( ERR_DROP, "SV_Bot_HunkAlloc: Alloc with marks already set" );
-	}
-
-	return Hunk_Alloc( size, h_high );
-}
-
-/*
-==================
 SV_BotClientCommand
 ==================
 */
 void BotClientCommand( int client, char *command )
 {
 	SV_ExecuteClientCommand( &svs.clients[ client ], command, qtrue, qfalse );
-}
-
-/*
-==================
-SV_BotFrame
-==================
-*/
-void SV_BotFrame( int time )
-{
-	if ( !bot_enable )
-	{
-		return;
-	}
-
-	//NOTE: maybe the game is already shutdown
-	if ( !gvm )
-	{
-		return;
-	}
-
-	gvm->BotAIStartFrame( time );
 }
 
 //
@@ -346,24 +210,3 @@ int EntityInPVS( int client, int entityNum )
 }
 
 #endif
-
-/*
-==================
-SV_BotGetSnapshotEntity
-==================
-*/
-int SV_BotGetSnapshotEntity( int client, int sequence )
-{
-	client_t         *cl;
-	clientSnapshot_t *frame;
-
-	cl = &svs.clients[ client ];
-	frame = &cl->frames[ cl->netchan.outgoingSequence & PACKET_MASK ];
-
-	if ( sequence < 0 || sequence >= frame->num_entities )
-	{
-		return -1;
-	}
-
-	return svs.snapshotEntities[( frame->first_entity + sequence ) % svs.numSnapshotEntities ].number;
-}

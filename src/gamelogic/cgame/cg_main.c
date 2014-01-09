@@ -718,8 +718,6 @@ these will change when following another player
 */
 static void CG_SetUIVars( void )
 {
-	int           i;
-	char          carriageCvar[ MAX_TOKEN_CHARS ];
 	playerState_t *ps;
 
 	if ( !cg.snap )
@@ -727,31 +725,8 @@ static void CG_SetUIVars( void )
 		return;
 	}
 
-	ps = &cg.snap->ps;
-	*carriageCvar = 0;
-
-	//determine what the player is carrying
-	for ( i = WP_NONE + 1; i < WP_NUM_WEAPONS; i++ )
-	{
-		if ( BG_InventoryContainsWeapon( i, cg.snap->ps.stats ) &&
-		     BG_Weapon( i )->purchasable )
-		{
-			strcat( carriageCvar, va( "W%d ", i ) );
-		}
-	}
-
-	for ( i = UP_NONE + 1; i < UP_NUM_UPGRADES; i++ )
-	{
-		if ( BG_InventoryContainsUpgrade( i, cg.snap->ps.stats ) &&
-		     BG_Upgrade( i )->purchasable )
-		{
-			strcat( carriageCvar, va( "U%d ", i ) );
-		}
-	}
-
-	strcat( carriageCvar, "$" );
-
-	trap_Cvar_Set( "ui_carriage", carriageCvar );
+	trap_Cvar_Set( "ui_carriage", va( "%d %d %d", cg.snap->ps.stats[ STAT_WEAPON ],
+	               cg.snap->ps.stats[ STAT_ITEMS ], cg.snap->ps.persistant[ PERS_CREDIT ] ) );
 }
 
 /*

@@ -28,7 +28,7 @@ namespace Audio {
 
     // Implementation of Sample
 
-    Sample::Sample(std::string name): HandledResource<Sample>(this), refCount(0), name(std::move(name)) {
+    Sample::Sample(std::string name): HandledResource<Sample>(this), name(std::move(name)) {
     }
 
     Sample::~Sample() {
@@ -39,18 +39,6 @@ namespace Audio {
 
     AL::Buffer& Sample::GetBuffer() {
         return buffer;
-    }
-
-    void Sample::Retain() {
-        refCount ++;
-    }
-
-    void Sample::Release() {
-        refCount --;
-    }
-
-    int Sample::GetRefCount() {
-        return refCount;
     }
 
     const std::string& Sample::GetName() {

@@ -648,7 +648,6 @@ void SV_SpawnServer( const char *server )
 	for ( i = 0; i < GAME_INIT_FRAMES; i++ )
 	{
 		gvm->GameRunFrame( svs.time );
-		SV_BotFrame( svs.time );
 		svs.time += FRAMETIME;
 	}
 
@@ -712,7 +711,6 @@ void SV_SpawnServer( const char *server )
 
 	// run another frame to allow things to look at all the players
 	gvm->GameRunFrame( svs.time );
-	SV_BotFrame( svs.time );
 	svs.time += FRAMETIME;
 
 	// the server sends these to the clients so they can figure

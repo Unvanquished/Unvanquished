@@ -236,7 +236,7 @@ namespace Audio {
         }
     }
 
-    void Make3D(AL::Source& source, const vec3_t position, const vec3_t velocity, bool forceReverb = false) {
+    void Make3D(AL::Source& source, const vec3_t position, const vec3_t velocity) {
         source.SetRelative(false);
         source.SetPosition(position);
         source.SetVelocity(velocity);
@@ -285,7 +285,7 @@ namespace Audio {
     void EntityEmitter::InternalSetupSound(Sound& sound) {
         AL::Source& source = sound.GetSource();
 
-        Make3D(source, entities[entityNum].position, entities[entityNum].velocity, true);
+        Make3D(source, entities[entityNum].position, entities[entityNum].velocity);
     }
 
     // Implementation of PositionEmitter
@@ -310,7 +310,7 @@ namespace Audio {
     void PositionEmitter::InternalSetupSound(Sound& sound) {
         AL::Source& source = sound.GetSource();
 
-        Make3D(source, position, origin, true);
+        Make3D(source, position, origin);
     }
 
     const vec3_t& PositionEmitter::GetPosition() const {

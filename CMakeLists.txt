@@ -608,11 +608,9 @@ set( CLIENTLIST
   ${ENGINE_DIR}/client/dl_main.cpp
   ${ENGINE_DIR}/audio/snd_codec.c
   ${ENGINE_DIR}/audio/snd_codec.h
-  ${ENGINE_DIR}/audio/snd_public.h
   ${ENGINE_DIR}/audio/snd_codec_ogg.c
   ${ENGINE_DIR}/audio/snd_codec_opus.c
   ${ENGINE_DIR}/audio/snd_codec_wav.c
-  ${ENGINE_DIR}/audio/snd_main.c
   ${ENGINE_DIR}/audio/ALObjects.cpp
   ${ENGINE_DIR}/audio/ALObjects.h
   ${ENGINE_DIR}/audio/Audio.cpp

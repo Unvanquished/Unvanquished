@@ -38,7 +38,7 @@ Maryland 20850 USA.
 #include "../qcommon/qcommon.h"
 #include "../renderer/tr_public.h"
 #include "keys.h"
-#include "../audio/snd_public.h"
+#include "../audio/Audio.h"
 
 #include "../client/ui_api.h"
 #include "../client/cg_api.h"
