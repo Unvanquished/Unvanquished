@@ -1,12 +1,15 @@
 unvanquished (0.23.0-2) unstable; urgency=low
 
   * Server: fix line breaks in rcon output.
-  * Server, client: fix adding a space on tab completion.
+  * Server, client: improve space handling in commands.
+  * Client: fix music looping if no leading sound.
   * Impure cgame: particle system fixes.
   * Impure/local game: register user-defined admin commands.
+  * Impure/local game: when building overmind or reactor, make sure that a
+    marked one is replaced.
   * Add a mime file so that unv:// is handled automatically.
 
- -- Darren Salt <devspam@moreofthesa.me.uk>  Wed, 08 Jan 2014 03:01:24 +0000
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Thu, 09 Jan 2014 14:31:40 +0000
 
 unvanquished (0.23.0-1) unstable; urgency=low
 
