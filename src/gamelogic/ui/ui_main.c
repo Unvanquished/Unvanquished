@@ -2634,7 +2634,6 @@ static void UI_LoadHumanArmouryBuys( void )
 			int price = BG_Weapon( i )->price - BG_Weapon( uiInfo.weapon )->price;
 			uiInfo.humanArmouryBuyList[ j ].text = String_Alloc( price <= uiInfo.credits ?
 			  BG_Weapon( i )->humanName : va( "^1%s", BG_Weapon( i )->humanName ) );
-			uiInfo.humanArmouryBuyList[ j ].text = BG_Weapon( i )->humanName;
 			uiInfo.humanArmouryBuyList[ j ].cmd =
 			  String_Alloc( va( "cmd buy +%s\n", BG_Weapon( i )->name ) );
 			uiInfo.humanArmouryBuyList[ j ].type = INFOTYPE_WEAPON;
@@ -2704,7 +2703,7 @@ static void UI_LoadHumanArmourySells( void )
 
 	for ( i = UP_NONE + 1; i < UP_NUM_UPGRADES; i++ )
 	{
-		if ( uiInfo.upgrades & ( 1 << i ) )
+		if ( uiInfo.upgrades & ( 1 << i ) && BG_Upgrade( i )->purchasable )
 		{
 			uiInfo.humanArmourySellList[ j ].text = BG_Upgrade( i )->humanName;
 			uiInfo.humanArmourySellList[ j ].cmd =
