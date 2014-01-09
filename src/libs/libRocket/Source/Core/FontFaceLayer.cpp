@@ -151,6 +151,7 @@ bool FontFaceLayer::AddNewGlyphs()
 
 		// Set the character's texture index.
 		character.texture_index = textures.size() + rectangle.GetTextureIndex();
+		character.local_texture_index = rectangle.GetTextureIndex();
 
 		// Generate the character's texture coordinates.
 		character.texcoords[0].x = float(rectangle.GetPosition().x) / float(texture.GetDimensions().x);
@@ -193,8 +194,8 @@ bool FontFaceLayer::GenerateTexture(const byte*& texture_data, Vector2i& texture
 		TextureLayoutRectangle& rectangle = texture_layout.GetRectangle(i);
 		Character& character = characters[(word) rectangle.GetId()];
 
-// 		if (character.texture_index != texture_id)
-// 			continue;
+	if (character.local_texture_index != texture_id)
+		continue;
 
 		const FontGlyph& glyph = glyphs.find((word) rectangle.GetId())->second;
 
