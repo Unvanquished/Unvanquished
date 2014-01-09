@@ -597,24 +597,24 @@ bool ParsePakName(const char* begin, const char* end, std::string& name, std::st
 		nameStart++;
 
 	// Get the name of the package
-	const char* underscore1 = std::find(nameStart, end, '_');
-	if (underscore1 == end)
+	const char* seperator1 = std::find(nameStart, end, '-');
+	if (seperator1 == end)
 		return false;
-	name.assign(begin, underscore1);
+	name.assign(begin, seperator1);
 
 	// Get the version of the package
-	const char* underscore2 = std::find(underscore1 + 1, end, '_');
-	if (underscore2 == end) {
-		version.assign(underscore1 + 1, end);
+	const char* seperator2 = std::find(seperator1 + 1, end, '-');
+	if (seperator2 == end) {
+		version.assign(seperator1 + 1, end);
 		checksum = Opt::nullopt;
 	} else {
 		// Get the optional checksum of the package
-		version.assign(underscore1 + 1, underscore2);
-		if (underscore2 + 9 != end)
+		version.assign(seperator1 + 1, seperator2);
+		if (seperator2 + 9 != end)
 			return false;
 		checksum = 0;
 		for (int i = 0; i < 8; i++) {
-			char c = underscore2[i + 1];
+			char c = seperator2[i + 1];
 			if (!Str::cisxdigit(c))
 				return false;
 			uint32_t hexValue = Str::cisdigit(c) ? c - '0' : Str::ctolower(c) - 'a' + 10;
@@ -628,9 +628,9 @@ bool ParsePakName(const char* begin, const char* end, std::string& name, std::st
 std::string MakePakName(Str::StringRef name, Str::StringRef version, Opt::optional<uint32_t> checksum)
 {
 	if (checksum)
-		return Str::Format("%s_%s_%08x", name, version, *checksum);
+		return Str::Format("%s-%s-%08x", name, version, *checksum);
 	else
-		return Str::Format("%s_%s", name, version);
+		return Str::Format("%s-%s", name, version);
 }
 
 const std::vector<PakInfo>& GetAvailablePaks()
