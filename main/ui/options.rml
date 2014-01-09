@@ -1,11 +1,11 @@
 <rml>
 	<head>
 		<title>Options</title>
-		<link type="text/template" href="assets/window.rml" />
+		<link type="text/template" href="templates/unvwindow.rml" />
 		<style>
 			body
 			{
-				width: 350px;
+				width: 800px;
 				height: 350px;
 
 				margin: auto;
@@ -24,9 +24,53 @@
 				width: 200px;
 				margin: auto;
 			}
+			tabset tabs
+			{
+				z-index: -1;
+				position: absolute;
+				top: 0px;
+				margin-top: -20px;
+				padding-left: 3%;
+			}
+			tab
+			{
+				height: 10px;
+				min-width: 50px;
+				max-width: 60px;
+				button-font-effect: none;
+				margin-top: 0px;
+				padding-top: 0px;
+				margin-left: 0px;
+				background-image-t:111px 171px;
+			}
+			tab:hover
+			{
+				background-image-t:222px 282px;
+			}
+			tab:selected
+			{
+				background-image-t: 0px 60px;
+			}
+			tab p
+			{
+				display: block;
+				text-align: center;
+				margin-top: 100%;
+			}
+			tab p.long
+			{
+				margin-left: -35%;
+				white-space: nowrap;
+				display: inline-block;
+				text-align: center;
+				font-size: 16;
+			}
 		</style>
 	</head>
-	<body id="options" template="window" onload="buildDS resolutions; sortDS resolutions default width">
+	<body id="options" template="unvwindow" onload="buildDS resolutions; sortDS resolutions default width">
+		<tabset id="options">
+		<tab><p class="long">Quick Options</p></tab>
+		<panel>
 		<form onsubmit="store; hide options">
 			<div>
 				<p>
@@ -43,5 +87,23 @@
 			<input type="submit" value="accept">Accept</input>
 			<input type="submit" value="cancel">Cancel</input>
 		</form>
+		</panel>
+		<tab><p>Player</p></tab>
+		<panel>
+		Stuff
+		</panel>
+		<tab><p>Controls</p></tab>
+		<panel>
+		More stuff
+		</panel>
+		<tab><p>Graphics</p></tab>
+		<panel>
+		Other stuff
+		</panel>
+		<tab><p>Audio</p></tab>
+		<panel>
+		Some stuff
+		</panel>
+		</tabset>
 	</body>
 </rml>

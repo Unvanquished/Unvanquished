@@ -35,14 +35,14 @@ dataselect
 	margin-left: 20px;
 }
 
-input.submit
+input.input.submit
 {
 	margin-left: 0px;
 }
 
 tab:focus,
 button:focus,
-input.submit:focus
+input.input.submit:focus
 {
     font-weight: bold;
 
@@ -103,30 +103,37 @@ scrollbarvertical sliderarrowinc
 	min-height: 10px;
 }
 tab,
-button
+button,
+input.submit
 {
-	color: teal;
-	display: inline-block;
+	color: #83fff5;
+	display: block;
 
-	width: 150px;
-	height: 64px;
-
-	font-size: 24;
-	padding-top: 35px;
-	margin-top: -30px;
-	button-font-effect: outline;
+	max-width: 250px;
+	width: 60%;
+	padding:5%;
+	margin-left:10%;
+	font-size: 17;
 	text-align: center;
 	tab-index: auto;
-
 	background-decorator: image;
-	background-image-src: /ui/assets/button.png;
+	background-image: /ui/assets/buttons.png 0px 222px 311px 333px;
 }
 
 tab:hover,
 button:hover
+input.submit:hover
 {
 	color: white;
-	background-image-src: /ui/assets/button-hover.png;
+	background-image: /ui/assets/buttons.png 0px 0px 311px 111px;
+}
+
+tab:active,
+button:active,
+input.submit:active
+{
+	color: white;
+	background-image: /ui/assets/buttons.png 0px 111px 311px 222px;
 }
 
 tabs
