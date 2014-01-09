@@ -109,6 +109,7 @@ void CG_Rocket_BuildServerInfo( void )
 		while ( *p )
 		{
 			Info_NextPair( &p, key, value );
+
 			if ( key[ 0 ] )
 			{
 				Info_SetValueForKey( buf, "cvar", key, qfalse );
@@ -116,6 +117,7 @@ void CG_Rocket_BuildServerInfo( void )
 				trap_Rocket_DSAddRow( "server_browser", "serverInfo", buf );
 				*buf = '\0';
 			}
+
 			else
 			{
 				break;
@@ -133,6 +135,7 @@ void CG_Rocket_BuildServerInfo( void )
 		while ( *p )
 		{
 			Info_NextPair( &p, key, value );
+
 			if ( key[ 0 ] )
 			{
 				sscanf( key, "%d %d %s", &score, &ping, name );
@@ -229,6 +232,7 @@ static void CG_Rocket_BuildServerList( const char *args )
 			trap_Rocket_DSAddRow( "server_browser", args, data );
 		}
 	}
+
 	else if ( !Q_stricmp( args, "serverInfo" ) )
 	{
 		CG_Rocket_BuildServerInfo();
@@ -243,8 +247,11 @@ static int ServerListCmpByPing( const void *one, const void *two )
 	server_t *b = ( server_t * ) two;
 
 	if ( a->ping > b->ping ) return 1;
+
 	if ( b->ping > a->ping ) return -1;
+
 	if ( a->ping == b->ping )  return 0;
+
 	return 0; // silence compiler
 }
 
@@ -314,6 +321,7 @@ static void CG_Rocket_FilterServerList( const char *table, const char *filter )
 		char name[ MAX_INFO_VALUE ];
 
 		Q_strncpyz( name, rocketInfo.data.servers[ netSrc ][ i ].name, sizeof( name ) );
+
 		if ( Q_stristr( Q_CleanStr( name ), filter ) )
 		{
 			char data[ MAX_INFO_STRING ] = { 0 };
@@ -415,8 +423,11 @@ static int ResolutionListCmpByWidth( const void *one, const void *two )
 	resolution_t *b = ( resolution_t * ) two;
 
 	if ( a->width > b->width ) return -1;
+
 	if ( b->width > a->width ) return 1;
+
 	if ( a->width == b->width )  return 0;
+
 	return 0; // silence compiler
 }
 
@@ -479,41 +490,54 @@ void CG_Rocket_BuildLanguageList( const char *args )
 	trap_Cvar_VariableStringBuffer( "trans_languages", buf, sizeof( buf ) );
 	p = buf;
 	memset( &temp, 0, sizeof( temp ) );
-	while( p && *p )
+
+	while ( p && *p )
 	{
-		if( *p == '"' && quoted )
+		if ( *p == '"' && quoted )
 		{
 			AddToLanguageList( BG_strdup( temp ), NULL );
 			quoted = qfalse;
 			index = 0;
 		}
 
-		else if( *p == '"' || quoted )
+		else if ( *p == '"' || quoted )
 		{
-			if( !quoted ) { p++; }
+			if ( !quoted )
+			{
+				p++;
+			}
+
 			quoted = qtrue;
 			temp[ index++ ] = *p;
 		}
+
 		p++;
 	}
+
 	trap_Cvar_VariableStringBuffer( "trans_encodings", buf, sizeof( buf ) );
 	p = buf;
 	memset( &temp, 0, sizeof( temp ) );
-	while( p && *p )
+
+	while ( p && *p )
 	{
-		if( *p == '"' && quoted )
+		if ( *p == '"' && quoted )
 		{
 			rocketInfo.data.languages[ lang++ ].lang = BG_strdup( temp );
 			quoted = qfalse;
 			index = 0;
 		}
 
-		else if( *p == '"' || quoted )
+		else if ( *p == '"' || quoted )
 		{
-			if( !quoted ) { p++; }
+			if ( !quoted )
+			{
+				p++;
+			}
+
 			quoted = qtrue;
 			temp[ index++ ] = *p;
 		}
+
 		p++;
 	}
 
@@ -564,6 +588,7 @@ void CG_Rocket_BuildVoIPInputs( const char *args )
 
 	trap_Cvar_VariableStringBuffer( "s_alAvailableInputDevices", buf, sizeof( buf ) );
 	head = buf;
+
 	while ( ( p = strchr( head, '\n' ) ) )
 	{
 		*p = '\0';
@@ -572,6 +597,7 @@ void CG_Rocket_BuildVoIPInputs( const char *args )
 	}
 
 	buf[ 0 ] = '\0';
+
 	for ( inputs = 0; inputs < rocketInfo.data.voipInputsCount; ++inputs )
 	{
 		Info_SetValueForKey( buf, "name", rocketInfo.data.voipInputs[ inputs ], qfalse );
@@ -615,6 +641,7 @@ void CG_Rocket_BuildAlOutputs( const char *args )
 
 	trap_Cvar_VariableStringBuffer( "s_alAvailableDevices", buf, sizeof( buf ) );
 	head = buf;
+
 	while ( ( p = strchr( head, '\n' ) ) )
 	{
 		*p = '\0';
@@ -793,6 +820,7 @@ void CG_Rocket_BuildPlayerList( const char *args )
 	{
 		ci = &cgs.clientinfo[ i ];
 		score = &cg.scores[ i ];
+
 		if ( !ci->infoValid )
 		{
 			continue;
@@ -834,8 +862,11 @@ static int PlayerListCmpByScore( const void *one, const void *two )
 	int *b = ( int * ) two;
 
 	if ( cg.scores[ *a ].score > cg.scores[ *b ].score ) return 1;
+
 	if ( cg.scores[ *b ].score > cg.scores[ *a ].score ) return -1;
+
 	if ( cg.scores[ *a ].score == cg.scores[ *b ].score )  return 0;
+
 	return 0; // silence compiler
 }
 
@@ -870,6 +901,7 @@ void CG_Rocket_SortPlayerList( const char *name, const char *sortBy )
 	{
 		ci = &cgs.clientinfo[ rocketInfo.data.playerList[ TEAM_NONE ][ i ] ];
 		score = &cg.scores[ rocketInfo.data.playerList[ TEAM_NONE ][ i ] ];
+
 		if ( !ci->infoValid )
 		{
 			continue;
@@ -891,6 +923,7 @@ void CG_Rocket_SortPlayerList( const char *name, const char *sortBy )
 	{
 		ci = &cgs.clientinfo[ rocketInfo.data.playerList[ TEAM_HUMANS ][ i ] ];
 		score = &cg.scores[ rocketInfo.data.playerList[ TEAM_NONE ][ i ] ];
+
 		if ( !ci->infoValid )
 		{
 			continue;
@@ -911,6 +944,7 @@ void CG_Rocket_SortPlayerList( const char *name, const char *sortBy )
 	{
 		ci = &cgs.clientinfo[ rocketInfo.data.playerList[ TEAM_NONE ][ i ] ];
 		score = &cg.scores[ rocketInfo.data.playerList[ TEAM_NONE ][ i ] ];
+
 		if ( !ci->infoValid )
 		{
 			continue;
@@ -981,7 +1015,8 @@ void CG_Rocket_SetPlayerListPlayer( const char *table, int index )
 
 void CG_Rocket_BuildTeamList( const char *args )
 {
-	static const char *data[] = {
+	static const char *data[] =
+	{
 		"\\name\\Aliens\\description\\The Alien Team\n\n"
 		"The Aliens' strengths are in movement and the ability to "
 		"quickly construct new bases quickly. They possess a range "
@@ -1023,10 +1058,21 @@ void CG_Rocket_ExecTeamList( const char *table )
 
 	switch ( rocketInfo.data.selectedTeamIndex )
 	{
-		case 0: cmd = "team aliens"; break;
-		case 1: cmd = "team humans"; break;
-		case 2: cmd = "team spectate"; break;
-		case 3: cmd = "team auto"; break;
+		case 0:
+			cmd = "team aliens";
+			break;
+
+		case 1:
+			cmd = "team humans";
+			break;
+
+		case 2:
+			cmd = "team spectate";
+			break;
+
+		case 3:
+			cmd = "team auto";
+			break;
 	}
 
 	if ( cmd )
@@ -1059,6 +1105,11 @@ void AddHumanSpawnItem( weapon_t weapon )
 
 void CG_Rocket_BuildHumanSpawnItems( const char *table )
 {
+	if ( rocketInfo.rocketState < PLAYING )
+	{
+		return;
+	}
+
 	trap_Rocket_DSClearTable( "humanSpawnItems", "default" );
 	AddHumanSpawnItem( WP_MACHINEGUN );
 	AddHumanSpawnItem( WP_HBUILD );
@@ -1072,10 +1123,16 @@ void CG_Rocket_SetHumanSpawnItems( const char *table, int index )
 void CG_Rocket_ExecHumanSpawnItems( const char *table )
 {
 	const char *cmd = NULL;
+
 	switch ( rocketInfo.data.selectedHumanSpawnItem )
 	{
-		case 0: cmd = "class rifle"; break;
-		case 1: cmd = "class ckit"; break;
+		case 0:
+			cmd = "class rifle";
+			break;
+
+		case 1:
+			cmd = "class ckit";
+			break;
 	}
 
 	if ( cmd )
@@ -1091,16 +1148,18 @@ void CG_Rocket_CleanUpHumanSpawnItems( const char *table )
 }
 
 
-enum {
-	ROCKETDS_BOTH,
-	ROCKETDS_WEAPONS,
-	ROCKETDS_UPGRADES
+enum
+{
+    ROCKETDS_BOTH,
+    ROCKETDS_WEAPONS,
+    ROCKETDS_UPGRADES
 };
 
 void CG_Rocket_CleanUpArmouryBuyList( const char *table )
 {
 	char c = table ? *table : 'd';
 	int tblIndex;
+
 	switch ( c )
 	{
 		case 'W':
@@ -1143,6 +1202,12 @@ static void AddUpgradeToBuyList( int i, const char *table, int tblIndex )
 {
 	static char buf[ MAX_STRING_CHARS ];
 
+	if ( rocketInfo.rocketState < PLAYING )
+	{
+		return;
+	}
+
+
 	buf[ 0 ] = '\0';
 
 	if ( BG_Upgrade( i )->team == TEAM_HUMANS && BG_Upgrade( i )->purchasable && BG_UpgradeUnlocked( i ) && !BG_UpgradeDisabled( i ) && !BG_InventoryContainsUpgrade( i, cg.predictedPlayerState.stats ) && i != UP_MEDKIT )
@@ -1165,6 +1230,11 @@ void CG_Rocket_BuildArmouryBuyList( const char *table )
 	int i;
 	int tblIndex = ROCKETDS_BOTH;
 
+	if ( rocketInfo.rocketState < PLAYING )
+	{
+		return;
+	}
+
 	// Only bother checking first letter
 	if ( *table == 'w' || *table == 'W' )
 	{
@@ -1182,13 +1252,13 @@ void CG_Rocket_BuildArmouryBuyList( const char *table )
 		trap_Rocket_DSClearTable( "armouryBuyList", "default" );
 	}
 
-	if(  tblIndex == ROCKETDS_BOTH || tblIndex == ROCKETDS_WEAPONS )
+	if ( tblIndex == ROCKETDS_BOTH || tblIndex == ROCKETDS_WEAPONS )
 	{
 		CG_Rocket_CleanUpArmouryBuyList( "weapons" );
 		trap_Rocket_DSClearTable( "armouryBuyList", "weapons" );
 	}
 
-	if(  tblIndex == ROCKETDS_BOTH || tblIndex == ROCKETDS_UPGRADES )
+	if ( tblIndex == ROCKETDS_BOTH || tblIndex == ROCKETDS_UPGRADES )
 	{
 		CG_Rocket_CleanUpArmouryBuyList( "upgrades" );
 		trap_Rocket_DSClearTable( "armouryBuyList", "upgrades" );
@@ -1200,7 +1270,7 @@ void CG_Rocket_BuildArmouryBuyList( const char *table )
 		for ( i = 0; i <= WP_NUM_WEAPONS; ++i )
 		{
 			AddWeaponToBuyList( i, "default", ROCKETDS_BOTH );
-			AddWeaponToBuyList( i, "weapons", ROCKETDS_WEAPONS);
+			AddWeaponToBuyList( i, "weapons", ROCKETDS_WEAPONS );
 		}
 	}
 
@@ -1219,6 +1289,7 @@ void CG_Rocket_SetArmouryBuyList( const char *table, int index )
 {
 	char c = table ? *table : 'd';
 	int tblIndex;
+
 	switch ( c )
 	{
 		case 'W':
@@ -1246,6 +1317,7 @@ void CG_Rocket_ExecArmouryBuyList( const char *table )
 	const char *buy = NULL;
 	char c = table ? *table : 'd';
 	int tblIndex;
+
 	switch ( c )
 	{
 		case 'W':
@@ -1283,12 +1355,13 @@ void CG_Rocket_ExecArmouryBuyList( const char *table )
 			}
 		}
 	}
+
 	else
 	{
 		if ( BG_Weapon( item ) )
 		{
 			buy = BG_Weapon( item )->name;
-			trap_SendClientCommand( va( "sell %s", BG_Weapon ( BG_GetPlayerWeapon( &cg.predictedPlayerState ) )->name ) );
+			trap_SendClientCommand( va( "sell %s", BG_Weapon( BG_GetPlayerWeapon( &cg.predictedPlayerState ) )->name ) );
 		}
 	}
 
@@ -1309,6 +1382,12 @@ void CG_Rocket_CleanUpArmourySellList( const char *table )
 void CG_Rocket_BuildArmourySellList( const char *table )
 {
 	static char buf[ MAX_STRING_CHARS ];
+
+	if ( rocketInfo.rocketState < PLAYING )
+	{
+		return;
+	}
+
 	if ( !Q_stricmp( table, "default" ) )
 	{
 		int i;
@@ -1373,6 +1452,7 @@ void CG_Rocket_ExecArmourySellList( const char *table )
 			BG_RemoveUpgradeFromInventory( item, cg.predictedPlayerState.stats );
 		}
 	}
+
 	else
 	{
 		if ( BG_Weapon( item ) )
@@ -1399,6 +1479,11 @@ void CG_Rocket_CleanUpAlienEvolveList( const char *table )
 void CG_Rocket_BuildAlienEvolveList( const char *table )
 {
 	static char buf[ MAX_STRING_CHARS ];
+
+	if ( rocketInfo.rocketState < PLAYING )
+	{
+		return;
+	}
 
 	if ( !Q_stricmp( table, "default" ) )
 	{
@@ -1433,7 +1518,7 @@ void CG_Rocket_SetAlienEvolveList( const char *table, int index )
 
 void CG_Rocket_ExecAlienEvolveList( const char *table )
 {
-	class_t evo = (class_t) rocketInfo.data.alienEvolveList[ rocketInfo.data.selectedAlienEvolve ];
+	class_t evo = ( class_t ) rocketInfo.data.alienEvolveList[ rocketInfo.data.selectedAlienEvolve ];
 
 	if ( BG_Class( evo ) && BG_ClassCanEvolveFromTo( cg.predictedPlayerState.stats[ STAT_CLASS ], evo, cg.predictedPlayerState.persistant[ PERS_CREDIT ] ) >= 0 )
 	{
@@ -1452,6 +1537,11 @@ void CG_Rocket_BuildHumanBuildList( const char *table )
 {
 	static char buf[ MAX_STRING_CHARS ];
 
+	if ( rocketInfo.rocketState < PLAYING )
+	{
+		return;
+	}
+
 	if ( !Q_stricmp( table, "default" ) )
 	{
 		int i;
@@ -1462,14 +1552,14 @@ void CG_Rocket_BuildHumanBuildList( const char *table )
 		for ( i = BA_NONE + 1; i < BA_NUM_BUILDABLES; ++i )
 		{
 			if ( BG_Buildable( i )->team == TEAM_HUMANS &&
-				BG_Buildable( i )->buildWeapon & ( 1 << BG_GetPlayerWeapon( &cg.predictedPlayerState ) ) &&
-				!BG_BuildableDisabled( i ) &&
-				BG_BuildableUnlocked( i ) )
+			        BG_Buildable( i )->buildWeapon & ( 1 << BG_GetPlayerWeapon( &cg.predictedPlayerState ) ) &&
+			        !BG_BuildableDisabled( i ) &&
+			        BG_BuildableUnlocked( i ) )
 			{
 				buf[ 0 ] = '\0';
 
 				Info_SetValueForKey( buf, "name", BG_Buildable( i )->humanName, qfalse );
-				Info_SetValueForKey(buf, "cost", va( "%d", BG_Buildable( i )->buildPoints ), qfalse );
+				Info_SetValueForKey( buf, "cost", va( "%d", BG_Buildable( i )->buildPoints ), qfalse );
 				Info_SetValueForKey( buf, "description", BG_Buildable( i )->info, qfalse );
 
 				trap_Rocket_DSAddRow( "humanBuildList", "default", buf );
@@ -1487,7 +1577,7 @@ void CG_Rocket_SetHumanBuildList( const char *table, int index )
 
 void CG_Rocket_ExecHumanBuildList( const char *table )
 {
-	buildable_t build = (buildable_t) rocketInfo.data.humanBuildList[ rocketInfo.data.selectedHumanBuild ];
+	buildable_t build = ( buildable_t ) rocketInfo.data.humanBuildList[ rocketInfo.data.selectedHumanBuild ];
 
 	if ( BG_Buildable( build ) )
 	{
@@ -1506,6 +1596,11 @@ void CG_Rocket_BuildAlienBuildList( const char *table )
 {
 	static char buf[ MAX_STRING_CHARS ];
 
+	if ( rocketInfo.rocketState < PLAYING )
+	{
+		return;
+	}
+
 	if ( !Q_stricmp( table, "default" ) )
 	{
 		int i;
@@ -1516,14 +1611,14 @@ void CG_Rocket_BuildAlienBuildList( const char *table )
 		for ( i = BA_NONE + 1; i < BA_NUM_BUILDABLES; ++i )
 		{
 			if ( BG_Buildable( i )->team == TEAM_ALIENS &&
-				BG_Buildable( i )->buildWeapon & ( 1 << BG_GetPlayerWeapon( &cg.predictedPlayerState ) ) &&
-				!BG_BuildableDisabled( i ) &&
-				BG_BuildableUnlocked( i ) )
+			        BG_Buildable( i )->buildWeapon & ( 1 << BG_GetPlayerWeapon( &cg.predictedPlayerState ) ) &&
+			        !BG_BuildableDisabled( i ) &&
+			        BG_BuildableUnlocked( i ) )
 			{
 				buf[ 0 ] = '\0';
 
 				Info_SetValueForKey( buf, "name", BG_Buildable( i )->humanName, qfalse );
-				Info_SetValueForKey(buf, "cost", va( "%d", BG_Buildable( i )->buildPoints ), qfalse );
+				Info_SetValueForKey( buf, "cost", va( "%d", BG_Buildable( i )->buildPoints ), qfalse );
 				Info_SetValueForKey( buf, "description", BG_Buildable( i )->info, qfalse );
 
 				trap_Rocket_DSAddRow( "alienBuildList", "default", buf );
@@ -1541,7 +1636,7 @@ void CG_Rocket_SetAlienBuildList( const char *table, int index )
 
 void CG_Rocket_ExecAlienBuildList( const char *table )
 {
-	buildable_t build = (buildable_t) rocketInfo.data.alienBuildList[ rocketInfo.data.selectedAlienBuild ];
+	buildable_t build = ( buildable_t ) rocketInfo.data.alienBuildList[ rocketInfo.data.selectedAlienBuild ];
 
 	if ( BG_Buildable( build ) )
 	{
@@ -1568,9 +1663,15 @@ void AddAlienSpawnClass( class_t _class )
 
 void CG_Rocket_BuildAlienSpawnList( const char *table )
 {
+	if ( rocketInfo.rocketState < PLAYING )
+	{
+		return;
+	}
+
 	if ( !Q_stricmp( table, "default" ) )
 
 		trap_Rocket_DSClearTable( "alienSpawnClass", "default" );
+
 	{
 		AddAlienSpawnClass( PCL_ALIEN_LEVEL0 );
 
@@ -1578,6 +1679,7 @@ void CG_Rocket_BuildAlienSpawnList( const char *table )
 		{
 			AddAlienSpawnClass( PCL_ALIEN_BUILDER0_UPG );
 		}
+
 		else
 		{
 			AddAlienSpawnClass( PCL_ALIEN_BUILDER0 );
@@ -1598,10 +1700,16 @@ void CG_Rocket_SetAlienSpawnList( const char *table, int index )
 void CG_Rocket_ExecAlienSpawnList( const char *table )
 {
 	const char *_class = NULL;
+
 	switch ( rocketInfo.data.selectedAlienSpawnClass )
 	{
-		case 0: _class = "level0"; break;
-		case 1: _class = BG_ClassUnlocked( PCL_ALIEN_BUILDER0_UPG ) ? "builderupg" : "builder"; break;
+		case 0:
+			_class = "level0";
+			break;
+
+		case 1:
+			_class = BG_ClassUnlocked( PCL_ALIEN_BUILDER0_UPG ) ? "builderupg" : "builder";
+			break;
 	}
 
 	if ( _class )
@@ -1626,12 +1734,12 @@ static void nullFilterFunc( const char *table, const char *filter )
 typedef struct
 {
 	const char *name;
-	void ( *build ) ( const char *args );
-	void ( *sort ) ( const char *name, const char *sortBy );
-	void ( *cleanup ) ( const char *table );
-	void ( *set ) ( const char *table, int index );
-	void ( *filter ) ( const char *table, const char *filter );
-	void ( *exec ) ( const char *table );
+	void ( *build )( const char *args );
+	void ( *sort )( const char *name, const char *sortBy );
+	void ( *cleanup )( const char *table );
+	void ( *set )( const char *table, int index );
+	void ( *filter )( const char *table, const char *filter );
+	void ( *exec )( const char *table );
 } dataSourceCmd_t;
 
 static const dataSourceCmd_t dataSourceCmdList[] =
@@ -1674,7 +1782,7 @@ void CG_Rocket_BuildDataSource( const char *dataSrc, const char *table )
 
 	}
 
-	cmd = (dataSourceCmd_t*) bsearch( dataSrc, dataSourceCmdList, dataSourceCmdListCount, sizeof( dataSourceCmd_t ), dataSourceCmdCmp );
+	cmd = ( dataSourceCmd_t * ) bsearch( dataSrc, dataSourceCmdList, dataSourceCmdListCount, sizeof( dataSourceCmd_t ), dataSourceCmdCmp );
 
 	if ( cmd )
 	{
@@ -1687,7 +1795,7 @@ void CG_Rocket_SortDataSource( const char *dataSource, const char *name, const c
 {
 	dataSourceCmd_t *cmd;
 
-	cmd = (dataSourceCmd_t*) bsearch( dataSource, dataSourceCmdList, dataSourceCmdListCount, sizeof( dataSourceCmd_t ), dataSourceCmdCmp );
+	cmd = ( dataSourceCmd_t * ) bsearch( dataSource, dataSourceCmdList, dataSourceCmdListCount, sizeof( dataSourceCmd_t ), dataSourceCmdCmp );
 
 	if ( cmd && cmd->sort )
 	{
@@ -1699,7 +1807,7 @@ void CG_Rocket_SetDataSourceIndex( const char *dataSource, const char *table, in
 {
 	dataSourceCmd_t *cmd;
 
-	cmd = (dataSourceCmd_t*) bsearch( dataSource, dataSourceCmdList, dataSourceCmdListCount, sizeof( dataSourceCmd_t ), dataSourceCmdCmp );
+	cmd = ( dataSourceCmd_t * ) bsearch( dataSource, dataSourceCmdList, dataSourceCmdListCount, sizeof( dataSourceCmd_t ), dataSourceCmdCmp );
 
 	if ( cmd && cmd->set )
 	{
@@ -1711,7 +1819,7 @@ void CG_Rocket_FilterDataSource( const char *dataSource, const char *table, cons
 {
 	dataSourceCmd_t *cmd;
 
-	cmd = (dataSourceCmd_t*) bsearch( dataSource, dataSourceCmdList, dataSourceCmdListCount, sizeof( dataSourceCmd_t ), dataSourceCmdCmp );
+	cmd = ( dataSourceCmd_t * ) bsearch( dataSource, dataSourceCmdList, dataSourceCmdListCount, sizeof( dataSourceCmd_t ), dataSourceCmdCmp );
 
 	if ( cmd && cmd->filter )
 	{
@@ -1723,7 +1831,7 @@ void CG_Rocket_ExecDataSource( const char *dataSource, const char *table )
 {
 	dataSourceCmd_t *cmd;
 
-	cmd = (dataSourceCmd_t*) bsearch( dataSource, dataSourceCmdList, dataSourceCmdListCount, sizeof( dataSourceCmd_t ), dataSourceCmdCmp );
+	cmd = ( dataSourceCmd_t * ) bsearch( dataSource, dataSourceCmdList, dataSourceCmdListCount, sizeof( dataSourceCmd_t ), dataSourceCmdCmp );
 
 	if ( cmd && cmd->exec )
 	{
