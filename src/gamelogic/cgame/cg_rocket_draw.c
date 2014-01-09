@@ -2416,6 +2416,31 @@ static void CG_Rocket_DrawPlayerFuelValue( void )
 	trap_Rocket_SetInnerRML( va( "%f", percent ), qfalse );
 }
 
+static void CG_Rocket_DrawWarmup( void )
+{
+	int   sec = 0;
+	int   w;
+	int   h;
+	float size = 0.5f;
+	char  text[ MAX_STRING_CHARS ];
+
+	if ( !cg.warmupTime )
+	{
+		trap_Rocket_SetInnerRML( "", qfalse );
+		return;
+	}
+
+	sec = ( cg.warmupTime - cg.time ) / 1000;
+
+	if ( sec < 0 )
+	{
+		trap_Rocket_SetInnerRML( "", qfalse );
+		return;
+	}
+
+	trap_Rocket_SetInnerRML( va( "%s", sec ? va( "%d", sec ) : _("FIGHT!") ), qfalse );
+}
+
 typedef struct
 {
 	const char *name;
@@ -2469,6 +2494,7 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "votes", &CG_Rocket_DrawVote, ELEMENT_GAME },
 	{ "votes_team", &CG_Rocket_DrawTeamVote, ELEMENT_BOTH },
 	{ "wallwalk", &CG_Rocket_DrawPlayerWallclimbing, ELEMENT_ALIENS },
+	{ "warmup_time", &CG_Rocket_DrawWarmup, ELEMENT_GAME },
 	{ "weapon_icon", &CG_Rocket_DrawWeaponIcon, ELEMENT_BOTH },
 };
 

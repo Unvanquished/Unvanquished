@@ -318,40 +318,6 @@ static void CG_DrawIntermission( void )
 // TODO
 }
 
-
-/*
-=================
-CG_DrawWarmup
-=================
-*/
-static void CG_DrawWarmup( void )
-{
-	int   sec = 0;
-	int   w;
-	int   h;
-	float size = 0.5f;
-	char  text[ MAX_STRING_CHARS ];
-
-	if ( !cg.warmupTime )
-	{
-		return;
-	}
-
-	sec = ( cg.warmupTime - cg.time ) / 1000;
-
-	if ( sec < 0 )
-	{
-		return;
-	}
-
-	Q_strncpyz( text, _( "Warmup Time:" ), sizeof( text ) );
-//TODO
-
-	Com_sprintf( text, sizeof( text ), "%s", sec ? va( "%d", sec ) : _("FIGHT!") );
-
-//TODO
-}
-
 //==================================================================================
 
 /*
@@ -392,8 +358,6 @@ static void CG_Draw2D( void )
 	{
 		//TODO: Draw HUD
 	}
-
-	CG_DrawWarmup();
 }
 
 /*
