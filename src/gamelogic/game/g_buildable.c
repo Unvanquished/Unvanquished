@@ -3959,7 +3959,7 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 
 	if ( buildable == BA_H_REACTOR )
 	{
-		ent = G_Reactor();
+		ent = ( ent = G_Reactor() ) ? ent : FindBuildable( BA_H_REACTOR );
 
 		if ( ent )
 		{
@@ -3975,7 +3975,7 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 	}
 	else if ( buildable == BA_A_OVERMIND )
 	{
-		ent = G_Overmind();
+		ent = ( ent = G_Overmind() ) ? ent : FindBuildable( BA_A_OVERMIND );
 
 		if ( ent )
 		{
