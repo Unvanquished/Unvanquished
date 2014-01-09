@@ -50,7 +50,7 @@ struct ConsoleLine
 		time = Sys_Milliseconds();
 	}
 };
-
+Rocket::Core::String Rocket_QuakeToRML( const char *in );
 class RocketConsoleTextElement : public Rocket::Core::Element
 {
 public:
@@ -92,7 +92,7 @@ public:
 			for (; line >= 0; --line, numLines++ )
 			{
 				Rocket::Core::Element *child = Rocket::Core::Factory::InstanceElement( this, "#text", "span", Rocket::Core::XMLAttributes() );
-				q2rml( lines[ line ].text.CString(), child );
+				Rocket::Core::Factory::InstanceElementText( child, Rocket_QuakeToRML( lines[ line ].text.CString() ));
 				child->SetId( va( "%d", lines[ line ].time ) );
 				AppendChild( child );
 				child->RemoveReference();
@@ -131,128 +131,6 @@ public:
 		{
 			int fontPt = GetProperty<int>( "font-size" );
 			maxLines = GetProperty<int>("height") / ( fontPt > 0 ? fontPt : 1 );
-		}
-	}
-
-
-	void q2rml( const char *in, Rocket::Core::Element *parent )
-	{
-		const char *p;
-		Rocket::Core::String out;
-		Rocket::Core::Element *child = NULL;
-		bool span = false;
-
-		if ( !*in )
-		{
-			return;
-		}
-
-		for ( p = in; p && *p; ++p )
-		{
-			if ( *p == '<' )
-			{
-				out.Append( "&lt;" );
-			}
-
-			else if ( *p == '>' )
-			{
-				out.Append( "&gt;" );
-			}
-
-			else if ( *p == '&' )
-			{
-				out.Append( "&amp;" );
-			}
-
-			else if ( *p == '\n' )
-			{
-				// Child element initialized.
-				if ( span )
-				{
-					span = false;
-				}
-
-				// If not intialized, probably the first one, and should be white.
-				else
-				{
-					Rocket::Core::XMLAttributes xml;
-					child = Rocket::Core::Factory::InstanceElement( parent, "#text", "span", xml );
-					child->SetProperty( "color", "#FFFFFF" );
-				}
-
-				static_cast<Rocket::Core::ElementText *>( child )->SetText( out );
-				parent->AppendChild( child );
-				child->RemoveReference();
-				parent->AppendChild( ( child = Rocket::Core::Factory::InstanceElement( parent, "*", "br", Rocket::Core::XMLAttributes() ) ) );
-				child->RemoveReference();
-				out.Clear();
-			}
-
-			// Convert ^^ to ^
-			else if ( *p == '^' && *( p + 1 ) == '^' )
-			{
-				p++;
-				out.Append( "^" );
-			}
-
-			else if ( Q_IsColorString( p ) )
-			{
-				Rocket::Core::XMLAttributes xml;
-				int code = ColorIndex( *++p );
-				char c = *p;
-
-				// Child element initialized
-				if ( span )
-				{
-					span = false;
-					static_cast<Rocket::Core::ElementText *>( child )->SetText( out );
-					parent->AppendChild( child );
-					child->RemoveReference();
-					out.Clear();
-				}
-
-				// If not intialized, probably the first one, and should be white.
-				else if ( !out.Empty() )
-				{
-					Rocket::Core::XMLAttributes xml;
-					child = Rocket::Core::Factory::InstanceElement( parent, "#text", "span", xml );
-					child->SetProperty( "color", "#FFFFFF" );
-					static_cast<Rocket::Core::ElementText *>( child )->SetText( out );
-					parent->AppendChild( child );
-					child->RemoveReference();
-					out.Clear();
-				}
-
-
-				child = Rocket::Core::Factory::InstanceElement( parent, "#text", "span", xml );
-				child->SetProperty( "color", va( "#%02X%02X%02X",
-								 ( int )( g_color_table[ code ][ 0 ] * 255 ),
-								 ( int )( g_color_table[ code ][ 1 ] * 255 ),
-								 ( int )( g_color_table[ code ][ 2 ] * 255 ) ) );
-				out.Append( va( "^%c", c ) );
-				span = true;
-			}
-
-			else
-			{
-				out.Append( *p );
-			}
-		}
-
-		if ( span && child && !out.Empty() )
-		{
-			static_cast<Rocket::Core::ElementText *>( child )->SetText( out );
-			parent->AppendChild( child );
-			child->RemoveReference();
-			span = false;
-		}
-
-		else if ( !span && !child && !out.Empty() )
-		{
-			child = Rocket::Core::Factory::InstanceElement( parent, "#text", "span", Rocket::Core::XMLAttributes() );
-			static_cast<Rocket::Core::ElementText *>( child )->SetText( out );
-			parent->AppendChild( child );
-			child->RemoveReference();
 		}
 	}
 
