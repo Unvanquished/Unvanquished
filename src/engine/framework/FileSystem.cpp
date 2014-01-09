@@ -625,6 +625,14 @@ bool ParsePakName(const char* begin, const char* end, std::string& name, std::st
 	return true;
 }
 
+std::string MakePakName(Str::StringRef name, Str::StringRef version, Opt::optional<uint32_t> checksum)
+{
+	if (checksum)
+		return Str::Format("%s_%s_%08x", name, version, *checksum);
+	else
+		return Str::Format("%s_%s", name, version);
+}
+
 const std::vector<PakInfo>& GetAvailablePaks()
 {
 	return availablePaks;
@@ -2262,7 +2270,7 @@ const char* FS_LoadedPaks()
 			continue;
 		if (info[0])
 			Q_strcat(info, sizeof(info), " ");
-		Q_strcat(info, sizeof(info), va("%s_%s_%08x", x.name.c_str(), x.version.c_str(), *x.checksum));
+		Q_strcat(info, sizeof(info), FS::MakePakName(x.name, x.version, x.checksum).c_str());
 	}
 	return info;
 }
@@ -2314,19 +2322,24 @@ qboolean FS_ComparePaks(char* neededpaks, int len, qboolean dlstring)
 	*neededpaks = '\0';
 	for (auto& x: fs_missingPaks) {
 		if (dlstring) {
-			Q_strcat(neededpaks, len, va("@%s_%s_%08x@", std::get<0>(x).c_str(), std::get<1>(x).c_str(), std::get<2>(x)));
-			const char* pakName = va("pkg/%s_%s.pk3", std::get<0>(x).c_str(), std::get<1>(x).c_str());
-			if (FS_FileExists(pakName))
-				Q_strcat(neededpaks, len, va("pkg/%s_%s_%08x.pk3", std::get<0>(x).c_str(), std::get<1>(x).c_str(), std::get<2>(x)));
+			Q_strcat(neededpaks, len, "@");
+			Q_strcat(neededpaks, len, FS::MakePakName(std::get<0>(x), std::get<1>(x), std::get<2>(x)).c_str());
+			Q_strcat(neededpaks, len, "@");
+			std::string pakName = Str::Format("pkg/%s.pk3", FS::MakePakName(std::get<0>(x), std::get<1>(x)));
+			if (FS::HomePath::FileExists(pakName))
+				Q_strcat(neededpaks, len, va("pkg/%s.pk3", FS::MakePakName(std::get<0>(x), std::get<1>(x), std::get<2>(x)).c_str()));
 			else
-				Q_strcat(neededpaks, len, pakName);
+				Q_strcat(neededpaks, len, pakName.c_str());
 		} else {
-			Q_strcat(neededpaks, len, va("%s_%s.pk3", std::get<0>(x).c_str(), std::get<1>(x).c_str()));
+			Q_strcat(neededpaks, len, va("%s.pk3", FS::MakePakName(std::get<0>(x), std::get<1>(x)).c_str()));
 			if (FS::FindPak(std::get<0>(x), std::get<1>(x))) {
 				Q_strcat(neededpaks, len, " (local file exists with wrong checksum)");
 #ifndef DEDICATED
-				if (CL_WWWBadChecksum(va("%s_%s_%08x", std::get<0>(x).c_str(), std::get<1>(x).c_str(), std::get<2>(x))))
-					FS_Delete(va("pkg/%s_%s.pk3", std::get<0>(x).c_str(), std::get<1>(x).c_str()));
+				if (CL_WWWBadChecksum(FS::MakePakName(std::get<0>(x), std::get<1>(x), std::get<2>(x)).c_str())) {
+					try {
+						FS::HomePath::DeleteFile(Str::Format("pkg/%s.pk3", FS::MakePakName(std::get<0>(x), std::get<1>(x))));
+					} catch (std::system_error&) {}
+				}
 #endif
 			}
 		}

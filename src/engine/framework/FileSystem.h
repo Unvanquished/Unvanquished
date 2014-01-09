@@ -424,6 +424,9 @@ const PakInfo* FindPak(Str::StringRef name, Str::StringRef version, uint32_t che
 // Extract a name, version and optional checksum from a pak filename
 bool ParsePakName(const char* begin, const char* end, std::string& name, std::string& version, Opt::optional<uint32_t>& checksum);
 
+// Generate a pak name from a name, version and optional checksum
+std::string MakePakName(Str::StringRef name, Str::StringRef version, Opt::optional<uint32_t> checksum = Opt::nullopt);
+
 // Get the list of available paks
 const std::vector<PakInfo>& GetAvailablePaks();
 

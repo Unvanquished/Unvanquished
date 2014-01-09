@@ -1024,7 +1024,7 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 
 					if ( success )
 					{
-						Q_strncpyz( cl->downloadURL, checksum ? va("%s/%s_%s_%08x", sv_wwwBaseURL->string, name.c_str(), version.c_str(), *checksum) : va("%s/%s_%s", sv_wwwBaseURL->string, name.c_str(), version.c_str()),
+						Q_strncpyz( cl->downloadURL, va("%s/%s", sv_wwwBaseURL->string, FS::MakePakName(name, version, checksum).c_str()),
 						            sizeof( cl->downloadURL ) );
 
 						//bani - prevent multiple download notifications
