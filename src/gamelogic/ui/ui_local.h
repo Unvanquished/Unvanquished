@@ -304,8 +304,9 @@ typedef struct
 	int                 helpCount;
 	int                 helpIndex;
 
-	int                 weapons;
+	int                 weapon;
 	int                 upgrades;
+	int                 credits;
 
 	serverStatus_t      serverStatus;
 
