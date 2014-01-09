@@ -5,25 +5,24 @@
 		<style>
 			body
 			{
-				width: 70%;
-				height: 50%;
+				width: 40%;
+				height: 30%;
 				margin: auto;
 			}
 
 			div
 			{
-				position: relative;
-				left: 20%;
 				float: left;
 			}
 			div#list
 			{
-				width: 30%;
+				width: 15%;
 				height: 100%;
 			}
 
 			div#info
 			{
+				float: right;
 				width: 70%;
 				height: 100%;
 				overflow-y: auto;
@@ -41,23 +40,21 @@
 			}
 			div#buttons
 			{
+				float: right;
 				position: absolute;
 				height: 3%;
-				width: 100%;
-				bottom: 20%;
+				bottom: 0px;
+				right: 0px;
 			}
-			button
+			div#buttons button
 			{
+				position: relative;
 				float: right;
-				font-size: 18;
-			}
-			button:first-child
-			{
-				margin-right: 60px;
+				bottom: 0px;
 			}
 		</style>
 	</head>
-	<body id="humanspawn" onShow="buildDS humanSpawnItems default">
+	<body id="humanspawn" template="unvwindow" onShow="buildDS humanSpawnItems default">
 		<div id="list">
 		<datagrid id="team"  source="humanSpawnItems.default">
 			<col fields="name" width="100%"/>
