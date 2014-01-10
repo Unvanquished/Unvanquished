@@ -97,7 +97,9 @@ static void CG_Rocket_BuildDS( void )
 
 static void CG_Rocket_EventExec( void )
 {
-	trap_SendConsoleCommand( CG_Args() );
+	const char *args = CG_Args();
+	args = Q_stristr( args, " ");
+	trap_SendConsoleCommand( args );
 }
 
 static void CG_Rocket_EventCvarForm( void )
