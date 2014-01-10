@@ -102,32 +102,6 @@ static void CG_Rocket_EventExec( void )
 	trap_SendConsoleCommand( args );
 }
 
-static void CG_Rocket_EventCvarForm( void )
-{
-	static char params[ BIG_INFO_STRING ];
-	static char key[BIG_INFO_VALUE], value[ BIG_INFO_VALUE ];
-	const char *s;
-
-	trap_Rocket_GetEventParameters( params, sizeof( params ) );
-
-	if ( !*params )
-	{
-		return;
-	}
-
-	s = params;
-
-	while ( *s )
-	{
-		Info_NextPair( &s, key, value );
-		if ( !Q_strnicmp( "cvar ", key, 5 ) )
-		{
-
-			trap_Cvar_Set( key + 5, value );
-		}
-	}
-}
-
 static void CG_Rocket_SortDS( void )
 {
 	char name[ 100 ], table[ 100 ], sortBy[ 100 ];
@@ -229,7 +203,6 @@ static const eventCmd_t eventCmdList[] =
 	{ "blur", &CG_Rocket_EventBlur },
 	{ "buildDS", &CG_Rocket_BuildDS },
 	{ "close", &CG_Rocket_EventClose },
-	{ "cvarform", &CG_Rocket_EventCvarForm },
 	{ "exec", &CG_Rocket_EventExec },
 	{ "execDS", &CG_Rocket_ExecDS },
 	{ "filterDS", &CG_Rocket_FilterDS },
