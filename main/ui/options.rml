@@ -65,28 +65,21 @@
 				text-align: center;
 				font-size: 16;
 			}
+			panel p
+			{
+				font-size: 14;
+				text-align: left;
+			}
 		</style>
 	</head>
 	<body id="options" template="unvwindow" onload="buildDS resolutions; sortDS resolutions default width">
 		<tabset id="options">
 		<tab><p class="long">Quick Options</p></tab>
 		<panel>
-		<form onsubmit="store; hide options">
-			<div>
-				<p>
-					<dataselect source="resolutions.default" fields="width,height" formatter="Resolution" />
-				</p>
-				<p>
-					<keybind cmd="+sprint" team="humans"/>
-				</p>
-				<p id="bad_warning" style="display: none;">Are you sure about this? Bad graphics are just plain <em>bad.</em></p>
-				<p>
+			<p>Name: <input type="text" cvar="name" /></p>
+			<p>VoIP: <input type="checkbox" cvar="cl_voip" /></p>
+			<p>Volume: <input type="range" min="0" max="1" step="0.01" cvar="audio.volume.master" /></p>
 
-				</p>
-			</div>
-			<input type="submit" value="accept">Accept</input>
-			<input type="submit" value="cancel">Cancel</input>
-		</form>
 		</panel>
 		<tab><p>Player</p></tab>
 		<panel>
