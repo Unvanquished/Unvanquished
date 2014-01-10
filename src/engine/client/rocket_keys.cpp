@@ -319,7 +319,7 @@ int utf8_to_ucs2( const unsigned char *input )
 
 void Rocket_ProcessTextInput( int key )
 {
-	if ( !menuContext )
+	if ( !menuContext || cls.keyCatchers & KEYCATCH_CONSOLE )
 	{
 		return;
 	}
@@ -338,7 +338,7 @@ void Rocket_ProcessTextInput( int key )
 
 void Rocket_MouseMove( int x, int y )
 {
-	if ( !menuContext )
+	if ( !menuContext || cls.keyCatchers & KEYCATCH_CONSOLE )
 	{
 		return;
 	}
