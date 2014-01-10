@@ -82,11 +82,40 @@ scrollbarvertical sliderbar
 	width: 10px;
 }
 
+input.range slidertrack
+{
+	background-decorator: image;
+	background-image-src: /ui/assets/backarrow
+	height: 10px;
+	width: 50px;
+}
+
+input.range slidertrack:hover,
+input.range slidertrack:active
+{
+	background-color-multitplier: yellow;
+}
+
+input.range sliderbar
+{
+	background-decorator: image;
+	background-image-src: /ui/assets/neutral/colon;
+	height: 20px;
+	width: 10px;
+}
+
+input.range sliderbar:active,
+input.range sliderbar:hover,
+{
+	background-color-multitplier: yellow;
+}
+
 scrollbarvertical sliderbar:hover, scrollbarvertical sliderbar:active
 {
 	background-image-src: /ui/assets/scrollbar_thumb;
 }
 
+input.range sliderarrowdec,
 scrollbarvertical sliderarrowdec
 {
 	icon-decorator: image;
@@ -95,6 +124,7 @@ scrollbarvertical sliderarrowdec
 	min-height: 10px;
 }
 
+input.range sliderarrowinc,
 scrollbarvertical sliderarrowinc
 {
 	icon-decorator: image;

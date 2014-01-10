@@ -5,9 +5,9 @@
 				width:100%;
 				height:100%;
 				background-decorator: image;
-				background-image:/ui/assets/mainmenu;				
+				background-image:/ui/assets/mainmenu;
 			}
-		
+
 			div
 			{
 				font-family: DejaVu Sans;
@@ -43,7 +43,7 @@
 				text-align: center;
 				tab-index: auto;
 				background-decorator: image;
-				background-image: /ui/assets/buttons.png 0px 222px 311px 333px ; 
+				background-image: /ui/assets/buttons.png 0px 222px 311px 333px ;
 			}
 			button:hover
 			{
@@ -53,7 +53,7 @@
 			button:active
 			{
 				color: white;
-				background-image: /ui/assets/buttons.png 0px 111px 311px 222px; 
+				background-image: /ui/assets/buttons.png 0px 111px 311px 222px;
 			}
 			#sidebar .separator
 			{
@@ -83,7 +83,7 @@
 			<div class="separator"></div>
 			<button onClick="exec quit">Quit</button>
 		</div>
-		
+
 		<img style="position: fixed; width: 50%; left: 30%; top: 46%;" src="/ui/assets/human.png"/>
 		<img style="position: fixed; width: 15%; left: 50%; top: 78%;" src="/ui/assets/dretch3.png"/>
 		<img style="position: fixed; width: 25%; left: 25%; top: 78%;" src="/ui/assets/dretch2.png"/>
