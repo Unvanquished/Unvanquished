@@ -1022,6 +1022,227 @@ static const byte mipBlendColors[ 16 ][ 4 ] =
 };
 
 /*
+==================
+R_UnpackDXT5A
+==================
+*/
+static void
+R_UnpackDXT5A( const byte *in, byte *out )
+{
+	unsigned int bits0, bits1, val;
+	int i;
+
+	bits0 = in[2] + (in[3] << 8) + (in[4] << 16);
+	bits1 = in[5] + (in[6] << 8) + (in[7] << 16);
+
+	if( in[0] > in[1] ) {
+		for( i = 0; i < 8; i++ ) {
+			val = bits0 & 7; bits0 >>= 3;
+			switch( val ) {
+			case 0: val = in[0]; break;
+			case 1: val = in[1]; break;
+			case 2: val = (6 * in[0] + 1 * in[1]) / 7; break;
+			case 3: val = (5 * in[0] + 2 * in[1]) / 7; break;
+			case 4: val = (4 * in[0] + 3 * in[1]) / 7; break;
+			case 5: val = (3 * in[0] + 4 * in[1]) / 7; break;
+			case 6: val = (2 * in[0] + 5 * in[1]) / 7; break;
+			case 7: val = (1 * in[0] + 6 * in[1]) / 7; break;
+			}
+			out[ i ] = val;
+
+			val = bits1 & 7; bits1 >>= 3;
+			switch( val ) {
+			case 0: val = in[0]; break;
+			case 1: val = in[1]; break;
+			case 2: val = (6 * in[0] + 1 * in[1]) / 7; break;
+			case 3: val = (5 * in[0] + 2 * in[1]) / 7; break;
+			case 4: val = (4 * in[0] + 3 * in[1]) / 7; break;
+			case 5: val = (3 * in[0] + 4 * in[1]) / 7; break;
+			case 6: val = (2 * in[0] + 5 * in[1]) / 7; break;
+			case 7: val = (1 * in[0] + 6 * in[1]) / 7; break;
+			}
+			out[ i + 8 ] = val;
+		}
+	} else {
+		for( i = 0; i < 8; i++ ) {
+			val = bits0 & 7; bits0 >>= 3;
+			switch( val ) {
+			case 0: val = in[0]; break;
+			case 1: val = in[1]; break;
+			case 2: val = (4 * in[0] + 1 * in[1]) / 5; break;
+			case 3: val = (3 * in[0] + 2 * in[1]) / 5; break;
+			case 4: val = (2 * in[0] + 3 * in[1]) / 5; break;
+			case 5: val = (1 * in[0] + 4 * in[1]) / 5; break;
+			case 6: val = 0;
+			case 7: val = 0xff;
+			}
+			out[ i ] = val;
+
+			val = bits1 & 7; bits1 >>= 3;
+			switch( val ) {
+			case 0: val = in[0]; break;
+			case 1: val = in[1]; break;
+			case 2: val = (4 * in[0] + 1 * in[1]) / 5; break;
+			case 3: val = (3 * in[0] + 2 * in[1]) / 5; break;
+			case 4: val = (2 * in[0] + 3 * in[1]) / 5; break;
+			case 5: val = (1 * in[0] + 4 * in[1]) / 5; break;
+			case 6: val = 0;
+			case 7: val = 0xff;
+			}
+			out[ i + 8 ] = val;
+		}
+	}
+}
+
+static void
+R_PackDXT1_Green( const byte *in, byte *out )
+{
+	int i;
+	byte min, max;
+	byte lim1, lim2, lim3;
+	unsigned int bits0, bits1;
+
+	min = max = in[ 0 ];
+	for( i = 1; i < 16; i++ ) {
+		if( in[ i ] < min )
+			min = in[ i ];
+		if( in[ i ] > max )
+			max = in[ i ];
+	}
+	
+	// truncate min and max to 6 bits
+	i = (max - min) >> 3;
+	min = (min + i) & 0xfc;
+	max = (max - i) & 0xfc;
+	if( min == max ) {
+		if( max == 0xfc ) {
+			min -= 4;
+		} else {
+			max += 4;
+		}
+	}
+	min |= min >> 6;
+	max |= max >> 6;
+
+	// find best match for every pixel
+	lim1 = (max + 5 * min) / 6;
+	lim2 = (max + min) / 2;
+	lim3 = (5 * max + min) / 6;
+	bits0 = bits1 = 0;
+	for( i = 7; i >= 0; i-- ) {
+		bits0 <<= 2;
+		bits1 <<= 2;
+		if( in[ i ] > lim2 ) {
+			if( in[ i ] > lim3 ) {
+				bits0 |= 0;
+			} else {
+				bits0 |= 2;
+			}
+		} else {
+			if( in[ i ] > lim1 ) {
+				bits0 |= 3;
+			} else {
+				bits0 |= 1;
+			}
+		}
+		if( in[ i + 8 ] > lim2 ) {
+			if( in[ i + 8 ] > lim3 ) {
+				bits1 |= 0;
+			} else {
+				bits1 |= 2;
+			}
+		} else {
+			if( in[ i + 8 ] > lim1 ) {
+				bits1 |= 3;
+			} else {
+				bits1 |= 1;
+			}
+		}
+	}
+
+	// write back DXT1 format data into out[]
+	out[0] = (max & 0x1c) << 3;
+	out[1] = 0xf8 | (max >> 5);
+	out[2] = (min & 0x1c) << 3;
+	out[3] = 0xf8 | (min >> 5);
+	out[4] = bits0 & 0xff;
+	out[5] = (bits0 >> 8) & 0xff;
+	out[6] = bits1 & 0xff;
+	out[7] = (bits1 >> 8) & 0xff;
+}
+
+/*
+==================
+R_ConvertBC5Image
+
+If the OpenGL doesn't support BC5 (= OpenGL rgtc) textures, convert
+them to BC3 (= dxt5). Sampling the original texture yields RGBA = XY01,
+the converted texture yields RGBA = 1Y0X, so the shader can reconstruct
+XY as vec2(tex.x * tex.a, tex.y).
+==================
+*/
+static void
+R_ConvertBC5Image(const byte **in, byte **out, int numMips, int numLayers,
+		  int width, int height, qboolean is3D )
+{
+	int blocks = 0;
+	int mipWidth, mipHeight, mipLayers, mipSize;
+	byte data[16], *to;
+	const byte *from;
+	int i, j, k;
+
+	// Allocate buffer for converted images
+	mipWidth = width;
+	mipHeight = height;
+	mipLayers = numLayers;
+	for ( i = 0; i < numMips; i++ ) {
+		mipSize = ((mipWidth + 3) >> 2) * ((mipHeight + 3) >> 2);
+
+		blocks += mipSize * mipLayers;
+
+		if( mipWidth > 1 )
+			mipWidth >>= 1;
+		if( mipHeight > 1 )
+			mipHeight >>= 1;
+		if( is3D && mipLayers > 1 )
+			mipLayers >>= 1;
+	}
+
+	*out = to = (byte *)ri.Hunk_AllocateTempMemory( blocks * 16 );
+
+	// Convert each mipmap
+	mipWidth = width;
+	mipHeight = height;
+	mipLayers = numLayers;
+	for ( i = 0; i < numMips; i++ ) {
+		mipSize = ((mipWidth + 3) >> 2) * ((mipHeight + 3) >> 2);
+
+		for( j = 0; j < mipLayers; j++ ) {
+			from = in[ i * numLayers + j ];
+			in [ i * numLayers + j ] = to;
+
+			for( k = 0; k < mipSize; k++ ) {
+				// red channel is unchanged
+				Com_Memcpy( to, from, 8 );
+
+				// green channel is converted to DXT1
+				R_UnpackDXT5A( from + 8, data );
+				R_PackDXT1_Green( data, to + 8 );
+
+				from += 16; to += 16;
+			}
+		}
+
+		if( mipWidth > 1 )
+			mipWidth >>= 1;
+		if( mipHeight > 1 )
+			mipHeight >>= 1;
+		if( is3D && mipLayers > 1 )
+			mipLayers >>= 1;
+	}
+}
+
+/*
 ===============
 R_UploadImage
 
@@ -1226,21 +1447,30 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 		}
 		else if ( image->bits & IF_BC4 ) {
 			if( !GLEW_ARB_texture_compression_rgtc ) {
-				// convert to BC1/dxt1
-
 				format = GL_NONE;
 				internalFormat = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
 				blockSize = 8;
+
+				if( dataArray ) {
+					// convert to BC1/dxt1
+				}
 			}
 			else {
 				format = GL_NONE;
-				internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+				internalFormat = GL_COMPRESSED_RED_RGTC1;
 				blockSize = 8;
 			}
 		}
 		else if ( image->bits & IF_BC5 ) {
 			if( !GLEW_ARB_texture_compression_rgtc ) {
-				// convert to BC3/dxt5
+				format = GL_NONE;
+				internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+				blockSize = 16;
+
+				R_ConvertBC5Image( dataArray, &scaledBuffer,
+						   numMips, numLayers,
+						   scaledWidth, scaledHeight,
+						   image->type == GL_TEXTURE_3D );
 			}
 			else {
 				format = GL_NONE;
@@ -1504,9 +1734,6 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 
 		for ( i = 0; i < numMips; i++ )
 		{
-			if( image->type == GL_TEXTURE_3D && mipLayers > 1 )
-				mipLayers >>= 1;
-
 			mipSize = ((mipWidth + 3) >> 2)
 			  * ((mipHeight + 3) >> 2) * blockSize;
 
@@ -1536,7 +1763,7 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 					mipWidth >>= 1;
 				if( mipHeight > 1 )
 					mipHeight >>= 1;
-				if( mipLayers > 1 )
+				if( image->type == GL_TEXTURE_3D && mipLayers > 1 )
 					mipLayers >>= 1;
 			}
 		}

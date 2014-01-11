@@ -105,7 +105,10 @@ vec2 texGlow = var_TexDiffuseGlow.pq;
 	}
 
 	// compute normal in tangent space from normalmap
-	vec3 N = 2.0 * (texture2D(u_NormalMap, texNormal).xyz - 0.5);
+	vec3 N = texture2D(u_NormalMap, texNormal.st).xyw;
+	N.x *= N.z;
+	N.xy = 2.0 * N.xy - 1.0;
+	N.z = sqrt(1.0 - dot(N.xy, N.xy));
 	
 	#if defined(r_NormalScale)
 	N.z *= r_NormalScale;

@@ -140,7 +140,10 @@ void	main()
 
 	vec3 N = normalize(var_Normal);
 
-	vec3 N2 = 2.0 * (texture2D(u_NormalMap, texNormal).xyz - 0.5);
+	vec3 N2 = texture2D(u_NormalMap, texNormal.st).xyw);
+	N2.x *= N2.z;
+	N2.xy = 2.0 * N2.xy - 1.0;
+	N2.z = sqrt(1.0 - dot(N2.xy, N2.xy));
 	N2 = normalize(tangentToWorldMatrix * N2);
 
 	// compute fresnel term
