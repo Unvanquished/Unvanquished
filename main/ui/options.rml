@@ -70,30 +70,107 @@
 				font-size: 14;
 				text-align: left;
 			}
+
+input.range {
+	padding-bottom:4px;
+}
+
+input.range slidertrack
+{
+	background:#83fff522;
+	border-style:solid;
+	border-width:1px;
+	border-color:#83fff555;
+	height: 10px;
+	width: 50px;
+	
+}
+
+input.range slidertrack:hover,
+input.range slidertrack:active
+{
+	background-color-multitplier: yellow;
+}
+
+input.range sliderbar
+{
+	border-style:solid;
+	border-width:1px;
+	border-color:#83fff588;
+	background:#136D67;
+	margin-top:-6px;
+	height: 20px;
+	width: 10px;
+}
+
+input.range sliderbar:active,
+input.range sliderbar:hover
+{
+	background:#83fff5;
+}			
+			
+			
+			
+			
 		</style>
 	</head>
 	<body id="options" template="unvwindow" onload="buildDS resolutions; sortDS resolutions default width">
 		<tabset id="options">
-		<tab><p class="long">Quick Options</p></tab>
+		<tab>Quick Options</tab>
 		<panel>
-			<p>Name: <input type="text" cvar="name" /></p>
-			<p>VoIP: <input type="checkbox" cvar="cl_voip" /></p>
-			<p>Volume: <input type="range" min="0" max="1" step="0.01" cvar="audio.volume.master" /></p>
+			<div><label>Bla</label><input type="checkbox"></div>
+			<div><label>Profile</label>
+			<select name="profile">
+				<option value="Me">Me</option>
+				<option value="Anonyme" selected="">Anonyme</option>
+				<option value="Granger">Granger</option>
+			</select></div>
+			<div><label>Name</label><input type="text" cvar="name"></div>
+			
+			<div><label>Resolution</label>
+			<select name="resolution">
+				<option value="800x600">800x600</option>
+				<option value="800x600" selected="">800x600</option>
+				<option value="800x600">800x600</option>
+			</select></div>
+			
+			<div><label>Video Quality</label>
+			<select name="videoquality">
+				<option value="low">Low</option>
+				<option value="medium">Medium</option>
+				<option value="hight" selected="">Hight</option>
+				<option value="ultra">Ultra</option>
+			</select></div>
+			
+			<div><label>Video Brightness</label><input type="range" min="0" max="1" step="0.01"  /></div>
+			<div><label>Mouse Sensitivity</label><input type="range" min="0" max="1" step="0.01"  /></div>
+			<div><label>Effect Volume</label><input type="range" min="0" max="1" step="0.01" cvar="audio.volume.master" /></div>
+			<div><label>Music Volume</label><input type="range" min="0" max="1" step="0.01" cvar="audio.volume.master" /></div>
+			
+			<div><label>Network Connection</label>
+			<select name="network">
+				<option value="modem">Modem</option>
+				<option value="isdn">ISDN</option>
+				<option value="dsl" selected="">DSL</option>
+			</select>
+			</div>
 
 		</panel>
-		<tab><p>Player</p></tab>
+		<tab>Player</tab>
 		<panel>
-		Stuff
+		<p>Name: <input type="text" cvar="name" /></p>
+			<p>VoIP: <input type="checkbox" cvar="cl_voip" /></p>
+			<p>Volume: <input type="range" min="0" max="1" step="0.01" cvar="audio.volume.master" /></p>
 		</panel>
-		<tab><p>Controls</p></tab>
+		<tab>Controls</tab>
 		<panel>
 		More stuff
 		</panel>
-		<tab><p>Graphics</p></tab>
+		<tab>Graphics</tab>
 		<panel>
 		Other stuff
 		</panel>
-		<tab><p>Audio</p></tab>
+		<tab>Audio</tab>
 		<panel>
 		Some stuff
 		</panel>
