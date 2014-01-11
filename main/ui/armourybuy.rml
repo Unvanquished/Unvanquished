@@ -6,71 +6,17 @@
 			body
 			{
 				padding-top:10%;
-				
-				text-align:center;
-			}
-			
-			panel{
-				background:#0000DD22;
-			}
-			
-.circlemenu tab{
-	width: 8%;
-	white-space: nowrap;
-	padding:5px 20px 0px 20px ;
-}
-
-.circlemenu tab:selected{
-	font-size:2em;
-	border-bottom-style:solid;
-	border-bottom-width:3px;
-	border-bottom-color:#83fff5;
-}
-
-			
-			div#foo{
-
-				
-			}
-			
-			
-			circlemenu
-			{	
-				display: block;
-				width: 500px;
-				height: 500px;
-				radius: 140px;
-				vertical-align: middle;
-				text-align: center;
-				background:#DDDDDD22;
-			}
-
-			button, button:hover
-			{
-				/*margin-left:-20px;*/
-				display: block;
-				padding:10px;
-				width:2%;
-				height:2%;
-				vertical-align: middle;
+				width:100%;
+				height:100%;
+				background:#00000066;
 				text-align:center;
 			}
 
-			button:hover
-			{
-				background-color-multiplier: rgb(12,12,12);
-			}
 
-			button img
-			{
-				display: block;
-				width: 50px;
-				height: 50px;
-				margin: auto;
-			}
+			
 		</style>
 	</head>
-	<body id="armourybuy" class=" human" onShow="buildDS armouryBuyList weapons; buildDS armouryBuyList upgrades">
+	<body id="armourybuy" class="circlemenu human" onShow="buildDS armouryBuyList weapons; buildDS armouryBuyList upgrades">
 	<div id="foo">
 	<tabset class="circlemenu">
 		<tab>Weapons</tab>
@@ -82,6 +28,15 @@
 			<circlemenu source="armouryBuyList.upgrades" fields="num" formatter="CMArmouryBuyUpgrades" cancel="hide armourybuy"/>
 		</panel>
 	</tabset>
+	
+	<div class="infobox">
+		<h2>Weapon Name</h2>
+		<p><div class="attr">Price:</div><div class="bar">0</div></p>
+		<p><div class="attr">Range:</div><div class="bar"><div class="barValue" style="width:70%;"></div></div></p>
+		<p><div class="attr">Damage:</div><div class="bar"><div class="barValue" style="width:30%;"></div></div></p>
+		<p><div class="attr">Fire Rate:</div><div class="bar"><div class="barValue" style="width:50%;"></div></div></p>
+		<p class="text">Basic weapon. Cased projectile weapon, with a slow clip based reload system.</p>
+	</div>
 	</div>
 	</body>
 </rml>

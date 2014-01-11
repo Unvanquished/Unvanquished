@@ -74,14 +74,14 @@
 			<img style="width: 100%;" src="/ui/assets/logo" />
 		</div>
 		<div id="sidebar">
-			<button onClick="show serverbrowser">Play</button>
-			<button onClick="show options">Options</button>
+			<button class="menuButton" onClick="show serverbrowser">Play</button>
+			<button class="menuButton" onClick="show options">Options</button>
 			<div class="separator"></div>
-			<button onClick="show help">Guide</button>
-			<button onClick="show mods">Mods</button>
-			<button onClick="show demos">Demos</button>
+			<button class="menuButton" onClick="show help">Guide</button>
+			<button class="menuButton" onClick="show mods">Mods</button>
+			<button class="menuButton" onClick="show demos">Demos</button>
 			<div class="separator"></div>
-			<button onClick="exec quit">Quit</button>
+			<button class="menuButton" onClick="exec quit">Quit</button>
 		</div>
 
 		<img style="position: fixed; width: 50%; left: 30%; top: 46%;" src="/ui/assets/human.png"/>
