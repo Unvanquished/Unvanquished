@@ -157,10 +157,98 @@ input.text
 	border-width:1px;
 	border-color:#83fff5;
 	background: #00000022;
-	width:200px;
+	width:170px;
 	height:2em;
 	padding:0.2em 0.4em;
 }			
+			
+			
+/* Specify the dimensions of the select element. */
+select
+{
+	width: 170px;
+	height: 23px;
+}
+
+/* Specify the dimensions of the value element within the select element. Padding is used to position the
+   value correctly internally. */
+select selectvalue
+{
+	width: 170px;
+	height: 23px;
+	padding:0.1em 0.4em;
+	
+	color:#83fff5;
+	border-style:solid;
+	border-width:1px;
+	border-color:#83fff5;
+	background: #00000022;
+}
+
+/* Animate the value field when it is hovered. */
+select selectvalue:hover
+{
+	background: #00000055;
+}
+
+/* Fix the size of the select arrow decorate the element. */
+select selectarrow
+{
+	margin-right:-5px;
+	margin-top:5px;
+	width:15px;
+	height:15px;
+	padding:2px;
+	icon-decorator: image;
+	icon-image: /ui/assets/select.png;
+}
+
+/* Animate the arrow when hovered. */
+select selectarrow:hover
+{
+	background: #54FFED;
+}
+
+/* Animate the arrow when the button is pressed or the box is visible. */
+select selectarrow:active,
+select selectarrow:checked,
+{
+}
+
+/* Fix the width of the select box and fiddle with the margins to get it in exactly the right place. */
+select selectbox
+{
+	margin-left: 1px;
+	margin-top: 4px;
+	color:#83fff5;
+	border-style:solid;
+	border-width:1px;
+	border-color:#83fff5;
+	background: #051211DD;
+	width: 168px;
+	padding: 1px 4px 4px 4px;
+
+}
+
+/* Sizes the option element to take up the available width in the select box. */
+select selectbox option
+{
+	width: auto;
+	padding-left: 3px;
+}
+
+/* Specifies every second option in the selection box to have a white background. */
+select selectbox option:nth-child(even)
+{
+}
+
+/* Gives the red highlight to the selection box. */
+select selectbox option:hover
+{
+	background: #FFFFFF22;
+}
+			
+			
 			
 		</style>
 	</head>
