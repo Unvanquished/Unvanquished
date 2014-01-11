@@ -167,61 +167,6 @@ datagridexpand:active
 	icon-image-s: 39px 56px;
 }
 
-input.radio
-{
-	icon-decorator: image;
-	icon-image: /ui/assets/radio-check.png 28px 28px 193px 192px;
-}
-
-input.radio:hover, input.radio:checked:hover
-{
-	icon-image-s: 249px 414px;
-}
-
-
-input.radio:active, input.radio:checked:active
-{
-	icon-image-s: 474px 638px;
-}
-
-input.radio:checked, input.radio:checked:hover, input.radio.checked:active
-{
-	icon-image-t: 473px 641px;
-}
-
-input.checkbox
-{
-	icon-decorator: image;
-	icon-image: /ui/assets/radio-check.png 46px 268px 177px 399px;
-}
-
-input.checkbox:hover
-{
-	icon-image-s: 268px 399px;
-}
-
-input.checkbox:active
-{
-	icon-image-s: 490px 621px;
-}
-
-input.checkbox:checked
-{
-	icon-image-s: 46px 207px;
-	icon-image-t: 699px 844px;
-}
-
-input.checkbox:checked:hover
-{
-	icon-image-s: 268px 429px;
-	icon-image-t: 699px 844px;
-}
-
-input.checkbox:checked:active
-{
-	icon-image-s: 490px 651px;
-	icon-image-t: 699px 844px;
-}
 
 input.text
 {
