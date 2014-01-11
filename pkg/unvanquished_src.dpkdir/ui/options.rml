@@ -1,14 +1,16 @@
 <rml>
 	<head>
 		<title>Options</title>
-		<link type="text/template" href="templates/unvwindow.rml" />
+		<link type="text/rcss" href="css/unv.rcss" />
 		<style>
 			body
-			{
+			{	
+				
+				padding-top:100px;
 				width: 800px;
-				height: 350px;
-
+				height: 500px;
 				margin: auto;
+				text-align:center;
 			}
 
 			div#title_bar div#icon
@@ -18,253 +20,103 @@
 
 				display: none;
 			}
-
-			form div
-			{
-				width: 200px;
-				margin: auto;
-			}
-			tabset tabs
-			{
-				z-index: -1;
-				position: absolute;
-				top: 0px;
-				margin-top: -20px;
-				padding-left: 3%;
-			}
-			tab
-			{
-				height: 10px;
-				min-width: 50px;
-				max-width: 60px;
-				button-font-effect: none;
-				margin-top: 0px;
-				padding-top: 0px;
-				margin-left: 0px;
-				background-image-t:111px 171px;
-			}
-			tab:hover
-			{
-				background-image-t:222px 282px;
-			}
-			tab:selected
-			{
-				background-image-t: 0px 60px;
-			}
-			tab p
-			{
-				display: block;
-				text-align: center;
-				margin-top: 100%;
-			}
-			tab p.long
-			{
-				margin-left: -35%;
-				white-space: nowrap;
-				display: inline-block;
-				text-align: center;
-				font-size: 16;
-			}
-			panel p
-			{
-				font-size: 14;
-				text-align: left;
-			}
-
-input.range {
-	padding-bottom:4px;
-}
-
-input.range slidertrack
-{
-	background:#83fff522;
-	border-style:solid;
-	border-width:1px;
-	border-color:#83fff555;
-	height: 10px;
-	width: 50px;
-	
-}
-
-input.range slidertrack:hover,
-input.range slidertrack:active
-{
-	background-color-multitplier: yellow;
-}
-
-input.range sliderbar
-{
-	border-style:solid;
-	border-width:1px;
-	border-color:#83fff588;
-	background:#136D67;
-	margin-top:-6px;
-	height: 20px;
-	width: 10px;
-}
-
-input.range sliderbar:active,
-input.range sliderbar:hover
-{
-	background:#83fff5;
-}			
-			
-			
-input.checkbox
-{
-	padding-bottom:10px;
-	width:33px;
-	height:33px;
-	icon-decorator: image;
-	icon-image: /ui/assets/radio-check.png 444px 222px 666px 444px;
-}
-
-input.radio
-{	
-	padding-bottom:7px;
-	width:25px;
-	height:25px;
-	icon-decorator: image;
-	icon-image: /ui/assets/radio-check.png 444px 0px 666px 222px;
-}
-
-input.checkbox:hover,input.checkbox:checked:hover,
-input.radio:hover, input.radio:checked:hover
-{
-	icon-image-s: 222px 444px;
-}
-
-input.checkbox:active,input.checkbox:checked:active,
-input.radio:active, input.radio:checked:active
-{
-	icon-image-s: 0px 222px;
-}
-
-input.checkbox:checked,input.checkbox:checked:active,input.checkbox:checked:hover
-{
-	icon-image-t: 666px 888px;
-}
-
-input.radio:checked, input.radio:checked:hover, input.radio.checked:active
-{
-	icon-image-t: 444px 666px;
-}
-
-input.text
-{
-	color:#83fff5;
-	border-style:solid;
-	border-width:1px;
-	border-color:#83fff5;
-	background: #00000022;
-	width:170px;
-	height:2em;
-	padding:0.2em 0.4em;
-}			
-			
-			
-/* Specify the dimensions of the select element. */
-select
-{
-	width: 170px;
-	height: 23px;
-}
-
-/* Specify the dimensions of the value element within the select element. Padding is used to position the
-   value correctly internally. */
-select selectvalue
-{
-	width: 170px;
-	height: 23px;
-	padding:0.1em 0.4em;
-	
-	color:#83fff5;
-	border-style:solid;
-	border-width:1px;
-	border-color:#83fff5;
-	background: #00000022;
-}
-
-/* Animate the value field when it is hovered. */
-select selectvalue:hover
-{
-	background: #00000055;
-}
-
-/* Fix the size of the select arrow decorate the element. */
-select selectarrow
-{
-	margin-right:-5px;
-	margin-top:5px;
-	width:15px;
-	height:15px;
-	padding:2px;
-	icon-decorator: image;
-	icon-image: /ui/assets/select.png;
-}
-
-/* Animate the arrow when hovered. */
-select selectarrow:hover
-{
-	background: #54FFED;
-}
-
-/* Animate the arrow when the button is pressed or the box is visible. */
-select selectarrow:active,
-select selectarrow:checked,
-{
-}
-
-/* Fix the width of the select box and fiddle with the margins to get it in exactly the right place. */
-select selectbox
-{
-	margin-left: 1px;
-	margin-top: 4px;
-	color:#83fff5;
-	border-style:solid;
-	border-width:1px;
-	border-color:#83fff5;
-	background: #051211DD;
-	width: 168px;
-	padding: 1px 4px 4px 4px;
-
-}
-
-/* Sizes the option element to take up the available width in the select box. */
-select selectbox option
-{
-	width: auto;
-	padding-left: 3px;
-}
-
-/* Specifies every second option in the selection box to have a white background. */
-select selectbox option:nth-child(even)
-{
-}
-
-/* Gives the red highlight to the selection box. */
-select selectbox option:hover
-{
-	background: #FFFFFF22;
-}
-			
-			
 			
 		</style>
 	</head>
-	<body id="options" template="unvwindow" onload="buildDS resolutions; sortDS resolutions default width">
-		<tabset id="options">
+	<body id="options" onload="buildDS resolutions; sortDS resolutions default width">
+		<tabset class="options window">
 		<tab>Quick Options</tab>
 		<panel>
-			<div><label>Bla</label><input type="checkbox"></div>
-			<div><label>Bla</label><input type="radio"></div>
+			<div><label>Profile:</label>
+			<select name="profile">
+				<option value="Me">Me</option>
+				<option value="Anonyme" selected="">Anonyme</option>
+				<option value="Granger">Granger</option>
+			</select></div>
+			<div><label>Name:</label><input type="text" cvar="name" /></div>
+			
+			<div><label>Resolution:</label>
+			<select name="resolution">
+				<option value="800x600">800x600</option>
+				<option value="800x600" selected="">800x600</option>
+				<option value="800x600">800x600</option>
+			</select></div>
+			
+			<div><label>Video Quality:</label>
+			<select name="videoquality">
+				<option value="low">Low</option>
+				<option value="medium">Medium</option>
+				<option value="hight" selected="">Hight</option>
+				<option value="ultra">Ultra</option>
+			</select></div>
+			
+			<div><label>Video Brightness:</label><input type="range" min="0" max="1" step="0.01"  /></div>
+			<div><label>Mouse Sensitivity:</label><input type="range" min="0" max="1" step="0.01"  /></div>
+			<div><label>Effect Volume:</label><input type="range" min="0" max="1" step="0.01" cvar="audio.volume.master" /></div>
+			<div><label>Music Volume:</label><input type="range" min="0" max="1" step="0.01" cvar="audio.volume.master" /></div>
+			
+			<div><label>Network Connection:</label>
+			<select name="network">
+				<option value="modem">Modem</option>
+				<option value="isdn">ISDN</option>
+				<option value="dsl" selected="">DSL</option>
+			</select>
+			</div>
+
+		</panel>
+		<tab>Player</tab>
+		<panel>
+			<div><label>Name: </label><input type="text" cvar="name" /></div>
+			<div><label>VoIP: </label><input type="checkbox" cvar="cl_voip" /></div>
+			<div><label>Volume: </label><input type="range" min="0" max="1" step="0.01" cvar="audio.volume.master" /></div>
+		</panel>
+		<tab>Controls</tab>
+		<panel>
+			<div><label>Bla</label><input type="checkbox" /></div>
+			<div><label>Bla</label><input type="radio" /></div>
 			<div><label>Profile</label>
 			<select name="profile">
 				<option value="Me">Me</option>
 				<option value="Anonyme" selected="">Anonyme</option>
 				<option value="Granger">Granger</option>
 			</select></div>
-			<div><label>Name</label><input type="text" cvar="name"></div>
+			<div><label>Name</label><input type="text" cvar="name" /></div>
+			
+			<div><label>Resolution</label>
+			<select name="resolution">
+				<option value="800x600">800x600</option>
+				<option value="800x600" selected="">800x600</option>
+				<option value="800x600">800x600</option>
+			</select></div>
+			
+			<div><label>Video Quality</label>
+			<select name="videoquality">
+				<option value="low">Low</option>
+				<option value="medium">Medium</option>
+				<option value="hight" selected="">Hight</option>
+				<option value="ultra">Ultra</option>
+			</select></div>
+			
+			<div><label>Video Brightness</label><input type="range" min="0" max="1" step="0.01"  /></div>
+			<div><label>Mouse Sensitivity</label><input type="range" min="0" max="1" step="0.01"  /></div>
+			<div><label>Effect Volume</label><input type="range" min="0" max="1" step="0.01" cvar="audio.volume.master" /></div>
+			<div><label>Music Volume</label><input type="range" min="0" max="1" step="0.01" cvar="audio.volume.master" /></div>
+			
+			<div><label>Network Connection</label>
+			<select name="network">
+				<option value="modem">Modem</option>
+				<option value="isdn">ISDN</option>
+				<option value="dsl" selected="">DSL</option>
+			</select>
+			</div>			<div><label>Bla</label><input type="checkbox" /></div>
+			<div><label>Bla</label><input type="radio" /></div>
+			<div><label>Profile</label>
+			<select name="profile">
+				<option value="Me">Me</option>
+				<option value="Anonyme" selected="">Anonyme</option>
+				<option value="Granger">Granger</option>
+			</select></div>
+			<div><label>Name</label><input type="text" cvar="name" /></div>
 			
 			<div><label>Resolution</label>
 			<select name="resolution">
@@ -293,17 +145,6 @@ select selectbox option:hover
 				<option value="dsl" selected="">DSL</option>
 			</select>
 			</div>
-
-		</panel>
-		<tab>Player</tab>
-		<panel>
-		<p>Name: <input type="text" cvar="name" /></p>
-			<p>VoIP: <input type="checkbox" cvar="cl_voip" /></p>
-			<p>Volume: <input type="range" min="0" max="1" step="0.01" cvar="audio.volume.master" /></p>
-		</panel>
-		<tab>Controls</tab>
-		<panel>
-		More stuff
 		</panel>
 		<tab>Graphics</tab>
 		<panel>
