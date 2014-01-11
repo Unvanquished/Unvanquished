@@ -168,8 +168,4 @@ datagridexpand:active
 }
 
 
-input.text
-{
-	background-decorator: image;
-	background-image-src: gfx/2d/teamoverlay.tga;
-}
+

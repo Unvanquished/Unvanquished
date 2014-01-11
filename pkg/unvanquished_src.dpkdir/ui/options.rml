@@ -149,7 +149,18 @@ input.radio:checked, input.radio:checked:hover, input.radio.checked:active
 {
 	icon-image-t: 444px 666px;
 }
-			
+
+input.text
+{
+	color:#83fff5;
+	border-style:solid;
+	border-width:1px;
+	border-color:#83fff5;
+	background: #00000022;
+	width:200px;
+	height:2em;
+	padding:0.2em 0.4em;
+}			
 			
 		</style>
 	</head>
