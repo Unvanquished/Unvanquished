@@ -111,17 +111,22 @@ button,
 input.submit
 {
 	color: #83fff5;
-	display: block;
-
+	text-align: center;
+	background-decorator: image;
+	background-image: /ui/assets/buttons.png 0px 222px 311px 333px;
+}	
+button,
+input.submit
+{
 	max-width: 250px;
 	width: 60%;
 	padding:5%;
+	display: block;
 	margin-left:10%;
 	font-size: 17;
-	text-align: center;
+
 	tab-index: auto;
-	background-decorator: image;
-	background-image: /ui/assets/buttons.png 0px 222px 311px 333px;
+
 }
 
 tab:hover,
@@ -168,4 +173,238 @@ datagridexpand:active
 }
 
 
+label{
+	color:#83fff5;
+	width:40%;
+	display:inline-block;
+	text-align:right;
+	font-size:0.9em;
+}
+#options div{
+	padding:7px;
+	display:block;
+	text-align:left;
+}
 
+input.range {
+	padding-bottom:0px;
+}
+
+input.range slidertrack
+{
+	background:#83fff522;
+	border-style:solid;
+	border-width:1px;
+	border-color:#83fff555;
+	height: 10px;
+	width: 50px;
+	
+}
+
+input.range slidertrack:hover,
+input.range slidertrack:active
+{
+	background-color-multitplier: yellow;
+}
+
+input.range sliderbar
+{
+	border-style:solid;
+	border-width:1px;
+	border-color:#83fff588;
+	background:#136D67;
+	margin-top:-6px;
+	height: 20px;
+	width: 10px;
+}
+
+input.range sliderbar:active,
+input.range sliderbar:hover
+{
+	background:#83fff5;
+}			
+			
+			
+input.checkbox
+{
+	padding-bottom:5px;
+	width:33px;
+	height:33px;
+	icon-decorator: image;
+	icon-image: /ui/assets/radio-check.png 444px 222px 666px 444px;
+}
+
+input.radio
+{	
+	padding-bottom:1px;
+	width:25px;
+	height:25px;
+	icon-decorator: image;
+	icon-image: /ui/assets/radio-check.png 444px 0px 666px 222px;
+}
+
+input.checkbox:hover,input.checkbox:checked:hover,
+input.radio:hover, input.radio:checked:hover
+{
+	icon-image-s: 222px 444px;
+}
+
+input.checkbox:active,input.checkbox:checked:active,
+input.radio:active, input.radio:checked:active
+{
+	icon-image-s: 0px 222px;
+}
+
+input.checkbox:checked,input.checkbox:checked:active,input.checkbox:checked:hover
+{
+	icon-image-t: 666px 888px;
+}
+
+input.radio:checked, input.radio:checked:hover, input.radio.checked:active
+{
+	icon-image-t: 444px 666px;
+}
+
+input.text
+{
+	color:#83fff5;
+	border-style:solid;
+	border-width:1px;
+	border-color:#83fff5;
+	background: #00000022;
+	width:183px;
+	height:2em;
+	padding:0.2em 0.4em;
+}			
+			
+			
+/* Specify the dimensions of the select element. */
+select
+{
+	width: 170px;
+	height: 23px;
+}
+
+/* Specify the dimensions of the value element within the select element. Padding is used to position the
+   value correctly internally. */
+select selectvalue
+{
+	width: 170px;
+	height: 23px;
+	padding:0.1em 0.4em;
+	
+	color:#83fff5;
+	border-style:solid;
+	border-width:1px;
+	border-color:#83fff5;
+	background: #00000022;
+}
+
+/* Animate the value field when it is hovered. */
+select selectvalue:hover
+{
+	background: #00000055;
+}
+
+/* Fix the size of the select arrow decorate the element. */
+select selectarrow
+{
+	margin-right:-5px;
+	margin-top:5px;
+	width:15px;
+	height:15px;
+	padding:2px;
+	icon-decorator: image;
+	icon-image: /ui/assets/select.png;
+}
+
+/* Animate the arrow when hovered. */
+select selectarrow:hover
+{
+	background: #54FFED;
+}
+
+/* Animate the arrow when the button is pressed or the box is visible. */
+select selectarrow:active,
+select selectarrow:checked,
+{
+}
+
+/* Fix the width of the select box and fiddle with the margins to get it in exactly the right place. */
+select selectbox
+{
+	margin-left: 1px;
+	margin-top: 4px;
+	color:#83fff5;
+	border-style:solid;
+	border-width:1px;
+	border-color:#83fff5;
+	background: #051211DD;
+	width: 168px;
+	padding: 1px 4px 4px 4px;
+
+}
+
+/* Sizes the option element to take up the available width in the select box. */
+select selectbox option
+{
+	width: auto;
+	padding-left: 3px;
+}
+
+/* Specifies every second option in the selection box to have a white background. */
+select selectbox option:nth-child(even)
+{
+}
+
+/* Gives the red highlight to the selection box. */
+select selectbox option:hover
+{
+	background: #FFFFFF22;
+}
+
+/*window*/
+			
+tabset tabs{
+	z-index: 1;
+	position: absolute;
+	margin-top:-39px;
+}
+tab{
+	white-space: nowrap;
+	min-width: 50px;
+	width: 8%;
+	padding:5px 20px 0px 20px ;
+	display:inline-block;
+	button-font-effect: none;
+	background-image-t:222px 282px;
+}
+tab:hover{
+	background-image-t: 0px 60px;
+	
+}
+tab:selected{
+	background-image-t: 0px 60px;
+}
+tab:active{	
+	background-image-t:111px 171px;
+}
+
+
+.window panel{
+	padding: 60px 70px;
+	margin:auto;
+	width: 80%;
+	height:90%;
+	background-decorator: tiled-box;
+	background-top-left-image: /ui/assets/window/top-left.png;
+	background-top-right-image: /ui/assets/window/top-right.png;
+	background-top-image: /ui/assets/window/top.png stretch;
+	background-bottom-left-image: /ui/assets/window/bottom-left.png;
+	background-bottom-right-image: /ui/assets/window/bottom-right.png;
+	background-bottom-image: /ui/assets/window/bottom.png stretch;
+	background-left-image: /ui/assets/window/left.png stretch;
+	background-center-image: /ui/assets/window/line.png stretch;
+	overflow: auto;
+}
+		
