@@ -110,6 +110,45 @@ input.range sliderbar:hover
 }			
 			
 			
+input.checkbox
+{
+	padding-bottom:10px;
+	width:33px;
+	height:33px;
+	icon-decorator: image;
+	icon-image: /ui/assets/radio-check.png 444px 222px 666px 444px;
+}
+
+input.radio
+{	
+	padding-bottom:7px;
+	width:25px;
+	height:25px;
+	icon-decorator: image;
+	icon-image: /ui/assets/radio-check.png 444px 0px 666px 222px;
+}
+
+input.checkbox:hover,input.checkbox:checked:hover,
+input.radio:hover, input.radio:checked:hover
+{
+	icon-image-s: 222px 444px;
+}
+
+input.checkbox:active,input.checkbox:checked:active,
+input.radio:active, input.radio:checked:active
+{
+	icon-image-s: 0px 222px;
+}
+
+input.checkbox:checked,input.checkbox:checked:active,input.checkbox:checked:hover
+{
+	icon-image-t: 666px 888px;
+}
+
+input.radio:checked, input.radio:checked:hover, input.radio.checked:active
+{
+	icon-image-t: 444px 666px;
+}
 			
 			
 		</style>
@@ -119,6 +158,7 @@ input.range sliderbar:hover
 		<tab>Quick Options</tab>
 		<panel>
 			<div><label>Bla</label><input type="checkbox"></div>
+			<div><label>Bla</label><input type="radio"></div>
 			<div><label>Profile</label>
 			<select name="profile">
 				<option value="Me">Me</option>
