@@ -52,9 +52,9 @@ public:
 
 	virtual ~RocketCircleMenu( void )
 	{
-		if (data_source)
+		if ( data_source )
 		{
-			data_source->DetachListener(this);
+			data_source->DetachListener( this );
 		}
 	}
 
@@ -78,6 +78,7 @@ public:
 		{
 			dimensions.x = property->value.Get<float>();
 		}
+
 		else
 		{
 			float base_size = 0;
@@ -94,10 +95,12 @@ public:
 		}
 
 		property = GetProperty( "height" );
+
 		if ( property->unit & Rocket::Core::Property::ABSOLUTE_UNIT )
 		{
 			dimensions.y = property->value.Get<float>();
 		}
+
 		else
 		{
 			float base_size = 0;
@@ -112,6 +115,7 @@ public:
 				}
 			}
 		}
+
 		// Return the calculated dimensions. If this changes the size of the element, it will result in
 		// a 'resize' event which is caught below and will regenerate the geometry.
 
@@ -154,7 +158,7 @@ public:
 
 		if ( changed_properties.find( "radius" ) != changed_properties.end() )
 		{
-			radius = GetProperty( "radius" )->Get<int>();
+			radius = GetProperty( "radius" )->Get<float>();
 		}
 
 	}
@@ -180,15 +184,38 @@ public:
 	}
 
 
+	// Checks if parents are visible as well
+	bool IsTreeVisible( void )
+	{
+		if ( IsVisible() )
+		{
+			Rocket::Core::Element *parent = this;
+
+			while ( ( parent = parent->GetParentNode() ) )
+			{
+				if ( !parent->IsVisible() )
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
+
+		else
+		{
+			return false;
+		}
+	}
+
+
 
 	void OnUpdate( void )
 	{
-		if ( !init )
-		{
-			AddCancelbutton();
-		}
-
-		if ( dirty_query )
+		// Only do layout if element is visible
+		// Positions calcs are not correct if element
+		// is not visible.
+		if ( dirty_query && IsTreeVisible() )
 		{
 			dirty_query = false;
 
@@ -207,6 +234,7 @@ public:
 			{
 				Rocket::Core::StringList raw_data;
 				Rocket::Core::String out;
+
 				for ( size_t i = 0; i < fields.size(); ++i )
 				{
 					raw_data.push_back( query.Get<Rocket::Core::String>( fields[ i ], "" ) );
@@ -218,6 +246,7 @@ public:
 				{
 					formatter->FormatData( out, raw_data );
 				}
+
 				else
 				{
 					for ( size_t i = 0; i < raw_data.size(); ++i )
@@ -261,7 +290,7 @@ protected:
 			return;
 		}
 
-		int angle = 360 /  ( numChildren - 1 );
+		float angle = 360 / ( numChildren - 1 );
 
 		// Rest are the circular buttons
 		for ( int i = 1; i < numChildren; ++i )
@@ -273,7 +302,7 @@ protected:
 			float x = cos( angle * ( i - 1 ) * ( M_PI / 180.0f ) ) * radius;
 
 			child->SetProperty( "position", "absolute" );
-			child->SetProperty( "left", va( "%fpx", ( dimensions.x / 2 ) - ( width / 2 ) + offset.x + x  ) );
+			child->SetProperty( "left", va( "%fpx", ( dimensions.x / 2 ) - ( width / 2 ) + offset.x + x ) );
 			child->SetProperty( "top", va( "%fpx", ( dimensions.y / 2 ) - ( height / 2 ) + offset.y + y ) );
 		}
 	}
@@ -290,7 +319,7 @@ private:
 	bool dirty_query;
 	bool dirty_layout;
 	bool init;
-	int radius;
+	float radius;
 	Rocket::Controls::DataFormatter *formatter;
 	Rocket::Controls::DataSource *data_source;
 
