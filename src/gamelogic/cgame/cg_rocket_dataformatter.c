@@ -117,14 +117,83 @@ static void CG_Rocket_DFCMArmouryBuyWeapon( int handle, const char *data )
 {
 	weapon_t weapon = (weapon_t) atoi( Info_ValueForKey( data, "1" ) );
 
-	trap_Rocket_DataFormatterFormattedData( handle, va( "<button class='armourybuy' onClick='setDS armouryBuyList weapons %s; execDS armouryBuyList weapons'><img src='/%s'/></button>", Info_ValueForKey( data, "2" ), CG_GetShaderNameFromHandle( cg_weapons[ weapon ].ammoIcon ) ), qfalse );
+	trap_Rocket_DataFormatterFormattedData( handle, va( "<button class='armourybuy' onMouseover='setDS armouryBuyList weapons %s' onClick='execDS armouryBuyList weapons'><img src='/%s'/></button>", Info_ValueForKey( data, "2" ), CG_GetShaderNameFromHandle( cg_weapons[ weapon ].ammoIcon ) ), qfalse );
 }
 
 static void CG_Rocket_DFCMArmouryBuyUpgrade( int handle, const char *data )
 {
 	upgrade_t upgrade = (upgrade_t) atoi( Info_ValueForKey( data, "1" ) );
 
-	trap_Rocket_DataFormatterFormattedData( handle, va( "<button class='armourybuy' onClick='setDS armouryBuyList upgrades %s; execDS armouryBuyList upgrades'><img src='/%s'/></button>", Info_ValueForKey( data, "2" ), CG_GetShaderNameFromHandle( cg_upgrades[ upgrade ].upgradeIcon ) ), qfalse );
+	trap_Rocket_DataFormatterFormattedData( handle, va( "<button class='armourybuy' onMouseover='setDS armouryBuyList upgrades %s' onClick='execDS armouryBuyList upgrades'><img src='/%s'/></button>", Info_ValueForKey( data, "2" ), CG_GetShaderNameFromHandle( cg_upgrades[ upgrade ].upgradeIcon ) ), qfalse );
+}
+
+static void CG_Rocket_DFGWeaponDamage( int handle, const char *data )
+{
+	weapon_t weapon = (weapon_t) atoi( Info_ValueForKey( data, "1" ) );
+	int      width = 0;
+
+	switch( weapon )
+	{
+		case WP_HBUILD: width = 0; break;
+		case WP_MACHINEGUN: width = 10; break;
+		case WP_PAIN_SAW: width = 90; break;
+		case WP_SHOTGUN: width = 40; break;
+		case WP_LAS_GUN: width = 30; break;
+		case WP_MASS_DRIVER: width = 50; break;
+		case WP_CHAINGUN: width = 60; break;
+		case WP_FLAMER: width = 70; break;
+		case WP_PULSE_RIFLE: width = 70; break;
+		case WP_LUCIFER_CANNON: width = 100; break;
+		default: width = 0; break;
+	}
+
+	trap_Rocket_DataFormatterFormattedData( handle, va( "<div class=\"barValue\" style=\"width:%d%%;\"></div>", width ), qfalse );
+}
+
+static void CG_Rocket_DFGWeaponRateOfFire( int handle, const char *data )
+{
+	weapon_t weapon = (weapon_t) atoi( Info_ValueForKey( data, "1" ) );
+	int      width = 0;
+
+	switch( weapon )
+	{
+		case WP_HBUILD: width = 0; break;
+		case WP_MACHINEGUN: width = 70; break;
+		case WP_PAIN_SAW: width = 100; break;
+		case WP_SHOTGUN: width = 100; break;
+		case WP_LAS_GUN: width = 40; break;
+		case WP_MASS_DRIVER: width = 20; break;
+		case WP_CHAINGUN: width = 80; break;
+		case WP_FLAMER: width = 70; break;
+		case WP_PULSE_RIFLE: width = 70; break;
+		case WP_LUCIFER_CANNON: width = 10; break;
+		default: width = 0; break;
+	}
+
+	trap_Rocket_DataFormatterFormattedData( handle, va( "<div class=\"barValue\" style=\"width:%d%%;\"></div>", width ), qfalse );
+}
+
+static void CG_Rocket_DFGWeaponRange( int handle, const char *data )
+{
+	weapon_t weapon = (weapon_t) atoi( Info_ValueForKey( data, "1" ) );
+	int      width = 0;
+
+	switch( weapon )
+	{
+		case WP_HBUILD: width = 0; break;
+		case WP_MACHINEGUN: width = 75; break;
+		case WP_PAIN_SAW: width = 10; break;
+		case WP_SHOTGUN: width = 30; break;
+		case WP_LAS_GUN: width = 100; break;
+		case WP_MASS_DRIVER: width = 100; break;
+		case WP_CHAINGUN: width = 50; break;
+		case WP_FLAMER: width = 25; break;
+		case WP_PULSE_RIFLE: width = 80; break;
+		case WP_LUCIFER_CANNON: width = 75; break;
+		default: width = 0; break;
+	}
+
+	trap_Rocket_DataFormatterFormattedData( handle, va( "<div class=\"barValue\" style=\"width:%d%%;\"></div>", width ), qfalse );
 }
 
 typedef struct
@@ -138,13 +207,16 @@ static const dataFormatterCmd_t dataFormatterCmdList[] =
 	{ "ClassName", &CG_Rocket_DFClassName },
 	{ "CMArmouryBuyUpgrades", &CG_Rocket_DFCMArmouryBuyUpgrade },
 	{ "CMArmouryBuyWeapons", &CG_Rocket_DFCMArmouryBuyWeapon },
+	{ "GWeaponDamage", &CG_Rocket_DFGWeaponDamage },
+	{ "GWeaponRange", &CG_Rocket_DFGWeaponRange },
+	{ "GWeaponRateOfFire", &CG_Rocket_DFGWeaponRateOfFire },
 	{ "PlayerName", &CG_Rocket_DFPlayerName },
 	{ "Resolution", &CG_Rocket_DFResolution },
 	{ "ServerLabel", &CG_Rocket_DFServerLabel },
 	{ "ServerPing", &CG_Rocket_DFServerPing },
 	{ "ServerPlayers", &CG_Rocket_DFServerPlayers },
 	{ "UpgradeName", &CG_Rocket_DFUpgradeName },
-	{ "WeaponName", &CG_Rocket_DFWeaponName }
+	{ "WeaponName", &CG_Rocket_DFWeaponName },
 };
 
 static const size_t dataFormatterCmdListCount = ARRAY_LEN( dataFormatterCmdList );

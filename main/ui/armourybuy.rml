@@ -21,7 +21,7 @@
 	<tabset class="circlemenu">
 		<tab>Weapons</tab>
 		<panel>
-			<circlemenu source="armouryBuyList.weapons" fields="num" formatter="CMArmouryBuyWeapons" cancel="hide armourybuy"/>
+			<circlemenu id="weapons" source="armouryBuyList.weapons" fields="num" formatter="CMArmouryBuyWeapons" cancel="hide armourybuy"/>
 		</panel>
 		<tab>Upgrades</tab>
 		<panel>
@@ -30,12 +30,12 @@
 	</tabset>
 
 	<div class="infobox">
-		<h2>Weapon Name</h2>
-		<p><div class="attr">Price:</div><div class="bar">0</div></p>
-		<p><div class="attr">Range:</div><div class="bar"><div class="barValue" style="width:70%;"></div></div></p>
-		<p><div class="attr">Damage:</div><div class="bar"><div class="barValue" style="width:30%;"></div></div></p>
-		<p><div class="attr">Fire Rate:</div><div class="bar"><div class="barValue" style="width:50%;"></div></div></p>
-		<p class="text">Basic weapon. Cased projectile weapon, with a slow clip based reload system.</p>
+		<h2><datasource_single source="armouryBuyList.weapons" fields="name" targetid="weapons" /></h2>
+		<p><div class="attr">Price:</div> <datasource_single source="armouryBuyList.weapons" fields="price" targetid="weapons" /></p>
+		<p><div class="attr">Range:</div><div class="bar"><datasource_single source="armouryBuyList.weapons" fields="num" formatter="GWeaponRange" targetid="weapons" /></div></p>
+		<p><div class="attr">Damage:</div><div class="bar"><datasource_single source="armouryBuyList.weapons" fields="num" formatter="GWeaponDamage" targetid="weapons" /></div></p>
+		<p><div class="attr">Fire Rate:</div><div class="bar"><datasource_single source="armouryBuyList.weapons" fields="num" formatter="GWeaponDamage" targetid="weapons" /></div></p>
+		<p class="text"><datasource_single source="armouryBuyList.weapons" fields="description" targetid="weapons" /></p>
 	</div>
 	</div>
 	</body>
