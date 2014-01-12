@@ -13,7 +13,7 @@
 			}
 
 
-			
+
 		</style>
 	</head>
 	<body id="armourybuy" class="circlemenu human" onShow="buildDS armouryBuyList weapons; buildDS armouryBuyList upgrades">
@@ -28,7 +28,7 @@
 			<circlemenu source="armouryBuyList.upgrades" fields="num" formatter="CMArmouryBuyUpgrades" cancel="hide armourybuy"/>
 		</panel>
 	</tabset>
-	
+
 	<div class="infobox">
 		<h2>Weapon Name</h2>
 		<p><div class="attr">Price:</div><div class="bar">0</div></p>
