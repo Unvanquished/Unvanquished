@@ -130,6 +130,7 @@ public:
 
 	void OnAttributeChange( const Rocket::Core::AttributeNameList &changed_attributes )
 	{
+		Rocket::Core::Element::OnAttributeChange( changed_attributes );
 		if ( changed_attributes.find( "source" ) != changed_attributes.end() )
 		{
 			SetDataSource( GetAttribute<Rocket::Core::String>( "source", "" ) );
@@ -151,6 +152,7 @@ public:
 
 	void OnPropertyChange( const Rocket::Core::PropertyNameList &changed_properties )
 	{
+		Rocket::Core::Element::OnPropertyChange( changed_properties );
 		if ( changed_properties.find( "width" ) != changed_properties.end() || changed_properties.find( "height" ) != changed_properties.end() )
 		{
 			dirty_layout = true;
@@ -266,6 +268,45 @@ public:
 			LayoutChildren();
 		}
 	}
+
+	virtual void ProcessEvent( Rocket::Core::Event &event )
+	{
+		if ( event == "mouseover" )
+		{
+			Rocket::Core::Element *parent = event.GetTargetElement();
+			Rocket::Core::Element *button = parent->GetTagName() == "button" ? parent : NULL;
+			while ( ( parent = parent->GetParentNode() ) )
+			{
+				if ( !button && parent->GetTagName() == "button" )
+				{
+					button = parent;
+					continue;
+				}
+
+				if ( parent == this )
+				{
+					Rocket::Core::Dictionary parameters;
+					int i = 0;
+
+					for ( i = 1; i < GetNumChildren(); ++i )
+					{
+						if ( GetChild( i ) == button )
+						{
+							break;
+						}
+					}
+
+					parameters.Set( "index", va( "%d", i - 1 ) );
+					parameters.Set( "datasource", data_source->GetDataSourceName() );
+					parameters.Set( "table", data_table );
+
+					DispatchEvent( "rowselect", parameters );
+					break;
+				}
+			}
+		}
+	}
+
 protected:
 	void LayoutChildren( void )
 	{

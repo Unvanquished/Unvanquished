@@ -53,6 +53,7 @@ public:
 
 	void OnAttributeChange( const Rocket::Core::AttributeNameList &changed_attributes )
 	{
+		Rocket::Core::Element::OnAttributeChange( changed_attributes );
 		if ( changed_attributes.find( "source" ) != changed_attributes.end() )
 		{
 			ParseDataSource( data_source, data_table, GetAttribute( "source")->Get<Rocket::Core::String>() );
@@ -79,15 +80,12 @@ public:
 	{
 		Rocket::Core::Element::ProcessEvent( evt );
 
-		if ( evt == "rowselect" )
+		// Make sure it is meant for the element we are listening to
+		if ( evt == "rowselect" && targetElement == evt.GetTargetElement() )
 		{
 			const Rocket::Core::Dictionary *parameters = evt.GetParameters();
-
-			if ( parameters->Get<Rocket::Core::String>( "datasource", "" ) == data_source->GetDataSourceName() && parameters->Get<Rocket::Core::String>( "table", "" ) == data_table )
-			{
-				selection = parameters->Get<int>( "index", -1 );
-				dirty_query = true;
-			}
+			selection = parameters->Get<int>( "index", -1 );
+			dirty_query = true;
 		}
 
 	}
