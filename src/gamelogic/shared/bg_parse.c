@@ -133,9 +133,6 @@ int   LEVEL4_TRAMPLE_CHARGE_TRIGGER;
 int   LEVEL4_TRAMPLE_DURATION;
 int   LEVEL4_TRAMPLE_STOP_PENALTY;
 int   LEVEL4_TRAMPLE_REPEAT;
-float LEVEL4_CRUSH_DAMAGE_PER_V;
-int   LEVEL4_CRUSH_DAMAGE;
-int   LEVEL4_CRUSH_REPEAT;
 
 // Human upgrades
 float RADAR_RANGE;
@@ -335,9 +332,6 @@ static configVar_t bg_configVars[] =
 	{"w_level4_clawHeight", FLOAT, qfalse, &LEVEL4_CLAW_HEIGHT},
 	{"w_level4_clawRange", FLOAT, qfalse, &LEVEL4_CLAW_RANGE},
 	{"w_level4_clawWidth", FLOAT, qfalse, &LEVEL4_CLAW_WIDTH},
-	{"w_level4_crushDmg", INTEGER, qfalse, &LEVEL4_CRUSH_DAMAGE},
-	{"w_level4_crushDmgPerFallingVelocity", FLOAT, qfalse, &LEVEL4_CRUSH_DAMAGE_PER_V},
-	{"w_level4_crushRepeat", INTEGER, qfalse, &LEVEL4_CRUSH_REPEAT},
 	{"w_level4_trampleChargeMax", INTEGER, qfalse, &LEVEL4_TRAMPLE_CHARGE_MAX},
 	{"w_level4_trampleChargeMin", INTEGER, qfalse, &LEVEL4_TRAMPLE_CHARGE_MIN},
 	{"w_level4_trampleChargeTrigger", INTEGER, qfalse, &LEVEL4_TRAMPLE_CHARGE_TRIGGER},
