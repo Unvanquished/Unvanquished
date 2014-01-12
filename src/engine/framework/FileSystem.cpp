@@ -34,6 +34,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #ifdef _WIN32
 #include <windows.h>
 #include <shlobj.h>
+#undef MoveFile
 #undef CopyFile
 #undef DeleteFile
 #else
