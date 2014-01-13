@@ -406,8 +406,8 @@ namespace HomePath {
 // Initialize the filesystem and the main paths
 void Initialize();
 
-// Shut down the filesystem and flush all file buffers
-void Shutdown();
+// Flush write buffers for all open files, useful in case of an unclean shutdown
+void FlushAll();
 
 // Check if the filesystem paths have been initialized
 bool IsInitialized();

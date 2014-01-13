@@ -2648,7 +2648,7 @@ void Com_Shutdown( qboolean badProfile )
 		FS_Delete( defaultPipeFilename );
 	}
 
-	FS::Shutdown();
+	FS::FlushAll();
 }
 
 //------------------------------------------------------------------------

@@ -394,9 +394,8 @@ void Initialize()
 	RefreshPaks();
 }
 
-void Shutdown()
+void FlushAll()
 {
-	// Flush all open file buffers
 	fflush(nullptr);
 }
 
