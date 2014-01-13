@@ -374,19 +374,17 @@ dataselect selectbox option:hover
 
 /*window*/
 
-.window tabset tabs{
-	z-index: 1;
-	position: absolute;
-	margin-top:-39px;
-}
 .window tab{
-	white-space: nowrap;
-	min-width: 50px;
-	width: 8%;
-	padding:5px 20px 0px 20px ;
-	display:inline-block;
-	button-font-effect: none;
-	background-image-t:222px 282px;
+	z-index:5;
+	display:block;
+ 	white-space: nowrap;
+ 	min-width: 50px;
+ 	width: 8%;
+ 	padding:5px 20px 0px 20px ;
+ 	display:inline-block;
+	margin-bottom:3px;
+ 	button-font-effect: none;
+ 	background-image-t:222px 282px;
 }
 .window tab:hover{
 	background-image-t: 0px 60px;
@@ -401,6 +399,7 @@ dataselect selectbox option:hover
 
 
 .window panel{
+	z-index: 0;
 	padding: 60px 70px;
 	margin:auto;
 	width: 80%;

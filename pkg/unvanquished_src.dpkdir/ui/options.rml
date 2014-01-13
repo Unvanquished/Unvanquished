@@ -5,11 +5,12 @@
 		<style>
 			body
 			{
-
-				padding-top:100px;
-				width: 800px;
-				height: 500px;
-				margin: auto;
++				width:70%;
++				height:60%;
++				display:block;
++				margin:auto;
++				margin-right:5%;
++				margin-top:23%;
 				text-align:center;
 			}
 		</style>
