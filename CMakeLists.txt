@@ -178,7 +178,7 @@ else()
 
     # Clang prints a warning when if it doesn't support -mfpmath=sse
     set( CMAKE_REQUIRED_FLAGS "-Werror" )
-    try_c_cxx_flag( "-mfpmath=sse" )
+    try_c_cxx_flag( MFPMATH_SSE "-mfpmath=sse" )
     set( CMAKE_REQUIRED_FLAGS "" )
   elseif( ARCH STREQUAL "x86_64" )
     set_c_cxx_flag( "-m64" )
