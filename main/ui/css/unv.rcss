@@ -114,7 +114,7 @@ input.submit
 	text-align: center;
 	background-decorator: image;
 	background-image: /ui/assets/buttons.png 0px 222px 311px 333px;
-}	
+}
 .menuButton,
 input.submit
 {
@@ -198,7 +198,7 @@ input.range slidertrack
 	border-color:#83fff555;
 	height: 10px;
 	width: 50px;
-	
+
 }
 
 input.range slidertrack:hover,
@@ -222,9 +222,9 @@ input.range sliderbar:active,
 input.range sliderbar:hover
 {
 	background:#83fff5;
-}			
-			
-			
+}
+
+
 input.checkbox
 {
 	padding-bottom:5px;
@@ -235,7 +235,7 @@ input.checkbox
 }
 
 input.radio
-{	
+{
 	padding-bottom:1px;
 	width:25px;
 	height:25px;
@@ -275,11 +275,12 @@ input.text
 	width:183px;
 	height:2em;
 	padding:0.2em 0.4em;
-}			
-			
-			
+}
+
+
 /* Specify the dimensions of the select element. */
-select
+select,
+dataselect
 {
 	width: 170px;
 	height: 23px;
@@ -287,12 +288,13 @@ select
 
 /* Specify the dimensions of the value element within the select element. Padding is used to position the
    value correctly internally. */
-select selectvalue
+select selectvalue,
+dataselect selectvalue
 {
 	width: 170px;
 	height: 23px;
 	padding:0.1em 0.4em;
-	
+
 	color:#83fff5;
 	border-style:solid;
 	border-width:1px;
@@ -301,13 +303,15 @@ select selectvalue
 }
 
 /* Animate the value field when it is hovered. */
-select selectvalue:hover
+select selectvalue:hover,
+dataselect selectvalue:hover
 {
 	background: #00000055;
 }
 
 /* Fix the size of the select arrow decorate the element. */
-select selectarrow
+select selectarrow,
+dataselect selectarrow
 {
 	margin-right:-5px;
 	margin-top:5px;
@@ -319,7 +323,8 @@ select selectarrow
 }
 
 /* Animate the arrow when hovered. */
-select selectarrow:hover
+select selectarrow:hover,
+dataselect selectarrow:hover
 {
 	background: #54FFED;
 }
@@ -331,7 +336,8 @@ select selectarrow:checked,
 }
 
 /* Fix the width of the select box and fiddle with the margins to get it in exactly the right place. */
-select selectbox
+select selectbox,
+dataselect selectbox
 {
 	margin-left: 1px;
 	margin-top: 4px;
@@ -346,25 +352,28 @@ select selectbox
 }
 
 /* Sizes the option element to take up the available width in the select box. */
-select selectbox option
+select selectbox option,
+dataselect selectbox option
 {
 	width: auto;
 	padding-left: 3px;
 }
 
 /* Specifies every second option in the selection box to have a white background. */
-select selectbox option:nth-child(even)
+select selectbox option:nth-child(even),
+dataselect selectbox option:nth-child(even)
 {
 }
 
 /* Gives the red highlight to the selection box. */
-select selectbox option:hover
+select selectbox option:hover,
+dataselect selectbox option:hover
 {
 	background: #FFFFFF22;
 }
 
 /*window*/
-			
+
 .window tabset tabs{
 	z-index: 1;
 	position: absolute;
@@ -381,12 +390,12 @@ select selectbox option:hover
 }
 .window tab:hover{
 	background-image-t: 0px 60px;
-	
+
 }
 .window tab:selected{
 	background-image-t: 0px 60px;
 }
-.window tab:active{	
+.window tab:active{
 	background-image-t:111px 171px;
 }
 
@@ -407,10 +416,10 @@ select selectbox option:hover
 	background-center-image: /ui/assets/window/line.png stretch;
 	overflow: auto;
 }
-		
+
 /* circlemenu */
 
-			
+
 .circlemenu tab{
 	width: 8%;
 	color:#83fff5;
@@ -439,9 +448,9 @@ tabset.circlemenu tabs{
 	margin-top:30px;
 	padding-left:15%;
 }
-				
+
 circlemenu
-{	
+{
 	display: block;
 	width: 100%;
 	margin-left:-17%;
@@ -488,7 +497,7 @@ circlemenu
 	height: 50px;
 	margin: auto;
 }
-			
+
 .infobox{
 	background:#00000066;
 	width:300px;
@@ -499,11 +508,11 @@ circlemenu
 	top:40%;
 	position:absolute;
 	font-size:0.8em;
-}			
-				
+}
+
 .infobox p{
 	display:block;
-}	
+}
 
 .infobox h2{
 	position:absolute;
@@ -513,20 +522,20 @@ circlemenu
 	font-size:2em;
 	display:block;
 	text-align:center;
-}	
+}
 
 .infobox p.text{
 	background:#25252599;
 	padding:5px;
-}	
+}
 
 
 .infobox .attr{
 	width:50%;
 	display:inline-block;
 	text-align:right;
-	
-}			
+
+}
 .infobox .bar{
 	padding-bottom:0px;
 	text-align:center;
@@ -536,7 +545,7 @@ circlemenu
 	margin-left:10%;
 	height:10px;
 	display:inline-block;
-}	
+}
 .infobox .barValue{
 	float:left;
 	height:10px;
@@ -546,4 +555,4 @@ circlemenu
 	border-width:1px;
 	border-color:#86868633;
 	display:inline-block;
-}	
+}
