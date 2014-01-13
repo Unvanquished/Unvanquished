@@ -4,23 +4,14 @@
 		<link type="text/rcss" href="css/unv.rcss" />
 		<style>
 			body
-			{	
-				
+			{
+
 				padding-top:100px;
 				width: 800px;
 				height: 500px;
 				margin: auto;
 				text-align:center;
 			}
-
-			div#title_bar div#icon
-			{
-				icon-image-s: 230px 281px;
-				icon-image-t: 152px 191px;
-
-				display: none;
-			}
-			
 		</style>
 	</head>
 	<body id="options" onload="buildDS resolutions; sortDS resolutions default width">
@@ -34,14 +25,11 @@
 				<option value="Granger">Granger</option>
 			</select></div>
 			<div><label>Name:</label><input type="text" cvar="name" /></div>
-			
+
 			<div><label>Resolution:</label>
-			<select name="resolution">
-				<option value="800x600">800x600</option>
-				<option value="800x600" selected="">800x600</option>
-				<option value="800x600">800x600</option>
-			</select></div>
-			
+				<dataselect source="resolutions.default" fields="width,height" formatter="Resolution" />
+			</div>
+
 			<div><label>Video Quality:</label>
 			<select name="videoquality">
 				<option value="low">Low</option>
@@ -49,12 +37,12 @@
 				<option value="hight" selected="">Hight</option>
 				<option value="ultra">Ultra</option>
 			</select></div>
-			
+
 			<div><label>Video Brightness:</label><input type="range" min="0" max="1" step="0.01"  /></div>
 			<div><label>Mouse Sensitivity:</label><input type="range" min="0" max="1" step="0.01"  /></div>
 			<div><label>Effect Volume:</label><input type="range" min="0" max="1" step="0.01" cvar="audio.volume.master" /></div>
 			<div><label>Music Volume:</label><input type="range" min="0" max="1" step="0.01" cvar="audio.volume.master" /></div>
-			
+
 			<div><label>Network Connection:</label>
 			<select name="network">
 				<option value="modem">Modem</option>
@@ -81,14 +69,14 @@
 				<option value="Granger">Granger</option>
 			</select></div>
 			<div><label>Name</label><input type="text" cvar="name" /></div>
-			
+
 			<div><label>Resolution</label>
 			<select name="resolution">
 				<option value="800x600">800x600</option>
 				<option value="800x600" selected="">800x600</option>
 				<option value="800x600">800x600</option>
 			</select></div>
-			
+
 			<div><label>Video Quality</label>
 			<select name="videoquality">
 				<option value="low">Low</option>
@@ -96,12 +84,12 @@
 				<option value="hight" selected="">Hight</option>
 				<option value="ultra">Ultra</option>
 			</select></div>
-			
+
 			<div><label>Video Brightness</label><input type="range" min="0" max="1" step="0.01"  /></div>
 			<div><label>Mouse Sensitivity</label><input type="range" min="0" max="1" step="0.01"  /></div>
 			<div><label>Effect Volume</label><input type="range" min="0" max="1" step="0.01" cvar="audio.volume.master" /></div>
 			<div><label>Music Volume</label><input type="range" min="0" max="1" step="0.01" cvar="audio.volume.master" /></div>
-			
+
 			<div><label>Network Connection</label>
 			<select name="network">
 				<option value="modem">Modem</option>
@@ -117,14 +105,14 @@
 				<option value="Granger">Granger</option>
 			</select></div>
 			<div><label>Name</label><input type="text" cvar="name" /></div>
-			
+
 			<div><label>Resolution</label>
 			<select name="resolution">
 				<option value="800x600">800x600</option>
 				<option value="800x600" selected="">800x600</option>
 				<option value="800x600">800x600</option>
 			</select></div>
-			
+
 			<div><label>Video Quality</label>
 			<select name="videoquality">
 				<option value="low">Low</option>
@@ -132,12 +120,12 @@
 				<option value="hight" selected="">Hight</option>
 				<option value="ultra">Ultra</option>
 			</select></div>
-			
+
 			<div><label>Video Brightness</label><input type="range" min="0" max="1" step="0.01"  /></div>
 			<div><label>Mouse Sensitivity</label><input type="range" min="0" max="1" step="0.01"  /></div>
 			<div><label>Effect Volume</label><input type="range" min="0" max="1" step="0.01" cvar="audio.volume.master" /></div>
 			<div><label>Music Volume</label><input type="range" min="0" max="1" step="0.01" cvar="audio.volume.master" /></div>
-			
+
 			<div><label>Network Connection</label>
 			<select name="network">
 				<option value="modem">Modem</option>
