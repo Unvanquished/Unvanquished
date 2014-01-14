@@ -807,6 +807,15 @@ void Sys_PlatformInit( void )
 
 	Sys_SetFloatEnv();
 
+	// Mark the process as DPI-aware on Vista and above
+	HMODULE user32 = LoadLibrary("user32.dll");
+	if (user32) {
+		FARPROC pSetProcessDPIAware = GetProcAddress(user32, "SetProcessDPIAware");
+		if (pSetProcessDPIAware)
+			pSetProcessDPIAware();
+		FreeLibrary(user32);
+	}
+
 #if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 	if(timeGetDevCaps(&ptc, sizeof(ptc)) == MMSYSERR_NOERROR)
 	{
