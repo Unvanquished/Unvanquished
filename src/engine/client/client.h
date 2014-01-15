@@ -502,9 +502,6 @@ extern cvar_t *cl_altTab;
 
 // -NERVE - SMF
 
-extern cvar_t *cl_profile;
-extern cvar_t *cl_defaultProfile;
-
 extern cvar_t *cl_consoleKeys;
 extern cvar_t *cl_consoleFont;
 extern cvar_t *cl_consoleFontSize;
@@ -573,8 +570,6 @@ void        CL_Disconnect_f( void );
 void        CL_GetChallengePacket( void );
 void        CL_Vid_Restart_f( void );
 void        CL_Snd_Restart_f( void );
-
-void        CL_UpdateProfile( void );
 
 void        CL_NextDemo( void );
 void        CL_ReadDemoMessage( void );

@@ -705,10 +705,6 @@ void       Com_SetRecommended( void );
 // if match is NULL, all set commands will be executed, otherwise
 // only a set with the exact name.  Only used during startup.
 
-//bani - profile functions
-qboolean            Com_CheckProfile( char *profile_path );
-qboolean            Com_WriteProfile( char *profile_path );
-
 extern cvar_t       *com_crashed;
 
 extern cvar_t       *com_developer;
@@ -820,7 +816,7 @@ double Sys_DoubleTime( void );
 // commandLine should not include the executable name (argv[0])
 void   Com_Init( char *commandLine );
 void   Com_Frame( void );
-void   Com_Shutdown( qboolean badProfile );
+void   Com_Shutdown();
 
 /*
 ==============================================================

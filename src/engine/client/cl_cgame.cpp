@@ -2034,8 +2034,6 @@ void  CL_OnTeamChanged( int newTeam )
 	 * execute a possibly team aware config each time the team was changed.
 	 * the user can use the cvars p_team or p_teamname (if the cgame sets it) within that config
 	 * to e.g. execute team specific configs, like cg_<team>Config did previously, but with less dependency on the cgame
-	 *
-	 * compared to render settings, that are client/workstation specifc, teamconfigs will always be player and with that profile dependend
 	 */
-	Cmd::BufferCommandText( va( "exec -f profiles/%s/" TEAMCONFIG_NAME, cl_profile->string ) );
+	Cmd::BufferCommandText( "exec -f " TEAMCONFIG_NAME );
 }
