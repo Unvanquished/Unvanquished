@@ -237,6 +237,10 @@ struct PakInfo {
 
 	// Full path to the pak
 	std::string path;
+
+	// Time this pak was last updated. This is only valid for zip paks and
+	// reflects the timestamp at the time the pak was loaded.
+	std::chrono::system_clock::time_point timestamp;
 };
 
 // Operations which work on files that are in packages

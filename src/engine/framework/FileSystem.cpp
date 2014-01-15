@@ -1216,7 +1216,14 @@ static void InternalLoadPak(const PakInfo& pak, Opt::optional<uint32_t> expected
 		}, err);
 		if (HaveError(err))
 			return;
+
+		// Save the real checksum in the list of loaded paks
 		loadedPaks.back().checksum = checksum;
+
+		// Get the timestamp of the pak
+		loadedPaks.back().timestamp = FS::RawPath::FileTimestamp(pak.path, err);
+		if (HaveError(err))
+			return;
 	}
 
 	// If an explicit checksum was requested, verify that the pak we loaded is the one we are expecting
@@ -1399,19 +1406,11 @@ std::chrono::system_clock::time_point FileTimestamp(Str::StringRef path, std::er
 	}
 
 	my_stat_t st;
-	int result;
 	const PakInfo& pak = loadedPaks[it->second.first];
 	if (pak.type == PAK_DIR)
-		result = my_stat(Path::Build(pak.path, path), &st);
+		return RawPath::FileTimestamp(Path::Build(pak.path, path), err);
 	else
-		result = my_stat(pak.path, &st);
-	if (result != 0) {
-		SetErrorCodeSystem(err);
-		return {};
-	} else {
-		ClearErrorCode(err);
-		return std::chrono::system_clock::from_time_t(std::max(st.st_ctime, st.st_mtime));
-	}
+		return pak.timestamp;
 }
 
 bool DirectoryRange::InternalAdvance()
