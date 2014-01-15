@@ -2205,7 +2205,7 @@ char** FS_ListFiles(const char* directory, const char* extension, int* numFiles)
 			s[x.size() - (x.back() == '/')] = '\0';
 			files.push_back(s);
 		}
-	} catch (std::system_error& err) {}
+	} catch (std::system_error&) {}
 	try {
 		for (const std::string& x: FS::HomePath::ListFiles(directory)) {
 			if (extension && !Str::IsSuffix(extension, x))
@@ -2217,7 +2217,7 @@ char** FS_ListFiles(const char* directory, const char* extension, int* numFiles)
 			s[x.size() - (x.back() == '/')] = '\0';
 			files.push_back(s);
 		}
-	} catch (std::system_error& err) {}
+	} catch (std::system_error&) {}
 
 	*numFiles = files.size();
 	char** list = new char*[files.size() + 1];
@@ -2306,7 +2306,7 @@ bool FS_LoadServerPaks(const char* paks)
 		else {
 			try {
 				FS::PakPath::LoadPakExplicit(*pak, *checksum);
-			} catch (std::system_error& err) {
+			} catch (std::system_error&) {
 				fs_missingPaks.emplace_back(std::move(name), std::move(version), *checksum);
 			}
 		}

@@ -542,9 +542,7 @@ void SV_DropClient( client_t *drop, const char *reason )
 
 	if ( drop->download )
 	{
-		try {
-			drop->download.Close();
-		} catch (std::system_error&) {}
+		drop->download = nullptr;
 	}
 
 	// call the prog function for removing a client
@@ -713,9 +711,7 @@ static void SV_CloseDownload( client_t *cl )
 	// EOF
 	if ( cl->download )
 	{
-		try {
-			cl->download.Close();
-		} catch (std::system_error&) {}
+		cl->download = nullptr;
 	}
 
 	*cl->downloadName = 0;
@@ -1015,7 +1011,7 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 						if (pak) {
 							try {
 								downloadSize = FS::RawPath::OpenRead(pak->path).Length();
-							} catch (std::system_error& err) {
+							} catch (std::system_error&) {
 								success = false;
 							}
 						} else
@@ -1092,9 +1088,9 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 			const FS::PakInfo* pak = checksum ? FS::FindPak(name, version) : FS::FindPak(name, version, *checksum);
 			if (pak) {
 				try {
-					cl->download = FS::RawPath::OpenRead(pak->path);
-					cl->downloadSize = cl->download.Length();
-				} catch (std::system_error& err) {
+					cl->download = std::make_shared<FS::File>(FS::RawPath::OpenRead(pak->path));
+					cl->downloadSize = cl->download->Length();
+				} catch (std::system_error&) {
 					success = false;
 				}
 			} else
@@ -1130,7 +1126,7 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 		}
 
 		try {
-			cl->downloadBlockSize[ curindex ] = cl->download.Read(cl->downloadBlocks[ curindex ], MAX_DOWNLOAD_BLKSIZE);
+			cl->downloadBlockSize[ curindex ] = cl->download->Read(cl->downloadBlocks[ curindex ], MAX_DOWNLOAD_BLKSIZE);
 		} catch (std::system_error&) {
 			// EOF right now
 			cl->downloadCount = cl->downloadSize;
