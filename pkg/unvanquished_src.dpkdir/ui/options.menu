@@ -231,7 +231,6 @@
 
 //////// PLAYER
 
-	BUTTON	( player, "Set Profile", open profiles, .2 )
 	COMBO	( player, "Language:", FEEDER_LANGUAGES, 1.5 )
 	CVAR	( player, "Name:", "name", 40, 2.5 )
 	YESNO	( player, "Taunts Sounds Off:", "cg_noTaunt", play "sound/misc/menu1.wav", 3.5 )
