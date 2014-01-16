@@ -3152,7 +3152,7 @@ static void UI_RunMenuScript( char **args )
 		}
 		else if ( Q_stricmp( name, "resetDefaults" ) == 0 )
 		{
-			trap_Cmd_ExecuteText( EXEC_APPEND, "exec default.cfg\n" );
+			trap_Cmd_ExecuteText( EXEC_APPEND, "preset default.cfg\n" );
 			trap_Cmd_ExecuteText( EXEC_APPEND, "cvar_restart\n" );
 			Controls_SetDefaults();
 			trap_Cvar_Set( "com_introPlayed", "1" );
@@ -3244,7 +3244,7 @@ static void UI_RunMenuScript( char **args )
 
 			trap_GetClientState( &cstate );
 
-			trap_Cmd_ExecuteText( EXEC_APPEND, va( "exec ui/%s/install.cfg;", uiInfo.huds[ uiInfo.hudIndex ].name ) );
+			trap_Cmd_ExecuteText( EXEC_APPEND, va( "preset ui/%s/install.cfg;", uiInfo.huds[ uiInfo.hudIndex ].name ) );
 			if ( cstate.connState == CA_ACTIVE )
 			{
 				trap_Cmd_ExecuteText( EXEC_APPEND, "reloadhud;" );
