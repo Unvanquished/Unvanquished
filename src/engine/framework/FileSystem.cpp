@@ -1405,7 +1405,6 @@ std::chrono::system_clock::time_point FileTimestamp(Str::StringRef path, std::er
 		return {};
 	}
 
-	my_stat_t st;
 	const PakInfo& pak = loadedPaks[it->second.first];
 	if (pak.type == PAK_DIR)
 		return RawPath::FileTimestamp(Path::Build(pak.path, path), err);
