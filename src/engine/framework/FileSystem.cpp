@@ -2123,7 +2123,6 @@ void FS_Printf(fileHandle_t handle, const char* fmt, ...)
 	FS_Write(buffer, strlen(buffer), handle);
 }
 
-// TODO: This needs to handle deleting directories
 int FS_Delete(const char* path)
 {
 	try {
