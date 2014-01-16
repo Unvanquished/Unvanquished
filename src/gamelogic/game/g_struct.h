@@ -674,9 +674,12 @@ struct level_locals_s
 
 	qboolean restarted; // waiting for a map_restart to fire
 
-	int      numConnectedClients;
-	int      numNonSpectatorClients; // includes connecting clients
-	int      numPlayingClients; // connected, non-spectators
+	int      numConnectedClients; // connected
+	int      numAliveClients;     // on a team and alive
+	int      numPlayingClients;   // on a team
+	int      numPlayingPlayers;   // on a team and not a bot
+	int      numPlayingBots;      // on a team and a bot
+
 	int      sortedClients[ MAX_CLIENTS ]; // sorted by score
 
 	int      snd_fry; // sound index for standing in lava
@@ -758,15 +761,18 @@ struct level_locals_s
 		int  voteYes;
 		int  voteNo;
 		int  voted;
-		int  numVotingClients; // set by CalculateRanks
 		int  quorum;
 
 		// gameplay state
 		int              numSpawns;
 		int              numClients;
+		int              numPlayers;
+		int              numBots;
 		float            averageNumClients;
+		float            averageNumPlayers;
+		float            averageNumBots;
 		int              numSamples;
-		int              numLiveClients;
+		int              numAliveClients;
 		float            buildPoints;
 		float            mineEfficiency;
 		int              kills;
