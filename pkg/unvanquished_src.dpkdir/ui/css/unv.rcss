@@ -545,7 +545,7 @@ circlemenu
 	height:10px;
 	display:inline-block;
 }
-.infobox .bar, .infobox .price{{
+.infobox .barValue {
 	float:left;
 	height:10px;
 	width:10px;
