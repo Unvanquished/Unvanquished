@@ -49,6 +49,11 @@ public:
 	~RocketDataGrid() { }
 	void GetRow( Rocket::Core::StringList& row, const Rocket::Core::String& table, int row_index, const Rocket::Core::StringList& columns )
 	{
+		if ( data.find( table ) == data.end() || data[table].size() <= row_index )
+		{
+			return;
+		}
+
 		for ( size_t i = 0; i < columns.size(); ++i )
 		{
 			row.push_back( Rocket_QuakeToRML ( Info_ValueForKey( data[ table ][ row_index ].CString(), columns[ i ].CString() ) ) );
