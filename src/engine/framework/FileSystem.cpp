@@ -729,7 +729,7 @@ std::string Extension(Str::StringRef path)
 		return "/";
 
 	// Find a dot or slash, searching from the end of the string
-	for (const char* p = path.end(); p != path.begin(); p++) {
+	for (const char* p = path.end(); p != path.begin(); p--) {
 		if (p[-1] == '/')
 			return "";
 		if (p[-1] == '.')
@@ -746,7 +746,7 @@ std::string StripExtension(Str::StringRef path)
 		return path.substr(path.size() - 1);
 
 	// Find a dot or slash, searching from the end of the string
-	for (const char* p = path.end(); p != path.begin(); p++) {
+	for (const char* p = path.end(); p != path.begin(); p--) {
 		if (p[-1] == '/')
 			return path;
 		if (p[-1] == '.')
@@ -764,7 +764,7 @@ std::string BaseNameStripExtension(Str::StringRef path)
 	const char* end = path.end();
 	if (path.back() == '/')
 		end = path.end() - 1;
-	for (const char* p = end; p != path.begin(); p++) {
+	for (const char* p = end; p != path.begin(); p--) {
 		if (p[-1] == '/')
 			return std::string(p, end);
 		if (p[-1] == '.' && end == path.end())
