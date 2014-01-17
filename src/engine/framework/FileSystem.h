@@ -34,6 +34,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #include <unordered_map>
 #include "../../common/String.h"
 #include "../../common/Optional.h"
+#include "../../common/Command.h"
 
 namespace FS {
 
@@ -278,6 +279,10 @@ namespace PakPath {
 	DirectoryRange ListFiles(Str::StringRef path, std::error_code& err = throws());
 	DirectoryRange ListFilesRecursive(Str::StringRef path, std::error_code& err = throws());
 
+	// Helper function to complete a filename. The root is prepended to the path but not included
+	// in the completion results.
+	Cmd::CompletionResult CompleteFilename(Str::StringRef prefix, Str::StringRef root, Str::StringRef extension, bool allowSubdirs, bool stripExtension);
+
 	// DirectoryRange implementation
 	class DirectoryRange {
 	public:
@@ -405,6 +410,10 @@ namespace HomePath {
 	typedef RawPath::RecursiveDirectoryRange RecursiveDirectoryRange;
 	DirectoryRange ListFiles(Str::StringRef path, std::error_code& err = throws());
 	RecursiveDirectoryRange ListFilesRecursive(Str::StringRef path, std::error_code& err = throws());
+
+	// Helper function to complete a filename. The root is prepended to the path but not included
+	// in the completion results.
+	Cmd::CompletionResult CompleteFilename(Str::StringRef prefix, Str::StringRef root, Str::StringRef extension, bool allowSubdirs, bool stripExtension);
 } // namespace HomePath
 
 // Initialize the filesystem and the main paths

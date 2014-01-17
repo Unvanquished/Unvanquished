@@ -592,11 +592,6 @@ qboolean   FS_ComparePaks( char *neededpaks, int len, qboolean dlstring );
 
 void       FS_Rename( const char *from, const char *to );
 
-namespace FS {
-    std::vector<std::pair<std::string, std::string>> CompleteFilenameInDir(Str::StringRef prefix, Str::StringRef dir,
-                                                                           Str::StringRef extension, bool stripExtension = true);
-}
-
 /*
 ==============================================================
 

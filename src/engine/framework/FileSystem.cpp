@@ -1472,6 +1472,34 @@ DirectoryRange ListFilesRecursive(Str::StringRef path, std::error_code& err)
 	return state;
 }
 
+// Note that this function is practically identical to the HomePath version.
+// Try to keep any changes in sync between the two versions.
+Cmd::CompletionResult CompleteFilename(Str::StringRef prefix, Str::StringRef root, Str::StringRef extension, bool allowSubdirs, bool stripExtension)
+{
+	std::string prefixDir = Path::DirName(prefix);
+	if (!allowSubdirs && !prefixDir.empty())
+		return {};
+	std::string prefixBase = Path::BaseName(prefix);
+
+	try {
+		Cmd::CompletionResult out;
+		for (auto& x: PakPath::ListFiles(Path::Build(root, prefixDir))) {
+			if (!extension.empty() && Path::Extension(x) != extension)
+				continue;
+			std::string result;
+			if (stripExtension)
+				result = Path::Build(prefixDir, Path::StripExtension(x));
+			else
+				result = Path::Build(prefixDir, x);
+			if (Str::IsPrefix(prefix, result))
+				out.emplace_back(result, "");
+		}
+		return out;
+	} catch (std::system_error&) {
+		return {};
+	}
+}
+
 } // namespace PakPath
 
 namespace RawPath {
@@ -1816,6 +1844,34 @@ RecursiveDirectoryRange ListFilesRecursive(Str::StringRef path, std::error_code&
 		return {};
 	}
 	return RawPath::ListFilesRecursive(Path::Build(homePath, path), err);
+}
+
+// Note that this function is practically identical to the PakPath version.
+// Try to keep any changes in sync between the two versions.
+Cmd::CompletionResult CompleteFilename(Str::StringRef prefix, Str::StringRef root, Str::StringRef extension, bool allowSubdirs, bool stripExtension)
+{
+	std::string prefixDir = Path::DirName(prefix);
+	if (!allowSubdirs && !prefixDir.empty())
+		return {};
+	std::string prefixBase = Path::BaseName(prefix);
+
+	try {
+		Cmd::CompletionResult out;
+		for (auto& x: HomePath::ListFiles(Path::Build(root, prefixDir))) {
+			if (!extension.empty() && Path::Extension(x) != extension)
+				continue;
+			std::string result;
+			if (stripExtension)
+				result = Path::Build(prefixDir, Path::StripExtension(x));
+			else
+				result = Path::Build(prefixDir, x);
+			if (Str::IsPrefix(prefix, result))
+				out.emplace_back(result, "");
+		}
+		return out;
+	} catch (std::system_error&) {
+		return {};
+	}
 }
 
 } // namespace HomePath
@@ -2340,32 +2396,6 @@ qboolean FS_ComparePaks(char* neededpaks, int len, qboolean dlstring)
 		}
 	}
 	return !fs_missingPaks.empty();
-}
-
-namespace FS {
-    Cmd::CompletionResult CompleteFilenameInDir(Str::StringRef prefix, Str::StringRef dir,
-                                                Str::StringRef extension, bool stripExtension) {
-        int nfiles;
-        char** filenames = FS_ListFiles(dir.c_str(), extension.c_str(), &nfiles);
-
-        Cmd::CompletionResult res;
-
-        for (int i = 0; i < nfiles; i++) {
-            char filename[MAX_STRING_CHARS];
-            Q_strncpyz(filename, filenames[i], MAX_STRING_CHARS);
-
-            if (stripExtension) {
-                COM_StripExtension3(filename, filename, sizeof(filename));
-            }
-
-            if (Str::IsIPrefix(prefix, filename)) {
-                res.push_back({filename, ""});
-            }
-        }
-
-        FS_FreeFileList( filenames );
-        return res;
-    }
 }
 
 class WhichCmd: public Cmd::StaticCmd {
