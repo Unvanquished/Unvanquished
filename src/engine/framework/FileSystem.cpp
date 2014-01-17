@@ -1940,7 +1940,7 @@ int FS_SV_FOpenFileRead(const char* path, fileHandle_t* handle)
 	} catch (std::system_error& err) {
 		Com_DPrintf("Failed to open '%s' for reading: %s\n", path, err.what());
 		*handle = 0;
-		return -1;
+		return 0;
 	}
 	handleTable[*handle].isPakFile = false;
 	handleTable[*handle].isOpen = true;
