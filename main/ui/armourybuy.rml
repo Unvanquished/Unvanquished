@@ -31,7 +31,7 @@
 
 	<div class="infobox">
 		<h2><datasource_single source="armouryBuyList.weapons" fields="name" targetid="weapons" /></h2>
-		<p><div class="attr">Price:</div><div class="price"><datasource_single source="armouryBuyList.weapons" fields="price" targetid="weapons" /></div></p>
+		<p><div class="attr">Price:</div><div class="bar"><datasource_single source="armouryBuyList.weapons" fields="price" targetid="weapons" /></div></p>
 		<p><div class="attr">Range:</div><div class="bar"><datasource_single source="armouryBuyList.weapons" fields="num" formatter="GWeaponRange" targetid="weapons" /></div></p>
 		<p><div class="attr">Damage:</div><div class="bar"><datasource_single source="armouryBuyList.weapons" fields="num" formatter="GWeaponDamage" targetid="weapons" /></div></p>
 		<p><div class="attr">Fire Rate:</div><div class="bar"><datasource_single source="armouryBuyList.weapons" fields="num" formatter="GWeaponDamage" targetid="weapons" /></div></p>
