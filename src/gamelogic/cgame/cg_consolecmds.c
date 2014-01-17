@@ -409,6 +409,7 @@ static const struct
 	{ "prevframe",        CG_TestModelPrevFrame_f, 0                },
 	{ "prevskin",         CG_TestModelPrevSkin_f,  0                },
 	{ "reload",           0,                       0                },
+	{ "reloadHud",        CG_ReloadHud_f,          0                },
 	{ "say",              0,                       0                },
 	{ "say_team",         0,                       0                },
 	{ "sell",             0,                       CG_CompleteSell  },
