@@ -62,7 +62,6 @@ SteadyClock::time_point SteadyClock::now() NOEXCEPT
 
 SteadyClock::time_point SleepUntil(SteadyClock::time_point time)
 {
-#ifdef _WIN32
 	// Early exit if we are already past the deadline
 	auto now = SteadyClock::now();
 	if (now >= time) {
@@ -71,6 +70,7 @@ SteadyClock::time_point SleepUntil(SteadyClock::time_point time)
 		return now;
 	}
 
+#ifdef _WIN32
 	// Load ntdll.dll functions
 	static NTSTATUS WINAPI (*pNtQueryTimerResolution)(ULONG* min_resolution, ULONG* max_resolution, ULONG* current_resolution);
 	static NTSTATUS WINAPI (*pNtSetTimerResolution)(ULONG resolution, BOOLEAN set_resolution, ULONG* current_resolution);
@@ -102,41 +102,25 @@ SteadyClock::time_point SleepUntil(SteadyClock::time_point time)
 	// Increase the system timer resolution for the duration of the sleep
 	pNtSetTimerResolution(maxRes, TRUE, &curRes);
 
-	while (true) {
-		// NT works in units of 100ns
-		typedef std::chrono::duration<int64_t, std::ratio<1, 10000000>> NTDuration;
-		auto remaining = std::chrono::duration_cast<NTDuration>(time - now);
+	// Convert to NT units of 100ns
+	typedef std::chrono::duration<int64_t, std::ratio<1, 10000000>> NTDuration;
+	auto remaining = std::chrono::duration_cast<NTDuration>(time - now);
 
-		// Store the delay as a negative number to indicate a relative sleep
-		LARGE_INTEGER duration;
-		duration.QuadPart = -remaining.count();
-		pNtDelayExecution(FALSE, &duration);
+	// Store the delay as a negative number to indicate a relative sleep
+	LARGE_INTEGER duration;
+	duration.QuadPart = -remaining.count();
+	pNtDelayExecution(FALSE, &duration);
 
-		// Check if we have reached our target
-		now = SteadyClock::now();
-		if (now >= time) {
-			// Restore timer resolution after sleeping
-			pNtSetTimerResolution(maxRes, FALSE, &curRes);
-
-			// We may have overslept, so use the target time rather than the
-			// current time as the base for the next frame. That way we ensure
-			// that the frame rate remains consistent.
-			return time;
-		}
-
-	}
+	// Restore timer resolution after sleeping
+	pNtSetTimerResolution(maxRes, FALSE, &curRes);
 #else
-	// See explaination in the Windows implementation
-	bool slept = false;
-
-	while (true) {
-		auto now = SteadyClock::now();
-		if (now >= time)
-			return slept ? time : now;
-		std::this_thread::sleep_for(time - now);
-		slept = true;
-	}
+	std::this_thread::sleep_for(time - now);
 #endif
+
+	// We may have overslept, so use the target time rather than the
+	// current time as the base for the next frame. That way we ensure
+	// that the frame rate remains consistent.
+	return time;
 }
 
 // Common code for fatal and non-fatal exit
