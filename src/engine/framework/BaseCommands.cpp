@@ -122,6 +122,19 @@ namespace Cmd {
                 }
             }
 
+            Cmd::CompletionResult Complete(int argNum, const Args& args, Str::StringRef prefix) const OVERRIDE {
+                Q_UNUSED(args);
+
+                if (argNum == 1 || (argNum == 2 && Str::IsPrefix("-", args.Argv(1)))) {
+                    if (readHomepath)
+                        return FS::HomePath::CompleteFilename(prefix, "config", ".cfg", true, false);
+                    else
+                        return FS::PakPath::CompleteFilename(prefix, "", ".cfg", true, false);
+                }
+
+                return {};
+            }
+
         private:
             bool readHomepath;
 
