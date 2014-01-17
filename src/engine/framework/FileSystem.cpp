@@ -2420,7 +2420,7 @@ public:
 			Print(_("File not found: \"%s\"\n"), filename);
 	}
 
-	Cmd::CompletionResult Complete(int argNum, const Args& args, Str::StringRef prefix) const OVERRIDE
+	Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, Str::StringRef prefix) const OVERRIDE
 	{
 		if (argNum == 1) {
 			return FS::PakPath::CompleteFilename(prefix, "", "", true, false);
