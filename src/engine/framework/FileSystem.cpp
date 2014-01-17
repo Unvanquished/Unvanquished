@@ -1484,7 +1484,8 @@ Cmd::CompletionResult CompleteFilename(Str::StringRef prefix, Str::StringRef roo
 	try {
 		Cmd::CompletionResult out;
 		for (auto& x: PakPath::ListFiles(Path::Build(root, prefixDir))) {
-			if (!extension.empty() && Path::Extension(x) != extension)
+			std::string ext = Path::Extension(x);
+			if (!extension.empty() && ext != extension && !(allowSubdirs && ext == "/"))
 				continue;
 			std::string result;
 			if (stripExtension)
@@ -1858,7 +1859,8 @@ Cmd::CompletionResult CompleteFilename(Str::StringRef prefix, Str::StringRef roo
 	try {
 		Cmd::CompletionResult out;
 		for (auto& x: HomePath::ListFiles(Path::Build(root, prefixDir))) {
-			if (!extension.empty() && Path::Extension(x) != extension)
+			std::string ext = Path::Extension(x);
+			if (!extension.empty() && ext != extension && !(allowSubdirs && ext == "/"))
 				continue;
 			std::string result;
 			if (stripExtension)
