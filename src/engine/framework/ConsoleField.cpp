@@ -100,6 +100,7 @@ namespace Console {
             return;
         }
         std::sort(candidates.begin(), candidates.end());
+        candidates.erase(std::unique(candidates.begin(), candidates.end()), candidates.end());
 
         //Compute the longest common prefix of all the results
         int prefixSize = candidates[0].first.size();
