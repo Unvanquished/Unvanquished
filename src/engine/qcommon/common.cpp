@@ -283,7 +283,7 @@ void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int code, const char *fmt, ... )
 
 	// make sure we can get at our local stuff
 	FS::PakPath::ClearPaks();
-	if (!FS_LoadPak("unvanquished"))
+	if (!FS_LoadPak("unvanquished") && code != ERR_FATAL)
 		Com_Error(ERR_FATAL, "Could not load main pak\n");
 
 	// if we are getting a solid stream of ERR_DROP, do an ERR_FATAL
