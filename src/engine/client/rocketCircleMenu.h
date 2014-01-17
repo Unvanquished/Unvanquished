@@ -292,15 +292,15 @@ public:
 					{
 						if ( GetChild( i ) == button )
 						{
+							parameters.Set( "index", va( "%d", i - 1 ) );
+							parameters.Set( "datasource", data_source->GetDataSourceName() );
+							parameters.Set( "table", data_table );
+
+							DispatchEvent( "rowselect", parameters );
 							break;
 						}
 					}
 
-					parameters.Set( "index", va( "%d", i - 1 ) );
-					parameters.Set( "datasource", data_source->GetDataSourceName() );
-					parameters.Set( "table", data_table );
-
-					DispatchEvent( "rowselect", parameters );
 					break;
 				}
 			}
