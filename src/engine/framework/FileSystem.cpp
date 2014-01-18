@@ -1530,7 +1530,7 @@ static void CreatePath(Str::StringRef path, std::error_code& err)
 		if (!isdirsep(c))
 			continue;
 		c = '\0';
-		if (_wmkdir(buffer.data()) != 0 && errno != EEXIST) {
+		if (_wmkdir(buffer.data()) != 0 && errno != EEXIST && errno != ENOENT) {
 			SetErrorCodeSystem(err);
 			return;
 		}
@@ -1542,7 +1542,7 @@ static void CreatePath(Str::StringRef path, std::error_code& err)
 		if (!isdirsep(c))
 			continue;
 		c = '\0';
-		if (mkdir(buffer.data(), 0777) != 0 && errno != EEXIST) {
+		if (mkdir(buffer.data(), 0777) != 0 && errno != EEXIST && errno != ENOENT) {
 			SetErrorCodeSystem(err);
 			return;
 		}
