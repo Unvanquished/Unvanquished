@@ -1281,6 +1281,7 @@ void ClearPaks()
 {
 	fileMap.clear();
 	loadedPaks.clear();
+	FS::RefreshPaks();
 }
 
 std::string ReadFile(Str::StringRef path, std::error_code& err)
