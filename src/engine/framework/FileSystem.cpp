@@ -1476,15 +1476,31 @@ DirectoryRange ListFilesRecursive(Str::StringRef path, std::error_code& err)
 // Try to keep any changes in sync between the two versions.
 Cmd::CompletionResult CompleteFilename(Str::StringRef prefix, Str::StringRef root, Str::StringRef extension, bool allowSubdirs, bool stripExtension)
 {
-	std::string prefixDir = Path::DirName(prefix);
-	if (!allowSubdirs && !prefixDir.empty())
-		return {};
-	std::string prefixBase = Path::BaseName(prefix);
+	// Handle prefixes ending with / so that they search inside the directory
+	std::string prefixDir, prefixBase;
+	if (Str::IsSuffix("/", prefix)) {
+		if (!allowSubdirs)
+			return {};
+		prefixDir = prefix;
+		prefixBase = "";
+	} else {
+		prefixDir = Path::DirName(prefix);
+		if (!allowSubdirs && !prefixDir.empty())
+			return {};
+		prefixBase = Path::BaseName(prefix);
+	}
 
 	try {
 		Cmd::CompletionResult out;
-		for (auto& x: PakPath::ListFiles(Path::Build(root, prefixDir))) {
+		// ListFiles doesn't return directories for PakPath, so use a recursive
+		// search to get directory names.
+		for (auto x: PakPath::ListFilesRecursive(Path::Build(root, prefixDir))) {
 			std::string ext = Path::Extension(x);
+			size_t slash = x.find('/');
+			if (!allowSubdirs && slash != std::string::npos)
+				continue;
+			else if (allowSubdirs && slash != std::string::npos)
+				x = x.substr(0, slash + 1);
 			if (!extension.empty() && ext != extension && !(allowSubdirs && ext == "/"))
 				continue;
 			std::string result;
@@ -1851,10 +1867,18 @@ RecursiveDirectoryRange ListFilesRecursive(Str::StringRef path, std::error_code&
 // Try to keep any changes in sync between the two versions.
 Cmd::CompletionResult CompleteFilename(Str::StringRef prefix, Str::StringRef root, Str::StringRef extension, bool allowSubdirs, bool stripExtension)
 {
-	std::string prefixDir = Path::DirName(prefix);
-	if (!allowSubdirs && !prefixDir.empty())
-		return {};
-	std::string prefixBase = Path::BaseName(prefix);
+	std::string prefixDir, prefixBase;
+	if (Str::IsSuffix("/", prefix)) {
+		if (!allowSubdirs)
+			return {};
+		prefixDir = prefix;
+		prefixBase = "";
+	} else {
+		prefixDir = Path::DirName(prefix);
+		if (!allowSubdirs && !prefixDir.empty())
+			return {};
+		prefixBase = Path::BaseName(prefix);
+	}
 
 	try {
 		Cmd::CompletionResult out;

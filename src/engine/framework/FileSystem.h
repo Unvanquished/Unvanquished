@@ -274,7 +274,7 @@ namespace PakPath {
 	std::chrono::system_clock::time_point FileTimestamp(Str::StringRef path, std::error_code& err = throws());
 
 	// List all files in the given subdirectory, optionally recursing into subdirectories
-	// Directory names are returned with a trailing slash to differentiate them from files
+	// Note that unlike RawPath/HomePath, directories are *not* returned by ListFiles
 	class DirectoryRange;
 	DirectoryRange ListFiles(Str::StringRef path, std::error_code& err = throws());
 	DirectoryRange ListFilesRecursive(Str::StringRef path, std::error_code& err = throws());
