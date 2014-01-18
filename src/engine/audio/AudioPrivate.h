@@ -36,6 +36,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "../../common/Command.h"
 #include "../../common/Log.h"
+#include "../framework/Resource.h"
 
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"

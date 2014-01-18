@@ -28,47 +28,26 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#ifndef AUDIO_AUDIO_H_
-#define AUDIO_AUDIO_H_
+#include "Resource.h"
 
-#include "../../common/String.h"
+namespace Resource {
 
-namespace Audio {
+    Resource::Resource(std::string name) : name(std::move(name)) {
+    }
 
-    // An interface to the sound system that mimics the previous sound system's behavior
+    Resource::~Resource() {
+    }
 
-    bool Init();
-    void Shutdown();
-    void Update();
+    bool Resource::TagDependencies() {
+        return true;
+    }
 
-    void BeginRegistration();
-    sfxHandle_t RegisterSFX(Str::StringRef filename);
-    void EndRegistration();
+    bool Resource::IsStillValid() {
+        return true;
+    }
 
-    void StartSound(int entityNum, const vec3_t origin, sfxHandle_t sfx);
-    void StartLocalSound(int entityNum);
+    Str::StringRef Resource::GetName() {
+        return name;
+    }
 
-    void AddEntityLoopingSound(int entityNum, sfxHandle_t sfx);
-    void ClearAllLoopingSounds();
-    void ClearLoopingSoundsForEntity(int entityNum);
-
-    void StartMusic(Str::StringRef leadingSound, Str::StringRef loopSound);
-    void StopMusic();
-
-    void StopAllSounds();
-
-    void StreamData(int streamNum, const void* data, int numSamples, int rate, int width, int channels, float volume, int entityNum);
-
-    void UpdateListener(int entityNum, const vec3_t orientation[3]);
-    void UpdateEntityPosition(int entityNum, const vec3_t position);
-    void UpdateEntityVelocity(int entityNum, const vec3_t velocity);
-
-    void SetReverb(int slotNum, std::string name, float ratio);
-
-    void StartCapture(int rate);
-    int AvailableCaptureSamples();
-    void GetCapturedData(int numSamples, void* buffer);
-    void StopCapture();
 }
-
-#endif //AUDIO_AUDIO_H_

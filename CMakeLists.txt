@@ -529,6 +529,8 @@ set( ENGINELIST
   ${ENGINE_DIR}/framework/ConsoleHistory.h
   ${ENGINE_DIR}/framework/LogSystem.cpp
   ${ENGINE_DIR}/framework/LogSystem.h
+  ${ENGINE_DIR}/framework/Resource.cpp
+  ${ENGINE_DIR}/framework/Resource.h
   ${ENGINE_DIR}/framework/VirtualMachine.cpp
   ${ENGINE_DIR}/framework/VirtualMachine.h
   ${ENGINE_DIR}/qcommon/cm_load.cpp
