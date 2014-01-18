@@ -472,7 +472,7 @@ namespace Cvar {
                     return;
                 }
 
-                const std::string& value = args.Argv(nameIndex + 1);
+                const std::string& value = args.ConcatArgs(nameIndex + 1);
 
                 ::Cvar::SetValue(name, value);
                 ::Cvar::AddFlags(name, flags);
