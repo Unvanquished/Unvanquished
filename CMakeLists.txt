@@ -1225,13 +1225,13 @@ endif()
 include( CMakeParseArguments )
 function( GAMEMODULE )
   # ParseArguments setup
-  set( oneValueArgs NAME OUTPUT_DIR HAS_NACL )
+  set( oneValueArgs NAME HAS_NACL )
   set( multiValueArgs COMPILE_DEF FILES NACL_FILES NATIVE_FILES QVM_FILES QVM_ASM )
   cmake_parse_arguments( GAMEMODULE "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
   if( CMAKE_CFG_INTDIR STREQUAL "." )
-    set( GAMEMODULE_FULL_OUTPUT_DIR ${CMAKE_BINARY_DIR}/${GAMEMODULE_OUTPUT_DIR} )
+    set( GAMEMODULE_FULL_OUTPUT_DIR ${CMAKE_BINARY_DIR} )
   else()
-    set( GAMEMODULE_FULL_OUTPUT_DIR ${CMAKE_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${GAMEMODULE_OUTPUT_DIR} )
+    set( GAMEMODULE_FULL_OUTPUT_DIR ${CMAKE_BINARY_DIR}/${CMAKE_CFG_INTDIR} )
   endif()
 
   if( GAMEMODULE_HAS_NACL AND BUILD_GAME_NACL_NATIVE )
@@ -1239,13 +1239,8 @@ function( GAMEMODULE )
     target_link_libraries( ${GAMEMODULE_NAME}-nacl-native ${LIBS_BASE} )
     set_target_properties( ${GAMEMODULE_NAME}-nacl-native PROPERTIES
       OUTPUT_NAME ${GAMEMODULE_NAME}
-      RUNTIME_OUTPUT_DIRECTORY ${GAMEMODULE_OUTPUT_DIR}
       COMPILE_DEFINITIONS ${GAMEMODULE_COMPILE_DEF}
     )
-    foreach( OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES} )
-      string( TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG_UP )
-      set_target_properties( ${GAMEMODULE_NAME}-nacl-native PROPERTIES RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG_UP} ${OUTPUTCONFIG}/${GAMEMODULE_OUTPUT_DIR} )
-    endforeach()
   endif()
 
   if( BUILD_GAME_QVM_NATIVE )
@@ -1254,13 +1249,8 @@ function( GAMEMODULE )
     target_link_libraries( ${GAMEMODULE_NAME}-qvm-native ${LIBS_BASE} )
     set_target_properties( ${GAMEMODULE_NAME}-qvm-native PROPERTIES
       PREFIX ""
-      LIBRARY_OUTPUT_DIRECTORY ${GAMEMODULE_OUTPUT_DIR}
       COMPILE_DEFINITIONS "${QVM_NATIVE_COMPILE_DEF}"
     )
-    foreach( OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES} )
-      string( TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG_UP )
-      set_target_properties( ${GAMEMODULE_NAME}-qvm-native PROPERTIES LIBRARY_OUTPUT_DIRECTORY_${OUTPUTCONFIG_UP} ${OUTPUTCONFIG}/${GAMEMODULE_OUTPUT_DIR} )
-    endforeach()
   endif()
 
   if( GAMEMODULE_HAS_NACL AND BUILD_GAME_NACL )
@@ -1401,14 +1391,14 @@ function( GAMEMODULE )
     endforeach()
 
     # Link *.asm into a qvm
-    add_custom_command( OUTPUT ${GAMEMODULE_FULL_OUTPUT_DIR}/vm/${GAMEMODULE_NAME}.qvm
-      COMMAND asm -o ${GAMEMODULE_FULL_OUTPUT_DIR}/vm/${GAMEMODULE_NAME}.qvm ${OBJECTS} ${GAMEMODULE_QVM_ASM}
+    add_custom_command( OUTPUT ${CMAKE_BINARY_DIR}/vm/${GAMEMODULE_NAME}.qvm
+      COMMAND asm -o ${CMAKE_BINARY_DIR}/vm/${GAMEMODULE_NAME}.qvm ${OBJECTS} ${GAMEMODULE_QVM_ASM}
       DEPENDS asm ${OBJECTS} ${GAMEMODULE_QVM_ASM}
     )
 
     # Dummy target to get CMake to execute the commands
     add_custom_target( ${GAMEMODULE_NAME}-qvm ALL
-      DEPENDS ${GAMEMODULE_FULL_OUTPUT_DIR}/vm/${GAMEMODULE_NAME}.qvm
+      DEPENDS ${CMAKE_BINARY_DIR}/vm/${GAMEMODULE_NAME}.qvm
     )
   endif()
 endfunction()
@@ -1418,7 +1408,6 @@ if( BUILD_GAME_QVM )
 endif()
 
 GAMEMODULE( NAME game
-  OUTPUT_DIR main
   COMPILE_DEF GAME
   HAS_NACL 1
   FILES ${GAMELIST}
@@ -1429,7 +1418,6 @@ GAMEMODULE( NAME game
 )
 
 GAMEMODULE( NAME cgame
-  OUTPUT_DIR main
   COMPILE_DEF CGAME
   HAS_NACL 0
   FILES ${CGAMELIST}
@@ -1440,7 +1428,6 @@ GAMEMODULE( NAME cgame
 )
 
 GAMEMODULE( NAME ui
-  OUTPUT_DIR main
   COMPILE_DEF UI
   FILES ${UILIST}
   HAS_NACL 0
