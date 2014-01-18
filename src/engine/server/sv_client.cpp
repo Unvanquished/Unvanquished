@@ -910,7 +910,7 @@ return true when a redirect URL message was filled up
 when the cvar is set to something, the download server will effectively never use a legacy download strategy
 ==================
 */
-static qboolean SV_CheckFallbackURL( client_t *cl, msg_t *msg )
+static qboolean SV_CheckFallbackURL( client_t *cl, const char* pakName, msg_t *msg )
 {
 	if ( !sv_wwwFallbackURL->string || strlen( sv_wwwFallbackURL->string ) == 0 )
 	{
@@ -921,7 +921,7 @@ static qboolean SV_CheckFallbackURL( client_t *cl, msg_t *msg )
 
 	MSG_WriteByte( msg, svc_download );
 	MSG_WriteShort( msg, -1 );  // block -1 means ftp/http download
-	MSG_WriteString( msg, va( "%s/%s", sv_wwwFallbackURL->string, cl->downloadName ) );
+	MSG_WriteString( msg, va( "%s/%s", sv_wwwFallbackURL->string, pakName ) );
 	MSG_WriteLong( msg, 0 );
 	MSG_WriteLong( msg, 0 );
 
@@ -998,29 +998,30 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 		// FIXME: I could rework that, it's crappy
 		if ( sv_wwwDownload->integer )
 		{
+			std::string name, version;
+			Opt::optional<uint32_t> checksum;
+			int downloadSize = 0;
+			bool success = FS::ParsePakName(cl->downloadName, cl->downloadName + strlen(cl->downloadName), name, version, checksum);
+			if (success) {
+				const FS::PakInfo* pak = checksum ? FS::FindPak(name, version) : FS::FindPak(name, version, *checksum);
+				if (pak) {
+					try {
+						downloadSize = FS::RawPath::OpenRead(pak->path).Length();
+					} catch (std::system_error&) {
+						success = false;
+					}
+				} else
+					success = false;
+			}
+			std::string pakName = name + "_" + version + ".pk3";
+
 			if ( cl->bDlOK )
 			{
 				if ( !cl->bFallback )
 				{
-					std::string name, version;
-					Opt::optional<uint32_t> checksum;
-					int downloadSize = 0;
-					bool success = FS::ParsePakName(cl->downloadName, cl->downloadName + strlen(cl->downloadName), name, version, checksum);
-					if (success) {
-						const FS::PakInfo* pak = checksum ? FS::FindPak(name, version) : FS::FindPak(name, version, *checksum);
-						if (pak) {
-							try {
-								downloadSize = FS::RawPath::OpenRead(pak->path).Length();
-							} catch (std::system_error&) {
-								success = false;
-							}
-						} else
-							success = false;
-					}
-
 					if ( success )
 					{
-						Q_strncpyz( cl->downloadURL, va("%s/%s", sv_wwwBaseURL->string, FS::MakePakName(name, version, checksum).c_str()),
+						Q_strncpyz( cl->downloadURL, va("%s/%s", sv_wwwBaseURL->string, pakName.c_str()),
 						            sizeof( cl->downloadURL ) );
 
 						//bani - prevent multiple download notifications
@@ -1059,7 +1060,7 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 					cl->bFallback = qfalse;
 					cl->bWWWDl = qtrue;
 
-					if ( SV_CheckFallbackURL( cl, msg ) )
+					if ( SV_CheckFallbackURL( cl, pakName.c_str(), msg ) )
 					{
 						return;
 					}
@@ -1070,7 +1071,7 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 			}
 			else
 			{
-				if ( SV_CheckFallbackURL( cl, msg ) )
+				if ( SV_CheckFallbackURL( cl, pakName.c_str(), msg ) )
 				{
 					return;
 				}
