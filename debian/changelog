@@ -1,15 +1,17 @@
 unvanquished (0.23.0-2) unstable; urgency=low
 
-  * Server: fix line breaks in rcon output.
+  * Server: fix minimum wage.
   * Server, client: improve space handling in commands.
+  * Server, client: fix “/set a foo bar” not setting a to “foo bar”.
   * Client: fix music looping if no leading sound.
+  * Game: fix line breaks in rcon output.
   * Impure cgame: particle system fixes.
   * Impure/local game: register user-defined admin commands.
   * Impure/local game: when building overmind or reactor, make sure that a
     marked one is replaced.
   * Add a mime file so that unv:// is handled automatically.
 
- -- Darren Salt <devspam@moreofthesa.me.uk>  Thu, 09 Jan 2014 14:31:40 +0000
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Sat, 18 Jan 2014 16:39:35 +0000
 
 unvanquished (0.23.0-1) unstable; urgency=low
 
