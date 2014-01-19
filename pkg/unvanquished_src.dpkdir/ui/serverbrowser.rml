@@ -4,22 +4,22 @@
 	<link type="text/rcss" href="css/unv.rcss" />
         <title>Server Browser</title>
         <style>
-        
-  
-    
-   
+
+
+
+
 #right, #left{
 	margin:auto;
 	position:absolute;
-}   
-     
+}
+
 #left{
 	height:95%;
 	width:75%;
 	margin-left:-2%;
 	left:0px;
 	margin-top:3%;
-} 
+}
 #right{
 	height:70%;
 	width:32%;
@@ -37,6 +37,12 @@
 	margin-top:-6.5%;
 }
 
+#right tabs{
+	display:block;
+	margin-top:2.5%;
+	margin-bottom: 3.3%;
+}
+
 #left tabs{
 	display:block;
 	margin-top:5%;
@@ -52,9 +58,9 @@
 	position:absolute;
 	top:5px;
 	left:5px;
-}  
-        
-        
+}
+
+
 body
 {
 	width: 100%;
@@ -105,12 +111,12 @@ datagridcell:nth-child(1n){
 	position:absolute;
 	left:0px;
 	display:block;
-}	
+}
 datagridheader{
 	background:#00000044;
 	margin-bottom:10px;
 	padding-bottom:5px;
-}	
+}
 datagridrow{
 	border-bottom-style:solid;
 	border-bottom-width:2px;
@@ -228,7 +234,7 @@ datagridrow:selected{
 			<div class="filter2">
 				<label>Server Name: </label><input type='text' name="filter" ontextinput="filterDS server_browser" />
 			</div>
-			
+
 		</panel>
 		<tab>Server Details</tab>
 		<panel>
