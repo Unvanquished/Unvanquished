@@ -380,11 +380,11 @@ void Initialize()
 	const char* basePath = Cvar_Get("fs_basepath", defaultBasePath.c_str(), CVAR_INIT)->string;
 	const char* extraPath = Cvar_Get("fs_extrapath", "", CVAR_INIT)->string;
 
-	pakPaths.push_back(Path::Build(homePath, "pkg"));
 	if (basePath != homePath)
 		pakPaths.push_back(Path::Build(basePath, "pkg"));
 	if (extraPath[0] && extraPath != basePath && extraPath != homePath)
 		pakPaths.push_back(Path::Build(extraPath, "pkg"));
+	pakPaths.push_back(Path::Build(homePath, "pkg"));
 	isInitialized = true;
 
 	Com_Printf("Home path: %s\n", homePath.c_str());
