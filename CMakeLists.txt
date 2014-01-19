@@ -215,6 +215,7 @@ else()
   # Use libc++ on Mac because the shipped libstdc++ version is too old
   if( APPLE )
     set_c_cxx_flag( "-stdlib=libc++" )
+    set_linker_flag( "-stdlib=libc++" )
   endif()
 
   # Hardening, don't set _FORTIFY_SOURCE in debug builds
@@ -231,12 +232,14 @@ else()
   endif()
 
   # Linker flags
-  try_linker_flag( LINKER_O1 "-Wl,-O1" )
-  try_linker_flag( LINKER_SORT_COMMON "-Wl,--sort-common" )
-  try_linker_flag( LINKER_AS_NEEDED "-Wl,--as-needed" )
-  try_linker_flag( LINKER_NO_UNDEFINED "-Wl,--no-undefined" )
-  try_linker_flag( LINKER_Z_RELRO "-Wl,-z,relro" )
-  try_linker_flag( LINKER_Z_NOW "-Wl,-z,now" )
+  if( NOT APPLE )
+    try_linker_flag( LINKER_O1 "-Wl,-O1" )
+    try_linker_flag( LINKER_SORT_COMMON "-Wl,--sort-common" )
+    try_linker_flag( LINKER_AS_NEEDED "-Wl,--as-needed" )
+    try_linker_flag( LINKER_NO_UNDEFINED "-Wl,--no-undefined" )
+    try_linker_flag( LINKER_Z_RELRO "-Wl,-z,relro" )
+    try_linker_flag( LINKER_Z_NOW "-Wl,-z,now" )
+  endif()
   if( WIN32 )
     try_linker_flag( LINKER_DYNAMICBASE "-Wl,--dynamicbase" )
     try_linker_flag( LINKER_NXCOMPAT "-Wl,--nxcompat" )
@@ -626,11 +629,11 @@ set( CLIENTLIST
   ${ENGINE_DIR}/client/cl_ui.cpp
   ${ENGINE_DIR}/client/cl_logs.cpp
   ${ENGINE_DIR}/client/dl_main.cpp
-  ${ENGINE_DIR}/audio/snd_codec.c
+  ${ENGINE_DIR}/audio/snd_codec.cpp
   ${ENGINE_DIR}/audio/snd_codec.h
-  ${ENGINE_DIR}/audio/snd_codec_ogg.c
-  ${ENGINE_DIR}/audio/snd_codec_opus.c
-  ${ENGINE_DIR}/audio/snd_codec_wav.c
+  ${ENGINE_DIR}/audio/snd_codec_ogg.cpp
+  ${ENGINE_DIR}/audio/snd_codec_opus.cpp
+  ${ENGINE_DIR}/audio/snd_codec_wav.cpp
   ${ENGINE_DIR}/audio/ALObjects.cpp
   ${ENGINE_DIR}/audio/ALObjects.h
   ${ENGINE_DIR}/audio/Audio.cpp
@@ -1376,6 +1379,12 @@ function( GAMEMODULE )
         ${GAMEMODULE_FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86.nexe
         ${GAMEMODULE_FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86_64.nexe
     )
+
+    # Create the build directory before building
+    add_custom_command( TARGET ${GAMEMODULE_NAME}-nacl PRE_BUILD
+      COMMAND ${CMAKE_COMMAND} -E make_directory ${GAMEMODULE_FULL_OUTPUT_DIR}
+      COMMAND ${CMAKE_COMMAND} -E make_directory ${NACL_DIR}
+    )
   endif()
 
   if( BUILD_GAME_QVM )
@@ -1419,6 +1428,12 @@ function( GAMEMODULE )
     # Dummy target to get CMake to execute the commands
     add_custom_target( ${GAMEMODULE_NAME}-qvm ALL
       DEPENDS ${CMAKE_BINARY_DIR}/vm/${GAMEMODULE_NAME}.qvm
+    )
+
+    # Create the build directory before building
+    add_custom_command( TARGET ${GAMEMODULE_NAME}-qvm PRE_BUILD
+      COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/vm
+      COMMAND ${CMAKE_COMMAND} -E make_directory ${QVM_DIR}
     )
   endif()
 endfunction()
