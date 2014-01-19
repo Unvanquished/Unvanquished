@@ -77,15 +77,16 @@ static std::vector<PakInfo> availablePaks;
 enum openMode_t {
 	MODE_READ,
 	MODE_WRITE,
-	MODE_APPEND
+	MODE_APPEND,
+	MODE_EDIT
 };
 static FILE* my_fopen(Str::StringRef path, openMode_t mode)
 {
 #ifdef _WIN32
-	const wchar_t* modes[] = {L"rb", L"wb", L"ab"};
+	const wchar_t* modes[] = {L"rb", L"wb", L"ab", L"rb+"};
 	return _wfopen(Str::UTF8To16(path).c_str(), modes[mode]);
 #else
-	const char* modes[] = {"rb", "wb", "ab"};
+	const char* modes[] = {"rb", "wb", "ab", "rb+"};
 #if defined(__APPLE__)
 	FILE* fd = fopen(path.c_str(), modes[mode]);
 #elif defined(__linux__)
@@ -1582,6 +1583,10 @@ File OpenAppend(Str::StringRef path, std::error_code& err)
 {
 	return OpenMode(path, MODE_APPEND, err);
 }
+File OpenEdit(Str::StringRef path, std::error_code& err)
+{
+	return OpenMode(path, MODE_EDIT, err);
+}
 
 bool FileExists(Str::StringRef path)
 {
@@ -1811,6 +1816,10 @@ File OpenWrite(Str::StringRef path, std::error_code& err)
 File OpenAppend(Str::StringRef path, std::error_code& err)
 {
 	return OpenMode(path, MODE_APPEND, err);
+}
+File OpenEdit(Str::StringRef path, std::error_code& err)
+{
+	return OpenMode(path, MODE_EDIT, err);
 }
 
 bool FileExists(Str::StringRef path)

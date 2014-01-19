@@ -318,6 +318,7 @@ namespace RawPath {
 	File OpenRead(Str::StringRef path, std::error_code& err = throws());
 	File OpenWrite(Str::StringRef path, std::error_code& err = throws());
 	File OpenAppend(Str::StringRef path, std::error_code& err = throws());
+	File OpenEdit(Str::StringRef path, std::error_code& err = throws());
 
 	// Check if a file exists
 	bool FileExists(Str::StringRef path);
@@ -393,6 +394,7 @@ namespace HomePath {
 	File OpenRead(Str::StringRef path, std::error_code& err = throws());
 	File OpenWrite(Str::StringRef path, std::error_code& err = throws());
 	File OpenAppend(Str::StringRef path, std::error_code& err = throws());
+	File OpenEdit(Str::StringRef path, std::error_code& err = throws());
 
 	// Check if a file exists
 	bool FileExists(Str::StringRef path);
