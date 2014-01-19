@@ -387,10 +387,9 @@ void Initialize()
 		pakPaths.push_back(Path::Build(extraPath, "pkg"));
 	isInitialized = true;
 
-	Com_Printf("Filesystem home path: %s\n", homePath.c_str());
-	Com_Printf("Filesystem search paths:\n");
+	Com_Printf("Home path: %s\n", homePath.c_str());
 	for (std::string& x: pakPaths)
-		Com_Printf("- %s\n", x.c_str());
+		Com_Printf("Pak path: %s\n", x.c_str());
 
 	RefreshPaks();
 }
@@ -2457,9 +2456,9 @@ public:
 		const std::string& filename = args.Argv(1);
 		const FS::PakInfo* pak = FS::PakPath::LocateFile(filename);
 		if (pak)
-			Print(_( "File \"%s\" found in \"%s\"\n"), filename, pak->path);
+			Print(_( "File \"%s\" found in \"%s\""), filename, pak->path);
 		else
-			Print(_("File not found: \"%s\"\n"), filename);
+			Print(_("File not found: \"%s\""), filename);
 	}
 
 	Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, Str::StringRef prefix) const OVERRIDE
@@ -2472,3 +2471,17 @@ public:
 	}
 };
 static WhichCmd WhichCmdRegistration;
+
+class PathCmd: public Cmd::StaticCmd {
+public:
+	PathCmd()
+		: Cmd::StaticCmd("path", Cmd::SYSTEM, N_("list filesystem search paths")) {}
+
+	void Run(const Cmd::Args& args) const OVERRIDE
+	{
+		Print("Home path: %s", FS::GetHomePath());
+		for (auto& x: FS::PakPath::GetLoadedPaks())
+			Print("Loaded pak: %s", x.path);
+	}
+};
+static PathCmd PathCmdRegistration;
