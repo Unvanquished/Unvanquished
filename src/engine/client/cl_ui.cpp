@@ -1022,7 +1022,7 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 			return 0;
 
 		case UI_FS_FOPENFILE:
-			return FS_FOpenFileByMode( (char*) VMA( 1 ), (fileHandle_t*) VMA( 2 ), (fsMode_t) args[ 3 ] );
+			return FS_Game_FOpenFileByMode( (char*) VMA( 1 ), (fileHandle_t*) VMA( 2 ), (fsMode_t) args[ 3 ] );
 
 		case UI_FS_READ:
 			VM_CheckBlock( args[1], args[2], "FSREAD" );

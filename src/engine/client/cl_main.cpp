@@ -4097,7 +4097,7 @@ qboolean CL_InitRenderer( void )
 	// filehandle is unused but forces FS_FOpenFileRead() to heed purecheck because it does not when filehandle is NULL
 	if ( cl_consoleFont->string[0] )
 	{
-		if ( FS_FOpenFileByMode( cl_consoleFont->string, &f, FS_READ ) >= 0 )
+		if ( FS_FOpenFileRead( cl_consoleFont->string, &f, qfalse ) >= 0 )
 		{
 			re.RegisterFont( cl_consoleFont->string, NULL, cl_consoleFontSize->integer, &cls.consoleFont );
 			cls.useLegacyConsoleFont = qfalse;

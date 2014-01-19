@@ -2015,6 +2015,9 @@ fileHandle_t FS_SV_FOpenFileWrite(const char* path)
 
 int FS_SV_FOpenFileRead(const char* path, fileHandle_t* handle)
 {
+	if (!handle)
+		return FS::HomePath::FileExists(path);
+
 	*handle = FS_AllocHandle();
 	int length;
 	try {
@@ -2030,24 +2033,29 @@ int FS_SV_FOpenFileRead(const char* path, fileHandle_t* handle)
 	return length;
 }
 
-int FS_FOpenFileByMode(const char* path, fileHandle_t* handle, fsMode_t mode)
+int FS_Game_FOpenFileByMode(const char* path, fileHandle_t* handle, fsMode_t mode)
 {
 	switch (mode) {
 	case FS_READ:
-		return FS_FOpenFileRead(path, handle, qfalse);
+		if (FS::PakPath::FileExists(path))
+			return FS_FOpenFileRead(path, handle, qfalse);
+		else {
+			int size = FS_SV_FOpenFileRead(FS::Path::Build("game", path).c_str(), handle);
+			return (!handle || *handle) ? size : -1;
+		}
 
 	case FS_WRITE:
-		*handle = FS_FOpenFileWrite(path);
+		*handle = FS_FOpenFileWrite(FS::Path::Build("game", path).c_str());
 		return *handle == 0 ? -1 : 0;
 
 	case FS_APPEND:
 	case FS_APPEND_SYNC:
-		*handle = FS_FOpenFileAppend(path);
+		*handle = FS_FOpenFileAppend(FS::Path::Build("game", path).c_str());
 		handleTable[*handle].forceFlush = mode == FS_APPEND_SYNC;
 		return *handle == 0 ? -1 : 0;
 
 	default:
-		Com_Error(ERR_DROP, "FS_FOpenFileByMode: bad mode %d", mode);
+		Com_Error(ERR_DROP, "FS_Game_FOpenFileByMode: bad mode %d", mode);
 	}
 }
 

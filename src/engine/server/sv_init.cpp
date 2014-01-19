@@ -472,7 +472,7 @@ void SV_SetExpectedHunkUsage( char *mapname )
 	char *token;
 	int  len;
 
-	len = FS_FOpenFileByMode( memlistfile, &handle, FS_READ );
+	len = FS_FOpenFileRead( memlistfile, &handle, qfalse );
 
 	if ( len >= 0 )
 	{

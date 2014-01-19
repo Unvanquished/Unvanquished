@@ -571,7 +571,7 @@ void QDECL FS_Printf( fileHandle_t f, const char *fmt, ... ) PRINTF_LIKE(2);
 
 // like fprintf
 
-int FS_FOpenFileByMode( const char *qpath, fileHandle_t *f, fsMode_t mode );
+int FS_Game_FOpenFileByMode( const char *qpath, fileHandle_t *f, fsMode_t mode );
 
 // opens a file for reading, writing, or appending depending on the value of mode
 
