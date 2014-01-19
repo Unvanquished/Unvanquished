@@ -4,99 +4,189 @@
 	<link type="text/rcss" href="css/unv.rcss" />
         <title>Server Browser</title>
         <style>
-		body
-		{
-			width: 100%;
-			height: 100%;
-			margin: auto;
-		}
+        
+  
+    
+   
+#right, #left{
+	margin:auto;
+	position:absolute;
+}   
+     
+#left{
+	height:95%;
+	width:75%;
+	margin-left:-2%;
+	left:0px;
+	margin-top:3%;
+} 
+#right{
+	height:70%;
+	width:32%;
+	margin-right:0%;
+	right:0px;
+	margin-top:9%;
+}
 
-		div#title_bar div#icon
-		{
-			icon-image-s: 128px 179px;
-			icon-image-t: 152px 191px;
-		}
+#right panel{
+	padding:20% 7%;
+}
 
-		div#content
-		{
-			height: 800px;
-			overflow-y: scroll;
-		}
+#left panel{
+	padding:5% 7%;
+	margin-top:-6.5%;
+}
 
-		datagrid datagridbody
-		{
-		}
+#left tabs{
+	display:block;
+	margin-top:5%;
+}
 
-		img.emoticon
-		{
-			width: 18px;
-			height: 18px;
-		}
-		div#backdrop, div#backdrop div
-		{
-			position: absolute;
-			top: 0;
-			left: 0;
-			width: 100%;
-			height: 100%;
-			z-index: -1;
-		}
-		div.servers
-		{
-			height: 75%;
-			width: 95%;
-		}
-		datagridbody
-		{
-			overflow-y: auto;
-			height: 100%;
-		}
-		datagridcell
-		{
-			border-style: solid;
-			border-width: 1px;
-			border-color: white;
-			min-height: 39px;
-			min-width: 37px;
-		}
-		datagridrow:selected
-		{
-			background: #FFFFFFA0;
-			border-color: #FFFFFFA0;
-		}
-		.trem-emoticon
-		{
-			width: 35px;
-			height: 35px;
-		}
-		tabset#misc tab
-		{
-			font-size: 24;
-		}
-		div#left
-		{
-			float: left;
-			width: 70%;
-		}
-		div#right
-		{
-			float: right;
-			width: 30%;
-		}
-		div#serverInfo
-		{
-			height: 100%;
-		}
-		datagrid#info datagridbody,
-		datagrid#players datagridbody
-		{
-			height: 50%;
-		}
-        </style>
+#serverbrowser .close{
+	z-index:7;
+	max-width: 9em;
+	width:auto;
+	padding:1%;
+	margin-left:0%;
+	font-size: 0.8em;
+	position:absolute;
+	top:5px;
+	left:5px;
+}  
+        
+        
+body
+{
+	width: 100%;
+	height: 100%;
+	margin: auto;
+	text-align:center;
+}
+
+
+div#backdrop, div#backdrop div
+{
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: -1;
+}
+
+datagrid{
+	width:99%;
+	display:block;
+	font-size:0.8em;
+	text-align:left;
+	overflow:visible;
+	z-index:2;
+}
+.trem-emoticon
+{
+	width:20px;
+	height:20px;
+}
+.label div{
+	display:block;
+	height:25px;
+}
+
+datagridcell{
+	padding-top:5px;
+	padding-bottom:2px;
+	color:white;
+}
+
+datagridcell:nth-child(2n) {
+	padding-left:30px;
+}
+datagridcell:nth-child(1n){
+	position:absolute;
+	left:0px;
+	display:block;
+}	
+datagridheader{
+	background:#00000044;
+	margin-bottom:10px;
+	padding-bottom:5px;
+}	
+datagridrow{
+	border-bottom-style:solid;
+	border-bottom-width:2px;
+	border-bottom-color:#86868655;
+}
+datagridrow:hover{
+	background:#86868655;
+}
+datagridrow:active{
+	background:#86868699;
+}
+
+datagridrow:selected{
+	background:#252424AA;
+}
+#misc{
+	text-align:center;
+}
+
+#misc .filter1{
+	text-align:left;
+	font-size:0.8em;
+	padding:5px 30px;
+	display:block;
+	width:100%;
+}
+
+#misc .filter1 div{
+	width:3em;
+	text-align:center;
+	float:left;
+}
+
+#misc .filter1 div input{
+	display:inline-block;
+	margin: 0px auto;
+}
+#misc .filter2{
+	text-align:left;
+	font-size:1em;
+	padding:5px 30px;
+	display:block;
+	width:100%;
+}
+#misc .filter2 label{
+	white-space: nowrap;
+	display:block;
+}
+#misc .filter2 input{
+	margin-left:0px;
+}
+
+</style>
     </head>
     <body onload="init_servers internet" id="serverbrowser">
-		<div id="left">
-		<tabset id="server">
+    	<button class="close menuButton" onClick="hide serverbrowser; show main">Back</button>
+		<div id="left" >
+		<tabset id="server" class="window">
+			<tab onClick="buildDS server_browser internet">Internet</tab>
+			<panel>
+				<p><span id="status"></span></p>
+				<button onClick="buildDS server_browser internet">Refresh</button>
+				<div class="servers">
+				<datagrid source="server_browser.internet">
+					<col fields="label" width="30px" class="label" formatter="ServerLabel"><div></div></col>
+					<col fields="name" width="50%" class="name" >Name:</col>
+					<col fields="map" width="10%" class="map"><button onClick="sortDS server_browser internet map">Map:</button></col>
+					<col fields="players,bots,maxClients" width="20%" formatter="ServerPlayers" class="players"><button onClick="sortDS server_browser internet players">Players (Bots)</button></col>
+					<col fields="ping" width="5%" formatter="ServerPing" class="ping"><button onClick="sortDS server_browser internet ping">Ping</button></col>
+				</datagrid>
+				</div>
+			</panel>
+			<tab>Favorite</tab>
+			<panel>
+				Favorite servers here
+			</panel>
 			<tab onClick="buildDS server_browser local">LAN</tab>
 			<panel onShow="init_servers local">
 				<p><span id="status"></span></p>
@@ -113,42 +203,34 @@
 				</div>
 
 			</panel>
-			<tab onClick="buildDS server_browser internet">Internet</tab>
-			<panel>
-				<p><span id="status"></span></p>
-				<button onClick="buildDS server_browser internet">Refresh</button>
-				<button onClick="sortDS server_browser internet ping">Sort</button>
-				<button onClick="hide serverbrowser; show main">Close</button>
-				<div class="servers">
-				<datagrid source="server_browser.internet">
-					<col fields="label" width="2%" formatter="ServerLabel"></col>
-					<col fields="name" width="56%">Name:</col>
-					<col fields="players,bots,maxClients" formatter="ServerPlayers"  width="20%">Players + Bots:</col>
-					<col fields="ping" formatter="ServerPing" width="20%">Ping:</col>
-				</datagrid>
-				</div>
-			</panel>
-			<tab>Favorite</tab>
-			<panel>
-				Favorite servers here
-			</panel>
 		</tabset>
 		</div>
-		<div id="right">
-		<tabset id="misc">
+		<div id="right" >
+		<tabset id="misc" class="window">
 		<tab>Filter</tab>
 		<panel>
-			<div>
-			<p>
-				<input type='checkbox' name="full" value="true"/> Full
-				<input type='checkbox' name="empty" value="true"/> Empty
-			</p>
-			<p>
-				Server Name: <input type='text' name="filter" ontextinput="filterDS server_browser" />
-			</p>
+			<h2>Show Servers with:</h2>
+			<div class="filter1">
+			Players:
+				<div>0-5<input type='checkbox' name="full" value="true"/></div>
+				<div>6-14<input type='checkbox' name="full" value="true"/></div>
+				<div>15+<input type='checkbox' name="full" value="true"/></div>
+				<div>Full<input type='checkbox' name="full" value="true"/></div>
 			</div>
+			<div class="filter1">
+			Free Slots:
+				<div>5><input type='checkbox' name="full" value="true"/></div>
+				<div>6-14<input type='checkbox' name="full" value="true"/></div>
+				<div>15+<input type='checkbox' name="full" value="true"/></div>
+				<div>Empty<input type='checkbox' name="full" value="true"/></div>
+			</div>
+
+			<div class="filter2">
+				<label>Server Name: </label><input type='text' name="filter" ontextinput="filterDS server_browser" />
+			</div>
+			
 		</panel>
-		<tab style="width: 300px;">Server Details</tab>
+		<tab>Server Details</tab>
 		<panel>
 		<div id="serverInfo">
 			<datagrid id="info" source="server_browser.serverInfo">
