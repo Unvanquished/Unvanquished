@@ -822,6 +822,7 @@ class RconEnvironment: public Cmd::DefaultEnvironment {
             }
 
             buffer += text;
+            buffer += '\n';
         }
 
         void Flush() {
