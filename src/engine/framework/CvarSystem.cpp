@@ -87,6 +87,7 @@ namespace Cvar {
                     Com_Printf(_("The change will take effect after restart."));
                     if (var.latchedString) Z_Free(var.latchedString);
                     var.latchedString = CopyString(cvar.value.c_str());
+                    modified = true;
                 } else if (var.latchedString) {
                     Z_Free(var.latchedString);
                     var.latchedString = nullptr;
@@ -416,7 +417,11 @@ namespace Cvar {
             cvarRecord_t* cvar = it.second;
 
             if (cvar->flags & ARCHIVE) {
-                FS_Printf(f, "seta %s %s\n", it.first.c_str(), Cmd::Escape(cvar->value).c_str());
+                if (cvar->ccvar.latchedString) {
+                    FS_Printf(f, "seta %s %s\n", it.first.c_str(), Cmd::Escape(cvar->ccvar.latchedString).c_str());
+                } else {
+                    FS_Printf(f, "seta %s %s\n", it.first.c_str(), Cmd::Escape(cvar->value).c_str());
+                }
             }
         }
     }
@@ -478,7 +483,7 @@ namespace Cvar {
                     return;
                 }
 
-                const std::string& value = args.Argv(nameIndex + 1);
+                const std::string& value = args.ConcatArgs(nameIndex + 1);
 
                 ::Cvar::SetValue(name, value);
                 ::Cvar::AddFlags(name, flags);
