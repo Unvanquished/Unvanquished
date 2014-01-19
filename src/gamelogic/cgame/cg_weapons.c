@@ -2664,6 +2664,7 @@ static void ShotgunPattern( vec3_t origin, vec3_t origin2, int seed, int otherEn
 			dummy.eventParm       = DirToByte( tr.plane.normal );
 			dummy.otherEntityNum  = tr.entityNum;
 			dummy.otherEntityNum2 = 0; // TODO: Set attackerNum
+			dummy.torsoAnim       = 0; // Make sure it is not used uninitialized
 
 			if ( cg_entities[ tr.entityNum ].currentState.eType == ET_PLAYER ||
 			     cg_entities[ tr.entityNum ].currentState.eType == ET_BUILDABLE )

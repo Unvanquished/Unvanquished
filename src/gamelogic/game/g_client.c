@@ -299,7 +299,7 @@ G_SelectSpectatorSpawnPoint
 
 ============
 */
-static gentity_t *G_SelectSpectatorSpawnPoint( vec3_t origin, vec3_t angles )
+gentity_t *G_SelectSpectatorSpawnPoint( vec3_t origin, vec3_t angles )
 {
 	FindIntermissionPoint();
 
@@ -1406,7 +1406,7 @@ void ClientAdminChallenge( int clientNum )
 	if ( !client->pers.pubkey_authenticated && admin && admin->pubkey[ 0 ] && ( level.time - client->pers.pubkey_challengedAt ) >= 6000 )
 	{
 		trap_SendServerCommand( clientNum, va( "pubkey_decrypt %s", admin->msg2 ) );
-		client->pers.pubkey_challengedAt = level.time ^ ( 5 * clientNum ); // a small amount of jitter 
+		client->pers.pubkey_challengedAt = level.time ^ ( 5 * clientNum ); // a small amount of jitter
 
 		// copy the decrypted message because generating a new message will overwrite it
 		G_admin_writeconfig();
