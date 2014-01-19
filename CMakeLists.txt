@@ -501,6 +501,7 @@ set( SERVERLIST
   ${ENGINE_DIR}/server/sv_net_chan.cpp
   ${ENGINE_DIR}/server/sv_snapshot.cpp
   ${ENGINE_DIR}/server/sv_world.cpp
+  ${ENGINE_DIR}/server/sv_sqlite.cpp
   ${ENGINE_DIR}/server/server.h
   ${ENGINE_DIR}/server/g_api.h
   ${ENGINE_DIR}/qcommon/print_translated.h
@@ -1045,6 +1046,12 @@ if( USE_GEOIP )
   set( LIBS_ENGINE ${LIBS_ENGINE} ${GeoIP_LIBRARIES} )
   include_directories( ${GeoIP_INCLUDE_DIRS} )
 endif()
+
+# SQLite3
+find_package( SQLite3 REQUIRED )
+set( LIBS_ENGINE ${LIBS_ENGINE} ${SQLITE3_LIBRARIES} )
+include_directories( ${SQLITE_INCLUDE_DIR} )
+
 
 # Native client
 if( APPLE )
