@@ -62,7 +62,7 @@ int SV_SQL_Open( const char *dbName )
 
 	if ( ret )
 	{
-		Com_Printf( "SV_SQL_Open: Error openning database %s: %s\n", dbName, sqlite3_errstr( ret ) );
+		Com_Printf( "SV_SQL_Open: Error openning database %s: %s\n", dbName, sqlite3_errmsg( db ) );
 		return -1;
 	}
 
@@ -90,7 +90,7 @@ int SV_SQL_Exec( int dbHandle, const char *sql, char *out, int len )
 
 	if ( ret != SQLITE_OK )
 	{
-		Com_Printf( "SV_SQL_Exec: Error preparing statement \"%s\": %s\n", sql, sqlite3_errstr( ret ) );
+		Com_Printf( "SV_SQL_Exec: Error preparing statement \"%s\": %s\n", sql, sqlite3_errmsg( db ) );
 		return -1;
 	}
 
@@ -98,7 +98,7 @@ int SV_SQL_Exec( int dbHandle, const char *sql, char *out, int len )
 
 	if ( ret != SQLITE_ROW && ret != SQLITE_DONE )
 	{
-		Com_Printf( "SV_SQL_Exec: Error executing statement \"%s\": %s\n", sql, sqlite3_errstr( ret ) );
+		Com_Printf( "SV_SQL_Exec: Error executing statement \"%s\": %s\n", sql, sqlite3_errmsg( db ) );
 		sqlite3_finalize( statement );
 		return -1;
 	}
@@ -119,7 +119,7 @@ int SV_SQL_Exec( int dbHandle, const char *sql, char *out, int len )
 
 			if ( ret != SQLITE_ROW )
 			{
-				Com_Printf( "SV_SQL_Exec: Error executing statement \"%s\": %s\n", sql, sqlite3_errstr( ret ) );
+				Com_Printf( "SV_SQL_Exec: Error executing statement \"%s\": %s\n", sql, sqlite3_errmsg( db ) );
 				sqlite3_finalize( statement );
 				return -1;
 			}
