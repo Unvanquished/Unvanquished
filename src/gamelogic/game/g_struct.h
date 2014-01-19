@@ -361,7 +361,7 @@ struct gentity_s
 	int         last_move_time;
 	int         timestamp; // body queue sinking, etc
 	int         shrunkTime; // time when a barricade shrunk or zero
-	int         creepTime; // Time when alien was last on creep
+	int         healthSourceTime; // last time an alien had contact to a health source
 	int         animTime; // last animation change
 	int         time1000; // timer evaluated every second
 

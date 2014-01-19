@@ -1608,22 +1608,14 @@ static void G_UnlaggedDetectCollisions( gentity_t *ent )
 	G_UnlaggedOff();
 }
 
-
-/*
-================
-G_FindHealth
-
-Attempt to find a health source for self.
-
-Returns SS_HEALING_ACTIVE when on creep,
-        SS_HEALING_2X when there is a source for double healing,
-        SS_HEALING_3X when there is a source for triple healing
-        or any combination of these flags, if more than one is true.
-
-Sets creepTime on self if appropriate.
-================
-*/
-static int G_FindHealth( gentity_t *self )
+/**
+ * @brief Attempt to find a health source for an alien.
+ * @return A mask of SS_HEALING_* flags:
+ *         SS_HEALING_ACTIVE when there is any heath source,
+ *         SS_HEALING_2X     when there also is a source for double healing,
+ *         SS_HEALING_3X     when there also is a source for triple healing.
+ */
+static int FindAlienHealthSource( gentity_t *self )
 {
 	int       ret = 0;
 	float     distance;
@@ -1638,40 +1630,55 @@ static int G_FindHealth( gentity_t *self )
 	{
 		distance = Distance( ent->s.origin, self->s.origin );
 
-		if ( ent->client &&
-		     ent->client->pers.team == self->client->pers.team &&
-		     ent->health > 0 &&
-		     distance < REGEN_BOOST_RANGE )
+		if ( ent->client && ent->health > 0 && distance < REGEN_BOOST_RANGE &&
+		     ent->client->pers.team == self->client->pers.team )
 		{
 			if ( ent->client->ps.stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL1 )
 			{
+				// Basilisk healing aura
 				ret |= SS_HEALING_2X;
 			}
 			else if ( ent->client->ps.stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL1_UPG )
 			{
+				// Advanced Basilisk healing aura
 				ret |= SS_HEALING_3X;
 			}
+			else if ( self != ent )
+			{
+				// Group healing
+				ret |= SS_HEALING_ACTIVE;
+			}
 		}
-		else if ( ent->s.eType == ET_BUILDABLE &&
-		          ent->buildableTeam == self->client->pers.team &&
-		          ent->spawned &&
-		          ent->health > 0 )
+		else if ( ent->s.eType == ET_BUILDABLE && ent->spawned && ent->health > 0 &&
+		          ent->buildableTeam == self->client->pers.team )
 		{
 			if ( ( ent->s.modelindex == BA_A_SPAWN || ent->s.modelindex == BA_A_OVERMIND ) &&
 			     distance < ( float )CREEP_BASESIZE )
 			{
+				// "Creep healing" (close to spawn or OM)
 				ret |= SS_HEALING_ACTIVE;
 			}
 			else if ( ent->s.modelindex == BA_A_BOOSTER && distance < REGEN_BOOST_RANGE )
 			{
+				// Booster healing
 				ret |= SS_HEALING_3X;
 			}
 		}
 	}
 
+	if ( ret & SS_HEALING_3X )
+	{
+		ret |= SS_HEALING_2X;
+	}
+
+	if ( ret & SS_HEALING_2X )
+	{
+		ret |= SS_HEALING_ACTIVE;
+	}
+
 	if ( ret )
 	{
-		self->creepTime = level.time;
+		self->healthSourceTime = level.time;
 	}
 
 	return ret;
@@ -1699,7 +1706,7 @@ static void G_ReplenishAlienHealth( gentity_t *self )
 		return;
 	}
 
-	foundHealthSource = G_FindHealth( self );
+	foundHealthSource = FindAlienHealthSource( self );
 
 	if ( self->nextRegenTime < level.time )
 	{
@@ -1730,7 +1737,7 @@ static void G_ReplenishAlienHealth( gentity_t *self )
 			else
 			{
 				// Exponentially decrease healing rate when not on creep. ln(2) ~= 0.6931472
-				modifier = exp( ( 0.6931472f / ( 1000.0f * g_alienOffCreepRegenHalfLife.value ) ) * ( self->creepTime - level.time ) );
+				modifier = exp( ( 0.6931472f / ( 1000.0f * g_alienOffCreepRegenHalfLife.value ) ) * ( self->healthSourceTime - level.time ) );
 
 				// Prevent possible overflow/division by zero and keep a minimum heal rate
 				if ( modifier < 0.1f )
