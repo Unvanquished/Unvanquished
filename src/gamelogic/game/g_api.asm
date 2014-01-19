@@ -99,3 +99,6 @@ equ trap_BotDisableArea                   -334
 equ trap_BotAddObstacle                   -335
 equ trap_BotRemoveObstacle                -336
 equ trap_BotUpdateObstacles               -337
+equ trap_SQL_Open                         -338
+equ trap_SQL_Exec                         -339
+equ trap_SQL_Close                        -340

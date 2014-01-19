@@ -71,7 +71,7 @@ playerState_t  *SV_GameClientNum( int num )
 	{
 		Com_Error( ERR_DROP, "SV_GameClientNum: bad num" );
 	}
-	
+
 	ps = ( playerState_t * )( ( byte * ) sv.gameClients + sv.gameClientSize * ( num ) );
 
 	return ps;
@@ -772,6 +772,25 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 			return 0;
 		case BOT_UPDATE_OBSTACLES:
 			BotUpdateObstacles();
+			return 0;
+
+		case G_SQL_OPEN:
+#ifdef USE_SQLITE
+			return SV_SQL_Open( ( const char * ) VMA( 1 ) );
+#else
+			return -1;
+#endif
+		case G_SQL_EXEC:
+#ifdef USE_SQLITE
+			return SV_SQL_Exec( args[ 1 ], ( const char * ) VMA( 1 ), ( char * ) VMA( 2 ), args[ 3 ] );
+#else
+			return -1;
+#endif
+
+		case G_SQL_CLOSE:
+#ifdef USE_SQLITE
+			SV_SQL_Close( args[ 1 ] );
+#endif
 			return 0;
 
 		default:

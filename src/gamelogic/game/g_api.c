@@ -612,3 +612,17 @@ void trap_BotUpdateObstacles( void )
 	syscallVM( BOT_UPDATE_OBSTACLES );
 }
 
+int trap_SQL_Open( const char *name )
+{
+	syscallVM( G_SQL_OPEN, name );
+}
+
+int trap_SQL_Exec( int dbHandle, const char *sql, char *out, int len )
+{
+	syscallVM( G_SQL_EXEC, dbHandle, sql, out, len );
+}
+
+void trap_SQL_Close( int dbHandle )
+{
+	syscallVM( G_SQL_CLOSE, dbHandle );
+}

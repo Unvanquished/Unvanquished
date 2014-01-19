@@ -116,5 +116,8 @@ void             trap_BotDisableArea( const vec3_t origin, const vec3_t mins, co
 void             trap_BotAddObstacle( const vec3_t mins, const vec3_t maxs, qhandle_t *handle );
 void             trap_BotRemoveObstacle( qhandle_t handle );
 void             trap_BotUpdateObstacles( void );
+int              trap_SQL_Open( const char *name );
+int              trap_SQL_Exec( int dbHandle, const char *sql, char *out, int len );
+void             trap_SQL_Close( int dbHandle );
 
 #endif // G_TRAPCALLS_H_

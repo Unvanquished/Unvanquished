@@ -178,7 +178,10 @@ typedef enum gameImport_s
   BOT_DISABLE_AREA,
   BOT_ADD_OBSTACLE,
   BOT_REMOVE_OBSTACLE,
-  BOT_UPDATE_OBSTACLES
+  BOT_UPDATE_OBSTACLES,
+  G_SQL_OPEN,
+  G_SQL_EXEC,
+  G_SQL_CLOSE
 } gameImport_t;
 
 // engine-to-game-module calls
