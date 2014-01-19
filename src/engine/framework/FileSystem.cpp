@@ -348,24 +348,6 @@ inline bool isdirsep(unsigned int c)
 #endif
 }
 
-// Test a directory for write permission
-static bool TestWritePermission(Str::StringRef path)
-{
-	// Create a temporary file in the path and then delete it
-	std::string fname = Path::Build(path, ".test_write_permission");
-	std::error_code err;
-	File f = RawPath::OpenWrite(fname, err);
-	if (HaveError(err))
-		return false;
-	f.Close(err);
-	if (HaveError(err))
-		return false;
-	RawPath::DeleteFile(fname, err);
-	if (HaveError(err))
-		return false;
-	return true;
-}
-
 void Initialize()
 {
 	Com_StartupVariable("fs_basepath");
@@ -374,7 +356,7 @@ void Initialize()
 	Com_StartupVariable("fs_libpath");
 
 	std::string defaultBasePath = DefaultBasePath();
-	std::string defaultHomePath = (!defaultBasePath.empty() && TestWritePermission(defaultBasePath)) ? defaultBasePath : DefaultHomePath();
+	std::string defaultHomePath = DefaultHomePath();
 	libPath = Cvar_Get("fs_libpath", defaultBasePath.c_str(), CVAR_INIT)->string;
 	homePath = Cvar_Get("fs_homepath", defaultHomePath.c_str(), CVAR_INIT)->string;
 	const char* basePath = Cvar_Get("fs_basepath", defaultBasePath.c_str(), CVAR_INIT)->string;
