@@ -275,9 +275,9 @@ static cvarTable_t gameCvarTable[] =
 
 	{ &g_synchronousClients,          "g_synchronousClients",          "0",                                CVAR_SYSTEMINFO,                                 0, qfalse           },
 
-	{ &g_friendlyFire,                "g_friendlyFire",                "0",                                CVAR_SERVERINFO | CVAR_ARCHIVE,                  0, qtrue            },
-	{ &g_friendlyBuildableFire,       "g_friendlyBuildableFire",       "0",                                CVAR_SERVERINFO | CVAR_ARCHIVE,                  0, qtrue            },
-	{ &g_dretchPunt,                  "g_dretchPunt",                  "1",                                CVAR_ARCHIVE,                                    0, qtrue            },
+	{ &g_friendlyFire,                "g_friendlyFire",                "0",                                CVAR_SERVERINFO,                                 0, qtrue            },
+	{ &g_friendlyBuildableFire,       "g_friendlyBuildableFire",       "0",                                CVAR_SERVERINFO,                                 0, qtrue            },
+	{ &g_dretchPunt,                  "g_dretchPunt",                  "1",                                0,                                               0, qtrue            },
 
 	{ &g_teamForceBalance,            "g_teamForceBalance",            "0",                                CVAR_ARCHIVE,                                    0, qtrue            },
 
@@ -319,48 +319,51 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_admitDefeatVotesPercent,     "g_admitDefeatVotesPercent",     "74",                               CVAR_ARCHIVE,                                    0, qtrue            },
 	{ &g_pollVotesPercent,            "g_pollVotesPercent",            "0",                                CVAR_ARCHIVE,                                    0, qtrue            },
 	{ &g_botKickVotesAllowed,         "g_botKickVotesAllowed",         "1",                                CVAR_ARCHIVE,                                    0, qtrue            },
-	{ &g_botKickVotesAllowedThisMap,  "g_botKickVotesAllowedThisMap",  "1",                                0,                                               0, qtrue            },
-	{ &g_minNameChangePeriod,         "g_minNameChangePeriod",         "5",                                0,                                               0, qfalse           },
-	{ &g_maxNameChanges,              "g_maxNameChanges",              "5",                                0,                                               0, qfalse           },
+	{ &g_botKickVotesAllowedThisMap,  "g_botKickVotesAllowedThisMap",  "1",                                CVAR_ARCHIVE,                                    0, qtrue            },
+	{ &g_minNameChangePeriod,         "g_minNameChangePeriod",         "5",                                CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_maxNameChanges,              "g_maxNameChanges",              "5",                                CVAR_ARCHIVE,                                    0, qfalse           },
 
 	{ &g_smoothClients,               "g_smoothClients",               "1",                                0,                                               0, qfalse           },
 	{ &pmove_fixed,                   "pmove_fixed",                   "0",                                CVAR_SYSTEMINFO,                                 0, qfalse           },
 	{ &pmove_msec,                    "pmove_msec",                    "8",                                CVAR_SYSTEMINFO,                                 0, qfalse           },
 	{ &pmove_accurate,                "pmove_accurate",                "1",                                CVAR_SYSTEMINFO,                                 0, qfalse           },
 
-	{ &g_initialBuildPoints,          "g_initialBuildPoints",          DEFAULT_INITIAL_BUILD_POINTS,       CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_initialMineRate,             "g_initialMineRate",             DEFAULT_INITIAL_MINE_RATE,          CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_mineRateHalfLife,            "g_mineRateHalfLife",            DEFAULT_MINE_RATE_HALF_LIFE,        CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_minimumMineRate,             "g_minimumMineRate",             DEFAULT_MINIMUM_MINE_RATE,          CVAR_ARCHIVE,                                    0, qfalse           },
+	// gameplay: mining
+	{ &g_initialBuildPoints,          "g_initialBuildPoints",          DEFAULT_INITIAL_BUILD_POINTS,       0,                                               0, qfalse           },
+	{ &g_initialMineRate,             "g_initialMineRate",             DEFAULT_INITIAL_MINE_RATE,          0,                                               0, qfalse           },
+	{ &g_mineRateHalfLife,            "g_mineRateHalfLife",            DEFAULT_MINE_RATE_HALF_LIFE,        0,                                               0, qfalse           },
+	{ &g_minimumMineRate,             "g_minimumMineRate",             DEFAULT_MINIMUM_MINE_RATE,          0,                                               0, qfalse           },
 
+	// gameplay: momentum
 	{ &g_debugMomentum,               "g_debugMomentum",               "0",                                0,                                               0, qfalse           },
-	{ &g_momentumHalfLife,            "g_momentumHalfLife",            DEFAULT_MOMENTUM_HALF_LIFE,         CVAR_SERVERINFO | CVAR_ARCHIVE,                  0, qfalse           },
-	{ &g_momentumRewardDoubleTime,    "g_momentumRewardDoubleTime",    DEFAULT_CONF_REWARD_DOUBLE_TIME,    CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_unlockableMinTime,           "g_unlockableMinTime",           DEFAULT_UNLOCKABLE_MIN_TIME,        CVAR_SERVERINFO | CVAR_ARCHIVE,                  0, qfalse           },
-	{ &g_momentumBaseMod,             "g_momentumBaseMod",             DEFAULT_MOMENTUM_BASE_MOD,          CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_momentumKillMod,             "g_momentumKillMod",             DEFAULT_MOMENTUM_KILL_MOD,          CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_momentumBuildMod,            "g_momentumBuildMod",            DEFAULT_MOMENTUM_BUILD_MOD,         CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_momentumDeconMod,            "g_momentumDeconMod",            DEFAULT_MOMENTUM_DECON_MOD,         CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_momentumDestroyMod,          "g_momentumDestroyMod",          DEFAULT_MOMENTUM_DESTROY_MOD,       CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_momentumHalfLife,            "g_momentumHalfLife",            DEFAULT_MOMENTUM_HALF_LIFE,         CVAR_SERVERINFO,                                 0, qfalse           },
+	{ &g_momentumRewardDoubleTime,    "g_momentumRewardDoubleTime",    DEFAULT_CONF_REWARD_DOUBLE_TIME,    0,                                               0, qfalse           },
+	{ &g_unlockableMinTime,           "g_unlockableMinTime",           DEFAULT_UNLOCKABLE_MIN_TIME,        CVAR_SERVERINFO,                                 0, qfalse           },
+	{ &g_momentumBaseMod,             "g_momentumBaseMod",             DEFAULT_MOMENTUM_BASE_MOD,          0,                                               0, qfalse           },
+	{ &g_momentumKillMod,             "g_momentumKillMod",             DEFAULT_MOMENTUM_KILL_MOD,          0,                                               0, qfalse           },
+	{ &g_momentumBuildMod,            "g_momentumBuildMod",            DEFAULT_MOMENTUM_BUILD_MOD,         0,                                               0, qfalse           },
+	{ &g_momentumDeconMod,            "g_momentumDeconMod",            DEFAULT_MOMENTUM_DECON_MOD,         0,                                               0, qfalse           },
+	{ &g_momentumDestroyMod,          "g_momentumDestroyMod",          DEFAULT_MOMENTUM_DESTROY_MOD,       0,                                               0, qfalse           },
 
+	// gameplay: human power
+	{ &g_powerCompetitionRange,       "g_powerCompetitionRange",       "320",                              0,                                               0, qfalse           },
+	{ &g_powerBaseSupply,             "g_powerBaseSupply",             "20",                               0,                                               0, qfalse           },
+	{ &g_powerReactorSupply,          "g_powerReactorSupply",          "40",                               0,                                               0, qfalse           },
+	{ &g_powerReactorRange,           "g_powerReactorRange",           "800",                              CVAR_SERVERINFO,                                 0, qfalse           },
+	{ &g_powerRepeaterSupply,         "g_powerRepeaterSupply",         "20",                               0,                                               0, qfalse           },
+	{ &g_powerRepeaterRange,          "g_powerRepeaterRange",          "400",                              CVAR_SERVERINFO,                                 0, qfalse           },
+	{ &g_powerLevel1Interference,     "g_powerLevel1Interference",     "13",                               0,                                               0, qfalse           },
+	{ &g_powerLevel1Range,            "g_powerLevel1Range",            "250",                              0,                                               0, qfalse           },
+	{ &g_powerLevel1UpgInterference,  "g_powerLevel1UpgInterference",  "16",                               0,                                               0, qfalse           },
+	{ &g_powerLevel1UpgRange,         "g_powerLevel1UpgRange",         "300",                              0,                                               0, qfalse           },
+
+	// gameplay: misc
+	{ &g_alienOffCreepRegenHalfLife,  "g_alienOffCreepRegenHalfLife",  "0",                                0,                                               0, qfalse           },
+	{ &g_freeFundPeriod,              "g_freeFundPeriod",              DEFAULT_FREEKILL_PERIOD,            0,                                               0, qtrue            },
 	{ &g_humanAllowBuilding,          "g_humanAllowBuilding",          "1",                                0,                                               0, qfalse           },
 	{ &g_alienAllowBuilding,          "g_alienAllowBuilding",          "1",                                0,                                               0, qfalse           },
 
-	{ &g_powerCompetitionRange,       "g_powerCompetitionRange",       "320",                              CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_powerBaseSupply,             "g_powerBaseSupply",             "20",                               CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_powerReactorSupply,          "g_powerReactorSupply",          "40",                               CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_powerReactorRange,           "g_powerReactorRange",           "800",                              CVAR_SERVERINFO | CVAR_ARCHIVE,                  0, qfalse           },
-	{ &g_powerRepeaterSupply,         "g_powerRepeaterSupply",         "20",                               CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_powerRepeaterRange,          "g_powerRepeaterRange",          "400",                              CVAR_SERVERINFO | CVAR_ARCHIVE,                  0, qfalse           },
-	{ &g_powerLevel1Interference,     "g_powerLevel1Interference",     "13",                               CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_powerLevel1Range,            "g_powerLevel1Range",            "250",                              CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_powerLevel1UpgInterference,  "g_powerLevel1UpgInterference",  "16",                               CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_powerLevel1UpgRange,         "g_powerLevel1UpgRange",         "300",                              CVAR_ARCHIVE,                                    0, qfalse           },
-
-	{ &g_alienOffCreepRegenHalfLife,  "g_alienOffCreepRegenHalfLife",  "0",                                CVAR_ARCHIVE,                                    0, qfalse           },
-
 	{ &g_teamImbalanceWarnings,       "g_teamImbalanceWarnings",       "30",                               CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_freeFundPeriod,              "g_freeFundPeriod",              DEFAULT_FREEKILL_PERIOD,            CVAR_ARCHIVE,                                    0, qtrue            },
 
 	{ &g_unlagged,                    "g_unlagged",                    "1",                                CVAR_SERVERINFO | CVAR_ARCHIVE,                  0, qtrue            },
 
@@ -374,7 +377,7 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_floodMaxDemerits,            "g_floodMaxDemerits",            "5000",                             CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_floodMinTime,                "g_floodMinTime",                "2000",                             CVAR_ARCHIVE,                                    0, qfalse           },
 
-	{ &g_markDeconstruct,             "g_markDeconstruct",             "3",                                CVAR_SERVERINFO | CVAR_ARCHIVE,                  0, qtrue            },
+	{ &g_markDeconstruct,             "g_markDeconstruct",             "3",                                CVAR_SERVERINFO,                                 0, qtrue            },
 
 	{ &g_debugMapRotation,            "g_debugMapRotation",            "0",                                0,                                               0, qfalse           },
 	{ &g_currentMapRotation,          "g_currentMapRotation",          "0",                                0,                                               0, qfalse           }, // -1 = NOT_ROTATING
