@@ -23,7 +23,7 @@ Dependencies
   * libtheora
   * libopus
   * libopusfile
-
+  * SQLite3
 
 
 Build Instructions
