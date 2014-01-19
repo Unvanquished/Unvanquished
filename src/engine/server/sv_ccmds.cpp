@@ -93,6 +93,23 @@ class MapCmd: public Cmd::StaticCmd {
 static MapCmd MapCmdRegistration("map", N_("starts a new map"), false);
 static MapCmd DevmapCmdRegistration("devmap", N_("starts a new map with cheats enabled"), true);
 
+class SqlTestCmd: public Cmd::StaticCmd {
+public:
+	SqlTestCmd(Str::StringRef name, Str::StringRef description):
+	Cmd::StaticCmd(name, Cmd::SYSTEM, description) {
+	}
+
+	void Run(const Cmd::Args& args) const OVERRIDE {
+		int db = SV_SQL_Open( "test.db" );
+		char str[ 1024 ];
+// 		SV_SQL_Exec( db, "INSERT INTO test (a,text) VALUES('5', 'hope');", str, sizeof( str ) );
+		SV_SQL_Exec( db, "SELECT * FROM test;", str, sizeof( str ) );
+		SV_SQL_Close( db );
+		Com_Printf("%s\n", str);
+	}
+};
+static SqlTestCmd SqlTestCmdRegistration("sqltest", N_("tests sql"));
+
 void MSG_PrioritiseEntitystateFields( void );
 void MSG_PrioritisePlayerStateFields( void );
 
