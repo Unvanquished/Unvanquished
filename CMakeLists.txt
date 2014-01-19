@@ -66,6 +66,7 @@ cmake_dependent_option( USE_VOIP "Compile with VOIP support" 0 "BUILD_CLIENT OR 
 cmake_dependent_option( USE_CURSES "Use the curses console" 1 "BUILD_CLIENT OR BUILD_SERVER OR BUILD_TTY_CLIENT" 0 )
 cmake_dependent_option( USE_SMP "Compile with support for running the renderer in a separate thread" 1 BUILD_CLIENT 0 )
 cmake_dependent_option( USE_GEOIP "Use libgeoip" 1 "BUILD_SERVER OR BUILD_CLIENT OR BUILD_TTY_CLIENT" 0 )
+cmake_dependent_option( USE_SQLITE "Allow SQLite3 usage in the game qvm" 1 "BUILD_SERVER OR BUILD_CLIENT OR BUILD_TTY_CLIENT" 0 )
 option( USE_SDL2 "Enable SDL 2.0 support (incompatible with SDL 1.2)" 1 )
 option( USE_WEXTRA "Enable extra compilation warnings" 0 )
 option( USE_PEDANTIC "Tell the compiler to be pedantic" 0 )
@@ -1048,9 +1049,12 @@ if( USE_GEOIP )
 endif()
 
 # SQLite3
-find_package( SQLite3 REQUIRED )
-set( LIBS_ENGINE ${LIBS_ENGINE} ${SQLITE3_LIBRARIES} )
-include_directories( ${SQLITE_INCLUDE_DIR} )
+if( USE_SQLITE )
+  find_package( SQLite3 REQUIRED )
+  set( LIBS_ENGINE ${LIBS_ENGINE} ${SQLITE3_LIBRARIES} )
+  include_directories( ${SQLITE_INCLUDE_DIR} )
+  add_definitions( -DUSE_SQLITE )
+endif()
 
 
 # Native client

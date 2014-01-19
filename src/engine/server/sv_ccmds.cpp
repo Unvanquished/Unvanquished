@@ -93,6 +93,7 @@ class MapCmd: public Cmd::StaticCmd {
 static MapCmd MapCmdRegistration("map", N_("starts a new map"), false);
 static MapCmd DevmapCmdRegistration("devmap", N_("starts a new map with cheats enabled"), true);
 
+#ifdef USE_SQLITE
 class SqlTestCmd: public Cmd::StaticCmd {
 public:
 	SqlTestCmd(Str::StringRef name, Str::StringRef description):
@@ -109,6 +110,7 @@ public:
 	}
 };
 static SqlTestCmd SqlTestCmdRegistration("sqltest", N_("tests sql"));
+#endif
 
 void MSG_PrioritiseEntitystateFields( void );
 void MSG_PrioritisePlayerStateFields( void );

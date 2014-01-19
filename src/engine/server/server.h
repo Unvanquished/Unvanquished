@@ -634,11 +634,12 @@ void     SV_Netchan_FreeQueue( client_t *client );
 
 void SV_GeoIP_Init( void );
 
+#ifdef USE_SQLITE
 //
 // sv_sqlite.cpp
 //
 int SV_SQL_Open( const char *dbName );
 int SV_SQL_Exec( int dbHandle, const char *sql, char *out, int len );
 void SV_SQL_Close( int dbHandle );
-
+#endif // USE_SQLITE
 #endif /* SERVER_H_ */

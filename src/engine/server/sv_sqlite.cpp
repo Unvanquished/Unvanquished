@@ -33,6 +33,7 @@ Maryland 20850 USA.
 */
 
 // Interface for using SQL commands by the VM
+#ifdef USE_SQLITE
 
 #include "server.h"
 #include <sqlite3.h>
@@ -162,3 +163,4 @@ void SV_SQL_Close( int dbHandle )
 {
 	sqlite3_close( databases[ dbHandle ] );
 }
+#endif
