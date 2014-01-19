@@ -775,13 +775,9 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
 		{
 			PARSE(text, token);
 
-			if ( !Q_stricmp( token, "allAlien" ) )
+			if ( !Q_stricmp( token, "alien" ) )
 			{
 				ba->buildWeapon = (weapon_t) ( ( 1 << WP_ABUILD ) | ( 1 << WP_ABUILD2 ) );
-			}
-			else if ( !Q_stricmp( token, "advAlien" ) )
-			{
-				ba->buildWeapon = (weapon_t) ( 1 << WP_ABUILD2 );
 			}
 			else if ( !Q_stricmp( token, "human" ) )
 			{
