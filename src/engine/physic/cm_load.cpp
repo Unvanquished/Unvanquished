@@ -35,6 +35,7 @@ Maryland 20850 USA.
 // cmodel.c -- model loading
 
 #include "cm_local.h"
+#include "Physic.h"
 
 // to allow boxes to be treated as brush models, we allocate
 // some extra indexes along with those needed by the map
@@ -946,6 +947,10 @@ void CM_LoadMap( const char *name, qboolean clientload, int *checksum )
 	{
 		Com_Error( ERR_DROP, "Couldn't load %s", name );
 	}
+
+    Physic::Shutdown();
+    Physic::Init();
+    Physic::Load(buf);
 
 	last_checksum = LittleLong( Com_BlockChecksum( buf, length ) );
 	*checksum = last_checksum;

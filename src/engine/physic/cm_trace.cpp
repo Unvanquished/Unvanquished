@@ -34,6 +34,7 @@ Maryland 20850 USA.
 
 #include "cm_local.h"
 #include "cm_patch.h"
+#include "Physic.h"
 
 // always use bbox vs. bbox collision and never capsule vs. bbox or vice versa
 //#define ALWAYS_BBOX_VS_BBOX
@@ -2319,6 +2320,11 @@ void CM_BoxTrace( trace_t *results, const vec3_t start, const vec3_t end,
                   vec3_t mins, vec3_t maxs, clipHandle_t model, int brushmask, traceType_t type )
 {
 	CM_Trace( results, start, end, mins, maxs, model, vec3_origin, brushmask, type, NULL );
+    float myTrace = Physic::BoxTrace(start, end, mins, maxs);
+    if(fabs(myTrace - results->fraction) > 0.00001) {
+        Com_Printf("%f\n", myTrace - results->fraction);
+    }
+    //results->fraction = myTrace;
 }
 
 /*

@@ -542,6 +542,11 @@ set( ENGINELIST
   ${ENGINE_DIR}/physic/cm_patch.h
   ${ENGINE_DIR}/physic/cm_polylib.h
   ${ENGINE_DIR}/physic/cm_public.h
+  ${ENGINE_DIR}/physic/Physic.cpp
+  ${ENGINE_DIR}/physic/Physic.h
+  ${ENGINE_DIR}/physic/PhysicPrivate.h
+  ${ENGINE_DIR}/physic/BspLoader.cpp
+  ${ENGINE_DIR}/physic/BspLoader.h
   ${ENGINE_DIR}/qcommon/cmd.cpp
   ${ENGINE_DIR}/qcommon/common.cpp
   ${ENGINE_DIR}/qcommon/crypto.cpp
@@ -1235,6 +1240,11 @@ if( USE_CURSES )
     set( LIBS_ENGINE ${LIBS_ENGINE} ${CURSESW_LIBRARIES} )
   endif()
 endif()
+
+# Bullet
+find_package( Bullet REQUIRED )
+include_directories( ${BULLET_INCLUDE_DIRS} )
+set( LIBS_BASE ${LIBS_BASE} ${BULLET_LIBRARIES} )
 
 ################################################################################
 # Game logic
