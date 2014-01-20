@@ -1710,9 +1710,9 @@ void CalculateRanks( void )
 		}
 	}
 
-	// voting code expects level.team[ TEAM_NONE ].numPlayers to be level.numPlayingPlayers
+	// voting code expects level.team[ TEAM_NONE ].numPlayers to be all players, spectating or playing
 	// TODO: Use TEAM_ALL or the latter version for this everywhere
-	level.team[ TEAM_NONE ].numPlayers = level.numPlayingPlayers;
+	level.team[ TEAM_NONE ].numPlayers += level.numPlayingPlayers;
 
 	P[ clientNum ] = '\0';
 	trap_Cvar_Set( "P", P );
