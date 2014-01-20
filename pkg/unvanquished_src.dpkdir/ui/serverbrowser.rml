@@ -182,8 +182,8 @@ datagridrow:selected{
 				<div class="servers">
 				<datagrid source="server_browser.internet">
 					<col fields="label" width="30px" class="label" formatter="ServerLabel"><div></div></col>
-					<col fields="name" width="50%" class="name" >Name:</col>
-					<col fields="map" width="10%" class="map"><button onClick="sortDS server_browser internet map">Map:</button></col>
+					<col fields="name" width="45%" class="name" >Name:</col>
+					<col fields="map" width="15%" class="map"><button onClick="sortDS server_browser internet map">Map:</button></col>
 					<col fields="players,bots,maxClients" width="20%" formatter="ServerPlayers" class="players"><button onClick="sortDS server_browser internet players">Players (Bots)</button></col>
 					<col fields="ping" width="5%" formatter="ServerPing" class="ping"><button onClick="sortDS server_browser internet ping">Ping</button></col>
 				</datagrid>
