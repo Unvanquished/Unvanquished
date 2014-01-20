@@ -1,8 +1,28 @@
+# Daemon BSD Source Code
+# Copyright (c) 2013-2014, Daemon Developers
+# All rights reserved.
 #
-# CMakeLists.txt
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#    * Redistributions of source code must retain the above copyright
+#      notice, this list of conditions and the following disclaimer.
+#    * Redistributions in binary form must reproduce the above copyright
+#      notice, this list of conditions and the following disclaimer in the
+#      documentation and/or other materials provided with the distribution.
+#    * Neither the name of the <organization> nor the
+#      names of its contributors may be used to endorse or promote products
+#      derived from this software without specific prior written permission.
 #
-# cmake required (http://www.cmake.org/)
-#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
+# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 cmake_minimum_required( VERSION 2.8 )
 if( POLICY CMP0017 )
@@ -158,7 +178,7 @@ else()
 
     # Clang prints a warning when if it doesn't support -mfpmath=sse
     set( CMAKE_REQUIRED_FLAGS "-Werror" )
-    set_c_cxx_flag( "-mfpmath=sse" )
+    try_c_cxx_flag( MFPMATH_SSE "-mfpmath=sse" )
     set( CMAKE_REQUIRED_FLAGS "" )
   elseif( ARCH STREQUAL "x86_64" )
     set_c_cxx_flag( "-m64" )
@@ -195,6 +215,7 @@ else()
   # Use libc++ on Mac because the shipped libstdc++ version is too old
   if( APPLE )
     set_c_cxx_flag( "-stdlib=libc++" )
+    set_linker_flag( "-stdlib=libc++" )
   endif()
 
   # Hardening, don't set _FORTIFY_SOURCE in debug builds
@@ -211,12 +232,14 @@ else()
   endif()
 
   # Linker flags
-  try_linker_flag( LINKER_O1 "-Wl,-O1" )
-  try_linker_flag( LINKER_SORT_COMMON "-Wl,--sort-common" )
-  try_linker_flag( LINKER_AS_NEEDED "-Wl,--as-needed" )
-  try_linker_flag( LINKER_NO_UNDEFINED "-Wl,--no-undefined" )
-  try_linker_flag( LINKER_Z_RELRO "-Wl,-z,relro" )
-  try_linker_flag( LINKER_Z_NOW "-Wl,-z,now" )
+  if( NOT APPLE )
+    try_linker_flag( LINKER_O1 "-Wl,-O1" )
+    try_linker_flag( LINKER_SORT_COMMON "-Wl,--sort-common" )
+    try_linker_flag( LINKER_AS_NEEDED "-Wl,--as-needed" )
+    try_linker_flag( LINKER_NO_UNDEFINED "-Wl,--no-undefined" )
+    try_linker_flag( LINKER_Z_RELRO "-Wl,-z,relro" )
+    try_linker_flag( LINKER_Z_NOW "-Wl,-z,now" )
+  endif()
   if( WIN32 )
     try_linker_flag( LINKER_DYNAMICBASE "-Wl,--dynamicbase" )
     try_linker_flag( LINKER_NXCOMPAT "-Wl,--nxcompat" )
@@ -606,11 +629,11 @@ set( CLIENTLIST
   ${ENGINE_DIR}/client/cl_ui.cpp
   ${ENGINE_DIR}/client/cl_logs.cpp
   ${ENGINE_DIR}/client/dl_main.cpp
-  ${ENGINE_DIR}/audio/snd_codec.c
+  ${ENGINE_DIR}/audio/snd_codec.cpp
   ${ENGINE_DIR}/audio/snd_codec.h
-  ${ENGINE_DIR}/audio/snd_codec_ogg.c
-  ${ENGINE_DIR}/audio/snd_codec_opus.c
-  ${ENGINE_DIR}/audio/snd_codec_wav.c
+  ${ENGINE_DIR}/audio/snd_codec_ogg.cpp
+  ${ENGINE_DIR}/audio/snd_codec_opus.cpp
+  ${ENGINE_DIR}/audio/snd_codec_wav.cpp
   ${ENGINE_DIR}/audio/ALObjects.cpp
   ${ENGINE_DIR}/audio/ALObjects.h
   ${ENGINE_DIR}/audio/Audio.cpp
@@ -1225,13 +1248,13 @@ endif()
 include( CMakeParseArguments )
 function( GAMEMODULE )
   # ParseArguments setup
-  set( oneValueArgs NAME OUTPUT_DIR HAS_NACL )
+  set( oneValueArgs NAME HAS_NACL )
   set( multiValueArgs COMPILE_DEF FILES NACL_FILES NATIVE_FILES QVM_FILES QVM_ASM )
   cmake_parse_arguments( GAMEMODULE "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
   if( CMAKE_CFG_INTDIR STREQUAL "." )
-    set( GAMEMODULE_FULL_OUTPUT_DIR ${CMAKE_BINARY_DIR}/${GAMEMODULE_OUTPUT_DIR} )
+    set( GAMEMODULE_FULL_OUTPUT_DIR ${CMAKE_BINARY_DIR} )
   else()
-    set( GAMEMODULE_FULL_OUTPUT_DIR ${CMAKE_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${GAMEMODULE_OUTPUT_DIR} )
+    set( GAMEMODULE_FULL_OUTPUT_DIR ${CMAKE_BINARY_DIR}/${CMAKE_CFG_INTDIR} )
   endif()
 
   if( GAMEMODULE_HAS_NACL AND BUILD_GAME_NACL_NATIVE )
@@ -1239,13 +1262,8 @@ function( GAMEMODULE )
     target_link_libraries( ${GAMEMODULE_NAME}-nacl-native ${LIBS_BASE} )
     set_target_properties( ${GAMEMODULE_NAME}-nacl-native PROPERTIES
       OUTPUT_NAME ${GAMEMODULE_NAME}
-      RUNTIME_OUTPUT_DIRECTORY ${GAMEMODULE_OUTPUT_DIR}
       COMPILE_DEFINITIONS ${GAMEMODULE_COMPILE_DEF}
     )
-    foreach( OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES} )
-      string( TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG_UP )
-      set_target_properties( ${GAMEMODULE_NAME}-nacl-native PROPERTIES RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG_UP} ${OUTPUTCONFIG}/${GAMEMODULE_OUTPUT_DIR} )
-    endforeach()
   endif()
 
   if( BUILD_GAME_QVM_NATIVE )
@@ -1254,13 +1272,8 @@ function( GAMEMODULE )
     target_link_libraries( ${GAMEMODULE_NAME}-qvm-native ${LIBS_BASE} )
     set_target_properties( ${GAMEMODULE_NAME}-qvm-native PROPERTIES
       PREFIX ""
-      LIBRARY_OUTPUT_DIRECTORY ${GAMEMODULE_OUTPUT_DIR}
       COMPILE_DEFINITIONS "${QVM_NATIVE_COMPILE_DEF}"
     )
-    foreach( OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES} )
-      string( TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG_UP )
-      set_target_properties( ${GAMEMODULE_NAME}-qvm-native PROPERTIES LIBRARY_OUTPUT_DIRECTORY_${OUTPUTCONFIG_UP} ${OUTPUTCONFIG}/${GAMEMODULE_OUTPUT_DIR} )
-    endforeach()
   endif()
 
   if( GAMEMODULE_HAS_NACL AND BUILD_GAME_NACL )
@@ -1366,6 +1379,12 @@ function( GAMEMODULE )
         ${GAMEMODULE_FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86.nexe
         ${GAMEMODULE_FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86_64.nexe
     )
+
+    # Create the build directory before building
+    add_custom_command( TARGET ${GAMEMODULE_NAME}-nacl PRE_BUILD
+      COMMAND ${CMAKE_COMMAND} -E make_directory ${GAMEMODULE_FULL_OUTPUT_DIR}
+      COMMAND ${CMAKE_COMMAND} -E make_directory ${NACL_DIR}
+    )
   endif()
 
   if( BUILD_GAME_QVM )
@@ -1401,14 +1420,20 @@ function( GAMEMODULE )
     endforeach()
 
     # Link *.asm into a qvm
-    add_custom_command( OUTPUT ${GAMEMODULE_FULL_OUTPUT_DIR}/vm/${GAMEMODULE_NAME}.qvm
-      COMMAND asm -o ${GAMEMODULE_FULL_OUTPUT_DIR}/vm/${GAMEMODULE_NAME}.qvm ${OBJECTS} ${GAMEMODULE_QVM_ASM}
+    add_custom_command( OUTPUT ${CMAKE_BINARY_DIR}/vm/${GAMEMODULE_NAME}.qvm
+      COMMAND asm -o ${CMAKE_BINARY_DIR}/vm/${GAMEMODULE_NAME}.qvm ${OBJECTS} ${GAMEMODULE_QVM_ASM}
       DEPENDS asm ${OBJECTS} ${GAMEMODULE_QVM_ASM}
     )
 
     # Dummy target to get CMake to execute the commands
     add_custom_target( ${GAMEMODULE_NAME}-qvm ALL
-      DEPENDS ${GAMEMODULE_FULL_OUTPUT_DIR}/vm/${GAMEMODULE_NAME}.qvm
+      DEPENDS ${CMAKE_BINARY_DIR}/vm/${GAMEMODULE_NAME}.qvm
+    )
+
+    # Create the build directory before building
+    add_custom_command( TARGET ${GAMEMODULE_NAME}-qvm PRE_BUILD
+      COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/vm
+      COMMAND ${CMAKE_COMMAND} -E make_directory ${QVM_DIR}
     )
   endif()
 endfunction()
@@ -1418,7 +1443,6 @@ if( BUILD_GAME_QVM )
 endif()
 
 GAMEMODULE( NAME game
-  OUTPUT_DIR main
   COMPILE_DEF GAME
   HAS_NACL 1
   FILES ${GAMELIST}
@@ -1429,7 +1453,6 @@ GAMEMODULE( NAME game
 )
 
 GAMEMODULE( NAME cgame
-  OUTPUT_DIR main
   COMPILE_DEF CGAME
   HAS_NACL 0
   FILES ${CGAMELIST}
@@ -1440,7 +1463,6 @@ GAMEMODULE( NAME cgame
 )
 
 GAMEMODULE( NAME ui
-  OUTPUT_DIR main
   COMPILE_DEF UI
   FILES ${UILIST}
   HAS_NACL 0

@@ -679,13 +679,6 @@ void SVC_Info( netadr_t from )
 		Info_SetValueForKey( infostring, "maxPing", va( "%i", sv_maxPing->integer ), qfalse );
 	}
 
-	gamedir = Cvar_VariableString( "fs_game" );
-
-	if ( *gamedir )
-	{
-		Info_SetValueForKey( infostring, "game", gamedir, qfalse );
-	}
-
 	Info_SetValueForKey( infostring, "gamename", GAMENAME_STRING, qfalse );  // Arnout: to be able to filter out Quake servers
 
 	NET_OutOfBandPrint( NS_SERVER, from, "infoResponse\n%s", infostring );
@@ -822,6 +815,7 @@ class RconEnvironment: public Cmd::DefaultEnvironment {
             }
 
             buffer += text;
+            buffer += '\n';
         }
 
         void Flush() {

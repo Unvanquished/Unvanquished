@@ -283,7 +283,7 @@ void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int code, const char *fmt, ... )
 
 	// make sure we can get at our local stuff
 	FS::PakPath::ClearPaks();
-	if (!FS_LoadPak("unvanquished"))
+	if (!FS_LoadPak("unvanquished") && code != ERR_FATAL)
 		Com_Error(ERR_FATAL, "Could not load main pak\n");
 
 	// if we are getting a solid stream of ERR_DROP, do an ERR_FATAL
@@ -346,7 +346,7 @@ void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int code, const char *fmt, ... )
 		SV_Shutdown( va( "Server fatal crashed: %s\n", com_errorMessage ) );
 	}
 
-	Com_Shutdown( code == ERR_VID_FATAL ? qtrue : qfalse );
+	Com_Shutdown();
 
 	Sys_Error( "%s", com_errorMessage );
 }
@@ -382,7 +382,7 @@ void NORETURN Com_Quit_f( void )
 		CL_ShutdownCGame();
 #endif
 		CL_Shutdown();
-		Com_Shutdown( qfalse );
+		Com_Shutdown();
 	}
 
 	Sys_Quit();
@@ -1754,82 +1754,15 @@ void Com_SetRecommended( void )
 	if ( goodVideo )
 	{
 		Com_Printf(_( "Found high quality video and slow CPU\n" ));
-		Cmd::BufferCommandText("exec preset_fast.cfg");
+		Cmd::BufferCommandText("preset preset_fast.cfg");
 		Cvar_Set( "com_recommended", "2" );
 	}
 	else
 	{
 		Com_Printf(_( "Found low quality video and slow CPU\n" ));
-		Cmd::BufferCommandText("exec preset_fastest.cfg");
+		Cmd::BufferCommandText("preset preset_fastest.cfg");
 		Cvar_Set( "com_recommended", "3" );
 	}
-}
-
-// bani - checks if profile.pid is valid
-// return qtrue if it is
-// return qfalse if it isn't(!)
-static Cvar::Cvar<bool> ignoreCrash("common.ignoreCrash", "ignores the value of common.crashed", Cvar::NONE, false);
-qboolean Com_CheckProfile( char *profile_path )
-{
-	fileHandle_t f;
-	char         f_data[ 32 ];
-	int          f_pid;
-
-	//let user override this
-	if ( ignoreCrash.Get() )
-	{
-		return qtrue;
-	}
-
-	if ( FS_FOpenFileRead( profile_path, &f, qtrue ) < 0 )
-	{
-		//no profile found, we're ok
-		return qtrue;
-	}
-
-	if ( FS_Read( &f_data, sizeof( f_data ) - 1, f ) < 0 )
-	{
-		//b0rk3d!
-		FS_FCloseFile( f );
-		//try to delete corrupted pid file
-		FS_Delete( profile_path );
-		return qfalse;
-	}
-
-	f_pid = atoi( f_data );
-
-	if ( f_pid != com_pid->integer )
-	{
-		//pid doesn't match
-		FS_FCloseFile( f );
-		return qfalse;
-	}
-
-	//we're all ok
-	FS_FCloseFile( f );
-	return qtrue;
-}
-
-// bani - writes pid to profile
-// returns qtrue if successful
-// returns qfalse if not(!!)
-qboolean Com_WriteProfile( char *profile_path )
-{
-	fileHandle_t f;
-
-	f = FS_FOpenFileWrite( profile_path );
-
-	if ( f < 0 )
-	{
-		Com_Printf( _( "%s couldn't write %s\n"), "[Com_WriteProfile]" S_WARNING, profile_path );
-		return qfalse;
-	}
-
-	FS_Printf( f, "%d", com_pid->integer );
-
-	FS_FCloseFile( f );
-
-	return qtrue;
 }
 
 /*
@@ -1892,69 +1825,20 @@ void Com_Init( char *commandLine )
 	Trans_Init();
 
 #ifndef DEDICATED
-	Cmd::BufferCommandText("exec default.cfg");
+	Cmd::BufferCommandText("preset default.cfg");
 #endif
 
 #if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
-
 	// skip the q3config.cfg if "safe" is on the command line
 	if ( !Com_SafeMode() )
 	{
-		char *cl_profileStr = Cvar_VariableString( "cl_profile" );
-
-		if ( !cl_profileStr[ 0 ] )
-		{
-			char *defaultProfile = NULL;
-
-			if( FS_ReadFile( "profiles/defaultprofile.dat", ( void ** ) &defaultProfile ) > 0 )
-			{
-				if ( defaultProfile )
-				{
-					Q_CleanStr( defaultProfile );
-					Q_CleanDirName( defaultProfile );
-
-					Cvar_Set( "cl_defaultProfile", defaultProfile );
-					Cvar_Set( "cl_profile", defaultProfile );
-
-					FS_FreeFile( defaultProfile );
-
-					cl_profileStr = Cvar_VariableString( "cl_defaultProfile" );
-				}
-			}
-		}
-
-		if ( cl_profileStr[ 0 ] )
-		{
-			// bani - check existing pid file and make sure it's ok
-			if ( !Com_CheckProfile( va( "profiles/%s/profile.pid", cl_profileStr ) ) )
-			{
-#if 0
-				Com_Printf(_( S_WARNING "profile.pid found for profile '%s' — the system settings will revert to their defaults\n"),
-				            cl_profileStr );
-				// ydnar: set crashed state
-				Cmd::BufferCommandText("set com_crashed 1");
-#endif
-			}
-
-			// bani - write a new one
-			Com_WriteProfile( va( "profiles/%s/profile.pid", cl_profileStr ) );
-
-			// exec the config
-			Cmd::BufferCommandText(va("exec profiles/%s/" CONFIG_NAME, cl_profileStr));
-			Cmd::BufferCommandText(va("exec profiles/%s/" KEYBINDINGS_NAME, cl_profileStr));
-			Cmd::BufferCommandText(va("exec profiles/%s/" AUTOEXEC_NAME, cl_profileStr));
-		}
-		else
-		{
-			Cmd::BufferCommandText("exec " CONFIG_NAME);
-			Cmd::BufferCommandText("exec " KEYBINDINGS_NAME);
-			Cmd::BufferCommandText("exec " AUTOEXEC_NAME);
-		}
+		Cmd::BufferCommandText("exec " CONFIG_NAME);
+		Cmd::BufferCommandText("exec " KEYBINDINGS_NAME);
+		Cmd::BufferCommandText("exec " AUTOEXEC_NAME);
 	}
 #else
 	Cmd::BufferCommandText("exec " CONFIG_NAME);
 #endif
-
 
 	// ydnar: reset crashed state
 	Cmd::BufferCommandText("set com_crashed 0");
@@ -2169,9 +2053,9 @@ void Com_ReadFromPipe( void )
 void Com_WriteConfigToFile( const char *filename, void (*writeConfig)( fileHandle_t ) )
 {
 	fileHandle_t f;
-	char         tmp[ MAX_QPATH + 5 ];
+	char         tmp[ MAX_QPATH ];
 
-	Com_sprintf( tmp, sizeof( tmp ), "%s.tmp", filename );
+	Com_sprintf( tmp, sizeof( tmp ), "config/%s", filename );
 
 	f = FS_FOpenFileWrite( tmp );
 
@@ -2182,11 +2066,8 @@ void Com_WriteConfigToFile( const char *filename, void (*writeConfig)( fileHandl
 	}
 
 	FS_Printf( f, "// generated by Unvanquished, do not modify\n" );
-//	Key_WriteBindings( f );
 	writeConfig( f );
 	FS_FCloseFile( f );
-
-	FS_Rename( tmp, filename ); // will unlink the original
 }
 
 /*
@@ -2198,8 +2079,6 @@ Writes key bindings and archived cvars to config file if modified
 */
 void Com_WriteConfiguration( void )
 {
-	char *cl_profileStr = Cvar_VariableString( "cl_profile" );
-
 	// if we are quiting without fully initializing, make sure
 	// we don't write out anything
 	if ( !com_fullyInitialized )
@@ -2211,14 +2090,7 @@ void Com_WriteConfiguration( void )
 	{
 		cvar_modifiedFlags &= ~CVAR_ARCHIVE;
 
-		if ( cl_profileStr[ 0 ] )
-		{
-			Com_WriteConfigToFile( va( "profiles/%s/%s", cl_profileStr, CONFIG_NAME ), Cvar_WriteVariables );
-		}
-		else
-		{
-			Com_WriteConfigToFile( CONFIG_NAME, Cvar_WriteVariables );
-		}
+		Com_WriteConfigToFile( CONFIG_NAME, Cvar_WriteVariables );
 	}
 
 #if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
@@ -2226,14 +2098,7 @@ void Com_WriteConfiguration( void )
 	{
 		bindingsModified = qfalse;
 
-		if ( cl_profileStr[ 0 ] )
-		{
-			Com_WriteConfigToFile( va( "profiles/%s/%s", cl_profileStr, KEYBINDINGS_NAME ), Key_WriteBindings );
-		}
-		else
-		{
-			Com_WriteConfigToFile( KEYBINDINGS_NAME, Key_WriteBindings );
-		}
+		Com_WriteConfigToFile( KEYBINDINGS_NAME, Key_WriteBindings );
 	}
 #endif
 }
@@ -2623,19 +2488,8 @@ void Com_Frame( void )
 Com_Shutdown
 =================
 */
-void Com_Shutdown( qboolean badProfile )
+void Com_Shutdown()
 {
-	char *cl_profileStr = Cvar_VariableString( "cl_profile" );
-
-	// delete pid file
-	if ( cl_profileStr[ 0 ] && !badProfile )
-	{
-		if ( FS_FileExists( va( "profiles/%s/profile.pid", cl_profileStr ) ) )
-		{
-			FS_Delete( va( "profiles/%s/profile.pid", cl_profileStr ) );
-		}
-	}
-
 	if ( logfile )
 	{
 		FS_FCloseFile( logfile );

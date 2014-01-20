@@ -299,7 +299,7 @@ G_SelectSpectatorSpawnPoint
 
 ============
 */
-static gentity_t *G_SelectSpectatorSpawnPoint( vec3_t origin, vec3_t angles )
+gentity_t *G_SelectSpectatorSpawnPoint( vec3_t origin, vec3_t angles )
 {
 	FindIntermissionPoint();
 
@@ -1406,7 +1406,7 @@ void ClientAdminChallenge( int clientNum )
 	if ( !client->pers.pubkey_authenticated && admin && admin->pubkey[ 0 ] && ( level.time - client->pers.pubkey_challengedAt ) >= 6000 )
 	{
 		trap_SendServerCommand( clientNum, va( "pubkey_decrypt %s", admin->msg2 ) );
-		client->pers.pubkey_challengedAt = level.time ^ ( 5 * clientNum ); // a small amount of jitter 
+		client->pers.pubkey_challengedAt = level.time ^ ( 5 * clientNum ); // a small amount of jitter
 
 		// copy the decrypted message because generating a new message will overwrite it
 		G_admin_writeconfig();
@@ -1827,13 +1827,17 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	usercmdClearButtons( client->latched_buttons );
 
 	// give basic income if mine rate above minimum
-	if ( ent != spawn && level.team[ client->pers.team ].mineEfficiency > g_minimumMineRate.value )
 	{
-		basicIncome = ( int )( BASIC_INCOME_MOD * level.team[ client->pers.team ].mineEfficiency ) - client->pers.credit;
+		int mineEfficiencyPercent = ( int )( level.team[ client->pers.team ].mineEfficiency * 100.0f );
 
-		if ( basicIncome > 0 )
+		if ( ent != spawn && mineEfficiencyPercent > g_minimumMineRate.value )
 		{
-			G_AddCreditToClient( client, ( short )basicIncome, qtrue );
+			basicIncome = ( int )( BASIC_INCOME_MOD * mineEfficiencyPercent ) - client->pers.credit;
+
+			if ( basicIncome > 0 )
+			{
+				G_AddCreditToClient( client, ( short )basicIncome, qtrue );
+			}
 		}
 	}
 

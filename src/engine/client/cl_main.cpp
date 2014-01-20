@@ -132,9 +132,6 @@ cvar_t *cl_inGameVideo;
 
 cvar_t *cl_serverStatusResendTime;
 
-cvar_t                 *cl_profile;
-cvar_t                 *cl_defaultProfile;
-
 cvar_t                 *cl_demorecording; // fretn
 cvar_t                 *cl_demofilename; // bani
 cvar_t                 *cl_demooffset; // bani
@@ -1422,7 +1419,7 @@ class DemoCmd: public Cmd::StaticCmd {
 
         Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, Str::StringRef prefix) const OVERRIDE {
             if (argNum == 1) {
-                return FS::CompleteFilenameInDir(prefix, "demos", ".dm_" XSTRING(PROTOCOL_VERSION));
+                return FS::HomePath::CompleteFilename(prefix, "demos", ".dm_" XSTRING(PROTOCOL_VERSION), false, true);
             }
 
             return {};
@@ -2179,14 +2176,7 @@ void CL_Rcon_f( void )
 
 static void CL_GetRSAKeysFileName( char *buffer, size_t size )
 {
-	if ( cl_profile && cl_profile->string[ 0 ] )
-	{
-		Q_snprintf( buffer, size, "profiles/%s/%s", cl_profile->string, RSAKEY_FILE );
-	}
-	else
-	{
-		Q_snprintf( buffer, size, "%s", RSAKEY_FILE );
-	}
+	Q_snprintf( buffer, size, "%s", RSAKEY_FILE );
 }
 
 static void CL_GenerateRSAKeys( const char *fileName )
@@ -2338,7 +2328,6 @@ void CL_Vid_Restart_f( void )
 	// startup all the client stuff
 	CL_StartHunkUsers();
 
-	CL_UpdateProfile();
 #ifdef _WIN32
 	Sys_In_Restart_f(); // fretn
 #endif
@@ -2406,20 +2395,6 @@ void CL_Snd_Restart_f( void )
 	{
 		Audio::Init();
 		CL_Vid_Restart_f();
-	}
-}
-
-
-/*
-=================
-CL_ChangeProfile
-=================
-*/
-void CL_UpdateProfile( void )
-{
-	if( cl_profile->modified )
-	{
-		cl_profile->modified = qfalse;
 	}
 }
 
@@ -4122,7 +4097,7 @@ qboolean CL_InitRenderer( void )
 	// filehandle is unused but forces FS_FOpenFileRead() to heed purecheck because it does not when filehandle is NULL
 	if ( cl_consoleFont->string[0] )
 	{
-		if ( FS_FOpenFileByMode( cl_consoleFont->string, &f, FS_READ ) >= 0 )
+		if ( FS_FOpenFileRead( cl_consoleFont->string, &f, qfalse ) >= 0 )
 		{
 			re.RegisterFont( cl_consoleFont->string, NULL, cl_consoleFontSize->integer, &cls.consoleFont );
 			cls.useLegacyConsoleFont = qfalse;
@@ -4494,9 +4469,6 @@ void CL_Init( void )
 
 	cl_allowDownload = Cvar_Get( "cl_allowDownload", "1", CVAR_ARCHIVE );
 	cl_wwwDownload = Cvar_Get( "cl_wwwDownload", "1", CVAR_USERINFO | CVAR_ARCHIVE );
-
-	cl_profile = Cvar_Get( "cl_profile", "", CVAR_ROM );
-	cl_defaultProfile = Cvar_Get( "cl_defaultProfile", "", CVAR_ROM );
 
 	cl_inGameVideo = Cvar_Get( "r_inGameVideo", "1", CVAR_ARCHIVE );
 

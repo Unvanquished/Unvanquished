@@ -194,7 +194,7 @@ typedef struct client_s
 
 	// downloading
 	char          downloadName[ MAX_QPATH ]; // if not empty string, we are downloading
-	FS::File      download; // file being downloaded
+	std::shared_ptr<FS::File> download; // file being downloaded (Using shared_ptr to work around MSVC failing at infering move constructors)
 	int           downloadSize; // total bytes (can't use EOF because of paks)
 	int           downloadCount; // bytes sent
 	int           downloadClientBlock; // last block we sent to the client, awaiting ack

@@ -34,6 +34,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #include <unordered_map>
 #include "../../common/String.h"
 #include "../../common/Optional.h"
+#include "../../common/Command.h"
 
 namespace FS {
 
@@ -237,6 +238,10 @@ struct PakInfo {
 
 	// Full path to the pak
 	std::string path;
+
+	// Time this pak was last updated. This is only valid for zip paks and
+	// reflects the timestamp at the time the pak was loaded.
+	std::chrono::system_clock::time_point timestamp;
 };
 
 // Operations which work on files that are in packages
@@ -269,10 +274,14 @@ namespace PakPath {
 	std::chrono::system_clock::time_point FileTimestamp(Str::StringRef path, std::error_code& err = throws());
 
 	// List all files in the given subdirectory, optionally recursing into subdirectories
-	// Directory names are returned with a trailing slash to differentiate them from files
+	// Note that unlike RawPath/HomePath, directories are *not* returned by ListFiles
 	class DirectoryRange;
 	DirectoryRange ListFiles(Str::StringRef path, std::error_code& err = throws());
 	DirectoryRange ListFilesRecursive(Str::StringRef path, std::error_code& err = throws());
+
+	// Helper function to complete a filename. The root is prepended to the path but not included
+	// in the completion results.
+	Cmd::CompletionResult CompleteFilename(Str::StringRef prefix, Str::StringRef root, Str::StringRef extension, bool allowSubdirs, bool stripExtension);
 
 	// DirectoryRange implementation
 	class DirectoryRange {
@@ -309,6 +318,7 @@ namespace RawPath {
 	File OpenRead(Str::StringRef path, std::error_code& err = throws());
 	File OpenWrite(Str::StringRef path, std::error_code& err = throws());
 	File OpenAppend(Str::StringRef path, std::error_code& err = throws());
+	File OpenEdit(Str::StringRef path, std::error_code& err = throws());
 
 	// Check if a file exists
 	bool FileExists(Str::StringRef path);
@@ -384,6 +394,7 @@ namespace HomePath {
 	File OpenRead(Str::StringRef path, std::error_code& err = throws());
 	File OpenWrite(Str::StringRef path, std::error_code& err = throws());
 	File OpenAppend(Str::StringRef path, std::error_code& err = throws());
+	File OpenEdit(Str::StringRef path, std::error_code& err = throws());
 
 	// Check if a file exists
 	bool FileExists(Str::StringRef path);
@@ -401,6 +412,10 @@ namespace HomePath {
 	typedef RawPath::RecursiveDirectoryRange RecursiveDirectoryRange;
 	DirectoryRange ListFiles(Str::StringRef path, std::error_code& err = throws());
 	RecursiveDirectoryRange ListFilesRecursive(Str::StringRef path, std::error_code& err = throws());
+
+	// Helper function to complete a filename. The root is prepended to the path but not included
+	// in the completion results.
+	Cmd::CompletionResult CompleteFilename(Str::StringRef prefix, Str::StringRef root, Str::StringRef extension, bool allowSubdirs, bool stripExtension);
 } // namespace HomePath
 
 // Initialize the filesystem and the main paths

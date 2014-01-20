@@ -77,15 +77,16 @@ static std::vector<PakInfo> availablePaks;
 enum openMode_t {
 	MODE_READ,
 	MODE_WRITE,
-	MODE_APPEND
+	MODE_APPEND,
+	MODE_EDIT
 };
 static FILE* my_fopen(Str::StringRef path, openMode_t mode)
 {
 #ifdef _WIN32
-	const wchar_t* modes[] = {L"rb", L"wb", L"ab"};
+	const wchar_t* modes[] = {L"rb", L"wb", L"ab", L"rb+"};
 	return _wfopen(Str::UTF8To16(path).c_str(), modes[mode]);
 #else
-	const char* modes[] = {"rb", "wb", "ab"};
+	const char* modes[] = {"rb", "wb", "ab", "rb+"};
 #if defined(__APPLE__)
 	FILE* fd = fopen(path.c_str(), modes[mode]);
 #elif defined(__linux__)
@@ -347,24 +348,6 @@ inline bool isdirsep(unsigned int c)
 #endif
 }
 
-// Test a directory for write permission
-static bool TestWritePermission(Str::StringRef path)
-{
-	// Create a temporary file in the path and then delete it
-	std::string fname = Path::Build(path, ".test_write_permission");
-	std::error_code err;
-	File f = RawPath::OpenWrite(fname, err);
-	if (HaveError(err))
-		return false;
-	f.Close(err);
-	if (HaveError(err))
-		return false;
-	RawPath::DeleteFile(fname, err);
-	if (HaveError(err))
-		return false;
-	return true;
-}
-
 void Initialize()
 {
 	Com_StartupVariable("fs_basepath");
@@ -373,23 +356,22 @@ void Initialize()
 	Com_StartupVariable("fs_libpath");
 
 	std::string defaultBasePath = DefaultBasePath();
-	std::string defaultHomePath = (!defaultBasePath.empty() && TestWritePermission(defaultBasePath)) ? defaultBasePath : DefaultHomePath();
+	std::string defaultHomePath = DefaultHomePath();
 	libPath = Cvar_Get("fs_libpath", defaultBasePath.c_str(), CVAR_INIT)->string;
 	homePath = Cvar_Get("fs_homepath", defaultHomePath.c_str(), CVAR_INIT)->string;
 	const char* basePath = Cvar_Get("fs_basepath", defaultBasePath.c_str(), CVAR_INIT)->string;
 	const char* extraPath = Cvar_Get("fs_extrapath", "", CVAR_INIT)->string;
 
-	pakPaths.push_back(Path::Build(homePath, "pkg"));
 	if (basePath != homePath)
 		pakPaths.push_back(Path::Build(basePath, "pkg"));
 	if (extraPath[0] && extraPath != basePath && extraPath != homePath)
 		pakPaths.push_back(Path::Build(extraPath, "pkg"));
+	pakPaths.push_back(Path::Build(homePath, "pkg"));
 	isInitialized = true;
 
-	Com_Printf("Filesystem home path: %s\n", homePath.c_str());
-	Com_Printf("Filesystem search paths:\n");
+	Com_Printf("Home path: %s\n", homePath.c_str());
 	for (std::string& x: pakPaths)
-		Com_Printf("- %s\n", x.c_str());
+		Com_Printf("Pak path: %s\n", x.c_str());
 
 	RefreshPaks();
 }
@@ -729,7 +711,7 @@ std::string Extension(Str::StringRef path)
 		return "/";
 
 	// Find a dot or slash, searching from the end of the string
-	for (const char* p = path.end(); p != path.begin(); p++) {
+	for (const char* p = path.end(); p != path.begin(); p--) {
 		if (p[-1] == '/')
 			return "";
 		if (p[-1] == '.')
@@ -746,7 +728,7 @@ std::string StripExtension(Str::StringRef path)
 		return path.substr(path.size() - 1);
 
 	// Find a dot or slash, searching from the end of the string
-	for (const char* p = path.end(); p != path.begin(); p++) {
+	for (const char* p = path.end(); p != path.begin(); p--) {
 		if (p[-1] == '/')
 			return path;
 		if (p[-1] == '.')
@@ -764,7 +746,7 @@ std::string BaseNameStripExtension(Str::StringRef path)
 	const char* end = path.end();
 	if (path.back() == '/')
 		end = path.end() - 1;
-	for (const char* p = end; p != path.begin(); p++) {
+	for (const char* p = end; p != path.begin(); p--) {
 		if (p[-1] == '/')
 			return std::string(p, end);
 		if (p[-1] == '.' && end == path.end())
@@ -1216,7 +1198,14 @@ static void InternalLoadPak(const PakInfo& pak, Opt::optional<uint32_t> expected
 		}, err);
 		if (HaveError(err))
 			return;
+
+		// Save the real checksum in the list of loaded paks
 		loadedPaks.back().checksum = checksum;
+
+		// Get the timestamp of the pak
+		loadedPaks.back().timestamp = FS::RawPath::FileTimestamp(pak.path, err);
+		if (HaveError(err))
+			return;
 	}
 
 	// If an explicit checksum was requested, verify that the pak we loaded is the one we are expecting
@@ -1274,6 +1263,7 @@ void ClearPaks()
 {
 	fileMap.clear();
 	loadedPaks.clear();
+	FS::RefreshPaks();
 }
 
 std::string ReadFile(Str::StringRef path, std::error_code& err)
@@ -1398,20 +1388,11 @@ std::chrono::system_clock::time_point FileTimestamp(Str::StringRef path, std::er
 		return {};
 	}
 
-	my_stat_t st;
-	int result;
 	const PakInfo& pak = loadedPaks[it->second.first];
 	if (pak.type == PAK_DIR)
-		result = my_stat(Path::Build(pak.path, path), &st);
+		return RawPath::FileTimestamp(Path::Build(pak.path, path), err);
 	else
-		result = my_stat(pak.path, &st);
-	if (result != 0) {
-		SetErrorCodeSystem(err);
-		return {};
-	} else {
-		ClearErrorCode(err);
-		return std::chrono::system_clock::from_time_t(std::max(st.st_ctime, st.st_mtime));
-	}
+		return pak.timestamp;
 }
 
 bool DirectoryRange::InternalAdvance()
@@ -1474,6 +1455,51 @@ DirectoryRange ListFilesRecursive(Str::StringRef path, std::error_code& err)
 	return state;
 }
 
+// Note that this function is practically identical to the HomePath version.
+// Try to keep any changes in sync between the two versions.
+Cmd::CompletionResult CompleteFilename(Str::StringRef prefix, Str::StringRef root, Str::StringRef extension, bool allowSubdirs, bool stripExtension)
+{
+	// Handle prefixes ending with / so that they search inside the directory
+	std::string prefixDir, prefixBase;
+	if (Str::IsSuffix("/", prefix)) {
+		if (!allowSubdirs)
+			return {};
+		prefixDir = prefix;
+		prefixBase = "";
+	} else {
+		prefixDir = Path::DirName(prefix);
+		if (!allowSubdirs && !prefixDir.empty())
+			return {};
+		prefixBase = Path::BaseName(prefix);
+	}
+
+	try {
+		Cmd::CompletionResult out;
+		// ListFiles doesn't return directories for PakPath, so use a recursive
+		// search to get directory names.
+		for (auto x: PakPath::ListFilesRecursive(Path::Build(root, prefixDir))) {
+			std::string ext = Path::Extension(x);
+			size_t slash = x.find('/');
+			if (!allowSubdirs && slash != std::string::npos)
+				continue;
+			else if (allowSubdirs && slash != std::string::npos)
+				x = x.substr(0, slash + 1);
+			if (!extension.empty() && ext != extension && !(allowSubdirs && ext == "/"))
+				continue;
+			std::string result;
+			if (stripExtension)
+				result = Path::Build(prefixDir, Path::StripExtension(x));
+			else
+				result = Path::Build(prefixDir, x);
+			if (Str::IsPrefix(prefix, result))
+				out.emplace_back(result, "");
+		}
+		return out;
+	} catch (std::system_error&) {
+		return {};
+	}
+}
+
 } // namespace PakPath
 
 namespace RawPath {
@@ -1487,7 +1513,7 @@ static void CreatePath(Str::StringRef path, std::error_code& err)
 		if (!isdirsep(c))
 			continue;
 		c = '\0';
-		if (_wmkdir(buffer.data()) != 0 && errno != EEXIST) {
+		if (_wmkdir(buffer.data()) != 0 && errno != EEXIST && errno != ENOENT) {
 			SetErrorCodeSystem(err);
 			return;
 		}
@@ -1499,7 +1525,7 @@ static void CreatePath(Str::StringRef path, std::error_code& err)
 		if (!isdirsep(c))
 			continue;
 		c = '\0';
-		if (mkdir(buffer.data(), 0777) != 0 && errno != EEXIST) {
+		if (mkdir(buffer.data(), 0777) != 0 && errno != EEXIST && errno != ENOENT) {
 			SetErrorCodeSystem(err);
 			return;
 		}
@@ -1537,6 +1563,10 @@ File OpenWrite(Str::StringRef path, std::error_code& err)
 File OpenAppend(Str::StringRef path, std::error_code& err)
 {
 	return OpenMode(path, MODE_APPEND, err);
+}
+File OpenEdit(Str::StringRef path, std::error_code& err)
+{
+	return OpenMode(path, MODE_EDIT, err);
 }
 
 bool FileExists(Str::StringRef path)
@@ -1768,6 +1798,10 @@ File OpenAppend(Str::StringRef path, std::error_code& err)
 {
 	return OpenMode(path, MODE_APPEND, err);
 }
+File OpenEdit(Str::StringRef path, std::error_code& err)
+{
+	return OpenMode(path, MODE_EDIT, err);
+}
 
 bool FileExists(Str::StringRef path)
 {
@@ -1818,6 +1852,43 @@ RecursiveDirectoryRange ListFilesRecursive(Str::StringRef path, std::error_code&
 		return {};
 	}
 	return RawPath::ListFilesRecursive(Path::Build(homePath, path), err);
+}
+
+// Note that this function is practically identical to the PakPath version.
+// Try to keep any changes in sync between the two versions.
+Cmd::CompletionResult CompleteFilename(Str::StringRef prefix, Str::StringRef root, Str::StringRef extension, bool allowSubdirs, bool stripExtension)
+{
+	std::string prefixDir, prefixBase;
+	if (Str::IsSuffix("/", prefix)) {
+		if (!allowSubdirs)
+			return {};
+		prefixDir = prefix;
+		prefixBase = "";
+	} else {
+		prefixDir = Path::DirName(prefix);
+		if (!allowSubdirs && !prefixDir.empty())
+			return {};
+		prefixBase = Path::BaseName(prefix);
+	}
+
+	try {
+		Cmd::CompletionResult out;
+		for (auto& x: HomePath::ListFiles(Path::Build(root, prefixDir))) {
+			std::string ext = Path::Extension(x);
+			if (!extension.empty() && ext != extension && !(allowSubdirs && ext == "/"))
+				continue;
+			std::string result;
+			if (stripExtension)
+				result = Path::Build(prefixDir, Path::StripExtension(x));
+			else
+				result = Path::Build(prefixDir, x);
+			if (Str::IsPrefix(prefix, result))
+				out.emplace_back(result, "");
+		}
+		return out;
+	} catch (std::system_error&) {
+		return {};
+	}
 }
 
 } // namespace HomePath
@@ -1934,6 +2005,9 @@ fileHandle_t FS_SV_FOpenFileWrite(const char* path)
 
 int FS_SV_FOpenFileRead(const char* path, fileHandle_t* handle)
 {
+	if (!handle)
+		return FS::HomePath::FileExists(path);
+
 	*handle = FS_AllocHandle();
 	int length;
 	try {
@@ -1942,31 +2016,36 @@ int FS_SV_FOpenFileRead(const char* path, fileHandle_t* handle)
 	} catch (std::system_error& err) {
 		Com_DPrintf("Failed to open '%s' for reading: %s\n", path, err.what());
 		*handle = 0;
-		return -1;
+		return 0;
 	}
 	handleTable[*handle].isPakFile = false;
 	handleTable[*handle].isOpen = true;
 	return length;
 }
 
-int FS_FOpenFileByMode(const char* path, fileHandle_t* handle, fsMode_t mode)
+int FS_Game_FOpenFileByMode(const char* path, fileHandle_t* handle, fsMode_t mode)
 {
 	switch (mode) {
 	case FS_READ:
-		return FS_FOpenFileRead(path, handle, qfalse);
+		if (FS::PakPath::FileExists(path))
+			return FS_FOpenFileRead(path, handle, qfalse);
+		else {
+			int size = FS_SV_FOpenFileRead(FS::Path::Build("game", path).c_str(), handle);
+			return (!handle || *handle) ? size : -1;
+		}
 
 	case FS_WRITE:
-		*handle = FS_FOpenFileWrite(path);
+		*handle = FS_FOpenFileWrite(FS::Path::Build("game", path).c_str());
 		return *handle == 0 ? -1 : 0;
 
 	case FS_APPEND:
 	case FS_APPEND_SYNC:
-		*handle = FS_FOpenFileAppend(path);
+		*handle = FS_FOpenFileAppend(FS::Path::Build("game", path).c_str());
 		handleTable[*handle].forceFlush = mode == FS_APPEND_SYNC;
 		return *handle == 0 ? -1 : 0;
 
 	default:
-		Com_Error(ERR_DROP, "FS_FOpenFileByMode: bad mode %d", mode);
+		Com_Error(ERR_DROP, "FS_Game_FOpenFileByMode: bad mode %d", mode);
 	}
 }
 
@@ -2125,7 +2204,6 @@ void FS_Printf(fileHandle_t handle, const char* fmt, ...)
 	FS_Write(buffer, strlen(buffer), handle);
 }
 
-// TODO: This needs to handle deleting directories
 int FS_Delete(const char* path)
 {
 	try {
@@ -2205,7 +2283,7 @@ char** FS_ListFiles(const char* directory, const char* extension, int* numFiles)
 			s[x.size() - (x.back() == '/')] = '\0';
 			files.push_back(s);
 		}
-	} catch (std::system_error& err) {}
+	} catch (std::system_error&) {}
 	try {
 		for (const std::string& x: FS::HomePath::ListFiles(directory)) {
 			if (extension && !Str::IsSuffix(extension, x))
@@ -2217,7 +2295,7 @@ char** FS_ListFiles(const char* directory, const char* extension, int* numFiles)
 			s[x.size() - (x.back() == '/')] = '\0';
 			files.push_back(s);
 		}
-	} catch (std::system_error& err) {}
+	} catch (std::system_error&) {}
 
 	*numFiles = files.size();
 	char** list = new char*[files.size() + 1];
@@ -2306,7 +2384,7 @@ bool FS_LoadServerPaks(const char* paks)
 		else {
 			try {
 				FS::PakPath::LoadPakExplicit(*pak, *checksum);
-			} catch (std::system_error& err) {
+			} catch (std::system_error&) {
 				fs_missingPaks.emplace_back(std::move(name), std::move(version), *checksum);
 			}
 		}
@@ -2345,32 +2423,6 @@ qboolean FS_ComparePaks(char* neededpaks, int len, qboolean dlstring)
 	return !fs_missingPaks.empty();
 }
 
-namespace FS {
-    Cmd::CompletionResult CompleteFilenameInDir(Str::StringRef prefix, Str::StringRef dir,
-                                                Str::StringRef extension, bool stripExtension) {
-        int nfiles;
-        char** filenames = FS_ListFiles(dir.c_str(), extension.c_str(), &nfiles);
-
-        Cmd::CompletionResult res;
-
-        for (int i = 0; i < nfiles; i++) {
-            char filename[MAX_STRING_CHARS];
-            Q_strncpyz(filename, filenames[i], MAX_STRING_CHARS);
-
-            if (stripExtension) {
-                COM_StripExtension3(filename, filename, sizeof(filename));
-            }
-
-            if (Str::IsIPrefix(prefix, filename)) {
-                res.push_back({filename, ""});
-            }
-        }
-
-        FS_FreeFileList( filenames );
-        return res;
-    }
-}
-
 class WhichCmd: public Cmd::StaticCmd {
 public:
 	WhichCmd()
@@ -2386,9 +2438,32 @@ public:
 		const std::string& filename = args.Argv(1);
 		const FS::PakInfo* pak = FS::PakPath::LocateFile(filename);
 		if (pak)
-			Print(_( "File \"%s\" found in \"%s\"\n"), filename, pak->path);
+			Print(_( "File \"%s\" found in \"%s\""), filename, pak->path);
 		else
-			Print(_("File not found: \"%s\"\n"), filename);
+			Print(_("File not found: \"%s\""), filename);
+	}
+
+	Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, Str::StringRef prefix) const OVERRIDE
+	{
+		if (argNum == 1) {
+			return FS::PakPath::CompleteFilename(prefix, "", "", true, false);
+		}
+
+		return {};
 	}
 };
 static WhichCmd WhichCmdRegistration;
+
+class PathCmd: public Cmd::StaticCmd {
+public:
+	PathCmd()
+		: Cmd::StaticCmd("path", Cmd::SYSTEM, N_("list filesystem search paths")) {}
+
+	void Run(const Cmd::Args& args) const OVERRIDE
+	{
+		Print("Home path: %s", FS::GetHomePath());
+		for (auto& x: FS::PakPath::GetLoadedPaks())
+			Print("Loaded pak: %s", x.path);
+	}
+};
+static PathCmd PathCmdRegistration;

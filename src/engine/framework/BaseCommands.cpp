@@ -1,24 +1,30 @@
 /*
 ===========================================================================
+Daemon BSD Source Code
+Copyright (c) 2013-2014, Daemon Developers
+All rights reserved.
 
-Daemon GPL Source Code
-Copyright (C) 2013 Unvanquished Developers
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+    * Neither the name of the <organization> nor the
+      names of its contributors may be used to endorse or promote products
+      derived from this software without specific prior written permission.
 
-This file is part of the Daemon GPL Source Code (Daemon Source Code).
-
-Daemon Source Code is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Daemon Source Code is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
-
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
+DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
@@ -68,20 +74,20 @@ namespace Cmd {
 
     class ExecCmd: public StaticCmd {
         public:
-            ExecCmd(Str::StringRef name, bool silent): StaticCmd(name, BASE, N_("executes a command file")), silent(silent) {
+            ExecCmd(Str::StringRef name, bool readHomepath): StaticCmd(name, BASE, N_("executes a command file")), readHomepath(readHomepath) {
             }
 
             void Run(const Cmd::Args& args) const OVERRIDE {
-                bool executeSilent = silent;
+                bool executeSilent = false;
                 bool failSilent = false;
                 bool hasOptions = args.Argc() >= 3 and args.Argv(1).size() >= 2 and args.Argv(1)[0] == '-';
 
                 //Check the syntax
                 if (args.Argc() < 2) {
-                    if (silent) {
-                        PrintUsage(args, _("<filename> [<arguments>…]"), _("execute a script file without notification, a shortcut for exec -q"));
+                    if (readHomepath) {
+                        PrintUsage(args, _("[-q|-f|-s] <filename> [<arguments>…]"), _("execute a user script file from config/."));
                     } else {
-                        PrintUsage(args, _("[-q|-f|-s] <filename> [<arguments>…]"), _("execute a script file."));
+                        PrintUsage(args, _("[-q|-f|-s] <filename> [<arguments>…]"), _("execute a script file from a pak."));
                     }
                     return;
                 }
@@ -122,51 +128,47 @@ namespace Cmd {
                 }
             }
 
+            Cmd::CompletionResult Complete(int argNum, const Args& args, Str::StringRef prefix) const OVERRIDE {
+                if (argNum == 1 || (argNum == 2 && Str::IsPrefix("-", args.Argv(1)))) {
+                    if (readHomepath)
+                        return FS::HomePath::CompleteFilename(prefix, "config", ".cfg", true, false);
+                    else
+                        return FS::PakPath::CompleteFilename(prefix, "", ".cfg", true, false);
+                }
+
+                return {};
+            }
+
         private:
-            bool silent;
+            bool readHomepath;
 
             void SetExecArgs(const Cmd::Args& args, int start) const {
                 //Set some cvars up so that scripts file can be used like functions
-                Cvar_Get("arg_all", args.ConcatArgs(start).c_str(), CVAR_TEMP | CVAR_ROM | CVAR_USER_CREATED);
-                Cvar_Set("arg_all", args.ConcatArgs(start).c_str());
-                Cvar_Get("arg_count", va("%i", args.Argc() - start), CVAR_TEMP | CVAR_ROM | CVAR_USER_CREATED);
-                Cvar_Set("arg_count", va("%i", args.Argc() - start));
+                ExecuteAfter(Str::Format("set arg_all %s", Cmd::Escape(args.ConcatArgs(start))));
+                ExecuteAfter(Str::Format("set arg_count %d", args.Argc() - start));
 
                 for (int i = start; i < args.Argc(); i++) {
-                    Cvar_Get(va("arg_%i", i), args.Argv(i + start - 1).c_str(), CVAR_TEMP | CVAR_ROM | CVAR_USER_CREATED);
-                    Cvar_Set(va("arg_%i", i), args.Argv(i + start - 1).c_str());
+                    ExecuteAfter(Str::Format("set arg_%d %s", i, Cmd::Escape(args.Argv(i + start - 1))));
                 }
             }
 
             bool ExecFile(Str::StringRef filename) const {
-                bool success = false;
-                fileHandle_t h;
-                int len = FS_SV_FOpenFileRead(filename.c_str(), &h);
-
-                //TODO: rewrite this
-                if (h) {
-                    success = true;
-                    char* content = (char*) Hunk_AllocateTempMemory(len + 1);
-                    FS_Read(content, len, h);
-                    content[len] = '\0';
-                    FS_FCloseFile(h);
-                    ExecuteAfter(content, true);
-                    Hunk_FreeTempMemory(content);
-                } else {
-                    char* content;
-                    FS_ReadFile(filename.c_str(), (void**) &content);
-
-                    if (content) {
-                        success = true;
-                        ExecuteAfter(content, true);
-                        FS_FreeFile(content);
+                std::string buffer;
+                try {
+                    if (readHomepath) {
+                        buffer = FS::HomePath::OpenRead(FS::Path::Build("config", filename)).ReadAll();
+                    } else {
+                        buffer = FS::PakPath::ReadFile(filename);
                     }
+                } catch (std::system_error&) {
+                    return false;
                 }
-                return success;
+                ExecuteAfter(buffer, true);
+                return true;
             }
     };
-    static ExecCmd ExecCmdRegistration("exec", false);
-    static ExecCmd ExecqCmdRegistration("execq", true);
+    static ExecCmd ExecCmdRegistration("exec", true);
+    static ExecCmd PresetCmdRegistration("preset", false);
 
     class EchoCmd: public StaticCmd {
         public:

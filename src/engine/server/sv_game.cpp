@@ -523,7 +523,7 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 			return 0;
 
 		case G_FS_FOPEN_FILE:
-			return FS_FOpenFileByMode( ( const char * ) VMA( 1 ), ( fileHandle_t* ) VMA( 2 ), ( fsMode_t ) args[ 3 ] );
+			return FS_Game_FOpenFileByMode( ( const char * ) VMA( 1 ), ( fileHandle_t* ) VMA( 2 ), ( fsMode_t ) args[ 3 ] );
 
 		case G_FS_READ:
 		        VM_CheckBlock( args[1], args[2], "FSREAD" );
@@ -1255,7 +1255,7 @@ void NaClGameVM::Syscall(int index, RPC::Reader& inputs, RPC::Writer& outputs)
 		qboolean openFile = inputs.ReadInt();
 		fsMode_t mode = static_cast<fsMode_t>(inputs.ReadInt());
 		fileHandle_t f;
-		outputs.WriteInt(FS_FOpenFileByMode(filename, openFile ? &f : NULL, mode));
+		outputs.WriteInt(FS_Game_FOpenFileByMode(filename, openFile ? &f : NULL, mode));
 		if (openFile)
 			outputs.WriteInt(f);
 		break;

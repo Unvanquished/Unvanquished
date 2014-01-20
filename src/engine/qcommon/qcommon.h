@@ -571,7 +571,7 @@ void QDECL FS_Printf( fileHandle_t f, const char *fmt, ... ) PRINTF_LIKE(2);
 
 // like fprintf
 
-int FS_FOpenFileByMode( const char *qpath, fileHandle_t *f, fsMode_t mode );
+int FS_Game_FOpenFileByMode( const char *qpath, fileHandle_t *f, fsMode_t mode );
 
 // opens a file for reading, writing, or appending depending on the value of mode
 
@@ -591,11 +591,6 @@ bool     FS_LoadServerPaks( const char* paks );
 qboolean   FS_ComparePaks( char *neededpaks, int len, qboolean dlstring );
 
 void       FS_Rename( const char *from, const char *to );
-
-namespace FS {
-    std::vector<std::pair<std::string, std::string>> CompleteFilenameInDir(Str::StringRef prefix, Str::StringRef dir,
-                                                                           Str::StringRef extension, bool stripExtension = true);
-}
 
 /*
 ==============================================================
@@ -704,10 +699,6 @@ void       Com_SetRecommended( void );
 // checks for and removes command line "+set var arg" constructs
 // if match is NULL, all set commands will be executed, otherwise
 // only a set with the exact name.  Only used during startup.
-
-//bani - profile functions
-qboolean            Com_CheckProfile( char *profile_path );
-qboolean            Com_WriteProfile( char *profile_path );
 
 extern cvar_t       *com_crashed;
 
@@ -820,7 +811,7 @@ double Sys_DoubleTime( void );
 // commandLine should not include the executable name (argv[0])
 void   Com_Init( char *commandLine );
 void   Com_Frame( void );
-void   Com_Shutdown( qboolean badProfile );
+void   Com_Shutdown();
 
 /*
 ==============================================================

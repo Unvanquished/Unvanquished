@@ -78,9 +78,15 @@ class MapCmd: public Cmd::StaticCmd {
 
         Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, Str::StringRef prefix) const OVERRIDE {
             if (argNum == 1) {
-                return FS::CompleteFilenameInDir(prefix, "maps", "bsp");
+                Cmd::CompletionResult out;
+                auto& paks = FS::GetAvailablePaks();
+                for (auto& x: paks) {
+                    if (Str::IsPrefix("map/", x.name))
+                        out.push_back({x.name.substr(4), ""});
+                }
+                return out;
             } else if (argNum > 1) {
-                return FS::CompleteFilenameInDir(prefix, "layouts/" + args.Argv(1), "dat");
+                return FS::HomePath::CompleteFilename(prefix, "layouts/" + args.Argv(1), ".dat", false, true);
             }
 
             return {};
