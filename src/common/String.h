@@ -291,11 +291,13 @@ namespace Str {
     }
 }
 
-template <typename T>
-struct std::hash<Str::BasicStringRef<T>> {
-    std::size_t operator()(const Str::BasicStringRef<T>& s) const {
-        return std::hash<const T*>()(s.c_str());
-    }
-};
+namespace std {
+    template <typename T>
+    struct hash<Str::BasicStringRef<T>> {
+        size_t operator()(const Str::BasicStringRef<T>& s) const {
+            return hash<const T*>()(s.c_str());
+        }
+    };
+}
 
 #endif //COMMON_STRING_H_
