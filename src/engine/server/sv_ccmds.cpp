@@ -61,7 +61,7 @@ class MapCmd: public Cmd::StaticCmd {
             const std::string& mapName = args.Argv(1);
 
             //Make sure the map exists to avoid typos that would kill the game
-            if (!FS::FindPak(va("map/%s", mapName.c_str()))) {
+            if (!FS::FindPak(va("map-%s", mapName.c_str()))) {
                 Print(_("Can't find map %s\n"), mapName.c_str());
                 return;
             }
@@ -81,7 +81,7 @@ class MapCmd: public Cmd::StaticCmd {
                 Cmd::CompletionResult out;
                 auto& paks = FS::GetAvailablePaks();
                 for (auto& x: paks) {
-                    if (Str::IsPrefix("map/", x.name))
+                    if (Str::IsPrefix("map-", x.name))
                         out.push_back({x.name.substr(4), ""});
                 }
                 return out;
