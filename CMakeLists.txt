@@ -650,6 +650,8 @@ set( CLIENTLIST
 )
 
 set( TTYCLIENTLIST
+    ${ENGINE_DIR}/null/null_input.cpp
+    ${ENGINE_DIR}/null/null_renderer.cpp
     ${ENGINE_DIR}/null/NullAudio.cpp
 )
 
@@ -1513,7 +1515,7 @@ endif()
 if( BUILD_SERVER )
   add_executable( server WIN32 ${SERVERLIST} ${ENGINELIST} ${SHAREDLIST} ${LIBSRC_BASE} ${LIBSRC_ENGINE}
     ${ENGINE_DIR}/null/null_client.cpp ${ENGINE_DIR}/null/null_input.cpp
-    ${ENGINE_DIR}/null/null_snddma.cpp ${WIN_RC} )
+    ${ENGINE_DIR}/null/NullAudio.cpp ${WIN_RC} )
   target_link_libraries( server ${LIBS_ENGINE} ${LIBS_BASE} )
   set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS DEDICATED )
   set_target_properties( server PROPERTIES OUTPUT_NAME "daemonded" PREFIX "" )
@@ -1521,9 +1523,7 @@ endif()
 
 if( BUILD_TTY_CLIENT )
   add_executable( ttyclient WIN32 ${SERVERLIST} ${CLIENTBASELIST} ${TTYCLIENTLIST} ${ENGINELIST} ${SHAREDLIST}
-    ${LIBSRC_BASE} ${LIBSRC_ENGINE} ${LIBSRC_CLIENTBASE} ${WIN_RC}
-    ${ENGINE_DIR}/null/null_input.cpp ${ENGINE_DIR}/null/null_snddma.cpp
-    ${ENGINE_DIR}/null/null_renderer.cpp )
+    ${LIBSRC_BASE} ${LIBSRC_ENGINE} ${LIBSRC_CLIENTBASE} ${WIN_RC} )
   target_link_libraries( ttyclient ${LIBS_CLIENTBASE} ${LIBS_ENGINE} ${LIBS_BASE} )
   set_property( TARGET ttyclient APPEND PROPERTY COMPILE_DEFINITIONS BUILD_TTY_CLIENT REF_HARD_LINKED )
   set_target_properties( ttyclient PROPERTIES OUTPUT_NAME "daemon-tty" PREFIX "" )
