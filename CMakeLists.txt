@@ -655,6 +655,11 @@ set( TTYCLIENTLIST
     ${ENGINE_DIR}/null/NullAudio.cpp
 )
 
+set( DEDSERVERLIST
+    ${ENGINE_DIR}/null/null_input.cpp
+    ${ENGINE_DIR}/null/null_client.cpp
+)
+
 
 if( USE_MUMBLE )
   set( CLIENTBASELIST ${CLIENTBASELIST}
@@ -1223,7 +1228,7 @@ endif()
 if( BUILD_CLIENT )
   find_package( OpenAL REQUIRED )
   include_directories( ${OPENAL_INCLUDE_DIR} )
-  set( LIBS_CLIENTBASE ${LIBS_CLIENT} ${OPENAL_LIBRARY} )
+  set( LIBS_CLIENT ${LIBS_CLIENT} ${OPENAL_LIBRARY} )
 endif()
 
 # CURL
@@ -1513,9 +1518,8 @@ if( BUILD_CLIENT )
 endif()
 
 if( BUILD_SERVER )
-  add_executable( server WIN32 ${SERVERLIST} ${ENGINELIST} ${SHAREDLIST} ${LIBSRC_BASE} ${LIBSRC_ENGINE}
-    ${ENGINE_DIR}/null/null_client.cpp ${ENGINE_DIR}/null/null_input.cpp
-    ${ENGINE_DIR}/null/NullAudio.cpp ${WIN_RC} )
+  add_executable( server WIN32 ${SERVERLIST} ${DEDSERVERLIST} ${ENGINELIST} ${SHAREDLIST}
+    ${LIBSRC_BASE} ${LIBSRC_ENGINE} ${WIN_RC} )
   target_link_libraries( server ${LIBS_ENGINE} ${LIBS_BASE} )
   set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS DEDICATED )
   set_target_properties( server PROPERTIES OUTPUT_NAME "daemonded" PREFIX "" )
