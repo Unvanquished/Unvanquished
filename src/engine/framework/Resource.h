@@ -31,6 +31,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <memory>
 #include <unordered_map>
 
+#include "../../common/Log.h"
 #include "../../common/String.h"
 
 #ifndef FRAMEWORK_RESOURCE_H_
@@ -48,6 +49,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 namespace Resource {
+
+    template<typename T> class Manager;
+    template<typename T> class Handle;
 
     /*
      * The interface that resources must implement to be used by the resource system.
@@ -80,6 +84,8 @@ namespace Resource {
             // TODO provide a facility to know if resources we depend on have been loaded?
             virtual bool Load() = 0;
 
+            virtual void Cleanup() = 0;
+
             // Checks if the resource is still valid and up to date,
             // for example after the FS loads a mod, some resources can have
             // been modified by the mod and what's in memory isn't valid anymore.
@@ -90,7 +96,38 @@ namespace Resource {
             Str::StringRef GetName();
 
         private:
+            bool TryLoad();
+
             std::string name;
+
+            bool loaded;
+            bool failed;
+
+            //TODO remove .keep once we have VM handles
+            // It is needed for now because the VM cannot ask for a shared_ptr so it
+            // doesn't add a refcount. .keep is a hack to avoid deleting resources
+            // added during the registration.
+            bool keep;
+
+            template<typename T> friend class Manager;
+            template<typename T> friend class Handle;
+    };
+
+    template<typename T>
+    class Handle {
+        public:
+            Handle(std::shared_ptr<T> value, const Manager<T>* manager): value(value), manager(manager) {
+            }
+
+            std::shared_ptr<T> Get() {
+                if (value->failed) {
+                    value = manager->GetDefaultValue();
+                }
+                return value;
+            }
+        private:
+            std::shared_ptr<T> value;
+            const Manager<T>* manager;
     };
 
     /*
@@ -106,19 +143,10 @@ namespace Resource {
     template<typename T>
     class Manager {
         private:
-            //TODO remove .keep once we have VM handles
-            // It is needed for now because the VM cannot ask for a shared_ptr so it
-            // doesn't add a refcount. .keep is a hack to avoid deleting resources
-            // added during the registration.
-            struct Record {
-                bool keep;
-                std::shared_ptr<T> resource;
-            };
-
-            typedef typename std::unordered_map<Str::StringRef, Record>::iterator iterator;
+            typedef typename std::unordered_map<Str::StringRef, std::shared_ptr<T>>::iterator iterator;
 
         public:
-            Manager();
+            Manager(Str::StringRef name = "");
             ~Manager();
 
             // Starts the registration.
@@ -129,8 +157,7 @@ namespace Resource {
 
             // Register the resource, returns a shared_ptr to that resource or nullptr
             // on a fail.
-            // TODO what do we do with the resource if at EndRegistration Load fails?
-            std::shared_ptr<T> Register(Str::StringRef name);
+            Handle<T> Register(Str::StringRef name);
 
             // Search and delete unused resources.
             void Prune();
@@ -141,17 +168,30 @@ namespace Resource {
             iterator begin();
             iterator end();
 
+            std::shared_ptr<T> GetDefaultValue() const {
+                return defaultValue;
+            }
+
         private:
             bool inRegistration;
+            std::shared_ptr<T> defaultValue;
             // We store a StringRef to the resource's name as we know that the lifetime
             // of the resource will be longer than the one of the hashmap entry.
-            std::unordered_map<Str::StringRef, Record> resources;
+            std::unordered_map<Str::StringRef, std::shared_ptr<T>> resources;
     };
 
     // Implementation of the templates
 
     template<typename T>
-    Manager<T>::Manager(): inRegistration(false) {
+    Manager<T>::Manager(Str::StringRef defaultName): inRegistration(false) {
+        if (defaultName == "") {
+            defaultValue = nullptr;
+        } else {
+            defaultValue = Register(defaultName).Get();
+            if (not defaultValue) {
+                Log::Error("Couldn't load the default resource for %s\n", typeid(T).name());
+            }
+        }
     }
 
     template<typename T>
@@ -162,7 +202,7 @@ namespace Resource {
     template<typename T>
     void Manager<T>::BeginRegistration() {
         for (auto& entry : resources) {
-            entry.second.keep = false;
+            entry.second->keep = false;
         }
 
         inRegistration = true;
@@ -175,8 +215,11 @@ namespace Resource {
 
         // And then load the new ones, so as to reduce peak memory usage.
         for (auto it = resources.begin(); it != resources.end(); it ++) {
-            if (not it->second.resource->Load()) {
-                it = resources.erase(it);
+            if (not it->second->loaded) {
+                if (not it->second->TryLoad()) {
+                    it->second->Cleanup();
+                    it = resources.erase(it);
+                }
             }
         }
 
@@ -184,36 +227,37 @@ namespace Resource {
     }
 
     template<typename T>
-    std::shared_ptr<T> Manager<T>::Register(Str::StringRef name) {
+    Handle<T> Manager<T>::Register(Str::StringRef name) {
         auto it = resources.find(name);
 
         if (it != resources.end()) {
-            it->second.keep = true;
-            return it->second.resource;
+            it->second->keep = true;
+            return Handle<T>(it->second, this);
         }
 
         std::shared_ptr<T> newResource = std::make_shared<T>(std::move(name));
         if (not newResource->TagDependencies()) {
-            return nullptr;
+            return Handle<T>(defaultValue, this);
         }
 
         if (inRegistration) {
-            resources[newResource->GetName()] = {true, newResource};
+            resources[newResource->GetName()] = newResource;
         } else {
-            if (newResource->Load()) {
-                resources[newResource->GetName()] = {true, newResource};
+            if (newResource->TryLoad()) {
+                resources[newResource->GetName()] = newResource;
             } else {
-                return nullptr;
+                return Handle<T>(defaultValue, this);
             }
         }
 
-        return newResource;
+        return Handle<T>(newResource, this);
     }
 
     template<typename T>
     void Manager<T>::Prune() {
         for (auto it = resources.begin(); it != resources.end(); it ++) {
-            if (not it->second.keep and it->second.resource.unique()) {
+            if (not it->second->keep and it->second.unique()) {
+                it->second->Cleanup();
                 it = resources.erase(it);
             }
         }

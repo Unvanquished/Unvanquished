@@ -65,6 +65,11 @@ namespace Audio {
         return true;
     }
 
+    void Sample::Cleanup() {
+        // Destroy the OpenAL buffer by moving it in the scope
+        AL::Buffer toDelete = std::move(buffer);
+    }
+
     AL::Buffer& Sample::GetBuffer() {
         return buffer;
     }
@@ -80,14 +85,7 @@ namespace Audio {
             return;
         }
 
-        sampleManager = new Resource::Manager<Sample>();
-
-        //TODO use an aggressive sound instead to know we are missing something?
-        errorSample = sampleManager->Register(errorSampleName);
-
-        if (not errorSample) {
-            Com_Error(ERR_FATAL, "Couldn't load the error sound sample '%s'", errorSampleName);
-        }
+        sampleManager = new Resource::Manager<Sample>(errorSampleName);
 
         initialized = true;
     }
@@ -124,13 +122,8 @@ namespace Audio {
     }
 
     std::shared_ptr<Sample> RegisterSample(Str::StringRef filename) {
-        std::shared_ptr<Sample> sample = sampleManager->Register(filename);
-
-        if (not sample) {
-            return errorSample;
-        }
-
-        return sample;
+        Resource::Handle<Sample> sample = sampleManager->Register(filename);
+        return sample.Get();
     }
 
     void EndSampleRegistration() {

@@ -95,6 +95,7 @@ namespace Audio {
             virtual ~Sample() OVERRIDE FINAL;
 
             virtual bool Load() OVERRIDE FINAL;
+            virtual void Cleanup() OVERRIDE FINAL;
 
             AL::Buffer& GetBuffer();
 
