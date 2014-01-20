@@ -605,7 +605,7 @@ if( USE_CURSES )
   set( ENGINELIST ${ENGINELIST} ${ENGINE_DIR}/sys/con_curses.cpp )
 endif()
 
-set( CLIENTLIST
+set( CLIENTBASELIST
   ${ENGINE_DIR}/botlib/bot_debug.cpp
   ${ENGINE_DIR}/botlib/bot_nav_edit.cpp
   ${ENGINE_DIR}/client/cg_api.h
@@ -628,6 +628,9 @@ set( CLIENTLIST
   ${ENGINE_DIR}/client/cl_ui.cpp
   ${ENGINE_DIR}/client/cl_logs.cpp
   ${ENGINE_DIR}/client/dl_main.cpp
+)
+
+set( CLIENTLIST
   ${ENGINE_DIR}/audio/snd_codec.cpp
   ${ENGINE_DIR}/audio/snd_codec.h
   ${ENGINE_DIR}/audio/snd_codec_ogg.cpp
@@ -646,8 +649,13 @@ set( CLIENTLIST
   ${ENGINE_DIR}/audio/Sound.h
 )
 
+set( TTYCLIENTLIST
+    ${ENGINE_DIR}/null/NullAudio.cpp
+)
+
+
 if( USE_MUMBLE )
-  set( CLIENTLIST ${CLIENTLIST}
+  set( CLIENTBASELIST ${CLIENTBASELIST}
     ${ENGINE_DIR}/client/libmumblelink.cpp
     ${ENGINE_DIR}/client/libmumblelink.h
   )
@@ -1210,10 +1218,10 @@ if( LINUX AND ( BUILD_CLIENT OR BUILD_NEW_RENDERER OR BUILD_OLD_RENDERER ) )
 endif()
 
 # OpenAL
-if( BUILD_CLIENT OR BUILD_TTY_CLIENT )
+if( BUILD_CLIENT )
   find_package( OpenAL REQUIRED )
   include_directories( ${OPENAL_INCLUDE_DIR} )
-  set( LIBS_CLIENTBASE ${LIBS_CLIENTBASE} ${OPENAL_LIBRARY} )
+  set( LIBS_CLIENTBASE ${LIBS_CLIENT} ${OPENAL_LIBRARY} )
 endif()
 
 # CURL
@@ -1489,7 +1497,7 @@ GAMEMODULE( NAME ui
 ################################################################################
 
 if( BUILD_CLIENT )
-  add_executable( client WIN32 ${SERVERLIST} ${CLIENTLIST} ${SDLLIST} ${ENGINELIST} ${SHAREDLIST}
+  add_executable( client WIN32 ${SERVERLIST} ${CLIENTBASELIST} ${CLIENTLIST} ${SDLLIST} ${ENGINELIST} ${SHAREDLIST}
     ${LIBSRC_BASE} ${LIBSRC_ENGINE} ${LIBSRC_CLIENTBASE} ${LIBSRC_CLIENT} ${WIN_RC} )
   target_link_libraries( client ${LIBS_CLIENT} ${LIBS_CLIENTBASE} ${LIBS_ENGINE} ${LIBS_BASE} )
   if( USE_VOIP )
@@ -1512,7 +1520,7 @@ if( BUILD_SERVER )
 endif()
 
 if( BUILD_TTY_CLIENT )
-  add_executable( ttyclient WIN32 ${SERVERLIST} ${CLIENTLIST} ${ENGINELIST} ${SHAREDLIST}
+  add_executable( ttyclient WIN32 ${SERVERLIST} ${CLIENTBASELIST} ${TTYCLIENTLIST} ${ENGINELIST} ${SHAREDLIST}
     ${LIBSRC_BASE} ${LIBSRC_ENGINE} ${LIBSRC_CLIENTBASE} ${WIN_RC}
     ${ENGINE_DIR}/null/null_input.cpp ${ENGINE_DIR}/null/null_snddma.cpp
     ${ENGINE_DIR}/null/null_renderer.cpp )
