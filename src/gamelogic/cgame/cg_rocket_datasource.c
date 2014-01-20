@@ -34,7 +34,7 @@ Maryland 20850 USA.
 
 #include "cg_local.h"
 
-static void AddToServerList( char *name, char *label, int clients, int bots, int ping, int maxClients, char *addr, int netSrc )
+static void AddToServerList( char *name, char *label, int clients, int bots, int ping, int maxClients, char *mapName, char *addr, int netSrc )
 {
 	server_t *node;
 
@@ -52,6 +52,7 @@ static void AddToServerList( char *name, char *label, int clients, int bots, int
 	node->maxClients = maxClients;
 	node->addr = BG_strdup( addr );
 	node->label = BG_strdup( label );
+	node->mapName = BG_strdup( mapName );
 
 	rocketInfo.data.serverCount[ netSrc ]++;
 }
@@ -204,13 +205,15 @@ static void CG_Rocket_BuildServerList( const char *args )
 			if ( ping >= 0 || !Q_stricmp( args, "favorites" ) )
 			{
 				char addr[ 25 ];
+				char mapname[ 256 ];
 				trap_LAN_GetServerInfo( netSrc, i, info, sizeof( info ) );
 
 				bots = atoi( Info_ValueForKey( info, "bots" ) );
 				clients = atoi( Info_ValueForKey( info, "clients" ) );
 				maxClients = atoi( Info_ValueForKey( info, "sv_maxclients" ) );
 				Q_strncpyz( addr, Info_ValueForKey( info, "addr" ), sizeof( addr ) );
-				AddToServerList( Info_ValueForKey( info, "hostname" ), Info_ValueForKey( info, "label" ), clients, bots, ping, maxClients, addr, netSrc );
+				Q_strncpyz( mapname, Info_ValueForKey( info, "mapname" ), sizeof( mapname ) );
+				AddToServerList( Info_ValueForKey( info, "hostname" ), Info_ValueForKey( info, "label" ), clients, bots, ping, maxClients, mapname, addr, netSrc );
 			}
 		}
 
@@ -228,6 +231,7 @@ static void CG_Rocket_BuildServerList( const char *args )
 			Info_SetValueForKey( data, "maxClients", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].maxClients ), qfalse );
 			Info_SetValueForKey( data, "addr", rocketInfo.data.servers[ netSrc ][ i ].addr, qfalse );
 			Info_SetValueForKey( data, "label", rocketInfo.data.servers[ netSrc ][ i ].label, qfalse );
+			Info_SetValueForKey( data, "map", rocketInfo.data.servers[ netSrc ][ i ].mapName, qfalse );
 
 			trap_Rocket_DSAddRow( "server_browser", args, data );
 		}
@@ -302,6 +306,7 @@ void CG_Rocket_CleanUpServerList( const char *table )
 				BG_Free( rocketInfo.data.servers[ i ][ j ].name );
 				BG_Free( rocketInfo.data.servers[ i ][ j ].label );
 				BG_Free( rocketInfo.data.servers[ i ][ j ].addr );
+				BG_Free( rocketInfo.data.servers[ i ][ j ].mapName );
 				rocketInfo.data.serverCount[ i ] = 0;
 			}
 		}

@@ -1204,6 +1204,7 @@ typedef struct server_s
 	int bots;
 	int ping;
 	int maxClients;
+	char *mapName;
 	char *addr;
 } server_t;
 
