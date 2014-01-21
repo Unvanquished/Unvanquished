@@ -1155,6 +1155,12 @@ static void InternalLoadPak(const PakInfo& pak, Opt::optional<uint32_t> expected
 	offset_t depsOffset;
 	ZipArchive zipFile;
 
+	// Check if this pak has already been loaded to avoid recursive dependencies
+	for (auto& x: loadedPaks) {
+		if (x.path == pak.path)
+			return;
+	}
+
 	// Add the pak to the list of loaded paks
 	loadedPaks.push_back(pak);
 
