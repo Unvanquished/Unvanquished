@@ -98,9 +98,15 @@ datagrid{
 	display:block;
 	font-size:0.8em;
 	text-align:left;
-	overflow:visible;
 	z-index:2;
 }
+
+datagridbody{
+	min-height: 50%%;
+	max-height: 85%;
+	overflow-y: auto;
+}
+
 .trem-emoticon
 {
 	width:20px;
