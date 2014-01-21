@@ -234,7 +234,9 @@ void SaveImageKTX( const char *path, image_t *img )
 		break;
 	case GL_RGB4:
 	case GL_RGB5:
+#ifdef GL_RGB565
 	case GL_RGB565:
+#endif
 		hdr.glType               = GL_UNSIGNED_SHORT_5_6_5;
 		hdr.glTypeSize           = 2;
 		hdr.glFormat             = GL_RGB;
