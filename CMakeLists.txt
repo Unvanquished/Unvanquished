@@ -433,6 +433,7 @@ set( RENDERERGLLIST
   ${ENGINE_DIR}/rendererGL/tr_image_dds.cpp
   ${ENGINE_DIR}/rendererGL/tr_image_exr.cpp
   ${ENGINE_DIR}/rendererGL/tr_image_jpg.cpp
+  ${ENGINE_DIR}/rendererGL/tr_image_ktx.cpp
   ${ENGINE_DIR}/rendererGL/tr_image_png.cpp
   ${ENGINE_DIR}/rendererGL/tr_image_tga.cpp
   ${ENGINE_DIR}/rendererGL/tr_image_webp.cpp

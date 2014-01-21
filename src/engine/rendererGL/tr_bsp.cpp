@@ -138,6 +138,37 @@ static void R_ColorShiftLightingBytes( byte in[ 4 ], byte out[ 4 ] )
 	out[ 3 ] = in[ 3 ];
 }
 
+static void R_ColorShiftLightingBytesCompressed( byte in[ 8 ], byte out[ 8 ] )
+{
+	unsigned short rgb565;
+	byte rgba[4];
+
+	// color shift the endpoint colors in the dxt block
+	rgb565 = in[1] << 8 | in[0];
+	rgba[0] = (rgb565 >> 8) & 0xf8;
+	rgba[1] = (rgb565 >> 3) & 0xfc;
+	rgba[2] = (rgb565 << 3) & 0xf8;
+	rgba[3] = 0xff;
+	R_ColorShiftLightingBytes( rgba, rgba );
+	rgb565 = ((rgba[0] >> 3) << 11) |
+		((rgba[1] >> 2) << 5) |
+		((rgba[2] >> 3) << 0);
+	out[0] = rgb565 & 0xff;
+	out[1] = rgb565 >> 8;
+
+	rgb565 = in[3] << 8 | in[2];
+	rgba[0] = (rgb565 >> 8) & 0xf8;
+	rgba[1] = (rgb565 >> 3) & 0xfc;
+	rgba[2] = (rgb565 << 3) & 0xf8;
+	rgba[3] = 0xff;
+	R_ColorShiftLightingBytes( rgba, rgba );
+	rgb565 = ((rgba[0] >> 3) << 11) |
+		((rgba[1] >> 2) << 5) |
+		((rgba[2] >> 3) << 0);
+	out[2] = rgb565 & 0xff;
+	out[3] = rgb565 >> 8;
+}
+
 #endif
 
 /*
@@ -303,7 +334,7 @@ R_ProcessLightmap
 ===============
 */
 #if defined( COMPAT_Q3A ) || defined( COMPAT_ET )
-float R_ProcessLightmap( byte *pic, int in_padding, int width, int height, byte *pic_out )
+float R_ProcessLightmap( byte *pic, int in_padding, int width, int height, int bits, byte *pic_out )
 {
 	int   j;
 	float maxIntensity = 0;
@@ -356,7 +387,17 @@ float R_ProcessLightmap( byte *pic, int in_padding, int width, int height, byte 
 	}
 	else
 	*/
-	{
+	if( bits & IF_BC1 ) {
+		for ( j = 0; j < ((width + 3) >> 2) * ((height + 3) >> 2); j++ )
+		{
+			R_ColorShiftLightingBytesCompressed( &pic[ j * 8 ], &pic_out[ j * 8 ] );
+		}
+	} else if( bits & IF_BC3 ) {
+		for ( j = 0; j < ((width + 3) >> 2) * ((height + 3) >> 2); j++ )
+		{
+			R_ColorShiftLightingBytesCompressed( &pic[ j * 16 ], &pic_out[ j * 16 ] );
+		}
+	} else {
 		for ( j = 0; j < width * height; j++ )
 		{
 			R_ColorShiftLightingBytes( &pic[ j * in_padding ], &pic_out[ j * 4 ] );
@@ -1003,8 +1044,13 @@ static void R_LoadLightmaps( lump_t *l, const char *bspName )
 
 						if ( !lightmapFiles || !numLightmaps )
 						{
-							ri.Printf( PRINT_WARNING, "WARNING: no lightmap files found\n" );
-							return;
+							lightmapFiles = ri.FS_ListFiles( mapName, ".crn", &numLightmaps );
+
+							if ( !lightmapFiles || !numLightmaps )
+							{
+								ri.Printf( PRINT_WARNING, "WARNING: no lightmap files found\n" );
+								return;
+							}
 						}
 					}
 				}
@@ -1036,8 +1082,13 @@ static void R_LoadLightmaps( lump_t *l, const char *bspName )
 
 					if ( !lightmapFiles || !numLightmaps )
 					{
-						ri.Printf( PRINT_WARNING, "WARNING: no lightmap files found\n" );
-						return;
+						lightmapFiles = ri.FS_ListFiles( mapName, ".crn", &numLightmaps );
+
+						if ( !lightmapFiles || !numLightmaps )
+						{
+							ri.Printf( PRINT_WARNING, "WARNING: no lightmap files found\n" );
+							return;
+						}
 					}
 				}
 			}

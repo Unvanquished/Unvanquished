@@ -1892,6 +1892,28 @@ image_t        *R_AllocImage( const char *name, qboolean linkIntoHashTable )
 
 /*
 ================
+================
+*/
+static void R_ExportTexture( image_t *image )
+{
+	char path[ 1024 ];
+	int i;
+
+	Com_sprintf( path, sizeof( path ), "texexp/%s.ktx",
+		     image->name );
+
+	// quick and dirty sanitize path name
+	for( i = strlen( path ) - 1; i >= 8; i-- ) {
+		if( !isalnum( path[ i ] ) && path[ i ] != '.' &&
+		    path[ i ] != '_' && path[ i ] != '-' ) {
+			path[ i ] = '_';
+		}
+	}
+	SaveImageKTX( path, image );
+}
+
+/*
+================
 R_CreateImage
 ================
 */
@@ -1917,6 +1939,10 @@ image_t        *R_CreateImage( const char *name, const byte **pic, int width, in
 	image->wrapType = wrapType;
 
 	R_UploadImage( pic, 1, numMips, image );
+
+	if( r_exportTextures->integer ) {
+		R_ExportTexture( image );
+	}
 
 	return image;
 }
@@ -1994,6 +2020,10 @@ image_t        *R_CreateCubeImage( const char *name,
 
 	R_UploadImage( pic, 6, 1, image );
 
+	if( r_exportTextures->integer ) {
+		R_ExportTexture( image );
+	}
+
 	return image;
 }
 
@@ -2036,6 +2066,10 @@ image_t        *R_Create3DImage( const char *name,
 	R_UploadImage( pics, depth, 1, image );
 
 	ri.Hunk_FreeTempMemory( pics );
+
+	if( r_exportTextures->integer ) {
+		R_ExportTexture( image );
+	}
 
 	return image;
 }
@@ -2455,6 +2489,7 @@ static const imageExtToLoaderMap_t imageLoaders[] =
 	{ "jpeg", LoadJPG  },
 	{ "dds",  LoadDDS  },
 	{ "crn",  LoadCRN  },
+	{ "ktx",  LoadKTX  },
 //	{"hdr", LoadRGBE}  // RGBE just sucks
 };
 
@@ -2737,7 +2772,7 @@ image_t        *R_FindImageFile( const char *imageName, int bits, filterType_t f
 
 	if ( bits & IF_LIGHTMAP )
 	{
-		R_ProcessLightmap( pic[ 0 ], 4, width, height, pic[ 0 ] );
+		R_ProcessLightmap( pic[ 0 ], 4, width, height, bits, pic[ 0 ] );
 
 		bits |= IF_NOCOMPRESSION;
 	}

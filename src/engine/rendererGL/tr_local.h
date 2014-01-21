@@ -2984,6 +2984,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	extern cvar_t *r_compressDiffuseMaps;
 	extern cvar_t *r_compressSpecularMaps;
 	extern cvar_t *r_compressNormalMaps;
+	extern cvar_t *r_exportTextures;
 	extern cvar_t *r_heatHaze;
 	extern cvar_t *r_heatHazeFix;
 	extern cvar_t *r_noMarksOnTrisurfs;
@@ -3365,7 +3366,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //----(SA) end
 
 	qboolean   R_GetEntityToken( char *buffer, int size );
-	float      R_ProcessLightmap( byte *pic, int in_padding, int width, int height, byte *pic_out );  // Arnout
+	float      R_ProcessLightmap( byte *pic, int in_padding, int width, int height, int bits, byte *pic_out );  // Arnout
 
 	model_t    *R_AllocModel( void );
 
@@ -4144,6 +4145,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	void                                LoadWEBP( const char *name, byte **pic, int *width, int *height, int *numMips, int *bits, byte alphaByte );
 	void                                LoadDDS( const char *name, byte **pic, int *width, int *height, int *numMips, int *bits, byte alphaByte);
 	void                                LoadCRN( const char *name, byte **pic, int *width, int *height, int *numMips, int *bits, byte alphaByte);
+	void                                LoadKTX( const char *name, byte **pic, int *width, int *height, int *numMips, int *bits, byte alphaByte);
+	void                                SaveImageKTX( const char *name, image_t *img );
+
 
 // video stuff
 	const void *RB_TakeVideoFrameCmd( const void *data );
