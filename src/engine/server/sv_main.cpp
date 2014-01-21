@@ -570,7 +570,6 @@ if a user is interested in a server to do a full status
 void SVC_Info( netadr_t from )
 {
 	int  i, count, botCount;
-	char *gamedir;
 	char infostring[ MAX_INFO_STRING ];
 
 	const char *challenge;
