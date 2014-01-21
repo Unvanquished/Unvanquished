@@ -61,6 +61,19 @@
 }
 
 
+}  
+#serverbrowser .connect{
+	z-index:7;
+	max-width:10em;
+	width:40%;
+	padding:2% 5%;
+	margin-left:0%;
+	font-size: 1em;
+	position:absolute;
+	bottom:9%;
+	right:2.2%;
+}          
+        
 body
 {
 	width: 100%;
@@ -265,5 +278,6 @@ datagridrow:selected{
 				<img style="position: fixed; width: 15%; left: 75%; top: 650px;" src="/ui/assets/dretch1.png"/>
 			</div>
 		</div>
+		<button class="connect menuButton" onClick="">Connect</button>
 	</body>
 </rml>
