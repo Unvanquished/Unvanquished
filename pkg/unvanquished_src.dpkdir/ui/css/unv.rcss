@@ -130,7 +130,7 @@ input.submit
 }
 
 .window tab:hover,
-.menuButton:hover
+.menuButton:hover,
 input.submit:hover
 {
 	color: white;
