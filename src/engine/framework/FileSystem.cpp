@@ -395,7 +395,7 @@ static void AddPak(pakType_t type, Str::StringRef filename, Str::StringRef baseP
 	std::string name, version;
 	Opt::optional<uint32_t> checksum;
 	if (!ParsePakName(filename.begin(), filename.end() - suffixLen, name, version, checksum) || (type == PAK_DIR && checksum)) {
-		Log::Warn("Invalid pak name: %s\n", fullPath);
+		Log::Warn("Invalid pak name: %s", fullPath);
 		return;
 	}
 
@@ -418,7 +418,7 @@ static void FindPaksInPath(Str::StringRef basePath, Str::StringRef subPath)
 	} catch (std::system_error& err) {
 		// If there was an error reading a directory, just ignore it and go to
 		// the next one.
-		Log::Debug("Error reading directory %s: %s\n", fullPath, err.what());
+		Log::Debug("Error reading directory %s: %s", fullPath, err.what());
 	}
 }
 
@@ -1107,7 +1107,7 @@ static void ParseDeps(const PakInfo& parent, Str::StringRef depsData, std::error
 		if (lineStart == lineEnd) {
 			const PakInfo* pak = FindPak(name);
 			if (!pak) {
-				Log::Warn("Could not find pak '%s' required by '%s'\n", name, parent.path);
+				Log::Warn("Could not find pak '%s' required by '%s'", name, parent.path);
 				SetErrorCodeFilesystem(filesystem_error::missing_depdency, err);
 				return;
 			}
@@ -1131,7 +1131,7 @@ static void ParseDeps(const PakInfo& parent, Str::StringRef depsData, std::error
 		if (lineStart == lineEnd) {
 			const PakInfo* pak = FindPak(name, version);
 			if (!pak) {
-				Log::Warn("Could not find pak '%s' with version '%s' required by '%s'\n", name, version, parent.path);
+				Log::Warn("Could not find pak '%s' with version '%s' required by '%s'", name, version, parent.path);
 				SetErrorCodeFilesystem(filesystem_error::missing_depdency, err);
 				return;
 			}
@@ -1143,7 +1143,7 @@ static void ParseDeps(const PakInfo& parent, Str::StringRef depsData, std::error
 		}
 
 		// If there is still stuff at the end of the line, print a warning and ignore it
-		Log::Warn("Invalid dependency specification on line %d in %s\n", line, Path::Build(parent.path, PAK_DEPS_FILE));
+		Log::Warn("Invalid dependency specification on line %d in %s", line, Path::Build(parent.path, PAK_DEPS_FILE));
 		lineStart = lineEnd == depsData.end() ? lineEnd : lineEnd + 1;
 	}
 }
@@ -1222,7 +1222,7 @@ static void InternalLoadPak(const PakInfo& pak, Opt::optional<uint32_t> expected
 
 	// Print a warning if the checksum doesn't match the one in the filename
 	if (pak.checksum && *pak.checksum != checksum)
-		Log::Warn("Pak checksum doesn't match filename: %s\n", pak.path);
+		Log::Warn("Pak checksum doesn't match filename: %s", pak.path);
 
 	// Load dependencies, but not if a checksum was specified
 	if (hasDeps && !expectedChecksum) {

@@ -62,7 +62,7 @@ class MapCmd: public Cmd::StaticCmd {
 
             //Make sure the map exists to avoid typos that would kill the game
             if (!FS::FindPak(va("map-%s", mapName.c_str()))) {
-                Print(_("Can't find map %s\n"), mapName.c_str());
+                Print(_("Can't find map %s"), mapName.c_str());
                 return;
             }
 
