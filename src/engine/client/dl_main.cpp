@@ -127,8 +127,8 @@ int DL_BeginDownload( const char *localName, const char *remoteName, int debug )
 
 	if ( dl_file )
 	{
-		fclose( dl_file );
-		dl_file = NULL;
+		FS_FCloseFile( dl_file );
+		dl_file = 0;
 	}
 
 	if ( !localName || !remoteName )
