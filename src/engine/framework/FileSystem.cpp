@@ -1515,29 +1515,55 @@ static void CreatePath(Str::StringRef path, std::error_code& err)
 {
 #ifdef _WIN32
 	std::wstring buffer = Str::UTF8To16(path);
-	for (wchar_t& c: buffer) {
-		if (!isdirsep(c))
-			continue;
-		c = '\0';
-		if (_wmkdir(buffer.data()) != 0 && errno != EEXIST && errno != ENOENT) {
-			SetErrorCodeSystem(err);
-			return;
-		}
-		c = '\\';
-	}
 #else
 	std::string buffer = path;
-	for (char& c: buffer) {
-		if (!isdirsep(c))
+#endif
+
+	// Skip drive letters and leading slashes
+	size_t offset = 0;
+#ifdef _WIN32
+	if (buffer.size() >= 2 && Str::cisalpha(buffer[0]) && buffer[1] == ':')
+		offset = 2;
+#endif
+	while (offset != buffer.size() && isdirsep(buffer[offset]))
+		offset++;
+
+	for (auto it = buffer.begin() + offset; it != buffer.end(); ++it) {
+		if (!isdirsep(*it))
 			continue;
-		c = '\0';
-		if (mkdir(buffer.data(), 0777) != 0 && errno != EEXIST && errno != ENOENT) {
+		*it = '\0';
+
+		// If the directory already exists, continue
+#ifdef _WIN32
+		DWORD attribs = GetFileAttributesW(buffer.data());
+		if (attribs != INVALID_FILE_ATTRIBUTES && (attribs & FILE_ATTRIBUTE_DIRECTORY)) {
+			*it = '/';
+			continue;
+		}
+#else
+		my_stat_t st;
+		if (my_stat(buffer.data(), &st) == 0 && S_ISDIR(st.st_mode)) {
+			*it = '/';
+			continue;
+		}
+#endif
+
+		// Attempt to create the directory
+#ifdef _WIN32
+		if (_wmkdir(buffer.data()) != 0 && errno != EEXIST) {
 			SetErrorCodeSystem(err);
 			return;
 		}
-		c = '/';
-	}
+#else
+		if (mkdir(buffer.data(), 0777) != 0 && errno != EEXIST) {
+			SetErrorCodeSystem(err);
+			return;
+		}
 #endif
+
+		*it = '/';
+	}
+	ClearErrorCode(err);
 }
 
 static File OpenMode(Str::StringRef path, openMode_t mode, std::error_code& err)
