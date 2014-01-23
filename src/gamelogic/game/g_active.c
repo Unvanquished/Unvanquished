@@ -980,7 +980,7 @@ void ClientTimerActions( gentity_t *ent, int msec )
 		}
 
 		// refill jetpack fuel
-		if ( !( ps->stats[ STAT_STATE2 ] & SS2_JETPACK_ENABLED ) )
+		if ( client->ps.stats[ STAT_FUEL ] < JETPACK_FUEL_REFUEL )
 		{
 			G_FindFuel( ent );
 		}

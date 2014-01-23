@@ -321,6 +321,7 @@ extern int   REACTOR_ATTACK_DAMAGE;
 #define JETPACK_FUEL_RESTORE          3     // in 1/ms
 #define JETPACK_FUEL_LOW              JETPACK_FUEL_MAX / 5       // jetpack doesn't start from a jump below this
 #define JETPACK_FUEL_STOP             JETPACK_FUEL_RESTORE * 150 // jetpack doesn't activate below this
+#define JETPACK_FUEL_REFUEL           JETPACK_FUEL_MAX - JETPACK_FUEL_USAGE * 1000
 
 /*
  * Misc
