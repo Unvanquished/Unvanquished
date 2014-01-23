@@ -85,6 +85,7 @@ gentity_t         *G_SelectRandomFurthestSpawnPoint( vec3_t avoidPoint, vec3_t o
 gentity_t         *G_SelectLockSpawnPoint( vec3_t origin, vec3_t angles , char const* intermission );
 gentity_t         *G_SelectAlienLockSpawnPoint( vec3_t origin, vec3_t angles );
 gentity_t         *G_SelectHumanLockSpawnPoint( vec3_t origin, vec3_t angles );
+gentity_t         *G_SelectSpectatorSpawnPoint( vec3_t origin, vec3_t angles );
 void              respawn( gentity_t *ent );
 void              ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const vec3_t angles );
 qboolean          SpotWouldTelefrag( gentity_t *spot );

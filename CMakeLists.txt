@@ -215,6 +215,7 @@ else()
   # Use libc++ on Mac because the shipped libstdc++ version is too old
   if( APPLE )
     set_c_cxx_flag( "-stdlib=libc++" )
+    set_linker_flag( "-stdlib=libc++" )
   endif()
 
   # Hardening, don't set _FORTIFY_SOURCE in debug builds
@@ -231,12 +232,14 @@ else()
   endif()
 
   # Linker flags
-  try_linker_flag( LINKER_O1 "-Wl,-O1" )
-  try_linker_flag( LINKER_SORT_COMMON "-Wl,--sort-common" )
-  try_linker_flag( LINKER_AS_NEEDED "-Wl,--as-needed" )
-  try_linker_flag( LINKER_NO_UNDEFINED "-Wl,--no-undefined" )
-  try_linker_flag( LINKER_Z_RELRO "-Wl,-z,relro" )
-  try_linker_flag( LINKER_Z_NOW "-Wl,-z,now" )
+  if( NOT APPLE )
+    try_linker_flag( LINKER_O1 "-Wl,-O1" )
+    try_linker_flag( LINKER_SORT_COMMON "-Wl,--sort-common" )
+    try_linker_flag( LINKER_AS_NEEDED "-Wl,--as-needed" )
+    try_linker_flag( LINKER_NO_UNDEFINED "-Wl,--no-undefined" )
+    try_linker_flag( LINKER_Z_RELRO "-Wl,-z,relro" )
+    try_linker_flag( LINKER_Z_NOW "-Wl,-z,now" )
+  endif()
   if( WIN32 )
     try_linker_flag( LINKER_DYNAMICBASE "-Wl,--dynamicbase" )
     try_linker_flag( LINKER_NXCOMPAT "-Wl,--nxcompat" )
@@ -602,7 +605,7 @@ if( USE_CURSES )
   set( ENGINELIST ${ENGINELIST} ${ENGINE_DIR}/sys/con_curses.cpp )
 endif()
 
-set( CLIENTLIST
+set( CLIENTBASELIST
   ${ENGINE_DIR}/botlib/bot_debug.cpp
   ${ENGINE_DIR}/botlib/bot_nav_edit.cpp
   ${ENGINE_DIR}/client/cg_api.h
@@ -625,11 +628,14 @@ set( CLIENTLIST
   ${ENGINE_DIR}/client/cl_ui.cpp
   ${ENGINE_DIR}/client/cl_logs.cpp
   ${ENGINE_DIR}/client/dl_main.cpp
-  ${ENGINE_DIR}/audio/snd_codec.c
+)
+
+set( CLIENTLIST
+  ${ENGINE_DIR}/audio/snd_codec.cpp
   ${ENGINE_DIR}/audio/snd_codec.h
-  ${ENGINE_DIR}/audio/snd_codec_ogg.c
-  ${ENGINE_DIR}/audio/snd_codec_opus.c
-  ${ENGINE_DIR}/audio/snd_codec_wav.c
+  ${ENGINE_DIR}/audio/snd_codec_ogg.cpp
+  ${ENGINE_DIR}/audio/snd_codec_opus.cpp
+  ${ENGINE_DIR}/audio/snd_codec_wav.cpp
   ${ENGINE_DIR}/audio/ALObjects.cpp
   ${ENGINE_DIR}/audio/ALObjects.h
   ${ENGINE_DIR}/audio/Audio.cpp
@@ -643,8 +649,20 @@ set( CLIENTLIST
   ${ENGINE_DIR}/audio/Sound.h
 )
 
+set( TTYCLIENTLIST
+    ${ENGINE_DIR}/null/null_input.cpp
+    ${ENGINE_DIR}/null/null_renderer.cpp
+    ${ENGINE_DIR}/null/NullAudio.cpp
+)
+
+set( DEDSERVERLIST
+    ${ENGINE_DIR}/null/null_input.cpp
+    ${ENGINE_DIR}/null/null_client.cpp
+)
+
+
 if( USE_MUMBLE )
-  set( CLIENTLIST ${CLIENTLIST}
+  set( CLIENTBASELIST ${CLIENTBASELIST}
     ${ENGINE_DIR}/client/libmumblelink.cpp
     ${ENGINE_DIR}/client/libmumblelink.h
   )
@@ -1207,10 +1225,10 @@ if( LINUX AND ( BUILD_CLIENT OR BUILD_NEW_RENDERER OR BUILD_OLD_RENDERER ) )
 endif()
 
 # OpenAL
-if( BUILD_CLIENT OR BUILD_TTY_CLIENT )
+if( BUILD_CLIENT )
   find_package( OpenAL REQUIRED )
   include_directories( ${OPENAL_INCLUDE_DIR} )
-  set( LIBS_CLIENTBASE ${LIBS_CLIENTBASE} ${OPENAL_LIBRARY} )
+  set( LIBS_CLIENT ${LIBS_CLIENT} ${OPENAL_LIBRARY} )
 endif()
 
 # CURL
@@ -1385,6 +1403,12 @@ function( GAMEMODULE )
         ${GAMEMODULE_FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86.nexe
         ${GAMEMODULE_FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86_64.nexe
     )
+
+    # Create the build directory before building
+    add_custom_command( TARGET ${GAMEMODULE_NAME}-nacl PRE_BUILD
+      COMMAND ${CMAKE_COMMAND} -E make_directory ${GAMEMODULE_FULL_OUTPUT_DIR}
+      COMMAND ${CMAKE_COMMAND} -E make_directory ${NACL_DIR}
+    )
   endif()
 
   if( BUILD_GAME_QVM )
@@ -1428,6 +1452,12 @@ function( GAMEMODULE )
     # Dummy target to get CMake to execute the commands
     add_custom_target( ${GAMEMODULE_NAME}-qvm ALL
       DEPENDS ${GAMEMODULE_FULL_OUTPUT_DIR}/vm/${GAMEMODULE_NAME}.qvm
+    )
+
+    # Create the build directory before building
+    add_custom_command( TARGET ${GAMEMODULE_NAME}-qvm PRE_BUILD
+      COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/vm
+      COMMAND ${CMAKE_COMMAND} -E make_directory ${QVM_DIR}
     )
   endif()
 endfunction()
@@ -1474,7 +1504,7 @@ GAMEMODULE( NAME ui
 ################################################################################
 
 if( BUILD_CLIENT )
-  add_executable( client WIN32 ${SERVERLIST} ${CLIENTLIST} ${SDLLIST} ${ENGINELIST} ${SHAREDLIST}
+  add_executable( client WIN32 ${SERVERLIST} ${CLIENTBASELIST} ${CLIENTLIST} ${SDLLIST} ${ENGINELIST} ${SHAREDLIST}
     ${LIBSRC_BASE} ${LIBSRC_ENGINE} ${LIBSRC_CLIENTBASE} ${LIBSRC_CLIENT} ${WIN_RC} )
   target_link_libraries( client ${LIBS_CLIENT} ${LIBS_CLIENTBASE} ${LIBS_ENGINE} ${LIBS_BASE} )
   if( USE_VOIP )
@@ -1488,19 +1518,16 @@ if( BUILD_CLIENT )
 endif()
 
 if( BUILD_SERVER )
-  add_executable( server WIN32 ${SERVERLIST} ${ENGINELIST} ${SHAREDLIST} ${LIBSRC_BASE} ${LIBSRC_ENGINE}
-    ${ENGINE_DIR}/null/null_client.cpp ${ENGINE_DIR}/null/null_input.cpp
-    ${ENGINE_DIR}/null/null_snddma.cpp ${WIN_RC} )
+  add_executable( server WIN32 ${SERVERLIST} ${DEDSERVERLIST} ${ENGINELIST} ${SHAREDLIST}
+    ${LIBSRC_BASE} ${LIBSRC_ENGINE} ${WIN_RC} )
   target_link_libraries( server ${LIBS_ENGINE} ${LIBS_BASE} )
   set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS DEDICATED )
   set_target_properties( server PROPERTIES OUTPUT_NAME "daemonded" PREFIX "" )
 endif()
 
 if( BUILD_TTY_CLIENT )
-  add_executable( ttyclient WIN32 ${SERVERLIST} ${CLIENTLIST} ${ENGINELIST} ${SHAREDLIST}
-    ${LIBSRC_BASE} ${LIBSRC_ENGINE} ${LIBSRC_CLIENTBASE} ${WIN_RC}
-    ${ENGINE_DIR}/null/null_input.cpp ${ENGINE_DIR}/null/null_snddma.cpp
-    ${ENGINE_DIR}/null/null_renderer.cpp )
+  add_executable( ttyclient WIN32 ${SERVERLIST} ${CLIENTBASELIST} ${TTYCLIENTLIST} ${ENGINELIST} ${SHAREDLIST}
+    ${LIBSRC_BASE} ${LIBSRC_ENGINE} ${LIBSRC_CLIENTBASE} ${WIN_RC} )
   target_link_libraries( ttyclient ${LIBS_CLIENTBASE} ${LIBS_ENGINE} ${LIBS_BASE} )
   set_property( TARGET ttyclient APPEND PROPERTY COMPILE_DEFINITIONS BUILD_TTY_CLIENT REF_HARD_LINKED )
   set_target_properties( ttyclient PROPERTIES OUTPUT_NAME "daemon-tty" PREFIX "" )
