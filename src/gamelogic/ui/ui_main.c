@@ -3121,6 +3121,26 @@ static void UI_Update( const char *name )
 				trap_Cvar_SetValue( "r_heathaze", 0 );
 				trap_Cvar_Set( "r_texturemode", "GL_LINEAR_MIPMAP_NEAREST" );
 				break;
+
+                        // 4 is custom
+
+			case 5: // dlights, no shader effects
+				trap_Cvar_SetValue( "r_subdivisions", 20 );
+				trap_Cvar_SetValue( "r_vertexlighting", 0 );
+				trap_Cvar_SetValue( "r_picmip", 0 );
+				trap_Cvar_SetValue( "r_inGameVideo", 0 );
+				trap_Cvar_SetValue( "cg_shadows", 0 );
+				trap_Cvar_SetValue( "r_dynamiclight", 1 );
+				trap_Cvar_SetValue( "cg_bounceParticles", 0 );
+				trap_Cvar_SetValue( "r_normalMapping", 0 );
+				trap_Cvar_SetValue( "r_bloom", 0 );
+				trap_Cvar_SetValue( "r_rimlighting", 0 );
+				trap_Cvar_SetValue( "cg_motionblur", 0 );
+				trap_Cvar_SetValue( "r_ext_multisample", 0 );
+				trap_Cvar_SetValue( "r_ext_texture_filter_anisotropic", 0 );
+				trap_Cvar_SetValue( "r_heathaze", 0 );
+				trap_Cvar_Set( "r_texturemode", "GL_LINEAR_MIPMAP_NEAREST" );
+				break;
 		}
 	}
 	else if ( Q_stricmp( name, "ui_mousePitch" ) == 0 )
