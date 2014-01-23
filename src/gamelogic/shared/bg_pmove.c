@@ -722,117 +722,6 @@ static void PM_PlayJumpingAnimation( void )
 
 /*
 =============
-PM_GetTrajectoryAngleForVelocity
-
-Given an origin, a target point and an initial velocity v0, calculate the two possible
-pitch angles and corresponding directions for reaching the target on a parabolic trajectory.
-
-Returns qtrue when angles contains the two possible pitch angles and dir1 and dir2
-contain the corresponding directions. Returns qfalse when the target is out of reach.
-=============
-*/
-static qboolean PM_GetTrajectoryPitch(
-        vec3_t origin, vec3_t target, float v0, vec2_t angles, vec3_t dir1, vec3_t dir2 )
-{
-	vec3_t t3;    // target relative to origin in 3D space
-	vec2_t t;     // relative target in 2D space (ignoring yaw angle)
-	float  tmp;   // temporary variable
-	float  g;     // gravity
-	float  v02;   // v0 * v0
-
-	VectorSubtract( target, origin, t3 );
-
-	if ( pm->debugLevel > 0 )
-	{
-		Com_Printf( "[PM_GetTrajectoryPitch] 3D: %.1f %.1f %.1f (%.1f qu)\n",
-		            t3[ 0 ], t3[ 1 ], t3[ 2 ], VectorLength( t3 ) );
-	}
-
-	// abort if the distance is very small
-	if ( VectorLength( t3 ) < 0.1f )
-	{
-		return qfalse;
-	}
-
-	g = ( float )pm->ps->gravity;
-	v02 = v0 * v0;
-
-	// create a 2D representation of the problem by cutting out the plane that contains
-	// the trajectory
-	t[ 1 ] = t3[ 2 ];
-	t[ 0 ] = sqrt( t3[ 0 ] * t3[ 0 ] + t3[ 1 ] * t3[ 1 ] );
-
-	if ( pm->debugLevel > 0 )
-	{
-		Com_Printf("[PM_GetTrajectoryPitch] 2D: %.1f %.1f (%.1f qu)\n",
-		           t[ 0 ], t[ 1 ], sqrt( t[ 0 ] * t[ 0 ] + t[ 1 ] * t[ 1 ] ) );
-	}
-
-	// calculate the angles
-	tmp = v02 * v02 - g * ( g * t[ 0 ] * t[ 0 ] + 2.0f * t[ 1 ] * v02 );
-
-	if ( tmp < 0.0f )
-	{
-		// target not reachable
-		return qfalse;
-	}
-
-	tmp = sqrt( tmp );
-
-	angles[ 0 ] = atanf( ( v02 + tmp ) / ( g * t[ 0 ] ) );
-	angles[ 1 ] = atanf( ( v02 - tmp ) / ( g * t[ 0 ] ) );
-
-	if ( pm->debugLevel > 0 )
-	{
-		Com_Printf( "[PM_GetTrajectoryPitch] Angles: %.1f°, %.1f°\n",
-		            180.0f / M_PI * angles[ 0 ], 180.0f / M_PI * angles[ 1 ] );
-	}
-
-	// calculate the corresponding directions for both angles
-	dir1[ 0 ] = dir2[ 0 ] = t3[ 0 ];
-	dir1[ 1 ] = dir2[ 1 ] = t3[ 1 ];
-
-	if ( fabs( t3[ 0 ] ) < 0.01f && fabs( t3[ 1 ] ) < 0.01f ) // epsilon to prevent DBZ
-	{
-		// if target is below or above origin, we already know the direction
-		dir1[ 2 ] = dir2[ 2 ] = t3[ 2 ];
-	}
-	else
-	{
-		// normalize direction so it can be rotated more easily
-		dir1[ 2 ] = dir2[ 2 ] = 0.0f;
-		VectorNormalize( dir1 );
-		VectorNormalize( dir2 );
-
-		// angles are in ]-pi/2,pi/2[, so cos != 0
-		dir1[ 2 ] = sqrt( 1.0f / cos( angles[ 0 ] ) - 1.0f );
-		dir2[ 2 ] = sqrt( 1.0f / cos( angles[ 1 ] ) - 1.0f );
-
-		if ( angles[ 0 ] < 0.0f )
-		{
-			dir1[ 2 ] = -dir1[ 2 ];
-		}
-
-		if ( angles[ 1 ] < 0.0f )
-		{
-			dir2[ 2 ] = -dir2[ 2 ];
-		}
-	}
-
-	VectorNormalize( dir1 );
-	VectorNormalize( dir2 );
-
-	if ( pm->debugLevel > 0 )
-	{
-		Com_Printf( "[PM_GetTrajectoryPitch] Dirs: ( %.2f, %.2f, %.2f ), ( %.2f, %.2f, %.2f )\n",
-		            dir1[ 0 ], dir1[ 1 ], dir1[ 2 ], dir2[ 0 ], dir2[ 1 ], dir2[ 2 ] );
-	}
-
-	return qtrue;
-}
-
-/*
-=============
 PM_CheckPounce
 =============
 */
@@ -938,8 +827,8 @@ static qboolean PM_CheckPounce( void )
 				else
 				{
 					trace_t  trace;
-					vec3_t   traceTarget, endpos, trajectoryDir1, trajectoryDir2;
-					vec2_t   trajectoryAngles;
+					vec3_t   traceTarget, endpos, trajDir1, trajDir2;
+					vec2_t   trajAngles;
 					float    zCorrection;
 					qboolean foundTrajectory;
 
@@ -968,21 +857,37 @@ static qboolean PM_CheckPounce( void )
 
 							VectorMA( endpos, zCorrection, trace.plane.normal, endpos );
 						}
+
+						if ( pm->debugLevel > 0 )
+						{
+							Com_Printf( "[PM_CheckPounce] Trajectory target has a distance of %.1f qu\n",
+							            Distance( pm->ps->origin, endpos ) );
+						}
 					}
 
 					// if there is a possible trajectoy they come in pairs, use the shorter one
 					if ( foundTrajectory &&
-					     PM_GetTrajectoryPitch( pm->ps->origin, endpos, jumpMagnitude, trajectoryAngles,
-					                            trajectoryDir1, trajectoryDir2 ) )
+					     BG_GetTrajectoryPitch( pm->ps->origin, endpos, jumpMagnitude, pm->ps->gravity,
+					                            trajAngles, trajDir1, trajDir2 ) )
 					{
-						if ( trajectoryDir1[ 2 ] < trajectoryDir2[ 2 ] )
+						if ( pm->debugLevel > 0 )
+						{
+							Com_Printf( "[PM_CheckPounce] Found trajectory angles: "
+							            "%.1f° ( %.2f, %.2f, %.2f ), %.1f° ( %.2f, %.2f, %.2f )\n",
+							            180.0f / M_PI * trajAngles[ 0 ],
+							            trajDir1[ 0 ], trajDir1[ 1 ], trajDir1[ 2 ],
+							            180.0f / M_PI * trajAngles[ 1 ],
+							            trajDir2[ 0 ], trajDir2[ 1 ], trajDir2[ 2 ] );
+						}
+
+						if ( trajDir1[ 2 ] < trajDir2[ 2 ] )
 						{
 							if ( pm->debugLevel > 0 )
 							{
 								Com_Printf("[PM_CheckPounce] Using angle #1\n");
 							}
 
-							VectorCopy( trajectoryDir1, jumpDirection );
+							VectorCopy( trajDir1, jumpDirection );
 						}
 						else
 						{
@@ -991,7 +896,7 @@ static qboolean PM_CheckPounce( void )
 								Com_Printf("[PM_CheckPounce] Using angle #2\n");
 							}
 
-							VectorCopy( trajectoryDir2, jumpDirection );
+							VectorCopy( trajDir2, jumpDirection );
 						}
 
 						// HACK: make sure we get off the ceiling if jumping to an adjacent wall

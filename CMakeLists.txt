@@ -683,6 +683,7 @@ set( CGAMELIST
   ${GAMELOGIC_DIR}/shared/bg_alloc.c
   ${GAMELOGIC_DIR}/shared/bg_voice.c
   ${GAMELOGIC_DIR}/shared/bg_teamprogress.c
+  ${GAMELOGIC_DIR}/shared/bg_utilities.c
   ${GAMELOGIC_DIR}/cgame/cg_consolecmds.c
   ${GAMELOGIC_DIR}/cgame/cg_buildable.c
   ${GAMELOGIC_DIR}/cgame/cg_animation.c
@@ -735,6 +736,7 @@ set( GAMELIST
   ${GAMELOGIC_DIR}/shared/bg_alloc.c
   ${GAMELOGIC_DIR}/shared/bg_voice.c
   ${GAMELOGIC_DIR}/shared/bg_teamprogress.c
+  ${GAMELOGIC_DIR}/shared/bg_utilities.c
   ${GAMELOGIC_DIR}/game/g_active.c
   ${GAMELOGIC_DIR}/game/g_client.c
   ${GAMELOGIC_DIR}/game/g_cmds.c
@@ -798,6 +800,7 @@ set( UILIST
   ${GAMELOGIC_DIR}/shared/bg_parse.c
   ${GAMELOGIC_DIR}/shared/bg_alloc.c
   ${GAMELOGIC_DIR}/shared/bg_teamprogress.c
+  ${GAMELOGIC_DIR}/shared/bg_utilities.c
   ${GAMELOGIC_DIR}/ui/ui_utf8.c
   ${ENGINE_DIR}/client/ui_api.h
 )
