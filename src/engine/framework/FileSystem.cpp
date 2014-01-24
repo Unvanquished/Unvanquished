@@ -1150,7 +1150,7 @@ static void ParseDeps(const PakInfo& parent, Str::StringRef depsData, std::error
 
 static void InternalLoadPak(const PakInfo& pak, Opt::optional<uint32_t> expectedChecksum, std::error_code& err)
 {
-	uint32_t checksum;
+	Opt::optional<uint32_t> checksum;
 	bool hasDeps = false;
 	offset_t depsOffset;
 	ZipArchive zipFile;
@@ -1181,7 +1181,6 @@ static void InternalLoadPak(const PakInfo& pak, Opt::optional<uint32_t> expected
 			if (HaveError(err))
 				return;
 		}
-		loadedPaks.back().checksum = Opt::nullopt;
 	} else {
 		// Open zip
 		zipFile = ZipArchive::Open(pak.path, err);
@@ -1191,7 +1190,7 @@ static void InternalLoadPak(const PakInfo& pak, Opt::optional<uint32_t> expected
 		// Get the file list and calculate the checksum of the package (checksum of all file checksums)
 		checksum = crc32(0, Z_NULL, 0);
 		zipFile.ForEachFile([&checksum, &hasDeps, &depsOffset](Str::StringRef filename, offset_t offset, uint32_t crc) {
-			checksum = crc32(checksum, reinterpret_cast<const Bytef*>(&crc), sizeof(crc));
+			checksum = crc32(*checksum, reinterpret_cast<const Bytef*>(&crc), sizeof(crc));
 #ifdef GCC_BROKEN_CXX11
 			fileMap.insert({filename, std::pair<size_t, offset_t>(loadedPaks.size() - 1, offset)});
 #else
@@ -1205,14 +1204,14 @@ static void InternalLoadPak(const PakInfo& pak, Opt::optional<uint32_t> expected
 		if (HaveError(err))
 			return;
 
-		// Save the real checksum in the list of loaded paks
-		loadedPaks.back().checksum = checksum;
-
 		// Get the timestamp of the pak
 		loadedPaks.back().timestamp = FS::RawPath::FileTimestamp(pak.path, err);
 		if (HaveError(err))
 			return;
 	}
+
+	// Save the real checksum in the list of loaded paks (empty for directories)
+	loadedPaks.back().checksum = checksum;
 
 	// If an explicit checksum was requested, verify that the pak we loaded is the one we are expecting
 	if (expectedChecksum && checksum != *expectedChecksum) {
@@ -1958,7 +1957,7 @@ static fileHandle_t FS_AllocHandle()
 
 static void FS_CheckHandle(fileHandle_t handle, bool write)
 {
-	if (handle < 0 || handle > MAX_FILE_HANDLES)
+	if (handle < 0 || handle >= MAX_FILE_HANDLES)
 		Com_Error(ERR_DROP, "FS_CheckHandle: invalid handle");
 	if (!handleTable[handle].isOpen)
 		Com_Error(ERR_DROP, "FS_CheckHandle: closed handle");
@@ -2404,7 +2403,7 @@ bool FS_LoadServerPaks(const char* paks)
 	for (int i = 0; i < args.Argc(); i++) {
 		std::string name, version;
 		Opt::optional<uint32_t> checksum;
-		if (!FS::ParsePakName(&*args.Argv(i).begin(), &*args.Argv(i).end(), name, version, checksum) || !checksum) {
+		if (!FS::ParsePakName(args.Argv(i).data(), args.Argv(i).data() + args.Argv(i).size(), name, version, checksum) || !checksum) {
 			Com_Error(ERR_DROP, "Invalid pak reference from server: %s\n", args.Argv(i).c_str());
 			continue;
 		}

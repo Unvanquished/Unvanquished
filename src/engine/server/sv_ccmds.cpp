@@ -79,8 +79,7 @@ class MapCmd: public Cmd::StaticCmd {
         Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, Str::StringRef prefix) const OVERRIDE {
             if (argNum == 1) {
                 Cmd::CompletionResult out;
-                auto& paks = FS::GetAvailablePaks();
-                for (auto& x: paks) {
+                for (auto& x: FS::GetAvailablePaks()) {
                     if (Str::IsPrefix("map-", x.name))
                         out.push_back({x.name.substr(4), ""});
                 }
