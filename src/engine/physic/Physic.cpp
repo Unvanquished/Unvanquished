@@ -35,6 +35,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace Physic {
 
+    btCollisionDispatcher* dispatcher = nullptr;
+    btDbvtBroadphase* broadphase = nullptr;
+    btDefaultCollisionConfiguration* collisionConf = nullptr;
+    btCollisionWorld* world = nullptr;
+
     void Init() {
         collisionConf = new btDefaultCollisionConfiguration();
         dispatcher = new btCollisionDispatcher(collisionConf);
@@ -47,6 +52,17 @@ namespace Physic {
         delete broadphase;
         delete dispatcher;
         delete collisionConf;
+    }
+
+    std::vector<btVector3> ConvexHullTrianglesFromVertices(const btAlignedObjectArray<btVector3> vertices) {
+        btConvexHullShape shape(&(vertices[0].getX()),vertices.size());
+        btShapeHull converter(&shape);
+        converter.buildHull(0.f);
+        std::vector<btVector3> res;
+        for (int i = 0; i < converter.numIndices(); i++) {
+            res.push_back(converter.getVertexPointer()[converter.getIndexPointer()[i]]);
+        }
+        return std::move(res);
     }
 
     void Load(void* bspBuffer) {
@@ -85,17 +101,14 @@ namespace Physic {
                             btAlignedObjectArray<btVector3> vertices;
                             btGeometryUtil::getVerticesFromPlaneEquations(planeEquations,vertices);
                             if (vertices.size() > 0) {
-                                btConvexHullShape* shape = new btConvexHullShape(&(vertices[0].getX()),vertices.size());
-                                btShapeHull converter(shape);
-                                converter.buildHull(0.f);
-                                for(int i = 0; i < converter.numIndices(); i += 3) {
+                                std::vector<btVector3> triangleVertices = ConvexHullTrianglesFromVertices(vertices);
+                                for(unsigned i = 0; i < triangleVertices.size(); i += 3) {
                                     trimesh->addTriangle(
-                                        converter.getVertexPointer()[converter.getIndexPointer()[i]],
-                                        converter.getVertexPointer()[converter.getIndexPointer()[i+1]],
-                                        converter.getVertexPointer()[converter.getIndexPointer()[i+2]]
+                                        triangleVertices[i],
+                                        triangleVertices[i + 1],
+                                        triangleVertices[i + 2]
                                     );
                                 }
-                                delete shape;
                             }
                         }
                     }
@@ -114,7 +127,7 @@ namespace Physic {
         return callback.m_closestHitFraction;
     }
 
-    float BoxTrace(const vec3_t pFrom, const vec3_t pTo, const vec3_t pMins, const vec3_t pMaxs) {
+    void BoxTrace(const vec3_t pFrom, const vec3_t pTo, const vec3_t pMins, const vec3_t pMaxs, TraceResults& results) {
         //FIXME
         btVector3 from = convertVector(pFrom);
         btVector3 to = convertVector(pTo);
@@ -122,7 +135,7 @@ namespace Physic {
         btVector3 maxs = convertVector(pMaxs);
         btVector3 halfExtends = (maxs - mins) / 2;
         btVector3 rayMove = maxs - halfExtends;
-        halfExtends = halfExtends.absolute();
+        //halfExtends = halfExtends.absolute();
 
         btBoxShape box(halfExtends);
         btTransform transFrom;
@@ -135,6 +148,8 @@ namespace Physic {
         btCollisionWorld::ClosestConvexResultCallback callback(from, to);
         world->convexSweepTest(&box, transFrom, transTo, callback);
 
-        return callback.m_closestHitFraction;
+        float fraction = results.fraction = callback.m_closestHitFraction;
+        bulletToQ3(callback.m_hitNormalWorld, results.normal);
+        bulletToQ3(from + fraction * (to - from), results.endpos);
     }
 }

@@ -38,8 +38,15 @@ namespace Physic {
     void Init();
     void Shutdown();
     void Load(void* bspBuffer);
-    float Trace(const vec3_t from, const vec3_t to);
-    float BoxTrace(const vec3_t from, const vec3_t to, const vec3_t mins, const vec3_t maxs);
+
+    struct TraceResults {
+        float fraction;
+        vec3_t endpos;
+        vec3_t normal;
+    };
+
+    //float Trace(const vec3_t from, const vec3_t to);
+    void BoxTrace(const vec3_t from, const vec3_t to, const vec3_t mins, const vec3_t maxs, TraceResults& results);
 }
 
 #endif //PHYSIC_PHYSIC_H_

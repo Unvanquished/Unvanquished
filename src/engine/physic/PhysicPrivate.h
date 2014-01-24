@@ -33,18 +33,26 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <btBulletCollisionCommon.h>
 #include "Physic.h"
+#include "../../common/Log.h"
 
 namespace Physic {
-    btCollisionDispatcher* dispatcher = nullptr;
-    btDbvtBroadphase* broadphase = nullptr;
-    btDefaultCollisionConfiguration* collisionConf = nullptr;
-    btCollisionWorld* world = nullptr;
+    extern btCollisionDispatcher* dispatcher;
+    extern btDbvtBroadphase* broadphase;
+    extern btDefaultCollisionConfiguration* collisionConf;
+    extern btCollisionWorld* world;
+
     inline btVector3 convertVector(const vec3_t vec) {
         if(vec) {
             return btVector3(vec[0], vec[1], vec[2]);
         } else {
             return btVector3(0, 0, 0);
         }
+    }
+
+    inline void bulletToQ3(btVector3 from, vec3_t to) {
+        to[0] = from[0];
+        to[1] = from[1];
+        to[2] = from[2];
     }
 }
 

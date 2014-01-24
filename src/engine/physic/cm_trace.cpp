@@ -34,7 +34,7 @@ Maryland 20850 USA.
 
 #include "cm_local.h"
 #include "cm_patch.h"
-#include "Physic.h"
+#include "PhysicPrivate.h"
 
 // always use bbox vs. bbox collision and never capsule vs. bbox or vice versa
 //#define ALWAYS_BBOX_VS_BBOX
@@ -2320,9 +2320,32 @@ void CM_BoxTrace( trace_t *results, const vec3_t start, const vec3_t end,
                   vec3_t mins, vec3_t maxs, clipHandle_t model, int brushmask, traceType_t type )
 {
 	CM_Trace( results, start, end, mins, maxs, model, vec3_origin, brushmask, type, NULL );
-    float myTrace = Physic::BoxTrace(start, end, mins, maxs);
-    if(fabs(myTrace - results->fraction) > 0.00001) {
-        Com_Printf("%f\n", myTrace - results->fraction);
+    Physic::TraceResults myTrace;
+    Physic::BoxTrace(start, end, mins, maxs, myTrace);
+    if(fabs(myTrace.fraction - results->fraction) > 0.001) {
+        Log::Debug("Start: (%?, %?, %?)", start[0], start[1], start[2]);
+        Log::Debug("End: (%?, %?, %?)", end[0], end[1], end[2]);
+        Log::Debug("Mins: (%?, %?, %?)", mins[0], mins[1], mins[2]);
+        Log::Debug("Maxs: (%?, %?, %?)", maxs[0], maxs[1], maxs[2]);
+        Log::Debug("Model: %?", model);
+        Log::Debug("Brushmask: %?", brushmask);
+        Log::Debug("Type: %?", type);
+
+        Log::Debug("CM Trace:");
+        Log::Debug(" - allsolid: %?", results->allsolid);
+        Log::Debug(" - startsolid: %?", results->startsolid);
+        Log::Debug(" - fration: %?", results->fraction);
+        Log::Debug(" - endpos: (%?, %?, %?)", results->endpos[0], results->endpos[1], results->endpos[2]);
+        Log::Debug(" - plane: (%?, %?, %?) %?", results->plane.normal[0], results->plane.normal[1], results->plane.normal[2], results->plane.dist);
+        Log::Debug(" - surfaceFlags: %?", results->surfaceFlags);
+        Log::Debug(" - contents: %?", results->contents);
+        Log::Debug(" - entityNum: %?", results->entityNum);
+        Log::Debug(" - lateralFraction: %?", results->lateralFraction);
+
+        Log::Debug("Bullet Trace:");
+        Log::Debug(" - fraction: %?", myTrace.fraction);
+        Log::Debug(" - endpos: (%?, %?, %?)", myTrace.endpos[0], myTrace.endpos[1], myTrace.endpos[2]);
+        Log::Debug(" - normal: (%?, %?, %?)", myTrace.normal[0], myTrace.normal[1], myTrace.normal[2]);
     }
     //results->fraction = myTrace;
 }
