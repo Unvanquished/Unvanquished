@@ -544,7 +544,6 @@ void SV_SpawnServer( const char *server )
 	int        i;
 	int        checksum;
 	qboolean   isBot;
-	const char *p;
 
 	// shut down the existing game if it is running
 	SV_ShutdownGameProgs();
@@ -614,7 +613,7 @@ void SV_SpawnServer( const char *server )
 	FS::PakPath::ClearPaks();
 	if (!FS_LoadPak("unvanquished"))
 		Com_Error(ERR_FATAL, "Could not load main pak\n");
-	if (!FS_LoadPak(va("map/%s", server)))
+	if (!FS_LoadPak(va("map-%s", server)))
 		Com_Error(ERR_DROP, "Could not load map pak\n");
 
 	CM_LoadMap( va( "maps/%s.bsp", server ), qfalse, &checksum );

@@ -570,7 +570,6 @@ if a user is interested in a server to do a full status
 void SVC_Info( netadr_t from )
 {
 	int  i, count, botCount;
-	char *gamedir;
 	char infostring[ MAX_INFO_STRING ];
 
 	const char *challenge;
@@ -874,11 +873,11 @@ void SVC_RemoteCommand( netadr_t from, msg_t *msg )
 
 	if ( !strlen( sv_rconPassword->string ) )
 	{
-		env.Print(_( "No rconpassword set on the server.\n" ));
+		env.Print(_( "No rconpassword set on the server." ));
 	}
 	else if ( !valid )
 	{
-		env.Print(_( "Bad rconpassword.\n" ));
+		env.Print(_( "Bad rconpassword." ));
 	}
 	else
 	{

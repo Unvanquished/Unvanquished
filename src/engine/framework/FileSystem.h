@@ -221,6 +221,7 @@ enum pakType_t {
 
 // Information about a package
 struct PakInfo {
+
 	// Base name of the pak, may include directories
 	std::string name;
 
@@ -242,10 +243,13 @@ struct PakInfo {
 	// Time this pak was last updated. This is only valid for zip paks and
 	// reflects the timestamp at the time the pak was loaded.
 	std::chrono::system_clock::time_point timestamp;
+
 };
 
-// Operations which work on files that are in packages
+// Operations which work on files that are in packages. Packages should be used
+// for read-only assets which can be distributed by auto-download.
 namespace PakPath {
+
 	// Load a pak into the namespace with all its dependencies
 	void LoadPak(const PakInfo& pak, std::error_code& err = throws());
 
@@ -310,10 +314,12 @@ namespace PakPath {
 		std::unordered_map<std::string, std::pair<size_t, offset_t>>::iterator iter, iter_end;
 		bool recursive;
 	};
+
 } // namespace PakPath
 
 // Operations which work on raw OS paths. Note that no validation on file names is performed
 namespace RawPath {
+
 	// Open a file for reading/writing/appending/editing
 	File OpenRead(Str::StringRef path, std::error_code& err = throws());
 	File OpenWrite(Str::StringRef path, std::error_code& err = throws());
@@ -386,10 +392,13 @@ namespace RawPath {
 		std::string path;
 		std::vector<DirectoryRange> dirs;
 	};
+
 } // namespace RawPath
 
-// Operations which work on the home path
+// Operations which work on the home path. This should be used when you need to
+// create files which are readable and writeable.
 namespace HomePath {
+
 	// Open a file for reading/writing/appending/editing
 	File OpenRead(Str::StringRef path, std::error_code& err = throws());
 	File OpenWrite(Str::StringRef path, std::error_code& err = throws());
@@ -416,6 +425,7 @@ namespace HomePath {
 	// Helper function to complete a filename. The root is prepended to the path but not included
 	// in the completion results.
 	Cmd::CompletionResult CompleteFilename(Str::StringRef prefix, Str::StringRef root, Str::StringRef extension, bool allowSubdirs, bool stripExtension);
+
 } // namespace HomePath
 
 // Initialize the filesystem and the main paths

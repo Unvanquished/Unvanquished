@@ -395,7 +395,7 @@ static void AddPak(pakType_t type, Str::StringRef filename, Str::StringRef baseP
 	std::string name, version;
 	Opt::optional<uint32_t> checksum;
 	if (!ParsePakName(filename.begin(), filename.end() - suffixLen, name, version, checksum) || (type == PAK_DIR && checksum)) {
-		Log::Warn("Invalid pak name: %s\n", fullPath);
+		Log::Warn("Invalid pak name: %s", fullPath);
 		return;
 	}
 
@@ -418,7 +418,7 @@ static void FindPaksInPath(Str::StringRef basePath, Str::StringRef subPath)
 	} catch (std::system_error& err) {
 		// If there was an error reading a directory, just ignore it and go to
 		// the next one.
-		Log::Debug("Error reading directory %s: %s\n", fullPath, err.what());
+		Log::Debug("Error reading directory %s: %s", fullPath, err.what());
 	}
 }
 
@@ -1107,7 +1107,7 @@ static void ParseDeps(const PakInfo& parent, Str::StringRef depsData, std::error
 		if (lineStart == lineEnd) {
 			const PakInfo* pak = FindPak(name);
 			if (!pak) {
-				Log::Warn("Could not find pak '%s' required by '%s'\n", name, parent.path);
+				Log::Warn("Could not find pak '%s' required by '%s'", name, parent.path);
 				SetErrorCodeFilesystem(filesystem_error::missing_depdency, err);
 				return;
 			}
@@ -1131,7 +1131,7 @@ static void ParseDeps(const PakInfo& parent, Str::StringRef depsData, std::error
 		if (lineStart == lineEnd) {
 			const PakInfo* pak = FindPak(name, version);
 			if (!pak) {
-				Log::Warn("Could not find pak '%s' with version '%s' required by '%s'\n", name, version, parent.path);
+				Log::Warn("Could not find pak '%s' with version '%s' required by '%s'", name, version, parent.path);
 				SetErrorCodeFilesystem(filesystem_error::missing_depdency, err);
 				return;
 			}
@@ -1143,17 +1143,23 @@ static void ParseDeps(const PakInfo& parent, Str::StringRef depsData, std::error
 		}
 
 		// If there is still stuff at the end of the line, print a warning and ignore it
-		Log::Warn("Invalid dependency specification on line %d in %s\n", line, Path::Build(parent.path, PAK_DEPS_FILE));
+		Log::Warn("Invalid dependency specification on line %d in %s", line, Path::Build(parent.path, PAK_DEPS_FILE));
 		lineStart = lineEnd == depsData.end() ? lineEnd : lineEnd + 1;
 	}
 }
 
 static void InternalLoadPak(const PakInfo& pak, Opt::optional<uint32_t> expectedChecksum, std::error_code& err)
 {
-	uint32_t checksum;
+	Opt::optional<uint32_t> checksum;
 	bool hasDeps = false;
 	offset_t depsOffset;
 	ZipArchive zipFile;
+
+	// Check if this pak has already been loaded to avoid recursive dependencies
+	for (auto& x: loadedPaks) {
+		if (x.path == pak.path)
+			return;
+	}
 
 	// Add the pak to the list of loaded paks
 	loadedPaks.push_back(pak);
@@ -1175,7 +1181,6 @@ static void InternalLoadPak(const PakInfo& pak, Opt::optional<uint32_t> expected
 			if (HaveError(err))
 				return;
 		}
-		loadedPaks.back().checksum = Opt::nullopt;
 	} else {
 		// Open zip
 		zipFile = ZipArchive::Open(pak.path, err);
@@ -1185,7 +1190,7 @@ static void InternalLoadPak(const PakInfo& pak, Opt::optional<uint32_t> expected
 		// Get the file list and calculate the checksum of the package (checksum of all file checksums)
 		checksum = crc32(0, Z_NULL, 0);
 		zipFile.ForEachFile([&checksum, &hasDeps, &depsOffset](Str::StringRef filename, offset_t offset, uint32_t crc) {
-			checksum = crc32(checksum, reinterpret_cast<const Bytef*>(&crc), sizeof(crc));
+			checksum = crc32(*checksum, reinterpret_cast<const Bytef*>(&crc), sizeof(crc));
 #ifdef GCC_BROKEN_CXX11
 			fileMap.insert({filename, std::pair<size_t, offset_t>(loadedPaks.size() - 1, offset)});
 #else
@@ -1199,14 +1204,14 @@ static void InternalLoadPak(const PakInfo& pak, Opt::optional<uint32_t> expected
 		if (HaveError(err))
 			return;
 
-		// Save the real checksum in the list of loaded paks
-		loadedPaks.back().checksum = checksum;
-
 		// Get the timestamp of the pak
 		loadedPaks.back().timestamp = FS::RawPath::FileTimestamp(pak.path, err);
 		if (HaveError(err))
 			return;
 	}
+
+	// Save the real checksum in the list of loaded paks (empty for directories)
+	loadedPaks.back().checksum = checksum;
 
 	// If an explicit checksum was requested, verify that the pak we loaded is the one we are expecting
 	if (expectedChecksum && checksum != *expectedChecksum) {
@@ -1216,7 +1221,7 @@ static void InternalLoadPak(const PakInfo& pak, Opt::optional<uint32_t> expected
 
 	// Print a warning if the checksum doesn't match the one in the filename
 	if (pak.checksum && *pak.checksum != checksum)
-		Log::Warn("Pak checksum doesn't match filename: %s\n", pak.path);
+		Log::Warn("Pak checksum doesn't match filename: %s", pak.path);
 
 	// Load dependencies, but not if a checksum was specified
 	if (hasDeps && !expectedChecksum) {
@@ -1509,29 +1514,55 @@ static void CreatePath(Str::StringRef path, std::error_code& err)
 {
 #ifdef _WIN32
 	std::wstring buffer = Str::UTF8To16(path);
-	for (wchar_t& c: buffer) {
-		if (!isdirsep(c))
-			continue;
-		c = '\0';
-		if (_wmkdir(buffer.data()) != 0 && errno != EEXIST && errno != ENOENT) {
-			SetErrorCodeSystem(err);
-			return;
-		}
-		c = '\\';
-	}
 #else
 	std::string buffer = path;
-	for (char& c: buffer) {
-		if (!isdirsep(c))
+#endif
+
+	// Skip drive letters and leading slashes
+	size_t offset = 0;
+#ifdef _WIN32
+	if (buffer.size() >= 2 && Str::cisalpha(buffer[0]) && buffer[1] == ':')
+		offset = 2;
+#endif
+	while (offset != buffer.size() && isdirsep(buffer[offset]))
+		offset++;
+
+	for (auto it = buffer.begin() + offset; it != buffer.end(); ++it) {
+		if (!isdirsep(*it))
 			continue;
-		c = '\0';
-		if (mkdir(buffer.data(), 0777) != 0 && errno != EEXIST && errno != ENOENT) {
+		*it = '\0';
+
+		// If the directory already exists, continue
+#ifdef _WIN32
+		DWORD attribs = GetFileAttributesW(buffer.data());
+		if (attribs != INVALID_FILE_ATTRIBUTES && (attribs & FILE_ATTRIBUTE_DIRECTORY)) {
+			*it = '/';
+			continue;
+		}
+#else
+		my_stat_t st;
+		if (my_stat(buffer.data(), &st) == 0 && S_ISDIR(st.st_mode)) {
+			*it = '/';
+			continue;
+		}
+#endif
+
+		// Attempt to create the directory
+#ifdef _WIN32
+		if (_wmkdir(buffer.data()) != 0 && errno != EEXIST) {
 			SetErrorCodeSystem(err);
 			return;
 		}
-		c = '/';
-	}
+#else
+		if (mkdir(buffer.data(), 0777) != 0 && errno != EEXIST) {
+			SetErrorCodeSystem(err);
+			return;
+		}
 #endif
+
+		*it = '/';
+	}
+	ClearErrorCode(err);
 }
 
 static File OpenMode(Str::StringRef path, openMode_t mode, std::error_code& err)
@@ -1926,7 +1957,7 @@ static fileHandle_t FS_AllocHandle()
 
 static void FS_CheckHandle(fileHandle_t handle, bool write)
 {
-	if (handle < 0 || handle > MAX_FILE_HANDLES)
+	if (handle < 0 || handle >= MAX_FILE_HANDLES)
 		Com_Error(ERR_DROP, "FS_CheckHandle: invalid handle");
 	if (!handleTable[handle].isOpen)
 		Com_Error(ERR_DROP, "FS_CheckHandle: closed handle");
@@ -2372,7 +2403,7 @@ bool FS_LoadServerPaks(const char* paks)
 	for (int i = 0; i < args.Argc(); i++) {
 		std::string name, version;
 		Opt::optional<uint32_t> checksum;
-		if (!FS::ParsePakName(&*args.Argv(i).begin(), &*args.Argv(i).end(), name, version, checksum) || !checksum) {
+		if (!FS::ParsePakName(args.Argv(i).data(), args.Argv(i).data() + args.Argv(i).size(), name, version, checksum) || !checksum) {
 			Com_Error(ERR_DROP, "Invalid pak reference from server: %s\n", args.Argv(i).c_str());
 			continue;
 		}
