@@ -368,7 +368,7 @@ namespace Cvar {
     }
 
     void SetCheatMode(bool cheats) {
-        if (not cheats) {
+        if (cheats) {
             return;
         }
 
