@@ -38,8 +38,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace Cvar {
 
-    //TODO more doc
-
     /*
      * Cvars can have different flags that trigger specific behavior.
      */
@@ -61,7 +59,7 @@ namespace Cvar {
 
     /*
      * All cvars created by the code inherit from this class although most of the time you'll
-     * want to use Cvar::Cvar. It is basically a callback for hen the value of the cvar changes.
+     * want to use Cvar::Cvar. It is basically a callback for when the value of the cvar changes.
      * A single CvarProxy can be registered for a given cvar name.
      */
     class CvarProxy {
@@ -86,7 +84,7 @@ namespace Cvar {
      * Cvar::Cvar<T> represents a type-checked cvar of type T. The parsed T can
      * be accessed with .Get() and .Set() will serialize T before setting the value.
      * It is also automatically registered when created so you can write:
-     *   static Cvar<bool> my_bool_cvar("my_bool_cvar", "bool - a cvar", Cvar::Archive, false);
+     *   static Cvar<bool> my_bool_cvar("my_bool_cvar", "bool - a cvar", Cvar::ARCHIVE, false);
      *
      * The functions bool ParseCvarValue(string, T& res), string SerializeCvarValue(T)
      * and string GetCvarTypeName<T>() must be implemented for Cvar<T> to work.
@@ -110,7 +108,10 @@ namespace Cvar {
         protected:
             // Used by classes that extend Cvar<T>
             bool Parse(std::string text, T& value);
+            // Implemented by subtypes to validate the value of the cvar (for example for Range)
             virtual OnValueChangedResult Validate(const T& value);
+            // Returns the new description of the cvar given the current value and the description
+            // given at the creation of the cvar.
             virtual std::string GetDescription(Str::StringRef value, Str::StringRef originalDescription);
 
             T value;
