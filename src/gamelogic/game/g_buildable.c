@@ -1925,8 +1925,6 @@ static int PowerRelevantRange()
 	relevantRange = MAX( relevantRange, g_powerReactorRange.integer );
 	relevantRange = MAX( relevantRange, g_powerRepeaterRange.integer );
 	relevantRange = MAX( relevantRange, g_powerCompetitionRange.integer );
-	relevantRange = MAX( relevantRange, g_powerLevel1UpgRange.integer );
-	relevantRange = MAX( relevantRange, g_powerLevel1Range.integer );
 
 	return relevantRange;
 }
@@ -2033,25 +2031,6 @@ static float IncomingInterference( buildable_t buildable, gentity_t *neighbor,
 			default:
 				power = -BG_Buildable( neighbor->s.modelindex )->powerConsumption;
 				range = g_powerCompetitionRange.integer;
-		}
-	}
-	// interference from player classes
-	else if ( !prediction && neighbor->client && neighbor->health > 0 )
-	{
-		switch ( neighbor->client->ps.stats[ STAT_CLASS ] )
-		{
-			case PCL_ALIEN_LEVEL1:
-				power = -g_powerLevel1Interference.integer;
-				range = g_powerLevel1Range.integer;
-				break;
-
-			case PCL_ALIEN_LEVEL1_UPG:
-				power = -g_powerLevel1UpgInterference.integer;
-				range = g_powerLevel1UpgRange.integer;
-				break;
-
-			default:
-				return 0.0f;
 		}
 	}
 	else
