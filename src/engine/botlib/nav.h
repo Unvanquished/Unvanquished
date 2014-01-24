@@ -94,7 +94,7 @@ struct OffMeshConnection
 
 struct OffMeshConnections
 {
-	static const int MAX_CON = 128;
+	static CONSTEXPR int MAX_CON = 128;
 	float  verts[ MAX_CON * 6 ];
 	float  rad[ MAX_CON ];
 	unsigned short flags[ MAX_CON ];
