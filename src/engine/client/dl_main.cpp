@@ -120,8 +120,15 @@ int DL_BeginDownload( const char *localName, const char *remoteName, int debug )
 
 	if ( dl_request )
 	{
-		Com_Printf( "ERROR: DL_BeginDownload called with a download request already active\n" );
-		return 0;
+		curl_multi_remove_handle( dl_multi, dl_request );
+		curl_easy_cleanup( dl_request );
+		dl_request = NULL;
+	}
+
+	if ( dl_file )
+	{
+		fclose( dl_file );
+		dl_file = NULL;
 	}
 
 	if ( !localName || !remoteName )

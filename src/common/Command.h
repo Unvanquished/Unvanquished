@@ -145,7 +145,7 @@ namespace Cmd {
      * instanciated and removes it when it is destroyed. A typical usage is
      *
      *  class MyCmd : public Cmd::StaticCmd {
-     *      MyCmd() : Cmd::StaticCmd("my_command", NAMESPACE, "my_desc"){}
+     *      MyCmd() : Cmd::StaticCmd("my_command", NAMESPACE, "my_description"){}
      *      //Other stuff
      *  };
      *  static MyCmd MyCmdRegistration;
