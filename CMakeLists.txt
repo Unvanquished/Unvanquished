@@ -1142,6 +1142,12 @@ find_package( GMP REQUIRED )
 include_directories( ${GMP_INCLUDE_DIR} )
 set( LIBS_ENGINE ${LIBS_ENGINE} ${GMP_LIBRARIES} )
 
+# CGAL
+find_package( CGAL REQUIRED )
+include_directories( ${CGAL_INCLUDE_DIR} )
+#TODO why doesn't ${CGAL_LIBRARIES} work?
+set( LIBS_ENGINE ${LIBS_ENGINE} -lCGAL )
+
 # Speex
 if( BUILD_CLIENT AND USE_VOIP )
   find_package( Speex REQUIRED )

@@ -33,6 +33,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <LinearMath/btGeometryUtil.h>
 #include <BulletCollision/CollisionShapes/btShapeHull.h>
 
+#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
+#include <CGAL/convex_hull_3.h>
+#include <CGAL/circulator.h>
+
+typedef CGAL::Exact_predicates_inexact_constructions_kernel CGALKernel;
+typedef CGALKernel::Point_3 CGALPoint;
+typedef CGAL::Polyhedron_3<CGALKernel> CGALPolyhedron;
+
 namespace Physic {
 
     btCollisionDispatcher* dispatcher = nullptr;
@@ -55,13 +63,35 @@ namespace Physic {
     }
 
     std::vector<btVector3> ConvexHullTrianglesFromVertices(const btAlignedObjectArray<btVector3> vertices) {
-        btConvexHullShape shape(&(vertices[0].getX()),vertices.size());
-        btShapeHull converter(&shape);
-        converter.buildHull(0.f);
-        std::vector<btVector3> res;
-        for (int i = 0; i < converter.numIndices(); i++) {
-            res.push_back(converter.getVertexPointer()[converter.getIndexPointer()[i]]);
+        std::vector<CGALPoint> cgalPoints;
+        for (int i = 0; i < vertices.size(); i++) {
+            cgalPoints.push_back(CGALPoint(vertices[i][0], vertices[i][1], vertices[i][2]));
         }
+
+        CGALPolyhedron poly;
+        CGAL::convex_hull_3(cgalPoints.begin(), cgalPoints.end(), poly);
+
+        std::vector<btVector3> res;
+        for (auto it = poly.facets_begin(); it != poly.facets_end(); it++) {
+            CGAL::Container_from_circulator<CGALPolyhedron::Facet::Halfedge_around_facet_circulator> vertices(it->facet_begin());
+            auto vit = vertices.begin();
+
+            CGALPoint first = vit->vertex()->point();
+            vit ++;
+            CGALPoint oldPoint = vit->vertex()->point();
+            vit ++;
+            while(vit != vertices.end()) {
+                CGALPoint nextPoint = vit->vertex()->point();
+
+                res.push_back({first[0], first[1], first[2]});
+                res.push_back({oldPoint[0], oldPoint[1], oldPoint[2]});
+                res.push_back({nextPoint[0], nextPoint[1], nextPoint[2]});
+
+                oldPoint = nextPoint;
+                vit ++;
+            }
+        }
+
         return std::move(res);
     }
 
