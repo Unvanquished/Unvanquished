@@ -352,10 +352,6 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_powerReactorRange,           "g_powerReactorRange",           "800",                              CVAR_SERVERINFO,                                 0, qfalse           },
 	{ &g_powerRepeaterSupply,         "g_powerRepeaterSupply",         "20",                               0,                                               0, qfalse           },
 	{ &g_powerRepeaterRange,          "g_powerRepeaterRange",          "400",                              CVAR_SERVERINFO,                                 0, qfalse           },
-	{ &g_powerLevel1Interference,     "g_powerLevel1Interference",     "13",                               0,                                               0, qfalse           },
-	{ &g_powerLevel1Range,            "g_powerLevel1Range",            "250",                              0,                                               0, qfalse           },
-	{ &g_powerLevel1UpgInterference,  "g_powerLevel1UpgInterference",  "16",                               0,                                               0, qfalse           },
-	{ &g_powerLevel1UpgRange,         "g_powerLevel1UpgRange",         "300",                              0,                                               0, qfalse           },
 
 	// gameplay: misc
 	{ &g_alienOffCreepRegenHalfLife,  "g_alienOffCreepRegenHalfLife",  "0",                                0,                                               0, qfalse           },

@@ -2140,7 +2140,7 @@ vote_is_disabled:
 			Com_sprintf( level.team[ team ].voteDisplayString,
 			             sizeof( level.team[ team ].voteDisplayString ), "Change to map layout '%s'", arg );
 		}
-		break; 
+		break;
 
 	case VOTE_NEXT_MAP:
 		if ( G_MapExists( g_nextMap.string ) )
@@ -3782,6 +3782,10 @@ void G_StopFollowing( gentity_t *ent )
 		{
 			G_SelectHumanLockSpawnPoint( spawn_origin, spawn_angles );
 		}
+		else
+		{
+			G_SelectSpectatorSpawnPoint( spawn_origin, spawn_angles );
+		}
 
 		G_SetOrigin( ent, spawn_origin );
 		VectorCopy( spawn_origin, ent->client->ps.origin );
@@ -3843,6 +3847,10 @@ void G_FollowLockView( gentity_t *ent )
 	else if ( level.clients[ clientNum ].pers.team == TEAM_HUMANS )
 	{
 		G_SelectHumanLockSpawnPoint( spawn_origin, spawn_angles );
+	}
+	else
+	{
+		G_SelectSpectatorSpawnPoint( spawn_origin, spawn_angles );
 	}
 
 	G_SetOrigin( ent, spawn_origin );

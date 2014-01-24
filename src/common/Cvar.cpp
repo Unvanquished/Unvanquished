@@ -57,8 +57,7 @@ namespace Cvar {
     }
 
     std::string SerializeCvarValue(bool value) {
-        //TODO: we keep compatibility with integer-style booleans for now but we should use "on" and "off" once we are merged
-        return value ? "1" : "0";
+        return value ? "on" : "off";
     }
 
     template<>

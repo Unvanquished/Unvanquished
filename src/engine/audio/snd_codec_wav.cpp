@@ -188,6 +188,13 @@ static qboolean S_ReadRIFFHeader( fileHandle_t file, snd_info_t *info )
 		return qfalse;
 	}
 
+	// Arbitrary size cutoff. 4MB gives 95s of audio (22050Hz 16b mono)
+	if ( info->size > 4 * 1024 * 1024)
+	{
+		Com_Printf( S_COLOR_YELLOW "WARNING: Large sample – truncating\n" );
+		info->size = 4 * 1024 * 1024;
+	}
+
 	info->samples = ( info->size / info->width ) / info->channels;
 
 	return qtrue;

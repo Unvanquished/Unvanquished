@@ -198,6 +198,8 @@ namespace Audio {
     }
 
     void UpdateReverbSlot(int slotNum, std::string name, float ratio) {
+        assert(slotNum >= 0 && slotNum < N_REVERB_SLOTS && !std::isnan(ratio));
+
         auto& slot = reverbSlots[slotNum];
 
         if (not testingReverb and name == "none") {
@@ -371,8 +373,13 @@ namespace Audio {
 
                 Cmd::CompletionResult res;
 
-                res.push_back({"stop", "stops the test"});
-                res.push_back({"none", "no effect at all"});
+                if (Str::IsPrefix(prefix, "stop")) {
+                    res.push_back({"stop", "stops the test"});
+                }
+
+                if (Str::IsPrefix(prefix, "none")) {
+                    res.push_back({"none", "no effect at all"});
+                }
 
                 for (auto& name: presets) {
                     if (Str::IsPrefix(prefix, name)) {
