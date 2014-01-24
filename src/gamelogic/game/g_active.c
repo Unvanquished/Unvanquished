@@ -1643,11 +1643,6 @@ static int FindAlienHealthSource( gentity_t *self )
 				// Advanced Basilisk healing aura
 				ret |= SS_HEALING_3X;
 			}
-			else if ( self != ent )
-			{
-				// Group healing
-				ret |= SS_HEALING_ACTIVE;
-			}
 		}
 		else if ( ent->s.eType == ET_BUILDABLE && ent->spawned && ent->health > 0 &&
 		          ent->buildableTeam == self->client->pers.team )
