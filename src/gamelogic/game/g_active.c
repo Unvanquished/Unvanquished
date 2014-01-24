@@ -1683,7 +1683,8 @@ static void G_ReplenishAlienHealth( gentity_t *self )
 {
 	gclient_t *client;
 	float     regenBaseRate, modifier;
-	int       foundHealthSource, count, interval;
+	int       count, interval;
+	qboolean  wasHealing;
 
 	client = self->client;
 
@@ -1701,27 +1702,25 @@ static void G_ReplenishAlienHealth( gentity_t *self )
 		return;
 	}
 
-	foundHealthSource = FindAlienHealthSource( self );
+	wasHealing = client->ps.stats[ STAT_STATE ] & SS_HEALING_ACTIVE;
+
+	// Check for health sources
+	client->ps.stats[ STAT_STATE ] &= ~( SS_HEALING_ACTIVE | SS_HEALING_2X | SS_HEALING_3X );
+	client->ps.stats[ STAT_STATE ] |= FindAlienHealthSource( self );
 
 	if ( self->nextRegenTime < level.time )
 	{
-		// Clear healing state, then set it accordingly
-		client->ps.stats[ STAT_STATE ] &= ~( SS_HEALING_ACTIVE | SS_HEALING_2X | SS_HEALING_3X );
-
-		if ( foundHealthSource & SS_HEALING_3X )
+		if      ( client->ps.stats[ STAT_STATE ] & SS_HEALING_3X )
 		{
 			modifier = 3.0f;
-			client->ps.stats[ STAT_STATE ] |= ( SS_HEALING_ACTIVE | SS_HEALING_3X );
 		}
-		else if ( foundHealthSource & SS_HEALING_2X )
+		else if ( client->ps.stats[ STAT_STATE ] & SS_HEALING_2X )
 		{
 			modifier = 2.0f;
-			client->ps.stats[ STAT_STATE ] |= ( SS_HEALING_ACTIVE | SS_HEALING_2X );
 		}
-		else if ( foundHealthSource & SS_HEALING_ACTIVE )
+		else if ( client->ps.stats[ STAT_STATE ] & SS_HEALING_ACTIVE )
 		{
 			modifier = 1.0f;
-			client->ps.stats[ STAT_STATE ] |= SS_HEALING_ACTIVE;
 		}
 		else
 		{
@@ -1733,35 +1732,24 @@ static void G_ReplenishAlienHealth( gentity_t *self )
 			{
 				// Exponentially decrease healing rate when not on creep. ln(2) ~= 0.6931472
 				modifier = exp( ( 0.6931472f / ( 1000.0f * g_alienOffCreepRegenHalfLife.value ) ) * ( self->healthSourceTime - level.time ) );
-
-				// Prevent possible overflow/division by zero and keep a minimum heal rate
-				if ( modifier < 0.1f )
-				{
-					modifier = 0.1f;
-				}
+				modifier = MAX( modifier, ALIEN_REGEN_NOCREEP_MIN );
 			}
 		}
 
 		interval = ( int )( 1000.0f / ( regenBaseRate * modifier ) );
 
-		// If recovery interval is less than frametime, compensate
-		count = MAX( 1 + ( level.time - self->nextRegenTime ) / interval, 0 );
+		// If recovery interval is less than frametime, compensate by healing more
+		count = 1 + ( level.time - self->nextRegenTime ) / interval;
 
 		G_Heal( self, count );
 
 		self->nextRegenTime = level.time + count * interval;
 	}
-	else if ( !( client->ps.stats[ STAT_STATE ] & SS_HEALING_ACTIVE ) && foundHealthSource )
+	else if ( !wasHealing && client->ps.stats[ STAT_STATE ] & SS_HEALING_ACTIVE )
 	{
-		client->ps.stats[ STAT_STATE ] |= SS_HEALING_ACTIVE;
-
 		// Don't immediately start regeneration to prevent players from quickly
 		// hopping in and out of a creep area to increase their heal rate
 		self->nextRegenTime = level.time + ( 1000 / regenBaseRate );
-	}
-	else if ( ( client->ps.stats[ STAT_STATE ] & SS_HEALING_ACTIVE ) && !foundHealthSource )
-	{
-		client->ps.stats[ STAT_STATE ] &= ~( SS_HEALING_ACTIVE );
 	}
 }
 
