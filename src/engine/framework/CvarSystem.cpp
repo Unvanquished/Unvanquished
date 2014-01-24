@@ -344,10 +344,9 @@ namespace Cvar {
         CvarMap& cvars = GetCvarMap();
 
         Cmd::CompletionResult res;
-        for (auto it : cvars) {
-            if (Str::IsIPrefix(prefix, it.first)) {
-                //TODO what do we show in the completion?
-                res.push_back(std::make_pair(it.first, it.second->description));
+        for (auto& entry : cvars) {
+            if (Str::IsIPrefix(prefix, entry.first)) {
+                res.push_back(std::make_pair(entry.first, entry.second->description));
             }
         }
 
@@ -369,15 +368,15 @@ namespace Cvar {
     }
 
     void SetCheatMode(bool cheats) {
-        if (not cheats) {
+        if (cheats) {
             return;
         }
 
         CvarMap& cvars = GetCvarMap();
 
         // Reset all the CHEAT cvars to their default value
-        for (auto it : cvars) {
-            cvarRecord_t* cvar = it.second;
+        for (auto& entry : cvars) {
+            cvarRecord_t* cvar = entry.second;
 
             if (cvar->flags & CHEAT && cvar->value != cvar->resetValue) {
                 cvar->value = cvar->resetValue;
@@ -386,11 +385,11 @@ namespace Cvar {
                 if (cvar->proxy) {
                     OnValueChangedResult result = cvar->proxy->OnValueChanged(cvar->resetValue);
                     if(result.success) {
-                        Cmd::ChangeDescription(it.first, result.description);
+                        Cmd::ChangeDescription(entry.first, result.description);
                         cvar->description = std::move(result.description);
                     } else {
                         Com_Printf(_("Default value '%s' is not correct for cvar '%s': %s\n"),
-                                cvar->resetValue.c_str(), it.first.c_str(), result.description.c_str());
+                                cvar->resetValue.c_str(), entry.first.c_str(), result.description.c_str());
                     }
                 }
             }
@@ -413,14 +412,14 @@ namespace Cvar {
     void WriteVariables(fileHandle_t f) {
         CvarMap& cvars = GetCvarMap();
 
-        for (auto it : cvars) {
-            cvarRecord_t* cvar = it.second;
+        for (auto& entry : cvars) {
+            cvarRecord_t* cvar = entry.second;
 
             if (cvar->flags & ARCHIVE) {
                 if (cvar->ccvar.latchedString) {
-                    FS_Printf(f, "seta %s %s\n", it.first.c_str(), Cmd::Escape(cvar->ccvar.latchedString).c_str());
+                    FS_Printf(f, "seta %s %s\n", entry.first.c_str(), Cmd::Escape(cvar->ccvar.latchedString).c_str());
                 } else {
-                    FS_Printf(f, "seta %s %s\n", it.first.c_str(), Cmd::Escape(cvar->value).c_str());
+                    FS_Printf(f, "seta %s %s\n", entry.first.c_str(), Cmd::Escape(cvar->value).c_str());
                 }
             }
         }
@@ -432,11 +431,11 @@ namespace Cvar {
 
         CvarMap& cvars = GetCvarMap();
 
-        for (auto it : cvars) {
-            cvarRecord_t* cvar = it.second;
+        for (auto& entry : cvars) {
+            cvarRecord_t* cvar = entry.second;
 
             if (cvar->flags & flag) {
-                Info_SetValueForKey(info, it.first.c_str(), cvar->value.c_str(), big);
+                Info_SetValueForKey(info, entry.first.c_str(), cvar->value.c_str(), big);
             }
         }
 
@@ -582,15 +581,15 @@ namespace Cvar {
                 unsigned long maxValueLength = 0;
 
                 //Find all the matching cvars
-                for (auto& record : cvars) {
-                    if (Q_stristr(record.first.c_str(), match.c_str())) {
-                        matchesNames.push_back(record.first);
+                for (auto& entry : cvars) {
+                    if (Q_stristr(entry.first.c_str(), match.c_str())) {
+                        matchesNames.push_back(entry.first);
 
-                        matches.push_back(record.second);
-                        matchesValues.push_back(record.second->value);
+                        matches.push_back(entry.second);
+                        matchesValues.push_back(entry.second->value);
 
                         //TODO: the raw parameter is not handled, need a function to escape carets
-                        maxNameLength = std::max<size_t>(maxNameLength, record.first.length());
+                        maxNameLength = std::max<size_t>(maxNameLength, entry.first.length());
                         maxValueLength = std::max<size_t>(maxValueLength, matchesValues.back().length());
                     }
                 }

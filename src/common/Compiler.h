@@ -84,6 +84,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define NOEXCEPT_IF(x) noexcept(x)
 #define NOEXCEPT_EXPR(x) noexcept(x)
 
+// Work around lack of constexpr
+#define CONSTEXPR constexpr
+
 // GCC 4.6 has incomplete support for C++11
 #if __GNUC__ * 100 + __GNUC_MINOR__ <= 407
 #define GCC_BROKEN_CXX11
@@ -148,6 +151,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define NOEXCEPT_EXPR(x) false
 // Work around lack of C99 support
 #define __func__ __FUNCTION__
+// Work around lack of constexpr
+#define CONSTEXPR const
 
 #elif defined(Q3_VM)
 #define DEPRECATED

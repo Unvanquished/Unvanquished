@@ -45,7 +45,7 @@ namespace Audio {
     };
 
     static sourceRecord_t* sources = nullptr;
-    static const int nSources = 128; //TODO see what's the limit for OpenAL soft
+    static CONSTEXPR int nSources = 128; //TODO see what's the limit for OpenAL soft
 
     sourceRecord_t* GetSource(int priority);
 
