@@ -385,7 +385,7 @@ namespace Audio {
     }
 
     void SetReverb(int slotNum, std::string name, float ratio) {
-        if (slotNum < 0 or slotNum > N_REVERB_SLOTS or std::isnan(ratio)) {
+        if (slotNum < 0 or slotNum >= N_REVERB_SLOTS or std::isnan(ratio)) {
             return;
         }
 
