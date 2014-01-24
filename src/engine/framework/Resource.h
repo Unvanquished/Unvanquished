@@ -51,7 +51,34 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace Resource {
 
     template<typename T> class Manager;
-    template<typename T> class Handle;
+
+    /*
+     * Handles are opaque types used to give pointers to resources outside of the
+     * subsystem handling that resource. A real pointer to the resource can be
+     * retrived using .Get for use inside the subsystem.
+     *
+     * They are used to fallback to the default value when the "async" loading of
+     * the resource failed.
+     */
+
+    template<typename T>
+    class Handle {
+        public:
+            Handle(std::shared_ptr<T> value, const Manager<T>* manager): value(value), manager(manager) {
+            }
+
+            // Returns a pointer to the resource, or to the default value if the
+            // loading of that resource failed.
+            std::shared_ptr<T> Get() {
+                if (value->failed) {
+                    value = manager->GetDefaultValue();
+                }
+                return value;
+            }
+        private:
+            std::shared_ptr<T> value;
+            const Manager<T>* manager;
+    };
 
     /*
      * The interface that resources must implement to be used by the resource system.
@@ -61,10 +88,10 @@ namespace Resource {
      * from the disk only what is needed to know the dependencies of that resource
      * (for example shaders might depend on textures). Finally Load is called, that
      * does the actual loading of the resource from the disk. (there will be async
-     * IO at some point)
+     * IO at some point).
      *
-     * The data should be loaded from the end of Load and until the destructor is
-     * called, the Resource::Manager is the one in charge of deleting the resource.
+     * The data should be loaded from the end of Load and until Cleanup is called,
+     * the Resource::Manager is the one in charge of deleting the Resource object.
      */
     class Resource {
         public:
@@ -84,6 +111,7 @@ namespace Resource {
             // TODO provide a facility to know if resources we depend on have been loaded?
             virtual bool Load() = 0;
 
+            // Unloads the resource and frees memory. Will always be called after Load.
             virtual void Cleanup() = 0;
 
             // Checks if the resource is still valid and up to date,
@@ -113,31 +141,14 @@ namespace Resource {
             template<typename T> friend class Handle;
     };
 
-    template<typename T>
-    class Handle {
-        public:
-            Handle(std::shared_ptr<T> value, const Manager<T>* manager): value(value), manager(manager) {
-            }
-
-            std::shared_ptr<T> Get() {
-                if (value->failed) {
-                    value = manager->GetDefaultValue();
-                }
-                return value;
-            }
-        private:
-            std::shared_ptr<T> value;
-            const Manager<T>* manager;
-    };
-
     /*
      * Manages resources so as to avoid redundant loads as well as defer the loading
      * to prepare for async loading. The manager can be in two states, either in the
      * registration during which the loading of resources will be defered, either not
      * in the registration in which case resources will be loaded immediately.
      *
-     * The manager gives shared_ptr's of resources, a resource will be candidate for
-     * deletion when the manager has the last pointer to the resource (so that we are
+     * The manager gives Handle to resources, a resource will be candidate for
+     * deletion when no more handles refering to that resource exist (so that we are
      * sure that noone is currently using the resource).
      */
     template<typename T>
@@ -155,7 +166,7 @@ namespace Resource {
             // Ends the registration.
             void EndRegistration();
 
-            // Register the resource, returns a shared_ptr to that resource or nullptr
+            // Register the resource, returns a Handle to that resource or nullptr
             // on a fail.
             Handle<T> Register(Str::StringRef name);
 
