@@ -308,6 +308,13 @@ typedef int clipHandle_t;
 	// convenient for SSE and GLSL, which operate on 4-dimensional
 	// float vectors.
 #if idx86_sse
+    // Here we have a union of scalar struct and sse struct, transform_u and the
+    // scalar struct must match transform_s so we have to use anonymous structs.
+    // We disable compiler warnings when using -Wpedantic for this specific case.
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wgnu-anonymous-struct"
 	typedef ALIGNED( 16, union transform_u {
 		struct {
 			quat_t rot;
@@ -319,6 +326,8 @@ typedef int clipHandle_t;
 			__m128 sseTransScale;
 		};
 	} ) transform_t;
+#pragma clang diagnostic pop
+#pragma GCC diagnostic pop
 #else
 	typedef struct transform_s {
 		quat_t rot;
