@@ -416,10 +416,14 @@ namespace Cvar {
             cvarRecord_t* cvar = entry.second;
 
             if (cvar->flags & ARCHIVE) {
+                const char* value;
                 if (cvar->ccvar.latchedString) {
-                    FS_Printf(f, "seta %s %s\n", entry.first.c_str(), Cmd::Escape(cvar->ccvar.latchedString).c_str());
+                    value = cvar->ccvar.latchedString;
                 } else {
-                    FS_Printf(f, "seta %s %s\n", entry.first.c_str(), Cmd::Escape(cvar->value).c_str());
+                    value = cvar->value.c_str();
+                }
+                if (strcmp(value, cvar->resetValue.c_str())) {
+                    FS_Printf(f, "seta %s %s\n", entry.first.c_str(), Cmd::Escape(value).c_str());
                 }
             }
         }
