@@ -58,8 +58,8 @@ namespace Cvar {
         cvar_t ccvar; // The state of the cvar_t used to emulate the C API
         //DO: mutex?
 
-        inline bool isArchived() const {
-            return !!(flags & (ARCHIVE | USER_ARCHIVE));
+        inline bool IsArchived() const {
+            return flags & (ARCHIVE | USER_ARCHIVE);
         }
     };
 
@@ -439,7 +439,7 @@ namespace Cvar {
         for (auto& entry : cvars) {
             cvarRecord_t* cvar = entry.second;
 
-            if (cvar->isArchived()) {
+            if (cvar->IsArchived()) {
                 const char* value;
                 if (cvar->ccvar.latchedString) {
                     value = cvar->ccvar.latchedString;
