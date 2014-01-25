@@ -418,7 +418,6 @@ static void FindPaksInPath(Str::StringRef basePath, Str::StringRef subPath)
 	} catch (std::system_error& err) {
 		// If there was an error reading a directory, just ignore it and go to
 		// the next one.
-		Log::Debug("Error reading directory %s: %s", fullPath, err.what());
 	}
 }
 
