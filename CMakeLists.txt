@@ -1145,8 +1145,7 @@ set( LIBS_ENGINE ${LIBS_ENGINE} ${GMP_LIBRARIES} )
 # CGAL
 find_package( CGAL REQUIRED )
 include_directories( ${CGAL_INCLUDE_DIR} )
-#TODO why doesn't ${CGAL_LIBRARIES} work?
-set( LIBS_ENGINE ${LIBS_ENGINE} -lCGAL )
+set( LIBS_ENGINE ${LIBS_ENGINE} ${CGAL_LIBRARY} )
 
 # Speex
 if( BUILD_CLIENT AND USE_VOIP )
