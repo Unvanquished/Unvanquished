@@ -2031,7 +2031,7 @@ void Com_Init( char *commandLine )
 
 	// if any archived cvars are modified after this, we will trigger a writing
 	// of the config file
-	cvar_modifiedFlags &= ~CVAR_ARCHIVE;
+	cvar_modifiedFlags &= ~CVAR_ARCHIVE_BITS;
 
 	//
 	// init commands and vars
@@ -2255,9 +2255,9 @@ void Com_WriteConfiguration( void )
 		return;
 	}
 
-	if ( cvar_modifiedFlags & CVAR_ARCHIVE )
+	if ( cvar_modifiedFlags & CVAR_ARCHIVE_BITS )
 	{
-		cvar_modifiedFlags &= ~CVAR_ARCHIVE;
+		cvar_modifiedFlags &= ~CVAR_ARCHIVE_BITS;
 
 		if ( cl_profileStr[ 0 ] )
 		{

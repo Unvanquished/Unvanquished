@@ -57,6 +57,10 @@ namespace Cvar {
         CvarProxy* proxy;
         cvar_t ccvar; // The state of the cvar_t used to emulate the C API
         //DO: mutex?
+
+        inline bool isArchived() const {
+            return !!(flags & (ARCHIVE | USER_ARCHIVE));
+        }
     };
 
     //Functions that emulate the C API
@@ -435,16 +439,14 @@ namespace Cvar {
         for (auto& entry : cvars) {
             cvarRecord_t* cvar = entry.second;
 
-            if (cvar->flags & ARCHIVE) {
+            if (cvar->isArchived()) {
                 const char* value;
                 if (cvar->ccvar.latchedString) {
                     value = cvar->ccvar.latchedString;
                 } else {
                     value = cvar->value.c_str();
                 }
-                if (strcmp(value, cvar->resetValue.c_str())) {
-                    FS_Printf(f, "seta %s %s\n", entry.first.c_str(), Cmd::Escape(value).c_str());
-                }
+                FS_Printf(f, "seta %s %s\n", entry.first.c_str(), Cmd::Escape(value).c_str());
             }
         }
     }
@@ -526,7 +528,7 @@ namespace Cvar {
     static SetCmd SetCmdRegistration("set", 0);
     static SetCmd SetuCmdRegistration("setu", USERINFO);
     static SetCmd SetsCmdRegistration("sets", SERVERINFO);
-    static SetCmd SetaCmdRegistration("seta", ARCHIVE);
+    static SetCmd SetaCmdRegistration("seta", USER_ARCHIVE);
 
     class ResetCmd: public Cmd::StaticCmd {
         public:
@@ -546,6 +548,7 @@ namespace Cvar {
                 if (iter != cvars.end()) {
                     cvarRecord_t* cvar = iter->second;
                     ::Cvar::SetValue(name, cvar->resetValue);
+                    ::Cvar::ClearFlags(name, USER_ARCHIVE);
                 } else {
                     Print(_("Cvar '%s' doesn't exist"), name.c_str());
                 }
@@ -635,7 +638,7 @@ namespace Cvar {
                     flags += (var->flags & USERINFO) ? "U" : "_";
                     flags += (var->flags & ROM) ? "R" : "_";
                     flags += (var->flags & CVAR_INIT) ? "I" : "_";
-                    flags += (var->flags & ARCHIVE) ? "A" : "_";
+                    flags += (var->flags & ARCHIVE) ? "A" : (var->flags & USER_ARCHIVE) ? "a" : "_";
                     flags += (var->flags & CVAR_LATCH) ? "L" : "_";
                     flags += (var->flags & CHEAT) ? "C" : "_";
                     flags += (var->flags & CVAR_USER_CREATED) ? "?" : "_";

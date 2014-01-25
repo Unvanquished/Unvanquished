@@ -48,7 +48,8 @@ namespace Cvar {
         SERVERINFO = BIT(2), // The cvar is send to the client as part of the server state
         SYSTEMINFO = BIT(3), // ???
         ROM        = BIT(6), // The cvar cannot be changed by the user
-        CHEAT      = BIT(9)  // The cvar is a cheat and should stay at its default value on pure servers.
+        CHEAT      = BIT(9), // The cvar is a cheat and should stay at its default value on pure servers.
+        USER_ARCHIVE = BIT(14), // The cvar is saved to the configuration file at user request
     };
 
     // Internal to the Cvar system

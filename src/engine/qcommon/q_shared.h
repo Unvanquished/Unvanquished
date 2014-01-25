@@ -1916,7 +1916,10 @@ void         ByteToDir( int b, vec3_t dir );
  * but server browsers will see it
  */
 #define CVAR_SERVERINFO_NOUPDATE BIT(13)
+#define CVAR_USER_ARCHIVE        BIT(14)
 #define CVAR_NONEXISTENT         0xFFFFFFFF /*< Cvar doesn't exist. */
+
+#define CVAR_ARCHIVE_BITS        (CVAR_ARCHIVE | CVAR_USER_ARCHIVE)
 
 #define MAX_CVAR_VALUE_STRING 256
 
