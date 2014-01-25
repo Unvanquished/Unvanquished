@@ -72,7 +72,7 @@ namespace Log {
 
     class Logger {
         public:
-            Logger(Str::StringRef name, Level level = DEFAULT_FILTER_LEVEL);
+            Logger(Str::StringRef name, Level defaultLevel = DEFAULT_FILTER_LEVEL);
 
             template<typename ... Args>
             void Error(Str::StringRef format, Args&& ... args);
