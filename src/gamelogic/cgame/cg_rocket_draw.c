@@ -1207,12 +1207,12 @@ static void CG_Rocket_DrawLevelshot( void )
 {
 	qhandle_t shader;
 
-	if ( rocketInfo.data.mapIndex < 0 && rocketInfo.rocketState != LOADING )
+	if ( rocketInfo.data.mapIndex < 0 && rocketInfo.cstate.connState < CA_ACTIVE && rocketInfo.cstate.connState > CA_CONNECTED )
 	{
 		return;
 	}
 
-	if ( !rocketInfo.rocketState != LOADING )
+	if ( rocketInfo.cstate.connState < CA_ACTIVE && rocketInfo.cstate.connState > CA_CONNECTED )
 	{
 		shader = rocketInfo.data.mapList[ rocketInfo.data.mapIndex ].levelShot;
 

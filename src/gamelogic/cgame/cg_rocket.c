@@ -72,7 +72,6 @@ void CG_RegisterRocketCvars( void )
 	}
 }
 
-static rocketState_t oldRocketState;
 static connstate_t oldConnState;
 
 void CG_Rocket_Init( void )
@@ -83,7 +82,6 @@ void CG_Rocket_Init( void )
 	fileHandle_t f;
 
 	oldConnState = CA_UNINITIALIZED;
-	oldRocketState = IDLE;
 
 	// Version check...
 	trap_SyscallABIVersion( SYSCALL_ABI_VERSION_MAJOR, SYSCALL_ABI_VERSION_MINOR );
@@ -105,8 +103,6 @@ void CG_Rocket_Init( void )
 
 	// Register elements
 	CG_Rocket_RegisterElements();
-
-	rocketInfo.rocketState = IDLE;
 
 	// Preload all the menu files...
 	len = trap_FS_FOpenFile( rocket_menuFile.string, &f, FS_READ );
@@ -518,68 +514,24 @@ void CG_Rocket_Frame( void )
 		switch ( rocketInfo.cstate.connState )
 		{
 			case CA_DISCONNECTED:
-
-				if ( rocketInfo.rocketState > BUILDING_SERVER_INFO )
-				{
-					rocketInfo.rocketState = IDLE;
-				}
-
 				break;
 
 			case CA_CONNECTING:
 			case CA_CHALLENGING:
 			case CA_CONNECTED:
-				rocketInfo.rocketState = CONNECTING;
+				trap_Rocket_DocumentAction( "", "blurall" );
+				trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_CONNECTING ].id, "show" );
 				break;
 
 			case CA_LOADING:
 			case CA_PRIMED:
-				rocketInfo.rocketState = LOADING;
 				break;
 
 			case CA_ACTIVE:
-			default:
-				rocketInfo.rocketState = PLAYING;
+				trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_CONNECTING ].id, "blurall" );
 		}
 
 		oldConnState = rocketInfo.cstate.connState;
-	}
-
-	if ( oldRocketState != rocketInfo.rocketState )
-	{
-		switch ( rocketInfo.rocketState )
-		{
-			case RETRIEVING_SERVERS:
-				if ( trap_LAN_UpdateVisiblePings( rocketInfo.currentNetSrc ) )
-				{
-				}
-				else
-				{
-					rocketInfo.rocketState = IDLE;
-				}
-
-				break;
-
-			case BUILDING_SERVER_INFO:
-				CG_Rocket_BuildServerInfo();
-				break;
-
-			case CONNECTING:
-				trap_Rocket_DocumentAction( "", "blurall" );
-				trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_CONNECTING ].id, "show" );
-
-			case LOADING:
-				CG_Rocket_CleanUpServerList( NULL );
-				trap_Rocket_DocumentAction( "", "blurall" );
-				trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_LOADING ].id, "show" );
-				break;
-
-			case PLAYING:
-				trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_CONNECTING ].id, "blurall" );
-				break;
-		}
-
-		oldRocketState = rocketInfo.rocketState;
 	}
 
 	CG_Rocket_ProcessEvents();
@@ -620,7 +572,7 @@ qboolean CG_Rocket_IsCommandAllowed( rocketElementType_t type )
 			return qtrue;
 
 		case ELEMENT_LOADING:
-			if ( rocketInfo.rocketState == LOADING )
+			if ( rocketInfo.cstate.connState < CA_ACTIVE && rocketInfo.cstate.connState > CA_CONNECTED )
 			{
 				return qtrue;
 			}
@@ -628,7 +580,7 @@ qboolean CG_Rocket_IsCommandAllowed( rocketElementType_t type )
 			return qfalse;
 
 		case ELEMENT_GAME:
-			if ( rocketInfo.rocketState == PLAYING )
+			if ( rocketInfo.cstate.connState == CA_ACTIVE )
 			{
 				return qtrue;
 			}

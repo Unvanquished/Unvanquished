@@ -1170,17 +1170,6 @@ typedef struct
 	int                     momentumGainedTime;
 } cg_t;
 
-typedef enum
-{
-	IDLE,
-	RETRIEVING_SERVERS,
-	BUILDING_SERVER_INFO,
-	CONNECTING,
-	LOADING,
-	PLAYING,
-	INGAME_MENU
-} rocketState_t;
-
 typedef struct
 {
 	const char *path;
@@ -1246,6 +1235,8 @@ typedef struct
 	server_t servers[ AS_FAVORITES + 1 ][ MAX_SERVERS ];
 	int serverCount[ AS_FAVORITES + 1 ];
 	int serverIndex[ AS_FAVORITES + 1 ];
+	qboolean buildingServerInfo;
+	qboolean retrievingServers;
 
 	resolution_t resolutions[ MAX_RESOLUTIONS ];
 	int resolutionCount;
@@ -1311,7 +1302,6 @@ typedef struct
 	int currentNetSrc;
 	int  serversLastRefresh;
 	cgClientState_t cstate;
-	rocketState_t rocketState;
 	rocketMenu_t menu[ ROCKETMENU_NUM_TYPES ];
 	rocketMenu_t hud[ WP_NUM_WEAPONS ];
 	rocketDataSource_t data;

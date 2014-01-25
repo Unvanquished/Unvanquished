@@ -74,7 +74,6 @@ static void CG_Rocket_SetServerListServer( const char *table, int index )
 void CG_Rocket_BuildServerInfo( void )
 {
 	static char serverInfoText[ MAX_SERVERSTATUS_LINES ];
-	static rocketState_t state;
 	char buf[ MAX_INFO_STRING ];
 	const char *p;
 	server_t *server;
@@ -87,13 +86,13 @@ void CG_Rocket_BuildServerInfo( void )
 		return;
 	}
 
+	if ( !rocketInfo.data.buildingServerInfo )
+	{
+		rocketInfo.data.buildingServerInfo = qtrue;
+	}
+
 	server = &rocketInfo.data.servers[ netSrc ][ serverIndex ];
 
-	if ( rocketInfo.rocketState != BUILDING_SERVER_INFO )
-	{
-		state = rocketInfo.rocketState;
-		rocketInfo.rocketState = BUILDING_SERVER_INFO;
-	}
 
 	if ( trap_LAN_ServerStatus( server->addr, serverInfoText, sizeof( serverInfoText ) ) )
 	{
@@ -158,7 +157,7 @@ void CG_Rocket_BuildServerInfo( void )
 			}
 		}
 
-		rocketInfo.rocketState = state;
+		rocketInfo.data.buildingServerInfo = qfalse;
 	}
 
 }
@@ -176,7 +175,6 @@ static void CG_Rocket_BuildServerList( const char *args )
 	}
 
 	rocketInfo.currentNetSrc = netSrc;
-	rocketInfo.rocketState = RETRIEVING_SERVERS;
 
 	if ( netSrc != AS_FAVORITES )
 	{
@@ -235,14 +233,14 @@ static void CG_Rocket_BuildServerList( const char *args )
 
 			trap_Rocket_DSAddRow( "server_browser", args, data );
 		}
+
+
 	}
 
 	else if ( !Q_stricmp( args, "serverInfo" ) )
 	{
 		CG_Rocket_BuildServerInfo();
 	}
-
-	rocketInfo.serversLastRefresh = trap_Milliseconds();
 }
 
 static int ServerListCmpByPing( const void *one, const void *two )
@@ -809,7 +807,7 @@ void CG_Rocket_BuildPlayerList( const char *args )
 	int i;
 
 // 	// Do not build list if not currently playing
-// 	if ( rocketInfo.rocketState < PLAYING )
+// 	if ( rocketInfo.cstate.connState < CA_ACTIVE )
 // 	{
 // 		return;
 // 	}
@@ -883,7 +881,7 @@ void CG_Rocket_SortPlayerList( const char *name, const char *sortBy )
 	char buf[ MAX_INFO_STRING ];
 
 	// Do not sort list if not currently playing
-	if ( rocketInfo.rocketState < PLAYING )
+	if ( rocketInfo.cstate.connState < CA_ACTIVE )
 	{
 		return;
 	}
@@ -1110,7 +1108,7 @@ void AddHumanSpawnItem( weapon_t weapon )
 
 void CG_Rocket_BuildHumanSpawnItems( const char *table )
 {
-	if ( rocketInfo.rocketState < PLAYING )
+	if ( rocketInfo.cstate.connState < CA_ACTIVE )
 	{
 		return;
 	}
@@ -1207,7 +1205,7 @@ static void AddUpgradeToBuyList( int i, const char *table, int tblIndex )
 {
 	static char buf[ MAX_STRING_CHARS ];
 
-	if ( rocketInfo.rocketState < PLAYING )
+	if ( rocketInfo.cstate.connState < CA_ACTIVE )
 	{
 		return;
 	}
@@ -1235,7 +1233,7 @@ void CG_Rocket_BuildArmouryBuyList( const char *table )
 	int i;
 	int tblIndex = ROCKETDS_BOTH;
 
-	if ( rocketInfo.rocketState < PLAYING )
+	if ( rocketInfo.cstate.connState < CA_ACTIVE )
 	{
 		return;
 	}
@@ -1388,7 +1386,7 @@ void CG_Rocket_BuildArmourySellList( const char *table )
 {
 	static char buf[ MAX_STRING_CHARS ];
 
-	if ( rocketInfo.rocketState < PLAYING )
+	if ( rocketInfo.cstate.connState < CA_ACTIVE )
 	{
 		return;
 	}
@@ -1485,7 +1483,7 @@ void CG_Rocket_BuildAlienEvolveList( const char *table )
 {
 	static char buf[ MAX_STRING_CHARS ];
 
-	if ( rocketInfo.rocketState < PLAYING )
+	if ( rocketInfo.cstate.connState < CA_ACTIVE )
 	{
 		return;
 	}
@@ -1542,7 +1540,7 @@ void CG_Rocket_BuildHumanBuildList( const char *table )
 {
 	static char buf[ MAX_STRING_CHARS ];
 
-	if ( rocketInfo.rocketState < PLAYING )
+	if ( rocketInfo.cstate.connState < CA_ACTIVE )
 	{
 		return;
 	}
@@ -1601,7 +1599,7 @@ void CG_Rocket_BuildAlienBuildList( const char *table )
 {
 	static char buf[ MAX_STRING_CHARS ];
 
-	if ( rocketInfo.rocketState < PLAYING )
+	if ( rocketInfo.cstate.connState < CA_ACTIVE )
 	{
 		return;
 	}
@@ -1668,7 +1666,7 @@ void AddAlienSpawnClass( class_t _class )
 
 void CG_Rocket_BuildAlienSpawnList( const char *table )
 {
-	if ( rocketInfo.rocketState < PLAYING )
+	if ( rocketInfo.cstate.connState < CA_ACTIVE )
 	{
 		return;
 	}
