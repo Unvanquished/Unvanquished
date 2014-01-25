@@ -353,7 +353,7 @@ namespace Cvar {
         return res;
     }
 
-    void AddFlags(const std::string& cvarName, int flags) {
+    bool AddFlags(const std::string& cvarName, int flags) {
         CvarMap& cvars = GetCvarMap();
 
         auto it = cvars.find(cvarName);
@@ -364,7 +364,27 @@ namespace Cvar {
             //TODO: remove it, overkill ?
             //Make sure to trigger the event as if this variable was changed
             cvar_modifiedFlags |= flags;
+            return true; // success
         } //TODO else what?
+
+        return false; // not found
+    }
+
+    bool ClearFlags(const std::string& cvarName, int flags) {
+        CvarMap& cvars = GetCvarMap();
+
+        auto it = cvars.find(cvarName);
+        if (it != cvars.end()) {
+            cvarRecord_t* cvar = it->second;
+            cvar->flags &= ~flags;
+
+            //TODO: remove it, overkill ?
+            //Make sure to trigger the event as if this variable was changed
+            cvar_modifiedFlags |= flags;
+            return true; // success
+        } //TODO else what?
+
+        return false; // not found
     }
 
     void SetCheatMode(bool cheats) {
