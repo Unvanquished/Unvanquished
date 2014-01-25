@@ -99,7 +99,8 @@ namespace Cmd {
     };
 
     // A completion result is a list of (result, short description)
-    typedef std::vector<std::pair<std::string, std::string>> CompletionResult;
+    typedef std::pair<std::string, std::string> CompletionItem;
+    typedef std::vector<CompletionItem> CompletionResult;
 
     class Environment;
 
