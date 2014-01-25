@@ -551,7 +551,7 @@ namespace Cvar {
 
     class ResetCmd: public Cmd::StaticCmd {
         public:
-            ResetCmd(): Cmd::StaticCmd("reset", Cmd::BASE, N_("resets a variable and, without -value, clears the user archive flag")) {
+            ResetCmd(): Cmd::StaticCmd("reset", Cmd::BASE, N_("resets the named variables and, without -value, clears their user archive flags")) {
             }
 
             void Run(const Cmd::Args& args) const OVERRIDE {
@@ -569,23 +569,27 @@ namespace Cvar {
                     }
                 }
 
-                if (argc - nameIndex != 1) {
-                    PrintUsage(args, _("[-value] <variable>"), "");
+                if (argc - nameIndex < 1) {
+                    PrintUsage(args, _("[-value] <variable>…"), "");
                     return;
                 }
 
-                const std::string& name = args.Argv(nameIndex);
                 CvarMap& cvars = GetCvarMap();
 
-                auto iter = cvars.find(name);
-                if (iter != cvars.end()) {
-                    cvarRecord_t* cvar = iter->second;
-                    ::Cvar::SetValue(name, cvar->resetValue);
-                    if (clearArchive) {
-                        ::Cvar::ClearFlags(name, USER_ARCHIVE);
+                for (; nameIndex < argc; ++nameIndex)
+                {
+                    const std::string& name = args.Argv(nameIndex);
+
+                    auto iter = cvars.find(name);
+                    if (iter != cvars.end()) {
+                        cvarRecord_t* cvar = iter->second;
+                        ::Cvar::SetValue(name, cvar->resetValue);
+                        if (clearArchive) {
+                            ::Cvar::ClearFlags(name, USER_ARCHIVE);
+                        }
+                    } else {
+                        Print(_("Cvar '%s' doesn't exist"), name.c_str());
                     }
-                } else {
-                    Print(_("Cvar '%s' doesn't exist"), name.c_str());
                 }
             }
 
