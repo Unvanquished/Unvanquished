@@ -549,6 +549,45 @@ namespace Cvar {
     static SetCmd SetsCmdRegistration("sets", SERVERINFO);
     static SetCmd SetaCmdRegistration("seta", USER_ARCHIVE);
 
+    class ArchiveCmd: public Cmd::StaticCmd {
+        public:
+            ArchiveCmd(const std::string& name, const std::string& description, bool set): Cmd::StaticCmd(name, Cmd::BASE, description), set(set) {
+            }
+
+            void Run(const Cmd::Args& args) const OVERRIDE {
+                int argc = args.Argc();
+
+                if (argc < 2) {
+                    PrintUsage(args, _("<variable>…"), "");
+                    return;
+                }
+
+                for (int nameIndex = 1; nameIndex < argc; ++nameIndex)
+                {
+                    const std::string& name = args.Argv(nameIndex);
+
+                    if (!(set ? ::Cvar::AddFlags(name, USER_ARCHIVE) : ::Cvar::ClearFlags(name, USER_ARCHIVE))) {
+                        Print(_("Cvar '%s' doesn't exist"), name.c_str());
+                    }
+                }
+            }
+
+            Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, Str::StringRef prefix) const OVERRIDE {
+                Q_UNUSED(args);
+
+                if (argNum == 1) {
+                    return ::Cvar::Complete(prefix);
+                }
+
+                return {};
+            }
+
+        private:
+            bool set;
+    };
+    static ArchiveCmd ArchiveCmdRegistration("archive", N_("marks variables as user-archived"), true);
+    static ArchiveCmd UnarchiveCmdRegistration("unarchive", N_("marks variables as not user-archived"), false);
+
     class ResetCmd: public Cmd::StaticCmd {
         public:
             ResetCmd(): Cmd::StaticCmd("reset", Cmd::BASE, N_("resets the named variables and, without -value, clears their user archive flags")) {
