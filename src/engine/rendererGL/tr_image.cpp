@@ -2074,14 +2074,15 @@ image_t        *R_Create3DImage( const char *name,
 	return image;
 }
 
-static void R_LoadImage( char **buffer, byte **pic, int *width, int *height, int *numMips,
+static void R_LoadImage( char **buffer, byte **pic, int *width, int *height,
+			 int *numLayers, int *numMips,
 			 int *bits, const char *materialName );
 
 static qboolean ParseHeightMap( char **text, byte **pic, int *width, int *height, int *bits, const char *materialName )
 {
 	char  *token;
 	float scale;
-	int   numMips = 0;
+	int   numLayers = 0, numMips = 0;
 
 	token = COM_ParseExt2( text, qfalse );
 
@@ -2091,9 +2092,9 @@ static qboolean ParseHeightMap( char **text, byte **pic, int *width, int *height
 		return qfalse;
 	}
 
-	R_LoadImage( text, pic, width, height, &numMips, bits, materialName );
+	R_LoadImage( text, pic, width, height, &numLayers, &numMips, bits, materialName );
 
-	if ( !pic )
+	if ( !pic || numLayers > 0 )
 	{
 		ri.Printf( PRINT_WARNING, "WARNING: failed loading of image for heightMap\n" );
 		return qfalse;
@@ -2131,7 +2132,7 @@ static qboolean ParseDisplaceMap( char **text, byte **pic, int *width, int *heig
 	char *token;
 	byte *pic2;
 	int  width2, height2;
-	int  numMips = 0;
+	int  numLayers = 0, numMips = 0;
 
 	token = COM_ParseExt2( text, qfalse );
 
@@ -2141,9 +2142,9 @@ static qboolean ParseDisplaceMap( char **text, byte **pic, int *width, int *heig
 		return qfalse;
 	}
 
-	R_LoadImage( text, pic, width, height, &numMips, bits, materialName );
+	R_LoadImage( text, pic, width, height, &numLayers, &numMips, bits, materialName );
 
-	if ( !pic )
+	if ( !pic || numLayers > 0 )
 	{
 		ri.Printf( PRINT_WARNING, "WARNING: failed loading of first image for displaceMap\n" );
 		return qfalse;
@@ -2157,9 +2158,9 @@ static qboolean ParseDisplaceMap( char **text, byte **pic, int *width, int *heig
 		return qfalse;
 	}
 
-	R_LoadImage( text, &pic2, &width2, &height2, &numMips, bits, materialName );
+	R_LoadImage( text, &pic2, &width2, &height2, &numLayers, &numMips, bits, materialName );
 
-	if ( !pic2 )
+	if ( !pic2 || numLayers > 0 )
 	{
 		ri.Printf( PRINT_WARNING, "WARNING: failed loading of second image for displaceMap\n" );
 		return qfalse;
@@ -2200,7 +2201,7 @@ static qboolean ParseAddGloss( char **text, byte **pic, int *width, int *height,
 	char *token;
 	byte *pic2;
 	int  width2, height2;
-	int  numMips;
+	int  numLayers = 0, numMips = 0;
 
 	token = COM_ParseExt2( text, qfalse );
 
@@ -2210,9 +2211,9 @@ static qboolean ParseAddGloss( char **text, byte **pic, int *width, int *height,
 		return qfalse;
 	}
 
-	R_LoadImage( text, pic, width, height, &numMips, bits, materialName );
+	R_LoadImage( text, pic, width, height, &numLayers, &numMips, bits, materialName );
 
-	if ( !pic )
+	if ( !pic || numLayers > 0 )
 	{
 		ri.Printf( PRINT_WARNING, "WARNING: failed loading of first image ( specular ) for addGloss\n" );
 		return qfalse;
@@ -2226,9 +2227,9 @@ static qboolean ParseAddGloss( char **text, byte **pic, int *width, int *height,
 		return qfalse;
 	}
 
-	R_LoadImage( text, &pic2, &width2, &height2, &numMips, bits, materialName );
+	R_LoadImage( text, &pic2, &width2, &height2, &numLayers, &numMips, bits, materialName );
 
-	if ( !pic2 )
+	if ( !pic2 || numLayers > 0 )
 	{
 		ri.Printf( PRINT_WARNING, "WARNING: failed loading of second image ( gloss ) for addGloss\n" );
 		return qfalse;
@@ -2267,7 +2268,7 @@ static qboolean ParseAddNormals( char **text, byte **pic, int *width, int *heigh
 	char *token;
 	byte *pic2;
 	int  width2, height2;
-	int  numMips = 0;
+	int  numLayers = 0, numMips = 0;
 
 	token = COM_ParseExt2( text, qfalse );
 
@@ -2277,9 +2278,9 @@ static qboolean ParseAddNormals( char **text, byte **pic, int *width, int *heigh
 		return qfalse;
 	}
 
-	R_LoadImage( text, pic, width, height, &numMips, bits, materialName );
+	R_LoadImage( text, pic, width, height, &numLayers, &numMips, bits, materialName );
 
-	if ( !pic )
+	if ( !pic || numLayers > 0 )
 	{
 		ri.Printf( PRINT_WARNING, "WARNING: failed loading of first image for addNormals\n" );
 		return qfalse;
@@ -2293,9 +2294,9 @@ static qboolean ParseAddNormals( char **text, byte **pic, int *width, int *heigh
 		return qfalse;
 	}
 
-	R_LoadImage( text, &pic2, &width2, &height2, &numMips, bits, materialName );
+	R_LoadImage( text, &pic2, &width2, &height2, &numLayers, &numMips, bits, materialName );
 
-	if ( !pic2 )
+	if ( !pic2 || numLayers > 0 )
 	{
 		ri.Printf( PRINT_WARNING, "WARNING: failed loading of second image for addNormals\n" );
 		return qfalse;
@@ -2333,7 +2334,7 @@ static qboolean ParseAddNormals( char **text, byte **pic, int *width, int *heigh
 static qboolean ParseInvertAlpha( char **text, byte **pic, int *width, int *height, int *bits, const char *materialName )
 {
 	char *token;
-	int  numMips = 0;
+	int  numLayers = 0, numMips = 0;
 
 	token = COM_ParseExt2( text, qfalse );
 
@@ -2343,9 +2344,9 @@ static qboolean ParseInvertAlpha( char **text, byte **pic, int *width, int *heig
 		return qfalse;
 	}
 
-	R_LoadImage( text, pic, width, height, &numMips, bits, materialName );
+	R_LoadImage( text, pic, width, height, &numLayers, &numMips, bits, materialName );
 
-	if ( !pic )
+	if ( !pic || numLayers > 0 )
 	{
 		ri.Printf( PRINT_WARNING, "WARNING: failed loading of image for invertAlpha\n" );
 		return qfalse;
@@ -2367,7 +2368,7 @@ static qboolean ParseInvertAlpha( char **text, byte **pic, int *width, int *heig
 static qboolean ParseInvertColor( char **text, byte **pic, int *width, int *height, int *bits, const char *materialName )
 {
 	char *token;
-	int  numMips = 0;
+	int  numLayers = 0, numMips = 0;
 
 	token = COM_ParseExt2( text, qfalse );
 
@@ -2377,9 +2378,9 @@ static qboolean ParseInvertColor( char **text, byte **pic, int *width, int *heig
 		return qfalse;
 	}
 
-	R_LoadImage( text, pic, width, height, &numMips, bits, materialName );
+	R_LoadImage( text, pic, width, height, &numLayers, &numMips, bits, materialName );
 
-	if ( !pic )
+	if ( !pic || numLayers > 0 )
 	{
 		ri.Printf( PRINT_WARNING, "WARNING: failed loading of image for invertColor\n" );
 		return qfalse;
@@ -2401,7 +2402,7 @@ static qboolean ParseInvertColor( char **text, byte **pic, int *width, int *heig
 static qboolean ParseMakeIntensity( char **text, byte **pic, int *width, int *height, int *bits, const char *materialName )
 {
 	char *token;
-	int  numMips = 0;
+	int  numLayers = 0, numMips = 0;
 
 	token = COM_ParseExt2( text, qfalse );
 
@@ -2411,9 +2412,9 @@ static qboolean ParseMakeIntensity( char **text, byte **pic, int *width, int *he
 		return qfalse;
 	}
 
-	R_LoadImage( text, pic, width, height, &numMips, bits, materialName );
+	R_LoadImage( text, pic, width, height, &numLayers, &numMips, bits, materialName );
 
-	if ( !pic )
+	if ( !pic || numLayers > 0 )
 	{
 		ri.Printf( PRINT_WARNING, "WARNING: failed loading of image for makeIntensity\n" );
 		return qfalse;
@@ -2438,7 +2439,7 @@ static qboolean ParseMakeIntensity( char **text, byte **pic, int *width, int *he
 static qboolean ParseMakeAlpha( char **text, byte **pic, int *width, int *height, int *bits, const char *materialName )
 {
 	char *token;
-	int  numMips = 0;
+	int  numLayers = 0, numMips = 0;
 
 	token = COM_ParseExt2( text, qfalse );
 
@@ -2448,9 +2449,9 @@ static qboolean ParseMakeAlpha( char **text, byte **pic, int *width, int *height
 		return qfalse;
 	}
 
-	R_LoadImage( text, pic, width, height, &numMips, bits, materialName );
+	R_LoadImage( text, pic, width, height, &numLayers, &numMips, bits, materialName );
 
-	if ( !pic )
+	if ( !pic || numLayers > 0 )
 	{
 		ri.Printf( PRINT_WARNING, "WARNING: failed loading of image for makeAlpha\n" );
 		return qfalse;
@@ -2475,7 +2476,7 @@ static qboolean ParseMakeAlpha( char **text, byte **pic, int *width, int *height
 typedef struct
 {
 	char *ext;
-	void ( *ImageLoader )( const char *, unsigned char **, int *, int *, int *, int *, byte );
+	void ( *ImageLoader )( const char *, unsigned char **, int *, int *, int *, int *, int *, byte );
 } imageExtToLoaderMap_t;
 
 // Note that the ordering indicates the order of preference used
@@ -2503,7 +2504,8 @@ Loads any of the supported image types into a canonical
 32 bit format.
 =================
 */
-static void R_LoadImage( char **buffer, byte **pic, int *width, int *height, int *numMips,
+static void R_LoadImage( char **buffer, byte **pic, int *width, int *height,
+			 int *numLayers, int *numMips,
 			 int *bits, const char *materialName )
 {
 	char *token;
@@ -2654,7 +2656,7 @@ static void R_LoadImage( char **buffer, byte **pic, int *width, int *height, int
 				if ( !Q_stricmp( ext, imageLoaders[ i ].ext ) )
 				{
 					// load
-					imageLoaders[ i ].ImageLoader( filename, pic, width, height, numMips, bits, alphaByte );
+					imageLoaders[ i ].ImageLoader( filename, pic, width, height, numLayers, numMips, bits, alphaByte );
 					break;
 				}
 			}
@@ -2683,7 +2685,7 @@ static void R_LoadImage( char **buffer, byte **pic, int *width, int *height, int
 			char *altName = va( "%s.%s", filename, imageLoaders[ i ].ext );
 
 			// load
-			imageLoaders[ i ].ImageLoader( altName, pic, width, height, numMips, bits, alphaByte );
+			imageLoaders[ i ].ImageLoader( altName, pic, width, height, numLayers, numMips, bits, alphaByte );
 
 			if ( *pic )
 			{
@@ -2709,7 +2711,7 @@ Returns NULL if it fails, not a default image.
 image_t        *R_FindImageFile( const char *imageName, int bits, filterType_t filterType, wrapType_t wrapType, const char *materialName )
 {
 	image_t       *image = NULL;
-	int           width = 0, height = 0, numMips = 0;
+	int           width = 0, height = 0, numLayers = 0, numMips = 0;
 	byte          *pic[ MAX_TEXTURE_MIPS * MAX_TEXTURE_LAYERS ];
 	long          hash;
 	char          buffer[ 1024 ];
@@ -2761,9 +2763,9 @@ image_t        *R_FindImageFile( const char *imageName, int bits, filterType_t f
 	// load the pic from disk
 	pic[ 0 ] = NULL;
 	buffer_p = &buffer[ 0 ];
-	R_LoadImage( &buffer_p, pic, &width, &height, &numMips, &bits, materialName );
+	R_LoadImage( &buffer_p, pic, &width, &height, &numLayers, &numMips, &bits, materialName );
 
-	if ( pic[ 0 ] == NULL )
+	if ( pic[ 0 ] == NULL || numLayers > 0 )
 	{
 		return NULL;
 	}
@@ -2941,8 +2943,8 @@ image_t        *R_FindCubeImage( const char *imageName, int bits, filterType_t f
 {
 	int         i;
 	image_t     *image = NULL;
-	int         width = 0, height = 0, numMips = 0;
-	byte        *pic[ 6 ];
+	int         width = 0, height = 0, numLayers = 0, numMips = 0;
+	byte        *pic[ MAX_TEXTURE_MIPS * MAX_TEXTURE_LAYERS ];
 	long        hash;
 
 	static char *openglSuffices[ 6 ] = { "px", "nx", "py", "ny", "pz", "nz" };
@@ -2999,6 +3001,18 @@ image_t        *R_FindCubeImage( const char *imageName, int bits, filterType_t f
 		}
 	}
 
+	// try to load .CRN cubemap
+	LoadCRN( buffer, pic, &width, &height, &numLayers, &numMips, &bitsIgnore, 0 );
+	if( numLayers == 6 && pic[0] ) {
+		goto createCubeImage;
+	}
+
+	// try to load .KTX cubemap
+	LoadKTX( buffer, pic, &width, &height, &numLayers, &numMips, &bitsIgnore, 0 );
+	if( numLayers == 6 && pic[0] ) {
+		goto createCubeImage;
+	}
+
 	for ( i = 0; i < 6; i++ )
 	{
 		pic[ i ] = NULL;
@@ -3009,9 +3023,9 @@ image_t        *R_FindCubeImage( const char *imageName, int bits, filterType_t f
 		Com_sprintf( filename, sizeof( filename ), "%s_%s", buffer, openglSuffices[ i ] );
 
 		filename_p = &filename[ 0 ];
-		R_LoadImage( &filename_p, &pic[ i ], &width, &height, &numMips, &bitsIgnore, materialName );
+		R_LoadImage( &filename_p, &pic[ i ], &width, &height, &numLayers, &numMips, &bitsIgnore, materialName );
 
-		if ( !pic[ i ] || width != height )
+		if ( !pic[ i ] || width != height || numLayers > 0 )
 		{
 			image = NULL;
 			goto tryDoom3Suffices;
@@ -3027,9 +3041,9 @@ tryDoom3Suffices:
 		Com_sprintf( filename, sizeof( filename ), "%s_%s", buffer, doom3Suffices[ i ] );
 
 		filename_p = &filename[ 0 ];
-		R_LoadImage( &filename_p, &pic[ i ], &width, &height, &numMips, &bitsIgnore, materialName );
+		R_LoadImage( &filename_p, &pic[ i ], &width, &height, &numLayers, &numMips, &bitsIgnore, materialName );
 
-		if ( !pic[ i ] || width != height )
+		if ( !pic[ i ] || width != height || numLayers > 0 )
 		{
 			image = NULL;
 			goto tryQuakeSuffices;
@@ -3057,9 +3071,9 @@ tryQuakeSuffices:
 		Com_sprintf( filename, sizeof( filename ), "%s_%s", buffer, quakeSuffices[ i ] );
 
 		filename_p = &filename[ 0 ];
-		R_LoadImage( &filename_p, &pic[ i ], &width, &height, &numMips, &bitsIgnore, materialName );
+		R_LoadImage( &filename_p, &pic[ i ], &width, &height, &numLayers, &numMips, &bitsIgnore, materialName );
 
-		if ( !pic[ i ] || width != height )
+		if ( !pic[ i ] || width != height || numLayers > 0 )
 		{
 			image = NULL;
 			goto skipCubeImage;

@@ -29,7 +29,7 @@ LoadTGA
 =============
 */
 void LoadTGA( const char *name, byte **pic, int *width, int *height,
-	      int *numMips, int *bits, byte alphaByte )
+	      int *numLayers, int *numMips, int *bits, byte alphaByte )
 {
 	int         columns, rows, numPixels;
 	byte        *pixbuf;

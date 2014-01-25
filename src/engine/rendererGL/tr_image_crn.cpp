@@ -25,11 +25,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "tr_local.h"
 #include "../../libs/crunch/crn_decomp.h"
 
-void LoadCRN( const char *name, byte **data, int *width, int *height, int *numMips, int *bits, byte alphaByte )
+void LoadCRN( const char *name, byte **data, int *width, int *height,
+	      int *numLayers, int *numMips, int *bits, byte alphaByte )
 {
 	byte    *buff;
-	size_t  buffLen, size;
-	int     i;
+	size_t  buffLen, size, imageSize;
+	int     i, j;
 	crnd::crn_texture_info ti;
 	crnd::crn_level_info li;
 	crnd::crnd_unpack_context ctx;
@@ -42,7 +43,7 @@ void LoadCRN( const char *name, byte **data, int *width, int *height, int *numMi
 	}
 
 	if( !crnd::crnd_get_texture_info( buff, buffLen, &ti ) ||
-	    ti.m_faces != 1 )
+	    ( ti.m_faces != 1 && ti.m_faces != 6 ) )
 	{
 		ri.FS_FreeFile( buff );
 		return;
@@ -69,23 +70,27 @@ void LoadCRN( const char *name, byte **data, int *width, int *height, int *numMi
 	*width = ti.m_width;
 	*height = ti.m_height;
 	*numMips = ti.m_levels;
+	*numLayers = ti.m_faces == 6 ? 6 : 0;
 
 	size = 0;
 	for( i = 0; i < ti.m_levels; i++ ) {
 		crnd::crnd_get_level_info( buff, buffLen, i, &li );
-		size += li.m_blocks_x * li.m_blocks_y * li.m_bytes_per_block;
-		data[ i + 1 ] = size + (byte *)0;
+		imageSize = li.m_blocks_x * li.m_blocks_y * li.m_bytes_per_block;
+		for( j = 0; j < ti.m_faces; j++ ) {
+			size += imageSize;
+			data[ i * ti.m_faces + j + 1 ] = size + (byte *)0;
+		}
 	}
 
 	data[ 0 ] = (byte *)ri.Z_Malloc( size );
-	for(i = 1; i <= ti.m_levels; i++ ) {
+	for(i = 1; i <= ti.m_levels * ti.m_faces; i++ ) {
 		data[ i ] = (data[ i ] - (byte *)0) + data[ 0 ];
 	}
 
 	ctx = crnd::crnd_unpack_begin( buff, buffLen );
 	for( i = 0; i < ti.m_levels; i++ ) {
-		crnd::crnd_unpack_level( ctx, (void **)&data[ i ],
-					 data[ i + 1 ] - data[ i ], 0, i );
+		crnd::crnd_unpack_level( ctx, (void **)&data[ i * ti.m_faces ],
+					 data[ i * ti.m_faces + 1 ] - data[ i * ti.m_faces ], 0, i );
 	}
 	crnd::crnd_unpack_end( ctx );
 

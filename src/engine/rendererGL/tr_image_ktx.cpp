@@ -45,13 +45,14 @@ static const byte KTX_identifier[12] = {
 static const uint32_t KTX_endianness = 0x04030201;
 static const uint32_t KTX_endianness_reverse = 0x01020304;
 
-void LoadKTX( const char *name, byte **data, int *width, int *height, int *numMips, int *bits, byte alphaByte )
+void LoadKTX( const char *name, byte **data, int *width, int *height,
+	      int *numLayers, int *numMips, int *bits, byte alphaByte )
 {
 	KTX_header_t *hdr;
 	byte         *ptr;
 	size_t        bufLen, size;
 	uint32_t      imageSize;
-	int           i;
+	int           i, j;
 
 	bufLen = ri.FS_ReadFile( name, ( void ** ) &hdr );
 
@@ -112,7 +113,7 @@ void LoadKTX( const char *name, byte **data, int *width, int *height, int *numMi
 	}
 
 	if( hdr->numberOfArrayElements != 0 ||
-	    hdr->numberOfFaces != 1 ||
+	    (hdr->numberOfFaces != 1 && hdr->numberOfFaces != 6) ||
 	    hdr->pixelWidth == 0 ||
 	    hdr->pixelHeight == 0 ||
 	    hdr->pixelDepth != 0 ) {
@@ -123,6 +124,7 @@ void LoadKTX( const char *name, byte **data, int *width, int *height, int *numMi
 	*width = hdr->pixelWidth;
 	*height = hdr->pixelHeight;
 	*numMips = hdr->numberOfMipmapLevels;
+	*numLayers = hdr->numberOfFaces == 6 ? 6 : 0;
 
 	ptr = (byte *)(hdr + 1);
 	ptr += hdr->bytesOfKeyValueData;
@@ -133,22 +135,39 @@ void LoadKTX( const char *name, byte **data, int *width, int *height, int *numMi
 			imageSize = Swap32( imageSize );
 		imageSize = PAD( imageSize, 4 );
 
-		size += imageSize;
+		size += imageSize * hdr->numberOfFaces;
 		ptr += 4 + imageSize;
 	}
 
 	ptr = (byte *)(hdr + 1);
 	ptr += hdr->bytesOfKeyValueData;
 	data[ 0 ] = (byte *)ri.Z_Malloc( size );
-	for(i = 1; i <= hdr->numberOfMipmapLevels; i++ ) {
+
+	imageSize = *((uint32_t *)ptr);
+	if( hdr->endianness == KTX_endianness_reverse )
+		imageSize = Swap32( imageSize );
+	imageSize = PAD( imageSize, 4 );
+	ptr += 4;
+	Com_Memcpy( data[ 0 ], ptr, imageSize );
+	ptr += imageSize;
+	for( j = 1; j < hdr->numberOfFaces; j++ ) {
+		data[ j ] = data[ j - 1 ] + imageSize;
+		Com_Memcpy( data[ j ], ptr, imageSize );
+		ptr += imageSize;
+	}
+	for( i = 1; i <= hdr->numberOfMipmapLevels; i++ ) {
 		imageSize = *((uint32_t *)ptr);
 		if( hdr->endianness == KTX_endianness_reverse )
 			imageSize = Swap32( imageSize );
 		imageSize = PAD( imageSize, 4 );
+		ptr += 4;
 
-		data[ i ] = data[ i - 1 ] + imageSize;
-		Com_Memcpy( data[ i ], ptr + 4, imageSize );
-		ptr += 4 + imageSize;
+		for( j = 0; j < hdr->numberOfFaces; j++ ) {
+			int idx = i * hdr->numberOfFaces + j;
+			data[ idx ] = data[ idx - 1 ] + imageSize;
+			Com_Memcpy( data[ idx ], ptr, imageSize );
+			ptr += imageSize;
+		}
 	}
 
 	ri.FS_FreeFile( hdr );

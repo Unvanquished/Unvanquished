@@ -3415,7 +3415,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	image_t *R_CreateGlyph( const char *name, const byte *pic, int width, int height );
 
 	image_t *R_AllocImage( const char *name, qboolean linkIntoHashTable );
-	void    R_UploadImage( const byte **dataArray, int numData, int numMips, image_t *image );
+	void    R_UploadImage( const byte **dataArray, int numLayers, int numMips, image_t *image );
 
 	int     RE_GetTextureId( const char *name );
 
@@ -4133,19 +4133,19 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	void                                RE_BeginFrame( stereoFrame_t stereoFrame );
 	void                                RE_EndFrame( int *frontEndMsec, int *backEndMsec );
 
-	void                                LoadTGA( const char *name, byte **pic, int *width, int *height, int *numMips, int *bits, byte alphaByte );
+	void                                LoadTGA( const char *name, byte **pic, int *width, int *height, int *numLayers, int *numMips, int *bits, byte alphaByte );
 
-	void                                LoadJPG( const char *filename, unsigned char **pic, int *width, int *height, int *numMips, int *bits, byte alphaByte );
+	void                                LoadJPG( const char *filename, unsigned char **pic, int *width, int *height, int *numLayers, int *numMips, int *bits, byte alphaByte );
 	void                                SaveJPG( char *filename, int quality, int image_width, int image_height, unsigned char *image_buffer );
 	int                                 SaveJPGToBuffer( byte *buffer, size_t bufferSize, int quality, int image_width, int image_height, byte *image_buffer );
 
-	void                                LoadPNG( const char *name, byte **pic, int *width, int *height, int *numMips, int *bits, byte alphaByte );
+	void                                LoadPNG( const char *name, byte **pic, int *width, int *height, int *numLayers, int *numMips, int *bits, byte alphaByte );
 	void                                SavePNG( const char *name, const byte *pic, int width, int height, int numBytes, qboolean flip );
 
-	void                                LoadWEBP( const char *name, byte **pic, int *width, int *height, int *numMips, int *bits, byte alphaByte );
-	void                                LoadDDS( const char *name, byte **pic, int *width, int *height, int *numMips, int *bits, byte alphaByte);
-	void                                LoadCRN( const char *name, byte **pic, int *width, int *height, int *numMips, int *bits, byte alphaByte);
-	void                                LoadKTX( const char *name, byte **pic, int *width, int *height, int *numMips, int *bits, byte alphaByte);
+	void                                LoadWEBP( const char *name, byte **pic, int *width, int *height, int *numLayers, int *numMips, int *bits, byte alphaByte );
+	void                                LoadDDS( const char *name, byte **pic, int *width, int *height, int *numLayers, int *numMips, int *bits, byte alphaByte);
+	void                                LoadCRN( const char *name, byte **pic, int *width, int *height, int *numLayers, int *numMips, int *bits, byte alphaByte);
+	void                                LoadKTX( const char *name, byte **pic, int *width, int *height, int *numLayers, int *numMips, int *bits, byte alphaByte);
 	void                                SaveImageKTX( const char *name, image_t *img );
 
 

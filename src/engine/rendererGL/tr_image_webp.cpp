@@ -32,7 +32,7 @@ LoadWEBP
 */
 
 void LoadWEBP( const char *filename, unsigned char **pic, int *width, int *height,
-	       int *numMips, int *bits, byte alphaByte )
+	       int *numLayers, int *numMips, int *bits, byte alphaByte )
 {
 	byte *out;
 	int  len;

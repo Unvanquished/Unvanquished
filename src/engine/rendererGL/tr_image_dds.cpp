@@ -149,16 +149,11 @@ static INLINE void UnpackRGB565( byte rgb[ 3 ], uint16_t cl )
 }
 
 void R_LoadDDSImageData( void *pImageData, const char *name, byte **data,
-			 int *width, int *height, int *numMips, int *bits )
+			 int *width, int *height, int *numLayers,
+			 int *numMips, int *bits )
 {
 	byte         *buff;
 	DDSHEADER_t  *ddsd; //used to get at the dds header in the read buffer
-
-	//based on texture type:
-	//  cube        width != 0, height == 0, depth == 0
-	//  2D          width != 0, height != 0, depth == 0
-	//  volume      width != 0, height != 0, depth != 0
-	int depth;
 
 	//mip count and pointers to image data for each mip
 	//level, idx 0 = top level last pointer does not start
@@ -226,8 +221,8 @@ void R_LoadDDSImageData( void *pImageData, const char *name, byte **data,
 		}
 
 		*width = ddsd->dwWidth;
-		*height = 0;
-		depth = 0;
+		*height = ddsd->dwHeight;
+		*numLayers = 6;
 
 		if ( *width & ( *width - 1 ) )
 		{
@@ -242,15 +237,15 @@ void R_LoadDDSImageData( void *pImageData, const char *name, byte **data,
 
 		*width = ddsd->dwWidth;
 		*height = ddsd->dwHeight;
-		depth = ddsd->dwDepth;
+		*numLayers = ddsd->dwDepth;
 
-		if ( depth > MAX_TEXTURE_LAYERS )
+		if ( *numLayers > MAX_TEXTURE_LAYERS )
 		{
 			ri.Printf( PRINT_WARNING, "R_LoadDDSImage: dds image has too many layers \"%s\"\n", name );
 			return;
 		}
 
-		if ( *width & ( *width - 1 ) || *height & ( *height - 1 ) || depth & ( depth - 1 ) )
+		if ( *width & ( *width - 1 ) || *height & ( *height - 1 ) || *numLayers & ( *numLayers - 1 ) )
 		{
 			ri.Printf( PRINT_WARNING, "R_LoadDDSImage: volume images must be power of two \"%s\"\n", name );
 			return;
@@ -262,7 +257,7 @@ void R_LoadDDSImageData( void *pImageData, const char *name, byte **data,
 
 		*width = ddsd->dwWidth;
 		*height = ddsd->dwHeight;
-		depth = 0;
+		*numLayers = 0;
 
 		//these are allowed to be non power of two, will be dealt with later on
 		//except for compressed images!
@@ -277,7 +272,7 @@ void R_LoadDDSImageData( void *pImageData, const char *name, byte **data,
 	{
 		int w, h, blockSize;
 
-		if ( depth != 0 )
+		if ( *numLayers != 0 )
 		{
 			ri.Printf( PRINT_WARNING, "R_LoadDDSImage: compressed volume textures are not supported \"%s\"\n", name );
 			return;
@@ -359,7 +354,8 @@ void R_LoadDDSImageData( void *pImageData, const char *name, byte **data,
 	}
 }
 
-void LoadDDS( const char *name, byte **data, int *width, int *height, int *numMips, int *bits, byte alphaByte )
+void LoadDDS( const char *name, byte **data, int *width, int *height,
+	      int *numLayers, int *numMips, int *bits, byte alphaByte )
 {
 	byte    *buff;
 
@@ -370,7 +366,8 @@ void LoadDDS( const char *name, byte **data, int *width, int *height, int *numMi
 		return;
 	}
 
-	R_LoadDDSImageData( buff, name, data, width, height, numMips, bits );
+	R_LoadDDSImageData( buff, name, data, width, height,
+			    numLayers, numMips, bits );
 
 	ri.FS_FreeFile( buff );
 }
