@@ -152,17 +152,17 @@ namespace Physic {
     }
 
     float Trace(const vec3_t from, const vec3_t to) {
-        btCollisionWorld::ClosestRayResultCallback callback(convertVector(from), convertVector(to));
-        world->rayTest(convertVector(from), convertVector(to), callback);
+        btCollisionWorld::ClosestRayResultCallback callback(q3ToBullet(from), q3ToBullet(to));
+        world->rayTest(q3ToBullet(from), q3ToBullet(to), callback);
         return callback.m_closestHitFraction;
     }
 
     void BoxTrace(const vec3_t pFrom, const vec3_t pTo, const vec3_t pMins, const vec3_t pMaxs, TraceResults& results) {
         //FIXME
-        btVector3 from = convertVector(pFrom);
-        btVector3 to = convertVector(pTo);
-        btVector3 mins = convertVector(pMins);
-        btVector3 maxs = convertVector(pMaxs);
+        btVector3 from = q3ToBullet(pFrom);
+        btVector3 to = q3ToBullet(pTo);
+        btVector3 mins = q3ToBullet(pMins);
+        btVector3 maxs = q3ToBullet(pMaxs);
         btVector3 halfExtends = (maxs - mins) / 2;
         btVector3 rayMove = maxs - halfExtends;
 

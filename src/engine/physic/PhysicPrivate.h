@@ -41,7 +41,7 @@ namespace Physic {
     extern btDefaultCollisionConfiguration* collisionConf;
     extern btCollisionWorld* world;
 
-    inline btVector3 convertVector(const vec3_t vec) {
+    inline btVector3 q3ToBullet(const vec3_t vec) {
         if(vec) {
             return btVector3(vec[0], vec[1], vec[2]);
         } else {

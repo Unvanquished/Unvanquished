@@ -2330,8 +2330,17 @@ void CM_BoxTrace( trace_t *results, const vec3_t start, const vec3_t end,
     if (DistanceSquared(results->endpos, myTrace.endpos) >= 1.0f) {
         Log::Debug("Start: (%?, %?, %?)", start[0], start[1], start[2]);
         Log::Debug("End: (%?, %?, %?)", end[0], end[1], end[2]);
-        Log::Debug("Mins: (%?, %?, %?)", mins[0], mins[1], mins[2]);
-        Log::Debug("Maxs: (%?, %?, %?)", maxs[0], maxs[1], maxs[2]);
+        if(mins) {
+            Log::Debug("Mins: (%?, %?, %?)", mins[0], mins[1], mins[2]);
+        } else {
+            Log::Debug("Mins: (0, 0, 0)");
+        }
+        if(maxs) {
+            Log::Debug("Maxs: (%?, %?, %?)", maxs[0], maxs[1], maxs[2]);
+        } else {
+            Log::Debug("Maxs: (0, 0, 0)");
+        }
+
         Log::Debug("Model: %?", model);
         Log::Debug("Brushmask: %?", brushmask);
         Log::Debug("Type: %?", type);
