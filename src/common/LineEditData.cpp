@@ -32,6 +32,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <string.h>
 #include <algorithm>
+#include <utility>
 
 //TODO: use a std::string instead of a fixed size char* ?
 //TODO: support MAJ-selection ?
@@ -112,6 +113,18 @@ namespace Util {
         buffer.insert(buffer.begin() + cursor, a);
         cursor ++;
         UpdateScroll();
+    }
+
+    void LineEditData::SwapWithNext() {
+        unsigned length = buffer.length();
+
+        if (length > 1 && cursor) {
+            if (cursor == length) {
+                --cursor;
+            }
+            std::swap(buffer[cursor - 1], buffer[cursor]);
+            ++cursor;
+        }
     }
 
     void LineEditData::Clear() {
