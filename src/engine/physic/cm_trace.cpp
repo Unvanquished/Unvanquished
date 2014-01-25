@@ -2322,7 +2322,12 @@ void CM_BoxTrace( trace_t *results, const vec3_t start, const vec3_t end,
 	CM_Trace( results, start, end, mins, maxs, model, vec3_origin, brushmask, type, NULL );
     Physic::TraceResults myTrace;
     Physic::BoxTrace(start, end, mins, maxs, myTrace);
-    if(fabs(myTrace.fraction - results->fraction) > 0.001) {
+
+    if (Distance(start, end) >= 3000) {
+        return; // Skip the crazy Xhair traces
+    }
+
+    if (DistanceSquared(results->endpos, myTrace.endpos) >= 1.0f) {
         Log::Debug("Start: (%?, %?, %?)", start[0], start[1], start[2]);
         Log::Debug("End: (%?, %?, %?)", end[0], end[1], end[2]);
         Log::Debug("Mins: (%?, %?, %?)", mins[0], mins[1], mins[2]);

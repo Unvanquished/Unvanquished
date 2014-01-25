@@ -165,7 +165,6 @@ namespace Physic {
         btVector3 maxs = convertVector(pMaxs);
         btVector3 halfExtends = (maxs - mins) / 2;
         btVector3 rayMove = maxs - halfExtends;
-        //halfExtends = halfExtends.absolute();
 
         btBoxShape box(halfExtends);
         btTransform transFrom;
@@ -175,11 +174,17 @@ namespace Physic {
         transTo.setIdentity();
         transTo.setOrigin(to + rayMove);
 
-        btCollisionWorld::ClosestConvexResultCallback callback(from, to);
+        btCollisionWorld::ClosestConvexResultCallback callback(from + rayMove, to + rayMove);
         world->convexSweepTest(&box, transFrom, transTo, callback);
 
         float fraction = results.fraction = callback.m_closestHitFraction;
         bulletToQ3(callback.m_hitNormalWorld, results.normal);
-        bulletToQ3(from + fraction * (to - from), results.endpos);
+
+        btVector3 rawRes = from + fraction * (to - from);
+        float traceLength = (to - from).length();
+
+        btVector3 tamperedRes = rawRes - rawRes.normalized() * std::min(1.0f / 16.0f, traceLength);
+
+        bulletToQ3(tamperedRes, results.endpos);
     }
 }
