@@ -1,0 +1,87 @@
+<rml>
+	<head>
+		<style>
+			body{
+				background:red;
+				width:100%;
+				height:100%;
+			}
+
+			div
+			{
+				font-family: DejaVu Sans;
+			}
+			div#sidebar, div#logo
+			{
+				position: fixed;
+				left: 0%;
+				width: 25%;
+				font-family: DejaVu Sans;
+				z-index: 3;
+				margin: auto 0;
+			}
+			div#logo
+			{
+				left: 35%;
+			}
+			div#sidebar
+			{
+				margin-top: 30%;
+				height: 50%;
+			}
+			button
+			{
+				color: #83fff5;
+				display: block;
+
+				max-width: 250px;
+				width: 60%;
+				padding:5%;
+				margin-left:10%;
+				font-size: 17;
+				text-align: center;
+				tab-index: auto;
+				background-decorator: image;
+				background-image: /ui/assets/buttons.png 0px 222px 311px 333px ;
+			}
+			button:hover
+			{
+				color: white;
+				background-image: /ui/assets/buttons.png 0px 0px 311px 111px;
+			}
+			button:active
+			{
+				color: white;
+				background-image: /ui/assets/buttons.png 0px 111px 311px 222px;
+			}
+			#sidebar .separator
+			{
+				display: block;
+				height: 15px;
+			}
+			#background-elements
+			{
+				position: absolute;
+				width: 100%;
+				height: 100%;
+			}
+		</style>
+		<title>main</title>
+	</head>
+	<body id="main">
+		<div id="logo">
+			<img style="width: 100%;" src="/ui/assets/logo" />
+		</div>
+		<div id="sidebar">
+			<button class="menuButton" onClick="show serverbrowser">Play</button>
+			<button class="menuButton" onClick="show options">Options</button>
+			<div class="separator"></div>
+			<button class="menuButton" onClick="show help">Guide</button>
+			<button class="menuButton" onClick="show mods">Mods</button>
+			<button class="menuButton" onClick="show demos">Demos</button>
+			<div class="separator"></div>
+			<button class="menuButton" onClick="exec quit">Quit</button>
+		</div>
+		
+	</body>
+</rml>
