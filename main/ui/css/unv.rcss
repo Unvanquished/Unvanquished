@@ -413,6 +413,7 @@ dataselect selectbox option:hover
 	background-bottom-image: /ui/assets/window/bottom.png stretch;
 	background-left-image: /ui/assets/window/left.png stretch;
 	background-center-image: /ui/assets/window/line.png stretch;
+	overflow: auto;
 }
 
 /* circlemenu */
