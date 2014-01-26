@@ -43,31 +43,19 @@ extern int   LEVEL0_BITE_DMG;
 extern float LEVEL0_BITE_RANGE;
 extern float LEVEL0_BITE_WIDTH;
 extern int   LEVEL0_BITE_REPEAT;
-#define LEVEL0_POUNCE_DISTANCE        300 // pitch between LEVEL0_POUNCE_MINPITCH and pi/4 results in this distance
-#define LEVEL0_POUNCE_MINPITCH        M_PI / 12.0f // 15°, minimum pitch that will result in full pounce distance
-#define LEVEL0_POUNCE_COOLDOWN        2000
-#define LEVEL0_WALLPOUNCE_MAGNITUDE   600
-#define LEVEL0_WALLPOUNCE_COOLDOWN    750
-#define LEVEL0_SIDEPOUNCE_MAGNITUDE   400
-#define LEVEL0_SIDEPOUNCE_DIR_Z       0.4f // in ]0.0f,1.0f], fixed Z-coordinate of sidepounce
-#define LEVEL0_SIDEPOUNCE_COOLDOWN    750
 
 extern int   LEVEL1_CLAW_DMG;
 extern float LEVEL1_CLAW_RANGE;
 extern float LEVEL1_CLAW_U_RANGE;
 extern float LEVEL1_CLAW_WIDTH;
-extern float LEVEL1_GRAB_RANGE;
-extern float LEVEL1_GRAB_U_RANGE;
-extern int   LEVEL1_GRAB_TIME;
-extern int   LEVEL1_GRAB_U_TIME;
-extern float LEVEL1_PCLOUD_RANGE;
-extern int   LEVEL1_PCLOUD_TIME;
-extern float LEVEL1_REGEN_MOD;
-extern float LEVEL1_UPG_REGEN_MOD;
-extern int   LEVEL1_REGEN_SCOREINC;
-extern int   LEVEL1_UPG_REGEN_SCOREINC;
-#define PCLOUD_MODIFIER         0.5f
-#define PCLOUD_ARMOUR_MODIFIER  0.75f
+#define LEVEL1_POUNCE_DISTANCE        300 // pitch between LEVEL1_POUNCE_MINPITCH and pi/4 results in this distance
+#define LEVEL1_POUNCE_MINPITCH        M_PI / 12.0f // 15°, minimum pitch that will result in full pounce distance
+#define LEVEL1_POUNCE_COOLDOWN        1500
+#define LEVEL1_WALLPOUNCE_MAGNITUDE   600
+#define LEVEL1_WALLPOUNCE_COOLDOWN    750
+#define LEVEL1_SIDEPOUNCE_MAGNITUDE   400
+#define LEVEL1_SIDEPOUNCE_DIR_Z       0.4f // in ]0.0f,1.0f], fixed Z-coordinate of sidepounce
+#define LEVEL1_SIDEPOUNCE_COOLDOWN    750
 
 extern int   LEVEL2_CLAW_DMG;
 extern float LEVEL2_CLAW_RANGE;

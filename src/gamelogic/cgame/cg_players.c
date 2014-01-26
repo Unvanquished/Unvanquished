@@ -3543,25 +3543,6 @@ void CG_Player( centity_t *cent )
 
 		head.altShaderIndex = altShaderIndex;
 		trap_R_AddRefEntityToScene( &head );
-
-		// if this player has been hit with poison cloud, add an effect PS
-		if ( ( es->eFlags & EF_POISONCLOUDED ) &&
-		     ( es->number != cg.snap->ps.clientNum || cg.renderingThirdPerson ) )
-		{
-			if ( !CG_IsParticleSystemValid( &cent->poisonCloudedPS ) )
-			{
-				cent->poisonCloudedPS = CG_SpawnNewParticleSystem( cgs.media.poisonCloudedPS );
-			}
-
-			CG_SetAttachmentTag( &cent->poisonCloudedPS->attachment,
-			                     &head, head.hModel, "tag_head" );
-			CG_SetAttachmentCent( &cent->poisonCloudedPS->attachment, cent );
-			CG_AttachToTag( &cent->poisonCloudedPS->attachment );
-		}
-		else if ( CG_IsParticleSystemValid( &cent->poisonCloudedPS ) )
-		{
-			CG_DestroyParticleSystem( &cent->poisonCloudedPS );
-		}
 	}
 
 	//

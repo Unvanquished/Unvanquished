@@ -1295,121 +1295,6 @@ qboolean G_CheckVenomAttack( gentity_t *self )
 /*
 ======================================================================
 
-LEVEL1
-
-======================================================================
-*/
-
-void G_CheckGrabAttack( gentity_t *self )
-{
-	trace_t   tr;
-	vec3_t    end, dir;
-	gentity_t *traceEnt;
-
-	// set aiming directions
-	AngleVectors( self->client->ps.viewangles, forward, right, up );
-
-	G_CalcMuzzlePoint( self, forward, right, up, muzzle );
-
-	if ( self->client->ps.weapon == WP_ALEVEL1 )
-	{
-		VectorMA( muzzle, LEVEL1_GRAB_RANGE, forward, end );
-	}
-	else if ( self->client->ps.weapon == WP_ALEVEL1_UPG )
-	{
-		VectorMA( muzzle, LEVEL1_GRAB_U_RANGE, forward, end );
-	}
-
-	trap_Trace( &tr, muzzle, NULL, NULL, end, self->s.number, MASK_SHOT );
-
-	if ( tr.surfaceFlags & SURF_NOIMPACT )
-	{
-		return;
-	}
-
-	traceEnt = &g_entities[ tr.entityNum ];
-
-	if ( !traceEnt->takedamage )
-	{
-		return;
-	}
-
-	if ( traceEnt->client )
-	{
-		if ( traceEnt->client->pers.team == TEAM_ALIENS )
-		{
-			return;
-		}
-
-		if ( traceEnt->client->ps.stats[ STAT_HEALTH ] <= 0 )
-		{
-			return;
-		}
-
-		if ( !( traceEnt->client->ps.stats[ STAT_STATE ] & SS_GRABBED ) )
-		{
-			AngleVectors( traceEnt->client->ps.viewangles, dir, NULL, NULL );
-			traceEnt->client->ps.stats[ STAT_VIEWLOCK ] = DirToByte( dir );
-
-			//event for client side grab effect
-			G_AddPredictableEvent( self, EV_LEV1_GRAB, 0 );
-		}
-
-		traceEnt->client->ps.stats[ STAT_STATE ] |= SS_GRABBED;
-
-		if ( self->client->ps.weapon == WP_ALEVEL1 )
-		{
-			traceEnt->client->grabExpiryTime = level.time + LEVEL1_GRAB_TIME;
-
-			// Update the last combat time.
-			self->client->lastCombatTime = level.time + LEVEL1_GRAB_TIME;
-			traceEnt->client->lastCombatTime = level.time + LEVEL1_GRAB_TIME;
-		}
-		else if ( self->client->ps.weapon == WP_ALEVEL1_UPG )
-		{
-			traceEnt->client->grabExpiryTime = level.time + LEVEL1_GRAB_U_TIME;
-
-			// Update the last combat time.
-			self->client->lastCombatTime = level.time + LEVEL1_GRAB_TIME;
-			traceEnt->client->lastCombatTime = level.time + LEVEL1_GRAB_TIME;
-		}
-	}
-}
-
-static void FirePoisonCloud( gentity_t *self )
-{
-	gentity_t *other;
-	trace_t   tr;
-
-	G_UnlaggedOn( self, self->s.origin, LEVEL1_PCLOUD_RANGE );
-
-	for ( other = NULL; ( other = G_IterateEntitiesWithinRadius( other, self->s.origin, LEVEL1_PCLOUD_RANGE ) ); )
-	{
-		if ( !other->client || other->client->pers.team != TEAM_HUMANS )
-		{
-			continue;
-		}
-
-		// check for line of sight
-		trap_Trace( &tr, muzzle, NULL, NULL, other->s.origin, other->s.number, CONTENTS_SOLID );
-
-		if ( tr.entityNum == ENTITYNUM_WORLD )
-		{
-			continue;
-		}
-
-		other->client->ps.eFlags |= EF_POISONCLOUDED;
-		other->client->lastPoisonCloudedTime = level.time;
-
-		trap_SendServerCommand( other->client->ps.clientNum, "poisoncloud" );
-	}
-
-	G_UnlaggedOff();
-}
-
-/*
-======================================================================
-
 LEVEL2
 
 ======================================================================
@@ -1943,11 +1828,6 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 					           LEVEL1_CLAW_DMG, MOD_LEVEL1_CLAW );
 					break;
 
-				case WP_ALEVEL1_UPG:
-					FireMelee( self, LEVEL1_CLAW_U_RANGE, LEVEL1_CLAW_WIDTH, LEVEL1_CLAW_WIDTH,
-					           LEVEL1_CLAW_DMG, MOD_LEVEL1_CLAW );
-					break;
-
 				case WP_ALEVEL3:
 					FireMelee( self, LEVEL3_CLAW_RANGE, LEVEL3_CLAW_WIDTH, LEVEL3_CLAW_WIDTH,
 					           LEVEL3_CLAW_DMG, MOD_LEVEL3_CLAW );
@@ -2047,10 +1927,6 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 		{
 			switch ( weapon )
 			{
-				case WP_ALEVEL1_UPG:
-					FirePoisonCloud( self );
-					break;
-
 				case WP_LUCIFER_CANNON:
 					FireLcannon( self, qtrue );
 					break;

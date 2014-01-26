@@ -254,7 +254,7 @@ typedef enum
 #define SS_WALLCLIMBING     BIT(0)
 #define SS_CREEPSLOWED      BIT(1)
 #define SS_SPEEDBOOST       BIT(2)
-#define SS_GRABBED          BIT(3)
+#define SS_UNUSED_1         BIT(3)
 #define SS_BLOBLOCKED       BIT(4)
 #define SS_POISONED         BIT(5)
 #define SS_BOOSTED          BIT(6)
@@ -355,7 +355,7 @@ typedef enum
 #define EF_FIRING2          0x0400 // alt fire
 #define EF_FIRING3          0x0800 // third fire
 #define EF_MOVER_STOP       0x1000 // will push otherwise
-#define EF_POISONCLOUDED    0x2000 // player hit with basilisk gas
+#define EF_UNUSED_1         0x2000 // UNUSED
 #define EF_CONNECTION       0x4000 // draw a connection trouble sprite
 #define EF_BLOBLOCKED       0x8000 // caught by a trapper
 
@@ -381,9 +381,7 @@ typedef enum
   WP_NONE,
 
   WP_ALEVEL0,
-  WP_ALEVEL0_UPG,
   WP_ALEVEL1,
-  WP_ALEVEL1_UPG,
   WP_ALEVEL2,
   WP_ALEVEL2_UPG,
   WP_ALEVEL3,
@@ -578,7 +576,6 @@ typedef enum
   EV_TESLATRAIL,
   EV_BULLET, // otherEntity is the shooter
 
-  EV_LEV1_GRAB,
   EV_LEV4_TRAMPLE_PREPARE,
   EV_LEV4_TRAMPLE_START,
 
@@ -910,9 +907,7 @@ typedef enum
 
   //offensive classes
   PCL_ALIEN_LEVEL0,
-  PCL_ALIEN_LEVEL0_UPG,
   PCL_ALIEN_LEVEL1,
-  PCL_ALIEN_LEVEL1_UPG,
   PCL_ALIEN_LEVEL2,
   PCL_ALIEN_LEVEL2_UPG,
   PCL_ALIEN_LEVEL3,
@@ -995,7 +990,6 @@ typedef enum
   MOD_ABUILDER_CLAW,
   MOD_LEVEL0_BITE,
   MOD_LEVEL1_CLAW,
-  MOD_LEVEL1_PCLOUD,
   MOD_LEVEL3_CLAW,
   MOD_LEVEL3_POUNCE,
   MOD_LEVEL3_BOUNCEBALL,
@@ -1294,7 +1288,6 @@ void     BG_PositionBuildableRelativeToPlayer( playerState_t *ps, const vec3_t m
                                                vec3_t outOrigin, vec3_t outAngles, trace_t *tr );
 int                         BG_GetValueOfPlayer( playerState_t *ps );
 qboolean                    BG_PlayerCanChangeWeapon( playerState_t *ps );
-int                         BG_PlayerPoisonCloudTime( playerState_t *ps );
 weapon_t                    BG_GetPlayerWeapon( playerState_t *ps );
 
 void                        BG_PackEntityNumbers( entityState_t *es, const int *entityNums, unsigned int count );

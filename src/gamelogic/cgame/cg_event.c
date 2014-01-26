@@ -628,19 +628,6 @@ static void CG_Obituary( entityState_t *ent )
 				}
 				break;
 
-			case MOD_LEVEL1_PCLOUD:
-				if ( cg_emoticonsInMessages.integer )
-				{
-					message = "%s%s^7 [advbasilisk] %s\n";
-					attackerFirst = qtrue;
-				}
-				else
-				{
-					message = G_( "%s ^7was gassed by %s%s^7's %s\n" );
-					attackerClass = PCL_ALIEN_LEVEL1;
-				}
-				break;
-
 			case MOD_TELEFRAG:
 				if ( cg_emoticonsInMessages.integer )
 				{
@@ -1071,10 +1058,6 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 				VectorCopy( surfNormal, cg.lastNormal );
 			}
 
-			break;
-
-		case EV_LEV1_GRAB:
-			trap_S_StartSound( NULL, es->number, CHAN_VOICE, cgs.media.alienL1Grab );
 			break;
 
 		case EV_LEV4_TRAMPLE_PREPARE:

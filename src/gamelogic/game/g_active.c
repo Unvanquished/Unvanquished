@@ -1051,21 +1051,6 @@ void ClientTimerActions( gentity_t *ent, int msec )
 		{
 			G_AddCreditsToScore( ent, HUMAN_BUILDER_SCOREINC );
 		}
-
-		// Give score to basis that healed other aliens
-		if ( ent->client->pers.hasHealed )
-		{
-			if ( client->ps.weapon == WP_ALEVEL1 )
-			{
-				G_AddCreditsToScore( ent, LEVEL1_REGEN_SCOREINC );
-			}
-			else if ( client->ps.weapon == WP_ALEVEL1_UPG )
-			{
-				G_AddCreditsToScore( ent, LEVEL1_UPG_REGEN_SCOREINC );
-			}
-
-			ent->client->pers.hasHealed = qfalse;
-		}
 	}
 
 	// Regenerate Adv. Dragoon barbs
@@ -1633,16 +1618,11 @@ static int FindAlienHealthSource( gentity_t *self )
 		if ( ent->client && ent->health > 0 && distance < REGEN_BOOST_RANGE &&
 		     ent->client->pers.team == self->client->pers.team )
 		{
-			if ( ent->client->ps.stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL1 )
+			/*if ( ent->client->ps.stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL4 )
 			{
-				// Basilisk healing aura
+				// Tyrant healing aura
 				ret |= SS_HEALING_2X;
-			}
-			else if ( ent->client->ps.stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL1_UPG )
-			{
-				// Advanced Basilisk healing aura
-				ret |= SS_HEALING_3X;
-			}
+			}*/
 		}
 		else if ( ent->s.eType == ET_BUILDABLE && ent->spawned && ent->health > 0 &&
 		          ent->buildableTeam == self->client->pers.team )
@@ -1874,20 +1854,13 @@ void ClientThink_real( gentity_t *self )
 	{
 		client->ps.pm_type = PM_DEAD;
 	}
-	else if ( (client->ps.stats[ STAT_STATE ] & SS_BLOBLOCKED) ||
-	          (client->ps.stats[ STAT_STATE ] & SS_GRABBED) )
+	else if ( client->ps.stats[ STAT_STATE ] & SS_BLOBLOCKED )
 	{
 		client->ps.pm_type = PM_GRABBED;
 	}
 	else
 	{
 		client->ps.pm_type = PM_NORMAL;
-	}
-
-	if ( ( client->ps.stats[ STAT_STATE ] & SS_GRABBED ) &&
-	     client->grabExpiryTime < level.time )
-	{
-		client->ps.stats[ STAT_STATE ] &= ~SS_GRABBED;
 	}
 
 	if ( ( client->ps.stats[ STAT_STATE ] & SS_BLOBLOCKED ) &&
@@ -1933,14 +1906,6 @@ void ClientThink_real( gentity_t *self )
 		{
 			client->ps.stats[ STAT_STATE ] |= SS_BOOSTEDWARNING;
 		}
-	}
-
-	// Check if poison cloud has worn off
-	if ( ( client->ps.eFlags & EF_POISONCLOUDED ) &&
-	     BG_PlayerPoisonCloudTime( &client->ps ) - level.time +
-	     client->lastPoisonCloudedTime <= 0 )
-	{
-		client->ps.eFlags &= ~EF_POISONCLOUDED;
 	}
 
 	if ( (client->ps.stats[ STAT_STATE ] & SS_POISONED) &&
@@ -2087,7 +2052,6 @@ void ClientThink_real( gentity_t *self )
 	switch ( client->ps.weapon )
 	{
 		case WP_ALEVEL0:
-		case WP_ALEVEL0_UPG:
 			if ( !G_CheckVenomAttack( self ) )
 			{
 				client->ps.weaponstate = WEAPON_READY;
@@ -2098,11 +2062,6 @@ void ClientThink_real( gentity_t *self )
 				G_AddEvent( self, EV_FIRE_WEAPON, 0 );
 			}
 
-			break;
-
-		case WP_ALEVEL1:
-		case WP_ALEVEL1_UPG:
-			G_CheckGrabAttack( self );
 			break;
 
 		case WP_ALEVEL3:

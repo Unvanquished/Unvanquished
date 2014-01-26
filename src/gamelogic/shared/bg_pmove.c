@@ -486,22 +486,6 @@ static float PM_CmdScale( usercmd_t *cmd, qboolean zFlight )
 				modifier *= CREEP_MODIFIER;
 			}
 		}
-
-		// Apply poisoncloud modifier
-		// TODO: Move modifer into upgrade/class config files of armour items/classes
-		if ( pm->ps->eFlags & EF_POISONCLOUDED )
-		{
-			if ( BG_InventoryContainsUpgrade( UP_LIGHTARMOUR, pm->ps->stats ) ||
-			     BG_InventoryContainsUpgrade( UP_MEDIUMARMOUR, pm->ps->stats ) ||
-			     BG_InventoryContainsUpgrade( UP_BATTLESUIT, pm->ps->stats ) )
-			{
-				modifier *= PCLOUD_ARMOUR_MODIFIER;
-			}
-			else
-			{
-				modifier *= PCLOUD_MODIFIER;
-			}
-		}
 	}
 
 	// Go faster when using the Tyrant charge attack
@@ -661,7 +645,7 @@ static void PM_CheckWaterPounce( void )
 	// Check for valid class
 	switch ( pm->ps->weapon )
 	{
-		case WP_ALEVEL0_UPG:
+		case WP_ALEVEL1:
 		case WP_ALEVEL3:
 		case WP_ALEVEL3_UPG:
 			break;
@@ -734,7 +718,7 @@ static qboolean PM_CheckPounce( void )
 	// Check for valid class
 	switch ( pm->ps->weapon )
 	{
-		case WP_ALEVEL0_UPG:
+		case WP_ALEVEL1:
 		case WP_ALEVEL3:
 		case WP_ALEVEL3_UPG:
 			break;
@@ -764,7 +748,7 @@ static qboolean PM_CheckPounce( void )
 	// Check class-specific conditions for starting a pounce
 	switch ( pm->ps->weapon )
 	{
-		case WP_ALEVEL0_UPG:
+		case WP_ALEVEL1:
 			// Check if player wants to pounce
 			if ( !usercmdButtonPressed( pm->cmd.buttons, BUTTON_ATTACK2 ) )
 			{
@@ -811,12 +795,12 @@ static qboolean PM_CheckPounce( void )
 	// Calculate jump parameters
 	switch ( pm->ps->weapon )
 	{
-		case WP_ALEVEL0_UPG:
+		case WP_ALEVEL1:
 			// wallwalking
 			if ( pm->ps->groundEntityNum == ENTITYNUM_WORLD && pml.groundTrace.plane.normal[ 2 ] <= 0.1f )
 			{
 				// get jump magnitude
-				jumpMagnitude = LEVEL0_WALLPOUNCE_MAGNITUDE;
+				jumpMagnitude = LEVEL1_WALLPOUNCE_MAGNITUDE;
 
 				// if looking in the direction of the surface, jump in opposite normal direction
 				if ( DotProduct( pml.groundTrace.plane.normal, pml.forward ) < 0.0f )
@@ -929,7 +913,7 @@ static qboolean PM_CheckPounce( void )
 				}
 
 				// add cooldown
-				pm->ps->stats[ STAT_MISC ] = LEVEL0_WALLPOUNCE_COOLDOWN;
+				pm->ps->stats[ STAT_MISC ] = LEVEL1_WALLPOUNCE_COOLDOWN;
 			}
 			// moving foward or standing still
 			else if ( pm->cmd.forwardmove > 0 || ( pm->cmd.forwardmove == 0 && pm->cmd.rightmove == 0 ) )
@@ -939,7 +923,7 @@ static qboolean PM_CheckPounce( void )
 				jumpDirection[ 2 ] = fabs( jumpDirection[ 2 ] );
 
 				// calculate jump magnitude so that jump length is fixed for pitch between
-				// LEVEL0_POUNCE_MINPITCH and pi/4 (45°)
+				// LEVEL1_POUNCE_MINPITCH and pi/4 (45°)
 				groundDirection[ 0 ] = jumpDirection[ 0 ];
 				groundDirection[ 1 ] = jumpDirection[ 1 ];
 				groundDirection[ 2 ] = 0.0f;
@@ -952,15 +936,15 @@ static qboolean PM_CheckPounce( void )
 				{
 					pitch = M_PI / 4.0f;
 				}
-				else if ( pitch < LEVEL0_POUNCE_MINPITCH )
+				else if ( pitch < LEVEL1_POUNCE_MINPITCH )
 				{
-					pitch = LEVEL0_POUNCE_MINPITCH;
+					pitch = LEVEL1_POUNCE_MINPITCH;
 				}
 
-				jumpMagnitude = ( int )sqrt( LEVEL0_POUNCE_DISTANCE * pm->ps->gravity / sin( 2.0f * pitch ) );
+				jumpMagnitude = ( int )sqrt( LEVEL1_POUNCE_DISTANCE * pm->ps->gravity / sin( 2.0f * pitch ) );
 
 				// add cooldown
-				pm->ps->stats[ STAT_MISC ] = LEVEL0_POUNCE_COOLDOWN;
+				pm->ps->stats[ STAT_MISC ] = LEVEL1_POUNCE_COOLDOWN;
 			}
 			// going backwards or strafing
 			else if ( pm->cmd.forwardmove < 0 || pm->cmd.rightmove != 0 )
@@ -979,13 +963,13 @@ static qboolean PM_CheckPounce( void )
 					VectorCopy( pml.right, jumpDirection );
 				}
 
-				jumpDirection[ 2 ] = LEVEL0_SIDEPOUNCE_DIR_Z;
+				jumpDirection[ 2 ] = LEVEL1_SIDEPOUNCE_DIR_Z;
 
 				// get jump magnitude
-				jumpMagnitude = LEVEL0_SIDEPOUNCE_MAGNITUDE;
+				jumpMagnitude = LEVEL1_SIDEPOUNCE_MAGNITUDE;
 
 				// add cooldown
-				pm->ps->stats[ STAT_MISC ] = LEVEL0_SIDEPOUNCE_COOLDOWN;
+				pm->ps->stats[ STAT_MISC ] = LEVEL1_SIDEPOUNCE_COOLDOWN;
 			}
 			// compilers don't get my epic dijkstra-if
 			else
@@ -3759,8 +3743,8 @@ static void PM_Weapon( void )
 		return;
 	}
 
-	// Pounce cooldown (advanced dretch)
-	if ( pm->ps->weapon == WP_ALEVEL0_UPG )
+	// Pounce cooldown (Mantis)
+	if ( pm->ps->weapon == WP_ALEVEL1 )
 	{
 		pm->ps->stats[ STAT_MISC ] -= pml.msec;
 
@@ -3770,7 +3754,7 @@ static void PM_Weapon( void )
 		}
 	}
 
-	// Charging for a pounce or canceling a pounce (dragoon)
+	// Charging for a pounce or canceling a pounce (Dragoon)
 	if ( pm->ps->weapon == WP_ALEVEL3 || pm->ps->weapon == WP_ALEVEL3_UPG )
 	{
 		int max;
@@ -4095,7 +4079,6 @@ static void PM_Weapon( void )
 	switch ( pm->ps->weapon )
 	{
 		case WP_ALEVEL0:
-		case WP_ALEVEL0_UPG:
 			//venom is only autohit
 			return;
 
@@ -4247,7 +4230,6 @@ static void PM_Weapon( void )
 		switch ( pm->ps->weapon )
 		{
 			case WP_ALEVEL0:
-			case WP_ALEVEL0_UPG:
 				pm->ps->generic1 = WPM_PRIMARY;
 				PM_AddEvent( EV_FIRE_WEAPON );
 				addTime = BG_Weapon( pm->ps->weapon )->repeatRate1;
@@ -4312,7 +4294,6 @@ static void PM_Weapon( void )
 		//       weapon.cfg
 		switch ( pm->ps->weapon )
 		{
-			case WP_ALEVEL1_UPG:
 			case WP_ALEVEL1:
 				if ( attack1 )
 				{
