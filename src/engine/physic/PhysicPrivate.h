@@ -54,6 +54,23 @@ namespace Physic {
         to[1] = from[1];
         to[2] = from[2];
     }
+
+    struct ClosestConvexResultCallback : public btCollisionWorld::ClosestConvexResultCallback {
+        int shapePart;
+        int triangleIndex;
+
+        ClosestConvexResultCallback(const btVector3& from, const btVector3& to) :
+            btCollisionWorld::ClosestConvexResultCallback(from, to),
+            shapePart(-1),
+            triangleIndex(-1) {}
+
+        virtual btScalar addSingleResult(btCollisionWorld::LocalConvexResult& convexResult, bool normalInWorldSpace) {
+            float result = btCollisionWorld::ClosestConvexResultCallback::addSingleResult(convexResult, normalInWorldSpace);
+            shapePart = convexResult.m_localShapeInfo->m_shapePart;
+            triangleIndex = convexResult.m_localShapeInfo->m_triangleIndex;
+            return result;
+        }
+    };
 }
 
 #endif //PHYSIC_PHYSICPRIVATE_H_

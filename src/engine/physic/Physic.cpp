@@ -174,7 +174,7 @@ namespace Physic {
         transTo.setIdentity();
         transTo.setOrigin(to + rayMove);
 
-        btCollisionWorld::ClosestConvexResultCallback callback(from + rayMove, to + rayMove);
+        ClosestConvexResultCallback callback(from + rayMove, to + rayMove);
         world->convexSweepTest(&box, transFrom, transTo, callback);
 
         float fraction = results.fraction = callback.m_closestHitFraction;
@@ -186,5 +186,9 @@ namespace Physic {
         btVector3 tamperedRes = rawRes - rawRes.normalized() * std::min(1.0f / 16.0f, traceLength);
 
         bulletToQ3(tamperedRes, results.endpos);
+
+        //if(callback.triangleIndex != 0 && callback.triangleIndex != -1) {
+            //Log::Debug("%? %?\n", callback.shapePart, callback.triangleIndex);
+        //}
     }
 }
