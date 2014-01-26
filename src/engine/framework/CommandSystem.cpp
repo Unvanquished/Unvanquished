@@ -253,11 +253,11 @@ namespace Cmd {
         return res;
     }
 
-    CompletionResult CompletionFilter(Str::StringRef prefix, std::initializer_list<std::pair<std::string, std::string>> list) {
+    CompletionResult CompletionFilter(Str::StringRef prefix, std::initializer_list<CompletionItem> list) {
         return CompletionFilter({}, prefix, list);
     }
 
-    CompletionResult CompletionFilter(CompletionResult &&res, Str::StringRef prefix, std::initializer_list<std::pair<std::string, std::string>> list) {
+    CompletionResult CompletionFilter(CompletionResult &&res, Str::StringRef prefix, std::initializer_list<CompletionItem> list) {
         for (auto item: list) {
             if (Str::IsIPrefix(prefix, item.first)) {
                 res.push_back({item.first, item.second});
