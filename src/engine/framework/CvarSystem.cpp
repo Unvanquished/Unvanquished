@@ -534,8 +534,25 @@ namespace Cvar {
             }
 
             Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, Str::StringRef prefix) const OVERRIDE {
-                if (argNum == 1 or (argNum == 2 and args.Argv(1) == "-unsafe")) {
-                    return ::Cvar::Complete(prefix);
+                int nameIndex = 0;
+                int argc = args.Argc();
+
+                // FIXME: translation
+                static const std::initializer_list<Cmd::CompletionItem> flags = {
+                    {"-unsafe", N_("not safe to use if loading after a crash")},
+                    {"-archive", N_("mark the variable as saved at user request")},
+                    {"-no-archive", N_("unmark the variable as saved at user request")}
+                };
+
+                while (++nameIndex < argc && args[nameIndex][0] == '-')
+                    ;
+
+                if (argNum == nameIndex) {
+                    return Cmd::CompletionFilter(::Cvar::Complete(prefix), prefix, flags);
+                }
+
+                if (argNum && argNum < nameIndex) {
+                    return Cmd::CompletionFilter(prefix, flags);
                 }
 
                 return {};
@@ -575,7 +592,7 @@ namespace Cvar {
             Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, Str::StringRef prefix) const OVERRIDE {
                 Q_UNUSED(args);
 
-                if (argNum == 1) {
+                if (argNum) {
                     return ::Cvar::Complete(prefix);
                 }
 
@@ -633,10 +650,27 @@ namespace Cvar {
             }
 
             Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, Str::StringRef prefix) const OVERRIDE {
-                Q_UNUSED(args);
+                int nameIndex = 0;
+                int argc = args.Argc();
 
-                if (argNum == 1) {
+                // FIXME: translation
+                static const std::initializer_list<Cmd::CompletionItem> flags = {
+                    {"-value", N_("reset only the value; don't clear the user-archived marker")}
+                };
+
+                while (++nameIndex < argc && args[nameIndex][0] == '-')
+                    ;
+
+                if (argNum == nameIndex) {
+                    return Cmd::CompletionFilter(::Cvar::Complete(prefix), prefix, flags);
+                }
+
+                if (argNum > nameIndex) {
                     return ::Cvar::Complete(prefix);
+                }
+
+                if (argNum) {
+                    return Cmd::CompletionFilter(prefix, flags);
                 }
 
                 return {};
