@@ -1177,29 +1177,38 @@ static void FireBuild( gentity_t *self, dynMenu_t menu )
 {
 	buildable_t buildable = (buildable_t) ( self->client->ps.stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK );
 
-	if ( buildable > BA_NONE )
+	// open build menu
+	if ( buildable <= BA_NONE )
 	{
-		if ( self->client->ps.stats[ STAT_MISC ] > 0 )
-		{
-			G_AddEvent( self, EV_BUILD_DELAY, self->client->ps.clientNum );
-			return;
-		}
-
-		if ( G_BuildIfValid( self, buildable ) )
-		{
-			if ( !g_cheats.integer )
-			{
-				self->client->ps.stats[ STAT_MISC ] +=
-				  BG_Buildable( buildable )->buildTime;
-			}
-
-			self->client->ps.stats[ STAT_BUILDABLE ] = BA_NONE;
-		}
-
+		G_TriggerMenu( self->client->ps.clientNum, menu );
 		return;
 	}
 
-	G_TriggerMenu( self->client->ps.clientNum, menu );
+	// can't build just yet
+	if ( self->client->ps.stats[ STAT_MISC ] > 0 )
+	{
+		G_AddEvent( self, EV_BUILD_DELAY, self->client->ps.clientNum );
+		return;
+	}
+
+	// build
+	if ( G_BuildIfValid( self, buildable ) )
+	{
+		if ( !g_cheats.integer )
+		{
+			int buildTime = BG_Buildable( buildable )->buildTime;
+
+			// humans have a reduced build timer
+			if ( self->client->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS )
+			{
+				buildTime /= 2;
+			}
+
+			self->client->ps.stats[ STAT_MISC ] += buildTime;
+		}
+
+		self->client->ps.stats[ STAT_BUILDABLE ] = BA_NONE;
+	}
 }
 
 static void FireSlowblob( gentity_t *self )
