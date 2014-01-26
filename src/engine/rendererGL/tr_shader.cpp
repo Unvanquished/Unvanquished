@@ -1761,6 +1761,40 @@ static qboolean LoadMap( shaderStage_t *stage, char *buffer )
 
 /*
 ===================
+ParseClampType
+===================
+*/
+static qboolean ParseClampType( char *token, wrapType_t *clamp )
+{
+	bool s = true, t = true;
+	wrapTypeEnum_t type;
+
+	// handle prefixing with 'S' or 'T'
+	switch ( token[ 0 ] & 0xDF )
+	{
+	case 'S': t = false; ++token; break;
+	case 'T': s = false; ++token; break;
+	}
+
+	// get the clamp type
+	if      ( !Q_stricmp( token, "clamp"          ) ) { type = WT_CLAMP; }
+	else if ( !Q_stricmp( token, "edgeClamp"      ) ) { type = WT_EDGE_CLAMP; }
+	else if ( !Q_stricmp( token, "zeroClamp"      ) ) { type = WT_ZERO_CLAMP; }
+	else if ( !Q_stricmp( token, "alphaZeroClamp" ) ) { type = WT_ALPHA_ZERO_CLAMP; }
+	else if ( !Q_stricmp( token, "noClamp"        ) ) { type = WT_REPEAT; }
+	else // not recognised
+	{
+		return qfalse;
+	}
+
+	if (s) { clamp->s = type; }
+	if (t) { clamp->t = type; }
+
+	return qtrue;
+}
+
+/*
+===================
 ParseStage
 ===================
 */
@@ -2075,35 +2109,10 @@ static qboolean ParseStage( shaderStage_t *stage, char **text )
 		{
 			stage->overrideNoPicMip = qtrue;
 		}
-		// clamp
-		else if ( !Q_stricmp( token, "clamp" ) )
+		// clamp, edgeClamp etc.
+		else if ( ParseClampType( token, &stage->wrapType ) )
 		{
 			stage->overrideWrapType = qtrue;
-			stage->wrapType = WT_CLAMP;
-		}
-		// edgeClamp
-		else if ( !Q_stricmp( token, "edgeClamp" ) )
-		{
-			stage->overrideWrapType = qtrue;
-			stage->wrapType = WT_EDGE_CLAMP;
-		}
-		// zeroClamp
-		else if ( !Q_stricmp( token, "zeroClamp" ) )
-		{
-			stage->overrideWrapType = qtrue;
-			stage->wrapType = WT_ZERO_CLAMP;
-		}
-		// alphaZeroClamp
-		else if ( !Q_stricmp( token, "alphaZeroClamp" ) )
-		{
-			stage->overrideWrapType = qtrue;
-			stage->wrapType = WT_ALPHA_ZERO_CLAMP;
-		}
-		// noClamp
-		else if ( !Q_stricmp( token, "noClamp" ) )
-		{
-			stage->overrideWrapType = qtrue;
-			stage->wrapType = WT_REPEAT;
 		}
 		// uncompressed
 		else if ( !Q_stricmp( token, "uncompressed" ) )
@@ -4578,28 +4587,9 @@ static qboolean ParseShader( char *_text )
 			shader.cullType = CT_BACK_SIDED;
 			continue;
 		}
-		// clamp
-		else if ( !Q_stricmp( token, "clamp" ) )
+		// clamp, edgeClamp etc.
+		else if ( ParseClampType( token, &shader.wrapType ) )
 		{
-			shader.wrapType = WT_CLAMP;
-			continue;
-		}
-		// edgeClamp
-		else if ( !Q_stricmp( token, "edgeClamp" ) )
-		{
-			shader.wrapType = WT_EDGE_CLAMP;
-			continue;
-		}
-		// zeroClamp
-		else if ( !Q_stricmp( token, "zeroclamp" ) )
-		{
-			shader.wrapType = WT_ZERO_CLAMP;
-			continue;
-		}
-		// alphaZeroClamp
-		else if ( !Q_stricmp( token, "alphaZeroClamp" ) )
-		{
-			shader.wrapType = WT_ALPHA_ZERO_CLAMP;
 			continue;
 		}
 		// sort
