@@ -147,16 +147,6 @@ gfx/2d/indicator-level0_s
 	}
 }
 
-gfx/2d/indicator-level0upg_s
-{
-	nopicmip
-	{
-		map gfx/2d/indicator-level0upg
-		blendfunc blend
-		rgbGen vertex
-	}
-}
-
 gfx/2d/indicator-level1_s
 {
 	nopicmip
