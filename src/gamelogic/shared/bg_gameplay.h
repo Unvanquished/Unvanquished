@@ -384,5 +384,6 @@ extern int   REACTOR_ATTACK_DAMAGE;
 #define DEFAULT_MOMENTUM_DESTROY_MOD     "0.8"
 
 #define MAXIMUM_BUILD_TIME                 20000 // used for pie timer
+#define BUILDABLE_START_HEALTH_FRAC        0.25f
 
 #endif // G_GAMEPLAY_H_

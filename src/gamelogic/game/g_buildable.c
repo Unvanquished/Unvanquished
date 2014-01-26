@@ -3378,8 +3378,9 @@ void G_BuildableThink( gentity_t *ent, int msec )
 
 		if ( !ent->spawned && ent->health > 0 )
 		{
-			// don't use G_Heal so the rewards array isn't scaled/cleared
-			ent->health += ( int )( ceil( ( float ) maxHealth / ( float )( buildTime * 0.001f ) ) );
+			int gain = ( int )ceil( maxHealth * ( 1.0f - BUILDABLE_START_HEALTH_FRAC ) * 1000.0f / buildTime );
+
+			G_Heal( ent, gain );
 		}
 		else if ( ent->health > 0 && ent->health < maxHealth )
 		{
@@ -4436,7 +4437,7 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 	built->buildableTeam = (team_t) built->s.modelindex2;
 	BG_BuildableBoundingBox( buildable, built->r.mins, built->r.maxs );
 
-	built->health = 1;
+	built->health = ( int )ceil( attr->health * BUILDABLE_START_HEALTH_FRAC );
 
 	built->splashDamage = attr->splashDamage;
 	built->splashRadius = attr->splashRadius;
