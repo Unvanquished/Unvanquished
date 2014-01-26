@@ -4508,15 +4508,6 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 			built->die = AOvermind_Die;
 			built->think = AOvermind_Think;
 			built->pain = AGeneric_Pain;
-			{
-				vec3_t mins;
-				vec3_t maxs;
-				VectorCopy( built->r.mins, mins );
-				VectorCopy( built->r.maxs, maxs );
-				VectorAdd( mins, origin, mins );
-				VectorAdd( maxs, origin, maxs );
-				trap_BotAddObstacle( mins, maxs, &built->obstacleHandle );
-			}
 			break;
 
 		case BA_H_SPAWN:
@@ -4532,30 +4523,12 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 		case BA_H_TESLAGEN:
 			built->die = HGeneric_Die;
 			built->think = HTeslaGen_Think;
-						{
-				vec3_t mins;
-				vec3_t maxs;
-				VectorCopy( built->r.mins, mins );
-				VectorCopy( built->r.maxs, maxs );
-				VectorAdd( mins, origin, mins );
-				VectorAdd( maxs, origin, maxs );
-				trap_BotAddObstacle( mins, maxs, &built->obstacleHandle );
-			}
 			break;
 
 		case BA_H_ARMOURY:
 			built->think = HArmoury_Think;
 			built->die = HGeneric_Die;
 			built->use = HArmoury_Use;
-						{
-				vec3_t mins;
-				vec3_t maxs;
-				VectorCopy( built->r.mins, mins );
-				VectorCopy( built->r.maxs, maxs );
-				VectorAdd( mins, origin, mins );
-				VectorAdd( maxs, origin, maxs );
-				trap_BotAddObstacle( mins, maxs, &built->obstacleHandle );
-			}
 			break;
 
 		case BA_H_MEDISTAT:
@@ -4572,15 +4545,6 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 			built->think = HReactor_Think;
 			built->die = HReactor_Die;
 			built->powered = built->active = qtrue;
-			{
-				vec3_t mins;
-				vec3_t maxs;
-				VectorCopy( built->r.mins, mins );
-				VectorCopy( built->r.maxs, maxs );
-				VectorAdd( mins, origin, mins );
-				VectorAdd( maxs, origin, maxs );
-				trap_BotAddObstacle( mins, maxs, &built->obstacleHandle );
-			}
 			break;
 
 		case BA_H_REPEATER:
@@ -4590,8 +4554,19 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 			break;
 
 		default:
-			//erk
 			break;
+	}
+
+	// Add bot obstacles
+	if ( built->r.maxs[2] - built->r.mins[2] > 47.0f ) // HACK: Fixed jump height
+	{
+		vec3_t mins;
+		vec3_t maxs;
+		VectorCopy( built->r.mins, mins );
+		VectorCopy( built->r.maxs, maxs );
+		VectorAdd( mins, origin, mins );
+		VectorAdd( maxs, origin, maxs );
+		trap_BotAddObstacle( mins, maxs, &built->obstacleHandle );
 	}
 
 	built->r.contents = CONTENTS_BODY;
