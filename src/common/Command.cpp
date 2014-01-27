@@ -425,6 +425,14 @@ namespace Cmd {
         return Argv(argNum);
     }
 
+    std::vector<std::string>::const_iterator Args::begin() const {
+        return args.cbegin();
+    }
+
+    std::vector<std::string>::const_iterator Args::end() const {
+        return args.cend();
+    }
+
     /*
     ===============================================================================
 
