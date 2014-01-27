@@ -307,6 +307,11 @@ namespace Cmd {
         return true;
     }
 
+    bool IsSwitch(Str::StringRef arg, const char *name)
+    {
+        return Str::LongestPrefixSize(ToLower(arg), name) > 1;
+    }
+
     /*
     ===============================================================================
 

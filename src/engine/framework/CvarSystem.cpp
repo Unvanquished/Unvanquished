@@ -493,14 +493,14 @@ namespace Cvar {
                 bool setArchive = false;
 
                 while (++nameIndex < argc) {
-                    if (args.Argv(nameIndex) == "-unsafe") {
+                    if (Cmd::IsSwitch(args.Argv(nameIndex), "-unsafe")) {
                         unsafe = true;
                     }
-                    else if (!flags && args.Argv(nameIndex) == "-archive") {
+                    else if (!flags && Cmd::IsSwitch(args.Argv(nameIndex), "-archive")) {
                         clearArchive = false;
                         setArchive = true;
                     }
-                    else if (!flags && args.Argv(nameIndex) == "-no-archive") {
+                    else if (!flags && Cmd::IsSwitch(args.Argv(nameIndex), "-no-archive")) {
                         clearArchive = true;
                         setArchive = false;
                     }
@@ -616,7 +616,7 @@ namespace Cvar {
                 bool clearArchive = true;
 
                 while (++nameIndex < argc) {
-                    if (args.Argv(nameIndex) == "-value") {
+                    if (Cmd::IsSwitch(args.Argv(nameIndex), "-value")) {
                         clearArchive = false;
                     }
                     else {
@@ -705,7 +705,7 @@ namespace Cvar {
                 //Read parameters
                 if (args.Argc() > 1) {
                     match = args.Argv(1);
-                    if (match == "-raw") {
+                    if (Cmd::IsSwitch(match, "-raw")) {
                         raw = true;
                         match = (args.Argc() > 2) ? args.Argv(2) : "";
                     }

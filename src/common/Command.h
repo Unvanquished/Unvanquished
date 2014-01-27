@@ -63,6 +63,8 @@ namespace Cmd {
     bool IsValidCmdName(Str::StringRef text);
     bool IsValidCvarName(Str::StringRef text);
 
+    bool IsSwitch(Str::StringRef arg, const char *name);
+
     /**
      * Cmd::Args represents the arguments given to an invoked command.
      * It has a number of convenient methods to access the raw command
