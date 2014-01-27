@@ -584,6 +584,7 @@ const char* FS_LoadedPaks();
 // Returns a space separated string containing all loaded pk3 files.
 
 bool     FS_LoadPak( const char *name );
+void     FS_LoadBasePak();
 bool     FS_LoadServerPaks( const char* paks );
 
 // shutdown and restart the filesystem so changes to fs_gamedir can take effect

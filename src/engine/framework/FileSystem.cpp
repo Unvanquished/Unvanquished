@@ -51,11 +51,18 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 namespace FS {
 
 // Pak zip and directory extensions
-#define PAK_ZIP_EXT ".pk3"
-#define PAK_DIR_EXT ".pk3dir/"
+const char PAK_ZIP_EXT[] = ".pk3";
+const char PAK_DIR_EXT[] = ".pk3dir/";
 
 // Dependencies file in packages
-#define PAK_DEPS_FILE "DEPS"
+const char PAK_DEPS_FILE[] = "DEPS";
+
+// Default base package
+const char DEFAULT_BASE_PAK[] = "unvanquished";
+
+// Cvars to select the base and extra packages to use
+static Cvar::Cvar<std::string> fs_basepak("fs_basepak", "base pak to load", 0, DEFAULT_BASE_PAK);
+static Cvar::Cvar<std::string> fs_extrapaks("fs_extrapaks", "space-seperated list of paks to load in addition to the base pak", 0, "");
 
 // Whether the search paths have been initialized yet. This can be used to delay
 // writing log files until the filesystem is initialized.
@@ -2395,15 +2402,30 @@ bool FS_LoadPak(const char* name)
 	}
 }
 
+void FS_LoadBasePak()
+{
+	if (!FS_LoadPak(FS::fs_basepak.Get().c_str())) {
+		Com_Printf("Could not load base pak '%s', falling back to default\n", FS::fs_basepak.Get().c_str());
+		if (!FS_LoadPak(FS::DEFAULT_BASE_PAK))
+			Com_Error(ERR_FATAL, "Could not load default base pak '%s'", FS::DEFAULT_BASE_PAK);
+	}
+
+	Cmd::Args extrapaks(FS::fs_extrapaks.Get());
+	for (auto& x: extrapaks) {
+		if (!FS_LoadPak(x.c_str()))
+			Com_Printf("Could not load extra pak '%s'\n", x.c_str());
+	}
+}
+
 bool FS_LoadServerPaks(const char* paks)
 {
 	Cmd::Args args(paks);
 	fs_missingPaks.clear();
-	for (int i = 0; i < args.Argc(); i++) {
+	for (auto& x: args) {
 		std::string name, version;
 		Opt::optional<uint32_t> checksum;
-		if (!FS::ParsePakName(args.Argv(i).data(), args.Argv(i).data() + args.Argv(i).size(), name, version, checksum) || !checksum) {
-			Com_Error(ERR_DROP, "Invalid pak reference from server: %s\n", args.Argv(i).c_str());
+		if (!FS::ParsePakName(x.data(), x.data() + x.size(), name, version, checksum) || !checksum) {
+			Com_Error(ERR_DROP, "Invalid pak reference from server: %s", x.c_str());
 			continue;
 		}
 

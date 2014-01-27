@@ -282,9 +282,10 @@ void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int code, const char *fmt, ... )
 	int        currentTime;
 
 	// make sure we can get at our local stuff
-	FS::PakPath::ClearPaks();
-	if (!FS_LoadPak("unvanquished") && code != ERR_FATAL)
-		Com_Error(ERR_FATAL, "Could not load main pak\n");
+	if (code != ERR_FATAL) {
+		FS::PakPath::ClearPaks();
+		FS_LoadBasePak();
+	}
 
 	// if we are getting a solid stream of ERR_DROP, do an ERR_FATAL
 	currentTime = Sys_Milliseconds();
@@ -1819,8 +1820,7 @@ void Com_Init( char *commandLine )
 	CL_InitKeyCommands();
 
 	FS::Initialize();
-	if (!FS_LoadPak("unvanquished"))
-		Com_Error(ERR_FATAL, "Could not load main pak\n");
+	FS_LoadBasePak();
 
 	Trans_Init();
 
