@@ -311,10 +311,13 @@ typedef int clipHandle_t;
     // Here we have a union of scalar struct and sse struct, transform_u and the
     // scalar struct must match transform_s so we have to use anonymous structs.
     // We disable compiler warnings when using -Wpedantic for this specific case.
+#ifdef __GNUC__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wgnu-anonymous-struct"
+#ifdef __clang__
+#pragma GCC diagnostic ignored "-Wgnu-anonymous-struct"
+#endif
+#endif
 	typedef ALIGNED( 16, union transform_u {
 		struct {
 			quat_t rot;
@@ -326,8 +329,9 @@ typedef int clipHandle_t;
 			__m128 sseTransScale;
 		};
 	} ) transform_t;
-#pragma clang diagnostic pop
+#ifdef __GNUC__
 #pragma GCC diagnostic pop
+#endif
 #else
 	typedef struct transform_s {
 		quat_t rot;
