@@ -275,9 +275,9 @@ static cvarTable_t gameCvarTable[] =
 
 	{ &g_synchronousClients,          "g_synchronousClients",          "0",                                CVAR_SYSTEMINFO,                                 0, qfalse           },
 
-	{ &g_friendlyFire,                "g_friendlyFire",                "0",                                CVAR_SERVERINFO | CVAR_ARCHIVE,                  0, qtrue            },
-	{ &g_friendlyBuildableFire,       "g_friendlyBuildableFire",       "0",                                CVAR_SERVERINFO | CVAR_ARCHIVE,                  0, qtrue            },
-	{ &g_dretchPunt,                  "g_dretchPunt",                  "1",                                CVAR_ARCHIVE,                                    0, qtrue            },
+	{ &g_friendlyFire,                "g_friendlyFire",                "0",                                CVAR_SERVERINFO,                                 0, qtrue            },
+	{ &g_friendlyBuildableFire,       "g_friendlyBuildableFire",       "0",                                CVAR_SERVERINFO,                                 0, qtrue            },
+	{ &g_dretchPunt,                  "g_dretchPunt",                  "1",                                0,                                               0, qtrue            },
 
 	{ &g_teamForceBalance,            "g_teamForceBalance",            "0",                                CVAR_ARCHIVE,                                    0, qtrue            },
 
@@ -319,48 +319,47 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_admitDefeatVotesPercent,     "g_admitDefeatVotesPercent",     "74",                               CVAR_ARCHIVE,                                    0, qtrue            },
 	{ &g_pollVotesPercent,            "g_pollVotesPercent",            "0",                                CVAR_ARCHIVE,                                    0, qtrue            },
 	{ &g_botKickVotesAllowed,         "g_botKickVotesAllowed",         "1",                                CVAR_ARCHIVE,                                    0, qtrue            },
-	{ &g_botKickVotesAllowedThisMap,  "g_botKickVotesAllowedThisMap",  "1",                                0,                                               0, qtrue            },
-	{ &g_minNameChangePeriod,         "g_minNameChangePeriod",         "5",                                0,                                               0, qfalse           },
-	{ &g_maxNameChanges,              "g_maxNameChanges",              "5",                                0,                                               0, qfalse           },
+	{ &g_botKickVotesAllowedThisMap,  "g_botKickVotesAllowedThisMap",  "1",                                CVAR_ARCHIVE,                                    0, qtrue            },
+	{ &g_minNameChangePeriod,         "g_minNameChangePeriod",         "5",                                CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_maxNameChanges,              "g_maxNameChanges",              "5",                                CVAR_ARCHIVE,                                    0, qfalse           },
 
 	{ &g_smoothClients,               "g_smoothClients",               "1",                                0,                                               0, qfalse           },
 	{ &pmove_fixed,                   "pmove_fixed",                   "0",                                CVAR_SYSTEMINFO,                                 0, qfalse           },
 	{ &pmove_msec,                    "pmove_msec",                    "8",                                CVAR_SYSTEMINFO,                                 0, qfalse           },
 	{ &pmove_accurate,                "pmove_accurate",                "1",                                CVAR_SYSTEMINFO,                                 0, qfalse           },
 
-	{ &g_initialBuildPoints,          "g_initialBuildPoints",          DEFAULT_INITIAL_BUILD_POINTS,       CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_initialMineRate,             "g_initialMineRate",             DEFAULT_INITIAL_MINE_RATE,          CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_mineRateHalfLife,            "g_mineRateHalfLife",            DEFAULT_MINE_RATE_HALF_LIFE,        CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_minimumMineRate,             "g_minimumMineRate",             DEFAULT_MINIMUM_MINE_RATE,          CVAR_ARCHIVE,                                    0, qfalse           },
+	// gameplay: mining
+	{ &g_initialBuildPoints,          "g_initialBuildPoints",          DEFAULT_INITIAL_BUILD_POINTS,       0,                                               0, qfalse           },
+	{ &g_initialMineRate,             "g_initialMineRate",             DEFAULT_INITIAL_MINE_RATE,          0,                                               0, qfalse           },
+	{ &g_mineRateHalfLife,            "g_mineRateHalfLife",            DEFAULT_MINE_RATE_HALF_LIFE,        0,                                               0, qfalse           },
+	{ &g_minimumMineRate,             "g_minimumMineRate",             DEFAULT_MINIMUM_MINE_RATE,          0,                                               0, qfalse           },
 
-	{ &g_debugMomentum,             "g_debugMomentum",             "0",                                0,                                               0, qfalse           },
-	{ &g_momentumHalfLife,          "g_momentumHalfLife",          DEFAULT_MOMENTUM_HALF_LIFE,       CVAR_SERVERINFO | CVAR_ARCHIVE,                  0, qfalse           },
-	{ &g_momentumRewardDoubleTime,  "g_momentumRewardDoubleTime",  DEFAULT_CONF_REWARD_DOUBLE_TIME,    CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_unlockableMinTime,           "g_unlockableMinTime",           DEFAULT_UNLOCKABLE_MIN_TIME,        CVAR_SERVERINFO | CVAR_ARCHIVE,                  0, qfalse           },
-	{ &g_momentumBaseMod,           "g_momentumBaseMod",           DEFAULT_MOMENTUM_BASE_MOD,        CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_momentumKillMod,           "g_momentumKillMod",           DEFAULT_MOMENTUM_KILL_MOD,        CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_momentumBuildMod,          "g_momentumBuildMod",          DEFAULT_MOMENTUM_BUILD_MOD,       CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_momentumDeconMod,          "g_momentumDeconMod",          DEFAULT_MOMENTUM_DECON_MOD,       CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_momentumDestroyMod,        "g_momentumDestroyMod",        DEFAULT_MOMENTUM_DESTROY_MOD,     CVAR_ARCHIVE,                                    0, qfalse           },
+	// gameplay: momentum
+	{ &g_debugMomentum,               "g_debugMomentum",               "0",                                0,                                               0, qfalse           },
+	{ &g_momentumHalfLife,            "g_momentumHalfLife",            DEFAULT_MOMENTUM_HALF_LIFE,         CVAR_SERVERINFO,                                 0, qfalse           },
+	{ &g_momentumRewardDoubleTime,    "g_momentumRewardDoubleTime",    DEFAULT_CONF_REWARD_DOUBLE_TIME,    0,                                               0, qfalse           },
+	{ &g_unlockableMinTime,           "g_unlockableMinTime",           DEFAULT_UNLOCKABLE_MIN_TIME,        CVAR_SERVERINFO,                                 0, qfalse           },
+	{ &g_momentumBaseMod,             "g_momentumBaseMod",             DEFAULT_MOMENTUM_BASE_MOD,          0,                                               0, qfalse           },
+	{ &g_momentumKillMod,             "g_momentumKillMod",             DEFAULT_MOMENTUM_KILL_MOD,          0,                                               0, qfalse           },
+	{ &g_momentumBuildMod,            "g_momentumBuildMod",            DEFAULT_MOMENTUM_BUILD_MOD,         0,                                               0, qfalse           },
+	{ &g_momentumDeconMod,            "g_momentumDeconMod",            DEFAULT_MOMENTUM_DECON_MOD,         0,                                               0, qfalse           },
+	{ &g_momentumDestroyMod,          "g_momentumDestroyMod",          DEFAULT_MOMENTUM_DESTROY_MOD,       0,                                               0, qfalse           },
 
+	// gameplay: human power
+	{ &g_powerCompetitionRange,       "g_powerCompetitionRange",       "320",                              0,                                               0, qfalse           },
+	{ &g_powerBaseSupply,             "g_powerBaseSupply",             "20",                               0,                                               0, qfalse           },
+	{ &g_powerReactorSupply,          "g_powerReactorSupply",          "40",                               0,                                               0, qfalse           },
+	{ &g_powerReactorRange,           "g_powerReactorRange",           "800",                              CVAR_SERVERINFO,                                 0, qfalse           },
+	{ &g_powerRepeaterSupply,         "g_powerRepeaterSupply",         "20",                               0,                                               0, qfalse           },
+	{ &g_powerRepeaterRange,          "g_powerRepeaterRange",          "400",                              CVAR_SERVERINFO,                                 0, qfalse           },
+
+	// gameplay: misc
+	{ &g_alienOffCreepRegenHalfLife,  "g_alienOffCreepRegenHalfLife",  "0",                                0,                                               0, qfalse           },
+	{ &g_freeFundPeriod,              "g_freeFundPeriod",              DEFAULT_FREEKILL_PERIOD,            0,                                               0, qtrue            },
 	{ &g_humanAllowBuilding,          "g_humanAllowBuilding",          "1",                                0,                                               0, qfalse           },
 	{ &g_alienAllowBuilding,          "g_alienAllowBuilding",          "1",                                0,                                               0, qfalse           },
 
-	{ &g_powerCompetitionRange,       "g_powerCompetitionRange",       "320",                              CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_powerBaseSupply,             "g_powerBaseSupply",             "20",                               CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_powerReactorSupply,          "g_powerReactorSupply",          "40",                               CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_powerReactorRange,           "g_powerReactorRange",           "800",                              CVAR_SERVERINFO | CVAR_ARCHIVE,                  0, qfalse           },
-	{ &g_powerRepeaterSupply,         "g_powerRepeaterSupply",         "20",                               CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_powerRepeaterRange,          "g_powerRepeaterRange",          "400",                              CVAR_SERVERINFO | CVAR_ARCHIVE,                  0, qfalse           },
-	{ &g_powerLevel1Interference,     "g_powerLevel1Interference",     "13",                               CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_powerLevel1Range,            "g_powerLevel1Range",            "250",                              CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_powerLevel1UpgInterference,  "g_powerLevel1UpgInterference",  "16",                               CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_powerLevel1UpgRange,         "g_powerLevel1UpgRange",         "300",                              CVAR_ARCHIVE,                                    0, qfalse           },
-
-	{ &g_alienOffCreepRegenHalfLife,  "g_alienOffCreepRegenHalfLife",  "0",                                CVAR_ARCHIVE,                                    0, qfalse           },
-
 	{ &g_teamImbalanceWarnings,       "g_teamImbalanceWarnings",       "30",                               CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_freeFundPeriod,              "g_freeFundPeriod",              DEFAULT_FREEKILL_PERIOD,            CVAR_ARCHIVE,                                    0, qtrue            },
 
 	{ &g_unlagged,                    "g_unlagged",                    "1",                                CVAR_SERVERINFO | CVAR_ARCHIVE,                  0, qtrue            },
 
@@ -374,7 +373,7 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_floodMaxDemerits,            "g_floodMaxDemerits",            "5000",                             CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_floodMinTime,                "g_floodMinTime",                "2000",                             CVAR_ARCHIVE,                                    0, qfalse           },
 
-	{ &g_markDeconstruct,             "g_markDeconstruct",             "3",                                CVAR_SERVERINFO | CVAR_ARCHIVE,                  0, qtrue            },
+	{ &g_markDeconstruct,             "g_markDeconstruct",             "3",                                CVAR_SERVERINFO,                                 0, qtrue            },
 
 	{ &g_debugMapRotation,            "g_debugMapRotation",            "0",                                0,                                               0, qfalse           },
 	{ &g_currentMapRotation,          "g_currentMapRotation",          "0",                                0,                                               0, qfalse           }, // -1 = NOT_ROTATING
@@ -835,14 +834,13 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 		{
 			char    serverinfo[ MAX_INFO_STRING ];
 			qtime_t qt;
-			int     t;
 
 			trap_GetServerinfo( serverinfo, sizeof( serverinfo ) );
 
 			G_LogPrintf( "------------------------------------------------------------\n" );
 			G_LogPrintf( "InitGame: %s\n", serverinfo );
 
-			t = trap_GMTime( &qt );
+			trap_GMTime( &qt );
 			G_LogPrintf( "RealTime: %04i-%02i-%02i %02i:%02i:%02i Z\n",
 			             1900 + qt.tm_year, qt.tm_mon + 1, qt.tm_mday,
 			             qt.tm_hour, qt.tm_min, qt.tm_sec );
@@ -1575,8 +1573,8 @@ Resets completely if all players leave a team.
 void G_CalculateAvgPlayers( void )
 {
 	int        team;
-	int        *samples, currentPlayers;
-	float      *avgPlayers;
+	int        *samples, currentPlayers, currentBots;
+	float      *avgClients, *avgPlayers, *avgBots;
 
 	static int nextCalculation = 0;
 
@@ -1588,26 +1586,26 @@ void G_CalculateAvgPlayers( void )
 	for ( team = TEAM_NONE + 1; team < NUM_TEAMS; team++ )
 	{
 		samples        = &level.team[ team ].numSamples;
-		currentPlayers =  level.team[ team ].numClients;
-		avgPlayers     = &level.team[ team ].averageNumClients;
+		currentPlayers =  level.team[ team ].numPlayers;
+		currentBots    =  level.team[ team ].numBots;
+		avgClients     = &level.team[ team ].averageNumClients;
+		avgPlayers     = &level.team[ team ].averageNumPlayers;
+		avgBots        = &level.team[ team ].averageNumBots;
 
 		if ( *samples == 0 )
 		{
 			*avgPlayers = ( float )currentPlayers;
+			*avgBots    = ( float )currentBots;
 		}
 		else
 		{
 			*avgPlayers = ( ( *avgPlayers * *samples ) + currentPlayers ) / ( *samples + 1 );
+			*avgBots    = ( ( *avgBots    * *samples ) + currentBots    ) / ( *samples + 1 );
 		}
 
-		if ( currentPlayers == 0 )
-		{
-			*samples = 0;
-		}
-		else
-		{
-			(*samples)++;
-		}
+		*avgClients = *avgPlayers + *avgBots;
+
+		(*samples)++;
 	}
 
 	nextCalculation = level.time + 1000;
@@ -1624,82 +1622,98 @@ and team change.
 */
 void CalculateRanks( void )
 {
-	int  i;
+	int  clientNum;
 	int  team;
 	char P[ MAX_CLIENTS + 1 ] = "", B[ MAX_CLIENTS + 1 ] = "";
 
 	level.numConnectedClients = 0;
-	level.numPlayingClients = 0;
+	level.numPlayingClients   = 0;
+	level.numPlayingPlayers   = 0;
+	level.numPlayingBots      = 0;
+	level.numAliveClients     = 0;
 
 	for ( team = TEAM_NONE; team < NUM_TEAMS; team++ )
 	{
-		level.team[ team ].numVotingClients = 0;
-		level.team[ team ].numClients = 0;
-		level.team[ team ].numLiveClients = 0;
+		level.team[ team ].numClients      = 0;
+		level.team[ team ].numPlayers      = 0;
+		level.team[ team ].numBots         = 0;
+		level.team[ team ].numAliveClients = 0;
 	}
 
-	for ( i = 0; i < level.maxclients; i++ )
+	for ( clientNum = 0; clientNum < level.maxclients; clientNum++ )
 	{
-		P[ i ] = '-';
-		B[ i ] = '-';
+		P[ clientNum ] = '-';
+		B[ clientNum ] = '-';
 
-		if ( level.clients[ i ].pers.connected != CON_DISCONNECTED )
+		if ( level.clients[ clientNum ].pers.connected != CON_DISCONNECTED )
 		{
 			qboolean bot = qfalse;
-			int j;
+			int      entNum;
 
-			for ( j = 0; j < level.num_entities; ++j)
+			for ( entNum = 0; entNum < level.num_entities; ++entNum)
 			{
-				if ( level.gentities[ i ].client == &level.clients[ i ] )
+				if ( level.gentities[ clientNum ].client == &level.clients[ clientNum ] )
 				{
-					bot = !!(level.gentities[ i ].r.svFlags & SVF_BOT);
+					bot = ( level.gentities[ clientNum ].r.svFlags & SVF_BOT );
 					break;
 				}
 			}
 
-			level.sortedClients[ level.numConnectedClients ] = i;
-			level.numConnectedClients++;
+			level.sortedClients[ level.numConnectedClients ] = clientNum;
 
-			team = level.clients[ i ].pers.team;
-			P[ i ] = ( char ) '0' + team;
+			team = level.clients[ clientNum ].pers.team;
+			P[ clientNum ] = ( char ) '0' + team;
+
+			level.numConnectedClients++;
+			level.team[ team ].numClients++;
 
 			if ( bot )
 			{
-				B[ i ] = 'b';
+				B[ clientNum ] = 'b';
+				level.team[ team ].numBots++;
 			}
 			else
 			{
-				level.team[ TEAM_NONE ].numVotingClients++;
+				level.team[ team ].numPlayers++;
 			}
 
-			if ( level.clients[ i ].pers.connected != CON_CONNECTED )
+			if ( level.clients[ clientNum ].pers.connected != CON_CONNECTED )
 			{
 				continue;
 			}
 
+			// clients on a team are "playing"
 			if ( team != TEAM_NONE )
 			{
 				level.numPlayingClients++;
-				level.team[ team ].numClients++;
 
-				if ( !bot )
+				if ( bot )
 				{
-					level.team[ team ].numVotingClients++;
+					level.numPlayingBots++;
+				}
+				else
+				{
+					level.numPlayingPlayers++;
 				}
 
-				if ( level.clients[ i ].sess.spectatorState == SPECTATOR_NOT )
+				// clients on a team that don't spectate are "alive"
+				if ( level.clients[ clientNum ].sess.spectatorState == SPECTATOR_NOT )
 				{
-					level.team[ team ].numLiveClients++;
+					level.numAliveClients++;
+					level.team[ team ].numAliveClients++;
 				}
 			}
 		}
 	}
 
-	level.numNonSpectatorClients = level.team[ TEAM_ALIENS ].numLiveClients +
-	                               level.team[ TEAM_HUMANS ].numLiveClients;
-	P[ i ] = '\0';
+	// voting code expects level.team[ TEAM_NONE ].numPlayers to be all players, spectating or playing
+	// TODO: Use TEAM_ALL or the latter version for this everywhere
+	level.team[ TEAM_NONE ].numPlayers += level.numPlayingPlayers;
+
+	P[ clientNum ] = '\0';
 	trap_Cvar_Set( "P", P );
-	B[ i ] = '\0';
+
+	B[ clientNum ] = '\0';
 	trap_Cvar_Set( "B", B );
 
 	qsort( level.sortedClients, level.numConnectedClients,
@@ -2006,46 +2020,6 @@ void QDECL PRINTF_LIKE(1) G_LogPrintf( const char *fmt, ... )
 
 /*
 =================
-GetAverageDistanceToBase
-
-Calculates the average distance of each teams' players to their main base.
-=================
-*/
-static void GetAverageDistanceToBase( int teamDistance[] )
-{
-	int       teamCnt[ NUM_TEAMS ];
-	int       playerNum;
-	gentity_t *playerEnt;
-	gclient_t *client;
-	int       team;
-
-	for ( team = TEAM_ALIENS ; team < NUM_TEAMS ; ++team)
-	{
-		teamCnt[ team ] = 0;
-		teamDistance[ team ] = 0;
-	}
-
-	for ( playerNum = 0; playerNum < MAX_CLIENTS; playerNum++ )
-	{
-		playerEnt = &g_entities[ playerNum ];
-		client = playerEnt->client;
-
-		if ( !client || playerEnt->health <= 0 )
-		{
-			continue;
-		}
-
-		teamDistance[ client->pers.team ] += ( int )G_DistanceToBase( playerEnt, qtrue );
-		teamCnt[ client->pers.team ]++;
-	}
-
-	//TODO merge G_Overmind() and G_Reactor() into a unique function (did not read them yet, but I bet is will not be so hard)
-	teamDistance[ TEAM_ALIENS ] = ( !G_Overmind() || teamCnt[ TEAM_ALIENS ] == 0 ) ? 0 : ( teamDistance[ TEAM_ALIENS ] / teamCnt[ TEAM_ALIENS ] );
-	teamDistance[ TEAM_HUMANS ] = ( !G_Reactor()  || teamCnt[ TEAM_HUMANS ] == 0 ) ? 0 : ( teamDistance[ TEAM_HUMANS ] / teamCnt[ TEAM_HUMANS ] );;
-}
-
-/*
-=================
 GetAverageCredits
 
 Calculates the average amount of spare credits as well as the value of each teams' players.
@@ -2096,7 +2070,7 @@ G_LogGameplayStats
 =================
 */
 // Increment this if you add/change columns or otherwise change the log format
-#define LOG_GAMEPLAY_STATS_VERSION 1
+#define LOG_GAMEPLAY_STATS_VERSION 2
 
 static void G_LogGameplayStats( int state )
 {
@@ -2104,11 +2078,6 @@ static void G_LogGameplayStats( int state )
 	char       logline[ sizeof( Q3_VERSION ) + sizeof( mapname ) + 1024 ];
 
 	static int nextCalculation = 0;
-
-	if ( state == LOG_GAMEPLAY_STATS_BODY && level.time < nextCalculation )
-	{
-		return;
-	}
 
 	if ( !level.logGameplayFile )
 	{
@@ -2125,31 +2094,32 @@ static void G_LogGameplayStats( int state )
 			trap_GMTime( &t );
 
 			Com_sprintf( logline, sizeof( logline ),
-				     "# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
-				     "#\n"
-				     "# Version: %s\n"
-				     "# Map:     %s\n"
-				     "# Date:    %04i-%02i-%02i\n"
-				     "# Time:    %02i:%02i:%02i\n"
-				     "# Format:  %i\n"
-				     "#\n"
-				     "# g_momentumHalfLife:      %4i\n"
-				     "# g_initialBuildPoints:      %4i\n"
-				     "# g_initialMineRate:         %4i\n"
-				     "# g_mineRateHalfLife:        %4i\n"
-				     "#\n"
-				     "#  1  2  3    4    5    6    7    8    9   10   11   12   13   14   15   16    17    18\n"
-				     "#  T #A #H ACon HCon  LMR  AME  HME  ABP  HBP ABRV HBRV  ADTB  HDTB ACre HCre AVal HVal\n"
-				     "# -------------------------------------------------------------------------------------\n",
-				     Q3_VERSION,
-				     mapname,
-				     t.tm_year + 1900, t.tm_mon + 1, t.tm_mday,
-				     t.tm_hour, t.tm_min, t.tm_sec,
-				     LOG_GAMEPLAY_STATS_VERSION,
-				     g_momentumHalfLife.integer,
-				     g_initialBuildPoints.integer,
-				     g_initialMineRate.integer,
-				     g_mineRateHalfLife.integer );
+			             "# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
+			             "#\n"
+			             "# Version: %s\n"
+			             "# Map:     %s\n"
+			             "# Date:    %04i-%02i-%02i\n"
+			             "# Time:    %02i:%02i:%02i\n"
+			             "# Format:  %i\n"
+			             "#\n"
+			             "# g_momentumHalfLife:        %4i\n"
+			             "# g_initialBuildPoints:      %4i\n"
+			             "# g_initialMineRate:         %4i\n"
+			             "# g_mineRateHalfLife:        %4i\n"
+			             "#\n"
+			             "#  1  2  3    4    5    6    7    8    9   10   11   12   13   14   15   16\n"
+			             "#  T #A #H AMom HMom  LMR  AME  HME  ABP  HBP ABRV HBRV ACre HCre AVal HVal\n"
+			             "# -------------------------------------------------------------------------\n",
+			             Q3_VERSION,
+			             mapname,
+			             t.tm_year + 1900, t.tm_mon + 1, t.tm_mday,
+			             t.tm_hour, t.tm_min, t.tm_sec,
+			             LOG_GAMEPLAY_STATS_VERSION,
+			             g_momentumHalfLife.integer,
+			             g_initialBuildPoints.integer,
+			             g_initialMineRate.integer,
+			             g_mineRateHalfLife.integer );
+
 			break;
 		}
 		case LOG_GAMEPLAY_STATS_BODY:
@@ -2158,13 +2128,17 @@ static void G_LogGameplayStats( int state )
 			float  LMR;
 			int    team;
 			int    num[ NUM_TEAMS ];
-			int    Con[ NUM_TEAMS ];
+			int    Mom[ NUM_TEAMS ];
 			int    ME [ NUM_TEAMS ];
 			int    BP [ NUM_TEAMS ];
 			int    BRV[ NUM_TEAMS ];
-			int    DTB[ NUM_TEAMS ];
 			int    Cre[ NUM_TEAMS ];
 			int    Val[ NUM_TEAMS ];
+
+			if ( level.time < nextCalculation )
+			{
+				return;
+			}
 
 			time = level.matchTime / 1000;
 			LMR  = level.mineRate; // float
@@ -2172,21 +2146,20 @@ static void G_LogGameplayStats( int state )
 			for( team = TEAM_NONE + 1; team < NUM_TEAMS; team++ )
 			{
 				num[ team ] = level.team[ team ].numClients;
-				Con[ team ] = ( int )level.team[ team ].momentum;
+				Mom[ team ] = ( int )level.team[ team ].momentum;
 				ME [ team ] = level.team[ team ].mineEfficiency;
 				BP [ team ] = level.team[ team ].buildPoints;
 			}
 
 			G_GetBuildableResourceValue( BRV );
-			GetAverageDistanceToBase( DTB );
 			GetAverageCredits( Cre, Val );
 
 			Com_sprintf( logline, sizeof( logline ),
-			             "%4i %2i %2i %4i %4i %4.1f %4i %4i %4i %4i %4i %4i %5i %5i %4i %4i %4i %4i\n",
-			             time, num[ TEAM_ALIENS ], num[ TEAM_HUMANS ], Con[ TEAM_ALIENS ], Con[ TEAM_HUMANS ],
+			             "%4i %2i %2i %4i %4i %4.1f %4i %4i %4i %4i %4i %4i %4i %4i %4i %4i\n",
+			             time, num[ TEAM_ALIENS ], num[ TEAM_HUMANS ], Mom[ TEAM_ALIENS ], Mom[ TEAM_HUMANS ],
 			             LMR, ME[ TEAM_ALIENS ], ME[ TEAM_HUMANS ], BP[ TEAM_ALIENS ], BP[ TEAM_HUMANS ],
-			             BRV[ TEAM_ALIENS ], BRV[ TEAM_HUMANS ], DTB[ TEAM_ALIENS ], DTB[ TEAM_HUMANS ],
-			             Cre[ TEAM_ALIENS ], Cre[ TEAM_HUMANS ], Val[ TEAM_ALIENS ], Val[ TEAM_HUMANS ] );
+			             BRV[ TEAM_ALIENS ], BRV[ TEAM_HUMANS ], Cre[ TEAM_ALIENS ], Cre[ TEAM_HUMANS ],
+			             Val[ TEAM_ALIENS ], Val[ TEAM_HUMANS ] );
 			break;
 		}
 		case LOG_GAMEPLAY_STATS_FOOTER:
@@ -2212,20 +2185,20 @@ static void G_LogGameplayStats( int state )
 			sec = ( level.matchTime / 1000 ) % 60;
 
 			Com_sprintf( logline, sizeof( logline ),
-				     "# ---------------------------------------------------------------------------------------------------------\n"
-				     "#\n"
-				     "# Match duration:  %i:%02i\n"
-				     "# Winning team:    %s\n"
-				     "# Average Players: %.1f\n"
-				     "# Average Aliens:  %.1f\n"
-				     "# Average Humans:  %.1f\n"
-				     "#\n",
-				     min, sec,
-				     winner,
-				     level.team[ TEAM_ALIENS ].averageNumClients +
-				     level.team[ TEAM_HUMANS ].averageNumClients,
-				     level.team[ TEAM_ALIENS ].averageNumClients,
-				     level.team[ TEAM_HUMANS ].averageNumClients);
+			             "# -------------------------------------------------------------------------\n"
+			             "#\n"
+			             "# Match duration:  %i:%02i\n"
+			             "# Winning team:    %s\n"
+			             "# Average Players: %.1f + %.1f\n"
+			             "# Average Aliens:  %.1f + %.1f\n"
+			             "# Average Humans:  %.1f + %.1f\n"
+			             "#\n",
+			             min, sec,
+			             winner,
+			             level.team[ TEAM_ALIENS ].averageNumPlayers + level.team[ TEAM_HUMANS ].averageNumPlayers,
+			             level.team[ TEAM_ALIENS ].averageNumBots    + level.team[ TEAM_HUMANS ].averageNumBots,
+			             level.team[ TEAM_ALIENS ].averageNumPlayers, level.team[ TEAM_ALIENS ].averageNumBots,
+			             level.team[ TEAM_HUMANS ].averageNumPlayers, level.team[ TEAM_HUMANS ].averageNumBots);
 			break;
 		}
 		default:
@@ -2588,7 +2561,7 @@ void CheckExitRules( void )
 	     ( level.unconditionalWin != TEAM_ALIENS &&
 	       ( level.time > level.startTime + 1000 ) &&
 	       ( level.team[ TEAM_ALIENS ].numSpawns == 0 ) &&
-	       ( level.team[ TEAM_ALIENS ].numLiveClients == 0 ) ) )
+	       ( level.team[ TEAM_ALIENS ].numAliveClients == 0 ) ) )
 	{
 		//humans win
 		level.lastWin = TEAM_HUMANS;
@@ -2602,7 +2575,7 @@ void CheckExitRules( void )
 	          ( level.unconditionalWin != TEAM_HUMANS &&
 	            ( level.time > level.startTime + 1000 ) &&
 	            ( level.team[ TEAM_HUMANS ].numSpawns == 0 ) &&
-	            ( level.team[ TEAM_HUMANS ].numLiveClients == 0 ) ) )
+	            ( level.team[ TEAM_HUMANS ].numAliveClients == 0 ) ) )
 	{
 		//aliens win
 		level.lastWin = TEAM_ALIENS;
@@ -2753,7 +2726,7 @@ void G_CheckVote( team_t team )
 	}
 
 	if ( ( level.time - level.team[ team ].voteTime >= VOTE_TIME ) ||
-	     ( level.team[ team ].voteYes + level.team[ team ].voteNo == level.team[ team ].numVotingClients ) )
+	     ( level.team[ team ].voteYes + level.team[ team ].voteNo == level.team[ team ].numPlayers ) )
 	{
 		pass = ( level.team[ team ].voteYes &&
 		         ( float ) level.team[ team ].voteYes / ( ( float ) level.team[ team ].voteYes + ( float ) level.team[ team ].voteNo ) > votePassThreshold );
@@ -2761,19 +2734,19 @@ void G_CheckVote( team_t team )
 	else
 	{
 		if ( ( float ) level.team[ team ].voteYes >
-		     ( float ) level.team[ team ].numVotingClients * votePassThreshold )
+		     ( float ) level.team[ team ].numPlayers * votePassThreshold )
 		{
 			pass = qtrue;
 		}
 		else if ( ( float ) level.team[ team ].voteNo <=
-		          ( float ) level.team[ team ].numVotingClients * ( 1.0f - votePassThreshold ) )
+		          ( float ) level.team[ team ].numPlayers * ( 1.0f - votePassThreshold ) )
 		{
 			return;
 		}
 	}
 
 	// If quorum is required, check whether at least half of who could vote did
-	if ( level.team[ team ].quorum && level.team[ team ].voted < floor( powf( level.team[ team ].numVotingClients, 0.6 ) ) )
+	if ( level.team[ team ].quorum && level.team[ team ].voted < floor( powf( level.team[ team ].numPlayers, 0.6 ) ) )
 	{
 		quorum = qfalse;
 	}
@@ -2786,12 +2759,12 @@ void G_CheckVote( team_t team )
 	G_LogPrintf( "EndVote: %s %s %d %d %d %d\n",
 	             team == TEAM_NONE ? "global" : BG_TeamName( team ),
 	             pass ? "pass" : "fail",
-	             level.team[ team ].voteYes, level.team[ team ].voteNo, level.team[ team ].numVotingClients, level.team[ team ].voted );
+	             level.team[ team ].voteYes, level.team[ team ].voteNo, level.team[ team ].numPlayers, level.team[ team ].voted );
 
 	if ( !quorum )
 	{
 		cmd = va( "print_tr %s %d %d", ( team == TEAM_NONE ) ? QQ( N_("Vote failed ($1$ of $2$; quorum not reached)\n") ) : QQ( N_("Team vote failed ($1$ of $2$; quorum not reached)\n") ),
-		            level.team[ team ].voteYes + level.team[ team ].voteNo, level.team[ team ].numVotingClients );
+		            level.team[ team ].voteYes + level.team[ team ].voteNo, level.team[ team ].numPlayers );
 	}
 	else if ( pass )
 	{

@@ -59,16 +59,16 @@ namespace Audio {
 
     // Somewhere on the Internet we can see "quake3 is like the old wolfenstein, 64 units = 8 feet"
     // it is consistent with our models and Carmack's being american.
-    const float QUNIT_IN_METER = 0.0384;
+    CONSTEXPR float QUNIT_IN_METER = 0.0384;
 
     // The speed of sound in qu/s
-    const float SPEED_OF_SOUND = 343.3 / QUNIT_IN_METER;
+    CONSTEXPR float SPEED_OF_SOUND = 343.3 / QUNIT_IN_METER;
 
     // Same number of raw streams as in the previous sound system
-    const int N_STREAMS = MAX_CLIENTS * 2 + 1;
+    CONSTEXPR int N_STREAMS = MAX_CLIENTS * 2 + 1;
 
     // There is only a small number of reverb slots because by default we can create only 4 AuxEffects
-    const int N_REVERB_SLOTS = 3;
+    CONSTEXPR int N_REVERB_SLOTS = 3;
 
     extern Log::Logger audioLogs;
 }

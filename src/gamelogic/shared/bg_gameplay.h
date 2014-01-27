@@ -183,6 +183,7 @@ extern int   LEVEL4_CRUSH_REPEAT;
 #define ALIEN_BUILDABLE_REGEN_WAIT 2000 // in ms
 
 #define ALIEN_REGEN_NOCREEP_MOD  ( 1.0f / 3.0f ) // regen off creep
+#define ALIEN_REGEN_NOCREEP_MIN  0.1f // minimum off creep regen when half life is active. must be > 0.
 
 #define ALIEN_MAX_CREDITS        2000 // CREDITS_PER_EVO converts this to evos for display
 #define ALIEN_TK_SUICIDE_PENALTY 150
@@ -321,6 +322,7 @@ extern int   REACTOR_ATTACK_DAMAGE;
 #define JETPACK_FUEL_RESTORE          3     // in 1/ms
 #define JETPACK_FUEL_LOW              JETPACK_FUEL_MAX / 5       // jetpack doesn't start from a jump below this
 #define JETPACK_FUEL_STOP             JETPACK_FUEL_RESTORE * 150 // jetpack doesn't activate below this
+#define JETPACK_FUEL_REFUEL           JETPACK_FUEL_MAX - JETPACK_FUEL_USAGE * 1000
 
 /*
  * Misc
@@ -368,16 +370,15 @@ extern int   REACTOR_ATTACK_DAMAGE;
 #define DEFAULT_INITIAL_MINE_RATE          "8"   // in (BP/min)/RGS
 #define DEFAULT_MINE_RATE_HALF_LIFE        "20"  // in min
 #define DEFAULT_MINIMUM_MINE_RATE          "50"
-#define BASIC_INCOME_MOD                   1.0f
 
 // momentum
 #define MOMENTUM_MAX                     300.0f
 #define MOMENTUM_PER_CREDIT              0.01f // used to award momentum based on credit rewards
 #define DEFAULT_MOMENTUM_HALF_LIFE       "5"   // in min
 #define DEFAULT_CONF_REWARD_DOUBLE_TIME  "30"  // in min
-#define DEFAULT_UNLOCKABLE_MIN_TIME      "60"  // in s
-#define DEFAULT_MOMENTUM_BASE_MOD        "0.8"
-#define DEFAULT_MOMENTUM_KILL_MOD        "1.0"
+#define DEFAULT_UNLOCKABLE_MIN_TIME      "30"  // in s
+#define DEFAULT_MOMENTUM_BASE_MOD        "0.7"
+#define DEFAULT_MOMENTUM_KILL_MOD        "1.3"
 #define DEFAULT_MOMENTUM_BUILD_MOD       "0.6"
 #define DEFAULT_MOMENTUM_DECON_MOD       "1.0" // used on top of build mod
 #define DEFAULT_MOMENTUM_DESTROY_MOD     "0.8"
