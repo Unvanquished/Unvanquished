@@ -2216,7 +2216,7 @@ int FS_Read(void* buffer, int len, fileHandle_t handle)
 		try {
 			return handleTable[handle].file.Read(buffer, len);
 		} catch (std::system_error& err) {
-			Com_Printf("Failed to read file: %s\n", err.what());
+			Com_Printf("FS_Read failed: %s\n", err.what());
 			return 0;
 		}
 	}
