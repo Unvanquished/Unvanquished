@@ -59,7 +59,7 @@ namespace Cvar {
         //DO: mutex?
 
         inline bool IsArchived() const {
-            return flags & (ARCHIVE | USER_ARCHIVE);
+            return (flags & (ARCHIVE | USER_ARCHIVE)) && !(flags & TEMPORARY);
         }
     };
 
@@ -363,6 +363,14 @@ namespace Cvar {
         auto it = cvars.find(cvarName);
         if (it != cvars.end()) {
             cvarRecord_t* cvar = it->second;
+
+            // User error. Possibly coder error too, but unlikely
+            if ((cvar->flags & TEMPORARY) && (flags & (ARCHIVE | USER_ARCHIVE)))
+            {
+                Com_Printf(_("Cvar '%s' is temporary and will not be archived\n"), cvarName.c_str());
+                flags &= ~(ARCHIVE | USER_ARCHIVE);
+            }
+
             cvar->flags |= flags;
 
             //TODO: remove it, overkill ?
@@ -750,7 +758,7 @@ namespace Cvar {
                     flags += (var->flags & USERINFO) ? "U" : "_";
                     flags += (var->flags & ROM) ? "R" : "_";
                     flags += (var->flags & CVAR_INIT) ? "I" : "_";
-                    flags += (var->flags & ARCHIVE) ? "A" : (var->flags & USER_ARCHIVE) ? "a" : "_";
+                    flags += (var->flags & TEMPORARY) ? "T" : (var->flags & ARCHIVE) ? "A" : (var->flags & USER_ARCHIVE) ? "a" : "_";
                     flags += (var->flags & CVAR_LATCH) ? "L" : "_";
                     flags += (var->flags & CHEAT) ? "C" : "_";
                     flags += (var->flags & CVAR_USER_CREATED) ? "?" : "_";
