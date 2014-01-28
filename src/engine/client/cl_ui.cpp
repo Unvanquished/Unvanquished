@@ -68,7 +68,7 @@ void LAN_LoadCachedServers( void )
 	cls.numglobalservers = cls.numfavoriteservers = 0;
 	cls.numGlobalServerAddresses = 0;
 
-	if ( FS_FOpenFileRead( "servercache.dat", &fileIn, qtrue ) )
+	if ( FS_FOpenFileRead( "servercache.dat", &fileIn, qtrue ) != -1 )
 	{
 		FS_Read( &cls.numglobalservers, sizeof( int ), fileIn );
 		FS_Read( &cls.numfavoriteservers, sizeof( int ), fileIn );
