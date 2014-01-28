@@ -59,7 +59,7 @@ namespace Cvar {
         //DO: mutex?
 
         inline bool IsArchived() const {
-            return (flags & (ARCHIVE | USER_ARCHIVE)) && !(flags & TEMPORARY);
+            return (flags & USER_ARCHIVE) && !(flags & TEMPORARY);
         }
     };
 
@@ -758,7 +758,7 @@ namespace Cvar {
                     flags += (var->flags & USERINFO) ? "U" : "_";
                     flags += (var->flags & ROM) ? "R" : "_";
                     flags += (var->flags & CVAR_INIT) ? "I" : "_";
-                    flags += (var->flags & TEMPORARY) ? "T" : (var->flags & ARCHIVE) ? "A" : (var->flags & USER_ARCHIVE) ? "a" : "_";
+                    flags += (var->flags & TEMPORARY) ? "T" : (var->flags & USER_ARCHIVE) ? "A" : "_";
                     flags += (var->flags & CVAR_LATCH) ? "L" : "_";
                     flags += (var->flags & CHEAT) ? "C" : "_";
                     flags += (var->flags & CVAR_USER_CREATED) ? "?" : "_";
