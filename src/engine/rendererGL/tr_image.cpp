@@ -2946,6 +2946,7 @@ image_t        *R_FindCubeImage( const char *imageName, int bits, filterType_t f
 	int         width = 0, height = 0, numLayers = 0, numMips = 0;
 	byte        *pic[ MAX_TEXTURE_MIPS * MAX_TEXTURE_LAYERS ];
 	long        hash;
+	int         numPicsToFree = 0;
 
 	static char *openglSuffices[ 6 ] = { "px", "nx", "py", "ny", "pz", "nz" };
 
@@ -2980,7 +2981,6 @@ image_t        *R_FindCubeImage( const char *imageName, int bits, filterType_t f
 	static qboolean quakeFlipY[ 6 ] = { qfalse,       qfalse, qtrue,  qfalse, qfalse, qtrue };
 	static int      quakeRot[ 6 ] = { 90,           -90,    0,              0,              90,             -90 };
 
-	int             bitsIgnore;
 	char            buffer[ 1024 ], filename[ 1024 ];
 	char            *filename_p;
 
@@ -3002,14 +3002,16 @@ image_t        *R_FindCubeImage( const char *imageName, int bits, filterType_t f
 	}
 
 	// try to load .CRN cubemap
-	LoadCRN( buffer, pic, &width, &height, &numLayers, &numMips, &bitsIgnore, 0 );
+	LoadCRN( buffer, pic, &width, &height, &numLayers, &numMips, &bits, 0 );
 	if( numLayers == 6 && pic[0] ) {
+		numPicsToFree = 1;
 		goto createCubeImage;
 	}
 
 	// try to load .KTX cubemap
-	LoadKTX( buffer, pic, &width, &height, &numLayers, &numMips, &bitsIgnore, 0 );
+	LoadKTX( buffer, pic, &width, &height, &numLayers, &numMips, &bits, 0 );
 	if( numLayers == 6 && pic[0] ) {
+		numPicsToFree = 1;
 		goto createCubeImage;
 	}
 
@@ -3023,25 +3025,32 @@ image_t        *R_FindCubeImage( const char *imageName, int bits, filterType_t f
 		Com_sprintf( filename, sizeof( filename ), "%s_%s", buffer, openglSuffices[ i ] );
 
 		filename_p = &filename[ 0 ];
-		R_LoadImage( &filename_p, &pic[ i ], &width, &height, &numLayers, &numMips, &bitsIgnore, materialName );
+		R_LoadImage( &filename_p, &pic[ i ], &width, &height, &numLayers, &numMips, &bits, materialName );
 
 		if ( !pic[ i ] || width != height || numLayers > 0 )
 		{
 			image = NULL;
 			goto tryDoom3Suffices;
 		}
+		numPicsToFree = i;
 	}
 
 	goto createCubeImage;
 
 tryDoom3Suffices:
 
+	for ( i = 0; i < numPicsToFree; i++ ) {
+		ri.Free( pic[i] );
+		pic[i] = NULL;
+	}
+	numPicsToFree = 0;
+
 	for ( i = 0; i < 6; i++ )
 	{
 		Com_sprintf( filename, sizeof( filename ), "%s_%s", buffer, doom3Suffices[ i ] );
 
 		filename_p = &filename[ 0 ];
-		R_LoadImage( &filename_p, &pic[ i ], &width, &height, &numLayers, &numMips, &bitsIgnore, materialName );
+		R_LoadImage( &filename_p, &pic[ i ], &width, &height, &numLayers, &numMips, &bits, materialName );
 
 		if ( !pic[ i ] || width != height || numLayers > 0 )
 		{
@@ -3060,18 +3069,26 @@ tryDoom3Suffices:
 		}
 
 		R_Rotate( pic[ i ], width, height, doom3Rot[ i ] );
+
+		numPicsToFree = i;
 	}
 
 	goto createCubeImage;
 
 tryQuakeSuffices:
 
+	for ( i = 0; i < numPicsToFree; i++ ) {
+		ri.Free( pic[i] );
+		pic[i] = NULL;
+	}
+	numPicsToFree = 0;
+
 	for ( i = 0; i < 6; i++ )
 	{
 		Com_sprintf( filename, sizeof( filename ), "%s_%s", buffer, quakeSuffices[ i ] );
 
 		filename_p = &filename[ 0 ];
-		R_LoadImage( &filename_p, &pic[ i ], &width, &height, &numLayers, &numMips, &bitsIgnore, materialName );
+		R_LoadImage( &filename_p, &pic[ i ], &width, &height, &numLayers, &numMips, &bits, materialName );
 
 		if ( !pic[ i ] || width != height || numLayers > 0 )
 		{
@@ -3090,6 +3107,8 @@ tryQuakeSuffices:
 		}
 
 		R_Rotate( pic[ i ], width, height, quakeRot[ i ] );
+
+		numPicsToFree = i;
 	}
 
 createCubeImage:
@@ -3097,7 +3116,7 @@ createCubeImage:
 
 skipCubeImage:
 
-	for ( i = 0; i < 6; i++ )
+	for ( i = 0; i < numPicsToFree; i++ )
 	{
 		if ( pic[ i ] )
 		{
