@@ -2348,7 +2348,7 @@ void CG_Buildable( centity_t *cent )
 
 	if( cg_drawBBOX.integer )
 	{
-		CG_DrawBoundingBox( cent->lerpOrigin, mins, maxs );
+		CG_DrawBoundingBox( cg_drawBBOX.integer, cent->lerpOrigin, mins, maxs );
 	}
 
 	//offset on the Z axis if required

@@ -29,6 +29,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include <string>
+#include <climits>
 
 #ifndef COMMON_LINE_EDIT_DATA_H_
 #define COMMON_LINE_EDIT_DATA_H_
@@ -59,8 +60,10 @@ namespace Util {
 
             void DeleteNext(int times = 1);
             void DeletePrev(int times = 1);
+            void DeleteEnd();
 
             void AddChar(char32_t a);
+            void SwapWithNext();
 
             void Clear();
 
@@ -76,6 +79,12 @@ namespace Util {
             unsigned cursor;
     };
 
+    // Implementation details
+
+    inline void LineEditData::DeleteEnd()
+    {
+        DeleteNext(INT_MAX);
+    }
 }
 
 #endif // COMMON_LINE_EDIT_DATA_H_

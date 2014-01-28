@@ -837,7 +837,7 @@ namespace Cmd {
                 AddCommand(name, aliasProxy, N_("a user-defined alias command"));
 
                 //Force an update of autogen.cfg (TODO: get rid of this super global variable)
-                cvar_modifiedFlags |= CVAR_ARCHIVE;
+                cvar_modifiedFlags |= CVAR_ARCHIVE_BITS;
             }
 
             Cmd::CompletionResult Complete(int argNum, const Args& args, Str::StringRef prefix) const OVERRIDE {

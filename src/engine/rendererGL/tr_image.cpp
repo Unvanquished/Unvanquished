@@ -364,30 +364,57 @@ void R_ImageList_f( void )
 				break;
 		}
 
-		switch ( image->wrapType )
+		switch ( image->wrapType.s )
 		{
 			case WT_REPEAT:
-				ri.Printf( PRINT_ALL, "rept  " );
+				ri.Printf( PRINT_ALL, "s.rept  " );
 				break;
 
 			case WT_CLAMP:
-				ri.Printf( PRINT_ALL, "clmp  " );
+				ri.Printf( PRINT_ALL, "s.clmp  " );
 				break;
 
 			case WT_EDGE_CLAMP:
-				ri.Printf( PRINT_ALL, "eclmp " );
+				ri.Printf( PRINT_ALL, "s.eclmp " );
 				break;
 
 			case WT_ZERO_CLAMP:
-				ri.Printf( PRINT_ALL, "zclmp " );
+				ri.Printf( PRINT_ALL, "s.zclmp " );
 				break;
 
 			case WT_ALPHA_ZERO_CLAMP:
-				ri.Printf( PRINT_ALL, "azclmp" );
+				ri.Printf( PRINT_ALL, "s.azclmp" );
 				break;
 
 			default:
-				ri.Printf( PRINT_ALL, "%4i  ", image->wrapType );
+				ri.Printf( PRINT_ALL, "s.%4i  ", image->wrapType.s );
+				break;
+		}
+
+		switch ( image->wrapType.t )
+		{
+			case WT_REPEAT:
+				ri.Printf( PRINT_ALL, "t.rept  " );
+				break;
+
+			case WT_CLAMP:
+				ri.Printf( PRINT_ALL, "t.clmp  " );
+				break;
+
+			case WT_EDGE_CLAMP:
+				ri.Printf( PRINT_ALL, "t.eclmp " );
+				break;
+
+			case WT_ZERO_CLAMP:
+				ri.Printf( PRINT_ALL, "t.zclmp " );
+				break;
+
+			case WT_ALPHA_ZERO_CLAMP:
+				ri.Printf( PRINT_ALL, "t.azclmp" );
+				break;
+
+			default:
+				ri.Printf( PRINT_ALL, "t.%4i  ", image->wrapType.t );
 				break;
 		}
 
@@ -1266,9 +1293,10 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 	GLenum     target;
 	GLenum     format = GL_RGBA;
 	GLenum     internalFormat = GL_RGB;
-	vec4_t     oneClampBorder = { 1, 1, 1, 1 };
-	vec4_t     zeroClampBorder = { 0, 0, 0, 1 };
-	vec4_t     alphaZeroClampBorder = { 0, 0, 0, 0 };
+
+	static const vec4_t oneClampBorder = { 1, 1, 1, 1 };
+	static const vec4_t zeroClampBorder = { 0, 0, 0, 1 };
+	static const vec4_t alphaZeroClampBorder = { 0, 0, 0, 0 };
 
 	if ( numMips <= 0 )
 		numMips = 1;
@@ -1825,41 +1853,115 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 	GL_CheckErrors();
 
 	// set wrap type
-	switch ( image->wrapType )
-	{
-		case WT_REPEAT:
-			glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_REPEAT );
-			glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_REPEAT );
-			break;
+	if ( image->wrapType.s == image->wrapType.t )
+        {
+                switch ( image->wrapType.s )
+                {
+                        case WT_REPEAT:
+                                glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_REPEAT );
+                                glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_REPEAT );
+                                break;
 
-		case WT_CLAMP:
-		case WT_EDGE_CLAMP:
-			glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-			glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-			break;
-		case WT_ONE_CLAMP:
-			glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER );
-			glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER );
-			glTexParameterfv( image->type, GL_TEXTURE_BORDER_COLOR, oneClampBorder );
-			break;
-		case WT_ZERO_CLAMP:
-			glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER );
-			glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER );
-			glTexParameterfv( image->type, GL_TEXTURE_BORDER_COLOR, zeroClampBorder );
-			break;
+                        case WT_CLAMP:
+                        case WT_EDGE_CLAMP:
+                                glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+                                glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+                                break;
+                        case WT_ONE_CLAMP:
+                                glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER );
+                                glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER );
+                                glTexParameterfv( image->type, GL_TEXTURE_BORDER_COLOR, oneClampBorder );
+                                break;
+                        case WT_ZERO_CLAMP:
+                                glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER );
+                                glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER );
+                                glTexParameterfv( image->type, GL_TEXTURE_BORDER_COLOR, zeroClampBorder );
+                                break;
 
-		case WT_ALPHA_ZERO_CLAMP:
-			glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER );
-			glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER );
-			glTexParameterfv( image->type, GL_TEXTURE_BORDER_COLOR, alphaZeroClampBorder );
-			break;
+                        case WT_ALPHA_ZERO_CLAMP:
+                                glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER );
+                                glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER );
+                                glTexParameterfv( image->type, GL_TEXTURE_BORDER_COLOR, alphaZeroClampBorder );
+                                break;
 
-		default:
-			ri.Printf( PRINT_WARNING, "WARNING: unknown wrap type for image '%s'\n", image->name );
-			glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_REPEAT );
-			glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_REPEAT );
-			break;
-	}
+                        default:
+                                ri.Printf( PRINT_WARNING, "WARNING: unknown wrap type for image '%s'\n", image->name );
+                                glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_REPEAT );
+                                glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_REPEAT );
+                                break;
+                }
+        } else {
+        	// warn about mismatched clamp types if both require a border colour to be set
+                if ( ( image->wrapType.s == WT_ZERO_CLAMP || image->wrapType.s == WT_ONE_CLAMP || image->wrapType.s == WT_ALPHA_ZERO_CLAMP ) &&
+	             ( image->wrapType.t == WT_ZERO_CLAMP || image->wrapType.t == WT_ONE_CLAMP || image->wrapType.t == WT_ALPHA_ZERO_CLAMP ) )
+        	{
+	                ri.Printf( PRINT_WARNING, "WARNING: mismatched wrap types for image '%s'\n", image->name );
+                }
+
+                switch ( image->wrapType.s )
+                {
+                        case WT_REPEAT:
+                                glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_REPEAT );
+                                break;
+
+                        case WT_CLAMP:
+                        case WT_EDGE_CLAMP:
+                                glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+                                break;
+
+                        case WT_ONE_CLAMP:
+                                glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER );
+                                glTexParameterfv( image->type, GL_TEXTURE_BORDER_COLOR, oneClampBorder );
+                                break;
+
+                        case WT_ZERO_CLAMP:
+                                glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER );
+                                glTexParameterfv( image->type, GL_TEXTURE_BORDER_COLOR, zeroClampBorder );
+                                break;
+
+                        case WT_ALPHA_ZERO_CLAMP:
+                                glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER );
+                                glTexParameterfv( image->type, GL_TEXTURE_BORDER_COLOR, alphaZeroClampBorder );
+                                break;
+
+                        default:
+                                ri.Printf( PRINT_WARNING, "WARNING: unknown wrap type for image '%s' axis S\n", image->name );
+                                glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_REPEAT );
+                                break;
+                }
+
+                switch ( image->wrapType.t )
+                {
+                        case WT_REPEAT:
+                                glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_REPEAT );
+                                break;
+
+                        case WT_CLAMP:
+                        case WT_EDGE_CLAMP:
+                                glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+                                break;
+
+                        case WT_ONE_CLAMP:
+                                glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER );
+                                glTexParameterfv( image->type, GL_TEXTURE_BORDER_COLOR, oneClampBorder );
+                                break;
+
+                        case WT_ZERO_CLAMP:
+                                glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER );
+                                glTexParameterfv( image->type, GL_TEXTURE_BORDER_COLOR, zeroClampBorder );
+                                break;
+
+                        case WT_ALPHA_ZERO_CLAMP:
+                                glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER );
+                                glTexParameterfv( image->type, GL_TEXTURE_BORDER_COLOR, alphaZeroClampBorder );
+                                break;
+
+                        default:
+                                ri.Printf( PRINT_WARNING, "WARNING: unknown wrap type for image '%s' axis T\n", image->name );
+                                glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_REPEAT );
+                                break;
+                }
+        }
 
 	GL_CheckErrors();
 

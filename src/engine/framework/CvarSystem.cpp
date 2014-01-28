@@ -57,6 +57,10 @@ namespace Cvar {
         CvarProxy* proxy;
         cvar_t ccvar; // The state of the cvar_t used to emulate the C API
         //DO: mutex?
+
+        inline bool IsArchived() const {
+            return (flags & (ARCHIVE | USER_ARCHIVE)) && !(flags & TEMPORARY);
+        }
     };
 
     //Functions that emulate the C API
@@ -353,18 +357,46 @@ namespace Cvar {
         return res;
     }
 
-    void AddFlags(const std::string& cvarName, int flags) {
+    bool AddFlags(const std::string& cvarName, int flags) {
         CvarMap& cvars = GetCvarMap();
 
         auto it = cvars.find(cvarName);
         if (it != cvars.end()) {
             cvarRecord_t* cvar = it->second;
+
+            // User error. Possibly coder error too, but unlikely
+            if ((cvar->flags & TEMPORARY) && (flags & (ARCHIVE | USER_ARCHIVE)))
+            {
+                Com_Printf(_("Cvar '%s' is temporary and will not be archived\n"), cvarName.c_str());
+                flags &= ~(ARCHIVE | USER_ARCHIVE);
+            }
+
             cvar->flags |= flags;
 
             //TODO: remove it, overkill ?
             //Make sure to trigger the event as if this variable was changed
             cvar_modifiedFlags |= flags;
+            return true; // success
         } //TODO else what?
+
+        return false; // not found
+    }
+
+    bool ClearFlags(const std::string& cvarName, int flags) {
+        CvarMap& cvars = GetCvarMap();
+
+        auto it = cvars.find(cvarName);
+        if (it != cvars.end()) {
+            cvarRecord_t* cvar = it->second;
+            cvar->flags &= ~flags;
+
+            //TODO: remove it, overkill ?
+            //Make sure to trigger the event as if this variable was changed
+            cvar_modifiedFlags |= flags;
+            return true; // success
+        } //TODO else what?
+
+        return false; // not found
     }
 
     void SetCheatMode(bool cheats) {
@@ -415,12 +447,14 @@ namespace Cvar {
         for (auto& entry : cvars) {
             cvarRecord_t* cvar = entry.second;
 
-            if (cvar->flags & ARCHIVE) {
+            if (cvar->IsArchived()) {
+                const char* value;
                 if (cvar->ccvar.latchedString) {
-                    FS_Printf(f, "seta %s %s\n", entry.first.c_str(), Cmd::Escape(cvar->ccvar.latchedString).c_str());
+                    value = cvar->ccvar.latchedString;
                 } else {
-                    FS_Printf(f, "seta %s %s\n", entry.first.c_str(), Cmd::Escape(cvar->value).c_str());
+                    value = cvar->value.c_str();
                 }
+                FS_Printf(f, "seta %s %s\n", entry.first.c_str(), Cmd::Escape(value).c_str());
             }
         }
     }
@@ -461,17 +495,32 @@ namespace Cvar {
 
             void Run(const Cmd::Args& args) const OVERRIDE {
                 int argc = args.Argc();
-                int nameIndex = 1;
+                int nameIndex = 0;
                 bool unsafe = false;
+                bool clearArchive = false;
+                bool setArchive = false;
 
-                if (argc < 3) {
-                    PrintUsage(args, _("[-unsafe] <variable> <value>"), "");
-                    return;
+                while (++nameIndex < argc) {
+                    if (Cmd::IsSwitch(args.Argv(nameIndex), "-unsafe")) {
+                        unsafe = true;
+                    }
+                    else if (!flags && Cmd::IsSwitch(args.Argv(nameIndex), "-archive")) {
+                        clearArchive = false;
+                        setArchive = true;
+                    }
+                    else if (!flags && Cmd::IsSwitch(args.Argv(nameIndex), "-no-archive")) {
+                        clearArchive = true;
+                        setArchive = false;
+                    }
+                    else {
+                        // no match; assume variable name
+                        break;
+                    }
                 }
 
-                if (argc >= 4 and args.Argv(1) == "-unsafe") {
-                    nameIndex = 2;
-                    unsafe = true;
+                if (argc - nameIndex < 2) {
+                    PrintUsage(args, flags ? _("[-unsafe] <variable> <value>") : _("[-unsafe] [-[no-]archive] <variable> <value>"), "");
+                    return;
                 }
 
                 const std::string& name = args.Argv(nameIndex);
@@ -485,12 +534,33 @@ namespace Cvar {
                 const std::string& value = args.ConcatArgs(nameIndex + 1);
 
                 ::Cvar::SetValue(name, value);
-                ::Cvar::AddFlags(name, flags);
+                ::Cvar::AddFlags(name, setArchive ? (flags | USER_ARCHIVE) : flags);
+
+                if (clearArchive) {
+                    ::Cvar::ClearFlags(name, USER_ARCHIVE);
+                }
             }
 
             Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, Str::StringRef prefix) const OVERRIDE {
-                if (argNum == 1 or (argNum == 2 and args.Argv(1) == "-unsafe")) {
-                    return ::Cvar::Complete(prefix);
+                int nameIndex = 0;
+                int argc = args.Argc();
+
+                // FIXME: translation
+                static const std::initializer_list<Cmd::CompletionItem> flags = {
+                    {"-unsafe", N_("not safe to use if loading after a crash")},
+                    {"-archive", N_("mark the variable as saved at user request")},
+                    {"-no-archive", N_("unmark the variable as saved at user request")}
+                };
+
+                while (++nameIndex < argc && args[nameIndex][0] == '-')
+                    ;
+
+                if (argNum == nameIndex) {
+                    return Cmd::CompletionFilter(::Cvar::Complete(prefix), prefix, flags);
+                }
+
+                if (argNum && argNum < nameIndex) {
+                    return Cmd::CompletionFilter(prefix, flags);
                 }
 
                 return {};
@@ -502,36 +572,113 @@ namespace Cvar {
     static SetCmd SetCmdRegistration("set", 0);
     static SetCmd SetuCmdRegistration("setu", USERINFO);
     static SetCmd SetsCmdRegistration("sets", SERVERINFO);
-    static SetCmd SetaCmdRegistration("seta", ARCHIVE);
+    static SetCmd SetaCmdRegistration("seta", USER_ARCHIVE);
 
-    class ResetCmd: public Cmd::StaticCmd {
+    class ArchiveCmd: public Cmd::StaticCmd {
         public:
-            ResetCmd(): Cmd::StaticCmd("reset", Cmd::BASE, N_("resets a variable")) {
+            ArchiveCmd(const std::string& name, const std::string& description, bool set): Cmd::StaticCmd(name, Cmd::BASE, description), set(set) {
             }
 
             void Run(const Cmd::Args& args) const OVERRIDE {
-                if (args.Argc() != 2) {
-                    PrintUsage(args, _("<variable>"), "");
+                int argc = args.Argc();
+
+                if (argc < 2) {
+                    PrintUsage(args, _("<variable>…"), "");
                     return;
                 }
 
-                const std::string& name = args.Argv(1);
-                CvarMap& cvars = GetCvarMap();
+                for (int nameIndex = 1; nameIndex < argc; ++nameIndex)
+                {
+                    const std::string& name = args.Argv(nameIndex);
 
-                auto iter = cvars.find(name);
-                if (iter != cvars.end()) {
-                    cvarRecord_t* cvar = iter->second;
-                    ::Cvar::SetValue(name, cvar->resetValue);
-                } else {
-                    Print(_("Cvar '%s' doesn't exist"), name.c_str());
+                    if (!(set ? ::Cvar::AddFlags(name, USER_ARCHIVE) : ::Cvar::ClearFlags(name, USER_ARCHIVE))) {
+                        Print(_("Cvar '%s' doesn't exist"), name.c_str());
+                    }
                 }
             }
 
             Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, Str::StringRef prefix) const OVERRIDE {
                 Q_UNUSED(args);
 
-                if (argNum == 1) {
+                if (argNum) {
                     return ::Cvar::Complete(prefix);
+                }
+
+                return {};
+            }
+
+        private:
+            bool set;
+    };
+    static ArchiveCmd ArchiveCmdRegistration("archive", N_("marks variables as user-archived"), true);
+    static ArchiveCmd UnarchiveCmdRegistration("unarchive", N_("marks variables as not user-archived"), false);
+
+    class ResetCmd: public Cmd::StaticCmd {
+        public:
+            ResetCmd(): Cmd::StaticCmd("reset", Cmd::BASE, N_("resets the named variables and, without -value, clears their user archive flags")) {
+            }
+
+            void Run(const Cmd::Args& args) const OVERRIDE {
+                int argc = args.Argc();
+                int nameIndex = 0;
+                bool clearArchive = true;
+
+                while (++nameIndex < argc) {
+                    if (Cmd::IsSwitch(args.Argv(nameIndex), "-value")) {
+                        clearArchive = false;
+                    }
+                    else {
+                        // no match; assume variable name
+                        break;
+                    }
+                }
+
+                if (argc - nameIndex < 1) {
+                    PrintUsage(args, _("[-value] <variable>…"), "");
+                    return;
+                }
+
+                CvarMap& cvars = GetCvarMap();
+
+                for (; nameIndex < argc; ++nameIndex)
+                {
+                    const std::string& name = args.Argv(nameIndex);
+
+                    auto iter = cvars.find(name);
+                    if (iter != cvars.end()) {
+                        cvarRecord_t* cvar = iter->second;
+                        ::Cvar::SetValue(name, cvar->resetValue);
+                        if (clearArchive) {
+                            ::Cvar::ClearFlags(name, USER_ARCHIVE);
+                        }
+                    } else {
+                        Print(_("Cvar '%s' doesn't exist"), name.c_str());
+                    }
+                }
+            }
+
+            Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, Str::StringRef prefix) const OVERRIDE {
+                int nameIndex = 0;
+                int argc = args.Argc();
+
+                // FIXME: translation
+                static const std::initializer_list<Cmd::CompletionItem> flags = {
+                    {"-value", N_("reset only the value; don't clear the user-archived marker")}
+                };
+
+                while (++nameIndex < argc && args[nameIndex][0] == '-')
+                    ;
+
+                if (argNum == nameIndex) {
+                    return Cmd::CompletionFilter(::Cvar::Complete(prefix), prefix, flags);
+                }
+
+                if (argNum > nameIndex) {
+                    return ::Cvar::Complete(prefix);
+                }
+
+                if (argNum) {
+                    return Cmd::CompletionFilter(prefix, flags);
                 }
 
                 return {};
@@ -566,7 +713,7 @@ namespace Cvar {
                 //Read parameters
                 if (args.Argc() > 1) {
                     match = args.Argv(1);
-                    if (match == "-raw") {
+                    if (Cmd::IsSwitch(match, "-raw")) {
                         raw = true;
                         match = (args.Argc() > 2) ? args.Argv(2) : "";
                     }
@@ -611,7 +758,7 @@ namespace Cvar {
                     flags += (var->flags & USERINFO) ? "U" : "_";
                     flags += (var->flags & ROM) ? "R" : "_";
                     flags += (var->flags & CVAR_INIT) ? "I" : "_";
-                    flags += (var->flags & ARCHIVE) ? "A" : "_";
+                    flags += (var->flags & TEMPORARY) ? "T" : (var->flags & ARCHIVE) ? "A" : (var->flags & USER_ARCHIVE) ? "a" : "_";
                     flags += (var->flags & CVAR_LATCH) ? "L" : "_";
                     flags += (var->flags & CHEAT) ? "C" : "_";
                     flags += (var->flags & CVAR_USER_CREATED) ? "?" : "_";
