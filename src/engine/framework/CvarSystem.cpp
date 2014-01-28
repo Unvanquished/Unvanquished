@@ -191,6 +191,7 @@ namespace Cvar {
                 } else {
                     //TODO forward the print part of the environment
                     SetValue(name, args.Argv(1));
+                    AddFlags(name, USER_ARCHIVE);
                 }
             }
     };
