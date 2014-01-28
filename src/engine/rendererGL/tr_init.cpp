@@ -88,6 +88,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	cvar_t      *r_compressDiffuseMaps;
 	cvar_t      *r_compressSpecularMaps;
 	cvar_t      *r_compressNormalMaps;
+	cvar_t      *r_exportTextures;
 	cvar_t      *r_heatHaze;
 	cvar_t      *r_heatHazeFix;
 	cvar_t      *r_noMarksOnTrisurfs;
@@ -1412,6 +1413,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		r_compressDiffuseMaps = ri.Cvar_Get( "r_compressDiffuseMaps", "1", CVAR_ARCHIVE | CVAR_LATCH );
 		r_compressSpecularMaps = ri.Cvar_Get( "r_compressSpecularMaps", "1", CVAR_ARCHIVE | CVAR_LATCH );
 		r_compressNormalMaps = ri.Cvar_Get( "r_compressNormalMaps", "0", CVAR_ARCHIVE | CVAR_LATCH );
+		r_exportTextures = ri.Cvar_Get( "r_exportTextures", "0", 0 );
 		r_heatHaze = ri.Cvar_Get( "r_heatHaze", "0", CVAR_ARCHIVE );
 		r_heatHazeFix = ri.Cvar_Get( "r_heatHazeFix", "0", CVAR_CHEAT | CVAR_SHADER );
 		r_noMarksOnTrisurfs = ri.Cvar_Get( "r_noMarksOnTrisurfs", "1", CVAR_CHEAT );

@@ -1071,6 +1071,9 @@ void Sys_PlatformInit( void )
 	signal( SIGBUS, Sys_SigHandler );
 #endif
 
+	// Enable S3TC on Mesa even if libtxc-dxtn is not available
+	putenv("force_s3tc_enable=true");
+
 	setlocale( LC_ALL, "" );
 
 	stdinIsATTY = isatty( STDIN_FILENO ) &&
