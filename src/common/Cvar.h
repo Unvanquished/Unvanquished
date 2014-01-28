@@ -86,7 +86,7 @@ namespace Cvar {
      * Cvar::Cvar<T> represents a type-checked cvar of type T. The parsed T can
      * be accessed with .Get() and .Set() will serialize T before setting the value.
      * It is also automatically registered when created so you can write:
-     *   static Cvar<bool> my_bool_cvar("my_bool_cvar", "bool - a cvar", Cvar::ARCHIVE, false);
+     *   static Cvar<bool> my_bool_cvar("my_bool_cvar", "bool - a cvar", Cvar::NONE, false);
      *
      * The functions bool ParseCvarValue(string, T& res), string SerializeCvarValue(T)
      * and string GetCvarTypeName<T>() must be implemented for Cvar<T> to work.

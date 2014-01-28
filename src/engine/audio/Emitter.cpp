@@ -54,8 +54,8 @@ namespace Audio {
 
     static const vec3_t origin = {0.0f, 0.0f, 0.0f};
 
-    static Cvar::Range<Cvar::Cvar<float>> dopplerExaggeration("audio.dopplerExaggeration", "controls the pitch change of the doppler effect", Cvar::ARCHIVE, 0.4, 0.0, 1.0);
-    static Cvar::Range<Cvar::Cvar<float>> reverbIntensity("audio.reverbIntensity", "the intensity of the reverb effects", Cvar::ARCHIVE, 1.0, 0.0, 1.0);
+    static Cvar::Range<Cvar::Cvar<float>> dopplerExaggeration("audio.dopplerExaggeration", "controls the pitch change of the doppler effect", Cvar::NONE, 0.4, 0.0, 1.0);
+    static Cvar::Range<Cvar::Cvar<float>> reverbIntensity("audio.reverbIntensity", "the intensity of the reverb effects", Cvar::NONE, 1.0, 0.0, 1.0);
 
     struct ReverbSlot {
         AL::EffectSlot* effect;

@@ -1093,71 +1093,71 @@ void R_Register( void )
 	//
 	// latched and archived variables
 	//
-	r_allowExtensions = ri.Cvar_Get( "r_allowExtensions", "1", CVAR_ARCHIVE | CVAR_LATCH | CVAR_UNSAFE );
-	r_ext_compressed_textures = ri.Cvar_Get( "r_ext_compressed_textures", "1", CVAR_ARCHIVE | CVAR_LATCH | CVAR_UNSAFE );  // (SA) ew, a spelling change I missed from the missionpack
-	r_ext_gamma_control = ri.Cvar_Get( "r_ext_gamma_control", "1", CVAR_ARCHIVE | CVAR_LATCH | CVAR_UNSAFE );
-	r_ext_multitexture = ri.Cvar_Get( "r_ext_multitexture", "1", CVAR_ARCHIVE | CVAR_LATCH | CVAR_UNSAFE );
-	r_ext_compiled_vertex_array = ri.Cvar_Get( "r_ext_compiled_vertex_array", "1", CVAR_ARCHIVE | CVAR_LATCH | CVAR_UNSAFE );
+	r_allowExtensions = ri.Cvar_Get( "r_allowExtensions", "1",  CVAR_LATCH | CVAR_UNSAFE );
+	r_ext_compressed_textures = ri.Cvar_Get( "r_ext_compressed_textures", "1",  CVAR_LATCH | CVAR_UNSAFE );  // (SA) ew, a spelling change I missed from the missionpack
+	r_ext_gamma_control = ri.Cvar_Get( "r_ext_gamma_control", "1",  CVAR_LATCH | CVAR_UNSAFE );
+	r_ext_multitexture = ri.Cvar_Get( "r_ext_multitexture", "1",  CVAR_LATCH | CVAR_UNSAFE );
+	r_ext_compiled_vertex_array = ri.Cvar_Get( "r_ext_compiled_vertex_array", "1",  CVAR_LATCH | CVAR_UNSAFE );
 
 //----(SA)  added
-	r_ext_ATI_pntriangles = ri.Cvar_Get( "r_ext_ATI_pntriangles", "0", CVAR_ARCHIVE | CVAR_LATCH | CVAR_UNSAFE );  //----(SA)  default to '0'
-	r_ati_truform_tess = ri.Cvar_Get( "r_ati_truform_tess", "1", CVAR_ARCHIVE | CVAR_UNSAFE );
+	r_ext_ATI_pntriangles = ri.Cvar_Get( "r_ext_ATI_pntriangles", "0",  CVAR_LATCH | CVAR_UNSAFE );  //----(SA)  default to '0'
+	r_ati_truform_tess = ri.Cvar_Get( "r_ati_truform_tess", "1",  CVAR_UNSAFE );
 	r_ati_truform_normalmode =
-	  ri.Cvar_Get( "r_ati_truform_normalmode", "GL_PN_TRIANGLES_NORMAL_MODE_LINEAR", CVAR_ARCHIVE | CVAR_UNSAFE );
+	  ri.Cvar_Get( "r_ati_truform_normalmode", "GL_PN_TRIANGLES_NORMAL_MODE_LINEAR",  CVAR_UNSAFE );
 	r_ati_truform_pointmode =
-	  ri.Cvar_Get( "r_ati_truform_pointmode", "GL_PN_TRIANGLES_POINT_MODE_LINEAR", CVAR_ARCHIVE | CVAR_UNSAFE );
+	  ri.Cvar_Get( "r_ati_truform_pointmode", "GL_PN_TRIANGLES_POINT_MODE_LINEAR",  CVAR_UNSAFE );
 
-	r_ati_fsaa_samples = ri.Cvar_Get( "r_ati_fsaa_samples", "1", CVAR_ARCHIVE | CVAR_UNSAFE );  //DAJ valids are 1, 2, 4
+	r_ati_fsaa_samples = ri.Cvar_Get( "r_ati_fsaa_samples", "1",  CVAR_UNSAFE );  //DAJ valids are 1, 2, 4
 
 	r_ext_texture_filter_anisotropic =
-	  ri.Cvar_Get( "r_ext_texture_filter_anisotropic", "0", CVAR_ARCHIVE | CVAR_LATCH | CVAR_UNSAFE );
+	  ri.Cvar_Get( "r_ext_texture_filter_anisotropic", "0",  CVAR_LATCH | CVAR_UNSAFE );
 
-	r_ext_NV_fog_dist = ri.Cvar_Get( "r_ext_NV_fog_dist", "0", CVAR_ARCHIVE | CVAR_LATCH | CVAR_UNSAFE );
-	r_nv_fogdist_mode = ri.Cvar_Get( "r_nv_fogdist_mode", "GL_EYE_RADIAL_NV", CVAR_ARCHIVE | CVAR_UNSAFE );  // default to 'looking good'
+	r_ext_NV_fog_dist = ri.Cvar_Get( "r_ext_NV_fog_dist", "0",  CVAR_LATCH | CVAR_UNSAFE );
+	r_nv_fogdist_mode = ri.Cvar_Get( "r_nv_fogdist_mode", "GL_EYE_RADIAL_NV",  CVAR_UNSAFE );  // default to 'looking good'
 //----(SA)  end
 
 #ifdef __linux__ // broken on linux
-	r_ext_texture_env_add = ri.Cvar_Get( "r_ext_texture_env_add", "0", CVAR_ARCHIVE | CVAR_LATCH | CVAR_UNSAFE );
+	r_ext_texture_env_add = ri.Cvar_Get( "r_ext_texture_env_add", "0",  CVAR_LATCH | CVAR_UNSAFE );
 #else
-	r_ext_texture_env_add = ri.Cvar_Get( "r_ext_texture_env_add", "1", CVAR_ARCHIVE | CVAR_LATCH | CVAR_UNSAFE );
+	r_ext_texture_env_add = ri.Cvar_Get( "r_ext_texture_env_add", "1",  CVAR_LATCH | CVAR_UNSAFE );
 #endif
 
-	r_clampToEdge = ri.Cvar_Get( "r_clampToEdge", "1", CVAR_ARCHIVE | CVAR_LATCH | CVAR_UNSAFE );  // ydnar: opengl 1.2 GL_CLAMP_TO_EDGE support
+	r_clampToEdge = ri.Cvar_Get( "r_clampToEdge", "1",  CVAR_LATCH | CVAR_UNSAFE );  // ydnar: opengl 1.2 GL_CLAMP_TO_EDGE support
 
-	r_picmip = ri.Cvar_Get( "r_picmip", "1", CVAR_ARCHIVE | CVAR_LATCH );  //----(SA)    mod for DM and DK for id build.  was "1" // JPW NERVE pushed back to 1
-	r_roundImagesDown = ri.Cvar_Get( "r_roundImagesDown", "1", CVAR_ARCHIVE | CVAR_LATCH );
-	r_rmse = ri.Cvar_Get( "r_rmse", "0.0", CVAR_ARCHIVE | CVAR_LATCH );
+	r_picmip = ri.Cvar_Get( "r_picmip", "1",  CVAR_LATCH );  //----(SA)    mod for DM and DK for id build.  was "1" // JPW NERVE pushed back to 1
+	r_roundImagesDown = ri.Cvar_Get( "r_roundImagesDown", "1",  CVAR_LATCH );
+	r_rmse = ri.Cvar_Get( "r_rmse", "0.0",  CVAR_LATCH );
 	r_colorMipLevels = ri.Cvar_Get( "r_colorMipLevels", "0", CVAR_LATCH );
 	AssertCvarRange( r_picmip, 0, 3, qtrue );
-	r_detailTextures = ri.Cvar_Get( "r_detailtextures", "1", CVAR_ARCHIVE | CVAR_LATCH );
-	r_texturebits = ri.Cvar_Get( "r_texturebits", "0", CVAR_ARCHIVE | CVAR_LATCH | CVAR_UNSAFE );
-	r_colorbits = ri.Cvar_Get( "r_colorbits", "0", CVAR_ARCHIVE | CVAR_LATCH | CVAR_UNSAFE );
-	r_alphabits = ri.Cvar_Get( "r_alphabits", "0", CVAR_ARCHIVE | CVAR_LATCH | CVAR_UNSAFE );
-	r_stereo = ri.Cvar_Get( "r_stereo", "0", CVAR_ARCHIVE | CVAR_LATCH | CVAR_UNSAFE );
-	r_stencilbits = ri.Cvar_Get( "r_stencilbits", "0", CVAR_ARCHIVE | CVAR_LATCH | CVAR_UNSAFE );
-	r_depthbits = ri.Cvar_Get( "r_depthbits", "0", CVAR_ARCHIVE | CVAR_LATCH | CVAR_UNSAFE );
-	r_ext_multisample = ri.Cvar_Get( "r_ext_multisample", "0", CVAR_ARCHIVE | CVAR_LATCH | CVAR_UNSAFE );
-	r_overBrightBits = ri.Cvar_Get( "r_overBrightBits", "0", CVAR_ARCHIVE | CVAR_LATCH );  // Arnout: disable overbrightbits by default
+	r_detailTextures = ri.Cvar_Get( "r_detailtextures", "1",  CVAR_LATCH );
+	r_texturebits = ri.Cvar_Get( "r_texturebits", "0",  CVAR_LATCH | CVAR_UNSAFE );
+	r_colorbits = ri.Cvar_Get( "r_colorbits", "0",  CVAR_LATCH | CVAR_UNSAFE );
+	r_alphabits = ri.Cvar_Get( "r_alphabits", "0",  CVAR_LATCH | CVAR_UNSAFE );
+	r_stereo = ri.Cvar_Get( "r_stereo", "0",  CVAR_LATCH | CVAR_UNSAFE );
+	r_stencilbits = ri.Cvar_Get( "r_stencilbits", "0",  CVAR_LATCH | CVAR_UNSAFE );
+	r_depthbits = ri.Cvar_Get( "r_depthbits", "0",  CVAR_LATCH | CVAR_UNSAFE );
+	r_ext_multisample = ri.Cvar_Get( "r_ext_multisample", "0",  CVAR_LATCH | CVAR_UNSAFE );
+	r_overBrightBits = ri.Cvar_Get( "r_overBrightBits", "0",  CVAR_LATCH );  // Arnout: disable overbrightbits by default
 	AssertCvarRange( r_overBrightBits, 0, 1, qtrue );  // ydnar: limit to overbrightbits 1 (sorry 1337 players)
 #ifdef WIN32
-	r_ignorehwgamma = ri.Cvar_Get( "r_ignorehwgamma", "0", CVAR_ARCHIVE | CVAR_LATCH );  // use hw gamma on Windows by default
+	r_ignorehwgamma = ri.Cvar_Get( "r_ignorehwgamma", "0",  CVAR_LATCH );  // use hw gamma on Windows by default
 #else
-	r_ignorehwgamma = ri.Cvar_Get( "r_ignorehwgamma", "1", CVAR_ARCHIVE | CVAR_LATCH );  // use software gamma by default
+	r_ignorehwgamma = ri.Cvar_Get( "r_ignorehwgamma", "1",  CVAR_LATCH );  // use software gamma by default
 #endif
-	r_mode = ri.Cvar_Get( "r_mode", "-2", CVAR_ARCHIVE | CVAR_LATCH | CVAR_UNSAFE );
-	r_oldMode = ri.Cvar_Get( "r_oldMode", "", CVAR_ARCHIVE );  // ydnar: previous "good" video mode
-	r_fullscreen = ri.Cvar_Get( "r_fullscreen", "1", CVAR_ARCHIVE );
-	r_customwidth = ri.Cvar_Get( "r_customwidth", "1600", CVAR_ARCHIVE | CVAR_LATCH );
-	r_customheight = ri.Cvar_Get( "r_customheight", "1024", CVAR_ARCHIVE | CVAR_LATCH );
-	r_customaspect = ri.Cvar_Get( "r_customaspect", "1", CVAR_ARCHIVE | CVAR_LATCH );
-	r_simpleMipMaps = ri.Cvar_Get( "r_simpleMipMaps", "1", CVAR_ARCHIVE | CVAR_LATCH );
-	r_subdivisions = ri.Cvar_Get( "r_subdivisions", "4", CVAR_ARCHIVE | CVAR_LATCH );
+	r_mode = ri.Cvar_Get( "r_mode", "-2", CVAR_LATCH | CVAR_UNSAFE );
+	r_oldMode = ri.Cvar_Get( "r_oldMode", "", 0 );  // ydnar: previous "good" video mode
+	r_fullscreen = ri.Cvar_Get( "r_fullscreen", "1", 0 );
+	r_customwidth = ri.Cvar_Get( "r_customwidth", "1600", CVAR_LATCH );
+	r_customheight = ri.Cvar_Get( "r_customheight", "1024", CVAR_LATCH );
+	r_customaspect = ri.Cvar_Get( "r_customaspect", "1", CVAR_LATCH );
+	r_simpleMipMaps = ri.Cvar_Get( "r_simpleMipMaps", "1", CVAR_LATCH );
+	r_subdivisions = ri.Cvar_Get( "r_subdivisions", "4", CVAR_LATCH );
 
-	r_smp = ri.Cvar_Get( "r_smp", "0", CVAR_ARCHIVE | CVAR_LATCH | CVAR_UNSAFE );
+	r_smp = ri.Cvar_Get( "r_smp", "0", CVAR_LATCH | CVAR_UNSAFE );
 
-	r_ignoreFastPath = ri.Cvar_Get( "r_ignoreFastPath", "0", CVAR_ARCHIVE | CVAR_LATCH );  // ydnar: use fast path by default
+	r_ignoreFastPath = ri.Cvar_Get( "r_ignoreFastPath", "0", CVAR_LATCH );  // ydnar: use fast path by default
 #if MAC_STVEF_HM || MAC_WOLF2_MP
-	r_ati_fsaa_samples = ri.Cvar_Get( "r_ati_fsaa_samples", "1", CVAR_ARCHIVE );  //DAJ valids are 1, 2, 4
+	r_ati_fsaa_samples = ri.Cvar_Get( "r_ati_fsaa_samples", "1", 0 );  //DAJ valids are 1, 2, 4
 #endif
 	//
 	// temporary latched variables that can only change over a restart
@@ -1171,28 +1171,28 @@ void R_Register( void )
 	//
 	// archived variables that can change at any time
 	//
-	r_lodCurveError = ri.Cvar_Get( "r_lodCurveError", "250", CVAR_ARCHIVE );
-	r_lodbias = ri.Cvar_Get( "r_lodbias", "0", CVAR_ARCHIVE );
-	r_flares = ri.Cvar_Get( "r_flares", "1", CVAR_ARCHIVE );
+	r_lodCurveError = ri.Cvar_Get( "r_lodCurveError", "250", 0 );
+	r_lodbias = ri.Cvar_Get( "r_lodbias", "0", 0 );
+	r_flares = ri.Cvar_Get( "r_flares", "1", 0 );
 	r_znear = ri.Cvar_Get( "r_znear", "3", CVAR_CHEAT );  // ydnar: changed it to 3 (from 4) because of lean/fov cheats
 	AssertCvarRange( r_znear, 0.001f, 200, qtrue );
 //----(SA)  added
 	r_zfar = ri.Cvar_Get( "r_zfar", "0", CVAR_CHEAT );
 //----(SA)  end
-	r_ignoreGLErrors = ri.Cvar_Get( "r_ignoreGLErrors", "1", CVAR_ARCHIVE );
-	r_fastsky = ri.Cvar_Get( "r_fastsky", "0", CVAR_ARCHIVE );
-	r_inGameVideo = ri.Cvar_Get( "r_inGameVideo", "1", CVAR_ARCHIVE );
-	r_drawSun = ri.Cvar_Get( "r_drawSun", "1", CVAR_ARCHIVE );
-	r_dynamiclight = ri.Cvar_Get( "r_dynamiclight", "1", CVAR_ARCHIVE );
-	r_dlightBacks = ri.Cvar_Get( "r_dlightBacks", "1", CVAR_ARCHIVE );
-	r_finish = ri.Cvar_Get( "r_finish", "0", CVAR_ARCHIVE );
-	r_textureMode = ri.Cvar_Get( "r_textureMode", "GL_LINEAR_MIPMAP_NEAREST", CVAR_ARCHIVE );
-	r_ext_texture_filter_anisotropic = ri.Cvar_Get( "r_ext_texture_filter_anisotropic", "1.0", CVAR_ARCHIVE );
-	r_swapInterval = ri.Cvar_Get( "r_swapInterval", "0", CVAR_ARCHIVE );
-	r_gamma = ri.Cvar_Get( "r_gamma", "1.3", CVAR_ARCHIVE );
-	r_facePlaneCull = ri.Cvar_Get( "r_facePlaneCull", "1", CVAR_ARCHIVE );
+	r_ignoreGLErrors = ri.Cvar_Get( "r_ignoreGLErrors", "1", 0 );
+	r_fastsky = ri.Cvar_Get( "r_fastsky", "0", 0 );
+	r_inGameVideo = ri.Cvar_Get( "r_inGameVideo", "1", 0 );
+	r_drawSun = ri.Cvar_Get( "r_drawSun", "1", 0 );
+	r_dynamiclight = ri.Cvar_Get( "r_dynamiclight", "1", 0 );
+	r_dlightBacks = ri.Cvar_Get( "r_dlightBacks", "1", 0 );
+	r_finish = ri.Cvar_Get( "r_finish", "0", 0 );
+	r_textureMode = ri.Cvar_Get( "r_textureMode", "GL_LINEAR_MIPMAP_NEAREST", 0 );
+	r_ext_texture_filter_anisotropic = ri.Cvar_Get( "r_ext_texture_filter_anisotropic", "1.0", 0 );
+	r_swapInterval = ri.Cvar_Get( "r_swapInterval", "0", 0 );
+	r_gamma = ri.Cvar_Get( "r_gamma", "1.3", 0 );
+	r_facePlaneCull = ri.Cvar_Get( "r_facePlaneCull", "1", 0 );
 
-	r_primitives = ri.Cvar_Get( "r_primitives", "0", CVAR_ARCHIVE );
+	r_primitives = ri.Cvar_Get( "r_primitives", "0", 0 );
 
 	r_ambientScale = ri.Cvar_Get( "r_ambientScale", "0.5", CVAR_CHEAT );
 	r_lightScale = ri.Cvar_Get( "r_lightScale", "2", CVAR_CHEAT );
@@ -1207,7 +1207,7 @@ void R_Register( void )
 	r_debugSort = ri.Cvar_Get( "r_debugSort", "0", CVAR_CHEAT );
 	r_printShaders = ri.Cvar_Get( "r_printShaders", "0", 0 );
 
-	r_fontScale = ri.Cvar_Get( "r_fontScale", "36", CVAR_ARCHIVE | CVAR_LATCH);
+	r_fontScale = ri.Cvar_Get( "r_fontScale", "36",  CVAR_LATCH);
 
 	// Ridah
 	// TTimo show_bug.cgi?id=440
@@ -1255,10 +1255,10 @@ void R_Register( void )
 	r_debugSurface = ri.Cvar_Get( "r_debugSurface", "0", CVAR_CHEAT );
 	r_nobind = ri.Cvar_Get( "r_nobind", "0", CVAR_CHEAT );
 	r_showtris = ri.Cvar_Get( "r_showtris", "0", CVAR_CHEAT );
-	r_trisColor = ri.Cvar_Get( "r_trisColor", "1.0 1.0 1.0 1.0", CVAR_ARCHIVE );
+	r_trisColor = ri.Cvar_Get( "r_trisColor", "1.0 1.0 1.0 1.0", 0 );
 	r_showsky = ri.Cvar_Get( "r_showsky", "0", CVAR_CHEAT );
 	r_shownormals = ri.Cvar_Get( "r_shownormals", "0", CVAR_CHEAT );
-	r_normallength = ri.Cvar_Get( "r_normallength", "0.5", CVAR_ARCHIVE );
+	r_normallength = ri.Cvar_Get( "r_normallength", "0.5", 0 );
 	r_showmodelbounds = ri.Cvar_Get( "r_showmodelbounds", "0", CVAR_CHEAT );
 	r_clear = ri.Cvar_Get( "r_clear", "0", CVAR_CHEAT );
 	r_offsetFactor = ri.Cvar_Get( "r_offsetfactor", "-1", CVAR_CHEAT );
@@ -1272,7 +1272,7 @@ void R_Register( void )
 	r_maxpolys = ri.Cvar_Get( "r_maxpolys", va( "%d", MAX_POLYS ), 0 );
 	r_maxpolyverts = ri.Cvar_Get( "r_maxpolyverts", va( "%d", MAX_POLYVERTS ), 0 );
 
-	r_highQualityVideo = ri.Cvar_Get( "r_highQualityVideo", "1", CVAR_ARCHIVE );
+	r_highQualityVideo = ri.Cvar_Get( "r_highQualityVideo", "1", 0 );
 	// make sure all the commands added here are also
 	// removed in R_Shutdown
 	ri.Cmd_AddCommand( "imagelist", R_ImageList_f );
