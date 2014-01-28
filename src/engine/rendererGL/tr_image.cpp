@@ -1611,6 +1611,25 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 							 ( image->bits & IF_NORMALMAP ) );
 				}
 
+#if 0
+				if( image->bits & IF_NORMALMAP ) {
+					for ( i = 0; i < c; i++ )
+					{
+						vec3_t n;
+
+						n[ 0 ] = Tex_ByteToFloat( scaledBuffer[ i * 4 + 0 ] );
+						n[ 1 ] = Tex_ByteToFloat( scaledBuffer[ i * 4 + 1 ] );
+						n[ 2 ] = Tex_ByteToFloat( scaledBuffer[ i * 4 + 2 ] );
+
+						VectorNormalize( n );
+
+						scaledBuffer[ i * 4 + 0 ] = Tex_FloatToByte( n[ 0 ] );
+						scaledBuffer[ i * 4 + 1 ] = Tex_FloatToByte( n[ 1 ] );
+						scaledBuffer[ i * 4 + 2 ] = Tex_FloatToByte( n[ 2 ] );
+					}
+				}
+#endif
+
 				if ( !( image->bits & ( IF_NORMALMAP | IF_RGBA16F | IF_RGBA32F | IF_TWOCOMP16F | IF_TWOCOMP32F | IF_NOLIGHTSCALE ) ) )
 				{
 					R_LightScaleTexture( ( unsigned * ) scaledBuffer, scaledWidth, scaledHeight, image->filterType == FT_DEFAULT );
