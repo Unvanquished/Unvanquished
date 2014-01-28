@@ -439,6 +439,8 @@ static int VersionCmp(Str::StringRef aStr, Str::StringRef bStr)
 			return 0;
 		else if (Str::cisalpha(c))
 			return c;
+		else if (c == '~')
+			return -1;
 		else if (c)
 			return c + 256;
 		else
@@ -653,7 +655,7 @@ bool IsValid(Str::StringRef path, bool allowDir)
 			return false;
 
 		// Only allow the following punctuation characters
-		if (c != '/' && c != '-' && c != '_' && c != '.')
+		if (c != '/' && c != '-' && c != '_' && c != '.' && c != '+' && c != '~')
 			return false;
 		nonAlphaNum = true;
 	}
