@@ -2406,16 +2406,16 @@ bool FS_LoadPak(const char* name)
 
 void FS_LoadBasePak()
 {
-	if (!FS_LoadPak(FS::fs_basepak.Get().c_str())) {
-		Com_Printf("Could not load base pak '%s', falling back to default\n", FS::fs_basepak.Get().c_str());
-		if (!FS_LoadPak(FS::DEFAULT_BASE_PAK))
-			Com_Error(ERR_FATAL, "Could not load default base pak '%s'", FS::DEFAULT_BASE_PAK);
-	}
-
 	Cmd::Args extrapaks(FS::fs_extrapaks.Get());
 	for (auto& x: extrapaks) {
 		if (!FS_LoadPak(x.c_str()))
 			Com_Printf("Could not load extra pak '%s'\n", x.c_str());
+	}
+
+	if (!FS_LoadPak(FS::fs_basepak.Get().c_str())) {
+		Com_Printf("Could not load base pak '%s', falling back to default\n", FS::fs_basepak.Get().c_str());
+		if (!FS_LoadPak(FS::DEFAULT_BASE_PAK))
+			Com_Error(ERR_FATAL, "Could not load default base pak '%s'", FS::DEFAULT_BASE_PAK);
 	}
 }
 
