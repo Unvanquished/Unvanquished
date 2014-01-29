@@ -67,6 +67,9 @@ int SV_SQL_Open( const char *dbName )
 		return -1;
 	}
 
+	// Prevents gamelogic from attaching further databases from arbitrary pathes
+	sqlite3_limit( db, SQLITE_LIMIT_ATTACHED, 0 );
+
 	databases.push_back( db );
 
 	return databases.size() - 1;
