@@ -70,9 +70,9 @@ namespace Cvar {
         }
 
         if (cvar.flags & CVAR_LATCH and cvar.ccvar.latchedString) {
-            cvar.description = Str::Format("\"%s\", latched value \"%s\"", cvar.ccvar.string, cvar.ccvar.latchedString);
+            cvar.description = Str::Format("\"%s^7\", latched value \"%s^7\"", cvar.ccvar.string, cvar.ccvar.latchedString);
         } else {
-            cvar.description = Str::Format("\"%s\"", cvar.value);
+            cvar.description = Str::Format("\"%s^7\"", cvar.value);
         }
 
         Cmd::ChangeDescription(cvar.ccvar.name, cvar.description);
@@ -782,10 +782,24 @@ namespace Cvar {
             }
 
             Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, Str::StringRef prefix) const OVERRIDE {
-                Q_UNUSED(args);
+                int nameIndex = 1;
+                int argc = args.Argc();
 
-                //TODO handle -raw?
+                // FIXME: translation
+                static const std::initializer_list<Cmd::CompletionItem> flags = {
+                    {"-raw", N_("display colour controls")},
+                };
+
+                // command only allows one switch
+                if (argc > 1 && args[1][0] == '-') {
+                    nameIndex = 2;
+                }
+
                 if (argNum == 1) {
+                    return Cmd::CompletionFilter(::Cvar::Complete(prefix), prefix, flags);
+                }
+
+                if (argNum == nameIndex) {
                     return ::Cvar::Complete(prefix);
                 }
 
