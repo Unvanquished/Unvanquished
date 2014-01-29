@@ -258,8 +258,8 @@ typedef enum
 #define SS_BLOBLOCKED       BIT(4)
 #define SS_POISONED         BIT(5)
 #define SS_BOOSTED          BIT(6)
-#define SS_BOOSTEDNEW       BIT(7) // booster recharged
-#define SS_BOOSTEDWARNING   BIT(8) // booster poison is running out
+#define SS_BOOSTEDNEW       BIT(7) // booster recharged // TODO: Unnecessary, remove
+#define SS_BOOSTEDWARNING   BIT(8) // booster poison is running out // TODO: Unnecessary, remove
 #define SS_SLOWLOCKED       BIT(9)
 #define SS_CHARGING         BIT(10)
 #define SS_HEALING_ACTIVE   BIT(11) // medistat for humans, creep for aliens
@@ -270,6 +270,7 @@ typedef enum
 #define SS2_JETPACK_ENABLED BIT(0)  // whether jets/wings are extended
 #define SS2_JETPACK_WARM    BIT(1)  // whether we can start a thrust
 #define SS2_JETPACK_ACTIVE  BIT(2)  // whether we are thrusting
+#define SS2_LEVEL1SLOW      BIT(3)  // hit and slowed by a Mantis attack
 
 // has to fit into 16 bits
 #define SB_BUILDABLE_MASK        0x00FF

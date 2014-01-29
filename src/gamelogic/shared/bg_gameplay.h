@@ -56,6 +56,8 @@ extern float LEVEL1_CLAW_WIDTH;
 #define LEVEL1_SIDEPOUNCE_MAGNITUDE   400
 #define LEVEL1_SIDEPOUNCE_DIR_Z       0.4f // in ]0.0f,1.0f], fixed Z-coordinate of sidepounce
 #define LEVEL1_SIDEPOUNCE_COOLDOWN    750
+#define LEVEL1_SLOW_TIME              1000
+#define LEVEL1_SLOW_MOD               0.75f
 
 extern int   LEVEL2_CLAW_DMG;
 extern float LEVEL2_CLAW_RANGE;
@@ -289,8 +291,9 @@ extern int   REACTOR_ATTACK_DAMAGE;
 #define HUMAN_SIDE_MODIFIER           0.9f
 #define HUMAN_LAND_FRICTION           3.0f
 
-#define STAMINA_MAX                   2000
-#define STAMINA_MEDISTAT_RESTORE      30   // 1/(100 ms). stacks.
+#define STAMINA_MAX                   30000
+#define STAMINA_MEDISTAT_RESTORE      450  // 1/(100 ms). stacks.
+#define STAMINA_LEVEL1SLOW_TAKE       6    // 1/ms
 
 #define HUMAN_SPAWN_REPEAT_TIME       10000
 

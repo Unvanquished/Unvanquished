@@ -596,6 +596,8 @@ struct gclient_s
 	int        trampleBuildablesHit[ MAX_TRAMPLE_BUILDABLES_TRACKED ];
 
 	int        nextCrushTime;
+
+	int        lastLevel1SlowTime;
 };
 
 /**

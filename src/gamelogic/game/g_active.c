@@ -1990,6 +1990,12 @@ void ClientThink_real( gentity_t *self )
 		client->ps.stats[ STAT_STATE ] &= ~SS_CREEPSLOWED;
 	}
 
+	// unset level1slow flag if it's time
+	if ( client->lastLevel1SlowTime + LEVEL1_SLOW_TIME < level.time )
+	{
+		client->ps.stats[ STAT_STATE2 ] &= ~SS2_LEVEL1SLOW;
+	}
+
 	// set up for pmove
 	oldEventSequence = client->ps.eventSequence;
 

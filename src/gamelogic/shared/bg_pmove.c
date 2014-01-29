@@ -486,6 +486,12 @@ static float PM_CmdScale( usercmd_t *cmd, qboolean zFlight )
 				modifier *= CREEP_MODIFIER;
 			}
 		}
+
+		// Apply level1 slow modifier
+		if ( pm->ps->stats[ STAT_STATE ] & SS2_LEVEL1SLOW )
+		{
+			modifier *= LEVEL1_SLOW_MOD;
+		}
 	}
 
 	// Go faster when using the Tyrant charge attack
@@ -4653,6 +4659,20 @@ void PM_UpdateViewAngles( playerState_t *ps, const usercmd_t *cmd )
 	}
 }
 
+static void PM_Level1SlowSideEffects( void )
+{
+	// Remove some stamina
+	if ( pm->ps->stats[ STAT_STATE2 ] & SS2_LEVEL1SLOW )
+	{
+		pm->ps->stats[ STAT_STAMINA ] -= pml.msec * STAMINA_LEVEL1SLOW_TAKE;
+
+		if ( pm->ps->stats[ STAT_STAMINA ] < 0 )
+		{
+			pm->ps->stats[ STAT_STAMINA ] = 0;
+		}
+	}
+}
+
 /*
 ================
 PmoveSingle
@@ -4876,6 +4896,9 @@ void PmoveSingle( pmove_t *pmove )
 
 	// restore jetpack fuel if possible
 	PM_CheckJetpackRestoreFuel();
+
+	// apply level1slow side effects
+	PM_Level1SlowSideEffects();
 
 	PM_Animate();
 

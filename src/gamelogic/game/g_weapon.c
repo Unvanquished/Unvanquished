@@ -522,22 +522,36 @@ static void SendMeleeHitEvent( gentity_t *attacker, gentity_t *target, trace_t *
 	event->s.generic1 = attacker->s.generic1;
 }
 
-static void FireMelee( gentity_t *self, float range, float width, float height,
-                       int damage, meansOfDeath_t mod )
+static gentity_t *FireMelee( gentity_t *self, float range, float width, float height,
+                             int damage, meansOfDeath_t mod )
 {
 	trace_t   tr;
 	gentity_t *traceEnt;
 
 	G_WideTrace( &tr, self, range, width, height, &traceEnt );
 
-	if ( traceEnt == NULL || !traceEnt->takedamage )
+	if ( traceEnt != NULL && traceEnt->takedamage )
 	{
-		return;
+		SendMeleeHitEvent( self, traceEnt, &tr );
+
+		G_Damage( traceEnt, self, self, forward, tr.endpos, damage, DAMAGE_NO_KNOCKBACK, mod );
 	}
 
-	SendMeleeHitEvent( self, traceEnt, &tr );
+	return traceEnt;
+}
 
-	G_Damage( traceEnt, self, self, forward, tr.endpos, damage, DAMAGE_NO_KNOCKBACK, mod );
+static void FireLevel1Melee( gentity_t *self )
+{
+	gentity_t *target;
+
+	target = FireMelee( self, LEVEL1_CLAW_RANGE, LEVEL1_CLAW_WIDTH, LEVEL1_CLAW_WIDTH,
+	                    LEVEL1_CLAW_DMG, MOD_LEVEL1_CLAW );
+
+	if ( target && target->client && target->takedamage )
+	{
+		target->client->ps.stats[ STAT_STATE2 ] |= SS2_LEVEL1SLOW;
+		target->client->lastLevel1SlowTime = level.time;
+	}
 }
 
 /*
@@ -1824,8 +1838,7 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 			switch ( weapon )
 			{
 				case WP_ALEVEL1:
-					FireMelee( self, LEVEL1_CLAW_RANGE, LEVEL1_CLAW_WIDTH, LEVEL1_CLAW_WIDTH,
-					           LEVEL1_CLAW_DMG, MOD_LEVEL1_CLAW );
+					FireLevel1Melee( self );
 					break;
 
 				case WP_ALEVEL3:
