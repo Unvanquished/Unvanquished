@@ -1702,7 +1702,7 @@ void IN_Init( void *windowData )
 	// mouse variables
 	in_mouse = Cvar_Get( "in_mouse", "1", 0 );
 	in_nograb = Cvar_Get( "in_nograb", "0", 0 );
-	in_uigrab = Cvar_Get( "in_uigrab", "1", 0 );
+	in_uigrab = Cvar_Get( "in_uigrab", "0", 0 );
 
 	in_joystick = Cvar_Get( "in_joystick", "0",  CVAR_LATCH );
 	in_joystickDebug = Cvar_Get( "in_joystickDebug", "0", CVAR_TEMP );
