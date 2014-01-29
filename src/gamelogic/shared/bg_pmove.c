@@ -488,7 +488,7 @@ static float PM_CmdScale( usercmd_t *cmd, qboolean zFlight )
 		}
 
 		// Apply level1 slow modifier
-		if ( pm->ps->stats[ STAT_STATE ] & SS2_LEVEL1SLOW )
+		if ( pm->ps->stats[ STAT_STATE2 ] & SS2_LEVEL1SLOW )
 		{
 			modifier *= LEVEL1_SLOW_MOD;
 		}
