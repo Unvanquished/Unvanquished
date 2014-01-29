@@ -523,45 +523,6 @@ namespace Cvar {
     static SetCmd SetsCmdRegistration("sets", N_("sets the value of a cvar"), SERVERINFO);
     static SetCmd SetaCmdRegistration("seta", N_("sets the value of a cvar and marks the cvar as archived"), USER_ARCHIVE);
 
-    class ArchiveCmd: public Cmd::StaticCmd {
-        public:
-            ArchiveCmd(const std::string& name, const std::string& description, bool set): Cmd::StaticCmd(name, Cmd::BASE, description), set(set) {
-            }
-
-            void Run(const Cmd::Args& args) const OVERRIDE {
-                int argc = args.Argc();
-
-                if (argc < 2) {
-                    PrintUsage(args, _("<variable>…"), "");
-                    return;
-                }
-
-                for (int nameIndex = 1; nameIndex < argc; ++nameIndex)
-                {
-                    const std::string& name = args.Argv(nameIndex);
-
-                    if (!(set ? ::Cvar::AddFlags(name, USER_ARCHIVE) : ::Cvar::ClearFlags(name, USER_ARCHIVE))) {
-                        Print(_("Cvar '%s' doesn't exist"), name.c_str());
-                    }
-                }
-            }
-
-            Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, Str::StringRef prefix) const OVERRIDE {
-                Q_UNUSED(args);
-
-                if (argNum) {
-                    return ::Cvar::Complete(prefix);
-                }
-
-                return {};
-            }
-
-        private:
-            bool set;
-    };
-    static ArchiveCmd ArchiveCmdRegistration("archive", N_("marks variables as user-archived"), true);
-    static ArchiveCmd UnarchiveCmdRegistration("unarchive", N_("marks variables as not user-archived"), false);
-
     class ResetCmd: public Cmd::StaticCmd {
         public:
             ResetCmd(): Cmd::StaticCmd("reset", Cmd::BASE, N_("resets the named variables")) {
@@ -569,29 +530,18 @@ namespace Cvar {
 
             void Run(const Cmd::Args& args) const OVERRIDE {
                 int argc = args.Argc();
-                int nameIndex = 0;
                 bool clearArchive = true;
 
-                while (++nameIndex < argc) {
-                    if (Cmd::IsSwitch(args.Argv(nameIndex), "-value")) {
-                        clearArchive = false;
-                    }
-                    else {
-                        // no match; assume variable name
-                        break;
-                    }
-                }
-
-                if (argc - nameIndex < 1) {
-                    PrintUsage(args, _("[-value] <variable>…"), "");
+                if (argc < 2) {
+                    PrintUsage(args, _("<variable>…"), "");
                     return;
                 }
 
                 CvarMap& cvars = GetCvarMap();
 
-                for (; nameIndex < argc; ++nameIndex)
+                for (int i = 1; i < argc; ++i)
                 {
-                    const std::string& name = args.Argv(nameIndex);
+                    const std::string& name = args[i];
 
                     auto iter = cvars.find(name);
                     if (iter != cvars.end()) {
@@ -607,27 +557,8 @@ namespace Cvar {
             }
 
             Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, Str::StringRef prefix) const OVERRIDE {
-                int nameIndex = 0;
-                int argc = args.Argc();
-
-                // FIXME: translation
-                static const std::initializer_list<Cmd::CompletionItem> flags = {
-                    {"-value", N_("reset only the value; don't clear the user-archived marker")}
-                };
-
-                while (++nameIndex < argc && args[nameIndex][0] == '-')
-                    ;
-
-                if (argNum == nameIndex) {
-                    return Cmd::CompletionFilter(::Cvar::Complete(prefix), prefix, flags);
-                }
-
-                if (argNum > nameIndex) {
-                    return ::Cvar::Complete(prefix);
-                }
-
                 if (argNum) {
-                    return Cmd::CompletionFilter(prefix, flags);
+                    return ::Cvar::Complete(prefix);
                 }
 
                 return {};
