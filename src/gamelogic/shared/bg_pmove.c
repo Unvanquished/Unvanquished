@@ -862,6 +862,8 @@ static qboolean PM_CheckPounce( void )
 					     BG_GetTrajectoryPitch( pm->ps->origin, endpos, jumpMagnitude, pm->ps->gravity,
 					                            trajAngles, trajDir1, trajDir2 ) )
 					{
+						int iter;
+
 						if ( pm->debugLevel > 0 )
 						{
 							Com_Printf( "[PM_CheckPounce] Found trajectory angles: "
@@ -893,9 +895,19 @@ static qboolean PM_CheckPounce( void )
 
 						// HACK: make sure we get off the ceiling if jumping to an adjacent wall
 						//       this is done by subsequently rotating the jump direction in surface
-						//       normal direction until their angle is below a threshold
-						while ( DotProduct( jumpDirection, pml.groundTrace.plane.normal ) <= 0.1f ) // acos(0.1) ~= 85°
+						//       normal direction until its angle is below a threshold (acos(0.1) ~= 85°)
+						for ( iter = 0; DotProduct( jumpDirection, pml.groundTrace.plane.normal ) <= 0.1f; iter++ )
 						{
+							if ( iter > 10 )
+							{
+								if ( pm->debugLevel > 0 )
+								{
+									Com_Printf("[PM_CheckPounce] Giving up adjusting jump direction.\n");
+								}
+
+								break;
+							}
+
 							VectorMA( jumpDirection, 0.1f, pml.groundTrace.plane.normal, jumpDirection );
 							VectorNormalize( jumpDirection );
 
@@ -905,7 +917,6 @@ static qboolean PM_CheckPounce( void )
 								           "( %.2f, %.2f, %.2f )\n",
 								           jumpDirection[ 0 ], jumpDirection[ 1 ], jumpDirection[ 2 ] );
 							}
-
 						}
 					}
 					// resort to jumping in view direction
