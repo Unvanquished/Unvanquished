@@ -717,9 +717,11 @@ PM_CheckPounce
 */
 static qboolean PM_CheckPounce( void )
 {
+	const static vec3_t up = { 0.0f, 0.0f, 1.0f };
+
 	int      jumpMagnitude;
-	vec3_t   jumpDirection, groundDirection;
-	float    pitch;
+	vec3_t   jumpDirection;
+	float    pitch, pitchToGround, pitchToRef;
 
 	// Check for valid class
 	switch ( pm->ps->weapon )
@@ -802,8 +804,8 @@ static qboolean PM_CheckPounce( void )
 	switch ( pm->ps->weapon )
 	{
 		case WP_ALEVEL1:
-			// wallwalking
-			if ( pm->ps->groundEntityNum == ENTITYNUM_WORLD && pml.groundTrace.plane.normal[ 2 ] <= 0.1f )
+			// wallwalking (ground surface normal is off more than 45° from Z direction)
+			if ( pm->ps->groundEntityNum == ENTITYNUM_WORLD && acos( pml.groundTrace.plane.normal[ 2 ] ) > M_PI / 4.0f )
 			{
 				// get jump magnitude
 				jumpMagnitude = LEVEL1_WALLPOUNCE_MAGNITUDE;
@@ -928,17 +930,17 @@ static qboolean PM_CheckPounce( void )
 				VectorCopy( pml.forward, jumpDirection );
 				jumpDirection[ 2 ] = fabs( jumpDirection[ 2 ] );
 
-				// calculate jump magnitude so that jump length is fixed for pitch between
-				// LEVEL1_POUNCE_MINPITCH and pi/4 (45°)
-				groundDirection[ 0 ] = jumpDirection[ 0 ];
-				groundDirection[ 1 ] = jumpDirection[ 1 ];
-				groundDirection[ 2 ] = 0.0f;
-				VectorNormalize( groundDirection );
+				// get pitch towards ground surface
+				pitchToGround = ( M_PI / 2.0f ) - acos( DotProduct( pml.groundTrace.plane.normal, jumpDirection ) );
 
-				pitch = acos( groundDirection[ 0 ] * jumpDirection[ 0 ] +
-							  groundDirection[ 1 ] * jumpDirection[ 1 ] );
+				// get pitch towards XY reference plane
+				pitchToRef = ( M_PI / 2.0f ) - acos( DotProduct( up, jumpDirection ) );
 
-				if ( pitch > M_PI / 4.0f ) // 45°
+				// use the advantageous pitch; allows using an upwards gradiant as a ramp
+				pitch = MIN( pitchToGround, pitchToRef );
+
+				// pitches above 45° or below LEVEL1_POUNCE_MINPITCH will result in less than the maximum jump length
+				if ( pitch > M_PI / 4.0f )
 				{
 					pitch = M_PI / 4.0f;
 				}
@@ -947,6 +949,7 @@ static qboolean PM_CheckPounce( void )
 					pitch = LEVEL1_POUNCE_MINPITCH;
 				}
 
+				// calculate jump magnitude for given pitch so that jump length is fixed
 				jumpMagnitude = ( int )sqrt( LEVEL1_POUNCE_DISTANCE * pm->ps->gravity / sin( 2.0f * pitch ) );
 
 				// add cooldown
