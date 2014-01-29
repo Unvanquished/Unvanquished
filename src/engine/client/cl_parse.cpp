@@ -501,10 +501,12 @@ void CL_SystemInfoChanged( void )
 	clc.voipEnabled = atoi( s );
 #endif
 
-	// load paks sent by the server
-	FS::PakPath::ClearPaks();
-	if (!FS_LoadServerPaks( Info_ValueForKey( systemInfo, "sv_paks" ) ) && !cl_allowDownload->integer)
-		Com_Error(ERR_DROP, "Client is missing paks but downloads are disabled");
+	// load paks sent by the server, but not if we are running a local server
+	if (!com_sv_running->integer) {
+		FS::PakPath::ClearPaks();
+		if (!FS_LoadServerPaks( Info_ValueForKey( systemInfo, "sv_paks" ) ) && !cl_allowDownload->integer)
+			Com_Error(ERR_DROP, "Client is missing paks but downloads are disabled");
+	}
 
 	// scan through all the variables in the systeminfo and locally set cvars to match
 	s = systemInfo;
