@@ -491,77 +491,25 @@ namespace Cvar {
 
     class SetCmd: public Cmd::StaticCmd {
         public:
-            SetCmd(const std::string& name, int flags): Cmd::StaticCmd(name, Cmd::BASE, N_("sets the value of a cvar")), flags(flags) {
+            SetCmd(const std::string& name, const std::string& help, int flags): Cmd::StaticCmd(name, Cmd::BASE, help), flags(flags) {
             }
 
             void Run(const Cmd::Args& args) const OVERRIDE {
-                int argc = args.Argc();
-                int nameIndex = 0;
-                bool unsafe = false;
-                bool clearArchive = false;
-                bool setArchive = false;
-
-                while (++nameIndex < argc) {
-                    if (Cmd::IsSwitch(args.Argv(nameIndex), "-unsafe")) {
-                        unsafe = true;
-                    }
-                    else if (!flags && Cmd::IsSwitch(args.Argv(nameIndex), "-archive")) {
-                        clearArchive = false;
-                        setArchive = true;
-                    }
-                    else if (!flags && Cmd::IsSwitch(args.Argv(nameIndex), "-no-archive")) {
-                        clearArchive = true;
-                        setArchive = false;
-                    }
-                    else {
-                        // no match; assume variable name
-                        break;
-                    }
-                }
-
-                if (argc - nameIndex < 2) {
-                    PrintUsage(args, flags ? _("[-unsafe] <variable> <value>") : _("[-unsafe] [-[no-]archive] <variable> <value>"), "");
+                if (args.Argc() < 2) {
+                    PrintUsage(args, _("<variable> <value>"),"");
                     return;
                 }
 
-                const std::string& name = args.Argv(nameIndex);
-
-                //TODO
-                if (unsafe and com_crashed != nullptr and com_crashed->integer != 0) {
-                    Print(_("%s is unsafe. Check com_crashed."), name.c_str());
-                    return;
-                }
-
-                const std::string& value = args.ConcatArgs(nameIndex + 1);
+                const std::string& name = args.Argv(1);
+                const std::string& value = args.ConcatArgs(2);
 
                 ::Cvar::SetValue(name, value);
-                ::Cvar::AddFlags(name, setArchive ? (flags | USER_ARCHIVE) : flags);
-
-                if (clearArchive) {
-                    ::Cvar::ClearFlags(name, USER_ARCHIVE);
-                }
+                ::Cvar::AddFlags(name, flags);
             }
 
             Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, Str::StringRef prefix) const OVERRIDE {
-                int nameIndex = 0;
-                int argc = args.Argc();
-
-                // FIXME: translation
-                static const std::initializer_list<Cmd::CompletionItem> flags = {
-                    {"-unsafe", N_("not safe to use if loading after a crash")},
-                    {"-archive", N_("mark the variable as saved at user request")},
-                    {"-no-archive", N_("unmark the variable as saved at user request")}
-                };
-
-                while (++nameIndex < argc && args[nameIndex][0] == '-')
-                    ;
-
-                if (argNum == nameIndex) {
-                    return Cmd::CompletionFilter(::Cvar::Complete(prefix), prefix, flags);
-                }
-
-                if (argNum && argNum < nameIndex) {
-                    return Cmd::CompletionFilter(prefix, flags);
+                if (argNum == 1) {
+                    return ::Cvar::Complete(prefix);
                 }
 
                 return {};
@@ -570,10 +518,10 @@ namespace Cvar {
         private:
             int flags;
     };
-    static SetCmd SetCmdRegistration("set", 0);
-    static SetCmd SetuCmdRegistration("setu", USERINFO);
-    static SetCmd SetsCmdRegistration("sets", SERVERINFO);
-    static SetCmd SetaCmdRegistration("seta", USER_ARCHIVE);
+    static SetCmd SetCmdRegistration("set", N_("sets the value of a cvar"), 0);
+    static SetCmd SetuCmdRegistration("setu", N_("sets the value of a cvar"), USERINFO);
+    static SetCmd SetsCmdRegistration("sets", N_("sets the value of a cvar"), SERVERINFO);
+    static SetCmd SetaCmdRegistration("seta", N_("sets the value of a cvar and marks the cvar as archived"), USER_ARCHIVE);
 
     class ArchiveCmd: public Cmd::StaticCmd {
         public:
@@ -616,7 +564,7 @@ namespace Cvar {
 
     class ResetCmd: public Cmd::StaticCmd {
         public:
-            ResetCmd(): Cmd::StaticCmd("reset", Cmd::BASE, N_("resets the named variables and, without -value, clears their user archive flags")) {
+            ResetCmd(): Cmd::StaticCmd("reset", Cmd::BASE, N_("resets the named variables")) {
             }
 
             void Run(const Cmd::Args& args) const OVERRIDE {
