@@ -285,7 +285,7 @@ void Trans_Init( void )
 
 	Cmd_AddCommand( "updatelanguage", Trans_UpdateLanguage_f );
 
-	language = Cvar_Get( "language", "", 0 );
+	language = Cvar_Get( "language", "", CVAR_ARCHIVE );
 	trans_debug = Cvar_Get( "trans_debug", "0", 0 );
 	trans_languages = Cvar_Get( "trans_languages", "", CVAR_ROM );
 	trans_encodings = Cvar_Get( "trans_encodings", "", CVAR_ROM );

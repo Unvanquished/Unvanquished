@@ -1094,7 +1094,7 @@ void R_Register( void )
 	// latched and archived variables
 	//
 	r_allowExtensions = ri.Cvar_Get( "r_allowExtensions", "1",  CVAR_LATCH | CVAR_UNSAFE );
-	r_ext_compressed_textures = ri.Cvar_Get( "r_ext_compressed_textures", "1",  CVAR_LATCH | CVAR_UNSAFE );  // (SA) ew, a spelling change I missed from the missionpack
+	r_ext_compressed_textures = ri.Cvar_Get( "r_ext_compressed_textures", "1",  CVAR_LATCH | CVAR_UNSAFE | CVAR_ARCHIVE );  // (SA) ew, a spelling change I missed from the missionpack
 	r_ext_gamma_control = ri.Cvar_Get( "r_ext_gamma_control", "1",  CVAR_LATCH | CVAR_UNSAFE );
 	r_ext_multitexture = ri.Cvar_Get( "r_ext_multitexture", "1",  CVAR_LATCH | CVAR_UNSAFE );
 	r_ext_compiled_vertex_array = ri.Cvar_Get( "r_ext_compiled_vertex_array", "1",  CVAR_LATCH | CVAR_UNSAFE );
@@ -1124,7 +1124,7 @@ void R_Register( void )
 
 	r_clampToEdge = ri.Cvar_Get( "r_clampToEdge", "1",  CVAR_LATCH | CVAR_UNSAFE );  // ydnar: opengl 1.2 GL_CLAMP_TO_EDGE support
 
-	r_picmip = ri.Cvar_Get( "r_picmip", "1",  CVAR_LATCH );  //----(SA)    mod for DM and DK for id build.  was "1" // JPW NERVE pushed back to 1
+	r_picmip = ri.Cvar_Get( "r_picmip", "1",  CVAR_LATCH | CVAR_ARCHIVE );  //----(SA)    mod for DM and DK for id build.  was "1" // JPW NERVE pushed back to 1
 	r_roundImagesDown = ri.Cvar_Get( "r_roundImagesDown", "1",  CVAR_LATCH );
 	r_rmse = ri.Cvar_Get( "r_rmse", "0.0",  CVAR_LATCH );
 	r_colorMipLevels = ri.Cvar_Get( "r_colorMipLevels", "0", CVAR_LATCH );
@@ -1136,7 +1136,7 @@ void R_Register( void )
 	r_stereo = ri.Cvar_Get( "r_stereo", "0",  CVAR_LATCH | CVAR_UNSAFE );
 	r_stencilbits = ri.Cvar_Get( "r_stencilbits", "0",  CVAR_LATCH | CVAR_UNSAFE );
 	r_depthbits = ri.Cvar_Get( "r_depthbits", "0",  CVAR_LATCH | CVAR_UNSAFE );
-	r_ext_multisample = ri.Cvar_Get( "r_ext_multisample", "0",  CVAR_LATCH | CVAR_UNSAFE );
+	r_ext_multisample = ri.Cvar_Get( "r_ext_multisample", "0",  CVAR_LATCH | CVAR_UNSAFE | CVAR_ARCHIVE );
 	r_overBrightBits = ri.Cvar_Get( "r_overBrightBits", "0",  CVAR_LATCH );  // Arnout: disable overbrightbits by default
 	AssertCvarRange( r_overBrightBits, 0, 1, qtrue );  // ydnar: limit to overbrightbits 1 (sorry 1337 players)
 #ifdef WIN32
@@ -1144,11 +1144,11 @@ void R_Register( void )
 #else
 	r_ignorehwgamma = ri.Cvar_Get( "r_ignorehwgamma", "1",  CVAR_LATCH );  // use software gamma by default
 #endif
-	r_mode = ri.Cvar_Get( "r_mode", "-2", CVAR_LATCH | CVAR_UNSAFE );
+	r_mode = ri.Cvar_Get( "r_mode", "-2", CVAR_LATCH | CVAR_UNSAFE | CVAR_ARCHIVE );
 	r_oldMode = ri.Cvar_Get( "r_oldMode", "", 0 );  // ydnar: previous "good" video mode
-	r_fullscreen = ri.Cvar_Get( "r_fullscreen", "1", 0 );
-	r_customwidth = ri.Cvar_Get( "r_customwidth", "1600", CVAR_LATCH );
-	r_customheight = ri.Cvar_Get( "r_customheight", "1024", CVAR_LATCH );
+	r_fullscreen = ri.Cvar_Get( "r_fullscreen", "1", CVAR_ARCHIVE );
+	r_customwidth = ri.Cvar_Get( "r_customwidth", "1600", CVAR_LATCH | CVAR_ARCHIVE );
+	r_customheight = ri.Cvar_Get( "r_customheight", "1024", CVAR_LATCH | CVAR_ARCHIVE );
 	r_customaspect = ri.Cvar_Get( "r_customaspect", "1", CVAR_LATCH );
 	r_simpleMipMaps = ri.Cvar_Get( "r_simpleMipMaps", "1", CVAR_LATCH );
 	r_subdivisions = ri.Cvar_Get( "r_subdivisions", "4", CVAR_LATCH );
@@ -1181,14 +1181,14 @@ void R_Register( void )
 //----(SA)  end
 	r_ignoreGLErrors = ri.Cvar_Get( "r_ignoreGLErrors", "1", 0 );
 	r_fastsky = ri.Cvar_Get( "r_fastsky", "0", 0 );
-	r_inGameVideo = ri.Cvar_Get( "r_inGameVideo", "1", 0 );
+	r_inGameVideo = ri.Cvar_Get( "r_inGameVideo", "1", CVAR_ARCHIVE );
 	r_drawSun = ri.Cvar_Get( "r_drawSun", "1", 0 );
 	r_dynamiclight = ri.Cvar_Get( "r_dynamiclight", "1", 0 );
 	r_dlightBacks = ri.Cvar_Get( "r_dlightBacks", "1", 0 );
 	r_finish = ri.Cvar_Get( "r_finish", "0", 0 );
-	r_textureMode = ri.Cvar_Get( "r_textureMode", "GL_LINEAR_MIPMAP_NEAREST", 0 );
-	r_ext_texture_filter_anisotropic = ri.Cvar_Get( "r_ext_texture_filter_anisotropic", "1.0", 0 );
-	r_swapInterval = ri.Cvar_Get( "r_swapInterval", "0", 0 );
+	r_textureMode = ri.Cvar_Get( "r_textureMode", "GL_LINEAR_MIPMAP_NEAREST", CVAR_ARCHIVE );
+	r_ext_texture_filter_anisotropic = ri.Cvar_Get( "r_ext_texture_filter_anisotropic", "1.0", CVAR_ARCHIVE );
+	r_swapInterval = ri.Cvar_Get( "r_swapInterval", "0", CVAR_ARCHIVE );
 	r_gamma = ri.Cvar_Get( "r_gamma", "1.3", 0 );
 	r_facePlaneCull = ri.Cvar_Get( "r_facePlaneCull", "1", 0 );
 

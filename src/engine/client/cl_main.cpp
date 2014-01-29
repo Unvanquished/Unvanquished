@@ -4451,9 +4451,9 @@ void CL_Init( void )
 	cl_packetdup = Cvar_Get( "cl_packetdup", "1", 0 );
 
 	cl_run = Cvar_Get( "cl_run", "1", 0 );
-	cl_sensitivity = Cvar_Get( "sensitivity", "5", 0 );
+	cl_sensitivity = Cvar_Get( "sensitivity", "5", CVAR_ARCHIVE );
 	cl_mouseAccel = Cvar_Get( "cl_mouseAccel", "0", 0 );
-	cl_freelook = Cvar_Get( "cl_freelook", "1", 0 );
+	cl_freelook = Cvar_Get( "cl_freelook", "1", CVAR_ARCHIVE );
 
 	cl_xbox360ControllerAvailable = Cvar_Get( "in_xbox360ControllerAvailable", "0", CVAR_ROM );
 
@@ -4479,7 +4479,7 @@ void CL_Init( void )
 	m_yaw = Cvar_Get( "m_yaw", "0.022", 0 );
 	m_forward = Cvar_Get( "m_forward", "0.25", 0 );
 	m_side = Cvar_Get( "m_side", "0.25", 0 );
-	m_filter = Cvar_Get( "m_filter", "0", 0 );
+	m_filter = Cvar_Get( "m_filter", "0", CVAR_ARCHIVE );
 
 	j_pitch = Cvar_Get( "j_pitch", "0.022", 0 );
 	j_yaw = Cvar_Get( "j_yaw", "-0.022", 0 );
@@ -4525,8 +4525,8 @@ void CL_Init( void )
 
 	Cvar_Get( "cl_maxPing", "800", 0 );
 	// userinfo
-	Cvar_Get( "name", UNNAMED_PLAYER, CVAR_USERINFO  );
-	cl_rate = Cvar_Get( "rate", "25000", CVAR_USERINFO  );
+	Cvar_Get( "name", UNNAMED_PLAYER, CVAR_USERINFO | CVAR_ARCHIVE );
+	cl_rate = Cvar_Get( "rate", "25000", CVAR_USERINFO | CVAR_ARCHIVE );
 	Cvar_Get( "snaps", "40", CVAR_USERINFO  );
 //  Cvar_Get ("sex", "male", CVAR_USERINFO  );
 
@@ -4540,15 +4540,15 @@ void CL_Init( void )
 #ifdef USE_VOIP
 	cl_voipSend = Cvar_Get( "cl_voipSend", "0", 0 );
 	cl_voipSendTarget = Cvar_Get( "cl_voipSendTarget", "all", 0 );
-	cl_voipGainDuringCapture = Cvar_Get( "cl_voipGainDuringCapture", "0.2", 0 );
-	cl_voipCaptureMult = Cvar_Get( "cl_voipCaptureMult", "2.0", 0 );
-	cl_voipUseVAD = Cvar_Get( "cl_voipUseVAD", "0", 0 );
-	cl_voipVADThreshold = Cvar_Get( "cl_voipVADThreshold", "0.25", 0 );
-	cl_voipShowMeter = Cvar_Get( "cl_voipShowMeter", "1", 0 );
-	cl_voipShowSender = Cvar_Get( "cl_voipShowSender", "1", 0 );
+	cl_voipGainDuringCapture = Cvar_Get( "cl_voipGainDuringCapture", "0.2", CVAR_ARCHIVE );
+	cl_voipCaptureMult = Cvar_Get( "cl_voipCaptureMult", "2.0", CVAR_ARCHIVE );
+	cl_voipUseVAD = Cvar_Get( "cl_voipUseVAD", "0", CVAR_ARCHIVE );
+	cl_voipVADThreshold = Cvar_Get( "cl_voipVADThreshold", "0.25", CVAR_ARCHIVE );
+	cl_voipShowMeter = Cvar_Get( "cl_voipShowMeter", "1", CVAR_ARCHIVE );
+	cl_voipShowSender = Cvar_Get( "cl_voipShowSender", "1", CVAR_ARCHIVE );
 
 	// This is a protocol version number.
-	cl_voip = Cvar_Get( "cl_voip", "1", CVAR_USERINFO  );
+	cl_voip = Cvar_Get( "cl_voip", "1", CVAR_USERINFO | CVAR_ARCHIVE );
 
 
 #endif

@@ -34,17 +34,17 @@ namespace Audio {
 
     Log::Logger audioLogs("audio");
 
-    static Cvar::Range<Cvar::Cvar<float>> masterVolume("audio.volume.master", "the global audio volume", Cvar::NONE, 0.8f, 0.0f, 1.0f);
+    static Cvar::Range<Cvar::Cvar<float>> masterVolume("audio.volume.master", "the global audio volume", Cvar::ARCHIVE, 0.8f, 0.0f, 1.0f);
 
     static Cvar::Cvar<bool> muteWhenMinimized("audio.muteWhenMinimized", "should the game be muted when minimized", Cvar::NONE, false);
     static Cvar::Cvar<bool> muteWhenUnfocused("audio.muteWhenUnfocused", "should the game be muted when not focused", Cvar::NONE, false);
 
     //TODO make them the equivalent of LATCH and ROM for available*
-    static Cvar::Cvar<std::string> deviceString("audio.al.device", "the OpenAL device to use", Cvar::NONE, "");
-    static Cvar::Cvar<std::string> availableDevices("audio.al.availableDevices", "the available OpenAL devices", 0, "");
+    static Cvar::Cvar<std::string> deviceString("audio.al.device", "the OpenAL device to use", Cvar::ARCHIVE, "");
+    static Cvar::Cvar<std::string> availableDevices("audio.al.availableDevices", "the available OpenAL devices", Cvar::NONE, "");
 
-    static Cvar::Cvar<std::string> captureDeviceString("audio.al.captureDevice", "the OpenAL capture device to use", Cvar::NONE, "");
-    static Cvar::Cvar<std::string> availableCaptureDevices("audio.al.availableCaptureDevices", "the available capture OpenAL devices", 0, "");
+    static Cvar::Cvar<std::string> captureDeviceString("audio.al.captureDevice", "the OpenAL capture device to use", Cvar::ARCHIVE, "");
+    static Cvar::Cvar<std::string> availableCaptureDevices("audio.al.availableCaptureDevices", "the available capture OpenAL devices", Cvar::NONE, "");
 
     // We mimic the behavior of the previous sound system by allowing only one looping ousnd per entity.
     // (and only one entities) CGame will add at each frame all the loops: if a loop hasn't been given
