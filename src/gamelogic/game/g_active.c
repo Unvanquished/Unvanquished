@@ -861,40 +861,6 @@ void ClientTimerActions( gentity_t *ent, int msec )
 
 		client->time100 -= 100;
 
-		// Use/Restore stamina (TODO: Move this to pmove to get rid of prediction errors!)
-		if ( client->ps.stats[ STAT_STATE2 ] & SS2_JETPACK_WARM )
-		{
-			client->ps.stats[ STAT_STAMINA ] += ca->staminaJogRestore;
-		}
-		else if ( stopped )
-		{
-			client->ps.stats[ STAT_STAMINA ] += ca->staminaStopRestore;
-		}
-		else if ( ( client->ps.stats[ STAT_STATE ] & SS_SPEEDBOOST ) &&
-		          !usercmdButtonPressed( client->buttons, BUTTON_WALKING ) &&
-		          !crouched ) // walk overrides sprint
-		{
-			client->ps.stats[ STAT_STAMINA ] -= ca->staminaSprintCost;
-		}
-		else if ( walking || crouched )
-		{
-			client->ps.stats[ STAT_STAMINA ] += ca->staminaWalkRestore;
-		}
-		else // assume jogging
-		{
-			client->ps.stats[ STAT_STAMINA ] += ca->staminaJogRestore;
-		}
-
-		// Check stamina limits
-		if ( client->ps.stats[ STAT_STAMINA ] > STAMINA_MAX )
-		{
-			client->ps.stats[ STAT_STAMINA ] = STAMINA_MAX;
-		}
-		else if ( client->ps.stats[ STAT_STAMINA ] < 0 )
-		{
-			client->ps.stats[ STAT_STAMINA ] = 0;
-		}
-
 		// Update build timer
 		if ( weapon == WP_ABUILD || weapon == WP_ABUILD2 ||
 		     BG_InventoryContainsWeapon( WP_HBUILD, client->ps.stats ) )

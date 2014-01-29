@@ -4662,17 +4662,59 @@ void PM_UpdateViewAngles( playerState_t *ps, const usercmd_t *cmd )
 	}
 }
 
-static void PM_Level1SlowSideEffects( void )
+static void PM_HumanStaminaEffects( void )
 {
-	// Remove some stamina
-	if ( pm->ps->stats[ STAT_STATE2 ] & SS2_LEVEL1SLOW )
-	{
-		pm->ps->stats[ STAT_STAMINA ] -= pml.msec * STAMINA_LEVEL1SLOW_TAKE;
+	const classAttributes_t *ca;
+	int      *stats;
+	qboolean crouching, stopped, walking;
 
-		if ( pm->ps->stats[ STAT_STAMINA ] < 0 )
-		{
-			pm->ps->stats[ STAT_STAMINA ] = 0;
-		}
+	if ( pm->ps->persistant[ PERS_TEAM ] != TEAM_HUMANS )
+	{
+		return;
+	}
+
+	stats     = pm->ps->stats;
+	ca        = BG_Class( stats[ STAT_CLASS ] );
+	stopped   = ( pm->cmd.forwardmove == 0 && pm->cmd.rightmove == 0 );
+	crouching = ( pm->ps->pm_flags & PMF_DUCKED );
+	walking   = usercmdButtonPressed( pm->cmd.buttons, BUTTON_WALKING );
+
+	// Use/Restore stamina
+	if ( stats[ STAT_STATE2 ] & SS2_JETPACK_WARM )
+	{
+		stats[ STAT_STAMINA ] += ( int )( pml.msec * ca->staminaJogRestore * 0.001f );
+	}
+	else if ( stopped )
+	{
+		stats[ STAT_STAMINA ] += ( int )( pml.msec * ca->staminaStopRestore * 0.001f );
+	}
+	else if ( ( stats[ STAT_STATE ] & SS_SPEEDBOOST ) && !walking && !crouching ) // walk/crouch overrides sprint
+	{
+		stats[ STAT_STAMINA ] -= ( int )( pml.msec * ca->staminaSprintCost * 0.001f );
+	}
+	else if ( walking || crouching )
+	{
+		stats[ STAT_STAMINA ] += ( int )( pml.msec * ca->staminaWalkRestore * 0.001f );
+	}
+	else // assume jogging
+	{
+		stats[ STAT_STAMINA ] += ( int )( pml.msec * ca->staminaJogRestore * 0.001f );
+	}
+
+	// Remove stamina based on status effects
+	if ( stats[ STAT_STATE2 ] & SS2_LEVEL1SLOW )
+	{
+		stats[ STAT_STAMINA ] -= pml.msec * STAMINA_LEVEL1SLOW_TAKE;
+	}
+
+	// Check stamina limits
+	if ( stats[ STAT_STAMINA ] > STAMINA_MAX )
+	{
+		stats[ STAT_STAMINA ] = STAMINA_MAX;
+	}
+	else if ( stats[ STAT_STAMINA ] < 0 )
+	{
+		stats[ STAT_STAMINA ] = 0;
 	}
 }
 
@@ -4900,8 +4942,8 @@ void PmoveSingle( pmove_t *pmove )
 	// restore jetpack fuel if possible
 	PM_CheckJetpackRestoreFuel();
 
-	// apply level1slow side effects
-	PM_Level1SlowSideEffects();
+	// restore or remove stamina
+	PM_HumanStaminaEffects();
 
 	PM_Animate();
 
