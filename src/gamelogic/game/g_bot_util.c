@@ -1041,7 +1041,7 @@ qboolean BotTargetInAttackRange( gentity_t *self, botTarget_t target )
 			break;
 		case WP_ALEVEL1:
 			range = LEVEL1_CLAW_RANGE;
-			secondaryRange = 0;
+			secondaryRange = LEVEL1_POUNCE_DISTANCE;
 			width = height = LEVEL1_CLAW_WIDTH;
 			break;
 		case WP_ALEVEL2:
@@ -1503,8 +1503,9 @@ void BotClassMovement( gentity_t *self, qboolean inAttackRange )
 	switch ( self->client->ps.stats[STAT_CLASS] )
 	{
 		case PCL_ALIEN_LEVEL0:
-		case PCL_ALIEN_LEVEL1:
 			BotStrafeDodge( self );
+			break;
+		case PCL_ALIEN_LEVEL1:
 			break;
 		case PCL_ALIEN_LEVEL2:
 		case PCL_ALIEN_LEVEL2_UPG:
@@ -1648,7 +1649,15 @@ void BotFireWeaponAI( gentity_t *self )
 		case WP_ALEVEL0:
 			break; //auto hit
 		case WP_ALEVEL1:
-			BotFireWeapon( WPM_PRIMARY, botCmdBuffer ); //basi swipe
+			if ( distance < LEVEL1_CLAW_RANGE )
+			{
+				BotFireWeapon( WPM_PRIMARY, botCmdBuffer ); //mantis swipe
+			}
+			else if ( self->client->ps.stats[ STAT_MISC ] == 0 )
+			{
+				BotMoveInDir( self, MOVE_FORWARD );
+				BotFireWeapon( WPM_SECONDARY, botCmdBuffer ); //mantis forward pounce
+			}
 			break;
 		case WP_ALEVEL2:
 			BotFireWeapon( WPM_PRIMARY, botCmdBuffer ); //mara swipe
