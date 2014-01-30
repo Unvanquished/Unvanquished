@@ -235,6 +235,11 @@ namespace Cvar {
             cvar->value = std::move(value);
             cvar->flags |= flags;
 
+            // mark for archival if flagged as archive-on-change
+            if (cvar->flags & ARCHIVE) {
+                cvar->flags |= USER_ARCHIVE;
+            }
+
             if (cvar->proxy) {
                 //Tell the cvar proxy about the new value
                 OnValueChangedResult result = cvar->proxy->OnValueChanged(cvar->value);
