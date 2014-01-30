@@ -1639,7 +1639,6 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 							 ( image->bits & IF_NORMALMAP ) );
 				}
 
-#if 0
 				if( image->bits & IF_NORMALMAP ) {
 					for ( i = 0; i < c; i++ )
 					{
@@ -1656,7 +1655,6 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 						scaledBuffer[ i * 4 + 2 ] = Tex_FloatToByte( n[ 2 ] );
 					}
 				}
-#endif
 
 				if ( !( image->bits & ( IF_NORMALMAP | IF_RGBA16F | IF_RGBA32F | IF_TWOCOMP16F | IF_TWOCOMP32F | IF_NOLIGHTSCALE ) ) )
 				{
