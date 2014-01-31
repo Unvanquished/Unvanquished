@@ -2503,10 +2503,10 @@ public:
 };
 static WhichCmd WhichCmdRegistration;
 
-class PathCmd: public Cmd::StaticCmd {
+class ListPathsCmd: public Cmd::StaticCmd {
 public:
-	PathCmd()
-		: Cmd::StaticCmd("path", Cmd::SYSTEM, N_("list filesystem search paths")) {}
+	ListPathsCmd()
+		: Cmd::StaticCmd("listPaths", Cmd::SYSTEM, N_("list filesystem search paths")) {}
 
 	void Run(const Cmd::Args& args) const OVERRIDE
 	{
@@ -2515,4 +2515,4 @@ public:
 			Print("Loaded pak: %s", x.path);
 	}
 };
-static PathCmd PathCmdRegistration;
+static ListPathsCmd ListPathsCmdRegistration;
