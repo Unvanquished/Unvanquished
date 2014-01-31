@@ -685,30 +685,25 @@ std::string Build(Str::StringRef base, Str::StringRef path)
 
 std::string DirName(Str::StringRef path)
 {
-	std::string out;
 	if (path.empty())
-		return out;
+		return "";
 
 	// Trim to last slash, excluding any trailing slash
 	size_t lastSlash = path.rfind('/', path.size() - 2);
 	if (lastSlash != Str::StringRef::npos)
-		out = path.substr(0, lastSlash);
-
-	return out;
+		return path.substr(0, lastSlash);
+	else
+		return "";
 }
 
 std::string BaseName(Str::StringRef path)
 {
-	std::string out;
 	if (path.empty())
-		return out;
+		return "";
 
 	// Trim from last slash, excluding any trailing slash
 	size_t lastSlash = path.rfind('/', path.size() - 2);
-	if (lastSlash != Str::StringRef::npos)
-		out = path.substr(lastSlash + 1);
-
-	return out;
+	return path.substr(lastSlash + 1);
 }
 
 std::string Extension(Str::StringRef path)
