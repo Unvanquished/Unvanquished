@@ -5,7 +5,7 @@ textures/titan/grates_alpha
 
 	// A GRATE OR GRILL THAT CAN BE SEEN FROM BOTH SIDES
 	{
-		map textures/titan/grates_alpha.tga
+		map textures/titan/grates_alpha
 		tcMod scale 2 2
 		blendFunc GL_ONE GL_ZERO
 		alphaFunc GE128

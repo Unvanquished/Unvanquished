@@ -20,7 +20,7 @@ outline
   nopicmip
   nomipmaps
   {
-    map gfx/2d/outline.tga
+    map gfx/2d/outline
     blendfunc	GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
     rgbgen vertex
   }
@@ -31,7 +31,7 @@ console
 	nopicmip
 	nomipmaps
   {
-		map gfx/colors/black.tga
+		map gfx/colors/black
 	}
 }
 
@@ -39,7 +39,7 @@ gfx/misc/detail
 {
 	nopicmip
 	{
-		map gfx/misc/detail.jpg
+		map gfx/misc/detail
     blendFunc GL_DST_COLOR GL_SRC_COLOR
 		rgbgen identity
 	}
@@ -51,7 +51,7 @@ gfx/2d/bigchars
 	nopicmip
 	nomipmaps
 	{
-		map gfx/2d/bigchars.tga
+		map gfx/2d/bigchars
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
 		rgbgen vertex
 	}
@@ -62,7 +62,7 @@ gfx/2d/cursor
   nopicmip
 	nomipmaps
   {
-    map gfx/2d/cursor.tga
+    map gfx/2d/cursor
   }
 }
 
@@ -83,7 +83,7 @@ gfx/2d/net
 {
 	nopicmip
 	{
-		map gfx/2d/net.jpg
+		map gfx/2d/net
 	}
 }
 
@@ -93,7 +93,7 @@ gfx/2d/numbers/zero_32b
 {
 	nopicmip
 	{
-		map gfx/2d/numbers/zero_32b.tga
+		map gfx/2d/numbers/zero_32b
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
 		rgbgen vertex
 	}
@@ -102,7 +102,7 @@ gfx/2d/numbers/one_32b
 {
 	nopicmip
 	{
-		map gfx/2d/numbers/one_32b.tga
+		map gfx/2d/numbers/one_32b
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
 		rgbgen vertex
 	}
@@ -111,7 +111,7 @@ gfx/2d/numbers/two_32b
 {
 	nopicmip
 	{
-		map gfx/2d/numbers/two_32b.tga
+		map gfx/2d/numbers/two_32b
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
 		rgbgen vertex
 	}
@@ -120,7 +120,7 @@ gfx/2d/numbers/three_32b
 {
 	nopicmip
 	{
-		map gfx/2d/numbers/three_32b.tga
+		map gfx/2d/numbers/three_32b
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
 		rgbgen vertex
 	}
@@ -129,7 +129,7 @@ gfx/2d/numbers/four_32b
 {
 	nopicmip
 	{
-		map gfx/2d/numbers/four_32b.tga
+		map gfx/2d/numbers/four_32b
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
 		rgbgen vertex
 	}
@@ -138,7 +138,7 @@ gfx/2d/numbers/five_32b
 {
 	nopicmip
 	{
-		map gfx/2d/numbers/five_32b.tga
+		map gfx/2d/numbers/five_32b
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
 		rgbgen vertex
 	}
@@ -147,7 +147,7 @@ gfx/2d/numbers/six_32b
 {
 	nopicmip
 	{
-		map gfx/2d/numbers/six_32b.tga
+		map gfx/2d/numbers/six_32b
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
 		rgbgen vertex
 	}
@@ -156,7 +156,7 @@ gfx/2d/numbers/seven_32b
 {
 	nopicmip
 	{
-		map gfx/2d/numbers/seven_32b.tga
+		map gfx/2d/numbers/seven_32b
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
 		rgbgen vertex
 	}
@@ -165,7 +165,7 @@ gfx/2d/numbers/eight_32b
 {
 	nopicmip
 	{
-		map gfx/2d/numbers/eight_32b.tga
+		map gfx/2d/numbers/eight_32b
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
 		rgbgen vertex
 	}
@@ -174,7 +174,7 @@ gfx/2d/numbers/nine_32b
 {
 	nopicmip
 	{
-		map gfx/2d/numbers/nine_32b.tga
+		map gfx/2d/numbers/nine_32b
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
 		rgbgen vertex
 	}
@@ -183,7 +183,7 @@ gfx/2d/numbers/minus_32b
 {
 	nopicmip
 	{
-		map gfx/2d/numbers/minus_32b.tga
+		map gfx/2d/numbers/minus_32b
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
 		rgbgen vertex
 	}

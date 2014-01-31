@@ -3,7 +3,7 @@ gfx/sprites/smoke
   cull none
   entityMergable
   {
-    map gfx/sprites/smoke.tga
+    map gfx/sprites/smoke
     blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
     rgbGen    vertex
     alphaGen  vertex
@@ -14,7 +14,7 @@ gfx/sprites/green_acid
 {
   nopicmip
   {
-    clampmap gfx/sprites/green_acid.tga
+    clampmap gfx/sprites/green_acid
     blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
     rgbGen    vertex
     alphaGen  vertex
@@ -25,7 +25,7 @@ gfx/sprites/spark
 {
   cull none
   {
-    map gfx/sprites/spark.tga
+    map gfx/sprites/spark
     blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
     rgbGen    vertex
     alphaGen  vertex
@@ -38,7 +38,7 @@ gfx/sprites/bubble
   cull none
   entityMergable
   {
-    map gfx/sprites/bubble.jpg
+    map gfx/sprites/bubble
     blendFunc GL_ONE GL_ONE
     rgbGen    vertex
     alphaGen  vertex
@@ -50,7 +50,7 @@ gfx/sprites/poisoncloud
   cull none
   entityMergable
   {
-    map gfx/sprites/poisoncloud.tga
+    map gfx/sprites/poisoncloud
     blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
     rgbGen    vertex
     alphaGen  vertex
@@ -62,7 +62,7 @@ gfx/sprites/acid_1
   cull none
   entityMergable
   {
-    map gfx/sprites/acid_1.png
+    map gfx/sprites/acid_1
     blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
     rgbGen    vertex
     alphaGen  vertex
@@ -74,7 +74,7 @@ gfx/sprites/acid_2
   cull none
   entityMergable
   {
-    map gfx/sprites/acid_2.png
+    map gfx/sprites/acid_2
     blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
     rgbGen    vertex
     alphaGen  vertex
@@ -86,7 +86,7 @@ gfx/sprites/acid_3
   cull none
   entityMergable
   {
-    map gfx/sprites/acid_3.png
+    map gfx/sprites/acid_3
     blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
     rgbGen    vertex
     alphaGen  vertex
@@ -97,7 +97,7 @@ gfx/sprites/acid_3
 gfx/sprites/chatballoon
 {
 	{
-		map gfx/sprites/chatballoon.tga
+		map gfx/sprites/chatballoon
 		blendfunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
 	}
 }

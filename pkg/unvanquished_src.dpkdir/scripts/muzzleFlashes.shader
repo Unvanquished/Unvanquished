@@ -3,7 +3,7 @@ models/weapons/rifle/flash
 	sort additive
 	cull disable
 	{
-		map	models/weapons/rifle/flash.jpg
+		map	models/weapons/rifle/flash
 		tcMod rotate 3000
 		blendfunc GL_ONE GL_ONE
 	}
@@ -14,7 +14,7 @@ models/weapons/chaingun/flash
 	sort additive
 	cull disable
 	{
-		map	models/weapons/chaingun/flash.jpg
+		map	models/weapons/chaingun/flash
 		tcMod rotate 3000
 		blendfunc GL_ONE GL_ONE
 	}
@@ -25,7 +25,7 @@ models/weapons/flamer/flash
 	sort additive
 	cull disable
 	{
-		map	models/weapons/flamer/flash.jpg
+		map	models/weapons/flamer/flash
 		blendfunc GL_ONE GL_ONE
 	}
 }
@@ -35,7 +35,7 @@ models/weapons/lgun/flash
 	sort additive
 	cull disable
 	{
-		map	models/weapons/lgun/flash.jpg
+		map	models/weapons/lgun/flash
 		blendfunc GL_ONE GL_ONE
 	}
 }
@@ -45,7 +45,7 @@ models/weapons/lcannon/flash
 	sort additive
 	cull disable
 	{
-		map	models/weapons/lcannon/flash.jpg
+		map	models/weapons/lcannon/flash
 		blendfunc GL_ONE GL_ONE
 	}
 }
@@ -55,7 +55,7 @@ models/weapons/mdriver/flash
 	sort additive
 	cull disable
 	{
-		map	models/weapons/mdriver/flash.jpg
+		map	models/weapons/mdriver/flash
 		blendfunc GL_ONE GL_ONE
 	}
 }
@@ -65,7 +65,7 @@ models/weapons/psaw/flash
 	sort additive
 	cull disable
 	{
-		map	models/weapons/psaw/flash.jpg
+		map	models/weapons/psaw/flash
 		blendfunc GL_ONE GL_ONE
 	}
 }
@@ -75,7 +75,7 @@ models/weapons/prifle/flash
 	sort additive
 	cull disable
 	{
-		map	models/weapons/prifle/flash.jpg
+		map	models/weapons/prifle/flash
 		blendfunc GL_ONE GL_ONE
 	}
 }
@@ -86,7 +86,7 @@ models/weapons/shotgun/flash
 	sort additive
 	cull disable
 	{
-		map	models/weapons/shotgun/flash.jpg
+		map	models/weapons/shotgun/flash
 		blendfunc GL_ONE GL_ONE
 	}
 }
@@ -97,7 +97,7 @@ models/weapons/blaster/flash
 	sort additive
 	cull disable
 	{
-		map	models/weapons/blaster/flash.jpg
+		map	models/weapons/blaster/flash
 		blendfunc GL_ONE GL_ONE
 	}
 }

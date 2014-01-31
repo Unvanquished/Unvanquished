@@ -3,7 +3,7 @@ gfx/weapons/blasterMF_1
   cull none
   entityMergable
   {
-    map gfx/weapons/blasterMF_1.tga
+    map gfx/weapons/blasterMF_1
     blendFunc add
     rgbGen vertex
     alphaGen vertex
@@ -14,7 +14,7 @@ gfx/weapons/blasterMF_2
   cull none
   entityMergable
   {
-    map gfx/weapons/blasterMF_2.tga
+    map gfx/weapons/blasterMF_2
     blendFunc add
     rgbGen vertex
     alphaGen vertex
@@ -25,7 +25,7 @@ gfx/weapons/blastertrail
   cull none
   entityMergable
   {
-    map gfx/weapons/blastertrail.tga
+    map gfx/weapons/blastertrail
     blendFunc add
     rgbGen vertex
     alphaGen vertex
@@ -35,7 +35,7 @@ blasterbullet
 {
   cull disable
   {
-    map gfx/weapons/blasterbullet.tga
+    map gfx/weapons/blasterbullet
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
     alphaGen vertex
     rgbGen vertex
@@ -45,7 +45,7 @@ MarkBlasterBullet
 {
   polygonOffset
   {
-    map gfx/marks/mark_blaster.tga
+    map gfx/marks/mark_blaster
     blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
     rgbGen exactVertex
     alphaGen vertex
