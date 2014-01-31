@@ -899,7 +899,7 @@ msgid "Evolution Points"
 msgstr ""
 
 #: main.menu:80
-msgid "Unvanquished (C) 2011-2013 Unvanquished Development"
+msgid "Unvanquished (C) 2011-2014 Unvanquished Development"
 msgstr ""
 
 #: mod.menu:74 profiles.menu:126
