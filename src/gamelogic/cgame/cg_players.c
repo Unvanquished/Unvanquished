@@ -3113,7 +3113,7 @@ void CG_Player( centity_t *cent )
 		vec3_t mins, maxs;
 
 		BG_ClassBoundingBox( class_, mins, maxs, NULL, NULL, NULL );
-		CG_DrawBoundingBox( cent->lerpOrigin, mins, maxs );
+		CG_DrawBoundingBox( cg_drawBBOX.integer, cent->lerpOrigin, mins, maxs );
 	}
 
 	if ( ci->md5 )
@@ -3352,42 +3352,12 @@ void CG_Player( centity_t *cent )
 
 		CG_PlayerUpgrades( cent, &body );
 
-		//sanity check that particle systems are stopped when dead
-		if ( es->eFlags & EF_DEAD )
-		{
-			if ( CG_IsParticleSystemValid( &cent->muzzlePS ) )
-			{
-				CG_DestroyParticleSystem( &cent->muzzlePS );
-			}
-
-			if ( CG_IsParticleSystemValid( &cent->jetPackPS ) )
-			{
-				CG_DestroyParticleSystem( &cent->jetPackPS );
-			}
-		}
-
-
 		// add body to renderer
 		body.altShaderIndex = altShaderIndex;
 		trap_R_AddRefEntityToScene( &body );
 
-		//sanity check that particle systems are stopped when dead
-		if ( es->eFlags & EF_DEAD )
-		{
-			if ( CG_IsParticleSystemValid( &cent->muzzlePS ) )
-			{
-				CG_DestroyParticleSystem( &cent->muzzlePS );
-			}
+		goto finish_up;
 
-			if ( CG_IsParticleSystemValid( &cent->jetPackPS ) )
-			{
-				CG_DestroyParticleSystem( &cent->jetPackPS );
-			}
-		}
-
-		VectorCopy( surfNormal, cent->pe.lastNormal );
-		CG_PlayerShadowEnd( );
-		return;
 	}
 
 	// get the rotation information
@@ -3611,6 +3581,7 @@ void CG_Player( centity_t *cent )
 
 	CG_PlayerUpgrades( cent, &torso );
 
+finish_up:
 	//sanity check that particle systems are stopped when dead
 	if ( es->eFlags & EF_DEAD )
 	{
@@ -3624,9 +3595,9 @@ void CG_Player( centity_t *cent )
 			CG_DestroyParticleSystem( &cent->jetPackPS );
 		}
 	}
-	CG_PlayerShadowEnd( );
 
 	VectorCopy( surfNormal, cent->pe.lastNormal );
+	CG_PlayerShadowEnd( );
 }
 
 /*

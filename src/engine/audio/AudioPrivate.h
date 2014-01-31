@@ -1,24 +1,30 @@
 /*
 ===========================================================================
+Daemon BSD Source Code
+Copyright (c) 2013-2014, Daemon Developers
+All rights reserved.
 
-daemon gpl source code
-copyright (c) 2013 unvanquished developers
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+    * Neither the name of the <organization> nor the
+      names of its contributors may be used to endorse or promote products
+      derived from this software without specific prior written permission.
 
-this file is part of the daemon gpl source code (daemon source code).
-
-daemon source code is free software: you can redistribute it and/or modify
-it under the terms of the gnu general public license as published by
-the free software foundation, either version 3 of the license, or
-(at your option) any later version.
-
-daemon source code is distributed in the hope that it will be useful,
-but without any warranty; without even the implied warranty of
-merchantability or fitness for a particular purpose.  see the
-gnu general public license for more details.
-
-you should have received a copy of the gnu general public license
-along with daemon source code.  if not, see <http://www.gnu.org/licenses/>.
-
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
+DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
@@ -34,7 +40,6 @@ along with daemon source code.  if not, see <http://www.gnu.org/licenses/>.
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
 #include "snd_codec.h"
-#include "snd_public.h"
 
 namespace Audio {
 
@@ -54,16 +59,16 @@ namespace Audio {
 
     // Somewhere on the Internet we can see "quake3 is like the old wolfenstein, 64 units = 8 feet"
     // it is consistent with our models and Carmack's being american.
-    const float QUNIT_IN_METER = 0.0384;
+    CONSTEXPR float QUNIT_IN_METER = 0.0384;
 
     // The speed of sound in qu/s
-    const float SPEED_OF_SOUND = 343.3 / QUNIT_IN_METER;
+    CONSTEXPR float SPEED_OF_SOUND = 343.3 / QUNIT_IN_METER;
 
     // Same number of raw streams as in the previous sound system
-    const int N_STREAMS = MAX_CLIENTS * 2 + 1;
+    CONSTEXPR int N_STREAMS = MAX_CLIENTS * 2 + 1;
 
     // There is only a small number of reverb slots because by default we can create only 4 AuxEffects
-    const int N_REVERB_SLOTS = 3;
+    CONSTEXPR int N_REVERB_SLOTS = 3;
 
     extern Log::Logger audioLogs;
 }

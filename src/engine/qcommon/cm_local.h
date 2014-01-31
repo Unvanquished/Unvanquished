@@ -290,8 +290,6 @@ extern const cFacet_t          *debugFacet;
 extern qboolean                debugBlock;
 extern vec3_t                  debugBlockPoints[ 4 ];
 
-int                            CM_BoxBrushes( const vec3_t mins, const vec3_t maxs, cbrush_t **list, int listsize );
-
 void                           CM_StoreLeafs( leafList_t *ll, int nodenum );
 void                           CM_StoreBrushes( leafList_t *ll, int nodenum );
 

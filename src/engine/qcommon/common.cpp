@@ -2031,7 +2031,7 @@ void Com_Init( char *commandLine )
 
 	// if any archived cvars are modified after this, we will trigger a writing
 	// of the config file
-	cvar_modifiedFlags &= ~CVAR_ARCHIVE;
+	cvar_modifiedFlags &= ~CVAR_ARCHIVE_BITS;
 
 	//
 	// init commands and vars
@@ -2056,7 +2056,7 @@ void Com_Init( char *commandLine )
 	com_consoleCommand = Cvar_Get( "com_consoleCommand", "", CVAR_ARCHIVE );
 
 	com_introPlayed = Cvar_Get( "com_introplayed", "0", CVAR_ARCHIVE );
-	com_ansiColor = Cvar_Get( "com_ansiColor", "0", CVAR_ARCHIVE );
+	com_ansiColor = Cvar_Get( "com_ansiColor", "1", CVAR_ARCHIVE );
 	com_logosPlaying = Cvar_Get( "com_logosPlaying", "0", CVAR_ROM );
 	com_recommendedSet = Cvar_Get( "com_recommendedSet", "0", CVAR_ARCHIVE );
 
@@ -2255,9 +2255,9 @@ void Com_WriteConfiguration( void )
 		return;
 	}
 
-	if ( cvar_modifiedFlags & CVAR_ARCHIVE )
+	if ( cvar_modifiedFlags & CVAR_ARCHIVE_BITS )
 	{
-		cvar_modifiedFlags &= ~CVAR_ARCHIVE;
+		cvar_modifiedFlags &= ~CVAR_ARCHIVE_BITS;
 
 		if ( cl_profileStr[ 0 ] )
 		{

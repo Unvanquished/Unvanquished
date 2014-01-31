@@ -28,23 +28,83 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include "../qcommon/qcommon.h"
+#include "../../common/String.h"
 #include "../qcommon/q_shared.h"
 
-#ifndef FRAMEWORK_BASE_COMMANDS_H_
-#define FRAMEWORK_BASE_COMMANDS_H_
+namespace Audio {
 
-/**
- * Function related to basic commands such as aliases and delays
- */
+    bool Init() {
+        return true;
+    }
 
-namespace Cmd {
+    void Shutdown() {
+    }
 
-    // Executes delayed commands that are ready.
-    void DelayFrame();
+    void Update() {
+    }
 
-    //Saves the aliases in a configuration file
-    void WriteAliases(fileHandle_t f);
+
+    sfxHandle_t RegisterSFX(Str::StringRef filename) {
+        return 0;
+    }
+
+
+    void StartSound(int entityNum, const vec3_t origin, sfxHandle_t sfx) {
+    }
+
+    void StartLocalSound(int entityNum) {
+    }
+
+
+    void AddEntityLoopingSound(int entityNum, sfxHandle_t sfx) {
+    }
+
+    void ClearAllLoopingSounds() {
+    }
+
+    void ClearLoopingSoundsForEntity(int entityNum) {
+    }
+
+
+    void StartMusic(Str::StringRef leadingSound, Str::StringRef loopSound) {
+    }
+
+    void StopMusic() {
+    }
+
+
+    void StopAllSounds() {
+    }
+
+
+    void StreamData(int streamNum, const void* data, int numSamples, int rate, int width, int channels, float volume, int entityNum) {
+    }
+
+
+    void UpdateListener(int entityNum, const vec3_t orientation[3]) {
+    }
+
+    void UpdateEntityPosition(int entityNum, const vec3_t position) {
+    }
+
+    void UpdateEntityVelocity(int entityNum, const vec3_t velocity) {
+    }
+
+
+    void SetReverb(int slotNum, std::string name, float ratio) {
+    }
+
+
+    void StartCapture(int rate) {
+    }
+
+    int AvailableCaptureSamples() {
+        return 0;
+    }
+
+    void GetCapturedData(int numSamples, void* buffer) {
+    }
+
+    void StopCapture() {
+    }
 }
-
-#endif // FRAMEWORK_BASE_COMMANDS_H_

@@ -32,7 +32,7 @@ CG_DrawBoxFace
 Draws a bounding box face
 ======================
 */
-static void CG_DrawBoxFace( vec3_t a, vec3_t b, vec3_t c, vec3_t d )
+static void CG_DrawBoxFace( qboolean solid, vec3_t a, vec3_t b, vec3_t c, vec3_t d )
 {
 	polyVert_t verts[ 4 ];
 	vec4_t     color = { 255.0f, 0.0f, 0.0f, 128.0f };
@@ -57,7 +57,7 @@ static void CG_DrawBoxFace( vec3_t a, vec3_t b, vec3_t c, vec3_t d )
 	verts[ 3 ].st[ 1 ] = 1;
 	Vector4Copy( color, verts[ 3 ].modulate );
 
-	trap_R_AddPolyToScene( cgs.media.outlineShader, 4, verts );
+	trap_R_AddPolyToScene( solid ? cgs.media.whiteShader : cgs.media.outlineShader, 4, verts );
 }
 
 /*
@@ -67,8 +67,10 @@ CG_DrawBoundingBox
 Draws a bounding box
 ======================
 */
-void CG_DrawBoundingBox( vec3_t origin, vec3_t mins, vec3_t maxs )
+void CG_DrawBoundingBox( int type, vec3_t origin, vec3_t mins, vec3_t maxs )
 {
+	qboolean solid = (type > 1);
+
 	vec3_t ppp, mpp, mmp, pmp;
 	vec3_t mmm, pmm, ppm, mpm;
 
@@ -106,12 +108,12 @@ void CG_DrawBoundingBox( vec3_t origin, vec3_t mins, vec3_t maxs )
 
 	//phew!
 
-	CG_DrawBoxFace( ppp, mpp, mmp, pmp );
-	CG_DrawBoxFace( ppp, pmp, pmm, ppm );
-	CG_DrawBoxFace( mpp, ppp, ppm, mpm );
-	CG_DrawBoxFace( mmp, mpp, mpm, mmm );
-	CG_DrawBoxFace( pmp, mmp, mmm, pmm );
-	CG_DrawBoxFace( mmm, mpm, ppm, pmm );
+	CG_DrawBoxFace( solid, ppp, mpp, mmp, pmp );
+	CG_DrawBoxFace( solid, ppp, pmp, pmm, ppm );
+	CG_DrawBoxFace( solid, mpp, ppp, ppm, mpm );
+	CG_DrawBoxFace( solid, mmp, mpp, mpm, mmm );
+	CG_DrawBoxFace( solid, pmp, mmp, mmm, pmm );
+	CG_DrawBoxFace( solid, mmm, mpm, ppm, pmm );
 }
 
 /*
@@ -1090,12 +1092,11 @@ static void CG_CEntityPVSEnter( centity_t *cent )
 	cent->radarVisibility = 0.0f;
 }
 
-/*
-===============
-CG_CEntityPVSLeave
-
-===============
-*/
+/**
+ * @brief Callend when a client entity leaves the potentially visible set.
+ *        Performs cleanup operations, e.g. destroying attached particle effects.
+ * @param cent
+ */
 static void CG_CEntityPVSLeave( centity_t *cent )
 {
 	int           i;
@@ -1133,6 +1134,25 @@ static void CG_CEntityPVSLeave( centity_t *cent )
 		default:
 			break;
 	}
+
+	// some muzzle PS are infinite, destroy them here
+	if ( CG_IsParticleSystemValid( &cent->muzzlePS ) )
+	{
+		CG_DestroyParticleSystem( &cent->muzzlePS );
+	}
+
+	// destroy the jetpack PS
+	if ( CG_IsParticleSystemValid( &cent->jetPackPS ) )
+	{
+	     CG_DestroyParticleSystem( &cent->jetPackPS );
+	}
+
+	// Lazy TODO: Destroy more PS/TS here
+	// Better TODO: Make two groups cent->temporaryPS[NUM_TMPPS], cent->persistentPS[NUM_PERSPS]
+	//              and use an enumerator each for different types of mutually non-exclusive PS.
+
+	// NOTE: Don't destroy cent->entityPS here since it is supposed to survive for certain
+	//       entity types (e.g. particle entities)
 }
 
 /*
@@ -1346,7 +1366,7 @@ void CG_AddPacketEntities( void )
 					mins[ 2 ] = -zd;
 					maxs[ 2 ] = zu;
 
-					CG_DrawBoundingBox( cent->lerpOrigin, mins, maxs );
+					CG_DrawBoundingBox( cg_drawBBOX.integer, cent->lerpOrigin, mins, maxs );
 					break;
 
 				default:

@@ -199,7 +199,6 @@ typedef struct serverStatus_s
 serverStatus_t cl_serverStatusList[ MAX_SERVERSTATUSREQUESTS ];
 int            serverStatusCount;
 
-extern void SV_BotFrame( int time );
 void        CL_CheckForResend( void );
 void        CL_ShowIP_f( void );
 void        CL_ServerStatus_f( void );
@@ -634,15 +633,16 @@ void CL_CaptureVoip( void )
 
 	if ( initialFrame )
 	{
-		S_MasterGain( Com_Clamp( 0.0f, 1.0f, cl_voipGainDuringCapture->value ) );
-		S_StartCapture();
+		//TODO
+		//S_MasterGain( Com_Clamp( 0.0f, 1.0f, cl_voipGainDuringCapture->value ) );
+		Audio::StartCapture(8000);
 		CL_VoipNewGeneration();
 		CL_VoipParseTargets();
 	}
 
 	if ( ( cl_voipSend->integer ) || ( finalFrame ) ) // user wants to capture audio?
 	{
-		int       samples = S_AvailableCaptureSamples();
+		int       samples = Audio::AvailableCaptureSamples();
 		const int mult = ( finalFrame ) ? 1 : 4; // 4 == 80ms of audio.
 
 		// enough data buffered in audio hardware to process yet?
@@ -665,7 +665,7 @@ void CL_CaptureVoip( void )
 			// !!! FIXME:  updates faster than 4Hz?
 
 			samples -= samples % clc.speexFrameSize;
-			S_Capture( samples, ( byte * ) sampbuffer );  // grab from audio card.
+			Audio::GetCapturedData( samples, (byte*) sampbuffer ); // grab from audio card.
 
 			// this will probably generate multiple speex packets each time.
 			while ( samples > 0 )
@@ -740,8 +740,9 @@ void CL_CaptureVoip( void )
 	//  any previously-buffered data. Pause the capture device, etc.
 	if ( finalFrame )
 	{
-		S_StopCapture();
-		S_MasterGain( 1.0f );
+		Audio::StopCapture();
+		//TODO
+		//S_MasterGain( 1.0f );
 		clc.voipPower = 0.0f; // force this value so it doesn't linger.
 	}
 }
@@ -1540,7 +1541,7 @@ CL_ShutdownAll
 void CL_ShutdownAll( void )
 {
 	// clear sounds
-	S_DisableSounds();
+	Audio::StopAllSounds();
 	// download subsystem
 	DL_Shutdown();
 	// shutdown CGame
@@ -1773,7 +1774,6 @@ void CL_Disconnect( qboolean showMainMenu )
 	}
 
 	SCR_StopCinematic();
-	S_ClearSoundBuffer(); //----(SA)    modified
 #if 1
 
 	// send a disconnect message to the server
@@ -2049,7 +2049,7 @@ void CL_Connect_f( void )
 	Q_strncpyz( cls.servername, server, sizeof( cls.servername ) );
 	Q_strncpyz( cls.reconnectCmd, Cmd::GetCurrentArgs().EscapedArgs(0).c_str(), sizeof( cls.reconnectCmd ) );
 
-	S_StopAllSounds(); // NERVE - SMF
+	Audio::StopAllSounds(); // NERVE - SMF
 
 	Cvar_Set( "ui_connecting", "1" );
 
@@ -2337,7 +2337,7 @@ void CL_Vid_Restart_f( void )
 	com_expectedhunkusage = -1;
 
 	// don't let them loop during the restart
-	S_StopAllSounds();
+	Audio::StopAllSounds();
 	// shutdown the UI
 	CL_ShutdownUI();
 	// shutdown the CGame
@@ -2352,8 +2352,6 @@ void CL_Vid_Restart_f( void )
 	FS_ClearPakReferences( FS_UI_REF | FS_CGAME_REF );
 	// reinitialize the filesystem if the game directory or checksum has changed
 	FS_ConditionalRestart( clc.checksumFeed );
-
-	S_BeginRegistration(); // all sound handles are now invalid
 
 	cls.rendererStarted = qfalse;
 	cls.uiStarted = qfalse;
@@ -2436,18 +2434,18 @@ handles will be invalid
 */
 void CL_Snd_Restart_f( void )
 {
-	S_Shutdown();
+	Audio::Shutdown();
 
 	if( !cls.cgameStarted )
 	{
 		CL_ShutdownUI();
-		S_Init();
-		S_BeginRegistration();
+		Audio::Init();
+		//TODO S_BeginRegistration()
 		CL_InitUI();
 	}
 	else
 	{
-		S_Init();
+		Audio::Init();
 		CL_Vid_Restart_f();
 	}
 }
@@ -3952,7 +3950,7 @@ void CL_Frame( int msec )
 	SCR_UpdateScreen();
 
 	// update the sound
-	S_Update();
+	Audio::Update();
 
 #ifdef USE_VOIP
 	CL_CaptureVoip();
@@ -4287,13 +4285,14 @@ void CL_StartHunkUsers( void )
 	if ( !cls.soundStarted )
 	{
 		cls.soundStarted = qtrue;
-		S_Init();
+		Audio::Init();
 	}
 
 	if ( !cls.soundRegistered )
 	{
 		cls.soundRegistered = qtrue;
-		S_BeginRegistration();
+		//TODO
+		//S_BeginRegistration();
 	}
 
 	if ( !cls.cgameStarted && !cls.cgameCVarsRegistered )
@@ -4760,7 +4759,7 @@ void CL_Shutdown( void )
 	CL_ShutdownCGame();
 	CL_ShutdownUI();
 
-	S_Shutdown();
+	Audio::Shutdown();
 	DL_Shutdown();
 
 	if ( re.UnregisterFont )

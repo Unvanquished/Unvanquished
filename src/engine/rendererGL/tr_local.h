@@ -476,7 +476,23 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	  WT_ONE_CLAMP,
 	  WT_ZERO_CLAMP, // guarantee 0,0,0,255 edge for projected textures
 	  WT_ALPHA_ZERO_CLAMP // guarante 0 alpha edge for projected textures
+	} wrapTypeEnum_t;
+
+	typedef struct wrapType_s
+	{
+		wrapTypeEnum_t s, t;
+
+		wrapType_s() : s(WT_CLAMP), t(WT_CLAMP) {}
+		wrapType_s( wrapTypeEnum_t w ) : s(w), t(w) {}
+		wrapType_s( wrapTypeEnum_t s, wrapTypeEnum_t t ) : s(s), t(t) {}
+
+		inline struct wrapType_s &operator =( wrapTypeEnum_t w ) { this->s = this->t = w; return *this; }
+
 	} wrapType_t;
+
+	static inline bool operator ==( const wrapType_t &a, const wrapType_t &b ) { return a.s == b.s && a.t == b.t; }
+	static inline bool operator !=( const wrapType_t &a, const wrapType_t &b ) { return a.s != b.s || a.t != b.t; }
+
 
 	typedef struct image_s
 	{
@@ -497,7 +513,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 		uint32_t       bits;
 		filterType_t   filterType;
-		wrapType_t     wrapType; // GL_CLAMP or GL_REPEAT
+		wrapType_t     wrapType;
 
 		struct image_s *next;
 	} image_t;

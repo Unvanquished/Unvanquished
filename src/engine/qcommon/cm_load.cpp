@@ -888,30 +888,6 @@ void CMod_LoadSurfaces( lump_t *surfs, lump_t *verts, lump_t *indexesLump )
 
 //==================================================================
 
-unsigned CM_LumpChecksum( lump_t *lump )
-{
-	return LittleLong( Com_BlockChecksum( cmod_base + lump->fileofs, lump->filelen ) );
-}
-
-unsigned CM_Checksum( dheader_t *header )
-{
-	unsigned checksums[ 16 ];
-
-	checksums[ 0 ] = CM_LumpChecksum( &header->lumps[ LUMP_SHADERS ] );
-	checksums[ 1 ] = CM_LumpChecksum( &header->lumps[ LUMP_LEAFS ] );
-	checksums[ 2 ] = CM_LumpChecksum( &header->lumps[ LUMP_LEAFBRUSHES ] );
-	checksums[ 3 ] = CM_LumpChecksum( &header->lumps[ LUMP_LEAFSURFACES ] );
-	checksums[ 4 ] = CM_LumpChecksum( &header->lumps[ LUMP_PLANES ] );
-	checksums[ 5 ] = CM_LumpChecksum( &header->lumps[ LUMP_BRUSHSIDES ] );
-	checksums[ 6 ] = CM_LumpChecksum( &header->lumps[ LUMP_BRUSHES ] );
-	checksums[ 7 ] = CM_LumpChecksum( &header->lumps[ LUMP_MODELS ] );
-	checksums[ 8 ] = CM_LumpChecksum( &header->lumps[ LUMP_NODES ] );
-	checksums[ 9 ] = CM_LumpChecksum( &header->lumps[ LUMP_SURFACES ] );
-	checksums[ 10 ] = CM_LumpChecksum( &header->lumps[ LUMP_DRAWVERTS ] );
-
-	return LittleLong( Com_BlockChecksum( checksums, 11 * 4 ) );
-}
-
 /*
 ==================
 CM_LoadMap
@@ -1066,11 +1042,6 @@ clipHandle_t CM_InlineModel( int index )
 	}
 
 	return index;
-}
-
-int CM_NumClusters( void )
-{
-	return cm.numClusters;
 }
 
 int CM_NumInlineModels( void )

@@ -1026,7 +1026,7 @@ static int CG_CalcFov( void )
 				}
 
 				// WBUTTON_ATTACK2 isn't held so unzoom next time
-				if ( !usercmdButtonPressed( cmd.buttons, BUTTON_ATTACK2 ) )
+				if ( !usercmdButtonPressed( cmd.buttons, BUTTON_ATTACK2 ) || cg.snap->ps.weaponstate == WEAPON_RELOADING )
 				{
 					cg.zoomed = qfalse;
 					cg.zoomTime = MIN( cg.time,
@@ -1043,7 +1043,7 @@ static int CG_CalcFov( void )
 				}
 
 				// WBUTTON_ATTACK2 is held so zoom next time
-				if ( usercmdButtonPressed( cmd.buttons, BUTTON_ATTACK2 ) )
+				if ( usercmdButtonPressed( cmd.buttons, BUTTON_ATTACK2 ) && cg.snap->ps.weaponstate != WEAPON_RELOADING )
 				{
 					cg.zoomed = qtrue;
 					cg.zoomTime = MIN( cg.time,

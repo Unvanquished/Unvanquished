@@ -649,7 +649,7 @@ char *CON_Input( void )
 			case '\r':
 			case KEY_ENTER:
 				Com_Printf( PROMPT S_COLOR_WHITE "%s\n", Str::UTF32To8(input_field.GetText()).c_str() );
-				input_field.RunCommand();
+				input_field.RunCommand(com_consoleCommand->string);
 				werase( inputwin );
 				wnoutrefresh( inputwin );
 				continue;
@@ -661,7 +661,7 @@ char *CON_Input( void )
 				continue;
 
 			case 11: // Ctrl-K
-				//input_field.buffer[ Field_CursorToOffset( &input_field ) ] = '\0';
+				input_field.DeleteEnd();
 				continue;
 
 			case '\t':
@@ -743,27 +743,7 @@ char *CON_Input( void )
 				continue;
 
 			case 20: // Ctrl-T
-				/*
-				if ( input_field.cursor )
-				{
-					char *p, *s, tmp[4];
-					int width;
-
-					if ( input_field.cursor == Q_UTF8_Strlen( input_field.buffer ) )
-					{
-						--input_field.cursor;
-					}
-
-					s = &input_field.buffer[ Field_CursorToOffset( &input_field ) ];
-					width = Q_UTF8_Width( s );
-					--input_field.cursor;
-					p = &input_field.buffer[ Field_CursorToOffset( &input_field ) ];
-					memcpy( tmp, p, s - p );
-					memmove( p, s, width );
-					memcpy( p + width, tmp, s - p );
-					input_field.cursor += 2;
-				}
-				*/
+				input_field.SwapWithNext();
 				continue;
 		}
 

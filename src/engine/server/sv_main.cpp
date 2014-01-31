@@ -822,6 +822,7 @@ class RconEnvironment: public Cmd::DefaultEnvironment {
             }
 
             buffer += text;
+            buffer += '\n';
         }
 
         void Flush() {
@@ -1294,11 +1295,6 @@ void SV_Frame( int msec )
 
 	sv.timeResidual += msec;
 
-	if ( !com_dedicated->integer )
-	{
-		SV_BotFrame( svs.time + sv.timeResidual );
-	}
-
 	if ( com_dedicated->integer && sv.timeResidual < frameMsec )
 	{
 		// NET_Sleep will give the OS time slices until either get a packet
@@ -1365,11 +1361,6 @@ void SV_Frame( int msec )
 
 	// update ping based on the all received frames
 	SV_CalcPings();
-
-	if ( com_dedicated->integer )
-	{
-		SV_BotFrame( svs.time );
-	}
 
 	// run the game simulation in chunks
 	while ( sv.timeResidual >= frameMsec )
