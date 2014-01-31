@@ -2,7 +2,7 @@ gfx/misc/tracer
 {
   cull none
   {
-    map gfx/sprites/spark.tga
+    map gfx/sprites/spark
     blendFunc blend
   }
 }
@@ -11,7 +11,7 @@ gfx/damage/blood
 {
   cull disable
   {
-    map gfx/damage/blood.tga
+    map gfx/damage/blood
     blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
     rgbGen vertex
     alphaGen vertex
@@ -21,7 +21,7 @@ gfx/damage/blood
 gfx/damage/fullscreen_painblend
 {
   {
-    map gfx/damage/fullscreen_painblend.tga
+    map gfx/damage/fullscreen_painblend
     blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
     rgbGen vertex
     alphaGen vertex
@@ -29,7 +29,7 @@ gfx/damage/fullscreen_painblend
   }
 
   {
-    map gfx/damage/fullscreen_painblend.tga
+    map gfx/damage/fullscreen_painblend
     blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
     rgbGen vertex
     alphaGen vertex
@@ -40,11 +40,11 @@ gfx/damage/fullscreen_painblend
 models/fx/metal_gibs/metal_gibs
 {
   {
-    map models/fx/metal_gibs/metal_gibs.tga
+    map models/fx/metal_gibs/metal_gibs
     rgbGen lightingDiffuse
   }
   {
-    map models/fx/metal_gibs/hot_gibs.tga
+    map models/fx/metal_gibs/hot_gibs
     blendfunc add
     rgbGen wave sin 0 1 0 0.0625
   }
@@ -53,7 +53,7 @@ models/fx/metal_gibs/metal_gibs
 gfx/misc/redbuild
 {
   {
-    map gfx/misc/redbuild.tga
+    map gfx/misc/redbuild
     blendfunc add
     rgbGen identity
   }
@@ -62,7 +62,7 @@ gfx/misc/redbuild
 gfx/misc/greenbuild
 {
   {
-    map gfx/misc/greenbuild.tga
+    map gfx/misc/greenbuild
     blendfunc add
     rgbGen identity
   }
@@ -71,7 +71,7 @@ gfx/misc/greenbuild
 gfx/misc/nopower
 {
   {
-    map gfx/misc/nopower.tga
+    map gfx/misc/nopower
     blendfunc add
     rgbGen identity
   }

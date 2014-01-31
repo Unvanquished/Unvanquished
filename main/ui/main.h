@@ -10,7 +10,7 @@
       type ITEM_TYPE_TEXT \
       style WINDOW_STYLE_SHADER \
       rect 439 376 182 140 \
-      background "ui/assets/dretch1.png" \
+      background "ui/assets/dretch1" \
       visible MENU_TRUE \
       decoration \
       nostretch \
@@ -21,7 +21,7 @@
       type ITEM_TYPE_TEXT \
       style WINDOW_STYLE_SHADER \
       rect 439 376 182 140 \
-      background "ui/assets/dretch1.png" \
+      background "ui/assets/dretch1" \
       visible MENU_TRUE \
       decoration \
       nostretch \
@@ -32,7 +32,7 @@
       type ITEM_TYPE_TEXT \
       style WINDOW_STYLE_SHADER \
       rect 97 341 246 139 \
-      background "ui/assets/dretch2.png" \
+      background "ui/assets/dretch2" \
       visible MENU_TRUE \
       decoration \
       nostretch \
@@ -43,7 +43,7 @@
       type ITEM_TYPE_TEXT \
       style WINDOW_STYLE_SHADER \
       rect 404 350 75 51 \
-      background "ui/assets/dretch3.png" \
+      background "ui/assets/dretch3" \
       visible MENU_TRUE \
       decoration \
       nostretch \
@@ -54,7 +54,7 @@
       type ITEM_TYPE_TEXT \
       style WINDOW_STYLE_SHADER \
       rect 223 199 400 320 \
-      background "ui/assets/human.png" \
+      background "ui/assets/human" \
       visible MENU_TRUE \
       decoration \
       nostretch \
@@ -74,15 +74,15 @@
       forecolor .12 .93 .99 1 \
       visible MENU_TRUE \
       textaligny ALIGNY \
-      background "ui/assets/button.png" \
+      background "ui/assets/button" \
       action { play "sound/misc/menu1.wav"; ACTION } \
       onFocus \
       { \
-		setbackground "ui/assets/button_highlight.png" \
+		setbackground "ui/assets/button_highlight" \
       } \
       leaveFocus \
       { \
-		setbackground "ui/assets/button.png" \
+		setbackground "ui/assets/button" \
       } \
       nostretch \
     }

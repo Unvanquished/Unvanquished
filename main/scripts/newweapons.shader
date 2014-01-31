@@ -3,7 +3,7 @@ gfx/weapons/spiderflash
   cull none
   entityMergable
   {
-    map gfx/weapons/spiderflash.tga
+    map gfx/weapons/spiderflash
     blendFunc add
     rgbGen vertex
     alphaGen vertex
@@ -14,7 +14,7 @@ gfx/weapons/flash
   cull none
   entityMergable
   {
-    map gfx/weapons/flash.tga
+    map gfx/weapons/flash
     blendFunc add
     rgbGen vertex
     alphaGen vertex
@@ -25,7 +25,7 @@ gfx/weapons/smoke
   cull none
   entityMergable
   {
-    map gfx/weapons/smoke.tga
+    map gfx/weapons/smoke
     blendFunc blend
     rgbGen vertex
     alphaGen vertex
@@ -36,7 +36,7 @@ gfx/grenade/smoke
   cull none
   entityMergable
   {
-    map gfx/weapons/smoke.tga
+    map gfx/weapons/smoke
     blendFunc blend
     rgbGen vertex
     alphaGen vertex
@@ -49,13 +49,13 @@ gfx/grenade/puff
   entityMergable
   //deformVertexes wave 40 sin 0 0.1 0 0.5
   {
-    map gfx/weapons/puff.tga
+    map gfx/weapons/puff
     blendFunc blend
     rgbGen vertex
     alphaGen vertex
   }
   {
-    map gfx/weapons/puffstreak.tga
+    map gfx/weapons/puffstreak
     blendfunc blend
     rgbGen vertex
     alphaGen vertex
@@ -64,7 +64,7 @@ gfx/grenade/puff
     tcMod scroll -0.5 0.0
   }
   {
-    map gfx/weapons/fire.tga
+    map gfx/weapons/fire
     blendfunc blend
     rgbGen vertex
     alphaGen vertex
