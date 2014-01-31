@@ -1,4 +1,5 @@
-obj-*-*-*/main/game-qvm-native.so	usr/lib/games/unvanquished/main/
+obj-*-*-*/game-qvm-native.so		usr/lib/games/unvanquished/
 debian/scripts/unvanquished-download-paks usr/sbin/
 download-pk3.sh				usr/lib/games/unvanquished/
-main/translation/client/*		usr/lib/games/unvanquished/main/translation/client/
+# disabled for now - seems broken
+# main/translation/client/*		usr/lib/games/unvanquished/main/translation/client/

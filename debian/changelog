@@ -1,3 +1,12 @@
+unvanquished (0.24.0-1) unstable; urgency=low
+
+  * Release of Alpha 24.
+    - This release changes various file locations.
+    - Drop upgrade support for very old versions.
+    - Don't include packaged translations for now (broken, not used).
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Fri, 31 Jan 2014 19:22:17 +0000
+
 unvanquished (0.23.0-2) unstable; urgency=low
 
   * Server: fix minimum wage.
