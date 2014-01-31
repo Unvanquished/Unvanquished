@@ -896,8 +896,8 @@ msgid "Evolution Points"
 msgstr "Puntos de Evolución"
 
 #: main.menu:80
-msgid "Unvanquished (C) 2011-2013 Unvanquished Development"
-msgstr "Unvanquished (C) 2011-2013 Unvanquished Development"
+msgid "Unvanquished (C) 2011-2014 Unvanquished Development"
+msgstr "Unvanquished (C) 2011-2014 Unvanquished Development"
 
 #: mod.menu:74 profiles.menu:126
 msgid "Load"
