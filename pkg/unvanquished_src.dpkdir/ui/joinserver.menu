@@ -631,7 +631,7 @@
     {
       name back
       style WINDOW_STYLE_SHADER
-      background "ui/assets/backarrow.tga"
+      background "ui/assets/backarrow"
       rect BCJ_X BCJ_Y ARROW_H ARROW_W
       aspectBias ALIGN_LEFT
       visible MENU_TRUE
@@ -652,7 +652,7 @@
     {
       name back_alt
       style WINDOW_STYLE_SHADER
-      background "ui/assets/backarrow_alt.tga"
+      background "ui/assets/backarrow_alt"
       rect BCJ_X BCJ_Y ARROW_H ARROW_W
       aspectBias ALIGN_LEFT
       backcolor 0 0 0 0
@@ -687,7 +687,7 @@
       style WINDOW_STYLE_SHADER
       rect ((BCJ_X+BCJ_W)-ARROW_W) BCJ_Y ARROW_H ARROW_W
       aspectBias ALIGN_RIGHT
-      background "ui/assets/forwardarrow.tga"
+      background "ui/assets/forwardarrow"
       backcolor 0 0 0 0
       visible MENU_TRUE
       mouseEnter
@@ -709,7 +709,7 @@
       style WINDOW_STYLE_SHADER
       rect ((BCJ_X+BCJ_W)-ARROW_W) BCJ_Y ARROW_H ARROW_W
       aspectBias ALIGN_RIGHT
-      background "ui/assets/forwardarrow_alt.tga"
+      background "ui/assets/forwardarrow_alt"
       backcolor 0 0 0 0
       type ITEM_TYPE_BUTTON
       visible MENU_FALSE

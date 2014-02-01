@@ -4,7 +4,7 @@ models/weapons/hive/missilePS
   {
     particle
     {
-      shader 20 models/weapons/hive/sprite1.tga models/weapons/hive/sprite2.tga
+      shader 20 models/weapons/hive/sprite1 models/weapons/hive/sprite2
 
       displacement 0 0 0 ~4.0
 

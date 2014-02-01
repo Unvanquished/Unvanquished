@@ -19,7 +19,7 @@ lights/roundfire2
 {
 	{
 		forceHighQuality
-		map	lights/round.tga
+		map	lights/round
 		red 	( firetable2 [Parm4 + (time / 6) ]) * Parm0
 		green 	( firetable2 [Parm4 + (time / 6) ]) * Parm1
 		blue 	( firetable2 [Parm4 + (time / 6) ]) * Parm2
@@ -33,7 +33,7 @@ lights/stormy1
 
 	{
 		forceHighQuality
-		map	lights/stormy2.tga
+		map	lights/stormy2
 		colored
 	    rotate	time * .1
 		zeroClamp
@@ -47,10 +47,10 @@ lights/stormy1
 lights/ambientLight
 {
 	ambientLight
-	lightFalloffImage	makeintensity( lights/squarelight1a.tga )
+	lightFalloffImage	makeintensity( lights/squarelight1a )
 	{
 		forceHighQuality
-		map lights/squarelight1.tga
+		map lights/squarelight1
 		colored
 		zeroClamp
 	}
@@ -59,10 +59,10 @@ lights/ambientLight
 lights/ambientLight2
 {
 	ambientLight
-	lightFalloffImage	makeintensity( lights/squarelight1a.tga )
+	lightFalloffImage	makeintensity( lights/squarelight1a )
 	{
 		forceHighQuality
-		map lights/squarelight.tga
+		map lights/squarelight
 		colored
 		zeroClamp
 	}
@@ -72,7 +72,7 @@ lights/square_blast
 {
 	{
 		forceHighQuality
-		map		lights/squarelight1.tga
+		map		lights/squarelight1
 		red 		( blasttable [Parm4 + (time / 6 * (Parm3)) ]) * Parm0
 		green 		( blasttable [Parm4 + (time / 6 * (Parm3)) ]) * Parm1
 		blue 		( blasttable [Parm4 + (time / 6 * (Parm3)) ]) * Parm2
@@ -84,7 +84,7 @@ lights/square_strobe
 {
 	{
 		forceHighQuality
-		map		lights/squarelight1.tga
+		map		lights/squarelight1
 		red 		( blinktable2 [Parm4 + (time * (6 * Parm3)) ]) * Parm0
 		green 		( blinktable2 [Parm4 + (time * (6 * Parm3)) ]) * Parm1
 		blue 		( blinktable2 [Parm4 + (time * (6 * Parm3)) ]) * Parm2
@@ -96,7 +96,7 @@ lights/square_brokenneon2
 {
 	{
 		forceHighQuality
-		map		lights/squarelight1.tga
+		map		lights/squarelight1
 		red 		( neontable2 [Parm4 + (time * (.15 * Parm3)) ]) * Parm0
 		green 		( neontable2 [Parm4 + (time * (.15 * Parm3)) ]) * Parm1
 		blue 		( neontable2 [Parm4 + (time * (.15 * Parm3)) ]) * Parm2
@@ -108,7 +108,7 @@ lights/square_brokenneon1
 {
 	{
 		forceHighQuality
-		map		lights/squarelight1.tga
+		map		lights/squarelight1
 		red 		( neontable1 [Parm4 + (time * (.2 * Parm3)) ]) * Parm0
 		green 		( neontable1 [Parm4 + (time * (.2 * Parm3)) ]) * Parm1
 		blue 		( neontable1 [Parm4 + (time * (.2 * Parm3)) ]) * Parm2
@@ -120,7 +120,7 @@ lights/square_flicker2
 {
 	{
 		forceHighQuality
-		map		lights/squarelight1.tga
+		map		lights/squarelight1
 		red 		( flashtable [Parm4 + (time * (.25 * Parm3)) ]) * Parm0
 		green 		( flashtable [Parm4 + (time * (.25 * Parm3)) ]) * Parm1
 		blue 		( flashtable [Parm4 + (time * (.25 * Parm3)) ]) * Parm2
@@ -132,7 +132,7 @@ lights/square_flicker
 {
 	{
 		forceHighQuality
-		map		lights/squarelight1.tga
+		map		lights/squarelight1
 		red 		((.25 * blinktable [Parm4 + (time * (15 * Parm3)) ]) +.75) * Parm0
 		green 		((.25 * blinktable [Parm4 + (time * (15 * Parm3)) ]) +.75) * Parm1
 		blue 		((.25 * blinktable [Parm4 + (time * (15 * Parm3)) ]) +.75) * Parm2
@@ -144,7 +144,7 @@ lights/square_flicker3
 {
 	{
 		forceHighQuality
-		map		lights/squarelight1.tga
+		map		lights/squarelight1
 		red 		((.25 * blinktable3 [Parm4 + (time * (15 * Parm3)) ]) +.75) * Parm0
 		green 		((.25 * blinktable3 [Parm4 + (time * (15 * Parm3)) ]) +.75) * Parm1
 		blue 		((.25 * blinktable3 [Parm4 + (time * (15 * Parm3)) ]) +.75) * Parm2
@@ -157,7 +157,7 @@ lights/square_flicker3_spectrum
 	spectrum 1
 	{
 		forceHighQuality
-		map		lights/squarelight1.tga
+		map		lights/squarelight1
 		red 		((.25 * blinktable3 [Parm4 + (time * (15 * Parm3)) ]) +.75) * Parm0
 		green 		((.25 * blinktable3 [Parm4 + (time * (15 * Parm3)) ]) +.75) * Parm1
 		blue 		((.25 * blinktable3 [Parm4 + (time * (15 * Parm3)) ]) +.75) * Parm2
@@ -169,7 +169,7 @@ lights/square_flicker4
 {
 	{
 		forceHighQuality
-		map		lights/squarelight1.tga
+		map		lights/squarelight1
 		red 		((.25 * blinktable4 [Parm4 + (time * (15 * Parm3)) ]) +.75) * Parm0
 		green 		((.25 * blinktable4 [Parm4 + (time * (15 * Parm3)) ]) +.75) * Parm1
 		blue 		((.25 * blinktable4 [Parm4 + (time * (15 * Parm3)) ]) +.75) * Parm2
@@ -181,7 +181,7 @@ lights/round_sin
 {
 	{
 		forceHighQuality
-		map			lights/round.tga
+		map			lights/round
 		red 		( sintable [Parm4 + (time * Parm3)] ) * Parm0
 		green 		( sintable [Parm4 + (time * Parm3)] ) * Parm1
 		blue 		( sintable [Parm4 + (time * Parm3)] ) * Parm2
@@ -193,7 +193,7 @@ lights/round_strobe
 {
 	{
 		forceHighQuality
-		map		lights/round.tga
+		map		lights/round
 		red 		( blinktable2 [Parm4 + (time * (6 * Parm3)) ]) * Parm0
 		green 		( blinktable2 [Parm4 + (time * (6 * Parm3)) ]) * Parm1
 		blue 		( blinktable2 [Parm4 + (time * (6 * Parm3)) ]) * Parm2
@@ -205,7 +205,7 @@ lights/round_brokenneon2
 {
 	{
 		forceHighQuality
-		map		lights/round.tga
+		map		lights/round
 		red 		( neontable2 [Parm4 + (time * (.15 * Parm3)) ]) * Parm0
 		green 	( neontable2 [Parm4 + (time * (.15 * Parm3)) ]) * Parm1
 		blue 		( neontable2 [Parm4 + (time * (.15 * Parm3)) ]) * Parm2
@@ -217,7 +217,7 @@ lights/round_brokenneon1
 {
 	{
 		forceHighQuality
-		map		lights/round.tga
+		map		lights/round
 		red 		( neontable1 [Parm4 + (time * (.2 * Parm3)) ]) * Parm0
 		green 	( neontable1 [Parm4 + (time * (.2 * Parm3)) ]) * Parm1
 		blue 		( neontable1 [Parm4 + (time * (.2 * Parm3)) ]) * Parm2
@@ -229,7 +229,7 @@ lights/round_flicker2
 {
 	{
 		forceHighQuality
-		map		lights/round.tga
+		map		lights/round
 		red 		( flashtable [Parm4 + (time * (.25 * Parm3)) ]) * Parm0
 		green 		( flashtable [Parm4 + (time * (.25 * Parm3)) ]) * Parm1
 		blue 		( flashtable [Parm4 + (time * (.25 * Parm3)) ]) * Parm2
@@ -241,7 +241,7 @@ lights/round_flicker
 {
 	{
 		forceHighQuality
-		map		lights/round.tga
+		map		lights/round
 		red 		((.25 * blinktable [Parm4 + (time * (15 * Parm3)) ]) +.75) * Parm0
 		green 		((.25 * blinktable [Parm4 + (time * (15 * Parm3)) ]) +.75) * Parm1
 		blue 		((.25 * blinktable [Parm4 + (time * (15 * Parm3)) ]) +.75) * Parm2
@@ -253,7 +253,7 @@ lights/squarelight
 {
 	{
 		forceHighQuality
-		map	lights/squarelight.tga
+		map	lights/squarelight
 		zeroClamp
 		colored
 	}
@@ -270,13 +270,13 @@ lights/defaultDynamicLight
 {
 	{
 		stage attenuationMapZ
-		map makeintensity(lights/squarelight1a.tga)
+		map makeintensity(lights/squarelight1a)
 		edgeClamp
 	}
 	{
 		stage attenuationMapXY
 		forceHighQuality
-		map lights/round.tga
+		map lights/round
 		colored
 		zeroClamp
 	}
@@ -286,11 +286,11 @@ lights/defaultPointLight
 {
 	// this will also be the falloff for any
 	// point light shaders that don't specify one
-	lightFalloffImage	makeintensity( lights/squarelight1a.tga )
+	lightFalloffImage	makeintensity( lights/squarelight1a )
 	{
 		stage attenuationMapXY
 		forceHighQuality
-		map lights/squarelight1.tga
+		map lights/squarelight1
 		colored
 		zeroClamp
 	}
@@ -301,14 +301,14 @@ lights/defaultProjectedLight
 	// by default, stay bright almost all the way to the end
 //	lightFalloffImage	_noFalloff
 
-//	lightFalloffImage	lights/skyline1.png
-	lightFalloffImage	makeintensity(lights/squarelight1b.png)
-//	lightFalloffImage	makeintensity(lights/flashoff.tga)
+//	lightFalloffImage	lights/skyline1
+	lightFalloffImage	makeintensity(lights/squarelight1b)
+//	lightFalloffImage	makeintensity(lights/flashoff)
 
 	{
 		stage attenuationMapXY
 		forceHighQuality
-		map lights/squarelight1.tga
+		map lights/squarelight1
 		colored
 		zeroClamp
 	}
@@ -317,8 +317,8 @@ lights/defaultProjectedLight
 
 lights/roqVideoLight
 {
-	lightFalloffImage	makeintensity(lights/squarelight1b.tga)
-//	lightFalloffImage	lights/skyline1.png
+	lightFalloffImage	makeintensity(lights/squarelight1b)
+//	lightFalloffImage	lights/skyline1
 //	lightFalloffImage	_noFalloff
 	{
 		stage attenuationMapXY
@@ -339,7 +339,7 @@ lights/stormLight
 
 		stage attenuationMapXY
 		forceHighQuality
-		map	lights/squarelight.tga
+		map	lights/squarelight
 		colored
 	    rotate	time * .1
 		zeroClamp
@@ -350,13 +350,13 @@ lights/stormLight
 lights/flashLight
 {
 //	lightFalloffImage	_noFalloff
-//	lightFalloffImage	lights/skyline1.png
-	lightFalloffImage	makeintensity(lights/squarelight1b.png)
+//	lightFalloffImage	lights/skyline1
+	lightFalloffImage	makeintensity(lights/squarelight1b)
 
 	{
 		stage attenuationMapXY
 		forceHighQuality
-		map	lights/round.png
+		map	lights/round
 		zeroClamp
 		colored
 	}
@@ -364,12 +364,12 @@ lights/flashLight
 
 lights/flashLight1
 {
-	lightFalloffImage	makeintensity(lights/squarelight1b.png)
+	lightFalloffImage	makeintensity(lights/squarelight1b)
 
 	{
 		stage attenuationMapXY
 		forceHighQuality
-		map	lights/flashlight1.png
+		map	lights/flashlight1
 		zeroClamp
 		colored
 	}
@@ -377,11 +377,11 @@ lights/flashLight1
 
 lights/roundFire
 {
-	lightFalloffImage	makeintensity(lights/squarelight1a.tga)
+	lightFalloffImage	makeintensity(lights/squarelight1a)
 	{
 		stage attenuationMapXY
 		forceHighQuality
-		map	lights/round.tga
+		map	lights/round
 		red 	( firetable [Parm4 + (time / 6 * (Parm3)) ]) * Parm0
 		green 	( firetable [Parm4 + (time / 6 * (Parm3)) ]) * Parm1
 		blue 	( firetable [Parm4 + (time / 6 * (Parm3)) ]) * Parm2
@@ -393,12 +393,12 @@ lights/roundFire
 lights/volumetricLight
 {
 	volumetricLight
-	lightFalloffImage	makeintensity( lights/squarelight1a.tga )
+	lightFalloffImage	makeintensity( lights/squarelight1a )
 
 	{
 		stage attenuationMapXY
 		forceHighQuality
-		map lights/squarelight1.tga
+		map lights/squarelight1
 		colored
 		zeroClamp
 	}
@@ -406,12 +406,12 @@ lights/volumetricLight
 
 lights/shadowProjectedLight
 {
-	lightFalloffImage	makeintensity(lights/squarelight1b.png)
+	lightFalloffImage	makeintensity(lights/squarelight1b)
 
 	{
 		stage attenuationMapXY
 		forceHighQuality
-		map lights/squarelight1.tga
+		map lights/squarelight1
 		colored
 		//red 	Parm0 * Parm3
 		//green 	Parm0 * Parm3
