@@ -1212,10 +1212,18 @@ static void FireBuild( gentity_t *self, dynMenu_t menu )
 		{
 			int buildTime = BG_Buildable( buildable )->buildTime;
 
-			// humans have a reduced build timer
-			if ( self->client->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS )
+			switch ( self->client->ps.persistant[ PERS_TEAM ] )
 			{
-				buildTime /= 2;
+				case TEAM_ALIENS:
+					buildTime *= ALIEN_BUILDDELAY_MOD;
+					break;
+
+				case TEAM_HUMANS:
+					buildTime *= HUMAN_BUILDDELAY_MOD;
+					break;
+
+				default:
+					break;
 			}
 
 			self->client->ps.stats[ STAT_MISC ] += buildTime;

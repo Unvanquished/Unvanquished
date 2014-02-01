@@ -342,14 +342,17 @@ extern int   REACTOR_ATTACK_DAMAGE;
 #define ALIEN_DETONATION_DELAY             5000
 #define DETONATION_DELAY_RAND_RANGE        0.25f
 
+// buildable limits
+#define HUMAN_BUILDDELAY_MOD               0.6f
+#define ALIEN_BUILDDELAY_MOD               0.6f
+
 // score
 #define SCORE_PER_CREDIT                   0.02f // used to convert credit rewards to score points
-#define SCORE_PER_MOMENTUM               1.0f  // used to convert momentum rewards to score points
+#define SCORE_PER_MOMENTUM                 1.0f  // used to convert momentum rewards to score points
 #define HUMAN_BUILDER_SCOREINC             50    // in credits/10s
 #define ALIEN_BUILDER_SCOREINC             50    // in credits/10s
 
-// funds
-// Values are in credits. 'evo' is just another unit for credits.
+// funds (values are in credits, 1 evo = 100 credits)
 #define CREDITS_PER_EVO                    100   // Used when alien credits are displayed as evos
 #define PLAYER_BASE_VALUE                  200   // base credit value of a player
 #define PLAYER_PRICE_TO_VALUE              0.5f  // fraction of upgrade price added to player value
