@@ -55,13 +55,3 @@ models/weapons/grenade/grenade
 	specularMap models/weapons/grenade/grenade_s.tga
 }
 
-models/weapons/grenade/grenade_s
-{
-	{
-		map models/weapons/grenade/energy.jpg
-		rgbGen wave sawtooth 0.3 1 0 0.5
-		tcMod scale 2 1
-		tcMod scroll 0 1
-	}
-}
-

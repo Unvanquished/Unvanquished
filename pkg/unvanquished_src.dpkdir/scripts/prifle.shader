@@ -1,24 +1,3 @@
-gfx/prifle/red_blob
-{
-	cull disable
-	{
-		map gfx/prifle/red_blob
-		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
-		alphaGen vertex
-	}
-}
-
-gfx/prifle/red_streak
-{
-	nomipmaps
-	cull disable
-	{
-		map gfx/prifle/red_streak
-		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
-		alphaGen vertex
-	}
-}
-
 models/weapons/prifle/flash
 {
 	sort additive
@@ -59,3 +38,13 @@ models/weapons/prifle/zprifle
 	specularMap models/weapons/prifle/zprifle_SPEC
 }
 
+MarkPulseRifleBullet
+{
+	polygonOffset
+	{
+		map gfx/marks/mark_pulserifle
+		//map models/weapons/rifle/lense
+		blendFunc GL_ZERO GL_ONE_MINUS_SRC_COLOR
+		rgbGen exactVertex
+	}
+}

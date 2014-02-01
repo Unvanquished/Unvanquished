@@ -7,9 +7,9 @@ models/players/human_light/armor
 	specularMap models/players/human_light/armour_s
 }
 
-//  ------------
-//  LIGHT ARMOUR
-//  ------------
+//   ------------
+//   LIGHT ARMOUR
+//   ------------
 models/players/human_light/body
 {
 	qer_editorimage models/players/human_nobsuit_common/base_d

@@ -17,15 +17,6 @@ gfx/misc/greenbuild
 	}
 }
 
-gfx/misc/nopower
-{
-	{
-		map gfx/misc/nopower
-		blendfunc add
-		rgbGen identity
-	}
-}
-
 gfx/misc/redbuild
 {
 	{
@@ -44,61 +35,79 @@ gfx/misc/tracer
 	}
 }
 
-// tank bubbles
-textures/misc/bubbles
+console
 {
-	cull disable
+	nopicmip
+	nomipmaps
 	{
-		map textures/misc/bubbles
-		blendfunc add
-		rgbGen wave noise 0 1 0 0.02
-		tcMod scroll -0.01 0.05
-		tcMod scale 2 2
-	}
-	{
-		map textures/misc/bubbles
-		blendfunc add
-		rgbGen wave noise 0 1 0 0.02
-		tcMod scroll 0.01 0.02
-		tcMod scale -2 2
+		map gfx/colors/black
 	}
 }
 
-// deep ocean
-textures/misc/dark_water
+creep
 {
+	nopicmip
+	polygonoffset
+	twoSided
 	{
-		map textures/misc/dark_water
-		tcMod rotate 1
+		clampmap gfx/creep/creep
+		blendfunc blend
+		blend diffusemap
+		rgbGen identity
+		alphaGen vertex
+		alphaFunc GE128
 	}
+	specularMap gfx/creep/creep_s
+	normalMap gfx/creep/creep_n
+}
+
+outline
+{
+	cull none
+	nopicmip
+	nomipmaps
 	{
-		map textures/misc/caustic
-		blendfunc add
-		rgbGen wave sin 0 1 0 0.05
-		tcMod scale 0.5 0.5
-		tcMod rotate 1
-	}
-	{
-		map textures/misc/caustic
-		blendfunc add
-		rgbGen wave sin 0 1 0 -0.05
-		tcMod scale -0.5 -0.5
-		tcMod rotate 1
+		map gfx/2d/outline
+		blendfunc	GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
+		rgbgen vertex
 	}
 }
 
-// foamy water top
-textures/misc/foam
+scope
 {
-	surfaceparm nonsolid
-	surfaceparm trans
-	surfaceparm water
-	deformVertexes wave 128 sin 0 5 6 0.5
-	tessSize 32
-	cull disable
 	{
-		map textures/misc/foam
-		blendfunc add
+		clampmap gfx/2d/scope/zoom
+		alphaGen vertex
+		blend blend
+	}
+	{
+		map gfx/2d/scope/bg
+		alphaGen vertex
+		blend blend
+	}
+	{
+		map gfx/2d/scope/circle1
+		alphaGen vertex
+		blend blend
+	}
+	{
+		clampmap gfx/2d/scope/circle2
+		alphaGen vertex
+		blend blend
+		tcMod rotate 45
+	}
+	{
+		clampmap gfx/2d/scope/crosshair
+		alphaGen vertex
+		blend blend
 	}
 }
 
+white
+{
+	{
+		map *white
+		blendfunc	GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
+		rgbgen vertex
+	}
+}

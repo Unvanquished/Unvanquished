@@ -1,7 +1,7 @@
-//  ======================================================================
-//  Placeholder for fire caused by flamer & firebomb
-//  Wall Torch Stuff - Thanks to Sockter / dasprid
-//  ======================================================================
+//   ======================================================================
+//   Placeholder for fire caused by flamer & firebomb
+//   Wall Torch Stuff - Thanks to Sockter / dasprid
+//   ======================================================================
 textures/citadel/sockter/torchflame
 {
 	qer_editorimage	textures/citadel/sockter/flame1_editor
