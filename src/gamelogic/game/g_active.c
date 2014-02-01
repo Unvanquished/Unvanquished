@@ -800,14 +800,7 @@ void ClientTimerActions( gentity_t *ent, int msec )
 	gclient_t     *client;
 	usercmd_t     *ucmd;
 	int           i, aForward, aRight;
-	qboolean      walking = qfalse,
-	              stopped = qfalse,
-	              crouched = qfalse,
-	              jumping = qfalse,
-	              strafing = qfalse;
 	buildable_t   buildable;
-	const classAttributes_t *ca;
-	const weaponAttributes_t *wa;
 
 	if ( !ent || !ent->client )
 	{
@@ -817,8 +810,6 @@ void ClientTimerActions( gentity_t *ent, int msec )
 	client = ent->client;
 	ps     = &client->ps;
 	ucmd   = &client->pers.cmd;
-	ca     = BG_Class( ps->stats[ STAT_CLASS ] );
-	wa     = BG_Weapon( ps->stats[ STAT_WEAPON ] );
 
 	aForward = abs( ucmd->forwardmove );
 	aRight   = abs( ucmd->rightmove );
@@ -826,29 +817,6 @@ void ClientTimerActions( gentity_t *ent, int msec )
 	client->time100 += msec;
 	client->time1000 += msec;
 	client->time10000 += msec;
-
-	if ( aForward == 0 && aRight == 0 )
-	{
-		stopped = qtrue;
-	}
-	else if ( aForward <= 64 && aRight <= 64 )
-	{
-		walking = qtrue;
-	}
-
-	if ( aRight > 0 )
-	{
-		strafing = qtrue;
-	}
-
-	if ( ucmd->upmove > 0 )
-	{
-		jumping = qtrue;
-	}
-	else if ( ent->client->ps.pm_flags & PMF_DUCKED )
-	{
-		crouched = qtrue;
-	}
 
 	if( ent->r.svFlags & SVF_BOT )
 	{
