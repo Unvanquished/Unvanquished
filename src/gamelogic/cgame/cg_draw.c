@@ -2052,7 +2052,7 @@ static void CG_DrawLevelShot( rectDef_t *rect )
 
 	info = CG_ConfigString( CS_SERVERINFO );
 	s = Info_ValueForKey( info, "mapname" );
-	levelshot = trap_R_RegisterShader(va("levelshots/%s.tga", s),
+	levelshot = trap_R_RegisterShader(va("levelshots/%s", s),
 					  RSF_NOMIP);
 
 	if ( !levelshot )
@@ -3009,7 +3009,7 @@ static void CG_DrawDisconnect( void )
 	x = 640 - 48;
 	y = 480 - 48;
 
-	CG_DrawPic( x, y, 48, 48, trap_R_RegisterShader("gfx/2d/net.tga",
+	CG_DrawPic( x, y, 48, 48, trap_R_RegisterShader("gfx/2d/net",
 							RSF_DEFAULT));
 }
 

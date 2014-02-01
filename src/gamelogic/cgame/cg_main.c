@@ -1476,18 +1476,18 @@ static void CG_RegisterGraphics( void )
 	}
 
 	// player health cross shaders
-	cgs.media.healthCross = trap_R_RegisterShader("ui/assets/neutral/cross.tga",
+	cgs.media.healthCross = trap_R_RegisterShader("ui/assets/neutral/cross",
 						      (RegisterShaderFlags_t) RSF_DEFAULT);
-	cgs.media.healthCross2X = trap_R_RegisterShader("ui/assets/neutral/cross2.tga",
+	cgs.media.healthCross2X = trap_R_RegisterShader("ui/assets/neutral/cross2",
 							(RegisterShaderFlags_t) RSF_DEFAULT);
-	cgs.media.healthCross3X = trap_R_RegisterShader("ui/assets/neutral/cross3.tga",
+	cgs.media.healthCross3X = trap_R_RegisterShader("ui/assets/neutral/cross3",
 							(RegisterShaderFlags_t) RSF_DEFAULT);
-	cgs.media.healthCrossMedkit = trap_R_RegisterShader("ui/assets/neutral/cross_medkit.tga",
+	cgs.media.healthCrossMedkit = trap_R_RegisterShader("ui/assets/neutral/cross_medkit",
 							    (RegisterShaderFlags_t) RSF_DEFAULT);
-	cgs.media.healthCrossPoisoned = trap_R_RegisterShader("ui/assets/neutral/cross_poison.tga",
+	cgs.media.healthCrossPoisoned = trap_R_RegisterShader("ui/assets/neutral/cross_poison",
 							      (RegisterShaderFlags_t) RSF_DEFAULT);
 
-	cgs.media.upgradeClassIconShader = trap_R_RegisterShader("icons/icona_upgrade.tga",
+	cgs.media.upgradeClassIconShader = trap_R_RegisterShader("icons/icona_upgrade",
 								 (RegisterShaderFlags_t) RSF_DEFAULT);
 
 	cgs.media.desaturatedCgrade = trap_R_RegisterShader("gfx/cgrading/desaturated",
@@ -2612,7 +2612,7 @@ void CG_AssetCache( void )
 
 	for ( i = 0; i < cgDC.Assets.emoticonCount; i++ )
 	{
-		cgDC.Assets.emoticons[ i ].shader = trap_R_RegisterShader(va("emoticons/%s_%dx1.tga", cgDC.Assets.emoticons[i].name, cgDC.Assets.emoticons[i].width),
+		cgDC.Assets.emoticons[ i ].shader = trap_R_RegisterShader(va("emoticons/%s_%dx1", cgDC.Assets.emoticons[i].name, cgDC.Assets.emoticons[i].width),
 									  (RegisterShaderFlags_t) RSF_NOMIP);
 	}
 }

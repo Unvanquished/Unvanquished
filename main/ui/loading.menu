@@ -8,7 +8,7 @@
   assetGlobalDef
   {
     cursor "ui/assets/3_cursor3"
-    gradient_100_50Bar "ui/assets/gradientbar2.tga"
+    gradient_100_50Bar "ui/assets/gradientbar2"
     fadeClamp 1.0
     fadeCycle 1
     fadeAmount 0.1
@@ -58,7 +58,7 @@
       backcolor 1 1 1 1
       visible MENU_TRUE
       decoration
-      background "ui/assets/gradient_100_50bar2.tga"
+      background "ui/assets/gradient_100_50bar2"
     }
     itemDef
     {
@@ -68,7 +68,7 @@
       backcolor 0 0 0 1
       visible MENU_TRUE
       decoration
-      background "ui/assets/halfgradright.tga"
+      background "ui/assets/halfgradright"
     }
     itemDef
     {
@@ -78,7 +78,7 @@
       backcolor 0 0 0 1
       visible MENU_TRUE
       decoration
-      background "ui/assets/halfgradright.tga"
+      background "ui/assets/halfgradright"
     }
 	//OVERALL LOADING PROGRESS BAR
     itemDef
