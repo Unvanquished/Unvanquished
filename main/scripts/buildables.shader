@@ -5,3 +5,4 @@ models/buildables/trapper
 	bumpMap models/buildables/trapper/trapper_n
 	specularMap models/buildables/trapper/trapper_s
 }
+

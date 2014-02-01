@@ -33,13 +33,12 @@ models/splash/nebula
 models/splash/trem_black
 {
 	nopicmip
-//	{
-//		map models/splash/highlights
-//		blendfunc add
-//		rgbGen wave sin 0 0.2 0 0.2
-//		tcMod scroll -0.2 0
-//	}
-
+	//	{
+	//		map models/splash/highlights
+	//		blendfunc add
+	//		rgbGen wave sin 0 0.2 0 0.2
+	//		tcMod scroll -0.2 0
+	//	}
 	{
 		map ui/assets/title
 		blendfunc blend

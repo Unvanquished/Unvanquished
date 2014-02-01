@@ -7,3 +7,4 @@ models/buildables/hive/hive_strands_s
 		alphaFunc GE128
 	}
 }
+

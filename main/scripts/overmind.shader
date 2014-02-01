@@ -1,13 +1,3 @@
-models/buildables/overmind/pod_strands
-{
-	cull disable
-	{
-		map models/buildables/eggpod/pod_strands
-		rgbGen lightingDiffuse
-		alphaFunc GE128
-	}
-}
-
 models/buildables/overmind/over_spike
 {
 	{
@@ -19,6 +9,16 @@ models/buildables/overmind/over_spike
 		blendfunc filter
 		rgbGen identity
 		tcGen environment
+	}
+}
+
+models/buildables/overmind/pod_strands
+{
+	cull disable
+	{
+		map models/buildables/eggpod/pod_strands
+		rgbGen lightingDiffuse
+		alphaFunc GE128
 	}
 }
 

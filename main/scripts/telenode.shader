@@ -1,17 +1,3 @@
-models/buildables/telenode/telenode_top
-{
-	{
-		map models/buildables/telenode/telenode_top
-		rgbGen lightingDiffuse
-	}
-	{
-		map models/buildables/overmind/ref2
-		blendfunc filter
-		rgbGen identity
-		tcGen environment
-	}
-}
-
 models/buildables/telenode/energy
 {
 	{
@@ -42,6 +28,20 @@ models/buildables/telenode/telenode_parts
 {
 	{
 		map models/buildables/telenode/telenode_parts
+		rgbGen lightingDiffuse
+	}
+	{
+		map models/buildables/overmind/ref2
+		blendfunc filter
+		rgbGen identity
+		tcGen environment
+	}
+}
+
+models/buildables/telenode/telenode_top
+{
+	{
+		map models/buildables/telenode/telenode_top
 		rgbGen lightingDiffuse
 	}
 	{
