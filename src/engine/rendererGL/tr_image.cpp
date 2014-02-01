@@ -1100,8 +1100,8 @@ R_UnpackDXT5A( const byte *in, byte *out )
 			case 3: val = (3 * in[0] + 2 * in[1]) / 5; break;
 			case 4: val = (2 * in[0] + 3 * in[1]) / 5; break;
 			case 5: val = (1 * in[0] + 4 * in[1]) / 5; break;
-			case 6: val = 0;
-			case 7: val = 0xff;
+			case 6: val = 0;                           break;
+			case 7: val = 0xff;                        break;
 			}
 			out[ i ] = val;
 
@@ -1113,8 +1113,8 @@ R_UnpackDXT5A( const byte *in, byte *out )
 			case 3: val = (3 * in[0] + 2 * in[1]) / 5; break;
 			case 4: val = (2 * in[0] + 3 * in[1]) / 5; break;
 			case 5: val = (1 * in[0] + 4 * in[1]) / 5; break;
-			case 6: val = 0;
-			case 7: val = 0xff;
+			case 6: val = 0;                           break;
+			case 7: val = 0xff;                        break;
 			}
 			out[ i + 8 ] = val;
 		}
@@ -1640,6 +1640,7 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 				}
 
 				if( image->bits & IF_NORMALMAP ) {
+					c = image->width * image->height;
 					for ( i = 0; i < c; i++ )
 					{
 						vec3_t n;
@@ -2218,6 +2219,10 @@ static qboolean ParseHeightMap( char **text, byte **pic, int *width, int *height
 		ri.Printf( PRINT_WARNING, "WARNING: failed loading of image for heightMap\n" );
 		return qfalse;
 	}
+	if ( *bits & ( IF_BC1 | IF_BC3 | IF_BC4 | IF_BC5 ) ) {
+		ri.Printf( PRINT_WARNING, "WARNING: heightMap from compressed image not supported\n" );
+		return qfalse;
+	}
 
 	token = COM_ParseExt2( text, qfalse );
 
@@ -2268,6 +2273,10 @@ static qboolean ParseDisplaceMap( char **text, byte **pic, int *width, int *heig
 		ri.Printf( PRINT_WARNING, "WARNING: failed loading of first image for displaceMap\n" );
 		return qfalse;
 	}
+	if ( *bits & ( IF_BC1 | IF_BC3 | IF_BC4 | IF_BC5 ) ) {
+		ri.Printf( PRINT_WARNING, "WARNING: displaceMap from compressed image not supported\n" );
+		return qfalse;
+	}
 
 	token = COM_ParseExt2( text, qfalse );
 
@@ -2282,6 +2291,10 @@ static qboolean ParseDisplaceMap( char **text, byte **pic, int *width, int *heig
 	if ( !pic2 || numLayers > 0 )
 	{
 		ri.Printf( PRINT_WARNING, "WARNING: failed loading of second image for displaceMap\n" );
+		return qfalse;
+	}
+	if ( *bits & ( IF_BC1 | IF_BC3 | IF_BC4 | IF_BC5 ) ) {
+		ri.Printf( PRINT_WARNING, "WARNING: displaceMap from compressed image not supported\n" );
 		return qfalse;
 	}
 
@@ -2337,6 +2350,10 @@ static qboolean ParseAddGloss( char **text, byte **pic, int *width, int *height,
 		ri.Printf( PRINT_WARNING, "WARNING: failed loading of first image ( specular ) for addGloss\n" );
 		return qfalse;
 	}
+	if ( *bits & ( IF_BC1 | IF_BC3 | IF_BC4 | IF_BC5 ) ) {
+		ri.Printf( PRINT_WARNING, "WARNING: addGloss from compressed image not supported\n" );
+		return qfalse;
+	}
 
 	token = COM_ParseExt2( text, qfalse );
 
@@ -2351,6 +2368,10 @@ static qboolean ParseAddGloss( char **text, byte **pic, int *width, int *height,
 	if ( !pic2 || numLayers > 0 )
 	{
 		ri.Printf( PRINT_WARNING, "WARNING: failed loading of second image ( gloss ) for addGloss\n" );
+		return qfalse;
+	}
+	if ( *bits & ( IF_BC1 | IF_BC3 | IF_BC4 | IF_BC5 ) ) {
+		ri.Printf( PRINT_WARNING, "WARNING: addGloss from compressed image not supported\n" );
 		return qfalse;
 	}
 
@@ -2404,6 +2425,10 @@ static qboolean ParseAddNormals( char **text, byte **pic, int *width, int *heigh
 		ri.Printf( PRINT_WARNING, "WARNING: failed loading of first image for addNormals\n" );
 		return qfalse;
 	}
+	if ( *bits & ( IF_BC1 | IF_BC3 | IF_BC4 | IF_BC5 ) ) {
+		ri.Printf( PRINT_WARNING, "WARNING: addNormals from compressed image not supported\n" );
+		return qfalse;
+	}
 
 	token = COM_ParseExt2( text, qfalse );
 
@@ -2418,6 +2443,10 @@ static qboolean ParseAddNormals( char **text, byte **pic, int *width, int *heigh
 	if ( !pic2 || numLayers > 0 )
 	{
 		ri.Printf( PRINT_WARNING, "WARNING: failed loading of second image for addNormals\n" );
+		return qfalse;
+	}
+	if ( *bits & ( IF_BC1 | IF_BC3 | IF_BC4 | IF_BC5 ) ) {
+		ri.Printf( PRINT_WARNING, "WARNING: addNormals from compressed image not supported\n" );
 		return qfalse;
 	}
 
@@ -2470,6 +2499,10 @@ static qboolean ParseInvertAlpha( char **text, byte **pic, int *width, int *heig
 		ri.Printf( PRINT_WARNING, "WARNING: failed loading of image for invertAlpha\n" );
 		return qfalse;
 	}
+	if ( *bits & ( IF_BC1 | IF_BC3 | IF_BC4 | IF_BC5 ) ) {
+		ri.Printf( PRINT_WARNING, "WARNING: invertAlpha from compressed image not supported\n" );
+		return qfalse;
+	}
 
 	token = COM_ParseExt2( text, qfalse );
 
@@ -2504,6 +2537,10 @@ static qboolean ParseInvertColor( char **text, byte **pic, int *width, int *heig
 		ri.Printf( PRINT_WARNING, "WARNING: failed loading of image for invertColor\n" );
 		return qfalse;
 	}
+	if ( *bits & ( IF_BC1 | IF_BC3 | IF_BC4 | IF_BC5 ) ) {
+		ri.Printf( PRINT_WARNING, "WARNING: invertColor from compressed image not supported\n" );
+		return qfalse;
+	}
 
 	token = COM_ParseExt2( text, qfalse );
 
@@ -2536,6 +2573,10 @@ static qboolean ParseMakeIntensity( char **text, byte **pic, int *width, int *he
 	if ( !pic || numLayers > 0 )
 	{
 		ri.Printf( PRINT_WARNING, "WARNING: failed loading of image for makeIntensity\n" );
+		return qfalse;
+	}
+	if ( *bits & ( IF_BC1 | IF_BC3 | IF_BC4 | IF_BC5 ) ) {
+		ri.Printf( PRINT_WARNING, "WARNING: makeIntensity from compressed image not supported\n" );
 		return qfalse;
 	}
 
@@ -2573,6 +2614,10 @@ static qboolean ParseMakeAlpha( char **text, byte **pic, int *width, int *height
 	if ( !pic || numLayers > 0 )
 	{
 		ri.Printf( PRINT_WARNING, "WARNING: failed loading of image for makeAlpha\n" );
+		return qfalse;
+	}
+	if ( *bits & ( IF_BC1 | IF_BC3 | IF_BC4 | IF_BC5 ) ) {
+		ri.Printf( PRINT_WARNING, "WARNING: makeAlpha from compressed image not supported\n" );
 		return qfalse;
 	}
 
