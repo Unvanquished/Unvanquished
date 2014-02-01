@@ -1,6 +1,6 @@
-//  -----
-//  NAKED
-//  -----
+//   -----
+//   NAKED
+//   -----
 models/players/human_naked/body
 {
 	qer_editorimage models/players/human_nobsuit_common/base_d

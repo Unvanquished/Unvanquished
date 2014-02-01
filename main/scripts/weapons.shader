@@ -22,18 +22,6 @@ gfx/weapons/blasterMF_2
 	}
 }
 
-gfx/weapons/blastertrail
-{
-	cull none
-	entityMergable
-	{
-		map gfx/weapons/blastertrail
-		blendFunc add
-		rgbGen vertex
-		alphaGen vertex
-	}
-}
-
 gfx/weapons/flamerhaze
 {
 	cull none
@@ -200,15 +188,6 @@ gfx/weapons/lasgunspark6
 	}
 }
 
-gfx/weapons/lcannonmissile
-{
-	cull disable
-	{
-		animmap 24 gfx/weapons/primary_1 gfx/weapons/primary_2 gfx/weapons/primary_3 gfx/weapons/primary_4
-		blendFunc filter
-	}
-}
-
 gfx/weapons/luci_shockwave_haze
 {
 	cull none
@@ -239,18 +218,6 @@ gfx/weapons/lucy_fire1
 	entityMergable
 	{
 		map gfx/weapons/lucy_fire1
-		blendFunc add
-		//rgbGen vertex
-		//alphaGen vertex
-	}
-}
-
-gfx/weapons/lucy_swirl
-{
-	cull none
-	entityMergable
-	{
-		map gfx/weapons/lucy_swirl
 		blendFunc add
 		//rgbGen vertex
 		//alphaGen vertex
@@ -365,9 +332,9 @@ gfx/weapons/spiderflash_p
 	}
 }
 
-//  ------------
-//  FIRST PERSON
-//  ------------
+//   ------------
+//   FIRST PERSON
+//   ------------
 models/weapons/hand2
 {
 	diffuseMap models/players/human_nobsuit_common/arm_d

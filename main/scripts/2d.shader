@@ -1,4 +1,4 @@
-//  The console font
+//   The console font
 gfx/2d/bigchars
 {
 	nopicmip
@@ -10,10 +10,10 @@ gfx/2d/bigchars
 	}
 }
 
-//  ----------
-//  CROSSHAIRS
-//  ----------
-//  shared crosshair for all classes
+//   ----------
+//   CROSSHAIRS
+//   ----------
+//   shared crosshair for all classes
 gfx/2d/crosshair-alien_s
 {
 	nopicmip
@@ -124,15 +124,6 @@ gfx/2d/crosshair-shotgun_s
 	}
 }
 
-gfx/2d/cursor
-{
-	nopicmip
-	nomipmaps
-	{
-		map gfx/2d/cursor
-	}
-}
-
 gfx/2d/indicator-alienBuilderUpg_s
 {
 	nopicmip
@@ -143,9 +134,9 @@ gfx/2d/indicator-alienBuilderUpg_s
 	}
 }
 
-//  ----------
-//  INIDCATORS
-//  ----------
+//   ----------
+//   INIDCATORS
+//   ----------
 gfx/2d/indicator-alienBuilder_s
 {
 	nopicmip
@@ -346,7 +337,7 @@ gfx/2d/indicator-shotgun_s
 	}
 }
 
-//  blinked on top of lagometer when connection is interrupted
+//   blinked on top of lagometer when connection is interrupted
 gfx/2d/net
 {
 	nopicmip

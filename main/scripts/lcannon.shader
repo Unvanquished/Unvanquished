@@ -1,22 +1,3 @@
-gfx/lcannon/primary
-{
-	cull disable
-	{
-		animmap 24 gfx/lcannon/primary_1 gfx/lcannon/primary_2 gfx/lcannon/primary_3 gfx/lcannon/primary_4
-		blendFunc GL_ONE GL_ONE
-	}
-}
-
-gfx/lcannon/ripple
-{
-	cull disable
-	entityMergable
-	{
-		map gfx/lcannon/ripple
-		blendFunc filter
-	}
-}
-
 models/weapons/lcannon/flash
 {
 	sort additive
@@ -34,3 +15,13 @@ models/weapons/lcannon/skin
 	specularMap models/weapons/lcannon/skin_SPEC
 }
 
+lucybullet
+{
+	cull disable
+	{
+		map gfx/weapons/lucybullet
+		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
+		alphaGen vertex
+		rgbGen vertex
+	}
+}

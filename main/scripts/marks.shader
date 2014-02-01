@@ -29,7 +29,7 @@ gfx/marks/plasma_mrk
 	}
 }
 
-//  markShadow is the very cheap blurry blob underneath the player
+//   markShadow is the very cheap blurry blob underneath the player
 gfx/marks/shadow
 {
 	polygonOffset
@@ -41,7 +41,7 @@ gfx/marks/shadow
 	}
 }
 
-//  wake is the mark on water surfaces for paddling players
+//   wake is the mark on water surfaces for paddling players
 gfx/marks/wake
 {
 	polygonOffset

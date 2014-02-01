@@ -1,24 +1,3 @@
-gfx/mdriver/green_particle
-{
-	cull disable
-	{
-		map gfx/mdriver/green_particle
-		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
-		rgbGen vertex
-		alphaGen vertex
-	}
-}
-
-gfx/mdriver/trail
-{
-	nomipmaps
-	cull disable
-	{
-		map gfx/mdriver/trail
-		blendFunc blend
-	}
-}
-
 models/weapons/mdriver/core
 {
 	diffuseMap models/weapons/mdriver/core_COLOR
@@ -33,16 +12,6 @@ models/weapons/mdriver/flash
 	{
 		map	models/weapons/mdriver/flash
 		blendfunc GL_ONE GL_ONE
-	}
-}
-
-models/weapons/mdriver/glow
-{
-	cull disable
-	{
-		map models/weapons/mdriver/glow
-		blendfunc GL_ONE GL_ONE
-		tcMod scroll -9.0 9.0
 	}
 }
 

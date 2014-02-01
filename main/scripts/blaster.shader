@@ -27,3 +27,24 @@ models/weapons/blaster/flash
 	}
 }
 
+MarkBlasterBullet
+{
+	polygonOffset
+	{
+		map gfx/marks/mark_blaster
+		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
+		rgbGen exactVertex
+		alphaGen vertex
+	}
+}
+
+blasterbullet
+{
+	cull disable
+	{
+		map gfx/weapons/blasterbullet
+		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
+		alphaGen vertex
+		rgbGen vertex
+	}
+}

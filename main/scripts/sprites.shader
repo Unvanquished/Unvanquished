@@ -1,27 +1,3 @@
-gfx/sprites/acid_1
-{
-	cull none
-	entityMergable
-	{
-		map gfx/sprites/acid_1
-		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
-		rgbGen    vertex
-		alphaGen  vertex
-	}
-}
-
-gfx/sprites/acid_2
-{
-	cull none
-	entityMergable
-	{
-		map gfx/sprites/acid_2
-		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
-		rgbGen    vertex
-		alphaGen  vertex
-	}
-}
-
 gfx/sprites/acid_3
 {
 	cull none

@@ -7,9 +7,9 @@ models/players/human_medium/armor
 	specularMap models/players/human_medium/armour_s
 }
 
-//  -------------
-//  MEDIUM ARMOUR
-//  -------------
+//   -------------
+//   MEDIUM ARMOUR
+//   -------------
 models/players/human_medium/body
 {
 	qer_editorimage models/players/human_nobsuit_common/base_d
