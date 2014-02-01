@@ -7,3 +7,4 @@ models/players/human_base/jetpack_flash
 		tcMod scroll 10.0 0.0
 	}
 }
+

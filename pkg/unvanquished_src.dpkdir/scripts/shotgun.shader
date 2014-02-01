@@ -1,21 +1,17 @@
-gfx/weapons/shotgunspark
+models/weapons/shotgun/flash
 {
-  cull none
-  entityMergable
-  {
-    map gfx/weapons/shotgunspark
-    blendFunc add
-    rgbGen vertex
-    alphaGen vertex
-  }
+	sort additive
+	cull disable
+	{
+		map	models/weapons/shotgun/flash
+		blendfunc GL_ONE GL_ONE
+	}
 }
-MarkShotgunBullet
+
+models/weapons/shotgun/shotgun
 {
-  polygonOffset
-  {
-    map gfx/marks/mark_shotgun
-    //map models/weapons/rifle/lense
-    blendFunc GL_ZERO GL_ONE_MINUS_SRC_COLOR
-    rgbGen exactVertex
-  }
+	diffuseMap models/weapons/shotgun/shotgun_COLOR
+	normalMap models/weapons/shotgun/shotgun_NRM
+	specularMap models/weapons/shotgun/shotgun_SPEC
 }
+

@@ -1,3 +1,38 @@
+textures/uncreation/billsky
+{
+	qer_editorimage textures/uncreation/billsky_1
+	surfaceparm noimpact
+	surfaceparm nomarks
+	surfaceparm nolightmap
+	q3map_sun 3 2 2 70 315 65
+	q3map_surfacelight 75
+	skyparms - 512 -
+	{
+		map textures/uncreation/billsky_1
+		tcMod scroll 0.05 .1
+		tcMod scale 2 2
+	}
+	{
+		map textures/uncreation/billsky_2
+		blendfunc GL_ONE GL_ONE
+		tcMod scroll 0.05 0.06
+		tcMod scale 3 2
+	}
+}
+
+textures/uncreation/clip
+{
+	qer_trans 0.40
+	qer_editorimage common/clip
+	surfaceparm nodraw
+	surfaceparm nolightmap
+	surfaceparm nonsolid
+	surfaceparm trans
+	surfaceparm nomarks
+	surfaceparm noimpact
+	surfaceparm playerclip
+}
+
 textures/uncreation/dusty
 {
 	cull none
@@ -9,33 +44,19 @@ textures/uncreation/dusty
 		alphaGen	vertex
 	}
 }
-textures/uncreation/lightbridge
-{
-	qer_editorimage textures/uncreation/blue
-	qer_trans 0.40
-    	surfaceparm nolightmap
-	surfaceparm trans
-	surfaceparm nomarks
-	{
-		map textures/uncreation/blue
-		blendFunc 	blend
-		rgbGen 		identity
-		alphaGen 	wave sin .2 .1 90 0.2
-	}
-}
+
 textures/uncreation/fogfalloff
 {
-qer_editorimage textures/sfx/fog_black
-qer_nocarve
-surfaceparm	trans
-surfaceparm	nonsolid
-surfaceparm	fog
-surfaceparm	nolightmap
-fogparms ( .03 .01 .01 ) 2048
+	qer_editorimage textures/sfx/fog_black
+	qer_nocarve
+	surfaceparm	trans
+	surfaceparm	nonsolid
+	surfaceparm	fog
+	surfaceparm	nolightmap
+	fogparms ( .03 .01 .01 ) 2048
 }
 
-//***** Shaders below are copied from the tech1soc set
-
+// ***** Shaders below are copied from the tech1soc set
 textures/uncreation/grate1a_trans
 {
 	qer_editorimage textures/uncreation/grate1a
@@ -75,6 +96,7 @@ textures/uncreation/grate1b_trans
 		rgbGen identity
 	}
 }
+
 textures/uncreation/lig_032-01b1-2k
 {
 	qer_editorimage textures/uncreation/032lig10ba
@@ -96,6 +118,7 @@ textures/uncreation/lig_032-01b1-2k
 		rgbGen wave sawtooth .6 .1 0 7
 	}
 }
+
 textures/uncreation/lig_032-01y1-2k
 {
 	qer_editorimage textures/uncreation/032lig10ya
@@ -117,6 +140,7 @@ textures/uncreation/lig_032-01y1-2k
 		rgbGen wave sawtooth .6 .1 0 7
 	}
 }
+
 textures/uncreation/lig_032-05b2-2k
 {
 	qer_editorimage textures/uncreation/032lig20bb
@@ -138,6 +162,7 @@ textures/uncreation/lig_032-05b2-2k
 		rgbGen wave sawtooth .6 .1 0 7
 	}
 }
+
 textures/uncreation/lig_032-05y2-2k
 {
 	qer_editorimage textures/uncreation/032lig20yb
@@ -159,6 +184,7 @@ textures/uncreation/lig_032-05y2-2k
 		rgbGen wave sawtooth .6 .1 0 7
 	}
 }
+
 textures/uncreation/lig_064-02r2-2k
 {
 	qer_editorimage textures/uncreation/064lig21rb
@@ -180,6 +206,7 @@ textures/uncreation/lig_064-02r2-2k
 		rgbGen wave sawtooth .6 .1 0 7
 	}
 }
+
 textures/uncreation/lig_064-03r2-2k
 {
 	qer_editorimage textures/uncreation/064lig22rb
@@ -201,6 +228,7 @@ textures/uncreation/lig_064-03r2-2k
 		rgbGen wave sawtooth .6 .1 0 7
 	}
 }
+
 textures/uncreation/lig_064z-01r1-2k
 {
 	qer_editorimage textures/uncreation/zdetlig01ra
@@ -222,6 +250,7 @@ textures/uncreation/lig_064z-01r1-2k
 		rgbGen wave sawtooth .6 .1 0 7
 	}
 }
+
 textures/uncreation/lig_128-02r1-2k
 {
 	qer_editorimage textures/uncreation/sqrlig03ra
@@ -243,6 +272,7 @@ textures/uncreation/lig_128-02r1-2k
 		rgbGen wave sin .3 .1 0 0.5
 	}
 }
+
 textures/uncreation/lig_128-02y1-2k
 {
 	qer_editorimage textures/uncreation/sqrlig03ya
@@ -264,6 +294,7 @@ textures/uncreation/lig_128-02y1-2k
 		rgbGen wave sin .3 .1 0 0.5
 	}
 }
+
 textures/uncreation/lig_128-02y2-2k
 {
 	qer_editorimage textures/uncreation/sqrlig03yb
@@ -285,6 +316,7 @@ textures/uncreation/lig_128-02y2-2k
 		rgbGen wave sin .3 .1 0 0.5
 	}
 }
+
 textures/uncreation/lig_128-03r1-2k
 {
 	qer_editorimage textures/uncreation/octlig01ra
@@ -306,6 +338,7 @@ textures/uncreation/lig_128-03r1-2k
 		rgbGen wave sin .3 .1 0 0.5
 	}
 }
+
 textures/uncreation/lig_128-03r2-2k
 {
 	qer_editorimage textures/uncreation/octlig01rb
@@ -327,6 +360,7 @@ textures/uncreation/lig_128-03r2-2k
 		rgbGen wave sin .3 .1 0 0.5
 	}
 }
+
 textures/uncreation/lig_128-03r3-2k
 {
 	qer_editorimage textures/uncreation/octlig01rc
@@ -349,40 +383,18 @@ textures/uncreation/lig_128-03r3-2k
 	}
 }
 
-textures/uncreation/billsky
+textures/uncreation/lightbridge
 {
-	qer_editorimage textures/uncreation/billsky_1
-	surfaceparm noimpact
-	surfaceparm nomarks
-	surfaceparm nolightmap
-
-	q3map_sun 3 2 2 70 315 65
-	q3map_surfacelight 75
-	skyparms - 512 -
-
-
-	{
-		map textures/uncreation/billsky_1
-		tcMod scroll 0.05 .1
-		tcMod scale 2 2
-	}
-	{
-		map textures/uncreation/billsky_2
-		blendfunc GL_ONE GL_ONE
-		tcMod scroll 0.05 0.06
-		tcMod scale 3 2
-	}
-}
-
-textures/uncreation/clip
-{
+	qer_editorimage textures/uncreation/blue
 	qer_trans 0.40
-	qer_editorimage common/clip
-	surfaceparm nodraw
 	surfaceparm nolightmap
-	surfaceparm nonsolid
 	surfaceparm trans
 	surfaceparm nomarks
-	surfaceparm noimpact
-	surfaceparm playerclip
+	{
+		map textures/uncreation/blue
+		blendFunc 	blend
+		rgbGen 		identity
+		alphaGen 	wave sin .2 .1 90 0.2
+	}
 }
+

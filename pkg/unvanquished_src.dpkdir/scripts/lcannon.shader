@@ -1,82 +1,36 @@
-gfx/weapons/lucy_fire1
+gfx/lcannon/primary
 {
-  cull none
-  entityMergable
-  {
-    map gfx/weapons/lucy_fire1
-    blendFunc add
-    //rgbGen vertex
-    //alphaGen vertex
-  }
+	cull disable
+	{
+		animmap 24 gfx/lcannon/primary_1 gfx/lcannon/primary_2 gfx/lcannon/primary_3 gfx/lcannon/primary_4
+		blendFunc GL_ONE GL_ONE
+	}
 }
-gfx/weapons/lucy_swirl
-{
-  cull none
-  entityMergable
-  {
-    map gfx/weapons/lucy_swirl
-    blendFunc add
-    //rgbGen vertex
-    //alphaGen vertex
-  }
-}
-gfx/weapons/lcannonmissile
-{
-  cull disable
-  {
-    animmap 24 gfx/weapons/primary_1 gfx/weapons/primary_2 gfx/weapons/primary_3 gfx/weapons/primary_4
-    blendFunc filter
-  }
-}
+
 gfx/lcannon/ripple
 {
-  cull disable
-  entityMergable
-  {
-    map gfx/lcannon/ripple
-    blendFunc filter
-  }
+	cull disable
+	entityMergable
+	{
+		map gfx/lcannon/ripple
+		blendFunc filter
+	}
 }
-lucybullet
+
+models/weapons/lcannon/flash
 {
-  cull disable
-  {
-    map gfx/weapons/lucybullet
-		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
-    alphaGen vertex
-    rgbGen vertex
-  }
+	sort additive
+	cull disable
+	{
+		map	models/weapons/lcannon/flash
+		blendfunc GL_ONE GL_ONE
+	}
 }
-gfx/weapons/lucytrail
+
+models/weapons/lcannon/skin
 {
-  cull none
-  entityMergable
-  {
-    map gfx/weapons/lucytrail
-    blendFunc add
-    rgbGen vertex
-    alphaGen vertex
-  }
+	diffuseMap models/weapons/lcannon/skin_COLOR
+	normalMap models/weapons/lcannon/skin_NRM
+	specularMap models/weapons/lcannon/skin_SPEC
 }
-gfx/weapons/luci_shockwave_haze
-{
-  cull none
-  entityMergable
-  implicitMapGL1 gfx/transparent
-  {
-    stage heathazeMap
-    deformMagnitude 5.0
-    map gfx/weapons/shockwave_normal
-  }
-}
-gfx/weapons/luci_shockwave_haze_small
-{
-  cull none
-  entityMergable
-  implicitMapGL1 gfx/transparent
-  {
-    stage heathazeMap
-    deformMagnitude 3.0
-    map gfx/weapons/shockwave_normal
-  }
-}
+

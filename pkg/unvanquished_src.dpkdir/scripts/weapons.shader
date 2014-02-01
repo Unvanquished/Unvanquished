@@ -1,93 +1,377 @@
-gfx/blaster/orange_particle
+gfx/weapons/blasterMF_1
 {
-  cull disable
-  {
-    map gfx/blaster/orange_particle
+	cull none
+	entityMergable
+	{
+		map gfx/weapons/blasterMF_1
+		blendFunc add
+		rgbGen vertex
+		alphaGen vertex
+	}
+}
+
+gfx/weapons/blasterMF_2
+{
+	cull none
+	entityMergable
+	{
+		map gfx/weapons/blasterMF_2
+		blendFunc add
+		rgbGen vertex
+		alphaGen vertex
+	}
+}
+
+gfx/weapons/blastertrail
+{
+	cull none
+	entityMergable
+	{
+		map gfx/weapons/blastertrail
+		blendFunc add
+		rgbGen vertex
+		alphaGen vertex
+	}
+}
+
+gfx/weapons/flamerhaze
+{
+	cull none
+	entityMergable
+	implicitMapGL1 gfx/transparent
+	{
+		stage heathazeMap
+		deformMagnitude 4.0
+		map gfx/weapons/flamerhaze_normal
+	}
+}
+
+gfx/weapons/flamersmoke
+{
+	cull none
+	entityMergable
+	{
+		map gfx/weapons/flamersmoke
+		blendFunc blend
+		rgbGen vertex
+		alphaGen vertex
+	}
+}
+
+gfx/weapons/flash
+{
+	cull none
+	entityMergable
+	{
+		map gfx/weapons/flash
+		blendFunc add
+		rgbGen vertex
+		alphaGen vertex
+	}
+}
+
+gfx/weapons/flash_lgun
+{
+	cull none
+	entityMergable
+	{
+		map gfx/weapons/flash_lgun
+		blendFunc add
+		//rgbGen vertex
+		//alphaGen vertex
+	}
+}
+
+gfx/weapons/flash_p
+{
+	cull none
+	entityMergable
+	{
+		map gfx/weapons/flash_p
+		blendFunc add
+		rgbGen vertex
+		alphaGen vertex
+	}
+}
+
+gfx/weapons/glow_particle_1
+{
+	cull disable
+	{
+		map gfx/weapons/glow_particle
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
-    alphaGen vertex
-    rgbGen vertex
-  }
+		rgbGen vertex
+		alphaGen vertex
+	}
 }
 
-gfx/mdriver/green_particle
+gfx/weapons/glow_particle_2
 {
-  cull disable
-  {
-    map gfx/mdriver/green_particle
+	cull disable
+	{
+		map gfx/weapons/glow_particle2
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
-    rgbGen vertex
-    alphaGen vertex
-  }
+		rgbGen vertex
+		alphaGen vertex
+	}
 }
 
-gfx/mdriver/trail
+gfx/weapons/grenade_shockwave_haze
 {
-  nomipmaps
-  cull disable
-  {
-    map gfx/mdriver/trail
-    blendFunc blend
-  }
+	cull none
+	entityMergable
+	implicitMapGL1 gfx/transparent
+	{
+		stage heathazeMap
+		deformMagnitude 5.0
+		map gfx/weapons/shockwave_normal
+	}
 }
 
-gfx/psaw/blue_particle
+gfx/weapons/lasgunspark1
 {
-  cull disable
-  {
-    map gfx/psaw/blue_particle
-    blendFunc GL_ONE GL_ONE
-    alphaGen vertex
-    rgbGen vertex
-  }
+	cull none
+	entityMergable
+	{
+		map gfx/weapons/lasgunspark1
+		blendFunc blend
+		rgbGen vertex
+		alphaGen vertex
+	}
 }
 
-gfx/rifle/verysmallrock
+gfx/weapons/lasgunspark2
 {
-  cull disable
-  {
-    map gfx/rifle/verysmallrock
-		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
-    alphaGen vertex
-    rgbGen vertex
-  }
+	cull none
+	entityMergable
+	{
+		map gfx/weapons/lasgunspark2
+		blendFunc blend
+		rgbGen vertex
+		alphaGen vertex
+	}
 }
 
-gfx/prifle/red_blob
+gfx/weapons/lasgunspark3
 {
-  cull disable
-  {
-    map gfx/prifle/red_blob
-		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
-    alphaGen vertex
-  }
+	cull none
+	entityMergable
+	{
+		map gfx/weapons/lasgunspark3
+		blendFunc blend
+		rgbGen vertex
+		alphaGen vertex
+	}
 }
 
-gfx/prifle/red_streak
+gfx/weapons/lasgunspark4
 {
-  nomipmaps
-  cull disable
-  {
-    map gfx/prifle/red_streak
-		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
-    alphaGen vertex
-  }
+	cull none
+	entityMergable
+	{
+		map gfx/weapons/lasgunspark4
+		blendFunc blend
+		rgbGen vertex
+		alphaGen vertex
+	}
 }
 
-gfx/lcannon/primary
+gfx/weapons/lasgunspark5
 {
-  cull disable
-  {
-    animmap 24 gfx/lcannon/primary_1 gfx/lcannon/primary_2 gfx/lcannon/primary_3 gfx/lcannon/primary_4
-		blendFunc GL_ONE GL_ONE
-  }
+	cull none
+	entityMergable
+	{
+		map gfx/weapons/lasgunspark5
+		blendFunc blend
+		rgbGen vertex
+		alphaGen vertex
+	}
 }
 
-gfx/lasgun/purple_particle
+gfx/weapons/lasgunspark6
 {
-  cull disable
-  {
-    map gfx/lasgun/purple_particle
-		blendFunc GL_ONE GL_ONE
-  }
+	cull none
+	entityMergable
+	{
+		map gfx/weapons/lasgunspark6
+		blendFunc blend
+		rgbGen vertex
+		alphaGen vertex
+	}
+}
+
+gfx/weapons/lcannonmissile
+{
+	cull disable
+	{
+		animmap 24 gfx/weapons/primary_1 gfx/weapons/primary_2 gfx/weapons/primary_3 gfx/weapons/primary_4
+		blendFunc filter
+	}
+}
+
+gfx/weapons/luci_shockwave_haze
+{
+	cull none
+	entityMergable
+	implicitMapGL1 gfx/transparent
+	{
+		stage heathazeMap
+		deformMagnitude 5.0
+		map gfx/weapons/shockwave_normal
+	}
+}
+
+gfx/weapons/luci_shockwave_haze_small
+{
+	cull none
+	entityMergable
+	implicitMapGL1 gfx/transparent
+	{
+		stage heathazeMap
+		deformMagnitude 3.0
+		map gfx/weapons/shockwave_normal
+	}
+}
+
+gfx/weapons/lucy_fire1
+{
+	cull none
+	entityMergable
+	{
+		map gfx/weapons/lucy_fire1
+		blendFunc add
+		//rgbGen vertex
+		//alphaGen vertex
+	}
+}
+
+gfx/weapons/lucy_swirl
+{
+	cull none
+	entityMergable
+	{
+		map gfx/weapons/lucy_swirl
+		blendFunc add
+		//rgbGen vertex
+		//alphaGen vertex
+	}
+}
+
+gfx/weapons/lucytrail
+{
+	cull none
+	entityMergable
+	{
+		map gfx/weapons/lucytrail
+		blendFunc add
+		rgbGen vertex
+		alphaGen vertex
+	}
+}
+
+gfx/weapons/massdriver_MF
+{
+	cull none
+	entityMergable
+	{
+		map gfx/weapons/massdriver_MF
+		blendFunc add
+		rgbGen vertex
+		alphaGen vertex
+	}
+}
+
+gfx/weapons/pulserifleimpact
+{
+	cull none
+	entityMergable
+	{
+		map gfx/weapons/pulserifleimpact
+		blendFunc add
+		rgbGen vertex
+		alphaGen vertex
+	}
+}
+
+gfx/weapons/pulserifletrail
+{
+	cull none
+	entityMergable
+	{
+		map gfx/weapons/pulserifletrail
+		blendFunc add
+		rgbGen vertex
+		alphaGen vertex
+	}
+}
+
+gfx/weapons/shotgunspark
+{
+	cull none
+	entityMergable
+	{
+		map gfx/weapons/shotgunspark
+		blendFunc add
+		rgbGen vertex
+		alphaGen vertex
+	}
+}
+
+gfx/weapons/smoke
+{
+	cull none
+	entityMergable
+	{
+		map gfx/weapons/smoke
+		blendFunc blend
+		rgbGen vertex
+		alphaGen vertex
+	}
+}
+
+gfx/weapons/spiderflash
+{
+	cull none
+	entityMergable
+	{
+		map gfx/weapons/spiderflash
+		blendFunc add
+		rgbGen vertex
+		alphaGen vertex
+	}
+}
+
+gfx/weapons/spiderflash_lgun
+{
+	cull none
+	entityMergable
+	{
+		map gfx/weapons/spiderflash_lgun
+		blendFunc add
+		//rgbGen vertex
+		//alphaGen vertex
+	}
+}
+
+gfx/weapons/spiderflash_p
+{
+	cull none
+	entityMergable
+	{
+		map gfx/weapons/spiderflash_p
+		blendFunc add
+		rgbGen vertex
+		alphaGen vertex
+	}
+}
+
+//  ------------
+//  FIRST PERSON
+//  ------------
+models/weapons/hand2
+{
+	diffuseMap models/players/human_nobsuit_common/arm_d
+	normalMap models/players/human_nobsuit_common/arm_n
+	specularMap models/players/human_nobsuit_common/arm_s
 }
 

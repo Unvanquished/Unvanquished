@@ -26,6 +26,7 @@ models/buildables/booster/booster_sac
 		tcMod scroll -0.05 -0.05
 	}
 }
+
 models/buildables/booster/pod_strands
 {
 	cull disable
@@ -35,12 +36,4 @@ models/buildables/booster/pod_strands
 		alphaFunc GE128
 	}
 }
-models/buildables/hovel/pod_strands
-{
-	cull disable
-	{
-		map models/buildables/barricade/pod_strands
-		rgbGen lightingDiffuse
-		alphaFunc GE128
-	}
-}
+

@@ -15,3 +15,4 @@ models/buildables/repeater/repeator_panel
 		rgbGen identity
 	}
 }
+
