@@ -897,7 +897,7 @@ static void R_AddGloss( byte *img, byte *in2, int width, int height )
 
 	for ( i = height * width; i; --i )
 	{
-		// seperate gloss maps should always be greyscale, but do the average anyway 
+		// seperate gloss maps should always be greyscale, but do the average anyway
 		*img = ( byte ) ( (int)in2[ 0 ] + (int)in2[ 1 ] + (int)in2[ 2 ] )/ 3;
 		in2 += 4;
 		img += 4;
@@ -1136,7 +1136,7 @@ R_PackDXT1_Green( const byte *in, byte *out )
 		if( in[ i ] > max )
 			max = in[ i ];
 	}
-	
+
 	// truncate min and max to 6 bits
 	i = (max - min) >> 3;
 	min = (min + i) & 0xfc;
@@ -1756,7 +1756,7 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 							glTexImage2D( target + i, mipLevel, internalFormat, mipWidth, mipHeight, 0, format, GL_UNSIGNED_BYTE,
 							              scaledBuffer );
 							break;
-							
+
 						default:
 							glTexImage2D( target, mipLevel, internalFormat, mipWidth, mipHeight, 0, format, GL_UNSIGNED_BYTE,
 							              scaledBuffer );
@@ -1798,7 +1798,7 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 				case GL_TEXTURE_CUBE_MAP:
 					glCompressedTexImage2D( target + j, i, internalFormat, mipWidth, mipHeight, 0, mipSize, data );
 					break;
-					
+
 				default:
 					glCompressedTexImage2D( target, i, internalFormat, mipWidth, mipHeight, 0, mipSize, data );
 					break;
@@ -2022,10 +2022,9 @@ static void R_ExportTexture( image_t *image )
 		     image->name );
 
 	// quick and dirty sanitize path name
-	for( i = strlen( path ) - 1; i >= 8; i-- ) {
-		if( !isalnum( path[ i ] ) && path[ i ] != '.' &&
-		    path[ i ] != '_' && path[ i ] != '-' ) {
-			path[ i ] = '_';
+	for( i = strlen( path ) - 1; i >= 7; i-- ) {
+		if( !isalnum( path[ i ] ) && path[ i ] != '.' && path[ i ] != '-' ) {
+			path[ i ] = '+';
 		}
 	}
 	SaveImageKTX( path, image );
@@ -2975,7 +2974,7 @@ static void R_Rotate( byte *in, int width, int height, int degrees )
 			{
 				x2 = ( width - ( 1 + y ) );
 				y2 = x;
- 
+
 				tmp[ 4 * ( y2 * width + x2 ) + 0 ] = color[ 0 ];
 				tmp[ 4 * ( y2 * width + x2 ) + 1 ] = color[ 1 ];
 				tmp[ 4 * ( y2 * width + x2 ) + 2 ] = color[ 2 ];
