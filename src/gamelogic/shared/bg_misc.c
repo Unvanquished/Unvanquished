@@ -2595,7 +2595,7 @@ int BG_LoadEmoticons( emoticon_t *emoticons, int num )
 	int  fileLen;
 	int  count;
 
-	numFiles = trap_FS_GetFileList( "emoticons", "x1", fileList,
+	numFiles = trap_FS_GetFileList( "emoticons", "x1.tga", fileList,
 	                                sizeof( fileList ) );
 
 	if ( numFiles < 1 )
