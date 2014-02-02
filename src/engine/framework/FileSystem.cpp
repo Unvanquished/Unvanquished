@@ -865,6 +865,9 @@ void File::CopyTo(const File& dest, std::error_code& err) const
 	}
 }
 
+// Workaround for GCC 4.7.2 bug: http://gcc.gnu.org/bugzilla/show_bug.cgi?id=55015
+namespace {
+
 // Class representing an open zip archive
 class ZipArchive {
 public:
@@ -1068,6 +1071,8 @@ public:
 private:
 	unzFile zipFile;
 };
+
+} // GCC bug workaround
 
 namespace PakPath {
 
