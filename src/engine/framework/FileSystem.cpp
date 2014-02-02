@@ -144,14 +144,14 @@ static int my_fseek(FILE* fd, offset_t off, int whence)
 #endif
 }
 #ifdef _WIN32
-typedef struct _stat32i64 my_stat_t;
+typedef struct _stati64 my_stat_t;
 #else
 typedef struct stat64 my_stat_t;
 #endif
 static int my_fstat(int fd, my_stat_t* st)
 {
 #ifdef _WIN32
-		return _fstat32i64(fd, st);
+		return _fstati64(fd, st);
 #else
 		return fstat64(fd, st);
 #endif
@@ -159,7 +159,7 @@ static int my_fstat(int fd, my_stat_t* st)
 static int my_stat(Str::StringRef path, my_stat_t* st)
 {
 #ifdef _WIN32
-		return _wstat32i64(Str::UTF8To16(path).c_str(), st);
+		return _wstati64(Str::UTF8To16(path).c_str(), st);
 #else
 		return stat64(path.c_str(), st);
 #endif
