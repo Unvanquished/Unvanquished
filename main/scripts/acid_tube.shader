@@ -1,15 +1,24 @@
 models/buildables/acid_tube/acidtube
 {
-	qer_editorimage models/buildables/acid_tube/acidtube.tga
-
+	qer_editorimage models/buildables/acid_tube/acidtube
 	{
 		blend diffusemap
-		map models/buildables/acid_tube/acidtube.tga
+		map models/buildables/acid_tube/acidtube
 		alphaFunc GE128
 	}
-	normalMap models/buildables/acid_tube/acidtube_n.tga
-	specularMap models/buildables/acid_tube/acidtube_s.tga
-	glowMap models/buildables/acid_tube/acidtube_g.tga
-
+	normalMap models/buildables/acid_tube/acidtube_n
+	specularMap models/buildables/acid_tube/acidtube_s
+	glowMap models/buildables/acid_tube/acidtube_g
 	cull none
 }
+
+models/buildables/acid_tube/pod_strands
+{
+	cull disable
+	{
+		map models/buildables/eggpod/pod_strands
+		rgbGen lightingDiffuse
+		alphaFunc GE128
+	}
+}
+

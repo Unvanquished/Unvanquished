@@ -897,7 +897,7 @@ static void R_AddGloss( byte *img, byte *in2, int width, int height )
 
 	for ( i = height * width; i; --i )
 	{
-		// seperate gloss maps should always be greyscale, but do the average anyway 
+		// seperate gloss maps should always be greyscale, but do the average anyway
 		*img = ( byte ) ( (int)in2[ 0 ] + (int)in2[ 1 ] + (int)in2[ 2 ] )/ 3;
 		in2 += 4;
 		img += 4;
@@ -1100,8 +1100,8 @@ R_UnpackDXT5A( const byte *in, byte *out )
 			case 3: val = (3 * in[0] + 2 * in[1]) / 5; break;
 			case 4: val = (2 * in[0] + 3 * in[1]) / 5; break;
 			case 5: val = (1 * in[0] + 4 * in[1]) / 5; break;
-			case 6: val = 0;
-			case 7: val = 0xff;
+			case 6: val = 0;                           break;
+			case 7: val = 0xff;                        break;
 			}
 			out[ i ] = val;
 
@@ -1113,8 +1113,8 @@ R_UnpackDXT5A( const byte *in, byte *out )
 			case 3: val = (3 * in[0] + 2 * in[1]) / 5; break;
 			case 4: val = (2 * in[0] + 3 * in[1]) / 5; break;
 			case 5: val = (1 * in[0] + 4 * in[1]) / 5; break;
-			case 6: val = 0;
-			case 7: val = 0xff;
+			case 6: val = 0;                           break;
+			case 7: val = 0xff;                        break;
 			}
 			out[ i + 8 ] = val;
 		}
@@ -1136,7 +1136,7 @@ R_PackDXT1_Green( const byte *in, byte *out )
 		if( in[ i ] > max )
 			max = in[ i ];
 	}
-	
+
 	// truncate min and max to 6 bits
 	i = (max - min) >> 3;
 	min = (min + i) & 0xfc;
@@ -1640,6 +1640,7 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 				}
 
 				if( image->bits & IF_NORMALMAP ) {
+					c = image->width * image->height;
 					for ( i = 0; i < c; i++ )
 					{
 						vec3_t n;
@@ -1756,7 +1757,7 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 							glTexImage2D( target + i, mipLevel, internalFormat, mipWidth, mipHeight, 0, format, GL_UNSIGNED_BYTE,
 							              scaledBuffer );
 							break;
-							
+
 						default:
 							glTexImage2D( target, mipLevel, internalFormat, mipWidth, mipHeight, 0, format, GL_UNSIGNED_BYTE,
 							              scaledBuffer );
@@ -1798,7 +1799,7 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 				case GL_TEXTURE_CUBE_MAP:
 					glCompressedTexImage2D( target + j, i, internalFormat, mipWidth, mipHeight, 0, mipSize, data );
 					break;
-					
+
 				default:
 					glCompressedTexImage2D( target, i, internalFormat, mipWidth, mipHeight, 0, mipSize, data );
 					break;
@@ -2022,10 +2023,9 @@ static void R_ExportTexture( image_t *image )
 		     image->name );
 
 	// quick and dirty sanitize path name
-	for( i = strlen( path ) - 1; i >= 8; i-- ) {
-		if( !isalnum( path[ i ] ) && path[ i ] != '.' &&
-		    path[ i ] != '_' && path[ i ] != '-' ) {
-			path[ i ] = '_';
+	for( i = strlen( path ) - 1; i >= 7; i-- ) {
+		if( !isalnum( path[ i ] ) && path[ i ] != '.' && path[ i ] != '-' ) {
+			path[ i ] = '+';
 		}
 	}
 	SaveImageKTX( path, image );
@@ -2218,6 +2218,10 @@ static qboolean ParseHeightMap( char **text, byte **pic, int *width, int *height
 		ri.Printf( PRINT_WARNING, "WARNING: failed loading of image for heightMap\n" );
 		return qfalse;
 	}
+	if ( *bits & ( IF_BC1 | IF_BC3 | IF_BC4 | IF_BC5 ) ) {
+		ri.Printf( PRINT_WARNING, "WARNING: heightMap from compressed image not supported\n" );
+		return qfalse;
+	}
 
 	token = COM_ParseExt2( text, qfalse );
 
@@ -2268,6 +2272,10 @@ static qboolean ParseDisplaceMap( char **text, byte **pic, int *width, int *heig
 		ri.Printf( PRINT_WARNING, "WARNING: failed loading of first image for displaceMap\n" );
 		return qfalse;
 	}
+	if ( *bits & ( IF_BC1 | IF_BC3 | IF_BC4 | IF_BC5 ) ) {
+		ri.Printf( PRINT_WARNING, "WARNING: displaceMap from compressed image not supported\n" );
+		return qfalse;
+	}
 
 	token = COM_ParseExt2( text, qfalse );
 
@@ -2282,6 +2290,10 @@ static qboolean ParseDisplaceMap( char **text, byte **pic, int *width, int *heig
 	if ( !pic2 || numLayers > 0 )
 	{
 		ri.Printf( PRINT_WARNING, "WARNING: failed loading of second image for displaceMap\n" );
+		return qfalse;
+	}
+	if ( *bits & ( IF_BC1 | IF_BC3 | IF_BC4 | IF_BC5 ) ) {
+		ri.Printf( PRINT_WARNING, "WARNING: displaceMap from compressed image not supported\n" );
 		return qfalse;
 	}
 
@@ -2337,6 +2349,10 @@ static qboolean ParseAddGloss( char **text, byte **pic, int *width, int *height,
 		ri.Printf( PRINT_WARNING, "WARNING: failed loading of first image ( specular ) for addGloss\n" );
 		return qfalse;
 	}
+	if ( *bits & ( IF_BC1 | IF_BC3 | IF_BC4 | IF_BC5 ) ) {
+		ri.Printf( PRINT_WARNING, "WARNING: addGloss from compressed image not supported\n" );
+		return qfalse;
+	}
 
 	token = COM_ParseExt2( text, qfalse );
 
@@ -2351,6 +2367,10 @@ static qboolean ParseAddGloss( char **text, byte **pic, int *width, int *height,
 	if ( !pic2 || numLayers > 0 )
 	{
 		ri.Printf( PRINT_WARNING, "WARNING: failed loading of second image ( gloss ) for addGloss\n" );
+		return qfalse;
+	}
+	if ( *bits & ( IF_BC1 | IF_BC3 | IF_BC4 | IF_BC5 ) ) {
+		ri.Printf( PRINT_WARNING, "WARNING: addGloss from compressed image not supported\n" );
 		return qfalse;
 	}
 
@@ -2404,6 +2424,10 @@ static qboolean ParseAddNormals( char **text, byte **pic, int *width, int *heigh
 		ri.Printf( PRINT_WARNING, "WARNING: failed loading of first image for addNormals\n" );
 		return qfalse;
 	}
+	if ( *bits & ( IF_BC1 | IF_BC3 | IF_BC4 | IF_BC5 ) ) {
+		ri.Printf( PRINT_WARNING, "WARNING: addNormals from compressed image not supported\n" );
+		return qfalse;
+	}
 
 	token = COM_ParseExt2( text, qfalse );
 
@@ -2418,6 +2442,10 @@ static qboolean ParseAddNormals( char **text, byte **pic, int *width, int *heigh
 	if ( !pic2 || numLayers > 0 )
 	{
 		ri.Printf( PRINT_WARNING, "WARNING: failed loading of second image for addNormals\n" );
+		return qfalse;
+	}
+	if ( *bits & ( IF_BC1 | IF_BC3 | IF_BC4 | IF_BC5 ) ) {
+		ri.Printf( PRINT_WARNING, "WARNING: addNormals from compressed image not supported\n" );
 		return qfalse;
 	}
 
@@ -2470,6 +2498,10 @@ static qboolean ParseInvertAlpha( char **text, byte **pic, int *width, int *heig
 		ri.Printf( PRINT_WARNING, "WARNING: failed loading of image for invertAlpha\n" );
 		return qfalse;
 	}
+	if ( *bits & ( IF_BC1 | IF_BC3 | IF_BC4 | IF_BC5 ) ) {
+		ri.Printf( PRINT_WARNING, "WARNING: invertAlpha from compressed image not supported\n" );
+		return qfalse;
+	}
 
 	token = COM_ParseExt2( text, qfalse );
 
@@ -2504,6 +2536,10 @@ static qboolean ParseInvertColor( char **text, byte **pic, int *width, int *heig
 		ri.Printf( PRINT_WARNING, "WARNING: failed loading of image for invertColor\n" );
 		return qfalse;
 	}
+	if ( *bits & ( IF_BC1 | IF_BC3 | IF_BC4 | IF_BC5 ) ) {
+		ri.Printf( PRINT_WARNING, "WARNING: invertColor from compressed image not supported\n" );
+		return qfalse;
+	}
 
 	token = COM_ParseExt2( text, qfalse );
 
@@ -2536,6 +2572,10 @@ static qboolean ParseMakeIntensity( char **text, byte **pic, int *width, int *he
 	if ( !pic || numLayers > 0 )
 	{
 		ri.Printf( PRINT_WARNING, "WARNING: failed loading of image for makeIntensity\n" );
+		return qfalse;
+	}
+	if ( *bits & ( IF_BC1 | IF_BC3 | IF_BC4 | IF_BC5 ) ) {
+		ri.Printf( PRINT_WARNING, "WARNING: makeIntensity from compressed image not supported\n" );
 		return qfalse;
 	}
 
@@ -2573,6 +2613,10 @@ static qboolean ParseMakeAlpha( char **text, byte **pic, int *width, int *height
 	if ( !pic || numLayers > 0 )
 	{
 		ri.Printf( PRINT_WARNING, "WARNING: failed loading of image for makeAlpha\n" );
+		return qfalse;
+	}
+	if ( *bits & ( IF_BC1 | IF_BC3 | IF_BC4 | IF_BC5 ) ) {
+		ri.Printf( PRINT_WARNING, "WARNING: makeAlpha from compressed image not supported\n" );
 		return qfalse;
 	}
 
@@ -2975,7 +3019,7 @@ static void R_Rotate( byte *in, int width, int height, int degrees )
 			{
 				x2 = ( width - ( 1 + y ) );
 				y2 = x;
- 
+
 				tmp[ 4 * ( y2 * width + x2 ) + 0 ] = color[ 0 ];
 				tmp[ 4 * ( y2 * width + x2 ) + 1 ] = color[ 1 ];
 				tmp[ 4 * ( y2 * width + x2 ) + 2 ] = color[ 2 ];

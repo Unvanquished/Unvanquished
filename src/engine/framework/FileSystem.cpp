@@ -144,14 +144,14 @@ static int my_fseek(FILE* fd, offset_t off, int whence)
 #endif
 }
 #ifdef _WIN32
-typedef struct _stat32i64 my_stat_t;
+typedef struct _stati64 my_stat_t;
 #else
 typedef struct stat64 my_stat_t;
 #endif
 static int my_fstat(int fd, my_stat_t* st)
 {
 #ifdef _WIN32
-		return _fstat32i64(fd, st);
+		return _fstati64(fd, st);
 #else
 		return fstat64(fd, st);
 #endif
@@ -159,7 +159,7 @@ static int my_fstat(int fd, my_stat_t* st)
 static int my_stat(Str::StringRef path, my_stat_t* st)
 {
 #ifdef _WIN32
-		return _wstat32i64(Str::UTF8To16(path).c_str(), st);
+		return _wstati64(Str::UTF8To16(path).c_str(), st);
 #else
 		return stat64(path.c_str(), st);
 #endif
@@ -865,6 +865,9 @@ void File::CopyTo(const File& dest, std::error_code& err) const
 	}
 }
 
+// Workaround for GCC 4.7.2 bug: http://gcc.gnu.org/bugzilla/show_bug.cgi?id=55015
+namespace {
+
 // Class representing an open zip archive
 class ZipArchive {
 public:
@@ -1069,6 +1072,8 @@ private:
 	unzFile zipFile;
 };
 
+} // GCC bug workaround
+
 namespace PakPath {
 
 // List of loaded pak files
@@ -1192,7 +1197,11 @@ static void InternalLoadPak(const PakInfo& pak, Opt::optional<uint32_t> expected
 
 		// Get the file list and calculate the checksum of the package (checksum of all file checksums)
 		checksum = crc32(0, Z_NULL, 0);
-		zipFile.ForEachFile([&checksum, &hasDeps, &depsOffset](Str::StringRef filename, offset_t offset, uint32_t crc) {
+		zipFile.ForEachFile([&pak, &checksum, &hasDeps, &depsOffset](Str::StringRef filename, offset_t offset, uint32_t crc) {
+			if (!Path::IsValid(filename, false)) {
+				Log::Warn("Invalid filename '%s' in pak '%s'", filename, pak.path);
+				return; // This is effectively a continue, since we are in a lambda
+			}
 			checksum = crc32(*checksum, reinterpret_cast<const Bytef*>(&crc), sizeof(crc));
 #ifdef GCC_BROKEN_CXX11
 			fileMap.insert({filename, std::pair<size_t, offset_t>(loadedPaks.size() - 1, offset)});

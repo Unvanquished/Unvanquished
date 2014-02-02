@@ -33,7 +33,7 @@ menuDef
 		decoration
 		forecolor HUD_BG_R HUD_BG_G HUD_BG_B .5
 		style WINDOW_STYLE_SHADER
-		background "ui/assets/human/rightbg.tga"
+		background "ui/assets/human/rightbg"
 	}
 
 	itemDef
@@ -45,7 +45,7 @@ menuDef
 		decoration
 		forecolor HUD_BG_R HUD_BG_G HUD_BG_B .5
 		style WINDOW_STYLE_SHADER
-		background "ui/assets/human/leftbg.tga"
+		background "ui/assets/human/leftbg"
 	}
 
 	itemDef
@@ -68,7 +68,7 @@ menuDef
 		decoration
 		forecolor 1 0 .11 .48
 		backColor .51 1 .93 .32
-		background "ui/assets/human/buildstat/health.tga"
+		background "ui/assets/human/buildstat/health"
 		ownerdraw CG_PLAYER_HEALTH_BAR
 	}
 
@@ -92,7 +92,7 @@ menuDef
 		decoration
 		forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0.8
 		backColor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0.2
-		background "ui/assets/human/stamina.tga"
+		background "ui/assets/human/stamina"
 		ownerdraw CG_PLAYER_STAMINA_BOLT
 	}
 
@@ -105,7 +105,7 @@ menuDef
 		decoration
 		forecolor .51 1 .93 .32
 		backColor 0 0 0 0
-		background "ui/assets/human/buildstat/health.tga"
+		background "ui/assets/human/buildstat/health"
 		ownerdraw CG_PLAYER_STAMINA_BAR
 	}
 
@@ -129,7 +129,7 @@ menuDef
 		decoration
 		forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0.8
 		backColor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0.2
-		background "icons/iconu_jetpack.tga"
+		background "icons/iconu_jetpack"
 		ownerdraw CG_PLAYER_FUEL_ICON
 	}
 
@@ -142,7 +142,7 @@ menuDef
 		decoration
 		forecolor 1.0 1.0 0.0 0.32
 		backColor 0 0 0 0
-		background "ui/assets/human/buildstat/health.tga" // really a white pixel
+		background "ui/assets/human/buildstat/health" // really a white pixel
 		ownerdraw CG_PLAYER_FUEL_BAR
 	}
 
@@ -166,7 +166,7 @@ menuDef
 		decoration
 		forecolor .29 .57 .56 .5
 		backColor 0 0 0 0
-		background "ui/assets/human/buildstat/health.tga"
+		background "ui/assets/human/buildstat/health"
 		ownerdraw CG_PLAYER_AMMO_STACK
 	}
 
@@ -179,7 +179,7 @@ menuDef
 		decoration
 		forecolor .51 1 .93 .32
 		backColor 0 0 0 0
-		background "ui/assets/human/buildstat/health.tga"
+		background "ui/assets/human/buildstat/health"
 		ownerdraw CG_PLAYER_BUILD_TIMER_BAR
 	}
 
@@ -192,7 +192,7 @@ menuDef
 		decoration
 		forecolor .29 .57 .56 .5
 		backColor 0 0 0 0
-		background "ui/assets/human/buildstat/health.tga"
+		background "ui/assets/human/buildstat/health"
 		ownerdraw CG_PLAYER_CLIPS_STACK
 	}
 
@@ -202,7 +202,7 @@ menuDef
 		rect 492 445 18 18
 		aspectBias ALIGN_RIGHT
 		visible MENU_TRUE
-		background "ui/assets/human/clip.tga"
+		background "ui/assets/human/clip"
 		decoration
 		style WINDOW_STYLE_SHADER
 		forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B .7
@@ -290,7 +290,7 @@ menuDef
 		visible MENU_TRUE
 		decoration
 		forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B .5
-		background "ui/assets/neutral/use.tga"
+		background "ui/assets/neutral/use"
 		ownerdraw CG_PLAYER_USABLE_BUILDABLE
 	}
 
@@ -302,7 +302,7 @@ menuDef
 		visible MENU_TRUE
 		decoration
 		forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B .5
-		background "ui/assets/human/scanner.tga"
+		background "ui/assets/human/scanner"
 		ownerdraw CG_PLAYER_HUMAN_SCANNER
 	}
 
@@ -327,7 +327,7 @@ menuDef
 		decoration
 		forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0.5
 		ownerdraw CG_PLAYER_CHARGE_BAR
-		background "ui/assets/human/buildstat/health.tga"
+		background "ui/assets/human/buildstat/health"
 	}
 
 	itemDef
@@ -376,7 +376,7 @@ menuDef
 		forecolor 1 .4 .38 .2
 		cvarTest "hud_crosshairbars"
 		showCvar {1}
-		background "ui/assets/neutral/crescent_left.tga"
+		background "ui/assets/neutral/crescent_left"
 		ownerdraw CG_PLAYER_HEALTH_METER
 	}
 
@@ -390,7 +390,7 @@ menuDef
 		forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B .1
 		cvarTest "hud_crosshairbars"
 		showCvar {1}
-		background "ui/assets/neutral/crescent_right.tga"
+		background "ui/assets/neutral/crescent_right"
 		ownerdraw CG_PLAYER_CLIPS_METER
 	}
 
