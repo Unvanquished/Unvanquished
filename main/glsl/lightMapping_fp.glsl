@@ -105,10 +105,10 @@ void	main()
 
 
 	// compute normal in world space from normalmap
-	vec3 N = texture2D(u_NormalMap, texNormal.st).xyw;
-	N.x *= N.z;
-	N.xy = 2.0 * N.xy - 1.0;
-	N.z = sqrt(1.0 - dot(N.xy, N.xy));
+	vec3 N = (2.0 * (texture2D(u_NormalMap, texNormal).xyz - 0.5));
+	//N.x = -N.x;
+	//N = normalize(N);
+	//N = normalize(var_Normal.xyz);
 	N = normalize(tangentToWorldMatrix * N);
 
 	// compute light direction in world space
