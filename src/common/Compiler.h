@@ -166,6 +166,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define __func__ __FUNCTION__
 // Work around lack of constexpr
 #define CONSTEXPR const
+#define ATTRIBUTE_NO_SANITIZE_ADDRESS
 
 #elif defined(Q3_VM)
 #define DEPRECATED
