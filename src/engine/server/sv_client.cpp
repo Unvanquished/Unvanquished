@@ -375,7 +375,7 @@ gotnewcl:
 	// build a new connection
 	// accept the new client
 	// this is the only place a client_t is ever initialized
-	*newcl = temp;
+	*newcl = std::move(temp);
 	clientNum = newcl - svs.clients;
 	ent = SV_GentityNum( clientNum );
 	newcl->gentity = ent;
@@ -542,8 +542,7 @@ void SV_DropClient( client_t *drop, const char *reason )
 
 	if ( drop->download )
 	{
-		FS_FCloseFile( drop->download );
-		drop->download = 0;
+		drop->download = nullptr;
 	}
 
 	// call the prog function for removing a client
@@ -600,8 +599,6 @@ void SV_SendClientGameState( client_t *client )
 	Com_DPrintf( "SV_SendClientGameState() for %s\n", client->name );
 	Com_DPrintf( "Going from CS_CONNECTED to CS_PRIMED for %s\n", client->name );
 	client->state = CS_PRIMED;
-	client->pureAuthentic = 0;
-	client->gotCP = qfalse;
 
 	// when we receive the first packet from the client, we will
 	// notice that it is from a different serverid and that the
@@ -714,10 +711,9 @@ static void SV_CloseDownload( client_t *cl )
 	// EOF
 	if ( cl->download )
 	{
-		FS_FCloseFile( cl->download );
+		cl->download = nullptr;
 	}
 
-	cl->download = 0;
 	*cl->downloadName = 0;
 
 	// Free the temporary buffer space
@@ -866,14 +862,12 @@ void SV_WWWDownload_f( client_t *cl )
 
 	if ( !Q_stricmp( subcmd, "done" ) )
 	{
-		cl->download = 0;
 		*cl->downloadName = 0;
 		cl->bWWWing = qfalse;
 		return;
 	}
 	else if ( !Q_stricmp( subcmd, "fail" ) )
 	{
-		cl->download = 0;
 		*cl->downloadName = 0;
 		cl->bWWWing = qfalse;
 		cl->bFallback = qtrue;
@@ -885,7 +879,6 @@ void SV_WWWDownload_f( client_t *cl )
 	{
 		Com_Logf(LOG_WARN, _( "client '%s' reports that the redirect download for '%s' had wrong checksum.\n\tYou should check your download redirect configuration."),
 				cl->name, cl->downloadName );
-		cl->download = 0;
 		*cl->downloadName = 0;
 		cl->bWWWing = qfalse;
 		cl->bFallback = qtrue;
@@ -917,7 +910,7 @@ return true when a redirect URL message was filled up
 when the cvar is set to something, the download server will effectively never use a legacy download strategy
 ==================
 */
-static qboolean SV_CheckFallbackURL( client_t *cl, msg_t *msg )
+static qboolean SV_CheckFallbackURL( client_t *cl, const char* pakName, msg_t *msg )
 {
 	if ( !sv_wwwFallbackURL->string || strlen( sv_wwwFallbackURL->string ) == 0 )
 	{
@@ -928,7 +921,7 @@ static qboolean SV_CheckFallbackURL( client_t *cl, msg_t *msg )
 
 	MSG_WriteByte( msg, svc_download );
 	MSG_WriteShort( msg, -1 );  // block -1 means ftp/http download
-	MSG_WriteString( msg, va( "%s/%s", sv_wwwFallbackURL->string, cl->downloadName ) );
+	MSG_WriteString( msg, va( "%s/%s", sv_wwwFallbackURL->string, pakName ) );
 	MSG_WriteLong( msg, 0 );
 	MSG_WriteLong( msg, 0 );
 
@@ -961,15 +954,6 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 	if ( cl->bWWWing )
 	{
 		return; // The client acked and is downloading with ftp/http
-	}
-
-	// CVE-2006-2082
-	// validate the download against the list of pak files
-	if ( !FS_VerifyPak( cl->downloadName ) )
-	{
-		// will drop the client and leave it hanging on the other side. good for him
-		SV_DropClient( cl, "illegal download request" );
-		return;
 	}
 
 	if ( !cl->download )
@@ -1014,18 +998,30 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 		// FIXME: I could rework that, it's crappy
 		if ( sv_wwwDownload->integer )
 		{
+			std::string name, version;
+			Opt::optional<uint32_t> checksum;
+			int downloadSize = 0;
+			bool success = FS::ParsePakName(cl->downloadName, cl->downloadName + strlen(cl->downloadName), name, version, checksum);
+			if (success) {
+				const FS::PakInfo* pak = checksum ? FS::FindPak(name, version) : FS::FindPak(name, version, *checksum);
+				if (pak) {
+					try {
+						downloadSize = FS::RawPath::OpenRead(pak->path).Length();
+					} catch (std::system_error&) {
+						success = false;
+					}
+				} else
+					success = false;
+			}
+			std::string pakName = name + "_" + version + ".pk3";
+
 			if ( cl->bDlOK )
 			{
 				if ( !cl->bFallback )
 				{
-					fileHandle_t handle;
-					int          downloadSize = FS_SV_FOpenFileRead( cl->downloadName, &handle );
-
-					if ( downloadSize )
+					if ( success )
 					{
-						FS_FCloseFile( handle );  // don't keep open, we only care about the size
-
-						Q_strncpyz( cl->downloadURL, va( "%s/%s", sv_wwwBaseURL->string, cl->downloadName ),
+						Q_strncpyz( cl->downloadURL, va("%s/%s", sv_wwwBaseURL->string, pakName.c_str()),
 						            sizeof( cl->downloadURL ) );
 
 						//bani - prevent multiple download notifications
@@ -1064,7 +1060,7 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 					cl->bFallback = qfalse;
 					cl->bWWWDl = qtrue;
 
-					if ( SV_CheckFallbackURL( cl, msg ) )
+					if ( SV_CheckFallbackURL( cl, pakName.c_str(), msg ) )
 					{
 						return;
 					}
@@ -1075,7 +1071,7 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 			}
 			else
 			{
-				if ( SV_CheckFallbackURL( cl, msg ) )
+				if ( SV_CheckFallbackURL( cl, pakName.c_str(), msg ) )
 				{
 					return;
 				}
@@ -1086,9 +1082,23 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 
 		// find file
 		cl->bWWWDl = qfalse;
-		cl->downloadSize = FS_SV_FOpenFileRead( cl->downloadName, &cl->download );
+		std::string name, version;
+		Opt::optional<uint32_t> checksum;
+		bool success = FS::ParsePakName(cl->downloadName, cl->downloadName + strlen(cl->downloadName), name, version, checksum);
+		if (success) {
+			const FS::PakInfo* pak = checksum ? FS::FindPak(name, version) : FS::FindPak(name, version, *checksum);
+			if (pak) {
+				try {
+					cl->download = std::make_shared<FS::File>(FS::RawPath::OpenRead(pak->path));
+					cl->downloadSize = cl->download->Length();
+				} catch (std::system_error&) {
+					success = false;
+				}
+			} else
+				success = false;
+		}
 
-		if ( cl->downloadSize <= 0 )
+		if ( !success )
 		{
 			Com_Printf(_( "clientDownload: %d : \"%s\" file not found on server\n"), ( int )( cl - svs.clients ), cl->downloadName );
 			Com_sprintf( errorMessage, sizeof( errorMessage ), "File \"%s\" not found on server for autodownloading.\n",
@@ -1116,10 +1126,9 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 			cl->downloadBlocks[ curindex ] = ( byte* ) Z_Malloc( MAX_DOWNLOAD_BLKSIZE );
 		}
 
-		cl->downloadBlockSize[ curindex ] = FS_Read( cl->downloadBlocks[ curindex ], MAX_DOWNLOAD_BLKSIZE, cl->download );
-
-		if ( cl->downloadBlockSize[ curindex ] < 0 )
-		{
+		try {
+			cl->downloadBlockSize[ curindex ] = cl->download->Read(cl->downloadBlocks[ curindex ], MAX_DOWNLOAD_BLKSIZE);
+		} catch (std::system_error&) {
 			// EOF right now
 			cl->downloadCount = cl->downloadSize;
 			break;
@@ -1244,230 +1253,6 @@ The client is going to disconnect, so remove the connection immediately  FIXME: 
 static void SV_Disconnect_f( client_t *cl )
 {
 	SV_DropClient( cl, _("disconnected") );
-}
-
-/*
-=================
-SV_VerifyPaks_f
-
-If we are pure, disconnect the client if they do no meet the following conditions:
-
-1. the first two checksums match our view of cgame and ui modules
-2. there are no any additional checksums that we do not have
-
-This routine would be a bit simpler with a goto but i abstained
-
-=================
-*/
-static void SV_VerifyPaks_f( client_t *cl )
-{
-	int        nChkSum1, nChkSum2, nClientPaks, nServerPaks, i, j, nCurArg;
-	int        nClientChkSum[ 1024 ];
-	int        nServerChkSum[ 1024 ];
-	const char *pPaks, *pArg;
-	qboolean   bGood = qtrue;
-
-	// if we are pure, we "expect" the client to load certain things from
-	// certain pk3 files, namely we want the client to have loaded the
-	// ui and cgame that we think should be loaded based on the pure setting
-	if ( sv_pure->integer != 0 )
-	{
-		bGood = qtrue;
-		nChkSum1 = nChkSum2 = 0;
-
-		bGood = ( FS_FileIsInPAK( "vm/cgame.qvm", &nChkSum1 ) == 1 );
-
-		if ( bGood )
-		{
-			bGood = ( FS_FileIsInPAK( "vm/ui.qvm", &nChkSum2 ) == 1 );
-		}
-
-		nClientPaks = Cmd_Argc();
-
-		// start at arg 2 ( skip serverId cl_paks )
-		nCurArg = 1;
-
-		pArg = Cmd_Argv( nCurArg++ );
-
-		if ( !pArg )
-		{
-			bGood = qfalse;
-		}
-		else
-		{
-			// show_bug.cgi?id=475
-			// we may get incoming cp sequences from a previous checksumFeed, which we need to ignore
-			// since serverId is a frame count, it always goes up
-			if ( atoi( pArg ) < sv.checksumFeedServerId )
-			{
-				Com_DPrintf( "ignoring outdated cp command from client %s\n", cl->name );
-				return;
-			}
-		}
-
-		// we basically use this while loop to avoid using 'goto' :)
-		while ( bGood )
-		{
-			// must be at least 6: "cl_paks cgame ui @ firstref ... numChecksums"
-			// numChecksums is encoded
-			if ( nClientPaks < 6 )
-			{
-				bGood = qfalse;
-				break;
-			}
-
-			// verify first to be the cgame checksum
-			pArg = Cmd_Argv( nCurArg++ );
-
-			if ( !pArg || *pArg == '@' || atoi( pArg ) != nChkSum1 )
-			{
-				Com_Printf( "nChkSum1 %d == %d\n", atoi( pArg ), nChkSum1 );
-				bGood = qfalse;
-				break;
-			}
-
-			// verify the second to be the ui checksum
-			pArg = Cmd_Argv( nCurArg++ );
-
-			if ( !pArg || *pArg == '@' || atoi( pArg ) != nChkSum2 )
-			{
-				Com_Printf( "nChkSum2 %d == %d\n", atoi( pArg ), nChkSum2 );
-				bGood = qfalse;
-				break;
-			}
-
-			// should be sitting at the delimeter now
-			pArg = Cmd_Argv( nCurArg++ );
-
-			if ( *pArg != '@' )
-			{
-				bGood = qfalse;
-				break;
-			}
-
-			// store checksums since tokenization is not re-entrant
-			for ( i = 0; nCurArg < nClientPaks; i++ )
-			{
-				nClientChkSum[ i ] = atoi( Cmd_Argv( nCurArg++ ) );
-			}
-
-			// store number to compare against (minus one cause the last is the number of checksums)
-			nClientPaks = i - 1;
-
-			// make sure none of the client check sums are the same
-			// so the client can't send 5 the same checksums
-			for ( i = 0; i < nClientPaks; i++ )
-			{
-				for ( j = 0; j < nClientPaks; j++ )
-				{
-					if ( i == j )
-					{
-						continue;
-					}
-
-					if ( nClientChkSum[ i ] == nClientChkSum[ j ] )
-					{
-						bGood = qfalse;
-						break;
-					}
-				}
-
-				if ( bGood == qfalse )
-				{
-					break;
-				}
-			}
-
-			if ( bGood == qfalse )
-			{
-				break;
-			}
-
-			// get the pure checksums of the pk3 files loaded by the server
-			pPaks = FS_LoadedPakPureChecksums();
-			Cmd_TokenizeString( pPaks );
-			nServerPaks = Cmd_Argc();
-
-			if ( nServerPaks > 1024 )
-			{
-				nServerPaks = 1024;
-			}
-
-			for ( i = 0; i < nServerPaks; i++ )
-			{
-				nServerChkSum[ i ] = atoi( Cmd_Argv( i ) );
-			}
-
-			// check if the client has provided any pure checksums of pk3 files not loaded by the server
-			for ( i = 0; i < nClientPaks; i++ )
-			{
-				for ( j = 0; j < nServerPaks; j++ )
-				{
-					if ( nClientChkSum[ i ] == nServerChkSum[ j ] )
-					{
-						break;
-					}
-				}
-
-				if ( j >= nServerPaks )
-				{
-					bGood = qfalse;
-					break;
-				}
-			}
-
-			if ( bGood == qfalse )
-			{
-				break;
-			}
-
-			// check if the number of checksums was correct
-			nChkSum1 = sv.checksumFeed;
-
-			for ( i = 0; i < nClientPaks; i++ )
-			{
-				nChkSum1 ^= nClientChkSum[ i ];
-			}
-
-			nChkSum1 ^= nClientPaks;
-
-			if ( nChkSum1 != nClientChkSum[ nClientPaks ] )
-			{
-				bGood = qfalse;
-				break;
-			}
-
-			// break out
-			break;
-		}
-
-		cl->gotCP = qtrue;
-
-		if ( bGood )
-		{
-			cl->pureAuthentic = 1;
-		}
-		else
-		{
-			cl->pureAuthentic = 0;
-			cl->nextSnapshotTime = -1;
-			cl->state = CS_ACTIVE;
-			SV_SendClientSnapshot( cl );
-			SV_SendServerCommand( cl, "disconnect \"%s\"", "This is a pure server. This is caused by corrupted or missing files. Try turning on AutoDownload." );
-			SV_SendServerCommand( cl, "Unpure client detected. Invalid .PK3 files referenced!" );
-		}
-	}
-}
-
-/*
-=================
-SV_ResetPureClient_f
-=================
-*/
-static void SV_ResetPureClient_f( client_t *cl )
-{
-	cl->pureAuthentic = 0;
-	cl->gotCP = qfalse;
 }
 
 /*
@@ -1657,8 +1442,6 @@ static ucmd_t ucmds[] =
 {
 	{ "userinfo",   SV_UpdateUserinfo_f,  qfalse },
 	{ "disconnect", SV_Disconnect_f,      qtrue  },
-	{ "cp",         SV_VerifyPaks_f,      qfalse },
-	{ "vdr",        SV_ResetPureClient_f, qfalse },
 	{ "download",   SV_BeginDownload_f,   qfalse },
 	{ "nextdl",     SV_NextDownload_f,    qfalse },
 	{ "stopdl",     SV_StopDownload_f,    qfalse },
@@ -1903,35 +1686,12 @@ static void SV_UserMove( client_t *cl, msg_t *msg, qboolean delta )
 	// save time for ping calculation
 	cl->frames[ cl->messageAcknowledge & PACKET_MASK ].messageAcked = svs.time;
 
-	// TTimo
-	// catch the no-cp-yet situation before SV_ClientEnterWorld
-	// if CS_ACTIVE, then it's time to trigger a new gamestate emission
-	// if not, then we are getting remaining parasite usermove commands, which we should ignore
-	if ( sv_pure->integer != 0 && cl->pureAuthentic == 0 && !cl->gotCP )
-	{
-		if ( cl->state == CS_ACTIVE )
-		{
-			// we didn't get a cp yet, don't assume anything and just send the gamestate all over again
-			Com_DPrintf( "%s^7: didn't get cp command, resending gamestate\n", cl->name );
-			SV_SendClientGameState( cl );
-		}
-
-		return;
-	}
-
 	// if this is the first usercmd we have received
 	// this gamestate, put the client into the world
 	if ( cl->state == CS_PRIMED )
 	{
 		SV_ClientEnterWorld( cl, &cmds[ 0 ] );
 		// the moves can be processed normaly
-	}
-
-	// a bad cp command was sent, drop the client
-	if ( sv_pure->integer != 0 && cl->pureAuthentic == 0 )
-	{
-		SV_DropClient( cl, "Cannot validate pure client!" );
-		return;
 	}
 
 	if ( cl->state != CS_ACTIVE )

@@ -589,9 +589,8 @@ void Field_KeyDownEvent(Util::LineEditData& edit, int key) {
             break;
         case 'k':
             if (keys[ K_CTRL ].down) {
-		//SDL1_case( 11 )
-                // TODO
-                //edit->buffer[ Field_CursorToOffset( edit ) ] = '\0';
+		SDL1_case( 11 )
+		edit.DeleteEnd();
             }
             break;
     }
@@ -666,7 +665,7 @@ void Console_Key( int key )
 		Com_Printf("]%s\n", Str::UTF32To8(g_consoleField.GetText()).c_str());
 
 		// if not in the game always treat the input as a command
-		if (cls.state != CA_ACTIVE or !cl_consoleCommand->string[0]) {
+		if (cls.state != CA_ACTIVE) {
 			g_consoleField.RunCommand();
 		} else {
 			g_consoleField.RunCommand(cl_consoleCommand->string);
@@ -1920,7 +1919,7 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 			else
 			{
 				CL_Disconnect_f();
-				S_StopAllSounds();
+				Audio::StopAllSounds();
 				VM_Call( uivm, UI_SET_ACTIVE_MENU, UIMENU_MAIN );
 			}
 

@@ -299,7 +299,7 @@ G_SelectSpectatorSpawnPoint
 
 ============
 */
-static gentity_t *G_SelectSpectatorSpawnPoint( vec3_t origin, vec3_t angles )
+gentity_t *G_SelectSpectatorSpawnPoint( vec3_t origin, vec3_t angles )
 {
 	FindIntermissionPoint();
 
@@ -1558,7 +1558,6 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	vec3_t             up = { 0.0f, 0.0f, 1.0f };
 	int                maxAmmo, maxClips;
 	weapon_t           weapon;
-	int                basicIncome;
 
 	index = ent - g_entities;
 	client = ent->client;
@@ -1846,17 +1845,6 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 
 	client->inactivityTime = level.time + g_inactivity.integer * 1000;
 	usercmdClearButtons( client->latched_buttons );
-
-	// give basic income if mine rate above minimum
-	if ( ent != spawn && level.team[ client->pers.team ].mineEfficiency > g_minimumMineRate.value )
-	{
-		basicIncome = ( int )( BASIC_INCOME_MOD * level.team[ client->pers.team ].mineEfficiency ) - client->pers.credit;
-
-		if ( basicIncome > 0 )
-		{
-			G_AddCreditToClient( client, ( short )basicIncome, qtrue );
-		}
-	}
 
 	// set default animations
 	client->ps.torsoAnim = TORSO_STAND;

@@ -297,7 +297,7 @@ char *CON_Input( void )
 			{
 				if ( key == '\n' )
 				{
-					TTY_field.RunCommand();
+					TTY_field.RunCommand(com_consoleCommand->string);
 					write( STDOUT_FILENO, "\n]", 2 );
 					return NULL;
 				}

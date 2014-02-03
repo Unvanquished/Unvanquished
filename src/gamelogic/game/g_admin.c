@@ -4321,8 +4321,8 @@ qboolean G_admin_endvote( gentity_t *ent )
 	}
 
 	admin_log( BG_TeamName( team ) );
-	level.team[ team ].voteNo = cancel ? level.team[ team ].numVotingClients : 0;
-	level.team[ team ].voteYes = cancel ? 0 : level.team[ team ].numVotingClients;
+	level.team[ team ].voteNo = cancel ? level.team[ team ].numPlayers : 0;
+	level.team[ team ].voteYes = cancel ? 0 : level.team[ team ].numPlayers;
 	level.team[ team ].quorum = 0;
 	G_CheckVote( team );
 

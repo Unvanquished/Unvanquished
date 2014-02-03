@@ -94,9 +94,6 @@ typedef struct
 	int           serverId; // changes each server start
 	int           restartedServerId; // serverId before a map_restart
 	int           checksumFeed; // the feed key that we use to compute the pure checksum strings
-	// show_bug.cgi?id=475
-	// the serverId associated with the current checksumFeed (always <= serverId)
-	int             checksumFeedServerId;
 	int             snapshotCounter; // incremented for each snapshot built
 	int             timeResidual; // <= 1000 / sv_frame->value
 	int             nextFrameTime; // when time > nextFrameTime, process world
@@ -197,7 +194,7 @@ typedef struct client_s
 
 	// downloading
 	char          downloadName[ MAX_QPATH ]; // if not empty string, we are downloading
-	fileHandle_t  download; // file being downloaded
+	std::shared_ptr<FS::File> download; // file being downloaded (Using shared_ptr to work around MSVC failing at infering move constructors)
 	int           downloadSize; // total bytes (can't use EOF because of paks)
 	int           downloadCount; // bytes sent
 	int           downloadClientBlock; // last block we sent to the client, awaiting ack
@@ -227,8 +224,6 @@ typedef struct client_s
 	int              ping;
 	int              rate; // bytes / second
 	int              snapshotMsec; // requests a snapshot every snapshotMsec unless rate choked
-	int              pureAuthentic;
-	qboolean         gotCP; // TTimo - additional flag to distinguish between a bad pure checksum, and no cp command at all
 	netchan_t        netchan;
 	// TTimo
 	// queuing outgoing fragmented messages to send them properly, without udp packet bursts
@@ -556,7 +551,6 @@ void           SV_GameCommandHandler( void );
 //
 // sv_bot.c
 //
-void SV_BotFrame( int time );
 int  SV_BotAllocateClient( int clientNum );
 void SV_BotFreeClient( int clientNum );
 

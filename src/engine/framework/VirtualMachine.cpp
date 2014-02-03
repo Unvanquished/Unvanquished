@@ -1,34 +1,30 @@
 /*
 ===========================================================================
+Daemon BSD Source Code
+Copyright (c) 2013-2014, Daemon Developers
+All rights reserved.
 
-Daemon GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+    * Neither the name of the <organization> nor the
+      names of its contributors may be used to endorse or promote products
+      derived from this software without specific prior written permission.
 
-This file is part of the Daemon GPL Source Code (Daemon Source Code).
-
-Daemon Source Code is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Daemon Source Code is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
-
-In addition, the Daemon Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following the
-terms and conditions of the GNU General Public License which accompanied the Daemon
-Source Code.  If not, please request a copy in writing from id Software at the address
-below.
-
-If you have questions concerning this license or the applicable additional terms, you
-may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville,
-Maryland 20850 USA.
-
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
+DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
@@ -39,48 +35,48 @@ Maryland 20850 USA.
 namespace VM {
 
 //TODO: error handling?
-int VMBase::Create(const char* name, Type type)
+int VMBase::Create(Str::StringRef name, Type type)
 {
 	if (module) {
 		Com_Printf(S_ERROR "Attempting to re-create an already-loaded VM");
 		return -1;
 	}
 
-	// TODO: Proper interaction with FS code
-	const char* gameDir = Cvar_VariableString("fs_game");
-	const char* libPath = Cvar_VariableString("fs_libpath");
+	const std::string& libPath = FS::GetLibPath();
 	bool debug = Cvar_Get("vm_debug", "0", CVAR_INIT)->integer;
 
 	if (type == TYPE_NATIVE) {
-		char exe[MAX_QPATH];
-		Com_sprintf(exe, sizeof(exe), "%s%s", name, EXE_EXT);
-		const char* path = FS_BuildOSPath(libPath, gameDir, exe);
-		Com_Printf("Trying to load native module %s\n", path);
-		module = NaCl::LoadModule(path, nullptr, debug);
+		std::string exe = FS::Path::Build(libPath, name + EXE_EXT);
+		Com_Printf("Trying to load native module %s\n", exe.c_str());
+		module = NaCl::LoadModule(exe.c_str(), nullptr, debug);
 	} else if (type == TYPE_NACL) {
-		char nexe[MAX_QPATH];
-		char sel_ldr[MAX_QPATH];
-		char irt[MAX_QPATH];
+		// Extract the nexe from the pak so that sel_ldr can load it
+		std::string nexe = name + "-" ARCH_STRING ".nexe";
+		try {
+			FS::File out = FS::HomePath::OpenWrite(nexe);
+			FS::PakPath::CopyFile(nexe, out);
+			out.Close();
+		} catch (std::system_error& err) {
+			Com_Printf(S_ERROR "Failed to extract NaCl module %s: %s\n", nexe.c_str(), err.what());
+			return -1;
+		}
+		std::string sel_ldr = FS::Path::Build(libPath, "sel_ldr" EXE_EXT);
+		std::string irt = FS::Path::Build(libPath, "irt_core-" ARCH_STRING ".nexe");
 #ifdef __linux__
-		char bootstrap[MAX_QPATH];
-		Com_sprintf(bootstrap, sizeof(bootstrap), "%s/nacl_helper_bootstrap%s", libPath, EXE_EXT);
+		std::string bootstrap = FS::Path::Build(libPath, "nacl_helper_bootstrap");
+		NaCl::LoaderParams params = {sel_ldr.c_str(), irt.c_str(), bootstrap.c_str()};
 #else
-		const char* bootstrap = nullptr;
+		NaCl::LoaderParams params = {sel_ldr.c_str(), irt.c_str(), nullptr};
 #endif
-		Com_sprintf(nexe, sizeof(nexe), "%s-%s.nexe", name, ARCH_STRING);
-		Com_sprintf(sel_ldr, sizeof(sel_ldr), "%s/sel_ldr%s", libPath, EXE_EXT);
-		Com_sprintf(irt, sizeof(irt), "%s/irt_core-%s.nexe", libPath, ARCH_STRING);
-		NaCl::LoaderParams params = {sel_ldr, irt, bootstrap};
-		const char* path = FS_BuildOSPath(libPath, gameDir, nexe);
-		Com_Printf("Trying to load NaCl module %s\n", path);
-		module = NaCl::LoadModule(path, &params, debug);
+		Com_Printf("Trying to load NaCl module %s\n", nexe.c_str());
+		module = NaCl::LoadModule(FS::Path::Build(FS::GetHomePath(), nexe).c_str(), &params, debug);
 	} else {
 		Com_Printf(S_ERROR "Invalid VM type");
 		return -1;
 	}
 
 	if (!module) {
-		Com_Printf(S_ERROR "Couldn't load VM %s", name);
+		Com_Printf(S_ERROR "Couldn't load VM %s", name.c_str());
 		return -1;
 	}
 
@@ -91,7 +87,7 @@ int VMBase::Create(const char* name, Type type)
 	// If this fails, we assume the remote process failed to start
 	std::vector<char> buffer;
 	if (!module.GetRootSocket().RecvMsg(buffer) || buffer.size() != sizeof(int)) {
-		Com_Printf(S_ERROR "The '%s' VM did not start.", name);
+		Com_Printf(S_ERROR "The '%s' VM did not start.", name.c_str());
 		return -1;
 	}
 	Com_Printf("Loaded module with the NaCl ABI");

@@ -1274,6 +1274,10 @@ typedef struct
 	sfxHandle_t    impactFleshSound[ 4 ];
 } missileAttributes_t;
 
+// bg_utilities.c
+qboolean BG_GetTrajectoryPitch( vec3_t origin, vec3_t target, float v0, float g,
+                                vec2_t angles, vec3_t dir1, vec3_t dir2 );
+
 qboolean BG_WeaponIsFull( int weapon, int stats[], int ammo, int clips );
 qboolean BG_InventoryContainsWeapon( int weapon, int stats[] );
 int      BG_SlotsForInventory( int stats[] );

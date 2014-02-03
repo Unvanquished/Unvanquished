@@ -355,7 +355,7 @@ void BotShutdownNav( void )
 
 qboolean BotSetupNav( const botClass_t *botClass, qhandle_t *navHandle )
 {
-	cvar_t *maxNavNodes = Cvar_Get( "bot_maxNavNodes", "4096", CVAR_ARCHIVE | CVAR_LATCH );
+	cvar_t *maxNavNodes = Cvar_Get( "bot_maxNavNodes", "4096",  CVAR_LATCH );
 
 	if ( !numNavData )
 	{

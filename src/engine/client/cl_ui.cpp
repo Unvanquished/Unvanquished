@@ -64,23 +64,11 @@ void LAN_LoadCachedServers( void )
 {
 	int          size;
 	fileHandle_t fileIn;
-	char         filename[ MAX_QPATH ];
 
 	cls.numglobalservers = cls.numfavoriteservers = 0;
 	cls.numGlobalServerAddresses = 0;
 
-	if ( cl_profile->string[ 0 ] )
-	{
-		Com_sprintf( filename, sizeof( filename ), "profiles/%s/servercache.dat", cl_profile->string );
-	}
-	else
-	{
-		Q_strncpyz( filename, "servercache.dat", sizeof( filename ) );
-	}
-
-	// Arnout: moved to mod/profiles dir
-	//if (FS_SV_FOpenFileRead(filename, &fileIn)) {
-	if ( FS_FOpenFileRead( filename, &fileIn, qtrue ) )
+	if ( FS_FOpenFileRead( "servercache.dat", &fileIn, qtrue ) != -1 )
 	{
 		FS_Read( &cls.numglobalservers, sizeof( int ), fileIn );
 		FS_Read( &cls.numfavoriteservers, sizeof( int ), fileIn );
@@ -110,20 +98,8 @@ void LAN_SaveServersToCache( void )
 {
 	int          size;
 	fileHandle_t fileOut;
-	char         filename[ MAX_QPATH ];
 
-	if ( cl_profile->string[ 0 ] )
-	{
-		Com_sprintf( filename, sizeof( filename ), "profiles/%s/servercache.dat", cl_profile->string );
-	}
-	else
-	{
-		Q_strncpyz( filename, "servercache.dat", sizeof( filename ) );
-	}
-
-	// Arnout: moved to mod/profiles dir
-	//fileOut = FS_SV_FOpenFileWrite(filename);
-	fileOut = FS_FOpenFileWrite( filename );
+	fileOut = FS_FOpenFileWrite( "servercache.dat" );
 	FS_Write( &cls.numglobalservers, sizeof( int ), fileOut );
 	FS_Write( &cls.numfavoriteservers, sizeof( int ), fileOut );
 	size = sizeof( cls.globalServers ) + sizeof( cls.favoriteServers );
@@ -1046,7 +1022,7 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 			return 0;
 
 		case UI_FS_FOPENFILE:
-			return FS_FOpenFileByMode( (char*) VMA( 1 ), (fileHandle_t*) VMA( 2 ), (fsMode_t) args[ 3 ] );
+			return FS_Game_FOpenFileByMode( (char*) VMA( 1 ), (fileHandle_t*) VMA( 2 ), (fsMode_t) args[ 3 ] );
 
 		case UI_FS_READ:
 			VM_CheckBlock( args[1], args[2], "FSREAD" );
@@ -1146,15 +1122,10 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 			return re.LerpTag( (orientation_t*) VMA( 1 ), (refEntity_t*) VMA( 2 ), (char*) VMA( 3 ), args[ 4 ] );
 
 		case UI_S_REGISTERSOUND:
-#ifdef DOOMSOUND ///// (SA) DOOMSOUND
-			return S_RegisterSound( (char*) VMA( 1 ) );
-#else
-			return S_RegisterSound( (char*) VMA( 1 ), args[ 2 ] );
-#endif ///// (SA) DOOMSOUND
+			return Audio::RegisterSFX( (char*) VMA( 1 ) );
 
 		case UI_S_STARTLOCALSOUND:
-			//S_StartLocalSound(args[1], args[2], args[3]);
-			S_StartLocalSound( args[ 1 ], args[ 2 ] );
+			Audio::StartLocalSound( args[ 1 ] );
 			return 0;
 
 		case UI_S_FADESTREAMINGSOUND:
@@ -1325,12 +1296,11 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 			return Parse_SourceFileAndLine( args[ 1 ], (char*) VMA( 2 ), (int*) VMA( 3 ) );
 
 		case UI_S_STOPBACKGROUNDTRACK:
-			S_StopBackgroundTrack();
+			Audio::StopMusic();
 			return 0;
 
 		case UI_S_STARTBACKGROUNDTRACK:
-			//S_StartBackgroundTrack(VMA(1), VMA(2), args[3]);  //----(SA) added fadeup time
-			S_StartBackgroundTrack( (char*) VMA( 1 ), (char*) VMA( 2 ) );
+			Audio::StartMusic( (char*) VMA( 1 ), (char*) VMA( 2 ) );
 			return 0;
 
 		case UI_REAL_TIME:

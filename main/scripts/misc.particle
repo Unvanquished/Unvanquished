@@ -102,7 +102,7 @@ alienBleedPS
   {
     particle
     {
-      shader sync gfx/damage/blood.tga
+      shader sync gfx/damage/blood
       displacement          0 0 0 0
 
       velocityType          normal
@@ -128,7 +128,7 @@ alienBleedPS
 
     particle
     {
-      shader sync gfx/damage/blood.tga
+      shader sync gfx/damage/blood
       displacement          0 0 0 0
 
       velocityType          normal
@@ -166,7 +166,7 @@ alienBuildableBleedPS
   {
     particle
     {
-      shader sync gfx/damage/blood.tga
+      shader sync gfx/damage/blood
       displacement          0 0 0 0
 
       velocityType          normal
@@ -192,7 +192,7 @@ alienBuildableBleedPS
 
     particle
     {
-      shader sync gfx/damage/blood.tga
+      shader sync gfx/damage/blood
       displacement          0 0 0 0
 
       velocityType          normal
@@ -229,7 +229,7 @@ humanBleedPS
   {
     particle
     {
-      shader sync gfx/damage/blood.tga
+      shader sync gfx/damage/blood
       displacement          0 0 0 0
 
       velocityType          normal
@@ -255,7 +255,7 @@ humanBleedPS
 
     particle
     {
-      shader sync gfx/damage/blood.tga
+      shader sync gfx/damage/blood
       displacement          0 0 0 0
 
       velocityType          normal

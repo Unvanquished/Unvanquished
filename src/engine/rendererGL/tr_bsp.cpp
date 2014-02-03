@@ -138,6 +138,37 @@ static void R_ColorShiftLightingBytes( byte in[ 4 ], byte out[ 4 ] )
 	out[ 3 ] = in[ 3 ];
 }
 
+static void R_ColorShiftLightingBytesCompressed( byte in[ 8 ], byte out[ 8 ] )
+{
+	unsigned short rgb565;
+	byte rgba[4];
+
+	// color shift the endpoint colors in the dxt block
+	rgb565 = in[1] << 8 | in[0];
+	rgba[0] = (rgb565 >> 8) & 0xf8;
+	rgba[1] = (rgb565 >> 3) & 0xfc;
+	rgba[2] = (rgb565 << 3) & 0xf8;
+	rgba[3] = 0xff;
+	R_ColorShiftLightingBytes( rgba, rgba );
+	rgb565 = ((rgba[0] >> 3) << 11) |
+		((rgba[1] >> 2) << 5) |
+		((rgba[2] >> 3) << 0);
+	out[0] = rgb565 & 0xff;
+	out[1] = rgb565 >> 8;
+
+	rgb565 = in[3] << 8 | in[2];
+	rgba[0] = (rgb565 >> 8) & 0xf8;
+	rgba[1] = (rgb565 >> 3) & 0xfc;
+	rgba[2] = (rgb565 << 3) & 0xf8;
+	rgba[3] = 0xff;
+	R_ColorShiftLightingBytes( rgba, rgba );
+	rgb565 = ((rgba[0] >> 3) << 11) |
+		((rgba[1] >> 2) << 5) |
+		((rgba[2] >> 3) << 0);
+	out[2] = rgb565 & 0xff;
+	out[3] = rgb565 >> 8;
+}
+
 #endif
 
 /*
@@ -303,7 +334,7 @@ R_ProcessLightmap
 ===============
 */
 #if defined( COMPAT_Q3A ) || defined( COMPAT_ET )
-float R_ProcessLightmap( byte *pic, int in_padding, int width, int height, byte *pic_out )
+float R_ProcessLightmap( byte *pic, int in_padding, int width, int height, int bits, byte *pic_out )
 {
 	int   j;
 	float maxIntensity = 0;
@@ -356,7 +387,17 @@ float R_ProcessLightmap( byte *pic, int in_padding, int width, int height, byte 
 	}
 	else
 	*/
-	{
+	if( bits & IF_BC1 ) {
+		for ( j = 0; j < ((width + 3) >> 2) * ((height + 3) >> 2); j++ )
+		{
+			R_ColorShiftLightingBytesCompressed( &pic[ j * 8 ], &pic_out[ j * 8 ] );
+		}
+	} else if( bits & IF_BC3 ) {
+		for ( j = 0; j < ((width + 3) >> 2) * ((height + 3) >> 2); j++ )
+		{
+			R_ColorShiftLightingBytesCompressed( &pic[ j * 16 ], &pic_out[ j * 16 ] );
+		}
+	} else {
 		for ( j = 0; j < width * height; j++ )
 		{
 			R_ColorShiftLightingBytes( &pic[ j * in_padding ], &pic_out[ j * 4 ] );
@@ -979,8 +1020,8 @@ static void R_LoadLightmaps( lump_t *l, const char *bspName )
 					width = height = 0;
 					LoadRGBEToBytes( va( "%s/%s", mapName, lightmapFiles[ i ] ), &ldrImage, &width, &height );
 
-					image = R_CreateImage( va( "%s/%s", mapName, lightmapFiles[ i ] ), ( byte * ) ldrImage, width, height,
-					                       IF_NOPICMIP | IF_LIGHTMAP | IF_NOCOMPRESSION, FT_DEFAULT, WT_CLAMP );
+					image = R_CreateImage( va( "%s/%s", mapName, lightmapFiles[ i ] ), (const byte **)&ldrImage, width, height,
+					                       1, IF_NOPICMIP | IF_LIGHTMAP | IF_NOCOMPRESSION, FT_DEFAULT, WT_CLAMP );
 
 					Com_AddToGrowList( &tr.lightmaps, image );
 
@@ -1003,8 +1044,13 @@ static void R_LoadLightmaps( lump_t *l, const char *bspName )
 
 						if ( !lightmapFiles || !numLightmaps )
 						{
-							ri.Printf( PRINT_WARNING, "WARNING: no lightmap files found\n" );
-							return;
+							lightmapFiles = ri.FS_ListFiles( mapName, ".crn", &numLightmaps );
+
+							if ( !lightmapFiles || !numLightmaps )
+							{
+								ri.Printf( PRINT_WARNING, "WARNING: no lightmap files found\n" );
+								return;
+							}
 						}
 					}
 				}
@@ -1036,8 +1082,13 @@ static void R_LoadLightmaps( lump_t *l, const char *bspName )
 
 					if ( !lightmapFiles || !numLightmaps )
 					{
-						ri.Printf( PRINT_WARNING, "WARNING: no lightmap files found\n" );
-						return;
+						lightmapFiles = ri.FS_ListFiles( mapName, ".crn", &numLightmaps );
+
+						if ( !lightmapFiles || !numLightmaps )
+						{
+							ri.Printf( PRINT_WARNING, "WARNING: no lightmap files found\n" );
+							return;
+						}
 					}
 				}
 			}
@@ -1105,7 +1156,7 @@ static void R_LoadLightmaps( lump_t *l, const char *bspName )
 						data[ j * 4 + 3 ] = 255;
 					}
 
-					image = R_CreateImage( va( "_lightmap%d", i ), data, LIGHTMAP_SIZE, LIGHTMAP_SIZE, IF_LIGHTMAP | IF_NOCOMPRESSION, FT_DEFAULT, WT_CLAMP );
+					image = R_CreateImage( va( "_lightmap%d", i ), data, LIGHTMAP_SIZE, LIGHTMAP_SIZE, 1, IF_LIGHTMAP | IF_NOCOMPRESSION, FT_DEFAULT, WT_CLAMP );
 					Com_AddToGrowList( &tr.lightmaps, image );
 				}
 				else
@@ -1239,7 +1290,9 @@ static void R_LoadLightmaps( lump_t *l, const char *bspName )
 
 		//memset(fatbuffer,128,tr.fatLightmapSize*tr.fatLightmapSize*4);
 
-		tr.fatLightmap = R_CreateImage( va( "_fatlightmap%d", 0 ), fatbuffer, tr.fatLightmapSize, tr.fatLightmapSize, IF_LIGHTMAP | IF_NOCOMPRESSION, FT_DEFAULT, WT_CLAMP );
+		tr.fatLightmap = R_CreateImage( va( "_fatlightmap%d", 0 ), (const byte **)&fatbuffer,
+						tr.fatLightmapSize, tr.fatLightmapSize, 1,
+						IF_LIGHTMAP | IF_NOCOMPRESSION, FT_DEFAULT, WT_CLAMP );
 		Com_AddToGrowList( &tr.lightmaps, tr.fatLightmap );
 
 		ri.Hunk_FreeTempMemory( fatbuffer );
@@ -9598,7 +9651,7 @@ void R_BuildCubeMaps( void )
 		cubeProbe->cubemap->filterType = FT_LINEAR;
 		cubeProbe->cubemap->wrapType = WT_EDGE_CLAMP;
 
-		R_UploadImage( ( const byte ** ) tr.cubeTemp, 6, cubeProbe->cubemap );
+		R_UploadImage( ( const byte ** ) tr.cubeTemp, 6, 1, cubeProbe->cubemap );
 	}
 
 	ri.Printf( PRINT_ALL, "\n" );
