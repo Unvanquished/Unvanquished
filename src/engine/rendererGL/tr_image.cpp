@@ -2947,6 +2947,8 @@ image_t        *R_FindImageFile( const char *imageName, int bits, filterType_t f
 	image = R_CreateImage( ( char * ) buffer, (const byte **)pic,
 			       width, height, numMips, bits,
 			       filterType, wrapType );
+
+	ri.Free( *pic );
 	return image;
 }
 
