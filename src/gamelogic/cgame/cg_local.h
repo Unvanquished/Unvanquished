@@ -1396,6 +1396,10 @@ typedef struct
 	qhandle_t    gameGradingTextures[ MAX_GRADING_TEXTURES ];
 	qhandle_t    gameGradingModels[ MAX_GRADING_TEXTURES ];
 	float        gameGradingDistances[ MAX_GRADING_TEXTURES ];
+	char         gameReverbEffects[ MAX_REVERB_EFFECTS ][ MAX_NAME_LENGTH ];
+	qhandle_t    gameReverbModels[ MAX_REVERB_EFFECTS ];
+	float        gameReverbDistances[ MAX_REVERB_EFFECTS ];
+	float        gameReverbIntensities[ MAX_REVERB_EFFECTS ];
 	qhandle_t    gameParticleSystems[ MAX_GAME_PARTICLE_SYSTEMS ];
 	sfxHandle_t  gameSounds[ MAX_SOUNDS ];
 
@@ -1800,7 +1804,7 @@ void CG_PainEvent( centity_t *cent, int health );
 //
 // cg_ents.c
 //
-void CG_DrawBoundingBox( vec3_t origin, vec3_t mins, vec3_t maxs );
+void CG_DrawBoundingBox( int type, vec3_t origin, vec3_t mins, vec3_t maxs );
 void CG_SetEntitySoundPosition( centity_t *cent );
 void CG_AddPacketEntities( void );
 void CG_Beam( centity_t *cent );
@@ -1909,7 +1913,7 @@ void     CG_AttachToTag( attachment_t *a );
 void     CG_AttachToParticle( attachment_t *a );
 void     CG_SetAttachmentPoint( attachment_t *a, vec3_t v );
 void     CG_SetAttachmentCent( attachment_t *a, centity_t *cent );
-void     CG_SetAttachmentTag( attachment_t *a, refEntity_t parent,
+void     CG_SetAttachmentTag( attachment_t *a, refEntity_t *parent,
                               qhandle_t model, const char *tagName );
 void     CG_SetAttachmentParticle( attachment_t *a, particle_t *p );
 

@@ -83,7 +83,7 @@ void G_ReadSessionData( gclient_t *client )
 	var = va( "session%li", ( long )( client - level.clients ) );
 	trap_Cvar_VariableStringBuffer( var, s, sizeof( s ) );
 
-	sscanf( s, "%i %i %i %i %i %i %64s %16s",
+	sscanf( s, "%i %i %i %i %i %i %63s %16s",
 	        &client->sess.spectatorTime,
 	        &spectatorState,
 	        &client->sess.spectatorClient,
@@ -126,7 +126,7 @@ void G_InitSessionData( gclient_t *client, const char *userinfo )
 	else
 	{
 		if ( g_maxGameClients.integer > 0 &&
-		     level.numNonSpectatorClients >= g_maxGameClients.integer )
+		     level.numAliveClients >= g_maxGameClients.integer )
 		{
 			sess->spectatorState = SPECTATOR_FREE;
 		}

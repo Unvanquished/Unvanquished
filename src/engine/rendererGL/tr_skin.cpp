@@ -121,7 +121,7 @@ static char    *CommaParse( char **data_p )
 				return com_token;
 			}
 
-			if ( len < MAX_TOKEN_CHARS )
+			if ( len < MAX_TOKEN_CHARS - 1 )
 			{
 				com_token[ len ] = c;
 				len++;
@@ -437,7 +437,7 @@ void R_InitSkins( void )
 	skin = tr.skins[ 0 ] = (skin_t*) ri.Hunk_Alloc( sizeof( skin_t ), h_low );
 	Q_strncpyz( skin->name, "<default skin>", sizeof( skin->name ) );
 	skin->numSurfaces = 1;
-	skin->surfaces[ 0 ] = (skinSurface_t*) ri.Hunk_Alloc( sizeof( *skin->surfaces ), h_low );
+	skin->surfaces[ 0 ] = (skinSurface_t*) ri.Hunk_Alloc( sizeof( *skin->surfaces[ 0 ] ), h_low );
 	skin->surfaces[ 0 ]->shader = tr.defaultShader;
 }
 

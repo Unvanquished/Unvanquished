@@ -992,7 +992,7 @@ static int Parse_ReadPunctuation( script_t *script, token_t *token )
 			//if the script contains the punctuation
 			if ( !strncmp( script->script_p, p, len ) )
 			{
-				strncpy( token->string, p, MAX_TOKEN_CHARS );
+				Q_strncpyz( token->string, p, MAX_TOKEN_CHARS );
 				script->script_p += len;
 				token->type = TT_PUNCTUATION;
 				//sub type is the number of the punctuation
@@ -1170,7 +1170,7 @@ static script_t *Parse_LoadScriptFile( const char *filename )
 
 	script = ( script_t * ) buffer;
 	Com_Memset( script, 0, sizeof( script_t ) );
-	strcpy( script->filename, filename );
+	Q_strncpyz( script->filename, filename, sizeof( script->filename ) );
 	script->buffer = ( char * ) buffer + sizeof( script_t );
 	script->buffer[ length ] = 0;
 	script->length = length;
@@ -1210,7 +1210,7 @@ static script_t *Parse_LoadScriptMemory( const char *ptr, int length, const char
 
 	script = ( script_t * ) buffer;
 	Com_Memset( script, 0, sizeof( script_t ) );
-	strcpy( script->filename, name );
+	Q_strncpyz( script->filename, name, sizeof( script->filename ) );
 	script->buffer = ( char * ) buffer + sizeof( script_t );
 	script->buffer[ length ] = 0;
 	script->length = length;
@@ -2889,11 +2889,24 @@ static int Parse_DollarEvaluate( source_t *source, signed long int *intvalue,
 
 				if ( !define )
 				{
+					for ( t = firsttoken; t; t = nexttoken )
+					{
+						nexttoken = t->next;
+						Parse_FreeToken( t );
+					}
 					Parse_SourceError( source, "can't evaluate %s, not defined", token.string );
 					return qfalse;
 				}
 
-				if ( !Parse_ExpandDefineIntoSource( source, &token, define ) ) { return qfalse; }
+				if ( !Parse_ExpandDefineIntoSource( source, &token, define ) ) 
+				{
+					for ( t = firsttoken; t; t = nexttoken )
+					{
+						nexttoken = t->next;
+						Parse_FreeToken( t );
+					}
+					return qfalse;
+				}
 			}
 		}
 		//if the token is a number or a punctuation
@@ -2968,8 +2981,10 @@ static int Parse_Directive_include( source_t *source )
 
 		if ( !script )
 		{
-			strcpy( path, source->includepath );
-			strcat( path, token.string );
+			// buffer too small?
+			path[ MAX_QPATH - 1 ] = 0;
+			strncpy( path, source->includepath, MAX_QPATH - 1 );
+			strncat( path, token.string, MAX_QPATH - 1 );
 			script = Parse_LoadScriptFile( path );
 		}
 	}
@@ -3972,7 +3987,7 @@ static define_t *Parse_DefineFromString( const char *string )
 	script = Parse_LoadScriptMemory( string, strlen( string ), "*extern" );
 	//create a new source
 	Com_Memset( &src, 0, sizeof( source_t ) );
-	strncpy( src.filename, "*extern", MAX_QPATH );
+	Q_strncpyz( src.filename, "*extern", MAX_QPATH );
 	src.scriptstack = script;
 	src.definehash = (define_t**) Z_Malloc( DEFINEHASHSIZE * sizeof( define_t * ) );
 	Com_Memset( src.definehash, 0, DEFINEHASHSIZE * sizeof( define_t * ) );
@@ -4162,7 +4177,7 @@ static source_t *Parse_LoadSourceFile( const char *filename )
 	source = ( source_t * ) Z_Malloc( sizeof( source_t ) );
 	Com_Memset( source, 0, sizeof( source_t ) );
 
-	strncpy( source->filename, filename, MAX_QPATH );
+	Q_strncpyz( source->filename, filename, MAX_QPATH );
 	source->scriptstack = script;
 	source->tokens = NULL;
 	source->defines = NULL;

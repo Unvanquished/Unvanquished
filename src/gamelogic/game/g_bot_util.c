@@ -236,9 +236,6 @@ float BotGetEnemyPriority( gentity_t *self, gentity_t *ent )
 			case BA_H_MEDISTAT:
 				enemyScore = 0.6;
 				break;
-			case BA_H_DCC:
-				enemyScore = 0.5;
-				break;
 			case BA_A_ACIDTUBE:
 				enemyScore = 0.7;
 				break;
@@ -278,9 +275,9 @@ qboolean BotCanEvolveToClass( gentity_t *self, class_t newClass )
 	return ( BG_ClassCanEvolveFromTo( ( class_t )self->client->ps.stats[STAT_CLASS], newClass, self->client->ps.persistant[PERS_CREDIT] ) >= 0 );
 }
 
-qboolean WeaponIsEmpty( weapon_t weapon, playerState_t ps )
+qboolean WeaponIsEmpty( weapon_t weapon, playerState_t *ps )
 {
-	if ( ps.ammo <= 0 && ps.clips <= 0 && !BG_Weapon( weapon )->infiniteAmmo )
+	if ( ps->ammo <= 0 && ps->clips <= 0 && !BG_Weapon( weapon )->infiniteAmmo )
 	{
 		return qtrue;
 	}
@@ -1307,7 +1304,7 @@ void BotAimAtLocation( gentity_t *self, vec3_t target )
 	int i;
 	usercmd_t *rAngles = &self->botMind->cmdBuffer;
 
-	if ( ! ( self && self->client ) )
+	if ( !self->client )
 	{
 		return;
 	}

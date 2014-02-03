@@ -33,7 +33,7 @@ int Q_UTF8_Width( const char *str )
   if( !str )
     return 0;
 
-  if     ( 0x00 <= *s && *s <= 0x7F )
+  if     (               *s <= 0x7F )
     ewidth = 0;
   else if( 0xC2 <= *s && *s <= 0xDF )
     ewidth = 1;

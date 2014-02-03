@@ -89,7 +89,8 @@ enum
   CS_SOUNDS = CS_MODELS + MAX_MODELS,
   CS_SHADERS = CS_SOUNDS + MAX_SOUNDS,
   CS_GRADING_TEXTURES = CS_SHADERS + MAX_GAME_SHADERS,
-  CS_PARTICLE_SYSTEMS = CS_GRADING_TEXTURES + MAX_GRADING_TEXTURES,
+  CS_REVERB_EFFECTS = CS_GRADING_TEXTURES + MAX_GRADING_TEXTURES,
+  CS_PARTICLE_SYSTEMS = CS_REVERB_EFFECTS + MAX_REVERB_EFFECTS,
 
   CS_PLAYERS = CS_PARTICLE_SYSTEMS + MAX_GAME_PARTICLE_SYSTEMS,
   CS_OBJECTIVES = CS_PLAYERS + MAX_CLIENTS,
@@ -269,7 +270,6 @@ typedef enum
 #define SS2_JETPACK_ENABLED BIT(0)  // whether jets/wings are extended
 #define SS2_JETPACK_WARM    BIT(1)  // whether we can start a thrust
 #define SS2_JETPACK_ACTIVE  BIT(2)  // whether we are thrusting
-#define SS2_JETPACK_DAMAGED BIT(3)  // whether we were damaged recently
 
 // has to fit into 16 bits
 #define SB_BUILDABLE_MASK        0x00FF
@@ -486,7 +486,6 @@ typedef enum
   BA_H_TESLAGEN,
 
   BA_H_ARMOURY,
-  BA_H_DCC,
   BA_H_MEDISTAT,
   BA_H_DRILL,
 
@@ -618,7 +617,6 @@ typedef enum
   EV_REACTOR_ATTACK_1, // reactor under attack
   EV_REACTOR_ATTACK_2, // reactor under attack
   EV_REACTOR_DYING, // reactor destroyed
-  EV_DCC_ATTACK, // dcc under attack
 
   EV_WARN_ATTACK, // a building has been destroyed and the destruction noticed by a nearby om/rc/rrep
 
@@ -1127,6 +1125,7 @@ typedef struct
 	int         splashDamage;
 	int         splashRadius;
 
+	weapon_t    weapon; // used to look up weaponInfo_t for clientside effects
 	int         meansOfDeath;
 
 	team_t      team;
@@ -1134,13 +1133,8 @@ typedef struct
 
 	int         idleAnim;
 
-	int         nextthink;
 	int         buildTime;
 	qboolean    usable;
-
-	int         turretRange;
-	int         turretFireSpeed;
-	weapon_t    turretProjType;
 
 	float       minNormal;
 	qboolean    invertNormal;
@@ -1148,7 +1142,6 @@ typedef struct
 	qboolean    creepTest;
 	int         creepSize;
 
-	qboolean    dccTest;
 	qboolean    transparentTest;
 	qboolean    uniqueTest;
 
@@ -1278,6 +1271,10 @@ typedef struct
 	sfxHandle_t    impactFleshSound[ 4 ];
 } missileAttributes_t;
 
+// bg_utilities.c
+qboolean BG_GetTrajectoryPitch( vec3_t origin, vec3_t target, float v0, float g,
+                                vec2_t angles, vec3_t dir1, vec3_t dir2 );
+
 qboolean BG_WeaponIsFull( int weapon, int stats[], int ammo, int clips );
 qboolean BG_InventoryContainsWeapon( int weapon, int stats[] );
 int      BG_SlotsForInventory( int stats[] );
@@ -1300,8 +1297,8 @@ qboolean                    BG_PlayerCanChangeWeapon( playerState_t *ps );
 int                         BG_PlayerPoisonCloudTime( playerState_t *ps );
 weapon_t                    BG_GetPlayerWeapon( playerState_t *ps );
 
-void                        BG_PackEntityNumbers( entityState_t *es, const int *entityNums, int count );
-int                         BG_UnpackEntityNumbers( entityState_t *es, int *entityNums, int count );
+void                        BG_PackEntityNumbers( entityState_t *es, const int *entityNums, unsigned int count );
+int                         BG_UnpackEntityNumbers( entityState_t *es, int *entityNums, unsigned int count );
 
 const buildableAttributes_t *BG_BuildableByName( const char *name );
 const buildableAttributes_t *BG_BuildableByEntityName( const char *name );
@@ -1326,6 +1323,7 @@ qboolean                    BG_ClassHasAbility( int pClass, int ability );
 int                         BG_ClassCanEvolveFromTo(int from, int to, int credits);
 qboolean                    BG_AlienCanEvolve(int from, int credits);
 
+weapon_t                  BG_WeaponNumberByName( const char *name );
 const weaponAttributes_t  *BG_WeaponByName( const char *name );
 const weaponAttributes_t  *BG_Weapon( int weapon );
 

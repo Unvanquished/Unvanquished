@@ -1460,7 +1460,7 @@ void Cmd_VSay_f( gentity_t *ent )
 
 	if ( !Q_stricmp( arg, "vsay" ) )
 	{
-		vchan = VOICE_CHAN_LOCAL;
+		vchan = VOICE_CHAN_ALL;
 	}
 	else if ( !Q_stricmp( arg, "vsay_team" ) )
 	{
@@ -2050,7 +2050,7 @@ vote_is_disabled:
 		level.extend_vote_count++;
 
 		Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
-		             "gametimelimit %i", level.timelimit + g_extendVotesTime.integer );
+		             "time %i", level.timelimit + g_extendVotesTime.integer );
 		Com_sprintf( level.team[ team ].voteDisplayString, sizeof( level.team[ team ].voteDisplayString ),
 		             "Extend the timelimit by %d minutes", g_extendVotesTime.integer );
 		break;
@@ -2140,7 +2140,7 @@ vote_is_disabled:
 			Com_sprintf( level.team[ team ].voteDisplayString,
 			             sizeof( level.team[ team ].voteDisplayString ), "Change to map layout '%s'", arg );
 		}
-		break; 
+		break;
 
 	case VOTE_NEXT_MAP:
 		if ( G_MapExists( g_nextMap.string ) )
@@ -2939,7 +2939,7 @@ void Cmd_ActivateItem_f( gentity_t *ent )
 		upgrade = BG_UpgradeByName( s )->number;
 	}
 
-	weapon = BG_WeaponByName( s )->number;
+	weapon = BG_WeaponNumberByName( s );
 
 	if ( upgrade != UP_NONE && BG_InventoryContainsUpgrade( upgrade, ent->client->ps.stats ) )
 	{
@@ -3002,8 +3002,9 @@ void Cmd_ToggleItem_f( gentity_t *ent )
 	upgrade_t upgrade;
 
 	trap_Argv( 1, s, sizeof( s ) );
+
 	upgrade = BG_UpgradeByName( s )->number;
-	weapon = BG_WeaponByName( s )->number;
+	weapon  = BG_WeaponNumberByName( s );
 
 	if ( weapon != WP_NONE )
 	{
@@ -3166,7 +3167,7 @@ static qboolean Cmd_Sell_internal( gentity_t *ent, const char *s )
 	}
 	else
 	{
-		weapon = BG_WeaponByName( s )->number;
+		weapon = BG_WeaponNumberByName( s );
 	}
 
 	upgrade = BG_UpgradeByName( s )->number;
@@ -3304,7 +3305,7 @@ static qboolean Cmd_Buy_internal( gentity_t *ent, const char *s, qboolean sellCo
 	upgrade_t upgrade;
 	vec3_t    newOrigin;
 
-	weapon = BG_WeaponByName( s )->number;
+	weapon = BG_WeaponNumberByName( s );
 	upgrade = BG_UpgradeByName( s )->number;
 
 	// check if armoury is in reach
@@ -3781,6 +3782,10 @@ void G_StopFollowing( gentity_t *ent )
 		{
 			G_SelectHumanLockSpawnPoint( spawn_origin, spawn_angles );
 		}
+		else
+		{
+			G_SelectSpectatorSpawnPoint( spawn_origin, spawn_angles );
+		}
 
 		G_SetOrigin( ent, spawn_origin );
 		VectorCopy( spawn_origin, ent->client->ps.origin );
@@ -3842,6 +3847,10 @@ void G_FollowLockView( gentity_t *ent )
 	else if ( level.clients[ clientNum ].pers.team == TEAM_HUMANS )
 	{
 		G_SelectHumanLockSpawnPoint( spawn_origin, spawn_angles );
+	}
+	else
+	{
+		G_SelectSpectatorSpawnPoint( spawn_origin, spawn_angles );
 	}
 
 	G_SetOrigin( ent, spawn_origin );
@@ -4270,18 +4279,15 @@ void Cmd_ListMaps_f( gentity_t *ent )
 		ADMP_P( va( "%s %d %d", Quote( P_("^3listmaps: ^7listing $1$ of $2$ map", "^3listmaps: ^7listing $1$ of $2$ maps", count) ), shown, count ), count );
 	}
 
-	if ( pages > 1 )
+	if ( pages > 1 && page + 1 < pages )
 	{
-		ADMP( va( "%s %d %d", QQ( N_(", page $1$ of $2$") ),  page + 1, pages ) );
+		ADMP( va( "%s %d %d %s %s %d", QQ( N_("^3listmaps: ^7page $1$ of $2$; use 'listmaps $3$$4$$5$' to see more") ),
+		           page + 1, pages, Quote( search ), ( search[ 0 ] ) ? " " : "", page + 2 ) );
 	}
-
-	if ( page + 1 < pages )
+	else if ( pages > 1 )
 	{
-		ADMP( va( "%s %s %s %d", QQ( N_(", use 'listmaps $1$$2$$3$' to see more") ),
-		           Quote( search ), ( search[ 0 ] ) ? " " : "", page + 2 ) );
+		ADMP( va( "%s %d %d", QQ( N_("^3listmaps: ^7page $1$ of $2$") ),  page + 1, pages ) );
 	}
-
-	ADMP( "\".\n\"" );
 }
 
 #define MAX_MAPLOGS 5

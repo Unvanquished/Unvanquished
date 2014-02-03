@@ -56,11 +56,10 @@ class MapCmd: public Cmd::StaticCmd {
             }
 
             const std::string& mapName = args.Argv(1);
-            std::string mapFilename = "maps/" + mapName + ".bsp";
 
             //Make sure the map exists to avoid typos that would kill the game
-            if (FS_ReadFile(mapFilename.c_str(), nullptr) == -1) {
-                Print(_("Can't find map %s\n"), mapFilename.c_str());
+            if (!FS::FindPak(va("map-%s", mapName.c_str()))) {
+                Print(_("Can't find map %s"), mapName.c_str());
                 return;
             }
 
@@ -76,9 +75,14 @@ class MapCmd: public Cmd::StaticCmd {
 
         Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, Str::StringRef prefix) const OVERRIDE {
             if (argNum == 1) {
-                return FS::CompleteFilenameInDir(prefix, "maps", "bsp");
+                Cmd::CompletionResult out;
+                for (auto& x: FS::GetAvailablePaks()) {
+                    if (Str::IsPrefix("map-" + prefix, x.name))
+                        out.push_back({x.name.substr(4), ""});
+                }
+                return out;
             } else if (argNum > 1) {
-                return FS::CompleteFilenameInDir(prefix, "layouts/" + args.Argv(1), "dat");
+                return FS::HomePath::CompleteFilename(prefix, "layouts/" + args.Argv(1), ".dat", false, true);
             }
 
             return {};

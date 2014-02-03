@@ -41,10 +41,12 @@ Maryland 20850 USA.
 #define PRODUCT_NAME            "Unvanquished"
 #define PRODUCT_NAME_UPPER      "UNVANQUISHED" // Case, No spaces
 #define PRODUCT_NAME_LOWER      "unvanquished" // No case, No spaces
-#define PRODUCT_VERSION         "0.22.1"
+#define PRODUCT_VERSION         "0.24.0"
 
 #define ENGINE_NAME             "Daemon Engine"
 #define ENGINE_VERSION          PRODUCT_VERSION
+
+#define RSQRT_PRECISE 1
 
 #ifdef REVISION
 # define Q3_VERSION             PRODUCT_NAME " " PRODUCT_VERSION " " REVISION
@@ -351,7 +353,17 @@ typedef int clipHandle_t;
 	// convenient for SSE and GLSL, which operate on 4-dimensional
 	// float vectors.
 #if idx86_sse
-	typedef union transform_u {
+    // Here we have a union of scalar struct and sse struct, transform_u and the
+    // scalar struct must match transform_s so we have to use anonymous structs.
+    // We disable compiler warnings when using -Wpedantic for this specific case.
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
+#ifdef __clang__
+#pragma GCC diagnostic ignored "-Wgnu-anonymous-struct"
+#endif
+#endif
+	typedef ALIGNED( 16, union transform_u {
 		struct {
 			quat_t rot;
 			vec3_t trans;
@@ -361,13 +373,19 @@ typedef int clipHandle_t;
 			__m128 sseRot;
 			__m128 sseTransScale;
 		};
-	} transform_t;
+	} ) transform_t;
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 #else
 	typedef struct transform_s {
 		quat_t rot;
 		vec3_t trans;
 		vec_t  scale;
 	} transform_t;
+#ifdef Q3_VM
+#pragma align transform_t 16
+#endif
 #endif
 
 	typedef int    fixed4_t;
@@ -604,6 +622,8 @@ extern quat_t   quatIdentity;
 		float x = 0.5f * number;
 		float y;
 
+		Q_UNUSED(x);
+
 		// compute approximate inverse square root
 #if defined( idx86_sse )
 		_mm_store_ss( &y, _mm_rsqrt_ss( _mm_load_ss( &number ) ) );
@@ -618,7 +638,9 @@ extern quat_t   quatIdentity;
 		y = Q_uintBitsToFloat( 0x5f3759df - (Q_floatBitsToUint( number ) >> 1) );
 		y *= ( 1.5f - ( x * y * y ) ); // initial iteration
 #endif
-		//y *= ( 1.5f - ( x * y * y ) ); // second iteration for higher precision
+#ifdef RSQRT_PRECISE
+		y *= ( 1.5f - ( x * y * y ) ); // second iteration for higher precision
+#endif
 		return y;
 	}
 #endif
@@ -1366,63 +1388,33 @@ void         ByteToDir( int b, vec3_t dir );
 	STATIC_INLINE __m128 unitQuat() {
 		return _mm_set_ps( 1.0f, 0.0f, 0.0f, 0.0f ); // order is reversed
 	}
+	STATIC_INLINE __m128 sseLoadInts( const int vec[4] ) {
+		return *(__m128 *)vec;
+	}
 	STATIC_INLINE __m128 mask_0000() {
-		return (__m128)_mm_set_epi32(  0,  0,  0,  0 );
+		static const ALIGNED(16, int vec[4]) = {  0,  0,  0,  0 };
+		return sseLoadInts( vec );
 	}
 	STATIC_INLINE __m128 mask_000W() {
-		return (__m128)_mm_set_epi32( -1,  0,  0,  0 );
-	}
-	STATIC_INLINE __m128 mask_00Z0() {
-		return (__m128)_mm_set_epi32(  0, -1,  0,  0 );
-	}
-	STATIC_INLINE __m128 mask_00ZW() {
-		return (__m128)_mm_set_epi32( -1, -1,  0,  0 );
-	}
-	STATIC_INLINE __m128 mask_0Y00() {
-		return (__m128)_mm_set_epi32(  0,  0, -1,  0 );
-	}
-	STATIC_INLINE __m128 mask_0Y0W() {
-		return (__m128)_mm_set_epi32( -1,  0, -1,  0 );
-	}
-	STATIC_INLINE __m128 mask_0YZ0() {
-		return (__m128)_mm_set_epi32(  0, -1, -1,  0 );
-	}
-	STATIC_INLINE __m128 mask_0YZW() {
-		return (__m128)_mm_set_epi32( -1, -1, -1,  0 );
-	}
-	STATIC_INLINE __m128 mask_X000() {
-		return (__m128)_mm_set_epi32(  0,  0,  0, -1 );
-	}
-	STATIC_INLINE __m128 mask_X00W() {
-		return (__m128)_mm_set_epi32( -1,  0,  0, -1 );
-	}
-	STATIC_INLINE __m128 mask_X0Z0() {
-		return (__m128)_mm_set_epi32(  0, -1,  0, -1 );
-	}
-	STATIC_INLINE __m128 mask_X0ZW() {
-		return (__m128)_mm_set_epi32( -1, -1,  0, -1 );
-	}
-	STATIC_INLINE __m128 mask_XY00() {
-		return (__m128)_mm_set_epi32(  0,  0, -1, -1 );
-	}
-	STATIC_INLINE __m128 mask_XY0W() {
-		return (__m128)_mm_set_epi32( -1,  0, -1, -1 );
+		static const ALIGNED(16, int vec[4]) = {  0,  0,  0, -1 };
+		return sseLoadInts( vec );
 	}
 	STATIC_INLINE __m128 mask_XYZ0() {
-		return (__m128)_mm_set_epi32(  0, -1, -1, -1 );
-	}
-	STATIC_INLINE __m128 mask_XYZW() {
-		return (__m128)_mm_set_epi32( -1, -1, -1, -1 );
+		static const ALIGNED(16, int vec[4]) = { -1, -1, -1,  0 };
+		return sseLoadInts( vec );
 	}
 
 	STATIC_INLINE __m128 sign_000W() {
-		return (__m128)_mm_set_epi32( 0x80000000, 0, 0, 0 );
+		static const ALIGNED(16, int vec[4]) = { 0, 0, 0, 1<<31 };
+		return sseLoadInts( vec );
 	}
 	STATIC_INLINE __m128 sign_XYZ0() {
-		return (__m128)_mm_set_epi32( 0, 0x80000000, 0x80000000, 0x80000000 );
+		static const ALIGNED(16, int vec[4]) = { 1<<31, 1<<31, 1<<31,  0 };
+		return sseLoadInts( vec );
 	}
 	STATIC_INLINE __m128 sign_XYZW() {
-		return (__m128)_mm_set_epi32( 0x80000000, 0x80000000, 0x80000000, 0x80000000 );
+		static const ALIGNED(16, int vec[4]) = { 1<<31, 1<<31, 1<<31, 1<<31 };
+		return sseLoadInts( vec );
 	}
 
 	STATIC_INLINE __m128 sseDot4( __m128 a, __m128 b ) {
@@ -1454,12 +1446,19 @@ void         ByteToDir( int b, vec3_t dir );
 	}
 	STATIC_INLINE __m128 sseQuatNormalize( __m128 q ) {
 		__m128 p = _mm_mul_ps( q, q );
+		__m128 t, h;
 		p = _mm_add_ps( sseSwizzle( p, XXZZ ),
 				sseSwizzle( p, YYWW ) );
 		p = _mm_add_ps( sseSwizzle( p, XXXX ),
 				sseSwizzle( p, ZZZZ ) );
-		p = _mm_rsqrt_ps( p );
-		return _mm_mul_ps( q, p );
+		t = _mm_rsqrt_ps( p );
+#ifdef RSQRT_PRECISE
+		h = _mm_mul_ps( _mm_set1_ps( 0.5f ), t );
+		t = _mm_mul_ps( _mm_mul_ps( t, t ), p );
+		t = _mm_sub_ps( _mm_set1_ps( 3.0f ), t );
+		t = _mm_mul_ps( h, t );
+#endif
+		return _mm_mul_ps( q, t );
 	}
 	STATIC_INLINE __m128 sseQuatTransform( __m128 q, __m128 vec ) {
 		__m128 t, t2;
@@ -1882,7 +1881,6 @@ void         ByteToDir( int b, vec3_t dir );
 
 #endif
 	void     Q_strcat( char *dest, int destsize, const char *src );
-	void     Q_strncpyz2( char *dst, const char *src, int dstSize );
 	qboolean Q_strreplace( char *dest, int destsize, const char *find, const char *replace );
 
 	int      Com_Filter( const char *filter, const char *name, int casesensitive );
@@ -1967,7 +1965,10 @@ void         ByteToDir( int b, vec3_t dir );
  * but server browsers will see it
  */
 #define CVAR_SERVERINFO_NOUPDATE BIT(13)
+#define CVAR_USER_ARCHIVE        BIT(14)
 #define CVAR_NONEXISTENT         0xFFFFFFFF /*< Cvar doesn't exist. */
+
+#define CVAR_ARCHIVE_BITS        (CVAR_ARCHIVE | CVAR_USER_ARCHIVE)
 
 #define MAX_CVAR_VALUE_STRING 256
 
@@ -2667,6 +2668,7 @@ typedef struct
 #define MAX_SOUNDS                256 // so they cannot be blindly increased
 #define MAX_GAME_SHADERS          64
 #define MAX_GRADING_TEXTURES      64
+#define MAX_REVERB_EFFECTS        64
 #define MAX_GAME_PARTICLE_SYSTEMS 64
 #define MAX_HOSTNAME_LENGTH       80
 #define MAX_NEWS_STRING           10000

@@ -1,24 +1,30 @@
 /*
 ===========================================================================
+Daemon BSD Source Code
+Copyright (c) 2013-2014, Daemon Developers
+All rights reserved.
 
-Daemon GPL Source Code
-Copyright (C) 2013 Unvanquished Developers
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+    * Neither the name of the <organization> nor the
+      names of its contributors may be used to endorse or promote products
+      derived from this software without specific prior written permission.
 
-This file is part of the Daemon GPL Source Code (Daemon Source Code).
-
-Daemon Source Code is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Daemon Source Code is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
-
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
+DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
@@ -26,8 +32,6 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #define COMMON_CVAR_H_
 
 namespace Cvar {
-
-    //TODO more doc
 
     /*
      * Cvars can have different flags that trigger specific behavior.
@@ -39,7 +43,9 @@ namespace Cvar {
         SERVERINFO = BIT(2), // The cvar is send to the client as part of the server state
         SYSTEMINFO = BIT(3), // ???
         ROM        = BIT(6), // The cvar cannot be changed by the user
-        CHEAT      = BIT(9)  // The cvar is a cheat and should stay at its default value on pure servers.
+        TEMPORARY  = BIT(8), // The cvar is temporary and is not to be archived (overrides archive flags)
+        CHEAT      = BIT(9), // The cvar is a cheat and should stay at its default value on pure servers.
+        USER_ARCHIVE = BIT(14), // The cvar is saved to the configuration file at user request
     };
 
     // Internal to the Cvar system
@@ -50,7 +56,7 @@ namespace Cvar {
 
     /*
      * All cvars created by the code inherit from this class although most of the time you'll
-     * want to use Cvar::Cvar. It is basically a callback for hen the value of the cvar changes.
+     * want to use Cvar::Cvar. It is basically a callback for when the value of the cvar changes.
      * A single CvarProxy can be registered for a given cvar name.
      */
     class CvarProxy {
@@ -75,7 +81,7 @@ namespace Cvar {
      * Cvar::Cvar<T> represents a type-checked cvar of type T. The parsed T can
      * be accessed with .Get() and .Set() will serialize T before setting the value.
      * It is also automatically registered when created so you can write:
-     *   static Cvar<bool> my_bool_cvar("my_bool_cvar", "bool - a cvar", Cvar::Archive, false);
+     *   static Cvar<bool> my_bool_cvar("my_bool_cvar", "bool - a cvar", Cvar::NONE, false);
      *
      * The functions bool ParseCvarValue(string, T& res), string SerializeCvarValue(T)
      * and string GetCvarTypeName<T>() must be implemented for Cvar<T> to work.
@@ -99,7 +105,10 @@ namespace Cvar {
         protected:
             // Used by classes that extend Cvar<T>
             bool Parse(std::string text, T& value);
+            // Implemented by subtypes to validate the value of the cvar (for example for Range)
             virtual OnValueChangedResult Validate(const T& value);
+            // Returns the new description of the cvar given the current value and the description
+            // given at the creation of the cvar.
             virtual std::string GetDescription(Str::StringRef value, Str::StringRef originalDescription);
 
             T value;
@@ -120,7 +129,7 @@ namespace Cvar {
             typedef typename Base::value_type value_type;
 
             template <typename ... Args>
-            Callback(std::string name, std::string description, int flags, value_type, std::function<void(value_type)> callback, Args&& ... args);
+            Callback(std::string name, std::string description, int flags, value_type defaultValue, std::function<void(value_type)> callback, Args&& ... args);
 
             virtual OnValueChangedResult OnValueChanged(Str::StringRef newValue);
 
@@ -128,18 +137,62 @@ namespace Cvar {
             std::function<void(value_type)> callback;
     };
 
+    /*
+     * Modified<CvarType> allow to query atomically if the cvar has been modified and the new value.
+     * (resets the modified flag to false)
+     */
+
+    template<typename Base> class Modified : public Base {
+        public:
+            typedef typename Base::value_type value_type;
+
+            template<typename ... Args>
+            Modified(std::string name, std::string description, int flags, value_type defaultValue, Args ... args);
+
+            virtual OnValueChangedResult OnValueChanged(Str::StringRef newValue);
+
+            //TODO change it when we have optional
+            bool GetModifiedValue(value_type& value);
+
+        private:
+            bool modified;
+    };
+
+    /*
+     * Range<CvarType> forces the cvar to stay in a range of values.
+     */
+
+    template<typename Base> class Range : public Base {
+        public:
+            typedef typename Base::value_type value_type;
+
+            template<typename ... Args>
+            Range(std::string name, std::string description, int flags, value_type defaultValue, value_type min, value_type max, Args ... args);
+
+        private:
+            virtual OnValueChangedResult Validate(const value_type& value);
+            virtual std::string GetDescription(Str::StringRef value, Str::StringRef originalDescription);
+
+            value_type min;
+            value_type max;
+    };
+
     // Implement Cvar<T> for T = bool, int, string
     template<typename T>
     std::string GetCvarTypeName();
 
-    bool ParseCvarValue(std::string value, bool& result);
+    bool ParseCvarValue(Str::StringRef value, bool& result);
     std::string SerializeCvarValue(bool value);
     template<>
     std::string GetCvarTypeName<bool>();
-    bool ParseCvarValue(std::string value, int& result);
+    bool ParseCvarValue(Str::StringRef value, int& result);
     std::string SerializeCvarValue(int value);
     template<>
     std::string GetCvarTypeName<int>();
+    bool ParseCvarValue(Str::StringRef value, float& result);
+    std::string SerializeCvarValue(float value);
+    template<>
+    std::string GetCvarTypeName<float>();
     bool ParseCvarValue(std::string value, std::string& result);
     std::string SerializeCvarValue(std::string value);
     template<>
@@ -167,15 +220,20 @@ namespace Cvar {
 
     template<typename T>
     void Cvar<T>::Set(T newValue) {
-        if (Validate(newValue)) {
-            SetValue(SerializeCvarValue(value));
+        if (Validate(newValue).success) {
+            SetValue(SerializeCvarValue(newValue));
         }
     }
 
     template<typename T>
     OnValueChangedResult Cvar<T>::OnValueChanged(Str::StringRef text) {
         if (Parse(text, value)) {
-            return {true, GetDescription(text, description)};
+            OnValueChangedResult validationResult = Validate(value);
+            if (validationResult.success) {
+                return {true, GetDescription(text, description)};
+            } else {
+                return validationResult;
+            }
         } else {
             return {false, Str::Format("value \"%s\" is not of type '%s' as expected", text, GetCvarTypeName<T>())};
         }
@@ -215,6 +273,56 @@ namespace Cvar {
         }
         return std::move(rec);
     }
+
+    // Modified<Base>
+
+    template <typename Base>
+    template <typename ... Args>
+    Modified<Base>::Modified(std::string name, std::string description, int flags, value_type defaultValue, Args ... args)
+    : Base(std::move(name), std::move(description), flags, std::move(defaultValue), std::forward<Args>(args) ...), modified(false) {
+    }
+
+    template <typename Base>
+    OnValueChangedResult Modified<Base>::OnValueChanged(Str::StringRef newValue) {
+        OnValueChangedResult rec = Base::OnValueChanged(newValue);
+
+        if (rec.success) {
+            modified = true;
+        }
+        return std::move(rec);
+    }
+
+    template<typename Base>
+    bool Modified<Base>::GetModifiedValue(value_type& value) {
+        value = this->Get();
+        bool res = modified;
+        modified = false;
+        return res;
+    }
+
+    // Range<Base>
+
+    template <typename Base>
+    template <typename ... Args>
+    Range<Base>::Range(std::string name, std::string description, int flags, value_type defaultValue, value_type min, value_type max, Args ... args)
+    : Base(std::move(name), std::move(description), flags, std::move(defaultValue), std::forward<Args>(args) ...), min(min), max(max) {
+    }
+
+    template <typename Base>
+    OnValueChangedResult Range<Base>::Validate(const value_type& value) {
+        bool inBounds = value <= max and value >= min;
+        if (inBounds) {
+            return {true, ""};
+        } else {
+            return {false, Str::Format("%s is not between %s and %s", SerializeCvarValue(value), SerializeCvarValue(min), SerializeCvarValue(max))};
+        }
+    }
+
+    template <typename Base>
+    std::string Range<Base>::GetDescription(Str::StringRef value, Str::StringRef originalDescription) {
+        return Base::GetDescription(value, Str::Format("%s - between %s and %s", originalDescription, SerializeCvarValue(min), SerializeCvarValue(max)));
+    }
+
 }
 
 #endif // COMMON_CVAR_H_

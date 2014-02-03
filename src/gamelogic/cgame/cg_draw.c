@@ -1357,7 +1357,6 @@ static void CG_DrawPlayerChargeBar( rectDef_t *rect, vec4_t ref_color,
 	}
 }
 
-#define MOMENTUM_BAR_MAX       300.0f
 #define MOMENTUM_BAR_MARKWIDTH 0.5f
 #define MOMENTUM_BAR_GLOWTIME  2000
 
@@ -1405,7 +1404,7 @@ static void CG_DrawPlayerMomentumBar( rectDef_t *rect, vec4_t foreColor, vec4_t 
 	CG_FillRect( x, y, w, h, color );
 
 	// draw momentum bar
-	fraction = rawFraction = momentum / MOMENTUM_BAR_MAX;
+	fraction = rawFraction = momentum / MOMENTUM_MAX;
 
 	if ( fraction < 0.0f )
 	{
@@ -1428,7 +1427,7 @@ static void CG_DrawPlayerMomentumBar( rectDef_t *rect, vec4_t foreColor, vec4_t 
 	// draw glow on momentum event
 	if ( cg.momentumGainedTime + MOMENTUM_BAR_GLOWTIME > cg.time )
 	{
-		glowFraction = fabs( cg.momentumGained / MOMENTUM_BAR_MAX );
+		glowFraction = fabs( cg.momentumGained / MOMENTUM_MAX );
 		glowStrength = ( MOMENTUM_BAR_GLOWTIME - ( cg.time - cg.momentumGainedTime ) ) /
 		               ( float )MOMENTUM_BAR_GLOWTIME;
 
@@ -1464,7 +1463,7 @@ static void CG_DrawPlayerMomentumBar( rectDef_t *rect, vec4_t foreColor, vec4_t 
 	while ( ( unlockableIter = BG_IterateMomentumThresholds( unlockableIter, team, &threshold, &unlocked ) ),
 	        ( unlockableIter.num >= 0 ) )
 	{
-		fraction = threshold / MOMENTUM_BAR_MAX;
+		fraction = threshold / MOMENTUM_MAX;
 
 		if ( fraction > 1.0f )
 		{
@@ -1908,10 +1907,9 @@ static void CG_DrawPlayerFuelIcon( rectDef_t *rect, vec4_t backColor,
 
 	fuel     = cg.snap->ps.stats[ STAT_FUEL ];
 	pmNormal = ( cg.snap->ps.pm_type == PM_NORMAL );
-	damaged  = ( cg.snap->ps.stats[ STAT_STATE2 ] & SS2_JETPACK_DAMAGED );
 	active   = ( cg.snap->ps.stats[ STAT_STATE2 ] & SS2_JETPACK_ACTIVE );
 
-	if ( fuel < JETPACK_FUEL_LOW || !pmNormal || damaged )
+	if ( fuel < JETPACK_FUEL_LOW || !pmNormal )
 	{
 		Vector4Copy( backColor, color );
 	}
@@ -2054,7 +2052,7 @@ static void CG_DrawLevelShot( rectDef_t *rect )
 
 	info = CG_ConfigString( CS_SERVERINFO );
 	s = Info_ValueForKey( info, "mapname" );
-	levelshot = trap_R_RegisterShader(va("levelshots/%s.tga", s),
+	levelshot = trap_R_RegisterShader(va("levelshots/%s", s),
 					  RSF_NOMIP);
 
 	if ( !levelshot )
@@ -3011,7 +3009,7 @@ static void CG_DrawDisconnect( void )
 	x = 640 - 48;
 	y = 480 - 48;
 
-	CG_DrawPic( x, y, 48, 48, trap_R_RegisterShader("gfx/2d/net.tga",
+	CG_DrawPic( x, y, 48, 48, trap_R_RegisterShader("gfx/2d/net",
 							RSF_DEFAULT));
 }
 
@@ -4989,7 +4987,7 @@ static void CG_DrawWarmup( void )
 		return;
 	}
 
-	strncpy( text, _( "Warmup Time:" ), sizeof( text ) );
+	Q_strncpyz( text, _( "Warmup Time:" ), sizeof( text ) );
 	w = UI_Text_Width( text, size );
 	h = UI_Text_Height( text, size );
 	UI_Text_Paint( 320 - w / 2, 200, size, colorWhite, text, 0, ITEM_TEXTSTYLE_SHADOWED );

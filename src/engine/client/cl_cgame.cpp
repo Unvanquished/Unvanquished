@@ -521,13 +521,13 @@ CL_SetExpectedHunkUsage
 void CL_SetExpectedHunkUsage( const char *mapname )
 {
 	int  handle;
-	char *memlistfile = "hunkusage.dat";
+	const char *memlistfile = "hunkusage.dat";
 	char *buf;
 	char *buftrav;
 	char *token;
 	int  len;
 
-	len = FS_FOpenFileByMode( memlistfile, &handle, FS_READ );
+	len = FS_FOpenFileRead( memlistfile, &handle, qfalse );
 
 	if ( len >= 0 )
 	{
@@ -688,10 +688,10 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			Cmd_ArgvBuffer( args[ 1 ], (char*) VMA( 2 ), args[ 3 ] );
 			return 0;
 
-		case CG_ARGS:
+		case CG_ESCAPED_ARGS:
 			cls.nCgameUselessSyscalls ++;
 			VM_CheckBlock( args[1], args[2], "ARGS" );
-			Cmd_ArgsBuffer( (char*) VMA( 1 ), args[ 2 ] );
+			Cmd_EscapedArgsBuffer( (char*) VMA( 1 ), args[ 2 ] );
 			return 0;
 
 		case CG_LITERAL_ARGS:
@@ -707,7 +707,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return CL_DemoPos();
 
 		case CG_FS_FOPENFILE:
-			return FS_FOpenFileByMode( (char*) VMA( 1 ), (fileHandle_t*) VMA( 2 ), (fsMode_t) args[ 3 ] );
+			return FS_Game_FOpenFileByMode( (char*) VMA( 1 ), (fileHandle_t*) VMA( 2 ), (fsMode_t) args[ 3 ] );
 
 		case CG_FS_READ:
 			VM_CheckBlock( args[1], args[2], "FSREAD" );
@@ -828,45 +828,41 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 
 		case CG_S_STARTSOUND:
 			cls.nCgameSoundSyscalls ++;
-			S_StartSound( (float*) VMA( 1 ), args[ 2 ], args[ 3 ], args[ 4 ] );
+			Audio::StartSound( args[ 2 ], (float*) VMA( 1 ), args[ 4 ] );
 			return 0;
 
 		case CG_S_STARTLOCALSOUND:
 			cls.nCgameSoundSyscalls ++;
-			S_StartLocalSound( args[ 1 ], args[ 2 ] );
+			Audio::StartLocalSound( args[ 1 ] );
 			return 0;
 
 		case CG_S_CLEARLOOPINGSOUNDS:
 			cls.nCgameSoundSyscalls ++;
-			S_ClearLoopingSounds( args[ 1 ] );
+			Audio::ClearAllLoopingSounds();
 			return 0;
 
 		case CG_S_CLEARSOUNDS:
 			cls.nCgameSoundSyscalls ++;
-
-			/*if(args[1] == 0)
-			{
-			        S_ClearSounds(qtrue, qfalse);
-			}
-			else if(args[1] == 1)
-			{
-			        S_ClearSounds(qtrue, qtrue);
-			}*/
 			return 0;
 
 		case CG_S_ADDLOOPINGSOUND:
-			cls.nCgameSoundSyscalls ++;
-			S_AddLoopingSound( args[ 1 ], (float*) VMA( 2 ), (float*) VMA( 3 ), args[ 4 ] );
-			return 0;
-
 		case CG_S_ADDREALLOOPINGSOUND:
 			cls.nCgameSoundSyscalls ++;
-			S_AddRealLoopingSound( args[ 1 ], (float*) VMA( 2 ), (float*) VMA( 3 ), args[ 4 ] );
+			if( args[ 2 ] )
+			{
+				Audio::UpdateEntityPosition( args[ 1 ], (float*) VMA( 2 ) );
+			}
+			if( args[ 3 ] )
+			{
+				Audio::UpdateEntityPosition( args[ 1 ], (float*) VMA( 3 ) );
+			}
+
+			Audio::AddEntityLoopingSound( args[ 1 ], args[ 4 ]);
 			return 0;
 
 		case CG_S_STOPLOOPINGSOUND:
 			cls.nCgameSoundSyscalls ++;
-			S_StopLoopingSound( args[ 1 ] );
+			Audio::ClearLoopingSoundsForEntity( args[ 1 ] );
 			return 0;
 
 		case CG_S_STOPSTREAMINGSOUND:
@@ -877,26 +873,24 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 
 		case CG_S_UPDATEENTITYPOSITION:
 			cls.nCgameSoundSyscalls ++;
-			S_UpdateEntityPosition( args[ 1 ], (float*) VMA( 2 ) );
+			Audio::UpdateEntityPosition( args[ 1 ], (float*) VMA( 2 ) );
 			return 0;
 
 		case CG_S_RESPATIALIZE:
 			cls.nCgameSoundSyscalls ++;
-			S_Respatialize( args[ 1 ], (float*) VMA( 2 ), (vec3_t*) VMA( 3 ), args[ 4 ] );
+			if (args[ 1 ] >= 0 and args[ 1 ] < MAX_GENTITIES) {
+				Audio::UpdateEntityPosition( args[ 1 ], (float*) VMA( 2 ));
+			}
+			Audio::UpdateListener(args[ 1 ], (vec3_t*) VMA( 3 ) );
 			return 0;
 
 		case CG_S_REGISTERSOUND:
 			cls.nCgameSoundSyscalls ++;
-#ifdef DOOMSOUND ///// (SA) DOOMSOUND
-			return S_RegisterSound( (char*) VMA( 1 ) );
-#else
-			return S_RegisterSound( (char*) VMA( 1 ), args[ 2 ] );
-#endif ///// (SA) DOOMSOUND
+			return Audio::RegisterSFX( (char*) VMA( 1 ) );
 
 		case CG_S_STARTBACKGROUNDTRACK:
 			cls.nCgameSoundSyscalls ++;
-			//S_StartBackgroundTrack(VMA(1), VMA(2), args[3]);  //----(SA)  added fadeup time
-			S_StartBackgroundTrack( (char*) VMA( 1 ), (char*) VMA( 2 ) );
+			Audio::StartMusic( (char*) VMA( 1 ), (char*) VMA( 2 ) );
 			return 0;
 
 		case CG_S_FADESTREAMINGSOUND:
@@ -1115,7 +1109,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 
 		case CG_S_STOPBACKGROUNDTRACK:
 			cls.nCgameSoundSyscalls ++;
-			S_StopBackgroundTrack();
+			Audio::StopMusic();
 			return 0;
 
 		case CG_REAL_TIME:
@@ -1384,6 +1378,16 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			re.SetAltShaderTokens( ( const char * )VMA(1) );
 			return 0;
 
+		case CG_S_UPDATEENTITYVELOCITY:
+			cls.nCgameSoundSyscalls ++;
+			Audio::UpdateEntityVelocity( args[ 1 ], (float*) VMA( 2 ) );
+			return 0;
+
+		case CG_S_SETREVERB:
+			cls.nCgameSoundSyscalls ++;
+			Audio::SetReverb( args[ 1 ], (const char*) VMA( 2 ), VMF( 3 ) );
+			return 0;
+
 		default:
 			Com_Error( ERR_DROP, "Bad cgame system trap: %ld", ( long int ) args[ 0 ] );
 			exit(1); // silence warning, and make sure this behaves as expected, if Com_Error's behavior changes
@@ -1417,7 +1421,7 @@ void CL_UpdateLevelHunkUsage( void )
 
 	memusage = Cvar_VariableIntegerValue( "com_hunkused" ) + Cvar_VariableIntegerValue( "hunk_soundadjust" );
 
-	len = FS_FOpenFileByMode( memlistfile, &handle, FS_READ );
+	len = FS_FOpenFileRead( memlistfile, &handle, qfalse );
 
 	if ( len >= 0 )
 	{
@@ -1498,9 +1502,9 @@ void CL_UpdateLevelHunkUsage( void )
 	}
 
 	// now append the current map to the current file
-	FS_FOpenFileByMode( memlistfile, &handle, FS_APPEND );
+	handle = FS_FOpenFileAppend( memlistfile );
 
-	if ( handle < 0 )
+	if ( handle == 0 )
 	{
 		Com_Error( ERR_DROP, "cannot write to hunkusage.dat, check disk full" );
 	}
@@ -1510,7 +1514,7 @@ void CL_UpdateLevelHunkUsage( void )
 	FS_FCloseFile( handle );
 
 	// now just open it and close it, so it gets copied to the pak dir
-	len = FS_FOpenFileByMode( memlistfile, &handle, FS_READ );
+	len = FS_FOpenFileRead( memlistfile, &handle, qfalse );
 
 	if ( len >= 0 )
 	{
@@ -2030,8 +2034,6 @@ void  CL_OnTeamChanged( int newTeam )
 	 * execute a possibly team aware config each time the team was changed.
 	 * the user can use the cvars p_team or p_teamname (if the cgame sets it) within that config
 	 * to e.g. execute team specific configs, like cg_<team>Config did previously, but with less dependency on the cgame
-	 *
-	 * compared to render settings, that are client/workstation specifc, teamconfigs will always be player and with that profile dependend
 	 */
-	Cmd::BufferCommandText( va( "exec -f profiles/%s/" TEAMCONFIG_NAME, cl_profile->string ) );
+	Cmd::BufferCommandText( "exec -f " TEAMCONFIG_NAME );
 }

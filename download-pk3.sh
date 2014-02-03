@@ -4,7 +4,7 @@
 # 1. Destination directory
 # 2. Cache file directory
 # For system-wide installation, you probably want something like
-# /usr/lib/games/unvanquished/main
+# /usr/lib/games/unvanquished/pkg
 # /var/cache/games/unvanquished
 
 # Requirements: GNU coreutils, grep, sed, diff; curl.
@@ -23,15 +23,15 @@ MIRROR_URL="http://%s.$MIRROR_DOMAIN/project/unvanquished/Assets/"
 # Default destination directory
 case "$(uname -s)" in
   Darwin)
-    DEFAULT_DEST_DIR=~/Library/Application\ Support/Unvanquished/main
+    DEFAULT_DEST_DIR=~/Library/Application\ Support/Unvanquished/pkg
     ;;
   *)
-    DEFAULT_DEST_DIR=~/.Unvanquished/main
+    DEFAULT_DEST_DIR=~/.unvanquished/pkg
     ;;
 esac
 
 # Version of Unvanquished for which this script is built
-VERSION=0.22
+VERSION=0.24
 
 # Option flags
 RUN_DOWNLOAD=1

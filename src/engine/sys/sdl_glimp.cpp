@@ -1813,9 +1813,9 @@ qboolean GLimp_Init( void )
 	glConfig.driverType = GLDRV_ICD;
 
 	r_sdlDriver = ri.Cvar_Get( "r_sdlDriver", "", CVAR_ROM );
-	r_allowResize = ri.Cvar_Get( "r_allowResize", "0", CVAR_ARCHIVE );
-	r_centerWindow = ri.Cvar_Get( "r_centerWindow", "0", CVAR_ARCHIVE );
-	r_displayIndex = ri.Cvar_Get( "r_displayIndex", "0", CVAR_ARCHIVE );
+	r_allowResize = ri.Cvar_Get( "r_allowResize", "0", 0 );
+	r_centerWindow = ri.Cvar_Get( "r_centerWindow", "0", 0 );
+	r_displayIndex = ri.Cvar_Get( "r_displayIndex", "0", 0 );
 	ri.Cmd_AddCommand( "minimize", GLimp_Minimize );
 
 	if ( ri.Cvar_VariableIntegerValue( "com_abnormalExit" ) )

@@ -322,6 +322,7 @@ char *NET_ErrorString( void )
 
 static void NetadrToSockadr( netadr_t *a, struct sockaddr *s )
 {
+	memset( s, 0, sizeof( struct sockaddr ) );
 	if ( a->type == NA_BROADCAST )
 	{
 		( ( struct sockaddr_in * ) s )->sin_family = AF_INET;
@@ -1086,6 +1087,7 @@ SOCKET NET_IPSocket( const char *net_interface, int port, struct sockaddr_in *bi
 
 	if ( !net_interface || !net_interface[ 0 ] )
 	{
+		memset( &address, 0, sizeof( address ) );
 		address.sin_family = AF_INET;
 		address.sin_addr.s_addr = INADDR_ANY;
 	}
@@ -1177,6 +1179,7 @@ SOCKET NET_IP6Socket( const char *net_interface, int port, struct sockaddr_in6 *
 
 	if ( !net_interface || !net_interface[ 0 ] )
 	{
+		memset( &address, 0, sizeof( address ) );
 		address.sin6_family = AF_INET6;
 		address.sin6_addr = in6addr_any;
 	}
@@ -1368,6 +1371,7 @@ void NET_OpenSocks( int port )
 		return;
 	}
 
+	memset( &address, 0, sizeof( address ) );
 	address.sin_family = AF_INET;
 	address.sin_addr.s_addr = * ( int * ) h->h_addr_list[ 0 ];
 	address.sin_port = htons( ( short ) net_socksPort->integer );
@@ -1539,6 +1543,7 @@ void NET_OpenSocks( int port )
 		return;
 	}
 
+	memset( &socksRelayAddr, 0, sizeof( socksRelayAddr ) );
 	( ( struct sockaddr_in * ) &socksRelayAddr )->sin_family = AF_INET;
 	( ( struct sockaddr_in * ) &socksRelayAddr )->sin_addr.s_addr = * ( int * ) &buf[ 4 ];
 	( ( struct sockaddr_in * ) &socksRelayAddr )->sin_port = * ( short * ) &buf[ 8 ];
@@ -1800,12 +1805,12 @@ static qboolean NET_GetCvars( void )
 
 #ifdef DEDICATED
 	// I want server owners to explicitly turn on IPv6 support.
-	net_enabled = Cvar_Get( "net_enabled", "1", CVAR_LATCH | CVAR_ARCHIVE );
+	net_enabled = Cvar_Get( "net_enabled", "1", CVAR_LATCH  );
 #else
 
 	/* End users have it enabled so they can connect to IPv6-only hosts, but IPv4 will be
 	 * used if available due to ping */
-	net_enabled = Cvar_Get( "net_enabled", "3", CVAR_LATCH | CVAR_ARCHIVE );
+	net_enabled = Cvar_Get( "net_enabled", "3", CVAR_LATCH  );
 #endif
 	modified = net_enabled->modified;
 	net_enabled->modified = qfalse;
@@ -1827,35 +1832,35 @@ static qboolean NET_GetCvars( void )
 	net_port6->modified = qfalse;
 
 	// Some cvars for configuring multicast options which facilitates scanning for servers on local subnets.
-	net_mcast6addr = Cvar_Get( "net_mcast6addr", NET_MULTICAST_IP6, CVAR_LATCH | CVAR_ARCHIVE );
+	net_mcast6addr = Cvar_Get( "net_mcast6addr", NET_MULTICAST_IP6, CVAR_LATCH  );
 	modified += net_mcast6addr->modified;
 	net_mcast6addr->modified = qfalse;
 
 #ifdef _WIN32
-	net_mcast6iface = Cvar_Get( "net_mcast6iface", "0", CVAR_LATCH | CVAR_ARCHIVE );
+	net_mcast6iface = Cvar_Get( "net_mcast6iface", "0", CVAR_LATCH  );
 #else
-	net_mcast6iface = Cvar_Get( "net_mcast6iface", "", CVAR_LATCH | CVAR_ARCHIVE );
+	net_mcast6iface = Cvar_Get( "net_mcast6iface", "", CVAR_LATCH  );
 #endif
 	modified += net_mcast6iface->modified;
 	net_mcast6iface->modified = qfalse;
 
-	net_socksEnabled = Cvar_Get( "net_socksEnabled", "0", CVAR_LATCH | CVAR_ARCHIVE );
+	net_socksEnabled = Cvar_Get( "net_socksEnabled", "0", CVAR_LATCH  );
 	modified += net_socksEnabled->modified;
 	net_socksEnabled->modified = qfalse;
 
-	net_socksServer = Cvar_Get( "net_socksServer", "", CVAR_LATCH | CVAR_ARCHIVE );
+	net_socksServer = Cvar_Get( "net_socksServer", "", CVAR_LATCH  );
 	modified += net_socksServer->modified;
 	net_socksServer->modified = qfalse;
 
-	net_socksPort = Cvar_Get( "net_socksPort", "1080", CVAR_LATCH | CVAR_ARCHIVE );
+	net_socksPort = Cvar_Get( "net_socksPort", "1080", CVAR_LATCH  );
 	modified += net_socksPort->modified;
 	net_socksPort->modified = qfalse;
 
-	net_socksUsername = Cvar_Get( "net_socksUsername", "", CVAR_LATCH | CVAR_ARCHIVE );
+	net_socksUsername = Cvar_Get( "net_socksUsername", "", CVAR_LATCH  );
 	modified += net_socksUsername->modified;
 	net_socksUsername->modified = qfalse;
 
-	net_socksPassword = Cvar_Get( "net_socksPassword", "", CVAR_LATCH | CVAR_ARCHIVE );
+	net_socksPassword = Cvar_Get( "net_socksPassword", "", CVAR_LATCH  );
 	modified += net_socksPassword->modified;
 	net_socksPassword->modified = qfalse;
 

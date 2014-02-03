@@ -366,8 +366,8 @@ void           VM_Forced_Unload_Start( void );
 void           VM_Forced_Unload_Done( void );
 vm_t           *VM_Restart( vm_t *vm );
 
-intptr_t QDECL VM_Call( vm_t *vm, int callNum, ... );
-intptr_t QDECL VM_DllSyscall( intptr_t arg, ... );
+ATTRIBUTE_NO_SANITIZE_ADDRESS intptr_t QDECL VM_Call( vm_t *vm, int callNum, ... );
+ATTRIBUTE_NO_SANITIZE_ADDRESS intptr_t QDECL VM_DllSyscall( intptr_t arg, ... );
 
 void           VM_Debug( int level );
 
@@ -439,7 +439,6 @@ void Cmd_CommandCompletion( void ( *callback )( const char *s ) );
 typedef void ( *completionFunc_t )( char *args, int argNum );
 
 void Cmd_OnCompleteMatch(const char* s);
-void Cmd_CommandCompletion( void ( *callback )( const char *s ) );
 void Cmd_AliasCompletion( void ( *callback )( const char *s ) );
 void Cmd_DelayCompletion( void ( *callback )( const char *s ) );
 
@@ -456,8 +455,8 @@ char *Cmd_Argv( int arg );
 void Cmd_ArgvBuffer( int arg, char *buffer, int bufferLength );
 char *Cmd_Args( void );
 char *Cmd_ArgsFrom( int arg );
+void Cmd_EscapedArgsBuffer( char* buffer, int bufferLength ); // from index 0
 void Cmd_LiteralArgsBuffer( char* buffer, int bufferLength );
-void Cmd_ArgsBuffer( char *buffer, int bufferLength );
 const char *Cmd_Cmd( void );
 const char *Cmd_Cmd_FromNth( int );
 
@@ -487,31 +486,7 @@ issues.
 ==============================================================
 */
 
-#define BASEGAME "main"
-
-// referenced flags
-// these are in loop specific order so don't change the order
-#define FS_GENERAL_REF   0x01
-#define FS_UI_REF        0x02
-#define FS_CGAME_REF     0x04
-
-#define MAX_FILE_HANDLES 64
-
-#ifdef WIN32
-#define Q_rmdir          _rmdir
-#else
-#define Q_rmdir          rmdir
-#endif
-
-qboolean FS_Initialized( void );
-
-void     FS_InitFilesystem( void );
-void     FS_Shutdown( qboolean closemfp );
-
-qboolean FS_ConditionalRestart( int checksumFeed );
-void     FS_Restart( int checksumFeed );
-
-// shutdown and restart the filesystem so changes to fs_gamedir can take effect
+#include "../framework/FileSystem.h"
 
 char **FS_ListFiles( const char *directory, const char *extension, int *numfiles );
 
@@ -522,27 +497,19 @@ char **FS_ListFiles( const char *directory, const char *extension, int *numfiles
 void         FS_FreeFileList( char **list );
 
 qboolean     FS_FileExists( const char *file );
-qboolean     FS_OS_FileExists( const char *file );  // TTimo - test file existence given OS path
-
-int          FS_LoadStack( void );
 
 int          FS_GetFileList( const char *path, const char *extension, char *listbuf, int bufsize );
-int          FS_GetModList( char *listbuf, int bufsize );
 
 fileHandle_t FS_FOpenFileWrite( const char *qpath );
 fileHandle_t FS_FOpenFileAppend( const char *filename );
 fileHandle_t  FS_FCreateOpenPipeFile( const char *filename );
 
-void         FS_FChmod( fileHandle_t f, int mode );
-
 // will properly create any needed paths and deal with separator character issues
 
-int          FS_filelength( fileHandle_t f );
 fileHandle_t FS_SV_FOpenFileWrite( const char *filename );
 int          FS_SV_FOpenFileRead( const char *filename, fileHandle_t *fp );
 void         FS_SV_Rename( const char *from, const char *to );
 int          FS_FOpenFileRead( const char *qpath, fileHandle_t *file, qboolean uniqueFILE );
-int          FS_FOpenFileRead_Impure( const char *filename, fileHandle_t *file, qboolean uniqueFILE );
 
 /*
 if uniqueFILE is true, then a new FILE will be fopened even if the file
@@ -552,21 +519,7 @@ It is generally safe to always set uniqueFILE to true, because the majority of
 file IO goes through FS_ReadFile, which Does The Right Thing already.
 */
 
-/* TTimo
-show_bug.cgi?id=506
-added exclude flag to filter out regular dirs or pack files on demand
-would rather have used FS_FOpenFileRead(..., int filter_flag = 0)
-but that's a C++ construct ..
-*/
-#define FS_EXCLUDE_DIR 0x1
-#define FS_EXCLUDE_PK3 0x2
-int FS_FOpenFileRead_Filtered( const char *qpath, fileHandle_t *file, qboolean uniqueFILE, int filter_flag );
-
-int FS_FileIsInPAK( const char *filename, int *pChecksum );
-
-// returns 1 if a file is in the PAK file, otherwise -1
-
-int FS_Delete( char *filename );  // only works inside the 'save' directory (for deleting savegames/images)
+int FS_Delete( const char *filename );  // only works inside the 'save' directory (for deleting savegames/images)
 
 int FS_Write( const void *buffer, int len, fileHandle_t f );
 
@@ -578,9 +531,7 @@ int FS_FCloseFile( fileHandle_t f ); // !0 on error (but errno isn't valid)
 
 // note: you can't just fclose from another DLL, due to MS libc issues
 
-long FS_ReadFileDir( const char *qpath, void *searchPath, void **buffer );
 int  FS_ReadFile( const char *qpath, void **buffer );
-int  FS_ReadFileCheck( const char *qpath, void **buffer );
 
 // returns the length of the file
 // a null buffer will just return the file length without loading,
@@ -615,7 +566,7 @@ void QDECL FS_Printf( fileHandle_t f, const char *fmt, ... ) PRINTF_LIKE(2);
 
 // like fprintf
 
-int FS_FOpenFileByMode( const char *qpath, fileHandle_t *f, fsMode_t mode );
+int FS_Game_FOpenFileByMode( const char *qpath, fileHandle_t *f, fsMode_t mode );
 
 // opens a file for reading, writing, or appending depending on the value of mode
 
@@ -623,74 +574,19 @@ int FS_Seek( fileHandle_t f, long offset, int origin );
 
 // seek on a file (doesn't work for zip files!!!!!!!!)
 
-qboolean   FS_FilenameCompare( const char *s1, const char *s2 );
+const char* FS_LoadedPaks();
 
-const char *FS_LoadedPakNames( void );
-const char *FS_LoadedPakChecksums( void );
-const char *FS_LoadedPakPureChecksums( void );
+// Returns a space separated string containing all loaded pk3 files.
 
-// Returns a space separated string containing the checksums of all loaded pk3 files.
-// Servers with sv_pure set will get this string and pass it to clients.
+bool     FS_LoadPak( const char *name );
+void     FS_LoadBasePak();
+bool     FS_LoadServerPaks( const char* paks );
 
-const char *FS_ReferencedPakNames( void );
-const char *FS_ReferencedPakChecksums( void );
-const char *FS_ReferencedPakPureChecksums( void );
-
-// Returns a space separated string containing the checksums of all loaded
-// AND referenced pk3 files. Servers with sv_pure set will get this string
-// back from clients for pure validation
-
-void FS_ClearPakReferences( int flags );
-
-// clears referenced booleans on loaded pk3s
-
-void FS_PureServerSetReferencedPaks( const char *pakSums, const char *pakNames );
-void FS_PureServerSetLoadedPaks( const char *pakSums, const char *pakNames );
-
-// If the string is empty, all data sources will be allowed.
-// If not empty, only pk3 files that match one of the space
-// separated checksums will be checked for files, with the
-// sole exception of .cfg files.
+// shutdown and restart the filesystem so changes to fs_gamedir can take effect
 
 qboolean   FS_ComparePaks( char *neededpaks, int len, qboolean dlstring );
 
 void       FS_Rename( const char *from, const char *to );
-
-char       *FS_BuildOSPath( const char *base, const char *game, const char *qpath );
-
-#if defined( DO_LIGHT_DEDICATED )
-int FS_RandChecksumFeed( void );
-
-#endif
-
-char         *FS_ShiftStr( const char *string, int shift );
-
-void         FS_CopyFile( char *fromOSPath, char *toOSPath );
-
-char         *FS_FindDll( const char *filename );
-
-qboolean     FS_CreatePath( const char *OSPath );
-
-qboolean     FS_VerifyPak( const char *pak );
-
-qboolean     FS_IsPure( void );
-
-void         FS_Remove( const char *ospath );
-
-// XreaL BEGIN
-void         FS_HomeRemove( const char *homePath );
-
-// XreaL END
-
-void       FS_FilenameCompletion( const char *dir, const char *ext,
-                                  qboolean stripExt, void ( *callback )( const char *s ) );
-
-qboolean   FS_Which( const char *filename, void *searchPath );
-
-namespace FS {
-    std::vector<std::pair<std::string, std::string>> CompleteFilenameInDir(Str::StringRef prefix, Str::StringRef dir,
-                                                                           Str::StringRef extension, bool stripExtension = true);
-}
 
 /*
 ==============================================================
@@ -799,11 +695,6 @@ void       Com_SetRecommended( void );
 // checks for and removes command line "+set var arg" constructs
 // if match is NULL, all set commands will be executed, otherwise
 // only a set with the exact name.  Only used during startup.
-
-//bani - profile functions
-void                Com_TrackProfile( char *profile_path );
-qboolean            Com_CheckProfile( char *profile_path );
-qboolean            Com_WriteProfile( char *profile_path );
 
 extern cvar_t       *com_crashed;
 
@@ -916,7 +807,7 @@ double Sys_DoubleTime( void );
 // commandLine should not include the executable name (argv[0])
 void   Com_Init( char *commandLine );
 void   Com_Frame( void );
-void   Com_Shutdown( qboolean badProfile );
+void   Com_Shutdown();
 
 /*
 ==============================================================

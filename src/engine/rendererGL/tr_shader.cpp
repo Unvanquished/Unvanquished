@@ -1724,11 +1724,6 @@ static qboolean LoadMap( shaderStage_t *stage, char *buffer )
 		imageBits |= IF_NOCOMPRESSION;
 	}
 
-	if ( stage->forceHighQuality )
-	{
-		imageBits |= IF_NOCOMPRESSION;
-	}
-
 	if ( stage->stateBits & ( GLS_ATEST_BITS ) )
 	{
 		imageBits |= IF_ALPHATEST;
@@ -1760,6 +1755,40 @@ static qboolean LoadMap( shaderStage_t *stage, char *buffer )
 		ri.Printf( PRINT_WARNING, "WARNING: R_FindImageFile could not find image '%s' in shader '%s'\n", buffer, shader.name );
 		return qfalse;
 	}
+
+	return qtrue;
+}
+
+/*
+===================
+ParseClampType
+===================
+*/
+static qboolean ParseClampType( char *token, wrapType_t *clamp )
+{
+	bool s = true, t = true;
+	wrapTypeEnum_t type;
+
+	// handle prefixing with 'S' or 'T'
+	switch ( token[ 0 ] & 0xDF )
+	{
+	case 'S': t = false; ++token; break;
+	case 'T': s = false; ++token; break;
+	}
+
+	// get the clamp type
+	if      ( !Q_stricmp( token, "clamp"          ) ) { type = WT_CLAMP; }
+	else if ( !Q_stricmp( token, "edgeClamp"      ) ) { type = WT_EDGE_CLAMP; }
+	else if ( !Q_stricmp( token, "zeroClamp"      ) ) { type = WT_ZERO_CLAMP; }
+	else if ( !Q_stricmp( token, "alphaZeroClamp" ) ) { type = WT_ALPHA_ZERO_CLAMP; }
+	else if ( !Q_stricmp( token, "noClamp"        ) ) { type = WT_REPEAT; }
+	else // not recognised
+	{
+		return qfalse;
+	}
+
+	if (s) { clamp->s = type; }
+	if (t) { clamp->t = type; }
 
 	return qtrue;
 }
@@ -2080,35 +2109,10 @@ static qboolean ParseStage( shaderStage_t *stage, char **text )
 		{
 			stage->overrideNoPicMip = qtrue;
 		}
-		// clamp
-		else if ( !Q_stricmp( token, "clamp" ) )
+		// clamp, edgeClamp etc.
+		else if ( ParseClampType( token, &stage->wrapType ) )
 		{
 			stage->overrideWrapType = qtrue;
-			stage->wrapType = WT_CLAMP;
-		}
-		// edgeClamp
-		else if ( !Q_stricmp( token, "edgeClamp" ) )
-		{
-			stage->overrideWrapType = qtrue;
-			stage->wrapType = WT_EDGE_CLAMP;
-		}
-		// zeroClamp
-		else if ( !Q_stricmp( token, "zeroClamp" ) )
-		{
-			stage->overrideWrapType = qtrue;
-			stage->wrapType = WT_ZERO_CLAMP;
-		}
-		// alphaZeroClamp
-		else if ( !Q_stricmp( token, "alphaZeroClamp" ) )
-		{
-			stage->overrideWrapType = qtrue;
-			stage->wrapType = WT_ALPHA_ZERO_CLAMP;
-		}
-		// noClamp
-		else if ( !Q_stricmp( token, "noClamp" ) )
-		{
-			stage->overrideWrapType = qtrue;
-			stage->wrapType = WT_REPEAT;
 		}
 		// uncompressed
 		else if ( !Q_stricmp( token, "uncompressed" ) )
@@ -3492,7 +3496,7 @@ static void ParseDiffuseMap( shaderStage_t *stage, char **text )
 
 	if ( !r_compressDiffuseMaps->integer )
 	{
-		stage->forceHighQuality = qtrue;
+		stage->uncompressed = qtrue;
 	}
 
 	if ( ParseMap( stage, text, buffer, sizeof( buffer ) ) )
@@ -3512,7 +3516,7 @@ static void ParseNormalMap( shaderStage_t *stage, char **text )
 
 	if ( !r_compressNormalMaps->integer )
 	{
-		stage->forceHighQuality = qtrue;
+		stage->uncompressed = qtrue;
 	}
 
 	if ( r_highQualityNormalMapping->integer )
@@ -3540,7 +3544,7 @@ static void ParseSpecularMap( shaderStage_t *stage, char **text )
 
 	if ( !r_compressSpecularMaps->integer )
 	{
-		stage->forceHighQuality = qtrue;
+		stage->uncompressed = qtrue;
 	}
 
 	if ( ParseMap( stage, text, buffer, sizeof( buffer ) ) )
@@ -4583,28 +4587,9 @@ static qboolean ParseShader( char *_text )
 			shader.cullType = CT_BACK_SIDED;
 			continue;
 		}
-		// clamp
-		else if ( !Q_stricmp( token, "clamp" ) )
+		// clamp, edgeClamp etc.
+		else if ( ParseClampType( token, &shader.wrapType ) )
 		{
-			shader.wrapType = WT_CLAMP;
-			continue;
-		}
-		// edgeClamp
-		else if ( !Q_stricmp( token, "edgeClamp" ) )
-		{
-			shader.wrapType = WT_EDGE_CLAMP;
-			continue;
-		}
-		// zeroClamp
-		else if ( !Q_stricmp( token, "zeroclamp" ) )
-		{
-			shader.wrapType = WT_ZERO_CLAMP;
-			continue;
-		}
-		// alphaZeroClamp
-		else if ( !Q_stricmp( token, "alphaZeroClamp" ) )
-		{
-			shader.wrapType = WT_ALPHA_ZERO_CLAMP;
 			continue;
 		}
 		// sort
@@ -6093,7 +6078,7 @@ shader_t       *R_FindShader( const char *name, shaderType_t type,
 		// of all explicit shaders
 		if ( r_printShaders->integer )
 		{
-			ri.Printf( PRINT_DEVELOPER, "...loading explicit shader '%s'\n", strippedName );
+			ri.Printf( PRINT_ALL, "...loading explicit shader '%s'\n", strippedName );
 		}
 
 		if ( !ParseShader( shaderText ) )
@@ -6571,8 +6556,8 @@ void R_ShaderExp_f( void )
 
 	for ( i = 1; i < ri.Cmd_Argc(); i++ )
 	{
-		strcat( buffer, ri.Cmd_Argv( i ) );
-		strcat( buffer, " " );
+		strncat( buffer, ri.Cmd_Argv( i ), sizeof( buffer ) - 1 );
+		strncat( buffer, " ", sizeof( buffer ) - 1 );
 	}
 
 	len = strlen( buffer );
@@ -6601,7 +6586,7 @@ static void ScanAndLoadGuideFiles( void )
 	char *p;
 	int  numGuides;
 	int  i;
-	char *oldp, *token, *hashMem;
+	char *oldp, *token, **hashMem;
 	int  guideTextHashTableSizes[ MAX_GUIDETEXT_HASH ], hash, size;
 	char filename[ MAX_QPATH ];
 	long sum = 0;
@@ -6740,12 +6725,12 @@ static void ScanAndLoadGuideFiles( void )
 
 	size += MAX_GUIDETEXT_HASH;
 
-	hashMem = (char*) ri.Hunk_Alloc( size * sizeof( char * ), h_low );
+	hashMem = (char**) ri.Hunk_Alloc( size * sizeof( char * ), h_low );
 
 	for ( i = 0; i < MAX_GUIDETEXT_HASH; i++ )
 	{
-		guideTextHashTable[ i ] = ( char ** ) hashMem;
-		hashMem = ( ( char * ) hashMem ) + ( ( guideTextHashTableSizes[ i ] + 1 ) * sizeof( char * ) );
+		guideTextHashTable[ i ] = hashMem;
+		hashMem += guideTextHashTableSizes[ i ] + 1;
 	}
 
 	Com_Memset( guideTextHashTableSizes, 0, sizeof( guideTextHashTableSizes ) );
@@ -6867,7 +6852,6 @@ static void ScanAndLoadShaderFiles( void )
 	if ( !shaderFiles || !numShaderFiles )
 	{
 		ri.Printf( PRINT_WARNING, "WARNING: no shader files found\n" );
-		return;
 	}
 
 	if ( numShaderFiles > MAX_SHADER_FILES )

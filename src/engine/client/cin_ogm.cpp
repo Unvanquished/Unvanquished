@@ -57,7 +57,6 @@ theora:
 #include <theora/theora.h>
 
 #include "client.h"
-#include "snd_local.h"
 
 #define OGG_BUFFER_SIZE 8 * 1024 //4096
 
@@ -230,8 +229,7 @@ static qboolean loadAudio( void )
 				// tell libvorbis how many samples we actually consumed
 				vorbis_synthesis_read( &g_ogm.vd, i );
 
-//              S_RawSamples( ssize, 22050, 2, 2, (byte *)sbuf, 1.0f );
-				S_RawSamples( 0, i, g_ogm.vi.rate, 2, 2, rawBuffer, 1.0f, 1.0f );
+				Audio::StreamData( 0, rawBuffer, i, g_ogm.vi.rate, 2, 2, 1.0f, 1);
 
 				anyDataTransferred = qtrue;
 			}

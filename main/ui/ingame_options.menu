@@ -56,13 +56,17 @@
       setitemcolor controlsBtn         forecolor 0.14 0.8 0.8 1.0;
       setitemcolor systemBtn           forecolor 0.14 0.8 0.8 1.0
     }
+	onClose
+	{
+		exec "stopSoundCaptureTest"
+	}
 
     itemDef
     {
       name window
       rect -40 0 (W+100) H
       style WINDOW_STYLE_SHADER
-      background "ui/assets/vertgrad.tga"
+      background "ui/assets/vertgrad"
       forecolor MENU_TEAL_TRANS
       visible MENU_TRUE
       decoration
@@ -487,7 +491,7 @@
 
 //////// Display
 	MULTIX	( gdisplay, "Quality:", "ui_glCustom",
-			"High" 0 "Intermediate" 1 "Low" 2 "Very Low" 3 "Custom" 4,
+			"High" 0 "Intermediate" 1 "Dlights, no fx" 5 "Low" 2 "Very Low" 3 "Custom" 4,
 			play "sound/misc/menu1.wav"; uiScript update "ui_glCustom",
 			0 )
 	COMBOX	( gdisplay, "Video Mode:", FEEDER_RESOLUTIONS,
@@ -719,19 +723,21 @@
     }
 
 	TEXTX	( netsound, "Sound", 0 )
-	SLIDERX	( netsound, "Effects Volume:", "s_volume", .7, 0, 1, 1 )
-	SLIDERX	( netsound, "Music Volume:", "s_musicvolume", .25, 0, 1, 2 )
-	YESNOX	( netsound, "OpenAL:", "s_useOpenAL", play "sound/misc/menu1.wav", 3 )
-	YESNOX  ( netsound, "OpenAL Capture", "s_alCapture", play "sound/misc/menu1.wav", 4 )
-	COMBOX  ( netsound, "OpenAL Device:", FEEDER_ALOUTPUT, 5 )
-	COMBOX  ( netsound, "OpenAL Capture Device:", FEEDER_VOIPINPUT, 6 )
-	YESNOX	( netsound, "Doppler Sound:", "s_doppler", play "sound/misc/menu1.wav", 7 )
-	TEXTX	( netsound, "Network", 9 )
+	SLIDERX	( netsound, "Global Volume:", "audio.volume.master", 1.0, 0, 1, 1 )
+	SLIDERX	( netsound, "Effects Volume:", "audio.volume.effects", .7, 0, 1, 2 )
+	SLIDERX	( netsound, "Music Volume:", "audio.volume.music", .7, 0, 1, 3 )
+	SLIDERX	( netsound, "Reverb Intensity:", "audio.reverbIntensity", .4, 0, 1, 4 )
+	SLIDERX	( netsound, "Doppler Intensity:", "audio.dopplerExaggeration", .4, 0, 1, 5 )
+	COMBOX  ( netsound, "OpenAL Device:", FEEDER_ALOUTPUT, 6 )
+	COMBOX  ( netsound, "OpenAL Capture Device:", FEEDER_VOIPINPUT, 7 )
+	BUTTONX ( netsound, "Test the Capture", exec "startSoundCaptureTest", 8 )
+	BUTTONX ( netsound, "Stop the Capture Test", exec "stopSoundCaptureTest", 9 )
+	TEXTX	( netsound, "Network", 10 )
 	MULTIX	( netsound, "Net Data Rate:", "rate",
 			"<=28.8k" 2500 "33.6k" 3000 "56k" 4000 "ISDN" 5000 "LAN/CABLE/xDSL" 25000,
 			play "sound/misc/menu1.wav",
-			10 )
-	BUTTONX	( netsound, APPLY, play "sound/misc/menu1.wav"; exec "snd_restart", 12 )
+			11 )
+	BUTTONX	( netsound, APPLY, play "sound/misc/menu1.wav"; exec "snd_restart", 13 )
 
 //////// VOIP
 

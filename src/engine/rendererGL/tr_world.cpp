@@ -157,7 +157,8 @@ static qboolean R_CullSurface( surfaceType_t *surface, shader_t *shader, int *fr
 	// plane cull
 	if ( *surface == SF_FACE && r_facePlaneCull->integer )
 	{
-		d = DotProduct( tr.orientation.viewOrigin, gen->plane.normal ) - gen->plane.dist;
+		srfSurfaceFace_t *srf = ( srfSurfaceFace_t * )gen;
+		d = DotProduct( tr.orientation.viewOrigin, srf->plane.normal ) - srf->plane.dist;
 
 		if ( d > 0.0f )
 		{
@@ -272,13 +273,14 @@ static qboolean R_CullLightSurface( surfaceType_t *surface, shader_t *shader, tr
 	// plane cull
 	if ( *surface == SF_FACE && r_facePlaneCull->integer )
 	{
+		srfSurfaceFace_t *srf = ( srfSurfaceFace_t * )gen;
 		if ( light->l.rlType == RL_DIRECTIONAL )
 		{
-			d = DotProduct( tr.sunDirection, gen->plane.normal );
+			d = DotProduct( tr.sunDirection, srf->plane.normal );
 		}
 		else
 		{
-			d = DotProduct( light->origin, gen->plane.normal ) - gen->plane.dist;
+			d = DotProduct( light->origin, srf->plane.normal ) - srf->plane.dist;
 		}
 		// don't cull exactly on the plane, because there are levels of rounding
 		// through the BSP, ICD, and hardware that may cause pixel gaps if an
@@ -505,36 +507,9 @@ void R_AddBSPModelSurfaces( trRefEntity_t *ent )
 
 	fogNum = R_FogWorldBox( ent->worldBounds );
 
-	if ( r_vboModels->integer && bspModel->numVBOSurfaces )
+	for ( i = 0; i < bspModel->numSurfaces; i++ )
 	{
-		srfVBOMesh_t *vboSurface;
-
-		for ( i = 0; i < bspModel->numVBOSurfaces; i++ )
-		{
-			vboSurface = bspModel->vboSurfaces[ i ];
-
-			R_AddDrawSurf( ( surfaceType_t * ) vboSurface, vboSurface->shader, vboSurface->lightmapNum, fogNum );
-		}
-
-		// Tr3B: also add surfaces like deform autosprite
-		for ( i = 0; i < bspModel->numSurfaces; i++ )
-		{
-			bspSurface_t *surf = bspModel->firstSurface + i;
-
-			if ( !ShaderRequiresCPUDeforms( surf->shader ) )
-			{
-				continue;
-			}
-
-			R_AddBrushModelSurface( surf, fogNum );
-		}
-	}
-	else
-	{
-		for ( i = 0; i < bspModel->numSurfaces; i++ )
-		{
-			R_AddBrushModelSurface( bspModel->firstSurface + i, fogNum );
-		}
+		R_AddBrushModelSurface( bspModel->firstSurface + i, fogNum );
 	}
 }
 

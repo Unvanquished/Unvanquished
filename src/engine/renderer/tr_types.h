@@ -165,7 +165,7 @@ typedef enum
   SK_ABSOLUTE
 } refSkeletonType_t;
 
-typedef struct
+typedef ALIGNED(16, struct
 {
 	refSkeletonType_t type; // skeleton has been reset
 
@@ -175,7 +175,7 @@ typedef struct
 	vec3_t            bounds[ 2 ]; // bounds of all applied animations
 	vec_t             scale;
 	int               padding[ 3 ]; // pad to multiple of 16 bytes for QVM code
-} refSkeleton_t;
+} ) refSkeleton_t;
 
 // XreaL END
 

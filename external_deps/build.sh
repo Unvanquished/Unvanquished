@@ -7,24 +7,24 @@ set -u
 
 # Package versions
 PKGCONFIG_VERSION=0.28
-NASM_VERSION=2.10.09
+NASM_VERSION=2.11
 ZLIB_VERSION=1.2.8
 GMP_VERSION=5.1.3
 NETTLE_VERSION=2.7.1
 GEOIP_VERSION=1.6.0
-CURL_VERSION=7.33.0
+CURL_VERSION=7.34.0
 SDL2_VERSION=2.0.1
 GLEW_VERSION=1.10.0
-PNG_VERSION=1.6.6
+PNG_VERSION=1.6.8
 JPEG_VERSION=1.3.0
-WEBP_VERSION=0.3.1
-FREETYPE_VERSION=2.5.0.1
+WEBP_VERSION=0.4.0
+FREETYPE_VERSION=2.5.2
 OPENAL_VERSION=1.15.1
 OGG_VERSION=1.3.1
 VORBIS_VERSION=1.3.3
 SPEEX_VERSION=1.2rc1
 THEORA_VERSION=1.1.1
-OPUS_VERSION=1.0.3
+OPUS_VERSION=1.1
 OPUSFILE_VERSION=0.4
 
 # Download and extract a file
@@ -285,15 +285,10 @@ build_freetype() {
 	download "freetype-${FREETYPE_VERSION}.tar.bz2" "http://download.savannah.gnu.org/releases/freetype/freetype-${FREETYPE_VERSION}.tar.bz2"
 	cd "freetype-${FREETYPE_VERSION}"
 	make distclean || true
-	./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED[@]} --without-bzip2
+	./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED[@]} --without-bzip2 --without-png
 	make clean
 	make
 	make install
-	case "${PLATFORM}" in
-	mingw*|msvc*)
-		cp "include/freetype/config/ftconfig.h" "${PREFIX}/include/freetype2/freetype/config/"
-		;;
-	esac
 	cd ..
 }
 
@@ -317,7 +312,7 @@ build_openal() {
 		cd ..
 		;;
 	macosx*)
-		download "openal-soft-${OPENAL_VERSION}.tar.bz2" "http://kcat.strangesoft.net/openal-soft-${OPENAL_VERSION}.tar.bz2"
+		download "openal-soft-${OPENAL_VERSION}.tar.bz2" "http://kcat.strangesoft.net/openal-releases/openal-soft-${OPENAL_VERSION}.tar.bz2"
 		cd "openal-soft-${OPENAL_VERSION}"
 		rm -rf CMakeCache.txt CMakeFiles
 		case "${PLATFORM}" in
@@ -372,8 +367,8 @@ build_speex() {
 	make distclean || true
 	./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED[@]}
 	local TMP_FILE="`mktemp /tmp/config.XXXXXXXXXX`"
-	sed "s/deplibs_check_method=.*/deplibs_check_method=pass_all/g" libtool > "$TMP_FILE"
-	mv "$TMP_FILE" libtool
+	sed "s/deplibs_check_method=.*/deplibs_check_method=pass_all/g" libtool > "${TMP_FILE}"
+	mv "${TMP_FILE}" libtool
 	make clean
 	make
 	make install
@@ -388,11 +383,11 @@ build_theora() {
 	case "${PLATFORM}" in
 	mingw*|msvc*)
 		local TMP_FILE="`mktemp /tmp/config.XXXXXXXXXX`"
-		sed "s,EXPORTS,," "win32/xmingw32/libtheoradec-all.def" > "$TMP_FILE"
-		mv "$TMP_FILE" "win32/xmingw32/libtheoradec-all.def"
+		sed "s,EXPORTS,," "win32/xmingw32/libtheoradec-all.def" > "${TMP_FILE}"
+		mv "${TMP_FILE}" "win32/xmingw32/libtheoradec-all.def"
 		local TMP_FILE="`mktemp /tmp/config.XXXXXXXXXX`"
-		sed "s,EXPORTS,," "win32/xmingw32/libtheoraenc-all.def" > "$TMP_FILE"
-		mv "$TMP_FILE" "win32/xmingw32/libtheoraenc-all.def"
+		sed "s,EXPORTS,," "win32/xmingw32/libtheoraenc-all.def" > "${TMP_FILE}"
+		mv "${TMP_FILE}" "win32/xmingw32/libtheoraenc-all.def"
 		;;
 	esac
 	./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED[@]} --disable-examples --disable-encode
@@ -430,6 +425,7 @@ build_opusfile() {
 common_setup() {
 	PREFIX="${PWD}/${PLATFORM}"
 	export PATH="${PATH}:${PREFIX}/bin"
+	export PKG_CONFIG="pkg-config"
 	export PKG_CONFIG_PATH="${PREFIX}/lib/pkgconfig"
 	export CPPFLAGS="${CPPFLAGS:-} -I${PREFIX}/include"
 	export LDFLAGS="${LDFLAGS:-} -L${PREFIX}/lib"
@@ -522,7 +518,7 @@ if [ "${#}" -lt "2" ]; then
 	echo "Packages requires for each platform:"
 	echo "Linux to Windows cross-compile: zlib gmp nettle geoip curl sdl2 glew png jpeg webp freetype openal ogg vorbis speex theora opus opusfile"
 	echo "Native Windows compile: pkgconfig nasm zlib gmp nettle geoip curl sdl2 glew png jpeg webp freetype openal ogg vorbis speex theora opus opusfile"
-	echo "Native Mac OS X compile: pkgconfig nasm gmp nettle geoip sdl2 glew png jpeg webp freetype ogg vorbis speex theora opus opusfile"
+	echo "Native Mac OS X compile: pkgconfig nasm gmp nettle geoip sdl2 glew png jpeg webp freetype openal ogg vorbis speex theora opus opusfile"
 	exit 1
 fi
 
@@ -567,13 +563,22 @@ case "${PLATFORM}" in
 msvc*)
 	mkdir -p "${PREFIX}/def"
 	cd "${PREFIX}/def"
-	echo 'cd "%~dp0"' > "${PREFIX}/genlib.bat"
+	echo 'cd /d "%~dp0"' > "${PREFIX}/genlib.bat"
 	for DLL_A in "${PREFIX}"/lib/*.dll.a; do
 		DLL=`${HOST}-dlltool -I "${DLL_A}"`
 		DEF=`basename ${DLL} .dll`.def
 		LIB=`basename ${DLL_A} .dll.a`.lib
 		MACHINE=`[ "${PLATFORM}" = msvc32 ] && echo x86 || echo x64`
-		gendef "${PREFIX}/bin/${DLL}" # Requires mingw-w64-tools
+
+		# Using gendef from mingw-w64-tools
+		gendef "${PREFIX}/bin/${DLL}"
+
+		# Fix some issues with gendef output
+		TMP_FILE="`mktemp /tmp/config.XXXXXXXXXX`"
+		sed "s/\(glew.*\)@4@4/\1@4/" "${DEF}" > "${TMP_FILE}"
+		sed "s/ov_halfrate_p@0/ov_halfrate_p/" "${TMP_FILE}" > "${DEF}"
+		rm -f "${TMP_FILE}"
+
 		echo "lib /def:def\\${DEF} /machine:${MACHINE} /out:lib\\${LIB}" >> "${PREFIX}/genlib.bat"
 	done
 	cd ../..

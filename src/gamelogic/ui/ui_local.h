@@ -62,16 +62,9 @@ void     UI_DrawConnectScreen( qboolean overlay );
 #define MAX_MOVIES              256
 #define MAX_HELP_INFOPANES      32
 #define MAX_RESOLUTIONS         32
-#define MAX_PROFILES            64
 #define MAX_LANGUAGES           16
 #define MAX_HUDS                16
 #define MAX_SOUND_DEVICES       16
-
-typedef struct
-{
-	const char *name;
-	const char *dir;
-} profileInfo_t;
 
 typedef struct
 {
@@ -304,8 +297,9 @@ typedef struct
 	int                 helpCount;
 	int                 helpIndex;
 
-	int                 weapons;
+	int                 weapon;
 	int                 upgrades;
+	int                 credits;
 
 	serverStatus_t      serverStatus;
 
@@ -339,10 +333,6 @@ typedef struct
 	int                   hudCount;
 	hudInfo_t             huds[ MAX_HUDS ];
 	int                   hudIndex;
-
-	profileInfo_t         profileList[ MAX_PROFILES ];
-	int                   profileCount;
-	int                   profileIndex;
 
 	const char            *voipInput[ MAX_SOUND_DEVICES ];
 	int                   voipInputCount;

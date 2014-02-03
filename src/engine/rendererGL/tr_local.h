@@ -29,7 +29,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../qcommon/qcommon.h"
 #include "../renderer/tr_public.h"
 #include "../renderer/iqm.h"
-#include "../renderer/tr_bonematrix.h"
 
 #include "../renderer/tr_public.h"
 
@@ -63,6 +62,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define CALC_REDUNDANT_SHADOWVERTS 0
 
 #define GLSL_COMPILE_STARTUP_ONLY  1
+
+#define MAX_TEXTURE_MIPS      16
+#define MAX_TEXTURE_LAYERS    256
 
 // visibility tests: check if a 3D-point is visible
 // results may be delayed, but for visual effect like flares this
@@ -459,7 +461,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	  IF_RGBE = BIT( 16 ),
 	  IF_ALPHATEST = BIT( 17 ),
 	  IF_DISPLACEMAP = BIT( 18 ),
-	  IF_NOLIGHTSCALE = BIT( 19 )
+	  IF_NOLIGHTSCALE = BIT( 19 ),
+	  IF_BC1 = BIT( 20 ),
+	  IF_BC3 = BIT( 21 ),
+	  IF_BC4 = BIT( 22 ),
+	  IF_BC5 = BIT( 23 )
 	};
 
 	typedef enum
@@ -477,7 +483,23 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	  WT_ONE_CLAMP,
 	  WT_ZERO_CLAMP, // guarantee 0,0,0,255 edge for projected textures
 	  WT_ALPHA_ZERO_CLAMP // guarante 0 alpha edge for projected textures
+	} wrapTypeEnum_t;
+
+	typedef struct wrapType_s
+	{
+		wrapTypeEnum_t s, t;
+
+		wrapType_s() : s(WT_CLAMP), t(WT_CLAMP) {}
+		wrapType_s( wrapTypeEnum_t w ) : s(w), t(w) {}
+		wrapType_s( wrapTypeEnum_t s, wrapTypeEnum_t t ) : s(s), t(t) {}
+
+		inline struct wrapType_s &operator =( wrapTypeEnum_t w ) { this->s = this->t = w; return *this; }
+
 	} wrapType_t;
+
+	static inline bool operator ==( const wrapType_t &a, const wrapType_t &b ) { return a.s == b.s && a.t == b.t; }
+	static inline bool operator !=( const wrapType_t &a, const wrapType_t &b ) { return a.s != b.s || a.t != b.t; }
+
 
 	typedef struct image_s
 	{
@@ -498,7 +520,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 		uint32_t       bits;
 		filterType_t   filterType;
-		wrapType_t     wrapType; // GL_CLAMP or GL_REPEAT
+		wrapType_t     wrapType;
 
 		struct image_s *next;
 	} image_t;
@@ -1777,7 +1799,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		vec3_t   bounds[ 2 ];
 		vec3_t   origin;
 		float    radius;
-		cplane_t plane;
 
 		// dynamic lighting information
 //	int             dlightBits[SMP_FRAMES];
@@ -1785,18 +1806,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 	srfGeneric_t;
 
-	typedef struct srfGridMesh_s
+	typedef struct srfGridMesh_s : srfGeneric_s
 	{
-		// srfGeneric_t BEGIN
-		surfaceType_t surfaceType;
-
-		vec3_t        bounds[ 2 ];
-		vec3_t        origin;
-		float         radius;
-		cplane_t      plane;
-
-		// srfGeneric_t END
-
 		// lod information, which may be different
 		// than the culling information to allow for
 		// groups of curves that LOD as a unit
@@ -1825,17 +1836,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		IBO_t *ibo;
 	} srfGridMesh_t;
 
-	typedef struct
+	typedef struct srfSurfaceFace_s : srfGeneric_s
 	{
-		// srfGeneric_t BEGIN
-		surfaceType_t surfaceType;
-
-		vec3_t        bounds[ 2 ];
-		vec3_t        origin;
-		float         radius;
-		cplane_t      plane;
-
-		// srfGeneric_t END
+		cplane_t     plane;
 
 		// triangle definitions
 		int           numTriangles;
@@ -1854,18 +1857,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	} srfSurfaceFace_t;
 
 // misc_models in maps are turned into direct geometry by xmap
-	typedef struct
+	typedef struct srfTriangles_s : srfGeneric_s
 	{
-		// srfGeneric_t BEGIN
-		surfaceType_t surfaceType;
-
-		vec3_t        bounds[ 2 ];
-		vec3_t        origin;
-		float         radius;
-		cplane_t      plane;
-
-		// srfGeneric_t END
-
 		// triangle definitions
 		int           numTriangles;
 		srfTriangle_t *triangles;
@@ -1882,14 +1875,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		IBO_t *ibo;
 	} srfTriangles_t;
 
-	typedef struct srfVBOMesh_s
+	typedef struct srfVBOMesh_s : srfGeneric_s
 	{
-		surfaceType_t   surfaceType;
-
-		vec3_t          bounds[ 2 ];
-		vec3_t          origin;
-		float           radius;
-
 		struct shader_s *shader; // FIXME move this to somewhere else
 
 		int             lightmapNum; // FIXME get rid of this by merging all lightmaps at level load
@@ -2048,9 +2035,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		uint32_t     numSurfaces;
 		bspSurface_t *firstSurface;
 
-		uint32_t     numVBOSurfaces;
-		srfVBOMesh_t **vboSurfaces;
-
 		// ydnar: decals
 		decal_t *decals;
 	} bspModel_t;
@@ -2108,8 +2092,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 //  int             numAreaPortals;
 //  bspAreaPortal_t *areaPortals;
-
-		int                numWorldSurfaces;
 
 		int                numSurfaces;
 		bspSurface_t       *surfaces;
@@ -3018,6 +3000,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	extern cvar_t *r_compressDiffuseMaps;
 	extern cvar_t *r_compressSpecularMaps;
 	extern cvar_t *r_compressNormalMaps;
+	extern cvar_t *r_exportTextures;
 	extern cvar_t *r_heatHaze;
 	extern cvar_t *r_heatHazeFix;
 	extern cvar_t *r_noMarksOnTrisurfs;
@@ -3399,7 +3382,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //----(SA) end
 
 	qboolean   R_GetEntityToken( char *buffer, int size );
-	float      R_ProcessLightmap( byte *pic, int in_padding, int width, int height, byte *pic_out );  // Arnout
+	float      R_ProcessLightmap( byte *pic, int in_padding, int width, int height, int bits, byte *pic_out );  // Arnout
 
 	model_t    *R_AllocModel( void );
 
@@ -3437,17 +3420,18 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	image_t *R_FindImageFile( const char *name, int bits, filterType_t filterType, wrapType_t wrapType, const char *materialName );
 	image_t *R_FindCubeImage( const char *name, int bits, filterType_t filterType, wrapType_t wrapType, const char *materialName );
 
-	image_t *R_CreateImage( const char *name, const byte *pic, int width, int height, int bits, filterType_t filterType,
-	                        wrapType_t wrapType );
+	image_t *R_CreateImage( const char *name, const byte **pic,
+				int width, int height, int bits, int numMips,
+				filterType_t filterType, wrapType_t wrapType );
 
-	image_t *R_CreateCubeImage( const char *name,
-	                            const byte *pic[ 6 ],
-	                            int width, int height, int bits, filterType_t filterType, wrapType_t wrapType );
+	image_t *R_CreateCubeImage( const char *name, const byte *pic[ 6 ],
+	                            int width, int height, int bits,
+				    filterType_t filterType, wrapType_t wrapType );
 
 	image_t *R_CreateGlyph( const char *name, const byte *pic, int width, int height );
 
 	image_t *R_AllocImage( const char *name, qboolean linkIntoHashTable );
-	void    R_UploadImage( const byte **dataArray, int numData, image_t *image );
+	void    R_UploadImage( const byte **dataArray, int numLayers, int numMips, image_t *image );
 
 	int     RE_GetTextureId( const char *name );
 
@@ -4165,16 +4149,21 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	void                                RE_BeginFrame( stereoFrame_t stereoFrame );
 	void                                RE_EndFrame( int *frontEndMsec, int *backEndMsec );
 
-	void                                LoadTGA( const char *name, byte **pic, int *width, int *height, byte alphaByte );
+	void                                LoadTGA( const char *name, byte **pic, int *width, int *height, int *numLayers, int *numMips, int *bits, byte alphaByte );
 
-	void                                LoadJPG( const char *filename, unsigned char **pic, int *width, int *height, byte alphaByte );
+	void                                LoadJPG( const char *filename, unsigned char **pic, int *width, int *height, int *numLayers, int *numMips, int *bits, byte alphaByte );
 	void                                SaveJPG( char *filename, int quality, int image_width, int image_height, unsigned char *image_buffer );
 	int                                 SaveJPGToBuffer( byte *buffer, size_t bufferSize, int quality, int image_width, int image_height, byte *image_buffer );
 
-	void                                LoadPNG( const char *name, byte **pic, int *width, int *height, byte alphaByte );
+	void                                LoadPNG( const char *name, byte **pic, int *width, int *height, int *numLayers, int *numMips, int *bits, byte alphaByte );
 	void                                SavePNG( const char *name, const byte *pic, int width, int height, int numBytes, qboolean flip );
 
-	void                                LoadWEBP( const char *name, byte **pic, int *width, int *height, byte alphaByte );
+	void                                LoadWEBP( const char *name, byte **pic, int *width, int *height, int *numLayers, int *numMips, int *bits, byte alphaByte );
+	void                                LoadDDS( const char *name, byte **pic, int *width, int *height, int *numLayers, int *numMips, int *bits, byte alphaByte);
+	void                                LoadCRN( const char *name, byte **pic, int *width, int *height, int *numLayers, int *numMips, int *bits, byte alphaByte);
+	void                                LoadKTX( const char *name, byte **pic, int *width, int *height, int *numLayers, int *numMips, int *bits, byte alphaByte);
+	void                                SaveImageKTX( const char *name, image_t *img );
+
 
 // video stuff
 	const void *RB_TakeVideoFrameCmd( const void *data );

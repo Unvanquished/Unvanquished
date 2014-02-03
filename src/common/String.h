@@ -1,24 +1,30 @@
 /*
 ===========================================================================
+Daemon BSD Source Code
+Copyright (c) 2013-2014, Daemon Developers
+All rights reserved.
 
-Daemon GPL Source Code
-Copyright (C) 2013 Unvanquished Developers
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+    * Neither the name of the <organization> nor the
+      names of its contributors may be used to endorse or promote products
+      derived from this software without specific prior written permission.
 
-This file is part of the Daemon GPL Source Code (Daemon Source Code).
-
-Daemon Source Code is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Daemon Source Code is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
-
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
+DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
@@ -185,46 +191,48 @@ namespace Str {
     };
     typedef BasicStringRef<char> StringRef;
 
-    int ToInt(Str::StringRef text);
-    bool ToInt(Str::StringRef text, int& result);
+    bool ParseInt(int& value, Str::StringRef text);
+
+    float ToFloat(Str::StringRef text);
+    bool ToFloat(Str::StringRef text, float& result);
 
     // Locale-independent versions of ctype
-    inline bool cisdigit(char c)
+    inline bool cisdigit(int c)
     {
         return c >= '0' && c <= '9';
     }
-    inline bool cisupper(char c)
+    inline bool cisupper(int c)
     {
         return c >= 'A' && c <= 'Z';
     }
-    inline bool cislower(char c)
+    inline bool cislower(int c)
     {
         return c >= 'a' && c <= 'z';
     }
-    inline bool cisalpha(char c)
+    inline bool cisalpha(int c)
     {
         return cisupper(c) || cislower(c);
     }
-    inline bool cisalnum(char c)
+    inline bool cisalnum(int c)
     {
         return cisalpha(c) || cisdigit(c);
     }
-    inline bool cisspace(char c)
+    inline bool cisspace(int c)
     {
         return c == ' ' || c == '\t' || c == '\n' || c == '\r';
     }
-    inline bool cisxdigit(char c)
+    inline bool cisxdigit(int c)
     {
         return cisdigit(c) || (c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f');
     }
-    inline char ctolower(char c)
+    inline int ctolower(int c)
     {
         if (cisupper(c))
             return c - 'A' + 'a';
         else
             return c;
     }
-    inline char ctoupper(char c)
+    inline int ctoupper(int c)
     {
         if (cislower(c))
             return c - 'a' + 'A';
@@ -232,6 +240,7 @@ namespace Str {
             return c;
     }
 
+    std::string ToUpper(Str::StringRef text);
     std::string ToLower(Str::StringRef text);
 
     bool IsPrefix(Str::StringRef prefix, Str::StringRef text);
@@ -255,7 +264,7 @@ namespace Str {
             if (a.size() != b.size())
                 return false;
             for (size_t i = 0; i < a.size(); i++) {
-                if (tolower(a[i]) != tolower(b[i]))
+                if (ctolower(a[i]) != ctolower(b[i]))
                     return false;
             }
             return true;

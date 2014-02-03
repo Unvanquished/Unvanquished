@@ -92,60 +92,19 @@ void R_AddBrushModelInteractions( trRefEntity_t *ent, trRefLight_t *light, inter
 
 	cubeSideBits = R_CalcLightCubeSideBits( light, ent->worldBounds );
 
-	if ( r_vboModels->integer && bspModel->numVBOSurfaces )
+	// set the light bits in all the surfaces
+	for ( i = 0; i < bspModel->numSurfaces; i++ )
 	{
-		srfVBOMesh_t *vboSurface;
-		shader_t     *shader;
+		surf = bspModel->firstSurface + i;
 
-		// static VBOs are fine for lighting and shadow mapping
-		for ( i = 0; i < bspModel->numVBOSurfaces; i++ )
+		// skip all surfaces that don't matter for lighting only pass
+		if ( surf->shader->isSky || ( !surf->shader->interactLight && surf->shader->noShadows ) )
 		{
-			vboSurface = bspModel->vboSurfaces[ i ];
-			shader = vboSurface->shader;
-
-			// skip all surfaces that don't matter for lighting only pass
-			if ( shader->isSky || ( !shader->interactLight && shader->noShadows ) )
-			{
-				continue;
-			}
-
-			R_AddLightInteraction( light, ( surfaceType_t * ) vboSurface, shader, cubeSideBits, iaType );
-			tr.pc.c_dlightSurfaces++;
+			continue;
 		}
-	}
-	else
-	{
-		// set the light bits in all the surfaces
-		for ( i = 0; i < bspModel->numSurfaces; i++ )
-		{
-			surf = bspModel->firstSurface + i;
 
-			// FIXME: do more culling?
-
-			/*
-			   if(*surf->data == SF_FACE)
-			   {
-			   ((srfSurfaceFace_t *) surf->data)->dlightBits[tr.smpFrame] = mask;
-			   }
-			   else if(*surf->data == SF_GRID)
-			   {
-			   ((srfGridMesh_t *) surf->data)->dlightBits[tr.smpFrame] = mask;
-			   }
-			   else if(*surf->data == SF_TRIANGLES)
-			   {
-			   ((srfTriangles_t *) surf->data)->dlightBits[tr.smpFrame] = mask;
-			   }
-			 */
-
-			// skip all surfaces that don't matter for lighting only pass
-			if ( surf->shader->isSky || ( !surf->shader->interactLight && surf->shader->noShadows ) )
-			{
-				continue;
-			}
-
-			R_AddLightInteraction( light, surf->data, surf->shader, cubeSideBits, iaType );
-			tr.pc.c_dlightSurfaces++;
-		}
+		R_AddLightInteraction( light, surf->data, surf->shader, cubeSideBits, iaType );
+		tr.pc.c_dlightSurfaces++;
 	}
 }
 
@@ -1610,7 +1569,7 @@ byte R_CalcLightCubeSideBits( trRefLight_t *light, vec3_t worldBounds[ 2 ] )
 	{
 		switch ( cubeSide )
 		{
-			case 0:
+			default: // 0
 				{
 					// view parameters
 					VectorSet( angles, 0, 0, 0 );
@@ -1644,13 +1603,6 @@ byte R_CalcLightCubeSideBits( trRefLight_t *light, vec3_t worldBounds[ 2 ] )
 			case 5:
 				{
 					VectorSet( angles, 90, 0, 0 );
-					break;
-				}
-
-			default:
-				{
-					// shut up compiler
-					VectorSet( angles, 0, 0, 0 );
 					break;
 				}
 		}

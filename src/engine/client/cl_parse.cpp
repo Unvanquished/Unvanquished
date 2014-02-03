@@ -108,11 +108,11 @@ CL_ParsePacketEntities
 
 ==================
 */
-void CL_ParsePacketEntities( msg_t *msg, clSnapshot_t *oldframe, clSnapshot_t *newframe )
+void CL_ParsePacketEntities( msg_t *msg, const clSnapshot_t *oldframe, clSnapshot_t *newframe )
 {
-	int           newnum;
+	unsigned int  newnum;
 	entityState_t *oldstate;
-	int           oldindex, oldnum;
+	unsigned int  oldindex, oldnum;
 
 	newframe->parseEntitiesNum = cl.parseEntitiesNum;
 	newframe->numEntities = 0;
@@ -123,13 +123,16 @@ void CL_ParsePacketEntities( msg_t *msg, clSnapshot_t *oldframe, clSnapshot_t *n
 
 	if ( !oldframe )
 	{
-		oldnum = 99999;
+		static const clSnapshot_t nullframe = { qfalse };
+
+		oldframe = &nullframe;
+		oldnum = MAX_GENTITIES; // guaranteed out of range
 	}
 	else
 	{
 		if ( oldindex >= oldframe->numEntities )
 		{
-			oldnum = 99999;
+			oldnum = MAX_GENTITIES;
 		}
 		else
 		{
@@ -144,7 +147,7 @@ void CL_ParsePacketEntities( msg_t *msg, clSnapshot_t *oldframe, clSnapshot_t *n
 		// read the entity index number
 		newnum = MSG_ReadBits( msg, GENTITYNUM_BITS );
 
-		if ( newnum == ( MAX_GENTITIES - 1 ) )
+		if ( newnum >= ( MAX_GENTITIES - 1 ) )
 		{
 			break;
 		}
@@ -168,7 +171,7 @@ void CL_ParsePacketEntities( msg_t *msg, clSnapshot_t *oldframe, clSnapshot_t *n
 
 			if ( oldindex >= oldframe->numEntities )
 			{
-				oldnum = 99999;
+				oldnum = MAX_GENTITIES;
 			}
 			else
 			{
@@ -192,7 +195,7 @@ void CL_ParsePacketEntities( msg_t *msg, clSnapshot_t *oldframe, clSnapshot_t *n
 
 			if ( oldindex >= oldframe->numEntities )
 			{
-				oldnum = 99999;
+				oldnum = MAX_GENTITIES;
 			}
 			else
 			{
@@ -218,7 +221,7 @@ void CL_ParsePacketEntities( msg_t *msg, clSnapshot_t *oldframe, clSnapshot_t *n
 	}
 
 	// any remaining entities in the old frame are copied over
-	while ( oldnum != 99999 )
+	while ( oldnum != MAX_GENTITIES )
 	{
 		// one or more entities from the old packet are unchanged
 		if ( cl_shownet->integer == 3 )
@@ -232,7 +235,7 @@ void CL_ParsePacketEntities( msg_t *msg, clSnapshot_t *oldframe, clSnapshot_t *n
 
 		if ( oldindex >= oldframe->numEntities )
 		{
-			oldnum = 99999;
+			oldnum = MAX_GENTITIES;
 		}
 		else
 		{
@@ -462,8 +465,6 @@ void CL_ParseSnapshot( msg_t *msg )
 
 //=====================================================================
 
-int cl_connectedToPureServer;
-
 /*
 ==================
 CL_SystemInfoChanged
@@ -500,14 +501,12 @@ void CL_SystemInfoChanged( void )
 	clc.voipEnabled = atoi( s );
 #endif
 
-	// check pure server string
-	s = Info_ValueForKey( systemInfo, "sv_paks" );
-	t = Info_ValueForKey( systemInfo, "sv_pakNames" );
-	FS_PureServerSetLoadedPaks( s, t );
-
-	s = Info_ValueForKey( systemInfo, "sv_referencedPaks" );
-	t = Info_ValueForKey( systemInfo, "sv_referencedPakNames" );
-	FS_PureServerSetReferencedPaks( s, t );
+	// load paks sent by the server, but not if we are running a local server
+	if (!com_sv_running->integer) {
+		FS::PakPath::ClearPaks();
+		if (!FS_LoadServerPaks( Info_ValueForKey( systemInfo, "sv_paks" ) ) && !cl_allowDownload->integer)
+			Com_Error(ERR_DROP, "Client is missing paks but downloads are disabled");
+	}
 
 	// scan through all the variables in the systeminfo and locally set cvars to match
 	s = systemInfo;
@@ -522,27 +521,6 @@ void CL_SystemInfoChanged( void )
 		}
 
 		Cvar_Set( key, value );
-	}
-
-	// Arnout: big hack to clear the image cache on a pure change
-	//cl_connectedToPureServer = Cvar_VariableValue( "sv_pure" );
-	if ( Cvar_VariableValue( "sv_pure" ) )
-	{
-		if ( !cl_connectedToPureServer && cls.state <= CA_CONNECTED )
-		{
-			CL_PurgeCache();
-		}
-
-		cl_connectedToPureServer = qtrue;
-	}
-	else
-	{
-		if ( cl_connectedToPureServer && cls.state <= CA_CONNECTED )
-		{
-			CL_PurgeCache();
-		}
-
-		cl_connectedToPureServer = qfalse;
 	}
 }
 
@@ -632,9 +610,6 @@ void CL_ParseGamestate( msg_t *msg )
 	// parse serverId and other cvars
 	CL_SystemInfoChanged();
 
-	// reinitialize the filesystem if the game directory has changed
-	FS_ConditionalRestart( clc.checksumFeed );
-
 	// This used to call CL_StartHunkUsers, but now we enter the download state before loading the
 	// cgame
 	CL_InitDownloads();
@@ -693,11 +668,6 @@ void CL_ParseDownload( msg_t *msg )
 				clc.bWWWDlAborting = qtrue;
 				return;
 			}
-
-			// make downloadTempName an OS path
-			Q_strncpyz( cls.downloadTempName, FS_BuildOSPath( Cvar_VariableString( "fs_homepath" ), cls.downloadTempName, "" ),
-			            sizeof( cls.downloadTempName ) );
-			cls.downloadTempName[ strlen( cls.downloadTempName ) - 1 ] = '\0';
 
 			if ( !DL_BeginDownload( cls.downloadTempName, cls.downloadName, com_developer->integer ) )
 			{
@@ -854,14 +824,12 @@ static void CL_PlayVoip( int sender, int samplecnt, const byte *data, int flags 
 {
 	if ( flags & VOIP_DIRECT )
 	{
-		S_RawSamples( sender + 1, samplecnt, clc.speexSampleRate, 2, 1,
-		              data, clc.voipGain[ sender ], -1 );
+		Audio::StreamData( sender + 1, data, samplecnt, clc.speexSampleRate, 2, 1, clc.voipGain[ sender ], -1 );
 	}
 
 	if ( flags & VOIP_SPATIAL )
 	{
-		S_RawSamples( sender + MAX_CLIENTS + 1, samplecnt, clc.speexSampleRate, 2, 1,
-		              data, 1.0f, sender );
+		Audio::StreamData( sender + MAX_CLIENTS + 1, data, samplecnt, clc.speexSampleRate, 2, 1, 1.0f, sender );
 	}
 }
 

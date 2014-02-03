@@ -1,24 +1,30 @@
 /*
 ===========================================================================
+Daemon BSD Source Code
+Copyright (c) 2013-2014, Daemon Developers
+All rights reserved.
 
-Daemon GPL Source Code
-Copyright (C) 2013 Unvanquished Developers
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+    * Neither the name of the <organization> nor the
+      names of its contributors may be used to endorse or promote products
+      derived from this software without specific prior written permission.
 
-This file is part of the Daemon GPL Source Code (Daemon Source Code).
-
-Daemon Source Code is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Daemon Source Code is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
-
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
+DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
@@ -46,9 +52,27 @@ namespace Cvar {
         CvarProxy* proxy;
         cvar_t ccvar; // The state of the cvar_t used to emulate the C API
         //DO: mutex?
+
+        inline bool IsArchived() const {
+            return (flags & USER_ARCHIVE) && !(flags & TEMPORARY);
+        }
     };
 
     //Functions that emulate the C API
+    void SetCStyleDescription(cvarRecord_t& cvar) {
+        if (cvar.proxy) {
+            return;
+        }
+
+        if (cvar.flags & CVAR_LATCH and cvar.ccvar.latchedString) {
+            cvar.description = Str::Format("\"%s^7\", latched value \"%s^7\"", cvar.ccvar.string, cvar.ccvar.latchedString);
+        } else {
+            cvar.description = Str::Format("\"%s^7\"", cvar.value);
+        }
+
+        Cmd::ChangeDescription(cvar.ccvar.name, cvar.description);
+    }
+
     void SetCCvar(cvarRecord_t& cvar) {
         cvar_t& var = cvar.ccvar;
         bool modified = false;
@@ -58,8 +82,15 @@ namespace Cvar {
                 var.string = CopyString(cvar.value.c_str());
                 modified = true;
             } else {
-                if (var.latchedString) Z_Free(var.latchedString);
-                var.latchedString = CopyString(cvar.value.c_str());
+                if (Q_stricmp(var.string, cvar.value.c_str())) {
+                    Com_Printf(_("The change will take effect after restart."));
+                    if (var.latchedString) Z_Free(var.latchedString);
+                    var.latchedString = CopyString(cvar.value.c_str());
+                    modified = true;
+                } else if (var.latchedString) {
+                    Z_Free(var.latchedString);
+                    var.latchedString = nullptr;
+                }
             }
         } else {
             if (var.string) {
@@ -82,6 +113,7 @@ namespace Cvar {
         if (modified) {
             cvar_modifiedFlags |= var.flags;
         }
+        SetCStyleDescription(cvar);
     }
 
     void GetCCvar(const std::string& name, cvarRecord_t& cvar) {
@@ -99,10 +131,10 @@ namespace Cvar {
 
         var.flags = cvar.flags;
 
-        if (cvar.flags & CVAR_LATCH and var.latchedString and Q_stricmp(var.string, var.latchedString)) {
+        if (cvar.flags & CVAR_LATCH and var.latchedString) {
             if (var.string) Z_Free(var.string);
             var.string = var.latchedString;
-            var.latchedString = 0;
+            var.latchedString = nullptr;
             modified = true;
         } else {
             if (var.string) {
@@ -125,6 +157,7 @@ namespace Cvar {
         if (modified) {
             cvar_modifiedFlags |= var.flags;
         }
+        SetCStyleDescription(cvar);
     }
 
     typedef std::unordered_map<std::string, cvarRecord_t*, Str::IHash, Str::IEqual> CvarMap;
@@ -149,10 +182,11 @@ namespace Cvar {
                 cvarRecord_t* var = cvars[name];
 
                 if (args.Argc() < 2) {
-                    Print(_("\"%s\" is \"%s^7\" default: \"%s^7\" %s"), name.c_str(), var->value.c_str(), var->resetValue.c_str(), var->description.c_str());
+                    Print(_("\"%s\" - %s^7 default: \"%s^7\""), name.c_str(), var->description.c_str(), var->resetValue.c_str());
                 } else {
                     //TODO forward the print part of the environment
                     SetValue(name, args.Argv(1));
+                    AddFlags(name, USER_ARCHIVE);
                 }
             }
     };
@@ -195,6 +229,11 @@ namespace Cvar {
             std::string oldValue = std::move(cvar->value);
             cvar->value = std::move(value);
             cvar->flags |= flags;
+
+            // mark for archival if flagged as archive-on-change
+            if (cvar->flags & ARCHIVE) {
+                cvar->flags |= USER_ARCHIVE;
+            }
 
             if (cvar->proxy) {
                 //Tell the cvar proxy about the new value
@@ -310,40 +349,67 @@ namespace Cvar {
         CvarMap& cvars = GetCvarMap();
 
         Cmd::CompletionResult res;
-        for (auto it : cvars) {
-            if (Str::IsIPrefix(prefix, it.first)) {
-                //TODO what do we show in the completion?
-                res.push_back(std::make_pair(it.first, it.second->description));
+        for (auto& entry : cvars) {
+            if (Str::IsIPrefix(prefix, entry.first)) {
+                res.push_back(std::make_pair(entry.first, entry.second->description));
             }
         }
 
         return res;
     }
 
-    void AddFlags(const std::string& cvarName, int flags) {
+    bool AddFlags(const std::string& cvarName, int flags) {
         CvarMap& cvars = GetCvarMap();
 
         auto it = cvars.find(cvarName);
         if (it != cvars.end()) {
             cvarRecord_t* cvar = it->second;
+
+            // User error. Possibly coder error too, but unlikely
+            if ((cvar->flags & TEMPORARY) && (flags & (ARCHIVE | USER_ARCHIVE)))
+            {
+                Com_Printf(_("Cvar '%s' is temporary and will not be archived\n"), cvarName.c_str());
+                flags &= ~(ARCHIVE | USER_ARCHIVE);
+            }
+
             cvar->flags |= flags;
 
             //TODO: remove it, overkill ?
             //Make sure to trigger the event as if this variable was changed
             cvar_modifiedFlags |= flags;
+            return true; // success
         } //TODO else what?
+
+        return false; // not found
+    }
+
+    bool ClearFlags(const std::string& cvarName, int flags) {
+        CvarMap& cvars = GetCvarMap();
+
+        auto it = cvars.find(cvarName);
+        if (it != cvars.end()) {
+            cvarRecord_t* cvar = it->second;
+            cvar->flags &= ~flags;
+
+            //TODO: remove it, overkill ?
+            //Make sure to trigger the event as if this variable was changed
+            cvar_modifiedFlags |= flags;
+            return true; // success
+        } //TODO else what?
+
+        return false; // not found
     }
 
     void SetCheatMode(bool cheats) {
-        if (not cheats) {
+        if (cheats) {
             return;
         }
 
         CvarMap& cvars = GetCvarMap();
 
         // Reset all the CHEAT cvars to their default value
-        for (auto it : cvars) {
-            cvarRecord_t* cvar = it.second;
+        for (auto& entry : cvars) {
+            cvarRecord_t* cvar = entry.second;
 
             if (cvar->flags & CHEAT && cvar->value != cvar->resetValue) {
                 cvar->value = cvar->resetValue;
@@ -352,11 +418,11 @@ namespace Cvar {
                 if (cvar->proxy) {
                     OnValueChangedResult result = cvar->proxy->OnValueChanged(cvar->resetValue);
                     if(result.success) {
-                        Cmd::ChangeDescription(it.first, result.description);
+                        Cmd::ChangeDescription(entry.first, result.description);
                         cvar->description = std::move(result.description);
                     } else {
                         Com_Printf(_("Default value '%s' is not correct for cvar '%s': %s\n"),
-                                cvar->resetValue.c_str(), it.first.c_str(), result.description.c_str());
+                                cvar->resetValue.c_str(), entry.first.c_str(), result.description.c_str());
                     }
                 }
             }
@@ -379,11 +445,17 @@ namespace Cvar {
     void WriteVariables(fileHandle_t f) {
         CvarMap& cvars = GetCvarMap();
 
-        for (auto it : cvars) {
-            cvarRecord_t* cvar = it.second;
+        for (auto& entry : cvars) {
+            cvarRecord_t* cvar = entry.second;
 
-            if (cvar->flags & ARCHIVE) {
-                FS_Printf(f, "seta %s %s\n", it.first.c_str(), Cmd::Escape(cvar->value).c_str());
+            if (cvar->IsArchived()) {
+                const char* value;
+                if (cvar->ccvar.latchedString) {
+                    value = cvar->ccvar.latchedString;
+                } else {
+                    value = cvar->value.c_str();
+                }
+                FS_Printf(f, "seta %s %s\n", entry.first.c_str(), Cmd::Escape(value).c_str());
             }
         }
     }
@@ -394,11 +466,11 @@ namespace Cvar {
 
         CvarMap& cvars = GetCvarMap();
 
-        for (auto it : cvars) {
-            cvarRecord_t* cvar = it.second;
+        for (auto& entry : cvars) {
+            cvarRecord_t* cvar = entry.second;
 
             if (cvar->flags & flag) {
-                Info_SetValueForKey(info, it.first.c_str(), cvar->value.c_str(), big);
+                Info_SetValueForKey(info, entry.first.c_str(), cvar->value.c_str(), big);
             }
         }
 
@@ -419,40 +491,24 @@ namespace Cvar {
 
     class SetCmd: public Cmd::StaticCmd {
         public:
-            SetCmd(const std::string& name, int flags): Cmd::StaticCmd(name, Cmd::BASE, N_("sets the value of a cvar")), flags(flags) {
+            SetCmd(const std::string& name, const std::string& help, int flags): Cmd::StaticCmd(name, Cmd::BASE, help), flags(flags) {
             }
 
             void Run(const Cmd::Args& args) const OVERRIDE {
-                int argc = args.Argc();
-                int nameIndex = 1;
-                bool unsafe = false;
-
-                if (argc < 3) {
-                    PrintUsage(args, _("[-unsafe] <variable> <value>"), "");
+                if (args.Argc() < 2) {
+                    PrintUsage(args, _("<variable> <value>"),"");
                     return;
                 }
 
-                if (argc >= 4 and args.Argv(1) == "-unsafe") {
-                    nameIndex = 2;
-                    unsafe = true;
-                }
-
-                const std::string& name = args.Argv(nameIndex);
-
-                //TODO
-                if (unsafe and com_crashed != nullptr and com_crashed->integer != 0) {
-                    Print(_("%s is unsafe. Check com_crashed."), name.c_str());
-                    return;
-                }
-
-                const std::string& value = args.Argv(nameIndex + 1);
+                const std::string& name = args.Argv(1);
+                const std::string& value = args.ConcatArgs(2);
 
                 ::Cvar::SetValue(name, value);
                 ::Cvar::AddFlags(name, flags);
             }
 
             Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, Str::StringRef prefix) const OVERRIDE {
-                if (argNum == 1 or (argNum == 2 and args.Argv(1) == "-unsafe")) {
+                if (argNum == 1) {
                     return ::Cvar::Complete(prefix);
                 }
 
@@ -462,38 +518,46 @@ namespace Cvar {
         private:
             int flags;
     };
-    static SetCmd SetCmdRegistration("set", 0);
-    static SetCmd SetuCmdRegistration("setu", USERINFO);
-    static SetCmd SetsCmdRegistration("sets", SERVERINFO);
-    static SetCmd SetaCmdRegistration("seta", ARCHIVE);
+    static SetCmd SetCmdRegistration("set", N_("sets the value of a cvar"), 0);
+    static SetCmd SetuCmdRegistration("setu", N_("sets the value of a cvar"), USERINFO);
+    static SetCmd SetsCmdRegistration("sets", N_("sets the value of a cvar"), SERVERINFO);
+    static SetCmd SetaCmdRegistration("seta", N_("sets the value of a cvar and marks the cvar as archived"), USER_ARCHIVE);
 
     class ResetCmd: public Cmd::StaticCmd {
         public:
-            ResetCmd(): Cmd::StaticCmd("reset", Cmd::BASE, N_("resets a variable")) {
+            ResetCmd(): Cmd::StaticCmd("reset", Cmd::BASE, N_("resets the named variables")) {
             }
 
             void Run(const Cmd::Args& args) const OVERRIDE {
-                if (args.Argc() != 2) {
-                    PrintUsage(args, _("<variable>"), "");
+                int argc = args.Argc();
+                bool clearArchive = true;
+
+                if (argc < 2) {
+                    PrintUsage(args, _("<variable>…"), "");
                     return;
                 }
 
-                const std::string& name = args.Argv(1);
                 CvarMap& cvars = GetCvarMap();
 
-                auto iter = cvars.find(name);
-                if (iter != cvars.end()) {
-                    cvarRecord_t* cvar = iter->second;
-                    ::Cvar::SetValue(name, cvar->resetValue);
-                } else {
-                    Print(_("Cvar '%s' doesn't exist"), name.c_str());
+                for (int i = 1; i < argc; ++i)
+                {
+                    const std::string& name = args[i];
+
+                    auto iter = cvars.find(name);
+                    if (iter != cvars.end()) {
+                        cvarRecord_t* cvar = iter->second;
+                        ::Cvar::SetValue(name, cvar->resetValue);
+                        if (clearArchive) {
+                            ::Cvar::ClearFlags(name, USER_ARCHIVE);
+                        }
+                    } else {
+                        Print(_("Cvar '%s' doesn't exist"), name.c_str());
+                    }
                 }
             }
 
             Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, Str::StringRef prefix) const OVERRIDE {
-                Q_UNUSED(args);
-
-                if (argNum == 1) {
+                if (argNum) {
                     return ::Cvar::Complete(prefix);
                 }
 
@@ -501,6 +565,19 @@ namespace Cvar {
             }
     };
     static ResetCmd ResetCmdRegistration;
+
+    std::string Raw(const std::string& src) {
+        std::string out;
+        size_t length = src.length();
+
+        for (size_t i = 0; i < length; ++i)
+        {
+            if (src[i] == '^')
+                out += '^';
+            out += src[i];
+        }
+        return out;
+    }
 
     class ListCvars: public Cmd::StaticCmd {
         public:
@@ -510,13 +587,13 @@ namespace Cvar {
             void Run(const Cmd::Args& args) const OVERRIDE {
                 CvarMap& cvars = GetCvarMap();
 
-                bool raw;
+                bool raw = false;
                 std::string match = "";
 
                 //Read parameters
                 if (args.Argc() > 1) {
                     match = args.Argv(1);
-                    if (match == "-raw") {
+                    if (Cmd::IsSwitch(match, "-raw")) {
                         raw = true;
                         match = (args.Argc() > 2) ? args.Argv(2) : "";
                     }
@@ -531,15 +608,15 @@ namespace Cvar {
                 unsigned long maxValueLength = 0;
 
                 //Find all the matching cvars
-                for (auto& record : cvars) {
-                    if (Q_stristr(record.first.c_str(), match.c_str())) {
-                        matchesNames.push_back(record.first);
+                for (auto& entry : cvars) {
+                    if (Q_stristr(entry.first.c_str(), match.c_str())) {
+                        matchesNames.push_back(entry.first);
 
-                        matches.push_back(record.second);
-                        matchesValues.push_back(record.second->value);
+                        matches.push_back(entry.second);
+                        matchesValues.push_back(entry.second->value);
 
                         //TODO: the raw parameter is not handled, need a function to escape carets
-                        maxNameLength = std::max<size_t>(maxNameLength, record.first.length());
+                        maxNameLength = std::max<size_t>(maxNameLength, entry.first.length());
                         maxValueLength = std::max<size_t>(maxValueLength, matchesValues.back().length());
                     }
                 }
@@ -561,7 +638,7 @@ namespace Cvar {
                     flags += (var->flags & USERINFO) ? "U" : "_";
                     flags += (var->flags & ROM) ? "R" : "_";
                     flags += (var->flags & CVAR_INIT) ? "I" : "_";
-                    flags += (var->flags & ARCHIVE) ? "A" : "_";
+                    flags += (var->flags & TEMPORARY) ? "T" : (var->flags & USER_ARCHIVE) ? "A" : "_";
                     flags += (var->flags & CVAR_LATCH) ? "L" : "_";
                     flags += (var->flags & CHEAT) ? "C" : "_";
                     flags += (var->flags & CVAR_USER_CREATED) ? "?" : "_";
@@ -572,17 +649,37 @@ namespace Cvar {
                         filler2 = std::string(maxValueLength - value.length(), ' ');
                     }
 
-                    Print("  %s%s %s %s%s %s", name, filler1, flags, value, filler2, var->description);
+                    // this is going to 'break' (wrong output) if the description contains any ^s other than in the variable value(s)
+                    if (raw) {
+                        Print("  %s%s %s %s", name, filler1, flags, Raw(var->description));
+                    }
+                    else {
+                        Print("  %s%s %s %s", name, filler1, flags, var->description);
+                    }
                 }
 
                 Print("%zu cvars", matches.size());
             }
 
             Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, Str::StringRef prefix) const OVERRIDE {
-                Q_UNUSED(args);
+                int nameIndex = 1;
+                int argc = args.Argc();
 
-                //TODO handle -raw?
+                // FIXME: translation
+                static const std::initializer_list<Cmd::CompletionItem> flags = {
+                    {"-raw", N_("display colour controls")},
+                };
+
+                // command only allows one switch
+                if (argc > 1 && args[1][0] == '-') {
+                    nameIndex = 2;
+                }
+
                 if (argNum == 1) {
+                    return Cmd::CompletionFilter(::Cvar::Complete(prefix), prefix, flags);
+                }
+
+                if (argNum == nameIndex) {
                     return ::Cvar::Complete(prefix);
                 }
 

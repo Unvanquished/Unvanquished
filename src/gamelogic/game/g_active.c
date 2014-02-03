@@ -376,7 +376,7 @@ void ClientImpacts( gentity_t *ent, pmove_t *pm )
 		G_WeightAttack( ent, other );
 
 		// tyrant trample
-		if ( ent->client->ps.weapon == WP_ALEVEL4 )
+		if ( ent->client && ent->client->ps.weapon == WP_ALEVEL4 )
 		{
 			G_ChargeAttack( ent, other );
 		}
@@ -938,7 +938,8 @@ void ClientTimerActions( gentity_t *ent, int msec )
 
 					if ( buildable == BA_H_DRILL || buildable == BA_A_LEECH )
 					{
-						client->ps.stats[ STAT_PREDICTION ] = G_RGSPredictEfficiency( dummy );
+						client->ps.stats[ STAT_PREDICTION ] =
+							( int )( G_RGSPredictEfficiencyDelta( dummy, ( team_t )ps->persistant[ PERS_TEAM ] ) * 100.0f );
 					}
 
 					// Let the client know which buildables will be removed by building
@@ -979,7 +980,7 @@ void ClientTimerActions( gentity_t *ent, int msec )
 		}
 
 		// refill jetpack fuel
-		if ( !( ps->stats[ STAT_STATE2 ] & SS2_JETPACK_ENABLED ) )
+		if ( client->ps.stats[ STAT_FUEL ] < JETPACK_FUEL_REFUEL )
 		{
 			G_FindFuel( ent );
 		}
@@ -1175,15 +1176,15 @@ void ClientEvents( gentity_t *ent, int oldEventSequence )
 				break;
 
 			case EV_FIRE_WEAPON:
-				G_FireWeapon( ent );
+				G_FireWeapon( ent, ( weapon_t )ent->s.weapon, WPM_PRIMARY );
 				break;
 
 			case EV_FIRE_WEAPON2:
-				G_FireWeapon2( ent );
+				G_FireWeapon( ent, ( weapon_t )ent->s.weapon, WPM_SECONDARY );
 				break;
 
 			case EV_FIRE_WEAPON3:
-				G_FireWeapon3( ent );
+				G_FireWeapon( ent, ( weapon_t )ent->s.weapon, WPM_TERTIARY );
 				break;
 
 			case EV_NOAMMO:
@@ -1607,76 +1608,72 @@ static void G_UnlaggedDetectCollisions( gentity_t *ent )
 	G_UnlaggedOff();
 }
 
-
-/*
-================
-G_FindHealth
-
-Attempt to find a health source for self.
-
-Returns SS_HEALING_ACTIVE when on creep,
-        SS_HEALING_2X when there is a source for double healing,
-        SS_HEALING_3X when there is a source for triple healing
-        or any combination of these flags, if more than one is true.
-
-Sets creepTime on self if appropriate.
-================
-*/
-static int G_FindHealth( gentity_t *self )
+/**
+ * @brief Attempt to find a health source for an alien.
+ * @return A mask of SS_HEALING_* flags:
+ *         SS_HEALING_ACTIVE when there is any heath source,
+ *         SS_HEALING_2X     when there also is a source for double healing,
+ *         SS_HEALING_3X     when there also is a source for triple healing.
+ */
+static int FindAlienHealthSource( gentity_t *self )
 {
-	int entityList[ MAX_GENTITIES ];
-	int i, num, ret = 0;
-	float distance;
-	vec3_t range, mins, maxs;
-	gclient_t *client = self->client;
+	int       ret = 0;
+	float     distance;
+	gentity_t *ent;
 
-	if ( !client )
+	if ( !self || !self->client )
 	{
 		return 0;
 	}
 
-	VectorSet( range, CREEP_BASESIZE, CREEP_BASESIZE, CREEP_BASESIZE );
-	VectorAdd( client->ps.origin, range, maxs );
-	VectorSubtract( client->ps.origin, range, mins );
-
-	num = trap_EntitiesInBox( mins, maxs, entityList, MAX_GENTITIES );
-
-	for ( i = 0; i < num; ++i )
+	for ( ent = NULL; ( ent = G_IterateEntities( ent, NULL, qtrue, 0, NULL ) ); )
 	{
-		gentity_t *boost = &g_entities[ entityList[ i ] ];
+		distance = Distance( ent->s.origin, self->s.origin );
 
-		distance = Distance( boost->s.origin, self->s.origin );
-
-		if ( boost->s.eType == ET_PLAYER && boost->client &&
-		     boost->client->pers.team == client->pers.team &&
-		     boost->health > 0 && distance < REGEN_BOOST_RANGE )
+		if ( ent->client && ent->health > 0 && distance < REGEN_BOOST_RANGE &&
+		     ent->client->pers.team == self->client->pers.team )
 		{
-			if ( boost->client->ps.stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL1 )
+			if ( ent->client->ps.stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL1 )
 			{
+				// Basilisk healing aura
 				ret |= SS_HEALING_2X;
 			}
-			else if ( boost->client->ps.stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL1_UPG )
+			else if ( ent->client->ps.stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL1_UPG )
 			{
+				// Advanced Basilisk healing aura
 				ret |= SS_HEALING_3X;
 			}
 		}
-		else if ( boost->s.eType == ET_BUILDABLE && boost->spawned && boost->health > 0 &&
-		          boost->powered && boost->buildableTeam == client->pers.team )
+		else if ( ent->s.eType == ET_BUILDABLE && ent->spawned && ent->health > 0 &&
+		          ent->buildableTeam == self->client->pers.team )
 		{
-			if ( ( boost->s.modelindex == BA_A_SPAWN || boost->s.modelindex == BA_A_OVERMIND ) && ( int )distance < CREEP_BASESIZE )
+			if ( ( ent->s.modelindex == BA_A_SPAWN || ent->s.modelindex == BA_A_OVERMIND ) &&
+			     distance < ( float )CREEP_BASESIZE )
 			{
+				// "Creep healing" (close to spawn or OM)
 				ret |= SS_HEALING_ACTIVE;
 			}
-			else if ( boost->s.modelindex == BA_A_BOOSTER && distance < REGEN_BOOST_RANGE )
+			else if ( ent->s.modelindex == BA_A_BOOSTER && distance < REGEN_BOOST_RANGE )
 			{
+				// Booster healing
 				ret |= SS_HEALING_3X;
 			}
 		}
 	}
 
+	if ( ret & SS_HEALING_3X )
+	{
+		ret |= SS_HEALING_2X;
+	}
+
+	if ( ret & SS_HEALING_2X )
+	{
+		ret |= SS_HEALING_ACTIVE;
+	}
+
 	if ( ret )
 	{
-		self->creepTime = level.time;
+		self->healthSourceTime = level.time;
 	}
 
 	return ret;
@@ -1686,7 +1683,8 @@ static void G_ReplenishAlienHealth( gentity_t *self )
 {
 	gclient_t *client;
 	float     regenBaseRate, modifier;
-	int       foundHealthSource, count, interval;
+	int       count, interval;
+	qboolean  wasHealing;
 
 	client = self->client;
 
@@ -1704,27 +1702,25 @@ static void G_ReplenishAlienHealth( gentity_t *self )
 		return;
 	}
 
-	foundHealthSource = G_FindHealth( self );
+	wasHealing = client->ps.stats[ STAT_STATE ] & SS_HEALING_ACTIVE;
+
+	// Check for health sources
+	client->ps.stats[ STAT_STATE ] &= ~( SS_HEALING_ACTIVE | SS_HEALING_2X | SS_HEALING_3X );
+	client->ps.stats[ STAT_STATE ] |= FindAlienHealthSource( self );
 
 	if ( self->nextRegenTime < level.time )
 	{
-		// Clear healing state, then set it accordingly
-		client->ps.stats[ STAT_STATE ] &= ~( SS_HEALING_ACTIVE | SS_HEALING_2X | SS_HEALING_3X );
-
-		if ( foundHealthSource & SS_HEALING_3X )
+		if      ( client->ps.stats[ STAT_STATE ] & SS_HEALING_3X )
 		{
 			modifier = 3.0f;
-			client->ps.stats[ STAT_STATE ] |= ( SS_HEALING_ACTIVE | SS_HEALING_3X );
 		}
-		else if ( foundHealthSource & SS_HEALING_2X )
+		else if ( client->ps.stats[ STAT_STATE ] & SS_HEALING_2X )
 		{
 			modifier = 2.0f;
-			client->ps.stats[ STAT_STATE ] |= ( SS_HEALING_ACTIVE | SS_HEALING_2X );
 		}
-		else if ( foundHealthSource & SS_HEALING_ACTIVE )
+		else if ( client->ps.stats[ STAT_STATE ] & SS_HEALING_ACTIVE )
 		{
 			modifier = 1.0f;
-			client->ps.stats[ STAT_STATE ] |= SS_HEALING_ACTIVE;
 		}
 		else
 		{
@@ -1735,36 +1731,25 @@ static void G_ReplenishAlienHealth( gentity_t *self )
 			else
 			{
 				// Exponentially decrease healing rate when not on creep. ln(2) ~= 0.6931472
-				modifier = exp( ( 0.6931472f / ( 1000.0f * g_alienOffCreepRegenHalfLife.value ) ) * ( self->creepTime - level.time ) );
-
-				// Prevent possible overflow/division by zero and keep a minimum heal rate
-				if ( modifier < 0.1f )
-				{
-					modifier = 0.1f;
-				}
+				modifier = exp( ( 0.6931472f / ( 1000.0f * g_alienOffCreepRegenHalfLife.value ) ) * ( self->healthSourceTime - level.time ) );
+				modifier = MAX( modifier, ALIEN_REGEN_NOCREEP_MIN );
 			}
 		}
 
 		interval = ( int )( 1000.0f / ( regenBaseRate * modifier ) );
 
-		// If recovery interval is less than frametime, compensate
-		count = MAX( 1 + ( level.time - self->nextRegenTime ) / interval, 0 );
+		// If recovery interval is less than frametime, compensate by healing more
+		count = 1 + ( level.time - self->nextRegenTime ) / interval;
 
 		G_Heal( self, count );
 
 		self->nextRegenTime = level.time + count * interval;
 	}
-	else if ( !( client->ps.stats[ STAT_STATE ] & SS_HEALING_ACTIVE ) && foundHealthSource )
+	else if ( !wasHealing && client->ps.stats[ STAT_STATE ] & SS_HEALING_ACTIVE )
 	{
-		client->ps.stats[ STAT_STATE ] |= SS_HEALING_ACTIVE;
-
 		// Don't immediately start regeneration to prevent players from quickly
 		// hopping in and out of a creep area to increase their heal rate
 		self->nextRegenTime = level.time + ( 1000 / regenBaseRate );
-	}
-	else if ( ( client->ps.stats[ STAT_STATE ] & SS_HEALING_ACTIVE ) && !foundHealthSource )
-	{
-		client->ps.stats[ STAT_STATE ] &= ~( SS_HEALING_ACTIVE );
 	}
 }
 
@@ -1779,7 +1764,7 @@ If "g_synchronousClients 1" is set, this will be called exactly
 once for each server frame, which makes for smooth demo recording.
 ==============
 */
-void ClientThink_real( gentity_t *ent )
+void ClientThink_real( gentity_t *self )
 {
 	gclient_t *client;
 	pmove_t   pm;
@@ -1787,7 +1772,7 @@ void ClientThink_real( gentity_t *ent )
 	int       msec;
 	usercmd_t *ucmd;
 
-	client = ent->client;
+	client = self->client;
 
 	// don't think if the client is not yet connected (and thus not yet spawned in)
 	if ( client->pers.connected != CON_CONNECTED )
@@ -1796,7 +1781,7 @@ void ClientThink_real( gentity_t *ent )
 	}
 
 	// mark the time, so the connection sprite can be removed
-	ucmd = &ent->client->pers.cmd;
+	ucmd = &client->pers.cmd;
 
 	// sanity check the command time to prevent speedup cheating
 	if ( ucmd->serverTime > level.time + 200 )
@@ -1844,14 +1829,14 @@ void ClientThink_real( gentity_t *ent )
 	}
 
 	// client is admin but program hasn't responded to challenge? Resend
-	ClientAdminChallenge( ent - g_entities );
+	ClientAdminChallenge( self - g_entities );
 
 	//
 	// check for exiting intermission
 	//
 	if ( level.intermissiontime )
 	{
-		if( ent->r.svFlags & SVF_BOT )
+		if( self->r.svFlags & SVF_BOT )
 			G_BotIntermissionThink( client );
 		else
 			ClientIntermissionThink( client );
@@ -1866,20 +1851,20 @@ void ClientThink_real( gentity_t *ent )
 			return;
 		}
 
-		SpectatorThink( ent, ucmd );
+		SpectatorThink( self, ucmd );
 		return;
 	}
 
 	G_namelog_update_score( client );
 
 	// check for inactivity timer, but never drop the local client of a non-dedicated server
-	if ( !ClientInactivityTimer( ent, qfalse ) )
+	if ( !ClientInactivityTimer( self, qfalse ) )
 	{
 		return;
 	}
 
 	// calculate where ent is currently seeing all the other active clients
-	G_UnlaggedCalc( ent->client->unlaggedTime, ent );
+	G_UnlaggedCalc( client->unlaggedTime, self );
 
 	if ( client->noclip )
 	{
@@ -1994,12 +1979,12 @@ void ClientThink_real( gentity_t *ent )
 			client->medKitIncrementTime = level.time +
 			                              ( MEDKIT_STARTUP_TIME / MEDKIT_STARTUP_SPEED );
 
-			G_AddEvent( ent, EV_MEDKIT_USED, 0 );
+			G_AddEvent( self, EV_MEDKIT_USED, 0 );
 		}
 	}
 
 	// Replenish alien health
-	G_ReplenishAlienHealth( ent );
+	G_ReplenishAlienHealth( self );
 
 	// Throw human grenade
 	if ( BG_InventoryContainsUpgrade( UP_GRENADE, client->ps.stats ) &&
@@ -2009,7 +1994,7 @@ void ClientThink_real( gentity_t *ent )
 		BG_DeactivateUpgrade( UP_GRENADE, client->ps.stats );
 		BG_RemoveUpgradeFromInventory( UP_GRENADE, client->ps.stats );
 
-		G_FireUpgrade( ent, UP_GRENADE );
+		G_FireUpgrade( self, UP_GRENADE );
 	}
 
 	// Throw human firebomb
@@ -2020,7 +2005,7 @@ void ClientThink_real( gentity_t *ent )
 		BG_DeactivateUpgrade( UP_FIREBOMB, client->ps.stats );
 		BG_RemoveUpgradeFromInventory( UP_FIREBOMB, client->ps.stats );
 
-		G_FireUpgrade( ent, UP_FIREBOMB );
+		G_FireUpgrade( self, UP_FIREBOMB );
 	}
 
 	// set speed
@@ -2040,29 +2025,23 @@ void ClientThink_real( gentity_t *ent )
 		client->ps.stats[ STAT_STATE ] &= ~SS_CREEPSLOWED;
 	}
 
-	// unset jetpack damaged flag if it's time
-	if ( client->lastCombatTime + JETPACK_DMG_DISABLE_TIME < level.time )
-	{
-		client->ps.stats[ STAT_STATE2 ] &= ~SS2_JETPACK_DAMAGED;
-	}
-
 	// set up for pmove
 	oldEventSequence = client->ps.eventSequence;
 
 	memset( &pm, 0, sizeof( pm ) );
 
-	if ( ent->flags & FL_FORCE_GESTURE )
+	if ( self->flags & FL_FORCE_GESTURE )
 	{
-		ent->flags &= ~FL_FORCE_GESTURE;
-		usercmdPressButton( ent->client->pers.cmd.buttons, BUTTON_GESTURE );
+		self->flags &= ~FL_FORCE_GESTURE;
+		usercmdPressButton( client->pers.cmd.buttons, BUTTON_GESTURE );
 	}
 
 	// clear fall impact velocity before every pmove
 	VectorSet( client->pmext.fallImpactVelocity, 0.0f, 0.0f, 0.0f );
 
-	pm.ps = &client->ps;
+	pm.ps    = &client->ps;
 	pm.pmext = &client->pmext;
-	pm.cmd = *ucmd;
+	pm.cmd   = *ucmd;
 
 	if ( pm.ps->pm_type == PM_DEAD )
 	{
@@ -2073,71 +2052,69 @@ void ClientThink_real( gentity_t *ent )
 		pm.tracemask = MASK_PLAYERSOLID;
 	}
 
-	pm.trace = trap_Trace;
-	pm.pointcontents = trap_PointContents;
-	pm.debugLevel = g_debugMove.integer;
-	pm.noFootsteps = 0;
-
-	pm.pmove_fixed = pmove_fixed.integer | client->pers.pmoveFixed;
-	pm.pmove_msec = pmove_msec.integer;
+	pm.trace          = trap_Trace;
+	pm.pointcontents  = trap_PointContents;
+	pm.debugLevel     = g_debugMove.integer;
+	pm.noFootsteps    = 0;
+	pm.pmove_fixed    = pmove_fixed.integer | client->pers.pmoveFixed;
+	pm.pmove_msec     = pmove_msec.integer;
 	pm.pmove_accurate = pmove_accurate.integer;
 
 	VectorCopy( client->ps.origin, client->oldOrigin );
 
-	// moved from after Pmove -- potentially the cause of
-	// future triggering bugs
-	G_TouchTriggers( ent );
+	// moved from after Pmove -- potentially the cause of future triggering bugs
+	G_TouchTriggers( self );
 
 	Pmove( &pm );
 
-	G_UnlaggedDetectCollisions( ent );
+	G_UnlaggedDetectCollisions( self );
 
 	// save results of pmove
-	if ( ent->client->ps.eventSequence != oldEventSequence )
+	if ( client->ps.eventSequence != oldEventSequence )
 	{
-		ent->eventTime = level.time;
+		self->eventTime = level.time;
 	}
 
 	if ( g_smoothClients.integer )
 	{
-		BG_PlayerStateToEntityStateExtraPolate( &ent->client->ps, &ent->s, ent->client->ps.commandTime, qtrue );
+		BG_PlayerStateToEntityStateExtraPolate( &client->ps, &self->s, client->ps.commandTime, qtrue );
 	}
 	else
 	{
-		BG_PlayerStateToEntityState( &ent->client->ps, &ent->s, qtrue );
+		BG_PlayerStateToEntityState( &client->ps, &self->s, qtrue );
 	}
 
 	switch ( client->ps.weapon )
 	{
 		case WP_ALEVEL0:
 		case WP_ALEVEL0_UPG:
-			if ( !G_CheckVenomAttack( ent ) )
+			if ( !G_CheckVenomAttack( self ) )
 			{
 				client->ps.weaponstate = WEAPON_READY;
 			}
 			else
 			{
 				client->ps.generic1 = WPM_PRIMARY;
-				G_AddEvent( ent, EV_FIRE_WEAPON, 0 );
+				G_AddEvent( self, EV_FIRE_WEAPON, 0 );
 			}
 
 			break;
 
 		case WP_ALEVEL1:
 		case WP_ALEVEL1_UPG:
-			G_CheckGrabAttack( ent );
+			G_CheckGrabAttack( self );
 			break;
 
 		case WP_ALEVEL3:
 		case WP_ALEVEL3_UPG:
-			if ( !G_CheckPounceAttack( ent ) )
+			if ( !G_CheckPounceAttack( self ) )
 			{
 				client->ps.weaponstate = WEAPON_READY;
 			}
 			else
 			{
 				client->ps.generic1 = WPM_SECONDARY;
-				G_AddEvent( ent, EV_FIRE_WEAPON2, 0 );
+				G_AddEvent( self, EV_FIRE_WEAPON2, 0 );
 			}
 
 			break;
@@ -2147,48 +2124,48 @@ void ClientThink_real( gentity_t *ent )
 			// If not currently in a trample, reset the trample bookkeeping data
 			if ( !( client->ps.pm_flags & PMF_CHARGE ) && client->trampleBuildablesHitPos )
 			{
-				ent->client->trampleBuildablesHitPos = 0;
-				memset( ent->client->trampleBuildablesHit, 0, sizeof( ent->client->trampleBuildablesHit ) );
+				client->trampleBuildablesHitPos = 0;
+				memset( client->trampleBuildablesHit, 0, sizeof( client->trampleBuildablesHit ) );
 			}
 
 			break;
 
 		case WP_HBUILD:
-			G_CheckCkitRepair( ent );
+			G_CheckCkitRepair( self );
 			break;
 
 		default:
 			break;
 	}
 
-	SendPendingPredictableEvents( &ent->client->ps );
+	SendPendingPredictableEvents( &client->ps );
 
 	// use the snapped origin for linking so it matches client predicted versions
-	VectorCopy( ent->s.pos.trBase, ent->r.currentOrigin );
+	VectorCopy( self->s.pos.trBase, self->r.currentOrigin );
 
-	VectorCopy( pm.mins, ent->r.mins );
-	VectorCopy( pm.maxs, ent->r.maxs );
+	VectorCopy( pm.mins, self->r.mins );
+	VectorCopy( pm.maxs, self->r.maxs );
 
-	ent->waterlevel = pm.waterlevel;
-	ent->watertype = pm.watertype;
+	self->waterlevel = pm.waterlevel;
+	self->watertype = pm.watertype;
 
 	// touch other objects
-	ClientImpacts( ent, &pm );
+	ClientImpacts( self, &pm );
 
 	// execute client events
-	ClientEvents( ent, oldEventSequence );
+	ClientEvents( self, oldEventSequence );
 
 	// link entity now, after any personal teleporters have been used
-	trap_LinkEntity( ent );
+	trap_LinkEntity( self );
 
 	// NOTE: now copy the exact origin over otherwise clients can be snapped into solid
-	VectorCopy( ent->client->ps.origin, ent->r.currentOrigin );
-	VectorCopy( ent->client->ps.origin, ent->s.origin );
+	VectorCopy( client->ps.origin, self->r.currentOrigin );
+	VectorCopy( client->ps.origin, self->s.origin );
 
 	// save results of triggers and client events
-	if ( ent->client->ps.eventSequence != oldEventSequence )
+	if ( client->ps.eventSequence != oldEventSequence )
 	{
-		ent->eventTime = level.time;
+		self->eventTime = level.time;
 	}
 
 	// inform client about the state of unlockable items
@@ -2211,63 +2188,55 @@ void ClientThink_real( gentity_t *ent )
 	{
 		trace_t   trace;
 		vec3_t    view, point;
-		gentity_t *traceEnt;
-
-		int    entityList[ MAX_GENTITIES ];
-		vec3_t range = { ENTITY_USE_RANGE, ENTITY_USE_RANGE, ENTITY_USE_RANGE };
-		vec3_t mins, maxs;
-		int    i, num;
+		gentity_t *ent;
 
 		// look for object infront of player
 		AngleVectors( client->ps.viewangles, view, NULL, NULL );
 		VectorMA( client->ps.origin, ENTITY_USE_RANGE, view, point );
-		trap_Trace( &trace, client->ps.origin, NULL, NULL, point, ent->s.number, MASK_SHOT );
+		trap_Trace( &trace, client->ps.origin, NULL, NULL, point, self->s.number, MASK_SHOT );
 
-		traceEnt = &g_entities[ trace.entityNum ];
+		ent = &g_entities[ trace.entityNum ];
 
-		if ( traceEnt && traceEnt->use
-				&& ( !traceEnt->buildableTeam || traceEnt->buildableTeam == client->pers.team )
-				&& ( !traceEnt->conditions.team || traceEnt->conditions.team == client->pers.team ))
+		if ( ent && ent->use &&
+		     ( !ent->buildableTeam   || ent->buildableTeam   == client->pers.team ) &&
+		     ( !ent->conditions.team || ent->conditions.team == client->pers.team ) )
 		{
 			if ( g_debugEntities.integer > 1 )
-				G_Printf("Debug: Calling entity->use for player facing %s\n", etos(traceEnt));
+			{
+				G_Printf("Debug: Calling entity->use for player facing %s\n", etos(ent));
+			}
 
-			traceEnt->use( traceEnt, ent, ent );  //other and activator are the same in this context
+			ent->use( ent, self, self ); // other and activator are the same in this context
 		}
 		else
 		{
-			//no entity in front of player - do a small area search
-
-			VectorAdd( client->ps.origin, range, maxs );
-			VectorSubtract( client->ps.origin, range, mins );
-
-			num = trap_EntitiesInBox( mins, maxs, entityList, MAX_GENTITIES );
-
-			for ( i = 0; i < num; i++ )
+			// no entity in front of player - do a small area search
+			for ( ent = NULL; ( ent = G_IterateEntitiesWithinRadius( ent, client->ps.origin, ENTITY_USE_RANGE ) ); )
 			{
-				traceEnt = &g_entities[ entityList[ i ] ];
-
-				if ( traceEnt && traceEnt->use && traceEnt->buildableTeam == client->pers.team)
+				if ( ent && ent->use && ent->buildableTeam == client->pers.team)
 				{
 					if ( g_debugEntities.integer > 1 )
-						G_Printf("Debug: Calling entity->use after an area-search for %s\n", etos(traceEnt));
+					{
+						G_Printf("Debug: Calling entity->use after an area-search for %s\n", etos(ent));
+					}
 
-					traceEnt->use( traceEnt, ent, ent );  //other and activator are the same in this context
+					ent->use( ent, self, self ); // other and activator are the same in this context
+
 					break;
 				}
 			}
 
-			if ( i == num && client->pers.team == TEAM_ALIENS )
+			if ( !ent && client->pers.team == TEAM_ALIENS )
 			{
 				if ( BG_AlienCanEvolve( client->ps.stats[ STAT_CLASS ], client->pers.credit ) )
 				{
-					//no nearby objects and alien - show class menu
-					G_TriggerMenu( ent->client->ps.clientNum, MN_A_INFEST );
+					// no nearby objects and alien - show class menu
+					G_TriggerMenu( client->ps.clientNum, MN_A_INFEST );
 				}
 				else
 				{
-					//flash frags
-					G_AddEvent( ent, EV_ALIEN_EVOLVE_FAILED, 0 );
+					// flash frags
+					G_AddEvent( self, EV_ALIEN_EVOLVE_FAILED, 0 );
 				}
 			}
 		}
@@ -2282,14 +2251,14 @@ void ClientThink_real( gentity_t *ent )
 	}
 
 	// perform once-a-second actions
-	ClientTimerActions( ent, msec );
+	ClientTimerActions( self, msec );
 
-	if ( ent->suicideTime > 0 && ent->suicideTime < level.time )
+	if ( self->suicideTime > 0 && self->suicideTime < level.time )
 	{
-		ent->client->ps.stats[ STAT_HEALTH ] = ent->health = 0;
-		G_PlayerDie( ent, ent, ent, MOD_SUICIDE );
+		client->ps.stats[ STAT_HEALTH ] = self->health = 0;
+		G_PlayerDie( self, self, self, MOD_SUICIDE );
 
-		ent->suicideTime = 0;
+		self->suicideTime = 0;
 	}
 }
 

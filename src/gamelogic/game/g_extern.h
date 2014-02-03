@@ -63,6 +63,7 @@ extern  vmCvar_t g_inactivity;
 extern  vmCvar_t g_debugMove;
 extern  vmCvar_t g_debugDamage;
 extern  vmCvar_t g_debugKnockback;
+extern  vmCvar_t g_debugTurrets;
 extern  vmCvar_t g_synchronousClients;
 extern  vmCvar_t g_motd;
 extern  vmCvar_t g_warmup;
@@ -114,10 +115,6 @@ extern  vmCvar_t g_powerReactorSupply;
 extern  vmCvar_t g_powerReactorRange;
 extern  vmCvar_t g_powerRepeaterSupply;
 extern  vmCvar_t g_powerRepeaterRange;
-extern  vmCvar_t g_powerLevel1Interference;
-extern  vmCvar_t g_powerLevel1Range;
-extern  vmCvar_t g_powerLevel1UpgInterference;
-extern  vmCvar_t g_powerLevel1UpgRange;
 
 extern  vmCvar_t g_alienOffCreepRegenHalfLife;
 

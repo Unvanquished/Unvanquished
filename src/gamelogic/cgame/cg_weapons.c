@@ -116,7 +116,7 @@ static void CG_LoadCustomCrosshairs( void )
 			break;
 		}
 
-		if ( ( weapon = BG_WeaponByName( token )->number ) )
+		if ( ( weapon = BG_WeaponNumberByName( token ) ) )
 		{
 			token = COM_Parse( &text_p );
 
@@ -1024,7 +1024,7 @@ static qboolean CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo
 
 			wi->crossHairIndicator = trap_R_RegisterShader( token, RSF_DEFAULT );
 
-			if ( !wi->crossHair )
+			if ( !wi->crossHairIndicator )
 			{
 				CG_Printf( S_ERROR "weapon crosshair indicator not found %s\n", token );
 			}
@@ -1660,11 +1660,11 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 		{
 			if ( noGunModel )
 			{
-				CG_SetAttachmentTag( &cent->muzzlePS->attachment, *parent, parent->hModel, "tag_weapon" );
+				CG_SetAttachmentTag( &cent->muzzlePS->attachment, parent, parent->hModel, "tag_weapon" );
 			}
 			else
 			{
-				CG_SetAttachmentTag( &cent->muzzlePS->attachment, gun, gun.hModel, "tag_flash" );
+				CG_SetAttachmentTag( &cent->muzzlePS->attachment, &gun, gun.hModel, "tag_flash" );
 			}
 		}
 
@@ -1733,11 +1733,11 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 			{
 				if ( noGunModel )
 				{
-					CG_SetAttachmentTag( &cent->muzzlePS->attachment, *parent, parent->hModel, "tag_weapon" );
+					CG_SetAttachmentTag( &cent->muzzlePS->attachment, parent, parent->hModel, "tag_weapon" );
 				}
 				else
 				{
-					CG_SetAttachmentTag( &cent->muzzlePS->attachment, gun, gun.hModel, "tag_flash" );
+					CG_SetAttachmentTag( &cent->muzzlePS->attachment, &gun, gun.hModel, "tag_flash" );
 				}
 
 				CG_SetAttachmentCent( &cent->muzzlePS->attachment, cent );
@@ -2664,6 +2664,7 @@ static void ShotgunPattern( vec3_t origin, vec3_t origin2, int seed, int otherEn
 			dummy.eventParm       = DirToByte( tr.plane.normal );
 			dummy.otherEntityNum  = tr.entityNum;
 			dummy.otherEntityNum2 = 0; // TODO: Set attackerNum
+			dummy.torsoAnim       = 0; // Make sure it is not used uninitialized
 
 			if ( cg_entities[ tr.entityNum ].currentState.eType == ET_PLAYER ||
 			     cg_entities[ tr.entityNum ].currentState.eType == ET_BUILDABLE )

@@ -109,15 +109,11 @@ void SP_target_push( gentity_t *self )
 
 	G_SetMovedir( self->s.angles, self->s.origin2 );
 	VectorScale( self->s.origin2, self->config.speed, self->s.origin2 );
-
-	if ( self )
-	{
-		VectorCopy( self->s.origin, self->r.absmin );
-		VectorCopy( self->s.origin, self->r.absmax );
-		self->think = think_aimAtTarget;
-		self->nextthink = level.time + FRAMETIME;
-		self->act = target_push_act;
-	}
+	VectorCopy( self->s.origin, self->r.absmin );
+	VectorCopy( self->s.origin, self->r.absmax );
+	self->think = think_aimAtTarget;
+	self->nextthink = level.time + FRAMETIME;
+	self->act = target_push_act;
 }
 
 /*

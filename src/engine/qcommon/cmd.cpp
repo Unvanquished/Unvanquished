@@ -164,7 +164,7 @@ char *Cmd_Argv( int arg )
 	const std::string& res = args.Argv(arg);
 	static char buffer[100][1024];
 
-	strcpy(buffer[arg], res.c_str());
+	Q_strncpyz(buffer[arg], res.c_str(), sizeof(buffer[arg]));
 
 	return buffer[arg];
 }
@@ -195,9 +195,22 @@ char *Cmd_ArgsFrom( int arg )
 
 	const Cmd::Args& args = Cmd::GetCurrentArgs();
 	const std::string& res = args.EscapedArgs(arg);
-	strcpy(cmd_args, res.c_str());
+	Q_strncpyz(cmd_args, res.c_str(), BIG_INFO_STRING);
 
 	return cmd_args;
+}
+
+/*
+============
+Cmd_EscapedArgsBuffer
+============
+*/
+
+void Cmd_EscapedArgsBuffer( char* buffer, int bufferLength )
+{
+	const Cmd::Args& args = Cmd::GetCurrentArgs();
+	const std::string& res = args.EscapedArgs(0);
+	Q_strncpyz( buffer, res.c_str(), bufferLength );
 }
 
 /*
@@ -223,19 +236,6 @@ Returns a single string containing argv(1) to argv(argc()-1)
 char           *Cmd_Args( void )
 {
 	return Cmd_ArgsFrom( 1 );
-}
-
-/*
-============
-Cmd_ArgsBuffer
-
-The interpreted versions use this because
-they can't have pointers returned to them
-============
-*/
-void Cmd_ArgsBuffer( char *buffer, int bufferLength )
-{
-	Q_strncpyz( buffer, Cmd_Args(), bufferLength );
 }
 
 /*
@@ -492,32 +492,6 @@ void Cmd_QuoteStringBuffer( const char *in, char *buffer, int size )
 }
 
 /*
-============
-Cmd_UnescapeString
-
-Unescape a string
-============
-*/
-const char *Cmd_UnescapeString( const char *in )
-{
-	char        *escapeBuffer = GetEscapeBuffer();
-	char        *out = escapeBuffer;
-
-	while ( *in && out < escapeBuffer + ESCAPEBUFFER_SIZE - 1)
-	{
-		if ( in[0] == '\\' )
-		{
-			++in;
-		}
-
-		*out++ = *in++;
-	}
-
-	*out = '\0';
-	return escapeBuffer;
-}
-
-/*
 ===================
 Cmd_UnquoteString
 
@@ -530,16 +504,6 @@ const char *Cmd_UnquoteString( const char *str )
 	char *escapeBuffer = GetEscapeBuffer();
 	Tokenise( str, escapeBuffer, qfalse, qfalse );
 	return escapeBuffer;
-}
-
-/*
-============
-Cmd_CommandExists
-============
-*/
-qboolean Cmd_CommandExists( const char *cmd_name )
-{
-	return Cmd::CommandExists(cmd_name);
 }
 
 struct proxyInfo_t{
@@ -652,22 +616,5 @@ void Cmd_RemoveCommandsByFunc( xcommand_t function ) {
             ++ it;
         }
     }
-}
-
-/*
-============
-Cmd_CommandCompletion
-============
-*/
-
-//TODO
-void Cmd_CommandCompletion( void ( *callback )( const char *s ) )
-{
-	auto names = Cmd::CompleteCommandNames();
-
-	for ( auto name: names )
-	{
-		callback( name.first.c_str() );
-	}
 }
 

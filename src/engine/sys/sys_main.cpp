@@ -388,21 +388,6 @@ void Sys_UnloadDll( void *dllHandle )
 
 /*
 =================
-Sys_TryLibraryLoad
-=================
-*/
-static void *Sys_TryLibraryLoad( const char *base, const char *gamedir, const char *fname )
-{
-	char *fn;
-
-	fn = FS_BuildOSPath( base, gamedir, fname );
-	Com_DPrintf( "Sys_LoadDll(%s)...\n", fn );
-
-	return Sys_LoadLibrary( fn );
-}
-
-/*
-=================
 Sys_LoadDll
 
 Used to load a DLL instead of a virtual machine
@@ -416,17 +401,15 @@ void *QDECL Sys_LoadDll( const char *name,
 	void *libHandle = NULL;
 	void ( QDECL * dllEntry )( intptr_t ( QDECL * syscallptr )( intptr_t, ... ) );
 	char fname[ MAX_QPATH ];
-	char *gamedir;
-	char *libpath;
 
 	assert( name );
 
 	Com_sprintf( fname, sizeof( fname ), "%s%s", name, DLL_EXT );
 
-	gamedir = Cvar_VariableString( "fs_game" );
-	libpath = Cvar_VariableString( "fs_libpath" );
+	std::string fn = FS::Path::Build( FS::GetLibPath(), fname );
+	Com_DPrintf( "Sys_LoadDll(%s)...\n", fn.c_str() );
 
-	libHandle = Sys_TryLibraryLoad( libpath, gamedir, fname );
+	libHandle = Sys_LoadLibrary( fn.c_str() );
 
 	if ( !libHandle )
 	{

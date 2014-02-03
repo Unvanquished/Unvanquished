@@ -891,9 +891,9 @@ msgid "Evolution Points"
 msgstr "Puntos de evolución"
 
 #: main.menu:80
-msgid "Unvanquished (C) 2011-2013 Unvanquished Development"
+msgid "Unvanquished (C) 2011-2014 Unvanquished Development"
 msgstr ""
-"Invicto («Unvanquished») © 2011-2013, Equipo de desenvolvemento de Invicto "
+"Invicto («Unvanquished») © 2011-2014, Equipo de desenvolvemento de Invicto "
 "(«Unvanquished»)"
 
 #: mod.menu:74 profiles.menu:126

@@ -30,6 +30,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
 // Common headers
 #include "String.h"
+#include "Optional.h"
 #include "Command.h"
 #include "Cvar.h"
 #include "Log.h"

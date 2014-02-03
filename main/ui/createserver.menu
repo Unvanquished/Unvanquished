@@ -78,7 +78,7 @@
        name maplistbg
        rect MAPS_X MAPS_Y (MAPS_W+30) MAPS_H
        style WINDOW_STYLE_SHADER
-       background "ui/assets/vertgrad.tga"
+       background "ui/assets/vertgrad"
        forecolor MENU_TEAL_TRANS
        visible MENU_TRUE
        decoration
@@ -112,7 +112,7 @@
       name window
       rect OPTIONS_X OPTIONS_Y OPTIONS_W OPTIONS_H
       style WINDOW_STYLE_SHADER
-      background "ui/assets/vertgrad.tga"
+      background "ui/assets/vertgrad"
       forecolor MENU_TEAL_TRANS
       visible MENU_TRUE
       decoration
@@ -164,7 +164,7 @@
     {
       name back
       style WINDOW_STYLE_SHADER
-      background "ui/assets/backarrow.tga"
+      background "ui/assets/backarrow"
       rect BC_X BC_Y ARROW_H ARROW_W
       aspectBias ALIGN_LEFT
       visible MENU_TRUE
@@ -185,7 +185,7 @@
     {
       name back_alt
       style WINDOW_STYLE_SHADER
-      background "ui/assets/backarrow_alt.tga"
+      background "ui/assets/backarrow_alt"
       rect BC_X BC_Y ARROW_H ARROW_W
       aspectBias ALIGN_LEFT
       backcolor 0 0 0 0
@@ -220,7 +220,7 @@
       style WINDOW_STYLE_SHADER
       rect ((BC_X+BC_W)-ARROW_W) BC_Y ARROW_H ARROW_W
       aspectBias ALIGN_RIGHT
-      background "ui/assets/forwardarrow.tga"
+      background "ui/assets/forwardarrow"
       backcolor 0 0 0 0
       visible MENU_TRUE
       mouseEnter
@@ -242,7 +242,7 @@
       style WINDOW_STYLE_SHADER
       rect ((BC_X+BC_W)-ARROW_W) BC_Y ARROW_H ARROW_W
       aspectBias ALIGN_RIGHT
-      background "ui/assets/forwardarrow_alt.tga"
+      background "ui/assets/forwardarrow_alt"
       backcolor 0 0 0 0
       type ITEM_TYPE_BUTTON
       visible MENU_FALSE

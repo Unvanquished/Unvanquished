@@ -28,9 +28,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 LoadTGA
 =============
 */
-void LoadTGA( const char *name, byte **pic, int *width, int *height, byte alphaByte )
+void LoadTGA( const char *name, byte **pic, int *width, int *height,
+	      int *numLayers, int *numMips, int *bits, byte alphaByte )
 {
-	int         columns, rows, numPixels;
+	unsigned int columns, rows, numPixels;
 	byte        *pixbuf;
 	int         row, column;
 	byte        *buf_p;

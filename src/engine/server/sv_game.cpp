@@ -438,8 +438,6 @@ void SV_GameBinaryMessageReceived( int cno, const char *buf, int buflen, int com
 
 //==============================================
 
-extern int S_RegisterSound( const char *name, qboolean compressed );
-
 /*
 ====================
 SV_GetTimeString
@@ -524,7 +522,7 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 			return 0;
 
 		case G_FS_FOPEN_FILE:
-			return FS_FOpenFileByMode( ( const char * ) VMA( 1 ), ( fileHandle_t* ) VMA( 2 ), ( fsMode_t ) args[ 3 ] );
+			return FS_Game_FOpenFileByMode( ( const char * ) VMA( 1 ), ( fileHandle_t* ) VMA( 2 ), ( fsMode_t ) args[ 3 ] );
 
 		case G_FS_READ:
 		        VM_CheckBlock( args[1], args[2], "FSREAD" );
@@ -693,11 +691,7 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 
 			// START    xkan, 10/28/2002
 		case G_REGISTERSOUND:
-#ifdef DOOMSOUND ///// (SA) DOOMSOUND
-			return S_RegisterSound( ( const char * ) VMA( 1 ) );
-#else
-			return S_RegisterSound( ( const char * ) VMA( 1 ), args[ 2 ] );
-#endif ///// (SA) DOOMSOUND
+			return 0;
 
 		case G_PARSE_ADD_GLOBAL_DEFINE:
 			return Parse_AddGlobalDefine( ( const char * ) VMA( 1 ) );
@@ -1260,7 +1254,7 @@ void NaClGameVM::Syscall(int index, RPC::Reader& inputs, RPC::Writer& outputs)
 		qboolean openFile = inputs.ReadInt();
 		fsMode_t mode = static_cast<fsMode_t>(inputs.ReadInt());
 		fileHandle_t f;
-		outputs.WriteInt(FS_FOpenFileByMode(filename, openFile ? &f : NULL, mode));
+		outputs.WriteInt(FS_Game_FOpenFileByMode(filename, openFile ? &f : NULL, mode));
 		if (openFile)
 			outputs.WriteInt(f);
 		break;
@@ -1523,6 +1517,7 @@ void NaClGameVM::Syscall(int index, RPC::Reader& inputs, RPC::Writer& outputs)
 		std::unique_ptr<char[]> buffer(new char[len]);
 		outputs.WriteInt(SV_BotGetConsoleMessage(client, buffer.get(), len));
 		outputs.WriteString(buffer.get());
+		break;
 	}
 
 	case G_GET_USERCMD:
@@ -1593,7 +1588,7 @@ void NaClGameVM::Syscall(int index, RPC::Reader& inputs, RPC::Writer& outputs)
 	{
 		const char* name = inputs.ReadString();
 		qboolean compressed = inputs.ReadInt();
-		outputs.WriteInt(S_RegisterSound(name, compressed));
+		outputs.WriteInt(0);
 		break;
 	}
 

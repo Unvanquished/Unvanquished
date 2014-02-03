@@ -93,15 +93,15 @@ static void CG_ParseTeamInfo( void )
 	{
 		client = atoi( CG_Argv( i ) );
 
-		// wrong team? skip to the next one
-		if ( cgs.clientinfo[ client ].team != cg.snap->ps.persistant[ PERS_TEAM ] )
-		{
-			return;
-		}
-
 		if ( client < 0 || client >= MAX_CLIENTS )
 		{
 			CG_Printf( "[skipnotify]CG_ParseTeamInfo: bad client number: %d\n", client );
+			return;
+		}
+
+		// wrong team? skip to the next one
+		if ( cgs.clientinfo[ client ].team != cg.snap->ps.persistant[ PERS_TEAM ] )
+		{
 			return;
 		}
 
@@ -198,14 +198,14 @@ void CG_ShaderStateChanged( void )
 
 		if ( n && *n )
 		{
-			strncpy( originalShader, o, n - o );
+			memcpy( originalShader, o, n - o );
 			originalShader[ n - o ] = 0;
 			n++;
 			t = strstr( n, ":" );
 
 			if ( t && *t )
 			{
-				strncpy( newShader, n, t - n );
+				memcpy( newShader, n, t - n );
 				newShader[ t - n ] = 0;
 			}
 			else
@@ -218,7 +218,7 @@ void CG_ShaderStateChanged( void )
 
 			if ( o )
 			{
-				strncpy( timeOffset, t, o - t );
+				memcpy( timeOffset, t, o - t );
 				timeOffset[ o - t ] = 0;
 				o++;
 				trap_R_RemapShader( originalShader, newShader, timeOffset );

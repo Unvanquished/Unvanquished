@@ -32,10 +32,6 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#include <stdarg.h>
-#include <stdio.h>
-#include <stdlib.h>
-
 #include <SDL.h>
 #include "sdl2_compat.h"
 #include "../client/client.h"
@@ -775,14 +771,14 @@ static void IN_InitJoystick( void )
 		Com_DPrintf( "[%d] %s\n", i, SDL_JoystickNameForIndex( i ) );
 	}
 
-	in_joystickNo = Cvar_Get( "in_joystickNo", "0", CVAR_ARCHIVE );
+	in_joystickNo = Cvar_Get( "in_joystickNo", "0", 0 );
 
 	if ( in_joystickNo->integer < 0 || in_joystickNo->integer >= total )
 	{
 		Cvar_Set( "in_joystickNo", "0" );
 	}
 
-	in_joystickUseAnalog = Cvar_Get( "in_joystickUseAnalog", "0", CVAR_ARCHIVE );
+	in_joystickUseAnalog = Cvar_Get( "in_joystickUseAnalog", "0", 0 );
 
 	stick = SDL_JoystickOpen( in_joystickNo->integer );
 
@@ -1700,13 +1696,13 @@ void IN_Init( void *windowData )
 	in_keyboardDebug = Cvar_Get( "in_keyboardDebug", "0", CVAR_TEMP );
 
 	// mouse variables
-	in_mouse = Cvar_Get( "in_mouse", "1", CVAR_ARCHIVE );
-	in_nograb = Cvar_Get( "in_nograb", "0", CVAR_ARCHIVE );
-	in_uigrab = Cvar_Get( "in_uigrab", "1", CVAR_ARCHIVE );
+	in_mouse = Cvar_Get( "in_mouse", "1", 0 );
+	in_nograb = Cvar_Get( "in_nograb", "0", 0 );
+	in_uigrab = Cvar_Get( "in_uigrab", "0", 0 );
 
-	in_joystick = Cvar_Get( "in_joystick", "0", CVAR_ARCHIVE | CVAR_LATCH );
+	in_joystick = Cvar_Get( "in_joystick", "0",  CVAR_LATCH );
 	in_joystickDebug = Cvar_Get( "in_joystickDebug", "0", CVAR_TEMP );
-	in_joystickThreshold = Cvar_Get( "in_joystickThreshold", "0.15", CVAR_ARCHIVE );
+	in_joystickThreshold = Cvar_Get( "in_joystickThreshold", "0.15", 0 );
 
 	in_xbox360Controller = Cvar_Get( "in_xbox360Controller", "1", CVAR_TEMP );
 	in_xbox360ControllerAvailable = Cvar_Get( "in_xbox360ControllerAvailable", "0", CVAR_ROM );

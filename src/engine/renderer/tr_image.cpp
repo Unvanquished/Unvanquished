@@ -1534,11 +1534,8 @@ static void LoadPCX( const char *filename, byte **pic, byte **palette, int *widt
 
 	pix = out;
 
-	if ( palette )
-	{
-		*palette = (byte*) ri.Z_Malloc( 768 );
-		memcpy( *palette, ( byte * ) pcx + len - 768, 768 );
-	}
+	*palette = (byte*) ri.Z_Malloc( 768 );
+	memcpy( *palette, ( byte * ) pcx + len - 768, 768 );
 
 	if ( width )
 	{
@@ -2535,7 +2532,7 @@ image_t        *R_FindImageFile( const char *name, qboolean mipmap, qboolean all
 		char altname[ MAX_QPATH ]; // copy the name
 		int  len; //
 
-		strcpy( altname, name );  //
+		Q_strncpyz( altname, name, MAX_QPATH );  //
 		len = strlen( altname );  //
 		altname[ len - 3 ] = toupper( altname[ len - 3 ] );  // and try upper case extension for unix systems
 		altname[ len - 2 ] = toupper( altname[ len - 2 ] );  //

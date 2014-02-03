@@ -187,6 +187,12 @@ struct gentity_s
 	float        momentumEarned;
 
 	/**
+	 * Mining structures
+	 */
+	float        mineRate;
+	float        mineEfficiency;
+
+	/**
 	 * Alien buildables can burn, which is a lot of fun if they are close.
 	 */
 	qboolean     onFire;
@@ -204,6 +210,7 @@ struct gentity_s
 	char         *targets[ MAX_ENTITY_TARGETS + 1 ];
 	gentity_t    *target;  /*< the currently selected target to aim at/for, is the reverse to "tracker" */
 	gentity_t    *tracker; /*< entity that currently targets, aims for or tracks this entity, is the reverse to "target" */
+	int          numTrackedBy;
 	/* path chaining, not unlike the target/tracker relationship */
 	gentity_t    *nextPathSegment;
 	gentity_t    *prevPathSegment;
@@ -349,13 +356,12 @@ struct gentity_s
 
 	team_t      buildableTeam; // buildable item team
 	struct namelog_s *builtBy; // clientNum of person that built this
-	int         dcc; // number of controlling dccs
 
 	int         pain_debounce_time;
 	int         last_move_time;
 	int         timestamp; // body queue sinking, etc
 	int         shrunkTime; // time when a barricade shrunk or zero
-	int         creepTime; // Time when alien was last on creep
+	int         healthSourceTime; // last time an alien had contact to a health source
 	int         animTime; // last animation change
 	int         time1000; // timer evaluated every second
 
@@ -373,7 +379,17 @@ struct gentity_s
 	float       credits[ MAX_CLIENTS ];
 	int         killedBy; // clientNum of killer
 
-	vec3_t      turretAim; // aim vector for turrets
+	vec3_t      buildableAim; // aim vector for buildables
+
+	// turret
+	int         turretNextShot;
+	int         turretLastShotAtTarget;
+	int         turretLastSeenATarget;
+	int         turretLastHeadMove;
+	int         turretCurrentDamage;
+	vec3_t      turretDirToTarget;
+	vec3_t      turretBaseDir;
+	qboolean    turretDisabled;
 
 	vec4_t      animation; // animated map objects
 
@@ -658,9 +674,12 @@ struct level_locals_s
 
 	qboolean restarted; // waiting for a map_restart to fire
 
-	int      numConnectedClients;
-	int      numNonSpectatorClients; // includes connecting clients
-	int      numPlayingClients; // connected, non-spectators
+	int      numConnectedClients; // connected
+	int      numAliveClients;     // on a team and alive
+	int      numPlayingClients;   // on a team
+	int      numPlayingPlayers;   // on a team and not a bot
+	int      numPlayingBots;      // on a team and a bot
+
 	int      sortedClients[ MAX_CLIENTS ]; // sorted by score
 
 	int      snd_fry; // sound index for standing in lava
@@ -742,17 +761,20 @@ struct level_locals_s
 		int  voteYes;
 		int  voteNo;
 		int  voted;
-		int  numVotingClients; // set by CalculateRanks
 		int  quorum;
 
 		// gameplay state
 		int              numSpawns;
 		int              numClients;
+		int              numPlayers;
+		int              numBots;
 		float            averageNumClients;
+		float            averageNumPlayers;
+		float            averageNumBots;
 		int              numSamples;
-		int              numLiveClients;
+		int              numAliveClients;
 		float            buildPoints;
-		int              mineEfficiency;
+		float            mineEfficiency;
 		int              kills;
 		spawnQueue_t     spawnQueue;
 		qboolean         locked;
