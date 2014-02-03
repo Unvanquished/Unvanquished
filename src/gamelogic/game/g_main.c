@@ -780,10 +780,10 @@ void G_MapConfigs( const char *mapname )
 	}
 
 	trap_SendConsoleCommand( EXEC_APPEND,
-	                         va( "preset %s/default.cfg\n", Quote( g_mapConfigs.string ) ) );
+	                         va( "exec %s/default.cfg\n", Quote( g_mapConfigs.string ) ) );
 
 	trap_SendConsoleCommand( EXEC_APPEND,
-	                         va( "preset %s/%s.cfg\n", Quote( g_mapConfigs.string ), Quote( mapname ) ) );
+	                         va( "exec %s/%s.cfg\n", Quote( g_mapConfigs.string ), Quote( mapname ) ) );
 
 	trap_Cvar_Set( "g_mapConfigsLoaded", "1" );
 	trap_SendConsoleCommand( EXEC_APPEND, "maprestarted\n" );
