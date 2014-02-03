@@ -1,3 +1,10 @@
+unvanquished (0.24.0-2) unstable; urgency=low
+
+  * Fix unvanquished-download-paks install location.
+  * Fix memory leak in texture loading [cherry-picked].
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Mon, 03 Feb 2014 04:38:11 +0000
+
 unvanquished (0.24.0-1) unstable; urgency=low
 
   * Release of Alpha 24.
