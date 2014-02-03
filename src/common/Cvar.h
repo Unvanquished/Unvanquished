@@ -48,7 +48,9 @@ namespace Cvar {
         SERVERINFO = BIT(2), // The cvar is send to the client as part of the server state
         SYSTEMINFO = BIT(3), // ???
         ROM        = BIT(6), // The cvar cannot be changed by the user
-        CHEAT      = BIT(9)  // The cvar is a cheat and should stay at its default value on pure servers.
+        TEMPORARY  = BIT(8), // The cvar is temporary and is not to be archived (overrides archive flags)
+        CHEAT      = BIT(9), // The cvar is a cheat and should stay at its default value on pure servers.
+        USER_ARCHIVE = BIT(14), // The cvar is saved to the configuration file at user request
     };
 
     // Internal to the Cvar system
@@ -84,7 +86,7 @@ namespace Cvar {
      * Cvar::Cvar<T> represents a type-checked cvar of type T. The parsed T can
      * be accessed with .Get() and .Set() will serialize T before setting the value.
      * It is also automatically registered when created so you can write:
-     *   static Cvar<bool> my_bool_cvar("my_bool_cvar", "bool - a cvar", Cvar::ARCHIVE, false);
+     *   static Cvar<bool> my_bool_cvar("my_bool_cvar", "bool - a cvar", Cvar::NONE, false);
      *
      * The functions bool ParseCvarValue(string, T& res), string SerializeCvarValue(T)
      * and string GetCvarTypeName<T>() must be implemented for Cvar<T> to work.

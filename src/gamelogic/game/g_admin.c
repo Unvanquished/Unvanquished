@@ -3217,7 +3217,7 @@ qboolean G_admin_changemap( gentity_t *ent )
 
 	trap_Argv( 1, map, sizeof( map ) );
 
-	if ( !trap_FS_FOpenFile( va( "maps/%s.bsp", map ), NULL, FS_READ ) )
+	if ( !G_MapExists( map ) )
 	{
 		ADMP( va( "%s %s", QQ( N_("^3changemap: ^7invalid map name '$1$'\n") ), map ) );
 		return qfalse;

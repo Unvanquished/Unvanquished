@@ -200,42 +200,42 @@ namespace Str {
     bool ToFloat(Str::StringRef text, float& result);
 
     // Locale-independent versions of ctype
-    inline bool cisdigit(char c)
+    inline bool cisdigit(int c)
     {
         return c >= '0' && c <= '9';
     }
-    inline bool cisupper(char c)
+    inline bool cisupper(int c)
     {
         return c >= 'A' && c <= 'Z';
     }
-    inline bool cislower(char c)
+    inline bool cislower(int c)
     {
         return c >= 'a' && c <= 'z';
     }
-    inline bool cisalpha(char c)
+    inline bool cisalpha(int c)
     {
         return cisupper(c) || cislower(c);
     }
-    inline bool cisalnum(char c)
+    inline bool cisalnum(int c)
     {
         return cisalpha(c) || cisdigit(c);
     }
-    inline bool cisspace(char c)
+    inline bool cisspace(int c)
     {
         return c == ' ' || c == '\t' || c == '\n' || c == '\r';
     }
-    inline bool cisxdigit(char c)
+    inline bool cisxdigit(int c)
     {
         return cisdigit(c) || (c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f');
     }
-    inline char ctolower(char c)
+    inline int ctolower(int c)
     {
         if (cisupper(c))
             return c - 'A' + 'a';
         else
             return c;
     }
-    inline char ctoupper(char c)
+    inline int ctoupper(int c)
     {
         if (cislower(c))
             return c - 'a' + 'A';

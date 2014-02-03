@@ -74,7 +74,9 @@ namespace Cvar {
     //Returns a list of cvars matching the prefix as well as their description
     Cmd::CompletionResult Complete(Str::StringRef prefix);
 
-    void AddFlags(const std::string& cvarName, int flags);
+    // Alter flags, returns true if the variable exists
+    bool AddFlags(const std::string& cvarName, int flags);
+    bool ClearFlags(const std::string& cvarName, int flags);
 
     // Used by statically defined cvar.
     void Register(CvarProxy* proxy, const std::string& name, std::string description, int flags, const std::string& defaultValue);

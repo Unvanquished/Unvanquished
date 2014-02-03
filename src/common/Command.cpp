@@ -307,6 +307,11 @@ namespace Cmd {
         return true;
     }
 
+    bool IsSwitch(Str::StringRef arg, const char *name)
+    {
+        return Str::LongestPrefixSize(ToLower(arg), name) > 1;
+    }
+
     /*
     ===============================================================================
 
@@ -423,6 +428,14 @@ namespace Cmd {
 
     const std::string& Args::operator[] (int argNum) const {
         return Argv(argNum);
+    }
+
+    std::vector<std::string>::const_iterator Args::begin() const {
+        return args.cbegin();
+    }
+
+    std::vector<std::string>::const_iterator Args::end() const {
+        return args.cend();
     }
 
     /*

@@ -2673,13 +2673,13 @@ CL_IRCSetup
 */
 void CL_IRCSetup( void )
 {
-	cl_IRC_connect_at_startup = Cvar_Get( "cl_IRC_connect_at_startup", "0", CVAR_ARCHIVE );
-	cl_IRC_server = Cvar_Get( "cl_IRC_server", "irc.freenode.org", CVAR_ARCHIVE );
-	cl_IRC_channel = Cvar_Get( "cl_IRC_channel", "unv-lobby", CVAR_ARCHIVE );
-	cl_IRC_port = Cvar_Get( "cl_IRC_port", "6667", CVAR_ARCHIVE );
-	cl_IRC_override_nickname = Cvar_Get( "cl_IRC_override_nickname", "0", CVAR_ARCHIVE );
-	cl_IRC_nickname = Cvar_Get( "cl_IRC_nickname", "", CVAR_ARCHIVE );
-	cl_IRC_reconnect_delay = Cvar_Get( "cl_IRC_reconnect_delay", "100", CVAR_ARCHIVE );
+	cl_IRC_connect_at_startup = Cvar_Get( "cl_IRC_connect_at_startup", "0", 0 );
+	cl_IRC_server = Cvar_Get( "cl_IRC_server", "irc.freenode.org", 0 );
+	cl_IRC_channel = Cvar_Get( "cl_IRC_channel", "unv-lobby", 0 );
+	cl_IRC_port = Cvar_Get( "cl_IRC_port", "6667", 0 );
+	cl_IRC_override_nickname = Cvar_Get( "cl_IRC_override_nickname", "0", 0 );
+	cl_IRC_nickname = Cvar_Get( "cl_IRC_nickname", "", 0 );
+	cl_IRC_reconnect_delay = Cvar_Get( "cl_IRC_reconnect_delay", "100", 0 );
 
 	if ( cl_IRC_connect_at_startup->value )
 	{

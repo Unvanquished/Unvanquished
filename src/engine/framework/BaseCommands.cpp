@@ -74,20 +74,20 @@ namespace Cmd {
 
     class ExecCmd: public StaticCmd {
         public:
-            ExecCmd(Str::StringRef name, bool silent): StaticCmd(name, BASE, N_("executes a command file")), silent(silent) {
+            ExecCmd(Str::StringRef name, bool readHomepath): StaticCmd(name, BASE, N_("executes a command file")), readHomepath(readHomepath) {
             }
 
             void Run(const Cmd::Args& args) const OVERRIDE {
-                bool executeSilent = silent;
+                bool executeSilent = false;
                 bool failSilent = false;
                 bool hasOptions = args.Argc() >= 3 and args.Argv(1).size() >= 2 and args.Argv(1)[0] == '-';
 
                 //Check the syntax
                 if (args.Argc() < 2) {
-                    if (silent) {
-                        PrintUsage(args, _("<filename> [<arguments>…]"), _("execute a script file without notification, a shortcut for exec -q"));
+                    if (readHomepath) {
+                        PrintUsage(args, _("[-q|-f|-s] <filename> [<arguments>…]"), _("execute a user script file from config/."));
                     } else {
-                        PrintUsage(args, _("[-q|-f|-s] <filename> [<arguments>…]"), _("execute a script file."));
+                        PrintUsage(args, _("[-q|-f|-s] <filename> [<arguments>…]"), _("execute a script file from a pak."));
                     }
                     return;
                 }
@@ -128,51 +128,47 @@ namespace Cmd {
                 }
             }
 
+            Cmd::CompletionResult Complete(int argNum, const Args& args, Str::StringRef prefix) const OVERRIDE {
+                if (argNum == 1 || (argNum == 2 && Str::IsPrefix("-", args.Argv(1)))) {
+                    if (readHomepath)
+                        return FS::HomePath::CompleteFilename(prefix, "config", ".cfg", true, false);
+                    else
+                        return FS::PakPath::CompleteFilename(prefix, "", ".cfg", true, false);
+                }
+
+                return {};
+            }
+
         private:
-            bool silent;
+            bool readHomepath;
 
             void SetExecArgs(const Cmd::Args& args, int start) const {
                 //Set some cvars up so that scripts file can be used like functions
-                Cvar_Get("arg_all", args.ConcatArgs(start).c_str(), CVAR_TEMP | CVAR_ROM | CVAR_USER_CREATED);
-                Cvar_Set("arg_all", args.ConcatArgs(start).c_str());
-                Cvar_Get("arg_count", va("%i", args.Argc() - start), CVAR_TEMP | CVAR_ROM | CVAR_USER_CREATED);
-                Cvar_Set("arg_count", va("%i", args.Argc() - start));
+                ExecuteAfter(Str::Format("set arg_all %s", Cmd::Escape(args.ConcatArgs(start))));
+                ExecuteAfter(Str::Format("set arg_count %d", args.Argc() - start));
 
                 for (int i = start; i < args.Argc(); i++) {
-                    Cvar_Get(va("arg_%i", i), args.Argv(i + start - 1).c_str(), CVAR_TEMP | CVAR_ROM | CVAR_USER_CREATED);
-                    Cvar_Set(va("arg_%i", i), args.Argv(i + start - 1).c_str());
+                    ExecuteAfter(Str::Format("set arg_%d %s", i, Cmd::Escape(args.Argv(i + start - 1))));
                 }
             }
 
             bool ExecFile(Str::StringRef filename) const {
-                bool success = false;
-                fileHandle_t h;
-                int len = FS_SV_FOpenFileRead(filename.c_str(), &h);
-
-                //TODO: rewrite this
-                if (h) {
-                    success = true;
-                    char* content = (char*) Hunk_AllocateTempMemory(len + 1);
-                    FS_Read(content, len, h);
-                    content[len] = '\0';
-                    FS_FCloseFile(h);
-                    ExecuteAfter(content, true);
-                    Hunk_FreeTempMemory(content);
-                } else {
-                    char* content;
-                    FS_ReadFile(filename.c_str(), (void**) &content);
-
-                    if (content) {
-                        success = true;
-                        ExecuteAfter(content, true);
-                        FS_FreeFile(content);
+                std::string buffer;
+                try {
+                    if (readHomepath) {
+                        buffer = FS::HomePath::OpenRead(FS::Path::Build("config", filename)).ReadAll();
+                    } else {
+                        buffer = FS::PakPath::ReadFile(filename);
                     }
+                } catch (std::system_error&) {
+                    return false;
                 }
-                return success;
+                ExecuteAfter(buffer, true);
+                return true;
             }
     };
-    static ExecCmd ExecCmdRegistration("exec", false);
-    static ExecCmd ExecqCmdRegistration("execq", true);
+    static ExecCmd ExecCmdRegistration("exec", true);
+    static ExecCmd PresetCmdRegistration("preset", false);
 
     class EchoCmd: public StaticCmd {
         public:
@@ -841,7 +837,7 @@ namespace Cmd {
                 AddCommand(name, aliasProxy, N_("a user-defined alias command"));
 
                 //Force an update of autogen.cfg (TODO: get rid of this super global variable)
-                cvar_modifiedFlags |= CVAR_ARCHIVE;
+                cvar_modifiedFlags |= CVAR_ARCHIVE_BITS;
             }
 
             Cmd::CompletionResult Complete(int argNum, const Args& args, Str::StringRef prefix) const OVERRIDE {

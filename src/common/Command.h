@@ -63,6 +63,8 @@ namespace Cmd {
     bool IsValidCmdName(Str::StringRef text);
     bool IsValidCvarName(Str::StringRef text);
 
+    bool IsSwitch(Str::StringRef arg, const char *name);
+
     /**
      * Cmd::Args represents the arguments given to an invoked command.
      * It has a number of convenient methods to access the raw command
@@ -94,12 +96,17 @@ namespace Cmd {
             int size() const; // same as Argc()
             const std::string& operator[] (int argNum) const; // same as Argv(int)
 
+            // Range-based for loop support
+            std::vector<std::string>::const_iterator begin() const;
+            std::vector<std::string>::const_iterator end() const;
+
         private:
             std::vector<std::string> args;
     };
 
     // A completion result is a list of (result, short description)
-    typedef std::vector<std::pair<std::string, std::string>> CompletionResult;
+    typedef std::pair<std::string, std::string> CompletionItem;
+    typedef std::vector<CompletionItem> CompletionResult;
 
     class Environment;
 

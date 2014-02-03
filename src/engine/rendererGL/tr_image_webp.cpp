@@ -31,7 +31,8 @@ LoadWEBP
 =========================================================
 */
 
-void LoadWEBP( const char *filename, unsigned char **pic, int *width, int *height, byte alphaByte )
+void LoadWEBP( const char *filename, unsigned char **pic, int *width, int *height,
+	       int *numLayers, int *numMips, int *bits, byte alphaByte )
 {
 	byte *out;
 	int  len;

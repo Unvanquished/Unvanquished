@@ -23,7 +23,7 @@
     smallFont "fonts/DejaVuSansCondensed.ttf" 20        // font
     bigFont "fonts/DejaVuSansCondensed.ttf" 34        // font
     cursor "ui/assets/3_cursor3"      // cursor
-    gradientBar "ui/assets/gradientbar2.tga"  // gradient bar
+    gradientBar "ui/assets/gradientbar2"  // gradient bar
     itemFocusSound "sound/misc/menu2.wav"   // sound for item getting focus (via keyboard or mouse )
     
 
@@ -61,7 +61,7 @@
       name "background"
       rect -40 -3 1000 58
       style WINDOW_STYLE_SHADER
-      background "ui/assets/vertgrad.tga"
+      background "ui/assets/vertgrad"
       visible MENU_TRUE
       decoration
       forecolor MENU_TEAL_TRANS
