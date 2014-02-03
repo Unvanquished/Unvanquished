@@ -791,20 +791,6 @@ set( GAMENACLLIST
   ${GAMELOGIC_DIR}/game/g_api.cpp
 )
 
-set( GAMENATIVELIST
-  ${GAMELOGIC_DIR}/game/g_api.c
-)
-
-set( GAMEQVMLIST
-  ${GAMELOGIC_DIR}/shared/bg_lib.c
-  ${ENGINE_DIR}/qcommon/q_static.c
-  ${SHAREDLIST_C}
-)
-
-set( GAMEASMLIST
-  ${GAMELOGIC_DIR}/game/g_api.asm
-)
-
 set( UILIST
   ${GAMELOGIC_DIR}/ui/ui_main.c #keep it first because vmMain must be the first function compiled in qvms
   ${GAMELOGIC_DIR}/ui/ui_atoms.c
@@ -1279,7 +1265,7 @@ endif()
 include( CMakeParseArguments )
 function( GAMEMODULE )
   # ParseArguments setup
-  set( oneValueArgs NAME HAS_NACL )
+  set( oneValueArgs NAME HAS_NACL HAS_QVM )
   set( multiValueArgs COMPILE_DEF FILES NACL_FILES NATIVE_FILES QVM_FILES QVM_ASM )
   cmake_parse_arguments( GAMEMODULE "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
   if( CMAKE_CFG_INTDIR STREQUAL "." )
@@ -1297,7 +1283,7 @@ function( GAMEMODULE )
     )
   endif()
 
-  if( BUILD_GAME_QVM_NATIVE )
+  if( GAMEMODULE_HAS_QVM AND BUILD_GAME_QVM_NATIVE )
     set( QVM_NATIVE_COMPILE_DEF ${GAMEMODULE_COMPILE_DEF} QVM_ABI)
     add_library( ${GAMEMODULE_NAME}-qvm-native MODULE ${GAMEMODULE_FILES} ${SHAREDLIST} ${GAMEMODULE_NATIVE_FILES} )
     target_link_libraries( ${GAMEMODULE_NAME}-qvm-native ${LIBS_BASE} )
@@ -1419,7 +1405,7 @@ function( GAMEMODULE )
     )
   endif()
 
-  if( BUILD_GAME_QVM )
+  if( GAMEMODULE_HAS_QVM AND BUILD_GAME_QVM )
     if( CMAKE_CFG_INTDIR STREQUAL "." )
       set( QVM_DIR ${OBJ_DIR}/${GAMEMODULE_NAME}-qvm.dir )
     else()
@@ -1477,6 +1463,7 @@ endif()
 GAMEMODULE( NAME game
   COMPILE_DEF GAME
   HAS_NACL 1
+  HAS_QVM 0
   FILES ${GAMELIST}
   NACL_FILES ${GAMENACLLIST}
   NATIVE_FILES ${GAMENATIVELIST}
@@ -1487,6 +1474,7 @@ GAMEMODULE( NAME game
 GAMEMODULE( NAME cgame
   COMPILE_DEF CGAME
   HAS_NACL 0
+  HAS_QVM 1
   FILES ${CGAMELIST}
   NACL_FILES ${CGAMENACLLIST}
   NATIVE_FILES ${CGAMENATIVELIST}
@@ -1498,6 +1486,7 @@ GAMEMODULE( NAME ui
   COMPILE_DEF UI
   FILES ${UILIST}
   HAS_NACL 0
+  HAS_QVM 1
   NACL_FILES ${UINACLLIST}
   NATIVE_FILES ${UINATIVELIST}
   QVM_FILES ${UIQVMLIST}

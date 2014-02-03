@@ -335,16 +335,6 @@ SV_LocateGameData
 
 ===============
 */
-void SV_LocateGameDataQVM( sharedEntity_t *gEnts, int numGEntities, int sizeofGEntity_t,
-                        playerState_t *clients, int sizeofGameClient )
-{
-	sv.gentities = gEnts;
-	sv.gentitySize = sizeofGEntity_t;
-	sv.num_entities = numGEntities;
-
-	sv.gameClients = clients;
-	sv.gameClientSize = sizeofGameClient;
-}
 
 void SV_LocateGameDataNaCl( const NaCl::SharedMemoryPtr& shmRegion, int numGEntities, int sizeofGEntity_t,
                         int sizeofGameClient )
@@ -471,315 +461,6 @@ static void SV_GetTimeString( char *buffer, int length, const char *format, cons
 	}
 }
 
-intptr_t SV_GameSystemCalls( intptr_t *args )
-{
-	switch ( args[ 0 ] )
-	{
-		case G_PRINT:
-			Com_Printf( "%s", ( char * ) VMA( 1 ) );
-			return 0;
-
-		case G_ERROR:
-			Com_Error( ERR_DROP, "%s", ( char * ) VMA( 1 ) );
-			return 0; //silence warning and have a fallback behavior if Com_Error behavior changes
-
-		case G_LOG:
-			Com_LogEvent( ( log_event_t* ) VMA( 1 ), NULL );
-			return 0;
-
-		case G_MILLISECONDS:
-			return Sys_Milliseconds();
-
-		case G_CVAR_REGISTER:
-			Cvar_Register( ( vmCvar_t* ) VMA( 1 ), ( const char* ) VMA( 2 ), ( const char* ) VMA( 3 ), args[ 4 ] );
-			return 0;
-
-		case G_CVAR_UPDATE:
-			Cvar_Update( ( vmCvar_t* ) VMA( 1 ) );
-			return 0;
-
-		case G_CVAR_SET:
-			Cvar_Set( ( const char * ) VMA( 1 ), ( const char * ) VMA( 2 ) );
-			return 0;
-
-		case G_CVAR_VARIABLE_INTEGER_VALUE:
-			return Cvar_VariableIntegerValue( ( const char * ) VMA( 1 ) );
-
-		case G_CVAR_VARIABLE_STRING_BUFFER:
-		        VM_CheckBlock( args[2], args[3], "CVARVSB" );
-			Cvar_VariableStringBuffer( ( const char* ) VMA( 1 ), ( char* ) VMA( 2 ), args[ 3 ] );
-			return 0;
-
-		case G_ARGC:
-			return Cmd_Argc();
-
-		case G_ARGV:
-		        VM_CheckBlock( args[2], args[3], "ARGV" );
-			Cmd_ArgvBuffer( args[ 1 ], ( char * ) VMA( 2 ), args[ 3 ] );
-			return 0;
-
-		case G_SEND_CONSOLE_COMMAND:
-			Cbuf_ExecuteText( args[ 1 ], ( const char * ) VMA( 2 ) );
-			return 0;
-
-		case G_FS_FOPEN_FILE:
-			return FS_Game_FOpenFileByMode( ( const char * ) VMA( 1 ), ( fileHandle_t* ) VMA( 2 ), ( fsMode_t ) args[ 3 ] );
-
-		case G_FS_READ:
-		        VM_CheckBlock( args[1], args[2], "FSREAD" );
-			FS_Read( VMA( 1 ), args[ 2 ], args[ 3 ] );
-			return 0;
-
-		case G_FS_WRITE:
-		        VM_CheckBlock( args[1], args[2], "FSWRITE" );
-			return FS_Write( VMA( 1 ), args[ 2 ], args[ 3 ] );
-
-		case G_FS_RENAME:
-			FS_Rename( ( const char * ) VMA( 1 ), ( const char * ) VMA( 2 ) );
-			return 0;
-
-		case G_FS_FCLOSE_FILE:
-			FS_FCloseFile( args[ 1 ] );
-			return 0;
-
-		case G_FS_GETFILELIST:
-		        VM_CheckBlock( args[3], args[4], "FSGFL" );
-			return FS_GetFileList( ( const char * ) VMA( 1 ), ( const char * ) VMA( 2 ), ( char * ) VMA( 3 ), args[ 4 ] );
-
-		case G_LOCATE_GAME_DATA:
-			SV_LocateGameDataQVM( ( sharedEntity_t* ) VMA( 1 ), args[ 2 ], args[ 3 ], ( playerState_t* ) VMA( 4 ), args[ 5 ] );
-			return 0;
-
-		case G_DROP_CLIENT:
-			SV_GameDropClient( args[ 1 ], ( const char * ) VMA( 2 ) );
-			return 0;
-
-		case G_SEND_SERVER_COMMAND:
-			SV_GameSendServerCommand( args[ 1 ], ( const char * ) VMA( 2 ) );
-			return 0;
-
-		case G_LINKENTITY:
-			SV_LinkEntity( ( sharedEntity_t* ) VMA( 1 ) );
-			return 0;
-
-		case G_UNLINKENTITY:
-			SV_UnlinkEntity( ( sharedEntity_t* ) VMA( 1 ) );
-			return 0;
-
-		case G_ENTITIES_IN_BOX:
-		        VM_CheckBlock( args[3], args[4] * sizeof( int ), "ENTIB" );
-			return SV_AreaEntities( ( const float * ) VMA( 1 ), ( const float * ) VMA( 2 ), ( int * ) VMA( 3 ), args[ 4 ] );
-
-		case G_ENTITY_CONTACT:
-			return SV_EntityContact( ( float * ) VMA( 1 ), ( float * ) VMA( 2 ), ( const sharedEntity_t * ) VMA( 3 ), TT_AABB );
-
-		case G_ENTITY_CONTACTCAPSULE:
-			return SV_EntityContact( ( float * ) VMA( 1 ), ( float * ) VMA( 2 ), ( const sharedEntity_t * ) VMA( 3 ), TT_CAPSULE );
-
-		case G_TRACE:
-			SV_Trace( ( trace_t * ) VMA( 1 ), ( const float * ) VMA( 2 ), ( float * ) VMA( 3 ), ( float * ) VMA( 4 ), ( const float * ) VMA( 5 ), args[ 6 ], args[ 7 ], TT_AABB );
-			return 0;
-
-		case G_TRACECAPSULE:
-			SV_Trace( ( trace_t * ) VMA( 1 ), ( const float * ) VMA( 2 ), ( float * ) VMA( 3 ), ( float * ) VMA( 4 ), ( const float * ) VMA( 5 ), args[ 6 ], args[ 7 ], TT_CAPSULE );
-			return 0;
-
-		case G_POINT_CONTENTS:
-			return SV_PointContents( ( const float * ) VMA( 1 ), args[ 2 ] );
-
-		case G_SET_BRUSH_MODEL:
-			SV_SetBrushModel( ( sharedEntity_t * ) VMA( 1 ), ( const char * ) VMA( 2 ) );
-			return 0;
-
-		case G_IN_PVS:
-			return SV_inPVS( ( const float * ) VMA( 1 ), ( const float * ) VMA( 2 ) );
-
-		case G_IN_PVS_IGNORE_PORTALS:
-			return SV_inPVSIgnorePortals( ( const float * ) VMA( 1 ), ( const float * ) VMA( 2 ) );
-
-		case G_SET_CONFIGSTRING:
-			SV_SetConfigstring( args[ 1 ], ( const char * ) VMA( 2 ) );
-			return 0;
-
-		case G_GET_CONFIGSTRING:
-		        VM_CheckBlock( args[2], args[3], "GETCS" );
-			SV_GetConfigstring( args[ 1 ], ( char * ) VMA( 2 ), args[ 3 ] );
-			return 0;
-
-		case G_SET_CONFIGSTRING_RESTRICTIONS:
-			// FIXME
-			//SV_SetConfigstringRestrictions( args[1], VMA(2) );
-			return 0;
-
-		case G_SET_USERINFO:
-			SV_SetUserinfo( args[ 1 ], ( const char * ) VMA( 2 ) );
-			return 0;
-
-		case G_GET_USERINFO:
-		        VM_CheckBlock( args[2], args[3], "GETUI" );
-			SV_GetUserinfo( args[ 1 ], ( char * ) VMA( 2 ), args[ 3 ] );
-			return 0;
-
-		case G_GET_SERVERINFO:
-		        VM_CheckBlock( args[2], args[3], "GETSI" );
-			SV_GetServerinfo( ( char * ) VMA( 1 ), args[ 2 ] );
-			return 0;
-
-		case G_ADJUST_AREA_PORTAL_STATE:
-			SV_AdjustAreaPortalState( ( sharedEntity_t * ) VMA( 1 ), args[ 2 ] );
-			return 0;
-
-		case G_AREAS_CONNECTED:
-			return CM_AreasConnected( args[ 1 ], args[ 2 ] );
-
-		case G_BOT_ALLOCATE_CLIENT:
-			return SV_BotAllocateClient( args[ 1 ] );
-
-		case G_BOT_FREE_CLIENT:
-			SV_BotFreeClient( args[ 1 ] );
-			return 0;
-
-		case BOT_GET_CONSOLE_MESSAGE:
-		        VM_CheckBlock( args[2], args[3], "BOTGCM" );
-			return SV_BotGetConsoleMessage( args[ 1 ], ( char * ) VMA( 2 ), args[ 3 ] );
-
-		case G_GET_USERCMD:
-			SV_GetUsercmd( args[ 1 ], ( usercmd_t * ) VMA( 2 ) );
-			return 0;
-
-		case G_GET_ENTITY_TOKEN:
-		        VM_CheckBlock( args[1], args[2], "GETET" );
-			{
-				const char *s;
-
-				s = COM_Parse( &sv.entityParsePoint );
-				Q_strncpyz( ( char * ) VMA( 1 ), s, args[ 2 ] );
-
-				if ( !sv.entityParsePoint && !s[ 0 ] )
-				{
-					return qfalse;
-				}
-				else
-				{
-					return qtrue;
-				}
-			}
-
-		case G_GM_TIME:
-			return Com_GMTime( ( qtime_t * ) VMA( 1 ) );
-
-		case G_SNAPVECTOR:
-			SnapVector( ( float * ) VMA( 1 ) );
-			return 0;
-
-		case G_SEND_GAMESTAT:
-			SV_MasterGameStat( ( const char * ) VMA( 1 ) );
-			return 0;
-
-		case G_ADDCOMMAND:
-			Cmd_AddCommand( ( const char * ) VMA( 1 ), SV_GameCommandHandler );
-			return 0;
-
-		case G_REMOVECOMMAND:
-			Cmd_RemoveCommand( ( const char * ) VMA( 1 ) );
-			return 0;
-
-		case G_GETTAG:
-			return SV_GetTag( args[ 1 ], args[ 2 ], ( const char * ) VMA( 3 ), ( orientation_t * ) VMA( 4 ) );
-
-		case G_REGISTERTAG:
-			return SV_LoadTag( ( const char * ) VMA( 1 ) );
-
-			// START    xkan, 10/28/2002
-		case G_REGISTERSOUND:
-			return 0;
-
-		case G_PARSE_ADD_GLOBAL_DEFINE:
-			return Parse_AddGlobalDefine( ( const char * ) VMA( 1 ) );
-
-		case G_PARSE_LOAD_SOURCE:
-			return Parse_LoadSourceHandle( ( const char * ) VMA( 1 ) );
-
-		case G_PARSE_FREE_SOURCE:
-			return Parse_FreeSourceHandle( args[ 1 ] );
-
-		case G_PARSE_READ_TOKEN:
-			return Parse_ReadTokenHandle( args[ 1 ], ( pc_token_t * ) VMA( 2 ) );
-
-		case G_PARSE_SOURCE_FILE_AND_LINE:
-			return Parse_SourceFileAndLine( args[ 1 ], ( char * ) VMA( 2 ), ( int * ) VMA( 3 ) );
-
-		case G_SENDMESSAGE:
-		        VM_CheckBlock( args[2], args[3], "SENDM" );
-			SV_SendBinaryMessage( args[ 1 ], ( char * ) VMA( 2 ), args[ 3 ] );
-			return 0;
-
-		case G_MESSAGESTATUS:
-			return SV_BinaryMessageStatus( args[ 1 ] );
-
-		case G_RSA_GENMSG:
-			return SV_RSAGenMsg( ( const char * ) VMA( 1 ), ( char * ) VMA( 2 ), ( char * ) VMA( 3 ) );
-
-		case G_QUOTESTRING:
-			VM_CheckBlock( args[ 2 ], args[ 3 ], "QUOTE" );
-			Cmd_QuoteStringBuffer( ( const char * ) VMA( 1 ), ( char * ) VMA( 2 ), args[ 3 ] );
-			return 0;
-
-		case G_GENFINGERPRINT:
-			Com_MD5Buffer( ( const char * ) VMA( 1 ), args[ 2 ], ( char * ) VMA( 3 ), args [ 4 ] );
-			return 0;
-
-		case G_GETPLAYERPUBKEY:
-			SV_GetPlayerPubkey( args[ 1 ], ( char * ) VMA( 2 ), args[ 3 ] );
-			return 0;
-
-		case G_GETTIMESTRING:
-			VM_CheckBlock( args[1], args[2], "STRFTIME" );
-			SV_GetTimeString( ( char * ) VMA( 1 ), args[ 2 ], ( const char * ) VMA( 3 ), ( const qtime_t * ) VMA( 4 ) );
-			return 0;
-
-		case BOT_NAV_SETUP:
-			return BotSetupNav( ( const botClass_t * ) VMA( 1 ), ( qhandle_t * ) VMA( 2 ) );
-		case BOT_NAV_SHUTDOWN:
-			BotShutdownNav();
-			return 0;
-		case BOT_SET_NAVMESH:
-			BotSetNavMesh( args[ 1 ], args[ 2 ] );
-			return 0;
-		case BOT_FIND_ROUTE:
-			return BotFindRouteExt( args[ 1 ], ( const botRouteTarget_t * ) VMA( 2 ), args[ 3 ] );
-		case BOT_UPDATE_PATH:
-			BotUpdateCorridor( args[ 1 ], ( const botRouteTarget_t * ) VMA( 2 ), ( botNavCmd_t * ) VMA( 3 ) );
-			return 0;
-		case BOT_NAV_RAYCAST:
-			return BotNavTrace( args[ 1 ], ( botTrace_t * ) VMA( 2 ), ( const float * ) VMA( 3 ), ( const float * ) VMA( 4 ) );
-		case BOT_NAV_RANDOMPOINT:
-			BotFindRandomPoint( args[ 1 ], ( float * ) VMA( 2 ) );
-			return 0;
-		case BOT_NAV_RANDOMPOINTRADIUS:
-			return BotFindRandomPointInRadius( args[ 1 ], ( const float * ) VMA( 2 ), ( float * ) VMA( 3 ), VMF( 4 ) );
-		case BOT_ENABLE_AREA:
-			BotEnableArea( ( const float * ) VMA( 1 ), ( const float * ) VMA( 2 ), ( const float * ) VMA( 3 ) );
-			return 0;
-		case BOT_DISABLE_AREA:
-			BotDisableArea( ( const float * ) VMA( 1 ), ( const float * ) VMA( 2 ), ( const float * ) VMA( 3 ) );
-			return 0;
-		case BOT_ADD_OBSTACLE:
-			BotAddObstacle( ( const float * ) VMA( 1 ), ( const float * ) VMA( 2 ), ( qhandle_t * ) VMA( 3 ) );
-			return 0;
-		case BOT_REMOVE_OBSTACLE:
-			BotRemoveObstacle( args[ 1 ] );
-			return 0;
-		case BOT_UPDATE_OBSTACLES:
-			BotUpdateObstacles();
-			return 0;
-
-		default:
-			Com_Error( ERR_DROP, "Bad game system trap: %ld", ( long int ) args[ 0 ] );
-			exit(1); // silence warning, and make sure this behaves as expected, if Com_Error's behavior changes
-	}
-}
-
 /*
 ===============
 SV_ShutdownGameProgs
@@ -840,26 +521,14 @@ SV_CreateGameVM
 Load a QVM vm or fails and try to load a NaCl vm
 ===================
 */
-static Cvar::Cvar<bool> naclGame("server.vm.useNaCl", "what VM ABI should be used for the game VM (0 = QVM, 1 = NaCl)", Cvar::NONE, false);
 GameVM* SV_CreateGameVM( void )
 {
-	if ( naclGame.Get() )
-	{
-		NaClGameVM* nacl = new NaClGameVM();
+    GameVM* vm = new GameVM();
 
-		if (nacl->Start()) {
-			return nacl;
-		}
-
-		delete nacl;
-	} else {
-		vm_t* vm = VM_Create( "game", SV_GameSystemCalls, ( vmInterpret_t ) vm_game->integer );
-
-		if ( vm )
-		{
-			return new QVMGameVM(vm);
-		}
-	}
+    if (vm->Start()) {
+        return vm;
+    }
+    delete vm;
 
 	Com_Error(ERR_DROP, "Couldn't load the game VM");
 
@@ -963,92 +632,11 @@ qboolean SV_GetTag( int clientNum, int tagFileNumber, const char *tagname, orien
 #endif
 }
 
-GameVM::~GameVM()
+GameVM::GameVM()
 {
 }
 
-QVMGameVM::QVMGameVM(vm_t* vm): vm(vm)
-{
-}
-
-QVMGameVM::~QVMGameVM()
-{
-    VM_Free(vm);
-}
-
-void QVMGameVM::GameInit(int levelTime, int randomSeed, qboolean restart)
-{
-	VM_Call( vm, GAME_INIT, levelTime, randomSeed, restart );
-}
-
-void QVMGameVM::GameShutdown(qboolean restart)
-{
-	VM_Call( vm, GAME_SHUTDOWN, qfalse );
-}
-
-qboolean QVMGameVM::GameClientConnect(char* reason, size_t size, int clientNum, qboolean firstTime, qboolean isBot)
-{
-	const char* denied = reinterpret_cast<const char*>( VM_Call( vm, GAME_CLIENT_CONNECT, clientNum, firstTime, isBot ) );
-	if ( denied )
-		Q_strncpyz( reason, denied, size );
-	return denied != NULL;
-}
-
-void QVMGameVM::GameClientBegin(int clientNum)
-{
-	VM_Call( vm, GAME_CLIENT_BEGIN, clientNum );
-}
-
-void QVMGameVM::GameClientUserInfoChanged(int clientNum)
-{
-	VM_Call( vm, GAME_CLIENT_USERINFO_CHANGED, clientNum );
-}
-
-void QVMGameVM::GameClientDisconnect(int clientNum)
-{
-	VM_Call( vm, GAME_CLIENT_DISCONNECT, clientNum );
-}
-
-void QVMGameVM::GameClientCommand(int clientNum)
-{
-	VM_Call( vm, GAME_CLIENT_COMMAND, clientNum );
-}
-
-void QVMGameVM::GameClientThink(int clientNum)
-{
-	VM_Call( vm, GAME_CLIENT_THINK, clientNum );
-}
-
-void QVMGameVM::GameRunFrame(int levelTime)
-{
-	VM_Call( vm, GAME_RUN_FRAME, levelTime );
-}
-
-qboolean QVMGameVM::GameConsoleCommand()
-{
-	return VM_Call( vm, GAME_CONSOLE_COMMAND );
-}
-
-qboolean QVMGameVM::GameSnapshotCallback(int entityNum, int clientNum)
-{
-	Com_Error(ERR_DROP, "GameVM::GameSnapshotCallback not implemented");
-}
-
-void QVMGameVM::BotAIStartFrame(int levelTime)
-{
-	Com_Error(ERR_DROP, "GameVM::BotAIStartFrame not implemented");
-}
-
-void QVMGameVM::GameMessageRecieved(int clientNum, const char *buffer, int bufferSize, int commandTime)
-{
-	//Com_Error(ERR_DROP, "GameVM::GameMessageRecieved not implemented");
-}
-
-NaClGameVM::NaClGameVM()
-{
-}
-
-bool NaClGameVM::Start()
+bool GameVM::Start()
 {
     int version = this->Create( "game", ( VM::Type ) vm_game->integer );
 
@@ -1064,12 +652,12 @@ bool NaClGameVM::Start()
     return true;
 }
 
-NaClGameVM::~NaClGameVM()
+GameVM::~GameVM()
 {
     this->Free();
 }
 
-void NaClGameVM::GameInit(int levelTime, int randomSeed, qboolean restart)
+void GameVM::GameInit(int levelTime, int randomSeed, qboolean restart)
 {
 	RPC::Writer input;
 	input.WriteInt(GS_QVM_SYSCALL);
@@ -1080,7 +668,7 @@ void NaClGameVM::GameInit(int levelTime, int randomSeed, qboolean restart)
 	DoRPC(input);
 }
 
-void NaClGameVM::GameShutdown(qboolean restart)
+void GameVM::GameShutdown(qboolean restart)
 {
 	RPC::Writer input;
 	input.WriteInt(GS_QVM_SYSCALL);
@@ -1095,7 +683,7 @@ void NaClGameVM::GameShutdown(qboolean restart)
 	this->shmRegion.Close();
 }
 
-qboolean NaClGameVM::GameClientConnect(char* reason, size_t size, int clientNum, qboolean firstTime, qboolean isBot)
+qboolean GameVM::GameClientConnect(char* reason, size_t size, int clientNum, qboolean firstTime, qboolean isBot)
 {
 	RPC::Writer input;
 	input.WriteInt(GS_QVM_SYSCALL);
@@ -1110,7 +698,7 @@ qboolean NaClGameVM::GameClientConnect(char* reason, size_t size, int clientNum,
 	return denied;
 }
 
-void NaClGameVM::GameClientBegin(int clientNum)
+void GameVM::GameClientBegin(int clientNum)
 {
 	RPC::Writer input;
 	input.WriteInt(GS_QVM_SYSCALL);
@@ -1119,7 +707,7 @@ void NaClGameVM::GameClientBegin(int clientNum)
 	DoRPC(input);
 }
 
-void NaClGameVM::GameClientUserInfoChanged(int clientNum)
+void GameVM::GameClientUserInfoChanged(int clientNum)
 {
 	RPC::Writer input;
 	input.WriteInt(GS_QVM_SYSCALL);
@@ -1128,7 +716,7 @@ void NaClGameVM::GameClientUserInfoChanged(int clientNum)
 	DoRPC(input);
 }
 
-void NaClGameVM::GameClientDisconnect(int clientNum)
+void GameVM::GameClientDisconnect(int clientNum)
 {
 	RPC::Writer input;
 	input.WriteInt(GS_QVM_SYSCALL);
@@ -1137,7 +725,7 @@ void NaClGameVM::GameClientDisconnect(int clientNum)
 	DoRPC(input);
 }
 
-void NaClGameVM::GameClientCommand(int clientNum)
+void GameVM::GameClientCommand(int clientNum)
 {
 	RPC::Writer input;
 	input.WriteInt(GS_QVM_SYSCALL);
@@ -1146,7 +734,7 @@ void NaClGameVM::GameClientCommand(int clientNum)
 	DoRPC(input);
 }
 
-void NaClGameVM::GameClientThink(int clientNum)
+void GameVM::GameClientThink(int clientNum)
 {
 	RPC::Writer input;
 	input.WriteInt(GS_QVM_SYSCALL);
@@ -1155,7 +743,7 @@ void NaClGameVM::GameClientThink(int clientNum)
 	DoRPC(input);
 }
 
-void NaClGameVM::GameRunFrame(int levelTime)
+void GameVM::GameRunFrame(int levelTime)
 {
 	RPC::Writer input;
 	input.WriteInt(GS_QVM_SYSCALL);
@@ -1164,7 +752,7 @@ void NaClGameVM::GameRunFrame(int levelTime)
 	DoRPC(input);
 }
 
-qboolean NaClGameVM::GameConsoleCommand()
+qboolean GameVM::GameConsoleCommand()
 {
 	RPC::Writer input;
 	input.WriteInt(GS_QVM_SYSCALL);
@@ -1173,22 +761,22 @@ qboolean NaClGameVM::GameConsoleCommand()
 	return output.ReadInt();
 }
 
-qboolean NaClGameVM::GameSnapshotCallback(int entityNum, int clientNum)
+qboolean GameVM::GameSnapshotCallback(int entityNum, int clientNum)
 {
 	Com_Error(ERR_DROP, "GameVM::GameSnapshotCallback not implemented");
 }
 
-void NaClGameVM::BotAIStartFrame(int levelTime)
+void GameVM::BotAIStartFrame(int levelTime)
 {
 	Com_Error(ERR_DROP, "GameVM::BotAIStartFrame not implemented");
 }
 
-void NaClGameVM::GameMessageRecieved(int clientNum, const char *buffer, int bufferSize, int commandTime)
+void GameVM::GameMessageRecieved(int clientNum, const char *buffer, int bufferSize, int commandTime)
 {
 	//Com_Error(ERR_DROP, "GameVM::GameMessageRecieved not implemented");
 }
 
-void NaClGameVM::Syscall(int major, int minor, RPC::Reader& inputs, RPC::Writer& outputs)
+void GameVM::Syscall(int major, int minor, RPC::Reader& inputs, RPC::Writer& outputs)
 {
 	switch (major) {
 	case GS_QVM_SYSCALL:
@@ -1203,7 +791,7 @@ void NaClGameVM::Syscall(int major, int minor, RPC::Reader& inputs, RPC::Writer&
 	}
 }
 
-void NaClGameVM::QVMSyscall(int index, RPC::Reader& inputs, RPC::Writer& outputs)
+void GameVM::QVMSyscall(int index, RPC::Reader& inputs, RPC::Writer& outputs)
 {
 	switch (index) {
 	case G_PRINT:

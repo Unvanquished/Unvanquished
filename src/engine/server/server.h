@@ -319,74 +319,33 @@ typedef struct
 
 //=============================================================================
 
-class GameVM {
+class GameVM: public VM::VMBase {
 public:
+	GameVM();
     virtual ~GameVM();
-
-	virtual void GameInit(int levelTime, int randomSeed, qboolean restart) = 0;
-	virtual void GameShutdown(qboolean restart) = 0;
-	virtual qboolean GameClientConnect(char* reason, size_t size, int clientNum, qboolean firstTime, qboolean isBot) = 0;
-	virtual void GameClientBegin(int clientNum) = 0;
-	virtual void GameClientUserInfoChanged(int clientNum) = 0;
-	virtual void GameClientDisconnect(int clientNum) = 0;
-	virtual void GameClientCommand(int clientNum) = 0;
-	virtual void GameClientThink(int clientNum) = 0;
-	virtual void GameRunFrame(int levelTime) = 0;
-	virtual qboolean GameConsoleCommand() = 0;
-	virtual qboolean GameSnapshotCallback(int entityNum, int clientNum) = 0;
-	virtual void BotAIStartFrame(int levelTime) = 0;
-	virtual void GameMessageRecieved(int clientNum, const char *buffer, int bufferSize, int commandTime) = 0;
-};
-
-class NaClGameVM: public GameVM, public VM::VMBase {
-public:
-	NaClGameVM();
-    virtual ~NaClGameVM();
 	bool Start();
 
-	virtual void GameInit(int levelTime, int randomSeed, qboolean restart) OVERRIDE;
-	virtual void GameShutdown(qboolean restart) OVERRIDE;
-	virtual qboolean GameClientConnect(char* reason, size_t size, int clientNum, qboolean firstTime, qboolean isBot) OVERRIDE;
-	virtual void GameClientBegin(int clientNum) OVERRIDE;
-	virtual void GameClientUserInfoChanged(int clientNum) OVERRIDE;
-	virtual void GameClientDisconnect(int clientNum) OVERRIDE;
-	virtual void GameClientCommand(int clientNum) OVERRIDE;
-	virtual void GameClientThink(int clientNum) OVERRIDE;
-	virtual void GameRunFrame(int levelTime) OVERRIDE;
-	virtual qboolean GameConsoleCommand() OVERRIDE;
-	virtual qboolean GameSnapshotCallback(int entityNum, int clientNum) OVERRIDE;
-	virtual void BotAIStartFrame(int levelTime) OVERRIDE;
-	virtual void GameMessageRecieved(int clientNum, const char *buffer, int bufferSize, int commandTime) OVERRIDE;
+	void GameInit(int levelTime, int randomSeed, qboolean restart);
+	void GameShutdown(qboolean restart);
+	qboolean GameClientConnect(char* reason, size_t size, int clientNum, qboolean firstTime, qboolean isBot);
+	void GameClientBegin(int clientNum);
+	void GameClientUserInfoChanged(int clientNum);
+	void GameClientDisconnect(int clientNum);
+	void GameClientCommand(int clientNum);
+	void GameClientThink(int clientNum);
+	void GameRunFrame(int levelTime);
+	qboolean GameConsoleCommand();
+	qboolean GameSnapshotCallback(int entityNum, int clientNum);
+	void BotAIStartFrame(int levelTime);
+	void GameMessageRecieved(int clientNum, const char *buffer, int bufferSize, int commandTime);
 
 private:
-	void Syscall(int major, int minor, RPC::Reader& input, RPC::Writer& outputs);
+	virtual void Syscall(int major, int minor, RPC::Reader& input, RPC::Writer& outputs) OVERRIDE FINAL;
 	void QVMSyscall(int index, RPC::Reader& input, RPC::Writer& outputs);
 
 	NaCl::SharedMemoryPtr shmRegion;
 };
 
-class QVMGameVM: public GameVM {
-public:
-    QVMGameVM(vm_t* vm);
-    virtual ~QVMGameVM();
-
-	virtual void GameInit(int levelTime, int randomSeed, qboolean restart) OVERRIDE;
-	virtual void GameShutdown(qboolean restart) OVERRIDE;
-	virtual qboolean GameClientConnect(char* reason, size_t size, int clientNum, qboolean firstTime, qboolean isBot) OVERRIDE;
-	virtual void GameClientBegin(int clientNum) OVERRIDE;
-	virtual void GameClientUserInfoChanged(int clientNum) OVERRIDE;
-	virtual void GameClientDisconnect(int clientNum) OVERRIDE;
-	virtual void GameClientCommand(int clientNum) OVERRIDE;
-	virtual void GameClientThink(int clientNum) OVERRIDE;
-	virtual void GameRunFrame(int levelTime) OVERRIDE;
-	virtual qboolean GameConsoleCommand() OVERRIDE;
-	virtual qboolean GameSnapshotCallback(int entityNum, int clientNum) OVERRIDE;
-	virtual void BotAIStartFrame(int levelTime) OVERRIDE;
-	virtual void GameMessageRecieved(int clientNum, const char *buffer, int bufferSize, int commandTime) OVERRIDE;
-
-private:
-    vm_t* vm;
-};
 //=============================================================================
 
 extern serverStatic_t svs; // persistent server info across maps
