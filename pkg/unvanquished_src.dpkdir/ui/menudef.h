@@ -116,7 +116,6 @@ enum
   FEEDER_IGNORE_LIST, // ignored players
   FEEDER_HELP_LIST, // help topics
   FEEDER_RESOLUTIONS, // display resolutions
-  FEEDER_PROFILES, // Profiles
   FEEDER_LANGUAGES, // Languages
   FEEDER_HUDS, // HUDs
   FEEDER_VOIPINPUT, // VOIP INPUT DEVICES

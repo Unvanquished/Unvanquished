@@ -1,45 +1,3 @@
-gfx/binary/alpha1
-{
-	sort 15.5
-	{
-		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
-		blendFunc GL_ONE GL_ONE
-	}
-}
-
-// ============== 000 ==============
-
-gfx/binary/000_F1
-{
-	sort 15.5001
-	{
-		map $whiteimage
-		alphaGen const 0.0
-		blendFunc GL_DST_COLOR GL_ZERO
-	}
-}
-
-gfx/binary/000_F2
-{
-	sort 15.5002
-	{
-		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
-		blendFunc GL_ONE GL_ONE
-	}
-}
-
-gfx/binary/000_F3
-{
-	sort 15.5003
-	{
-		map $whiteimage
-		rgbGen exactVertex
-		blendFunc GL_ONE_MINUS_DST_ALPHA GL_ONE
-	}
-}
-
 gfx/binary/000_B1
 {
 	sort 15.5004
@@ -72,11 +30,10 @@ gfx/binary/000_B3
 	}
 }
 
-// ============== 001 ==============
-
-gfx/binary/001_F1
+//   ============== 000 ==============
+gfx/binary/000_F1
 {
-	sort 15.5007
+	sort 15.5001
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -84,9 +41,9 @@ gfx/binary/001_F1
 	}
 }
 
-gfx/binary/001_F2
+gfx/binary/000_F2
 {
-	sort 15.5008
+	sort 15.5002
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -94,9 +51,9 @@ gfx/binary/001_F2
 	}
 }
 
-gfx/binary/001_F3
+gfx/binary/000_F3
 {
-	sort 15.5009
+	sort 15.5003
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -136,11 +93,10 @@ gfx/binary/001_B3
 	}
 }
 
-// ============== 002 ==============
-
-gfx/binary/002_F1
+//   ============== 001 ==============
+gfx/binary/001_F1
 {
-	sort 15.5013
+	sort 15.5007
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -148,9 +104,9 @@ gfx/binary/002_F1
 	}
 }
 
-gfx/binary/002_F2
+gfx/binary/001_F2
 {
-	sort 15.5014
+	sort 15.5008
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -158,9 +114,9 @@ gfx/binary/002_F2
 	}
 }
 
-gfx/binary/002_F3
+gfx/binary/001_F3
 {
-	sort 15.5015
+	sort 15.5009
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -200,11 +156,10 @@ gfx/binary/002_B3
 	}
 }
 
-// ============== 003 ==============
-
-gfx/binary/003_F1
+//   ============== 002 ==============
+gfx/binary/002_F1
 {
-	sort 15.5019
+	sort 15.5013
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -212,9 +167,9 @@ gfx/binary/003_F1
 	}
 }
 
-gfx/binary/003_F2
+gfx/binary/002_F2
 {
-	sort 15.5020
+	sort 15.5014
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -222,9 +177,9 @@ gfx/binary/003_F2
 	}
 }
 
-gfx/binary/003_F3
+gfx/binary/002_F3
 {
-	sort 15.5021
+	sort 15.5015
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -264,11 +219,10 @@ gfx/binary/003_B3
 	}
 }
 
-// ============== 004 ==============
-
-gfx/binary/004_F1
+//   ============== 003 ==============
+gfx/binary/003_F1
 {
-	sort 15.5025
+	sort 15.5019
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -276,9 +230,9 @@ gfx/binary/004_F1
 	}
 }
 
-gfx/binary/004_F2
+gfx/binary/003_F2
 {
-	sort 15.5026
+	sort 15.5020
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -286,9 +240,9 @@ gfx/binary/004_F2
 	}
 }
 
-gfx/binary/004_F3
+gfx/binary/003_F3
 {
-	sort 15.5027
+	sort 15.5021
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -328,11 +282,10 @@ gfx/binary/004_B3
 	}
 }
 
-// ============== 005 ==============
-
-gfx/binary/005_F1
+//   ============== 004 ==============
+gfx/binary/004_F1
 {
-	sort 15.5031
+	sort 15.5025
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -340,9 +293,9 @@ gfx/binary/005_F1
 	}
 }
 
-gfx/binary/005_F2
+gfx/binary/004_F2
 {
-	sort 15.5032
+	sort 15.5026
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -350,9 +303,9 @@ gfx/binary/005_F2
 	}
 }
 
-gfx/binary/005_F3
+gfx/binary/004_F3
 {
-	sort 15.5033
+	sort 15.5027
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -392,11 +345,10 @@ gfx/binary/005_B3
 	}
 }
 
-// ============== 006 ==============
-
-gfx/binary/006_F1
+//   ============== 005 ==============
+gfx/binary/005_F1
 {
-	sort 15.5037
+	sort 15.5031
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -404,9 +356,9 @@ gfx/binary/006_F1
 	}
 }
 
-gfx/binary/006_F2
+gfx/binary/005_F2
 {
-	sort 15.5038
+	sort 15.5032
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -414,9 +366,9 @@ gfx/binary/006_F2
 	}
 }
 
-gfx/binary/006_F3
+gfx/binary/005_F3
 {
-	sort 15.5039
+	sort 15.5033
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -456,11 +408,10 @@ gfx/binary/006_B3
 	}
 }
 
-// ============== 007 ==============
-
-gfx/binary/007_F1
+//   ============== 006 ==============
+gfx/binary/006_F1
 {
-	sort 15.5043
+	sort 15.5037
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -468,9 +419,9 @@ gfx/binary/007_F1
 	}
 }
 
-gfx/binary/007_F2
+gfx/binary/006_F2
 {
-	sort 15.5044
+	sort 15.5038
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -478,9 +429,9 @@ gfx/binary/007_F2
 	}
 }
 
-gfx/binary/007_F3
+gfx/binary/006_F3
 {
-	sort 15.5045
+	sort 15.5039
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -520,11 +471,10 @@ gfx/binary/007_B3
 	}
 }
 
-// ============== 008 ==============
-
-gfx/binary/008_F1
+//   ============== 007 ==============
+gfx/binary/007_F1
 {
-	sort 15.5049
+	sort 15.5043
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -532,9 +482,9 @@ gfx/binary/008_F1
 	}
 }
 
-gfx/binary/008_F2
+gfx/binary/007_F2
 {
-	sort 15.5050
+	sort 15.5044
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -542,9 +492,9 @@ gfx/binary/008_F2
 	}
 }
 
-gfx/binary/008_F3
+gfx/binary/007_F3
 {
-	sort 15.5051
+	sort 15.5045
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -584,11 +534,10 @@ gfx/binary/008_B3
 	}
 }
 
-// ============== 009 ==============
-
-gfx/binary/009_F1
+//   ============== 008 ==============
+gfx/binary/008_F1
 {
-	sort 15.5055
+	sort 15.5049
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -596,9 +545,9 @@ gfx/binary/009_F1
 	}
 }
 
-gfx/binary/009_F2
+gfx/binary/008_F2
 {
-	sort 15.5056
+	sort 15.5050
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -606,9 +555,9 @@ gfx/binary/009_F2
 	}
 }
 
-gfx/binary/009_F3
+gfx/binary/008_F3
 {
-	sort 15.5057
+	sort 15.5051
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -648,11 +597,10 @@ gfx/binary/009_B3
 	}
 }
 
-// ============== 010 ==============
-
-gfx/binary/010_F1
+//   ============== 009 ==============
+gfx/binary/009_F1
 {
-	sort 15.5061
+	sort 15.5055
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -660,9 +608,9 @@ gfx/binary/010_F1
 	}
 }
 
-gfx/binary/010_F2
+gfx/binary/009_F2
 {
-	sort 15.5062
+	sort 15.5056
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -670,9 +618,9 @@ gfx/binary/010_F2
 	}
 }
 
-gfx/binary/010_F3
+gfx/binary/009_F3
 {
-	sort 15.5063
+	sort 15.5057
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -712,11 +660,10 @@ gfx/binary/010_B3
 	}
 }
 
-// ============== 011 ==============
-
-gfx/binary/011_F1
+//   ============== 010 ==============
+gfx/binary/010_F1
 {
-	sort 15.5067
+	sort 15.5061
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -724,9 +671,9 @@ gfx/binary/011_F1
 	}
 }
 
-gfx/binary/011_F2
+gfx/binary/010_F2
 {
-	sort 15.5068
+	sort 15.5062
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -734,9 +681,9 @@ gfx/binary/011_F2
 	}
 }
 
-gfx/binary/011_F3
+gfx/binary/010_F3
 {
-	sort 15.5069
+	sort 15.5063
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -776,11 +723,10 @@ gfx/binary/011_B3
 	}
 }
 
-// ============== 012 ==============
-
-gfx/binary/012_F1
+//   ============== 011 ==============
+gfx/binary/011_F1
 {
-	sort 15.5073
+	sort 15.5067
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -788,9 +734,9 @@ gfx/binary/012_F1
 	}
 }
 
-gfx/binary/012_F2
+gfx/binary/011_F2
 {
-	sort 15.5074
+	sort 15.5068
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -798,9 +744,9 @@ gfx/binary/012_F2
 	}
 }
 
-gfx/binary/012_F3
+gfx/binary/011_F3
 {
-	sort 15.5075
+	sort 15.5069
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -840,11 +786,10 @@ gfx/binary/012_B3
 	}
 }
 
-// ============== 013 ==============
-
-gfx/binary/013_F1
+//   ============== 012 ==============
+gfx/binary/012_F1
 {
-	sort 15.5079
+	sort 15.5073
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -852,9 +797,9 @@ gfx/binary/013_F1
 	}
 }
 
-gfx/binary/013_F2
+gfx/binary/012_F2
 {
-	sort 15.5080
+	sort 15.5074
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -862,9 +807,9 @@ gfx/binary/013_F2
 	}
 }
 
-gfx/binary/013_F3
+gfx/binary/012_F3
 {
-	sort 15.5081
+	sort 15.5075
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -904,11 +849,10 @@ gfx/binary/013_B3
 	}
 }
 
-// ============== 014 ==============
-
-gfx/binary/014_F1
+//   ============== 013 ==============
+gfx/binary/013_F1
 {
-	sort 15.5085
+	sort 15.5079
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -916,9 +860,9 @@ gfx/binary/014_F1
 	}
 }
 
-gfx/binary/014_F2
+gfx/binary/013_F2
 {
-	sort 15.5086
+	sort 15.5080
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -926,9 +870,9 @@ gfx/binary/014_F2
 	}
 }
 
-gfx/binary/014_F3
+gfx/binary/013_F3
 {
-	sort 15.5087
+	sort 15.5081
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -968,11 +912,10 @@ gfx/binary/014_B3
 	}
 }
 
-// ============== 015 ==============
-
-gfx/binary/015_F1
+//   ============== 014 ==============
+gfx/binary/014_F1
 {
-	sort 15.5091
+	sort 15.5085
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -980,9 +923,9 @@ gfx/binary/015_F1
 	}
 }
 
-gfx/binary/015_F2
+gfx/binary/014_F2
 {
-	sort 15.5092
+	sort 15.5086
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -990,9 +933,9 @@ gfx/binary/015_F2
 	}
 }
 
-gfx/binary/015_F3
+gfx/binary/014_F3
 {
-	sort 15.5093
+	sort 15.5087
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -1032,11 +975,10 @@ gfx/binary/015_B3
 	}
 }
 
-// ============== 016 ==============
-
-gfx/binary/016_F1
+//   ============== 015 ==============
+gfx/binary/015_F1
 {
-	sort 15.5097
+	sort 15.5091
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -1044,9 +986,9 @@ gfx/binary/016_F1
 	}
 }
 
-gfx/binary/016_F2
+gfx/binary/015_F2
 {
-	sort 15.5098
+	sort 15.5092
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -1054,9 +996,9 @@ gfx/binary/016_F2
 	}
 }
 
-gfx/binary/016_F3
+gfx/binary/015_F3
 {
-	sort 15.5099
+	sort 15.5093
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -1096,11 +1038,10 @@ gfx/binary/016_B3
 	}
 }
 
-// ============== 017 ==============
-
-gfx/binary/017_F1
+//   ============== 016 ==============
+gfx/binary/016_F1
 {
-	sort 15.5103
+	sort 15.5097
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -1108,9 +1049,9 @@ gfx/binary/017_F1
 	}
 }
 
-gfx/binary/017_F2
+gfx/binary/016_F2
 {
-	sort 15.5104
+	sort 15.5098
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -1118,9 +1059,9 @@ gfx/binary/017_F2
 	}
 }
 
-gfx/binary/017_F3
+gfx/binary/016_F3
 {
-	sort 15.5105
+	sort 15.5099
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -1160,11 +1101,10 @@ gfx/binary/017_B3
 	}
 }
 
-// ============== 018 ==============
-
-gfx/binary/018_F1
+//   ============== 017 ==============
+gfx/binary/017_F1
 {
-	sort 15.5109
+	sort 15.5103
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -1172,9 +1112,9 @@ gfx/binary/018_F1
 	}
 }
 
-gfx/binary/018_F2
+gfx/binary/017_F2
 {
-	sort 15.5110
+	sort 15.5104
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -1182,9 +1122,9 @@ gfx/binary/018_F2
 	}
 }
 
-gfx/binary/018_F3
+gfx/binary/017_F3
 {
-	sort 15.5111
+	sort 15.5105
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -1224,11 +1164,10 @@ gfx/binary/018_B3
 	}
 }
 
-// ============== 019 ==============
-
-gfx/binary/019_F1
+//   ============== 018 ==============
+gfx/binary/018_F1
 {
-	sort 15.5115
+	sort 15.5109
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -1236,9 +1175,9 @@ gfx/binary/019_F1
 	}
 }
 
-gfx/binary/019_F2
+gfx/binary/018_F2
 {
-	sort 15.5116
+	sort 15.5110
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -1246,9 +1185,9 @@ gfx/binary/019_F2
 	}
 }
 
-gfx/binary/019_F3
+gfx/binary/018_F3
 {
-	sort 15.5117
+	sort 15.5111
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -1288,11 +1227,10 @@ gfx/binary/019_B3
 	}
 }
 
-// ============== 020 ==============
-
-gfx/binary/020_F1
+//   ============== 019 ==============
+gfx/binary/019_F1
 {
-	sort 15.5121
+	sort 15.5115
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -1300,9 +1238,9 @@ gfx/binary/020_F1
 	}
 }
 
-gfx/binary/020_F2
+gfx/binary/019_F2
 {
-	sort 15.5122
+	sort 15.5116
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -1310,9 +1248,9 @@ gfx/binary/020_F2
 	}
 }
 
-gfx/binary/020_F3
+gfx/binary/019_F3
 {
-	sort 15.5123
+	sort 15.5117
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -1352,11 +1290,10 @@ gfx/binary/020_B3
 	}
 }
 
-// ============== 021 ==============
-
-gfx/binary/021_F1
+//   ============== 020 ==============
+gfx/binary/020_F1
 {
-	sort 15.5127
+	sort 15.5121
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -1364,9 +1301,9 @@ gfx/binary/021_F1
 	}
 }
 
-gfx/binary/021_F2
+gfx/binary/020_F2
 {
-	sort 15.5128
+	sort 15.5122
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -1374,9 +1311,9 @@ gfx/binary/021_F2
 	}
 }
 
-gfx/binary/021_F3
+gfx/binary/020_F3
 {
-	sort 15.5129
+	sort 15.5123
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -1416,11 +1353,10 @@ gfx/binary/021_B3
 	}
 }
 
-// ============== 022 ==============
-
-gfx/binary/022_F1
+//   ============== 021 ==============
+gfx/binary/021_F1
 {
-	sort 15.5133
+	sort 15.5127
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -1428,9 +1364,9 @@ gfx/binary/022_F1
 	}
 }
 
-gfx/binary/022_F2
+gfx/binary/021_F2
 {
-	sort 15.5134
+	sort 15.5128
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -1438,9 +1374,9 @@ gfx/binary/022_F2
 	}
 }
 
-gfx/binary/022_F3
+gfx/binary/021_F3
 {
-	sort 15.5135
+	sort 15.5129
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -1480,11 +1416,10 @@ gfx/binary/022_B3
 	}
 }
 
-// ============== 023 ==============
-
-gfx/binary/023_F1
+//   ============== 022 ==============
+gfx/binary/022_F1
 {
-	sort 15.5139
+	sort 15.5133
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -1492,9 +1427,9 @@ gfx/binary/023_F1
 	}
 }
 
-gfx/binary/023_F2
+gfx/binary/022_F2
 {
-	sort 15.5140
+	sort 15.5134
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -1502,9 +1437,9 @@ gfx/binary/023_F2
 	}
 }
 
-gfx/binary/023_F3
+gfx/binary/022_F3
 {
-	sort 15.5141
+	sort 15.5135
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -1544,11 +1479,10 @@ gfx/binary/023_B3
 	}
 }
 
-// ============== 024 ==============
-
-gfx/binary/024_F1
+//   ============== 023 ==============
+gfx/binary/023_F1
 {
-	sort 15.5145
+	sort 15.5139
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -1556,9 +1490,9 @@ gfx/binary/024_F1
 	}
 }
 
-gfx/binary/024_F2
+gfx/binary/023_F2
 {
-	sort 15.5146
+	sort 15.5140
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -1566,9 +1500,9 @@ gfx/binary/024_F2
 	}
 }
 
-gfx/binary/024_F3
+gfx/binary/023_F3
 {
-	sort 15.5147
+	sort 15.5141
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -1608,11 +1542,10 @@ gfx/binary/024_B3
 	}
 }
 
-// ============== 025 ==============
-
-gfx/binary/025_F1
+//   ============== 024 ==============
+gfx/binary/024_F1
 {
-	sort 15.5151
+	sort 15.5145
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -1620,9 +1553,9 @@ gfx/binary/025_F1
 	}
 }
 
-gfx/binary/025_F2
+gfx/binary/024_F2
 {
-	sort 15.5152
+	sort 15.5146
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -1630,9 +1563,9 @@ gfx/binary/025_F2
 	}
 }
 
-gfx/binary/025_F3
+gfx/binary/024_F3
 {
-	sort 15.5153
+	sort 15.5147
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -1672,11 +1605,10 @@ gfx/binary/025_B3
 	}
 }
 
-// ============== 026 ==============
-
-gfx/binary/026_F1
+//   ============== 025 ==============
+gfx/binary/025_F1
 {
-	sort 15.5157
+	sort 15.5151
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -1684,9 +1616,9 @@ gfx/binary/026_F1
 	}
 }
 
-gfx/binary/026_F2
+gfx/binary/025_F2
 {
-	sort 15.5158
+	sort 15.5152
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -1694,9 +1626,9 @@ gfx/binary/026_F2
 	}
 }
 
-gfx/binary/026_F3
+gfx/binary/025_F3
 {
-	sort 15.5159
+	sort 15.5153
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -1736,11 +1668,10 @@ gfx/binary/026_B3
 	}
 }
 
-// ============== 027 ==============
-
-gfx/binary/027_F1
+//   ============== 026 ==============
+gfx/binary/026_F1
 {
-	sort 15.5163
+	sort 15.5157
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -1748,9 +1679,9 @@ gfx/binary/027_F1
 	}
 }
 
-gfx/binary/027_F2
+gfx/binary/026_F2
 {
-	sort 15.5164
+	sort 15.5158
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -1758,9 +1689,9 @@ gfx/binary/027_F2
 	}
 }
 
-gfx/binary/027_F3
+gfx/binary/026_F3
 {
-	sort 15.5165
+	sort 15.5159
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -1800,11 +1731,10 @@ gfx/binary/027_B3
 	}
 }
 
-// ============== 028 ==============
-
-gfx/binary/028_F1
+//   ============== 027 ==============
+gfx/binary/027_F1
 {
-	sort 15.5169
+	sort 15.5163
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -1812,9 +1742,9 @@ gfx/binary/028_F1
 	}
 }
 
-gfx/binary/028_F2
+gfx/binary/027_F2
 {
-	sort 15.5170
+	sort 15.5164
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -1822,9 +1752,9 @@ gfx/binary/028_F2
 	}
 }
 
-gfx/binary/028_F3
+gfx/binary/027_F3
 {
-	sort 15.5171
+	sort 15.5165
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -1864,11 +1794,10 @@ gfx/binary/028_B3
 	}
 }
 
-// ============== 029 ==============
-
-gfx/binary/029_F1
+//   ============== 028 ==============
+gfx/binary/028_F1
 {
-	sort 15.5175
+	sort 15.5169
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -1876,9 +1805,9 @@ gfx/binary/029_F1
 	}
 }
 
-gfx/binary/029_F2
+gfx/binary/028_F2
 {
-	sort 15.5176
+	sort 15.5170
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -1886,9 +1815,9 @@ gfx/binary/029_F2
 	}
 }
 
-gfx/binary/029_F3
+gfx/binary/028_F3
 {
-	sort 15.5177
+	sort 15.5171
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -1928,11 +1857,10 @@ gfx/binary/029_B3
 	}
 }
 
-// ============== 030 ==============
-
-gfx/binary/030_F1
+//   ============== 029 ==============
+gfx/binary/029_F1
 {
-	sort 15.5181
+	sort 15.5175
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -1940,9 +1868,9 @@ gfx/binary/030_F1
 	}
 }
 
-gfx/binary/030_F2
+gfx/binary/029_F2
 {
-	sort 15.5182
+	sort 15.5176
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -1950,9 +1878,9 @@ gfx/binary/030_F2
 	}
 }
 
-gfx/binary/030_F3
+gfx/binary/029_F3
 {
-	sort 15.5183
+	sort 15.5177
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -1992,11 +1920,10 @@ gfx/binary/030_B3
 	}
 }
 
-// ============== 031 ==============
-
-gfx/binary/031_F1
+//   ============== 030 ==============
+gfx/binary/030_F1
 {
-	sort 15.5187
+	sort 15.5181
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -2004,9 +1931,9 @@ gfx/binary/031_F1
 	}
 }
 
-gfx/binary/031_F2
+gfx/binary/030_F2
 {
-	sort 15.5188
+	sort 15.5182
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -2014,9 +1941,9 @@ gfx/binary/031_F2
 	}
 }
 
-gfx/binary/031_F3
+gfx/binary/030_F3
 {
-	sort 15.5189
+	sort 15.5183
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -2056,11 +1983,10 @@ gfx/binary/031_B3
 	}
 }
 
-// ============== 032 ==============
-
-gfx/binary/032_F1
+//   ============== 031 ==============
+gfx/binary/031_F1
 {
-	sort 15.5193
+	sort 15.5187
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -2068,9 +1994,9 @@ gfx/binary/032_F1
 	}
 }
 
-gfx/binary/032_F2
+gfx/binary/031_F2
 {
-	sort 15.5194
+	sort 15.5188
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -2078,9 +2004,9 @@ gfx/binary/032_F2
 	}
 }
 
-gfx/binary/032_F3
+gfx/binary/031_F3
 {
-	sort 15.5195
+	sort 15.5189
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -2120,11 +2046,10 @@ gfx/binary/032_B3
 	}
 }
 
-// ============== 033 ==============
-
-gfx/binary/033_F1
+//   ============== 032 ==============
+gfx/binary/032_F1
 {
-	sort 15.5199
+	sort 15.5193
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -2132,9 +2057,9 @@ gfx/binary/033_F1
 	}
 }
 
-gfx/binary/033_F2
+gfx/binary/032_F2
 {
-	sort 15.5200
+	sort 15.5194
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -2142,9 +2067,9 @@ gfx/binary/033_F2
 	}
 }
 
-gfx/binary/033_F3
+gfx/binary/032_F3
 {
-	sort 15.5201
+	sort 15.5195
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -2184,11 +2109,10 @@ gfx/binary/033_B3
 	}
 }
 
-// ============== 034 ==============
-
-gfx/binary/034_F1
+//   ============== 033 ==============
+gfx/binary/033_F1
 {
-	sort 15.5205
+	sort 15.5199
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -2196,9 +2120,9 @@ gfx/binary/034_F1
 	}
 }
 
-gfx/binary/034_F2
+gfx/binary/033_F2
 {
-	sort 15.5206
+	sort 15.5200
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -2206,9 +2130,9 @@ gfx/binary/034_F2
 	}
 }
 
-gfx/binary/034_F3
+gfx/binary/033_F3
 {
-	sort 15.5207
+	sort 15.5201
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -2248,11 +2172,10 @@ gfx/binary/034_B3
 	}
 }
 
-// ============== 035 ==============
-
-gfx/binary/035_F1
+//   ============== 034 ==============
+gfx/binary/034_F1
 {
-	sort 15.5211
+	sort 15.5205
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -2260,9 +2183,9 @@ gfx/binary/035_F1
 	}
 }
 
-gfx/binary/035_F2
+gfx/binary/034_F2
 {
-	sort 15.5212
+	sort 15.5206
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -2270,9 +2193,9 @@ gfx/binary/035_F2
 	}
 }
 
-gfx/binary/035_F3
+gfx/binary/034_F3
 {
-	sort 15.5213
+	sort 15.5207
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -2312,11 +2235,10 @@ gfx/binary/035_B3
 	}
 }
 
-// ============== 036 ==============
-
-gfx/binary/036_F1
+//   ============== 035 ==============
+gfx/binary/035_F1
 {
-	sort 15.5217
+	sort 15.5211
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -2324,9 +2246,9 @@ gfx/binary/036_F1
 	}
 }
 
-gfx/binary/036_F2
+gfx/binary/035_F2
 {
-	sort 15.5218
+	sort 15.5212
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -2334,9 +2256,9 @@ gfx/binary/036_F2
 	}
 }
 
-gfx/binary/036_F3
+gfx/binary/035_F3
 {
-	sort 15.5219
+	sort 15.5213
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -2376,11 +2298,10 @@ gfx/binary/036_B3
 	}
 }
 
-// ============== 037 ==============
-
-gfx/binary/037_F1
+//   ============== 036 ==============
+gfx/binary/036_F1
 {
-	sort 15.5223
+	sort 15.5217
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -2388,9 +2309,9 @@ gfx/binary/037_F1
 	}
 }
 
-gfx/binary/037_F2
+gfx/binary/036_F2
 {
-	sort 15.5224
+	sort 15.5218
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -2398,9 +2319,9 @@ gfx/binary/037_F2
 	}
 }
 
-gfx/binary/037_F3
+gfx/binary/036_F3
 {
-	sort 15.5225
+	sort 15.5219
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -2440,11 +2361,10 @@ gfx/binary/037_B3
 	}
 }
 
-// ============== 038 ==============
-
-gfx/binary/038_F1
+//   ============== 037 ==============
+gfx/binary/037_F1
 {
-	sort 15.5229
+	sort 15.5223
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -2452,9 +2372,9 @@ gfx/binary/038_F1
 	}
 }
 
-gfx/binary/038_F2
+gfx/binary/037_F2
 {
-	sort 15.5230
+	sort 15.5224
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -2462,9 +2382,9 @@ gfx/binary/038_F2
 	}
 }
 
-gfx/binary/038_F3
+gfx/binary/037_F3
 {
-	sort 15.5231
+	sort 15.5225
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -2504,11 +2424,10 @@ gfx/binary/038_B3
 	}
 }
 
-// ============== 039 ==============
-
-gfx/binary/039_F1
+//   ============== 038 ==============
+gfx/binary/038_F1
 {
-	sort 15.5235
+	sort 15.5229
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -2516,9 +2435,9 @@ gfx/binary/039_F1
 	}
 }
 
-gfx/binary/039_F2
+gfx/binary/038_F2
 {
-	sort 15.5236
+	sort 15.5230
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -2526,9 +2445,9 @@ gfx/binary/039_F2
 	}
 }
 
-gfx/binary/039_F3
+gfx/binary/038_F3
 {
-	sort 15.5237
+	sort 15.5231
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -2568,11 +2487,10 @@ gfx/binary/039_B3
 	}
 }
 
-// ============== 040 ==============
-
-gfx/binary/040_F1
+//   ============== 039 ==============
+gfx/binary/039_F1
 {
-	sort 15.5241
+	sort 15.5235
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -2580,9 +2498,9 @@ gfx/binary/040_F1
 	}
 }
 
-gfx/binary/040_F2
+gfx/binary/039_F2
 {
-	sort 15.5242
+	sort 15.5236
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -2590,9 +2508,9 @@ gfx/binary/040_F2
 	}
 }
 
-gfx/binary/040_F3
+gfx/binary/039_F3
 {
-	sort 15.5243
+	sort 15.5237
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -2632,11 +2550,10 @@ gfx/binary/040_B3
 	}
 }
 
-// ============== 041 ==============
-
-gfx/binary/041_F1
+//   ============== 040 ==============
+gfx/binary/040_F1
 {
-	sort 15.5247
+	sort 15.5241
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -2644,9 +2561,9 @@ gfx/binary/041_F1
 	}
 }
 
-gfx/binary/041_F2
+gfx/binary/040_F2
 {
-	sort 15.5248
+	sort 15.5242
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -2654,9 +2571,9 @@ gfx/binary/041_F2
 	}
 }
 
-gfx/binary/041_F3
+gfx/binary/040_F3
 {
-	sort 15.5249
+	sort 15.5243
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -2696,11 +2613,10 @@ gfx/binary/041_B3
 	}
 }
 
-// ============== 042 ==============
-
-gfx/binary/042_F1
+//   ============== 041 ==============
+gfx/binary/041_F1
 {
-	sort 15.5253
+	sort 15.5247
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -2708,9 +2624,9 @@ gfx/binary/042_F1
 	}
 }
 
-gfx/binary/042_F2
+gfx/binary/041_F2
 {
-	sort 15.5254
+	sort 15.5248
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -2718,9 +2634,9 @@ gfx/binary/042_F2
 	}
 }
 
-gfx/binary/042_F3
+gfx/binary/041_F3
 {
-	sort 15.5255
+	sort 15.5249
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -2760,11 +2676,10 @@ gfx/binary/042_B3
 	}
 }
 
-// ============== 043 ==============
-
-gfx/binary/043_F1
+//   ============== 042 ==============
+gfx/binary/042_F1
 {
-	sort 15.5259
+	sort 15.5253
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -2772,9 +2687,9 @@ gfx/binary/043_F1
 	}
 }
 
-gfx/binary/043_F2
+gfx/binary/042_F2
 {
-	sort 15.5260
+	sort 15.5254
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -2782,9 +2697,9 @@ gfx/binary/043_F2
 	}
 }
 
-gfx/binary/043_F3
+gfx/binary/042_F3
 {
-	sort 15.5261
+	sort 15.5255
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -2824,11 +2739,10 @@ gfx/binary/043_B3
 	}
 }
 
-// ============== 044 ==============
-
-gfx/binary/044_F1
+//   ============== 043 ==============
+gfx/binary/043_F1
 {
-	sort 15.5265
+	sort 15.5259
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -2836,9 +2750,9 @@ gfx/binary/044_F1
 	}
 }
 
-gfx/binary/044_F2
+gfx/binary/043_F2
 {
-	sort 15.5266
+	sort 15.5260
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -2846,9 +2760,9 @@ gfx/binary/044_F2
 	}
 }
 
-gfx/binary/044_F3
+gfx/binary/043_F3
 {
-	sort 15.5267
+	sort 15.5261
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -2888,11 +2802,10 @@ gfx/binary/044_B3
 	}
 }
 
-// ============== 045 ==============
-
-gfx/binary/045_F1
+//   ============== 044 ==============
+gfx/binary/044_F1
 {
-	sort 15.5271
+	sort 15.5265
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -2900,9 +2813,9 @@ gfx/binary/045_F1
 	}
 }
 
-gfx/binary/045_F2
+gfx/binary/044_F2
 {
-	sort 15.5272
+	sort 15.5266
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -2910,9 +2823,9 @@ gfx/binary/045_F2
 	}
 }
 
-gfx/binary/045_F3
+gfx/binary/044_F3
 {
-	sort 15.5273
+	sort 15.5267
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -2952,11 +2865,10 @@ gfx/binary/045_B3
 	}
 }
 
-// ============== 046 ==============
-
-gfx/binary/046_F1
+//   ============== 045 ==============
+gfx/binary/045_F1
 {
-	sort 15.5277
+	sort 15.5271
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -2964,9 +2876,9 @@ gfx/binary/046_F1
 	}
 }
 
-gfx/binary/046_F2
+gfx/binary/045_F2
 {
-	sort 15.5278
+	sort 15.5272
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -2974,9 +2886,9 @@ gfx/binary/046_F2
 	}
 }
 
-gfx/binary/046_F3
+gfx/binary/045_F3
 {
-	sort 15.5279
+	sort 15.5273
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -3016,11 +2928,10 @@ gfx/binary/046_B3
 	}
 }
 
-// ============== 047 ==============
-
-gfx/binary/047_F1
+//   ============== 046 ==============
+gfx/binary/046_F1
 {
-	sort 15.5283
+	sort 15.5277
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -3028,9 +2939,9 @@ gfx/binary/047_F1
 	}
 }
 
-gfx/binary/047_F2
+gfx/binary/046_F2
 {
-	sort 15.5284
+	sort 15.5278
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -3038,9 +2949,9 @@ gfx/binary/047_F2
 	}
 }
 
-gfx/binary/047_F3
+gfx/binary/046_F3
 {
-	sort 15.5285
+	sort 15.5279
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -3080,11 +2991,10 @@ gfx/binary/047_B3
 	}
 }
 
-// ============== 048 ==============
-
-gfx/binary/048_F1
+//   ============== 047 ==============
+gfx/binary/047_F1
 {
-	sort 15.5289
+	sort 15.5283
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -3092,9 +3002,9 @@ gfx/binary/048_F1
 	}
 }
 
-gfx/binary/048_F2
+gfx/binary/047_F2
 {
-	sort 15.5290
+	sort 15.5284
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -3102,9 +3012,9 @@ gfx/binary/048_F2
 	}
 }
 
-gfx/binary/048_F3
+gfx/binary/047_F3
 {
-	sort 15.5291
+	sort 15.5285
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -3144,11 +3054,10 @@ gfx/binary/048_B3
 	}
 }
 
-// ============== 049 ==============
-
-gfx/binary/049_F1
+//   ============== 048 ==============
+gfx/binary/048_F1
 {
-	sort 15.5295
+	sort 15.5289
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -3156,9 +3065,9 @@ gfx/binary/049_F1
 	}
 }
 
-gfx/binary/049_F2
+gfx/binary/048_F2
 {
-	sort 15.5296
+	sort 15.5290
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -3166,9 +3075,9 @@ gfx/binary/049_F2
 	}
 }
 
-gfx/binary/049_F3
+gfx/binary/048_F3
 {
-	sort 15.5297
+	sort 15.5291
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -3208,11 +3117,10 @@ gfx/binary/049_B3
 	}
 }
 
-// ============== 050 ==============
-
-gfx/binary/050_F1
+//   ============== 049 ==============
+gfx/binary/049_F1
 {
-	sort 15.5301
+	sort 15.5295
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -3220,9 +3128,9 @@ gfx/binary/050_F1
 	}
 }
 
-gfx/binary/050_F2
+gfx/binary/049_F2
 {
-	sort 15.5302
+	sort 15.5296
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -3230,9 +3138,9 @@ gfx/binary/050_F2
 	}
 }
 
-gfx/binary/050_F3
+gfx/binary/049_F3
 {
-	sort 15.5303
+	sort 15.5297
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -3272,11 +3180,10 @@ gfx/binary/050_B3
 	}
 }
 
-// ============== 051 ==============
-
-gfx/binary/051_F1
+//   ============== 050 ==============
+gfx/binary/050_F1
 {
-	sort 15.5307
+	sort 15.5301
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -3284,9 +3191,9 @@ gfx/binary/051_F1
 	}
 }
 
-gfx/binary/051_F2
+gfx/binary/050_F2
 {
-	sort 15.5308
+	sort 15.5302
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -3294,9 +3201,9 @@ gfx/binary/051_F2
 	}
 }
 
-gfx/binary/051_F3
+gfx/binary/050_F3
 {
-	sort 15.5309
+	sort 15.5303
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -3336,11 +3243,10 @@ gfx/binary/051_B3
 	}
 }
 
-// ============== 052 ==============
-
-gfx/binary/052_F1
+//   ============== 051 ==============
+gfx/binary/051_F1
 {
-	sort 15.5313
+	sort 15.5307
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -3348,9 +3254,9 @@ gfx/binary/052_F1
 	}
 }
 
-gfx/binary/052_F2
+gfx/binary/051_F2
 {
-	sort 15.5314
+	sort 15.5308
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -3358,9 +3264,9 @@ gfx/binary/052_F2
 	}
 }
 
-gfx/binary/052_F3
+gfx/binary/051_F3
 {
-	sort 15.5315
+	sort 15.5309
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -3400,11 +3306,10 @@ gfx/binary/052_B3
 	}
 }
 
-// ============== 053 ==============
-
-gfx/binary/053_F1
+//   ============== 052 ==============
+gfx/binary/052_F1
 {
-	sort 15.5319
+	sort 15.5313
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -3412,9 +3317,9 @@ gfx/binary/053_F1
 	}
 }
 
-gfx/binary/053_F2
+gfx/binary/052_F2
 {
-	sort 15.5320
+	sort 15.5314
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -3422,9 +3327,9 @@ gfx/binary/053_F2
 	}
 }
 
-gfx/binary/053_F3
+gfx/binary/052_F3
 {
-	sort 15.5321
+	sort 15.5315
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -3464,11 +3369,10 @@ gfx/binary/053_B3
 	}
 }
 
-// ============== 054 ==============
-
-gfx/binary/054_F1
+//   ============== 053 ==============
+gfx/binary/053_F1
 {
-	sort 15.5325
+	sort 15.5319
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -3476,9 +3380,9 @@ gfx/binary/054_F1
 	}
 }
 
-gfx/binary/054_F2
+gfx/binary/053_F2
 {
-	sort 15.5326
+	sort 15.5320
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -3486,9 +3390,9 @@ gfx/binary/054_F2
 	}
 }
 
-gfx/binary/054_F3
+gfx/binary/053_F3
 {
-	sort 15.5327
+	sort 15.5321
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -3528,11 +3432,10 @@ gfx/binary/054_B3
 	}
 }
 
-// ============== 055 ==============
-
-gfx/binary/055_F1
+//   ============== 054 ==============
+gfx/binary/054_F1
 {
-	sort 15.5331
+	sort 15.5325
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -3540,9 +3443,9 @@ gfx/binary/055_F1
 	}
 }
 
-gfx/binary/055_F2
+gfx/binary/054_F2
 {
-	sort 15.5332
+	sort 15.5326
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -3550,9 +3453,9 @@ gfx/binary/055_F2
 	}
 }
 
-gfx/binary/055_F3
+gfx/binary/054_F3
 {
-	sort 15.5333
+	sort 15.5327
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -3592,11 +3495,10 @@ gfx/binary/055_B3
 	}
 }
 
-// ============== 056 ==============
-
-gfx/binary/056_F1
+//   ============== 055 ==============
+gfx/binary/055_F1
 {
-	sort 15.5337
+	sort 15.5331
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -3604,9 +3506,9 @@ gfx/binary/056_F1
 	}
 }
 
-gfx/binary/056_F2
+gfx/binary/055_F2
 {
-	sort 15.5338
+	sort 15.5332
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -3614,9 +3516,9 @@ gfx/binary/056_F2
 	}
 }
 
-gfx/binary/056_F3
+gfx/binary/055_F3
 {
-	sort 15.5339
+	sort 15.5333
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -3656,11 +3558,10 @@ gfx/binary/056_B3
 	}
 }
 
-// ============== 057 ==============
-
-gfx/binary/057_F1
+//   ============== 056 ==============
+gfx/binary/056_F1
 {
-	sort 15.5343
+	sort 15.5337
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -3668,9 +3569,9 @@ gfx/binary/057_F1
 	}
 }
 
-gfx/binary/057_F2
+gfx/binary/056_F2
 {
-	sort 15.5344
+	sort 15.5338
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -3678,9 +3579,9 @@ gfx/binary/057_F2
 	}
 }
 
-gfx/binary/057_F3
+gfx/binary/056_F3
 {
-	sort 15.5345
+	sort 15.5339
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -3720,11 +3621,10 @@ gfx/binary/057_B3
 	}
 }
 
-// ============== 058 ==============
-
-gfx/binary/058_F1
+//   ============== 057 ==============
+gfx/binary/057_F1
 {
-	sort 15.5349
+	sort 15.5343
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -3732,9 +3632,9 @@ gfx/binary/058_F1
 	}
 }
 
-gfx/binary/058_F2
+gfx/binary/057_F2
 {
-	sort 15.5350
+	sort 15.5344
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -3742,9 +3642,9 @@ gfx/binary/058_F2
 	}
 }
 
-gfx/binary/058_F3
+gfx/binary/057_F3
 {
-	sort 15.5351
+	sort 15.5345
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -3784,11 +3684,10 @@ gfx/binary/058_B3
 	}
 }
 
-// ============== 059 ==============
-
-gfx/binary/059_F1
+//   ============== 058 ==============
+gfx/binary/058_F1
 {
-	sort 15.5355
+	sort 15.5349
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -3796,9 +3695,9 @@ gfx/binary/059_F1
 	}
 }
 
-gfx/binary/059_F2
+gfx/binary/058_F2
 {
-	sort 15.5356
+	sort 15.5350
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -3806,9 +3705,9 @@ gfx/binary/059_F2
 	}
 }
 
-gfx/binary/059_F3
+gfx/binary/058_F3
 {
-	sort 15.5357
+	sort 15.5351
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -3848,11 +3747,10 @@ gfx/binary/059_B3
 	}
 }
 
-// ============== 060 ==============
-
-gfx/binary/060_F1
+//   ============== 059 ==============
+gfx/binary/059_F1
 {
-	sort 15.5361
+	sort 15.5355
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -3860,9 +3758,9 @@ gfx/binary/060_F1
 	}
 }
 
-gfx/binary/060_F2
+gfx/binary/059_F2
 {
-	sort 15.5362
+	sort 15.5356
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -3870,9 +3768,9 @@ gfx/binary/060_F2
 	}
 }
 
-gfx/binary/060_F3
+gfx/binary/059_F3
 {
-	sort 15.5363
+	sort 15.5357
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -3912,11 +3810,10 @@ gfx/binary/060_B3
 	}
 }
 
-// ============== 061 ==============
-
-gfx/binary/061_F1
+//   ============== 060 ==============
+gfx/binary/060_F1
 {
-	sort 15.5367
+	sort 15.5361
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -3924,9 +3821,9 @@ gfx/binary/061_F1
 	}
 }
 
-gfx/binary/061_F2
+gfx/binary/060_F2
 {
-	sort 15.5368
+	sort 15.5362
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -3934,9 +3831,9 @@ gfx/binary/061_F2
 	}
 }
 
-gfx/binary/061_F3
+gfx/binary/060_F3
 {
-	sort 15.5369
+	sort 15.5363
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -3976,11 +3873,10 @@ gfx/binary/061_B3
 	}
 }
 
-// ============== 062 ==============
-
-gfx/binary/062_F1
+//   ============== 061 ==============
+gfx/binary/061_F1
 {
-	sort 15.5373
+	sort 15.5367
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -3988,9 +3884,9 @@ gfx/binary/062_F1
 	}
 }
 
-gfx/binary/062_F2
+gfx/binary/061_F2
 {
-	sort 15.5374
+	sort 15.5368
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -3998,9 +3894,9 @@ gfx/binary/062_F2
 	}
 }
 
-gfx/binary/062_F3
+gfx/binary/061_F3
 {
-	sort 15.5375
+	sort 15.5369
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -4040,11 +3936,10 @@ gfx/binary/062_B3
 	}
 }
 
-// ============== 063 ==============
-
-gfx/binary/063_F1
+//   ============== 062 ==============
+gfx/binary/062_F1
 {
-	sort 15.5379
+	sort 15.5373
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -4052,9 +3947,9 @@ gfx/binary/063_F1
 	}
 }
 
-gfx/binary/063_F2
+gfx/binary/062_F2
 {
-	sort 15.5380
+	sort 15.5374
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -4062,9 +3957,9 @@ gfx/binary/063_F2
 	}
 }
 
-gfx/binary/063_F3
+gfx/binary/062_F3
 {
-	sort 15.5381
+	sort 15.5375
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -4104,11 +3999,10 @@ gfx/binary/063_B3
 	}
 }
 
-// ============== 064 ==============
-
-gfx/binary/064_F1
+//   ============== 063 ==============
+gfx/binary/063_F1
 {
-	sort 15.5385
+	sort 15.5379
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -4116,9 +4010,9 @@ gfx/binary/064_F1
 	}
 }
 
-gfx/binary/064_F2
+gfx/binary/063_F2
 {
-	sort 15.5386
+	sort 15.5380
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -4126,9 +4020,9 @@ gfx/binary/064_F2
 	}
 }
 
-gfx/binary/064_F3
+gfx/binary/063_F3
 {
-	sort 15.5387
+	sort 15.5381
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -4168,11 +4062,10 @@ gfx/binary/064_B3
 	}
 }
 
-// ============== 065 ==============
-
-gfx/binary/065_F1
+//   ============== 064 ==============
+gfx/binary/064_F1
 {
-	sort 15.5391
+	sort 15.5385
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -4180,9 +4073,9 @@ gfx/binary/065_F1
 	}
 }
 
-gfx/binary/065_F2
+gfx/binary/064_F2
 {
-	sort 15.5392
+	sort 15.5386
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -4190,9 +4083,9 @@ gfx/binary/065_F2
 	}
 }
 
-gfx/binary/065_F3
+gfx/binary/064_F3
 {
-	sort 15.5393
+	sort 15.5387
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -4232,11 +4125,10 @@ gfx/binary/065_B3
 	}
 }
 
-// ============== 066 ==============
-
-gfx/binary/066_F1
+//   ============== 065 ==============
+gfx/binary/065_F1
 {
-	sort 15.5397
+	sort 15.5391
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -4244,9 +4136,9 @@ gfx/binary/066_F1
 	}
 }
 
-gfx/binary/066_F2
+gfx/binary/065_F2
 {
-	sort 15.5398
+	sort 15.5392
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -4254,9 +4146,9 @@ gfx/binary/066_F2
 	}
 }
 
-gfx/binary/066_F3
+gfx/binary/065_F3
 {
-	sort 15.5399
+	sort 15.5393
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -4296,11 +4188,10 @@ gfx/binary/066_B3
 	}
 }
 
-// ============== 067 ==============
-
-gfx/binary/067_F1
+//   ============== 066 ==============
+gfx/binary/066_F1
 {
-	sort 15.5403
+	sort 15.5397
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -4308,9 +4199,9 @@ gfx/binary/067_F1
 	}
 }
 
-gfx/binary/067_F2
+gfx/binary/066_F2
 {
-	sort 15.5404
+	sort 15.5398
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -4318,9 +4209,9 @@ gfx/binary/067_F2
 	}
 }
 
-gfx/binary/067_F3
+gfx/binary/066_F3
 {
-	sort 15.5405
+	sort 15.5399
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -4360,11 +4251,10 @@ gfx/binary/067_B3
 	}
 }
 
-// ============== 068 ==============
-
-gfx/binary/068_F1
+//   ============== 067 ==============
+gfx/binary/067_F1
 {
-	sort 15.5409
+	sort 15.5403
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -4372,9 +4262,9 @@ gfx/binary/068_F1
 	}
 }
 
-gfx/binary/068_F2
+gfx/binary/067_F2
 {
-	sort 15.5410
+	sort 15.5404
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -4382,9 +4272,9 @@ gfx/binary/068_F2
 	}
 }
 
-gfx/binary/068_F3
+gfx/binary/067_F3
 {
-	sort 15.5411
+	sort 15.5405
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -4424,11 +4314,10 @@ gfx/binary/068_B3
 	}
 }
 
-// ============== 069 ==============
-
-gfx/binary/069_F1
+//   ============== 068 ==============
+gfx/binary/068_F1
 {
-	sort 15.5415
+	sort 15.5409
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -4436,9 +4325,9 @@ gfx/binary/069_F1
 	}
 }
 
-gfx/binary/069_F2
+gfx/binary/068_F2
 {
-	sort 15.5416
+	sort 15.5410
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -4446,9 +4335,9 @@ gfx/binary/069_F2
 	}
 }
 
-gfx/binary/069_F3
+gfx/binary/068_F3
 {
-	sort 15.5417
+	sort 15.5411
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -4488,11 +4377,10 @@ gfx/binary/069_B3
 	}
 }
 
-// ============== 070 ==============
-
-gfx/binary/070_F1
+//   ============== 069 ==============
+gfx/binary/069_F1
 {
-	sort 15.5421
+	sort 15.5415
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -4500,9 +4388,9 @@ gfx/binary/070_F1
 	}
 }
 
-gfx/binary/070_F2
+gfx/binary/069_F2
 {
-	sort 15.5422
+	sort 15.5416
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -4510,9 +4398,9 @@ gfx/binary/070_F2
 	}
 }
 
-gfx/binary/070_F3
+gfx/binary/069_F3
 {
-	sort 15.5423
+	sort 15.5417
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -4552,11 +4440,10 @@ gfx/binary/070_B3
 	}
 }
 
-// ============== 071 ==============
-
-gfx/binary/071_F1
+//   ============== 070 ==============
+gfx/binary/070_F1
 {
-	sort 15.5427
+	sort 15.5421
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -4564,9 +4451,9 @@ gfx/binary/071_F1
 	}
 }
 
-gfx/binary/071_F2
+gfx/binary/070_F2
 {
-	sort 15.5428
+	sort 15.5422
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -4574,9 +4461,9 @@ gfx/binary/071_F2
 	}
 }
 
-gfx/binary/071_F3
+gfx/binary/070_F3
 {
-	sort 15.5429
+	sort 15.5423
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -4616,11 +4503,10 @@ gfx/binary/071_B3
 	}
 }
 
-// ============== 072 ==============
-
-gfx/binary/072_F1
+//   ============== 071 ==============
+gfx/binary/071_F1
 {
-	sort 15.5433
+	sort 15.5427
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -4628,9 +4514,9 @@ gfx/binary/072_F1
 	}
 }
 
-gfx/binary/072_F2
+gfx/binary/071_F2
 {
-	sort 15.5434
+	sort 15.5428
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -4638,9 +4524,9 @@ gfx/binary/072_F2
 	}
 }
 
-gfx/binary/072_F3
+gfx/binary/071_F3
 {
-	sort 15.5435
+	sort 15.5429
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -4680,11 +4566,10 @@ gfx/binary/072_B3
 	}
 }
 
-// ============== 073 ==============
-
-gfx/binary/073_F1
+//   ============== 072 ==============
+gfx/binary/072_F1
 {
-	sort 15.5439
+	sort 15.5433
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -4692,9 +4577,9 @@ gfx/binary/073_F1
 	}
 }
 
-gfx/binary/073_F2
+gfx/binary/072_F2
 {
-	sort 15.5440
+	sort 15.5434
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -4702,9 +4587,9 @@ gfx/binary/073_F2
 	}
 }
 
-gfx/binary/073_F3
+gfx/binary/072_F3
 {
-	sort 15.5441
+	sort 15.5435
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -4744,11 +4629,10 @@ gfx/binary/073_B3
 	}
 }
 
-// ============== 074 ==============
-
-gfx/binary/074_F1
+//   ============== 073 ==============
+gfx/binary/073_F1
 {
-	sort 15.5445
+	sort 15.5439
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -4756,9 +4640,9 @@ gfx/binary/074_F1
 	}
 }
 
-gfx/binary/074_F2
+gfx/binary/073_F2
 {
-	sort 15.5446
+	sort 15.5440
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -4766,9 +4650,9 @@ gfx/binary/074_F2
 	}
 }
 
-gfx/binary/074_F3
+gfx/binary/073_F3
 {
-	sort 15.5447
+	sort 15.5441
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -4808,11 +4692,10 @@ gfx/binary/074_B3
 	}
 }
 
-// ============== 075 ==============
-
-gfx/binary/075_F1
+//   ============== 074 ==============
+gfx/binary/074_F1
 {
-	sort 15.5451
+	sort 15.5445
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -4820,9 +4703,9 @@ gfx/binary/075_F1
 	}
 }
 
-gfx/binary/075_F2
+gfx/binary/074_F2
 {
-	sort 15.5452
+	sort 15.5446
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -4830,9 +4713,9 @@ gfx/binary/075_F2
 	}
 }
 
-gfx/binary/075_F3
+gfx/binary/074_F3
 {
-	sort 15.5453
+	sort 15.5447
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -4872,11 +4755,10 @@ gfx/binary/075_B3
 	}
 }
 
-// ============== 076 ==============
-
-gfx/binary/076_F1
+//   ============== 075 ==============
+gfx/binary/075_F1
 {
-	sort 15.5457
+	sort 15.5451
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -4884,9 +4766,9 @@ gfx/binary/076_F1
 	}
 }
 
-gfx/binary/076_F2
+gfx/binary/075_F2
 {
-	sort 15.5458
+	sort 15.5452
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -4894,9 +4776,9 @@ gfx/binary/076_F2
 	}
 }
 
-gfx/binary/076_F3
+gfx/binary/075_F3
 {
-	sort 15.5459
+	sort 15.5453
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -4936,11 +4818,10 @@ gfx/binary/076_B3
 	}
 }
 
-// ============== 077 ==============
-
-gfx/binary/077_F1
+//   ============== 076 ==============
+gfx/binary/076_F1
 {
-	sort 15.5463
+	sort 15.5457
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -4948,9 +4829,9 @@ gfx/binary/077_F1
 	}
 }
 
-gfx/binary/077_F2
+gfx/binary/076_F2
 {
-	sort 15.5464
+	sort 15.5458
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -4958,9 +4839,9 @@ gfx/binary/077_F2
 	}
 }
 
-gfx/binary/077_F3
+gfx/binary/076_F3
 {
-	sort 15.5465
+	sort 15.5459
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -5000,11 +4881,10 @@ gfx/binary/077_B3
 	}
 }
 
-// ============== 078 ==============
-
-gfx/binary/078_F1
+//   ============== 077 ==============
+gfx/binary/077_F1
 {
-	sort 15.5469
+	sort 15.5463
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -5012,9 +4892,9 @@ gfx/binary/078_F1
 	}
 }
 
-gfx/binary/078_F2
+gfx/binary/077_F2
 {
-	sort 15.5470
+	sort 15.5464
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -5022,9 +4902,9 @@ gfx/binary/078_F2
 	}
 }
 
-gfx/binary/078_F3
+gfx/binary/077_F3
 {
-	sort 15.5471
+	sort 15.5465
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -5064,11 +4944,10 @@ gfx/binary/078_B3
 	}
 }
 
-// ============== 079 ==============
-
-gfx/binary/079_F1
+//   ============== 078 ==============
+gfx/binary/078_F1
 {
-	sort 15.5475
+	sort 15.5469
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -5076,9 +4955,9 @@ gfx/binary/079_F1
 	}
 }
 
-gfx/binary/079_F2
+gfx/binary/078_F2
 {
-	sort 15.5476
+	sort 15.5470
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -5086,9 +4965,9 @@ gfx/binary/079_F2
 	}
 }
 
-gfx/binary/079_F3
+gfx/binary/078_F3
 {
-	sort 15.5477
+	sort 15.5471
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -5128,11 +5007,10 @@ gfx/binary/079_B3
 	}
 }
 
-// ============== 080 ==============
-
-gfx/binary/080_F1
+//   ============== 079 ==============
+gfx/binary/079_F1
 {
-	sort 15.5481
+	sort 15.5475
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -5140,9 +5018,9 @@ gfx/binary/080_F1
 	}
 }
 
-gfx/binary/080_F2
+gfx/binary/079_F2
 {
-	sort 15.5482
+	sort 15.5476
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -5150,9 +5028,9 @@ gfx/binary/080_F2
 	}
 }
 
-gfx/binary/080_F3
+gfx/binary/079_F3
 {
-	sort 15.5483
+	sort 15.5477
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -5192,11 +5070,10 @@ gfx/binary/080_B3
 	}
 }
 
-// ============== 081 ==============
-
-gfx/binary/081_F1
+//   ============== 080 ==============
+gfx/binary/080_F1
 {
-	sort 15.5487
+	sort 15.5481
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -5204,9 +5081,9 @@ gfx/binary/081_F1
 	}
 }
 
-gfx/binary/081_F2
+gfx/binary/080_F2
 {
-	sort 15.5488
+	sort 15.5482
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -5214,9 +5091,9 @@ gfx/binary/081_F2
 	}
 }
 
-gfx/binary/081_F3
+gfx/binary/080_F3
 {
-	sort 15.5489
+	sort 15.5483
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -5256,11 +5133,10 @@ gfx/binary/081_B3
 	}
 }
 
-// ============== 082 ==============
-
-gfx/binary/082_F1
+//   ============== 081 ==============
+gfx/binary/081_F1
 {
-	sort 15.5493
+	sort 15.5487
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -5268,9 +5144,9 @@ gfx/binary/082_F1
 	}
 }
 
-gfx/binary/082_F2
+gfx/binary/081_F2
 {
-	sort 15.5494
+	sort 15.5488
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -5278,9 +5154,9 @@ gfx/binary/082_F2
 	}
 }
 
-gfx/binary/082_F3
+gfx/binary/081_F3
 {
-	sort 15.5495
+	sort 15.5489
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -5320,11 +5196,10 @@ gfx/binary/082_B3
 	}
 }
 
-// ============== 083 ==============
-
-gfx/binary/083_F1
+//   ============== 082 ==============
+gfx/binary/082_F1
 {
-	sort 15.5499
+	sort 15.5493
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -5332,9 +5207,9 @@ gfx/binary/083_F1
 	}
 }
 
-gfx/binary/083_F2
+gfx/binary/082_F2
 {
-	sort 15.5500
+	sort 15.5494
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -5342,9 +5217,9 @@ gfx/binary/083_F2
 	}
 }
 
-gfx/binary/083_F3
+gfx/binary/082_F3
 {
-	sort 15.5501
+	sort 15.5495
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -5384,11 +5259,10 @@ gfx/binary/083_B3
 	}
 }
 
-// ============== 084 ==============
-
-gfx/binary/084_F1
+//   ============== 083 ==============
+gfx/binary/083_F1
 {
-	sort 15.5505
+	sort 15.5499
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -5396,9 +5270,9 @@ gfx/binary/084_F1
 	}
 }
 
-gfx/binary/084_F2
+gfx/binary/083_F2
 {
-	sort 15.5506
+	sort 15.5500
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -5406,9 +5280,9 @@ gfx/binary/084_F2
 	}
 }
 
-gfx/binary/084_F3
+gfx/binary/083_F3
 {
-	sort 15.5507
+	sort 15.5501
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -5448,11 +5322,10 @@ gfx/binary/084_B3
 	}
 }
 
-// ============== 085 ==============
-
-gfx/binary/085_F1
+//   ============== 084 ==============
+gfx/binary/084_F1
 {
-	sort 15.5511
+	sort 15.5505
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -5460,9 +5333,9 @@ gfx/binary/085_F1
 	}
 }
 
-gfx/binary/085_F2
+gfx/binary/084_F2
 {
-	sort 15.5512
+	sort 15.5506
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -5470,9 +5343,9 @@ gfx/binary/085_F2
 	}
 }
 
-gfx/binary/085_F3
+gfx/binary/084_F3
 {
-	sort 15.5513
+	sort 15.5507
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -5512,11 +5385,10 @@ gfx/binary/085_B3
 	}
 }
 
-// ============== 086 ==============
-
-gfx/binary/086_F1
+//   ============== 085 ==============
+gfx/binary/085_F1
 {
-	sort 15.5517
+	sort 15.5511
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -5524,9 +5396,9 @@ gfx/binary/086_F1
 	}
 }
 
-gfx/binary/086_F2
+gfx/binary/085_F2
 {
-	sort 15.5518
+	sort 15.5512
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -5534,9 +5406,9 @@ gfx/binary/086_F2
 	}
 }
 
-gfx/binary/086_F3
+gfx/binary/085_F3
 {
-	sort 15.5519
+	sort 15.5513
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -5576,11 +5448,10 @@ gfx/binary/086_B3
 	}
 }
 
-// ============== 087 ==============
-
-gfx/binary/087_F1
+//   ============== 086 ==============
+gfx/binary/086_F1
 {
-	sort 15.5523
+	sort 15.5517
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -5588,9 +5459,9 @@ gfx/binary/087_F1
 	}
 }
 
-gfx/binary/087_F2
+gfx/binary/086_F2
 {
-	sort 15.5524
+	sort 15.5518
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -5598,9 +5469,9 @@ gfx/binary/087_F2
 	}
 }
 
-gfx/binary/087_F3
+gfx/binary/086_F3
 {
-	sort 15.5525
+	sort 15.5519
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -5640,11 +5511,10 @@ gfx/binary/087_B3
 	}
 }
 
-// ============== 088 ==============
-
-gfx/binary/088_F1
+//   ============== 087 ==============
+gfx/binary/087_F1
 {
-	sort 15.5529
+	sort 15.5523
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -5652,9 +5522,9 @@ gfx/binary/088_F1
 	}
 }
 
-gfx/binary/088_F2
+gfx/binary/087_F2
 {
-	sort 15.5530
+	sort 15.5524
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -5662,9 +5532,9 @@ gfx/binary/088_F2
 	}
 }
 
-gfx/binary/088_F3
+gfx/binary/087_F3
 {
-	sort 15.5531
+	sort 15.5525
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -5704,11 +5574,10 @@ gfx/binary/088_B3
 	}
 }
 
-// ============== 089 ==============
-
-gfx/binary/089_F1
+//   ============== 088 ==============
+gfx/binary/088_F1
 {
-	sort 15.5535
+	sort 15.5529
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -5716,9 +5585,9 @@ gfx/binary/089_F1
 	}
 }
 
-gfx/binary/089_F2
+gfx/binary/088_F2
 {
-	sort 15.5536
+	sort 15.5530
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -5726,9 +5595,9 @@ gfx/binary/089_F2
 	}
 }
 
-gfx/binary/089_F3
+gfx/binary/088_F3
 {
-	sort 15.5537
+	sort 15.5531
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -5768,11 +5637,10 @@ gfx/binary/089_B3
 	}
 }
 
-// ============== 090 ==============
-
-gfx/binary/090_F1
+//   ============== 089 ==============
+gfx/binary/089_F1
 {
-	sort 15.5541
+	sort 15.5535
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -5780,9 +5648,9 @@ gfx/binary/090_F1
 	}
 }
 
-gfx/binary/090_F2
+gfx/binary/089_F2
 {
-	sort 15.5542
+	sort 15.5536
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -5790,9 +5658,9 @@ gfx/binary/090_F2
 	}
 }
 
-gfx/binary/090_F3
+gfx/binary/089_F3
 {
-	sort 15.5543
+	sort 15.5537
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -5832,11 +5700,10 @@ gfx/binary/090_B3
 	}
 }
 
-// ============== 091 ==============
-
-gfx/binary/091_F1
+//   ============== 090 ==============
+gfx/binary/090_F1
 {
-	sort 15.5547
+	sort 15.5541
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -5844,9 +5711,9 @@ gfx/binary/091_F1
 	}
 }
 
-gfx/binary/091_F2
+gfx/binary/090_F2
 {
-	sort 15.5548
+	sort 15.5542
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -5854,9 +5721,9 @@ gfx/binary/091_F2
 	}
 }
 
-gfx/binary/091_F3
+gfx/binary/090_F3
 {
-	sort 15.5549
+	sort 15.5543
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -5896,11 +5763,10 @@ gfx/binary/091_B3
 	}
 }
 
-// ============== 092 ==============
-
-gfx/binary/092_F1
+//   ============== 091 ==============
+gfx/binary/091_F1
 {
-	sort 15.5553
+	sort 15.5547
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -5908,9 +5774,9 @@ gfx/binary/092_F1
 	}
 }
 
-gfx/binary/092_F2
+gfx/binary/091_F2
 {
-	sort 15.5554
+	sort 15.5548
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -5918,9 +5784,9 @@ gfx/binary/092_F2
 	}
 }
 
-gfx/binary/092_F3
+gfx/binary/091_F3
 {
-	sort 15.5555
+	sort 15.5549
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -5960,11 +5826,10 @@ gfx/binary/092_B3
 	}
 }
 
-// ============== 093 ==============
-
-gfx/binary/093_F1
+//   ============== 092 ==============
+gfx/binary/092_F1
 {
-	sort 15.5559
+	sort 15.5553
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -5972,9 +5837,9 @@ gfx/binary/093_F1
 	}
 }
 
-gfx/binary/093_F2
+gfx/binary/092_F2
 {
-	sort 15.5560
+	sort 15.5554
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -5982,9 +5847,9 @@ gfx/binary/093_F2
 	}
 }
 
-gfx/binary/093_F3
+gfx/binary/092_F3
 {
-	sort 15.5561
+	sort 15.5555
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -6024,11 +5889,10 @@ gfx/binary/093_B3
 	}
 }
 
-// ============== 094 ==============
-
-gfx/binary/094_F1
+//   ============== 093 ==============
+gfx/binary/093_F1
 {
-	sort 15.5565
+	sort 15.5559
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -6036,9 +5900,9 @@ gfx/binary/094_F1
 	}
 }
 
-gfx/binary/094_F2
+gfx/binary/093_F2
 {
-	sort 15.5566
+	sort 15.5560
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -6046,9 +5910,9 @@ gfx/binary/094_F2
 	}
 }
 
-gfx/binary/094_F3
+gfx/binary/093_F3
 {
-	sort 15.5567
+	sort 15.5561
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -6088,11 +5952,10 @@ gfx/binary/094_B3
 	}
 }
 
-// ============== 095 ==============
-
-gfx/binary/095_F1
+//   ============== 094 ==============
+gfx/binary/094_F1
 {
-	sort 15.5571
+	sort 15.5565
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -6100,9 +5963,9 @@ gfx/binary/095_F1
 	}
 }
 
-gfx/binary/095_F2
+gfx/binary/094_F2
 {
-	sort 15.5572
+	sort 15.5566
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -6110,9 +5973,9 @@ gfx/binary/095_F2
 	}
 }
 
-gfx/binary/095_F3
+gfx/binary/094_F3
 {
-	sort 15.5573
+	sort 15.5567
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -6152,11 +6015,10 @@ gfx/binary/095_B3
 	}
 }
 
-// ============== 096 ==============
-
-gfx/binary/096_F1
+//   ============== 095 ==============
+gfx/binary/095_F1
 {
-	sort 15.5577
+	sort 15.5571
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -6164,9 +6026,9 @@ gfx/binary/096_F1
 	}
 }
 
-gfx/binary/096_F2
+gfx/binary/095_F2
 {
-	sort 15.5578
+	sort 15.5572
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -6174,9 +6036,9 @@ gfx/binary/096_F2
 	}
 }
 
-gfx/binary/096_F3
+gfx/binary/095_F3
 {
-	sort 15.5579
+	sort 15.5573
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -6216,11 +6078,10 @@ gfx/binary/096_B3
 	}
 }
 
-// ============== 097 ==============
-
-gfx/binary/097_F1
+//   ============== 096 ==============
+gfx/binary/096_F1
 {
-	sort 15.5583
+	sort 15.5577
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -6228,9 +6089,9 @@ gfx/binary/097_F1
 	}
 }
 
-gfx/binary/097_F2
+gfx/binary/096_F2
 {
-	sort 15.5584
+	sort 15.5578
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -6238,9 +6099,9 @@ gfx/binary/097_F2
 	}
 }
 
-gfx/binary/097_F3
+gfx/binary/096_F3
 {
-	sort 15.5585
+	sort 15.5579
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -6280,11 +6141,10 @@ gfx/binary/097_B3
 	}
 }
 
-// ============== 098 ==============
-
-gfx/binary/098_F1
+//   ============== 097 ==============
+gfx/binary/097_F1
 {
-	sort 15.5589
+	sort 15.5583
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -6292,9 +6152,9 @@ gfx/binary/098_F1
 	}
 }
 
-gfx/binary/098_F2
+gfx/binary/097_F2
 {
-	sort 15.5590
+	sort 15.5584
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -6302,9 +6162,9 @@ gfx/binary/098_F2
 	}
 }
 
-gfx/binary/098_F3
+gfx/binary/097_F3
 {
-	sort 15.5591
+	sort 15.5585
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -6344,11 +6204,10 @@ gfx/binary/098_B3
 	}
 }
 
-// ============== 099 ==============
-
-gfx/binary/099_F1
+//   ============== 098 ==============
+gfx/binary/098_F1
 {
-	sort 15.5595
+	sort 15.5589
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -6356,9 +6215,9 @@ gfx/binary/099_F1
 	}
 }
 
-gfx/binary/099_F2
+gfx/binary/098_F2
 {
-	sort 15.5596
+	sort 15.5590
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -6366,9 +6225,9 @@ gfx/binary/099_F2
 	}
 }
 
-gfx/binary/099_F3
+gfx/binary/098_F3
 {
-	sort 15.5597
+	sort 15.5591
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -6408,11 +6267,10 @@ gfx/binary/099_B3
 	}
 }
 
-// ============== 100 ==============
-
-gfx/binary/100_F1
+//   ============== 099 ==============
+gfx/binary/099_F1
 {
-	sort 15.5601
+	sort 15.5595
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -6420,9 +6278,9 @@ gfx/binary/100_F1
 	}
 }
 
-gfx/binary/100_F2
+gfx/binary/099_F2
 {
-	sort 15.5602
+	sort 15.5596
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -6430,9 +6288,9 @@ gfx/binary/100_F2
 	}
 }
 
-gfx/binary/100_F3
+gfx/binary/099_F3
 {
-	sort 15.5603
+	sort 15.5597
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -6472,11 +6330,10 @@ gfx/binary/100_B3
 	}
 }
 
-// ============== 101 ==============
-
-gfx/binary/101_F1
+//   ============== 100 ==============
+gfx/binary/100_F1
 {
-	sort 15.5607
+	sort 15.5601
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -6484,9 +6341,9 @@ gfx/binary/101_F1
 	}
 }
 
-gfx/binary/101_F2
+gfx/binary/100_F2
 {
-	sort 15.5608
+	sort 15.5602
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -6494,9 +6351,9 @@ gfx/binary/101_F2
 	}
 }
 
-gfx/binary/101_F3
+gfx/binary/100_F3
 {
-	sort 15.5609
+	sort 15.5603
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -6536,11 +6393,10 @@ gfx/binary/101_B3
 	}
 }
 
-// ============== 102 ==============
-
-gfx/binary/102_F1
+//   ============== 101 ==============
+gfx/binary/101_F1
 {
-	sort 15.5613
+	sort 15.5607
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -6548,9 +6404,9 @@ gfx/binary/102_F1
 	}
 }
 
-gfx/binary/102_F2
+gfx/binary/101_F2
 {
-	sort 15.5614
+	sort 15.5608
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -6558,9 +6414,9 @@ gfx/binary/102_F2
 	}
 }
 
-gfx/binary/102_F3
+gfx/binary/101_F3
 {
-	sort 15.5615
+	sort 15.5609
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -6600,11 +6456,10 @@ gfx/binary/102_B3
 	}
 }
 
-// ============== 103 ==============
-
-gfx/binary/103_F1
+//   ============== 102 ==============
+gfx/binary/102_F1
 {
-	sort 15.5619
+	sort 15.5613
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -6612,9 +6467,9 @@ gfx/binary/103_F1
 	}
 }
 
-gfx/binary/103_F2
+gfx/binary/102_F2
 {
-	sort 15.5620
+	sort 15.5614
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -6622,9 +6477,9 @@ gfx/binary/103_F2
 	}
 }
 
-gfx/binary/103_F3
+gfx/binary/102_F3
 {
-	sort 15.5621
+	sort 15.5615
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -6664,11 +6519,10 @@ gfx/binary/103_B3
 	}
 }
 
-// ============== 104 ==============
-
-gfx/binary/104_F1
+//   ============== 103 ==============
+gfx/binary/103_F1
 {
-	sort 15.5625
+	sort 15.5619
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -6676,9 +6530,9 @@ gfx/binary/104_F1
 	}
 }
 
-gfx/binary/104_F2
+gfx/binary/103_F2
 {
-	sort 15.5626
+	sort 15.5620
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -6686,9 +6540,9 @@ gfx/binary/104_F2
 	}
 }
 
-gfx/binary/104_F3
+gfx/binary/103_F3
 {
-	sort 15.5627
+	sort 15.5621
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -6728,11 +6582,10 @@ gfx/binary/104_B3
 	}
 }
 
-// ============== 105 ==============
-
-gfx/binary/105_F1
+//   ============== 104 ==============
+gfx/binary/104_F1
 {
-	sort 15.5631
+	sort 15.5625
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -6740,9 +6593,9 @@ gfx/binary/105_F1
 	}
 }
 
-gfx/binary/105_F2
+gfx/binary/104_F2
 {
-	sort 15.5632
+	sort 15.5626
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -6750,9 +6603,9 @@ gfx/binary/105_F2
 	}
 }
 
-gfx/binary/105_F3
+gfx/binary/104_F3
 {
-	sort 15.5633
+	sort 15.5627
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -6792,11 +6645,10 @@ gfx/binary/105_B3
 	}
 }
 
-// ============== 106 ==============
-
-gfx/binary/106_F1
+//   ============== 105 ==============
+gfx/binary/105_F1
 {
-	sort 15.5637
+	sort 15.5631
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -6804,9 +6656,9 @@ gfx/binary/106_F1
 	}
 }
 
-gfx/binary/106_F2
+gfx/binary/105_F2
 {
-	sort 15.5638
+	sort 15.5632
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -6814,9 +6666,9 @@ gfx/binary/106_F2
 	}
 }
 
-gfx/binary/106_F3
+gfx/binary/105_F3
 {
-	sort 15.5639
+	sort 15.5633
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -6856,11 +6708,10 @@ gfx/binary/106_B3
 	}
 }
 
-// ============== 107 ==============
-
-gfx/binary/107_F1
+//   ============== 106 ==============
+gfx/binary/106_F1
 {
-	sort 15.5643
+	sort 15.5637
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -6868,9 +6719,9 @@ gfx/binary/107_F1
 	}
 }
 
-gfx/binary/107_F2
+gfx/binary/106_F2
 {
-	sort 15.5644
+	sort 15.5638
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -6878,9 +6729,9 @@ gfx/binary/107_F2
 	}
 }
 
-gfx/binary/107_F3
+gfx/binary/106_F3
 {
-	sort 15.5645
+	sort 15.5639
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -6920,11 +6771,10 @@ gfx/binary/107_B3
 	}
 }
 
-// ============== 108 ==============
-
-gfx/binary/108_F1
+//   ============== 107 ==============
+gfx/binary/107_F1
 {
-	sort 15.5649
+	sort 15.5643
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -6932,9 +6782,9 @@ gfx/binary/108_F1
 	}
 }
 
-gfx/binary/108_F2
+gfx/binary/107_F2
 {
-	sort 15.5650
+	sort 15.5644
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -6942,9 +6792,9 @@ gfx/binary/108_F2
 	}
 }
 
-gfx/binary/108_F3
+gfx/binary/107_F3
 {
-	sort 15.5651
+	sort 15.5645
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -6984,11 +6834,10 @@ gfx/binary/108_B3
 	}
 }
 
-// ============== 109 ==============
-
-gfx/binary/109_F1
+//   ============== 108 ==============
+gfx/binary/108_F1
 {
-	sort 15.5655
+	sort 15.5649
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -6996,9 +6845,9 @@ gfx/binary/109_F1
 	}
 }
 
-gfx/binary/109_F2
+gfx/binary/108_F2
 {
-	sort 15.5656
+	sort 15.5650
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -7006,9 +6855,9 @@ gfx/binary/109_F2
 	}
 }
 
-gfx/binary/109_F3
+gfx/binary/108_F3
 {
-	sort 15.5657
+	sort 15.5651
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -7048,11 +6897,10 @@ gfx/binary/109_B3
 	}
 }
 
-// ============== 110 ==============
-
-gfx/binary/110_F1
+//   ============== 109 ==============
+gfx/binary/109_F1
 {
-	sort 15.5661
+	sort 15.5655
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -7060,9 +6908,9 @@ gfx/binary/110_F1
 	}
 }
 
-gfx/binary/110_F2
+gfx/binary/109_F2
 {
-	sort 15.5662
+	sort 15.5656
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -7070,9 +6918,9 @@ gfx/binary/110_F2
 	}
 }
 
-gfx/binary/110_F3
+gfx/binary/109_F3
 {
-	sort 15.5663
+	sort 15.5657
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -7112,11 +6960,10 @@ gfx/binary/110_B3
 	}
 }
 
-// ============== 111 ==============
-
-gfx/binary/111_F1
+//   ============== 110 ==============
+gfx/binary/110_F1
 {
-	sort 15.5667
+	sort 15.5661
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -7124,9 +6971,9 @@ gfx/binary/111_F1
 	}
 }
 
-gfx/binary/111_F2
+gfx/binary/110_F2
 {
-	sort 15.5668
+	sort 15.5662
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -7134,9 +6981,9 @@ gfx/binary/111_F2
 	}
 }
 
-gfx/binary/111_F3
+gfx/binary/110_F3
 {
-	sort 15.5669
+	sort 15.5663
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -7176,11 +7023,10 @@ gfx/binary/111_B3
 	}
 }
 
-// ============== 112 ==============
-
-gfx/binary/112_F1
+//   ============== 111 ==============
+gfx/binary/111_F1
 {
-	sort 15.5673
+	sort 15.5667
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -7188,9 +7034,9 @@ gfx/binary/112_F1
 	}
 }
 
-gfx/binary/112_F2
+gfx/binary/111_F2
 {
-	sort 15.5674
+	sort 15.5668
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -7198,9 +7044,9 @@ gfx/binary/112_F2
 	}
 }
 
-gfx/binary/112_F3
+gfx/binary/111_F3
 {
-	sort 15.5675
+	sort 15.5669
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -7240,11 +7086,10 @@ gfx/binary/112_B3
 	}
 }
 
-// ============== 113 ==============
-
-gfx/binary/113_F1
+//   ============== 112 ==============
+gfx/binary/112_F1
 {
-	sort 15.5679
+	sort 15.5673
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -7252,9 +7097,9 @@ gfx/binary/113_F1
 	}
 }
 
-gfx/binary/113_F2
+gfx/binary/112_F2
 {
-	sort 15.5680
+	sort 15.5674
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -7262,9 +7107,9 @@ gfx/binary/113_F2
 	}
 }
 
-gfx/binary/113_F3
+gfx/binary/112_F3
 {
-	sort 15.5681
+	sort 15.5675
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -7304,11 +7149,10 @@ gfx/binary/113_B3
 	}
 }
 
-// ============== 114 ==============
-
-gfx/binary/114_F1
+//   ============== 113 ==============
+gfx/binary/113_F1
 {
-	sort 15.5685
+	sort 15.5679
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -7316,9 +7160,9 @@ gfx/binary/114_F1
 	}
 }
 
-gfx/binary/114_F2
+gfx/binary/113_F2
 {
-	sort 15.5686
+	sort 15.5680
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -7326,9 +7170,9 @@ gfx/binary/114_F2
 	}
 }
 
-gfx/binary/114_F3
+gfx/binary/113_F3
 {
-	sort 15.5687
+	sort 15.5681
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -7368,11 +7212,10 @@ gfx/binary/114_B3
 	}
 }
 
-// ============== 115 ==============
-
-gfx/binary/115_F1
+//   ============== 114 ==============
+gfx/binary/114_F1
 {
-	sort 15.5691
+	sort 15.5685
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -7380,9 +7223,9 @@ gfx/binary/115_F1
 	}
 }
 
-gfx/binary/115_F2
+gfx/binary/114_F2
 {
-	sort 15.5692
+	sort 15.5686
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -7390,9 +7233,9 @@ gfx/binary/115_F2
 	}
 }
 
-gfx/binary/115_F3
+gfx/binary/114_F3
 {
-	sort 15.5693
+	sort 15.5687
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -7432,11 +7275,10 @@ gfx/binary/115_B3
 	}
 }
 
-// ============== 116 ==============
-
-gfx/binary/116_F1
+//   ============== 115 ==============
+gfx/binary/115_F1
 {
-	sort 15.5697
+	sort 15.5691
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -7444,9 +7286,9 @@ gfx/binary/116_F1
 	}
 }
 
-gfx/binary/116_F2
+gfx/binary/115_F2
 {
-	sort 15.5698
+	sort 15.5692
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -7454,9 +7296,9 @@ gfx/binary/116_F2
 	}
 }
 
-gfx/binary/116_F3
+gfx/binary/115_F3
 {
-	sort 15.5699
+	sort 15.5693
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -7496,11 +7338,10 @@ gfx/binary/116_B3
 	}
 }
 
-// ============== 117 ==============
-
-gfx/binary/117_F1
+//   ============== 116 ==============
+gfx/binary/116_F1
 {
-	sort 15.5703
+	sort 15.5697
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -7508,9 +7349,9 @@ gfx/binary/117_F1
 	}
 }
 
-gfx/binary/117_F2
+gfx/binary/116_F2
 {
-	sort 15.5704
+	sort 15.5698
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -7518,9 +7359,9 @@ gfx/binary/117_F2
 	}
 }
 
-gfx/binary/117_F3
+gfx/binary/116_F3
 {
-	sort 15.5705
+	sort 15.5699
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -7560,11 +7401,10 @@ gfx/binary/117_B3
 	}
 }
 
-// ============== 118 ==============
-
-gfx/binary/118_F1
+//   ============== 117 ==============
+gfx/binary/117_F1
 {
-	sort 15.5709
+	sort 15.5703
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -7572,9 +7412,9 @@ gfx/binary/118_F1
 	}
 }
 
-gfx/binary/118_F2
+gfx/binary/117_F2
 {
-	sort 15.5710
+	sort 15.5704
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -7582,9 +7422,9 @@ gfx/binary/118_F2
 	}
 }
 
-gfx/binary/118_F3
+gfx/binary/117_F3
 {
-	sort 15.5711
+	sort 15.5705
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -7624,11 +7464,10 @@ gfx/binary/118_B3
 	}
 }
 
-// ============== 119 ==============
-
-gfx/binary/119_F1
+//   ============== 118 ==============
+gfx/binary/118_F1
 {
-	sort 15.5715
+	sort 15.5709
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -7636,9 +7475,9 @@ gfx/binary/119_F1
 	}
 }
 
-gfx/binary/119_F2
+gfx/binary/118_F2
 {
-	sort 15.5716
+	sort 15.5710
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -7646,9 +7485,9 @@ gfx/binary/119_F2
 	}
 }
 
-gfx/binary/119_F3
+gfx/binary/118_F3
 {
-	sort 15.5717
+	sort 15.5711
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -7688,11 +7527,10 @@ gfx/binary/119_B3
 	}
 }
 
-// ============== 120 ==============
-
-gfx/binary/120_F1
+//   ============== 119 ==============
+gfx/binary/119_F1
 {
-	sort 15.5721
+	sort 15.5715
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -7700,9 +7538,9 @@ gfx/binary/120_F1
 	}
 }
 
-gfx/binary/120_F2
+gfx/binary/119_F2
 {
-	sort 15.5722
+	sort 15.5716
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -7710,9 +7548,9 @@ gfx/binary/120_F2
 	}
 }
 
-gfx/binary/120_F3
+gfx/binary/119_F3
 {
-	sort 15.5723
+	sort 15.5717
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -7752,11 +7590,10 @@ gfx/binary/120_B3
 	}
 }
 
-// ============== 121 ==============
-
-gfx/binary/121_F1
+//   ============== 120 ==============
+gfx/binary/120_F1
 {
-	sort 15.5727
+	sort 15.5721
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -7764,9 +7601,9 @@ gfx/binary/121_F1
 	}
 }
 
-gfx/binary/121_F2
+gfx/binary/120_F2
 {
-	sort 15.5728
+	sort 15.5722
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -7774,9 +7611,9 @@ gfx/binary/121_F2
 	}
 }
 
-gfx/binary/121_F3
+gfx/binary/120_F3
 {
-	sort 15.5729
+	sort 15.5723
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -7816,11 +7653,10 @@ gfx/binary/121_B3
 	}
 }
 
-// ============== 122 ==============
-
-gfx/binary/122_F1
+//   ============== 121 ==============
+gfx/binary/121_F1
 {
-	sort 15.5733
+	sort 15.5727
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -7828,9 +7664,9 @@ gfx/binary/122_F1
 	}
 }
 
-gfx/binary/122_F2
+gfx/binary/121_F2
 {
-	sort 15.5734
+	sort 15.5728
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -7838,9 +7674,9 @@ gfx/binary/122_F2
 	}
 }
 
-gfx/binary/122_F3
+gfx/binary/121_F3
 {
-	sort 15.5735
+	sort 15.5729
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -7880,11 +7716,10 @@ gfx/binary/122_B3
 	}
 }
 
-// ============== 123 ==============
-
-gfx/binary/123_F1
+//   ============== 122 ==============
+gfx/binary/122_F1
 {
-	sort 15.5739
+	sort 15.5733
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -7892,9 +7727,9 @@ gfx/binary/123_F1
 	}
 }
 
-gfx/binary/123_F2
+gfx/binary/122_F2
 {
-	sort 15.5740
+	sort 15.5734
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -7902,9 +7737,9 @@ gfx/binary/123_F2
 	}
 }
 
-gfx/binary/123_F3
+gfx/binary/122_F3
 {
-	sort 15.5741
+	sort 15.5735
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -7944,11 +7779,10 @@ gfx/binary/123_B3
 	}
 }
 
-// ============== 124 ==============
-
-gfx/binary/124_F1
+//   ============== 123 ==============
+gfx/binary/123_F1
 {
-	sort 15.5745
+	sort 15.5739
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -7956,9 +7790,9 @@ gfx/binary/124_F1
 	}
 }
 
-gfx/binary/124_F2
+gfx/binary/123_F2
 {
-	sort 15.5746
+	sort 15.5740
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -7966,9 +7800,9 @@ gfx/binary/124_F2
 	}
 }
 
-gfx/binary/124_F3
+gfx/binary/123_F3
 {
-	sort 15.5747
+	sort 15.5741
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -8008,11 +7842,10 @@ gfx/binary/124_B3
 	}
 }
 
-// ============== 125 ==============
-
-gfx/binary/125_F1
+//   ============== 124 ==============
+gfx/binary/124_F1
 {
-	sort 15.5751
+	sort 15.5745
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -8020,9 +7853,9 @@ gfx/binary/125_F1
 	}
 }
 
-gfx/binary/125_F2
+gfx/binary/124_F2
 {
-	sort 15.5752
+	sort 15.5746
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -8030,9 +7863,9 @@ gfx/binary/125_F2
 	}
 }
 
-gfx/binary/125_F3
+gfx/binary/124_F3
 {
-	sort 15.5753
+	sort 15.5747
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -8072,11 +7905,10 @@ gfx/binary/125_B3
 	}
 }
 
-// ============== 126 ==============
-
-gfx/binary/126_F1
+//   ============== 125 ==============
+gfx/binary/125_F1
 {
-	sort 15.5757
+	sort 15.5751
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -8084,9 +7916,9 @@ gfx/binary/126_F1
 	}
 }
 
-gfx/binary/126_F2
+gfx/binary/125_F2
 {
-	sort 15.5758
+	sort 15.5752
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -8094,9 +7926,9 @@ gfx/binary/126_F2
 	}
 }
 
-gfx/binary/126_F3
+gfx/binary/125_F3
 {
-	sort 15.5759
+	sort 15.5753
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -8136,11 +7968,10 @@ gfx/binary/126_B3
 	}
 }
 
-// ============== 127 ==============
-
-gfx/binary/127_F1
+//   ============== 126 ==============
+gfx/binary/126_F1
 {
-	sort 15.5763
+	sort 15.5757
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -8148,9 +7979,9 @@ gfx/binary/127_F1
 	}
 }
 
-gfx/binary/127_F2
+gfx/binary/126_F2
 {
-	sort 15.5764
+	sort 15.5758
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -8158,9 +7989,9 @@ gfx/binary/127_F2
 	}
 }
 
-gfx/binary/127_F3
+gfx/binary/126_F3
 {
-	sort 15.5765
+	sort 15.5759
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -8200,11 +8031,10 @@ gfx/binary/127_B3
 	}
 }
 
-// ============== 128 ==============
-
-gfx/binary/128_F1
+//   ============== 127 ==============
+gfx/binary/127_F1
 {
-	sort 15.5769
+	sort 15.5763
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -8212,9 +8042,9 @@ gfx/binary/128_F1
 	}
 }
 
-gfx/binary/128_F2
+gfx/binary/127_F2
 {
-	sort 15.5770
+	sort 15.5764
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -8222,9 +8052,9 @@ gfx/binary/128_F2
 	}
 }
 
-gfx/binary/128_F3
+gfx/binary/127_F3
 {
-	sort 15.5771
+	sort 15.5765
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -8264,11 +8094,10 @@ gfx/binary/128_B3
 	}
 }
 
-// ============== 129 ==============
-
-gfx/binary/129_F1
+//   ============== 128 ==============
+gfx/binary/128_F1
 {
-	sort 15.5775
+	sort 15.5769
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -8276,9 +8105,9 @@ gfx/binary/129_F1
 	}
 }
 
-gfx/binary/129_F2
+gfx/binary/128_F2
 {
-	sort 15.5776
+	sort 15.5770
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -8286,9 +8115,9 @@ gfx/binary/129_F2
 	}
 }
 
-gfx/binary/129_F3
+gfx/binary/128_F3
 {
-	sort 15.5777
+	sort 15.5771
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -8328,11 +8157,10 @@ gfx/binary/129_B3
 	}
 }
 
-// ============== 130 ==============
-
-gfx/binary/130_F1
+//   ============== 129 ==============
+gfx/binary/129_F1
 {
-	sort 15.5781
+	sort 15.5775
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -8340,9 +8168,9 @@ gfx/binary/130_F1
 	}
 }
 
-gfx/binary/130_F2
+gfx/binary/129_F2
 {
-	sort 15.5782
+	sort 15.5776
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -8350,9 +8178,9 @@ gfx/binary/130_F2
 	}
 }
 
-gfx/binary/130_F3
+gfx/binary/129_F3
 {
-	sort 15.5783
+	sort 15.5777
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -8392,11 +8220,10 @@ gfx/binary/130_B3
 	}
 }
 
-// ============== 131 ==============
-
-gfx/binary/131_F1
+//   ============== 130 ==============
+gfx/binary/130_F1
 {
-	sort 15.5787
+	sort 15.5781
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -8404,9 +8231,9 @@ gfx/binary/131_F1
 	}
 }
 
-gfx/binary/131_F2
+gfx/binary/130_F2
 {
-	sort 15.5788
+	sort 15.5782
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -8414,9 +8241,9 @@ gfx/binary/131_F2
 	}
 }
 
-gfx/binary/131_F3
+gfx/binary/130_F3
 {
-	sort 15.5789
+	sort 15.5783
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -8456,11 +8283,10 @@ gfx/binary/131_B3
 	}
 }
 
-// ============== 132 ==============
-
-gfx/binary/132_F1
+//   ============== 131 ==============
+gfx/binary/131_F1
 {
-	sort 15.5793
+	sort 15.5787
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -8468,9 +8294,9 @@ gfx/binary/132_F1
 	}
 }
 
-gfx/binary/132_F2
+gfx/binary/131_F2
 {
-	sort 15.5794
+	sort 15.5788
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -8478,9 +8304,9 @@ gfx/binary/132_F2
 	}
 }
 
-gfx/binary/132_F3
+gfx/binary/131_F3
 {
-	sort 15.5795
+	sort 15.5789
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -8520,11 +8346,10 @@ gfx/binary/132_B3
 	}
 }
 
-// ============== 133 ==============
-
-gfx/binary/133_F1
+//   ============== 132 ==============
+gfx/binary/132_F1
 {
-	sort 15.5799
+	sort 15.5793
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -8532,9 +8357,9 @@ gfx/binary/133_F1
 	}
 }
 
-gfx/binary/133_F2
+gfx/binary/132_F2
 {
-	sort 15.5800
+	sort 15.5794
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -8542,9 +8367,9 @@ gfx/binary/133_F2
 	}
 }
 
-gfx/binary/133_F3
+gfx/binary/132_F3
 {
-	sort 15.5801
+	sort 15.5795
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -8584,11 +8409,10 @@ gfx/binary/133_B3
 	}
 }
 
-// ============== 134 ==============
-
-gfx/binary/134_F1
+//   ============== 133 ==============
+gfx/binary/133_F1
 {
-	sort 15.5805
+	sort 15.5799
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -8596,9 +8420,9 @@ gfx/binary/134_F1
 	}
 }
 
-gfx/binary/134_F2
+gfx/binary/133_F2
 {
-	sort 15.5806
+	sort 15.5800
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -8606,9 +8430,9 @@ gfx/binary/134_F2
 	}
 }
 
-gfx/binary/134_F3
+gfx/binary/133_F3
 {
-	sort 15.5807
+	sort 15.5801
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -8648,11 +8472,10 @@ gfx/binary/134_B3
 	}
 }
 
-// ============== 135 ==============
-
-gfx/binary/135_F1
+//   ============== 134 ==============
+gfx/binary/134_F1
 {
-	sort 15.5811
+	sort 15.5805
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -8660,9 +8483,9 @@ gfx/binary/135_F1
 	}
 }
 
-gfx/binary/135_F2
+gfx/binary/134_F2
 {
-	sort 15.5812
+	sort 15.5806
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -8670,9 +8493,9 @@ gfx/binary/135_F2
 	}
 }
 
-gfx/binary/135_F3
+gfx/binary/134_F3
 {
-	sort 15.5813
+	sort 15.5807
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -8712,11 +8535,10 @@ gfx/binary/135_B3
 	}
 }
 
-// ============== 136 ==============
-
-gfx/binary/136_F1
+//   ============== 135 ==============
+gfx/binary/135_F1
 {
-	sort 15.5817
+	sort 15.5811
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -8724,9 +8546,9 @@ gfx/binary/136_F1
 	}
 }
 
-gfx/binary/136_F2
+gfx/binary/135_F2
 {
-	sort 15.5818
+	sort 15.5812
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -8734,9 +8556,9 @@ gfx/binary/136_F2
 	}
 }
 
-gfx/binary/136_F3
+gfx/binary/135_F3
 {
-	sort 15.5819
+	sort 15.5813
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -8776,11 +8598,10 @@ gfx/binary/136_B3
 	}
 }
 
-// ============== 137 ==============
-
-gfx/binary/137_F1
+//   ============== 136 ==============
+gfx/binary/136_F1
 {
-	sort 15.5823
+	sort 15.5817
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -8788,9 +8609,9 @@ gfx/binary/137_F1
 	}
 }
 
-gfx/binary/137_F2
+gfx/binary/136_F2
 {
-	sort 15.5824
+	sort 15.5818
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -8798,9 +8619,9 @@ gfx/binary/137_F2
 	}
 }
 
-gfx/binary/137_F3
+gfx/binary/136_F3
 {
-	sort 15.5825
+	sort 15.5819
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -8840,11 +8661,10 @@ gfx/binary/137_B3
 	}
 }
 
-// ============== 138 ==============
-
-gfx/binary/138_F1
+//   ============== 137 ==============
+gfx/binary/137_F1
 {
-	sort 15.5829
+	sort 15.5823
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -8852,9 +8672,9 @@ gfx/binary/138_F1
 	}
 }
 
-gfx/binary/138_F2
+gfx/binary/137_F2
 {
-	sort 15.5830
+	sort 15.5824
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -8862,9 +8682,9 @@ gfx/binary/138_F2
 	}
 }
 
-gfx/binary/138_F3
+gfx/binary/137_F3
 {
-	sort 15.5831
+	sort 15.5825
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -8904,11 +8724,10 @@ gfx/binary/138_B3
 	}
 }
 
-// ============== 139 ==============
-
-gfx/binary/139_F1
+//   ============== 138 ==============
+gfx/binary/138_F1
 {
-	sort 15.5835
+	sort 15.5829
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -8916,9 +8735,9 @@ gfx/binary/139_F1
 	}
 }
 
-gfx/binary/139_F2
+gfx/binary/138_F2
 {
-	sort 15.5836
+	sort 15.5830
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -8926,9 +8745,9 @@ gfx/binary/139_F2
 	}
 }
 
-gfx/binary/139_F3
+gfx/binary/138_F3
 {
-	sort 15.5837
+	sort 15.5831
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -8968,11 +8787,10 @@ gfx/binary/139_B3
 	}
 }
 
-// ============== 140 ==============
-
-gfx/binary/140_F1
+//   ============== 139 ==============
+gfx/binary/139_F1
 {
-	sort 15.5841
+	sort 15.5835
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -8980,9 +8798,9 @@ gfx/binary/140_F1
 	}
 }
 
-gfx/binary/140_F2
+gfx/binary/139_F2
 {
-	sort 15.5842
+	sort 15.5836
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -8990,9 +8808,9 @@ gfx/binary/140_F2
 	}
 }
 
-gfx/binary/140_F3
+gfx/binary/139_F3
 {
-	sort 15.5843
+	sort 15.5837
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -9032,11 +8850,10 @@ gfx/binary/140_B3
 	}
 }
 
-// ============== 141 ==============
-
-gfx/binary/141_F1
+//   ============== 140 ==============
+gfx/binary/140_F1
 {
-	sort 15.5847
+	sort 15.5841
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -9044,9 +8861,9 @@ gfx/binary/141_F1
 	}
 }
 
-gfx/binary/141_F2
+gfx/binary/140_F2
 {
-	sort 15.5848
+	sort 15.5842
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -9054,9 +8871,9 @@ gfx/binary/141_F2
 	}
 }
 
-gfx/binary/141_F3
+gfx/binary/140_F3
 {
-	sort 15.5849
+	sort 15.5843
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -9096,11 +8913,10 @@ gfx/binary/141_B3
 	}
 }
 
-// ============== 142 ==============
-
-gfx/binary/142_F1
+//   ============== 141 ==============
+gfx/binary/141_F1
 {
-	sort 15.5853
+	sort 15.5847
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -9108,9 +8924,9 @@ gfx/binary/142_F1
 	}
 }
 
-gfx/binary/142_F2
+gfx/binary/141_F2
 {
-	sort 15.5854
+	sort 15.5848
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -9118,9 +8934,9 @@ gfx/binary/142_F2
 	}
 }
 
-gfx/binary/142_F3
+gfx/binary/141_F3
 {
-	sort 15.5855
+	sort 15.5849
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -9160,11 +8976,10 @@ gfx/binary/142_B3
 	}
 }
 
-// ============== 143 ==============
-
-gfx/binary/143_F1
+//   ============== 142 ==============
+gfx/binary/142_F1
 {
-	sort 15.5859
+	sort 15.5853
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -9172,9 +8987,9 @@ gfx/binary/143_F1
 	}
 }
 
-gfx/binary/143_F2
+gfx/binary/142_F2
 {
-	sort 15.5860
+	sort 15.5854
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -9182,9 +8997,9 @@ gfx/binary/143_F2
 	}
 }
 
-gfx/binary/143_F3
+gfx/binary/142_F3
 {
-	sort 15.5861
+	sort 15.5855
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -9224,11 +9039,10 @@ gfx/binary/143_B3
 	}
 }
 
-// ============== 144 ==============
-
-gfx/binary/144_F1
+//   ============== 143 ==============
+gfx/binary/143_F1
 {
-	sort 15.5865
+	sort 15.5859
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -9236,9 +9050,9 @@ gfx/binary/144_F1
 	}
 }
 
-gfx/binary/144_F2
+gfx/binary/143_F2
 {
-	sort 15.5866
+	sort 15.5860
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -9246,9 +9060,9 @@ gfx/binary/144_F2
 	}
 }
 
-gfx/binary/144_F3
+gfx/binary/143_F3
 {
-	sort 15.5867
+	sort 15.5861
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -9288,11 +9102,10 @@ gfx/binary/144_B3
 	}
 }
 
-// ============== 145 ==============
-
-gfx/binary/145_F1
+//   ============== 144 ==============
+gfx/binary/144_F1
 {
-	sort 15.5871
+	sort 15.5865
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -9300,9 +9113,9 @@ gfx/binary/145_F1
 	}
 }
 
-gfx/binary/145_F2
+gfx/binary/144_F2
 {
-	sort 15.5872
+	sort 15.5866
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -9310,9 +9123,9 @@ gfx/binary/145_F2
 	}
 }
 
-gfx/binary/145_F3
+gfx/binary/144_F3
 {
-	sort 15.5873
+	sort 15.5867
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -9352,11 +9165,10 @@ gfx/binary/145_B3
 	}
 }
 
-// ============== 146 ==============
-
-gfx/binary/146_F1
+//   ============== 145 ==============
+gfx/binary/145_F1
 {
-	sort 15.5877
+	sort 15.5871
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -9364,9 +9176,9 @@ gfx/binary/146_F1
 	}
 }
 
-gfx/binary/146_F2
+gfx/binary/145_F2
 {
-	sort 15.5878
+	sort 15.5872
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -9374,9 +9186,9 @@ gfx/binary/146_F2
 	}
 }
 
-gfx/binary/146_F3
+gfx/binary/145_F3
 {
-	sort 15.5879
+	sort 15.5873
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -9416,11 +9228,10 @@ gfx/binary/146_B3
 	}
 }
 
-// ============== 147 ==============
-
-gfx/binary/147_F1
+//   ============== 146 ==============
+gfx/binary/146_F1
 {
-	sort 15.5883
+	sort 15.5877
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -9428,9 +9239,9 @@ gfx/binary/147_F1
 	}
 }
 
-gfx/binary/147_F2
+gfx/binary/146_F2
 {
-	sort 15.5884
+	sort 15.5878
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -9438,9 +9249,9 @@ gfx/binary/147_F2
 	}
 }
 
-gfx/binary/147_F3
+gfx/binary/146_F3
 {
-	sort 15.5885
+	sort 15.5879
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -9480,11 +9291,10 @@ gfx/binary/147_B3
 	}
 }
 
-// ============== 148 ==============
-
-gfx/binary/148_F1
+//   ============== 147 ==============
+gfx/binary/147_F1
 {
-	sort 15.5889
+	sort 15.5883
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -9492,9 +9302,9 @@ gfx/binary/148_F1
 	}
 }
 
-gfx/binary/148_F2
+gfx/binary/147_F2
 {
-	sort 15.5890
+	sort 15.5884
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -9502,9 +9312,9 @@ gfx/binary/148_F2
 	}
 }
 
-gfx/binary/148_F3
+gfx/binary/147_F3
 {
-	sort 15.5891
+	sort 15.5885
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -9544,11 +9354,10 @@ gfx/binary/148_B3
 	}
 }
 
-// ============== 149 ==============
-
-gfx/binary/149_F1
+//   ============== 148 ==============
+gfx/binary/148_F1
 {
-	sort 15.5895
+	sort 15.5889
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -9556,9 +9365,9 @@ gfx/binary/149_F1
 	}
 }
 
-gfx/binary/149_F2
+gfx/binary/148_F2
 {
-	sort 15.5896
+	sort 15.5890
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -9566,9 +9375,9 @@ gfx/binary/149_F2
 	}
 }
 
-gfx/binary/149_F3
+gfx/binary/148_F3
 {
-	sort 15.5897
+	sort 15.5891
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -9608,11 +9417,10 @@ gfx/binary/149_B3
 	}
 }
 
-// ============== 150 ==============
-
-gfx/binary/150_F1
+//   ============== 149 ==============
+gfx/binary/149_F1
 {
-	sort 15.5901
+	sort 15.5895
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -9620,9 +9428,9 @@ gfx/binary/150_F1
 	}
 }
 
-gfx/binary/150_F2
+gfx/binary/149_F2
 {
-	sort 15.5902
+	sort 15.5896
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -9630,9 +9438,9 @@ gfx/binary/150_F2
 	}
 }
 
-gfx/binary/150_F3
+gfx/binary/149_F3
 {
-	sort 15.5903
+	sort 15.5897
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -9672,11 +9480,10 @@ gfx/binary/150_B3
 	}
 }
 
-// ============== 151 ==============
-
-gfx/binary/151_F1
+//   ============== 150 ==============
+gfx/binary/150_F1
 {
-	sort 15.5907
+	sort 15.5901
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -9684,9 +9491,9 @@ gfx/binary/151_F1
 	}
 }
 
-gfx/binary/151_F2
+gfx/binary/150_F2
 {
-	sort 15.5908
+	sort 15.5902
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -9694,9 +9501,9 @@ gfx/binary/151_F2
 	}
 }
 
-gfx/binary/151_F3
+gfx/binary/150_F3
 {
-	sort 15.5909
+	sort 15.5903
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -9736,11 +9543,10 @@ gfx/binary/151_B3
 	}
 }
 
-// ============== 152 ==============
-
-gfx/binary/152_F1
+//   ============== 151 ==============
+gfx/binary/151_F1
 {
-	sort 15.5913
+	sort 15.5907
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -9748,9 +9554,9 @@ gfx/binary/152_F1
 	}
 }
 
-gfx/binary/152_F2
+gfx/binary/151_F2
 {
-	sort 15.5914
+	sort 15.5908
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -9758,9 +9564,9 @@ gfx/binary/152_F2
 	}
 }
 
-gfx/binary/152_F3
+gfx/binary/151_F3
 {
-	sort 15.5915
+	sort 15.5909
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -9800,11 +9606,10 @@ gfx/binary/152_B3
 	}
 }
 
-// ============== 153 ==============
-
-gfx/binary/153_F1
+//   ============== 152 ==============
+gfx/binary/152_F1
 {
-	sort 15.5919
+	sort 15.5913
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -9812,9 +9617,9 @@ gfx/binary/153_F1
 	}
 }
 
-gfx/binary/153_F2
+gfx/binary/152_F2
 {
-	sort 15.5920
+	sort 15.5914
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -9822,9 +9627,9 @@ gfx/binary/153_F2
 	}
 }
 
-gfx/binary/153_F3
+gfx/binary/152_F3
 {
-	sort 15.5921
+	sort 15.5915
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -9864,11 +9669,10 @@ gfx/binary/153_B3
 	}
 }
 
-// ============== 154 ==============
-
-gfx/binary/154_F1
+//   ============== 153 ==============
+gfx/binary/153_F1
 {
-	sort 15.5925
+	sort 15.5919
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -9876,9 +9680,9 @@ gfx/binary/154_F1
 	}
 }
 
-gfx/binary/154_F2
+gfx/binary/153_F2
 {
-	sort 15.5926
+	sort 15.5920
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -9886,9 +9690,9 @@ gfx/binary/154_F2
 	}
 }
 
-gfx/binary/154_F3
+gfx/binary/153_F3
 {
-	sort 15.5927
+	sort 15.5921
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -9928,11 +9732,10 @@ gfx/binary/154_B3
 	}
 }
 
-// ============== 155 ==============
-
-gfx/binary/155_F1
+//   ============== 154 ==============
+gfx/binary/154_F1
 {
-	sort 15.5931
+	sort 15.5925
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -9940,9 +9743,9 @@ gfx/binary/155_F1
 	}
 }
 
-gfx/binary/155_F2
+gfx/binary/154_F2
 {
-	sort 15.5932
+	sort 15.5926
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -9950,9 +9753,9 @@ gfx/binary/155_F2
 	}
 }
 
-gfx/binary/155_F3
+gfx/binary/154_F3
 {
-	sort 15.5933
+	sort 15.5927
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -9992,11 +9795,10 @@ gfx/binary/155_B3
 	}
 }
 
-// ============== 156 ==============
-
-gfx/binary/156_F1
+//   ============== 155 ==============
+gfx/binary/155_F1
 {
-	sort 15.5937
+	sort 15.5931
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -10004,9 +9806,9 @@ gfx/binary/156_F1
 	}
 }
 
-gfx/binary/156_F2
+gfx/binary/155_F2
 {
-	sort 15.5938
+	sort 15.5932
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -10014,9 +9816,9 @@ gfx/binary/156_F2
 	}
 }
 
-gfx/binary/156_F3
+gfx/binary/155_F3
 {
-	sort 15.5939
+	sort 15.5933
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -10056,11 +9858,10 @@ gfx/binary/156_B3
 	}
 }
 
-// ============== 157 ==============
-
-gfx/binary/157_F1
+//   ============== 156 ==============
+gfx/binary/156_F1
 {
-	sort 15.5943
+	sort 15.5937
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -10068,9 +9869,9 @@ gfx/binary/157_F1
 	}
 }
 
-gfx/binary/157_F2
+gfx/binary/156_F2
 {
-	sort 15.5944
+	sort 15.5938
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -10078,9 +9879,9 @@ gfx/binary/157_F2
 	}
 }
 
-gfx/binary/157_F3
+gfx/binary/156_F3
 {
-	sort 15.5945
+	sort 15.5939
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -10120,11 +9921,10 @@ gfx/binary/157_B3
 	}
 }
 
-// ============== 158 ==============
-
-gfx/binary/158_F1
+//   ============== 157 ==============
+gfx/binary/157_F1
 {
-	sort 15.5949
+	sort 15.5943
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -10132,9 +9932,9 @@ gfx/binary/158_F1
 	}
 }
 
-gfx/binary/158_F2
+gfx/binary/157_F2
 {
-	sort 15.5950
+	sort 15.5944
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -10142,9 +9942,9 @@ gfx/binary/158_F2
 	}
 }
 
-gfx/binary/158_F3
+gfx/binary/157_F3
 {
-	sort 15.5951
+	sort 15.5945
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -10184,11 +9984,10 @@ gfx/binary/158_B3
 	}
 }
 
-// ============== 159 ==============
-
-gfx/binary/159_F1
+//   ============== 158 ==============
+gfx/binary/158_F1
 {
-	sort 15.5955
+	sort 15.5949
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -10196,9 +9995,9 @@ gfx/binary/159_F1
 	}
 }
 
-gfx/binary/159_F2
+gfx/binary/158_F2
 {
-	sort 15.5956
+	sort 15.5950
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -10206,9 +10005,9 @@ gfx/binary/159_F2
 	}
 }
 
-gfx/binary/159_F3
+gfx/binary/158_F3
 {
-	sort 15.5957
+	sort 15.5951
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -10248,11 +10047,10 @@ gfx/binary/159_B3
 	}
 }
 
-// ============== 160 ==============
-
-gfx/binary/160_F1
+//   ============== 159 ==============
+gfx/binary/159_F1
 {
-	sort 15.5961
+	sort 15.5955
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -10260,9 +10058,9 @@ gfx/binary/160_F1
 	}
 }
 
-gfx/binary/160_F2
+gfx/binary/159_F2
 {
-	sort 15.5962
+	sort 15.5956
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -10270,9 +10068,9 @@ gfx/binary/160_F2
 	}
 }
 
-gfx/binary/160_F3
+gfx/binary/159_F3
 {
-	sort 15.5963
+	sort 15.5957
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -10312,11 +10110,10 @@ gfx/binary/160_B3
 	}
 }
 
-// ============== 161 ==============
-
-gfx/binary/161_F1
+//   ============== 160 ==============
+gfx/binary/160_F1
 {
-	sort 15.5967
+	sort 15.5961
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -10324,9 +10121,9 @@ gfx/binary/161_F1
 	}
 }
 
-gfx/binary/161_F2
+gfx/binary/160_F2
 {
-	sort 15.5968
+	sort 15.5962
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -10334,9 +10131,9 @@ gfx/binary/161_F2
 	}
 }
 
-gfx/binary/161_F3
+gfx/binary/160_F3
 {
-	sort 15.5969
+	sort 15.5963
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -10376,11 +10173,10 @@ gfx/binary/161_B3
 	}
 }
 
-// ============== 162 ==============
-
-gfx/binary/162_F1
+//   ============== 161 ==============
+gfx/binary/161_F1
 {
-	sort 15.5973
+	sort 15.5967
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -10388,9 +10184,9 @@ gfx/binary/162_F1
 	}
 }
 
-gfx/binary/162_F2
+gfx/binary/161_F2
 {
-	sort 15.5974
+	sort 15.5968
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -10398,9 +10194,9 @@ gfx/binary/162_F2
 	}
 }
 
-gfx/binary/162_F3
+gfx/binary/161_F3
 {
-	sort 15.5975
+	sort 15.5969
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -10440,11 +10236,10 @@ gfx/binary/162_B3
 	}
 }
 
-// ============== 163 ==============
-
-gfx/binary/163_F1
+//   ============== 162 ==============
+gfx/binary/162_F1
 {
-	sort 15.5979
+	sort 15.5973
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -10452,9 +10247,9 @@ gfx/binary/163_F1
 	}
 }
 
-gfx/binary/163_F2
+gfx/binary/162_F2
 {
-	sort 15.5980
+	sort 15.5974
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -10462,9 +10257,9 @@ gfx/binary/163_F2
 	}
 }
 
-gfx/binary/163_F3
+gfx/binary/162_F3
 {
-	sort 15.5981
+	sort 15.5975
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -10504,11 +10299,10 @@ gfx/binary/163_B3
 	}
 }
 
-// ============== 164 ==============
-
-gfx/binary/164_F1
+//   ============== 163 ==============
+gfx/binary/163_F1
 {
-	sort 15.5985
+	sort 15.5979
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -10516,9 +10310,9 @@ gfx/binary/164_F1
 	}
 }
 
-gfx/binary/164_F2
+gfx/binary/163_F2
 {
-	sort 15.5986
+	sort 15.5980
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -10526,9 +10320,9 @@ gfx/binary/164_F2
 	}
 }
 
-gfx/binary/164_F3
+gfx/binary/163_F3
 {
-	sort 15.5987
+	sort 15.5981
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -10568,11 +10362,10 @@ gfx/binary/164_B3
 	}
 }
 
-// ============== 165 ==============
-
-gfx/binary/165_F1
+//   ============== 164 ==============
+gfx/binary/164_F1
 {
-	sort 15.5991
+	sort 15.5985
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -10580,9 +10373,9 @@ gfx/binary/165_F1
 	}
 }
 
-gfx/binary/165_F2
+gfx/binary/164_F2
 {
-	sort 15.5992
+	sort 15.5986
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -10590,9 +10383,9 @@ gfx/binary/165_F2
 	}
 }
 
-gfx/binary/165_F3
+gfx/binary/164_F3
 {
-	sort 15.5993
+	sort 15.5987
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -10632,11 +10425,10 @@ gfx/binary/165_B3
 	}
 }
 
-// ============== 166 ==============
-
-gfx/binary/166_F1
+//   ============== 165 ==============
+gfx/binary/165_F1
 {
-	sort 15.5997
+	sort 15.5991
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -10644,9 +10436,9 @@ gfx/binary/166_F1
 	}
 }
 
-gfx/binary/166_F2
+gfx/binary/165_F2
 {
-	sort 15.5998
+	sort 15.5992
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -10654,9 +10446,9 @@ gfx/binary/166_F2
 	}
 }
 
-gfx/binary/166_F3
+gfx/binary/165_F3
 {
-	sort 15.5999
+	sort 15.5993
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -10696,11 +10488,10 @@ gfx/binary/166_B3
 	}
 }
 
-// ============== 167 ==============
-
-gfx/binary/167_F1
+//   ============== 166 ==============
+gfx/binary/166_F1
 {
-	sort 15.6003
+	sort 15.5997
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -10708,9 +10499,9 @@ gfx/binary/167_F1
 	}
 }
 
-gfx/binary/167_F2
+gfx/binary/166_F2
 {
-	sort 15.6004
+	sort 15.5998
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -10718,9 +10509,9 @@ gfx/binary/167_F2
 	}
 }
 
-gfx/binary/167_F3
+gfx/binary/166_F3
 {
-	sort 15.6005
+	sort 15.5999
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -10760,11 +10551,10 @@ gfx/binary/167_B3
 	}
 }
 
-// ============== 168 ==============
-
-gfx/binary/168_F1
+//   ============== 167 ==============
+gfx/binary/167_F1
 {
-	sort 15.6009
+	sort 15.6003
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -10772,9 +10562,9 @@ gfx/binary/168_F1
 	}
 }
 
-gfx/binary/168_F2
+gfx/binary/167_F2
 {
-	sort 15.6010
+	sort 15.6004
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -10782,9 +10572,9 @@ gfx/binary/168_F2
 	}
 }
 
-gfx/binary/168_F3
+gfx/binary/167_F3
 {
-	sort 15.6011
+	sort 15.6005
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -10824,11 +10614,10 @@ gfx/binary/168_B3
 	}
 }
 
-// ============== 169 ==============
-
-gfx/binary/169_F1
+//   ============== 168 ==============
+gfx/binary/168_F1
 {
-	sort 15.6015
+	sort 15.6009
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -10836,9 +10625,9 @@ gfx/binary/169_F1
 	}
 }
 
-gfx/binary/169_F2
+gfx/binary/168_F2
 {
-	sort 15.6016
+	sort 15.6010
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -10846,9 +10635,9 @@ gfx/binary/169_F2
 	}
 }
 
-gfx/binary/169_F3
+gfx/binary/168_F3
 {
-	sort 15.6017
+	sort 15.6011
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -10888,11 +10677,10 @@ gfx/binary/169_B3
 	}
 }
 
-// ============== 170 ==============
-
-gfx/binary/170_F1
+//   ============== 169 ==============
+gfx/binary/169_F1
 {
-	sort 15.6021
+	sort 15.6015
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -10900,9 +10688,9 @@ gfx/binary/170_F1
 	}
 }
 
-gfx/binary/170_F2
+gfx/binary/169_F2
 {
-	sort 15.6022
+	sort 15.6016
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -10910,9 +10698,9 @@ gfx/binary/170_F2
 	}
 }
 
-gfx/binary/170_F3
+gfx/binary/169_F3
 {
-	sort 15.6023
+	sort 15.6017
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -10952,11 +10740,10 @@ gfx/binary/170_B3
 	}
 }
 
-// ============== 171 ==============
-
-gfx/binary/171_F1
+//   ============== 170 ==============
+gfx/binary/170_F1
 {
-	sort 15.6027
+	sort 15.6021
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -10964,9 +10751,9 @@ gfx/binary/171_F1
 	}
 }
 
-gfx/binary/171_F2
+gfx/binary/170_F2
 {
-	sort 15.6028
+	sort 15.6022
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -10974,9 +10761,9 @@ gfx/binary/171_F2
 	}
 }
 
-gfx/binary/171_F3
+gfx/binary/170_F3
 {
-	sort 15.6029
+	sort 15.6023
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -11016,11 +10803,10 @@ gfx/binary/171_B3
 	}
 }
 
-// ============== 172 ==============
-
-gfx/binary/172_F1
+//   ============== 171 ==============
+gfx/binary/171_F1
 {
-	sort 15.6033
+	sort 15.6027
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -11028,9 +10814,9 @@ gfx/binary/172_F1
 	}
 }
 
-gfx/binary/172_F2
+gfx/binary/171_F2
 {
-	sort 15.6034
+	sort 15.6028
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -11038,9 +10824,9 @@ gfx/binary/172_F2
 	}
 }
 
-gfx/binary/172_F3
+gfx/binary/171_F3
 {
-	sort 15.6035
+	sort 15.6029
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -11080,11 +10866,10 @@ gfx/binary/172_B3
 	}
 }
 
-// ============== 173 ==============
-
-gfx/binary/173_F1
+//   ============== 172 ==============
+gfx/binary/172_F1
 {
-	sort 15.6039
+	sort 15.6033
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -11092,9 +10877,9 @@ gfx/binary/173_F1
 	}
 }
 
-gfx/binary/173_F2
+gfx/binary/172_F2
 {
-	sort 15.6040
+	sort 15.6034
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -11102,9 +10887,9 @@ gfx/binary/173_F2
 	}
 }
 
-gfx/binary/173_F3
+gfx/binary/172_F3
 {
-	sort 15.6041
+	sort 15.6035
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -11144,11 +10929,10 @@ gfx/binary/173_B3
 	}
 }
 
-// ============== 174 ==============
-
-gfx/binary/174_F1
+//   ============== 173 ==============
+gfx/binary/173_F1
 {
-	sort 15.6045
+	sort 15.6039
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -11156,9 +10940,9 @@ gfx/binary/174_F1
 	}
 }
 
-gfx/binary/174_F2
+gfx/binary/173_F2
 {
-	sort 15.6046
+	sort 15.6040
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -11166,9 +10950,9 @@ gfx/binary/174_F2
 	}
 }
 
-gfx/binary/174_F3
+gfx/binary/173_F3
 {
-	sort 15.6047
+	sort 15.6041
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -11208,11 +10992,10 @@ gfx/binary/174_B3
 	}
 }
 
-// ============== 175 ==============
-
-gfx/binary/175_F1
+//   ============== 174 ==============
+gfx/binary/174_F1
 {
-	sort 15.6051
+	sort 15.6045
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -11220,9 +11003,9 @@ gfx/binary/175_F1
 	}
 }
 
-gfx/binary/175_F2
+gfx/binary/174_F2
 {
-	sort 15.6052
+	sort 15.6046
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -11230,9 +11013,9 @@ gfx/binary/175_F2
 	}
 }
 
-gfx/binary/175_F3
+gfx/binary/174_F3
 {
-	sort 15.6053
+	sort 15.6047
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -11272,11 +11055,10 @@ gfx/binary/175_B3
 	}
 }
 
-// ============== 176 ==============
-
-gfx/binary/176_F1
+//   ============== 175 ==============
+gfx/binary/175_F1
 {
-	sort 15.6057
+	sort 15.6051
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -11284,9 +11066,9 @@ gfx/binary/176_F1
 	}
 }
 
-gfx/binary/176_F2
+gfx/binary/175_F2
 {
-	sort 15.6058
+	sort 15.6052
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -11294,9 +11076,9 @@ gfx/binary/176_F2
 	}
 }
 
-gfx/binary/176_F3
+gfx/binary/175_F3
 {
-	sort 15.6059
+	sort 15.6053
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -11336,11 +11118,10 @@ gfx/binary/176_B3
 	}
 }
 
-// ============== 177 ==============
-
-gfx/binary/177_F1
+//   ============== 176 ==============
+gfx/binary/176_F1
 {
-	sort 15.6063
+	sort 15.6057
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -11348,9 +11129,9 @@ gfx/binary/177_F1
 	}
 }
 
-gfx/binary/177_F2
+gfx/binary/176_F2
 {
-	sort 15.6064
+	sort 15.6058
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -11358,9 +11139,9 @@ gfx/binary/177_F2
 	}
 }
 
-gfx/binary/177_F3
+gfx/binary/176_F3
 {
-	sort 15.6065
+	sort 15.6059
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -11400,11 +11181,10 @@ gfx/binary/177_B3
 	}
 }
 
-// ============== 178 ==============
-
-gfx/binary/178_F1
+//   ============== 177 ==============
+gfx/binary/177_F1
 {
-	sort 15.6069
+	sort 15.6063
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -11412,9 +11192,9 @@ gfx/binary/178_F1
 	}
 }
 
-gfx/binary/178_F2
+gfx/binary/177_F2
 {
-	sort 15.6070
+	sort 15.6064
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -11422,9 +11202,9 @@ gfx/binary/178_F2
 	}
 }
 
-gfx/binary/178_F3
+gfx/binary/177_F3
 {
-	sort 15.6071
+	sort 15.6065
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -11464,11 +11244,10 @@ gfx/binary/178_B3
 	}
 }
 
-// ============== 179 ==============
-
-gfx/binary/179_F1
+//   ============== 178 ==============
+gfx/binary/178_F1
 {
-	sort 15.6075
+	sort 15.6069
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -11476,9 +11255,9 @@ gfx/binary/179_F1
 	}
 }
 
-gfx/binary/179_F2
+gfx/binary/178_F2
 {
-	sort 15.6076
+	sort 15.6070
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -11486,9 +11265,9 @@ gfx/binary/179_F2
 	}
 }
 
-gfx/binary/179_F3
+gfx/binary/178_F3
 {
-	sort 15.6077
+	sort 15.6071
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -11528,11 +11307,10 @@ gfx/binary/179_B3
 	}
 }
 
-// ============== 180 ==============
-
-gfx/binary/180_F1
+//   ============== 179 ==============
+gfx/binary/179_F1
 {
-	sort 15.6081
+	sort 15.6075
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -11540,9 +11318,9 @@ gfx/binary/180_F1
 	}
 }
 
-gfx/binary/180_F2
+gfx/binary/179_F2
 {
-	sort 15.6082
+	sort 15.6076
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -11550,9 +11328,9 @@ gfx/binary/180_F2
 	}
 }
 
-gfx/binary/180_F3
+gfx/binary/179_F3
 {
-	sort 15.6083
+	sort 15.6077
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -11592,11 +11370,10 @@ gfx/binary/180_B3
 	}
 }
 
-// ============== 181 ==============
-
-gfx/binary/181_F1
+//   ============== 180 ==============
+gfx/binary/180_F1
 {
-	sort 15.6087
+	sort 15.6081
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -11604,9 +11381,9 @@ gfx/binary/181_F1
 	}
 }
 
-gfx/binary/181_F2
+gfx/binary/180_F2
 {
-	sort 15.6088
+	sort 15.6082
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -11614,9 +11391,9 @@ gfx/binary/181_F2
 	}
 }
 
-gfx/binary/181_F3
+gfx/binary/180_F3
 {
-	sort 15.6089
+	sort 15.6083
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -11656,11 +11433,10 @@ gfx/binary/181_B3
 	}
 }
 
-// ============== 182 ==============
-
-gfx/binary/182_F1
+//   ============== 181 ==============
+gfx/binary/181_F1
 {
-	sort 15.6093
+	sort 15.6087
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -11668,9 +11444,9 @@ gfx/binary/182_F1
 	}
 }
 
-gfx/binary/182_F2
+gfx/binary/181_F2
 {
-	sort 15.6094
+	sort 15.6088
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -11678,9 +11454,9 @@ gfx/binary/182_F2
 	}
 }
 
-gfx/binary/182_F3
+gfx/binary/181_F3
 {
-	sort 15.6095
+	sort 15.6089
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -11720,11 +11496,10 @@ gfx/binary/182_B3
 	}
 }
 
-// ============== 183 ==============
-
-gfx/binary/183_F1
+//   ============== 182 ==============
+gfx/binary/182_F1
 {
-	sort 15.6099
+	sort 15.6093
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -11732,9 +11507,9 @@ gfx/binary/183_F1
 	}
 }
 
-gfx/binary/183_F2
+gfx/binary/182_F2
 {
-	sort 15.6100
+	sort 15.6094
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -11742,9 +11517,9 @@ gfx/binary/183_F2
 	}
 }
 
-gfx/binary/183_F3
+gfx/binary/182_F3
 {
-	sort 15.6101
+	sort 15.6095
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -11784,11 +11559,10 @@ gfx/binary/183_B3
 	}
 }
 
-// ============== 184 ==============
-
-gfx/binary/184_F1
+//   ============== 183 ==============
+gfx/binary/183_F1
 {
-	sort 15.6105
+	sort 15.6099
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -11796,9 +11570,9 @@ gfx/binary/184_F1
 	}
 }
 
-gfx/binary/184_F2
+gfx/binary/183_F2
 {
-	sort 15.6106
+	sort 15.6100
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -11806,9 +11580,9 @@ gfx/binary/184_F2
 	}
 }
 
-gfx/binary/184_F3
+gfx/binary/183_F3
 {
-	sort 15.6107
+	sort 15.6101
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -11848,11 +11622,10 @@ gfx/binary/184_B3
 	}
 }
 
-// ============== 185 ==============
-
-gfx/binary/185_F1
+//   ============== 184 ==============
+gfx/binary/184_F1
 {
-	sort 15.6111
+	sort 15.6105
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -11860,9 +11633,9 @@ gfx/binary/185_F1
 	}
 }
 
-gfx/binary/185_F2
+gfx/binary/184_F2
 {
-	sort 15.6112
+	sort 15.6106
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -11870,9 +11643,9 @@ gfx/binary/185_F2
 	}
 }
 
-gfx/binary/185_F3
+gfx/binary/184_F3
 {
-	sort 15.6113
+	sort 15.6107
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -11912,11 +11685,10 @@ gfx/binary/185_B3
 	}
 }
 
-// ============== 186 ==============
-
-gfx/binary/186_F1
+//   ============== 185 ==============
+gfx/binary/185_F1
 {
-	sort 15.6117
+	sort 15.6111
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -11924,9 +11696,9 @@ gfx/binary/186_F1
 	}
 }
 
-gfx/binary/186_F2
+gfx/binary/185_F2
 {
-	sort 15.6118
+	sort 15.6112
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -11934,9 +11706,9 @@ gfx/binary/186_F2
 	}
 }
 
-gfx/binary/186_F3
+gfx/binary/185_F3
 {
-	sort 15.6119
+	sort 15.6113
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -11976,11 +11748,10 @@ gfx/binary/186_B3
 	}
 }
 
-// ============== 187 ==============
-
-gfx/binary/187_F1
+//   ============== 186 ==============
+gfx/binary/186_F1
 {
-	sort 15.6123
+	sort 15.6117
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -11988,9 +11759,9 @@ gfx/binary/187_F1
 	}
 }
 
-gfx/binary/187_F2
+gfx/binary/186_F2
 {
-	sort 15.6124
+	sort 15.6118
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -11998,9 +11769,9 @@ gfx/binary/187_F2
 	}
 }
 
-gfx/binary/187_F3
+gfx/binary/186_F3
 {
-	sort 15.6125
+	sort 15.6119
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -12040,11 +11811,10 @@ gfx/binary/187_B3
 	}
 }
 
-// ============== 188 ==============
-
-gfx/binary/188_F1
+//   ============== 187 ==============
+gfx/binary/187_F1
 {
-	sort 15.6129
+	sort 15.6123
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -12052,9 +11822,9 @@ gfx/binary/188_F1
 	}
 }
 
-gfx/binary/188_F2
+gfx/binary/187_F2
 {
-	sort 15.6130
+	sort 15.6124
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -12062,9 +11832,9 @@ gfx/binary/188_F2
 	}
 }
 
-gfx/binary/188_F3
+gfx/binary/187_F3
 {
-	sort 15.6131
+	sort 15.6125
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -12104,11 +11874,10 @@ gfx/binary/188_B3
 	}
 }
 
-// ============== 189 ==============
-
-gfx/binary/189_F1
+//   ============== 188 ==============
+gfx/binary/188_F1
 {
-	sort 15.6135
+	sort 15.6129
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -12116,9 +11885,9 @@ gfx/binary/189_F1
 	}
 }
 
-gfx/binary/189_F2
+gfx/binary/188_F2
 {
-	sort 15.6136
+	sort 15.6130
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -12126,9 +11895,9 @@ gfx/binary/189_F2
 	}
 }
 
-gfx/binary/189_F3
+gfx/binary/188_F3
 {
-	sort 15.6137
+	sort 15.6131
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -12168,11 +11937,10 @@ gfx/binary/189_B3
 	}
 }
 
-// ============== 190 ==============
-
-gfx/binary/190_F1
+//   ============== 189 ==============
+gfx/binary/189_F1
 {
-	sort 15.6141
+	sort 15.6135
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -12180,9 +11948,9 @@ gfx/binary/190_F1
 	}
 }
 
-gfx/binary/190_F2
+gfx/binary/189_F2
 {
-	sort 15.6142
+	sort 15.6136
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -12190,9 +11958,9 @@ gfx/binary/190_F2
 	}
 }
 
-gfx/binary/190_F3
+gfx/binary/189_F3
 {
-	sort 15.6143
+	sort 15.6137
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -12232,11 +12000,10 @@ gfx/binary/190_B3
 	}
 }
 
-// ============== 191 ==============
-
-gfx/binary/191_F1
+//   ============== 190 ==============
+gfx/binary/190_F1
 {
-	sort 15.6147
+	sort 15.6141
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -12244,9 +12011,9 @@ gfx/binary/191_F1
 	}
 }
 
-gfx/binary/191_F2
+gfx/binary/190_F2
 {
-	sort 15.6148
+	sort 15.6142
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -12254,9 +12021,9 @@ gfx/binary/191_F2
 	}
 }
 
-gfx/binary/191_F3
+gfx/binary/190_F3
 {
-	sort 15.6149
+	sort 15.6143
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -12296,11 +12063,10 @@ gfx/binary/191_B3
 	}
 }
 
-// ============== 192 ==============
-
-gfx/binary/192_F1
+//   ============== 191 ==============
+gfx/binary/191_F1
 {
-	sort 15.6153
+	sort 15.6147
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -12308,9 +12074,9 @@ gfx/binary/192_F1
 	}
 }
 
-gfx/binary/192_F2
+gfx/binary/191_F2
 {
-	sort 15.6154
+	sort 15.6148
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -12318,9 +12084,9 @@ gfx/binary/192_F2
 	}
 }
 
-gfx/binary/192_F3
+gfx/binary/191_F3
 {
-	sort 15.6155
+	sort 15.6149
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -12360,11 +12126,10 @@ gfx/binary/192_B3
 	}
 }
 
-// ============== 193 ==============
-
-gfx/binary/193_F1
+//   ============== 192 ==============
+gfx/binary/192_F1
 {
-	sort 15.6159
+	sort 15.6153
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -12372,9 +12137,9 @@ gfx/binary/193_F1
 	}
 }
 
-gfx/binary/193_F2
+gfx/binary/192_F2
 {
-	sort 15.6160
+	sort 15.6154
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -12382,9 +12147,9 @@ gfx/binary/193_F2
 	}
 }
 
-gfx/binary/193_F3
+gfx/binary/192_F3
 {
-	sort 15.6161
+	sort 15.6155
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -12424,11 +12189,10 @@ gfx/binary/193_B3
 	}
 }
 
-// ============== 194 ==============
-
-gfx/binary/194_F1
+//   ============== 193 ==============
+gfx/binary/193_F1
 {
-	sort 15.6165
+	sort 15.6159
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -12436,9 +12200,9 @@ gfx/binary/194_F1
 	}
 }
 
-gfx/binary/194_F2
+gfx/binary/193_F2
 {
-	sort 15.6166
+	sort 15.6160
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -12446,9 +12210,9 @@ gfx/binary/194_F2
 	}
 }
 
-gfx/binary/194_F3
+gfx/binary/193_F3
 {
-	sort 15.6167
+	sort 15.6161
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -12488,11 +12252,10 @@ gfx/binary/194_B3
 	}
 }
 
-// ============== 195 ==============
-
-gfx/binary/195_F1
+//   ============== 194 ==============
+gfx/binary/194_F1
 {
-	sort 15.6171
+	sort 15.6165
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -12500,9 +12263,9 @@ gfx/binary/195_F1
 	}
 }
 
-gfx/binary/195_F2
+gfx/binary/194_F2
 {
-	sort 15.6172
+	sort 15.6166
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -12510,9 +12273,9 @@ gfx/binary/195_F2
 	}
 }
 
-gfx/binary/195_F3
+gfx/binary/194_F3
 {
-	sort 15.6173
+	sort 15.6167
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -12552,11 +12315,10 @@ gfx/binary/195_B3
 	}
 }
 
-// ============== 196 ==============
-
-gfx/binary/196_F1
+//   ============== 195 ==============
+gfx/binary/195_F1
 {
-	sort 15.6177
+	sort 15.6171
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -12564,9 +12326,9 @@ gfx/binary/196_F1
 	}
 }
 
-gfx/binary/196_F2
+gfx/binary/195_F2
 {
-	sort 15.6178
+	sort 15.6172
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -12574,9 +12336,9 @@ gfx/binary/196_F2
 	}
 }
 
-gfx/binary/196_F3
+gfx/binary/195_F3
 {
-	sort 15.6179
+	sort 15.6173
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -12616,11 +12378,10 @@ gfx/binary/196_B3
 	}
 }
 
-// ============== 197 ==============
-
-gfx/binary/197_F1
+//   ============== 196 ==============
+gfx/binary/196_F1
 {
-	sort 15.6183
+	sort 15.6177
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -12628,9 +12389,9 @@ gfx/binary/197_F1
 	}
 }
 
-gfx/binary/197_F2
+gfx/binary/196_F2
 {
-	sort 15.6184
+	sort 15.6178
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -12638,9 +12399,9 @@ gfx/binary/197_F2
 	}
 }
 
-gfx/binary/197_F3
+gfx/binary/196_F3
 {
-	sort 15.6185
+	sort 15.6179
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -12680,11 +12441,10 @@ gfx/binary/197_B3
 	}
 }
 
-// ============== 198 ==============
-
-gfx/binary/198_F1
+//   ============== 197 ==============
+gfx/binary/197_F1
 {
-	sort 15.6189
+	sort 15.6183
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -12692,9 +12452,9 @@ gfx/binary/198_F1
 	}
 }
 
-gfx/binary/198_F2
+gfx/binary/197_F2
 {
-	sort 15.6190
+	sort 15.6184
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -12702,9 +12462,9 @@ gfx/binary/198_F2
 	}
 }
 
-gfx/binary/198_F3
+gfx/binary/197_F3
 {
-	sort 15.6191
+	sort 15.6185
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -12744,11 +12504,10 @@ gfx/binary/198_B3
 	}
 }
 
-// ============== 199 ==============
-
-gfx/binary/199_F1
+//   ============== 198 ==============
+gfx/binary/198_F1
 {
-	sort 15.6195
+	sort 15.6189
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -12756,9 +12515,9 @@ gfx/binary/199_F1
 	}
 }
 
-gfx/binary/199_F2
+gfx/binary/198_F2
 {
-	sort 15.6196
+	sort 15.6190
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -12766,9 +12525,9 @@ gfx/binary/199_F2
 	}
 }
 
-gfx/binary/199_F3
+gfx/binary/198_F3
 {
-	sort 15.6197
+	sort 15.6191
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -12808,11 +12567,10 @@ gfx/binary/199_B3
 	}
 }
 
-// ============== 200 ==============
-
-gfx/binary/200_F1
+//   ============== 199 ==============
+gfx/binary/199_F1
 {
-	sort 15.6201
+	sort 15.6195
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -12820,9 +12578,9 @@ gfx/binary/200_F1
 	}
 }
 
-gfx/binary/200_F2
+gfx/binary/199_F2
 {
-	sort 15.6202
+	sort 15.6196
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -12830,9 +12588,9 @@ gfx/binary/200_F2
 	}
 }
 
-gfx/binary/200_F3
+gfx/binary/199_F3
 {
-	sort 15.6203
+	sort 15.6197
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -12872,11 +12630,10 @@ gfx/binary/200_B3
 	}
 }
 
-// ============== 201 ==============
-
-gfx/binary/201_F1
+//   ============== 200 ==============
+gfx/binary/200_F1
 {
-	sort 15.6207
+	sort 15.6201
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -12884,9 +12641,9 @@ gfx/binary/201_F1
 	}
 }
 
-gfx/binary/201_F2
+gfx/binary/200_F2
 {
-	sort 15.6208
+	sort 15.6202
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -12894,9 +12651,9 @@ gfx/binary/201_F2
 	}
 }
 
-gfx/binary/201_F3
+gfx/binary/200_F3
 {
-	sort 15.6209
+	sort 15.6203
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -12936,11 +12693,10 @@ gfx/binary/201_B3
 	}
 }
 
-// ============== 202 ==============
-
-gfx/binary/202_F1
+//   ============== 201 ==============
+gfx/binary/201_F1
 {
-	sort 15.6213
+	sort 15.6207
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -12948,9 +12704,9 @@ gfx/binary/202_F1
 	}
 }
 
-gfx/binary/202_F2
+gfx/binary/201_F2
 {
-	sort 15.6214
+	sort 15.6208
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -12958,9 +12714,9 @@ gfx/binary/202_F2
 	}
 }
 
-gfx/binary/202_F3
+gfx/binary/201_F3
 {
-	sort 15.6215
+	sort 15.6209
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -13000,11 +12756,10 @@ gfx/binary/202_B3
 	}
 }
 
-// ============== 203 ==============
-
-gfx/binary/203_F1
+//   ============== 202 ==============
+gfx/binary/202_F1
 {
-	sort 15.6219
+	sort 15.6213
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -13012,9 +12767,9 @@ gfx/binary/203_F1
 	}
 }
 
-gfx/binary/203_F2
+gfx/binary/202_F2
 {
-	sort 15.6220
+	sort 15.6214
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -13022,9 +12777,9 @@ gfx/binary/203_F2
 	}
 }
 
-gfx/binary/203_F3
+gfx/binary/202_F3
 {
-	sort 15.6221
+	sort 15.6215
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -13064,11 +12819,10 @@ gfx/binary/203_B3
 	}
 }
 
-// ============== 204 ==============
-
-gfx/binary/204_F1
+//   ============== 203 ==============
+gfx/binary/203_F1
 {
-	sort 15.6225
+	sort 15.6219
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -13076,9 +12830,9 @@ gfx/binary/204_F1
 	}
 }
 
-gfx/binary/204_F2
+gfx/binary/203_F2
 {
-	sort 15.6226
+	sort 15.6220
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -13086,9 +12840,9 @@ gfx/binary/204_F2
 	}
 }
 
-gfx/binary/204_F3
+gfx/binary/203_F3
 {
-	sort 15.6227
+	sort 15.6221
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -13128,11 +12882,10 @@ gfx/binary/204_B3
 	}
 }
 
-// ============== 205 ==============
-
-gfx/binary/205_F1
+//   ============== 204 ==============
+gfx/binary/204_F1
 {
-	sort 15.6231
+	sort 15.6225
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -13140,9 +12893,9 @@ gfx/binary/205_F1
 	}
 }
 
-gfx/binary/205_F2
+gfx/binary/204_F2
 {
-	sort 15.6232
+	sort 15.6226
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -13150,9 +12903,9 @@ gfx/binary/205_F2
 	}
 }
 
-gfx/binary/205_F3
+gfx/binary/204_F3
 {
-	sort 15.6233
+	sort 15.6227
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -13192,11 +12945,10 @@ gfx/binary/205_B3
 	}
 }
 
-// ============== 206 ==============
-
-gfx/binary/206_F1
+//   ============== 205 ==============
+gfx/binary/205_F1
 {
-	sort 15.6237
+	sort 15.6231
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -13204,9 +12956,9 @@ gfx/binary/206_F1
 	}
 }
 
-gfx/binary/206_F2
+gfx/binary/205_F2
 {
-	sort 15.6238
+	sort 15.6232
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -13214,9 +12966,9 @@ gfx/binary/206_F2
 	}
 }
 
-gfx/binary/206_F3
+gfx/binary/205_F3
 {
-	sort 15.6239
+	sort 15.6233
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -13256,11 +13008,10 @@ gfx/binary/206_B3
 	}
 }
 
-// ============== 207 ==============
-
-gfx/binary/207_F1
+//   ============== 206 ==============
+gfx/binary/206_F1
 {
-	sort 15.6243
+	sort 15.6237
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -13268,9 +13019,9 @@ gfx/binary/207_F1
 	}
 }
 
-gfx/binary/207_F2
+gfx/binary/206_F2
 {
-	sort 15.6244
+	sort 15.6238
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -13278,9 +13029,9 @@ gfx/binary/207_F2
 	}
 }
 
-gfx/binary/207_F3
+gfx/binary/206_F3
 {
-	sort 15.6245
+	sort 15.6239
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -13320,11 +13071,10 @@ gfx/binary/207_B3
 	}
 }
 
-// ============== 208 ==============
-
-gfx/binary/208_F1
+//   ============== 207 ==============
+gfx/binary/207_F1
 {
-	sort 15.6249
+	sort 15.6243
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -13332,9 +13082,9 @@ gfx/binary/208_F1
 	}
 }
 
-gfx/binary/208_F2
+gfx/binary/207_F2
 {
-	sort 15.6250
+	sort 15.6244
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -13342,9 +13092,9 @@ gfx/binary/208_F2
 	}
 }
 
-gfx/binary/208_F3
+gfx/binary/207_F3
 {
-	sort 15.6251
+	sort 15.6245
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -13384,11 +13134,10 @@ gfx/binary/208_B3
 	}
 }
 
-// ============== 209 ==============
-
-gfx/binary/209_F1
+//   ============== 208 ==============
+gfx/binary/208_F1
 {
-	sort 15.6255
+	sort 15.6249
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -13396,9 +13145,9 @@ gfx/binary/209_F1
 	}
 }
 
-gfx/binary/209_F2
+gfx/binary/208_F2
 {
-	sort 15.6256
+	sort 15.6250
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -13406,9 +13155,9 @@ gfx/binary/209_F2
 	}
 }
 
-gfx/binary/209_F3
+gfx/binary/208_F3
 {
-	sort 15.6257
+	sort 15.6251
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -13448,11 +13197,10 @@ gfx/binary/209_B3
 	}
 }
 
-// ============== 210 ==============
-
-gfx/binary/210_F1
+//   ============== 209 ==============
+gfx/binary/209_F1
 {
-	sort 15.6261
+	sort 15.6255
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -13460,9 +13208,9 @@ gfx/binary/210_F1
 	}
 }
 
-gfx/binary/210_F2
+gfx/binary/209_F2
 {
-	sort 15.6262
+	sort 15.6256
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -13470,9 +13218,9 @@ gfx/binary/210_F2
 	}
 }
 
-gfx/binary/210_F3
+gfx/binary/209_F3
 {
-	sort 15.6263
+	sort 15.6257
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -13512,11 +13260,10 @@ gfx/binary/210_B3
 	}
 }
 
-// ============== 211 ==============
-
-gfx/binary/211_F1
+//   ============== 210 ==============
+gfx/binary/210_F1
 {
-	sort 15.6267
+	sort 15.6261
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -13524,9 +13271,9 @@ gfx/binary/211_F1
 	}
 }
 
-gfx/binary/211_F2
+gfx/binary/210_F2
 {
-	sort 15.6268
+	sort 15.6262
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -13534,9 +13281,9 @@ gfx/binary/211_F2
 	}
 }
 
-gfx/binary/211_F3
+gfx/binary/210_F3
 {
-	sort 15.6269
+	sort 15.6263
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -13576,11 +13323,10 @@ gfx/binary/211_B3
 	}
 }
 
-// ============== 212 ==============
-
-gfx/binary/212_F1
+//   ============== 211 ==============
+gfx/binary/211_F1
 {
-	sort 15.6273
+	sort 15.6267
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -13588,9 +13334,9 @@ gfx/binary/212_F1
 	}
 }
 
-gfx/binary/212_F2
+gfx/binary/211_F2
 {
-	sort 15.6274
+	sort 15.6268
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -13598,9 +13344,9 @@ gfx/binary/212_F2
 	}
 }
 
-gfx/binary/212_F3
+gfx/binary/211_F3
 {
-	sort 15.6275
+	sort 15.6269
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -13640,11 +13386,10 @@ gfx/binary/212_B3
 	}
 }
 
-// ============== 213 ==============
-
-gfx/binary/213_F1
+//   ============== 212 ==============
+gfx/binary/212_F1
 {
-	sort 15.6279
+	sort 15.6273
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -13652,9 +13397,9 @@ gfx/binary/213_F1
 	}
 }
 
-gfx/binary/213_F2
+gfx/binary/212_F2
 {
-	sort 15.6280
+	sort 15.6274
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -13662,9 +13407,9 @@ gfx/binary/213_F2
 	}
 }
 
-gfx/binary/213_F3
+gfx/binary/212_F3
 {
-	sort 15.6281
+	sort 15.6275
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -13704,11 +13449,10 @@ gfx/binary/213_B3
 	}
 }
 
-// ============== 214 ==============
-
-gfx/binary/214_F1
+//   ============== 213 ==============
+gfx/binary/213_F1
 {
-	sort 15.6285
+	sort 15.6279
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -13716,9 +13460,9 @@ gfx/binary/214_F1
 	}
 }
 
-gfx/binary/214_F2
+gfx/binary/213_F2
 {
-	sort 15.6286
+	sort 15.6280
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -13726,9 +13470,9 @@ gfx/binary/214_F2
 	}
 }
 
-gfx/binary/214_F3
+gfx/binary/213_F3
 {
-	sort 15.6287
+	sort 15.6281
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -13768,11 +13512,10 @@ gfx/binary/214_B3
 	}
 }
 
-// ============== 215 ==============
-
-gfx/binary/215_F1
+//   ============== 214 ==============
+gfx/binary/214_F1
 {
-	sort 15.6291
+	sort 15.6285
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -13780,9 +13523,9 @@ gfx/binary/215_F1
 	}
 }
 
-gfx/binary/215_F2
+gfx/binary/214_F2
 {
-	sort 15.6292
+	sort 15.6286
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -13790,9 +13533,9 @@ gfx/binary/215_F2
 	}
 }
 
-gfx/binary/215_F3
+gfx/binary/214_F3
 {
-	sort 15.6293
+	sort 15.6287
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -13832,11 +13575,10 @@ gfx/binary/215_B3
 	}
 }
 
-// ============== 216 ==============
-
-gfx/binary/216_F1
+//   ============== 215 ==============
+gfx/binary/215_F1
 {
-	sort 15.6297
+	sort 15.6291
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -13844,9 +13586,9 @@ gfx/binary/216_F1
 	}
 }
 
-gfx/binary/216_F2
+gfx/binary/215_F2
 {
-	sort 15.6298
+	sort 15.6292
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -13854,9 +13596,9 @@ gfx/binary/216_F2
 	}
 }
 
-gfx/binary/216_F3
+gfx/binary/215_F3
 {
-	sort 15.6299
+	sort 15.6293
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -13896,11 +13638,10 @@ gfx/binary/216_B3
 	}
 }
 
-// ============== 217 ==============
-
-gfx/binary/217_F1
+//   ============== 216 ==============
+gfx/binary/216_F1
 {
-	sort 15.6303
+	sort 15.6297
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -13908,9 +13649,9 @@ gfx/binary/217_F1
 	}
 }
 
-gfx/binary/217_F2
+gfx/binary/216_F2
 {
-	sort 15.6304
+	sort 15.6298
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -13918,9 +13659,9 @@ gfx/binary/217_F2
 	}
 }
 
-gfx/binary/217_F3
+gfx/binary/216_F3
 {
-	sort 15.6305
+	sort 15.6299
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -13960,11 +13701,10 @@ gfx/binary/217_B3
 	}
 }
 
-// ============== 218 ==============
-
-gfx/binary/218_F1
+//   ============== 217 ==============
+gfx/binary/217_F1
 {
-	sort 15.6309
+	sort 15.6303
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -13972,9 +13712,9 @@ gfx/binary/218_F1
 	}
 }
 
-gfx/binary/218_F2
+gfx/binary/217_F2
 {
-	sort 15.6310
+	sort 15.6304
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -13982,9 +13722,9 @@ gfx/binary/218_F2
 	}
 }
 
-gfx/binary/218_F3
+gfx/binary/217_F3
 {
-	sort 15.6311
+	sort 15.6305
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -14024,11 +13764,10 @@ gfx/binary/218_B3
 	}
 }
 
-// ============== 219 ==============
-
-gfx/binary/219_F1
+//   ============== 218 ==============
+gfx/binary/218_F1
 {
-	sort 15.6315
+	sort 15.6309
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -14036,9 +13775,9 @@ gfx/binary/219_F1
 	}
 }
 
-gfx/binary/219_F2
+gfx/binary/218_F2
 {
-	sort 15.6316
+	sort 15.6310
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -14046,9 +13785,9 @@ gfx/binary/219_F2
 	}
 }
 
-gfx/binary/219_F3
+gfx/binary/218_F3
 {
-	sort 15.6317
+	sort 15.6311
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -14088,11 +13827,10 @@ gfx/binary/219_B3
 	}
 }
 
-// ============== 220 ==============
-
-gfx/binary/220_F1
+//   ============== 219 ==============
+gfx/binary/219_F1
 {
-	sort 15.6321
+	sort 15.6315
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -14100,9 +13838,9 @@ gfx/binary/220_F1
 	}
 }
 
-gfx/binary/220_F2
+gfx/binary/219_F2
 {
-	sort 15.6322
+	sort 15.6316
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -14110,9 +13848,9 @@ gfx/binary/220_F2
 	}
 }
 
-gfx/binary/220_F3
+gfx/binary/219_F3
 {
-	sort 15.6323
+	sort 15.6317
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -14152,11 +13890,10 @@ gfx/binary/220_B3
 	}
 }
 
-// ============== 221 ==============
-
-gfx/binary/221_F1
+//   ============== 220 ==============
+gfx/binary/220_F1
 {
-	sort 15.6327
+	sort 15.6321
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -14164,9 +13901,9 @@ gfx/binary/221_F1
 	}
 }
 
-gfx/binary/221_F2
+gfx/binary/220_F2
 {
-	sort 15.6328
+	sort 15.6322
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -14174,9 +13911,9 @@ gfx/binary/221_F2
 	}
 }
 
-gfx/binary/221_F3
+gfx/binary/220_F3
 {
-	sort 15.6329
+	sort 15.6323
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -14216,11 +13953,10 @@ gfx/binary/221_B3
 	}
 }
 
-// ============== 222 ==============
-
-gfx/binary/222_F1
+//   ============== 221 ==============
+gfx/binary/221_F1
 {
-	sort 15.6333
+	sort 15.6327
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -14228,9 +13964,9 @@ gfx/binary/222_F1
 	}
 }
 
-gfx/binary/222_F2
+gfx/binary/221_F2
 {
-	sort 15.6334
+	sort 15.6328
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -14238,9 +13974,9 @@ gfx/binary/222_F2
 	}
 }
 
-gfx/binary/222_F3
+gfx/binary/221_F3
 {
-	sort 15.6335
+	sort 15.6329
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -14280,11 +14016,10 @@ gfx/binary/222_B3
 	}
 }
 
-// ============== 223 ==============
-
-gfx/binary/223_F1
+//   ============== 222 ==============
+gfx/binary/222_F1
 {
-	sort 15.6339
+	sort 15.6333
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -14292,9 +14027,9 @@ gfx/binary/223_F1
 	}
 }
 
-gfx/binary/223_F2
+gfx/binary/222_F2
 {
-	sort 15.6340
+	sort 15.6334
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -14302,9 +14037,9 @@ gfx/binary/223_F2
 	}
 }
 
-gfx/binary/223_F3
+gfx/binary/222_F3
 {
-	sort 15.6341
+	sort 15.6335
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -14344,11 +14079,10 @@ gfx/binary/223_B3
 	}
 }
 
-// ============== 224 ==============
-
-gfx/binary/224_F1
+//   ============== 223 ==============
+gfx/binary/223_F1
 {
-	sort 15.6345
+	sort 15.6339
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -14356,9 +14090,9 @@ gfx/binary/224_F1
 	}
 }
 
-gfx/binary/224_F2
+gfx/binary/223_F2
 {
-	sort 15.6346
+	sort 15.6340
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -14366,9 +14100,9 @@ gfx/binary/224_F2
 	}
 }
 
-gfx/binary/224_F3
+gfx/binary/223_F3
 {
-	sort 15.6347
+	sort 15.6341
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -14408,11 +14142,10 @@ gfx/binary/224_B3
 	}
 }
 
-// ============== 225 ==============
-
-gfx/binary/225_F1
+//   ============== 224 ==============
+gfx/binary/224_F1
 {
-	sort 15.6351
+	sort 15.6345
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -14420,9 +14153,9 @@ gfx/binary/225_F1
 	}
 }
 
-gfx/binary/225_F2
+gfx/binary/224_F2
 {
-	sort 15.6352
+	sort 15.6346
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -14430,9 +14163,9 @@ gfx/binary/225_F2
 	}
 }
 
-gfx/binary/225_F3
+gfx/binary/224_F3
 {
-	sort 15.6353
+	sort 15.6347
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -14472,11 +14205,10 @@ gfx/binary/225_B3
 	}
 }
 
-// ============== 226 ==============
-
-gfx/binary/226_F1
+//   ============== 225 ==============
+gfx/binary/225_F1
 {
-	sort 15.6357
+	sort 15.6351
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -14484,9 +14216,9 @@ gfx/binary/226_F1
 	}
 }
 
-gfx/binary/226_F2
+gfx/binary/225_F2
 {
-	sort 15.6358
+	sort 15.6352
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -14494,9 +14226,9 @@ gfx/binary/226_F2
 	}
 }
 
-gfx/binary/226_F3
+gfx/binary/225_F3
 {
-	sort 15.6359
+	sort 15.6353
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -14536,11 +14268,10 @@ gfx/binary/226_B3
 	}
 }
 
-// ============== 227 ==============
-
-gfx/binary/227_F1
+//   ============== 226 ==============
+gfx/binary/226_F1
 {
-	sort 15.6363
+	sort 15.6357
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -14548,9 +14279,9 @@ gfx/binary/227_F1
 	}
 }
 
-gfx/binary/227_F2
+gfx/binary/226_F2
 {
-	sort 15.6364
+	sort 15.6358
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -14558,9 +14289,9 @@ gfx/binary/227_F2
 	}
 }
 
-gfx/binary/227_F3
+gfx/binary/226_F3
 {
-	sort 15.6365
+	sort 15.6359
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -14600,11 +14331,10 @@ gfx/binary/227_B3
 	}
 }
 
-// ============== 228 ==============
-
-gfx/binary/228_F1
+//   ============== 227 ==============
+gfx/binary/227_F1
 {
-	sort 15.6369
+	sort 15.6363
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -14612,9 +14342,9 @@ gfx/binary/228_F1
 	}
 }
 
-gfx/binary/228_F2
+gfx/binary/227_F2
 {
-	sort 15.6370
+	sort 15.6364
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -14622,9 +14352,9 @@ gfx/binary/228_F2
 	}
 }
 
-gfx/binary/228_F3
+gfx/binary/227_F3
 {
-	sort 15.6371
+	sort 15.6365
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -14664,11 +14394,10 @@ gfx/binary/228_B3
 	}
 }
 
-// ============== 229 ==============
-
-gfx/binary/229_F1
+//   ============== 228 ==============
+gfx/binary/228_F1
 {
-	sort 15.6375
+	sort 15.6369
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -14676,9 +14405,9 @@ gfx/binary/229_F1
 	}
 }
 
-gfx/binary/229_F2
+gfx/binary/228_F2
 {
-	sort 15.6376
+	sort 15.6370
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -14686,9 +14415,9 @@ gfx/binary/229_F2
 	}
 }
 
-gfx/binary/229_F3
+gfx/binary/228_F3
 {
-	sort 15.6377
+	sort 15.6371
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -14728,11 +14457,10 @@ gfx/binary/229_B3
 	}
 }
 
-// ============== 230 ==============
-
-gfx/binary/230_F1
+//   ============== 229 ==============
+gfx/binary/229_F1
 {
-	sort 15.6381
+	sort 15.6375
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -14740,9 +14468,9 @@ gfx/binary/230_F1
 	}
 }
 
-gfx/binary/230_F2
+gfx/binary/229_F2
 {
-	sort 15.6382
+	sort 15.6376
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -14750,9 +14478,9 @@ gfx/binary/230_F2
 	}
 }
 
-gfx/binary/230_F3
+gfx/binary/229_F3
 {
-	sort 15.6383
+	sort 15.6377
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -14792,11 +14520,10 @@ gfx/binary/230_B3
 	}
 }
 
-// ============== 231 ==============
-
-gfx/binary/231_F1
+//   ============== 230 ==============
+gfx/binary/230_F1
 {
-	sort 15.6387
+	sort 15.6381
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -14804,9 +14531,9 @@ gfx/binary/231_F1
 	}
 }
 
-gfx/binary/231_F2
+gfx/binary/230_F2
 {
-	sort 15.6388
+	sort 15.6382
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -14814,9 +14541,9 @@ gfx/binary/231_F2
 	}
 }
 
-gfx/binary/231_F3
+gfx/binary/230_F3
 {
-	sort 15.6389
+	sort 15.6383
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -14856,11 +14583,10 @@ gfx/binary/231_B3
 	}
 }
 
-// ============== 232 ==============
-
-gfx/binary/232_F1
+//   ============== 231 ==============
+gfx/binary/231_F1
 {
-	sort 15.6393
+	sort 15.6387
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -14868,9 +14594,9 @@ gfx/binary/232_F1
 	}
 }
 
-gfx/binary/232_F2
+gfx/binary/231_F2
 {
-	sort 15.6394
+	sort 15.6388
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -14878,9 +14604,9 @@ gfx/binary/232_F2
 	}
 }
 
-gfx/binary/232_F3
+gfx/binary/231_F3
 {
-	sort 15.6395
+	sort 15.6389
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -14920,11 +14646,10 @@ gfx/binary/232_B3
 	}
 }
 
-// ============== 233 ==============
-
-gfx/binary/233_F1
+//   ============== 232 ==============
+gfx/binary/232_F1
 {
-	sort 15.6399
+	sort 15.6393
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -14932,9 +14657,9 @@ gfx/binary/233_F1
 	}
 }
 
-gfx/binary/233_F2
+gfx/binary/232_F2
 {
-	sort 15.6400
+	sort 15.6394
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -14942,9 +14667,9 @@ gfx/binary/233_F2
 	}
 }
 
-gfx/binary/233_F3
+gfx/binary/232_F3
 {
-	sort 15.6401
+	sort 15.6395
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -14984,11 +14709,10 @@ gfx/binary/233_B3
 	}
 }
 
-// ============== 234 ==============
-
-gfx/binary/234_F1
+//   ============== 233 ==============
+gfx/binary/233_F1
 {
-	sort 15.6405
+	sort 15.6399
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -14996,9 +14720,9 @@ gfx/binary/234_F1
 	}
 }
 
-gfx/binary/234_F2
+gfx/binary/233_F2
 {
-	sort 15.6406
+	sort 15.6400
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -15006,9 +14730,9 @@ gfx/binary/234_F2
 	}
 }
 
-gfx/binary/234_F3
+gfx/binary/233_F3
 {
-	sort 15.6407
+	sort 15.6401
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -15048,11 +14772,10 @@ gfx/binary/234_B3
 	}
 }
 
-// ============== 235 ==============
-
-gfx/binary/235_F1
+//   ============== 234 ==============
+gfx/binary/234_F1
 {
-	sort 15.6411
+	sort 15.6405
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -15060,9 +14783,9 @@ gfx/binary/235_F1
 	}
 }
 
-gfx/binary/235_F2
+gfx/binary/234_F2
 {
-	sort 15.6412
+	sort 15.6406
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -15070,9 +14793,9 @@ gfx/binary/235_F2
 	}
 }
 
-gfx/binary/235_F3
+gfx/binary/234_F3
 {
-	sort 15.6413
+	sort 15.6407
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -15112,11 +14835,10 @@ gfx/binary/235_B3
 	}
 }
 
-// ============== 236 ==============
-
-gfx/binary/236_F1
+//   ============== 235 ==============
+gfx/binary/235_F1
 {
-	sort 15.6417
+	sort 15.6411
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -15124,9 +14846,9 @@ gfx/binary/236_F1
 	}
 }
 
-gfx/binary/236_F2
+gfx/binary/235_F2
 {
-	sort 15.6418
+	sort 15.6412
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -15134,9 +14856,9 @@ gfx/binary/236_F2
 	}
 }
 
-gfx/binary/236_F3
+gfx/binary/235_F3
 {
-	sort 15.6419
+	sort 15.6413
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -15176,11 +14898,10 @@ gfx/binary/236_B3
 	}
 }
 
-// ============== 237 ==============
-
-gfx/binary/237_F1
+//   ============== 236 ==============
+gfx/binary/236_F1
 {
-	sort 15.6423
+	sort 15.6417
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -15188,9 +14909,9 @@ gfx/binary/237_F1
 	}
 }
 
-gfx/binary/237_F2
+gfx/binary/236_F2
 {
-	sort 15.6424
+	sort 15.6418
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -15198,9 +14919,9 @@ gfx/binary/237_F2
 	}
 }
 
-gfx/binary/237_F3
+gfx/binary/236_F3
 {
-	sort 15.6425
+	sort 15.6419
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -15240,11 +14961,10 @@ gfx/binary/237_B3
 	}
 }
 
-// ============== 238 ==============
-
-gfx/binary/238_F1
+//   ============== 237 ==============
+gfx/binary/237_F1
 {
-	sort 15.6429
+	sort 15.6423
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -15252,9 +14972,9 @@ gfx/binary/238_F1
 	}
 }
 
-gfx/binary/238_F2
+gfx/binary/237_F2
 {
-	sort 15.6430
+	sort 15.6424
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -15262,9 +14982,9 @@ gfx/binary/238_F2
 	}
 }
 
-gfx/binary/238_F3
+gfx/binary/237_F3
 {
-	sort 15.6431
+	sort 15.6425
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -15304,11 +15024,10 @@ gfx/binary/238_B3
 	}
 }
 
-// ============== 239 ==============
-
-gfx/binary/239_F1
+//   ============== 238 ==============
+gfx/binary/238_F1
 {
-	sort 15.6435
+	sort 15.6429
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -15316,9 +15035,9 @@ gfx/binary/239_F1
 	}
 }
 
-gfx/binary/239_F2
+gfx/binary/238_F2
 {
-	sort 15.6436
+	sort 15.6430
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -15326,9 +15045,9 @@ gfx/binary/239_F2
 	}
 }
 
-gfx/binary/239_F3
+gfx/binary/238_F3
 {
-	sort 15.6437
+	sort 15.6431
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -15368,11 +15087,10 @@ gfx/binary/239_B3
 	}
 }
 
-// ============== 240 ==============
-
-gfx/binary/240_F1
+//   ============== 239 ==============
+gfx/binary/239_F1
 {
-	sort 15.6441
+	sort 15.6435
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -15380,9 +15098,9 @@ gfx/binary/240_F1
 	}
 }
 
-gfx/binary/240_F2
+gfx/binary/239_F2
 {
-	sort 15.6442
+	sort 15.6436
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -15390,9 +15108,9 @@ gfx/binary/240_F2
 	}
 }
 
-gfx/binary/240_F3
+gfx/binary/239_F3
 {
-	sort 15.6443
+	sort 15.6437
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -15432,11 +15150,10 @@ gfx/binary/240_B3
 	}
 }
 
-// ============== 241 ==============
-
-gfx/binary/241_F1
+//   ============== 240 ==============
+gfx/binary/240_F1
 {
-	sort 15.6447
+	sort 15.6441
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -15444,9 +15161,9 @@ gfx/binary/241_F1
 	}
 }
 
-gfx/binary/241_F2
+gfx/binary/240_F2
 {
-	sort 15.6448
+	sort 15.6442
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -15454,9 +15171,9 @@ gfx/binary/241_F2
 	}
 }
 
-gfx/binary/241_F3
+gfx/binary/240_F3
 {
-	sort 15.6449
+	sort 15.6443
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -15496,11 +15213,10 @@ gfx/binary/241_B3
 	}
 }
 
-// ============== 242 ==============
-
-gfx/binary/242_F1
+//   ============== 241 ==============
+gfx/binary/241_F1
 {
-	sort 15.6453
+	sort 15.6447
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -15508,9 +15224,9 @@ gfx/binary/242_F1
 	}
 }
 
-gfx/binary/242_F2
+gfx/binary/241_F2
 {
-	sort 15.6454
+	sort 15.6448
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -15518,9 +15234,9 @@ gfx/binary/242_F2
 	}
 }
 
-gfx/binary/242_F3
+gfx/binary/241_F3
 {
-	sort 15.6455
+	sort 15.6449
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -15560,11 +15276,10 @@ gfx/binary/242_B3
 	}
 }
 
-// ============== 243 ==============
-
-gfx/binary/243_F1
+//   ============== 242 ==============
+gfx/binary/242_F1
 {
-	sort 15.6459
+	sort 15.6453
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -15572,9 +15287,9 @@ gfx/binary/243_F1
 	}
 }
 
-gfx/binary/243_F2
+gfx/binary/242_F2
 {
-	sort 15.6460
+	sort 15.6454
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -15582,9 +15297,9 @@ gfx/binary/243_F2
 	}
 }
 
-gfx/binary/243_F3
+gfx/binary/242_F3
 {
-	sort 15.6461
+	sort 15.6455
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -15624,11 +15339,10 @@ gfx/binary/243_B3
 	}
 }
 
-// ============== 244 ==============
-
-gfx/binary/244_F1
+//   ============== 243 ==============
+gfx/binary/243_F1
 {
-	sort 15.6465
+	sort 15.6459
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -15636,9 +15350,9 @@ gfx/binary/244_F1
 	}
 }
 
-gfx/binary/244_F2
+gfx/binary/243_F2
 {
-	sort 15.6466
+	sort 15.6460
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -15646,9 +15360,9 @@ gfx/binary/244_F2
 	}
 }
 
-gfx/binary/244_F3
+gfx/binary/243_F3
 {
-	sort 15.6467
+	sort 15.6461
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -15688,11 +15402,10 @@ gfx/binary/244_B3
 	}
 }
 
-// ============== 245 ==============
-
-gfx/binary/245_F1
+//   ============== 244 ==============
+gfx/binary/244_F1
 {
-	sort 15.6471
+	sort 15.6465
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -15700,9 +15413,9 @@ gfx/binary/245_F1
 	}
 }
 
-gfx/binary/245_F2
+gfx/binary/244_F2
 {
-	sort 15.6472
+	sort 15.6466
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -15710,9 +15423,9 @@ gfx/binary/245_F2
 	}
 }
 
-gfx/binary/245_F3
+gfx/binary/244_F3
 {
-	sort 15.6473
+	sort 15.6467
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -15752,11 +15465,10 @@ gfx/binary/245_B3
 	}
 }
 
-// ============== 246 ==============
-
-gfx/binary/246_F1
+//   ============== 245 ==============
+gfx/binary/245_F1
 {
-	sort 15.6477
+	sort 15.6471
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -15764,9 +15476,9 @@ gfx/binary/246_F1
 	}
 }
 
-gfx/binary/246_F2
+gfx/binary/245_F2
 {
-	sort 15.6478
+	sort 15.6472
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -15774,9 +15486,9 @@ gfx/binary/246_F2
 	}
 }
 
-gfx/binary/246_F3
+gfx/binary/245_F3
 {
-	sort 15.6479
+	sort 15.6473
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -15816,11 +15528,10 @@ gfx/binary/246_B3
 	}
 }
 
-// ============== 247 ==============
-
-gfx/binary/247_F1
+//   ============== 246 ==============
+gfx/binary/246_F1
 {
-	sort 15.6483
+	sort 15.6477
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -15828,9 +15539,9 @@ gfx/binary/247_F1
 	}
 }
 
-gfx/binary/247_F2
+gfx/binary/246_F2
 {
-	sort 15.6484
+	sort 15.6478
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -15838,9 +15549,9 @@ gfx/binary/247_F2
 	}
 }
 
-gfx/binary/247_F3
+gfx/binary/246_F3
 {
-	sort 15.6485
+	sort 15.6479
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -15880,11 +15591,10 @@ gfx/binary/247_B3
 	}
 }
 
-// ============== 248 ==============
-
-gfx/binary/248_F1
+//   ============== 247 ==============
+gfx/binary/247_F1
 {
-	sort 15.6489
+	sort 15.6483
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -15892,9 +15602,9 @@ gfx/binary/248_F1
 	}
 }
 
-gfx/binary/248_F2
+gfx/binary/247_F2
 {
-	sort 15.6490
+	sort 15.6484
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -15902,9 +15612,9 @@ gfx/binary/248_F2
 	}
 }
 
-gfx/binary/248_F3
+gfx/binary/247_F3
 {
-	sort 15.6491
+	sort 15.6485
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -15944,11 +15654,10 @@ gfx/binary/248_B3
 	}
 }
 
-// ============== 249 ==============
-
-gfx/binary/249_F1
+//   ============== 248 ==============
+gfx/binary/248_F1
 {
-	sort 15.6495
+	sort 15.6489
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -15956,9 +15665,9 @@ gfx/binary/249_F1
 	}
 }
 
-gfx/binary/249_F2
+gfx/binary/248_F2
 {
-	sort 15.6496
+	sort 15.6490
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -15966,9 +15675,9 @@ gfx/binary/249_F2
 	}
 }
 
-gfx/binary/249_F3
+gfx/binary/248_F3
 {
-	sort 15.6497
+	sort 15.6491
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -16008,11 +15717,10 @@ gfx/binary/249_B3
 	}
 }
 
-// ============== 250 ==============
-
-gfx/binary/250_F1
+//   ============== 249 ==============
+gfx/binary/249_F1
 {
-	sort 15.6501
+	sort 15.6495
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -16020,9 +15728,9 @@ gfx/binary/250_F1
 	}
 }
 
-gfx/binary/250_F2
+gfx/binary/249_F2
 {
-	sort 15.6502
+	sort 15.6496
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -16030,9 +15738,9 @@ gfx/binary/250_F2
 	}
 }
 
-gfx/binary/250_F3
+gfx/binary/249_F3
 {
-	sort 15.6503
+	sort 15.6497
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -16072,11 +15780,10 @@ gfx/binary/250_B3
 	}
 }
 
-// ============== 251 ==============
-
-gfx/binary/251_F1
+//   ============== 250 ==============
+gfx/binary/250_F1
 {
-	sort 15.6507
+	sort 15.6501
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -16084,9 +15791,9 @@ gfx/binary/251_F1
 	}
 }
 
-gfx/binary/251_F2
+gfx/binary/250_F2
 {
-	sort 15.6508
+	sort 15.6502
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -16094,9 +15801,9 @@ gfx/binary/251_F2
 	}
 }
 
-gfx/binary/251_F3
+gfx/binary/250_F3
 {
-	sort 15.6509
+	sort 15.6503
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -16136,11 +15843,10 @@ gfx/binary/251_B3
 	}
 }
 
-// ============== 252 ==============
-
-gfx/binary/252_F1
+//   ============== 251 ==============
+gfx/binary/251_F1
 {
-	sort 15.6513
+	sort 15.6507
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -16148,9 +15854,9 @@ gfx/binary/252_F1
 	}
 }
 
-gfx/binary/252_F2
+gfx/binary/251_F2
 {
-	sort 15.6514
+	sort 15.6508
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -16158,9 +15864,9 @@ gfx/binary/252_F2
 	}
 }
 
-gfx/binary/252_F3
+gfx/binary/251_F3
 {
-	sort 15.6515
+	sort 15.6509
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -16200,11 +15906,10 @@ gfx/binary/252_B3
 	}
 }
 
-// ============== 253 ==============
-
-gfx/binary/253_F1
+//   ============== 252 ==============
+gfx/binary/252_F1
 {
-	sort 15.6519
+	sort 15.6513
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -16212,9 +15917,9 @@ gfx/binary/253_F1
 	}
 }
 
-gfx/binary/253_F2
+gfx/binary/252_F2
 {
-	sort 15.6520
+	sort 15.6514
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -16222,9 +15927,9 @@ gfx/binary/253_F2
 	}
 }
 
-gfx/binary/253_F3
+gfx/binary/252_F3
 {
-	sort 15.6521
+	sort 15.6515
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -16264,11 +15969,10 @@ gfx/binary/253_B3
 	}
 }
 
-// ============== 254 ==============
-
-gfx/binary/254_F1
+//   ============== 253 ==============
+gfx/binary/253_F1
 {
-	sort 15.6525
+	sort 15.6519
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -16276,9 +15980,9 @@ gfx/binary/254_F1
 	}
 }
 
-gfx/binary/254_F2
+gfx/binary/253_F2
 {
-	sort 15.6526
+	sort 15.6520
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -16286,9 +15990,9 @@ gfx/binary/254_F2
 	}
 }
 
-gfx/binary/254_F3
+gfx/binary/253_F3
 {
-	sort 15.6527
+	sort 15.6521
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -16328,11 +16032,10 @@ gfx/binary/254_B3
 	}
 }
 
-// ============== 255 ==============
-
-gfx/binary/255_F1
+//   ============== 254 ==============
+gfx/binary/254_F1
 {
-	sort 15.6531
+	sort 15.6525
 	{
 		map $whiteimage
 		alphaGen const 0.0
@@ -16340,9 +16043,9 @@ gfx/binary/255_F1
 	}
 }
 
-gfx/binary/255_F2
+gfx/binary/254_F2
 {
-	sort 15.6532
+	sort 15.6526
 	{
 		map $whiteimage
 		rgbGen const ( 0.0 0.0 0.0 )
@@ -16350,9 +16053,9 @@ gfx/binary/255_F2
 	}
 }
 
-gfx/binary/255_F3
+gfx/binary/254_F3
 {
-	sort 15.6533
+	sort 15.6527
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -16389,6 +16092,47 @@ gfx/binary/255_B3
 		map $whiteimage
 		rgbGen exactVertex
 		blendFunc GL_ONE_MINUS_DST_ALPHA GL_ONE
+	}
+}
+
+//   ============== 255 ==============
+gfx/binary/255_F1
+{
+	sort 15.6531
+	{
+		map $whiteimage
+		alphaGen const 0.0
+		blendFunc GL_DST_COLOR GL_ZERO
+	}
+}
+
+gfx/binary/255_F2
+{
+	sort 15.6532
+	{
+		map $whiteimage
+		rgbGen const ( 0.0 0.0 0.0 )
+		blendFunc GL_ONE GL_ONE
+	}
+}
+
+gfx/binary/255_F3
+{
+	sort 15.6533
+	{
+		map $whiteimage
+		rgbGen exactVertex
+		blendFunc GL_ONE_MINUS_DST_ALPHA GL_ONE
+	}
+}
+
+gfx/binary/alpha1
+{
+	sort 15.5
+	{
+		map $whiteimage
+		rgbGen const ( 0.0 0.0 0.0 )
+		blendFunc GL_ONE GL_ONE
 	}
 }
 

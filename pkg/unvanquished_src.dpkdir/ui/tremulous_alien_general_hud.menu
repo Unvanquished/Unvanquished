@@ -23,7 +23,7 @@
       aspectBias ALIGN_CENTER
       visible MENU_TRUE
       forecolor 1.0 0.0 0.0 0.5
-      background "ui/assets/alien/tremublob.tga"
+      background "ui/assets/alien/tremublob"
       ownerdraw CG_PLAYER_POISON_BARBS
     }
   }
