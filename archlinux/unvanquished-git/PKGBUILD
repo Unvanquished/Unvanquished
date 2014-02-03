@@ -9,7 +9,7 @@ _type='branch'
 _checkout='master'
 
 pkgname=unvanquished-git
-pkgver=v0.24.0-4-g3787623
+pkgver=v0.24.0.4.g3787623
 pkgrel=1
 pkgdesc='A team-based, fast-paced, fps/rts hybrid game which pits aliens against humans. Bleeding edge version.'
 arch=('x86_64' 'i686')
@@ -83,5 +83,5 @@ package() {
 }
 
 md5sums=('SKIP'
-         'e8cb879471b24c3b815b5196e542f35e'
+         '28cbf1c598e891aaa0544c55883ada28'
          '9ce3867ed35be48ffcafb8a713172385')
