@@ -199,7 +199,7 @@ else()
   # Extra debug flags
   set_c_cxx_flag( "-g3" DEBUG )
   set_c_cxx_flag( "-g3" RELWITHDEBINFO )
-  if( OPTIMIZE_DEBUG )
+  if( USE_DEBUG_OPTIMIZE )
     try_c_cxx_flag( OPTIMIZE_DEBUG "-Og" DEBUG )
   endif()
 

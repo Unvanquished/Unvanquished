@@ -1,54 +1,49 @@
-models/buildables/telenode/energy
+models/buildables/telenode/telenode_dead
 {
+	diffuseMap	models/buildables/telenode/telenode_diff
+	normalMap	models/buildables/telenode/telenode_normal
+	specularMap	models/buildables/telenode/telenode_spec
+}
+
+models/buildables/telenode/telenode_full
+{
+	qer_editorimage models/buildables/telenode/telenode_diff
+
+	diffuseMap	models/buildables/telenode/telenode_diff
+	normalMap	models/buildables/telenode/telenode_normal
 	{
-		map models/buildables/telenode/energy
-		rgbGen wave inversesawtooth 0.2 0.4 0 1
-		tcMod rotate 10
+		stage	specularMap
+		map	models/buildables/telenode/telenode_spec
+		specularExponentMin 8
+		specularExponentMax 85
+	}
+	glowMap		models/buildables/telenode/telenode_glow
+
+	when destroyed	models/buildables/telenode/telenode_dead
+}
+
+models/buildables/telenode/telenode-effect_dead
+{
+	cull none
+
+	{
+		map models/buildables/telenode/telenode-effect
+		blendfunc blend
+		tcMod scroll -0.997 0
+		tAlphaZeroClamp
 	}
 }
 
-models/buildables/telenode/rep_cyl
+models/buildables/telenode/telenode-effect
 {
-	cull disable
-	{
-		map models/buildables/telenode/rep_cyl
-		blendfunc add
-		rgbGen lightingDiffuse
-		tcMod scroll 0.2 0
-	}
-	{
-		map models/buildables/telenode/lines2
-		blendfunc add
-		rgbGen identity
-		tcMod scroll 0 0.2
-	}
-}
+	cull none
 
-models/buildables/telenode/telenode_parts
-{
 	{
-		map models/buildables/telenode/telenode_parts
-		rgbGen lightingDiffuse
+		map models/buildables/telenode/telenode-effect
+		blendfunc GL_SRC_ALPHA GL_ONE
+		tcMod scroll -0.997 0
+		tAlphaZeroClamp
 	}
-	{
-		map models/buildables/overmind/ref2
-		blendfunc filter
-		rgbGen identity
-		tcGen environment
-	}
-}
 
-models/buildables/telenode/telenode_top
-{
-	{
-		map models/buildables/telenode/telenode_top
-		rgbGen lightingDiffuse
-	}
-	{
-		map models/buildables/overmind/ref2
-		blendfunc filter
-		rgbGen identity
-		tcGen environment
-	}
+	when destroyed	models/buildables/telenode/telenode-effect_dead
 }
-
