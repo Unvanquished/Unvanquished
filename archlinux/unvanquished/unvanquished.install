@@ -44,6 +44,16 @@ _migrate() {
 		# delete old asset directory
 		rmdir /var/lib/unvanquished/main
 	fi
+
+	# download-pk3.sh to download-pk3-torrent.sh
+	md5sums="/var/cache/unvanquished/update-paks/md5sums"
+	if [ -f "$md5sums" ]; then
+		echo "Deleting assets previously downloaded with the old download-pk3.sh script..."
+		echo "Don't worry, the new download script will be fast as lighting"'!'
+		cat "$md5sums"|grep -o '[^*]*$'|xargs -I'#' rm -v /var/lib/unvanquished/pkg/'#'
+		echo "Cleaning cache directory..."
+		rm -v /var/cache/unvanquished/update-paks/*
+	fi
 }
 
 post_install() {

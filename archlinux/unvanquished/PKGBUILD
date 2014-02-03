@@ -4,7 +4,7 @@
 
 pkgname=unvanquished
 pkgver=0.24.0
-pkgrel=2
+pkgrel=3
 pkgdesc='A team-based, fast-paced, fps/rts hybrid game which pits aliens against humans. Monthly alpha release.'
 arch=('x86_64' 'i686')
 url='http://www.unvanquished.net'
@@ -13,7 +13,7 @@ makedepends=('git' 'cmake')
 depends=('zlib' 'gmp' 'nettle' 'geoip' 'curl' 'sdl2' 'glew' 'libpng'
          'libjpeg-turbo' 'libwebp>=0.2.0' 'freetype2' 'openal' 'libogg'
          'libvorbis' 'speex' 'libtheora' 'opusfile' 'ncurses' 'xdg-utils'
-         'desktop-file-utils' 'shared-mime-info' 'hicolor-icon-theme')
+         'desktop-file-utils' 'shared-mime-info' 'hicolor-icon-theme' 'aria2')
 provides=('unvanquished')
 conflicts=('unvanquished-maps' 'unvanquished-git')
 options=('emptydirs')
@@ -49,20 +49,20 @@ package() {
 	# install content
 	cd "$srcdir"/unvanquished
 
-	install -m 755 daemon* *.so download-pk3.sh "$pkgdir"/usr/lib/unvanquished/
-	install -m 644 debian/unvanquished.png      "$pkgdir"/usr/share/icons/hicolor/128x128/apps/
-	install -m 644 COPYING.txt                  "$pkgdir"/usr/share/licenses/unvanquished/
-	install -m 644 debian/configfiles/*         "$pkgdir"/etc/unvanquished/config/
+	install -m 755 daemon* *.so download-pk3*.sh "$pkgdir"/usr/lib/unvanquished/
+	install -m 644 debian/unvanquished.png       "$pkgdir"/usr/share/icons/hicolor/128x128/apps/
+	install -m 644 COPYING.txt                   "$pkgdir"/usr/share/licenses/unvanquished/
+	install -m 644 debian/configfiles/*          "$pkgdir"/etc/unvanquished/config/
 
 	# install starters
 	cd "$srcdir"/unvanquished/archlinux
 
-	install -m 755 unvanquished.sh              "$pkgdir"/usr/bin/unvanquished
-	install -m 755 unvanquished-tty.sh          "$pkgdir"/usr/bin/unvanquished-tty
-	install -m 755 unvanquished-update-paks.sh  "$pkgdir"/usr/bin/unvanquished-update-paks
-	install -m 644 unvanquished.conf            "$pkgdir"/etc/conf.d/
-	install -m 644 unvanquished.service         "$pkgdir"/usr/lib/systemd/system/
-	install -m 644 unvanquished.desktop         "$pkgdir"/usr/share/applications/
+	install -m 755 unvanquished.sh               "$pkgdir"/usr/bin/unvanquished
+	install -m 755 unvanquished-tty.sh           "$pkgdir"/usr/bin/unvanquished-tty
+	install -m 755 unvanquished-update-paks.sh   "$pkgdir"/usr/bin/unvanquished-update-paks
+	install -m 644 unvanquished.conf             "$pkgdir"/etc/conf.d/
+	install -m 644 unvanquished.service          "$pkgdir"/usr/lib/systemd/system/
+	install -m 644 unvanquished.desktop          "$pkgdir"/usr/share/applications/
 
 	# setup server home directory
 	cd "$pkgdir"/var/lib/unvanquished-server/config
@@ -71,5 +71,5 @@ package() {
 }
 
 md5sums=('SKIP'
-         '688dc19586040b4c02852750be353513'
-         '9ce3867ed35be48ffcafb8a713172385')
+         '2626432dbb9694dfd714f56bf14dcf65'
+         '607e695760b1fd02bac515725869efc7')

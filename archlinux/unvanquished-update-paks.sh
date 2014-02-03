@@ -8,4 +8,4 @@ fi
 # Make sure unvanquished has read access
 umask 033
 
-exec /usr/lib/unvanquished/download-pk3.sh /var/lib/unvanquished/pkg /var/cache/unvanquished/update-paks
+exec /usr/lib/unvanquished/download-pk3-torrent.sh /var/lib/unvanquished/pkg /var/cache/unvanquished/update-paks

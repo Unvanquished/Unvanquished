@@ -1,3 +1,8 @@
+2014-02-04 Viech
+	* 0.24.0-3 :
+	Use new torrent-driven asset download script.
+	Sorry for the asset redownload, but you'll love the speed!
+
 2014-02-03 Viech
 	* 0.24.0-2 :
 	Put starters and configs on the official Unvanquished repo.
