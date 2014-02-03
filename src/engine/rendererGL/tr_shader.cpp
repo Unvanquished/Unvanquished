@@ -6078,7 +6078,7 @@ shader_t       *R_FindShader( const char *name, shaderType_t type,
 		// of all explicit shaders
 		if ( r_printShaders->integer )
 		{
-			ri.Printf( PRINT_DEVELOPER, "...loading explicit shader '%s'\n", strippedName );
+			ri.Printf( PRINT_ALL, "...loading explicit shader '%s'\n", strippedName );
 		}
 
 		if ( !ParseShader( shaderText ) )
@@ -6852,7 +6852,6 @@ static void ScanAndLoadShaderFiles( void )
 	if ( !shaderFiles || !numShaderFiles )
 	{
 		ri.Printf( PRINT_WARNING, "WARNING: no shader files found\n" );
-		return;
 	}
 
 	if ( numShaderFiles > MAX_SHADER_FILES )

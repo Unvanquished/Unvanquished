@@ -496,7 +496,6 @@ qboolean G_FindCreep( gentity_t *self )
 				self->powerSource = closestSpawn;
 			}
 
-			self->creepTime = level.time; // This was the last time ent was on creep
 			return qtrue;
 		}
 		else
@@ -510,8 +509,7 @@ qboolean G_FindCreep( gentity_t *self )
 		return qfalse;
 	}
 
-	//if we haven't returned by now then we must already have a valid parent
-	self->creepTime = level.time; // This was the last time ent was on creep
+	// if we haven't returned by now then we must already have a valid parent
 	return qtrue;
 }
 
@@ -1927,8 +1925,6 @@ static int PowerRelevantRange()
 	relevantRange = MAX( relevantRange, g_powerReactorRange.integer );
 	relevantRange = MAX( relevantRange, g_powerRepeaterRange.integer );
 	relevantRange = MAX( relevantRange, g_powerCompetitionRange.integer );
-	relevantRange = MAX( relevantRange, g_powerLevel1UpgRange.integer );
-	relevantRange = MAX( relevantRange, g_powerLevel1Range.integer );
 
 	return relevantRange;
 }
@@ -2035,25 +2031,6 @@ static float IncomingInterference( buildable_t buildable, gentity_t *neighbor,
 			default:
 				power = -BG_Buildable( neighbor->s.modelindex )->powerConsumption;
 				range = g_powerCompetitionRange.integer;
-		}
-	}
-	// interference from player classes
-	else if ( !prediction && neighbor->client && neighbor->health > 0 )
-	{
-		switch ( neighbor->client->ps.stats[ STAT_CLASS ] )
-		{
-			case PCL_ALIEN_LEVEL1:
-				power = -g_powerLevel1Interference.integer;
-				range = g_powerLevel1Range.integer;
-				break;
-
-			case PCL_ALIEN_LEVEL1_UPG:
-				power = -g_powerLevel1UpgInterference.integer;
-				range = g_powerLevel1UpgRange.integer;
-				break;
-
-			default:
-				return 0.0f;
 		}
 	}
 	else
@@ -3401,8 +3378,9 @@ void G_BuildableThink( gentity_t *ent, int msec )
 
 		if ( !ent->spawned && ent->health > 0 )
 		{
-			// don't use G_Heal so the rewards array isn't scaled/cleared
-			ent->health += ( int )( ceil( ( float ) maxHealth / ( float )( buildTime * 0.001f ) ) );
+			int gain = ( int )ceil( maxHealth * ( 1.0f - BUILDABLE_START_HEALTH_FRAC ) * 1000.0f / buildTime );
+
+			G_Heal( ent, gain );
 		}
 		else if ( ent->health > 0 && ent->health < maxHealth )
 		{
@@ -4459,7 +4437,7 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 	built->buildableTeam = (team_t) built->s.modelindex2;
 	BG_BuildableBoundingBox( buildable, built->r.mins, built->r.maxs );
 
-	built->health = 1;
+	built->health = ( int )ceil( attr->health * BUILDABLE_START_HEALTH_FRAC );
 
 	built->splashDamage = attr->splashDamage;
 	built->splashRadius = attr->splashRadius;
@@ -4531,15 +4509,6 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 			built->die = AOvermind_Die;
 			built->think = AOvermind_Think;
 			built->pain = AGeneric_Pain;
-			{
-				vec3_t mins;
-				vec3_t maxs;
-				VectorCopy( built->r.mins, mins );
-				VectorCopy( built->r.maxs, maxs );
-				VectorAdd( mins, origin, mins );
-				VectorAdd( maxs, origin, maxs );
-				trap_BotAddObstacle( mins, maxs, &built->obstacleHandle );
-			}
 			break;
 
 		case BA_H_SPAWN:
@@ -4555,30 +4524,12 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 		case BA_H_TESLAGEN:
 			built->die = HGeneric_Die;
 			built->think = HTeslaGen_Think;
-						{
-				vec3_t mins;
-				vec3_t maxs;
-				VectorCopy( built->r.mins, mins );
-				VectorCopy( built->r.maxs, maxs );
-				VectorAdd( mins, origin, mins );
-				VectorAdd( maxs, origin, maxs );
-				trap_BotAddObstacle( mins, maxs, &built->obstacleHandle );
-			}
 			break;
 
 		case BA_H_ARMOURY:
 			built->think = HArmoury_Think;
 			built->die = HGeneric_Die;
 			built->use = HArmoury_Use;
-						{
-				vec3_t mins;
-				vec3_t maxs;
-				VectorCopy( built->r.mins, mins );
-				VectorCopy( built->r.maxs, maxs );
-				VectorAdd( mins, origin, mins );
-				VectorAdd( maxs, origin, maxs );
-				trap_BotAddObstacle( mins, maxs, &built->obstacleHandle );
-			}
 			break;
 
 		case BA_H_MEDISTAT:
@@ -4595,15 +4546,6 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 			built->think = HReactor_Think;
 			built->die = HReactor_Die;
 			built->powered = built->active = qtrue;
-			{
-				vec3_t mins;
-				vec3_t maxs;
-				VectorCopy( built->r.mins, mins );
-				VectorCopy( built->r.maxs, maxs );
-				VectorAdd( mins, origin, mins );
-				VectorAdd( maxs, origin, maxs );
-				trap_BotAddObstacle( mins, maxs, &built->obstacleHandle );
-			}
 			break;
 
 		case BA_H_REPEATER:
@@ -4613,8 +4555,19 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 			break;
 
 		default:
-			//erk
 			break;
+	}
+
+	// Add bot obstacles
+	if ( built->r.maxs[2] - built->r.mins[2] > 47.0f ) // HACK: Fixed jump height
+	{
+		vec3_t mins;
+		vec3_t maxs;
+		VectorCopy( built->r.mins, mins );
+		VectorCopy( built->r.maxs, maxs );
+		VectorAdd( mins, origin, mins );
+		VectorAdd( maxs, origin, maxs );
+		trap_BotAddObstacle( mins, maxs, &built->obstacleHandle );
 	}
 
 	built->r.contents = CONTENTS_BODY;

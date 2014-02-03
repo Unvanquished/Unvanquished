@@ -87,6 +87,19 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // Work around lack of constexpr
 #define CONSTEXPR constexpr
 
+// To mark functions which cause issues with address sanitizer
+#if __clang__
+#if __has_attribute(no_sanitize_address)
+# define ATTRIBUTE_NO_SANITIZE_ADDRESS __attribute__((no_sanitize_address))
+#else
+# define ATTRIBUTE_NO_SANITIZE_ADDRESS
+#endif
+#elif __SANITIZE_ADDRESS__
+# define ATTRIBUTE_NO_SANITIZE_ADDRESS __attribute__((no_sanitize_address))
+#else
+# define ATTRIBUTE_NO_SANITIZE_ADDRESS
+#endif
+
 // GCC 4.6 has incomplete support for C++11
 #if __GNUC__ * 100 + __GNUC_MINOR__ <= 407
 #define GCC_BROKEN_CXX11
@@ -153,6 +166,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define __func__ __FUNCTION__
 // Work around lack of constexpr
 #define CONSTEXPR const
+#define ATTRIBUTE_NO_SANITIZE_ADDRESS
 
 #elif defined(Q3_VM)
 #define DEPRECATED

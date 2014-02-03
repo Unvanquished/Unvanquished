@@ -13,7 +13,7 @@ itemDef
 	decoration
 	forecolor .48 .02 .03 .3
 	style WINDOW_STYLE_SHADER
-	background "ui/assets/alien/hbg.tga"
+	background "ui/assets/alien/hbg"
 }
 
 itemDef
@@ -25,7 +25,7 @@ itemDef
 	decoration
 	forecolor .48 .02 .03 .3
 	ownerdraw CG_PLAYER_HEALTH_METER
-	background "ui/assets/alien/healt.tga"
+	background "ui/assets/alien/healt"
 }
 
 itemDef
@@ -37,7 +37,7 @@ itemDef
 	decoration
 	forecolor .48 .02 .03 .5
 	style WINDOW_STYLE_SHADER
-	background "ui/assets/alien/pbg.tga"
+	background "ui/assets/alien/pbg"
 }
 
 itemDef
@@ -49,7 +49,7 @@ itemDef
 	decoration
 	forecolor .39 0 .09 .7
 	ownerdraw CG_PLAYER_BOOSTED_METER
-	background "ui/assets/alien/poisonbg.tga"
+	background "ui/assets/alien/poisonbg"
 }
 
 itemDef
@@ -61,7 +61,7 @@ itemDef
 	decoration
 	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0
 	backcolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 1
-	background "ui/assets/alien/l-spikes-small.png"
+	background "ui/assets/alien/l-spikes-small"
 	ownerdraw CG_PLAYER_WALLCLIMBING
 }
 
@@ -74,7 +74,7 @@ itemDef
 	decoration
 	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 1
 	backcolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0
-	background "ui/assets/alien/l-spikes-big.png"
+	background "ui/assets/alien/l-spikes-big"
 	ownerdraw CG_PLAYER_WALLCLIMBING
 }
 
@@ -87,7 +87,7 @@ itemDef
 	decoration
 	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0
 	backcolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 1
-	background "ui/assets/alien/r-spikes-small.png"
+	background "ui/assets/alien/r-spikes-small"
 	ownerdraw CG_PLAYER_WALLCLIMBING
 }
 
@@ -100,7 +100,7 @@ itemDef
 	decoration
 	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 1
 	backcolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0
-	background "ui/assets/alien/r-spikes-big.png"
+	background "ui/assets/alien/r-spikes-big"
 	ownerdraw CG_PLAYER_WALLCLIMBING
 }
 
@@ -113,7 +113,7 @@ itemDef
 	decoration
 	forecolor 1 1 1 .9
 	style WINDOW_STYLE_SHADER
-	background "ui/assets/alien/ll.png"
+	background "ui/assets/alien/ll"
 }
 
 itemDef
@@ -125,7 +125,7 @@ itemDef
 	decoration
 	forecolor 1 1 1 .9
 	style WINDOW_STYLE_SHADER
-	background "ui/assets/alien/rl.tga"
+	background "ui/assets/alien/rl"
 }
 
 //BOOSTED
@@ -138,7 +138,7 @@ itemDef
 	decoration
 	forecolor .54 .11 .17 .4
 	backcolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0
-	background "ui/assets/alien/poison.tga"
+	background "ui/assets/alien/poison"
 	ownerdraw CG_PLAYER_BOOSTED
 }
 
@@ -177,7 +177,7 @@ itemDef
 	decoration
 	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 1
 	backColor 0 0 0 0
-	background "ui/assets/neutral/cross.tga"
+	background "ui/assets/neutral/cross"
 	style WINDOW_STYLE_SHADER
 }
 
@@ -190,7 +190,7 @@ itemDef
 	decoration
 	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 1
 	backColor 0 0 0 0
-	background "ui/assets/neutral/cross.tga"
+	background "ui/assets/neutral/cross"
 	style WINDOW_STYLE_SHADER
 }
 */
@@ -253,7 +253,7 @@ itemDef
 	decoration
 	forecolor 1.0 1.0 1.0 0.25
 	ownerdraw CG_PLAYER_CHARGE_BAR
-	background "ui/assets/human/buildstat/health.tga"
+	background "ui/assets/human/buildstat/health"
 }
 
 /*
@@ -266,7 +266,7 @@ temDef
 	decoration
 	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0.25
 	ownerdraw CG_PLAYER_CHARGE_BAR_BG
-	background "ui/assets/neutral/charge_bg_h.tga"
+	background "ui/assets/neutral/charge_bg_h"
 }
 */
 
@@ -316,6 +316,6 @@ itemDef
 	forecolor .48 .02 .03 .3
 	cvarTest "hud_crosshairbars"
 	showCvar {1}
-	background "ui/assets/neutral/crescent_bottom.tga"
+	background "ui/assets/neutral/crescent_bottom"
 	ownerdraw CG_PLAYER_HEALTH_METER
 }

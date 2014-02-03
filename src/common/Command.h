@@ -96,6 +96,10 @@ namespace Cmd {
             int size() const; // same as Argc()
             const std::string& operator[] (int argNum) const; // same as Argv(int)
 
+            // Range-based for loop support
+            std::vector<std::string>::const_iterator begin() const;
+            std::vector<std::string>::const_iterator end() const;
+
         private:
             std::vector<std::string> args;
     };

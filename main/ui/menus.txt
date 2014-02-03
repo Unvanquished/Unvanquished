@@ -16,10 +16,6 @@
   loadMenu { "ui/serverinfo.menu" }
   loadMenu { "ui/findplayer.menu" }
   loadMenu { "ui/createfavorite.menu" }
-  loadMenu { "ui/firstrun.menu" }
-  loadMenu { "ui/profiles.menu" }
-  loadMenu { "ui/newprofile.menu" }
-  loadMenu { "ui/confirmdelprofile.menu" }
   loadMenu { "ui/help.menu" }
   loadMenu { "ui/huds.menu" }
 }

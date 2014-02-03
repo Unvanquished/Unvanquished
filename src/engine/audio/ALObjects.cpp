@@ -65,7 +65,7 @@ namespace AL {
     }
 
     // Used to avoid unnecessary calls to alGetError
-    static Cvar::Cvar<bool> checkAllCalls("audio.al.checkAllCalls", "check all OpenAL calls for errors", Cvar::ARCHIVE, false);
+    static Cvar::Cvar<bool> checkAllCalls("audio.al.checkAllCalls", "check all OpenAL calls for errors", Cvar::NONE, false);
     int ClearALError(int line = -1) {
         int error = alGetError();
 

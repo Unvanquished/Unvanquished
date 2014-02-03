@@ -93,9 +93,7 @@ vmCvar_t                   ui_emoticons;
 vmCvar_t                   ui_winner;
 vmCvar_t                   ui_chatCommands;
 vmCvar_t                   ui_chatPromptColours;
-vmCvar_t                   cl_profile;
-vmCvar_t                   cl_defaultProfile;
-vmCvar_t                   ui_profile;
+vmCvar_t                   ui_mousePitch;
 
 vmCvar_t                   ui_menuFiles;
 vmCvar_t                   ui_ingameFiles;
@@ -104,40 +102,38 @@ vmCvar_t                   ui_helpFiles;
 
 static const cvarTable_t   cvarTable[] =
 {
-	{ &ui_assetScale,          "ui_assetScale",               "1",                         CVAR_ARCHIVE | CVAR_LATCH },
+	{ &ui_assetScale,          "ui_assetScale",               "1",                         CVAR_LATCH  },
 
-	{ &ui_browserShowFull,     "ui_browserShowFull",          "1",                         CVAR_ARCHIVE              },
-	{ &ui_browserShowEmpty,    "ui_browserShowEmpty",         "1",                         CVAR_ARCHIVE              },
+	{ &ui_browserShowFull,     "ui_browserShowFull",          "1",                         0           },
+	{ &ui_browserShowEmpty,    "ui_browserShowEmpty",         "1",                         0           },
 
-	{ &ui_dedicated,           "ui_dedicated",                "0",                         CVAR_ARCHIVE              },
-	{ &ui_netSource,           "ui_netSource",                "1",                         CVAR_ARCHIVE              },
-	{ &ui_selectedMap,         "ui_selectedMap",              "0",                         CVAR_ARCHIVE              },
-	{ &ui_lastServerRefresh_0, "ui_lastServerRefresh_0",      "",                          CVAR_ARCHIVE              },
-	{ &ui_lastServerRefresh_1, "ui_lastServerRefresh_1",      "",                          CVAR_ARCHIVE              },
-	{ &ui_lastServerRefresh_2, "ui_lastServerRefresh_2",      "",                          CVAR_ARCHIVE              },
-	{ &ui_lastServerRefresh_3, "ui_lastServerRefresh_3",      "",                          CVAR_ARCHIVE              },
-	{ &ui_lastServerRefresh_0, "ui_lastServerRefresh_0_time", "",                          CVAR_ARCHIVE              },
-	{ &ui_lastServerRefresh_1, "ui_lastServerRefresh_1_time", "",                          CVAR_ARCHIVE              },
-	{ &ui_lastServerRefresh_2, "ui_lastServerRefresh_2_time", "",                          CVAR_ARCHIVE              },
-	{ &ui_lastServerRefresh_3, "ui_lastServerRefresh_3_time", "",                          CVAR_ARCHIVE              },
-	{ &ui_smallFont,           "ui_smallFont",                "0.2",                       CVAR_ARCHIVE | CVAR_LATCH },
-	{ &ui_bigFont,             "ui_bigFont",                  "0.5",                       CVAR_ARCHIVE | CVAR_LATCH },
-	{ &ui_findPlayer,          "ui_findPlayer",               "",                          CVAR_ARCHIVE              },
-	{ &ui_serverStatusTimeOut, "ui_serverStatusTimeOut",      "7000",                      CVAR_ARCHIVE              },
-	{ &ui_textWrapCache,       "ui_textWrapCache",            "1",                         CVAR_ARCHIVE              },
-	{ &ui_developer,           "ui_developer",                "0",                         CVAR_ARCHIVE | CVAR_CHEAT },
-	{ &ui_emoticons,           "cg_emoticons",                "1",                         CVAR_LATCH | CVAR_ARCHIVE },
-	{ &ui_winner,              "ui_winner",                   "",                          CVAR_ROM                  },
-	{ &cl_profile,             "cl_profile",                  "",                          CVAR_ROM                  },
-	{ &cl_defaultProfile,      "cl_defaultProfile",           "",                          CVAR_ROM                  },
-	{ &ui_profile,             "ui_profile",                  "",                          CVAR_ROM                  },
-	{ &ui_chatCommands,        "ui_chatCommands",             "1",                         CVAR_ARCHIVE              },
-	{ &ui_chatPromptColours,   "ui_chatPromptColors",         "0",                         CVAR_ARCHIVE | CVAR_LATCH },
+	{ &ui_dedicated,           "ui_dedicated",                "0",                         0           },
+	{ &ui_netSource,           "ui_netSource",                "1",                         0           },
+	{ &ui_selectedMap,         "ui_selectedMap",              "0",                         0           },
+	{ &ui_lastServerRefresh_0, "ui_lastServerRefresh_0",      "",                          0           },
+	{ &ui_lastServerRefresh_1, "ui_lastServerRefresh_1",      "",                          0           },
+	{ &ui_lastServerRefresh_2, "ui_lastServerRefresh_2",      "",                          0           },
+	{ &ui_lastServerRefresh_3, "ui_lastServerRefresh_3",      "",                          0           },
+	{ &ui_lastServerRefresh_0, "ui_lastServerRefresh_0_time", "",                          0           },
+	{ &ui_lastServerRefresh_1, "ui_lastServerRefresh_1_time", "",                          0           },
+	{ &ui_lastServerRefresh_2, "ui_lastServerRefresh_2_time", "",                          0           },
+	{ &ui_lastServerRefresh_3, "ui_lastServerRefresh_3_time", "",                          0           },
+	{ &ui_smallFont,           "ui_smallFont",                "0.2",                       CVAR_LATCH  },
+	{ &ui_bigFont,             "ui_bigFont",                  "0.5",                       CVAR_LATCH  },
+	{ &ui_findPlayer,          "ui_findPlayer",               "",                          0           },
+	{ &ui_serverStatusTimeOut, "ui_serverStatusTimeOut",      "7000",                      0           },
+	{ &ui_textWrapCache,       "ui_textWrapCache",            "1",                         0           },
+	{ &ui_developer,           "ui_developer",                "0",                         CVAR_CHEAT  },
+	{ &ui_emoticons,           "cg_emoticons",                "1",                         CVAR_LATCH  },
+	{ &ui_winner,              "ui_winner",                   "",                          CVAR_ROM    },
+	{ &ui_chatCommands,        "ui_chatCommands",             "1",                         0           },
+	{ &ui_chatPromptColours,   "ui_chatPromptColors",         "0",                         CVAR_LATCH  },
+	{ &ui_mousePitch,          "ui_mousePitch",               "0",                         CVAR_ARCHIVE},
 
-	{ &ui_menuFiles,           "ui_menuFiles",                "ui/menus.txt",         CVAR_ARCHIVE              },
-	{ &ui_ingameFiles,         "ui_ingameFiles",              "ui/ingame.txt", CVAR_ARCHIVE              },
-	{ &ui_teamFiles,           "ui_teamFiles",                "ui/tremulous.txt",     CVAR_ARCHIVE              },
-	{ &ui_helpFiles,           "ui_helpFiles",                "ui/help.txt",     CVAR_ARCHIVE              }
+	{ &ui_menuFiles,           "ui_menuFiles",                "ui/menus.txt",              0           },
+	{ &ui_ingameFiles,         "ui_ingameFiles",              "ui/ingame.txt",             0           },
+	{ &ui_teamFiles,           "ui_teamFiles",                "ui/tremulous.txt",          0           },
+	{ &ui_helpFiles,           "ui_helpFiles",                "ui/help.txt",               0           }
 };
 
 static const size_t         cvarTableSize = ARRAY_LEN( cvarTable );
@@ -2846,108 +2842,6 @@ static void UI_LoadHumanBuilds( void )
 
 /*
 ===============
-UI_LoadProfiles
-===============
-*/
-static void UI_LoadProfiles( void )
-{
-	int             numdirs;
-	char            dirlist[ 2048 ];
-	char           *dirptr;
-
-	//char  *descptr;
-	int             i;
-	int             dirlen;
-
-	uiInfo.profileCount = 0;
-	uiInfo.profileIndex = -1;
-	numdirs = trap_FS_GetFileList( "profiles", "/", dirlist, sizeof( dirlist ) );
-	dirptr = dirlist;
-
-	for ( i = 0; i < numdirs; i++ )
-	{
-		dirlen = strlen( dirptr ) + 1;
-
-		if ( dirptr[ 0 ] && Q_stricmp( dirptr, "." ) && Q_stricmp( dirptr, ".." ) )
-		{
-			int  handle;
-			char token[ 40 ];
-
-			if ( trap_FS_FOpenFile( va( "profiles/%s/profile.dat", dirptr ), &handle, FS_READ ) == -1 )
-			{
-				dirptr += dirlen;
-				continue;
-			}
-
-			memset( token, 0, sizeof( token ) );
-
-			trap_FS_Read( token, sizeof( token ) - 1, handle );
-			Q_CleanStr( token );
-			Q_CleanDirName( token );
-
-			if ( !token[ 0 ] )
-			{
-				strcpy( token, "UnnamedPlayer" );
-			}
-
-			uiInfo.profileList[ uiInfo.profileCount ].name = String_Alloc( token );
-			trap_FS_FCloseFile( handle );
-
-			uiInfo.profileList[ uiInfo.profileCount ].dir = String_Alloc( dirptr );
-			uiInfo.profileCount++;
-
-			/*if( uiInfo.profileCount == 1 ) {
-			   int j;
-
-			   uiInfo.profileIndex = 0;
-			   trap_Cvar_Set( "ui_profile", token );
-
-			   for( j = 0; j < Menu_Count(); j++ ) {
-			   Menu_SetFeederSelection( Menu_Get(j), FEEDER_PROFILES, 0, NULL );
-			   }
-			   } */
-			if ( uiInfo.profileIndex == -1 )
-			{
-				Q_CleanStr( token );
-				Q_CleanDirName( token );
-
-				if ( !Q_stricmp( token, cl_profile.string ) )
-				{
-					int             j;
-
-					uiInfo.profileIndex = i;
-
-					for ( j = 0; j < Menu_Count(); j++ )
-					{
-						Menu_SetFeederSelection( Menu_Get( j ), FEEDER_PROFILES, uiInfo.profileIndex, NULL );
-					}
-				}
-			}
-
-			if ( uiInfo.profileCount >= MAX_PROFILES )
-			{
-				break;
-			}
-		}
-
-		dirptr += dirlen;
-	}
-
-	if ( uiInfo.profileIndex == -1 )
-	{
-		int             j;
-
-		uiInfo.profileIndex = 0;
-
-		for ( j = 0; j < Menu_Count(); j++ )
-		{
-			Menu_SetFeederSelection( Menu_Get( j ), FEEDER_PROFILES, 0, NULL );
-		}
-	}
-}
-
-/*
-===============
 UI_LoadMods
 ===============
 */
@@ -3280,7 +3174,7 @@ static void UI_RunMenuScript( char **args )
 		}
 		else if ( Q_stricmp( name, "resetDefaults" ) == 0 )
 		{
-			trap_Cmd_ExecuteText( EXEC_APPEND, "exec default.cfg\n" );
+			trap_Cmd_ExecuteText( EXEC_APPEND, "preset default.cfg\n" );
 			trap_Cmd_ExecuteText( EXEC_APPEND, "cvar_restart\n" );
 			Controls_SetDefaults();
 			trap_Cvar_Set( "com_introPlayed", "1" );
@@ -3372,7 +3266,7 @@ static void UI_RunMenuScript( char **args )
 
 			trap_GetClientState( &cstate );
 
-			trap_Cmd_ExecuteText( EXEC_APPEND, va( "exec ui/%s/install.cfg;", uiInfo.huds[ uiInfo.hudIndex ].name ) );
+			trap_Cmd_ExecuteText( EXEC_APPEND, va( "preset ui/%s/install.cfg;", uiInfo.huds[ uiInfo.hudIndex ].name ) );
 			if ( cstate.connState == CA_ACTIVE )
 			{
 				trap_Cmd_ExecuteText( EXEC_APPEND, "reloadhud;" );
@@ -3776,201 +3670,6 @@ static void UI_RunMenuScript( char **args )
 				}
 			}
 		}
-
-		else if ( Q_stricmp( name, "loadProfiles" ) == 0 )
-		{
-			UI_LoadProfiles();
-		}
-		else if ( Q_stricmp( name, "createProfile" ) == 0 )
-		{
-			fileHandle_t    f;
-			char            buff[ MAX_CVAR_VALUE_STRING ];
-
-			/*Q_strncpyz( cl_profile.string, ui_profile.string, sizeof(cl_profile.string) );
-			  Q_CleanStr( cl_profile.string );
-			  Q_CleanDirName( cl_profile.string );
-
-			  trap_Cvar_Set( "cl_profile", cl_profile.string );
-			  if( trap_FS_FOpenFile( va( "profiles/%s/profile.dat", cl_profile.string ), &f, FS_WRITE ) >= 0 ) {
-			  trap_FS_Write( ui_profile.string, strlen(ui_profile.string), f );
-			  trap_FS_FCloseFile( f );
-			  } */
-			Q_strncpyz( buff, ui_profile.string, sizeof( buff ) );
-			if( buff[0] )
-			{
-				Q_CleanStr( buff );
-				Q_CleanDirName( buff );
-
-				if ( trap_FS_FOpenFile( va( "profiles/%s/profile.dat", buff ), &f, FS_WRITE ) >= 0 )
-				{
-					trap_FS_Write( ui_profile.string, strlen( ui_profile.string ), f );
-					trap_FS_FCloseFile( f );
-				}
-
-				trap_Cvar_Set( "name", ui_profile.string );
-			}
-			else
-			{
-				trap_Cvar_Set( "com_errorMessage", "You did not enter a profile!" );
-				Menus_ActivateByName( "error_popmenu" );
-			}
-		}
-		else if ( Q_stricmp( name, "clearPID" ) == 0 )
-		{
-			fileHandle_t    f;
-
-			// delete profile.pid from current profile
-			if ( trap_FS_FOpenFile( va( "profiles/%s/profile.pid", cl_profile.string ), &f, FS_READ ) >= 0 )
-			{
-				trap_FS_FCloseFile( f );
-				trap_FS_Delete( va( "profiles/%s/profile.pid", cl_profile.string ) );
-			}
-		}
-		else if ( Q_stricmp( name, "applyProfile" ) == 0 )
-		{
-			if ( uiInfo.profileList[ uiInfo.profileIndex ].name == NULL )
-				// no default profile yet
-				return;
-			Q_strncpyz( cl_profile.string, uiInfo.profileList[ uiInfo.profileIndex ].name, sizeof( cl_profile.string ) );
-			Q_CleanStr( cl_profile.string );
-			Q_CleanDirName( cl_profile.string );
-			trap_Cvar_Set( "cl_profile", cl_profile.string );
-			trap_Cmd_ExecuteText( EXEC_APPEND, va( "exec profiles/%s/autogen.cfg\n", cl_profile.string ) );
-			trap_Cmd_ExecuteText( EXEC_APPEND, va( "exec profiles/%s/autoexec.cfg\n", cl_profile.string ) );
-			trap_Cmd_ExecuteText( EXEC_APPEND, "vid_restart\n" );
-		}
-		else if ( Q_stricmp( name, "setDefaultProfile" ) == 0 )
-		{
-			fileHandle_t    f;
-
-			if ( uiInfo.profileList[ uiInfo.profileIndex ].name == NULL )
-				// no default profile yet
-				return;
-			Q_strncpyz( cl_defaultProfile.string, uiInfo.profileList[ uiInfo.profileIndex ].name, sizeof( cl_profile.string ) );
-			Q_CleanStr( cl_defaultProfile.string );
-			Q_CleanDirName( cl_defaultProfile.string );
-			trap_Cvar_Set( "cl_defaultProfile", cl_defaultProfile.string );
-
-			if ( trap_FS_FOpenFile( "profiles/defaultprofile.dat", &f, FS_WRITE ) >= 0 )
-			{
-				trap_FS_Write( cl_defaultProfile.string, strlen( cl_defaultProfile.string ), f );
-				trap_FS_FCloseFile( f );
-			}
-		}
-		else if ( Q_stricmp( name, "deleteProfile" ) == 0 )
-		{
-			char            buff[ MAX_CVAR_VALUE_STRING ];
-
-			Q_strncpyz( buff, uiInfo.profileList[ uiInfo.profileIndex ].name, sizeof( buff ) );
-			Q_CleanStr( buff );
-			Q_CleanDirName( buff );
-
-			// can't delete active profile
-			if ( Q_stricmp( buff, cl_profile.string ) )
-			{
-				if ( !Q_stricmp( buff, cl_defaultProfile.string ) )
-				{
-					// if deleting the default profile, set the default to the current active profile
-					fileHandle_t    f;
-
-					trap_Cvar_Set( "cl_defaultProfile", cl_profile.string );
-
-					if ( trap_FS_FOpenFile( "profiles/defaultprofile.dat", &f, FS_WRITE ) >= 0 )
-					{
-						trap_FS_Write( cl_profile.string, strlen( cl_profile.string ), f );
-						trap_FS_FCloseFile( f );
-					}
-				}
-
-				trap_FS_Delete( va( "profiles/%s", buff ) );
-			}
-		}
-		else if ( Q_stricmp( name, "renameProfileInit" ) == 0 )
-		{
-			trap_Cvar_Set( "ui_profile_renameto", ui_profile.string );
-		}
-		else if ( Q_stricmp( name, "renameProfile" ) == 0 )
-		{
-			fileHandle_t    f, f2;
-			int             len;
-			char            buff[ MAX_CVAR_VALUE_STRING ];
-			char            ui_renameprofileto[ MAX_CVAR_VALUE_STRING ];
-			char            uiprofile[ MAX_CVAR_VALUE_STRING ];
-
-			trap_Cvar_VariableStringBuffer( "ui_profile_renameto", ui_renameprofileto, sizeof( ui_renameprofileto ) );
-			Q_strncpyz( buff, ui_renameprofileto, sizeof( buff ) );
-			Q_CleanStr( buff );
-			Q_CleanDirName( buff );
-
-			Q_strncpyz( uiprofile, ui_profile.string, sizeof( uiprofile ) );
-			Q_CleanStr( uiprofile );
-			Q_CleanDirName( uiprofile );
-
-			if ( trap_FS_FOpenFile( va( "profiles/%s/profile.dat", buff ), &f, FS_WRITE ) >= 0 )
-			{
-				trap_FS_Write( ui_renameprofileto, strlen( ui_renameprofileto ), f );
-				trap_FS_FCloseFile( f );
-			}
-
-			// FIXME: make this copying handle all files in the profiles directory
-			if ( Q_stricmp( uiprofile, buff ) )
-			{
-				int i;
-				char fileList[ MAX_STRING_CHARS ];
-				char *filePtr;
-				int numFiles = trap_FS_GetFileList( va( "profiles/%s", uiprofile ), NULL, fileList,
-					sizeof( fileList ) );
-
-				filePtr = fileList;
-				for ( i = 0; i < numFiles; i++, filePtr += strlen( filePtr ) + 1 )
-				{
-					if ( trap_FS_FOpenFile( va( "profiles/%s/%s", buff, filePtr ), &f, FS_WRITE ) >= 0 )
-					{
-						if ( ( len = trap_FS_FOpenFile( va( "profiles/%s/%s", uiprofile, filePtr ), &f2, FS_READ ) ) >= 0 )
-						{
-							char b[ 4096 ];
-
-							while ( len > 0 )
-							{
-								int count = MIN( sizeof( b ), (size_t) len );
-
-								trap_FS_Read( &b, count, f2 );
-								trap_FS_Write( &b, count, f );
-								len -= count;
-							}
-
-							trap_FS_FCloseFile( f2 );
-						}
-
-						trap_FS_FCloseFile( f );
-					}
-				}
-			}
-
-			if ( !Q_stricmp( uiprofile, cl_defaultProfile.string ) )
-			{
-				// if renaming the default profile, set the default to the new profile
-				trap_Cvar_Set( "cl_defaultProfile", buff );
-
-				if ( trap_FS_FOpenFile( "profiles/defaultprofile.dat", &f, FS_WRITE ) >= 0 )
-				{
-					trap_FS_Write( buff, strlen( buff ), f );
-					trap_FS_FCloseFile( f );
-				}
-			}
-
-			// if renaming the active profile, set active to new name
-			if ( !Q_stricmp( uiprofile, cl_profile.string ) )
-			{
-				trap_Cvar_Set( "cl_profile", buff );
-			}
-
-			// delete the old profile
-			trap_FS_Delete( va( "profiles/%s", uiprofile ) );
-
-			trap_Cvar_Set( "ui_profile", ui_renameprofileto );
-			trap_Cvar_Set( "ui_profile_renameto", "" );
-		}
 		else if ( Q_stricmp( name, "deleteFavorite" ) == 0 )
 		{
 			if ( ui_netSource.integer == AS_FAVORITES )
@@ -4206,10 +3905,6 @@ static int UI_FeederCount( int feederID )
 	else if ( feederID == FEEDER_ALOUTPUT )
 	{
 		return uiInfo.alOutputCount;
-	}
-	else if ( feederID == FEEDER_PROFILES )
-	{
-		return uiInfo.profileCount;
 	}
 	else if ( feederID == FEEDER_HUDS )
 	{
@@ -4595,13 +4290,6 @@ static const char *UI_FeederItemText( int feederID, int index, int column, qhand
 			return uiInfo.alOutput[ index ];
 		}
 	}
-	else if ( feederID == FEEDER_PROFILES )
-	{
-		if( index >= 0 && index < uiInfo.profileCount )
-		{
-			return uiInfo.profileList[ index ].name;
-		}
-	}
 	else if ( feederID  == FEEDER_HUDS )
 	{
 		if ( index >= 0 && index < uiInfo.hudCount )
@@ -4820,10 +4508,6 @@ static void UI_FeederSelection( int feederID, int index )
 			trap_Cvar_Set( "audio.al.device", uiInfo.alOutput[ index ] );
 			uiInfo.alOutputIndex = index;
 		}
-	}
-	else if ( feederID == FEEDER_PROFILES )
-	{
-		uiInfo.profileIndex = index;
 	}
 	else if ( feederID == FEEDER_HUDS )
 	{
@@ -5388,10 +5072,6 @@ void UI_SetActiveMenu( uiMenuCommand_t menu )
 				trap_Key_SetCatcher( KEYCATCH_UI );
 				Menus_CloseAll();
 				Menus_ActivateByName( "main" );
-				if( !cl_profile.string[0] )
-				{
-					Menus_ActivateByName( "profile_firstrun" );
-				}
 				buf[ 0 ] = '\0';
 				trap_Cvar_VariableStringBuffer( "com_errorMessage", buf, sizeof( buf ) );
 

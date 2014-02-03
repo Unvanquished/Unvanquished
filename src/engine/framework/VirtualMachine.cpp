@@ -35,48 +35,48 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace VM {
 
 //TODO: error handling?
-int VMBase::Create(const char* name, Type type)
+int VMBase::Create(Str::StringRef name, Type type)
 {
 	if (module) {
 		Com_Printf(S_ERROR "Attempting to re-create an already-loaded VM");
 		return -1;
 	}
 
-	// TODO: Proper interaction with FS code
-	const char* gameDir = Cvar_VariableString("fs_game");
-	const char* libPath = Cvar_VariableString("fs_libpath");
+	const std::string& libPath = FS::GetLibPath();
 	bool debug = Cvar_Get("vm_debug", "0", CVAR_INIT)->integer;
 
 	if (type == TYPE_NATIVE) {
-		char exe[MAX_QPATH];
-		Com_sprintf(exe, sizeof(exe), "%s%s", name, EXE_EXT);
-		const char* path = FS_BuildOSPath(libPath, gameDir, exe);
-		Com_Printf("Trying to load native module %s\n", path);
-		module = NaCl::LoadModule(path, nullptr, debug);
+		std::string exe = FS::Path::Build(libPath, name + EXE_EXT);
+		Com_Printf("Trying to load native module %s\n", exe.c_str());
+		module = NaCl::LoadModule(exe.c_str(), nullptr, debug);
 	} else if (type == TYPE_NACL) {
-		char nexe[MAX_QPATH];
-		char sel_ldr[MAX_QPATH];
-		char irt[MAX_QPATH];
+		// Extract the nexe from the pak so that sel_ldr can load it
+		std::string nexe = name + "-" ARCH_STRING ".nexe";
+		try {
+			FS::File out = FS::HomePath::OpenWrite(nexe);
+			FS::PakPath::CopyFile(nexe, out);
+			out.Close();
+		} catch (std::system_error& err) {
+			Com_Printf(S_ERROR "Failed to extract NaCl module %s: %s\n", nexe.c_str(), err.what());
+			return -1;
+		}
+		std::string sel_ldr = FS::Path::Build(libPath, "sel_ldr" EXE_EXT);
+		std::string irt = FS::Path::Build(libPath, "irt_core-" ARCH_STRING ".nexe");
 #ifdef __linux__
-		char bootstrap[MAX_QPATH];
-		Com_sprintf(bootstrap, sizeof(bootstrap), "%s/nacl_helper_bootstrap%s", libPath, EXE_EXT);
+		std::string bootstrap = FS::Path::Build(libPath, "nacl_helper_bootstrap");
+		NaCl::LoaderParams params = {sel_ldr.c_str(), irt.c_str(), bootstrap.c_str()};
 #else
-		const char* bootstrap = nullptr;
+		NaCl::LoaderParams params = {sel_ldr.c_str(), irt.c_str(), nullptr};
 #endif
-		Com_sprintf(nexe, sizeof(nexe), "%s-%s.nexe", name, ARCH_STRING);
-		Com_sprintf(sel_ldr, sizeof(sel_ldr), "%s/sel_ldr%s", libPath, EXE_EXT);
-		Com_sprintf(irt, sizeof(irt), "%s/irt_core-%s.nexe", libPath, ARCH_STRING);
-		NaCl::LoaderParams params = {sel_ldr, irt, bootstrap};
-		const char* path = FS_BuildOSPath(libPath, gameDir, nexe);
-		Com_Printf("Trying to load NaCl module %s\n", path);
-		module = NaCl::LoadModule(path, &params, debug);
+		Com_Printf("Trying to load NaCl module %s\n", nexe.c_str());
+		module = NaCl::LoadModule(FS::Path::Build(FS::GetHomePath(), nexe).c_str(), &params, debug);
 	} else {
 		Com_Printf(S_ERROR "Invalid VM type");
 		return -1;
 	}
 
 	if (!module) {
-		Com_Printf(S_ERROR "Couldn't load VM %s", name);
+		Com_Printf(S_ERROR "Couldn't load VM %s", name.c_str());
 		return -1;
 	}
 
@@ -87,7 +87,7 @@ int VMBase::Create(const char* name, Type type)
 	// If this fails, we assume the remote process failed to start
 	std::vector<char> buffer;
 	if (!module.GetRootSocket().RecvMsg(buffer) || buffer.size() != sizeof(int)) {
-		Com_Printf(S_ERROR "The '%s' VM did not start.", name);
+		Com_Printf(S_ERROR "The '%s' VM did not start.", name.c_str());
 		return -1;
 	}
 	Com_Printf("Loaded module with the NaCl ABI");

@@ -33,6 +33,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "../../libs/nacl/nacl.h"
 #include "../../common/RPC.h"
+#include "../../common/String.h"
 
 namespace VM {
 
@@ -46,7 +47,7 @@ class VMBase {
 public:
   // Create the VM for the named module. Returns the ABI version reported
   // by the module.
-  int Create(const char* name, Type type);
+  int Create(Str::StringRef name, Type type);
 
   // Free the VM
   void Free()

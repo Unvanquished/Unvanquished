@@ -33,8 +33,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace Audio {
 
     //TODO lazily check for the values
-    static Cvar::Range<Cvar::Cvar<float>> effectsVolume("audio.volume.effects", "the volume of the effects", Cvar::ARCHIVE, 0.8f, 0.0f, 1.0f);
-    static Cvar::Range<Cvar::Cvar<float>> musicVolume("audio.volume.music", "the volume of the music", Cvar::ARCHIVE, 0.8f, 0.0f, 1.0f);
+    static Cvar::Range<Cvar::Cvar<float>> effectsVolume("audio.volume.effects", "the volume of the effects", Cvar::NONE, 0.8f, 0.0f, 1.0f);
+    static Cvar::Range<Cvar::Cvar<float>> musicVolume("audio.volume.music", "the volume of the music", Cvar::NONE, 0.8f, 0.0f, 1.0f);
 
     // We have a big, fixed number of source to avoid rendering too many sounds and slowing down the rest of the engine.
     struct sourceRecord_t {

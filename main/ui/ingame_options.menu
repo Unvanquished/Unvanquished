@@ -66,7 +66,7 @@
       name window
       rect -40 0 (W+100) H
       style WINDOW_STYLE_SHADER
-      background "ui/assets/vertgrad.tga"
+      background "ui/assets/vertgrad"
       forecolor MENU_TEAL_TRANS
       visible MENU_TRUE
       decoration
