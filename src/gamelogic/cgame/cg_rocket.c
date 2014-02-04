@@ -525,10 +525,12 @@ void CG_Rocket_Frame( void )
 
 			case CA_LOADING:
 			case CA_PRIMED:
+				trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_CONNECTING ].id, "blur" );
+				trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_LOADING ].id, "show" );
 				break;
 
 			case CA_ACTIVE:
-				trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_CONNECTING ].id, "blurall" );
+				trap_Rocket_DocumentAction( "", "blurall" );
 		}
 
 		oldConnState = rocketInfo.cstate.connState;
