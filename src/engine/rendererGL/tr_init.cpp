@@ -1966,9 +1966,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	GetRefAPI
 	=====================
 	*/
-#ifdef  __cplusplus
-extern "C"
-#endif
 	Q_EXPORT refexport_t *GetRefAPI( int apiVersion, refimport_t *rimp )
 	{
 		static refexport_t re;
@@ -2115,46 +2112,3 @@ extern "C"
 
 		return &re;
 	}
-
-#ifndef REF_HARD_LINKED
-
-// this is only here so the functions in q_shared.c and q_math.c can link
-
-		void QDECL PRINTF_LIKE(1) Com_Printf( const char *msg, ... )
-		{
-			va_list argptr;
-			char    text[ 1024 ];
-
-			va_start( argptr, msg );
-			Q_vsnprintf( text, sizeof( text ), msg, argptr );
-			va_end( argptr );
-
-			ri.Printf( PRINT_ALL, "%s", text );
-		}
-
-		void QDECL PRINTF_LIKE(1) Com_DPrintf( const char *msg, ... )
-		{
-			va_list argptr;
-			char    text[ 1024 ];
-
-			va_start( argptr, msg );
-			Q_vsnprintf( text, sizeof( text ), msg, argptr );
-			va_end( argptr );
-
-			ri.Printf( PRINT_DEVELOPER, "%s", text );
-		}
-
-		void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int level, const char *error, ... )
-		{
-			va_list argptr;
-			char    text[ 1024 ];
-
-			va_start( argptr, error );
-			Q_vsnprintf( text, sizeof( text ), error, argptr );
-			va_end( argptr );
-
-			ri.Error( level, "%s", text );
-		}
-
-#endif
-
