@@ -39,7 +39,7 @@ fi
 
 # create and enter cache subdirectory
 cd "$cache_dir"
-if [ "$cache_subdir" == "" ]; then
+if [ "$cache_subdir" = "" ]; then
     echo "Empty cache subdirectory name."
     exit
 fi
