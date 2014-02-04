@@ -534,6 +534,15 @@ void CG_Rocket_Frame( void )
 		oldConnState = rocketInfo.cstate.connState;
 	}
 
+	// Continue to attempt to update serverlisting
+	if ( rocketInfo.data.retrievingServers )
+	{
+		if ( !trap_LAN_UpdateVisiblePings( rocketInfo.currentNetSrc ) )
+		{
+			CG_Rocket_BuildServerList( CG_NetSourceToString( rocketInfo.currentNetSrc ) );
+		}
+	}
+
 	CG_Rocket_ProcessEvents();
 }
 

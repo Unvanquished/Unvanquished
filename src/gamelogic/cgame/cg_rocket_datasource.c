@@ -162,7 +162,7 @@ void CG_Rocket_BuildServerInfo( void )
 
 }
 
-static void CG_Rocket_BuildServerList( const char *args )
+void CG_Rocket_BuildServerList( const char *args )
 {
 	char data[ MAX_INFO_STRING ] = { 0 };
 	int netSrc = CG_StringToNetSource( args );
@@ -180,11 +180,19 @@ static void CG_Rocket_BuildServerList( const char *args )
 	{
 		int numServers;
 
+		rocketInfo.data.retrievingServers = qtrue;
+
 		trap_Rocket_DSClearTable( "server_browser", args );
 
 		trap_LAN_MarkServerVisible( netSrc, -1, qtrue );
 
 		numServers = trap_LAN_GetServerCount( netSrc );
+
+		// Still waiting for a response...
+		if ( numServers == -1 )
+		{
+			return;
+		}
 
 		for ( i = 0; i < numServers; ++i )
 		{
@@ -232,8 +240,12 @@ static void CG_Rocket_BuildServerList( const char *args )
 			Info_SetValueForKey( data, "map", rocketInfo.data.servers[ netSrc ][ i ].mapName, qfalse );
 
 			trap_Rocket_DSAddRow( "server_browser", args, data );
-		}
 
+			if ( rocketInfo.data.retrievingServers )
+			{
+				rocketInfo.data.retrievingServers = qfalse;
+			}
+		}
 
 	}
 
