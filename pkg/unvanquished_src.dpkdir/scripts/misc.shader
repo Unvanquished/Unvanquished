@@ -1,78 +1,113 @@
-gfx/misc/tracer
+gfx/misc/detail
 {
-  cull none
-  {
-    map gfx/sprites/spark.tga
-    blendFunc blend
-  }
-}
-
-gfx/damage/blood
-{
-  cull disable
-  {
-    map gfx/damage/blood.tga
-    blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
-    rgbGen vertex
-    alphaGen vertex
-  }
-}
-
-gfx/damage/fullscreen_painblend
-{
-  {
-    map gfx/damage/fullscreen_painblend.tga
-    blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
-    rgbGen vertex
-    alphaGen vertex
-    tcMod rotate 90
-  }
-
-  {
-    map gfx/damage/fullscreen_painblend.tga
-    blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
-    rgbGen vertex
-    alphaGen vertex
-    tcMod rotate -90
-  }
-}
-
-models/fx/metal_gibs/metal_gibs
-{
-  {
-    map models/fx/metal_gibs/metal_gibs.tga
-    rgbGen lightingDiffuse
-  }
-  {
-    map models/fx/metal_gibs/hot_gibs.tga
-    blendfunc add
-    rgbGen wave sin 0 1 0 0.0625
-  }
-}
-
-gfx/misc/redbuild
-{
-  {
-    map gfx/misc/redbuild.tga
-    blendfunc add
-    rgbGen identity
-  }
+	nopicmip
+	{
+		map gfx/misc/detail
+		blendFunc GL_DST_COLOR GL_SRC_COLOR
+		rgbgen identity
+	}
 }
 
 gfx/misc/greenbuild
 {
-  {
-    map gfx/misc/greenbuild.tga
-    blendfunc add
-    rgbGen identity
-  }
+	{
+		map gfx/misc/greenbuild
+		blendfunc add
+		rgbGen identity
+	}
 }
 
-gfx/misc/nopower
+gfx/misc/redbuild
 {
-  {
-    map gfx/misc/nopower.tga
-    blendfunc add
-    rgbGen identity
-  }
+	{
+		map gfx/misc/redbuild
+		blendfunc add
+		rgbGen identity
+	}
+}
+
+gfx/misc/tracer
+{
+	cull none
+	{
+		map gfx/sprites/spark
+		blendFunc blend
+	}
+}
+
+console
+{
+	nopicmip
+	nomipmaps
+	{
+		map gfx/colors/black
+	}
+}
+
+creep
+{
+	nopicmip
+	polygonoffset
+	twoSided
+	{
+		clampmap gfx/creep/creep
+		blendfunc blend
+		blend diffusemap
+		rgbGen identity
+		alphaGen vertex
+		alphaFunc GE128
+	}
+	specularMap gfx/creep/creep_s
+	normalMap gfx/creep/creep_n
+}
+
+outline
+{
+	cull none
+	nopicmip
+	nomipmaps
+	{
+		map gfx/2d/outline
+		blendfunc	GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
+		rgbgen vertex
+	}
+}
+
+scope
+{
+	{
+		clampmap gfx/2d/scope/zoom
+		alphaGen vertex
+		blend blend
+	}
+	{
+		map gfx/2d/scope/bg
+		alphaGen vertex
+		blend blend
+	}
+	{
+		map gfx/2d/scope/circle1
+		alphaGen vertex
+		blend blend
+	}
+	{
+		clampmap gfx/2d/scope/circle2
+		alphaGen vertex
+		blend blend
+		tcMod rotate 45
+	}
+	{
+		clampmap gfx/2d/scope/crosshair
+		alphaGen vertex
+		blend blend
+	}
+}
+
+white
+{
+	{
+		map *white
+		blendfunc	GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
+		rgbgen vertex
+	}
 }
