@@ -220,7 +220,7 @@ KeyModifier Rocket_GetKeyModifiers( void )
 
 void Rocket_ProcessMouseClick( int button, qboolean down )
 {
-	if ( !menuContext || cls.keyCatchers & KEYCATCH_CONSOLE )
+	if ( !menuContext || cls.keyCatchers & KEYCATCH_CONSOLE || !cls.keyCatchers )
 	{
 		return;
 	}
@@ -248,7 +248,7 @@ void Rocket_ProcessMouseClick( int button, qboolean down )
 #define MOUSEWHEEL_DELTA 5
 void Rocket_ProcessKeyInput( int key, qboolean down )
 {
-	if ( !menuContext || cls.keyCatchers & KEYCATCH_CONSOLE )
+	if ( !menuContext || cls.keyCatchers & KEYCATCH_CONSOLE || !cls.keyCatchers )
 	{
 		return;
 	}
@@ -319,7 +319,7 @@ int utf8_to_ucs2( const unsigned char *input )
 
 void Rocket_ProcessTextInput( int key )
 {
-	if ( !menuContext || cls.keyCatchers & KEYCATCH_CONSOLE )
+	if ( !menuContext || cls.keyCatchers & KEYCATCH_CONSOLE || !cls.keyCatchers )
 	{
 		return;
 	}
@@ -338,7 +338,7 @@ void Rocket_ProcessTextInput( int key )
 
 void Rocket_MouseMove( int x, int y )
 {
-	if ( !menuContext || cls.keyCatchers & KEYCATCH_CONSOLE )
+	if ( !menuContext || cls.keyCatchers & KEYCATCH_CONSOLE || !cls.keyCatchers )
 	{
 		return;
 	}
