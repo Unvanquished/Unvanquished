@@ -1635,7 +1635,7 @@ void IN_Frame( void )
 	loading = ( cls.state != CA_DISCONNECTED && cls.state != CA_ACTIVE );
 
 	if ( ( !cls.glconfig.isFullscreen || SDL_VERSION_ATLEAST( 2, 0, 0 ) ) &&
-	     ( cls.keyCatchers & KEYCATCH_CONSOLE || ( CL_UIOwnsMouse() && !in_uigrab->integer ) ) )
+	     ( cls.keyCatchers & KEYCATCH_CONSOLE ) )
 	{
 		// Console is down, or UI is up, in windowed mode
 		IN_DeactivateMouse( qfalse );
@@ -1647,7 +1647,7 @@ void IN_Frame( void )
 	}
 	else if ( !( SDL_GetWindowFlags( window ) & SDL_WINDOW_INPUT_FOCUS ) )
 	{
-		// Window not got focus
+		// Window doesn't have focus
 		IN_DeactivateMouse( qfalse );
 	}
 	else if ( com_minimized->integer )

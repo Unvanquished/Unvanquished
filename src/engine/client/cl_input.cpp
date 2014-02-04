@@ -431,11 +431,6 @@ void CL_KeyMove( usercmd_t *cmd )
 	}
 }
 
-qboolean CL_UIOwnsMouse( void )
-{
-	return ( ( cls.keyCatchers & KEYCATCH_UI ) && !( cls.keyCatchers & KEYCATCH_CONSOLE ) && !Cvar_VariableValue( "ui_hideCursor" ) );
-}
-
 /*
 =================
 CL_MouseEvent
