@@ -8,7 +8,7 @@ if test "$1" = "configure"; then
   . /usr/share/debconf/confmodule
   db_version 2.0
 
-  if dpkg --compare-versions "$2" '<' 0.4.0-0; then
+  if test -n "$2" && dpkg --compare-versions "$2" '<' 0.4.0-0; then
     echo 'Upgrading from a very old version of Unvanquished is not supported.'
     echo 'You need to purge and re-install unvanquished-common.'
     exit 1
