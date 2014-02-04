@@ -36,7 +36,7 @@ Maryland 20850 USA.
 #define _MD4_H_
 
 #include "../qcommon/q_shared.h"
-#include "../renderer/tr_types.h"
+#include "../rendererGL/tr_types.h"
 
 void mdfour( byte *out, byte *in, int n );
 

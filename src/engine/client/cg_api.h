@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "../qcommon/q_shared.h"
 #include "../qcommon/vm_traps.h"
-#include "../renderer/tr_types.h"
+#include "../rendererGL/tr_types.h"
 
 #define CGAME_IMPORT_API_VERSION 3
 

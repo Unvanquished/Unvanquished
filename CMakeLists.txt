@@ -420,7 +420,7 @@ set( RENDERERGLLIST
   ${ENGINE_DIR}/rendererGL/tr_fbo.cpp
   ${ENGINE_DIR}/rendererGL/tr_flares.cpp
   ${ENGINE_DIR}/rendererGL/tr_fog.cpp
-  ${ENGINE_DIR}/renderer/tr_font.cpp
+  ${ENGINE_DIR}/rendererGL/tr_font.cpp
   ${ENGINE_DIR}/rendererGL/tr_image.cpp
   ${ENGINE_DIR}/rendererGL/tr_image_crn.cpp
   ${ENGINE_DIR}/rendererGL/tr_image_dds.cpp
@@ -456,7 +456,7 @@ set( RENDERERGLLIST
   ${ENGINE_DIR}/qcommon/md4.cpp
   ${LIB_DIR}/openexr/half.cpp
   ${ENGINE_DIR}/rendererGL/tr_local.h
-  ${ENGINE_DIR}/renderer/tr_public.h
+  ${ENGINE_DIR}/rendererGL/tr_public.h
   ${ENGINE_DIR}/rendererGL/gl_shader.h
   ${ENGINE_DIR}/rendererGL/tr_image.h
   ${ENGINE_DIR}/rendererGL/tr_model_skel.h
