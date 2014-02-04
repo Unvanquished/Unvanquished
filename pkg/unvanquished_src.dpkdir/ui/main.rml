@@ -69,7 +69,7 @@
 		</style>
 		<title>main</title>
 	</head>
-	<body id="main">
+	<body id="main" nohide>
 		<div id="logo">
 			<img style="width: 100%;" src="/ui/assets/logo" />
 		</div>
