@@ -18,7 +18,7 @@ last_assets_file=last-assets.txt
 set -e
 
 # check usage
-if [[ $# -ne 2 ]]; then
+if [ $# -ne 2 ]; then
     echo "Usage: $0 <target directory> <cache directory>"
     exit
 fi
