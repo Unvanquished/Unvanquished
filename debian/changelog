@@ -3,8 +3,14 @@ unvanquished (0.24.0-3) unstable; urgency=low
   * Fix a bug which prevented install (but not upgrade) from succeeding.
   * Fix configuration script regarding when it asks for the mirror name.
   * Add vm & lcc directories to debian/clean.
+  * Enable USE_VOIP; remove build dependency on libxvidcore-dev.
+  * Cherry-picked bug fixes:
+    - Avoid light sampling outside the light grid. This fixes colouring
+      problems in maps such as nano.
+    - Mark fs_extrapaks as a startup variable.
+    - Don't do init for presets which we don't have.
 
- -- Darren Salt <devspam@moreofthesa.me.uk>  Tue, 04 Feb 2014 14:27:10 +0000
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Tue, 04 Feb 2014 14:43:12 +0000
 
 unvanquished (0.24.0-2) unstable; urgency=low
 
