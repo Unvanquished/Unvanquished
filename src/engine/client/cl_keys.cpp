@@ -589,9 +589,8 @@ void Field_KeyDownEvent(Util::LineEditData& edit, int key) {
             break;
         case 'k':
             if (keys[ K_CTRL ].down) {
-		//SDL1_case( 11 )
-                // TODO
-                //edit->buffer[ Field_CursorToOffset( edit ) ] = '\0';
+		SDL1_case( 11 )
+		edit.DeleteEnd();
             }
             break;
     }

@@ -517,25 +517,25 @@ void Con_Init( void )
 	con_animationSpeed = Cvar_Get( "con_animationSpeed", "3", 0 );
 	con_animationType = Cvar_Get( "con_animationType", "2", 0 );
 
-	con_autoclear = Cvar_Get( "con_autoclear", "1", CVAR_ARCHIVE );
-	con_scrollLock = Cvar_Get( "con_scrollLock", "2", CVAR_ARCHIVE );
+	con_autoclear = Cvar_Get( "con_autoclear", "1", 0 );
+	con_scrollLock = Cvar_Get( "con_scrollLock", "2", 0 );
 
-	con_prompt = Cvar_Get( "con_prompt", "^3->", CVAR_ARCHIVE );
+	con_prompt = Cvar_Get( "con_prompt", "^3->", 0 );
 
-	con_height = Cvar_Get( "con_height", "55", CVAR_ARCHIVE );
-	con_colorRed = Cvar_Get( "con_colorRed", "0", CVAR_ARCHIVE );
-	con_colorBlue = Cvar_Get( "con_colorBlue", "0.3", CVAR_ARCHIVE );
-	con_colorGreen = Cvar_Get( "con_colorGreen", "0.18", CVAR_ARCHIVE );
-	con_colorAlpha = Cvar_Get( "con_colorAlpha", "0.5", CVAR_ARCHIVE );
+	con_height = Cvar_Get( "con_height", "55", 0 );
+	con_colorRed = Cvar_Get( "con_colorRed", "0", 0 );
+	con_colorBlue = Cvar_Get( "con_colorBlue", "0.3", 0 );
+	con_colorGreen = Cvar_Get( "con_colorGreen", "0.18", 0 );
+	con_colorAlpha = Cvar_Get( "con_colorAlpha", "0.5", 0 );
 
-	con_margin = Cvar_Get( "con_margin", "10", CVAR_ARCHIVE );
-	con_horizontalPadding = Cvar_Get( "con_horizontalPadding", "0", CVAR_ARCHIVE );
+	con_margin = Cvar_Get( "con_margin", "10", 0 );
+	con_horizontalPadding = Cvar_Get( "con_horizontalPadding", "0", 0 );
 
-	con_borderWidth = Cvar_Get( "con_borderWidth", "1", CVAR_ARCHIVE );
-	con_borderColorRed = Cvar_Get( "con_borderColorRed", "1", CVAR_ARCHIVE );
-	con_borderColorBlue = Cvar_Get( "con_borderColorBlue", "1", CVAR_ARCHIVE );
-	con_borderColorGreen = Cvar_Get( "con_borderColorGreen", "1", CVAR_ARCHIVE );
-	con_borderColorAlpha = Cvar_Get( "con_borderColorAlpha", "0.2", CVAR_ARCHIVE );
+	con_borderWidth = Cvar_Get( "con_borderWidth", "1", 0 );
+	con_borderColorRed = Cvar_Get( "con_borderColorRed", "1", 0 );
+	con_borderColorBlue = Cvar_Get( "con_borderColorBlue", "1", 0 );
+	con_borderColorGreen = Cvar_Get( "con_borderColorGreen", "1", 0 );
+	con_borderColorAlpha = Cvar_Get( "con_borderColorAlpha", "0.2", 0 );
 
 	con_debug = Cvar_Get( "con_debug", "0", 0 );
 

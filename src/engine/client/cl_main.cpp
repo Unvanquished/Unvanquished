@@ -132,9 +132,6 @@ cvar_t *cl_inGameVideo;
 
 cvar_t *cl_serverStatusResendTime;
 
-cvar_t                 *cl_profile;
-cvar_t                 *cl_defaultProfile;
-
 cvar_t                 *cl_demorecording; // fretn
 cvar_t                 *cl_demofilename; // bani
 cvar_t                 *cl_demooffset; // bani
@@ -1387,7 +1384,7 @@ class DemoCmd: public Cmd::StaticCmd {
                     Com_sprintf(name, sizeof(name), "demos/%s.dm_%d", arg, prot_ver);
                 }
 
-                FS_FOpenFileRead_Impure(name, &clc.demofile, qtrue);
+                FS_FOpenFileRead(name, &clc.demofile, qtrue);
                 prot_ver++;
             }
 
@@ -1422,7 +1419,7 @@ class DemoCmd: public Cmd::StaticCmd {
 
         Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, Str::StringRef prefix) const OVERRIDE {
             if (argNum == 1) {
-                return FS::CompleteFilenameInDir(prefix, "demos", ".dm_" + std::to_string(PROTOCOL_VERSION));
+                return FS::HomePath::CompleteFilename(prefix, "demos", ".dm_" XSTRING(PROTOCOL_VERSION), false, true);
             }
 
             return {};
@@ -1796,9 +1793,6 @@ void CL_Disconnect( qboolean showMainMenu )
 
 	// allow cheats locally
 	Cvar_Set( "sv_cheats", "1" );
-
-	// not connected to a pure server anymore
-	cl_connectedToPureServer = qfalse;
 
 #ifdef USE_VOIP
 	// not connected to voip server anymore.
@@ -2177,44 +2171,9 @@ void CL_Rcon_f( void )
 	NET_SendPacket( NS_CLIENT, strlen( message ) + 1, message, to );
 }
 
-/*
-=================
-CL_SendPureChecksums
-=================
-*/
-void CL_SendPureChecksums( void )
-{
-	const char *pChecksums;
-	char       cMsg[ MAX_INFO_VALUE ];
-
-	// if we are pure we need to send back a command with our referenced pk3 checksums
-	pChecksums = FS_ReferencedPakPureChecksums();
-
-	Com_sprintf( cMsg, sizeof( cMsg ), "cp %d %s", cl.serverId, pChecksums );
-
-	CL_AddReliableCommand( cMsg );
-}
-
-/*
-=================
-CL_ResetPureClientAtServer
-=================
-*/
-void CL_ResetPureClientAtServer( void )
-{
-	CL_AddReliableCommand( "vdr" );
-}
-
 static void CL_GetRSAKeysFileName( char *buffer, size_t size )
 {
-	if ( cl_profile && cl_profile->string[ 0 ] )
-	{
-		Q_snprintf( buffer, size, "profiles/%s/%s", cl_profile->string, RSAKEY_FILE );
-	}
-	else
-	{
-		Q_snprintf( buffer, size, "%s", RSAKEY_FILE );
-	}
+	Q_snprintf( buffer, size, "%s", RSAKEY_FILE );
 }
 
 static void CL_GenerateRSAKeys( const char *fileName )
@@ -2244,8 +2203,6 @@ static void CL_GenerateRSAKeys( const char *fileName )
 	{
 		Com_Error( ERR_FATAL, "Daemon could not open %s for writing the RSA keypair", RSAKEY_FILE );
 	}
-
-	FS_FChmod( f, 0600 ); // owner r/w, no other access
 
 	FS_Write( key_buffer.contents, key_buffer.size, f );
 	FS_FCloseFile( f );
@@ -2341,12 +2298,6 @@ void CL_Vid_Restart_f( void )
 	re.UnregisterFont( NULL );
 	// shutdown the renderer and clear the renderer interface
 	CL_ShutdownRef();
-	// client is no longer pure untill new checksums are sent
-	CL_ResetPureClientAtServer();
-	// clear pak references
-	FS_ClearPakReferences( FS_UI_REF | FS_CGAME_REF );
-	// reinitialize the filesystem if the game directory or checksum has changed
-	FS_ConditionalRestart( clc.checksumFeed );
 
 	cls.rendererStarted = qfalse;
 	cls.uiStarted = qfalse;
@@ -2372,7 +2323,6 @@ void CL_Vid_Restart_f( void )
 	// startup all the client stuff
 	CL_StartHunkUsers();
 
-	CL_UpdateProfile();
 #ifdef _WIN32
 	Sys_In_Restart_f(); // fretn
 #endif
@@ -2383,8 +2333,6 @@ void CL_Vid_Restart_f( void )
 		cls.cgameStarted = qtrue;
 		cls.cgameCVarsRegistered = qtrue;
 		CL_InitCGame();
-		// send pure checksums
-		CL_SendPureChecksums();
 	}
 }
 
@@ -2439,40 +2387,6 @@ void CL_Snd_Restart_f( void )
 		Audio::Init();
 		CL_Vid_Restart_f();
 	}
-}
-
-
-/*
-=================
-CL_ChangeProfile
-=================
-*/
-void CL_UpdateProfile( void )
-{
-	if( cl_profile->modified )
-	{
-		cl_profile->modified = qfalse;
-	}
-}
-
-/*
-==================
-CL_PK3List_f
-==================
-*/
-void CL_OpenedPK3List_f( void )
-{
-	Com_Printf( "Opened PK3 Names: %s\n", FS_LoadedPakNames() );
-}
-
-/*
-==================
-CL_PureList_f
-==================
-*/
-void CL_ReferencedPK3List_f( void )
-{
-	Com_Printf( "Referenced PK3 Names: %s\n", FS_ReferencedPakNames() );
 }
 
 /*
@@ -2645,7 +2559,8 @@ void CL_DownloadsComplete( void )
 	{
 		cls.downloadRestart = qfalse;
 
-		FS_Restart( clc.checksumFeed );  // We possibly downloaded a pak, restart the file system to load it
+		FS::PakPath::ClearPaks();
+		FS_LoadServerPaks(Cvar_VariableString("sv_paks")); // We possibly downloaded a pak, restart the file system to load it
 
 		if ( !cls.bWWWDlDisconnected )
 		{
@@ -2692,9 +2607,6 @@ void CL_DownloadsComplete( void )
 	cls.cgameStarted = qtrue;
 	cls.cgameCVarsRegistered = qtrue;
 	CL_InitCGame();
-
-	// set pure checksums
-	CL_SendPureChecksums();
 
 	CL_WritePacket();
 	CL_WritePacket();
@@ -3734,7 +3646,6 @@ CL_WWWDownload
 */
 void CL_WWWDownload( void )
 {
-	char            *to_ospath;
 	dlStatus_t      ret;
 	static qboolean bAbort = qfalse;
 
@@ -3765,16 +3676,9 @@ void CL_WWWDownload( void )
 	if ( ret == DL_DONE )
 	{
 		// taken from CL_ParseDownload
-		// we work with OS paths
 		clc.download = 0;
-		to_ospath = FS_BuildOSPath( Cvar_VariableString( "fs_homepath" ), cls.originalDownloadName, "" );
-		to_ospath[ strlen( to_ospath ) - 1 ] = '\0';
 
-		if ( rename( cls.downloadTempName, to_ospath ) )
-		{
-			FS_CopyFile( cls.downloadTempName, to_ospath );
-			remove( cls.downloadTempName );
-		}
+		FS_SV_Rename( cls.downloadTempName, cls.originalDownloadName );
 
 		*cls.downloadTempName = *cls.downloadName = 0;
 		Cvar_Set( "cl_downloadName", "" );
@@ -3836,7 +3740,7 @@ this indicates that the redirect setup is broken, and next dl attempt should NOT
 */
 qboolean CL_WWWBadChecksum( const char *pakname )
 {
-	if ( strstr( clc.redirectedList, va( "@%s", pakname ) ) )
+	if ( strstr( clc.redirectedList, va( "@%s@", pakname ) ) )
 	{
 		Com_Logf(LOG_WARN, _( "file %s obtained through download redirect has wrong checksum\n"
 		              "\tthis likely means the server configuration is broken" ), pakname );
@@ -4184,7 +4088,7 @@ qboolean CL_InitRenderer( void )
 	// filehandle is unused but forces FS_FOpenFileRead() to heed purecheck because it does not when filehandle is NULL
 	if ( cl_consoleFont->string[0] )
 	{
-		if ( FS_FOpenFileByMode( cl_consoleFont->string, &f, FS_READ ) >= 0 )
+		if ( FS_FOpenFileRead( cl_consoleFont->string, &f, qfalse ) >= 0 )
 		{
 			re.RegisterFont( cl_consoleFont->string, NULL, cl_consoleFontSize->integer, &cls.consoleFont );
 			cls.useLegacyConsoleFont = qfalse;
@@ -4346,7 +4250,7 @@ qboolean CL_InitRef( const char *renderer )
 	GetRefAPI_t GetRefAPI;
 	char        dllName[ MAX_OSPATH ];
 
-	Com_sprintf( dllName, sizeof( dllName ), "%s/renderer%s" DLL_EXT, Cvar_VariableString( "fs_libpath" ), renderer );
+	Com_sprintf( dllName, sizeof( dllName ), "%s/renderer%s" DLL_EXT, FS::GetLibPath().c_str(), renderer );
 
 	Com_Printf( "Loading \"%s\"...", dllName );
 
@@ -4403,7 +4307,6 @@ qboolean CL_InitRef( const char *renderer )
 	ri.FS_WriteFile = FS_WriteFile;
 	ri.FS_FreeFileList = FS_FreeFileList;
 	ri.FS_ListFiles = FS_ListFiles;
-	ri.FS_FileIsInPAK = FS_FileIsInPAK;
 	ri.FS_FileExists = FS_FileExists;
 	ri.FS_Seek = FS_Seek;
 	ri.FS_FTell = FS_FTell;
@@ -4502,7 +4405,7 @@ void CL_Init( void )
 	//
 	// register our variables
 	//
-	cl_renderer = Cvar_Get( "cl_renderer", "GL3,GL", CVAR_ARCHIVE );
+	cl_renderer = Cvar_Get( "cl_renderer", "GL3,GL", 0 );
 
 	cl_noprint = Cvar_Get( "cl_noprint", "0", 0 );
 	cl_motd = Cvar_Get( "cl_motd", "1", 0 );
@@ -4524,24 +4427,24 @@ void CL_Init( void )
 
 	cl_timedemo = Cvar_Get( "timedemo", "0", 0 );
 	cl_forceavidemo = Cvar_Get( "cl_forceavidemo", "0", 0 );
-	cl_aviFrameRate = Cvar_Get( "cl_aviFrameRate", "25", CVAR_ARCHIVE );
+	cl_aviFrameRate = Cvar_Get( "cl_aviFrameRate", "25", 0 );
 
 	// XreaL BEGIN
-	cl_aviMotionJpeg = Cvar_Get( "cl_aviMotionJpeg", "1", CVAR_ARCHIVE );
+	cl_aviMotionJpeg = Cvar_Get( "cl_aviMotionJpeg", "1", 0 );
 	// XreaL END
 
 	rconAddress = Cvar_Get( "rconAddress", "", 0 );
 
-	cl_yawspeed = Cvar_Get( "cl_yawspeed", "140", CVAR_ARCHIVE );
-	cl_pitchspeed = Cvar_Get( "cl_pitchspeed", "140", CVAR_ARCHIVE );
+	cl_yawspeed = Cvar_Get( "cl_yawspeed", "140", 0 );
+	cl_pitchspeed = Cvar_Get( "cl_pitchspeed", "140", 0 );
 	cl_anglespeedkey = Cvar_Get( "cl_anglespeedkey", "1.5", 0 );
 
-	cl_maxpackets = Cvar_Get( "cl_maxpackets", "125", CVAR_ARCHIVE );
-	cl_packetdup = Cvar_Get( "cl_packetdup", "1", CVAR_ARCHIVE );
+	cl_maxpackets = Cvar_Get( "cl_maxpackets", "125", 0 );
+	cl_packetdup = Cvar_Get( "cl_packetdup", "1", 0 );
 
-	cl_run = Cvar_Get( "cl_run", "1", CVAR_ARCHIVE );
+	cl_run = Cvar_Get( "cl_run", "1", 0 );
 	cl_sensitivity = Cvar_Get( "sensitivity", "5", CVAR_ARCHIVE );
-	cl_mouseAccel = Cvar_Get( "cl_mouseAccel", "0", CVAR_ARCHIVE );
+	cl_mouseAccel = Cvar_Get( "cl_mouseAccel", "0", 0 );
 	cl_freelook = Cvar_Get( "cl_freelook", "1", CVAR_ARCHIVE );
 
 	cl_xbox360ControllerAvailable = Cvar_Get( "in_xbox360ControllerAvailable", "0", CVAR_ROM );
@@ -4549,59 +4452,56 @@ void CL_Init( void )
 	// 0: legacy mouse acceleration
 	// 1: new implementation
 
-	cl_mouseAccelStyle = Cvar_Get( "cl_mouseAccelStyle", "0", CVAR_ARCHIVE );
+	cl_mouseAccelStyle = Cvar_Get( "cl_mouseAccelStyle", "0", 0 );
 	// offset for the power function (for style 1, ignored otherwise)
 	// this should be set to the max rate value
-	cl_mouseAccelOffset = Cvar_Get( "cl_mouseAccelOffset", "5", CVAR_ARCHIVE );
+	cl_mouseAccelOffset = Cvar_Get( "cl_mouseAccelOffset", "5", 0 );
 
 	cl_showMouseRate = Cvar_Get( "cl_showmouserate", "0", 0 );
 
-	cl_allowDownload = Cvar_Get( "cl_allowDownload", "1", CVAR_ARCHIVE );
-	cl_wwwDownload = Cvar_Get( "cl_wwwDownload", "1", CVAR_USERINFO | CVAR_ARCHIVE );
+	cl_allowDownload = Cvar_Get( "cl_allowDownload", "1", 0 );
+	cl_wwwDownload = Cvar_Get( "cl_wwwDownload", "1", CVAR_USERINFO  );
 
-	cl_profile = Cvar_Get( "cl_profile", "", CVAR_ROM );
-	cl_defaultProfile = Cvar_Get( "cl_defaultProfile", "", CVAR_ROM );
-
-	cl_inGameVideo = Cvar_Get( "r_inGameVideo", "1", CVAR_ARCHIVE );
+	cl_inGameVideo = Cvar_Get( "r_inGameVideo", "1", 0 );
 
 	cl_serverStatusResendTime = Cvar_Get( "cl_serverStatusResendTime", "750", 0 );
 
-	cl_doubletapdelay = Cvar_Get( "cl_doubletapdelay", "250", CVAR_ARCHIVE );  // Arnout: double tap
-	m_pitch = Cvar_Get( "m_pitch", "0.022", CVAR_ARCHIVE );
-	m_yaw = Cvar_Get( "m_yaw", "0.022", CVAR_ARCHIVE );
-	m_forward = Cvar_Get( "m_forward", "0.25", CVAR_ARCHIVE );
-	m_side = Cvar_Get( "m_side", "0.25", CVAR_ARCHIVE );
+	cl_doubletapdelay = Cvar_Get( "cl_doubletapdelay", "250", 0 );  // Arnout: double tap
+	m_pitch = Cvar_Get( "m_pitch", "0.022", 0 );
+	m_yaw = Cvar_Get( "m_yaw", "0.022", 0 );
+	m_forward = Cvar_Get( "m_forward", "0.25", 0 );
+	m_side = Cvar_Get( "m_side", "0.25", 0 );
 	m_filter = Cvar_Get( "m_filter", "0", CVAR_ARCHIVE );
 
-	j_pitch = Cvar_Get( "j_pitch", "0.022", CVAR_ARCHIVE );
-	j_yaw = Cvar_Get( "j_yaw", "-0.022", CVAR_ARCHIVE );
-	j_forward = Cvar_Get( "j_forward", "-0.25", CVAR_ARCHIVE );
-	j_side = Cvar_Get( "j_side", "0.25", CVAR_ARCHIVE );
-	j_up = Cvar_Get ("j_up", "1", CVAR_ARCHIVE);
+	j_pitch = Cvar_Get( "j_pitch", "0.022", 0 );
+	j_yaw = Cvar_Get( "j_yaw", "-0.022", 0 );
+	j_forward = Cvar_Get( "j_forward", "-0.25", 0 );
+	j_side = Cvar_Get( "j_side", "0.25", 0 );
+	j_up = Cvar_Get ("j_up", "1", 0);
 
-	j_pitch_axis = Cvar_Get( "j_pitch_axis", "3", CVAR_ARCHIVE );
-	j_yaw_axis = Cvar_Get( "j_yaw_axis", "4", CVAR_ARCHIVE );
-	j_forward_axis = Cvar_Get( "j_forward_axis", "1", CVAR_ARCHIVE );
-	j_side_axis = Cvar_Get( "j_side_axis", "0", CVAR_ARCHIVE );
-	j_up_axis = Cvar_Get( "j_up_axis", "2", CVAR_ARCHIVE );
+	j_pitch_axis = Cvar_Get( "j_pitch_axis", "3", 0 );
+	j_yaw_axis = Cvar_Get( "j_yaw_axis", "4", 0 );
+	j_forward_axis = Cvar_Get( "j_forward_axis", "1", 0 );
+	j_side_axis = Cvar_Get( "j_side_axis", "0", 0 );
+	j_up_axis = Cvar_Get( "j_up_axis", "2", 0 );
 
 	cl_motdString = Cvar_Get( "cl_motdString", "", CVAR_ROM );
 
 	// ~ and `, as keys and characters
-	cl_consoleKeys = Cvar_Get( "cl_consoleKeys", _("~ ` 0x7e 0x60"), CVAR_ARCHIVE );
+	cl_consoleKeys = Cvar_Get( "cl_consoleKeys", _("~ ` 0x7e 0x60"), 0 );
 
-	cl_consoleFont = Cvar_Get( "cl_consoleFont", "fonts/unifont.ttf", CVAR_ARCHIVE | CVAR_LATCH );
-	cl_consoleFontSize = Cvar_Get( "cl_consoleFontSize", "16", CVAR_ARCHIVE | CVAR_LATCH );
-	cl_consoleFontKerning = Cvar_Get( "cl_consoleFontKerning", "0", CVAR_ARCHIVE );
+	cl_consoleFont = Cvar_Get( "cl_consoleFont", "fonts/unifont.ttf",  CVAR_LATCH );
+	cl_consoleFontSize = Cvar_Get( "cl_consoleFontSize", "16",  CVAR_LATCH );
+	cl_consoleFontKerning = Cvar_Get( "cl_consoleFontKerning", "0", 0 );
 
-	cl_consoleCommand = Cvar_Get( "cl_consoleCommand", "say", CVAR_ARCHIVE );
+	cl_consoleCommand = Cvar_Get( "cl_consoleCommand", "say", 0 );
 
-	cl_logs = Cvar_Get ("cl_logs", "0", CVAR_ARCHIVE);
+	cl_logs = Cvar_Get ("cl_logs", "0", 0);
 
 	p_team = Cvar_Get("p_team", "0", CVAR_ROM );
 
 	cl_gamename = Cvar_Get( "cl_gamename", GAMENAME_FOR_MASTER, CVAR_TEMP );
-	cl_altTab = Cvar_Get( "cl_altTab", "1", CVAR_ARCHIVE );
+	cl_altTab = Cvar_Get( "cl_altTab", "1", 0 );
 
 	//bani - make these cvars visible to cgame
 	cl_demorecording = Cvar_Get( "cl_demorecording", "0", CVAR_ROM );
@@ -4615,18 +4515,18 @@ void CL_Init( void )
 	cl_packetloss = Cvar_Get( "cl_packetloss", "0", CVAR_CHEAT );
 	cl_packetdelay = Cvar_Get( "cl_packetdelay", "0", CVAR_CHEAT );
 
-	Cvar_Get( "cl_maxPing", "800", CVAR_ARCHIVE );
+	Cvar_Get( "cl_maxPing", "800", 0 );
 	// userinfo
 	Cvar_Get( "name", UNNAMED_PLAYER, CVAR_USERINFO | CVAR_ARCHIVE );
 	cl_rate = Cvar_Get( "rate", "25000", CVAR_USERINFO | CVAR_ARCHIVE );
-	Cvar_Get( "snaps", "40", CVAR_USERINFO | CVAR_ARCHIVE );
-//  Cvar_Get ("sex", "male", CVAR_USERINFO | CVAR_ARCHIVE );
+	Cvar_Get( "snaps", "40", CVAR_USERINFO  );
+//  Cvar_Get ("sex", "male", CVAR_USERINFO  );
 
 	Cvar_Get( "password", "", CVAR_USERINFO );
 
 #ifdef USE_MUMBLE
-	cl_useMumble = Cvar_Get( "cl_useMumble", "0", CVAR_ARCHIVE | CVAR_LATCH );
-	cl_mumbleScale = Cvar_Get( "cl_mumbleScale", "0.0254", CVAR_ARCHIVE );
+	cl_useMumble = Cvar_Get( "cl_useMumble", "0",  CVAR_LATCH );
+	cl_mumbleScale = Cvar_Get( "cl_mumbleScale", "0.0254", 0 );
 #endif
 
 #ifdef USE_VOIP
@@ -4646,11 +4546,11 @@ void CL_Init( void )
 #endif
 
 	// cgame might not be initialized before menu is used
-	Cvar_Get( "cg_viewsize", "100", CVAR_ARCHIVE );
+	Cvar_Get( "cg_viewsize", "100", 0 );
 
 	cl_allowPaste = Cvar_Get( "cl_allowPaste", "1", 0 );
 
-	cl_cgameSyscallStats = Cvar_Get( "cl_cgameSyscallStats", "0", CVAR_ARCHIVE );
+	cl_cgameSyscallStats = Cvar_Get( "cl_cgameSyscallStats", "0", 0 );
 
 	//
 	// register our commands
@@ -4675,8 +4575,6 @@ void CL_Init( void )
 	Cmd_AddCommand( "ping", CL_Ping_f );
 	Cmd_AddCommand( "serverstatus", CL_ServerStatus_f );
 	Cmd_AddCommand( "showip", CL_ShowIP_f );
-	Cmd_AddCommand( "fs_openedList", CL_OpenedPK3List_f );
-	Cmd_AddCommand( "fs_referencedList", CL_ReferencedPK3List_f );
 
 	Cmd_AddCommand( "irc_connect", CL_InitIRC );
 	Cmd_AddCommand( "irc_quit", CL_IRCInitiateShutdown );

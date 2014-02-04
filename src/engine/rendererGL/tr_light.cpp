@@ -166,10 +166,12 @@ static void R_SetupEntityLightingGrid( trRefEntity_t *ent, vec3_t forcedOrigin )
 		if ( pos[ i ] < 0 )
 		{
 			pos[ i ] = 0;
+			frac[ i ] = 0.0f;
 		}
 		else if ( pos[ i ] >= tr.world->lightGridBounds[ i ] - 1 )
 		{
-			pos[ i ] = tr.world->lightGridBounds[ i ] - 1;
+			pos[ i ] = tr.world->lightGridBounds[ i ] - 2;
+			frac[ i ] = 1.0f;
 		}
 	}
 

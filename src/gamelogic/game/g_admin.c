@@ -3217,7 +3217,7 @@ qboolean G_admin_changemap( gentity_t *ent )
 
 	trap_Argv( 1, map, sizeof( map ) );
 
-	if ( !trap_FS_FOpenFile( va( "maps/%s.bsp", map ), NULL, FS_READ ) )
+	if ( !G_MapExists( map ) )
 	{
 		ADMP( va( "%s %s", QQ( N_("^3changemap: ^7invalid map name '$1$'\n") ), map ) );
 		return qfalse;
@@ -4153,8 +4153,8 @@ qboolean G_admin_endvote( gentity_t *ent )
 	}
 
 	admin_log( BG_TeamName( team ) );
-	level.team[ team ].voteNo = cancel ? level.team[ team ].numVotingClients : 0;
-	level.team[ team ].voteYes = cancel ? 0 : level.team[ team ].numVotingClients;
+	level.team[ team ].voteNo = cancel ? level.team[ team ].numPlayers : 0;
+	level.team[ team ].voteYes = cancel ? 0 : level.team[ team ].numPlayers;
 	level.team[ team ].quorum = 0;
 	G_CheckVote( team );
 

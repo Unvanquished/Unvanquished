@@ -40,11 +40,11 @@ Maryland 20850 USA.
 void RE_Shutdown( qboolean destroyWindow ) { }
 qhandle_t RE_RegisterModel( const char *name )
 {
-	return 1;
+	return FS_FOpenFileRead( name, NULL, qfalse );
 }
 qhandle_t RE_RegisterSkin( const char *name )
 {
-	return 1;
+	return FS_FOpenFileRead( name, NULL, qfalse );
 }
 qhandle_t RE_RegisterShader( const char *name, RegisterShaderFlags_t flags )
 {
@@ -54,11 +54,42 @@ qhandle_t RE_RegisterShaderNoMip( const char *name )
 {
 	return 1;
 }
-void RE_RegisterFont( const char *fontName, const char *fallbackName, int pointSize, fontInfo_t *font ) { }
-void RE_Glyph( fontInfo_t *font, const char *str, glyphInfo_t *glyphh ) { }
-void RE_GlyphChar( fontInfo_t *font, int ch, glyphInfo_t *glyph ) { }
+void RE_RegisterFont( const char *fontName, const char *fallbackName, int pointSize, fontInfo_t *font )
+{
+	font->pointSize = pointSize;
+	font->height = 1;
+	font->glyphScale = 1.0f;
+	font->name[0] = '\0';
+}
+void RE_Glyph( fontInfo_t *font, const char *str, glyphInfo_t *glyph )
+{
+	glyph->height = 1;
+	glyph->top = 1;
+	glyph->bottom = 0;
+	glyph->pitch = 1;
+	glyph->xSkip = 1;
+	glyph->imageWidth = 1;
+	glyph->imageHeight = 1;
+	glyph->s = 0.0f;
+	glyph->t = 0.0f;
+	glyph->s2 = 1.0f;
+	glyph->t2 = 1.0f;
+	glyph->glyph = 1;
+	glyph->shaderName[0] = '\0';
+}
+void RE_GlyphChar( fontInfo_t *font, int ch, glyphInfo_t *glyph )
+{
+	RE_Glyph( font, NULL, glyph );
+}
 void RE_UnregisterFont( fontInfo_t *font ) { }
-void RE_RegisterFontVM( const char *fontName, const char *fallbackName, int pointSize, fontMetrics_t *font ) { }
+void RE_RegisterFontVM( const char *fontName, const char *fallbackName, int pointSize, fontMetrics_t *font )
+{
+	font->handle = 1;
+	font->isBitmap = qtrue;
+	font->pointSize = pointSize;
+	font->height = 1;
+	font->glyphScale = 1.0f;
+}
 void RE_GlyphVM( fontHandle_t font, const char *ch, glyphInfo_t *glyph ) { }
 void RE_GlyphCharVM( fontHandle_t font, int ch, glyphInfo_t *glyph ) { }
 void RE_UnregisterFontVM( fontHandle_t font ) { }
@@ -149,11 +180,11 @@ int RE_CheckSkeleton( refSkeleton_t *skel, qhandle_t model, qhandle_t anim )
 }
 int RE_BuildSkeleton( refSkeleton_t *skel, qhandle_t anim, int startFrame, int endFrame, float frac, qboolean clearOrigin )
 {
-	return 0;
+	return 1;
 }
 int RE_BlendSkeleton( refSkeleton_t *skel, const refSkeleton_t *blend, float frac )
 {
-	return 0;
+	return 1;
 }
 int RE_BoneIndex( qhandle_t hModel, const char *boneName )
 {
@@ -185,6 +216,9 @@ void     R_SetAltShaderTokens( const char *name ) { }
 qboolean RE_BeginRegistration( glconfig_t *config, glconfig2_t *glconfig2 )
 {
 	Com_Memset( config, 0, sizeof( glconfig_t ) );
+	config->vidWidth = 640;
+	config->vidHeight = 480;
+	config->windowAspect = 1.0f;
 	Com_Memset( glconfig2, 0, sizeof( glconfig2_t ) );
 
 	return qtrue;

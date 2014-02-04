@@ -526,7 +526,7 @@ void CL_SetExpectedHunkUsage( const char *mapname )
 	char *token;
 	int  len;
 
-	len = FS_FOpenFileByMode( memlistfile, &handle, FS_READ );
+	len = FS_FOpenFileRead( memlistfile, &handle, qfalse );
 
 	if ( len >= 0 )
 	{
@@ -640,23 +640,11 @@ void LAN_LoadCachedServers( void )
 {
 	int          size;
 	fileHandle_t fileIn;
-	char         filename[ MAX_QPATH ];
 
 	cls.numglobalservers = cls.numfavoriteservers = 0;
 	cls.numGlobalServerAddresses = 0;
 
-	if ( cl_profile->string[ 0 ] )
-	{
-		Com_sprintf( filename, sizeof( filename ), "profiles/%s/servercache.dat", cl_profile->string );
-	}
-	else
-	{
-		Q_strncpyz( filename, "servercache.dat", sizeof( filename ) );
-	}
-
-	// Arnout: moved to mod/profiles dir
-	//if (FS_SV_FOpenFileRead(filename, &fileIn)) {
-	if ( FS_FOpenFileRead( filename, &fileIn, qtrue ) )
+	if ( FS_FOpenFileRead( "servercache.dat", &fileIn, qtrue ) != -1 )
 	{
 		FS_Read( &cls.numglobalservers, sizeof( int ), fileIn );
 		FS_Read( &cls.numfavoriteservers, sizeof( int ), fileIn );
@@ -686,20 +674,8 @@ void LAN_SaveServersToCache( void )
 {
 	int          size;
 	fileHandle_t fileOut;
-	char         filename[ MAX_QPATH ];
 
-	if ( cl_profile->string[ 0 ] )
-	{
-		Com_sprintf( filename, sizeof( filename ), "profiles/%s/servercache.dat", cl_profile->string );
-	}
-	else
-	{
-		Q_strncpyz( filename, "servercache.dat", sizeof( filename ) );
-	}
-
-	// Arnout: moved to mod/profiles dir
-	//fileOut = FS_SV_FOpenFileWrite(filename);
-	fileOut = FS_FOpenFileWrite( filename );
+	fileOut = FS_FOpenFileWrite( "servercache.dat" );
 	FS_Write( &cls.numglobalservers, sizeof( int ), fileOut );
 	FS_Write( &cls.numfavoriteservers, sizeof( int ), fileOut );
 	size = sizeof( cls.globalServers ) + sizeof( cls.favoriteServers );
@@ -1590,7 +1566,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return CL_DemoPos();
 
 		case CG_FS_FOPENFILE:
-			return FS_FOpenFileByMode( (char*) VMA( 1 ), (fileHandle_t*) VMA( 2 ), (fsMode_t) args[ 3 ] );
+			return FS_Game_FOpenFileByMode( (char*) VMA( 1 ), (fileHandle_t*) VMA( 2 ), (fsMode_t) args[ 3 ] );
 
 		case CG_FS_READ:
 			VM_CheckBlock( args[1], args[2], "FSREAD" );
@@ -2509,7 +2485,7 @@ void CL_UpdateLevelHunkUsage( void )
 
 	memusage = Cvar_VariableIntegerValue( "com_hunkused" ) + Cvar_VariableIntegerValue( "hunk_soundadjust" );
 
-	len = FS_FOpenFileByMode( memlistfile, &handle, FS_READ );
+	len = FS_FOpenFileRead( memlistfile, &handle, qfalse );
 
 	if ( len >= 0 )
 	{
@@ -2590,9 +2566,9 @@ void CL_UpdateLevelHunkUsage( void )
 	}
 
 	// now append the current map to the current file
-	FS_FOpenFileByMode( memlistfile, &handle, FS_APPEND );
+	handle = FS_FOpenFileAppend( memlistfile );
 
-	if ( handle < 0 )
+	if ( handle == 0 )
 	{
 		Com_Error( ERR_DROP, "cannot write to hunkusage.dat, check disk full" );
 	}
@@ -2602,7 +2578,7 @@ void CL_UpdateLevelHunkUsage( void )
 	FS_FCloseFile( handle );
 
 	// now just open it and close it, so it gets copied to the pak dir
-	len = FS_FOpenFileByMode( memlistfile, &handle, FS_READ );
+	len = FS_FOpenFileRead( memlistfile, &handle, qfalse );
 
 	if ( len >= 0 )
 	{
@@ -3138,8 +3114,6 @@ void  CL_OnTeamChanged( int newTeam )
 	 * execute a possibly team aware config each time the team was changed.
 	 * the user can use the cvars p_team or p_teamname (if the cgame sets it) within that config
 	 * to e.g. execute team specific configs, like cg_<team>Config did previously, but with less dependency on the cgame
-	 *
-	 * compared to render settings, that are client/workstation specifc, teamconfigs will always be player and with that profile dependend
 	 */
-	Cmd::BufferCommandText( va( "exec -f profiles/%s/" TEAMCONFIG_NAME, cl_profile->string ) );
+	Cmd::BufferCommandText( "exec -f " TEAMCONFIG_NAME );
 }

@@ -11,14 +11,14 @@ modification, are permitted provided that the following conditions are met:
     * Redistributions in binary form must reproduce the above copyright
       notice, this list of conditions and the following disclaimer in the
       documentation and/or other materials provided with the distribution.
-    * Neither the name of the <organization> nor the
+    * Neither the name of the Daemon developers nor the
       names of its contributors may be used to endorse or promote products
       derived from this software without specific prior written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
+DISCLAIMED. IN NO EVENT SHALL DAEMON DEVELOPERS BE LIABLE FOR ANY
 DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
 (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
 LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -36,15 +36,15 @@ namespace Audio {
 
     static Cvar::Range<Cvar::Cvar<float>> masterVolume("audio.volume.master", "the global audio volume", Cvar::ARCHIVE, 0.8f, 0.0f, 1.0f);
 
-    static Cvar::Cvar<bool> muteWhenMinimized("audio.muteWhenMinimized", "should the game be muted when minimized", Cvar::ARCHIVE, false);
-    static Cvar::Cvar<bool> muteWhenUnfocused("audio.muteWhenUnfocused", "should the game be muted when not focused", Cvar::ARCHIVE, false);
+    static Cvar::Cvar<bool> muteWhenMinimized("audio.muteWhenMinimized", "should the game be muted when minimized", Cvar::NONE, false);
+    static Cvar::Cvar<bool> muteWhenUnfocused("audio.muteWhenUnfocused", "should the game be muted when not focused", Cvar::NONE, false);
 
     //TODO make them the equivalent of LATCH and ROM for available*
     static Cvar::Cvar<std::string> deviceString("audio.al.device", "the OpenAL device to use", Cvar::ARCHIVE, "");
-    static Cvar::Cvar<std::string> availableDevices("audio.al.availableDevices", "the available OpenAL devices", 0, "");
+    static Cvar::Cvar<std::string> availableDevices("audio.al.availableDevices", "the available OpenAL devices", Cvar::NONE, "");
 
     static Cvar::Cvar<std::string> captureDeviceString("audio.al.captureDevice", "the OpenAL capture device to use", Cvar::ARCHIVE, "");
-    static Cvar::Cvar<std::string> availableCaptureDevices("audio.al.availableCaptureDevices", "the available capture OpenAL devices", 0, "");
+    static Cvar::Cvar<std::string> availableCaptureDevices("audio.al.availableCaptureDevices", "the available capture OpenAL devices", Cvar::NONE, "");
 
     // We mimic the behavior of the previous sound system by allowing only one looping ousnd per entity.
     // (and only one entities) CGame will add at each frame all the loops: if a loop hasn't been given
@@ -385,7 +385,7 @@ namespace Audio {
     }
 
     void SetReverb(int slotNum, std::string name, float ratio) {
-        if (slotNum < 0 or slotNum > N_REVERB_SLOTS or std::isnan(ratio)) {
+        if (slotNum < 0 or slotNum >= N_REVERB_SLOTS or std::isnan(ratio)) {
             return;
         }
 

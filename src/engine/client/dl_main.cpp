@@ -47,16 +47,16 @@ static int   dl_initialized = 0;
 
 static CURLM *dl_multi = NULL;
 static CURL  *dl_request = NULL;
-static FILE  *dl_file = NULL;
+static fileHandle_t dl_file;
 
 /*
 ** Write to file
 */
 static size_t DL_cb_FWriteFile( void *ptr, size_t size, size_t nmemb, void *stream )
 {
-	FILE *file = ( FILE * ) stream;
+	fileHandle_t file = ( fileHandle_t )( intptr_t ) stream;
 
-	return fwrite( ptr, size, nmemb, file );
+	return FS_Write( ptr, size * nmemb, file );
 }
 
 /*
@@ -120,8 +120,15 @@ int DL_BeginDownload( const char *localName, const char *remoteName, int debug )
 
 	if ( dl_request )
 	{
-		Com_Printf( "ERROR: DL_BeginDownload called with a download request already active\n" );
-		return 0;
+		curl_multi_remove_handle( dl_multi, dl_request );
+		curl_easy_cleanup( dl_request );
+		dl_request = NULL;
+	}
+
+	if ( dl_file )
+	{
+		FS_FCloseFile( dl_file );
+		dl_file = 0;
 	}
 
 	if ( !localName || !remoteName )
@@ -130,8 +137,7 @@ int DL_BeginDownload( const char *localName, const char *remoteName, int debug )
 		return 0;
 	}
 
-	FS_CreatePath( localName );
-	dl_file = fopen( localName, "wb+" );
+	dl_file = FS_SV_FOpenFileWrite( localName );
 
 	if ( !dl_file )
 	{
@@ -149,7 +155,7 @@ int DL_BeginDownload( const char *localName, const char *remoteName, int debug )
 	curl_easy_setopt( dl_request, CURLOPT_REFERER, referer );
 	curl_easy_setopt( dl_request, CURLOPT_URL, remoteName );
 	curl_easy_setopt( dl_request, CURLOPT_WRITEFUNCTION, DL_cb_FWriteFile );
-	curl_easy_setopt( dl_request, CURLOPT_WRITEDATA, ( void * ) dl_file );
+	curl_easy_setopt( dl_request, CURLOPT_WRITEDATA, ( void * )( intptr_t ) dl_file );
 	curl_easy_setopt( dl_request, CURLOPT_PROGRESSFUNCTION, DL_cb_Progress );
 	curl_easy_setopt( dl_request, CURLOPT_NOPROGRESS, 0 );
 	curl_easy_setopt( dl_request, CURLOPT_FAILONERROR, 1 );
@@ -206,8 +212,7 @@ dlStatus_t DL_DownloadLoop( void )
 	curl_multi_remove_handle( dl_multi, dl_request );
 	curl_easy_cleanup( dl_request );
 
-	fclose( dl_file );
-	dl_file = NULL;
+	FS_FCloseFile( dl_file );
 
 	dl_request = NULL;
 
