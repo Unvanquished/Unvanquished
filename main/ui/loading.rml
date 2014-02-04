@@ -46,7 +46,7 @@
 		</style>
 		<title>Loading</title>
 	</head>
-	<body id="loading">
+	<body id="loading" nohide>
 		<div id="text">
 			<p>Connecting...</p>
 			<progressbar id="overall" src="overall" />

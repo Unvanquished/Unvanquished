@@ -39,8 +39,6 @@ Maryland 20850 USA.
 #include <Rocket/Core/Element.h>
 #include <Rocket/Core/ElementDocument.h>
 
-static Rocket::Core::String MAIN("main");
-
 
 class RocketElementDocument : public Rocket::Core::ElementDocument
 {
@@ -55,8 +53,7 @@ public:
 		{
 			Rocket::Core::Input::KeyIdentifier key = (Rocket::Core::Input::KeyIdentifier) event.GetParameter<int>( "key_identifier", 0 );
 
-			//HACK: Don't hide menu with id main
-			if ( key == Rocket::Core::Input::KI_ESCAPE && GetId() != MAIN )
+			if ( key == Rocket::Core::Input::KI_ESCAPE && !HasAttribute( "nohide" ) )
 			{
 				this->Hide();
 			}
