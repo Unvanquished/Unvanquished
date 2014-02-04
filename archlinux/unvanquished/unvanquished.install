@@ -1,5 +1,5 @@
 _update_assets() {
-	/usr/bin/unvanquished-update-paks
+	stdbuf -o0 /usr/bin/unvanquished-update-paks|cat
 }
 
 _delete_assets() {
