@@ -277,7 +277,7 @@ static void CG_Rocket_SortServerList( const char *name, const char *sortBy )
 
 	if ( !Q_stricmp( sortBy, "ping" ) )
 	{
-		qsort( rocketInfo.data.servers, rocketInfo.data.serverCount[ netSrc ], sizeof( server_t ), &ServerListCmpByPing );
+		qsort( rocketInfo.data.servers[ netSrc ], rocketInfo.data.serverCount[ netSrc ], sizeof( server_t ), &ServerListCmpByPing );
 	}
 
 	trap_Rocket_DSClearTable( "server_browser", name );
@@ -296,6 +296,7 @@ static void CG_Rocket_SortServerList( const char *name, const char *sortBy )
 		Info_SetValueForKey( data, "maxClients", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].maxClients ), qfalse );
 		Info_SetValueForKey( data, "addr", rocketInfo.data.servers[ netSrc ][ i ].addr, qfalse );
 		Info_SetValueForKey( data, "label", rocketInfo.data.servers[ netSrc ][ i ].label, qfalse );
+		Info_SetValueForKey( data, "map", rocketInfo.data.servers[ netSrc ][ i ].mapName, qfalse );
 
 		trap_Rocket_DSAddRow( "server_browser", name, data );
 	}
