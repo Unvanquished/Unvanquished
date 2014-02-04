@@ -61,19 +61,17 @@
 }
 
 
-}  
 #serverbrowser .connect{
 	z-index:7;
-	max-width:10em;
-	width:40%;
+	max-width: 10em;
+	width:auto;
 	padding:2% 5%;
 	margin-left:0%;
 	font-size: 1em;
 	position:absolute;
-	bottom:9%;
-	right:2.2%;
-}          
-        
+	bottom:2%;
+	right:5%;
+}
 body
 {
 	width: 100%;
