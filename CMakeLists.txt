@@ -1322,6 +1322,7 @@ function( GAMEMODULE )
       -Wall
       -ffast-math
       -fvisibility=hidden
+      -stdlib=libc++
       --pnacl-allow-exceptions
       $<$<CONFIG:None>:-O3>
       $<$<CONFIG:None>:-fomit-frame-pointer>
