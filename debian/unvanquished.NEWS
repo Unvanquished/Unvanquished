@@ -1,3 +1,23 @@
+unvanquished (0.24.0-1~~) unstable; urgency=low
+
+  If you're upgrading from 0.23.0 or older, your profile will need to be
+  migrated. You can do this yourself by running unvanquished-migrate-profile,
+  but it will be run for you anyway when you run Unvanquished.
+
+  Old location: ~/.Unvanquished/main/profiles/$NAME/
+  New location: ~/.unvanquished
+
+  keybindings.cfg, pubkey and the ‘name’ cvar from autogen.cfg are retained.
+  ~/.Unvanquished is left intact; do with as you will.
+
+  If you've installed (unmanaged) files in /var/games/unvanquished/main,
+  these will be ignored. You may move them to /var/games/unvanquished.pkg;
+  you may have to rename some when doing so.
+
+  Upgrading from older than 0.5.0 is no longer supported.
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Fri, 31 Jan 2014 20:13:19 +0000
+
 unvanquished (0.5.0-1~~) unstable; urgency=low
 
   If you're upgrading from 0.4.0 or older, your profile will need to be
