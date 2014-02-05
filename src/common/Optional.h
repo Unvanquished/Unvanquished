@@ -41,7 +41,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // The implementation is heavily based on experimental/optional in libc++, but
 // rewritten to work with older compilers.
 
-namespace Opt {
+namespace Util {
 
 struct nullopt_t {
 	explicit nullopt_t(int) {}
@@ -439,13 +439,13 @@ template<typename T> bool operator>(const T& a, const optional<T>& b)
 namespace std {
 
 // Hash support for optional
-template<typename T> struct hash<Opt::optional<T>> {
-	size_t operator()(const Opt::optional<T>& value) const
+template<typename T> struct hash<Util::optional<T>> {
+	size_t operator()(const Util::optional<T>& value) const
 	{
 		return static_cast<bool>(value) ? std::hash<T>()(*value) : 0;
 	}
 };
 
-} // namespace std
+} // namespace Util
 
 #endif // COMMON_OPTIONAL_H_

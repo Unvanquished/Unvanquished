@@ -400,7 +400,7 @@ static void AddPak(pakType_t type, Str::StringRef filename, Str::StringRef baseP
 
 	size_t suffixLen = type == PAK_DIR ? strlen(PAK_DIR_EXT) : strlen(PAK_ZIP_EXT);
 	std::string name, version;
-	Opt::optional<uint32_t> checksum;
+	Util::optional<uint32_t> checksum;
 	if (!ParsePakName(filename.begin(), filename.end() - suffixLen, name, version, checksum) || (type == PAK_DIR && checksum)) {
 		Log::Warn("Invalid pak name: %s", fullPath);
 		return;
@@ -569,7 +569,7 @@ const PakInfo* FindPak(Str::StringRef name, Str::StringRef version, uint32_t che
 			result = VersionCmp(version, pakInfo.version);
 			if (result != 0)
 				return result < 0;
-			return Opt::nullopt > pakInfo.checksum;
+			return Util::nullopt > pakInfo.checksum;
 		});
 
 		// Only allow zip packages because directories don't have a checksum
@@ -580,7 +580,7 @@ const PakInfo* FindPak(Str::StringRef name, Str::StringRef version, uint32_t che
 	return &*(iter - 1);
 }
 
-bool ParsePakName(const char* begin, const char* end, std::string& name, std::string& version, Opt::optional<uint32_t>& checksum)
+bool ParsePakName(const char* begin, const char* end, std::string& name, std::string& version, Util::optional<uint32_t>& checksum)
 {
 	const char* nameStart = std::find(std::reverse_iterator<const char*>(end), std::reverse_iterator<const char*>(begin), '/').base();
 	if (nameStart != begin)
@@ -596,7 +596,7 @@ bool ParsePakName(const char* begin, const char* end, std::string& name, std::st
 	const char* underscore2 = std::find(underscore1 + 1, end, '_');
 	if (underscore2 == end) {
 		version.assign(underscore1 + 1, end);
-		checksum = Opt::nullopt;
+		checksum = Util::nullopt;
 	} else {
 		// Get the optional checksum of the package
 		version.assign(underscore1 + 1, underscore2);
@@ -615,7 +615,7 @@ bool ParsePakName(const char* begin, const char* end, std::string& name, std::st
 	return true;
 }
 
-std::string MakePakName(Str::StringRef name, Str::StringRef version, Opt::optional<uint32_t> checksum)
+std::string MakePakName(Str::StringRef name, Str::StringRef version, Util::optional<uint32_t> checksum)
 {
 	if (checksum)
 		return Str::Format("%s_%s_%08x", name, version, *checksum);
@@ -1156,9 +1156,9 @@ static void ParseDeps(const PakInfo& parent, Str::StringRef depsData, std::error
 	}
 }
 
-static void InternalLoadPak(const PakInfo& pak, Opt::optional<uint32_t> expectedChecksum, std::error_code& err)
+static void InternalLoadPak(const PakInfo& pak, Util::optional<uint32_t> expectedChecksum, std::error_code& err)
 {
-	Opt::optional<uint32_t> checksum;
+	Util::optional<uint32_t> checksum;
 	bool hasDeps = false;
 	offset_t depsOffset;
 	ZipArchive zipFile;
@@ -1263,7 +1263,7 @@ static void InternalLoadPak(const PakInfo& pak, Opt::optional<uint32_t> expected
 
 void LoadPak(const PakInfo& pak, std::error_code& err)
 {
-	InternalLoadPak(pak, Opt::nullopt, err);
+	InternalLoadPak(pak, Util::nullopt, err);
 }
 
 void LoadPakExplicit(const PakInfo& pak, uint32_t expectedChecksum, std::error_code& err)
@@ -2429,7 +2429,7 @@ bool FS_LoadServerPaks(const char* paks)
 	fs_missingPaks.clear();
 	for (auto& x: args) {
 		std::string name, version;
-		Opt::optional<uint32_t> checksum;
+		Util::optional<uint32_t> checksum;
 		if (!FS::ParsePakName(x.data(), x.data() + x.size(), name, version, checksum) || !checksum) {
 			Com_Error(ERR_DROP, "Invalid pak reference from server: %s", x.c_str());
 			continue;

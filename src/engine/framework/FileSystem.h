@@ -232,7 +232,7 @@ struct PakInfo {
 	// pak, but not necessarily for available paks. Also it might be inaccurate
 	// for available paks if the checksum in the filename doesn't match the
 	// actual checksum.
-	Opt::optional<uint32_t> checksum;
+	Util::optional<uint32_t> checksum;
 
 	// Type of pak
 	pakType_t type;
@@ -447,10 +447,10 @@ const PakInfo* FindPak(Str::StringRef name, Str::StringRef version);
 const PakInfo* FindPak(Str::StringRef name, Str::StringRef version, uint32_t checksum);
 
 // Extract a name, version and optional checksum from a pak filename
-bool ParsePakName(const char* begin, const char* end, std::string& name, std::string& version, Opt::optional<uint32_t>& checksum);
+bool ParsePakName(const char* begin, const char* end, std::string& name, std::string& version, Util::optional<uint32_t>& checksum);
 
 // Generate a pak name from a name, version and optional checksum
-std::string MakePakName(Str::StringRef name, Str::StringRef version, Opt::optional<uint32_t> checksum = Opt::nullopt);
+std::string MakePakName(Str::StringRef name, Str::StringRef version, Util::optional<uint32_t> checksum = Util::nullopt);
 
 // Get the list of available paks
 const std::vector<PakInfo>& GetAvailablePaks();
