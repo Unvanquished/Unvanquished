@@ -319,6 +319,10 @@ typedef struct
 
 //=============================================================================
 
+namespace Cmd {
+    class CommandProxy;
+}
+
 class GameVM: public VM::VMBase {
 public:
 	GameVM();
@@ -344,6 +348,8 @@ private:
 	void QVMSyscall(int index, RPC::Reader& input, RPC::Writer& outputs);
 
 	NaCl::SharedMemoryPtr shmRegion;
+
+    Cmd::CommandProxy* commandProxy;
 };
 
 //=============================================================================

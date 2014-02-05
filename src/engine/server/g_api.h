@@ -228,5 +228,5 @@ typedef enum
 typedef enum
 {
   GS_QVM_SYSCALL,
-  GS_CVAR
+  GS_COMMAND
 } gameServices_t;

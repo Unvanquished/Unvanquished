@@ -408,6 +408,19 @@ set( SHAREDLIST
   ${SHAREDLIST_H}
 )
 
+set( COMMONLIST
+  ${COMMON_DIR}/Command.cpp
+  ${COMMON_DIR}/Command.h
+  ${COMMON_DIR}/Cvar.cpp
+  ${COMMON_DIR}/Cvar.h
+  ${COMMON_DIR}/LineEditData.cpp
+  ${COMMON_DIR}/LineEditData.h
+  ${COMMON_DIR}/Log.cpp
+  ${COMMON_DIR}/Log.h
+  ${COMMON_DIR}/String.cpp
+  ${COMMON_DIR}/String.h
+)
+
 set( RENDERERLIST
   ${ENGINE_DIR}/sys/sdl2_compat.cpp
   ${ENGINE_DIR}/sys/sdl_glimp.cpp
@@ -523,16 +536,6 @@ set( SERVERLIST
 )
 
 set( ENGINELIST
-  ${COMMON_DIR}/Command.cpp
-  ${COMMON_DIR}/Command.h
-  ${COMMON_DIR}/Cvar.cpp
-  ${COMMON_DIR}/Cvar.h
-  ${COMMON_DIR}/LineEditData.cpp
-  ${COMMON_DIR}/LineEditData.h
-  ${COMMON_DIR}/Log.cpp
-  ${COMMON_DIR}/Log.h
-  ${COMMON_DIR}/String.cpp
-  ${COMMON_DIR}/String.h
   ${ENGINE_DIR}/framework/BaseCommands.cpp
   ${ENGINE_DIR}/framework/BaseCommands.h
   ${ENGINE_DIR}/framework/CommandSystem.cpp
@@ -549,6 +552,8 @@ set( ENGINELIST
   ${ENGINE_DIR}/framework/LogSystem.h
   ${ENGINE_DIR}/framework/VirtualMachine.cpp
   ${ENGINE_DIR}/framework/VirtualMachine.h
+  ${ENGINE_DIR}/proxy/CommandProxy.cpp
+  ${ENGINE_DIR}/proxy/CommandProxy.h
   ${ENGINE_DIR}/qcommon/cm_load.cpp
   ${ENGINE_DIR}/qcommon/cm_trisoup.cpp
   ${ENGINE_DIR}/qcommon/cm_patch.cpp
@@ -586,6 +591,7 @@ set( ENGINELIST
   ${ENGINE_DIR}/sys/con_log.cpp
   ${ENGINE_DIR}/qcommon/qcommon.h
   ${ENGINE_DIR}/qcommon/surfaceflags.h
+  ${COMMONLIST}
 )
 
 if( ARCH STREQUAL "x86" OR ARCH STREQUAL "x86_64" )
@@ -751,6 +757,8 @@ set( GAMELIST
   ${GAMELOGIC_DIR}/shared/bg_voice.c
   ${GAMELOGIC_DIR}/shared/bg_teamprogress.c
   ${GAMELOGIC_DIR}/shared/bg_utilities.c
+  ${GAMELOGIC_DIR}/shared/CommandProxy.cpp
+  ${GAMELOGIC_DIR}/shared/CommandProxy.h
   ${GAMELOGIC_DIR}/game/g_active.c
   ${GAMELOGIC_DIR}/game/g_client.c
   ${GAMELOGIC_DIR}/game/g_cmds.c
@@ -789,6 +797,7 @@ set( GAMELIST
 
 set( GAMENACLLIST
   ${GAMELOGIC_DIR}/game/g_api.cpp
+  ${COMMONLIST}
 )
 
 set( UILIST

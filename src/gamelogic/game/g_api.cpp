@@ -24,6 +24,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../../libs/nacl/nacl.h"
 #include "../../common/RPC.h"
 
+//TODO
+#include "../shared/CommandProxy.h"
+
 static NaCl::RootSocket rootSocket;
 static NaCl::IPCHandle shmRegion;
 static NaCl::SharedMemoryPtr shmMapping;
@@ -31,79 +34,89 @@ static NaCl::SharedMemoryPtr shmMapping;
 // Module RPC entry point
 static void VMMain(int major, int minor, RPC::Reader& inputs, RPC::Writer& outputs)
 {
-	switch (minor) {
-	case GAME_INIT:
-	{
-		int levelTime = inputs.ReadInt();
-		int randomSeed = inputs.ReadInt();
-		qboolean restart = inputs.ReadInt();
-		G_InitGame(levelTime, randomSeed, restart);
-		break;
-	}
+    switch(major) {
+        case GS_QVM_SYSCALL:
+            switch (minor) {
+            case GAME_INIT:
+            {
+                Cmd::InitializeProxy();
+                int levelTime = inputs.ReadInt();
+                int randomSeed = inputs.ReadInt();
+                qboolean restart = inputs.ReadInt();
+                G_InitGame(levelTime, randomSeed, restart);
+                break;
+            }
 
-	case GAME_SHUTDOWN:
-		G_ShutdownGame(inputs.ReadInt());
-		break;
+            case GAME_SHUTDOWN:
+                G_ShutdownGame(inputs.ReadInt());
+                break;
 
-	case GAME_CLIENT_CONNECT:
-	{
-		int clientNum = inputs.ReadInt();
-		qboolean firstTime = inputs.ReadInt();
-		qboolean isBot = inputs.ReadInt();
-		const char* denied = isBot ? ClientBotConnect(clientNum, firstTime, TEAM_NONE) : ClientConnect(clientNum, firstTime);
-		outputs.WriteInt(denied ? qtrue : qfalse);
-		if (denied)
-			outputs.WriteString(denied);
-		break;
-	}
+            case GAME_CLIENT_CONNECT:
+            {
+                int clientNum = inputs.ReadInt();
+                qboolean firstTime = inputs.ReadInt();
+                qboolean isBot = inputs.ReadInt();
+                const char* denied = isBot ? ClientBotConnect(clientNum, firstTime, TEAM_NONE) : ClientConnect(clientNum, firstTime);
+                outputs.WriteInt(denied ? qtrue : qfalse);
+                if (denied)
+                    outputs.WriteString(denied);
+                break;
+            }
 
-	case GAME_CLIENT_THINK:
-		ClientThink(inputs.ReadInt());
-		break;
+            case GAME_CLIENT_THINK:
+                ClientThink(inputs.ReadInt());
+                break;
 
-	case GAME_CLIENT_USERINFO_CHANGED:
-		ClientUserinfoChanged(inputs.ReadInt(), qfalse);
-		break;
+            case GAME_CLIENT_USERINFO_CHANGED:
+                ClientUserinfoChanged(inputs.ReadInt(), qfalse);
+                break;
 
-	case GAME_CLIENT_DISCONNECT:
-		ClientDisconnect(inputs.ReadInt());
-		break;
+            case GAME_CLIENT_DISCONNECT:
+                ClientDisconnect(inputs.ReadInt());
+                break;
 
-	case GAME_CLIENT_BEGIN:
-		ClientBegin(inputs.ReadInt());
-		break;
+            case GAME_CLIENT_BEGIN:
+                ClientBegin(inputs.ReadInt());
+                break;
 
-	case GAME_CLIENT_COMMAND:
-		ClientCommand(inputs.ReadInt());
-		break;
+            case GAME_CLIENT_COMMAND:
+                ClientCommand(inputs.ReadInt());
+                break;
 
-	case GAME_RUN_FRAME:
-		G_RunFrame(inputs.ReadInt());
-		break;
+            case GAME_RUN_FRAME:
+                G_RunFrame(inputs.ReadInt());
+                break;
 
-	case GAME_CONSOLE_COMMAND:
-		outputs.WriteInt(ConsoleCommand());
-		break;
+            case GAME_CONSOLE_COMMAND:
+                outputs.WriteInt(ConsoleCommand());
+                break;
 
-	case GAME_SNAPSHOT_CALLBACK:
-		G_Error("GAME_SNAPSHOT_CALLBACK not implemented");
-		break;
+            case GAME_SNAPSHOT_CALLBACK:
+                G_Error("GAME_SNAPSHOT_CALLBACK not implemented");
+                break;
 
-	case BOTAI_START_FRAME:
-		G_Error("BOTAI_START_FRAME not implemented");
-		break;
+            case BOTAI_START_FRAME:
+                G_Error("BOTAI_START_FRAME not implemented");
+                break;
 
-	case GAME_MESSAGERECEIVED:
-		G_Error("GAME_MESSAGERECEIVED not implemented");
-		break;
+            case GAME_MESSAGERECEIVED:
+                G_Error("GAME_MESSAGERECEIVED not implemented");
+                break;
 
-	default:
-		G_Error("VMMain(): unknown game command %i", minor);
-	}
+            default:
+                G_Error("VMMain(): unknown game command %i", minor);
+            }
+        break;
+
+        case GS_COMMAND:
+            Cmd::HandleSyscall(minor, inputs, outputs);
+            break;
+    }
+
 }
 
 // Wrapper which uses the module root socket and VMMain
-static RPC::Reader DoRPC(RPC::Writer& writer)
+RPC::Reader DoRPC(RPC::Writer& writer)
 {
 	return RPC::DoRPC(rootSocket, writer, false, VMMain);
 }

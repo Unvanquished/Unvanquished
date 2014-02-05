@@ -32,7 +32,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "Log.h"
 
 #include "../engine/qcommon/qcommon.h"
-#include "../engine/framework/CommandSystem.h"
 #include "../engine/framework/CvarSystem.h"
 
 namespace Cmd {
@@ -476,11 +475,16 @@ namespace Cmd {
         return *Cmd::GetEnv();
     }
 
+    StaticCmd::StaticCmd(std::string name, std::string description)
+    :CmdBase(0){
+        //Register this command statically
+        AddCommand(std::move(name), *this, std::move(description));
+    }
+
     StaticCmd::StaticCmd(std::string name, const int flags, std::string description)
     :CmdBase(flags){
         //Register this command statically
         AddCommand(std::move(name), *this, std::move(description));
     }
-
 
 }
