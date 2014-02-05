@@ -2424,6 +2424,14 @@ void FS_LoadBasePak()
 	}
 }
 
+void FS_LoadAllMaps()
+{
+	for (auto& x: FS::GetAvailablePaks()) {
+		if (Str::IsPrefix("map-", x.name))
+			FS_LoadPak(x.name.c_str());
+	}
+}
+
 bool FS_LoadServerPaks(const char* paks)
 {
 	Cmd::Args args(paks);
