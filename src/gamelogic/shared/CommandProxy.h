@@ -33,4 +33,7 @@ namespace Cmd {
     void InitializeProxy();
     void HandleSyscall(int minor, RPC::Reader& inputs, RPC::Writer& outputs);
 
+    void PushArgs(Str::StringRef args);
+    void PopArgs();
+
 }

@@ -1524,7 +1524,7 @@ void SV_ExecuteClientCommand( client_t *cl, const char *s, qboolean clientOK, qb
 		// pass unknown strings to the game
 		if ( !u->name && sv.state == SS_GAME )
 		{
-			gvm->GameClientCommand( cl - svs.clients );
+			gvm->GameClientCommand( cl - svs.clients, s );
 		}
 	}
 	else if ( !bProcessed )

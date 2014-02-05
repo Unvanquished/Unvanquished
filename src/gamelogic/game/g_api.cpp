@@ -23,6 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "g_local.h"
 #include "../../libs/nacl/nacl.h"
 #include "../../common/RPC.h"
+#include "../../common/String.h"
 
 //TODO
 #include "../shared/CommandProxy.h"
@@ -80,7 +81,13 @@ static void VMMain(int major, int minor, RPC::Reader& inputs, RPC::Writer& outpu
                 break;
 
             case GAME_CLIENT_COMMAND:
-                ClientCommand(inputs.ReadInt());
+                {
+                    int clientNum = inputs.ReadInt();
+                    Str::StringRef command = inputs.ReadString();
+                    Cmd::PushArgs(command);
+                    ClientCommand(clientNum);
+                    Cmd::PopArgs();
+                }
                 break;
 
             case GAME_RUN_FRAME:

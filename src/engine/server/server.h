@@ -335,7 +335,7 @@ public:
 	void GameClientBegin(int clientNum);
 	void GameClientUserInfoChanged(int clientNum);
 	void GameClientDisconnect(int clientNum);
-	void GameClientCommand(int clientNum);
+	void GameClientCommand(int clientNum, const char* command);
 	void GameClientThink(int clientNum);
 	void GameRunFrame(int levelTime);
 	qboolean GameSnapshotCallback(int entityNum, int clientNum);

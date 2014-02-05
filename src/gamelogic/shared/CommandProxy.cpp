@@ -248,12 +248,25 @@ int trap_Argc(void) {
     if (argStack.empty()) {
         return 0;
     }
-    return argStack[argStack.size() - 1]->Argc();
+    return argStack.back()->Argc();
 }
 
 void trap_Argv(int n, char *buffer, int bufferLength) {
     if (bufferLength <= 0 or argStack.empty()) {
         return;
     }
-    Q_strncpyz(buffer, argStack[argStack.size() - 1]->Argv(0).c_str(), bufferLength);
+    Q_strncpyz(buffer, argStack.back()->Argv(n).c_str(), bufferLength);
+}
+
+namespace Cmd {
+
+    void PushArgs(Str::StringRef args) {
+        argStack.push_back(new Cmd::Args(args));
+    }
+
+    void PopArgs() {
+        delete argStack.back();
+        argStack.pop_back();
+    }
+
 }

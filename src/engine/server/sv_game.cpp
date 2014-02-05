@@ -716,12 +716,13 @@ void GameVM::GameClientDisconnect(int clientNum)
 	DoRPC(input);
 }
 
-void GameVM::GameClientCommand(int clientNum)
+void GameVM::GameClientCommand(int clientNum, const char* command)
 {
 	RPC::Writer input;
 	input.WriteInt(GS_QVM_SYSCALL);
 	input.WriteInt(GAME_CLIENT_COMMAND);
 	input.WriteInt(clientNum);
+	input.WriteString(command);
 	DoRPC(input);
 }
 
