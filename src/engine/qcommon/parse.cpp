@@ -2004,14 +2004,6 @@ static void Parse_ConvertPath( char *path )
 			ptr++;
 		}
 	}
-
-	//set OS-dependent path separators
-	for ( ptr = path; *ptr; )
-	{
-		if ( *ptr == '/' || *ptr == '\\' ) { *ptr = PATH_SEP; }
-
-		ptr++;
-	}
 }
 
 /*

@@ -361,6 +361,7 @@ void Initialize()
 	Com_StartupVariable("fs_extrapath");
 	Com_StartupVariable("fs_homepath");
 	Com_StartupVariable("fs_libpath");
+	Com_StartupVariable("fs_extrapaks");
 
 	std::string defaultBasePath = DefaultBasePath();
 	std::string defaultHomePath = DefaultHomePath();

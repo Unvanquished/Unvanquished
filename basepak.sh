@@ -29,9 +29,9 @@ if test -n "$BUILDDIR" && test ! -d "$BASEDIR/$BUILDDIR"; then
   exit 2
 fi
 
-rm -f -- pak.pre.pk3 vms.pre.pk3
+rm -f -- pak.pre.pk3
 
-echo '[33mBuilding pak.pre.pk3[m'
+echo '[33mGathering resource files[m'
 cd "$BASEDIR/main"
 if test -n "$(git diff --name-only "$PAKBASE" . | sed -e 's%main/%%' | grep -v '^translation/[^c]')"; then
   zip -9 "$BASEDIR/pak.pre.pk3" $(git diff --name-only "$PAKBASE" . | sed -e 's%main/%%' | grep -v '^translation/[^c]')
@@ -43,15 +43,15 @@ if test -d "$BASEDIR/pak"; then
   cd - >/dev/null
 fi
 
-echo '[33mBuilding vms.pre.pk3[m'
-cd "$BASEDIR/$BUILDDIR/main"
-zip -9 "$BASEDIR/vms.pre.pk3" vm/*qvm
+echo '[33mGathering VM code[m'
+cd "$BASEDIR/$BUILDDIR"
+zip -9 "$BASEDIR/pak.pre.pk3" vm/*qvm
 
 
-if which advzip &>/dev/null; then
+if (which advzip && test -f pak.pre.pk3) &>/dev/null; then
   echo '[33mOptimising[m'
   cd "$BASEDIR"
-  advzip -z4 $(test -f pak.pre.pk3 && echo pak.pre.pk3 || :) vms.pre.pk3
+  advzip -z4 pak.pre.pk3
 fi
 
 echo '[32mDone![m'

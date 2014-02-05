@@ -1960,14 +1960,6 @@ void Com_Init( char *commandLine )
 
 	CL_StartHunkUsers();
 
-	// NERVE - SMF - force recommendedSet and don't do vid_restart if in safe mode
-	if ( !com_recommendedSet->integer && !Com_SafeMode() )
-	{
-		Com_SetRecommended();
-	}
-
-	Cvar_Set( "com_recommendedSet", "1" );
-
 	if ( !com_dedicated->integer )
 	{
 		//Cvar_Set( "com_logosPlaying", "1" );
