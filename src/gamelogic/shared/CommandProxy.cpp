@@ -212,3 +212,48 @@ namespace Cmd {
     }
 }
 
+// Simulation of the command-related trap calls
+// The old VM command code registers the command as a string. When the engine calls the command
+// it performs a special VM call and the VM will check the string to dispatch to the right function.
+// Then to get the arguments the VM uses the trap_Argc and trap_Argv calls.
+
+// This vector is used as a stack of Cmd::Args for when commands are called recursively.
+static std::vector<const Cmd::Args*> argStack;
+
+// A proxy command added instead of the string when the VM registers a command? It will just
+// setup the args right and call the command Dispatcher
+class TrapProxyCommand: public Cmd::CmdBase {
+    public:
+        TrapProxyCommand() : Cmd::CmdBase(0) {
+        }
+        virtual void Run(const Cmd::Args& args) const {
+            // Push a pointer to args, it is fine because we remove the pointer before args goes out of scope
+            argStack.push_back(&args);
+            ConsoleCommand();
+            argStack.pop_back();
+        }
+};
+
+static TrapProxyCommand trapProxy;
+
+void trap_AddCommand(const char *cmdName) {
+    Cmd::AddCommand(cmdName, trapProxy, "an old style vm command");
+}
+
+void trap_RemoveCommand(const char *cmdName) {
+    Cmd::RemoveCommand(cmdName);
+}
+
+int trap_Argc(void) {
+    if (argStack.empty()) {
+        return 0;
+    }
+    return argStack[argStack.size() - 1]->Argc();
+}
+
+void trap_Argv(int n, char *buffer, int bufferLength) {
+    if (bufferLength <= 0 or argStack.empty()) {
+        return;
+    }
+    Q_strncpyz(buffer, argStack[argStack.size() - 1]->Argv(0).c_str(), bufferLength);
+}

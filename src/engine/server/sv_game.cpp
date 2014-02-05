@@ -485,8 +485,6 @@ void SV_ShutdownGameProgs( void )
 		FS_Rename( sv_newGameShlib->string, "game" DLL_EXT );
 		Cvar_Set( "sv_newGameShlib", "" );
 	}
-
-	Cmd_RemoveCommandsByFunc( SV_GameCommandHandler );
 }
 
 /*
@@ -554,7 +552,6 @@ void SV_RestartGameProgs( void )
 
 	delete gvm;
 	gvm = nullptr;
-	Cmd_RemoveCommandsByFunc( SV_GameCommandHandler );
 
 	gvm = SV_CreateGameVM();
 
@@ -577,16 +574,6 @@ void SV_InitGameProgs( void )
 	gvm = SV_CreateGameVM();
 
 	SV_InitGameVM( qfalse );
-}
-
-/*
-====================
-SV_GameCommandHandler
-====================
-*/
-void SV_GameCommandHandler( void )
-{
-	gvm->GameConsoleCommand();
 }
 
 /*
@@ -756,15 +743,6 @@ void GameVM::GameRunFrame(int levelTime)
 	DoRPC(input);
 }
 
-qboolean GameVM::GameConsoleCommand()
-{
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(GAME_CONSOLE_COMMAND);
-	RPC::Reader output = DoRPC(input);
-	return output.ReadInt();
-}
-
 qboolean GameVM::GameSnapshotCallback(int entityNum, int clientNum)
 {
 	Com_Error(ERR_DROP, "GameVM::GameSnapshotCallback not implemented");
@@ -849,14 +827,6 @@ void GameVM::QVMSyscall(int index, RPC::Reader& inputs, RPC::Writer& outputs)
 
 	case G_CVAR_VARIABLE_STRING_BUFFER:
 		outputs.WriteString(Cvar_VariableString(inputs.ReadString()));
-		break;
-
-	case G_ARGC:
-		outputs.WriteInt(Cmd_Argc());
-		break;
-
-	case G_ARGV:
-		outputs.WriteString(Cmd_Argv(inputs.ReadInt()));
 		break;
 
 	case G_SEND_CONSOLE_COMMAND:
@@ -1178,14 +1148,6 @@ void GameVM::QVMSyscall(int index, RPC::Reader& inputs, RPC::Writer& outputs)
 
 	case G_SEND_GAMESTAT:
 		SV_MasterGameStat(inputs.ReadString());
-		break;
-
-	case G_ADDCOMMAND:
-		Cmd_AddCommand(inputs.ReadString(), SV_GameCommandHandler );
-		break;
-
-	case G_REMOVECOMMAND:
-		Cmd_RemoveCommand(inputs.ReadString());
 		break;
 
 	case G_GETTAG:

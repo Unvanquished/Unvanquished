@@ -87,10 +87,6 @@ static void VMMain(int major, int minor, RPC::Reader& inputs, RPC::Writer& outpu
                 G_RunFrame(inputs.ReadInt());
                 break;
 
-            case GAME_CONSOLE_COMMAND:
-                outputs.WriteInt(ConsoleCommand());
-                break;
-
             case GAME_SNAPSHOT_CALLBACK:
                 G_Error("GAME_SNAPSHOT_CALLBACK not implemented");
                 break;
@@ -238,25 +234,6 @@ void trap_Cvar_VariableStringBuffer(const char *var_name, char *buffer, int bufs
 	input.WriteString(var_name);
 	RPC::Reader output = DoRPC(input);
 	Q_strncpyz(buffer, output.ReadString(), bufsize);
-}
-
-int trap_Argc()
-{
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_ARGC);
-	RPC::Reader output = DoRPC(input);
-	return output.ReadInt();
-}
-
-void trap_Argv(int n, char *buffer, int bufferLength)
-{
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_ARGV);
-	input.WriteInt(n);
-	RPC::Reader output = DoRPC(input);
-	Q_strncpyz(buffer, output.ReadString(), bufferLength);
 }
 
 void trap_SendConsoleCommand(int exec_when, const char *text)
@@ -687,24 +664,6 @@ void trap_SendGameStat(const char *data)
 	input.WriteInt(GS_QVM_SYSCALL);
 	input.WriteInt(G_SEND_GAMESTAT);
 	input.WriteString(data);
-	DoRPC(input);
-}
-
-void trap_AddCommand(const char *cmdName)
-{
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_ADDCOMMAND);
-	input.WriteString(cmdName);
-	DoRPC(input);
-}
-
-void trap_RemoveCommand(const char *cmdName)
-{
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_REMOVECOMMAND);
-	input.WriteString(cmdName);
 	DoRPC(input);
 }
 

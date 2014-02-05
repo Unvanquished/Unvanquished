@@ -108,8 +108,6 @@ typedef enum gameImport_s
   G_CVAR_VARIABLE_INTEGER_VALUE,
   G_CVAR_VARIABLE_STRING_BUFFER,
   G_STUB__CVAR_LATCHEDVARIABLESTRINGBUFFER,
-  G_ARGC,
-  G_ARGV,
   G_SEND_CONSOLE_COMMAND,
   G_FS_FOPEN_FILE,
   G_FS_READ,
@@ -146,8 +144,6 @@ typedef enum gameImport_s
   G_GM_TIME,
   G_SNAPVECTOR,
   G_SEND_GAMESTAT,
-  G_ADDCOMMAND,
-  G_REMOVECOMMAND,
   G_GETTAG,
   G_REGISTERTAG,
   G_REGISTERSOUND,
@@ -205,12 +201,6 @@ typedef enum
   GAME_CLIENT_THINK, // void ()( int clientNum );
 
   GAME_RUN_FRAME, // void ()( int levelTime );
-
-  GAME_CONSOLE_COMMAND, // void ()( void );
-  // this will be called when a client-to-server command has been
-  //  issued that is not recognized as an engine command.
-  // the game module can issue trap_Argc() and trap_Argv() calls to get the command and arguments.
-  // return qfalse if the game module doesn't recognize the command
 
   GAME_SNAPSHOT_CALLBACK, // qboolean ()( int entityNum, int clientNum );
   // return qfalse if the entity should not be sent to the client

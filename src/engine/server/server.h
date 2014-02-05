@@ -338,7 +338,6 @@ public:
 	void GameClientCommand(int clientNum);
 	void GameClientThink(int clientNum);
 	void GameRunFrame(int levelTime);
-	qboolean GameConsoleCommand();
 	qboolean GameSnapshotCallback(int entityNum, int clientNum);
 	void BotAIStartFrame(int levelTime);
 	void GameMessageRecieved(int clientNum, const char *buffer, int bufferSize, int commandTime);
