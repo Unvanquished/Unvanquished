@@ -209,7 +209,7 @@ template<> struct SerializeTraits<std::string> {
 };
 
 // IPC message, which automatically serializes and deserializes objects
-template<typename... T> class Message {
+template<uint32_t Major, uint32_t Minor, typename... T> class Message {
 	typedef std::tuple<T...> TupleType;
 
 	template<size_t Index, typename Tuple> static void FillTuple(Tuple&, Reader&) {}
@@ -230,19 +230,26 @@ template<typename... T> class Message {
 	}
 
 	template<size_t Index> static void SerializeImpl(Writer&) {}
-	template<size_t Index, typename Arg0, typename... Args> static void SerializeImpl(Writer& stream, Arg0&& arg0, Args&&... args)
+	template<size_t Index, typename Arg0, typename... Args> void SerializeImpl(Arg0&& arg0, Args&&... args)
 	{
 		SerializeTraits<typename std::tuple_element<Index, TupleType>::type>::Write(stream, std::forward<Arg0>(arg0));
-		SerializeImpl<Index + 1>(stream, std::forward<Args>(args)...);
+		SerializeImpl<Index + 1>(std::forward<Args>(args)...);
 	}
 
 public:
-	template<typename... Args> static void Serialize(Writer& stream, Args&&... args)
+	// Stream containing the serialized message data
+	Writer stream;
+
+	// Construct a message for sending
+	template<typename... Args> Message(Args&&... args)
 	{
 		static_assert(sizeof...(Args) == sizeof...(T), "Incorrect number of arguments for IPC::Message::Serialize");
+		SerializeTraits<uint32_t>::Write(stream, Major);
+		SerializeTraits<uint32_t>::Write(stream, Minor);
 		SerializeImpl<0>(stream, std::forward<Args>(args)...);
 	}
 
+	// Deserialize a message and call the given function with the message arguments
 	template<typename Func> static void Deserialize(Reader& stream, Func&& func)
 	{
 		std::tuple<decltype(SerializeTraits<T>::Read(stream))...> tuple;
