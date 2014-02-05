@@ -41,6 +41,7 @@ Maryland 20850 USA.
 #include <string>
 #include "String.h"
 #include <limits>
+#include "Util.h"
 #include "../libs/nacl/nacl.h"
 #include "../engine/qcommon/q_shared.h"
 #include "../engine/qcommon/qcommon.h"
@@ -219,16 +220,6 @@ template<uint32_t Major, uint32_t Minor, typename... T> class Message {
 		FillTuple<Index + 1, Types...>(tuple, stream);
 	}
 
-	template<size_t... Seq> struct seq {
-		typedef seq<Seq...> type;
-	};
-	template<size_t Max, size_t... Seq> struct make_seq: make_seq<Max - 1, Max - 1, Seq...> {};
-	template<size_t... Seq> struct make_seq<0, Seq...>: seq<Seq...> {};
-	template<size_t... Seq, typename Tuple, typename Func> static void InvokeTuple(Tuple&& tuple, Func&& func, seq<Seq...>)
-	{
-		std::forward<Func>(func)(std::get<Seq>(std::forward<Tuple>(tuple))...);
-	}
-
 	template<size_t Index> static void SerializeImpl(Writer&) {}
 	template<size_t Index, typename Arg0, typename... Args> void SerializeImpl(Arg0&& arg0, Args&&... args)
 	{
@@ -254,7 +245,7 @@ public:
 	{
 		std::tuple<decltype(SerializeTraits<T>::Read(stream))...> tuple;
 		FillTuple<0, T...>(tuple, stream);
-		InvokeTuple(std::move(tuple), std::forward<Func>(func), make_seq<sizeof...(T)>());
+		Util::apply(std::forward<Func>(func), std::move(tuple));
 	}
 };
 
