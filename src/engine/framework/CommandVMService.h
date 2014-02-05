@@ -34,10 +34,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <unordered_map>
 
-//TODO or CommandService?
-
-#ifndef PROXY_COMMAND_PROXY_H_
-#define PROXY_COMMAND_PROXY_H_
+#ifndef COMMAND_VM_SERVICE_H_
+#define COMMAND_VM_SERVICE_H_
 
 namespace VM {
     class VMBase;
@@ -47,10 +45,10 @@ namespace Cmd {
 
     class ProxyCmd;
 
-    class CommandProxy {
+    class CommandVMService {
         public:
-            CommandProxy(VM::VMBase* vm, int commandFlag, Str::StringRef vmName);
-            ~CommandProxy();
+            CommandVMService(VM::VMBase* vm, int commandFlag, Str::StringRef vmName);
+            ~CommandVMService();
 
             void Syscall(int index, RPC::Reader& inputs, RPC::Writer& outputs);
 
@@ -71,4 +69,5 @@ namespace Cmd {
             VM::VMBase* vm;
     };
 }
-#endif // PROXY_COMMAND_PROXY_H_
+
+#endif // COMMAND_VM_SERVICE_H_

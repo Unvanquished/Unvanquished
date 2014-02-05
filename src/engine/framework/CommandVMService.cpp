@@ -28,7 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include "CommandProxy.h"
+#include "CommandVMService.h"
 #include "../framework/CommandSystem.h"
 #include "../framework/VirtualMachine.h"
 #include "../../common/Log.h"
@@ -40,7 +40,7 @@ namespace Cmd {
 
     class ProxyCmd: public Cmd::CmdBase {
         public:
-            ProxyCmd(CommandProxy& cmdProxy, int flag): Cmd::CmdBase(flag), cmdProxy(cmdProxy) {
+            ProxyCmd(CommandVMService& cmdProxy, int flag): Cmd::CmdBase(flag), cmdProxy(cmdProxy) {
             }
 
             virtual void Run(const Args& args) const {
@@ -52,24 +52,44 @@ namespace Cmd {
             }
 
             virtual Cmd::CompletionResult Complete(int argNum, const Args& args, Str::StringRef prefix) const {
-                return {};
+                RPC::Writer inputs;
+                inputs.WriteInt(GS_COMMAND);
+                inputs.WriteInt(COMPLETE);
+                inputs.WriteInt(argNum);
+                inputs.WriteString(args.EscapedArgs(0).c_str());
+                inputs.WriteString(prefix.c_str());
+
+                RPC::Reader outputs = cmdProxy.GetVM()->DoRPC(inputs);
+
+                int resSize = outputs.ReadInt();
+
+                Cmd::CompletionResult res;
+                res.reserve(resSize);
+
+                for (int i = 0; i < resSize; i++) {
+                    Str::StringRef name = outputs.ReadString();
+                    Str::StringRef desc = outputs.ReadString();
+                    res.emplace_back(name, desc);
+                }
+
+                return res;
             }
 
         private:
-            CommandProxy& cmdProxy;
+            CommandVMService& cmdProxy;
     };
 
-    CommandProxy::CommandProxy(VM::VMBase* vm, int commandFlag, Str::StringRef vmName)
+    CommandVMService::CommandVMService(VM::VMBase* vm, int commandFlag, Str::StringRef vmName)
     :flag(commandFlag), vmName(vmName), proxy(new ProxyCmd(*this, flag)), vm(vm) {
     }
 
-    CommandProxy::~CommandProxy() {
+    CommandVMService::~CommandVMService() {
         //FIXME or iterate over the commands we registered, or add Cmd::RemoveByProxy()
         Cmd::RemoveFlaggedCommands(flag);
         delete proxy;
     }
 
-    void CommandProxy::Syscall(int index, RPC::Reader& inputs, RPC::Writer& outputs) {
+    void CommandVMService::Syscall(int index, RPC::Reader& inputs, RPC::Writer& outputs) {
         switch(index) {
             case ADD_COMMAND:
                 AddCommand(inputs, outputs);
@@ -92,11 +112,11 @@ namespace Cmd {
         }
     }
 
-    VM::VMBase* CommandProxy::GetVM() {
+    VM::VMBase* CommandVMService::GetVM() {
         return vm;
     }
 
-    void CommandProxy::AddCommand(RPC::Reader& inputs, RPC::Writer& outputs) {
+    void CommandVMService::AddCommand(RPC::Reader& inputs, RPC::Writer& outputs) {
         Str::StringRef name = inputs.ReadString();
         Str::StringRef description = inputs.ReadString();
 
@@ -111,7 +131,7 @@ namespace Cmd {
         registeredCommands[name] = 0;
     }
 
-    void CommandProxy::RemoveCommand(RPC::Reader& inputs, RPC::Writer& outputs) {
+    void CommandVMService::RemoveCommand(RPC::Reader& inputs, RPC::Writer& outputs) {
         Str::StringRef name = inputs.ReadString();
 
         if (registeredCommands.find(name) != registeredCommands.end()) {
@@ -119,14 +139,14 @@ namespace Cmd {
         }
     }
 
-    void CommandProxy::EnvPrint(RPC::Reader& inputs, RPC::Writer& outputs) {
+    void CommandVMService::EnvPrint(RPC::Reader& inputs, RPC::Writer& outputs) {
         //TODO allow it only if we are in a command?
         Str::StringRef line = inputs.ReadString();
 
         Cmd::GetEnv()->Print(line);
     }
 
-    void CommandProxy::EnvExecuteAfter(RPC::Reader& inputs, RPC::Writer& outputs) {
+    void CommandVMService::EnvExecuteAfter(RPC::Reader& inputs, RPC::Writer& outputs) {
         //TODO check that it isn't sending /quit or other bad commands (/lua "rootkit()")?
         Str::StringRef commandText = inputs.ReadString();
         int parseCvars = inputs.ReadInt();

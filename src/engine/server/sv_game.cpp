@@ -37,7 +37,7 @@ Maryland 20850 USA.
 #include "server.h"
 #include "../../common/Cvar.h"
 #include "../qcommon/crypto.h"
-#include "../proxy/CommandProxy.h"
+#include "../framework/CommandVMService.h"
 
 // these functions must be used instead of pointer arithmetic, because
 // the game allocates gentities with private information after the server shared part
@@ -650,7 +650,7 @@ bool GameVM::Start()
 		Com_Error( ERR_DROP, "Game ABI mismatch, expected %d, got %d", GAME_API_VERSION, version );
     }
 
-    commandProxy = new Cmd::CommandProxy(this, Cmd::GAME, "Game");
+    commandService = new Cmd::CommandVMService(this, Cmd::GAME, "Game");
 
     return true;
 }
@@ -658,7 +658,7 @@ bool GameVM::Start()
 GameVM::~GameVM()
 {
     this->Free();
-    delete commandProxy;
+    delete commandService;
 }
 
 void GameVM::GameInit(int levelTime, int randomSeed, qboolean restart)
@@ -788,7 +788,7 @@ void GameVM::Syscall(int major, int minor, RPC::Reader& inputs, RPC::Writer& out
 		break;
 
 	case GS_COMMAND:
-        this->commandProxy->Syscall(minor, inputs, outputs);
+        this->commandService->Syscall(minor, inputs, outputs);
 		break;
 
 	default:

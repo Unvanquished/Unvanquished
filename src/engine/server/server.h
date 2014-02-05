@@ -320,7 +320,7 @@ typedef struct
 //=============================================================================
 
 namespace Cmd {
-    class CommandProxy;
+    class CommandVMService;
 }
 
 class GameVM: public VM::VMBase {
@@ -349,7 +349,7 @@ private:
 
 	NaCl::SharedMemoryPtr shmRegion;
 
-    Cmd::CommandProxy* commandProxy;
+    Cmd::CommandVMService* commandService;
 };
 
 //=============================================================================

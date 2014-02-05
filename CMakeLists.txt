@@ -413,10 +413,12 @@ set( COMMONLIST
   ${COMMON_DIR}/Command.h
   ${COMMON_DIR}/Cvar.cpp
   ${COMMON_DIR}/Cvar.h
+  ${COMMON_DIR}/IPC.h
   ${COMMON_DIR}/LineEditData.cpp
   ${COMMON_DIR}/LineEditData.h
   ${COMMON_DIR}/Log.cpp
   ${COMMON_DIR}/Log.h
+  ${COMMON_DIR}/RPC.h
   ${COMMON_DIR}/String.cpp
   ${COMMON_DIR}/String.h
 )
@@ -542,6 +544,8 @@ set( ENGINELIST
   ${ENGINE_DIR}/framework/CommandSystem.h
   ${ENGINE_DIR}/framework/CvarSystem.cpp
   ${ENGINE_DIR}/framework/CvarSystem.h
+  ${ENGINE_DIR}/framework/CommandVMService.cpp
+  ${ENGINE_DIR}/framework/CommandVMService.h
   ${ENGINE_DIR}/framework/ConsoleField.cpp
   ${ENGINE_DIR}/framework/ConsoleField.h
   ${ENGINE_DIR}/framework/ConsoleHistory.cpp
@@ -552,8 +556,6 @@ set( ENGINELIST
   ${ENGINE_DIR}/framework/LogSystem.h
   ${ENGINE_DIR}/framework/VirtualMachine.cpp
   ${ENGINE_DIR}/framework/VirtualMachine.h
-  ${ENGINE_DIR}/proxy/CommandProxy.cpp
-  ${ENGINE_DIR}/proxy/CommandProxy.h
   ${ENGINE_DIR}/qcommon/cm_load.cpp
   ${ENGINE_DIR}/qcommon/cm_trisoup.cpp
   ${ENGINE_DIR}/qcommon/cm_patch.cpp

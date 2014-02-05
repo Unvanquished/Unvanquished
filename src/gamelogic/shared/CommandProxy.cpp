@@ -154,6 +154,10 @@ namespace Cmd {
             virtual void Run(const Args& args) const {
                 Print("The temp command is running");
             }
+
+            virtual Cmd::CompletionResult Complete(int argNum, const Args& args, Str::StringRef prefix) const {
+                return {{"toto", "tata"}, {"titi", "tutu"}};
+            }
     };
 
     static TempCmd tempCmdRegistration;
@@ -171,10 +175,35 @@ namespace Cmd {
         it->second.cmd->Run(args);
     }
 
+    void CompleteSyscall(RPC::Reader& inputs, RPC::Writer& outputs) {
+        int argNum = inputs.ReadInt();
+        Cmd::Args args(inputs.ReadString());
+        Str::StringRef prefix = inputs.ReadString();
+
+        auto map = GetCommandMap();
+        auto it = map.find(args.Argv(0));
+
+        if (it == map.end()) {
+            return;
+        }
+
+        Cmd::CompletionResult res = it->second.cmd->Complete(argNum, args, prefix);
+
+        outputs.WriteInt(res.size());
+        for (int i = 0; i < res.size(); i++) {
+            outputs.WriteString(res[i].first.c_str());
+            outputs.WriteString(res[i].second.c_str());
+        }
+    }
+
     void HandleSyscall(int minor, RPC::Reader& inputs, RPC::Writer& outputs) {
         switch (minor) {
             case EXECUTE:
                 ExecuteSyscall(inputs, outputs);
+                break;
+
+            case COMPLETE:
+                CompleteSyscall(inputs, outputs);
                 break;
 
             default:
