@@ -28,12 +28,21 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-namespace Cmd {
+#ifndef SHARED_COMMON_PROXIES_H_
+#define SHARED_COMMON_PROXIES_H_
 
-    void InitializeProxy();
-    void HandleSyscall(int minor, RPC::Reader& inputs, RPC::Writer& outputs);
+namespace Cmd {
 
     void PushArgs(Str::StringRef args);
     void PopArgs();
 
 }
+
+namespace VM {
+
+    void InitializeProxies();
+    void HandleCommonSyscall(int major, int minor, RPC::Reader& inputs, RPC::Writer& outputs);
+
+}
+
+#endif // SHARED_COMMON_PROXIES_H_

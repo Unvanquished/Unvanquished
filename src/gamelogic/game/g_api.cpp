@@ -25,8 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../../common/RPC.h"
 #include "../../common/String.h"
 
-//TODO
-#include "../shared/CommandProxy.h"
+#include "../shared/CommonProxies.h"
 
 static NaCl::RootSocket rootSocket;
 static NaCl::IPCHandle shmRegion;
@@ -35,85 +34,85 @@ static NaCl::SharedMemoryPtr shmMapping;
 // Module RPC entry point
 static void VMMain(int major, int minor, RPC::Reader& inputs, RPC::Writer& outputs)
 {
-    switch(major) {
-        case GS_QVM_SYSCALL:
-            switch (minor) {
-            case GAME_INIT:
-            {
-                Cmd::InitializeProxy();
-                int levelTime = inputs.ReadInt();
-                int randomSeed = inputs.ReadInt();
-                qboolean restart = inputs.ReadInt();
-                G_InitGame(levelTime, randomSeed, restart);
-                break;
-            }
+    if (major == GS_QVM_SYSCALL) {
+        switch (minor) {
+        case GAME_INIT:
+        {
+            VM::InitializeProxies();
+            int levelTime = inputs.ReadInt();
+            int randomSeed = inputs.ReadInt();
+            qboolean restart = inputs.ReadInt();
+            G_InitGame(levelTime, randomSeed, restart);
+            break;
+        }
 
-            case GAME_SHUTDOWN:
-                G_ShutdownGame(inputs.ReadInt());
-                break;
+        case GAME_SHUTDOWN:
+            G_ShutdownGame(inputs.ReadInt());
+            break;
 
-            case GAME_CLIENT_CONNECT:
+        case GAME_CLIENT_CONNECT:
+        {
+            int clientNum = inputs.ReadInt();
+            qboolean firstTime = inputs.ReadInt();
+            qboolean isBot = inputs.ReadInt();
+            const char* denied = isBot ? ClientBotConnect(clientNum, firstTime, TEAM_NONE) : ClientConnect(clientNum, firstTime);
+            outputs.WriteInt(denied ? qtrue : qfalse);
+            if (denied)
+                outputs.WriteString(denied);
+            break;
+        }
+
+        case GAME_CLIENT_THINK:
+            ClientThink(inputs.ReadInt());
+            break;
+
+        case GAME_CLIENT_USERINFO_CHANGED:
+            ClientUserinfoChanged(inputs.ReadInt(), qfalse);
+            break;
+
+        case GAME_CLIENT_DISCONNECT:
+            ClientDisconnect(inputs.ReadInt());
+            break;
+
+        case GAME_CLIENT_BEGIN:
+            ClientBegin(inputs.ReadInt());
+            break;
+
+        case GAME_CLIENT_COMMAND:
             {
                 int clientNum = inputs.ReadInt();
-                qboolean firstTime = inputs.ReadInt();
-                qboolean isBot = inputs.ReadInt();
-                const char* denied = isBot ? ClientBotConnect(clientNum, firstTime, TEAM_NONE) : ClientConnect(clientNum, firstTime);
-                outputs.WriteInt(denied ? qtrue : qfalse);
-                if (denied)
-                    outputs.WriteString(denied);
-                break;
+                Str::StringRef command = inputs.ReadString();
+                Cmd::PushArgs(command);
+                ClientCommand(clientNum);
+                Cmd::PopArgs();
             }
-
-            case GAME_CLIENT_THINK:
-                ClientThink(inputs.ReadInt());
-                break;
-
-            case GAME_CLIENT_USERINFO_CHANGED:
-                ClientUserinfoChanged(inputs.ReadInt(), qfalse);
-                break;
-
-            case GAME_CLIENT_DISCONNECT:
-                ClientDisconnect(inputs.ReadInt());
-                break;
-
-            case GAME_CLIENT_BEGIN:
-                ClientBegin(inputs.ReadInt());
-                break;
-
-            case GAME_CLIENT_COMMAND:
-                {
-                    int clientNum = inputs.ReadInt();
-                    Str::StringRef command = inputs.ReadString();
-                    Cmd::PushArgs(command);
-                    ClientCommand(clientNum);
-                    Cmd::PopArgs();
-                }
-                break;
-
-            case GAME_RUN_FRAME:
-                G_RunFrame(inputs.ReadInt());
-                break;
-
-            case GAME_SNAPSHOT_CALLBACK:
-                G_Error("GAME_SNAPSHOT_CALLBACK not implemented");
-                break;
-
-            case BOTAI_START_FRAME:
-                G_Error("BOTAI_START_FRAME not implemented");
-                break;
-
-            case GAME_MESSAGERECEIVED:
-                G_Error("GAME_MESSAGERECEIVED not implemented");
-                break;
-
-            default:
-                G_Error("VMMain(): unknown game command %i", minor);
-            }
-        break;
-
-        case GS_COMMAND:
-            Cmd::HandleSyscall(minor, inputs, outputs);
             break;
+
+        case GAME_RUN_FRAME:
+            G_RunFrame(inputs.ReadInt());
+            break;
+
+        case GAME_SNAPSHOT_CALLBACK:
+            G_Error("GAME_SNAPSHOT_CALLBACK not implemented");
+            break;
+
+        case BOTAI_START_FRAME:
+            G_Error("BOTAI_START_FRAME not implemented");
+            break;
+
+        case GAME_MESSAGERECEIVED:
+            G_Error("GAME_MESSAGERECEIVED not implemented");
+            break;
+
+        default:
+            G_Error("VMMain(): unknown game command %i", minor);
+        }
+
+    } else if (major <= GS_LAST_COMMON_PROXY) {
+        VM::HandleCommonSyscall(major, minor, inputs, outputs);
+
+    } else {
+        G_Error("unhandled VM major syscall number %i", major);
     }
 
 }
@@ -182,65 +181,6 @@ int trap_Milliseconds(void)
 	input.WriteInt(G_MILLISECONDS);
 	RPC::Reader output = DoRPC(input);
 	return output.ReadInt();
-}
-
-void trap_Cvar_Register(vmCvar_t *cvar, const char *var_name, const char *value, int flags)
-{
-	vmCvar_t dummy;
-	if (!cvar)
-		cvar = &dummy;
-
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_CVAR_REGISTER);
-	input.Write(cvar, sizeof(vmCvar_t));
-	input.WriteString(var_name);
-	input.WriteString(value);
-	input.WriteInt(flags);
-	RPC::Reader output = DoRPC(input);
-	output.Read(cvar, sizeof(vmCvar_t));
-}
-
-void trap_Cvar_Update(vmCvar_t *cvar)
-{
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_CVAR_UPDATE);
-	input.Write(cvar, sizeof(vmCvar_t));
-	RPC::Reader output = DoRPC(input);
-	output.Read(cvar, sizeof(vmCvar_t));
-}
-
-void trap_Cvar_Set(const char *var_name, const char *value)
-{
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_CVAR_SET);
-	input.WriteString(var_name);
-	input.WriteInt(value != NULL);
-	if (value)
-		input.WriteString(value);
-	DoRPC(input);
-}
-
-int trap_Cvar_VariableIntegerValue(const char *var_name)
-{
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_CVAR_VARIABLE_INTEGER_VALUE);
-	input.WriteString(var_name);
-	RPC::Reader output = DoRPC(input);
-	return output.ReadInt();
-}
-
-void trap_Cvar_VariableStringBuffer(const char *var_name, char *buffer, int bufsize)
-{
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(G_CVAR_VARIABLE_STRING_BUFFER);
-	input.WriteString(var_name);
-	RPC::Reader output = DoRPC(input);
-	Q_strncpyz(buffer, output.ReadString(), bufsize);
 }
 
 void trap_SendConsoleCommand(int exec_when, const char *text)

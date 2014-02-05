@@ -44,23 +44,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "unordered_map"
 
 //TODO HACK avoid compile link errors
-namespace Cvar{
-    std::string GetValue(const std::string& name) {
-        return "";
-    }
-    void Register(CvarProxy*, std::string const&, std::string, int, std::string const&) {
-    }
-    void SetValue(std::string const&, std::string) {
-    }
-}
-
 namespace Log {
     void Dispatch(Event, int) {
     }
 }
 
-const char* Trans_Gettext(const char*) {
-    return "";
+const char* Trans_Gettext(const char* text) {
+    return text;
 }
 
 // Forward declare DoRPC, would need to expose it somehow
@@ -70,8 +60,12 @@ RPC::Reader DoRPC(RPC::Writer& writer);
 
 //TODO END HACK
 
+// Command related syscall handling
+
 namespace Cmd {
 
+    // This is a proxy environment given to commands, to replicate the common API
+    // Calls to its methods will be proxied to Cmd::GetEnv() in the engine.
     class ProxyEnvironment: public Cmd::Environment {
         public:
             virtual void Print(Str::StringRef text) {
@@ -96,6 +90,8 @@ namespace Cmd {
         return env;
     }
 
+    // Commands can be statically initialized so we must store the description so that we can register them after main
+
     struct CommandRecord {
         const Cmd::CmdBase* cmd;
         std::string description;
@@ -108,7 +104,7 @@ namespace Cmd {
         return map;
     }
 
-    bool initialized = false;
+    bool commandsInitialized = false;
 
     static void AddCommandRPC(std::string name, std::string description) {
         RPC::Writer input;
@@ -119,8 +115,16 @@ namespace Cmd {
         DoRPC(input);
     }
 
+    static void InitializeProxy() {
+        for(auto& record: GetCommandMap()) {
+            AddCommandRPC(record.first, std::move(record.second.description));
+        }
+
+        commandsInitialized = true;
+    }
+
     void AddCommand(std::string name, const Cmd::CmdBase& cmd, std::string description) {
-        if (initialized) {
+        if (commandsInitialized) {
             GetCommandMap()[name] = {&cmd, ""};
             AddCommandRPC(std::move(name), std::move(description));
         } else {
@@ -138,31 +142,9 @@ namespace Cmd {
         DoRPC(input);
     }
 
-    void InitializeProxy() {
-        for(auto& record: GetCommandMap()) {
-            AddCommandRPC(record.first, std::move(record.second.description));
-        }
+    // Implementation of the engine syscalls
 
-        initialized = true;
-    }
-
-    class TempCmd: Cmd::StaticCmd {
-        public:
-            TempCmd() : Cmd::StaticCmd("vmTempCommand", "a temp VM command made with the beautiful proxies") {
-            }
-
-            virtual void Run(const Args& args) const {
-                Print("The temp command is running");
-            }
-
-            virtual Cmd::CompletionResult Complete(int argNum, const Args& args, Str::StringRef prefix) const {
-                return {{"toto", "tata"}, {"titi", "tutu"}};
-            }
-    };
-
-    static TempCmd tempCmdRegistration;
-
-    void ExecuteSyscall(RPC::Reader& inputs, RPC::Writer& outputs) {
+    void ExecuteSyscall(RPC::Reader& inputs, RPC::Writer&) {
         Cmd::Args args(inputs.ReadString());
 
         auto map = GetCommandMap();
@@ -190,7 +172,7 @@ namespace Cmd {
         Cmd::CompletionResult res = it->second.cmd->Complete(argNum, args, prefix);
 
         outputs.WriteInt(res.size());
-        for (int i = 0; i < res.size(); i++) {
+        for (unsigned i = 0; i < res.size(); i++) {
             outputs.WriteString(res[i].first.c_str());
             outputs.WriteString(res[i].second.c_str());
         }
@@ -260,6 +242,7 @@ void trap_Argv(int n, char *buffer, int bufferLength) {
 
 namespace Cmd {
 
+    // We also provide an API to manipulate the stack for example when the VM asks for commands to be tokenized
     void PushArgs(Str::StringRef args) {
         argStack.push_back(new Cmd::Args(args));
     }
@@ -269,4 +252,214 @@ namespace Cmd {
         argStack.pop_back();
     }
 
+}
+
+// Cvar related commands
+
+namespace Cvar{
+
+    // Commands can be statically initialized so we must store the registration parameters
+    // so that we can register them after main
+
+    struct CvarRecord {
+        CvarProxy* cvar;
+        std::string description;
+        int flags;
+        std::string defaultValue;
+    };
+
+    typedef std::unordered_map<std::string, CvarRecord> CvarMap;
+
+    CvarMap& GetCvarMap() {
+        static CvarMap map;
+        return map;
+    }
+
+    bool cvarsInitialized = false;
+
+    void RegisterCvarRPC(const std::string& name, std::string description, int flags, std::string defaultValue) {
+        RPC::Writer input;
+        input.WriteInt(GS_CVAR);
+        input.WriteInt(REGISTER_CVAR);
+        input.WriteString(name.c_str());
+        input.WriteString(description.c_str());
+        input.WriteInt(flags);
+        input.WriteString(defaultValue.c_str());
+        DoRPC(input);
+    }
+
+    static void InitializeProxy() {
+        for(auto& record: GetCvarMap()) {
+            RegisterCvarRPC(record.first, std::move(record.second.description), record.second.flags, std::move(record.second.defaultValue));
+        }
+
+        cvarsInitialized = true;
+    }
+
+    void Register(CvarProxy* cvar, const std::string& name, std::string description, int flags, const std::string& defaultValue) {
+        if (cvarsInitialized) {
+            GetCvarMap()[name] = {cvar, "", 0, defaultValue};
+            RegisterCvarRPC(name, std::move(description), flags, defaultValue);
+        } else {
+            GetCvarMap()[name] = {cvar, std::move(description), flags, defaultValue};
+        }
+    }
+
+    std::string GetValue(const std::string& name) {
+        RPC::Writer inputs;
+        inputs.WriteInt(GS_CVAR);
+        inputs.WriteInt(GET_CVAR);
+        inputs.WriteString(name.c_str());
+        RPC::Reader outputs = DoRPC(inputs);
+        return outputs.ReadString();
+    }
+
+    void SetValue(const std::string& name, std::string value) {
+        RPC::Writer inputs;
+        inputs.WriteInt(GS_CVAR);
+        inputs.WriteInt(SET_CVAR);
+        inputs.WriteString(name.c_str());
+        inputs.WriteString(value.c_str());
+        DoRPC(inputs);
+    }
+
+    // Syscalls called by the engine
+
+    void CallOnValueChangedSyscall(RPC::Reader& inputs, RPC::Writer& outputs) {
+        Str::StringRef name = inputs.ReadString();
+        Str::StringRef value = inputs.ReadString();
+
+        auto map = GetCvarMap();
+        auto it = map.find(name);
+
+        if (it == map.end()) {
+            outputs.WriteInt(true);
+            outputs.WriteString("");
+            return;
+        }
+
+        auto res = it->second.cvar->OnValueChanged(value);
+
+        outputs.WriteInt(res.success);
+        outputs.WriteString(res.description.c_str());
+    }
+
+    void HandleSyscall(int minor, RPC::Reader& inputs, RPC::Writer& outputs) {
+        switch (minor) {
+            case ON_VALUE_CHANGED:
+                CallOnValueChangedSyscall(inputs, outputs);
+                break;
+
+            default:
+                G_Error("Unhandled engine cvar syscall %i", minor);
+        }
+    }
+}
+
+// In the QVMs are used registered through vmCvar_t which contains a copy of the values of the cvar
+// each frame will call Cvar_Update for each cvar. Previously the cvar system would use a modification
+// count in both the engine cvar and the vmcvar to update the latter lazily. However we cannot afford
+// that many roundtrips anymore.
+// The following code registers a special CvarProxy for each vmCvar_t and will cache the new value.
+// That way we are able to update vmcvars lazily without roundtrips. See qcommon/cmd.cpp for the
+// legacy implementation.
+
+class VMCvarProxy : public Cvar::CvarProxy {
+    public:
+        VMCvarProxy(Str::StringRef name, int flags, Str::StringRef defaultValue)
+        : Cvar::CvarProxy(name, "a vmCvar_t", flags, defaultValue), modificationCount(0), value(defaultValue) {
+            Register();
+        }
+
+        virtual Cvar::OnValueChangedResult OnValueChanged(Str::StringRef newValue) OVERRIDE {
+            value = newValue;
+            modificationCount++;
+            return {true, ""};
+        }
+
+        void Update(vmCvar_t* cvar) {
+            if (cvar->modificationCount == modificationCount) {
+                return;
+            }
+
+            Q_strncpyz(cvar->string, value.c_str(), MAX_CVAR_VALUE_STRING);
+
+            if (not Str::ToFloat(value, cvar->value)) {
+                cvar->value = 0,0;
+            }
+            if (not Str::ParseInt(cvar->integer, value)) {
+                cvar->integer = 0;
+            }
+
+            cvar->modificationCount = modificationCount;
+        }
+
+    private:
+        int modificationCount;
+        std::string value;
+};
+
+std::vector<VMCvarProxy*> vmCvarProxies;
+
+static void UpdateVMCvar(vmCvar_t* cvar) {
+    vmCvarProxies[cvar->handle]->Update(cvar);
+}
+
+void trap_Cvar_Register(vmCvar_t *cvar, const char *varName, const char *value, int flags) {
+    vmCvarProxies.push_back(new VMCvarProxy(varName, flags, value));
+
+    if (!cvar) {
+        return;
+    }
+
+    cvar->modificationCount = -1;
+    cvar->handle = vmCvarProxies.size() - 1;
+    UpdateVMCvar(cvar);
+}
+
+void trap_Cvar_Set(const char *varName, const char *value) {
+    Cvar::SetValue(varName, value);
+}
+
+void trap_Cvar_Update(vmCvar_t *cvar) {
+    UpdateVMCvar(cvar);
+}
+
+int trap_Cvar_VariableIntegerValue(const char *varName) {
+    std::string value = Cvar::GetValue(varName);
+    int res;
+    if (Str::ParseInt(res, value)) {
+        return res;
+    }
+    return 0;
+}
+
+void trap_Cvar_VariableStringBuffer(const char *varName, char *buffer, int bufsize) {
+    std::string value = Cvar::GetValue(varName);
+    Q_strncpyz(buffer, value.c_str(), bufsize);
+}
+
+// Common functions for all syscalls
+
+namespace VM {
+
+    void InitializeProxies() {
+        Cmd::InitializeProxy();
+        Cvar::InitializeProxy();
+    }
+
+    void HandleCommonSyscall(int major, int minor, RPC::Reader& inputs, RPC::Writer& outputs) {
+        switch (major) {
+            case GS_COMMAND:
+                Cmd::HandleSyscall(minor, inputs, outputs);
+                break;
+
+            case GS_CVAR:
+                Cvar::HandleSyscall(minor, inputs, outputs);
+                break;
+
+            default:
+                G_Error("Unhandled common VM syscall major number %i", major);
+        }
+    }
 }

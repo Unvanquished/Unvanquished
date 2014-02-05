@@ -544,8 +544,8 @@ set( ENGINELIST
   ${ENGINE_DIR}/framework/CommandSystem.h
   ${ENGINE_DIR}/framework/CvarSystem.cpp
   ${ENGINE_DIR}/framework/CvarSystem.h
-  ${ENGINE_DIR}/framework/CommandVMService.cpp
-  ${ENGINE_DIR}/framework/CommandVMService.h
+  ${ENGINE_DIR}/framework/CommonVMServices.cpp
+  ${ENGINE_DIR}/framework/CommonVMServices.h
   ${ENGINE_DIR}/framework/ConsoleField.cpp
   ${ENGINE_DIR}/framework/ConsoleField.h
   ${ENGINE_DIR}/framework/ConsoleHistory.cpp
@@ -759,8 +759,8 @@ set( GAMELIST
   ${GAMELOGIC_DIR}/shared/bg_voice.c
   ${GAMELOGIC_DIR}/shared/bg_teamprogress.c
   ${GAMELOGIC_DIR}/shared/bg_utilities.c
-  ${GAMELOGIC_DIR}/shared/CommandProxy.cpp
-  ${GAMELOGIC_DIR}/shared/CommandProxy.h
+  ${GAMELOGIC_DIR}/shared/CommonProxies.cpp
+  ${GAMELOGIC_DIR}/shared/CommonProxies.h
   ${GAMELOGIC_DIR}/game/g_active.c
   ${GAMELOGIC_DIR}/game/g_client.c
   ${GAMELOGIC_DIR}/game/g_cmds.c

@@ -34,40 +34,50 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <unordered_map>
 
-#ifndef COMMAND_VM_SERVICE_H_
-#define COMMAND_VM_SERVICE_H_
+#ifndef COMMON_VM_SERVICES_H_
+#define COMMON_VM_SERVICES_H_
 
 namespace VM {
+
     class VMBase;
-}
 
-namespace Cmd {
-
-    class ProxyCmd;
-
-    class CommandVMService {
+    class CommonVMServices {
         public:
-            CommandVMService(VM::VMBase* vm, int commandFlag, Str::StringRef vmName);
-            ~CommandVMService();
+            CommonVMServices(VM::VMBase* vm, Str::StringRef vmName, int commandFlag);
+            ~CommonVMServices();
 
-            void Syscall(int index, RPC::Reader& inputs, RPC::Writer& outputs);
+            void Syscall(int major, int minor, RPC::Reader& inputs, RPC::Writer& outputs);
+
+        private:
+            Str::StringRef vmName;
+            VM::VMBase* vm;
 
             VM::VMBase* GetVM();
 
-        private:
+            // Command Related
+            void HandleCommandSyscall(int minor, RPC::Reader& inputs, RPC::Writer& outputs);
+
             void AddCommand(RPC::Reader& inputs, RPC::Writer& outputs);
             void RemoveCommand(RPC::Reader& inputs, RPC::Writer& outputs);
-
             void EnvPrint(RPC::Reader& inputs, RPC::Writer& outputs);
             void EnvExecuteAfter(RPC::Reader& inputs, RPC::Writer& outputs);
 
-            int flag;
-            Str::StringRef vmName;
-            std::unordered_map<std::string, uint64_t> registeredCommands; // values not used for now
+            class ProxyCmd;
+            int commandFlag;
+            ProxyCmd* commandProxy;
+            //TODO use the values to help the VM cache the location of the commands instead of doing a second hashtable lookup
+            std::unordered_map<std::string, uint64_t> registeredCommands;
 
-            ProxyCmd* proxy;
-            VM::VMBase* vm;
+            // Cvar Related
+            void HandleCvarSyscall(int minor, RPC::Reader& inputs, RPC::Writer& outputs);
+
+            void RegisterCvar(RPC::Reader& inputs, RPC::Writer& outputs);
+            void GetCvar(RPC::Reader& inputs, RPC::Writer& outputs);
+            void SetCvar(RPC::Reader& inputs, RPC::Writer& outputs);
+
+            class ProxyCvar;
+            std::vector<ProxyCvar*> registeredCvars;
     };
 }
 
-#endif // COMMAND_VM_SERVICE_H_
+#endif // COMMAND_VM_SERVICES_H_

@@ -161,7 +161,6 @@ namespace Cmd {
         protected:
             StaticCmd(std::string name, std::string description);
             StaticCmd(std::string name, int flags, std::string description);
-            //TODO: sometimes (in the gamelogic) we already know what the flags is, provide another constructor for it.
     };
 
     /**

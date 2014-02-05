@@ -319,8 +319,8 @@ typedef struct
 
 //=============================================================================
 
-namespace Cmd {
-    class CommandVMService;
+namespace VM {
+    class CommonVMServices;
 }
 
 class GameVM: public VM::VMBase {
@@ -348,7 +348,7 @@ private:
 
 	NaCl::SharedMemoryPtr shmRegion;
 
-    Cmd::CommandVMService* commandService;
+    VM::CommonVMServices* services;
 };
 
 //=============================================================================

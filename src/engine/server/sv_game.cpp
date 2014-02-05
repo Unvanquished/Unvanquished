@@ -37,7 +37,7 @@ Maryland 20850 USA.
 #include "server.h"
 #include "../../common/Cvar.h"
 #include "../qcommon/crypto.h"
-#include "../framework/CommandVMService.h"
+#include "../framework/CommonVMServices.h"
 
 // these functions must be used instead of pointer arithmetic, because
 // the game allocates gentities with private information after the server shared part
@@ -637,7 +637,7 @@ bool GameVM::Start()
 		Com_Error( ERR_DROP, "Game ABI mismatch, expected %d, got %d", GAME_API_VERSION, version );
     }
 
-    commandService = new Cmd::CommandVMService(this, Cmd::GAME, "Game");
+    services = new VM::CommonVMServices(this, "Game", Cmd::GAME);
 
     return true;
 }
@@ -645,7 +645,7 @@ bool GameVM::Start()
 GameVM::~GameVM()
 {
     this->Free();
-    delete commandService;
+    delete services;
 }
 
 void GameVM::GameInit(int levelTime, int randomSeed, qboolean restart)
@@ -761,16 +761,13 @@ void GameVM::GameMessageRecieved(int clientNum, const char *buffer, int bufferSi
 
 void GameVM::Syscall(int major, int minor, RPC::Reader& inputs, RPC::Writer& outputs)
 {
-	switch (major) {
-	case GS_QVM_SYSCALL:
+	if (major == GS_QVM_SYSCALL) {
 		this->QVMSyscall(minor, inputs, outputs);
-		break;
 
-	case GS_COMMAND:
-        this->commandService->Syscall(minor, inputs, outputs);
-		break;
+    } else if (major <= GS_LAST_COMMON_PROXY) {
+        services->Syscall(major, minor, inputs, outputs);
 
-	default:
+    } else {
 		Com_Error(ERR_DROP, "Bad major game syscall number: %d", major);
 	}
 }
@@ -790,44 +787,6 @@ void GameVM::QVMSyscall(int index, RPC::Reader& inputs, RPC::Writer& outputs)
 
 	case G_MILLISECONDS:
 		outputs.WriteInt(Sys_Milliseconds());
-		break;
-
-	case G_CVAR_REGISTER:
-	{
-		vmCvar_t cvar;
-		inputs.Read(&cvar, sizeof(vmCvar_t));
-		const char* name = inputs.ReadString();
-		const char* defaultValue = inputs.ReadString();
-		int flags = inputs.ReadInt();
-		Cvar_Register(&cvar, name, defaultValue, flags);
-		outputs.Write(&cvar, sizeof(vmCvar_t));
-		break;
-	}
-
-	case G_CVAR_UPDATE:
-	{
-		vmCvar_t cvar;
-		inputs.Read(&cvar, sizeof(vmCvar_t));
-		Cvar_Update(&cvar);
-		outputs.Write(&cvar, sizeof(vmCvar_t));
-		break;
-	}
-
-	case G_CVAR_SET:
-	{
-		const char* name = inputs.ReadString();
-		qboolean haveValue = inputs.ReadInt();
-		const char* value = haveValue ? inputs.ReadString() : NULL;
-		Cvar_Set(name, value);
-		break;
-	}
-
-	case G_CVAR_VARIABLE_INTEGER_VALUE:
-		outputs.WriteInt(Cvar_VariableIntegerValue(inputs.ReadString()));
-		break;
-
-	case G_CVAR_VARIABLE_STRING_BUFFER:
-		outputs.WriteString(Cvar_VariableString(inputs.ReadString()));
 		break;
 
 	case G_SEND_CONSOLE_COMMAND:
