@@ -798,7 +798,6 @@ void G_admin_writeconfig( void )
 	g_admin_level_t   *l;
 	g_admin_ban_t     *b;
 	g_admin_command_t *c;
-	char              tmp[ sizeof( g_admin.string ) + 4 ];
 
 	if ( !g_admin.string[ 0 ] )
 	{
@@ -809,9 +808,7 @@ void G_admin_writeconfig( void )
 
 	t = trap_GMTime( NULL );
 
-	Q_snprintf( tmp, sizeof( tmp ), "%s.tmp", g_admin.string );
-
-	if ( trap_FS_FOpenFile( tmp, &f, FS_WRITE ) < 0 )
+	if ( trap_FS_FOpenFile( g_admin.string, &f, FS_WRITE_VIA_TEMPORARY ) < 0 )
 	{
 		G_Printf( "admin_writeconfig: could not open g_admin file \"%s\"\n",
 		          g_admin.string );
@@ -909,7 +906,6 @@ void G_admin_writeconfig( void )
 	}
 
 	trap_FS_FCloseFile( f );
-	trap_FS_Rename( tmp, g_admin.string );
 }
 
 static void admin_readconfig_string( char **cnf, char *s, int size )

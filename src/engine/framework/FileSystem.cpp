@@ -27,6 +27,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #include "FileSystem.h"
 #include "../../common/Log.h"
 #include "../../common/Command.h"
+#include "../../common/Optional.h"
 #include "../../libs/minizip/unzip.h"
 #include <vector>
 #include <algorithm>
@@ -59,6 +60,8 @@ const char PAK_DEPS_FILE[] = "DEPS";
 
 // Default base package
 const char DEFAULT_BASE_PAK[] = "unvanquished";
+
+const char TEMP_SUFFIX[] = ".tmp";
 
 // Cvars to select the base and extra packages to use
 static Cvar::Cvar<std::string> fs_basepak("fs_basepak", "base pak to load", 0, DEFAULT_BASE_PAK);
@@ -1851,6 +1854,15 @@ File OpenEdit(Str::StringRef path, std::error_code& err)
 	return OpenMode(path, MODE_EDIT, err);
 }
 
+static File OpenWriteViaTemporary(Str::StringRef path, std::error_code& err = throws())
+{
+	if (!Path::IsValid(path, false)) {
+		SetErrorCodeFilesystem(filesystem_error::invalid_filename, err);
+		return {};
+	}
+	return RawPath::OpenMode(Path::Build(homePath, path) + FS::TEMP_SUFFIX, MODE_WRITE, err);
+}
+
 bool FileExists(Str::StringRef path)
 {
 	if (!Path::IsValid(path, false))
@@ -1948,6 +1960,7 @@ Cmd::CompletionResult CompleteFilename(Str::StringRef prefix, Str::StringRef roo
 struct handleData_t {
 	bool isOpen;
 	bool isPakFile;
+	Opt::optional<std::string> renameTo;
 
 	// Normal file info
 	bool forceFlush;
@@ -2012,15 +2025,14 @@ int FS_FOpenFileRead(const char* path, fileHandle_t* handle, qboolean)
 		*handle = 0;
 		return -1;
 	}
-
 	return length;
 }
 
-fileHandle_t FS_FOpenFileWrite(const char* path)
+static fileHandle_t FS_FOpenFileWrite_internal(const char* path, bool temporary)
 {
 	fileHandle_t handle = FS_AllocHandle();
 	try {
-		handleTable[handle].file = FS::HomePath::OpenWrite(path);
+		handleTable[handle].file = temporary ? FS::HomePath::OpenWriteViaTemporary(path) : FS::HomePath::OpenWrite(path);
 	} catch (std::system_error& err) {
 		Com_Printf("Failed to open '%s' for writing: %s\n", path, err.what());
 		return 0;
@@ -2028,7 +2040,20 @@ fileHandle_t FS_FOpenFileWrite(const char* path)
 	handleTable[handle].forceFlush = false;
 	handleTable[handle].isPakFile = false;
 	handleTable[handle].isOpen = true;
+	if (temporary) {
+		handleTable[handle].renameTo = FS::Path::Build(FS::homePath, path);
+	}
 	return handle;
+}
+
+fileHandle_t FS_FOpenFileWrite(const char* path)
+{
+	return FS_FOpenFileWrite_internal(path, false);
+}
+
+fileHandle_t FS_FOpenFileWriteViaTemporary(const char* path)
+{
+	return FS_FOpenFileWrite_internal(path, true);
 }
 
 fileHandle_t FS_FOpenFileAppend(const char* path)
@@ -2048,7 +2073,7 @@ fileHandle_t FS_FOpenFileAppend(const char* path)
 
 fileHandle_t FS_SV_FOpenFileWrite(const char* path)
 {
-	return FS_FOpenFileWrite(path);
+	return FS_FOpenFileWrite_internal(path, false);
 }
 
 int FS_SV_FOpenFileRead(const char* path, fileHandle_t* handle)
@@ -2083,7 +2108,8 @@ int FS_Game_FOpenFileByMode(const char* path, fileHandle_t* handle, fsMode_t mod
 		}
 
 	case FS_WRITE:
-		*handle = FS_FOpenFileWrite(FS::Path::Build("game", path).c_str());
+	case FS_WRITE_VIA_TEMPORARY:
+		*handle = FS_FOpenFileWrite_internal(FS::Path::Build("game", path).c_str(), mode == FS_WRITE_VIA_TEMPORARY);
 		return *handle == 0 ? -1 : 0;
 
 	case FS_APPEND:
@@ -2109,6 +2135,16 @@ int FS_FCloseFile(fileHandle_t handle)
 	} else {
 		try {
 			handleTable[handle].file.Close();
+			if (handleTable[handle].renameTo) {
+				std::string renameTo = std::move(*handleTable[handle].renameTo);
+				handleTable[handle].renameTo = Opt::nullopt; // tidy up after abusing std::move
+				try {
+					FS::RawPath::MoveFile(renameTo, renameTo + FS::TEMP_SUFFIX);
+				} catch (std::system_error& err) {
+					Com_Printf("Failed to replace file %s: %s\n", renameTo.c_str(), err.what());
+					return -1;
+				}
+			}
 			return 0;
 		} catch (std::system_error& err) {
 			Com_Printf("Failed to close file: %s\n", err.what());

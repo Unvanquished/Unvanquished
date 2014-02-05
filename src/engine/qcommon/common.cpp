@@ -2057,7 +2057,7 @@ void Com_WriteConfigToFile( const char *filename, void (*writeConfig)( fileHandl
 
 	Com_sprintf( tmp, sizeof( tmp ), "config/%s", filename );
 
-	f = FS_FOpenFileWrite( tmp );
+	f = FS_FOpenFileWriteViaTemporary( tmp );
 
 	if ( !f )
 	{

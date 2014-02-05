@@ -509,6 +509,8 @@ fileHandle_t FS_FOpenFileWrite( const char *qpath );
 fileHandle_t FS_FOpenFileAppend( const char *filename );
 fileHandle_t  FS_FCreateOpenPipeFile( const char *filename );
 
+fileHandle_t FS_FOpenFileWriteViaTemporary( const char *qpath );
+
 // will properly create any needed paths and deal with separator character issues
 
 fileHandle_t FS_SV_FOpenFileWrite( const char *filename );
