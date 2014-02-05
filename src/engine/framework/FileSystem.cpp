@@ -1200,6 +1200,9 @@ static void InternalLoadPak(const PakInfo& pak, Opt::optional<uint32_t> expected
 		// Get the file list and calculate the checksum of the package (checksum of all file checksums)
 		checksum = crc32(0, Z_NULL, 0);
 		zipFile.ForEachFile([&pak, &checksum, &hasDeps, &depsOffset](Str::StringRef filename, offset_t offset, uint32_t crc) {
+			// Ignore directories
+			if (Str::IsSuffix("/", filename))
+				return;
 			if (!Path::IsValid(filename, false)) {
 				Log::Warn("Invalid filename '%s' in pak '%s'", filename, pak.path);
 				return; // This is effectively a continue, since we are in a lambda
