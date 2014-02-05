@@ -663,8 +663,8 @@ bool IsValid(Str::StringRef path, bool allowDir)
 	}
 
 	// An empty path or a path ending with / is a directory
-	if (!allowDir && nonAlphaNum)
-		return path.empty() || path.back() == '/';
+	if (nonAlphaNum)
+		return allowDir && (path.empty() || path.back() == '/');
 
 	return true;
 }
