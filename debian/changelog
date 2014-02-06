@@ -4,6 +4,8 @@ unvanquished (0.24.0-4) UNRELEASED; urgency=low
     Not perfect, not guaranteed to work(!), but should cover common cases.
   * Add directories in /etc/unvanquished-server for scripts and per-map
     configuration files.
+  * Remove vm & lcc directories to debian/clean since they break cleaning.
+    Clean them up properly in debian/rules.
 
  -- Darren Salt <devspam@moreofthesa.me.uk>  Thu, 06 Feb 2014 03:03:26 +0000
 
