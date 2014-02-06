@@ -1855,15 +1855,6 @@ File OpenEdit(Str::StringRef path, std::error_code& err)
 	return OpenMode(path, MODE_EDIT, err);
 }
 
-static File OpenWriteViaTemporary(Str::StringRef path, std::error_code& err = throws())
-{
-	if (!Path::IsValid(path, false)) {
-		SetErrorCodeFilesystem(filesystem_error::invalid_filename, err);
-		return {};
-	}
-	return RawPath::OpenMode(Path::Build(homePath, path) + FS::TEMP_SUFFIX, MODE_WRITE, err);
-}
-
 bool FileExists(Str::StringRef path)
 {
 	if (!Path::IsValid(path, false))
@@ -2033,7 +2024,7 @@ static fileHandle_t FS_FOpenFileWrite_internal(const char* path, bool temporary)
 {
 	fileHandle_t handle = FS_AllocHandle();
 	try {
-		handleTable[handle].file = temporary ? FS::HomePath::OpenWriteViaTemporary(path) : FS::HomePath::OpenWrite(path);
+		handleTable[handle].file = FS::HomePath::OpenWrite(temporary ? path : std::string(path) + FS::TEMP_SUFFIX);
 	} catch (std::system_error& err) {
 		Com_Printf("Failed to open '%s' for writing: %s\n", path, err.what());
 		return 0;
