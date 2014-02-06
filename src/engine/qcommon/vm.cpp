@@ -89,8 +89,8 @@ void VM_Init( void )
 	// vm_* 0 means native libraries (.so, .dll, etc.) are used
 	// vm_* 1 means virtual machines (.qvm, etc.) are used through an interpreter
 	// vm_* 2 means virtual machines are used with JIT compiling
-	Cvar_Get( "vm_cgame", "0", CVAR_ARCHIVE );
-	Cvar_Get( "vm_ui", "0", CVAR_ARCHIVE );
+	Cvar_Get( "vm_cgame", "0", 0 );
+	Cvar_Get( "vm_ui", "0", 0 );
 
 	Cmd_AddCommand( "vmprofile", VM_VmProfile_f );
 	Cmd_AddCommand( "vminfo", VM_VmInfo_f );
@@ -534,7 +534,7 @@ vmHeader_t *VM_LoadQVM( vm_t *vm, qboolean alloc )
 	Com_sprintf( filename, sizeof( filename ), "vm/%s.qvm", vm->name );
 	Com_DPrintf( "Loading vm file %s…\n", filename );
 
-	i = FS_ReadFileCheck( filename, &header.v );
+	FS_ReadFile( filename, &header.v );
 
 	if ( !header.h )
 	{
@@ -543,7 +543,7 @@ vmHeader_t *VM_LoadQVM( vm_t *vm, qboolean alloc )
 		return NULL;
 	}
 
-	vm->clean = i >= 0;
+	vm->clean = qtrue;
 
 	// show where the QVM was loaded from
 	if ( com_developer->integer )

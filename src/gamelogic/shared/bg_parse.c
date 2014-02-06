@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA	02110-1301	USA
 #include "../../engine/qcommon/q_shared.h"
 #include "bg_public.h"
 
-#ifdef CGAME
+#ifdef IN_CGAME_VM
 #include "../cgame/cg_local.h"
 #endif
 
@@ -133,9 +133,6 @@ int   LEVEL4_TRAMPLE_CHARGE_TRIGGER;
 int   LEVEL4_TRAMPLE_DURATION;
 int   LEVEL4_TRAMPLE_STOP_PENALTY;
 int   LEVEL4_TRAMPLE_REPEAT;
-float LEVEL4_CRUSH_DAMAGE_PER_V;
-int   LEVEL4_CRUSH_DAMAGE;
-int   LEVEL4_CRUSH_REPEAT;
 
 // Human upgrades
 float RADAR_RANGE;
@@ -335,9 +332,6 @@ static configVar_t bg_configVars[] =
 	{"w_level4_clawHeight", FLOAT, qfalse, &LEVEL4_CLAW_HEIGHT},
 	{"w_level4_clawRange", FLOAT, qfalse, &LEVEL4_CLAW_RANGE},
 	{"w_level4_clawWidth", FLOAT, qfalse, &LEVEL4_CLAW_WIDTH},
-	{"w_level4_crushDmg", INTEGER, qfalse, &LEVEL4_CRUSH_DAMAGE},
-	{"w_level4_crushDmgPerFallingVelocity", FLOAT, qfalse, &LEVEL4_CRUSH_DAMAGE_PER_V},
-	{"w_level4_crushRepeat", INTEGER, qfalse, &LEVEL4_CRUSH_REPEAT},
 	{"w_level4_trampleChargeMax", INTEGER, qfalse, &LEVEL4_TRAMPLE_CHARGE_MAX},
 	{"w_level4_trampleChargeMin", INTEGER, qfalse, &LEVEL4_TRAMPLE_CHARGE_MIN},
 	{"w_level4_trampleChargeTrigger", INTEGER, qfalse, &LEVEL4_TRAMPLE_CHARGE_TRIGGER},
@@ -781,13 +775,9 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
 		{
 			PARSE(text, token);
 
-			if ( !Q_stricmp( token, "allAlien" ) )
+			if ( !Q_stricmp( token, "alien" ) )
 			{
 				ba->buildWeapon = (weapon_t) ( ( 1 << WP_ABUILD ) | ( 1 << WP_ABUILD2 ) );
-			}
-			else if ( !Q_stricmp( token, "advAlien" ) )
-			{
-				ba->buildWeapon = (weapon_t) ( 1 << WP_ABUILD2 );
 			}
 			else if ( !Q_stricmp( token, "human" ) )
 			{
@@ -2216,7 +2206,7 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 		if      ( !Q_stricmp( token, "model" ) )
 		{
 			PARSE( text, token );
-#ifdef CGAME
+#ifdef IN_CGAME_VM
 			ma->model = trap_R_RegisterModel( token );
 #endif
 			defined |= MODEL;
@@ -2224,7 +2214,7 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 		else if ( !Q_stricmp( token, "sound" ) )
 		{
 			PARSE( text, token );
-#ifdef CGAME
+#ifdef IN_CGAME_VM
 			ma->sound = trap_S_RegisterSound( token, qfalse );
 #endif
 			defined |= SOUND;
@@ -2263,7 +2253,7 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 		else if ( !Q_stricmp( token, "sprite" ) )
 		{
 			PARSE( text, token );
-#ifdef CGAME
+#ifdef IN_CGAME_VM
 			ma->sprite = trap_R_RegisterShader( token, RSF_DEFAULT );
 #endif
 			defined |= SPRITE;
@@ -2286,7 +2276,7 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 		else if ( !Q_stricmp( token, "particleSystem" ) )
 		{
 			PARSE( text, token );
-#ifdef CGAME
+#ifdef IN_CGAME_VM
 			ma->particleSystem = CG_RegisterParticleSystem( token );
 #endif
 			defined |= PARTICLE_SYSTEM;
@@ -2294,7 +2284,7 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 		else if ( !Q_stricmp( token, "trailSystem" ) )
 		{
 			PARSE( text, token );
-#ifdef CGAME
+#ifdef IN_CGAME_VM
 			ma->trailSystem = CG_RegisterTrailSystem( token );
 #endif
 			defined |= TRAIL_SYSTEM;
@@ -2339,7 +2329,7 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 		else if ( !Q_stricmp( token, "impactParticleSystem" ) )
 		{
 			PARSE( text, token );
-#ifdef CGAME
+#ifdef IN_CGAME_VM
 			ma->impactParticleSystem = CG_RegisterParticleSystem( token );
 #endif
 			defined |= IMPACT_PARTICLE;
@@ -2347,7 +2337,7 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 		else if ( !Q_stricmp( token, "impactMark" ) )
 		{
 			PARSE( text, token );
-#ifdef CGAME
+#ifdef IN_CGAME_VM
 			ma->impactMark = trap_R_RegisterShader( token, RSF_DEFAULT );
 #endif
 			defined |= IMPACT_MARK;
@@ -2365,7 +2355,7 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 			PARSE( text, token );
 			index = atoi( token );
 			PARSE( text, token );
-#ifdef CGAME
+#ifdef IN_CGAME_VM
 			if ( index >= 0 && index < 4 )
 			{
 				ma->impactSound[ index ] = trap_S_RegisterSound( token, qfalse );
@@ -2378,7 +2368,7 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 			PARSE( text, token );
 			index = atoi( token );
 			PARSE( text, token );
-#ifdef CGAME
+#ifdef IN_CGAME_VM
 			if ( index >= 0 && index < 4 )
 			{
 				ma->impactFleshSound[ index ] = trap_S_RegisterSound( token, qfalse );

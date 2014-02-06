@@ -1,0 +1,12 @@
+[Unit]
+Description=Unvanquished Dedicated Server
+After=network.target
+
+[Service]
+EnvironmentFile=/etc/conf.d/unvanquished.conf
+User=unvanquished
+Group=unvanquished
+ExecStart=/usr/lib/unvanquished/daemonded +nocurses +set fs_libpath $FS_LIBPATH +set fs_basepath $FS_BASEPATH +set fs_homepath $FS_HOMEPATH +set dedicated $DEDICATED +exec $EXEC
+
+[Install]
+WantedBy=multi-user.target

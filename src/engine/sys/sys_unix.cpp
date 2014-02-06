@@ -413,7 +413,7 @@ FILE *Sys_Mkfifo( const char *ospath )
 
 	// if file already exists AND is a pipefile, remove it
 	if( !stat( ospath, &buf ) && S_ISFIFO( buf.st_mode ) )
-		FS_Remove( ospath );
+		remove( ospath );
 
 	result = mkfifo( ospath, 0600 );
 	if( result != 0 )
@@ -755,11 +755,8 @@ void Sys_ErrorDialog( const char *error )
 	char         buffer[ 1024 ];
 	unsigned int size;
 	int          f;
-	const char   *homepath = Cvar_VariableString( "fs_homepath" );
-	const char   *gamedir = Cvar_VariableString( "fs_game" );
 	const char   *fileName = "crashlog.txt";
-	char         *ospath = FS_BuildOSPath( homepath, gamedir, "" );
-	char         *ospathfile = FS_BuildOSPath( homepath, gamedir, fileName );
+	std::string ospath = FS::Path::Build(FS::GetHomePath(), fileName);
 
 	Sys_Print( va( "%s\n", error ) );
 
@@ -770,20 +767,13 @@ void Sys_ErrorDialog( const char *error )
 		SDL_SetWindowGrab( (SDL_Window*) IN_GetWindow(), SDL_FALSE );
 	}
 
-	Sys_Dialog( DT_ERROR, va( "%s. See \"%s\" for details.", error, ospathfile ), "Error" );
+	Sys_Dialog( DT_ERROR, va( "%s. See \"%s\" for details.", error, ospath.c_str() ), "Error" );
 #endif
-
-	// Make sure the write path for the crashlog exists...
-	if ( !Sys_Mkdir( ospath ) )
-	{
-		Com_Printf( "ERROR: couldn't create path '%s' for crash log.\n", ospath );
-		return;
-	}
 
 	// We might be crashing because we maxed out the Quake MAX_FILE_HANDLES,
 	// which will come through here, so we don't want to recurse forever by
 	// calling FS_FOpenFileWrite()...use the Unix system APIs instead.
-	f = open( ospathfile, O_CREAT | O_TRUNC | O_WRONLY, 0640 );
+	f = open( ospath.c_str(), O_CREAT | O_TRUNC | O_WRONLY, 0640 );
 
 	if ( f == -1 )
 	{
@@ -1080,6 +1070,9 @@ void Sys_PlatformInit( void )
 	signal( SIGIOT, Sys_SigHandler );
 	signal( SIGBUS, Sys_SigHandler );
 #endif
+
+	// Enable S3TC on Mesa even if libtxc-dxtn is not available
+	putenv("force_s3tc_enable=true");
 
 	setlocale( LC_ALL, "" );
 

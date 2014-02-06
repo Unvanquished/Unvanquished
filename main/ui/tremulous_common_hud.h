@@ -264,7 +264,7 @@ itemDef
 	forecolor 1 0 0 1
 	textscale 0.3
 	ownerdraw CG_DEMO_RECORDING
-	background "ui/assets/neutral/circle.tga"
+	background "ui/assets/neutral/circle"
 }
 itemDef
 {
@@ -277,7 +277,7 @@ itemDef
 	forecolor 1 1 1 1
 	textscale 0.3
 	ownerdraw CG_DEMO_PLAYBACK
-	background "ui/assets/forwardarrow.tga"
+	background "ui/assets/forwardarrow"
 }
 
 //SNAPSHOT

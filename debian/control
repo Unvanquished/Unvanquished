@@ -18,7 +18,6 @@ Build-Depends: debhelper (>= 8.0.0), g++ (>= 4.7) | g++-4.7, po-debconf, cmake,
 	libvorbis-dev,
 	libopusfile-dev,
 	libwebp-dev (>> 0.2),
-	libxvidcore-dev | cmake (<< 2.8.5),
 	libgeoip-dev,
 	nettle-dev,
 	zlib1g-dev

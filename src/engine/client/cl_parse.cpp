@@ -465,8 +465,6 @@ void CL_ParseSnapshot( msg_t *msg )
 
 //=====================================================================
 
-int cl_connectedToPureServer;
-
 /*
 ==================
 CL_SystemInfoChanged
@@ -503,14 +501,12 @@ void CL_SystemInfoChanged( void )
 	clc.voipEnabled = atoi( s );
 #endif
 
-	// check pure server string
-	s = Info_ValueForKey( systemInfo, "sv_paks" );
-	t = Info_ValueForKey( systemInfo, "sv_pakNames" );
-	FS_PureServerSetLoadedPaks( s, t );
-
-	s = Info_ValueForKey( systemInfo, "sv_referencedPaks" );
-	t = Info_ValueForKey( systemInfo, "sv_referencedPakNames" );
-	FS_PureServerSetReferencedPaks( s, t );
+	// load paks sent by the server, but not if we are running a local server
+	if (!com_sv_running->integer) {
+		FS::PakPath::ClearPaks();
+		if (!FS_LoadServerPaks( Info_ValueForKey( systemInfo, "sv_paks" ) ) && !cl_allowDownload->integer)
+			Com_Error(ERR_DROP, "Client is missing paks but downloads are disabled");
+	}
 
 	// scan through all the variables in the systeminfo and locally set cvars to match
 	s = systemInfo;
@@ -525,27 +521,6 @@ void CL_SystemInfoChanged( void )
 		}
 
 		Cvar_Set( key, value );
-	}
-
-	// Arnout: big hack to clear the image cache on a pure change
-	//cl_connectedToPureServer = Cvar_VariableValue( "sv_pure" );
-	if ( Cvar_VariableValue( "sv_pure" ) )
-	{
-		if ( !cl_connectedToPureServer && cls.state <= CA_CONNECTED )
-		{
-			CL_PurgeCache();
-		}
-
-		cl_connectedToPureServer = qtrue;
-	}
-	else
-	{
-		if ( cl_connectedToPureServer && cls.state <= CA_CONNECTED )
-		{
-			CL_PurgeCache();
-		}
-
-		cl_connectedToPureServer = qfalse;
 	}
 }
 
@@ -635,9 +610,6 @@ void CL_ParseGamestate( msg_t *msg )
 	// parse serverId and other cvars
 	CL_SystemInfoChanged();
 
-	// reinitialize the filesystem if the game directory has changed
-	FS_ConditionalRestart( clc.checksumFeed );
-
 	// This used to call CL_StartHunkUsers, but now we enter the download state before loading the
 	// cgame
 	CL_InitDownloads();
@@ -696,11 +668,6 @@ void CL_ParseDownload( msg_t *msg )
 				clc.bWWWDlAborting = qtrue;
 				return;
 			}
-
-			// make downloadTempName an OS path
-			Q_strncpyz( cls.downloadTempName, FS_BuildOSPath( Cvar_VariableString( "fs_homepath" ), cls.downloadTempName, "" ),
-			            sizeof( cls.downloadTempName ) );
-			cls.downloadTempName[ strlen( cls.downloadTempName ) - 1 ] = '\0';
 
 			if ( !DL_BeginDownload( cls.downloadTempName, cls.downloadName, com_developer->integer ) )
 			{
