@@ -1,3 +1,12 @@
+unvanquished (0.24.0-4) UNRELEASED; urgency=low
+
+  * Lots of configuration migration fixes.
+    Not perfect, not guaranteed to work(!), but should cover common cases.
+  * Add directories in /etc/unvanquished-server for scripts and per-map
+    configuration files.
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Thu, 06 Feb 2014 03:03:26 +0000
+
 unvanquished (0.24.0-3) unstable; urgency=low
 
   * Fix a bug which prevented install (but not upgrade) from succeeding.

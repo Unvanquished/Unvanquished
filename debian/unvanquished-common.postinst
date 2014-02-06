@@ -14,9 +14,9 @@ if test "$1" = "configure"; then
     exit 1
   fi
 
-  if dpkg --compare-versions "$2" '<' 0.24.0-0; then
+  if test -n "$2" && dpkg --compare-versions "$2" '<' 0.24.0-0; then
     # move data files from the old (< 0.24.0) location
-    if test -f /var/games/unvanquished/main; then
+    if test -d /var/games/unvanquished/main; then
       echo 'Moving files from /var/games/unvanquished/main to /var/games/unvanquished/pkg...'
       echo 'You are advised to check content as some may not be used.'
       mv /var/games/unvanquished/main/* /var/games/unvanquished/pkg
