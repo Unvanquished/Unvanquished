@@ -71,9 +71,13 @@ namespace Resource {
             // loading of that resource failed.
             std::shared_ptr<T> Get() {
                 if (value->failed) {
-                    value = manager->GetDefaultValue();
+                    value = manager->GetDefaultResource();
                 }
                 return value;
+            }
+
+            bool IsDefault() const {
+                return value == manager->GetDefaultResource();
             }
         private:
             std::shared_ptr<T> value;
@@ -157,18 +161,24 @@ namespace Resource {
             typedef typename std::unordered_map<Str::StringRef, std::shared_ptr<T>>::iterator iterator;
 
         public:
-            Manager(Str::StringRef name = "");
+            Manager(Str::StringRef name = "", std::shared_ptr<T> defaultResource = nullptr);
             ~Manager();
 
             // Starts the registration.
-            void BeginRegistration();
+            // For old systems that can't afford to use handles immediately at once
+            // resource can be loaded as soon as they are registered, even during the
+            // registration.
+            void BeginRegistration(bool loadImmediately = false);
 
             // Ends the registration.
             void EndRegistration();
 
-            // Register the resource, returns a Handle to that resource or nullptr
-            // on a fail.
-            Handle<T> Register(Str::StringRef name);
+            // Registers the resource, if the second argument isn't given the resource
+            // is created by passing name to the constructor of T. Returns a handle to
+            // a resource (miht not be the same as provided if an error occursit returns
+            // the default value).
+            // TODO name is redundant if resource is provided
+            Handle<T> Register(Str::StringRef name, std::shared_ptr<T> resource = nullptr);
 
             // Search and delete unused resources.
             void Prune();
@@ -179,12 +189,16 @@ namespace Resource {
             iterator begin();
             iterator end();
 
-            std::shared_ptr<T> GetDefaultValue() const {
+            int Size() const;
+
+            Handle<T> GetResource(Str::StringRef name) const;
+            std::shared_ptr<T> GetDefaultResource() const {
                 return defaultValue;
             }
 
         private:
             bool inRegistration;
+            bool immediate;
             std::shared_ptr<T> defaultValue;
             // We store a StringRef to the resource's name as we know that the lifetime
             // of the resource will be longer than the one of the hashmap entry.
@@ -194,11 +208,11 @@ namespace Resource {
     // Implementation of the templates
 
     template<typename T>
-    Manager<T>::Manager(Str::StringRef defaultName): inRegistration(false) {
+    Manager<T>::Manager(Str::StringRef defaultName, std::shared_ptr<T> _defaultValue): inRegistration(false) {
         if (defaultName == "") {
             defaultValue = nullptr;
         } else {
-            defaultValue = Register(defaultName).Get();
+            defaultValue = Register(defaultName, _defaultValue).Get();
             if (not defaultValue) {
                 Log::Error("Couldn't load the default resource for %s\n", typeid(T).name());
             }
@@ -211,7 +225,8 @@ namespace Resource {
     }
 
     template<typename T>
-    void Manager<T>::BeginRegistration() {
+    void Manager<T>::BeginRegistration(bool loadImmediately) {
+        immediate = loadImmediately;
         for (auto& entry : resources) {
             entry.second->keep = false;
         }
@@ -238,7 +253,7 @@ namespace Resource {
     }
 
     template<typename T>
-    Handle<T> Manager<T>::Register(Str::StringRef name) {
+    Handle<T> Manager<T>::Register(Str::StringRef name, std::shared_ptr<T> resource) {
         auto it = resources.find(name);
 
         if (it != resources.end()) {
@@ -246,22 +261,24 @@ namespace Resource {
             return Handle<T>(it->second, this);
         }
 
-        std::shared_ptr<T> newResource = std::make_shared<T>(std::move(name));
-        if (not newResource->TagDependencies()) {
+        if (not resource) {
+            resource = std::make_shared<T>(std::move(name));
+        }
+        if (not resource->TagDependencies()) {
             return Handle<T>(defaultValue, this);
         }
 
-        if (inRegistration) {
-            resources[newResource->GetName()] = newResource;
+        if (inRegistration and not immediate) {
+            resources[resource->GetName()] = resource;
         } else {
-            if (newResource->TryLoad()) {
-                resources[newResource->GetName()] = newResource;
+            if (resource->TryLoad()) {
+                resources[resource->GetName()] = resource;
             } else {
                 return Handle<T>(defaultValue, this);
             }
         }
 
-        return Handle<T>(newResource, this);
+        return Handle<T>(resource, this);
     }
 
     template<typename T>
@@ -282,6 +299,22 @@ namespace Resource {
     template<typename T>
     typename Manager<T>::iterator Manager<T>::end() {
         return resources.end();
+    }
+
+    template<typename T>
+    int Manager<T>::Size() const {
+        return resources.size();
+    }
+
+    template<typename T>
+    Handle<T> Manager<T>::GetResource(Str::StringRef name) const {
+        auto it = resources.find(name);
+
+        if (it == resources.end()) {
+            return Handle<T>(defaultValue, this);
+        }
+
+        return Handle<T>(it->second, this);
     }
 }
 
