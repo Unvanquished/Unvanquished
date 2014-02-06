@@ -1789,7 +1789,8 @@ void         ByteToDir( int b, vec3_t dir );
 	  FS_APPEND,
 	  FS_APPEND_SYNC,
 	  FS_READ_DIRECT,
-	  FS_UPDATE
+	  FS_UPDATE,
+	  FS_WRITE_VIA_TEMPORARY,
 	} fsMode_t;
 
 	typedef enum

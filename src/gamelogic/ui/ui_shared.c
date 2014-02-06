@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define MAX_TEAMS 4 // keep in sync with src/engine/client/keys.h"
 
-#ifdef CGAME
+#ifdef IN_CGAME_VM
 #include "../cgame/cg_local.h"
 #elif defined UI
 #include "ui_local.h"
@@ -158,7 +158,7 @@ void UI_RemoveCaptureFunc( void )
 	captureFuncExpiry = 0;
 }
 
-#ifdef CGAME
+#ifdef IN_CGAME_VM
 #define MEM_POOL_SIZE 128 * 1024
 #else
 #define MEM_POOL_SIZE 1024 * 1024
