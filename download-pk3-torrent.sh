@@ -10,7 +10,7 @@
 torrent_file=current.torrent
 torrent_url=http://unvanquished.net/unv-launcher/$torrent_file
 
-cache_subdir=unv-paks-cache
+default_cache_dir=/tmp/unv-paks-cache
 last_assets_file=last-assets.txt
 
 ############
@@ -18,8 +18,8 @@ last_assets_file=last-assets.txt
 set -e
 
 # check usage
-if [ $# -ne 2 ]; then
-    echo "Usage: $0 <target directory> <cache directory>"
+if [ $# -lt 1 ]; then
+    echo "Usage: $0 <target directory> [cache directory]"
     exit
 fi
 
@@ -31,22 +31,19 @@ if [ ! -d "$target_dir" ]; then
 fi
 
 # retrieve cache directory
-cache_dir=$(readlink -f "$2")
+if [ $# -gt 1 ]; then
+    cache_dir=$(readlink -f "$2")
+else
+    cache_dir="$default_cache_dir"
+    mkdir -p "$cache_dir"
+fi
 if [ ! -d "$cache_dir" ]; then
     echo "Not a directory: $cache_dir"
     exit
 fi
 
-# create and enter cache subdirectory
+# enter cache subdirectory
 cd "$cache_dir"
-if [ "$cache_subdir" = "" ]; then
-    echo "Empty cache subdirectory name."
-    exit
-fi
-if [ ! -d "$cache_subdir" ]; then
-    mkdir "$cache_subdir"
-fi
-cd "$cache_subdir"
 
 # download torrent file
 echo "Downloading torrent..."
