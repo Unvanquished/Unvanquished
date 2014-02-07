@@ -409,7 +409,7 @@ void SV_ChangeMaxClients( void )
 	{
 		if ( svs.clients[ i ].state >= CS_CONNECTED )
 		{
-			oldClients[ i ] = svs.clients[ i ];
+			oldClients[ i ] = std::move(svs.clients[ i ]);
 		}
 		else
 		{
@@ -437,7 +437,7 @@ void SV_ChangeMaxClients( void )
 	{
 		if ( oldClients[ i ].state >= CS_CONNECTED )
 		{
-			svs.clients[ i ] = oldClients[ i ];
+			svs.clients[ i ] = std::move(oldClients[ i ]);
 		}
 	}
 
@@ -472,7 +472,7 @@ void SV_SetExpectedHunkUsage( char *mapname )
 	char *token;
 	int  len;
 
-	len = FS_FOpenFileByMode( memlistfile, &handle, FS_READ );
+	len = FS_FOpenFileRead( memlistfile, &handle, qfalse );
 
 	if ( len >= 0 )
 	{
@@ -532,30 +532,6 @@ void SV_ClearServer( void )
 
 /*
 ================
-SV_TouchCGame
-
-  touch cgame so that a pure client can load it if it's in a separate pk3
-================
-*/
-void SV_TouchCGame( void )
-{
-	fileHandle_t f;
-
-	FS_FOpenFileRead( "vm/cgame.qvm", &f, qfalse );
-
-	if ( f )
-	{
-		FS_FCloseFile( f );
-	}
-
-	if ( f )
-	{
-		FS_FCloseFile( f );
-	}
-}
-
-/*
-================
 SV_SpawnServer
 
 Change the server to a new map, taking all connected
@@ -568,7 +544,6 @@ void SV_SpawnServer( const char *server )
 	int        i;
 	int        checksum;
 	qboolean   isBot;
-	const char *p;
 
 	// shut down the existing game if it is running
 	SV_ShutdownGameProgs();
@@ -613,9 +588,6 @@ void SV_SpawnServer( const char *server )
 		}
 	}
 
-	// clear pak references
-	FS_ClearPakReferences( 0 );
-
 	// allocate the snapshot entities on the hunk
 	svs.snapshotEntities = ( entityState_t * ) Hunk_Alloc( sizeof( entityState_t ) * svs.numSnapshotEntities, h_high );
 	svs.nextSnapshotEntities = 0;
@@ -634,23 +606,14 @@ void SV_SpawnServer( const char *server )
 	// make sure we are not paused
 	Cvar_Set( "cl_paused", "0" );
 
-#if !defined( DO_LIGHT_DEDICATED )
 	// get a new checksum feed and restart the file system
 	srand( Sys_Milliseconds() );
 	sv.checksumFeed = ( ( ( int ) rand() << 16 ) ^ rand() ) ^ Sys_Milliseconds();
 
-	// DO_LIGHT_DEDICATED
-	// only comment out when you need a new pure checksum string and its associated random feed
-	//Com_DPrintf("SV_SpawnServer checksum feed: %p\n", sv.checksumFeed);
-
-#else // DO_LIGHT_DEDICATED implementation below
-	// we are not able to randomize the checksum feed since the feed is used as key for pure_checksum computations
-	// files.c 1776 : pack->pure_checksum = Com_BlockChecksumKey( fs_headerLongs, 4 * fs_numHeaderLongs, LittleLong(fs_checksumFeed) );
-	// we request a fake randomized feed, files.c knows the answer
-	srand( Sys_Milliseconds() );
-	sv.checksumFeed = FS_RandChecksumFeed();
-#endif
-	FS_Restart( sv.checksumFeed );
+	FS::PakPath::ClearPaks();
+	FS_LoadBasePak();
+	if (!FS_LoadPak(va("map-%s", server)))
+		Com_Error(ERR_DROP, "Could not load map pak\n");
 
 	CM_LoadMap( va( "maps/%s.bsp", server ), qfalse, &checksum );
 
@@ -664,7 +627,6 @@ void SV_SpawnServer( const char *server )
 	// serverid should be different each time
 	sv.serverId = com_frameTime;
 	sv.restartedServerId = sv.serverId;
-	sv.checksumFeedServerId = sv.serverId;
 	Cvar_Set( "sv_serverid", va( "%i", sv.serverId ) );
 
 	// clear physics interaction links
@@ -749,42 +711,10 @@ void SV_SpawnServer( const char *server )
 	gvm->GameRunFrame( svs.time );
 	svs.time += FRAMETIME;
 
-	if ( sv_pure->integer )
-	{
-		// the server sends these to the clients so they will only
-		// load pk3s also loaded at the server
-		p = FS_LoadedPakChecksums();
-		Cvar_Set( "sv_paks", p );
-
-		if ( strlen( p ) == 0 )
-		{
-			Com_Log(LOG_WARN, _( "sv_pure set but no PK3 files loaded" ));
-		}
-
-		p = FS_LoadedPakNames();
-		Cvar_Set( "sv_pakNames", p );
-
-		// if a dedicated pure server we need to touch the cgame because it could be in a
-		// separate pk3 file and the client will need to load the latest cgame.qvm
-		if ( com_dedicated->integer )
-		{
-			SV_TouchCGame();
-		}
-	}
-	else
-	{
-		Cvar_Set( "sv_paks", "" );
-		Cvar_Set( "sv_pakNames", "" );
-	}
-
 	// the server sends these to the clients so they can figure
 	// out which pk3s should be auto-downloaded
-	// NOTE: we consider the referencedPaks as 'required for operation'
 
-	p = FS_ReferencedPakChecksums();
-	Cvar_Set( "sv_referencedPaks", p );
-	p = FS_ReferencedPakNames();
-	Cvar_Set( "sv_referencedPakNames", p );
+	Cvar_Set( "sv_paks", FS_LoadedPaks() );
 
 	// save systeminfo and serverinfo strings
 	cvar_modifiedFlags &= ~CVAR_SYSTEMINFO;
@@ -826,19 +756,19 @@ void SV_Init( void )
 	// serverinfo vars
 	Cvar_Get( "timelimit", "0", CVAR_SERVERINFO );
 
-	Cvar_Get( "protocol", va( "%i", PROTOCOL_VERSION ), CVAR_SERVERINFO | CVAR_ARCHIVE );
+	Cvar_Get( "protocol", va( "%i", PROTOCOL_VERSION ), CVAR_SERVERINFO  );
 	sv_mapname = Cvar_Get( "mapname", "nomap", CVAR_SERVERINFO | CVAR_ROM );
 	Cvar_Get( "layout", "", CVAR_SERVERINFO | CVAR_ROM );
 	Cvar_Get( "g_layouts", "", 0 ); // FIXME
 	sv_privateClients = Cvar_Get( "sv_privateClients", "0", CVAR_SERVERINFO );
-	sv_hostname = Cvar_Get( "sv_hostname", "Unnamed Unvanquished Server", CVAR_SERVERINFO | CVAR_ARCHIVE );
+	sv_hostname = Cvar_Get( "sv_hostname", "Unnamed Unvanquished Server", CVAR_SERVERINFO  );
 	sv_maxclients = Cvar_Get( "sv_maxclients", "20", CVAR_SERVERINFO | CVAR_LATCH );  // NERVE - SMF - changed to 20 from 8
-	sv_maxRate = Cvar_Get( "sv_maxRate", "0", CVAR_ARCHIVE | CVAR_SERVERINFO );
-	sv_minPing = Cvar_Get( "sv_minPing", "0", CVAR_ARCHIVE | CVAR_SERVERINFO );
-	sv_maxPing = Cvar_Get( "sv_maxPing", "0", CVAR_ARCHIVE | CVAR_SERVERINFO );
-	sv_floodProtect = Cvar_Get( "sv_floodProtect", "0", CVAR_ARCHIVE | CVAR_SERVERINFO );
+	sv_maxRate = Cvar_Get( "sv_maxRate", "0",  CVAR_SERVERINFO );
+	sv_minPing = Cvar_Get( "sv_minPing", "0",  CVAR_SERVERINFO );
+	sv_maxPing = Cvar_Get( "sv_maxPing", "0",  CVAR_SERVERINFO );
+	sv_floodProtect = Cvar_Get( "sv_floodProtect", "0",  CVAR_SERVERINFO );
 
-	sv_statsURL = Cvar_Get( "sv_statsURL", "", CVAR_SERVERINFO | CVAR_ARCHIVE );
+	sv_statsURL = Cvar_Get( "sv_statsURL", "", CVAR_SERVERINFO  );
 
 	// systeminfo
 	sv_serverid = Cvar_Get( "sv_serverid", "0", CVAR_SYSTEMINFO | CVAR_ROM );
@@ -853,9 +783,6 @@ void SV_Init( void )
 	sv_voip = Cvar_Get( "sv_voip", "1", CVAR_SYSTEMINFO | CVAR_LATCH );
 #endif
 	Cvar_Get( "sv_paks", "", CVAR_SYSTEMINFO | CVAR_ROM );
-	Cvar_Get( "sv_pakNames", "", CVAR_SYSTEMINFO | CVAR_ROM );
-	Cvar_Get( "sv_referencedPaks", "", CVAR_SYSTEMINFO | CVAR_ROM );
-	Cvar_Get( "sv_referencedPakNames", "", CVAR_SYSTEMINFO | CVAR_ROM );
 
 	// server vars
 	sv_rconPassword = Cvar_Get( "rconPassword", "", CVAR_TEMP );
@@ -865,37 +792,37 @@ void SV_Init( void )
 	sv_zombietime = Cvar_Get( "sv_zombietime", "2", CVAR_TEMP );
 	Cvar_Get( "sv_nextmap", "", CVAR_TEMP );
 
-	sv_allowDownload = Cvar_Get( "sv_allowDownload", "1", CVAR_ARCHIVE );
+	sv_allowDownload = Cvar_Get( "sv_allowDownload", "1", 0 );
 	sv_master[ 0 ] = Cvar_Get( "sv_master1", MASTER_SERVER_NAME, 0 );
-	sv_master[ 1 ] = Cvar_Get( "sv_master2", "", CVAR_ARCHIVE );
-	sv_master[ 2 ] = Cvar_Get( "sv_master3", "", CVAR_ARCHIVE );
-	sv_master[ 3 ] = Cvar_Get( "sv_master4", "", CVAR_ARCHIVE );
-	sv_master[ 4 ] = Cvar_Get( "sv_master5", "", CVAR_ARCHIVE );
+	sv_master[ 1 ] = Cvar_Get( "sv_master2", "", 0 );
+	sv_master[ 2 ] = Cvar_Get( "sv_master3", "", 0 );
+	sv_master[ 3 ] = Cvar_Get( "sv_master4", "", 0 );
+	sv_master[ 4 ] = Cvar_Get( "sv_master5", "", 0 );
 	sv_reconnectlimit = Cvar_Get( "sv_reconnectlimit", "3", 0 );
 	sv_padPackets = Cvar_Get( "sv_padPackets", "0", 0 );
 	sv_killserver = Cvar_Get( "sv_killserver", "0", 0 );
 	sv_mapChecksum = Cvar_Get( "sv_mapChecksum", "", CVAR_ROM );
 
-	sv_lanForceRate = Cvar_Get( "sv_lanForceRate", "1", CVAR_ARCHIVE );
+	sv_lanForceRate = Cvar_Get( "sv_lanForceRate", "1", 0 );
 
 	sv_showAverageBPS = Cvar_Get( "sv_showAverageBPS", "0", 0 );  // NERVE - SMF - net debugging
 
 	// the download netcode tops at 18/20 kb/s, no need to make you think you can go above
-	sv_dl_maxRate = Cvar_Get( "sv_dl_maxRate", "42000", CVAR_ARCHIVE );
+	sv_dl_maxRate = Cvar_Get( "sv_dl_maxRate", "42000", 0 );
 
-	sv_wwwDownload = Cvar_Get( "sv_wwwDownload", "0", CVAR_ARCHIVE );
-	sv_wwwBaseURL = Cvar_Get( "sv_wwwBaseURL", "", CVAR_ARCHIVE );
-	sv_wwwDlDisconnected = Cvar_Get( "sv_wwwDlDisconnected", "0", CVAR_ARCHIVE );
-	sv_wwwFallbackURL = Cvar_Get( "sv_wwwFallbackURL", "", CVAR_ARCHIVE );
+	sv_wwwDownload = Cvar_Get( "sv_wwwDownload", "0", 0 );
+	sv_wwwBaseURL = Cvar_Get( "sv_wwwBaseURL", "", 0 );
+	sv_wwwDlDisconnected = Cvar_Get( "sv_wwwDlDisconnected", "0", 0 );
+	sv_wwwFallbackURL = Cvar_Get( "sv_wwwFallbackURL", "", 0 );
 
 	//bani
 	sv_packetdelay = Cvar_Get( "sv_packetdelay", "0", CVAR_CHEAT );
 
 	// fretn - note: redirecting of clients to other servers relies on this,
 	// ET://someserver.com
-	sv_fullmsg = Cvar_Get( "sv_fullmsg", "Server is full.", CVAR_ARCHIVE );
+	sv_fullmsg = Cvar_Get( "sv_fullmsg", "Server is full.", 0 );
 
-	vm_game = Cvar_Get( "vm_game", "0", CVAR_ARCHIVE );
+	vm_game = Cvar_Get( "vm_game", "0", 0 );
 
 	svs.serverLoad = -1;
 }

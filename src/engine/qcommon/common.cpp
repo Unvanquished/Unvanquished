@@ -73,7 +73,7 @@ jmp_buf             abortframe; // an ERR_DROP has occurred, exit the entire fra
 
 FILE                *debuglogfile;
 static fileHandle_t logfile;
-static fileHandle_t pipefile;
+static FILE         *pipefile;
 
 cvar_t              *com_crashed = NULL; // ydnar: set in case of a crash, prevents CVAR_UNSAFE variables from being set from a cfg
 
@@ -282,7 +282,14 @@ void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int code, const char *fmt, ... )
 	int        currentTime;
 
 	// make sure we can get at our local stuff
-	FS_PureServerSetLoadedPaks( "", "" );
+	if (code != ERR_FATAL) {
+		FS::PakPath::ClearPaks();
+		FS_LoadBasePak();
+#ifndef DEDICATED
+		// Load map pk3s to allow menus to load levelshots
+		FS_LoadAllMaps();
+#endif
+	}
 
 	// if we are getting a solid stream of ERR_DROP, do an ERR_FATAL
 	currentTime = Sys_Milliseconds();
@@ -344,7 +351,7 @@ void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int code, const char *fmt, ... )
 		SV_Shutdown( va( "Server fatal crashed: %s\n", com_errorMessage ) );
 	}
 
-	Com_Shutdown( code == ERR_VID_FATAL ? qtrue : qfalse );
+	Com_Shutdown();
 
 	Sys_Error( "%s", com_errorMessage );
 }
@@ -380,8 +387,7 @@ void NORETURN Com_Quit_f( void )
 		CL_ShutdownCGame();
 #endif
 		CL_Shutdown();
-		Com_Shutdown( qfalse );
-		FS_Shutdown( qtrue );
+		Com_Shutdown();
 	}
 
 	Sys_Quit();
@@ -866,7 +872,7 @@ void Hunk_Log( void )
 	char        buf[ 4096 ];
 	int         size, numBlocks;
 
-	if ( !logfile || !FS_Initialized() )
+	if ( !logfile || !FS::IsInitialized() )
 	{
 		return;
 	}
@@ -903,7 +909,7 @@ void Hunk_SmallLog( void )
 	char        buf[ 4096 ];
 	int         size, locsize, numBlocks;
 
-	if ( !logfile || !FS_Initialized() )
+	if ( !logfile || !FS::IsInitialized() )
 	{
 		return;
 	}
@@ -972,17 +978,8 @@ void Com_InitHunkMemory( void )
 
 	isDedicated = (com_dedicated && com_dedicated->integer);
 
-	// make sure the file system has allocated and "not" freed any temp blocks
-	// this allows the config and product id files ( journal files too ) to be loaded
-	// by the file system without redundant routines in the file system utilizing different
-	// memory systems
-	if ( FS_LoadStack() != 0 )
-	{
-		Com_Error( ERR_FATAL, "Hunk initialization failed. File system load stack not zero" );
-	}
-
 	// allocate the stack based hunk allocator
-	cv = Cvar_Get( "com_hunkMegs", DEF_COMHUNKMEGS_S, CVAR_LATCH | CVAR_ARCHIVE );
+	cv = Cvar_Get( "com_hunkMegs", DEF_COMHUNKMEGS_S, CVAR_LATCH  );
 
 	// if we are not dedicated min allocation is 56, otherwise min is 1
 	nMinAlloc = isDedicated ? MIN_DEDICATED_COMHUNKMEGS : MIN_COMHUNKMEGS;
@@ -1755,135 +1752,22 @@ void Com_SetRecommended( void )
 	qboolean goodVideo;
 
 	// will use this for recommended settings as well.. do i outside the lower check so it gets done even with command line stuff
-	r_highQualityVideo = Cvar_Get( "r_highQualityVideo", "1", CVAR_ARCHIVE );
-	//com_recommended = Cvar_Get("com_recommended", "-1", CVAR_ARCHIVE);
+	r_highQualityVideo = Cvar_Get( "r_highQualityVideo", "1", 0 );
+	//com_recommended = Cvar_Get("com_recommended", "-1", 0);
 	goodVideo = ( r_highQualityVideo && r_highQualityVideo->integer );
 
 	if ( goodVideo )
 	{
 		Com_Printf(_( "Found high quality video and slow CPU\n" ));
-		Cmd::BufferCommandText("exec preset_fast.cfg");
+		Cmd::BufferCommandText("preset preset_fast.cfg");
 		Cvar_Set( "com_recommended", "2" );
 	}
 	else
 	{
 		Com_Printf(_( "Found low quality video and slow CPU\n" ));
-		Cmd::BufferCommandText("exec preset_fastest.cfg");
+		Cmd::BufferCommandText("preset preset_fastest.cfg");
 		Cvar_Set( "com_recommended", "3" );
 	}
-}
-
-// bani - checks if profile.pid is valid
-// return qtrue if it is
-// return qfalse if it isn't(!)
-static Cvar::Cvar<bool> ignoreCrash("common.ignoreCrash", "ignores the value of common.crashed", Cvar::NONE, false);
-qboolean Com_CheckProfile( char *profile_path )
-{
-	fileHandle_t f;
-	char         f_data[ 32 ];
-	int          f_pid;
-
-	//let user override this
-	if ( ignoreCrash.Get() )
-	{
-		return qtrue;
-	}
-
-	if ( FS_FOpenFileRead( profile_path, &f, qtrue ) < 0 )
-	{
-		//no profile found, we're ok
-		return qtrue;
-	}
-
-	if ( FS_Read( &f_data, sizeof( f_data ) - 1, f ) < 0 )
-	{
-		//b0rk3d!
-		FS_FCloseFile( f );
-		//try to delete corrupted pid file
-		FS_Delete( profile_path );
-		return qfalse;
-	}
-
-	f_pid = atoi( f_data );
-
-	if ( f_pid != com_pid->integer )
-	{
-		//pid doesn't match
-		FS_FCloseFile( f );
-		return qfalse;
-	}
-
-	//we're all ok
-	FS_FCloseFile( f );
-	return qtrue;
-}
-
-//bani - from files.c
-extern char fs_gamedir[ MAX_OSPATH ];
-char        last_fs_gamedir[ MAX_OSPATH ];
-char        last_profile_path[ MAX_OSPATH ];
-
-//bani - track profile changes, delete old profile.pid if we change fs_game(dir)
-//hackish, we fiddle with fs_gamedir to make FS_* calls work "right"
-void Com_TrackProfile( char *profile_path )
-{
-	char temp_fs_gamedir[ MAX_OSPATH ];
-
-//  Com_Printf(_( "Com_TrackProfile: Tracking profile [%s] [%s]\n"), fs_gamedir, profile_path );
-	//have we changed fs_game(dir)?
-	if ( strcmp( last_fs_gamedir, fs_gamedir ) )
-	{
-		if ( strlen( last_fs_gamedir ) && strlen( last_profile_path ) )
-		{
-			//save current fs_gamedir
-			Q_strncpyz( temp_fs_gamedir, fs_gamedir, sizeof( temp_fs_gamedir ) );
-			//set fs_gamedir temporarily to make FS_* stuff work "right"
-			Q_strncpyz( fs_gamedir, last_fs_gamedir, sizeof( fs_gamedir ) );
-
-			if ( FS_FileExists( last_profile_path ) )
-			{
-				Com_Printf( "Com_TrackProfile: Deleting old pid file [%s] [%s]\n", fs_gamedir, last_profile_path );
-				FS_Delete( last_profile_path );
-			}
-
-			//restore current fs_gamedir
-			Q_strncpyz( fs_gamedir, temp_fs_gamedir, sizeof( fs_gamedir ) );
-		}
-
-		//and save current vars for future reference
-		Q_strncpyz( last_fs_gamedir, fs_gamedir, sizeof( last_fs_gamedir ) );
-		Q_strncpyz( last_profile_path, profile_path, sizeof( last_profile_path ) );
-	}
-}
-
-// bani - writes pid to profile
-// returns qtrue if successful
-// returns qfalse if not(!!)
-qboolean Com_WriteProfile( char *profile_path )
-{
-	fileHandle_t f;
-
-	if ( FS_FileExists( profile_path ) )
-	{
-		FS_Delete( profile_path );
-	}
-
-	f = FS_FOpenFileWrite( profile_path );
-
-	if ( f < 0 )
-	{
-		Com_Printf( _( "%s couldn't write %s\n"), "[Com_WriteProfile]" S_WARNING, profile_path );
-		return qfalse;
-	}
-
-	FS_Printf( f, "%d", com_pid->integer );
-
-	FS_FCloseFile( f );
-
-	//track profile changes
-	Com_TrackProfile( profile_path );
-
-	return qtrue;
 }
 
 /*
@@ -1895,15 +1779,13 @@ Com_Init
 
 #ifndef _WIN32
 # ifdef DEDICATED
-	const std::string defaultPipeFilename = "svpipe";
+	const char* defaultPipeFilename = "svpipe";
 # else
-	const std::string defaultPipeFilename = "pipe";
+	const char* defaultPipeFilename = "pipe";
 # endif
 #else
-	const std::string defaultPipeFilename = "";
+	const char* defaultPipeFilename = "";
 #endif
-//TODO LATCH
-static Cvar::Cvar<std::string> pipeFilename("common.pipefile", "the name of the pipe you can send console commands to", Cvar::ARCHIVE, defaultPipeFilename);
 
 void Com_Init( char *commandLine )
 {
@@ -1941,74 +1823,30 @@ void Com_Init( char *commandLine )
 	// done early so bind command exists
 	CL_InitKeyCommands();
 
-	FS_InitFilesystem();
+	FS::Initialize();
+	FS_LoadBasePak();
+#ifndef DEDICATED
+	// Load map pk3s to allow menus to load levelshots
+	FS_LoadAllMaps();
+#endif
 
 	Trans_Init();
 
 #ifndef DEDICATED
-	Cmd::BufferCommandText("exec default.cfg");
+	Cmd::BufferCommandText("preset default.cfg");
 #endif
 
 #if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
-
 	// skip the q3config.cfg if "safe" is on the command line
 	if ( !Com_SafeMode() )
 	{
-		char *cl_profileStr = Cvar_VariableString( "cl_profile" );
-
-		if ( !cl_profileStr[ 0 ] )
-		{
-			char *defaultProfile = NULL;
-
-			if( FS_ReadFile( "profiles/defaultprofile.dat", ( void ** ) &defaultProfile ) > 0 )
-			{
-				if ( defaultProfile )
-				{
-					Q_CleanStr( defaultProfile );
-					Q_CleanDirName( defaultProfile );
-
-					Cvar_Set( "cl_defaultProfile", defaultProfile );
-					Cvar_Set( "cl_profile", defaultProfile );
-
-					FS_FreeFile( defaultProfile );
-
-					cl_profileStr = Cvar_VariableString( "cl_defaultProfile" );
-				}
-			}
-		}
-
-		if ( cl_profileStr[ 0 ] )
-		{
-			// bani - check existing pid file and make sure it's ok
-			if ( !Com_CheckProfile( va( "profiles/%s/profile.pid", cl_profileStr ) ) )
-			{
-#if 0
-				Com_Printf(_( S_WARNING "profile.pid found for profile '%s' — the system settings will revert to their defaults\n"),
-				            cl_profileStr );
-				// ydnar: set crashed state
-				Cmd::BufferCommandText("set com_crashed 1");
-#endif
-			}
-
-			// bani - write a new one
-			Com_WriteProfile( va( "profiles/%s/profile.pid", cl_profileStr ) );
-
-			// exec the config
-			Cmd::BufferCommandText(va("exec profiles/%s/" CONFIG_NAME, cl_profileStr));
-			Cmd::BufferCommandText(va("exec profiles/%s/" KEYBINDINGS_NAME, cl_profileStr));
-			Cmd::BufferCommandText(va("exec profiles/%s/" AUTOEXEC_NAME, cl_profileStr));
-		}
-		else
-		{
-			Cmd::BufferCommandText("exec " CONFIG_NAME);
-			Cmd::BufferCommandText("exec " KEYBINDINGS_NAME);
-			Cmd::BufferCommandText("exec " AUTOEXEC_NAME);
-		}
+		Cmd::BufferCommandText("exec " CONFIG_NAME);
+		Cmd::BufferCommandText("exec " KEYBINDINGS_NAME);
+		Cmd::BufferCommandText("exec " AUTOEXEC_NAME);
 	}
 #else
 	Cmd::BufferCommandText("exec " CONFIG_NAME);
 #endif
-
 
 	// ydnar: reset crashed state
 	Cmd::BufferCommandText("set com_crashed 0");
@@ -2031,7 +1869,7 @@ void Com_Init( char *commandLine )
 
 	// if any archived cvars are modified after this, we will trigger a writing
 	// of the config file
-	cvar_modifiedFlags &= ~CVAR_ARCHIVE;
+	cvar_modifiedFlags &= ~CVAR_ARCHIVE_BITS;
 
 	//
 	// init commands and vars
@@ -2053,12 +1891,12 @@ void Com_Init( char *commandLine )
 
 	//on a server, commands have to be used a lot more often than say
 	//we could differentiate server and client, but would change the default behavior many might be used to
-	com_consoleCommand = Cvar_Get( "com_consoleCommand", "", CVAR_ARCHIVE );
+	com_consoleCommand = Cvar_Get( "com_consoleCommand", "", 0 );
 
-	com_introPlayed = Cvar_Get( "com_introplayed", "0", CVAR_ARCHIVE );
-	com_ansiColor = Cvar_Get( "com_ansiColor", "0", CVAR_ARCHIVE );
+	com_introPlayed = Cvar_Get( "com_introplayed", "0", 0 );
+	com_ansiColor = Cvar_Get( "com_ansiColor", "1", 0 );
 	com_logosPlaying = Cvar_Get( "com_logosPlaying", "0", CVAR_ROM );
-	com_recommendedSet = Cvar_Get( "com_recommendedSet", "0", CVAR_ARCHIVE );
+	com_recommendedSet = Cvar_Get( "com_recommendedSet", "0", 0 );
 
 	com_unfocused = Cvar_Get( "com_unfocused", "0", CVAR_ROM );
 	com_minimized = Cvar_Get( "com_minimized", "0", CVAR_ROM );
@@ -2130,14 +1968,6 @@ void Com_Init( char *commandLine )
 
 	CL_StartHunkUsers();
 
-	// NERVE - SMF - force recommendedSet and don't do vid_restart if in safe mode
-	if ( !com_recommendedSet->integer && !Com_SafeMode() )
-	{
-		Com_SetRecommended();
-	}
-
-	Cvar_Set( "com_recommendedSet", "1" );
-
 	if ( !com_dedicated->integer )
 	{
 		//Cvar_Set( "com_logosPlaying", "1" );
@@ -2150,9 +1980,15 @@ void Com_Init( char *commandLine )
 		   } */
 	}
 
-	if (not pipeFilename.Get().empty())
+	if (defaultPipeFilename[0])
 	{
-		pipefile = FS_FCreateOpenPipeFile(pipeFilename.Get().c_str());
+		std::string ospath = FS::Path::Build(FS::GetHomePath(), defaultPipeFilename);
+		pipefile = Sys_Mkfifo(ospath.c_str());
+		if (!pipefile)
+		{
+			Com_Printf( S_WARNING "Could not create new pipefile at %s. "
+			"pipefile will not be used.\n", ospath.c_str() );
+		}
 	}
 	com_fullyInitialized = qtrue;
 	Com_Printf( "%s", "--- Common Initialization Complete ---\n" );
@@ -2176,7 +2012,7 @@ void Com_ReadFromPipe( void )
 		return;
 	}
 
-	while ( ( numNew = FS_Read( buf + numAccd, sizeof( buf ) - 1 - numAccd, pipefile ) ) > 0 )
+	while ( ( numNew = fread( buf + numAccd, 1, sizeof( buf ) - 1 - numAccd, pipefile ) ) > 0 )
 	{
 		char *brk = NULL; // will point to after the last CR/LF character, if any
 		int i;
@@ -2217,11 +2053,11 @@ void Com_ReadFromPipe( void )
 void Com_WriteConfigToFile( const char *filename, void (*writeConfig)( fileHandle_t ) )
 {
 	fileHandle_t f;
-	char         tmp[ MAX_QPATH + 5 ];
+	char         tmp[ MAX_QPATH ];
 
-	Com_sprintf( tmp, sizeof( tmp ), "%s.tmp", filename );
+	Com_sprintf( tmp, sizeof( tmp ), "config/%s", filename );
 
-	f = FS_FOpenFileWrite( tmp );
+	f = FS_FOpenFileWriteViaTemporary( tmp );
 
 	if ( !f )
 	{
@@ -2230,11 +2066,8 @@ void Com_WriteConfigToFile( const char *filename, void (*writeConfig)( fileHandl
 	}
 
 	FS_Printf( f, "// generated by Unvanquished, do not modify\n" );
-//	Key_WriteBindings( f );
 	writeConfig( f );
 	FS_FCloseFile( f );
-
-	FS_Rename( tmp, filename ); // will unlink the original
 }
 
 /*
@@ -2246,8 +2079,6 @@ Writes key bindings and archived cvars to config file if modified
 */
 void Com_WriteConfiguration( void )
 {
-	char *cl_profileStr = Cvar_VariableString( "cl_profile" );
-
 	// if we are quiting without fully initializing, make sure
 	// we don't write out anything
 	if ( !com_fullyInitialized )
@@ -2255,18 +2086,11 @@ void Com_WriteConfiguration( void )
 		return;
 	}
 
-	if ( cvar_modifiedFlags & CVAR_ARCHIVE )
+	if ( cvar_modifiedFlags & CVAR_ARCHIVE_BITS )
 	{
-		cvar_modifiedFlags &= ~CVAR_ARCHIVE;
+		cvar_modifiedFlags &= ~CVAR_ARCHIVE_BITS;
 
-		if ( cl_profileStr[ 0 ] )
-		{
-			Com_WriteConfigToFile( va( "profiles/%s/%s", cl_profileStr, CONFIG_NAME ), Cvar_WriteVariables );
-		}
-		else
-		{
-			Com_WriteConfigToFile( CONFIG_NAME, Cvar_WriteVariables );
-		}
+		Com_WriteConfigToFile( CONFIG_NAME, Cvar_WriteVariables );
 	}
 
 #if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
@@ -2274,14 +2098,7 @@ void Com_WriteConfiguration( void )
 	{
 		bindingsModified = qfalse;
 
-		if ( cl_profileStr[ 0 ] )
-		{
-			Com_WriteConfigToFile( va( "profiles/%s/%s", cl_profileStr, KEYBINDINGS_NAME ), Key_WriteBindings );
-		}
-		else
-		{
-			Com_WriteConfigToFile( KEYBINDINGS_NAME, Key_WriteBindings );
-		}
+		Com_WriteConfigToFile( KEYBINDINGS_NAME, Key_WriteBindings );
 	}
 #endif
 }
@@ -2404,12 +2221,12 @@ Com_Frame
 */
 
 //TODO 0 for the same value as common.maxFPS
-static Cvar::Cvar<int> maxfps("common.framerate.max", "the max framerate, 0 for unlimited", Cvar::ARCHIVE, 125);
-static Cvar::Cvar<int> maxfpsUnfocused("common.framerate.maxUnfocused", "the max framerate when the game is unfocused, 0 for unlimited", Cvar::ARCHIVE, 0);
-static Cvar::Cvar<int> maxfpsMinimized("common.framerate.maxMinimized", "the max framerate when the game is minimized, 0 for unlimited", Cvar::ARCHIVE, 0);
+static Cvar::Cvar<int> maxfps("common.framerate.max", "the max framerate, 0 for unlimited", Cvar::NONE, 125);
+static Cvar::Cvar<int> maxfpsUnfocused("common.framerate.maxUnfocused", "the max framerate when the game is unfocused, 0 for unlimited", Cvar::NONE, 0);
+static Cvar::Cvar<int> maxfpsMinimized("common.framerate.maxMinimized", "the max framerate when the game is minimized, 0 for unlimited", Cvar::NONE, 0);
 
-static Cvar::Cvar<int> watchdogThreshold("common.watchdogTime", "seconds of server running without a map after which common.watchdogCmd is executed", Cvar::ARCHIVE, 60);
-static Cvar::Cvar<std::string> watchdogCmd("common.watchdogCmd", "the command triggered by the watchdog, empty for /quit", Cvar::ARCHIVE, "");
+static Cvar::Cvar<int> watchdogThreshold("common.watchdogTime", "seconds of server running without a map after which common.watchdogCmd is executed", Cvar::NONE, 60);
+static Cvar::Cvar<std::string> watchdogCmd("common.watchdogCmd", "the command triggered by the watchdog, empty for /quit", Cvar::NONE, "");
 
 static Cvar::Cvar<bool> showTraceStats("common.showTraceStats", "are physics traces stats printed each frame", Cvar::CHEAT, false);
 
@@ -2671,19 +2488,8 @@ void Com_Frame( void )
 Com_Shutdown
 =================
 */
-void Com_Shutdown( qboolean badProfile )
+void Com_Shutdown()
 {
-	char *cl_profileStr = Cvar_VariableString( "cl_profile" );
-
-	// delete pid file
-	if ( cl_profileStr[ 0 ] && !badProfile )
-	{
-		if ( FS_FileExists( va( "profiles/%s/profile.pid", cl_profileStr ) ) )
-		{
-			FS_Delete( va( "profiles/%s/profile.pid", cl_profileStr ) );
-		}
-	}
-
 	if ( logfile )
 	{
 		FS_FCloseFile( logfile );
@@ -2692,9 +2498,11 @@ void Com_Shutdown( qboolean badProfile )
 
 	if ( pipefile )
 	{
-		FS_FCloseFile( pipefile );
-		FS_HomeRemove( pipeFilename.Get().c_str() );
+		fclose( pipefile );
+		FS_Delete( defaultPipeFilename );
 	}
+
+	FS::FlushAll();
 }
 
 //------------------------------------------------------------------------

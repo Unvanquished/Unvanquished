@@ -43,10 +43,9 @@ make_universal daemonded 755
 make_universal daemon-tty 755
 make_universal rendererGL.so 644
 make_universal rendererGL3.so 644
-install -d "${DEST_PATH}/Contents/MacOS/main"
-make_universal main/game-qvm-native.so 644
-make_universal main/cgame-qvm-native.so 644
-make_universal main/ui-qvm-native.so 644
+make_universal game-qvm-native.so 644
+make_universal cgame-qvm-native.so 644
+make_universal ui-qvm-native.so 644
 
 # Create a universal version of GLEW and OpenAL and add it to the bundle
 lipo -create -o "${DEST_PATH}/Contents/MacOS/libGLEW.${GLEW_VERSION}.dylib" "${DEPS32_PATH}/lib/libGLEW.${GLEW_VERSION}.dylib" "${DEPS64_PATH}/lib/libGLEW.${GLEW_VERSION}.dylib"

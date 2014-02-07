@@ -3,3 +3,5 @@ CPackConfig.cmake
 CPackSourceConfig.cmake
 Makefile
 cmake_install.cmake
+lcc
+vm

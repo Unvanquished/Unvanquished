@@ -3113,7 +3113,7 @@ void CG_Player( centity_t *cent )
 		vec3_t mins, maxs;
 
 		BG_ClassBoundingBox( class_, mins, maxs, NULL, NULL, NULL );
-		CG_DrawBoundingBox( cent->lerpOrigin, mins, maxs );
+		CG_DrawBoundingBox( cg_drawBBOX.integer, cent->lerpOrigin, mins, maxs );
 	}
 
 	if ( ci->md5 )

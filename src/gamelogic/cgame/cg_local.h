@@ -1804,7 +1804,7 @@ void CG_PainEvent( centity_t *cent, int health );
 //
 // cg_ents.c
 //
-void CG_DrawBoundingBox( vec3_t origin, vec3_t mins, vec3_t maxs );
+void CG_DrawBoundingBox( int type, vec3_t origin, vec3_t mins, vec3_t maxs );
 void CG_SetEntitySoundPosition( centity_t *cent );
 void CG_AddPacketEntities( void );
 void CG_Beam( centity_t *cent );

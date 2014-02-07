@@ -76,7 +76,7 @@
       name window
       rect -50 0 (W+100) H
       style WINDOW_STYLE_SHADER
-      background "ui/assets/vertgrad.tga"
+      background "ui/assets/vertgrad"
       forecolor MENU_TEAL_TRANS
       visible MENU_TRUE
       decoration
@@ -231,7 +231,6 @@
 
 //////// PLAYER
 
-	BUTTON	( player, "Set Profile", open profiles, .2 )
 	COMBO	( player, "Language:", FEEDER_LANGUAGES, 1.5 )
 	CVAR	( player, "Name:", "name", 40, 2.5 )
 	YESNO	( player, "Taunts Sounds Off:", "cg_noTaunt", play "sound/misc/menu1.wav", 3.5 )
@@ -635,7 +634,7 @@
 			0 )
 	YESNOX	( gsoftware, "Draw Gun:", "cg_drawGun",
 			play "sound/misc/menu1.wav",
-			1 )
+			1 ) // Redundant option
 	YESNOX	( gsoftware, "Mark On Walls:", "cg_marks",
 			play "sound/misc/menu1.wav",
 			2 )
