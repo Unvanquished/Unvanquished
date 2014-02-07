@@ -42,35 +42,46 @@ Maryland 20850 USA.
 class RocketFocusManager : public Rocket::Core::EventListener
 {
 public:
-	RocketFocusManager( void ) : active( 0 ) { }
+	RocketFocusManager( void ) { }
 	void ProcessEvent( Rocket::Core::Event &evt )
 	{
-		if ( evt == "show" || evt == "load" )
-		{
-			active++;
-		}
-
-		if ( evt == "hide" || evt == "close" )
-		{
-			active--;
-
-			if ( active < 0 )
-			{
-				active = 0;
-			}
-		}
-
-		if ( !( cls.keyCatchers & KEYCATCH_UI ) && active > 0 )
+		if ( !( cls.keyCatchers & KEYCATCH_UI ) &&
+			evt.GetTargetElement() &&
+			evt.GetTargetElement()->GetContext() &&
+			IsTreeVisible(evt.GetTargetElement()->GetContext()->GetFocusElement()) )
 		{
 			Key_SetCatcher( KEYCATCH_UI );
 		}
-		else if ( cls.keyCatchers && active <= 0 && cls.state >= CA_PRIMED )
+		else if ( cls.keyCatchers && cls.state >= CA_PRIMED )
 		{
 			Key_SetCatcher( 0 );
 		}
 	}
 
 private:
-	int active;
+	// Checks if parents are visible as well
+	bool IsTreeVisible( Rocket::Core::Element *element )
+	{
+		if ( element && element->IsVisible() )
+		{
+			Rocket::Core::Element *parent = element;
+
+			while ( ( parent = parent->GetParentNode() ) )
+			{
+				if ( !parent->IsVisible() )
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
+
+		else
+		{
+			return false;
+		}
+	}
+
 };
 #endif
