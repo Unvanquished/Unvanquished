@@ -186,6 +186,10 @@ datagridrow:selected{
 	margin-left:0px;
 }
 
+.window panel {
+	overflow: hidden hidden;
+}
+
 </style>
     </head>
     <body onload="init_servers internet" id="serverbrowser">

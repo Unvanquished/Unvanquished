@@ -545,6 +545,12 @@ void CG_Rocket_Frame( void )
 		}
 	}
 
+	// Continue to attempt to update serverinfo
+	if ( rocketInfo.data.buildingServerInfo )
+	{
+		CG_Rocket_BuildServerInfo();
+	}
+
 	CG_Rocket_ProcessEvents();
 }
 
