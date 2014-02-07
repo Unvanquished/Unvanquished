@@ -43,6 +43,11 @@ static void AddToServerList( char *name, char *label, int clients, int bots, int
 		return;
 	}
 
+	if ( !*name || !*mapName )
+	{
+		return;
+	}
+
 	node = &rocketInfo.data.servers[ netSrc ][ rocketInfo.data.serverCount[ netSrc ] ];
 
 	node->name = BG_strdup( name );
@@ -85,6 +90,13 @@ void CG_Rocket_BuildServerInfo( void )
 	{
 		return;
 	}
+
+	if ( rocketInfo.realtime < rocketInfo.serverStatusLastRefresh + 500 )
+	{
+		return;
+	}
+
+	rocketInfo.serverStatusLastRefresh = rocketInfo.realtime;
 
 	if ( !rocketInfo.data.buildingServerInfo )
 	{
@@ -156,7 +168,7 @@ void CG_Rocket_BuildServerInfo( void )
 				trap_Rocket_DSAddRow( "server_browser", "serverPlayers", buf );
 			}
 		}
-
+		trap_LAN_ServerStatus( NULL, NULL, 0 );
 		rocketInfo.data.buildingServerInfo = qfalse;
 	}
 
@@ -169,11 +181,12 @@ void CG_Rocket_BuildServerList( const char *args )
 	int i;
 
 	// Only refresh once every second
-	if ( trap_Milliseconds() < 1000 + rocketInfo.serversLastRefresh )
+	if ( rocketInfo.realtime < 1000 + rocketInfo.serversLastRefresh )
 	{
 		return;
 	}
 
+	rocketInfo.serversLastRefresh = rocketInfo.realtime;
 	rocketInfo.currentNetSrc = netSrc;
 
 	if ( netSrc != AS_FAVORITES )
@@ -183,6 +196,7 @@ void CG_Rocket_BuildServerList( const char *args )
 		rocketInfo.data.retrievingServers = qtrue;
 
 		trap_Rocket_DSClearTable( "server_browser", args );
+		CG_Rocket_CleanUpServerList( args );
 
 		trap_LAN_MarkServerVisible( netSrc, -1, qtrue );
 

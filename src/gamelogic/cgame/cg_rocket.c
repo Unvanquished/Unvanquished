@@ -508,6 +508,7 @@ const char *CG_NetSourceToString( int netSrc )
 void CG_Rocket_Frame( void )
 {
 	trap_GetClientState( &rocketInfo.cstate );
+	rocketInfo.realtime = trap_Milliseconds();
 
 	if ( oldConnState != rocketInfo.cstate.connState )
 	{

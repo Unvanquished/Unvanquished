@@ -1300,7 +1300,9 @@ typedef struct
 typedef struct
 {
 	int currentNetSrc;
-	int  serversLastRefresh;
+	int serversLastRefresh;
+	int serverStatusLastRefresh;
+	int realtime;
 	cgClientState_t cstate;
 	rocketMenu_t menu[ ROCKETMENU_NUM_TYPES ];
 	rocketMenu_t hud[ WP_NUM_WEAPONS ];
