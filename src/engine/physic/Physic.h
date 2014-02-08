@@ -43,10 +43,14 @@ namespace Physic {
         float fraction;
         vec3_t endpos;
         vec3_t normal;
+        vec3_t debug1;
+        vec3_t debug2;
+        vec3_t debug3;
+        vec3_t debug4;
     };
 
     //float Trace(const vec3_t from, const vec3_t to);
-    void BoxTrace(const vec3_t from, const vec3_t to, const vec3_t mins, const vec3_t maxs, TraceResults& results);
+    void BoxTrace(const vec3_t from, const vec3_t to, const vec3_t mins, const vec3_t maxs, int brushMask, TraceResults& results);
 }
 
 #endif //PHYSIC_PHYSIC_H_

@@ -157,7 +157,7 @@ namespace Physic {
         return callback.m_closestHitFraction;
     }
 
-    void BoxTrace(const vec3_t pFrom, const vec3_t pTo, const vec3_t pMins, const vec3_t pMaxs, TraceResults& results) {
+    void BoxTrace(const vec3_t pFrom, const vec3_t pTo, const vec3_t pMins, const vec3_t pMaxs, int brushMask, TraceResults& results) {
         //FIXME
         btVector3 from = q3ToBullet(pFrom);
         btVector3 to = q3ToBullet(pTo);
@@ -178,13 +178,14 @@ namespace Physic {
         world->convexSweepTest(&box, transFrom, transTo, callback);
 
         float fraction = results.fraction = callback.m_closestHitFraction;
+
         bulletToQ3(callback.m_hitNormalWorld, results.normal);
 
-        btVector3 rawRes = from + fraction * (to - from);
-        float traceLength = (to - from).length();
+        btVector3 diff = to - from;
+        btVector3 rawRes = from + fraction * diff;;
+        float traceLength = diff.length();
 
-        btVector3 tamperedRes = rawRes - rawRes.normalized() * std::min(1.0f / 16.0f, traceLength);
-
+        btVector3 tamperedRes = rawRes - diff.normalized() * std::min(1.0f / 16.0f, traceLength);
         bulletToQ3(tamperedRes, results.endpos);
 
         //if(callback.triangleIndex != 0 && callback.triangleIndex != -1) {

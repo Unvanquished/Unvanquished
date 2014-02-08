@@ -2321,13 +2321,14 @@ void CM_BoxTrace( trace_t *results, const vec3_t start, const vec3_t end,
 {
 	CM_Trace( results, start, end, mins, maxs, model, vec3_origin, brushmask, type, NULL );
     Physic::TraceResults myTrace;
-    Physic::BoxTrace(start, end, mins, maxs, myTrace);
+    Physic::BoxTrace(start, end, mins, maxs, brushmask, myTrace);
 
     if (Distance(start, end) >= 3000) {
         return; // Skip the crazy Xhair traces
     }
 
     if (DistanceSquared(results->endpos, myTrace.endpos) >= 1.0f) {
+        Log::Debug("");
         Log::Debug("Start: (%?, %?, %?)", start[0], start[1], start[2]);
         Log::Debug("End: (%?, %?, %?)", end[0], end[1], end[2]);
         if(mins) {
@@ -2348,7 +2349,7 @@ void CM_BoxTrace( trace_t *results, const vec3_t start, const vec3_t end,
         Log::Debug("CM Trace:");
         Log::Debug(" - allsolid: %?", results->allsolid);
         Log::Debug(" - startsolid: %?", results->startsolid);
-        Log::Debug(" - fration: %?", results->fraction);
+        Log::Debug(" - fraction: %?", results->fraction);
         Log::Debug(" - endpos: (%?, %?, %?)", results->endpos[0], results->endpos[1], results->endpos[2]);
         Log::Debug(" - plane: (%?, %?, %?) %?", results->plane.normal[0], results->plane.normal[1], results->plane.normal[2], results->plane.dist);
         Log::Debug(" - surfaceFlags: %?", results->surfaceFlags);
@@ -2360,6 +2361,10 @@ void CM_BoxTrace( trace_t *results, const vec3_t start, const vec3_t end,
         Log::Debug(" - fraction: %?", myTrace.fraction);
         Log::Debug(" - endpos: (%?, %?, %?)", myTrace.endpos[0], myTrace.endpos[1], myTrace.endpos[2]);
         Log::Debug(" - normal: (%?, %?, %?)", myTrace.normal[0], myTrace.normal[1], myTrace.normal[2]);
+        //Log::Debug(" - debug1: (%?, %?, %?)", myTrace.debug1[0], myTrace.debug1[1], myTrace.debug1[2]);
+        //Log::Debug(" - debug2: (%?, %?, %?)", myTrace.debug2[0], myTrace.debug2[1], myTrace.debug2[2]);
+        //Log::Debug(" - debug3: (%?, %?, %?)", myTrace.debug3[0], myTrace.debug3[1], myTrace.debug3[2]);
+        //Log::Debug(" - debug4: (%?, %?, %?)", myTrace.debug4[0], myTrace.debug4[1], myTrace.debug4[2]);
     }
     //results->fraction = myTrace;
 }
