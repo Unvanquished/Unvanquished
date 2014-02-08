@@ -3779,13 +3779,6 @@ void CL_Frame( int msec )
 		return;
 	}
 
-	if ( cls.state == CA_DISCONNECTED && !( cls.keyCatchers & KEYCATCH_UI ) && !com_sv_running->integer )
-	{
-		// if disconnected, bring up the menu
-		//S_StopAllSounds();
-// 		Rocket_DocumentAction( "main", "open" );
-	}
-
 	// if recording an avi, lock to a fixed fps
 	if ( CL_VideoRecording() && cl_aviFrameRate->integer && msec )
 	{
