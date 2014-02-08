@@ -6,6 +6,7 @@ lcc
 *.DS_Store
 CMakeCache.txt
 CMakeFiles
+CMakeLists.txt.user*
 Makefile
 cmake_install.cmake
 daemon*
@@ -23,6 +24,7 @@ build-32/*
 build-64/*
 Release
 Debug
+build
 
 *.vcxproj.user
 *.kdev4

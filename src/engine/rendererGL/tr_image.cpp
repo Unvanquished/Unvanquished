@@ -2939,6 +2939,10 @@ image_t        *R_FindImageFile( const char *imageName, int bits, filterType_t f
 
 	if ( pic[ 0 ] == NULL || numLayers > 0 )
 	{
+		if ( *pic )
+		{
+			ri.Free( *pic );
+		}
 		return NULL;
 	}
 

@@ -34,7 +34,7 @@ int         trap_Parse_FreeSource( int handle );
 int         trap_Parse_ReadToken( int handle, pc_token_t *pc_token );
 int         trap_Parse_SourceFileAndLine( int handle, char *filename, int *line );
 
-#ifdef CGAME
+#ifdef IN_CGAME_VM
 sfxHandle_t trap_S_RegisterSound( const char *sample, qboolean compressed );
 
 #endif
@@ -399,7 +399,7 @@ static voiceTrack_t *BG_VoiceParseCommand( int handle )
 		}
 		else
 		{
-#ifdef CGAME
+#ifdef IN_CGAME_VM
 			voiceTracks->track = trap_S_RegisterSound( token.string, qfalse );
 			voiceTracks->duration = 0; // FIXME: Was always zero...
 #endif
@@ -567,7 +567,7 @@ void BG_PrintVoices( voice_t *voices, int debugLevel )
 					Com_Printf( "    class -> %d\n", voiceTrack->pClass );
 					Com_Printf( "    weapon -> %d\n", voiceTrack->weapon );
 					Com_Printf( "    enthusiasm -> %d\n", voiceTrack->enthusiasm );
-#ifdef CGAME
+#ifdef IN_CGAME_VM
 					Com_Printf( "    duration -> %d\n", voiceTrack->duration );
 #endif
 				}

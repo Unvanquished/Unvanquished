@@ -1,3 +1,33 @@
+unvanquished (0.24.0-3) unstable; urgency=low
+
+  * Fix a bug which prevented install (but not upgrade) from succeeding.
+  * Fix configuration script regarding when it asks for the mirror name.
+  * Add vm & lcc directories to debian/clean.
+  * Enable USE_VOIP; remove build dependency on libxvidcore-dev.
+  * Cherry-picked bug fixes:
+    - Avoid light sampling outside the light grid. This fixes colouring
+      problems in maps such as nano.
+    - Mark fs_extrapaks as a startup variable.
+    - Don't do init for presets which we don't have.
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Tue, 04 Feb 2014 14:43:12 +0000
+
+unvanquished (0.24.0-2) unstable; urgency=low
+
+  * Fix unvanquished-download-paks install location.
+  * Fix memory leak in texture loading [cherry-picked].
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Mon, 03 Feb 2014 04:38:11 +0000
+
+unvanquished (0.24.0-1) unstable; urgency=low
+
+  * Release of Alpha 24.
+    - This release changes various file locations.
+    - Drop upgrade support for very old versions.
+    - Don't include packaged translations for now (broken, not used).
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Fri, 31 Jan 2014 19:22:17 +0000
+
 unvanquished (0.23.0-2) unstable; urgency=low
 
   * Server: fix minimum wage.

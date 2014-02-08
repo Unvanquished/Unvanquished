@@ -2197,7 +2197,13 @@ static void CL_GenerateRSAKeys( const char *fileName )
 
 	Com_Printf( _( "^5Regenerating RSA keypair; writing to %s\n" ), fileName );
 
+#ifndef _WIN32
+	int old_umask = umask(0600);
+#endif
 	f = FS_FOpenFileWrite( fileName );
+#ifndef _WIN32
+	umask(old_umask);
+#endif
 
 	if ( !f )
 	{
