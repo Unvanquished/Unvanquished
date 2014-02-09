@@ -85,11 +85,6 @@ int              trap_Parse_LoadSource( const char *filename );
 int              trap_Parse_FreeSource( int handle );
 int              trap_Parse_ReadToken( int handle, pc_token_t *pc_token );
 int              trap_Parse_SourceFileAndLine( int handle, char *filename, int *line );
-int              trap_PC_LoadSource( const char *filename );
-int              trap_PC_FreeSource( int handle );
-int              trap_PC_ReadToken( int handle, pc_token_t *pc_token );
-int              trap_PC_SourceFileAndLine( int handle, char *filename, int *line );
-int              trap_PC_UnReadToken( int handle );
 int              trap_BotGetServerCommand( int clientNum, char *message, int size );
 void             trap_SendMessage( int clientNum, char *buf, int buflen );
 messageStatus_t  trap_MessageStatus( int clientNum );
@@ -102,6 +97,7 @@ void             trap_GenFingerprint( const char *pubkey, int size, char *buffer
 void             trap_GetPlayerPubkey( int clientNum, char *pubkey, int size );
 
 void             trap_GetTimeString( char *buffer, int size, const char *format, const qtime_t *tm );
+qboolean         trap_FindPak( const char *name );
 
 qboolean         trap_BotSetupNav( const botClass_t *botClass, qhandle_t *navHandle );
 void             trap_BotShutdownNav( void );

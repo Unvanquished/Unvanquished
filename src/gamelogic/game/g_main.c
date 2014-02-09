@@ -395,7 +395,7 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_markDeconstruct,             "g_markDeconstruct",             "3",                                CVAR_SERVERINFO,                                 0, qtrue            },
 
 	{ &g_debugMapRotation,            "g_debugMapRotation",            "0",                                0,                                               0, qfalse           },
-	{ &g_currentMapRotation,          "g_currentMapRotation",          "0",                                0,                                               0, qfalse           }, // -1 = NOT_ROTATING
+	{ &g_currentMapRotation,          "g_currentMapRotation",          "-1",                                0,                                               0, qfalse           }, // -1 = NOT_ROTATING
 	{ &g_mapRotationNodes,            "g_mapRotationNodes",            "",                                 CVAR_ROM,                                        0, qfalse           },
 	{ &g_mapRotationStack,            "g_mapRotationStack",            "",                                 CVAR_ROM,                                        0, qfalse           },
 	{ &g_nextMap,                     "g_nextMap",                     "",                                 0,                                               0, qtrue            },
@@ -819,10 +819,10 @@ void G_MapConfigs( const char *mapname )
 	}
 
 	trap_SendConsoleCommand( EXEC_APPEND,
-	                         va( "preset %s/default.cfg\n", Quote( g_mapConfigs.string ) ) );
+	                         va( "exec %s/default.cfg\n", Quote( g_mapConfigs.string ) ) );
 
 	trap_SendConsoleCommand( EXEC_APPEND,
-	                         va( "preset %s/%s.cfg\n", Quote( g_mapConfigs.string ), Quote( mapname ) ) );
+	                         va( "exec %s/%s.cfg\n", Quote( g_mapConfigs.string ), Quote( mapname ) ) );
 
 	trap_Cvar_Set( "g_mapConfigsLoaded", "1" );
 	trap_SendConsoleCommand( EXEC_APPEND, "maprestarted\n" );
