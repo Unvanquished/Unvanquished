@@ -1373,10 +1373,10 @@ qboolean BG_ClassUnlocked( int class_ );
 unlockableType_t              BG_UnlockableType( int num );
 int                           BG_UnlockableTypeIndex( int num );
 momentumThresholdIterator_t BG_IterateMomentumThresholds( momentumThresholdIterator_t unlockableIter, team_t team, int *threshold, qboolean *unlocked );
-#ifdef GAME
+#ifdef IN_GAME_VM
 void     G_UpdateUnlockables( void );
 #endif
-#ifdef CGAME
+#ifdef IN_CGAME_VM
 void     CG_UpdateUnlockables( playerState_t *ps );
 #endif
 #ifdef UI
@@ -1450,7 +1450,7 @@ typedef enum
 
 typedef struct voiceTrack_s
 {
-#ifdef CGAME
+#ifdef IN_CGAME_VM
 	sfxHandle_t         track;
 	int                 duration;
 #endif

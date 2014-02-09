@@ -547,6 +547,11 @@ void trap_GetTimeString( char *buffer, int size, const char *format, const qtime
 	syscallVM( G_GETTIMESTRING, buffer, size, format, tm );
 }
 
+qboolean trap_FindPak( const char *name )
+{
+	return syscallVM( G_FINDPAK, name );
+}
+
 qboolean trap_BotSetupNav( const botClass_t *botClass, qhandle_t *navHandle )
 {
 	return syscallVM( BOT_NAV_SETUP, botClass, navHandle );

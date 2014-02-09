@@ -8,17 +8,19 @@ if test "$1" = "configure"; then
   . /usr/share/debconf/confmodule
   db_version 2.0
 
-  if dpkg --compare-versions "$2" '<' 0.4.0-0; then
-    # move data files from the old (< 0.4.0) location
-    if test -f /var/lib/games/unvanquished/md5sums; then
-      mv /var/lib/games/unvanquished/main/* /var/games/unvanquished/main/
-      mv /var/lib/games/unvanquished/md5sums /var/games/unvanquished/
-      rmdir /var/lib/games/unvanquished/main /var/lib/games/unvanquished
+  if test -n "$2" && dpkg --compare-versions "$2" '<' 0.4.0-0; then
+    echo 'Upgrading from a very old version of Unvanquished is not supported.'
+    echo 'You need to purge and re-install unvanquished-common.'
+    exit 1
+  fi
+
+  if dpkg --compare-versions "$2" '<' 0.24.0-0; then
+    # move data files from the old (< 0.24.0) location
+    if test -f /var/games/unvanquished/main; then
+      echo 'Moving files from /var/games/unvanquished/main to /var/games/unvanquished/pkg...'
+      echo 'You are advised to check content as some may not be used.'
+      mv /var/games/unvanquished/main/* /var/games/unvanquished/pkg
     fi
-  elif dpkg --compare-versions "$2" '<' 0.3.0-1; then
-    cd /var/lib/games/unvanquished
-    # move data files from the old (<= 0.3.0-1) location
-    ls | grep -ve md5sums -e main | while read FN; do mv -f "$FN" main; done
   fi
 
   db_get unvanquished-common/download-pk3

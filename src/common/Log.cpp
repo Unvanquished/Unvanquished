@@ -81,22 +81,22 @@ namespace Log {
 	//TODO add the time (broken for now because it is journaled) use Sys_Milliseconds instead (Utils::Milliseconds ?)
     static const int errorTargets = (1 << GRAPHICAL_CONSOLE) | (1 << TTY_CONSOLE) | (1 << CRASHLOG) | (1 << HUD) | (1 << LOGFILE);
     void CodeSourceError(std::string message) {
-        Log::Dispatch({/*Com_Milliseconds()*/0, "^1Error: " + message}, errorTargets);
+        Log::Dispatch({"^1Error: " + message}, errorTargets);
     }
 
     static const int warnTargets = (1 << GRAPHICAL_CONSOLE) | (1 << TTY_CONSOLE) | (1 << CRASHLOG) | (1 << LOGFILE);
     void CodeSourceWarn(std::string message) {
-        Log::Dispatch({/*Com_Milliseconds()*/0, "^3Warn: " + message}, warnTargets);
+        Log::Dispatch({"^3Warn: " + message}, warnTargets);
     }
 
     static const int noticeTargets = (1 << GRAPHICAL_CONSOLE) | (1 << TTY_CONSOLE) | (1 << CRASHLOG) | (1 << LOGFILE);
     void CodeSourceNotice(std::string message) {
-        Log::Dispatch({/*Com_Milliseconds()*/0, message}, noticeTargets);
+        Log::Dispatch({message}, noticeTargets);
     }
 
     static const int debugTargets = (1 << GRAPHICAL_CONSOLE) | (1 << TTY_CONSOLE);
     void CodeSourceDebug(std::string message) {
-        Log::Dispatch({/*Com_Milliseconds()*/0, "^5Debug: " + message}, debugTargets);
+        Log::Dispatch({"^5Debug: " + message}, debugTargets);
     }
 }
 

@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../qcommon/q_shared.h"
 #include "../qcommon/vm_traps.h"
 
-#define GAME_API_VERSION          10
+#define GAME_API_VERSION          1
 
 #define SVF_NOCLIENT              0x00000001
 #define SVF_CLIENTMASK            0x00000002
@@ -166,6 +166,7 @@ typedef enum gameImport_s
   G_GENFINGERPRINT,
   G_GETPLAYERPUBKEY,
   G_GETTIMESTRING,
+  G_FINDPAK,
   BOT_NAV_SETUP,
   BOT_NAV_SHUTDOWN,
   BOT_SET_NAVMESH,
