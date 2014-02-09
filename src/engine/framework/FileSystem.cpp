@@ -2024,7 +2024,7 @@ static fileHandle_t FS_FOpenFileWrite_internal(const char* path, bool temporary)
 {
 	fileHandle_t handle = FS_AllocHandle();
 	try {
-		handleTable[handle].file = FS::HomePath::OpenWrite(temporary ? path : std::string(path) + FS::TEMP_SUFFIX);
+		handleTable[handle].file = FS::HomePath::OpenWrite(temporary ? std::string(path) + FS::TEMP_SUFFIX : path);
 	} catch (std::system_error& err) {
 		Com_Printf("Failed to open '%s' for writing: %s\n", path, err.what());
 		return 0;
