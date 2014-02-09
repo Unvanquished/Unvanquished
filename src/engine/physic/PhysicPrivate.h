@@ -34,6 +34,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <btBulletCollisionCommon.h>
 #include "Physic.h"
 #include "../../common/Log.h"
+#include "../qcommon/surfaceflags.h"
 
 namespace Physic {
     extern btCollisionDispatcher* dispatcher;
@@ -55,6 +56,17 @@ namespace Physic {
         to[2] = from[2];
     }
 
+    inline short convertCollisionMask(int mask) {
+        short result = 0;
+        if(mask & CONTENTS_SOLID) {
+            result |= COLLISION_SOLID;
+        }
+        if(mask & CONTENTS_BODY) {
+            result |= COLLISION_BODY;
+        }
+        return result;
+    }
+
     struct ClosestConvexResultCallback : public btCollisionWorld::ClosestConvexResultCallback {
         int shapePart;
         int triangleIndex;
@@ -66,8 +78,13 @@ namespace Physic {
 
         virtual btScalar addSingleResult(btCollisionWorld::LocalConvexResult& convexResult, bool normalInWorldSpace) {
             float result = btCollisionWorld::ClosestConvexResultCallback::addSingleResult(convexResult, normalInWorldSpace);
-            shapePart = convexResult.m_localShapeInfo->m_shapePart;
-            triangleIndex = convexResult.m_localShapeInfo->m_triangleIndex;
+            if(convexResult.m_localShapeInfo) {
+                shapePart = convexResult.m_localShapeInfo->m_shapePart;
+                triangleIndex = convexResult.m_localShapeInfo->m_triangleIndex;
+            } else {
+                shapePart = -1;
+                triangleIndex = -1;
+            }
             return result;
         }
     };

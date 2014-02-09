@@ -1151,6 +1151,7 @@ Capsules are handled differently though.
 */
 clipHandle_t CM_TempBoxModel( const vec3_t mins, const vec3_t maxs, int capsule )
 {
+    Physic::TempBox(mins, maxs);
 	VectorCopy( mins, box_model.mins );
 	VectorCopy( maxs, box_model.maxs );
 

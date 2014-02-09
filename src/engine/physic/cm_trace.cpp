@@ -2365,8 +2365,10 @@ void CM_BoxTrace( trace_t *results, const vec3_t start, const vec3_t end,
         //Log::Debug(" - debug2: (%?, %?, %?)", myTrace.debug2[0], myTrace.debug2[1], myTrace.debug2[2]);
         //Log::Debug(" - debug3: (%?, %?, %?)", myTrace.debug3[0], myTrace.debug3[1], myTrace.debug3[2]);
         //Log::Debug(" - debug4: (%?, %?, %?)", myTrace.debug4[0], myTrace.debug4[1], myTrace.debug4[2]);
+        Log::Debug("");
     }
-    //results->fraction = myTrace;
+    //results->fraction = myTrace.fraction;
+    //VectorCopy(myTrace.endpos, results->endpos);
 }
 
 /*

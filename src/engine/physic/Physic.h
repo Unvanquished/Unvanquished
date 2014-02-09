@@ -51,6 +51,12 @@ namespace Physic {
 
     //float Trace(const vec3_t from, const vec3_t to);
     void BoxTrace(const vec3_t from, const vec3_t to, const vec3_t mins, const vec3_t maxs, int brushMask, TraceResults& results);
+    void TempBox(const vec3_t mins, const vec3_t maxs);
+
+    enum COLLISIONFLAGS {
+        COLLISION_SOLID = 0x1,
+        COLLISION_BODY = 0x2,
+    };
 }
 
 #endif //PHYSIC_PHYSIC_H_

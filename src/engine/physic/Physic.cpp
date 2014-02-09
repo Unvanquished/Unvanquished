@@ -57,9 +57,13 @@ namespace Physic {
 
     void Shutdown() {
         delete world;
+        world = nullptr;
         delete broadphase;
+        broadphase = nullptr;
         delete dispatcher;
+        dispatcher = nullptr;
         delete collisionConf;
+        collisionConf = nullptr;
     }
 
     std::vector<btVector3> ConvexHullTrianglesFromVertices(const btAlignedObjectArray<btVector3> vertices) {
@@ -148,7 +152,7 @@ namespace Physic {
         btBvhTriangleMeshShape* shape = new btBvhTriangleMeshShape(trimesh, false, true);
         btCollisionObject* triObj = new btCollisionObject();
         triObj->setCollisionShape(shape);
-        world->addCollisionObject(triObj);
+        world->addCollisionObject(triObj, COLLISION_SOLID);
     }
 
     float Trace(const vec3_t from, const vec3_t to) {
@@ -164,17 +168,19 @@ namespace Physic {
         btVector3 mins = q3ToBullet(pMins);
         btVector3 maxs = q3ToBullet(pMaxs);
         btVector3 halfExtends = (maxs - mins) / 2;
-        btVector3 rayMove = maxs - halfExtends;
+        btVector3 rayOffset = maxs - halfExtends;
+        short mask = convertCollisionMask(brushMask);
 
         btBoxShape box(halfExtends);
         btTransform transFrom;
         transFrom.setIdentity();
-        transFrom.setOrigin(from + rayMove);
+        transFrom.setOrigin(from + rayOffset);
         btTransform transTo;
         transTo.setIdentity();
-        transTo.setOrigin(to + rayMove);
+        transTo.setOrigin(to + rayOffset);
 
-        ClosestConvexResultCallback callback(from + rayMove, to + rayMove);
+        ClosestConvexResultCallback callback(from + rayOffset, to + rayOffset);
+        callback.m_collisionFilterMask = mask;
         world->convexSweepTest(&box, transFrom, transTo, callback);
 
         float fraction = results.fraction = callback.m_closestHitFraction;
@@ -191,5 +197,25 @@ namespace Physic {
         //if(callback.triangleIndex != 0 && callback.triangleIndex != -1) {
             //Log::Debug("%? %?\n", callback.shapePart, callback.triangleIndex);
         //}
+    }
+
+    void TempBox(const vec3_t pMins, const vec3_t pMaxs) {
+        btVector3 mins = q3ToBullet(pMins);
+        btVector3 maxs = q3ToBullet(pMaxs);
+        btVector3 halfExtends = (maxs - mins) / 2;
+        btVector3 offset = maxs - halfExtends;
+        static btBoxShape boxShape(btVector3(0, 0, 0));
+        static btCollisionObject boxObject;
+        static btCollisionWorld* lastWorld = nullptr;
+        boxShape = btBoxShape(halfExtends);
+        boxObject.setCollisionShape(&boxShape);
+        btTransform transform;
+        transform.setIdentity();
+        transform.setOrigin(offset);
+        boxObject.setWorldTransform(transform);
+        if(world && world != lastWorld) {
+            lastWorld = world;
+            world->addCollisionObject(&boxObject, COLLISION_BODY);
+        }
     }
 }
