@@ -314,9 +314,6 @@ typedef int clipHandle_t;
 #ifdef __GNUC__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
-#ifdef __clang__
-#pragma GCC diagnostic ignored "-Wgnu-anonymous-struct"
-#endif
 #endif
 	typedef ALIGNED( 16, union transform_u {
 		struct {
