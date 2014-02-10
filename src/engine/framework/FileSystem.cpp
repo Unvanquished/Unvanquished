@@ -2418,8 +2418,9 @@ const char* FS_LoadedPaks()
 	static char info[BIG_INFO_STRING];
 	info[0] = '\0';
 	for (const FS::PakInfo& x: FS::PakPath::GetLoadedPaks()) {
+		// If we have a pk3dir, don't allow clients to connect
 		if (!x.checksum)
-			continue;
+			return "";
 		if (info[0])
 			Q_strcat(info, sizeof(info), " ");
 		Q_strcat(info, sizeof(info), FS::MakePakName(x.name, x.version, x.checksum).c_str());
@@ -2466,6 +2467,10 @@ void FS_LoadAllMaps()
 
 bool FS_LoadServerPaks(const char* paks)
 {
+	// Empty pak list means the server is using pk3dir, and we shouldn't connect to it
+	if (!paks[0])
+		Com_Error(ERR_DROP, "This server is configured to load game data from a directory and will not accept connections.");
+
 	Cmd::Args args(paks);
 	fs_missingPaks.clear();
 	for (auto& x: args) {
