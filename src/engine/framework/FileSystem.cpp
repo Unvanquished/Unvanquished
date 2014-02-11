@@ -1967,6 +1967,8 @@ struct handleData_t {
 static handleData_t handleTable[MAX_FILE_HANDLES];
 static std::vector<std::tuple<std::string, std::string, uint32_t>> fs_missingPaks;
 
+static Cvar::Cvar<bool> allowRemotePakDir("client.allowRemotePakDir", "Connect to servers that load game data from directories", Cvar::TEMPORARY, false);
+
 static fileHandle_t FS_AllocHandle()
 {
 	// Don't use handle 0 because it is used to indicate failures
@@ -2418,9 +2420,6 @@ const char* FS_LoadedPaks()
 	static char info[BIG_INFO_STRING];
 	info[0] = '\0';
 	for (const FS::PakInfo& x: FS::PakPath::GetLoadedPaks()) {
-		// If we have a pk3dir, don't allow clients to connect
-		if (!x.checksum)
-			return "";
 		if (info[0])
 			Q_strcat(info, sizeof(info), " ");
 		Q_strcat(info, sizeof(info), FS::MakePakName(x.name, x.version, x.checksum).c_str());
@@ -2467,18 +2466,17 @@ void FS_LoadAllMaps()
 
 bool FS_LoadServerPaks(const char* paks)
 {
-	// Empty pak list means the server is using pk3dir, and we shouldn't connect to it
-	if (!paks[0])
-		Com_Error(ERR_DROP, "This server is configured to load game data from a directory and will not accept connections.");
-
 	Cmd::Args args(paks);
 	fs_missingPaks.clear();
 	for (auto& x: args) {
 		std::string name, version;
 		Opt::optional<uint32_t> checksum;
-		if (!FS::ParsePakName(x.data(), x.data() + x.size(), name, version, checksum) || !checksum) {
+		if (!FS::ParsePakName(x.data(), x.data() + x.size(), name, version, checksum)) {
 			Com_Error(ERR_DROP, "Invalid pak reference from server: %s", x.c_str());
-			continue;
+		} else if (!checksum) {
+			if (allowRemotePakDir.Get())
+				continue;
+			Com_Error(ERR_DROP, "The server is configured to load game data from a directory which makes it incompatible with remote clients.");
 		}
 
 		// Keep track of all missing paks
