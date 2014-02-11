@@ -7,7 +7,12 @@
 # SETTINGS #
 ############
 
-torrent_file=current.torrent
+if [ $# -gt 2 ]; then
+    torrent_file="unvanquished_${3}_universal.torrent"
+else
+    torrent_file="current.torrent"
+fi
+
 torrent_url=http://unvanquished.net/unv-launcher/$torrent_file
 
 default_cache_dir=/tmp/unv-paks-cache
@@ -19,7 +24,7 @@ set -e
 
 # check usage
 if [ $# -lt 1 ]; then
-    echo "Usage: $0 <target directory> [cache directory]"
+    echo "Usage: $0 <target directory> [cache directory] [version]"
     exit
 fi
 
