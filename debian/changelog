@@ -1,3 +1,15 @@
+unvanquished (0.24.0-4) unstable; urgency=low
+
+  * Lots of configuration migration fixes.
+    Not perfect, not guaranteed to work(!), but should cover common cases.
+  * Add directories in /etc/unvanquished-server for scripts and per-map
+    configuration files.
+  * Remove vm & lcc directories to debian/clean since they break cleaning.
+    Clean them up properly in debian/rules.
+  * Various bug fixes from git master.
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Sat, 08 Feb 2014 21:02:44 +0000
+
 unvanquished (0.24.0-3) unstable; urgency=low
 
   * Fix a bug which prevented install (but not upgrade) from succeeding.
