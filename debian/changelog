@@ -1,3 +1,9 @@
+unvanquished (0.24.1-1) unstable; urgency=low
+
+  * Point release.
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Tue, 11 Feb 2014 17:47:18 +0000
+
 unvanquished (0.24.0-4) unstable; urgency=low
 
   * Lots of configuration migration fixes.
