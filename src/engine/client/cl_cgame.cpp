@@ -854,7 +854,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			}
 			if( args[ 3 ] )
 			{
-				Audio::UpdateEntityPosition( args[ 1 ], (float*) VMA( 3 ) );
+				Audio::UpdateEntityVelocity( args[ 1 ], (float*) VMA( 3 ) );
 			}
 
 			Audio::AddEntityLoopingSound( args[ 1 ], args[ 4 ]);
