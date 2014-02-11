@@ -24,11 +24,11 @@ along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 #include "../../engine/qcommon/q_shared.h"
 #include "bg_public.h"
 
-#ifdef GAME
+#ifdef IN_GAME_VM
 #include "../game/g_local.h"
 #endif
 
-#ifdef CGAME
+#ifdef IN_CGAME_VM
 #include "../cgame/cg_local.h"
 #endif
 
@@ -95,13 +95,13 @@ static qboolean Disabled( unlockable_t *unlockable )
 	return qfalse;
 }
 
-#ifdef CGAME
+#ifdef IN_CGAME_VM
 static void InformUnlockableStatusChange( unlockable_t *unlockable, qboolean unlocked )
 {
 }
-#endif // CGAME
+#endif // IN_CGAME_VM
 
-#ifdef CGAME
+#ifdef IN_CGAME_VM
 static void InformUnlockableStatusChanges( int *statusChanges, int count )
 {
 	char         text[ MAX_STRING_CHARS ];
@@ -167,7 +167,7 @@ static void InformUnlockableStatusChanges( int *statusChanges, int count )
 
 	CG_CenterPrint( text, SCREEN_HEIGHT * 0.3, GIANTCHAR_WIDTH * 2 );
 }
-#endif // CGAME
+#endif // IN_CGAME_VM
 
 static INLINE qboolean Unlocked( unlockableType_t type, int itemNum )
 {
@@ -202,11 +202,11 @@ static float UnlockToLockThreshold( float unlockThreshold )
 	static float lastMod                = 0.0f;
 
 	// retrieve relevant settings
-#ifdef GAME
+#ifdef IN_GAME_VM
 	momentumHalfLife = g_momentumHalfLife.value;
 	unlockableMinTime  = g_unlockableMinTime.value;
 #endif
-#ifdef CGAME
+#ifdef IN_CGAME_VM
 	momentumHalfLife = cgs.momentumHalfLife;
 	unlockableMinTime  = cgs.unlockableMinTime;
 #endif
@@ -257,7 +257,7 @@ void BG_InitUnlockackables( void )
 	unlockablesTypeOffset[ UNLT_BUILDABLE ] = unlockablesTypeOffset[ UNLT_UPGRADE ]   + UP_NUM_UPGRADES;
 	unlockablesTypeOffset[ UNLT_CLASS ]     = unlockablesTypeOffset[ UNLT_BUILDABLE ] + BA_NUM_BUILDABLES;
 
-#ifdef GAME
+#ifdef IN_GAME_VM
 	G_UpdateUnlockables();
 #endif
 }
@@ -270,7 +270,7 @@ void BG_ImportUnlockablesFromMask( int team, int mask )
 	team_t           currentTeam;
 	qboolean         newStatus;
 	int              statusChanges[ NUM_UNLOCKABLES ];
-#ifdef CGAME
+#ifdef IN_CGAME_VM
 	int statusChangeCount = 0;
 #endif
 
@@ -347,7 +347,7 @@ void BG_ImportUnlockablesFromMask( int team, int mask )
 		{
 			newStatus = mask & ( 1 << teamUnlockableNum );
 
-#ifdef CGAME
+#ifdef IN_CGAME_VM
 			// notify client about single status change
 			if ( unlockablesTeamKnowledge == team && unlockable->statusKnown &&
 			     unlockable->unlocked != newStatus )
@@ -373,7 +373,7 @@ void BG_ImportUnlockablesFromMask( int team, int mask )
 		itemNum++;
 	}
 
-#ifdef CGAME
+#ifdef IN_CGAME_VM
 	// notify client about all status changes
 	if ( statusChangeCount )
 	{
@@ -499,7 +499,7 @@ momentumThresholdIterator_t BG_IterateMomentumThresholds( momentumThresholdItera
 // GAME methods
 // ------------
 
-#ifdef GAME
+#ifdef IN_GAME_VM
 static void UpdateUnlockablesMask( void )
 {
 	int    unlockable, unlockableNum[ NUM_TEAMS ];
@@ -538,7 +538,7 @@ static void UpdateUnlockablesMask( void )
 }
 #endif
 
-#ifdef GAME
+#ifdef IN_GAME_VM
 void G_UpdateUnlockables( void )
 {
 	int              itemNum = 0, unlockableNum, unlockThreshold;
@@ -622,7 +622,7 @@ void G_UpdateUnlockables( void )
 // CGAME methods
 // -------------
 
-#ifdef CGAME
+#ifdef IN_CGAME_VM
 void CG_UpdateUnlockables( playerState_t *ps )
 {
 	BG_ImportUnlockablesFromMask( ps->persistant[ PERS_TEAM ], ps->persistant[ PERS_UNLOCKABLES ] );

@@ -213,6 +213,7 @@ dlStatus_t DL_DownloadLoop( void )
 	curl_easy_cleanup( dl_request );
 
 	FS_FCloseFile( dl_file );
+	dl_file = 0;
 
 	dl_request = NULL;
 

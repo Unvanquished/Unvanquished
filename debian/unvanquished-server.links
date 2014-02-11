@@ -1,2 +1,2 @@
-etc/unvanquished-server/server.cfg	usr/lib/games/unvanquished/main/server.cfg
-etc/unvanquished-server/maprotation.cfg	usr/lib/games/unvanquished/main/maprotation.cfg
+etc/unvanquished-server/server.cfg	usr/lib/games/unvanquished/config/server.cfg
+etc/unvanquished-server/maprotation.cfg	usr/lib/games/unvanquished/game/maprotation.cfg
