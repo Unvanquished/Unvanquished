@@ -108,9 +108,10 @@ echo '[33mGathering VM code[m'
 cd "$BASEDIR/$BUILDDIR"
 dozip vm/*qvm
 
+cd "$BASEDIR"
+
 if (which advzip && test -f "$PAKFILENAME") &>/dev/null; then
   echo '[33mOptimising[m'
-  cd "$BASEDIR"
   advzip -z4 "$PAKFILENAME"
 fi
 
