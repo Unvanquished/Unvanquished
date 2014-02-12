@@ -48,6 +48,7 @@ namespace Log {
 
     enum Level {
         DEBUG,
+        PRINT,
         NOTICE,
         WARNING,
         ERROR
@@ -84,6 +85,9 @@ namespace Log {
             void Notice(Str::StringRef format, Args&& ... args);
 
             template<typename ... Args>
+            void Print(Str::StringRef format, Args&& ... args);
+
+            template<typename ... Args>
             void Debug(Str::StringRef format, Args&& ... args);
 
         private:
@@ -108,6 +112,9 @@ namespace Log {
     void Notice(Str::StringRef format, Args&& ... args);
 
     template<typename ... Args>
+    void Print(Str::StringRef format, Args&& ... args);
+
+    template<typename ... Args>
     void Debug(Str::StringRef format, Args&& ... args);
 
     /*
@@ -116,9 +123,10 @@ namespace Log {
      */
 
     struct Event {
-        Event(std::string text)
-            : text(std::move(text)) {}
+        Event(std::string text, Level level)
+            : text(std::move(text)), level(level) {}
         std::string text;
+        Level level;
     };
 
     /*
@@ -127,6 +135,7 @@ namespace Log {
      */
 
     enum TargetId {
+        NO_TARGET,
         GRAPHICAL_CONSOLE,
         TTY_CONSOLE,
         CRASHLOG,
@@ -147,6 +156,7 @@ namespace Log {
     void CodeSourceError(std::string message);
     void CodeSourceWarn(std::string message);
     void CodeSourceNotice(std::string message);
+    void CodeSourcePrint(std::string message);
     void CodeSourceDebug(std::string message);
 
     // Implementation of templates
@@ -173,6 +183,13 @@ namespace Log {
     }
 
     template<typename ... Args>
+    void Logger::Print(Str::StringRef format, Args&& ... args) {
+        if (filterLevel.Get() <= PRINT) {
+            CodeSourcePrint(Str::Format(format, std::forward<Args>(args) ...));
+        }
+    }
+
+    template<typename ... Args>
     void Logger::Debug(Str::StringRef format, Args&& ... args) {
         if (filterLevel.Get() <= DEBUG) {
             CodeSourceDebug(Str::Format(format, std::forward<Args>(args) ...));
@@ -194,6 +211,11 @@ namespace Log {
     template<typename ... Args>
     void Notice(Str::StringRef format, Args&& ... args) {
         CodeSourceNotice(Str::Format(format, std::forward<Args>(args) ...));
+    }
+
+    template<typename ... Args>
+    void Print(Str::StringRef format, Args&& ... args) {
+        CodeSourcePrint(Str::Format(format, std::forward<Args>(args) ...));
     }
 
     template<typename ... Args>

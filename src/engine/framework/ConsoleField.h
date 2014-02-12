@@ -28,7 +28,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
+#include "../../common/Command.h"
 #include "../../common/LineEditData.h"
+#include "../../common/Log.h"
 #include "../../common/String.h"
 #include "ConsoleHistory.h"
 
@@ -39,7 +41,8 @@ namespace Console {
 
     class Field : public Util::LineEditData {
         public:
-            Field(int size);
+            Field(int size, Log::TargetId logTarget = Log::NO_TARGET);
+            ~Field();
 
             void HistoryPrev();
             void HistoryNext();
@@ -47,8 +50,13 @@ namespace Console {
             void RunCommand(Str::StringRef defaultCommand = "");
             void AutoComplete();
 
+            void StartRedirectPrints();
+            void StopRedirectPrints();
+
         private:
             HistoryHandle hist;
+            Cmd::Environment* env;
+            Log::TargetId logTarget;
     };
 
 }

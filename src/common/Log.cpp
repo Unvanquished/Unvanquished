@@ -55,6 +55,11 @@ namespace Log {
             return true;
         }
 
+        if (value == "print") {
+            result = Log::PRINT;
+            return true;
+        }
+
         if (value == "debug" or value == "all") {
             result = Log::DEBUG;
             return true;
@@ -69,6 +74,8 @@ namespace Log {
                 return "error";
             case Log::WARNING:
                 return "warning";
+            case Log::PRINT:
+                return "print";
             case Log::NOTICE:
                 return "notice";
             case Log::DEBUG:
@@ -78,25 +85,29 @@ namespace Log {
         }
     }
 
-	//TODO add the time (broken for now because it is journaled) use Sys_Milliseconds instead (Utils::Milliseconds ?)
     static const int errorTargets = (1 << GRAPHICAL_CONSOLE) | (1 << TTY_CONSOLE) | (1 << CRASHLOG) | (1 << HUD) | (1 << LOGFILE);
     void CodeSourceError(std::string message) {
-        Log::Dispatch({"^1Error: " + message}, errorTargets);
+        Log::Dispatch({"^1Error: " + message, ERROR}, errorTargets);
     }
 
     static const int warnTargets = (1 << GRAPHICAL_CONSOLE) | (1 << TTY_CONSOLE) | (1 << CRASHLOG) | (1 << LOGFILE);
     void CodeSourceWarn(std::string message) {
-        Log::Dispatch({"^3Warn: " + message}, warnTargets);
+        Log::Dispatch({"^3Warn: " + message, WARNING}, warnTargets);
     }
 
     static const int noticeTargets = (1 << GRAPHICAL_CONSOLE) | (1 << TTY_CONSOLE) | (1 << CRASHLOG) | (1 << LOGFILE);
     void CodeSourceNotice(std::string message) {
-        Log::Dispatch({message}, noticeTargets);
+        Log::Dispatch({message, NOTICE}, noticeTargets);
+    }
+
+    static const int printTargets = (1 << GRAPHICAL_CONSOLE) | (1 << TTY_CONSOLE);
+    void CodeSourcePrint(std::string message) {
+        Log::Dispatch({message, PRINT}, printTargets);
     }
 
     static const int debugTargets = (1 << GRAPHICAL_CONSOLE) | (1 << TTY_CONSOLE);
     void CodeSourceDebug(std::string message) {
-        Log::Dispatch({"^5Debug: " + message}, debugTargets);
+        Log::Dispatch({"^5Debug: " + message, DEBUG}, debugTargets);
     }
 }
 
