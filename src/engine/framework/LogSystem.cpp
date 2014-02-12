@@ -39,7 +39,7 @@ namespace Log {
 
     static Target* targets[MAX_TARGET_ID];
 
-    TargetId redirectPrintTarget = NO_TARGET;
+    static TargetId redirectPrintTarget = NO_TARGET;
 
     //TODO make me reentrant // or check it is actually reentrant when using for (Event e : events) do stuff
     //TODO think way more about thread safety
@@ -73,7 +73,7 @@ namespace Log {
     }
 
     void RedirectPrints(TargetId id) {
-        redirectPrintTarget = id;
+        redirectPrintTarget = static_cast<TargetId>(1 << id);
     }
 
     void RegisterTarget(TargetId id, Target* target) {
