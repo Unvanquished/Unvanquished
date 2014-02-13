@@ -340,6 +340,23 @@ struct SerializeTraits<std::vector<T>, typename std::enable_if<!std::is_pod<T>::
 	}
 };
 
+// std::pair, with a specialization for POD types
+template<typename T, typename U>
+struct SerializeTraits<std::pair<T, U>> {
+	static void Write(Writer& stream, const std::pair<T, U>& value)
+	{
+        SerializeTraits<T>::Write(stream, value.first);
+        SerializeTraits<U>::Write(stream, value.second);
+	}
+	static std::pair<T, U> Read(Reader& stream)
+	{
+		std::pair<T, U> value;
+        value.first = SerializeTraits<T>::Read(stream);
+        value.second = SerializeTraits<U>::Read(stream);
+		return value;
+	}
+};
+
 // std::string, returns a StringRef into the stream buffer
 template<> struct SerializeTraits<std::string> {
 	static void Write(Writer& stream, Str::StringRef value)
@@ -356,6 +373,8 @@ template<> struct SerializeTraits<std::string> {
 		return p;
 	}
 };
+
+#define IPC_ID(major, minor) ((((uint16_t)major) << 16) + ((uint16_t)minor))
 
 // IPC message, which automatically serializes and deserializes objects
 template<uint32_t Id, typename... T> class Message: public Writer {
@@ -393,10 +412,10 @@ public:
 };
 
 // Message ID to indicate an RPC return
-const uint32_t MSGID_RETURN = 0xffffffffu;
+const uint32_t RETURN = 0xffffffffu;
 
 // Helper function to perform a synchronous RPC. This involves sending a message
-// and then processing all incoming messages until a MSGID_RETURN is recieved.
+// and then processing all incoming messages until a RETURN is recieved.
 template<typename Func> Reader DoRPC(const Socket& socket, const Writer& writer, Func&& syscallHandler)
 {
 	socket.SendMsg(writer);
@@ -404,7 +423,7 @@ template<typename Func> Reader DoRPC(const Socket& socket, const Writer& writer,
 	while (true) {
 		Reader reader = socket.RecvMsg();
 		uint32_t id = reader.Read<uint32_t>();
-		if (id == MSGID_RETURN)
+		if (id == RETURN)
 			return reader;
 		syscallHandler(id, std::move(reader));
 	}

@@ -108,7 +108,7 @@ static void VMMain(int major, int minor, RPC::Reader& inputs, RPC::Writer& outpu
             G_Error("VMMain(): unknown game command %i", minor);
         }
 
-    } else if (major <= GS_LAST_COMMON_PROXY) {
+    } else if (major < IPC::LAST_COMMON_SYSCALL) {
         VM::HandleCommonSyscall(major, minor, inputs, outputs);
 
     } else {

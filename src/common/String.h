@@ -42,6 +42,12 @@ namespace Str {
     public:
         static const size_t npos = -1;
 
+        BasicStringRef()
+        {
+            ptr = nullptr;
+            len = 0;
+        }
+
         BasicStringRef(const std::basic_string<T>& other)
         {
             ptr = other.c_str();

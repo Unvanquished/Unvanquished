@@ -176,20 +176,6 @@ namespace Cmd {
             virtual void ExecuteAfter(Str::StringRef text, bool parseCvars = false) = 0;
     };
 
-    // Command-Related Syscall Definitions
-
-    enum EngineCommandRPC {
-        ADD_COMMAND,
-        REMOVE_COMMAND,
-        ENV_PRINT,
-        ENV_EXECUTE_AFTER
-    };
-
-    enum VMCommandRPC {
-        EXECUTE,
-        COMPLETE
-    };
-
     // Engine calls available everywhere
 
     void AddCommand(std::string name, const CmdBase& cmd, std::string description);

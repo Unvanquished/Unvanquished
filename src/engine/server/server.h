@@ -343,7 +343,7 @@ public:
 	void GameMessageRecieved(int clientNum, const char *buffer, int bufferSize, int commandTime);
 
 private:
-	virtual void Syscall(uint32_t id, IPC::Reader reader, const IPC::Socket& socket) OVERRIDE FINAL;
+	virtual void Syscall(uint32_t id, IPC::Reader reader, const IPC::Socket& socket) const OVERRIDE FINAL;
 	void QVMSyscall(int index, IPC::Reader reader, const IPC::Socket& socket);
 
 	NaCl::SharedMemoryPtr shmRegion;

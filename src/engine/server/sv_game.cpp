@@ -759,14 +759,14 @@ void GameVM::GameMessageRecieved(int clientNum, const char *buffer, int bufferSi
 	//Com_Error(ERR_DROP, "GameVM::GameMessageRecieved not implemented");
 }
 
-void GameVM::Syscall(uint32_t id, IPC::Reader reader, const IPC::Socket& socket)
+void GameVM::Syscall(uint32_t id, IPC::Reader reader, const IPC::Socket& socket) const;
 {
 	int major = id >> 16;
 	int minor = id & 0xffff;
 	if (major == GS_QVM_SYSCALL) {
 		this->QVMSyscall(minor, std::move(reader), socket);
 
-    } else if (major <= GS_LAST_COMMON_PROXY) {
+    } else if (major < IPC::LAST_COMMON_SYSCALL) {
         services->Syscall(major, minor, std::move(reader), socket);
 
     } else {
@@ -774,7 +774,7 @@ void GameVM::Syscall(uint32_t id, IPC::Reader reader, const IPC::Socket& socket)
 	}
 }
 
-void GameVM::QVMSyscall(int index, IPC::Reader reader, const IPC::Socket& socket)
+void GameVM::QVMSyscall(int index, IPC::Reader reader, const IPC::Socket& socket) const
 {
 	switch (index) {
 	case G_PRINT:

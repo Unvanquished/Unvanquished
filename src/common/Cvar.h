@@ -229,18 +229,6 @@ namespace Cvar {
     template<>
     std::string GetCvarTypeName<std::string>();
 
-    // Cvar-Related Syscall Definitions
-
-    enum EngineCommandRPC {
-        REGISTER_CVAR,
-        GET_CVAR,
-        SET_CVAR
-    };
-
-    enum VMCommandRPC {
-        ON_VALUE_CHANGED
-    };
-
     // Engine calls available everywhere
 
     void Register(CvarProxy* proxy, const std::string& name, std::string description, int flags, const std::string& defaultValue);
