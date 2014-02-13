@@ -60,7 +60,7 @@ aria2c \
 echo
 
 # get the contained asset path
-path=$(aria2c -S "$torrent_file"|grep '/pkg/unvanquished_.*\.pk3'|awk -F'/' '{print $2}')
+path=$(aria2c -S "$torrent_file"|grep '/pkg/unvanquished_.*\.pk3'|head -1|awk -F'/' '{print $2}')
 
 # delete old torrent directories
 for dir in $(ls -c1|tr -d '/'); do
