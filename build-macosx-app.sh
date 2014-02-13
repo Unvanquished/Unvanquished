@@ -41,8 +41,6 @@ make_universal() {
 make_universal daemon 755
 make_universal daemonded 755
 make_universal daemon-tty 755
-make_universal rendererGL.so 644
-make_universal rendererGL3.so 644
 make_universal game-qvm-native.so 644
 make_universal cgame-qvm-native.so 644
 make_universal ui-qvm-native.so 644
