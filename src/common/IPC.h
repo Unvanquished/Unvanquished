@@ -392,6 +392,24 @@ public:
 	}
 };
 
+// Message ID to indicate an RPC return
+const uint32_t MSGID_RETURN = 0xffffffffu;
+
+// Helper function to perform a synchronous RPC. This involves sending a message
+// and then processing all incoming messages until a MSGID_RETURN is recieved.
+template<typename Func> Reader DoRPC(const Socket& socket, const Writer& writer, Func&& syscallHandler)
+{
+	socket.SendMsg(writer);
+
+	while (true) {
+		Reader reader = socket.RecvMsg();
+		uint32_t id = reader.Read<uint32_t>();
+		if (id == MSGID_RETURN)
+			return reader;
+		syscallHandler(id, std::move(reader));
+	}
+}
+
 } // namespace IPC
 
 #endif // COMMON_IPC_H_

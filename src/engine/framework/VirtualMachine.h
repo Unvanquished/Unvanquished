@@ -67,11 +67,16 @@ public:
 	}
 
 	// Perform an RPC call with the given inputs, returns results in output
-	RPC::Reader DoRPC(const RPC::Writer& input);
+	IPC::Reader DoRPC(const IPC::Writer& writer) const
+	{
+		return IPC::DoRPC(rootSocket, writer, [this](uint32_t id, IPC::Reader reader) {
+			Syscall(id, std::move(reader), rootSocket);
+		});
+	}
 
 protected:
 	// System call handler
-	virtual void Syscall(int major, int minor, const RPC::Reader& input, RPC::Writer& output) = 0;
+	virtual void Syscall(uint32_t id, IPC::Reader reader, const IPC::Socket& socket) const = 0;
 
 private:
 	IPC::OSHandleType processHandle;

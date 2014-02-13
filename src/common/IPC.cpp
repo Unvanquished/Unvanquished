@@ -95,6 +95,21 @@ struct NaClInternalHeader {
 
 namespace IPC {
 
+// Windows equivalent of strerror
+#ifdef _WIN32
+static std::string Win32StrError(uint32_t error)
+{
+	std::string out;
+	char* message;
+	if (FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_FROM_SYSTEM, NULL, error, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), reinterpret_cast<char *>(&message), 0, NULL)) {
+		out = message;
+		LocalFree(message);
+	} else
+		out = Str::Format("Unknown error 0x%08lx", error);
+	return out;
+}
+#endif
+
 void CloseDesc(const Desc& desc)
 {
 #ifdef __native_client__
@@ -406,17 +421,13 @@ static void* MapSharedMemory(OSHandleType handle, size_t size)
 	// We don't use NaClMap here because it only supports MAP_FIXED
 #ifdef _WIN32
 	void *base = MapViewOfFile(handle, FILE_MAP_ALL_ACCESS, 0, 0, size);
+	if (base == nullptr)
+		Com_Error(ERR_DROP, "IPC: Failed to map shared memory object of size %lu: %s", size, Win32StrError(GetLastError()).c_str());
 #else
 	void *base = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, handle, 0);
 	if (base == MAP_FAILED)
-		base = nullptr;
+		Com_Error(ERR_DROP, "IPC: Failed to map shared memory object of size %lu: %s", size, strerror(errno));
 #endif
-
-	if (base == nullptr) {
-		char error[256];
-		NaClGetLastErrorString(error, sizeof(error));
-		Com_Error(ERR_DROP, "IPC: Failed to map shared memory object of size %lu: %s", size, error);
-	}
 
 	return base;
 }
