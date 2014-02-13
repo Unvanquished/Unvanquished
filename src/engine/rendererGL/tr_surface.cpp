@@ -1468,6 +1468,12 @@ void Tess_SurfaceIQM( srfIQModel_t *surf ) {
 		const float weightFactor = 1.0f / 255.0f;
 		vec3_t tmp;
 
+		if( model->blendWeights[ 4 * idxIn + 0 ] == 0 &&
+		    model->blendWeights[ 4 * idxIn + 1 ] == 0 &&
+		    model->blendWeights[ 4 * idxIn + 2 ] == 0 &&
+		    model->blendWeights[ 4 * idxIn + 3 ] == 0 )
+			model->blendWeights[ 4 * idxIn + 0 ] = 255;
+
 		VectorClear( tess.xyz[ idxOut ] );
 		VectorClear( tess.normals[ idxOut ] );
 		VectorClear( tess.tangents[ idxOut ] );

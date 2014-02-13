@@ -291,4 +291,13 @@ namespace Str {
     }
 }
 
+namespace std {
+    template <typename T>
+    struct hash<Str::BasicStringRef<T>> {
+        size_t operator()(const Str::BasicStringRef<T>& s) const {
+            return hash<string>()(s.str()); //FIXME: avoid a copy?
+        }
+    };
+}
+
 #endif //COMMON_STRING_H_

@@ -506,6 +506,8 @@ set( ENGINELIST
   ${ENGINE_DIR}/framework/FileSystem.h
   ${ENGINE_DIR}/framework/LogSystem.cpp
   ${ENGINE_DIR}/framework/LogSystem.h
+  ${ENGINE_DIR}/framework/Resource.cpp
+  ${ENGINE_DIR}/framework/Resource.h
   ${ENGINE_DIR}/framework/VirtualMachine.cpp
   ${ENGINE_DIR}/framework/VirtualMachine.h
   ${ENGINE_DIR}/qcommon/cm_load.cpp
@@ -1425,7 +1427,7 @@ if( BUILD_GAME_QVM )
 endif()
 
 GAMEMODULE( NAME game
-  COMPILE_DEF GAME
+  COMPILE_DEF IN_GAME_VM
   HAS_NACL 1
   FILES ${GAMELIST}
   NACL_FILES ${GAMENACLLIST}
@@ -1435,7 +1437,7 @@ GAMEMODULE( NAME game
 )
 
 GAMEMODULE( NAME cgame
-  COMPILE_DEF CGAME
+  COMPILE_DEF IN_CGAME_VM
   HAS_NACL 0
   FILES ${CGAMELIST}
   NACL_FILES ${CGAMENACLLIST}

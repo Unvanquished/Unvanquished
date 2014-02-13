@@ -30,6 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "ConsoleField.h"
 #include "CommandSystem.h"
+#include "LogSystem.h"
 #include "../../common/String.h"
 #include "../qcommon/q_shared.h"
 #include <locale>
@@ -37,7 +38,38 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace Console {
 
-    Field::Field(int size): LineEditData(size), hist(HISTORY_END) {
+    class ConsoleEnvironment: public Cmd::DefaultEnvironment {
+        public:
+            ConsoleEnvironment(Field* field): field(field), recursive(0) {};
+
+            virtual void OnCommandStart() OVERRIDE FINAL {
+                if (recursive == 0) {
+                    field->StartRedirectPrints();
+                }
+                recursive ++;
+            }
+            virtual void OnCommandEnd() OVERRIDE FINAL {
+                recursive --;
+                if (recursive == 0) {
+                    field->StopRedirectPrints();
+                }
+            }
+
+        private:
+            Field* field;
+            int recursive;
+    };
+
+    Field::Field(int size, Log::TargetId logTarget): LineEditData(size), hist(HISTORY_END), logTarget(logTarget) {
+        if (logTarget == Log::NO_TARGET) {
+            env = new Cmd::DefaultEnvironment;
+        } else {
+            env = new ConsoleEnvironment(this);
+        }
+    }
+
+    Field::~Field() {
+        delete env;
     }
 
     void Field::HistoryPrev() {
@@ -59,11 +91,11 @@ namespace Console {
 
         std::string current = Str::UTF32To8(GetText());
         if (current[0] == '/' or current[0] == '\\') {
-            Cmd::BufferCommandText(current.c_str() + 1, true);
+            Cmd::BufferCommandText(current.c_str() + 1, true, env);
         } else if (defaultCommand.empty()) {
-            Cmd::BufferCommandText(current, true);
+            Cmd::BufferCommandText(current, true, env);
         } else {
-            Cmd::BufferCommandText(defaultCommand + " " + Cmd::Escape(current), true);
+            Cmd::BufferCommandText(defaultCommand + " " + Cmd::Escape(current), true, env);
         }
         AddToHistory(hist, std::move(current));
 
@@ -131,12 +163,24 @@ namespace Console {
 
         //Print the matches if it is ambiguous
         if (candidates.size() >= 2) {
-            Com_Printf(S_COLOR_YELLOW "-> " S_COLOR_WHITE "%s\n", Str::UTF32To8(GetText()).c_str());
+            StartRedirectPrints();
+            Log::Print(S_COLOR_YELLOW "-> " S_COLOR_WHITE "%s", Str::UTF32To8(GetText()).c_str());
             for (auto& candidate : candidates) {
                 std::string filler(maxCandidateLength - candidate.first.length(), ' ');
-                Com_Printf("   %s%s %s\n", candidate.first.c_str(), filler.c_str(), candidate.second.c_str());
+                Log::Print("   %s%s %s", candidate.first.c_str(), filler.c_str(), candidate.second.c_str());
             }
+            StopRedirectPrints();
         }
+    }
+
+    void Field::StartRedirectPrints() {
+        if (logTarget != Log::NO_TARGET) {
+            Log::RedirectPrints(logTarget);
+        }
+    }
+
+    void Field::StopRedirectPrints() {
+        Log::RedirectPrints();
     }
 
 }

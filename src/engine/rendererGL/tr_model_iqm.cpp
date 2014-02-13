@@ -331,35 +331,37 @@ static qboolean LoadIQMFile( void *buffer, int filesize, const char *mod_name,
 	}
 
 	// check and swap poses
-	if( IQM_CheckRange( header, header->ofs_poses,
-			    header->num_poses, sizeof(iqmPose_t),
-			    mod_name, "pose" ) ) {
-		return qfalse;
-	}
-	pose = ( iqmPose_t* )IQMPtr( header, header->ofs_poses );
-	for( i = 0; i < header->num_poses; i++, pose++ ) {
-		LL( pose->parent );
-		LL( pose->mask );
-		LL( pose->channeloffset[0] );
-		LL( pose->channeloffset[1] );
-		LL( pose->channeloffset[2] );
-		LL( pose->channeloffset[3] );
-		LL( pose->channeloffset[4] );
-		LL( pose->channeloffset[5] );
-		LL( pose->channeloffset[6] );
-		LL( pose->channeloffset[7] );
-		LL( pose->channeloffset[8] );
-		LL( pose->channeloffset[9] );
-		LL( pose->channelscale[0] );
-		LL( pose->channelscale[1] );
-		LL( pose->channelscale[2] );
-		LL( pose->channelscale[3] );
-		LL( pose->channelscale[4] );
-		LL( pose->channelscale[5] );
-		LL( pose->channelscale[6] );
-		LL( pose->channelscale[7] );
-		LL( pose->channelscale[8] );
-		LL( pose->channelscale[9] );
+	if( header->ofs_poses > 0 ) {
+		if( IQM_CheckRange( header, header->ofs_poses,
+				    header->num_poses, sizeof(iqmPose_t),
+				    mod_name, "pose" ) ) {
+			return qfalse;
+		}
+		pose = ( iqmPose_t* )IQMPtr( header, header->ofs_poses );
+		for( i = 0; i < header->num_poses; i++, pose++ ) {
+			LL( pose->parent );
+			LL( pose->mask );
+			LL( pose->channeloffset[0] );
+			LL( pose->channeloffset[1] );
+			LL( pose->channeloffset[2] );
+			LL( pose->channeloffset[3] );
+			LL( pose->channeloffset[4] );
+			LL( pose->channeloffset[5] );
+			LL( pose->channeloffset[6] );
+			LL( pose->channeloffset[7] );
+			LL( pose->channeloffset[8] );
+			LL( pose->channeloffset[9] );
+			LL( pose->channelscale[0] );
+			LL( pose->channelscale[1] );
+			LL( pose->channelscale[2] );
+			LL( pose->channelscale[3] );
+			LL( pose->channelscale[4] );
+			LL( pose->channelscale[5] );
+			LL( pose->channelscale[6] );
+			LL( pose->channelscale[7] );
+			LL( pose->channelscale[8] );
+			LL( pose->channelscale[9] );
+		}
 	}
 
 	if( header->ofs_bounds )
@@ -386,21 +388,23 @@ static qboolean LoadIQMFile( void *buffer, int filesize, const char *mod_name,
 	}
 
 	// check and swap animations
-	if( IQM_CheckRange( header, header->ofs_anims,
-			    header->num_anims, sizeof(iqmAnim_t),
-			    mod_name, "animation" ) ) {
-		return qfalse;
-	}
-	anim = ( iqmAnim_t* )IQMPtr( header, header->ofs_anims );
-	for( i = 0; i < header->num_anims; i++, anim++ ) {
-		LL( anim->name );
-		LL( anim->first_frame );
-		LL( anim->num_frames );
-		LL( anim->framerate );
-		LL( anim->flags );
+	if( header->ofs_anims ) {
+		if( IQM_CheckRange( header, header->ofs_anims,
+				    header->num_anims, sizeof(iqmAnim_t),
+				    mod_name, "animation" ) ) {
+			return qfalse;
+		}
+		anim = ( iqmAnim_t* )IQMPtr( header, header->ofs_anims );
+		for( i = 0; i < header->num_anims; i++, anim++ ) {
+			LL( anim->name );
+			LL( anim->first_frame );
+			LL( anim->num_frames );
+			LL( anim->framerate );
+			LL( anim->flags );
 
-		*len_names += strlen( ( char* )IQMPtr( header, header->ofs_text
-					      + anim->name ) ) + 1;
+			*len_names += strlen( ( char* )IQMPtr( header, header->ofs_text
+							       + anim->name ) ) + 1;
+		}
 	}
 
 	return qtrue;
@@ -461,6 +465,7 @@ qboolean R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 	int                     *indexbuf;
 	VBO_t                   *vbo;
 	IBO_t                   *ibo;
+	void                    *ptr;
 
 	if( !LoadIQMFile( buffer, filesize, mod_name, &len_names ) ) {
 		return qfalse;
@@ -492,6 +497,7 @@ qboolean R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 	IQModel = (IQModel_t *)ri.Hunk_Alloc( size, h_low );
 	mod->type = MOD_IQM;
 	mod->iqm = IQModel;
+	ptr = IQModel + 1;
 
 	// fill header and setup pointers
 	IQModel->num_vertexes = header->num_vertexes;
@@ -501,28 +507,64 @@ qboolean R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 	IQModel->num_joints   = header->num_joints;
 	IQModel->num_anims    = header->num_anims;
 
-	IQModel->surfaces     = (srfIQModel_t *)(IQModel + 1);
-	IQModel->anims        = (IQAnim_t *)(IQModel->surfaces + header->num_meshes);
-	IQModel->joints       = (transform_t *) PADP(IQModel->anims + header->num_anims, 16);
-	poses                 = IQModel->joints + header->num_joints;
+	IQModel->surfaces = (srfIQModel_t *)ptr;
+	ptr = IQModel->surfaces + header->num_meshes;
+
+	if( header->ofs_anims ) {
+		IQModel->anims = (IQAnim_t *)ptr;
+		ptr = IQModel->anims + header->num_anims;
+	} else {
+		IQModel->anims = NULL;
+	}
+
+	IQModel->joints = (transform_t *)PADP(ptr, 16);
+	ptr = IQModel->joints + header->num_joints;
+
+	if( header->ofs_poses ) {
+		poses = (transform_t *)ptr;
+		ptr = poses + header->num_poses * header->num_frames;
+	} else {
+		poses = NULL;
+	}
+
 	if( header->ofs_bounds ) {
-		bounds = (float *)(poses + header->num_poses * header->num_frames);
-		IQModel->positions = bounds + 6 * header->num_frames;
+		bounds = (float *)ptr;
+		ptr = bounds + 6 * header->num_frames;
 	} else {
 		bounds = NULL;
-		IQModel->positions = (float *)(poses + header->num_poses * header->num_frames);
 	}
-	IQModel->texcoords    = IQModel->positions + 3 * header->num_vertexes;
-	IQModel->normals      = IQModel->texcoords + 2 * header->num_vertexes;
-	IQModel->tangents     = IQModel->normals + 3 * header->num_vertexes;
-	IQModel->bitangents   = IQModel->tangents + 3 * header->num_vertexes;
-	IQModel->blendIndexes = (byte *)(IQModel->bitangents + 3 * header->num_vertexes);
-	IQModel->blendWeights = IQModel->blendIndexes + 4 * header->num_vertexes;
-	IQModel->colors       = IQModel->blendWeights + 4 * header->num_vertexes;
-	IQModel->jointParents = (int *)(IQModel->colors + 4 * header->num_vertexes);
-	IQModel->triangles    = IQModel->jointParents + header->num_joints;
 
-	str                   = (char *)(IQModel->triangles + 3 * header->num_triangles);
+	IQModel->positions = (float *)ptr;
+	ptr = IQModel->positions + 3 * header->num_vertexes;
+
+	IQModel->texcoords = (float *)ptr;
+	ptr = IQModel->texcoords + 2 * header->num_vertexes;
+
+	IQModel->normals = (float *)ptr;
+	ptr = IQModel->normals + 3 * header->num_vertexes;
+
+	IQModel->tangents = (float *)ptr;
+	ptr = IQModel->tangents + 3 * header->num_vertexes;
+
+	IQModel->bitangents = (float *)ptr;
+	ptr = IQModel->bitangents + 3 * header->num_vertexes;
+
+	IQModel->blendIndexes = (byte *)ptr;
+	ptr = IQModel->blendIndexes + 4 * header->num_vertexes;
+
+	IQModel->blendWeights = (byte *)ptr;
+	ptr = IQModel->blendWeights + 4 * header->num_vertexes;
+
+	IQModel->colors = (byte *)ptr;
+	ptr = IQModel->colors + 4 * header->num_vertexes;
+
+	IQModel->jointParents = (int *)ptr;
+	ptr = IQModel->jointParents + header->num_joints;
+
+	IQModel->triangles = (int *)ptr;
+	ptr = IQModel->triangles + 3 * header->num_triangles;
+
+	str                   = (char *)ptr;
 	IQModel->jointNames   = str;
 
 	// copy joint names
@@ -718,6 +760,12 @@ qboolean R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 
 			weightbuf = (float *)ri.Hunk_AllocateTempMemory( sizeof(vec4_t) * IQModel->num_vertexes );
 			for( i = 0; i < IQModel->num_vertexes; i++ ) {
+				if( IQModel->blendWeights[ 4 * i + 0 ] == 0 &&
+				    IQModel->blendWeights[ 4 * i + 1 ] == 0 &&
+				    IQModel->blendWeights[ 4 * i + 2 ] == 0 &&
+				    IQModel->blendWeights[ 4 * i + 3 ] == 0 )
+					IQModel->blendWeights[ 4 * i + 0 ] = 255;
+
 				weightbuf[ 4 * i + 0 ] = weightscale * IQModel->blendWeights[ 4 * i + 0 ];
 				weightbuf[ 4 * i + 1 ] = weightscale * IQModel->blendWeights[ 4 * i + 1 ];
 				weightbuf[ 4 * i + 2 ] = weightscale * IQModel->blendWeights[ 4 * i + 2 ];
@@ -837,6 +885,11 @@ static int R_CullIQM( trRefEntity_t *ent ) {
 		// no properly set skeleton so use the bounding box by the model instead by the animations
 		IQModel_t *model = tr.currentModel->iqm;
 		IQAnim_t  *anim = model->anims;
+
+		if ( !anim ) {
+			tr.pc.c_box_cull_md5_in++;
+			return CULL_IN;
+		}
 
 		VectorScale( anim->bounds, ent->e.skeleton.scale, localBounds[ 0 ] );
 		VectorScale( anim->bounds + 3, ent->e.skeleton.scale, localBounds[ 1 ] );

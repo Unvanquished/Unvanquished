@@ -854,7 +854,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			}
 			if( args[ 3 ] )
 			{
-				Audio::UpdateEntityPosition( args[ 1 ], (float*) VMA( 3 ) );
+				Audio::UpdateEntityVelocity( args[ 1 ], (float*) VMA( 3 ) );
 			}
 
 			Audio::AddEntityLoopingSound( args[ 1 ], args[ 4 ]);
@@ -1386,6 +1386,16 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 		case CG_S_SETREVERB:
 			cls.nCgameSoundSyscalls ++;
 			Audio::SetReverb( args[ 1 ], (const char*) VMA( 2 ), VMF( 3 ) );
+			return 0;
+
+		case CG_S_BEGINREGISTRATION:
+			cls.nCgameSoundSyscalls ++;
+			Audio::BeginRegistration();
+			return 0;
+
+		case CG_S_ENDREGISTRATION:
+			cls.nCgameSoundSyscalls ++;
+			Audio::EndRegistration();
 			return 0;
 
 		default:

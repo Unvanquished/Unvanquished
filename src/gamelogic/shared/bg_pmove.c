@@ -4581,7 +4581,7 @@ void PM_UpdateViewAngles( playerState_t *ps, const usercmd_t *cmd )
 			// Guard against speed hack
 			temp[ i ] = ps->delta_angles[ i ];
 
-#ifdef CGAME
+#ifdef IN_CGAME_VM
 			// Assert here so that if cmd->angles[ i ] becomes non-zero
 			// for a legitimate reason we can tell where and why it's
 			// being ignored
