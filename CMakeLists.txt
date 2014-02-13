@@ -410,56 +410,56 @@ set( RENDERERGLLIST
   ${ENGINE_DIR}/sys/sdl2_compat.cpp
   ${ENGINE_DIR}/sys/sdl_glimp.cpp
   ${ENGINE_DIR}/sys/sdl_gamma.cpp
-  ${ENGINE_DIR}/rendererGL/gl_shader.cpp
-  ${ENGINE_DIR}/rendererGL/tr_animation.cpp
-  ${ENGINE_DIR}/rendererGL/tr_backend.cpp
-  ${ENGINE_DIR}/rendererGL/tr_bsp.cpp
-  ${ENGINE_DIR}/rendererGL/tr_cmds.cpp
-  ${ENGINE_DIR}/rendererGL/tr_curve.cpp
-  ${ENGINE_DIR}/rendererGL/tr_decals.cpp
-  ${ENGINE_DIR}/rendererGL/tr_fbo.cpp
-  ${ENGINE_DIR}/rendererGL/tr_flares.cpp
-  ${ENGINE_DIR}/rendererGL/tr_fog.cpp
-  ${ENGINE_DIR}/rendererGL/tr_font.cpp
-  ${ENGINE_DIR}/rendererGL/tr_image.cpp
-  ${ENGINE_DIR}/rendererGL/tr_image_crn.cpp
-  ${ENGINE_DIR}/rendererGL/tr_image_dds.cpp
-  ${ENGINE_DIR}/rendererGL/tr_image_exr.cpp
-  ${ENGINE_DIR}/rendererGL/tr_image_jpg.cpp
-  ${ENGINE_DIR}/rendererGL/tr_image_ktx.cpp
-  ${ENGINE_DIR}/rendererGL/tr_image_png.cpp
-  ${ENGINE_DIR}/rendererGL/tr_image_tga.cpp
-  ${ENGINE_DIR}/rendererGL/tr_image_webp.cpp
-  ${ENGINE_DIR}/rendererGL/tr_init.cpp
-  ${ENGINE_DIR}/rendererGL/tr_light.cpp
-  ${ENGINE_DIR}/rendererGL/tr_main.cpp
-  ${ENGINE_DIR}/rendererGL/tr_marks.cpp
-  ${ENGINE_DIR}/rendererGL/tr_mesh.cpp
-  ${ENGINE_DIR}/rendererGL/tr_model.cpp
-  ${ENGINE_DIR}/rendererGL/tr_model_md3.cpp
-  ${ENGINE_DIR}/rendererGL/tr_model_md5.cpp
-  ${ENGINE_DIR}/rendererGL/tr_model_iqm.cpp
-  ${ENGINE_DIR}/rendererGL/tr_model_mdc.cpp
-  ${ENGINE_DIR}/rendererGL/tr_model_psk.cpp
-  ${ENGINE_DIR}/rendererGL/tr_model_skel.cpp
-  ${ENGINE_DIR}/rendererGL/tr_noise.cpp
-  ${ENGINE_DIR}/rendererGL/tr_scene.cpp
-  ${ENGINE_DIR}/rendererGL/tr_shade.cpp
-  ${ENGINE_DIR}/rendererGL/tr_shade_calc.cpp
-  ${ENGINE_DIR}/rendererGL/tr_shader.cpp
-  ${ENGINE_DIR}/rendererGL/tr_shadows.cpp
-  ${ENGINE_DIR}/rendererGL/tr_skin.cpp
-  ${ENGINE_DIR}/rendererGL/tr_sky.cpp
-  ${ENGINE_DIR}/rendererGL/tr_surface.cpp
-  ${ENGINE_DIR}/rendererGL/tr_vbo.cpp
-  ${ENGINE_DIR}/rendererGL/tr_world.cpp
+  ${ENGINE_DIR}/renderer/gl_shader.cpp
+  ${ENGINE_DIR}/renderer/tr_animation.cpp
+  ${ENGINE_DIR}/renderer/tr_backend.cpp
+  ${ENGINE_DIR}/renderer/tr_bsp.cpp
+  ${ENGINE_DIR}/renderer/tr_cmds.cpp
+  ${ENGINE_DIR}/renderer/tr_curve.cpp
+  ${ENGINE_DIR}/renderer/tr_decals.cpp
+  ${ENGINE_DIR}/renderer/tr_fbo.cpp
+  ${ENGINE_DIR}/renderer/tr_flares.cpp
+  ${ENGINE_DIR}/renderer/tr_fog.cpp
+  ${ENGINE_DIR}/renderer/tr_font.cpp
+  ${ENGINE_DIR}/renderer/tr_image.cpp
+  ${ENGINE_DIR}/renderer/tr_image_crn.cpp
+  ${ENGINE_DIR}/renderer/tr_image_dds.cpp
+  ${ENGINE_DIR}/renderer/tr_image_exr.cpp
+  ${ENGINE_DIR}/renderer/tr_image_jpg.cpp
+  ${ENGINE_DIR}/renderer/tr_image_ktx.cpp
+  ${ENGINE_DIR}/renderer/tr_image_png.cpp
+  ${ENGINE_DIR}/renderer/tr_image_tga.cpp
+  ${ENGINE_DIR}/renderer/tr_image_webp.cpp
+  ${ENGINE_DIR}/renderer/tr_init.cpp
+  ${ENGINE_DIR}/renderer/tr_light.cpp
+  ${ENGINE_DIR}/renderer/tr_main.cpp
+  ${ENGINE_DIR}/renderer/tr_marks.cpp
+  ${ENGINE_DIR}/renderer/tr_mesh.cpp
+  ${ENGINE_DIR}/renderer/tr_model.cpp
+  ${ENGINE_DIR}/renderer/tr_model_md3.cpp
+  ${ENGINE_DIR}/renderer/tr_model_md5.cpp
+  ${ENGINE_DIR}/renderer/tr_model_iqm.cpp
+  ${ENGINE_DIR}/renderer/tr_model_mdc.cpp
+  ${ENGINE_DIR}/renderer/tr_model_psk.cpp
+  ${ENGINE_DIR}/renderer/tr_model_skel.cpp
+  ${ENGINE_DIR}/renderer/tr_noise.cpp
+  ${ENGINE_DIR}/renderer/tr_scene.cpp
+  ${ENGINE_DIR}/renderer/tr_shade.cpp
+  ${ENGINE_DIR}/renderer/tr_shade_calc.cpp
+  ${ENGINE_DIR}/renderer/tr_shader.cpp
+  ${ENGINE_DIR}/renderer/tr_shadows.cpp
+  ${ENGINE_DIR}/renderer/tr_skin.cpp
+  ${ENGINE_DIR}/renderer/tr_sky.cpp
+  ${ENGINE_DIR}/renderer/tr_surface.cpp
+  ${ENGINE_DIR}/renderer/tr_vbo.cpp
+  ${ENGINE_DIR}/renderer/tr_world.cpp
   ${ENGINE_DIR}/qcommon/md4.cpp
   ${LIB_DIR}/openexr/half.cpp
-  ${ENGINE_DIR}/rendererGL/tr_local.h
-  ${ENGINE_DIR}/rendererGL/tr_public.h
-  ${ENGINE_DIR}/rendererGL/gl_shader.h
-  ${ENGINE_DIR}/rendererGL/tr_image.h
-  ${ENGINE_DIR}/rendererGL/tr_model_skel.h
+  ${ENGINE_DIR}/renderer/tr_local.h
+  ${ENGINE_DIR}/renderer/tr_public.h
+  ${ENGINE_DIR}/renderer/gl_shader.h
+  ${ENGINE_DIR}/renderer/tr_image.h
+  ${ENGINE_DIR}/renderer/tr_model_skel.h
 )
 
 set( SERVERLIST
@@ -1463,7 +1463,6 @@ GAMEMODULE( NAME ui
 if( BUILD_CLIENT )
   add_executable( client WIN32 ${SERVERLIST} ${CLIENTBASELIST} ${CLIENTLIST} ${RENDERERGLLIST} ${SDLLIST} ${ENGINELIST} ${SHAREDLIST}
     ${LIBSRC_BASE} ${LIBSRC_ENGINE} ${LIBSRC_CLIENTBASE} ${LIBSRC_CLIENT} ${WIN_RC} )
-  set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_XREAL_RENDERER )
   if( USE_SMP )
     set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS SMP )
   endif()

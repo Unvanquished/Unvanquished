@@ -36,7 +36,7 @@ Maryland 20850 USA.
 
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
-#include "../rendererGL/tr_public.h"
+#include "../renderer/tr_public.h"
 #include "keys.h"
 #include "../audio/Audio.h"
 
