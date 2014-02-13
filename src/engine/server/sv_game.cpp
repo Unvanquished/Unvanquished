@@ -626,7 +626,7 @@ GameVM::GameVM()
 
 bool GameVM::Start()
 {
-    int version = this->Create( "game", ( VM::Type ) vm_game->integer );
+    int version = this->Create( "game", ( VM::vmType_t ) vm_game->integer );
 
     if (version < 0)
     {
@@ -759,20 +759,22 @@ void GameVM::GameMessageRecieved(int clientNum, const char *buffer, int bufferSi
 	//Com_Error(ERR_DROP, "GameVM::GameMessageRecieved not implemented");
 }
 
-void GameVM::Syscall(int major, int minor, RPC::Reader& inputs, RPC::Writer& outputs)
+void GameVM::Syscall(uint32_t id, IPC::Reader reader, const IPC::Socket& socket)
 {
+	int major = id >> 16;
+	int minor = id & 0xffff;
 	if (major == GS_QVM_SYSCALL) {
-		this->QVMSyscall(minor, inputs, outputs);
+		this->QVMSyscall(minor, std::move(reader), socket);
 
     } else if (major <= GS_LAST_COMMON_PROXY) {
-        services->Syscall(major, minor, inputs, outputs);
+        services->Syscall(major, minor, std::move(reader), socket);
 
     } else {
 		Com_Error(ERR_DROP, "Bad major game syscall number: %d", major);
 	}
 }
 
-void GameVM::QVMSyscall(int index, RPC::Reader& inputs, RPC::Writer& outputs)
+void GameVM::QVMSyscall(int index, IPC::Reader reader, const IPC::Socket& socket)
 {
 	switch (index) {
 	case G_PRINT:
