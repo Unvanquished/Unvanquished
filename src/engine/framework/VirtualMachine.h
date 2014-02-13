@@ -31,45 +31,51 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef VIRTUALMACHINE_H_
 #define VIRTUALMACHINE_H_
 
-#include "../../libs/nacl/nacl.h"
-#include "../../common/RPC.h"
+#include "../../common/IPC.h"
 #include "../../common/String.h"
 
 namespace VM {
 
-enum Type {
-  TYPE_NATIVE,
-  TYPE_NACL
+enum vmType_t {
+	TYPE_NATIVE,
+	TYPE_NACL
 };
 
 // Base class for a virtual machine instance
 class VMBase {
 public:
-  // Create the VM for the named module. Returns the ABI version reported
-  // by the module.
-  int Create(Str::StringRef name, Type type);
+	VMBase()
+		: processHandle(IPC::INVALID_HANDLE) {}
 
-  // Free the VM
-  void Free()
-  {
-    module.Close();
-  }
+	// Create the VM for the named module. Returns the ABI version reported
+	// by the module.
+	int Create(Str::StringRef name, vmType_t type);
 
-  // Check if the VM is active
-  bool IsActive() const
-  {
-    return bool(module);
-  }
+	// Free the VM
+	void Free();
 
-  // Perform an RPC call with the given inputs, returns results in output
-  RPC::Reader DoRPC(RPC::Writer& input, bool ignoreErrors = false);
+	// Check if the VM is active
+	bool IsActive() const
+	{
+		return processHandle != IPC::INVALID_HANDLE;
+	}
+
+	// Make sure the VM is closed on exit
+	~VMBase()
+	{
+		Free();
+	}
+
+	// Perform an RPC call with the given inputs, returns results in output
+	RPC::Reader DoRPC(const RPC::Writer& input);
 
 protected:
-  // System call handler
-  virtual void Syscall(int major, int minor, RPC::Reader& input, RPC::Writer& output) = 0;
+	// System call handler
+	virtual void Syscall(int major, int minor, const RPC::Reader& input, RPC::Writer& output) = 0;
 
 private:
-  NaCl::Module module;
+	IPC::OSHandleType processHandle;
+	IPC::Socket rootSocket;
 };
 
 } // namespace VM

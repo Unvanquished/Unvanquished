@@ -95,12 +95,12 @@ class Socket {
 public:
 	Socket()
 		: handle(INVALID_HANDLE) {}
-	Socket(Socket&& other) NACL_NOEXCEPT
+	Socket(Socket&& other) NOEXCEPT
 		: handle(other.handle)
 	{
 		other.handle = INVALID_HANDLE;
 	}
-	Socket& operator=(Socket&& other) NACL_NOEXCEPT
+	Socket& operator=(Socket&& other) NOEXCEPT
 	{
 		std::swap(handle, other.handle);
 		return *this;
@@ -133,12 +133,12 @@ class SharedMemory {
 public:
 	SharedMemory()
 		: handle(INVALID_HANDLE) {}
-	SharedMemory(SharedMemory&& other) NACL_NOEXCEPT
+	SharedMemory(SharedMemory&& other) NOEXCEPT
 		: handle(other.handle), base(other.base), size(other.size)
 	{
 		other.handle = INVALID_HANDLE;
 	}
-	SharedMemory& operator=(SharedMemory&& other) NACL_NOEXCEPT
+	SharedMemory& operator=(SharedMemory&& other) NOEXCEPT
 	{
 		std::swap(handle, other.handle);
 		std::swap(base, other.base);
@@ -220,9 +220,9 @@ class Reader {
 public:
 	Reader()
 		: pos(0), handles_pos(0) {}
-	Reader(Reader&& other)
+	Reader(Reader&& other) NOEXCEPT
 		: data(std::move(other.data)), handles(std::move(other.handles)), pos(other.pos), handles_pos(other.handles_pos) {}
-	Reader& operator=(Reader&& other)
+	Reader& operator=(Reader&& other) NOEXCEPT
 	{
 		std::swap(data, other.data);
 		std::swap(handles, other.handles);
@@ -358,18 +358,18 @@ template<> struct SerializeTraits<std::string> {
 };
 
 // IPC message, which automatically serializes and deserializes objects
-template<uint32_t Major, uint32_t Minor, typename... T> class Message: public Writer {
+template<uint32_t Id, typename... T> class Message: public Writer {
 	template<size_t Index, typename Tuple> static void FillTuple(Tuple&, Reader&) {}
 	template<size_t Index, typename Type0, typename... Types, typename Tuple> static void FillTuple(Tuple& tuple, Reader& stream)
 	{
-		std::get<Index>(tuple) = SerializeTraits<Type0>::Read(stream);
+		std::get<Index>(tuple) = stream.Read<Type0>();
 		FillTuple<Index + 1, Types...>(tuple, stream);
 	}
 
 	template<size_t Index> void SerializeImpl() {}
 	template<size_t Index, typename Arg0, typename... Args> void SerializeImpl(Arg0&& arg0, Args&&... args)
 	{
-		SerializeTraits<typename std::tuple_element<Index, std::tuple<T...>>::type>::Write(*this, std::forward<Arg0>(arg0));
+		Write<typename std::tuple_element<Index, std::tuple<T...>>::type>(std::forward<Arg0>(arg0));
 		SerializeImpl<Index + 1>(std::forward<Args>(args)...);
 	}
 
@@ -379,15 +379,14 @@ public:
 	template<typename... Args> Message(Args&&... args)
 	{
 		static_assert(sizeof...(Args) == sizeof...(T), "Incorrect number of arguments for IPC::Message::Serialize");
-		SerializeTraits<uint32_t>::Write(*this, Major);
-		SerializeTraits<uint32_t>::Write(*this, Minor);
+		Write<uint32_t>(Id);
 		SerializeImpl<0>(std::forward<Args>(args)...);
 	}
 
 	// Deserialize a message and call the given function with the message arguments
 	template<typename Func> static void Deserialize(Reader& stream, Func&& func)
 	{
-		std::tuple<decltype(SerializeTraits<T>::Read(stream))...> tuple;
+		std::tuple<decltype(stream.Read<T>())...> tuple;
 		FillTuple<0, T...>(tuple, stream);
 		Util::apply(std::forward<Func>(func), std::move(tuple));
 	}

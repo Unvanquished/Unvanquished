@@ -176,22 +176,22 @@ void Socket::SendMsg(const Writer& writer) const
 	NaClIOVec iov[3];
 	NaClHandle h[NACL_ABI_IMC_DESC_MAX];
 	const Desc* handles = writer.GetHandles().data();
-	size_t num_handles = writer.GetHandles().size();
+	size_t numHandles = writer.GetHandles().size();
 	const void* data = writer.GetHandles().data();
 	size_t len = writer.GetHandles().size();
 
-	if (num_handles > NACL_ABI_IMC_DESC_MAX)
-		Com_Error(ERR_DROP, "IPC: Message contains more handles than maximum allowed: %lu\n", num_handles);
+	if (numHandles > NACL_ABI_IMC_DESC_MAX)
+		Com_Error(ERR_DROP, "IPC: Message contains more handles than maximum allowed: %lu\n", numHandles);
 	if (len > NACL_ABI_IMC_USER_BYTES_MAX)
 		Com_Error(ERR_DROP, "IPC: Message above maximum size: %lu\n", len);
-	for (size_t i = 0; i < num_handles; i++)
+	for (size_t i = 0; i < numHandles; i++)
 		h[i] = DescToHandle(handles[i]);
 
 #ifdef __native_client__
 	hdr.iov = iov;
 	hdr.iov_length = 1;
 	hdr.handles = h;
-	hdr.handle_count = num_handles;
+	hdr.handle_count = numHandles;
 	hdr.flags = 0;
 	iov[0].base = const_cast<void*>(data);
 	iov[0].length = len;
@@ -201,53 +201,53 @@ void Socket::SendMsg(const Writer& writer) const
 		Com_Error(ERR_DROP, "IPC: Failed to send message: %s", error);
 	}
 #else
-	size_t desc_bytes = 0;
-	std::unique_ptr<char[]> desc_buffer;
-	if (num_handles != 0) {
-		for (size_t i = 0; i < num_handles; i++) {
+	size_t descBytes = 0;
+	std::unique_ptr<char[]> descBuffer;
+	if (numHandles != 0) {
+		for (size_t i = 0; i < numHandles; i++) {
 			// tag: 1 byte
 			// flags: 4 bytes
 			// size: 8 bytes (only for SHM)
-			desc_bytes++;
-			desc_bytes += sizeof(uint32_t);
+			descBytes++;
+			descBytes += sizeof(uint32_t);
 			if (handles[i].type == NACL_DESC_SHM)
-				desc_bytes += sizeof(uint64_t);
+				descBytes += sizeof(uint64_t);
 			else if (handles[i].type == NACL_DESC_HOST_IO)
-				desc_bytes += sizeof(int32_t);
+				descBytes += sizeof(int32_t);
 		}
 		// Add 1 byte end tag and round to 16 bytes
-		desc_bytes = (desc_bytes + 1 + 0xf) & ~0xf;
+		descBytes = (descBytes + 1 + 0xf) & ~0xf;
 
-		desc_buffer.reset(new char[desc_bytes]);
-		char* desc_buffer_ptr = &desc_buffer[0];
-		for (size_t i = 0; i < num_handles; i++) {
-			*desc_buffer_ptr++ = handles[i].type;
-			memset(desc_buffer_ptr, 0, sizeof(uint32_t));
-			desc_buffer_ptr += sizeof(uint32_t);
+		descBuffer.reset(new char[descBytes]);
+		char* descBuffer_ptr = &descBuffer[0];
+		for (size_t i = 0; i < numHandles; i++) {
+			*descBuffer_ptr++ = handles[i].type;
+			memset(descBuffer_ptr, 0, sizeof(uint32_t));
+			descBuffer_ptr += sizeof(uint32_t);
 			if (handles[i].type == NACL_DESC_SHM) {
-				memcpy(desc_buffer_ptr, &handles[i].size, sizeof(uint64_t));
-				desc_buffer_ptr += sizeof(uint64_t);
+				memcpy(descBuffer_ptr, &handles[i].size, sizeof(uint64_t));
+				descBuffer_ptr += sizeof(uint64_t);
 			} else if (handles[i].type == NACL_DESC_HOST_IO) {
-				memcpy(desc_buffer_ptr, &handles[i].flags, sizeof(int32_t));
-				desc_buffer_ptr += sizeof(int32_t);
+				memcpy(descBuffer_ptr, &handles[i].flags, sizeof(int32_t));
+				descBuffer_ptr += sizeof(int32_t);
 			}
 		}
-		*desc_buffer_ptr++ = NACL_DESC_TYPE_END_TAG;
+		*descBuffer_ptr++ = NACL_DESC_TYPE_END_TAG;
 
 		// Clear any padding bytes to avoid information leak
-		std::fill(desc_buffer_ptr, &desc_buffer[desc_bytes], 0);
+		std::fill(descBuffer_ptr, &descBuffer[descBytes], 0);
 	}
 
-	NaClInternalHeader internal_hdr = {{NACL_HANDLE_TRANSFER_PROTOCOL, static_cast<uint32_t>(desc_bytes)}, {}};
+	NaClInternalHeader internalHdr = {{NACL_HANDLE_TRANSFER_PROTOCOL, static_cast<uint32_t>(descBytes)}, {}};
 	hdr.iov = iov;
 	hdr.iov_length = 3;
 	hdr.handles = h;
-	hdr.handle_count = num_handles;
+	hdr.handle_count = numHandles;
 	hdr.flags = 0;
-	iov[0].base = &internal_hdr;
+	iov[0].base = &internalHdr;
 	iov[0].length = sizeof(NaClInternalHeader);
-	iov[1].base = desc_buffer.get();
-	iov[1].length = desc_bytes;
+	iov[1].base = descBuffer.get();
+	iov[1].length = descBytes;
 	iov[2].base = const_cast<void*>(data);
 	iov[2].length = len;
 
@@ -275,7 +275,7 @@ Reader Socket::RecvMsg() const
 	NaClMessageHeader hdr;
 	NaClIOVec iov[2];
 	NaClHandle h[NACL_ABI_IMC_DESC_MAX];
-	std::unique_ptr<char[]> recv_buffer(new char[NACL_ABI_IMC_BYTES_MAX]);
+	std::unique_ptr<char[]> recvBuffer(new char[NACL_ABI_IMC_BYTES_MAX]);
 	Reader out;
 
 	for (size_t i = 0; i < NACL_ABI_IMC_DESC_MAX; i++)
@@ -287,7 +287,7 @@ Reader Socket::RecvMsg() const
 	hdr.handles = h;
 	hdr.handle_count = NACL_ABI_IMC_DESC_MAX;
 	hdr.flags = 0;
-	iov[0].base = recv_buffer.get();
+	iov[0].base = recvBuffer.get();
 	iov[0].length = NACL_ABI_IMC_BYTES_MAX;
 
 	int result = NaClRecieveDatagram(handle, &hdr, 0);
@@ -301,18 +301,18 @@ Reader Socket::RecvMsg() const
 		if (h[i] != NACL_INVALID_HANDLE)
 			out.GetHandles().push_back(h[i]);
 	}
-	out.GetData().assign(&recv_buffer[0], &recv_buffer[result]);
+	out.GetData().assign(&recvBuffer[0], &recvBuffer[result]);
 	return out;
 #else
-	NaClInternalHeader internal_hdr;
+	NaClInternalHeader internalHdr;
 	hdr.iov = iov;
 	hdr.iov_length = 2;
 	hdr.handles = h;
 	hdr.handle_count = NACL_ABI_IMC_DESC_MAX;
 	hdr.flags = 0;
-	iov[0].base = &internal_hdr;
+	iov[0].base = &internalHdr;
 	iov[0].length = sizeof(NaClInternalHeader);
-	iov[1].base = &recv_buffer[0];
+	iov[1].base = &recvBuffer[0];
 	iov[1].length = NACL_ABI_IMC_BYTES_MAX;
 
 	int result = NaClReceiveDatagram(handle, &hdr, 0);
@@ -328,14 +328,14 @@ Reader Socket::RecvMsg() const
 	}
 	result -= sizeof(NaClInternalHeader);
 
-	if (internal_hdr.h.xfer_protocol_version != NACL_HANDLE_TRANSFER_PROTOCOL || result < (int)internal_hdr.h.descriptor_data_bytes) {
+	if (internalHdr.h.xfer_protocol_version != NACL_HANDLE_TRANSFER_PROTOCOL || result < (int)internalHdr.h.descriptor_data_bytes) {
 		FreeHandles(h);
 		Com_Error(ERR_DROP, "IPC: Message with invalid header");
 	}
-	result -= internal_hdr.h.descriptor_data_bytes;
+	result -= internalHdr.h.descriptor_data_bytes;
 
-	char* desc_ptr = &recv_buffer[0];
-	char* desc_end = desc_ptr + internal_hdr.h.descriptor_data_bytes;
+	char* desc_ptr = &recvBuffer[0];
+	char* desc_end = desc_ptr + internalHdr.h.descriptor_data_bytes;
 	size_t handle_index = 0;
 	while (desc_ptr < desc_end) {
 		int tag = 0xff & *desc_ptr++;

@@ -418,7 +418,8 @@ set( COMMONLIST
   ${COMMON_DIR}/LineEditData.h
   ${COMMON_DIR}/Log.cpp
   ${COMMON_DIR}/Log.h
-  ${COMMON_DIR}/RPC.h
+  ${COMMON_DIR}/IPC.cpp
+  ${COMMON_DIR}/IPC.h
   ${COMMON_DIR}/String.cpp
   ${COMMON_DIR}/String.h
 )
