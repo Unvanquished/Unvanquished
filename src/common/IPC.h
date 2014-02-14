@@ -340,41 +340,37 @@ struct SerializeTraits<std::vector<T>, typename std::enable_if<!std::is_pod<T>::
 	}
 };
 
-// std::pair, with a specialization for POD types
+// std::pair
 template<typename T, typename U>
 struct SerializeTraits<std::pair<T, U>> {
 	static void Write(Writer& stream, const std::pair<T, U>& value)
 	{
-        SerializeTraits<T>::Write(stream, value.first);
-        SerializeTraits<U>::Write(stream, value.second);
+		SerializeTraits<T>::Write(stream, value.first);
+		SerializeTraits<U>::Write(stream, value.second);
 	}
 	static std::pair<T, U> Read(Reader& stream)
 	{
 		std::pair<T, U> value;
-        value.first = SerializeTraits<T>::Read(stream);
-        value.second = SerializeTraits<U>::Read(stream);
+		value.first = SerializeTraits<T>::Read(stream);
+		value.second = SerializeTraits<U>::Read(stream);
 		return value;
 	}
 };
 
-// std::string, returns a StringRef into the stream buffer
+// std::string
 template<> struct SerializeTraits<std::string> {
 	static void Write(Writer& stream, Str::StringRef value)
 	{
 		stream.WriteSize(value.size());
-		stream.WriteData(value.c_str(), value.size() + 1);
+		stream.WriteData(value.c_str(), value.size());
 	}
-	static Str::StringRef Read(Reader& stream)
+	static std::string Read(Reader& stream)
 	{
 		size_t size = stream.ReadSize<char>();
-		const char* p = static_cast<const char*>(stream.ReadInline(size + 1));
-		if (p[size] != '\0')
-			Com_Error(ERR_DROP, "IPC: String in message is not NUL-terminated");
-		return p;
+		const char* p = static_cast<const char*>(stream.ReadInline(size));
+		return std::string(p, p + size);
 	}
 };
-
-#define IPC_ID(major, minor) ((((uint16_t)major) << 16) + ((uint16_t)minor))
 
 // IPC message, which automatically serializes and deserializes objects
 template<uint32_t Id, typename... T> class Message: public Writer {
@@ -413,6 +409,9 @@ public:
 
 // Message ID to indicate an RPC return
 const uint32_t RETURN = 0xffffffffu;
+
+// Combine a major and minor ID into a single number
+#define IPC_ID(major, minor) ((((uint16_t)major) << 16) + ((uint16_t)minor))
 
 // Helper function to perform a synchronous RPC. This involves sending a message
 // and then processing all incoming messages until a RETURN is recieved.
