@@ -948,21 +948,18 @@ set( RECASTLIST
 
 if( APPLE )
   set( NACLLIST_NATIVE
-    ${LIB_DIR}/nacl/nacl.cpp
     ${LIB_DIR}/nacl/native_client/src/shared/imc/nacl_imc_common.cc
     ${LIB_DIR}/nacl/native_client/src/shared/imc/posix/nacl_imc_posix.cc
     ${LIB_DIR}/nacl/native_client/src/shared/imc/osx/nacl_imc.cc
   )
 elseif( LINUX )
   set( NACLLIST_NATIVE
-    ${LIB_DIR}/nacl/nacl.cpp
     ${LIB_DIR}/nacl/native_client/src/shared/imc/nacl_imc_common.cc
     ${LIB_DIR}/nacl/native_client/src/shared/imc/posix/nacl_imc_posix.cc
     ${LIB_DIR}/nacl/native_client/src/shared/imc/linux/nacl_imc.cc
   )
 elseif( WIN32 )
   set( NACLLIST_NATIVE
-    ${LIB_DIR}/nacl/nacl.cpp
     ${LIB_DIR}/nacl/native_client/src/shared/imc/nacl_imc_common.cc
     ${LIB_DIR}/nacl/native_client/src/shared/imc/win/nacl_imc.cc
     ${LIB_DIR}/nacl/native_client/src/shared/imc/win/nacl_shm.cc
@@ -970,7 +967,6 @@ elseif( WIN32 )
 endif()
 
 set( NACLLIST_MODULE
-  ${LIB_DIR}/nacl/nacl.cpp
   ${LIB_DIR}/nacl/native_client/src/shared/imc/nacl_imc_common.cc
   ${LIB_DIR}/nacl/native_client/src/shared/imc/nacl/nacl_imc.cc
   ${LIB_DIR}/nacl/native_client/src/untrusted/nacl/imc_accept.c
