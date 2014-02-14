@@ -36,6 +36,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "../engine/qcommon/q_shared.h"
 #include <utility>
 #include <type_traits>
+#include <memory>
 
 namespace Util {
 
@@ -83,6 +84,41 @@ decltype(apply_impl(std::declval<Func>(), std::declval<Tuple>(), gen_seq<std::tu
 {
 	return apply_impl(std::forward<Func>(func), std::forward<Tuple>(tuple), gen_seq<std::tuple_size<typename std::decay<Tuple>::type>::value>());
 }
+
+// Utility class to hold a possibly uninitialized object.
+template<typename T> class uninitialized {
+public:
+	uninitialized() {}
+	template<typename... Args> void construct(Args&&... args)
+	{
+		new(&data) T(std::forward<Args>(args)...);
+	}
+	template<typename Arg> decltype(std::declval<T&>() = std::declval<Arg>()) assign(Arg&& arg)
+	{
+		return get() = std::forward<Arg>(arg);
+	}
+	void destroy()
+	{
+		get().~T();
+	}
+	T& get()
+	{
+		return *reinterpret_cast<T*>(&data);
+	}
+	const T& get() const
+	{
+		return *reinterpret_cast<const T*>(&data);
+	}
+
+private:
+	typename std::aligned_storage<sizeof(T), std::alignment_of<T>::value>::type data;
+
+	// Not copyable or movable
+	uninitialized(const uninitialized&) = delete;
+	uninitialized(uninitialized&&) = delete;
+	uninitialized& operator=(const uninitialized&) = delete;
+	uninitialized& operator=(uninitialized&&) = delete;
+};
 
 } // namespace Util
 
