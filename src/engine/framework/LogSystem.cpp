@@ -39,17 +39,12 @@ namespace Log {
 
     static Target* targets[MAX_TARGET_ID];
 
-    TargetId redirectPrintTarget = NO_TARGET;
 
     //TODO make me reentrant // or check it is actually reentrant when using for (Event e : events) do stuff
     //TODO think way more about thread safety
     void Dispatch(Log::Event event, int targetControl) {
         static std::vector<Log::Event> buffers[MAX_TARGET_ID];
         static std::recursive_mutex bufferLocks[MAX_TARGET_ID];
-
-        if (event.level == PRINT and redirectPrintTarget != NO_TARGET) {
-            targetControl = redirectPrintTarget;
-        }
 
         for (int i = 0; i < MAX_TARGET_ID; i++) {
             if ((targetControl >> i) & 1) {
@@ -70,10 +65,6 @@ namespace Log {
                 }
             }
         }
-    }
-
-    void RedirectPrints(TargetId id) {
-        redirectPrintTarget = id;
     }
 
     void RegisterTarget(TargetId id, Target* target) {

@@ -75,7 +75,7 @@ static int            TTY_eof;
 
 static struct termios TTY_tc;
 
-static Console::Field TTY_field(INT_MAX, Log::TTY_CONSOLE);
+static Console::Field TTY_field(INT_MAX);
 
 /*
 ==================

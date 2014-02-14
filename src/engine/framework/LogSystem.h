@@ -49,7 +49,6 @@ namespace Log {
     // Dispatches the event to all the targets specified by targetControl (flags)
     // Can be called by any thread.
     void Dispatch(Log::Event event, int targetControl);
-    void RedirectPrints(TargetId id = NO_TARGET);
 
     class Target {
         public:

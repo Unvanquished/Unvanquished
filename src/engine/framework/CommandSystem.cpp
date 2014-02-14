@@ -203,9 +203,7 @@ namespace Cmd {
         auto it = commands.find(cmdName);
         if (it != commands.end()) {
             storedEnvironment = env;
-            storedEnvironment->OnCommandStart();
             it->second.cmd->Run(args);
-            storedEnvironment->OnCommandEnd();
             return;
         }
 
@@ -301,7 +299,7 @@ namespace Cmd {
     */
 
     void DefaultEnvironment::Print(Str::StringRef text) {
-        Log::CodeSourcePrint(text);
+        Log::CodeSourceNotice(text);
     }
 
     void DefaultEnvironment::ExecuteAfter(Str::StringRef text, bool parseCvars) {

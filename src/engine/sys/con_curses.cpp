@@ -70,7 +70,7 @@ void            CON_Print_tty( const char *message );
 void            CON_Clear_tty( void );
 
 static qboolean curses_on = qfalse;
-static Console::Field input_field(INT_MAX, Log::TTY_CONSOLE);
+static Console::Field input_field(INT_MAX);
 static WINDOW   *borderwin;
 static WINDOW   *logwin;
 static WINDOW   *inputwin;

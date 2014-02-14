@@ -172,13 +172,8 @@ namespace Cmd {
      */
     class Environment {
         public:
-            virtual ~Environment() {};
-
             virtual void Print(Str::StringRef text) = 0;
             virtual void ExecuteAfter(Str::StringRef text, bool parseCvars = false) = 0;
-
-            virtual void OnCommandStart() {}
-            virtual void OnCommandEnd() {}
     };
 
     // Implementation of templates.
