@@ -2019,13 +2019,14 @@ static void R_ExportTexture( image_t *image )
 	char path[ 1024 ];
 	int i;
 
+
 	Com_sprintf( path, sizeof( path ), "texexp/%s.ktx",
 		     image->name );
 
 	// quick and dirty sanitize path name
 	for( i = strlen( path ) - 1; i >= 7; i-- ) {
 		if( !isalnum( path[ i ] ) && path[ i ] != '.' && path[ i ] != '-' ) {
-			path[ i ] = '+';
+			path[ i ] = 'z';
 		}
 	}
 	SaveImageKTX( path, image );
