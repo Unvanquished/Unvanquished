@@ -27,6 +27,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #include "FileSystem.h"
 #include "../../common/Log.h"
 #include "../../common/Command.h"
+#include "../../common/Optional.h"
 #include "../../libs/minizip/unzip.h"
 #include <vector>
 #include <algorithm>
@@ -51,11 +52,20 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 namespace FS {
 
 // Pak zip and directory extensions
-#define PAK_ZIP_EXT ".pk3"
-#define PAK_DIR_EXT ".pk3dir/"
+const char PAK_ZIP_EXT[] = ".pk3";
+const char PAK_DIR_EXT[] = ".pk3dir/";
 
 // Dependencies file in packages
-#define PAK_DEPS_FILE "DEPS"
+const char PAK_DEPS_FILE[] = "DEPS";
+
+// Default base package
+const char DEFAULT_BASE_PAK[] = "unvanquished";
+
+const char TEMP_SUFFIX[] = ".tmp";
+
+// Cvars to select the base and extra packages to use
+static Cvar::Cvar<std::string> fs_basepak("fs_basepak", "base pak to load", 0, DEFAULT_BASE_PAK);
+static Cvar::Cvar<std::string> fs_extrapaks("fs_extrapaks", "space-seperated list of paks to load in addition to the base pak", 0, "");
 
 // Whether the search paths have been initialized yet. This can be used to delay
 // writing log files until the filesystem is initialized.
@@ -137,14 +147,14 @@ static int my_fseek(FILE* fd, offset_t off, int whence)
 #endif
 }
 #ifdef _WIN32
-typedef struct _stat32i64 my_stat_t;
+typedef struct _stati64 my_stat_t;
 #else
 typedef struct stat64 my_stat_t;
 #endif
 static int my_fstat(int fd, my_stat_t* st)
 {
 #ifdef _WIN32
-		return _fstat32i64(fd, st);
+		return _fstati64(fd, st);
 #else
 		return fstat64(fd, st);
 #endif
@@ -152,7 +162,7 @@ static int my_fstat(int fd, my_stat_t* st)
 static int my_stat(Str::StringRef path, my_stat_t* st)
 {
 #ifdef _WIN32
-		return _wstat32i64(Str::UTF8To16(path).c_str(), st);
+		return _wstati64(Str::UTF8To16(path).c_str(), st);
 #else
 		return stat64(path.c_str(), st);
 #endif
@@ -354,6 +364,8 @@ void Initialize()
 	Com_StartupVariable("fs_extrapath");
 	Com_StartupVariable("fs_homepath");
 	Com_StartupVariable("fs_libpath");
+	Com_StartupVariable("fs_extrapaks");
+	Com_StartupVariable("fs_basepak");
 
 	std::string defaultBasePath = DefaultBasePath();
 	std::string defaultHomePath = DefaultHomePath();
@@ -418,7 +430,6 @@ static void FindPaksInPath(Str::StringRef basePath, Str::StringRef subPath)
 	} catch (std::system_error& err) {
 		// If there was an error reading a directory, just ignore it and go to
 		// the next one.
-		Log::Debug("Error reading directory %s: %s", fullPath, err.what());
 	}
 }
 
@@ -433,6 +444,8 @@ static int VersionCmp(Str::StringRef aStr, Str::StringRef bStr)
 			return 0;
 		else if (Str::cisalpha(c))
 			return c;
+		else if (c == '~')
+			return -1;
 		else if (c)
 			return c + 256;
 		else
@@ -647,14 +660,14 @@ bool IsValid(Str::StringRef path, bool allowDir)
 			return false;
 
 		// Only allow the following punctuation characters
-		if (c != '/' && c != '-' && c != '_' && c != '.')
+		if (c != '/' && c != '-' && c != '_' && c != '.' && c != '+' && c != '~')
 			return false;
 		nonAlphaNum = true;
 	}
 
 	// An empty path or a path ending with / is a directory
-	if (!allowDir && nonAlphaNum)
-		return path.empty() || path.back() == '/';
+	if (nonAlphaNum)
+		return allowDir && (path.empty() || path.back() == '/');
 
 	return true;
 }
@@ -677,30 +690,25 @@ std::string Build(Str::StringRef base, Str::StringRef path)
 
 std::string DirName(Str::StringRef path)
 {
-	std::string out;
 	if (path.empty())
-		return out;
+		return "";
 
 	// Trim to last slash, excluding any trailing slash
 	size_t lastSlash = path.rfind('/', path.size() - 2);
 	if (lastSlash != Str::StringRef::npos)
-		out = path.substr(0, lastSlash);
-
-	return out;
+		return path.substr(0, lastSlash);
+	else
+		return "";
 }
 
 std::string BaseName(Str::StringRef path)
 {
-	std::string out;
 	if (path.empty())
-		return out;
+		return "";
 
 	// Trim from last slash, excluding any trailing slash
 	size_t lastSlash = path.rfind('/', path.size() - 2);
-	if (lastSlash != Str::StringRef::npos)
-		out = path.substr(lastSlash + 1);
-
-	return out;
+	return path.substr(lastSlash + 1);
 }
 
 std::string Extension(Str::StringRef path)
@@ -861,6 +869,9 @@ void File::CopyTo(const File& dest, std::error_code& err) const
 			return;
 	}
 }
+
+// Workaround for GCC 4.7.2 bug: http://gcc.gnu.org/bugzilla/show_bug.cgi?id=55015
+namespace {
 
 // Class representing an open zip archive
 class ZipArchive {
@@ -1066,6 +1077,8 @@ private:
 	unzFile zipFile;
 };
 
+} // GCC bug workaround
+
 namespace PakPath {
 
 // List of loaded pak files
@@ -1189,8 +1202,16 @@ static void InternalLoadPak(const PakInfo& pak, Opt::optional<uint32_t> expected
 
 		// Get the file list and calculate the checksum of the package (checksum of all file checksums)
 		checksum = crc32(0, Z_NULL, 0);
-		zipFile.ForEachFile([&checksum, &hasDeps, &depsOffset](Str::StringRef filename, offset_t offset, uint32_t crc) {
+		zipFile.ForEachFile([&pak, &checksum, &hasDeps, &depsOffset](Str::StringRef filename, offset_t offset, uint32_t crc) {
+			// Compatibility hack to get the same checksums as before
+			bool isDir = Str::IsSuffix("/", filename);
+			if (!isDir && !Path::IsValid(filename, false)) {
+				Log::Warn("Invalid filename '%s' in pak '%s'", filename, pak.path);
+				return; // This is effectively a continue, since we are in a lambda
+			}
 			checksum = crc32(*checksum, reinterpret_cast<const Bytef*>(&crc), sizeof(crc));
+			if (isDir)
+				return;
 #ifdef GCC_BROKEN_CXX11
 			fileMap.insert({filename, std::pair<size_t, offset_t>(loadedPaks.size() - 1, offset)});
 #else
@@ -1931,6 +1952,7 @@ Cmd::CompletionResult CompleteFilename(Str::StringRef prefix, Str::StringRef roo
 struct handleData_t {
 	bool isOpen;
 	bool isPakFile;
+	Opt::optional<std::string> renameTo;
 
 	// Normal file info
 	bool forceFlush;
@@ -1944,6 +1966,8 @@ struct handleData_t {
 #define MAX_FILE_HANDLES 64
 static handleData_t handleTable[MAX_FILE_HANDLES];
 static std::vector<std::tuple<std::string, std::string, uint32_t>> fs_missingPaks;
+
+static Cvar::Cvar<bool> allowRemotePakDir("client.allowRemotePakDir", "Connect to servers that load game data from directories", Cvar::TEMPORARY, false);
 
 static fileHandle_t FS_AllocHandle()
 {
@@ -1995,15 +2019,14 @@ int FS_FOpenFileRead(const char* path, fileHandle_t* handle, qboolean)
 		*handle = 0;
 		return -1;
 	}
-
 	return length;
 }
 
-fileHandle_t FS_FOpenFileWrite(const char* path)
+static fileHandle_t FS_FOpenFileWrite_internal(const char* path, bool temporary)
 {
 	fileHandle_t handle = FS_AllocHandle();
 	try {
-		handleTable[handle].file = FS::HomePath::OpenWrite(path);
+		handleTable[handle].file = FS::HomePath::OpenWrite(temporary ? std::string(path) + FS::TEMP_SUFFIX : path);
 	} catch (std::system_error& err) {
 		Com_Printf("Failed to open '%s' for writing: %s\n", path, err.what());
 		return 0;
@@ -2011,7 +2034,20 @@ fileHandle_t FS_FOpenFileWrite(const char* path)
 	handleTable[handle].forceFlush = false;
 	handleTable[handle].isPakFile = false;
 	handleTable[handle].isOpen = true;
+	if (temporary) {
+		handleTable[handle].renameTo = FS::Path::Build(FS::homePath, path);
+	}
 	return handle;
+}
+
+fileHandle_t FS_FOpenFileWrite(const char* path)
+{
+	return FS_FOpenFileWrite_internal(path, false);
+}
+
+fileHandle_t FS_FOpenFileWriteViaTemporary(const char* path)
+{
+	return FS_FOpenFileWrite_internal(path, true);
 }
 
 fileHandle_t FS_FOpenFileAppend(const char* path)
@@ -2031,7 +2067,7 @@ fileHandle_t FS_FOpenFileAppend(const char* path)
 
 fileHandle_t FS_SV_FOpenFileWrite(const char* path)
 {
-	return FS_FOpenFileWrite(path);
+	return FS_FOpenFileWrite_internal(path, false);
 }
 
 int FS_SV_FOpenFileRead(const char* path, fileHandle_t* handle)
@@ -2066,7 +2102,8 @@ int FS_Game_FOpenFileByMode(const char* path, fileHandle_t* handle, fsMode_t mod
 		}
 
 	case FS_WRITE:
-		*handle = FS_FOpenFileWrite(FS::Path::Build("game", path).c_str());
+	case FS_WRITE_VIA_TEMPORARY:
+		*handle = FS_FOpenFileWrite_internal(FS::Path::Build("game", path).c_str(), mode == FS_WRITE_VIA_TEMPORARY);
 		return *handle == 0 ? -1 : 0;
 
 	case FS_APPEND:
@@ -2092,6 +2129,16 @@ int FS_FCloseFile(fileHandle_t handle)
 	} else {
 		try {
 			handleTable[handle].file.Close();
+			if (handleTable[handle].renameTo) {
+				std::string renameTo = std::move(*handleTable[handle].renameTo);
+				handleTable[handle].renameTo = Opt::nullopt; // tidy up after abusing std::move
+				try {
+					FS::RawPath::MoveFile(renameTo, renameTo + FS::TEMP_SUFFIX);
+				} catch (std::system_error& err) {
+					Com_Printf("Failed to replace file %s: %s\n", renameTo.c_str(), err.what());
+					return -1;
+				}
+			}
 			return 0;
 		} catch (std::system_error& err) {
 			Com_Printf("Failed to close file: %s\n", err.what());
@@ -2217,7 +2264,7 @@ int FS_Read(void* buffer, int len, fileHandle_t handle)
 		try {
 			return handleTable[handle].file.Read(buffer, len);
 		} catch (std::system_error& err) {
-			Com_Printf("Failed to read file: %s\n", err.what());
+			Com_Printf("FS_Read failed: %s\n", err.what());
 			return 0;
 		}
 	}
@@ -2373,8 +2420,6 @@ const char* FS_LoadedPaks()
 	static char info[BIG_INFO_STRING];
 	info[0] = '\0';
 	for (const FS::PakInfo& x: FS::PakPath::GetLoadedPaks()) {
-		if (!x.checksum)
-			continue;
 		if (info[0])
 			Q_strcat(info, sizeof(info), " ");
 		Q_strcat(info, sizeof(info), FS::MakePakName(x.name, x.version, x.checksum).c_str());
@@ -2396,16 +2441,42 @@ bool FS_LoadPak(const char* name)
 	}
 }
 
+void FS_LoadBasePak()
+{
+	Cmd::Args extrapaks(FS::fs_extrapaks.Get());
+	for (auto& x: extrapaks) {
+		if (!FS_LoadPak(x.c_str()))
+			Com_Printf("Could not load extra pak '%s'\n", x.c_str());
+	}
+
+	if (!FS_LoadPak(FS::fs_basepak.Get().c_str())) {
+		Com_Printf("Could not load base pak '%s', falling back to default\n", FS::fs_basepak.Get().c_str());
+		if (!FS_LoadPak(FS::DEFAULT_BASE_PAK))
+			Com_Error(ERR_FATAL, "Could not load default base pak '%s'", FS::DEFAULT_BASE_PAK);
+	}
+}
+
+void FS_LoadAllMaps()
+{
+	for (auto& x: FS::GetAvailablePaks()) {
+		if (Str::IsPrefix("map-", x.name))
+			FS_LoadPak(x.name.c_str());
+	}
+}
+
 bool FS_LoadServerPaks(const char* paks)
 {
 	Cmd::Args args(paks);
 	fs_missingPaks.clear();
-	for (int i = 0; i < args.Argc(); i++) {
+	for (auto& x: args) {
 		std::string name, version;
 		Opt::optional<uint32_t> checksum;
-		if (!FS::ParsePakName(args.Argv(i).data(), args.Argv(i).data() + args.Argv(i).size(), name, version, checksum) || !checksum) {
-			Com_Error(ERR_DROP, "Invalid pak reference from server: %s\n", args.Argv(i).c_str());
-			continue;
+		if (!FS::ParsePakName(x.data(), x.data() + x.size(), name, version, checksum)) {
+			Com_Error(ERR_DROP, "Invalid pak reference from server: %s", x.c_str());
+		} else if (!checksum) {
+			if (allowRemotePakDir.Get())
+				continue;
+			Com_Error(ERR_DROP, "The server is configured to load game data from a directory which makes it incompatible with remote clients.");
 		}
 
 		// Keep track of all missing paks
@@ -2485,10 +2556,10 @@ public:
 };
 static WhichCmd WhichCmdRegistration;
 
-class PathCmd: public Cmd::StaticCmd {
+class ListPathsCmd: public Cmd::StaticCmd {
 public:
-	PathCmd()
-		: Cmd::StaticCmd("path", Cmd::SYSTEM, N_("list filesystem search paths")) {}
+	ListPathsCmd()
+		: Cmd::StaticCmd("listPaths", Cmd::SYSTEM, N_("list filesystem search paths")) {}
 
 	void Run(const Cmd::Args& args) const OVERRIDE
 	{
@@ -2497,4 +2568,4 @@ public:
 			Print("Loaded pak: %s", x.path);
 	}
 };
-static PathCmd PathCmdRegistration;
+static ListPathsCmd ListPathsCmdRegistration;

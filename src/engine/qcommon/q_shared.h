@@ -41,7 +41,7 @@ Maryland 20850 USA.
 #define PRODUCT_NAME            "Unvanquished"
 #define PRODUCT_NAME_UPPER      "UNVANQUISHED" // Case, No spaces
 #define PRODUCT_NAME_LOWER      "unvanquished" // No case, No spaces
-#define PRODUCT_VERSION         "0.23.0"
+#define PRODUCT_VERSION         "0.24.1"
 
 #define ENGINE_NAME             "Daemon Engine"
 #define ENGINE_VERSION          PRODUCT_VERSION
@@ -308,6 +308,13 @@ typedef int clipHandle_t;
 	// convenient for SSE and GLSL, which operate on 4-dimensional
 	// float vectors.
 #if idx86_sse
+    // Here we have a union of scalar struct and sse struct, transform_u and the
+    // scalar struct must match transform_s so we have to use anonymous structs.
+    // We disable compiler warnings when using -Wpedantic for this specific case.
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
+#endif
 	typedef ALIGNED( 16, union transform_u {
 		struct {
 			quat_t rot;
@@ -319,6 +326,9 @@ typedef int clipHandle_t;
 			__m128 sseTransScale;
 		};
 	} ) transform_t;
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 #else
 	typedef struct transform_s {
 		quat_t rot;
@@ -1776,7 +1786,8 @@ void         ByteToDir( int b, vec3_t dir );
 	  FS_APPEND,
 	  FS_APPEND_SYNC,
 	  FS_READ_DIRECT,
-	  FS_UPDATE
+	  FS_UPDATE,
+	  FS_WRITE_VIA_TEMPORARY,
 	} fsMode_t;
 
 	typedef enum
@@ -1907,7 +1918,10 @@ void         ByteToDir( int b, vec3_t dir );
  * but server browsers will see it
  */
 #define CVAR_SERVERINFO_NOUPDATE BIT(13)
+#define CVAR_USER_ARCHIVE        BIT(14)
 #define CVAR_NONEXISTENT         0xFFFFFFFF /*< Cvar doesn't exist. */
+
+#define CVAR_ARCHIVE_BITS        (CVAR_ARCHIVE | CVAR_USER_ARCHIVE)
 
 #define MAX_CVAR_VALUE_STRING 256
 

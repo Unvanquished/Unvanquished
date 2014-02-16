@@ -282,9 +282,14 @@ void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int code, const char *fmt, ... )
 	int        currentTime;
 
 	// make sure we can get at our local stuff
-	FS::PakPath::ClearPaks();
-	if (!FS_LoadPak("unvanquished") && code != ERR_FATAL)
-		Com_Error(ERR_FATAL, "Could not load main pak\n");
+	if (code != ERR_FATAL) {
+		FS::PakPath::ClearPaks();
+		FS_LoadBasePak();
+#ifndef DEDICATED
+		// Load map pk3s to allow menus to load levelshots
+		FS_LoadAllMaps();
+#endif
+	}
 
 	// if we are getting a solid stream of ERR_DROP, do an ERR_FATAL
 	currentTime = Sys_Milliseconds();
@@ -974,7 +979,7 @@ void Com_InitHunkMemory( void )
 	isDedicated = (com_dedicated && com_dedicated->integer);
 
 	// allocate the stack based hunk allocator
-	cv = Cvar_Get( "com_hunkMegs", DEF_COMHUNKMEGS_S, CVAR_LATCH | CVAR_ARCHIVE );
+	cv = Cvar_Get( "com_hunkMegs", DEF_COMHUNKMEGS_S, CVAR_LATCH  );
 
 	// if we are not dedicated min allocation is 56, otherwise min is 1
 	nMinAlloc = isDedicated ? MIN_DEDICATED_COMHUNKMEGS : MIN_COMHUNKMEGS;
@@ -1747,8 +1752,8 @@ void Com_SetRecommended( void )
 	qboolean goodVideo;
 
 	// will use this for recommended settings as well.. do i outside the lower check so it gets done even with command line stuff
-	r_highQualityVideo = Cvar_Get( "r_highQualityVideo", "1", CVAR_ARCHIVE );
-	//com_recommended = Cvar_Get("com_recommended", "-1", CVAR_ARCHIVE);
+	r_highQualityVideo = Cvar_Get( "r_highQualityVideo", "1", 0 );
+	//com_recommended = Cvar_Get("com_recommended", "-1", 0);
 	goodVideo = ( r_highQualityVideo && r_highQualityVideo->integer );
 
 	if ( goodVideo )
@@ -1819,8 +1824,11 @@ void Com_Init( char *commandLine )
 	CL_InitKeyCommands();
 
 	FS::Initialize();
-	if (!FS_LoadPak("unvanquished"))
-		Com_Error(ERR_FATAL, "Could not load main pak\n");
+	FS_LoadBasePak();
+#ifndef DEDICATED
+	// Load map pk3s to allow menus to load levelshots
+	FS_LoadAllMaps();
+#endif
 
 	Trans_Init();
 
@@ -1861,7 +1869,7 @@ void Com_Init( char *commandLine )
 
 	// if any archived cvars are modified after this, we will trigger a writing
 	// of the config file
-	cvar_modifiedFlags &= ~CVAR_ARCHIVE;
+	cvar_modifiedFlags &= ~CVAR_ARCHIVE_BITS;
 
 	//
 	// init commands and vars
@@ -1883,12 +1891,12 @@ void Com_Init( char *commandLine )
 
 	//on a server, commands have to be used a lot more often than say
 	//we could differentiate server and client, but would change the default behavior many might be used to
-	com_consoleCommand = Cvar_Get( "com_consoleCommand", "", CVAR_ARCHIVE );
+	com_consoleCommand = Cvar_Get( "com_consoleCommand", "", 0 );
 
-	com_introPlayed = Cvar_Get( "com_introplayed", "0", CVAR_ARCHIVE );
-	com_ansiColor = Cvar_Get( "com_ansiColor", "0", CVAR_ARCHIVE );
+	com_introPlayed = Cvar_Get( "com_introplayed", "0", 0 );
+	com_ansiColor = Cvar_Get( "com_ansiColor", "1", 0 );
 	com_logosPlaying = Cvar_Get( "com_logosPlaying", "0", CVAR_ROM );
-	com_recommendedSet = Cvar_Get( "com_recommendedSet", "0", CVAR_ARCHIVE );
+	com_recommendedSet = Cvar_Get( "com_recommendedSet", "0", 0 );
 
 	com_unfocused = Cvar_Get( "com_unfocused", "0", CVAR_ROM );
 	com_minimized = Cvar_Get( "com_minimized", "0", CVAR_ROM );
@@ -1959,14 +1967,6 @@ void Com_Init( char *commandLine )
 	}
 
 	CL_StartHunkUsers();
-
-	// NERVE - SMF - force recommendedSet and don't do vid_restart if in safe mode
-	if ( !com_recommendedSet->integer && !Com_SafeMode() )
-	{
-		Com_SetRecommended();
-	}
-
-	Cvar_Set( "com_recommendedSet", "1" );
 
 	if ( !com_dedicated->integer )
 	{
@@ -2057,7 +2057,7 @@ void Com_WriteConfigToFile( const char *filename, void (*writeConfig)( fileHandl
 
 	Com_sprintf( tmp, sizeof( tmp ), "config/%s", filename );
 
-	f = FS_FOpenFileWrite( tmp );
+	f = FS_FOpenFileWriteViaTemporary( tmp );
 
 	if ( !f )
 	{
@@ -2086,9 +2086,9 @@ void Com_WriteConfiguration( void )
 		return;
 	}
 
-	if ( cvar_modifiedFlags & CVAR_ARCHIVE )
+	if ( cvar_modifiedFlags & CVAR_ARCHIVE_BITS )
 	{
-		cvar_modifiedFlags &= ~CVAR_ARCHIVE;
+		cvar_modifiedFlags &= ~CVAR_ARCHIVE_BITS;
 
 		Com_WriteConfigToFile( CONFIG_NAME, Cvar_WriteVariables );
 	}
@@ -2221,12 +2221,12 @@ Com_Frame
 */
 
 //TODO 0 for the same value as common.maxFPS
-static Cvar::Cvar<int> maxfps("common.framerate.max", "the max framerate, 0 for unlimited", Cvar::ARCHIVE, 125);
-static Cvar::Cvar<int> maxfpsUnfocused("common.framerate.maxUnfocused", "the max framerate when the game is unfocused, 0 for unlimited", Cvar::ARCHIVE, 0);
-static Cvar::Cvar<int> maxfpsMinimized("common.framerate.maxMinimized", "the max framerate when the game is minimized, 0 for unlimited", Cvar::ARCHIVE, 0);
+static Cvar::Cvar<int> maxfps("common.framerate.max", "the max framerate, 0 for unlimited", Cvar::NONE, 125);
+static Cvar::Cvar<int> maxfpsUnfocused("common.framerate.maxUnfocused", "the max framerate when the game is unfocused, 0 for unlimited", Cvar::NONE, 0);
+static Cvar::Cvar<int> maxfpsMinimized("common.framerate.maxMinimized", "the max framerate when the game is minimized, 0 for unlimited", Cvar::NONE, 0);
 
-static Cvar::Cvar<int> watchdogThreshold("common.watchdogTime", "seconds of server running without a map after which common.watchdogCmd is executed", Cvar::ARCHIVE, 60);
-static Cvar::Cvar<std::string> watchdogCmd("common.watchdogCmd", "the command triggered by the watchdog, empty for /quit", Cvar::ARCHIVE, "");
+static Cvar::Cvar<int> watchdogThreshold("common.watchdogTime", "seconds of server running without a map after which common.watchdogCmd is executed", Cvar::NONE, 60);
+static Cvar::Cvar<std::string> watchdogCmd("common.watchdogCmd", "the command triggered by the watchdog, empty for /quit", Cvar::NONE, "");
 
 static Cvar::Cvar<bool> showTraceStats("common.showTraceStats", "are physics traces stats printed each frame", Cvar::CHEAT, false);
 

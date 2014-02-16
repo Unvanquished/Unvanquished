@@ -9,7 +9,7 @@
     smallFont "fonts/DejaVuSansCondensed.ttf" 20        // font
     bigFont "fonts/DejaVuSansCondensed.ttf" 40        // font
     cursor "ui/assets/3_cursor3"      // cursor
-    gradient_100_50Bar "ui/assets/gradientbar2.tga"  // gradient bar
+    gradient_100_50Bar "ui/assets/gradientbar2"  // gradient bar
     itemFocusSound "sound/misc/menu2.wav"   // sound for item getting focus (via keyboard or mouse )
 
     fadeClamp 1.0         // sets the fadeup alpha
@@ -37,7 +37,7 @@
       type ITEM_TYPE_TEXT
       style WINDOW_STYLE_SHADER
       rect 234 89 150 330
-      background "ui/assets/button_bg.png"
+      background "ui/assets/button_bg"
       visible MENU_TRUE
       decoration
       nostretch
@@ -50,7 +50,7 @@
       style WINDOW_STYLE_SHADER
       //60
       rect 200 45 237 150
-      background "ui/assets/logo.png"
+      background "ui/assets/logo"
       visible MENU_TRUE
       decoration
       nostretch
@@ -76,7 +76,7 @@
     {
       name copyright
       type ITEM_TYPE_TEXT
-      text "Unvanquished (C) 2011-2013 Unvanquished Development"
+      text "Unvanquished (C) 2011-2014 Unvanquished Development"
       style WINDOW_STYLE_EMPTY
       textstyle ITEM_TEXTSTYLE_PLAIN
       textscale .25

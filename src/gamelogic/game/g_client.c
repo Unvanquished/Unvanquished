@@ -1537,7 +1537,6 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	vec3_t             up = { 0.0f, 0.0f, 1.0f };
 	int                maxAmmo, maxClips;
 	weapon_t           weapon;
-	int                basicIncome;
 
 	index = ent - g_entities;
 	client = ent->client;
@@ -1825,21 +1824,6 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 
 	client->inactivityTime = level.time + g_inactivity.integer * 1000;
 	usercmdClearButtons( client->latched_buttons );
-
-	// give basic income if mine rate above minimum
-	{
-		int mineEfficiencyPercent = ( int )( level.team[ client->pers.team ].mineEfficiency * 100.0f );
-
-		if ( ent != spawn && mineEfficiencyPercent > g_minimumMineRate.value )
-		{
-			basicIncome = ( int )( BASIC_INCOME_MOD * mineEfficiencyPercent ) - client->pers.credit;
-
-			if ( basicIncome > 0 )
-			{
-				G_AddCreditToClient( client, ( short )basicIncome, qtrue );
-			}
-		}
-	}
 
 	// set default animations
 	client->ps.torsoAnim = TORSO_STAND;

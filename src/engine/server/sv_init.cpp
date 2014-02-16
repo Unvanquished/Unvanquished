@@ -611,8 +611,7 @@ void SV_SpawnServer( const char *server )
 	sv.checksumFeed = ( ( ( int ) rand() << 16 ) ^ rand() ) ^ Sys_Milliseconds();
 
 	FS::PakPath::ClearPaks();
-	if (!FS_LoadPak("unvanquished"))
-		Com_Error(ERR_FATAL, "Could not load main pak\n");
+	FS_LoadBasePak();
 	if (!FS_LoadPak(va("map-%s", server)))
 		Com_Error(ERR_DROP, "Could not load map pak\n");
 
@@ -757,19 +756,19 @@ void SV_Init( void )
 	// serverinfo vars
 	Cvar_Get( "timelimit", "0", CVAR_SERVERINFO );
 
-	Cvar_Get( "protocol", va( "%i", PROTOCOL_VERSION ), CVAR_SERVERINFO | CVAR_ARCHIVE );
+	Cvar_Get( "protocol", va( "%i", PROTOCOL_VERSION ), CVAR_SERVERINFO  );
 	sv_mapname = Cvar_Get( "mapname", "nomap", CVAR_SERVERINFO | CVAR_ROM );
 	Cvar_Get( "layout", "", CVAR_SERVERINFO | CVAR_ROM );
 	Cvar_Get( "g_layouts", "", 0 ); // FIXME
 	sv_privateClients = Cvar_Get( "sv_privateClients", "0", CVAR_SERVERINFO );
-	sv_hostname = Cvar_Get( "sv_hostname", "Unnamed Unvanquished Server", CVAR_SERVERINFO | CVAR_ARCHIVE );
+	sv_hostname = Cvar_Get( "sv_hostname", "Unnamed Unvanquished Server", CVAR_SERVERINFO  );
 	sv_maxclients = Cvar_Get( "sv_maxclients", "20", CVAR_SERVERINFO | CVAR_LATCH );  // NERVE - SMF - changed to 20 from 8
-	sv_maxRate = Cvar_Get( "sv_maxRate", "0", CVAR_ARCHIVE | CVAR_SERVERINFO );
-	sv_minPing = Cvar_Get( "sv_minPing", "0", CVAR_ARCHIVE | CVAR_SERVERINFO );
-	sv_maxPing = Cvar_Get( "sv_maxPing", "0", CVAR_ARCHIVE | CVAR_SERVERINFO );
-	sv_floodProtect = Cvar_Get( "sv_floodProtect", "0", CVAR_ARCHIVE | CVAR_SERVERINFO );
+	sv_maxRate = Cvar_Get( "sv_maxRate", "0",  CVAR_SERVERINFO );
+	sv_minPing = Cvar_Get( "sv_minPing", "0",  CVAR_SERVERINFO );
+	sv_maxPing = Cvar_Get( "sv_maxPing", "0",  CVAR_SERVERINFO );
+	sv_floodProtect = Cvar_Get( "sv_floodProtect", "0",  CVAR_SERVERINFO );
 
-	sv_statsURL = Cvar_Get( "sv_statsURL", "", CVAR_SERVERINFO | CVAR_ARCHIVE );
+	sv_statsURL = Cvar_Get( "sv_statsURL", "", CVAR_SERVERINFO  );
 
 	// systeminfo
 	sv_serverid = Cvar_Get( "sv_serverid", "0", CVAR_SYSTEMINFO | CVAR_ROM );
@@ -793,37 +792,37 @@ void SV_Init( void )
 	sv_zombietime = Cvar_Get( "sv_zombietime", "2", CVAR_TEMP );
 	Cvar_Get( "sv_nextmap", "", CVAR_TEMP );
 
-	sv_allowDownload = Cvar_Get( "sv_allowDownload", "1", CVAR_ARCHIVE );
+	sv_allowDownload = Cvar_Get( "sv_allowDownload", "1", 0 );
 	sv_master[ 0 ] = Cvar_Get( "sv_master1", MASTER_SERVER_NAME, 0 );
-	sv_master[ 1 ] = Cvar_Get( "sv_master2", "", CVAR_ARCHIVE );
-	sv_master[ 2 ] = Cvar_Get( "sv_master3", "", CVAR_ARCHIVE );
-	sv_master[ 3 ] = Cvar_Get( "sv_master4", "", CVAR_ARCHIVE );
-	sv_master[ 4 ] = Cvar_Get( "sv_master5", "", CVAR_ARCHIVE );
+	sv_master[ 1 ] = Cvar_Get( "sv_master2", "", 0 );
+	sv_master[ 2 ] = Cvar_Get( "sv_master3", "", 0 );
+	sv_master[ 3 ] = Cvar_Get( "sv_master4", "", 0 );
+	sv_master[ 4 ] = Cvar_Get( "sv_master5", "", 0 );
 	sv_reconnectlimit = Cvar_Get( "sv_reconnectlimit", "3", 0 );
 	sv_padPackets = Cvar_Get( "sv_padPackets", "0", 0 );
 	sv_killserver = Cvar_Get( "sv_killserver", "0", 0 );
 	sv_mapChecksum = Cvar_Get( "sv_mapChecksum", "", CVAR_ROM );
 
-	sv_lanForceRate = Cvar_Get( "sv_lanForceRate", "1", CVAR_ARCHIVE );
+	sv_lanForceRate = Cvar_Get( "sv_lanForceRate", "1", 0 );
 
 	sv_showAverageBPS = Cvar_Get( "sv_showAverageBPS", "0", 0 );  // NERVE - SMF - net debugging
 
 	// the download netcode tops at 18/20 kb/s, no need to make you think you can go above
-	sv_dl_maxRate = Cvar_Get( "sv_dl_maxRate", "42000", CVAR_ARCHIVE );
+	sv_dl_maxRate = Cvar_Get( "sv_dl_maxRate", "42000", 0 );
 
-	sv_wwwDownload = Cvar_Get( "sv_wwwDownload", "0", CVAR_ARCHIVE );
-	sv_wwwBaseURL = Cvar_Get( "sv_wwwBaseURL", "", CVAR_ARCHIVE );
-	sv_wwwDlDisconnected = Cvar_Get( "sv_wwwDlDisconnected", "0", CVAR_ARCHIVE );
-	sv_wwwFallbackURL = Cvar_Get( "sv_wwwFallbackURL", "", CVAR_ARCHIVE );
+	sv_wwwDownload = Cvar_Get( "sv_wwwDownload", "0", 0 );
+	sv_wwwBaseURL = Cvar_Get( "sv_wwwBaseURL", "", 0 );
+	sv_wwwDlDisconnected = Cvar_Get( "sv_wwwDlDisconnected", "0", 0 );
+	sv_wwwFallbackURL = Cvar_Get( "sv_wwwFallbackURL", "", 0 );
 
 	//bani
 	sv_packetdelay = Cvar_Get( "sv_packetdelay", "0", CVAR_CHEAT );
 
 	// fretn - note: redirecting of clients to other servers relies on this,
 	// ET://someserver.com
-	sv_fullmsg = Cvar_Get( "sv_fullmsg", "Server is full.", CVAR_ARCHIVE );
+	sv_fullmsg = Cvar_Get( "sv_fullmsg", "Server is full.", 0 );
 
-	vm_game = Cvar_Get( "vm_game", "0", CVAR_ARCHIVE );
+	vm_game = Cvar_Get( "vm_game", "0", 0 );
 
 	svs.serverLoad = -1;
 }

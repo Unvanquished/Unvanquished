@@ -80,7 +80,7 @@ class MapCmd: public Cmd::StaticCmd {
             if (argNum == 1) {
                 Cmd::CompletionResult out;
                 for (auto& x: FS::GetAvailablePaks()) {
-                    if (Str::IsPrefix("map-", x.name))
+                    if (Str::IsPrefix("map-" + prefix, x.name))
                         out.push_back({x.name.substr(4), ""});
                 }
                 return out;

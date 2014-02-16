@@ -11,14 +11,14 @@ modification, are permitted provided that the following conditions are met:
     * Redistributions in binary form must reproduce the above copyright
       notice, this list of conditions and the following disclaimer in the
       documentation and/or other materials provided with the distribution.
-    * Neither the name of the <organization> nor the
+    * Neither the name of the Daemon developers nor the
       names of its contributors may be used to endorse or promote products
       derived from this software without specific prior written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
+DISCLAIMED. IN NO EVENT SHALL DAEMON DEVELOPERS BE LIABLE FOR ANY
 DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
 (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
 LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -35,6 +35,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace Audio {
 
+    //TODO remove once we have VM handles
     template<typename T>
     class HandledResource {
         public:
@@ -88,21 +89,18 @@ namespace Audio {
     template<typename T>
     std::vector<int> HandledResource<T>::inactiveHandles;
 
-    //TODO handle memory pressure: load and unload buffers automatically
-    class Sample: public HandledResource<Sample> {
+    class Sample: public HandledResource<Sample>, public Resource::Resource {
         public:
             Sample(std::string name);
-            ~Sample();
+            virtual ~Sample() OVERRIDE FINAL;
 
-            void Use();
+            virtual bool Load() OVERRIDE FINAL;
+            virtual void Cleanup() OVERRIDE FINAL;
 
             AL::Buffer& GetBuffer();
 
-            const std::string& GetName();
-
         private:
             AL::Buffer buffer;
-            std::string name;
     };
 
     void InitSamples();
@@ -110,7 +108,9 @@ namespace Audio {
 
 	std::vector<std::string> ListSamples();
 
-    Sample* RegisterSample(Str::StringRef filename);
+    void BeginSampleRegistration();
+    std::shared_ptr<Sample> RegisterSample(Str::StringRef filename);
+    void EndSampleRegistration();
 }
 
 #endif //AUDIO_SAMPLE_H_

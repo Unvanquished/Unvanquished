@@ -89,8 +89,8 @@ void VM_Init( void )
 	// vm_* 0 means native libraries (.so, .dll, etc.) are used
 	// vm_* 1 means virtual machines (.qvm, etc.) are used through an interpreter
 	// vm_* 2 means virtual machines are used with JIT compiling
-	Cvar_Get( "vm_cgame", "0", CVAR_ARCHIVE );
-	Cvar_Get( "vm_ui", "0", CVAR_ARCHIVE );
+	Cvar_Get( "vm_cgame", "0", 0 );
+	Cvar_Get( "vm_ui", "0", 0 );
 
 	Cmd_AddCommand( "vmprofile", VM_VmProfile_f );
 	Cmd_AddCommand( "vminfo", VM_VmInfo_f );

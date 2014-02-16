@@ -160,9 +160,6 @@ cvar_t             *cl_gamename;
 
 cvar_t             *cl_altTab;
 
-static cvar_t      *cl_renderer = NULL;
-static void        *rendererLib = NULL;
-
 // XreaL BEGIN
 cvar_t             *cl_aviMotionJpeg;
 // XreaL END
@@ -2200,7 +2197,13 @@ static void CL_GenerateRSAKeys( const char *fileName )
 
 	Com_Printf( _( "^5Regenerating RSA keypair; writing to %s\n" ), fileName );
 
+#ifndef _WIN32
+	int old_umask = umask(0077);
+#endif
 	f = FS_FOpenFileWrite( fileName );
+#ifndef _WIN32
+	umask(old_umask);
+#endif
 
 	if ( !f )
 	{
@@ -4135,55 +4138,15 @@ void CL_StartHunkUsers( void )
 		return;
 	}
 
-	if ( rendererLib == NULL )
+	if ( !cls.rendererStarted && CL_InitRef() && CL_InitRenderer() )
 	{
-		// initialize the renderer interface
-		char renderers[ MAX_QPATH ];
-		char *from, *to;
-
-		PrintBanner(_( "Initializing Renderer" ))
-
-		Q_strncpyz( renderers, cl_renderer->string, sizeof( renderers ) );
-		from = renderers;
-
-		while ( from )
-		{
-			to = strchr( from, ',' );
-
-			if ( to )
-			{
-				*to++ = '\0';
-			}
-
-			if ( CL_InitRef( from ) && CL_InitRenderer() )
-			{
-				cls.rendererStarted = qtrue;
-				break;
-			}
-
-			CL_ShutdownRef();
-			from = to;
-		}
-
-		if ( !cls.rendererStarted && CL_InitRef( "GL" ) && CL_InitRenderer() )
-		{
-			cls.rendererStarted = qtrue;
-		}
-
-		if ( !cls.rendererStarted )
-		{
-			CL_ShutdownRef();
-			Com_Error( ERR_FATAL, "Couldn't load a renderer" );
-		}
-
-		Com_Printf( "-------------------------------\n" );
+		cls.rendererStarted = qtrue;
 	}
-	else if ( !cls.rendererStarted )
+
+	if ( !cls.rendererStarted )
 	{
-		if ( CL_InitRenderer() )
-		{
-			cls.rendererStarted = qtrue;
-		}
+		CL_ShutdownRef();
+		Com_Error( ERR_FATAL, "Couldn't load a renderer" );
 	}
 
 	if ( !cls.soundStarted )
@@ -4236,51 +4199,17 @@ int CL_ScaledMilliseconds( void )
 	return Sys_Milliseconds() * com_timescale->value;
 }
 
-#if defined( REF_HARD_LINKED )
 extern refexport_t *GetRefAPI( int apiVersion, refimport_t *rimp );
-
-#endif
 
 /*
 ============
 CL_InitRef
-
-RB: changed to load the renderer from a .dll
 ============
 */
-qboolean CL_InitRef( const char *renderer )
+qboolean CL_InitRef( )
 {
 	refimport_t ri;
 	refexport_t *ret;
-	void        *lib = NULL;
-
-#if !defined( REF_HARD_LINKED )
-	GetRefAPI_t GetRefAPI;
-	char        dllName[ MAX_OSPATH ];
-
-	Com_sprintf( dllName, sizeof( dllName ), "%s/renderer%s" DLL_EXT, FS::GetLibPath().c_str(), renderer );
-
-	Com_Printf( "Loading \"%s\"...", dllName );
-
-	lib = Sys_LoadLibrary( dllName );
-
-	if ( !lib )
-	{
-		Com_Printf( "failed:\n\"%s\"\n", Sys_LibraryError() );
-		return qfalse;
-	}
-
-	Com_Printf( "done\n" );
-
-	GetRefAPI = (GetRefAPI_t) Sys_LoadFunction( lib, "GetRefAPI" );
-
-	if ( !GetRefAPI )
-	{
-		Com_Printf( "Can't load symbol GetRefAPI: '%s'\n",  Sys_LibraryError() );
-		Sys_UnloadDll( lib );
-		return qfalse;
-	}
-#endif
 
 	ri.Cmd_AddCommand = Cmd_AddCommand;
 	ri.Cmd_RemoveCommand = Cmd_RemoveCommand;
@@ -4352,7 +4281,6 @@ qboolean CL_InitRef( const char *renderer )
 	if ( !ret )
 	{
 		Com_Printf( "Couldn't initialize refresh module\n" );
-		Sys_UnloadDll( lib );
 		return qfalse;
 	}
 
@@ -4361,7 +4289,6 @@ qboolean CL_InitRef( const char *renderer )
 	// unpause so the cgame definitely gets a snapshot and renders a frame
 	Cvar_Set( "cl_paused", "0" );
 
-	rendererLib = lib; // at this point, we pass on unloading responsibility
 	return qtrue;
 }
 
@@ -4379,12 +4306,6 @@ void CL_ShutdownRef( void )
 
 	re.Shutdown( qtrue );
 	memset( &re, 0, sizeof( re ) );
-
-	if ( rendererLib )
-	{
-		Sys_UnloadDll( rendererLib );
-		rendererLib = NULL;
-	}
 }
 
 //===========================================================================================
@@ -4413,8 +4334,6 @@ void CL_Init( void )
 	//
 	// register our variables
 	//
-	cl_renderer = Cvar_Get( "cl_renderer", "GL3,GL", CVAR_ARCHIVE );
-
 	cl_noprint = Cvar_Get( "cl_noprint", "0", 0 );
 	cl_motd = Cvar_Get( "cl_motd", "1", 0 );
 
@@ -4435,24 +4354,24 @@ void CL_Init( void )
 
 	cl_timedemo = Cvar_Get( "timedemo", "0", 0 );
 	cl_forceavidemo = Cvar_Get( "cl_forceavidemo", "0", 0 );
-	cl_aviFrameRate = Cvar_Get( "cl_aviFrameRate", "25", CVAR_ARCHIVE );
+	cl_aviFrameRate = Cvar_Get( "cl_aviFrameRate", "25", 0 );
 
 	// XreaL BEGIN
-	cl_aviMotionJpeg = Cvar_Get( "cl_aviMotionJpeg", "1", CVAR_ARCHIVE );
+	cl_aviMotionJpeg = Cvar_Get( "cl_aviMotionJpeg", "1", 0 );
 	// XreaL END
 
 	rconAddress = Cvar_Get( "rconAddress", "", 0 );
 
-	cl_yawspeed = Cvar_Get( "cl_yawspeed", "140", CVAR_ARCHIVE );
-	cl_pitchspeed = Cvar_Get( "cl_pitchspeed", "140", CVAR_ARCHIVE );
+	cl_yawspeed = Cvar_Get( "cl_yawspeed", "140", 0 );
+	cl_pitchspeed = Cvar_Get( "cl_pitchspeed", "140", 0 );
 	cl_anglespeedkey = Cvar_Get( "cl_anglespeedkey", "1.5", 0 );
 
-	cl_maxpackets = Cvar_Get( "cl_maxpackets", "125", CVAR_ARCHIVE );
-	cl_packetdup = Cvar_Get( "cl_packetdup", "1", CVAR_ARCHIVE );
+	cl_maxpackets = Cvar_Get( "cl_maxpackets", "125", 0 );
+	cl_packetdup = Cvar_Get( "cl_packetdup", "1", 0 );
 
-	cl_run = Cvar_Get( "cl_run", "1", CVAR_ARCHIVE );
+	cl_run = Cvar_Get( "cl_run", "1", 0 );
 	cl_sensitivity = Cvar_Get( "sensitivity", "5", CVAR_ARCHIVE );
-	cl_mouseAccel = Cvar_Get( "cl_mouseAccel", "0", CVAR_ARCHIVE );
+	cl_mouseAccel = Cvar_Get( "cl_mouseAccel", "0", 0 );
 	cl_freelook = Cvar_Get( "cl_freelook", "1", CVAR_ARCHIVE );
 
 	cl_xbox360ControllerAvailable = Cvar_Get( "in_xbox360ControllerAvailable", "0", CVAR_ROM );
@@ -4460,56 +4379,56 @@ void CL_Init( void )
 	// 0: legacy mouse acceleration
 	// 1: new implementation
 
-	cl_mouseAccelStyle = Cvar_Get( "cl_mouseAccelStyle", "0", CVAR_ARCHIVE );
+	cl_mouseAccelStyle = Cvar_Get( "cl_mouseAccelStyle", "0", 0 );
 	// offset for the power function (for style 1, ignored otherwise)
 	// this should be set to the max rate value
-	cl_mouseAccelOffset = Cvar_Get( "cl_mouseAccelOffset", "5", CVAR_ARCHIVE );
+	cl_mouseAccelOffset = Cvar_Get( "cl_mouseAccelOffset", "5", 0 );
 
 	cl_showMouseRate = Cvar_Get( "cl_showmouserate", "0", 0 );
 
-	cl_allowDownload = Cvar_Get( "cl_allowDownload", "1", CVAR_ARCHIVE );
-	cl_wwwDownload = Cvar_Get( "cl_wwwDownload", "1", CVAR_USERINFO | CVAR_ARCHIVE );
+	cl_allowDownload = Cvar_Get( "cl_allowDownload", "1", 0 );
+	cl_wwwDownload = Cvar_Get( "cl_wwwDownload", "1", CVAR_USERINFO  );
 
-	cl_inGameVideo = Cvar_Get( "r_inGameVideo", "1", CVAR_ARCHIVE );
+	cl_inGameVideo = Cvar_Get( "r_inGameVideo", "1", 0 );
 
 	cl_serverStatusResendTime = Cvar_Get( "cl_serverStatusResendTime", "750", 0 );
 
-	cl_doubletapdelay = Cvar_Get( "cl_doubletapdelay", "250", CVAR_ARCHIVE );  // Arnout: double tap
-	m_pitch = Cvar_Get( "m_pitch", "0.022", CVAR_ARCHIVE );
-	m_yaw = Cvar_Get( "m_yaw", "0.022", CVAR_ARCHIVE );
-	m_forward = Cvar_Get( "m_forward", "0.25", CVAR_ARCHIVE );
-	m_side = Cvar_Get( "m_side", "0.25", CVAR_ARCHIVE );
+	cl_doubletapdelay = Cvar_Get( "cl_doubletapdelay", "250", 0 );  // Arnout: double tap
+	m_pitch = Cvar_Get( "m_pitch", "0.022", 0 );
+	m_yaw = Cvar_Get( "m_yaw", "0.022", 0 );
+	m_forward = Cvar_Get( "m_forward", "0.25", 0 );
+	m_side = Cvar_Get( "m_side", "0.25", 0 );
 	m_filter = Cvar_Get( "m_filter", "0", CVAR_ARCHIVE );
 
-	j_pitch = Cvar_Get( "j_pitch", "0.022", CVAR_ARCHIVE );
-	j_yaw = Cvar_Get( "j_yaw", "-0.022", CVAR_ARCHIVE );
-	j_forward = Cvar_Get( "j_forward", "-0.25", CVAR_ARCHIVE );
-	j_side = Cvar_Get( "j_side", "0.25", CVAR_ARCHIVE );
-	j_up = Cvar_Get ("j_up", "1", CVAR_ARCHIVE);
+	j_pitch = Cvar_Get( "j_pitch", "0.022", 0 );
+	j_yaw = Cvar_Get( "j_yaw", "-0.022", 0 );
+	j_forward = Cvar_Get( "j_forward", "-0.25", 0 );
+	j_side = Cvar_Get( "j_side", "0.25", 0 );
+	j_up = Cvar_Get ("j_up", "1", 0);
 
-	j_pitch_axis = Cvar_Get( "j_pitch_axis", "3", CVAR_ARCHIVE );
-	j_yaw_axis = Cvar_Get( "j_yaw_axis", "4", CVAR_ARCHIVE );
-	j_forward_axis = Cvar_Get( "j_forward_axis", "1", CVAR_ARCHIVE );
-	j_side_axis = Cvar_Get( "j_side_axis", "0", CVAR_ARCHIVE );
-	j_up_axis = Cvar_Get( "j_up_axis", "2", CVAR_ARCHIVE );
+	j_pitch_axis = Cvar_Get( "j_pitch_axis", "3", 0 );
+	j_yaw_axis = Cvar_Get( "j_yaw_axis", "4", 0 );
+	j_forward_axis = Cvar_Get( "j_forward_axis", "1", 0 );
+	j_side_axis = Cvar_Get( "j_side_axis", "0", 0 );
+	j_up_axis = Cvar_Get( "j_up_axis", "2", 0 );
 
 	cl_motdString = Cvar_Get( "cl_motdString", "", CVAR_ROM );
 
 	// ~ and `, as keys and characters
-	cl_consoleKeys = Cvar_Get( "cl_consoleKeys", _("~ ` 0x7e 0x60"), CVAR_ARCHIVE );
+	cl_consoleKeys = Cvar_Get( "cl_consoleKeys", _("~ ` 0x7e 0x60"), 0 );
 
-	cl_consoleFont = Cvar_Get( "cl_consoleFont", "fonts/unifont.ttf", CVAR_ARCHIVE | CVAR_LATCH );
-	cl_consoleFontSize = Cvar_Get( "cl_consoleFontSize", "16", CVAR_ARCHIVE | CVAR_LATCH );
-	cl_consoleFontKerning = Cvar_Get( "cl_consoleFontKerning", "0", CVAR_ARCHIVE );
+	cl_consoleFont = Cvar_Get( "cl_consoleFont", "fonts/unifont.ttf",  CVAR_LATCH );
+	cl_consoleFontSize = Cvar_Get( "cl_consoleFontSize", "16",  CVAR_LATCH );
+	cl_consoleFontKerning = Cvar_Get( "cl_consoleFontKerning", "0", 0 );
 
-	cl_consoleCommand = Cvar_Get( "cl_consoleCommand", "say", CVAR_ARCHIVE );
+	cl_consoleCommand = Cvar_Get( "cl_consoleCommand", "say", 0 );
 
-	cl_logs = Cvar_Get ("cl_logs", "0", CVAR_ARCHIVE);
+	cl_logs = Cvar_Get ("cl_logs", "0", 0);
 
 	p_team = Cvar_Get("p_team", "0", CVAR_ROM );
 
 	cl_gamename = Cvar_Get( "cl_gamename", GAMENAME_FOR_MASTER, CVAR_TEMP );
-	cl_altTab = Cvar_Get( "cl_altTab", "1", CVAR_ARCHIVE );
+	cl_altTab = Cvar_Get( "cl_altTab", "1", 0 );
 
 	//bani - make these cvars visible to cgame
 	cl_demorecording = Cvar_Get( "cl_demorecording", "0", CVAR_ROM );
@@ -4523,18 +4442,18 @@ void CL_Init( void )
 	cl_packetloss = Cvar_Get( "cl_packetloss", "0", CVAR_CHEAT );
 	cl_packetdelay = Cvar_Get( "cl_packetdelay", "0", CVAR_CHEAT );
 
-	Cvar_Get( "cl_maxPing", "800", CVAR_ARCHIVE );
+	Cvar_Get( "cl_maxPing", "800", 0 );
 	// userinfo
 	Cvar_Get( "name", UNNAMED_PLAYER, CVAR_USERINFO | CVAR_ARCHIVE );
 	cl_rate = Cvar_Get( "rate", "25000", CVAR_USERINFO | CVAR_ARCHIVE );
-	Cvar_Get( "snaps", "40", CVAR_USERINFO | CVAR_ARCHIVE );
-//  Cvar_Get ("sex", "male", CVAR_USERINFO | CVAR_ARCHIVE );
+	Cvar_Get( "snaps", "40", CVAR_USERINFO  );
+//  Cvar_Get ("sex", "male", CVAR_USERINFO  );
 
 	Cvar_Get( "password", "", CVAR_USERINFO );
 
 #ifdef USE_MUMBLE
-	cl_useMumble = Cvar_Get( "cl_useMumble", "0", CVAR_ARCHIVE | CVAR_LATCH );
-	cl_mumbleScale = Cvar_Get( "cl_mumbleScale", "0.0254", CVAR_ARCHIVE );
+	cl_useMumble = Cvar_Get( "cl_useMumble", "0",  CVAR_LATCH );
+	cl_mumbleScale = Cvar_Get( "cl_mumbleScale", "0.0254", 0 );
 #endif
 
 #ifdef USE_VOIP
@@ -4554,11 +4473,11 @@ void CL_Init( void )
 #endif
 
 	// cgame might not be initialized before menu is used
-	Cvar_Get( "cg_viewsize", "100", CVAR_ARCHIVE );
+	Cvar_Get( "cg_viewsize", "100", 0 );
 
 	cl_allowPaste = Cvar_Get( "cl_allowPaste", "1", 0 );
 
-	cl_cgameSyscallStats = Cvar_Get( "cl_cgameSyscallStats", "0", CVAR_ARCHIVE );
+	cl_cgameSyscallStats = Cvar_Get( "cl_cgameSyscallStats", "0", 0 );
 
 	//
 	// register our commands

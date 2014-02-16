@@ -371,8 +371,8 @@ void           VM_Forced_Unload_Start( void );
 void           VM_Forced_Unload_Done( void );
 vm_t           *VM_Restart( vm_t *vm );
 
-intptr_t QDECL VM_Call( vm_t *vm, int callNum, ... );
-intptr_t QDECL VM_DllSyscall( intptr_t arg, ... );
+ATTRIBUTE_NO_SANITIZE_ADDRESS intptr_t QDECL VM_Call( vm_t *vm, int callNum, ... );
+ATTRIBUTE_NO_SANITIZE_ADDRESS intptr_t QDECL VM_DllSyscall( intptr_t arg, ... );
 
 void           VM_Debug( int level );
 
@@ -509,6 +509,8 @@ fileHandle_t FS_FOpenFileWrite( const char *qpath );
 fileHandle_t FS_FOpenFileAppend( const char *filename );
 fileHandle_t  FS_FCreateOpenPipeFile( const char *filename );
 
+fileHandle_t FS_FOpenFileWriteViaTemporary( const char *qpath );
+
 // will properly create any needed paths and deal with separator character issues
 
 fileHandle_t FS_SV_FOpenFileWrite( const char *filename );
@@ -584,6 +586,8 @@ const char* FS_LoadedPaks();
 // Returns a space separated string containing all loaded pk3 files.
 
 bool     FS_LoadPak( const char *name );
+void     FS_LoadBasePak();
+void     FS_LoadAllMaps();
 bool     FS_LoadServerPaks( const char* paks );
 
 // shutdown and restart the filesystem so changes to fs_gamedir can take effect

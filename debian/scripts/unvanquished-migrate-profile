@@ -1,19 +1,32 @@
 #! /bin/sh
 
-test -f ~/.Unvanquished/main/profiles/defaultprofile.dat && exit 0
-test -f ~/.Unvanquished/main/autogen.cfg || exit 0
-
 set -e
 
-# need this to avoid case folding
-export LANG=C
+test -f ~/.unvanquished/pubkey && chmod go= ~/.unvanquished/pubkey
 
-NAME="$(sed -e '/^seta name /! d; s/^seta name //; s/\^[0-:<-o]//g; s/[^0-9A-Za-z]//g; q' ~/.Unvanquished/main/autogen.cfg)"
-mkdir -p ~/.Unvanquished/main/profiles/"$NAME"
-cp -al ~/.Unvanquished/pubkey \
-       ~/.Unvanquished/main/guid \
-       ~/.Unvanquished/main/*.cfg ~/.Unvanquished/main/profiles/"$NAME"/
-echo "$NAME" >~/.Unvanquished/main/profiles/"$NAME"/profile.dat
-echo "$NAME" >~/.Unvanquished/main/profiles/defaultprofile.dat
+test "$1" != --force -a -f ~/.unvanquished/config/autogen.cfg && exit 0
+test -f ~/.Unvanquished/main/profiles/defaultprofile.dat || exit 0
+NAME="$(cat ~/.Unvanquished/main/profiles/defaultprofile.dat)"
+test -d ~/.Unvanquished/main/profiles/"$NAME" || exit 0
 
-echo "Default profile created for '$NAME'."
+mkdir -p ~/.unvanquished/config ~/.unvanquished/game ~/.unvanquished/pkg
+
+cd ~/.Unvanquished/main
+for UNV_FILE in default.cfg server.cfg configs scripts; do
+  test -e "$UNV_FILE" && cp -alu "$UNV_FILE" ~/.unvanquished/config/
+done
+for UNV_FILE in maprotation.cfg layouts; do
+  test -e "$UNV_FILE" && cp -alu "$UNV_FILE" ~/.unvanquished/game/
+done
+
+cd ~/.Unvanquished/main/profiles/"$NAME"
+test -e keybindings.cfg && cp -alu keybindings.cfg ~/.unvanquished/config/
+test -e pubkey          && cp -alu pubkey	  ~/.unvanquished/
+chmod go= ~/.unvanquished/pubkey
+test -e autogen.cfg && grep '^seta name ' autogen.cfg >~/.unvanquished/config/autogen.cfg
+
+echo "Basic profile for '$NAME' has been copied into ~/.unvanquished."
+echo "Some local server configuration (if present) has also been copied."
+echo 'Most settings have not been transferred.'
+echo 'You should check the ocnfiguration (in ~/.unvanquished).'
+echo 'Anything missing is in ~/.Unvanquished, which you may remove once done.'
