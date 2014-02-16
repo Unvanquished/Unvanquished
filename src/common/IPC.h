@@ -38,7 +38,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "String.h"
 #include <limits>
 #include "Util.h"
-#include "../libs/nacl/nacl.h"
 #include "../engine/qcommon/q_shared.h"
 #include "../engine/qcommon/qcommon.h"
 
@@ -372,60 +371,121 @@ template<> struct SerializeTraits<std::string> {
 	}
 };
 
-// IPC message, which automatically serializes and deserializes objects
-template<uint32_t Id, typename... T> class Message: public Writer {
-	template<size_t Index, typename Tuple> static void FillTuple(Tuple&, Reader&) {}
-	template<size_t Index, typename Type0, typename... Types, typename Tuple> static void FillTuple(Tuple& tuple, Reader& stream)
-	{
-		std::get<Index>(tuple) = stream.Read<Type0>();
-		FillTuple<Index + 1, Types...>(tuple, stream);
-	}
-
-	template<size_t Index> void SerializeImpl() {}
-	template<size_t Index, typename Arg0, typename... Args> void SerializeImpl(Arg0&& arg0, Args&&... args)
-	{
-		Write<typename std::tuple_element<Index, std::tuple<T...>>::type>(std::forward<Arg0>(arg0));
-		SerializeImpl<Index + 1>(std::forward<Args>(args)...);
-	}
-
-public:
-	// Construct a message for sending. The message object contains a Writer which
-	// has the actual message data and can be passed to SendMsg().
-	template<typename... Args> Message(Args&&... args)
-	{
-		static_assert(sizeof...(Args) == sizeof...(T), "Incorrect number of arguments for IPC::Message::Serialize");
-		Write<uint32_t>(Id);
-		SerializeImpl<0>(std::forward<Args>(args)...);
-	}
-
-	// Deserialize a message and call the given function with the message arguments
-	template<typename Func> static void Deserialize(Reader& stream, Func&& func)
-	{
-		std::tuple<decltype(stream.Read<T>())...> tuple;
-		FillTuple<0, T...>(tuple, stream);
-		Util::apply(std::forward<Func>(func), std::move(tuple));
-	}
-};
-
 // Message ID to indicate an RPC return
-const uint32_t RETURN = 0xffffffffu;
+const uint32_t ID_RETURN = 0xffffffffu;
 
 // Combine a major and minor ID into a single number
 #define IPC_ID(major, minor) ((((uint16_t)major) << 16) + ((uint16_t)minor))
 
-// Helper function to perform a synchronous RPC. This involves sending a message
-// and then processing all incoming messages until a RETURN is recieved.
-template<typename Func> Reader DoRPC(const Socket& socket, const Writer& writer, Func&& syscallHandler)
+// Asynchronous message which does not wait for a reply
+template<uint32_t Id, typename... T> struct Message {
+	static const uint32_t id = Id;
+	typedef std::tuple<T...> Inputs;
+};
+
+// Synchronous message which waits for a reply. The reply can contain data.
+template<typename InMsg, typename... Out> class SyncMessage {
+	static const uint32_t id = InMsg::id;
+	typedef typename InMsg::Inputs Inputs;
+	typedef std::tuple<Out...> Outputs;
+};
+
+namespace detail {
+
+// Serialize a list of types into a Writer (ignores extra trailing arguments)
+template<typename... Args> void SerializeArgs(Writer&, std::tuple<>&&, Args&&...) {}
+template<typename Type0, typename... Types, typename Arg0, typename... Args> void SerializeArgs(Writer& writer, std::tuple<Type0, Types...>&&, Arg0&& arg0, Args&&... args)
 {
+	writer.Write<Type0>(std::forward<Arg0>(arg0));
+	SerializeArgs(writer, std::tuple<Types...>(), std::forward<Args>(args)...);
+}
+
+// Read a list of types into a tuple starting at the given index
+template<size_t Index, typename Tuple> void FillTuple(Tuple&, Reader&) {}
+template<size_t Index, typename Type0, typename... Types, typename Tuple> void FillTuple(Tuple& tuple, Reader& stream)
+{
+	std::get<Index>(tuple) = stream.Read<Type0>();
+	FillTuple<Index + 1, Types...>(tuple, stream);
+}
+
+// Create a tuple of references from a tuple. The type of reference is the same as that with which the tuple is passed in.
+template<size_t... Seq, typename Tuple> decltype(std::forward_as_tuple(std::get<Seq>(std::declval<Tuple>())...)) RefTuple(Tuple&& tuple, Util::seq<Seq...>)
+{
+	return std::forward_as_tuple(std::get<Seq>(std::forward<Tuple>(tuple))...);
+}
+
+// Implementations of SendMsg for Message and SyncMessage
+template<typename Func, uint32_t Id, typename... MsgArgs, typename... Args> void SendMsg(const Socket& socket, Func&&, Message<Id, MsgArgs...>, Args&&... args)
+{
+	typedef Message<Id, MsgArgs...> Message;
+	static_assert(sizeof...(Args) == std::tuple_size<typename Message::Inputs>::value, "Incorrect number of arguments for IPC::SendMsg");
+
+	Writer writer;
+	writer.Write<uint32_t>(Message::id);
+	SerializeArgs(writer, typename Message::Inputs(), std::forward<Args>(args)...);
+	socket.SendMsg(writer);
+}
+template<typename Func, typename MsgIn, typename... MsgOutArgs, typename... Args> void SendMsg(const Socket& socket, Func&& messageHandler, SyncMessage<MsgIn, MsgOutArgs...>, Args&&... args)
+{
+	typedef SyncMessage<MsgIn, MsgOutArgs...> Message;
+	static_assert(sizeof...(Args) == std::tuple_size<typename Message::Inputs>::value + sizeof...(MsgOutArgs), "Incorrect number of arguments for IPC::SendMsg");
+
+	Writer writer;
+	writer.Write<uint32_t>(Message::id);
+	SerializeArgs(writer, typename Message::Inputs(), std::forward<Args>(args)...);
 	socket.SendMsg(writer);
 
 	while (true) {
 		Reader reader = socket.RecvMsg();
 		uint32_t id = reader.Read<uint32_t>();
-		if (id == RETURN)
-			return reader;
-		syscallHandler(id, std::move(reader));
+		if (id == ID_RETURN) {
+			auto out = std::forward_as_tuple(std::forward<Args>(args)...);
+			FillTuple<std::tuple_size<typename Message::Inputs>::value, MsgOutArgs...>(out, reader);
+			return;
+		}
+		messageHandler(id, std::move(reader));
 	}
+}
+
+// Implementations of HandleMsg for Message and SyncMessage
+template<typename Func, uint32_t Id, typename... MsgArgs> void HandleMsg(const Socket&, Message<Id, MsgArgs...>, IPC::Reader reader, Func&& func)
+{
+	typedef Message<Id, MsgArgs...> Message;
+
+	typename Message::Inputs inputs;
+	FillTuple<0>(inputs, reader);
+	Util::apply(std::forward<Func>(func), std::move(inputs));
+}
+template<typename Func, typename MsgIn, typename... MsgOutArgs> void HandleMsg(const Socket& socket, SyncMessage<MsgIn, MsgOutArgs...>, IPC::Reader reader, Func&& func)
+{
+	typedef SyncMessage<MsgIn, MsgOutArgs...> Message;
+
+	typename Message::Inputs inputs;
+	typename Message::Outputs outputs;
+	FillTuple<0>(inputs, reader);
+	Util::apply(std::forward<Func>(func), std::tuple_cat(RefTuple(std::move(inputs)), RefTuple(outputs)));
+
+	Writer writer;
+	writer.Write<uint32_t>(ID_RETURN);
+	SerializeArgs(writer, typename Message::Outputs(), outputs);
+	socket.SendMsg(writer);
+}
+
+} // namespace detail
+
+// Send a message to the given socket. If the message is synchronous then messageHandler is invoked for all
+// message that are recieved until ID_RETURN is recieved. Values returned by a synchronous message are
+// returned through reference parameters.
+template<typename Msg, typename Func, typename... Args> void SendMsg(const Socket& socket, Func&& messageHandler, Args&&... args)
+{
+	detail::SendMsg(socket, messageHandler, Msg(), std::forward<Args>(args)...);
+}
+
+// Handle an incoming message using a callback function (which can just be a lambda). If the message is
+// synchronous then outputs values are written to using reference parameters.
+template<typename Msg, typename Func> void HandleMsg(const Socket& socket, Reader reader, Func&& func)
+{
+	detail::HandleMsg(socket, Msg(), std::move(reader), std::forward<Func>(func));
 }
 
 } // namespace IPC

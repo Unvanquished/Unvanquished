@@ -66,12 +66,12 @@ public:
 		Free();
 	}
 
-	// Perform an RPC call with the given inputs, returns results in output
-	IPC::Reader DoRPC(const IPC::Writer& writer) const
+	// Send a message to the VM
+	template<typename Msg, typename... Args> void SendMsg(Args&&... args) const
 	{
-		return IPC::DoRPC(rootSocket, writer, [this](uint32_t id, IPC::Reader reader) {
+		IPC::SendMsg(rootSocket, [this](uint32_t id, IPC::Reader reader) {
 			Syscall(id, std::move(reader), rootSocket);
-		});
+		}, std::forward<Args>(args)...);
 	}
 
 protected:
