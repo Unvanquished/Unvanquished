@@ -11,14 +11,14 @@ modification, are permitted provided that the following conditions are met:
     * Redistributions in binary form must reproduce the above copyright
       notice, this list of conditions and the following disclaimer in the
       documentation and/or other materials provided with the distribution.
-    * Neither the name of the <organization> nor the
+    * Neither the name of the Daemon developers nor the
       names of its contributors may be used to endorse or promote products
       derived from this software without specific prior written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
+DISCLAIMED. IN NO EVENT SHALL DAEMON DEVELOPERS BE LIABLE FOR ANY
 DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
 (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
 LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -81,22 +81,22 @@ namespace Log {
 	//TODO add the time (broken for now because it is journaled) use Sys_Milliseconds instead (Utils::Milliseconds ?)
     static const int errorTargets = (1 << GRAPHICAL_CONSOLE) | (1 << TTY_CONSOLE) | (1 << CRASHLOG) | (1 << HUD) | (1 << LOGFILE);
     void CodeSourceError(std::string message) {
-        Log::Dispatch({/*Com_Milliseconds()*/0, "^1Error: " + message}, errorTargets);
+        Log::Dispatch({"^1Error: " + message}, errorTargets);
     }
 
     static const int warnTargets = (1 << GRAPHICAL_CONSOLE) | (1 << TTY_CONSOLE) | (1 << CRASHLOG) | (1 << LOGFILE);
     void CodeSourceWarn(std::string message) {
-        Log::Dispatch({/*Com_Milliseconds()*/0, "^3Warn: " + message}, warnTargets);
+        Log::Dispatch({"^3Warn: " + message}, warnTargets);
     }
 
     static const int noticeTargets = (1 << GRAPHICAL_CONSOLE) | (1 << TTY_CONSOLE) | (1 << CRASHLOG) | (1 << LOGFILE);
     void CodeSourceNotice(std::string message) {
-        Log::Dispatch({/*Com_Milliseconds()*/0, message}, noticeTargets);
+        Log::Dispatch({message}, noticeTargets);
     }
 
     static const int debugTargets = (1 << GRAPHICAL_CONSOLE) | (1 << TTY_CONSOLE);
     void CodeSourceDebug(std::string message) {
-        Log::Dispatch({/*Com_Milliseconds()*/0, "^5Debug: " + message}, debugTargets);
+        Log::Dispatch({"^5Debug: " + message}, debugTargets);
     }
 }
 

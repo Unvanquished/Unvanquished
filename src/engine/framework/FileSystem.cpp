@@ -56,6 +56,8 @@ const char PAK_DEPS_FILE[] = "DEPS";
 // Default base package
 const char DEFAULT_BASE_PAK[] = "unvanquished";
 
+const char TEMP_SUFFIX[] = ".tmp";
+
 // Cvars to select the base and extra packages to use
 static Cvar::Cvar<std::string> fs_basepak("fs_basepak", "base pak to load", 0, DEFAULT_BASE_PAK);
 static Cvar::Cvar<std::string> fs_extrapaks("fs_extrapaks", "space-seperated list of paks to load in addition to the base pak", 0, "");
@@ -357,6 +359,8 @@ void Initialize()
 	Com_StartupVariable("fs_extrapath");
 	Com_StartupVariable("fs_homepath");
 	Com_StartupVariable("fs_libpath");
+	Com_StartupVariable("fs_extrapaks");
+	Com_StartupVariable("fs_basepak");
 
 	std::string defaultBasePath = DefaultBasePath();
 	std::string defaultHomePath = DefaultHomePath();
@@ -657,8 +661,8 @@ bool IsValid(Str::StringRef path, bool allowDir)
 	}
 
 	// An empty path or a path ending with / is a directory
-	if (!allowDir && nonAlphaNum)
-		return path.empty() || path.back() == '/';
+	if (nonAlphaNum)
+		return allowDir && (path.empty() || path.back() == '/');
 
 	return true;
 }
@@ -1194,11 +1198,15 @@ static void InternalLoadPak(const PakInfo& pak, Opt::optional<uint32_t> expected
 		// Get the file list and calculate the checksum of the package (checksum of all file checksums)
 		checksum = crc32(0, Z_NULL, 0);
 		zipFile.ForEachFile([&pak, &checksum, &hasDeps, &depsOffset](Str::StringRef filename, offset_t offset, uint32_t crc) {
-			if (!Path::IsValid(filename, false)) {
+			// Compatibility hack to get the same checksums as before
+			bool isDir = Str::IsSuffix("/", filename);
+			if (!isDir && !Path::IsValid(filename, false)) {
 				Log::Warn("Invalid filename '%s' in pak '%s'", filename, pak.path);
 				return; // This is effectively a continue, since we are in a lambda
 			}
 			checksum = crc32(*checksum, reinterpret_cast<const Bytef*>(&crc), sizeof(crc));
+			if (isDir)
+				return;
 #ifdef GCC_BROKEN_CXX11
 			fileMap.insert({filename, std::pair<size_t, offset_t>(loadedPaks.size() - 1, offset)});
 #else
@@ -1939,6 +1947,7 @@ Cmd::CompletionResult CompleteFilename(Str::StringRef prefix, Str::StringRef roo
 struct handleData_t {
 	bool isOpen;
 	bool isPakFile;
+	Opt::optional<std::string> renameTo;
 
 	// Normal file info
 	bool forceFlush;
@@ -1952,6 +1961,8 @@ struct handleData_t {
 #define MAX_FILE_HANDLES 64
 static handleData_t handleTable[MAX_FILE_HANDLES];
 static std::vector<std::tuple<std::string, std::string, uint32_t>> fs_missingPaks;
+
+static Cvar::Cvar<bool> allowRemotePakDir("client.allowRemotePakDir", "Connect to servers that load game data from directories", Cvar::TEMPORARY, false);
 
 static fileHandle_t FS_AllocHandle()
 {
@@ -2003,15 +2014,14 @@ int FS_FOpenFileRead(const char* path, fileHandle_t* handle, qboolean)
 		*handle = 0;
 		return -1;
 	}
-
 	return length;
 }
 
-fileHandle_t FS_FOpenFileWrite(const char* path)
+static fileHandle_t FS_FOpenFileWrite_internal(const char* path, bool temporary)
 {
 	fileHandle_t handle = FS_AllocHandle();
 	try {
-		handleTable[handle].file = FS::HomePath::OpenWrite(path);
+		handleTable[handle].file = FS::HomePath::OpenWrite(temporary ? std::string(path) + FS::TEMP_SUFFIX : path);
 	} catch (std::system_error& err) {
 		Com_Printf("Failed to open '%s' for writing: %s\n", path, err.what());
 		return 0;
@@ -2019,7 +2029,20 @@ fileHandle_t FS_FOpenFileWrite(const char* path)
 	handleTable[handle].forceFlush = false;
 	handleTable[handle].isPakFile = false;
 	handleTable[handle].isOpen = true;
+	if (temporary) {
+		handleTable[handle].renameTo = FS::Path::Build(FS::homePath, path);
+	}
 	return handle;
+}
+
+fileHandle_t FS_FOpenFileWrite(const char* path)
+{
+	return FS_FOpenFileWrite_internal(path, false);
+}
+
+fileHandle_t FS_FOpenFileWriteViaTemporary(const char* path)
+{
+	return FS_FOpenFileWrite_internal(path, true);
 }
 
 fileHandle_t FS_FOpenFileAppend(const char* path)
@@ -2039,7 +2062,7 @@ fileHandle_t FS_FOpenFileAppend(const char* path)
 
 fileHandle_t FS_SV_FOpenFileWrite(const char* path)
 {
-	return FS_FOpenFileWrite(path);
+	return FS_FOpenFileWrite_internal(path, false);
 }
 
 int FS_SV_FOpenFileRead(const char* path, fileHandle_t* handle)
@@ -2074,7 +2097,8 @@ int FS_Game_FOpenFileByMode(const char* path, fileHandle_t* handle, fsMode_t mod
 		}
 
 	case FS_WRITE:
-		*handle = FS_FOpenFileWrite(FS::Path::Build("game", path).c_str());
+	case FS_WRITE_VIA_TEMPORARY:
+		*handle = FS_FOpenFileWrite_internal(FS::Path::Build("game", path).c_str(), mode == FS_WRITE_VIA_TEMPORARY);
 		return *handle == 0 ? -1 : 0;
 
 	case FS_APPEND:
@@ -2100,6 +2124,16 @@ int FS_FCloseFile(fileHandle_t handle)
 	} else {
 		try {
 			handleTable[handle].file.Close();
+			if (handleTable[handle].renameTo) {
+				std::string renameTo = std::move(*handleTable[handle].renameTo);
+				handleTable[handle].renameTo = Opt::nullopt; // tidy up after abusing std::move
+				try {
+					FS::RawPath::MoveFile(renameTo, renameTo + FS::TEMP_SUFFIX);
+				} catch (std::system_error& err) {
+					Com_Printf("Failed to replace file %s: %s\n", renameTo.c_str(), err.what());
+					return -1;
+				}
+			}
 			return 0;
 		} catch (std::system_error& err) {
 			Com_Printf("Failed to close file: %s\n", err.what());
@@ -2381,8 +2415,6 @@ const char* FS_LoadedPaks()
 	static char info[BIG_INFO_STRING];
 	info[0] = '\0';
 	for (const FS::PakInfo& x: FS::PakPath::GetLoadedPaks()) {
-		if (!x.checksum)
-			continue;
 		if (info[0])
 			Q_strcat(info, sizeof(info), " ");
 		Q_strcat(info, sizeof(info), FS::MakePakName(x.name, x.version, x.checksum).c_str());
@@ -2419,6 +2451,14 @@ void FS_LoadBasePak()
 	}
 }
 
+void FS_LoadAllMaps()
+{
+	for (auto& x: FS::GetAvailablePaks()) {
+		if (Str::IsPrefix("map-", x.name))
+			FS_LoadPak(x.name.c_str());
+	}
+}
+
 bool FS_LoadServerPaks(const char* paks)
 {
 	Cmd::Args args(paks);
@@ -2426,9 +2466,12 @@ bool FS_LoadServerPaks(const char* paks)
 	for (auto& x: args) {
 		std::string name, version;
 		Opt::optional<uint32_t> checksum;
-		if (!FS::ParsePakName(x.data(), x.data() + x.size(), name, version, checksum) || !checksum) {
+		if (!FS::ParsePakName(x.data(), x.data() + x.size(), name, version, checksum)) {
 			Com_Error(ERR_DROP, "Invalid pak reference from server: %s", x.c_str());
-			continue;
+		} else if (!checksum) {
+			if (allowRemotePakDir.Get())
+				continue;
+			Com_Error(ERR_DROP, "The server is configured to load game data from a directory which makes it incompatible with remote clients.");
 		}
 
 		// Keep track of all missing paks

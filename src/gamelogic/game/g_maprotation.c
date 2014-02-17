@@ -123,7 +123,7 @@ qboolean G_MapExists( const char *name )
 {
 	// Due to filesystem changes, this is no longer the correct way to check if a map exists
 	//return trap_FS_FOpenFile( va( "maps/%s.bsp", name ), NULL, FS_READ );
-	return qtrue;
+	return trap_FindPak( va( "map-%s", name ) );
 }
 
 /*

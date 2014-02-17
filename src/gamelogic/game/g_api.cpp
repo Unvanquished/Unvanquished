@@ -554,6 +554,15 @@ qboolean trap_AreasConnected(int area1, int area2)
 	return output.ReadInt();
 }
 
+qboolean trap_FindPak( const char *name )
+{
+	RPC::Writer input;
+	input.WriteInt(G_FINDPAK);
+	input.WriteString(name);
+	RPC::Reader output = DoRPC(input);
+	return output.ReadInt();
+}
+
 int trap_BotAllocateClient(int clientNum)
 {
 	RPC::Writer input;

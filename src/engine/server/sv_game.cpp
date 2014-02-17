@@ -70,7 +70,7 @@ playerState_t  *SV_GameClientNum( int num )
 	{
 		Com_Error( ERR_DROP, "SV_GameClientNum: bad num" );
 	}
-	
+
 	ps = ( playerState_t * )( ( byte * ) sv.gameClients + sv.gameClientSize * ( num ) );
 
 	return ps;
@@ -736,6 +736,9 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 			VM_CheckBlock( args[1], args[2], "STRFTIME" );
 			SV_GetTimeString( ( char * ) VMA( 1 ), args[ 2 ], ( const char * ) VMA( 3 ), ( const qtime_t * ) VMA( 4 ) );
 			return 0;
+
+		case G_FINDPAK:
+			return !!FS::FindPak( ( const char * ) VMA( 1 ) );
 
 		case BOT_NAV_SETUP:
 			return BotSetupNav( ( const botClass_t * ) VMA( 1 ), ( qhandle_t * ) VMA( 2 ) );
@@ -1681,6 +1684,14 @@ void NaClGameVM::Syscall(int index, RPC::Reader& inputs, RPC::Writer& outputs)
 		inputs.Read(&t, sizeof(qtime_t));
 		SV_GetTimeString(buffer.get(), len, format, &t);
 		outputs.WriteString(buffer.get());
+		break;
+	}
+
+	case G_FINDPAK:
+	{
+		const char* pakName = inputs.ReadString();
+		bool found = FS::FindPak(pakName);
+		outputs.WriteInt(found);
 		break;
 	}
 
