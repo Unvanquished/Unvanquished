@@ -122,6 +122,7 @@ void CloseDesc(const Desc& desc)
 Desc DescFromFile(OSHandleType handle, FileOpenMode mode)
 {
 #ifdef __native_client__
+	Q_UNUSED(mode);
 	return handle;
 #else
 	Desc out;
@@ -305,7 +306,7 @@ Reader Socket::RecvMsg() const
 	iov[0].base = recvBuffer.get();
 	iov[0].length = NACL_ABI_IMC_BYTES_MAX;
 
-	int result = NaClRecieveDatagram(handle, &hdr, 0);
+	int result = NaClReceiveDatagram(handle, &hdr, 0);
 	if (result == -1) {
 		char error[256];
 		NaClGetLastErrorString(error, sizeof(error));
@@ -468,7 +469,7 @@ SharedMemory SharedMemory::FromDesc(const Desc& desc)
 		Com_Error(ERR_DROP, "IPC: Failed to stat shared memory handle: %s", error);
 	}
 	out.size = st.st_size;
-	out.handle = desc
+	out.handle = desc;
 #else
 	out.size = desc.size;
 	out.handle = desc.handle;
