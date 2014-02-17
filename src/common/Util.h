@@ -31,7 +31,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef COMMON_UTIL_H_
 #define COMMON_UTIL_H_
 
-// Various utility functions
+// Various utilities
 
 #include "../engine/qcommon/q_shared.h"
 #include <utility>
@@ -73,21 +73,31 @@ template<size_t N> struct gen_seq: concat<typename gen_seq<N / 2>::type, typenam
 template<> struct gen_seq<0>: seq<>{};
 template<> struct gen_seq<1>: seq<0>{};
 
-namespace detail {
+// Simple type list template, useful for pattern matching in functions
+template<typename... T> struct TypeList {};
+template<typename T> struct TypeListFromTuple {};
+template<typename... T> struct TypeListFromTuple<std::tuple<T...>>: TypeList<T...> {};
 
+// Create a tuple of references from a tuple. The type of reference is the same as that with which the tuple is passed in.
+template<typename Tuple, size_t... Seq> decltype(std::forward_as_tuple(std::get<Seq>(std::declval<Tuple>())...)) ref_tuple_impl(Tuple&& tuple, seq<Seq...>)
+{
+	return std::forward_as_tuple(std::get<Seq>(std::forward<Tuple>(tuple))...);
+}
+template<typename Tuple> decltype(ref_tuple_impl(std::declval<Tuple>(), gen_seq<std::tuple_size<typename std::decay<Tuple>::type>::value>())) ref_tuple(Tuple&& tuple)
+{
+	return ref_tuple_impl(std::forward<Tuple>(tuple), gen_seq<std::tuple_size<typename std::decay<Tuple>::type>::value>());
+}
+
+// Invoke a function using parameters from a tuple
 template<typename Func, typename Tuple, size_t... Seq>
 decltype(std::declval<Func>()(std::get<Seq>(std::declval<Tuple>())...)) apply_impl(Func&& func, Tuple&& tuple, seq<Seq...>)
 {
 	return std::forward<Func>(func)(std::get<Seq>(std::forward<Tuple>(tuple))...);
 }
-
-} // namespace detail
-
-// Invoke a function using parameters from a tuple
 template<typename Func, typename Tuple>
-decltype(detail::apply_impl(std::declval<Func>(), std::declval<Tuple>(), gen_seq<std::tuple_size<typename std::decay<Tuple>::type>::value>())) apply(Func&& func, Tuple&& tuple)
+decltype(apply_impl(std::declval<Func>(), std::declval<Tuple>(), gen_seq<std::tuple_size<typename std::decay<Tuple>::type>::value>())) apply(Func&& func, Tuple&& tuple)
 {
-	return detail::apply_impl(std::forward<Func>(func), std::forward<Tuple>(tuple), gen_seq<std::tuple_size<typename std::decay<Tuple>::type>::value>());
+	return apply_impl(std::forward<Func>(func), std::forward<Tuple>(tuple), gen_seq<std::tuple_size<typename std::decay<Tuple>::type>::value>());
 }
 
 // Utility class to hold a possibly uninitialized object.

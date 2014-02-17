@@ -383,35 +383,42 @@ template<uint32_t Id, typename... T> struct Message {
 	typedef std::tuple<T...> Inputs;
 };
 
+// Reply class which should only be used for the second parameter of SyncMessage
+template<typename... T> struct Reply {
+	typedef std::tuple<T...> Outputs;
+};
+
 // Synchronous message which waits for a reply. The reply can contain data.
-template<typename InMsg, typename... Out> class SyncMessage {
-	static const uint32_t id = InMsg::id;
-	typedef typename InMsg::Inputs Inputs;
-	typedef std::tuple<Out...> Outputs;
+template<typename Msg, typename Reply> struct SyncMessage {
+	static const uint32_t id = Msg::id;
+	typedef typename Msg::Inputs Inputs;
+	typedef typename Reply::Outputs Outputs;
 };
 
 namespace detail {
 
 // Serialize a list of types into a Writer (ignores extra trailing arguments)
-template<typename... Args> void SerializeArgs(Writer&, std::tuple<>&&, Args&&...) {}
-template<typename Type0, typename... Types, typename Arg0, typename... Args> void SerializeArgs(Writer& writer, std::tuple<Type0, Types...>&&, Arg0&& arg0, Args&&... args)
+template<typename... Args> void SerializeArgs(Util::TypeList<>, Writer&, Args&&...) {}
+template<typename Type0, typename... Types, typename Arg0, typename... Args> void SerializeArgs(Util::TypeList<Type0, Types...>, Writer& writer, Arg0&& arg0, Args&&... args)
 {
 	writer.Write<Type0>(std::forward<Arg0>(arg0));
-	SerializeArgs(writer, std::tuple<Types...>(), std::forward<Args>(args)...);
+	SerializeArgs(Util::TypeList<Types...>(), writer, std::forward<Args>(args)...);
+}
+template<typename Types, typename Tuple, size_t... Seq> void SerializeTuple(Types, Writer& writer, Tuple&& tuple, Util::seq<Seq...>)
+{
+	SerializeArgs(Types(), writer, std::get<Seq>(std::forward<Tuple>(tuple))...);
+}
+template<typename Types, typename Tuple> void SerializeTuple(Types, Writer& writer, Tuple&& tuple)
+{
+	SerializeTuple(Types(), writer, std::forward<Tuple>(tuple), Util::gen_seq<std::tuple_size<typename std::decay<Tuple>::type>::value>());
 }
 
 // Read a list of types into a tuple starting at the given index
-template<size_t Index, typename Tuple> void FillTuple(Tuple&, Reader&) {}
-template<size_t Index, typename Type0, typename... Types, typename Tuple> void FillTuple(Tuple& tuple, Reader& stream)
+template<size_t Index, typename Tuple> void FillTuple(Util::TypeList<>, Tuple&, Reader&) {}
+template<size_t Index, typename Type0, typename... Types, typename Tuple> void FillTuple(Util::TypeList<Type0, Types...>, Tuple& tuple, Reader& stream)
 {
 	std::get<Index>(tuple) = stream.Read<Type0>();
-	FillTuple<Index + 1, Types...>(tuple, stream);
-}
-
-// Create a tuple of references from a tuple. The type of reference is the same as that with which the tuple is passed in.
-template<size_t... Seq, typename Tuple> decltype(std::forward_as_tuple(std::get<Seq>(std::declval<Tuple>())...)) RefTuple(Tuple&& tuple, Util::seq<Seq...>)
-{
-	return std::forward_as_tuple(std::get<Seq>(std::forward<Tuple>(tuple))...);
+	FillTuple<Index + 1>(Util::TypeList<Types...>(), tuple, stream);
 }
 
 // Implementations of SendMsg for Message and SyncMessage
@@ -422,17 +429,17 @@ template<typename Func, uint32_t Id, typename... MsgArgs, typename... Args> void
 
 	Writer writer;
 	writer.Write<uint32_t>(Message::id);
-	SerializeArgs(writer, typename Message::Inputs(), std::forward<Args>(args)...);
+	SerializeArgs(Util::TypeListFromTuple<typename Message::Inputs>(), writer, std::forward<Args>(args)...);
 	socket.SendMsg(writer);
 }
-template<typename Func, typename MsgIn, typename... MsgOutArgs, typename... Args> void SendMsg(const Socket& socket, Func&& messageHandler, SyncMessage<MsgIn, MsgOutArgs...>, Args&&... args)
+template<typename Func, typename Msg, typename Reply, typename... Args> void SendMsg(const Socket& socket, Func&& messageHandler, SyncMessage<Msg, Reply>, Args&&... args)
 {
-	typedef SyncMessage<MsgIn, MsgOutArgs...> Message;
-	static_assert(sizeof...(Args) == std::tuple_size<typename Message::Inputs>::value + sizeof...(MsgOutArgs), "Incorrect number of arguments for IPC::SendMsg");
+	typedef SyncMessage<Msg, Reply> Message;
+	static_assert(sizeof...(Args) == std::tuple_size<typename Message::Inputs>::value + std::tuple_size<typename Message::Outputs>::value, "Incorrect number of arguments for IPC::SendMsg");
 
 	Writer writer;
 	writer.Write<uint32_t>(Message::id);
-	SerializeArgs(writer, typename Message::Inputs(), std::forward<Args>(args)...);
+	SerializeArgs(Util::TypeListFromTuple<typename Message::Inputs>(), writer, std::forward<Args>(args)...);
 	socket.SendMsg(writer);
 
 	while (true) {
@@ -440,7 +447,7 @@ template<typename Func, typename MsgIn, typename... MsgOutArgs, typename... Args
 		uint32_t id = reader.Read<uint32_t>();
 		if (id == ID_RETURN) {
 			auto out = std::forward_as_tuple(std::forward<Args>(args)...);
-			FillTuple<std::tuple_size<typename Message::Inputs>::value, MsgOutArgs...>(out, reader);
+			FillTuple<std::tuple_size<typename Message::Inputs>::value>(Util::TypeListFromTuple<typename Message::Outputs>(), out, reader);
 			return;
 		}
 		messageHandler(id, std::move(reader));
@@ -453,21 +460,21 @@ template<typename Func, uint32_t Id, typename... MsgArgs> void HandleMsg(const S
 	typedef Message<Id, MsgArgs...> Message;
 
 	typename Message::Inputs inputs;
-	FillTuple<0>(inputs, reader);
+	FillTuple<0>(Util::TypeListFromTuple<typename Message::Inputs>(), inputs, reader);
 	Util::apply(std::forward<Func>(func), std::move(inputs));
 }
-template<typename Func, typename MsgIn, typename... MsgOutArgs> void HandleMsg(const Socket& socket, SyncMessage<MsgIn, MsgOutArgs...>, IPC::Reader reader, Func&& func)
+template<typename Func, typename Msg, typename Reply> void HandleMsg(const Socket& socket, SyncMessage<Msg, Reply>, IPC::Reader reader, Func&& func)
 {
-	typedef SyncMessage<MsgIn, MsgOutArgs...> Message;
+	typedef SyncMessage<Msg, Reply> Message;
 
 	typename Message::Inputs inputs;
 	typename Message::Outputs outputs;
-	FillTuple<0>(inputs, reader);
-	Util::apply(std::forward<Func>(func), std::tuple_cat(RefTuple(std::move(inputs)), RefTuple(outputs)));
+	FillTuple<0>(Util::TypeListFromTuple<typename Message::Inputs>(), inputs, reader);
+	Util::apply(std::forward<Func>(func), std::tuple_cat(Util::ref_tuple(std::move(inputs)), Util::ref_tuple(outputs)));
 
 	Writer writer;
 	writer.Write<uint32_t>(ID_RETURN);
-	SerializeArgs(writer, typename Message::Outputs(), outputs);
+	SerializeTuple(Util::TypeListFromTuple<typename Message::Outputs>(), writer, std::move(outputs));
 	socket.SendMsg(writer);
 }
 
