@@ -58,8 +58,6 @@ option( BUILD_GAME_NACL "Build NaCl game logic" 0)
 option( BUILD_GAME_QVM_NATIVE "Build native game logic " 1)
 option( BUILD_GAME_QVM "Build QVM game logic" 1)
 option( BUILD_TTY_CLIENT "Build Daemon headless client" 0 )
-cmake_dependent_option( BUILD_OLD_RENDERER "Build old renderer library" 1 BUILD_CLIENT 0 )
-cmake_dependent_option( BUILD_NEW_RENDERER "Build new renderer library" 1 BUILD_CLIENT 0 )
 
 cmake_dependent_option( USE_MUMBLE "Compile with support for Mumble" 1 BUILD_CLIENT 0 )
 cmake_dependent_option( USE_VOIP "Compile with VOIP support" 0 "BUILD_CLIENT OR BUILD_SERVER OR BUILD_TTY_CLIENT" 0 )
@@ -428,25 +426,38 @@ set( RENDERERLIST
   ${ENGINE_DIR}/sys/sdl2_compat.cpp
   ${ENGINE_DIR}/sys/sdl_glimp.cpp
   ${ENGINE_DIR}/sys/sdl_gamma.cpp
+  ${ENGINE_DIR}/renderer/gl_shader.cpp
   ${ENGINE_DIR}/renderer/tr_animation.cpp
-  ${ENGINE_DIR}/renderer/tr_animation_mds.cpp
   ${ENGINE_DIR}/renderer/tr_backend.cpp
   ${ENGINE_DIR}/renderer/tr_bsp.cpp
   ${ENGINE_DIR}/renderer/tr_cmds.cpp
-  ${ENGINE_DIR}/renderer/tr_cmesh.cpp
   ${ENGINE_DIR}/renderer/tr_curve.cpp
   ${ENGINE_DIR}/renderer/tr_decals.cpp
+  ${ENGINE_DIR}/renderer/tr_fbo.cpp
   ${ENGINE_DIR}/renderer/tr_flares.cpp
+  ${ENGINE_DIR}/renderer/tr_fog.cpp
   ${ENGINE_DIR}/renderer/tr_font.cpp
   ${ENGINE_DIR}/renderer/tr_image.cpp
+  ${ENGINE_DIR}/renderer/tr_image_crn.cpp
+  ${ENGINE_DIR}/renderer/tr_image_dds.cpp
+  ${ENGINE_DIR}/renderer/tr_image_exr.cpp
+  ${ENGINE_DIR}/renderer/tr_image_jpg.cpp
+  ${ENGINE_DIR}/renderer/tr_image_ktx.cpp
+  ${ENGINE_DIR}/renderer/tr_image_png.cpp
+  ${ENGINE_DIR}/renderer/tr_image_tga.cpp
+  ${ENGINE_DIR}/renderer/tr_image_webp.cpp
   ${ENGINE_DIR}/renderer/tr_init.cpp
   ${ENGINE_DIR}/renderer/tr_light.cpp
   ${ENGINE_DIR}/renderer/tr_main.cpp
   ${ENGINE_DIR}/renderer/tr_marks.cpp
   ${ENGINE_DIR}/renderer/tr_mesh.cpp
   ${ENGINE_DIR}/renderer/tr_model.cpp
+  ${ENGINE_DIR}/renderer/tr_model_md3.cpp
   ${ENGINE_DIR}/renderer/tr_model_md5.cpp
   ${ENGINE_DIR}/renderer/tr_model_iqm.cpp
+  ${ENGINE_DIR}/renderer/tr_model_mdc.cpp
+  ${ENGINE_DIR}/renderer/tr_model_psk.cpp
+  ${ENGINE_DIR}/renderer/tr_model_skel.cpp
   ${ENGINE_DIR}/renderer/tr_noise.cpp
   ${ENGINE_DIR}/renderer/tr_scene.cpp
   ${ENGINE_DIR}/renderer/tr_shade.cpp
@@ -456,67 +467,15 @@ set( RENDERERLIST
   ${ENGINE_DIR}/renderer/tr_skin.cpp
   ${ENGINE_DIR}/renderer/tr_sky.cpp
   ${ENGINE_DIR}/renderer/tr_surface.cpp
+  ${ENGINE_DIR}/renderer/tr_vbo.cpp
   ${ENGINE_DIR}/renderer/tr_world.cpp
-  ${ENGINE_DIR}/renderer/tr_local.h
-  ${ENGINE_DIR}/renderer/tr_types.h
-  ${ENGINE_DIR}/renderer/tr_public.h
-  ${ENGINE_DIR}/renderer/anorms256.h
-)
-
-set( RENDERERGLLIST
-  ${ENGINE_DIR}/sys/sdl2_compat.cpp
-  ${ENGINE_DIR}/sys/sdl_glimp.cpp
-  ${ENGINE_DIR}/sys/sdl_gamma.cpp
-  ${ENGINE_DIR}/rendererGL/gl_shader.cpp
-  ${ENGINE_DIR}/rendererGL/tr_animation.cpp
-  ${ENGINE_DIR}/rendererGL/tr_backend.cpp
-  ${ENGINE_DIR}/rendererGL/tr_bsp.cpp
-  ${ENGINE_DIR}/rendererGL/tr_cmds.cpp
-  ${ENGINE_DIR}/rendererGL/tr_curve.cpp
-  ${ENGINE_DIR}/rendererGL/tr_decals.cpp
-  ${ENGINE_DIR}/rendererGL/tr_fbo.cpp
-  ${ENGINE_DIR}/rendererGL/tr_flares.cpp
-  ${ENGINE_DIR}/rendererGL/tr_fog.cpp
-  ${ENGINE_DIR}/renderer/tr_font.cpp
-  ${ENGINE_DIR}/rendererGL/tr_image.cpp
-  ${ENGINE_DIR}/rendererGL/tr_image_crn.cpp
-  ${ENGINE_DIR}/rendererGL/tr_image_dds.cpp
-  ${ENGINE_DIR}/rendererGL/tr_image_exr.cpp
-  ${ENGINE_DIR}/rendererGL/tr_image_jpg.cpp
-  ${ENGINE_DIR}/rendererGL/tr_image_ktx.cpp
-  ${ENGINE_DIR}/rendererGL/tr_image_png.cpp
-  ${ENGINE_DIR}/rendererGL/tr_image_tga.cpp
-  ${ENGINE_DIR}/rendererGL/tr_image_webp.cpp
-  ${ENGINE_DIR}/rendererGL/tr_init.cpp
-  ${ENGINE_DIR}/rendererGL/tr_light.cpp
-  ${ENGINE_DIR}/rendererGL/tr_main.cpp
-  ${ENGINE_DIR}/rendererGL/tr_marks.cpp
-  ${ENGINE_DIR}/rendererGL/tr_mesh.cpp
-  ${ENGINE_DIR}/rendererGL/tr_model.cpp
-  ${ENGINE_DIR}/rendererGL/tr_model_md3.cpp
-  ${ENGINE_DIR}/rendererGL/tr_model_md5.cpp
-  ${ENGINE_DIR}/rendererGL/tr_model_iqm.cpp
-  ${ENGINE_DIR}/rendererGL/tr_model_mdc.cpp
-  ${ENGINE_DIR}/rendererGL/tr_model_psk.cpp
-  ${ENGINE_DIR}/rendererGL/tr_model_skel.cpp
-  ${ENGINE_DIR}/rendererGL/tr_noise.cpp
-  ${ENGINE_DIR}/rendererGL/tr_scene.cpp
-  ${ENGINE_DIR}/rendererGL/tr_shade.cpp
-  ${ENGINE_DIR}/rendererGL/tr_shade_calc.cpp
-  ${ENGINE_DIR}/rendererGL/tr_shader.cpp
-  ${ENGINE_DIR}/rendererGL/tr_shadows.cpp
-  ${ENGINE_DIR}/rendererGL/tr_skin.cpp
-  ${ENGINE_DIR}/rendererGL/tr_sky.cpp
-  ${ENGINE_DIR}/rendererGL/tr_surface.cpp
-  ${ENGINE_DIR}/rendererGL/tr_vbo.cpp
-  ${ENGINE_DIR}/rendererGL/tr_world.cpp
   ${ENGINE_DIR}/qcommon/md4.cpp
   ${LIB_DIR}/openexr/half.cpp
-  ${ENGINE_DIR}/rendererGL/tr_local.h
+  ${ENGINE_DIR}/renderer/tr_local.h
   ${ENGINE_DIR}/renderer/tr_public.h
-  ${ENGINE_DIR}/rendererGL/gl_shader.h
-  ${ENGINE_DIR}/rendererGL/tr_image.h
-  ${ENGINE_DIR}/rendererGL/tr_model_skel.h
+  ${ENGINE_DIR}/renderer/gl_shader.h
+  ${ENGINE_DIR}/renderer/tr_image.h
+  ${ENGINE_DIR}/renderer/tr_model_skel.h
 )
 
 set( SERVERLIST
@@ -555,6 +514,8 @@ set( ENGINELIST
   ${ENGINE_DIR}/framework/FileSystem.h
   ${ENGINE_DIR}/framework/LogSystem.cpp
   ${ENGINE_DIR}/framework/LogSystem.h
+  ${ENGINE_DIR}/framework/Resource.cpp
+  ${ENGINE_DIR}/framework/Resource.h
   ${ENGINE_DIR}/framework/VirtualMachine.cpp
   ${ENGINE_DIR}/framework/VirtualMachine.h
   ${ENGINE_DIR}/qcommon/cm_load.cpp
@@ -1029,7 +990,6 @@ endif()
 # These variables are defined
 # LIBS_BASE, LIBSRC_BASE
 # LIBS_ENGINE, LIBSRC_ENGINE
-# LIBS_RENDERER, LIBSRC_RENDERER
 # LIBS_BASECLIENT, LIBSRC_BASECLIENT
 # LIBS_CLIENT, LIBSRC_CLIENT
 
@@ -1097,7 +1057,7 @@ include_directories( ${LIB_DIR}/nacl )
 set( LIBSRC_ENGINE ${LIBSRC_ENGINE} ${NACLLIST_NATIVE} )
 
 # SDL, required for all targets on win32 because of iconv
-if( BUILD_CLIENT OR BUILD_NEW_RENDERER OR BUILD_OLD_RENDERER OR ( WIN32 AND (BUILD_TTY_CLIENT OR BUILD_SERVER ) ) )
+if( BUILD_CLIENT OR ( WIN32 AND (BUILD_TTY_CLIENT OR BUILD_SERVER ) ) )
   if( USE_SDL2 )
     find_package( SDL2 REQUIRED )
     include_directories( ${SDL2_INCLUDE_DIR} )
@@ -1106,8 +1066,6 @@ if( BUILD_CLIENT OR BUILD_NEW_RENDERER OR BUILD_OLD_RENDERER OR ( WIN32 AND (BUI
     else()
       set( LIBS_CLIENT ${LIBS_CLIENT} ${SDL2_LIBRARY} )
     endif()
-    set( LIBS_RENDERER ${LIBS_RENDERER} ${SDL2_LIBRARY} )
-    set( LIBS_RENDERERGL ${LIBS_RENDERERGL} ${SDL2_LIBRARY} )
   else()
     find_package( SDL REQUIRED )
     include_directories( ${SDL_INCLUDE_DIR} )
@@ -1116,8 +1074,6 @@ if( BUILD_CLIENT OR BUILD_NEW_RENDERER OR BUILD_OLD_RENDERER OR ( WIN32 AND (BUI
     else()
       set( LIBS_CLIENT ${LIBS_CLIENT} ${SDL_LIBRARY} )
     endif()
-    set( LIBS_RENDERER ${LIBS_RENDERER} ${SDL_LIBRARY} )
-    set( LIBS_RENDERERGL ${LIBS_RENDERERGL} ${SDL_LIBRARY} )
     if( APPLE )
       # Mac OS X does not provide a SDLMain.dylib so we must compile our own
       add_library( INTERNAL_SDLMain ${ENGINE_DIR}/sys/SDLMain.mm )
@@ -1184,55 +1140,52 @@ if( BUILD_CLIENT )
 endif()
 
 # WebP
-if( BUILD_NEW_RENDERER OR BUILD_OLD_RENDERER )
+if( BUILD_CLIENT )
   find_package( WebP REQUIRED )
   include_directories( ${WEBP_INCLUDE_DIRS} )
-  set( LIBS_RENDERER ${LIBS_RENDERER} ${WEBP_LIBRARIES} )
+  set( LIBS_CLIENT ${LIBS_CLIENT} ${WEBP_LIBRARIES} )
 endif()
 
 # JPEG
-if( BUILD_NEW_RENDERER OR BUILD_OLD_RENDERER )
+if( BUILD_CLIENT )
   find_package( JPEG REQUIRED )
   include_directories( ${JPEG_INCLUDE_DIR} )
-  set( LIBS_RENDERER ${LIBS_RENDERER} ${JPEG_LIBRARIES} )
+  set( LIBS_CLIENT ${LIBS_CLIENT} ${JPEG_LIBRARIES} )
 endif()
 
 # PNG
-if( BUILD_NEW_RENDERER OR BUILD_OLD_RENDERER )
+if( BUILD_CLIENT )
   find_package( PNG REQUIRED )
   include_directories( ${PNG_INCLUDE_DIRS} )
-  set( LIBS_RENDERER ${LIBS_RENDERER} ${PNG_LIBRARIES} )
+  set( LIBS_CLIENT ${LIBS_CLIENT} ${PNG_LIBRARIES} )
 endif()
 
 # Freetype
-if( BUILD_NEW_RENDERER OR BUILD_OLD_RENDERER )
+if( BUILD_CLIENT )
   find_package( Freetype REQUIRED )
   include_directories( ${FREETYPE_INCLUDE_DIRS} )
-  set( LIBS_RENDERER ${LIBS_RENDERER} ${FREETYPE_LIBRARIES} )
+  set( LIBS_CLIENT ${LIBS_CLIENT} ${FREETYPE_LIBRARIES} )
 endif()
 
 # GLEW
-if( BUILD_CLIENT OR BUILD_NEW_RENDERER OR BUILD_OLD_RENDERER )
+if( BUILD_CLIENT )
   find_package( GLEW REQUIRED )
   include_directories( ${GLEW_INCLUDE_DIR} )
-  set( LIBS_RENDERER ${LIBS_RENDERER} ${GLEW_LIBRARIES} )
   set( LIBS_CLIENT ${LIBS_CLIENT} ${GLEW_LIBRARIES} )
 endif()
 
 # OpenGL
-if( BUILD_CLIENT OR BUILD_NEW_RENDERER OR BUILD_OLD_RENDERER )
+if( BUILD_CLIENT )
   find_package( OpenGL REQUIRED )
   include_directories( ${OPENGL_INCLUDE_DIR} )
-  set( LIBS_RENDERER ${LIBS_RENDERER} ${OPENGL_LIBRARIES} )
   set( LIBS_CLIENT ${LIBS_CLIENT} ${OPENGL_LIBRARIES} )
 endif()
 
 # X11
-if( LINUX AND ( BUILD_CLIENT OR BUILD_NEW_RENDERER OR BUILD_OLD_RENDERER ) )
+if( LINUX AND BUILD_CLIENT )
   find_package( X11 REQUIRED )
   include_directories( ${X11_INCLUDE_DIRS} )
   set( LIBS_CLIENT ${LIBS_CLIENT} ${X11_LIBRARIES} )
-  set( LIBS_RENDERER ${LIBS_RENDERER} ${X11_LIBRARIES} )
 endif()
 
 # OpenAL
@@ -1506,8 +1459,11 @@ GAMEMODULE( NAME ui
 ################################################################################
 
 if( BUILD_CLIENT )
-  add_executable( client WIN32 ${SERVERLIST} ${CLIENTBASELIST} ${CLIENTLIST} ${SDLLIST} ${ENGINELIST} ${SHAREDLIST}
+  add_executable( client WIN32 ${SERVERLIST} ${CLIENTBASELIST} ${CLIENTLIST} ${RENDERERLIST} ${SDLLIST} ${ENGINELIST} ${SHAREDLIST}
     ${LIBSRC_BASE} ${LIBSRC_ENGINE} ${LIBSRC_CLIENTBASE} ${LIBSRC_CLIENT} ${WIN_RC} )
+  if( USE_SMP )
+    set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS SMP )
+  endif()
   target_link_libraries( client ${LIBS_CLIENT} ${LIBS_CLIENTBASE} ${LIBS_ENGINE} ${LIBS_BASE} )
   if( USE_VOIP )
     # Set it here so the tty client doesn't need to depend on speex
@@ -1533,24 +1489,4 @@ if( BUILD_TTY_CLIENT )
   target_link_libraries( ttyclient ${LIBS_CLIENTBASE} ${LIBS_ENGINE} ${LIBS_BASE} )
   set_property( TARGET ttyclient APPEND PROPERTY COMPILE_DEFINITIONS BUILD_TTY_CLIENT REF_HARD_LINKED )
   set_target_properties( ttyclient PROPERTIES OUTPUT_NAME "daemon-tty" PREFIX "" )
-endif()
-
-################################################################################
-# Renderers
-################################################################################
-
-if( BUILD_OLD_RENDERER )
-  add_library( renderer MODULE ${RENDERERLIST} ${SHAREDLIST} ${LIBSRC_BASE} ${LIBSRC_RENDERER} )
-  target_link_libraries( renderer ${LIBS_RENDERER} ${LIBS_BASE} )
-  set_target_properties( renderer PROPERTIES OUTPUT_NAME "rendererGL" PREFIX "" )
-endif()
-
-if( BUILD_NEW_RENDERER )
-  add_library( rendererGL MODULE ${RENDERERGLLIST} ${SHAREDLIST} ${LIBSRC_BASE} ${LIBSRC_RENDERER} )
-  set_property( TARGET rendererGL APPEND PROPERTY COMPILE_DEFINITIONS USE_XREAL_RENDERER )
-  target_link_libraries( rendererGL ${LIBS_RENDERER} ${LIBS_BASE} )
-  set_target_properties( rendererGL PROPERTIES OUTPUT_NAME "rendererGL3" PREFIX "" )
-  if( USE_SMP )
-    set_property( TARGET rendererGL APPEND PROPERTY COMPILE_DEFINITIONS SMP )
-  endif()
 endif()

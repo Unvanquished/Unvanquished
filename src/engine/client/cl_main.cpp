@@ -160,9 +160,6 @@ cvar_t             *cl_gamename;
 
 cvar_t             *cl_altTab;
 
-static cvar_t      *cl_renderer = NULL;
-static void        *rendererLib = NULL;
-
 // XreaL BEGIN
 cvar_t             *cl_aviMotionJpeg;
 // XreaL END
@@ -2200,7 +2197,13 @@ static void CL_GenerateRSAKeys( const char *fileName )
 
 	Com_Printf( _( "^5Regenerating RSA keypair; writing to %s\n" ), fileName );
 
+#ifndef _WIN32
+	int old_umask = umask(0077);
+#endif
 	f = FS_FOpenFileWrite( fileName );
+#ifndef _WIN32
+	umask(old_umask);
+#endif
 
 	if ( !f )
 	{
@@ -4135,55 +4138,15 @@ void CL_StartHunkUsers( void )
 		return;
 	}
 
-	if ( rendererLib == NULL )
+	if ( !cls.rendererStarted && CL_InitRef() && CL_InitRenderer() )
 	{
-		// initialize the renderer interface
-		char renderers[ MAX_QPATH ];
-		char *from, *to;
-
-		PrintBanner(_( "Initializing Renderer" ))
-
-		Q_strncpyz( renderers, cl_renderer->string, sizeof( renderers ) );
-		from = renderers;
-
-		while ( from )
-		{
-			to = strchr( from, ',' );
-
-			if ( to )
-			{
-				*to++ = '\0';
-			}
-
-			if ( CL_InitRef( from ) && CL_InitRenderer() )
-			{
-				cls.rendererStarted = qtrue;
-				break;
-			}
-
-			CL_ShutdownRef();
-			from = to;
-		}
-
-		if ( !cls.rendererStarted && CL_InitRef( "GL" ) && CL_InitRenderer() )
-		{
-			cls.rendererStarted = qtrue;
-		}
-
-		if ( !cls.rendererStarted )
-		{
-			CL_ShutdownRef();
-			Com_Error( ERR_FATAL, "Couldn't load a renderer" );
-		}
-
-		Com_Printf( "-------------------------------\n" );
+		cls.rendererStarted = qtrue;
 	}
-	else if ( !cls.rendererStarted )
+
+	if ( !cls.rendererStarted )
 	{
-		if ( CL_InitRenderer() )
-		{
-			cls.rendererStarted = qtrue;
-		}
+		CL_ShutdownRef();
+		Com_Error( ERR_FATAL, "Couldn't load a renderer" );
 	}
 
 	if ( !cls.soundStarted )
@@ -4236,51 +4199,17 @@ int CL_ScaledMilliseconds( void )
 	return Sys_Milliseconds() * com_timescale->value;
 }
 
-#if defined( REF_HARD_LINKED )
 extern refexport_t *GetRefAPI( int apiVersion, refimport_t *rimp );
-
-#endif
 
 /*
 ============
 CL_InitRef
-
-RB: changed to load the renderer from a .dll
 ============
 */
-qboolean CL_InitRef( const char *renderer )
+qboolean CL_InitRef( )
 {
 	refimport_t ri;
 	refexport_t *ret;
-	void        *lib = NULL;
-
-#if !defined( REF_HARD_LINKED )
-	GetRefAPI_t GetRefAPI;
-	char        dllName[ MAX_OSPATH ];
-
-	Com_sprintf( dllName, sizeof( dllName ), "%s/renderer%s" DLL_EXT, FS::GetLibPath().c_str(), renderer );
-
-	Com_Printf( "Loading \"%s\"...", dllName );
-
-	lib = Sys_LoadLibrary( dllName );
-
-	if ( !lib )
-	{
-		Com_Printf( "failed:\n\"%s\"\n", Sys_LibraryError() );
-		return qfalse;
-	}
-
-	Com_Printf( "done\n" );
-
-	GetRefAPI = (GetRefAPI_t) Sys_LoadFunction( lib, "GetRefAPI" );
-
-	if ( !GetRefAPI )
-	{
-		Com_Printf( "Can't load symbol GetRefAPI: '%s'\n",  Sys_LibraryError() );
-		Sys_UnloadDll( lib );
-		return qfalse;
-	}
-#endif
 
 	ri.Cmd_AddCommand = Cmd_AddCommand;
 	ri.Cmd_RemoveCommand = Cmd_RemoveCommand;
@@ -4352,7 +4281,6 @@ qboolean CL_InitRef( const char *renderer )
 	if ( !ret )
 	{
 		Com_Printf( "Couldn't initialize refresh module\n" );
-		Sys_UnloadDll( lib );
 		return qfalse;
 	}
 
@@ -4361,7 +4289,6 @@ qboolean CL_InitRef( const char *renderer )
 	// unpause so the cgame definitely gets a snapshot and renders a frame
 	Cvar_Set( "cl_paused", "0" );
 
-	rendererLib = lib; // at this point, we pass on unloading responsibility
 	return qtrue;
 }
 
@@ -4379,12 +4306,6 @@ void CL_ShutdownRef( void )
 
 	re.Shutdown( qtrue );
 	memset( &re, 0, sizeof( re ) );
-
-	if ( rendererLib )
-	{
-		Sys_UnloadDll( rendererLib );
-		rendererLib = NULL;
-	}
 }
 
 //===========================================================================================
@@ -4413,8 +4334,6 @@ void CL_Init( void )
 	//
 	// register our variables
 	//
-	cl_renderer = Cvar_Get( "cl_renderer", "GL3,GL", 0 );
-
 	cl_noprint = Cvar_Get( "cl_noprint", "0", 0 );
 	cl_motd = Cvar_Get( "cl_motd", "1", 0 );
 

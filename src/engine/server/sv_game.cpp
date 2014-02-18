@@ -1194,6 +1194,14 @@ void GameVM::QVMSyscall(int index, IPC::Reader reader, const IPC::Socket& socket
 		break;
 	}
 
+	case G_FINDPAK:
+	{
+		const char* pakName = inputs.ReadString();
+		bool found = FS::FindPak(pakName);
+		outputs.WriteInt(found);
+		break;
+	}
+
 	case BOT_NAV_SETUP:
 	{
 		botClass_t botClass;

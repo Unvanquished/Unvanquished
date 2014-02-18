@@ -77,11 +77,7 @@ Maryland 20850 USA.
 //    touch the font bitmaps.
 
 
-#ifdef USE_XREAL_RENDERER
-#include "../rendererGL/tr_local.h"
-#else
 #include "tr_local.h"
-#endif
 
 #include "../qcommon/qcommon.h"
 #include "../qcommon/q_unicode.h"
@@ -464,11 +460,7 @@ static void RE_StoreImage( fontInfo_t *font, int chunk, int page, int from, int 
 
 	ri.Free( buffer );
 
-#ifdef USE_XREAL_RENDERER
 	h = RE_RegisterShaderFromImage( fileName, image );
-#else
-	h = RE_RegisterShaderFromImage( fileName, LIGHTMAP_2D, image );
-#endif
 
 	for ( j = from; j < to; j++ )
 	{

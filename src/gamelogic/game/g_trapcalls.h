@@ -97,6 +97,7 @@ void             trap_GenFingerprint( const char *pubkey, int size, char *buffer
 void             trap_GetPlayerPubkey( int clientNum, char *pubkey, int size );
 
 void             trap_GetTimeString( char *buffer, int size, const char *format, const qtime_t *tm );
+qboolean         trap_FindPak( const char *name );
 
 qboolean         trap_BotSetupNav( const botClass_t *botClass, qhandle_t *navHandle );
 void             trap_BotShutdownNav( void );

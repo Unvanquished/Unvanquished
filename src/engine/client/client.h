@@ -587,7 +587,7 @@ void        CL_ClearPing( int n );
 int         CL_GetPingQueueCount( void );
 
 void        CL_ShutdownRef( void );
-qboolean    CL_InitRef( const char *renderer );
+qboolean    CL_InitRef( void );
 
 int         CL_ServerStatus( char *serverAddress, char *serverStatusString, int maxLen );
 

@@ -1,0 +1,18 @@
+unvanquished-server (0.24.0-4~~) unstable; urgency=low
+
+  There are files to be checked in both
+  /var/games/unvanquished-server/.Unvanquished (old directory) and
+  /var/games/unvanquished-server/.unvanquished (new).
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Thu, 06 Feb 2014 03:15:25 +0000
+
+unvanquished-server (0.24.0-1~~) unstable; urgency=low
+
+  If you've installed (unmanaged) files in /var/games/unvanquished/main,
+  these will be ignored. You may move them to /var/games/unvanquished/pkg;
+  you may have to rename some when doing so.
+
+  Upgrading from older than 0.5.0 is no longer supported.
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Fri, 31 Jan 2014 20:13:19 +0000
+

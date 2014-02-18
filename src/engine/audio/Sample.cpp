@@ -11,14 +11,14 @@ modification, are permitted provided that the following conditions are met:
     * Redistributions in binary form must reproduce the above copyright
       notice, this list of conditions and the following disclaimer in the
       documentation and/or other materials provided with the distribution.
-    * Neither the name of the <organization> nor the
+    * Neither the name of the Daemon developers nor the
       names of its contributors may be used to endorse or promote products
       derived from this software without specific prior written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
+DISCLAIMED. IN NO EVENT SHALL DAEMON DEVELOPERS BE LIABLE FOR ANY
 DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
 (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
 LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -32,43 +32,60 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace Audio {
 
+    Resource::Manager<Sample>* sampleManager;
+
     // Implementation of Sample
 
-    Sample::Sample(std::string name): HandledResource<Sample>(this), name(std::move(name)) {
+    Sample::Sample(std::string filename): HandledResource<Sample>(this), Resource(filename) {
     }
 
     Sample::~Sample() {
+        audioLogs.Debug("Deleting Sample '%s'", GetName());
     }
 
-    void Sample::Use() {
+    bool Sample::Load() {
+        audioLogs.Debug("Loading Sample '%s'", GetName());
+        snd_info_t info;
+        void* data = S_CodecLoad(GetName().c_str(), &info);
+
+        if (data == nullptr) {
+            audioLogs.Warn("Couldn't load sound %s", GetName());
+            return false;
+        }
+
+        //TODO handle errors, especially out of memory errors
+        buffer.Feed(info, data);
+
+        if (info.size == 0) {
+            audioLogs.Warn("info.size = 0 in RegisterSample, what?");
+        }
+
+        Hunk_FreeTempMemory(data);
+
+        return true;
+    }
+
+    void Sample::Cleanup() {
+        // Destroy the OpenAL buffer by moving it in the scope
+        AL::Buffer toDelete = std::move(buffer);
     }
 
     AL::Buffer& Sample::GetBuffer() {
         return buffer;
     }
 
-    const std::string& Sample::GetName() {
-        return name;
-    }
-
     // Implementation of the sample storage
 
-    static std::unordered_map<std::string, Sample*> samples;
-
     static const char errorSampleName[] = "sound/feedback/hit.wav";
-    static Sample* errorSample = nullptr;
+    static std::shared_ptr<Sample> errorSample = nullptr;
     bool initialized = false;
 
     void InitSamples() {
         if (initialized) {
             return;
         }
-        //TODO use an aggressive sound instead to know we are missing something?
-        errorSample = RegisterSample(errorSampleName);
 
-        if (!errorSample) {
-            Com_Error(ERR_FATAL, "Couldn't load the error sound sample '%s'", errorSampleName);
-        }
+        sampleManager = new Resource::Manager<Sample>(errorSampleName);
 
         initialized = true;
     }
@@ -78,12 +95,10 @@ namespace Audio {
             return;
         }
 
-        for (auto it: samples) {
-            delete it.second;
-        }
-        samples.clear();
-
         errorSample = nullptr;
+
+        delete sampleManager;
+        sampleManager = nullptr;
 
         initialized = false;
     }
@@ -95,39 +110,23 @@ namespace Audio {
 
 		std::vector<std::string> res;
 
-		for (auto& it : samples) {
+		for (auto& it : *sampleManager) {
 			res.push_back(it.first);
 		}
 
 		return res;
 	}
 
-    Sample* RegisterSample(Str::StringRef filename) {
-        auto it = samples.find(filename);
-        if (it != samples.end()) {
-            return it->second;
-        }
+    void BeginSampleRegistration() {
+        sampleManager->BeginRegistration();
+    }
 
-        snd_info_t info;
-        void* data = S_CodecLoad(filename.c_str(), &info);
+    std::shared_ptr<Sample> RegisterSample(Str::StringRef filename) {
+        Resource::Handle<Sample> sample = sampleManager->Register(filename);
+        return sample.Get();
+    }
 
-        if (data == nullptr) {
-            audioLogs.Warn("Couldn't load sound %s", filename);
-            return errorSample;
-        }
-
-        Sample* sample = new Sample(std::move(filename));
-        samples[filename] = sample;
-
-        //TODO handle errors, especially out of memeory errors
-        sample->GetBuffer().Feed(info, data);
-
-        if (info.size == 0) {
-            audioLogs.Warn("info.size = 0 in RegisterSample, what?");
-        }
-
-        Hunk_FreeTempMemory(data);
-
-        return sample;
+    void EndSampleRegistration() {
+        sampleManager->EndRegistration();
     }
 }

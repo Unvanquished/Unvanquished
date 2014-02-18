@@ -285,6 +285,10 @@ void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int code, const char *fmt, ... )
 	if (code != ERR_FATAL) {
 		FS::PakPath::ClearPaks();
 		FS_LoadBasePak();
+#ifndef DEDICATED
+		// Load map pk3s to allow menus to load levelshots
+		FS_LoadAllMaps();
+#endif
 	}
 
 	// if we are getting a solid stream of ERR_DROP, do an ERR_FATAL
@@ -1821,6 +1825,10 @@ void Com_Init( char *commandLine )
 
 	FS::Initialize();
 	FS_LoadBasePak();
+#ifndef DEDICATED
+	// Load map pk3s to allow menus to load levelshots
+	FS_LoadAllMaps();
+#endif
 
 	Trans_Init();
 
@@ -1960,14 +1968,6 @@ void Com_Init( char *commandLine )
 
 	CL_StartHunkUsers();
 
-	// NERVE - SMF - force recommendedSet and don't do vid_restart if in safe mode
-	if ( !com_recommendedSet->integer && !Com_SafeMode() )
-	{
-		Com_SetRecommended();
-	}
-
-	Cvar_Set( "com_recommendedSet", "1" );
-
 	if ( !com_dedicated->integer )
 	{
 		//Cvar_Set( "com_logosPlaying", "1" );
@@ -2057,7 +2057,7 @@ void Com_WriteConfigToFile( const char *filename, void (*writeConfig)( fileHandl
 
 	Com_sprintf( tmp, sizeof( tmp ), "config/%s", filename );
 
-	f = FS_FOpenFileWrite( tmp );
+	f = FS_FOpenFileWriteViaTemporary( tmp );
 
 	if ( !f )
 	{
