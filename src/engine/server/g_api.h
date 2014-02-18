@@ -105,12 +105,15 @@ typedef enum gameImport_s
   G_LOG,
   G_MILLISECONDS,
   G_SEND_CONSOLE_COMMAND,
+
   G_FS_FOPEN_FILE,
   G_FS_READ,
   G_FS_WRITE,
   G_FS_RENAME,
   G_FS_FCLOSE_FILE,
-  G_FS_GETFILELIST,
+  G_FS_GET_FILE_LIST,
+  G_FS_FIND_PAK,
+
   G_LOCATE_GAME_DATA,
   G_DROP_CLIENT,
   G_SEND_SERVER_COMMAND,
@@ -158,7 +161,6 @@ typedef enum gameImport_s
   G_GENFINGERPRINT,
   G_GETPLAYERPUBKEY,
   G_GETTIMESTRING,
-  G_FINDPAK,
   BOT_NAV_SETUP,
   BOT_NAV_SHUTDOWN,
   BOT_SET_NAVMESH,
@@ -173,6 +175,51 @@ typedef enum gameImport_s
   BOT_REMOVE_OBSTACLE,
   BOT_UPDATE_OBSTACLES
 } gameImport_t;
+
+// PrintMsg
+typedef IPC::Message<IPC_ID(VM::QVM, G_PRINT), std::string> PrintMsg;
+// ErrorMsg
+typedef IPC::Message<IPC_ID(VM::QVM, G_ERROR), std::string> ErrorMsg;
+// LogMsg TODO
+// MillisecondsMsg
+typedef IPC::SyncMessage<
+	IPC::Message<IPC_ID(VM::QVM, G_MILLISECONDS)>,
+	IPC::Reply<int>
+> MillisecondsMsg;
+// SendConsoleCommandMsg
+typedef IPC::Message<IPC_ID(VM::QVM, G_SEND_CONSOLE_COMMAND), int, std::string> SendConsoleCommandMsg;
+
+// FSFOpenFileMsg
+typedef IPC::SyncMessage<
+	IPC::Message<IPC_ID(VM::QVM, G_FS_FOPEN_FILE), std::string, bool, int>,
+	IPC::Reply<int, int>
+> FSFOpenFileMsg;
+// FSReadMsg
+typedef IPC::SyncMessage<
+	IPC::Message<IPC_ID(VM::QVM, G_FS_READ), int, int>,
+	IPC::Reply<std::string>
+> FSReadMsg;
+// FSWriteMsg
+typedef IPC::SyncMessage<
+	IPC::Message<IPC_ID(VM::QVM, G_FS_WRITE), int, std::string>,
+    IPC::Reply<int>
+> FSWriteMsg;
+// FSRenameMsg
+typedef IPC::Message<IPC_ID(VM::QVM, G_FS_RENAME), std::string, std::string> FSRenameMsg;
+// FSFCloseFile
+typedef IPC::Message<IPC_ID(VM::QVM, G_FS_FCLOSE_FILE), int> FSFCloseFileMsg;
+// FSGetFileListMsg
+typedef IPC::SyncMessage<
+	IPC::Message<IPC_ID(VM::QVM, G_FS_GET_FILE_LIST), std::string, std::string, int>,
+    IPC::Reply<int, std::string>
+> FSGetFileListMsg;
+// FSFindPakMsg
+typedef IPC::SyncMessage<
+	IPC::Message<IPC_ID(VM::QVM, G_FS_FIND_PAK), std::string>,
+	IPC::Reply<bool>
+> FSFindPakMsg;
+
+
 
 // engine-to-game-module calls
 typedef enum

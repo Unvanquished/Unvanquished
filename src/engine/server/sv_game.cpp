@@ -740,86 +740,85 @@ void GameVM::Syscall(uint32_t id, IPC::Reader reader, const IPC::Socket& socket)
 		Com_Error(ERR_DROP, "Bad major game syscall number: %d", major);
 	}
 }
-/*
-void GameVM::QVMSyscall(int index, IPC::Reader reader, const IPC::Socket& socket) const
+
+void GameVM::QVMSyscall(int index, IPC::Reader& reader, const IPC::Socket& socket) const
 {
 	switch (index) {
 	case G_PRINT:
-		Com_Printf("%s", inputs.ReadString());
+		IPC::HandleMsg<PrintMsg>(socket, std::move(reader), [this](Str::StringRef text) {
+			Com_Printf("%s", text.c_str());
+		});
 		break;
 
 	case G_ERROR:
-		Com_Error(ERR_DROP, "%s", inputs.ReadString());
+		IPC::HandleMsg<ErrorMsg>(socket, std::move(reader), [this](Str::StringRef text) {
+			Com_Error(ERR_DROP, "%s", text.c_str());
+		});
+		break;
 
 	case G_LOG:
 		Com_Error(ERR_DROP, "trap_Log not implemented");
 
 	case G_MILLISECONDS:
-		outputs.WriteInt(Sys_Milliseconds());
+		IPC::HandleMsg<MillisecondsMsg>(socket, std::move(reader), [this](int& time) {
+			time = Sys_Milliseconds();
+		});
 		break;
 
 	case G_SEND_CONSOLE_COMMAND:
-	{
-		int exec_when = inputs.ReadInt();
-		const char* text = inputs.ReadString();
-		Cbuf_ExecuteText(exec_when, text);
+		IPC::HandleMsg<SendConsoleCommandMsg>(socket, std::move(reader), [this](int when, Str::StringRef text) {
+			Cbuf_ExecuteText(when, text.c_str());
+		});
 		break;
-	}
 
 	case G_FS_FOPEN_FILE:
-	{
-		const char* filename = inputs.ReadString();
-		qboolean openFile = inputs.ReadInt();
-		fsMode_t mode = static_cast<fsMode_t>(inputs.ReadInt());
-		fileHandle_t f;
-		outputs.WriteInt(FS_Game_FOpenFileByMode(filename, openFile ? &f : NULL, mode));
-		if (openFile)
-			outputs.WriteInt(f);
+		IPC::HandleMsg<FSFOpenFileMsg>(socket, std::move(reader), [this](Str::StringRef filename, bool open, int fsMode, int& success, int& handle) {
+			fsMode_t mode = static_cast<fsMode_t>(fsMode);
+			success = FS_Game_FOpenFileByMode(filename.c_str(), open ? &handle : NULL, mode);
+		});
 		break;
-	}
 
 	case G_FS_READ:
-	{
-		fileHandle_t f= inputs.ReadInt();
-		int len = inputs.ReadInt();
-		std::unique_ptr<char[]> buffer(new char[len]);
-		FS_Read(buffer.get(), len, f);
-		outputs.Write(buffer.get(), len);
+		IPC::HandleMsg<FSReadMsg>(socket, std::move(reader), [this](int handle, int len, std::string& res) {
+			std::unique_ptr<char[]> buffer(new char[len]);
+			FS_Read(buffer.get(), len, handle);
+			res = buffer.get();
+		});
 		break;
-	}
 
 	case G_FS_WRITE:
-	{
-		fileHandle_t f= inputs.ReadInt();
-		int len = inputs.ReadInt();
-		const void* buffer = inputs.ReadInline(len);
-		outputs.WriteInt(FS_Write(buffer, len, f));
+		IPC::HandleMsg<FSWriteMsg>(socket, std::move(reader), [this](int handle, Str::StringRef text, int& res) {
+			res = FS_Write(text.c_str(), text.size(), handle);
+		});
 		break;
-	}
 
 	case G_FS_RENAME:
-	{
-		const char* from = inputs.ReadString();
-		const char* to = inputs.ReadString();
-		FS_Rename(from, to);
+		IPC::HandleMsg<FSRenameMsg>(socket, std::move(reader), [this](Str::StringRef from, Str::StringRef to) {
+			FS_Rename(from.c_str(), to.c_str());
+		});
 		break;
-	}
 
 	case G_FS_FCLOSE_FILE:
-		FS_FCloseFile(inputs.ReadInt());
+		IPC::HandleMsg<FSFCloseFileMsg>(socket, std::move(reader), [this](int handle) {
+			FS_FCloseFile(handle);
+		});
 		break;
 
-	case G_FS_GETFILELIST:
-	{
-		const char* path = inputs.ReadString();
-		const char* extension = inputs.ReadString();
-		int len = inputs.ReadInt();
-		std::unique_ptr<char[]> buffer(new char[len]);
-		outputs.WriteInt(FS_GetFileList(path, extension, buffer.get(), len));
-		outputs.Write(buffer.get(), len);
+	case G_FS_GET_FILE_LIST:
+		IPC::HandleMsg<FSGetFileListMsg>(socket, std::move(reader), [this](Str::StringRef path, Str::StringRef extension, int len, int& intRes, std::string& res) {
+			std::unique_ptr<char[]> buffer(new char[len]);
+			intRes = FS_GetFileList(path.c_str(), extension.c_str(), buffer.get(), len);
+			res = buffer.get();
+		});
 		break;
-	}
 
+	case G_FS_FIND_PAK:
+		IPC::HandleMsg<FSFindPakMsg>(socket, std::move(reader), [this](Str::StringRef pakName, bool& found) {
+			found = FS::FindPak(pakName);
+		});
+		break;
+
+/*
 	case G_LOCATE_GAME_DATA:
 	{
 		if (!shmRegion)
@@ -830,7 +829,6 @@ void GameVM::QVMSyscall(int index, IPC::Reader reader, const IPC::Socket& socket
 		SV_LocateGameData(shmRegion, numEntities, entitySize, playerSize);
 		break;
 	}
-
 	case G_DROP_CLIENT:
 	{
 		int clientNum = inputs.ReadInt();
@@ -1194,14 +1192,6 @@ void GameVM::QVMSyscall(int index, IPC::Reader reader, const IPC::Socket& socket
 		break;
 	}
 
-	case G_FINDPAK:
-	{
-		const char* pakName = inputs.ReadString();
-		bool found = FS::FindPak(pakName);
-		outputs.WriteInt(found);
-		break;
-	}
-
 	case BOT_NAV_SETUP:
 	{
 		botClass_t botClass;
@@ -1322,8 +1312,8 @@ void GameVM::QVMSyscall(int index, IPC::Reader reader, const IPC::Socket& socket
 	case BOT_UPDATE_OBSTACLES:
 		BotUpdateObstacles();
 		break;
-
+*/
 	default:
 		Com_Error(ERR_DROP, "Bad game system trap: %d", index);
 	}
-}*/
+}
