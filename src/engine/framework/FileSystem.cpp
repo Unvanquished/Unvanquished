@@ -1952,7 +1952,7 @@ Cmd::CompletionResult CompleteFilename(Str::StringRef prefix, Str::StringRef roo
 struct handleData_t {
 	bool isOpen;
 	bool isPakFile;
-	Opt::optional<std::string> renameTo;
+	Util::optional<std::string> renameTo;
 
 	// Normal file info
 	bool forceFlush;
@@ -2131,7 +2131,7 @@ int FS_FCloseFile(fileHandle_t handle)
 			handleTable[handle].file.Close();
 			if (handleTable[handle].renameTo) {
 				std::string renameTo = std::move(*handleTable[handle].renameTo);
-				handleTable[handle].renameTo = Opt::nullopt; // tidy up after abusing std::move
+				handleTable[handle].renameTo = Util::nullopt; // tidy up after abusing std::move
 				try {
 					FS::RawPath::MoveFile(renameTo, renameTo + FS::TEMP_SUFFIX);
 				} catch (std::system_error& err) {

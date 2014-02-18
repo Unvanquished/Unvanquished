@@ -114,7 +114,7 @@ namespace VM {
     }
 
     void CommonVMServices::EnvExecuteAfter(IPC::Reader& reader, const IPC::Socket& socket) {
-        IPC::HandleMsg<EnvExecuteAfterMsg>(socket, std::move(reader), [this](std::string commandText, int parseCvars){
+        IPC::HandleMsg<EnvExecuteAfterMsg>(socket, std::move(reader), [this](std::string commandText, bool parseCvars){
             //TODO check that it isn't sending /quit or other bad commands (/lua "rootkit()")?
             Cmd::GetEnv()->ExecuteAfter(commandText, parseCvars);
         });

@@ -59,7 +59,7 @@ namespace VM {
     // EnvPrintMsg
     typedef IPC::Message<IPC_ID(COMMAND, ENV_PRINT), std::string> EnvPrintMsg;
     // EnvExecuteAfterMsg
-    typedef IPC::Message<IPC_ID(COMMAND, ENV_EXECUTE_AFTER), std::string, int> EnvExecuteAfterMsg;
+    typedef IPC::Message<IPC_ID(COMMAND, ENV_EXECUTE_AFTER), std::string, bool> EnvExecuteAfterMsg;
 
     enum VMCommandMessages {
         EXECUTE,

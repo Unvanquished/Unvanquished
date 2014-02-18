@@ -379,9 +379,9 @@ const uint32_t ID_RETURN = 0xffffffffu;
 
 // Asynchronous message which does not wait for a reply
 template<uint32_t Id, typename... T> struct Message {
-    enum {
-        id = Id
-    };
+	enum {
+		id = Id
+	};
 	typedef std::tuple<T...> Inputs;
 };
 
@@ -392,9 +392,9 @@ template<typename... T> struct Reply {
 
 // Synchronous message which waits for a reply. The reply can contain data.
 template<typename Msg, typename Reply> struct SyncMessage {
-    enum {
-        id = Msg::id
-    };
+	enum {
+		id = Msg::id
+	};
 	typedef typename Msg::Inputs Inputs;
 	typedef typename Reply::Outputs Outputs;
 };
