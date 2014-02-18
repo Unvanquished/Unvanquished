@@ -69,7 +69,7 @@ public:
 	// Send a message to the VM
 	template<typename Msg, typename... Args> void SendMsg(Args&&... args) const
 	{
-		IPC::SendMsg(rootSocket, [this](uint32_t id, IPC::Reader reader) {
+		IPC::SendMsg<Msg>(rootSocket, [this](uint32_t id, IPC::Reader reader) {
 			Syscall(id, std::move(reader), rootSocket);
 		}, std::forward<Args>(args)...);
 	}
