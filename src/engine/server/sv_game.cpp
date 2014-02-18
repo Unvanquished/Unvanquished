@@ -72,7 +72,7 @@ playerState_t  *SV_GameClientNum( int num )
 	{
 		Com_Error( ERR_DROP, "SV_GameClientNum: bad num" );
 	}
-	
+
 	ps = ( playerState_t * )( ( byte * ) sv.gameClients + sv.gameClientSize * ( num ) );
 
 	return ps;
