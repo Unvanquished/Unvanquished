@@ -337,17 +337,17 @@ SV_LocateGameData
 ===============
 */
 
-void SV_LocateGameDataNaCl( const NaCl::SharedMemoryPtr& shmRegion, int numGEntities, int sizeofGEntity_t,
+void SV_LocateGameData( const IPC::SharedMemory& shmRegion, int numGEntities, int sizeofGEntity_t,
                         int sizeofGameClient )
 {
 	if ( !shmRegion )
-		Com_Error( ERR_DROP, "SV_LocateGameDataNaCl: Failed to map shared memory region" );
+		Com_Error( ERR_DROP, "SV_LocateGameData: Failed to map shared memory region" );
 	if ( numGEntities < 0 || sizeofGEntity_t < 0 || sizeofGameClient < 0 )
-		Com_Error( ERR_DROP, "SV_LocateGameDataNaCl: Invalid game data parameters" );
+		Com_Error( ERR_DROP, "SV_LocateGameData: Invalid game data parameters" );
 	if ( shmRegion.GetSize() < numGEntities * sizeofGEntity_t + sv_maxclients->integer * sizeofGameClient )
-		Com_Error( ERR_DROP, "SV_LocateGameDataNaCl: Shared memory region too small" );
+		Com_Error( ERR_DROP, "SV_LocateGameData: Shared memory region too small" );
 
-	char* base = static_cast<char*>(shmRegion.Get());
+	char* base = static_cast<char*>(shmRegion.GetBase());
 	sv.gentities = reinterpret_cast<sharedEntity_t*>(base);
 	sv.gentitySize = sizeofGEntity_t;
 	sv.num_entities = numGEntities;
@@ -650,15 +650,9 @@ GameVM::~GameVM()
 
 void GameVM::GameInit(int levelTime, int randomSeed, qboolean restart)
 {
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(GAME_INIT);
-	input.WriteInt(levelTime);
-	input.WriteInt(randomSeed);
-	input.WriteInt(restart);
-	DoRPC(input);
+	this->SendMsg<GameInitMsg>(levelTime, randomSeed, restart);
 }
-
+/*
 void GameVM::GameShutdown(qboolean restart)
 {
 	RPC::Writer input;
@@ -673,75 +667,48 @@ void GameVM::GameShutdown(qboolean restart)
 	// Release the shared memory region
 	this->shmRegion.Close();
 }
+*/
 
 qboolean GameVM::GameClientConnect(char* reason, size_t size, int clientNum, qboolean firstTime, qboolean isBot)
 {
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(GAME_CLIENT_CONNECT);
-	input.WriteInt(clientNum);
-	input.WriteInt(firstTime);
-	input.WriteInt(isBot);
-	RPC::Reader output = DoRPC(input);
-	qboolean denied = output.ReadInt();
-	if (denied)
-		Q_strncpyz(reason, output.ReadString(), size);
+	bool denied;
+	Str::StringRef sentReason;
+	this->SendMsg<GameClientConnectMsg>(clientNum, firstTime, isBot, denied, sentReason);
+
+	if (denied) {
+		Q_strncpyz(reason, sentReason.c_str(), size);
+	}
 	return denied;
 }
 
 void GameVM::GameClientBegin(int clientNum)
 {
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(GAME_CLIENT_BEGIN);
-	input.WriteInt(clientNum);
-	DoRPC(input);
+	this->SendMsg<GameClientBeginMsg>(clientNum);
 }
 
 void GameVM::GameClientUserInfoChanged(int clientNum)
 {
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(GAME_CLIENT_USERINFO_CHANGED);
-	input.WriteInt(clientNum);
-	DoRPC(input);
+	this->SendMsg<GameClientUserinfoChangedMsg>(clientNum);
 }
 
 void GameVM::GameClientDisconnect(int clientNum)
 {
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(GAME_CLIENT_DISCONNECT);
-	input.WriteInt(clientNum);
-	DoRPC(input);
+	this->SendMsg<GameClientDisconnectMsg>(clientNum);
 }
 
 void GameVM::GameClientCommand(int clientNum, const char* command)
 {
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(GAME_CLIENT_COMMAND);
-	input.WriteInt(clientNum);
-	input.WriteString(command);
-	DoRPC(input);
+	this->SendMsg<GameClientCommandMsg>(clientNum, command);
 }
 
 void GameVM::GameClientThink(int clientNum)
 {
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(GAME_CLIENT_THINK);
-	input.WriteInt(clientNum);
-	DoRPC(input);
+	this->SendMsg<GameClientThinkMsg>(clientNum);
 }
 
 void GameVM::GameRunFrame(int levelTime)
 {
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(GAME_RUN_FRAME);
-	input.WriteInt(levelTime);
-	DoRPC(input);
+	this->SendMsg<GameRunFrameMsg>(levelTime);
 }
 
 qboolean GameVM::GameSnapshotCallback(int entityNum, int clientNum)
@@ -759,21 +726,21 @@ void GameVM::GameMessageRecieved(int clientNum, const char *buffer, int bufferSi
 	//Com_Error(ERR_DROP, "GameVM::GameMessageRecieved not implemented");
 }
 
-void GameVM::Syscall(uint32_t id, IPC::Reader reader, const IPC::Socket& socket) const;
+void GameVM::Syscall(uint32_t id, IPC::Reader reader, const IPC::Socket& socket) const
 {
 	int major = id >> 16;
 	int minor = id & 0xffff;
-	if (major == GS_QVM_SYSCALL) {
-		this->QVMSyscall(minor, std::move(reader), socket);
+	if (major == VM::QVM) {
+		this->QVMSyscall(minor, reader, socket);
 
-    } else if (major < IPC::LAST_COMMON_SYSCALL) {
+    } else if (major < VM::LAST_COMMON_SYSCALL) {
         services->Syscall(major, minor, std::move(reader), socket);
 
     } else {
 		Com_Error(ERR_DROP, "Bad major game syscall number: %d", major);
 	}
 }
-
+/*
 void GameVM::QVMSyscall(int index, IPC::Reader reader, const IPC::Socket& socket) const
 {
 	switch (index) {
@@ -860,7 +827,7 @@ void GameVM::QVMSyscall(int index, IPC::Reader reader, const IPC::Socket& socket
 		int numEntities = inputs.ReadInt();
 		int entitySize = inputs.ReadInt();
 		int playerSize = inputs.ReadInt();
-		SV_LocateGameDataNaCl(shmRegion, numEntities, entitySize, playerSize);
+		SV_LocateGameData(shmRegion, numEntities, entitySize, playerSize);
 		break;
 	}
 
@@ -1351,4 +1318,4 @@ void GameVM::QVMSyscall(int index, IPC::Reader reader, const IPC::Socket& socket
 	default:
 		Com_Error(ERR_DROP, "Bad game system trap: %d", index);
 	}
-}
+}*/

@@ -198,7 +198,7 @@ namespace VM {
         }
     }
 
-    void CommonVMServices::Syscall(int major, int minor, IPC::Reader& reader, const IPC::Socket& socket) {
+    void CommonVMServices::Syscall(int major, int minor, IPC::Reader reader, const IPC::Socket& socket) {
         switch (major) {
             case COMMAND:
                 HandleCommandSyscall(minor, reader, socket);

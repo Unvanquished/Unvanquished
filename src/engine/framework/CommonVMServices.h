@@ -46,7 +46,7 @@ namespace VM {
             CommonVMServices(VMBase* vm, Str::StringRef vmName, int commandFlag);
             ~CommonVMServices();
 
-            void Syscall(int major, int minor, IPC::Reader& reader, const IPC::Socket& socket);
+            void Syscall(int major, int minor, IPC::Reader reader, const IPC::Socket& socket);
 
         private:
             Str::StringRef vmName;

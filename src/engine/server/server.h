@@ -344,9 +344,9 @@ public:
 
 private:
 	virtual void Syscall(uint32_t id, IPC::Reader reader, const IPC::Socket& socket) const OVERRIDE FINAL;
-	void QVMSyscall(int index, IPC::Reader reader, const IPC::Socket& socket);
+	void QVMSyscall(int index, IPC::Reader& reader, const IPC::Socket& socket) const;
 
-	NaCl::SharedMemoryPtr shmRegion;
+	IPC::SharedMemory shmRegion;
 
     VM::CommonVMServices* services;
 };

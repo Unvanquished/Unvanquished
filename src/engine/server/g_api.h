@@ -22,6 +22,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "../qcommon/q_shared.h"
 #include "../qcommon/vm_traps.h"
+#include "../../common/CommonSyscalls.h"
+#include "../../common/IPC.h"
 
 #define GAME_API_VERSION          1
 
@@ -209,3 +211,24 @@ typedef enum
   GAME_MESSAGERECEIVED, // void ()( int clientNum, const char *buffer, int bufferSize, int commandTime );
 } gameExport_t;
 
+// GameInitMsg
+typedef IPC::Message<IPC_ID(VM::QVM, GAME_INIT), int, int, int> GameInitMsg;
+// GameShutdownMsg
+typedef IPC::Message<IPC_ID(VM::QVM, GAME_SHUTDOWN)> GameShutdownMsg;
+// GameClientConnectMsg
+typedef IPC::SyncMessage<
+	IPC::Message<IPC_ID(VM::QVM, GAME_CLIENT_CONNECT), int, bool, int>,
+	IPC::Reply<bool, std::string>
+> GameClientConnectMsg;
+// GameClientBeginMsg
+typedef IPC::Message<IPC_ID(VM::QVM, GAME_CLIENT_BEGIN), int> GameClientBeginMsg;
+// GameClientUserinfoChangedMsg
+typedef IPC::Message<IPC_ID(VM::QVM, GAME_CLIENT_USERINFO_CHANGED), int> GameClientUserinfoChangedMsg;
+// GameClientDisconnectMsg
+typedef IPC::Message<IPC_ID(VM::QVM, GAME_CLIENT_DISCONNECT), int> GameClientDisconnectMsg;
+// GameClientCommandMsg
+typedef IPC::Message<IPC_ID(VM::QVM, GAME_CLIENT_COMMAND), int, std::string> GameClientCommandMsg;
+// GameClientThinkMsg
+typedef IPC::Message<IPC_ID(VM::QVM, GAME_CLIENT_THINK), int> GameClientThinkMsg;
+// GameRunFrameMsg
+typedef IPC::Message<IPC_ID(VM::QVM, GAME_RUN_FRAME), int> GameRunFrameMsg;
