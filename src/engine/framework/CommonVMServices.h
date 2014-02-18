@@ -43,24 +43,24 @@ namespace VM {
 
     class CommonVMServices {
         public:
-            CommonVMServices(VM::VMBase* vm, Str::StringRef vmName, int commandFlag);
+            CommonVMServices(VMBase* vm, Str::StringRef vmName, int commandFlag);
             ~CommonVMServices();
 
-            void Syscall(int major, int minor, IPC::Reader reader, const IPC::Socket& socket);
+            void Syscall(int major, int minor, IPC::Reader& reader, const IPC::Socket& socket);
 
         private:
             Str::StringRef vmName;
-            VM::VMBase* vm;
+            VMBase* vm;
 
-            VM::VMBase* GetVM();
+            VMBase* GetVM();
 
             // Command Related
-            void HandleCommandSyscall(int minor, IPC::Reader reader, const IPC::Socket& socket);
+            void HandleCommandSyscall(int minor, IPC::Reader& reader, const IPC::Socket& socket);
 
-            void AddCommand(IPC::Reader reader, const IPC::Socket& socket);
-            void RemoveCommand(IPC::Reader reader, const IPC::Socket& socket);
-            void EnvPrint(IPC::Reader reader, const IPC::Socket& socket);
-            void EnvExecuteAfter(IPC::Reader reader, const IPC::Socket& socket);
+            void AddCommand(IPC::Reader& reader, const IPC::Socket& socket);
+            void RemoveCommand(IPC::Reader& reader, const IPC::Socket& socket);
+            void EnvPrint(IPC::Reader& reader, const IPC::Socket& socket);
+            void EnvExecuteAfter(IPC::Reader& reader, const IPC::Socket& socket);
 
             class ProxyCmd;
             int commandFlag;
@@ -69,11 +69,11 @@ namespace VM {
             std::unordered_map<std::string, uint64_t> registeredCommands;
 
             // Cvar Related
-            void HandleCvarSyscall(int minor, IPC::Reader reader, const IPC::Socket& socket);
+            void HandleCvarSyscall(int minor, IPC::Reader& reader, const IPC::Socket& socket);
 
-            void RegisterCvar(IPC::Reader reader, const IPC::Socket& socket);
-            void GetCvar(IPC::Reader reader, const IPC::Socket& socket);
-            void SetCvar(IPC::Reader reader, const IPC::Socket& socket);
+            void RegisterCvar(IPC::Reader& reader, const IPC::Socket& socket);
+            void GetCvar(IPC::Reader& reader, const IPC::Socket& socket);
+            void SetCvar(IPC::Reader& reader, const IPC::Socket& socket);
 
             class ProxyCvar;
             std::vector<ProxyCvar*> registeredCvars;

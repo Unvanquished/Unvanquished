@@ -42,22 +42,22 @@ namespace VM {
 
     // Command Related
 
-    void CommonVMServices::HandleCommandSyscall(int minor, IPC::Reader reader, const IPC::Socket& socket) {
+    void CommonVMServices::HandleCommandSyscall(int minor, IPC::Reader& reader, const IPC::Socket& socket) {
         switch(minor) {
-            case Cmd::ADD_COMMAND:
-                AddCommand(std::move(reader), socket);
+            case ADD_COMMAND:
+                AddCommand(reader, socket);
                 break;
 
-            case Cmd::REMOVE_COMMAND:
-                RemoveCommand(std::move(reader), socket);
+            case REMOVE_COMMAND:
+                RemoveCommand(reader, socket);
                 break;
 
-            case Cmd::ENV_PRINT:
-                EnvPrint(std::move(reader), socket);
+            case ENV_PRINT:
+                EnvPrint(reader, socket);
                 break;
 
-            case Cmd::ENV_EXECUTE_AFTER:
-                EnvExecuteAfter(std::move(reader), socket);
+            case ENV_EXECUTE_AFTER:
+                EnvExecuteAfter(reader, socket);
                 break;
 
             default:
@@ -73,29 +73,21 @@ namespace VM {
             }
 
             virtual void Run(const Cmd::Args& args) const {
-                services.GetVM()->DoRPC(
-                    Cmd::ExecuteSyscall(args.EscapedArgs(0))
-                );
+                services.GetVM()->SendMsg<ExecuteMsg>(args.EscapedArgs(0));
             }
 
             virtual Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, Str::StringRef prefix) const {
-                IPC::Reader outputs = services.GetVM()->DoRPC(
-                        Cmd::CompleteSyscall(argNum, args.EscapedArgs(0), prefix)
-                );
-
                 Cmd::CompletionResult res;
-                Cmd::CompleteSyscallAnswer::Deserialize(outputs, [&](Cmd::CompletionResult result){
-                    res = std::move(result);
-                });
-                return std::move(res);
+                services.GetVM()->SendMsg<CompleteMsg>(argNum, args.EscapedArgs(0), prefix, res);
+                return res;
             }
 
         private:
             CommonVMServices& services;
     };
 
-    void CommonVMServices::AddCommand(IPC::Reader reader, const IPC::Socket& socket) {
-        Cmd::AddCommandSyscall::Deserialize(reader, [this](std::string name, std::string description){
+    void CommonVMServices::AddCommand(IPC::Reader& reader, const IPC::Socket& socket) {
+        IPC::HandleMsg<AddCommandMsg>(socket, std::move(reader), [this](std::string name, std::string description){
             if (Cmd::CommandExists(name)) {
                 Log::Warn("VM '%s' tried to register command '%s' which is already registered", vmName, name);
                 return;
@@ -106,23 +98,23 @@ namespace VM {
         });
     }
 
-    void CommonVMServices::RemoveCommand(IPC::Reader reader, const IPC::Socket& socket) {
-        Cmd::RemoveCommandSyscall::Deserialize(reader, [this](std::string name){
+    void CommonVMServices::RemoveCommand(IPC::Reader& reader, const IPC::Socket& socket) {
+        IPC::HandleMsg<RemoveCommandMsg>(socket, std::move(reader), [this](std::string name){
             if (registeredCommands.find(name) != registeredCommands.end()) {
                 Cmd::RemoveCommand(name);
             }
         });
     }
 
-    void CommonVMServices::EnvPrint(IPC::Reader reader, const IPC::Socket& socket) {
-        Cmd::EnvPrintSyscall::Deserialize(reader, [this](std::string line){
+    void CommonVMServices::EnvPrint(IPC::Reader& reader, const IPC::Socket& socket) {
+        IPC::HandleMsg<EnvPrintMsg>(socket, std::move(reader), [this](std::string line){
             //TODO allow it only if we are in a command?
             Cmd::GetEnv()->Print(line);
         });
     }
 
-    void CommonVMServices::EnvExecuteAfter(IPC::Reader reader, const IPC::Socket& socket) {
-        Cmd::EnvExecuteAfterSyscall::Deserialize(reader, [this](std::string commandText, int parseCvars){
+    void CommonVMServices::EnvExecuteAfter(IPC::Reader& reader, const IPC::Socket& socket) {
+        IPC::HandleMsg<EnvExecuteAfterMsg>(socket, std::move(reader), [this](std::string commandText, int parseCvars){
             //TODO check that it isn't sending /quit or other bad commands (/lua "rootkit()")?
             Cmd::GetEnv()->ExecuteAfter(commandText, parseCvars);
         });
@@ -140,14 +132,8 @@ namespace VM {
             }
 
             virtual Cvar::OnValueChangedResult OnValueChanged(Str::StringRef newValue) OVERRIDE {
-                IPC::Reader reader = services->GetVM()->DoRPC(
-                    Cvar::OnValueChangedSyscall(name, newValue)
-                );
-
                 Cvar::OnValueChangedResult result;
-                Cvar::OnValueChangedSyscallAnswer::Deserialize(reader, [&](bool success, Str::StringRef description){
-                    result = {success, description};
-                });
+                services->GetVM()->SendMsg<OnValueChangedMsg>(name, newValue, result.success, result.description);
                 return result;
             }
 
@@ -155,18 +141,18 @@ namespace VM {
             CommonVMServices* services;
     };
 
-    void CommonVMServices::HandleCvarSyscall(int minor, IPC::Reader reader, const IPC::Socket& socket) {
+    void CommonVMServices::HandleCvarSyscall(int minor, IPC::Reader& reader, const IPC::Socket& socket) {
         switch(minor) {
-            case Cvar::REGISTER_CVAR:
-                RegisterCvar(std::move(reader), socket);
+            case REGISTER_CVAR:
+                RegisterCvar(reader, socket);
                 break;
 
-            case Cvar::GET_CVAR:
-                GetCvar(std::move(reader), socket);
+            case GET_CVAR:
+                GetCvar(reader, socket);
                 break;
 
-            case Cvar::SET_CVAR:
-                SetCvar(std::move(reader), socket);
+            case SET_CVAR:
+                SetCvar(reader, socket);
                 break;
 
             default:
@@ -174,23 +160,23 @@ namespace VM {
         }
     }
 
-    void CommonVMServices::RegisterCvar(IPC::Reader reader, const IPC::Socket& socket) {
-        Cvar::RegisterCvarSyscall::Deserialize(reader, [this](Str::StringRef name, Str::StringRef description,
+    void CommonVMServices::RegisterCvar(IPC::Reader& reader, const IPC::Socket& socket) {
+        IPC::HandleMsg<RegisterCvarMsg>(socket, std::move(reader), [this](Str::StringRef name, Str::StringRef description,
                 int flags, Str::StringRef defaultValue){
             // The registration of the cvar is made automatically when it is created
             registeredCvars.push_back(new ProxyCvar(this, name, description, flags, defaultValue));
         });
     }
 
-    void CommonVMServices::GetCvar(IPC::Reader reader, const IPC::Socket& socket) {
-        Cvar::GetCvarSyscall::Deserialize(reader, [&, this](Str::StringRef name){
+    void CommonVMServices::GetCvar(IPC::Reader& reader, const IPC::Socket& socket) {
+        IPC::HandleMsg<GetCvarMsg>(socket, std::move(reader), [&, this](Str::StringRef name, std::string& value){
             //TODO check it is only looking at allowed cvars?
-            socket.SendMsg(Cvar::GetCvarSyscallAnswer(Cvar::GetValue(name)));
+            value = Cvar::GetValue(name);
         });
     }
 
-    void CommonVMServices::SetCvar(IPC::Reader reader, const IPC::Socket& socket) {
-        Cvar::SetCvarSyscall::Deserialize(reader, [this](Str::StringRef name, Str::StringRef value){
+    void CommonVMServices::SetCvar(IPC::Reader& reader, const IPC::Socket& socket) {
+        IPC::HandleMsg<SetCvarMsg>(socket, std::move(reader), [this](Str::StringRef name, Str::StringRef value){
             //TODO check it is only touching allowed cvars?
             Cvar::SetValue(name, value);
         });
@@ -198,7 +184,7 @@ namespace VM {
 
     // Misc, Dispatch
 
-    CommonVMServices::CommonVMServices(VM::VMBase* vm, Str::StringRef vmName, int commandFlag)
+    CommonVMServices::CommonVMServices(VMBase* vm, Str::StringRef vmName, int commandFlag)
     :vmName(vmName), vm(vm), commandFlag(commandFlag), commandProxy(new ProxyCmd(*this, commandFlag)) {
     }
 
@@ -212,14 +198,14 @@ namespace VM {
         }
     }
 
-    void CommonVMServices::Syscall(int major, int minor, IPC::Reader reader, const IPC::Socket& socket) {
+    void CommonVMServices::Syscall(int major, int minor, IPC::Reader& reader, const IPC::Socket& socket) {
         switch (major) {
-            case IPC::COMMAND:
-                HandleCommandSyscall(minor, std::move(reader), socket);
+            case COMMAND:
+                HandleCommandSyscall(minor, reader, socket);
                 break;
 
-            case IPC::CVAR:
-                HandleCvarSyscall(minor, std::move(reader), socket);
+            case CVAR:
+                HandleCvarSyscall(minor, reader, socket);
                 break;
 
             default:
@@ -227,7 +213,7 @@ namespace VM {
         }
     }
 
-    VM::VMBase* CommonVMServices::GetVM() {
+    VMBase* CommonVMServices::GetVM() {
         return vm;
     }
 }
