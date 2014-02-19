@@ -60,6 +60,25 @@ NORETURN void Quit();
 // an error message is displayed to the user.
 NORETURN void Error(Str::StringRef errorMessage);
 
+// Throw a DropErr with the given message, which normally will drop to the main menu
+class DropErr: public std::runtime_error {
+	DropErr(const char* message)
+		: std::runtime_error(message) {}
+	DropErr(const std::string& message)
+		: std::runtime_error(message) {}
+};
+NORETURN void Drop(Str::StringRef errorMessage);
+
+// Variadic wrappers for Error and Drop
+template<typename ... Args> void Error(Str::StringRef format, Args&& ... args)
+{
+	Error(Str::Format(format, std::forward<Args>(args)...));
+}
+template<typename ... Args> void Drop(Str::StringRef format, Args&& ... args)
+{
+	Drop(Str::Format(format, std::forward<Args>(args)...));
+}
+
 #ifdef _WIN32
 // strerror() equivalent for Win32 API error values, as returned by GetLastError
 std::string Win32StrError(uint32_t error);

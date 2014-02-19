@@ -79,16 +79,16 @@ SteadyClock::time_point SleepUntil(SteadyClock::time_point time)
 		std::string errorString;
 		static DynamicLib ntdll = DynamicLib::Load("ntdll.dll", errorString);
 		if (!ntdll)
-			Sys::Error(Str::Format("Failed to load ntdll.dll: %s", errorString));
+			Sys::Error("Failed to load ntdll.dll: %s", errorString);
 		pNtQueryTimerResolution = ntdll.LoadSym<decltype(pNtQueryTimerResolution)>("NtQueryTimerResolution", errorString);
 		if (!pNtQueryTimerResolution)
-			Sys::Error(Str::Format("Failed to load NtQueryTimerResolution from ntdll.dll: %s", errorString));
+			Sys::Error("Failed to load NtQueryTimerResolution from ntdll.dll: %s", errorString);
 		pNtSetTimerResolution = ntdll.LoadSym<decltype(pNtSetTimerResolution)>("NtSetTimerResolution", errorString);
 		if (!pNtSetTimerResolution)
-			Sys::Error(Str::Format("Failed to load NtSetTimerResolution from ntdll.dll: %s", errorString));
+			Sys::Error("Failed to load NtSetTimerResolution from ntdll.dll: %s", errorString);
 		pNtDelayExecution = ntdll.LoadSym<decltype(pNtDelayExecution)>("NtDelayExecution", errorString);
 		if (!pNtDelayExecution)
-			Sys::Error(Str::Format("Failed to load NtDelayExecution from ntdll.dll: %s", errorString));
+			Sys::Error("Failed to load NtDelayExecution from ntdll.dll: %s", errorString);
 	}
 
 	// Determine the maximum available timer resolution
@@ -130,8 +130,7 @@ static void Shutdown(Str::StringRef message)
 	SV_Shutdown(message.empty() ? "Server quit" : va("Server fatal crashed: %s\n", message));
 	Com_Shutdown(false);
 
-	// Always run SDL_Quit, because it restore system resolution and makes sure
-	// that the system is in a reasonable state.
+	// Always run SDL_Quit, because it restore system resolution and gamma.
 #if defined(_WIN32) || (!defined(DEDICATED) && !defined(BUILD_TTY_CLIENT))
 	SDL_Quit();
 #endif
@@ -146,6 +145,11 @@ void Quit()
 	exit(0);
 }
 
+void Drop(Str::StringRef message)
+{
+	throw DropErr(message.c_str());
+}
+
 void Error(Str::StringRef message)
 {
 	static bool errorEntered = false;
@@ -157,7 +161,9 @@ void Error(Str::StringRef message)
 
 	Shutdown(message);
 
-	// TODO: messagebox
+#if defined(_WIN32) || (!defined(DEDICATED) && !defined(BUILD_TTY_CLIENT))
+	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Unvanquished", message.c_str(), nullptr);
+#endif
 
 	exit(1);
 }
@@ -343,7 +349,7 @@ static LONG CALLBACK CrashHandler(PEXCEPTION_POINTERS ExceptionInfo)
 
 	// TODO: backtrace
 
-	Sys::Error(Str::Format("Caught exception 0x%lx: %s", ExceptionInfo->ExceptionRecord->ExceptionCode, WindowsExceptionString(ExceptionInfo->ExceptionRecord->ExceptionCode)));
+	Sys::Error("Caught exception 0x%lx: %s", ExceptionInfo->ExceptionRecord->ExceptionCode, WindowsExceptionString(ExceptionInfo->ExceptionRecord->ExceptionCode));
 }
 static void SetupCrashHandler()
 {
@@ -359,7 +365,7 @@ static void CrashHandler(int sig)
 
 	// TODO: backtrace
 
-	Sys::Error(Str::Format("Caught signal %d: %s", sig, strsignal(sig)));
+	Sys::Error("Caught signal %d: %s", sig, strsignal(sig));
 }
 static void SetupCrashHandler()
 {
