@@ -33,6 +33,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <type_traits>
 #include <tuple>
+#include <array>
 #include <map>
 #include <set>
 #include <unordered_map>
