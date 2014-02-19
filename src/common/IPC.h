@@ -442,6 +442,12 @@ template<size_t Index, typename Type0, typename... Types, typename Tuple> void F
 	FillTuple<Index + 1>(Util::TypeList<Types...>(), tuple, stream);
 }
 
+// Map a tuple to get the actual types returned by SerializeTraits::Read instead of the declared types
+template<typename T> struct MapTuple {};
+template<typename... T> struct MapTuple<std::tuple<T...>> {
+	typedef std::tuple<decltype(SerializeTraits<T>::Read(std::declval<Reader&>()))...> type;
+};
+
 // Implementations of SendMsg for Message and SyncMessage
 template<typename Func, uint32_t Id, typename... MsgArgs, typename... Args> void SendMsg(const Socket& socket, Func&&, Message<Id, MsgArgs...>, Args&&... args)
 {
@@ -480,7 +486,7 @@ template<typename Func, uint32_t Id, typename... MsgArgs> void HandleMsg(const S
 {
 	typedef Message<Id, MsgArgs...> Message;
 
-	typename Message::Inputs inputs;
+	typename MapTuple<typename Message::Inputs>::type inputs;
 	FillTuple<0>(Util::TypeListFromTuple<typename Message::Inputs>(), inputs, reader);
 	Util::apply(std::forward<Func>(func), std::move(inputs));
 }
@@ -488,7 +494,7 @@ template<typename Func, typename Msg, typename Reply> void HandleMsg(const Socke
 {
 	typedef SyncMessage<Msg, Reply> Message;
 
-	typename Message::Inputs inputs;
+	typename MapTuple<typename Message::Inputs>::type inputs;
 	typename Message::Outputs outputs;
 	FillTuple<0>(Util::TypeListFromTuple<typename Message::Inputs>(), inputs, reader);
 	Util::apply(std::forward<Func>(func), std::tuple_cat(Util::ref_tuple(std::move(inputs)), Util::ref_tuple(outputs)));
