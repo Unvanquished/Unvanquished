@@ -1575,6 +1575,7 @@ void CL_ShutdownAll( void )
 	if ( re.UnregisterFont )
 	{
 		re.UnregisterFont( &cls.consoleFont );
+		memset( &cls.consoleFont, 0, sizeof( cls.consoleFont ) );
 	}
 }
 
@@ -2304,6 +2305,7 @@ void CL_Vid_Restart_f( void )
 	CL_ShutdownCGame();
 	// clear the font cache
 	re.UnregisterFont( NULL );
+	memset( &cls.consoleFont, 0, sizeof( cls.consoleFont ) );
 	// shutdown the renderer and clear the renderer interface
 	CL_ShutdownRef();
 
@@ -4582,6 +4584,7 @@ void CL_Shutdown( void )
 	if ( re.UnregisterFont )
 	{
 		re.UnregisterFont( NULL );
+		memset( &cls.consoleFont, 0, sizeof( cls.consoleFont ) );
 	}
 
 	CL_ShutdownRef();
