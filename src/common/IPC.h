@@ -292,7 +292,7 @@ private:
 
 // Simple implementation for POD types
 template<typename T>
-struct SerializeTraits<T, typename std::enable_if<std::is_pod<T>::value>::type> {
+struct SerializeTraits<T, typename std::enable_if<std::is_pod<T>::value && !std::is_array<T>::value>::type> {
 	static void Write(Writer& stream, const T& value)
 	{
 		stream.WriteData(std::addressof(value), sizeof(value));
@@ -301,6 +301,23 @@ struct SerializeTraits<T, typename std::enable_if<std::is_pod<T>::value>::type> 
 	{
 		T value;
 		stream.ReadData(std::addressof(value), sizeof(value));
+		return value;
+	}
+};
+
+// std::array for non-POD types (POD types are already handled by the base case)
+template<typename T, size_t N>
+struct SerializeTraits<std::array<T, N>, typename std::enable_if<!std::is_pod<T>::value>::type> {
+	static void Write(Writer& stream, const std::array<T, N>& value)
+	{
+		for (const T& x: value)
+			SerializeTraits<T>::Write(stream, x);
+	}
+	static std::array<T, N> Read(Reader& stream)
+	{
+		std::array<T, N> value;
+		for (T& x: value)
+			x = SerializeTraits<T>::Read(stream);
 		return value;
 	}
 };
