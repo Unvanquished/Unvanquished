@@ -808,13 +808,13 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, const IPC::Socket& socke
 		break;
 
 	case G_LOCATE_GAME_DATA1:
-		IPC::HandleMsg<LocateGameDataMsg1>(socket, std::move(reader), [this](IPC::SharedMemory shm, int numEntities, int entitiySize, int playerSize) {
+		IPC::HandleMsg<LocateGameDataMsg1>(socket, std::move(reader), [this](IPC::SharedMemory shm, int numEntities, int entitySize, int playerSize) {
 			shmRegion = std::move(shm);
 			SV_LocateGameData(shmRegion, numEntities, entitySize, playerSize);
 		});
 		break;
 	case G_LOCATE_GAME_DATA2:
-		IPC::HandleMsg<LocateGameDataMsg2>(socket, std::move(reader), [this](int numEntities, int entitiySize, int playerSize) {
+		IPC::HandleMsg<LocateGameDataMsg2>(socket, std::move(reader), [this](int numEntities, int entitySize, int playerSize) {
 			SV_LocateGameData(shmRegion, numEntities, entitySize, playerSize);
 		});
 		break;
