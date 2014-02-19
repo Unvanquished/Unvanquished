@@ -121,10 +121,17 @@ public:
 	{
 		new(&data) T(std::forward<Args>(args)...);
 	}
+#ifdef GCC_BROKEN_CXX11
+	template<typename Arg> T& assign(Arg&& arg)
+	{
+		return get() = std::forward<Arg>(arg);
+	}
+#else
 	template<typename Arg> decltype(std::declval<T&>() = std::declval<Arg>()) assign(Arg&& arg)
 	{
 		return get() = std::forward<Arg>(arg);
 	}
+#endif
 	void destroy()
 	{
 		get().~T();
