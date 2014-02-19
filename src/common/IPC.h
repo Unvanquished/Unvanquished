@@ -33,6 +33,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <type_traits>
 #include <tuple>
+#include <map>
+#include <set>
+#include <unordered_map>
+#include <unordered_set>
 #include <vector>
 #include <string>
 #include "String.h"
@@ -385,6 +389,78 @@ template<> struct SerializeTraits<std::string> {
 		size_t size = stream.ReadSize<char>();
 		const char* p = static_cast<const char*>(stream.ReadInline(size));
 		return std::string(p, p + size);
+	}
+};
+
+// std::map and std::unordered_map
+template<typename T, typename U>
+struct SerializeTraits<std::map<T, U>> {
+	static void Write(Writer& stream, const std::map<T, U>& value)
+	{
+		stream.WriteSize(value.size());
+		for (const std::pair<T, U>& x: value)
+			SerializeTraits<std::pair<T, U>>::Write(x);
+	}
+	static std::map<T, U> Read(Reader& stream)
+	{
+		std::map<T, U> value;
+		size_t size = stream.ReadSize<std::pair<T, U>>();
+		for (size_t i = 0; i != size; i++)
+			value.insert(SerializeTraits<std::pair<T, U>>::Read(stream));
+		return value;
+	}
+};
+template<typename T, typename U>
+struct SerializeTraits<std::unordered_map<T, U>> {
+	static void Write(Writer& stream, const std::unordered_map<T, U>& value)
+	{
+		stream.WriteSize(value.size());
+		for (const std::pair<T, U>& x: value)
+			SerializeTraits<std::pair<T, U>>::Write(x);
+	}
+	static std::unordered_map<T, U> Read(Reader& stream)
+	{
+		std::unordered_map<T, U> value;
+		size_t size = stream.ReadSize<std::pair<T, U>>();
+		for (size_t i = 0; i != size; i++)
+			value.insert(SerializeTraits<std::pair<T, U>>::Read(stream));
+		return value;
+	}
+};
+
+// std::set and std::unordered_set
+template<typename T>
+struct SerializeTraits<std::set<T>> {
+	static void Write(Writer& stream, const std::set<T>& value)
+	{
+		stream.WriteSize(value.size());
+		for (const T& x: value)
+			SerializeTraits<T>::Write(x);
+	}
+	static std::set<T> Read(Reader& stream)
+	{
+		std::set<T> value;
+		size_t size = stream.ReadSize<T>();
+		for (size_t i = 0; i != size; i++)
+			value.insert(SerializeTraits<T>::Read(stream));
+		return value;
+	}
+};
+template<typename T>
+struct SerializeTraits<std::unordered_set<T>> {
+	static void Write(Writer& stream, const std::unordered_set<T>& value)
+	{
+		stream.WriteSize(value.size());
+		for (const T& x: value)
+			SerializeTraits<T>::Write(x);
+	}
+	static std::unordered_set<T> Read(Reader& stream)
+	{
+		std::unordered_set<T> value;
+		size_t size = stream.ReadSize<T>();
+		for (size_t i = 0; i != size; i++)
+			value.insert(SerializeTraits<T>::Read(stream));
+		return value;
 	}
 };
 
