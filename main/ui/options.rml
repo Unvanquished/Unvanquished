@@ -30,7 +30,15 @@
 			<div><label>Resolution:</label>
 				<dataselect source="resolutions.default" fields="width,height" formatter="Resolution" />
 			</div>
-
+			<div><label>Resolution:</label>
+				<label>320x240</label><input type="radio" name="resolution" cvar="r_mode" value="0" />
+				<label>400x300</label><input type="radio" name="resolution" cvar="r_mode" value="1" />
+				<label>512x384</label><input type="radio" name="resolution" cvar="r_mode" value="2" />
+				<label>640x480</label><input type="radio" name="resolution" cvar="r_mode" value="3" />
+				<label>800x600</label><input type="radio" name="resolution" cvar="r_mode" value="4" />
+				<label>960x720</label><input type="radio" name="resolution" cvar="r_mode" value="5" />
+				<label>1024x768</label><input type="radio" name="resolution" cvar="r_mode" value="6" />
+			</div>
 			<div><label>Video Quality:</label>
 			<select name="videoquality">
 				<option value="low">Low</option>
@@ -38,7 +46,7 @@
 				<option value="hight" selected="">Hight</option>
 				<option value="ultra">Ultra</option>
 			</select></div>
-
+			<div><label>Fullscreen</label><input cvar="r_fullscreen" type="checkbox" /></div>
 			<div><label>Video Brightness:</label><input type="range" min="0" max="1" step="0.01"  /></div>
 			<div><label>Mouse Sensitivity:</label><input type="range" min="0" max="1" step="0.01"  /></div>
 			<div><label>Effect Volume:</label><input type="range" min="0" max="1" step="0.01" cvar="audio.volume.master" /></div>
