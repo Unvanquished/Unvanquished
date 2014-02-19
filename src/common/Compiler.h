@@ -101,7 +101,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 // GCC 4.6 has incomplete support for C++11
-#if __GNUC__ * 100 + __GNUC_MINOR__ <= 407
+#if !defined(__clang__) && __GNUC__ * 100 + __GNUC_MINOR__ <= 407
 #define GCC_BROKEN_CXX11
 #endif
 
