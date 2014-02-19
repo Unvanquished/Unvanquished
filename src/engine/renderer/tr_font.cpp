@@ -889,7 +889,10 @@ void RE_UnregisterFont_Internal( fontHandle_t handle )
 		return;
 	}
 
-	fontUsage[ handle ]--;
+	if ( --fontUsage[ handle ] )
+	{
+		return;
+	}
 
 	if ( registeredFont[ handle ].face )
 	{
@@ -908,6 +911,7 @@ void RE_UnregisterFont_Internal( fontHandle_t handle )
 		if ( registeredFont[ handle ].glyphBlock[ i ] && registeredFont[ handle ].glyphBlock[ i ] != nullGlyphs )
 		{
 			ri.Free( registeredFont[ handle ].glyphBlock[ i ] );
+			registeredFont[ handle ].glyphBlock[ i ] = NULL;
 		}
 	}
 
