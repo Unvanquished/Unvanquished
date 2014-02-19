@@ -39,7 +39,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <memory>
 
 // Workaround for broken tuples in GCC 4.6
-#if defined(__GLIBCXX__) && __GLIBCXX__ < 20120322
+#ifdef LIBSTDCXX_BROKEN_CXX11
 namespace std {
 
 template<size_t Index, typename... T>

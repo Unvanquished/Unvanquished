@@ -104,6 +104,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #if !defined(__clang__) && __GNUC__ * 100 + __GNUC_MINOR__ <= 407
 #define GCC_BROKEN_CXX11
 #endif
+#if defined(__GLIBCXX__) && __GLIBCXX__ < 20120322
+#define LIBSTDCXX_BROKEN_CXX11
+#endif
 
 // Microsoft Visual C++
 #elif defined( _MSC_VER )

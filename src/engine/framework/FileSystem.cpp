@@ -1183,7 +1183,7 @@ static void InternalLoadPak(const PakInfo& pak, Util::optional<uint32_t> expecte
 		if (HaveError(err))
 			return;
 		for (auto it = dirRange.begin(); it != dirRange.end();) {
-#ifdef GCC_BROKEN_CXX11
+#ifdef LIBSTDCXX_BROKEN_CXX11
 			fileMap.insert({*it, std::pair<size_t, offset_t>(loadedPaks.size() - 1, 0)});
 #else
 			fileMap.emplace(*it, std::pair<size_t, offset_t>(loadedPaks.size() - 1, 0));
@@ -1212,7 +1212,7 @@ static void InternalLoadPak(const PakInfo& pak, Util::optional<uint32_t> expecte
 			checksum = crc32(*checksum, reinterpret_cast<const Bytef*>(&crc), sizeof(crc));
 			if (isDir)
 				return;
-#ifdef GCC_BROKEN_CXX11
+#ifdef LIBSTDCXX_BROKEN_CXX11
 			fileMap.insert({filename, std::pair<size_t, offset_t>(loadedPaks.size() - 1, offset)});
 #else
 			fileMap.emplace(filename, std::pair<size_t, offset_t>(loadedPaks.size() - 1, offset));
@@ -1730,7 +1730,7 @@ DirectoryRange ListFiles(Str::StringRef path, std::error_code& err)
 {
 	std::string dirPath = path;
 	if (!dirPath.empty() && dirPath.back() == '/')
-#ifdef GCC_BROKEN_CXX11
+#ifdef LIBSTDCXX_BROKEN_CXX11
 		dirPath.resize(dirPath.size() - 1);
 #else
 		dirPath.pop_back();

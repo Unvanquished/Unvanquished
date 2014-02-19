@@ -65,7 +65,7 @@ public:
 namespace detail {
 
 // GCC 4.6 is missing some type traits
-#ifdef GCC_BROKEN_CXX11
+#ifdef LIBSTDCXX_BROKEN_CXX11
 typedef char one[1];
 typedef char two[2];
 template<typename T, typename Arg, typename = decltype(std::declval<T>() = std::declval<Arg>())>
