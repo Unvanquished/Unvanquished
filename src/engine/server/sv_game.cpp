@@ -943,25 +943,6 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, const IPC::Socket& socke
 		});
 		break;
 
-/*
-	case G_BOT_ALLOCATE_CLIENT:
-		outputs.WriteInt(SV_BotAllocateClient(inputs.ReadInt()));
-		break;
-
-	case G_BOT_FREE_CLIENT:
-		SV_BotFreeClient(inputs.ReadInt());
-		break;
-
-	case BOT_GET_CONSOLE_MESSAGE:
-	{
-		int client = inputs.ReadInt();
-		int len = inputs.ReadInt();
-		std::unique_ptr<char[]> buffer(new char[len]);
-		outputs.WriteInt(SV_BotGetConsoleMessage(client, buffer.get(), len));
-		outputs.WriteString(buffer.get());
-		break;
-	}
-*/
 	case G_GET_USERCMD:
 		IPC::HandleMsg<GetUsercmdMsg>(socket, std::move(reader), [this](int index, usercmd_t& cmd) {
 			SV_GetUsercmd(index, &cmd);
@@ -1044,34 +1025,54 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, const IPC::Socket& socke
 			res.assign(buffer.get(), len);
 		});
 		break;
-/*
+
 	case G_PARSE_ADD_GLOBAL_DEFINE:
-		outputs.WriteInt(Parse_AddGlobalDefine(inputs.ReadString()));
+		IPC::HandleMsg<ParseAddGlobalDefineMsg>(socket, std::move(reader), [this](Str::StringRef define, int& res) {
+			res = Parse_AddGlobalDefine(define.c_str());
+		});
 		break;
 
 	case G_PARSE_LOAD_SOURCE:
-		outputs.WriteInt(Parse_LoadSourceHandle(inputs.ReadString()));
+		IPC::HandleMsg<ParseLoadSourceMsg>(socket, std::move(reader), [this](Str::StringRef name, int& res) {
+			res = Parse_LoadSourceHandle(name.c_str());
+		});
 		break;
 
 	case G_PARSE_FREE_SOURCE:
-		outputs.WriteInt(Parse_FreeSourceHandle(inputs.ReadInt()));
+		IPC::HandleMsg<ParseFreeSourceMsg>(socket, std::move(reader), [this](int source, int& res) {
+			res = Parse_FreeSourceHandle(source);
+		});
 		break;
 
 	case G_PARSE_READ_TOKEN:
-	{
-		pc_token_t token;
-		outputs.WriteInt(Parse_ReadTokenHandle(inputs.ReadInt(), &token));
-		outputs.Write(&token, sizeof(pc_token_t));
+		IPC::HandleMsg<ParseReadTokenMsg>(socket, std::move(reader), [this](int source, int& res, pc_token_t& token) {
+			res = Parse_ReadTokenHandle(source, &token);
+		});
 		break;
-	}
 
 	case G_PARSE_SOURCE_FILE_AND_LINE:
+		IPC::HandleMsg<ParseSourceFileAndLineMsg>(socket, std::move(reader), [this](int source, int& res, std::string& file, int& line) {
+			char buffer[128] = {0};
+			res = Parse_SourceFileAndLine(source, buffer, &line);
+			file = buffer;
+		});
+		break;
+/*
+	case G_BOT_ALLOCATE_CLIENT:
+		outputs.WriteInt(SV_BotAllocateClient(inputs.ReadInt()));
+		break;
+
+	case G_BOT_FREE_CLIENT:
+		SV_BotFreeClient(inputs.ReadInt());
+		break;
+
+	case BOT_GET_CONSOLE_MESSAGE:
 	{
-		char buffer[128];
-		int line;
-		outputs.WriteInt(Parse_SourceFileAndLine(inputs.ReadInt(), buffer, &line));
-		outputs.WriteString(buffer);
-		outputs.WriteInt(line);
+		int client = inputs.ReadInt();
+		int len = inputs.ReadInt();
+		std::unique_ptr<char[]> buffer(new char[len]);
+		outputs.WriteInt(SV_BotGetConsoleMessage(client, buffer.get(), len));
+		outputs.WriteString(buffer.get());
 		break;
 	}
 

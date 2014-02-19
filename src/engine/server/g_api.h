@@ -347,6 +347,34 @@ typedef IPC::SyncMessage<
     IPC::Reply<std::string>
 > GetTimeStringMsg;
 
+//ParseAddGlobalDefineMsg
+typedef IPC::SyncMessage<
+    IPC::Message<IPC_ID(VM::QVM, G_PARSE_ADD_GLOBAL_DEFINE), std::string>,
+    IPC::Reply<int>
+> ParseAddGlobalDefineMsg;
+//ParseLoadSourceMsg
+typedef IPC::SyncMessage<
+    IPC::Message<IPC_ID(VM::QVM, G_PARSE_LOAD_SOURCE), std::string>,
+    IPC::Reply<int>
+> ParseLoadSourceMsg;
+//ParseFreeSourceMsg
+typedef IPC::SyncMessage<
+    IPC::Message<IPC_ID(VM::QVM, G_PARSE_FREE_SOURCE), int>,
+    IPC::Reply<int>
+> ParseFreeSourceMsg;
+//ParseReadTokenMsg
+typedef IPC::SyncMessage<
+    IPC::Message<IPC_ID(VM::QVM, G_PARSE_READ_TOKEN), int>,
+    IPC::Reply<int, pc_token_t>
+> ParseReadTokenMsg;
+//ParseSourceFileAndLineMsg
+typedef IPC::SyncMessage<
+    IPC::Message<IPC_ID(VM::QVM, G_PARSE_SOURCE_FILE_AND_LINE), int>,
+    IPC::Reply<int, std::string, int>
+> ParseSourceFileAndLineMsg;
+
+
+
 // engine-to-game-module calls
 typedef enum
 {
