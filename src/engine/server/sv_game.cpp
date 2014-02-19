@@ -650,22 +650,15 @@ void GameVM::GameInit(int levelTime, int randomSeed, qboolean restart)
 {
 	this->SendMsg<GameInitMsg>(levelTime, randomSeed, restart);
 }
-/*
+
 void GameVM::GameShutdown(qboolean restart)
 {
-	RPC::Writer input;
-	input.WriteInt(GS_QVM_SYSCALL);
-	input.WriteInt(GAME_SHUTDOWN);
-	input.WriteInt(restart);
-
-	// Ignore socket errors when shutting down, in case the remote process
-	// has been killed and we are shutting down because of an error.
-	DoRPC(input, true);
+	//TODO ignore errors
+	this->SendMsg<GameShutdownMsg>(restart);
 
 	// Release the shared memory region
 	this->shmRegion.Close();
 }
-*/
 
 qboolean GameVM::GameClientConnect(char* reason, size_t size, int clientNum, qboolean firstTime, qboolean isBot)
 {
