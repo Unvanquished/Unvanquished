@@ -43,16 +43,16 @@ namespace VM {
 
     class CommonVMServices {
         public:
-            CommonVMServices(VMBase* vm, Str::StringRef vmName, int commandFlag);
+            CommonVMServices(VMBase& vm, Str::StringRef vmName, int commandFlag);
             ~CommonVMServices();
 
             void Syscall(int major, int minor, IPC::Reader reader, const IPC::Socket& socket);
 
         private:
             Str::StringRef vmName;
-            VMBase* vm;
+            VMBase& vm;
 
-            VMBase* GetVM();
+            VMBase& GetVM();
 
             // Command Related
             void HandleCommandSyscall(int minor, IPC::Reader& reader, const IPC::Socket& socket);
@@ -64,7 +64,7 @@ namespace VM {
 
             class ProxyCmd;
             int commandFlag;
-            ProxyCmd* commandProxy;
+            std::unique_ptr<ProxyCmd> commandProxy;
             //TODO use the values to help the VM cache the location of the commands instead of doing a second hashtable lookup
             std::unordered_map<std::string, uint64_t> registeredCommands;
 
@@ -76,7 +76,7 @@ namespace VM {
             void SetCvar(IPC::Reader& reader, const IPC::Socket& socket);
 
             class ProxyCvar;
-            std::vector<ProxyCvar*> registeredCvars;
+            std::vector<std::unique_ptr<ProxyCvar>> registeredCvars;
     };
 }
 

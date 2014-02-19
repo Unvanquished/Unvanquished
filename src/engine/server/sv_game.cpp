@@ -620,7 +620,7 @@ qboolean SV_GetTag( int clientNum, int tagFileNumber, const char *tagname, orien
 #endif
 }
 
-GameVM::GameVM()
+GameVM::GameVM(): services(new VM::CommonVMServices(*this, "Game", Cmd::GAME))
 {
 }
 
@@ -637,7 +637,6 @@ bool GameVM::Start()
 		Com_Error( ERR_DROP, "Game ABI mismatch, expected %d, got %d", GAME_API_VERSION, version );
     }
 
-    services = new VM::CommonVMServices(this, "Game", Cmd::GAME);
 
     return true;
 }
@@ -645,7 +644,6 @@ bool GameVM::Start()
 GameVM::~GameVM()
 {
     this->Free();
-    delete services;
 }
 
 void GameVM::GameInit(int levelTime, int randomSeed, qboolean restart)
@@ -782,7 +780,7 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, const IPC::Socket& socke
 		IPC::HandleMsg<FSReadMsg>(socket, std::move(reader), [this](int handle, int len, std::string& res) {
 			std::unique_ptr<char[]> buffer(new char[len]);
 			FS_Read(buffer.get(), len, handle);
-			res = buffer.get();
+			res.assign(buffer.get(), len);
 		});
 		break;
 
@@ -808,7 +806,7 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, const IPC::Socket& socke
 		IPC::HandleMsg<FSGetFileListMsg>(socket, std::move(reader), [this](Str::StringRef path, Str::StringRef extension, int len, int& intRes, std::string& res) {
 			std::unique_ptr<char[]> buffer(new char[len]);
 			intRes = FS_GetFileList(path.c_str(), extension.c_str(), buffer.get(), len);
-			res = buffer.get();
+			res.assign(buffer.get(), len);
 		});
 		break;
 

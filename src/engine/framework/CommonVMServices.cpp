@@ -73,12 +73,12 @@ namespace VM {
             }
 
             virtual void Run(const Cmd::Args& args) const {
-                services.GetVM()->SendMsg<ExecuteMsg>(args.EscapedArgs(0));
+                services.GetVM().SendMsg<ExecuteMsg>(args.EscapedArgs(0));
             }
 
             virtual Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, Str::StringRef prefix) const {
                 Cmd::CompletionResult res;
-                services.GetVM()->SendMsg<CompleteMsg>(argNum, args.EscapedArgs(0), prefix, res);
+                services.GetVM().SendMsg<CompleteMsg>(argNum, args.EscapedArgs(0), prefix, res);
                 return res;
             }
 
@@ -133,7 +133,7 @@ namespace VM {
 
             virtual Cvar::OnValueChangedResult OnValueChanged(Str::StringRef newValue) OVERRIDE {
                 Cvar::OnValueChangedResult result;
-                services->GetVM()->SendMsg<OnValueChangedMsg>(name, newValue, result.success, result.description);
+                services->GetVM().SendMsg<OnValueChangedMsg>(name, newValue, result.success, result.description);
                 return result;
             }
 
@@ -164,7 +164,7 @@ namespace VM {
         IPC::HandleMsg<RegisterCvarMsg>(socket, std::move(reader), [this](Str::StringRef name, Str::StringRef description,
                 int flags, Str::StringRef defaultValue){
             // The registration of the cvar is made automatically when it is created
-            registeredCvars.push_back(new ProxyCvar(this, name, description, flags, defaultValue));
+            registeredCvars.emplace_back(new ProxyCvar(this, name, description, flags, defaultValue));
         });
     }
 
@@ -184,18 +184,14 @@ namespace VM {
 
     // Misc, Dispatch
 
-    CommonVMServices::CommonVMServices(VMBase* vm, Str::StringRef vmName, int commandFlag)
+    CommonVMServices::CommonVMServices(VMBase& vm, Str::StringRef vmName, int commandFlag)
     :vmName(vmName), vm(vm), commandFlag(commandFlag), commandProxy(new ProxyCmd(*this, commandFlag)) {
     }
 
     CommonVMServices::~CommonVMServices() {
         //FIXME or iterate over the commands we registered, or add Cmd::RemoveByProxy()
         Cmd::RemoveFlaggedCommands(commandFlag);
-        delete commandProxy;
-
-        for (auto cvar: registeredCvars) {
-            delete cvar;
-        }
+        //TODO unregesiter cvars
     }
 
     void CommonVMServices::Syscall(int major, int minor, IPC::Reader reader, const IPC::Socket& socket) {
@@ -213,7 +209,7 @@ namespace VM {
         }
     }
 
-    VMBase* CommonVMServices::GetVM() {
+    VMBase& CommonVMServices::GetVM() {
         return vm;
     }
 }
