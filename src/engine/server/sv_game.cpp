@@ -842,113 +842,63 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, const IPC::Socket& socke
 		SV_GameSendServerCommand(clientNum, text);
 		break;
 	}
-
-	case G_LINKENTITY:
-		SV_LinkEntity(SV_GentityNum(inputs.ReadInt()));
+*/
+	case G_LINK_ENTITY:
+		IPC::HandleMsg<LinkEntityMsg>(socket, std::move(reader), [this](int entityNum) {
+			SV_LinkEntity(SV_GentityNum(entityNum));
+		});
 		break;
 
-	case G_UNLINKENTITY:
-		SV_UnlinkEntity(SV_GentityNum(inputs.ReadInt()));
+	case G_UNLINK_ENTITY:
+		IPC::HandleMsg<UnlinkEntityMsg>(socket, std::move(reader), [this](int entityNum) {
+			SV_UnlinkEntity(SV_GentityNum(entityNum));
+		});
 		break;
 
 	case G_ENTITIES_IN_BOX:
-	{
-		vec3_t mins, maxs;
-		inputs.Read(mins, sizeof(vec3_t));
-		inputs.Read(maxs, sizeof(vec3_t));
-		int len = inputs.ReadInt();
-		std::unique_ptr<int[]> buffer(new int[len]);
-		len = SV_AreaEntities(mins, maxs, buffer.get(), len);
-		outputs.WriteInt(len);
-		outputs.Write(buffer.get(), len * sizeof(int));
+		IPC::HandleMsg<EntitiesInBoxMsg>(socket, std::move(reader), [this](std::array<float, 3> mins, std::array<float, 3> maxs, int len, std::vector<int>& res) {
+			res.resize(len); //reserve doesn't guarantee that data() will return an array long enough
+			len = SV_AreaEntities(mins.data(), maxs.data(), res.data(), len);
+		});
 		break;
-	}
 
 	case G_ENTITY_CONTACT:
-	{
-		vec3_t mins, maxs;
-		inputs.Read(mins, sizeof(vec3_t));
-		inputs.Read(maxs, sizeof(vec3_t));
-		const sharedEntity_t* ent = SV_GentityNum(inputs.ReadInt());
-		outputs.WriteInt(SV_EntityContact(mins, maxs, ent, TT_AABB));
-		break;
-	}
-
-	case G_ENTITY_CONTACTCAPSULE:
-	{
-		vec3_t mins, maxs;
-		inputs.Read(mins, sizeof(vec3_t));
-		inputs.Read(maxs, sizeof(vec3_t));
-		const sharedEntity_t* ent = SV_GentityNum(inputs.ReadInt());
-		outputs.WriteInt(SV_EntityContact(mins, maxs, ent, TT_CAPSULE));
-		break;
-	}
+		IPC::HandleMsg<EntityContactMsg>(socket, std::move(reader), [this](std::array<float, 3> mins, std::array<float, 3> maxs, int entityNum, int& res) {
+			const sharedEntity_t* ent = SV_GentityNum(entityNum);
+			res = SV_EntityContact(mins.data(), maxs.data(), ent, TT_AABB);
+		});
 
 	case G_TRACE:
-	{
-		vec3_t start, mins, maxs, end;
-		inputs.Read(start, sizeof(vec3_t));
-		inputs.Read(mins, sizeof(vec3_t));
-		inputs.Read(maxs, sizeof(vec3_t));
-		inputs.Read(end, sizeof(vec3_t));
-		int passEntityNum = inputs.ReadInt();
-		int contentmask = inputs.ReadInt();
-		trace_t result;
-		SV_Trace(&result, start, mins, maxs, end, passEntityNum, contentmask, TT_AABB);
-		outputs.Write(&result, sizeof(trace_t));
-		break;
-	}
-
-	case G_TRACECAPSULE:
-	{
-		vec3_t start, mins, maxs, end;
-		inputs.Read(start, sizeof(vec3_t));
-		inputs.Read(mins, sizeof(vec3_t));
-		inputs.Read(maxs, sizeof(vec3_t));
-		inputs.Read(end, sizeof(vec3_t));
-		int passEntityNum = inputs.ReadInt();
-		int contentmask = inputs.ReadInt();
-		trace_t result;
-		SV_Trace(&result, start, mins, maxs, end, passEntityNum, contentmask, TT_CAPSULE);
-		outputs.Write(&result, sizeof(trace_t));
-		break;
-	}
+		IPC::HandleMsg<TraceMsg>(socket, std::move(reader), [this](std::array<float, 3> start, std::array<float, 3> mins, std::array<float, 3> maxs, std::array<float, 3> end, int passEntityNum, int contentMask, trace_t& res) {
+			SV_Trace(&res, start.data(), mins.data(), maxs.data(), end.data(), passEntityNum, contentMask, TT_AABB);
+		});
 
 	case G_POINT_CONTENTS:
-	{
-		vec3_t p;
-		inputs.Read(p, sizeof(p));
-		int passEntityNum = inputs.ReadInt();
-		outputs.WriteInt(SV_PointContents(p, passEntityNum));
+		IPC::HandleMsg<PointContentsMsg>(socket, std::move(reader), [this](std::array<float, 3> p, int passEntityNum, int& res) {
+			res = SV_PointContents(p.data(), passEntityNum);
+		});
 		break;
-	}
 
 	case G_SET_BRUSH_MODEL:
-	{
-		sharedEntity_t* ent = SV_GentityNum(inputs.ReadInt());
-		const char* name = inputs.ReadString();
-		SV_SetBrushModel(ent, name);
+		IPC::HandleMsg<SetBrushModelMsg>(socket, std::move(reader), [this](int entityNum, Str::StringRef name) {
+			sharedEntity_t* ent = SV_GentityNum(entityNum);
+			SV_SetBrushModel(ent, name.c_str());
+		});
 		break;
-	}
 
 	case G_IN_PVS:
-	{
-		vec3_t p1, p2;
-		inputs.Read(p1, sizeof(vec3_t));
-		inputs.Read(p2, sizeof(vec3_t));
-		outputs.WriteInt(SV_inPVS(p1, p2));
+		IPC::HandleMsg<InPVSMsg>(socket, std::move(reader), [this](std::array<float, 3> p1, std::array<float, 3> p2, bool& res) {
+			res = SV_inPVS(p1.data(), p2.data());
+		});
 		break;
-	}
 
 	case G_IN_PVS_IGNORE_PORTALS:
-	{
-		vec3_t p1, p2;
-		inputs.Read(p1, sizeof(vec3_t));
-		inputs.Read(p2, sizeof(vec3_t));
-		outputs.WriteInt(SV_inPVSIgnorePortals(p1, p2));
+		IPC::HandleMsg<InPVSIgnorePortalsMsg>(socket, std::move(reader), [this](std::array<float, 3> p1, std::array<float, 3> p2, bool& res) {
+			res = SV_inPVSIgnorePortals(p1.data(), p2.data());
+		});
 		break;
-	}
 
+/*
 	case G_SET_CONFIGSTRING:
 	{
 		int index = inputs.ReadInt();

@@ -24,6 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../qcommon/vm_traps.h"
 #include "../../common/CommonSyscalls.h"
 #include "../../common/IPC.h"
+#include <array>
 
 #define GAME_API_VERSION          1
 
@@ -117,17 +118,17 @@ typedef enum gameImport_s
   G_LOCATE_GAME_DATA,
   G_DROP_CLIENT,
   G_SEND_SERVER_COMMAND,
-  G_LINKENTITY,
-  G_UNLINKENTITY,
+
+  G_LINK_ENTITY,
+  G_UNLINK_ENTITY,
   G_ENTITIES_IN_BOX,
   G_ENTITY_CONTACT,
-  G_ENTITY_CONTACTCAPSULE,
   G_TRACE,
-  G_TRACECAPSULE,
   G_POINT_CONTENTS,
   G_SET_BRUSH_MODEL,
   G_IN_PVS,
   G_IN_PVS_IGNORE_PORTALS,
+
   G_SET_CONFIGSTRING,
   G_GET_CONFIGSTRING,
   G_SET_CONFIGSTRING_RESTRICTIONS,
@@ -219,6 +220,42 @@ typedef IPC::SyncMessage<
 	IPC::Reply<bool>
 > FSFindPakMsg;
 
+// LinkEntityMsg
+typedef IPC::Message<IPC_ID(VM::QVM, G_LINK_ENTITY), int> LinkEntityMsg;
+// UnlinkEntityMsg
+typedef IPC::Message<IPC_ID(VM::QVM, G_UNLINK_ENTITY), int> UnlinkEntityMsg;
+// EntitiesInBoxMsg
+typedef IPC::SyncMessage<
+	IPC::Message<IPC_ID(VM::QVM, G_ENTITIES_IN_BOX), std::array<float, 3>, std::array<float, 3>, int>,
+	IPC::Reply<std::vector<int>>
+> EntitiesInBoxMsg;
+// EntityContactMsg
+typedef IPC::SyncMessage<
+	IPC::Message<IPC_ID(VM::QVM, G_ENTITY_CONTACT), std::array<float, 3>, std::array<float, 3>, int>,
+	IPC::Reply<int>
+> EntityContactMsg;
+// TraceMsg
+typedef IPC::SyncMessage<
+	IPC::Message<IPC_ID(VM::QVM, G_TRACE), std::array<float, 3>, std::array<float, 3>, std::array<float, 3>, std::array<float, 3>, int, int>,
+	IPC::Reply<trace_t>
+> TraceMsg;
+// PointConentsMsg
+typedef IPC::SyncMessage<
+	IPC::Message<IPC_ID(VM::QVM, G_POINT_CONTENTS), std::array<float, 3>, int>,
+	IPC::Reply<int>
+> PointContentsMsg;
+// SetBrushModelMsg
+typedef IPC::Message<IPC_ID(VM::QVM, G_SET_BRUSH_MODEL), int, std::string> SetBrushModelMsg;
+// InPVSMsg
+typedef IPC::SyncMessage<
+	IPC::Message<IPC_ID(VM::QVM, G_IN_PVS), std::array<float, 3>, std::array<float, 3>>,
+	IPC::Reply<bool>
+> InPVSMsg;
+// InPVSIgnorePortalsMsg
+typedef IPC::SyncMessage<
+	IPC::Message<IPC_ID(VM::QVM, G_IN_PVS_IGNORE_PORTALS), std::array<float, 3>, std::array<float, 3>>,
+	IPC::Reply<bool>
+> InPVSIgnorePortalsMsg;
 
 
 // engine-to-game-module calls
