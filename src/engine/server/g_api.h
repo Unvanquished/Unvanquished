@@ -302,23 +302,47 @@ typedef enum
 } gameExport_t;
 
 // GameInitMsg
-typedef IPC::Message<IPC_ID(VM::QVM, GAME_INIT), int, int, int> GameInitMsg;
+typedef IPC::SyncMessage<
+	IPC::Message<IPC_ID(VM::QVM, GAME_INIT), int, int, int>,
+	IPC::Reply<>
+> GameInitMsg;
 // GameShutdownMsg
-typedef IPC::Message<IPC_ID(VM::QVM, GAME_SHUTDOWN), int> GameShutdownMsg;
+typedef IPC::SyncMessage<
+	IPC::Message<IPC_ID(VM::QVM, GAME_SHUTDOWN), int>,
+	IPC::Reply<>
+> GameShutdownMsg;
 // GameClientConnectMsg
 typedef IPC::SyncMessage<
 	IPC::Message<IPC_ID(VM::QVM, GAME_CLIENT_CONNECT), int, bool, int>,
 	IPC::Reply<bool, std::string>
 > GameClientConnectMsg;
 // GameClientBeginMsg
-typedef IPC::Message<IPC_ID(VM::QVM, GAME_CLIENT_BEGIN), int> GameClientBeginMsg;
+typedef IPC::SyncMessage<
+	IPC::Message<IPC_ID(VM::QVM, GAME_CLIENT_BEGIN), int>,
+	IPC::Reply<>
+> GameClientBeginMsg;
 // GameClientUserinfoChangedMsg
-typedef IPC::Message<IPC_ID(VM::QVM, GAME_CLIENT_USERINFO_CHANGED), int> GameClientUserinfoChangedMsg;
+typedef IPC::SyncMessage<
+	IPC::Message<IPC_ID(VM::QVM, GAME_CLIENT_USERINFO_CHANGED), int>,
+	IPC::Reply<>
+> GameClientUserinfoChangedMsg;
 // GameClientDisconnectMsg
-typedef IPC::Message<IPC_ID(VM::QVM, GAME_CLIENT_DISCONNECT), int> GameClientDisconnectMsg;
+typedef IPC::SyncMessage<
+	IPC::Message<IPC_ID(VM::QVM, GAME_CLIENT_DISCONNECT), int>,
+	IPC::Reply<>
+> GameClientDisconnectMsg;
 // GameClientCommandMsg
-typedef IPC::Message<IPC_ID(VM::QVM, GAME_CLIENT_COMMAND), int, std::string> GameClientCommandMsg;
+typedef IPC::SyncMessage<
+	IPC::Message<IPC_ID(VM::QVM, GAME_CLIENT_COMMAND), int, std::string>,
+	IPC::Reply<>
+> GameClientCommandMsg;
 // GameClientThinkMsg
-typedef IPC::Message<IPC_ID(VM::QVM, GAME_CLIENT_THINK), int> GameClientThinkMsg;
+typedef IPC::SyncMessage<
+	IPC::Message<IPC_ID(VM::QVM, GAME_CLIENT_THINK), int>,
+	IPC::Reply<>
+> GameClientThinkMsg;
 // GameRunFrameMsg
-typedef IPC::Message<IPC_ID(VM::QVM, GAME_RUN_FRAME), int> GameRunFrameMsg;
+typedef IPC::SyncMessage<
+	IPC::Message<IPC_ID(VM::QVM, GAME_RUN_FRAME), int>,
+	IPC::Reply<>
+> GameRunFrameMsg;
