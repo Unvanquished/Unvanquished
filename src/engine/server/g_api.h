@@ -115,7 +115,8 @@ typedef enum gameImport_s
   G_FS_GET_FILE_LIST,
   G_FS_FIND_PAK,
 
-  G_LOCATE_GAME_DATA,
+  G_LOCATE_GAME_DATA1,
+  G_LOCATE_GAME_DATA2,
   G_DROP_CLIENT,
   G_SEND_SERVER_COMMAND,
 
@@ -219,6 +220,10 @@ typedef IPC::SyncMessage<
 	IPC::Message<IPC_ID(VM::QVM, G_FS_FIND_PAK), std::string>,
 	IPC::Reply<bool>
 > FSFindPakMsg;
+
+// LocateGameData
+typedef IPC::Message<IPC_ID(VM::QVM, G_LOCATE_GAME_DATA1), IPC::SharedMemory, int, int, int> LocateGameDataMsg1;
+typedef IPC::Message<IPC_ID(VM::QVM, G_LOCATE_GAME_DATA2), int, int, int> LocateGameDataMsg2;
 
 // LinkEntityMsg
 typedef IPC::Message<IPC_ID(VM::QVM, G_LINK_ENTITY), int> LinkEntityMsg;

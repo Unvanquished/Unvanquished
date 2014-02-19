@@ -340,8 +340,6 @@ SV_LocateGameData
 void SV_LocateGameData( const IPC::SharedMemory& shmRegion, int numGEntities, int sizeofGEntity_t,
                         int sizeofGameClient )
 {
-	if ( !shmRegion )
-		Com_Error( ERR_DROP, "SV_LocateGameData: Failed to map shared memory region" );
 	if ( numGEntities < 0 || sizeofGEntity_t < 0 || sizeofGameClient < 0 )
 		Com_Error( ERR_DROP, "SV_LocateGameData: Invalid game data parameters" );
 	if ( shmRegion.GetSize() < numGEntities * sizeofGEntity_t + sv_maxclients->integer * sizeofGameClient )
@@ -809,17 +807,18 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, const IPC::Socket& socke
 		});
 		break;
 
-/*
-	case G_LOCATE_GAME_DATA:
-	{
-		if (!shmRegion)
-			shmRegion = inputs.ReadHandle().Map();
-		int numEntities = inputs.ReadInt();
-		int entitySize = inputs.ReadInt();
-		int playerSize = inputs.ReadInt();
-		SV_LocateGameData(shmRegion, numEntities, entitySize, playerSize);
+	case G_LOCATE_GAME_DATA1:
+		IPC::HandleMsg<LocateGameDataMsg1>(socket, std::move(reader), [this](IPC::SharedMemory shm, int numEntities, int entitiySize, int playerSize) {
+			shmRegion = std::move(shm);
+			SV_LocateGameData(shmRegion, numEntities, entitySize, playerSize);
+		});
 		break;
-	}
+	case G_LOCATE_GAME_DATA2:
+		IPC::HandleMsg<LocateGameDataMsg2>(socket, std::move(reader), [this](int numEntities, int entitiySize, int playerSize) {
+			SV_LocateGameData(shmRegion, numEntities, entitySize, playerSize);
+		});
+		break;
+/*
 	case G_DROP_CLIENT:
 	{
 		int clientNum = inputs.ReadInt();
