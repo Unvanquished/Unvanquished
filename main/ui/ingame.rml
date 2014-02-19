@@ -1,8 +1,9 @@
 <rml>
 	<head>
+		<link type="text/rcss" href="css/unv.rcss" />
 		<style>
 			body{
-				background:red;
+				background:#000000CC;
 				width:100%;
 				height:100%;
 			}
@@ -20,13 +21,9 @@
 				z-index: 3;
 				margin: auto 0;
 			}
-			div#logo
-			{
-				left: 35%;
-			}
 			div#sidebar
 			{
-				margin-top: 30%;
+				margin-top: 15%;
 				height: 50%;
 			}
 			button
@@ -65,23 +62,34 @@
 				width: 100%;
 				height: 100%;
 			}
+			#mapmap{
+				width:70%;
+				height:70%;
+				display:block;
+				background:#FFFFFF44;
+				margin:auto;
+				margin-left:25%;
+			}
+			
 		</style>
 		<title>main</title>
 	</head>
-	<body id="main">
-		<div id="logo">
-			<img style="width: 100%;" src="/ui/assets/logo" />
-		</div>
+	<body id="ingame">
+		
 		<div id="sidebar">
-			<button class="menuButton" onClick="show serverbrowser">Play</button>
+			<button class="menuButton" onClick="show overview">Overview</button>
+			<button class="menuButton" onClick="show serverinfo">Server</button>
+			<button class="menuButton" onClick="show player">Player</button>
+			<button class="menuButton" onClick="show maps">Map</button>
+			<button class="menuButton" onClick="show admin">Vote</button>
+			<div class="separator"></div>
 			<button class="menuButton" onClick="show options">Options</button>
-			<div class="separator"></div>
 			<button class="menuButton" onClick="show help">Guide</button>
-			<button class="menuButton" onClick="show mods">Mods</button>
-			<button class="menuButton" onClick="show demos">Demos</button>
 			<div class="separator"></div>
+			<button class="menuButton" onClick="exec disconnect">Disconnect</button>
 			<button class="menuButton" onClick="exec quit">Quit</button>
 		</div>
 		
+		<div id="mapmap">Big minimap Map ...Map</div>
 	</body>
 </rml>
