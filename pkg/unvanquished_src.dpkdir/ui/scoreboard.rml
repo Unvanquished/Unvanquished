@@ -1,15 +1,44 @@
 <rml>
     <head>
         <title>Score</title>
-        <link type="text/template" href="assets/window.rml" />
+        <link type="text/rcss" href="css/unv.rcss" />
         <style>
         body
         {
-			width: 50%;
-			height: 60%;
+			width: 70%;
+			height: 80%;
 			margin: auto;
 		}
 
+
+		#aliens,#humans{
+			width:50%;
+			height:70%;
+		}
+		#aliens{
+			background:#88000044;
+			float:left;
+		}
+		#humans{
+			background:#00008844;
+			float:right;
+		}
+		#infos{
+			display:block;
+		}
+		
+		#infos div{
+			width: 25%;
+			display:inline-block;
+			text-align:center;
+		}
+		
+		#infos div:nth-child(1n){
+			text-align:left;
+		}
+		#infos div:nth-child(4n){
+			text-align:right;
+		}
 		div#content
 		{
 			overflow-y: auto;
@@ -25,38 +54,47 @@
 		{
 			border-style: solid;
 		}
+		h2{
+			width:50%;
+			display:inline-block;
+			text-align:center;
+			font-size:2em;
+		}
+		
         </style>
     </head>
-    <body template="window" onload="buildDS teams" id="scoreboard">
+    <body onload="buildDS teams" id="scoreboard">
+    
+    <h2>Aliens</h2><h2>Humans</h2>
 	<div class="container">
-	<datagrid source="teams.aliens">
-		<col fields="num" width="5%">Num:</col>
-		<col fields="num" formatter="PlayerName" width="40%">Name:</col>
-		<col fields="score" width="10%">Score:</col>
-		<col fields="time" width="5%">Time:</col>
-		<col fields="ping" width="10%">Ping:</col>
-		<col fields="credits" width="10%">Credits:</col>
-		<col fields="location" width="20%">Location:</col>
+	<datagrid source="teams.aliens" id="aliens">
+		<col fields="num" formatter="PlayerName" width="40%">Name</col>
+		<col fields="kills" width="10%">Kills</col>
+		<col fields="deaths" width="15%">Deaths</col>
+		<col fields="ping" width="10%">Ping</col>
+		<col fields="score" width="15%">Score</col>
 	</datagrid>
 	</div>
 	<div class="container">
-	<datagrid source="teams.humans">
-		<col fields="num" width="5%">Num:</col>
-		<col fields="num" formatter="PlayerName" width="40%">Name:</col>
-		<col fields="score" width="10%">Score:</col>
-		<col fields="time" width="5%">Time:</col>
-		<col fields="ping" width="10%">Ping:</col>
-		<col fields="credits" width="10%">Credits:</col>
-		<col fields="location" width="20%">Location:</col>
+	<datagrid source="teams.humans" id="humans">
+		<col fields="num" formatter="PlayerName" width="40%">Name</col>
+		<col fields="kills" width="10%">Kills</col>
+		<col fields="deaths" width="15%">Deaths</col>
+		<col fields="ping" width="10%">Ping</col>
+		<col fields="score" width="15%">Score</col>
 	</datagrid>
 	</div>
 	<div class="container">
 	<datagrid source="teams.spectators">
-		<col fields="num" width="5%">Num:</col>
 		<col fields="num" formatter="PlayerName" width="45%">Name:</col>
-		<col fields="location" width="50%">Location:</col>
 	</datagrid>
 	</div>
-	<button onClick="buildDS teams">Refresh</button>
-    </body>
+	<div>Server: Official NA Unvanquished Server</div>
+	<div id="infos">
+		<div>Map: ATCSHD</div>
+		<div>GameMode: Grangerhunt</div>
+		<div>Time left: 12:34</div>
+		<div>Next Map: parpax</div>
+    </div>
+    </body> 
 </rml>
