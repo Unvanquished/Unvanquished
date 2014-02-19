@@ -117,8 +117,6 @@ typedef enum gameImport_s
 
   G_LOCATE_GAME_DATA1,
   G_LOCATE_GAME_DATA2,
-  G_DROP_CLIENT,
-  G_SEND_SERVER_COMMAND,
 
   G_LINK_ENTITY,
   G_UNLINK_ENTITY,
@@ -129,40 +127,40 @@ typedef enum gameImport_s
   G_SET_BRUSH_MODEL,
   G_IN_PVS,
   G_IN_PVS_IGNORE_PORTALS,
+  G_ADJUST_AREA_PORTAL_STATE,
+  G_AREAS_CONNECTED,
 
+  G_DROP_CLIENT,
+  G_SEND_SERVER_COMMAND,
   G_SET_CONFIGSTRING,
   G_GET_CONFIGSTRING,
   G_SET_CONFIGSTRING_RESTRICTIONS,
   G_SET_USERINFO,
   G_GET_USERINFO,
   G_GET_SERVERINFO,
-  G_ADJUST_AREA_PORTAL_STATE,
-  G_AREAS_CONNECTED,
-  G_BOT_ALLOCATE_CLIENT,
-  G_BOT_FREE_CLIENT,
   G_GET_USERCMD,
   G_GET_ENTITY_TOKEN,
+  G_SEND_GAME_STAT,
+  G_GET_TAG,
+  G_REGISTER_TAG,
+  G_SEND_MESSAGE,
+  G_MESSAGE_STATUS,
+  G_RSA_GENMSG, // ( const char *public_key, char *cleartext, char *encrypted )
+  G_GEN_FINGERPRINT,
+  G_GET_PLAYER_PUBKEY,
   G_GM_TIME,
-  G_SNAPVECTOR,
-  G_SEND_GAMESTAT,
-  G_GETTAG,
-  G_REGISTERTAG,
-  G_REGISTERSOUND,
+  G_GET_TIME_STRING,
+
   G_PARSE_ADD_GLOBAL_DEFINE,
   G_PARSE_LOAD_SOURCE,
   G_PARSE_FREE_SOURCE,
   G_PARSE_READ_TOKEN,
   G_PARSE_SOURCE_FILE_AND_LINE,
-  BOT_GET_CONSOLE_MESSAGE,
-  G_STUB__ADD_PHYSICS_ENTITY,
-  G_STUB__ADD_PHYSICS_STATIC,
-  G_SENDMESSAGE,
-  G_MESSAGESTATUS,
-  G_RSA_GENMSG, // ( const char *public_key, char *cleartext, char *encrypted )
-  G_QUOTESTRING,
-  G_GENFINGERPRINT,
-  G_GETPLAYERPUBKEY,
-  G_GETTIMESTRING,
+
+  G_BOT_ALLOCATE_CLIENT,
+  G_BOT_FREE_CLIENT,
+  G_BOT_GET_CONSOLE_MESSAGE,
+
   BOT_NAV_SETUP,
   BOT_NAV_SHUTDOWN,
   BOT_SET_NAVMESH,
@@ -261,7 +259,93 @@ typedef IPC::SyncMessage<
 	IPC::Message<IPC_ID(VM::QVM, G_IN_PVS_IGNORE_PORTALS), std::array<float, 3>, std::array<float, 3>>,
 	IPC::Reply<bool>
 > InPVSIgnorePortalsMsg;
+// AdjustAreaPortalStateMsg
+typedef IPC::Message<IPC_ID(VM::QVM, G_ADJUST_AREA_PORTAL_STATE), int, bool> AdjustAreaPortalStateMsg;
+// AreasConnectedMsg
+typedef IPC::SyncMessage<
+    IPC::Message<IPC_ID(VM::QVM, G_AREAS_CONNECTED), int, int>,
+    IPC::Reply<bool>
+> AreasConnectedMsg;
 
+// DropClientMsg
+typedef IPC::Message<IPC_ID(VM::QVM, G_DROP_CLIENT), int, std::string> DropClientMsg;
+// SendServerCommandMsg
+typedef IPC::Message<IPC_ID(VM::QVM, G_SEND_SERVER_COMMAND), int, std::string> SendServerCommandMsg;
+// SetConfigStringMsg
+typedef IPC::Message<IPC_ID(VM::QVM, G_SET_CONFIGSTRING), int, std::string> SetConfigStringMsg;
+// GetConfigStringMsg
+typedef IPC::SyncMessage<
+    IPC::Message<IPC_ID(VM::QVM, G_GET_CONFIGSTRING), int, int>,
+    IPC::Reply<std::string>
+> GetConfigStringMsg;
+// SetConfigStringRestrictionsMsg
+typedef IPC::Message<IPC_ID(VM::QVM, G_SET_CONFIGSTRING_RESTRICTIONS)> SetConfigStringRestrictionsMsg;
+// SetUserinfoMsg
+typedef IPC::Message<IPC_ID(VM::QVM, G_SET_USERINFO), int, std::string> SetUserinfoMsg;
+// GetUserinfoMsg
+typedef IPC::SyncMessage<
+    IPC::Message<IPC_ID(VM::QVM, G_GET_USERINFO), int, int>,
+    IPC::Reply<std::string>
+> GetUserinfoMsg;
+// GetServerinfoMsg
+typedef IPC::SyncMessage<
+    IPC::Message<IPC_ID(VM::QVM, G_GET_SERVERINFO), int>,
+    IPC::Reply<std::string>
+> GetServerinfoMsg;
+// GetUsercmdMsg
+typedef IPC::SyncMessage<
+    IPC::Message<IPC_ID(VM::QVM, G_GET_SERVERINFO), int>,
+    IPC::Reply<usercmd_t>
+> GetUsercmdMsg;
+//GetEntityTokenMsg
+typedef IPC::SyncMessage<
+    IPC::Message<IPC_ID(VM::QVM, G_GET_ENTITY_TOKEN)>,
+    IPC::Reply<bool, std::string>
+> GetEntityTokenMsg;
+// SendGameStatMsg
+typedef IPC::Message<IPC_ID(VM::QVM, G_SEND_GAME_STAT), std::string> SendGameStatMsg;
+// GetTagMsg
+typedef IPC::SyncMessage<
+    IPC::Message<IPC_ID(VM::QVM, G_GET_TAG), int, int, std::string>,
+    IPC::Reply<int, orientation_t>
+> GetTagMsg;
+// RegisterTagMsg
+typedef IPC::SyncMessage<
+    IPC::Message<IPC_ID(VM::QVM, G_REGISTER_TAG), std::string>,
+    IPC::Reply<int>
+> RegisterTagMsg;
+// SendMessageMsg
+typedef IPC::Message<IPC_ID(VM::QVM, G_SEND_MESSAGE), int, int, std::vector<char>> SendMessageMsg;
+// MessageStatusMsg
+typedef IPC::SyncMessage<
+    IPC::Message<IPC_ID(VM::QVM, G_MESSAGE_STATUS), int>,
+    IPC::Reply<int>
+> MessageStatusMsg;
+// RSAGenMsgMsg
+typedef IPC::SyncMessage<
+    IPC::Message<IPC_ID(VM::QVM, G_RSA_GENMSG), std::string>,
+    IPC::Reply<int, std::string, std::string>
+> RSAGenMsgMsg;
+// GenFingerPrintMsg
+typedef IPC::SyncMessage<
+    IPC::Message<IPC_ID(VM::QVM, G_GEN_FINGERPRINT), int, std::vector<char>, int>,
+    IPC::Reply<std::string>
+> GenFingerprintMsg;
+// GetPlayerPubkeyMsg
+typedef IPC::SyncMessage<
+    IPC::Message<IPC_ID(VM::QVM, G_GET_PLAYER_PUBKEY), int, int>,
+    IPC::Reply<std::string>
+> GetPlayerPubkeyMsg;
+//GMTimeMsg
+typedef IPC::SyncMessage<
+    IPC::Message<IPC_ID(VM::QVM, G_GM_TIME)>,
+    IPC::Reply<int, qtime_t>
+> GMTimeMsg;
+// GetTimeStringMsg
+typedef IPC::SyncMessage<
+    IPC::Message<IPC_ID(VM::QVM, G_GET_TIME_STRING), int, std::string, qtime_t>,
+    IPC::Reply<std::string>
+> GetTimeStringMsg;
 
 // engine-to-game-module calls
 typedef enum

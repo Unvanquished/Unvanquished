@@ -375,7 +375,7 @@ void SV_GetUsercmd( int clientNum, usercmd_t *cmd )
 SV_SendBinaryMessage
 ====================
 */
-static void SV_SendBinaryMessage( int cno, char *buf, int buflen )
+static void SV_SendBinaryMessage( int cno, const char *buf, int buflen )
 {
 	if ( cno < 0 || cno >= sv_maxclients->integer )
 	{
@@ -813,28 +813,13 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, const IPC::Socket& socke
 			SV_LocateGameData(shmRegion, numEntities, entitySize, playerSize);
 		});
 		break;
+
 	case G_LOCATE_GAME_DATA2:
 		IPC::HandleMsg<LocateGameDataMsg2>(socket, std::move(reader), [this](int numEntities, int entitySize, int playerSize) {
 			SV_LocateGameData(shmRegion, numEntities, entitySize, playerSize);
 		});
 		break;
-/*
-	case G_DROP_CLIENT:
-	{
-		int clientNum = inputs.ReadInt();
-		const char* reason = inputs.ReadString();
-		SV_GameDropClient(clientNum, reason);
-		break;
-	}
 
-	case G_SEND_SERVER_COMMAND:
-	{
-		int clientNum = inputs.ReadInt();
-		const char* text = inputs.ReadString();
-		SV_GameSendServerCommand(clientNum, text);
-		break;
-	}
-*/
 	case G_LINK_ENTITY:
 		IPC::HandleMsg<LinkEntityMsg>(socket, std::move(reader), [this](int entityNum) {
 			SV_LinkEntity(SV_GentityNum(entityNum));
@@ -890,74 +875,75 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, const IPC::Socket& socke
 		});
 		break;
 
-/*
-	case G_SET_CONFIGSTRING:
-	{
-		int index = inputs.ReadInt();
-		const char* val = inputs.ReadString();
-		SV_SetConfigstring(index, val);
-		break;
-	}
-
-	case G_GET_CONFIGSTRING:
-	{
-		int index = inputs.ReadInt();
-		int len = inputs.ReadInt();
-		std::unique_ptr<char[]> buffer(new char[len]);
-		SV_GetConfigstring(index, buffer.get(), len);
-		outputs.WriteString(buffer.get());
-		break;
-	}
-
-	case G_SET_CONFIGSTRING_RESTRICTIONS:
-	{
-		Com_Printf("SV_SetConfigstringRestrictions not implemented\n");
-		break;
-	}
-
-	case G_SET_USERINFO:
-	{
-		int index = inputs.ReadInt();
-		const char* val = inputs.ReadString();
-		SV_SetUserinfo(index, val);
-		break;
-	}
-
-	case G_GET_USERINFO:
-	{
-		int index = inputs.ReadInt();
-		int len = inputs.ReadInt();
-		std::unique_ptr<char[]> buffer(new char[len]);
-		SV_GetUserinfo(index, buffer.get(), len);
-		outputs.WriteString(buffer.get());
-		break;
-	}
-
-	case G_GET_SERVERINFO:
-	{
-		int len = inputs.ReadInt();
-		std::unique_ptr<char[]> buffer(new char[len]);
-		SV_GetServerinfo(buffer.get(), len);
-		outputs.WriteString(buffer.get());
-		break;
-	}
-
 	case G_ADJUST_AREA_PORTAL_STATE:
-	{
-		sharedEntity_t* ent = SV_GentityNum(inputs.ReadInt());
-		qboolean open = inputs.ReadInt();
-		SV_AdjustAreaPortalState(ent, open);
+		IPC::HandleMsg<AdjustAreaPortalStateMsg>(socket, std::move(reader), [this](int entityNum, bool open) {
+			sharedEntity_t* ent = SV_GentityNum(entityNum);
+			SV_AdjustAreaPortalState(ent, open);
+        });
 		break;
-	}
 
 	case G_AREAS_CONNECTED:
-	{
-		int area1 = inputs.ReadInt();
-		int area2 = inputs.ReadInt();
-		outputs.WriteInt(CM_AreasConnected(area1, area2));
+		IPC::HandleMsg<AreasConnectedMsg>(socket, std::move(reader), [this](int area1, int area2, bool& res) {
+			res = CM_AreasConnected(area1, area2);
+		});
 		break;
-	}
 
+
+	case G_DROP_CLIENT:
+		IPC::HandleMsg<DropClientMsg>(socket, std::move(reader), [this](int clientNum, Str::StringRef reason) {
+			SV_GameDropClient(clientNum, reason.c_str());
+		});
+		break;
+
+	case G_SEND_SERVER_COMMAND:
+		IPC::HandleMsg<SendServerCommandMsg>(socket, std::move(reader), [this](int clientNum, Str::StringRef text) {
+			SV_GameSendServerCommand(clientNum, text.c_str());
+		});
+		break;
+
+	case G_SET_CONFIGSTRING:
+		IPC::HandleMsg<SetConfigStringMsg>(socket, std::move(reader), [this](int index, Str::StringRef val) {
+			SV_SetConfigstring(index, val.c_str());
+		});
+		break;
+
+	case G_GET_CONFIGSTRING:
+		IPC::HandleMsg<GetConfigStringMsg>(socket, std::move(reader), [this](int index, int len, std::string& res) {
+			std::unique_ptr<char[]> buffer(new char[len]);
+			SV_GetConfigstring(index, buffer.get(), len);
+			res.assign(buffer.get(), len);
+		});
+		break;
+
+	case G_SET_CONFIGSTRING_RESTRICTIONS:
+		IPC::HandleMsg<SetConfigStringRestrictionsMsg>(socket, std::move(reader), [this]() {
+			Com_Printf("SV_SetConfigstringRestrictions not implemented\n");
+		});
+		break;
+
+	case G_SET_USERINFO:
+		IPC::HandleMsg<SetUserinfoMsg>(socket, std::move(reader), [this](int index, Str::StringRef val) {
+			SV_SetUserinfo(index, val.c_str());
+		});
+		break;
+
+	case G_GET_USERINFO:
+		IPC::HandleMsg<GetUserinfoMsg>(socket, std::move(reader), [this](int index, int len, std::string& res) {
+			std::unique_ptr<char[]> buffer(new char[len]);
+			SV_GetUserinfo(index, buffer.get(), len);
+			res.assign(buffer.get(), len);
+		});
+		break;
+
+	case G_GET_SERVERINFO:
+		IPC::HandleMsg<GetServerinfoMsg>(socket, std::move(reader), [this](int len, std::string& res) {
+			std::unique_ptr<char[]> buffer(new char[len]);
+			SV_GetServerinfo(buffer.get(), len);
+			res.assign(buffer.get(), len);
+		});
+		break;
+
+/*
 	case G_BOT_ALLOCATE_CLIENT:
 		outputs.WriteInt(SV_BotAllocateClient(inputs.ReadInt()));
 		break;
@@ -975,71 +961,90 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, const IPC::Socket& socke
 		outputs.WriteString(buffer.get());
 		break;
 	}
-
+*/
 	case G_GET_USERCMD:
-	{
-		int index = inputs.ReadInt();
-		usercmd_t cmd;
-		SV_GetUsercmd(index, &cmd);
-		outputs.Write(&cmd, sizeof(usercmd_t));
+		IPC::HandleMsg<GetUsercmdMsg>(socket, std::move(reader), [this](int index, usercmd_t& cmd) {
+			SV_GetUsercmd(index, &cmd);
+		});
 		break;
-	}
 
 	case G_GET_ENTITY_TOKEN:
-	{
-		const char *s = COM_Parse(&sv.entityParsePoint);
-		if (!sv.entityParsePoint && !s[0])
-			outputs.WriteInt(qfalse);
-		else
-			outputs.WriteInt(qtrue);
-		outputs.WriteString(s);
+		IPC::HandleMsg<GetEntityTokenMsg>(socket, std::move(reader), [this](bool& boolRes, std::string& res) {
+			res = COM_Parse(&sv.entityParsePoint);
+			boolRes = sv.entityParsePoint or res.size() > 0;
+		});
 		break;
-	}
+
+	case G_SEND_GAME_STAT:
+		IPC::HandleMsg<SendGameStatMsg>(socket, std::move(reader), [this](Str::StringRef text) {
+			SV_MasterGameStat(text.c_str());
+		});
+		break;
+
+	case G_GET_TAG:
+		IPC::HandleMsg<GetTagMsg>(socket, std::move(reader), [this](int clientNum, int tagFileNumber, Str::StringRef tagName, int& res, orientation_t& orientation) {
+			res = SV_GetTag(clientNum, tagFileNumber, tagName.c_str(), &orientation);
+		});
+		break;
+
+	case G_REGISTER_TAG:
+		IPC::HandleMsg<RegisterTagMsg>(socket, std::move(reader), [this](Str::StringRef tagFileName, int& res) {
+			res = SV_LoadTag(tagFileName.c_str());
+		});
+		break;
+
+	case G_SEND_MESSAGE:
+		IPC::HandleMsg<SendMessageMsg>(socket, std::move(reader), [this](int clientNum, int len, std::vector<char> message) {
+			SV_SendBinaryMessage(clientNum, message.data(), len);
+		});
+		break;
+
+	case G_MESSAGE_STATUS:
+		IPC::HandleMsg<MessageStatusMsg>(socket, std::move(reader), [this](int index, int& status) {
+			status = SV_BinaryMessageStatus(index);
+		});
+		break;
+
+	case G_RSA_GENMSG:
+		IPC::HandleMsg<RSAGenMsgMsg>(socket, std::move(reader), [this](Str::StringRef pubkey, int& res, std::string& cleartext, std::string& encrypted) {
+			char cleartextBuffer[RSA_STRING_LENGTH];
+			char encryptedBuffer[RSA_STRING_LENGTH];
+			res = SV_RSAGenMsg(pubkey.c_str(), cleartextBuffer, encryptedBuffer);
+			cleartext = cleartextBuffer;
+			encrypted = encryptedBuffer;
+		});
+		break;
+
+	case G_GEN_FINGERPRINT:
+		IPC::HandleMsg<GenFingerprintMsg>(socket, std::move(reader), [this](int keylen, const std::vector<char>& key, int len, std::string& res) {
+			std::unique_ptr<char[]> buffer(new char[len]);
+			Com_MD5Buffer(key.data(), keylen, buffer.get(), len);
+			res.assign(buffer.get(), len);
+		});
+		break;
+
+	case G_GET_PLAYER_PUBKEY:
+		IPC::HandleMsg<GetPlayerPubkeyMsg>(socket, std::move(reader), [this](int clientNum, int len, std::string& pubkey) {
+			std::unique_ptr<char[]> buffer(new char[len]);
+			SV_GetPlayerPubkey(clientNum, buffer.get(), len);
+			pubkey.assign(buffer.get());
+		});
+		break;
 
 	case G_GM_TIME:
-	{
-		qtime_t t;
-		outputs.WriteInt(Com_GMTime(&t));
-		outputs.Write(&t, sizeof(qtime_t));
-		break;
-	}
-
-	case G_SNAPVECTOR:
-	{
-		vec3_t v;
-		inputs.Read(v, sizeof(vec3_t));
-		SnapVector(v);
-		outputs.Write(v, sizeof(vec3_t));
-		break;
-	}
-
-	case G_SEND_GAMESTAT:
-		SV_MasterGameStat(inputs.ReadString());
+		IPC::HandleMsg<GMTimeMsg>(socket, std::move(reader), [this](int& res, qtime_t& time) {
+			res = Com_GMTime(&time);
+		});
 		break;
 
-	case G_GETTAG:
-	{
-		int clientNum = inputs.ReadInt();
-		int tagFileNumber = inputs.ReadInt();
-		const char* tagName = inputs.ReadString();
-		orientation_t org;
-		outputs.WriteInt(SV_GetTag(clientNum, tagFileNumber, tagName, &org));
-		outputs.Write(&org, sizeof(orientation_t));
+	case G_GET_TIME_STRING:
+		IPC::HandleMsg<GetTimeStringMsg>(socket, std::move(reader), [this](int len, Str::StringRef format, const qtime_t& time, std::string& res) {
+			std::unique_ptr<char[]> buffer(new char[len]);
+			SV_GetTimeString(buffer.get(), len, format.c_str(), &time);
+			res.assign(buffer.get(), len);
+		});
 		break;
-	}
-
-	case G_REGISTERTAG:
-		outputs.WriteInt(SV_LoadTag(inputs.ReadString()));
-		break;
-
-	case G_REGISTERSOUND:
-	{
-		const char* name = inputs.ReadString();
-		qboolean compressed = inputs.ReadInt();
-		outputs.WriteInt(0);
-		break;
-	}
-
+/*
 	case G_PARSE_ADD_GLOBAL_DEFINE:
 		outputs.WriteInt(Parse_AddGlobalDefine(inputs.ReadString()));
 		break;
@@ -1067,68 +1072,6 @@ void GameVM::QVMSyscall(int index, IPC::Reader& reader, const IPC::Socket& socke
 		outputs.WriteInt(Parse_SourceFileAndLine(inputs.ReadInt(), buffer, &line));
 		outputs.WriteString(buffer);
 		outputs.WriteInt(line);
-		break;
-	}
-
-	case G_SENDMESSAGE:
-	{
-		int clientNum = inputs.ReadInt();
-		int len = inputs.ReadInt();
-		std::unique_ptr<char[]> buffer(new char[len]);
-		inputs.Read(buffer.get(), len);
-		SV_SendBinaryMessage(clientNum, buffer.get(), len);
-		break;
-	}
-
-	case G_MESSAGESTATUS:
-		outputs.WriteInt(SV_BinaryMessageStatus(inputs.ReadInt()));
-		break;
-
-	case G_RSA_GENMSG:
-	{
-		const char* pubkey = inputs.ReadString();
-		char cleartext[RSA_STRING_LENGTH];
-		char encrypted[RSA_STRING_LENGTH];
-		outputs.WriteInt(SV_RSAGenMsg(pubkey, cleartext, encrypted));
-		outputs.WriteString(cleartext);
-		outputs.WriteString(encrypted);
-		break;
-	}
-
-	case G_QUOTESTRING:
-		outputs.WriteString(Cmd_QuoteString(inputs.ReadString()));
-		break;
-
-	case G_GENFINGERPRINT:
-	{
-		int keylen = inputs.ReadInt();
-		const char* key = static_cast<const char*>(inputs.ReadInline(keylen));
-		int len = inputs.ReadInt();
-		std::unique_ptr<char[]> buffer(new char[len]);
-		Com_MD5Buffer(key, keylen, buffer.get(), len);
-		outputs.WriteString(buffer.get());
-		break;
-	}
-
-	case G_GETPLAYERPUBKEY:
-	{
-		int clientNum = inputs.ReadInt();
-		int len = inputs.ReadInt();
-		std::unique_ptr<char[]> buffer(new char[len]);
-		SV_GetPlayerPubkey(clientNum, buffer.get(), len);
-		outputs.WriteString(buffer.get());
-		break;
-	}
-
-	case G_GETTIMESTRING:
-	{
-		int len = inputs.ReadInt();
-		std::unique_ptr<char[]> buffer(new char[len]);
-		const char* format = inputs.ReadString();
-		qtime_t t;
-		inputs.Read(&t, sizeof(qtime_t));
-		SV_GetTimeString(buffer.get(), len, format, &t);
-		outputs.WriteString(buffer.get());
 		break;
 	}
 
