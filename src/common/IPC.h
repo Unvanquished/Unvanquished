@@ -464,6 +464,28 @@ struct SerializeTraits<std::unordered_set<T>> {
 	}
 };
 
+// Socket and shared memory
+template<> struct SerializeTraits<Socket> {
+	static void Write(Writer& stream, const Socket& value)
+	{
+		stream.WriteHandle(value.GetDesc());
+	}
+	static Socket Read(Reader& stream)
+	{
+		return Socket::FromDesc(stream.ReadHandle());
+	}
+};
+template<> struct SerializeTraits<SharedMemory> {
+	static void Write(Writer& stream, const SharedMemory& value)
+	{
+		stream.WriteHandle(value.GetDesc());
+	}
+	static SharedMemory Read(Reader& stream)
+	{
+		return SharedMemory::FromDesc(stream.ReadHandle());
+	}
+};
+
 // Message ID to indicate an RPC return
 const uint32_t ID_RETURN = 0xffffffffu;
 
