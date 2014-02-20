@@ -723,6 +723,7 @@ set( GAMELIST
   ${GAMELOGIC_DIR}/shared/bg_utilities.c
   ${GAMELOGIC_DIR}/shared/CommonProxies.cpp
   ${GAMELOGIC_DIR}/shared/CommonProxies.h
+  ${GAMELOGIC_DIR}/shared/VMMain.h
   ${GAMELOGIC_DIR}/game/g_active.c
   ${GAMELOGIC_DIR}/game/g_client.c
   ${GAMELOGIC_DIR}/game/g_cmds.c

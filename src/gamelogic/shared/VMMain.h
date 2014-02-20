@@ -28,21 +28,19 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#ifndef SHARED_COMMON_PROXIES_H_
-#define SHARED_COMMON_PROXIES_H_
-
-namespace Cmd {
-
-    void PushArgs(Str::StringRef args);
-    void PopArgs();
-
-}
+#include "../../common/IPC.h"
 
 namespace VM {
 
-    void InitializeProxies();
-    void HandleCommonSyscall(int major, int minor, IPC::Reader reader, const IPC::Socket& socket);
+    extern IPC::Socket rootSocket;
+
+	void Syscall(uint32_t id, IPC::Reader reader, const IPC::Socket& socket);
+
+    // Send a message to the engine
+	template<typename Msg, typename... Args> void SendMsg(Args&&... args) {
+		IPC::SendMsg<Msg>(rootSocket, [](uint32_t id, IPC::Reader reader) {
+			Syscall(id, std::move(reader), rootSocket);
+		}, std::forward<Args>(args)...);
+	}
 
 }
-
-#endif // SHARED_COMMON_PROXIES_H_

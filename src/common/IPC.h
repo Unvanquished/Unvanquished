@@ -44,7 +44,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <limits>
 #include "Util.h"
 #include "../engine/qcommon/q_shared.h"
-#include "../engine/qcommon/qcommon.h"
 
 namespace IPC {
 

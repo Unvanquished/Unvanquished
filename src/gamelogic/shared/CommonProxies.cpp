@@ -38,9 +38,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "../game/g_local.h"
 
 #include "../../common/Command.h"
+#include "../../common/CommonSyscalls.h"
 #include "../../common/Cvar.h"
 #include "../../common/Log.h"
-#include "../../common/RPC.h"
+#include "VMMain.h"
 #include "unordered_map"
 
 //TODO HACK avoid compile link errors
@@ -53,11 +54,6 @@ const char* Trans_Gettext(const char* text) {
     return text;
 }
 
-// Forward declare DoRPC, would need to expose it somehow
-// but the RPC system will get rewritten so...
-RPC::Reader DoRPC(RPC::Writer& writer);
-
-
 //TODO END HACK
 
 // Command related syscall handling
@@ -69,19 +65,10 @@ namespace Cmd {
     class ProxyEnvironment: public Cmd::Environment {
         public:
             virtual void Print(Str::StringRef text) {
-                RPC::Writer input;
-                input.WriteInt(GS_COMMAND);
-                input.WriteInt(ENV_PRINT);
-                input.WriteString(text.c_str());
-                DoRPC(input);
+                VM::SendMsg<VM::EnvPrintMsg>(text);
             }
-            virtual void ExecuteAfter(Str::StringRef text, bool parseCvars = false) {
-                RPC::Writer input;
-                input.WriteInt(GS_COMMAND);
-                input.WriteInt(ENV_EXECUTE_AFTER);
-                input.WriteString(text.c_str());
-                input.WriteInt(parseCvars);
-                DoRPC(input);
+            virtual void ExecuteAfter(Str::StringRef text, bool parseCvars) {
+                VM::SendMsg<VM::EnvExecuteAfterMsg>(text, parseCvars);
             }
     };
 
@@ -107,12 +94,7 @@ namespace Cmd {
     bool commandsInitialized = false;
 
     static void AddCommandRPC(std::string name, std::string description) {
-        RPC::Writer input;
-        input.WriteInt(GS_COMMAND);
-        input.WriteInt(ADD_COMMAND);
-        input.WriteString(name.c_str());
-        input.WriteString(description.c_str());
-        DoRPC(input);
+        VM::SendMsg<VM::AddCommandMsg>(name, description);
     }
 
     static void InitializeProxy() {
@@ -135,57 +117,49 @@ namespace Cmd {
     void RemoveCommand(const std::string& name) {
         GetCommandMap().erase(name);
 
-        RPC::Writer input;
-        input.WriteInt(GS_COMMAND);
-        input.WriteInt(REMOVE_COMMAND);
-        input.WriteString(name.c_str());
-        DoRPC(input);
+        VM::SendMsg<VM::RemoveCommandMsg>(name);
     }
 
     // Implementation of the engine syscalls
 
-    void ExecuteSyscall(RPC::Reader& inputs, RPC::Writer&) {
-        Cmd::Args args(inputs.ReadString());
+    void ExecuteSyscall(IPC::Reader& reader, const IPC::Socket& socket) {
+        IPC::HandleMsg<VM::ExecuteMsg>(socket, std::move(reader), [](Str::StringRef command){
+            Cmd::Args args(command);
 
-        auto map = GetCommandMap();
-        auto it = map.find(args.Argv(0));
+            auto map = GetCommandMap();
+            auto it = map.find(args.Argv(0));
 
-        if (it == map.end()) {
-            return;
-        }
+            if (it == map.end()) {
+                return;
+            }
 
-        it->second.cmd->Run(args);
+            it->second.cmd->Run(args);
+        });
     }
 
-    void CompleteSyscall(RPC::Reader& inputs, RPC::Writer& outputs) {
-        int argNum = inputs.ReadInt();
-        Cmd::Args args(inputs.ReadString());
-        Str::StringRef prefix = inputs.ReadString();
+    void CompleteSyscall(IPC::Reader& reader, const IPC::Socket& socket) {
+        IPC::HandleMsg<VM::CompleteMsg>(socket, std::move(reader), [](int argNum, Str::StringRef command, Str::StringRef prefix, Cmd::CompletionResult& res) {
+            Cmd::Args args(command);
 
-        auto map = GetCommandMap();
-        auto it = map.find(args.Argv(0));
+            auto map = GetCommandMap();
+            auto it = map.find(args.Argv(0));
 
-        if (it == map.end()) {
-            return;
-        }
+            if (it == map.end()) {
+                return;
+            }
 
-        Cmd::CompletionResult res = it->second.cmd->Complete(argNum, args, prefix);
-
-        outputs.WriteInt(res.size());
-        for (unsigned i = 0; i < res.size(); i++) {
-            outputs.WriteString(res[i].first.c_str());
-            outputs.WriteString(res[i].second.c_str());
-        }
+            res = std::move(it->second.cmd->Complete(argNum, args, prefix));
+        });
     }
 
-    void HandleSyscall(int minor, RPC::Reader& inputs, RPC::Writer& outputs) {
+    void HandleSyscall(int minor, IPC::Reader& reader, const IPC::Socket& socket) {
         switch (minor) {
-            case EXECUTE:
-                ExecuteSyscall(inputs, outputs);
+            case VM::EXECUTE:
+                ExecuteSyscall(reader, socket);
                 break;
 
-            case COMPLETE:
-                CompleteSyscall(inputs, outputs);
+            case VM::COMPLETE:
+                CompleteSyscall(reader, socket);
                 break;
 
             default:
@@ -278,14 +252,7 @@ namespace Cvar{
     bool cvarsInitialized = false;
 
     void RegisterCvarRPC(const std::string& name, std::string description, int flags, std::string defaultValue) {
-        RPC::Writer input;
-        input.WriteInt(GS_CVAR);
-        input.WriteInt(REGISTER_CVAR);
-        input.WriteString(name.c_str());
-        input.WriteString(description.c_str());
-        input.WriteInt(flags);
-        input.WriteString(defaultValue.c_str());
-        DoRPC(input);
+        VM::SendMsg<VM::RegisterCvarMsg>(name, description, flags, defaultValue);
     }
 
     static void InitializeProxy() {
@@ -306,48 +273,39 @@ namespace Cvar{
     }
 
     std::string GetValue(const std::string& name) {
-        RPC::Writer inputs;
-        inputs.WriteInt(GS_CVAR);
-        inputs.WriteInt(GET_CVAR);
-        inputs.WriteString(name.c_str());
-        RPC::Reader outputs = DoRPC(inputs);
-        return outputs.ReadString();
+        std::string value;
+        VM::SendMsg<VM::GetCvarMsg>(name, value);
+        return value;
     }
 
     void SetValue(const std::string& name, std::string value) {
-        RPC::Writer inputs;
-        inputs.WriteInt(GS_CVAR);
-        inputs.WriteInt(SET_CVAR);
-        inputs.WriteString(name.c_str());
-        inputs.WriteString(value.c_str());
-        DoRPC(inputs);
+        VM::SendMsg<VM::SetCvarMsg>(name, value);
     }
 
     // Syscalls called by the engine
 
-    void CallOnValueChangedSyscall(RPC::Reader& inputs, RPC::Writer& outputs) {
-        Str::StringRef name = inputs.ReadString();
-        Str::StringRef value = inputs.ReadString();
+    void CallOnValueChangedSyscall(IPC::Reader& reader, const IPC::Socket& socket) {
+        IPC::HandleMsg<VM::OnValueChangedMsg>(socket, std::move(reader), [](Str::StringRef name, Str::StringRef value, bool& success, std::string& description) {
+            auto map = GetCvarMap();
+            auto it = map.find(name);
 
-        auto map = GetCvarMap();
-        auto it = map.find(name);
+            if (it == map.end()) {
+                success = true;
+                description = "";
+                return;
+            }
 
-        if (it == map.end()) {
-            outputs.WriteInt(true);
-            outputs.WriteString("");
-            return;
-        }
+            auto res = it->second.cvar->OnValueChanged(value);
 
-        auto res = it->second.cvar->OnValueChanged(value);
-
-        outputs.WriteInt(res.success);
-        outputs.WriteString(res.description.c_str());
+            success = res.success;
+            description = res.description;
+        });
     }
 
-    void HandleSyscall(int minor, RPC::Reader& inputs, RPC::Writer& outputs) {
+    void HandleSyscall(int minor, IPC::Reader& reader, const IPC::Socket& socket) {
         switch (minor) {
-            case ON_VALUE_CHANGED:
-                CallOnValueChangedSyscall(inputs, outputs);
+            case VM::ON_VALUE_CHANGED:
+                CallOnValueChangedSyscall(reader, socket);
                 break;
 
             default:
@@ -448,14 +406,14 @@ namespace VM {
         Cvar::InitializeProxy();
     }
 
-    void HandleCommonSyscall(int major, int minor, RPC::Reader& inputs, RPC::Writer& outputs) {
+    void HandleCommonSyscall(int major, int minor, IPC::Reader reader, const IPC::Socket& socket) {
         switch (major) {
-            case GS_COMMAND:
-                Cmd::HandleSyscall(minor, inputs, outputs);
+            case VM::COMMAND:
+                Cmd::HandleSyscall(minor, reader, socket);
                 break;
 
-            case GS_CVAR:
-                Cvar::HandleSyscall(minor, inputs, outputs);
+            case VM::CVAR:
+                Cvar::HandleSyscall(minor, reader, socket);
                 break;
 
             default:
