@@ -3108,6 +3108,18 @@ Returns NULL if it fails, not a default image.
 Tr3B: fear the use of goto
 ==============
 */
+static void R_FreeCubePics( byte **pic, int count )
+{
+	while (--count >= 0)
+	{
+		if ( pic[ count ] )
+		{
+			ri.Free( pic[ count ] );
+		}
+	}
+}
+
+
 image_t        *R_FindCubeImage( const char *imageName, int bits, filterType_t filterType, wrapType_t wrapType, const char *materialName )
 {
 	int         i;
@@ -3175,6 +3187,8 @@ image_t        *R_FindCubeImage( const char *imageName, int bits, filterType_t f
 	if( numLayers == 6 && pic[0] ) {
 		numPicsToFree = 1;
 		goto createCubeImage;
+	} else {
+		R_FreeCubePics( pic, numLayers );
 	}
 
 	// try to load .KTX cubemap
@@ -3182,6 +3196,8 @@ image_t        *R_FindCubeImage( const char *imageName, int bits, filterType_t f
 	if( numLayers == 6 && pic[0] ) {
 		numPicsToFree = 1;
 		goto createCubeImage;
+	} else {
+		R_FreeCubePics( pic, numLayers );
 	}
 
 	for ( i = 0; i < 6; i++ )
@@ -3302,14 +3318,7 @@ createCubeImage:
 	image = R_CreateCubeImage( ( char * ) buffer, ( const byte ** ) pic, width, height, bits, filterType, wrapType );
 
 skipCubeImage:
-
-	for ( i = 0; i < numPicsToFree; i++ )
-	{
-		if ( pic[ i ] )
-		{
-			ri.Free( pic[ i ] );
-		}
-	}
+	R_FreeCubePics( pic, numPicsToFree );
 
 	return image;
 }
